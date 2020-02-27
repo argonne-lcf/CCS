@@ -3,8 +3,8 @@
 //   Creators, Management
 extern ccs_error_t
 ccs_create_configuration(ccs_configuration_space_t configuration_space,
-                         size_t                    num_datum,
-                         ccs_data_t               *vector,
+                         size_t                    num_values,
+                         ccs_datum_t              *values,
                          void                     *user_data
                          ccs_configuration_t      *configuration_ret);
 
@@ -26,11 +26,11 @@ ccs_configuration_get_user_data(ccs_configuration_t   configuration,
 extern ccs_error_t
 ccs_configuration_get_value(ccs_configuration_t  configuration,
                             size_t               index,
-                            ccs_data_t          *value);
+                            ccs_datum_t         *value);
 
 extern ccs_error_t
-ccs_configuration_get_vector(ccs_configuration_t  configuration,
-                             size_t               num_datum,
-                             ccs_data_t          *vector,
-                             size_t              *num_datum_ret);
+ccs_configuration_get_values(ccs_configuration_t  configuration,
+                             size_t               num_values,
+                             ccs_datum_t         *values,
+                             size_t              *num_values_ret);
 

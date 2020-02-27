@@ -27,15 +27,22 @@ typedef enum ccs_hyperparameter_type_e {
 typedef enum ccs_hyperparameter_type_e ccs_hyperparameter_type_t;
 
 typedef struct _ccs_rng_s          *ccs_rng_t;
-typedef struct _ccs_distribution_s *ccs_distribution_t;
 
 // Distribution
 extern ccs_error_t
+ccs_create_distribution(ccs_distribution_type_e distribution_type,
+                        ccs_data_type_t         data_type,
+                        ccs_scale_type_t        scale,
+                        ccs_value_t             quantization,
+                        ccs_value_t            *parameters,
+                        ccs_distribution_t     *distribution_ret);
+
+extern ccs_error_t
 ccs_create_normal_distribution(ccs_data_type_t     data_type,
-                               ccs_data_t          mu,
-                               ccs_data_t          sigma,
+                               ccs_value_t         mu,
+                               ccs_value_t         sigma,
                                ccs_scale_type_t    scale,
-                               ccs_data_t          quantization,
+                               ccs_value_t         quantization,
                                ccs_distribution_t *distribution_ret);
 
 extern ccs_error_t
@@ -87,33 +94,87 @@ ccs_distribution_get_scale_type(ccs_distribution_t  distribution,
 
 extern ccs_error_t
 ccs_distribution_get_quantization(ccs_distribution_t  distribution,
-                                  ccs_data_t         *quantization);
+                                  ccs_datum_t        *quantization);
 
 extern ccs_error_t
 ccs_normal_distribution_get_parameters(ccs_distribution_t  distribution,
-                                       ccs_data_t         *mu_ret,
-                                       ccs_data_t         *sigma_ret);
+                                       ccs_datum_t        *mu_ret,
+                                       ccs_datum_t        *sigma_ret);
 
 extern ccs_error_t
 ccs_uniform_distribution_get_parameters(ccs_distribution_t  distribution,
-                                        ccs_data_t         *lower,
-                                        ccs_data_t         *upper);
+                                        ccs_datum_t        *lower,
+                                        ccs_datum_t        *upper);
 
 //   Sampling Interface
 extern ccs_error_t
 ccs_distribution_sample(ccs_distribution_t  distribution,
                         ccs_rng_t           rng,
-                        ccs_data_t         *value);
+                        ccs_datum_t        *value);
 
 extern ccs_error_t
 ccs_distribution_samples(ccs_distribution_t  distribution,
                          ccs_rng_t           rng,
                          size_t              num_values,
-                         ccs_data_t         *values);
+                         ccs_datum_t        *values);
+
+extern ccs_error_t
+ccs_distribution_is_value_valid(ccs_distribution_t distribution,
+                                ccs_datum_t        value);
 
 // Hyperparameter Interface
+extern ccs_error_t
+ccs_create_numerical_hyperparameter(const char           *name,
+                                    void                 *user_data,
+                                    ccs_distribution_t    distribution,
+                                    ccs_datum_t           default_value,
+                                    ccs_hyperparameter_t *hyperparameter_ret);
+
+extern ccs_error_t
+ccs_create_categorical_hyperparameter(const char           *name,
+                                      void                 *user_data,
+                                      size_t                num_possible_values,
+                                      ccs_datum_t          *possible_values,
+                                      ccs_datum_t           default_value,
+                                      ccs_datum_t          *weights,
+                                      ccs_hyperparameter_t *hyperparameter_ret);
+
+extern ccs_error_t
+ccs_create_ordinal_hyperparameters(const char           *name,
+                                   void                 *user_data,
+                                   size_t                num_possible_values,
+                                   ccs_datum_t          *possible_values,
+                                   ccs_hyperparameter_t *hyperparameter_ret);
+
 extern ccs_error_t
 ccs_retain_hyperparameter(ccs_hyperparameter_t hyperparameter);
 
 extern ccs_error_t
 ccs_release_hyperparameter(ccs_hyperparameter_t hyperparameter);
+
+//   Accessors
+
+extern ccs_error_t
+ccs_hyperparameters_get_default_value(ccs_hyperparameter_t  hyperparameter,
+                                      ccs_datum_t          *value);
+
+extern ccs_error_t
+ccs_hyperparameters_get_name(ccs_hyperparameter_t   hyperparameter,
+                             const char           **name);
+
+extern ccs_error_t
+ccs_hyperparameters_get_user_data(ccs_hyperparameter_t   hyperparameter,
+                                  void                 **user_data);
+//   Sampling Interface
+extern ccs_error_t
+ccs_hyperparameters_sample(ccs_hyperparameter_t  hyperparameter,
+                           ccs_rng_t             rng,
+                           ccs_datum_t          *value);
+
+extern ccs_error_t
+ccs_hyperparameters_samples(ccs_hyperparameter_t  hyperparameter,
+                            ccs_rng_t             rng,
+                            size_t                num_values,
+                            ccs_datum_t          *values);
+
+

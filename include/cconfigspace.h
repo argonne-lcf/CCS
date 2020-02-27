@@ -2,10 +2,13 @@
 #include "ccs/configuration_space.h"
 #include "ccs/configuration.h"
 #include "ccs/hyperparameter.h"
+#include "ccs/condition.h"
 
 typedef struct _ccs_configuration_space_s *ccs_configuration_space_t;
 typedef struct _ccs_configuration_s       *ccs_configuration_t;
+typedef struct _ccs_distribution_s        *ccs_distribution_t;
 typedef struct _ccs_hyperparameter_s      *ccs_hyperparameter_t;
+typedef struct _ccs_expression_s          *ccs_expression_t;
 typedef struct _ccs_condition_s           *ccs_condition_t;
 typedef struct _ccs_forbidden_clause_s    *ccs_forbidden_clause_t;
 
@@ -27,14 +30,21 @@ enum ccs_data_type_e {
 
 typedef enum ccs_data_type_e ccs_data_type_t;
 
-struct ccs_data_u {
-	union {
-		double      d;
-		int64_t     i;
-		const char *s;
-	} value;
+
+union ccs_value_u {
+{
+	double      d;
+	int64_t     i;
+	const char *s;
+};
+
+typedef union ccs_value_u ccs_value_t
+
+
+struct ccs_datum_u {
+	ccs_value_u value;
 	ccs_data_type_t type;
 };
 
-typedef struct ccs_data_u ccs_data_t;
+typedef struct ccs_datum_u ccs_datum_t;
 

@@ -108,9 +108,9 @@ ccs_configuration_space_check_configuration(ccs_configuration_space_t configurat
                                             ccs_configuration_t       configuration);
 
 extern ccs_error_t
-ccs_configuration_space_check_configuration_vector(ccs_configuration_space_t  configuration_space,
-                                                   size_t                     num_datum,
-                                                   ccs_data_t                *vector);
+ccs_configuration_space_check_configuration_values(ccs_configuration_space_t  configuration_space,
+                                                   size_t                     num_values,
+                                                   ccs_datum_t               *values);
 
 extern ccs_error_t
 ccs_configuration_space_get_default_configuration(ccs_configuration_space_t  configuration_space,
