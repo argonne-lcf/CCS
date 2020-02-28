@@ -14,6 +14,7 @@ typedef struct _ccs_forbidden_clause_s    *ccs_forbidden_clause_t;
 
 enum ccs_error_e {
 	CCS_SUCCESS,
+	CCS_INVALID_OBJECT,
 	CCS_ERROR_MAX,
 	CCS_ERROR_FORCE_32BIT = MAX_INT
 };
