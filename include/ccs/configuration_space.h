@@ -1,16 +1,10 @@
 // Configuration Space Interface
 
-//   Creators, Management
+//   Creators
 extern ccs_error_t
 ccs_create_configuration_space(const char                *name,
                                void                      *user_data,
                                ccs_configuration_space_t *configuration_space_ret);
-
-extern ccs_error_t
-ccs_retain_configuration_space(ccs_configuration_space_t configuration_space);
-
-extern ccs_error_t
-ccs_release_configuration_space(ccs_configuration_space_t configuration_space);
 
 //   Accessors
 extern ccs_error_t

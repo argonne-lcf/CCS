@@ -73,12 +73,6 @@ ccs_create_uniform_float_distribution(double lower,
                                       double              quantization,
                                       ccs_distribution_t *distribution_ret);
 
-extern ccs_error_t
-ccs_retain_distribution(ccs_distribution_t distribution);
-
-extern ccs_error_t
-ccs_release_distribution(ccs_distribution_t distribution);
-
 //   Accessors
 extern ccs_error_t
 ccs_distribution_get_type(ccs_distribution_t       distribution,
@@ -145,12 +139,6 @@ ccs_create_ordinal_hyperparameters(const char           *name,
                                    size_t                num_possible_values,
                                    ccs_datum_t          *possible_values,
                                    ccs_hyperparameter_t *hyperparameter_ret);
-
-extern ccs_error_t
-ccs_retain_hyperparameter(ccs_hyperparameter_t hyperparameter);
-
-extern ccs_error_t
-ccs_release_hyperparameter(ccs_hyperparameter_t hyperparameter);
 
 //   Accessors
 
