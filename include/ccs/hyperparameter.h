@@ -1,8 +1,11 @@
+#ifndef _CCS_HYPERPARAMETER_H
+#define _CCS_HYPERPARAMETER_H
+
 enum ccs_distribution_type_e {
 	CCS_UNIFORM,
 	CCS_NORMAL,
 	CCS_DISTRIBUTION_TYPE_MAX,
-	CCS_DISTRIBUTION_FORCE_32BIT = MAX_INT
+	CCS_DISTRIBUTION_FORCE_32BIT = INT_MAX
 };
 
 typedef enum ccs_distribution_type_e ccs_distribution_type_t;
@@ -11,26 +14,26 @@ enum ccs_scale_type_e {
 	CSS_LINEAR,
 	CSS_LOGARITHMIC,
 	CCS_SCALE_TYPE_MAX,
-	CCS_SCALE_TYPE_FORCE_32BIT = MAX_INT
+	CCS_SCALE_TYPE_FORCE_32BIT = INT_MAX
 };
 
 typedef enum ccs_scale_type_e ccs_scale_type_t;
 
-typedef enum ccs_hyperparameter_type_e {
+enum ccs_hyperparameter_type_e {
 	CCS_NUMERICAL,
-	CCS_CATEGORICAL.
+	CCS_CATEGORICAL,
 	CCS_ORDINAL,
 	CCS_HYPERPARAMETER_TYPE_MAX,
-	CCS_HYPERPARAMETER_TYPE_FORCE_32BIT = MAX_INT
+	CCS_HYPERPARAMETER_TYPE_FORCE_32BIT = INT_MAX
 };
 
 typedef enum ccs_hyperparameter_type_e ccs_hyperparameter_type_t;
 
-typedef struct _ccs_rng_s          *ccs_rng_t;
+typedef struct _ccs_rng_s             *ccs_rng_t;
 
 // Distribution
 extern ccs_error_t
-ccs_create_distribution(ccs_distribution_type_e distribution_type,
+ccs_create_distribution(ccs_distribution_type_t distribution_type,
                         ccs_data_type_t         data_type,
                         ccs_scale_type_t        scale,
                         ccs_value_t             quantization,
@@ -166,3 +169,4 @@ ccs_hyperparameters_samples(ccs_hyperparameter_t  hyperparameter,
                             ccs_datum_t          *values);
 
 
+#endif //_CCS_HYPERPARAMETER_H

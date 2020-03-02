@@ -1,3 +1,6 @@
+#ifndef _CCS_CONFIGURATION_SPACE
+#define _CCS_CONFIGURATION_SPACE
+
 // Configuration Space Interface
 
 //   Creators
@@ -166,3 +169,4 @@ ccs_configuration_space_get_parents_of(ccs_configuration_space_t  configuration_
                                        ccs_hyperparameter_t      *hyperparameters,
                                        size_t                    *num_hyperparameters_ret);
 
+#endif //_CCS_CONFIGURATION_SPACE

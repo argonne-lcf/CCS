@@ -1,3 +1,6 @@
+#ifndef _CCS_CONDITION_H
+#define _CCS_CONDITION_H
+
 enum ccs_expression_type_e {
 	CCS_EQUALS,
 	CCS_LESS_THAN,
@@ -7,10 +10,10 @@ enum ccs_expression_type_e {
 	CCS_AND,
 	CCS_OR,
 	CCS_CONDITION_TYPE_MAX,
-	CCS_CONDITION_FORCE_32BIT = MAX_INT
+	CCS_CONDITION_FORCE_32BIT = INT_MAX
 };
 
-typedef ccs_expression_type_e ccs_expression_type_t;
+typedef enum ccs_expression_type_e ccs_expression_type_t;
 
 // Expressions
 extern ccs_error_t
@@ -68,3 +71,5 @@ extern ccs_error_t
 ccs_create_forbidden_clause(ccs_hyperparameter_t    hyperparameter,
                             ccs_expression_t        expression,
                             ccs_forbidden_clause_t *forbidden_clause_ret);
+
+#endif //_CCS_CONDITION_H
