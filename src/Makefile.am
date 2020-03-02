@@ -4,5 +4,5 @@ AM_CFLAGS = -Wall -Werror -pedantic
 
 lib_LTLIBRARIES = libcconfigspace.la
 
-libcconfigspace_la_SOURCES = cconfigspace.c
+libcconfigspace_la_SOURCES = cconfigspace.c distribution.c
 

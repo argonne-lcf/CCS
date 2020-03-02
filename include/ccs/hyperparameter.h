@@ -29,14 +29,13 @@ enum ccs_hyperparameter_type_e {
 
 typedef enum ccs_hyperparameter_type_e ccs_hyperparameter_type_t;
 
-typedef struct _ccs_rng_s             *ccs_rng_t;
-
 // Distribution
 extern ccs_error_t
 ccs_create_distribution(ccs_distribution_type_t distribution_type,
                         ccs_data_type_t         data_type,
                         ccs_scale_type_t        scale,
                         ccs_value_t             quantization,
+                        size_t                  num_parameters,
                         ccs_value_t            *parameters,
                         ccs_distribution_t     *distribution_ret);
 

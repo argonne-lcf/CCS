@@ -3,6 +3,7 @@
 
 typedef struct _ccs_configuration_space_s *ccs_configuration_space_t;
 typedef struct _ccs_configuration_s       *ccs_configuration_t;
+typedef struct _ccs_rng_s                 *ccs_rng_t;
 typedef struct _ccs_distribution_s        *ccs_distribution_t;
 typedef struct _ccs_hyperparameter_s      *ccs_hyperparameter_t;
 typedef struct _ccs_expression_s          *ccs_expression_t;
@@ -12,6 +13,7 @@ typedef struct _ccs_forbidden_clause_s    *ccs_forbidden_clause_t;
 enum ccs_error_e {
 	CCS_SUCCESS,
 	CCS_INVALID_OBJECT,
+	CCS_INVALID_VALUE,
 	CCS_ERROR_MAX,
 	CCS_ERROR_FORCE_32BIT = INT_MAX
 };
@@ -19,6 +21,7 @@ enum ccs_error_e {
 typedef enum ccs_error_e ccs_error_t;
 
 enum ccs_object_type_e {
+	CCS_RNG,
 	CCS_DISTRIBUTION,
 	CCS_HYPERPARAMETER,
 	CCS_EXPRESSION,
