@@ -10,11 +10,13 @@ static struct _ccs_rng_ops_s _rng_ops = { {&_ccs_rng_del} };
 ccs_error_t
 ccs_rng_create_with_type(const gsl_rng_type *rng_type,
                          ccs_rng_t          *rng_ret) {
+	if (!rng_type || !rng_ret)
+		return -CCS_INVALID_VALUE;
 	ccs_error_t err = CCS_SUCCESS;
 	gsl_rng *grng = gsl_rng_alloc(rng_type);
 
 	if (!grng) {
-		err = CCS_ENOMEM;
+		err = -CCS_ENOMEM;
 		goto error;
 	}
 	uintptr_t mem = (uintptr_t)calloc(1, sizeof(struct _ccs_rng_s) + sizeof(struct _ccs_rng_data_s));
@@ -71,6 +73,8 @@ ccs_rng_get(ccs_rng_t          rng,
             unsigned long int *value_ret) {
 	if (!rng)
 		return -CCS_INVALID_OBJECT;
+	if (!value_ret)
+		return -CCS_INVALID_VALUE;
 	*value_ret = gsl_rng_get(rng->data->gsl_rng);
 	return CCS_SUCCESS;
 }
@@ -80,6 +84,8 @@ ccs_rng_uniform(ccs_rng_t  rng,
                 double    *value_ret) {
 	if (!rng)
 		return -CCS_INVALID_OBJECT;
+	if (!value_ret)
+		return -CCS_INVALID_VALUE;
 	*value_ret = gsl_rng_uniform(rng->data->gsl_rng);
 	return CCS_SUCCESS;
 }
@@ -89,7 +95,30 @@ ccs_rng_get_gsl_rng(ccs_rng_t   rng,
                     gsl_rng   **gsl_rng_ret) {
 	if (!rng)
 		return -CCS_INVALID_OBJECT;
+	if (!gsl_rng_ret)
+		return -CCS_INVALID_VALUE;
 	*gsl_rng_ret = rng->data->gsl_rng;
 	return CCS_SUCCESS;
 }
 
+ccs_error_t
+ccs_rng_min(ccs_rng_t          rng,
+            unsigned long int *value_ret) {
+	if (!rng)
+		return -CCS_INVALID_OBJECT;
+	if (!value_ret)
+		return -CCS_INVALID_VALUE;
+	*value_ret = gsl_rng_min(rng->data->gsl_rng);
+	return CCS_SUCCESS;
+}
+
+ccs_error_t
+ccs_rng_max(ccs_rng_t          rng,
+            unsigned long int *value_ret) {
+	if (!rng)
+		return -CCS_INVALID_OBJECT;
+	if (!value_ret)
+		return -CCS_INVALID_VALUE;
+	*value_ret = gsl_rng_max(rng->data->gsl_rng);
+	return CCS_SUCCESS;
+}

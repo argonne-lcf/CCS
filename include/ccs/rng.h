@@ -34,6 +34,14 @@ extern ccs_error_t
 ccs_rng_get_gsl_rng(ccs_rng_t   rng,
                     gsl_rng   **gsl_rng_ret);
 
+extern ccs_error_t
+ccs_rng_min(ccs_rng_t          rng,
+            unsigned long int *value_ret);
+
+extern ccs_error_t
+ccs_rng_max(ccs_rng_t          rng,
+            unsigned long int *value_ret);
+
 #ifdef __cplusplus
 }
 #endif
