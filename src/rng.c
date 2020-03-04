@@ -24,9 +24,7 @@ ccs_rng_create_with_type(const gsl_rng_type *rng_type,
 		goto cleanup_gsl;
 	}
 	ccs_rng_t rng = (ccs_rng_t)mem;
-	rng->obj.type = CCS_RNG;
-	rng->obj.refcount = 1;
-	rng->obj.ops = (_ccs_object_ops_t *)&_rng_ops;
+	_ccs_object_init(&(rng->obj), CCS_RNG, (_ccs_object_ops_t *)&_rng_ops);
 	rng->data = (struct _ccs_rng_data_s *)(mem + sizeof(struct _ccs_rng_s));
 	rng->data->rng_type = rng_type;
 	rng->data->gsl_rng = grng;

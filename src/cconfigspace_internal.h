@@ -16,4 +16,14 @@ struct _ccs_object_internal_s {
 };
 
 typedef struct _ccs_object_internal_s _ccs_object_internal_t;
+
+static inline __attribute__((always_inline)) void
+_ccs_object_init(_ccs_object_internal_t *o,
+                 ccs_object_type_t       t,
+                 _ccs_object_ops_t      *ops) {
+	o->type = t;
+	o->refcount = 1;
+	o->ops = ops;
+}
+
 #endif //_CONFIGSPACE_INTERNAL_H

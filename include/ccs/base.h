@@ -66,8 +66,7 @@ union ccs_object_u {
 typedef union ccs_object_u ccs_object_t;
 
 
-union ccs_value_u
-{
+union ccs_value_u {
 	double        d;
 	int64_t       i;
 	const char   *s;
@@ -88,14 +87,26 @@ extern ccs_error_t
 ccs_init();
 
 extern ccs_error_t
-ccs_retain_object(ccs_object_t object);
+_ccs_retain_object(ccs_object_t object);
+
+#define ccs_retain_object(o) _ccs_retain_object((ccs_object_t)(o))
 
 extern ccs_error_t
-ccs_release_object(ccs_object_t object);
+_ccs_release_object(ccs_object_t object);
+
+#define ccs_release_object(o) _ccs_release_object((ccs_object_t)(o))
 
 extern ccs_error_t
-ccs_object_get_type(ccs_object_t       object,
-                    ccs_object_type_t *type_ret);
+_ccs_object_get_type(ccs_object_t       object,
+                     ccs_object_type_t *type_ret);
+
+#define ccs_object_get_type(o, t) _ccs_object_get_type((ccs_object_t)(o), t)
+
+extern ccs_error_t
+_ccs_object_get_refcount(ccs_object_t  object,
+                         int32_t      *refcount_ret);
+
+#define ccs_object_get_refcount(o, c) _ccs_object_get_refcount((ccs_object_t)(o), c)
 
 #ifdef __cplusplus
 }
