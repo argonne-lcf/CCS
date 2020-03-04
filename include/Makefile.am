@@ -2,8 +2,10 @@ include_HEADERS=cconfigspace.h
 
 include_ccsdir=$(includedir)/ccs
 include_ccs_HEADERS = \
+			ccs/rng.h \
+			ccs/distribution.h \
+			ccs/hyperparameter.h \
 			ccs/condition.h\
-			ccs/configuration.h \
 			ccs/configuration_space.h \
-			ccs/hyperparameter.h
+			ccs/configuration.h
 

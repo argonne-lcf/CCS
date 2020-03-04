@@ -1,3 +1,6 @@
+#ifndef _CONFIGSPACE_INTERNAL_H
+#define _CONFIGSPACE_INTERNAL_H
+
 #include <cconfigspace.h>
 
 struct _ccs_object_ops_s {
@@ -13,3 +16,4 @@ struct _ccs_object_internal_s {
 };
 
 typedef struct _ccs_object_internal_s _ccs_object_internal_t;
+#endif //_CONFIGSPACE_INTERNAL_H

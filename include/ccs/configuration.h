@@ -1,6 +1,10 @@
 #ifndef _CCS_CONFIGURATION_H
 #define _CCS_CONFIGURATION_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 // Configuration Interface
 
 //   Creators, Management
@@ -30,5 +34,9 @@ ccs_configuration_get_values(ccs_configuration_t  configuration,
                              size_t               num_values,
                              ccs_datum_t         *values,
                              size_t              *num_values_ret);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif //_CCS_CONFIGURATION_H

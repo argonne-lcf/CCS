@@ -5,9 +5,11 @@
 #include <stdint.h>
 #include <limits.h>
 #include "ccs/base.h"
-#include "ccs/configuration_space.h"
-#include "ccs/configuration.h"
+#include "ccs/rng.h"
+#include "ccs/distribution.h"
 #include "ccs/hyperparameter.h"
 #include "ccs/condition.h"
+#include "ccs/configuration_space.h"
+#include "ccs/configuration.h"
 
 #endif //_CCONFIGSPACE_H

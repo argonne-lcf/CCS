@@ -1,24 +1,29 @@
 #ifndef _CCS_BASE_H
 #define _CCS_BASE_H
 
-typedef struct _ccs_configuration_space_s *ccs_configuration_space_t;
-typedef struct _ccs_configuration_s       *ccs_configuration_t;
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 typedef struct _ccs_rng_s                 *ccs_rng_t;
 typedef struct _ccs_distribution_s        *ccs_distribution_t;
 typedef struct _ccs_hyperparameter_s      *ccs_hyperparameter_t;
 typedef struct _ccs_expression_s          *ccs_expression_t;
 typedef struct _ccs_condition_s           *ccs_condition_t;
 typedef struct _ccs_forbidden_clause_s    *ccs_forbidden_clause_t;
+typedef struct _ccs_configuration_space_s *ccs_configuration_space_t;
+typedef struct _ccs_configuration_s       *ccs_configuration_t;
 
 enum ccs_error_e {
 	CCS_SUCCESS,
 	CCS_INVALID_OBJECT,
 	CCS_INVALID_VALUE,
+	CCS_ENOMEM,
 	CCS_ERROR_MAX,
 	CCS_ERROR_FORCE_32BIT = INT_MAX
 };
 
-typedef enum ccs_error_e ccs_error_t;
+typedef int ccs_error_t;
 
 enum ccs_object_type_e {
 	CCS_RNG,
@@ -48,6 +53,7 @@ typedef enum ccs_data_type_e ccs_data_type_t;
 
 union ccs_object_u {
 	void                      *ptr;
+	ccs_rng_t                  rng;
 	ccs_configuration_space_t  configuration_space;
 	ccs_configuration_t        configuration;
 	ccs_distribution_t         distribution;
@@ -79,6 +85,9 @@ struct ccs_datum_u {
 typedef struct ccs_datum_u ccs_datum_t;
 
 extern ccs_error_t
+ccs_init();
+
+extern ccs_error_t
 ccs_retain_object(ccs_object_t object);
 
 extern ccs_error_t
@@ -87,5 +96,9 @@ ccs_release_object(ccs_object_t object);
 extern ccs_error_t
 ccs_object_get_type(ccs_object_t       object,
                     ccs_object_type_t *type_ret);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif //_CCS_BASE_H

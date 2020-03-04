@@ -1,6 +1,10 @@
 #ifndef _CCS_CONDITION_H
 #define _CCS_CONDITION_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 enum ccs_expression_type_e {
 	CCS_EQUALS,
 	CCS_LESS_THAN,
@@ -71,5 +75,9 @@ extern ccs_error_t
 ccs_create_forbidden_clause(ccs_hyperparameter_t    hyperparameter,
                             ccs_expression_t        expression,
                             ccs_forbidden_clause_t *forbidden_clause_ret);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif //_CCS_CONDITION_H

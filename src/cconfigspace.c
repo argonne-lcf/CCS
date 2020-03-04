@@ -1,4 +1,12 @@
 #include "cconfigspace_internal.h"
+#include <stdlib.h>
+#include <gsl/gsl_rng.h>
+
+ccs_error_t
+ccs_init() {
+	gsl_rng_env_setup();
+	return CCS_SUCCESS;
+}
 
 ccs_error_t
 ccs_retain_object(ccs_object_t object) {
@@ -15,8 +23,12 @@ ccs_release_object(ccs_object_t object) {
 	if (!obj || obj->refcount <= 0)
 		return -CCS_INVALID_OBJECT;
 	obj->refcount -= 1;
-	if (obj->refcount == 0)
-		return obj->ops->del(object);
+	if (obj->refcount == 0) {
+		ccs_error_t err = obj->ops->del(object);
+		if (err)
+			return err;
+		free(object.ptr);
+	}
 	return CCS_SUCCESS;
 }
 
