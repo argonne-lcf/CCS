@@ -67,7 +67,7 @@ _ccs_distribution_uniform_get_parameters(_ccs_distribution_data_t *data,
 		parameters[0].type = d->common_data.data_type;
 		parameters[0].value = d->lower;
 		parameters[1].type = d->common_data.data_type;
-		parameters[0].value = d->upper;
+		parameters[1].value = d->upper;
 	}
 	return CCS_SUCCESS;
 }
@@ -101,11 +101,11 @@ _ccs_distribution_uniform_samples(_ccs_distribution_data_t *data,
 				values[i].value.f = exp(values[i].value.f);
 			if (quantize)
 				for (i = 0; i < num_values; i++)
-					values[i].value.f = (int64_t)floor((values[i].value.f - lower.f)/quantization.f) * quantization.f + lower.f;
+					values[i].value.f = (ccs_int_t)floor((values[i].value.f - lower.f)/quantization.f) * quantization.f + lower.f;
 		} else
 			if (quantize)
 				for (i = 0; i < num_values; i++)
-					values[i].value.f = (int64_t)floor(values[i].value.f) * quantization.f + lower.f;
+					values[i].value.f = (ccs_int_t)floor(values[i].value.f) * quantization.f + lower.f;
 			else
 				for (i = 0; i < num_values; i++)
 					values[i].value.f += lower.f;
@@ -113,7 +113,7 @@ _ccs_distribution_uniform_samples(_ccs_distribution_data_t *data,
 		if (scale_type == CCS_LOGARITHMIC) {
 			for (i = 0; i < num_values; i++) {
 				values[i].value.f = gsl_ran_flat(grng, internal_lower.f, internal_upper.f);
-				values[i].value.i = floor(values[i].value.f);
+				values[i].value.i = floor(exp(values[i].value.f));
 				values[i].type    = CCS_INTEGER;
 			}
 			if (quantize)
@@ -144,8 +144,10 @@ _ccs_create_uniform_distribution(ccs_data_type_t     data_type,
                                  ccs_distribution_t *distribution_ret) {
 	if (!distribution_ret)
 		return -CCS_INVALID_VALUE;
-	if (data_type != CCS_FLOAT || data_type != CCS_INTEGER)
+	if (data_type != CCS_FLOAT && data_type != CCS_INTEGER)
 		return -CCS_INVALID_TYPE;
+	if (scale_type != CCS_LINEAR && scale_type != CCS_LOGARITHMIC)
+		return -CCS_INVALID_SCALE;
 	if (data_type == CCS_INTEGER && (
 		lower.i >= upper.i ||
 		(scale_type == CCS_LOGARITHMIC && lower.i <= 0) ||
@@ -206,3 +208,26 @@ _ccs_create_uniform_distribution(ccs_data_type_t     data_type,
 error:
 	return err;
 }
+
+extern ccs_error_t
+ccs_uniform_distribution_get_parameters(ccs_distribution_t  distribution,
+                                        ccs_datum_t        *lower,
+                                        ccs_datum_t        *upper) {
+	if (!distribution || !distribution->data)
+		return -CCS_INVALID_OBJECT;
+	if (!lower && !upper)
+		return -CCS_INVALID_VALUE;
+	_ccs_distribution_uniform_data_t * data = (_ccs_distribution_uniform_data_t *)distribution->data;
+
+	if (lower) {
+		lower->value = data->lower;
+		lower->type  = data->common_data.data_type;
+	}
+	if (upper) {
+		upper->value = data->upper;
+		upper->type  = data->common_data.data_type;
+	}
+	return CCS_SUCCESS;
+}
+
+

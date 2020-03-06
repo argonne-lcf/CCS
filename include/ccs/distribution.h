@@ -42,17 +42,17 @@ ccs_create_normal_distribution(ccs_data_type_t     data_type,
                                ccs_distribution_t *distribution_ret);
 
 extern ccs_error_t
-ccs_create_normal_int_distribution(int64_t             mu,
-                                   int64_t             sigma,
+ccs_create_normal_int_distribution(ccs_int_t           mu,
+                                   ccs_int_t           sigma,
                                    ccs_scale_type_t    scale,
-                                   int64_t             quantization,
+                                   ccs_int_t           quantization,
                                    ccs_distribution_t *distribution_ret);
 
 extern ccs_error_t
-ccs_create_normal_float_distribution(double mu,
-                                     double sigma,
+ccs_create_normal_float_distribution(ccs_float_t         mu,
+                                     ccs_float_t         sigma,
                                      ccs_scale_type_t    scale,
-                                     double              quantization,
+                                     ccs_float_t         quantization,
                                      ccs_distribution_t *distribution_ret);
 
 extern ccs_error_t
@@ -67,17 +67,17 @@ _ccs_create_uniform_distribution(ccs_data_type_t     data_type,
        _ccs_create_uniform_distribution(t, (ccs_value_t)(l), (ccs_value_t)(u), s, (ccs_value_t)(q), d)
 
 extern ccs_error_t
-ccs_create_uniform_int_distribution(int64_t lower,
-                                    int64_t upper,
+ccs_create_uniform_int_distribution(ccs_int_t           lower,
+                                    ccs_int_t           upper,
                                     ccs_scale_type_t    scale,
-                                    int64_t             quantization,
+                                    ccs_int_t           quantization,
                                     ccs_distribution_t *distribution_ret);
 
 extern ccs_error_t
-ccs_create_uniform_float_distribution(double lower,
-                                      double upper,
+ccs_create_uniform_float_distribution(ccs_float_t         lower,
+                                      ccs_float_t         upper,
                                       ccs_scale_type_t    scale,
-                                      double              quantization,
+                                      ccs_float_t         quantization,
                                       ccs_distribution_t *distribution_ret);
 
 //   Accessors

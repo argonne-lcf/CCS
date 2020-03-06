@@ -70,7 +70,7 @@ ccs_distribution_get_parameters(ccs_distribution_t  distribution,
                                 size_t             *num_parameters_ret) {
 	if (!distribution || !distribution->data)
 		return -CCS_INVALID_OBJECT;
-	if (num_parameters > 0 && parameters)
+	if (num_parameters > 0 && !parameters)
 		return -CCS_INVALID_VALUE;
 	_ccs_distribution_ops_t *ops = ccs_distribution_get_ops(distribution);
 	return ops->get_parameters(distribution->data, num_parameters, parameters, num_parameters_ret);

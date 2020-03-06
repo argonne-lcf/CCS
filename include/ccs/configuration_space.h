@@ -24,11 +24,11 @@ ccs_configuration_space_get_user_data(ccs_configuration_space_t   configuration_
 
 extern ccs_error_t
 ccs_configuration_space_set_seed(ccs_configuration_space_t configuration_space,
-                                 int64_t                   seed);
+                                 ccs_int_t                 seed);
 
 extern ccs_error_t
 ccs_configuration_space_get_seed(ccs_configuration_space_t  configuration_space,
-                                int64_t                    *seed);
+                                 ccs_int_t                 *seed);
 
 //   List Accessors
 extern ccs_error_t

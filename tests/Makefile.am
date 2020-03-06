@@ -3,10 +3,9 @@ AM_COLOR_TESTS = yes
 AM_CFLAGS = -I$(top_srcdir)/include
 AM_LDFLAGS = ../src/libcconfigspace.la
 
-@VALGRIND_CHECK_RULES@
-
 RNG_TESTS = \
-		test_rng
+		test_rng \
+		test_distribution
 
 # unit tests
 UNIT_TESTS = \
@@ -16,3 +15,5 @@ UNIT_TESTS = \
 TST_PROGS = $(UNIT_TESTS)
 check_PROGRAMS = $(TST_PROGS)
 TESTS = $(TST_PROGS)
+
+@VALGRIND_CHECK_RULES@

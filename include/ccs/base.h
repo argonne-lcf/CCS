@@ -5,6 +5,9 @@
 extern "C" {
 #endif
 
+typedef double  ccs_float_t;
+typedef int64_t ccs_int_t;
+
 typedef struct _ccs_rng_s                 *ccs_rng_t;
 typedef struct _ccs_distribution_s        *ccs_distribution_t;
 typedef struct _ccs_hyperparameter_s      *ccs_hyperparameter_t;
@@ -19,6 +22,7 @@ enum ccs_error_e {
 	CCS_INVALID_OBJECT,
 	CCS_INVALID_VALUE,
 	CCS_INVALID_TYPE,
+	CCS_INVALID_SCALE,
 	CCS_ENOMEM,
 	CCS_ERROR_MAX,
 	CCS_ERROR_FORCE_32BIT = INT_MAX
@@ -68,8 +72,8 @@ typedef union ccs_object_u ccs_object_t;
 
 
 union ccs_value_u {
-	double        f;
-	int64_t       i;
+	ccs_float_t   f;
+	ccs_int_t     i;
 	const char   *s;
 	ccs_object_t  o;
 };
