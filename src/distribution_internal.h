@@ -7,22 +7,6 @@ typedef struct _ccs_distribution_data_s _ccs_distribution_data_t;
 struct _ccs_distribution_ops_s {
 	_ccs_object_ops_t obj_ops;
 
-	ccs_error_t (*get_type)(
-		_ccs_distribution_data_t *distribution,
-		ccs_distribution_type_t  *type_ret);
-
-	ccs_error_t (*get_data_type)(
-		_ccs_distribution_data_t *distribution,
-		ccs_data_type_t          *data_type_ret);
-
-	ccs_error_t (*get_scale_type)(
-		_ccs_distribution_data_t *distribution,
-		ccs_scale_type_t         *scale_type_ret);
-
-	ccs_error_t (*get_quantization)(
-		_ccs_distribution_data_t *distribution,
-		ccs_datum_t              *quantization);
-
 	ccs_error_t (*get_num_parameters)(
 		_ccs_distribution_data_t *distribution,
 		size_t                   *num_parameters_ret);
@@ -47,4 +31,11 @@ struct _ccs_distribution_s {
 	_ccs_distribution_data_t *data;
 };
 
+struct _ccs_distribution_common_data_s {
+        ccs_distribution_type_t type;
+	ccs_data_type_t         data_type;
+	ccs_scale_type_t        scale_type;
+	ccs_value_t             quantization;
+};
+typedef struct _ccs_distribution_common_data_s _ccs_distribution_common_data_t;
 #endif //_DISTRIBUTION_INTERNAL_H

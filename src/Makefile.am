@@ -10,5 +10,6 @@ libcconfigspace_la_SOURCES = \
 			rng.c \
 			rng_internal.h \
 			distribution.c \
-			distribution_internal.h
+			distribution_internal.h \
+			distribution_uniform.c
 

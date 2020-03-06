@@ -15,8 +15,8 @@ enum ccs_distribution_type_e {
 typedef enum ccs_distribution_type_e ccs_distribution_type_t;
 
 enum ccs_scale_type_e {
-	CSS_LINEAR,
-	CSS_LOGARITHMIC,
+	CCS_LINEAR,
+	CCS_LOGARITHMIC,
 	CCS_SCALE_TYPE_MAX,
 	CCS_SCALE_TYPE_FORCE_32BIT = INT_MAX
 };
@@ -54,6 +54,17 @@ ccs_create_normal_float_distribution(double mu,
                                      ccs_scale_type_t    scale,
                                      double              quantization,
                                      ccs_distribution_t *distribution_ret);
+
+extern ccs_error_t
+_ccs_create_uniform_distribution(ccs_data_type_t     data_type,
+                                 ccs_value_t         lower,
+                                 ccs_value_t         upper,
+                                 ccs_scale_type_t    scale_type,
+                                 ccs_value_t         quantization,
+                                 ccs_distribution_t *distribution_ret);
+
+#define ccs_create_uniform_distribution(t, l, u, s, q, d) \
+       _ccs_create_uniform_distribution(t, (ccs_value_t)(l), (ccs_value_t)(u), s, (ccs_value_t)(q), d)
 
 extern ccs_error_t
 ccs_create_uniform_int_distribution(int64_t lower,
@@ -117,12 +128,6 @@ ccs_distribution_samples(ccs_distribution_t  distribution,
                          ccs_rng_t           rng,
                          size_t              num_values,
                          ccs_datum_t        *values);
-
-extern ccs_error_t
-ccs_distribution_is_value_valid(ccs_distribution_t distribution,
-                                ccs_datum_t        value);
-
-
 
 #ifdef __cplusplus
 }
