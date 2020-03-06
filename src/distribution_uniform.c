@@ -101,11 +101,11 @@ _ccs_distribution_uniform_samples(_ccs_distribution_data_t *data,
 				values[i].value.f = exp(values[i].value.f);
 			if (quantize)
 				for (i = 0; i < num_values; i++)
-					values[i].value.f = (ccs_int_t)floor((values[i].value.f - lower.f)/quantization.f) * quantization.f + lower.f;
+					values[i].value.f = floor((values[i].value.f - lower.f)/quantization.f) * quantization.f + lower.f;
 		} else
 			if (quantize)
 				for (i = 0; i < num_values; i++)
-					values[i].value.f = (ccs_int_t)floor(values[i].value.f) * quantization.f + lower.f;
+					values[i].value.f = floor(values[i].value.f) * quantization.f + lower.f;
 			else
 				for (i = 0; i < num_values; i++)
 					values[i].value.f += lower.f;
@@ -160,13 +160,10 @@ _ccs_create_uniform_distribution(ccs_data_type_t     data_type,
 		quantization.f < 0.0 ||
 		quantization.f > upper.f - lower.f ) )
 		return -CCS_INVALID_VALUE;
-	ccs_error_t err = CCS_SUCCESS;
 	uintptr_t mem = (uintptr_t)calloc(1, sizeof(struct _ccs_distribution_s) + sizeof(_ccs_distribution_uniform_data_t));
 
-	if (!mem) {
-		err = -CCS_INVALID_VALUE;
-		goto error;
-	}
+	if (!mem)
+		return -CCS_ENOMEM;
 	ccs_distribution_t distrib = (ccs_distribution_t)mem;
 	_ccs_object_init(&(distrib->obj), CCS_DISTRIBUTION, (_ccs_object_ops_t *)&_ccs_distribution_uniform_ops);
         _ccs_distribution_uniform_data_t * distrib_data = (_ccs_distribution_uniform_data_t *)(mem + sizeof(struct _ccs_distribution_s));
@@ -205,8 +202,6 @@ _ccs_create_uniform_distribution(ccs_data_type_t     data_type,
 	distrib->data = (_ccs_distribution_data_t *)distrib_data;
 	*distribution_ret = distrib;
 	return CCS_SUCCESS;
-error:
-	return err;
 }
 
 extern ccs_error_t

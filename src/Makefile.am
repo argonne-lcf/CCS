@@ -11,6 +11,7 @@ libcconfigspace_la_SOURCES = \
 			rng_internal.h \
 			distribution.c \
 			distribution_internal.h \
-			distribution_uniform.c
+			distribution_uniform.c \
+			distribution_normal.c
 
 @VALGRIND_CHECK_RULES@
