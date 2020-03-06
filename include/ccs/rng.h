@@ -27,8 +27,8 @@ ccs_rng_get(ccs_rng_t          rng,
             unsigned long int *value_ret);
 
 extern ccs_error_t
-ccs_rng_uniform(ccs_rng_t  rng,
-                double    *value_ret);
+ccs_rng_uniform(ccs_rng_t    rng,
+                ccs_float_t *value_ret);
 
 extern ccs_error_t
 ccs_rng_get_gsl_rng(ccs_rng_t   rng,

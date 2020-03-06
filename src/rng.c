@@ -80,8 +80,8 @@ ccs_rng_get(ccs_rng_t          rng,
 }
 
 ccs_error_t
-ccs_rng_uniform(ccs_rng_t  rng,
-                double    *value_ret) {
+ccs_rng_uniform(ccs_rng_t    rng,
+                ccs_float_t *value_ret) {
 	if (!rng)
 		return -CCS_INVALID_OBJECT;
 	if (!value_ret)
