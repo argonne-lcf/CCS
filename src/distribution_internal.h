@@ -21,7 +21,7 @@ struct _ccs_distribution_ops_s {
 		_ccs_distribution_data_t *distribution,
 		ccs_rng_t                 rng,
 		size_t                    num_values,
-		ccs_datum_t              *values);
+		ccs_value_t              *values);
 		
 };
 typedef struct _ccs_distribution_ops_s _ccs_distribution_ops_t;

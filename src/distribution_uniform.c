@@ -35,7 +35,7 @@ static ccs_error_t
 _ccs_distribution_uniform_samples(_ccs_distribution_data_t *data,
                                   ccs_rng_t                 rng,
                                   size_t                    num_values,
-                                  ccs_datum_t              *values);
+                                  ccs_value_t              *values);
 
 _ccs_distribution_ops_t _ccs_distribution_uniform_ops = {
 	{ &_ccs_distribution_del },
@@ -76,7 +76,7 @@ static ccs_error_t
 _ccs_distribution_uniform_samples(_ccs_distribution_data_t *data,
                                   ccs_rng_t                 rng,
                                   size_t                    num_values,
-                                  ccs_datum_t              *values) {
+                                  ccs_value_t              *values) {
 	_ccs_distribution_uniform_data_t *d = (_ccs_distribution_uniform_data_t *)data;
 	size_t i;
 	const ccs_data_type_t  data_type      = d->common_data.data_type;
@@ -93,43 +93,39 @@ _ccs_distribution_uniform_samples(_ccs_distribution_data_t *data,
 
 	if (data_type == CCS_FLOAT) {
 		for (i = 0; i < num_values; i++) {
-			values[i].value.f = gsl_ran_flat(grng, internal_lower.f, internal_upper.f);
-			values[i].type    = CCS_FLOAT;
+			values[i].f = gsl_ran_flat(grng, internal_lower.f, internal_upper.f);
 		}
 		if (scale_type == CCS_LOGARITHMIC) {
 			for (i = 0; i < num_values; i++)
-				values[i].value.f = exp(values[i].value.f);
+				values[i].f = exp(values[i].f);
 			if (quantize)
 				for (i = 0; i < num_values; i++)
-					values[i].value.f = floor((values[i].value.f - lower.f)/quantization.f) * quantization.f + lower.f;
+					values[i].f = floor((values[i].f - lower.f)/quantization.f) * quantization.f + lower.f;
 		} else
 			if (quantize)
 				for (i = 0; i < num_values; i++)
-					values[i].value.f = floor(values[i].value.f) * quantization.f + lower.f;
+					values[i].f = floor(values[i].f) * quantization.f + lower.f;
 			else
 				for (i = 0; i < num_values; i++)
-					values[i].value.f += lower.f;
+					values[i].f += lower.f;
 	} else {
 		if (scale_type == CCS_LOGARITHMIC) {
 			for (i = 0; i < num_values; i++) {
-				values[i].value.f = gsl_ran_flat(grng, internal_lower.f, internal_upper.f);
-				values[i].value.i = floor(exp(values[i].value.f));
-				values[i].type    = CCS_INTEGER;
+				values[i].i = floor(exp(gsl_ran_flat(grng, internal_lower.f, internal_upper.f)));
 			}
 			if (quantize)
 				for (i = 0; i < num_values; i++)
-					values[i].value.i = ((values[i].value.i - lower.i)/quantization.i) * quantization.i + lower.i;
+					values[i].i = ((values[i].i - lower.i)/quantization.i) * quantization.i + lower.i;
 		} else {
 			for (i = 0; i < num_values; i++) {
-				values[i].type    = CCS_INTEGER;
-				values[i].value.i = gsl_rng_uniform_int(grng, internal_upper.i);
+				values[i].i = gsl_rng_uniform_int(grng, internal_upper.i);
 			}
 			if (quantize)
 				for (i = 0; i < num_values; i++)
-					values[i].value.i = values[i].value.i * quantization.i + lower.i;
+					values[i].i = values[i].i * quantization.i + lower.i;
 			else
 				for (i = 0; i < num_values; i++)
-					values[i].value.i += lower.i;
+					values[i].i += lower.i;
 		}
 	}
 	return CCS_SUCCESS;

@@ -32,7 +32,7 @@ static ccs_error_t
 _ccs_distribution_normal_samples(_ccs_distribution_data_t *data,
                                  ccs_rng_t                 rng,
                                  size_t                    num_values,
-                                 ccs_datum_t              *values);
+                                 ccs_value_t              *values);
 
 _ccs_distribution_ops_t _ccs_distribution_normal_ops = {
 	{ &_ccs_distribution_del },
@@ -73,7 +73,7 @@ static ccs_error_t
 _ccs_distribution_normal_samples(_ccs_distribution_data_t *data,
                                   ccs_rng_t                 rng,
                                   size_t                    num_values,
-                                  ccs_datum_t              *values) {
+                                  ccs_value_t              *values) {
 	_ccs_distribution_normal_data_t *d = (_ccs_distribution_normal_data_t *)data;
 	size_t i;
 	const ccs_data_type_t  data_type      = d->common_data.data_type;
@@ -88,30 +88,28 @@ _ccs_distribution_normal_samples(_ccs_distribution_data_t *data,
 		return err;
 	if (data_type == CCS_FLOAT) {
 		for (i = 0; i < num_values; i++) {
-			values[i].value.f = gsl_ran_gaussian(grng, sigma) + mu.f;
-			values[i].type    = CCS_FLOAT;
+			values[i].f = gsl_ran_gaussian(grng, sigma) + mu.f;
 		}
 	} else {
 		for (i = 0; i < num_values; i++) {
-			values[i].value.f = gsl_ran_gaussian(grng, sigma) + mu.i;
-			values[i].type    = CCS_INTEGER;
+			values[i].f = gsl_ran_gaussian(grng, sigma) + mu.i;
 		}
 	}
 
 	if (scale_type == CCS_LOGARITHMIC)
 		for (i = 0; i < num_values; i++)
-			values[i].value.f = exp(values[i].value.f);
+			values[i].f = exp(values[i].f);
 	if (data_type == CCS_FLOAT) {
 		if (quantize)
 			for (i = 0; i < num_values; i++)
-				values[i].value.f = round(values[i].value.f/quantization.f) * quantization.f;
+				values[i].f = round(values[i].f/quantization.f) * quantization.f;
 	} else {
 		if (quantize)
 			for (i = 0; i < num_values; i++)
-				values[i].value.i = (ccs_int_t)round(values[i].value.f/quantization.i) * quantization.i;
+				values[i].i = (ccs_int_t)round(values[i].f/quantization.i) * quantization.i;
 		else
 			for (i = 0; i < num_values; i++)
-				values[i].value.i = round(values[i].value.f);
+				values[i].i = round(values[i].f);
 	}
 	return CCS_SUCCESS;
 }

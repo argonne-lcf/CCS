@@ -79,7 +79,7 @@ ccs_distribution_get_parameters(ccs_distribution_t  distribution,
 ccs_error_t
 ccs_distribution_sample(ccs_distribution_t  distribution,
                         ccs_rng_t           rng,
-                        ccs_datum_t        *value) {
+                        ccs_value_t        *value) {
 	if (!distribution || !distribution->data)
 		return -CCS_INVALID_OBJECT;
 	if (!value)
@@ -92,7 +92,7 @@ ccs_error_t
 ccs_distribution_samples(ccs_distribution_t  distribution,
                          ccs_rng_t           rng,
                          size_t              num_values,
-                         ccs_datum_t        *values) {
+                         ccs_value_t        *values) {
 	if (!distribution || !distribution->data)
 		return -CCS_INVALID_OBJECT;
 	if (num_values && !values)
