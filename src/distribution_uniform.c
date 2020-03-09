@@ -204,7 +204,9 @@ extern ccs_error_t
 ccs_uniform_distribution_get_parameters(ccs_distribution_t  distribution,
                                         ccs_datum_t        *lower,
                                         ccs_datum_t        *upper) {
-	if (!distribution || !distribution->data)
+	if (!distribution || distribution->obj.type != CCS_DISTRIBUTION)
+		return -CCS_INVALID_OBJECT;
+	if (!distribution->data || ((_ccs_distribution_common_data_t*)distribution->data)->type != CCS_UNIFORM)
 		return -CCS_INVALID_OBJECT;
 	if (!lower && !upper)
 		return -CCS_INVALID_VALUE;

@@ -35,16 +35,16 @@ ccs_create_distribution(ccs_distribution_type_t distribution_type,
 
 extern ccs_error_t
 _ccs_create_normal_distribution(ccs_data_type_t     data_type,
-                                ccs_value_t         mu,
+                                ccs_float_t         mu,
                                 ccs_float_t         sigma,
                                 ccs_scale_type_t    scale,
                                 ccs_value_t         quantization,
                                 ccs_distribution_t *distribution_ret);
 #define ccs_create_normal_distribution(t, m, s, sc, q, d) \
-	_ccs_create_normal_distribution(t, (ccs_value_t)(m), s, sc, (ccs_value_t)(q), d)
+	_ccs_create_normal_distribution(t, m, s, sc, (ccs_value_t)(q), d)
 
 extern ccs_error_t
-ccs_create_normal_int_distribution(ccs_int_t           mu,
+ccs_create_normal_int_distribution(ccs_float_t         mu,
                                    ccs_float_t         sigma,
                                    ccs_scale_type_t    scale,
                                    ccs_int_t           quantization,
