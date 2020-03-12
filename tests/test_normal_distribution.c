@@ -169,6 +169,8 @@ static void test_normal_distribution_int() {
 
 	err = ccs_release_object(distrib);
 	assert( err == CCS_SUCCESS );
+	err = ccs_release_object(rng);
+	assert( err == CCS_SUCCESS );
 }
 
 static void test_normal_distribution_float() {
@@ -205,6 +207,8 @@ static void test_normal_distribution_float() {
 	assert( sig > sigma - 0.1 );
 
 	err = ccs_release_object(distrib);
+	assert( err == CCS_SUCCESS );
+	err = ccs_release_object(rng);
 	assert( err == CCS_SUCCESS );
 }
 
@@ -255,6 +259,8 @@ static void test_normal_distribution_int_log() {
 
 	err = ccs_release_object(distrib);
 	assert( err == CCS_SUCCESS );
+	err = ccs_release_object(rng);
+	assert( err == CCS_SUCCESS );
 }
 
 static void test_normal_distribution_float_log() {
@@ -292,6 +298,8 @@ static void test_normal_distribution_float_log() {
 	assert( sig > sigma - 0.1 );
 
 	err = ccs_release_object(distrib);
+	assert( err == CCS_SUCCESS );
+	err = ccs_release_object(rng);
 	assert( err == CCS_SUCCESS );
 }
 
@@ -331,6 +339,8 @@ static void test_normal_distribution_int_quantize() {
 
 	err = ccs_release_object(distrib);
 	assert( err == CCS_SUCCESS );
+	err = ccs_release_object(rng);
+	assert( err == CCS_SUCCESS );
 }
 
 static void test_normal_distribution_float_quantize() {
@@ -367,6 +377,8 @@ static void test_normal_distribution_float_quantize() {
 	assert( sig > sigma - 0.1 );
 
 	err = ccs_release_object(distrib);
+	assert( err == CCS_SUCCESS );
+	err = ccs_release_object(rng);
 	assert( err == CCS_SUCCESS );
 }
 
@@ -418,6 +430,8 @@ static void test_normal_distribution_int_log_quantize() {
 
 	err = ccs_release_object(distrib);
 	assert( err == CCS_SUCCESS );
+	err = ccs_release_object(rng);
+	assert( err == CCS_SUCCESS );
 }
 
 static void test_normal_distribution_float_log_quantize() {
@@ -466,6 +480,8 @@ static void test_normal_distribution_float_log_quantize() {
 	assert( sig > tsigma - 0.1 );
 
 	err = ccs_release_object(distrib);
+	assert( err == CCS_SUCCESS );
+	err = ccs_release_object(rng);
 	assert( err == CCS_SUCCESS );
 }
 

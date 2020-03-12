@@ -157,6 +157,8 @@ static void test_uniform_distribution_int() {
 
 	err = ccs_release_object(distrib);
 	assert( err == CCS_SUCCESS );
+	err = ccs_release_object(rng);
+	assert( err == CCS_SUCCESS );
 }
 
 static void test_uniform_distribution_int_log() {
@@ -188,6 +190,8 @@ static void test_uniform_distribution_int_log() {
 	}
 
 	err = ccs_release_object(distrib);
+	assert( err == CCS_SUCCESS );
+	err = ccs_release_object(rng);
 	assert( err == CCS_SUCCESS );
 }
 
@@ -223,6 +227,8 @@ static void test_uniform_distribution_int_log_quantize() {
 
 	err = ccs_release_object(distrib);
 	assert( err == CCS_SUCCESS );
+	err = ccs_release_object(rng);
+	assert( err == CCS_SUCCESS );
 }
 
 static void test_uniform_distribution_int_quantize() {
@@ -257,6 +263,8 @@ static void test_uniform_distribution_int_quantize() {
 
 	err = ccs_release_object(distrib);
 	assert( err == CCS_SUCCESS );
+	err = ccs_release_object(rng);
+	assert( err == CCS_SUCCESS );
 }
 
 static void test_uniform_distribution_float() {
@@ -289,6 +297,8 @@ static void test_uniform_distribution_float() {
 
 	err = ccs_release_object(distrib);
 	assert( err == CCS_SUCCESS );
+	err = ccs_release_object(rng);
+	assert( err == CCS_SUCCESS );
 }
 
 static void test_uniform_distribution_float_log() {
@@ -320,6 +330,8 @@ static void test_uniform_distribution_float_log() {
 	}
 
 	err = ccs_release_object(distrib);
+	assert( err == CCS_SUCCESS );
+	err = ccs_release_object(rng);
 	assert( err == CCS_SUCCESS );
 }
 
@@ -354,6 +366,8 @@ static void test_uniform_distribution_float_log_quantize() {
 
 	err = ccs_release_object(distrib);
 	assert( err == CCS_SUCCESS );
+	err = ccs_release_object(rng);
+	assert( err == CCS_SUCCESS );
 }
 
 static void test_uniform_distribution_float_quantize() {
@@ -386,6 +400,8 @@ static void test_uniform_distribution_float_quantize() {
 	}
 
 	err = ccs_release_object(distrib);
+	assert( err == CCS_SUCCESS );
+	err = ccs_release_object(rng);
 	assert( err == CCS_SUCCESS );
 }
 
