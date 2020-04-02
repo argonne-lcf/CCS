@@ -5,7 +5,7 @@
 
 struct _ccs_rng_data_s {
 	const gsl_rng_type *rng_type;
-	gsl_rng            *gsl_rng;
+	gsl_rng            *rng;
 };
 
 typedef struct _ccs_rng_data_s _ccs_rng_data_t;

@@ -32,6 +32,13 @@ _ccs_distribution_uniform_get_parameters(_ccs_distribution_data_t *data,
                                          size_t                   *num_parameters_ret);
 
 static ccs_error_t
+_ccs_distribution_uniform_get_bounds(_ccs_distribution_data_t *data,
+                                     ccs_datum_t              *lower,
+                                     ccs_bool_t               *lower_included,
+                                     ccs_datum_t              *upper,
+                                     ccs_bool_t               *upper_included);
+
+static ccs_error_t
 _ccs_distribution_uniform_samples(_ccs_distribution_data_t *data,
                                   ccs_rng_t                 rng,
                                   size_t                    num_values,
@@ -41,7 +48,8 @@ _ccs_distribution_ops_t _ccs_distribution_uniform_ops = {
 	{ &_ccs_distribution_del },
 	&_ccs_distribution_uniform_get_num_parameters,
 	&_ccs_distribution_uniform_get_parameters,
-	&_ccs_distribution_uniform_samples
+	&_ccs_distribution_uniform_samples,
+	&_ccs_distribution_uniform_get_bounds
  };
 
 static ccs_error_t
@@ -69,6 +77,36 @@ _ccs_distribution_uniform_get_parameters(_ccs_distribution_data_t *data,
 		parameters[1].type = d->common_data.data_type;
 		parameters[1].value = d->upper;
 	}
+	return CCS_SUCCESS;
+}
+
+static ccs_error_t
+_ccs_distribution_uniform_get_bounds(_ccs_distribution_data_t *data,
+                                     ccs_datum_t              *lower,
+                                     ccs_bool_t               *lower_included,
+                                     ccs_datum_t              *upper,
+                                     ccs_bool_t               *upper_included) {
+	_ccs_distribution_uniform_data_t *d = (_ccs_distribution_uniform_data_t *)data;
+	const ccs_data_type_t  data_type      = d->common_data.data_type;
+        ccs_datum_t            l;
+	ccs_bool_t             li;
+	ccs_datum_t            u;
+	ccs_bool_t             ui;
+
+	l.type = data_type;
+	l.value = d->lower;
+	li = CCS_TRUE;
+        u.type = data_type;
+	u.value = d->upper;
+        ui = CCS_FALSE;
+	if (lower)
+		*lower = l;
+	if (lower_included)
+		*lower_included = li;
+	if (upper)
+		*upper = u;
+	if (upper_included)
+		*upper_included = ui;
 	return CCS_SUCCESS;
 }
 

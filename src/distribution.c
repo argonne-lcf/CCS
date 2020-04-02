@@ -77,6 +77,20 @@ ccs_distribution_get_parameters(ccs_distribution_t  distribution,
 }
 
 ccs_error_t
+ccs_distribution_get_bounds(ccs_distribution_t  distribution,
+                            ccs_datum_t        *lower,
+                            ccs_bool_t         *lower_included,
+                            ccs_datum_t        *upper,
+                            ccs_bool_t         *upper_included) {
+	if (!distribution || !distribution->data)
+		return -CCS_INVALID_OBJECT;
+	if (!lower && !lower_included && !upper && !upper_included)
+		return -CCS_INVALID_VALUE;
+	_ccs_distribution_ops_t *ops = ccs_distribution_get_ops(distribution);
+	return ops->get_bounds(distribution->data, lower, lower_included, upper, upper_included);
+}
+
+ccs_error_t
 ccs_distribution_sample(ccs_distribution_t  distribution,
                         ccs_rng_t           rng,
                         ccs_value_t        *value) {
@@ -95,7 +109,7 @@ ccs_distribution_samples(ccs_distribution_t  distribution,
                          ccs_value_t        *values) {
 	if (!distribution || !distribution->data)
 		return -CCS_INVALID_OBJECT;
-	if (num_values && !values)
+	if (!num_values || !values)
 		return -CCS_INVALID_VALUE;
 	_ccs_distribution_ops_t *ops = ccs_distribution_get_ops(distribution);
 	return ops->samples(distribution->data, rng, num_values, values);

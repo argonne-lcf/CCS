@@ -29,6 +29,13 @@ _ccs_distribution_normal_get_parameters(_ccs_distribution_data_t *data,
                                         size_t                   *num_parameters_ret);
 
 static ccs_error_t
+_ccs_distribution_normal_get_bounds(_ccs_distribution_data_t *data,
+                                    ccs_datum_t              *lower,
+                                    ccs_bool_t               *lower_included,
+                                    ccs_datum_t              *upper,
+                                    ccs_bool_t               *upper_included);
+
+static ccs_error_t
 _ccs_distribution_normal_samples(_ccs_distribution_data_t *data,
                                  ccs_rng_t                 rng,
                                  size_t                    num_values,
@@ -38,7 +45,8 @@ _ccs_distribution_ops_t _ccs_distribution_normal_ops = {
 	{ &_ccs_distribution_del },
 	&_ccs_distribution_normal_get_num_parameters,
 	&_ccs_distribution_normal_get_parameters,
-	&_ccs_distribution_normal_samples
+	&_ccs_distribution_normal_samples,
+	&_ccs_distribution_normal_get_bounds
 };
 
 static ccs_error_t
@@ -70,12 +78,163 @@ _ccs_distribution_normal_get_parameters(_ccs_distribution_data_t *data,
 }
 
 static ccs_error_t
+_ccs_distribution_normal_get_bounds(_ccs_distribution_data_t *data,
+                                    ccs_datum_t              *lower,
+                                    ccs_bool_t               *lower_included,
+                                    ccs_datum_t              *upper,
+                                    ccs_bool_t               *upper_included) {
+	_ccs_distribution_normal_data_t *d = (_ccs_distribution_normal_data_t *)data;
+	const ccs_data_type_t  data_type      = d->common_data.data_type;
+	const ccs_scale_type_t scale_type     = d->common_data.scale_type;
+	const ccs_value_t      quantization   = d->common_data.quantization;
+	const int              quantize       = d->quantize;
+        ccs_datum_t            l;
+	ccs_bool_t             li;
+	ccs_datum_t            u;
+	ccs_bool_t             ui;
+
+	l.type = data_type;
+	u.type = data_type;
+	if (scale_type == CCS_LOGARITHMIC) {
+		if (data_type == CCS_FLOAT) {
+			if (quantize) {
+				l.value.f = quantization.f;
+				li = CCS_TRUE;
+			} else {
+				l.value.f = 0.0;
+				li = CCS_FALSE;
+			}
+			u.value.f = CCS_INFINITY;
+			ui = CCS_FALSE;
+		} else {
+			if (quantize) {
+				l.value.i = quantization.i;
+				u.value.i = (CCS_INT_MAX/quantization.i)*quantization.i;
+			} else {
+				l.value.i = 1;
+				u.value.i = CCS_INT_MAX;
+			}
+			li = CCS_TRUE;
+			ui = CCS_TRUE;
+		}
+	} else {
+		if (data_type == CCS_FLOAT) {
+			l.value.f = -CCS_INFINITY;
+			li = CCS_FALSE;
+			u.value.f = CCS_INFINITY;
+			ui = CCS_FALSE;
+		} else {
+			if (quantize) {
+				l.value.i = (CCS_INT_MIN/quantization.i)*quantization.i;
+				u.value.i = (CCS_INT_MAX/quantization.i)*quantization.i;
+			} else {
+				l.value.i = CCS_INT_MIN;
+				u.value.i = CCS_INT_MAX;
+			}
+			li = CCS_TRUE;
+			ui = CCS_TRUE;
+		}
+	}
+	if (lower)
+		*lower = l;
+	if (lower_included)
+		*lower_included = li;
+	if (upper)
+		*upper = u;
+	if (upper_included)
+		*upper_included = ui;
+	return CCS_SUCCESS;
+}
+
+static inline ccs_error_t
+_ccs_distribution_normal_samples_float(gsl_rng                *grng,
+                                       const ccs_scale_type_t  scale_type,
+                                       const ccs_float_t       quantization,
+                                       const ccs_float_t       mu,
+                                       const ccs_float_t       sigma,
+                                       const int               quantize,
+                                       size_t                  num_values,
+                                       ccs_float_t            *values) {
+	size_t i;
+	if (scale_type == CCS_LOGARITHMIC && quantize) {
+		ccs_float_t lq = log(quantization*0.5);
+		if (mu - lq >= 0.0)
+			//at least 50% chance to get a valid value
+			for (i = 0; i < num_values; i++)
+				do {
+					values[i] = gsl_ran_gaussian(grng, sigma) + mu;
+				} while (values[i] < lq);
+		else
+			//use tail distribution
+			for (i = 0; i < num_values; i++)
+				values[i] = gsl_ran_gaussian_tail(grng, lq - mu, sigma) + mu;
+	} else
+		for (i = 0; i < num_values; i++)
+			values[i] = gsl_ran_gaussian(grng, sigma) + mu;
+	if (scale_type == CCS_LOGARITHMIC)
+		for (i = 0; i < num_values; i++)
+			values[i] = exp(values[i]);
+	if (quantize) {
+			ccs_float_t rquantization = 1.0 / quantization;
+			for (i = 0; i < num_values; i++)
+				values[i] = round(values[i] * rquantization) * quantization;
+	}
+	return CCS_SUCCESS;
+}
+
+static inline ccs_error_t
+_ccs_distribution_normal_samples_int(gsl_rng                *grng,
+                                     const ccs_scale_type_t  scale_type,
+                                     const ccs_int_t         quantization,
+                                     const ccs_float_t       mu,
+                                     const ccs_float_t       sigma,
+                                     const int               quantize,
+                                     size_t                  num_values,
+                                     ccs_value_t            *values) {
+	size_t i;
+	ccs_float_t q;
+	if (quantize)
+		q = quantization*0.5;
+	else
+		q = 0.5;
+	if (scale_type == CCS_LOGARITHMIC) {
+		ccs_float_t lq = log(q);
+		if (mu - lq >= 0.0)
+			for (i = 0; i < num_values; i++)
+				do {
+					do {
+						values[i].f = gsl_ran_gaussian(grng, sigma) + mu;
+					} while (values[i].f < lq);
+					values[i].f = exp(values[i].f);
+				} while (unlikely(values[i].f - q > CCS_INT_MAX));
+		else
+			for (i = 0; i < num_values; i++)
+				do {
+					values[i].f = gsl_ran_gaussian_tail(grng, lq - mu, sigma) + mu;
+					values[i].f = exp(values[i].f);
+				} while (unlikely(values[i].f - q > CCS_INT_MAX));
+	}
+	else
+		for (i = 0; i < num_values; i++)
+			do {
+				values[i].f = gsl_ran_gaussian(grng, sigma) + mu;
+			} while (unlikely(values[i].f - q > CCS_INT_MAX || values[i].f + q < CCS_INT_MIN));
+	if (quantize) {
+		ccs_float_t rquantization = 1.0 / quantization;
+		for (i = 0; i < num_values; i++)
+			values[i].i = (ccs_int_t)round(values[i].f * rquantization) * quantization;
+	} else
+		for (i = 0; i < num_values; i++)
+			values[i].i = round(values[i].f);
+	return CCS_SUCCESS;
+}
+
+static ccs_error_t
 _ccs_distribution_normal_samples(_ccs_distribution_data_t *data,
                                   ccs_rng_t                 rng,
                                   size_t                    num_values,
                                   ccs_value_t              *values) {
 	_ccs_distribution_normal_data_t *d = (_ccs_distribution_normal_data_t *)data;
-	size_t i;
 	const ccs_data_type_t  data_type      = d->common_data.data_type;
 	const ccs_scale_type_t scale_type     = d->common_data.scale_type;
 	const ccs_value_t      quantization   = d->common_data.quantization;
@@ -87,62 +246,16 @@ _ccs_distribution_normal_samples(_ccs_distribution_data_t *data,
 	if (err)
 		return err;
 	if (data_type == CCS_FLOAT)
-		if (scale_type == CCS_LOGARITHMIC && quantize) {
-			double lq = log(quantization.f*0.5);
-			if (mu - lq >= 0.0)
-				//at least 50% chance to get a valid value
-				for (i = 0; i < num_values; i++)
-					do {
-						values[i].f = gsl_ran_gaussian(grng, sigma) + mu;
-					} while (values[i].f < lq);
-			else
-				//use tail distribution
-				for (i = 0; i < num_values; i++)
-					values[i].f = gsl_ran_gaussian_tail(grng, lq - mu, sigma) + mu;
-		}
-		else
-			for (i = 0; i < num_values; i++)
-				values[i].f = gsl_ran_gaussian(grng, sigma) + mu;
-	else {
-		if (scale_type == CCS_LOGARITHMIC) {
-			double lq;
-			if (quantize)
-				lq = log(quantization.i*0.5);
-			else
-				lq = log(0.5);
-			if (mu - lq >= 0.0)
-				for (i = 0; i < num_values; i++)
-					do {
-						values[i].f = gsl_ran_gaussian(grng, sigma) + mu;
-					} while (values[i].f < lq);
-			else
-				for (i = 0; i < num_values; i++)
-					values[i].f = gsl_ran_gaussian_tail(grng, lq - mu, sigma) + mu;
-		}
-		else
-			for (i = 0; i < num_values; i++)
-				values[i].f = gsl_ran_gaussian(grng, sigma) + mu;
-	}
-
-	if (scale_type == CCS_LOGARITHMIC)
-		for (i = 0; i < num_values; i++)
-			values[i].f = exp(values[i].f);
-	if (data_type == CCS_FLOAT) {
-		if (quantize) {
-			ccs_float_t rquantization = 1.0 / quantization.f;
-			for (i = 0; i < num_values; i++)
-				values[i].f = round(values[i].f * rquantization) * quantization.f;
-		}
-	} else {
-		if (quantize) {
-			ccs_float_t rquantization = 1.0 / quantization.i;
-			for (i = 0; i < num_values; i++)
-				values[i].i = (ccs_int_t)round(values[i].f * rquantization) * quantization.i;
-		} else
-			for (i = 0; i < num_values; i++)
-				values[i].i = round(values[i].f);
-	}
-	return CCS_SUCCESS;
+		return _ccs_distribution_normal_samples_float(grng, scale_type,
+                                                              quantization.f, mu,
+                                                              sigma, quantize,
+                                                              num_values,
+                                                              (ccs_float_t*) values);
+	else
+		return _ccs_distribution_normal_samples_int(grng, scale_type,
+                                                            quantization.i, mu,
+                                                            sigma, quantize,
+                                                            num_values, values);
 }
 
 extern ccs_error_t

@@ -110,6 +110,13 @@ ccs_distribution_get_parameters(ccs_distribution_t  distribution,
                                 size_t             *num_parameters_ret);
 
 extern ccs_error_t
+ccs_distribution_get_bounds(ccs_distribution_t  distribution,
+                            ccs_datum_t        *lower,
+                            ccs_bool_t         *lower_included,
+                            ccs_datum_t        *upper,
+                            ccs_bool_t         *upper_included);
+
+extern ccs_error_t
 ccs_normal_distribution_get_parameters(ccs_distribution_t  distribution,
                                        ccs_datum_t        *mu_ret,
                                        ccs_datum_t        *sigma_ret);

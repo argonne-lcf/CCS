@@ -12,30 +12,24 @@ ccs_rng_create_with_type(const gsl_rng_type *rng_type,
                          ccs_rng_t          *rng_ret) {
 	if (!rng_type || !rng_ret)
 		return -CCS_INVALID_VALUE;
-	ccs_error_t err = CCS_SUCCESS;
 	gsl_rng *grng = gsl_rng_alloc(rng_type);
 
 	if (!grng) {
-		err = -CCS_ENOMEM;
-		goto error;
+		return -CCS_ENOMEM;
 	}
 	uintptr_t mem = (uintptr_t)calloc(1, sizeof(struct _ccs_rng_s) + sizeof(struct _ccs_rng_data_s));
 
 	if (!mem) {
-		err = CCS_ENOMEM;
-		goto cleanup_gsl;
+		gsl_rng_free(grng);
+		return -CCS_ENOMEM;
 	}
 	ccs_rng_t rng = (ccs_rng_t)mem;
 	_ccs_object_init(&(rng->obj), CCS_RNG, (_ccs_object_ops_t *)&_rng_ops);
 	rng->data = (struct _ccs_rng_data_s *)(mem + sizeof(struct _ccs_rng_s));
 	rng->data->rng_type = rng_type;
-	rng->data->gsl_rng = grng;
+	rng->data->rng = grng;
 	*rng_ret = rng;
 	return CCS_SUCCESS;
-cleanup_gsl:
-	gsl_rng_free(grng);
-error:
-	return err;
 }
 
 ccs_error_t
@@ -45,8 +39,8 @@ ccs_rng_create(ccs_rng_t *rng_ret) {
 
 static ccs_error_t
 _ccs_rng_del(ccs_object_t object) {
-	gsl_rng_free(object.rng->data->gsl_rng);
-	object.rng->data->gsl_rng = NULL;
+	gsl_rng_free(object.rng->data->rng);
+	object.rng->data->rng = NULL;
 	return CCS_SUCCESS;
 }
 
@@ -64,7 +58,7 @@ ccs_rng_set_seed(ccs_rng_t         rng,
                  unsigned long int seed) {
 	if (!rng)
 		return -CCS_INVALID_OBJECT;
-	gsl_rng_set(rng->data->gsl_rng, seed);
+	gsl_rng_set(rng->data->rng, seed);
 	return CCS_SUCCESS;
 }
 
@@ -75,7 +69,7 @@ ccs_rng_get(ccs_rng_t          rng,
 		return -CCS_INVALID_OBJECT;
 	if (!value_ret)
 		return -CCS_INVALID_VALUE;
-	*value_ret = gsl_rng_get(rng->data->gsl_rng);
+	*value_ret = gsl_rng_get(rng->data->rng);
 	return CCS_SUCCESS;
 }
 
@@ -86,7 +80,7 @@ ccs_rng_uniform(ccs_rng_t    rng,
 		return -CCS_INVALID_OBJECT;
 	if (!value_ret)
 		return -CCS_INVALID_VALUE;
-	*value_ret = gsl_rng_uniform(rng->data->gsl_rng);
+	*value_ret = gsl_rng_uniform(rng->data->rng);
 	return CCS_SUCCESS;
 }
 
@@ -97,7 +91,7 @@ ccs_rng_get_gsl_rng(ccs_rng_t   rng,
 		return -CCS_INVALID_OBJECT;
 	if (!gsl_rng_ret)
 		return -CCS_INVALID_VALUE;
-	*gsl_rng_ret = rng->data->gsl_rng;
+	*gsl_rng_ret = rng->data->rng;
 	return CCS_SUCCESS;
 }
 
@@ -108,7 +102,7 @@ ccs_rng_min(ccs_rng_t          rng,
 		return -CCS_INVALID_OBJECT;
 	if (!value_ret)
 		return -CCS_INVALID_VALUE;
-	*value_ret = gsl_rng_min(rng->data->gsl_rng);
+	*value_ret = gsl_rng_min(rng->data->rng);
 	return CCS_SUCCESS;
 }
 
@@ -119,6 +113,6 @@ ccs_rng_max(ccs_rng_t          rng,
 		return -CCS_INVALID_OBJECT;
 	if (!value_ret)
 		return -CCS_INVALID_VALUE;
-	*value_ret = gsl_rng_max(rng->data->gsl_rng);
+	*value_ret = gsl_rng_max(rng->data->rng);
 	return CCS_SUCCESS;
 }

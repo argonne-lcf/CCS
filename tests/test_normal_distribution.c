@@ -15,7 +15,8 @@ static void test_create_normal_distribution() {
 	ccs_distribution_type_t dtype;
 	ccs_scale_type_t        stype;
 	ccs_data_type_t         data_type;
-	ccs_datum_t             parameters[2], quantization, mu, sigma;
+	ccs_datum_t             parameters[2], quantization, mu, sigma, lower, upper;
+	ccs_bool_t              lower_included, upper_included;
 
 	err = ccs_create_normal_distribution(
 		CCS_FLOAT,
@@ -59,6 +60,15 @@ static void test_create_normal_distribution() {
 	assert( parameters[1].type == CCS_FLOAT );
 	assert( parameters[1].value.f == 2.0 );
 
+        err = ccs_distribution_get_bounds(distrib, &lower, &lower_included, &upper, &upper_included);
+	assert( err == CCS_SUCCESS );
+	assert( lower.type == CCS_FLOAT );
+	assert( lower.value.f == -CCS_INFINITY );
+	assert( lower_included == CCS_FALSE );
+	assert( upper.type == CCS_FLOAT );
+	assert( upper.value.f == CCS_INFINITY );
+	assert( upper_included == CCS_FALSE );
+
 	err = ccs_normal_distribution_get_parameters(distrib, &mu, &sigma);
 	assert( err == CCS_SUCCESS );
 	assert( mu.type == CCS_FLOAT );
@@ -93,7 +103,7 @@ static void test_create_normal_distribution_errors() {
 		CCS_FLOAT,
 		1.0,
 		2.0,
-		0xdeadbeef,
+		(ccs_scale_type_t)0xdeadbeef,
 		0.0,
 		&distrib);
 	assert( err == -CCS_INVALID_SCALE );
@@ -141,7 +151,9 @@ static void test_normal_distribution_int() {
 	const ccs_float_t  mu = 1;
 	const ccs_float_t  sigma = 2;
 	ccs_value_t        samples[num_samples];
-	double mean, sig;
+	double             mean, sig;
+	ccs_datum_t        lower, upper;
+	ccs_bool_t         lower_included, upper_included;
 
 	err = ccs_rng_create(&rng);
 	assert( err == CCS_SUCCESS );
@@ -153,6 +165,15 @@ static void test_normal_distribution_int() {
 		0L,
 		&distrib);
 	assert( err == CCS_SUCCESS );
+
+        err = ccs_distribution_get_bounds(distrib, &lower, &lower_included, &upper, &upper_included);
+	assert( err == CCS_SUCCESS );
+	assert( lower.type == CCS_INTEGER );
+	assert( lower.value.i == CCS_INT_MIN );
+	assert( lower_included == CCS_TRUE );
+	assert( upper.type == CCS_INTEGER );
+	assert( upper.value.i == CCS_INT_MAX );
+	assert( upper_included == CCS_TRUE );
 
 	err = ccs_distribution_samples(distrib, rng, num_samples, samples);
 	assert( err == CCS_SUCCESS );
@@ -181,7 +202,9 @@ static void test_normal_distribution_float() {
 	const ccs_float_t  mu = 1;
 	const ccs_float_t  sigma = 2;
 	ccs_value_t        samples[num_samples];
-	double mean, sig;
+	double             mean, sig;
+	ccs_datum_t        lower, upper;
+	ccs_bool_t         lower_included, upper_included;
 
 	err = ccs_rng_create(&rng);
 	assert( err == CCS_SUCCESS );
@@ -193,6 +216,15 @@ static void test_normal_distribution_float() {
 		0.0,
 		&distrib);
 	assert( err == CCS_SUCCESS );
+
+        err = ccs_distribution_get_bounds(distrib, &lower, &lower_included, &upper, &upper_included);
+	assert( err == CCS_SUCCESS );
+	assert( lower.type == CCS_FLOAT );
+	assert( lower.value.f == -CCS_INFINITY );
+	assert( lower_included == CCS_FALSE );
+	assert( upper.type == CCS_FLOAT );
+	assert( upper.value.f == CCS_INFINITY );
+	assert( upper_included == CCS_FALSE );
 
 	err = ccs_distribution_samples(distrib, rng, num_samples, samples);
 	assert( err == CCS_SUCCESS );
@@ -220,8 +252,10 @@ static void test_normal_distribution_int_log() {
 	const ccs_float_t  mu = 1;
 	const ccs_float_t  sigma = 2;
 	ccs_value_t        samples[num_samples];
-	double mean, sig;
-	double tmean, tsigma, alpha, zee, pdfa;
+	double             mean, sig;
+	double             tmean, tsigma, alpha, zee, pdfa;
+	ccs_datum_t        lower, upper;
+	ccs_bool_t         lower_included, upper_included;
 
 	err = ccs_rng_create(&rng);
 	assert( err == CCS_SUCCESS );
@@ -233,6 +267,15 @@ static void test_normal_distribution_int_log() {
 		0L,
 		&distrib);
 	assert( err == CCS_SUCCESS );
+
+        err = ccs_distribution_get_bounds(distrib, &lower, &lower_included, &upper, &upper_included);
+	assert( err == CCS_SUCCESS );
+	assert( lower.type == CCS_INTEGER );
+	assert( lower.value.i == 1 );
+	assert( lower_included == CCS_TRUE );
+	assert( upper.type == CCS_INTEGER );
+	assert( upper.value.i == CCS_INT_MAX );
+	assert( upper_included == CCS_TRUE );
 
 	err = ccs_distribution_samples(distrib, rng, num_samples, samples);
 	assert( err == CCS_SUCCESS );
@@ -271,7 +314,9 @@ static void test_normal_distribution_float_log() {
 	const ccs_float_t  mu = 1;
 	const ccs_float_t  sigma = 2;
 	ccs_value_t        samples[num_samples];
-	double mean, sig;
+	double             mean, sig;
+	ccs_datum_t        lower, upper;
+	ccs_bool_t         lower_included, upper_included;
 
 	err = ccs_rng_create(&rng);
 	assert( err == CCS_SUCCESS );
@@ -283,6 +328,15 @@ static void test_normal_distribution_float_log() {
 		0.0,
 		&distrib);
 	assert( err == CCS_SUCCESS );
+
+        err = ccs_distribution_get_bounds(distrib, &lower, &lower_included, &upper, &upper_included);
+	assert( err == CCS_SUCCESS );
+	assert( lower.type == CCS_FLOAT );
+	assert( lower.value.f == 0.0 );
+	assert( lower_included == CCS_FALSE );
+	assert( upper.type == CCS_FLOAT );
+	assert( upper.value.f == CCS_INFINITY );
+	assert( upper_included == CCS_FALSE );
 
 	err = ccs_distribution_samples(distrib, rng, num_samples, samples);
 	assert( err == CCS_SUCCESS );
@@ -310,8 +364,11 @@ static void test_normal_distribution_int_quantize() {
 	const size_t       num_samples = 10000;
 	const ccs_float_t  mu = 1;
 	const ccs_float_t  sigma = 2;
+	const ccs_int_t    q = 2L;
 	ccs_value_t        samples[num_samples];
-	double mean, sig;
+	double             mean, sig;
+	ccs_datum_t        lower, upper;
+	ccs_bool_t         lower_included, upper_included;
 
 	err = ccs_rng_create(&rng);
 	assert( err == CCS_SUCCESS );
@@ -320,9 +377,18 @@ static void test_normal_distribution_int_quantize() {
 		mu,
 		sigma,
 		CCS_LINEAR,
-		2L,
+		q,
 		&distrib);
 	assert( err == CCS_SUCCESS );
+
+        err = ccs_distribution_get_bounds(distrib, &lower, &lower_included, &upper, &upper_included);
+	assert( err == CCS_SUCCESS );
+	assert( lower.type == CCS_INTEGER );
+	assert( lower.value.i == (CCS_INT_MIN/q)*q );
+	assert( lower_included == CCS_TRUE );
+	assert( upper.type == CCS_INTEGER );
+	assert( upper.value.i == (CCS_INT_MAX/q)*q );
+	assert( upper_included == CCS_TRUE );
 
 	err = ccs_distribution_samples(distrib, rng, num_samples, samples);
 	assert( err == CCS_SUCCESS );
@@ -351,7 +417,9 @@ static void test_normal_distribution_float_quantize() {
 	const ccs_float_t  mu = 1;
 	const ccs_float_t  sigma = 2;
 	ccs_value_t        samples[num_samples];
-	double mean, sig;
+	double             mean, sig;
+	ccs_datum_t        lower, upper;
+	ccs_bool_t         lower_included, upper_included;
 
 	err = ccs_rng_create(&rng);
 	assert( err == CCS_SUCCESS );
@@ -363,6 +431,15 @@ static void test_normal_distribution_float_quantize() {
 		0.2,
 		&distrib);
 	assert( err == CCS_SUCCESS );
+
+        err = ccs_distribution_get_bounds(distrib, &lower, &lower_included, &upper, &upper_included);
+	assert( err == CCS_SUCCESS );
+	assert( lower.type == CCS_FLOAT );
+	assert( lower.value.f == -CCS_INFINITY );
+	assert( lower_included == CCS_FALSE );
+	assert( upper.type == CCS_FLOAT );
+	assert( upper.value.f == CCS_INFINITY );
+	assert( upper_included == CCS_FALSE );
 
 	err = ccs_distribution_samples(distrib, rng, num_samples, samples);
 	assert( err == CCS_SUCCESS );
@@ -389,10 +466,12 @@ static void test_normal_distribution_int_log_quantize() {
 	const size_t       num_samples = 10000;
 	const ccs_float_t  mu = 3;
 	const ccs_float_t  sigma = 2;
-	const ccs_int_t    quantize = 2;
+	const ccs_int_t    quantize = 2L;
 	ccs_value_t        samples[num_samples];
-	double mean, sig;
-	double tmean, tsigma, alpha, zee, pdfa;
+	double             mean, sig;
+	double             tmean, tsigma, alpha, zee, pdfa;
+	ccs_datum_t        lower, upper;
+	ccs_bool_t         lower_included, upper_included;
 
 	err = ccs_rng_create(&rng);
 	assert( err == CCS_SUCCESS );
@@ -404,6 +483,15 @@ static void test_normal_distribution_int_log_quantize() {
 		quantize,
 		&distrib);
 	assert( err == CCS_SUCCESS );
+
+        err = ccs_distribution_get_bounds(distrib, &lower, &lower_included, &upper, &upper_included);
+	assert( err == CCS_SUCCESS );
+	assert( lower.type == CCS_INTEGER );
+	assert( lower.value.i == quantize );
+	assert( lower_included == CCS_TRUE );
+	assert( upper.type == CCS_INTEGER );
+	assert( upper.value.i == (CCS_INT_MAX/quantize)*quantize );
+	assert( upper_included == CCS_TRUE );
 
 	err = ccs_distribution_samples(distrib, rng, num_samples, samples);
 	assert( err == CCS_SUCCESS );
@@ -443,8 +531,10 @@ static void test_normal_distribution_float_log_quantize() {
 	const ccs_float_t  sigma = 2;
 	const ccs_float_t  quantization = 2.0;
 	ccs_value_t        samples[num_samples];
-	double mean, sig;
-	double tmean, tsigma, alpha, zee, pdfa;
+	double             mean, sig;
+	double             tmean, tsigma, alpha, zee, pdfa;
+	ccs_datum_t        lower, upper;
+	ccs_bool_t         lower_included, upper_included;
 
 	err = ccs_rng_create(&rng);
 	assert( err == CCS_SUCCESS );
@@ -456,6 +546,15 @@ static void test_normal_distribution_float_log_quantize() {
 		quantization,
 		&distrib);
 	assert( err == CCS_SUCCESS );
+
+        err = ccs_distribution_get_bounds(distrib, &lower, &lower_included, &upper, &upper_included);
+	assert( err == CCS_SUCCESS );
+	assert( lower.type == CCS_FLOAT );
+	assert( lower.value.f == quantization );
+	assert( lower_included == CCS_TRUE );
+	assert( upper.type == CCS_FLOAT );
+	assert( upper.value.f == CCS_INFINITY );
+	assert( upper_included == CCS_FALSE );
 
 	err = ccs_distribution_samples(distrib, rng, num_samples, samples);
 	assert( err == CCS_SUCCESS );

@@ -22,7 +22,14 @@ struct _ccs_distribution_ops_s {
 		ccs_rng_t                 rng,
 		size_t                    num_values,
 		ccs_value_t              *values);
-		
+
+	ccs_error_t (*get_bounds)(
+		_ccs_distribution_data_t *distribution,
+		ccs_datum_t              *lower,
+		ccs_bool_t               *lower_included,
+		ccs_datum_t              *upper,
+		ccs_bool_t               *upper_included);
+
 };
 typedef struct _ccs_distribution_ops_s _ccs_distribution_ops_t;
 
