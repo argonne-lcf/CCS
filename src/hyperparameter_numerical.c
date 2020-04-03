@@ -58,9 +58,7 @@ _ccs_hyperparameter_numerical_samples(_ccs_hyperparameter_data_t *data,
 		vs = NULL;
 		size_t coeff = 2;
 		while (found < num_values) {
-		        fprintf(stderr, "Found %ld\n", found);
 			size_t buff_sz = (num_values - found)*coeff;
-			fprintf(stderr, "NewBuff %ld\n", buff_sz);
 			vs = (ccs_numeric_t *)malloc(sizeof(ccs_numeric_t)*buff_sz);
 			if (!vs)
 				return -CCS_ENOMEM;
