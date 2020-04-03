@@ -50,30 +50,30 @@ ccs_hyperparameter_get_type(ccs_hyperparameter_t       hyperparameter,
                             ccs_hyperparameter_type_t *type_ret);
 
 extern ccs_error_t
-ccs_hyperparameters_get_default_value(ccs_hyperparameter_t  hyperparameter,
-                                      ccs_datum_t          *value_ret);
+ccs_hyperparameter_get_default_value(ccs_hyperparameter_t  hyperparameter,
+                                     ccs_datum_t          *value_ret);
 
 extern ccs_error_t
-ccs_hyperparameters_get_name(ccs_hyperparameter_t   hyperparameter,
-                             const char           **name_ret);
+ccs_hyperparameter_get_name(ccs_hyperparameter_t   hyperparameter,
+                            const char           **name_ret);
 
 extern ccs_error_t
-ccs_hyperparameters_get_user_data(ccs_hyperparameter_t   hyperparameter,
-                                  void                 **user_data_ret);
+ccs_hyperparameter_get_user_data(ccs_hyperparameter_t   hyperparameter,
+                                 void                 **user_data_ret);
 extern ccs_error_t
 ccs_hyperparameter_get_distribution(ccs_hyperparameter_t  hyperparameter,
                                     ccs_distribution_t   *distribution);
 //   Sampling Interface
 extern ccs_error_t
-ccs_hyperparameters_sample(ccs_hyperparameter_t  hyperparameter,
-                           ccs_rng_t             rng,
-                           ccs_datum_t          *value);
+ccs_hyperparameter_sample(ccs_hyperparameter_t  hyperparameter,
+                          ccs_rng_t             rng,
+                          ccs_datum_t          *value);
 
 extern ccs_error_t
-ccs_hyperparameters_samples(ccs_hyperparameter_t  hyperparameter,
-                            ccs_rng_t             rng,
-                            size_t                num_values,
-                            ccs_datum_t          *values);
+ccs_hyperparameter_samples(ccs_hyperparameter_t  hyperparameter,
+                           ccs_rng_t             rng,
+                           size_t                num_values,
+                           ccs_datum_t          *values);
 
 #ifdef __cplusplus
 }

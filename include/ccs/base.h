@@ -85,18 +85,39 @@ typedef void * ccs_object_t;
 union ccs_numeric_u {
 	ccs_float_t   f;
 	ccs_int_t     i;
+#ifdef __cplusplus
+	ccs_numeric_u() : i(0L) {}
+	ccs_numeric_u(float v) : f((ccs_float_t)v) {}
+	ccs_numeric_u(int v) : i((ccs_int_t)v) {}
+	ccs_numeric_u(ccs_int_t v) : i(v) {}
+	ccs_numeric_u(ccs_float_t v) : f(v) {}
+#endif
 };
 
 typedef union ccs_numeric_u ccs_numeric_t;
 
+#ifdef __cplusplus
+#define CCSF(v) v
+#define CCSI(v) v
+#else
 #define CCSF(v) ( (ccs_numeric_t){ .f = v })
 #define CCSI(v) ( (ccs_numeric_t){ .i = v })
+#endif
 
 union ccs_value_u {
 	ccs_float_t   f;
 	ccs_int_t     i;
 	char         *s;
 	ccs_object_t  o;
+#ifdef __cplusplus
+	ccs_value_u() : i(0L) {}
+	ccs_value_u(float v) : f((ccs_float_t)v) {}
+	ccs_value_u(int v) : i((ccs_int_t)v) {}
+	ccs_value_u(ccs_float_t v) : f(v) {}
+	ccs_value_u(ccs_int_t v) : i(v) {}
+	ccs_value_u(char *v) : s(v) {}
+	ccs_value_u(ccs_object_t v) : o(v) {}
+#endif
 };
 
 typedef union ccs_value_u ccs_value_t;
@@ -122,26 +143,18 @@ extern ccs_error_t
 ccs_init();
 
 extern ccs_error_t
-_ccs_retain_object(ccs_object_t object);
-
-#define ccs_retain_object(o) _ccs_retain_object((ccs_object_t)(o))
+ccs_retain_object(ccs_object_t object);
 
 extern ccs_error_t
-_ccs_release_object(ccs_object_t object);
-
-#define ccs_release_object(o) _ccs_release_object((ccs_object_t)(o))
+ccs_release_object(ccs_object_t object);
 
 extern ccs_error_t
-_ccs_object_get_type(ccs_object_t       object,
-                     ccs_object_type_t *type_ret);
-
-#define ccs_object_get_type(o, t) _ccs_object_get_type((ccs_object_t)(o), t)
+ccs_object_get_type(ccs_object_t       object,
+                    ccs_object_type_t *type_ret);
 
 extern ccs_error_t
-_ccs_object_get_refcount(ccs_object_t  object,
-                         int32_t      *refcount_ret);
-
-#define ccs_object_get_refcount(o, c) _ccs_object_get_refcount((ccs_object_t)(o), c)
+ccs_object_get_refcount(ccs_object_t  object,
+                        int32_t      *refcount_ret);
 
 #ifdef __cplusplus
 }
