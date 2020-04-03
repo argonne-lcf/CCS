@@ -37,7 +37,6 @@ ccs_interval_include(ccs_interval_t *interval, ccs_numeric_t value) {
 	}
 }
 
-
 #ifdef __cplusplus
 }
 #endif

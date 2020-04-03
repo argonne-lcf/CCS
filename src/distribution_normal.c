@@ -28,7 +28,7 @@ _ccs_distribution_normal_samples(_ccs_distribution_data_t *data,
                                  size_t                    num_values,
                                  ccs_numeric_t            *values);
 
-_ccs_distribution_ops_t _ccs_distribution_normal_ops = {
+static _ccs_distribution_ops_t _ccs_distribution_normal_ops = {
 	{ &_ccs_distribution_del },
 	&_ccs_distribution_normal_samples,
 	&_ccs_distribution_normal_get_bounds
@@ -208,12 +208,12 @@ _ccs_distribution_normal_samples(_ccs_distribution_data_t *data,
 }
 
 extern ccs_error_t
-_ccs_create_normal_distribution(ccs_numeric_type_t  data_type,
-                                ccs_float_t         mu,
-                                ccs_float_t         sigma,
-                                ccs_scale_type_t    scale_type,
-                                ccs_numeric_t       quantization,
-                                ccs_distribution_t *distribution_ret) {
+ccs_create_normal_distribution(ccs_numeric_type_t  data_type,
+                               ccs_float_t         mu,
+                               ccs_float_t         sigma,
+                               ccs_scale_type_t    scale_type,
+                               ccs_numeric_t       quantization,
+                               ccs_distribution_t *distribution_ret) {
 	if (!distribution_ret)
 		return -CCS_INVALID_VALUE;
 	if (data_type != CCS_NUM_FLOAT && data_type != CCS_NUM_INTEGER)
@@ -269,5 +269,4 @@ ccs_normal_distribution_get_parameters(ccs_distribution_t  distribution,
 	}
 	return CCS_SUCCESS;
 }
-
 

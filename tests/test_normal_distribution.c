@@ -23,7 +23,7 @@ static void test_create_normal_distribution() {
 		1.0,
 		2.0,
 		CCS_LINEAR,
-		0.0,
+		CCSF(0.0),
 		&distrib);
 	assert( err == CCS_SUCCESS );
 
@@ -78,7 +78,7 @@ static void test_create_normal_distribution_errors() {
 		1.0,
 		2.0,
 		CCS_LINEAR,
-		0.0,
+		CCSF(0.0),
 		&distrib);
 	assert( err == -CCS_INVALID_TYPE );
 
@@ -88,7 +88,7 @@ static void test_create_normal_distribution_errors() {
 		1.0,
 		2.0,
 		(ccs_scale_type_t)0xdeadbeef,
-		0.0,
+		CCSF(0.0),
 		&distrib);
 	assert( err == -CCS_INVALID_SCALE );
 
@@ -98,7 +98,7 @@ static void test_create_normal_distribution_errors() {
 		1.0,
 		2.0,
 		CCS_LINEAR,
-		-1.0,
+		CCSF(-1.0),
 		&distrib);
 	assert( err == -CCS_INVALID_VALUE );
 
@@ -108,7 +108,7 @@ static void test_create_normal_distribution_errors() {
 		1.0,
 		2.0,
 		CCS_LINEAR,
-		0.0,
+		CCSF(0.0),
 		NULL);
 	assert( err == -CCS_INVALID_VALUE );
 
@@ -145,7 +145,7 @@ static void test_normal_distribution_int() {
 		mu,
 		sigma,
 		CCS_LINEAR,
-		0L,
+		CCSI(0),
 		&distrib);
 	assert( err == CCS_SUCCESS );
 
@@ -194,7 +194,7 @@ static void test_normal_distribution_float() {
 		mu,
 		sigma,
 		CCS_LINEAR,
-		0.0,
+		CCSF(0.0),
 		&distrib);
 	assert( err == CCS_SUCCESS );
 
@@ -243,7 +243,7 @@ static void test_normal_distribution_int_log() {
 		mu,
 		sigma,
 		CCS_LOGARITHMIC,
-		0L,
+		CCSI(0),
 		&distrib);
 	assert( err == CCS_SUCCESS );
 
@@ -302,7 +302,7 @@ static void test_normal_distribution_float_log() {
 		mu,
 		sigma,
 		CCS_LOGARITHMIC,
-		0.0,
+		CCSF(0.0),
 		&distrib);
 	assert( err == CCS_SUCCESS );
 
@@ -352,7 +352,7 @@ static void test_normal_distribution_int_quantize() {
 		mu,
 		sigma,
 		CCS_LINEAR,
-		q,
+		CCSI(q),
 		&distrib);
 	assert( err == CCS_SUCCESS );
 
@@ -401,7 +401,7 @@ static void test_normal_distribution_float_quantize() {
 		mu,
 		sigma,
 		CCS_LINEAR,
-		0.2,
+		CCSF(0.2),
 		&distrib);
 	assert( err == CCS_SUCCESS );
 
@@ -451,7 +451,7 @@ static void test_normal_distribution_int_log_quantize() {
 		mu,
 		sigma,
 		CCS_LOGARITHMIC,
-		quantize,
+		CCSI(quantize),
 		&distrib);
 	assert( err == CCS_SUCCESS );
 
@@ -512,7 +512,7 @@ static void test_normal_distribution_float_log_quantize() {
 		mu,
 		sigma,
 		CCS_LOGARITHMIC,
-		quantization,
+		CCSF(quantization),
 		&distrib);
 	assert( err == CCS_SUCCESS );
 

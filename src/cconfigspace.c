@@ -10,7 +10,7 @@ ccs_init() {
 
 ccs_error_t
 _ccs_retain_object(ccs_object_t object) {
-	_ccs_object_internal_t *obj = (_ccs_object_internal_t *)object.ptr;
+	_ccs_object_internal_t *obj = (_ccs_object_internal_t *)object;
         if (!obj || obj->refcount <= 0)
 		return -CCS_INVALID_OBJECT;
 	obj->refcount += 1;
@@ -19,7 +19,7 @@ _ccs_retain_object(ccs_object_t object) {
 
 ccs_error_t
 _ccs_release_object(ccs_object_t object) {
-	_ccs_object_internal_t *obj = (_ccs_object_internal_t *)object.ptr;
+	_ccs_object_internal_t *obj = (_ccs_object_internal_t *)object;
 	if (!obj || obj->refcount <= 0)
 		return -CCS_INVALID_OBJECT;
 	obj->refcount -= 1;
@@ -27,7 +27,7 @@ _ccs_release_object(ccs_object_t object) {
 		ccs_error_t err = obj->ops->del(object);
 		if (err)
 			return err;
-		free(object.ptr);
+		free(object);
 	}
 	return CCS_SUCCESS;
 }
@@ -35,7 +35,7 @@ _ccs_release_object(ccs_object_t object) {
 ccs_error_t
 _ccs_object_get_type(ccs_object_t       object,
                      ccs_object_type_t *type_ret) {
-	_ccs_object_internal_t *obj = (_ccs_object_internal_t *)object.ptr;
+	_ccs_object_internal_t *obj = (_ccs_object_internal_t *)object;
 	if (!obj)
 		return -CCS_INVALID_OBJECT;
 	if (!type_ret)
@@ -47,7 +47,7 @@ _ccs_object_get_type(ccs_object_t       object,
 ccs_error_t
 _ccs_object_get_refcount(ccs_object_t  object,
                          int32_t      *refcount_ret) {
-	_ccs_object_internal_t *obj = (_ccs_object_internal_t *)object.ptr;
+	_ccs_object_internal_t *obj = (_ccs_object_internal_t *)object;
 	if (!obj)
 		return -CCS_INVALID_OBJECT;
         if (!refcount_ret)

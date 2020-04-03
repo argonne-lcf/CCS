@@ -34,14 +34,12 @@ ccs_create_distribution(ccs_distribution_type_t distribution_type,
                         ccs_distribution_t     *distribution_ret);
 
 extern ccs_error_t
-_ccs_create_normal_distribution(ccs_numeric_type_t  data_type,
-                                ccs_float_t         mu,
-                                ccs_float_t         sigma,
-                                ccs_scale_type_t    scale,
-                                ccs_numeric_t       quantization,
-                                ccs_distribution_t *distribution_ret);
-#define ccs_create_normal_distribution(t, m, s, sc, q, d) \
-	_ccs_create_normal_distribution(t, m, s, sc, (ccs_numeric_t)(q), d)
+ccs_create_normal_distribution(ccs_numeric_type_t  data_type,
+                               ccs_float_t         mu,
+                               ccs_float_t         sigma,
+                               ccs_scale_type_t    scale,
+                               ccs_numeric_t       quantization,
+                               ccs_distribution_t *distribution_ret);
 
 extern ccs_error_t
 ccs_create_normal_int_distribution(ccs_float_t         mu,
@@ -58,15 +56,12 @@ ccs_create_normal_float_distribution(ccs_float_t         mu,
                                      ccs_distribution_t *distribution_ret);
 
 extern ccs_error_t
-_ccs_create_uniform_distribution(ccs_numeric_type_t  data_type,
-                                 ccs_numeric_t       lower,
-                                 ccs_numeric_t       upper,
-                                 ccs_scale_type_t    scale_type,
-                                 ccs_numeric_t       quantization,
-                                 ccs_distribution_t *distribution_ret);
-
-#define ccs_create_uniform_distribution(t, l, u, s, q, d) \
-       _ccs_create_uniform_distribution(t, (ccs_numeric_t)(l), (ccs_numeric_t)(u), s, (ccs_numeric_t)(q), d)
+ccs_create_uniform_distribution(ccs_numeric_type_t  data_type,
+                                ccs_numeric_t       lower,
+                                ccs_numeric_t       upper,
+                                ccs_scale_type_t    scale_type,
+                                ccs_numeric_t       quantization,
+                                ccs_distribution_t *distribution_ret);
 
 extern ccs_error_t
 ccs_create_uniform_int_distribution(ccs_int_t           lower,

@@ -80,55 +80,23 @@ enum ccs_numeric_type_e {
 
 typedef enum ccs_numeric_type_e ccs_numeric_type_t;
 
-union ccs_object_u {
-	void                      *ptr;
-	ccs_rng_t                  rng;
-	ccs_configuration_space_t  configuration_space;
-	ccs_configuration_t        configuration;
-	ccs_distribution_t         distribution;
-	ccs_hyperparameter_t       hyperparameter;
-	ccs_expression_t           expression;
-	ccs_condition_t            condition;
-	ccs_forbidden_clause_t     forbidden_clause;
-#ifdef __cplusplus
-	ccs_object_u(void *v) : ptr(v) {}
-	ccs_object_u(ccs_rng_t v) : rng(v) {}
-	ccs_object_u(ccs_configuration_space_t v) : configuration_space(v) {}
-	ccs_object_u(ccs_configuration_t v) : configuration(v) {}
-	ccs_object_u(ccs_distribution_t v) : distribution(v) {}
-	ccs_object_u(ccs_hyperparameter_t v) : hyperparameter(v) {}
-	ccs_object_u(ccs_expression_t v) : expression(v) {}
-	ccs_object_u(ccs_condition_t v) : condition(v) {}
-	ccs_object_u(ccs_forbidden_clause_t v) : forbidden_clause(v) {}
-#endif
-};
-
-typedef union ccs_object_u ccs_object_t;
+typedef void * ccs_object_t;
 
 union ccs_numeric_u {
 	ccs_float_t   f;
 	ccs_int_t     i;
-#ifdef __cplusplus
-	ccs_numeric_u() : i(0L) {}
-	ccs_numeric_u(ccs_float_t v) : f(v) {}
-	ccs_numeric_u(ccs_int_t v) : i(v) {}
-#endif
 };
 
 typedef union ccs_numeric_u ccs_numeric_t;
+
+#define CCSF(v) ( (ccs_numeric_t){ .f = v })
+#define CCSI(v) ( (ccs_numeric_t){ .i = v })
 
 union ccs_value_u {
 	ccs_float_t   f;
 	ccs_int_t     i;
 	char         *s;
 	ccs_object_t  o;
-#ifdef __cplusplus
-	ccs_value_u() : i(0L) {}
-	ccs_value_u(ccs_float_t v) : f(v) {}
-	ccs_value_u(ccs_int_t v) : i(v) {}
-	ccs_value_u(char *v) : s(v) {}
-	ccs_value_u(ccs_object_t v) : o(v) {}
-#endif
 };
 
 typedef union ccs_value_u ccs_value_t;
@@ -146,9 +114,6 @@ typedef struct ccs_interval_s ccs_interval_t;
 struct ccs_datum_u {
 	ccs_value_t value;
 	ccs_data_type_t type;
-#ifdef __cplusplus
-	ccs_datum_u() : value(0L), type(CCS_NONE) {}
-#endif
 };
 
 typedef struct ccs_datum_u ccs_datum_t;

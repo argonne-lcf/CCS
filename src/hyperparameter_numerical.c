@@ -10,12 +10,10 @@ typedef struct _ccs_hyperparameter_numerical_data_s _ccs_hyperparameter_numerica
 
 static ccs_error_t
 _ccs_hyperparameter_numerical_del(ccs_object_t o) {
-	ccs_hyperparameter_t d = o.hyperparameter;
+	ccs_hyperparameter_t d = (ccs_hyperparameter_t)o;
 	_ccs_hyperparameter_numerical_data_t *data = (_ccs_hyperparameter_numerical_data_t *)(d->data);
 	return ccs_release_object(data->common_data.distribution);
 }
-
-
 
 static inline
 ccs_bool_t _check_value(_ccs_hyperparameter_numerical_data_t *d,
@@ -25,9 +23,9 @@ ccs_bool_t _check_value(_ccs_hyperparameter_numerical_data_t *d,
 
 static ccs_error_t
 _ccs_hyperparameter_numerical_samples(_ccs_hyperparameter_data_t *data,
-                                      ccs_rng_t                   rng,
-                                      size_t                      num_values,
-                                      ccs_datum_t                *values) {
+                                     ccs_rng_t                   rng,
+                                     size_t                      num_values,
+                                     ccs_datum_t                *values) {
 	_ccs_hyperparameter_numerical_data_t *d = (_ccs_hyperparameter_numerical_data_t *)data;
 	ccs_error_t err;
 	ccs_numeric_t *vs = (ccs_numeric_t *)values;
@@ -83,21 +81,21 @@ _ccs_hyperparameter_numerical_samples(_ccs_hyperparameter_data_t *data,
 	return CCS_SUCCESS;
 }
 
-_ccs_hyperparameter_ops_t _ccs_hyperparameter_numerical_ops = {
+static _ccs_hyperparameter_ops_t _ccs_hyperparameter_numerical_ops = {
 	{ &_ccs_hyperparameter_numerical_del },
 	&_ccs_hyperparameter_numerical_samples
 };
 
 ccs_error_t
-_ccs_create_numerical_hyperparameter(const char           *name,
-                                     ccs_numeric_type_t    data_type,
-                                     ccs_numeric_t         lower,
-                                     ccs_numeric_t         upper,
-                                     ccs_numeric_t         quantization,
-                                     ccs_numeric_t         default_value,
-                                     ccs_distribution_t    distribution,
-                                     void                 *user_data,
-                                     ccs_hyperparameter_t *hyperparameter_ret) {
+ccs_create_numerical_hyperparameter(const char           *name,
+                                    ccs_numeric_type_t    data_type,
+                                    ccs_numeric_t         lower,
+                                    ccs_numeric_t         upper,
+                                    ccs_numeric_t         quantization,
+                                    ccs_numeric_t         default_value,
+                                    ccs_distribution_t    distribution,
+                                    void                 *user_data,
+                                    ccs_hyperparameter_t *hyperparameter_ret) {
 	if (!hyperparameter_ret)
 		return -CCS_INVALID_VALUE;
 	if (data_type != CCS_NUM_FLOAT && data_type != CCS_NUM_INTEGER)

@@ -211,6 +211,38 @@ void test_equal_int() {
 	assert( equal );
 }
 
+void test_interval_include_float() {
+	ccs_interval_t interval;
+
+	interval.type = CCS_NUM_FLOAT;
+	interval.lower.f = -3.0;
+	interval.upper.f = 5.0;
+	interval.lower_included = CCS_TRUE;
+	interval.upper_included = CCS_FALSE;
+
+	assert( ccs_interval_include(&interval, CCSF(0.0)) );
+	assert( ccs_interval_include(&interval, CCSF(-3.0)) );
+	assert( !ccs_interval_include(&interval, CCSF(-3.1)) );
+	assert( ccs_interval_include(&interval, CCSF(4.9)) );
+	assert( !ccs_interval_include(&interval, CCSF(5.0)) );
+}
+
+void test_interval_include_int() {
+	ccs_interval_t interval;
+
+	interval.type = CCS_NUM_INTEGER;
+	interval.lower.i = -3;
+	interval.upper.i = 5;
+	interval.lower_included = CCS_TRUE;
+	interval.upper_included = CCS_FALSE;
+
+	assert( ccs_interval_include(&interval, CCSI(0)) );
+	assert( ccs_interval_include(&interval, CCSI(-3)) );
+	assert( !ccs_interval_include(&interval, CCSI(-4)) );
+	assert( ccs_interval_include(&interval, CCSI(4)) );
+	assert( !ccs_interval_include(&interval, CCSI(5)) );
+}
+
 int main(int argc, char *argv[]) {
 	ccs_init();
 	test_empty_float();
@@ -219,6 +251,8 @@ int main(int argc, char *argv[]) {
 	test_intersect_int();
 	test_equal_float();
 	test_equal_int();
+	test_interval_include_float();
+	test_interval_include_int();
 	return 0;
 }
 

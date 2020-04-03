@@ -31,7 +31,7 @@ _ccs_distribution_uniform_samples(_ccs_distribution_data_t *data,
                                   size_t                    num_values,
                                   ccs_numeric_t            *values);
 
-_ccs_distribution_ops_t _ccs_distribution_uniform_ops = {
+static _ccs_distribution_ops_t _ccs_distribution_uniform_ops = {
 	{ &_ccs_distribution_del },
 	&_ccs_distribution_uniform_samples,
 	&_ccs_distribution_uniform_get_bounds
@@ -118,12 +118,12 @@ _ccs_distribution_uniform_samples(_ccs_distribution_data_t *data,
 }
 
 ccs_error_t
-_ccs_create_uniform_distribution(ccs_numeric_type_t  data_type,
-                                 ccs_numeric_t       lower,
-                                 ccs_numeric_t       upper,
-                                 ccs_scale_type_t    scale_type,
-                                 ccs_numeric_t       quantization,
-                                 ccs_distribution_t *distribution_ret) {
+ccs_create_uniform_distribution(ccs_numeric_type_t  data_type,
+                                ccs_numeric_t       lower,
+                                ccs_numeric_t       upper,
+                                ccs_scale_type_t    scale_type,
+                                ccs_numeric_t       quantization,
+                                ccs_distribution_t *distribution_ret) {
 	if (!distribution_ret)
 		return -CCS_INVALID_VALUE;
 	if (data_type != CCS_NUM_FLOAT && data_type != CCS_NUM_INTEGER)
@@ -186,7 +186,7 @@ _ccs_create_uniform_distribution(ccs_numeric_type_t  data_type,
 	return CCS_SUCCESS;
 }
 
-extern ccs_error_t
+ccs_error_t
 ccs_uniform_distribution_get_parameters(ccs_distribution_t  distribution,
                                         ccs_numeric_t      *lower,
                                         ccs_numeric_t      *upper) {

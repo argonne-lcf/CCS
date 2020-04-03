@@ -39,8 +39,8 @@ ccs_rng_create(ccs_rng_t *rng_ret) {
 
 static ccs_error_t
 _ccs_rng_del(ccs_object_t object) {
-	gsl_rng_free(object.rng->data->rng);
-	object.rng->data->rng = NULL;
+	gsl_rng_free(((ccs_rng_t)object)->data->rng);
+	((ccs_rng_t)object)->data->rng = NULL;
 	return CCS_SUCCESS;
 }
 
