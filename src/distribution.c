@@ -113,3 +113,13 @@ ccs_distribution_samples(ccs_distribution_t  distribution,
 	_ccs_distribution_ops_t *ops = ccs_distribution_get_ops(distribution);
 	return ops->samples(distribution->data, rng, num_values, values);
 }
+
+extern ccs_error_t
+ccs_create_normal_float_distribution(ccs_float_t         mu,
+                                     ccs_float_t         sigma,
+                                     ccs_scale_type_t    scale,
+                                     ccs_float_t         quantization,
+                                     ccs_distribution_t *distribution_ret) {
+	return ccs_create_normal_distribution(CCS_NUM_FLOAT, mu, sigma, scale,
+                                       CCSF(quantization), distribution_ret);
+}

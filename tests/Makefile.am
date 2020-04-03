@@ -7,7 +7,8 @@ RNG_TESTS = \
 		test_rng \
 		test_interval \
 		test_uniform_distribution \
-		test_normal_distribution
+		test_normal_distribution \
+		test_numerical_hyperparameter
 
 # unit tests
 UNIT_TESTS = \

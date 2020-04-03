@@ -162,11 +162,9 @@ static void test_normal_distribution_int() {
 
 	to_float(samples, num_samples);
 	mean = gsl_stats_mean((double*)samples, 1, num_samples);
-	//fprintf(stderr, "mu: %lf \n", mean);
 	assert( mean < mu + 0.1 );
 	assert( mean > mu - 0.1 );
 	sig    = gsl_stats_sd_m((double*)samples, 1, num_samples, mu);
-	//fprintf(stderr, "sig: %lf \n", sig);
 	assert( sig < sigma + 0.1 );
 	assert( sig > sigma - 0.1 );
 
@@ -210,11 +208,9 @@ static void test_normal_distribution_float() {
 	assert( err == CCS_SUCCESS );
 
 	mean = gsl_stats_mean((double*)samples, 1, num_samples);
-	//fprintf(stderr, "mu: %lf \n", mean);
 	assert( mean < mu + 0.1 );
 	assert( mean > mu - 0.1 );
 	sig    = gsl_stats_sd_m((double*)samples, 1, num_samples, mu);
-	//fprintf(stderr, "sig: %lf \n", sig);
 	assert( sig < sigma + 0.1 );
 	assert( sig > sigma - 0.1 );
 
@@ -261,20 +257,16 @@ static void test_normal_distribution_int_log() {
 	to_float(samples, num_samples);
 	to_log(samples, num_samples);
 	mean = gsl_stats_mean((double*)samples, 1, num_samples);
-	//fprintf(stderr, "mean: %lf \n", mean);
 	// cutoff at 0.0 to have exp(v) >= 1
 	// see https://en.wikipedia.org/wiki/Truncated_normal_distribution
 	alpha = (log(0.5) - mu)/sigma;
 	zee = (1.0 - gsl_cdf_ugaussian_P(alpha));
 	pdfa = gsl_ran_ugaussian_pdf(alpha);
 	tmean = mu + pdfa * sigma / zee;
-	//fprintf(stderr, "tmean: %lf \n", tmean);
 	assert( mean < tmean + 0.1 );
 	assert( mean > tmean - 0.1 );
 	sig    = gsl_stats_sd_m((double*)samples, 1, num_samples, tmean);
-	//fprintf(stderr, "sig: %lf \n", sig);
 	tsigma = sqrt( sigma * sigma * ( 1.0 + alpha * pdfa / zee - ( pdfa * pdfa )/( zee * zee ) ) );
-	//fprintf(stderr, "tsig: %lf \n", tsigma);
 	assert( sig < tsigma + 0.1 );
 	assert( sig > tsigma - 1.1 );
 
@@ -319,11 +311,9 @@ static void test_normal_distribution_float_log() {
 
 	to_log(samples, num_samples);
 	mean = gsl_stats_mean((double*)samples, 1, num_samples);
-	//fprintf(stderr, "mu: %lf \n", mean);
 	assert( mean < mu + 0.1 );
 	assert( mean > mu - 0.1 );
 	sig    = gsl_stats_sd_m((double*)samples, 1, num_samples, mu);
-	//fprintf(stderr, "sig: %lf \n", sig);
 	assert( sig < sigma + 0.1 );
 	assert( sig > sigma - 0.1 );
 
@@ -369,11 +359,9 @@ static void test_normal_distribution_int_quantize() {
 
 	to_float(samples, num_samples);
 	mean = gsl_stats_mean((double*)samples, 1, num_samples);
-	//fprintf(stderr, "mu: %lf \n", mean);
 	assert( mean < mu + 0.1 );
 	assert( mean > mu - 0.1 );
 	sig    = gsl_stats_sd_m((double*)samples, 1, num_samples, mu);
-	//fprintf(stderr, "sig: %lf \n", sig);
 	assert( sig < sigma + 0.1 );
 	assert( sig > sigma - 0.1 );
 
@@ -417,11 +405,9 @@ static void test_normal_distribution_float_quantize() {
 	assert( err == CCS_SUCCESS );
 
 	mean = gsl_stats_mean((double*)samples, 1, num_samples);
-	//fprintf(stderr, "mu: %lf \n", mean);
 	assert( mean < mu + 0.1 );
 	assert( mean > mu - 0.1 );
 	sig    = gsl_stats_sd_m((double*)samples, 1, num_samples, mu);
-	//fprintf(stderr, "sig: %lf \n", sig);
 	assert( sig < sigma + 0.1 );
 	assert( sig > sigma - 0.1 );
 
@@ -469,20 +455,16 @@ static void test_normal_distribution_int_log_quantize() {
 	to_float(samples, num_samples);
 	to_log(samples, num_samples);
 	mean = gsl_stats_mean((double*)samples, 1, num_samples);
-	//fprintf(stderr, "mean: %lf \n", mean);
 	// cutoff at 0.0 to have exp(v) >= 1
 	// see https://en.wikipedia.org/wiki/Truncated_normal_distribution
 	alpha = (log(0.5*quantize) - mu)/sigma;
 	zee = (1.0 - gsl_cdf_ugaussian_P(alpha));
 	pdfa = gsl_ran_ugaussian_pdf(alpha);
 	tmean = mu + pdfa * sigma / zee;
-	//fprintf(stderr, "tmean: %lf \n", tmean);
 	assert( mean < tmean + 0.1 );
 	assert( mean > tmean - 0.1 );
 	sig    = gsl_stats_sd_m((double*)samples, 1, num_samples, tmean);
-	//fprintf(stderr, "sig: %lf \n", sig);
 	tsigma = sqrt( sigma * sigma * ( 1.0 + alpha * pdfa / zee - ( pdfa * pdfa )/( zee * zee ) ) );
-	//fprintf(stderr, "tsig: %lf \n", tsigma);
 	assert( sig < tsigma + 0.1 );
 	assert( sig > tsigma - 1.1 );
 
@@ -529,20 +511,16 @@ static void test_normal_distribution_float_log_quantize() {
 
 	to_log(samples, num_samples);
 	mean = gsl_stats_mean((double*)samples, 1, num_samples);
-	//fprintf(stderr, "mu: %lf \n", mean);
 	// cutoff at log(quantization/2.0) to have quantized(exp(v)) >= quantization
 	// see https://en.wikipedia.org/wiki/Truncated_normal_distribution
 	alpha = (log(quantization*0.5) - mu)/sigma;
 	zee = (1.0 - gsl_cdf_ugaussian_P(alpha));
 	pdfa = gsl_ran_ugaussian_pdf(alpha);
 	tmean = mu + pdfa * sigma / zee;
-	//fprintf(stderr, "tmean: %lf \n", tmean);
 	assert( mean < tmean + 0.1 );
 	assert( mean > tmean - 0.1 );
 	sig    = gsl_stats_sd_m((double*)samples, 1, num_samples, tmean);
-	//fprintf(stderr, "sig: %lf \n", sig);
 	tsigma = sqrt( sigma * sigma * ( 1.0 + alpha * pdfa / zee - ( pdfa * pdfa )/( zee * zee ) ) );
-	//fprintf(stderr, "tsig: %lf \n", tsigma);
 	assert( sig < tsigma + 0.1 );
 	assert( sig > tsigma - 0.1 );
 

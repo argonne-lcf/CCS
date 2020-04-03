@@ -25,15 +25,6 @@ typedef enum ccs_scale_type_e ccs_scale_type_t;
 
 // Distribution
 extern ccs_error_t
-ccs_create_distribution(ccs_distribution_type_t distribution_type,
-                        ccs_numeric_type_t      data_type,
-                        ccs_scale_type_t        scale,
-                        ccs_numeric_t           quantization,
-                        size_t                  num_parameters,
-                        ccs_numeric_t          *parameters,
-                        ccs_distribution_t     *distribution_ret);
-
-extern ccs_error_t
 ccs_create_normal_distribution(ccs_numeric_type_t  data_type,
                                ccs_float_t         mu,
                                ccs_float_t         sigma,
