@@ -18,11 +18,11 @@ typedef enum ccs_hyperparameter_type_e ccs_hyperparameter_type_t;
 // Hyperparameter Interface
 extern ccs_error_t
 _ccs_create_numerical_hyperparameter(const char           *name,
-                                     ccs_data_type_t       data_type,
-                                     ccs_value_t           lower,
-                                     ccs_value_t           upper,
-                                     ccs_value_t           quantization,
-                                     ccs_value_t           default_value,
+                                     ccs_numeric_type_t    data_type,
+                                     ccs_numeric_t         lower,
+                                     ccs_numeric_t         upper,
+                                     ccs_numeric_t         quantization,
+                                     ccs_numeric_t         default_value,
                                      ccs_distribution_t    distribution,
                                      void                 *user_data,
                                      ccs_hyperparameter_t *hyperparameter_ret);

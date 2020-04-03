@@ -25,7 +25,8 @@ struct _ccs_hyperparameter_common_data_s {
 	const char                *name;
 	void                      *user_data;
 	ccs_distribution_t         distribution;
-        ccs_datum_t                default_value;
+	ccs_datum_t                default_value;
+	ccs_bool_t                 oversampling;
 };
 
 typedef struct _ccs_hyperparameter_common_data_s _ccs_hyperparameter_common_data_t;

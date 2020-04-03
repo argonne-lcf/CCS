@@ -5,6 +5,7 @@
 #include <stdint.h>
 #include <limits.h>
 #include "ccs/base.h"
+#include "ccs/interval.h"
 #include "ccs/rng.h"
 #include "ccs/distribution.h"
 #include "ccs/hyperparameter.h"

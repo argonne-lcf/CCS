@@ -5,6 +5,7 @@ AM_LDFLAGS = ../src/libcconfigspace.la
 
 RNG_TESTS = \
 		test_rng \
+		test_interval \
 		test_uniform_distribution \
 		test_normal_distribution
 

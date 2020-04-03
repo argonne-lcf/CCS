@@ -6,19 +6,18 @@ static void test_create_uniform_distribution() {
 	ccs_distribution_t      distrib = NULL;
 	ccs_error_t             err = CCS_SUCCESS;
 	int32_t                 refcount;
-	size_t                  num_parameters;
 	ccs_object_type_t       otype;
 	ccs_distribution_type_t dtype;
 	ccs_scale_type_t        stype;
-	ccs_data_type_t         data_type;
-	ccs_datum_t             parameters[2], quantization, lower, upper;
-	ccs_bool_t              lower_included, upper_included;
+	ccs_numeric_type_t      data_type;
+	ccs_numeric_t           quantization, lower, upper;
+	ccs_interval_t          interval;
 	ccs_int_t               l = -10L;
 	ccs_int_t               u = 11L;
 	ccs_int_t               q = 0L;
 
 	err = ccs_create_uniform_distribution(
-		CCS_INTEGER,
+		CCS_NUM_INTEGER,
 		l,
 		u,
 		CCS_LINEAR,
@@ -36,7 +35,7 @@ static void test_create_uniform_distribution() {
 
 	err = ccs_distribution_get_data_type(distrib, &data_type);
 	assert( err == CCS_SUCCESS );
-	assert( data_type == CCS_INTEGER );
+	assert( data_type == CCS_NUM_INTEGER );
 
 	err = ccs_distribution_get_scale_type(distrib, &stype);
 	assert( err == CCS_SUCCESS );
@@ -44,36 +43,20 @@ static void test_create_uniform_distribution() {
 
 	err = ccs_distribution_get_quantization(distrib, &quantization);
 	assert( err == CCS_SUCCESS );
-	assert( quantization.type == CCS_INTEGER );
-	assert( quantization.value.i == q );
+	assert( quantization.i == q );
 
-	err = ccs_distribution_get_num_parameters(distrib, &num_parameters);
+        err = ccs_distribution_get_bounds(distrib, &interval);
 	assert( err == CCS_SUCCESS );
-	assert( num_parameters == 2 );
-
-	err = ccs_distribution_get_parameters(distrib, 2, parameters, &num_parameters);
-	assert( err == CCS_SUCCESS );
-	assert( num_parameters == 2 );
-	assert( parameters[0].type == CCS_INTEGER );
-	assert( parameters[0].value.i == l );
-	assert( parameters[1].type == CCS_INTEGER );
-	assert( parameters[1].value.i == u );
-
-        err = ccs_distribution_get_bounds(distrib, &lower, &lower_included, &upper, &upper_included);
-	assert( err == CCS_SUCCESS );
-	assert( lower.type == CCS_INTEGER );
-	assert( lower.value.i == l );
-	assert( lower_included == CCS_TRUE );
-	assert( upper.type == CCS_INTEGER );
-	assert( upper.value.i == u );
-	assert( upper_included == CCS_FALSE );
+	assert( interval.type == CCS_NUM_INTEGER );
+	assert( interval.lower.i == l );
+	assert( interval.lower_included == CCS_TRUE );
+	assert( interval.upper.i == u );
+	assert( interval.upper_included == CCS_FALSE );
 
 	err = ccs_uniform_distribution_get_parameters(distrib, &lower, &upper);
 	assert( err == CCS_SUCCESS );
-	assert( lower.type == CCS_INTEGER );
-	assert( lower.value.i == l );
-	assert( upper.type == CCS_INTEGER );
-	assert( upper.value.i == u );
+	assert( lower.i == l );
+	assert( upper.i == u );
 
 	err = ccs_object_get_refcount(distrib, &refcount);
 	assert( err == CCS_SUCCESS );
@@ -89,7 +72,7 @@ static void test_create_uniform_distribution_errors() {
 
 	// check wrong data_type
 	err = ccs_create_uniform_distribution(
-		CCS_OBJECT,
+		(ccs_numeric_type_t)2,
 		-10L,
 		11L,
 		CCS_LINEAR,
@@ -99,7 +82,7 @@ static void test_create_uniform_distribution_errors() {
 
 	// check wrong data_type
 	err = ccs_create_uniform_distribution(
-		CCS_INTEGER,
+		CCS_NUM_INTEGER,
 		-10L,
 		11L,
 		(ccs_scale_type_t)3,
@@ -109,7 +92,7 @@ static void test_create_uniform_distribution_errors() {
 
 	// check wrong bounds
 	err = ccs_create_uniform_distribution(
-		CCS_INTEGER,
+		CCS_NUM_INTEGER,
 		10L,
 		-11L,
 		CCS_LINEAR,
@@ -119,7 +102,7 @@ static void test_create_uniform_distribution_errors() {
 
 	// check wrong quantization
 	err = ccs_create_uniform_distribution(
-		CCS_INTEGER,
+		CCS_NUM_INTEGER,
 		-10L,
 		11L,
 		CCS_LINEAR,
@@ -129,7 +112,7 @@ static void test_create_uniform_distribution_errors() {
 
 	// check wrong pointer
 	err = ccs_create_uniform_distribution(
-		CCS_INTEGER,
+		CCS_NUM_INTEGER,
 		10L,
 		-11L,
 		CCS_LINEAR,
@@ -147,12 +130,12 @@ static void test_uniform_distribution_int() {
 	const size_t       num_samples = 100;
 	const ccs_int_t    lower = -10;
 	const ccs_int_t    upper = 11;
-	ccs_value_t        samples[num_samples];
+	ccs_numeric_t      samples[num_samples];
 
 	err = ccs_rng_create(&rng);
 	assert( err == CCS_SUCCESS );
 	err = ccs_create_uniform_distribution(
-		CCS_INTEGER,
+		CCS_NUM_INTEGER,
 		lower,
 		upper,
 		CCS_LINEAR,
@@ -181,12 +164,12 @@ static void test_uniform_distribution_int_log() {
 	const size_t       num_samples = 1000;
 	const ccs_int_t    lower = 1;
 	const ccs_int_t    upper = 100;
-	ccs_value_t        samples[num_samples];
+	ccs_numeric_t      samples[num_samples];
 
 	err = ccs_rng_create(&rng);
 	assert( err == CCS_SUCCESS );
 	err = ccs_create_uniform_distribution(
-		CCS_INTEGER,
+		CCS_NUM_INTEGER,
 		lower,
 		upper,
 		CCS_LOGARITHMIC,
@@ -216,12 +199,12 @@ static void test_uniform_distribution_int_log_quantize() {
 	const ccs_int_t    lower = 1;
 	const ccs_int_t    upper = 101;
 	const ccs_int_t    quantize = 2;
-	ccs_value_t        samples[num_samples];
+	ccs_numeric_t      samples[num_samples];
 
 	err = ccs_rng_create(&rng);
 	assert( err == CCS_SUCCESS );
 	err = ccs_create_uniform_distribution(
-		CCS_INTEGER,
+		CCS_NUM_INTEGER,
 		lower,
 		upper,
 		CCS_LOGARITHMIC,
@@ -252,12 +235,12 @@ static void test_uniform_distribution_int_quantize() {
 	const ccs_int_t    lower = -10;
 	const ccs_int_t    upper = 12;
 	const ccs_int_t    quantize = 2;
-	ccs_value_t        samples[num_samples];
+	ccs_numeric_t      samples[num_samples];
 
 	err = ccs_rng_create(&rng);
 	assert( err == CCS_SUCCESS );
 	err = ccs_create_uniform_distribution(
-		CCS_INTEGER,
+		CCS_NUM_INTEGER,
 		lower,
 		upper,
 		CCS_LINEAR,
@@ -287,12 +270,12 @@ static void test_uniform_distribution_float() {
 	const size_t       num_samples = 100;
 	const ccs_float_t  lower = -10;
 	const ccs_float_t  upper = 11;
-	ccs_value_t        samples[num_samples];
+	ccs_numeric_t      samples[num_samples];
 
 	err = ccs_rng_create(&rng);
 	assert( err == CCS_SUCCESS );
 	err = ccs_create_uniform_distribution(
-		CCS_FLOAT,
+		CCS_NUM_FLOAT,
 		lower,
 		upper,
 		CCS_LINEAR,
@@ -321,12 +304,12 @@ static void test_uniform_distribution_float_log() {
 	const size_t       num_samples = 1000;
 	const ccs_float_t  lower = 1;
 	const ccs_float_t  upper = 100;
-	ccs_value_t        samples[num_samples];
+	ccs_numeric_t      samples[num_samples];
 
 	err = ccs_rng_create(&rng);
 	assert( err == CCS_SUCCESS );
 	err = ccs_create_uniform_distribution(
-		CCS_FLOAT,
+		CCS_NUM_FLOAT,
 		lower,
 		upper,
 		CCS_LOGARITHMIC,
@@ -356,12 +339,12 @@ static void test_uniform_distribution_float_log_quantize() {
 	const ccs_float_t  lower = 1;
 	const ccs_float_t  upper = 101;
 	const ccs_float_t  quantize = 2;
-	ccs_value_t        samples[num_samples];
+	ccs_numeric_t      samples[num_samples];
 
 	err = ccs_rng_create(&rng);
 	assert( err == CCS_SUCCESS );
 	err = ccs_create_uniform_distribution(
-		CCS_FLOAT,
+		CCS_NUM_FLOAT,
 		lower,
 		upper,
 		CCS_LOGARITHMIC,
@@ -391,12 +374,12 @@ static void test_uniform_distribution_float_quantize() {
 	const ccs_float_t  lower = -10;
 	const ccs_float_t  upper = 12;
 	const ccs_float_t  quantize = 2;
-	ccs_value_t        samples[num_samples];
+	ccs_numeric_t      samples[num_samples];
 
 	err = ccs_rng_create(&rng);
 	assert( err == CCS_SUCCESS );
 	err = ccs_create_uniform_distribution(
-		CCS_FLOAT,
+		CCS_NUM_FLOAT,
 		lower,
 		upper,
 		CCS_LINEAR,

@@ -36,6 +36,9 @@ enum ccs_error_e {
 	CCS_INVALID_VALUE,
 	CCS_INVALID_TYPE,
 	CCS_INVALID_SCALE,
+	CCS_TYPE_NOT_COMPARABLE,
+	CCS_INVALID_BOUNDS,
+	CCS_SAMPLING_UNSUCCESSFUL,
 	CCS_ENOMEM,
 	CCS_ERROR_MAX,
 	CCS_ERROR_FORCE_32BIT = INT_MAX
@@ -70,6 +73,13 @@ enum ccs_data_type_e {
 
 typedef enum ccs_data_type_e ccs_data_type_t;
 
+enum ccs_numeric_type_e {
+	CCS_NUM_INTEGER = CCS_INTEGER,
+	CCS_NUM_FLOAT = CCS_FLOAT
+};
+
+typedef enum ccs_numeric_type_e ccs_numeric_type_t;
+
 union ccs_object_u {
 	void                      *ptr;
 	ccs_rng_t                  rng;
@@ -95,6 +105,17 @@ union ccs_object_u {
 
 typedef union ccs_object_u ccs_object_t;
 
+union ccs_numeric_u {
+	ccs_float_t   f;
+	ccs_int_t     i;
+#ifdef __cplusplus
+	ccs_numeric_u() : i(0L) {}
+	ccs_numeric_u(ccs_float_t v) : f(v) {}
+	ccs_numeric_u(ccs_int_t v) : i(v) {}
+#endif
+};
+
+typedef union ccs_numeric_u ccs_numeric_t;
 
 union ccs_value_u {
 	ccs_float_t   f;
@@ -112,6 +133,15 @@ union ccs_value_u {
 
 typedef union ccs_value_u ccs_value_t;
 
+struct ccs_interval_s {
+	ccs_numeric_type_t type;
+	ccs_numeric_t   lower;
+	ccs_numeric_t   upper;
+	ccs_bool_t      lower_included;
+	ccs_bool_t      upper_included;
+};
+
+typedef struct ccs_interval_s ccs_interval_t;
 
 struct ccs_datum_u {
 	ccs_value_t value;
