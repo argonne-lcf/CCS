@@ -26,6 +26,7 @@ struct _ccs_hyperparameter_common_data_s {
 	void                      *user_data;
 	ccs_distribution_t         distribution;
 	ccs_datum_t                default_value;
+	ccs_interval_t             interval;
 	ccs_bool_t                 oversampling;
 };
 

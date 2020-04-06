@@ -17,6 +17,7 @@ libcconfigspace_la_SOURCES = \
 			distribution_roulette.c \
 			hyperparameter.c \
 			hyperparameter_internal.h \
-			hyperparameter_numerical.c
+			hyperparameter_numerical.c \
+			hyperparameter_categorical.c
 
 @VALGRIND_CHECK_RULES@

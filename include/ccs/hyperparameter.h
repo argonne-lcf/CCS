@@ -29,11 +29,11 @@ ccs_create_numerical_hyperparameter(const char           *name,
 
 extern ccs_error_t
 ccs_create_categorical_hyperparameter(const char           *name,
-                                      void                 *user_data,
                                       size_t                num_possible_values,
                                       ccs_datum_t          *possible_values,
-                                      ccs_datum_t           default_value,
-                                      ccs_datum_t          *weights,
+                                      size_t                default_value_index,
+                                      ccs_distribution_t    distribution,
+                                      void                 *user_data,
                                       ccs_hyperparameter_t *hyperparameter_ret);
 
 extern ccs_error_t
@@ -63,6 +63,10 @@ ccs_hyperparameter_get_user_data(ccs_hyperparameter_t   hyperparameter,
 extern ccs_error_t
 ccs_hyperparameter_get_distribution(ccs_hyperparameter_t  hyperparameter,
                                     ccs_distribution_t   *distribution);
+
+extern ccs_error_t
+ccs_hyperparameter_set_distribution(ccs_hyperparameter_t  hyperparameter,
+                                    ccs_distribution_t    distribution);
 //   Sampling Interface
 extern ccs_error_t
 ccs_hyperparameter_sample(ccs_hyperparameter_t  hyperparameter,

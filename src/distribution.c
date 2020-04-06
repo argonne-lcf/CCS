@@ -114,7 +114,7 @@ ccs_distribution_samples(ccs_distribution_t  distribution,
 	return ops->samples(distribution->data, rng, num_values, values);
 }
 
-extern ccs_error_t
+ccs_error_t
 ccs_create_normal_float_distribution(ccs_float_t         mu,
                                      ccs_float_t         sigma,
                                      ccs_scale_type_t    scale,
@@ -123,3 +123,36 @@ ccs_create_normal_float_distribution(ccs_float_t         mu,
 	return ccs_create_normal_distribution(CCS_NUM_FLOAT, mu, sigma, scale,
                                        CCSF(quantization), distribution_ret);
 }
+
+ccs_error_t
+ccs_create_normal_int_distribution(ccs_float_t         mu,
+                                   ccs_float_t         sigma,
+                                   ccs_scale_type_t    scale,
+                                   ccs_int_t           quantization,
+                                   ccs_distribution_t *distribution_ret) {
+	return ccs_create_normal_distribution(CCS_NUM_INTEGER, mu, sigma, scale,
+	                                      CCSI(quantization), distribution_ret);
+}
+
+ccs_error_t
+ccs_create_uniform_float_distribution(ccs_float_t         lower,
+                                      ccs_float_t         upper,
+                                      ccs_scale_type_t    scale,
+                                      ccs_float_t         quantization,
+                                      ccs_distribution_t *distribution_ret) {
+	return ccs_create_uniform_distribution(CCS_NUM_FLOAT, CCSF(lower), CCSF(upper),
+	                                       scale, CCSF(quantization),
+	                                       distribution_ret);
+}
+
+ccs_error_t
+ccs_create_uniform_int_distribution(ccs_int_t           lower,
+                                    ccs_int_t           upper,
+                                    ccs_scale_type_t    scale,
+                                    ccs_int_t           quantization,
+                                    ccs_distribution_t *distribution_ret) {
+	return ccs_create_uniform_distribution(CCS_NUM_INTEGER, CCSI(lower), CCSI(upper),
+	                                       scale, CCSI(quantization),
+	                                       distribution_ret);
+}
+

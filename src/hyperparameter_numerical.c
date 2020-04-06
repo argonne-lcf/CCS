@@ -4,7 +4,6 @@
 
 struct _ccs_hyperparameter_numerical_data_s {
 	_ccs_hyperparameter_common_data_t common_data;
-	ccs_interval_t                    interval;
 	ccs_numeric_t                     quantization;
 };
 typedef struct _ccs_hyperparameter_numerical_data_s _ccs_hyperparameter_numerical_data_t;
@@ -16,43 +15,37 @@ _ccs_hyperparameter_numerical_del(ccs_object_t o) {
 	return ccs_release_object(data->common_data.distribution);
 }
 
-static inline
-ccs_bool_t _check_value(_ccs_hyperparameter_numerical_data_t *d,
-                        ccs_numeric_t value) {
-	return ccs_interval_include(&(d->interval), value);
-}
-
 static ccs_error_t
 _ccs_hyperparameter_numerical_samples(_ccs_hyperparameter_data_t *data,
                                      ccs_rng_t                   rng,
                                      size_t                      num_values,
                                      ccs_datum_t                *values) {
 	_ccs_hyperparameter_numerical_data_t *d = (_ccs_hyperparameter_numerical_data_t *)data;
+	ccs_numeric_type_t type = d->common_data.interval.type;
+	ccs_interval_t *interval = &(d->common_data.interval);
 	ccs_error_t err;
-	ccs_numeric_t *vs = (ccs_numeric_t *)values;
+	ccs_numeric_t *vs = (ccs_numeric_t *)values + num_values;
 	err = ccs_distribution_samples(d->common_data.distribution,
 	                               rng, num_values, vs);
 	if (err)
 		return err;
 	if (!d->common_data.oversampling) {
-		if (d->interval.type == CCS_NUM_FLOAT) {
+		if (type == CCS_NUM_FLOAT) {
 			for(size_t i = 0; i < num_values; i++)
-				values[num_values - 1 - i].value.f =
-				    vs[num_values - 1 - i].f;
+				values[i].value.f = vs[i].f;
 		} else {
 			for(size_t i = 0; i < num_values; i++)
-				values[num_values - 1 - i].value.i =
-				    vs[num_values - 1 - i].i;
+				values[i].value.i = vs[i].i;
 		}
 	} else {
 		size_t found = 0;
-		if (d->interval.type == CCS_NUM_FLOAT) {
+		if (type == CCS_NUM_FLOAT) {
 			for(size_t i = 0; i < num_values; i++)
-				if (_check_value(d, vs[i]))
+				if (ccs_interval_include(interval, vs[i]))
 					values[found++].value.f = vs[i].f;
 		} else {
 			for(size_t i = 0; i < num_values; i++)
-				if (_check_value(d, vs[i]))
+				if (ccs_interval_include(interval, vs[i]))
 					values[found++].value.i = vs[i].i;
 		}
 		vs = NULL;
@@ -64,13 +57,13 @@ _ccs_hyperparameter_numerical_samples(_ccs_hyperparameter_data_t *data,
 				return -CCS_ENOMEM;
 			err = ccs_distribution_samples(d->common_data.distribution,
 			                               rng, buff_sz, vs);
-			if (d->interval.type == CCS_NUM_FLOAT) {
+			if (type == CCS_NUM_FLOAT) {
 				for(size_t i = 0; i < buff_sz && found < num_values; i++)
-					if (_check_value(d, vs[i]))
+					if (ccs_interval_include(interval, vs[i]))
 						values[found++].value.f = vs[i].f;
 			} else {
 				for(size_t i = 0; i < buff_sz && found < num_values; i++)
-					if (_check_value(d, vs[i]))
+					if (ccs_interval_include(interval, vs[i]))
 						values[found++].value.i = vs[i].i;
 			}
 			coeff <<= 1;
@@ -80,7 +73,7 @@ _ccs_hyperparameter_numerical_samples(_ccs_hyperparameter_data_t *data,
 		}
 	}
 	for (size_t i = 0; i < num_values; i++)
-		values[i].type = (ccs_data_type_t)(d->interval.type);
+		values[i].type = (ccs_data_type_t)type;
 	return CCS_SUCCESS;
 }
 
@@ -164,8 +157,8 @@ ccs_create_numerical_hyperparameter(const char           *name,
 		hyperparam_data->common_data.default_value.type = CCS_INTEGER;
 		hyperparam_data->common_data.default_value.value.i = default_value.i;
 	}
+	hyperparam_data->common_data.interval = interval;
 	hyperparam_data->common_data.oversampling = oversampling;
-	hyperparam_data->interval = interval;
 	hyperparam_data->quantization = quantization;
 	hyperparam->data = (_ccs_hyperparameter_data_t *)hyperparam_data;
 	*hyperparameter_ret = hyperparam;

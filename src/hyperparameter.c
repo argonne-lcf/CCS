@@ -56,10 +56,34 @@ ccs_hyperparameter_get_distribution(ccs_hyperparameter_t  hyperparameter,
 	if (!hyperparameter || !hyperparameter->data)
 		return -CCS_INVALID_OBJECT;
 	if (!distribution)
-		return -CCS_INVALID_OBJECT;
+		return -CCS_INVALID_VALUE;
 	*distribution = ((_ccs_hyperparameter_common_data_t *)(hyperparameter->data))->distribution;
 	return CCS_SUCCESS;
 } 
+
+ccs_error_t
+ccs_hyperparameter_set_distribution(ccs_hyperparameter_t  hyperparameter,
+                                    ccs_distribution_t    distribution) {
+	if (!hyperparameter || !hyperparameter->data)
+		return -CCS_INVALID_OBJECT;
+	if (!distribution)
+		return -CCS_INVALID_OBJECT;
+	_ccs_hyperparameter_common_data_t * d = ((_ccs_hyperparameter_common_data_t *)(hyperparameter->data));
+	ccs_error_t err;
+	ccs_bool_t oversampling;
+
+	err = ccs_distribution_check_oversampling(distribution, &(d->interval),
+	                                          &oversampling);
+	if (err)
+		return err;
+	err = ccs_release_object(d->distribution);
+	if (err)
+		return err;
+	err = ccs_retain_object(distribution);
+	d->distribution = distribution;
+	d->oversampling = oversampling;
+	return CCS_SUCCESS;
+}
 
 ccs_error_t
 ccs_hyperparameter_sample(ccs_hyperparameter_t  hyperparameter,
