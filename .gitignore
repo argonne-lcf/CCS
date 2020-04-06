@@ -124,5 +124,5 @@ m4/lt~obsolete.m4
 Makefile
 
 #Misc
-build
+build*
 src/config.h.in

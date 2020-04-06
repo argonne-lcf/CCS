@@ -14,6 +14,7 @@ libcconfigspace_la_SOURCES = \
 			distribution_internal.h \
 			distribution_uniform.c \
 			distribution_normal.c \
+			distribution_roulette.c \
 			hyperparameter.c \
 			hyperparameter_internal.h \
 			hyperparameter_numerical.c

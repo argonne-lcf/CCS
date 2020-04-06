@@ -188,21 +188,21 @@ ccs_create_uniform_distribution(ccs_numeric_type_t  data_type,
 
 ccs_error_t
 ccs_uniform_distribution_get_parameters(ccs_distribution_t  distribution,
-                                        ccs_numeric_t      *lower,
-                                        ccs_numeric_t      *upper) {
+                                        ccs_numeric_t      *lower_ret,
+                                        ccs_numeric_t      *upper_ret) {
 	if (!distribution || distribution->obj.type != CCS_DISTRIBUTION)
 		return -CCS_INVALID_OBJECT;
 	if (!distribution->data || ((_ccs_distribution_common_data_t*)distribution->data)->type != CCS_UNIFORM)
 		return -CCS_INVALID_OBJECT;
-	if (!lower && !upper)
+	if (!lower_ret && !upper_ret)
 		return -CCS_INVALID_VALUE;
 	_ccs_distribution_uniform_data_t * data = (_ccs_distribution_uniform_data_t *)distribution->data;
 
-	if (lower) {
-		*lower = data->lower;
+	if (lower_ret) {
+		*lower_ret = data->lower;
 	}
-	if (upper) {
-		*upper = data->upper;
+	if (upper_ret) {
+		*upper_ret = data->upper;
 	}
 	return CCS_SUCCESS;
 }

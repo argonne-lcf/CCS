@@ -8,6 +8,7 @@ extern "C" {
 enum ccs_distribution_type_e {
 	CCS_UNIFORM,
 	CCS_NORMAL,
+	CCS_ROULETTE,
 	CCS_DISTRIBUTION_TYPE_MAX,
 	CCS_DISTRIBUTION_TYPE_FORCE_32BIT = INT_MAX
 };
@@ -68,6 +69,11 @@ ccs_create_uniform_float_distribution(ccs_float_t         lower,
                                       ccs_float_t         quantization,
                                       ccs_distribution_t *distribution_ret);
 
+extern ccs_error_t
+ccs_create_roulette_distribution(size_t              num_areas,
+                                 ccs_float_t        *areas,
+                                 ccs_distribution_t *distribution_ret);
+
 //   Accessors
 extern ccs_error_t
 ccs_distribution_get_type(ccs_distribution_t       distribution,
@@ -101,8 +107,17 @@ ccs_normal_distribution_get_parameters(ccs_distribution_t  distribution,
 
 extern ccs_error_t
 ccs_uniform_distribution_get_parameters(ccs_distribution_t  distribution,
-                                        ccs_numeric_t      *lower,
-                                        ccs_numeric_t      *upper);
+                                        ccs_numeric_t      *lower_ret,
+                                        ccs_numeric_t      *upper_ret);
+
+extern ccs_error_t
+ccs_roulette_distribution_get_num_areas(ccs_distribution_t  distribution,
+                                        size_t             *num_areas_ret);
+
+extern ccs_error_t
+ccs_roulette_distribution_get_areas(ccs_distribution_t  distribution,
+                                    size_t              num_areas,
+                                    ccs_float_t        *areas);
 
 //   Sampling Interface
 extern ccs_error_t
