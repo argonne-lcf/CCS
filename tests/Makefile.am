@@ -10,7 +10,8 @@ RNG_TESTS = \
 		test_normal_distribution \
 		test_roulette_distribution \
 		test_numerical_hyperparameter \
-		test_categorical_hyperparameter
+		test_categorical_hyperparameter \
+		test_ordinal_hyperparameter
 
 # unit tests
 UNIT_TESTS = \

@@ -37,11 +37,19 @@ ccs_create_categorical_hyperparameter(const char           *name,
                                       ccs_hyperparameter_t *hyperparameter_ret);
 
 extern ccs_error_t
-ccs_create_ordinal_hyperparameters(const char           *name,
-                                   void                 *user_data,
-                                   size_t                num_possible_values,
-                                   ccs_datum_t          *possible_values,
-                                   ccs_hyperparameter_t *hyperparameter_ret);
+ccs_create_ordinal_hyperparameter(const char           *name,
+                                  size_t                num_possible_values,
+                                  ccs_datum_t          *possible_values,
+                                  size_t                default_value_index,
+                                  ccs_distribution_t    distribution,
+                                  void                 *user_data,
+                                  ccs_hyperparameter_t *hyperparameter_ret);
+
+extern ccs_error_t
+ccs_ordinal_hyperparameter_compare_values(ccs_hyperparameter_t  hyperparameter,
+                                          ccs_datum_t           value1,
+                                          ccs_datum_t           value2,
+                                          ccs_int_t            *comp_ret);
 
 //   Accessors
 

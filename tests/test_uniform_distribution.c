@@ -72,7 +72,7 @@ static void test_create_uniform_distribution_errors() {
 
 	// check wrong data_type
 	err = ccs_create_uniform_distribution(
-		(ccs_numeric_type_t)2,
+		(ccs_numeric_type_t)CCS_STRING,
 		CCSI(-10),
 		CCSI(11),
 		CCS_LINEAR,

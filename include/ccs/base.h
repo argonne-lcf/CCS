@@ -62,20 +62,22 @@ enum ccs_object_type_e {
 typedef enum ccs_object_type_e ccs_object_type_t;
 
 enum ccs_data_type_e {
+	CCS_NONE,
 	CCS_INTEGER,
 	CCS_FLOAT,
 	CCS_STRING,
 	CCS_OBJECT,
-	CCS_NONE,
 	CCS_DATA_TYPE_MAX,
-	CCS_DATA_TYPE_FORCE_32BIT = INT_MAX
+	CCS_DATA_TYPE_FORCE_64BIT = INT64_MAX
 };
 
 typedef enum ccs_data_type_e ccs_data_type_t;
 
 enum ccs_numeric_type_e {
 	CCS_NUM_INTEGER = CCS_INTEGER,
-	CCS_NUM_FLOAT = CCS_FLOAT
+	CCS_NUM_FLOAT = CCS_FLOAT,
+	CCS_NUM_TYPE_MAX,
+	CCS_NUM_TYPE_FORCE_64BIT = INT64_MAX
 };
 
 typedef enum ccs_numeric_type_e ccs_numeric_type_t;
@@ -100,14 +102,14 @@ typedef union ccs_numeric_u ccs_numeric_t;
 #define CCSF(v) v
 #define CCSI(v) v
 #else
-#define CCSF(v) ( (ccs_numeric_t){ .f = v })
-#define CCSI(v) ( (ccs_numeric_t){ .i = v })
+#define CCSF(v) ((ccs_numeric_t){ .f = v })
+#define CCSI(v) ((ccs_numeric_t){ .i = v })
 #endif
 
 union ccs_value_u {
 	ccs_float_t   f;
 	ccs_int_t     i;
-	char         *s;
+	const char   *s;
 	ccs_object_t  o;
 #ifdef __cplusplus
 	ccs_value_u() : i(0L) {}
@@ -138,6 +140,10 @@ struct ccs_datum_u {
 };
 
 typedef struct ccs_datum_u ccs_datum_t;
+
+extern const ccs_datum_t ccs_none;
+
+#define CCS_NONE_VAL {{0}, CCS_NONE}
 
 extern ccs_error_t
 ccs_init();

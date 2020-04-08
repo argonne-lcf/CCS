@@ -2,6 +2,8 @@
 #include <stdlib.h>
 #include <gsl/gsl_rng.h>
 
+const ccs_datum_t ccs_none = CCS_NONE_VAL;
+
 ccs_error_t
 ccs_init() {
 	gsl_rng_env_setup();
