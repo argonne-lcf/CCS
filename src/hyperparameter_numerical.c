@@ -10,26 +10,34 @@ typedef struct _ccs_hyperparameter_numerical_data_s _ccs_hyperparameter_numerica
 
 static ccs_error_t
 _ccs_hyperparameter_numerical_del(ccs_object_t o) {
-	ccs_hyperparameter_t d = (ccs_hyperparameter_t)o;
-	_ccs_hyperparameter_numerical_data_t *data = (_ccs_hyperparameter_numerical_data_t *)(d->data);
-	return ccs_release_object(data->common_data.distribution);
+	(void)o;
+	return CCS_SUCCESS;
 }
 
 static ccs_error_t
 _ccs_hyperparameter_numerical_samples(_ccs_hyperparameter_data_t *data,
+                                      ccs_distribution_t          distribution,
                                       ccs_rng_t                   rng,
                                       size_t                      num_values,
                                       ccs_datum_t                *values) {
-	_ccs_hyperparameter_numerical_data_t *d = (_ccs_hyperparameter_numerical_data_t *)data;
+	_ccs_hyperparameter_numerical_data_t *d =
+	    (_ccs_hyperparameter_numerical_data_t *)data;
 	ccs_numeric_type_t type = d->common_data.interval.type;
 	ccs_interval_t *interval = &(d->common_data.interval);
 	ccs_error_t err;
 	ccs_numeric_t *vs = (ccs_numeric_t *)values + num_values;
-	err = ccs_distribution_samples(d->common_data.distribution,
+        ccs_bool_t oversampling;
+
+	err = ccs_distribution_check_oversampling(distribution,
+	                                          interval,
+	                                          &oversampling);
+	if (err)
+		return err;
+	err = ccs_distribution_samples(distribution,
 	                               rng, num_values, vs);
 	if (err)
 		return err;
-	if (!d->common_data.oversampling) {
+	if (!oversampling) {
 		if (type == CCS_NUM_FLOAT) {
 			for(size_t i = 0; i < num_values; i++)
 				values[i].value.f = vs[i].f;
@@ -55,8 +63,8 @@ _ccs_hyperparameter_numerical_samples(_ccs_hyperparameter_data_t *data,
 			vs = (ccs_numeric_t *)malloc(sizeof(ccs_numeric_t)*buff_sz);
 			if (!vs)
 				return -CCS_ENOMEM;
-			err = ccs_distribution_samples(d->common_data.distribution,
-			                               rng, buff_sz, vs);
+			err = ccs_distribution_samples(distribution, rng,
+			                               buff_sz, vs);
 			if (type == CCS_NUM_FLOAT) {
 				for(size_t i = 0; i < buff_sz && found < num_values; i++)
 					if (ccs_interval_include(interval, vs[i]))
@@ -102,7 +110,6 @@ ccs_create_numerical_hyperparameter(const char           *name,
                                     ccs_numeric_t         upper,
                                     ccs_numeric_t         quantization,
                                     ccs_numeric_t         default_value,
-                                    ccs_distribution_t    distribution,
                                     void                 *user_data,
                                     ccs_hyperparameter_t *hyperparameter_ret) {
 	if (!hyperparameter_ret || !name)
@@ -134,27 +141,6 @@ ccs_create_numerical_hyperparameter(const char           *name,
 	interval.lower_included = CCS_TRUE;
 	interval.upper_included = CCS_FALSE;
 
-	ccs_error_t err;
-	ccs_bool_t oversampling;
-	if (!distribution) {
-		err = ccs_create_uniform_distribution(data_type, lower, upper,
-                                                      CCS_LINEAR, quantization,
-                                                      &distribution);
-		if (err) {
-			free((void *)mem);
-			return err;
-		}
-		oversampling = CCS_FALSE;
-	} else {
-		err = ccs_distribution_check_oversampling(distribution, &interval,
-		                                          &oversampling);
-		if (err) {
-			free((void *)mem);
-			return err;
-		}
-		ccs_retain_object(distribution);
-	}
- 
 	ccs_hyperparameter_t hyperparam = (ccs_hyperparameter_t)mem;
 	_ccs_object_init(&(hyperparam->obj), CCS_HYPERPARAMETER, (_ccs_object_ops_t *)&_ccs_hyperparameter_numerical_ops);
 	_ccs_hyperparameter_numerical_data_t *hyperparam_data = (_ccs_hyperparameter_numerical_data_t *)(mem + sizeof(struct _ccs_hyperparameter_s));
@@ -162,7 +148,6 @@ ccs_create_numerical_hyperparameter(const char           *name,
 	hyperparam_data->common_data.name = (char *)(mem + sizeof(struct _ccs_hyperparameter_s) + sizeof(_ccs_hyperparameter_numerical_data_t));
 	strcpy((char *)hyperparam_data->common_data.name, name);
 	hyperparam_data->common_data.user_data = user_data;
-	hyperparam_data->common_data.distribution = distribution;
 	if (data_type == CCS_NUM_FLOAT) {
 		hyperparam_data->common_data.default_value.type = CCS_FLOAT;
 		hyperparam_data->common_data.default_value.value.f = default_value.f;
@@ -171,7 +156,6 @@ ccs_create_numerical_hyperparameter(const char           *name,
 		hyperparam_data->common_data.default_value.value.i = default_value.i;
 	}
 	hyperparam_data->common_data.interval = interval;
-	hyperparam_data->common_data.oversampling = oversampling;
 	hyperparam_data->quantization = quantization;
 	hyperparam->data = (_ccs_hyperparameter_data_t *)hyperparam_data;
 	*hyperparameter_ret = hyperparam;

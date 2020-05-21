@@ -99,11 +99,12 @@ _ccs_hyperparameter_ordinal_del(ccs_object_t o) {
 	for (ccs_int_t i = 0; i < data->num_possible_values; i++) {
 		HASH_DELETE(hh, data->hash, data->possible_values + i);
 	}
-	return ccs_release_object(data->common_data.distribution);
+	return CCS_SUCCESS;
 }
 
 static ccs_error_t
 _ccs_hyperparameter_ordinal_samples(_ccs_hyperparameter_data_t *data,
+                                    ccs_distribution_t          distribution,
                                     ccs_rng_t                   rng,
                                     size_t                      num_values,
                                     ccs_datum_t                *values) {
@@ -111,11 +112,17 @@ _ccs_hyperparameter_ordinal_samples(_ccs_hyperparameter_data_t *data,
 	    (_ccs_hyperparameter_ordinal_data_t *)data;
 	ccs_error_t err;
 	ccs_int_t *vs = (ccs_int_t *)values + num_values;
-	err = ccs_distribution_samples(d->common_data.distribution,
-	                               rng, num_values, (ccs_numeric_t *)vs);
+        ccs_bool_t oversampling;
+	err = ccs_distribution_check_oversampling(distribution,
+	                                          &(d->common_data.interval),
+	                                          &oversampling);
 	if (err)
 		return err;
-	if (!d->common_data.oversampling) {
+	err = ccs_distribution_samples(distribution, rng,
+	                               num_values, (ccs_numeric_t *)vs);
+	if (err)
+		return err;
+	if (!oversampling) {
 		for(size_t i = 0; i < num_values; i++)
 			values[i] = d->possible_values[vs[i]].d;
 	} else {
@@ -130,8 +137,8 @@ _ccs_hyperparameter_ordinal_samples(_ccs_hyperparameter_data_t *data,
 			vs = (ccs_int_t *)malloc(sizeof(ccs_numeric_t)*buff_sz);
 			if (!vs)
 				return -CCS_ENOMEM;
-			err = ccs_distribution_samples(d->common_data.distribution,
-			                               rng, buff_sz, (ccs_numeric_t *)vs);
+			err = ccs_distribution_samples(distribution, rng,
+			                               buff_sz, (ccs_numeric_t *)vs);
 			for(size_t i = 0; i < buff_sz && found < num_values; i++)
 				if (vs[i] >= 0 && vs[i] < d->num_possible_values)
 					values[found++] = d->possible_values[vs[i]].d;
@@ -194,7 +201,6 @@ ccs_ordinal_hyperparameter_compare_values(ccs_hyperparameter_t  hyperparameter,
 	while ( v > pvs) { \
 		HASH_DELETE(hh, hyperparam_data->hash, --v); \
 	} \
-	ccs_release_object(distribution); \
 	free((void*)mem); \
 	return -CCS_ENOMEM; \
 }
@@ -204,7 +210,6 @@ ccs_create_ordinal_hyperparameter(const char           *name,
                                   size_t                num_possible_values,
                                   ccs_datum_t          *possible_values,
                                   size_t                default_value_index,
-                                  ccs_distribution_t    distribution,
                                   void                 *user_data,
                                   ccs_hyperparameter_t *hyperparameter_ret) {
 	if (!hyperparameter_ret || !name)
@@ -239,27 +244,6 @@ ccs_create_ordinal_hyperparameter(const char           *name,
 	interval.lower_included = CCS_TRUE;
 	interval.upper_included = CCS_FALSE;
 
-	ccs_error_t err;
-	ccs_bool_t oversampling;
-	if (!distribution) {
-		err = ccs_create_uniform_distribution(interval.type,
-		                                      interval.lower, interval.upper,
-		                                      CCS_LINEAR, CCSI(0),
-		                                      &distribution);
-		if (err) {
-			free((void *)mem);
-			return err;
-		}
-		oversampling = CCS_FALSE;
-	} else {
-		err = ccs_distribution_check_oversampling(distribution, &interval,
-		                                          &oversampling);
-		if (err) {
-			free((void *)mem);
-			return err;
-		}
-		ccs_retain_object(distribution);
-	}
 	ccs_hyperparameter_t hyperparam = (ccs_hyperparameter_t)mem;
 	_ccs_object_init(&(hyperparam->obj), CCS_HYPERPARAMETER, (_ccs_object_ops_t *)&_ccs_hyperparameter_ordinal_ops);
 	_ccs_hyperparameter_ordinal_data_t *hyperparam_data =
@@ -272,10 +256,8 @@ ccs_create_ordinal_hyperparameter(const char           *name,
 	    sizeof(_ccs_hash_datum_t) * num_possible_values);
 	strcpy((char *)hyperparam_data->common_data.name, name);
 	hyperparam_data->common_data.user_data = user_data;
-	hyperparam_data->common_data.distribution = distribution;
 	hyperparam_data->common_data.default_value = possible_values[default_value_index];
 	hyperparam_data->common_data.interval = interval;
-	hyperparam_data->common_data.oversampling = oversampling;
 	hyperparam_data->num_possible_values = num_possible_values;
 	_ccs_hash_datum_t *pvs = (_ccs_hash_datum_t *)(mem +
 	    sizeof(struct _ccs_hyperparameter_s) +
@@ -292,7 +274,6 @@ ccs_create_ordinal_hyperparameter(const char           *name,
 			HASH_ITER(hh, hyperparam_data->hash, p, tmp) {
 				HASH_DELETE(hh, hyperparam_data->hash, p);
 			}
-			ccs_release_object(distribution);
 			free((void *)mem);
 			return -CCS_INVALID_VALUE;
 		}

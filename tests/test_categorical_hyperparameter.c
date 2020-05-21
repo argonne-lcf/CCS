@@ -24,8 +24,7 @@ void test_create() {
 
 	err = ccs_create_categorical_hyperparameter("my_param", num_possible_values,
 	                                            possible_values, default_value_index,
-	                                            NULL, (void *)0xdeadbeef,
-	                                            &hyperparameter);
+	                                            (void *)0xdeadbeef, &hyperparameter);
 	assert( err == CCS_SUCCESS );
 
 	err = ccs_hyperparameter_get_type(hyperparameter, &type);
@@ -45,7 +44,7 @@ void test_create() {
 	assert( err == CCS_SUCCESS );
 	assert( user_data == (void *)0xdeadbeef );
 
-	err = ccs_hyperparameter_get_distribution(hyperparameter, &distribution);
+	err = ccs_hyperparameter_get_default_distribution(hyperparameter, &distribution);
 	assert( err == CCS_SUCCESS );
 	assert( distribution );
 
@@ -61,6 +60,8 @@ void test_create() {
 	assert( interval.upper.i  == 4 );
 	assert( interval.upper_included == CCS_FALSE );
 
+	err = ccs_release_object(distribution);
+	assert( err == CCS_SUCCESS );
 	err = ccs_release_object(hyperparameter);
 	assert( err == CCS_SUCCESS );
 }
@@ -68,6 +69,7 @@ void test_create() {
 void test_samples() {
 	ccs_rng_t                  rng;
 	ccs_hyperparameter_t       hyperparameter;
+	ccs_distribution_t         distribution;
 	const size_t               num_samples = 10000;
 	ccs_datum_t                samples[num_samples];
 	ccs_error_t                err;
@@ -84,11 +86,15 @@ void test_samples() {
 	assert( err == CCS_SUCCESS );
 	err = ccs_create_categorical_hyperparameter("my_param", num_possible_values,
 	                                            possible_values, default_value_index,
-	                                            NULL, NULL,
-	                                            &hyperparameter);
+	                                            NULL, &hyperparameter);
 	assert( err == CCS_SUCCESS );
 
-	err = ccs_hyperparameter_samples(hyperparameter, rng, num_samples, samples);
+	err = ccs_hyperparameter_get_default_distribution(hyperparameter, &distribution);
+	assert( err == CCS_SUCCESS );
+	assert( distribution );
+
+	err = ccs_hyperparameter_samples(hyperparameter, distribution, rng,
+	                                 num_samples, samples);
 	assert( err == CCS_SUCCESS );
 
 	for (size_t i = 0; i < num_samples; i++) {
@@ -98,6 +104,8 @@ void test_samples() {
 		assert( samples[i].value.i <= (ccs_int_t)num_possible_values * 2);
 	}
 
+	err = ccs_release_object(distribution);
+	assert( err == CCS_SUCCESS );
 	err = ccs_release_object(hyperparameter);
 	assert( err == CCS_SUCCESS );
 	err = ccs_release_object(rng);
@@ -128,14 +136,11 @@ void test_oversampling() {
 
 	err = ccs_create_categorical_hyperparameter("my_param", num_possible_values,
 	                                            possible_values, default_value_index,
-	                                            distribution, NULL,
-	                                            &hyperparameter);
+	                                            NULL, &hyperparameter);
 	assert( err == CCS_SUCCESS );
 
-	err = ccs_release_object(distribution);
-	assert( err == CCS_SUCCESS );
-
-	err = ccs_hyperparameter_samples(hyperparameter, rng, num_samples, samples);
+	err = ccs_hyperparameter_samples(hyperparameter, distribution, rng,
+	                                 num_samples, samples);
 	assert( err == CCS_SUCCESS );
 
 	for (size_t i = 0; i < num_samples; i++) {
@@ -145,6 +150,8 @@ void test_oversampling() {
 		assert( samples[i].value.i <= (ccs_int_t)num_possible_values * 2);
 	}
 
+	err = ccs_release_object(distribution);
+	assert( err == CCS_SUCCESS );
 	err = ccs_release_object(hyperparameter);
 	assert( err == CCS_SUCCESS );
 	err = ccs_release_object(rng);

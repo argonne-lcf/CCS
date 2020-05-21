@@ -8,7 +8,8 @@ struct _ccs_hyperparameter_ops_s {
 	_ccs_object_ops_t obj_ops;
 
         ccs_error_t (*samples)(
-		_ccs_hyperparameter_data_t *hyperparameter,
+		_ccs_hyperparameter_data_t *data,
+		ccs_distribution_t          distribution,
 		ccs_rng_t                   rng,
 		size_t                      num_values,
 		ccs_datum_t                *values);
@@ -28,10 +29,8 @@ struct _ccs_hyperparameter_common_data_s {
 	ccs_hyperparameter_type_t  type;
 	const char                *name;
 	void                      *user_data;
-	ccs_distribution_t         distribution;
 	ccs_datum_t                default_value;
 	ccs_interval_t             interval;
-	ccs_bool_t                 oversampling;
 };
 
 typedef struct _ccs_hyperparameter_common_data_s _ccs_hyperparameter_common_data_t;

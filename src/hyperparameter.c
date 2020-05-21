@@ -63,62 +63,29 @@ ccs_hyperparameter_get_default_distribution(ccs_hyperparameter_t  hyperparameter
 }
 
 ccs_error_t
-ccs_hyperparameter_get_distribution(ccs_hyperparameter_t  hyperparameter,
-                                    ccs_distribution_t   *distribution) {
-	if (!hyperparameter || !hyperparameter->data)
-		return -CCS_INVALID_OBJECT;
-	if (!distribution)
-		return -CCS_INVALID_VALUE;
-	*distribution = ((_ccs_hyperparameter_common_data_t *)(hyperparameter->data))->distribution;
-	return CCS_SUCCESS;
-} 
-
-ccs_error_t
-ccs_hyperparameter_set_distribution(ccs_hyperparameter_t  hyperparameter,
-                                    ccs_distribution_t    distribution) {
-	if (!hyperparameter || !hyperparameter->data)
-		return -CCS_INVALID_OBJECT;
-	if (!distribution)
-		return -CCS_INVALID_OBJECT;
-	_ccs_hyperparameter_common_data_t * d = ((_ccs_hyperparameter_common_data_t *)(hyperparameter->data));
-	ccs_error_t err;
-	ccs_bool_t oversampling;
-
-	err = ccs_distribution_check_oversampling(distribution, &(d->interval),
-	                                          &oversampling);
-	if (err)
-		return err;
-	err = ccs_release_object(d->distribution);
-	if (err)
-		return err;
-	err = ccs_retain_object(distribution);
-	d->distribution = distribution;
-	d->oversampling = oversampling;
-	return CCS_SUCCESS;
-}
-
-ccs_error_t
 ccs_hyperparameter_sample(ccs_hyperparameter_t  hyperparameter,
+                          ccs_distribution_t    distribution,
                           ccs_rng_t             rng,
                           ccs_datum_t          *value) {
-	if (!hyperparameter || !hyperparameter->data)
+	if (!hyperparameter || distribution || !hyperparameter->data)
 		return -CCS_INVALID_OBJECT;
 	if (!value)
 		return -CCS_INVALID_VALUE;
 	_ccs_hyperparameter_ops_t *ops = ccs_hyperparameter_get_ops(hyperparameter);
-	return ops->samples(hyperparameter->data, rng, 1, value);
+	return ops->samples(hyperparameter->data, distribution, rng, 1, value);
 }
 
 ccs_error_t
 ccs_hyperparameter_samples(ccs_hyperparameter_t  hyperparameter,
+                           ccs_distribution_t    distribution,
                            ccs_rng_t             rng,
                            size_t                num_values,
                            ccs_datum_t          *values) {
-	if (!hyperparameter || !hyperparameter->data)
+	if (!hyperparameter || !distribution || !hyperparameter->data)
 		return -CCS_INVALID_OBJECT;
 	if (!num_values || !values)
 		return -CCS_INVALID_VALUE;
 	_ccs_hyperparameter_ops_t *ops = ccs_hyperparameter_get_ops(hyperparameter);
-	return ops->samples(hyperparameter->data, rng, num_values, values);
+	return ops->samples(hyperparameter->data, distribution, rng, num_values, values);
 }
 
