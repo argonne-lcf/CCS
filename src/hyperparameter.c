@@ -50,6 +50,18 @@ ccs_hyperparameter_get_user_data(ccs_hyperparameter_t   hyperparameter,
 	return CCS_SUCCESS;
 }
 
+
+ccs_error_t
+ccs_hyperparameter_get_default_distribution(ccs_hyperparameter_t  hyperparameter,
+                                            ccs_distribution_t   *distribution) {
+	if (!hyperparameter || !hyperparameter->data)
+		return -CCS_INVALID_OBJECT;
+	if (!distribution)
+		return -CCS_INVALID_VALUE;
+	_ccs_hyperparameter_ops_t *ops = ccs_hyperparameter_get_ops(hyperparameter);
+	return ops->get_default_distribution( hyperparameter->data, distribution);
+}
+
 ccs_error_t
 ccs_hyperparameter_get_distribution(ccs_hyperparameter_t  hyperparameter,
                                     ccs_distribution_t   *distribution) {

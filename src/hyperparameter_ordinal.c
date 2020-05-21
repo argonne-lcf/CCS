@@ -144,9 +144,22 @@ _ccs_hyperparameter_ordinal_samples(_ccs_hyperparameter_data_t *data,
 	return CCS_SUCCESS;
 }
 
+ccs_error_t
+_ccs_hyperparameter_ordinal_get_default_distribution(
+		_ccs_hyperparameter_data_t *data,
+		ccs_distribution_t         *distribution) {
+	_ccs_hyperparameter_ordinal_data_t *d = (_ccs_hyperparameter_ordinal_data_t *)data;
+	ccs_interval_t *interval = &(d->common_data.interval);
+	return ccs_create_uniform_distribution(interval->type,
+	                                       interval->lower, interval->upper,
+	                                       CCS_LINEAR, CCSI(0),
+	                                       distribution);
+}
+
 static _ccs_hyperparameter_ops_t _ccs_hyperparameter_ordinal_ops = {
 	{ &_ccs_hyperparameter_ordinal_del },
-	&_ccs_hyperparameter_ordinal_samples
+	&_ccs_hyperparameter_ordinal_samples,
+        &_ccs_hyperparameter_ordinal_get_default_distribution
 };
 
 ccs_error_t

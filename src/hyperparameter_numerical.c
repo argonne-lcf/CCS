@@ -17,9 +17,9 @@ _ccs_hyperparameter_numerical_del(ccs_object_t o) {
 
 static ccs_error_t
 _ccs_hyperparameter_numerical_samples(_ccs_hyperparameter_data_t *data,
-                                     ccs_rng_t                   rng,
-                                     size_t                      num_values,
-                                     ccs_datum_t                *values) {
+                                      ccs_rng_t                   rng,
+                                      size_t                      num_values,
+                                      ccs_datum_t                *values) {
 	_ccs_hyperparameter_numerical_data_t *d = (_ccs_hyperparameter_numerical_data_t *)data;
 	ccs_numeric_type_t type = d->common_data.interval.type;
 	ccs_interval_t *interval = &(d->common_data.interval);
@@ -77,9 +77,22 @@ _ccs_hyperparameter_numerical_samples(_ccs_hyperparameter_data_t *data,
 	return CCS_SUCCESS;
 }
 
+ccs_error_t
+_ccs_hyperparameter_numerical_get_default_distribution(
+		_ccs_hyperparameter_data_t *data,
+		ccs_distribution_t         *distribution) {
+	_ccs_hyperparameter_numerical_data_t *d = (_ccs_hyperparameter_numerical_data_t *)data;
+	ccs_interval_t *interval = &(d->common_data.interval);
+	return ccs_create_uniform_distribution(interval->type,
+	                                       interval->lower, interval->upper,
+	                                       CCS_LINEAR, d->quantization,
+	                                       distribution);
+}
+
 static _ccs_hyperparameter_ops_t _ccs_hyperparameter_numerical_ops = {
 	{ &_ccs_hyperparameter_numerical_del },
-	&_ccs_hyperparameter_numerical_samples
+	&_ccs_hyperparameter_numerical_samples,
+	&_ccs_hyperparameter_numerical_get_default_distribution
 };
 
 ccs_error_t

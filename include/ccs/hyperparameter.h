@@ -68,6 +68,11 @@ ccs_hyperparameter_get_name(ccs_hyperparameter_t   hyperparameter,
 extern ccs_error_t
 ccs_hyperparameter_get_user_data(ccs_hyperparameter_t   hyperparameter,
                                  void                 **user_data_ret);
+
+extern ccs_error_t
+ccs_hyperparameter_get_default_distribution(ccs_hyperparameter_t  hyperparameter,
+                                            ccs_distribution_t   *distribution);
+
 extern ccs_error_t
 ccs_hyperparameter_get_distribution(ccs_hyperparameter_t  hyperparameter,
                                     ccs_distribution_t   *distribution);
