@@ -20,6 +20,9 @@ libcconfigspace_la_SOURCES = \
 			hyperparameter_numerical.c \
 			hyperparameter_categorical.c \
 			uthash.h \
-			hyperparameter_ordinal.c
+			hyperparameter_ordinal.c \
+			utarray.h \
+			configuration_space.c \
+			configuration_space_internal.h
 
 @VALGRIND_CHECK_RULES@
