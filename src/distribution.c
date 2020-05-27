@@ -30,6 +30,18 @@ ccs_distribution_get_data_type(ccs_distribution_t       distribution,
 }
 
 ccs_error_t
+ccs_distribution_get_dimension(ccs_distribution_t  distribution,
+                               size_t             *dimension_ret) {
+	if (!distribution || !distribution->data)
+		return -CCS_INVALID_OBJECT;
+	if (!dimension_ret)
+		return -CCS_INVALID_VALUE;
+	*dimension_ret = 1;
+	return CCS_SUCCESS;
+}
+
+
+ccs_error_t
 ccs_distribution_get_scale_type(ccs_distribution_t  distribution,
                                 ccs_scale_type_t   *scale_type_ret) {
 	if (!distribution || !distribution->data)

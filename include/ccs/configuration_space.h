@@ -52,6 +52,12 @@ ccs_configuration_space_get_hyperparameter(ccs_configuration_space_t  configurat
                                            ccs_hyperparameter_t      *hyperparameter_ret);
 
 extern ccs_error_t
+ccs_configuration_space_get_hyperparameter_by_name(
+		ccs_configuration_space_t  configuration_space,
+		const char *               name,
+		ccs_hyperparameter_t      *hyperparameter_ret);
+
+extern ccs_error_t
 ccs_configuration_space_get_hyperparameters(ccs_configuration_space_t  configuration_space,
                                             size_t                     num_hyperparameters,
                                             ccs_hyperparameter_t      *hyperparameters,

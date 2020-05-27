@@ -84,6 +84,10 @@ ccs_distribution_get_data_type(ccs_distribution_t       distribution,
                                ccs_numeric_type_t      *data_type_ret);
 
 extern ccs_error_t
+ccs_distribution_get_dimension(ccs_distribution_t  distribution,
+                               size_t             *dimension);
+
+extern ccs_error_t
 ccs_distribution_get_scale_type(ccs_distribution_t  distribution,
                                 ccs_scale_type_t   *scale_type_ret);
 

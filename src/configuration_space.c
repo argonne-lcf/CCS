@@ -13,10 +13,16 @@ _ccs_configuration_space_del(ccs_object_t object) {
 	_ccs_hyperparameter_wrapper_t *wrapper = NULL;
 	while ( (wrapper = (_ccs_hyperparameter_wrapper_t *)utarray_next(array, wrapper)) ) {
 		ccs_release_object(wrapper->hyperparameter);
-		ccs_release_object(wrapper->distribution);
 	}
 	HASH_CLEAR(hh_name, configuration_space->data->name_hash);
 	utarray_free(array);
+	_ccs_distribution_wrapper_t *dw;
+	_ccs_distribution_wrapper_t *tmp;
+	DL_FOREACH_SAFE(configuration_space->data->distribution_list, dw, tmp) {
+		DL_DELETE(configuration_space->data->distribution_list, dw);
+		ccs_release_object(dw->distribution);
+		free(dw);
+	}
 	ccs_release_object(configuration_space->data->rng);
 	return CCS_SUCCESS;
 }
@@ -61,6 +67,7 @@ ccs_create_configuration_space(const char                *name,
 	config_space->data->rng = rng;
 	utarray_new(config_space->data->hyperparameters, &_hyperparameter_wrapper_icd);
 	config_space->data->name_hash = NULL;
+	config_space->data->distribution_list = NULL;
 	strcpy((char *)(config_space->data->name), name);
 	*configuration_space_ret = config_space;
 	return CCS_SUCCESS;
@@ -116,7 +123,7 @@ ccs_configuration_space_get_rng(ccs_configuration_space_t  configuration_space,
 #undef  utarray_oom
 #define utarray_oom() { \
 	err = -CCS_ENOMEM; \
-	goto errordistrib; \
+	goto errordistrib_wrapper; \
 }
 #undef uthash_nonfatal_oom
 #define uthash_nonfatal_oom(elt) { \
@@ -130,37 +137,80 @@ ccs_configuration_space_add_hyperparameter(ccs_configuration_space_t configurati
 	if (!configuration_space || !configuration_space->data || !hyperparameter)
 		return -CCS_INVALID_OBJECT;
 	ccs_error_t err;
+	const char *name;
+	size_t sz_name;
+	_ccs_hyperparameter_wrapper_t *p_hyper_wrapper;
+	err = ccs_hyperparameter_get_name(hyperparameter, &name);
+	if (err)
+		goto error;
+	sz_name = strlen(name);
+	HASH_FIND(hh_name, configuration_space->data->name_hash,
+	          name, sz_name, p_hyper_wrapper);
+	if (p_hyper_wrapper) {
+		err = -CCS_INVALID_HYPERPARAMETER;
+		goto error;
+	}
 	UT_array *hyperparameters;
 	unsigned int index;
+	size_t dimension;
 	_ccs_hyperparameter_wrapper_t hyper_wrapper;
+	_ccs_distribution_wrapper_t *distrib_wrapper;
+	uintptr_t pmem;
 	hyper_wrapper.hyperparameter = hyperparameter;
+	err = ccs_retain_object(hyperparameter);
+	if (err)
+		goto error;
+
 	if (distribution) {
-		ccs_retain_object(distribution);
-		hyper_wrapper.distribution = distribution;
-	} else {
-		err = ccs_hyperparameter_get_default_distribution(hyperparameter, &hyper_wrapper.distribution);
+		err = ccs_distribution_get_dimension(distribution, &dimension);
 		if (err)
-			goto error;
+			goto errorhyper;
+		if (dimension != 1) {
+			err = -CCS_INVALID_DISTRIBUTION;
+			goto errorhyper;
+		}
+		err = ccs_retain_object(distribution);
+		if (err)
+			goto errorhyper;
+	} else {
+		err = ccs_hyperparameter_get_default_distribution(hyperparameter, &distribution);
+		if (err)
+			goto errorhyper;
+		dimension = 1;
 	}
+	pmem = (uintptr_t)malloc(sizeof(_ccs_distribution_wrapper_t) + sizeof(size_t)*dimension);
+	if (!pmem) {
+		err = -CCS_ENOMEM;
+		goto errordistrib;
+	}
+        distrib_wrapper = (_ccs_distribution_wrapper_t *)pmem;
+	distrib_wrapper->distribution = distribution;
+	distrib_wrapper->dimension = dimension;
+	distrib_wrapper->hyperparameter_indexes = (size_t *)(pmem + sizeof(_ccs_distribution_wrapper_t));
+	distrib_wrapper->hyperparameter_indexes[0] = 0;
 	hyperparameters = configuration_space->data->hyperparameters;
 	index = utarray_len(hyperparameters);
 	hyper_wrapper.index = index;
-	err = ccs_hyperparameter_get_name(hyperparameter, &hyper_wrapper.name);
-	if (err)
-		goto errordistrib;
+	hyper_wrapper.distribution_index = 0;
+	hyper_wrapper.distribution = distrib_wrapper;
+	hyper_wrapper.name = name;
 	utarray_push_back(hyperparameters, &hyper_wrapper);
 
-	_ccs_hyperparameter_wrapper_t *p_hyper_wrapper =
+	p_hyper_wrapper =
 	   (_ccs_hyperparameter_wrapper_t*)utarray_eltptr(hyperparameters, index);
 	HASH_ADD_KEYPTR( hh_name, configuration_space->data->name_hash,
-	                 p_hyper_wrapper->name, strlen(p_hyper_wrapper->name),
-	                 p_hyper_wrapper );
+	                 name, sz_name, p_hyper_wrapper );
+	DL_APPEND(configuration_space->data->distribution_list, distrib_wrapper);
 
 	return CCS_SUCCESS;
 errorutarray:
 	utarray_pop_back(hyperparameters);
+errordistrib_wrapper:
+	free(distrib_wrapper);
 errordistrib:
-	ccs_release_object(hyper_wrapper.distribution);
+	ccs_release_object(distribution);
+errorhyper:
+	ccs_release_object(hyperparameter);
 error:
 	return err;
 }
@@ -211,9 +261,31 @@ ccs_configuration_space_get_hyperparameter(ccs_configuration_space_t  configurat
 		return -CCS_INVALID_VALUE;
 	_ccs_hyperparameter_wrapper_t *wrapper = (_ccs_hyperparameter_wrapper_t*)
 	    utarray_eltptr(configuration_space->data->hyperparameters, (unsigned int)index);
-	if (!wrapper)
+	if (wrapper)
+		*hyperparameter_ret = wrapper->hyperparameter;
+	else
+		*hyperparameter_ret = NULL;
+	return CCS_SUCCESS;
+}
+
+ccs_error_t
+ccs_configuration_space_get_hyperparameter_by_name(
+		ccs_configuration_space_t  configuration_space,
+		const char *               name,
+		ccs_hyperparameter_t      *hyperparameter_ret) {
+	if (!configuration_space || !configuration_space->data)
+		return -CCS_INVALID_OBJECT;
+	if (!hyperparameter_ret)
 		return -CCS_INVALID_VALUE;
-	*hyperparameter_ret = wrapper->hyperparameter;
+	_ccs_hyperparameter_wrapper_t *wrapper;
+	size_t sz_name;
+	sz_name = strlen(name);
+	HASH_FIND(hh_name, configuration_space->data->name_hash,
+	          name, sz_name, wrapper);
+	if (wrapper)
+		*hyperparameter_ret = wrapper->hyperparameter;
+	else
+		*hyperparameter_ret = NULL;
 	return CCS_SUCCESS;
 }
 
@@ -237,7 +309,7 @@ ccs_configuration_space_get_hyperparameters(ccs_configuration_space_t  configura
 		_ccs_hyperparameter_wrapper_t *wrapper = NULL;
 		size_t index = 0;
 		while ( (wrapper = (_ccs_hyperparameter_wrapper_t *)utarray_next(array, wrapper)) )
-			hyperparameters[index] = wrapper->hyperparameter;
+			hyperparameters[index++] = wrapper->hyperparameter;
 		for (size_t i = size; i < num_hyperparameters; i++)
 			hyperparameters[i] = NULL;
 	}

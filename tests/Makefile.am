@@ -11,7 +11,8 @@ RNG_TESTS = \
 		test_roulette_distribution \
 		test_numerical_hyperparameter \
 		test_categorical_hyperparameter \
-		test_ordinal_hyperparameter
+		test_ordinal_hyperparameter \
+		test_configuration_space
 
 # unit tests
 UNIT_TESTS = \
