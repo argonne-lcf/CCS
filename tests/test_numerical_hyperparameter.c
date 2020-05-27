@@ -8,6 +8,7 @@ void test_create() {
 	ccs_hyperparameter_type_t  type;
 	ccs_datum_t                default_value;
 	ccs_error_t                err;
+	ccs_bool_t                 check;
 	const char                *name;
 	void *                     user_data;
 	ccs_distribution_t         distribution;
@@ -53,6 +54,15 @@ void test_create() {
 	assert( interval.lower_included == CCS_TRUE );
 	assert( interval.upper.f  == 5.0 );
 	assert( interval.upper_included == CCS_FALSE );
+
+	err = ccs_hyperparameter_check_value(hyperparameter, default_value, &check);
+	assert( err == CCS_SUCCESS );
+	assert( check == CCS_TRUE );
+
+	default_value.value.f = 6.0;
+	err = ccs_hyperparameter_check_value(hyperparameter, default_value, &check);
+	assert( err == CCS_SUCCESS );
+	assert( check == CCS_FALSE );
 
 	err = ccs_release_object(distribution);
 	assert( err == CCS_SUCCESS );

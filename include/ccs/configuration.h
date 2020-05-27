@@ -45,6 +45,9 @@ ccs_configuration_get_value_by_name(ccs_configuration_t  configuration,
                                     const char          *name,
                                     ccs_datum_t         *value_ret);
 
+extern ccs_error_t
+ccs_configuration_check(ccs_configuration_t  configuration);
+
 #ifdef __cplusplus
 }
 #endif

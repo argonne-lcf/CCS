@@ -94,6 +94,9 @@ void check_configuration(ccs_configuration_space_t  configuration_space,
 	err = ccs_configuration_space_get_default_configuration(
 		configuration_space, &configuration);
 	assert( err == CCS_SUCCESS );
+
+	err = ccs_configuration_check(configuration);
+	assert( err == CCS_SUCCESS );
 	for (size_t i = 0; i < sz; i++) {
 		ccs_datum_t datum;
 		ccs_datum_t hdatum;

@@ -1,5 +1,6 @@
 #include "cconfigspace_internal.h"
 #include "configuration_space_internal.h"
+#include "configuration_internal.h"
 
 static inline _ccs_configuration_space_ops_t *
 ccs_configuration_space_get_ops(ccs_configuration_space_t configuration_space) {
@@ -367,6 +368,34 @@ ccs_configuration_space_get_default_configuration(ccs_configuration_space_t  con
 error:
 	ccs_release_object(config);
 	return err;
+}
+
+ccs_error_t
+ccs_configuration_space_check_configuration(ccs_configuration_space_t configuration_space,
+                                            ccs_configuration_t       configuration) {
+	if (!configuration_space || !configuration_space->data)
+		return -CCS_INVALID_OBJECT;
+	if (!configuration || !configuration->data)
+		return -CCS_INVALID_OBJECT;
+	if (configuration->data->configuration_space != configuration_space)
+		return -CCS_INVALID_CONFIGURATION;
+	size_t index = 0;
+	UT_array *array = configuration_space->data->hyperparameters;
+	if (configuration->data->num_values != utarray_len(array))
+		return -CCS_INVALID_CONFIGURATION;
+	_ccs_hyperparameter_wrapper_t *wrapper = NULL;
+	ccs_datum_t *values = configuration->data->values;
+	while ( (wrapper = (_ccs_hyperparameter_wrapper_t *)utarray_next(array, wrapper)) ) {
+		ccs_bool_t res;
+		ccs_error_t err;
+		err = ccs_hyperparameter_check_value(wrapper->hyperparameter,
+		                                     values[index++], &res);
+		if (unlikely(err))
+			return err;
+		if (res == CCS_FALSE)
+			return -CCS_INVALID_CONFIGURATION;
+	}
+	return CCS_SUCCESS;
 }
 
 

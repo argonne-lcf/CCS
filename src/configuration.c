@@ -153,3 +153,10 @@ ccs_configuration_get_value_by_name(ccs_configuration_t  configuration,
 }
 
 
+ccs_error_t
+ccs_configuration_check(ccs_configuration_t  configuration) {
+	if (!configuration || !configuration->data)
+		return -CCS_INVALID_OBJECT;
+	return ccs_configuration_space_check_configuration(
+		configuration->data->configuration_space, configuration);
+}
