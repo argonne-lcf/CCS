@@ -261,10 +261,9 @@ ccs_configuration_space_get_hyperparameter(ccs_configuration_space_t  configurat
 		return -CCS_INVALID_VALUE;
 	_ccs_hyperparameter_wrapper_t *wrapper = (_ccs_hyperparameter_wrapper_t*)
 	    utarray_eltptr(configuration_space->data->hyperparameters, (unsigned int)index);
-	if (wrapper)
-		*hyperparameter_ret = wrapper->hyperparameter;
-	else
-		*hyperparameter_ret = NULL;
+	if (!wrapper)
+		return -CCS_OUT_OF_BOUNDS;
+	*hyperparameter_ret = wrapper->hyperparameter;
 	return CCS_SUCCESS;
 }
 
@@ -282,10 +281,29 @@ ccs_configuration_space_get_hyperparameter_by_name(
 	sz_name = strlen(name);
 	HASH_FIND(hh_name, configuration_space->data->name_hash,
 	          name, sz_name, wrapper);
-	if (wrapper)
-		*hyperparameter_ret = wrapper->hyperparameter;
-	else
-		*hyperparameter_ret = NULL;
+	if (!wrapper)
+		return -CCS_INVALID_NAME;
+	*hyperparameter_ret = wrapper->hyperparameter;
+	return CCS_SUCCESS;
+}
+
+ccs_error_t
+ccs_configuration_space_get_hyperparameter_index_by_name(
+		ccs_configuration_space_t  configuration_space,
+		const char                *name,
+		size_t                    *index_ret) {
+	if (!configuration_space || !configuration_space->data)
+		return -CCS_INVALID_OBJECT;
+	if (!index_ret)
+		return -CCS_INVALID_VALUE;
+	_ccs_hyperparameter_wrapper_t *wrapper;
+	size_t sz_name;
+	sz_name = strlen(name);
+	HASH_FIND(hh_name, configuration_space->data->name_hash,
+	          name, sz_name, wrapper);
+	if (!wrapper)
+		return -CCS_INVALID_NAME;
+	*index_ret = wrapper->index;
 	return CCS_SUCCESS;
 }
 
@@ -306,6 +324,8 @@ ccs_configuration_space_get_hyperparameters(ccs_configuration_space_t  configura
 	UT_array *array = configuration_space->data->hyperparameters;
 	size_t size = utarray_len(array);
 	if (hyperparameters) {
+		if (num_hyperparameters < size)
+			return -CCS_INVALID_VALUE;
 		_ccs_hyperparameter_wrapper_t *wrapper = NULL;
 		size_t index = 0;
 		while ( (wrapper = (_ccs_hyperparameter_wrapper_t *)utarray_next(array, wrapper)) )
@@ -317,4 +337,36 @@ ccs_configuration_space_get_hyperparameters(ccs_configuration_space_t  configura
 		*num_hyperparameters_ret = size;
 	return CCS_SUCCESS;
 }
+
+ccs_error_t
+ccs_configuration_space_get_default_configuration(ccs_configuration_space_t  configuration_space,
+                                                  ccs_configuration_t       *configuration_ret) {
+	if (!configuration_space || !configuration_space->data)
+		return -CCS_INVALID_OBJECT;
+	if (!configuration_ret)
+		return -CCS_INVALID_VALUE;
+	ccs_error_t err;
+	ccs_configuration_t config;
+	err = ccs_create_configuration(configuration_space, 0, NULL, NULL, &config);
+	if (err)
+		return err;
+	UT_array *array = configuration_space->data->hyperparameters;
+	size_t index = 0;
+	_ccs_hyperparameter_wrapper_t *wrapper = NULL;
+	ccs_datum_t d;
+	while ( (wrapper = (_ccs_hyperparameter_wrapper_t *)utarray_next(array, wrapper)) ) {
+		err = ccs_hyperparameter_get_default_value(wrapper->hyperparameter, &d);
+		if (unlikely(err))
+			goto error;
+		err = ccs_configuration_set_value(config, index++, d);
+		if (unlikely(err))
+			goto error;
+	}
+	*configuration_ret = config;
+	return CCS_SUCCESS;
+error:
+	ccs_release_object(config);
+	return err;
+}
+
 

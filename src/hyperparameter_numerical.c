@@ -15,6 +15,32 @@ _ccs_hyperparameter_numerical_del(ccs_object_t o) {
 }
 
 static ccs_error_t
+_ccs_hyperparameter_numerical_check_values(_ccs_hyperparameter_data_t *data,
+                                           size_t                num_values,
+                                           const ccs_datum_t    *values,
+                                           ccs_bool_t           *results) {
+	_ccs_hyperparameter_numerical_data_t *d =
+	    (_ccs_hyperparameter_numerical_data_t *)data;
+	ccs_interval_t *interval = &(d->common_data.interval);
+	ccs_numeric_type_t type = d->common_data.interval.type;
+	if (type == CCS_NUM_FLOAT) {
+		for(size_t i = 0; i < num_values; i++)
+			if (values[i].type != CCS_FLOAT)
+				results[i] = CCS_FALSE;
+			else
+				results[i] = ccs_interval_include(interval, CCSF(values[i].value.f));
+	}
+	else {
+		for(size_t i = 0; i < num_values; i++)
+			if (values[i].type != CCS_INTEGER)
+				results[i] = CCS_FALSE;
+			else
+				results[i] = ccs_interval_include(interval, CCSI(values[i].value.i));
+	}
+	return CCS_SUCCESS;
+}
+
+static ccs_error_t
 _ccs_hyperparameter_numerical_samples(_ccs_hyperparameter_data_t *data,
                                       ccs_distribution_t          distribution,
                                       ccs_rng_t                   rng,
@@ -99,6 +125,7 @@ _ccs_hyperparameter_numerical_get_default_distribution(
 
 static _ccs_hyperparameter_ops_t _ccs_hyperparameter_numerical_ops = {
 	{ &_ccs_hyperparameter_numerical_del },
+	&_ccs_hyperparameter_numerical_check_values,
 	&_ccs_hyperparameter_numerical_samples,
 	&_ccs_hyperparameter_numerical_get_default_distribution
 };

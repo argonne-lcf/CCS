@@ -1,17 +1,36 @@
 #include "cconfigspace_internal.h"
 #include "hyperparameter_internal.h"
+#include "datum_hash.h"
 #include <string.h>
 
 struct _ccs_hyperparameter_categorical_data_s {
 	_ccs_hyperparameter_common_data_t  common_data;
 	ccs_int_t                          num_possible_values;
-	ccs_datum_t                       *possible_values;
+	_ccs_hash_datum_t                 *possible_values;
+	_ccs_hash_datum_t                 *hash;
 };
 typedef struct _ccs_hyperparameter_categorical_data_s _ccs_hyperparameter_categorical_data_t;
 
 static ccs_error_t
 _ccs_hyperparameter_categorical_del(ccs_object_t o) {
-	(void)o;
+	ccs_hyperparameter_t d = (ccs_hyperparameter_t)o;
+	_ccs_hyperparameter_categorical_data_t *data = (_ccs_hyperparameter_categorical_data_t *)(d->data);
+	HASH_CLEAR(hh, data->hash);
+	return CCS_SUCCESS;
+}
+
+static ccs_error_t
+_ccs_hyperparameter_categorical_check_values(_ccs_hyperparameter_data_t *data,
+                                             size_t                num_values,
+                                             const ccs_datum_t    *values,
+                                             ccs_bool_t           *results) {
+	_ccs_hyperparameter_categorical_data_t *d =
+	    (_ccs_hyperparameter_categorical_data_t *)data;
+	for (size_t i = 0; i < num_values; i++) {
+		_ccs_hash_datum_t *p;
+		HASH_FIND(hh, d->hash, values + i, sizeof(ccs_datum_t), p);
+		results[i] = p ? CCS_TRUE : CCS_FALSE;
+	}
 	return CCS_SUCCESS;
 }
 
@@ -24,36 +43,37 @@ _ccs_hyperparameter_categorical_samples(_ccs_hyperparameter_data_t *data,
 	_ccs_hyperparameter_categorical_data_t *d =
 	    (_ccs_hyperparameter_categorical_data_t *)data;
 	ccs_error_t err;
-	ccs_numeric_t *vs = (ccs_numeric_t *)values + num_values;
+	ccs_int_t *vs = (ccs_int_t *)values + num_values;
         ccs_bool_t oversampling;
 	err = ccs_distribution_check_oversampling(distribution,
 	                                          &(d->common_data.interval),
 	                                          &oversampling);
 	if (err)
 		return err;
-	err = ccs_distribution_samples(distribution, rng, num_values, vs);
+	err = ccs_distribution_samples(distribution, rng,
+	                               num_values, (ccs_numeric_t *)vs);
 	if (err)
 		return err;
 	if (!oversampling) {
 		for(size_t i = 0; i < num_values; i++)
-			values[i] = d->possible_values[vs[i].i];
+			values[i] = d->possible_values[vs[i]].d;
 	} else {
 		size_t found = 0;
 		for(size_t i = 0; i < num_values; i++)
-			if (vs[i].i >= 0 && vs[i].i < d->num_possible_values)
-				values[found++] = d->possible_values[vs[i].i];
+			if (vs[i] >= 0 && vs[i] < d->num_possible_values)
+				values[found++] = d->possible_values[vs[i]].d;
 		vs = NULL;
 		size_t coeff = 2;
 		while (found < num_values) {
 			size_t buff_sz = (num_values - found)*coeff;
-			vs = (ccs_numeric_t *)malloc(sizeof(ccs_numeric_t)*buff_sz);
+			vs = (ccs_int_t *)malloc(sizeof(ccs_int_t)*buff_sz);
 			if (!vs)
 				return -CCS_ENOMEM;
 			err = ccs_distribution_samples(distribution, rng,
-			                               buff_sz, vs);
+			                               buff_sz, (ccs_numeric_t *)vs);
 			for(size_t i = 0; i < buff_sz && found < num_values; i++)
-				if (vs[i].i >= 0 && vs[i].i < d->num_possible_values)
-					values[found++] = d->possible_values[vs[i].i];
+				if (vs[i] >= 0 && vs[i] < d->num_possible_values)
+					values[found++] = d->possible_values[vs[i]].d;
 			coeff <<= 1;
 			free(vs);
 			if (coeff > 32)
@@ -77,9 +97,17 @@ _ccs_hyperparameter_categorical_get_default_distribution(
 
 static _ccs_hyperparameter_ops_t _ccs_hyperparameter_categorical_ops = {
 	{ &_ccs_hyperparameter_categorical_del },
+	&_ccs_hyperparameter_categorical_check_values,
 	&_ccs_hyperparameter_categorical_samples,
 	&_ccs_hyperparameter_categorical_get_default_distribution
 };
+
+#undef uthash_nonfatal_oom
+#define uthash_nonfatal_oom(elt) { \
+	HASH_CLEAR(hh, hyperparam_data->hash); \
+	free((void*)mem); \
+	return -CCS_ENOMEM; \
+}
 
 ccs_error_t
 ccs_create_categorical_hyperparameter(const char           *name,
@@ -96,11 +124,20 @@ ccs_create_categorical_hyperparameter(const char           *name,
 		return -CCS_INVALID_VALUE;
 	if (!possible_values)
 		return -CCS_INVALID_VALUE;
+	size_t size_strs = 0;
+	for(size_t i = 0; i < num_possible_values; i++)
+		if (possible_values[i].type == CCS_STRING) {
+			if (!possible_values[i].value.s)
+				return -CCS_INVALID_VALUE;
+			size_strs += strlen(possible_values[i].value.s) + 1;
+		}
+
 	uintptr_t mem = (uintptr_t)calloc(1,
 	    sizeof(struct _ccs_hyperparameter_s) +
 	    sizeof(_ccs_hyperparameter_categorical_data_t) +
-	    sizeof(ccs_datum_t) * num_possible_values +
-	    strlen(name) + 1);
+	    sizeof(_ccs_hash_datum_t) * num_possible_values +
+	    strlen(name) + 1 +
+	    size_strs);
 	if (!mem)
 		return -CCS_ENOMEM;
 
@@ -120,17 +157,40 @@ ccs_create_categorical_hyperparameter(const char           *name,
 	hyperparam_data->common_data.name = (char *)(mem +
 	    sizeof(struct _ccs_hyperparameter_s) +
 	    sizeof(_ccs_hyperparameter_categorical_data_t) +
-	    sizeof(ccs_datum_t) * num_possible_values);
+	    sizeof(_ccs_hash_datum_t) * num_possible_values);
 	strcpy((char *)hyperparam_data->common_data.name, name);
 	hyperparam_data->common_data.user_data = user_data;
-	hyperparam_data->common_data.default_value = possible_values[default_value_index];
 	hyperparam_data->common_data.interval = interval;
 	hyperparam_data->num_possible_values = num_possible_values;
-	hyperparam_data->possible_values = (ccs_datum_t *)(mem +
+        _ccs_hash_datum_t *pvs = (_ccs_hash_datum_t *)(mem +
 	    sizeof(struct _ccs_hyperparameter_s) +
 	    sizeof(_ccs_hyperparameter_categorical_data_t));
-	memcpy(hyperparam_data->possible_values, possible_values,
-	    sizeof(ccs_datum_t) * num_possible_values);
+	hyperparam_data->possible_values = pvs;
+	hyperparam_data->hash = NULL;
+
+	char *str_pool = (char *)(hyperparam_data->common_data.name) + strlen(name) + 1;
+	for (size_t i = 0; i < num_possible_values; i++) {
+		_ccs_hash_datum_t *p = NULL;
+		HASH_FIND(hh, hyperparam_data->hash, possible_values + i, sizeof(ccs_datum_t), p);
+		if (p) {
+			_ccs_hash_datum_t *tmp;
+			HASH_ITER(hh, hyperparam_data->hash, p, tmp) {
+				HASH_DELETE(hh, hyperparam_data->hash, p);
+			}
+			free((void *)mem);
+			return -CCS_INVALID_VALUE;
+		}
+		if (possible_values[i].type == CCS_STRING) {
+			pvs[i].d.type = CCS_STRING;
+			pvs[i].d.value.s = str_pool;
+			strcpy(str_pool, possible_values[i].value.s);
+			str_pool += strlen(possible_values[i].value.s) + 1;
+		} else {
+			pvs[i].d = possible_values[i];
+		}
+		HASH_ADD(hh, hyperparam_data->hash, d, sizeof(ccs_datum_t), pvs + i);
+	}
+	hyperparam_data->common_data.default_value = pvs[default_value_index].d;
 	hyperparam->data = (_ccs_hyperparameter_data_t *)hyperparam_data;
 	*hyperparameter_ret = hyperparam;
 	return CCS_SUCCESS;

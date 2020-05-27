@@ -70,6 +70,17 @@ extern ccs_error_t
 ccs_hyperparameter_get_default_distribution(ccs_hyperparameter_t  hyperparameter,
                                             ccs_distribution_t   *distribution);
 
+extern ccs_error_t
+ccs_hyperparameter_check_value(ccs_hyperparameter_t  hyperparameter,
+                               ccs_datum_t           value,
+                               ccs_bool_t           *result_ret);
+
+extern ccs_error_t
+ccs_hyperparameter_check_values(ccs_hyperparameter_t  hyperparameter,
+                                size_t                num_values,
+                                const ccs_datum_t    *values,
+                                ccs_bool_t           *results);
+
 //   Sampling Interface
 extern ccs_error_t
 ccs_hyperparameter_sample(ccs_hyperparameter_t  hyperparameter,

@@ -1,88 +1,7 @@
 #include "cconfigspace_internal.h"
 #include "hyperparameter_internal.h"
+#include "datum_hash.h"
 #include <string.h>
-
-#define HASH_NONFATAL_OOM 1
-#define HASH_FUNCTION(s,len,hashv) (hashv) = _hash_datum((ccs_datum_t *)(s))
-#define HASH_KEYCMP(a,b,len) (_datum_cmp((ccs_datum_t *)a, (ccs_datum_t *)b))
-#include "uthash.h"
-
-/* BEWARE: ccs_float_t are used as hash keys. In order to recall sucessfully,
- * The *SAME* float must be used.
- * Alternative is o(n) access for floating point values as they would all go
- * in the same bucket. May be the wisest... Switch to find in the possiblie_values list?
- * #define MAXULPDIFF 7 // To define
- * // Could be doing type puning...
- * static inline int _cmp_float(ccs_float_t a, ccs_float_t b) {
- *   int64_t t1, t2, cmp;
- *   memcpy(&t1, &a, sizeof(int64));
- *   memcpy(&t2, &b, sizeof(int64));
- *   if (a == b)
- *     return 0;
- *   if ((t1 < 0) != (t2 < 0)) {
- *     if (t1 < 0)
- *       return -1;
- *     if (t2 < 0)
- *       return 1;
- *   }
- *   cmp = labs(t1-t2);
- *   if (cmp <= MAXULPDIFF)
- *     return 0;
- *   else if (a < b)
- *     return -1;
- *   else
- *     return 1;
- * }
- */
-
-static inline unsigned _hash_datum(ccs_datum_t *d) {
-	unsigned h;
-	switch(d->type) {
-	case CCS_STRING:
-		if (d->value.s)
-			HASH_JEN(d->value.s, strlen(d->value.s), h);
-		else
-			HASH_JEN(d, sizeof(ccs_datum_t), h);
-		break;
-	case CCS_NONE:
-		HASH_JEN(&(d->type), sizeof(d->type), h);
-		break;
-	default:
-		HASH_JEN(d, sizeof(ccs_datum_t), h);
-	}
-	return h;
-}
-
-static inline int _datum_cmp(ccs_datum_t *a, ccs_datum_t *b) {
-	if (a->type < b->type) {
-		return -1;
-	} else if (a->type > b->type) {
-		return 1;
-	} else {
-		switch(a->type) {
-		case CCS_STRING:
-			if (a->value.s == b->value.s)
-				return 0;
-			else if (!a->value.s)
-				return -1;
-			else if (!b->value.s)
-				return 1;
-			else
-				return strcmp(a->value.s, b->value.s);
-		case CCS_NONE:
-			return 0;
-			break;
-		default:
-			return memcmp(&(a->value), &(b->value),  sizeof(ccs_value_t));
-		}
-	}
-}
-
-struct _ccs_hash_datum_s {
-	ccs_datum_t d;
-	UT_hash_handle hh;
-};
-typedef struct _ccs_hash_datum_s _ccs_hash_datum_t;
 
 struct _ccs_hyperparameter_ordinal_data_s {
 	_ccs_hyperparameter_common_data_t  common_data;
@@ -96,8 +15,21 @@ static ccs_error_t
 _ccs_hyperparameter_ordinal_del(ccs_object_t o) {
 	ccs_hyperparameter_t d = (ccs_hyperparameter_t)o;
 	_ccs_hyperparameter_ordinal_data_t *data = (_ccs_hyperparameter_ordinal_data_t *)(d->data);
-	for (ccs_int_t i = 0; i < data->num_possible_values; i++) {
-		HASH_DELETE(hh, data->hash, data->possible_values + i);
+	HASH_CLEAR(hh, data->hash);
+	return CCS_SUCCESS;
+}
+
+static ccs_error_t
+_ccs_hyperparameter_ordinal_check_values(_ccs_hyperparameter_data_t *data,
+                                         size_t                num_values,
+                                         const ccs_datum_t    *values,
+                                         ccs_bool_t           *results) {
+	_ccs_hyperparameter_ordinal_data_t *d =
+	    (_ccs_hyperparameter_ordinal_data_t *)data;
+	for (size_t i = 0; i < num_values; i++) {
+		_ccs_hash_datum_t *p;
+		HASH_FIND(hh, d->hash, values + i, sizeof(ccs_datum_t), p);
+		results[i] = p ? CCS_TRUE : CCS_FALSE;
 	}
 	return CCS_SUCCESS;
 }
@@ -165,6 +97,7 @@ _ccs_hyperparameter_ordinal_get_default_distribution(
 
 static _ccs_hyperparameter_ops_t _ccs_hyperparameter_ordinal_ops = {
 	{ &_ccs_hyperparameter_ordinal_del },
+	&_ccs_hyperparameter_ordinal_check_values,
 	&_ccs_hyperparameter_ordinal_samples,
         &_ccs_hyperparameter_ordinal_get_default_distribution
 };
@@ -197,10 +130,7 @@ ccs_ordinal_hyperparameter_compare_values(ccs_hyperparameter_t  hyperparameter,
 
 #undef uthash_nonfatal_oom
 #define uthash_nonfatal_oom(elt) { \
-	_ccs_hash_datum_t *v = (_ccs_hash_datum_t *)elt; \
-	while ( v > pvs) { \
-		HASH_DELETE(hh, hyperparam_data->hash, --v); \
-	} \
+	HASH_CLEAR(hh, hyperparam_data->hash); \
 	free((void*)mem); \
 	return -CCS_ENOMEM; \
 }
@@ -256,7 +186,6 @@ ccs_create_ordinal_hyperparameter(const char           *name,
 	    sizeof(_ccs_hash_datum_t) * num_possible_values);
 	strcpy((char *)hyperparam_data->common_data.name, name);
 	hyperparam_data->common_data.user_data = user_data;
-	hyperparam_data->common_data.default_value = possible_values[default_value_index];
 	hyperparam_data->common_data.interval = interval;
 	hyperparam_data->num_possible_values = num_possible_values;
 	_ccs_hash_datum_t *pvs = (_ccs_hash_datum_t *)(mem +
@@ -287,6 +216,7 @@ ccs_create_ordinal_hyperparameter(const char           *name,
 		}
 		HASH_ADD(hh, hyperparam_data->hash, d, sizeof(ccs_datum_t), pvs + i);
 	}
+	hyperparam_data->common_data.default_value = pvs[default_value_index].d;
 	hyperparam->data = (_ccs_hyperparameter_data_t *)hyperparam_data;
 	*hyperparameter_ret = hyperparam;
 	return CCS_SUCCESS;

@@ -63,6 +63,31 @@ ccs_hyperparameter_get_default_distribution(ccs_hyperparameter_t  hyperparameter
 }
 
 ccs_error_t
+ccs_hyperparameter_check_value(ccs_hyperparameter_t  hyperparameter,
+                               ccs_datum_t           value,
+                               ccs_bool_t           *result_ret) {
+	if (!hyperparameter || !hyperparameter->data)
+		return -CCS_INVALID_OBJECT;
+	if (!result_ret)
+		return -CCS_INVALID_VALUE;
+	_ccs_hyperparameter_ops_t *ops = ccs_hyperparameter_get_ops(hyperparameter);
+	return ops->check_values(hyperparameter->data, 1, &value, result_ret);
+}
+
+ccs_error_t
+ccs_hyperparameter_check_values(ccs_hyperparameter_t  hyperparameter,
+                                size_t                num_values,
+                                const ccs_datum_t    *values,
+                                ccs_bool_t           *results) {
+	if (!hyperparameter || !hyperparameter->data)
+		return -CCS_INVALID_OBJECT;
+	if (num_values && (!values || !results ))
+		return -CCS_INVALID_VALUE;
+	_ccs_hyperparameter_ops_t *ops = ccs_hyperparameter_get_ops(hyperparameter);
+	return ops->check_values(hyperparameter->data, num_values, values, results);
+}
+
+ccs_error_t
 ccs_hyperparameter_sample(ccs_hyperparameter_t  hyperparameter,
                           ccs_distribution_t    distribution,
                           ccs_rng_t             rng,

@@ -38,6 +38,7 @@ enum ccs_error_e {
 	CCS_INVALID_SCALE,
 	CCS_INVALID_DISTRIBUTION,
 	CCS_INVALID_HYPERPARAMETER,
+	CCS_INVALID_NAME,
 	CCS_TYPE_NOT_COMPARABLE,
 	CCS_INVALID_BOUNDS,
 	CCS_OUT_OF_BOUNDS,
@@ -137,12 +138,12 @@ struct ccs_interval_s {
 
 typedef struct ccs_interval_s ccs_interval_t;
 
-struct ccs_datum_u {
+struct ccs_datum_s {
 	ccs_value_t value;
 	ccs_data_type_t type;
 };
 
-typedef struct ccs_datum_u ccs_datum_t;
+typedef struct ccs_datum_s ccs_datum_t;
 
 extern const ccs_datum_t ccs_none;
 

@@ -58,6 +58,12 @@ ccs_configuration_space_get_hyperparameter_by_name(
 		ccs_hyperparameter_t      *hyperparameter_ret);
 
 extern ccs_error_t
+ccs_configuration_space_get_hyperparameter_index_by_name(
+		ccs_configuration_space_t  configuration_space,
+		const char                *name,
+		size_t                    *index_ret);
+
+extern ccs_error_t
 ccs_configuration_space_get_hyperparameters(ccs_configuration_space_t  configuration_space,
                                             size_t                     num_hyperparameters,
                                             ccs_hyperparameter_t      *hyperparameters,
@@ -123,7 +129,7 @@ ccs_configuration_space_check_configuration_values(ccs_configuration_space_t  co
 
 extern ccs_error_t
 ccs_configuration_space_get_default_configuration(ccs_configuration_space_t  configuration_space,
-                                                  ccs_configuration_t       *configuration);
+                                                  ccs_configuration_t       *configuration_ret);
 
 extern ccs_error_t
 ccs_configuration_space_sample_configuration(ccs_configuration_space_t  configuration_space,
