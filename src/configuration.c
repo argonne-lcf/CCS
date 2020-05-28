@@ -1,5 +1,6 @@
 #include "cconfigspace_internal.h"
 #include "configuration_internal.h"
+#include <string.h>
 
 static inline _ccs_configuration_ops_t *
 ccs_configuration_get_ops(ccs_configuration_t configuration) {
@@ -51,8 +52,7 @@ ccs_create_configuration(ccs_configuration_space_t configuration_space,
 	config->data->configuration_space = configuration_space;
 	config->data->values = (ccs_datum_t *)(mem + sizeof(struct _ccs_configuration_s) + sizeof(struct _ccs_configuration_data_s));
 	if (values)
-		for (size_t i = 0; i < num; i++)
-			config->data->values[i] = values[i];
+		memcpy(config->data->values, values, num*sizeof(ccs_datum_t));
 	*configuration_ret = config;
 	return CCS_SUCCESS;
 }
@@ -122,12 +122,9 @@ ccs_configuration_get_values(ccs_configuration_t  configuration,
 	if (values) {
 		if (num_values < num)
 			return -CCS_INVALID_VALUE;
-		for (size_t i = 0; i < num; i++)
-			values[i] = configuration->data->values[i];
-		for (size_t i = num; i < num_values; i++) {
-			values[i].value.i = 0;
-			values[i].type = CCS_NONE;
-		}
+		memcpy(values, configuration->data->values, num*sizeof(ccs_datum_t));
+		if (num < num_values)
+			memset(values + num, 0, (num_values - num)*sizeof(ccs_datum_t));
 	}
 	if (num_values_ret)
 		*num_values_ret = num;
