@@ -132,13 +132,13 @@ ccs_configuration_space_get_default_configuration(ccs_configuration_space_t  con
                                                   ccs_configuration_t       *configuration_ret);
 
 extern ccs_error_t
-ccs_configuration_space_sample_configuration(ccs_configuration_space_t  configuration_space,
-                                             ccs_configuration_t       *configuration);
+ccs_configuration_space_sample(ccs_configuration_space_t  configuration_space,
+                               ccs_configuration_t       *configuration_ret);
 
 extern ccs_error_t
-ccs_configuration_space_sample_configurations(ccs_configuration_space_t  configuration_space,
-                                              size_t                     num_configurations,
-                                              ccs_configuration_t       *configurations);
+ccs_configuration_space_samples(ccs_configuration_space_t  configuration_space,
+                                size_t                     num_configurations,
+                                ccs_configuration_t       *configurations);
 
 //   Hyperparameter related functions
 extern ccs_error_t

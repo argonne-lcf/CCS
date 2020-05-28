@@ -92,7 +92,7 @@ ccs_hyperparameter_sample(ccs_hyperparameter_t  hyperparameter,
                           ccs_distribution_t    distribution,
                           ccs_rng_t             rng,
                           ccs_datum_t          *value) {
-	if (!hyperparameter || distribution || !hyperparameter->data)
+	if (!hyperparameter || !distribution || !hyperparameter->data)
 		return -CCS_INVALID_OBJECT;
 	if (!value)
 		return -CCS_INVALID_VALUE;

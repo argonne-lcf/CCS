@@ -163,7 +163,7 @@ void test_add_list() {
 	hyperparameters[2] = create_dummy_hyperparameter("param3");
 
 	err = ccs_configuration_space_add_hyperparameters(configuration_space, 3,
-	                                                 hyperparameters, NULL);
+	                                                  hyperparameters, NULL);
 	assert( err == CCS_SUCCESS );
 
 	check_configuration(configuration_space, 3, hyperparameters);
@@ -176,10 +176,62 @@ void test_add_list() {
 	assert( err == CCS_SUCCESS );
 }
 
+void test_sample() {
+	ccs_hyperparameter_t      hyperparameters[4];
+	ccs_configuration_t       configuration;
+	ccs_configuration_t       configurations[100];
+	ccs_configuration_space_t configuration_space;
+	ccs_error_t               err;
+
+	err = ccs_create_configuration_space("my_config_space", NULL,
+	                                     &configuration_space);
+	assert( err == CCS_SUCCESS );
+
+	hyperparameters[0] = create_dummy_hyperparameter("param1");
+	hyperparameters[1] = create_dummy_hyperparameter("param2");
+	hyperparameters[2] = create_dummy_hyperparameter("param3");
+	err = ccs_create_numerical_hyperparameter("param4", CCS_NUM_INTEGER,
+	                                          CCSI(-5), CCSI(5),
+	                                          CCSI(0), CCSI(0),
+	                                          NULL, hyperparameters+3);
+	assert( err == CCS_SUCCESS );
+
+	err = ccs_configuration_space_add_hyperparameters(configuration_space, 4,
+	                                                  hyperparameters, NULL);
+	assert( err == CCS_SUCCESS );
+
+	err = ccs_configuration_space_sample(configuration_space, &configuration);
+	assert( err == CCS_SUCCESS );
+
+	err = ccs_configuration_check(configuration);
+	assert( err == CCS_SUCCESS );
+
+	err = ccs_configuration_space_samples(configuration_space,
+	                                      100, configurations);
+	assert( err == CCS_SUCCESS );
+
+	for (size_t i = 0; i < 100; i++) {
+		err = ccs_configuration_check(configurations[i]);
+		assert( err == CCS_SUCCESS );
+		err = ccs_release_object(configurations[i]);
+		assert( err == CCS_SUCCESS );
+	}
+
+	err = ccs_release_object(configuration);
+	assert( err == CCS_SUCCESS );
+	for (size_t i = 0; i < 4; i++) {
+		err = ccs_release_object(hyperparameters[i]);
+		assert( err == CCS_SUCCESS );
+	}
+	err = ccs_release_object(configuration_space);
+	assert( err == CCS_SUCCESS );
+}
+
 int main(int argc, char *argv[]) {
 	ccs_init();
 	test_create();
 	test_add();
 	test_add_list();
+	test_sample();
 	return 0;
 }

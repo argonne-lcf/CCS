@@ -123,8 +123,10 @@ ccs_configuration_get_values(ccs_configuration_t  configuration,
 		if (num_values < num)
 			return -CCS_INVALID_VALUE;
 		memcpy(values, configuration->data->values, num*sizeof(ccs_datum_t));
-		if (num < num_values)
-			memset(values + num, 0, (num_values - num)*sizeof(ccs_datum_t));
+		for (size_t i = num; i < num_values; i++) {
+			values[i].type = CCS_NONE;
+			values[i].value.i = 0;
+		}
 	}
 	if (num_values_ret)
 		*num_values_ret = num;
