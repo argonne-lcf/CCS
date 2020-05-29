@@ -13,6 +13,7 @@ struct _ccs_hyperparameter_wrapper_s {
 	size_t                       index;
 	const char                  *name;
         UT_hash_handle               hh_name;
+        UT_hash_handle               hh_handle;
 	size_t                       distribution_index;
 	_ccs_distribution_wrapper_t *distribution;
 };
@@ -45,6 +46,7 @@ struct _ccs_configuration_space_data_s {
 	ccs_rng_t                     rng;
 	UT_array                      *hyperparameters;
 	_ccs_hyperparameter_wrapper_t *name_hash;
+	_ccs_hyperparameter_wrapper_t *handle_hash;
 	_ccs_distribution_wrapper_t   *distribution_list;
 };
 

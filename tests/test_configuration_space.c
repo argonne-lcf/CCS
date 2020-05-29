@@ -58,6 +58,7 @@ void check_configuration(ccs_configuration_space_t  configuration_space,
 	ccs_configuration_t   configuration;
 	ccs_error_t           err;
 	size_t                sz_ret;
+	size_t                index;
 	ccs_hyperparameter_t *hyperparameters_ret =
 		(ccs_hyperparameter_t *)malloc(sizeof(ccs_hyperparameter_t)*(sz+1));
 	const char           *name;
@@ -73,6 +74,10 @@ void check_configuration(ccs_configuration_space_t  configuration_space,
 		                                                 &hyperparameter);
 		assert( err == CCS_SUCCESS );
 		assert( hyperparameter == hyperparameters[i] );
+		err = ccs_configuration_space_get_hyperparameter_index(
+			configuration_space, hyperparameter, &index);
+		assert( err == CCS_SUCCESS );
+		assert( index == i);
 	}
 	err = ccs_configuration_space_get_hyperparameters(configuration_space, sz + 1,
 	                                                  hyperparameters_ret, &sz_ret);

@@ -16,6 +16,7 @@ _ccs_configuration_space_del(ccs_object_t object) {
 		ccs_release_object(wrapper->hyperparameter);
 	}
 	HASH_CLEAR(hh_name, configuration_space->data->name_hash);
+	HASH_CLEAR(hh_handle, configuration_space->data->handle_hash);
 	utarray_free(array);
 	_ccs_distribution_wrapper_t *dw;
 	_ccs_distribution_wrapper_t *tmp;
@@ -201,7 +202,9 @@ ccs_configuration_space_add_hyperparameter(ccs_configuration_space_t configurati
 	   (_ccs_hyperparameter_wrapper_t*)utarray_eltptr(hyperparameters, index);
 	HASH_ADD_KEYPTR( hh_name, configuration_space->data->name_hash,
 	                 name, sz_name, p_hyper_wrapper );
-	DL_APPEND(configuration_space->data->distribution_list, distrib_wrapper);
+	HASH_ADD( hh_handle, configuration_space->data->handle_hash,
+	          hyperparameter, sizeof(ccs_hyperparameter_t), p_hyper_wrapper );
+	DL_APPEND( configuration_space->data->distribution_list, distrib_wrapper );
 
 	return CCS_SUCCESS;
 errorutarray:
@@ -304,6 +307,26 @@ ccs_configuration_space_get_hyperparameter_index_by_name(
 	          name, sz_name, wrapper);
 	if (!wrapper)
 		return -CCS_INVALID_NAME;
+	*index_ret = wrapper->index;
+	return CCS_SUCCESS;
+}
+
+ccs_error_t
+ccs_configuration_space_get_hyperparameter_index(
+		ccs_configuration_space_t  configuration_space,
+		ccs_hyperparameter_t       hyperparameter,
+		size_t                    *index_ret) {
+	if (!configuration_space || !configuration_space->data)
+		return -CCS_INVALID_OBJECT;
+	if (!hyperparameter)
+		return -CCS_INVALID_HYPERPARAMETER;
+	if (!index_ret)
+		return -CCS_INVALID_VALUE;
+	_ccs_hyperparameter_wrapper_t *wrapper;
+	HASH_FIND(hh_handle, configuration_space->data->handle_hash,
+	          &hyperparameter, sizeof(ccs_hyperparameter_t), wrapper);
+	if (!wrapper)
+		return -CCS_INVALID_HYPERPARAMETER;
 	*index_ret = wrapper->index;
 	return CCS_SUCCESS;
 }
