@@ -58,7 +58,8 @@ static inline ccs_error_t
 _ccs_expr_datum_eval(ccs_datum_t               *d,
                      ccs_configuration_space_t  context,
                      ccs_datum_t               *values,
-                     ccs_datum_t               *result) {
+                     ccs_datum_t               *result,
+                     ccs_hyperparameter_type_t *ht) {
 	ccs_object_type_t t;
 	size_t index;
 	ccs_error_t err;
@@ -76,7 +77,7 @@ _ccs_expr_datum_eval(ccs_datum_t               *d,
 			return err;
 		switch (t) {
 		case CCS_EXPRESSION:
-			return ccs_eval_expression((ccs_expression_t)(d->value.o),
+			return ccs_expression_eval((ccs_expression_t)(d->value.o),
 			                           context, values, result);
 			break;
 		case CCS_HYPERPARAMETER:
@@ -85,6 +86,12 @@ _ccs_expr_datum_eval(ccs_datum_t               *d,
 			if (err)
 				return err;
 			*result = values[index];
+			if (ht) {
+				err = ccs_hyperparameter_get_type(
+				          (ccs_hyperparameter_t)(d->value.o), ht);
+				if (err)
+					return err;
+			}
 			break;
 		default:
 			return CCS_INVALID_OBJECT;
@@ -96,15 +103,15 @@ _ccs_expr_datum_eval(ccs_datum_t               *d,
 	return CCS_SUCCESS;
 }
 
-#define eval_left_right(data, context, values, left, right) { \
+#define eval_left_right(data, context, values, left, right, htl, htr) do { \
 	ccs_error_t err; \
-	err = _ccs_expr_datum_eval(data->nodes, context, values, &left); \
+	err = _ccs_expr_datum_eval(data->nodes, context, values, &left, htl); \
 	if (err) \
 		return err; \
-	err = _ccs_expr_datum_eval(data->nodes + 1, context, values, &right); \
+	err = _ccs_expr_datum_eval(data->nodes + 1, context, values, &right, htr); \
 	if (err) \
 		return err; \
-}
+} while (0)
 
 static ccs_error_t
 _ccs_expr_or_eval(_ccs_expression_data_t *data,
@@ -113,7 +120,7 @@ _ccs_expr_or_eval(_ccs_expression_data_t *data,
                   ccs_datum_t               *result) {
 	ccs_datum_t left;
 	ccs_datum_t right;
-	eval_left_right(data, context, values, left, right);
+	eval_left_right(data, context, values, left, right, NULL, NULL);
 	if (left.type != CCS_BOOLEAN || right.type != CCS_BOOLEAN)
 		return -CCS_INVALID_VALUE;
 	result->type = CCS_BOOLEAN;
@@ -133,7 +140,7 @@ _ccs_expr_and_eval(_ccs_expression_data_t *data,
                   ccs_datum_t               *result) {
 	ccs_datum_t left;
 	ccs_datum_t right;
-	eval_left_right(data, context, values, left, right);
+	eval_left_right(data, context, values, left, right, NULL, NULL);
 	if (left.type != CCS_BOOLEAN || right.type != CCS_BOOLEAN)
 		return -CCS_INVALID_VALUE;
 	result->type = CCS_BOOLEAN;
@@ -146,6 +153,94 @@ static _ccs_expression_ops_t _ccs_expr_and_ops = {
 	&_ccs_expr_and_eval
 };
 
+#define check_values(param, v) do { \
+	ccs_bool_t valid; \
+	ccs_error_t err; \
+	err = ccs_hyperparameter_check_value( \
+		(ccs_hyperparameter_t)(param), v, &valid); \
+	if (unlikely(err)) \
+		return err; \
+	if (!valid) \
+		return -CCS_INVALID_VALUE; \
+} while(0)
+
+#define check_hypers(param, v, t) do { \
+	if (t == CCS_ORDINAL || t == CCS_CATEGORICAL) { \
+		check_values(param.value.o, v); \
+	} else if (t == CCS_NUMERICAL) {\
+		if (v.type != CCS_INTEGER && v.type != CCS_FLOAT) \
+			return -CCS_INVALID_VALUE; \
+	} \
+} while(0)
+
+static inline ccs_int_t
+_ccs_string_cmp(const char *a, const char *b) {
+	if (a == b)
+		return 0;
+	if (!a)
+		return -1;
+	if (!b)
+		return 1;
+	return strcmp(a, b);
+}
+
+static inline ccs_error_t
+_ccs_datum_test_equal_generic(ccs_datum_t *a, ccs_datum_t *b, ccs_bool_t *equal) {
+	if (a->type == b->type) {
+		switch(a->type) {
+		case CCS_STRING:
+			*equal = _ccs_string_cmp(a->value.s, b->value.s) == 0 ? CCS_TRUE : CCS_FALSE;
+			break;
+		case CCS_NONE:
+			*equal = CCS_TRUE;
+			break;
+		default:
+			*equal = memcmp(&(a->value), &(b->value), sizeof(ccs_value_t)) == 0 ? CCS_TRUE : CCS_FALSE;
+		}
+	} else {
+		if (a->type == CCS_INTEGER && b->type == CCS_FLOAT) {
+			*equal = (a->value.i == b->value.f) ? CCS_TRUE : CCS_FALSE;
+		} else if (a->type == CCS_FLOAT && b->type == CCS_INTEGER) {
+			*equal = (a->value.f == b->value.i) ? CCS_TRUE : CCS_FALSE;
+		} else {
+			*equal = CCS_FALSE;
+			return -CCS_INVALID_VALUE;
+		}
+	}
+	return CCS_SUCCESS;
+}
+
+static ccs_error_t
+_ccs_expr_equal_eval(_ccs_expression_data_t *data,
+                  ccs_configuration_space_t  context,
+                  ccs_datum_t               *values,
+                  ccs_datum_t               *result) {
+	ccs_datum_t               left;
+	ccs_datum_t               right;
+	ccs_hyperparameter_type_t htl = CCS_HYPERPARAMETER_TYPE_MAX;
+	ccs_hyperparameter_type_t htr = CCS_HYPERPARAMETER_TYPE_MAX;
+
+	eval_left_right(data, context, values, left, right, &htl, &htr);
+	check_hypers(data->nodes[0], right, htl);
+	check_hypers(data->nodes[1], left, htr);
+	ccs_bool_t equal;
+	ccs_error_t err = _ccs_datum_test_equal_generic(&left, &right, &equal);
+	if(htl != CCS_HYPERPARAMETER_TYPE_MAX || htr != CCS_HYPERPARAMETER_TYPE_MAX) {
+		result->value.i = equal;
+	} else {
+		if (err)
+			return err;
+		result->value.i = equal;
+	}
+	result->type = CCS_BOOLEAN;
+	return CCS_SUCCESS;
+}
+
+static _ccs_expression_ops_t _ccs_expr_equal_ops = {
+	{ &_ccs_expression_del },
+	&_ccs_expr_equal_eval
+};
+
 static inline _ccs_expression_ops_t *
 _ccs_expression_ops_broker(ccs_expression_type_t  expression_type) {
 	switch (expression_type) {
@@ -155,16 +250,19 @@ _ccs_expression_ops_broker(ccs_expression_type_t  expression_type) {
 	case CCS_AND:
 		return &_ccs_expr_and_ops;
 		break;
+	case CCS_EQUAL:
+		return &_ccs_expr_equal_ops;
+		break;
 	default:
 		return NULL;
 	}
 }
 
 ccs_error_t
-ccs_create_epression(ccs_expression_type_t  expression_type,
-	             size_t                 num_nodes,
-                     ccs_datum_t           *nodes,
-                     ccs_expression_t      *expression_ret) {
+ccs_create_expression(ccs_expression_type_t  expression_type,
+	              size_t                 num_nodes,
+                      ccs_datum_t           *nodes,
+                      ccs_expression_t      *expression_ret) {
 	if (num_nodes && !nodes)
 		return -CCS_INVALID_VALUE;
 	if (!expression_ret)
@@ -229,7 +327,7 @@ ccs_create_epression(ccs_expression_type_t  expression_type,
 }
 
 ccs_error_t
-ccs_eval_expression(ccs_expression_t           expression,
+ccs_expression_eval(ccs_expression_t           expression,
                     ccs_configuration_space_t  context,
                     ccs_datum_t               *values,
                     ccs_datum_t               *result) {
@@ -240,5 +338,3 @@ ccs_eval_expression(ccs_expression_t           expression,
 	_ccs_expression_ops_t *ops = ccs_expression_get_ops(expression);
 	return ops->eval(expression->data, context, values, result);
 }
-
-

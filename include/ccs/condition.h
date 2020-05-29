@@ -63,13 +63,13 @@ ccs_create_unary_expression(ccs_expression_type_t  expression_type,
                             ccs_expression_t      *expression_ret);
 
 extern ccs_error_t
-ccs_create_epression(ccs_expression_type_t  expression_type,
-	             size_t                 num_nodes,
-                     ccs_datum_t           *nodes,
-                     ccs_expression_t      *expression_ret);
+ccs_create_expression(ccs_expression_type_t  expression_type,
+	              size_t                 num_nodes,
+                      ccs_datum_t           *nodes,
+                      ccs_expression_t      *expression_ret);
 
 extern ccs_error_t
-ccs_eval_expression(ccs_expression_t           expression,
+ccs_expression_eval(ccs_expression_t           expression,
                     ccs_configuration_space_t  context,
                     ccs_datum_t               *values,
                     ccs_datum_t               *result);

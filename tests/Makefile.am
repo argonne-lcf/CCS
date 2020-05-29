@@ -12,7 +12,8 @@ RNG_TESTS = \
 		test_numerical_hyperparameter \
 		test_categorical_hyperparameter \
 		test_ordinal_hyperparameter \
-		test_configuration_space
+		test_configuration_space \
+		test_expression
 
 # unit tests
 UNIT_TESTS = \

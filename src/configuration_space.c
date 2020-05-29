@@ -480,7 +480,7 @@ ccs_configuration_space_samples(ccs_configuration_space_t  configuration_space,
 	ccs_error_t err;
 	UT_array *array = configuration_space->data->hyperparameters;
 	size_t num_hyper = utarray_len(array);
-	ccs_datum_t *values = (ccs_datum_t *)malloc(sizeof(ccs_datum_t)*num_configurations*num_hyper);
+	ccs_datum_t *values = (ccs_datum_t *)calloc(1, sizeof(ccs_datum_t)*num_configurations*num_hyper);
 	ccs_datum_t *p_values = values;
 	ccs_rng_t rng = configuration_space->data->rng;
 	_ccs_hyperparameter_wrapper_t *wrapper = NULL;
