@@ -1,5 +1,6 @@
 #include "cconfigspace_internal.h"
 #include "condition_internal.h"
+#include <math.h>
 #include <string.h>
 
 const int ccs_expression_precedence[] = {
@@ -102,6 +103,13 @@ _ccs_expr_datum_eval(ccs_datum_t               *d,
 	}
 	return CCS_SUCCESS;
 }
+
+#define eval_node(data, context, values, node, ht) do { \
+	ccs_error_t err; \
+	err = _ccs_expr_datum_eval(data->nodes, context, values, &node, ht); \
+	if (err) \
+		return err; \
+} while(0)
 
 #define eval_left_right(data, context, values, left, right, htl, htr) do { \
 	ccs_error_t err; \
@@ -210,11 +218,43 @@ _ccs_datum_test_equal_generic(ccs_datum_t *a, ccs_datum_t *b, ccs_bool_t *equal)
 	return CCS_SUCCESS;
 }
 
+static inline ccs_error_t
+_ccs_datum_cmp_generic(ccs_datum_t *a, ccs_datum_t *b, ccs_int_t *cmp) {
+	if (a->type == b->type) {
+		switch(a->type) {
+		case CCS_STRING:
+			*cmp = _ccs_string_cmp(a->value.s, b->value.s);
+			break;
+		case CCS_INTEGER:
+			*cmp = a->value.i < b->value.i ? -1 :
+			       a->value.i > b->value.i ?  1 : 0;
+			break;
+		case CCS_FLOAT:
+			*cmp = a->value.f < b->value.f ? -1 :
+			       a->value.f > b->value.f ?  1 : 0;
+			break;
+		default:
+			return -CCS_INVALID_VALUE;
+		}
+	} else {
+		if (a->type == CCS_INTEGER && b->type == CCS_FLOAT) {
+			*cmp = a->value.i < b->value.f ? -1 :
+			       a->value.i > b->value.f ?  1 : 0;
+		} else if (a->type == CCS_FLOAT && b->type == CCS_INTEGER) {
+			*cmp = a->value.f < b->value.i ? -1 :
+			       a->value.f > b->value.i ?  1 : 0;
+		} else {
+			return -CCS_INVALID_VALUE;
+		}
+	}
+	return CCS_SUCCESS;
+}
+
 static ccs_error_t
 _ccs_expr_equal_eval(_ccs_expression_data_t *data,
-                  ccs_configuration_space_t  context,
-                  ccs_datum_t               *values,
-                  ccs_datum_t               *result) {
+                     ccs_configuration_space_t  context,
+                     ccs_datum_t               *values,
+                     ccs_datum_t               *result) {
 	ccs_datum_t               left;
 	ccs_datum_t               right;
 	ccs_hyperparameter_type_t htl = CCS_HYPERPARAMETER_TYPE_MAX;
@@ -241,6 +281,606 @@ static _ccs_expression_ops_t _ccs_expr_equal_ops = {
 	&_ccs_expr_equal_eval
 };
 
+static ccs_error_t
+_ccs_expr_not_equal_eval(_ccs_expression_data_t    *data,
+                         ccs_configuration_space_t  context,
+                         ccs_datum_t               *values,
+                         ccs_datum_t               *result) {
+	ccs_datum_t               left;
+	ccs_datum_t               right;
+	ccs_hyperparameter_type_t htl = CCS_HYPERPARAMETER_TYPE_MAX;
+	ccs_hyperparameter_type_t htr = CCS_HYPERPARAMETER_TYPE_MAX;
+
+	eval_left_right(data, context, values, left, right, &htl, &htr);
+	check_hypers(data->nodes[0], right, htl);
+	check_hypers(data->nodes[1], left, htr);
+	ccs_bool_t equal;
+	ccs_error_t err = _ccs_datum_test_equal_generic(&left, &right, &equal);
+	if(htl != CCS_HYPERPARAMETER_TYPE_MAX || htr != CCS_HYPERPARAMETER_TYPE_MAX) {
+		result->value.i = equal ? CCS_FALSE : CCS_TRUE;
+	} else {
+		if (err)
+			return err;
+		result->value.i = equal ? CCS_FALSE : CCS_TRUE;
+	}
+	result->type = CCS_BOOLEAN;
+	return CCS_SUCCESS;
+}
+
+static _ccs_expression_ops_t _ccs_expr_not_equal_ops = {
+	{ &_ccs_expression_del },
+	&_ccs_expr_not_equal_eval
+};
+
+static ccs_error_t
+_ccs_expr_less_eval(_ccs_expression_data_t *data,
+                    ccs_configuration_space_t  context,
+                    ccs_datum_t               *values,
+                    ccs_datum_t               *result) {
+	ccs_datum_t               left;
+	ccs_datum_t               right;
+	ccs_hyperparameter_type_t htl = CCS_HYPERPARAMETER_TYPE_MAX;
+	ccs_hyperparameter_type_t htr = CCS_HYPERPARAMETER_TYPE_MAX;
+
+	eval_left_right(data, context, values, left, right, &htl, &htr);
+	if (htl == CCS_CATEGORICAL || htr == CCS_CATEGORICAL)
+		return -CCS_INVALID_VALUE;
+	check_hypers(data->nodes[0], right, htl);
+	check_hypers(data->nodes[1], left, htr);
+	ccs_error_t err;
+	if (htl == CCS_ORDINAL) {
+		ccs_int_t cmp;
+		err = ccs_ordinal_hyperparameter_compare_values(
+			(ccs_hyperparameter_t)(data->nodes[0].value.o),
+			left, right, &cmp);
+		if (err)
+			return err;
+		result->type = CCS_BOOLEAN;
+		result->value.i = (cmp < 0 ? CCS_TRUE : CCS_FALSE);
+		return CCS_SUCCESS;
+	}
+	if (htr == CCS_ORDINAL) {
+		ccs_int_t cmp;
+		err = ccs_ordinal_hyperparameter_compare_values(
+			(ccs_hyperparameter_t)(data->nodes[1].value.o),
+			left, right, &cmp);
+		if (err)
+			return err;
+		result->type = CCS_BOOLEAN;
+		result->value.i = (cmp < 0 ? CCS_TRUE : CCS_FALSE);
+		return CCS_SUCCESS;
+	}
+	ccs_int_t cmp;
+	err = _ccs_datum_cmp_generic(&left, &right, &cmp);
+	if (err)
+		return err;
+	result->type = CCS_BOOLEAN;
+	result->value.i = cmp < 0 ? CCS_TRUE : CCS_FALSE;
+	return CCS_SUCCESS;
+}
+
+static _ccs_expression_ops_t _ccs_expr_less_ops = {
+	{ &_ccs_expression_del },
+	&_ccs_expr_less_eval
+};
+
+static ccs_error_t
+_ccs_expr_greater_eval(_ccs_expression_data_t *data,
+                       ccs_configuration_space_t  context,
+                       ccs_datum_t               *values,
+                       ccs_datum_t               *result) {
+	ccs_datum_t               left;
+	ccs_datum_t               right;
+	ccs_hyperparameter_type_t htl = CCS_HYPERPARAMETER_TYPE_MAX;
+	ccs_hyperparameter_type_t htr = CCS_HYPERPARAMETER_TYPE_MAX;
+
+	eval_left_right(data, context, values, left, right, &htl, &htr);
+	if (htl == CCS_CATEGORICAL || htr == CCS_CATEGORICAL)
+		return -CCS_INVALID_VALUE;
+	check_hypers(data->nodes[0], right, htl);
+	check_hypers(data->nodes[1], left, htr);
+	ccs_error_t err;
+	if (htl == CCS_ORDINAL) {
+		ccs_int_t cmp;
+		err = ccs_ordinal_hyperparameter_compare_values(
+			(ccs_hyperparameter_t)(data->nodes[0].value.o),
+			left, right, &cmp);
+		if (err)
+			return err;
+		result->type = CCS_BOOLEAN;
+		result->value.i = (cmp > 0 ? CCS_TRUE : CCS_FALSE);
+		return CCS_SUCCESS;
+	}
+	if (htr == CCS_ORDINAL) {
+		ccs_int_t cmp;
+		err = ccs_ordinal_hyperparameter_compare_values(
+			(ccs_hyperparameter_t)(data->nodes[1].value.o),
+			left, right, &cmp);
+		if (err)
+			return err;
+		result->type = CCS_BOOLEAN;
+		result->value.i = (cmp > 0 ? CCS_TRUE : CCS_FALSE);
+		return CCS_SUCCESS;
+	}
+	ccs_int_t cmp;
+	err = _ccs_datum_cmp_generic(&left, &right, &cmp);
+	if (err)
+		return err;
+	result->type = CCS_BOOLEAN;
+	result->value.i = cmp > 0 ? CCS_TRUE : CCS_FALSE;
+	return CCS_SUCCESS;
+}
+
+static _ccs_expression_ops_t _ccs_expr_greater_ops = {
+	{ &_ccs_expression_del },
+	&_ccs_expr_greater_eval
+};
+
+static ccs_error_t
+_ccs_expr_less_or_equal_eval(_ccs_expression_data_t *data,
+                             ccs_configuration_space_t  context,
+                             ccs_datum_t               *values,
+                             ccs_datum_t               *result) {
+	ccs_datum_t               left;
+	ccs_datum_t               right;
+	ccs_hyperparameter_type_t htl = CCS_HYPERPARAMETER_TYPE_MAX;
+	ccs_hyperparameter_type_t htr = CCS_HYPERPARAMETER_TYPE_MAX;
+
+	eval_left_right(data, context, values, left, right, &htl, &htr);
+	if (htl == CCS_CATEGORICAL || htr == CCS_CATEGORICAL)
+		return -CCS_INVALID_VALUE;
+	check_hypers(data->nodes[0], right, htl);
+	check_hypers(data->nodes[1], left, htr);
+	ccs_error_t err;
+	if (htl == CCS_ORDINAL) {
+		ccs_int_t cmp;
+		err = ccs_ordinal_hyperparameter_compare_values(
+			(ccs_hyperparameter_t)(data->nodes[0].value.o),
+			left, right, &cmp);
+		if (err)
+			return err;
+		result->type = CCS_BOOLEAN;
+		result->value.i = (cmp <= 0 ? CCS_TRUE : CCS_FALSE);
+		return CCS_SUCCESS;
+	}
+	if (htr == CCS_ORDINAL) {
+		ccs_int_t cmp;
+		err = ccs_ordinal_hyperparameter_compare_values(
+			(ccs_hyperparameter_t)(data->nodes[1].value.o),
+			left, right, &cmp);
+		if (err)
+			return err;
+		result->type = CCS_BOOLEAN;
+		result->value.i = (cmp <= 0 ? CCS_TRUE : CCS_FALSE);
+		return CCS_SUCCESS;
+	}
+	ccs_int_t cmp;
+	err = _ccs_datum_cmp_generic(&left, &right, &cmp);
+	if (err)
+		return err;
+	result->type = CCS_BOOLEAN;
+	result->value.i = cmp <= 0 ? CCS_TRUE : CCS_FALSE;
+	return CCS_SUCCESS;
+}
+
+static _ccs_expression_ops_t _ccs_expr_less_or_equal_ops = {
+	{ &_ccs_expression_del },
+	&_ccs_expr_less_or_equal_eval
+};
+
+static ccs_error_t
+_ccs_expr_greater_or_equal_eval(_ccs_expression_data_t *data,
+                                ccs_configuration_space_t  context,
+                                ccs_datum_t               *values,
+                                ccs_datum_t               *result) {
+	ccs_datum_t               left;
+	ccs_datum_t               right;
+	ccs_hyperparameter_type_t htl = CCS_HYPERPARAMETER_TYPE_MAX;
+	ccs_hyperparameter_type_t htr = CCS_HYPERPARAMETER_TYPE_MAX;
+
+	eval_left_right(data, context, values, left, right, &htl, &htr);
+	if (htl == CCS_CATEGORICAL || htr == CCS_CATEGORICAL)
+		return -CCS_INVALID_VALUE;
+	check_hypers(data->nodes[0], right, htl);
+	check_hypers(data->nodes[1], left, htr);
+	ccs_error_t err;
+	if (htl == CCS_ORDINAL) {
+		ccs_int_t cmp;
+		err = ccs_ordinal_hyperparameter_compare_values(
+			(ccs_hyperparameter_t)(data->nodes[0].value.o),
+			left, right, &cmp);
+		if (err)
+			return err;
+		result->type = CCS_BOOLEAN;
+		result->value.i = (cmp >= 0 ? CCS_TRUE : CCS_FALSE);
+		return CCS_SUCCESS;
+	}
+	if (htr == CCS_ORDINAL) {
+		ccs_int_t cmp;
+		err = ccs_ordinal_hyperparameter_compare_values(
+			(ccs_hyperparameter_t)(data->nodes[1].value.o),
+			left, right, &cmp);
+		if (err)
+			return err;
+		result->type = CCS_BOOLEAN;
+		result->value.i = (cmp >= 0 ? CCS_TRUE : CCS_FALSE);
+		return CCS_SUCCESS;
+	}
+	ccs_int_t cmp;
+	err = _ccs_datum_cmp_generic(&left, &right, &cmp);
+	if (err)
+		return err;
+	result->type = CCS_BOOLEAN;
+	result->value.i = cmp >= 0 ? CCS_TRUE : CCS_FALSE;
+	return CCS_SUCCESS;
+}
+
+static _ccs_expression_ops_t _ccs_expr_greater_or_equal_ops = {
+	{ &_ccs_expression_del },
+	&_ccs_expr_greater_or_equal_eval
+};
+
+static ccs_error_t
+_ccs_expr_in_eval(_ccs_expression_data_t *data,
+                  ccs_configuration_space_t  context,
+                  ccs_datum_t               *values,
+                  ccs_datum_t               *result) {
+	if (data->nodes[1].type != CCS_OBJECT)
+		return -CCS_INVALID_VALUE;
+	ccs_object_type_t type;
+	ccs_error_t err;
+	err = ccs_object_get_type(data->nodes[1].value.o, &type);
+	if (err)
+		return err;
+	if (type != CCS_EXPRESSION)
+		return -CCS_INVALID_VALUE;
+	ccs_expression_type_t etype;
+	err = ccs_expression_get_type((ccs_expression_t)(data->nodes[1].value.o), &etype);
+	if (err)
+		return err;
+	if (etype != CCS_LIST)
+		return -CCS_INVALID_VALUE;
+	size_t num_nodes;
+	err = ccs_expression_get_num_nodes((ccs_expression_t)(data->nodes[1].value.o), &num_nodes);
+	if (err)
+		return err;
+	if (num_nodes == 0) {
+		result->type = CCS_BOOLEAN;
+		result->value.i = CCS_FALSE;
+		return CCS_SUCCESS;
+	}
+
+	ccs_datum_t               left;
+	ccs_hyperparameter_type_t htl = CCS_HYPERPARAMETER_TYPE_MAX;
+	eval_node(data, context, values, left, &htl);
+	for (size_t i = 0; i < num_nodes; i++) {
+		ccs_datum_t right;
+		err = ccs_expression_list_eval_node((ccs_expression_t)(data->nodes[1].value.o), context, values, i, &right);
+		check_hypers(data->nodes[0], right, htl);
+		ccs_bool_t equal;
+		ccs_error_t err = _ccs_datum_test_equal_generic(&left, &right, &equal);
+		if(htl != CCS_HYPERPARAMETER_TYPE_MAX) {
+			if (equal) {
+				result->type = CCS_BOOLEAN;
+				result->value.i = CCS_TRUE;
+				return CCS_SUCCESS;
+			}
+		} else {
+			if (err)
+				return err;
+			if (equal) {
+				result->type = CCS_BOOLEAN;
+				result->value.i = CCS_TRUE;
+				return CCS_SUCCESS;
+			}
+		}
+	}
+	result->type = CCS_BOOLEAN;
+	result->value.i = CCS_FALSE;
+	return CCS_SUCCESS;
+}
+
+static _ccs_expression_ops_t _ccs_expr_in_ops = {
+	{ &_ccs_expression_del },
+	&_ccs_expr_in_eval
+};
+
+static ccs_error_t
+_ccs_expr_add_eval(_ccs_expression_data_t *data,
+                   ccs_configuration_space_t  context,
+                   ccs_datum_t               *values,
+                   ccs_datum_t               *result) {
+	ccs_datum_t left;
+	ccs_datum_t right;
+	eval_left_right(data, context, values, left, right, NULL, NULL);
+	if (left.type == CCS_INTEGER) {
+		if (right.type == CCS_INTEGER) {
+			result->type = CCS_INTEGER;
+			result->value.i = left.value.i + right.value.i;
+			return CCS_SUCCESS;
+		}
+		if (right.type == CCS_FLOAT) {
+			result->type = CCS_FLOAT;
+			result->value.f = left.value.i + right.value.f;
+			return CCS_SUCCESS;
+		}
+		return -CCS_INVALID_VALUE;
+	}
+	if (left.type == CCS_FLOAT) {
+		if (right.type == CCS_INTEGER) {
+			result->type = CCS_FLOAT;
+			result->value.f = left.value.f + right.value.i;
+			return CCS_SUCCESS;
+		}
+		if (right.type == CCS_FLOAT) {
+			result->type = CCS_FLOAT;
+			result->value.f = left.value.f + right.value.f;
+			return CCS_SUCCESS;
+		}
+	}
+	return -CCS_INVALID_VALUE;
+}
+
+static _ccs_expression_ops_t _ccs_expr_add_ops = {
+	{ &_ccs_expression_del },
+	&_ccs_expr_add_eval
+};
+
+static ccs_error_t
+_ccs_expr_substract_eval(_ccs_expression_data_t *data,
+                         ccs_configuration_space_t  context,
+                         ccs_datum_t               *values,
+                         ccs_datum_t               *result) {
+	ccs_datum_t left;
+	ccs_datum_t right;
+	eval_left_right(data, context, values, left, right, NULL, NULL);
+	if (left.type == CCS_INTEGER) {
+		if (right.type == CCS_INTEGER) {
+			result->type = CCS_INTEGER;
+			result->value.i = left.value.i - right.value.i;
+			return CCS_SUCCESS;
+		}
+		if (right.type == CCS_FLOAT) {
+			result->type = CCS_FLOAT;
+			result->value.f = left.value.i - right.value.f;
+			return CCS_SUCCESS;
+		}
+		return -CCS_INVALID_VALUE;
+	}
+	if (left.type == CCS_FLOAT) {
+		if (right.type == CCS_INTEGER) {
+			result->type = CCS_FLOAT;
+			result->value.f = left.value.f - right.value.i;
+			return CCS_SUCCESS;
+		}
+		if (right.type == CCS_FLOAT) {
+			result->type = CCS_FLOAT;
+			result->value.f = left.value.f - right.value.f;
+			return CCS_SUCCESS;
+		}
+	}
+	return -CCS_INVALID_VALUE;
+}
+
+static _ccs_expression_ops_t _ccs_expr_substract_ops = {
+	{ &_ccs_expression_del },
+	&_ccs_expr_substract_eval
+};
+
+static ccs_error_t
+_ccs_expr_multiply_eval(_ccs_expression_data_t    *data,
+                        ccs_configuration_space_t  context,
+                        ccs_datum_t               *values,
+                        ccs_datum_t               *result) {
+	ccs_datum_t left;
+	ccs_datum_t right;
+	eval_left_right(data, context, values, left, right, NULL, NULL);
+	if (left.type == CCS_INTEGER) {
+		if (right.type == CCS_INTEGER) {
+			result->type = CCS_INTEGER;
+			result->value.i = left.value.i * right.value.i;
+			return CCS_SUCCESS;
+		}
+		if (right.type == CCS_FLOAT) {
+			result->type = CCS_FLOAT;
+			result->value.f = left.value.i * right.value.f;
+			return CCS_SUCCESS;
+		}
+		return -CCS_INVALID_VALUE;
+	}
+	if (left.type == CCS_FLOAT) {
+		if (right.type == CCS_INTEGER) {
+			result->type = CCS_FLOAT;
+			result->value.f = left.value.f * right.value.i;
+			return CCS_SUCCESS;
+		}
+		if (right.type == CCS_FLOAT) {
+			result->type = CCS_FLOAT;
+			result->value.f = left.value.f * right.value.f;
+			return CCS_SUCCESS;
+		}
+	}
+	return -CCS_INVALID_VALUE;
+}
+
+static _ccs_expression_ops_t _ccs_expr_multiply_ops = {
+	{ &_ccs_expression_del },
+	&_ccs_expr_multiply_eval
+};
+
+static ccs_error_t
+_ccs_expr_divide_eval(_ccs_expression_data_t    *data,
+                      ccs_configuration_space_t  context,
+                      ccs_datum_t               *values,
+                      ccs_datum_t               *result) {
+	ccs_datum_t left;
+	ccs_datum_t right;
+	eval_left_right(data, context, values, left, right, NULL, NULL);
+	if (left.type == CCS_INTEGER) {
+		if (right.type == CCS_INTEGER) {
+			if (right.value.i == 0)
+				return -CCS_INVALID_VALUE;
+			result->type = CCS_INTEGER;
+			result->value.i = left.value.i / right.value.i;
+			return CCS_SUCCESS;
+		}
+		if (right.type == CCS_FLOAT) {
+			if (right.value.f == 0.0)
+				return -CCS_INVALID_VALUE;
+			result->type = CCS_FLOAT;
+			result->value.f = left.value.i / right.value.f;
+			return CCS_SUCCESS;
+		}
+		return -CCS_INVALID_VALUE;
+	}
+	if (left.type == CCS_FLOAT) {
+		if (right.type == CCS_INTEGER) {
+			if (right.value.i == 0)
+				return -CCS_INVALID_VALUE;
+			result->type = CCS_FLOAT;
+			result->value.f = left.value.f / right.value.i;
+			return CCS_SUCCESS;
+		}
+		if (right.type == CCS_FLOAT) {
+			if (right.value.f == 0.0)
+				return -CCS_INVALID_VALUE;
+			result->type = CCS_FLOAT;
+			result->value.f = left.value.f / right.value.f;
+			return CCS_SUCCESS;
+		}
+	}
+	return -CCS_INVALID_VALUE;
+}
+
+static _ccs_expression_ops_t _ccs_expr_divide_ops = {
+	{ &_ccs_expression_del },
+	&_ccs_expr_divide_eval
+};
+
+static ccs_error_t
+_ccs_expr_modulo_eval(_ccs_expression_data_t    *data,
+                      ccs_configuration_space_t  context,
+                      ccs_datum_t               *values,
+                      ccs_datum_t               *result) {
+	ccs_datum_t left;
+	ccs_datum_t right;
+	eval_left_right(data, context, values, left, right, NULL, NULL);
+	if (left.type == CCS_INTEGER) {
+		if (right.type == CCS_INTEGER) {
+			if (right.value.i == 0)
+				return -CCS_INVALID_VALUE;
+			result->type = CCS_INTEGER;
+			result->value.i = left.value.i % right.value.i;
+			return CCS_SUCCESS;
+		}
+		if (right.type == CCS_FLOAT) {
+			if (right.value.f == 0.0)
+				return -CCS_INVALID_VALUE;
+			result->type = CCS_FLOAT;
+			result->value.f = fmod(left.value.i, right.value.f);
+			return CCS_SUCCESS;
+		}
+		return -CCS_INVALID_VALUE;
+	}
+	if (left.type == CCS_FLOAT) {
+		if (right.type == CCS_INTEGER) {
+			if (right.value.i == 0)
+				return -CCS_INVALID_VALUE;
+			result->type = CCS_FLOAT;
+			result->value.f = fmod(left.value.f, right.value.i);
+			return CCS_SUCCESS;
+		}
+		if (right.type == CCS_FLOAT) {
+			if (right.value.f == 0.0)
+				return -CCS_INVALID_VALUE;
+			result->type = CCS_FLOAT;
+			result->value.f = fmod(left.value.f, right.value.f);
+			return CCS_SUCCESS;
+		}
+	}
+	return -CCS_INVALID_VALUE;
+}
+
+static _ccs_expression_ops_t _ccs_expr_modulo_ops = {
+	{ &_ccs_expression_del },
+	&_ccs_expr_modulo_eval
+};
+
+static ccs_error_t
+_ccs_expr_positive_eval(_ccs_expression_data_t    *data,
+                        ccs_configuration_space_t  context,
+                        ccs_datum_t               *values,
+                        ccs_datum_t               *result) {
+	ccs_datum_t node;
+	eval_node(data, context, values, node, NULL);
+	if (node.type != CCS_INTEGER && node.type != CCS_FLOAT) {
+		return -CCS_INVALID_VALUE;
+	}
+	*result = node;
+	return CCS_SUCCESS;
+}
+
+static _ccs_expression_ops_t _ccs_expr_positive_ops = {
+	{ &_ccs_expression_del },
+	&_ccs_expr_positive_eval
+};
+
+static ccs_error_t
+_ccs_expr_negative_eval(_ccs_expression_data_t    *data,
+                        ccs_configuration_space_t  context,
+                        ccs_datum_t               *values,
+                        ccs_datum_t               *result) {
+	ccs_datum_t node;
+	eval_node(data, context, values, node, NULL);
+	if (node.type == CCS_INTEGER) {
+		result->type = node.type;
+		result->value.i = - node.value.i;
+	} else if (node.type == CCS_FLOAT) {
+		result->type = node.type;
+		result->value.f = - node.value.f;
+	} else
+		return -CCS_INVALID_VALUE;
+	return CCS_SUCCESS;
+}
+
+static _ccs_expression_ops_t _ccs_expr_negative_ops = {
+	{ &_ccs_expression_del },
+	&_ccs_expr_negative_eval
+};
+
+static ccs_error_t
+_ccs_expr_not_eval(_ccs_expression_data_t    *data,
+                   ccs_configuration_space_t  context,
+                   ccs_datum_t               *values,
+                   ccs_datum_t               *result) {
+	ccs_datum_t node;
+	eval_node(data, context, values, node, NULL);
+	if (node.type == CCS_BOOLEAN) {
+		result->type = node.type;
+		result->value.i = node.value.i ? CCS_FALSE : CCS_TRUE;
+	} else
+		return -CCS_INVALID_VALUE;
+	return CCS_SUCCESS;
+}
+
+static _ccs_expression_ops_t _ccs_expr_not_ops = {
+	{ &_ccs_expression_del },
+	&_ccs_expr_not_eval
+};
+
+static ccs_error_t
+_ccs_expr_list_eval(_ccs_expression_data_t    *data,
+                   ccs_configuration_space_t  context,
+                   ccs_datum_t               *values,
+                   ccs_datum_t               *result) {
+	return -CCS_UNSUPPORTED_OPERATION;
+}
+
+static _ccs_expression_ops_t _ccs_expr_list_ops = {
+	{ &_ccs_expression_del },
+	&_ccs_expr_list_eval
+};
+
 static inline _ccs_expression_ops_t *
 _ccs_expression_ops_broker(ccs_expression_type_t  expression_type) {
 	switch (expression_type) {
@@ -252,6 +892,51 @@ _ccs_expression_ops_broker(ccs_expression_type_t  expression_type) {
 		break;
 	case CCS_EQUAL:
 		return &_ccs_expr_equal_ops;
+		break;
+	case CCS_NOT_EQUAL:
+		return &_ccs_expr_not_equal_ops;
+		break;
+	case CCS_LESS:
+		return &_ccs_expr_less_ops;
+		break;
+	case CCS_GREATER:
+		return &_ccs_expr_greater_ops;
+		break;
+	case CCS_LESS_OR_EQUAL:
+		return &_ccs_expr_less_or_equal_ops;
+		break;
+	case CCS_GREATER_OR_EQUAL:
+		return &_ccs_expr_greater_or_equal_ops;
+		break;
+	case CCS_IN:
+		return &_ccs_expr_in_ops;
+		break;
+	case CCS_ADD:
+		return &_ccs_expr_add_ops;
+		break;
+	case CCS_SUBSTRACT:
+		return &_ccs_expr_substract_ops;
+		break;
+	case CCS_MULTIPLY:
+		return &_ccs_expr_multiply_ops;
+		break;
+	case CCS_DIVIDE:
+		return &_ccs_expr_divide_ops;
+		break;
+	case CCS_MODULO:
+		return &_ccs_expr_modulo_ops;
+		break;
+	case CCS_POSITIVE:
+		return &_ccs_expr_positive_ops;
+		break;
+	case CCS_NEGATIVE:
+		return &_ccs_expr_negative_ops;
+		break;
+	case CCS_NOT:
+		return &_ccs_expr_not_ops;
+		break;
+	case CCS_LIST:
+		return &_ccs_expr_list_ops;
 		break;
 	default:
 		return NULL;
@@ -338,3 +1023,45 @@ ccs_expression_eval(ccs_expression_t           expression,
 	_ccs_expression_ops_t *ops = ccs_expression_get_ops(expression);
 	return ops->eval(expression->data, context, values, result);
 }
+
+ccs_error_t
+ccs_expression_get_num_nodes(ccs_expression_t  expression,
+                             size_t           *num_nodes_ret) {
+	if (!expression || !expression->data)
+		return CCS_INVALID_OBJECT;
+	if (!num_nodes_ret)
+		return CCS_INVALID_VALUE;
+	*num_nodes_ret = expression->data->num_nodes;
+	return CCS_SUCCESS;
+}
+
+ccs_error_t
+ccs_expression_list_eval_node(ccs_expression_t           expression,
+                              ccs_configuration_space_t  context,
+                              ccs_datum_t               *values,
+                              size_t                     index,
+                              ccs_datum_t               *result) {
+	if (!expression || !expression->data)
+		return CCS_INVALID_OBJECT;
+	if (!result)
+		return CCS_INVALID_VALUE;
+	ccs_error_t err;
+	ccs_datum_t node;
+	if (index >= expression->data->num_nodes)
+		return -CCS_OUT_OF_BOUNDS;
+	err = _ccs_expr_datum_eval(expression->data->nodes + index, context, values, &node, NULL);
+	if (err)
+		return err;
+	*result = node;
+	return CCS_SUCCESS;
+}
+
+ccs_error_t
+ccs_expression_get_type(ccs_expression_t       expression,
+                        ccs_expression_type_t *type_ret) {
+	if (!expression || !expression->data)
+		return CCS_INVALID_OBJECT;
+	*type_ret = expression->data->type;
+	return CCS_SUCCESS;
+}
+

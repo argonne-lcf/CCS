@@ -74,6 +74,20 @@ ccs_expression_eval(ccs_expression_t           expression,
                     ccs_datum_t               *values,
                     ccs_datum_t               *result);
 
+extern ccs_error_t
+ccs_expression_list_eval_node(ccs_expression_t           expression,
+                              ccs_configuration_space_t  context,
+                              ccs_datum_t               *values,
+                              size_t                     index,
+                              ccs_datum_t               *result);
+
+extern ccs_error_t
+ccs_expression_get_num_nodes(ccs_expression_t  expression,
+                             size_t           *num_nodes_ret);
+
+extern ccs_error_t
+ccs_expression_get_type(ccs_expression_t       expression,
+                        ccs_expression_type_t *type_ret);
 // Conditions
 extern ccs_error_t
 ccs_create_condition(ccs_hyperparameter_t  hyperparameter,
