@@ -556,23 +556,21 @@ _ccs_expr_in_eval(_ccs_expression_data_t *data,
 	for (size_t i = 0; i < num_nodes; i++) {
 		ccs_datum_t right;
 		err = ccs_expression_list_eval_node((ccs_expression_t)(data->nodes[1].value.o), context, values, i, &right);
+		if (err)
+			return err;
 		check_hypers(data->nodes[0], right, htl);
 		ccs_bool_t equal;
 		ccs_error_t err = _ccs_datum_test_equal_generic(&left, &right, &equal);
-		if(htl != CCS_HYPERPARAMETER_TYPE_MAX) {
-			if (equal) {
-				result->type = CCS_BOOLEAN;
-				result->value.i = CCS_TRUE;
-				return CCS_SUCCESS;
-			}
-		} else {
-			if (err)
+		if (err) {
+			if (err != -CCS_INVALID_VALUE)
 				return err;
-			if (equal) {
-				result->type = CCS_BOOLEAN;
-				result->value.i = CCS_TRUE;
-				return CCS_SUCCESS;
-			}
+			else
+				continue;
+		}
+		if (equal) {
+			result->type = CCS_BOOLEAN;
+			result->value.i = CCS_TRUE;
+			return CCS_SUCCESS;
 		}
 	}
 	result->type = CCS_BOOLEAN;
@@ -944,7 +942,7 @@ _ccs_expression_ops_broker(ccs_expression_type_t  expression_type) {
 }
 
 ccs_error_t
-ccs_create_expression(ccs_expression_type_t  expression_type,
+ccs_create_expression(ccs_expression_type_t  type,
 	              size_t                 num_nodes,
                       ccs_datum_t           *nodes,
                       ccs_expression_t      *expression_ret) {
@@ -952,7 +950,7 @@ ccs_create_expression(ccs_expression_type_t  expression_type,
 		return -CCS_INVALID_VALUE;
 	if (!expression_ret)
 		return -CCS_INVALID_VALUE;
-	int arity = ccs_expression_arity[expression_type];
+	int arity = ccs_expression_arity[type];
 	if (arity >= 0 && num_nodes != (size_t)arity)
 		return -CCS_INVALID_VALUE;
 
@@ -984,10 +982,10 @@ ccs_create_expression(ccs_expression_type_t  expression_type,
 
 	ccs_expression_t expression = (ccs_expression_t)mem;
 	_ccs_object_init(&(expression->obj), CCS_EXPRESSION,
-	                 (_ccs_object_ops_t*)_ccs_expression_ops_broker(expression_type));
+	                 (_ccs_object_ops_t*)_ccs_expression_ops_broker(type));
 	_ccs_expression_data_t *expression_data =
 	    (_ccs_expression_data_t *)(mem + sizeof(struct _ccs_expression_s));
-	expression_data->type = expression_type;
+	expression_data->type = type;
 	expression_data->num_nodes = num_nodes;
 	expression_data->nodes = (ccs_datum_t *)(mem +
 	    sizeof(struct _ccs_expression_s) +
@@ -1009,6 +1007,24 @@ ccs_create_expression(ccs_expression_type_t  expression_type,
 	expression->data = expression_data;
 	*expression_ret = expression;
 	return CCS_SUCCESS;
+}
+
+ccs_error_t
+ccs_create_binary_expression(ccs_expression_type_t  type,
+                             ccs_datum_t            node_left,
+                             ccs_datum_t            node_right,
+                             ccs_expression_t      *expression_ret) {
+	ccs_datum_t nodes[2];
+	nodes[0] = node_left;
+	nodes[1] = node_right;
+	return ccs_create_expression(type, 2, nodes, expression_ret);
+}
+
+ccs_error_t
+ccs_create_unary_expression(ccs_expression_type_t  type,
+                            ccs_datum_t            node,
+                            ccs_expression_t      *expression_ret) {
+	return ccs_create_expression(type, 1, &node, expression_ret);
 }
 
 ccs_error_t

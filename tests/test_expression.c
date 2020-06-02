@@ -2,6 +2,7 @@
 #include <assert.h>
 #include <cconfigspace.h>
 #include <string.h>
+#include <math.h>
 
 static inline ccs_datum_t
 ccs_bool(ccs_bool_t v) {
@@ -281,10 +282,482 @@ void test_equal_ordinal() {
 	assert( err == CCS_SUCCESS );
 }
 
+void test_binary_arithmetic(ccs_expression_type_t t,
+                            ccs_datum_t a, ccs_datum_t b,
+                            ccs_datum_t eres, ccs_error_t eerr) {
+	ccs_datum_t nodes[2];
+	nodes[0] = a;
+	nodes[1] = b;
+	test_expression_wrapper(t, 2, nodes, NULL, NULL, eres, eerr);
+
+}
+
+void test_unary_arithmetic(ccs_expression_type_t t,
+                           ccs_datum_t a,
+                           ccs_datum_t eres, ccs_error_t eerr) {
+	test_expression_wrapper(t, 1, &a, NULL, NULL, eres, eerr);
+}
+
+void test_arithmetic_add() {
+	test_binary_arithmetic(CCS_ADD,
+	                       ccs_float(1.0), ccs_float(2.0), ccs_float(1.0+2.0),
+	                       CCS_SUCCESS);
+
+	test_binary_arithmetic(CCS_ADD,
+	                       ccs_int(1), ccs_float(2.0), ccs_float(1+2.0),
+	                       CCS_SUCCESS);
+
+	test_binary_arithmetic(CCS_ADD,
+	                       ccs_float(1.0), ccs_int(2), ccs_float(1.0+2),
+	                       CCS_SUCCESS);
+
+	test_binary_arithmetic(CCS_ADD,
+	                       ccs_int(1), ccs_int(2), ccs_int(1+2),
+	                       CCS_SUCCESS);
+
+	test_binary_arithmetic(CCS_ADD,
+	                       ccs_int(1), ccs_bool(CCS_TRUE), ccs_none,
+	                       -CCS_INVALID_VALUE);
+}
+
+void test_arithmetic_substract() {
+	test_binary_arithmetic(CCS_SUBSTRACT,
+	                       ccs_float(1.0), ccs_float(2.0), ccs_float(1.0-2.0),
+	                       CCS_SUCCESS);
+
+	test_binary_arithmetic(CCS_SUBSTRACT,
+	                       ccs_int(1), ccs_float(2.0), ccs_float(1-2.0),
+	                       CCS_SUCCESS);
+
+	test_binary_arithmetic(CCS_SUBSTRACT,
+	                       ccs_float(1.0), ccs_int(2), ccs_float(1.0-2),
+	                       CCS_SUCCESS);
+
+	test_binary_arithmetic(CCS_SUBSTRACT,
+	                       ccs_int(1), ccs_int(2), ccs_int(1-2),
+	                       CCS_SUCCESS);
+
+	test_binary_arithmetic(CCS_SUBSTRACT,
+	                       ccs_int(1), ccs_bool(CCS_TRUE), ccs_none,
+	                       -CCS_INVALID_VALUE);
+}
+
+void test_arithmetic_multiply() {
+	test_binary_arithmetic(CCS_MULTIPLY,
+	                       ccs_float(3.0), ccs_float(2.0), ccs_float(3.0*2.0),
+	                       CCS_SUCCESS);
+
+	test_binary_arithmetic(CCS_MULTIPLY,
+	                       ccs_int(3), ccs_float(2.0), ccs_float(3*2.0),
+	                       CCS_SUCCESS);
+
+	test_binary_arithmetic(CCS_MULTIPLY,
+	                       ccs_float(3.0), ccs_int(2), ccs_float(3.0*2),
+	                       CCS_SUCCESS);
+
+	test_binary_arithmetic(CCS_MULTIPLY,
+	                       ccs_int(3), ccs_int(2), ccs_int(3*2),
+	                       CCS_SUCCESS);
+
+	test_binary_arithmetic(CCS_MULTIPLY,
+	                       ccs_int(3), ccs_bool(CCS_TRUE), ccs_none,
+	                       -CCS_INVALID_VALUE);
+}
+
+void test_arithmetic_divide() {
+	test_binary_arithmetic(CCS_DIVIDE,
+	                       ccs_float(3.0), ccs_float(2.0), ccs_float(3.0/2.0),
+	                       CCS_SUCCESS);
+
+	test_binary_arithmetic(CCS_DIVIDE,
+	                       ccs_int(3), ccs_float(2.0), ccs_float(3/2.0),
+	                       CCS_SUCCESS);
+
+	test_binary_arithmetic(CCS_DIVIDE,
+	                       ccs_float(3.0), ccs_int(2), ccs_float(3.0/2),
+	                       CCS_SUCCESS);
+
+	test_binary_arithmetic(CCS_DIVIDE,
+	                       ccs_int(3), ccs_int(2), ccs_int(3/2),
+	                       CCS_SUCCESS);
+
+	test_binary_arithmetic(CCS_DIVIDE,
+	                       ccs_int(3), ccs_bool(CCS_TRUE), ccs_none,
+	                       -CCS_INVALID_VALUE);
+}
+
+void test_arithmetic_modulo() {
+	test_binary_arithmetic(CCS_MODULO,
+	                       ccs_float(3.0), ccs_float(2.0), ccs_float(fmod(3.0, 2.0)),
+	                       CCS_SUCCESS);
+
+	test_binary_arithmetic(CCS_MODULO,
+	                       ccs_int(3), ccs_float(2.0), ccs_float(fmod(3, 2.0)),
+	                       CCS_SUCCESS);
+
+	test_binary_arithmetic(CCS_MODULO,
+	                       ccs_float(3.0), ccs_int(2), ccs_float(fmod(3.0, 2)),
+	                       CCS_SUCCESS);
+
+	test_binary_arithmetic(CCS_MODULO,
+	                       ccs_int(3), ccs_int(2), ccs_int(3%2),
+	                       CCS_SUCCESS);
+
+	test_binary_arithmetic(CCS_MODULO,
+	                       ccs_int(3), ccs_bool(CCS_TRUE), ccs_none,
+	                       -CCS_INVALID_VALUE);
+}
+
+void test_arithmetic_positive() {
+	test_unary_arithmetic(CCS_POSITIVE, ccs_float(3.0),
+	                      ccs_float(3.0), CCS_SUCCESS);
+
+	test_unary_arithmetic(CCS_POSITIVE, ccs_int(3),
+	                      ccs_int(3), CCS_SUCCESS);
+
+	test_unary_arithmetic(CCS_POSITIVE, ccs_bool(CCS_FALSE),
+	                      ccs_none, -CCS_INVALID_VALUE);
+}
+
+void test_arithmetic_negative() {
+	test_unary_arithmetic(CCS_NEGATIVE, ccs_float(3.0),
+	                      ccs_float(-3.0), CCS_SUCCESS);
+
+	test_unary_arithmetic(CCS_NEGATIVE, ccs_int(3),
+	                      ccs_int(-3), CCS_SUCCESS);
+
+	test_unary_arithmetic(CCS_NEGATIVE, ccs_bool(CCS_FALSE),
+	                      ccs_none, -CCS_INVALID_VALUE);
+}
+
+void test_arithmetic_not() {
+	test_unary_arithmetic(CCS_NOT, ccs_float(3.0),
+	                      ccs_none, -CCS_INVALID_VALUE);
+
+	test_unary_arithmetic(CCS_NOT, ccs_int(3),
+	                      ccs_none, -CCS_INVALID_VALUE);
+
+	test_unary_arithmetic(CCS_NOT, ccs_bool(CCS_FALSE),
+	                      ccs_bool(CCS_TRUE), CCS_SUCCESS);
+
+	test_unary_arithmetic(CCS_NOT, ccs_bool(CCS_TRUE),
+	                      ccs_bool(CCS_FALSE), CCS_SUCCESS);
+}
+
+void test_arithmetic_and() {
+	test_binary_arithmetic(CCS_AND,
+	                       ccs_bool(CCS_FALSE), ccs_bool(CCS_FALSE),
+	                       ccs_bool(CCS_FALSE), CCS_SUCCESS);
+
+	test_binary_arithmetic(CCS_AND,
+	                       ccs_bool(CCS_TRUE), ccs_bool(CCS_FALSE),
+	                       ccs_bool(CCS_FALSE), CCS_SUCCESS);
+
+	test_binary_arithmetic(CCS_AND,
+	                       ccs_bool(CCS_FALSE), ccs_bool(CCS_TRUE),
+	                       ccs_bool(CCS_FALSE), CCS_SUCCESS);
+
+	test_binary_arithmetic(CCS_AND,
+	                       ccs_bool(CCS_TRUE), ccs_bool(CCS_TRUE),
+	                       ccs_bool(CCS_TRUE), CCS_SUCCESS);
+
+	test_binary_arithmetic(CCS_AND,
+	                       ccs_int(1), ccs_bool(CCS_TRUE),
+	                       ccs_none, -CCS_INVALID_VALUE);
+}
+
+void test_arithmetic_or() {
+	test_binary_arithmetic(CCS_OR,
+	                       ccs_bool(CCS_FALSE), ccs_bool(CCS_FALSE),
+	                       ccs_bool(CCS_FALSE), CCS_SUCCESS);
+
+	test_binary_arithmetic(CCS_OR,
+	                       ccs_bool(CCS_TRUE), ccs_bool(CCS_FALSE),
+	                       ccs_bool(CCS_TRUE), CCS_SUCCESS);
+
+	test_binary_arithmetic(CCS_OR,
+	                       ccs_bool(CCS_FALSE), ccs_bool(CCS_TRUE),
+	                       ccs_bool(CCS_TRUE), CCS_SUCCESS);
+
+	test_binary_arithmetic(CCS_OR,
+	                       ccs_bool(CCS_TRUE), ccs_bool(CCS_TRUE),
+	                       ccs_bool(CCS_TRUE), CCS_SUCCESS);
+
+	test_binary_arithmetic(CCS_OR,
+	                       ccs_int(1), ccs_bool(CCS_TRUE),
+	                       ccs_none, -CCS_INVALID_VALUE);
+}
+
+void test_arithmetic_less() {
+	test_binary_arithmetic(CCS_LESS,
+	                       ccs_float(1.0), ccs_float(2.0),
+	                       ccs_bool(CCS_TRUE), CCS_SUCCESS);
+
+	test_binary_arithmetic(CCS_LESS,
+	                       ccs_float(1.0), ccs_float(1.0),
+	                       ccs_bool(CCS_FALSE), CCS_SUCCESS);
+
+	test_binary_arithmetic(CCS_LESS,
+	                       ccs_float(2.0), ccs_float(1.0),
+	                       ccs_bool(CCS_FALSE), CCS_SUCCESS);
+
+	test_binary_arithmetic(CCS_LESS,
+	                       ccs_int(1), ccs_float(2.0),
+	                       ccs_bool(CCS_TRUE), CCS_SUCCESS);
+
+	test_binary_arithmetic(CCS_LESS,
+	                       ccs_float(2.0), ccs_int(1),
+	                       ccs_bool(CCS_FALSE), CCS_SUCCESS);
+
+	test_binary_arithmetic(CCS_LESS,
+	                       ccs_int(1), ccs_int(1),
+	                       ccs_bool(CCS_FALSE), CCS_SUCCESS);
+
+	test_binary_arithmetic(CCS_LESS,
+	                       ccs_bool(CCS_TRUE), ccs_int(1),
+	                       ccs_none, -CCS_INVALID_VALUE);
+
+	test_binary_arithmetic(CCS_LESS,
+	                       ccs_string("bar"), ccs_string("foo"),
+	                       ccs_bool(CCS_TRUE), CCS_SUCCESS);
+
+	test_binary_arithmetic(CCS_LESS,
+	                       ccs_string("baz"), ccs_string("bar"),
+	                       ccs_bool(CCS_FALSE), CCS_SUCCESS);
+
+	test_binary_arithmetic(CCS_LESS,
+	                       ccs_string("bar"), ccs_string("bar"),
+	                       ccs_bool(CCS_FALSE), CCS_SUCCESS);
+}
+
+void test_arithmetic_greater() {
+	test_binary_arithmetic(CCS_GREATER,
+	                       ccs_float(1.0), ccs_float(2.0),
+	                       ccs_bool(CCS_FALSE), CCS_SUCCESS);
+
+	test_binary_arithmetic(CCS_GREATER,
+	                       ccs_float(1.0), ccs_float(1.0),
+	                       ccs_bool(CCS_FALSE), CCS_SUCCESS);
+
+	test_binary_arithmetic(CCS_GREATER,
+	                       ccs_float(2.0), ccs_float(1.0),
+	                       ccs_bool(CCS_TRUE), CCS_SUCCESS);
+
+	test_binary_arithmetic(CCS_GREATER,
+	                       ccs_int(1), ccs_float(2.0),
+	                       ccs_bool(CCS_FALSE), CCS_SUCCESS);
+
+	test_binary_arithmetic(CCS_GREATER,
+	                       ccs_float(2.0), ccs_int(1),
+	                       ccs_bool(CCS_TRUE), CCS_SUCCESS);
+
+	test_binary_arithmetic(CCS_GREATER,
+	                       ccs_int(1), ccs_int(1),
+	                       ccs_bool(CCS_FALSE), CCS_SUCCESS);
+
+	test_binary_arithmetic(CCS_GREATER,
+	                       ccs_bool(CCS_TRUE), ccs_int(1),
+	                       ccs_none, -CCS_INVALID_VALUE);
+
+	test_binary_arithmetic(CCS_GREATER,
+	                       ccs_string("bar"), ccs_string("foo"),
+	                       ccs_bool(CCS_FALSE), CCS_SUCCESS);
+
+	test_binary_arithmetic(CCS_GREATER,
+	                       ccs_string("baz"), ccs_string("bar"),
+	                       ccs_bool(CCS_TRUE), CCS_SUCCESS);
+
+	test_binary_arithmetic(CCS_GREATER,
+	                       ccs_string("bar"), ccs_string("bar"),
+	                       ccs_bool(CCS_FALSE), CCS_SUCCESS);
+}
+
+void test_arithmetic_less_or_equal() {
+	test_binary_arithmetic(CCS_LESS_OR_EQUAL,
+	                       ccs_float(1.0), ccs_float(2.0),
+	                       ccs_bool(CCS_TRUE), CCS_SUCCESS);
+
+	test_binary_arithmetic(CCS_LESS_OR_EQUAL,
+	                       ccs_float(1.0), ccs_float(1.0),
+	                       ccs_bool(CCS_TRUE), CCS_SUCCESS);
+
+	test_binary_arithmetic(CCS_LESS_OR_EQUAL,
+	                       ccs_float(2.0), ccs_float(1.0),
+	                       ccs_bool(CCS_FALSE), CCS_SUCCESS);
+
+	test_binary_arithmetic(CCS_LESS_OR_EQUAL,
+	                       ccs_int(1), ccs_float(2.0),
+	                       ccs_bool(CCS_TRUE), CCS_SUCCESS);
+
+	test_binary_arithmetic(CCS_LESS_OR_EQUAL,
+	                       ccs_float(2.0), ccs_int(1),
+	                       ccs_bool(CCS_FALSE), CCS_SUCCESS);
+
+	test_binary_arithmetic(CCS_LESS_OR_EQUAL,
+	                       ccs_int(1), ccs_int(1),
+	                       ccs_bool(CCS_TRUE), CCS_SUCCESS);
+
+	test_binary_arithmetic(CCS_LESS_OR_EQUAL,
+	                       ccs_bool(CCS_TRUE), ccs_int(1),
+	                       ccs_none, -CCS_INVALID_VALUE);
+
+	test_binary_arithmetic(CCS_LESS_OR_EQUAL,
+	                       ccs_string("bar"), ccs_string("foo"),
+	                       ccs_bool(CCS_TRUE), CCS_SUCCESS);
+
+	test_binary_arithmetic(CCS_LESS_OR_EQUAL,
+	                       ccs_string("baz"), ccs_string("bar"),
+	                       ccs_bool(CCS_FALSE), CCS_SUCCESS);
+
+	test_binary_arithmetic(CCS_LESS_OR_EQUAL,
+	                       ccs_string("bar"), ccs_string("bar"),
+	                       ccs_bool(CCS_TRUE), CCS_SUCCESS);
+}
+
+void test_arithmetic_greater_or_equal() {
+	test_binary_arithmetic(CCS_GREATER_OR_EQUAL,
+	                       ccs_float(1.0), ccs_float(2.0),
+	                       ccs_bool(CCS_FALSE), CCS_SUCCESS);
+
+	test_binary_arithmetic(CCS_GREATER_OR_EQUAL,
+	                       ccs_float(1.0), ccs_float(1.0),
+	                       ccs_bool(CCS_TRUE), CCS_SUCCESS);
+
+	test_binary_arithmetic(CCS_GREATER_OR_EQUAL,
+	                       ccs_float(2.0), ccs_float(1.0),
+	                       ccs_bool(CCS_TRUE), CCS_SUCCESS);
+
+	test_binary_arithmetic(CCS_GREATER_OR_EQUAL,
+	                       ccs_int(1), ccs_float(2.0),
+	                       ccs_bool(CCS_FALSE), CCS_SUCCESS);
+
+	test_binary_arithmetic(CCS_GREATER_OR_EQUAL,
+	                       ccs_float(2.0), ccs_int(1),
+	                       ccs_bool(CCS_TRUE), CCS_SUCCESS);
+
+	test_binary_arithmetic(CCS_GREATER_OR_EQUAL,
+	                       ccs_int(1), ccs_int(1),
+	                       ccs_bool(CCS_TRUE), CCS_SUCCESS);
+
+	test_binary_arithmetic(CCS_GREATER_OR_EQUAL,
+	                       ccs_bool(CCS_TRUE), ccs_int(1),
+	                       ccs_none, -CCS_INVALID_VALUE);
+
+	test_binary_arithmetic(CCS_GREATER_OR_EQUAL,
+	                       ccs_string("bar"), ccs_string("foo"),
+	                       ccs_bool(CCS_FALSE), CCS_SUCCESS);
+
+	test_binary_arithmetic(CCS_GREATER_OR_EQUAL,
+	                       ccs_string("baz"), ccs_string("bar"),
+	                       ccs_bool(CCS_TRUE), CCS_SUCCESS);
+
+	test_binary_arithmetic(CCS_GREATER_OR_EQUAL,
+	                       ccs_string("bar"), ccs_string("bar"),
+	                       ccs_bool(CCS_TRUE), CCS_SUCCESS);
+}
+
+void test_in() {
+	ccs_expression_t list;
+	ccs_datum_t      values[4];
+	ccs_error_t      err;
+
+	values[0] = ccs_float(3.0);
+	values[1] = ccs_int(1);
+	values[2] = ccs_string("foo");
+	values[3] = ccs_bool(CCS_TRUE);
+
+	err = ccs_create_expression(CCS_LIST, 4, values, &list);
+	assert( err == CCS_SUCCESS );
+
+	test_binary_arithmetic(CCS_IN,
+	                       ccs_float(3.0), ccs_object(list),
+	                       ccs_bool(CCS_TRUE), CCS_SUCCESS);
+
+	test_binary_arithmetic(CCS_IN,
+	                       ccs_int(1), ccs_object(list),
+	                       ccs_bool(CCS_TRUE), CCS_SUCCESS);
+
+	test_binary_arithmetic(CCS_IN,
+	                       ccs_string("foo"), ccs_object(list),
+	                       ccs_bool(CCS_TRUE), CCS_SUCCESS);
+
+	test_binary_arithmetic(CCS_IN,
+	                       ccs_bool(CCS_TRUE), ccs_object(list),
+	                       ccs_bool(CCS_TRUE), CCS_SUCCESS);
+
+	test_binary_arithmetic(CCS_IN,
+	                       ccs_int(3), ccs_object(list),
+	                       ccs_bool(CCS_TRUE), CCS_SUCCESS);
+
+	test_binary_arithmetic(CCS_IN,
+	                       ccs_float(1.0), ccs_object(list),
+	                       ccs_bool(CCS_TRUE), CCS_SUCCESS);
+
+	test_binary_arithmetic(CCS_IN,
+	                       ccs_float(2.0), ccs_object(list),
+	                       ccs_bool(CCS_FALSE), CCS_SUCCESS);
+
+	test_binary_arithmetic(CCS_IN,
+	                       ccs_int(2), ccs_object(list),
+	                       ccs_bool(CCS_FALSE), CCS_SUCCESS);
+
+	test_binary_arithmetic(CCS_IN,
+	                       ccs_string("bar"), ccs_object(list),
+	                       ccs_bool(CCS_FALSE), CCS_SUCCESS);
+
+	test_binary_arithmetic(CCS_IN,
+	                       ccs_bool(CCS_FALSE), ccs_object(list),
+	                       ccs_bool(CCS_FALSE), CCS_SUCCESS);
+
+	err = ccs_release_object(list);
+	assert( err == CCS_SUCCESS );
+}
+
+void
+test_compound() {
+	ccs_expression_t expression1, expression2;
+	ccs_datum_t      result;
+	ccs_error_t      err;
+
+	err = ccs_create_binary_expression(CCS_ADD, ccs_float(3.0), ccs_int(1),
+	                                   &expression1);
+	assert( err == CCS_SUCCESS );
+
+	err = ccs_create_binary_expression(CCS_MULTIPLY, ccs_float(2.0),
+	                                   ccs_object(expression1), &expression2);
+	assert( err == CCS_SUCCESS );
+	err = ccs_release_object(expression1);
+	assert( err == CCS_SUCCESS );
+
+	err = ccs_expression_eval(expression2, NULL, NULL, &result);
+	assert( err == CCS_SUCCESS );
+	assert( result.type == CCS_FLOAT );
+	assert( result.value.f == 8.0 );
+	
+	err = ccs_release_object(expression2);
+	assert( err == CCS_SUCCESS );
+}
+
 int main(int argc, char *argv[]) {
 	ccs_init();
 	test_equal_literal();
 	test_equal_numerical();
 	test_equal_categorical();
 	test_equal_ordinal();
+	test_arithmetic_add();
+	test_arithmetic_substract();
+	test_arithmetic_multiply();
+	test_arithmetic_divide();
+	test_arithmetic_modulo();
+	test_arithmetic_positive();
+	test_arithmetic_negative();
+	test_arithmetic_not();
+	test_arithmetic_and();
+	test_arithmetic_or();
+	test_arithmetic_less();
+	test_arithmetic_greater();
+	test_arithmetic_less_or_equal();
+	test_arithmetic_greater_or_equal();
+	test_compound();
+	test_in();
 }

@@ -52,18 +52,18 @@ extern const int ccs_expression_arity[];
 
 // Expressions
 extern ccs_error_t
-ccs_create_binary_expression(ccs_expression_type_t  expresion_type,
+ccs_create_binary_expression(ccs_expression_type_t  type,
                              ccs_datum_t            node_left,
                              ccs_datum_t            node_right,
                              ccs_expression_t      *expression_ret);
 
 extern ccs_error_t
-ccs_create_unary_expression(ccs_expression_type_t  expression_type,
+ccs_create_unary_expression(ccs_expression_type_t  type,
                             ccs_datum_t            node,
                             ccs_expression_t      *expression_ret);
 
 extern ccs_error_t
-ccs_create_expression(ccs_expression_type_t  expression_type,
+ccs_create_expression(ccs_expression_type_t  type,
 	              size_t                 num_nodes,
                       ccs_datum_t           *nodes,
                       ccs_expression_t      *expression_ret);
