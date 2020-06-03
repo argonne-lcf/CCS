@@ -1177,3 +1177,39 @@ ccs_expression_get_hyperparameters(ccs_expression_t      expression,
 	return CCS_SUCCESS;
 }
 
+ccs_error_t
+ccs_expression_check_context(ccs_expression_t          expression,
+                             ccs_configuration_space_t context) {
+	ccs_error_t err;
+	UT_array *array;
+	utarray_new(array, &_hyperparameter_icd);
+	err = _get_hyperparameters(expression, array);
+	utarray_sort(array, &hyper_sort);
+	if (err) {
+		utarray_free(array);
+		return err;
+	}
+	if (utarray_len(array) > 0) {
+		if (!context) {
+			utarray_free(array);
+			return -CCS_INVALID_VALUE;
+		}
+		ccs_hyperparameter_t  previous = NULL;
+		ccs_hyperparameter_t *p_h = NULL;
+		while ( (p_h = (ccs_hyperparameter_t *)utarray_next(array, p_h)) ) {
+			if (*p_h != previous) {
+				size_t index;
+				err = ccs_configuration_space_get_hyperparameter_index(
+					context, *p_h, &index);
+				if (err) {
+					utarray_free(array);
+					return err;
+				}
+				previous = *p_h;
+			}
+		}
+	}
+	utarray_free(array);
+	return CCS_SUCCESS;
+}
+

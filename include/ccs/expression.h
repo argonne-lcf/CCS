@@ -94,6 +94,10 @@ ccs_expression_get_hyperparameters(ccs_expression_t      expression,
                                    size_t                num_hyperparameters,
                                    ccs_hyperparameter_t *hyperparameters,
                                    size_t               *num_hyperparameters_ret);
+
+extern ccs_error_t
+ccs_expression_check_context(ccs_expression_t          expression,
+                             ccs_configuration_space_t context);
 #ifdef __cplusplus
 }
 #endif

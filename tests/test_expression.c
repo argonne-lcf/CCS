@@ -787,6 +787,8 @@ void test_get_hyperparameters() {
 	assert( hyperparameters[0] == hyperparameter2 );
 	assert( hyperparameters[1] == NULL );
 	assert( hyperparameters[2] == NULL );
+	err = ccs_expression_check_context(expression2, NULL);
+	assert( err == -CCS_INVALID_VALUE );
 
 	err = ccs_release_object(hyperparameter1);
 	assert( err == CCS_SUCCESS );
@@ -795,6 +797,58 @@ void test_get_hyperparameters() {
 	err = ccs_release_object(expression1);
 	assert( err == CCS_SUCCESS );
 	err = ccs_release_object(expression2);
+	assert( err == CCS_SUCCESS );
+}
+
+void test_check_context() {
+	ccs_expression_t          expression1, expression2;
+	ccs_hyperparameter_t      hyperparameter1, hyperparameter2, hyperparameter3;
+	ccs_configuration_space_t space;
+	ccs_error_t               err;
+
+	hyperparameter1 = create_dummy_categorical("param1");
+	hyperparameter2 = create_dummy_numerical("param2");
+	hyperparameter3 = create_dummy_ordinal("param3");
+
+	err = ccs_create_configuration_space("space", NULL, &space);
+	assert( err == CCS_SUCCESS );
+	err = ccs_configuration_space_add_hyperparameter(space, hyperparameter1, NULL);
+	assert( err == CCS_SUCCESS );
+	err = ccs_configuration_space_add_hyperparameter(space, hyperparameter2, NULL);
+	assert( err == CCS_SUCCESS );
+
+	err = ccs_create_binary_expression(CCS_ADD, ccs_float(3.0), ccs_object(hyperparameter2), &expression1);
+	assert( err == CCS_SUCCESS );
+
+	err = ccs_create_binary_expression(CCS_EQUAL,
+	    ccs_object(hyperparameter1), ccs_object(expression1), &expression2);
+	assert( err == CCS_SUCCESS );
+
+	err = ccs_expression_check_context(expression2, NULL);
+	assert( err == -CCS_INVALID_VALUE );
+	err = ccs_expression_check_context(expression2, space);
+	assert( err == CCS_SUCCESS );
+
+	err = ccs_release_object(expression2);
+	assert( err == CCS_SUCCESS );
+
+	err = ccs_create_binary_expression(CCS_EQUAL,
+	    ccs_object(hyperparameter3), ccs_object(expression1), &expression2);
+	assert( err == CCS_SUCCESS );
+	err = ccs_expression_check_context(expression2, space);
+	assert( err == -CCS_INVALID_HYPERPARAMETER );
+
+	err = ccs_release_object(hyperparameter1);
+	assert( err == CCS_SUCCESS );
+	err = ccs_release_object(hyperparameter2);
+	assert( err == CCS_SUCCESS );
+	err = ccs_release_object(hyperparameter3);
+	assert( err == CCS_SUCCESS );
+	err = ccs_release_object(expression1);
+	assert( err == CCS_SUCCESS );
+	err = ccs_release_object(expression2);
+	assert( err == CCS_SUCCESS );
+	err = ccs_release_object(space);
 	assert( err == CCS_SUCCESS );
 }
 
@@ -821,4 +875,5 @@ int main(int argc, char *argv[]) {
 	test_compound();
 	test_in();
 	test_get_hyperparameters();
+	test_check_context();
 }
