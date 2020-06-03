@@ -76,7 +76,7 @@ ccs_configuration_space_get_hyperparameters(ccs_configuration_space_t  configura
                                             size_t                    *num_hyperparameters_ret);
 
 extern ccs_error_t
-ccs_configuration_space_add_condition(ccs_configuration_space_t configuration_space,
+ccs_configuration_space_set_condition(ccs_configuration_space_t configuration_space,
                                       size_t                    hyperparameter_index,
                                       ccs_expression_t          expression);
 
@@ -102,13 +102,13 @@ ccs_configuration_space_add_forbidden_clauses(ccs_configuration_space_t  configu
 
 extern ccs_error_t
 ccs_configuration_space_get_forbidden_clause(ccs_configuration_space_t  configuration_space,
-                                             size_t                     hyperparameter_index,
+                                             size_t                     index,
                                              ccs_expression_t          *expression_ret);
 
 extern ccs_error_t
 ccs_configuration_space_get_forbidden_clauses(ccs_configuration_space_t  configuration_space,
                                               size_t                     num_expressions,
-                                              ccs_expression_t          *expressionss,
+                                              ccs_expression_t          *expressions,
                                               size_t                    *num_expressions_ret);
 
 //   Configuration related functions
@@ -137,6 +137,7 @@ ccs_configuration_space_samples(ccs_configuration_space_t  configuration_space,
 //   Hyperparameter related functions
 extern ccs_error_t
 ccs_configuration_space_get_active_hyperparameters(ccs_configuration_space_t  configuration_space,
+                                                   ccs_configuration_t        configuration,
                                                    size_t                     num_hyperparameters,
                                                    ccs_hyperparameter_t      *hyperparameters,
                                                    size_t                    *num_hyperparameters_ret);

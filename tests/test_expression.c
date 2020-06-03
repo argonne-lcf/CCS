@@ -738,6 +738,66 @@ test_compound() {
 	assert( err == CCS_SUCCESS );
 }
 
+void test_get_hyperparameters() {
+	ccs_expression_t     expression1, expression2;
+	ccs_hyperparameter_t hyperparameter1, hyperparameter2;
+	ccs_hyperparameter_t hyperparameters[3];
+	ccs_error_t          err;
+	size_t               count;
+
+	hyperparameter1 = create_dummy_categorical("param1");
+	hyperparameter2 = create_dummy_numerical("param2");
+
+	err = ccs_create_binary_expression(CCS_ADD, ccs_float(3.0), ccs_object(hyperparameter2), &expression1);
+	assert( err == CCS_SUCCESS );
+
+	err = ccs_expression_get_hyperparameters(expression1, 0, NULL, &count);
+	assert( err == CCS_SUCCESS );
+	assert( count == 1 );
+	err = ccs_expression_get_hyperparameters(expression1, 3, hyperparameters, &count);
+	assert( err == CCS_SUCCESS );
+	assert( count == 1 );
+	assert( hyperparameters[0] == hyperparameter2 );
+	assert( hyperparameters[1] == NULL );
+	assert( hyperparameters[2] == NULL );
+
+	err = ccs_create_binary_expression(CCS_EQUAL,
+	    ccs_object(hyperparameter1), ccs_object(expression1), &expression2);
+	assert( err == CCS_SUCCESS );
+
+	err = ccs_expression_get_hyperparameters(expression2, 0, NULL, &count);
+	assert( err == CCS_SUCCESS );
+	assert( count == 2 );
+	err = ccs_expression_get_hyperparameters(expression2, 3, hyperparameters, NULL);
+	assert( err == CCS_SUCCESS );
+	assert( hyperparameters[0] != hyperparameters[1] );
+	assert( hyperparameters[0] == hyperparameter1 || hyperparameters[0] == hyperparameter2 );
+	assert( hyperparameters[1] == hyperparameter1 || hyperparameters[1] == hyperparameter2 );
+	assert( hyperparameters[2] == NULL );
+
+	err = ccs_release_object(expression2);
+	assert( err == CCS_SUCCESS );
+
+	err = ccs_create_binary_expression(CCS_EQUAL,
+	    ccs_object(hyperparameter2), ccs_object(expression1), &expression2);
+	assert( err == CCS_SUCCESS );
+	err = ccs_expression_get_hyperparameters(expression2, 3, hyperparameters, &count);
+	assert( err == CCS_SUCCESS );
+	assert( count == 1 );
+	assert( hyperparameters[0] == hyperparameter2 );
+	assert( hyperparameters[1] == NULL );
+	assert( hyperparameters[2] == NULL );
+
+	err = ccs_release_object(hyperparameter1);
+	assert( err == CCS_SUCCESS );
+	err = ccs_release_object(hyperparameter2);
+	assert( err == CCS_SUCCESS );
+	err = ccs_release_object(expression1);
+	assert( err == CCS_SUCCESS );
+	err = ccs_release_object(expression2);
+	assert( err == CCS_SUCCESS );
+}
+
 int main(int argc, char *argv[]) {
 	ccs_init();
 	test_equal_literal();
@@ -760,4 +820,5 @@ int main(int argc, char *argv[]) {
 	test_arithmetic_greater_or_equal();
 	test_compound();
 	test_in();
+	test_get_hyperparameters();
 }

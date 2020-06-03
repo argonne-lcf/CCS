@@ -89,6 +89,11 @@ extern ccs_error_t
 ccs_expression_get_type(ccs_expression_t       expression,
                         ccs_expression_type_t *type_ret);
 
+extern ccs_error_t
+ccs_expression_get_hyperparameters(ccs_expression_t      expression,
+                                   size_t                num_hyperparameters,
+                                   ccs_hyperparameter_t *hyperparameters,
+                                   size_t               *num_hyperparameters_ret);
 #ifdef __cplusplus
 }
 #endif

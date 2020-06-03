@@ -2,6 +2,7 @@
 #include "expression_internal.h"
 #include <math.h>
 #include <string.h>
+#include "utarray.h"
 
 const int ccs_expression_precedence[] = {
 	0,
@@ -1078,6 +1079,101 @@ ccs_expression_get_type(ccs_expression_t       expression,
 	if (!expression || !expression->data)
 		return CCS_INVALID_OBJECT;
 	*type_ret = expression->data->type;
+	return CCS_SUCCESS;
+}
+
+#undef  utarray_oom
+#define utarray_oom() { \
+	return -CCS_ENOMEM; \
+}
+
+static ccs_error_t _get_hyperparameters(ccs_expression_t       expression,
+                                        UT_array              *array) {
+	if (!expression || !expression->data)
+		return CCS_INVALID_OBJECT;
+	ccs_error_t err;
+	for (size_t i = 0; i < expression->data->num_nodes; i++) {
+		ccs_datum_t *d = expression->data->nodes + i;
+		if (d->type == CCS_OBJECT) {
+			ccs_object_type_t t;
+			err = ccs_object_get_type(d->value.o, &t);
+			if (err)
+				return err;
+			if (t == CCS_HYPERPARAMETER)
+				utarray_push_back(array, &(d->value.o));
+			else if (t == CCS_EXPRESSION) {
+				err = _get_hyperparameters((ccs_expression_t)(d->value.o), array);
+				if (err)
+					return err;
+			}
+		}
+	}
+	return CCS_SUCCESS;
+}
+
+static const UT_icd _hyperparameter_icd = {
+	sizeof(ccs_hyperparameter_t),
+	NULL,
+	NULL,
+	NULL,
+};
+
+static int hyper_sort(const void *a, const void *b) {
+	ccs_hyperparameter_t ha = *(ccs_hyperparameter_t *)a;
+	ccs_hyperparameter_t hb = *(ccs_hyperparameter_t *)b;
+	return ha < hb ? -1 : ha > hb ? 1 : 0;
+}
+
+ccs_error_t
+ccs_expression_get_hyperparameters(ccs_expression_t      expression,
+                                   size_t                num_hyperparameters,
+                                   ccs_hyperparameter_t *hyperparameters,
+                                   size_t               *num_hyperparameters_ret) {
+	if (num_hyperparameters && !hyperparameters)
+		return -CCS_INVALID_VALUE;
+	if (!hyperparameters && !num_hyperparameters_ret)
+		return -CCS_INVALID_VALUE;
+	ccs_error_t err;
+	UT_array *array;
+	utarray_new(array, &_hyperparameter_icd);
+	err = _get_hyperparameters(expression, array);
+	if (err) {
+		utarray_free(array);
+		return err;
+	}
+	utarray_sort(array, &hyper_sort);
+	size_t count = 0;
+	if (utarray_len(array) > 0) {
+		ccs_hyperparameter_t  previous = NULL;
+		ccs_hyperparameter_t *p_h = NULL;
+		while ( (p_h = (ccs_hyperparameter_t *)utarray_next(array, p_h)) ) {
+			if (*p_h != previous) {
+				count += 1;
+				previous = *p_h;
+			}
+		}
+	} else
+		count = 0;
+	if (hyperparameters) {
+		if (count > num_hyperparameters) {
+			utarray_free(array);
+			return -CCS_INVALID_VALUE;
+		}
+		ccs_hyperparameter_t  previous = NULL;
+		ccs_hyperparameter_t *p_h = NULL;
+		size_t index = 0;
+		while ( (p_h = (ccs_hyperparameter_t *)utarray_next(array, p_h)) ) {
+			if (*p_h != previous) {
+				hyperparameters[index++] = *p_h;
+				previous = *p_h;
+			}
+		}
+		for (size_t i = count; i < num_hyperparameters; i++)
+			hyperparameters[i] = NULL;
+	}
+	if (num_hyperparameters_ret)
+		*num_hyperparameters_ret = count;
+	utarray_free(array);
 	return CCS_SUCCESS;
 }
 

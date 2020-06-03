@@ -16,6 +16,7 @@ struct _ccs_hyperparameter_wrapper_s {
         UT_hash_handle               hh_handle;
 	size_t                       distribution_index;
 	_ccs_distribution_wrapper_t *distribution;
+	ccs_expression_t             condition;
 };
 typedef struct _ccs_hyperparameter_wrapper_s _ccs_hyperparameter_wrapper_t;
 
@@ -48,6 +49,7 @@ struct _ccs_configuration_space_data_s {
 	_ccs_hyperparameter_wrapper_t *name_hash;
 	_ccs_hyperparameter_wrapper_t *handle_hash;
 	_ccs_distribution_wrapper_t   *distribution_list;
+	UT_array                      *forbidden_clauses;
 };
 
 #endif //_CONFIGURATION_SPACE_INTERNAL_H

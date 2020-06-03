@@ -14,10 +14,18 @@ _ccs_configuration_space_del(ccs_object_t object) {
 	_ccs_hyperparameter_wrapper_t *wrapper = NULL;
 	while ( (wrapper = (_ccs_hyperparameter_wrapper_t *)utarray_next(array, wrapper)) ) {
 		ccs_release_object(wrapper->hyperparameter);
+		if (wrapper->condition)
+			ccs_release_object(wrapper->condition);
+	}
+	array = configuration_space->data->forbidden_clauses;
+	ccs_expression_t *expr = NULL;
+	while ( (expr = (ccs_expression_t *)utarray_next(array, expr)) ) {
+		ccs_release_object(*expr);
 	}
 	HASH_CLEAR(hh_name, configuration_space->data->name_hash);
 	HASH_CLEAR(hh_handle, configuration_space->data->handle_hash);
-	utarray_free(array);
+	utarray_free(configuration_space->data->hyperparameters);
+	utarray_free(configuration_space->data->forbidden_clauses);
 	_ccs_distribution_wrapper_t *dw;
 	_ccs_distribution_wrapper_t *tmp;
 	DL_FOREACH_SAFE(configuration_space->data->distribution_list, dw, tmp) {
@@ -39,11 +47,18 @@ static const UT_icd _hyperparameter_wrapper_icd = {
 	NULL,
 };
 
+static const UT_icd _forbidden_clauses_icd = {
+	sizeof(ccs_expression_t),
+	NULL,
+	NULL,
+	NULL,
+};
+
 #undef  utarray_oom
 #define utarray_oom() { \
 	ccs_release_object(config_space->data->rng); \
-	free((void *)mem); \
-	return -CCS_ENOMEM; \
+	err = -CCS_ENOMEM; \
+	goto arrays; \
 }
 ccs_error_t
 ccs_create_configuration_space(const char                *name,
@@ -67,12 +82,22 @@ ccs_create_configuration_space(const char                *name,
 	config_space->data->name = (const char *)(mem + sizeof(struct _ccs_configuration_space_s) + sizeof(struct _ccs_configuration_space_data_s));
 	config_space->data->user_data = user_data;
 	config_space->data->rng = rng;
+	config_space->data->hyperparameters = NULL;
+	config_space->data->forbidden_clauses = NULL;
 	utarray_new(config_space->data->hyperparameters, &_hyperparameter_wrapper_icd);
+	utarray_new(config_space->data->forbidden_clauses, &_forbidden_clauses_icd);
 	config_space->data->name_hash = NULL;
 	config_space->data->distribution_list = NULL;
 	strcpy((char *)(config_space->data->name), name);
 	*configuration_space_ret = config_space;
 	return CCS_SUCCESS;
+arrays:
+	if(config_space->data->hyperparameters)
+		utarray_free(config_space->data->hyperparameters);
+	if(config_space->data->forbidden_clauses)
+		utarray_free(config_space->data->forbidden_clauses);
+	free((void *)mem);
+	return err;
 }
 
 ccs_error_t
@@ -196,6 +221,7 @@ ccs_configuration_space_add_hyperparameter(ccs_configuration_space_t configurati
 	hyper_wrapper.distribution_index = 0;
 	hyper_wrapper.distribution = distrib_wrapper;
 	hyper_wrapper.name = name;
+	hyper_wrapper.condition = NULL;
 	utarray_push_back(hyperparameters, &hyper_wrapper);
 
 	p_hyper_wrapper =
@@ -437,7 +463,7 @@ ccs_configuration_space_check_configuration_values(ccs_configuration_space_t  co
 }
 
 
-// This is temporary until I fugure out how correlated sampling should work
+// This is temporary until I figure out how correlated sampling should work
 ccs_error_t
 ccs_configuration_space_sample(ccs_configuration_space_t  configuration_space,
                                ccs_configuration_t       *configuration_ret) {
@@ -513,4 +539,147 @@ ccs_configuration_space_samples(ccs_configuration_space_t  configuration_space,
 	return CCS_SUCCESS;
 }
 
+ccs_error_t
+ccs_configuration_space_set_condition(ccs_configuration_space_t configuration_space,
+                                      size_t                    hyperparameter_index,
+                                      ccs_expression_t          expression) {
+	if (!configuration_space || !configuration_space->data || !expression)
+		return -CCS_INVALID_OBJECT;
+	_ccs_hyperparameter_wrapper_t *wrapper = (_ccs_hyperparameter_wrapper_t*)
+	    utarray_eltptr(configuration_space->data->hyperparameters,
+	                   (unsigned int)hyperparameter_index);
+	if (!wrapper)
+		return -CCS_OUT_OF_BOUNDS;
+	if (wrapper->condition)
+		return -CCS_INVALID_HYPERPARAMETER;
+	ccs_error_t err = ccs_retain_object(expression);
+	if (err)
+		return err;
+	wrapper->condition = expression;
+	return CCS_SUCCESS;
+}
 
+ccs_error_t
+ccs_configuration_space_get_condition(ccs_configuration_space_t  configuration_space,
+                                      size_t                     hyperparameter_index,
+                                      ccs_expression_t          *expression_ret) {
+	if (!configuration_space || !configuration_space->data)
+		return -CCS_INVALID_OBJECT;
+	if (!expression_ret)
+		return -CCS_INVALID_VALUE;
+	_ccs_hyperparameter_wrapper_t *wrapper = (_ccs_hyperparameter_wrapper_t*)
+	    utarray_eltptr(configuration_space->data->hyperparameters,
+	                   (unsigned int)hyperparameter_index);
+	if (!wrapper)
+		return -CCS_OUT_OF_BOUNDS;
+	*expression_ret = wrapper->condition;
+	return CCS_SUCCESS;
+}
+
+ccs_error_t
+ccs_configuration_space_get_conditions(ccs_configuration_space_t  configuration_space,
+                                       size_t                     num_expressions,
+                                       ccs_expression_t          *expressions,
+                                       size_t                    *num_expressions_ret) {
+	if (!configuration_space || !configuration_space->data)
+		return -CCS_INVALID_OBJECT;
+	if (num_expressions && !expressions)
+		return -CCS_INVALID_VALUE;
+	if (!expressions && !num_expressions_ret)
+		return -CCS_INVALID_VALUE;
+	UT_array *array = configuration_space->data->hyperparameters;
+	size_t size = utarray_len(array);
+	if (expressions) {
+		if (num_expressions < size)
+			return -CCS_INVALID_VALUE;
+		_ccs_hyperparameter_wrapper_t *wrapper = NULL;
+		size_t index = 0;
+		while ( (wrapper = (_ccs_hyperparameter_wrapper_t *)utarray_next(array, wrapper)) )
+			expressions[index++] = wrapper->condition;
+		for (size_t i = size; i < num_expressions; i++)
+			expressions[i] = NULL;
+	}
+	if (num_expressions_ret)
+		*num_expressions_ret = size;
+	return CCS_SUCCESS;
+}
+
+#undef  utarray_oom
+#define utarray_oom() { \
+	return -CCS_ENOMEM; \
+}
+ccs_error_t
+ccs_configuration_space_add_forbidden_clause(ccs_configuration_space_t configuration_space,
+                                             ccs_expression_t          expression) {
+	if (!configuration_space || !configuration_space->data)
+		return -CCS_INVALID_OBJECT;
+	ccs_error_t err = ccs_retain_object(expression);
+	if (err)
+		return err;
+	utarray_push_back(configuration_space->data->forbidden_clauses, &expression);
+	return CCS_SUCCESS;
+}
+
+ccs_error_t
+ccs_configuration_space_add_forbidden_clauses(ccs_configuration_space_t  configuration_space,
+                                              size_t                     num_expressions,
+                                              ccs_expression_t          *expressions) {
+	if (!configuration_space || !configuration_space->data)
+		return -CCS_INVALID_OBJECT;
+	if (num_expressions && !expressions)
+		return -CCS_INVALID_VALUE;
+	for (size_t i = 0; i < num_expressions; i++) {
+		ccs_error_t err = ccs_retain_object(expressions[i]);
+		if (err)
+			return err;
+		utarray_push_back(configuration_space->data->forbidden_clauses, expressions + i);
+	}
+	return CCS_SUCCESS;
+}
+#undef  utarray_oom
+#define utarray_oom() exit(-1)
+
+ccs_error_t
+ccs_configuration_space_get_forbidden_clause(ccs_configuration_space_t  configuration_space,
+                                             size_t                     index,
+                                             ccs_expression_t          *expression_ret) {
+	if (!configuration_space || !configuration_space->data)
+		return -CCS_INVALID_OBJECT;
+	if (!expression_ret)
+		return -CCS_INVALID_VALUE;
+	ccs_expression_t *p_expr = (ccs_expression_t*)
+	    utarray_eltptr(configuration_space->data->forbidden_clauses,
+	                   (unsigned int)index);
+	if (!p_expr)
+		return -CCS_OUT_OF_BOUNDS;
+	*expression_ret = *p_expr;
+	return CCS_SUCCESS;
+}
+
+ccs_error_t
+ccs_configuration_space_get_forbidden_clauses(ccs_configuration_space_t  configuration_space,
+                                              size_t                     num_expressions,
+                                              ccs_expression_t          *expressions,
+                                              size_t                    *num_expressions_ret) {
+	if (!configuration_space || !configuration_space->data)
+		return -CCS_INVALID_OBJECT;
+	if (num_expressions && !expressions)
+		return -CCS_INVALID_VALUE;
+	if (!expressions && !num_expressions_ret)
+		return -CCS_INVALID_VALUE;
+	UT_array *array = configuration_space->data->forbidden_clauses;
+	size_t size = utarray_len(array);
+	if (expressions) {
+		if (num_expressions < size)
+			return -CCS_INVALID_VALUE;
+		ccs_expression_t *p_expr = NULL;
+		size_t index = 0;
+		while ( (p_expr = (ccs_expression_t *)utarray_next(array, p_expr)) )
+			expressions[index++] = *p_expr;
+		for (size_t i = size; i < num_expressions; i++)
+			expressions[i] = NULL;
+	}
+	if (num_expressions_ret)
+		*num_expressions_ret = size;
+	return CCS_SUCCESS;
+}
