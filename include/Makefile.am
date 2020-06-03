@@ -5,7 +5,7 @@ include_ccs_HEADERS = \
 			ccs/rng.h \
 			ccs/distribution.h \
 			ccs/hyperparameter.h \
-			ccs/condition.h\
+			ccs/expression.h\
 			ccs/configuration_space.h \
 			ccs/configuration.h
 

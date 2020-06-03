@@ -25,8 +25,6 @@ typedef struct _ccs_rng_s                 *ccs_rng_t;
 typedef struct _ccs_distribution_s        *ccs_distribution_t;
 typedef struct _ccs_hyperparameter_s      *ccs_hyperparameter_t;
 typedef struct _ccs_expression_s          *ccs_expression_t;
-typedef struct _ccs_condition_s           *ccs_condition_t;
-typedef struct _ccs_forbidden_clause_s    *ccs_forbidden_clause_t;
 typedef struct _ccs_configuration_space_s *ccs_configuration_space_t;
 typedef struct _ccs_configuration_s       *ccs_configuration_t;
 
@@ -57,8 +55,6 @@ enum ccs_object_type_e {
 	CCS_DISTRIBUTION,
 	CCS_HYPERPARAMETER,
 	CCS_EXPRESSION,
-	CCS_CONDITION,
-	CCS_FORBIDDEN_CLAUSE,
 	CCS_CONFIGURATION_SPACE,
 	CCS_CONFIGURATION,
 	CCS_OBJECT_TYPE_MAX,

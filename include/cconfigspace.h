@@ -9,7 +9,7 @@
 #include "ccs/rng.h"
 #include "ccs/distribution.h"
 #include "ccs/hyperparameter.h"
-#include "ccs/condition.h"
+#include "ccs/expression.h"
 #include "ccs/configuration_space.h"
 #include "ccs/configuration.h"
 

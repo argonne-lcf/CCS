@@ -77,51 +77,39 @@ ccs_configuration_space_get_hyperparameters(ccs_configuration_space_t  configura
 
 extern ccs_error_t
 ccs_configuration_space_add_condition(ccs_configuration_space_t configuration_space,
-                                      ccs_condition_t           condition);
+                                      size_t                    hyperparameter_index,
+                                      ccs_expression_t          expression);
 
 extern ccs_error_t
-ccs_configuration_space_add_conditions(ccs_configuration_space_t  configuration_space,
-                                       size_t                     num_conditions,
-                                       ccs_condition_t           *conditions);
-
-extern ccs_error_t
-ccs_configuration_space_get_num_conditions(ccs_configuration_space_t  configuration_space,
-                                           size_t                    *num_conditions_ret);
-
-extern ccs_error_t
-ccs_configuration_space_get_condition(ccs_configuration_space_t configuration_space,
-                                      size_t                    index,
-                                      ccs_condition_t          *condition_ret);
+ccs_configuration_space_get_condition(ccs_configuration_space_t  configuration_space,
+                                      size_t                     hyperparameter_index,
+                                      ccs_expression_t          *expression_ret);
 
 extern ccs_error_t
 ccs_configuration_space_get_conditions(ccs_configuration_space_t  configuration_space,
-                                       size_t                     num_conditions,
-                                       ccs_condition_t           *conditions,
-                                       size_t                    *num_conditions_ret);
+                                       size_t                     num_expressions,
+                                       ccs_expression_t          *expressions,
+                                       size_t                    *num_expressions_ret);
 
 extern ccs_error_t
 ccs_configuration_space_add_forbidden_clause(ccs_configuration_space_t configuration_space,
-                                             ccs_forbidden_clause_t    forbidden_clause);
+                                             ccs_expression_t          expression);
 
 extern ccs_error_t
 ccs_configuration_space_add_forbidden_clauses(ccs_configuration_space_t  configuration_space,
-                                              size_t                     num_forbidden_clauses,
-                                              ccs_forbidden_clause_t    *forbidden_clauses);
+                                              size_t                     num_expressions,
+                                              ccs_expression_t          *expressions);
 
 extern ccs_error_t
-ccs_configuration_space_get_num_forbidden_clauses(ccs_configuration_space_t  configuration_space,
-                                                  size_t                    *num_forbidden_clauses_ret);
-
-extern ccs_error_t
-ccs_configuration_space_get_forbidden_clause(ccs_configuration_space_t configuration_space,
-                                             size_t                    index,
-                                             ccs_forbidden_clause_t   *forbidden_clause_ret);
+ccs_configuration_space_get_forbidden_clause(ccs_configuration_space_t  configuration_space,
+                                             size_t                     hyperparameter_index,
+                                             ccs_expression_t          *expression_ret);
 
 extern ccs_error_t
 ccs_configuration_space_get_forbidden_clauses(ccs_configuration_space_t  configuration_space,
-                                              size_t                     num_forbidden_clauses,
-                                              ccs_forbidden_clause_t    *forbidden_clauses,
-                                              size_t                    *num_forbidden_clauses_ret);
+                                              size_t                     num_expressions,
+                                              ccs_expression_t          *expressionss,
+                                              size_t                    *num_expressions_ret);
 
 //   Configuration related functions
 extern ccs_error_t
@@ -166,25 +154,11 @@ ccs_configuration_space_get_unconditional_hyperparameters(ccs_configuration_spac
                                                           size_t                    *num_hyperparameters_ret);
 
 extern ccs_error_t
-ccs_configuration_space_get_child_conditions_of(ccs_configuration_space_t  configuration_space,
-                                                ccs_hyperparameter_t       hyperparameter,
-                                                size_t                     num_conditions,
-                                                ccs_condition_t           *conditions,
-                                                size_t                    *num_conditions_ret);
-
-extern ccs_error_t
 ccs_configuration_space_get_children_of(ccs_configuration_space_t  configuration_space,
                                         ccs_hyperparameter_t       hyperparameter,
                                         size_t                     num_hyperparameters,
                                         ccs_hyperparameter_t      *hyperparameters,
                                         size_t                    *num_hyperparameters_ret);
-
-extern ccs_error_t
-ccs_configuration_space_get_parent_conditions_of(ccs_configuration_space_t  configuration_space,
-                                                 ccs_hyperparameter_t       hyperparameter,
-                                                 size_t                     num_conditions,
-                                                 ccs_condition_t           *conditions,
-                                                 size_t                    *num_conditions_ret);
 
 extern ccs_error_t
 ccs_configuration_space_get_parents_of(ccs_configuration_space_t  configuration_space,

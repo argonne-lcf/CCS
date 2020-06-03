@@ -1,5 +1,5 @@
-#ifndef _CONDITION_INTERNAL_H
-#define _CONDITION_INTERNAL_H
+#ifndef _EXPRESSION_INTERNAL_H
+#define _EXPRESSION_INTERNAL_H
 
 struct _ccs_expression_data_s;
 typedef struct _ccs_expression_data_s _ccs_expression_data_t;
@@ -26,4 +26,4 @@ struct _ccs_expression_data_s {
 	ccs_datum_t           *nodes;
 };
 
-#endif //_CONDITION_INTERNAL_H
+#endif //_EXPRESSION_INTERNAL_H

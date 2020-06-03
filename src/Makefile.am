@@ -27,7 +27,7 @@ libcconfigspace_la_SOURCES = \
 			configuration_space_internal.h \
 			configuration.c \
 			configuration_internal.h \
-			condition.c \
-			condition_internal.h
+			expression.c \
+			expression_internal.h
 
 @VALGRIND_CHECK_RULES@

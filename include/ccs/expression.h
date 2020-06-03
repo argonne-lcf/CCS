@@ -88,17 +88,6 @@ ccs_expression_get_num_nodes(ccs_expression_t  expression,
 extern ccs_error_t
 ccs_expression_get_type(ccs_expression_t       expression,
                         ccs_expression_type_t *type_ret);
-// Conditions
-extern ccs_error_t
-ccs_create_condition(ccs_hyperparameter_t  hyperparameter,
-                     ccs_expression_t      expression,
-                     ccs_condition_t      *condition_ret);
-
-// Forbidden Clause
-extern ccs_error_t
-ccs_create_forbidden_clause(ccs_hyperparameter_t    hyperparameter,
-                            ccs_expression_t        expression,
-                            ccs_forbidden_clause_t *forbidden_clause_ret);
 
 #ifdef __cplusplus
 }
