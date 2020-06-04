@@ -95,6 +95,7 @@ ccs_expression_list_eval_node(ccs_expression_t           expression,
                               size_t                     index,
                               ccs_datum_t               *result);
 
+//uniq and sorted list of hyperparameters handle
 extern ccs_error_t
 ccs_expression_get_hyperparameters(ccs_expression_t      expression,
                                    size_t                num_hyperparameters,

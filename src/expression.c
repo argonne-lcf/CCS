@@ -1144,7 +1144,7 @@ static const UT_icd _hyperparameter_icd = {
 	NULL,
 };
 
-static int hyper_sort(const void *a, const void *b) {
+static int _hyper_sort(const void *a, const void *b) {
 	ccs_hyperparameter_t ha = *(ccs_hyperparameter_t *)a;
 	ccs_hyperparameter_t hb = *(ccs_hyperparameter_t *)b;
 	return ha < hb ? -1 : ha > hb ? 1 : 0;
@@ -1167,7 +1167,7 @@ ccs_expression_get_hyperparameters(ccs_expression_t      expression,
 		utarray_free(array);
 		return err;
 	}
-	utarray_sort(array, &hyper_sort);
+	utarray_sort(array, &_hyper_sort);
 	size_t count = 0;
 	if (utarray_len(array) > 0) {
 		ccs_hyperparameter_t  previous = NULL;
@@ -1210,7 +1210,7 @@ ccs_expression_check_context(ccs_expression_t          expression,
 	UT_array *array;
 	utarray_new(array, &_hyperparameter_icd);
 	err = _get_hyperparameters(expression, array);
-	utarray_sort(array, &hyper_sort);
+	utarray_sort(array, &_hyper_sort);
 	if (err) {
 		utarray_free(array);
 		return err;

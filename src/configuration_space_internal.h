@@ -17,6 +17,8 @@ struct _ccs_hyperparameter_wrapper_s {
 	size_t                       distribution_index;
 	_ccs_distribution_wrapper_t *distribution;
 	ccs_expression_t             condition;
+	UT_array                    *parents;
+	UT_array                    *children;
 };
 typedef struct _ccs_hyperparameter_wrapper_s _ccs_hyperparameter_wrapper_t;
 
@@ -50,6 +52,8 @@ struct _ccs_configuration_space_data_s {
 	_ccs_hyperparameter_wrapper_t *handle_hash;
 	_ccs_distribution_wrapper_t   *distribution_list;
 	UT_array                      *forbidden_clauses;
+	ccs_bool_t                     graph_ok;
+	UT_array                      *sorted_indexes;
 };
 
 #endif //_CONFIGURATION_SPACE_INTERNAL_H
