@@ -630,7 +630,6 @@ _topological_sort(ccs_configuration_space_t configuration_space) {
 		sizeof(struct _hyper_list_s *) * count);
 	if (!list)
 		return -CCS_ENOMEM;
-	struct _hyper_list_s *to_process = NULL;
 	struct _hyper_list_s *queue = NULL;
 
 	_ccs_hyperparameter_wrapper_t *wrapper = NULL;
@@ -641,8 +640,6 @@ _topological_sort(ccs_configuration_space_t configuration_space) {
 		list[index].index = index;
 		if (in_edges == 0)
 			DL_APPEND(queue, list + index);
-		else
-			DL_APPEND(list, list + index);
 		index++;
 	}
 	size_t processed = 0;
@@ -655,7 +652,6 @@ _topological_sort(ccs_configuration_space_t configuration_space) {
 		while ( (child = (size_t *)utarray_next(wrapper->children, child)) ) {
 			list[*child].in_edges--;
 			if (list[*child].in_edges == 0) {
-				DL_DELETE(to_process, list + *child);
 				DL_APPEND(queue, list + *child);
 			}
 		}
