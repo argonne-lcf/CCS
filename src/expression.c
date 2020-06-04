@@ -96,11 +96,11 @@ _ccs_expr_datum_eval(ccs_datum_t               *d,
 			}
 			break;
 		default:
-			return CCS_INVALID_OBJECT;
+			return -CCS_INVALID_OBJECT;
 		}
 		break;
 	default:
-		return CCS_INVALID_VALUE;
+		return -CCS_INVALID_VALUE;
 	}
 	return CCS_SUCCESS;
 }
@@ -1034,9 +1034,9 @@ ccs_expression_eval(ccs_expression_t           expression,
                     ccs_datum_t               *values,
                     ccs_datum_t               *result) {
 	if (!expression || !expression->data)
-		return CCS_INVALID_OBJECT;
+		return -CCS_INVALID_OBJECT;
 	if (!result)
-		return CCS_INVALID_VALUE;
+		return -CCS_INVALID_VALUE;
 	_ccs_expression_ops_t *ops = ccs_expression_get_ops(expression);
 	return ops->eval(expression->data, context, values, result);
 }
@@ -1045,10 +1045,36 @@ ccs_error_t
 ccs_expression_get_num_nodes(ccs_expression_t  expression,
                              size_t           *num_nodes_ret) {
 	if (!expression || !expression->data)
-		return CCS_INVALID_OBJECT;
+		return -CCS_INVALID_OBJECT;
 	if (!num_nodes_ret)
-		return CCS_INVALID_VALUE;
+		return -CCS_INVALID_VALUE;
 	*num_nodes_ret = expression->data->num_nodes;
+	return CCS_SUCCESS;
+}
+
+ccs_error_t
+ccs_expression_get_nodes(ccs_expression_t  expression,
+                         size_t            num_nodes,
+                         ccs_datum_t      *nodes,
+                         size_t           *num_nodes_ret) {
+	if (!expression || !expression->data)
+		return -CCS_INVALID_OBJECT;
+	if (num_nodes && !nodes)
+		return -CCS_INVALID_VALUE;
+	if (!num_nodes_ret && !nodes)
+		return -CCS_INVALID_VALUE;
+	size_t count = expression->data->num_nodes;
+	if (nodes) {
+		ccs_datum_t *p_nodes = expression->data->nodes;
+		if (num_nodes < count)
+			return -CCS_INVALID_VALUE;
+		for (size_t i = 0; i < count; i++)
+			nodes[i] = p_nodes[i];
+		for (size_t i = count; i < num_nodes; i++)
+			nodes[i] = ccs_none;
+	}
+	if (num_nodes_ret)
+		*num_nodes_ret = count;
 	return CCS_SUCCESS;
 }
 
@@ -1059,9 +1085,9 @@ ccs_expression_list_eval_node(ccs_expression_t           expression,
                               size_t                     index,
                               ccs_datum_t               *result) {
 	if (!expression || !expression->data)
-		return CCS_INVALID_OBJECT;
+		return -CCS_INVALID_OBJECT;
 	if (!result)
-		return CCS_INVALID_VALUE;
+		return -CCS_INVALID_VALUE;
 	ccs_error_t err;
 	ccs_datum_t node;
 	if (index >= expression->data->num_nodes)
@@ -1077,7 +1103,7 @@ ccs_error_t
 ccs_expression_get_type(ccs_expression_t       expression,
                         ccs_expression_type_t *type_ret) {
 	if (!expression || !expression->data)
-		return CCS_INVALID_OBJECT;
+		return -CCS_INVALID_OBJECT;
 	*type_ret = expression->data->type;
 	return CCS_SUCCESS;
 }
@@ -1090,7 +1116,7 @@ ccs_expression_get_type(ccs_expression_t       expression,
 static ccs_error_t _get_hyperparameters(ccs_expression_t       expression,
                                         UT_array              *array) {
 	if (!expression || !expression->data)
-		return CCS_INVALID_OBJECT;
+		return -CCS_INVALID_OBJECT;
 	ccs_error_t err;
 	for (size_t i = 0; i < expression->data->num_nodes; i++) {
 		ccs_datum_t *d = expression->data->nodes + i;
