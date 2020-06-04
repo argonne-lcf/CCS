@@ -552,7 +552,11 @@ ccs_configuration_space_set_condition(ccs_configuration_space_t configuration_sp
 		return -CCS_OUT_OF_BOUNDS;
 	if (wrapper->condition)
 		return -CCS_INVALID_HYPERPARAMETER;
-	ccs_error_t err = ccs_retain_object(expression);
+	ccs_error_t err;
+	err = ccs_expression_check_context(expression, configuration_space);
+	if (err)
+		return err;
+	err = ccs_retain_object(expression);
 	if (err)
 		return err;
 	wrapper->condition = expression;
@@ -613,7 +617,11 @@ ccs_configuration_space_add_forbidden_clause(ccs_configuration_space_t configura
                                              ccs_expression_t          expression) {
 	if (!configuration_space || !configuration_space->data)
 		return -CCS_INVALID_OBJECT;
-	ccs_error_t err = ccs_retain_object(expression);
+	ccs_error_t err;
+	err = ccs_expression_check_context(expression, configuration_space);
+	if (err)
+		return err;
+	err = ccs_retain_object(expression);
 	if (err)
 		return err;
 	utarray_push_back(configuration_space->data->forbidden_clauses, &expression);
@@ -629,7 +637,11 @@ ccs_configuration_space_add_forbidden_clauses(ccs_configuration_space_t  configu
 	if (num_expressions && !expressions)
 		return -CCS_INVALID_VALUE;
 	for (size_t i = 0; i < num_expressions; i++) {
-		ccs_error_t err = ccs_retain_object(expressions[i]);
+		ccs_error_t err;
+		err = ccs_expression_check_context(expressions[i], configuration_space);
+		if (err)
+			return err;
+		err = ccs_retain_object(expressions[i]);
 		if (err)
 			return err;
 		utarray_push_back(configuration_space->data->forbidden_clauses, expressions + i);
