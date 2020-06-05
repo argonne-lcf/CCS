@@ -100,7 +100,7 @@ ccs_create_configuration_space(const char                *name,
 	utarray_new(config_space->data->sorted_indexes, &_size_t_icd);
 	config_space->data->name_hash = NULL;
 	config_space->data->distribution_list = NULL;
-	config_space->data->graph_ok = CCS_FALSE;
+	config_space->data->graph_ok = CCS_TRUE;
 	strcpy((char *)(config_space->data->name), name);
 	*configuration_space_ret = config_space;
 	return CCS_SUCCESS;
@@ -442,7 +442,7 @@ ccs_configuration_space_get_default_configuration(ccs_configuration_space_t  con
 		return -CCS_INVALID_VALUE;
 	ccs_error_t err;
 	ccs_configuration_t config;
-	err = ccs_create_configuration(configuration_space, 0, NULL, NULL, &config);
+	err = ccs_create_configuration(configuration_space, 0, NULL, NULL, NULL, &config);
 	if (err)
 		return err;
 	UT_array *array = configuration_space->data->hyperparameters;
@@ -508,6 +508,46 @@ ccs_configuration_space_check_configuration_values(ccs_configuration_space_t  co
 }
 
 
+static ccs_error_t
+_check_actives(ccs_configuration_space_t configuration_space,
+               ccs_configuration_t       configuration) {
+	size_t *p_index = NULL;
+	UT_array *index_array = configuration_space->data->sorted_indexes;
+	UT_array *array = configuration_space->data->hyperparameters;
+	ccs_bool_t *actives = configuration->data->actives;
+	ccs_datum_t *values = configuration->data->values;
+	while ( (p_index = (size_t *)utarray_next(index_array, p_index)) ) {
+		_ccs_hyperparameter_wrapper_t *wrapper = NULL;
+		wrapper = (_ccs_hyperparameter_wrapper_t *)utarray_eltptr(array, *p_index);
+		if (!wrapper->condition)
+			continue;
+		UT_array *parents = wrapper->parents;
+		size_t *p_parent = NULL;
+		while ( (p_parent = (size_t*)utarray_next(parents, p_parent)) ) {
+			if (!actives[*p_parent]) {
+				actives[*p_index] = CCS_FALSE;
+				values[*p_index] = ccs_none;
+				break;
+			}
+		}
+		if (!actives[*p_index])
+			continue;
+		ccs_datum_t result;
+		ccs_error_t err;
+		err = ccs_expression_eval(wrapper->condition, configuration_space,
+		                          values, &result);
+		if (err)
+			return err;
+		if (!(result.type == CCS_BOOLEAN && result.value.i == CCS_TRUE)) {
+			actives[*p_index] = CCS_FALSE;
+			values[*p_index] = ccs_none;
+		}
+	}
+	return CCS_SUCCESS;
+}
+
+static ccs_error_t
+_generate_constraints(ccs_configuration_space_t configuration_space);
 // This is temporary until I figure out how correlated sampling should work
 ccs_error_t
 ccs_configuration_space_sample(ccs_configuration_space_t  configuration_space,
@@ -518,7 +558,12 @@ ccs_configuration_space_sample(ccs_configuration_space_t  configuration_space,
 		return -CCS_INVALID_VALUE;
 	ccs_error_t err;
 	ccs_configuration_t config;
-	err = ccs_create_configuration(configuration_space, 0, NULL, NULL, &config);
+	if (!configuration_space->data->graph_ok) {
+		err = _generate_constraints(configuration_space);
+		if (err)
+			return err;
+	}
+	err = ccs_create_configuration(configuration_space, 0, NULL, NULL, NULL, &config);
 	if (err)
 		return err;
 	ccs_rng_t rng = configuration_space->data->rng;
@@ -533,6 +578,11 @@ ccs_configuration_space_sample(ccs_configuration_space_t  configuration_space,
 			ccs_release_object(config);
 			return err;
 		}
+	}
+	err = _check_actives(configuration_space, config);
+	if (err) {
+		ccs_release_object(config);
+		return err;
 	}
 	*configuration_ret = config;
 	return CCS_SUCCESS;
@@ -567,19 +617,27 @@ ccs_configuration_space_samples(ccs_configuration_space_t  configuration_space,
 	}
 	size_t i;
 	for(i = 0; i < num_configurations; i++) {
-		err = ccs_create_configuration(configuration_space, 0, NULL, NULL, configurations + i);
+		err = ccs_create_configuration(configuration_space, 0, NULL, NULL, NULL, configurations + i);
 		if (unlikely(err)) {
 			free(values);
-			for(size_t j = 0; j < i; j++) {
+			for(size_t j = 0; j < i; j++)
 				ccs_release_object(configurations + j);
-			}
 			return err;
 		}
 	}
-	for(i = 0; i < num_configurations; i++)
+	for(i = 0; i < num_configurations; i++) {
 		for(size_t j = 0; j < num_hyper; j++)
 			configurations[i]->data->values[j] =
 				values[j*num_configurations + i];
+
+		err = _check_actives(configuration_space, configurations[i]);
+		if (err) {
+			free(values);
+			for(size_t j = 0; j < num_configurations; j++)
+				ccs_release_object(configurations + j);
+			return err;
+		}
+	}
 	free(values);
 	return CCS_SUCCESS;
 }
@@ -628,8 +686,8 @@ _topological_sort(ccs_configuration_space_t configuration_space) {
 	UT_array *array = configuration_space->data->hyperparameters;
 	size_t count = utarray_len(array);
 
-	struct _hyper_list_s *list = (struct _hyper_list_s *)malloc(
-		sizeof(struct _hyper_list_s *) * count);
+	struct _hyper_list_s *list = (struct _hyper_list_s *)calloc(1,
+		sizeof(struct _hyper_list_s) * count);
 	if (!list)
 		return -CCS_ENOMEM;
 	struct _hyper_list_s *queue = NULL;
@@ -673,7 +731,6 @@ _topological_sort(ccs_configuration_space_t configuration_space) {
 }
 static ccs_error_t
 _recompute_graph(ccs_configuration_space_t configuration_space) {
-	configuration_space->data->graph_ok = CCS_FALSE;
 	_ccs_hyperparameter_wrapper_t *wrapper = NULL;
 	UT_array *array = configuration_space->data->hyperparameters;
 	while ( (wrapper = (_ccs_hyperparameter_wrapper_t *)utarray_next(array, wrapper)) ) {
@@ -716,6 +773,7 @@ _recompute_graph(ccs_configuration_space_t configuration_space) {
 			parent_wrapper = (_ccs_hyperparameter_wrapper_t *)utarray_eltptr(array, parents_index[i]);
 			utarray_push_back(parent_wrapper->children, &(wrapper->index));
 		}
+		free((void *)mem);
 	}
 	wrapper = NULL;
 	while ( (wrapper = (_ccs_hyperparameter_wrapper_t *)utarray_next(array, wrapper)) ) {
@@ -727,6 +785,19 @@ _recompute_graph(ccs_configuration_space_t configuration_space) {
 #undef  utarray_oom
 #define utarray_oom() { \
 	exit(-1); \
+}
+
+static ccs_error_t
+_generate_constraints(ccs_configuration_space_t configuration_space) {
+	ccs_error_t err;
+	err = _recompute_graph(configuration_space);
+	if (err)
+		return err;
+	err = _topological_sort(configuration_space);
+	if (err)
+		return err;
+	configuration_space->data->graph_ok = CCS_TRUE;
+	return CCS_SUCCESS;
 }
 
 ccs_error_t
@@ -748,20 +819,13 @@ ccs_configuration_space_set_condition(ccs_configuration_space_t configuration_sp
 		return err;
 	wrapper->condition = expression;
 	// Recompute the whole graph for now
-	err = _recompute_graph(configuration_space);
+	configuration_space->data->graph_ok = CCS_FALSE;
+	err = _generate_constraints(configuration_space);
 	if (err) {
 		ccs_release_object(expression);
 		wrapper->condition = NULL;
 		return err;
 	}
-	err = _topological_sort(configuration_space);
-	if (err) {
-		configuration_space->data->graph_ok = CCS_FALSE;
-		ccs_release_object(expression);
-		wrapper->condition = NULL;
-		return err;
-	}
-	configuration_space->data->graph_ok = CCS_TRUE;
 	return CCS_SUCCESS;
 }
 
