@@ -157,6 +157,57 @@ ccs_configuration_get_value_by_name(ccs_configuration_t  configuration,
 	return CCS_SUCCESS;
 }
 
+ccs_error_t
+ccs_configuration_get_active(ccs_configuration_t  configuration,
+                             size_t               index,
+                             ccs_bool_t          *active_ret) {
+	if (!configuration || !configuration->data)
+		return -CCS_INVALID_OBJECT;
+	if (!active_ret)
+		return -CCS_INVALID_VALUE;
+	if (index >= configuration->data->num_values)
+		return -CCS_OUT_OF_BOUNDS;
+	*active_ret = configuration->data->actives[index];
+	return CCS_SUCCESS;
+}
+
+ccs_error_t
+ccs_configuration_set_active(ccs_configuration_t configuration,
+                             size_t              index,
+                             ccs_bool_t          active) {
+	if (!configuration || !configuration->data)
+		return -CCS_INVALID_OBJECT;
+	if (index >= configuration->data->num_values)
+		return -CCS_OUT_OF_BOUNDS;
+	configuration->data->actives[index] = active;
+	return CCS_SUCCESS;
+}
+
+ccs_error_t
+ccs_configuration_get_actives(ccs_configuration_t  configuration,
+                              size_t               num_actives,
+                              ccs_bool_t          *actives,
+                              size_t              *num_actives_ret) {
+	if (!configuration || !configuration->data)
+		return -CCS_INVALID_OBJECT;
+	if (!num_actives_ret && !actives)
+		return -CCS_INVALID_VALUE;
+	if (num_actives && !actives)
+		return -CCS_INVALID_VALUE;
+	if (!num_actives && actives)
+		return -CCS_INVALID_VALUE;
+	size_t num = configuration->data->num_values;
+	if (actives) {
+		if (num_actives < num)
+			return -CCS_INVALID_VALUE;
+		memcpy(actives, configuration->data->actives, num*sizeof(ccs_bool_t));
+		for (size_t i = num; i < num_actives; i++)
+			actives[i] = CCS_FALSE;
+	}
+	if (num_actives_ret)
+		*num_actives_ret = num;
+	return CCS_SUCCESS;
+}
 
 ccs_error_t
 ccs_configuration_check(ccs_configuration_t  configuration) {
