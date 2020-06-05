@@ -242,6 +242,7 @@ ccs_configuration_space_add_hyperparameter(ccs_configuration_space_t configurati
 	utarray_new(hyper_wrapper.parents, &_size_t_icd);
 	utarray_new(hyper_wrapper.children, &_size_t_icd);
 	utarray_push_back(hyperparameters, &hyper_wrapper);
+	utarray_push_back(configuration_space->data->sorted_indexes, &(hyper_wrapper.index));
 
 	p_hyper_wrapper =
 	   (_ccs_hyperparameter_wrapper_t*)utarray_eltptr(hyperparameters, index);
@@ -623,6 +624,7 @@ struct _hyper_list_s {
 }
 static ccs_error_t
 _topological_sort(ccs_configuration_space_t configuration_space) {
+	utarray_clear(configuration_space->data->sorted_indexes);
 	UT_array *array = configuration_space->data->hyperparameters;
 	size_t count = utarray_len(array);
 
@@ -720,7 +722,6 @@ _recompute_graph(ccs_configuration_space_t configuration_space) {
 		_uniq_size_t_array(wrapper->parents);
 		_uniq_size_t_array(wrapper->children);
         }
-	configuration_space->data->graph_ok = CCS_TRUE;
 	return CCS_SUCCESS;
 }
 #undef  utarray_oom
@@ -760,6 +761,7 @@ ccs_configuration_space_set_condition(ccs_configuration_space_t configuration_sp
 		wrapper->condition = NULL;
 		return err;
 	}
+	configuration_space->data->graph_ok = CCS_TRUE;
 	return CCS_SUCCESS;
 }
 
