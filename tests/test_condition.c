@@ -94,6 +94,8 @@ test_simple() {
 			assert( values[1].type == CCS_FLOAT );
 		else
 			assert( values[1].type == CCS_NONE );
+		err = ccs_configuration_space_check_configuration(space, configuration);
+		assert( err == CCS_SUCCESS );
 		err = ccs_release_object(configuration);
 		assert( err == CCS_SUCCESS );
 	}
@@ -112,6 +114,8 @@ test_simple() {
 			assert( values[1].type == CCS_FLOAT );
 		else
 			assert( values[1].type == CCS_NONE );
+		err = ccs_configuration_space_check_configuration(space, configurations[i]);
+		assert( err == CCS_SUCCESS );
 		err = ccs_release_object(configurations[i]);
 		assert( err == CCS_SUCCESS );
 	}
