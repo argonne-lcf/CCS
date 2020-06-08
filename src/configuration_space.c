@@ -445,7 +445,7 @@ ccs_configuration_space_get_default_configuration(ccs_configuration_space_t  con
 		return -CCS_INVALID_VALUE;
 	ccs_error_t err;
 	ccs_configuration_t config;
-	err = ccs_create_configuration(configuration_space, 0, NULL, NULL, NULL, &config);
+	err = ccs_create_configuration(configuration_space, 0, NULL, NULL, &config);
 	if (err)
 		return err;
 	UT_array *array = configuration_space->data->hyperparameters;
@@ -469,25 +469,22 @@ _set_actives(ccs_configuration_space_t configuration_space,
 	size_t *p_index = NULL;
 	UT_array *indexes = configuration_space->data->sorted_indexes;
 	UT_array *array = configuration_space->data->hyperparameters;
-	ccs_bool_t *actives = configuration->data->actives;
 	ccs_datum_t *values = configuration->data->values;
 	while ( (p_index = (size_t *)utarray_next(indexes, p_index)) ) {
 		_ccs_hyperparameter_wrapper_t *wrapper = NULL;
 		wrapper = (_ccs_hyperparameter_wrapper_t *)utarray_eltptr(array, *p_index);
 		if (!wrapper->condition) {
-			actives[*p_index] = CCS_TRUE;
 			continue;
 		}
 		UT_array *parents = wrapper->parents;
 		size_t *p_parent = NULL;
 		while ( (p_parent = (size_t*)utarray_next(parents, p_parent)) ) {
-			if (!actives[*p_parent]) {
-				actives[*p_index] = CCS_FALSE;
-				values[*p_index] = ccs_none;
+			if (values[*p_parent].type == CCS_INACTIVE) {
+				values[*p_index] = ccs_inactive;
 				break;
 			}
 		}
-		if (!actives[*p_index])
+		if (values[*p_index].type == CCS_INACTIVE)
 			continue;
 		ccs_datum_t result;
 		ccs_error_t err;
@@ -495,11 +492,8 @@ _set_actives(ccs_configuration_space_t configuration_space,
 		                          values, &result);
 		if (err)
 			return err;
-		if (!(result.type == CCS_BOOLEAN && result.value.i == CCS_TRUE)) {
-			actives[*p_index] = CCS_FALSE;
-			values[*p_index] = ccs_none;
-		} else
-			actives[*p_index] = CCS_TRUE;
+		if (!(result.type == CCS_BOOLEAN && result.value.i == CCS_TRUE))
+			values[*p_index] = ccs_inactive;
 	}
 	return CCS_SUCCESS;
 }
@@ -507,8 +501,7 @@ _set_actives(ccs_configuration_space_t configuration_space,
 static inline ccs_error_t
 _check_configuration(ccs_configuration_space_t  configuration_space,
                      size_t                     num_values,
-                     ccs_datum_t               *values,
-                     ccs_bool_t                *actives) {
+                     ccs_datum_t               *values) {
 	UT_array *indexes = configuration_space->data->sorted_indexes;
 	UT_array *array = configuration_space->data->hyperparameters;
 	if (num_values != utarray_len(array))
@@ -523,7 +516,7 @@ _check_configuration(ccs_configuration_space_t  configuration_space,
 			UT_array *parents = wrapper->parents;
 			size_t *p_parent = NULL;
 			while ( (p_parent = (size_t*)utarray_next(parents, p_parent)) ) {
-				if (!actives[*p_parent]) {
+				if (values[*p_parent].type == CCS_INACTIVE) {
 					active = CCS_FALSE;
 					break;
 				}
@@ -541,7 +534,7 @@ _check_configuration(ccs_configuration_space_t  configuration_space,
 				}
 			}
 		}
-		if (active != actives[*p_index])
+		if (active != (values[*p_index].type == CCS_INACTIVE ? CCS_FALSE : CCS_TRUE))
 			return -CCS_INVALID_CONFIGURATION;
 		if (active) {
 			ccs_bool_t res;
@@ -573,18 +566,16 @@ ccs_configuration_space_check_configuration(ccs_configuration_space_t configurat
 	}
 	return _check_configuration(configuration_space,
 	                            configuration->data->num_values,
-	                            configuration->data->values,
-	                            configuration->data->actives);
+	                            configuration->data->values);
 }
 
 ccs_error_t
 ccs_configuration_space_check_configuration_values(ccs_configuration_space_t  configuration_space,
                                                    size_t                     num_values,
-                                                   ccs_datum_t               *values,
-                                                   ccs_bool_t                *actives) {
+                                                   ccs_datum_t               *values) {
 	if (!configuration_space || !configuration_space->data)
 		return -CCS_INVALID_OBJECT;
-	if (!values || !actives)
+	if (!values)
 		return -CCS_INVALID_VALUE;
 	if (!configuration_space->data->graph_ok) {
 		ccs_error_t err;
@@ -592,7 +583,7 @@ ccs_configuration_space_check_configuration_values(ccs_configuration_space_t  co
 		if (err)
 			return err;
 	}
-	return _check_configuration(configuration_space, num_values, values, actives);
+	return _check_configuration(configuration_space, num_values, values);
 }
 
 ccs_error_t
@@ -609,7 +600,7 @@ ccs_configuration_space_sample(ccs_configuration_space_t  configuration_space,
 		if (err)
 			return err;
 	}
-	err = ccs_create_configuration(configuration_space, 0, NULL, NULL, NULL, &config);
+	err = ccs_create_configuration(configuration_space, 0, NULL, NULL, &config);
 	if (err)
 		return err;
 	ccs_rng_t rng = configuration_space->data->rng;
@@ -668,7 +659,7 @@ ccs_configuration_space_samples(ccs_configuration_space_t  configuration_space,
 	}
 	size_t i;
 	for(i = 0; i < num_configurations; i++) {
-		err = ccs_create_configuration(configuration_space, 0, NULL, NULL, NULL, configurations + i);
+		err = ccs_create_configuration(configuration_space, 0, NULL, NULL, configurations + i);
 		if (unlikely(err)) {
 			free(values);
 			for(size_t j = 0; j < i; j++)

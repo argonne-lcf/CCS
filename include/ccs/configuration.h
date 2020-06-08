@@ -12,7 +12,6 @@ extern ccs_error_t
 ccs_create_configuration(ccs_configuration_space_t configuration_space,
                          size_t                    num_values,
                          ccs_datum_t              *values,
-                         ccs_bool_t               *actives,
                          void                     *user_data,
                          ccs_configuration_t      *configuration_ret);
 
@@ -45,22 +44,6 @@ extern ccs_error_t
 ccs_configuration_get_value_by_name(ccs_configuration_t  configuration,
                                     const char          *name,
                                     ccs_datum_t         *value_ret);
-
-extern ccs_error_t
-ccs_configuration_get_active(ccs_configuration_t  configuration,
-                             size_t               index,
-                             ccs_bool_t          *active_ret);
-
-extern ccs_error_t
-ccs_configuration_set_active(ccs_configuration_t configuration,
-                             size_t              index,
-                             ccs_bool_t          active);
-
-extern ccs_error_t
-ccs_configuration_get_actives(ccs_configuration_t  configuration,
-                              size_t               num_actives,
-                              ccs_bool_t          *actives,
-                              size_t              *num_actives_ret);
 
 extern ccs_error_t
 ccs_configuration_check(ccs_configuration_t  configuration);

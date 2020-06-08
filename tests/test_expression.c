@@ -4,46 +4,6 @@
 #include <string.h>
 #include <math.h>
 
-static inline ccs_datum_t
-ccs_bool(ccs_bool_t v) {
-	ccs_datum_t d;
-	d.type = CCS_BOOLEAN;
-	d.value.i = v;
-	return d;
-}
-
-static inline ccs_datum_t
-ccs_float(ccs_float_t v) {
-	ccs_datum_t d;
-	d.type = CCS_FLOAT;
-	d.value.f = v;
-	return d;
-}
-
-static inline ccs_datum_t
-ccs_int(ccs_int_t v) {
-	ccs_datum_t d;
-	d.type = CCS_INTEGER;
-	d.value.i = v;
-	return d;
-}
-
-static inline ccs_datum_t
-ccs_object(ccs_object_t v) {
-	ccs_datum_t d;
-	d.type = CCS_OBJECT;
-	d.value.o = v;
-	return d;
-}
-
-static inline ccs_datum_t
-ccs_string(const char *v) {
-	ccs_datum_t d;
-	d.type = CCS_STRING;
-	d.value.s = v;
-	return d;
-}
-
 double d = -2.0;
 
 ccs_hyperparameter_t create_dummy_numerical(const char * name) {

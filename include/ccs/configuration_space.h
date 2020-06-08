@@ -126,8 +126,7 @@ ccs_configuration_space_check_configuration(ccs_configuration_space_t configurat
 extern ccs_error_t
 ccs_configuration_space_check_configuration_values(ccs_configuration_space_t  configuration_space,
                                                    size_t                     num_values,
-                                                   ccs_datum_t               *values,
-                                                   ccs_bool_t                *actives);
+                                                   ccs_datum_t               *values);
 
 extern ccs_error_t
 ccs_configuration_space_get_default_configuration(ccs_configuration_space_t  configuration_space,

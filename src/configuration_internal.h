@@ -19,7 +19,6 @@ struct _ccs_configuration_data_s {
 	ccs_configuration_space_t  configuration_space;
 	size_t                     num_values;
 	ccs_datum_t               *values;
-	ccs_bool_t                *actives;
 };
 
 #endif //_CONFIGURATION_INTERNAL_H

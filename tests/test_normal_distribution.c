@@ -74,7 +74,7 @@ static void test_create_normal_distribution_errors() {
 
 	// check wrong data_type
 	err = ccs_create_normal_distribution(
-		(ccs_numeric_type_t)3,
+		(ccs_numeric_type_t)CCS_STRING,
 		1.0,
 		2.0,
 		CCS_LINEAR,

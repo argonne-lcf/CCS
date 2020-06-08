@@ -44,6 +44,7 @@ enum ccs_error_e {
 	CCS_INVALID_BOUNDS,
 	CCS_OUT_OF_BOUNDS,
 	CCS_SAMPLING_UNSUCCESSFUL,
+	CCS_INACTIVE_HYPERPARAMETER,
 	CCS_ENOMEM,
 	CCS_UNSUPPORTED_OPERATION,
 	CCS_ERROR_MAX,
@@ -67,6 +68,7 @@ typedef enum ccs_object_type_e ccs_object_type_t;
 
 enum ccs_data_type_e {
 	CCS_NONE,
+	CCS_INACTIVE,
 	CCS_INTEGER,
 	CCS_FLOAT,
 	CCS_BOOLEAN,
@@ -146,9 +148,51 @@ struct ccs_datum_s {
 
 typedef struct ccs_datum_s ccs_datum_t;
 
+static inline ccs_datum_t
+ccs_bool(ccs_bool_t v) {
+	ccs_datum_t d;
+	d.type = CCS_BOOLEAN;
+	d.value.i = v;
+	return d;
+}
+
+static inline ccs_datum_t
+ccs_float(ccs_float_t v) {
+	ccs_datum_t d;
+	d.type = CCS_FLOAT;
+	d.value.f = v;
+	return d;
+}
+
+static inline ccs_datum_t
+ccs_int(ccs_int_t v) {
+	ccs_datum_t d;
+	d.type = CCS_INTEGER;
+	d.value.i = v;
+	return d;
+}
+
+static inline ccs_datum_t
+ccs_object(ccs_object_t v) {
+	ccs_datum_t d;
+	d.type = CCS_OBJECT;
+	d.value.o = v;
+	return d;
+}
+
+static inline ccs_datum_t
+ccs_string(const char *v) {
+	ccs_datum_t d;
+	d.type = CCS_STRING;
+	d.value.s = v;
+	return d;
+}
+
 extern const ccs_datum_t ccs_none;
+extern const ccs_datum_t ccs_inactive;
 
 #define CCS_NONE_VAL {{0}, CCS_NONE}
+#define CCS_INACTIVE_VAL {{0}, CCS_INACTIVE}
 
 extern ccs_error_t
 ccs_init();

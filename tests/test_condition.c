@@ -4,46 +4,6 @@
 #include <string.h>
 #include <math.h>
 
-static inline ccs_datum_t
-ccs_bool(ccs_bool_t v) {
-	ccs_datum_t d;
-	d.type = CCS_BOOLEAN;
-	d.value.i = v;
-	return d;
-}
-
-static inline ccs_datum_t
-ccs_float(ccs_float_t v) {
-	ccs_datum_t d;
-	d.type = CCS_FLOAT;
-	d.value.f = v;
-	return d;
-}
-
-static inline ccs_datum_t
-ccs_int(ccs_int_t v) {
-	ccs_datum_t d;
-	d.type = CCS_INTEGER;
-	d.value.i = v;
-	return d;
-}
-
-static inline ccs_datum_t
-ccs_object(ccs_object_t v) {
-	ccs_datum_t d;
-	d.type = CCS_OBJECT;
-	d.value.o = v;
-	return d;
-}
-
-static inline ccs_datum_t
-ccs_string(const char *v) {
-	ccs_datum_t d;
-	d.type = CCS_STRING;
-	d.value.s = v;
-	return d;
-}
-
 ccs_hyperparameter_t create_numerical(const char * name) {
 	ccs_hyperparameter_t hyperparameter;
 	ccs_error_t          err;
@@ -57,7 +17,7 @@ ccs_hyperparameter_t create_numerical(const char * name) {
 
 void
 test_simple() {
-	ccs_hyperparameter_t hyperparameter1, hyperparameter2;
+	ccs_hyperparameter_t      hyperparameter1, hyperparameter2;
 	ccs_configuration_space_t space;
 	ccs_expression_t          expression;
 	ccs_configuration_t       configuration;
@@ -90,10 +50,10 @@ test_simple() {
 		assert( values[0].type == CCS_FLOAT );
 		f = values[0].value.f;
 		assert( f >= -1.0 && f < 1.0 );
-		if ( f < 0.0 )
+		if (f < 0.0)
 			assert( values[1].type == CCS_FLOAT );
 		else
-			assert( values[1].type == CCS_NONE );
+			assert( values[1].type == CCS_INACTIVE );
 		err = ccs_configuration_space_check_configuration(space, configuration);
 		assert( err == CCS_SUCCESS );
 		err = ccs_release_object(configuration);
@@ -110,10 +70,10 @@ test_simple() {
 		assert( values[0].type == CCS_FLOAT );
 		f = values[0].value.f;
 		assert( f >= -1.0 && f < 1.0 );
-		if ( f < 0.0 )
+		if (f < 0.0)
 			assert( values[1].type == CCS_FLOAT );
 		else
-			assert( values[1].type == CCS_NONE );
+			assert( values[1].type == CCS_INACTIVE );
 		err = ccs_configuration_space_check_configuration(space, configurations[i]);
 		assert( err == CCS_SUCCESS );
 		err = ccs_release_object(configurations[i]);

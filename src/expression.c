@@ -88,6 +88,8 @@ _ccs_expr_datum_eval(ccs_datum_t               *d,
 			if (err)
 				return err;
 			*result = values[index];
+			if (result->type == CCS_INACTIVE)
+				return -CCS_INACTIVE_HYPERPARAMETER;
 			if (ht) {
 				err = ccs_hyperparameter_get_type(
 				          (ccs_hyperparameter_t)(d->value.o), ht);

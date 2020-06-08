@@ -21,7 +21,6 @@ ccs_error_t
 ccs_create_configuration(ccs_configuration_space_t configuration_space,
                          size_t                    num_values,
                          ccs_datum_t              *values,
-                         ccs_bool_t               *actives,
                          void                     *user_data,
                          ccs_configuration_t      *configuration_ret) {
 	if (!configuration_ret)
@@ -37,7 +36,7 @@ ccs_create_configuration(ccs_configuration_space_t configuration_space,
 		return err;
 	if (values && num != num_values)
 		return -CCS_INVALID_VALUE;
-	uintptr_t mem = (uintptr_t)calloc(1, sizeof(struct _ccs_configuration_s) + sizeof(struct _ccs_configuration_data_s) + num * sizeof(ccs_datum_t) + num * sizeof(ccs_bool_t));
+	uintptr_t mem = (uintptr_t)calloc(1, sizeof(struct _ccs_configuration_s) + sizeof(struct _ccs_configuration_data_s) + num * sizeof(ccs_datum_t));
 	if (!mem)
 		return CCS_ENOMEM;
 	err = ccs_retain_object(configuration_space);
@@ -52,13 +51,8 @@ ccs_create_configuration(ccs_configuration_space_t configuration_space,
 	config->data->num_values = num;
 	config->data->configuration_space = configuration_space;
 	config->data->values = (ccs_datum_t *)(mem + sizeof(struct _ccs_configuration_s) + sizeof(struct _ccs_configuration_data_s));
-	config->data->actives = (ccs_bool_t *)(config->data->values+num);
 	if (values)
 		memcpy(config->data->values, values, num*sizeof(ccs_datum_t));
-	if (actives)
-		memcpy(config->data->actives, actives, num*sizeof(ccs_bool_t));
-	else for (size_t i = 0; i < num; i++)
-		config->data->actives[i] = CCS_TRUE;
 	*configuration_ret = config;
 	return CCS_SUCCESS;
 }
@@ -154,58 +148,6 @@ ccs_configuration_get_value_by_name(ccs_configuration_t  configuration,
 	if (err)
 		return err;
 	*value_ret = configuration->data->values[index];
-	return CCS_SUCCESS;
-}
-
-ccs_error_t
-ccs_configuration_get_active(ccs_configuration_t  configuration,
-                             size_t               index,
-                             ccs_bool_t          *active_ret) {
-	if (!configuration || !configuration->data)
-		return -CCS_INVALID_OBJECT;
-	if (!active_ret)
-		return -CCS_INVALID_VALUE;
-	if (index >= configuration->data->num_values)
-		return -CCS_OUT_OF_BOUNDS;
-	*active_ret = configuration->data->actives[index];
-	return CCS_SUCCESS;
-}
-
-ccs_error_t
-ccs_configuration_set_active(ccs_configuration_t configuration,
-                             size_t              index,
-                             ccs_bool_t          active) {
-	if (!configuration || !configuration->data)
-		return -CCS_INVALID_OBJECT;
-	if (index >= configuration->data->num_values)
-		return -CCS_OUT_OF_BOUNDS;
-	configuration->data->actives[index] = active;
-	return CCS_SUCCESS;
-}
-
-ccs_error_t
-ccs_configuration_get_actives(ccs_configuration_t  configuration,
-                              size_t               num_actives,
-                              ccs_bool_t          *actives,
-                              size_t              *num_actives_ret) {
-	if (!configuration || !configuration->data)
-		return -CCS_INVALID_OBJECT;
-	if (!num_actives_ret && !actives)
-		return -CCS_INVALID_VALUE;
-	if (num_actives && !actives)
-		return -CCS_INVALID_VALUE;
-	if (!num_actives && actives)
-		return -CCS_INVALID_VALUE;
-	size_t num = configuration->data->num_values;
-	if (actives) {
-		if (num_actives < num)
-			return -CCS_INVALID_VALUE;
-		memcpy(actives, configuration->data->actives, num*sizeof(ccs_bool_t));
-		for (size_t i = num; i < num_actives; i++)
-			actives[i] = CCS_FALSE;
-	}
-	if (num_actives_ret)
-		*num_actives_ret = num;
 	return CCS_SUCCESS;
 }
 

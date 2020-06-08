@@ -3,6 +3,7 @@
 #include <gsl/gsl_rng.h>
 
 const ccs_datum_t ccs_none = CCS_NONE_VAL;
+const ccs_datum_t ccs_inactive = CCS_INACTIVE_VAL;
 
 ccs_error_t
 ccs_init() {
