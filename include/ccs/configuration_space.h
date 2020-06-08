@@ -141,40 +141,6 @@ ccs_configuration_space_samples(ccs_configuration_space_t  configuration_space,
                                 size_t                     num_configurations,
                                 ccs_configuration_t       *configurations);
 
-//   Hyperparameter related functions
-extern ccs_error_t
-ccs_configuration_space_get_active_hyperparameters(ccs_configuration_space_t  configuration_space,
-                                                   ccs_configuration_t        configuration,
-                                                   size_t                     num_hyperparameters,
-                                                   ccs_hyperparameter_t      *hyperparameters,
-                                                   size_t                    *num_hyperparameters_ret);
-
-extern ccs_error_t
-ccs_configuration_space_get_conditional_hyperparameters(ccs_configuration_space_t  configuration_space,
-                                                        size_t                     num_hyperparameters,
-                                                        ccs_hyperparameter_t      *hyperparameters,
-                                                        size_t                    *num_hyperparameters_ret);
-
-extern ccs_error_t
-ccs_configuration_space_get_unconditional_hyperparameters(ccs_configuration_space_t  configuration_space,
-                                                          size_t                     num_hyperparameters,
-                                                          ccs_hyperparameter_t      *hyperparameters,
-                                                          size_t                    *num_hyperparameters_ret);
-
-extern ccs_error_t
-ccs_configuration_space_get_children_of(ccs_configuration_space_t  configuration_space,
-                                        ccs_hyperparameter_t       hyperparameter,
-                                        size_t                     num_hyperparameters,
-                                        ccs_hyperparameter_t      *hyperparameters,
-                                        size_t                    *num_hyperparameters_ret);
-
-extern ccs_error_t
-ccs_configuration_space_get_parents_of(ccs_configuration_space_t  configuration_space,
-                                       ccs_hyperparameter_t       hyperparameter,
-                                       size_t                     num_hyperparameters,
-                                       ccs_hyperparameter_t      *hyperparameters,
-                                       size_t                    *num_hyperparameters_ret);
-
 #ifdef __cplusplus
 }
 #endif
