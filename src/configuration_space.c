@@ -616,6 +616,39 @@ ccs_configuration_space_check_configuration_values(ccs_configuration_space_t  co
 	return _check_configuration(configuration_space, num_values, values);
 }
 
+
+static ccs_error_t
+_sample(ccs_configuration_space_t  configuration_space,
+	ccs_configuration_t        config,
+	ccs_bool_t                *found) {
+	ccs_error_t err;
+	ccs_rng_t rng = configuration_space->data->rng;
+	UT_array *array = configuration_space->data->hyperparameters;
+	_ccs_hyperparameter_wrapper_t *wrapper = NULL;
+	ccs_datum_t *values = config->data->values;
+	while ( (wrapper = (_ccs_hyperparameter_wrapper_t *)
+	                       utarray_next(array, wrapper)) ) {
+		err = ccs_hyperparameter_sample(wrapper->hyperparameter,
+		                                wrapper->distribution->distribution,
+		                                rng, values++);
+		if (unlikely(err)) {
+			ccs_release_object(config);
+			return err;
+		}
+	}
+	err = _set_actives(configuration_space, config);
+	if (err) {
+		ccs_release_object(config);
+		return err;
+	}
+	err = _test_forbidden(configuration_space, config->data->values, found);
+	if (err) {
+		ccs_release_object(config);
+		return err;
+	}
+	return CCS_SUCCESS;
+}
+
 ccs_error_t
 ccs_configuration_space_sample(ccs_configuration_space_t  configuration_space,
                                ccs_configuration_t       *configuration_ret) {
@@ -633,29 +666,10 @@ ccs_configuration_space_sample(ccs_configuration_space_t  configuration_space,
 	err = ccs_create_configuration(configuration_space, 0, NULL, NULL, &config);
 	if (err)
 		return err;
-	ccs_rng_t rng = configuration_space->data->rng;
-	UT_array *array = configuration_space->data->hyperparameters;
 	ccs_bool_t found;
 	int counter = 0;
 	do {
-		_ccs_hyperparameter_wrapper_t *wrapper = NULL;
-		ccs_datum_t *values = config->data->values;
-		while ( (wrapper = (_ccs_hyperparameter_wrapper_t *)
-		                       utarray_next(array, wrapper)) ) {
-			err = ccs_hyperparameter_sample(wrapper->hyperparameter,
-			                                wrapper->distribution->distribution,
-			                                rng, values++);
-			if (unlikely(err)) {
-				ccs_release_object(config);
-				return err;
-			}
-		}
-		err = _set_actives(configuration_space, config);
-		if (err) {
-			ccs_release_object(config);
-			return err;
-		}
-		err = _test_forbidden(configuration_space, config->data->values, &found);
+		err = _sample(configuration_space, config, &found);
 		if (err) {
 			ccs_release_object(config);
 			return err;
@@ -686,47 +700,75 @@ ccs_configuration_space_samples(ccs_configuration_space_t  configuration_space,
 		if (err)
 			return err;
 	}
-	UT_array *array = configuration_space->data->hyperparameters;
-	size_t num_hyper = utarray_len(array);
-	ccs_datum_t *values = (ccs_datum_t *)calloc(1, sizeof(ccs_datum_t)*num_configurations*num_hyper);
-	ccs_datum_t *p_values = values;
-	ccs_rng_t rng = configuration_space->data->rng;
-	_ccs_hyperparameter_wrapper_t *wrapper = NULL;
-	while ( (wrapper = (_ccs_hyperparameter_wrapper_t *)utarray_next(array, wrapper)) ) {
-		err = ccs_hyperparameter_samples(wrapper->hyperparameter,
-		                                 wrapper->distribution->distribution,
-						 rng, num_configurations, p_values);
-		if (unlikely(err)) {
-			free(values);
-			return err;
+	size_t     counter = 0;
+	size_t     count = 0;
+	ccs_bool_t found;
+	ccs_configuration_t config = NULL;
+	// Naive implementation
+	//See below for more efficient ideas...
+	for (size_t i = 0; i < num_configurations; i++)
+		configurations[i] = NULL;
+	while (count < num_configurations && counter < 100 * num_configurations) {
+		if (!config) {
+			err = ccs_create_configuration(configuration_space, 0, NULL, NULL, &config);
+			if (err)
+				return err;
 		}
-		p_values += num_configurations;
-	}
-	size_t i;
-	for(i = 0; i < num_configurations; i++) {
-		err = ccs_create_configuration(configuration_space, 0, NULL, NULL, configurations + i);
-		if (unlikely(err)) {
-			free(values);
-			for(size_t j = 0; j < i; j++)
-				ccs_release_object(configurations + j);
-			return err;
-		}
-	}
-	for(i = 0; i < num_configurations; i++) {
-		for(size_t j = 0; j < num_hyper; j++)
-			configurations[i]->data->values[j] =
-				values[j*num_configurations + i];
-
-		err = _set_actives(configuration_space, configurations[i]);
+		err = _sample(configuration_space, config, &found);
 		if (err) {
-			free(values);
-			for(size_t j = 0; j < num_configurations; j++)
-				ccs_release_object(configurations + j);
+			ccs_release_object(config);
 			return err;
 		}
+		counter++;
+		if (found) {
+			configurations[count++] = config;
+			config = NULL;
+		}
 	}
-	free(values);
+	if (count < num_configurations)
+		return -CCS_SAMPLING_UNSUCCESSFUL;
 	return CCS_SUCCESS;
+//	UT_array *array = configuration_space->data->hyperparameters;
+//	size_t num_hyper = utarray_len(array);
+//	ccs_datum_t *values = (ccs_datum_t *)calloc(1, sizeof(ccs_datum_t)*num_configurations*num_hyper);
+//	ccs_datum_t *p_values = values;
+//	ccs_rng_t rng = configuration_space->data->rng;
+//	_ccs_hyperparameter_wrapper_t *wrapper = NULL;
+//	while ( (wrapper = (_ccs_hyperparameter_wrapper_t *)utarray_next(array, wrapper)) ) {
+//		err = ccs_hyperparameter_samples(wrapper->hyperparameter,
+//		                                 wrapper->distribution->distribution,
+//						 rng, num_configurations, p_values);
+//		if (unlikely(err)) {
+//			free(values);
+//			return err;
+//		}
+//		p_values += num_configurations;
+//	}
+//	size_t i;
+//	for(i = 0; i < num_configurations; i++) {
+//		err = ccs_create_configuration(configuration_space, 0, NULL, NULL, configurations + i);
+//		if (unlikely(err)) {
+//			free(values);
+//			for(size_t j = 0; j < i; j++)
+//				ccs_release_object(configurations + j);
+//			return err;
+//		}
+//	}
+//	for(i = 0; i < num_configurations; i++) {
+//		for(size_t j = 0; j < num_hyper; j++)
+//			configurations[i]->data->values[j] =
+//				values[j*num_configurations + i];
+//
+//		err = _set_actives(configuration_space, configurations[i]);
+//		if (err) {
+//			free(values);
+//			for(size_t j = 0; j < num_configurations; j++)
+//				ccs_release_object(configurations + j);
+//			return err;
+//		}
+//	}
+//	free(values);
+//	return CCS_SUCCESS;
 }
 
 static int _size_t_sort(const void *a, const void *b) {
