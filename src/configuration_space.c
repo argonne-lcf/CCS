@@ -511,7 +511,7 @@ _test_forbidden(ccs_configuration_space_t  configuration_space,
 		ccs_datum_t result;
 		err = ccs_expression_eval(*p_expression, configuration_space,
 		                          values, &result);
-		if (err == CCS_INACTIVE_HYPERPARAMETER)
+		if (err == -CCS_INACTIVE_HYPERPARAMETER)
 			continue;
 		else if (err)
 			return err;
@@ -631,21 +631,15 @@ _sample(ccs_configuration_space_t  configuration_space,
 		err = ccs_hyperparameter_sample(wrapper->hyperparameter,
 		                                wrapper->distribution->distribution,
 		                                rng, values++);
-		if (unlikely(err)) {
-			ccs_release_object(config);
+		if (unlikely(err))
 			return err;
-		}
 	}
 	err = _set_actives(configuration_space, config);
-	if (err) {
-		ccs_release_object(config);
+	if (err)
 		return err;
-	}
 	err = _test_forbidden(configuration_space, config->data->values, found);
-	if (err) {
-		ccs_release_object(config);
+	if (err)
 		return err;
-	}
 	return CCS_SUCCESS;
 }
 

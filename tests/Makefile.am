@@ -14,7 +14,8 @@ RNG_TESTS = \
 		test_ordinal_hyperparameter \
 		test_configuration_space \
 		test_expression \
-		test_condition
+		test_condition \
+		test_forbidden
 
 # unit tests
 UNIT_TESTS = \

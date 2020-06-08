@@ -38,7 +38,7 @@ test_simple() {
 	                                   ccs_float(0.0), &expression);
 	assert( err == CCS_SUCCESS );
 
-	err = ccs_configuration_space_set_condition(space, 1, expression);
+	err = ccs_configuration_space_add_forbidden_clause(space, expression);
 	assert( err == CCS_SUCCESS );
 
 	for (int i = 0; i < 100; i ++) {
@@ -49,17 +49,15 @@ test_simple() {
 		assert( err == CCS_SUCCESS );
 		assert( values[0].type == CCS_FLOAT );
 		f = values[0].value.f;
+		assert( f >= 0.0 && f < 1.0 );
+		assert( values[1].type == CCS_FLOAT );
+		f = values[0].value.f;
 		assert( f >= -1.0 && f < 1.0 );
-		if (f < 0.0)
-			assert( values[1].type == CCS_FLOAT );
-		else
-			assert( values[1].type == CCS_INACTIVE );
 		err = ccs_configuration_space_check_configuration(space, configuration);
 		assert( err == CCS_SUCCESS );
 		err = ccs_release_object(configuration);
 		assert( err == CCS_SUCCESS );
 	}
-
 	err = ccs_configuration_space_samples(space, 100, configurations);
 	assert( err == CCS_SUCCESS );
 
@@ -69,11 +67,10 @@ test_simple() {
 		assert( err == CCS_SUCCESS );
 		assert( values[0].type == CCS_FLOAT );
 		f = values[0].value.f;
+		assert( f >= 0.0 && f < 1.0 );
+		assert( values[1].type == CCS_FLOAT );
+		f = values[0].value.f;
 		assert( f >= -1.0 && f < 1.0 );
-		if (f < 0.0)
-			assert( values[1].type == CCS_FLOAT );
-		else
-			assert( values[1].type == CCS_INACTIVE );
 		err = ccs_configuration_space_check_configuration(space, configurations[i]);
 		assert( err == CCS_SUCCESS );
 		err = ccs_release_object(configurations[i]);
@@ -91,7 +88,7 @@ test_simple() {
 }
 
 void
-test_transitive() {
+test_combined() {
 	ccs_hyperparameter_t      hyperparameters[3];
 	ccs_configuration_space_t space;
 	ccs_expression_t          expression;
@@ -127,6 +124,15 @@ test_transitive() {
 	err = ccs_release_object(expression);
 	assert( err == CCS_SUCCESS );
 
+	err = ccs_create_binary_expression(CCS_LESS, ccs_object(hyperparameters[0]),
+	                                   ccs_float(0.0), &expression);
+	assert( err == CCS_SUCCESS );
+	err = ccs_configuration_space_add_forbidden_clause(space, expression);
+	assert( err == CCS_SUCCESS );
+	err = ccs_release_object(expression);
+	assert( err == CCS_SUCCESS );
+
+
 	for (int i = 0; i < 100; i ++) {
 		ccs_float_t f;
 		err = ccs_configuration_space_sample(space, &configuration);
@@ -143,7 +149,7 @@ test_transitive() {
 			if (f < 0.0) {
 				assert( values[0].type == CCS_FLOAT );
 				f = values[0].value.f;
-				assert( f >= -1.0 && f < 1.0 );
+				assert( f >= 0.0 && f < 1.0 );
 			}
 			else
 				assert( values[0].type == CCS_INACTIVE );
@@ -174,7 +180,7 @@ test_transitive() {
 			if (f < 0.0) {
 				assert( values[0].type == CCS_FLOAT );
 				f = values[0].value.f;
-				assert( f >= -1.0 && f < 1.0 );
+				assert( f >= 0.0 && f < 1.0 );
 			}
 			else
 				assert( values[0].type == CCS_INACTIVE );
@@ -197,9 +203,10 @@ test_transitive() {
 	assert( err == CCS_SUCCESS );
 }
 
+
 int main() {
 	ccs_init();
 	test_simple();
-	test_transitive();
+	test_combined();
 	return 0;
 }
