@@ -86,7 +86,7 @@ extern ccs_error_t
 ccs_hyperparameter_sample(ccs_hyperparameter_t  hyperparameter,
                           ccs_distribution_t    distribution,
                           ccs_rng_t             rng,
-                          ccs_datum_t          *value);
+                          ccs_datum_t          *value_ret);
 
 extern ccs_error_t
 ccs_hyperparameter_samples(ccs_hyperparameter_t  hyperparameter,
