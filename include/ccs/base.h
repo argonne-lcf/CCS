@@ -131,16 +131,6 @@ union ccs_value_u {
 
 typedef union ccs_value_u ccs_value_t;
 
-struct ccs_interval_s {
-	ccs_numeric_type_t type;
-	ccs_numeric_t   lower;
-	ccs_numeric_t   upper;
-	ccs_bool_t      lower_included;
-	ccs_bool_t      upper_included;
-};
-
-typedef struct ccs_interval_s ccs_interval_t;
-
 struct ccs_datum_s {
 	ccs_value_t value;
 	ccs_data_type_t type;

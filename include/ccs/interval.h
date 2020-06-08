@@ -5,6 +5,16 @@
 extern "C" {
 #endif
 
+struct ccs_interval_s {
+	ccs_numeric_type_t type;
+	ccs_numeric_t   lower;
+	ccs_numeric_t   upper;
+	ccs_bool_t      lower_included;
+	ccs_bool_t      upper_included;
+};
+
+typedef struct ccs_interval_s ccs_interval_t;
+
 extern ccs_error_t
 ccs_interval_empty(ccs_interval_t *interval, ccs_bool_t *empty_ret);
 
