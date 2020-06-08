@@ -498,17 +498,41 @@ _set_actives(ccs_configuration_space_t configuration_space,
 	return CCS_SUCCESS;
 }
 
+static ccs_error_t
+_test_forbidden(ccs_configuration_space_t  configuration_space,
+                ccs_datum_t               *values,
+		ccs_bool_t                *is_valid) {
+	ccs_error_t err;
+	UT_array *array = configuration_space->data->forbidden_clauses;
+	ccs_expression_t *p_expression = NULL;
+	*is_valid = CCS_FALSE;
+	while ( (p_expression = (ccs_expression_t *)
+	               utarray_next(array, p_expression)) ) {
+		ccs_datum_t result;
+		err = ccs_expression_eval(*p_expression, configuration_space,
+		                          values, &result);
+		if (err == CCS_INACTIVE_HYPERPARAMETER)
+			continue;
+		else if (err)
+			return err;
+		if (result.type == CCS_BOOLEAN && result.value.i == CCS_TRUE)
+			return CCS_SUCCESS;
+	}
+	*is_valid = CCS_TRUE;
+	return CCS_SUCCESS;
+}
+
 static inline ccs_error_t
 _check_configuration(ccs_configuration_space_t  configuration_space,
                      size_t                     num_values,
                      ccs_datum_t               *values) {
+	ccs_error_t err;
 	UT_array *indexes = configuration_space->data->sorted_indexes;
 	UT_array *array = configuration_space->data->hyperparameters;
 	if (num_values != utarray_len(array))
 		return -CCS_INVALID_CONFIGURATION;
 	size_t *p_index = NULL;
 	while ( (p_index = (size_t *)utarray_next(indexes, p_index)) ) {
-		ccs_error_t err;
 		ccs_bool_t active = CCS_TRUE;
 		_ccs_hyperparameter_wrapper_t *wrapper = NULL;
 		wrapper = (_ccs_hyperparameter_wrapper_t *)utarray_eltptr(array, *p_index);
@@ -546,6 +570,12 @@ _check_configuration(ccs_configuration_space_t  configuration_space,
 				return -CCS_INVALID_CONFIGURATION;
 		}
 	}
+	ccs_bool_t valid;
+	err = _test_forbidden(configuration_space, values, &valid);
+	if (err)
+		return err;
+	if (!valid)
+		return -CCS_INVALID_CONFIGURATION;
 	return CCS_SUCCESS;
 }
 
@@ -605,21 +635,36 @@ ccs_configuration_space_sample(ccs_configuration_space_t  configuration_space,
 		return err;
 	ccs_rng_t rng = configuration_space->data->rng;
 	UT_array *array = configuration_space->data->hyperparameters;
-	_ccs_hyperparameter_wrapper_t *wrapper = NULL;
-	ccs_datum_t *values = config->data->values;
-	while ( (wrapper = (_ccs_hyperparameter_wrapper_t *)utarray_next(array, wrapper)) ) {
-		err = ccs_hyperparameter_sample(wrapper->hyperparameter,
-		                                wrapper->distribution->distribution,
-		                                rng, values++);
-		if (unlikely(err)) {
+	ccs_bool_t found;
+	int counter = 0;
+	do {
+		_ccs_hyperparameter_wrapper_t *wrapper = NULL;
+		ccs_datum_t *values = config->data->values;
+		while ( (wrapper = (_ccs_hyperparameter_wrapper_t *)
+		                       utarray_next(array, wrapper)) ) {
+			err = ccs_hyperparameter_sample(wrapper->hyperparameter,
+			                                wrapper->distribution->distribution,
+			                                rng, values++);
+			if (unlikely(err)) {
+				ccs_release_object(config);
+				return err;
+			}
+		}
+		err = _set_actives(configuration_space, config);
+		if (err) {
 			ccs_release_object(config);
 			return err;
 		}
-	}
-	err = _set_actives(configuration_space, config);
-	if (err) {
+		err = _test_forbidden(configuration_space, config->data->values, &found);
+		if (err) {
+			ccs_release_object(config);
+			return err;
+		}
+		counter++;
+	} while (!found && counter < 100);
+	if (!found) {
 		ccs_release_object(config);
-		return err;
+		return -CCS_SAMPLING_UNSUCCESSFUL;
 	}
 	*configuration_ret = config;
 	return CCS_SUCCESS;
