@@ -38,7 +38,7 @@ ccs_create_configuration(ccs_configuration_space_t configuration_space,
 		return -CCS_INVALID_VALUE;
 	uintptr_t mem = (uintptr_t)calloc(1, sizeof(struct _ccs_configuration_s) + sizeof(struct _ccs_configuration_data_s) + num * sizeof(ccs_datum_t));
 	if (!mem)
-		return CCS_ENOMEM;
+		return -CCS_ENOMEM;
 	err = ccs_retain_object(configuration_space);
 	if (err) {
 		free((void*)mem);
