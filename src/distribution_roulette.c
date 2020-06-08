@@ -144,18 +144,24 @@ ccs_roulette_distribution_get_num_areas(ccs_distribution_t  distribution,
 ccs_error_t
 ccs_roulette_distribution_get_areas(ccs_distribution_t  distribution,
                                     size_t              num_areas,
-                                    ccs_float_t        *areas) {
+                                    ccs_float_t        *areas,
+                                    size_t             *num_areas_ret) {
 	if (!distribution || distribution->obj.type != CCS_DISTRIBUTION)
 		return -CCS_INVALID_OBJECT;
 	if (!distribution->data || ((_ccs_distribution_common_data_t*)distribution->data)->type != CCS_ROULETTE)
 		return -CCS_INVALID_OBJECT;
-	if (!areas)
+	if (!areas && !num_areas_ret)
+		return -CCS_INVALID_VALUE;
+	if (num_areas && !areas)
 		return -CCS_INVALID_VALUE;
 	_ccs_distribution_roulette_data_t * data = (_ccs_distribution_roulette_data_t *)distribution->data;
-	if ((ccs_int_t)num_areas != data->num_areas)
-		return -CCS_INVALID_VALUE;
-
-	for (size_t i = 0; i < num_areas; i++)
-		areas[i] = data->areas[i+1] - data->areas[i];
+	if (areas) {
+		if ((ccs_int_t)num_areas != data->num_areas)
+			return -CCS_INVALID_VALUE;
+		for (size_t i = 0; i < num_areas; i++)
+			areas[i] = data->areas[i+1] - data->areas[i];
+	}
+	if (num_areas_ret)
+		*num_areas_ret = data->num_areas;
 	return CCS_SUCCESS;
 }

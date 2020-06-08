@@ -121,7 +121,8 @@ ccs_roulette_distribution_get_num_areas(ccs_distribution_t  distribution,
 extern ccs_error_t
 ccs_roulette_distribution_get_areas(ccs_distribution_t  distribution,
                                     size_t              num_areas,
-                                    ccs_float_t        *areas);
+                                    ccs_float_t        *areas,
+                                    size_t             *num_areas_ret);
 
 //   Sampling Interface
 extern ccs_error_t

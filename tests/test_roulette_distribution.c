@@ -64,8 +64,10 @@ void test_create_roulette_distribution() {
 	assert( err == CCS_SUCCESS );
 	assert( num_areas_ret == num_areas );
 
-	err = ccs_roulette_distribution_get_areas(distrib, num_areas_ret, areas_ret);
+	err = ccs_roulette_distribution_get_areas(distrib, num_areas, areas_ret, &num_areas_ret);
 	assert( err == CCS_SUCCESS );
+	assert( num_areas_ret == num_areas );
+
 	ccs_float_t inv_sum = 2.0 / (num_areas * (num_areas + 1));
 	for (size_t i = 0; i < num_areas; i++) {
 		assert( areas_ret[i] <= areas[i] * inv_sum + epsilon &&
