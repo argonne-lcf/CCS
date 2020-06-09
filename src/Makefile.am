@@ -32,6 +32,8 @@ libcconfigspace_la_SOURCES = \
 			expression.c \
 			expression_internal.h \
 			objective_space.c \
-			objective_space_internal.h
+			objective_space_internal.h \
+			evaluation.c \
+			evaluation_internal.h
 
 @VALGRIND_CHECK_RULES@
