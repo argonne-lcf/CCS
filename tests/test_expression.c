@@ -675,11 +675,12 @@ void test_in() {
 
 void
 test_compound() {
-	ccs_expression_t expression1, expression2;
-	ccs_datum_t      result;
-	ccs_error_t      err;
-	ccs_datum_t      nodes[3];
-	size_t           num_nodes_ret;
+	ccs_expression_t      expression1, expression2;
+	ccs_datum_t           result;
+	ccs_error_t           err;
+	ccs_expression_t      nodes[3];
+	size_t                num_nodes_ret;
+	ccs_expression_type_t type;
 
 	err = ccs_create_binary_expression(CCS_ADD, ccs_float(3.0), ccs_int(1),
 	                                   &expression1);
@@ -687,10 +688,20 @@ test_compound() {
 	err = ccs_expression_get_nodes(expression1, 3, nodes, &num_nodes_ret);
 	assert( err == CCS_SUCCESS );
 	assert( num_nodes_ret == 2 );
-	assert( nodes[0].type == CCS_FLOAT );
-	assert( nodes[0].value.f == 3.0 );
-	assert( nodes[1].type == CCS_INTEGER );
-	assert( nodes[1].value.i == 1 );
+	err = ccs_expression_get_type(nodes[0], &type);
+	assert( err == CCS_SUCCESS );
+	assert( type == CCS_LITERAL );
+	err = ccs_literal_get_value(nodes[0], &result);
+	assert( err == CCS_SUCCESS );
+	assert( result.type == CCS_FLOAT );
+	assert( result.value.f == 3.0 );
+	err = ccs_expression_get_type(nodes[1], &type);
+	assert( err == CCS_SUCCESS );
+	assert( type == CCS_LITERAL );
+	err = ccs_literal_get_value(nodes[1], &result);
+	assert( err == CCS_SUCCESS );
+	assert( result.type == CCS_INTEGER );
+	assert( result.value.i == 1 );
 
 	err = ccs_create_binary_expression(CCS_MULTIPLY, ccs_float(2.0),
 	                                   ccs_object(expression1), &expression2);

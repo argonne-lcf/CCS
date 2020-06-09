@@ -72,11 +72,11 @@ typedef enum ccs_object_type_e ccs_object_type_t;
 
 enum ccs_data_type_e {
 	CCS_NONE,
-	CCS_INACTIVE,
 	CCS_INTEGER,
 	CCS_FLOAT,
 	CCS_BOOLEAN,
 	CCS_STRING,
+	CCS_INACTIVE,
 	CCS_OBJECT,
 	CCS_DATA_TYPE_MAX,
 	CCS_DATA_TYPE_FORCE_64BIT = INT64_MAX

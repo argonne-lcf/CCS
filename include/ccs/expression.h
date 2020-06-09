@@ -24,6 +24,8 @@ enum ccs_expression_type_e {
 	CCS_NEGATIVE,
 	CCS_NOT,
 	CCS_LIST,
+	CCS_LITERAL,
+	CCS_VARIABLE,
 	CCS_EXPRESSION_TYPE_MAX,
 	CCS_EXPRESSION_FORCE_32BIT = INT_MAX
 };
@@ -41,7 +43,7 @@ typedef enum ccs_expression_type_e ccs_expression_type_t;
 // 6 : MULTIPLY, DIVIDE, MODULO
 // 7 : POSITIVE, NEGATIVE, NOT
 // max - 1: LIST
-// max : LITERAL, VARIABLE, HYPERPARAMETER
+// max : LITERAL, VARIABLE
 
 // One for each expression type:
 extern const int ccs_expression_precedence[];
@@ -69,6 +71,14 @@ ccs_create_expression(ccs_expression_type_t  type,
                       ccs_expression_t      *expression_ret);
 
 extern ccs_error_t
+ccs_create_literal(ccs_datum_t       value,
+                   ccs_expression_t *expression_ret);
+
+extern ccs_error_t
+ccs_create_variable(ccs_hyperparameter_t  hyperparameter,
+                    ccs_expression_t     *expression_ret);
+
+extern ccs_error_t
 ccs_expression_get_type(ccs_expression_t       expression,
                         ccs_expression_type_t *type_ret);
 
@@ -79,8 +89,16 @@ ccs_expression_get_num_nodes(ccs_expression_t  expression,
 extern ccs_error_t
 ccs_expression_get_nodes(ccs_expression_t  expression,
                          size_t            num_nodes,
-                         ccs_datum_t      *nodes,
+                         ccs_expression_t *nodes,
                          size_t           *num_nodes_ret);
+
+extern ccs_error_t
+ccs_literal_get_value(ccs_expression_t  expression,
+                      ccs_datum_t      *value_ret);
+
+extern ccs_error_t
+ccs_variable_get_hyperparameter(ccs_expression_t      expression,
+                                ccs_hyperparameter_t *hyperparameter_ret);
 
 extern ccs_error_t
 ccs_expression_eval(ccs_expression_t  expression,
