@@ -23,6 +23,8 @@ libcconfigspace_la_SOURCES = \
 			hyperparameter_categorical.c \
 			hyperparameter_ordinal.c \
 			utarray.h \
+			context.c \
+			context_internal.h \
 			configuration_space.c \
 			configuration_space_internal.h \
 			configuration.c \

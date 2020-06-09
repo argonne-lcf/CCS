@@ -10,6 +10,7 @@
 #include "ccs/distribution.h"
 #include "ccs/hyperparameter.h"
 #include "ccs/expression.h"
+#include "ccs/context.h"
 #include "ccs/configuration_space.h"
 #include "ccs/configuration.h"
 

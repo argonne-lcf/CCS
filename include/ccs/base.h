@@ -25,6 +25,7 @@ typedef struct _ccs_rng_s                 *ccs_rng_t;
 typedef struct _ccs_distribution_s        *ccs_distribution_t;
 typedef struct _ccs_hyperparameter_s      *ccs_hyperparameter_t;
 typedef struct _ccs_expression_s          *ccs_expression_t;
+typedef struct _ccs_context_s             *ccs_context_t;
 typedef struct _ccs_configuration_space_s *ccs_configuration_space_t;
 typedef struct _ccs_configuration_s       *ccs_configuration_t;
 

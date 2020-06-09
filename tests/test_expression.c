@@ -63,7 +63,7 @@ void test_expression_wrapper(ccs_expression_type_t type,
 
 	err = ccs_create_expression(type, count, nodes, &expression);
 	assert( err == CCS_SUCCESS );
-	err = ccs_expression_eval(expression, context, inputs, &result);
+	err = ccs_expression_eval(expression, (ccs_context_t)context, inputs, &result);
 	assert( err == eerr );
 	if (eerr != CCS_SUCCESS) {
 		err = ccs_release_object(expression);
@@ -795,7 +795,7 @@ void test_check_context() {
 
 	err = ccs_expression_check_context(expression2, NULL);
 	assert( err == -CCS_INVALID_VALUE );
-	err = ccs_expression_check_context(expression2, space);
+	err = ccs_expression_check_context(expression2, (ccs_context_t)space);
 	assert( err == CCS_SUCCESS );
 
 	err = ccs_release_object(expression2);
@@ -804,7 +804,7 @@ void test_check_context() {
 	err = ccs_create_binary_expression(CCS_EQUAL,
 	    ccs_object(hyperparameter3), ccs_object(expression1), &expression2);
 	assert( err == CCS_SUCCESS );
-	err = ccs_expression_check_context(expression2, space);
+	err = ccs_expression_check_context(expression2, (ccs_context_t)space);
 	assert( err == -CCS_INVALID_HYPERPARAMETER );
 
 	err = ccs_release_object(hyperparameter1);

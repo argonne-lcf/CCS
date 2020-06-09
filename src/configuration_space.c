@@ -43,8 +43,24 @@ _ccs_configuration_space_del(ccs_object_t object) {
 	return CCS_SUCCESS;
 }
 
+static ccs_error_t
+_ccs_configuration_space_get_hyperparameter_index(_ccs_context_data_t *data,
+                                                  ccs_hyperparameter_t  hyperparameter,
+                                                  size_t               *index_ret) {
+	_ccs_configuration_space_data_t *csdata =
+		(_ccs_configuration_space_data_t *)data;
+	_ccs_hyperparameter_wrapper_t *wrapper;
+	HASH_FIND(hh_handle, csdata->handle_hash, &hyperparameter,
+	          sizeof(ccs_hyperparameter_t), wrapper);
+	if (!wrapper)
+		return -CCS_INVALID_HYPERPARAMETER;
+	*index_ret = wrapper->index;
+	return CCS_SUCCESS;
+}
+
 static _ccs_configuration_space_ops_t _configuration_space_ops =
-    { {&_ccs_configuration_space_del} };
+    { { {&_ccs_configuration_space_del},
+	 &_ccs_configuration_space_get_hyperparameter_index} };
 
 static const UT_icd _hyperparameter_wrapper_icd = {
 	sizeof(_ccs_hyperparameter_wrapper_t),
@@ -488,7 +504,8 @@ _set_actives(ccs_configuration_space_t configuration_space,
 			continue;
 		ccs_datum_t result;
 		ccs_error_t err;
-		err = ccs_expression_eval(wrapper->condition, configuration_space,
+		err = ccs_expression_eval(wrapper->condition,
+		                          (ccs_context_t)configuration_space,
 		                          values, &result);
 		if (err)
 			return err;
@@ -509,7 +526,8 @@ _test_forbidden(ccs_configuration_space_t  configuration_space,
 	while ( (p_expression = (ccs_expression_t *)
 	               utarray_next(array, p_expression)) ) {
 		ccs_datum_t result;
-		err = ccs_expression_eval(*p_expression, configuration_space,
+		err = ccs_expression_eval(*p_expression,
+		                          (ccs_context_t)configuration_space,
 		                          values, &result);
 		if (err == -CCS_INACTIVE_HYPERPARAMETER)
 			continue;
@@ -548,9 +566,10 @@ _check_configuration(ccs_configuration_space_t  configuration_space,
 			if (active) {
 				ccs_datum_t result;
 				ccs_error_t err;
-				err = ccs_expression_eval(wrapper->condition,
-				                          configuration_space,
-		                                          values, &result);
+				err = ccs_expression_eval(
+					wrapper->condition,
+					(ccs_context_t)configuration_space,
+					values, &result);
 				if (err)
 					return err;
 				if (!(result.type == CCS_BOOLEAN && result.value.i == CCS_TRUE)) {
@@ -1007,7 +1026,8 @@ ccs_configuration_space_add_forbidden_clause(ccs_configuration_space_t configura
 	if (!configuration_space || !configuration_space->data)
 		return -CCS_INVALID_OBJECT;
 	ccs_error_t err;
-	err = ccs_expression_check_context(expression, configuration_space);
+	err = ccs_expression_check_context(expression,
+	                                   (ccs_context_t)configuration_space);
 	if (err)
 		return err;
 	err = ccs_retain_object(expression);
@@ -1027,7 +1047,8 @@ ccs_configuration_space_add_forbidden_clauses(ccs_configuration_space_t  configu
 		return -CCS_INVALID_VALUE;
 	for (size_t i = 0; i < num_expressions; i++) {
 		ccs_error_t err;
-		err = ccs_expression_check_context(expressions[i], configuration_space);
+		err = ccs_expression_check_context(expressions[i],
+		                                   (ccs_context_t)configuration_space);
 		if (err)
 			return err;
 		err = ccs_retain_object(expressions[i]);

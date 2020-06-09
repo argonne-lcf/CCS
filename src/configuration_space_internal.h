@@ -4,6 +4,7 @@
 #define HASH_NONFATAL_OOM 1
 #include "uthash.h"
 #include "utlist.h"
+#include "context_internal.h"
 
 struct _ccs_distribution_wrapper_s;
 typedef struct _ccs_distribution_wrapper_s _ccs_distribution_wrapper_t;
@@ -34,7 +35,7 @@ struct _ccs_configuration_space_data_s;
 typedef struct _ccs_configuration_space_data_s _ccs_configuration_space_data_t;
 
 struct _ccs_configuration_space_ops_s {
-	_ccs_object_ops_t obj_ops;
+	_ccs_context_ops_t ops;
 };
 typedef struct _ccs_configuration_space_ops_s _ccs_configuration_space_ops_t;
 

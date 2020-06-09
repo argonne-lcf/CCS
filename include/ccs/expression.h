@@ -83,17 +83,17 @@ ccs_expression_get_nodes(ccs_expression_t  expression,
                          size_t           *num_nodes_ret);
 
 extern ccs_error_t
-ccs_expression_eval(ccs_expression_t           expression,
-                    ccs_configuration_space_t  context,
-                    ccs_datum_t               *values,
-                    ccs_datum_t               *result);
+ccs_expression_eval(ccs_expression_t  expression,
+                    ccs_context_t     context,
+                    ccs_datum_t      *values,
+                    ccs_datum_t      *result);
 
 extern ccs_error_t
-ccs_expression_list_eval_node(ccs_expression_t           expression,
-                              ccs_configuration_space_t  context,
-                              ccs_datum_t               *values,
-                              size_t                     index,
-                              ccs_datum_t               *result);
+ccs_expression_list_eval_node(ccs_expression_t  expression,
+                              ccs_context_t     context,
+                              ccs_datum_t      *values,
+                              size_t            index,
+                              ccs_datum_t      *result);
 
 //uniq and sorted list of hyperparameters handle
 extern ccs_error_t
@@ -103,8 +103,8 @@ ccs_expression_get_hyperparameters(ccs_expression_t      expression,
                                    size_t               *num_hyperparameters_ret);
 
 extern ccs_error_t
-ccs_expression_check_context(ccs_expression_t          expression,
-                             ccs_configuration_space_t context);
+ccs_expression_check_context(ccs_expression_t expression,
+                             ccs_context_t    context);
 #ifdef __cplusplus
 }
 #endif
