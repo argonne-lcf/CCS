@@ -28,18 +28,70 @@ ccs_objective_space_get_user_data(ccs_objective_space_t   objective_space,
                                   void                  **user_data_ret);
 
 extern ccs_error_t
-ccs_objective_space_add_variable(ccs_objective_space_t objective_space,
-                                 ccs_hyperparameter_t  result);
+ccs_objective_space_add_hyperparameter(ccs_objective_space_t objective_space,
+                                       ccs_hyperparameter_t  hyperparameter);
+
+extern ccs_error_t
+ccs_objective_space_add_hyperparameters(ccs_objective_space_t  objective_space,
+                                        size_t                 num_hyperparameters,
+                                        ccs_hyperparameter_t  *hyperparameters);
+
+extern ccs_error_t
+ccs_objective_space_get_num_hyperparameters(
+		ccs_objective_space_t  objective_space,
+		size_t                *num_hyperparameters_ret);
+
+extern ccs_error_t
+ccs_objective_space_get_hyperparameter(ccs_objective_space_t  objective_space,
+                                       size_t                 index,
+                                       ccs_hyperparameter_t  *hyperparameter_ret);
+
+extern ccs_error_t
+ccs_objective_space_get_hyperparameter_by_name(
+		ccs_objective_space_t  objective_space,
+		const char *           name,
+		ccs_hyperparameter_t  *hyperparameter_ret);
+
+extern ccs_error_t
+ccs_objective_space_get_hyperparameter_index_by_name(
+		ccs_objective_space_t  objective_space,
+		const char            *name,
+		size_t                *index_ret);
+
+extern ccs_error_t
+ccs_objective_space_get_hyperparameter_index(
+		ccs_objective_space_t  objective_space,
+		ccs_hyperparameter_t   hyperparameter,
+		size_t                *index_ret);
+
+extern ccs_error_t
+ccs_objective_space_get_hyperparameters(ccs_objective_space_t  objective_space,
+                                        size_t                 num_hyperparameters,
+                                        ccs_hyperparameter_t  *hyperparameters,
+                                        size_t                *num_hyperparameters_ret);
 
 extern ccs_error_t
 ccs_objective_space_add_objective(ccs_objective_space_t objective_space,
-                                  ccs_expression_t      objective,
+                                  ccs_expression_t      expression,
                                   ccs_objective_type_t  type);
 
 extern ccs_error_t
+ccs_objective_space_add_objectives(ccs_objective_space_t  objective_space,
+                                   size_t                 num_objectives,
+                                   ccs_expression_t      *expressions,
+                                   ccs_objective_type_t  *types);
+
+extern ccs_error_t
 ccs_objective_space_get_objective(ccs_objective_space_t  objective_space,
-                                  ccs_expression_t      *objective_ret,
+                                  size_t                 index,
+                                  ccs_expression_t      *expression_ret,
                                   ccs_objective_type_t  *type_ret);
+extern ccs_error_t
+ccs_objective_space_get_objectives(ccs_objective_space_t  objective_space,
+                                   size_t                 num_objectives,
+                                   ccs_expression_t      *expressions,
+                                   ccs_objective_type_t  *types,
+                                   size_t                *num_objectives_ret);
 
 #ifdef __cplusplus
 }

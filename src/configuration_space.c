@@ -111,14 +111,9 @@ ccs_create_configuration_space(const char                *name,
 	config_space->data->name = (const char *)(mem + sizeof(struct _ccs_configuration_space_s) + sizeof(struct _ccs_configuration_space_data_s));
 	config_space->data->user_data = user_data;
 	config_space->data->rng = rng;
-	config_space->data->hyperparameters = NULL;
-	config_space->data->forbidden_clauses = NULL;
-	config_space->data->sorted_indexes = NULL;
 	utarray_new(config_space->data->hyperparameters, &_hyperparameter_wrapper_icd);
 	utarray_new(config_space->data->forbidden_clauses, &_forbidden_clauses_icd);
 	utarray_new(config_space->data->sorted_indexes, &_size_t_icd);
-	config_space->data->name_hash = NULL;
-	config_space->data->distribution_list = NULL;
 	config_space->data->graph_ok = CCS_TRUE;
 	strcpy((char *)(config_space->data->name), name);
 	*configuration_space_ret = config_space;
@@ -422,11 +417,11 @@ ccs_configuration_space_get_hyperparameter_indexes(
 }
 
 ccs_error_t
-ccs_configuration_space_get_hyperparameters(ccs_configuration_space_t  configuration_space,
-                                            size_t                     num_hyperparameters
-,
-                                            ccs_hyperparameter_t      *hyperparameters,
-                                            size_t                    *num_hyperparameters_ret) {
+ccs_configuration_space_get_hyperparameters(
+		ccs_configuration_space_t  configuration_space,
+		size_t                     num_hyperparameters,
+		ccs_hyperparameter_t      *hyperparameters,
+		size_t                    *num_hyperparameters_ret) {
 	if (!configuration_space || !configuration_space->data)
 		return -CCS_INVALID_OBJECT;
 	if (num_hyperparameters && !hyperparameters)
