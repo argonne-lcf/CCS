@@ -10,5 +10,8 @@ include_ccs_HEADERS = \
 			ccs/configuration_space.h \
 			ccs/hyperparameter.h \
 			ccs/expression.h \
-			ccs/configuration.h
+			ccs/configuration.h \
+			ccs/objective_space.h \
+			ccs/result.h \
+			ccs/tuner.h
 

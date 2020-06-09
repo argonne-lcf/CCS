@@ -28,6 +28,9 @@ typedef struct _ccs_expression_s          *ccs_expression_t;
 typedef struct _ccs_context_s             *ccs_context_t;
 typedef struct _ccs_configuration_space_s *ccs_configuration_space_t;
 typedef struct _ccs_configuration_s       *ccs_configuration_t;
+typedef struct _ccs_objective_space_s     *ccs_objective_space_t;
+typedef struct _ccs_result_s              *ccs_result_t;
+typedef struct _ccs_tuner_s               *ccs_tuner_t;
 
 enum ccs_error_e {
 	CCS_SUCCESS,
