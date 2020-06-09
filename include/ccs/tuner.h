@@ -12,9 +12,9 @@ ccs_tuner_ask(ccs_tuner_t          tuner,
               size_t              *num_configurations_ret);
 
 extern ccs_error_t
-ccs_tuner_tell(ccs_tuner_t   tuner,
-               size_t        num_results,
-               ccs_result_t *results);
+ccs_tuner_tell(ccs_tuner_t       tuner,
+               size_t            num_evaluations,
+               ccs_evaluation_t *evaluations);
 
 extern ccs_error_t
 ccs_tuner_get_optimal(ccs_tuner_t          tuner,

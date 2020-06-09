@@ -14,7 +14,7 @@
 #include "ccs/configuration_space.h"
 #include "ccs/configuration.h"
 #include "ccs/objective_space.h"
-#include "ccs/result.h"
+#include "ccs/evaluation.h"
 #include "ccs/tuner.h"
 
 #endif //_CCONFIGSPACE_H

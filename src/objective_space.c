@@ -416,7 +416,7 @@ ccs_objective_space_get_objectives(ccs_objective_space_t  objective_space,
 		}
 		for (size_t i = size; i < num_objectives; i++) {
 			expressions[i] = NULL;
-			types[i] = 0;
+			types[i] = CCS_MINIMIZE;
 		}
 	}
 	if (num_objectives_ret)

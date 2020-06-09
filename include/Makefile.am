@@ -12,6 +12,6 @@ include_ccs_HEADERS = \
 			ccs/expression.h \
 			ccs/configuration.h \
 			ccs/objective_space.h \
-			ccs/result.h \
+			ccs/evaluation.h \
 			ccs/tuner.h
 
