@@ -13,6 +13,14 @@ extern "C" {
 typedef double  ccs_float_t;
 typedef int64_t ccs_int_t;
 typedef int32_t ccs_bool_t;
+typedef struct {
+	uint16_t major;
+	uint16_t minor;
+	uint16_t patch;
+	uint16_t revision;
+} ccs_version_t;
+
+extern const ccs_version_t ccs_version;
 
 #define CCS_TRUE ((ccs_bool_t)(1))
 #define CCS_FALSE ((ccs_bool_t)(0))
@@ -192,6 +200,9 @@ extern const ccs_datum_t ccs_inactive;
 
 extern ccs_error_t
 ccs_init();
+
+extern ccs_version_t
+ccs_get_version();
 
 extern ccs_error_t
 ccs_retain_object(ccs_object_t object);
