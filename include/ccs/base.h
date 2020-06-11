@@ -10,9 +10,11 @@ extern "C" {
 #define likely(x)      __builtin_expect(!!(x), 1)
 #define unlikely(x)    __builtin_expect(!!(x), 0)
 
-typedef double  ccs_float_t;
-typedef int64_t ccs_int_t;
-typedef int32_t ccs_bool_t;
+typedef double   ccs_float_t;
+typedef int64_t  ccs_int_t;
+typedef int32_t  ccs_bool_t;
+typedef uint32_t ccs_hash_t;
+
 typedef struct {
 	uint16_t major;
 	uint16_t minor;

@@ -1,5 +1,6 @@
 #include "cconfigspace_internal.h"
 #include "configuration_internal.h"
+#include "datum_hash.h"
 #include <string.h>
 
 static inline _ccs_configuration_ops_t *
@@ -154,9 +155,29 @@ ccs_configuration_get_value_by_name(ccs_configuration_t  configuration,
 }
 
 ccs_error_t
-ccs_configuration_check(ccs_configuration_t  configuration) {
+ccs_configuration_check(ccs_configuration_t configuration) {
 	if (!configuration || !configuration->data)
 		return -CCS_INVALID_OBJECT;
 	return ccs_configuration_space_check_configuration(
 		configuration->data->configuration_space, configuration);
+}
+
+ccs_error_t
+ccs_configuration_hash(ccs_configuration_t  configuration,
+                       ccs_hash_t          *hash_ret) {
+	if (!configuration || !configuration->data)
+		return -CCS_INVALID_OBJECT;
+	if (!hash_ret)
+		return -CCS_INVALID_VALUE;
+	_ccs_configuration_data_t *data = configuration->data;
+	ccs_hash_t h, ht;
+	HASH_JEN(&(data->configuration_space), sizeof(data->configuration_space), h);
+	HASH_JEN(&(data->num_values), sizeof(data->num_values), ht);
+	h = _hash_combine(h, ht);
+	for (size_t i = 0; i < data->num_values; i++) {
+		ht = _hash_datum(data->values + i);
+		h = _hash_combine(h, ht);
+	}
+	*hash_ret = h;
+	return CCS_SUCCESS;
 }

@@ -1,5 +1,5 @@
-#ifndef _DATUMHASH_H
-#define _DATUMHASH_H
+#ifndef _DATUM_HASH_H
+#define _DATUM_HASH_H
 
 #define HASH_NONFATAL_OOM 1
 #define HASH_FUNCTION(s,len,hashv) (hashv) = _hash_datum((ccs_datum_t *)(s))
@@ -51,6 +51,7 @@ static inline int _datum_cmp(ccs_datum_t *a, ccs_datum_t *b) {
 			else
 				return strcmp(a->value.s, b->value.s);
 		case CCS_NONE:
+		case CCS_INACTIVE:
 			return 0;
 			break;
 		default:
@@ -59,16 +60,27 @@ static inline int _datum_cmp(ccs_datum_t *a, ccs_datum_t *b) {
 	}
 }
 
+//from boost
+static inline ccs_hash_t _hash_combine(ccs_hash_t h1, ccs_hash_t h2) {
+	h1 ^= h2 + 0x9e3779b9 + (h1 << 6) + (h1 >> 2);
+	return h1;
+}
+
 static inline unsigned _hash_datum(ccs_datum_t *d) {
 	unsigned h;
 	switch(d->type) {
 	case CCS_STRING:
-		if (d->value.s)
-			HASH_JEN(d->value.s, strlen(d->value.s), h);
+		if (d->value.s) {
+			unsigned h1, h2;
+			HASH_JEN(&(d->type), sizeof(d->type), h1);
+			HASH_JEN(d->value.s, strlen(d->value.s), h2);
+			h = _hash_combine(h1, h2);
+		}
 		else
 			HASH_JEN(d, sizeof(ccs_datum_t), h);
 		break;
 	case CCS_NONE:
+	case CCS_INACTIVE:
 		HASH_JEN(&(d->type), sizeof(d->type), h);
 		break;
 	default:
@@ -84,4 +96,4 @@ struct _ccs_hash_datum_s {
 typedef struct _ccs_hash_datum_s _ccs_hash_datum_t;
 
 
-#endif //_DATUMHASH_H
+#endif //_DATUM_HASH_H

@@ -1,10 +1,9 @@
 #ifndef _CONFIGURATION_SPACE_INTERNAL_H
 #define _CONFIGURATION_SPACE_INTERNAL_H
 #include "utarray.h"
+#include "context_internal.h"
 #define HASH_NONFATAL_OOM 1
 #include "uthash.h"
-#include "utlist.h"
-#include "context_internal.h"
 
 struct _ccs_distribution_wrapper_s;
 typedef struct _ccs_distribution_wrapper_s _ccs_distribution_wrapper_t;

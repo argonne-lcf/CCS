@@ -1,6 +1,7 @@
 #include "cconfigspace_internal.h"
 #include "configuration_space_internal.h"
 #include "configuration_internal.h"
+#include "utlist.h"
 
 static ccs_error_t
 _generate_constraints(ccs_configuration_space_t configuration_space);
