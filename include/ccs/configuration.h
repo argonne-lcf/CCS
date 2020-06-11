@@ -52,6 +52,10 @@ extern ccs_error_t
 ccs_configuration_hash(ccs_configuration_t  configuration,
                        ccs_hash_t          *hash_ret);
 
+extern ccs_error_t
+ccs_configuration_equal(ccs_configuration_t  configuration,
+                        ccs_configuration_t  other_configuration,
+                        ccs_bool_t          *equal_ret);
 #ifdef __cplusplus
 }
 #endif

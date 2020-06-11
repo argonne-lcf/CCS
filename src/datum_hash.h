@@ -55,7 +55,7 @@ static inline int _datum_cmp(ccs_datum_t *a, ccs_datum_t *b) {
 			return 0;
 			break;
 		default:
-			return memcmp(&(a->value), &(b->value),  sizeof(ccs_value_t));
+			return memcmp(&(a->value), &(b->value), sizeof(ccs_value_t));
 		}
 	}
 }

@@ -181,3 +181,29 @@ ccs_configuration_hash(ccs_configuration_t  configuration,
 	*hash_ret = h;
 	return CCS_SUCCESS;
 }
+
+ccs_error_t
+ccs_configuration_equal(ccs_configuration_t  configuration,
+                        ccs_configuration_t  other_configuration,
+                        ccs_bool_t          *equal_ret) {
+	if (!configuration || !configuration->data)
+		return -CCS_INVALID_OBJECT;
+	if (!other_configuration || !other_configuration->data)
+		return -CCS_INVALID_OBJECT;
+	if (!equal_ret)
+		return -CCS_INVALID_VALUE;
+	_ccs_configuration_data_t *data = configuration->data;
+	_ccs_configuration_data_t *other_data = other_configuration->data;
+	*equal_ret = CCS_FALSE;
+	if (data->configuration_space != other_data->configuration_space)
+		return CCS_SUCCESS;
+	if (data->num_values != other_data->num_values)
+		return CCS_SUCCESS;
+	for (size_t i = 0; i < data->num_values; i++) {
+		if (_datum_cmp(data->values + i, other_data->values + i))
+			return CCS_SUCCESS;
+	}
+	*equal_ret = CCS_TRUE;
+	return CCS_SUCCESS;
+}
+
