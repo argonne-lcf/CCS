@@ -2,7 +2,7 @@
 #define _DATUM_HASH_H
 
 #define HASH_NONFATAL_OOM 1
-#define HASH_FUNCTION(s,len,hashv) (hashv) = _hash_datum((ccs_datum_t *)(s))
+#define HASH_FUNCTION(s,len,hashv) do { (hashv) = _hash_datum((ccs_datum_t *)(s)); } while(0)
 #define HASH_KEYCMP(a,b,len) (_datum_cmp((ccs_datum_t *)a, (ccs_datum_t *)b))
 #include "uthash.h"
 

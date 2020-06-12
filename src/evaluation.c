@@ -193,3 +193,133 @@ ccs_evaluation_get_value_by_name(ccs_evaluation_t  evaluation,
 	*value_ret = evaluation->data->values[index];
 	return CCS_SUCCESS;
 }
+
+ccs_error_t
+ccs_evaluation_get_objective_value(ccs_evaluation_t  evaluation,
+                                   size_t            index,
+                                   ccs_datum_t      *value_ret) {
+	if (!evaluation || !evaluation->data)
+		return -CCS_INVALID_OBJECT;
+	ccs_expression_t     expression;
+	ccs_objective_type_t type;
+	ccs_error_t err;
+	err = ccs_objective_space_get_objective(evaluation->data->objective_space,
+	                                        index, &expression, &type);
+	if (err)
+		return err;
+	return ccs_expression_eval(expression,
+	                           (ccs_context_t)evaluation->data->objective_space,
+	                           evaluation->data->values, value_ret);
+}
+
+ccs_error_t
+ccs_evaluation_get_objective_values(ccs_evaluation_t  evaluation,
+                                    size_t            num_values,
+                                    ccs_datum_t      *values,
+                                    size_t           *num_values_ret) {
+	if (!evaluation || !evaluation->data)
+		return -CCS_INVALID_OBJECT;
+	if (num_values && !values)
+		return -CCS_INVALID_VALUE;
+	if (!values && !num_values_ret)
+		return -CCS_INVALID_VALUE;
+	size_t count;
+	ccs_error_t err;
+	err = ccs_objective_space_get_objectives(evaluation->data->objective_space,
+	                                         0, NULL, NULL, &count);
+	if (err)
+		return err;
+	if (values) {
+		if (count < num_values)
+			return -CCS_INVALID_VALUE;
+		for (size_t i = 0; i < count; i++) {
+			ccs_expression_t     expression;
+			ccs_objective_type_t type;
+
+			err = ccs_objective_space_get_objective(
+				evaluation->data->objective_space, i, &expression, &type);
+			if (err)
+				return err;
+			err = ccs_expression_eval(expression,
+				(ccs_context_t)evaluation->data->objective_space,
+				evaluation->data->values, values + i);
+			if (err)
+				return err;
+		}
+		for (size_t i = count; i < num_values; i++)
+			values[i] = ccs_none;
+	}
+	if (num_values_ret)
+		*num_values_ret = count;
+	return CCS_SUCCESS;
+}
+
+static inline int
+_numeric_compare(const ccs_datum_t *a, const ccs_datum_t *b) {
+	if (a->type == CCS_FLOAT) {
+		return a->value.f < b->value.f ? -1 : a->value.f > b->value.f ? 1 : 0;
+	} else {
+		return a->value.i < b->value.i ? -1 : a->value.i > b->value.i ? 1 : 0;
+	}
+}
+
+//Could be using memoization here.
+ccs_error_t
+ccs_evaluation_cmp(ccs_evaluation_t  evaluation,
+                   ccs_evaluation_t  other_evaluation,
+                   ccs_comparison_t  *result_ret) {
+	if (!evaluation || !evaluation->data || evaluation->data->error)
+		return -CCS_INVALID_OBJECT;
+	if (!other_evaluation || !other_evaluation->data || other_evaluation->data->error)
+		return -CCS_INVALID_OBJECT;
+	if (evaluation->data->objective_space != other_evaluation->data->objective_space)
+		return -CCS_INVALID_OBJECT;
+	if (!result_ret)
+		return -CCS_INVALID_VALUE;
+	size_t count;
+	ccs_error_t err;
+	err = ccs_objective_space_get_objectives(evaluation->data->objective_space,
+	                                         0, NULL, NULL, &count);
+	if (err)
+		return err;
+	*result_ret = CCS_EQUIVALENT;
+	for (size_t i = 0; i < count; i++) {
+		ccs_expression_t     expression;
+		ccs_objective_type_t type;
+		ccs_datum_t          values[2];
+		int cmp;
+
+		err = ccs_objective_space_get_objective(
+			evaluation->data->objective_space, i, &expression, &type);
+		if (err)
+			return err;
+		err = ccs_expression_eval(expression,
+				(ccs_context_t)evaluation->data->objective_space,
+				evaluation->data->values, values);
+		if (err)
+			return err;
+		err = ccs_expression_eval(expression,
+				(ccs_context_t)evaluation->data->objective_space,
+				other_evaluation->data->values, values + 1);
+		if (err)
+			return err;
+		if ((values[0].type != CCS_INTEGER && values[0].type != CCS_FLOAT) ||
+		     values[0].type != values[1].type) {
+			*result_ret = CCS_NOT_COMPARABLE;
+			return CCS_SUCCESS;
+		}
+		cmp = _numeric_compare(values, values + 1);
+		if (cmp) {
+			if (type == CCS_MAXIMIZE)
+				cmp = -cmp;
+			if (*result_ret == CCS_EQUIVALENT)
+				*result_ret = (ccs_comparison_t)cmp;
+			else if (*result_ret != cmp) {
+				*result_ret = CCS_NOT_COMPARABLE;
+				return CCS_SUCCESS;
+			}
+		}
+	}
+	return CCS_SUCCESS;
+}
+

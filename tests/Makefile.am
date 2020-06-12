@@ -15,7 +15,8 @@ RNG_TESTS = \
 		test_configuration_space \
 		test_expression \
 		test_condition \
-		test_forbidden
+		test_forbidden \
+		test_random_tuner
 
 # unit tests
 UNIT_TESTS = \

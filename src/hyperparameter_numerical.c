@@ -157,7 +157,7 @@ ccs_create_numerical_hyperparameter(const char           *name,
 		default_value.f < lower.f ||
 		default_value.f >= upper.f ) )
 		return -CCS_INVALID_VALUE;
-	uintptr_t mem = (uintptr_t)calloc(1, sizeof(struct _ccs_hyperparameter_s) + sizeof(_ccs_hyperparameter_numerical_data_t)+strlen(name) + 1);
+	uintptr_t mem = (uintptr_t)calloc(1, sizeof(struct _ccs_hyperparameter_s) + sizeof(_ccs_hyperparameter_numerical_data_t) + strlen(name) + 1);
 	if (!mem)
 		return -CCS_ENOMEM;
 

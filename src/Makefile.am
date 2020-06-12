@@ -34,6 +34,9 @@ libcconfigspace_la_SOURCES = \
 			objective_space.c \
 			objective_space_internal.h \
 			evaluation.c \
-			evaluation_internal.h
+			evaluation_internal.h \
+			tuner.c \
+			tuner_internal.h \
+			tuner_random.c
 
 @VALGRIND_CHECK_RULES@

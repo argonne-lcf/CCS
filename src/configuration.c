@@ -183,27 +183,33 @@ ccs_configuration_hash(ccs_configuration_t  configuration,
 }
 
 ccs_error_t
-ccs_configuration_equal(ccs_configuration_t  configuration,
-                        ccs_configuration_t  other_configuration,
-                        ccs_bool_t          *equal_ret) {
+ccs_configuration_cmp(ccs_configuration_t  configuration,
+                      ccs_configuration_t  other_configuration,
+                      int                 *cmp_ret) {
 	if (!configuration || !configuration->data)
 		return -CCS_INVALID_OBJECT;
 	if (!other_configuration || !other_configuration->data)
 		return -CCS_INVALID_OBJECT;
-	if (!equal_ret)
+	if (!cmp_ret)
 		return -CCS_INVALID_VALUE;
+	if (configuration == other_configuration) {
+		*cmp_ret = 0;
+		return CCS_SUCCESS;
+	}
 	_ccs_configuration_data_t *data = configuration->data;
 	_ccs_configuration_data_t *other_data = other_configuration->data;
-	*equal_ret = CCS_FALSE;
-	if (data->configuration_space != other_data->configuration_space)
+	*cmp_ret = data->configuration_space < other_data->configuration_space ? -1 :
+	           data->configuration_space > other_data->configuration_space ?  1 : 0;
+	if (*cmp_ret)
 		return CCS_SUCCESS;
-	if (data->num_values != other_data->num_values)
+	*cmp_ret = data->num_values < other_data->num_values ? -1 :
+	           data->num_values > other_data->num_values ?  1 : 0;
+	if (*cmp_ret)
 		return CCS_SUCCESS;
 	for (size_t i = 0; i < data->num_values; i++) {
-		if (_datum_cmp(data->values + i, other_data->values + i))
+		if ( (*cmp_ret = _datum_cmp(data->values + i, other_data->values + i)) )
 			return CCS_SUCCESS;
 	}
-	*equal_ret = CCS_TRUE;
 	return CCS_SUCCESS;
 }
 
