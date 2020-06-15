@@ -1,17 +1,17 @@
 include_HEADERS=cconfigspace.h
 
-include_ccsdir=$(includedir)/ccs
+include_ccsdir=$(includedir)/cconfigspace
 include_ccs_HEADERS = \
-			ccs/base.h \
-			ccs/rng.h \
-			ccs/distribution.h \
-			ccs/interval.h \
-			ccs/context.h \
-			ccs/configuration_space.h \
-			ccs/hyperparameter.h \
-			ccs/expression.h \
-			ccs/configuration.h \
-			ccs/objective_space.h \
-			ccs/evaluation.h \
-			ccs/tuner.h
+			cconfigspace/base.h \
+			cconfigspace/rng.h \
+			cconfigspace/distribution.h \
+			cconfigspace/interval.h \
+			cconfigspace/context.h \
+			cconfigspace/configuration_space.h \
+			cconfigspace/hyperparameter.h \
+			cconfigspace/expression.h \
+			cconfigspace/configuration.h \
+			cconfigspace/objective_space.h \
+			cconfigspace/evaluation.h \
+			cconfigspace/tuner.h
 
