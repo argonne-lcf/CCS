@@ -66,7 +66,7 @@ enum ccs_error_e {
 };
 typedef enum ccs_error_e ccs_error_t;
 
-typedef int ccs_result_t;
+typedef int32_t ccs_result_t;
 
 enum ccs_object_type_e {
 	CCS_RNG,
