@@ -48,7 +48,7 @@ _ccs_tuner_random_ask(_ccs_tuner_data_t   *data,
 #undef  utarray_oom
 #define utarray_oom() { \
 	ccs_release_object(evaluations[i]); \
-	return -CCS_ENOMEM; \
+	return -CCS_OUT_OF_MEMORY; \
 }
 static ccs_error_t
 _ccs_tuner_random_tell(_ccs_tuner_data_t *data,
@@ -75,7 +75,7 @@ _ccs_tuner_random_tell(_ccs_tuner_data_t *data,
 #undef  utarray_oom
 #define utarray_oom() { \
 	d->optimums = d->old_optimums; \
-	return -CCS_ENOMEM; \
+	return -CCS_OUT_OF_MEMORY; \
 }
 			while ( (eval = (ccs_evaluation_t *)utarray_next(d->old_optimums, eval)) ) {
 				if (!discard) {
@@ -168,7 +168,7 @@ static const UT_icd _evaluation_icd = {
 
 #undef  utarray_oom
 #define utarray_oom() { \
-	err = -CCS_ENOMEM; \
+	err = -CCS_OUT_OF_MEMORY; \
 	goto arrays; \
 }
 ccs_error_t
@@ -186,7 +186,7 @@ ccs_create_random_tuner(const char                *name,
 	                                     sizeof(struct _ccs_random_tuner_data_s) +
 	                                     strlen(name) + 1);
 	if (!mem)
-		return -CCS_ENOMEM;
+		return -CCS_OUT_OF_MEMORY;
 	ccs_tuner_t tun;
 	_ccs_random_tuner_data_t * data;
 	ccs_error_t err;

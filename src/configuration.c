@@ -41,7 +41,7 @@ ccs_create_configuration(ccs_configuration_space_t configuration_space,
 	                                     sizeof(struct _ccs_configuration_data_s) +
 	                                     num * sizeof(ccs_datum_t));
 	if (!mem)
-		return -CCS_ENOMEM;
+		return -CCS_OUT_OF_MEMORY;
 	err = ccs_retain_object(configuration_space);
 	if (err) {
 		free((void*)mem);

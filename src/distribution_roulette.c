@@ -101,7 +101,7 @@ ccs_create_roulette_distribution(size_t              num_areas,
 	uintptr_t mem = (uintptr_t)calloc(1, sizeof(struct _ccs_distribution_s) + sizeof(_ccs_distribution_roulette_data_t) + sizeof(ccs_float_t)*(num_areas + 1));
 
 	if (!mem)
-		return -CCS_ENOMEM;
+		return -CCS_OUT_OF_MEMORY;
 
 	ccs_distribution_t distrib = (ccs_distribution_t)mem;
 	_ccs_object_init(&(distrib->obj), CCS_DISTRIBUTION, (_ccs_object_ops_t *)&_ccs_distribution_roulette_ops);

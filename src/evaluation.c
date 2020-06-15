@@ -43,7 +43,7 @@ ccs_create_evaluation(ccs_objective_space_t  objective_space,
 	                                     sizeof(struct _ccs_evaluation_data_s) +
 	                                     num * sizeof(ccs_datum_t));
 	if (!mem)
-		return -CCS_ENOMEM;
+		return -CCS_OUT_OF_MEMORY;
 	err = ccs_retain_object(objective_space);
 	if (err) {
 		free((void*)mem);

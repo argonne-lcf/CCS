@@ -87,7 +87,7 @@ static UT_icd _size_t_icd = {
 #undef  utarray_oom
 #define utarray_oom() { \
 	ccs_release_object(config_space->data->rng); \
-	err = -CCS_ENOMEM; \
+	err = -CCS_OUT_OF_MEMORY; \
 	goto arrays; \
 }
 ccs_error_t
@@ -98,7 +98,7 @@ ccs_create_configuration_space(const char                *name,
 		return -CCS_INVALID_VALUE;
 	uintptr_t mem = (uintptr_t)calloc(1, sizeof(struct _ccs_configuration_space_s) + sizeof(struct _ccs_configuration_space_data_s) + strlen(name) + 1);
 	if (!mem)
-		return -CCS_ENOMEM;
+		return -CCS_OUT_OF_MEMORY;
 	ccs_rng_t rng;
 	ccs_error_t err = ccs_rng_create(&rng);
 	if (err) {
@@ -179,12 +179,12 @@ ccs_configuration_space_get_rng(ccs_configuration_space_t  configuration_space,
 
 #undef  utarray_oom
 #define utarray_oom() { \
-	err = -CCS_ENOMEM; \
+	err = -CCS_OUT_OF_MEMORY; \
 	goto errordistrib_wrapper; \
 }
 #undef uthash_nonfatal_oom
 #define uthash_nonfatal_oom(elt) { \
-	err = -CCS_ENOMEM; \
+	err = -CCS_OUT_OF_MEMORY; \
 	goto errorutarray; \
 }
 ccs_error_t
@@ -237,7 +237,7 @@ ccs_configuration_space_add_hyperparameter(ccs_configuration_space_t configurati
 	}
 	pmem = (uintptr_t)malloc(sizeof(_ccs_distribution_wrapper_t) + sizeof(size_t)*dimension);
 	if (!pmem) {
-		err = -CCS_ENOMEM;
+		err = -CCS_OUT_OF_MEMORY;
 		goto errordistrib;
 	}
         distrib_wrapper = (_ccs_distribution_wrapper_t *)pmem;
@@ -816,7 +816,7 @@ struct _hyper_list_s {
 #undef  utarray_oom
 #define utarray_oom() { \
 	free((void *)list); \
-	return -CCS_ENOMEM; \
+	return -CCS_OUT_OF_MEMORY; \
 }
 static ccs_error_t
 _topological_sort(ccs_configuration_space_t configuration_space) {
@@ -827,7 +827,7 @@ _topological_sort(ccs_configuration_space_t configuration_space) {
 	struct _hyper_list_s *list = (struct _hyper_list_s *)calloc(1,
 		sizeof(struct _hyper_list_s) * count);
 	if (!list)
-		return -CCS_ENOMEM;
+		return -CCS_OUT_OF_MEMORY;
 	struct _hyper_list_s *queue = NULL;
 
 	_ccs_hyperparameter_wrapper_t *wrapper = NULL;
@@ -865,7 +865,7 @@ _topological_sort(ccs_configuration_space_t configuration_space) {
 #undef  utarray_oom
 #define utarray_oom() { \
 	free((void *)mem); \
-	return -CCS_ENOMEM; \
+	return -CCS_OUT_OF_MEMORY; \
 }
 static ccs_error_t
 _recompute_graph(ccs_configuration_space_t configuration_space) {
@@ -892,7 +892,7 @@ _recompute_graph(ccs_configuration_space_t configuration_space) {
 		intptr_t mem = (intptr_t)malloc(count *
 			(sizeof(ccs_hyperparameter_t) + sizeof(size_t)));
 		if (!mem)
-			return -CCS_ENOMEM;
+			return -CCS_OUT_OF_MEMORY;
 		parents = (ccs_hyperparameter_t *)mem;
 		parents_index = (size_t *)(mem + count * sizeof(ccs_hyperparameter_t));
 		err = ccs_expression_get_hyperparameters(wrapper->condition, count, parents, NULL);
@@ -1014,7 +1014,7 @@ ccs_configuration_space_get_conditions(ccs_configuration_space_t  configuration_
 
 #undef  utarray_oom
 #define utarray_oom() { \
-	return -CCS_ENOMEM; \
+	return -CCS_OUT_OF_MEMORY; \
 }
 ccs_error_t
 ccs_configuration_space_add_forbidden_clause(ccs_configuration_space_t configuration_space,

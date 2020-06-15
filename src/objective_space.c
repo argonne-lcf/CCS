@@ -61,7 +61,7 @@ static const UT_icd _objectives_icd = {
 
 #undef  utarray_oom
 #define utarray_oom() { \
-	err = -CCS_ENOMEM; \
+	err = -CCS_OUT_OF_MEMORY; \
 	goto arrays; \
 }
 
@@ -74,7 +74,7 @@ ccs_create_objective_space(const char            *name,
 
 	uintptr_t mem = (uintptr_t)calloc(1, sizeof(struct _ccs_objective_space_s) + sizeof(struct _ccs_objective_space_data_s) + strlen(name) + 1);
 	if (!mem)
-		return -CCS_ENOMEM;
+		return -CCS_OUT_OF_MEMORY;
 	ccs_error_t err;
 	ccs_objective_space_t obj_space = (ccs_objective_space_t)mem;
 	_ccs_object_init(&(obj_space->obj), CCS_OBJECTIVE_SPACE,
@@ -123,12 +123,12 @@ ccs_objective_space_get_user_data(ccs_objective_space_t   objective_space,
 
 #undef  utarray_oom
 #define utarray_oom() { \
-	err = -CCS_ENOMEM; \
+	err = -CCS_OUT_OF_MEMORY; \
 	goto errorhyper; \
 }
 #undef uthash_nonfatal_oom
 #define uthash_nonfatal_oom(elt) { \
-	err = -CCS_ENOMEM; \
+	err = -CCS_OUT_OF_MEMORY; \
 	goto errorutarray; \
 }
 ccs_error_t
@@ -320,7 +320,7 @@ ccs_objective_space_get_hyperparameters(ccs_objective_space_t  objective_space,
 
 #undef  utarray_oom
 #define utarray_oom() { \
-	return -CCS_ENOMEM; \
+	return -CCS_OUT_OF_MEMORY; \
 }
 ccs_error_t
 ccs_objective_space_add_objective(ccs_objective_space_t objective_space,

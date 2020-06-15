@@ -990,7 +990,7 @@ ccs_create_literal(ccs_datum_t       value,
 		sizeof(struct _ccs_expression_literal_data_s) +
 		size_str);
 	if(!mem)
-		return -CCS_ENOMEM;
+		return -CCS_OUT_OF_MEMORY;
 	ccs_expression_t expression = (ccs_expression_t)mem;
 	_ccs_object_init(&(expression->obj), CCS_EXPRESSION,
 		(_ccs_object_ops_t*)_ccs_expression_ops_broker(CCS_LITERAL));
@@ -1027,7 +1027,7 @@ ccs_create_variable(ccs_hyperparameter_t  hyperparameter,
 		sizeof(struct _ccs_expression_s) +
 		sizeof(struct _ccs_expression_variable_data_s));
 	if (!mem)
-		return -CCS_ENOMEM;
+		return -CCS_OUT_OF_MEMORY;
 	err = ccs_retain_object(hyperparameter);
 	if (err) {
 		free((void *)mem);
@@ -1080,7 +1080,7 @@ ccs_create_expression(ccs_expression_type_t  type,
 	    sizeof(struct _ccs_expression_data_s) +
 	    num_nodes*sizeof(ccs_expression_t));
 	if (!mem)
-		return -CCS_ENOMEM;
+		return -CCS_OUT_OF_MEMORY;
 
 	ccs_expression_t expression = (ccs_expression_t)mem;
 	_ccs_object_init(&(expression->obj), CCS_EXPRESSION,
@@ -1255,7 +1255,7 @@ ccs_variable_get_hyperparameter(ccs_expression_t      expression,
 
 #undef  utarray_oom
 #define utarray_oom() { \
-	return -CCS_ENOMEM; \
+	return -CCS_OUT_OF_MEMORY; \
 }
 
 static ccs_error_t _get_hyperparameters(ccs_expression_t  expression,

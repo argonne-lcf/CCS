@@ -68,7 +68,7 @@ _ccs_hyperparameter_categorical_samples(_ccs_hyperparameter_data_t *data,
 			size_t buff_sz = (num_values - found)*coeff;
 			vs = (ccs_int_t *)malloc(sizeof(ccs_int_t)*buff_sz);
 			if (!vs)
-				return -CCS_ENOMEM;
+				return -CCS_OUT_OF_MEMORY;
 			err = ccs_distribution_samples(distribution, rng,
 			                               buff_sz, (ccs_numeric_t *)vs);
 			for(size_t i = 0; i < buff_sz && found < num_values; i++)
@@ -106,7 +106,7 @@ static _ccs_hyperparameter_ops_t _ccs_hyperparameter_categorical_ops = {
 #define uthash_nonfatal_oom(elt) { \
 	HASH_CLEAR(hh, hyperparam_data->hash); \
 	free((void*)mem); \
-	return -CCS_ENOMEM; \
+	return -CCS_OUT_OF_MEMORY; \
 }
 
 ccs_error_t
@@ -139,7 +139,7 @@ ccs_create_categorical_hyperparameter(const char           *name,
 	    strlen(name) + 1 +
 	    size_strs);
 	if (!mem)
-		return -CCS_ENOMEM;
+		return -CCS_OUT_OF_MEMORY;
 
 	ccs_interval_t interval;
 	interval.type = CCS_NUM_INTEGER;

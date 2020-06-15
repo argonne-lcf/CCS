@@ -15,13 +15,13 @@ ccs_rng_create_with_type(const gsl_rng_type *rng_type,
 	gsl_rng *grng = gsl_rng_alloc(rng_type);
 
 	if (!grng) {
-		return -CCS_ENOMEM;
+		return -CCS_OUT_OF_MEMORY;
 	}
 	uintptr_t mem = (uintptr_t)calloc(1, sizeof(struct _ccs_rng_s) + sizeof(struct _ccs_rng_data_s));
 
 	if (!mem) {
 		gsl_rng_free(grng);
-		return -CCS_ENOMEM;
+		return -CCS_OUT_OF_MEMORY;
 	}
 	ccs_rng_t rng = (ccs_rng_t)mem;
 	_ccs_object_init(&(rng->obj), CCS_RNG, (_ccs_object_ops_t *)&_rng_ops);

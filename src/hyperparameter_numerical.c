@@ -88,7 +88,7 @@ _ccs_hyperparameter_numerical_samples(_ccs_hyperparameter_data_t *data,
 			size_t buff_sz = (num_values - found)*coeff;
 			vs = (ccs_numeric_t *)malloc(sizeof(ccs_numeric_t)*buff_sz);
 			if (!vs)
-				return -CCS_ENOMEM;
+				return -CCS_OUT_OF_MEMORY;
 			err = ccs_distribution_samples(distribution, rng,
 			                               buff_sz, vs);
 			if (type == CCS_NUM_FLOAT) {
@@ -159,7 +159,7 @@ ccs_create_numerical_hyperparameter(const char           *name,
 		return -CCS_INVALID_VALUE;
 	uintptr_t mem = (uintptr_t)calloc(1, sizeof(struct _ccs_hyperparameter_s) + sizeof(_ccs_hyperparameter_numerical_data_t) + strlen(name) + 1);
 	if (!mem)
-		return -CCS_ENOMEM;
+		return -CCS_OUT_OF_MEMORY;
 
 	ccs_interval_t interval;
 	interval.type = data_type;
