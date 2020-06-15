@@ -16,10 +16,10 @@ typedef int32_t  ccs_bool_t;
 typedef uint32_t ccs_hash_t;
 
 typedef struct {
-	uint16_t major;
-	uint16_t minor;
-	uint16_t patch;
 	uint16_t revision;
+	uint16_t patch;
+	uint16_t minor;
+	uint16_t major;
 } ccs_version_t;
 
 extern const ccs_version_t ccs_version;
