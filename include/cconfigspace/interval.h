@@ -28,7 +28,7 @@ ccs_interval_equal(ccs_interval_t *interval1,
                    ccs_interval_t *interval2,
                    ccs_bool_t     *equal_res);
 
-static inline ccs_bool_t
+inline ccs_bool_t
 ccs_interval_include(ccs_interval_t *interval, ccs_numeric_t value) {
 	if (interval->type == CCS_NUM_FLOAT) {
 		return ( interval->lower_included ?

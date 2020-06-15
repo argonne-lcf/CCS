@@ -116,3 +116,6 @@ ccs_interval_equal(ccs_interval_t *interval1,
 	}
 	return CCS_SUCCESS;
 }
+
+extern inline ccs_bool_t
+ccs_interval_include(ccs_interval_t *interval, ccs_numeric_t value);
