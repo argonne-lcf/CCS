@@ -1,6 +1,6 @@
 #include "cconfigspace.h"
 
-ccs_error_t
+ccs_result_t
 ccs_interval_empty(ccs_interval_t *interval, ccs_bool_t *empty_ret) {
 	if (!interval)
 		return CCS_INVALID_VALUE;
@@ -60,7 +60,7 @@ ccs_interval_empty(ccs_interval_t *interval, ccs_bool_t *empty_ret) {
 	} \
 }
 
-ccs_error_t
+ccs_result_t
 ccs_interval_intersect(ccs_interval_t *interval1,
 		       ccs_interval_t *interval2,
                        ccs_interval_t *interval_res) {
@@ -88,7 +88,7 @@ ccs_interval_intersect(ccs_interval_t *interval1,
 	return CCS_SUCCESS;
 }
 
-ccs_error_t
+ccs_result_t
 ccs_interval_equal(ccs_interval_t *interval1,
                    ccs_interval_t *interval2,
                    ccs_bool_t     *equal_res) {

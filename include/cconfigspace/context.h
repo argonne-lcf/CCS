@@ -5,7 +5,7 @@
 extern "C" {
 #endif
 
-extern ccs_error_t
+extern ccs_result_t
 ccs_context_get_hyperparameter_index(
 		ccs_context_t         context,
 		ccs_hyperparameter_t  hyperparameter,

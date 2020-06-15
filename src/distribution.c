@@ -7,7 +7,7 @@ ccs_distribution_get_ops(ccs_distribution_t distribution) {
 }
 
 
-ccs_error_t
+ccs_result_t
 ccs_distribution_get_type(ccs_distribution_t       distribution,
                           ccs_distribution_type_t *type_ret) {
 	if (!distribution || !distribution->data)
@@ -18,7 +18,7 @@ ccs_distribution_get_type(ccs_distribution_t       distribution,
 	return CCS_SUCCESS;
 }
 
-ccs_error_t
+ccs_result_t
 ccs_distribution_get_data_type(ccs_distribution_t       distribution,
                                ccs_numeric_type_t      *data_type_ret) {
 	if (!distribution || !distribution->data)
@@ -29,7 +29,7 @@ ccs_distribution_get_data_type(ccs_distribution_t       distribution,
 	return CCS_SUCCESS;
 }
 
-ccs_error_t
+ccs_result_t
 ccs_distribution_get_dimension(ccs_distribution_t  distribution,
                                size_t             *dimension_ret) {
 	if (!distribution || !distribution->data)
@@ -41,7 +41,7 @@ ccs_distribution_get_dimension(ccs_distribution_t  distribution,
 }
 
 
-ccs_error_t
+ccs_result_t
 ccs_distribution_get_scale_type(ccs_distribution_t  distribution,
                                 ccs_scale_type_t   *scale_type_ret) {
 	if (!distribution || !distribution->data)
@@ -52,7 +52,7 @@ ccs_distribution_get_scale_type(ccs_distribution_t  distribution,
 	return CCS_SUCCESS;
 }
 
-ccs_error_t
+ccs_result_t
 ccs_distribution_get_quantization(ccs_distribution_t  distribution,
                                   ccs_numeric_t      *quantization_ret) {
 	if (!distribution || !distribution->data)
@@ -63,7 +63,7 @@ ccs_distribution_get_quantization(ccs_distribution_t  distribution,
 	return CCS_SUCCESS;
 }
 
-ccs_error_t
+ccs_result_t
 ccs_distribution_get_bounds(ccs_distribution_t  distribution,
                             ccs_interval_t     *interval_ret) {
 	if (!distribution || !distribution->data)
@@ -74,11 +74,11 @@ ccs_distribution_get_bounds(ccs_distribution_t  distribution,
 	return ops->get_bounds(distribution->data, interval_ret);
 }
 
-ccs_error_t
+ccs_result_t
 ccs_distribution_check_oversampling(ccs_distribution_t  distribution,
                                     ccs_interval_t     *interval,
                                     ccs_bool_t         *oversampling_ret) {
-	ccs_error_t err;
+	ccs_result_t err;
 	ccs_interval_t d_interval;
 	if (!interval || !oversampling_ret)
 		return -CCS_INVALID_VALUE;
@@ -101,7 +101,7 @@ ccs_distribution_check_oversampling(ccs_distribution_t  distribution,
 	return CCS_SUCCESS;
 }
 
-ccs_error_t
+ccs_result_t
 ccs_distribution_sample(ccs_distribution_t  distribution,
                         ccs_rng_t           rng,
                         ccs_numeric_t      *value) {
@@ -113,7 +113,7 @@ ccs_distribution_sample(ccs_distribution_t  distribution,
 	return ops->samples(distribution->data, rng, 1, value);
 }
 
-ccs_error_t
+ccs_result_t
 ccs_distribution_samples(ccs_distribution_t  distribution,
                          ccs_rng_t           rng,
                          size_t              num_values,
@@ -126,7 +126,7 @@ ccs_distribution_samples(ccs_distribution_t  distribution,
 	return ops->samples(distribution->data, rng, num_values, values);
 }
 
-ccs_error_t
+ccs_result_t
 ccs_create_normal_float_distribution(ccs_float_t         mu,
                                      ccs_float_t         sigma,
                                      ccs_scale_type_t    scale,
@@ -136,7 +136,7 @@ ccs_create_normal_float_distribution(ccs_float_t         mu,
                                        CCSF(quantization), distribution_ret);
 }
 
-ccs_error_t
+ccs_result_t
 ccs_create_normal_int_distribution(ccs_float_t         mu,
                                    ccs_float_t         sigma,
                                    ccs_scale_type_t    scale,
@@ -146,7 +146,7 @@ ccs_create_normal_int_distribution(ccs_float_t         mu,
 	                                      CCSI(quantization), distribution_ret);
 }
 
-ccs_error_t
+ccs_result_t
 ccs_create_uniform_float_distribution(ccs_float_t         lower,
                                       ccs_float_t         upper,
                                       ccs_scale_type_t    scale,
@@ -157,7 +157,7 @@ ccs_create_uniform_float_distribution(ccs_float_t         lower,
 	                                       distribution_ret);
 }
 
-ccs_error_t
+ccs_result_t
 ccs_create_uniform_int_distribution(ccs_int_t           lower,
                                     ccs_int_t           upper,
                                     ccs_scale_type_t    scale,

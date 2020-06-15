@@ -18,7 +18,7 @@ struct _ccs_evaluation_data_s {
 	void                  *user_data;
 	ccs_objective_space_t  objective_space;
 	ccs_configuration_t    configuration;
-	ccs_error_t            error;
+	ccs_result_t           error;
 	size_t                 num_values;
 	ccs_datum_t           *values;
 };

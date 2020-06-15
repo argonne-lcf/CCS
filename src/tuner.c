@@ -7,7 +7,7 @@ ccs_tuner_get_ops(ccs_tuner_t tuner) {
 }
 
 
-ccs_error_t
+ccs_result_t
 ccs_tuner_get_name(ccs_tuner_t   tuner,
                    const char  **name_ret) {
 	if (!tuner || !tuner->data)
@@ -19,7 +19,7 @@ ccs_tuner_get_name(ccs_tuner_t   tuner,
 	return CCS_SUCCESS;
 }
 
-ccs_error_t
+ccs_result_t
 ccs_tuner_get_user_data(ccs_tuner_t   tuner,
                         void        **user_data_ret) {
 	if (!tuner || !tuner->data)
@@ -31,7 +31,7 @@ ccs_tuner_get_user_data(ccs_tuner_t   tuner,
 	return CCS_SUCCESS;
 }
 
-ccs_error_t
+ccs_result_t
 ccs_tuner_get_configuration_space(ccs_tuner_t                tuner,
                                   ccs_configuration_space_t *configuration_space_ret) {
 	if (!tuner || !tuner->data)
@@ -43,7 +43,7 @@ ccs_tuner_get_configuration_space(ccs_tuner_t                tuner,
 	return CCS_SUCCESS;
 }
 
-ccs_error_t
+ccs_result_t
 ccs_tuner_get_objective_spce(ccs_tuner_t            tuner,
                              ccs_objective_space_t *objective_space_ret) {
 	if (!tuner || !tuner->data)
@@ -55,7 +55,7 @@ ccs_tuner_get_objective_spce(ccs_tuner_t            tuner,
 	return CCS_SUCCESS;
 }
 
-ccs_error_t
+ccs_result_t
 ccs_tuner_ask(ccs_tuner_t          tuner,
               size_t               num_configurations,
               ccs_configuration_t *configurations,
@@ -70,7 +70,7 @@ ccs_tuner_ask(ccs_tuner_t          tuner,
 	return ops->ask(tuner->data, num_configurations, configurations, num_configurations_ret);
 }
 
-ccs_error_t
+ccs_result_t
 ccs_tuner_tell(ccs_tuner_t       tuner,
                size_t            num_evaluations,
                ccs_evaluation_t *evaluations) {
@@ -82,7 +82,7 @@ ccs_tuner_tell(ccs_tuner_t       tuner,
 	return ops->tell(tuner->data, num_evaluations, evaluations);
 }
 
-ccs_error_t
+ccs_result_t
 ccs_tuner_get_optimums(ccs_tuner_t       tuner,
                        size_t            num_evaluations,
                        ccs_evaluation_t *evaluations,
@@ -97,7 +97,7 @@ ccs_tuner_get_optimums(ccs_tuner_t       tuner,
 	return ops->get_optimums(tuner->data, num_evaluations, evaluations, num_evaluations_ret);
 }
 
-ccs_error_t
+ccs_result_t
 ccs_tuner_get_history(ccs_tuner_t       tuner,
                       size_t            num_evaluations,
                       ccs_evaluation_t *evaluations,

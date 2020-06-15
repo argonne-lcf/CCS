@@ -6,7 +6,7 @@
 
 ccs_hyperparameter_t create_numerical(const char * name) {
 	ccs_hyperparameter_t hyperparameter;
-	ccs_error_t          err;
+	ccs_result_t         err;
 	err = ccs_create_numerical_hyperparameter(name, CCS_NUM_FLOAT,
 	                                          CCSF(-1.0), CCSF(1.0),
 	                                          CCSF(0.0), CCSF(0),
@@ -23,7 +23,7 @@ test_simple() {
 	ccs_configuration_t       configuration;
 	ccs_datum_t               values[2];
 	ccs_configuration_t       configurations[100];
-	ccs_error_t               err;
+	ccs_result_t              err;
 
 	hyperparameter1 = create_numerical("param1");
 	hyperparameter2 = create_numerical("param2");
@@ -95,7 +95,7 @@ test_combined() {
 	ccs_configuration_t       configuration;
 	ccs_datum_t               values[3];
 	ccs_configuration_t       configurations[100];
-	ccs_error_t               err;
+	ccs_result_t              err;
 
 	hyperparameters[0] = create_numerical("param1");
 	hyperparameters[1] = create_numerical("param2");

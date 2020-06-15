@@ -2,12 +2,12 @@
 #include "rng_internal.h"
 #include <stdlib.h>
 
-static ccs_error_t
+static ccs_result_t
 _ccs_rng_del(ccs_object_t object);
 
 static struct _ccs_rng_ops_s _rng_ops = { {&_ccs_rng_del} };
 
-ccs_error_t
+ccs_result_t
 ccs_rng_create_with_type(const gsl_rng_type *rng_type,
                          ccs_rng_t          *rng_ret) {
 	if (!rng_type || !rng_ret)
@@ -32,19 +32,19 @@ ccs_rng_create_with_type(const gsl_rng_type *rng_type,
 	return CCS_SUCCESS;
 }
 
-ccs_error_t
+ccs_result_t
 ccs_rng_create(ccs_rng_t *rng_ret) {
 	return ccs_rng_create_with_type(gsl_rng_default, rng_ret);
 }
 
-static ccs_error_t
+static ccs_result_t
 _ccs_rng_del(ccs_object_t object) {
 	gsl_rng_free(((ccs_rng_t)object)->data->rng);
 	((ccs_rng_t)object)->data->rng = NULL;
 	return CCS_SUCCESS;
 }
 
-ccs_error_t
+ccs_result_t
 ccs_rng_get_type(ccs_rng_t            rng,
                  const gsl_rng_type **rng_type_ret) {
 	if (!rng)
@@ -53,7 +53,7 @@ ccs_rng_get_type(ccs_rng_t            rng,
 	return CCS_SUCCESS;
 }
 
-ccs_error_t
+ccs_result_t
 ccs_rng_set_seed(ccs_rng_t         rng,
                  unsigned long int seed) {
 	if (!rng)
@@ -62,7 +62,7 @@ ccs_rng_set_seed(ccs_rng_t         rng,
 	return CCS_SUCCESS;
 }
 
-ccs_error_t
+ccs_result_t
 ccs_rng_get(ccs_rng_t          rng,
             unsigned long int *value_ret) {
 	if (!rng)
@@ -73,7 +73,7 @@ ccs_rng_get(ccs_rng_t          rng,
 	return CCS_SUCCESS;
 }
 
-ccs_error_t
+ccs_result_t
 ccs_rng_uniform(ccs_rng_t    rng,
                 ccs_float_t *value_ret) {
 	if (!rng)
@@ -84,7 +84,7 @@ ccs_rng_uniform(ccs_rng_t    rng,
 	return CCS_SUCCESS;
 }
 
-ccs_error_t
+ccs_result_t
 ccs_rng_get_gsl_rng(ccs_rng_t   rng,
                     gsl_rng   **gsl_rng_ret) {
 	if (!rng)
@@ -95,7 +95,7 @@ ccs_rng_get_gsl_rng(ccs_rng_t   rng,
 	return CCS_SUCCESS;
 }
 
-ccs_error_t
+ccs_result_t
 ccs_rng_min(ccs_rng_t          rng,
             unsigned long int *value_ret) {
 	if (!rng)
@@ -106,7 +106,7 @@ ccs_rng_min(ccs_rng_t          rng,
 	return CCS_SUCCESS;
 }
 
-ccs_error_t
+ccs_result_t
 ccs_rng_max(ccs_rng_t          rng,
             unsigned long int *value_ret) {
 	if (!rng)

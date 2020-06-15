@@ -8,7 +8,7 @@
 
 void test_create_roulette_distribution() {
 	ccs_distribution_t      distrib = NULL;
-	ccs_error_t             err = CCS_SUCCESS;
+	ccs_result_t            err = CCS_SUCCESS;
 	int32_t                 refcount;
 	ccs_object_type_t       otype;
 	ccs_distribution_type_t dtype;
@@ -84,7 +84,7 @@ void test_create_roulette_distribution() {
 
 void test_create_roulette_distribution_errors() {
 	ccs_distribution_t      distrib = NULL;
-	ccs_error_t             err = CCS_SUCCESS;
+	ccs_result_t            err = CCS_SUCCESS;
 	const size_t            num_areas = 4;
 	ccs_float_t             areas[num_areas];
 
@@ -128,7 +128,7 @@ void test_create_roulette_distribution_errors() {
 void test_roulette_distribution() {
 	ccs_distribution_t distrib = NULL;
 	ccs_rng_t          rng = NULL;
-	ccs_error_t        err = CCS_SUCCESS;
+	ccs_result_t       err = CCS_SUCCESS;
 	const size_t       num_samples = 10000;
 	ccs_numeric_t      samples[num_samples];
 	const size_t       num_areas = 4;
@@ -175,7 +175,7 @@ void test_roulette_distribution() {
 void test_roulette_distribution_zero() {
 	ccs_distribution_t distrib = NULL;
 	ccs_rng_t          rng = NULL;
-	ccs_error_t        err = CCS_SUCCESS;
+	ccs_result_t       err = CCS_SUCCESS;
 	const size_t       num_samples = 8000;
 	ccs_numeric_t      samples[num_samples];
 	const size_t       num_areas = 4;

@@ -7,7 +7,7 @@ double d = -2.0;
 
 ccs_hyperparameter_t create_dummy_hyperparameter(const char * name) {
 	ccs_hyperparameter_t hyperparameter;
-	ccs_error_t          err;
+	ccs_result_t         err;
 	err = ccs_create_numerical_hyperparameter(name, CCS_NUM_FLOAT,
 	                                          CCSF(-5.0), CCSF(5.0),
 	                                          CCSF(0.0), CCSF(d),
@@ -21,7 +21,7 @@ ccs_hyperparameter_t create_dummy_hyperparameter(const char * name) {
 
 void test_create() {
 	ccs_configuration_space_t  configuration_space;
-	ccs_error_t                err;
+	ccs_result_t               err;
 	ccs_object_type_t          type;
 	const char                *name;
 	void *                     user_data;
@@ -56,7 +56,7 @@ void check_configuration(ccs_configuration_space_t  configuration_space,
                          ccs_hyperparameter_t      *hyperparameters) {
 	ccs_hyperparameter_t  hyperparameter;
 	ccs_configuration_t   configuration;
-	ccs_error_t           err;
+	ccs_result_t          err;
 	size_t                sz_ret;
 	size_t                index;
 	ccs_hyperparameter_t *hyperparameters_ret =
@@ -119,7 +119,7 @@ void check_configuration(ccs_configuration_space_t  configuration_space,
 void test_add() {
 	ccs_hyperparameter_t      hyperparameters[3];
 	ccs_configuration_space_t configuration_space;
-	ccs_error_t               err;
+	ccs_result_t              err;
 
 	err = ccs_create_configuration_space("my_config_space", NULL,
 	                                     &configuration_space);
@@ -157,7 +157,7 @@ void test_add() {
 void test_add_list() {
 	ccs_hyperparameter_t      hyperparameters[3];
 	ccs_configuration_space_t configuration_space;
-	ccs_error_t               err;
+	ccs_result_t              err;
 
 	err = ccs_create_configuration_space("my_config_space", NULL,
 	                                     &configuration_space);
@@ -186,7 +186,7 @@ void test_sample() {
 	ccs_configuration_t       configuration;
 	ccs_configuration_t       configurations[100];
 	ccs_configuration_space_t configuration_space;
-	ccs_error_t               err;
+	ccs_result_t              err;
 
 	err = ccs_create_configuration_space("my_config_space", NULL,
 	                                     &configuration_space);

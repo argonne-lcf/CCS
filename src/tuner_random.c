@@ -11,7 +11,7 @@ struct _ccs_random_tuner_data_s {
 };
 typedef struct _ccs_random_tuner_data_s _ccs_random_tuner_data_t;
 
-static ccs_error_t
+static ccs_result_t
 _ccs_tuner_random_del(ccs_object_t o) {
 	_ccs_random_tuner_data_t *d = (_ccs_random_tuner_data_t *)((ccs_tuner_t)o)->data;
 	ccs_release_object(d->common_data.configuration_space);
@@ -26,7 +26,7 @@ _ccs_tuner_random_del(ccs_object_t o) {
 	return CCS_SUCCESS;
 }
 
-static ccs_error_t
+static ccs_result_t
 _ccs_tuner_random_ask(_ccs_tuner_data_t   *data,
                       size_t               num_configurations,
                       ccs_configuration_t *configurations,
@@ -36,7 +36,7 @@ _ccs_tuner_random_ask(_ccs_tuner_data_t   *data,
 		*num_configurations_ret = 1;
 		return CCS_SUCCESS;
 	}
-	ccs_error_t err;
+	ccs_result_t err;
 	err = ccs_configuration_space_samples(d->common_data.configuration_space,
 	                                      num_configurations, configurations);
 	if (err)
@@ -50,15 +50,15 @@ _ccs_tuner_random_ask(_ccs_tuner_data_t   *data,
 	ccs_release_object(evaluations[i]); \
 	return -CCS_OUT_OF_MEMORY; \
 }
-static ccs_error_t
+static ccs_result_t
 _ccs_tuner_random_tell(_ccs_tuner_data_t *data,
                        size_t             num_evaluations,
                        ccs_evaluation_t  *evaluations) {
 	_ccs_random_tuner_data_t *d = (_ccs_random_tuner_data_t *)data;
 	UT_array *history = d->history;
-	ccs_error_t err;
+	ccs_result_t err;
 	for (size_t i = 0; i < num_evaluations; i++) {
-		ccs_error_t error;
+		ccs_result_t error;
 		err = ccs_evaluation_get_error(evaluations[i], &error);
 		if (err)
 			return err;
@@ -107,7 +107,7 @@ _ccs_tuner_random_tell(_ccs_tuner_data_t *data,
 	return CCS_SUCCESS;
 }
 
-static ccs_error_t
+static ccs_result_t
  _ccs_tuner_random_get_optimums(_ccs_tuner_data_t *data,
                                 size_t             num_evaluations,
                                 ccs_evaluation_t  *evaluations,
@@ -129,7 +129,7 @@ static ccs_error_t
 	return CCS_SUCCESS;
 }
 
-static ccs_error_t
+static ccs_result_t
  _ccs_tuner_random_get_history(_ccs_tuner_data_t *data,
                                size_t             num_evaluations,
                                ccs_evaluation_t  *evaluations,
@@ -171,7 +171,7 @@ static const UT_icd _evaluation_icd = {
 	err = -CCS_OUT_OF_MEMORY; \
 	goto arrays; \
 }
-ccs_error_t
+ccs_result_t
 ccs_create_random_tuner(const char                *name,
                         ccs_configuration_space_t  configuration_space,
                         ccs_objective_space_t      objective_space,
@@ -189,7 +189,7 @@ ccs_create_random_tuner(const char                *name,
 		return -CCS_OUT_OF_MEMORY;
 	ccs_tuner_t tun;
 	_ccs_random_tuner_data_t * data;
-	ccs_error_t err;
+	ccs_result_t err;
 	err = ccs_retain_object(configuration_space);
 	if (err)
 		goto errmemory;

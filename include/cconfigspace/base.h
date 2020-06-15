@@ -64,8 +64,9 @@ enum ccs_error_e {
 	CCS_ERROR_MAX,
 	CCS_ERROR_FORCE_32BIT = INT_MAX
 };
+typedef enum ccs_error_e ccs_error_t;
 
-typedef int ccs_error_t;
+typedef int ccs_result_t;
 
 enum ccs_object_type_e {
 	CCS_RNG,
@@ -201,23 +202,23 @@ extern const ccs_datum_t ccs_inactive;
 #define CCS_NONE_VAL {{0}, CCS_NONE}
 #define CCS_INACTIVE_VAL {{0}, CCS_INACTIVE}
 
-extern ccs_error_t
+extern ccs_result_t
 ccs_init();
 
 extern ccs_version_t
 ccs_get_version();
 
-extern ccs_error_t
+extern ccs_result_t
 ccs_retain_object(ccs_object_t object);
 
-extern ccs_error_t
+extern ccs_result_t
 ccs_release_object(ccs_object_t object);
 
-extern ccs_error_t
+extern ccs_result_t
 ccs_object_get_type(ccs_object_t       object,
                     ccs_object_type_t *type_ret);
 
-extern ccs_error_t
+extern ccs_result_t
 ccs_object_get_refcount(ccs_object_t  object,
                         int32_t      *refcount_ret);
 

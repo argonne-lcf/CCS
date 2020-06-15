@@ -6,7 +6,7 @@ typedef struct _ccs_context_data_s _ccs_context_data_t;
 struct _ccs_context_ops_s {
 	_ccs_object_ops_t obj_ops;
 
-	ccs_error_t (*get_hyperparameter_index)(
+	ccs_result_t (*get_hyperparameter_index)(
 		_ccs_context_data_t  *data,
 		ccs_hyperparameter_t  hyperparameter,
 		size_t               *index_ret);

@@ -8,7 +8,7 @@ ccs_configuration_get_ops(ccs_configuration_t configuration) {
 	return (_ccs_configuration_ops_t *)configuration->obj.ops;
 }
 
-static ccs_error_t
+static ccs_result_t
 _ccs_configuration_del(ccs_object_t object) {
 	ccs_configuration_t configuration = (ccs_configuration_t)object;
 	ccs_release_object(configuration->data->configuration_space);
@@ -18,7 +18,7 @@ _ccs_configuration_del(ccs_object_t object) {
 static _ccs_configuration_ops_t _configuration_ops =
     { {&_ccs_configuration_del} };
 
-ccs_error_t
+ccs_result_t
 ccs_create_configuration(ccs_configuration_space_t configuration_space,
                          size_t                    num_values,
                          ccs_datum_t              *values,
@@ -30,7 +30,7 @@ ccs_create_configuration(ccs_configuration_space_t configuration_space,
 		return -CCS_INVALID_VALUE;
 	if (!num_values && values)
 		return -CCS_INVALID_VALUE;
-	ccs_error_t err;
+	ccs_result_t err;
 	size_t num;
 	err = ccs_configuration_space_get_num_hyperparameters(configuration_space, &num);
 	if (err)
@@ -60,7 +60,7 @@ ccs_create_configuration(ccs_configuration_space_t configuration_space,
 	return CCS_SUCCESS;
 }
 
-ccs_error_t
+ccs_result_t
 ccs_configuration_get_configuration_space(ccs_configuration_t        configuration,
                                           ccs_configuration_space_t *configuration_space_ret) {
 	if (!configuration || !configuration->data)
@@ -71,7 +71,7 @@ ccs_configuration_get_configuration_space(ccs_configuration_t        configurati
 	return CCS_SUCCESS;
 }
 
-ccs_error_t
+ccs_result_t
 ccs_configuration_get_user_data(ccs_configuration_t   configuration,
                                 void                **user_data_ret) {
 	if (!configuration || !configuration->data)
@@ -82,7 +82,7 @@ ccs_configuration_get_user_data(ccs_configuration_t   configuration,
 	return CCS_SUCCESS;
 }
 
-ccs_error_t
+ccs_result_t
 ccs_configuration_get_value(ccs_configuration_t  configuration,
                             size_t               index,
                             ccs_datum_t         *value_ret) {
@@ -96,7 +96,7 @@ ccs_configuration_get_value(ccs_configuration_t  configuration,
 	return CCS_SUCCESS;
 }
 
-ccs_error_t
+ccs_result_t
 ccs_configuration_set_value(ccs_configuration_t configuration,
                             size_t              index,
                             ccs_datum_t         value) {
@@ -108,7 +108,7 @@ ccs_configuration_set_value(ccs_configuration_t configuration,
 	return CCS_SUCCESS;
 }
 
-ccs_error_t
+ccs_result_t
 ccs_configuration_get_values(ccs_configuration_t  configuration,
                              size_t               num_values,
                              ccs_datum_t         *values,
@@ -136,7 +136,7 @@ ccs_configuration_get_values(ccs_configuration_t  configuration,
 	return CCS_SUCCESS;
 }
 
-ccs_error_t
+ccs_result_t
 ccs_configuration_get_value_by_name(ccs_configuration_t  configuration,
                                     const char          *name,
                                     ccs_datum_t         *value_ret) {
@@ -145,7 +145,7 @@ ccs_configuration_get_value_by_name(ccs_configuration_t  configuration,
 	if (!name)
 		return -CCS_INVALID_VALUE;
 	size_t index;
-	ccs_error_t err;
+	ccs_result_t err;
 	err = ccs_configuration_space_get_hyperparameter_index_by_name(
 		configuration->data->configuration_space, name, &index);
 	if (err)
@@ -154,7 +154,7 @@ ccs_configuration_get_value_by_name(ccs_configuration_t  configuration,
 	return CCS_SUCCESS;
 }
 
-ccs_error_t
+ccs_result_t
 ccs_configuration_check(ccs_configuration_t configuration) {
 	if (!configuration || !configuration->data)
 		return -CCS_INVALID_OBJECT;
@@ -162,7 +162,7 @@ ccs_configuration_check(ccs_configuration_t configuration) {
 		configuration->data->configuration_space, configuration);
 }
 
-ccs_error_t
+ccs_result_t
 ccs_configuration_hash(ccs_configuration_t  configuration,
                        ccs_hash_t          *hash_ret) {
 	if (!configuration || !configuration->data)
@@ -182,7 +182,7 @@ ccs_configuration_hash(ccs_configuration_t  configuration,
 	return CCS_SUCCESS;
 }
 
-ccs_error_t
+ccs_result_t
 ccs_configuration_cmp(ccs_configuration_t  configuration,
                       ccs_configuration_t  other_configuration,
                       int                 *cmp_ret) {

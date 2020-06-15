@@ -7,7 +7,7 @@ void test_create() {
 	ccs_hyperparameter_t       hyperparameter;
 	ccs_hyperparameter_type_t  type;
 	ccs_datum_t                default_value;
-	ccs_error_t                err;
+	ccs_result_t               err;
 	ccs_bool_t                 check;
 	const char                *name;
 	void *                     user_data;
@@ -85,7 +85,7 @@ void test_samples() {
 	ccs_distribution_t         distribution;
 	const size_t               num_samples = 10000;
 	ccs_datum_t                samples[num_samples];
-	ccs_error_t                err;
+	ccs_result_t               err;
 	const size_t               num_possible_values = 4;
 	ccs_datum_t                possible_values[num_possible_values];
 	const size_t               default_value_index = 2;
@@ -131,7 +131,7 @@ void test_oversampling() {
 	ccs_distribution_t         distribution;
 	const size_t               num_samples = 10000;
 	ccs_datum_t                samples[num_samples];
-	ccs_error_t                err;
+	ccs_result_t               err;
 	const size_t               num_possible_values = 4;
 	ccs_datum_t                possible_values[num_possible_values];
 	const size_t               default_value_index = 2;

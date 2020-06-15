@@ -48,7 +48,7 @@ ccs_expression_get_ops(ccs_expression_t expression) {
 	return (_ccs_expression_ops_t *)expression->obj.ops;
 }
 
-static ccs_error_t
+static ccs_result_t
 _ccs_expression_del(ccs_object_t o) {
 	ccs_expression_t d = (ccs_expression_t)o;
 	_ccs_expression_data_t *data = d->data;
@@ -57,13 +57,13 @@ _ccs_expression_del(ccs_object_t o) {
 	return CCS_SUCCESS;
 }
 
-static inline ccs_error_t
+static inline ccs_result_t
 _ccs_expr_node_eval(ccs_expression_t           n,
                     ccs_context_t              context,
                     ccs_datum_t               *values,
                     ccs_datum_t               *result,
                     ccs_hyperparameter_type_t *ht) {
-	ccs_error_t err;
+	ccs_result_t err;
 	if (ht && n->data->type == CCS_VARIABLE) {
 		_ccs_expression_variable_data_t *d =
 			(_ccs_expression_variable_data_t *)n->data;
@@ -76,14 +76,14 @@ _ccs_expr_node_eval(ccs_expression_t           n,
 }
 
 #define eval_node(data, context, values, node, ht) do { \
-	ccs_error_t err; \
+	ccs_result_t err; \
 	err = _ccs_expr_node_eval(data->nodes[0], context, values, &node, ht); \
 	if (err) \
 		return err; \
 } while(0)
 
 #define eval_left_right(data, context, values, left, right, htl, htr) do { \
-	ccs_error_t err; \
+	ccs_result_t err; \
 	err = _ccs_expr_node_eval(data->nodes[0], context, values, &left, htl); \
 	if (err) \
 		return err; \
@@ -92,7 +92,7 @@ _ccs_expr_node_eval(ccs_expression_t           n,
 		return err; \
 } while (0)
 
-static ccs_error_t
+static ccs_result_t
 _ccs_expr_or_eval(_ccs_expression_data_t *data,
                   ccs_context_t           context,
                   ccs_datum_t            *values,
@@ -112,7 +112,7 @@ static _ccs_expression_ops_t _ccs_expr_or_ops = {
 	&_ccs_expr_or_eval
 };
 
-static ccs_error_t
+static ccs_result_t
 _ccs_expr_and_eval(_ccs_expression_data_t *data,
                   ccs_context_t            context,
                   ccs_datum_t             *values,
@@ -134,7 +134,7 @@ static _ccs_expression_ops_t _ccs_expr_and_ops = {
 
 #define check_values(param, v) do { \
 	ccs_bool_t valid; \
-	ccs_error_t err; \
+	ccs_result_t err; \
 	err = ccs_hyperparameter_check_value(param, v, &valid); \
 	if (unlikely(err)) \
 		return err; \
@@ -164,7 +164,7 @@ _ccs_string_cmp(const char *a, const char *b) {
 	return strcmp(a, b);
 }
 
-static inline ccs_error_t
+static inline ccs_result_t
 _ccs_datum_test_equal_generic(ccs_datum_t *a, ccs_datum_t *b, ccs_bool_t *equal) {
 	if (a->type == b->type) {
 		switch(a->type) {
@@ -190,7 +190,7 @@ _ccs_datum_test_equal_generic(ccs_datum_t *a, ccs_datum_t *b, ccs_bool_t *equal)
 	return CCS_SUCCESS;
 }
 
-static inline ccs_error_t
+static inline ccs_result_t
 _ccs_datum_cmp_generic(ccs_datum_t *a, ccs_datum_t *b, ccs_int_t *cmp) {
 	if (a->type == b->type) {
 		switch(a->type) {
@@ -222,7 +222,7 @@ _ccs_datum_cmp_generic(ccs_datum_t *a, ccs_datum_t *b, ccs_int_t *cmp) {
 	return CCS_SUCCESS;
 }
 
-static ccs_error_t
+static ccs_result_t
 _ccs_expr_equal_eval(_ccs_expression_data_t *data,
                      ccs_context_t           context,
                      ccs_datum_t            *values,
@@ -236,7 +236,7 @@ _ccs_expr_equal_eval(_ccs_expression_data_t *data,
 	check_hypers(data->nodes[0], right, htl);
 	check_hypers(data->nodes[1], left, htr);
 	ccs_bool_t equal;
-	ccs_error_t err = _ccs_datum_test_equal_generic(&left, &right, &equal);
+	ccs_result_t err = _ccs_datum_test_equal_generic(&left, &right, &equal);
 	if(htl != CCS_HYPERPARAMETER_TYPE_MAX || htr != CCS_HYPERPARAMETER_TYPE_MAX) {
 		result->value.i = equal;
 	} else {
@@ -253,7 +253,7 @@ static _ccs_expression_ops_t _ccs_expr_equal_ops = {
 	&_ccs_expr_equal_eval
 };
 
-static ccs_error_t
+static ccs_result_t
 _ccs_expr_not_equal_eval(_ccs_expression_data_t *data,
                          ccs_context_t           context,
                          ccs_datum_t            *values,
@@ -267,7 +267,7 @@ _ccs_expr_not_equal_eval(_ccs_expression_data_t *data,
 	check_hypers(data->nodes[0], right, htl);
 	check_hypers(data->nodes[1], left, htr);
 	ccs_bool_t equal;
-	ccs_error_t err = _ccs_datum_test_equal_generic(&left, &right, &equal);
+	ccs_result_t err = _ccs_datum_test_equal_generic(&left, &right, &equal);
 	if(htl != CCS_HYPERPARAMETER_TYPE_MAX || htr != CCS_HYPERPARAMETER_TYPE_MAX) {
 		result->value.i = equal ? CCS_FALSE : CCS_TRUE;
 	} else {
@@ -284,7 +284,7 @@ static _ccs_expression_ops_t _ccs_expr_not_equal_ops = {
 	&_ccs_expr_not_equal_eval
 };
 
-static ccs_error_t
+static ccs_result_t
 _ccs_expr_less_eval(_ccs_expression_data_t *data,
                     ccs_context_t           context,
                     ccs_datum_t            *values,
@@ -299,7 +299,7 @@ _ccs_expr_less_eval(_ccs_expression_data_t *data,
 		return -CCS_INVALID_VALUE;
 	check_hypers(data->nodes[0], right, htl);
 	check_hypers(data->nodes[1], left, htr);
-	ccs_error_t err;
+	ccs_result_t err;
 	if (htl == CCS_ORDINAL) {
 		ccs_int_t cmp;
 		_ccs_expression_variable_data_t *d =
@@ -340,7 +340,7 @@ static _ccs_expression_ops_t _ccs_expr_less_ops = {
 	&_ccs_expr_less_eval
 };
 
-static ccs_error_t
+static ccs_result_t
 _ccs_expr_greater_eval(_ccs_expression_data_t *data,
                        ccs_context_t           context,
                        ccs_datum_t            *values,
@@ -355,7 +355,7 @@ _ccs_expr_greater_eval(_ccs_expression_data_t *data,
 		return -CCS_INVALID_VALUE;
 	check_hypers(data->nodes[0], right, htl);
 	check_hypers(data->nodes[1], left, htr);
-	ccs_error_t err;
+	ccs_result_t err;
 	if (htl == CCS_ORDINAL) {
 		ccs_int_t cmp;
 		_ccs_expression_variable_data_t *d =
@@ -396,7 +396,7 @@ static _ccs_expression_ops_t _ccs_expr_greater_ops = {
 	&_ccs_expr_greater_eval
 };
 
-static ccs_error_t
+static ccs_result_t
 _ccs_expr_less_or_equal_eval(_ccs_expression_data_t *data,
                              ccs_context_t           context,
                              ccs_datum_t            *values,
@@ -411,7 +411,7 @@ _ccs_expr_less_or_equal_eval(_ccs_expression_data_t *data,
 		return -CCS_INVALID_VALUE;
 	check_hypers(data->nodes[0], right, htl);
 	check_hypers(data->nodes[1], left, htr);
-	ccs_error_t err;
+	ccs_result_t err;
 	if (htl == CCS_ORDINAL) {
 		ccs_int_t cmp;
 		_ccs_expression_variable_data_t *d =
@@ -452,7 +452,7 @@ static _ccs_expression_ops_t _ccs_expr_less_or_equal_ops = {
 	&_ccs_expr_less_or_equal_eval
 };
 
-static ccs_error_t
+static ccs_result_t
 _ccs_expr_greater_or_equal_eval(_ccs_expression_data_t *data,
                                 ccs_context_t           context,
                                 ccs_datum_t            *values,
@@ -467,7 +467,7 @@ _ccs_expr_greater_or_equal_eval(_ccs_expression_data_t *data,
 		return -CCS_INVALID_VALUE;
 	check_hypers(data->nodes[0], right, htl);
 	check_hypers(data->nodes[1], left, htr);
-	ccs_error_t err;
+	ccs_result_t err;
 	if (htl == CCS_ORDINAL) {
 		ccs_int_t cmp;
 		_ccs_expression_variable_data_t *d =
@@ -508,12 +508,12 @@ static _ccs_expression_ops_t _ccs_expr_greater_or_equal_ops = {
 	&_ccs_expr_greater_or_equal_eval
 };
 
-static ccs_error_t
+static ccs_result_t
 _ccs_expr_in_eval(_ccs_expression_data_t *data,
                   ccs_context_t           context,
                   ccs_datum_t            *values,
                   ccs_datum_t            *result) {
-	ccs_error_t err;
+	ccs_result_t err;
 	ccs_expression_type_t etype;
 	err = ccs_expression_get_type(data->nodes[1], &etype);
 	if (err)
@@ -540,7 +540,7 @@ _ccs_expr_in_eval(_ccs_expression_data_t *data,
 			return err;
 		check_hypers(data->nodes[0], right, htl);
 		ccs_bool_t equal;
-		ccs_error_t err = _ccs_datum_test_equal_generic(&left, &right, &equal);
+		ccs_result_t err = _ccs_datum_test_equal_generic(&left, &right, &equal);
 		if (err) {
 			if (err != -CCS_INVALID_VALUE)
 				return err;
@@ -563,7 +563,7 @@ static _ccs_expression_ops_t _ccs_expr_in_ops = {
 	&_ccs_expr_in_eval
 };
 
-static ccs_error_t
+static ccs_result_t
 _ccs_expr_add_eval(_ccs_expression_data_t *data,
                    ccs_context_t           context,
                    ccs_datum_t            *values,
@@ -604,7 +604,7 @@ static _ccs_expression_ops_t _ccs_expr_add_ops = {
 	&_ccs_expr_add_eval
 };
 
-static ccs_error_t
+static ccs_result_t
 _ccs_expr_substract_eval(_ccs_expression_data_t *data,
                          ccs_context_t           context,
                          ccs_datum_t            *values,
@@ -645,7 +645,7 @@ static _ccs_expression_ops_t _ccs_expr_substract_ops = {
 	&_ccs_expr_substract_eval
 };
 
-static ccs_error_t
+static ccs_result_t
 _ccs_expr_multiply_eval(_ccs_expression_data_t *data,
                         ccs_context_t           context,
                         ccs_datum_t            *values,
@@ -686,7 +686,7 @@ static _ccs_expression_ops_t _ccs_expr_multiply_ops = {
 	&_ccs_expr_multiply_eval
 };
 
-static ccs_error_t
+static ccs_result_t
 _ccs_expr_divide_eval(_ccs_expression_data_t *data,
                       ccs_context_t           context,
                       ccs_datum_t            *values,
@@ -735,7 +735,7 @@ static _ccs_expression_ops_t _ccs_expr_divide_ops = {
 	&_ccs_expr_divide_eval
 };
 
-static ccs_error_t
+static ccs_result_t
 _ccs_expr_modulo_eval(_ccs_expression_data_t *data,
                       ccs_context_t           context,
                       ccs_datum_t            *values,
@@ -784,7 +784,7 @@ static _ccs_expression_ops_t _ccs_expr_modulo_ops = {
 	&_ccs_expr_modulo_eval
 };
 
-static ccs_error_t
+static ccs_result_t
 _ccs_expr_positive_eval(_ccs_expression_data_t *data,
                         ccs_context_t           context,
                         ccs_datum_t            *values,
@@ -803,7 +803,7 @@ static _ccs_expression_ops_t _ccs_expr_positive_ops = {
 	&_ccs_expr_positive_eval
 };
 
-static ccs_error_t
+static ccs_result_t
 _ccs_expr_negative_eval(_ccs_expression_data_t *data,
                         ccs_context_t           context,
                         ccs_datum_t            *values,
@@ -826,7 +826,7 @@ static _ccs_expression_ops_t _ccs_expr_negative_ops = {
 	&_ccs_expr_negative_eval
 };
 
-static ccs_error_t
+static ccs_result_t
 _ccs_expr_not_eval(_ccs_expression_data_t *data,
                    ccs_context_t           context,
                    ccs_datum_t            *values,
@@ -846,7 +846,7 @@ static _ccs_expression_ops_t _ccs_expr_not_ops = {
 	&_ccs_expr_not_eval
 };
 
-static ccs_error_t
+static ccs_result_t
 _ccs_expr_list_eval(_ccs_expression_data_t *data,
                     ccs_context_t           context,
                     ccs_datum_t            *values,
@@ -859,7 +859,7 @@ static _ccs_expression_ops_t _ccs_expr_list_ops = {
 	&_ccs_expr_list_eval
 };
 
-static ccs_error_t
+static ccs_result_t
 _ccs_expr_literal_eval(_ccs_expression_data_t *data,
                        ccs_context_t           context,
                        ccs_datum_t            *values,
@@ -875,14 +875,14 @@ static _ccs_expression_ops_t _ccs_expr_literal_ops = {
 	&_ccs_expr_literal_eval
 };
 
-static ccs_error_t
+static ccs_result_t
 _ccs_expr_variable_del(ccs_object_t o) {
 	_ccs_expression_variable_data_t *d =
 		(_ccs_expression_variable_data_t *)((ccs_expression_t)o)->data;
 	return ccs_release_object(d->hyperparameter);
 }
 
-static ccs_error_t
+static ccs_result_t
 _ccs_expr_variable_eval(_ccs_expression_data_t *data,
                         ccs_context_t           context,
                         ccs_datum_t            *values,
@@ -890,7 +890,7 @@ _ccs_expr_variable_eval(_ccs_expression_data_t *data,
 	_ccs_expression_variable_data_t *d =
 		(_ccs_expression_variable_data_t *)data;
 	size_t index;
-	ccs_error_t err;
+	ccs_result_t err;
 	err = ccs_context_get_hyperparameter_index(context,
 		(ccs_hyperparameter_t)(d->hyperparameter), &index);
 	if (err)
@@ -974,7 +974,7 @@ _ccs_expression_ops_broker(ccs_expression_type_t  expression_type) {
 	}
 }
 
-ccs_error_t
+ccs_result_t
 ccs_create_literal(ccs_datum_t       value,
                    ccs_expression_t *expression_ret) {
 	if (value.type < CCS_NONE || value.type > CCS_STRING)
@@ -1015,14 +1015,14 @@ ccs_create_literal(ccs_datum_t       value,
 	return CCS_SUCCESS;
 }
 
-ccs_error_t
+ccs_result_t
 ccs_create_variable(ccs_hyperparameter_t  hyperparameter,
                     ccs_expression_t     *expression_ret) {
 	if (!hyperparameter)
 		return -CCS_INVALID_OBJECT;
 	if (!expression_ret)
 		return -CCS_INVALID_VALUE;
-	ccs_error_t err;
+	ccs_result_t err;
 	uintptr_t mem = (uintptr_t)calloc(1,
 		sizeof(struct _ccs_expression_s) +
 		sizeof(struct _ccs_expression_variable_data_s));
@@ -1048,7 +1048,7 @@ ccs_create_variable(ccs_hyperparameter_t  hyperparameter,
 	return CCS_SUCCESS;
 }
 
-ccs_error_t
+ccs_result_t
 ccs_create_expression(ccs_expression_type_t  type,
 	              size_t                 num_nodes,
                       ccs_datum_t           *nodes,
@@ -1062,7 +1062,7 @@ ccs_create_expression(ccs_expression_type_t  type,
 	int arity = ccs_expression_arity[type];
 	if (arity >= 0 && num_nodes != (size_t)arity)
 		return -CCS_INVALID_VALUE;
-	ccs_error_t err;
+	ccs_result_t err;
 	for(size_t i = 0; i < num_nodes; i++){
 		if (nodes[i].type == CCS_OBJECT) {
 			ccs_object_type_t t;
@@ -1127,7 +1127,7 @@ cleanup:
 	return err;
 }
 
-ccs_error_t
+ccs_result_t
 ccs_create_binary_expression(ccs_expression_type_t  type,
                              ccs_datum_t            node_left,
                              ccs_datum_t            node_right,
@@ -1138,14 +1138,14 @@ ccs_create_binary_expression(ccs_expression_type_t  type,
 	return ccs_create_expression(type, 2, nodes, expression_ret);
 }
 
-ccs_error_t
+ccs_result_t
 ccs_create_unary_expression(ccs_expression_type_t  type,
                             ccs_datum_t            node,
                             ccs_expression_t      *expression_ret) {
 	return ccs_create_expression(type, 1, &node, expression_ret);
 }
 
-ccs_error_t
+ccs_result_t
 ccs_expression_eval(ccs_expression_t  expression,
                     ccs_context_t     context,
                     ccs_datum_t      *values,
@@ -1158,7 +1158,7 @@ ccs_expression_eval(ccs_expression_t  expression,
 	return ops->eval(expression->data, context, values, result);
 }
 
-ccs_error_t
+ccs_result_t
 ccs_expression_get_num_nodes(ccs_expression_t  expression,
                              size_t           *num_nodes_ret) {
 	if (!expression || !expression->data)
@@ -1169,7 +1169,7 @@ ccs_expression_get_num_nodes(ccs_expression_t  expression,
 	return CCS_SUCCESS;
 }
 
-ccs_error_t
+ccs_result_t
 ccs_expression_get_nodes(ccs_expression_t  expression,
                          size_t            num_nodes,
                          ccs_expression_t *nodes,
@@ -1195,7 +1195,7 @@ ccs_expression_get_nodes(ccs_expression_t  expression,
 	return CCS_SUCCESS;
 }
 
-ccs_error_t
+ccs_result_t
 ccs_expression_list_eval_node(ccs_expression_t  expression,
                               ccs_context_t     context,
                               ccs_datum_t      *values,
@@ -1205,7 +1205,7 @@ ccs_expression_list_eval_node(ccs_expression_t  expression,
 		return -CCS_INVALID_OBJECT;
 	if (!result)
 		return -CCS_INVALID_VALUE;
-	ccs_error_t err;
+	ccs_result_t err;
 	ccs_datum_t node;
 	if (index >= expression->data->num_nodes)
 		return -CCS_OUT_OF_BOUNDS;
@@ -1216,7 +1216,7 @@ ccs_expression_list_eval_node(ccs_expression_t  expression,
 	return CCS_SUCCESS;
 }
 
-ccs_error_t
+ccs_result_t
 ccs_expression_get_type(ccs_expression_t       expression,
                         ccs_expression_type_t *type_ret) {
 	if (!expression || !expression->data)
@@ -1227,7 +1227,7 @@ ccs_expression_get_type(ccs_expression_t       expression,
 	return CCS_SUCCESS;
 }
 
-ccs_error_t
+ccs_result_t
 ccs_literal_get_value(ccs_expression_t  expression,
                       ccs_datum_t      *value_ret) {
 	if (!expression || !expression->data || expression->data->type != CCS_LITERAL)
@@ -1240,7 +1240,7 @@ ccs_literal_get_value(ccs_expression_t  expression,
 	return CCS_SUCCESS;
 }
 
-ccs_error_t
+ccs_result_t
 ccs_variable_get_hyperparameter(ccs_expression_t      expression,
                                 ccs_hyperparameter_t *hyperparameter_ret) {
 	if (!expression || !expression->data || expression->data->type != CCS_VARIABLE)
@@ -1258,11 +1258,11 @@ ccs_variable_get_hyperparameter(ccs_expression_t      expression,
 	return -CCS_OUT_OF_MEMORY; \
 }
 
-static ccs_error_t _get_hyperparameters(ccs_expression_t  expression,
+static ccs_result_t _get_hyperparameters(ccs_expression_t  expression,
                                         UT_array         *array) {
 	if (!expression || !expression->data)
 		return -CCS_INVALID_OBJECT;
-	ccs_error_t err;
+	ccs_result_t err;
 	if (expression->data->type == CCS_VARIABLE) {
 		_ccs_expression_variable_data_t * d =
 			(_ccs_expression_variable_data_t *)expression->data;
@@ -1290,7 +1290,7 @@ static int _hyper_sort(const void *a, const void *b) {
 	return ha < hb ? -1 : ha > hb ? 1 : 0;
 }
 
-ccs_error_t
+ccs_result_t
 ccs_expression_get_hyperparameters(ccs_expression_t      expression,
                                    size_t                num_hyperparameters,
                                    ccs_hyperparameter_t *hyperparameters,
@@ -1299,7 +1299,7 @@ ccs_expression_get_hyperparameters(ccs_expression_t      expression,
 		return -CCS_INVALID_VALUE;
 	if (!hyperparameters && !num_hyperparameters_ret)
 		return -CCS_INVALID_VALUE;
-	ccs_error_t err;
+	ccs_result_t err;
 	UT_array *array;
 	utarray_new(array, &_hyperparameter_icd);
 	err = _get_hyperparameters(expression, array);
@@ -1343,10 +1343,10 @@ ccs_expression_get_hyperparameters(ccs_expression_t      expression,
 	return CCS_SUCCESS;
 }
 
-ccs_error_t
+ccs_result_t
 ccs_expression_check_context(ccs_expression_t expression,
                              ccs_context_t    context) {
-	ccs_error_t err;
+	ccs_result_t err;
 	UT_array *array;
 	utarray_new(array, &_hyperparameter_icd);
 	err = _get_hyperparameters(expression, array);

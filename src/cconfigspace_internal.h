@@ -4,7 +4,7 @@
 #include <cconfigspace.h>
 
 struct _ccs_object_ops_s {
-	ccs_error_t (*del)(ccs_object_t object);
+	ccs_result_t (*del)(ccs_object_t object);
 };
 
 typedef struct _ccs_object_ops_s _ccs_object_ops_t;

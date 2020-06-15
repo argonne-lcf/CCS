@@ -6,7 +6,7 @@ ccs_context_get_ops(ccs_context_t context) {
 	return (_ccs_context_ops_t *)context->obj.ops;
 }
 
-ccs_error_t
+ccs_result_t
 ccs_context_get_hyperparameter_index(
 		ccs_context_t         context,
 		ccs_hyperparameter_t  hyperparameter,

@@ -11,7 +11,7 @@ struct _ccs_hyperparameter_categorical_data_s {
 };
 typedef struct _ccs_hyperparameter_categorical_data_s _ccs_hyperparameter_categorical_data_t;
 
-static ccs_error_t
+static ccs_result_t
 _ccs_hyperparameter_categorical_del(ccs_object_t o) {
 	ccs_hyperparameter_t d = (ccs_hyperparameter_t)o;
 	_ccs_hyperparameter_categorical_data_t *data = (_ccs_hyperparameter_categorical_data_t *)(d->data);
@@ -19,7 +19,7 @@ _ccs_hyperparameter_categorical_del(ccs_object_t o) {
 	return CCS_SUCCESS;
 }
 
-static ccs_error_t
+static ccs_result_t
 _ccs_hyperparameter_categorical_check_values(_ccs_hyperparameter_data_t *data,
                                              size_t                num_values,
                                              const ccs_datum_t    *values,
@@ -34,7 +34,7 @@ _ccs_hyperparameter_categorical_check_values(_ccs_hyperparameter_data_t *data,
 	return CCS_SUCCESS;
 }
 
-static ccs_error_t
+static ccs_result_t
 _ccs_hyperparameter_categorical_samples(_ccs_hyperparameter_data_t *data,
                                         ccs_distribution_t          distribution,
                                         ccs_rng_t                   rng,
@@ -42,7 +42,7 @@ _ccs_hyperparameter_categorical_samples(_ccs_hyperparameter_data_t *data,
                                         ccs_datum_t                *values) {
 	_ccs_hyperparameter_categorical_data_t *d =
 	    (_ccs_hyperparameter_categorical_data_t *)data;
-	ccs_error_t err;
+	ccs_result_t err;
 	ccs_int_t *vs = (ccs_int_t *)values + num_values;
         ccs_bool_t oversampling;
 	err = ccs_distribution_check_oversampling(distribution,
@@ -83,7 +83,7 @@ _ccs_hyperparameter_categorical_samples(_ccs_hyperparameter_data_t *data,
 	return CCS_SUCCESS;
 }
 
-ccs_error_t
+ccs_result_t
 _ccs_hyperparameter_categorical_get_default_distribution(
 		_ccs_hyperparameter_data_t *data,
 		ccs_distribution_t         *distribution) {
@@ -109,7 +109,7 @@ static _ccs_hyperparameter_ops_t _ccs_hyperparameter_categorical_ops = {
 	return -CCS_OUT_OF_MEMORY; \
 }
 
-ccs_error_t
+ccs_result_t
 ccs_create_categorical_hyperparameter(const char           *name,
                                       size_t                num_possible_values,
                                       ccs_datum_t          *possible_values,

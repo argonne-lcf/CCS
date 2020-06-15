@@ -53,60 +53,60 @@ extern const char *ccs_expression_symbols[];
 extern const int ccs_expression_arity[];
 
 // Expressions
-extern ccs_error_t
+extern ccs_result_t
 ccs_create_binary_expression(ccs_expression_type_t  type,
                              ccs_datum_t            node_left,
                              ccs_datum_t            node_right,
                              ccs_expression_t      *expression_ret);
 
-extern ccs_error_t
+extern ccs_result_t
 ccs_create_unary_expression(ccs_expression_type_t  type,
                             ccs_datum_t            node,
                             ccs_expression_t      *expression_ret);
 
-extern ccs_error_t
+extern ccs_result_t
 ccs_create_expression(ccs_expression_type_t  type,
 	              size_t                 num_nodes,
                       ccs_datum_t           *nodes,
                       ccs_expression_t      *expression_ret);
 
-extern ccs_error_t
+extern ccs_result_t
 ccs_create_literal(ccs_datum_t       value,
                    ccs_expression_t *expression_ret);
 
-extern ccs_error_t
+extern ccs_result_t
 ccs_create_variable(ccs_hyperparameter_t  hyperparameter,
                     ccs_expression_t     *expression_ret);
 
-extern ccs_error_t
+extern ccs_result_t
 ccs_expression_get_type(ccs_expression_t       expression,
                         ccs_expression_type_t *type_ret);
 
-extern ccs_error_t
+extern ccs_result_t
 ccs_expression_get_num_nodes(ccs_expression_t  expression,
                              size_t           *num_nodes_ret);
 
-extern ccs_error_t
+extern ccs_result_t
 ccs_expression_get_nodes(ccs_expression_t  expression,
                          size_t            num_nodes,
                          ccs_expression_t *nodes,
                          size_t           *num_nodes_ret);
 
-extern ccs_error_t
+extern ccs_result_t
 ccs_literal_get_value(ccs_expression_t  expression,
                       ccs_datum_t      *value_ret);
 
-extern ccs_error_t
+extern ccs_result_t
 ccs_variable_get_hyperparameter(ccs_expression_t      expression,
                                 ccs_hyperparameter_t *hyperparameter_ret);
 
-extern ccs_error_t
+extern ccs_result_t
 ccs_expression_eval(ccs_expression_t  expression,
                     ccs_context_t     context,
                     ccs_datum_t      *values,
                     ccs_datum_t      *result);
 
-extern ccs_error_t
+extern ccs_result_t
 ccs_expression_list_eval_node(ccs_expression_t  expression,
                               ccs_context_t     context,
                               ccs_datum_t      *values,
@@ -114,13 +114,13 @@ ccs_expression_list_eval_node(ccs_expression_t  expression,
                               ccs_datum_t      *result);
 
 //uniq and sorted list of hyperparameters handle
-extern ccs_error_t
+extern ccs_result_t
 ccs_expression_get_hyperparameters(ccs_expression_t      expression,
                                    size_t                num_hyperparameters,
                                    ccs_hyperparameter_t *hyperparameters,
                                    size_t               *num_hyperparameters_ret);
 
-extern ccs_error_t
+extern ccs_result_t
 ccs_expression_check_context(ccs_expression_t expression,
                              ccs_context_t    context);
 #ifdef __cplusplus

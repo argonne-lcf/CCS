@@ -6,7 +6,7 @@ ccs_objective_space_get_ops(ccs_objective_space_t objective_space) {
 	return (_ccs_objective_space_ops_t *)objective_space->obj.ops;
 }
 
-static ccs_error_t
+static ccs_result_t
 _ccs_objective_space_del(ccs_object_t object) {
 	ccs_objective_space_t objective_space = (ccs_objective_space_t)object;
 	UT_array *array = objective_space->data->hyperparameters;
@@ -26,7 +26,7 @@ _ccs_objective_space_del(ccs_object_t object) {
 	return CCS_SUCCESS;
 }
 
-static ccs_error_t
+static ccs_result_t
 _ccs_objective_space_get_hyperparameter_index(_ccs_context_data_t *data,
                                               ccs_hyperparameter_t  hyperparameter,
                                               size_t               *index_ret) {
@@ -65,7 +65,7 @@ static const UT_icd _objectives_icd = {
 	goto arrays; \
 }
 
-ccs_error_t
+ccs_result_t
 ccs_create_objective_space(const char            *name,
                            void                  *user_data,
                            ccs_objective_space_t *objective_space_ret) {
@@ -75,7 +75,7 @@ ccs_create_objective_space(const char            *name,
 	uintptr_t mem = (uintptr_t)calloc(1, sizeof(struct _ccs_objective_space_s) + sizeof(struct _ccs_objective_space_data_s) + strlen(name) + 1);
 	if (!mem)
 		return -CCS_OUT_OF_MEMORY;
-	ccs_error_t err;
+	ccs_result_t err;
 	ccs_objective_space_t obj_space = (ccs_objective_space_t)mem;
 	_ccs_object_init(&(obj_space->obj), CCS_OBJECTIVE_SPACE,
 		(_ccs_object_ops_t *)&_objective_space_ops);
@@ -99,7 +99,7 @@ arrays:
 	return err;
 }
 
-ccs_error_t
+ccs_result_t
 ccs_objective_space_get_name(ccs_objective_space_t   objective_space,
                              const char            **name_ret) {
 	if (!objective_space || !objective_space->data)
@@ -110,7 +110,7 @@ ccs_objective_space_get_name(ccs_objective_space_t   objective_space,
 	return CCS_SUCCESS;
 }
 
-ccs_error_t
+ccs_result_t
 ccs_objective_space_get_user_data(ccs_objective_space_t   objective_space,
                                   void                  **user_data_ret) {
 	if (!objective_space || !objective_space->data)
@@ -131,12 +131,12 @@ ccs_objective_space_get_user_data(ccs_objective_space_t   objective_space,
 	err = -CCS_OUT_OF_MEMORY; \
 	goto errorutarray; \
 }
-ccs_error_t
+ccs_result_t
 ccs_objective_space_add_hyperparameter(ccs_objective_space_t objective_space,
                                        ccs_hyperparameter_t  hyperparameter) {
 	if (!objective_space || !objective_space->data || !hyperparameter)
 		return -CCS_INVALID_OBJECT;
-	ccs_error_t err;
+	ccs_result_t err;
 	const char *name;
 	size_t sz_name;
 	_ccs_hyperparameter_wrapper2_t *p_hyper_wrapper;
@@ -182,7 +182,7 @@ error:
 #undef  utarray_oom
 #define utarray_oom() exit(-1)
 
-ccs_error_t
+ccs_result_t
 ccs_objective_space_add_hyperparameters(ccs_objective_space_t  objective_space,
                                         size_t                 num_hyperparameters,
                                         ccs_hyperparameter_t  *hyperparameters) {
@@ -191,7 +191,7 @@ ccs_objective_space_add_hyperparameters(ccs_objective_space_t  objective_space,
 	if (num_hyperparameters > 0 && !hyperparameters)
 		return -CCS_INVALID_VALUE;
 	for (size_t i = 0; i < num_hyperparameters; i++) {
-		ccs_error_t err =
+		ccs_result_t err =
 		    ccs_objective_space_add_hyperparameter( objective_space,
 		                                            hyperparameters[i]);
 		if (err)
@@ -200,7 +200,7 @@ ccs_objective_space_add_hyperparameters(ccs_objective_space_t  objective_space,
 	return CCS_SUCCESS;
 }
 
-ccs_error_t
+ccs_result_t
 ccs_objective_space_get_num_hyperparameters(
 		ccs_objective_space_t  objective_space,
 		size_t                *num_hyperparameters_ret) {
@@ -212,7 +212,7 @@ ccs_objective_space_get_num_hyperparameters(
 	return CCS_SUCCESS;
 }
 
-ccs_error_t
+ccs_result_t
 ccs_objective_space_get_hyperparameter(ccs_objective_space_t  objective_space,
                                        size_t                 index,
                                        ccs_hyperparameter_t  *hyperparameter_ret) {
@@ -228,7 +228,7 @@ ccs_objective_space_get_hyperparameter(ccs_objective_space_t  objective_space,
 	return CCS_SUCCESS;
 }
 
-ccs_error_t
+ccs_result_t
 ccs_objective_space_get_hyperparameter_by_name(
 		ccs_objective_space_t  objective_space,
 		const char *           name,
@@ -248,7 +248,7 @@ ccs_objective_space_get_hyperparameter_by_name(
 	return CCS_SUCCESS;
 }
 
-ccs_error_t
+ccs_result_t
 ccs_objective_space_get_hyperparameter_index_by_name(
 		ccs_objective_space_t  objective_space,
 		const char            *name,
@@ -268,7 +268,7 @@ ccs_objective_space_get_hyperparameter_index_by_name(
 	return CCS_SUCCESS;
 }
 
-ccs_error_t
+ccs_result_t
 ccs_objective_space_get_hyperparameter_index(
 		ccs_objective_space_t  objective_space,
 		ccs_hyperparameter_t   hyperparameter,
@@ -288,7 +288,7 @@ ccs_objective_space_get_hyperparameter_index(
 	return CCS_SUCCESS;
 }
 
-ccs_error_t
+ccs_result_t
 ccs_objective_space_get_hyperparameters(ccs_objective_space_t  objective_space,
                                         size_t                 num_hyperparameters,
                                         ccs_hyperparameter_t  *hyperparameters,
@@ -322,13 +322,13 @@ ccs_objective_space_get_hyperparameters(ccs_objective_space_t  objective_space,
 #define utarray_oom() { \
 	return -CCS_OUT_OF_MEMORY; \
 }
-ccs_error_t
+ccs_result_t
 ccs_objective_space_add_objective(ccs_objective_space_t objective_space,
                                   ccs_expression_t      expression,
                                   ccs_objective_type_t  type) {
 	if (!objective_space || !objective_space->data)
 		return -CCS_INVALID_OBJECT;
-	ccs_error_t err;
+	ccs_result_t err;
 	err = ccs_expression_check_context(expression,
 	                                   (ccs_context_t)objective_space);
 	if (err)
@@ -343,7 +343,7 @@ ccs_objective_space_add_objective(ccs_objective_space_t objective_space,
 	return CCS_SUCCESS;
 }
 
-ccs_error_t
+ccs_result_t
 ccs_objective_space_add_objectives(ccs_objective_space_t  objective_space,
                                    size_t                 num_objectives,
                                    ccs_expression_t      *expressions,
@@ -353,7 +353,7 @@ ccs_objective_space_add_objectives(ccs_objective_space_t  objective_space,
 	if (num_objectives && (!expressions || !types))
 		return -CCS_INVALID_VALUE;
 	for (size_t i = 0; i < num_objectives; i++) {
-		ccs_error_t err;
+		ccs_result_t err;
 		err = ccs_expression_check_context(expressions[i],
 		                                   (ccs_context_t)objective_space);
 		if (err)
@@ -371,7 +371,7 @@ ccs_objective_space_add_objectives(ccs_objective_space_t  objective_space,
 #undef  utarray_oom
 #define utarray_oom() exit(-1)
 
-ccs_error_t
+ccs_result_t
 ccs_objective_space_get_objective(ccs_objective_space_t  objective_space,
                                   size_t                 index,
                                   ccs_expression_t      *expression_ret,
@@ -390,7 +390,7 @@ ccs_objective_space_get_objective(ccs_objective_space_t  objective_space,
 	return CCS_SUCCESS;
 }
 
-ccs_error_t
+ccs_result_t
 ccs_objective_space_get_objectives(ccs_objective_space_t  objective_space,
                                    size_t                 num_objectives,
                                    ccs_expression_t      *expressions,

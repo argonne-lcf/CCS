@@ -7,20 +7,20 @@ typedef struct _ccs_hyperparameter_data_s _ccs_hyperparameter_data_t;
 struct _ccs_hyperparameter_ops_s {
 	_ccs_object_ops_t obj_ops;
 
-	ccs_error_t (*check_values)(
+	ccs_result_t (*check_values)(
 		_ccs_hyperparameter_data_t *data,
 		size_t                      num_values,
 		const ccs_datum_t          *values,
 		ccs_bool_t                 *results);
 
-        ccs_error_t (*samples)(
+        ccs_result_t (*samples)(
 		_ccs_hyperparameter_data_t *data,
 		ccs_distribution_t          distribution,
 		ccs_rng_t                   rng,
 		size_t                      num_values,
 		ccs_datum_t                *values);
 
-	ccs_error_t (*get_default_distribution)(
+	ccs_result_t (*get_default_distribution)(
 		_ccs_hyperparameter_data_t *data,
 		ccs_distribution_t         *distribution);
 };

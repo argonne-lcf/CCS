@@ -5,7 +5,7 @@
 
 ccs_hyperparameter_t create_numerical(const char * name, double lower, double upper) {
 	ccs_hyperparameter_t hyperparameter;
-	ccs_error_t          err;
+	ccs_result_t         err;
 	err = ccs_create_numerical_hyperparameter(name, CCS_NUM_FLOAT,
 	                                          CCSF(lower), CCSF(upper),
 	                                          CCSF(0.0), CCSF(0),
@@ -22,7 +22,7 @@ void test() {
 	ccs_objective_space_t     ospace;
 	ccs_expression_t          expression;
 	ccs_tuner_t               tuner;
-	ccs_error_t               err;
+	ccs_result_t              err;
 
 	hyperparameter1 = create_numerical("x", -5.0, 5.0);
 	hyperparameter2 = create_numerical("y", -5.0, 5.0);
