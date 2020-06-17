@@ -51,7 +51,7 @@ extern ccs_result_t
 ccs_create_uniform_distribution(ccs_numeric_type_t  data_type,
                                 ccs_numeric_t       lower,
                                 ccs_numeric_t       upper,
-                                ccs_scale_type_t    scale_type,
+                                ccs_scale_type_t    scale,
                                 ccs_numeric_t       quantization,
                                 ccs_distribution_t *distribution_ret);
 

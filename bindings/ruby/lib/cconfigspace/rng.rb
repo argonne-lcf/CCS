@@ -21,6 +21,10 @@ module CCS
       end
     end
 
+    def self.from_handle(handle)
+      self.new(handle, retain: true)
+    end
+
     def seed=(s)
       res = CCS.ccs_rng_set_seed(@handle, s)
       CCS.error_check(res)

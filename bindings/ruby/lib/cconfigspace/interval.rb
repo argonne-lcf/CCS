@@ -23,7 +23,7 @@ module CCS
         if type == :CCS_NUM_FLOAT
           self[:upper][:f] = upper
         else
-          self[:lower][:i] = upper
+          self[:upper][:i] = upper
         end
       end
       self[:lower_included] = lower_included ? CCS::TRUE : CCS::FALSE
@@ -127,6 +127,13 @@ module CCS
       end
       res = CCS.ccs_interval_include(self, n)
       res == CCS::FALSE ? false : true
+    end
+
+    def to_s
+      s = ""
+      s << (lower_included? ? "[" : "(")
+      s << " #{lower}, #{upper} "
+      s << (upper_included? ? "]" : ")")
     end
   end
   typedef Interval.by_value, :ccs_interval_t

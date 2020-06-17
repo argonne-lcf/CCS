@@ -1,3 +1,4 @@
+require 'singleton'
 module CCS
   extend FFI::Library
 
@@ -35,8 +36,10 @@ module CCS
   class MemoryPointer
     alias read_ccs_float_t  read_double
     alias read_array_of_ccs_float_t  read_array_of_double
+    alias write_array_of_ccs_float_t  write_array_of_double
     alias read_ccs_int_t    read_int64
     alias read_array_of_ccs_int_t  read_array_of_int64
+    alias write_array_of_ccs_int_t  write_array_of_int64
     alias read_ccs_bool_t   read_int32
     alias read_ccs_result_t read_int32
     alias read_ccs_hash_t   read_uint32
@@ -133,14 +136,89 @@ module CCS
   class Value < FFI::Union
     layout :f, :ccs_float_t,
            :i, :ccs_int_t,
-           :s, :string,
+           :s, :pointer,
            :o, :ccs_object_t
   end
   typedef Value.by_value, :ccs_value_t
 
+  class InactiveClass
+    include Singleton
+  end
+  Inactive = InactiveClass.instance
+
   class Datum < FFI::Struct
     layout :value, :ccs_value_t,
            :type, :ccs_data_type_t
+  end
+  class Datum
+    NONE = self::new
+    NONE[:type] = :CCS_NONE
+    NONE[:value][:i] = 0
+    TRUE = self::new
+    TRUE[:type] = :CCS_BOOLEAN
+    TRUE[:value][:i] = CCS::TRUE
+    FALSE = self::new
+    FALSE[:type] = :CCS_BOOLEAN
+    FALSE[:value][:i] = CCS::FALSE
+    INACTIVE = self::new
+    INACTIVE[:type] = :CCS_INACTIVE
+    INACTIVE[:value][:i] = 0
+    def value
+      case self[:type]
+      when :NONE
+        nil
+      when :CCS_INTEGER
+        self[:value][:i]
+      when :CCS_FLOAT
+        self[:value][:f]
+      when :CCS_BOOLEAN
+        self[:value][:i] == :CCS_FALSE ? false : true
+      when :CCS_STRING
+        self[:value][:s].read_string
+      when :CCS_INACTIVE
+        Inactive
+      when :CCS_OBJECT
+        Object::from_handle(self[:value][:o])
+      end
+    end
+
+    def self.from_value(v)
+      case v
+      when nil
+        NONE
+      when true
+        TRUE
+      when false
+        FALSE
+      when Inactive
+        INACTIVE
+      when Float
+        d = self::new
+        d[:type] = :CCS_FLOAT
+        d[:value][:f] = v
+        d
+      when Integer
+        d = self::new
+        d[:type] = :CCS_INTEGER
+        d[:value][:i] = v
+        d
+      when String
+        d = self::new
+        ptr = MemoryPointer::from_string(v)
+        d.instance_variable_set(:@string, ptr)
+        d[:type] = :STRING
+        d[:valus][:s] = ptr
+        d
+      when Object
+        d = self::new
+        d[:type] = :CCS_OBJECT
+        d[:value][:o] = v.handle
+        d.instance_variable_set(:@object, v)
+        d
+      else
+        raise StandardError, :CCS_INVALID_VALUE
+      end
+    end
   end
   typedef Datum.by_value, :ccs_datum_t
 
@@ -177,36 +255,6 @@ module CCS
         CCS.ccs_release_object(@handle)
       end
     end
-
-    attr_reader :handle
-    def initialize(handle, retain: false)
-      @handle = handle
-      if retain
-        res = CCS.ccs_retain_object(handle)
-        CCS.error_check(res)
-      end
-
-      ObjectSpace.define_finalizer(self, Releaser::new(handle))
-    end
-
-    def object_type
-      ptr = MemoryPointer::new(:ccs_object_type_t)
-      res = CCS.ccs_object_get_type(@handle, ptr)
-      CCS.error_check(res)
-      return ptr.read_ccs_object_type_t
-    end
-
-    def refcount
-      ptr = MemoryPointer::new(:int32)
-      res = CCS.ccs_object_get_refcount(@handle, ptr)
-      CCS.error_check(res)
-      return ptr.read_int32
-    end
-
-    def to_ptr
-      @handle
-    end
-
     def self.add_property(name, type, accessor, memoize: false)
       src = ""
       src << "def #{name}\n"
@@ -219,6 +267,51 @@ module CCS
       src << "end\n"
       class_eval src
     end
+
+    add_property :object_type, :ccs_object_type_t, :ccs_object_get_type, memoize: true
+    add_property :refcount, :uint32, :ccs_object_get_refcount
+    attr_reader :handle
+    def initialize(handle, retain: false, auto_release: true)
+      @handle = handle
+      if retain
+        res = CCS.ccs_retain_object(handle)
+        CCS.error_check(res)
+      end
+      ObjectSpace.define_finalizer(self, Releaser::new(handle)) if auto_release
+    end
+
+    def self.from_handle(handle)
+      ptr = MemoryPointer::new(:ccs_object_type_t)
+      res = CCS.ccs_object_get_type(handle, ptr)
+      CCS.error_check(res)
+      case ptr.read_ccs_object_type_t
+      when :CCS_RNG
+        CCS::Rng::from_handle(handle)
+      when :CCS_DISTRIBUTION
+        CCS::Distribution::from_handle(handle)
+      when :CCS_HYPERPARAMETER
+        CCS::Hyperparameter::from_handle(handle)
+      when :CCS_EXPRESSION
+        CCS::Expression::from_handle(handle)
+      when :CCS_CONFIGURATION_SPACE
+        CCS::ConfigurationSpace::from_handle(handle)
+      when :CCS_CONFIGURATION
+        CCS::Configuration::from_handle(handle)
+      when :CCS_OBJECTIVE_SPACE
+        CCS::ObjectiveSpace::from_handle(handle)
+      when :CCS_EVALUATION
+        CCS::Evaluation::from_handle(handle)
+      when :CCS_TUNER
+        CCS::Tuner::from_handle(handle)
+      else
+        raise StandardError, :CCS_INVALID_OBJECT
+      end
+    end
+
+    def to_ptr
+      @handle
+    end
+
   end
 
 end
