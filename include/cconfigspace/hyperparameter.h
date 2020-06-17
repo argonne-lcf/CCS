@@ -27,6 +27,13 @@ ccs_create_numerical_hyperparameter(const char           *name,
                                     ccs_hyperparameter_t *hyperparameter_ret);
 
 extern ccs_result_t
+ccs_numerical_hyperparameter_get_parameters(ccs_hyperparameter_t  hyperparameter,
+                                            ccs_numeric_type_t   *data_type_ret,
+                                            ccs_numeric_t        *lower_ret,
+                                            ccs_numeric_t        *upper_ret,
+                                            ccs_numeric_t        *quantization_ret);
+
+extern ccs_result_t
 ccs_create_categorical_hyperparameter(const char           *name,
                                       size_t                num_possible_values,
                                       ccs_datum_t          *possible_values,
@@ -35,12 +42,24 @@ ccs_create_categorical_hyperparameter(const char           *name,
                                       ccs_hyperparameter_t *hyperparameter_ret);
 
 extern ccs_result_t
+ccs_categorical_hyperparameter_get_values(ccs_hyperparameter_t  hyperparameter,
+                                          size_t                num_possible_values,
+                                          ccs_datum_t          *possible_values,
+                                          size_t               *num_possible_values_ret);
+
+extern ccs_result_t
 ccs_create_ordinal_hyperparameter(const char           *name,
                                   size_t                num_possible_values,
                                   ccs_datum_t          *possible_values,
                                   size_t                default_value_index,
                                   void                 *user_data,
                                   ccs_hyperparameter_t *hyperparameter_ret);
+
+extern ccs_result_t
+ccs_ordinal_hyperparameter_get_values(ccs_hyperparameter_t  hyperparameter,
+                                      size_t                num_possible_values,
+                                      ccs_datum_t          *possible_values,
+                                      size_t               *num_possible_values_ret);
 
 extern ccs_result_t
 ccs_ordinal_hyperparameter_compare_values(ccs_hyperparameter_t  hyperparameter,

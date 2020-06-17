@@ -189,3 +189,28 @@ ccs_create_numerical_hyperparameter(const char           *name,
 
 	return CCS_SUCCESS;
 }
+
+ccs_result_t
+ccs_numerical_hyperparameter_get_parameters(ccs_hyperparameter_t  hyperparameter,
+                                            ccs_numeric_type_t   *data_type_ret,
+                                            ccs_numeric_t        *lower_ret,
+                                            ccs_numeric_t        *upper_ret,
+                                            ccs_numeric_t        *quantization_ret) {
+	if (!hyperparameter || !hyperparameter->data)
+		return -CCS_INVALID_OBJECT;
+	if (!data_type_ret && !lower_ret && !upper_ret && !quantization_ret)
+		return -CCS_INVALID_VALUE;
+	_ccs_hyperparameter_numerical_data_t *d =
+		(_ccs_hyperparameter_numerical_data_t *)hyperparameter->data;
+        if (data_type_ret)
+		*data_type_ret = d->common_data.interval.type;
+        if (lower_ret)
+		*lower_ret = d->common_data.interval.lower;
+        if (upper_ret)
+		*upper_ret = d->common_data.interval.upper;
+	if (quantization_ret)
+		*quantization_ret = d->quantization;
+	return CCS_SUCCESS;
+}
+
+

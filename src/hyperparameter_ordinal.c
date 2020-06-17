@@ -5,7 +5,7 @@
 
 struct _ccs_hyperparameter_ordinal_data_s {
 	_ccs_hyperparameter_common_data_t  common_data;
-	ccs_int_t                          num_possible_values;
+	size_t                             num_possible_values;
 	_ccs_hash_datum_t                 *possible_values;
 	_ccs_hash_datum_t                 *hash;
 };
@@ -60,7 +60,7 @@ _ccs_hyperparameter_ordinal_samples(_ccs_hyperparameter_data_t *data,
 	} else {
 		size_t found = 0;
 		for(size_t i = 0; i < num_values; i++)
-			if (vs[i] >= 0 && vs[i] < d->num_possible_values)
+			if (vs[i] >= 0 && (size_t)vs[i] < d->num_possible_values)
 				values[found++] = d->possible_values[vs[i]].d;
 		vs = NULL;
 		size_t coeff = 2;
@@ -72,7 +72,7 @@ _ccs_hyperparameter_ordinal_samples(_ccs_hyperparameter_data_t *data,
 			err = ccs_distribution_samples(distribution, rng,
 			                               buff_sz, (ccs_numeric_t *)vs);
 			for(size_t i = 0; i < buff_sz && found < num_values; i++)
-				if (vs[i] >= 0 && vs[i] < d->num_possible_values)
+				if (vs[i] >= 0 && (size_t)vs[i] < d->num_possible_values)
 					values[found++] = d->possible_values[vs[i]].d;
 			coeff <<= 1;
 			free(vs);
@@ -221,3 +221,30 @@ ccs_create_ordinal_hyperparameter(const char           *name,
 	*hyperparameter_ret = hyperparam;
 	return CCS_SUCCESS;
 }
+
+extern ccs_result_t
+ccs_ordinal_hyperparameter_get_values(ccs_hyperparameter_t  hyperparameter,
+                                      size_t                num_possible_values,
+                                      ccs_datum_t          *possible_values,
+                                      size_t               *num_possible_values_ret) {
+	if (!hyperparameter || !hyperparameter->data)
+		return -CCS_INVALID_OBJECT;
+	if (num_possible_values && !possible_values)
+		return -CCS_INVALID_VALUE;
+	if (!possible_values && !num_possible_values_ret)
+		return -CCS_INVALID_VALUE;
+	_ccs_hyperparameter_ordinal_data_t *d =
+		(_ccs_hyperparameter_ordinal_data_t *)hyperparameter->data;
+	if (possible_values) {
+		if (num_possible_values < d->num_possible_values)
+			return -CCS_INVALID_VALUE;
+		for (size_t i = 0; i < d->num_possible_values; i++)
+			possible_values[i] = d->possible_values[i].d;
+		for (size_t i = num_possible_values; i < d->num_possible_values; i++)
+			possible_values[i] = ccs_none;
+	}
+	if (num_possible_values_ret)
+		*num_possible_values_ret = d->num_possible_values;
+	return CCS_SUCCESS;
+}
+
