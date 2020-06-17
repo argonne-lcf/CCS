@@ -60,4 +60,43 @@ class CConfigSpaceTest < Minitest::Test
     assert_equal( :CCS_OBJECT, d[:type] )
     assert_equal( rng.handle, d[:value][:o] )
   end
+
+  def test_value_affect
+    d = CCS::Datum::from_value(nil)
+    assert_equal( :CCS_NONE, d[:type] )
+    assert_equal( 0, d[:value][:i] )
+    d.value = CCS::Inactive
+    assert_equal( :CCS_INACTIVE, d[:type] )
+    assert_equal( 0, d[:value][:i] )
+    d.value = false
+    assert_equal( :CCS_BOOLEAN, d[:type] )
+    assert_equal( CCS::FALSE, d[:value][:i] )
+    d.value = true
+    assert_equal( :CCS_BOOLEAN, d[:type] )
+    assert_equal( CCS::TRUE, d[:value][:i] )
+    d.value = 15
+    assert_equal( :CCS_INTEGER, d[:type] )
+    assert_equal( 15, d[:value][:i] )
+    d.value = 15.0
+    assert_equal( :CCS_FLOAT, d[:type] )
+    assert_equal( 15.0, d[:value][:f] )
+    rng = CCS::Rng::new
+    d.value = rng
+    assert_equal( :CCS_OBJECT, d[:type] )
+    assert_equal( rng.handle, d[:value][:o] )
+    d.value = nil
+    assert_equal( :CCS_NONE, d[:type] )
+    assert_equal( 0, d[:value][:i] )
+  end
+
+  def test_numeric
+    n = CCS::Numeric::from_value(1)
+    assert_equal( 1, n.value(:CCS_NUM_INTEGER) )
+    n.value = 2
+    assert_equal( 2, n.value(:CCS_NUM_INTEGER) )
+    n.value = 1.0
+    assert_equal( 1.0, n.value(:CCS_NUM_FLOAT) )
+    n = CCS::Numeric::from_value(2.0)
+    assert_equal( 2.0, n.value(:CCS_NUM_FLOAT) )
+  end
 end

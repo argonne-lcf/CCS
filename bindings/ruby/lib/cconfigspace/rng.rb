@@ -45,4 +45,6 @@ module CCS
       ptr.read_ccs_float_t
     end
   end
+
+  DefaultRng = Rng::new
 end

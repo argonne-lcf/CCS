@@ -72,6 +72,19 @@ module CCS
   typedef :pointer, :ccs_evaluation_t
   typedef :pointer, :ccs_tuner_t
   typedef :pointer, :ccs_object_t
+  class MemoryPointer
+    alias read_ccs_rng_t read_pointer
+    alias read_ccs_distribution_t read_pointer
+    alias read_ccs_hyperparameter_t read_pointer
+    alias read_ccs_expression_t read_pointer
+    alias read_ccs_context_t read_pointer
+    alias read_ccs_configuration_space_t read_pointer
+    alias read_ccs_configuration_t read_pointer
+    alias read_ccs_objective_space_t read_pointer
+    alias read_ccs_evaluation_t read_pointer
+    alias read_ccs_tuner_t read_pointer
+    alias read_ccs_object_t read_pointer
+  end
 
   Error = enum FFI::Type::INT32, :ccs_error_t, [
     :CCS_SUCCESS,
@@ -130,6 +143,42 @@ module CCS
   class Numeric < FFI::Union
     layout :f, :ccs_float_t,
            :i, :ccs_int_t
+    def value(type)
+      case type
+      when :CCS_NUM_FLOAT
+        self[:f]
+      when :CCS_NUM_INTEGER
+        self[:i]
+      else
+        raise StandardError, :CCS_INVALID_TYPE
+      end
+    end
+
+    def self.from_value(v)
+      case v
+      when Float
+        n = self::new
+        n[:f] = v
+        n
+      when Integer
+        n = self::new
+        n[:i] = v
+        n
+      else
+        raise StandardError, :CCS_INVALID_TYPE
+      end
+    end
+
+    def value=(v)
+      case v
+      when Float
+        self[:f] = v
+      when Integer
+        self[:i] = v
+      else
+        raise StandardError, :CCS_INVALID_TYPE
+      end
+    end
   end
   typedef Numeric.by_value, :ccs_numeric_t
 
@@ -165,7 +214,7 @@ module CCS
     INACTIVE[:value][:i] = 0
     def value
       case self[:type]
-      when :NONE
+      when :CCS_NONE
         nil
       when :CCS_INTEGER
         self[:value][:i]
@@ -179,7 +228,54 @@ module CCS
         Inactive
       when :CCS_OBJECT
         Object::from_handle(self[:value][:o])
+      else
+        raise StandardError, :CCS_INVALID_TYPE
       end
+    end
+
+    def value=(v, string_store: nil, object_store: nil)
+      @string = nil if defined?(@string) && @string
+      @object = nil if defined?(@object) && @object
+      case v
+      when nil
+        self[:type] = :CCS_NONE
+        self[:value][:i] = 0
+      when true
+        self[:type] = :CCS_BOOLEAN
+        self[:value][:i] = 1
+      when false
+        self[:type] = :CCS_BOOLEAN
+        self[:value][:i] = 0
+      when Inactive
+        self[:type] = :CCS_INACTIVE
+        self[:value][:i] = 0
+      when Float
+        self[:type] = :CCS_FLOAT
+        self[:value][:f] = v
+      when Integer
+        self[:type] = :CCS_INTEGER
+        self[:value][:i] = v
+      when String
+        ptr = MemoryPointer::from_string(v)
+        if string_store
+          string_store.push ptr
+        else
+          @string = ptr
+        end
+        self[:type] = :CCS_STRING
+        self[:value][:s] = ptr
+      when Object
+        if object_store
+          object_store.push v
+        else
+          @object = v
+        end
+        self[:type] = :CCS_OBJECT
+        self[:value][:o] = v.handle
+      else
+        raise StandardError, :CCS_INVALID_TYPE
+      end
+      v
     end
 
     def self.from_value(v)
@@ -206,8 +302,8 @@ module CCS
         d = self::new
         ptr = MemoryPointer::from_string(v)
         d.instance_variable_set(:@string, ptr)
-        d[:type] = :STRING
-        d[:valus][:s] = ptr
+        d[:type] = :CCS_STRING
+        d[:value][:s] = ptr
         d
       when Object
         d = self::new
@@ -216,7 +312,7 @@ module CCS
         d.instance_variable_set(:@object, v)
         d
       else
-        raise StandardError, :CCS_INVALID_VALUE
+        raise StandardError, :CCS_INVALID_TYPE
       end
     end
   end
