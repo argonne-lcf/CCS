@@ -9,8 +9,8 @@ class CConfigSpaceTestRng < Minitest::Test
 
   def test_create
     rng = CCS::Rng::new
-    assert( rng.object_type == :CCS_RNG )
-    assert( rng.refcount == 1 )
+    assert_equal( :CCS_RNG, rng.object_type )
+    assert_equal( 1, rng.refcount )
     rng = nil
     GC.start
   end
