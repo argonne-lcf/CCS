@@ -37,13 +37,6 @@ module CCS
     add_property :dimension, :size_t, :ccs_distribution_get_dimension, memoize: true
     add_property :scale, :ccs_scale_type_t, :ccs_distribution_get_scale_type, memoize: true
 
-    def initialize(handle, retain: false)
-      if !handle
-        raise StandardError, :CCS_INVALID_OBJECT
-      end
-      super
-    end
-
     def self.from_handle(handle)
       ptr = MemoryPointer::new(:ccs_distribution_type_t)
       res = CCS.ccs_distribution_get_type(handle, ptr)

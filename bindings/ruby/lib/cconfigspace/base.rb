@@ -97,6 +97,7 @@ module CCS
     :CCS_INVALID_CONFIGURATION,
     :CCS_INVALID_NAME,
     :CCS_INVALID_CONDITION,
+    :CCS_INVALID_TUNER,
     :CCS_INVALID_GRAPH,
     :CCS_TYPE_NOT_COMPARABLE,
     :CCS_INVALID_BOUNDS,
@@ -388,7 +389,11 @@ module CCS
     add_property :object_type, :ccs_object_type_t, :ccs_object_get_type, memoize: true
     add_property :refcount, :uint32, :ccs_object_get_refcount
     attr_reader :handle
+
     def initialize(handle, retain: false, auto_release: true)
+      if !handle
+        raise StandardError, :CCS_INVALID_OBJECT
+      end
       @handle = handle
       if retain
         res = CCS.ccs_retain_object(handle)

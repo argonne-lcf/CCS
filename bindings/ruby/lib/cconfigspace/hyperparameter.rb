@@ -31,12 +31,6 @@ module CCS
   class Hyperparameter < Object
     add_property :type, :ccs_hyperparameter_type_t, :ccs_hyperparameter_get_type, memoize:true
     add_property :user_data, :pointer, :ccs_hyperparameter_get_user_data, memoize: true
-    def initialize(handle, retain: false)
-      if !handle
-        raise StandardError, :CCS_INVALID_OBJECT
-      end
-      super
-    end
 
     def self.default_name
       "param#{"%03d"%CCS.get_id}"

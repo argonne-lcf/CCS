@@ -52,6 +52,10 @@ module CCS
       end
     end
 
+    def self.from_handle(handle)
+      self::new(handle, retain: true)
+    end
+
     def error=(err)
       res = CCS.ccs_evaluation_set_error(@handle, err)
       CCS.error_check(res)
