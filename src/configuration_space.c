@@ -263,6 +263,7 @@ ccs_configuration_space_add_hyperparameter(ccs_configuration_space_t configurati
 	   (_ccs_hyperparameter_wrapper_t*)utarray_eltptr(hyperparameters, index);
 	HASH_ADD_KEYPTR( hh_name, configuration_space->data->name_hash,
 	                 name, sz_name, p_hyper_wrapper );
+//WARNING: from this point on error handling is flunky....
 	HASH_ADD( hh_handle, configuration_space->data->handle_hash,
 	          hyperparameter, sizeof(ccs_hyperparameter_t), p_hyper_wrapper );
 	DL_APPEND( configuration_space->data->distribution_list, distrib_wrapper );
@@ -448,33 +449,6 @@ ccs_configuration_space_get_hyperparameters(
 	return CCS_SUCCESS;
 }
 
-ccs_result_t
-ccs_configuration_space_get_default_configuration(ccs_configuration_space_t  configuration_space,
-                                                  ccs_configuration_t       *configuration_ret) {
-	if (!configuration_space || !configuration_space->data)
-		return -CCS_INVALID_OBJECT;
-	if (!configuration_ret)
-		return -CCS_INVALID_VALUE;
-	ccs_result_t err;
-	ccs_configuration_t config;
-	err = ccs_create_configuration(configuration_space, 0, NULL, NULL, &config);
-	if (err)
-		return err;
-	UT_array *array = configuration_space->data->hyperparameters;
-	_ccs_hyperparameter_wrapper_t *wrapper = NULL;
-	ccs_datum_t *values = config->data->values;
-	while ( (wrapper = (_ccs_hyperparameter_wrapper_t *)utarray_next(array, wrapper)) ) {
-		err = ccs_hyperparameter_get_default_value(wrapper->hyperparameter,
-		                                           values++);
-		if (unlikely(err)) {
-			ccs_release_object(config);
-			return err;
-		}
-	}
-	*configuration_ret = config;
-	return CCS_SUCCESS;
-}
-
 static ccs_result_t
 _set_actives(ccs_configuration_space_t configuration_space,
              ccs_configuration_t       configuration) {
@@ -508,6 +482,38 @@ _set_actives(ccs_configuration_space_t configuration_space,
 		if (!(result.type == CCS_BOOLEAN && result.value.i == CCS_TRUE))
 			values[*p_index] = ccs_inactive;
 	}
+	return CCS_SUCCESS;
+}
+
+ccs_result_t
+ccs_configuration_space_get_default_configuration(ccs_configuration_space_t  configuration_space,
+                                                  ccs_configuration_t       *configuration_ret) {
+	if (!configuration_space || !configuration_space->data)
+		return -CCS_INVALID_OBJECT;
+	if (!configuration_ret)
+		return -CCS_INVALID_VALUE;
+	ccs_result_t err;
+	ccs_configuration_t config;
+	err = ccs_create_configuration(configuration_space, 0, NULL, NULL, &config);
+	if (err)
+		return err;
+	UT_array *array = configuration_space->data->hyperparameters;
+	_ccs_hyperparameter_wrapper_t *wrapper = NULL;
+	ccs_datum_t *values = config->data->values;
+	while ( (wrapper = (_ccs_hyperparameter_wrapper_t *)utarray_next(array, wrapper)) ) {
+		err = ccs_hyperparameter_get_default_value(wrapper->hyperparameter,
+		                                           values++);
+		if (unlikely(err)) {
+			ccs_release_object(config);
+			return err;
+		}
+	}
+	err = _set_actives(configuration_space, config);
+	if (err) {
+		ccs_release_object(config);
+		return err;
+	}
+	*configuration_ret = config;
 	return CCS_SUCCESS;
 }
 
@@ -1026,12 +1032,30 @@ ccs_configuration_space_add_forbidden_clause(ccs_configuration_space_t configura
 	                                   (ccs_context_t)configuration_space);
 	if (err)
 		return err;
+	ccs_datum_t d;
+	ccs_configuration_t config;
+	err = ccs_configuration_space_get_default_configuration(configuration_space,
+	                                                        &config);
+	if (err)
+		return err;
+
+	err = ccs_expression_eval(expression, (ccs_context_t)configuration_space,
+	                          config->data->values,
+	                          &d);
+	ccs_release_object(config);
+	if (err && err != -CCS_INACTIVE_HYPERPARAMETER) {
+		return err;
+	}
+	if (!err && d.type == CCS_BOOLEAN && d.value.i == CCS_TRUE)
+		return -CCS_INVALID_CONFIGURATION;
 	err = ccs_retain_object(expression);
 	if (err)
 		return err;
 	utarray_push_back(configuration_space->data->forbidden_clauses, &expression);
 	return CCS_SUCCESS;
 }
+#undef  utarray_oom
+#define utarray_oom() exit(-1)
 
 ccs_result_t
 ccs_configuration_space_add_forbidden_clauses(ccs_configuration_space_t  configuration_space,
@@ -1043,19 +1067,13 @@ ccs_configuration_space_add_forbidden_clauses(ccs_configuration_space_t  configu
 		return -CCS_INVALID_VALUE;
 	for (size_t i = 0; i < num_expressions; i++) {
 		ccs_result_t err;
-		err = ccs_expression_check_context(expressions[i],
-		                                   (ccs_context_t)configuration_space);
+		err = ccs_configuration_space_add_forbidden_clause(configuration_space,
+                                                                   expressions[i]);
 		if (err)
 			return err;
-		err = ccs_retain_object(expressions[i]);
-		if (err)
-			return err;
-		utarray_push_back(configuration_space->data->forbidden_clauses, expressions + i);
 	}
 	return CCS_SUCCESS;
 }
-#undef  utarray_oom
-#define utarray_oom() exit(-1)
 
 ccs_result_t
 ccs_configuration_space_get_forbidden_clause(ccs_configuration_space_t  configuration_space,

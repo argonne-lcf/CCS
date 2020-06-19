@@ -6,10 +6,9 @@ extern "C" {
 #endif
 
 extern ccs_result_t
-ccs_context_get_hyperparameter_index(
-		ccs_context_t         context,
-		ccs_hyperparameter_t  hyperparameter,
-		size_t               *index_ret);
+ccs_context_get_hyperparameter_index(ccs_context_t         context,
+                                     ccs_hyperparameter_t  hyperparameter,
+                                     size_t               *index_ret);
 
 #ifdef __cplusplus
 }
