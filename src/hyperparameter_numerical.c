@@ -28,14 +28,14 @@ _ccs_hyperparameter_numerical_check_values(_ccs_hyperparameter_data_t *data,
 			if (values[i].type != CCS_FLOAT)
 				results[i] = CCS_FALSE;
 			else
-				results[i] = ccs_interval_include(interval, CCSF(values[i].value.f));
+				results[i] = _ccs_interval_include(interval, CCSF(values[i].value.f));
 	}
 	else {
 		for(size_t i = 0; i < num_values; i++)
 			if (values[i].type != CCS_INTEGER)
 				results[i] = CCS_FALSE;
 			else
-				results[i] = ccs_interval_include(interval, CCSI(values[i].value.i));
+				results[i] = _ccs_interval_include(interval, CCSI(values[i].value.i));
 	}
 	return CCS_SUCCESS;
 }
@@ -75,11 +75,11 @@ _ccs_hyperparameter_numerical_samples(_ccs_hyperparameter_data_t *data,
 		size_t found = 0;
 		if (type == CCS_NUM_FLOAT) {
 			for(size_t i = 0; i < num_values; i++)
-				if (ccs_interval_include(interval, vs[i]))
+				if (_ccs_interval_include(interval, vs[i]))
 					values[found++].value.f = vs[i].f;
 		} else {
 			for(size_t i = 0; i < num_values; i++)
-				if (ccs_interval_include(interval, vs[i]))
+				if (_ccs_interval_include(interval, vs[i]))
 					values[found++].value.i = vs[i].i;
 		}
 		vs = NULL;
@@ -93,11 +93,11 @@ _ccs_hyperparameter_numerical_samples(_ccs_hyperparameter_data_t *data,
 			                               buff_sz, vs);
 			if (type == CCS_NUM_FLOAT) {
 				for(size_t i = 0; i < buff_sz && found < num_values; i++)
-					if (ccs_interval_include(interval, vs[i]))
+					if (_ccs_interval_include(interval, vs[i]))
 						values[found++].value.f = vs[i].f;
 			} else {
 				for(size_t i = 0; i < buff_sz && found < num_values; i++)
-					if (ccs_interval_include(interval, vs[i]))
+					if (_ccs_interval_include(interval, vs[i]))
 						values[found++].value.i = vs[i].i;
 			}
 			coeff <<= 1;

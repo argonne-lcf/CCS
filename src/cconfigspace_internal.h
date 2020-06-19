@@ -3,6 +3,25 @@
 
 #include <cconfigspace.h>
 
+static inline ccs_bool_t
+_ccs_interval_include(ccs_interval_t *interval, ccs_numeric_t value) {
+	if (interval->type == CCS_NUM_FLOAT) {
+		return ( interval->lower_included ?
+		           interval->lower.f <= value.f :
+		           interval->lower.f < value.f ) &&
+		       ( interval->upper_included ?
+		           interval->upper.f >= value.f :
+		           interval->upper.f > value.f );
+	} else {
+		return ( interval->lower_included ?
+		           interval->lower.i <= value.i :
+		           interval->lower.i < value.i ) &&
+		       ( interval->upper_included ?
+		           interval->upper.i >= value.i :
+		           interval->upper.i > value.i );
+	}
+}
+
 struct _ccs_object_ops_s {
 	ccs_result_t (*del)(ccs_object_t object);
 };
