@@ -18,6 +18,12 @@ class CConfigSpaceTest < Minitest::Test
     assert_nil( d.value )
     d[:type] = :CCS_INACTIVE
     assert_equal( CCS::Inactive, d.value )
+    d[:type] = :CCS_BOOLEAN
+    d[:value][:i] = CCS::FALSE
+    assert_equal( false, d.value )
+    d[:type] = :CCS_BOOLEAN
+    d[:value][:i] = CCS::TRUE
+    assert_equal( true, d.value )
     d[:type] = :CCS_FLOAT
     d[:value][:f] = 15.0
     assert_equal( 15.0, d.value )

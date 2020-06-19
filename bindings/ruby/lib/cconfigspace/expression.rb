@@ -143,7 +143,7 @@ module CCS
     def check_context(context)
       res = CCS.ccs_expression_check_context(@handle, context)
       CCS.error_check(res)
-      true
+      self
     end
 
     def to_s
@@ -186,7 +186,12 @@ module CCS
     end
 
     def to_s
-      value.to_s
+      case value
+      when String
+        value.inspect
+      else
+        value.to_s
+      end
     end
   end
 
@@ -223,7 +228,7 @@ module CCS
       end
     end
 
-    def eval(index, contex: nil, values: nil)
+    def eval(index, context: nil, values: nil)
       if values && context
         count = context.num_hyperparameters
         raise StandardError, :CCS_INVALID_VALUES if values.size != count

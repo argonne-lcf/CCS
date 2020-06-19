@@ -42,4 +42,27 @@ class CConfigSpaceTestExpression < Minitest::Test
     e = CCS::Variable::new(hyperparameter: h)
     assert_equal( h.name , e.to_s )
   end
+
+  def test_list
+    e = CCS::List::new(values: ["foo", 1, 2.0])
+    assert_equal( "[ \"foo\", 1, 2.0 ]", e.to_s )
+    assert_equal( "foo", e.eval(0) )
+    assert_equal( 1, e.eval(1) )
+    assert_equal( 2.0, e.eval(2) )
+    h = CCS::NumericalHyperparameter::new(name: "test")
+    e2 = CCS::Expression::new(type: :CCS_IN, nodes: [h, e])
+    assert_equal( "test # [ \"foo\", 1, 2.0 ]",  e2.to_s )
+  end
+
+  def test_unary
+    e = CCS::Expression::unary(type: :CCS_NOT, node: true)
+    assert_equal( "!true", e.to_s )
+    assert_equal( false, e.eval )
+  end
+
+  def test_binary
+    e = CCS::Expression::binary(type: :CCS_OR, left: true, right: false)
+    assert_equal( "true || false", e.to_s)
+    assert_equal( true, e.eval )
+  end
 end

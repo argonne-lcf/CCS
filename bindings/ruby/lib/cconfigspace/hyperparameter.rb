@@ -97,7 +97,7 @@ module CCS
       count = vals.size
       return [] if count == 0
       values = MemoryPointer::new(:ccs_datum_t, count)
-      vals.each_with_index{ |v, i| Datum::new(values[i]).value = v }
+      vals.each_with_index { |v, i| Datum::new(values[i]).value = v }
       ptr = MemoryPointer::new(:ccs_bool_t, count)
       res = CCS.ccs_hyperparameter_check_values(@handle, count, values, ptr)
       CCS.error_check(res)
@@ -117,6 +117,10 @@ module CCS
       res = CCS.ccs_hyperparameter_samples(@handle, distribution, rng, count, values)
       CCS.error_check(res)
       count.times.collect { |i| Datum::new(values[i]).value }
+    end
+
+    def ==(other)
+      self.class == other.class && @handle == other.handle
     end
   end
 

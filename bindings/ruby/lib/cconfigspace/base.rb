@@ -192,6 +192,13 @@ module CCS
 
   class InactiveClass
     include Singleton
+    def to_s
+      "inactive"
+    end
+
+    def inspect
+      "inactive"
+    end
   end
   Inactive = InactiveClass.instance
 
@@ -221,7 +228,7 @@ module CCS
       when :CCS_FLOAT
         self[:value][:f]
       when :CCS_BOOLEAN
-        self[:value][:i] == :CCS_FALSE ? false : true
+        self[:value][:i] == CCS::FALSE ? false : true
       when :CCS_STRING
         self[:value][:s].read_string
       when :CCS_INACTIVE
