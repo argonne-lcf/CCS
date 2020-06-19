@@ -358,6 +358,7 @@ module CCS
         CCS.ccs_release_object(@handle)
       end
     end
+
     def self.add_property(name, type, accessor, memoize: false)
       src = ""
       src << "def #{name}\n"
@@ -366,6 +367,19 @@ module CCS
       src << "  res = CCS.#{accessor}(@handle, ptr)\n"
       src << "  CCS.error_check(res)\n"
       src << "  ptr.read_#{type}\n"
+      src << "  end\n" if memoize
+      src << "end\n"
+      class_eval src
+    end
+
+    def self.add_handle_property(name, type, accessor, memoize: false)
+      src = ""
+      src << "def #{name}\n"
+      src << "  @#{name} ||= begin\n" if memoize
+      src << "  ptr = MemoryPointer::new(:#{type})\n"
+      src << "  res = CCS.#{accessor}(@handle, ptr)\n"
+      src << "  CCS.error_check(res)\n"
+      src << "  Object::from_handle(ptr.read_#{type})\n"
       src << "  end\n" if memoize
       src << "end\n"
       class_eval src

@@ -27,10 +27,12 @@ class CConfigSpaceTestConfigurationSpace < Minitest::Test
     assert_equal( [h1, h2, h3], cs.hyperparameters )
     assert_equal( h2, cs.hyperparameter_by_name(h2.name) )
     cs.check(cs.default_configuration)
-    cs.check(cs.sample)
+    c = cs.sample
+    cs.check(c)
+    assert_equal( cs.handle, c.configuration_space.handle )
     cs.check_values(cs.sample.values)
     cs.samples(100).each { |c|
-      cs.check(cs.sample)
+      cs.check(c)
     }
   end
 

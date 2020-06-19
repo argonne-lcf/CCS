@@ -99,6 +99,13 @@ module CCS
       ptr.read_size_t
     end
 
+    def hyperparameter_index_by_name(name)
+      ptr = MemoryPointer::new(:size_t)
+      res = CCS.ccs_objective_space_get_hyperparameter_index_by_name(@handle, name, ptr)
+      CCS.error_check(res)
+      ptr.read_size_t
+    end
+
     def hyperparameters
       count = num_hyperparameters
       return [] if count == 0
@@ -115,6 +122,10 @@ module CCS
     end
 
     def add_objectives(expressions, types: nil)
+      if expressions.kind_of? Hash
+        types = expressions.values
+        expressions = expressions.keys
+      end
       count = expressions.length
       return self if count == 0
       if types

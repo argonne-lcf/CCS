@@ -15,6 +15,7 @@ module CCS
     include Comparable
     add_property :user_data, :pointer, :ccs_configuration_get_user_data, memoize: true
     add_property :hash, :ccs_hash_t, :ccs_configuration_hash, memoize: false
+    add_handle_property :configuration_space, :ccs_configuration_space_t, :ccs_configuration_get_configuration_space, memoize: true
 
     def initialize(handle = nil, retain: false, configuration_space: nil,  values: nil, user_data: nil)
       if (handle)
@@ -26,6 +27,8 @@ module CCS
           p_values = MemoryPointer::new(:ccs_datum_t, count)
           values.each_with_index {  |v, i| Datum::new(p_values[i]).value = v }
           values = p_values
+        else
+          count = 0
         end
         ptr = MemoryPointer::new(:ccs_configuration_t)
         res = CCS.ccs_create_configuration(configuration_space, count, values, user_data, ptr)
@@ -38,13 +41,17 @@ module CCS
       self::new(handle, retain: true)
     end
 
-    def configuration_space
-      @configuration_space ||= begin
-        ptr = MemoryPointer::new(:ccs_configuration_space_t)
-        res = CCS.ccs_configuration_get_configuration_space(@handle, ptr)
-        CCS.error_check(res)
-        ConfigurationSpace.from_handle(ptr.read_ccs_configuration_space_t)
+    def set_value(hyperparameter, value)
+      d = Datum.from_value(value)
+      case hyperparameter
+      when String
+        hyperparameter = configuration_space.hyperparameter_index_by_name(hyperparameter)
+      when Hyperparameter
+        hyperparameter = configuration_space.hyperparameter_index(hyperparameter)
       end
+      res = CCS.ccs_configuration_set_value(@handle, hyperparameter, d)
+      CCS.error_check(res)
+      self
     end
 
     def value(hyperparameter)
