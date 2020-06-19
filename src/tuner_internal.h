@@ -38,6 +38,7 @@ struct _ccs_tuner_s {
 };
 
 struct _ccs_tuner_common_data_s {
+	ccs_tuner_type_t           type;
 	const char                *name;
 	void                      *user_data;
 	ccs_configuration_space_t  configuration_space;

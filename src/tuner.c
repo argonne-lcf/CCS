@@ -6,6 +6,17 @@ ccs_tuner_get_ops(ccs_tuner_t tuner) {
 	return (_ccs_tuner_ops_t *)tuner->obj.ops;
 }
 
+ccs_result_t
+ccs_tuner_get_type(ccs_tuner_t       tuner,
+                   ccs_tuner_type_t *type_ret) {
+	if (!tuner || !tuner->data)
+		return -CCS_INVALID_OBJECT;
+	if (!type_ret)
+		return -CCS_INVALID_VALUE;
+	_ccs_tuner_common_data_t *d = (_ccs_tuner_common_data_t *)tuner->data;
+	*type_ret = d->type;
+	return CCS_SUCCESS;
+}
 
 ccs_result_t
 ccs_tuner_get_name(ccs_tuner_t   tuner,
@@ -44,8 +55,8 @@ ccs_tuner_get_configuration_space(ccs_tuner_t                tuner,
 }
 
 ccs_result_t
-ccs_tuner_get_objective_spce(ccs_tuner_t            tuner,
-                             ccs_objective_space_t *objective_space_ret) {
+ccs_tuner_get_objective_space(ccs_tuner_t            tuner,
+                              ccs_objective_space_t *objective_space_ret) {
 	if (!tuner || !tuner->data)
 		return -CCS_INVALID_OBJECT;
 	if (!objective_space_ret)
