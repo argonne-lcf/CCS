@@ -124,8 +124,7 @@ ccs_create_uniform_distribution(ccs_numeric_type_t  data_type,
                                 ccs_scale_type_t    scale_type,
                                 ccs_numeric_t       quantization,
                                 ccs_distribution_t *distribution_ret) {
-	if (!distribution_ret)
-		return -CCS_INVALID_VALUE;
+	CCS_CHECK_PTR(distribution_ret);
 	if (data_type != CCS_NUM_FLOAT && data_type != CCS_NUM_INTEGER)
 		return -CCS_INVALID_TYPE;
 	if (scale_type != CCS_LINEAR && scale_type != CCS_LOGARITHMIC)
@@ -190,9 +189,8 @@ ccs_result_t
 ccs_uniform_distribution_get_parameters(ccs_distribution_t  distribution,
                                         ccs_numeric_t      *lower_ret,
                                         ccs_numeric_t      *upper_ret) {
-	if (!distribution || distribution->obj.type != CCS_DISTRIBUTION)
-		return -CCS_INVALID_OBJECT;
-	if (!distribution->data || ((_ccs_distribution_common_data_t*)distribution->data)->type != CCS_UNIFORM)
+	CCS_CHECK_OBJ(distribution, CCS_DISTRIBUTION);
+	if (((_ccs_distribution_common_data_t*)distribution->data)->type != CCS_UNIFORM)
 		return -CCS_INVALID_OBJECT;
 	if (!lower_ret && !upper_ret)
 		return -CCS_INVALID_VALUE;

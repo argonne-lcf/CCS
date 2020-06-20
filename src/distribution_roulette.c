@@ -6,7 +6,7 @@
 
 struct _ccs_distribution_roulette_data_s {
 	_ccs_distribution_common_data_t  common_data;
-	ccs_int_t                        num_areas;
+	size_t                           num_areas;
 	ccs_float_t                     *areas;
 };
 typedef struct _ccs_distribution_roulette_data_s _ccs_distribution_roulette_data_t;
@@ -40,7 +40,7 @@ _ccs_distribution_roulette_get_bounds(_ccs_distribution_data_t *data,
 
 	interval_ret->type = CCS_NUM_INTEGER;
 	interval_ret->lower = CCSI(INT64_C(0));
-	interval_ret->upper = CCSI(d->num_areas);
+	interval_ret->upper = CCSI((ccs_int_t)(d->num_areas));
 	interval_ret->lower_included = CCS_TRUE;
 	interval_ret->upper_included = CCS_FALSE;
 	return CCS_SUCCESS;
@@ -83,7 +83,9 @@ ccs_result_t
 ccs_create_roulette_distribution(size_t              num_areas,
                                  ccs_float_t        *areas,
                                  ccs_distribution_t *distribution_ret) {
-	if (!distribution_ret || !areas || !num_areas || num_areas > INT64_MAX)
+	CCS_CHECK_ARY(num_areas, areas);
+	CCS_CHECK_PTR(distribution_ret);
+	if (!num_areas || num_areas > INT64_MAX)
 		return -CCS_INVALID_VALUE;
 	ccs_float_t sum = 0.0;
 
@@ -130,12 +132,10 @@ ccs_create_roulette_distribution(size_t              num_areas,
 ccs_result_t
 ccs_roulette_distribution_get_num_areas(ccs_distribution_t  distribution,
                                         size_t             *num_areas_ret) {
-	if (!distribution || distribution->obj.type != CCS_DISTRIBUTION)
+	CCS_CHECK_OBJ(distribution, CCS_DISTRIBUTION);
+	CCS_CHECK_PTR(num_areas_ret);
+	if (((_ccs_distribution_common_data_t*)distribution->data)->type != CCS_ROULETTE)
 		return -CCS_INVALID_OBJECT;
-	if (!distribution->data || ((_ccs_distribution_common_data_t*)distribution->data)->type != CCS_ROULETTE)
-		return -CCS_INVALID_OBJECT;
-	if (!num_areas_ret)
-		return -CCS_INVALID_VALUE;
 	_ccs_distribution_roulette_data_t * data = (_ccs_distribution_roulette_data_t *)distribution->data;
 	*num_areas_ret = data->num_areas;
 	return CCS_SUCCESS;
@@ -146,20 +146,20 @@ ccs_roulette_distribution_get_areas(ccs_distribution_t  distribution,
                                     size_t              num_areas,
                                     ccs_float_t        *areas,
                                     size_t             *num_areas_ret) {
-	if (!distribution || distribution->obj.type != CCS_DISTRIBUTION)
-		return -CCS_INVALID_OBJECT;
-	if (!distribution->data || ((_ccs_distribution_common_data_t*)distribution->data)->type != CCS_ROULETTE)
+	CCS_CHECK_OBJ(distribution, CCS_DISTRIBUTION);
+	CCS_CHECK_ARY(num_areas, areas);
+	if (((_ccs_distribution_common_data_t*)distribution->data)->type != CCS_ROULETTE)
 		return -CCS_INVALID_OBJECT;
 	if (!areas && !num_areas_ret)
 		return -CCS_INVALID_VALUE;
-	if (num_areas && !areas)
-		return -CCS_INVALID_VALUE;
 	_ccs_distribution_roulette_data_t * data = (_ccs_distribution_roulette_data_t *)distribution->data;
 	if (areas) {
-		if ((ccs_int_t)num_areas != data->num_areas)
+		if (num_areas < data->num_areas)
 			return -CCS_INVALID_VALUE;
-		for (size_t i = 0; i < num_areas; i++)
+		for (size_t i = 0; i < data->num_areas; i++)
 			areas[i] = data->areas[i+1] - data->areas[i];
+		for (size_t i = data->num_areas; i < num_areas; i++)
+			areas[i] = 0.0;
 	}
 	if (num_areas_ret)
 		*num_areas_ret = data->num_areas;

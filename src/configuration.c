@@ -24,12 +24,8 @@ ccs_create_configuration(ccs_configuration_space_t configuration_space,
                          ccs_datum_t              *values,
                          void                     *user_data,
                          ccs_configuration_t      *configuration_ret) {
-	if (!configuration_ret)
-		return -CCS_INVALID_VALUE;
-	if (num_values && !values)
-		return -CCS_INVALID_VALUE;
-	if (!num_values && values)
-		return -CCS_INVALID_VALUE;
+	CCS_CHECK_PTR(configuration_ret);
+	CCS_CHECK_ARY(num_values, values);
 	ccs_result_t err;
 	size_t num;
 	err = ccs_configuration_space_get_num_hyperparameters(configuration_space, &num);
@@ -63,10 +59,8 @@ ccs_create_configuration(ccs_configuration_space_t configuration_space,
 ccs_result_t
 ccs_configuration_get_configuration_space(ccs_configuration_t        configuration,
                                           ccs_configuration_space_t *configuration_space_ret) {
-	if (!configuration || !configuration->data)
-		return -CCS_INVALID_OBJECT;
-	if (!configuration_space_ret)
-		return -CCS_INVALID_VALUE;
+	CCS_CHECK_OBJ(configuration, CCS_CONFIGURATION);
+	CCS_CHECK_PTR(configuration_space_ret);
 	*configuration_space_ret = configuration->data->configuration_space;
 	return CCS_SUCCESS;
 }
@@ -74,10 +68,8 @@ ccs_configuration_get_configuration_space(ccs_configuration_t        configurati
 ccs_result_t
 ccs_configuration_get_user_data(ccs_configuration_t   configuration,
                                 void                **user_data_ret) {
-	if (!configuration || !configuration->data)
-		return -CCS_INVALID_OBJECT;
-	if (!user_data_ret)
-		return -CCS_INVALID_VALUE;
+	CCS_CHECK_OBJ(configuration, CCS_CONFIGURATION);
+	CCS_CHECK_PTR(user_data_ret);
 	*user_data_ret = configuration->data->user_data;
 	return CCS_SUCCESS;
 }
@@ -86,10 +78,8 @@ ccs_result_t
 ccs_configuration_get_value(ccs_configuration_t  configuration,
                             size_t               index,
                             ccs_datum_t         *value_ret) {
-	if (!configuration || !configuration->data)
-		return -CCS_INVALID_OBJECT;
-	if (!value_ret)
-		return -CCS_INVALID_VALUE;
+	CCS_CHECK_OBJ(configuration, CCS_CONFIGURATION);
+	CCS_CHECK_PTR(value_ret);
 	if (index >= configuration->data->num_values)
 		return -CCS_OUT_OF_BOUNDS;
 	*value_ret = configuration->data->values[index];
@@ -100,8 +90,7 @@ ccs_result_t
 ccs_configuration_set_value(ccs_configuration_t configuration,
                             size_t              index,
                             ccs_datum_t         value) {
-	if (!configuration || !configuration->data)
-		return -CCS_INVALID_OBJECT;
+	CCS_CHECK_OBJ(configuration, CCS_CONFIGURATION);
 	if (index >= configuration->data->num_values)
 		return -CCS_OUT_OF_BOUNDS;
 	configuration->data->values[index] = value;
@@ -113,13 +102,9 @@ ccs_configuration_get_values(ccs_configuration_t  configuration,
                              size_t               num_values,
                              ccs_datum_t         *values,
                              size_t              *num_values_ret) {
-	if (!configuration || !configuration->data)
-		return -CCS_INVALID_OBJECT;
+	CCS_CHECK_OBJ(configuration, CCS_CONFIGURATION);
+	CCS_CHECK_ARY(num_values, values);
 	if (!num_values_ret && !values)
-		return -CCS_INVALID_VALUE;
-	if (num_values && !values)
-		return -CCS_INVALID_VALUE;
-	if (!num_values && values)
 		return -CCS_INVALID_VALUE;
 	size_t num = configuration->data->num_values;
 	if (values) {
@@ -140,10 +125,8 @@ ccs_result_t
 ccs_configuration_get_value_by_name(ccs_configuration_t  configuration,
                                     const char          *name,
                                     ccs_datum_t         *value_ret) {
-	if (!configuration || !configuration->data)
-		return -CCS_INVALID_OBJECT;
-	if (!name)
-		return -CCS_INVALID_VALUE;
+	CCS_CHECK_OBJ(configuration, CCS_CONFIGURATION);
+	CCS_CHECK_PTR(name);
 	size_t index;
 	ccs_result_t err;
 	err = ccs_configuration_space_get_hyperparameter_index_by_name(
@@ -156,8 +139,7 @@ ccs_configuration_get_value_by_name(ccs_configuration_t  configuration,
 
 ccs_result_t
 ccs_configuration_check(ccs_configuration_t configuration) {
-	if (!configuration || !configuration->data)
-		return -CCS_INVALID_OBJECT;
+	CCS_CHECK_OBJ(configuration, CCS_CONFIGURATION);
 	return ccs_configuration_space_check_configuration(
 		configuration->data->configuration_space, configuration);
 }
@@ -165,10 +147,8 @@ ccs_configuration_check(ccs_configuration_t configuration) {
 ccs_result_t
 ccs_configuration_hash(ccs_configuration_t  configuration,
                        ccs_hash_t          *hash_ret) {
-	if (!configuration || !configuration->data)
-		return -CCS_INVALID_OBJECT;
-	if (!hash_ret)
-		return -CCS_INVALID_VALUE;
+	CCS_CHECK_OBJ(configuration, CCS_CONFIGURATION);
+	CCS_CHECK_PTR(hash_ret);
 	_ccs_configuration_data_t *data = configuration->data;
 	ccs_hash_t h, ht;
 	HASH_JEN(&(data->configuration_space), sizeof(data->configuration_space), h);
@@ -186,12 +166,9 @@ ccs_result_t
 ccs_configuration_cmp(ccs_configuration_t  configuration,
                       ccs_configuration_t  other_configuration,
                       int                 *cmp_ret) {
-	if (!configuration || !configuration->data)
-		return -CCS_INVALID_OBJECT;
-	if (!other_configuration || !other_configuration->data)
-		return -CCS_INVALID_OBJECT;
-	if (!cmp_ret)
-		return -CCS_INVALID_VALUE;
+	CCS_CHECK_OBJ(configuration, CCS_CONFIGURATION);
+	CCS_CHECK_OBJ(other_configuration, CCS_CONFIGURATION);
+	CCS_CHECK_PTR(cmp_ret);
 	if (configuration == other_configuration) {
 		*cmp_ret = 0;
 		return CCS_SUCCESS;

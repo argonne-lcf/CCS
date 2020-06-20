@@ -22,6 +22,23 @@ _ccs_interval_include(ccs_interval_t *interval, ccs_numeric_t value) {
 	}
 }
 
+#define CCS_CHECK_OBJ(o, t) do { \
+	if (unlikely(!(o) || \
+	    !((_ccs_object_template_t *)(o))->data || \
+	     ((_ccs_object_template_t *)(o))->obj.type != (t))) \
+		return -CCS_INVALID_OBJECT; \
+} while (0)
+
+#define CCS_CHECK_PTR(p) do { \
+	if (unlikely(!(p))) \
+		return -CCS_INVALID_VALUE; \
+} while (0)
+
+#define CCS_CHECK_ARY(c, a) do { \
+	if (unlikely((c > 0) && !(a))) \
+		return -CCS_INVALID_VALUE; \
+} while (0)
+
 struct _ccs_object_ops_s {
 	ccs_result_t (*del)(ccs_object_t object);
 };
@@ -35,6 +52,12 @@ struct _ccs_object_internal_s {
 };
 
 typedef struct _ccs_object_internal_s _ccs_object_internal_t;
+
+struct _ccs_object_template_s {
+	_ccs_object_internal_t  obj;
+	void                   *data;
+};
+typedef struct _ccs_object_template_s _ccs_object_template_t;
 
 static inline __attribute__((always_inline)) void
 _ccs_object_init(_ccs_object_internal_t *o,

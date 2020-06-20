@@ -47,8 +47,7 @@ ccs_object_get_type(ccs_object_t       object,
 	_ccs_object_internal_t *obj = (_ccs_object_internal_t *)object;
 	if (!obj)
 		return -CCS_INVALID_OBJECT;
-	if (!type_ret)
-		return -CCS_INVALID_VALUE;
+	CCS_CHECK_PTR(type_ret);
 	*type_ret = obj->type;
 	return CCS_SUCCESS;
 }
@@ -59,8 +58,7 @@ ccs_object_get_refcount(ccs_object_t  object,
 	_ccs_object_internal_t *obj = (_ccs_object_internal_t *)object;
 	if (!obj)
 		return -CCS_INVALID_OBJECT;
-        if (!refcount_ret)
-		return -CCS_INVALID_VALUE;
+	CCS_CHECK_PTR(refcount_ret);
 	*refcount_ret = obj->refcount;
 	return CCS_SUCCESS;
 }

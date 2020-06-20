@@ -69,8 +69,8 @@ ccs_result_t
 ccs_create_objective_space(const char            *name,
                            void                  *user_data,
                            ccs_objective_space_t *objective_space_ret) {
-	if (!name || !objective_space_ret)
-		return -CCS_INVALID_VALUE;
+	CCS_CHECK_PTR(name);
+	CCS_CHECK_PTR(objective_space_ret);
 
 	uintptr_t mem = (uintptr_t)calloc(1, sizeof(struct _ccs_objective_space_s) + sizeof(struct _ccs_objective_space_data_s) + strlen(name) + 1);
 	if (!mem)
@@ -102,8 +102,7 @@ arrays:
 ccs_result_t
 ccs_objective_space_get_name(ccs_objective_space_t   objective_space,
                              const char            **name_ret) {
-	if (!objective_space || !objective_space->data)
-		return -CCS_INVALID_OBJECT;
+	CCS_CHECK_OBJ(objective_space, CCS_OBJECTIVE_SPACE);
 	if (!name_ret)
 		return -CCS_INVALID_VALUE;
 	*name_ret = objective_space->data->name;
@@ -113,8 +112,7 @@ ccs_objective_space_get_name(ccs_objective_space_t   objective_space,
 ccs_result_t
 ccs_objective_space_get_user_data(ccs_objective_space_t   objective_space,
                                   void                  **user_data_ret) {
-	if (!objective_space || !objective_space->data)
-		return -CCS_INVALID_OBJECT;
+	CCS_CHECK_OBJ(objective_space, CCS_OBJECTIVE_SPACE);
 	if (!user_data_ret)
 		return -CCS_INVALID_VALUE;
 	*user_data_ret = objective_space->data->user_data;
@@ -134,8 +132,8 @@ ccs_objective_space_get_user_data(ccs_objective_space_t   objective_space,
 ccs_result_t
 ccs_objective_space_add_hyperparameter(ccs_objective_space_t objective_space,
                                        ccs_hyperparameter_t  hyperparameter) {
-	if (!objective_space || !objective_space->data || !hyperparameter)
-		return -CCS_INVALID_OBJECT;
+	CCS_CHECK_OBJ(objective_space, CCS_OBJECTIVE_SPACE);
+	CCS_CHECK_OBJ(hyperparameter, CCS_HYPERPARAMETER);
 	ccs_result_t err;
 	const char *name;
 	size_t sz_name;
@@ -186,10 +184,8 @@ ccs_result_t
 ccs_objective_space_add_hyperparameters(ccs_objective_space_t  objective_space,
                                         size_t                 num_hyperparameters,
                                         ccs_hyperparameter_t  *hyperparameters) {
-	if (!objective_space)
-		return -CCS_INVALID_OBJECT;
-	if (num_hyperparameters > 0 && !hyperparameters)
-		return -CCS_INVALID_VALUE;
+	CCS_CHECK_OBJ(objective_space, CCS_OBJECTIVE_SPACE);
+	CCS_CHECK_ARY(num_hyperparameters, hyperparameters);
 	for (size_t i = 0; i < num_hyperparameters; i++) {
 		ccs_result_t err =
 		    ccs_objective_space_add_hyperparameter( objective_space,
@@ -204,10 +200,8 @@ ccs_result_t
 ccs_objective_space_get_num_hyperparameters(
 		ccs_objective_space_t  objective_space,
 		size_t                *num_hyperparameters_ret) {
-	if (!objective_space || !objective_space->data)
-		return -CCS_INVALID_OBJECT;
-	if (!num_hyperparameters_ret)
-		return -CCS_INVALID_VALUE;
+	CCS_CHECK_OBJ(objective_space, CCS_OBJECTIVE_SPACE);
+	CCS_CHECK_PTR(num_hyperparameters_ret);
 	*num_hyperparameters_ret = utarray_len(objective_space->data->hyperparameters);
 	return CCS_SUCCESS;
 }
@@ -216,10 +210,8 @@ ccs_result_t
 ccs_objective_space_get_hyperparameter(ccs_objective_space_t  objective_space,
                                        size_t                 index,
                                        ccs_hyperparameter_t  *hyperparameter_ret) {
-	if (!objective_space || !objective_space->data)
-		return -CCS_INVALID_OBJECT;
-	if (!hyperparameter_ret)
-		return -CCS_INVALID_VALUE;
+	CCS_CHECK_OBJ(objective_space, CCS_OBJECTIVE_SPACE);
+	CCS_CHECK_PTR(hyperparameter_ret);
 	_ccs_hyperparameter_wrapper2_t *wrapper = (_ccs_hyperparameter_wrapper2_t*)
 	    utarray_eltptr(objective_space->data->hyperparameters, (unsigned int)index);
 	if (!wrapper)
@@ -233,10 +225,8 @@ ccs_objective_space_get_hyperparameter_by_name(
 		ccs_objective_space_t  objective_space,
 		const char *           name,
 		ccs_hyperparameter_t  *hyperparameter_ret) {
-	if (!objective_space || !objective_space->data)
-		return -CCS_INVALID_OBJECT;
-	if (!hyperparameter_ret)
-		return -CCS_INVALID_VALUE;
+	CCS_CHECK_OBJ(objective_space, CCS_OBJECTIVE_SPACE);
+	CCS_CHECK_PTR(hyperparameter_ret);
 	_ccs_hyperparameter_wrapper2_t *wrapper;
 	size_t sz_name;
 	sz_name = strlen(name);
@@ -253,10 +243,9 @@ ccs_objective_space_get_hyperparameter_index_by_name(
 		ccs_objective_space_t  objective_space,
 		const char            *name,
 		size_t                *index_ret) {
-	if (!objective_space || !objective_space->data)
-		return -CCS_INVALID_OBJECT;
-	if (!index_ret)
-		return -CCS_INVALID_VALUE;
+	CCS_CHECK_OBJ(objective_space, CCS_OBJECTIVE_SPACE);
+	CCS_CHECK_PTR(name);
+	CCS_CHECK_PTR(index_ret);
 	_ccs_hyperparameter_wrapper2_t *wrapper;
 	size_t sz_name;
 	sz_name = strlen(name);
@@ -273,12 +262,9 @@ ccs_objective_space_get_hyperparameter_index(
 		ccs_objective_space_t  objective_space,
 		ccs_hyperparameter_t   hyperparameter,
 		size_t                *index_ret) {
-	if (!objective_space || !objective_space->data)
-		return -CCS_INVALID_OBJECT;
-	if (!hyperparameter)
-		return -CCS_INVALID_HYPERPARAMETER;
-	if (!index_ret)
-		return -CCS_INVALID_VALUE;
+	CCS_CHECK_OBJ(objective_space, CCS_OBJECTIVE_SPACE);
+	CCS_CHECK_OBJ(hyperparameter, CCS_HYPERPARAMETER);
+	CCS_CHECK_PTR(index_ret);
 	_ccs_hyperparameter_wrapper2_t *wrapper;
 	HASH_FIND(hh_handle, objective_space->data->handle_hash,
 	          &hyperparameter, sizeof(ccs_hyperparameter_t), wrapper);
@@ -293,12 +279,8 @@ ccs_objective_space_get_hyperparameters(ccs_objective_space_t  objective_space,
                                         size_t                 num_hyperparameters,
                                         ccs_hyperparameter_t  *hyperparameters,
                                         size_t                *num_hyperparameters_ret) {
-	if (!objective_space || !objective_space->data)
-		return -CCS_INVALID_OBJECT;
-	if (num_hyperparameters && !hyperparameters)
-		return -CCS_INVALID_VALUE;
-	if (hyperparameters && !num_hyperparameters)
-		return -CCS_INVALID_VALUE;
+	CCS_CHECK_OBJ(objective_space, CCS_OBJECTIVE_SPACE);
+	CCS_CHECK_ARY(num_hyperparameters, hyperparameters);
 	if (!num_hyperparameters_ret && !hyperparameters)
 		return -CCS_INVALID_VALUE;
 	UT_array *array = objective_space->data->hyperparameters;
@@ -326,8 +308,7 @@ ccs_result_t
 ccs_objective_space_add_objective(ccs_objective_space_t objective_space,
                                   ccs_expression_t      expression,
                                   ccs_objective_type_t  type) {
-	if (!objective_space || !objective_space->data)
-		return -CCS_INVALID_OBJECT;
+	CCS_CHECK_OBJ(objective_space, CCS_OBJECTIVE_SPACE);
 	ccs_result_t err;
 	err = ccs_expression_check_context(expression,
 	                                   (ccs_context_t)objective_space);
@@ -348,10 +329,9 @@ ccs_objective_space_add_objectives(ccs_objective_space_t  objective_space,
                                    size_t                 num_objectives,
                                    ccs_expression_t      *expressions,
                                    ccs_objective_type_t  *types) {
-	if (!objective_space || !objective_space->data)
-		return -CCS_INVALID_OBJECT;
-	if (num_objectives && (!expressions || !types))
-		return -CCS_INVALID_VALUE;
+	CCS_CHECK_OBJ(objective_space, CCS_OBJECTIVE_SPACE);
+	CCS_CHECK_ARY(num_objectives, expressions);
+	CCS_CHECK_ARY(num_objectives, types);
 	for (size_t i = 0; i < num_objectives; i++) {
 		ccs_result_t err;
 		err = ccs_expression_check_context(expressions[i],
@@ -376,10 +356,9 @@ ccs_objective_space_get_objective(ccs_objective_space_t  objective_space,
                                   size_t                 index,
                                   ccs_expression_t      *expression_ret,
                                   ccs_objective_type_t  *type_ret) {
-	if (!objective_space || !objective_space->data)
-		return -CCS_INVALID_OBJECT;
-	if (!expression_ret || !type_ret)
-		return -CCS_INVALID_VALUE;
+	CCS_CHECK_OBJ(objective_space, CCS_OBJECTIVE_SPACE);
+	CCS_CHECK_PTR(expression_ret);
+	CCS_CHECK_PTR(type_ret);
 	_ccs_objective_t *p_obj = (_ccs_objective_t*)
 	    utarray_eltptr(objective_space->data->objectives,
 	                   (unsigned int)index);
@@ -396,10 +375,9 @@ ccs_objective_space_get_objectives(ccs_objective_space_t  objective_space,
                                    ccs_expression_t      *expressions,
                                    ccs_objective_type_t  *types,
                                    size_t                *num_objectives_ret) {
-	if (!objective_space || !objective_space->data)
-		return -CCS_INVALID_OBJECT;
-	if (num_objectives && (!expressions || !types))
-		return -CCS_INVALID_VALUE;
+	CCS_CHECK_OBJ(objective_space, CCS_OBJECTIVE_SPACE);
+	CCS_CHECK_ARY(num_objectives, expressions);
+	CCS_CHECK_ARY(num_objectives, types);
 	if (!expressions && !num_objectives_ret)
 		return -CCS_INVALID_VALUE;
 	UT_array *array = objective_space->data->objectives;

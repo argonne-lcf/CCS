@@ -26,12 +26,8 @@ ccs_create_evaluation(ccs_objective_space_t  objective_space,
                       ccs_datum_t           *values,
                       void                  *user_data,
                       ccs_evaluation_t      *evaluation_ret) {
-	if (!evaluation_ret)
-		return -CCS_INVALID_VALUE;
-	if (num_values && !values)
-		return -CCS_INVALID_VALUE;
-	if (!num_values && values)
-		return -CCS_INVALID_VALUE;
+	CCS_CHECK_PTR(evaluation_ret);
+	CCS_CHECK_ARY(num_values, values);
 	ccs_result_t err;
 	size_t num;
 	err = ccs_objective_space_get_num_hyperparameters(objective_space, &num);
@@ -72,10 +68,8 @@ ccs_create_evaluation(ccs_objective_space_t  objective_space,
 ccs_result_t
 ccs_evaluation_get_objective_space(ccs_evaluation_t       evaluation,
                                    ccs_objective_space_t *objective_space_ret) {
-	if (!evaluation || !evaluation->data)
-		return -CCS_INVALID_OBJECT;
-	if (!objective_space_ret)
-		return -CCS_INVALID_VALUE;
+	CCS_CHECK_OBJ(evaluation, CCS_EVALUATION);
+	CCS_CHECK_PTR(objective_space_ret);
 	*objective_space_ret = evaluation->data->objective_space;
 	return CCS_SUCCESS;
 }
@@ -83,10 +77,8 @@ ccs_evaluation_get_objective_space(ccs_evaluation_t       evaluation,
 ccs_result_t
 ccs_evaluation_get_configuration(ccs_evaluation_t     evaluation,
                                  ccs_configuration_t *configuration_ret) {
-	if (!evaluation || !evaluation->data)
-		return -CCS_INVALID_OBJECT;
-	if (!configuration_ret)
-		return -CCS_INVALID_VALUE;
+	CCS_CHECK_OBJ(evaluation, CCS_EVALUATION);
+	CCS_CHECK_PTR(configuration_ret);
 	*configuration_ret = evaluation->data->configuration;
 	return CCS_SUCCESS;
 }
@@ -94,10 +86,8 @@ ccs_evaluation_get_configuration(ccs_evaluation_t     evaluation,
 ccs_result_t
 ccs_evaluation_get_user_data(ccs_evaluation_t   evaluation,
                              void             **user_data_ret) {
-	if (!evaluation || !evaluation->data)
-		return -CCS_INVALID_OBJECT;
-	if (!user_data_ret)
-		return -CCS_INVALID_VALUE;
+	CCS_CHECK_OBJ(evaluation, CCS_EVALUATION);
+	CCS_CHECK_PTR(user_data_ret);
 	*user_data_ret = evaluation->data->user_data;
 	return CCS_SUCCESS;
 }
@@ -105,10 +95,8 @@ ccs_evaluation_get_user_data(ccs_evaluation_t   evaluation,
 ccs_result_t
 ccs_evaluation_get_error(ccs_evaluation_t  evaluation,
                          ccs_result_t     *error_ret) {
-	if (!evaluation || !evaluation->data)
-		return -CCS_INVALID_OBJECT;
-	if (!error_ret)
-		return -CCS_INVALID_VALUE;
+	CCS_CHECK_OBJ(evaluation, CCS_EVALUATION);
+	CCS_CHECK_PTR(error_ret);
 	*error_ret = evaluation->data->error;
 	return CCS_SUCCESS;
 }
@@ -116,8 +104,7 @@ ccs_evaluation_get_error(ccs_evaluation_t  evaluation,
 ccs_result_t
 ccs_evaluation_set_error(ccs_evaluation_t evaluation,
                          ccs_result_t     error) {
-	if (!evaluation || !evaluation->data)
-		return -CCS_INVALID_OBJECT;
+	CCS_CHECK_OBJ(evaluation, CCS_EVALUATION);
 	evaluation->data->error = error;
 	return CCS_SUCCESS;
 }
@@ -126,10 +113,8 @@ ccs_result_t
 ccs_evaluation_get_value(ccs_evaluation_t  evaluation,
                          size_t            index,
                          ccs_datum_t      *value_ret) {
-	if (!evaluation || !evaluation->data)
-		return -CCS_INVALID_OBJECT;
-	if (!value_ret)
-		return -CCS_INVALID_VALUE;
+	CCS_CHECK_OBJ(evaluation, CCS_EVALUATION);
+	CCS_CHECK_PTR(value_ret);
 	if (index >= evaluation->data->num_values)
 		return -CCS_OUT_OF_BOUNDS;
 	*value_ret = evaluation->data->values[index];
@@ -140,8 +125,7 @@ ccs_result_t
 ccs_evaluation_set_value(ccs_evaluation_t evaluation,
                          size_t           index,
                          ccs_datum_t      value) {
-	if (!evaluation || !evaluation->data)
-		return -CCS_INVALID_OBJECT;
+	CCS_CHECK_OBJ(evaluation, CCS_EVALUATION);
 	if (index >= evaluation->data->num_values)
 		return -CCS_OUT_OF_BOUNDS;
 	evaluation->data->values[index] = value;
@@ -153,13 +137,9 @@ ccs_evaluation_get_values(ccs_evaluation_t  evaluation,
                           size_t            num_values,
                           ccs_datum_t      *values,
                           size_t           *num_values_ret) {
-	if (!evaluation || !evaluation->data)
-		return -CCS_INVALID_OBJECT;
+	CCS_CHECK_OBJ(evaluation, CCS_EVALUATION);
+	CCS_CHECK_ARY(num_values, values);
 	if (!num_values_ret && !values)
-		return -CCS_INVALID_VALUE;
-	if (num_values && !values)
-		return -CCS_INVALID_VALUE;
-	if (!num_values && values)
 		return -CCS_INVALID_VALUE;
 	size_t num = evaluation->data->num_values;
 	if (values) {
@@ -180,10 +160,8 @@ ccs_result_t
 ccs_evaluation_get_value_by_name(ccs_evaluation_t  evaluation,
                                  const char       *name,
                                  ccs_datum_t      *value_ret) {
-	if (!evaluation || !evaluation->data)
-		return -CCS_INVALID_OBJECT;
-	if (!name)
-		return -CCS_INVALID_VALUE;
+	CCS_CHECK_OBJ(evaluation, CCS_EVALUATION);
+	CCS_CHECK_PTR(name);
 	size_t index;
 	ccs_result_t err;
 	err = ccs_objective_space_get_hyperparameter_index_by_name(
@@ -198,8 +176,8 @@ ccs_result_t
 ccs_evaluation_get_objective_value(ccs_evaluation_t  evaluation,
                                    size_t            index,
                                    ccs_datum_t      *value_ret) {
-	if (!evaluation || !evaluation->data)
-		return -CCS_INVALID_OBJECT;
+	CCS_CHECK_OBJ(evaluation, CCS_EVALUATION);
+	CCS_CHECK_PTR(value_ret);
 	ccs_expression_t     expression;
 	ccs_objective_type_t type;
 	ccs_result_t err;
@@ -217,10 +195,8 @@ ccs_evaluation_get_objective_values(ccs_evaluation_t  evaluation,
                                     size_t            num_values,
                                     ccs_datum_t      *values,
                                     size_t           *num_values_ret) {
-	if (!evaluation || !evaluation->data)
-		return -CCS_INVALID_OBJECT;
-	if (num_values && !values)
-		return -CCS_INVALID_VALUE;
+	CCS_CHECK_OBJ(evaluation, CCS_EVALUATION);
+	CCS_CHECK_ARY(num_values, values);
 	if (!values && !num_values_ret)
 		return -CCS_INVALID_VALUE;
 	size_t count;
@@ -268,14 +244,13 @@ ccs_result_t
 ccs_evaluation_cmp(ccs_evaluation_t  evaluation,
                    ccs_evaluation_t  other_evaluation,
                    ccs_comparison_t  *result_ret) {
-	if (!evaluation || !evaluation->data || evaluation->data->error)
-		return -CCS_INVALID_OBJECT;
-	if (!other_evaluation || !other_evaluation->data || other_evaluation->data->error)
+	CCS_CHECK_OBJ(evaluation, CCS_EVALUATION);
+	CCS_CHECK_OBJ(other_evaluation, CCS_EVALUATION);
+	CCS_CHECK_PTR(result_ret);
+	if(evaluation->data->error || other_evaluation->data->error)
 		return -CCS_INVALID_OBJECT;
 	if (evaluation->data->objective_space != other_evaluation->data->objective_space)
 		return -CCS_INVALID_OBJECT;
-	if (!result_ret)
-		return -CCS_INVALID_VALUE;
 	size_t count;
 	ccs_result_t err;
 	err = ccs_objective_space_get_objectives(evaluation->data->objective_space,

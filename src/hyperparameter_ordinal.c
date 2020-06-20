@@ -107,10 +107,8 @@ ccs_ordinal_hyperparameter_compare_values(ccs_hyperparameter_t  hyperparameter,
                                           ccs_datum_t           value1,
                                           ccs_datum_t           value2,
                                           ccs_int_t            *comp_ret) {
-	if (unlikely(!hyperparameter || !hyperparameter->data))
-		return -CCS_INVALID_OBJECT;
-	if (unlikely(!comp_ret))
-		return -CCS_INVALID_VALUE;
+	CCS_CHECK_OBJ(hyperparameter, CCS_HYPERPARAMETER);
+	CCS_CHECK_PTR(comp_ret);
 	_ccs_hyperparameter_ordinal_data_t *d = ((_ccs_hyperparameter_ordinal_data_t *)(hyperparameter->data));
 	_ccs_hash_datum_t *p1, *p2;
 	HASH_FIND(hh, d->hash, &value1, sizeof(ccs_datum_t), p1);
@@ -142,13 +140,11 @@ ccs_create_ordinal_hyperparameter(const char           *name,
                                   size_t                default_value_index,
                                   void                 *user_data,
                                   ccs_hyperparameter_t *hyperparameter_ret) {
-	if (!hyperparameter_ret || !name)
-		return -CCS_INVALID_VALUE;
+	CCS_CHECK_PTR(name);
+	CCS_CHECK_PTR(hyperparameter_ret);
+	CCS_CHECK_ARY(num_possible_values, possible_values);
 	if (!num_possible_values ||
-	     num_possible_values > INT64_MAX ||
              num_possible_values <= default_value_index)
-		return -CCS_INVALID_VALUE;
-	if (!possible_values)
 		return -CCS_INVALID_VALUE;
 	size_t size_strs = 0;
 	for(size_t i = 0; i < num_possible_values; i++)
@@ -227,10 +223,8 @@ ccs_ordinal_hyperparameter_get_values(ccs_hyperparameter_t  hyperparameter,
                                       size_t                num_possible_values,
                                       ccs_datum_t          *possible_values,
                                       size_t               *num_possible_values_ret) {
-	if (!hyperparameter || !hyperparameter->data)
-		return -CCS_INVALID_OBJECT;
-	if (num_possible_values && !possible_values)
-		return -CCS_INVALID_VALUE;
+	CCS_CHECK_OBJ(hyperparameter, CCS_HYPERPARAMETER);
+	CCS_CHECK_ARY(num_possible_values, possible_values);
 	if (!possible_values && !num_possible_values_ret)
 		return -CCS_INVALID_VALUE;
 	_ccs_hyperparameter_ordinal_data_t *d =

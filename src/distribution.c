@@ -10,10 +10,8 @@ ccs_distribution_get_ops(ccs_distribution_t distribution) {
 ccs_result_t
 ccs_distribution_get_type(ccs_distribution_t       distribution,
                           ccs_distribution_type_t *type_ret) {
-	if (!distribution || !distribution->data)
-		return -CCS_INVALID_OBJECT;
-	if (!type_ret)
-		return -CCS_INVALID_VALUE;
+	CCS_CHECK_OBJ(distribution, CCS_DISTRIBUTION);
+	CCS_CHECK_PTR(type_ret);
 	*type_ret = ((_ccs_distribution_common_data_t *)(distribution->data))->type;
 	return CCS_SUCCESS;
 }
@@ -21,10 +19,8 @@ ccs_distribution_get_type(ccs_distribution_t       distribution,
 ccs_result_t
 ccs_distribution_get_data_type(ccs_distribution_t       distribution,
                                ccs_numeric_type_t      *data_type_ret) {
-	if (!distribution || !distribution->data)
-		return -CCS_INVALID_OBJECT;
-	if (!data_type_ret)
-		return -CCS_INVALID_VALUE;
+	CCS_CHECK_OBJ(distribution, CCS_DISTRIBUTION);
+	CCS_CHECK_PTR(data_type_ret);
 	*data_type_ret = ((_ccs_distribution_common_data_t *)(distribution->data))->data_type;
 	return CCS_SUCCESS;
 }
@@ -32,10 +28,8 @@ ccs_distribution_get_data_type(ccs_distribution_t       distribution,
 ccs_result_t
 ccs_distribution_get_dimension(ccs_distribution_t  distribution,
                                size_t             *dimension_ret) {
-	if (!distribution || !distribution->data)
-		return -CCS_INVALID_OBJECT;
-	if (!dimension_ret)
-		return -CCS_INVALID_VALUE;
+	CCS_CHECK_OBJ(distribution, CCS_DISTRIBUTION);
+	CCS_CHECK_PTR(dimension_ret);
 	*dimension_ret = 1;
 	return CCS_SUCCESS;
 }
@@ -44,10 +38,8 @@ ccs_distribution_get_dimension(ccs_distribution_t  distribution,
 ccs_result_t
 ccs_distribution_get_scale_type(ccs_distribution_t  distribution,
                                 ccs_scale_type_t   *scale_type_ret) {
-	if (!distribution || !distribution->data)
-		return -CCS_INVALID_OBJECT;
-	if (!scale_type_ret)
-		return -CCS_INVALID_VALUE;
+	CCS_CHECK_OBJ(distribution, CCS_DISTRIBUTION);
+	CCS_CHECK_PTR(scale_type_ret);
 	*scale_type_ret = ((_ccs_distribution_common_data_t *)(distribution->data))->scale_type;
 	return CCS_SUCCESS;
 }
@@ -55,10 +47,8 @@ ccs_distribution_get_scale_type(ccs_distribution_t  distribution,
 ccs_result_t
 ccs_distribution_get_quantization(ccs_distribution_t  distribution,
                                   ccs_numeric_t      *quantization_ret) {
-	if (!distribution || !distribution->data)
-		return -CCS_INVALID_OBJECT;
-	if (!quantization_ret)
-		return -CCS_INVALID_VALUE;
+	CCS_CHECK_OBJ(distribution, CCS_DISTRIBUTION);
+	CCS_CHECK_PTR(quantization_ret);
 	*quantization_ret = ((_ccs_distribution_common_data_t *)(distribution->data))->quantization;
 	return CCS_SUCCESS;
 }
@@ -66,10 +56,8 @@ ccs_distribution_get_quantization(ccs_distribution_t  distribution,
 ccs_result_t
 ccs_distribution_get_bounds(ccs_distribution_t  distribution,
                             ccs_interval_t     *interval_ret) {
-	if (!distribution || !distribution->data)
-		return -CCS_INVALID_OBJECT;
-	if (!interval_ret)
-		return -CCS_INVALID_VALUE;
+	CCS_CHECK_OBJ(distribution, CCS_DISTRIBUTION);
+	CCS_CHECK_PTR(interval_ret);
 	_ccs_distribution_ops_t *ops = ccs_distribution_get_ops(distribution);
 	return ops->get_bounds(distribution->data, interval_ret);
 }
@@ -78,10 +66,11 @@ ccs_result_t
 ccs_distribution_check_oversampling(ccs_distribution_t  distribution,
                                     ccs_interval_t     *interval,
                                     ccs_bool_t         *oversampling_ret) {
+	CCS_CHECK_OBJ(distribution, CCS_DISTRIBUTION);
+	CCS_CHECK_PTR(interval);
+	CCS_CHECK_PTR(oversampling_ret);
 	ccs_result_t err;
 	ccs_interval_t d_interval;
-	if (!interval || !oversampling_ret)
-		return -CCS_INVALID_VALUE;
 
 	err = ccs_distribution_get_bounds(distribution, &d_interval);
 	if (err)
@@ -104,13 +93,11 @@ ccs_distribution_check_oversampling(ccs_distribution_t  distribution,
 ccs_result_t
 ccs_distribution_sample(ccs_distribution_t  distribution,
                         ccs_rng_t           rng,
-                        ccs_numeric_t      *value) {
-	if (!distribution || !distribution->data)
-		return -CCS_INVALID_OBJECT;
-	if (!value)
-		return -CCS_INVALID_VALUE;
+                        ccs_numeric_t      *value_ret) {
+	CCS_CHECK_OBJ(distribution, CCS_DISTRIBUTION);
+	CCS_CHECK_PTR(value_ret);
 	_ccs_distribution_ops_t *ops = ccs_distribution_get_ops(distribution);
-	return ops->samples(distribution->data, rng, 1, value);
+	return ops->samples(distribution->data, rng, 1, value_ret);
 }
 
 ccs_result_t
@@ -118,10 +105,10 @@ ccs_distribution_samples(ccs_distribution_t  distribution,
                          ccs_rng_t           rng,
                          size_t              num_values,
                          ccs_numeric_t      *values) {
-	if (!distribution || !distribution->data)
-		return -CCS_INVALID_OBJECT;
-	if (!num_values || !values)
-		return -CCS_INVALID_VALUE;
+	CCS_CHECK_OBJ(distribution, CCS_DISTRIBUTION);
+	if (!num_values)
+		return CCS_SUCCESS;
+	CCS_CHECK_ARY(num_values, values);
 	_ccs_distribution_ops_t *ops = ccs_distribution_get_ops(distribution);
 	return ops->samples(distribution->data, rng, num_values, values);
 }

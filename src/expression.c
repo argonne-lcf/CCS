@@ -979,8 +979,7 @@ ccs_create_literal(ccs_datum_t       value,
                    ccs_expression_t *expression_ret) {
 	if (value.type < CCS_NONE || value.type > CCS_STRING)
 		return -CCS_INVALID_VALUE;
-	if (!expression_ret)
-		return -CCS_INVALID_VALUE;
+	CCS_CHECK_PTR(expression_ret);
 	size_t size_str = 0;
 	if (value.type == CCS_STRING && value.value.s) {
 		size_str = strlen(value.value.s) + 1;
@@ -1018,10 +1017,8 @@ ccs_create_literal(ccs_datum_t       value,
 ccs_result_t
 ccs_create_variable(ccs_hyperparameter_t  hyperparameter,
                     ccs_expression_t     *expression_ret) {
-	if (!hyperparameter)
-		return -CCS_INVALID_OBJECT;
-	if (!expression_ret)
-		return -CCS_INVALID_VALUE;
+	CCS_CHECK_OBJ(hyperparameter, CCS_HYPERPARAMETER);
+	CCS_CHECK_PTR(expression_ret);
 	ccs_result_t err;
 	uintptr_t mem = (uintptr_t)calloc(1,
 		sizeof(struct _ccs_expression_s) +
@@ -1053,11 +1050,9 @@ ccs_create_expression(ccs_expression_type_t  type,
 	              size_t                 num_nodes,
                       ccs_datum_t           *nodes,
                       ccs_expression_t      *expression_ret) {
+	CCS_CHECK_ARY(num_nodes, nodes);
+	CCS_CHECK_PTR(expression_ret);
 	if (type < CCS_OR || type > CCS_LIST)
-		return -CCS_INVALID_VALUE;
-	if (num_nodes && !nodes)
-		return -CCS_INVALID_VALUE;
-	if (!expression_ret)
 		return -CCS_INVALID_VALUE;
 	int arity = ccs_expression_arity[type];
 	if (arity >= 0 && num_nodes != (size_t)arity)
@@ -1149,22 +1144,18 @@ ccs_result_t
 ccs_expression_eval(ccs_expression_t  expression,
                     ccs_context_t     context,
                     ccs_datum_t      *values,
-                    ccs_datum_t      *result) {
-	if (!expression || !expression->data)
-		return -CCS_INVALID_OBJECT;
-	if (!result)
-		return -CCS_INVALID_VALUE;
+                    ccs_datum_t      *result_ret) {
+	CCS_CHECK_OBJ(expression, CCS_EXPRESSION);
+	CCS_CHECK_PTR(result_ret);
 	_ccs_expression_ops_t *ops = ccs_expression_get_ops(expression);
-	return ops->eval(expression->data, context, values, result);
+	return ops->eval(expression->data, context, values, result_ret);
 }
 
 ccs_result_t
 ccs_expression_get_num_nodes(ccs_expression_t  expression,
                              size_t           *num_nodes_ret) {
-	if (!expression || !expression->data)
-		return -CCS_INVALID_OBJECT;
-	if (!num_nodes_ret)
-		return -CCS_INVALID_VALUE;
+	CCS_CHECK_OBJ(expression, CCS_EXPRESSION);
+	CCS_CHECK_PTR(num_nodes_ret);
 	*num_nodes_ret = expression->data->num_nodes;
 	return CCS_SUCCESS;
 }
@@ -1174,10 +1165,8 @@ ccs_expression_get_nodes(ccs_expression_t  expression,
                          size_t            num_nodes,
                          ccs_expression_t *nodes,
                          size_t           *num_nodes_ret) {
-	if (!expression || !expression->data)
-		return -CCS_INVALID_OBJECT;
-	if (num_nodes && !nodes)
-		return -CCS_INVALID_VALUE;
+	CCS_CHECK_OBJ(expression, CCS_EXPRESSION);
+	CCS_CHECK_ARY(num_nodes, nodes);
 	if (!num_nodes_ret && !nodes)
 		return -CCS_INVALID_VALUE;
 	size_t count = expression->data->num_nodes;
@@ -1201,10 +1190,10 @@ ccs_expression_list_eval_node(ccs_expression_t  expression,
                               ccs_datum_t      *values,
                               size_t            index,
                               ccs_datum_t      *result) {
-	if (!expression || !expression->data)
-		return -CCS_INVALID_OBJECT;
-	if (!result)
-		return -CCS_INVALID_VALUE;
+	CCS_CHECK_OBJ(expression, CCS_EXPRESSION);
+	CCS_CHECK_PTR(result);
+	if (expression->data->type != CCS_LIST)
+		return -CCS_INVALID_EXPRESSION;
 	ccs_result_t err;
 	ccs_datum_t node;
 	if (index >= expression->data->num_nodes)
@@ -1219,10 +1208,8 @@ ccs_expression_list_eval_node(ccs_expression_t  expression,
 ccs_result_t
 ccs_expression_get_type(ccs_expression_t       expression,
                         ccs_expression_type_t *type_ret) {
-	if (!expression || !expression->data)
-		return -CCS_INVALID_OBJECT;
-	if (!type_ret)
-		return -CCS_INVALID_VALUE;
+	CCS_CHECK_OBJ(expression, CCS_EXPRESSION);
+	CCS_CHECK_PTR(type_ret);
 	*type_ret = expression->data->type;
 	return CCS_SUCCESS;
 }
@@ -1230,10 +1217,10 @@ ccs_expression_get_type(ccs_expression_t       expression,
 ccs_result_t
 ccs_literal_get_value(ccs_expression_t  expression,
                       ccs_datum_t      *value_ret) {
-	if (!expression || !expression->data || expression->data->type != CCS_LITERAL)
-		return -CCS_INVALID_OBJECT;
-	if (!value_ret)
-		return -CCS_INVALID_VALUE;
+	CCS_CHECK_OBJ(expression, CCS_EXPRESSION);
+	CCS_CHECK_PTR(value_ret);
+	if (expression->data->type != CCS_LITERAL)
+		return -CCS_INVALID_EXPRESSION;
 	_ccs_expression_literal_data_t *d =
 		(_ccs_expression_literal_data_t *)expression->data;
 	*value_ret = d->value;
@@ -1243,10 +1230,10 @@ ccs_literal_get_value(ccs_expression_t  expression,
 ccs_result_t
 ccs_variable_get_hyperparameter(ccs_expression_t      expression,
                                 ccs_hyperparameter_t *hyperparameter_ret) {
-	if (!expression || !expression->data || expression->data->type != CCS_VARIABLE)
-		return -CCS_INVALID_OBJECT;
-	if (!hyperparameter_ret)
-		return -CCS_INVALID_VALUE;
+	CCS_CHECK_OBJ(expression, CCS_EXPRESSION);
+	CCS_CHECK_PTR(hyperparameter_ret);
+	if (expression->data->type != CCS_VARIABLE)
+		return -CCS_INVALID_EXPRESSION;
 	_ccs_expression_variable_data_t *d =
 		(_ccs_expression_variable_data_t *)expression->data;
 	*hyperparameter_ret = d->hyperparameter;
@@ -1260,8 +1247,7 @@ ccs_variable_get_hyperparameter(ccs_expression_t      expression,
 
 static ccs_result_t _get_hyperparameters(ccs_expression_t  expression,
                                         UT_array         *array) {
-	if (!expression || !expression->data)
-		return -CCS_INVALID_OBJECT;
+	CCS_CHECK_OBJ(expression, CCS_EXPRESSION);
 	ccs_result_t err;
 	if (expression->data->type == CCS_VARIABLE) {
 		_ccs_expression_variable_data_t * d =
@@ -1295,8 +1281,8 @@ ccs_expression_get_hyperparameters(ccs_expression_t      expression,
                                    size_t                num_hyperparameters,
                                    ccs_hyperparameter_t *hyperparameters,
                                    size_t               *num_hyperparameters_ret) {
-	if (num_hyperparameters && !hyperparameters)
-		return -CCS_INVALID_VALUE;
+	CCS_CHECK_OBJ(expression, CCS_EXPRESSION);
+	CCS_CHECK_ARY(num_hyperparameters, hyperparameters);
 	if (!hyperparameters && !num_hyperparameters_ret)
 		return -CCS_INVALID_VALUE;
 	ccs_result_t err;
@@ -1346,6 +1332,8 @@ ccs_expression_get_hyperparameters(ccs_expression_t      expression,
 ccs_result_t
 ccs_expression_check_context(ccs_expression_t expression,
                              ccs_context_t    context) {
+	CCS_CHECK_OBJ(expression, CCS_EXPRESSION);
+	CCS_CHECK_PTR(context);
 	ccs_result_t err;
 	UT_array *array;
 	utarray_new(array, &_hyperparameter_icd);

@@ -177,10 +177,10 @@ ccs_create_random_tuner(const char                *name,
                         ccs_objective_space_t      objective_space,
                         void                      *user_data,
                         ccs_tuner_t               *tuner_ret) {
-	if (!name || !tuner_ret)
-		return -CCS_INVALID_VALUE;
-	if (!configuration_space || !objective_space)
-		return -CCS_INVALID_OBJECT;
+	CCS_CHECK_PTR(name);
+	CCS_CHECK_OBJ(configuration_space, CCS_CONFIGURATION_SPACE);
+	CCS_CHECK_OBJ(objective_space, CCS_OBJECTIVE_SPACE);
+	CCS_CHECK_PTR(tuner_ret);
 
 	uintptr_t mem = (uintptr_t)calloc(1, sizeof(struct _ccs_tuner_s) +
 	                                     sizeof(struct _ccs_random_tuner_data_s) +

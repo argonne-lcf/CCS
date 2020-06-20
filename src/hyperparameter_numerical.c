@@ -139,8 +139,8 @@ ccs_create_numerical_hyperparameter(const char           *name,
                                     ccs_numeric_t         default_value,
                                     void                 *user_data,
                                     ccs_hyperparameter_t *hyperparameter_ret) {
-	if (!hyperparameter_ret || !name)
-		return -CCS_INVALID_VALUE;
+	CCS_CHECK_PTR(name);
+	CCS_CHECK_PTR(hyperparameter_ret);
 	if (data_type != CCS_NUM_FLOAT && data_type != CCS_NUM_INTEGER)
 		return -CCS_INVALID_TYPE;
 	if (data_type == CCS_NUM_INTEGER && (
@@ -196,8 +196,7 @@ ccs_numerical_hyperparameter_get_parameters(ccs_hyperparameter_t  hyperparameter
                                             ccs_numeric_t        *lower_ret,
                                             ccs_numeric_t        *upper_ret,
                                             ccs_numeric_t        *quantization_ret) {
-	if (!hyperparameter || !hyperparameter->data)
-		return -CCS_INVALID_OBJECT;
+	CCS_CHECK_OBJ(hyperparameter, CCS_HYPERPARAMETER);
 	if (!data_type_ret && !lower_ret && !upper_ret && !quantization_ret)
 		return -CCS_INVALID_VALUE;
 	_ccs_hyperparameter_numerical_data_t *d =
