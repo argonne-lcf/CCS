@@ -37,13 +37,4 @@ struct _ccs_tuner_s {
 	_ccs_tuner_data_t      *data;
 };
 
-struct _ccs_tuner_common_data_s {
-	ccs_tuner_type_t           type;
-	const char                *name;
-	void                      *user_data;
-	ccs_configuration_space_t  configuration_space;
-	ccs_objective_space_t      objective_space;
-};
-typedef struct _ccs_tuner_common_data_s _ccs_tuner_common_data_t;
-
 #endif //_TUNER_INTERNAL_H

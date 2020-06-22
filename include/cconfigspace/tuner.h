@@ -6,8 +6,8 @@ extern "C" {
 #endif
 
 enum ccs_tuner_type_e {
-	CCS_RANDOM,
-	CCS_GENERIC,
+	CCS_TUNER_RANDOM,
+	CCS_TUNER_USER_DEFINED,
 	CCS_TUNER_TYPE_MAX,
 	CCS_TUNER_TYPE_32BIT = INT_MAX
 };
@@ -62,6 +62,66 @@ ccs_create_random_tuner(const char                *name,
                         ccs_objective_space_t      objective_space,
                         void                      *user_data,
                         ccs_tuner_t               *tuner_ret);
+
+struct ccs_tuner_common_data_s {
+	ccs_tuner_type_t           type;
+	const char                *name;
+	void                      *user_data;
+	ccs_configuration_space_t  configuration_space;
+	ccs_objective_space_t      objective_space;
+};
+typedef struct ccs_tuner_common_data_s ccs_tuner_common_data_t;
+
+
+
+struct ccs_user_defined_tuner_data_s;
+typedef struct ccs_user_defined_tuner_data_s ccs_user_defined_tuner_data_t;
+
+struct ccs_tuner_vector_s {
+	ccs_result_t (*del)(
+		ccs_user_defined_tuner_data_t *data);
+
+	ccs_result_t (*ask)(
+		ccs_user_defined_tuner_data_t *data,
+		size_t                         num_configurations,
+		ccs_configuration_t           *configurations,
+		size_t                        *num_configurations_ret);
+
+	ccs_result_t (*tell)(
+		ccs_user_defined_tuner_data_t *data,
+		size_t                         num_evaluations,
+		ccs_evaluation_t              *evaluations);
+
+	ccs_result_t (*get_optimums)(
+		ccs_user_defined_tuner_data_t *data,
+		size_t                         num_evaluations,
+		ccs_evaluation_t              *evaluations,
+		size_t                        *num_evaluations_ret);
+
+	ccs_result_t (*get_history)(
+		ccs_user_defined_tuner_data_t *data,
+		size_t                         num_evaluations,
+		ccs_evaluation_t              *evaluations,
+		size_t                        *num_evaluations_ret);
+};
+typedef struct ccs_tuner_vector_s ccs_tuner_vector_t;
+
+struct ccs_user_defined_tuner_data_s {
+	ccs_tuner_common_data_t  common_data;
+	ccs_tuner_vector_t       vector;
+	void                    *tuner_data;
+};
+
+extern ccs_result_t
+ccs_create_user_defined_tuner(const char                *name,
+                              ccs_configuration_space_t  configuration_space,
+                              ccs_objective_space_t      objective_space,
+                              void                      *user_data,
+                              ccs_tuner_vector_t        *vector,
+                              void                      *tuner_data,
+                              ccs_tuner_t               *tuner_ret);
+
+
 #ifdef __cplusplus
 }
 #endif

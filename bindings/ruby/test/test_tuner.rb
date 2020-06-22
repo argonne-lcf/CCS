@@ -22,7 +22,7 @@ class CConfigSpaceTestTuner < Minitest::Test
     os.add_objectives( [e1, e2] )
     t = CCS::RandomTuner::new(name: "tuner", configuration_space: cs, objective_space: os)
     assert_equal( "tuner", t.name )
-    assert_equal( :CCS_RANDOM, t.type )
+    assert_equal( :CCS_TUNER_RANDOM, t.type )
     func = lambda { |(x, y, z)|
       [(x-2)**2, Math.sin(z+y)]
     }

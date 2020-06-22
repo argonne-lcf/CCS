@@ -4,10 +4,10 @@
 #include "utarray.h"
 
 struct _ccs_random_tuner_data_s {
-	_ccs_tuner_common_data_t  common_data;
-	UT_array                 *history;
-	UT_array                 *optimums;
-	UT_array                 *old_optimums;
+	ccs_tuner_common_data_t  common_data;
+	UT_array                *history;
+	UT_array                *optimums;
+	UT_array                *old_optimums;
 };
 typedef struct _ccs_random_tuner_data_s _ccs_random_tuner_data_t;
 
@@ -108,14 +108,14 @@ _ccs_tuner_random_tell(_ccs_tuner_data_t *data,
 }
 
 static ccs_result_t
- _ccs_tuner_random_get_optimums(_ccs_tuner_data_t *data,
-                                size_t             num_evaluations,
-                                ccs_evaluation_t  *evaluations,
-                                size_t            *num_evaluations_ret) {
+_ccs_tuner_random_get_optimums(_ccs_tuner_data_t *data,
+                               size_t             num_evaluations,
+                               ccs_evaluation_t  *evaluations,
+                               size_t            *num_evaluations_ret) {
 	_ccs_random_tuner_data_t *d = (_ccs_random_tuner_data_t *)data;
 	size_t count = utarray_len(d->optimums);
 	if (evaluations) {
-		if (count < num_evaluations)
+		if (num_evaluations < count)
 			return -CCS_INVALID_VALUE;
 		ccs_evaluation_t *eval = NULL;
 		size_t index = 0;
@@ -130,14 +130,14 @@ static ccs_result_t
 }
 
 static ccs_result_t
- _ccs_tuner_random_get_history(_ccs_tuner_data_t *data,
-                               size_t             num_evaluations,
-                               ccs_evaluation_t  *evaluations,
-                               size_t            *num_evaluations_ret) {
+_ccs_tuner_random_get_history(_ccs_tuner_data_t *data,
+                              size_t             num_evaluations,
+                              ccs_evaluation_t  *evaluations,
+                              size_t            *num_evaluations_ret) {
 	_ccs_random_tuner_data_t *d = (_ccs_random_tuner_data_t *)data;
 	size_t count = utarray_len(d->history);
 	if (evaluations) {
-		if (count < num_evaluations)
+		if (num_evaluations < count)
 			return -CCS_INVALID_VALUE;
 		ccs_evaluation_t *eval = NULL;
 		size_t index = 0;
@@ -200,7 +200,7 @@ ccs_create_random_tuner(const char                *name,
 	_ccs_object_init(&(tun->obj), CCS_TUNER, (_ccs_object_ops_t *)&_ccs_tuner_random_ops);
 	tun->data = (struct _ccs_tuner_data_s *)(mem + sizeof(struct _ccs_tuner_s));
 	data = (_ccs_random_tuner_data_t *)tun->data;
-	data->common_data.type = CCS_RANDOM;
+	data->common_data.type = CCS_TUNER_RANDOM;
 	data->common_data.name = (const char *)(mem + sizeof(struct _ccs_tuner_s) +
                                                       sizeof(struct _ccs_random_tuner_data_s));
 	data->common_data.user_data = user_data;
