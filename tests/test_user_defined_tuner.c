@@ -101,7 +101,7 @@ tuner_last_get_history(ccs_user_defined_tuner_data_t *data,
 	return CCS_SUCCESS;
 }
 
-ccs_tuner_vector_t tuner_last_vector = {
+ccs_user_defined_tuner_vector_t tuner_last_vector = {
 	&tuner_last_del,
 	&tuner_last_ask,
 	&tuner_last_tell,

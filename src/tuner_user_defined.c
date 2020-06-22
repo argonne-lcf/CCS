@@ -61,13 +61,13 @@ static _ccs_tuner_ops_t _ccs_tuner_user_defined_ops = {
 };
 
 extern ccs_result_t
-ccs_create_user_defined_tuner(const char                *name,
-                              ccs_configuration_space_t  configuration_space,
-                              ccs_objective_space_t      objective_space,
-                              void                      *user_data,
-                              ccs_tuner_vector_t        *vector,
-                              void                      *tuner_data,
-                              ccs_tuner_t               *tuner_ret) {
+ccs_create_user_defined_tuner(const char                      *name,
+                              ccs_configuration_space_t        configuration_space,
+                              ccs_objective_space_t            objective_space,
+                              void                            *user_data,
+                              ccs_user_defined_tuner_vector_t *vector,
+                              void                            *tuner_data,
+                              ccs_tuner_t                     *tuner_ret) {
 	CCS_CHECK_PTR(name);
 	CCS_CHECK_OBJ(configuration_space, CCS_CONFIGURATION_SPACE);
 	CCS_CHECK_OBJ(objective_space, CCS_OBJECTIVE_SPACE);
