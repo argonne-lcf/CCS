@@ -152,7 +152,7 @@ module CCS
       when :CCS_NUM_INTEGER
         self[:i]
       else
-        raise StandardError, :CCS_INVALID_TYPE
+        raise CCSError, :CCS_INVALID_TYPE
       end
     end
 
@@ -167,7 +167,7 @@ module CCS
         n[:i] = v
         n
       else
-        raise StandardError, :CCS_INVALID_TYPE
+        raise CCSError, :CCS_INVALID_TYPE
       end
     end
 
@@ -178,7 +178,7 @@ module CCS
       when Integer
         self[:i] = v
       else
-        raise StandardError, :CCS_INVALID_TYPE
+        raise CCSError, :CCS_INVALID_TYPE
       end
     end
   end
@@ -238,7 +238,7 @@ module CCS
       when :CCS_OBJECT
         Object::from_handle(self[:value][:o])
       else
-        raise StandardError, :CCS_INVALID_TYPE
+        raise CCSError, :CCS_INVALID_TYPE
       end
     end
 
@@ -282,7 +282,7 @@ module CCS
         self[:type] = :CCS_OBJECT
         self[:value][:o] = v.handle
       else
-        raise StandardError, :CCS_INVALID_TYPE
+        raise CCSError, :CCS_INVALID_TYPE
       end
       v
     end
@@ -321,7 +321,7 @@ module CCS
         d.instance_variable_set(:@object, v)
         d
       else
-        raise StandardError, :CCS_INVALID_TYPE
+        raise CCSError, :CCS_INVALID_TYPE
       end
     end
   end
@@ -338,9 +338,19 @@ module CCS
     alias version ccs_get_version
   end
 
+  class CCSError < StandardError
+    def self.to_native(sym)
+      -Error.to_native(sym, nil)
+    end
+
+    def to_native
+      -Error.to_native(message.to_sym, nil)
+    end
+  end
+
   def self.error_check(result)
     if result < 0
-      raise StandardError, Error.from_native(-result, nil)
+      raise CCSError, Error.from_native(-result, nil)
     end
   end
 
@@ -393,7 +403,7 @@ module CCS
 
     def initialize(handle, retain: false, auto_release: true)
       if !handle
-        raise StandardError, :CCS_INVALID_OBJECT
+        raise CCSError, :CCS_INVALID_OBJECT
       end
       @handle = handle
       if retain
@@ -427,7 +437,7 @@ module CCS
       when :CCS_TUNER
         CCS::Tuner::from_handle(handle)
       else
-        raise StandardError, :CCS_INVALID_OBJECT
+        raise CCSError, :CCS_INVALID_OBJECT
       end
     end
 

@@ -48,7 +48,7 @@ module CCS
       when :CCS_ORDINAL
         OrdinalHyperparameter::new(handle, retain: true)
       else
-        raise StandardError, :CCS_INVALID_HYPERPARAMETER
+        raise CCSError, :CCS_INVALID_HYPERPARAMETER
       end
     end
 
@@ -138,7 +138,7 @@ module CCS
           quantization = Numeric::from_value(quantization.to_i)
           default = Numeric::from_value(default.to_i)
         else
-          raise StandardError, :CCS_INVALID_TYPE
+          raise CCSError, :CCS_INVALID_TYPE
         end
         res = CCS.ccs_create_numerical_hyperparameter(name, data_type, lower, upper, quantization, default, user_data, ptr)
         CCS.error_check(res)

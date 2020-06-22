@@ -77,7 +77,7 @@ module CCS
       count = hyperparameters.size
       return self if count == 0
       if distributions
-        raise StandardError, :CCS_INVALID_VALUE if count != distributions.size
+        raise CCSError, :CCS_INVALID_VALUE if count != distributions.size
         p_dists = MemoryPointer::new(:ccs_distribution_t, count)
         p_dists.write_array_of_pointer(distributions.collect(&:handle))
         distributions = p_dist
@@ -204,7 +204,7 @@ module CCS
 
     def check_values(values)
       count = values.size
-      raise StandardError, :CCS_INVALID_VALUE if count != num_hyperparameters
+      raise CCSError, :CCS_INVALID_VALUE if count != num_hyperparameters
       ptr = MemoryPointer::new(:ccs_datum_t, count)
       values.each_with_index {  |v, i| Datum::new(ptr[i]).value = v }
       res = CCS.ccs_configuration_space_check_configuration_values(@handle, count, ptr)

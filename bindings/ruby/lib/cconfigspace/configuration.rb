@@ -23,7 +23,7 @@ module CCS
       else
         if values
           count = values.size
-          raise StandardError, :CCS_INVALID_VALUE if count == 0
+          raise CCSError, :CCS_INVALID_VALUE if count == 0
           p_values = MemoryPointer::new(:ccs_datum_t, count)
           values.each_with_index {  |v, i| Datum::new(p_values[i]).value = v }
           values = p_values
@@ -64,7 +64,7 @@ module CCS
       when Integer
         res = CCS.ccs_configuration_get_value(@handle, hyperparameter, ptr)
       else
-        raise StandardError, :CCS_INVALID_VALUE
+        raise CCSError, :CCS_INVALID_VALUE
       end
       CCS.error_check(res)
       Datum::new(ptr).value

@@ -49,7 +49,7 @@ module CCS
       when :CCS_ROULETTE
         RouletteDistribution::new(handle, retain: true)
       else
-        raise StandardError, :CCS_INVALID_DISTRIBUTION
+        raise CCSError, :CCS_INVALID_DISTRIBUTION
       end
     end
 

@@ -8,7 +8,7 @@ module CCS
 
     def initialize(*args, type:, lower: nil, upper: nil, lower_included: true, upper_included: false)
       unless [:CCS_NUM_FLOAT, :CCS_NUM_INTEGER].include?(type)
-        raise StandardError, :CCS_INVALID_TYPE
+        raise CCSError, :CCS_INVALID_TYPE
       end
       super(*args)
       self[:type] = type
@@ -41,7 +41,7 @@ module CCS
       when :CCS_NUM_INTEGER
         self[:lower][:i]
       else
-        raise StandardError, :CCS_INVALID_TYPE
+        raise CCSError, :CCS_INVALID_TYPE
       end
     end
 
@@ -52,7 +52,7 @@ module CCS
       when :CCS_NUM_INTEGER
         self[:lower][:i] = v
       else
-        raise StandardError, :CCS_INVALID_TYPE
+        raise CCSError, :CCS_INVALID_TYPE
       end
     end
 
@@ -63,7 +63,7 @@ module CCS
       when :CCS_NUM_INTEGER
         self[:upper][:i]
       else
-        raise StandardError, :CCS_INVALID_TYPE
+        raise CCSError, :CCS_INVALID_TYPE
       end
     end
 
@@ -74,7 +74,7 @@ module CCS
       when :CCS_NUM_INTEGER
         self[:upper][:i] = v
       else
-        raise StandardError, :CCS_INVALID_TYPE
+        raise CCSError, :CCS_INVALID_TYPE
       end
     end
 
@@ -123,7 +123,7 @@ module CCS
       when :CCS_NUM_INTEGER
         n[:i] = v
       else
-        raise StandardError, :CCS_INVALID_TYPE
+        raise CCSError, :CCS_INVALID_TYPE
       end
       res = CCS.ccs_interval_include(self, n)
       res == CCS::FALSE ? false : true

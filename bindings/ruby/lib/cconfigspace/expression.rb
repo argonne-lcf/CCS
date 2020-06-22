@@ -112,7 +112,7 @@ module CCS
     def eval(context: nil, values: nil)
       if values && context
         count = context.num_hyperparameters
-        raise StandardError, :CCS_INVALID_VALUES if values.size != count
+        raise CCSError, :CCS_INVALID_VALUES if values.size != count
         p_values = MemoryPointer::new(:ccs_datum_t, count)
         values.each_with_index{ |v, i| Datum::new(p_values[i]).value = v }
         values = p_values
@@ -231,7 +231,7 @@ module CCS
     def eval(index, context: nil, values: nil)
       if values && context
         count = context.num_hyperparameters
-        raise StandardError, :CCS_INVALID_VALUES if values.size != count
+        raise CCSError, :CCS_INVALID_VALUES if values.size != count
         p_values = MemoryPointer::new(:ccs_datum_t, count)
         values.each_with_index{ |v, i| Datum::new(p_values[i]).value = v }
         values = p_values

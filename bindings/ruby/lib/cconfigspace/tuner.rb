@@ -37,7 +37,7 @@ module CCS
       when :CCS_TUNER_USER_DEFINED
         GenericTuner::new(handle, retain: true)
       else
-        raise StandardError, :CCS_INVALID_TUNER
+        raise CCSError, :CCS_INVALID_TUNER
       end
     end
 

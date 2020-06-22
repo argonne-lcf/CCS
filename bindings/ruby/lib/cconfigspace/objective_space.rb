@@ -129,7 +129,7 @@ module CCS
       count = expressions.length
       return self if count == 0
       if types
-        raise StandardError, :CCS_INVALID_VALUE if types.size != count
+        raise CCSError, :CCS_INVALID_VALUE if types.size != count
       else
         types = [:CCS_MINIMIZE] * count
       end

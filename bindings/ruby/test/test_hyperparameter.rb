@@ -19,7 +19,7 @@ class CConfigSpaceTestHyperparameter < Minitest::Test
     assert_equal( 1, h.compare(3.0, "foo") )
     assert_equal( 1, h.compare(3.0, 2) )
     assert_equal( 0, h.compare(3.0, 3.0) )
-    assert_raises(StandardError, :CCS_INVALID_VALUE) { h.compare(4.0, "foo") }
+    assert_raises(CCS::CCSError, :CCS_INVALID_VALUE) { h.compare(4.0, "foo") }
   end
 
   def test_from_handle_ordinal
