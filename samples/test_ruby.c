@@ -120,9 +120,7 @@ void test() {
 		return;
 	}
 	VALUE tuner;
-	VALUE top_self;
-	top_self = rb_eval_string("self");
-	tuner = rb_funcall(top_self, rb_intern("create_test_tuner"),
+	tuner = rb_funcall(rb_current_receiver(), rb_intern("create_test_tuner"),
 	                   2, ULL2NUM((uintptr_t)cs), ULL2NUM((uintptr_t)os));
 	t = (ccs_tuner_t)NUM2ULL(rb_funcall(rb_funcall(tuner, rb_intern("handle"), 0), rb_intern("to_i"), 0));
 	ccs_retain_object(t);
