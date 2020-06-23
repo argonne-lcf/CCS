@@ -169,7 +169,7 @@ module CCS
         }
         askwrapper = lambda { |data, count, p_configurations, p_count|
           begin
-            configurations, count_ret = ask.call(data, p_configurations.null? ? 0 : count)
+            configurations, count_ret = ask.call(data, p_configurations.null? ? nil : count)
             raise CCSError, :CCS_INVALID_VALUE if !p_configurations.null? && count < count_ret
             if !p_configurations.null?
               configurations.each_with_index { |c, i|

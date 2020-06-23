@@ -51,7 +51,7 @@ class CConfigSpaceTestTuner < Minitest::Test
     optimums = []
     del = lambda { |data| nil }
     ask = lambda { |data, count|
-      if count > 0
+      if count
         cs = CCS::ConfigurationSpace::from_handle(data[:common_data][:configuration_space])
         [cs.samples(count), count]
       else

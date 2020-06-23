@@ -22,6 +22,9 @@ AC_PROG_CC_STDC
 AC_TYPE_SIZE_T
 AC_HEADER_ASSERT
 
+#
+PKG_CHECK_MODULES([RUBY], [ruby >= 2.3])
+
 #check for libraries
 AC_CHECK_LIB([m],[cos])
 AC_CHECK_LIB([gslcblas],[cblas_dgemm])
@@ -36,8 +39,10 @@ AX_VALGRIND_CHECK
 AC_CONFIG_HEADERS([src/config.h])
 
 AC_CONFIG_FILES([Makefile
-		 include/Makefile
-		 src/Makefile
-		 tests/Makefile
-		 cconfigspace.pc])
+		include/Makefile
+		src/Makefile
+		tests/Makefile
+		samples/Makefile
+		cconfigspace.pc])
+AC_CONFIG_LINKS([samples/test_ruby.rb:samples/test_ruby.rb])
 AC_OUTPUT

@@ -3,7 +3,7 @@ AM_COLOR_TESTS = yes
 AM_CFLAGS = -I$(top_srcdir)/include -Wall -Werror -Wpedantic
 AM_LDFLAGS = ../src/libcconfigspace.la
 
-RNG_TESTS = \
+CCONFIGSPACE_TESTS = \
 		test_rng \
 		test_interval \
 		test_uniform_distribution \
@@ -21,11 +21,11 @@ RNG_TESTS = \
 
 # unit tests
 UNIT_TESTS = \
-		 $(RNG_TESTS)
+		 $(CCONFIGSPACE_TESTS)
 
 # all tests
-TST_PROGS = $(UNIT_TESTS)
-check_PROGRAMS = $(TST_PROGS)
-TESTS = $(TST_PROGS)
+TEST_PROGS = $(UNIT_TESTS)
+check_PROGRAMS = $(TEST_PROGS)
+TESTS = $(TEST_PROGS)
 
 @VALGRIND_CHECK_RULES@
