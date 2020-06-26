@@ -9,6 +9,7 @@ enum ccs_hyperparameter_type_e {
 	CCS_NUMERICAL,
 	CCS_CATEGORICAL,
 	CCS_ORDINAL,
+	CCS_DISCRETE,
 	CCS_HYPERPARAMETER_TYPE_MAX,
 	CCS_HYPERPARAMETER_TYPE_FORCE_32BIT = INT_MAX
 };
@@ -66,6 +67,21 @@ ccs_ordinal_hyperparameter_compare_values(ccs_hyperparameter_t  hyperparameter,
                                           ccs_datum_t           value1,
                                           ccs_datum_t           value2,
                                           ccs_int_t            *comp_ret);
+
+/* Ordered collection of numeric values */
+extern ccs_result_t
+ccs_create_discrete_hyperparameter(const char           *name,
+                                   size_t                num_possible_values,
+                                   ccs_datum_t          *possible_values,
+                                   size_t                default_value_index,
+                                   void                 *user_data,
+                                   ccs_hyperparameter_t *hyperparameter_ret);
+
+extern ccs_result_t
+ccs_discrete_hyperparameter_get_values(ccs_hyperparameter_t  hyperparameter,
+                                       size_t                num_possible_values,
+                                       ccs_datum_t          *possible_values,
+                                       size_t               *num_possible_values_ret);
 
 //   Accessors
 

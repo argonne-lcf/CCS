@@ -147,7 +147,7 @@ static _ccs_expression_ops_t _ccs_expr_and_ops = {
 		_ccs_expression_variable_data_t *d = \
 			(_ccs_expression_variable_data_t *)param->data; \
 		check_values(d->hyperparameter, v); \
-	} else if (t == CCS_NUMERICAL) {\
+	} else if (t == CCS_NUMERICAL || t == CCS_DISCRETE) {\
 		if (v.type != CCS_INTEGER && v.type != CCS_FLOAT) \
 			return -CCS_INVALID_VALUE; \
 	} \
