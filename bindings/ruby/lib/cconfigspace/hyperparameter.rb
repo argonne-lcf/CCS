@@ -10,7 +10,8 @@ module CCS
   HyperparameterType = enum FFI::Type::INT32, :ccs_hyperparameter_type_t, [
     :CCS_NUMERICAL,
     :CCS_CATEGORICAL,
-    :CCS_ORDINAL
+    :CCS_ORDINAL,
+    :CCS_DISCRETE
   ]
   class MemoryPointer
     def read_ccs_hyperparameter_type_t
@@ -47,6 +48,8 @@ module CCS
         CategoricalHyperparameter::new(handle, retain: true)
       when :CCS_ORDINAL
         OrdinalHyperparameter::new(handle, retain: true)
+      when :CCS_DISCRETE
+        DiscreteHyperparameter::new(handle, retain: true)
       else
         raise CCSError, :CCS_INVALID_HYPERPARAMETER
       end
@@ -271,6 +274,38 @@ module CCS
         count = ptr.read_size_t
         ptr = MemoryPointer::new(:ccs_datum_t, count)
         res = CCS.ccs_ordinal_hyperparameter_get_values(@handle, count, ptr, nil)
+        CCS.error_check(res)
+        count.times.collect { |i| Datum::new(ptr[i]).value }
+      end
+    end
+  end
+
+  attach_function :ccs_create_discrete_hyperparameter, [:string, :size_t, :pointer, :size_t, :pointer, :pointer],  :ccs_result_t
+  attach_function :ccs_discrete_hyperparameter_get_values, [:ccs_hyperparameter_t, :size_t, :pointer, :pointer], :ccs_result_t
+  class DiscreteHyperparameter < Hyperparameter
+    def initialize(handle = nil, retain: false, name: Hyperparameter.default_name, values: [], default_index: 0, user_data: nil)
+      if handle
+        super(handle, retain: retain)
+      else
+        count = values.size
+        return [] if count == 0
+        vals = MemoryPointer::new(:ccs_datum_t, count)
+        values.each_with_index{ |v, i| Datum::new(vals[i]).value = v }
+        ptr = MemoryPointer::new(:ccs_hyperparameter_t)
+        res = CCS.ccs_create_discrete_hyperparameter(name, count, vals, default_index, user_data, ptr)
+        CCS.error_check(res)
+        super(ptr.read_ccs_hyperparameter_t, retain: false)
+      end
+    end
+
+    def values
+      @values ||= begin
+        ptr = MemoryPointer::new(:size_t)
+        res = CCS.ccs_discrete_hyperparameter_get_values(@handle, 0, nil, ptr)
+        CCS.error_check(res)
+        count = ptr.read_size_t
+        ptr = MemoryPointer::new(:ccs_datum_t, count)
+        res = CCS.ccs_discrete_hyperparameter_get_values(@handle, count, ptr, nil)
         CCS.error_check(res)
         count.times.collect { |i| Datum::new(ptr[i]).value }
       end

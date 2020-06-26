@@ -7,6 +7,31 @@ class CConfigSpaceTestHyperparameter < Minitest::Test
     CCS.init
   end
 
+  def test_from_handle_discrete
+    values = [0, 1.5, 2, 7.2]
+    h = CCS::DiscreteHyperparameter::new(values: values)
+    h2 = CCS::Object::from_handle(h)
+    assert_equal( h.class, h2.class )
+  end
+
+  def test_discrete
+    values = [0, 1.5, 2, 7.2]
+    h = CCS::DiscreteHyperparameter::new(values: values)
+    assert_equal( :CCS_HYPERPARAMETER, h.object_type )
+    assert_equal( :CCS_DISCRETE, h.type )
+    assert_match( /param/, h.name )
+    assert( h.user_data.null? )
+    assert_equal( 0, h.default_value )
+    values.each { |v| assert( h.check_value(v) ) }
+    refute( h.check_value("foo") )
+    v = h.sample
+    assert( values.include? v )
+    vals = h.samples(100)
+    vals.each { |v|
+      assert( values.include? v )
+    }
+  end
+
   def test_ordinal_compare
     values = ["foo", 2, 3.0]
     h = CCS::OrdinalHyperparameter::new(values: values)
