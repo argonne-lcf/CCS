@@ -250,16 +250,20 @@ ccs_configuration_space_add_hyperparameter(ccs_configuration_space_t configurati
 	hyper_wrapper.children = NULL;
 	utarray_new(hyper_wrapper.parents, &_size_t_icd);
 	utarray_new(hyper_wrapper.children, &_size_t_icd);
+	HASH_CLEAR(hh_name, configuration_space->data->name_hash);
+	HASH_CLEAR(hh_handle, configuration_space->data->handle_hash);
 	utarray_push_back(hyperparameters, &hyper_wrapper);
 	utarray_push_back(configuration_space->data->sorted_indexes, &(hyper_wrapper.index));
 
-	p_hyper_wrapper =
-	   (_ccs_hyperparameter_wrapper_t*)utarray_eltptr(hyperparameters, index);
-	HASH_ADD_KEYPTR( hh_name, configuration_space->data->name_hash,
-	                 name, sz_name, p_hyper_wrapper );
+	p_hyper_wrapper = NULL;
+        // Rehash in case utarray_push_back triggered a memory reallocation
+	while ( (p_hyper_wrapper = (_ccs_hyperparameter_wrapper_t *)utarray_next(hyperparameters, p_hyper_wrapper)) ) {
+		HASH_ADD_KEYPTR( hh_name, configuration_space->data->name_hash,
+		                 p_hyper_wrapper->name, strlen(p_hyper_wrapper->name), p_hyper_wrapper );
 //WARNING: from this point on error handling is flunky....
-	HASH_ADD( hh_handle, configuration_space->data->handle_hash,
-	          hyperparameter, sizeof(ccs_hyperparameter_t), p_hyper_wrapper );
+		HASH_ADD( hh_handle, configuration_space->data->handle_hash,
+		          hyperparameter, sizeof(ccs_hyperparameter_t), p_hyper_wrapper );
+	}
 	DL_APPEND( configuration_space->data->distribution_list, distrib_wrapper );
 
 	return CCS_SUCCESS;
