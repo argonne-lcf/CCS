@@ -441,27 +441,18 @@ _set_actives(ccs_configuration_space_t configuration_space,
 	while ( (p_index = (size_t *)utarray_next(indexes, p_index)) ) {
 		_ccs_hyperparameter_wrapper_t *wrapper = NULL;
 		wrapper = (_ccs_hyperparameter_wrapper_t *)utarray_eltptr(array, *p_index);
-		if (!wrapper->condition) {
-			continue;
-		}
-		UT_array *parents = wrapper->parents;
-		size_t *p_parent = NULL;
-		while ( (p_parent = (size_t*)utarray_next(parents, p_parent)) ) {
-			if (values[*p_parent].type == CCS_INACTIVE) {
-				values[*p_index] = ccs_inactive;
-				break;
-			}
-		}
-		if (values[*p_index].type == CCS_INACTIVE)
+		if (!wrapper->condition)
 			continue;
 		ccs_datum_t result;
 		ccs_result_t err;
 		err = ccs_expression_eval(wrapper->condition,
 		                          (ccs_context_t)configuration_space,
 		                          values, &result);
-		if (err)
-			return err;
-		if (!(result.type == CCS_BOOLEAN && result.value.i == CCS_TRUE))
+		if (err) {
+			if (err != -CCS_INACTIVE_HYPERPARAMETER)
+				return err;
+                        values[*p_index] = ccs_inactive;
+		} else if (!(result.type == CCS_BOOLEAN && result.value.i == CCS_TRUE))
 			values[*p_index] = ccs_inactive;
 	}
 	return CCS_SUCCESS;
@@ -537,26 +528,18 @@ _check_configuration(ccs_configuration_space_t  configuration_space,
 		_ccs_hyperparameter_wrapper_t *wrapper = NULL;
 		wrapper = (_ccs_hyperparameter_wrapper_t *)utarray_eltptr(array, *p_index);
 		if (wrapper->condition) {
-			UT_array *parents = wrapper->parents;
-			size_t *p_parent = NULL;
-			while ( (p_parent = (size_t*)utarray_next(parents, p_parent)) ) {
-				if (values[*p_parent].type == CCS_INACTIVE) {
-					active = CCS_FALSE;
-					break;
-				}
-			}
-			if (active) {
-				ccs_datum_t result;
-				ccs_result_t err;
-				err = ccs_expression_eval(
-					wrapper->condition,
-					(ccs_context_t)configuration_space,
-					values, &result);
-				if (err)
+			ccs_datum_t result;
+			ccs_result_t err;
+			err = ccs_expression_eval(
+				wrapper->condition,
+				(ccs_context_t)configuration_space,
+				values, &result);
+			if (err) {
+				if (err != -CCS_INACTIVE_HYPERPARAMETER)
 					return err;
-				if (!(result.type == CCS_BOOLEAN && result.value.i == CCS_TRUE)) {
-					active = CCS_FALSE;
-				}
+                                active = CCS_FALSE;
+			} else if (!(result.type == CCS_BOOLEAN && result.value.i == CCS_TRUE)) {
+				active = CCS_FALSE;
 			}
 		}
 		if (active != (values[*p_index].type == CCS_INACTIVE ? CCS_FALSE : CCS_TRUE))
