@@ -99,11 +99,44 @@ _ccs_expr_or_eval(_ccs_expression_data_t *data,
                   ccs_datum_t            *result) {
 	ccs_datum_t left;
 	ccs_datum_t right;
-	eval_left_right(data, context, values, left, right, NULL, NULL);
-	if (left.type != CCS_BOOLEAN || right.type != CCS_BOOLEAN)
-		return -CCS_INVALID_VALUE;
+	// Lazy evaluation + avoid inactive branch suppressing a hyper parameter
+	// if the other branch is valid.
+	ccs_result_t errl;
+	ccs_result_t errr;
+        errl = _ccs_expr_node_eval(data->nodes[0], context, values, &left, NULL);
+        if (errl) {
+		if (errl != -CCS_INACTIVE_HYPERPARAMETER)
+			return errl;
+	} else {
+		if (left.type != CCS_BOOLEAN)
+			return -CCS_INVALID_VALUE;
+		if (left.value.i) {
+			result->type = CCS_BOOLEAN;
+			result->value.i = CCS_TRUE;
+			return CCS_SUCCESS;
+		}
+	}
+	errr = _ccs_expr_node_eval(data->nodes[1], context, values, &right, NULL);
+        if (errr) {
+		if (errr != -CCS_INACTIVE_HYPERPARAMETER)
+			return errr;
+	} else {
+		if (right.type != CCS_BOOLEAN)
+			return -CCS_INVALID_VALUE;
+		if (right.value.i) {
+			result->type = CCS_BOOLEAN;
+			result->value.i = CCS_TRUE;
+			return CCS_SUCCESS;
+		}
+	}
+	// Return inactive parameter errors
+	if (errl)
+		return errl;
+	if (errr)
+		return errr;
+
 	result->type = CCS_BOOLEAN;
-	result->value.i = (left.value.i || right.value.i) ? CCS_TRUE : CCS_FALSE;
+	result->value.i = CCS_FALSE;
 	return CCS_SUCCESS;
 }
 
