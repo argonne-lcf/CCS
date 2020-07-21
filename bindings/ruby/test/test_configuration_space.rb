@@ -167,6 +167,8 @@ class CConfigSpaceTestConfigurationSpace < Minitest::Test
       (all_params - active_params).each { |par|
         assert_equal( CCS::Inactive, s.value(par) )
       }
+      refute( s.value('p1') == '#pragma omp #P2' && s.value('p2') == ' ' )
+      refute( s.value('p1') == '#pragma omp #P3' && s.value('p3') == ' ' )
     }
 
   end
