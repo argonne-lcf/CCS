@@ -27,12 +27,27 @@ module CCS
     end
   end
 
+  AssociativityType = enum FFI::Type::INT32, :ccs_associativity_type_t, [
+    :CCS_ASSOCIATIVITY_NONE, 0,
+    :CCS_LEFT_TO_RIGHT,
+    :CCS_RIGHT_TO_LEFT
+  ]
+  class MemoryPointer
+    def read_ccs_associativity_type_t
+      AssociativityType.from_native(read_int32, nil)
+    end
+  end
+
   attach_variable :expression_precedence, :ccs_expression_precedence, FFI::ArrayType::new(find_type(:int), ExpressionType.symbol_map.size)
+  attach_variable :expression_associativity, :ccs_expression_associativity, FFI::ArrayType::new(find_type(:ccs_associativity_type_t), ExpressionType.symbol_map.size)
   attach_variable :expression_symbols, :ccs_expression_symbols, FFI::ArrayType::new(find_type(:string), ExpressionType.symbol_map.size)
   attach_variable :expression_arity, :ccs_expression_arity, FFI::ArrayType::new(find_type(:int), ExpressionType.symbol_map.size)
 
   ExpressionPrecedence = ExpressionType.symbol_map.collect { |k, v|
     [k, expression_precedence[v]]
+  }.to_h
+  ExpressionAssociativity = ExpressionType.symbol_map.collect { |k, v|
+    [k, expression_associativity[v]]
   }.to_h
   ExpressionSymbols = ExpressionType.symbol_map.collect { |k, v|
     p = expression_symbols[v]

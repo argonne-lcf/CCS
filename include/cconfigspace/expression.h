@@ -48,6 +48,18 @@ typedef enum ccs_expression_type_e ccs_expression_type_t;
 // One for each expression type:
 extern const int ccs_expression_precedence[];
 
+enum ccs_associativity_type_e {
+	CCS_ASSOCIATIVITY_TYPE_NONE = 0,
+	CCS_LEFT_TO_RIGHT,
+	CCS_RIGHT_TO_LEFT,
+	CCS_ASSOCIATIVITY_TYPE_MAX,
+	CCS_ASSOCIATIVITY_TYPE_FORCE_32BIT = INT_MAX
+};
+
+typedef enum ccs_associativity_type_e ccs_associativity_type_t;
+
+extern const ccs_associativity_type_t ccs_expression_associativity[];
+
 extern const char *ccs_expression_symbols[];
 
 extern const int ccs_expression_arity[];

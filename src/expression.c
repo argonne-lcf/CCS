@@ -17,6 +17,19 @@ const int ccs_expression_precedence[] = {
 	9, 9
 };
 
+const ccs_associativity_type_t ccs_expression_associativity[] = {
+	CCS_LEFT_TO_RIGHT,
+	CCS_LEFT_TO_RIGHT,
+	CCS_LEFT_TO_RIGHT, CCS_LEFT_TO_RIGHT,
+	CCS_LEFT_TO_RIGHT, CCS_LEFT_TO_RIGHT, CCS_LEFT_TO_RIGHT, CCS_LEFT_TO_RIGHT,
+	CCS_LEFT_TO_RIGHT,
+	CCS_LEFT_TO_RIGHT, CCS_LEFT_TO_RIGHT,
+	CCS_LEFT_TO_RIGHT, CCS_LEFT_TO_RIGHT, CCS_LEFT_TO_RIGHT,
+	CCS_RIGHT_TO_LEFT, CCS_RIGHT_TO_LEFT, CCS_RIGHT_TO_LEFT,
+	CCS_LEFT_TO_RIGHT,
+	CCS_ASSOCIATIVITY_TYPE_NONE, CCS_ASSOCIATIVITY_TYPE_NONE
+};
+
 const char *ccs_expression_symbols[] = {
 	"||",
 	"&&",
