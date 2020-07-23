@@ -14,7 +14,6 @@ enum ccs_expression_type_e {
 	CCS_GREATER,
 	CCS_LESS_OR_EQUAL,
 	CCS_GREATER_OR_EQUAL,
-	CCS_IN,
 	CCS_ADD,
 	CCS_SUBSTRACT,
 	CCS_MULTIPLY,
@@ -23,6 +22,7 @@ enum ccs_expression_type_e {
 	CCS_POSITIVE,
 	CCS_NEGATIVE,
 	CCS_NOT,
+	CCS_IN,
 	CCS_LIST,
 	CCS_LITERAL,
 	CCS_VARIABLE,
@@ -38,10 +38,10 @@ typedef enum ccs_expression_type_e ccs_expression_type_t;
 // 1 : AND
 // 2 : EQUAL, NOT_EQUAL
 // 3 : LESS, GREATER, LESS_OR_EQUAL, GREATER_OR_EQUAL
-// 4 : IN
-// 5 : ADD, SUBSTRACT
-// 6 : MULTIPLY, DIVIDE, MODULO
-// 7 : POSITIVE, NEGATIVE, NOT
+// 4 : ADD, SUBSTRACT
+// 5 : MULTIPLY, DIVIDE, MODULO
+// 6 : POSITIVE, NEGATIVE, NOT
+// 7 : IN
 // max - 1: LIST
 // max : LITERAL, VARIABLE
 

@@ -9,10 +9,10 @@ const int ccs_expression_precedence[] = {
 	1,
 	2, 2,
 	3, 3, 3, 3,
-	4,
-	5, 5,
+	4, 4,
+	5, 5, 5,
 	6, 6, 6,
-	7, 7, 7,
+	7,
 	8,
 	9, 9
 };
@@ -22,10 +22,10 @@ const ccs_associativity_type_t ccs_expression_associativity[] = {
 	CCS_LEFT_TO_RIGHT,
 	CCS_LEFT_TO_RIGHT, CCS_LEFT_TO_RIGHT,
 	CCS_LEFT_TO_RIGHT, CCS_LEFT_TO_RIGHT, CCS_LEFT_TO_RIGHT, CCS_LEFT_TO_RIGHT,
-	CCS_LEFT_TO_RIGHT,
 	CCS_LEFT_TO_RIGHT, CCS_LEFT_TO_RIGHT,
 	CCS_LEFT_TO_RIGHT, CCS_LEFT_TO_RIGHT, CCS_LEFT_TO_RIGHT,
 	CCS_RIGHT_TO_LEFT, CCS_RIGHT_TO_LEFT, CCS_RIGHT_TO_LEFT,
+	CCS_LEFT_TO_RIGHT,
 	CCS_LEFT_TO_RIGHT,
 	CCS_ASSOCIATIVITY_TYPE_NONE, CCS_ASSOCIATIVITY_TYPE_NONE
 };
@@ -35,10 +35,10 @@ const char *ccs_expression_symbols[] = {
 	"&&",
 	"==", "!=",
 	"<", ">", "<=", ">=",
-	"#",
 	"+", "-",
 	"*", "/", "%",
 	"+", "-", "!",
+	"#",
 	NULL,
 	NULL, NULL
 };
@@ -48,10 +48,10 @@ const int ccs_expression_arity[] = {
 	2,
 	2, 2,
 	2, 2, 2, 2,
-	2,
 	2, 2,
 	2, 2, 2,
 	1, 1, 1,
+	2,
 	-1,
 	0, 0
 };
@@ -979,9 +979,6 @@ _ccs_expression_ops_broker(ccs_expression_type_t  expression_type) {
 	case CCS_GREATER_OR_EQUAL:
 		return &_ccs_expr_greater_or_equal_ops;
 		break;
-	case CCS_IN:
-		return &_ccs_expr_in_ops;
-		break;
 	case CCS_ADD:
 		return &_ccs_expr_add_ops;
 		break;
@@ -1005,6 +1002,9 @@ _ccs_expression_ops_broker(ccs_expression_type_t  expression_type) {
 		break;
 	case CCS_NOT:
 		return &_ccs_expr_not_ops;
+		break;
+	case CCS_IN:
+		return &_ccs_expr_in_ops;
 		break;
 	case CCS_LIST:
 		return &_ccs_expr_list_ops;

@@ -8,7 +8,6 @@ module CCS
     :CCS_GREATER,
     :CCS_LESS_OR_EQUAL,
     :CCS_GREATER_OR_EQUAL,
-    :CCS_IN,
     :CCS_ADD,
     :CCS_SUBSTRACT,
     :CCS_MULTIPLY,
@@ -17,6 +16,7 @@ module CCS
     :CCS_POSITIVE,
     :CCS_NEGATIVE,
     :CCS_NOT,
+    :CCS_IN,
     :CCS_LIST,
     :CCS_LITERAL,
     :CCS_VARIABLE
