@@ -127,6 +127,9 @@ module CCS
     end
 
     def set_condition(hyperparameter, expression)
+      if expression.kind_of? String
+        expression = ExpressionParser::new(self).parse(expression)
+      end
       case hyperparameter
       when Hyperparameter
         hyperparameter = hyperparameter_index(hyperparameter);
@@ -163,12 +166,23 @@ module CCS
     end
 
     def add_forbidden_clause(expression)
+      if expression.kind_of? String
+        expression = ExpressionParser::new(self).parse(expression)
+      end
       res = CCS.ccs_configuration_space_add_forbidden_clause(@handle, expression)
       CCS.error_check(res)
       self
     end
 
     def add_forbidden_clauses(expressions)
+      expressions = expressions.collect { |e|
+        p = ExpressionParser::new(self)
+        if e.kind_of? String
+          e = p.parse(e)
+        else
+          e
+        end
+      }
       count = expressions.size
       return self if count == 0
       ptr = MemoryPointer::new(:ccs_expression_t, count)

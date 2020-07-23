@@ -58,6 +58,21 @@ class CConfigSpaceTestConfigurationSpace < Minitest::Test
     assert_equal( e3.handle, forbidden_clauses[0].handle )
   end
 
+  def extract_active_parameters(values)
+    ['p1'] + values.select { |v|
+      v != CCS::Inactive
+    }.collect { |v|
+      m = v.scan(/#P(\d)/)
+      if m
+        m.collect { |vi|
+          "p#{vi.first.to_i}"
+        }
+      else
+        nil
+      end
+    }.compact.flatten
+  end
+
   def test_omp
     p1 = CCS::CategoricalHyperparameter::new(
       name: 'p1',
@@ -149,18 +164,87 @@ class CConfigSpaceTestConfigurationSpace < Minitest::Test
     1000.times {
       s = cs.sample
       s.check
-      active_params = ['p1'] + s.values.select { |v|
-        v != CCS::Inactive
-      }.collect { |v|
-        m = v.scan(/#P(\d)/)
-        if m
-          m.collect { |vi|
-            "p#{vi.first.to_i}"
-          }
-        else
-          nil
-        end
-      }.compact.flatten
+      active_params = extract_active_parameters(s.values)
+      active_params.each { |par|
+        refute_equal( CCS::Inactive, s.value(par) )
+      }
+      (all_params - active_params).each { |par|
+        assert_equal( CCS::Inactive, s.value(par) )
+      }
+      refute( s.value('p1') == '#pragma omp #P2' && s.value('p2') == ' ' )
+      refute( s.value('p1') == '#pragma omp #P3' && s.value('p3') == ' ' )
+    }
+  end
+
+  def test_omp_parse
+    p1 = CCS::CategoricalHyperparameter::new(
+      name: 'p1',
+      values: [
+        ' ',
+        '#pragma omp #P2',
+        '#pragma omp target teams distribute #P2',
+        '#pragma omp target teams distribute #P4',
+        '#pragma omp #P3'])
+    p2 = CCS::CategoricalHyperparameter::new(
+      name: 'p2',
+      values: [
+        ' ',
+        'parallel for #P3',
+        'parallel for #P5',
+        'parallel for #P6'])
+    p3 = CCS::CategoricalHyperparameter::new(
+      name: 'p3',
+      values: [' ', 'simd'])
+    p4 = CCS::CategoricalHyperparameter::new(
+      name: 'p4',
+      values: [
+        ' ',
+        'dist_schedule(static)',
+        'dist_schedule(static, #P8)'])
+    p5 = CCS::CategoricalHyperparameter::new(
+      name: 'p5',
+      values: [
+        ' ',
+        'schedule(#P7,#P8)',
+        'schedule(#P7)'])
+    p6 = CCS::CategoricalHyperparameter::new(
+      name: 'p6',
+      values: [
+        ' ',
+        'numthreads(#P9)'])
+    p7 = CCS::CategoricalHyperparameter::new(
+      name: 'p7',
+      values: [
+        'static',
+        'dynamic'])
+    p8 = CCS::OrdinalHyperparameter::new(
+      name: 'p8',
+      values: ['1', '8', '16'])
+    p9 = CCS::OrdinalHyperparameter::new(
+      name: 'p9',
+      values: ['1', '8', '16'])
+
+    cs = CCS::ConfigurationSpace::new(name: "omp")
+    cs.add_hyperparameters([p1, p2, p3, p4, p5, p6, p7, p8, p9])
+
+    cs.set_condition(p2, "p1 # ['#pragma omp #P2', '#pragma omp target teams distribute #P2']")
+    cs.set_condition(p4, "p1 == '#pragma omp target teams distribute #P4'")
+    cs.set_condition(p3, "p1 == '#pragma omp #P3' || p2 == 'parallel for #P3'")
+    cs.set_condition(p5, "p2 == 'parallel for #P5'")
+    cs.set_condition(p6, "p2 == 'parallel for #P6'")
+    cs.set_condition(p7, "p5 # ['schedule(#P7)', 'schedule(#P7,#P8)']")
+    cs.set_condition(p8, "p4 == 'dist_schedule(static, #P8)' || p5 == 'schedule(#P7,#P8)'")
+    cs.set_condition(p9, "p6 == 'numthreads(#P9)'")
+
+    cs.add_forbidden_clauses(["p1 == '#pragma omp #P2' && p2 == ' '",
+                              "p1 == '#pragma omp #P3' && p3 == ' '"])
+
+    all_params = (1..9).collect { |i| "p#{i}" }
+
+    1000.times {
+      s = cs.sample
+      s.check
+      active_params = extract_active_parameters(s.values)
       active_params.each { |par|
         refute_equal( CCS::Inactive, s.value(par) )
       }

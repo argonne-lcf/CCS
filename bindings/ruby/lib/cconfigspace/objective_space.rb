@@ -116,6 +116,9 @@ module CCS
     end
 
     def add_objective(expression, type: :CCS_MINIMIZE)
+      if expression.kind_of? String
+        expression = ExpressionParser::new(self).parse(expression)
+      end
       res = CCS.ccs_objective_space_add_objective(@handle, expression, type)
       CCS.error_check(res)
       self
@@ -126,6 +129,14 @@ module CCS
         types = expressions.values
         expressions = expressions.keys
       end
+      expressions = expressions.collect { |e|
+        p = ExpressionParser::new(self)
+        if e.kind_of? String
+          e = p.parse(e)
+        else
+          e
+        end
+      }
       count = expressions.length
       return self if count == 0
       if types

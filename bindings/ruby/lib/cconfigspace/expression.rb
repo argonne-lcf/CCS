@@ -50,8 +50,10 @@ module CCS
     [k, expression_associativity[v]]
   }.to_h
   ExpressionSymbols = ExpressionType.symbol_map.collect { |k, v|
-    p = expression_symbols[v]
-    [k, p]
+    [k, expression_symbols[v]]
+  }.to_h
+  ExpressionArity = ExpressionType.symbol_map.collect { |k, v|
+    [k, expression_arity[v]]
   }.to_h
 
   attach_function :ccs_create_binary_expression, [:ccs_expression_type_t, :ccs_datum_t, :ccs_datum_t, :pointer], :ccs_result_t
