@@ -34,5 +34,17 @@ class CConfigSpaceTestExpressionParser < Minitest::Test
     assert( res.kind_of? CCS::Expression )
     assert_equal( 4, res.eval )
   end
+
+  def test_in
+    m = CCS::ExpressionParser.new.method(:parse)
+    exp = "5 # [3.0, 5]"
+    res = m[exp]
+    assert( res.kind_of? CCS::Expression )
+    assert_equal( true, res.eval )
+    exp = "5 # [3.0, 4]"
+    res = m[exp]
+    assert( res.kind_of? CCS::Expression )
+    assert_equal( false, res.eval )
+  end
 end
 

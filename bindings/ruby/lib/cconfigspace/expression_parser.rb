@@ -66,7 +66,7 @@ module CCS
     end
 
     rule(:in_expr) do |r|
-      r[:identifier, "#", :list].as { |v, _, l|
+      r[:value, "#", :list].as { |v, _, l|
         Expression.binary(type: :CCS_IN, left: v, right: l) }
     end
 
