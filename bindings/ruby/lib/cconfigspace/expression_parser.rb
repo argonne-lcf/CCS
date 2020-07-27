@@ -12,6 +12,10 @@ silence_warnings {
 
 undef silence_warnings
 module CCS
+  AssociativityMap = {
+    :CCS_LEFT_TO_RIGHT => :left,
+    :CCS_RIGHT_TO_LEFT => :right
+  }
   class ExpressionParser < Whittle::Parser
     class << self
       attr_accessor :context
@@ -23,13 +27,13 @@ module CCS
       self.class.context = @context
       super
     end
+
     ExpressionSymbols.reverse_each { |k, v|
       next unless v
       next if k == :CCS_POSITIVE || k == :CCS_NEGATIVE
-      associativity = ExpressionAssociativity[k] == :CCS_LEFT_TO_RIGHT ? :left :
-                      ExpressionAssociativity[k] == :CCS_RIGHT_TO_LEFT ? :right : nil
+      associativity = AssociativityMap[ExpressionAssociativity[k]]
       precedence = ExpressionPrecedence[k]
-      eval "rule('#{v}') % :#{associativity} ^ #{precedence}"
+      rule(v) % associativity ^ precedence
     }
 
     rule(:wsp => /\s+/).skip!
@@ -65,11 +69,6 @@ module CCS
       r["[", "]"].as { |_, _| List::new(values: []) }
     end
 
-    rule(:in_expr) do |r|
-      r[:value, "#", :list].as { |v, _, l|
-        Expression.binary(type: :CCS_IN, left: v, right: l) }
-    end
-
     rule(:expr) do |r|
       r["(", :expr, ")"].as { |_, exp, _| exp }
       ExpressionSymbols.reverse_each { |k, v|
@@ -77,12 +76,12 @@ module CCS
         next if v == "#"
         arity = ExpressionArity[k]
         if arity == 1
-          eval "r['#{v}', :expr].as { |_, a| Expression.unary(type: :#{k}, node: a) }"
+          r[v, :expr].as { |_, a| Expression.unary(type: k, node: a) }
         else
-          eval "r[:expr, '#{v}', :expr].as { |a, _, b| Expression.binary(type: :#{k}, left: a, right: b) }"
+          r[:expr, v, :expr].as { |a, _, b| Expression.binary(type: k, left: a, right: b) }
         end
       }
-      r[:in_expr]
+      r[:expr, "#", :list].as { |v, _, l| Expression.binary(type: :CCS_IN, left: v, right: l) }
       r[:value]
     end
 
