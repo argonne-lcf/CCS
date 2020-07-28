@@ -363,7 +363,7 @@ class Object:
     res = ccs_object_get_type(h, ct.byref(t))
     Error.check(res)
     if t.value == ccs_object_type.RNG:
-      from .rng import Rng
       return Rng.from_handle(h)
     else:
       raise Error(ccs_error.INVALID_OBJECT)
+from .rng import Rng
