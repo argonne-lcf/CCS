@@ -5,6 +5,7 @@ module CCS
   attach_function :ccs_rng_get, [:ccs_rng_t, :pointer], :ccs_result_t
   attach_function :ccs_rng_min, [:ccs_rng_t, :pointer], :ccs_result_t
   attach_function :ccs_rng_max, [:ccs_rng_t, :pointer], :ccs_result_t
+  attach_function :ccs_rng_uniform, [:ccs_rng_t, :pointer], :ccs_result_t
 
   class Rng < Object
     add_property :min, :ulong, :ccs_rng_min, memoize: true
@@ -40,7 +41,7 @@ module CCS
 
     def uniform
       ptr = MemoryPointer::new(:ccs_float_t)
-      res = CCS.ccs_rng_get(@handle, ptr)
+      res = CCS.ccs_rng_uniform(@handle, ptr)
       CCS.error_check(res)
       ptr.read_ccs_float_t
     end
