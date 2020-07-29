@@ -133,6 +133,8 @@ module CCS
         p_values = MemoryPointer::new(:ccs_datum_t, count)
         values.each_with_index{ |v, i| Datum::new(p_values[i]).value = v }
         values = p_values
+      elsif values || context
+        raise CCSError, :CCS_INVALID_VALUES
       end
       ptr = MemoryPointer::new(:ccs_datum_t)
       res = CCS.ccs_expression_eval(@handle, context, values, ptr)
@@ -252,6 +254,8 @@ module CCS
         p_values = MemoryPointer::new(:ccs_datum_t, count)
         values.each_with_index{ |v, i| Datum::new(p_values[i]).value = v }
         values = p_values
+      elsif values || context
+        raise CCSError, :CCS_INVALID_VALUES
       end
       ptr = MemoryPointer::new(:ccs_datum_t)
       res = CCS.ccs_expression_list_eval_node(@handle, context, values, index, ptr)
