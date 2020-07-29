@@ -8,3 +8,5 @@ else:
 
 from .base import *
 from .rng import *
+from .interval import *
+from .distribution import *

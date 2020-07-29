@@ -4,11 +4,14 @@ from . import libcconfigspace
 ccs_init = libcconfigspace.ccs_init
 ccs_init.restype = ct.c_int
 
-class Version(ct.Structure):
+class ccs_version(ct.Structure):
   _fields_ = [("revision", ct.c_ushort),
               ("patch",    ct.c_ushort),
               ("minor",    ct.c_ushort),
               ("major",    ct.c_ushort)]
+
+  def __str__(self):
+    return "{}.{}.{}.{}".format(self.major, self.minor, self.patch, self.revision)
 
 # Base types
 ccs_float  = ct.c_double
@@ -32,6 +35,12 @@ ccs_tuner               = ccs_object
 
 ccs_false = 0
 ccs_true = 1
+
+def _ccs_get_function(method, argtypes = [], restype = ccs_result):
+  res = getattr(libcconfigspace, method)
+  res.restype = restype
+  res.argtypes = argtypes
+  return res
 
 # https://www.python-course.eu/python3_metaclasses.php
 class Singleton(type):
@@ -82,11 +91,14 @@ class CEnumerationType(type(ct.c_int)):
 class CEnumeration(ct.c_int, metaclass=CEnumerationType):
   _members_ = {}
   def __init__(self, value):
-    if value in self._reverse_members_:
-        self.name = self._reverse_members_[value]
+    ct.c_int.__init__(self, value)
+
+  @property
+  def name(self):
+    if self.value in self._reverse_members_:
+      return self._reverse_members_[self.value]
     else:
       raise ValueError("No enumeration member with value %r" % value)
-    ct.c_int.__init__(self, value)
 
   @classmethod
   def from_param(cls, param):
@@ -139,10 +151,6 @@ class CEnumerationType64(type(ct.c_longlong)):
 class CEnumeration64(ct.c_longlong, metaclass=CEnumerationType64):
   _members_ = {}
   def __init__(self, value):
-    if value in self._reverse_members_:
-        self._name = self._reverse_members_[value]
-    else:
-      raise ValueError("No enumeration member with value %r" % value)
     ct.c_longlong.__init__(self, value)
 
   def __repr__(self):
@@ -218,9 +226,13 @@ class ccs_numeric_type(CEnumeration64):
     ('NUM_INTEGER', ccs_data_type.INTEGER),
     ('NUM_FLOAT', ccs_data_type.FLOAT) ]
 
-class Numeric(ct.Union):
+class ccs_numeric(ct.Union):
   _fields_ = [('f', ccs_float),
               ('i', ccs_int)]
+
+  def __init__(self, v = 0):
+    super().__init__()
+    self.set_value(v)
 
   def get_value(self, t):
     if t == ccs_numeric_type.NUM_INTEGER:
@@ -238,14 +250,14 @@ class Numeric(ct.Union):
     else:
       raise Error(ccs_error.INVALID_VALUE)
 
-class Value(ct.Union):
+class ccs_value(ct.Union):
   _fields_ = [('f', ccs_float),
               ('i', ccs_int),
               ('s', ct.c_char_p),
               ('o', ccs_object)]
 
-class Datum(ct.Structure):
-  _fields_ = [('_value', Value),
+class ccs_datum(ct.Structure):
+  _fields_ = [('_value', ccs_value),
               ('type', ccs_data_type)]
 
   def __init__(self, v = None):
@@ -312,24 +324,11 @@ class Error(Exception):
     if err < 0:
       raise cls(ccs_error(-err))
 
-ccs_get_version = libcconfigspace.ccs_get_version
-ccs_get_version.restype = Version
-
-ccs_retain_object = libcconfigspace.ccs_retain_object
-ccs_retain_object.restype = ccs_result
-ccs_retain_object.argtypes = [ccs_object]
-
-ccs_release_object = libcconfigspace.ccs_release_object
-ccs_release_object.restype = ccs_result
-ccs_release_object.argtypes = [ccs_object]
-
-ccs_object_get_type = libcconfigspace.ccs_object_get_type
-ccs_object_get_type.restype = ccs_result
-ccs_object_get_type.argtypes = [ccs_object, ct.POINTER(ccs_object_type)]
-
-ccs_object_get_refcount = libcconfigspace.ccs_object_get_refcount
-ccs_object_get_refcount.restype = ccs_result
-ccs_object_get_refcount.argtypes = [ccs_object, ct.POINTER(ct.c_int)]
+ccs_get_version = _ccs_get_function("ccs_get_version", restype = ccs_version)
+ccs_retain_object = _ccs_get_function("ccs_retain_object", [ccs_object])
+ccs_release_object = _ccs_get_function("ccs_release_object", [ccs_object])
+ccs_object_get_type = _ccs_get_function("ccs_object_get_type", [ccs_object, ct.POINTER(ccs_object_type)])
+ccs_object_get_refcount = _ccs_get_function("ccs_object_get_refcount", [ccs_object, ct.POINTER(ct.c_int)])
 
 class Object:
   def __init__(self, handle, retain = False, auto_release = True):
