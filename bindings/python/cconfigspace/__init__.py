@@ -11,3 +11,4 @@ from .rng import *
 from .interval import *
 from .distribution import *
 from .hyperparameter import *
+from .expression import *

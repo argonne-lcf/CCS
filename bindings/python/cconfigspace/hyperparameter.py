@@ -1,6 +1,6 @@
 import ctypes as ct
 from . import libcconfigspace
-from .base import Object, Error, ccs_error, CEnumeration, _ccs_get_function, ccs_hyperparameter, ccs_datum, ccs_distribution, ccs_rng, ccs_int, ccs_data_type, ccs_bool, ccs_numeric_type, ccs_numeric, _ccs_get_id
+from .base import Object, Error, ccs_error, CEnumeration, _ccs_get_function, ccs_hyperparameter, ccs_datum, ccs_datum_fix, ccs_distribution, ccs_rng, ccs_int, ccs_data_type, ccs_bool, ccs_numeric_type, ccs_numeric, _ccs_get_id
 from .rng import ccs_default_rng
 from .distribution import Distribution
 
@@ -11,10 +11,6 @@ class ccs_hyperparameter_type(CEnumeration):
     'ORDINAL',
     'DISCRETE'
   ]
-
-class ccs_datum_fix(ct.Structure):
-  _fields_ = [('value', ccs_int),
-              ('type', ccs_data_type)]
 
 ccs_hyperparameter_get_type = _ccs_get_function("ccs_hyperparameter_get_type", [ccs_hyperparameter, ct.POINTER(ccs_hyperparameter_type)])
 ccs_hyperparameter_get_default_value = _ccs_get_function("ccs_hyperparameter_get_default_value", [ccs_hyperparameter, ct.POINTER(ccs_datum)])
@@ -113,7 +109,7 @@ class Hyperparameter(Object):
   def check_values(self, values):
     sz = len(values)
     v = (ccs_datum * sz)()
-    for i in range(len(values)):
+    for i in range(sz):
       v[i].value = values[i]
     b = (ccs_bool * sz)()
     res = ccs_hyperparameter_check_values(self.handle, sz, v, b)
@@ -242,5 +238,107 @@ class NumericalHyperparameter(Hyperparameter):
     else:
       raise Error(ccs_error.INVALID_VALUE)
     return self._quantization
+
+ccs_create_categorical_hyperparameter = _ccs_get_function("ccs_create_categorical_hyperparameter", [ct.c_char_p, ct.c_size_t, ct.POINTER(ccs_datum), ct.c_size_t, ct.c_void_p, ct.POINTER(ccs_hyperparameter)])
+ccs_categorical_hyperparameter_get_values = _ccs_get_function("ccs_categorical_hyperparameter_get_values", [ccs_hyperparameter, ct.c_size_t, ct.POINTER(ccs_datum), ct.POINTER(ct.c_size_t)])
+
+class CategoricalHyperparameter(Hyperparameter):
+  def __init__(self, handle = None, retain = False, name = None, values = [], default_index = 0, user_data = None):
+    if handle is None:
+      if name is None:
+        name = NumericalHyperparameter.default_name()
+      sz = len(values)
+      handle = ccs_hyperparameter()
+      v = (ccs_datum*sz)()
+      for i in range(sz):
+        v[i].value = values[i]
+      res = ccs_create_categorical_hyperparameter(str.encode(name), sz, v, default_index, user_data, ct.byref(handle))
+      Error.check(res)
+      super().__init__(handle = handle, retain = False)
+    else:
+      super().__init__(handle = handle, retain = retain)
+
+  @property
+  def values(self):
+    sz = ct.c_size_t()
+    res = ccs_categorical_hyperparameter_get_values(self.handle, 0, None, ct.byref(sz))
+    Error.check(res)
+    v = (ccs_datum*sz.value)()
+    res = ccs_categorical_hyperparameter_get_values(self.handle, sz, v, None)
+    Error.check(res)
+    return [x.value for x in v]
+
+ccs_create_ordinal_hyperparameter = _ccs_get_function("ccs_create_ordinal_hyperparameter", [ct.c_char_p, ct.c_size_t, ct.POINTER(ccs_datum), ct.c_size_t, ct.c_void_p, ct.POINTER(ccs_hyperparameter)])
+ccs_ordinal_hyperparameter_compare_values = _ccs_get_function("ccs_ordinal_hyperparameter_compare_values", [ccs_hyperparameter, ccs_datum_fix, ccs_datum_fix, ct.POINTER(ccs_int)])
+ccs_ordinal_hyperparameter_get_values = _ccs_get_function("ccs_ordinal_hyperparameter_get_values", [ccs_hyperparameter, ct.c_size_t, ct.POINTER(ccs_datum), ct.POINTER(ct.c_size_t)])
+
+class OrdinalHyperparameter(Hyperparameter):
+  def __init__(self, handle = None, retain = False, name = None, values = [], default_index = 0, user_data = None):
+    if handle is None:
+      if name is None:
+        name = NumericalHyperparameter.default_name()
+      sz = len(values)
+      handle = ccs_hyperparameter()
+      v = (ccs_datum*sz)()
+      for i in range(sz):
+        v[i].value = values[i]
+      res = ccs_create_ordinal_hyperparameter(str.encode(name), sz, v, default_index, user_data, ct.byref(handle))
+      Error.check(res)
+      super().__init__(handle = handle, retain = False)
+    else:
+      super().__init__(handle = handle, retain = retain)
+
+  @property
+  def values(self):
+    sz = ct.c_size_t()
+    res = ccs_ordinal_hyperparameter_get_values(self.handle, 0, None, ct.byref(sz))
+    Error.check(res)
+    v = (ccs_datum*sz.value)()
+    res = ccs_ordinal_hyperparameter_get_values(self.handle, sz, v, None)
+    Error.check(res)
+    return [x.value for x in v]
+
+  def compare(self, value1, value2):
+    pv1 = ccs_datum(value1)
+    pv2 = ccs_datum(value2)
+    v1 = ccs_datum_fix()
+    v2 = ccs_datum_fix()
+    v1.value = pv1._value.i
+    v1.type = pv1.type
+    v2.value = pv2._value.i
+    v2.type = pv2.type
+    c = ccs_int()
+    res = ccs_ordinal_hyperparameter_compare_values(self.handle, v1, v2, ct.byref(c))
+    Error.check(res)
+    return c.value
+
+ccs_create_discrete_hyperparameter = _ccs_get_function("ccs_create_discrete_hyperparameter", [ct.c_char_p, ct.c_size_t, ct.POINTER(ccs_datum), ct.c_size_t, ct.c_void_p, ct.POINTER(ccs_hyperparameter)])
+ccs_discrete_hyperparameter_get_values = _ccs_get_function("ccs_discrete_hyperparameter_get_values", [ccs_hyperparameter, ct.c_size_t, ct.POINTER(ccs_datum), ct.POINTER(ct.c_size_t)])
+
+class DiscreteHyperparameter(Hyperparameter):
+  def __init__(self, handle = None, retain = False, name = None, values = [], default_index = 0, user_data = None):
+    if handle is None:
+      if name is None:
+        name = NumericalHyperparameter.default_name()
+      sz = len(values)
+      handle = ccs_hyperparameter()
+      v = (ccs_datum*sz)()
+      for i in range(sz):
+        v[i].value = values[i]
+      res = ccs_create_discrete_hyperparameter(str.encode(name), sz, v, default_index, user_data, ct.byref(handle))
+      Error.check(res)
+      super().__init__(handle = handle, retain = False)
+    else:
+      super().__init__(handle = handle, retain = retain)
+
+  @property
+  def values(self):
+    sz = ct.c_size_t()
+    res = ccs_discrete_hyperparameter_get_values(self.handle, 0, None, ct.byref(sz))
+    Error.check(res)
+    v = (ccs_datum*sz.value)()
+    res = ccs_discrete_hyperparameter_get_values(self.handle, sz, v, None)
+    Error.check(res)
+    return [x.value for x in v]
 
 

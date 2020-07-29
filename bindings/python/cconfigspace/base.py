@@ -111,7 +111,7 @@ class CEnumeration(ct.c_int, metaclass=CEnumerationType):
       return cls(param)
 
   def __repr__(self):
-    return "<member %s=%d of %r>" % (self.name, self.value, self.__class__)
+    return "<member %s(%d) of %r>" % (self.name, self.value, self.__class__)
 
   def __str__(self):
     return "%s.%s" % (self.__class__.__name__, self.name)
@@ -154,7 +154,7 @@ class CEnumeration64(ct.c_longlong, metaclass=CEnumerationType64):
     ct.c_longlong.__init__(self, value)
 
   def __repr__(self):
-    return "<member %s=%d of %r>" % (self.name, self.value, self.__class__)
+    return "<member %s(%d) of %r>" % (self.name, self.value, self.__class__)
 
   def __str__(self):
     return "%s.%s" % (self.__class__.__name__, self.name)
@@ -256,6 +256,10 @@ class ccs_value(ct.Union):
               ('s', ct.c_char_p),
               ('o', ccs_object)]
 
+class ccs_datum_fix(ct.Structure):
+  _fields_ = [('value', ccs_int),
+              ('type', ccs_data_type)]
+
 class ccs_datum(ct.Structure):
   _fields_ = [('_value', ccs_value),
               ('type', ccs_data_type)]
@@ -330,22 +334,31 @@ class Object:
   def __init__(self, handle, retain = False, auto_release = True):
     if handle is None:
       raise Error(ccs_error.INVALID_OBJECT)
-    self.handle = handle
+    self._handle = handle
     self.auto_release = auto_release
     if retain:
       res = ccs_retain_object(handle)
       Error.check(res)
 
   def __del__(self):
-    res = ccs_release_object(self.handle)
+    res = ccs_release_object(self._handle)
     Error.check(res)
 
+  @property
+  def handle(self):
+    return self._handle
+
+  @property
   def object_type(self):
+    if hasattr(self, "_object_type"):
+      return self._object_type
     t = ccs_object_type(0)
     res = ccs_object_get_type(self.handle, ct.byref(t))
     Error.check(res)
+    self._object_type = t
     return t
 
+  @property
   def refcount(self):
     c = ct.c_int(0)
     res = ccs_object_get_refcount(self.handle, ct.byref(c))
@@ -364,6 +377,8 @@ class Object:
       return Distribution.from_handle(h)
     elif v == ccs_object_type.HYPERPARAMETER:
       return Hyperparameter.from_handle(h)
+    elif v == ccs_object_type.EXPRESSION:
+      return Expression.from_handle(h)
     else:
       raise Error(ccs_error.INVALID_OBJECT)
 
@@ -376,3 +391,4 @@ def _ccs_get_id():
 from .rng import Rng
 from .distribution import Distribution
 from .hyperparameter import Hyperparameter
+from .expression import Expression
