@@ -112,11 +112,13 @@ class Hyperparameter(Object):
 
   def check_values(self, values):
     sz = len(values)
-    v = (ccs_datum * sz)(*values)
+    v = (ccs_datum * sz)()
+    for i in range(len(values)):
+      v[i].value = values[i]
     b = (ccs_bool * sz)()
     res = ccs_hyperparameter_check_values(self.handle, sz, v, b)
     Error.check(res)
-    return [lambda x: False if x == 0 else true for x in b]
+    return [False if x == 0 else True for x in b]
 
   def sample(self, distribution = None, rng = None):
     if distribution is None:
