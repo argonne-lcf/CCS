@@ -34,7 +34,7 @@ module CCS
     add_property :user_data, :pointer, :ccs_hyperparameter_get_user_data, memoize: true
 
     def self.default_name
-      "param#{"%03d"%CCS.get_id}"
+      "param%03d" % CCS.get_id
     end
 
     def self.from_handle(handle)

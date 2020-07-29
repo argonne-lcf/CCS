@@ -262,8 +262,6 @@ class ccs_datum(ct.Structure):
 
   def __init__(self, v = None):
     super().__init__()
-    self._string = None
-    self._object = None
     self.value = v
 
   @property
@@ -287,8 +285,6 @@ class ccs_datum(ct.Structure):
 
   @value.setter
   def value(self, v):
-    self._string = None
-    self._object = None
     if v is None:
       self.type.value = ccs_data_type.NONE
       self._value.i = 0
@@ -310,7 +306,7 @@ class ccs_datum(ct.Structure):
       self._value.i = 0
     elif isinstance(v, Object):
       self.type.value = ccs_data_type.OBJECT
-      self_object = v
+      self._object = v
       self._value.o = v.handle
     else:
       raise Error(ccs_error.INVALID_VALUE)
@@ -361,8 +357,22 @@ class Object:
     t = ccs_object_type(0)
     res = ccs_object_get_type(h, ct.byref(t))
     Error.check(res)
-    if t.value == ccs_object_type.RNG:
+    v = t.value
+    if v == ccs_object_type.RNG:
       return Rng.from_handle(h)
+    elif v == ccs_object_type.DISTRIBUTION:
+      return Distribution.from_handle(h)
+    elif v == ccs_object_type.HYPERPARAMETER:
+      return Hyperparameter.from_handle(h)
     else:
       raise Error(ccs_error.INVALID_OBJECT)
+
+_ccs_id = 0
+def _ccs_get_id():
+  global _ccs_id
+  res = _ccs_id
+  _ccs_id += 1
+  return res
 from .rng import Rng
+from .distribution import Distribution
+from .hyperparameter import Hyperparameter

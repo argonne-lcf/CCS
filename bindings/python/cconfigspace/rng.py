@@ -52,4 +52,4 @@ class Rng(Object):
     Error.check(res)
     return v.value
 
-
+ccs_default_rng = Rng()
