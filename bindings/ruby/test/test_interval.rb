@@ -43,4 +43,13 @@ class CConfigSpaceTestInterval < Minitest::Test
     assert(i3.empty?)
   end
 
+  def test_include
+    i = CCS::Interval::new(type: :CCS_NUM_FLOAT, lower: -1.0, upper: 1.0)
+    assert( i.include?(0.0) )
+    refute( i.include?(2.0) )
+    i = CCS::Interval::new(type: :CCS_NUM_INTEGER, lower: -5, upper: 5)
+    assert( i.include?(0) )
+    refute( i.include?(6) )
+  end
+
 end
