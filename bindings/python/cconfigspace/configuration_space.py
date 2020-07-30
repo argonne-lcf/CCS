@@ -228,13 +228,13 @@ class ConfigurationSpace(Context):
     v = ccs_configuration()
     res = ccs_configuration_space_get_default_configuration(self.handle, ct.byref(v))
     Error.check(res)
-    return Configuration.from_handle(v)
+    return Configuration(handle = v, retain = False)
 
   def sample(self):
     v = ccs_configuration()
     res = ccs_configuration_space_sample(self.handle, ct.byref(v))
     Error.check(res)
-    return Configuration.from_handle(v)
+    return Configuration(handle = v, retain = False)
 
   def samples(self, count):
     if count == 0:
@@ -242,6 +242,6 @@ class ConfigurationSpace(Context):
     v = (ccs_configuration * count)()
     res = ccs_configuration_space_samples(self.handle, count, v)
     Error.check(res)
-    return [Configuration.from_handle(x) for x in v]
+    return [Configuration(handle = ccs_configuration(x), retain = False) for x in v]
 
 from .configuration import Configuration

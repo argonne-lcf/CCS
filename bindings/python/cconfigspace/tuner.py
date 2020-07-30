@@ -92,7 +92,7 @@ class Tuner(Object):
     res = ccs_tuner_ask(self.handle, count, v, ct.byref(c))
     Error.check(res)
     count = c.value
-    return [Configuration.from_handle(ccs_configuration(v[x])) for x in range(count)]
+    return [Configuration(handle = ccs_configuration(v[x]), retain = False) for x in range(count)]
 
   def tell(self, evaluations):
     count = len(evaluations)
