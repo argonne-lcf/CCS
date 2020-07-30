@@ -81,7 +81,7 @@ class Tuner(Object):
     if hasattr(self, "_configuration_space"):
       return self._configuration_space
     v = ccs_configuration_space()
-    res = ccs_evaluation_get_configuration_space(self.handle, ct.byref(v))
+    res = ccs_tuner_get_configuration_space(self.handle, ct.byref(v))
     Error.check(res)
     self._configuration_space = ConfigurationSpace.from_handle(v)
     return self._configuration_space
