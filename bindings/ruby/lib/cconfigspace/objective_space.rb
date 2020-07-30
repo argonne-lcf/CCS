@@ -28,7 +28,7 @@ module CCS
   attach_function :ccs_objective_space_get_hyperparameter_by_name, [:ccs_objective_space_t, :string, :pointer], :ccs_result_t
   attach_function :ccs_objective_space_get_hyperparameter_index_by_name, [:ccs_objective_space_t, :string, :pointer], :ccs_result_t
   attach_function :ccs_objective_space_get_hyperparameter_index, [:ccs_objective_space_t, :ccs_hyperparameter_t, :pointer], :ccs_result_t
-  attach_function :ccs_objective_space_get_hyperparameters, [:ccs_objective_space_t, :size_t, :pointer, :pointer], :size_t
+  attach_function :ccs_objective_space_get_hyperparameters, [:ccs_objective_space_t, :size_t, :pointer, :pointer], :ccs_result_t
   attach_function :ccs_objective_space_add_objective, [:ccs_objective_space_t, :ccs_expression_t, :ccs_objective_type_t], :ccs_result_t
   attach_function :ccs_objective_space_add_objectives, [:ccs_objective_space_t, :size_t, :pointer, :pointer], :ccs_result_t
   attach_function :ccs_objective_space_get_objective, [:ccs_objective_space_t, :size_t, :pointer, :pointer], :ccs_result_t
