@@ -15,3 +15,6 @@ from .expression import *
 from .context import *
 from .configuration_space import *
 from .configuration import *
+from .objective_space import *
+from .evaluation import *
+from .tuner import *

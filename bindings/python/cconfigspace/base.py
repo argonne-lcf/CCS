@@ -1,9 +1,6 @@
 import ctypes as ct
 from . import libcconfigspace
 
-ccs_init = libcconfigspace.ccs_init
-ccs_init.restype = ct.c_int
-
 class ccs_version(ct.Structure):
   _fields_ = [("revision", ct.c_ushort),
               ("patch",    ct.c_ushort),
@@ -158,6 +155,12 @@ class CEnumeration64(ct.c_longlong, metaclass=CEnumerationType64):
 
   def __str__(self):
     return "%s.%s" % (self.__class__.__name__, self.name)
+
+  def __eq__(self, other):
+    if isinstance(other, int):
+      return self.value == other
+    else:
+      return self.value == other.value
 
   @property
   def name(self):
@@ -324,11 +327,15 @@ class Error(Exception):
     if err < 0:
       raise cls(ccs_error(-err))
 
+ccs_init = _ccs_get_function("ccs_init")
 ccs_get_version = _ccs_get_function("ccs_get_version", restype = ccs_version)
 ccs_retain_object = _ccs_get_function("ccs_retain_object", [ccs_object])
 ccs_release_object = _ccs_get_function("ccs_release_object", [ccs_object])
 ccs_object_get_type = _ccs_get_function("ccs_object_get_type", [ccs_object, ct.POINTER(ccs_object_type)])
 ccs_object_get_refcount = _ccs_get_function("ccs_object_get_refcount", [ccs_object, ct.POINTER(ct.c_int)])
+
+_res = ccs_init()
+Error.check(_res)
 
 class Object:
   def __init__(self, handle, retain = False, auto_release = True):
@@ -383,6 +390,12 @@ class Object:
       return ConfigurationSpace.from_handle(h)
     elif v == ccs_object_type.CONFIGURATION:
       return Configuration.from_handle(h)
+    elif v == ccs_object_type.OBJECTIVE_SPACE:
+      return ObjectiveSpace.from_handle(h)
+    elif v == ccs_object_type.EVALUATION:
+      return Evaluation.from_handle(h)
+    elif v == ccs_object_type.Tuner:
+      return Tuner.from_handle(h)
     else:
       raise Error(ccs_error.INVALID_OBJECT)
 
@@ -398,3 +411,5 @@ from .hyperparameter import Hyperparameter
 from .expression import Expression
 from .configuration_space import ConfigurationSpace
 from .configuration import Configuration
+from .evaluation import Evaluation
+from .tuner import Tuner

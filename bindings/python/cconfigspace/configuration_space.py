@@ -182,7 +182,7 @@ class ConfigurationSpace(Context):
     sz = len(expressions)
     if sz == 0:
       return None
-    v = (ccs_expression * sz)(*[x.handle.value if x else x for x in expressions])
+    v = (ccs_expression * sz)(*[x.handle.value for x in expressions])
     res = ccs_configuration_space_add_forbidden_clauses(self.handle, sz, v)
     Error.check(res)
 
