@@ -39,7 +39,7 @@ class Hyperparameter(Object):
     elif v == ccs_hyperparameter_type.DISCRETE:
       return DiscreteHyperparameter(handle = handle, retain = True)
     else:
-      raise Error(ccs_error.INVALID_HYPERPARAMETER)
+      raise Error(ccs_error(ccs_error.INVALID_HYPERPARAMETER))
 
   @classmethod
   def default_name(cls):
@@ -165,7 +165,7 @@ class NumericalHyperparameter(Hyperparameter):
         q.i = quantization
         d.i = default
       else:
-        raise Error(ccs_error.INVALID_VALUE)
+        raise Error(ccs_error(ccs_error.INVALID_VALUE))
       handle = ccs_hyperparameter()
       res = ccs_create_numerical_hyperparameter(str.encode(name), data_type, l.i, u.i, q.i, d.i, user_data, ct.byref(handle))
       Error.check(res)
@@ -204,7 +204,7 @@ class NumericalHyperparameter(Hyperparameter):
     elif t == ccs_numeric_type.NUM_FLOAT:
       self._lower = v.f
     else:
-      raise Error(ccs_error.INVALID_VALUE)
+      raise Error(ccs_error(ccs_error.INVALID_VALUE))
     return self._lower
 
   @property
@@ -220,7 +220,7 @@ class NumericalHyperparameter(Hyperparameter):
     elif t == ccs_numeric_type.NUM_FLOAT:
       self._upper = v.f
     else:
-      raise Error(ccs_error.INVALID_VALUE)
+      raise Error(ccs_error(ccs_error.INVALID_VALUE))
     return self._upper
 
   @property
@@ -236,7 +236,7 @@ class NumericalHyperparameter(Hyperparameter):
     elif t == ccs_numeric_type.NUM_FLOAT:
       self._quantization = v.f
     else:
-      raise Error(ccs_error.INVALID_VALUE)
+      raise Error(ccs_error(ccs_error.INVALID_VALUE))
     return self._quantization
 
 ccs_create_categorical_hyperparameter = _ccs_get_function("ccs_create_categorical_hyperparameter", [ct.c_char_p, ct.c_size_t, ct.POINTER(ccs_datum), ct.c_size_t, ct.c_void_p, ct.POINTER(ccs_hyperparameter)])

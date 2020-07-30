@@ -160,14 +160,14 @@ class Expression(Object):
     if context and values:
       count = context.num_hyperparameters
       if count != len(values):
-        raise Error(ccs_error.INVALID_VALUE)
+        raise Error(ccs_error(ccs_error.INVALID_VALUE))
       v = (ccs_datum * count)()
       for i in range(count):
         v[i].value = values[i]
       values = v
       context = context.handle
     elif context or values:
-      raise Error(ccs_error.INVALID_VALUE)
+      raise Error(ccs_error(ccs_error.INVALID_VALUE))
     v = ccs_datum()
     res = ccs_expression_eval(self.handle, context, values, ct.byref(v))
     Error.check(res)
@@ -255,14 +255,14 @@ class List(Expression):
     if context and values:
       count = context.num_hyperparameters
       if count != len(values):
-        raise Error(ccs_error.INVALID_VALUE)
+        raise Error(ccs_error(ccs_error.INVALID_VALUE))
       v = (ccs_datum * count)()
       for i in range(count):
         v[i].value = values[i]
       values = v
       context = context.handle
     elif context or values:
-      raise Error(ccs_error.INVALID_VALUE)
+      raise Error(ccs_error(ccs_error.INVALID_VALUE))
     v = ccs_datum()
     res = ccs_expression_list_eval_node(self.handle, context, values, index, ct.byref(v))
     Error.check(res)

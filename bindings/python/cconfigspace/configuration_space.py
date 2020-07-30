@@ -90,7 +90,7 @@ class ConfigurationSpace(Context):
       return None
     if distributions:
       if count != len(distributions):
-        raise Error(ccs_error.INVALID_VALUE)
+        raise Error(ccs_error(ccs_error.INVALID_VALUE))
       distribs = (ccs_distribution * count)(*[x.handle.value if x else x for x in distributions])
     else:
       distribs = None
@@ -216,7 +216,7 @@ class ConfigurationSpace(Context):
   def check_values(self, values):
     count = len(values)
     if count != self.num_hyperparameters:
-      raise Error(ccs_error.INVALID_VALUE)
+      raise Error(ccs_error(ccs_error.INVALID_VALUE))
     v = (ccs_datum * count)()
     for i in range(count):
       v[i].value = values[i]

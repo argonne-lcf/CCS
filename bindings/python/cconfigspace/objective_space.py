@@ -124,7 +124,7 @@ class ObjectiveSpace(Context):
       return None
     if types:
       if len(types) != sz:
-        raise Error(ccs_error.INVALID_VALUE)
+        raise Error(ccs_error(ccs_error.INVALID_VALUE))
       types = (ccs_objective_type * sz)(*types)
     else:
       types = (ccs_objective_type * sz)(*([ccs_objective_type.MINIMIZE] * sz))

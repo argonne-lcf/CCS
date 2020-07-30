@@ -34,7 +34,7 @@ class Tuner(Object):
     elif v == ccs_hyperparameter_type.USER_DEFIND:
       return UserDefinedTuner(handle = handle, retain = True)
     else:
-      raise Error(ccs_error.INVALID_TUNER)
+      raise Error(ccs_error(ccs_error.INVALID_TUNER))
 
   @property
   def type(self):

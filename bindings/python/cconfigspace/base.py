@@ -243,7 +243,7 @@ class ccs_numeric(ct.Union):
     elif t == ccs_numeric_type.NUM_FLOAT:
       return self.v
     else:
-      raise Error(ccs_error.INVALID_VALUE)
+      raise Error(ccs_error(ccs_error.INVALID_VALUE))
 
   def set_value(self, v):
     if isinstance(v, int):
@@ -251,7 +251,7 @@ class ccs_numeric(ct.Union):
     elif isinstance(v, float):
       self.f = v
     else:
-      raise Error(ccs_error.INVALID_VALUE)
+      raise Error(ccs_error(ccs_error.INVALID_VALUE))
 
 class ccs_value(ct.Union):
   _fields_ = [('f', ccs_float),
@@ -288,7 +288,7 @@ class ccs_datum(ct.Structure):
     elif self.type.value == ccs_data_type.OBJECT:
       return Object.from_handle(ct.c_void_p(self._value.o))
     else:
-      raise Error(ccs_error.INVALID_VALUE)
+      raise Error(ccs_error(ccs_error.INVALID_VALUE))
 
   @value.setter
   def value(self, v):
@@ -316,7 +316,7 @@ class ccs_datum(ct.Structure):
       self._object = v
       self._value.o = v.handle
     else:
-      raise Error(ccs_error.INVALID_VALUE)
+      raise Error(ccs_error(ccs_error.INVALID_VALUE))
 
 class Error(Exception):
   def __init__(self, message):
@@ -340,7 +340,7 @@ Error.check(_res)
 class Object:
   def __init__(self, handle, retain = False, auto_release = True):
     if handle is None:
-      raise Error(ccs_error.INVALID_OBJECT)
+      raise Error(ccs_error(ccs_error.INVALID_OBJECT))
     self._handle = handle
     self.auto_release = auto_release
     if retain:
@@ -397,7 +397,7 @@ class Object:
     elif v == ccs_object_type.Tuner:
       return Tuner.from_handle(h)
     else:
-      raise Error(ccs_error.INVALID_OBJECT)
+      raise Error(ccs_error(ccs_error.INVALID_OBJECT))
 
 _ccs_id = 0
 def _ccs_get_id():
