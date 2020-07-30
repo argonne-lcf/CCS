@@ -155,7 +155,7 @@ class Evaluation(Object):
     return [x.value for x in v]
 
   def cmp(self, other):
-    v = ccs_comparison()
+    v = ccs_comparison(0)
     res = ccs_evaluation_cmp(self.handle, other.handle, ct.byref(v))
     Error.check(res)
     return v
