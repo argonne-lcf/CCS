@@ -94,6 +94,7 @@ module CCS
     end
 
     def samples(rng, count)
+      return [] if count == 0
       ptr = MemoryPointer::new(:ccs_numeric_t, count)
       res = CCS.ccs_distribution_samples(@handle, rng, count, ptr)
       CCS.error_check(res)
