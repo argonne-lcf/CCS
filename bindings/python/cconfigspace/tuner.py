@@ -1,5 +1,5 @@
 import ctypes as ct
-from .base import Object, Error, CEnumeration, ccs_error, ccs_result, _ccs_get_function, ccs_context, ccs_hyperparameter, ccs_configuration_space, ccs_configuration, ccs_datum, ccs_objective_space, ccs_evaluation, ccs_tuner
+from .base import Object, Error, CEnumeration, ccs_error, ccs_result, _ccs_get_function, ccs_context, ccs_hyperparameter, ccs_configuration_space, ccs_configuration, ccs_datum, ccs_objective_space, ccs_evaluation, ccs_tuner, ccs_retain_object
 from .context import Context
 from .hyperparameter import Hyperparameter
 from .configuration_space import ConfigurationSpace
@@ -141,4 +141,146 @@ class RandomTuner(Tuner):
       super().__init__(handle = handle, retain = False)
     else:
       super().__init__(handle = handle, retain = retain)
+
+
+class ccs_tuner_common_data(ct.Structure):
+  _fields_ = [
+    ('type', ccs_tuner_type),
+    ('name', ct.c_char_p),
+    ('user_data', ct.c_void_p),
+    ('configuration_space', ccs_configuration_space),
+    ('objective_space', ccs_objective_space) ]
+
+ccs_user_defined_tuner_del_type = ct.CFUNCTYPE(ccs_result, ct.c_void_p)
+ccs_user_defined_tuner_ask_type = ct.CFUNCTYPE(ccs_result, ct.c_void_p, ct.c_size_t, ct.POINTER(ccs_configuration), ct.POINTER(ct.c_size_t))
+ccs_user_defined_tuner_tell_type = ct.CFUNCTYPE(ccs_result, ct.c_void_p, ct.c_size_t, ct.POINTER(ccs_evaluation))
+ccs_user_defined_tuner_get_optimums_type = ct.CFUNCTYPE(ccs_result, ct.c_void_p, ct.c_size_t, ct.POINTER(ccs_evaluation), ct.POINTER(ct.c_size_t))
+ccs_user_defined_tuner_get_history_type = ct.CFUNCTYPE(ccs_result, ct.c_void_p, ct.c_size_t, ct.POINTER(ccs_evaluation), ct.POINTER(ct.c_size_t))
+
+class ccs_user_defined_tuner_vector(ct.Structure):
+  _fields_ = [
+    ('delete', ccs_user_defined_tuner_del_type),
+    ('ask', ccs_user_defined_tuner_ask_type),
+    ('tell', ccs_user_defined_tuner_tell_type),
+    ('get_optimums', ccs_user_defined_tuner_get_optimums_type),
+    ('get_history', ccs_user_defined_tuner_get_history_type) ]
+
+class ccs_user_defined_tuner_data(ct.Structure):
+  _fields_ = [
+    ('common_data', ccs_tuner_common_data),
+    ('vector', ccs_user_defined_tuner_vector),
+    ('tuner_data', ct.c_void_p) ]
+
+ccs_create_user_defined_tuner = _ccs_get_function("ccs_create_user_defined_tuner", [ct.c_char_p, ccs_configuration_space, ccs_objective_space, ct.c_void_p, ct.POINTER(ccs_user_defined_tuner_vector), ct.c_void_p, ct.POINTER(ccs_tuner)])
+
+class UserDefinedTuner(Tuner):
+  callbacks = {}
+  def __init__(self, handle = None, retain = False, name = None, configuration_space = None, objective_space = None, user_data = None, delete = None, ask = None, tell = None, get_optimums = None, get_history = None, tuner_data = None ):
+    if handle is None:
+      if delete is None or ask is None or tell is None or get_optimums is None or get_history is None:
+        raise Error(ccs_error(ccs_error.INVALID_VALUE))
+
+      def delete_wrapper(data):
+        try:
+          data = ct.cast(data, ct.POINTER(ccs_user_defined_tuner_data))
+          delete(data.contents)
+          del UserDefinedTuner.callbacks[self]
+          return ccs_error.SUCCESS
+        except Error as e:
+          return -e.message.value
+
+      def ask_wrapper(data, count, p_configurations, p_count):
+        try:
+          data = ct.cast(data, ct.POINTER(ccs_user_defined_tuner_data))
+          p_confs = ct.cast(p_configurations, ct.c_void_p)
+          p_c = ct.cast(p_count, ct.c_void_p)
+          (configurations, count_ret) = ask(data.contents, count if p_confs.value else None)
+          if p_confs.value is not None and count < count_ret:
+            raise Error(ccs_error(ccs_error.INVALID_VALUE))
+          if p_confs.value is not None:
+            for i in range(len(configurations)):
+              res = ccs_retain_object(configurations[i].handle)
+              Error.check(res)
+              p_configurations[i] = configurations[i].handle.value
+            for i in range(len(configurations), count):
+              p_configurations[i] = None
+          if p_c.value is not None:
+            p_count[0] = count_ret
+          return ccs_error.SUCCESS
+        except Error as e:
+          return -e.message.value
+
+      def tell_wrapper(data, count, p_evaluations):
+        try:
+          if count == 0:
+            return ccs_error.SUCCESS
+          data = ct.cast(data, ct.POINTER(ccs_user_defined_tuner_data))
+          p_evals = ct.cast(p_evaluations, ct.c_void_p)
+          if p_evals.value is None:
+            raise Error(ccs_error(ccs_error.INVALID_VALUE))
+          evals = [Evaluation.from_handle(ccs_evaluation(p_evaluations[i])) for i in range(count)]
+          tell(data.contents, evals)
+          return ccs_error.SUCCESS
+        except Error as e:
+          return -e.message.value
+
+      def get_optimums_wrapper(data, count, p_evaluations, p_count):
+        try:
+          data = ct.cast(data, ct.POINTER(ccs_user_defined_tuner_data))
+          p_evals = ct.cast(p_evaluations, ct.c_void_p)
+          p_c = ct.cast(p_count, ct.c_void_p)
+          optimums = get_optimums(data.contents)
+          count_ret = len(optimums)
+          if p_evals.value is not None and count < count_ret:
+            raise Error(ccs_error(ccs_error.INVALID_VALUE))
+          if p_evals.value is not None:
+            for i in range(count_ret):
+              p_evaluations[i] = optimums[i].handle.value
+            for i in range(count_ret, count):
+              p_evaluations[i] = None
+          if p_c.value is not None:
+              p_count[0] = count_ret
+          return ccs_error.SUCCESS
+        except Error as e:
+          return -e.message.value
+
+      def get_history_wrapper(data, count, p_evaluations, p_count):
+        try:
+          data = ct.cast(data, ct.POINTER(ccs_user_defined_tuner_data))
+          p_evals = ct.cast(p_evaluations, ct.c_void_p)
+          p_c = ct.cast(p_count, ct.c_void_p)
+          history = get_history(data.contents)
+          count_ret = len(history)
+          if p_evals.value is not None and count < count_ret:
+            raise Error(ccs_error(ccs_error.INVALID_VALUE))
+          if p_evals.value is not None:
+            for i in range(count_ret):
+              p_evaluations[i] = history[i].handle.value
+            for i in range(count_ret, count):
+              p_evaluations[i] = None
+          if p_c.value is not None:
+              p_count[0] = count_ret
+          return ccs_error.SUCCESS
+        except Error as e:
+          return -e.message.value
+
+      handle = ccs_tuner()
+      vec = ccs_user_defined_tuner_vector()
+      delete_wrapper_func = ccs_user_defined_tuner_del_type(delete_wrapper)
+      vec.delete = delete_wrapper_func
+      ask_wrapper_func = ccs_user_defined_tuner_ask_type(ask_wrapper)
+      vec.ask = ask_wrapper_func
+      tell_wrapper_func = ccs_user_defined_tuner_tell_type(tell_wrapper)
+      vec.tell = tell_wrapper_func
+      get_optimums_wrapper_func = ccs_user_defined_tuner_get_optimums_type(get_optimums_wrapper)
+      vec.get_optimums = get_optimums_wrapper_func
+      get_history_wrapper_func = ccs_user_defined_tuner_get_history_type(get_history_wrapper)
+      vec.get_history = get_history_wrapper_func
+      res = ccs_create_user_defined_tuner(str.encode(name), configuration_space.handle, objective_space.handle, user_data, ct.byref(vec), tuner_data, ct.byref(handle))
+      Error.check(res)
+      super().__init__(handle = handle, retain = False)
+      UserDefinedTuner.callbacks[self] = [delete_wrapper, ask_wrapper, tell_wrapper, get_optimums_wrapper, get_history_wrapper, delete_wrapper_func, ask_wrapper_func, tell_wrapper_func, get_optimums_wrapper_func, get_history_wrapper_func]
+    else:
+      super().__init__(handle = handle, retain = retain)
+
 

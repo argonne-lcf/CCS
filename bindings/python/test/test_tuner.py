@@ -38,7 +38,76 @@ class TestTuner(unittest.TestCase):
     optims = t.optimums
     objs = [x.objective_values for x in optims]
     objs.sort(key = lambda x: x[0])
-    self.assertTrue(all(objs[i] <= objs[i+1] for i in range(len(objs)-1)))
+    # assert pareto front
+    self.assertTrue(all(objs[i][1] >= objs[i+1][1] for i in range(len(objs)-1)))
+
+  def test_user_defined(self):
+    global history
+    history = []
+    global optimums
+    optimums = []
+
+    def delete(data):
+      return None
+
+    def ask(data, count):
+      if count is None:
+        return (None, 1)
+      else:
+        cs = ccs.ConfigurationSpace.from_handle(ccs.ccs_configuration_space(data.common_data.configuration_space))
+        return (cs.samples(count), count)
+
+    def tell(data, evaluations):
+      global history
+      global optimums
+      history += evaluations
+      for e in evaluations:
+        discard = False
+        new_optimums = []
+        for o in optimums:
+          if discard:
+            new_optimums.append(o)
+          else:
+            c = e.cmp(o).value
+            if c == ccs.EQUIVALENT or c == ccs.WORSE:
+              discard = True
+              new_optimums.append(o)
+            elif c == ccs.NOT_COMPARABLE:
+              new_optimums.append(o)
+        if not discard:
+          new_optimums.append(e)
+        optimums = new_optimums
+      return None
+
+    def get_history(data):
+      global history
+      return history
+
+    def get_optimums(data):
+      global optimums
+      return optimums
+
+    (cs, os) = self.create_tuning_problem()
+    t = ccs.UserDefinedTuner(name = "tuner", configuration_space = cs, objective_space = os, delete = delete, ask = ask, tell = tell, get_optimums = get_optimums, get_history = get_history)
+    self.assertEqual("tuner", t.name)
+    self.assertEqual(ccs.TUNER_USER_DEFINED, t.type.value)
+    self.assertEqual(cs.handle.value, t.configuration_space.handle.value)
+    self.assertEqual(os.handle.value, t.objective_space.handle.value)
+    func = lambda x, y, z: [(x-2)*(x-2), sin(z+y)]
+    evals = [ccs.Evaluation(objective_space = os, configuration = c, values = func(*(c.values))) for c in t.ask(100)]
+    t.tell(evals)
+    hist = t.history
+    self.assertEqual(100, len(hist))
+    evals = [ccs.Evaluation(objective_space = os, configuration = c, values = func(*(c.values))) for c in t.ask(100)]
+    t.tell(evals)
+    hist = t.history
+    self.assertEqual(200, len(hist))
+    optims = t.optimums
+    objs = [x.objective_values for x in optims]
+    objs.sort(key = lambda x: x[0])
+    # assert pareto front
+    self.assertTrue(all(objs[i][1] >= objs[i+1][1] for i in range(len(objs)-1)))
+
 
 if __name__ == '__main__':
     unittest.main()
