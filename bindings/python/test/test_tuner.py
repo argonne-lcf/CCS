@@ -42,9 +42,7 @@ class TestTuner(unittest.TestCase):
     self.assertTrue(all(objs[i][1] >= objs[i+1][1] for i in range(len(objs)-1)))
 
   def test_user_defined(self):
-    global history
     history = []
-    global optimums
     optimums = []
 
     def delete(data):
@@ -58,8 +56,8 @@ class TestTuner(unittest.TestCase):
         return (cs.samples(count), count)
 
     def tell(data, evaluations):
-      global history
-      global optimums
+      nonlocal history
+      nonlocal optimums
       history += evaluations
       for e in evaluations:
         discard = False
@@ -80,11 +78,9 @@ class TestTuner(unittest.TestCase):
       return None
 
     def get_history(data):
-      global history
       return history
 
     def get_optimums(data):
-      global optimums
       return optimums
 
     (cs, os) = self.create_tuning_problem()
