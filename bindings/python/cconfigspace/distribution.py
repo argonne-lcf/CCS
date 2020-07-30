@@ -126,6 +126,8 @@ class Distribution(Object):
       raise Error(ccs_error.INVALID_VALUE)
     
   def samples(self, rng, count):
+    if count == 0:
+      return []
     t = self.data_type.value
     if t == ccs_numeric_type.NUM_INTEGER:
       v = (ccs_int * count)()

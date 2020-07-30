@@ -379,6 +379,10 @@ class Object:
       return Hyperparameter.from_handle(h)
     elif v == ccs_object_type.EXPRESSION:
       return Expression.from_handle(h)
+    elif v == ccs_object_type.CONFIGURATION_SPACE:
+      return ConfigurationSpace.from_handle(h)
+    elif v == ccs_object_type.CONFIGURATION:
+      return Configuration.from_handle(h)
     else:
       raise Error(ccs_error.INVALID_OBJECT)
 
@@ -392,3 +396,5 @@ from .rng import Rng
 from .distribution import Distribution
 from .hyperparameter import Hyperparameter
 from .expression import Expression
+from .configuration_space import ConfigurationSpace
+from .configuration import Configuration

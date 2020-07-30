@@ -136,7 +136,7 @@ class Hyperparameter(Object):
     Error.check(res)
     return [x.value for x in v]
 
-  def __eql__(self, other):
+  def __eq__(self, other):
     return self.__class__ == other.__class__ and self.handle == other.handle
 
 
