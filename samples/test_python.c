@@ -134,7 +134,7 @@ void test() {
 		Py_DECREF(pFunc);
 		pHandle = PyObject_GetAttrString(pValue, "handle");
 		pAddr = PyObject_GetAttrString(pHandle, "value");
-		t = PyLong_AsVoidPtr(pAddr);
+		t = (ccs_tuner_t)PyLong_AsVoidPtr(pAddr);
 		err = ccs_retain_object(t);
 		Py_DECREF(pHandle);
 		Py_DECREF(pAddr);
