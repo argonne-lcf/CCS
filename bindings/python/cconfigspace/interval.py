@@ -9,11 +9,30 @@ class ccs_interval(ct.Structure):
               ('_lower_included', ccs_bool),
               ('_upper_included', ccs_bool)]
 
+  def __init__(self, t = ccs_numeric_type.NUM_FLOAT, lower = 0.0, upper = 1.0, lower_included = True, upper_included = False):
+    if t == ccs_numeric_type.NUM_INTEGER:
+      self._lower.i = lower
+      self._upper.i = upper
+    elif t == ccs_numeric_type.NUM_FLOAT:
+      self._lower.f = lower
+      self._upper.f = upper
+    else:
+      raise Error(ccs_error(ccs_error.INVALID_VALUE))
+    self._type.value = t
+    if lower_included:
+      self._lower_included = ccs_true
+    else:
+      self._lower_included = ccs_false
+    if upper_included:
+      self._upper_included = ccs_true
+    else:
+      self._upper_included = ccs_false
+
   @property
   def type(self):
     return self._type.value
 
-  @property
+  @type.setter
   def type(self, v):
     self._type.value = v
 
@@ -79,6 +98,7 @@ class ccs_interval(ct.Structure):
     else:
       self._upper_included = ccs_false
 
+  @property
   def empty(self):
     v = ccs_bool(0)
     res = ccs_interval_empty(ct.byref(self), ct.byref(v))

@@ -1,6 +1,6 @@
 import ctypes as ct
 from . import libcconfigspace
-from .base import Object, Error, ccs_error, ccs_int, ccs_float, ccs_bool, ccs_result, ccs_rng, ccs_distribution, ccs_numeric_type, ccs_numeric, CEnumeration, NUM_FLOAT, NUM_INTEGER, _ccs_get_function
+from .base import Object, Error, ccs_error, ccs_int, ccs_float, ccs_bool, ccs_result, ccs_rng, ccs_distribution, ccs_numeric_type, ccs_numeric, CEnumeration, NUM_FLOAT, NUM_INTEGER, _ccs_get_function, ccs_false, ccs_true
 from .interval import ccs_interval
 
 class ccs_distribution_type(CEnumeration):
@@ -80,6 +80,8 @@ class Distribution(Object):
     Error.check(res)
     self._scale_type = v.value
     return self._scale_type
+
+  scale = scale_type
 
   @property
   def quantization(self):
@@ -218,6 +220,14 @@ class NormalDistribution(Distribution):
       super().__init__(handle = handle, retain = False)
     else:
       super().__init__(handle = handle, retain = retain)
+
+  @classmethod
+  def int(cls, mu, sigma, scale = ccs_scale_type.LINEAR, quantization = 0):
+    return cls(data_type = NUM_INTEGER, mu = mu, sigma = sigma, scale = scale, quantization = quantization)
+
+  @classmethod
+  def float(cls, mu, sigma, scale = ccs_scale_type.LINEAR, quantization = 0.0):
+    return cls(data_type = NUM_FLOAT, mu = mu, sigma = sigma, scale = scale, quantization = quantization)
 
   @property
   def mu(self):

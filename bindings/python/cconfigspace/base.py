@@ -239,9 +239,9 @@ class ccs_numeric(ct.Union):
 
   def get_value(self, t):
     if t == ccs_numeric_type.NUM_INTEGER:
-      return self.f
+      return self.i
     elif t == ccs_numeric_type.NUM_FLOAT:
-      return self.v
+      return self.f
     else:
       raise Error(ccs_error(ccs_error.INVALID_VALUE))
 

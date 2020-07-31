@@ -23,10 +23,12 @@ class Rng(Object):
   def from_handle(cls, handle):
     return cls(handle, retain = True)
 
-  def set_seed(self, value):
-    res = ccs_rng_set_seed(self.handle, value)
-    Error.check(res)
-    return self
+  def __setattr__(self, name, value):
+    if name == 'seed':
+      res = ccs_rng_set_seed(self.handle, value)
+      Error.check(res)
+      return None
+    super().__setattr__(name, value)
 
   def get(self):
     v = ct.c_ulong(0)
@@ -40,12 +42,14 @@ class Rng(Object):
     Error.check(res)
     return v.value
 
+  @property
   def min(self):
     v = ct.c_ulong(0)
     res = ccs_rng_min(self.handle, ct.byref(v))
     Error.check(res)
     return v.value
 
+  @property
   def max(self):
     v = ct.c_ulong(0)
     res = ccs_rng_max(self.handle, ct.byref(v))
