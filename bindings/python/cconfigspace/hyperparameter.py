@@ -137,7 +137,7 @@ class Hyperparameter(Object):
     return [x.value for x in v]
 
   def __eq__(self, other):
-    return self.__class__ == other.__class__ and self.handle == other.handle
+    return self.__class__ == other.__class__ and self.handle.value == other.handle.value
 
 
 ccs_create_numerical_hyperparameter = _ccs_get_function("ccs_create_numerical_hyperparameter", [ct.c_char_p, ccs_numeric_type, ccs_int, ccs_int, ccs_int, ccs_int, ct.c_void_p, ct.POINTER(ccs_hyperparameter)])

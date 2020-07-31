@@ -41,14 +41,18 @@ def _ccs_get_function(method, argtypes = [], restype = ccs_result):
 
 # https://www.python-course.eu/python3_metaclasses.php
 class Singleton(type):
-    _instances = {}
-    def __call__(cls, *args, **kwargs):
-        if cls not in cls._instances:
-            cls._instances[cls] = super(Singleton, cls).__call__(*args, **kwargs)
-        return cls._instances[cls]
+  _instances = {}
+  def __call__(cls, *args, **kwargs):
+    if cls not in cls._instances:
+      cls._instances[cls] = super(Singleton, cls).__call__(*args, **kwargs)
+    return cls._instances[cls]
 
 class Inactive(metaclass=Singleton):
-    pass
+  def __str__(self):
+    return "Inactive"
+
+  def __repr__(self):
+    return "Inactive"
 
 ccs_inactive = Inactive()
 

@@ -9,7 +9,7 @@ from .configuration import Configuration
 class ccs_objective_type(CEnumeration):
   _members_ = [
     ('MINIMIZE', 0),
-    'MAXINIZE' ]
+    'MAXIMIZE' ]
 
 ccs_create_objective_space = _ccs_get_function("ccs_create_objective_space", [ct.c_char_p, ct.c_void_p, ct.POINTER(ccs_objective_space)])
 ccs_objective_space_get_name = _ccs_get_function("ccs_objective_space_get_name", [ccs_objective_space, ct.POINTER(ct.c_char_p)])
@@ -119,6 +119,9 @@ class ObjectiveSpace(Context):
     Error.check(res)
 
   def add_objectives(self, expressions, types = None):
+    if isinstance(expressions, dict):
+      types = expressions.values()
+      expressions = expressions.keys()
     sz = len(expressions)
     if sz == 0:
       return None
@@ -153,4 +156,4 @@ class ObjectiveSpace(Context):
     t = (ccs_objective_type * sz)()
     res = ccs_objective_space_get_objectives(self.handle, sz, v, t, None)
     Error.check(res)
-    return [(Expression.from_handle(ccs_expression(v[x])), t[x]) for x in range(sz)]
+    return [(Expression.from_handle(ccs_expression(v[x])), t[x].value) for x in range(sz)]

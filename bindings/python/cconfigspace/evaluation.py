@@ -1,5 +1,5 @@
 import ctypes as ct
-from .base import Object, Error, CEnumeration, ccs_error, ccs_result, _ccs_get_function, ccs_context, ccs_hyperparameter, ccs_configuration_space, ccs_configuration, ccs_datum, ccs_objective_space, ccs_evaluation
+from .base import Object, Error, CEnumeration, ccs_error, ccs_result, _ccs_get_function, ccs_context, ccs_hyperparameter, ccs_configuration_space, ccs_configuration, ccs_datum, ccs_datum_fix, ccs_objective_space, ccs_evaluation
 from .context import Context
 from .hyperparameter import Hyperparameter
 from .configuration_space import ConfigurationSpace
@@ -20,7 +20,7 @@ ccs_evaluation_get_user_data = _ccs_get_function("ccs_evaluation_get_user_data",
 ccs_evaluation_get_error = _ccs_get_function("ccs_evaluation_get_error", [ccs_evaluation, ct.POINTER(ccs_result)])
 ccs_evaluation_set_error = _ccs_get_function("ccs_evaluation_set_error", [ccs_evaluation, ccs_result])
 ccs_evaluation_get_value = _ccs_get_function("ccs_evaluation_get_value", [ccs_evaluation, ct.c_size_t, ct.POINTER(ccs_datum)])
-ccs_evaluation_set_value = _ccs_get_function("ccs_evaluation_set_value", [ccs_evaluation, ct.c_size_t, ccs_datum])
+ccs_evaluation_set_value = _ccs_get_function("ccs_evaluation_set_value", [ccs_evaluation, ct.c_size_t, ccs_datum_fix])
 ccs_evaluation_get_values = _ccs_get_function("ccs_evaluation_get_values", [ccs_evaluation, ct.c_size_t, ct.POINTER(ccs_datum), ct.POINTER(ct.c_size_t)])
 ccs_evaluation_get_value_by_name = _ccs_get_function("ccs_evaluation_get_value_by_name", [ccs_evaluation, ct.c_char_p, ccs_datum])
 ccs_evaluation_get_objective_value = _ccs_get_function("ccs_evaluation_get_objective_value", [ccs_evaluation, ct.c_size_t, ct.POINTER(ccs_datum)])

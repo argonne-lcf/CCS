@@ -178,10 +178,10 @@ class Expression(Object):
     Error.check(res)
 
   def __str__(self):
-    t = self.type.value
+    t = self.type
     symbol = ccs_expression_symbols[t]
     prec = ccs_expression_precedence[t]
-    nds = ["({})".format(n) if ccs_expression_precedence[n.type.value] < prec else n.__str__() for n in self.nodes]
+    nds = ["({})".format(n) if ccs_expression_precedence[n.type] < prec else n.__str__() for n in self.nodes]
     if len(nds) == 1:
       return "{}{}".format(symbol, nds[0])
     else:

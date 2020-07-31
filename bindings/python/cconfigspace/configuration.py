@@ -2,6 +2,7 @@ import ctypes as ct
 from .base import Object, Error, ccs_error, _ccs_get_function, ccs_context, ccs_hyperparameter, ccs_configuration_space, ccs_configuration, ccs_rng, ccs_distribution, ccs_expression, ccs_datum, ccs_hash, ccs_int
 from .context import Context
 from .rng import Rng
+from .hyperparameter import Hyperparameter
 from .configuration_space import ConfigurationSpace
 
 ccs_create_configuration = _ccs_get_function("ccs_create_configuration", [ccs_configuration_space, ct.c_size_t, ct.POINTER(ccs_datum), ct.c_void_p, ct.POINTER(ccs_configuration)])
