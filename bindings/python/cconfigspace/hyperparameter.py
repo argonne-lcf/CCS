@@ -52,8 +52,8 @@ class Hyperparameter(Object):
     v = ccs_hyperparameter_type(0)
     res = ccs_hyperparameter_get_type(self.handle, ct.byref(v))
     Error.check(res)
-    self._type = v
-    return v
+    self._type = v.value
+    return self._type
 
   @property
   def user_data(self):
@@ -188,8 +188,8 @@ class NumericalHyperparameter(Hyperparameter):
     v = ccs_numeric_type(0)
     res = ccs_numerical_hyperparameter_get_parameters(self.handle, ct.byref(v), None, None, None)
     Error.check(res)
-    self._data_type = v
-    return v
+    self._data_type = v.value
+    return self._data_type
 
   @property
   def lower(self):
@@ -198,7 +198,7 @@ class NumericalHyperparameter(Hyperparameter):
     v = ccs_numeric()
     res = ccs_numerical_hyperparameter_get_parameters(self.handle, None, ct.byref(v), None, None)
     Error.check(res)
-    t = self.data_type.value
+    t = self.data_type
     if t == ccs_numeric_type.NUM_INTEGER:
       self._lower = v.i
     elif t == ccs_numeric_type.NUM_FLOAT:
@@ -214,7 +214,7 @@ class NumericalHyperparameter(Hyperparameter):
     v = ccs_numeric()
     res = ccs_numerical_hyperparameter_get_parameters(self.handle, None, None, ct.byref(v), None)
     Error.check(res)
-    t = self.data_type.value
+    t = self.data_type
     if t == ccs_numeric_type.NUM_INTEGER:
       self._upper = v.i
     elif t == ccs_numeric_type.NUM_FLOAT:
@@ -230,7 +230,7 @@ class NumericalHyperparameter(Hyperparameter):
     v = ccs_numeric(0)
     res = ccs_numerical_hyperparameter_get_parameters(self.handle, None, None, None, ct.byref(v))
     Error.check(res)
-    t = self.data_type.value
+    t = self.data_type
     if t == ccs_numeric_type.NUM_INTEGER:
       self._quantization = v.i
     elif t == ccs_numeric_type.NUM_FLOAT:

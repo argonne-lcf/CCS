@@ -43,8 +43,8 @@ class Tuner(Object):
     v = ccs_tuner_type(0)
     res = ccs_tuner_get_type(self.handle, ct.byref(v))
     Error.check(res)
-    self._type = v
-    return v
+    self._type = v.value
+    return self._type
 
   @property
   def user_data(self):

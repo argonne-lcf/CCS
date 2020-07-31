@@ -158,4 +158,4 @@ class Evaluation(Object):
     v = ccs_comparison(0)
     res = ccs_evaluation_cmp(self.handle, other.handle, ct.byref(v))
     Error.check(res)
-    return v
+    return v.value

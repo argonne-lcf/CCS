@@ -3,44 +3,56 @@ from . import libcconfigspace
 from .base import Error, ccs_error, ccs_numeric_type, ccs_numeric, ccs_float, ccs_int, ccs_result, ccs_bool, ccs_false, ccs_true, _ccs_get_function
 
 class ccs_interval(ct.Structure):
-  _fields_ = [('type', ccs_numeric_type),
+  _fields_ = [('_type', ccs_numeric_type),
               ('_lower', ccs_numeric),
               ('_upper', ccs_numeric),
               ('_lower_included', ccs_bool),
               ('_upper_included', ccs_bool)]
 
   @property
+  def type(self):
+    return self._type.value
+
+  @property
+  def type(self, v):
+    self._type.value = v
+
+  @property
   def lower(self):
-    if self.type.value == ccs_numeric_type.NUM_INTEGER:
+    t = self.type
+    if t == ccs_numeric_type.NUM_INTEGER:
       return self._lower.i
-    elif self.type.value == ccs_numeric_type.NUM_FLOAT:
+    elif t == ccs_numeric_type.NUM_FLOAT:
       return self._lower.f
     else:
       raise Error(ccs_error(ccs_error.INVALID_VALUE))
 
   @lower.setter
   def lower(self, value):
-    if self.type.value == ccs_numeric_type.NUM_INTEGER:
+    t = self.type
+    if t == ccs_numeric_type.NUM_INTEGER:
       self._lower.i = value
-    elif self.type.value == ccs_numeric_type.NUM_FLOAT:
+    elif t == ccs_numeric_type.NUM_FLOAT:
       self._lower.f = value
     else:
       raise Error(ccs_error(ccs_error.INVALID_VALUE))
 
   @property
   def upper(self):
-    if self.type.value == ccs_numeric_type.NUM_INTEGER:
+    t = self.type
+    if t == ccs_numeric_type.NUM_INTEGER:
       return self._upper.i
-    elif self.type.value == ccs_numeric_type.NUM_FLOAT:
+    elif t == ccs_numeric_type.NUM_FLOAT:
       return self._upper.f
     else:
       raise Error(ccs_error(ccs_error.INVALID_VALUE))
 
   @upper.setter
   def upper(self, value):
-    if self.type.value == ccs_numeric_type.NUM_INTEGER:
+    t = self.type
+    if t == ccs_numeric_type.NUM_INTEGER:
       self._upper.i = value
-    elif self.type.value == ccs_numeric_type.NUM_FLOAT:
+    elif t == ccs_numeric_type.NUM_FLOAT:
       self._upper.f = value
     else:
       raise Error(ccs_error(ccs_error.INVALID_VALUE))
@@ -88,9 +100,10 @@ class ccs_interval(ct.Structure):
   # this works around a subtle bug in union support...
   def include(self, value):
     v = ccs_numeric()
-    if self.type.value == ccs_numeric_type.NUM_INTEGER:
+    t = self.type
+    if t == ccs_numeric_type.NUM_INTEGER:
       v.i = value
-    elif self.type.value == ccs_numeric_type.NUM_FLOAT:
+    elif t == ccs_numeric_type.NUM_FLOAT:
       v.f = value
     res = ccs_interval_include(ct.byref(self), v.i)
     return False if res == ccs_false else True

@@ -265,27 +265,35 @@ class ccs_datum_fix(ct.Structure):
 
 class ccs_datum(ct.Structure):
   _fields_ = [('_value', ccs_value),
-              ('type', ccs_data_type)]
+              ('_type', ccs_data_type)]
 
   def __init__(self, v = None):
     super().__init__()
     self.value = v
 
   @property
+  def type(self):
+    return self._type.value
+
+  @type.setter
+  def type(self, v):
+    self._type.value = v
+
+  @property
   def value(self):
-    if self.type.value == ccs_data_type.NONE:
+    if self.type == ccs_data_type.NONE:
       return None
-    elif self.type.value == ccs_data_type.INTEGER:
+    elif self.type == ccs_data_type.INTEGER:
       return self._value.i
-    elif self.type.value == ccs_data_type.FLOAT:
+    elif self.type == ccs_data_type.FLOAT:
       return self._value.f
-    elif self.type.value == ccs_data_type.BOOLEAN:
+    elif self.type == ccs_data_type.BOOLEAN:
       return False if self._value.i == ccs_false else True
-    elif self.type.value == ccs_data_type.STRING:
+    elif self.type == ccs_data_type.STRING:
       return self._value.s.decode()
-    elif self.type.value == ccs_data_type.INACTIVE:
+    elif self.type == ccs_data_type.INACTIVE:
       return ccs_inactive
-    elif self.type.value == ccs_data_type.OBJECT:
+    elif self.type == ccs_data_type.OBJECT:
       return Object.from_handle(ct.c_void_p(self._value.o))
     else:
       raise Error(ccs_error(ccs_error.INVALID_VALUE))
@@ -293,26 +301,26 @@ class ccs_datum(ct.Structure):
   @value.setter
   def value(self, v):
     if v is None:
-      self.type.value = ccs_data_type.NONE
+      self.type = ccs_data_type.NONE
       self._value.i = 0
     elif isinstance(v, bool):
-      self.type.value = ccs_data_type.BOOLEAN
+      self.type = ccs_data_type.BOOLEAN
       self._value.i = 1 if v else 0
     elif isinstance(v, int):
-      self.type.value = ccs_data_type.INTEGER
+      self.type = ccs_data_type.INTEGER
       self._value.i = v
     elif isinstance(v, float):
-      self.type.value = ccs_data_type.FLOAT
+      self.type = ccs_data_type.FLOAT
       self._value.f = v
     elif isinstance(v, str):
-      self.type.value = ccs_data_type.STRING
+      self.type = ccs_data_type.STRING
       self._string = str.encode(v)
       self._value.s = ct.c_char_p(self._string)
     elif v is ccs_inactive:
-      self.type.value = ccs_data_type.INACTIVE
+      self.type = ccs_data_type.INACTIVE
       self._value.i = 0
     elif isinstance(v, Object):
-      self.type.value = ccs_data_type.OBJECT
+      self.type = ccs_data_type.OBJECT
       self._object = v
       self._value.o = v.handle
     else:
@@ -362,8 +370,8 @@ class Object:
     t = ccs_object_type(0)
     res = ccs_object_get_type(self.handle, ct.byref(t))
     Error.check(res)
-    self._object_type = t
-    return t
+    self._object_type = t.value
+    return self._object_type
 
   @property
   def refcount(self):

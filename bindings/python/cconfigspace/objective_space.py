@@ -137,7 +137,7 @@ class ObjectiveSpace(Context):
     t = ccs_objective_type()
     res = ccs_objective_space_get_objective(self.handle, index, ct.byref(v), ct.byref(t))
     Error.check(res)
-    return (Expression.from_handle(v), t)
+    return (Expression.from_handle(v), t.value)
 
   @property
   def num_objective(self):
@@ -153,4 +153,4 @@ class ObjectiveSpace(Context):
     t = (ccs_objective_type * sz)()
     res = ccs_objective_space_get_objectives(self.handle, sz, v, t, None)
     Error.check(res)
-    return [(Expression.from_handle(ccs_expression(v[x])), ccs_objective_type(t[x])) for x in range(sz)]
+    return [(Expression.from_handle(ccs_expression(v[x])), t[x]) for x in range(sz)]

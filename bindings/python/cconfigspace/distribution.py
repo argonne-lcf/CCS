@@ -48,8 +48,8 @@ class Distribution(Object):
     v = ccs_distribution_type(0)
     res = ccs_distribution_get_type(self.handle, ct.byref(v))
     Error.check(res)
-    self._type = v
-    return v
+    self._type = v.value
+    return self._type
 
   @property
   def data_type(self):
@@ -58,8 +58,8 @@ class Distribution(Object):
     v = ccs_numeric_type(0)
     res = ccs_distribution_get_data_type(self.handle, ct.byref(v))
     Error.check(res)
-    self._data_type = v
-    return v
+    self._data_type = v.value
+    return self._data_type
 
   @property
   def dimension(self):
@@ -78,8 +78,8 @@ class Distribution(Object):
     v = ccs_scale_type(0)
     res = ccs_distribution_get_scale_type(self.handle, ct.byref(v))
     Error.check(res)
-    self._scale_type = v
-    return v
+    self._scale_type = v.value
+    return self._scale_type
 
   @property
   def quantization(self):
@@ -88,7 +88,7 @@ class Distribution(Object):
     v = ccs_numeric(0)
     res = ccs_distribution_get_quantization(self.handle, ct.byref(v))
     Error.check(res)
-    t = self.data_type.value
+    t = self.data_type
     if t == ccs_numeric_type.NUM_INTEGER:
       self._quantization = v.i
     elif t == ccs_numeric_type.NUM_FLOAT:
@@ -117,7 +117,7 @@ class Distribution(Object):
     v = ccs_numeric()
     res = ccs_distribution_sample(self.handle, rng.handle, ct.byref(v))
     Error.check(res)
-    t = self.data_type.value
+    t = self.data_type
     if t == ccs_numeric_type.NUM_INTEGER:
       return v.i
     elif t == ccs_numeric_type.NUM_FLOAT:
@@ -128,7 +128,7 @@ class Distribution(Object):
   def samples(self, rng, count):
     if count == 0:
       return []
-    t = self.data_type.value
+    t = self.data_type
     if t == ccs_numeric_type.NUM_INTEGER:
       v = (ccs_int * count)()
     elif t == ccs_numeric_type.NUM_FLOAT:
@@ -174,7 +174,7 @@ class UniformDistribution(Distribution):
     v = ccs_numeric()
     res = ccs_uniform_distribution_get_parameters(self.handle, ct.byref(v), None)
     Error.check(res)
-    t = self.data_type.value
+    t = self.data_type
     if t == ccs_numeric_type.NUM_INTEGER:
       self._lower = v.i
     elif t == ccs_numeric_type.NUM_FLOAT:
@@ -190,7 +190,7 @@ class UniformDistribution(Distribution):
     v = ccs_numeric()
     res = ccs_uniform_distribution_get_parameters(self.handle, None, ct.byref(v))
     Error.check(res)
-    t = self.data_type.value
+    t = self.data_type
     if t == ccs_numeric_type.NUM_INTEGER:
       self._upper = v.i
     elif t == ccs_numeric_type.NUM_FLOAT:
@@ -226,7 +226,6 @@ class NormalDistribution(Distribution):
     v = ccs_float()
     res = ccs_normal_distribution_get_parameters(self.handle, ct.byref(v), None)
     Error.check(res)
-    t = self.data_type.value
     self._mu = v.value
     return self._mu
 
@@ -237,7 +236,6 @@ class NormalDistribution(Distribution):
     v = ccs_float()
     res = ccs_normal_distribution_get_parameters(self.handle, None, ct.byref(v))
     Error.check(res)
-    t = self.data_type.value
     self._sigma = v.value
     return self._sigma
 
