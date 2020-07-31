@@ -24,6 +24,7 @@ AC_HEADER_ASSERT
 
 #
 PKG_CHECK_MODULES([RUBY], [ruby >= 2.3])
+PKG_CHECK_MODULES([PYTHON], [python3-embed >= 3.6])
 
 #check for libraries
 AC_CHECK_LIB([m],[cos])
@@ -44,5 +45,6 @@ AC_CONFIG_FILES([Makefile
 		tests/Makefile
 		samples/Makefile
 		cconfigspace.pc])
-AC_CONFIG_LINKS([samples/test_ruby.rb:samples/test_ruby.rb])
+AC_CONFIG_LINKS([samples/test_ruby.rb:samples/test_ruby.rb
+                 samples/test_python.py:samples/test_python.py])
 AC_OUTPUT

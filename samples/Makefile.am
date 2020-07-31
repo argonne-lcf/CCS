@@ -1,10 +1,14 @@
 AM_COLOR_TESTS = yes
 
-AM_CFLAGS = -I$(top_srcdir)/include -Wall -Werror -Wpedantic $(RUBY_CFLAGS)
-AM_LDFLAGS = ../src/libcconfigspace.la $(RUBY_LIBS)
+test_ruby_CFLAGS = -I$(top_srcdir)/include -Wall -Werror -Wpedantic $(RUBY_CFLAGS)
+test_ruby_LDFLAGS = ../src/libcconfigspace.la $(RUBY_LIBS)
+
+test_python_CFLAGS = -I$(top_srcdir)/include -Wall -Werror -Wpedantic $(PYTHON_CFLAGS)
+test_python_LDFLAGS = ../src/libcconfigspace.la $(PYTHON_LIBS)
 
 CCONFIGSPACE_TESTS = \
-		test_ruby
+		test_ruby \
+		test_python
 
 # unit tests
 UNIT_TESTS = \
