@@ -1,18 +1,9 @@
 module CCS
   attach_function :ccs_create_configuration_space, [:string, :pointer, :pointer], :ccs_result_t
-  attach_function :ccs_configuration_space_get_name, [:ccs_configuration_space_t, :pointer], :ccs_result_t
-  attach_function :ccs_configuration_space_get_user_data, [:ccs_configuration_space_t, :pointer], :ccs_result_t
   attach_function :ccs_configuration_space_set_rng, [:ccs_configuration_space_t, :ccs_rng_t], :ccs_result_t
   attach_function :ccs_configuration_space_get_rng, [:ccs_configuration_space_t, :pointer], :ccs_result_t
   attach_function :ccs_configuration_space_add_hyperparameter, [:ccs_configuration_space_t, :ccs_hyperparameter_t, :ccs_distribution_t], :ccs_result_t
   attach_function :ccs_configuration_space_add_hyperparameters, [:ccs_configuration_space_t, :size_t, :pointer, :pointer], :ccs_result_t
-  attach_function :ccs_configuration_space_get_num_hyperparameters, [:ccs_configuration_space_t, :pointer], :ccs_result_t
-  attach_function :ccs_configuration_space_get_hyperparameter, [:ccs_configuration_space_t, :size_t, :pointer], :ccs_result_t
-  attach_function :ccs_configuration_space_get_hyperparameter_by_name, [:ccs_configuration_space_t, :string, :pointer], :ccs_result_t
-  attach_function :ccs_configuration_space_get_hyperparameter_index_by_name, [:ccs_configuration_space_t, :string, :pointer], :ccs_result_t
-  attach_function :ccs_configuration_space_get_hyperparameter_index, [:ccs_configuration_space_t, :ccs_hyperparameter_t, :pointer], :ccs_result_t
-  attach_function :ccs_configuration_space_get_hyperparameter_indexes, [:ccs_configuration_space_t, :size_t, :pointer, :pointer], :ccs_result_t
-  attach_function :ccs_configuration_space_get_hyperparameters, [:ccs_configuration_space_t, :size_t, :pointer, :pointer], :ccs_result_t
   attach_function :ccs_configuration_space_set_condition, [:ccs_configuration_space_t, :size_t, :ccs_expression_t], :ccs_result_t
   attach_function :ccs_configuration_space_get_condition, [:ccs_configuration_space_t, :size_t, :pointer], :ccs_result_t
   attach_function :ccs_configuration_space_get_conditions, [:ccs_configuration_space_t, :size_t, :pointer, :pointer], :ccs_result_t
@@ -27,8 +18,6 @@ module CCS
   attach_function :ccs_configuration_space_samples, [:ccs_configuration_space_t, :size_t, :pointer], :ccs_result_t
 
   class ConfigurationSpace < Context
-    add_property :user_data, :pointer, :ccs_configuration_space_get_user_data, memoize: true
-    add_property :num_hyperparameters, :size_t, :ccs_configuration_space_get_num_hyperparameters, memoize: false
 
     def initialize(handle = nil, retain: false, name: "", user_data: nil)
       if handle
@@ -43,15 +32,6 @@ module CCS
 
     def self.from_handle(handle)
       self::new(handle, retain: true)
-    end
-
-    def name
-      @name ||= begin
-        ptr = MemoryPointer::new(:pointer)
-        res = CCS.ccs_configuration_space_get_name(@handle, ptr)
-        CCS.error_check(res)
-        ptr.read_pointer.read_string
-      end
     end
 
     def rng
@@ -88,43 +68,6 @@ module CCS
       res = CCS.ccs_configuration_space_add_hyperparameters(@handle, count, p_hypers, p_dists)
       CCS.error_check(res)
       self
-    end
-
-    def hyperparameter(index)
-      ptr = MemoryPointer::new(:ccs_hyperparameter_t)
-      res = CCS.ccs_configuration_space_get_hyperparameter(@handle, index, ptr)
-      CCS.error_check(res)
-      Hyperparameter.from_handle(ptr.read_ccs_hyperparameter_t)
-    end
-
-    def hyperparameter_by_name(name)
-      ptr = MemoryPointer::new(:ccs_hyperparameter_t)
-      res = CCS.ccs_configuration_space_get_hyperparameter_by_name(@handle, name, ptr)
-      CCS.error_check(res)
-      Hyperparameter.from_handle(ptr.read_ccs_hyperparameter_t)
-    end
-
-    def hyperparameter_index(hyperparameter)
-      ptr = MemoryPointer::new(:size_t)
-      res = CCS.ccs_configuration_space_get_hyperparameter_index(@handle, hyperparameter, ptr)
-      CCS.error_check(res)
-      ptr.read_size_t
-    end
-
-    def hyperparameter_index_by_name(name)
-      ptr = MemoryPointer::new(:size_t)
-      res = CCS.ccs_configuration_space_get_hyperparameter_index_by_name(@handle, name, ptr)
-      CCS.error_check(res)
-      ptr.read_size_t
-    end
-
-    def hyperparameters
-      count = num_hyperparameters
-      return [] if count == 0
-      ptr = MemoryPointer::new(:ccs_hyperparameter_t, count)
-      res = CCS.ccs_configuration_space_get_hyperparameters(@handle, count, ptr, nil)
-      CCS.error_check(res)
-      count.times.collect { |i| Hyperparameter.from_handle(ptr[i].read_pointer) }
     end
 
     def set_condition(hyperparameter, expression)

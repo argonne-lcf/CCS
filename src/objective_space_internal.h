@@ -1,19 +1,7 @@
 #ifndef _OBJECTIVE_SPACE_INTERNAL_H
 #define _OBJECTIVE_SPACE_INTERNAL_H
-#include "utarray.h"
-#define HASH_NONFATAL_OOM 1
-#include "uthash.h"
 #include "utlist.h"
 #include "context_internal.h"
-
-struct _ccs_hyperparameter_wrapper2_s {
-	ccs_hyperparameter_t         hyperparameter;
-	size_t                       index;
-	const char                  *name;
-        UT_hash_handle               hh_name;
-        UT_hash_handle               hh_handle;
-};
-typedef struct _ccs_hyperparameter_wrapper2_s _ccs_hyperparameter_wrapper2_t;
 
 struct _ccs_objective_s {
 	ccs_expression_t     expression;
@@ -38,8 +26,8 @@ struct _ccs_objective_space_data_s {
 	const char                     *name;
 	void                           *user_data;
 	UT_array                       *hyperparameters;
-	_ccs_hyperparameter_wrapper2_t *name_hash;
-	_ccs_hyperparameter_wrapper2_t *handle_hash;
+	_ccs_hyperparameter_wrapper_t  *name_hash;
+	_ccs_hyperparameter_wrapper_t  *handle_hash;
 	UT_array                       *objectives;
 };
 

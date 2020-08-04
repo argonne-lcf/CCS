@@ -19,24 +19,14 @@ module CCS
   end
 
   attach_function :ccs_create_objective_space, [:string, :pointer, :pointer], :ccs_result_t
-  attach_function :ccs_objective_space_get_name, [:ccs_objective_space_t, :pointer], :ccs_result_t
-  attach_function :ccs_objective_space_get_user_data, [:ccs_objective_space_t, :pointer], :ccs_result_t
   attach_function :ccs_objective_space_add_hyperparameter, [:ccs_objective_space_t, :ccs_hyperparameter_t], :ccs_result_t
   attach_function :ccs_objective_space_add_hyperparameters, [:ccs_objective_space_t, :size_t, :pointer], :ccs_result_t
-  attach_function :ccs_objective_space_get_num_hyperparameters, [:ccs_objective_space_t, :pointer], :ccs_result_t
-  attach_function :ccs_objective_space_get_hyperparameter, [:ccs_objective_space_t, :size_t, :pointer], :ccs_result_t
-  attach_function :ccs_objective_space_get_hyperparameter_by_name, [:ccs_objective_space_t, :string, :pointer], :ccs_result_t
-  attach_function :ccs_objective_space_get_hyperparameter_index_by_name, [:ccs_objective_space_t, :string, :pointer], :ccs_result_t
-  attach_function :ccs_objective_space_get_hyperparameter_index, [:ccs_objective_space_t, :ccs_hyperparameter_t, :pointer], :ccs_result_t
-  attach_function :ccs_objective_space_get_hyperparameters, [:ccs_objective_space_t, :size_t, :pointer, :pointer], :ccs_result_t
   attach_function :ccs_objective_space_add_objective, [:ccs_objective_space_t, :ccs_expression_t, :ccs_objective_type_t], :ccs_result_t
   attach_function :ccs_objective_space_add_objectives, [:ccs_objective_space_t, :size_t, :pointer, :pointer], :ccs_result_t
   attach_function :ccs_objective_space_get_objective, [:ccs_objective_space_t, :size_t, :pointer, :pointer], :ccs_result_t
   attach_function :ccs_objective_space_get_objectives, [:ccs_objective_space_t, :size_t, :pointer, :pointer, :pointer], :ccs_result_t
 
-  class ObjectiveSpace < Object
-    add_property :user_data, :pointer, :ccs_objective_space_get_user_data, memoize: true
-    add_property :num_hyperparameters, :size_t, :ccs_objective_space_get_num_hyperparameters, memoize: false
+  class ObjectiveSpace < Context
 
     def initialize(handle = nil, retain: false, name: "", user_data: nil)
       if handle
@@ -53,15 +43,6 @@ module CCS
       self::new(handle, retain: true)
     end
 
-    def name
-      @name ||= begin
-        ptr = MemoryPointer::new(:pointer)
-        res = CCS.ccs_objective_space_get_name(@handle, ptr)
-        CCS.error_check(res)
-        ptr.read_pointer.read_string
-      end
-    end
-
     def add_hyperparameter(hyperparameter)
       res = CCS.ccs_objective_space_add_hyperparameter(@handle, hyperparameter)
       CCS.error_check(res)
@@ -76,43 +57,6 @@ module CCS
       res = CCS.ccs_objective_space_add_hyperparameters(@handle, count, p_hypers)
       CCS.error_check(res)
       self
-    end
-
-    def hyperparameter(index)
-      ptr = MemoryPointer::new(:ccs_hyperparameter_t)
-      res = CCS.ccs_objective_space_get_hyperparameter(@handle, index, ptr)
-      CCS.error_check(res)
-      Hyperparameter.from_handle(ptr.read_ccs_hyperparameter_t)
-    end
-
-    def hyperparameter_by_name(name)
-      ptr = MemoryPointer::new(:ccs_hyperparameter_t)
-      res = CCS.ccs_objective_space_get_hyperparameter_by_name(@handle, name, ptr)
-      CCS.error_check(res)
-      Hyperparameter.from_handle(ptr.read_ccs_hyperparameter_t)
-    end
-
-    def hyperparameter_index(hyperparameter)
-      ptr = MemoryPointer::new(:size_t)
-      res = CCS.ccs_objective_space_get_hyperparameter_index(@handle, hyperparameter, ptr)
-      CCS.error_check(res)
-      ptr.read_size_t
-    end
-
-    def hyperparameter_index_by_name(name)
-      ptr = MemoryPointer::new(:size_t)
-      res = CCS.ccs_objective_space_get_hyperparameter_index_by_name(@handle, name, ptr)
-      CCS.error_check(res)
-      ptr.read_size_t
-    end
-
-    def hyperparameters
-      count = num_hyperparameters
-      return [] if count == 0
-      ptr = MemoryPointer::new(:ccs_hyperparameter_t, count)
-      res = CCS.ccs_objective_space_get_hyperparameters(@handle, count, ptr, nil)
-      CCS.error_check(res)
-      count.times.collect { |i| Hyperparameter.from_handle(ptr[i].read_pointer) }
     end
 
     def add_objective(expression, type: :CCS_MINIMIZE)

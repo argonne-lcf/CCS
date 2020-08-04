@@ -10,8 +10,8 @@ static ccs_result_t
 _ccs_objective_space_del(ccs_object_t object) {
 	ccs_objective_space_t objective_space = (ccs_objective_space_t)object;
 	UT_array *array = objective_space->data->hyperparameters;
-	_ccs_hyperparameter_wrapper2_t *wrapper = NULL;
-	while ( (wrapper = (_ccs_hyperparameter_wrapper2_t *)utarray_next(array, wrapper)) ) {
+	_ccs_hyperparameter_wrapper_t *wrapper = NULL;
+	while ( (wrapper = (_ccs_hyperparameter_wrapper_t *)utarray_next(array, wrapper)) ) {
 		ccs_release_object(wrapper->hyperparameter);
 	}
 	array = objective_space->data->objectives;
@@ -26,27 +26,11 @@ _ccs_objective_space_del(ccs_object_t object) {
 	return CCS_SUCCESS;
 }
 
-static ccs_result_t
-_ccs_objective_space_get_hyperparameter_index(_ccs_context_data_t *data,
-                                              ccs_hyperparameter_t  hyperparameter,
-                                              size_t               *index_ret) {
-	_ccs_objective_space_data_t *osdata =
-		(_ccs_objective_space_data_t *)data;
-	_ccs_hyperparameter_wrapper2_t *wrapper;
-	HASH_FIND(hh_handle, osdata->handle_hash, &hyperparameter,
-	          sizeof(ccs_hyperparameter_t), wrapper);
-	if (!wrapper)
-		return -CCS_INVALID_HYPERPARAMETER;
-	*index_ret = wrapper->index;
-	return CCS_SUCCESS;
-}
-
 static _ccs_objective_space_ops_t _objective_space_ops =
-    { { {&_ccs_objective_space_del},
-	 &_ccs_objective_space_get_hyperparameter_index} };
+    { { {&_ccs_objective_space_del} } };
 
 static const UT_icd _hyperparameter_wrapper2_icd = {
-	sizeof(_ccs_hyperparameter_wrapper2_t),
+	sizeof(_ccs_hyperparameter_wrapper_t),
 	NULL,
 	NULL,
 	NULL,
@@ -103,20 +87,14 @@ ccs_result_t
 ccs_objective_space_get_name(ccs_objective_space_t   objective_space,
                              const char            **name_ret) {
 	CCS_CHECK_OBJ(objective_space, CCS_OBJECTIVE_SPACE);
-	if (!name_ret)
-		return -CCS_INVALID_VALUE;
-	*name_ret = objective_space->data->name;
-	return CCS_SUCCESS;
+	return _ccs_context_get_name((ccs_context_t)objective_space, name_ret);
 }
 
 ccs_result_t
 ccs_objective_space_get_user_data(ccs_objective_space_t   objective_space,
                                   void                  **user_data_ret) {
 	CCS_CHECK_OBJ(objective_space, CCS_OBJECTIVE_SPACE);
-	if (!user_data_ret)
-		return -CCS_INVALID_VALUE;
-	*user_data_ret = objective_space->data->user_data;
-	return CCS_SUCCESS;
+	return _ccs_context_get_user_data((ccs_context_t)objective_space, user_data_ret);
 }
 
 #undef  utarray_oom
@@ -137,7 +115,7 @@ ccs_objective_space_add_hyperparameter(ccs_objective_space_t objective_space,
 	ccs_result_t err;
 	const char *name;
 	size_t sz_name;
-	_ccs_hyperparameter_wrapper2_t *p_hyper_wrapper;
+	_ccs_hyperparameter_wrapper_t *p_hyper_wrapper;
 	err = ccs_hyperparameter_get_name(hyperparameter, &name);
 	if (err)
 		goto error;
@@ -150,7 +128,7 @@ ccs_objective_space_add_hyperparameter(ccs_objective_space_t objective_space,
 	}
 	UT_array *hyperparameters;
 	unsigned int index;
-	_ccs_hyperparameter_wrapper2_t hyper_wrapper;
+	_ccs_hyperparameter_wrapper_t hyper_wrapper;
 	hyper_wrapper.hyperparameter = hyperparameter;
 	err = ccs_retain_object(hyperparameter);
 	if (err)
@@ -166,7 +144,7 @@ ccs_objective_space_add_hyperparameter(ccs_objective_space_t objective_space,
 
 	p_hyper_wrapper = NULL;
         // Rehash in case utarray_push_back triggered a memory reallocation
-        while ( (p_hyper_wrapper = (_ccs_hyperparameter_wrapper2_t*)utarray_next(hyperparameters, p_hyper_wrapper)) ) {
+        while ( (p_hyper_wrapper = (_ccs_hyperparameter_wrapper_t*)utarray_next(hyperparameters, p_hyper_wrapper)) ) {
 		HASH_ADD_KEYPTR( hh_name, objective_space->data->name_hash,
 		                 p_hyper_wrapper->name, strlen(p_hyper_wrapper->name), p_hyper_wrapper );
 		HASH_ADD( hh_handle, objective_space->data->handle_hash,
@@ -205,9 +183,8 @@ ccs_objective_space_get_num_hyperparameters(
 		ccs_objective_space_t  objective_space,
 		size_t                *num_hyperparameters_ret) {
 	CCS_CHECK_OBJ(objective_space, CCS_OBJECTIVE_SPACE);
-	CCS_CHECK_PTR(num_hyperparameters_ret);
-	*num_hyperparameters_ret = utarray_len(objective_space->data->hyperparameters);
-	return CCS_SUCCESS;
+	return _ccs_context_get_num_hyperparameters(
+		(ccs_context_t)objective_space, num_hyperparameters_ret);
 }
 
 ccs_result_t
@@ -215,13 +192,8 @@ ccs_objective_space_get_hyperparameter(ccs_objective_space_t  objective_space,
                                        size_t                 index,
                                        ccs_hyperparameter_t  *hyperparameter_ret) {
 	CCS_CHECK_OBJ(objective_space, CCS_OBJECTIVE_SPACE);
-	CCS_CHECK_PTR(hyperparameter_ret);
-	_ccs_hyperparameter_wrapper2_t *wrapper = (_ccs_hyperparameter_wrapper2_t*)
-	    utarray_eltptr(objective_space->data->hyperparameters, (unsigned int)index);
-	if (!wrapper)
-		return -CCS_OUT_OF_BOUNDS;
-	*hyperparameter_ret = wrapper->hyperparameter;
-	return CCS_SUCCESS;
+	return _ccs_context_get_hyperparameter(
+		(ccs_context_t)objective_space, index, hyperparameter_ret);
 }
 
 ccs_result_t
@@ -230,16 +202,8 @@ ccs_objective_space_get_hyperparameter_by_name(
 		const char *           name,
 		ccs_hyperparameter_t  *hyperparameter_ret) {
 	CCS_CHECK_OBJ(objective_space, CCS_OBJECTIVE_SPACE);
-	CCS_CHECK_PTR(hyperparameter_ret);
-	_ccs_hyperparameter_wrapper2_t *wrapper;
-	size_t sz_name;
-	sz_name = strlen(name);
-	HASH_FIND(hh_name, objective_space->data->name_hash,
-	          name, sz_name, wrapper);
-	if (!wrapper)
-		return -CCS_INVALID_NAME;
-	*hyperparameter_ret = wrapper->hyperparameter;
-	return CCS_SUCCESS;
+	return _ccs_context_get_hyperparameter_by_name(
+		(ccs_context_t)objective_space, name, hyperparameter_ret);
 }
 
 ccs_result_t
@@ -248,17 +212,8 @@ ccs_objective_space_get_hyperparameter_index_by_name(
 		const char            *name,
 		size_t                *index_ret) {
 	CCS_CHECK_OBJ(objective_space, CCS_OBJECTIVE_SPACE);
-	CCS_CHECK_PTR(name);
-	CCS_CHECK_PTR(index_ret);
-	_ccs_hyperparameter_wrapper2_t *wrapper;
-	size_t sz_name;
-	sz_name = strlen(name);
-	HASH_FIND(hh_name, objective_space->data->name_hash,
-	          name, sz_name, wrapper);
-	if (!wrapper)
-		return -CCS_INVALID_NAME;
-	*index_ret = wrapper->index;
-	return CCS_SUCCESS;
+	return _ccs_context_get_hyperparameter_index_by_name(
+		(ccs_context_t)objective_space, name, index_ret);
 }
 
 ccs_result_t
@@ -268,14 +223,9 @@ ccs_objective_space_get_hyperparameter_index(
 		size_t                *index_ret) {
 	CCS_CHECK_OBJ(objective_space, CCS_OBJECTIVE_SPACE);
 	CCS_CHECK_OBJ(hyperparameter, CCS_HYPERPARAMETER);
-	CCS_CHECK_PTR(index_ret);
-	_ccs_hyperparameter_wrapper2_t *wrapper;
-	HASH_FIND(hh_handle, objective_space->data->handle_hash,
-	          &hyperparameter, sizeof(ccs_hyperparameter_t), wrapper);
-	if (!wrapper)
-		return -CCS_INVALID_HYPERPARAMETER;
-	*index_ret = wrapper->index;
-	return CCS_SUCCESS;
+	return _ccs_context_get_hyperparameter_index(
+		(ccs_context_t)(objective_space),
+		hyperparameter, index_ret);
 }
 
 ccs_result_t
@@ -284,24 +234,9 @@ ccs_objective_space_get_hyperparameters(ccs_objective_space_t  objective_space,
                                         ccs_hyperparameter_t  *hyperparameters,
                                         size_t                *num_hyperparameters_ret) {
 	CCS_CHECK_OBJ(objective_space, CCS_OBJECTIVE_SPACE);
-	CCS_CHECK_ARY(num_hyperparameters, hyperparameters);
-	if (!num_hyperparameters_ret && !hyperparameters)
-		return -CCS_INVALID_VALUE;
-	UT_array *array = objective_space->data->hyperparameters;
-	size_t size = utarray_len(array);
-	if (hyperparameters) {
-		if (num_hyperparameters < size)
-			return -CCS_INVALID_VALUE;
-		_ccs_hyperparameter_wrapper2_t *wrapper = NULL;
-		size_t index = 0;
-		while ( (wrapper = (_ccs_hyperparameter_wrapper2_t *)utarray_next(array, wrapper)) )
-			hyperparameters[index++] = wrapper->hyperparameter;
-		for (size_t i = size; i < num_hyperparameters; i++)
-			hyperparameters[i] = NULL;
-	}
-	if (num_hyperparameters_ret)
-		*num_hyperparameters_ret = size;
-	return CCS_SUCCESS;
+	return _ccs_context_get_hyperparameters(
+		(ccs_context_t)objective_space, num_hyperparameters,
+		hyperparameters, num_hyperparameters_ret);
 }
 
 #undef  utarray_oom

@@ -6,19 +6,10 @@ from .expression import Expression
 from .rng import Rng
 
 ccs_create_configuration_space = _ccs_get_function("ccs_create_configuration_space", [ct.c_char_p, ct.c_void_p, ct.POINTER(ccs_configuration_space)])
-ccs_configuration_space_get_name = _ccs_get_function("ccs_configuration_space_get_name", [ccs_configuration_space, ct.POINTER(ct.c_char_p)])
-ccs_configuration_space_get_user_data = _ccs_get_function("ccs_configuration_space_get_user_data", [ccs_configuration_space, ct.POINTER(ct.c_void_p)])
 ccs_configuration_space_set_rng = _ccs_get_function("ccs_configuration_space_set_rng", [ccs_configuration_space, ccs_rng])
 ccs_configuration_space_get_rng = _ccs_get_function("ccs_configuration_space_get_rng", [ccs_configuration_space, ct.POINTER(ccs_rng)])
 ccs_configuration_space_add_hyperparameter = _ccs_get_function("ccs_configuration_space_add_hyperparameter", [ccs_configuration_space, ccs_hyperparameter, ccs_distribution])
 ccs_configuration_space_add_hyperparameters = _ccs_get_function("ccs_configuration_space_add_hyperparameters", [ccs_configuration_space, ct.c_size_t, ct.POINTER(ccs_hyperparameter), ct.POINTER(ccs_distribution)])
-ccs_configuration_space_get_num_hyperparameters = _ccs_get_function("ccs_configuration_space_get_num_hyperparameters", [ccs_configuration_space, ct.POINTER(ct.c_size_t)])
-ccs_configuration_space_get_hyperparameter = _ccs_get_function("ccs_configuration_space_get_hyperparameter", [ccs_configuration_space, ct.c_size_t, ct.POINTER(ccs_hyperparameter)])
-ccs_configuration_space_get_hyperparameter_by_name = _ccs_get_function("ccs_configuration_space_get_hyperparameter_by_name", [ccs_configuration_space, ct.c_char_p, ct.POINTER(ccs_hyperparameter)])
-ccs_configuration_space_get_hyperparameter_index_by_name = _ccs_get_function("ccs_configuration_space_get_hyperparameter_index_by_name", [ccs_configuration_space, ct.c_char_p, ct.POINTER(ct.c_size_t)])
-ccs_configuration_space_get_hyperparameter_index = _ccs_get_function("ccs_configuration_space_get_hyperparameter_index", [ccs_configuration_space, ccs_hyperparameter, ct.POINTER(ct.c_size_t)])
-ccs_configuration_space_get_hyperparameter_indexes = _ccs_get_function("ccs_configuration_space_get_hyperparameter_indexes", [ccs_configuration_space, ct.c_size_t, ct.POINTER(ccs_hyperparameter), ct.POINTER(ct.c_size_t)])
-ccs_configuration_space_get_hyperparameters = _ccs_get_function("ccs_configuration_space_get_hyperparameters", [ccs_configuration_space, ct.c_size_t, ct.POINTER(ccs_hyperparameter), ct.POINTER(ct.c_size_t)])
 ccs_configuration_space_set_condition = _ccs_get_function("ccs_configuration_space_set_condition", [ccs_configuration_space, ct.c_size_t, ccs_expression])
 ccs_configuration_space_get_condition = _ccs_get_function("ccs_configuration_space_get_condition", [ccs_configuration_space, ct.c_size_t, ct.POINTER(ccs_expression)])
 ccs_configuration_space_get_conditions = _ccs_get_function("ccs_configuration_space_get_conditions", [ccs_configuration_space, ct.c_size_t, ct.POINTER(ccs_expression), ct.POINTER(ct.c_size_t)])
@@ -45,26 +36,6 @@ class ConfigurationSpace(Context):
   @classmethod
   def from_handle(cls, handle):
     return cls(handle = handle, retain = True)
-
-  @property
-  def user_data(self):
-    if hasattr(self, "_user_data"):
-      return self._user_data
-    v = ct.c_void_p()
-    res = ccs_configuration_space_get_user_data(self.handle, ct.byref(v))
-    Error.check(res)
-    self._user_data = v
-    return v
-
-  @property
-  def name(self):
-    if hasattr(self, "_name"):
-      return self._name
-    v = ct.c_char_p()
-    res = ccs_configuration_space_get_name(self.handle, ct.byref(v))
-    Error.check(res)
-    self._name = v.value.decode()
-    return self._name
 
   @property
   def rng(self):
@@ -97,47 +68,6 @@ class ConfigurationSpace(Context):
     hypers = (ccs_hyperparameter * count)(*[x.handle.value for x in hyperparameters])
     res = ccs_configuration_space_add_hyperparameters(self.handle, count, hypers, distribs)
     Error.check(res)
-
-  def hyperparameter(self, index):
-    v = ccs_hyperparameter()
-    res = ccs_configuration_space_get_hyperparameter(self.handle, index, ct.byref(v))
-    Error.check(res)
-    return Hyperparameter.from_handle(v)
-
-  def hyperparameter_by_name(self, name):
-    v = ccs_hyperparameter()
-    res = ccs_configuration_space_get_hyperparameter_by_name(self.handle, str.encode(name), ct.byref(v))
-    Error.check(res)
-    return Hyperparameter.from_handle(v)
-
-  def hyperparameter_index(self, hyperparameter):
-    v = ct.c_size_t()
-    res = ccs_configuration_space_get_hyperparameter_index(self.handle, hyperparameter.handle, ct.byref(v))
-    Error.check(res)
-    return v.value
-
-  def hyperparameter_index_by_name(self, name):
-    v = ct.c_size_t()
-    res = ccs_configuration_space_get_hyperparameter_index_by_name(self.handle, str.encode(name), ct.byref(v))
-    Error.check(res)
-    return v.value
-
-  @property
-  def num_hyperparameters(self):
-    v = ct.c_size_t(0)
-    res = ccs_configuration_space_get_num_hyperparameters(self.handle, ct.byref(v))
-    Error.check(res)
-    return v.value
-
-  @property
-  def hyperparameters(self):
-    count = self.num_hyperparameters
-    if count == 0:
-      return []
-    v = (ccs_hyperparameter * count)()
-    res = ccs_configuration_space_get_hyperparameters(self.handle, count, v, None)
-    Error.check(res)
-    return [Hyperparameter.from_handle(ccs_hyperparameter(x)) for x in v]
 
   def set_condition(self, hyperparameter, expression):
     if isinstance(hyperparameter, Hyperparameter):
