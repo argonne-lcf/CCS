@@ -156,8 +156,83 @@ class TestConfigurationSpace(unittest.TestCase):
         self.assertNotEqual( ccs.ccs_inactive, s.value(par) )
       for par in list(set(all_params) - set(active_params)):
         self.assertEqual( ccs.ccs_inactive, s.value(par) )
-      self.assertFalse( s.value('p1') == '#pragma omp #P2' and  s.value('p2') == ' ' ) 
-      self.assertFalse( s.value('p1') == '#pragma omp #P3' and  s.value('p3') == ' ' ) 
+      self.assertFalse( s.value('p1') == '#pragma omp #P2' and  s.value('p2') == ' ' )
+      self.assertFalse( s.value('p1') == '#pragma omp #P3' and  s.value('p3') == ' ' )
+
+  def test_omp_parse(self):
+    p1 = ccs.CategoricalHyperparameter(
+      name = 'p1',
+      values = [
+        ' ',
+        '#pragma omp #P2',
+        '#pragma omp target teams distribute #P2',
+        '#pragma omp target teams distribute #P4',
+        '#pragma omp #P3'])
+    p2 = ccs.CategoricalHyperparameter(
+      name = 'p2',
+      values = [
+        ' ',
+        'parallel for #P3',
+        'parallel for #P5',
+        'parallel for #P6'])
+    p3 = ccs.CategoricalHyperparameter(
+      name = 'p3',
+      values = [' ', 'simd'])
+    p4 = ccs.CategoricalHyperparameter(
+      name = 'p4',
+      values = [
+        ' ',
+        'dist_schedule(static)',
+        'dist_schedule(static, #P8)'])
+    p5 = ccs.CategoricalHyperparameter(
+      name = 'p5',
+      values = [
+        ' ',
+        'schedule(#P7,#P8)',
+        'schedule(#P7)'])
+    p6 = ccs.CategoricalHyperparameter(
+      name = 'p6',
+      values = [
+        ' ',
+        'numthreads(#P9)'])
+    p7 = ccs.CategoricalHyperparameter(
+      name = 'p7',
+      values = [
+        'static',
+        'dynamic'])
+    p8 = ccs.OrdinalHyperparameter(
+      name = 'p8',
+      values = ['1', '8', '16'])
+    p9 = ccs.OrdinalHyperparameter(
+      name = 'p9',
+      values = ['1', '8', '16'])
+
+    cs = ccs.ConfigurationSpace(name = "omp")
+    cs.add_hyperparameters([p1, p2, p3, p4, p5, p6, p7, p8, p9])
+
+    cs.set_condition(p2, "p1 # ['#pragma omp #P2', '#pragma omp target teams distribute #P2']")
+    cs.set_condition(p4, "p1 == '#pragma omp target teams distribute #P4'")
+    cs.set_condition(p3, "p1 == '#pragma omp #P3' || p2 == 'parallel for #P3'")
+    cs.set_condition(p5, "p2 == 'parallel for #P5'")
+    cs.set_condition(p6, "p2 == 'parallel for #P6'")
+    cs.set_condition(p7, "p5 # ['schedule(#P7)', 'schedule(#P7,#P8)']")
+    cs.set_condition(p8, "p4 == 'dist_schedule(static, #P8)' || p5 == 'schedule(#P7,#P8)'")
+    cs.set_condition(p9, "p6 == 'numthreads(#P9)'")
+
+    cs.add_forbidden_clauses(["p1 == '#pragma omp #P2' && p2 == ' '",
+                              "p1 == '#pragma omp #P3' && p3 == ' '"])
+
+    all_params = [ "p{}".format(i) for i in range(1,10) ]
+    for i in range(1000):
+      s = cs.sample()
+      s.check()
+      active_params = self.extract_active_parameters(s.values)
+      for par in active_params:
+        self.assertNotEqual( ccs.ccs_inactive, s.value(par) )
+      for par in list(set(all_params) - set(active_params)):
+        self.assertEqual( ccs.ccs_inactive, s.value(par) )
+      self.assertFalse( s.value('p1') == '#pragma omp #P2' and  s.value('p2') == ' ' )
+      self.assertFalse( s.value('p1') == '#pragma omp #P3' and  s.value('p3') == ' ' )
 
 
 if __name__ == '__main__':

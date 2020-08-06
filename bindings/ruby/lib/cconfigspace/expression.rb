@@ -206,7 +206,7 @@ module CCS
 
     def to_s
       case value
-      when String
+      when nil, String
         value.inspect
       else
         value.to_s

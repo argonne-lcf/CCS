@@ -3,8 +3,10 @@ from .base import Object, Error, CEnumeration, ccs_error, _ccs_get_function, ccs
 from .context import Context
 from .hyperparameter import Hyperparameter
 from .expression import Expression
+from .expression_parser import ccs_parser
 from .configuration_space import ConfigurationSpace
 from .configuration import Configuration
+from parglare.parser import Context as PContext
 
 class ccs_objective_type(CEnumeration):
   _members_ = [
@@ -46,6 +48,8 @@ class ObjectiveSpace(Context):
     Error.check(res)
 
   def add_objective(self, expression, t = ccs_objective_type.MINIMIZE):
+    if isinstance(expression, str):
+      expression = ccs_parser.parse(expression, context = PContext(extra=self))
     res = ccs_objective_space_add_objective(self.handle, expression.handle, t)
     Error.check(res)
 
@@ -53,6 +57,7 @@ class ObjectiveSpace(Context):
     if isinstance(expressions, dict):
       types = expressions.values()
       expressions = expressions.keys()
+    expressions = [ ccs_parser.parse(expression, context = PContext(extra=self)) if isinstance(expression, str) else expression for expression in expressions ]
     sz = len(expressions)
     if sz == 0:
       return None

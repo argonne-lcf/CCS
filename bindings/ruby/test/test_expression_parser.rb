@@ -46,5 +46,29 @@ class CConfigSpaceTestExpressionParser < Minitest::Test
     assert( res.kind_of? CCS::Expression )
     assert_equal( false, res.eval )
   end
+
+  def test_boolean
+    m = CCS::ExpressionParser.new.method(:parse)
+    exp = "true"
+    res = m[exp]
+    assert( res.kind_of? CCS::Literal )
+    assert_equal( true, res.eval )
+    assert_equal( "true", res.to_s )
+    exp = "false"
+    res = m[exp]
+    assert( res.kind_of? CCS::Literal )
+    assert_equal( false, res.eval )
+    assert_equal( "false", res.to_s )
+  end
+
+  def test_none
+    m = CCS::ExpressionParser.new.method(:parse)
+    exp = "nil"
+    res = m[exp]
+    assert( res.kind_of? CCS::Literal )
+    assert_nil( res.eval )
+    assert_equal( "nil", res.to_s )
+  end
+
 end
 

@@ -3,7 +3,9 @@ from .base import Object, Error, ccs_error, _ccs_get_function, ccs_context, ccs_
 from .context import Context
 from .hyperparameter import Hyperparameter
 from .expression import Expression
+from .expression_parser import ccs_parser
 from .rng import Rng
+from parglare.parser import Context as PContext
 
 ccs_create_configuration_space = _ccs_get_function("ccs_create_configuration_space", [ct.c_char_p, ct.c_void_p, ct.POINTER(ccs_configuration_space)])
 ccs_configuration_space_set_rng = _ccs_get_function("ccs_configuration_space_set_rng", [ccs_configuration_space, ccs_rng])
@@ -70,6 +72,8 @@ class ConfigurationSpace(Context):
     Error.check(res)
 
   def set_condition(self, hyperparameter, expression):
+    if isinstance(expression, str):
+      expression = ccs_parser.parse(expression, context = PContext(extra=self))
     if isinstance(hyperparameter, Hyperparameter):
       hyperparameter = self.hyperparameter_index(hyperparameter)
     elif isinstance(hyperparameter, str):
@@ -105,6 +109,8 @@ class ConfigurationSpace(Context):
     return [Expression.from_handle(ccs_expression(x)) if x else None for x in v]    
 
   def add_forbidden_clause(self, expression):
+    if isinstance(expression, str):
+      expression = ccs_parser.parse(expression, context = PContext(extra=self))
     res = ccs_configuration_space_add_forbidden_clause(self.handle, expression.handle)
     Error.check(res)
 
@@ -112,6 +118,7 @@ class ConfigurationSpace(Context):
     sz = len(expressions)
     if sz == 0:
       return None
+    expressions = [ ccs_parser.parse(expression, context = PContext(extra=self)) if isinstance(expression, str) else expression for expression in expressions ]
     v = (ccs_expression * sz)(*[x.handle.value for x in expressions])
     res = ccs_configuration_space_add_forbidden_clauses(self.handle, sz, v)
     Error.check(res)

@@ -12,6 +12,7 @@ from .interval import *
 from .distribution import *
 from .hyperparameter import *
 from .expression import *
+from .expression_parser import *
 from .context import *
 from .configuration_space import *
 from .configuration import *
