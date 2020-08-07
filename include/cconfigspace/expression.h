@@ -29,7 +29,6 @@ enum ccs_expression_type_e {
 	CCS_EXPRESSION_TYPE_MAX,
 	CCS_EXPRESSION_FORCE_32BIT = INT_MAX
 };
-
 typedef enum ccs_expression_type_e ccs_expression_type_t;
 
 // Precedence classes: least from most (taken from C)
@@ -55,7 +54,6 @@ enum ccs_associativity_type_e {
 	CCS_ASSOCIATIVITY_TYPE_MAX,
 	CCS_ASSOCIATIVITY_TYPE_FORCE_32BIT = INT_MAX
 };
-
 typedef enum ccs_associativity_type_e ccs_associativity_type_t;
 
 extern const ccs_associativity_type_t ccs_expression_associativity[];
@@ -63,6 +61,29 @@ extern const ccs_associativity_type_t ccs_expression_associativity[];
 extern const char *ccs_expression_symbols[];
 
 extern const int ccs_expression_arity[];
+
+enum ccs_terminal_type_e {
+	CCS_TERM_NONE = 0,
+	CCS_TERM_TRUE,
+	CCS_TERM_FALSE,
+	CCS_TERM_STRING,
+	CCS_TERM_IDENTIFIER,
+	CCS_TERM_INTEGER,
+	CCS_TERM_FLOAT,
+	CCS_TERMINAL_TYPE_MAX,
+	CCS_TERMINAL_FORCE_32BIT = INT_MAX
+};
+typedef enum ccs_terminal_type_e ccs_terminal_type_t;
+
+// Precedence classes for disambiguation
+// NONE, TRUE and FALSE are not IDENTIFIER
+// 0: STRING, IDENTIFIER, INTEGER, FLOAT
+// 1: NONE, TRUE, FALSE
+extern const int ccs_terminal_precedence[];
+
+extern const char *ccs_terminal_regexp[];
+
+extern const char *ccs_terminal_symbols[];
 
 // Expressions
 extern ccs_result_t

@@ -56,6 +56,31 @@ const int ccs_expression_arity[] = {
 	0, 0
 };
 
+const int ccs_terminal_precedence[] = {
+	1, 1, 1,
+	0, 0, 0, 0
+};
+
+const char *ccs_terminal_regexp[] = {
+	"none",
+	"true",
+	"false",
+	"\"([^\\0\\t\\n\\r\\f\"\\\\]|\\\\[0tnrf\"\\\\])+\"|'([^\\0\\t\\n\\r\\f'\\\\]|\\\\[0tnrf'\\\\])+'",
+	"[a-zA-Z_][a-zA-Z_0-9]*",
+	"-?[0-9]+",
+	"-?[0-9]+([eE][+-]?[0-9]+|\\.[0-9]+([eE][+-]?[0-9]+)?)"
+};
+
+const char *ccs_terminal_symbols[] = {
+	"none",
+	"true",
+	"false",
+	NULL,
+	NULL,
+	NULL,
+	NULL
+};
+
 static inline _ccs_expression_ops_t *
 ccs_expression_get_ops(ccs_expression_t expression) {
 	return (_ccs_expression_ops_t *)expression->obj.ops;

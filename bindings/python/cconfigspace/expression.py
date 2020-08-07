@@ -38,6 +38,21 @@ ccs_expression_associativity = (ccs_associativity_type * _sz_expr).in_dll(libcco
 ccs_expression_symbols = [x.decode() if x else x for x in (ct.c_char_p * _sz_expr).in_dll(libcconfigspace, "ccs_expression_symbols")]
 ccs_expression_arity = (ct.c_int * _sz_expr).in_dll(libcconfigspace, "ccs_expression_arity")
 
+class ccs_terminal_type(CEnumeration):
+  _members_ = [
+    ('TERM_NONE', 0),
+    'TERM_TRUE',
+    'TERM_FALSE',
+    'TERM_STRING',
+    'TERM_IDENTIFIER',
+    'TERM_INTEGER',
+    'TERM_FLOAT' ]
+
+_sz_term = len(ccs_terminal_type._members_)
+ccs_terminal_precedence = (ct.c_int * _sz_term).in_dll(libcconfigspace, "ccs_terminal_precedence")
+ccs_terminal_regexp = [x.decode() if x else x for x in (ct.c_char_p * _sz_term).in_dll(libcconfigspace, "ccs_terminal_regexp")]
+ccs_terminal_symbols = [x.decode() if x else x for x in (ct.c_char_p * _sz_term).in_dll(libcconfigspace, "ccs_terminal_symbols")]
+
 ccs_create_binary_expression = _ccs_get_function("ccs_create_binary_expression", [ccs_expression_type, ccs_datum_fix, ccs_datum_fix, ct.POINTER(ccs_expression)])
 ccs_create_unary_expression = _ccs_get_function("ccs_create_unary_expression", [ccs_expression_type, ccs_datum_fix, ct.POINTER(ccs_expression)])
 ccs_create_expression = _ccs_get_function("ccs_create_expression", [ccs_expression_type, ct.c_size_t, ct.POINTER(ccs_datum), ct.POINTER(ccs_expression)])
@@ -189,6 +204,10 @@ class Expression(Object):
 
 
 class Literal(Expression):
+  none_symbol = ccs_terminal_symbols[ccs_terminal_type.TERM_NONE]
+  true_aymbol = ccs_terminal_symbols[ccs_terminal_type.TERM_TRUE]
+  false_symbol = ccs_terminal_symbols[ccs_terminal_type.TERM_FALSE]
+
   def __init__(self, handle = None, retain = False, value = None):
     if handle is None:
       handle = ccs_expression()
@@ -217,11 +236,11 @@ class Literal(Expression):
     if isinstance(v, str):
       return repr(v)
     elif v is None:
-      return "none"
+      return Literal.none_symbol
     elif v is True:
-      return "true"
+      return Literal.true_aymbol
     elif v is False:
-      return "false"
+      return Literal.false_symbol
     else:
       return "{}".format(v)
 

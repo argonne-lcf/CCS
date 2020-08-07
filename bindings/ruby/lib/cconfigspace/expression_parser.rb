@@ -43,25 +43,25 @@ module CCS
     rule("]")
     rule(",")
 
-    rule(:none => /none/).as { |b|
+    rule(:none => Regexp.new(TerminalRegexp[:CCS_TERM_NONE])).as { |b|
       Literal::new(value: nil) }
-    rule(:btrue => /true/).as { |b|
+    rule(:true => Regexp.new(TerminalRegexp[:CCS_TERM_TRUE])).as { |b|
       Literal::new(value: true) }
-    rule(:bfalse => /false/).as { |b|
+    rule(:false => Regexp.new(TerminalRegexp[:CCS_TERM_FALSE])).as { |b|
       Literal::new(value: false) }
-    rule(:float => /-?[0-9]+([eE][+-]?[0-9]+|\.[0-9]+([eE][+-]?[0-9]+)?)/).as {|num|
+    rule(:float => Regexp.new(TerminalRegexp[:CCS_TERM_FLOAT])).as {|num|
       Literal::new(value: Float(num)) }
-    rule(:integer => /-?[0-9]+/).as { |num|
+    rule(:integer => Regexp.new(TerminalRegexp[:CCS_TERM_INTEGER])).as { |num|
       Literal::new(value: Integer(num)) }
-    rule(:identifier => /[a-zA-Z_][a-zA-Z_0-9]*/).as { |identifier|
+    rule(:identifier => Regexp.new(TerminalRegexp[:CCS_TERM_IDENTIFIER])).as { |identifier|
       Variable::new(hyperparameter: context.hyperparameter_by_name(identifier)) }
-    rule(:string => /"([^\0\t\n\r\f"\\]|\\[0tnrf"\\])+"|'([^\0\t\n\r\f'\\]|\\[0tnrf'\\])+'/).as { |str|
+    rule(:string => Regexp.new(TerminalRegexp[:CCS_TERM_STRING])).as { |str|
       Literal::new(value: eval(str)) }
 
     rule(:value) do |r|
       r[:none]
-      r[:btrue]
-      r[:bfalse]
+      r[:true]
+      r[:false]
       r[:string]
       r[:identifier]
       r[:float]

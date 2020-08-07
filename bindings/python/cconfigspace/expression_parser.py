@@ -1,5 +1,5 @@
 from parglare import Parser, Grammar
-from .expression import Expression, Literal, Variable, List, ccs_expression_type, ccs_associativity_type, ccs_expression_precedence, ccs_expression_associativity, ccs_expression_symbols, ccs_expression_arity
+from .expression import Expression, Literal, Variable, List, ccs_expression_type, ccs_associativity_type, ccs_expression_precedence, ccs_expression_associativity, ccs_expression_symbols, ccs_expression_arity, ccs_terminal_type, ccs_terminal_precedence, ccs_terminal_regexp
 
 _associativity_map = {
   ccs_associativity_type.LEFT_TO_RIGHT: "left",
@@ -21,22 +21,28 @@ list: '[' list_item ']'
 list_item: list_item ',' value
          | value;
 value: none
-     | btrue
-     | bfalse
+     | true
+     | false
      | string
      | identifier
      | integer
      | float;
 
 terminals
-none: /none/ {prefer};
-btrue: /true/ {prefer};
-bfalse: /false/ {prefer};
-identifier: /[a-zA-Z_][a-zA-Z_0-9]*/;
-string: /"([^\0\t\n\r\f"\\]|\\[0tnrf"\\])+"|'([^\0\t\n\r\f'\\]|\\[0tnrf'\\])+'/;
-integer: /-?[0-9]+/;
-float: /-?[0-9]+([eE][+-]?[0-9]+|\.[0-9]+([eE][+-]?[0-9]+)?)/;
-"""
+none: /%s/ {%d};
+true: /%s/ {%d};
+false: /%s/ {%d};
+identifier: /%s/ {%d};
+string: /%s/ {%d};
+integer: /%s/ {%d};
+float: /%s/ {%d};
+""" % (ccs_terminal_regexp[ccs_terminal_type.TERM_NONE], ccs_terminal_precedence[ccs_terminal_type.TERM_NONE],
+       ccs_terminal_regexp[ccs_terminal_type.TERM_TRUE], ccs_terminal_precedence[ccs_terminal_type.TERM_TRUE],
+       ccs_terminal_regexp[ccs_terminal_type.TERM_FALSE], ccs_terminal_precedence[ccs_terminal_type.TERM_FALSE],
+       ccs_terminal_regexp[ccs_terminal_type.TERM_IDENTIFIER], ccs_terminal_precedence[ccs_terminal_type.TERM_IDENTIFIER],
+       ccs_terminal_regexp[ccs_terminal_type.TERM_STRING], ccs_terminal_precedence[ccs_terminal_type.TERM_STRING],
+       ccs_terminal_regexp[ccs_terminal_type.TERM_INTEGER], ccs_terminal_precedence[ccs_terminal_type.TERM_INTEGER],
+       ccs_terminal_regexp[ccs_terminal_type.TERM_FLOAT], ccs_terminal_precedence[ccs_terminal_type.TERM_FLOAT])
 
 _actions = {}
 _expr_actions = [ lambda _, n: n[1] ]
@@ -56,8 +62,8 @@ _actions["list_item"] = [
   lambda _, n: [n[0]]
 ]
 _actions["none"] = lambda _, value: Literal(value = None)
-_actions["btrue"] = lambda _, value: Literal(value = True)
-_actions["bfalse"] = lambda _, value: Literal(value = False)
+_actions["true"] = lambda _, value: Literal(value = True)
+_actions["false"] = lambda _, value: Literal(value = False)
 _actions["identifier"] = lambda p, value: Variable(hyperparameter = p.extra.hyperparameter_by_name(value))
 _actions["string"] = lambda _, value: Literal(value = eval(value))
 _actions["float"] = lambda _, value: Literal(value = float(value))

@@ -56,6 +56,30 @@ module CCS
     [k, expression_arity[v]]
   }.to_h
 
+  TerminalType = enum FFI::Type::INT32, :ccs_terminal_type_t, [
+    :CCS_TERM_NONE, 0,
+    :CCS_TERM_TRUE,
+    :CCS_TERM_FALSE,
+    :CCS_TERM_STRING,
+    :CCS_TERM_IDENTIFIER,
+    :CCS_TERM_INTEGER,
+    :CCS_TERM_FLOAT,
+  ]
+
+  attach_variable :terminal_precedence, :ccs_terminal_precedence, FFI::ArrayType::new(find_type(:int), TerminalType.symbol_map.size)
+  attach_variable :terminal_regexp, :ccs_terminal_regexp, FFI::ArrayType::new(find_type(:string), TerminalType.symbol_map.size)
+  attach_variable :terminal_symbols, :ccs_terminal_symbols, FFI::ArrayType::new(find_type(:string), TerminalType.symbol_map.size)
+
+  TerminalPrecedence = TerminalType.symbol_map.collect { |k, v|
+    [k, terminal_precedence[v]]
+  }.to_h
+  TerminalRegexp = TerminalType.symbol_map.collect { |k, v|
+    [k, terminal_regexp[v]]
+  }.to_h
+  TerminalSymbols = TerminalType.symbol_map.collect { |k, v|
+    [k, terminal_symbols[v]]
+  }.to_h
+
   attach_function :ccs_create_binary_expression, [:ccs_expression_type_t, :ccs_datum_t, :ccs_datum_t, :pointer], :ccs_result_t
   attach_function :ccs_create_unary_expression, [:ccs_expression_type_t, :ccs_datum_t, :pointer], :ccs_result_t
   attach_function :ccs_create_expression, [:ccs_expression_type_t, :size_t, :pointer, :pointer], :ccs_result_t
@@ -186,6 +210,10 @@ module CCS
   end
 
   class Literal < Expression
+    NONE_SYMBOL = TerminalSymbols[:CCS_TERM_NONE]
+    TRUE_SYMBOL = TerminalSymbols[:CCS_TERM_TRUE]
+    FALSE_SYMBOL = TerminalSymbols[:CCS_TERM_FALSE]
+
     def initialize(handle = nil, retain: false, value: nil)
       if handle
         super(handle, retain: retain)
@@ -207,7 +235,11 @@ module CCS
     def to_s
       case value
       when nil
-        "none"
+        NONE_SYMBOL
+      when true
+        TRUE_SYMBOL
+      when false
+        FALSE_SYMBOL
       when String
         value.inspect
       else
