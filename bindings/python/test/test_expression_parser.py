@@ -39,23 +39,23 @@ class TestExpressionParser(unittest.TestCase):
     self.assertFalse( res.eval() )
 
   def test_boolean(self):
-    exp = "True"
+    exp = "true"
     res = ccs.ccs_parser.parse(exp)
     self.assertIsInstance( res, ccs.Literal )
     self.assertEqual( True, res.eval() )
-    self.assertEqual( "True", res.__str__() )
-    exp = "False"
+    self.assertEqual( "true", res.__str__() )
+    exp = "false"
     res = ccs.ccs_parser.parse(exp)
     self.assertIsInstance( res, ccs.Literal )
     self.assertEqual( False, res.eval() )
-    self.assertEqual( "False", res.__str__() )
+    self.assertEqual( "false", res.__str__() )
 
   def test_none(self):
-    exp = "None"
+    exp = "none"
     res = ccs.ccs_parser.parse(exp)
     self.assertIsInstance( res, ccs.Literal )
     self.assertIsNone( res.eval() )
-    self.assertEqual( "None", res.__str__() )
+    self.assertEqual( "none", res.__str__() )
 
 
 if __name__ == '__main__':

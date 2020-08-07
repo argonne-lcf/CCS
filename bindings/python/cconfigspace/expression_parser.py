@@ -21,15 +21,17 @@ list: '[' list_item ']'
 list_item: list_item ',' value
          | value;
 value: none
-     | boolean
+     | btrue
+     | bfalse
      | string
      | identifier
      | integer
      | float;
 
 terminals
-none: /None/ {prefer};
-boolean: /True|False/ {prefer};
+none: /none/ {prefer};
+btrue: /true/ {prefer};
+bfalse: /false/ {prefer};
 identifier: /[a-zA-Z_][a-zA-Z_0-9]*/;
 string: /"([^\0\t\n\r\f"\\]|\\[0tnrf"\\])+"|'([^\0\t\n\r\f'\\]|\\[0tnrf'\\])+'/;
 integer: /-?[0-9]+/;
@@ -53,8 +55,9 @@ _actions["list_item"] = [
   lambda _, n: n[0] + [n[2]],
   lambda _, n: [n[0]]
 ]
-_actions["none"] = lambda _, value: Literal(value = eval(value))
-_actions["boolean"] = lambda _, value: Literal(value = eval(value))
+_actions["none"] = lambda _, value: Literal(value = None)
+_actions["btrue"] = lambda _, value: Literal(value = True)
+_actions["bfalse"] = lambda _, value: Literal(value = False)
 _actions["identifier"] = lambda p, value: Variable(hyperparameter = p.extra.hyperparameter_by_name(value))
 _actions["string"] = lambda _, value: Literal(value = eval(value))
 _actions["float"] = lambda _, value: Literal(value = float(value))

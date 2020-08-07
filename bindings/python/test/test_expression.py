@@ -32,7 +32,7 @@ class TestExpression(unittest.TestCase):
     e = ccs.Literal(value = 15)
     self.assertEqual( "15" , str(e) )
     e = ccs.Literal(value = None)
-    self.assertEqual( "None" , str(e) )
+    self.assertEqual( "none" , str(e) )
 
   def test_variable(self):
     h = ccs.NumericalHyperparameter()
@@ -51,12 +51,12 @@ class TestExpression(unittest.TestCase):
 
   def test_unary(self):
     e = ccs.Expression.unary(t = ccs.NOT, node = True)
-    self.assertEqual( "!True", str(e) )
+    self.assertEqual( "!true", str(e) )
     self.assertFalse( e.eval() )
 
   def test_binary(self):
     e = ccs.Expression.binary(t = ccs.OR, left = True, right = False)
-    self.assertEqual( "True || False", str(e) )
+    self.assertEqual( "true || false", str(e) )
     self.assertTrue( e.eval() )
 
 if __name__ == '__main__':

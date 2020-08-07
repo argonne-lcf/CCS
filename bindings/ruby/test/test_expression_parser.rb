@@ -63,11 +63,11 @@ class CConfigSpaceTestExpressionParser < Minitest::Test
 
   def test_none
     m = CCS::ExpressionParser.new.method(:parse)
-    exp = "nil"
+    exp = "none"
     res = m[exp]
     assert( res.kind_of? CCS::Literal )
     assert_nil( res.eval )
-    assert_equal( "nil", res.to_s )
+    assert_equal( "none", res.to_s )
   end
 
 end

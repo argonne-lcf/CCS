@@ -216,6 +216,12 @@ class Literal(Expression):
     v = self.value
     if isinstance(v, str):
       return repr(v)
+    elif v is None:
+      return "none"
+    elif v is True:
+      return "true"
+    elif v is False:
+      return "false"
     else:
       return "{}".format(v)
 

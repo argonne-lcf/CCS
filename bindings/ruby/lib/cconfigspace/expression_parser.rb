@@ -43,10 +43,12 @@ module CCS
     rule("]")
     rule(",")
 
-    rule(:none => /nil/).as { |b|
+    rule(:none => /none/).as { |b|
       Literal::new(value: nil) }
-    rule(:boolean => /true|false/).as { |b|
-      Literal::new(value: eval(b)) }
+    rule(:btrue => /true/).as { |b|
+      Literal::new(value: true) }
+    rule(:bfalse => /false/).as { |b|
+      Literal::new(value: false) }
     rule(:float => /-?[0-9]+([eE][+-]?[0-9]+|\.[0-9]+([eE][+-]?[0-9]+)?)/).as {|num|
       Literal::new(value: Float(num)) }
     rule(:integer => /-?[0-9]+/).as { |num|
@@ -58,7 +60,8 @@ module CCS
 
     rule(:value) do |r|
       r[:none]
-      r[:boolean]
+      r[:btrue]
+      r[:bfalse]
       r[:string]
       r[:identifier]
       r[:float]
