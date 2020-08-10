@@ -95,8 +95,8 @@ ccs_distribution_get_dimension(ccs_distribution_t  distribution,
                                size_t             *dimension);
 
 extern ccs_result_t
-ccs_distribution_get_data_type(ccs_distribution_t       distribution,
-                               ccs_numeric_type_t      *data_type_ret);
+ccs_distribution_get_data_types(ccs_distribution_t       distribution,
+                                ccs_numeric_type_t      *data_types_ret);
 
 extern ccs_result_t
 ccs_distribution_get_bounds(ccs_distribution_t  distribution,

@@ -35,7 +35,7 @@ static void test_create_normal_distribution() {
 	assert( err == CCS_SUCCESS );
 	assert( dtype == CCS_NORMAL );
 
-	err = ccs_distribution_get_data_type(distrib, &data_type);
+	err = ccs_distribution_get_data_types(distrib, &data_type);
 	assert( err == CCS_SUCCESS );
 	assert( data_type == CCS_NUM_FLOAT );
 

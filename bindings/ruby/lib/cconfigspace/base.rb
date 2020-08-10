@@ -35,9 +35,11 @@ module CCS
 
   class MemoryPointer
     alias read_ccs_float_t  read_double
+    alias get_ccs_float_t   get_double
     alias read_array_of_ccs_float_t  read_array_of_double
     alias write_array_of_ccs_float_t  write_array_of_double
     alias read_ccs_int_t    read_int64
+    alias get_ccs_int_t     get_int64
     alias read_array_of_ccs_int_t  read_array_of_int64
     alias write_array_of_ccs_int_t  write_array_of_int64
     alias read_ccs_bool_t   read_int32

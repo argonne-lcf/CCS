@@ -22,7 +22,7 @@ module CCS
   end
 
   attach_function :ccs_distribution_get_type, [:ccs_distribution_t, :pointer], :ccs_result_t
-  attach_function :ccs_distribution_get_data_type, [:ccs_distribution_t, :pointer], :ccs_result_t
+  attach_function :ccs_distribution_get_data_types, [:ccs_distribution_t, :pointer], :ccs_result_t
   attach_function :ccs_distribution_get_dimension, [:ccs_distribution_t, :pointer], :ccs_result_t
   attach_function :ccs_distribution_get_bounds, [:ccs_distribution_t, :pointer], :ccs_result_t
   attach_function :ccs_distribution_check_oversampling, [:ccs_distribution_t, Interval.by_ref, :pointer], :ccs_result_t
@@ -31,7 +31,6 @@ module CCS
 
   class Distribution < Object
     add_property :type, :ccs_distribution_type_t, :ccs_distribution_get_type, memoize: true
-    add_property :data_type, :ccs_numeric_type_t, :ccs_distribution_get_data_type, memoize: true
     add_property :dimension, :size_t, :ccs_distribution_get_dimension, memoize: true
 
     def self.from_handle(handle)
@@ -47,6 +46,15 @@ module CCS
         RouletteDistribution::new(handle, retain: true)
       else
         raise CCSError, :CCS_INVALID_DISTRIBUTION
+      end
+    end
+
+    def data_types
+      @data_types ||= begin
+        ptr = MemoryPointer::new(:ccs_numeric_type_t, dimension)
+        res = CCS.ccs_distribution_get_data_types(@handle, ptr)
+        CCS.error_check(res)
+        ptr.read_array_of_int32(dimension).collect { |i| NumericType.from_native(i, nil) }
       end
     end
 
@@ -67,25 +75,50 @@ module CCS
     end
 
     def sample(rng)
-      ptr = MemoryPointer::new(:ccs_numeric_t)
+      dim = dimension
+      ptr = MemoryPointer::new(:ccs_numeric_t, dim)
       res = CCS.ccs_distribution_sample(@handle, rng, ptr)
       CCS.error_check(res)
-      if data_type == :CCS_NUM_FLOAT
-        ptr.read_ccs_float_t
+      if dim == 1
+        if data_types.first == :CCS_NUM_FLOAT
+          ptr.read_ccs_float_t
+        else
+          ptr.read_ccs_int_t
+        end
       else
-        ptr.read_ccs_int_t
+        data_types.each_with_index.collect { |t, i|
+          if t == :CCS_NUM_FLOAT
+            ptr.get_ccs_float_t(i*8)
+          else
+            ptr.get_ccs_int_t(i*8)
+          end
+        }
       end
     end
 
     def samples(rng, count)
       return [] if count == 0
-      ptr = MemoryPointer::new(:ccs_numeric_t, count)
+      dim = dimension
+      ptr = MemoryPointer::new(:ccs_numeric_t, count*dim)
       res = CCS.ccs_distribution_samples(@handle, rng, count, ptr)
       CCS.error_check(res)
-      if data_type == :CCS_NUM_FLOAT
-        ptr.read_array_of_ccs_float_t(count)
+      if dim == 1
+        if data_types.first == :CCS_NUM_FLOAT
+          ptr.read_array_of_ccs_float_t(count)
+        else
+          ptr.read_array_of_ccs_int_t(count)
+        end
       else
-        ptr.read_array_of_ccs_int_t(count)
+        sz = CCS.find_type(:ccs_numeric_t).size
+        count.times.collect { |j|
+          data_types.each_with_index.collect { |t, i|
+            if t == :CCS_NUM_FLOAT
+              ptr.get_ccs_float_t((j*dim + i)*sz)
+            else
+              ptr.get_ccs_int_t((j*dim + i)*sz)
+            end
+          }
+        }
       end
     end
 
@@ -118,6 +151,10 @@ module CCS
 
     def self.float(lower:, upper:, scale: :CCS_LINEAR, quantization: 0.0)
       self.new(nil, data_type: :CCS_NUM_FLOAT, lower: lower, upper: upper, scale: scale, quantization: quantization)
+    end
+
+    def data_type
+      @data_type ||= data_types.first
     end
 
     def lower
@@ -197,6 +234,10 @@ module CCS
       self::new(nil, retain: false, data_type: :CCS_NUM_FLOAT, mu: mu, sigma: sigma, scale: scale, quantization: quantization) 
     end
 
+    def data_type
+      @data_type ||= data_types.first
+    end
+
     def mu
       @mu ||= begin
         ptr = MemoryPointer::new(:ccs_numeric_t)
@@ -254,6 +295,10 @@ module CCS
         CCS.error_check(res)
         super(ptr.read_pointer, retain: false)
       end
+    end
+
+    def data_type
+      @data_type ||= data_types.first
     end
 
     def areas

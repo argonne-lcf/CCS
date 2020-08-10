@@ -142,7 +142,7 @@ ccs_create_roulette_distribution(size_t              num_areas,
 	if (isnan(inv_sum) || !isfinite(inv_sum))
 		return -CCS_INVALID_VALUE;
 
-	uintptr_t mem = (uintptr_t)calloc(1, sizeof(struct _ccs_distribution_s) + sizeof(_ccs_distribution_roulette_data_t) + sizeof(ccs_float_t)*(num_areas + 1));
+	uintptr_t mem = (uintptr_t)calloc(1, sizeof(struct _ccs_distribution_s) + sizeof(_ccs_distribution_roulette_data_t) + sizeof(ccs_float_t)*(num_areas + 1) + sizeof(ccs_numeric_type_t));
 
 	if (!mem)
 		return -CCS_OUT_OF_MEMORY;
@@ -150,11 +150,12 @@ ccs_create_roulette_distribution(size_t              num_areas,
 	ccs_distribution_t distrib = (ccs_distribution_t)mem;
 	_ccs_object_init(&(distrib->obj), CCS_DISTRIBUTION, (_ccs_object_ops_t *)&_ccs_distribution_roulette_ops);
 	_ccs_distribution_roulette_data_t * distrib_data = (_ccs_distribution_roulette_data_t *)(mem + sizeof(struct _ccs_distribution_s));
-	distrib_data->common_data.type         = CCS_ROULETTE;
-	distrib_data->common_data.dimension    = 1;
-	distrib_data->common_data.data_type    = CCS_NUM_INTEGER;
-	distrib_data->num_areas                = num_areas;
-	distrib_data->areas                    = (ccs_float_t *)(mem + sizeof(struct _ccs_distribution_s) + sizeof(_ccs_distribution_roulette_data_t));
+	distrib_data->common_data.data_types    = (ccs_numeric_type_t *)(mem + sizeof(struct _ccs_distribution_s) + sizeof(_ccs_distribution_roulette_data_t) + sizeof(ccs_float_t)*(num_areas + 1));
+	distrib_data->common_data.type          = CCS_ROULETTE;
+	distrib_data->common_data.dimension     = 1;
+	distrib_data->common_data.data_types[0] = CCS_NUM_INTEGER;
+	distrib_data->num_areas                 = num_areas;
+	distrib_data->areas                     = (ccs_float_t *)(mem + sizeof(struct _ccs_distribution_s) + sizeof(_ccs_distribution_roulette_data_t));
 
 	distrib_data->areas[0] = 0.0;
 	for(size_t i = 1; i <= num_areas; i++) {

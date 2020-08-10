@@ -17,11 +17,14 @@ ccs_distribution_get_type(ccs_distribution_t       distribution,
 }
 
 ccs_result_t
-ccs_distribution_get_data_type(ccs_distribution_t       distribution,
-                               ccs_numeric_type_t      *data_type_ret) {
+ccs_distribution_get_data_types(ccs_distribution_t       distribution,
+                                ccs_numeric_type_t      *data_types_ret) {
 	CCS_CHECK_OBJ(distribution, CCS_DISTRIBUTION);
-	CCS_CHECK_PTR(data_type_ret);
-	*data_type_ret = ((_ccs_distribution_common_data_t *)(distribution->data))->data_type;
+	CCS_CHECK_PTR(data_types_ret);
+        _ccs_distribution_common_data_t *d =
+		(_ccs_distribution_common_data_t *)(distribution->data);
+	for(size_t i = 0; i < d->dimension; i++)
+		data_types_ret[i] = d->data_types[i];
 	return CCS_SUCCESS;
 }
 
