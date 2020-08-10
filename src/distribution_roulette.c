@@ -27,10 +27,18 @@ _ccs_distribution_roulette_samples(_ccs_distribution_data_t *data,
                                    size_t                    num_values,
                                    ccs_numeric_t            *values);
 
+static ccs_result_t
+_ccs_distribution_roulette_strided_samples(_ccs_distribution_data_t *data,
+                                           ccs_rng_t                 rng,
+                                           size_t                    num_values,
+                                           size_t                    stride,
+                                           ccs_numeric_t            *values);
+
 static _ccs_distribution_ops_t _ccs_distribution_roulette_ops = {
 	{ &_ccs_distribution_del },
 	&_ccs_distribution_roulette_samples,
-	&_ccs_distribution_roulette_get_bounds
+	&_ccs_distribution_roulette_get_bounds,
+	&_ccs_distribution_roulette_strided_samples
 };
 
 static ccs_result_t
@@ -75,6 +83,40 @@ _ccs_distribution_roulette_samples(_ccs_distribution_data_t *data,
 				found = 1;
 		}
 		values[i].i = index;
+	}
+	return CCS_SUCCESS;
+}
+
+static ccs_result_t
+_ccs_distribution_roulette_strided_samples(_ccs_distribution_data_t *data,
+                                           ccs_rng_t                 rng,
+                                           size_t                    num_values,
+                                           size_t                    stride,
+                                           ccs_numeric_t            *values) {
+	_ccs_distribution_roulette_data_t *d = (_ccs_distribution_roulette_data_t *)data;
+
+	gsl_rng *grng;
+	ccs_result_t err = ccs_rng_get_gsl_rng(rng, &grng);
+	if (err)
+		return err;
+
+	for (size_t i = 0; i < num_values; i++) {
+		ccs_float_t rnd = gsl_rng_uniform(grng);
+		ccs_int_t upper = d->num_areas - 1;
+		ccs_int_t lower = 0;
+		ccs_int_t index = upper * rnd;
+		int found = 0;
+		while( !found ) {
+			if ( rnd < d->areas[index] ) {
+				upper = index - 1;
+				index = (lower+upper)/2;
+			} else if ( rnd >= d->areas[index+1] ) {
+				lower = index + 1;
+				index = (lower+upper)/2;
+			} else
+				found = 1;
+		}
+		values[i*stride].i = index;
 	}
 	return CCS_SUCCESS;
 }

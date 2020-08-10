@@ -47,7 +47,7 @@ static void test_create_normal_distribution() {
 	assert( err == CCS_SUCCESS );
 	assert( quantization.f == 0.0 );
 
-        err = ccs_distribution_get_bounds(distrib, &interval);
+	err = ccs_distribution_get_bounds(distrib, &interval);
 	assert( err == CCS_SUCCESS );
 	assert( interval.type == CCS_NUM_FLOAT );
 	assert( interval.lower.f == -CCS_INFINITY );
@@ -149,7 +149,7 @@ static void test_normal_distribution_int() {
 		&distrib);
 	assert( err == CCS_SUCCESS );
 
-        err = ccs_distribution_get_bounds(distrib, &interval);
+	err = ccs_distribution_get_bounds(distrib, &interval);
 	assert( err == CCS_SUCCESS );
 	assert( interval.type == CCS_NUM_INTEGER );
 	assert( interval.lower.i == CCS_INT_MIN );
@@ -196,7 +196,7 @@ static void test_normal_distribution_float() {
 		&distrib);
 	assert( err == CCS_SUCCESS );
 
-        err = ccs_distribution_get_bounds(distrib, &interval);
+	err = ccs_distribution_get_bounds(distrib, &interval);
 	assert( err == CCS_SUCCESS );
 	assert( interval.type == CCS_NUM_FLOAT );
 	assert( interval.lower.f == -CCS_INFINITY );
@@ -243,7 +243,7 @@ static void test_normal_distribution_int_log() {
 		&distrib);
 	assert( err == CCS_SUCCESS );
 
-        err = ccs_distribution_get_bounds(distrib, &interval);
+	err = ccs_distribution_get_bounds(distrib, &interval);
 	assert( err == CCS_SUCCESS );
 	assert( interval.type == CCS_NUM_INTEGER );
 	assert( interval.lower.i == 1 );
@@ -298,7 +298,7 @@ static void test_normal_distribution_float_log() {
 		&distrib);
 	assert( err == CCS_SUCCESS );
 
-        err = ccs_distribution_get_bounds(distrib, &interval);
+	err = ccs_distribution_get_bounds(distrib, &interval);
 	assert( err == CCS_SUCCESS );
 	assert( interval.type == CCS_NUM_FLOAT );
 	assert( interval.lower.f == 0.0 );
@@ -346,7 +346,7 @@ static void test_normal_distribution_int_quantize() {
 		&distrib);
 	assert( err == CCS_SUCCESS );
 
-        err = ccs_distribution_get_bounds(distrib, &interval);
+	err = ccs_distribution_get_bounds(distrib, &interval);
 	assert( err == CCS_SUCCESS );
 	assert( interval.type == CCS_NUM_INTEGER );
 	assert( interval.lower.i == (CCS_INT_MIN/q)*q );
@@ -393,7 +393,7 @@ static void test_normal_distribution_float_quantize() {
 		&distrib);
 	assert( err == CCS_SUCCESS );
 
-        err = ccs_distribution_get_bounds(distrib, &interval);
+	err = ccs_distribution_get_bounds(distrib, &interval);
 	assert( err == CCS_SUCCESS );
 	assert( interval.type == CCS_NUM_FLOAT );
 	assert( interval.lower.f == -CCS_INFINITY );
@@ -441,7 +441,7 @@ static void test_normal_distribution_int_log_quantize() {
 		&distrib);
 	assert( err == CCS_SUCCESS );
 
-        err = ccs_distribution_get_bounds(distrib, &interval);
+	err = ccs_distribution_get_bounds(distrib, &interval);
 	assert( err == CCS_SUCCESS );
 	assert( interval.type == CCS_NUM_INTEGER );
 	assert( interval.lower.i == quantize );
@@ -498,7 +498,7 @@ static void test_normal_distribution_float_log_quantize() {
 		&distrib);
 	assert( err == CCS_SUCCESS );
 
-        err = ccs_distribution_get_bounds(distrib, &interval);
+	err = ccs_distribution_get_bounds(distrib, &interval);
 	assert( err == CCS_SUCCESS );
 	assert( interval.type == CCS_NUM_FLOAT );
 	assert( interval.lower.f == quantization );
@@ -530,6 +530,66 @@ static void test_normal_distribution_float_log_quantize() {
 	assert( err == CCS_SUCCESS );
 }
 
+static void test_normal_distribution_strided_samples() {
+	ccs_distribution_t distrib1 = NULL;
+	ccs_distribution_t distrib2 = NULL;
+	ccs_rng_t          rng = NULL;
+	ccs_result_t       err = CCS_SUCCESS;
+	const size_t       num_samples = 10000;
+	const ccs_float_t  mu1 = 1;
+	const ccs_float_t  sigma1 = 2;
+	const ccs_float_t  mu2 = 0;
+	const ccs_float_t  sigma2 = 2;
+	ccs_numeric_t      samples[num_samples*2];
+	double             mean, sig;
+
+	err = ccs_rng_create(&rng);
+	assert( err == CCS_SUCCESS );
+	err = ccs_create_normal_distribution(
+		CCS_NUM_FLOAT,
+		mu1,
+		sigma1,
+		CCS_LINEAR,
+		CCSF(0.0),
+		&distrib1);
+	assert( err == CCS_SUCCESS );
+
+	err = ccs_create_normal_distribution(
+		CCS_NUM_FLOAT,
+		mu2,
+		sigma2,
+		CCS_LINEAR,
+		CCSF(0.0),
+		&distrib2);
+	assert( err == CCS_SUCCESS );
+
+	err = ccs_distribution_strided_samples(distrib1, rng, num_samples, 2, samples);
+	assert( err == CCS_SUCCESS );
+	err = ccs_distribution_strided_samples(distrib2, rng, num_samples, 2, &(samples[0]) + 1);
+	assert( err == CCS_SUCCESS );
+
+	mean = gsl_stats_mean((double*)samples, 2, num_samples);
+	assert( mean < mu1 + 0.1 );
+	assert( mean > mu1 - 0.1 );
+	sig    = gsl_stats_sd_m((double*)samples, 2, num_samples, mu1);
+	assert( sig < sigma1 + 0.1 );
+	assert( sig > sigma1 - 0.1 );
+
+	mean = gsl_stats_mean((double*)samples + 1, 2, num_samples);
+	assert( mean < mu2 + 0.1 );
+	assert( mean > mu2 - 0.1 );
+	sig    = gsl_stats_sd_m((double*)samples + 1, 2, num_samples, mu2);
+	assert( sig < sigma2 + 0.1 );
+	assert( sig > sigma2 - 0.1 );
+
+	err = ccs_release_object(distrib1);
+	assert( err == CCS_SUCCESS );
+	err = ccs_release_object(distrib2);
+	assert( err == CCS_SUCCESS );
+	err = ccs_release_object(rng);
+	assert( err == CCS_SUCCESS );
+}
+
 int main(int argc, char *argv[]) {
 	ccs_init();
 	test_create_normal_distribution();
@@ -542,5 +602,6 @@ int main(int argc, char *argv[]) {
 	test_normal_distribution_float_log();
 	test_normal_distribution_float_quantize();
 	test_normal_distribution_float_log_quantize();
+	test_normal_distribution_strided_samples();
 	return 0;
 }

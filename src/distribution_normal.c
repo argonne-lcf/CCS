@@ -28,10 +28,18 @@ _ccs_distribution_normal_samples(_ccs_distribution_data_t *data,
                                  size_t                    num_values,
                                  ccs_numeric_t            *values);
 
+static ccs_result_t
+_ccs_distribution_normal_strided_samples(_ccs_distribution_data_t *data,
+                                         ccs_rng_t                 rng,
+                                         size_t                    num_values,
+                                         size_t                    stride,
+                                         ccs_numeric_t            *values);
+
 static _ccs_distribution_ops_t _ccs_distribution_normal_ops = {
 	{ &_ccs_distribution_del },
 	&_ccs_distribution_normal_samples,
-	&_ccs_distribution_normal_get_bounds
+	&_ccs_distribution_normal_get_bounds,
+	&_ccs_distribution_normal_strided_samples
 };
 
 static ccs_result_t
@@ -205,6 +213,121 @@ _ccs_distribution_normal_samples(_ccs_distribution_data_t *data,
                                                             quantization.i, mu,
                                                             sigma, quantize,
                                                             num_values, values);
+}
+
+static inline ccs_result_t
+_ccs_distribution_normal_strided_samples_float(gsl_rng                *grng,
+                                               const ccs_scale_type_t  scale_type,
+                                               const ccs_float_t       quantization,
+                                               const ccs_float_t       mu,
+                                               const ccs_float_t       sigma,
+                                               const int               quantize,
+                                               size_t                  num_values,
+                                               size_t                  stride,
+                                               ccs_float_t            *values) {
+	size_t i;
+	if (scale_type == CCS_LOGARITHMIC && quantize) {
+		ccs_float_t lq = log(quantization*0.5);
+		if (mu - lq >= 0.0)
+			//at least 50% chance to get a valid value
+			for (i = 0; i < num_values; i++)
+				do {
+					values[i*stride] = gsl_ran_gaussian(grng, sigma) + mu;
+				} while (values[i*stride] < lq);
+		else
+			//use tail distribution
+			for (i = 0; i < num_values; i++)
+				values[i*stride] = gsl_ran_gaussian_tail(grng, lq - mu, sigma) + mu;
+	} else
+		for (i = 0; i < num_values; i++)
+			values[i*stride] = gsl_ran_gaussian(grng, sigma) + mu;
+	if (scale_type == CCS_LOGARITHMIC)
+		for (i = 0; i < num_values; i++)
+			values[i*stride] = exp(values[i*stride]);
+	if (quantize) {
+			ccs_float_t rquantization = 1.0 / quantization;
+			for (i = 0; i < num_values; i++)
+				values[i*stride] = round(values[i*stride] * rquantization) * quantization;
+	}
+	return CCS_SUCCESS;
+}
+
+static inline ccs_result_t
+_ccs_distribution_normal_strided_samples_int(gsl_rng                *grng,
+                                             const ccs_scale_type_t  scale_type,
+                                             const ccs_int_t         quantization,
+                                             const ccs_float_t       mu,
+                                             const ccs_float_t       sigma,
+                                             const int               quantize,
+                                             size_t                  num_values,
+                                             size_t                  stride,
+                                             ccs_numeric_t          *values) {
+	size_t i;
+	ccs_float_t q;
+	if (quantize)
+		q = quantization*0.5;
+	else
+		q = 0.5;
+	if (scale_type == CCS_LOGARITHMIC) {
+		ccs_float_t lq = log(q);
+		if (mu - lq >= 0.0)
+			for (i = 0; i < num_values; i++)
+				do {
+					do {
+						values[i*stride].f = gsl_ran_gaussian(grng, sigma) + mu;
+					} while (values[i*stride].f < lq);
+					values[i*stride].f = exp(values[i*stride].f);
+				} while (unlikely(values[i*stride].f - q > CCS_INT_MAX));
+		else
+			for (i = 0; i < num_values; i++)
+				do {
+					values[i*stride].f = gsl_ran_gaussian_tail(grng, lq - mu, sigma) + mu;
+					values[i*stride].f = exp(values[i*stride].f);
+				} while (unlikely(values[i*stride].f - q > CCS_INT_MAX));
+	}
+	else
+		for (i = 0; i < num_values; i++)
+			do {
+				values[i*stride].f = gsl_ran_gaussian(grng, sigma) + mu;
+			} while (unlikely(values[i*stride].f - q > CCS_INT_MAX || values[i*stride].f + q < CCS_INT_MIN));
+	if (quantize) {
+		ccs_float_t rquantization = 1.0 / quantization;
+		for (i = 0; i < num_values; i++)
+			values[i*stride].i = (ccs_int_t)round(values[i*stride].f * rquantization) * quantization;
+	} else
+		for (i = 0; i < num_values; i++)
+			values[i*stride].i = round(values[i*stride].f);
+	return CCS_SUCCESS;
+}
+
+static ccs_result_t
+_ccs_distribution_normal_strided_samples(_ccs_distribution_data_t *data,
+                                         ccs_rng_t                 rng,
+                                         size_t                    num_values,
+                                         size_t                    stride,
+                                         ccs_numeric_t            *values) {
+	_ccs_distribution_normal_data_t *d = (_ccs_distribution_normal_data_t *)data;
+	const ccs_numeric_type_t  data_type   = d->common_data.data_type;
+	const ccs_scale_type_t scale_type     = d->common_data.scale_type;
+	const ccs_numeric_t    quantization   = d->common_data.quantization;
+	const ccs_float_t      mu             = d->mu;
+	const ccs_float_t      sigma          = d->sigma;
+	const int              quantize       = d->quantize;
+	gsl_rng *grng;
+	ccs_result_t err = ccs_rng_get_gsl_rng(rng, &grng);
+	if (err)
+		return err;
+	if (data_type == CCS_NUM_FLOAT)
+		return _ccs_distribution_normal_strided_samples_float(grng, scale_type,
+		                                                      quantization.f, mu,
+		                                                      sigma, quantize,
+		                                                      num_values, stride,
+		                                                      (ccs_float_t*) values);
+	else
+		return _ccs_distribution_normal_strided_samples_int(grng, scale_type,
+		                                                    quantization.i, mu,
+		                                                    sigma, quantize,
+		                                                    num_values, stride, values);
 }
 
 extern ccs_result_t

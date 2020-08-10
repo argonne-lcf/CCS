@@ -17,6 +17,13 @@ struct _ccs_distribution_ops_s {
 		_ccs_distribution_data_t *distribution,
 		ccs_interval_t           *interval_ret);
 
+	ccs_result_t (*strided_samples)(
+		_ccs_distribution_data_t *distribution,
+		ccs_rng_t                 rng,
+		size_t                    num_values,
+		size_t                    stride,
+		ccs_numeric_t            *values);
+
 };
 typedef struct _ccs_distribution_ops_s _ccs_distribution_ops_t;
 

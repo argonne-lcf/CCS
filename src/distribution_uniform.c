@@ -31,10 +31,18 @@ _ccs_distribution_uniform_samples(_ccs_distribution_data_t *data,
                                   size_t                    num_values,
                                   ccs_numeric_t            *values);
 
+static ccs_result_t
+_ccs_distribution_uniform_strided_samples(_ccs_distribution_data_t *data,
+                                          ccs_rng_t                 rng,
+                                          size_t                    num_values,
+                                          size_t                    stride,
+                                          ccs_numeric_t            *values);
+
 static _ccs_distribution_ops_t _ccs_distribution_uniform_ops = {
 	{ &_ccs_distribution_del },
 	&_ccs_distribution_uniform_samples,
-	&_ccs_distribution_uniform_get_bounds
+	&_ccs_distribution_uniform_get_bounds,
+	&_ccs_distribution_uniform_strided_samples
  };
 
 static ccs_result_t
@@ -55,6 +63,67 @@ _ccs_distribution_uniform_get_bounds(_ccs_distribution_data_t *data,
 	interval_ret->upper = u;
 	interval_ret->lower_included = li;
 	interval_ret->upper_included = ui;
+	return CCS_SUCCESS;
+}
+
+
+static ccs_result_t
+_ccs_distribution_uniform_strided_samples(_ccs_distribution_data_t *data,
+                                          ccs_rng_t                 rng,
+                                          size_t                    num_values,
+                                          size_t                    stride,
+                                          ccs_numeric_t            *values) {
+	_ccs_distribution_uniform_data_t *d = (_ccs_distribution_uniform_data_t *)data;
+	size_t i;
+	const ccs_numeric_type_t  data_type      = d->common_data.data_type;
+	const ccs_scale_type_t    scale_type     = d->common_data.scale_type;
+	const ccs_numeric_t       quantization   = d->common_data.quantization;
+	const ccs_numeric_t       lower          = d->lower;
+	const ccs_numeric_t       internal_lower = d->internal_lower;
+	const ccs_numeric_t       internal_upper = d->internal_upper;
+	const int                 quantize       = d->quantize;
+	gsl_rng *grng;
+	ccs_result_t err = ccs_rng_get_gsl_rng(rng, &grng);
+	if (err)
+		return err;
+
+	if (data_type == CCS_NUM_FLOAT) {
+		for (i = 0; i < num_values; i++) {
+			values[i*stride].f = gsl_ran_flat(grng, internal_lower.f, internal_upper.f);
+		}
+		if (scale_type == CCS_LOGARITHMIC) {
+			for (i = 0; i < num_values; i++)
+				values[i*stride].f = exp(values[i*stride].f);
+			if (quantize)
+				for (i = 0; i < num_values; i++)
+					values[i*stride].f = floor((values[i*stride].f - lower.f)/quantization.f) * quantization.f + lower.f;
+		} else
+			if (quantize)
+				for (i = 0; i < num_values; i++)
+					values[i*stride].f = floor(values[i*stride].f) * quantization.f + lower.f;
+			else
+				for (i = 0; i < num_values; i++)
+					values[i*stride].f += lower.f;
+	} else {
+		if (scale_type == CCS_LOGARITHMIC) {
+			for (i = 0; i < num_values; i++) {
+				values[i*stride].i = floor(exp(gsl_ran_flat(grng, internal_lower.f, internal_upper.f)));
+			}
+			if (quantize)
+				for (i = 0; i < num_values; i++)
+					values[i*stride].i = ((values[i*stride].i - lower.i)/quantization.i) * quantization.i + lower.i;
+		} else {
+			for (i = 0; i < num_values; i++) {
+				values[i*stride].i = gsl_rng_uniform_int(grng, internal_upper.i);
+			}
+			if (quantize)
+				for (i = 0; i < num_values; i++)
+					values[i*stride].i = values[i*stride].i * quantization.i + lower.i;
+			else
+				for (i = 0; i < num_values; i++)
+					values[i*stride].i += lower.i;
+		}
+	}
 	return CCS_SUCCESS;
 }
 

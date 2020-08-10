@@ -136,6 +136,16 @@ ccs_distribution_samples(ccs_distribution_t  distribution,
                          size_t              num_values,
                          ccs_numeric_t      *values);
 
+// Stride between elements given in number of ccs_numeric_t.
+// stride equal to the the distribution dimension is
+// equivalent to ccs_distribution_samples
+extern ccs_result_t
+ccs_distribution_strided_samples(ccs_distribution_t  distribution,
+                                 ccs_rng_t           rng,
+                                 size_t              num_values,
+                                 size_t              stride,
+                                 ccs_numeric_t      *values);
+
 #ifdef __cplusplus
 }
 #endif

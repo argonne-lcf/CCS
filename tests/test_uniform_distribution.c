@@ -401,6 +401,60 @@ static void test_uniform_distribution_float_quantize() {
 	assert( err == CCS_SUCCESS );
 }
 
+static void test_uniform_distribution_strided_samples() {
+	ccs_distribution_t distrib1 = NULL;
+	ccs_distribution_t distrib2 = NULL;
+	ccs_rng_t          rng = NULL;
+	ccs_result_t       err = CCS_SUCCESS;
+	const size_t       num_samples = 100;
+	ccs_int_t          lower1 = -10;
+	ccs_int_t          upper1 = 11;
+	ccs_int_t          lower2 = 12;
+	ccs_int_t          upper2 = 20;
+	ccs_numeric_t      samples[num_samples*2];
+
+	err = ccs_rng_create(&rng);
+	assert( err == CCS_SUCCESS );
+	err = ccs_create_uniform_distribution(
+		CCS_NUM_INTEGER,
+		CCSI(lower1),
+		CCSI(upper1),
+		CCS_LINEAR,
+		CCSI(0),
+		&distrib1);
+	assert( err == CCS_SUCCESS );
+
+	err = ccs_create_uniform_distribution(
+		CCS_NUM_INTEGER,
+		CCSI(lower2),
+		CCSI(upper2),
+		CCS_LINEAR,
+		CCSI(0),
+		&distrib2);
+	assert( err == CCS_SUCCESS );
+
+	err = ccs_distribution_strided_samples(distrib1, rng, num_samples, 2, samples);
+	err = ccs_distribution_strided_samples(distrib2, rng, num_samples, 2, &(samples[0])+1);
+	assert( err == CCS_SUCCESS );
+
+	for (size_t i = 0; i < num_samples; i++) {
+		assert(samples[i*2].i >= lower1);
+		assert(samples[i*2].i < upper1);
+	}
+
+	for (size_t i = 0; i < num_samples; i++) {
+		assert(samples[i*2+1].i >= lower2);
+		assert(samples[i*2+1].i < upper2);
+	}
+
+	err = ccs_release_object(distrib1);
+	assert( err == CCS_SUCCESS );
+	err = ccs_release_object(distrib2);
+	assert( err == CCS_SUCCESS );
+	err = ccs_release_object(rng);
+	assert( err == CCS_SUCCESS );
+}
+
 int main(int argc, char *argv[]) {
 	ccs_init();
 	test_create_uniform_distribution();
@@ -413,5 +467,6 @@ int main(int argc, char *argv[]) {
 	test_uniform_distribution_float_log();
 	test_uniform_distribution_float_quantize();
 	test_uniform_distribution_float_log_quantize();
+	test_uniform_distribution_strided_samples();
 	return 0;
 }
