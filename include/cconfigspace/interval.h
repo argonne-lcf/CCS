@@ -24,6 +24,11 @@ ccs_interval_intersect(ccs_interval_t *interval1,
                        ccs_interval_t *interval_res);
 
 extern ccs_result_t
+ccs_interval_union(ccs_interval_t *interval1,
+		   ccs_interval_t *interval2,
+                   ccs_interval_t *interval_res);
+
+extern ccs_result_t
 ccs_interval_equal(ccs_interval_t *interval1,
                    ccs_interval_t *interval2,
                    ccs_bool_t     *equal_res);

@@ -139,6 +139,62 @@ void test_intersect_int() {
 
 }
 
+void test_union_float() {
+	ccs_interval_t interval1, interval2, u;
+	ccs_bool_t     empty;
+	ccs_result_t   err;
+
+	interval1.type = CCS_NUM_FLOAT;
+	interval1.lower.f = -3.0;
+	interval1.upper.f = 5.0;
+	interval1.lower_included = CCS_TRUE;
+	interval1.upper_included = CCS_FALSE;
+
+	interval2.type = CCS_NUM_FLOAT;
+	interval2.lower.f = 2.0;
+	interval2.upper.f = 7.0;
+	interval2.lower_included = CCS_TRUE;
+	interval2.upper_included = CCS_TRUE;
+
+	err = ccs_interval_union(&interval1, &interval2, &u);
+	assert( err == CCS_SUCCESS );
+	assert( !empty );
+	assert( u.type == CCS_NUM_FLOAT );
+	assert( u.lower.f == -3.0 );
+	assert( u.lower_included == CCS_TRUE );
+	assert( u.upper.f == 7.0 );
+	assert( u.upper_included == CCS_TRUE );
+
+}
+
+void test_union_int() {
+	ccs_interval_t interval1, interval2, u;
+	ccs_bool_t     empty;
+	ccs_result_t   err;
+
+	interval1.type = CCS_NUM_INTEGER;
+	interval1.lower.i = -3;
+	interval1.upper.i = 5;
+	interval1.lower_included = CCS_TRUE;
+	interval1.upper_included = CCS_FALSE;
+
+	interval2.type = CCS_NUM_INTEGER;
+	interval2.lower.i = 2;
+	interval2.upper.i = 7;
+	interval2.lower_included = CCS_TRUE;
+	interval2.upper_included = CCS_TRUE;
+
+	err = ccs_interval_union(&interval1, &interval2, &u);
+	assert( err == CCS_SUCCESS );
+	assert( !empty );
+	assert( u.type == CCS_NUM_INTEGER );
+	assert( u.lower.i == -3 );
+	assert( u.lower_included == CCS_TRUE);
+	assert( u.upper.i == 7 );
+	assert( u.upper_included == CCS_TRUE);
+
+}
+
 void test_equal_float() {
 	ccs_interval_t interval1, interval2;
 	ccs_bool_t     equal;
@@ -249,6 +305,8 @@ int main(int argc, char *argv[]) {
 	test_empty_int();
 	test_intersect_float();
 	test_intersect_int();
+	test_union_float();
+	test_union_int();
 	test_equal_float();
 	test_equal_int();
 	test_interval_include_float();

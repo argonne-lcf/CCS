@@ -89,6 +89,34 @@ ccs_interval_intersect(ccs_interval_t *interval1,
 }
 
 ccs_result_t
+ccs_interval_union(ccs_interval_t *interval1,
+                   ccs_interval_t *interval2,
+                   ccs_interval_t *interval_res) {
+	if (!interval1 || !interval2 || !interval_res)
+		return CCS_INVALID_VALUE;
+	if (interval1->type != interval2->type)
+		return CCS_INVALID_TYPE;
+	if (interval1->type  == CCS_NUM_FLOAT) {
+		interval_res->type = CCS_NUM_FLOAT;
+		MERGE_MIN(interval1->lower.f, interval1->lower_included,
+		          interval2->lower.f, interval2->lower_included,
+		          interval_res->lower.f, interval_res->lower_included);
+		MERGE_MAX(interval1->upper.f, interval1->upper_included,
+		          interval2->upper.f, interval2->upper_included,
+		          interval_res->upper.f, interval_res->upper_included);
+	} else {
+		interval_res->type = CCS_NUM_INTEGER;
+		MERGE_MIN(interval1->lower.i, interval1->lower_included,
+		          interval2->lower.i, interval2->lower_included,
+		          interval_res->lower.i, interval_res->lower_included);
+		MERGE_MAX(interval1->upper.i, interval1->upper_included,
+		          interval2->upper.i, interval2->upper_included,
+		          interval_res->upper.i, interval_res->upper_included);
+	}
+	return CCS_SUCCESS;
+}
+
+ccs_result_t
 ccs_interval_equal(ccs_interval_t *interval1,
                    ccs_interval_t *interval2,
                    ccs_bool_t     *equal_res) {
