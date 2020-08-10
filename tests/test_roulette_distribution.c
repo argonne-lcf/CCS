@@ -210,7 +210,7 @@ void test_roulette_distribution_zero() {
 	assert( err == CCS_SUCCESS );
 }
 
-void test_roulette_distribution_strided_sample() {
+void test_roulette_distribution_strided_samples() {
 	ccs_distribution_t distrib1 = NULL;
 	ccs_distribution_t distrib2 = NULL;
 	ccs_rng_t          rng = NULL;
@@ -343,7 +343,7 @@ int main(int argc, char *argv[]) {
 	test_create_roulette_distribution_errors();
 	test_roulette_distribution();
 	test_roulette_distribution_zero();
-	test_roulette_distribution_strided_sample();
+	test_roulette_distribution_strided_samples();
 	test_roulette_distribution_soa_samples();
 	return 0;
 }
