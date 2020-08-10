@@ -24,6 +24,11 @@ struct _ccs_distribution_ops_s {
 		size_t                    stride,
 		ccs_numeric_t            *values);
 
+	ccs_result_t (*soa_samples)(
+		_ccs_distribution_data_t  *distribution,
+		ccs_rng_t                  rng,
+		size_t                     num_values,
+		ccs_numeric_t            **values);
 };
 typedef struct _ccs_distribution_ops_s _ccs_distribution_ops_t;
 

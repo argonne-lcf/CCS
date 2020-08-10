@@ -112,6 +112,19 @@ ccs_distribution_strided_samples(ccs_distribution_t  distribution,
 }
 
 ccs_result_t
+ccs_distribution_soa_samples(ccs_distribution_t   distribution,
+                             ccs_rng_t            rng,
+                             size_t               num_values,
+                             ccs_numeric_t      **values) {
+	CCS_CHECK_OBJ(distribution, CCS_DISTRIBUTION);
+	if (!num_values)
+		return CCS_SUCCESS;
+	CCS_CHECK_ARY(num_values, values);
+	_ccs_distribution_ops_t *ops = ccs_distribution_get_ops(distribution);
+	return ops->soa_samples(distribution->data, rng, num_values, values);
+}
+
+ccs_result_t
 ccs_create_normal_float_distribution(ccs_float_t         mu,
                                      ccs_float_t         sigma,
                                      ccs_scale_type_t    scale,

@@ -153,6 +153,12 @@ ccs_distribution_strided_samples(ccs_distribution_t  distribution,
                                  size_t              stride,
                                  ccs_numeric_t      *values);
 
+extern ccs_result_t
+ccs_distribution_soa_samples(ccs_distribution_t   distribution,
+                             ccs_rng_t            rng,
+                             size_t               num_values,
+                             ccs_numeric_t      **values);
+
 #ifdef __cplusplus
 }
 #endif

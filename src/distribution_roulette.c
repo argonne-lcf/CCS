@@ -34,11 +34,18 @@ _ccs_distribution_roulette_strided_samples(_ccs_distribution_data_t *data,
                                            size_t                    stride,
                                            ccs_numeric_t            *values);
 
+static ccs_result_t
+_ccs_distribution_roulette_soa_samples(_ccs_distribution_data_t  *data,
+                                       ccs_rng_t                  rng,
+                                       size_t                     num_values,
+                                       ccs_numeric_t            **values);
+
 static _ccs_distribution_ops_t _ccs_distribution_roulette_ops = {
 	{ &_ccs_distribution_del },
 	&_ccs_distribution_roulette_samples,
 	&_ccs_distribution_roulette_get_bounds,
-	&_ccs_distribution_roulette_strided_samples
+	&_ccs_distribution_roulette_strided_samples,
+	&_ccs_distribution_roulette_soa_samples
 };
 
 static ccs_result_t
@@ -118,6 +125,16 @@ _ccs_distribution_roulette_strided_samples(_ccs_distribution_data_t *data,
 		}
 		values[i*stride].i = index;
 	}
+	return CCS_SUCCESS;
+}
+
+static ccs_result_t
+_ccs_distribution_roulette_soa_samples(_ccs_distribution_data_t  *data,
+                                     ccs_rng_t                  rng,
+                                     size_t                     num_values,
+                                     ccs_numeric_t            **values) {
+	if (*values)
+		return _ccs_distribution_roulette_samples(data, rng, num_values, *values);
 	return CCS_SUCCESS;
 }
 

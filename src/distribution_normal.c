@@ -37,11 +37,18 @@ _ccs_distribution_normal_strided_samples(_ccs_distribution_data_t *data,
                                          size_t                    stride,
                                          ccs_numeric_t            *values);
 
+static ccs_result_t
+_ccs_distribution_normal_soa_samples(_ccs_distribution_data_t  *data,
+                                     ccs_rng_t                  rng,
+                                     size_t                     num_values,
+                                     ccs_numeric_t            **values);
+
 static _ccs_distribution_ops_t _ccs_distribution_normal_ops = {
 	{ &_ccs_distribution_del },
 	&_ccs_distribution_normal_samples,
 	&_ccs_distribution_normal_get_bounds,
-	&_ccs_distribution_normal_strided_samples
+	&_ccs_distribution_normal_strided_samples,
+	&_ccs_distribution_normal_soa_samples
 };
 
 static ccs_result_t
@@ -330,6 +337,16 @@ _ccs_distribution_normal_strided_samples(_ccs_distribution_data_t *data,
 		                                                    quantization.i, mu,
 		                                                    sigma, quantize,
 		                                                    num_values, stride, values);
+}
+
+static ccs_result_t
+_ccs_distribution_normal_soa_samples(_ccs_distribution_data_t  *data,
+                                     ccs_rng_t                  rng,
+                                     size_t                     num_values,
+                                     ccs_numeric_t            **values) {
+	if (*values)
+		return _ccs_distribution_normal_samples(data, rng, num_values, *values);
+	return CCS_SUCCESS;
 }
 
 extern ccs_result_t

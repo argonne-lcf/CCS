@@ -584,6 +584,54 @@ static void test_normal_distribution_strided_samples() {
 	assert( err == CCS_SUCCESS );
 }
 
+static void test_normal_distribution_soa_samples() {
+	ccs_distribution_t distrib = NULL;
+	ccs_rng_t          rng = NULL;
+	ccs_result_t       err = CCS_SUCCESS;
+	const size_t       num_samples = 10000;
+	const ccs_float_t  mu = 1;
+	const ccs_float_t  sigma = 2;
+	ccs_numeric_t      samples[num_samples];
+	double             mean, sig;
+	ccs_interval_t     interval;
+	ccs_numeric_t     *p_samples;
+
+	err = ccs_rng_create(&rng);
+	assert( err == CCS_SUCCESS );
+	err = ccs_create_normal_distribution(
+		CCS_NUM_FLOAT,
+		mu,
+		sigma,
+		CCS_LINEAR,
+		CCSF(0.0),
+		&distrib);
+	assert( err == CCS_SUCCESS );
+
+	err = ccs_distribution_get_bounds(distrib, &interval);
+	assert( err == CCS_SUCCESS );
+	assert( interval.type == CCS_NUM_FLOAT );
+	assert( interval.lower.f == -CCS_INFINITY );
+	assert( interval.lower_included == CCS_FALSE );
+	assert( interval.upper.f == CCS_INFINITY );
+	assert( interval.upper_included == CCS_FALSE );
+
+	p_samples = &(samples[0]);
+	err = ccs_distribution_soa_samples(distrib, rng, num_samples, &p_samples);
+	assert( err == CCS_SUCCESS );
+
+	mean = gsl_stats_mean((double*)samples, 1, num_samples);
+	assert( mean < mu + 0.1 );
+	assert( mean > mu - 0.1 );
+	sig    = gsl_stats_sd_m((double*)samples, 1, num_samples, mu);
+	assert( sig < sigma + 0.1 );
+	assert( sig > sigma - 0.1 );
+
+	err = ccs_release_object(distrib);
+	assert( err == CCS_SUCCESS );
+	err = ccs_release_object(rng);
+	assert( err == CCS_SUCCESS );
+}
+
 int main(int argc, char *argv[]) {
 	ccs_init();
 	test_create_normal_distribution();
@@ -597,5 +645,6 @@ int main(int argc, char *argv[]) {
 	test_normal_distribution_float_quantize();
 	test_normal_distribution_float_log_quantize();
 	test_normal_distribution_strided_samples();
+	test_normal_distribution_soa_samples();
 	return 0;
 }
