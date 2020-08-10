@@ -8,6 +8,8 @@ struct _ccs_distribution_uniform_data_s {
 	_ccs_distribution_common_data_t common_data;
 	ccs_numeric_t                   lower;
 	ccs_numeric_t                   upper;
+	ccs_scale_type_t                scale_type;
+	ccs_numeric_t                   quantization;
 	ccs_numeric_type_t              internal_type;
 	ccs_numeric_t                   internal_lower;
         ccs_numeric_t                   internal_upper;
@@ -76,8 +78,8 @@ _ccs_distribution_uniform_strided_samples(_ccs_distribution_data_t *data,
 	_ccs_distribution_uniform_data_t *d = (_ccs_distribution_uniform_data_t *)data;
 	size_t i;
 	const ccs_numeric_type_t  data_type      = d->common_data.data_type;
-	const ccs_scale_type_t    scale_type     = d->common_data.scale_type;
-	const ccs_numeric_t       quantization   = d->common_data.quantization;
+	const ccs_scale_type_t    scale_type     = d->scale_type;
+	const ccs_numeric_t       quantization   = d->quantization;
 	const ccs_numeric_t       lower          = d->lower;
 	const ccs_numeric_t       internal_lower = d->internal_lower;
 	const ccs_numeric_t       internal_upper = d->internal_upper;
@@ -135,8 +137,8 @@ _ccs_distribution_uniform_samples(_ccs_distribution_data_t *data,
 	_ccs_distribution_uniform_data_t *d = (_ccs_distribution_uniform_data_t *)data;
 	size_t i;
 	const ccs_numeric_type_t  data_type      = d->common_data.data_type;
-	const ccs_scale_type_t    scale_type     = d->common_data.scale_type;
-	const ccs_numeric_t       quantization   = d->common_data.quantization;
+	const ccs_scale_type_t    scale_type     = d->scale_type;
+	const ccs_numeric_t       quantization   = d->quantization;
 	const ccs_numeric_t       lower          = d->lower;
 	const ccs_numeric_t       internal_lower = d->internal_lower;
 	const ccs_numeric_t       internal_upper = d->internal_upper;
@@ -218,9 +220,10 @@ ccs_create_uniform_distribution(ccs_numeric_type_t  data_type,
 	_ccs_object_init(&(distrib->obj), CCS_DISTRIBUTION, (_ccs_object_ops_t *)&_ccs_distribution_uniform_ops);
         _ccs_distribution_uniform_data_t * distrib_data = (_ccs_distribution_uniform_data_t *)(mem + sizeof(struct _ccs_distribution_s));
 	distrib_data->common_data.type         = CCS_UNIFORM;
+	distrib_data->common_data.dimension    = 1;
 	distrib_data->common_data.data_type    = data_type;
-	distrib_data->common_data.scale_type   = scale_type;
-	distrib_data->common_data.quantization = quantization;
+	distrib_data->scale_type               = scale_type;
+	distrib_data->quantization             = quantization;
 	distrib_data->lower                    = lower;
 	distrib_data->upper                    = upper;
 
@@ -257,20 +260,24 @@ ccs_create_uniform_distribution(ccs_numeric_type_t  data_type,
 ccs_result_t
 ccs_uniform_distribution_get_parameters(ccs_distribution_t  distribution,
                                         ccs_numeric_t      *lower_ret,
-                                        ccs_numeric_t      *upper_ret) {
+                                        ccs_numeric_t      *upper_ret,
+                                        ccs_scale_type_t   *scale_type_ret,
+                                        ccs_numeric_t      *quantization_ret) {
 	CCS_CHECK_OBJ(distribution, CCS_DISTRIBUTION);
 	if (((_ccs_distribution_common_data_t*)distribution->data)->type != CCS_UNIFORM)
 		return -CCS_INVALID_OBJECT;
-	if (!lower_ret && !upper_ret)
+	if (!lower_ret && !upper_ret && !scale_type_ret && !quantization_ret)
 		return -CCS_INVALID_VALUE;
 	_ccs_distribution_uniform_data_t * data = (_ccs_distribution_uniform_data_t *)distribution->data;
 
-	if (lower_ret) {
+	if (lower_ret)
 		*lower_ret = data->lower;
-	}
-	if (upper_ret) {
+	if (upper_ret)
 		*upper_ret = data->upper;
-	}
+	if (scale_type_ret)
+		*scale_type_ret = data->scale_type;
+	if (quantization_ret)
+		*quantization_ret = data->quantization;
 	return CCS_SUCCESS;
 }
 

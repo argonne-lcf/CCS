@@ -8,6 +8,8 @@ struct _ccs_distribution_normal_data_s {
 	_ccs_distribution_common_data_t common_data;
 	ccs_float_t                     mu;
 	ccs_float_t                     sigma;
+	ccs_scale_type_t                scale_type;
+	ccs_numeric_t                   quantization;
 	int                             quantize;
 };
 typedef struct _ccs_distribution_normal_data_s _ccs_distribution_normal_data_t;
@@ -47,8 +49,8 @@ _ccs_distribution_normal_get_bounds(_ccs_distribution_data_t *data,
                                     ccs_interval_t           *interval_ret) {
 	_ccs_distribution_normal_data_t *d = (_ccs_distribution_normal_data_t *)data;
 	const ccs_numeric_type_t  data_type   = d->common_data.data_type;
-	const ccs_scale_type_t scale_type     = d->common_data.scale_type;
-	const ccs_numeric_t    quantization   = d->common_data.quantization;
+	const ccs_scale_type_t scale_type     = d->scale_type;
+	const ccs_numeric_t    quantization   = d->quantization;
 	const int              quantize       = d->quantize;
 	ccs_numeric_t          l;
 	ccs_bool_t             li;
@@ -193,8 +195,8 @@ _ccs_distribution_normal_samples(_ccs_distribution_data_t *data,
                                   ccs_numeric_t            *values) {
 	_ccs_distribution_normal_data_t *d = (_ccs_distribution_normal_data_t *)data;
 	const ccs_numeric_type_t  data_type   = d->common_data.data_type;
-	const ccs_scale_type_t scale_type     = d->common_data.scale_type;
-	const ccs_numeric_t    quantization   = d->common_data.quantization;
+	const ccs_scale_type_t scale_type     = d->scale_type;
+	const ccs_numeric_t    quantization   = d->quantization;
 	const ccs_float_t      mu             = d->mu;
 	const ccs_float_t      sigma          = d->sigma;
 	const int              quantize       = d->quantize;
@@ -308,8 +310,8 @@ _ccs_distribution_normal_strided_samples(_ccs_distribution_data_t *data,
                                          ccs_numeric_t            *values) {
 	_ccs_distribution_normal_data_t *d = (_ccs_distribution_normal_data_t *)data;
 	const ccs_numeric_type_t  data_type   = d->common_data.data_type;
-	const ccs_scale_type_t scale_type     = d->common_data.scale_type;
-	const ccs_numeric_t    quantization   = d->common_data.quantization;
+	const ccs_scale_type_t scale_type     = d->scale_type;
+	const ccs_numeric_t    quantization   = d->quantization;
 	const ccs_float_t      mu             = d->mu;
 	const ccs_float_t      sigma          = d->sigma;
 	const int              quantize       = d->quantize;
@@ -354,9 +356,10 @@ ccs_create_normal_distribution(ccs_numeric_type_t  data_type,
 	_ccs_object_init(&(distrib->obj), CCS_DISTRIBUTION, (_ccs_object_ops_t *)&_ccs_distribution_normal_ops);
         _ccs_distribution_normal_data_t * distrib_data = (_ccs_distribution_normal_data_t *)(mem + sizeof(struct _ccs_distribution_s));
 	distrib_data->common_data.type         = CCS_NORMAL;
+	distrib_data->common_data.dimension    = 1;
 	distrib_data->common_data.data_type    = data_type;
-	distrib_data->common_data.scale_type   = scale_type;
-	distrib_data->common_data.quantization = quantization;
+	distrib_data->scale_type               = scale_type;
+	distrib_data->quantization             = quantization;
 	distrib_data->mu                       = mu;
 	distrib_data->sigma                    = sigma;
 	if (data_type == CCS_NUM_FLOAT) {
@@ -373,21 +376,25 @@ ccs_create_normal_distribution(ccs_numeric_type_t  data_type,
 
 extern ccs_result_t
 ccs_normal_distribution_get_parameters(ccs_distribution_t  distribution,
-                                       ccs_float_t        *mu,
-                                       ccs_float_t        *sigma) {
+                                       ccs_float_t        *mu_ret,
+                                       ccs_float_t        *sigma_ret,
+                                       ccs_scale_type_t   *scale_type_ret,
+                                       ccs_numeric_t      *quantization_ret) {
 	CCS_CHECK_OBJ(distribution, CCS_DISTRIBUTION);
 	if (((_ccs_distribution_common_data_t*)distribution->data)->type != CCS_NORMAL)
 		return -CCS_INVALID_OBJECT;
-	if (!mu && !sigma)
+	if (!mu_ret && !sigma_ret && !scale_type_ret && !quantization_ret)
 		return -CCS_INVALID_VALUE;
 	_ccs_distribution_normal_data_t * data = (_ccs_distribution_normal_data_t *)distribution->data;
 
-	if (mu) {
-		*mu = data->mu;
-	}
-	if (sigma) {
-		*sigma = data->sigma;
-	}
+	if (mu_ret)
+		*mu_ret = data->mu;
+	if (sigma_ret)
+		*sigma_ret = data->sigma;
+	if (scale_type_ret)
+		*scale_type_ret = data->scale_type;
+	if (quantization_ret)
+		*quantization_ret = data->quantization;
 	return CCS_SUCCESS;
 }
 

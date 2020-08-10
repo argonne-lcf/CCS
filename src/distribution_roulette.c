@@ -151,9 +151,8 @@ ccs_create_roulette_distribution(size_t              num_areas,
 	_ccs_object_init(&(distrib->obj), CCS_DISTRIBUTION, (_ccs_object_ops_t *)&_ccs_distribution_roulette_ops);
 	_ccs_distribution_roulette_data_t * distrib_data = (_ccs_distribution_roulette_data_t *)(mem + sizeof(struct _ccs_distribution_s));
 	distrib_data->common_data.type         = CCS_ROULETTE;
+	distrib_data->common_data.dimension    = 1;
 	distrib_data->common_data.data_type    = CCS_NUM_INTEGER;
-	distrib_data->common_data.scale_type   = CCS_LINEAR;
-	distrib_data->common_data.quantization = CCSI(0);
 	distrib_data->num_areas                = num_areas;
 	distrib_data->areas                    = (ccs_float_t *)(mem + sizeof(struct _ccs_distribution_s) + sizeof(_ccs_distribution_roulette_data_t));
 

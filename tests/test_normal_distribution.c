@@ -39,14 +39,6 @@ static void test_create_normal_distribution() {
 	assert( err == CCS_SUCCESS );
 	assert( data_type == CCS_NUM_FLOAT );
 
-	err = ccs_distribution_get_scale_type(distrib, &stype);
-	assert( err == CCS_SUCCESS );
-	assert( stype == CCS_LINEAR );
-
-	err = ccs_distribution_get_quantization(distrib, &quantization);
-	assert( err == CCS_SUCCESS );
-	assert( quantization.f == 0.0 );
-
 	err = ccs_distribution_get_bounds(distrib, &interval);
 	assert( err == CCS_SUCCESS );
 	assert( interval.type == CCS_NUM_FLOAT );
@@ -55,10 +47,12 @@ static void test_create_normal_distribution() {
 	assert( interval.upper.f == CCS_INFINITY );
 	assert( interval.upper_included == CCS_FALSE );
 
-	err = ccs_normal_distribution_get_parameters(distrib, &mu, &sigma);
+	err = ccs_normal_distribution_get_parameters(distrib, &mu, &sigma, &stype, &quantization);
 	assert( err == CCS_SUCCESS );
 	assert( mu == 1.0 );
 	assert( sigma == 2.0 );
+	assert( stype == CCS_LINEAR );
+	assert( quantization.f == 0.0 );
 
 	err = ccs_object_get_refcount(distrib, &refcount);
 	assert( err == CCS_SUCCESS );

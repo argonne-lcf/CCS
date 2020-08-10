@@ -33,10 +33,9 @@ struct _ccs_distribution_s {
 };
 
 struct _ccs_distribution_common_data_s {
-        ccs_distribution_type_t type;
+	ccs_distribution_type_t type;
+	size_t                  dimension;
 	ccs_numeric_type_t      data_type;
-	ccs_scale_type_t        scale_type;
-	ccs_numeric_t           quantization;
 };
 typedef struct _ccs_distribution_common_data_s _ccs_distribution_common_data_t;
 #endif //_DISTRIBUTION_INTERNAL_H

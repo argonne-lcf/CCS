@@ -24,8 +24,6 @@ module CCS
   attach_function :ccs_distribution_get_type, [:ccs_distribution_t, :pointer], :ccs_result_t
   attach_function :ccs_distribution_get_data_type, [:ccs_distribution_t, :pointer], :ccs_result_t
   attach_function :ccs_distribution_get_dimension, [:ccs_distribution_t, :pointer], :ccs_result_t
-  attach_function :ccs_distribution_get_scale_type, [:ccs_distribution_t, :pointer], :ccs_result_t
-  attach_function :ccs_distribution_get_quantization, [:ccs_distribution_t, :pointer], :ccs_result_t
   attach_function :ccs_distribution_get_bounds, [:ccs_distribution_t, :pointer], :ccs_result_t
   attach_function :ccs_distribution_check_oversampling, [:ccs_distribution_t, Interval.by_ref, :pointer], :ccs_result_t
   attach_function :ccs_distribution_sample, [:ccs_distribution_t, :ccs_rng_t, :pointer], :ccs_result_t
@@ -35,7 +33,6 @@ module CCS
     add_property :type, :ccs_distribution_type_t, :ccs_distribution_get_type, memoize: true
     add_property :data_type, :ccs_numeric_type_t, :ccs_distribution_get_data_type, memoize: true
     add_property :dimension, :size_t, :ccs_distribution_get_dimension, memoize: true
-    add_property :scale, :ccs_scale_type_t, :ccs_distribution_get_scale_type, memoize: true
 
     def self.from_handle(handle)
       ptr = MemoryPointer::new(:ccs_distribution_type_t)
@@ -50,19 +47,6 @@ module CCS
         RouletteDistribution::new(handle, retain: true)
       else
         raise CCSError, :CCS_INVALID_DISTRIBUTION
-      end
-    end
-
-    def quantization
-      @quantization ||= begin
-        ptr = MemoryPointer::new(:ccs_numeric_t)
-        res = CCS.ccs_distribution_get_quantization(@handle, ptr)
-        CCS.error_check(res)
-        if data_type == :CCS_NUM_FLOAT
-          ptr.read_ccs_float_t
-        else
-          ptr.read_ccs_int_t
-        end
       end
     end
 
@@ -110,7 +94,7 @@ module CCS
   attach_function :ccs_create_uniform_distribution, [:ccs_numeric_type_t, :ccs_numeric_t, :ccs_numeric_t, :ccs_scale_type_t, :ccs_numeric_t, :pointer], :ccs_result_t
   attach_function :ccs_create_uniform_int_distribution, [:ccs_int_t, :ccs_int_t, :ccs_scale_type_t, :ccs_int_t, :pointer], :ccs_result_t
   attach_function :ccs_create_uniform_float_distribution, [:ccs_float_t, :ccs_float_t, :ccs_scale_type_t, :ccs_float_t, :pointer], :ccs_result_t
-  attach_function :ccs_uniform_distribution_get_parameters, [:ccs_distribution_t, :pointer, :pointer], :ccs_result_t
+  attach_function :ccs_uniform_distribution_get_parameters, [:ccs_distribution_t, :pointer, :pointer, :pointer, :pointer], :ccs_result_t
 
   class UniformDistribution < Distribution
     def initialize(handle = nil, retain: false, data_type: :CCS_NUM_FLOAT, lower: 0.0, upper: 1.0, scale: :CCS_LINEAR, quantization: 0.0)
@@ -139,7 +123,7 @@ module CCS
     def lower
       @lower ||= begin
         ptr = MemoryPointer::new(:ccs_numeric_t)
-        res = CCS.ccs_uniform_distribution_get_parameters(@handle, ptr, nil)
+        res = CCS.ccs_uniform_distribution_get_parameters(@handle, ptr, nil, nil, nil)
         CCS.error_check(res)
         if data_type == :CCS_NUM_FLOAT
           ptr.read_ccs_float_t
@@ -152,7 +136,29 @@ module CCS
     def upper
       @upper ||= begin
         ptr = MemoryPointer::new(:ccs_numeric_t)
-        res = CCS.ccs_uniform_distribution_get_parameters(@handle, nil, ptr)
+        res = CCS.ccs_uniform_distribution_get_parameters(@handle, nil, ptr, nil, nil)
+        CCS.error_check(res)
+        if data_type == :CCS_NUM_FLOAT
+          ptr.read_ccs_float_t
+        else
+          ptr.read_ccs_int_t
+        end
+      end
+    end
+
+    def scale
+      @scale ||= begin
+        ptr = MemoryPointer::new(:ccs_scale_type_t)
+        res = CCS.ccs_uniform_distribution_get_parameters(@handle, nil, nil, ptr, nil)
+        CCS.error_check(res)
+        ptr.read_ccs_scale_type_t
+      end
+    end
+
+    def quantization
+      @quantization ||= begin
+        ptr = MemoryPointer::new(:ccs_numeric_t)
+        res = CCS.ccs_uniform_distribution_get_parameters(@handle, nil, nil, nil, ptr)
         CCS.error_check(res)
         if data_type == :CCS_NUM_FLOAT
           ptr.read_ccs_float_t
@@ -166,7 +172,7 @@ module CCS
   attach_function :ccs_create_normal_distribution, [:ccs_numeric_type_t, :ccs_float_t, :ccs_float_t, :ccs_scale_type_t, :ccs_numeric_t, :pointer], :ccs_result_t
   attach_function :ccs_create_normal_int_distribution, [:ccs_float_t, :ccs_float_t, :ccs_scale_type_t, :ccs_int_t, :pointer], :ccs_result_t
   attach_function :ccs_create_normal_float_distribution, [:ccs_float_t, :ccs_float_t, :ccs_scale_type_t, :ccs_float_t, :pointer], :ccs_result_t
-  attach_function :ccs_normal_distribution_get_parameters, [:ccs_distribution_t, :pointer, :pointer], :ccs_result_t
+  attach_function :ccs_normal_distribution_get_parameters, [:ccs_distribution_t, :pointer, :pointer, :pointer, :pointer], :ccs_result_t
   class NormalDistribution < Distribution
     def initialize(handle = nil, retain: false, data_type: :CCS_NUM_FLOAT, mu: 0.0, sigma: 1.0, scale: :CCS_LINEAR, quantization: 0.0)
       if handle
@@ -194,7 +200,7 @@ module CCS
     def mu
       @mu ||= begin
         ptr = MemoryPointer::new(:ccs_numeric_t)
-        res = CCS.ccs_normal_distribution_get_parameters(@handle, ptr, nil)
+        res = CCS.ccs_normal_distribution_get_parameters(@handle, ptr, nil, nil, nil)
         CCS.error_check(res)
         ptr.read_ccs_float_t
       end
@@ -203,9 +209,31 @@ module CCS
     def sigma
       @sigma ||= begin
         ptr = MemoryPointer::new(:ccs_numeric_t)
-        res = CCS.ccs_normal_distribution_get_parameters(@handle, nil, ptr)
+        res = CCS.ccs_normal_distribution_get_parameters(@handle, nil, ptr, nil, nil)
         CCS.error_check(res)
         ptr.read_ccs_float_t
+      end
+    end
+
+    def scale
+      @scale ||= begin
+        ptr = MemoryPointer::new(:ccs_scale_type_t)
+        res = CCS.ccs_normal_distribution_get_parameters(@handle, nil, nil, ptr, nil)
+        CCS.error_check(res)
+        ptr.read_ccs_scale_type_t
+      end
+    end
+
+    def quantization
+      @quantization ||= begin
+        ptr = MemoryPointer::new(:ccs_numeric_t)
+        res = CCS.ccs_normal_distribution_get_parameters(@handle, nil, nil, nil, ptr)
+        CCS.error_check(res)
+        if data_type == :CCS_NUM_FLOAT
+          ptr.read_ccs_float_t
+        else
+          ptr.read_ccs_int_t
+        end
       end
     end
   end

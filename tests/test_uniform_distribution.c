@@ -37,14 +37,6 @@ static void test_create_uniform_distribution() {
 	assert( err == CCS_SUCCESS );
 	assert( data_type == CCS_NUM_INTEGER );
 
-	err = ccs_distribution_get_scale_type(distrib, &stype);
-	assert( err == CCS_SUCCESS );
-	assert( stype == CCS_LINEAR );
-
-	err = ccs_distribution_get_quantization(distrib, &quantization);
-	assert( err == CCS_SUCCESS );
-	assert( quantization.i == q );
-
         err = ccs_distribution_get_bounds(distrib, &interval);
 	assert( err == CCS_SUCCESS );
 	assert( interval.type == CCS_NUM_INTEGER );
@@ -53,10 +45,12 @@ static void test_create_uniform_distribution() {
 	assert( interval.upper.i == u );
 	assert( interval.upper_included == CCS_FALSE );
 
-	err = ccs_uniform_distribution_get_parameters(distrib, &lower, &upper);
+	err = ccs_uniform_distribution_get_parameters(distrib, &lower, &upper, &stype, &quantization);
 	assert( err == CCS_SUCCESS );
 	assert( lower.i == l );
 	assert( upper.i == u );
+	assert( stype == CCS_LINEAR );
+	assert( quantization.i == q );
 
 	err = ccs_object_get_refcount(distrib, &refcount);
 	assert( err == CCS_SUCCESS );

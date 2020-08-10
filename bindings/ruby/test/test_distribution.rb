@@ -21,7 +21,6 @@ class CConfigSpaceTestDistribution < Minitest::Test
     assert_equal( :CCS_DISTRIBUTION, d.object_type )
     assert_equal( :CCS_ROULETTE, d.type )
     assert_equal( :CCS_NUM_INTEGER, d.data_type )
-    assert_equal( :CCS_LINEAR, d.scale )
     assert_equal( 1, d.dimension )
     assert_equal( 4, d.num_areas )
     assert( d.areas.reduce(:+) > 0.999 )

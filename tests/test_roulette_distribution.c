@@ -12,9 +12,7 @@ void test_create_roulette_distribution() {
 	int32_t                 refcount;
 	ccs_object_type_t       otype;
 	ccs_distribution_type_t dtype;
-	ccs_scale_type_t        stype;
 	ccs_numeric_type_t      data_type;
-	ccs_numeric_t           quantization;
 	ccs_interval_t          interval;
 	const size_t            num_areas = 4;
 	ccs_float_t             areas[num_areas];
@@ -43,14 +41,6 @@ void test_create_roulette_distribution() {
 	err = ccs_distribution_get_data_type(distrib, &data_type);
 	assert( err == CCS_SUCCESS );
 	assert( data_type == CCS_NUM_INTEGER );
-
-	err = ccs_distribution_get_scale_type(distrib, &stype);
-	assert( err == CCS_SUCCESS );
-	assert( stype == CCS_LINEAR );
-
-	err = ccs_distribution_get_quantization(distrib, &quantization);
-	assert( err == CCS_SUCCESS );
-	assert( quantization.i == 0 );
 
         err = ccs_distribution_get_bounds(distrib, &interval);
 	assert( err == CCS_SUCCESS );

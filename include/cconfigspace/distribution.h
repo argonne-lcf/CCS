@@ -74,26 +74,29 @@ ccs_create_roulette_distribution(size_t              num_areas,
                                  ccs_float_t        *areas,
                                  ccs_distribution_t *distribution_ret);
 
+extern ccs_result_t
+ccs_create_mixture_distribution(size_t              num_distributions,
+                                ccs_distribution_t *distributions,
+                                ccs_float_t        *weights,
+                                ccs_distribution_t *distribution_ret);
+
+extern ccs_result_t
+ccs_create_multivariate_distribution(size_t              num_distributions,
+                                     ccs_distribution_t *distributions,
+                                     ccs_distribution_t *distribution_ret);
+
 //   Accessors
 extern ccs_result_t
 ccs_distribution_get_type(ccs_distribution_t       distribution,
                           ccs_distribution_type_t *type_ret);
 
 extern ccs_result_t
-ccs_distribution_get_data_type(ccs_distribution_t       distribution,
-                               ccs_numeric_type_t      *data_type_ret);
-
-extern ccs_result_t
 ccs_distribution_get_dimension(ccs_distribution_t  distribution,
                                size_t             *dimension);
 
 extern ccs_result_t
-ccs_distribution_get_scale_type(ccs_distribution_t  distribution,
-                                ccs_scale_type_t   *scale_type_ret);
-
-extern ccs_result_t
-ccs_distribution_get_quantization(ccs_distribution_t  distribution,
-                                  ccs_numeric_t      *quantization);
+ccs_distribution_get_data_type(ccs_distribution_t       distribution,
+                               ccs_numeric_type_t      *data_type_ret);
 
 extern ccs_result_t
 ccs_distribution_get_bounds(ccs_distribution_t  distribution,
@@ -107,12 +110,16 @@ ccs_distribution_check_oversampling(ccs_distribution_t  distribution,
 extern ccs_result_t
 ccs_normal_distribution_get_parameters(ccs_distribution_t  distribution,
                                        ccs_float_t        *mu_ret,
-                                       ccs_float_t        *sigma_ret);
+                                       ccs_float_t        *sigma_ret,
+                                       ccs_scale_type_t   *scale_ret,
+                                       ccs_numeric_t      *quantization_ret);
 
 extern ccs_result_t
 ccs_uniform_distribution_get_parameters(ccs_distribution_t  distribution,
                                         ccs_numeric_t      *lower_ret,
-                                        ccs_numeric_t      *upper_ret);
+                                        ccs_numeric_t      *upper_ret,
+                                        ccs_scale_type_t   *scale_ret,
+                                        ccs_numeric_t      *quantization_ret);
 
 extern ccs_result_t
 ccs_roulette_distribution_get_num_areas(ccs_distribution_t  distribution,

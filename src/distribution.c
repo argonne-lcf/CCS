@@ -30,26 +30,7 @@ ccs_distribution_get_dimension(ccs_distribution_t  distribution,
                                size_t             *dimension_ret) {
 	CCS_CHECK_OBJ(distribution, CCS_DISTRIBUTION);
 	CCS_CHECK_PTR(dimension_ret);
-	*dimension_ret = 1;
-	return CCS_SUCCESS;
-}
-
-
-ccs_result_t
-ccs_distribution_get_scale_type(ccs_distribution_t  distribution,
-                                ccs_scale_type_t   *scale_type_ret) {
-	CCS_CHECK_OBJ(distribution, CCS_DISTRIBUTION);
-	CCS_CHECK_PTR(scale_type_ret);
-	*scale_type_ret = ((_ccs_distribution_common_data_t *)(distribution->data))->scale_type;
-	return CCS_SUCCESS;
-}
-
-ccs_result_t
-ccs_distribution_get_quantization(ccs_distribution_t  distribution,
-                                  ccs_numeric_t      *quantization_ret) {
-	CCS_CHECK_OBJ(distribution, CCS_DISTRIBUTION);
-	CCS_CHECK_PTR(quantization_ret);
-	*quantization_ret = ((_ccs_distribution_common_data_t *)(distribution->data))->quantization;
+	*dimension_ret = ((_ccs_distribution_common_data_t *)(distribution->data))->dimension;
 	return CCS_SUCCESS;
 }
 

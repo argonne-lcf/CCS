@@ -19,7 +19,6 @@ class TestDistribution(unittest.TestCase):
     self.assertEqual( ccs.DISTRIBUTION, d.object_type )
     self.assertEqual( ccs.ROULETTE, d.type )
     self.assertEqual( ccs.NUM_INTEGER, d.data_type )
-    self.assertEqual( ccs.LINEAR, d.scale )
     self.assertEqual( 1, d.dimension )
     a = d.areas
     self.assertTrue(  sum(a) > 0.999 )
