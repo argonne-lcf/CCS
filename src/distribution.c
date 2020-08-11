@@ -48,28 +48,36 @@ ccs_distribution_get_bounds(ccs_distribution_t  distribution,
 
 ccs_result_t
 ccs_distribution_check_oversampling(ccs_distribution_t  distribution,
-                                    ccs_interval_t     *interval,
+                                    ccs_interval_t     *intervals,
                                     ccs_bool_t         *oversampling_ret) {
 	CCS_CHECK_OBJ(distribution, CCS_DISTRIBUTION);
-	CCS_CHECK_PTR(interval);
+	CCS_CHECK_PTR(intervals);
 	CCS_CHECK_PTR(oversampling_ret);
 	ccs_result_t err;
-	ccs_interval_t d_interval;
+	size_t dim = ((_ccs_distribution_common_data_t *)(distribution->data))->dimension;
 
-	err = ccs_distribution_get_bounds(distribution, &d_interval);
+	ccs_interval_t *d_intervals = (ccs_interval_t *)alloca(sizeof(ccs_interval_t)*dim);
+
+	err = ccs_distribution_get_bounds(distribution, d_intervals);
 	if (err)
 		return err;
 
-	ccs_interval_t intersection;
-	err = ccs_interval_intersect(&d_interval, interval, &intersection);
-	if (err)
-		return err;
+	for(size_t i = 0; i < dim; i++) {
+		ccs_interval_t intersection;
+		err = ccs_interval_intersect(d_intervals+i, intervals+i, &intersection);
+		if (err)
+			return err;
 
-	ccs_bool_t eql;
-	err = ccs_interval_equal(&d_interval, &intersection, &eql);
-	if (err)
-		return err;
-	*oversampling_ret = (eql ? CCS_FALSE : CCS_TRUE);
+		ccs_bool_t eql;
+		err = ccs_interval_equal(d_intervals+i, &intersection, &eql);
+		if (err)
+			return err;
+		if (!eql) {
+			*oversampling_ret = CCS_TRUE;
+			return CCS_SUCCESS;
+		}
+	}
+	*oversampling_ret = CCS_FALSE;
 
 	return CCS_SUCCESS;
 }
