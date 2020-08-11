@@ -9,6 +9,7 @@ enum ccs_distribution_type_e {
 	CCS_UNIFORM,
 	CCS_NORMAL,
 	CCS_ROULETTE,
+	CCS_MIXTURE,
 	CCS_MULTIVARIATE,
 	CCS_DISTRIBUTION_TYPE_MAX,
 	CCS_DISTRIBUTION_TYPE_FORCE_32BIT = INT_MAX
@@ -131,6 +132,22 @@ ccs_roulette_distribution_get_areas(ccs_distribution_t  distribution,
                                     size_t              num_areas,
                                     ccs_float_t        *areas,
                                     size_t             *num_areas_ret);
+
+extern ccs_result_t
+ccs_mixture_distribution_get_num_distributions(ccs_distribution_t  distribution,
+                                               size_t             *num_distributions_ret);
+
+extern ccs_result_t
+ccs_mixture_distribution_get_distributions(ccs_distribution_t  distribution,
+                                           size_t              num_distributions,
+                                           ccs_distribution_t *distributions,
+                                           size_t             *num_distributions_ret);
+
+extern ccs_result_t
+ccs_mixture_distribution_get_weights(ccs_distribution_t  distribution,
+                                     size_t              num_weights,
+                                     ccs_float_t        *weights,
+                                     size_t             *num_weights_ret);
 
 extern ccs_result_t
 ccs_multivariate_distribution_get_num_distributions(ccs_distribution_t  distribution,

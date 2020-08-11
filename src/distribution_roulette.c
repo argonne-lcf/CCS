@@ -75,20 +75,7 @@ _ccs_distribution_roulette_samples(_ccs_distribution_data_t *data,
 
 	for (size_t i = 0; i < num_values; i++) {
 		ccs_float_t rnd = gsl_rng_uniform(grng);
-		ccs_int_t upper = d->num_areas - 1;
-		ccs_int_t lower = 0;
-		ccs_int_t index = upper * rnd;
-		int found = 0;
-		while( !found ) {
-			if ( rnd < d->areas[index] ) {
-				upper = index - 1;
-				index = (lower+upper)/2;
-			} else if ( rnd >= d->areas[index+1] ) {
-				lower = index + 1;
-				index = (lower+upper)/2;
-			} else
-				found = 1;
-		}
+		ccs_int_t index = ccs_dichotomic_search(d->num_areas, d->areas, rnd);
 		values[i].i = index;
 	}
 	return CCS_SUCCESS;
@@ -109,20 +96,7 @@ _ccs_distribution_roulette_strided_samples(_ccs_distribution_data_t *data,
 
 	for (size_t i = 0; i < num_values; i++) {
 		ccs_float_t rnd = gsl_rng_uniform(grng);
-		ccs_int_t upper = d->num_areas - 1;
-		ccs_int_t lower = 0;
-		ccs_int_t index = upper * rnd;
-		int found = 0;
-		while( !found ) {
-			if ( rnd < d->areas[index] ) {
-				upper = index - 1;
-				index = (lower+upper)/2;
-			} else if ( rnd >= d->areas[index+1] ) {
-				lower = index + 1;
-				index = (lower+upper)/2;
-			} else
-				found = 1;
-		}
+		ccs_int_t index = ccs_dichotomic_search(d->num_areas, d->areas, rnd);
 		values[i*stride].i = index;
 	}
 	return CCS_SUCCESS;
@@ -194,7 +168,7 @@ ccs_roulette_distribution_get_num_areas(ccs_distribution_t  distribution,
 	CCS_CHECK_OBJ(distribution, CCS_DISTRIBUTION);
 	CCS_CHECK_PTR(num_areas_ret);
 	if (((_ccs_distribution_common_data_t*)distribution->data)->type != CCS_ROULETTE)
-		return -CCS_INVALID_OBJECT;
+		return -CCS_INVALID_DISTRIBUTION;
 	_ccs_distribution_roulette_data_t * data = (_ccs_distribution_roulette_data_t *)distribution->data;
 	*num_areas_ret = data->num_areas;
 	return CCS_SUCCESS;
@@ -208,7 +182,7 @@ ccs_roulette_distribution_get_areas(ccs_distribution_t  distribution,
 	CCS_CHECK_OBJ(distribution, CCS_DISTRIBUTION);
 	CCS_CHECK_ARY(num_areas, areas);
 	if (((_ccs_distribution_common_data_t*)distribution->data)->type != CCS_ROULETTE)
-		return -CCS_INVALID_OBJECT;
+		return -CCS_INVALID_DISTRIBUTION;
 	if (!areas && !num_areas_ret)
 		return -CCS_INVALID_VALUE;
 	_ccs_distribution_roulette_data_t * data = (_ccs_distribution_roulette_data_t *)distribution->data;

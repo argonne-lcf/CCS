@@ -104,6 +104,8 @@ ccs_distribution_strided_samples(ccs_distribution_t  distribution,
                                  size_t              stride,
                                  ccs_numeric_t      *values) {
 	CCS_CHECK_OBJ(distribution, CCS_DISTRIBUTION);
+	if (stride < ((_ccs_distribution_common_data_t *)(distribution->data))->dimension)
+		return -CCS_INVALID_VALUE;
 	if (!num_values)
 		return CCS_SUCCESS;
 	CCS_CHECK_ARY(num_values, values);
