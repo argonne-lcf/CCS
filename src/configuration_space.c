@@ -526,29 +526,78 @@ ccs_configuration_space_check_configuration_values(ccs_configuration_space_t  co
 
 static ccs_result_t
 _sample(ccs_configuration_space_t  configuration_space,
-	ccs_configuration_t        config,
-	ccs_bool_t                *found) {
+        ccs_configuration_t        config,
+        ccs_bool_t                *found) {
 	ccs_result_t err;
 	ccs_rng_t rng = configuration_space->data->rng;
 	UT_array *array = configuration_space->data->hyperparameters;
-	_ccs_hyperparameter_wrapper_cs_t *wrapper = NULL;
+	_ccs_distribution_wrapper_t *dwrapper = NULL;
+	_ccs_hyperparameter_wrapper_cs_t *hwrapper = NULL;
 	ccs_datum_t *values = config->data->values;
-	while ( (wrapper = (_ccs_hyperparameter_wrapper_cs_t *)
-	                       utarray_next(array, wrapper)) ) {
-		err = ccs_hyperparameter_sample(wrapper->hyperparameter,
-		                                wrapper->distribution->distribution,
-		                                rng, values++);
+
+	size_t num_hyperparameters = utarray_len(array);
+	ccs_datum_t *p_values;
+	ccs_hyperparameter_t *hps;
+	uintptr_t mem;
+	mem = (uintptr_t) malloc(num_hyperparameters * (sizeof(ccs_datum_t) + sizeof(ccs_hyperparameter_t)));
+	if (!mem)
+		return -CCS_OUT_OF_MEMORY;
+
+	p_values = (ccs_datum_t *)mem;
+	hps = (ccs_hyperparameter_t *)(mem + num_hyperparameters*sizeof(ccs_datum_t));
+	DL_FOREACH(configuration_space->data->distribution_list, dwrapper) {
+		for (size_t i = 0; i < dwrapper->dimension; i++) {
+			size_t hindex = dwrapper->hyperparameter_indexes[i];
+			hwrapper = (_ccs_hyperparameter_wrapper_cs_t *)utarray_eltptr(array, hindex);
+			hps[i] = hwrapper->hyperparameter;
+		}
+		err = ccs_distribution_hyperparameters_sample(
+			dwrapper->distribution, rng, hps, p_values);
 		if (unlikely(err))
-			return err;
+			goto memory;
+		for (size_t i = 0; i < dwrapper->dimension; i++) {
+			size_t hindex = dwrapper->hyperparameter_indexes[i];
+			values[hindex] = p_values[i];
+		}
 	}
 	err = _set_actives(configuration_space, config);
 	if (err)
-		return err;
+		goto memory;
 	err = _test_forbidden(configuration_space, config->data->values, found);
 	if (err)
-		return err;
+		goto memory;
+	free((void *)mem);
 	return CCS_SUCCESS;
+memory:
+	free((void *)mem);
+	return err;
 }
+
+//static ccs_result_t
+//_sample(ccs_configuration_space_t  configuration_space,
+//	ccs_configuration_t        config,
+//	ccs_bool_t                *found) {
+//	ccs_result_t err;
+//	ccs_rng_t rng = configuration_space->data->rng;
+//	UT_array *array = configuration_space->data->hyperparameters;
+//	_ccs_hyperparameter_wrapper_cs_t *wrapper = NULL;
+//	ccs_datum_t *values = config->data->values;
+//	while ( (wrapper = (_ccs_hyperparameter_wrapper_cs_t *)
+//	                       utarray_next(array, wrapper)) ) {
+//		err = ccs_hyperparameter_sample(wrapper->hyperparameter,
+//		                                wrapper->distribution->distribution,
+//		                                rng, values++);
+//		if (unlikely(err))
+//			return err;
+//	}
+//	err = _set_actives(configuration_space, config);
+//	if (err)
+//		return err;
+//	err = _test_forbidden(configuration_space, config->data->values, found);
+//	if (err)
+//		return err;
+//	return CCS_SUCCESS;
+//}
 
 ccs_result_t
 ccs_configuration_space_sample(ccs_configuration_space_t  configuration_space,
