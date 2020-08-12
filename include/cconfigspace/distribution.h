@@ -106,8 +106,8 @@ ccs_distribution_get_bounds(ccs_distribution_t  distribution,
 
 extern ccs_result_t
 ccs_distribution_check_oversampling(ccs_distribution_t  distribution,
-                                    ccs_interval_t     *interval,
-                                    ccs_bool_t         *oversampling_ret);
+                                    ccs_interval_t     *intervals,
+                                    ccs_bool_t         *oversamplings);
 
 extern ccs_result_t
 ccs_normal_distribution_get_parameters(ccs_distribution_t  distribution,
@@ -186,6 +186,19 @@ ccs_distribution_soa_samples(ccs_distribution_t   distribution,
                              ccs_rng_t            rng,
                              size_t               num_values,
                              ccs_numeric_t      **values);
+
+extern ccs_result_t
+ccs_distribution_hyperparameters_samples(ccs_distribution_t    distribution,
+                                         ccs_rng_t             rng,
+                                         ccs_hyperparameter_t *hyperparameters,
+                                         size_t                num_values,
+                                         ccs_datum_t          *values);
+
+extern ccs_result_t
+ccs_distribution_hyperparameters_sample(ccs_distribution_t    distribution,
+                                        ccs_rng_t             rng,
+                                        ccs_hyperparameter_t *hyperparameters,
+                                        ccs_datum_t          *values);
 
 #ifdef __cplusplus
 }

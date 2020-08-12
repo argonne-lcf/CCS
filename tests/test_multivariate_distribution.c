@@ -266,10 +266,170 @@ void test_multivariate_distribution_soa_samples() {
 	assert( err == CCS_SUCCESS );
 }
 
+void test_distribution_hyperparameters_sample() {
+	const size_t         num_distribs = 2;
+	ccs_distribution_t   distrib = NULL, distribs[num_distribs];
+	ccs_hyperparameter_t params[num_distribs];
+	ccs_rng_t            rng = NULL;
+	ccs_result_t         err = CCS_SUCCESS;
+	const size_t         num_samples = 10000;
+	ccs_datum_t          samples[num_samples*num_distribs];
+
+	err = ccs_rng_create(&rng);
+	assert( err == CCS_SUCCESS );
+
+	err = ccs_create_uniform_distribution(
+		CCS_NUM_FLOAT,
+		CCSF(-4.0),
+		CCSF(4.0),
+		CCS_LINEAR,
+		CCSF(0.0),
+		distribs);
+	assert( err == CCS_SUCCESS );
+
+	err = ccs_create_uniform_distribution(
+		CCS_NUM_FLOAT,
+		CCSF(-3.0),
+		CCSF(5.0),
+		CCS_LINEAR,
+		CCSF(0.0),
+		distribs + 1);
+	assert( err == CCS_SUCCESS );
+
+	err = ccs_create_numerical_hyperparameter("param1", CCS_NUM_FLOAT,
+	                                          CCSF(-5.0), CCSF(5.0),
+	                                          CCSF(0.0), CCSF(0.0),
+	                                          NULL, params);
+	assert( err == CCS_SUCCESS );
+
+	err = ccs_create_numerical_hyperparameter("param2", CCS_NUM_FLOAT,
+	                                          CCSF(-4.0), CCSF(6.0),
+	                                          CCSF(0.0), CCSF(1.0),
+	                                          NULL, params + 1);
+	assert( err == CCS_SUCCESS );
+
+	err = ccs_create_multivariate_distribution(
+		num_distribs,
+		distribs,
+		&distrib);
+	assert( err == CCS_SUCCESS );
+
+	err = ccs_distribution_hyperparameters_samples(distrib, rng, params, num_samples, samples);
+	assert( err == CCS_SUCCESS );
+
+	for (size_t i = 0; i < num_samples; i++) {
+		assert( samples[2*i].type == CCS_FLOAT );
+		assert( samples[2*i].value.f >= -5.0 );
+		assert( samples[2*i].value.f <   5.0 );
+		assert( samples[2*i + 1].type == CCS_FLOAT );
+		assert( samples[2*i + 1].value.f >= -4.0 );
+		assert( samples[2*i + 1].value.f <   6.0 );
+	}
+	double mean = gsl_stats_mean((double*)samples, 4, num_samples);
+	assert( mean < 0.0 + 0.1 );
+	assert( mean > 0.0 - 0.1 );
+
+	mean = gsl_stats_mean((double*)samples + 2, 4, num_samples);
+	assert( mean < 1.0 + 0.1 );
+	assert( mean > 1.0 - 0.1 );
+
+	for (size_t i = 0; i < num_distribs; i++) {
+		err = ccs_release_object(distribs[i]);
+		assert( err == CCS_SUCCESS );
+		err = ccs_release_object(params[i]);
+		assert( err == CCS_SUCCESS );
+	}
+	err = ccs_release_object(distrib);
+	assert( err == CCS_SUCCESS );
+	err = ccs_release_object(rng);
+	assert( err == CCS_SUCCESS );
+}
+
+void test_distribution_hyperparameters_sample_oversampling() {
+	const size_t         num_distribs = 2;
+	ccs_distribution_t   distrib = NULL, distribs[num_distribs];
+	ccs_hyperparameter_t params[num_distribs];
+	ccs_rng_t            rng = NULL;
+	ccs_result_t         err = CCS_SUCCESS;
+	const size_t         num_samples = 10000;
+	ccs_datum_t          samples[num_samples*num_distribs];
+
+	err = ccs_rng_create(&rng);
+	assert( err == CCS_SUCCESS );
+
+	err = ccs_create_normal_distribution(
+		CCS_NUM_FLOAT,
+		0.0,
+		4.0,
+		CCS_LINEAR,
+		CCSF(0.0),
+		distribs);
+	assert( err == CCS_SUCCESS );
+
+	err = ccs_create_normal_distribution(
+		CCS_NUM_FLOAT,
+		1.0,
+		4.0,
+		CCS_LINEAR,
+		CCSF(0.0),
+		distribs + 1);
+	assert( err == CCS_SUCCESS );
+
+	err = ccs_create_numerical_hyperparameter("param1", CCS_NUM_FLOAT,
+	                                          CCSF(-5.0), CCSF(5.0),
+	                                          CCSF(0.0), CCSF(0.0),
+	                                          NULL, params);
+	assert( err == CCS_SUCCESS );
+
+	err = ccs_create_numerical_hyperparameter("param2", CCS_NUM_FLOAT,
+	                                          CCSF(-4.0), CCSF(6.0),
+	                                          CCSF(0.0), CCSF(1.0),
+	                                          NULL, params + 1);
+	assert( err == CCS_SUCCESS );
+
+	err = ccs_create_multivariate_distribution(
+		num_distribs,
+		distribs,
+		&distrib);
+	assert( err == CCS_SUCCESS );
+
+	err = ccs_distribution_hyperparameters_samples(distrib, rng, params, num_samples, samples);
+	assert( err == CCS_SUCCESS );
+
+	for (size_t i = 0; i < num_samples; i++) {
+		assert( samples[2*i].type == CCS_FLOAT );
+		assert( samples[2*i].value.f >= -5.0 );
+		assert( samples[2*i].value.f <   5.0 );
+		assert( samples[2*i + 1].type == CCS_FLOAT );
+		assert( samples[2*i + 1].value.f >= -4.0 );
+		assert( samples[2*i + 1].value.f <   6.0 );
+	}
+	double mean = gsl_stats_mean((double*)samples, 4, num_samples);
+	assert( mean < 0.0 + 0.1 );
+	assert( mean > 0.0 - 0.1 );
+
+	mean = gsl_stats_mean((double*)samples + 2, 4, num_samples);
+	assert( mean < 1.0 + 0.1 );
+	assert( mean > 1.0 - 0.1 );
+
+	for (size_t i = 0; i < num_distribs; i++) {
+		err = ccs_release_object(distribs[i]);
+		assert( err == CCS_SUCCESS );
+		err = ccs_release_object(params[i]);
+		assert( err == CCS_SUCCESS );
+	}
+	err = ccs_release_object(distrib);
+	assert( err == CCS_SUCCESS );
+	err = ccs_release_object(rng);
+	assert( err == CCS_SUCCESS );
+}
+
 int main(int argc, char *argv[]) {
 	ccs_init();
 	test_create_multivariate_distribution();
 	test_multivariate_distribution();
 	test_multivariate_distribution_strided_samples();
 	test_multivariate_distribution_soa_samples();
+	test_distribution_hyperparameters_sample();
+	test_distribution_hyperparameters_sample_oversampling();
 }
