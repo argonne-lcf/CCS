@@ -15,7 +15,7 @@ void test_create_multivariate_distribution() {
 	int32_t                 refcount;
 	ccs_object_type_t       otype;
 	ccs_distribution_type_t dtype;
-	ccs_numeric_type_t      data_type;
+	ccs_numeric_type_t      data_types[2];
 	ccs_interval_t          intervals[num_distribs];
 	size_t                  num_distribs_ret;
 
@@ -51,9 +51,10 @@ void test_create_multivariate_distribution() {
 	assert( err == CCS_SUCCESS );
 	assert( dtype == CCS_MULTIVARIATE );
 
-	err = ccs_distribution_get_data_types(distrib, &data_type);
+	err = ccs_distribution_get_data_types(distrib, data_types);
 	assert( err == CCS_SUCCESS );
-	assert( data_type == CCS_NUM_FLOAT );
+	assert( data_types[0] == CCS_NUM_FLOAT );
+	assert( data_types[1] == CCS_NUM_INTEGER );
 
         err = ccs_distribution_get_bounds(distrib, intervals);
 	assert( err == CCS_SUCCESS );

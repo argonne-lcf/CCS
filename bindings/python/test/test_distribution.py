@@ -169,6 +169,39 @@ class TestDistribution(unittest.TestCase):
     for v in a:
       self.assertTrue( i.include(v) )
 
+  def test_create_mixture(self):
+    distributions = [ ccs.UniformDistribution.float(lower = -5.0, upper = 0.0),
+                      ccs.UniformDistribution.float(lower =  0.0, upper = 2.0) ]
+    d = ccs.MixtureDistribution(distributions = distributions)
+    self.assertEqual( d.object_type, ccs.DISTRIBUTION )
+    self.assertEqual( d.type, ccs.MIXTURE )
+    self.assertEqual( d.data_types, [ccs.NUM_FLOAT] )
+    self.assertEqual( d.weights, [0.5, 0.5] )
+    self.assertEqual( [x.handle.value for x in d.distributions], [x.handle.value for x in distributions] )
+    d2 = ccs.Object.from_handle(d.handle)
+    self.assertEqual( d.__class__, d2.__class__ )
+
+  def test_create_multivariate(self):
+    distributions = [ ccs.UniformDistribution.float(lower = -5.0, upper = 0.0),
+                      ccs.UniformDistribution.int(lower =  0, upper = 2) ]
+    d = ccs.MultivariateDistribution(distributions = distributions)
+    self.assertEqual( d.object_type, ccs.DISTRIBUTION )
+    self.assertEqual( d.type, ccs.MULTIVARIATE )
+    self.assertEqual( d.data_types, [ccs.NUM_FLOAT, ccs.NUM_INTEGER] )
+    self.assertEqual( [x.handle.value for x in d.distributions], [x.handle.value for x in distributions] )
+    d2 = ccs.Object.from_handle(d.handle)
+    self.assertEqual( d.__class__, d2.__class__ )
+
+  def test_mixture_multidim(self):
+    distributions = [ ccs.UniformDistribution.float(lower = -5.0, upper = 0.0),
+                      ccs.UniformDistribution.int(lower =  0, upper = 2) ]
+    d = ccs.MultivariateDistribution(distributions = distributions)
+    d2 = ccs.MixtureDistribution(distributions = [d, d])
+    self.assertEqual( d2.object_type, ccs.DISTRIBUTION )
+    self.assertEqual( d2.type, ccs.MIXTURE )
+    self.assertEqual( d2.data_types, [ccs.NUM_FLOAT, ccs.NUM_INTEGER] )
+    self.assertEqual( d2.weights, [0.5, 0.5] )
+
 
 if __name__ == '__main__':
     unittest.main()

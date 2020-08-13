@@ -7,7 +7,9 @@ class ccs_distribution_type(CEnumeration):
   _members_ = [
     ('UNIFORM', 0),
     'NORMAL',
-    'ROULETTE' ]
+    'ROULETTE',
+    'MIXTURE',
+    'MULTIVARIATE' ]
 
 class ccs_scale_type(CEnumeration):
   _members_ = [
@@ -36,6 +38,10 @@ class Distribution(Object):
       return NormalDistribution(handle = handle, retain = True)
     elif v == ccs_distribution_type.ROULETTE:
       return RouletteDistribution(handle = handle, retain = True)
+    elif v == ccs_distribution_type.MIXTURE:
+      return MixtureDistribution(handle = handle, retain = True)
+    elif v == ccs_distribution_type.MULTIVARIATE:
+      return MultivariateDistribution(handle = handle, retain = True)
     else:
       raise Error(ccs_error(ccs_error.INVALID_DISTRIBUTION))
 
@@ -342,4 +348,86 @@ class RouletteDistribution(Distribution):
     self._areas = list(v)
     return self._areas
 
+ccs_create_mixture_distribution = _ccs_get_function("ccs_create_mixture_distribution", [ct.c_size_t, ct.POINTER(ccs_distribution), ct.POINTER(ccs_float), ct.POINTER(ccs_distribution)])
+ccs_mixture_distribution_get_num_distributions = _ccs_get_function("ccs_mixture_distribution_get_num_distributions", [ccs_distribution, ct.POINTER(ct.c_size_t)])
+ccs_mixture_distribution_get_distributions = _ccs_get_function("ccs_mixture_distribution_get_distributions", [ccs_distribution, ct.c_size_t, ct.POINTER(ccs_distribution), ct.POINTER(ct.c_size_t)])
+ccs_mixture_distribution_get_weights = _ccs_get_function("ccs_mixture_distribution_get_weights", [ccs_distribution, ct.c_size_t, ct.POINTER(ccs_float), ct.POINTER(ct.c_size_t)])
 
+class MixtureDistribution(Distribution):
+  def __init__(self, handle = None, retain = False, distributions = [], weights = None):
+    if handle is None:
+      handle = ccs_distribution(0)
+      if weights is None:
+        weights = [1.0] * len(distributions)
+      ws = (ccs_float * len(distributions))(*weights)
+      ds = (ccs_distribution * len(distributions))(*[x.handle.value for x in distributions])
+      res = ccs_create_mixture_distribution(len(distributions), ds, ws, ct.byref(handle))
+      Error.check(res)
+      super().__init__(handle = handle, retain = False)
+    else:
+      super().__init__(handle = handle, retain = retain)
+
+  @property
+  def num_distributions(self):
+    if hasattr(self, "_num_distributions"):
+      return self._num_distributions
+    v = ct.c_size_t()
+    res = ccs_mixture_distribution_get_num_distributions(self.handle, ct.byref(v))
+    Error.check(res)
+    self._num_distributions = v.value
+    return self._num_distributions
+
+  @property
+  def weights(self):
+    if hasattr(self, "_weights"):
+      return self._weights
+    v = (ccs_float * self.num_distributions)()
+    res = ccs_mixture_distribution_get_weights(self.handle, self.num_distributions, v, None)
+    Error.check(res)
+    self._weights = list(v)
+    return self._weights
+
+  @property
+  def distributions(self):
+    if hasattr(self, "_distributions"):
+      return self._distributions
+    v = (ccs_distribution * self.num_distributions)()
+    res = ccs_mixture_distribution_get_distributions(self.handle, self.num_distributions, v, None)
+    Error.check(res)
+    self._distributions = [Distribution.from_handle(ccs_distribution(x)) for x in v]
+    return self._distributions
+
+ccs_create_multivariate_distribution = _ccs_get_function("ccs_create_multivariate_distribution", [ct.c_size_t, ct.POINTER(ccs_distribution), ct.POINTER(ccs_distribution)])
+ccs_multivariate_distribution_get_num_distributions = _ccs_get_function("ccs_multivariate_distribution_get_num_distributions", [ccs_distribution, ct.POINTER(ct.c_size_t)])
+ccs_multivariate_distribution_get_distributions = _ccs_get_function("ccs_multivariate_distribution_get_distributions", [ccs_distribution, ct.c_size_t, ct.POINTER(ccs_distribution), ct.POINTER(ct.c_size_t)])
+
+class MultivariateDistribution(Distribution):
+  def __init__(self, handle = None, retain = False, distributions = [], weights = None):
+    if handle is None:
+      handle = ccs_distribution(0)
+      ds = (ccs_distribution * len(distributions))(*[x.handle.value for x in distributions])
+      res = ccs_create_multivariate_distribution(len(distributions), ds, ct.byref(handle))
+      Error.check(res)
+      super().__init__(handle = handle, retain = False)
+    else:
+      super().__init__(handle = handle, retain = retain)
+
+  @property
+  def num_distributions(self):
+    if hasattr(self, "_num_distributions"):
+      return self._num_distributions
+    v = ct.c_size_t()
+    res = ccs_multivariate_distribution_get_num_distributions(self.handle, ct.byref(v))
+    Error.check(res)
+    self._num_distributions = v.value
+    return self._num_distributions
+
+  @property
+  def distributions(self):
+    if hasattr(self, "_distributions"):
+      return self._distributions
+    v = (ccs_distribution * self.num_distributions)()
+    res = ccs_multivariate_distribution_get_distributions(self.handle, self.num_distributions, v, None)
+    Error.check(res)
+    self._distributions = [Distribution.from_handle(ccs_distribution(x)) for x in v]
+    return self._distributions
