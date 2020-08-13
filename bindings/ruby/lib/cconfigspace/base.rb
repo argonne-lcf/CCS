@@ -47,8 +47,12 @@ module CCS
     alias read_ccs_hash_t   read_uint32
     if FFI.find_type(:size_t).size == 8
       alias read_size_t read_uint64
+      alias write_size_t write_uint64
+      alias write_array_of_size_t write_array_of_uint64
     else
       alias read_size_t read_uint32
+      alias write_size_t write_uint32
+      alias write_array_of_size_t write_array_of_uint32
     end
   end
 

@@ -213,5 +213,5 @@ class CConfigSpaceTestDistribution < Minitest::Test
     assert( d2.type == :CCS_MIXTURE )
     assert( d2.data_types == [:CCS_NUM_FLOAT, :CCS_NUM_INTEGER] )
     assert( d2.weights == [0.5, 0.5] )
-   end
+  end
 end

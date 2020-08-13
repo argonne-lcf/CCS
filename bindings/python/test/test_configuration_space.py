@@ -34,6 +34,31 @@ class TestConfigurationSpace(unittest.TestCase):
     for c in cs.samples(100):
       cs.check(c)
 
+  def test_set_distribution(self):
+    cs = ccs.ConfigurationSpace(name = "space")
+    h1 = ccs.NumericalHyperparameter()
+    h2 = ccs.NumericalHyperparameter()
+    h3 = ccs.NumericalHyperparameter()
+    cs.add_hyperparameters([h1, h2, h3])
+    distributions = [ ccs.UniformDistribution.float(lower = 0.1, upper = 0.3),
+                      ccs.UniformDistribution.float(lower = 0.2, upper = 0.6) ]
+    d = ccs.MultivariateDistribution(distributions = distributions)
+    cs.set_distribution(d, [h1, h2])
+    (dist, indx) = cs.get_hyperparameter_distribution(h1)
+    self.assertEqual( d.handle.value, dist.handle.value )
+    self.assertEqual( 0, indx )
+    (dist, indx) = cs.get_hyperparameter_distribution(h2)
+    self.assertEqual( d.handle.value, dist.handle.value )
+    self.assertEqual( 1, indx )
+    cs.set_distribution(d, [h3, h1])
+    (dist, indx) = cs.get_hyperparameter_distribution(h1)
+    self.assertEqual( d.handle.value, dist.handle.value )
+    self.assertEqual( 1, indx )
+    (dist, indx) = cs.get_hyperparameter_distribution(h3)
+    self.assertEqual( d.handle.value, dist.handle.value )
+    self.assertEqual( 0, indx )
+
+
   def test_conditions(self):
     h1 = ccs.NumericalHyperparameter(lower = -1.0, upper = 1.0, default = 0.0)
     h2 = ccs.NumericalHyperparameter(lower = -1.0, upper = 1.0)
