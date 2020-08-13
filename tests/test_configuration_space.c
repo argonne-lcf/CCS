@@ -236,7 +236,9 @@ void test_set_distribution() {
 	ccs_hyperparameter_t      hyperparameters[3];
 	ccs_distribution_t        distribs[2];
 	ccs_distribution_t        distrib;
+	ccs_distribution_t        distrib_ret;
 	size_t                    hindexes[2];
+	size_t                    dindex_ret;
 	ccs_configuration_t       configurations[100];
 	ccs_configuration_space_t configuration_space;
 	ccs_result_t              err;
@@ -285,6 +287,18 @@ void test_set_distribution() {
 		configuration_space, distrib, hindexes);
 	assert( err == CCS_SUCCESS );
 
+	err = ccs_configuration_space_get_hyperparameter_distribution(
+		configuration_space, 0, &distrib_ret, &dindex_ret);
+	assert( err == CCS_SUCCESS );
+	assert( distrib_ret == distrib );
+	assert( dindex_ret == 0 );
+
+	err = ccs_configuration_space_get_hyperparameter_distribution(
+		configuration_space, 1, &distrib_ret, &dindex_ret);
+	assert( err == CCS_SUCCESS );
+	assert( distrib_ret == distrib );
+	assert( dindex_ret == 1 );
+
 	err = ccs_configuration_space_samples(configuration_space,
 	                                      100, configurations);
 	assert( err == CCS_SUCCESS );
@@ -308,6 +322,18 @@ void test_set_distribution() {
 	err = ccs_configuration_space_set_distribution(
 		configuration_space, distrib, hindexes);
 	assert( err == CCS_SUCCESS );
+
+	err = ccs_configuration_space_get_hyperparameter_distribution(
+		configuration_space, 0, &distrib_ret, &dindex_ret);
+	assert( err == CCS_SUCCESS );
+	assert( distrib_ret == distrib );
+	assert( dindex_ret == 1 );
+
+	err = ccs_configuration_space_get_hyperparameter_distribution(
+		configuration_space, 2, &distrib_ret, &dindex_ret);
+	assert( err == CCS_SUCCESS );
+	assert( distrib_ret == distrib );
+	assert( dindex_ret == 0 );
 
 	err = ccs_configuration_space_samples(configuration_space,
 	                                      100, configurations);

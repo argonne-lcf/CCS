@@ -401,6 +401,25 @@ memory:
 	return err;
 }
 
+extern ccs_result_t
+ccs_configuration_space_get_hyperparameter_distribution(
+		ccs_configuration_space_t  configuration_space,
+		size_t                     index,
+		ccs_distribution_t        *distribution_ret,
+		size_t                    *index_ret) {
+	CCS_CHECK_OBJ(configuration_space, CCS_CONFIGURATION_SPACE);
+	CCS_CHECK_PTR(distribution_ret);
+	CCS_CHECK_PTR(index_ret);
+
+	_ccs_hyperparameter_wrapper_cs_t *wrapper = (_ccs_hyperparameter_wrapper_cs_t*)
+		utarray_eltptr(configuration_space->data->hyperparameters, (unsigned int)index);
+	if (!wrapper)
+		return -CCS_OUT_OF_BOUNDS;
+	*distribution_ret = wrapper->distribution->distribution;
+	*index_ret = wrapper->distribution_index;
+	return CCS_SUCCESS;
+}
+
 ccs_result_t
 ccs_configuration_space_add_hyperparameters(ccs_configuration_space_t  configuration_space,
                                             size_t                     num_hyperparameters,
