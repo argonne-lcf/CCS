@@ -38,7 +38,7 @@ void test_create_roulette_distribution() {
 	assert( err == CCS_SUCCESS );
 	assert( dtype == CCS_ROULETTE );
 
-	err = ccs_distribution_get_data_type(distrib, &data_type);
+	err = ccs_distribution_get_data_types(distrib, &data_type);
 	assert( err == CCS_SUCCESS );
 	assert( data_type == CCS_NUM_INTEGER );
 
@@ -210,7 +210,7 @@ void test_roulette_distribution_zero() {
 	assert( err == CCS_SUCCESS );
 }
 
-void test_roulette_distribution_strided_sample() {
+void test_roulette_distribution_strided_samples() {
 	ccs_distribution_t distrib1 = NULL;
 	ccs_distribution_t distrib2 = NULL;
 	ccs_rng_t          rng = NULL;
@@ -288,12 +288,62 @@ void test_roulette_distribution_strided_sample() {
 	assert( err == CCS_SUCCESS );
 }
 
+void test_roulette_distribution_soa_samples() {
+	ccs_distribution_t distrib = NULL;
+	ccs_rng_t          rng = NULL;
+	ccs_result_t       err = CCS_SUCCESS;
+	const size_t       num_samples = 10000;
+	ccs_numeric_t      samples[num_samples];
+	const size_t       num_areas = 4;
+	ccs_float_t        areas[num_areas];
+	int                counts[num_areas];
+	ccs_numeric_t     *p_samples;
+
+	for(size_t i = 0; i < num_areas; i++) {
+		areas[i] = (double)(i+1);
+	        counts[i] = 0;
+	}
+
+	err = ccs_rng_create(&rng);
+	assert( err == CCS_SUCCESS );
+	err = ccs_create_roulette_distribution(
+		num_areas,
+		areas,
+		&distrib);
+	assert( err == CCS_SUCCESS );
+
+	p_samples = &(samples[0]);
+	err = ccs_distribution_soa_samples(distrib, rng, num_samples, &p_samples);
+	assert( err == CCS_SUCCESS );
+
+	ccs_float_t sum = 0.0;
+	ccs_float_t inv_sum = 0.0;
+	for(size_t i = 0; i < num_areas; i++) {
+		sum += areas[i];
+	}
+	inv_sum = 1.0 / sum;
+	for(size_t i = 0; i < num_samples; i++) {
+		assert( samples[i].i >=0 && samples[i].i < 4 );
+		counts[samples[i].i]++;
+	}
+	for(size_t i = 0; i < num_areas; i++) {
+		ccs_float_t target = num_samples * areas[i] * inv_sum;
+		assert( counts[i] >= target * 0.95 && counts[i] <= target * 1.05 );
+	}
+
+	err = ccs_release_object(distrib);
+	assert( err == CCS_SUCCESS );
+	err = ccs_release_object(rng);
+	assert( err == CCS_SUCCESS );
+}
+
 int main(int argc, char *argv[]) {
 	ccs_init();
 	test_create_roulette_distribution();
 	test_create_roulette_distribution_errors();
 	test_roulette_distribution();
 	test_roulette_distribution_zero();
-	test_roulette_distribution_strided_sample();
+	test_roulette_distribution_strided_samples();
+	test_roulette_distribution_soa_samples();
 	return 0;
 }

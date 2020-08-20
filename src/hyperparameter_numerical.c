@@ -123,11 +123,50 @@ _ccs_hyperparameter_numerical_get_default_distribution(
 	                                       distribution);
 }
 
+ccs_result_t
+_ccs_hyperparameter_numerical_convert_samples(
+		_ccs_hyperparameter_data_t *data,
+		ccs_bool_t                  oversampling,
+		size_t                      num_values,
+		const ccs_numeric_t        *values,
+		ccs_datum_t                *results) {
+	_ccs_hyperparameter_numerical_data_t *d =
+	    (_ccs_hyperparameter_numerical_data_t *)data;
+	ccs_numeric_type_t type = d->common_data.interval.type;
+	ccs_interval_t *interval = &(d->common_data.interval);
+
+	if (!oversampling) {
+		if (type == CCS_NUM_FLOAT) {
+			for(size_t i = 0; i < num_values; i++)
+				results[i] = ccs_float(values[i].f);
+		} else {
+			for(size_t i = 0; i < num_values; i++)
+				results[i] = ccs_int(values[i].i);
+		}
+	} else {
+		if (type == CCS_NUM_FLOAT) {
+			for(size_t i = 0; i < num_values; i++)
+				if (_ccs_interval_include(interval, values[i]))
+					results[i] = ccs_float(values[i].f);
+				else
+					results[i] = ccs_inactive;
+		} else {
+			for(size_t i = 0; i < num_values; i++)
+				if (_ccs_interval_include(interval, values[i]))
+					results[i] = ccs_int(values[i].i);
+				else
+					results[i] = ccs_inactive;
+		}
+	}
+	return CCS_SUCCESS;
+}
+
 static _ccs_hyperparameter_ops_t _ccs_hyperparameter_numerical_ops = {
 	{ &_ccs_hyperparameter_numerical_del },
 	&_ccs_hyperparameter_numerical_check_values,
 	&_ccs_hyperparameter_numerical_samples,
-	&_ccs_hyperparameter_numerical_get_default_distribution
+	&_ccs_hyperparameter_numerical_get_default_distribution,
+	&_ccs_hyperparameter_numerical_convert_samples
 };
 
 ccs_result_t

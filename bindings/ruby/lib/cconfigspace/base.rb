@@ -35,9 +35,11 @@ module CCS
 
   class MemoryPointer
     alias read_ccs_float_t  read_double
+    alias get_ccs_float_t   get_double
     alias read_array_of_ccs_float_t  read_array_of_double
     alias write_array_of_ccs_float_t  write_array_of_double
     alias read_ccs_int_t    read_int64
+    alias get_ccs_int_t     get_int64
     alias read_array_of_ccs_int_t  read_array_of_int64
     alias write_array_of_ccs_int_t  write_array_of_int64
     alias read_ccs_bool_t   read_int32
@@ -45,8 +47,12 @@ module CCS
     alias read_ccs_hash_t   read_uint32
     if FFI.find_type(:size_t).size == 8
       alias read_size_t read_uint64
+      alias write_size_t write_uint64
+      alias write_array_of_size_t write_array_of_uint64
     else
       alias read_size_t read_uint32
+      alias write_size_t write_uint32
+      alias write_array_of_size_t write_array_of_uint32
     end
   end
 

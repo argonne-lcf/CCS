@@ -9,6 +9,8 @@ enum ccs_distribution_type_e {
 	CCS_UNIFORM,
 	CCS_NORMAL,
 	CCS_ROULETTE,
+	CCS_MIXTURE,
+	CCS_MULTIVARIATE,
 	CCS_DISTRIBUTION_TYPE_MAX,
 	CCS_DISTRIBUTION_TYPE_FORCE_32BIT = INT_MAX
 };
@@ -95,8 +97,8 @@ ccs_distribution_get_dimension(ccs_distribution_t  distribution,
                                size_t             *dimension);
 
 extern ccs_result_t
-ccs_distribution_get_data_type(ccs_distribution_t       distribution,
-                               ccs_numeric_type_t      *data_type_ret);
+ccs_distribution_get_data_types(ccs_distribution_t       distribution,
+                                ccs_numeric_type_t      *data_types_ret);
 
 extern ccs_result_t
 ccs_distribution_get_bounds(ccs_distribution_t  distribution,
@@ -104,8 +106,8 @@ ccs_distribution_get_bounds(ccs_distribution_t  distribution,
 
 extern ccs_result_t
 ccs_distribution_check_oversampling(ccs_distribution_t  distribution,
-                                    ccs_interval_t     *interval,
-                                    ccs_bool_t         *oversampling_ret);
+                                    ccs_interval_t     *intervals,
+                                    ccs_bool_t         *oversamplings);
 
 extern ccs_result_t
 ccs_normal_distribution_get_parameters(ccs_distribution_t  distribution,
@@ -131,6 +133,32 @@ ccs_roulette_distribution_get_areas(ccs_distribution_t  distribution,
                                     ccs_float_t        *areas,
                                     size_t             *num_areas_ret);
 
+extern ccs_result_t
+ccs_mixture_distribution_get_num_distributions(ccs_distribution_t  distribution,
+                                               size_t             *num_distributions_ret);
+
+extern ccs_result_t
+ccs_mixture_distribution_get_distributions(ccs_distribution_t  distribution,
+                                           size_t              num_distributions,
+                                           ccs_distribution_t *distributions,
+                                           size_t             *num_distributions_ret);
+
+extern ccs_result_t
+ccs_mixture_distribution_get_weights(ccs_distribution_t  distribution,
+                                     size_t              num_weights,
+                                     ccs_float_t        *weights,
+                                     size_t             *num_weights_ret);
+
+extern ccs_result_t
+ccs_multivariate_distribution_get_num_distributions(ccs_distribution_t  distribution,
+                                                    size_t             *num_distributions_ret);
+
+extern ccs_result_t
+ccs_multivariate_distribution_get_distributions(ccs_distribution_t  distribution,
+                                                size_t              num_distributions,
+                                                ccs_distribution_t *distributions,
+                                                size_t             *num_distributions_ret);
+
 //   Sampling Interface
 extern ccs_result_t
 ccs_distribution_sample(ccs_distribution_t  distribution,
@@ -152,6 +180,25 @@ ccs_distribution_strided_samples(ccs_distribution_t  distribution,
                                  size_t              num_values,
                                  size_t              stride,
                                  ccs_numeric_t      *values);
+
+extern ccs_result_t
+ccs_distribution_soa_samples(ccs_distribution_t   distribution,
+                             ccs_rng_t            rng,
+                             size_t               num_values,
+                             ccs_numeric_t      **values);
+
+extern ccs_result_t
+ccs_distribution_hyperparameters_samples(ccs_distribution_t    distribution,
+                                         ccs_rng_t             rng,
+                                         ccs_hyperparameter_t *hyperparameters,
+                                         size_t                num_values,
+                                         ccs_datum_t          *values);
+
+extern ccs_result_t
+ccs_distribution_hyperparameters_sample(ccs_distribution_t    distribution,
+                                        ccs_rng_t             rng,
+                                        ccs_hyperparameter_t *hyperparameters,
+                                        ccs_datum_t          *values);
 
 #ifdef __cplusplus
 }

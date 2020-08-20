@@ -43,6 +43,11 @@ ccs_configuration_space_add_hyperparameters(ccs_configuration_space_t  configura
                                             ccs_distribution_t        *distributions);
 
 extern ccs_result_t
+ccs_configuration_space_set_distribution(ccs_configuration_space_t  configuration_space,
+                                         ccs_distribution_t         distribution,
+                                         size_t                    *indexes);
+
+extern ccs_result_t
 ccs_configuration_space_get_num_hyperparameters(ccs_configuration_space_t  configuration_space,
                                                 size_t                     *num_hyperparameters_ret);
 
@@ -50,6 +55,13 @@ extern ccs_result_t
 ccs_configuration_space_get_hyperparameter(ccs_configuration_space_t  configuration_space,
                                            size_t                     index,
                                            ccs_hyperparameter_t      *hyperparameter_ret);
+
+extern ccs_result_t
+ccs_configuration_space_get_hyperparameter_distribution(
+	ccs_configuration_space_t  configuration_space,
+	size_t                     index,
+	ccs_distribution_t        *distribution_ret,
+	size_t                    *index_ret);
 
 extern ccs_result_t
 ccs_configuration_space_get_hyperparameter_by_name(

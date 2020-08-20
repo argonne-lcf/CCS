@@ -116,6 +116,13 @@ ccs_hyperparameter_check_values(ccs_hyperparameter_t  hyperparameter,
                                 const ccs_datum_t    *values,
                                 ccs_bool_t           *results);
 
+extern ccs_result_t
+ccs_hyperparameter_convert_samples(ccs_hyperparameter_t  hyperparameter,
+                                   ccs_bool_t            oversampling,
+                                   size_t                num_values,
+                                   const ccs_numeric_t  *values,
+                                   ccs_datum_t          *results);
+
 //   Sampling Interface
 extern ccs_result_t
 ccs_hyperparameter_sample(ccs_hyperparameter_t  hyperparameter,
@@ -130,6 +137,9 @@ ccs_hyperparameter_samples(ccs_hyperparameter_t  hyperparameter,
                            size_t                num_values,
                            ccs_datum_t          *values);
 
+extern ccs_result_t
+ccs_hyperparameter_sampling_interval(ccs_hyperparameter_t  hyperparameter,
+                                     ccs_interval_t       *interval_ret);
 #ifdef __cplusplus
 }
 #endif

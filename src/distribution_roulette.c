@@ -34,11 +34,18 @@ _ccs_distribution_roulette_strided_samples(_ccs_distribution_data_t *data,
                                            size_t                    stride,
                                            ccs_numeric_t            *values);
 
+static ccs_result_t
+_ccs_distribution_roulette_soa_samples(_ccs_distribution_data_t  *data,
+                                       ccs_rng_t                  rng,
+                                       size_t                     num_values,
+                                       ccs_numeric_t            **values);
+
 static _ccs_distribution_ops_t _ccs_distribution_roulette_ops = {
 	{ &_ccs_distribution_del },
 	&_ccs_distribution_roulette_samples,
 	&_ccs_distribution_roulette_get_bounds,
-	&_ccs_distribution_roulette_strided_samples
+	&_ccs_distribution_roulette_strided_samples,
+	&_ccs_distribution_roulette_soa_samples
 };
 
 static ccs_result_t
@@ -68,20 +75,7 @@ _ccs_distribution_roulette_samples(_ccs_distribution_data_t *data,
 
 	for (size_t i = 0; i < num_values; i++) {
 		ccs_float_t rnd = gsl_rng_uniform(grng);
-		ccs_int_t upper = d->num_areas - 1;
-		ccs_int_t lower = 0;
-		ccs_int_t index = upper * rnd;
-		int found = 0;
-		while( !found ) {
-			if ( rnd < d->areas[index] ) {
-				upper = index - 1;
-				index = (lower+upper)/2;
-			} else if ( rnd >= d->areas[index+1] ) {
-				lower = index + 1;
-				index = (lower+upper)/2;
-			} else
-				found = 1;
-		}
+		ccs_int_t index = ccs_dichotomic_search(d->num_areas, d->areas, rnd);
 		values[i].i = index;
 	}
 	return CCS_SUCCESS;
@@ -102,22 +96,19 @@ _ccs_distribution_roulette_strided_samples(_ccs_distribution_data_t *data,
 
 	for (size_t i = 0; i < num_values; i++) {
 		ccs_float_t rnd = gsl_rng_uniform(grng);
-		ccs_int_t upper = d->num_areas - 1;
-		ccs_int_t lower = 0;
-		ccs_int_t index = upper * rnd;
-		int found = 0;
-		while( !found ) {
-			if ( rnd < d->areas[index] ) {
-				upper = index - 1;
-				index = (lower+upper)/2;
-			} else if ( rnd >= d->areas[index+1] ) {
-				lower = index + 1;
-				index = (lower+upper)/2;
-			} else
-				found = 1;
-		}
+		ccs_int_t index = ccs_dichotomic_search(d->num_areas, d->areas, rnd);
 		values[i*stride].i = index;
 	}
+	return CCS_SUCCESS;
+}
+
+static ccs_result_t
+_ccs_distribution_roulette_soa_samples(_ccs_distribution_data_t  *data,
+                                     ccs_rng_t                  rng,
+                                     size_t                     num_values,
+                                     ccs_numeric_t            **values) {
+	if (*values)
+		return _ccs_distribution_roulette_samples(data, rng, num_values, *values);
 	return CCS_SUCCESS;
 }
 
@@ -142,7 +133,7 @@ ccs_create_roulette_distribution(size_t              num_areas,
 	if (isnan(inv_sum) || !isfinite(inv_sum))
 		return -CCS_INVALID_VALUE;
 
-	uintptr_t mem = (uintptr_t)calloc(1, sizeof(struct _ccs_distribution_s) + sizeof(_ccs_distribution_roulette_data_t) + sizeof(ccs_float_t)*(num_areas + 1));
+	uintptr_t mem = (uintptr_t)calloc(1, sizeof(struct _ccs_distribution_s) + sizeof(_ccs_distribution_roulette_data_t) + sizeof(ccs_float_t)*(num_areas + 1) + sizeof(ccs_numeric_type_t));
 
 	if (!mem)
 		return -CCS_OUT_OF_MEMORY;
@@ -150,11 +141,12 @@ ccs_create_roulette_distribution(size_t              num_areas,
 	ccs_distribution_t distrib = (ccs_distribution_t)mem;
 	_ccs_object_init(&(distrib->obj), CCS_DISTRIBUTION, (_ccs_object_ops_t *)&_ccs_distribution_roulette_ops);
 	_ccs_distribution_roulette_data_t * distrib_data = (_ccs_distribution_roulette_data_t *)(mem + sizeof(struct _ccs_distribution_s));
-	distrib_data->common_data.type         = CCS_ROULETTE;
-	distrib_data->common_data.dimension    = 1;
-	distrib_data->common_data.data_type    = CCS_NUM_INTEGER;
-	distrib_data->num_areas                = num_areas;
-	distrib_data->areas                    = (ccs_float_t *)(mem + sizeof(struct _ccs_distribution_s) + sizeof(_ccs_distribution_roulette_data_t));
+	distrib_data->common_data.data_types    = (ccs_numeric_type_t *)(mem + sizeof(struct _ccs_distribution_s) + sizeof(_ccs_distribution_roulette_data_t) + sizeof(ccs_float_t)*(num_areas + 1));
+	distrib_data->common_data.type          = CCS_ROULETTE;
+	distrib_data->common_data.dimension     = 1;
+	distrib_data->common_data.data_types[0] = CCS_NUM_INTEGER;
+	distrib_data->num_areas                 = num_areas;
+	distrib_data->areas                     = (ccs_float_t *)(mem + sizeof(struct _ccs_distribution_s) + sizeof(_ccs_distribution_roulette_data_t));
 
 	distrib_data->areas[0] = 0.0;
 	for(size_t i = 1; i <= num_areas; i++) {
@@ -176,7 +168,7 @@ ccs_roulette_distribution_get_num_areas(ccs_distribution_t  distribution,
 	CCS_CHECK_OBJ(distribution, CCS_DISTRIBUTION);
 	CCS_CHECK_PTR(num_areas_ret);
 	if (((_ccs_distribution_common_data_t*)distribution->data)->type != CCS_ROULETTE)
-		return -CCS_INVALID_OBJECT;
+		return -CCS_INVALID_DISTRIBUTION;
 	_ccs_distribution_roulette_data_t * data = (_ccs_distribution_roulette_data_t *)distribution->data;
 	*num_areas_ret = data->num_areas;
 	return CCS_SUCCESS;
@@ -190,7 +182,7 @@ ccs_roulette_distribution_get_areas(ccs_distribution_t  distribution,
 	CCS_CHECK_OBJ(distribution, CCS_DISTRIBUTION);
 	CCS_CHECK_ARY(num_areas, areas);
 	if (((_ccs_distribution_common_data_t*)distribution->data)->type != CCS_ROULETTE)
-		return -CCS_INVALID_OBJECT;
+		return -CCS_INVALID_DISTRIBUTION;
 	if (!areas && !num_areas_ret)
 		return -CCS_INVALID_VALUE;
 	_ccs_distribution_roulette_data_t * data = (_ccs_distribution_roulette_data_t *)distribution->data;
