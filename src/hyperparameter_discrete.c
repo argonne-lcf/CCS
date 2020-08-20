@@ -95,6 +95,31 @@ _ccs_hyperparameter_discrete_get_default_distribution(
 	                                       distribution);
 }
 
+ccs_result_t
+_ccs_hyperparameter_discrete_convert_samples(
+		_ccs_hyperparameter_data_t *data,
+		ccs_bool_t                  oversampling,
+		size_t                      num_values,
+		const ccs_numeric_t        *values,
+		ccs_datum_t                *results) {
+	_ccs_hyperparameter_discrete_data_t *d =
+	    (_ccs_hyperparameter_discrete_data_t *)data;
+
+	if (!oversampling) {
+		for(size_t i = 0; i < num_values; i++)
+			results[i] = d->possible_values[values[i].i].d;
+	} else {
+		for(size_t i = 0; i < num_values; i++) {
+			size_t index = (size_t)values[i].i;
+			if (index >= 0 && index < d->num_possible_values)
+				results[i] = d->possible_values[index].d;
+			else
+				results[i] = ccs_inactive;
+		}
+	}
+	return CCS_SUCCESS;
+}
+
 static _ccs_hyperparameter_ops_t _ccs_hyperparameter_discrete_ops = {
 	{ &_ccs_hyperparameter_discrete_del },
 	&_ccs_hyperparameter_discrete_check_values,

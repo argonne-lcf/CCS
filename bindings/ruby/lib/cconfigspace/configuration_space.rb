@@ -4,6 +4,8 @@ module CCS
   attach_function :ccs_configuration_space_get_rng, [:ccs_configuration_space_t, :pointer], :ccs_result_t
   attach_function :ccs_configuration_space_add_hyperparameter, [:ccs_configuration_space_t, :ccs_hyperparameter_t, :ccs_distribution_t], :ccs_result_t
   attach_function :ccs_configuration_space_add_hyperparameters, [:ccs_configuration_space_t, :size_t, :pointer, :pointer], :ccs_result_t
+  attach_function :ccs_configuration_space_set_distribution, [:ccs_configuration_space_t, :ccs_distribution_t, :pointer], :ccs_result_t
+  attach_function :ccs_configuration_space_get_hyperparameter_distribution, [:ccs_configuration_space_t, :size_t, :pointer, :pointer], :ccs_result_t
   attach_function :ccs_configuration_space_set_condition, [:ccs_configuration_space_t, :size_t, :ccs_expression_t], :ccs_result_t
   attach_function :ccs_configuration_space_get_condition, [:ccs_configuration_space_t, :size_t, :pointer], :ccs_result_t
   attach_function :ccs_configuration_space_get_conditions, [:ccs_configuration_space_t, :size_t, :pointer, :pointer], :ccs_result_t
@@ -51,6 +53,40 @@ module CCS
       res = CCS.ccs_configuration_space_add_hyperparameter(@handle, hyperparameter, distribution)
       CCS.error_check(res)
       self
+    end
+
+    def set_distribution(distribution, hyperparameters )
+      count = distribution.dimension
+      raise CCSError, :CCS_INVALID_VALUE if count != hyperparameters.size
+      hyperparameters = hyperparameters.collect { |h|
+        case h
+        when Hyperparameter
+          hyperparameter_index(h)
+        when String
+          hyperparameter_index_by_name(hyperparameter)
+        else
+          h
+        end
+      }
+      p_hypers = MemoryPointer::new(:size_t, count)
+      p_hypers.write_array_of_size_t(hyperparameters)
+      res = CCS.ccs_configuration_space_set_distribution(@handle, distribution, p_hypers)
+      CCS.error_check(res)
+      self
+    end
+
+    def get_hyperparameter_distribution(hyperparameter)
+      case hyperparameter
+      when Hyperparameter
+        hyperparameter = hyperparameter_index(hyperparameter);
+      when String
+        hyperparameter = hyperparameter_index_by_name(hyperparameter);
+      end
+      p_distribution = MemoryPointer::new(:ccs_distribution_t)
+      p_indx = MemoryPointer::new(:size_t)
+      res = CCS.ccs_configuration_space_get_hyperparameter_distribution(@handle, hyperparameter, p_distribution, p_indx)
+      CCS.error_check(res)
+      [CCS::Distribution.from_handle(p_distribution.read_ccs_distribution_t), p_indx.read_size_t]
     end
 
     def add_hyperparameters(hyperparameters, distributions: nil)

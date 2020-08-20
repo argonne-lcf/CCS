@@ -96,8 +96,32 @@ ccs_hyperparameter_samples(ccs_hyperparameter_t  hyperparameter,
 	CCS_CHECK_OBJ(distribution, CCS_DISTRIBUTION);
 	CCS_CHECK_ARY(num_values, values);
 	if (!num_values)
-		return -CCS_SUCCESS;
+		return CCS_SUCCESS;
 	_ccs_hyperparameter_ops_t *ops = ccs_hyperparameter_get_ops(hyperparameter);
 	return ops->samples(hyperparameter->data, distribution, rng, num_values, values);
+}
+
+ccs_result_t
+ccs_hyperparameter_convert_samples(ccs_hyperparameter_t  hyperparameter,
+                                   ccs_bool_t            oversampling,
+                                   size_t                num_values,
+                                   const ccs_numeric_t  *values,
+                                   ccs_datum_t          *results) {
+	CCS_CHECK_OBJ(hyperparameter, CCS_HYPERPARAMETER);
+	CCS_CHECK_ARY(num_values, values);
+	CCS_CHECK_ARY(num_values, results);
+	if (!num_values)
+		return CCS_SUCCESS;
+	_ccs_hyperparameter_ops_t *ops = ccs_hyperparameter_get_ops(hyperparameter);
+	return ops->convert_samples(hyperparameter->data, oversampling, num_values, values, results);
+}
+
+ccs_result_t
+ccs_hyperparameter_sampling_interval(ccs_hyperparameter_t  hyperparameter,
+                                     ccs_interval_t       *interval_ret) {
+	CCS_CHECK_OBJ(hyperparameter, CCS_HYPERPARAMETER);
+	CCS_CHECK_PTR(interval_ret);
+	*interval_ret = ((_ccs_hyperparameter_common_data_t *)(hyperparameter->data))->interval;
+	return CCS_SUCCESS;
 }
 

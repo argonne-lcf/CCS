@@ -266,6 +266,161 @@ error:
 #define utarray_oom() exit(-1)
 
 ccs_result_t
+ccs_configuration_space_set_distribution(ccs_configuration_space_t  configuration_space,
+                                         ccs_distribution_t         distribution,
+                                         size_t                    *indexes) {
+	CCS_CHECK_OBJ(configuration_space, CCS_CONFIGURATION_SPACE);
+	CCS_CHECK_OBJ(distribution, CCS_DISTRIBUTION);
+	CCS_CHECK_PTR(indexes);
+
+	_ccs_distribution_wrapper_t *dwrapper;
+	_ccs_hyperparameter_wrapper_cs_t *hwrapper;
+	ccs_result_t err;
+	UT_array *hyperparameters = configuration_space->data->hyperparameters;
+	size_t num_hyperparameters = utarray_len(hyperparameters);
+	size_t dim;
+	err = ccs_distribution_get_dimension(distribution, &dim);
+	if (err)
+		return err;
+
+	for (size_t i = 0; i < dim; i++) {
+		if (indexes[i] >= num_hyperparameters)
+			return -CCS_INVALID_VALUE;
+		// Check duplicate entries
+		for (size_t j = 0;  j < i; j++)
+			if (indexes[i] == indexes[j])
+				return -CCS_INVALID_VALUE;
+		for (size_t j = i + 1;  j < dim; j++)
+			if (indexes[i] == indexes[j])
+				return -CCS_INVALID_VALUE;
+	}
+
+	uintptr_t cur_mem;
+	uintptr_t mem = (uintptr_t)malloc(sizeof(void *)*num_hyperparameters*2 +
+		sizeof(size_t)*num_hyperparameters);
+	if (!mem)
+		return -CCS_OUT_OF_MEMORY;
+	cur_mem = mem;
+	_ccs_distribution_wrapper_t **p_dwrappers_to_del =
+		 (_ccs_distribution_wrapper_t **)cur_mem;
+	cur_mem += sizeof(_ccs_distribution_wrapper_t *)*num_hyperparameters;
+	_ccs_distribution_wrapper_t **p_dwrappers_to_add =
+		 (_ccs_distribution_wrapper_t **)cur_mem;
+	cur_mem += sizeof(_ccs_distribution_wrapper_t *)*num_hyperparameters;
+	size_t *hypers_without_distrib = (size_t *)cur_mem;
+	cur_mem += sizeof(size_t)*num_hyperparameters;
+
+	size_t to_add_count = 0;
+	size_t to_del_count = 0;
+	size_t without_distrib_count = 0;
+
+	for (size_t i = 0; i < dim; i++) {
+		int add = 1;
+		hwrapper = (_ccs_hyperparameter_wrapper_cs_t *)utarray_eltptr(hyperparameters, indexes[i]);
+		for (size_t j = 0; j < to_del_count; j++)
+			if (p_dwrappers_to_del[j] == hwrapper->distribution) {
+				add = 0;
+				break;
+			}
+		if (add)
+			p_dwrappers_to_del[to_del_count++] = hwrapper->distribution;
+	}
+	for (size_t i = 0; i < to_del_count; i++) {
+		for (size_t j = 0; j < p_dwrappers_to_del[i]->dimension; j++) {
+			hypers_without_distrib[without_distrib_count++] = p_dwrappers_to_del[i]->hyperparameter_indexes[j];
+		}
+	}
+
+	uintptr_t dmem = (uintptr_t)malloc(sizeof(_ccs_distribution_wrapper_t) + sizeof(size_t)*dim);
+	if (!dmem) {
+		err = -CCS_OUT_OF_MEMORY;
+		goto memory;
+	}
+
+	dwrapper = (_ccs_distribution_wrapper_t *)dmem;
+	dwrapper->distribution = distribution;
+	dwrapper->dimension = dim;
+	dwrapper->hyperparameter_indexes = (size_t *)(dmem + sizeof(_ccs_distribution_wrapper_t));
+	for (size_t i = 0; i < dim; i++) {
+		dwrapper->hyperparameter_indexes[i] = indexes[i];
+		size_t indx = 0;
+		for (size_t j = 0; j < without_distrib_count; j++, indx++)
+			if (hypers_without_distrib[j] == indexes[i])
+				break;
+		for (size_t j = indx + 1; j < without_distrib_count; j++)
+			hypers_without_distrib[j-1] = hypers_without_distrib[j];
+		without_distrib_count--;
+	}
+	err = ccs_retain_object(distribution);
+	if (err) {
+		free((void *)dmem);
+		goto memory;
+	}
+
+	p_dwrappers_to_add[0] = dwrapper;
+	to_add_count = 1;
+	for (size_t i = 0; i < without_distrib_count; i++) {
+		dmem = (uintptr_t)malloc(sizeof(_ccs_distribution_wrapper_t) + sizeof(size_t));
+		dwrapper = (_ccs_distribution_wrapper_t *)dmem;
+		dwrapper->hyperparameter_indexes = (size_t *)(dmem + sizeof(_ccs_distribution_wrapper_t));
+		dwrapper->dimension = 1;
+		dwrapper->hyperparameter_indexes[0] = hypers_without_distrib[i];
+		hwrapper = (_ccs_hyperparameter_wrapper_cs_t *)utarray_eltptr(hyperparameters, hypers_without_distrib[i]);
+		err = ccs_hyperparameter_get_default_distribution(
+			hwrapper->hyperparameter, &(dwrapper->distribution));
+		if (err) {
+			free((void *)dmem);
+			goto dwrappers;
+		}
+		p_dwrappers_to_add[to_add_count++] = dwrapper;
+	}
+
+	for (size_t i = 0; i < to_del_count; i++) {
+		DL_DELETE(configuration_space->data->distribution_list, p_dwrappers_to_del[i]);
+		ccs_release_object(p_dwrappers_to_del[i]->distribution);
+		free(p_dwrappers_to_del[i]);
+	}
+	for (size_t i = 0; i < to_add_count; i++) {
+		DL_APPEND( configuration_space->data->distribution_list, p_dwrappers_to_add[i]);
+		for (size_t j = 0; j < p_dwrappers_to_add[i]->dimension; j++) {
+			hwrapper = (_ccs_hyperparameter_wrapper_cs_t *)utarray_eltptr(hyperparameters, p_dwrappers_to_add[i]->hyperparameter_indexes[j]);
+			hwrapper->distribution_index = j;
+			hwrapper->distribution = p_dwrappers_to_add[i];
+		}
+	}
+
+	free((void *)mem);
+	return CCS_SUCCESS;
+dwrappers:
+	for (size_t i = 0; i < to_add_count; i++) {
+		ccs_release_object(p_dwrappers_to_add[i]->distribution);
+		free(p_dwrappers_to_add[i]);
+	}
+memory:
+	free((void *)mem);
+	return err;
+}
+
+extern ccs_result_t
+ccs_configuration_space_get_hyperparameter_distribution(
+		ccs_configuration_space_t  configuration_space,
+		size_t                     index,
+		ccs_distribution_t        *distribution_ret,
+		size_t                    *index_ret) {
+	CCS_CHECK_OBJ(configuration_space, CCS_CONFIGURATION_SPACE);
+	CCS_CHECK_PTR(distribution_ret);
+	CCS_CHECK_PTR(index_ret);
+
+	_ccs_hyperparameter_wrapper_cs_t *wrapper = (_ccs_hyperparameter_wrapper_cs_t*)
+		utarray_eltptr(configuration_space->data->hyperparameters, (unsigned int)index);
+	if (!wrapper)
+		return -CCS_OUT_OF_BOUNDS;
+	*distribution_ret = wrapper->distribution->distribution;
+	*index_ret = wrapper->distribution_index;
+	return CCS_SUCCESS;
+}
+
+ccs_result_t
 ccs_configuration_space_add_hyperparameters(ccs_configuration_space_t  configuration_space,
                                             size_t                     num_hyperparameters,
                                             ccs_hyperparameter_t      *hyperparameters,
@@ -526,29 +681,78 @@ ccs_configuration_space_check_configuration_values(ccs_configuration_space_t  co
 
 static ccs_result_t
 _sample(ccs_configuration_space_t  configuration_space,
-	ccs_configuration_t        config,
-	ccs_bool_t                *found) {
+        ccs_configuration_t        config,
+        ccs_bool_t                *found) {
 	ccs_result_t err;
 	ccs_rng_t rng = configuration_space->data->rng;
 	UT_array *array = configuration_space->data->hyperparameters;
-	_ccs_hyperparameter_wrapper_cs_t *wrapper = NULL;
+	_ccs_distribution_wrapper_t *dwrapper = NULL;
+	_ccs_hyperparameter_wrapper_cs_t *hwrapper = NULL;
 	ccs_datum_t *values = config->data->values;
-	while ( (wrapper = (_ccs_hyperparameter_wrapper_cs_t *)
-	                       utarray_next(array, wrapper)) ) {
-		err = ccs_hyperparameter_sample(wrapper->hyperparameter,
-		                                wrapper->distribution->distribution,
-		                                rng, values++);
+
+	size_t num_hyperparameters = utarray_len(array);
+	ccs_datum_t *p_values;
+	ccs_hyperparameter_t *hps;
+	uintptr_t mem;
+	mem = (uintptr_t) malloc(num_hyperparameters * (sizeof(ccs_datum_t) + sizeof(ccs_hyperparameter_t)));
+	if (!mem)
+		return -CCS_OUT_OF_MEMORY;
+
+	p_values = (ccs_datum_t *)mem;
+	hps = (ccs_hyperparameter_t *)(mem + num_hyperparameters*sizeof(ccs_datum_t));
+	DL_FOREACH(configuration_space->data->distribution_list, dwrapper) {
+		for (size_t i = 0; i < dwrapper->dimension; i++) {
+			size_t hindex = dwrapper->hyperparameter_indexes[i];
+			hwrapper = (_ccs_hyperparameter_wrapper_cs_t *)utarray_eltptr(array, hindex);
+			hps[i] = hwrapper->hyperparameter;
+		}
+		err = ccs_distribution_hyperparameters_sample(
+			dwrapper->distribution, rng, hps, p_values);
 		if (unlikely(err))
-			return err;
+			goto memory;
+		for (size_t i = 0; i < dwrapper->dimension; i++) {
+			size_t hindex = dwrapper->hyperparameter_indexes[i];
+			values[hindex] = p_values[i];
+		}
 	}
 	err = _set_actives(configuration_space, config);
 	if (err)
-		return err;
+		goto memory;
 	err = _test_forbidden(configuration_space, config->data->values, found);
 	if (err)
-		return err;
+		goto memory;
+	free((void *)mem);
 	return CCS_SUCCESS;
+memory:
+	free((void *)mem);
+	return err;
 }
+
+//static ccs_result_t
+//_sample(ccs_configuration_space_t  configuration_space,
+//	ccs_configuration_t        config,
+//	ccs_bool_t                *found) {
+//	ccs_result_t err;
+//	ccs_rng_t rng = configuration_space->data->rng;
+//	UT_array *array = configuration_space->data->hyperparameters;
+//	_ccs_hyperparameter_wrapper_cs_t *wrapper = NULL;
+//	ccs_datum_t *values = config->data->values;
+//	while ( (wrapper = (_ccs_hyperparameter_wrapper_cs_t *)
+//	                       utarray_next(array, wrapper)) ) {
+//		err = ccs_hyperparameter_sample(wrapper->hyperparameter,
+//		                                wrapper->distribution->distribution,
+//		                                rng, values++);
+//		if (unlikely(err))
+//			return err;
+//	}
+//	err = _set_actives(configuration_space, config);
+//	if (err)
+//		return err;
+//	err = _test_forbidden(configuration_space, config->data->values, found);
+//	if (err)
+//		return err;
+//	return CCS_SUCCESS;
+//}
 
 ccs_result_t
 ccs_configuration_space_sample(ccs_configuration_space_t  configuration_space,

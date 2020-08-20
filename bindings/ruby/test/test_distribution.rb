@@ -181,4 +181,37 @@ class CConfigSpaceTestDistribution < Minitest::Test
       assert( i.include?(w) )
     }
   end
+
+  def test_create_mixture
+    distributions = [ CCS::UniformDistribution::float(lower: -5.0, upper: 0.0), CCS::UniformDistribution::float(lower: 0.0, upper: 2.0) ]
+    d = CCS::MixtureDistribution::new(distributions: distributions)
+    assert( d.object_type == :CCS_DISTRIBUTION )
+    assert( d.type == :CCS_MIXTURE )
+    assert( d.data_types == [:CCS_NUM_FLOAT] )
+    assert( d.weights == [0.5, 0.5] )
+    assert( d.distributions.collect(&:handle) == distributions.collect(&:handle) )
+    d2 = CCS::Object::from_handle(d)
+    assert_equal( d.class, d2.class )
+  end
+
+  def test_create_multivariate
+    distributions = [ CCS::UniformDistribution::float(lower: -5.0, upper: 0.0), CCS::UniformDistribution::int(lower: 0, upper: 2) ]
+    d = CCS::MultivariateDistribution::new(distributions: distributions)
+    assert( d.object_type == :CCS_DISTRIBUTION )
+    assert( d.type == :CCS_MULTIVARIATE )
+    assert( d.data_types == [:CCS_NUM_FLOAT, :CCS_NUM_INTEGER] )
+    assert( d.distributions.collect(&:handle) == distributions.collect(&:handle) )
+    d2 = CCS::Object::from_handle(d)
+    assert_equal( d.class, d2.class )
+  end
+
+  def test_mixture_multidim
+    distributions = [ CCS::UniformDistribution::float(lower: -5.0, upper: 0.0), CCS::UniformDistribution::int(lower: 0, upper: 2) ]
+    d = CCS::MultivariateDistribution::new(distributions: distributions)
+    d2 = CCS::MixtureDistribution::new(distributions: [d, d])
+    assert( d2.object_type == :CCS_DISTRIBUTION )
+    assert( d2.type == :CCS_MIXTURE )
+    assert( d2.data_types == [:CCS_NUM_FLOAT, :CCS_NUM_INTEGER] )
+    assert( d2.weights == [0.5, 0.5] )
+  end
 end

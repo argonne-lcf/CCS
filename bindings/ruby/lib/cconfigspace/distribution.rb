@@ -3,7 +3,9 @@ module CCS
   DistributionType = enum FFI::Type::INT32, :ccs_distribution_type_t, [
     :CCS_UNIFORM,
     :CCS_NORMAL,
-    :CCS_ROULETTE
+    :CCS_ROULETTE,
+    :CCS_MIXTURE,
+    :CCS_MULTIVARIATE
   ]
   class MemoryPointer
     def read_ccs_distribution_type_t
@@ -22,7 +24,7 @@ module CCS
   end
 
   attach_function :ccs_distribution_get_type, [:ccs_distribution_t, :pointer], :ccs_result_t
-  attach_function :ccs_distribution_get_data_type, [:ccs_distribution_t, :pointer], :ccs_result_t
+  attach_function :ccs_distribution_get_data_types, [:ccs_distribution_t, :pointer], :ccs_result_t
   attach_function :ccs_distribution_get_dimension, [:ccs_distribution_t, :pointer], :ccs_result_t
   attach_function :ccs_distribution_get_bounds, [:ccs_distribution_t, :pointer], :ccs_result_t
   attach_function :ccs_distribution_check_oversampling, [:ccs_distribution_t, Interval.by_ref, :pointer], :ccs_result_t
@@ -31,7 +33,6 @@ module CCS
 
   class Distribution < Object
     add_property :type, :ccs_distribution_type_t, :ccs_distribution_get_type, memoize: true
-    add_property :data_type, :ccs_numeric_type_t, :ccs_distribution_get_data_type, memoize: true
     add_property :dimension, :size_t, :ccs_distribution_get_dimension, memoize: true
 
     def self.from_handle(handle)
@@ -45,8 +46,21 @@ module CCS
         NormalDistribution::new(handle, retain: true)
       when :CCS_ROULETTE
         RouletteDistribution::new(handle, retain: true)
+      when :CCS_MIXTURE
+        MixtureDistribution::new(handle, retain: true)
+      when :CCS_MULTIVARIATE
+        MultivariateDistribution::new(handle, retain: true)
       else
         raise CCSError, :CCS_INVALID_DISTRIBUTION
+      end
+    end
+
+    def data_types
+      @data_types ||= begin
+        ptr = MemoryPointer::new(:ccs_numeric_type_t, dimension)
+        res = CCS.ccs_distribution_get_data_types(@handle, ptr)
+        CCS.error_check(res)
+        ptr.read_array_of_int64(dimension).collect { |i| NumericType.from_native(i, nil) }
       end
     end
 
@@ -67,25 +81,50 @@ module CCS
     end
 
     def sample(rng)
-      ptr = MemoryPointer::new(:ccs_numeric_t)
+      dim = dimension
+      ptr = MemoryPointer::new(:ccs_numeric_t, dim)
       res = CCS.ccs_distribution_sample(@handle, rng, ptr)
       CCS.error_check(res)
-      if data_type == :CCS_NUM_FLOAT
-        ptr.read_ccs_float_t
+      if dim == 1
+        if data_types.first == :CCS_NUM_FLOAT
+          ptr.read_ccs_float_t
+        else
+          ptr.read_ccs_int_t
+        end
       else
-        ptr.read_ccs_int_t
+        data_types.each_with_index.collect { |t, i|
+          if t == :CCS_NUM_FLOAT
+            ptr.get_ccs_float_t(i*8)
+          else
+            ptr.get_ccs_int_t(i*8)
+          end
+        }
       end
     end
 
     def samples(rng, count)
       return [] if count == 0
-      ptr = MemoryPointer::new(:ccs_numeric_t, count)
+      dim = dimension
+      ptr = MemoryPointer::new(:ccs_numeric_t, count*dim)
       res = CCS.ccs_distribution_samples(@handle, rng, count, ptr)
       CCS.error_check(res)
-      if data_type == :CCS_NUM_FLOAT
-        ptr.read_array_of_ccs_float_t(count)
+      if dim == 1
+        if data_types.first == :CCS_NUM_FLOAT
+          ptr.read_array_of_ccs_float_t(count)
+        else
+          ptr.read_array_of_ccs_int_t(count)
+        end
       else
-        ptr.read_array_of_ccs_int_t(count)
+        sz = CCS.find_type(:ccs_numeric_t).size
+        count.times.collect { |j|
+          data_types.each_with_index.collect { |t, i|
+            if t == :CCS_NUM_FLOAT
+              ptr.get_ccs_float_t((j*dim + i)*sz)
+            else
+              ptr.get_ccs_int_t((j*dim + i)*sz)
+            end
+          }
+        }
       end
     end
 
@@ -118,6 +157,10 @@ module CCS
 
     def self.float(lower:, upper:, scale: :CCS_LINEAR, quantization: 0.0)
       self.new(nil, data_type: :CCS_NUM_FLOAT, lower: lower, upper: upper, scale: scale, quantization: quantization)
+    end
+
+    def data_type
+      @data_type ||= data_types.first
     end
 
     def lower
@@ -197,6 +240,10 @@ module CCS
       self::new(nil, retain: false, data_type: :CCS_NUM_FLOAT, mu: mu, sigma: sigma, scale: scale, quantization: quantization) 
     end
 
+    def data_type
+      @data_type ||= data_types.first
+    end
+
     def mu
       @mu ||= begin
         ptr = MemoryPointer::new(:ccs_numeric_t)
@@ -256,6 +303,10 @@ module CCS
       end
     end
 
+    def data_type
+      @data_type ||= data_types.first
+    end
+
     def areas
       @areas ||= begin
         count = num_areas
@@ -266,4 +317,81 @@ module CCS
       end
     end
   end
+
+  attach_function :ccs_create_mixture_distribution, [:size_t, :pointer, :pointer, :pointer], :ccs_result_t
+  attach_function :ccs_mixture_distribution_get_num_distributions, [:ccs_distribution_t, :pointer], :ccs_result_t
+  attach_function :ccs_mixture_distribution_get_distributions, [:ccs_distribution_t, :size_t, :pointer, :pointer], :ccs_result_t
+  attach_function :ccs_mixture_distribution_get_weights, [:ccs_distribution_t, :size_t, :pointer, :pointer], :ccs_result_t
+  class MixtureDistribution < Distribution
+    add_property :num_distributions, :size_t, :ccs_mixture_distribution_get_num_distributions, memoize: true
+    def initialize(handle = nil, retain: false, distributions: [], weights: nil)
+      if handle
+        super(handle, retain: retain)
+      else
+        ptr = MemoryPointer::new(:ccs_distribution_t)
+        p_distributions = MemoryPointer::new(:ccs_distribution_t, distributions.length)
+        if weights
+          raise CCSError, :CCS_INVALID_VALUE if distributions.length != weights.length
+        else
+          weights = [1.0]*distributions.length
+        end
+        p_weights = MemoryPointer::new(:ccs_float_t, weights.length)
+        p_distributions.write_array_of_pointer(distributions.collect(&:handle))
+        p_weights.write_array_of_ccs_float_t(weights)
+        res = CCS.ccs_create_mixture_distribution(distributions.length, p_distributions, p_weights, ptr)
+        CCS.error_check(res)
+        super(ptr.read_pointer, retain: false)
+      end
+    end
+
+    def weights
+      @weights ||= begin
+        count = num_distributions
+        ptr = MemoryPointer::new(:ccs_float_t, count)
+        res = CCS.ccs_mixture_distribution_get_weights(@handle, count, ptr, nil)
+        CCS.error_check(res)
+        ptr.read_array_of_ccs_float_t(count)
+      end
+    end
+
+    def distributions
+      @distributions ||= begin
+        count = num_distributions
+        ptr = MemoryPointer::new(:ccs_distribution_t, count)
+        res = CCS.ccs_mixture_distribution_get_distributions(@handle, count, ptr, nil)
+        CCS.error_check(res)
+        count.times.collect { |i| Distribution.from_handle(ptr[i].read_pointer) }
+      end
+    end
+  end
+
+  attach_function :ccs_create_multivariate_distribution, [:size_t, :pointer, :pointer], :ccs_result_t
+  attach_function :ccs_multivariate_distribution_get_num_distributions, [:ccs_distribution_t, :pointer], :ccs_result_t
+  attach_function :ccs_multivariate_distribution_get_distributions, [:ccs_distribution_t, :size_t, :pointer, :pointer], :ccs_result_t
+  class MultivariateDistribution < Distribution
+    add_property :num_distributions, :size_t, :ccs_multivariate_distribution_get_num_distributions, memoize: true
+    def initialize(handle = nil, retain: false, distributions: [])
+      if handle
+        super(handle, retain: retain)
+      else
+        ptr = MemoryPointer::new(:ccs_distribution_t)
+        p_distributions = MemoryPointer::new(:ccs_distribution_t, distributions.length)
+        p_distributions.write_array_of_pointer(distributions.collect(&:handle))
+        res = CCS.ccs_create_multivariate_distribution(distributions.length, p_distributions, ptr)
+        CCS.error_check(res)
+        super(ptr.read_pointer, retain: false)
+      end
+    end
+
+    def distributions
+      @distributions ||= begin
+        count = num_distributions
+        ptr = MemoryPointer::new(:ccs_distribution_t, count)
+        res = CCS.ccs_multivariate_distribution_get_distributions(@handle, count, ptr, nil)
+        CCS.error_check(res)
+        count.times.collect { |i| Distribution.from_handle(ptr[i].read_pointer) }
+      end
+    end
+  end
+
 end
