@@ -7,7 +7,9 @@ class ccs_distribution_type(CEnumeration):
   _members_ = [
     ('UNIFORM', 0),
     'NORMAL',
-    'ROULETTE' ]
+    'ROULETTE',
+    'MIXTURE',
+    'MULTIVARIATE' ]
 
 class ccs_scale_type(CEnumeration):
   _members_ = [
@@ -15,7 +17,7 @@ class ccs_scale_type(CEnumeration):
     'LOGARITHMIC' ]
 
 ccs_distribution_get_type = _ccs_get_function("ccs_distribution_get_type", [ccs_distribution, ct.POINTER(ccs_distribution_type)])
-ccs_distribution_get_data_type = _ccs_get_function("ccs_distribution_get_data_type", [ccs_distribution, ct.POINTER(ccs_numeric_type)])
+ccs_distribution_get_data_types = _ccs_get_function("ccs_distribution_get_data_types", [ccs_distribution, ct.POINTER(ccs_numeric_type)])
 ccs_distribution_get_dimension = _ccs_get_function("ccs_distribution_get_dimension", [ccs_distribution, ct.POINTER(ct.c_size_t)])
 ccs_distribution_get_bounds = _ccs_get_function("ccs_distribution_get_bounds", [ccs_distribution, ct.POINTER(ccs_interval)])
 ccs_distribution_check_oversampling = _ccs_get_function("ccs_distribution_check_oversampling", [ccs_distribution, ct.POINTER(ccs_interval), ct.POINTER(ccs_bool)])
@@ -36,6 +38,10 @@ class Distribution(Object):
       return NormalDistribution(handle = handle, retain = True)
     elif v == ccs_distribution_type.ROULETTE:
       return RouletteDistribution(handle = handle, retain = True)
+    elif v == ccs_distribution_type.MIXTURE:
+      return MixtureDistribution(handle = handle, retain = True)
+    elif v == ccs_distribution_type.MULTIVARIATE:
+      return MultivariateDistribution(handle = handle, retain = True)
     else:
       raise Error(ccs_error(ccs_error.INVALID_DISTRIBUTION))
 
@@ -50,14 +56,14 @@ class Distribution(Object):
     return self._type
 
   @property
-  def data_type(self):
-    if hasattr(self, "_data_type"):
-      return self._data_type
-    v = ccs_numeric_type(0)
-    res = ccs_distribution_get_data_type(self.handle, ct.byref(v))
+  def data_types(self):
+    if hasattr(self, "_data_types"):
+      return self._data_types
+    v = (ccs_numeric_type*self.dimension)()
+    res = ccs_distribution_get_data_types(self.handle, v)
     Error.check(res)
-    self._data_type = v.value
-    return self._data_type
+    self._data_types = [t.value for t in v]
+    return self._data_types
 
   @property
   def dimension(self):
@@ -86,30 +92,41 @@ class Distribution(Object):
     return False if v.value == ccs_false else True
 
   def sample(self, rng):
-    v = ccs_numeric()
-    res = ccs_distribution_sample(self.handle, rng.handle, ct.byref(v))
+    dim = self.dimension
+    v = (ccs_numeric*dim)()
+    res = ccs_distribution_sample(self.handle, rng.handle, v)
     Error.check(res)
-    t = self.data_type
-    if t == ccs_numeric_type.NUM_INTEGER:
-      return v.i
-    elif t == ccs_numeric_type.NUM_FLOAT:
-      return v.f
+    if dim == 1:
+      t = self.data_types[0]
+      if t == ccs_numeric_type.NUM_INTEGER:
+        return v[0].i
+      elif t == ccs_numeric_type.NUM_FLOAT:
+        return v[0].f
+      else:
+        raise Error(ccs_error(ccs_error.INVALID_VALUE))
     else:
-      raise Error(ccs_error(ccs_error.INVALID_VALUE))
-    
+      return [ v[i].i if self.data_types[i] == ccs_numeric_type.NUM_INTEGER else v[i].f for i in range(dim) ]
+
   def samples(self, rng, count):
     if count == 0:
       return []
-    t = self.data_type
-    if t == ccs_numeric_type.NUM_INTEGER:
-      v = (ccs_int * count)()
-    elif t == ccs_numeric_type.NUM_FLOAT:
-      v = (ccs_float * count)()
+    dim = self.dimension
+    if dim == 1:
+      t = self.data_types[0]
+      if t == ccs_numeric_type.NUM_INTEGER:
+        v = (ccs_int * (count * dim))()
+      elif t == ccs_numeric_type.NUM_FLOAT:
+        v = (ccs_float * (count * dim))()
+      else:
+        raise Error(ccs_error(ccs_error.INVALID_VALUE))
+      res = ccs_distribution_samples(self.handle, rng.handle, count, ct.cast(v, ct.POINTER(ccs_numeric)))
+      Error.check(res)
+      return list(v)
     else:
-      raise Error(ccs_error(ccs_error.INVALID_VALUE))
-    res = ccs_distribution_samples(self.handle, rng.handle, count, ct.cast(v, ct.POINTER(ccs_numeric)))
-    Error.check(res)
-    return list(v)
+      v = (ccs_numeric*dim*count)()
+      res = ccs_distribution_samples(self.handle, rng.handle, count, v)
+      Error.check(res)
+      return [ [v[j][i].i if self.data_types[i] == ccs_numeric_type.NUM_INTEGER else v[j][i].f for i in range(dim) ] for j in range(count) ]
 
 ccs_create_uniform_distribution = _ccs_get_function("ccs_create_uniform_distribution", [ccs_numeric_type, ccs_int, ccs_int, ccs_scale_type, ccs_int, ct.POINTER(ccs_distribution)])
 ccs_create_uniform_int_distribution = _ccs_get_function("ccs_create_uniform_int_distribution", [ccs_int, ccs_int, ccs_scale_type, ccs_int, ct.POINTER(ccs_distribution)])
@@ -138,6 +155,13 @@ class UniformDistribution(Distribution):
   @classmethod
   def float(cls, lower, upper, scale = ccs_scale_type.LINEAR, quantization = 0.0):
     return cls(data_type = NUM_FLOAT, lower = lower, upper = upper, scale = scale, quantization = quantization)
+
+  @property
+  def data_type(self):
+    if hasattr(self, "_data_type"):
+      return self._data_type
+    self._data_type = self.data_types[0]
+    return self._data_type
 
   @property
   def lower(self):
@@ -228,6 +252,13 @@ class NormalDistribution(Distribution):
     return cls(data_type = NUM_FLOAT, mu = mu, sigma = sigma, scale = scale, quantization = quantization)
 
   @property
+  def data_type(self):
+    if hasattr(self, "_data_type"):
+      return self._data_type
+    self._data_type = self.data_types[0]
+    return self._data_type
+
+  @property
   def mu(self):
     if hasattr(self, "_mu"):
       return self._mu
@@ -291,6 +322,13 @@ class RouletteDistribution(Distribution):
       super().__init__(handle = handle, retain = retain)
 
   @property
+  def data_type(self):
+    if hasattr(self, "_data_type"):
+      return self._data_type
+    self._data_type = self.data_types[0]
+    return self._data_type
+
+  @property
   def num_areas(self):
     if hasattr(self, "_num_areas"):
       return self._num_areas
@@ -310,4 +348,86 @@ class RouletteDistribution(Distribution):
     self._areas = list(v)
     return self._areas
 
+ccs_create_mixture_distribution = _ccs_get_function("ccs_create_mixture_distribution", [ct.c_size_t, ct.POINTER(ccs_distribution), ct.POINTER(ccs_float), ct.POINTER(ccs_distribution)])
+ccs_mixture_distribution_get_num_distributions = _ccs_get_function("ccs_mixture_distribution_get_num_distributions", [ccs_distribution, ct.POINTER(ct.c_size_t)])
+ccs_mixture_distribution_get_distributions = _ccs_get_function("ccs_mixture_distribution_get_distributions", [ccs_distribution, ct.c_size_t, ct.POINTER(ccs_distribution), ct.POINTER(ct.c_size_t)])
+ccs_mixture_distribution_get_weights = _ccs_get_function("ccs_mixture_distribution_get_weights", [ccs_distribution, ct.c_size_t, ct.POINTER(ccs_float), ct.POINTER(ct.c_size_t)])
 
+class MixtureDistribution(Distribution):
+  def __init__(self, handle = None, retain = False, distributions = [], weights = None):
+    if handle is None:
+      handle = ccs_distribution(0)
+      if weights is None:
+        weights = [1.0] * len(distributions)
+      ws = (ccs_float * len(distributions))(*weights)
+      ds = (ccs_distribution * len(distributions))(*[x.handle.value for x in distributions])
+      res = ccs_create_mixture_distribution(len(distributions), ds, ws, ct.byref(handle))
+      Error.check(res)
+      super().__init__(handle = handle, retain = False)
+    else:
+      super().__init__(handle = handle, retain = retain)
+
+  @property
+  def num_distributions(self):
+    if hasattr(self, "_num_distributions"):
+      return self._num_distributions
+    v = ct.c_size_t()
+    res = ccs_mixture_distribution_get_num_distributions(self.handle, ct.byref(v))
+    Error.check(res)
+    self._num_distributions = v.value
+    return self._num_distributions
+
+  @property
+  def weights(self):
+    if hasattr(self, "_weights"):
+      return self._weights
+    v = (ccs_float * self.num_distributions)()
+    res = ccs_mixture_distribution_get_weights(self.handle, self.num_distributions, v, None)
+    Error.check(res)
+    self._weights = list(v)
+    return self._weights
+
+  @property
+  def distributions(self):
+    if hasattr(self, "_distributions"):
+      return self._distributions
+    v = (ccs_distribution * self.num_distributions)()
+    res = ccs_mixture_distribution_get_distributions(self.handle, self.num_distributions, v, None)
+    Error.check(res)
+    self._distributions = [Distribution.from_handle(ccs_distribution(x)) for x in v]
+    return self._distributions
+
+ccs_create_multivariate_distribution = _ccs_get_function("ccs_create_multivariate_distribution", [ct.c_size_t, ct.POINTER(ccs_distribution), ct.POINTER(ccs_distribution)])
+ccs_multivariate_distribution_get_num_distributions = _ccs_get_function("ccs_multivariate_distribution_get_num_distributions", [ccs_distribution, ct.POINTER(ct.c_size_t)])
+ccs_multivariate_distribution_get_distributions = _ccs_get_function("ccs_multivariate_distribution_get_distributions", [ccs_distribution, ct.c_size_t, ct.POINTER(ccs_distribution), ct.POINTER(ct.c_size_t)])
+
+class MultivariateDistribution(Distribution):
+  def __init__(self, handle = None, retain = False, distributions = [], weights = None):
+    if handle is None:
+      handle = ccs_distribution(0)
+      ds = (ccs_distribution * len(distributions))(*[x.handle.value for x in distributions])
+      res = ccs_create_multivariate_distribution(len(distributions), ds, ct.byref(handle))
+      Error.check(res)
+      super().__init__(handle = handle, retain = False)
+    else:
+      super().__init__(handle = handle, retain = retain)
+
+  @property
+  def num_distributions(self):
+    if hasattr(self, "_num_distributions"):
+      return self._num_distributions
+    v = ct.c_size_t()
+    res = ccs_multivariate_distribution_get_num_distributions(self.handle, ct.byref(v))
+    Error.check(res)
+    self._num_distributions = v.value
+    return self._num_distributions
+
+  @property
+  def distributions(self):
+    if hasattr(self, "_distributions"):
+      return self._distributions
+    v = (ccs_distribution * self.num_distributions)()
+    res = ccs_multivariate_distribution_get_distributions(self.handle, self.num_distributions, v, None)
+    Error.check(res)
+    self._distributions = [Distribution.from_handle(ccs_distribution(x)) for x in v]
+    return self._distributions

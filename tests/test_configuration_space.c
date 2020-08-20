@@ -232,11 +232,147 @@ void test_sample() {
 	assert( err == CCS_SUCCESS );
 }
 
+void test_set_distribution() {
+	ccs_hyperparameter_t      hyperparameters[3];
+	ccs_distribution_t        distribs[2];
+	ccs_distribution_t        distrib;
+	ccs_distribution_t        distrib_ret;
+	size_t                    hindexes[2];
+	size_t                    dindex_ret;
+	ccs_configuration_t       configurations[100];
+	ccs_configuration_space_t configuration_space;
+	ccs_result_t              err;
+
+	err = ccs_create_configuration_space("my_config_space", NULL,
+	                                     &configuration_space);
+	assert( err == CCS_SUCCESS );
+
+	hyperparameters[0] = create_dummy_hyperparameter("param1");
+	hyperparameters[1] = create_dummy_hyperparameter("param2");
+	hyperparameters[2] = create_dummy_hyperparameter("param3");
+
+	err = ccs_configuration_space_add_hyperparameters(configuration_space, 3,
+	                                                  hyperparameters, NULL);
+	assert( err == CCS_SUCCESS );
+
+	check_configuration(configuration_space, 3, hyperparameters);
+
+	err = ccs_create_uniform_distribution(
+		CCS_NUM_FLOAT,
+		CCSF(-4.0),
+		CCSF(4.0),
+		CCS_LINEAR,
+		CCSF(0.0),
+		distribs);
+	assert( err == CCS_SUCCESS );
+
+	err = ccs_create_uniform_distribution(
+		CCS_NUM_FLOAT,
+		CCSF(-3.0),
+		CCSF(3.0),
+		CCS_LINEAR,
+		CCSF(0.0),
+		distribs + 1);
+	assert( err == CCS_SUCCESS );
+
+	err = ccs_create_multivariate_distribution(
+		2,
+		distribs,
+		&distrib);
+	assert( err == CCS_SUCCESS );
+
+	hindexes[0] = 0;
+	hindexes[1] = 1;
+	err = ccs_configuration_space_set_distribution(
+		configuration_space, distrib, hindexes);
+	assert( err == CCS_SUCCESS );
+
+	err = ccs_configuration_space_get_hyperparameter_distribution(
+		configuration_space, 0, &distrib_ret, &dindex_ret);
+	assert( err == CCS_SUCCESS );
+	assert( distrib_ret == distrib );
+	assert( dindex_ret == 0 );
+
+	err = ccs_configuration_space_get_hyperparameter_distribution(
+		configuration_space, 1, &distrib_ret, &dindex_ret);
+	assert( err == CCS_SUCCESS );
+	assert( distrib_ret == distrib );
+	assert( dindex_ret == 1 );
+
+	err = ccs_configuration_space_samples(configuration_space,
+	                                      100, configurations);
+	assert( err == CCS_SUCCESS );
+
+	for (size_t i = 0; i < 100; i++) {
+		ccs_datum_t values[3];
+		err = ccs_configuration_check(configurations[i]);
+		assert( err == CCS_SUCCESS );
+		err = ccs_configuration_get_values(configurations[i], 3, values, NULL);
+		assert( err == CCS_SUCCESS );
+		assert( values[0].value.f >= -4.0 );
+		assert( values[0].value.f <   4.0 );
+		assert( values[1].value.f >= -3.0 );
+		assert( values[1].value.f <   3.0 );
+		err = ccs_release_object(configurations[i]);
+		assert( err == CCS_SUCCESS );
+	}
+
+	hindexes[0] = 2;
+	hindexes[1] = 0;
+	err = ccs_configuration_space_set_distribution(
+		configuration_space, distrib, hindexes);
+	assert( err == CCS_SUCCESS );
+
+	err = ccs_configuration_space_get_hyperparameter_distribution(
+		configuration_space, 0, &distrib_ret, &dindex_ret);
+	assert( err == CCS_SUCCESS );
+	assert( distrib_ret == distrib );
+	assert( dindex_ret == 1 );
+
+	err = ccs_configuration_space_get_hyperparameter_distribution(
+		configuration_space, 2, &distrib_ret, &dindex_ret);
+	assert( err == CCS_SUCCESS );
+	assert( distrib_ret == distrib );
+	assert( dindex_ret == 0 );
+
+	err = ccs_configuration_space_samples(configuration_space,
+	                                      100, configurations);
+	assert( err == CCS_SUCCESS );
+
+	for (size_t i = 0; i < 100; i++) {
+		ccs_datum_t values[3];
+		err = ccs_configuration_check(configurations[i]);
+		assert( err == CCS_SUCCESS );
+		err = ccs_configuration_get_values(configurations[i], 3, values, NULL);
+		assert( err == CCS_SUCCESS );
+		assert( values[2].value.f >= -4.0 );
+		assert( values[2].value.f <   4.0 );
+		assert( values[0].value.f >= -3.0 );
+		assert( values[0].value.f <   3.0 );
+		err = ccs_release_object(configurations[i]);
+		assert( err == CCS_SUCCESS );
+	}
+
+	for (size_t i = 0; i < 2; i++) {
+		err = ccs_release_object(distribs[i]);
+		assert( err == CCS_SUCCESS );
+	}
+	for (size_t i = 0; i < 3; i++) {
+		err = ccs_release_object(hyperparameters[i]);
+		assert( err == CCS_SUCCESS );
+	}
+	err = ccs_release_object(distrib);
+	assert( err == CCS_SUCCESS );
+	err = ccs_release_object(configuration_space);
+	assert( err == CCS_SUCCESS );
+}
+
 int main(int argc, char *argv[]) {
 	ccs_init();
 	test_create();
 	test_add();
 	test_add_list();
 	test_sample();
+	test_set_distribution();
 	return 0;
 }

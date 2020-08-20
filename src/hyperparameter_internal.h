@@ -23,6 +23,13 @@ struct _ccs_hyperparameter_ops_s {
 	ccs_result_t (*get_default_distribution)(
 		_ccs_hyperparameter_data_t *data,
 		ccs_distribution_t         *distribution);
+
+	ccs_result_t (*convert_samples)(
+		_ccs_hyperparameter_data_t *data,
+		ccs_bool_t                  oversampling,
+		size_t                      num_values,
+		const ccs_numeric_t        *values,
+		ccs_datum_t                *results);
 };
 typedef struct _ccs_hyperparameter_ops_s _ccs_hyperparameter_ops_t;
 

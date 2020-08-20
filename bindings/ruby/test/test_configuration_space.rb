@@ -36,6 +36,30 @@ class CConfigSpaceTestConfigurationSpace < Minitest::Test
     }
   end
 
+  def test_set_distribution
+    cs = CCS::ConfigurationSpace::new(name: "space")
+    h1 = CCS::NumericalHyperparameter::new
+    h2 = CCS::NumericalHyperparameter::new
+    h3 = CCS::NumericalHyperparameter::new
+    cs.add_hyperparameters([h1, h2, h3])
+    distributions = [ CCS::UniformDistribution::float(lower: 0.1, upper: 0.3), CCS::UniformDistribution::float(lower: 0.2, upper: 0.6) ]
+    d = CCS::MultivariateDistribution::new(distributions: distributions)
+    cs.set_distribution(d, [h1, h2])
+    dist, indx = cs.get_hyperparameter_distribution(h1)
+    assert_equal( d.handle, dist.handle )
+    assert_equal( 0, indx )
+    dist, indx = cs.get_hyperparameter_distribution(h2)
+    assert_equal( d.handle, dist.handle )
+    assert_equal( 1, indx )
+    cs.set_distribution(d, [h3, h1])
+    dist, indx = cs.get_hyperparameter_distribution(h1)
+    assert_equal( d.handle, dist.handle )
+    assert_equal( 1, indx )
+    dist, indx = cs.get_hyperparameter_distribution(h3)
+    assert_equal( d.handle, dist.handle )
+    assert_equal( 0, indx )
+  end
+
   def test_conditions
     h1 = CCS::NumericalHyperparameter::new(lower: -1.0, upper: 1.0, default: 0.0)
     h2 = CCS::NumericalHyperparameter::new(lower: -1.0, upper: 1.0)

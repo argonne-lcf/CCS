@@ -33,7 +33,7 @@ static void test_create_uniform_distribution() {
 	assert( err == CCS_SUCCESS );
 	assert( dtype == CCS_UNIFORM );
 
-	err = ccs_distribution_get_data_type(distrib, &data_type);
+	err = ccs_distribution_get_data_types(distrib, &data_type);
 	assert( err == CCS_SUCCESS );
 	assert( data_type == CCS_NUM_INTEGER );
 
@@ -449,6 +449,43 @@ static void test_uniform_distribution_strided_samples() {
 	assert( err == CCS_SUCCESS );
 }
 
+static void test_uniform_distribution_soa_samples() {
+	ccs_distribution_t distrib = NULL;
+	ccs_rng_t          rng = NULL;
+	ccs_result_t       err = CCS_SUCCESS;
+	const size_t       num_samples = 100;
+	ccs_float_t        lower = -10;
+	ccs_float_t        upper = 11;
+	ccs_numeric_t      samples[num_samples];
+	ccs_numeric_t     *p_samples;
+
+	err = ccs_rng_create(&rng);
+	assert( err == CCS_SUCCESS );
+	err = ccs_create_uniform_distribution(
+		CCS_NUM_FLOAT,
+		CCSF(lower),
+		CCSF(upper),
+		CCS_LINEAR,
+		CCSF(0.0),
+		&distrib);
+	assert( err == CCS_SUCCESS );
+
+        p_samples = &(samples[0]);
+	err = ccs_distribution_soa_samples(distrib, rng, num_samples, &p_samples);
+	assert( err == CCS_SUCCESS );
+
+	for (size_t i = 0; i < num_samples; i++) {
+		assert(samples[i].f >= lower);
+		assert(samples[i].f < upper);
+	}
+
+	err = ccs_release_object(distrib);
+	assert( err == CCS_SUCCESS );
+	err = ccs_release_object(rng);
+	assert( err == CCS_SUCCESS );
+}
+
+
 int main(int argc, char *argv[]) {
 	ccs_init();
 	test_create_uniform_distribution();
@@ -462,5 +499,6 @@ int main(int argc, char *argv[]) {
 	test_uniform_distribution_float_quantize();
 	test_uniform_distribution_float_log_quantize();
 	test_uniform_distribution_strided_samples();
+	test_uniform_distribution_soa_samples();
 	return 0;
 }

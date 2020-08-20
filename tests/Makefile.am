@@ -9,6 +9,8 @@ CCONFIGSPACE_TESTS = \
 		test_uniform_distribution \
 		test_normal_distribution \
 		test_roulette_distribution \
+		test_multivariate_distribution \
+		test_mixture_distribution \
 		test_numerical_hyperparameter \
 		test_categorical_hyperparameter \
 		test_ordinal_hyperparameter \
