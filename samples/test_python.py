@@ -79,7 +79,7 @@ class Test(unittest.TestCase):
     (cs, os) = create_tuning_problem()
     t = TestTuner(cs, os)
     self.assertEqual("tuner", t.name)
-    self.assertEqual(ccs.TUNER_USER_DEFINED, t.type.value)
+    self.assertEqual(ccs.TUNER_USER_DEFINED, t.type)
     self.assertEqual(cs.handle.value, t.configuration_space.handle.value)
     self.assertEqual(os.handle.value, t.objective_space.handle.value)
     func = lambda x, y, z: [(x-2)*(x-2), sin(z+y)]
