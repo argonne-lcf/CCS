@@ -53,7 +53,7 @@ module CCS
       Literal::new(value: Float(num)) }
     rule(:integer => Regexp.new(TerminalRegexp[:CCS_TERM_INTEGER])).as { |num|
       Literal::new(value: Integer(num)) }
-    rule(:identifier => Regexp.new(TerminalRegexp[:CCS_TERM_IDENTIFIER])).as { |identifier|
+    rule(:identifier => /[:a-zA-Z_][a-zA-Z_0-9]*/).as { |identifier|
       Variable::new(hyperparameter: context.hyperparameter_by_name(identifier)) }
     rule(:string => Regexp.new(TerminalRegexp[:CCS_TERM_STRING])).as { |str|
       Literal::new(value: eval(str)) }

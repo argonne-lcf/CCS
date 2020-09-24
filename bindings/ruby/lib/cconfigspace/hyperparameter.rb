@@ -60,7 +60,9 @@ module CCS
         ptr = MemoryPointer::new(:pointer)
         res = CCS.ccs_hyperparameter_get_name(@handle, ptr)
         CCS.error_check(res)
-        ptr.read_pointer.read_string
+        r = ptr.read_pointer.read_string
+        r = r.sub(/^:/, "").to_sym if r.match(/^:/)
+        r
       end
     end
 
@@ -143,6 +145,7 @@ module CCS
         else
           raise CCSError, :CCS_INVALID_TYPE
         end
+        name = name.inspect if name.kind_of?(Symbol)
         res = CCS.ccs_create_numerical_hyperparameter(name, data_type, lower, upper, quantization, default, user_data, ptr)
         CCS.error_check(res)
         super(ptr.read_pointer, retain: false)
@@ -218,6 +221,7 @@ module CCS
         vals = MemoryPointer::new(:ccs_datum_t, count)
         values.each_with_index{ |v, i| Datum::new(vals[i]).value = v }
         ptr = MemoryPointer::new(:ccs_hyperparameter_t)
+        name = name.inspect if name.kind_of?(Symbol)
         res = CCS.ccs_create_categorical_hyperparameter(name, count, vals, default_index, user_data, ptr)
         CCS.error_check(res)
         super(ptr.read_ccs_hyperparameter_t, retain: false)
@@ -251,6 +255,7 @@ module CCS
         vals = MemoryPointer::new(:ccs_datum_t, count)
         values.each_with_index{ |v, i| Datum::new(vals[i]).value = v }
         ptr = MemoryPointer::new(:ccs_hyperparameter_t)
+        name = name.inspect if name.kind_of?(Symbol)
         res = CCS.ccs_create_ordinal_hyperparameter(name, count, vals, default_index, user_data, ptr)
         CCS.error_check(res)
         super(ptr.read_ccs_hyperparameter_t, retain: false)
@@ -292,6 +297,7 @@ module CCS
         vals = MemoryPointer::new(:ccs_datum_t, count)
         values.each_with_index{ |v, i| Datum::new(vals[i]).value = v }
         ptr = MemoryPointer::new(:ccs_hyperparameter_t)
+        name = name.inspect if name.kind_of?(Symbol)
         res = CCS.ccs_create_discrete_hyperparameter(name, count, vals, default_index, user_data, ptr)
         CCS.error_check(res)
         super(ptr.read_ccs_hyperparameter_t, retain: false)
