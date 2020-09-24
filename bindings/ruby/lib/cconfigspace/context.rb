@@ -29,6 +29,7 @@ module CCS
     end
 
     def hyperparameter_by_name(name)
+      name = name.inspect if name.kind_of?(Symbol)
       ptr = MemoryPointer::new(:ccs_hyperparameter_t)
       res = CCS.ccs_context_get_hyperparameter_by_name(@handle, name, ptr)
       CCS.error_check(res)
@@ -36,6 +37,7 @@ module CCS
     end
 
     def hyperparameter_index_by_name(name)
+      name = name.inspect if name.kind_of?(Symbol)
       ptr = MemoryPointer::new(:size_t)
       res = CCS.ccs_context_get_hyperparameter_index_by_name(@handle, name, ptr)
       CCS.error_check(res)

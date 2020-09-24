@@ -62,7 +62,7 @@ module CCS
         case h
         when Hyperparameter
           hyperparameter_index(h)
-        when String
+        when String, Symbol
           hyperparameter_index_by_name(hyperparameter)
         else
           h
@@ -79,7 +79,7 @@ module CCS
       case hyperparameter
       when Hyperparameter
         hyperparameter = hyperparameter_index(hyperparameter);
-      when String
+      when String, Symbol
         hyperparameter = hyperparameter_index_by_name(hyperparameter);
       end
       p_distribution = MemoryPointer::new(:ccs_distribution_t)
@@ -113,7 +113,7 @@ module CCS
       case hyperparameter
       when Hyperparameter
         hyperparameter = hyperparameter_index(hyperparameter);
-      when String
+      when String, Symbol
         hyperparameter = hyperparameter_index_by_name(hyperparameter);
       end
       res = CCS.ccs_configuration_space_set_condition(@handle, hyperparameter, expression)
@@ -125,7 +125,7 @@ module CCS
       case hyperparameter
       when Hyperparameter
         hyperparameter = hyperparameter_index(hyperparameter);
-      when String
+      when String, Symbol
         hyperparameter = hyperparameter_index_by_name(hyperparameter);
       end
       ptr = MemoryPointer::new(:ccs_expression_t)

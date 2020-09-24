@@ -44,7 +44,7 @@ module CCS
     def set_value(hyperparameter, value)
       d = Datum.from_value(value)
       case hyperparameter
-      when String
+      when String, Symbol
         hyperparameter = configuration_space.hyperparameter_index_by_name(hyperparameter)
       when Hyperparameter
         hyperparameter = configuration_space.hyperparameter_index(hyperparameter)
@@ -59,6 +59,8 @@ module CCS
       case hyperparameter
       when String
         res = CCS.ccs_configuration_get_value_by_name(@handle, hyperparameter, ptr)
+      when Symbol
+        res = CCS.ccs_configuration_get_value_by_name(@handle, hyperparameter.inspect, ptr)
       when Hyperparameter
         res = CCS.ccs_configuration_get_value(@handle, configuration_space.hyperparameter_index(hyperparameter), ptr)
       when Integer
