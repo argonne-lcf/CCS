@@ -27,7 +27,7 @@ module CCS
     add_handle_property :configuration_space, :ccs_configuration_space_t, :ccs_tuner_get_configuration_space, memoize: true
     add_handle_property :objective_space, :ccs_objective_space_t, :ccs_tuner_get_objective_space, memoize: true
 
-    def from_handle(handle)
+    def self.from_handle(handle)
       ptr = MemoryPointer::new(:ccs_tuner_type_t)
       res = CCS.ccs_tuner_get_type(handle, ptr)
       CCS.error_check(res)
