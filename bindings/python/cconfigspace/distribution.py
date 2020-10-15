@@ -27,21 +27,21 @@ ccs_distribution_samples = _ccs_get_function("ccs_distribution_samples", [ccs_di
 class Distribution(Object):
 
   @classmethod
-  def from_handle(cls, handle):
+  def from_handle(cls, handle, retain = True, auto_release = True):
     v = ccs_distribution_type(0)
     res = ccs_distribution_get_type(handle, ct.byref(v))
     Error.check(res)
     v = v.value
     if v == ccs_distribution_type.UNIFORM:
-      return UniformDistribution(handle = handle, retain = True)
+      return UniformDistribution(handle = handle, retain = retain, auto_release = auto_release)
     elif v == ccs_distribution_type.NORMAL:
-      return NormalDistribution(handle = handle, retain = True)
+      return NormalDistribution(handle = handle, retain = retain, auto_release = auto_release)
     elif v == ccs_distribution_type.ROULETTE:
-      return RouletteDistribution(handle = handle, retain = True)
+      return RouletteDistribution(handle = handle, retain = retain, auto_release = auto_release)
     elif v == ccs_distribution_type.MIXTURE:
-      return MixtureDistribution(handle = handle, retain = True)
+      return MixtureDistribution(handle = handle, retain = retain, auto_release = auto_release)
     elif v == ccs_distribution_type.MULTIVARIATE:
-      return MultivariateDistribution(handle = handle, retain = True)
+      return MultivariateDistribution(handle = handle, retain = retain, auto_release = auto_release)
     else:
       raise Error(ccs_error(ccs_error.INVALID_DISTRIBUTION))
 
@@ -134,7 +134,8 @@ ccs_create_uniform_float_distribution = _ccs_get_function("ccs_create_uniform_fl
 ccs_uniform_distribution_get_parameters = _ccs_get_function("ccs_uniform_distribution_get_parameters", [ccs_distribution, ct.POINTER(ccs_numeric), ct.POINTER(ccs_numeric), ct.POINTER(ccs_scale_type), ct.POINTER(ccs_numeric)])
 
 class UniformDistribution(Distribution):
-  def __init__(self, handle = None, retain = False, data_type = NUM_FLOAT, lower = 0.0, upper = 1.0, scale = ccs_scale_type.LINEAR, quantization = 0.0):
+  def __init__(self, handle = None, retain = False, auto_release = True,
+               data_type = NUM_FLOAT, lower = 0.0, upper = 1.0, scale = ccs_scale_type.LINEAR, quantization = 0.0):
     if handle is None:
       handle = ccs_distribution(0)
       if data_type == NUM_FLOAT:
@@ -146,7 +147,7 @@ class UniformDistribution(Distribution):
       Error.check(res)
       super().__init__(handle = handle, retain = False)
     else:
-      super().__init__(handle = handle, retain = retain)
+      super().__init__(handle = handle, retain = retain, auto_release = auto_release)
 
   @classmethod
   def int(cls, lower, upper, scale = ccs_scale_type.LINEAR, quantization = 0):
@@ -229,7 +230,8 @@ ccs_create_normal_float_distribution = _ccs_get_function("ccs_create_normal_floa
 ccs_normal_distribution_get_parameters = _ccs_get_function("ccs_normal_distribution_get_parameters", [ccs_distribution, ct.POINTER(ccs_float), ct.POINTER(ccs_float), ct.POINTER(ccs_scale_type), ct.POINTER(ccs_numeric)])
 
 class NormalDistribution(Distribution):
-  def __init__(self, handle = None, retain = False, data_type = NUM_FLOAT, mu = 0.0, sigma = 1.0, scale = ccs_scale_type.LINEAR, quantization = 0.0):
+  def __init__(self, handle = None, retain = False, auto_release = True,
+               data_type = NUM_FLOAT, mu = 0.0, sigma = 1.0, scale = ccs_scale_type.LINEAR, quantization = 0.0):
     if handle is None:
       handle = ccs_distribution(0)
       if data_type == NUM_FLOAT:
@@ -241,7 +243,7 @@ class NormalDistribution(Distribution):
       Error.check(res)
       super().__init__(handle = handle, retain = False)
     else:
-      super().__init__(handle = handle, retain = retain)
+      super().__init__(handle = handle, retain = retain, auto_release = auto_release)
 
   @classmethod
   def int(cls, mu, sigma, scale = ccs_scale_type.LINEAR, quantization = 0):
@@ -311,7 +313,8 @@ ccs_roulette_distribution_get_num_areas = _ccs_get_function("ccs_roulette_distri
 ccs_roulette_distribution_get_areas = _ccs_get_function("ccs_roulette_distribution_get_areas", [ccs_distribution, ct.c_size_t, ct.POINTER(ccs_float), ct.POINTER(ct.c_size_t)])
 
 class RouletteDistribution(Distribution):
-  def __init__(self, handle = None, retain = False, areas = []):
+  def __init__(self, handle = None, retain = False, auto_release = True,
+               areas = []):
     if handle is None:
       handle = ccs_distribution(0)
       v = (ccs_float * len(areas))(*areas)
@@ -319,7 +322,7 @@ class RouletteDistribution(Distribution):
       Error.check(res)
       super().__init__(handle = handle, retain = False)
     else:
-      super().__init__(handle = handle, retain = retain)
+      super().__init__(handle = handle, retain = retain, auto_release = auto_release)
 
   @property
   def data_type(self):
@@ -354,7 +357,8 @@ ccs_mixture_distribution_get_distributions = _ccs_get_function("ccs_mixture_dist
 ccs_mixture_distribution_get_weights = _ccs_get_function("ccs_mixture_distribution_get_weights", [ccs_distribution, ct.c_size_t, ct.POINTER(ccs_float), ct.POINTER(ct.c_size_t)])
 
 class MixtureDistribution(Distribution):
-  def __init__(self, handle = None, retain = False, distributions = [], weights = None):
+  def __init__(self, handle = None, retain = False, auto_release = True,
+               distributions = [], weights = None):
     if handle is None:
       handle = ccs_distribution(0)
       if weights is None:
@@ -365,7 +369,7 @@ class MixtureDistribution(Distribution):
       Error.check(res)
       super().__init__(handle = handle, retain = False)
     else:
-      super().__init__(handle = handle, retain = retain)
+      super().__init__(handle = handle, retain = retain, auto_release = auto_release)
 
   @property
   def num_distributions(self):
@@ -402,7 +406,8 @@ ccs_multivariate_distribution_get_num_distributions = _ccs_get_function("ccs_mul
 ccs_multivariate_distribution_get_distributions = _ccs_get_function("ccs_multivariate_distribution_get_distributions", [ccs_distribution, ct.c_size_t, ct.POINTER(ccs_distribution), ct.POINTER(ct.c_size_t)])
 
 class MultivariateDistribution(Distribution):
-  def __init__(self, handle = None, retain = False, distributions = [], weights = None):
+  def __init__(self, handle = None, retain = False, auto_release = True,
+               distributions = [], weights = None):
     if handle is None:
       handle = ccs_distribution(0)
       ds = (ccs_distribution * len(distributions))(*[x.handle.value for x in distributions])
@@ -410,7 +415,7 @@ class MultivariateDistribution(Distribution):
       Error.check(res)
       super().__init__(handle = handle, retain = False)
     else:
-      super().__init__(handle = handle, retain = retain)
+      super().__init__(handle = handle, retain = retain, auto_release = auto_release)
 
   @property
   def num_distributions(self):

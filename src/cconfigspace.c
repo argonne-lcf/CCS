@@ -33,6 +33,8 @@ ccs_release_object(ccs_object_t object) {
 		return -CCS_INVALID_OBJECT;
 	obj->refcount -= 1;
 	if (obj->refcount == 0) {
+		if (obj->cb)
+			obj->cb(object, obj->cb_user_data);
 		ccs_result_t err = obj->ops->del(object);
 		if (err)
 			return err;
@@ -62,3 +64,18 @@ ccs_object_get_refcount(ccs_object_t  object,
 	*refcount_ret = obj->refcount;
 	return CCS_SUCCESS;
 }
+
+ccs_result_t
+ccs_object_set_destroy_callback(ccs_object_t  object,
+                                void (*callback)(
+                                  ccs_object_t object,
+                                  void *user_data),
+                                void *user_data) {
+	_ccs_object_internal_t *obj = (_ccs_object_internal_t *)object;
+	if (!obj)
+		return -CCS_INVALID_OBJECT;
+	obj->cb = callback;
+	obj->cb_user_data = user_data;
+	return CCS_SUCCESS;
+}
+

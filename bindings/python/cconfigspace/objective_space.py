@@ -22,18 +22,19 @@ ccs_objective_space_get_objective = _ccs_get_function("ccs_objective_space_get_o
 ccs_objective_space_get_objectives = _ccs_get_function("ccs_objective_space_get_objectives", [ccs_objective_space, ct.c_size_t, ct.POINTER(ccs_expression), ct.POINTER(ccs_objective_type), ct.POINTER(ct.c_size_t)])
 
 class ObjectiveSpace(Context):
-  def __init__(self, handle = None, retain = False, name = "", user_data = None):
+  def __init__(self, handle = None, retain = False, auto_release = True,
+               name = "", user_data = None):
     if handle is None:
       handle = ccs_objective_space()
       res = ccs_create_objective_space(str.encode(name), user_data, ct.byref(handle))
       Error.check(res)
       super().__init__(handle = handle, retain = False)
     else:
-      super().__init__(handle = handle, retain = retain)
+      super().__init__(handle = handle, retain = retain, auto_release = auto_release)
 
   @classmethod
-  def from_handle(cls, handle):
-    return cls(handle = handle, retain = True)
+  def from_handle(cls, handle, retain = True, auto_release = True):
+    return cls(handle = handle, retain = retain, auto_release = auto_release)
 
   def add_hyperparameter(self, hyperparameter):
     res = ccs_objective_space_add_hyperparameter(self.handle, hyperparameter.handle)

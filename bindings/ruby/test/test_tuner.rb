@@ -26,6 +26,8 @@ class CConfigSpaceTestTuner < Minitest::Test
   def test_create_random
     cs, os = create_tuning_problem
     t = CCS::RandomTuner::new(name: "tuner", configuration_space: cs, objective_space: os)
+    t2 = CCS::Object::from_handle(t)
+    assert_equal( t.class, t2.class)
     assert_equal( "tuner", t.name )
     assert_equal( :CCS_TUNER_RANDOM, t.type )
     func = lambda { |(x, y, z)|
@@ -88,6 +90,8 @@ class CConfigSpaceTestTuner < Minitest::Test
     }
     cs, os = create_tuning_problem
     t = CCS::UserDefinedTuner::new(name: "tuner", configuration_space: cs, objective_space: os, del: del, ask: ask, tell: tell, get_optimums: get_optimums, get_history: get_history)
+    t2 = CCS::Object::from_handle(t)
+    assert_equal( t.class, t2.class)
     assert_equal( "tuner", t.name )
     assert_equal( :CCS_TUNER_USER_DEFINED, t.type )
     func = lambda { |(x, y, z)|

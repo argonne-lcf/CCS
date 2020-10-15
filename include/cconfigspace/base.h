@@ -224,6 +224,15 @@ extern ccs_result_t
 ccs_object_get_refcount(ccs_object_t  object,
                         int32_t      *refcount_ret);
 
+typedef void (*ccs_object_release_callback_t)(ccs_object_t object, void *user_data);
+
+extern ccs_result_t
+ccs_object_set_destroy_callback(ccs_object_t  object,
+                                void (*callback)(
+                                  ccs_object_t object,
+                                  void *user_data),
+                                void *user_data);
+
 #ifdef __cplusplus
 }
 #endif

@@ -28,9 +28,10 @@ module CCS
 
   class ObjectiveSpace < Context
 
-    def initialize(handle = nil, retain: false, name: "", user_data: nil)
+    def initialize(handle = nil, retain: false, auto_release: true,
+                   name: "", user_data: nil)
       if handle
-        super(handle, retain: retain)
+        super(handle, retain: retain, auto_release: auto_release)
       else
         ptr = MemoryPointer::new(:ccs_objective_space_t)
         res = CCS.ccs_create_objective_space(name, user_data, ptr)
@@ -39,8 +40,8 @@ module CCS
       end
     end
 
-    def self.from_handle(handle)
-      self::new(handle, retain: true)
+    def self.from_handle(handle, retain: true, auto_release: true)
+      self::new(handle, retain: retain, auto_release: auto_release)
     end
 
     def add_hyperparameter(hyperparameter)

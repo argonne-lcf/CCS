@@ -46,9 +46,11 @@ struct _ccs_object_ops_s {
 typedef struct _ccs_object_ops_s _ccs_object_ops_t;
 
 struct _ccs_object_internal_s {
-	ccs_object_type_t  type;
-	int32_t            refcount;
-	_ccs_object_ops_t *ops;
+	ccs_object_type_t              type;
+	int32_t                        refcount;
+        ccs_object_release_callback_t  cb;
+	void                          *cb_user_data;
+	_ccs_object_ops_t             *ops;
 };
 
 typedef struct _ccs_object_internal_s _ccs_object_internal_t;
@@ -65,6 +67,8 @@ _ccs_object_init(_ccs_object_internal_t *o,
                  _ccs_object_ops_t      *ops) {
 	o->type = t;
 	o->refcount = 1;
+	o->cb = NULL;
+	o->cb_user_data = NULL;
 	o->ops = ops;
 }
 

@@ -69,7 +69,8 @@ ccs_expression_get_hyperparameters = _ccs_get_function("ccs_expression_get_hyper
 ccs_expression_check_context = _ccs_get_function("ccs_expression_check_context", [ccs_expression, ccs_context])
 
 class Expression(Object):
-  def  __init__(self, handle = None, retain = False, t = None, nodes = []):
+  def __init__(self, handle = None, retain = False, auto_release = True,
+               t = None, nodes = []):
     if handle is None:
       sz = len(nodes)
       handle = ccs_expression()
@@ -80,22 +81,22 @@ class Expression(Object):
       Error.check(res)
       super().__init__(handle = handle, retain = False)
     else:
-      super().__init__(handle = handle, retain = retain)
+      super().__init__(handle = handle, retain = retain, auto_release = auto_release)
 
   @classmethod
-  def from_handle(cls, handle):
+  def from_handle(cls, handle, retain = True, auto_release = True):
     v = ccs_expression_type(0)
     res = ccs_expression_get_type(handle, ct.byref(v))
     Error.check(res)
     v = v.value
     if v == ccs_expression_type.LIST:
-      return List(handle = handle, retain = True)
+      return List(handle = handle, retain = retain, auto_release = auto_release)
     elif v == ccs_expression_type.LITERAL:
-      return Literal(handle = handle, retain = True)
+      return Literal(handle = handle, retain = retain, auto_release = auto_release)
     elif v == ccs_expression_type.VARIABLE:
-      return Variable(handle = handle, retain = True)
+      return Variable(handle = handle, retain = retain, auto_release = auto_release)
     else:
-      return cls(handle = handle, retain = True)
+      return cls(handle = handle, retain = retain, auto_release = auto_release)
 
   @classmethod
   def binary(cls, t, left, right):
@@ -208,7 +209,8 @@ class Literal(Expression):
   true_aymbol = ccs_terminal_symbols[ccs_terminal_type.TERM_TRUE]
   false_symbol = ccs_terminal_symbols[ccs_terminal_type.TERM_FALSE]
 
-  def __init__(self, handle = None, retain = False, value = None):
+  def __init__(self, handle = None, retain = False, auto_release = True,
+               value = None):
     if handle is None:
       handle = ccs_expression()
       pv = ccs_datum(value)
@@ -219,7 +221,7 @@ class Literal(Expression):
       Error.check(res)
       super().__init__(handle = handle, retain = False)
     else:
-      super().__init__(handle = handle, retain = retain)
+      super().__init__(handle = handle, retain = retain, auto_release = auto_release)
  
   @property 
   def value(self):
@@ -246,14 +248,15 @@ class Literal(Expression):
 
 
 class Variable(Expression):
-  def __init__(self, handle = None, retain = False, hyperparameter = None):
+  def __init__(self, handle = None, retain = False, auto_release = True,
+               hyperparameter = None):
     if handle is None:
       handle = ccs_expression()
       res = ccs_create_variable(hyperparameter.handle, ct.byref(handle))
       Error.check(res)
       super().__init__(handle = handle, retain = False)
     else:
-      super().__init__(handle = handle, retain = retain)
+      super().__init__(handle = handle, retain = retain, auto_release = auto_release)
   
   @property 
   def hyperparameter(self):
@@ -270,11 +273,12 @@ class Variable(Expression):
 
 
 class List(Expression):
-  def __init__(self, handle = None, retain = False, values = []):
+  def __init__(self, handle = None, retain = False, auto_release = True,
+               values = []):
     if handle is None:
       super().__init__(t = ccs_expression_type.LIST, nodes = values)
     else:
-      super().__init__(handle = handle, retain = retain)
+      super().__init__(handle = handle, retain = retain, auto_release = auto_release)
   
   def eval(self, index, context = None, values = None):
     if context and values:

@@ -339,6 +339,8 @@ module CCS
   attach_function :ccs_release_object, [:ccs_object_t], :ccs_result_t
   attach_function :ccs_object_get_type, [:ccs_object_t, :pointer], :ccs_result_t
   attach_function :ccs_object_get_refcount, [:ccs_object_t, :pointer], :ccs_result_t
+  callback :ccs_object_release_callback, [:ccs_object_t, :pointer], :void
+  attach_function :ccs_object_set_destroy_callback, [:ccs_object_t, :ccs_object_release_callback, :pointer], :ccs_result_t
 
   class << self
     alias version ccs_get_version
@@ -423,34 +425,58 @@ module CCS
       ptr = MemoryPointer::new(:ccs_object_type_t)
       res = CCS.ccs_object_get_type(handle, ptr)
       CCS.error_check(res)
+      ptr2 = MemoryPointer::new(:int32)
+      res = CCS.ccs_object_get_refcount(handle, ptr2)
+      CCS.error_check(res)
+      opts = ptr2.read_int32 == 0 ? {retain: false, auto_release: false} : {}
       case ptr.read_ccs_object_type_t
       when :CCS_RNG
-        CCS::Rng::from_handle(handle)
+        CCS::Rng
       when :CCS_DISTRIBUTION
-        CCS::Distribution::from_handle(handle)
+        CCS::Distribution
       when :CCS_HYPERPARAMETER
-        CCS::Hyperparameter::from_handle(handle)
+        CCS::Hyperparameter
       when :CCS_EXPRESSION
-        CCS::Expression::from_handle(handle)
+        CCS::Expression
       when :CCS_CONFIGURATION_SPACE
-        CCS::ConfigurationSpace::from_handle(handle)
+        CCS::ConfigurationSpace
       when :CCS_CONFIGURATION
-        CCS::Configuration::from_handle(handle)
+        CCS::Configuration
       when :CCS_OBJECTIVE_SPACE
-        CCS::ObjectiveSpace::from_handle(handle)
+        CCS::ObjectiveSpace
       when :CCS_EVALUATION
-        CCS::Evaluation::from_handle(handle)
+        CCS::Evaluation
       when :CCS_TUNER
-        CCS::Tuner::from_handle(handle)
+        CCS::Tuner
       else
         raise CCSError, :CCS_INVALID_OBJECT
-      end
+      end.from_handle(handle, **opts)
     end
 
     def to_ptr
       @handle
     end
 
+    def set_destroy_callback(user_data: nil, &block)
+      CCS.set_destroy_callback(@handle, user_data: user_data, &block)
+      self
+    end
+
+  end
+
+  @@callbacks = {}
+  def self.set_destroy_callback(handle, user_data: nil, &block)
+    if block
+      cb_wrapper = lambda { |object, data|
+        block.call(Object.from_handle(object), data)
+        @@callbacks.delete(cb_wrapper)
+      }
+      @@callbacks[cb_wrapper] = user_data
+    else
+      cb_wrapper = nil
+    end
+    res = CCS.ccs_object_set_destroy_callback(handle, cb_wrapper, user_data)
+    CCS.error_check(res)
   end
 
 end

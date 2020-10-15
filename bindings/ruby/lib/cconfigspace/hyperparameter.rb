@@ -37,22 +37,22 @@ module CCS
       "param%03d" % CCS.get_id
     end
 
-    def self.from_handle(handle)
+    def self.from_handle(handle, retain: true, auto_release: true)
       ptr = MemoryPointer::new(:ccs_hyperparameter_type_t)
       res = CCS.ccs_hyperparameter_get_type(handle, ptr)
       CCS.error_check(res)
       case ptr.read_ccs_hyperparameter_type_t
       when :CCS_NUMERICAL
-        NumericalHyperparameter::new(handle, retain: true)
+        NumericalHyperparameter
       when :CCS_CATEGORICAL
-        CategoricalHyperparameter::new(handle, retain: true)
+        CategoricalHyperparameter
       when :CCS_ORDINAL
-        OrdinalHyperparameter::new(handle, retain: true)
+        OrdinalHyperparameter
       when :CCS_DISCRETE
-        DiscreteHyperparameter::new(handle, retain: true)
+        DiscreteHyperparameter
       else
         raise CCSError, :CCS_INVALID_HYPERPARAMETER
-      end
+      end.new(handle, retain: retain, auto_release: auto_release)
     end
 
     def name
@@ -126,9 +126,10 @@ module CCS
   attach_function :ccs_create_numerical_hyperparameter, [:string, :ccs_numeric_type_t, :ccs_numeric_t, :ccs_numeric_t, :ccs_numeric_t, :ccs_numeric_t, :pointer, :pointer], :ccs_result_t
   attach_function :ccs_numerical_hyperparameter_get_parameters, [:ccs_hyperparameter_t, :pointer, :pointer, :pointer, :pointer], :ccs_result_t
   class NumericalHyperparameter < Hyperparameter
-    def initialize(handle = nil, retain: false, name: Hyperparameter.default_name, data_type: :CCS_NUM_FLOAT, lower: 0.0, upper: 1.0, quantization: 0.0, default: lower, user_data: nil)
+    def initialize(handle = nil, retain: false, auto_release: true,
+                   name: Hyperparameter.default_name, data_type: :CCS_NUM_FLOAT, lower: 0.0, upper: 1.0, quantization: 0.0, default: lower, user_data: nil)
       if (handle)
-        super(handle, retain: retain)
+        super(handle, retain: retain, auto_release: auto_release)
       else
         ptr = MemoryPointer::new(:ccs_hyperparameter_t)
         case data_type
@@ -212,9 +213,10 @@ module CCS
   attach_function :ccs_create_categorical_hyperparameter, [:string, :size_t, :pointer, :size_t, :pointer, :pointer],  :ccs_result_t
   attach_function :ccs_categorical_hyperparameter_get_values, [:ccs_hyperparameter_t, :size_t, :pointer, :pointer], :ccs_result_t
   class CategoricalHyperparameter < Hyperparameter
-    def initialize(handle = nil, retain: false, name: Hyperparameter.default_name, values: [], default_index: 0, user_data: nil)
+    def initialize(handle = nil, retain: false, auto_release: true,
+                   name: Hyperparameter.default_name, values: [], default_index: 0, user_data: nil)
       if handle
-        super(handle, retain: retain)
+        super(handle, retain: retain, auto_release: auto_release)
       else
         count = values.size
         return [] if count == 0
@@ -246,9 +248,10 @@ module CCS
   attach_function :ccs_ordinal_hyperparameter_compare_values, [:ccs_hyperparameter_t, :ccs_datum_t, :ccs_datum_t, :pointer], :ccs_result_t
   attach_function :ccs_ordinal_hyperparameter_get_values, [:ccs_hyperparameter_t, :size_t, :pointer, :pointer], :ccs_result_t
   class OrdinalHyperparameter < Hyperparameter
-    def initialize(handle = nil, retain: false, name: Hyperparameter.default_name, values: [], default_index: 0, user_data: nil)
+    def initialize(handle = nil, retain: false, auto_release: true,
+                   name: Hyperparameter.default_name, values: [], default_index: 0, user_data: nil)
       if handle
-        super(handle, retain: retain)
+        super(handle, retain: retain, auto_release: auto_release)
       else
         count = values.size
         return [] if count == 0
@@ -288,9 +291,10 @@ module CCS
   attach_function :ccs_create_discrete_hyperparameter, [:string, :size_t, :pointer, :size_t, :pointer, :pointer],  :ccs_result_t
   attach_function :ccs_discrete_hyperparameter_get_values, [:ccs_hyperparameter_t, :size_t, :pointer, :pointer], :ccs_result_t
   class DiscreteHyperparameter < Hyperparameter
-    def initialize(handle = nil, retain: false, name: Hyperparameter.default_name, values: [], default_index: 0, user_data: nil)
+    def initialize(handle = nil, retain: false, auto_release: true,
+                   name: Hyperparameter.default_name, values: [], default_index: 0, user_data: nil)
       if handle
-        super(handle, retain: retain)
+        super(handle, retain: retain, auto_release: auto_release)
       else
         count = values.size
         return [] if count == 0

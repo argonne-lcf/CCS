@@ -24,6 +24,7 @@ class TestTuner(unittest.TestCase):
   def test_create_random(self):
     (cs, os) = self.create_tuning_problem()
     t = ccs.RandomTuner(name = "tuner", configuration_space = cs, objective_space = os)
+    t2 = ccs.Object.from_handle(t.handle)
     self.assertEqual("tuner", t.name)
     self.assertEqual(ccs.TUNER_RANDOM, t.type)
     func = lambda x, y, z: [(x-2)*(x-2), sin(z+y)]
@@ -85,6 +86,7 @@ class TestTuner(unittest.TestCase):
 
     (cs, os) = self.create_tuning_problem()
     t = ccs.UserDefinedTuner(name = "tuner", configuration_space = cs, objective_space = os, delete = delete, ask = ask, tell = tell, get_optimums = get_optimums, get_history = get_history)
+    t2 = ccs.Object.from_handle(t.handle)
     self.assertEqual("tuner", t.name)
     self.assertEqual(ccs.TUNER_USER_DEFINED, t.type)
     self.assertEqual(cs.handle.value, t.configuration_space.handle.value)

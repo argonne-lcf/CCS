@@ -17,7 +17,8 @@ ccs_configuration_hash = _ccs_get_function("ccs_configuration_hash", [ccs_config
 ccs_configuration_cmp = _ccs_get_function("ccs_configuration_cmp", [ccs_configuration, ccs_configuration, ct.POINTER(ccs_int)])
 
 class Configuration(Object):
-  def __init__(self, handle = None, retain = False, configuration_space = None, values = None, user_data = None):
+  def __init__(self, handle = None, retain = False, auto_release = True,
+               configuration_space = None, values = None, user_data = None):
     if handle is None:
       count = 0
       if values:
@@ -32,11 +33,11 @@ class Configuration(Object):
       Error.check(res)
       super().__init__(handle = handle, retain = False)
     else:
-      super().__init__(handle = handle, retain = retain)
+      super().__init__(handle = handle, retain = retain, auto_release = auto_release)
 
   @classmethod
-  def from_handle(cls, handle):
-    return cls(handle = handle, retain = True)
+  def from_handle(cls, handle, retain = True, auto_release = True):
+    return cls(handle = handle, retain = retain, auto_release = auto_release)
 
   @property
   def user_data(self):

@@ -10,18 +10,18 @@ ccs_rng_min = _ccs_get_function("ccs_rng_min", [ccs_rng, ct.POINTER(ct.c_ulong)]
 ccs_rng_max = _ccs_get_function("ccs_rng_max", [ccs_rng, ct.POINTER(ct.c_ulong)])
 
 class Rng(Object):
-  def __init__(self, handle = None, retain = False):
+  def __init__(self, handle = None, retain = False, auto_release = True):
     if handle is None:
       handle = ccs_rng(0)
       res = ccs_rng_create(ct.byref(handle))
       Error.check(res)
       super().__init__(handle = handle, retain = False)
     else:
-      super().__init__(handle = handle, retain = retain)
+      super().__init__(handle = handle, retain = retain, auto_release = auto_release)
 
   @classmethod
-  def from_handle(cls, handle):
-    return cls(handle, retain = True)
+  def from_handle(cls, handle, retain = True, auto_release = True):
+    return cls(handle, retain = retain, auto_release = auto_release)
 
   def __setattr__(self, name, value):
     if name == 'seed':

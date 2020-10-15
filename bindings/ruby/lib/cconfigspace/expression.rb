@@ -98,7 +98,8 @@ module CCS
   class Expression < Object
     add_property :type, :ccs_expression_type_t, :ccs_expression_get_type, memoize: true
     add_property :num_nodes, :size_t, :ccs_expression_get_num_nodes, memoize: true
-    def initialize(handle = nil, retain: false, type: nil, nodes: [])
+    def initialize(handle = nil, retain: false, auto_release: true,
+                   type: nil, nodes: [])
       if handle
         super(handle, retain: retain)
       else
@@ -112,20 +113,20 @@ module CCS
       end
     end
 
-    def self.from_handle(handle)
+    def self.from_handle(handle, retain: true, auto_release: true)
       ptr = MemoryPointer::new(:ccs_expression_type_t)
       res = CCS.ccs_expression_get_type(handle, ptr)
       CCS.error_check(res)
       case ptr.read_ccs_expression_type_t
       when :CCS_LIST
-        List::new(handle, retain: true)
+        List
       when :CCS_LITERAL
-	Literal::new(handle, retain: true)
+	Literal
       when :CCS_VARIABLE
-        Variable::new(handle, retain: true)
+        Variable
       else
-        Expression::new(handle, retain: true)
-      end
+        Expression
+      end.new(handle, retain: retain, auto_release: auto_release)
     end
 
     def self.binary(type:, left:, right:)
@@ -214,7 +215,8 @@ module CCS
     TRUE_SYMBOL = TerminalSymbols[:CCS_TERM_TRUE]
     FALSE_SYMBOL = TerminalSymbols[:CCS_TERM_FALSE]
 
-    def initialize(handle = nil, retain: false, value: nil)
+    def initialize(handle = nil, retain: false, auto_release: true,
+                   value: nil)
       if handle
         super(handle, retain: retain)
       else
@@ -249,7 +251,8 @@ module CCS
   end
 
   class Variable < Expression
-    def initialize(handle = nil, retain: false, hyperparameter: nil)
+    def initialize(handle = nil, retain: false, auto_release: true,
+                   hyperparameter: nil)
       if handle
         super(handle, retain: retain)
       else
@@ -273,7 +276,8 @@ module CCS
   end
 
   class List < Expression
-    def initialize(handle = nil, retain: false, values: nil)
+    def initialize(handle = nil, retain: false, auto_release: true,
+                   values: nil)
       if handle
         super(handle, retain: retain)
       else

@@ -28,7 +28,8 @@ ccs_evaluation_get_objective_values = _ccs_get_function("ccs_evaluation_get_obje
 ccs_evaluation_cmp = _ccs_get_function("ccs_evaluation_cmp", [ccs_evaluation, ccs_evaluation, ct.POINTER(ccs_comparison)])
 
 class Evaluation(Object):
-  def __init__(self, handle = None, retain = False, objective_space = None, configuration = None, error = ccs_error.SUCCESS, values = None, user_data = None):
+  def __init__(self, handle = None, retain = False, auto_release = True,
+               objective_space = None, configuration = None, error = ccs_error.SUCCESS, values = None, user_data = None):
     if handle is None:
       count = 0
       if values:
@@ -43,11 +44,11 @@ class Evaluation(Object):
       Error.check(res)
       super().__init__(handle = handle, retain = False)
     else:
-      super().__init__(handle = handle, retain = retain)
+      super().__init__(handle = handle, retain = retain, auto_release = auto_release)
 
   @classmethod
-  def from_handle(cls, handle):
-    return cls(handle = handle, retain = True)
+  def from_handle(cls, handle, retain = True, auto_release = True):
+    return cls(handle = handle, retain = retain, auto_release = auto_release)
 
   @property
   def user_data(self):

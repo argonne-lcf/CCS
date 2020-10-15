@@ -35,24 +35,24 @@ module CCS
     add_property :type, :ccs_distribution_type_t, :ccs_distribution_get_type, memoize: true
     add_property :dimension, :size_t, :ccs_distribution_get_dimension, memoize: true
 
-    def self.from_handle(handle)
+    def self.from_handle(handle, retain: true, auto_release: true)
       ptr = MemoryPointer::new(:ccs_distribution_type_t)
       res = CCS.ccs_distribution_get_type(handle, ptr)
       CCS.error_check(res)
       case ptr.read_ccs_distribution_type_t
       when :CCS_UNIFORM
-        UniformDistribution::new(handle, retain: true)
+        UniformDistribution
       when :CCS_NORMAL
-        NormalDistribution::new(handle, retain: true)
+        NormalDistribution
       when :CCS_ROULETTE
-        RouletteDistribution::new(handle, retain: true)
+        RouletteDistribution
       when :CCS_MIXTURE
-        MixtureDistribution::new(handle, retain: true)
+        MixtureDistribution
       when :CCS_MULTIVARIATE
-        MultivariateDistribution::new(handle, retain: true)
+        MultivariateDistribution
       else
         raise CCSError, :CCS_INVALID_DISTRIBUTION
-      end
+      end.new(handle, retain: retain, auto_release: auto_release)
     end
 
     def data_types
@@ -136,7 +136,8 @@ module CCS
   attach_function :ccs_uniform_distribution_get_parameters, [:ccs_distribution_t, :pointer, :pointer, :pointer, :pointer], :ccs_result_t
 
   class UniformDistribution < Distribution
-    def initialize(handle = nil, retain: false, data_type: :CCS_NUM_FLOAT, lower: 0.0, upper: 1.0, scale: :CCS_LINEAR, quantization: 0.0)
+    def initialize(handle = nil, retain: false, auto_release: true,
+                   data_type: :CCS_NUM_FLOAT, lower: 0.0, upper: 1.0, scale: :CCS_LINEAR, quantization: 0.0)
       if handle
         super(handle, retain: retain)
       else
@@ -217,7 +218,8 @@ module CCS
   attach_function :ccs_create_normal_float_distribution, [:ccs_float_t, :ccs_float_t, :ccs_scale_type_t, :ccs_float_t, :pointer], :ccs_result_t
   attach_function :ccs_normal_distribution_get_parameters, [:ccs_distribution_t, :pointer, :pointer, :pointer, :pointer], :ccs_result_t
   class NormalDistribution < Distribution
-    def initialize(handle = nil, retain: false, data_type: :CCS_NUM_FLOAT, mu: 0.0, sigma: 1.0, scale: :CCS_LINEAR, quantization: 0.0)
+    def initialize(handle = nil, retain: false, auto_release: true,
+                   data_type: :CCS_NUM_FLOAT, mu: 0.0, sigma: 1.0, scale: :CCS_LINEAR, quantization: 0.0)
       if handle
         super(handle, retain: retain)
       else
@@ -290,7 +292,8 @@ module CCS
   attach_function :ccs_roulette_distribution_get_areas, [:ccs_distribution_t, :size_t, :pointer, :pointer], :ccs_result_t
   class RouletteDistribution < Distribution
     add_property :num_areas, :size_t, :ccs_roulette_distribution_get_num_areas, memoize: true
-    def initialize(handle = nil, retain: false, areas: [])
+    def initialize(handle = nil, retain: false, auto_release: true,
+                   areas: [])
       if handle
         super(handle, retain: retain)
       else
@@ -324,7 +327,8 @@ module CCS
   attach_function :ccs_mixture_distribution_get_weights, [:ccs_distribution_t, :size_t, :pointer, :pointer], :ccs_result_t
   class MixtureDistribution < Distribution
     add_property :num_distributions, :size_t, :ccs_mixture_distribution_get_num_distributions, memoize: true
-    def initialize(handle = nil, retain: false, distributions: [], weights: nil)
+    def initialize(handle = nil, retain: false, auto_release: true,
+                   distributions: [], weights: nil)
       if handle
         super(handle, retain: retain)
       else
@@ -370,7 +374,8 @@ module CCS
   attach_function :ccs_multivariate_distribution_get_distributions, [:ccs_distribution_t, :size_t, :pointer, :pointer], :ccs_result_t
   class MultivariateDistribution < Distribution
     add_property :num_distributions, :size_t, :ccs_multivariate_distribution_get_num_distributions, memoize: true
-    def initialize(handle = nil, retain: false, distributions: [])
+    def initialize(handle = nil, retain: false, auto_release: true,
+                   distributions: [])
       if handle
         super(handle, retain: retain)
       else

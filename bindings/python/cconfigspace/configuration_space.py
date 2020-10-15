@@ -29,18 +29,19 @@ ccs_configuration_space_sample = _ccs_get_function("ccs_configuration_space_samp
 ccs_configuration_space_samples = _ccs_get_function("ccs_configuration_space_samples", [ccs_configuration_space, ct.c_size_t, ct.POINTER(ccs_configuration)])
 
 class ConfigurationSpace(Context):
-  def __init__(self, handle = None, retain = False, name = "", user_data = None):
+  def __init__(self, handle = None, retain = False, auto_release = True,
+               name = "", user_data = None):
     if handle is None:
       handle = ccs_configuration_space()
       res = ccs_create_configuration_space(str.encode(name), user_data, ct.byref(handle))
       Error.check(res)
       super().__init__(handle = handle, retain = False)
     else:
-      super().__init__(handle = handle, retain = retain)
+      super().__init__(handle = handle, retain = retain, auto_release = auto_release)
 
   @classmethod
-  def from_handle(cls, handle):
-    return cls(handle = handle, retain = True)
+  def from_handle(cls, handle, retain = True, auto_release = True):
+    return cls(handle = handle, retain = retain, auto_release = auto_release)
 
   @property
   def rng(self):

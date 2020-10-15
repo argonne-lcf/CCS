@@ -3,6 +3,11 @@
 #include <cconfigspace.h>
 #include <string.h>
 
+void free_data(ccs_object_t o, void *user_data) {
+	(void)o;
+	free(user_data);
+}
+
 void test_create() {
 	ccs_hyperparameter_t       hyperparameter;
 	ccs_hyperparameter_type_t  type;
@@ -23,10 +28,14 @@ void test_create() {
 		possible_values[i].value.i = (i+1)*2;
 	}
 
+	user_data = (void *)strdup("hello");
+
 	err = ccs_create_categorical_hyperparameter("my_param", num_possible_values,
 	                                            possible_values, default_value_index,
-	                                            (void *)0xdeadbeef, &hyperparameter);
+	                                            user_data, &hyperparameter);
 	assert( err == CCS_SUCCESS );
+
+	err = ccs_object_set_destroy_callback(hyperparameter, &free_data, user_data);
 
 	err = ccs_hyperparameter_get_type(hyperparameter, &type);
 	assert( err == CCS_SUCCESS );
@@ -43,7 +52,7 @@ void test_create() {
 
 	err = ccs_hyperparameter_get_user_data(hyperparameter, &user_data);
 	assert( err == CCS_SUCCESS );
-	assert( user_data == (void *)0xdeadbeef );
+	assert( !strcmp((char *)user_data, "hello") );
 
 	err = ccs_hyperparameter_get_default_distribution(hyperparameter, &distribution);
 	assert( err == CCS_SUCCESS );

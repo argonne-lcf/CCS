@@ -11,7 +11,7 @@ module CCS
     add_property :min, :ulong, :ccs_rng_min, memoize: true
     add_property :max, :ulong, :ccs_rng_max, memoize: true
 
-    def initialize(handle = nil, retain: false)
+    def initialize(handle = nil, retain: false, auto_release: true)
       if handle
         super
       else
@@ -22,8 +22,8 @@ module CCS
       end
     end
 
-    def self.from_handle(handle)
-      self.new(handle, retain: true)
+    def self.from_handle(handle, retain: true, auto_release: true)
+      self.new(handle, retain: retain, auto_release: auto_release)
     end
 
     def seed=(s)

@@ -30,9 +30,10 @@ module CCS
     add_property :user_data, :pointer, :ccs_evaluation_get_user_data, memoize: true
     add_property :error, :ccs_result_t, :ccs_evaluation_get_error, memoize: false
 
-    def initialize(handle = nil, retain: false, objective_space: nil, configuration: nil, error: :CCS_SUCCESS, values: nil, user_data: nil)
+    def initialize(handle = nil, retain: false, auto_release: true,
+                   objective_space: nil, configuration: nil, error: :CCS_SUCCESS, values: nil, user_data: nil)
       if handle
-        super(handle, retain: retain)
+        super(handle, retain: retain, auto_release: auto_release)
       else
         if values
           count = values.size
@@ -52,8 +53,8 @@ module CCS
       end
     end
 
-    def self.from_handle(handle)
-      self::new(handle, retain: true)
+    def self.from_handle(handle, retain: true, auto_release: true)
+      self::new(handle, retain: retain, auto_release: auto_release)
     end
 
     def error=(err)

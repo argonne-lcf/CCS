@@ -17,9 +17,10 @@ module CCS
     add_property :hash, :ccs_hash_t, :ccs_configuration_hash, memoize: false
     add_handle_property :configuration_space, :ccs_configuration_space_t, :ccs_configuration_get_configuration_space, memoize: true
 
-    def initialize(handle = nil, retain: false, configuration_space: nil,  values: nil, user_data: nil)
+    def initialize(handle = nil, retain: false, auto_release: true,
+                   configuration_space: nil,  values: nil, user_data: nil)
       if (handle)
-        super(handle, retain: retain)
+        super(handle, retain: retain, auto_release: auto_release)
       else
         if values
           count = values.size
@@ -37,8 +38,8 @@ module CCS
       end
     end
 
-    def self.from_handle(handle)
-      self::new(handle, retain: true)
+    def self.from_handle(handle, retain: true, auto_release: true)
+      self::new(handle, retain: retain, auto_release: auto_release)
     end
 
     def set_value(hyperparameter, value)

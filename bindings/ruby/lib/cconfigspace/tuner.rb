@@ -27,18 +27,18 @@ module CCS
     add_handle_property :configuration_space, :ccs_configuration_space_t, :ccs_tuner_get_configuration_space, memoize: true
     add_handle_property :objective_space, :ccs_objective_space_t, :ccs_tuner_get_objective_space, memoize: true
 
-    def self.from_handle(handle)
+    def self.from_handle(handle, retain: true, auto_release: true)
       ptr = MemoryPointer::new(:ccs_tuner_type_t)
       res = CCS.ccs_tuner_get_type(handle, ptr)
       CCS.error_check(res)
       case ptr.read_ccs_tuner_type_t
       when :CCS_TUNER_RANDOM
-	RandomTuner::new(handle, retain: true)
+	RandomTuner
       when :CCS_TUNER_USER_DEFINED
-        UserDefinedTuner::new(handle, retain: true)
+        UserDefinedTuner
       else
         raise CCSError, :CCS_INVALID_TUNER
-      end
+      end.new(handle, retain: retain, auto_release: auto_release)
     end
 
     def name
@@ -100,9 +100,10 @@ module CCS
   end
 
   class RandomTuner < Tuner
-    def initialize(handle = nil, retain: false, name: nil, configuration_space: nil, objective_space: nil, user_data: nil)
+    def initialize(handle = nil, retain: false, auto_release: true,
+                   name: nil, configuration_space: nil, objective_space: nil, user_data: nil)
       if handle
-        super(handle, retain: retain)
+        super(handle, retain: retain, auto_release: auto_release)
       else
         ptr = MemoryPointer::new(:ccs_tuner_t)
         res = CCS.ccs_create_random_tuner(name, configuration_space, objective_space, user_data, ptr)
@@ -146,89 +147,94 @@ module CCS
   end
   typedef UserDefinedTunerData.by_value, :ccs_user_defined_tuner_data_t
 
+  def self.wrap_user_defined_callbacks(del, ask, tell, get_optimums, get_history)
+    delwrapper = lambda { |data|
+      begin
+        del.call(data)
+        @@callbacks.delete(delwrapper)
+        CCSError.to_native(:CCS_SUCCESS)
+      rescue CCSError => e
+        e.to_native
+      end
+    }
+    askwrapper = lambda { |data, count, p_configurations, p_count|
+      begin
+        configurations, count_ret = ask.call(data, p_configurations.null? ? nil : count)
+        raise CCSError, :CCS_INVALID_VALUE if !p_configurations.null? && count < count_ret
+        if !p_configurations.null?
+          configurations.each_with_index { |c, i|
+            err = CCS.ccs_retain_object(c.handle)
+            CCS.error_check(err)
+            p_configurations.put_pointer(i*8, c.handle)
+          }
+          (count_ret...count).each { |i| p_configurations[i].put_pointer(i*8, 0) }
+        end
+        p_count.write_uint64(count_ret) unless p_count.null?
+        CCSError.to_native(:CCS_SUCCESS)
+      rescue CCSError => e
+        e.to_native
+      end
+    }
+    tellwrapper = lambda { |data, count, p_evaluations|
+      begin
+        if count > 0
+          evals = count.times.collect { |i| Evaluation::from_handle(p_evaluations.get_pointer(i*8)) }
+          tell.call(data, evals)
+        end
+        CCSError.to_native(:CCS_SUCCESS)
+      rescue CCSError => e
+        e.to_native
+      end
+    }
+    get_optimumswrapper = lambda { |data, count, p_evaluations, p_count|
+      begin
+        optimums = get_optimums.call(data)
+        raise CCSError, :CCS_INVALID_VALUE if !p_evaluations.null? && count < optimums.size
+        unless p_evaluations.null?
+          optimums.each_with_index { |o, i|
+            p_evaluations.put_pointer(8*i, o.handle)
+          }
+          ((optimums.size)...count).each { |i| p_evaluations.put_pointer(8*i, 0) }
+        end
+        p_count.write_uint64(optimums.size) unless p_count.null?
+        CCSError.to_native(:CCS_SUCCESS)
+      rescue CCSError => e
+        e.to_native
+      end
+    }
+    get_historywrapper = lambda { |data, count, p_evaluations, p_count|
+      begin
+        history = get_history.call(data)
+        raise CCSError, :CCS_INVALID_VALUE if !p_evaluations.null? && count < history.size
+        unless p_evaluations.null?
+          history.each_with_index { |e, i|
+            p_evaluations.put_pointer(8*i, e.handle)
+          }
+          ((history.size)...count).each { |i| p_evaluations.put_pointer(8*i, 0) }
+        end
+        p_count.write_uint64(history.size) unless p_count.null?
+        CCSError.to_native(:CCS_SUCCESS)
+      rescue CCSError => e
+        e.to_native
+      end
+    }
+    return [delwrapper, askwrapper, tellwrapper, get_optimumswrapper, get_historywrapper]
+  end
+
   attach_function :ccs_create_user_defined_tuner, [:string, :ccs_configuration_space_t, :ccs_objective_space_t, :pointer, UserDefinedTunerVector.by_ref, :pointer, :pointer], :ccs_result_t
   class UserDefinedTuner < Tuner
-    @callbacks = {}
     class << self
       attr_reader :callbacks
     end
 
-    def initialize(handle = nil, retain: false, name: nil, configuration_space: nil, objective_space: nil, user_data: nil, del: nil, ask: nil, tell: nil, get_optimums: nil, get_history: nil, tuner_data: nil)
+    def initialize(handle = nil, retain: false, auto_release: true,
+                   name: nil, configuration_space: nil, objective_space: nil, user_data: nil, del: nil, ask: nil, tell: nil, get_optimums: nil, get_history: nil, tuner_data: nil)
       if handle
-        super(handle, retain: retain)
+        super(handle, retain: retain, auto_release: auto_release)
       else
 	raise CCSError, :CCS_INVALID_VALUE if del.nil? || ask.nil? || tell.nil? || get_optimums.nil? || get_history.nil?
-        delwrapper = lambda { |data|
-          begin
-            del.call(data)
-            UserDefinedTuner.callbacks.delete(self)
-            CCSError.to_native(:CCS_SUCCESS)
-          rescue CCSError => e
-            e.to_native
-          end
-        }
-        askwrapper = lambda { |data, count, p_configurations, p_count|
-          begin
-            configurations, count_ret = ask.call(data, p_configurations.null? ? nil : count)
-            raise CCSError, :CCS_INVALID_VALUE if !p_configurations.null? && count < count_ret
-            if !p_configurations.null?
-              configurations.each_with_index { |c, i|
-                err = CCS.ccs_retain_object(c.handle)
-                CCS.error_check(err)
-                p_configurations.put_pointer(i*8, c.handle)
-              }
-              (count_ret...count).each { |i| p_configurations[i].put_pointer(i*8, 0) }
-            end
-            p_count.write_uint64(count_ret) unless p_count.null?
-            CCSError.to_native(:CCS_SUCCESS)
-          rescue CCSError => e
-            e.to_native
-          end
-        }
-        tellwrapper = lambda { |data, count, p_evaluations|
-          begin
-            if count > 0
-              evals = count.times.collect { |i| Evaluation::from_handle(p_evaluations.get_pointer(i*8)) }
-              tell.call(data, evals)
-            end
-            CCSError.to_native(:CCS_SUCCESS)
-          rescue CCSError => e
-            e.to_native
-          end
-        }
-        get_optimumswrapper = lambda { |data, count, p_evaluations, p_count|
-          begin
-            optimums = get_optimums.call(data)
-            raise CCSError, :CCS_INVALID_VALUE if !p_evaluations.null? && count < optimums.size
-            unless p_evaluations.null?
-              optimums.each_with_index { |o, i|
-                p_evaluations.put_pointer(8*i, o.handle)
-              }
-              ((optimums.size)...count).each { |i| p_evaluations.put_pointer(8*i, 0) }
-            end
-            p_count.write_uint64(optimums.size) unless p_count.null?
-            CCSError.to_native(:CCS_SUCCESS)
-          rescue CCSError => e
-            e.to_native
-          end
-        }
-        get_historywrapper = lambda { |data, count, p_evaluations, p_count|
-          begin
-            history = get_history.call(data)
-            raise CCSError, :CCS_INVALID_VALUE if !p_evaluations.null? && count < history.size
-            unless p_evaluations.null?
-              history.each_with_index { |e, i|
-                p_evaluations.put_pointer(8*i, e.handle)
-              }
-              ((history.size)...count).each { |i| p_evaluations.put_pointer(8*i, 0) }
-            end
-            p_count.write_uint64(history.size) unless p_count.null?
-            CCSError.to_native(:CCS_SUCCESS)
-          rescue CCSError => e
-            e.to_native
-          end
-        }
-
+        delwrapper, askwrapper, tellwrapper, get_optimumswrapper, get_historywrapper =
+          CCS.wrap_user_defined_callbacks(del, ask, tell, get_optimums, get_history)
         vector = UserDefinedTunerVector::new
         vector[:del] = delwrapper
         vector[:ask] = askwrapper
@@ -239,7 +245,7 @@ module CCS
         res = CCS.ccs_create_user_defined_tuner(name, configuration_space, objective_space, user_data, vector, tuner_data, ptr)
         CCS.error_check(res)
         super(ptr.read_ccs_tuner_t, retain: false)
-        UserDefinedTuner.callbacks[self] = [delwrapper, askwrapper, tellwrapper, get_optimumswrapper, get_historywrapper]
+        CCS.class_variable_get(:@@callbacks)[delwrapper] = [askwrapper, tellwrapper, get_optimumswrapper, get_historywrapper, user_data, tuner_data]
       end
     end
   end

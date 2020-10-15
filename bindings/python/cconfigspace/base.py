@@ -345,11 +345,14 @@ ccs_retain_object = _ccs_get_function("ccs_retain_object", [ccs_object])
 ccs_release_object = _ccs_get_function("ccs_release_object", [ccs_object])
 ccs_object_get_type = _ccs_get_function("ccs_object_get_type", [ccs_object, ct.POINTER(ccs_object_type)])
 ccs_object_get_refcount = _ccs_get_function("ccs_object_get_refcount", [ccs_object, ct.POINTER(ct.c_int)])
+ccs_object_destroy_callback_type = ct.CFUNCTYPE(None, ccs_object, ct.c_void_p)
+ccs_object_set_destroy_callback = _ccs_get_function("ccs_object_set_destroy_callback", [ccs_object, ccs_object_destroy_callback_type, ct.c_void_p])
 
 _res = ccs_init()
 Error.check(_res)
 
 class Object:
+
   def __init__(self, handle, retain = False, auto_release = True):
     if handle is None:
       raise Error(ccs_error(ccs_error.INVALID_OBJECT))
@@ -360,8 +363,9 @@ class Object:
       Error.check(res)
 
   def __del__(self):
-    res = ccs_release_object(self._handle)
-    Error.check(res)
+    if self.auto_release:
+      res = ccs_release_object(self._handle)
+      Error.check(res)
 
   @property
   def handle(self):
@@ -389,27 +393,58 @@ class Object:
     t = ccs_object_type(0)
     res = ccs_object_get_type(h, ct.byref(t))
     Error.check(res)
+    r = ct.c_int(0)
+    res = ccs_object_get_refcount(h, ct.byref(r))
+    Error.check(res)
+    r = r.value
+    if r == 0:
+      retain = False
+      auto_release = False
+    else:
+      retain = True
+      auto_release = True
     v = t.value
     if v == ccs_object_type.RNG:
-      return Rng.from_handle(h)
+      return Rng.from_handle(h, retain = retain, auto_release = auto_release)
     elif v == ccs_object_type.DISTRIBUTION:
-      return Distribution.from_handle(h)
+      return Distribution.from_handle(h, retain = retain, auto_release = auto_release)
     elif v == ccs_object_type.HYPERPARAMETER:
-      return Hyperparameter.from_handle(h)
+      return Hyperparameter.from_handle(h, retain = retain, auto_release = auto_release)
     elif v == ccs_object_type.EXPRESSION:
-      return Expression.from_handle(h)
+      return Expression.from_handle(h, retain = retain, auto_release = auto_release)
     elif v == ccs_object_type.CONFIGURATION_SPACE:
-      return ConfigurationSpace.from_handle(h)
+      return ConfigurationSpace.from_handle(h, retain = retain, auto_release = auto_release)
     elif v == ccs_object_type.CONFIGURATION:
-      return Configuration.from_handle(h)
+      return Configuration.from_handle(h, retain = retain, auto_release = auto_release)
     elif v == ccs_object_type.OBJECTIVE_SPACE:
-      return ObjectiveSpace.from_handle(h)
+      return ObjectiveSpace.from_handle(h, retain = retain, auto_release = auto_release)
     elif v == ccs_object_type.EVALUATION:
-      return Evaluation.from_handle(h)
-    elif v == ccs_object_type.Tuner:
-      return Tuner.from_handle(h)
+      return Evaluation.from_handle(h, retain = retain, auto_release = auto_release)
+    elif v == ccs_object_type.TUNER:
+      return Tuner.from_handle(h, retain = retain, auto_release = auto_release)
     else:
       raise Error(ccs_error(ccs_error.INVALID_OBJECT))
+
+  def set_destroy_callback(self, callback, user_data = None):
+    _set_destroy_callback(self.handle, callback, user_data = user_data)
+
+_callbacks = {}
+
+def _set_destroy_callback(handle, callback, user_data = None):
+  if callback is None:
+    raise Error(ccs_error(ccs_error.INVALID_VALUE))
+  ptr = ct.c_int(32)
+  def cb_wrapper(obj, data):
+    try:
+      callback(Object.from_handle(obj), data)
+      del _callbacks[ct.addressof(ptr)]
+    except Error as e:
+      None
+  cb_wrapper_func = ccs_object_destroy_callback_type(cb_wrapper)
+  res = ccs_object_set_destroy_callback(handle, cb_wrapper_func, user_data)
+  Error.check(res)
+  _callbacks[ct.addressof(ptr)] = (cb_wrapper_func, user_data, ptr)
+
 
 _ccs_id = 0
 def _ccs_get_id():
