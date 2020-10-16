@@ -33,8 +33,14 @@ ccs_release_object(ccs_object_t object) {
 		return -CCS_INVALID_OBJECT;
 	obj->refcount -= 1;
 	if (obj->refcount == 0) {
-		if (obj->cb)
-			obj->cb(object, obj->cb_user_data);
+		if (obj->callbacks) {
+			_ccs_object_callback_t *cb = NULL;
+			while ( (cb = (_ccs_object_callback_t *)
+			              utarray_next(obj->callbacks, cb)) ) {
+				cb->callback(object, cb->user_data);
+			}
+			utarray_free(obj->callbacks);
+		}
 		ccs_result_t err = obj->ops->del(object);
 		if (err)
 			return err;
@@ -65,6 +71,13 @@ ccs_object_get_refcount(ccs_object_t  object,
 	return CCS_SUCCESS;
 }
 
+static const UT_icd _object_callback_icd = {
+	sizeof(_ccs_object_callback_t),
+	NULL,
+	NULL,
+	NULL
+};
+
 ccs_result_t
 ccs_object_set_destroy_callback(ccs_object_t  object,
                                 void (*callback)(
@@ -74,8 +87,13 @@ ccs_object_set_destroy_callback(ccs_object_t  object,
 	_ccs_object_internal_t *obj = (_ccs_object_internal_t *)object;
 	if (!obj)
 		return -CCS_INVALID_OBJECT;
-	obj->cb = callback;
-	obj->cb_user_data = user_data;
+	if (!callback)
+		return -CCS_INVALID_VALUE;
+	if (!obj->callbacks)
+		utarray_new(obj->callbacks, &_object_callback_icd);
+
+	_ccs_object_callback_t cb = { callback, user_data };
+	utarray_push_back(obj->callbacks, &cb);
 	return CCS_SUCCESS;
 }
 

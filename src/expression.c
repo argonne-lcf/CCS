@@ -1317,7 +1317,7 @@ ccs_variable_get_hyperparameter(ccs_expression_t      expression,
 }
 
 static ccs_result_t _get_hyperparameters(ccs_expression_t  expression,
-                                        UT_array         *array) {
+                                         UT_array         *array) {
 	CCS_CHECK_OBJ(expression, CCS_EXPRESSION);
 	ccs_result_t err;
 	if (expression->data->type == CCS_VARIABLE) {

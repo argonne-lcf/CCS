@@ -2,6 +2,7 @@
 #define _CONFIGSPACE_INTERNAL_H
 
 #include <cconfigspace.h>
+#include "utarray.h"
 
 static inline ccs_bool_t
 _ccs_interval_include(ccs_interval_t *interval, ccs_numeric_t value) {
@@ -45,11 +46,16 @@ struct _ccs_object_ops_s {
 
 typedef struct _ccs_object_ops_s _ccs_object_ops_t;
 
+struct _ccs_object_callback_s {
+	ccs_object_release_callback_t  callback;
+	void                          *user_data;
+};
+typedef struct _ccs_object_callback_s _ccs_object_callback_t;
+
 struct _ccs_object_internal_s {
 	ccs_object_type_t              type;
 	int32_t                        refcount;
-        ccs_object_release_callback_t  cb;
-	void                          *cb_user_data;
+	UT_array                      *callbacks;
 	_ccs_object_ops_t             *ops;
 };
 
@@ -67,8 +73,7 @@ _ccs_object_init(_ccs_object_internal_t *o,
                  _ccs_object_ops_t      *ops) {
 	o->type = t;
 	o->refcount = 1;
-	o->cb = NULL;
-	o->cb_user_data = NULL;
+	o->callbacks = NULL;
 	o->ops = ops;
 }
 
