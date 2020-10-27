@@ -46,17 +46,17 @@ class TestTuner(unittest.TestCase):
     history = []
     optimums = []
 
-    def delete(data):
+    def delete(tuner):
       return None
 
-    def ask(data, count):
+    def ask(tuner, count):
       if count is None:
         return (None, 1)
       else:
-        cs = ccs.ConfigurationSpace.from_handle(ccs.ccs_configuration_space(data.common_data.configuration_space))
+        cs = tuner.configuration_space
         return (cs.samples(count), count)
 
-    def tell(data, evaluations):
+    def tell(tuner, evaluations):
       nonlocal history
       nonlocal optimums
       history += evaluations
@@ -78,10 +78,10 @@ class TestTuner(unittest.TestCase):
         optimums = new_optimums
       return None
 
-    def get_history(data):
+    def get_history(tuner):
       return history
 
-    def get_optimums(data):
+    def get_optimums(tuner):
       return optimums
 
     (cs, os) = self.create_tuning_problem()

@@ -113,23 +113,11 @@ module CCS
     end
   end
 
-  class TunerCommonData < FFI::Struct
-    layout :type, :ccs_tuner_type_t,
-           :name, :string,
-           :user_data, :pointer,
-           :configuration_space, :ccs_configuration_space_t,
-           :objective_space, :ccs_objective_space_t
-  end
-  typedef TunerCommonData.by_value, :ccs_tuner_common_data_t
-
-  class UserDefinedTunerData < FFI::Struct
-  end
-
-  callback :ccs_user_defined_tuner_del, [UserDefinedTunerData.by_ref], :ccs_result_t
-  callback :ccs_user_defined_tuner_ask, [UserDefinedTunerData.by_ref, :size_t, :pointer, :pointer], :ccs_result_t
-  callback :ccs_user_defined_tuner_tell, [UserDefinedTunerData.by_ref, :size_t, :pointer], :ccs_result_t
-  callback :ccs_user_defined_tuner_get_optimums, [UserDefinedTunerData.by_ref, :size_t, :pointer, :pointer], :ccs_result_t
-  callback :ccs_user_defined_tuner_get_history, [UserDefinedTunerData.by_ref, :size_t, :pointer, :pointer], :ccs_result_t
+  callback :ccs_user_defined_tuner_del, [:ccs_tuner_t], :ccs_result_t
+  callback :ccs_user_defined_tuner_ask, [:ccs_tuner_t, :size_t, :pointer, :pointer], :ccs_result_t
+  callback :ccs_user_defined_tuner_tell, [:ccs_tuner_t, :size_t, :pointer], :ccs_result_t
+  callback :ccs_user_defined_tuner_get_optimums, [:ccs_tuner_t, :size_t, :pointer, :pointer], :ccs_result_t
+  callback :ccs_user_defined_tuner_get_history, [:ccs_tuner_t, :size_t, :pointer, :pointer], :ccs_result_t
   class UserDefinedTunerVector < FFI::Struct
     layout :del, :ccs_user_defined_tuner_del,
            :ask, :ccs_user_defined_tuner_ask,
@@ -139,27 +127,19 @@ module CCS
   end
   typedef UserDefinedTunerVector.by_value, :ccs_user_defined_tuner_vector_t
 
-  class UserDefinedTunerData
-    layout :common_data, :ccs_tuner_common_data_t,
-           :vector, :ccs_user_defined_tuner_vector_t,
-           :tuner_data, :pointer
-
-  end
-  typedef UserDefinedTunerData.by_value, :ccs_user_defined_tuner_data_t
-
   def self.wrap_user_defined_callbacks(del, ask, tell, get_optimums, get_history)
-    delwrapper = lambda { |data|
+    delwrapper = lambda { |tun|
       begin
-        del.call(data)
+        del.call(CCS::Object.from_handle(tun))
         @@callbacks.delete(delwrapper)
         CCSError.to_native(:CCS_SUCCESS)
       rescue CCSError => e
         e.to_native
       end
     }
-    askwrapper = lambda { |data, count, p_configurations, p_count|
+    askwrapper = lambda { |tun, count, p_configurations, p_count|
       begin
-        configurations, count_ret = ask.call(data, p_configurations.null? ? nil : count)
+        configurations, count_ret = ask.call(Tuner.from_handle(tun), p_configurations.null? ? nil : count)
         raise CCSError, :CCS_INVALID_VALUE if !p_configurations.null? && count < count_ret
         if !p_configurations.null?
           configurations.each_with_index { |c, i|
@@ -175,20 +155,20 @@ module CCS
         e.to_native
       end
     }
-    tellwrapper = lambda { |data, count, p_evaluations|
+    tellwrapper = lambda { |tun, count, p_evaluations|
       begin
         if count > 0
           evals = count.times.collect { |i| Evaluation::from_handle(p_evaluations.get_pointer(i*8)) }
-          tell.call(data, evals)
+          tell.call(Tuner.from_handle(tun), evals)
         end
         CCSError.to_native(:CCS_SUCCESS)
       rescue CCSError => e
         e.to_native
       end
     }
-    get_optimumswrapper = lambda { |data, count, p_evaluations, p_count|
+    get_optimumswrapper = lambda { |tun, count, p_evaluations, p_count|
       begin
-        optimums = get_optimums.call(data)
+        optimums = get_optimums.call(Tuner.from_handle(tun))
         raise CCSError, :CCS_INVALID_VALUE if !p_evaluations.null? && count < optimums.size
         unless p_evaluations.null?
           optimums.each_with_index { |o, i|
@@ -202,9 +182,9 @@ module CCS
         e.to_native
       end
     }
-    get_historywrapper = lambda { |data, count, p_evaluations, p_count|
+    get_historywrapper = lambda { |tun, count, p_evaluations, p_count|
       begin
-        history = get_history.call(data)
+        history = get_history.call(Tuner.from_handle(tun))
         raise CCSError, :CCS_INVALID_VALUE if !p_evaluations.null? && count < history.size
         unless p_evaluations.null?
           history.each_with_index { |e, i|
@@ -222,7 +202,9 @@ module CCS
   end
 
   attach_function :ccs_create_user_defined_tuner, [:string, :ccs_configuration_space_t, :ccs_objective_space_t, :pointer, UserDefinedTunerVector.by_ref, :pointer, :pointer], :ccs_result_t
+  attach_function :ccs_user_defined_tuner_get_tuner_data, [:ccs_tuner_t, :pointer], :ccs_result_t
   class UserDefinedTuner < Tuner
+    add_property :tuner_data, :pointer, :ccs_user_defined_tuner_get_tuner_data, memoize: true
     class << self
       attr_reader :callbacks
     end
