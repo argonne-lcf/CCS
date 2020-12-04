@@ -15,7 +15,7 @@ _ccs_tuner_user_defined_del(ccs_object_t o) {
 	_ccs_user_defined_tuner_data_t *d =
 		(_ccs_user_defined_tuner_data_t *)((ccs_tuner_t)o)->data;
 	ccs_result_t err;
-	err = d->vector.del(o);
+	err = d->vector.del((ccs_tuner_t)o);
 	ccs_release_object(d->common_data.configuration_space);
 	ccs_release_object(d->common_data.objective_space);
 	return err;
