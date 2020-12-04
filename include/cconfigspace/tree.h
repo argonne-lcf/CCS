@@ -7,7 +7,7 @@ extern "C" {
 
 extern ccs_result_t
 ccs_create_tree(size_t       arity,
-                ccs_tree_t  *children,
+                size_t       num_children,
                 ccs_datum_t  value,
                 void        *user_data,
                 ccs_tree_t  *tree_ret);
@@ -19,6 +19,10 @@ ccs_tree_get_user_data(ccs_tree_t   tree,
 extern ccs_result_t
 ccs_tree_get_value(ccs_tree_t   tree,
                    ccs_datum_t *value_ret);
+
+extern ccs_result_t
+ccs_tree_set_value(ccs_tree_t   tree,
+                   ccs_datum_t  value);
 
 extern ccs_result_t
 ccs_tree_get_arity(ccs_tree_t  tree,
