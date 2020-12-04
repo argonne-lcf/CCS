@@ -36,7 +36,7 @@ ccs_release_object(ccs_object_t object) {
 		if (obj->callbacks) {
 			_ccs_object_callback_t *cb = NULL;
 			while ( (cb = (_ccs_object_callback_t *)
-			              utarray_next(obj->callbacks, cb)) ) {
+			              utarray_prev(obj->callbacks, cb)) ) {
 				cb->callback(object, cb->user_data);
 			}
 			utarray_free(obj->callbacks);
