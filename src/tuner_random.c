@@ -4,10 +4,10 @@
 #include "utarray.h"
 
 struct _ccs_random_tuner_data_s {
-	ccs_tuner_common_data_t  common_data;
-	UT_array                *history;
-	UT_array                *optimums;
-	UT_array                *old_optimums;
+	_ccs_tuner_common_data_t  common_data;
+	UT_array                 *history;
+	UT_array                 *optimums;
+	UT_array                 *old_optimums;
 };
 typedef struct _ccs_random_tuner_data_s _ccs_random_tuner_data_t;
 

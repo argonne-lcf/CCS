@@ -5,16 +5,16 @@ class TestTuner < CCS::UserDefinedTuner
   def initialize(cs, os)
     @history = []
     @optimums = []
-    del = lambda { |data| nil }
-    ask = lambda { |data, count|
+    del = lambda { |tuner| nil }
+    ask = lambda { |tuner, count|
       if count
-        cs = CCS::ConfigurationSpace::from_handle(data[:common_data][:configuration_space])
+        cs = tuner.configuration_space
         [cs.samples(count), count]
       else
         [nil, 1]
       end
     }
-    tell = lambda { |data, evaluations|
+    tell = lambda { |tuner, evaluations|
       @history += evaluations
       evaluations.each { |e|
         discard = false
@@ -36,10 +36,10 @@ class TestTuner < CCS::UserDefinedTuner
         @optimums.push(e) unless discard
       }
     }
-    get_history = lambda { |data|
+    get_history = lambda { |tuner|
       @history
     }
-    get_optimums = lambda { |data|
+    get_optimums = lambda { |tuner|
       @optimums
     }
     super(name: "tuner", configuration_space: cs, objective_space: os, del: del, ask: ask, tell: tell, get_optimums: get_optimums, get_history: get_history)

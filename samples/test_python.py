@@ -11,17 +11,17 @@ class TestTuner(ccs.UserDefinedTuner):
     self.__history = []
     self.__optimums = []
 
-    def delete(data):
+    def delete(tuner):
       return None
 
-    def ask(data, count):
+    def ask(tuner, count):
       if count is None:
         return (None, 1)
       else:
-        cs = ccs.ConfigurationSpace.from_handle(ccs.ccs_configuration_space(data.common_data.configuration_space))
+        cs = tuner.configuration_space
         return (cs.samples(count), count)
 
-    def tell(data, evaluations):
+    def tell(tuner, evaluations):
       self.__history += evaluations
       for e in evaluations:
         discard = False
@@ -41,10 +41,10 @@ class TestTuner(ccs.UserDefinedTuner):
         self.__optimums = new_optimums
       return None
 
-    def get_history(data):
+    def get_history(tuner):
       return self.__history
 
-    def get_optimums(data):
+    def get_optimums(tuner):
       return self.__optimums
 
     super().__init__(name = "tuner", configuration_space = cs, objective_space = os, delete = delete, ask = ask, tell = tell, get_optimums = get_optimums, get_history = get_history)

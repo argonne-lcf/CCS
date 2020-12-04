@@ -1,4 +1,4 @@
-ENV["PYTHONPATH"] = "./:"+ ENV["PYTHONPATH"]
+ENV["PYTHONPATH"] = "./" + (ENV["PYTHONPATH"] ? ":"+ ENV["PYTHONPATH"] : "")
 
 require 'rubygems'
 require_relative '../bindings/ruby/lib/cconfigspace'

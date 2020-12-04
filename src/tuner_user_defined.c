@@ -2,12 +2,20 @@
 #include "tuner_internal.h"
 #include "string.h"
 
+struct _ccs_user_defined_tuner_data_s {
+	_ccs_tuner_common_data_t          common_data;
+	ccs_tuner_t                       selfref;
+	ccs_user_defined_tuner_vector_t   vector;
+	void                             *tuner_data;
+};
+typedef struct _ccs_user_defined_tuner_data_s _ccs_user_defined_tuner_data_t;
+
 static ccs_result_t
 _ccs_tuner_user_defined_del(ccs_object_t o) {
-	ccs_user_defined_tuner_data_t *d =
-		(ccs_user_defined_tuner_data_t *)((ccs_tuner_t)o)->data;
+	_ccs_user_defined_tuner_data_t *d =
+		(_ccs_user_defined_tuner_data_t *)((ccs_tuner_t)o)->data;
 	ccs_result_t err;
-	err = d->vector.del(d);
+	err = d->vector.del(o);
 	ccs_release_object(d->common_data.configuration_space);
 	ccs_release_object(d->common_data.objective_space);
 	return err;
@@ -18,18 +26,18 @@ _ccs_tuner_user_defined_ask(_ccs_tuner_data_t   *data,
                             size_t               num_configurations,
                             ccs_configuration_t *configurations,
                             size_t              *num_configurations_ret) {
-	ccs_user_defined_tuner_data_t *d =
-		(ccs_user_defined_tuner_data_t *)data;
-	return d->vector.ask(d, num_configurations, configurations, num_configurations_ret);
+	_ccs_user_defined_tuner_data_t *d =
+		(_ccs_user_defined_tuner_data_t *)data;
+	return d->vector.ask(d->selfref, num_configurations, configurations, num_configurations_ret);
 }
 
 static ccs_result_t
 _ccs_tuner_user_defined_tell(_ccs_tuner_data_t *data,
                              size_t             num_evaluations,
                              ccs_evaluation_t  *evaluations) {
-	ccs_user_defined_tuner_data_t *d =
-		(ccs_user_defined_tuner_data_t *)data;
-	return d->vector.tell(d, num_evaluations, evaluations);
+	_ccs_user_defined_tuner_data_t *d =
+		(_ccs_user_defined_tuner_data_t *)data;
+	return d->vector.tell(d->selfref, num_evaluations, evaluations);
 }
 
 static ccs_result_t
@@ -37,9 +45,9 @@ _ccs_tuner_user_defined_get_optimums(_ccs_tuner_data_t *data,
                                      size_t             num_evaluations,
                                      ccs_evaluation_t  *evaluations,
                                      size_t            *num_evaluations_ret) {
-	ccs_user_defined_tuner_data_t *d =
-		(ccs_user_defined_tuner_data_t *)data;
-	return d->vector.get_optimums(d, num_evaluations, evaluations, num_evaluations_ret);
+	_ccs_user_defined_tuner_data_t *d =
+		(_ccs_user_defined_tuner_data_t *)data;
+	return d->vector.get_optimums(d->selfref, num_evaluations, evaluations, num_evaluations_ret);
 }
 
 static ccs_result_t
@@ -47,9 +55,9 @@ _ccs_tuner_user_defined_get_history(_ccs_tuner_data_t *data,
                                     size_t             num_evaluations,
                                     ccs_evaluation_t  *evaluations,
                                     size_t            *num_evaluations_ret) {
-	ccs_user_defined_tuner_data_t *d =
-		(ccs_user_defined_tuner_data_t *)data;
-	return d->vector.get_history(d, num_evaluations, evaluations, num_evaluations_ret);
+	_ccs_user_defined_tuner_data_t *d =
+		(_ccs_user_defined_tuner_data_t *)data;
+	return d->vector.get_history(d->selfref, num_evaluations, evaluations, num_evaluations_ret);
 }
 
 static _ccs_tuner_ops_t _ccs_tuner_user_defined_ops = {
@@ -81,12 +89,12 @@ ccs_create_user_defined_tuner(const char                      *name,
 
 	uintptr_t mem = (uintptr_t)calloc(1,
 		sizeof(struct _ccs_tuner_s) +
-		sizeof(struct ccs_user_defined_tuner_data_s) +
+		sizeof(struct _ccs_user_defined_tuner_data_s) +
 		strlen(name) + 1);
 	if (!mem)
 		return -CCS_OUT_OF_MEMORY;
 	ccs_tuner_t tun;
-	ccs_user_defined_tuner_data_t * data;
+	_ccs_user_defined_tuner_data_t * data;
 	ccs_result_t err;
 	err = ccs_retain_object(configuration_space);
 	if (err)
@@ -98,14 +106,15 @@ ccs_create_user_defined_tuner(const char                      *name,
 	tun = (ccs_tuner_t)mem;
 	_ccs_object_init(&(tun->obj), CCS_TUNER, (_ccs_object_ops_t *)&_ccs_tuner_user_defined_ops);
 	tun->data = (struct _ccs_tuner_data_s *)(mem + sizeof(struct _ccs_tuner_s));
-	data = (ccs_user_defined_tuner_data_t *)tun->data;
+	data = (_ccs_user_defined_tuner_data_t *)tun->data;
 	data->common_data.type = CCS_TUNER_USER_DEFINED;
 	data->common_data.name = (const char *)(mem +
 		sizeof(struct _ccs_tuner_s) +
-		sizeof(struct ccs_user_defined_tuner_data_s));
+		sizeof(struct _ccs_user_defined_tuner_data_s));
 	data->common_data.user_data = user_data;
 	data->common_data.configuration_space = configuration_space;
 	data->common_data.objective_space = objective_space;
+        data->selfref = tun;
 	data->vector = *vector;
 	data->tuner_data = tuner_data;
 	strcpy((char*)data->common_data.name, name);
@@ -118,5 +127,16 @@ errmem:
 	return err;
 }
 
-
+ccs_result_t
+ccs_user_defined_tuner_get_tuner_data(ccs_tuner_t   tuner,
+                                      void        **tuner_data_ret) {
+	CCS_CHECK_OBJ(tuner, CCS_TUNER);
+	CCS_CHECK_PTR(tuner_data_ret);
+	_ccs_user_defined_tuner_data_t *d =
+		(_ccs_user_defined_tuner_data_t *)tuner->data;
+        if ( d->common_data.type != CCS_TUNER_USER_DEFINED)
+		return -CCS_INVALID_TUNER;
+	*tuner_data_ret = d->tuner_data;
+	return CCS_SUCCESS;
+}
 

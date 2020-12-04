@@ -20,26 +20,33 @@ struct tuner_last_s {
 typedef struct tuner_last_s tuner_last_t;
 
 ccs_result_t
-tuner_last_del(ccs_user_defined_tuner_data_t *data) {
+tuner_last_del(ccs_tuner_t tuner) {
 	tuner_last_t *tuner_data;
-	tuner_data = (tuner_last_t *)(data->tuner_data);
-	if (tuner_data->last_eval)
+	ccs_result_t err;
+	err = ccs_user_defined_tuner_get_tuner_data(tuner, (void**)&tuner_data);
+	if (err)
+		return err;
+	if (tuner_data && tuner_data->last_eval)
 		ccs_release_object(tuner_data->last_eval);
 	free(tuner_data);
 	return CCS_SUCCESS;
 }
 
 ccs_result_t
-tuner_last_ask(ccs_user_defined_tuner_data_t *data,
-               size_t                         num_configurations,
-               ccs_configuration_t           *configurations,
-               size_t                        *num_configurations_ret) {
+tuner_last_ask(ccs_tuner_t          tuner,
+               size_t               num_configurations,
+               ccs_configuration_t *configurations,
+               size_t              *num_configurations_ret) {
 	if (!configurations) {
 		*num_configurations_ret = 1;
 		return CCS_SUCCESS;
 	}
 	ccs_result_t err;
-	err = ccs_configuration_space_samples(data->common_data.configuration_space,
+        ccs_configuration_space_t configuration_space;
+	err = ccs_tuner_get_configuration_space(tuner, &configuration_space);
+	if (err)
+		return err;
+	err = ccs_configuration_space_samples(configuration_space,
 	                                      num_configurations, configurations);
 	if (err)
 		return err;
@@ -49,13 +56,16 @@ tuner_last_ask(ccs_user_defined_tuner_data_t *data,
 }
 
 ccs_result_t
-tuner_last_tell(ccs_user_defined_tuner_data_t *data,
-                size_t                         num_evaluations,
-                ccs_evaluation_t              *evaluations) {
+tuner_last_tell(ccs_tuner_t       tuner,
+                size_t            num_evaluations,
+                ccs_evaluation_t *evaluations) {
 	if (!num_evaluations)
 		return CCS_SUCCESS;
-	tuner_last_t *tuner_data = (tuner_last_t *)(data->tuner_data);
 	ccs_result_t err;
+	tuner_last_t *tuner_data;
+	err = ccs_user_defined_tuner_get_tuner_data(tuner, (void**)&tuner_data);
+	if (err)
+		return err;
 	err = ccs_retain_object(evaluations[num_evaluations - 1]);
 	if (err)
 		return err;
@@ -66,14 +76,18 @@ tuner_last_tell(ccs_user_defined_tuner_data_t *data,
 }
 
 ccs_result_t
-tuner_last_get_optimums(ccs_user_defined_tuner_data_t *data,
-                        size_t                         num_evaluations,
-                        ccs_evaluation_t              *evaluations,
-                        size_t                        *num_evaluations_ret) {
+tuner_last_get_optimums(ccs_tuner_t       tuner,
+                        size_t            num_evaluations,
+                        ccs_evaluation_t *evaluations,
+                        size_t           *num_evaluations_ret) {
 	if (evaluations) {
 		if (num_evaluations < 1)
 			return -CCS_INVALID_VALUE;
-		tuner_last_t *tuner_data = (tuner_last_t *)(data->tuner_data);
+		ccs_result_t err;
+		tuner_last_t *tuner_data;
+		err = ccs_user_defined_tuner_get_tuner_data(tuner, (void**)&tuner_data);
+		if (err)
+			return err;
 		evaluations[0] = tuner_data->last_eval;
 		for(size_t i = 1; i < num_evaluations; i++)
 			evaluations[i] = NULL;
@@ -84,14 +98,18 @@ tuner_last_get_optimums(ccs_user_defined_tuner_data_t *data,
 }
 
 ccs_result_t
-tuner_last_get_history(ccs_user_defined_tuner_data_t *data,
-                       size_t                         num_evaluations,
-                       ccs_evaluation_t              *evaluations,
-                       size_t                        *num_evaluations_ret) {
+tuner_last_get_history(ccs_tuner_t       tuner,
+                       size_t            num_evaluations,
+                       ccs_evaluation_t *evaluations,
+                       size_t           *num_evaluations_ret) {
 	if (evaluations) {
 		if (num_evaluations < 1)
 			return -CCS_INVALID_VALUE;
-		tuner_last_t *tuner_data = (tuner_last_t *)(data->tuner_data);
+		ccs_result_t err;
+		tuner_last_t *tuner_data;
+		err = ccs_user_defined_tuner_get_tuner_data(tuner, (void**)&tuner_data);
+		if (err)
+			return err;
 		evaluations[0] = tuner_data->last_eval;
 		for(size_t i = 1; i < num_evaluations; i++)
 			evaluations[i] = NULL;
