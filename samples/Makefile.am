@@ -1,6 +1,6 @@
 AM_COLOR_TESTS = yes
 
-test_ruby_CFLAGS = -I$(top_srcdir)/include -Wall -Werror -Wpedantic $(RUBY_CFLAGS)
+test_ruby_CFLAGS = -I$(top_srcdir)/include -Wall -Werror -Wpedantic $(RUBY_CFLAGS) -Wno-deprecated-declarations
 test_ruby_LDFLAGS = ../src/libcconfigspace.la $(RUBY_LIBS)
 
 test_python_CFLAGS = -I$(top_srcdir)/include -Wall -Werror -Wpedantic $(PYTHON_CFLAGS)
