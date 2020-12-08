@@ -40,6 +40,8 @@ libcconfigspace_la_SOURCES = \
 			tuner.c \
 			tuner_internal.h \
 			tuner_random.c \
-			tuner_user_defined.c
+			tuner_user_defined.c \
+			tree_internal.h \
+			tree.c
 
 @VALGRIND_CHECK_RULES@
