@@ -48,6 +48,7 @@ ccs_result_t
 ccs_rng_get_type(ccs_rng_t            rng,
                  const gsl_rng_type **rng_type_ret) {
 	CCS_CHECK_OBJ(rng, CCS_RNG);
+	CCS_CHECK_PTR(rng_type_ret);
 	*rng_type_ret = rng->data->rng_type;
 	return CCS_SUCCESS;
 }
