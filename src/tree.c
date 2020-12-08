@@ -125,10 +125,57 @@ ccs_tree_set_child(ccs_tree_t tree,
 	if (err)
 		goto wrap;
 	HASH_ADD(hh, tree->data->index_hash, index, sizeof(index), wrap);
+	tree->data->sorted = 0;
 	return CCS_SUCCESS;
 retain:
 	ccs_release_object(child);
 wrap:
 	free(wrap);
 	return err;
+}
+
+ccs_result_t
+ccs_tree_get_children(ccs_tree_t  tree,
+                      size_t      num_children,
+                      ssize_t    *indices,
+                      ccs_tree_t *children,
+                      size_t     *num_children_ret) {
+	CCS_CHECK_OBJ(tree, CCS_TREE);
+	if (num_children && !children && !indices)
+		return -CCS_INVALID_VALUE;
+	if (!num_children_ret && !children && !indices)
+		return -CCS_INVALID_VALUE;
+
+	size_t count = HASH_CNT(hh, tree->data->index_hash);
+	if (indices) {
+		if (!tree->data->sorted) {
+			HASH_SRT(hh, tree->data->index_hash, _ccs_tree_wrapper_cmp);
+			tree->data->sorted = 1;
+		}
+		if (num_children < count)
+			return -CCS_INVALID_VALUE;
+		size_t index = 0;
+		for (_ccs_tree_wrapper_t *wrap = tree->data->index_hash;
+		     wrap != NULL; wrap = (_ccs_tree_wrapper_t *)(wrap->hh.next))
+			indices[index++] = (ssize_t)(wrap->index);
+		for (size_t i = count; i < num_children; i++)
+			indices[i] = -1;
+	}
+	if (children) {
+		if (!tree->data->sorted) {
+			HASH_SRT(hh, tree->data->index_hash, _ccs_tree_wrapper_cmp);
+			tree->data->sorted = 1;
+		}
+		if (num_children < count)
+			return -CCS_INVALID_VALUE;
+		size_t index = 0;
+		for (_ccs_tree_wrapper_t *wrap = tree->data->index_hash;
+		     wrap != NULL; wrap = (_ccs_tree_wrapper_t *)(wrap->hh.next))
+			children[index++] = wrap->tree;
+		for (size_t i = count; i < num_children; i++)
+			children[i] = NULL;
+	}
+	if (num_children_ret)
+		*num_children_ret = count;
+	return CCS_SUCCESS;
 }

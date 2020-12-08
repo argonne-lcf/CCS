@@ -36,7 +36,7 @@ ccs_tree_set_child(ccs_tree_t tree,
 extern ccs_result_t
 ccs_tree_get_children(ccs_tree_t  tree,
                       size_t      num_children,
-                      size_t     *indices,
+                      ssize_t    *indices,
                       ccs_tree_t *children,
                       size_t     *num_children_ret);
 
