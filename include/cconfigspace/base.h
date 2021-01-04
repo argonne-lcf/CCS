@@ -40,9 +40,13 @@ typedef struct _ccs_context_s             *ccs_context_t;
 typedef struct _ccs_configuration_space_s *ccs_configuration_space_t;
 typedef struct _ccs_binding_s             *ccs_binding_t;
 typedef struct _ccs_configuration_s       *ccs_configuration_t;
+typedef struct _ccs_features_space_s      *ccs_features_space_t;
+typedef struct _ccs_features_s            *ccs_features_t;
 typedef struct _ccs_objective_space_s     *ccs_objective_space_t;
 typedef struct _ccs_evaluation_s          *ccs_evaluation_t;
+typedef struct _ccs_features_evaluation_s *ccs_features_evaluation_t;
 typedef struct _ccs_tuner_s               *ccs_tuner_t;
+typedef struct _ccs_features_tuner_s      *ccs_features_tuner_t;
 
 enum ccs_error_e {
 	CCS_SUCCESS,
@@ -83,6 +87,9 @@ enum ccs_object_type_e {
 	CCS_OBJECTIVE_SPACE,
 	CCS_EVALUATION,
 	CCS_TUNER,
+	CCS_FEATURES_SPACE,
+	CCS_FEATURES,
+	CCS_FEATURES_EVALUATION,
 	CCS_OBJECT_TYPE_MAX,
 	CCS_OBJECT_TYPE_FORCE_32BIT = INT32_MAX
 };
