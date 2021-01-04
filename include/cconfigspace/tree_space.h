@@ -25,11 +25,18 @@ struct ccs_dynamic_tree_space_vector_s {
 		ccs_tree_configuration_t  configuration,
 		size_t                   *arity_ret);
 
+	ccs_result_t (*values)(
+		ccs_tree_space_t          tree_space,
+		ccs_tree_configuration_t  configuration,
+		size_t                    num_values,
+		ccs_datum_t              *values,
+		size_t                   *num_values_ret);
+
 	ccs_result_t (*child)(
 		ccs_tree_space_t          tree_space,
 		ccs_tree_configuration_t  configuration,
 		size_t                    child_index,
-                void                     *user_data,
+		void                     *user_data,
 		ccs_tree_configuration_t *child_ret);
 };
 typedef struct ccs_dynamic_tree_space_vector_s ccs_dynamic_tree_space_vector_t;
@@ -68,6 +75,10 @@ ccs_tree_space_get_configuration_child(ccs_tree_space_t          tree_space,
                                        size_t                    child_index,
                                        void                     *user_data,
                                        ccs_tree_configuration_t *child_ret);
+
+extern ccs_result_t
+ccs_static_tree_space_get_tree(ccs_tree_space_t  tree_space,
+                               ccs_tree_t       *tree_ret);
 
 #ifdef __cplusplus
 }

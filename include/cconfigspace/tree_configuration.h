@@ -28,9 +28,9 @@ ccs_tree_configuration_get_position(ccs_tree_configuration_t  configuration,
 
 extern ccs_result_t
 ccs_tree_configuration_get_values(ccs_tree_configuration_t  configuration,
-                                  size_t               num_values,
-                                  ccs_datum_t         *values,
-                                  size_t              *num_values_ret);
+                                  size_t                    num_values,
+                                  ccs_datum_t              *values,
+                                  size_t                   *num_values_ret);
 
 extern ccs_result_t
 ccs_tree_configuration_get_arity(ccs_tree_configuration_t  configuration,
