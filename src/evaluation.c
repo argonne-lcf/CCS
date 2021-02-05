@@ -63,6 +63,8 @@ ccs_create_evaluation(ccs_objective_space_t  objective_space,
                       ccs_datum_t           *values,
                       void                  *user_data,
                       ccs_evaluation_t      *evaluation_ret) {
+	CCS_CHECK_OBJ(objective_space, CCS_OBJECTIVE_SPACE);
+	CCS_CHECK_OBJ(configuration, CCS_CONFIGURATION);
 	CCS_CHECK_PTR(evaluation_ret);
 	CCS_CHECK_ARY(num_values, values);
 	ccs_result_t err;
@@ -84,6 +86,7 @@ ccs_create_evaluation(ccs_objective_space_t  objective_space,
 	}
 	err = ccs_retain_object(configuration);
 	if (err) {
+		ccs_release_object(objective_space);
 		free((void*)mem);
 		return err;
 	}
@@ -293,6 +296,10 @@ ccs_evaluation_compare(ccs_evaluation_t  evaluation,
 	CCS_CHECK_OBJ(evaluation, CCS_EVALUATION);
 	CCS_CHECK_OBJ(other_evaluation, CCS_EVALUATION);
 	CCS_CHECK_PTR(result_ret);
+	if (evaluation == other_evaluation) {
+		*result_ret = CCS_EQUIVALENT;
+		return CCS_SUCCESS;
+	}
 	if(evaluation->data->error || other_evaluation->data->error)
 		return -CCS_INVALID_OBJECT;
 	if (evaluation->data->objective_space != other_evaluation->data->objective_space)
