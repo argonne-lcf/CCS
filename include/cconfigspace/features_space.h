@@ -59,6 +59,11 @@ ccs_features_space_get_hyperparameters(ccs_features_space_t  features_space,
                                        size_t                num_hyperparameters,
                                        ccs_hyperparameter_t *hyperparameters,
                                        size_t               *num_hyperparameters_ret);
+
+extern ccs_result_t
+ccs_features_space_check_features(ccs_features_space_t features_space,
+                                  ccs_features_t       features);
+
 #ifdef __cplusplus
 }
 #endif
