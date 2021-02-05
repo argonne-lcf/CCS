@@ -53,7 +53,7 @@ ccs_features_tuner_tell(ccs_features_tuner_t       features_tuner,
                         ccs_features_evaluation_t *evaluations);
 
 extern ccs_result_t
-ccs_features_tuner_suggest(ccs_features_tuner_t features_tuner,
+ccs_features_tuner_suggest(ccs_features_tuner_t  features_tuner,
                            ccs_features_t        features,
                            ccs_configuration_t  *configuration);
 
@@ -120,13 +120,13 @@ ccs_create_user_defined_features_tuner(
 		ccs_objective_space_t                     objective_space,
 		void                                     *user_data,
 		ccs_user_defined_features_tuner_vector_t *vector,
-		void                                     *features_tuner_data,
+		void                                     *tuner_data,
 		ccs_features_tuner_t                     *features_tuner_ret);
 
 extern ccs_result_t
-ccs_user_defined_features_tuner_get_features_tuner_data(
+ccs_user_defined_features_tuner_get_tuner_data(
 		ccs_features_tuner_t   features_tuner,
-		void                 **features_tuner_data_ret);
+		void                 **tuner_data_ret);
 
 #ifdef __cplusplus
 }
