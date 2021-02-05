@@ -209,10 +209,10 @@ ccs_create_random_features_tuner(const char                *name,
 	if (err)
 		goto errconfigs;
 	tun = (ccs_features_tuner_t)mem;
-	_ccs_object_init(&(tun->obj), CCS_TUNER, (_ccs_object_ops_t *)&_ccs_features_tuner_random_ops);
+	_ccs_object_init(&(tun->obj), CCS_FEATURES_TUNER, (_ccs_object_ops_t *)&_ccs_features_tuner_random_ops);
 	tun->data = (struct _ccs_features_tuner_data_s *)(mem + sizeof(struct _ccs_features_tuner_s));
 	data = (_ccs_random_features_tuner_data_t *)tun->data;
-	data->common_data.type = CCS_TUNER_RANDOM;
+	data->common_data.type = CCS_FEATURES_TUNER_RANDOM;
 	data->common_data.name = (const char *)(mem + sizeof(struct _ccs_features_tuner_s) +
                                                       sizeof(struct _ccs_random_features_tuner_data_s));
 	data->common_data.user_data = user_data;

@@ -124,10 +124,10 @@ ccs_create_user_defined_features_tuner(
 		goto erros;
 
 	tun = (ccs_features_tuner_t)mem;
-	_ccs_object_init(&(tun->obj), CCS_TUNER, (_ccs_object_ops_t *)&_ccs_features_tuner_user_defined_ops);
+	_ccs_object_init(&(tun->obj), CCS_FEATURES_TUNER, (_ccs_object_ops_t *)&_ccs_features_tuner_user_defined_ops);
 	tun->data = (struct _ccs_features_tuner_data_s *)(mem + sizeof(struct _ccs_features_tuner_s));
 	data = (_ccs_user_defined_features_tuner_data_t *)tun->data;
-	data->common_data.type = CCS_TUNER_USER_DEFINED;
+	data->common_data.type = CCS_FEATURES_TUNER_USER_DEFINED;
 	data->common_data.name = (const char *)(mem +
 		sizeof(struct _ccs_features_tuner_s) +
 		sizeof(struct _ccs_user_defined_features_tuner_data_s));
