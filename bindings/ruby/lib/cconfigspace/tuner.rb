@@ -19,6 +19,7 @@ module CCS
   attach_function :ccs_tuner_tell, [:ccs_tuner_t, :size_t, :pointer], :ccs_result_t
   attach_function :ccs_tuner_get_optimums, [:ccs_tuner_t, :size_t, :pointer, :pointer], :ccs_result_t
   attach_function :ccs_tuner_get_history, [:ccs_tuner_t, :size_t, :pointer, :pointer], :ccs_result_t
+  attach_function :ccs_tuner_suggest, [:ccs_tuner_t, :pointer], :ccs_result_t
   attach_function :ccs_create_random_tuner, [:string, :ccs_configuration_space_t, :ccs_objective_space_t, :pointer, :pointer], :ccs_result_t
 
   class Tuner < Object
@@ -97,6 +98,14 @@ module CCS
       CCS.error_check(res)
       count.times.collect { |i| Evaluation::from_handle(p_evals[i].read_pointer) }
     end
+
+    def suggest
+      p_conf = MemoryPointer::new(:ccs_configuration_t)
+      res = CCS.ccs_tuner_suggest(@handle, p_conf)
+      CCS.error_check(res)
+      Configuration::new(p_conf.read_pointer, retain: false)
+    end
+
   end
 
   class RandomTuner < Tuner
@@ -118,16 +127,19 @@ module CCS
   callback :ccs_user_defined_tuner_tell, [:ccs_tuner_t, :size_t, :pointer], :ccs_result_t
   callback :ccs_user_defined_tuner_get_optimums, [:ccs_tuner_t, :size_t, :pointer, :pointer], :ccs_result_t
   callback :ccs_user_defined_tuner_get_history, [:ccs_tuner_t, :size_t, :pointer, :pointer], :ccs_result_t
+  callback :ccs_user_defined_tuner_suggest, [:ccs_tuner_t, :pointer], :ccs_result_t
+
   class UserDefinedTunerVector < FFI::Struct
     layout :del, :ccs_user_defined_tuner_del,
            :ask, :ccs_user_defined_tuner_ask,
            :tell, :ccs_user_defined_tuner_tell,
            :get_optimums, :ccs_user_defined_tuner_get_optimums,
-           :get_history, :ccs_user_defined_tuner_get_history
+           :get_history, :ccs_user_defined_tuner_get_history,
+           :suggest, :ccs_user_defined_tuner_suggest
   end
   typedef UserDefinedTunerVector.by_value, :ccs_user_defined_tuner_vector_t
 
-  def self.wrap_user_defined_callbacks(del, ask, tell, get_optimums, get_history)
+  def self.wrap_user_defined_tuner_callbacks(del, ask, tell, get_optimums, get_history, suggest)
     delwrapper = lambda { |tun|
       begin
         del.call(CCS::Object.from_handle(tun))
@@ -198,7 +210,23 @@ module CCS
         e.to_native
       end
     }
-    return [delwrapper, askwrapper, tellwrapper, get_optimumswrapper, get_historywrapper]
+    suggestwrapper =
+      if suggest
+        lambda { |tun, p_configuration|
+          begin
+            configuration = suggest.call(Tuner.from_handle(tun))
+            err = CCS.ccs_retain_object(configuration.handle)
+            CCS.error_check(err)
+            p_configuration.write_pointer(configuration.handle)
+            CCSError.to_native(:CCS_SUCCESS)
+          rescue CCSError => e
+            e.to_native
+          end
+        }
+      else
+        nil
+      end
+    return [delwrapper, askwrapper, tellwrapper, get_optimumswrapper, get_historywrapper, suggestwrapper]
   end
 
   attach_function :ccs_create_user_defined_tuner, [:string, :ccs_configuration_space_t, :ccs_objective_space_t, :pointer, UserDefinedTunerVector.by_ref, :pointer, :pointer], :ccs_result_t
@@ -210,24 +238,25 @@ module CCS
     end
 
     def initialize(handle = nil, retain: false, auto_release: true,
-                   name: nil, configuration_space: nil, objective_space: nil, user_data: nil, del: nil, ask: nil, tell: nil, get_optimums: nil, get_history: nil, tuner_data: nil)
+                   name: nil, configuration_space: nil, objective_space: nil, user_data: nil, del: nil, ask: nil, tell: nil, get_optimums: nil, get_history: nil, suggest: nil, tuner_data: nil)
       if handle
         super(handle, retain: retain, auto_release: auto_release)
       else
 	raise CCSError, :CCS_INVALID_VALUE if del.nil? || ask.nil? || tell.nil? || get_optimums.nil? || get_history.nil?
-        delwrapper, askwrapper, tellwrapper, get_optimumswrapper, get_historywrapper =
-          CCS.wrap_user_defined_callbacks(del, ask, tell, get_optimums, get_history)
+        delwrapper, askwrapper, tellwrapper, get_optimumswrapper, get_historywrapper, suggestwrapper =
+          CCS.wrap_user_defined_tuner_callbacks(del, ask, tell, get_optimums, get_history, suggest)
         vector = UserDefinedTunerVector::new
         vector[:del] = delwrapper
         vector[:ask] = askwrapper
         vector[:tell] = tellwrapper
         vector[:get_optimums] = get_optimumswrapper
         vector[:get_history] = get_historywrapper
+        vector[:suggest] = suggestwrapper
         ptr = MemoryPointer::new(:ccs_tuner_t)
         res = CCS.ccs_create_user_defined_tuner(name, configuration_space, objective_space, user_data, vector, tuner_data, ptr)
         CCS.error_check(res)
         super(ptr.read_ccs_tuner_t, retain: false)
-        CCS.class_variable_get(:@@callbacks)[delwrapper] = [askwrapper, tellwrapper, get_optimumswrapper, get_historywrapper, user_data, tuner_data]
+        CCS.class_variable_get(:@@callbacks)[delwrapper] = [askwrapper, tellwrapper, get_optimumswrapper, get_historywrapper, suggestwrapper, user_data, tuner_data]
       end
     end
   end

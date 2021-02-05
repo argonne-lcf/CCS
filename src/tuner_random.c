@@ -156,7 +156,8 @@ static _ccs_tuner_ops_t _ccs_tuner_random_ops = {
 	&_ccs_tuner_random_ask,
 	&_ccs_tuner_random_tell,
 	&_ccs_tuner_random_get_optimums,
-	&_ccs_tuner_random_get_history
+	&_ccs_tuner_random_get_history,
+	NULL
 };
 
 static const UT_icd _evaluation_icd = {
