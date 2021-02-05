@@ -38,6 +38,7 @@ ccs_create_configuration(ccs_configuration_space_t configuration_space,
                          ccs_datum_t              *values,
                          void                     *user_data,
                          ccs_configuration_t      *configuration_ret) {
+	CCS_CHECK_OBJ(configuration_space, CCS_CONFIGURATION_SPACE);
 	CCS_CHECK_PTR(configuration_ret);
 	CCS_CHECK_ARY(num_values, values);
 	ccs_result_t err;
