@@ -34,6 +34,7 @@ _ccs_features_tuner_random_ask(_ccs_features_tuner_data_t *data,
                                size_t                      num_configurations,
                                ccs_configuration_t        *configurations,
                                size_t                     *num_configurations_ret) {
+	(void) features;
 	_ccs_random_features_tuner_data_t *d =
 		(_ccs_random_features_tuner_data_t *)data;
 	if (!configurations) {
