@@ -7,8 +7,8 @@ ccs_features_tuner_get_ops(ccs_features_tuner_t tuner) {
 }
 
 ccs_result_t
-ccs_features_features_tuner_get_type(ccs_features_tuner_t       tuner,
-                                     ccs_features_tuner_type_t *type_ret) {
+ccs_features_tuner_get_type(ccs_features_tuner_t       tuner,
+                            ccs_features_tuner_type_t *type_ret) {
 	CCS_CHECK_OBJ(tuner, CCS_FEATURES_TUNER);
 	CCS_CHECK_PTR(type_ret);
 	_ccs_features_tuner_common_data_t *d =

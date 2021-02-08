@@ -64,6 +64,11 @@ extern ccs_result_t
 ccs_features_space_check_features(ccs_features_space_t features_space,
                                   ccs_features_t       features);
 
+extern ccs_result_t
+ccs_features_space_check_features_values(ccs_features_space_t  features_space,
+                                         size_t                num_values,
+                                         ccs_datum_t          *values);
+
 #ifdef __cplusplus
 }
 #endif

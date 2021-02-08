@@ -160,7 +160,7 @@ ccs_user_defined_features_tuner_get_tuner_data(ccs_features_tuner_t   tuner,
 	_ccs_user_defined_features_tuner_data_t *d =
 		(_ccs_user_defined_features_tuner_data_t *)tuner->data;
         if (d->common_data.type != CCS_FEATURES_TUNER_USER_DEFINED)
-		return -CCS_INVALID_TUNER;
+		return -CCS_INVALID_FEATURES_TUNER;
 	*tuner_data_ret = d->tuner_data;
 	return CCS_SUCCESS;
 }

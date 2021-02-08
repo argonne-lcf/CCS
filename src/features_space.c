@@ -257,3 +257,12 @@ ccs_features_space_check_features(ccs_features_space_t features_space,
 	                       features->data->num_values,
 	                       features->data->values);
 }
+
+ccs_result_t
+ccs_features_space_check_features_values(ccs_features_space_t  features_space,
+                                         size_t                num_values,
+                                         ccs_datum_t          *values) {
+	CCS_CHECK_OBJ(features_space, CCS_CONFIGURATION_SPACE);
+	CCS_CHECK_ARY(num_values, values);
+	return _check_features(features_space, num_values, values);
+}
