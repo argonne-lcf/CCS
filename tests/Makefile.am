@@ -25,7 +25,8 @@ CCONFIGSPACE_TESTS = \
 		test_condition \
 		test_forbidden \
 		test_random_tuner \
-		test_user_defined_tuner
+		test_user_defined_tuner \
+		test_features_space
 
 # unit tests
 UNIT_TESTS = \
