@@ -102,28 +102,34 @@ ccs_features_tuner_tell(ccs_features_tuner_t       tuner,
 
 ccs_result_t
 ccs_features_tuner_get_optimums(ccs_features_tuner_t       tuner,
+                                ccs_features_t             features,
                                 size_t                     num_evaluations,
                                 ccs_features_evaluation_t *evaluations,
                                 size_t                    *num_evaluations_ret) {
 	CCS_CHECK_OBJ(tuner, CCS_FEATURES_TUNER);
+	if (features)
+		CCS_CHECK_OBJ(features, CCS_FEATURES);
 	CCS_CHECK_ARY(num_evaluations, evaluations);
 	if (!evaluations && !num_evaluations_ret)
 		return -CCS_INVALID_VALUE;
 	_ccs_features_tuner_ops_t *ops = ccs_features_tuner_get_ops(tuner);
-	return ops->get_optimums(tuner->data, num_evaluations, evaluations, num_evaluations_ret);
+	return ops->get_optimums(tuner->data, features, num_evaluations, evaluations, num_evaluations_ret);
 }
 
 ccs_result_t
 ccs_features_tuner_get_history(ccs_features_tuner_t       tuner,
+                               ccs_features_t             features,
                                size_t                     num_evaluations,
                                ccs_features_evaluation_t *evaluations,
                                size_t                    *num_evaluations_ret) {
 	CCS_CHECK_OBJ(tuner, CCS_FEATURES_TUNER);
+	if (features)
+		CCS_CHECK_OBJ(features, CCS_FEATURES);
 	CCS_CHECK_ARY(num_evaluations, evaluations);
 	if (!evaluations && !num_evaluations_ret)
 		return -CCS_INVALID_VALUE;
 	_ccs_features_tuner_ops_t *ops = ccs_features_tuner_get_ops(tuner);
-	return ops->get_history(tuner->data, num_evaluations, evaluations, num_evaluations_ret);
+	return ops->get_history(tuner->data, features, num_evaluations, evaluations, num_evaluations_ret);
 }
 
 ccs_result_t

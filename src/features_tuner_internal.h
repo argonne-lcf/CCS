@@ -21,12 +21,14 @@ struct _ccs_features_tuner_ops_s {
 
 	ccs_result_t (*get_optimums)(
 		_ccs_features_tuner_data_t *data,
+		ccs_features_t              features,
 		size_t                      num_evaluations,
 		ccs_features_evaluation_t  *evaluations,
 		size_t                     *num_evaluations_ret);
 
 	ccs_result_t (*get_history)(
 		_ccs_features_tuner_data_t *data,
+		ccs_features_t              features,
 		size_t                      num_evaluations,
 		ccs_features_evaluation_t  *evaluations,
 		size_t                     *num_evaluations_ret);

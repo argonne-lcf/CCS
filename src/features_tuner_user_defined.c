@@ -45,23 +45,25 @@ _ccs_features_tuner_user_defined_tell(_ccs_features_tuner_data_t *data,
 static ccs_result_t
 _ccs_features_tuner_user_defined_get_optimums(
 		_ccs_features_tuner_data_t *data,
+		ccs_features_t              features,
 		size_t                      num_evaluations,
 		ccs_features_evaluation_t  *evaluations,
 		size_t                     *num_evaluations_ret) {
 	_ccs_user_defined_features_tuner_data_t *d =
 		(_ccs_user_defined_features_tuner_data_t *)data;
-	return d->vector.get_optimums(d->selfref, num_evaluations, evaluations, num_evaluations_ret);
+	return d->vector.get_optimums(d->selfref, features, num_evaluations, evaluations, num_evaluations_ret);
 }
 
 static ccs_result_t
 _ccs_features_tuner_user_defined_get_history(
 		_ccs_features_tuner_data_t *data,
+		ccs_features_t              features,
 		size_t                      num_evaluations,
 		ccs_features_evaluation_t  *evaluations,
 		size_t                     *num_evaluations_ret) {
 	_ccs_user_defined_features_tuner_data_t *d =
 		(_ccs_user_defined_features_tuner_data_t *)data;
-	return d->vector.get_history(d->selfref, num_evaluations, evaluations, num_evaluations_ret);
+	return d->vector.get_history(d->selfref, features, num_evaluations, evaluations, num_evaluations_ret);
 }
 
 static ccs_result_t

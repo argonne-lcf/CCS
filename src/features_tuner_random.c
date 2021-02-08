@@ -114,20 +114,57 @@ _ccs_features_tuner_random_tell(_ccs_features_tuner_data_t *data,
 static ccs_result_t
 _ccs_features_tuner_random_get_optimums(
 		_ccs_features_tuner_data_t *data,
+		ccs_features_t              features,
 		size_t                      num_evaluations,
 		ccs_features_evaluation_t  *evaluations,
 		size_t                     *num_evaluations_ret) {
 	_ccs_random_features_tuner_data_t *d = (_ccs_random_features_tuner_data_t *)data;
-	size_t count = utarray_len(d->optimums);
-	if (evaluations) {
-		if (num_evaluations < count)
-			return -CCS_INVALID_VALUE;
+	size_t count = 0;
+	if (!features) {
+		count = utarray_len(d->optimums);
+		if (evaluations) {
+			if (num_evaluations < count)
+				return -CCS_INVALID_VALUE;
+			ccs_features_evaluation_t *eval = NULL;
+			size_t index = 0;
+			while ( (eval = (ccs_features_evaluation_t *)utarray_next(d->optimums, eval)) )
+				evaluations[index++] = *eval;
+			for (size_t i = count; i <num_evaluations; i++)
+				evaluations[i] = NULL;
+		}
+	} else {
 		ccs_features_evaluation_t *eval = NULL;
 		size_t index = 0;
-		while ( (eval = (ccs_features_evaluation_t *)utarray_next(d->optimums, eval)) )
-			evaluations[index++] = *eval;
-		for (size_t i = count; i <num_evaluations; i++)
-			evaluations[i] = NULL;
+		ccs_features_t feat;
+		int cmp;
+		ccs_result_t err;
+		while ( (eval = (ccs_features_evaluation_t *)utarray_next(d->optimums, eval)) ) {
+			err = ccs_features_evaluation_get_features(*eval, &feat);
+			if (unlikely(err != CCS_SUCCESS))
+				return err;
+			err = ccs_features_cmp(features, feat, &cmp);
+			if (unlikely(err != CCS_SUCCESS))
+				return err;
+			if (cmp == 0)
+				count += 1;
+		}
+		if (evaluations) {
+			if (num_evaluations < count)
+				return -CCS_INVALID_VALUE;
+			eval = NULL;
+			while ( (eval = (ccs_features_evaluation_t *)utarray_next(d->optimums, eval)) ) {
+				err = ccs_features_evaluation_get_features(*eval, &feat);
+				if (unlikely(err != CCS_SUCCESS))
+					return err;
+				err = ccs_features_cmp(features, feat, &cmp);
+				if (unlikely(err != CCS_SUCCESS))
+					return err;
+				if (cmp == 0)
+					evaluations[index++] = *eval;
+			}
+			for (size_t i = count; i <num_evaluations; i++)
+				evaluations[i] = NULL;
+		}
 	}
 	if (num_evaluations_ret)
 		*num_evaluations_ret = count;
@@ -137,20 +174,57 @@ _ccs_features_tuner_random_get_optimums(
 static ccs_result_t
 _ccs_features_tuner_random_get_history(
 		_ccs_features_tuner_data_t *data,
+		ccs_features_t              features,
 		size_t                      num_evaluations,
 		ccs_features_evaluation_t  *evaluations,
 		size_t                     *num_evaluations_ret) {
 	_ccs_random_features_tuner_data_t *d = (_ccs_random_features_tuner_data_t *)data;
-	size_t count = utarray_len(d->history);
-	if (evaluations) {
-		if (num_evaluations < count)
-			return -CCS_INVALID_VALUE;
+	size_t count = 0;
+	if (!features) {
+		count = utarray_len(d->history);
+		if (evaluations) {
+			if (num_evaluations < count)
+				return -CCS_INVALID_VALUE;
+			ccs_features_evaluation_t *eval = NULL;
+			size_t index = 0;
+			while ( (eval = (ccs_features_evaluation_t *)utarray_next(d->history, eval)) )
+				evaluations[index++] = *eval;
+			for (size_t i = count; i <num_evaluations; i++)
+				evaluations[i] = NULL;
+		}
+	} else {
 		ccs_features_evaluation_t *eval = NULL;
+		ccs_features_t feat;
+		int cmp;
 		size_t index = 0;
-		while ( (eval = (ccs_features_evaluation_t *)utarray_next(d->history, eval)) )
-			evaluations[index++] = *eval;
-		for (size_t i = count; i <num_evaluations; i++)
-			evaluations[i] = NULL;
+		ccs_result_t err;
+		while ( (eval = (ccs_features_evaluation_t *)utarray_next(d->history, eval)) ) {
+			err = ccs_features_evaluation_get_features(*eval, &feat);
+			if (unlikely(err != CCS_SUCCESS))
+				return err;
+			err = ccs_features_cmp(features, feat, &cmp);
+			if (unlikely(err != CCS_SUCCESS))
+				return err;
+			if (cmp == 0)
+				count += 1;
+		}
+		if (evaluations) {
+			if (num_evaluations < count)
+				return -CCS_INVALID_VALUE;
+			eval = NULL;
+			while ( (eval = (ccs_features_evaluation_t *)utarray_next(d->history, eval)) ) {
+				err = ccs_features_evaluation_get_features(*eval, &feat);
+				if (unlikely(err != CCS_SUCCESS))
+					return err;
+				err = ccs_features_cmp(features, feat, &cmp);
+				if (unlikely(err != CCS_SUCCESS))
+					return err;
+				if (cmp == 0)
+					evaluations[index++] = *eval;
+			}
+			for (size_t i = count; i <num_evaluations; i++)
+				evaluations[i] = NULL;
+		}
 	}
 	if (num_evaluations_ret)
 		*num_evaluations_ret = count;
