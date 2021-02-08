@@ -162,10 +162,111 @@ void test_add_list() {
 	assert( err == CCS_SUCCESS );
 }
 
+void test_features() {
+	ccs_hyperparameter_t  hyperparameters[3];
+	ccs_features_space_t  features_space, features_space_ret;
+	ccs_datum_t           values[3] =
+		{ ccs_float(-1.0), ccs_float(0.0), ccs_float(1.0) };
+	ccs_datum_t           values_ret[3];
+	ccs_features_t        features1, features2;
+	ccs_result_t          err;
+	void                 *user_data_ret;
+	ccs_datum_t           datum;
+	size_t                num_values_ret;
+	int                   cmp;
+
+	err = ccs_create_features_space("my_config_space", NULL,
+	                                &features_space);
+	assert( err == CCS_SUCCESS );
+
+	hyperparameters[0] = create_dummy_hyperparameter("param1");
+	hyperparameters[1] = create_dummy_hyperparameter("param2");
+	hyperparameters[2] = create_dummy_hyperparameter("param3");
+
+	err = ccs_features_space_add_hyperparameters(features_space, 3,
+	                                             hyperparameters);
+	assert( err == CCS_SUCCESS );
+
+	err = ccs_create_features(features_space, 3, values,
+	                          (void*)0xdeadbeef, &features1);
+	assert( err == CCS_SUCCESS );
+
+	err = ccs_features_get_features_space(features1, &features_space_ret);
+	assert( err == CCS_SUCCESS );
+	assert( features_space == features_space_ret );
+
+	err = ccs_features_get_user_data(features1, &user_data_ret);
+	assert( err == CCS_SUCCESS );
+	assert( (void*)0xdeadbeef == user_data_ret );
+
+	for (size_t i = 0; i < 3; i++) {
+		err = ccs_features_get_value(features1, i, &datum);
+		assert( err == CCS_SUCCESS );
+		assert( values[i].type == datum.type );
+		assert( values[i].value.f == datum.value.f );
+	}
+
+	err = ccs_features_get_values(features1, 3, values_ret, &num_values_ret);
+	assert( err == CCS_SUCCESS );
+	assert( 3 == num_values_ret );
+	for (size_t i = 0; i < 3; i++) {
+		assert( values[i].type == values_ret[i].type );
+		assert( values[i].value.f == values_ret[i].value.f );
+	}
+
+	err = ccs_features_get_value_by_name(features1, "param2", &datum);
+	assert( err == CCS_SUCCESS );
+	assert( values[1].type == datum.type );
+	assert( values[1].value.f == datum.value.f );
+
+	err = ccs_features_check(features1);
+	assert( err == CCS_SUCCESS );
+
+	err = ccs_features_space_check_features(features_space, features1);
+	assert( err == CCS_SUCCESS );
+
+	err = ccs_create_features(features_space, 3, values,
+	                          (void*)0xdeadbeef, &features2);
+
+	assert( err == CCS_SUCCESS );
+
+	err = ccs_features_cmp(features1, features2, &cmp);
+	assert( err == CCS_SUCCESS );
+	assert( 0 == cmp );
+
+	err = ccs_features_set_value(features2, 1, ccs_float(0.5));
+	assert( err == CCS_SUCCESS );
+
+	err = ccs_features_cmp(features1, features2, &cmp);
+	assert( err == CCS_SUCCESS );
+	assert( 0 > cmp);
+
+	err = ccs_features_set_value(features2, 1, ccs_float(10.0));
+	assert( err == CCS_SUCCESS );
+
+	err = ccs_features_space_check_features(features_space, features2);
+	assert( err == -CCS_INVALID_FEATURES );
+
+	err = ccs_features_space_check_features(features_space, features2);
+	assert( err == -CCS_INVALID_FEATURES );
+
+	for (size_t i = 0; i < 3; i++) {
+		err = ccs_release_object(hyperparameters[i]);
+		assert( err == CCS_SUCCESS );
+	}
+	err = ccs_release_object(features_space);
+	assert( err == CCS_SUCCESS );
+	err = ccs_release_object(features1);
+	assert( err == CCS_SUCCESS );
+	err = ccs_release_object(features2);
+	assert( err == CCS_SUCCESS );
+}
+
 int main(int argc, char *argv[]) {
 	ccs_init();
 	test_create();
 	test_add();
 	test_add_list();
+	test_features();
 	return 0;
 }
