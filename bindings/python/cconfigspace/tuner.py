@@ -267,7 +267,7 @@ def _wrap_user_defined_callbacks(delete, ask, tell, get_optimums, get_history, s
         configuration = suggest(Tuner.from_handle(tun))
         res = ccs_retain_object(configuration.handle)
         Error.check(res)
-        p_configuration[i] = configuration.handle.value
+        p_configuration[0] = configuration.handle.value
         return ccs_error.SUCCESS
       except Error as e:
         return -e.message.value

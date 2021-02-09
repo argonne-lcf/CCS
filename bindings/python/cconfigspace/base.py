@@ -27,9 +27,13 @@ ccs_context             = ccs_object
 ccs_configuration_space = ccs_object
 ccs_binding             = ccs_object
 ccs_configuration       = ccs_object
+ccs_features_space      = ccs_object
+ccs_features            = ccs_object
 ccs_objective_space     = ccs_object
 ccs_evaluation          = ccs_object
+ccs_features_evaluation = ccs_object
 ccs_tuner               = ccs_object
+ccs_features_tuner      = ccs_object
 
 ccs_false = 0
 ccs_true = 1
@@ -128,7 +132,11 @@ class ccs_object_type(CEnumeration):
     'CONFIGURATION',
     'OBJECTIVE_SPACE',
     'EVALUATION',
-    'TUNER' ]
+    'TUNER',
+    'FEATURES_SPACE',
+    'FEATURES',
+    'FEATURES_EVALUATION',
+    'FEATURES_TUNER' ]
 
 class ccs_error(CEnumeration):
   _members_ = [ 
@@ -152,7 +160,9 @@ class ccs_error(CEnumeration):
     'INACTIVE_HYPERPARAMETER',
     'OUT_OF_MEMORY',
     'UNSUPPORTED_OPERATION',
-    'INVALID_EVALUATION' ]
+    'INVALID_EVALUATION',
+    'CCS_INVALID_FEATURES',
+    'CCS_INVALID_FEATURES_TUNER' ]
 
 class ccs_data_type(CEnumeration):
   _members_ = [
@@ -369,12 +379,20 @@ class Object:
       return ConfigurationSpace.from_handle(h, retain = retain, auto_release = auto_release)
     elif v == ccs_object_type.CONFIGURATION:
       return Configuration.from_handle(h, retain = retain, auto_release = auto_release)
+    elif v == ccs_object_type.FEATURES_SPACE:
+      return FeaturesSpace.from_handle(h, retain = retain, auto_release = auto_release)
+    elif v == ccs_object_type.FEATURES:
+      return Features.from_handle(h, retain = retain, auto_release = auto_release)
     elif v == ccs_object_type.OBJECTIVE_SPACE:
       return ObjectiveSpace.from_handle(h, retain = retain, auto_release = auto_release)
     elif v == ccs_object_type.EVALUATION:
       return Evaluation.from_handle(h, retain = retain, auto_release = auto_release)
+    elif v == ccs_object_type.FEATURES_EVALUATION:
+      return FeaturesEvaluation.from_handle(h, retain = retain, auto_release = auto_release)
     elif v == ccs_object_type.TUNER:
       return Tuner.from_handle(h, retain = retain, auto_release = auto_release)
+    elif v == ccs_object_type.FEATURES_TUNER:
+      return FeaturesTuner.from_handle(h, retain = retain, auto_release = auto_release)
     else:
       raise Error(ccs_error(ccs_error.INVALID_OBJECT))
 
@@ -412,5 +430,9 @@ from .expression import Expression
 from .configuration_space import ConfigurationSpace
 from .configuration import Configuration
 from .objective_space import ObjectiveSpace
+from .features_space import FeaturesSpace
+from .features import Features
 from .evaluation import Evaluation
+from .features_evaluation import FeaturesEvaluation
 from .tuner import Tuner
+from .features_tuner import FeaturesTuner

@@ -23,7 +23,7 @@ class Configuration(Binding):
       else:
         vals = None
       handle = ccs_configuration()
-      res = ccs_create_configuration(configuration_space.handle, count, vals, ct.byref(handle))
+      res = ccs_create_configuration(configuration_space.handle, count, vals, user_data, ct.byref(handle))
       Error.check(res)
       super().__init__(handle = handle, retain = False)
     else:

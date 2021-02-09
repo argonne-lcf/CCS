@@ -22,7 +22,7 @@ class CConfigSpaceTestFeaturesTuner < Minitest::Test
     os.add_objectives( [e1, e2] )
 
     fs = CCS::FeaturesSpace::new(name: "fspace")
-    f1 = CCS::CategoricalHyperparameter::new(values: ["on", "off"])
+    f1 = CCS::CategoricalHyperparameter::new(values: [true, false])
     fs.add_hyperparameter f1
     [cs, fs, os]
   end
@@ -37,8 +37,8 @@ class CConfigSpaceTestFeaturesTuner < Minitest::Test
     func = lambda { |(x, y, z)|
       [(x-2)**2, Math.sin(z+y)]
     }
-    features_on = CCS::Features.new(features_space: fs, values: ["on"])
-    features_off = CCS::Features.new(features_space: fs, values: ["off"])
+    features_on = CCS::Features.new(features_space: fs, values: [true])
+    features_off = CCS::Features.new(features_space: fs, values: [false])
     evals = t.ask(features_on, 50).collect { |c|
       CCS::FeaturesEvaluation::new(objective_space: os, configuration: c, features: features_on, values: func[c.values])
     }
@@ -119,8 +119,8 @@ class CConfigSpaceTestFeaturesTuner < Minitest::Test
     func = lambda { |(x, y, z)|
       [(x-2)**2, Math.sin(z+y)]
     }
-    features_on = CCS::Features.new(features_space: fs, values: ["on"])
-    features_off = CCS::Features.new(features_space: fs, values: ["off"])
+    features_on = CCS::Features.new(features_space: fs, values: [true])
+    features_off = CCS::Features.new(features_space: fs, values: [false])
     evals = t.ask(features_on, 50).collect { |c|
       CCS::FeaturesEvaluation::new(objective_space: os, configuration: c, features: features_on, values: func[c.values])
     }
