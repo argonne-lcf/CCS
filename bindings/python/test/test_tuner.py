@@ -1,5 +1,6 @@
 import unittest
 import sys
+from random import choice
 sys.path.insert(1, '.')
 sys.path.insert(1, '..')
 import cconfigspace as ccs
@@ -41,6 +42,7 @@ class TestTuner(unittest.TestCase):
     objs.sort(key = lambda x: x[0])
     # assert pareto front
     self.assertTrue(all(objs[i][1] >= objs[i+1][1] for i in range(len(objs)-1)))
+    self.assertTrue(t.suggest in [x.configuration for x in optims])
 
   def test_user_defined(self):
     history = []
@@ -84,8 +86,14 @@ class TestTuner(unittest.TestCase):
     def get_optimums(tuner):
       return optimums
 
+    def suggest(tuner):
+      if not optimums:
+        return ask(tuner, 1)
+      else:
+        return choice(optimums).configuration
+
     (cs, os) = self.create_tuning_problem()
-    t = ccs.UserDefinedTuner(name = "tuner", configuration_space = cs, objective_space = os, delete = delete, ask = ask, tell = tell, get_optimums = get_optimums, get_history = get_history)
+    t = ccs.UserDefinedTuner(name = "tuner", configuration_space = cs, objective_space = os, delete = delete, ask = ask, tell = tell, get_optimums = get_optimums, get_history = get_history, suggest = suggest)
     t2 = ccs.Object.from_handle(t.handle)
     self.assertEqual("tuner", t.name)
     self.assertEqual(ccs.TUNER_USER_DEFINED, t.type)
@@ -105,6 +113,7 @@ class TestTuner(unittest.TestCase):
     objs.sort(key = lambda x: x[0])
     # assert pareto front
     self.assertTrue(all(objs[i][1] >= objs[i+1][1] for i in range(len(objs)-1)))
+    self.assertTrue(t.suggest in [x.configuration for x in optims])
 
 
 if __name__ == '__main__':

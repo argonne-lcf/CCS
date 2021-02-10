@@ -263,7 +263,6 @@ def _wrap_user_defined_callbacks(delete, ask, tell, get_optimums, get_history, s
   if suggest is not None:
     def suggest_wrapper(tun, p_configuration):
       try:
-        p_conf = ct.cast(p_configuration, ct.c_void_p)
         configuration = suggest(Tuner.from_handle(tun))
         res = ccs_retain_object(configuration.handle)
         Error.check(res)

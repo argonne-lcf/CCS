@@ -151,13 +151,45 @@ _ccs_tuner_random_get_history(_ccs_tuner_data_t *data,
 	return CCS_SUCCESS;
 }
 
+static ccs_result_t
+_ccs_tuner_random_suggest(_ccs_tuner_data_t   *data,
+                          ccs_configuration_t *configuration) {
+	ccs_result_t err;
+	_ccs_random_tuner_data_t *d = (_ccs_random_tuner_data_t *)data;
+	size_t count = utarray_len(d->optimums);
+	if (count > 0) {
+		ccs_rng_t rng;
+		unsigned long int indx;
+		err = ccs_configuration_space_get_rng(d->common_data.configuration_space, &rng);
+		if (err)
+			return err;
+		err = ccs_rng_get(rng, &indx);
+		if (err)
+			return err;
+		indx = indx % count;
+		ccs_evaluation_t *eval =
+			(ccs_evaluation_t *)utarray_eltptr(d->optimums, indx);
+		err = ccs_evaluation_get_configuration(*eval, configuration);
+		if (err)
+			return err;
+		err = ccs_retain_object(*configuration);
+		if (err)
+			return err;
+	} else {
+		err = _ccs_tuner_random_ask(data, 1, configuration, NULL);
+		if (err)
+			return err;
+	}
+	return CCS_SUCCESS;
+}
+
 static _ccs_tuner_ops_t _ccs_tuner_random_ops = {
 	{ &_ccs_tuner_random_del },
 	&_ccs_tuner_random_ask,
 	&_ccs_tuner_random_tell,
 	&_ccs_tuner_random_get_optimums,
 	&_ccs_tuner_random_get_history,
-	NULL
+	&_ccs_tuner_random_suggest
 };
 
 static const UT_icd _evaluation_icd = {

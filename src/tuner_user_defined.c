@@ -65,6 +65,8 @@ _ccs_tuner_user_defined_suggest(_ccs_tuner_data_t   *data,
                                 ccs_configuration_t *configuration_ret) {
 	_ccs_user_defined_tuner_data_t *d =
 		(_ccs_user_defined_tuner_data_t *)data;
+	if (!d->vector.suggest)
+		return -CCS_UNSUPPORTED_OPERATION;
 	return d->vector.suggest(d->selfref, configuration_ret);
 }
 
