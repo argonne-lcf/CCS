@@ -148,7 +148,7 @@ class FeaturesTuner(Object):
     Error.check(res)
     return [FeaturesEvaluation.from_handle(ccs_features_evaluation(x)) for x in v]
 
-  def suggest(self, feature):
+  def suggest(self, features):
     config = ccs_configuration()
     res = ccs_features_tuner_suggest(self.handle, features.handle, ct.byref(config))
     Error.check(res)
@@ -271,7 +271,6 @@ def _wrap_user_defined_callbacks(delete, ask, tell, get_optimums, get_history, s
   if suggest is not None:
     def suggest_wrapper(tun, features, p_configuration):
       try:
-        p_conf = ct.cast(p_configuration, ct.c_void_p)
         configuration = suggest(FeaturesTuner.from_handle(tun), Features.from_handle(features))
         res = ccs_retain_object(configuration.handle)
         Error.check(res)

@@ -232,13 +232,71 @@ _ccs_features_tuner_random_get_history(
 	return CCS_SUCCESS;
 }
 
+static ccs_result_t
+_ccs_features_tuner_random_suggest(_ccs_features_tuner_data_t *data,
+                                   ccs_features_t              features,
+                                   ccs_configuration_t        *configuration) {
+	ccs_result_t err;
+	_ccs_random_features_tuner_data_t *d = (_ccs_random_features_tuner_data_t *)data;
+	size_t count = 0;
+	ccs_features_evaluation_t *eval = NULL;
+	ccs_features_t feat;
+	int cmp;
+	while ( (eval = (ccs_features_evaluation_t *)utarray_next(d->optimums, eval)) ) {
+		err = ccs_features_evaluation_get_features(*eval, &feat);
+		if (unlikely(err != CCS_SUCCESS))
+			return err;
+		err = ccs_features_cmp(features, feat, &cmp);
+		if (unlikely(err != CCS_SUCCESS))
+			return err;
+		if (cmp == 0)
+			count += 1;
+	}
+	if (count > 0) {
+		ccs_rng_t rng;
+		unsigned long int indx;
+		err = ccs_configuration_space_get_rng(d->common_data.configuration_space, &rng);
+		if (err)
+			return err;
+		err = ccs_rng_get(rng, &indx);
+		if (err)
+			return err;
+		indx = indx % count;
+		while ( (eval = (ccs_features_evaluation_t *)utarray_next(d->optimums, eval)) ) {
+			err = ccs_features_evaluation_get_features(*eval, &feat);
+			if (unlikely(err != CCS_SUCCESS))
+				return err;
+			err = ccs_features_cmp(features, feat, &cmp);
+			if (unlikely(err != CCS_SUCCESS))
+				return err;
+			if (cmp == 0) {
+				if (indx == 0)
+					break;
+				else
+					indx--;
+			}
+		}
+		err = ccs_features_evaluation_get_configuration(*eval, configuration);
+		if (err)
+			return err;
+		err = ccs_retain_object(*configuration);
+		if (err)
+			return err;
+	} else {
+		err = _ccs_features_tuner_random_ask(data, features, 1, configuration, NULL);
+		if (err)
+			return err;
+	}
+	return CCS_SUCCESS;
+}
+
 static _ccs_features_tuner_ops_t _ccs_features_tuner_random_ops = {
 	{ &_ccs_features_tuner_random_del },
 	&_ccs_features_tuner_random_ask,
 	&_ccs_features_tuner_random_tell,
 	&_ccs_features_tuner_random_get_optimums,
 	&_ccs_features_tuner_random_get_history,
-	NULL
+	&_ccs_features_tuner_random_suggest
 };
 
 static const UT_icd _evaluation_icd = {

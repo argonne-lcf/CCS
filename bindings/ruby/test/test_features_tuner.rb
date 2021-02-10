@@ -59,6 +59,7 @@ class CConfigSpaceTestFeaturesTuner < Minitest::Test
     [features_on, features_off].each { |features|
       objs = t.optimums(features: features).collect(&:objective_values).sort
       objs.collect { |(_, v)| v }.each_cons(2) { |v1, v2| assert( (v1 <=> v2) > 0 ) }
+      assert( t.optimums(features: features).collect(&:configuration).include?(t.suggest(features)))
     }
   end
 
@@ -110,8 +111,16 @@ class CConfigSpaceTestFeaturesTuner < Minitest::Test
         optimums
       end
     }
+    suggest = lambda { |tuner, features|
+      optis = optimums.select { |e| e.features == features }
+      if optis.empty?
+        ask.call(tuner, features, 1)
+      else
+        optis.sample.configuration
+      end
+    }
     cs, fs, os = create_tuning_problem
-    t = CCS::UserDefinedFeaturesTuner::new(name: "tuner", configuration_space: cs, features_space: fs, objective_space: os, del: del, ask: ask, tell: tell, get_optimums: get_optimums, get_history: get_history)
+    t = CCS::UserDefinedFeaturesTuner::new(name: "tuner", configuration_space: cs, features_space: fs, objective_space: os, del: del, ask: ask, tell: tell, get_optimums: get_optimums, get_history: get_history, suggest: suggest)
     t2 = CCS::Object::from_handle(t)
     assert_equal( t.class, t2.class)
     assert_equal( "tuner", t.name )
@@ -141,6 +150,7 @@ class CConfigSpaceTestFeaturesTuner < Minitest::Test
     [features_on, features_off].each { |features|
       objs = t.optimums(features: features).collect(&:objective_values).sort
       objs.collect { |(_, v)| v }.each_cons(2) { |v1, v2| assert( (v1 <=> v2) > 0 ) }
+      assert( t.optimums(features: features).collect(&:configuration).include?(t.suggest(features)))
     }
   end
 end

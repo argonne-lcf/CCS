@@ -4,6 +4,7 @@ sys.path.insert(1, '.')
 sys.path.insert(1, '..')
 import cconfigspace as ccs
 from math import sin
+from random import choice
 
 class TestFeaturesTuner(unittest.TestCase):
   def create_tuning_problem(self):
@@ -49,11 +50,13 @@ class TestFeaturesTuner(unittest.TestCase):
     objs.sort(key = lambda x: x[0])
     # assert pareto front
     self.assertTrue(all(objs[i][1] >= objs[i+1][1] for i in range(len(objs)-1)))
+    self.assertTrue(t.suggest(features_on) in [x.configuration for x in optims])
     optims = t.optimums(features = features_off)
     objs = [x.objective_values for x in optims]
     objs.sort(key = lambda x: x[0])
     # assert pareto front
     self.assertTrue(all(objs[i][1] >= objs[i+1][1] for i in range(len(objs)-1)))
+    self.assertTrue(t.suggest(features_off) in [x.configuration for x in optims])
 
 
   def test_user_defined(self):
@@ -104,8 +107,15 @@ class TestFeaturesTuner(unittest.TestCase):
       else:
         return optimums
 
+    def suggest(tuner, features):
+      optis = list(filter(lambda e: e.features == features, optimums))
+      if not optis:
+        return ask(tuner, features, 1)
+      else:
+        return choice(optis).configuration
+
     (cs, fs, os) = self.create_tuning_problem()
-    t = ccs.UserDefinedFeaturesTuner(name = "tuner", configuration_space = cs, features_space = fs, objective_space = os, delete = delete, ask = ask, tell = tell, get_optimums = get_optimums, get_history = get_history)
+    t = ccs.UserDefinedFeaturesTuner(name = "tuner", configuration_space = cs, features_space = fs, objective_space = os, delete = delete, ask = ask, tell = tell, get_optimums = get_optimums, get_history = get_history, suggest = suggest)
     t2 = ccs.Object.from_handle(t.handle)
     self.assertEqual("tuner", t.name)
     self.assertEqual(ccs.FEATURES_TUNER_USER_DEFINED, t.type)
@@ -131,11 +141,13 @@ class TestFeaturesTuner(unittest.TestCase):
     objs.sort(key = lambda x: x[0])
     # assert pareto front
     self.assertTrue(all(objs[i][1] >= objs[i+1][1] for i in range(len(objs)-1)))
+    self.assertTrue(t.suggest(features_on) in [x.configuration for x in optims])
     optims = t.optimums(features = features_off)
     objs = [x.objective_values for x in optims]
     objs.sort(key = lambda x: x[0])
     # assert pareto front
     self.assertTrue(all(objs[i][1] >= objs[i+1][1] for i in range(len(objs)-1)))
+    self.assertTrue(t.suggest(features_off) in [x.configuration for x in optims])
 
 
 if __name__ == '__main__':
