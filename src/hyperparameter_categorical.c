@@ -206,12 +206,12 @@ _ccs_create_categorical_hyperparameter(ccs_hyperparameter_type_t  type,
 			return -CCS_INVALID_VALUE;
 		}
 		if (possible_values[i].type == CCS_STRING) {
-			pvs[i].d.type = CCS_STRING;
-			pvs[i].d.value.s = str_pool;
+			pvs[i].d = ccs_string(str_pool);
 			strcpy(str_pool, possible_values[i].value.s);
 			str_pool += strlen(possible_values[i].value.s) + 1;
 		} else {
 			pvs[i].d = possible_values[i];
+			pvs[i].d.flags = CCS_FLAG_DEFAULT;
 		}
 		HASH_ADD(hh, hyperparam_data->hash, d, sizeof(ccs_datum_t), pvs + i);
 	}

@@ -68,23 +68,24 @@ static inline ccs_hash_t _hash_combine(ccs_hash_t h1, ccs_hash_t h2) {
 
 static inline unsigned _hash_datum(ccs_datum_t *d) {
 	unsigned h;
+	unsigned h1, h2;
 	switch(d->type) {
 	case CCS_STRING:
-		if (d->value.s) {
-			unsigned h1, h2;
-			HASH_JEN(&(d->type), sizeof(d->type), h1);
+		HASH_JEN(&(d->type), sizeof(d->type), h1);
+		if (d->value.s)
 			HASH_JEN(d->value.s, strlen(d->value.s), h2);
-			h = _hash_combine(h1, h2);
-		}
 		else
-			HASH_JEN(d, sizeof(ccs_datum_t), h);
+			HASH_JEN(&(d->value), sizeof(d->value), h2);
+		h = _hash_combine(h1, h2);
 		break;
 	case CCS_NONE:
 	case CCS_INACTIVE:
 		HASH_JEN(&(d->type), sizeof(d->type), h);
 		break;
 	default:
-		HASH_JEN(d, sizeof(ccs_datum_t), h);
+		HASH_JEN(&(d->type), sizeof(d->type), h1);
+		HASH_JEN(&(d->value), sizeof(d->value), h2);
+		h = _hash_combine(h1, h2);
 	}
 	return h;
 }

@@ -130,7 +130,7 @@ module CCS
     end
   end
 
-  DataType = enum FFI::Type::INT64, :ccs_data_type_t, [
+  DataType = enum FFI::Type::INT32, :ccs_data_type_t, [
     :CCS_NONE,
     :CCS_INTEGER,
     :CCS_FLOAT,
@@ -138,6 +138,12 @@ module CCS
     :CCS_STRING,
     :CCS_INACTIVE,
     :CCS_OBJECT ]
+
+  DatumFlag = enum FFI::Type::INT32, :ccs_datum_flag_t, [
+    :CCS_FLAG_DEFAULT ]
+
+  DatumFlags = bitmask FFI::Type::INT32, :ccs_datum_flags_t, [
+    ]
 
   NumericType = enum FFI::Type::INT64, :ccs_numeric_type_t, [
     :CCS_NUM_INTEGER, DataType.to_native(:CCS_INTEGER, nil),
@@ -212,21 +218,26 @@ module CCS
 
   class Datum < FFI::Struct
     layout :value, :ccs_value_t,
-           :type, :ccs_data_type_t
+           :type, :ccs_data_type_t,
+           :flags, :ccs_datum_flags_t
   end
   class Datum
     NONE = self::new
     NONE[:type] = :CCS_NONE
     NONE[:value][:i] = 0
+    NONE[:flags] = 0
     TRUE = self::new
     TRUE[:type] = :CCS_BOOLEAN
     TRUE[:value][:i] = CCS::TRUE
+    TRUE[:flags] = 0
     FALSE = self::new
     FALSE[:type] = :CCS_BOOLEAN
     FALSE[:value][:i] = CCS::FALSE
+    FALSE[:flags] = 0
     INACTIVE = self::new
     INACTIVE[:type] = :CCS_INACTIVE
     INACTIVE[:value][:i] = 0
+    INACTIVE[:flags] = 0
     def value
       case self[:type]
       when :CCS_NONE
@@ -255,21 +266,27 @@ module CCS
       when nil
         self[:type] = :CCS_NONE
         self[:value][:i] = 0
+        self[:flags] = 0
       when true
         self[:type] = :CCS_BOOLEAN
         self[:value][:i] = 1
+        self[:flags] = 0
       when false
         self[:type] = :CCS_BOOLEAN
         self[:value][:i] = 0
+        self[:flags] = 0
       when Inactive
         self[:type] = :CCS_INACTIVE
         self[:value][:i] = 0
+        self[:flags] = 0
       when Float
         self[:type] = :CCS_FLOAT
         self[:value][:f] = v
+        self[:flags] = 0
       when Integer
         self[:type] = :CCS_INTEGER
         self[:value][:i] = v
+        self[:flags] = 0
       when String
         ptr = MemoryPointer::from_string(v)
         if string_store
@@ -279,6 +296,7 @@ module CCS
         end
         self[:type] = :CCS_STRING
         self[:value][:s] = ptr
+        self[:flags] = 0
       when Object
         if object_store
           object_store.push v
@@ -287,6 +305,7 @@ module CCS
         end
         self[:type] = :CCS_OBJECT
         self[:value][:o] = v.handle
+        self[:flags] = 0
       else
         raise CCSError, :CCS_INVALID_TYPE
       end
@@ -307,11 +326,13 @@ module CCS
         d = self::new
         d[:type] = :CCS_FLOAT
         d[:value][:f] = v
+        d[:flags] = 0
         d
       when Integer
         d = self::new
         d[:type] = :CCS_INTEGER
         d[:value][:i] = v
+        d[:flags] = 0
         d
       when String
         d = self::new
@@ -319,11 +340,13 @@ module CCS
         d.instance_variable_set(:@string, ptr)
         d[:type] = :CCS_STRING
         d[:value][:s] = ptr
+        d[:flags] = 0
         d
       when Object
         d = self::new
         d[:type] = :CCS_OBJECT
         d[:value][:o] = v.handle
+        d[:flags] = 0
         d.instance_variable_set(:@object, v)
         d
       else

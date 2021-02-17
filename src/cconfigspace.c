@@ -4,6 +4,8 @@
 
 const ccs_datum_t ccs_none = CCS_NONE_VAL;
 const ccs_datum_t ccs_inactive = CCS_INACTIVE_VAL;
+const ccs_datum_t ccs_true = CCS_TRUE_VAL;
+const ccs_datum_t ccs_false = CCS_FALSE_VAL;
 const ccs_version_t ccs_version = { 0, 1, 0, 0 };
 
 ccs_result_t

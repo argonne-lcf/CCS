@@ -147,7 +147,6 @@ ccs_create_discrete_hyperparameter(const char           *name,
 	if (!num_possible_values ||
 	     num_possible_values <= default_value_index)
 		return -CCS_INVALID_VALUE;
-	size_t size_strs = 0;
 	for(size_t i = 0; i < num_possible_values; i++)
 		if (possible_values[i].type != CCS_FLOAT &&
 		    possible_values[i].type != CCS_INTEGER)
@@ -180,8 +179,7 @@ ccs_create_discrete_hyperparameter(const char           *name,
 	    sizeof(struct _ccs_hyperparameter_s) +
 	    sizeof(_ccs_hyperparameter_discrete_data_t) +
 	    sizeof(_ccs_hash_datum_t) * num_possible_values +
-	    strlen(name) + 1 +
-	    size_strs);
+	    strlen(name) + 1);
 	if (!mem)
 		return -CCS_OUT_OF_MEMORY;
 
@@ -212,7 +210,6 @@ ccs_create_discrete_hyperparameter(const char           *name,
 	hyperparam_data->possible_values = pvs;
 	hyperparam_data->hash = NULL;
 
-	char *str_pool = (char *)(hyperparam_data->common_data.name) + strlen(name) + 1;
 	for (size_t i = 0; i < num_possible_values; i++) {
 		_ccs_hash_datum_t *p = NULL;
 		HASH_FIND(hh, hyperparam_data->hash, possible_values + i, sizeof(ccs_datum_t), p);
@@ -224,14 +221,8 @@ ccs_create_discrete_hyperparameter(const char           *name,
 			free((void *)mem);
 			return -CCS_INVALID_VALUE;
 		}
-		if (possible_values[i].type == CCS_STRING) {
-			pvs[i].d.type = CCS_STRING;
-			pvs[i].d.value.s = str_pool;
-			strcpy(str_pool, possible_values[i].value.s);
-			str_pool += strlen(possible_values[i].value.s) + 1;
-		} else {
-			pvs[i].d = possible_values[i];
-		}
+		pvs[i].d = possible_values[i];
+		pvs[i].d.flags = CCS_FLAG_DEFAULT;
 		HASH_ADD(hh, hyperparam_data->hash, d, sizeof(ccs_datum_t), pvs + i);
 	}
 	hyperparam_data->common_data.default_value = pvs[default_value_index].d;

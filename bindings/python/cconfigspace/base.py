@@ -218,7 +218,7 @@ class ccs_error(CEnumeration):
     'OUT_OF_MEMORY',
     'UNSUPPORTED_OPERATION' ]
 
-class ccs_data_type(CEnumeration64):
+class ccs_data_type(CEnumeration):
   _members_ = [
     ('NONE', 0),
     'INTEGER',
@@ -227,7 +227,13 @@ class ccs_data_type(CEnumeration64):
     'STRING',
     'INACTIVE',
     'OBJECT' ]
+
+class ccs_datum_flag(CEnumeration):
+  _members_ = [
+    ('FLAG_DEFAULT', 0) ]
  
+ccs_datum_flags = ct.c_uint
+
 class ccs_numeric_type(CEnumeration64):
   _members_ = [
     ('NUM_INTEGER', ccs_data_type.INTEGER),
@@ -265,11 +271,13 @@ class ccs_value(ct.Union):
 
 class ccs_datum_fix(ct.Structure):
   _fields_ = [('value', ccs_int),
-              ('type', ccs_data_type)]
+              ('type', ccs_data_type),
+              ('flags', ccs_datum_flags)]
 
 class ccs_datum(ct.Structure):
   _fields_ = [('_value', ccs_value),
-              ('_type', ccs_data_type)]
+              ('_type', ccs_data_type),
+              ('flags', ccs_datum_flags)]
 
   def __init__(self, v = None):
     super().__init__()
@@ -307,26 +315,33 @@ class ccs_datum(ct.Structure):
     if v is None:
       self.type = ccs_data_type.NONE
       self._value.i = 0
+      self.flags = 0
     elif isinstance(v, bool):
       self.type = ccs_data_type.BOOLEAN
       self._value.i = 1 if v else 0
+      self.flags = 0
     elif isinstance(v, int):
       self.type = ccs_data_type.INTEGER
       self._value.i = v
+      self.flags = 0
     elif isinstance(v, float):
       self.type = ccs_data_type.FLOAT
       self._value.f = v
+      self.flags = 0
     elif isinstance(v, str):
       self.type = ccs_data_type.STRING
       self._string = str.encode(v)
       self._value.s = ct.c_char_p(self._string)
+      self.flags = 0
     elif v is ccs_inactive:
       self.type = ccs_data_type.INACTIVE
       self._value.i = 0
+      self.flags = 0
     elif isinstance(v, Object):
       self.type = ccs_data_type.OBJECT
       self._object = v
       self._value.o = v.handle
+      self.flags = 0
     else:
       raise Error(ccs_error(ccs_error.INVALID_VALUE))
 

@@ -106,8 +106,10 @@ _ccs_hyperparameter_numerical_samples(_ccs_hyperparameter_data_t *data,
 				return -CCS_SAMPLING_UNSUCCESSFUL;
 		}
 	}
-	for (size_t i = 0; i < num_values; i++)
+	for (size_t i = 0; i < num_values; i++) {
 		values[i].type = (ccs_data_type_t)type;
+		values[i].flags = CCS_FLAG_DEFAULT;
+	}
 	return CCS_SUCCESS;
 }
 
