@@ -21,6 +21,7 @@ libcconfigspace_la_SOURCES = \
 			hyperparameter_internal.h \
 			hyperparameter_numerical.c \
 			uthash.h \
+			datum_uthash.h \
 			datum_hash.h \
 			hyperparameter_categorical.c \
 			hyperparameter_discrete.c \
@@ -29,6 +30,8 @@ libcconfigspace_la_SOURCES = \
 			context_internal.h \
 			configuration_space.c \
 			configuration_space_internal.h \
+			binding.c \
+			binding_internal.h \
 			configuration.c \
 			configuration_internal.h \
 			expression.c \

@@ -95,6 +95,12 @@ ccs_configuration_space_get_hyperparameters(ccs_configuration_space_t  configura
                                             size_t                    *num_hyperparameters_ret);
 
 extern ccs_result_t
+ccs_configuration_space_validate_value(ccs_configuration_space_t  configuration_space,
+                                       size_t                     index,
+                                       ccs_datum_t                value,
+                                       ccs_datum_t               *value_ret);
+
+extern ccs_result_t
 ccs_configuration_space_set_condition(ccs_configuration_space_t configuration_space,
                                       size_t                    hyperparameter_index,
                                       ccs_expression_t          expression);

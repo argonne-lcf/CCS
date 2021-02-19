@@ -354,6 +354,58 @@ void test_compare_string() {
 	assert( err == CCS_SUCCESS );
 }
 
+void test_validate() {
+	ccs_hyperparameter_t hyperparameter;
+	ccs_result_t         err;
+	const size_t         num_possible_values = 4;
+	ccs_datum_t          possible_values[num_possible_values];
+	ccs_datum_t          validated_values[num_possible_values];
+	ccs_bool_t           res[num_possible_values], valid;
+	const size_t         default_value_index = 2;
+	ccs_datum_t          invalid, diff_ptr, tmp;
+
+	invalid.value.s = "faraway";
+	invalid.type = CCS_STRING;
+	possible_values[0].value.s = "foo";
+	possible_values[0].type = CCS_STRING;
+	possible_values[1].value.s = "bar";
+	possible_values[1].type = CCS_STRING;
+	possible_values[2].value.i = 5;
+	possible_values[2].type = CCS_INTEGER;
+	possible_values[3].value.s = "baz";
+	possible_values[3].type = CCS_STRING;
+	diff_ptr = ccs_string(strdup(possible_values[0].value.s));
+
+
+	err = ccs_create_ordinal_hyperparameter("my_param", num_possible_values,
+	                                        possible_values, default_value_index,
+	                                        NULL, &hyperparameter);
+	assert( err == CCS_SUCCESS );
+
+	err = ccs_hyperparameter_validate_values(hyperparameter, num_possible_values,
+	                                         possible_values, validated_values, res);
+	assert( err == CCS_SUCCESS );
+	for (size_t i = 0; i < num_possible_values; i++) {
+		assert( res[i] );
+		assert( ccs_datum_cmp(possible_values[i], validated_values[i]) == 0 );
+	}
+
+	err = ccs_hyperparameter_validate_value(hyperparameter, invalid, &tmp, &valid);
+	assert( err == CCS_SUCCESS );
+	assert( !valid );
+	assert( ccs_datum_cmp(tmp, ccs_inactive) == 0 );
+
+	err = ccs_hyperparameter_validate_value(hyperparameter, diff_ptr, &tmp, &valid);
+	assert( err == CCS_SUCCESS );
+	assert( valid );
+	assert( ccs_datum_cmp(tmp, diff_ptr) == 0 );
+	assert( tmp.value.s != diff_ptr.value.s );
+
+	free((void *)diff_ptr.value.s);
+	err = ccs_release_object(hyperparameter);
+	assert( err == CCS_SUCCESS );
+}
+
 int main(int argc, char *argv[]) {
 	ccs_init();
 	test_create();
@@ -363,5 +415,6 @@ int main(int argc, char *argv[]) {
 	test_compare();
 	test_compare_float();
 	test_compare_string();
+	test_validate();
 	return 0;
 }

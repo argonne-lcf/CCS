@@ -1,5 +1,6 @@
 #include "cconfigspace_internal.h"
 #include "objective_space_internal.h"
+#include "evaluation_internal.h"
 
 static inline _ccs_objective_space_ops_t *
 ccs_objective_space_get_ops(ccs_objective_space_t objective_space) {
@@ -229,6 +230,18 @@ ccs_objective_space_get_hyperparameter_index(
 }
 
 ccs_result_t
+ccs_objective_space_get_hyperparameter_indexes(
+		ccs_objective_space_t  objective_space,
+		size_t                 num_hyperparameters,
+		ccs_hyperparameter_t  *hyperparameters,
+		size_t                *indexes) {
+	CCS_CHECK_OBJ(objective_space, CCS_OBJECTIVE_SPACE);
+	return _ccs_context_get_hyperparameter_indexes(
+		(ccs_context_t)objective_space, num_hyperparameters,
+		 hyperparameters, indexes);
+}
+
+ccs_result_t
 ccs_objective_space_get_hyperparameters(ccs_objective_space_t  objective_space,
                                         size_t                 num_hyperparameters,
                                         ccs_hyperparameter_t  *hyperparameters,
@@ -237,6 +250,59 @@ ccs_objective_space_get_hyperparameters(ccs_objective_space_t  objective_space,
 	return _ccs_context_get_hyperparameters(
 		(ccs_context_t)objective_space, num_hyperparameters,
 		hyperparameters, num_hyperparameters_ret);
+}
+
+static inline ccs_result_t
+_check_evaluation(ccs_objective_space_t  objective_space,
+                  size_t                 num_values,
+                  ccs_datum_t           *values) {
+	ccs_result_t err;
+	UT_array *array = objective_space->data->hyperparameters;
+	if (num_values != utarray_len(array))
+		return -CCS_INVALID_EVALUATION;
+	for (size_t i = 0; i < num_values; i++) {
+		ccs_bool_t res;
+		_ccs_hyperparameter_wrapper_t *wrapper =
+			(_ccs_hyperparameter_wrapper_t *)utarray_eltptr(array, i);
+		err = ccs_hyperparameter_check_value(wrapper->hyperparameter,
+	                                             values[i], &res);
+		if (unlikely(err))
+			return err;
+		if (res == CCS_FALSE)
+			return -CCS_INVALID_EVALUATION;
+	}
+	return CCS_SUCCESS;
+}
+
+ccs_result_t
+ccs_objective_space_check_evaluation(ccs_objective_space_t objective_space,
+                                     ccs_evaluation_t      evaluation) {
+	CCS_CHECK_OBJ(objective_space, CCS_OBJECTIVE_SPACE);
+	CCS_CHECK_OBJ(evaluation, CCS_EVALUATION);
+	if (evaluation->data->objective_space != objective_space)
+		return -CCS_INVALID_EVALUATION;
+	return _check_evaluation(objective_space,
+	                         evaluation->data->num_values,
+	                         evaluation->data->values);
+}
+
+ccs_result_t
+ccs_objective_space_check_evaluation_values(ccs_objective_space_t  objective_space,
+                                            size_t                 num_values,
+                                            ccs_datum_t           *values) {
+	CCS_CHECK_OBJ(objective_space, CCS_OBJECTIVE_SPACE);
+	CCS_CHECK_ARY(num_values, values);
+	return _check_evaluation(objective_space, num_values, values);
+}
+
+ccs_result_t
+ccs_objective_space_validate_value(ccs_objective_space_t  objective_space,
+                                   size_t                 index,
+                                   ccs_datum_t            value,
+                                   ccs_datum_t           *value_ret) {
+	CCS_CHECK_OBJ(objective_space, CCS_OBJECTIVE_SPACE);
+	return _ccs_context_validate_value((ccs_context_t)objective_space,
+	                                   index, value, value_ret);
 }
 
 #undef  utarray_oom

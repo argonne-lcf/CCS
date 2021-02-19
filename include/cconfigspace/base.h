@@ -2,6 +2,7 @@
 #define _CCS_BASE_H
 #include <limits.h>
 #include <math.h>
+#include <string.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -37,6 +38,7 @@ typedef struct _ccs_hyperparameter_s      *ccs_hyperparameter_t;
 typedef struct _ccs_expression_s          *ccs_expression_t;
 typedef struct _ccs_context_s             *ccs_context_t;
 typedef struct _ccs_configuration_space_s *ccs_configuration_space_t;
+typedef struct _ccs_binding_s             *ccs_binding_t;
 typedef struct _ccs_configuration_s       *ccs_configuration_t;
 typedef struct _ccs_objective_space_s     *ccs_objective_space_t;
 typedef struct _ccs_evaluation_s          *ccs_evaluation_t;
@@ -63,6 +65,7 @@ enum ccs_error_e {
 	CCS_INACTIVE_HYPERPARAMETER,
 	CCS_OUT_OF_MEMORY,
 	CCS_UNSUPPORTED_OPERATION,
+	CCS_INVALID_EVALUATION,
 	CCS_ERROR_MAX,
 	CCS_ERROR_FORCE_32BIT = INT32_MAX
 };
@@ -104,6 +107,8 @@ typedef uint32_t ccs_datum_flags_t;
 
 enum ccs_datum_flag_e {
 	CCS_FLAG_DEFAULT = 0,
+	CCS_FLAG_TRANSIENT = (1 << 0),
+	CCS_FLAG_UNPOOLED = (1 << 1),
 	CCS_DATUM_FLAG_FORCE_32BIT = INT32_MAX
 };
 
@@ -211,6 +216,32 @@ ccs_string(const char *v) {
 	d.value.s = v;
 	d.flags = CCS_FLAG_DEFAULT;
 	return d;
+}
+
+static inline int ccs_datum_cmp(ccs_datum_t a, ccs_datum_t b) {
+	if (a.type < b.type) {
+		return -1;
+	} else if (a.type > b.type) {
+		return 1;
+	} else {
+		switch(a.type) {
+		case CCS_STRING:
+			if (a.value.s == b.value.s)
+				return 0;
+			else if (!a.value.s)
+				return -1;
+			else if (!b.value.s)
+				return 1;
+			else
+				return strcmp(a.value.s, b.value.s);
+		case CCS_NONE:
+		case CCS_INACTIVE:
+			return 0;
+			break;
+		default:
+			return memcmp(&(a.value), &(b.value), sizeof(ccs_value_t));
+		}
+	}
 }
 
 extern const ccs_datum_t ccs_none;

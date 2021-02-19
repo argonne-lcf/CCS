@@ -513,6 +513,16 @@ ccs_configuration_space_get_hyperparameters(
 		hyperparameters, num_hyperparameters_ret);
 }
 
+ccs_result_t
+ccs_configuration_space_validate_value(ccs_configuration_space_t  configuration_space,
+                                       size_t                     index,
+                                       ccs_datum_t                value,
+                                       ccs_datum_t               *value_ret) {
+	CCS_CHECK_OBJ(configuration_space, CCS_CONFIGURATION_SPACE);
+	return _ccs_context_validate_value((ccs_context_t)configuration_space,
+	                                   index, value, value_ret);
+}
+
 static ccs_result_t
 _set_actives(ccs_configuration_space_t configuration_space,
              ccs_configuration_t       configuration) {

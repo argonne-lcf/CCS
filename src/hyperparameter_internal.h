@@ -11,6 +11,7 @@ struct _ccs_hyperparameter_ops_s {
 		_ccs_hyperparameter_data_t *data,
 		size_t                      num_values,
 		const ccs_datum_t          *values,
+		ccs_datum_t                *values_ret,
 		ccs_bool_t                 *results);
 
         ccs_result_t (*samples)(

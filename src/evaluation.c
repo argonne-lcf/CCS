@@ -59,8 +59,20 @@ ccs_create_evaluation(ccs_objective_space_t  objective_space,
 	eval->data->configuration = configuration;
 	eval->data->error = error;
 	eval->data->values = (ccs_datum_t *)(mem + sizeof(struct _ccs_evaluation_s) + sizeof(struct _ccs_evaluation_data_s));
-	if (values)
+	if (values) {
 		memcpy(eval->data->values, values, num*sizeof(ccs_datum_t));
+		for (size_t i = 0; i < num_values; i++) {
+			if (values[i].flags & CCS_FLAG_TRANSIENT) {
+				err = ccs_objective_space_validate_value(
+					objective_space, i, values[i],
+					eval->data->values + i);
+				if (unlikely(err)) {
+					free((void*)mem);
+					return err;
+				}
+			}
+		}
+	}
 	*evaluation_ret = eval;
 	return CCS_SUCCESS;
 }
@@ -69,9 +81,8 @@ ccs_result_t
 ccs_evaluation_get_objective_space(ccs_evaluation_t       evaluation,
                                    ccs_objective_space_t *objective_space_ret) {
 	CCS_CHECK_OBJ(evaluation, CCS_EVALUATION);
-	CCS_CHECK_PTR(objective_space_ret);
-	*objective_space_ret = evaluation->data->objective_space;
-	return CCS_SUCCESS;
+	return _ccs_binding_get_context(
+		(ccs_binding_t)evaluation, (ccs_context_t *)objective_space_ret);
 }
 
 ccs_result_t
@@ -87,9 +98,8 @@ ccs_result_t
 ccs_evaluation_get_user_data(ccs_evaluation_t   evaluation,
                              void             **user_data_ret) {
 	CCS_CHECK_OBJ(evaluation, CCS_EVALUATION);
-	CCS_CHECK_PTR(user_data_ret);
-	*user_data_ret = evaluation->data->user_data;
-	return CCS_SUCCESS;
+	return _ccs_binding_get_user_data(
+		(ccs_binding_t)evaluation, user_data_ret);
 }
 
 ccs_result_t
@@ -114,11 +124,8 @@ ccs_evaluation_get_value(ccs_evaluation_t  evaluation,
                          size_t            index,
                          ccs_datum_t      *value_ret) {
 	CCS_CHECK_OBJ(evaluation, CCS_EVALUATION);
-	CCS_CHECK_PTR(value_ret);
-	if (index >= evaluation->data->num_values)
-		return -CCS_OUT_OF_BOUNDS;
-	*value_ret = evaluation->data->values[index];
-	return CCS_SUCCESS;
+	return _ccs_binding_get_value(
+		(ccs_binding_t)evaluation, index, value_ret);
 }
 
 ccs_result_t
@@ -126,10 +133,8 @@ ccs_evaluation_set_value(ccs_evaluation_t evaluation,
                          size_t           index,
                          ccs_datum_t      value) {
 	CCS_CHECK_OBJ(evaluation, CCS_EVALUATION);
-	if (index >= evaluation->data->num_values)
-		return -CCS_OUT_OF_BOUNDS;
-	evaluation->data->values[index] = value;
-	return CCS_SUCCESS;
+	return _ccs_binding_set_value(
+		(ccs_binding_t)evaluation, index, value);
 }
 
 ccs_result_t
@@ -138,22 +143,8 @@ ccs_evaluation_get_values(ccs_evaluation_t  evaluation,
                           ccs_datum_t      *values,
                           size_t           *num_values_ret) {
 	CCS_CHECK_OBJ(evaluation, CCS_EVALUATION);
-	CCS_CHECK_ARY(num_values, values);
-	if (!num_values_ret && !values)
-		return -CCS_INVALID_VALUE;
-	size_t num = evaluation->data->num_values;
-	if (values) {
-		if (num_values < num)
-			return -CCS_INVALID_VALUE;
-		memcpy(values, evaluation->data->values, num*sizeof(ccs_datum_t));
-		for (size_t i = num; i < num_values; i++) {
-			values[i].type = CCS_NONE;
-			values[i].value.i = 0;
-		}
-	}
-	if (num_values_ret)
-		*num_values_ret = num;
-	return CCS_SUCCESS;
+	return _ccs_binding_get_values(
+		(ccs_binding_t)evaluation, num_values, values, num_values_ret);
 }
 
 ccs_result_t
@@ -161,15 +152,15 @@ ccs_evaluation_get_value_by_name(ccs_evaluation_t  evaluation,
                                  const char       *name,
                                  ccs_datum_t      *value_ret) {
 	CCS_CHECK_OBJ(evaluation, CCS_EVALUATION);
-	CCS_CHECK_PTR(name);
-	size_t index;
-	ccs_result_t err;
-	err = ccs_objective_space_get_hyperparameter_index_by_name(
-		evaluation->data->objective_space, name, &index);
-	if (err)
-		return err;
-	*value_ret = evaluation->data->values[index];
-	return CCS_SUCCESS;
+	return _ccs_binding_get_value_by_name(
+		(ccs_binding_t)evaluation, name, value_ret);
+}
+
+ccs_result_t
+ccs_evaluation_check(ccs_evaluation_t  evaluation) {
+	CCS_CHECK_OBJ(evaluation, CCS_EVALUATION);
+	return ccs_objective_space_check_evaluation(
+		evaluation->data->objective_space, evaluation);
 }
 
 ccs_result_t

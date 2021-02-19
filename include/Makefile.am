@@ -10,6 +10,7 @@ include_ccs_HEADERS = \
 			cconfigspace/configuration_space.h \
 			cconfigspace/hyperparameter.h \
 			cconfigspace/expression.h \
+			cconfigspace/binding.h \
 			cconfigspace/configuration.h \
 			cconfigspace/objective_space.h \
 			cconfigspace/evaluation.h \

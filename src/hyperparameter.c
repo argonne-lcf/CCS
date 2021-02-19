@@ -59,7 +59,7 @@ ccs_hyperparameter_check_value(ccs_hyperparameter_t  hyperparameter,
 	CCS_CHECK_OBJ(hyperparameter, CCS_HYPERPARAMETER);
 	CCS_CHECK_PTR(result_ret);
 	_ccs_hyperparameter_ops_t *ops = ccs_hyperparameter_get_ops(hyperparameter);
-	return ops->check_values(hyperparameter->data, 1, &value, result_ret);
+	return ops->check_values(hyperparameter->data, 1, &value, NULL, result_ret);
 }
 
 ccs_result_t
@@ -71,8 +71,35 @@ ccs_hyperparameter_check_values(ccs_hyperparameter_t  hyperparameter,
 	CCS_CHECK_ARY(num_values, values);
 	CCS_CHECK_ARY(num_values, results);
 	_ccs_hyperparameter_ops_t *ops = ccs_hyperparameter_get_ops(hyperparameter);
-	return ops->check_values(hyperparameter->data, num_values, values, results);
+	return ops->check_values(hyperparameter->data, num_values, values, NULL, results);
 }
+
+ccs_result_t
+ccs_hyperparameter_validate_value(ccs_hyperparameter_t  hyperparameter,
+                                  ccs_datum_t           value,
+                                  ccs_datum_t          *value_ret,
+                                  ccs_bool_t           *result_ret) {
+	CCS_CHECK_OBJ(hyperparameter, CCS_HYPERPARAMETER);
+	CCS_CHECK_PTR(value_ret);
+	CCS_CHECK_PTR(result_ret);
+	_ccs_hyperparameter_ops_t *ops = ccs_hyperparameter_get_ops(hyperparameter);
+	return ops->check_values(hyperparameter->data, 1, &value, value_ret, result_ret);
+}
+
+ccs_result_t
+ccs_hyperparameter_validate_values(ccs_hyperparameter_t  hyperparameter,
+                                   size_t                num_values,
+                                   const ccs_datum_t    *values,
+                                   ccs_datum_t          *values_ret,
+                                   ccs_bool_t           *results) {
+	CCS_CHECK_OBJ(hyperparameter, CCS_HYPERPARAMETER);
+	CCS_CHECK_ARY(num_values, values);
+	CCS_CHECK_ARY(num_values, values_ret);
+	CCS_CHECK_ARY(num_values, results);
+	_ccs_hyperparameter_ops_t *ops = ccs_hyperparameter_get_ops(hyperparameter);
+	return ops->check_values(hyperparameter->data, num_values, values, values_ret, results);
+}
+
 
 ccs_result_t
 ccs_hyperparameter_sample(ccs_hyperparameter_t  hyperparameter,

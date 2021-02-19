@@ -1,6 +1,5 @@
 #include "cconfigspace_internal.h"
 #include "configuration_internal.h"
-#include "datum_hash.h"
 #include <string.h>
 
 static inline _ccs_configuration_ops_t *
@@ -50,8 +49,20 @@ ccs_create_configuration(ccs_configuration_space_t configuration_space,
 	config->data->num_values = num;
 	config->data->configuration_space = configuration_space;
 	config->data->values = (ccs_datum_t *)(mem + sizeof(struct _ccs_configuration_s) + sizeof(struct _ccs_configuration_data_s));
-	if (values)
+	if (values) {
 		memcpy(config->data->values, values, num*sizeof(ccs_datum_t));
+		for (size_t i = 0; i < num_values; i++) {
+			if (values[i].flags & CCS_FLAG_TRANSIENT) {
+				err = ccs_configuration_space_validate_value(
+					configuration_space, i, values[i],
+					 config->data->values + i);
+				if (unlikely(err)) {
+					free((void*)mem);
+					return err;
+				}
+			}
+		}
+	}
 	*configuration_ret = config;
 	return CCS_SUCCESS;
 }
@@ -60,18 +71,16 @@ ccs_result_t
 ccs_configuration_get_configuration_space(ccs_configuration_t        configuration,
                                           ccs_configuration_space_t *configuration_space_ret) {
 	CCS_CHECK_OBJ(configuration, CCS_CONFIGURATION);
-	CCS_CHECK_PTR(configuration_space_ret);
-	*configuration_space_ret = configuration->data->configuration_space;
-	return CCS_SUCCESS;
+	return _ccs_binding_get_context(
+		(ccs_binding_t)configuration, (ccs_context_t *)configuration_space_ret);
 }
 
 ccs_result_t
 ccs_configuration_get_user_data(ccs_configuration_t   configuration,
                                 void                **user_data_ret) {
 	CCS_CHECK_OBJ(configuration, CCS_CONFIGURATION);
-	CCS_CHECK_PTR(user_data_ret);
-	*user_data_ret = configuration->data->user_data;
-	return CCS_SUCCESS;
+	return _ccs_binding_get_user_data(
+		(ccs_binding_t)configuration, user_data_ret);
 }
 
 ccs_result_t
@@ -79,11 +88,8 @@ ccs_configuration_get_value(ccs_configuration_t  configuration,
                             size_t               index,
                             ccs_datum_t         *value_ret) {
 	CCS_CHECK_OBJ(configuration, CCS_CONFIGURATION);
-	CCS_CHECK_PTR(value_ret);
-	if (index >= configuration->data->num_values)
-		return -CCS_OUT_OF_BOUNDS;
-	*value_ret = configuration->data->values[index];
-	return CCS_SUCCESS;
+	return _ccs_binding_get_value(
+		(ccs_binding_t)configuration, index, value_ret);
 }
 
 ccs_result_t
@@ -91,10 +97,8 @@ ccs_configuration_set_value(ccs_configuration_t configuration,
                             size_t              index,
                             ccs_datum_t         value) {
 	CCS_CHECK_OBJ(configuration, CCS_CONFIGURATION);
-	if (index >= configuration->data->num_values)
-		return -CCS_OUT_OF_BOUNDS;
-	configuration->data->values[index] = value;
-	return CCS_SUCCESS;
+	return _ccs_binding_set_value(
+		(ccs_binding_t)configuration, index, value);
 }
 
 ccs_result_t
@@ -103,22 +107,8 @@ ccs_configuration_get_values(ccs_configuration_t  configuration,
                              ccs_datum_t         *values,
                              size_t              *num_values_ret) {
 	CCS_CHECK_OBJ(configuration, CCS_CONFIGURATION);
-	CCS_CHECK_ARY(num_values, values);
-	if (!num_values_ret && !values)
-		return -CCS_INVALID_VALUE;
-	size_t num = configuration->data->num_values;
-	if (values) {
-		if (num_values < num)
-			return -CCS_INVALID_VALUE;
-		memcpy(values, configuration->data->values, num*sizeof(ccs_datum_t));
-		for (size_t i = num; i < num_values; i++) {
-			values[i].type = CCS_NONE;
-			values[i].value.i = 0;
-		}
-	}
-	if (num_values_ret)
-		*num_values_ret = num;
-	return CCS_SUCCESS;
+	return _ccs_binding_get_values(
+		(ccs_binding_t)configuration, num_values, values, num_values_ret);
 }
 
 ccs_result_t
@@ -126,15 +116,8 @@ ccs_configuration_get_value_by_name(ccs_configuration_t  configuration,
                                     const char          *name,
                                     ccs_datum_t         *value_ret) {
 	CCS_CHECK_OBJ(configuration, CCS_CONFIGURATION);
-	CCS_CHECK_PTR(name);
-	size_t index;
-	ccs_result_t err;
-	err = ccs_configuration_space_get_hyperparameter_index_by_name(
-		configuration->data->configuration_space, name, &index);
-	if (err)
-		return err;
-	*value_ret = configuration->data->values[index];
-	return CCS_SUCCESS;
+	return _ccs_binding_get_value_by_name(
+		(ccs_binding_t)configuration, name, value_ret);
 }
 
 ccs_result_t
@@ -148,18 +131,7 @@ ccs_result_t
 ccs_configuration_hash(ccs_configuration_t  configuration,
                        ccs_hash_t          *hash_ret) {
 	CCS_CHECK_OBJ(configuration, CCS_CONFIGURATION);
-	CCS_CHECK_PTR(hash_ret);
-	_ccs_configuration_data_t *data = configuration->data;
-	ccs_hash_t h, ht;
-	HASH_JEN(&(data->configuration_space), sizeof(data->configuration_space), h);
-	HASH_JEN(&(data->num_values), sizeof(data->num_values), ht);
-	h = _hash_combine(h, ht);
-	for (size_t i = 0; i < data->num_values; i++) {
-		ht = _hash_datum(data->values + i);
-		h = _hash_combine(h, ht);
-	}
-	*hash_ret = h;
-	return CCS_SUCCESS;
+	return _ccs_binding_hash((ccs_binding_t)configuration, hash_ret);
 }
 
 ccs_result_t
@@ -168,25 +140,7 @@ ccs_configuration_cmp(ccs_configuration_t  configuration,
                       int                 *cmp_ret) {
 	CCS_CHECK_OBJ(configuration, CCS_CONFIGURATION);
 	CCS_CHECK_OBJ(other_configuration, CCS_CONFIGURATION);
-	CCS_CHECK_PTR(cmp_ret);
-	if (configuration == other_configuration) {
-		*cmp_ret = 0;
-		return CCS_SUCCESS;
-	}
-	_ccs_configuration_data_t *data = configuration->data;
-	_ccs_configuration_data_t *other_data = other_configuration->data;
-	*cmp_ret = data->configuration_space < other_data->configuration_space ? -1 :
-	           data->configuration_space > other_data->configuration_space ?  1 : 0;
-	if (*cmp_ret)
-		return CCS_SUCCESS;
-	*cmp_ret = data->num_values < other_data->num_values ? -1 :
-	           data->num_values > other_data->num_values ?  1 : 0;
-	if (*cmp_ret)
-		return CCS_SUCCESS;
-	for (size_t i = 0; i < data->num_values; i++) {
-		if ( (*cmp_ret = _datum_cmp(data->values + i, other_data->values + i)) )
-			return CCS_SUCCESS;
-	}
-	return CCS_SUCCESS;
+	return _ccs_binding_cmp((ccs_binding_t)configuration,
+		 (ccs_binding_t)other_configuration, cmp_ret);
 }
 

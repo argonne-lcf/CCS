@@ -1,5 +1,6 @@
 #include "cconfigspace_internal.h"
 #include "hyperparameter_internal.h"
+#include "datum_uthash.h"
 #include "datum_hash.h"
 #include <string.h>
 
@@ -23,13 +24,23 @@ static ccs_result_t
 _ccs_hyperparameter_discrete_check_values(_ccs_hyperparameter_data_t *data,
                                           size_t                num_values,
                                           const ccs_datum_t    *values,
+                                          ccs_datum_t          *values_ret,
                                           ccs_bool_t           *results) {
 	_ccs_hyperparameter_discrete_data_t *d =
 	    (_ccs_hyperparameter_discrete_data_t *)data;
 	for (size_t i = 0; i < num_values; i++) {
 		_ccs_hash_datum_t *p;
+		ccs_bool_t         found;
 		HASH_FIND(hh, d->hash, values + i, sizeof(ccs_datum_t), p);
-		results[i] = p ? CCS_TRUE : CCS_FALSE;
+		found = (p ? CCS_TRUE : CCS_FALSE);
+		results[i] = found;
+		if (values_ret) {
+			if (found) {
+				values_ret[i] = p->d;
+			} else {
+				values_ret[i] = ccs_inactive;
+			}
+		}
 	}
 	return CCS_SUCCESS;
 }

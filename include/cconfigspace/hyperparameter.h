@@ -117,6 +117,19 @@ ccs_hyperparameter_check_values(ccs_hyperparameter_t  hyperparameter,
                                 ccs_bool_t           *results);
 
 extern ccs_result_t
+ccs_hyperparameter_validate_value(ccs_hyperparameter_t  hyperparameter,
+                                  ccs_datum_t           value,
+                                  ccs_datum_t          *value_ret,
+                                  ccs_bool_t           *result_ret);
+
+extern ccs_result_t
+ccs_hyperparameter_validate_values(ccs_hyperparameter_t  hyperparameter,
+                                   size_t                num_values,
+                                   const ccs_datum_t    *values,
+                                   ccs_datum_t          *values_ret,
+                                   ccs_bool_t           *results);
+
+extern ccs_result_t
 ccs_hyperparameter_convert_samples(ccs_hyperparameter_t  hyperparameter,
                                    ccs_bool_t            oversampling,
                                    size_t                num_values,

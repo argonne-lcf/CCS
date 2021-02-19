@@ -66,6 +66,9 @@ ccs_evaluation_get_value_by_name(ccs_evaluation_t  evaluation,
                                  ccs_datum_t      *value_ret);
 
 extern ccs_result_t
+ccs_evaluation_check(ccs_evaluation_t  evaluation);
+
+extern ccs_result_t
 ccs_evaluation_get_objective_value(ccs_evaluation_t  evaluation,
                                    size_t            index,
                                    ccs_datum_t      *value_ret);

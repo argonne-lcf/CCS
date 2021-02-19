@@ -1,5 +1,6 @@
 #ifndef _CONFIGURATION_INTERNAL_H
 #define _CONFIGURATION_INTERNAL_H
+#include "binding_internal.h"
 
 struct _ccs_configuration_ops_s {
 	_ccs_object_ops_t obj_ops;

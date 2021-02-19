@@ -18,6 +18,7 @@ static ccs_result_t
 _ccs_hyperparameter_numerical_check_values(_ccs_hyperparameter_data_t *data,
                                            size_t                num_values,
                                            const ccs_datum_t    *values,
+                                           ccs_datum_t          *values_ret,
                                            ccs_bool_t           *results) {
 	_ccs_hyperparameter_numerical_data_t *d =
 	    (_ccs_hyperparameter_numerical_data_t *)data;
@@ -36,6 +37,15 @@ _ccs_hyperparameter_numerical_check_values(_ccs_hyperparameter_data_t *data,
 				results[i] = CCS_FALSE;
 			else
 				results[i] = _ccs_interval_include(interval, CCSI(values[i].value.i));
+	}
+	if (values_ret) {
+		for (size_t i = 0; i < num_values; i++) {
+			if (results[i] == CCS_TRUE) {
+				values_ret[i] = values[i];
+			} else {
+				values_ret[i] = ccs_inactive;
+			}
+		}
 	}
 	return CCS_SUCCESS;
 }

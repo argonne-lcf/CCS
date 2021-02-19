@@ -163,6 +163,27 @@ _ccs_context_get_name(ccs_context_t   context,
 }
 
 static inline ccs_result_t
+_ccs_context_validate_value(ccs_context_t  context,
+                            size_t         index,
+                            ccs_datum_t    value,
+                            ccs_datum_t   *value_ret) {
+	CCS_CHECK_PTR(value_ret);
+	_ccs_hyperparameter_wrapper_t *wrapper = (_ccs_hyperparameter_wrapper_t*)
+	    utarray_eltptr(context->data->hyperparameters, (unsigned int)index);
+	if (!wrapper)
+		return -CCS_OUT_OF_BOUNDS;
+	ccs_result_t err;
+	ccs_bool_t valid;
+	err = ccs_hyperparameter_validate_value(wrapper->hyperparameter,
+	                                        value, value_ret, &valid);
+	if (err)
+		return err;
+	if (!valid)
+		return -CCS_INVALID_VALUE;
+	return CCS_SUCCESS;
+}
+
+static inline ccs_result_t
 _ccs_context_get_user_data(ccs_context_t   context,
                            void          **user_data_ret) {
 	CCS_CHECK_PTR(user_data_ret);

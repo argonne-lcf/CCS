@@ -81,6 +81,16 @@ ccs_context_get_hyperparameter_indexes(
 }
 
 ccs_result_t
+ccs_context_validate_value(ccs_context_t  context,
+                           size_t         index,
+                           ccs_datum_t    value,
+                           ccs_datum_t   *value_ret) {
+	if (!context || !context->data)
+		return -CCS_INVALID_OBJECT;
+	return _ccs_context_validate_value(context, index, value, value_ret);
+}
+
+ccs_result_t
 ccs_context_get_name(ccs_context_t   context,
                      const char    **name_ret) {
 	if (!context || !context->data)

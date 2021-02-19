@@ -50,6 +50,12 @@ ccs_context_get_hyperparameter_indexes(
 		ccs_hyperparameter_t  *hyperparameters,
 		size_t                *indexes);
 
+extern ccs_result_t
+ccs_context_validate_value(ccs_context_t  context,
+                           size_t         index,
+                           ccs_datum_t    value,
+                           ccs_datum_t   *value_ret);
+
 #ifdef __cplusplus
 }
 #endif

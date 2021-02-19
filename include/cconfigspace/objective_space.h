@@ -65,10 +65,32 @@ ccs_objective_space_get_hyperparameter_index(
 		size_t                *index_ret);
 
 extern ccs_result_t
+ccs_objective_space_get_hyperparameter_indexes(
+		ccs_objective_space_t  objective_space,
+		size_t                 num_hyperparameters,
+		ccs_hyperparameter_t  *hyperparameters,
+		size_t                *indexes);
+
+extern ccs_result_t
 ccs_objective_space_get_hyperparameters(ccs_objective_space_t  objective_space,
                                         size_t                 num_hyperparameters,
                                         ccs_hyperparameter_t  *hyperparameters,
                                         size_t                *num_hyperparameters_ret);
+
+extern ccs_result_t
+ccs_objective_space_check_evaluation(ccs_objective_space_t objective_space,
+                                     ccs_evaluation_t      evaluation);
+
+extern ccs_result_t
+ccs_objective_space_check_evaluation_values(ccs_objective_space_t  objective_space,
+                                            size_t                 num_values,
+                                            ccs_datum_t           *values);
+
+extern ccs_result_t
+ccs_objective_space_validate_value(ccs_objective_space_t  objective_space,
+                                   size_t                 index,
+                                   ccs_datum_t            value,
+                                   ccs_datum_t           *value_ret);
 
 extern ccs_result_t
 ccs_objective_space_add_objective(ccs_objective_space_t objective_space,
