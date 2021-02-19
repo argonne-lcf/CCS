@@ -25,6 +25,8 @@ module CCS
   attach_function :ccs_objective_space_add_objectives, [:ccs_objective_space_t, :size_t, :pointer, :pointer], :ccs_result_t
   attach_function :ccs_objective_space_get_objective, [:ccs_objective_space_t, :size_t, :pointer, :pointer], :ccs_result_t
   attach_function :ccs_objective_space_get_objectives, [:ccs_objective_space_t, :size_t, :pointer, :pointer, :pointer], :ccs_result_t
+  attach_function :ccs_objective_space_check_evaluation, [:ccs_objective_space_t, :ccs_evaluation_t], :ccs_result_t
+  attach_function :ccs_objective_space_check_evaluation_values, [:ccs_objective_space_t, :size_t, :pointer], :ccs_result_t
 
   class ObjectiveSpace < Context
 
@@ -123,6 +125,22 @@ module CCS
       exprs = p_exprs.read_array_of_pointer(count).collect { |p| Expression.from_handle(p) }
       types = p_types.read_array_of_ccs_objective_type_t(count)
       exprs.zip types
+    end
+
+    def check(evaluation)
+      res = CCS.ccs_objective_space_check_evaluation(@handle, evaluation)
+      CCS.error_check(res)
+      self
+    end
+
+    def check_values(values)
+      count = values.size
+      raise CCSError, :CCS_INVALID_VALUE if count != num_hyperparameters
+      ptr = MemoryPointer::new(:ccs_datum_t, count)
+      values.each_with_index {  |v, i| Datum::new(ptr[i]).value = v }
+      res = CCS.ccs_objective_space_check_evaluation_values(@handle, count, ptr)
+      CCS.error_check(res)
+      self
     end
   end
 end

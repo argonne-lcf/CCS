@@ -30,7 +30,7 @@ class TestTuner(ccs.UserDefinedTuner):
           if discard:
             new_optimums.append(o)
           else:
-            c = e.cmp(o)
+            c = e.compare(o)
             if c == ccs.EQUIVALENT or c == ccs.WORSE:
               discard = True
               new_optimums.append(o)

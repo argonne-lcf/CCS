@@ -64,7 +64,8 @@ ccs_binding_hash(ccs_binding_t  binding,
                  ccs_hash_t    *hash_ret) {
 	if (!binding || !binding->data)
 		return -CCS_INVALID_OBJECT;
-	return _ccs_binding_hash(binding, hash_ret);
+	_ccs_binding_ops_t *ops = ccs_binding_get_ops(binding);
+	return ops->hash(binding->data, hash_ret);
 }
 
 ccs_result_t
@@ -73,7 +74,10 @@ ccs_binding_cmp(ccs_binding_t  binding,
                 int           *cmp_ret) {
 	if (!binding || !binding->data)
 		return -CCS_INVALID_OBJECT;
-	return _ccs_binding_cmp(binding, other_binding, cmp_ret);
+	if (!other_binding || !other_binding->data)
+		return -CCS_INVALID_OBJECT;
+	_ccs_binding_ops_t *ops = ccs_binding_get_ops(binding);
+	return ops->cmp(binding->data, other_binding, cmp_ret);
 }
 
 

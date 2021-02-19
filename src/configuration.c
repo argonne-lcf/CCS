@@ -14,8 +14,23 @@ _ccs_configuration_del(ccs_object_t object) {
 	return CCS_SUCCESS;
 }
 
+static ccs_result_t
+_ccs_configuration_hash(_ccs_configuration_data_t *data,
+                        ccs_hash_t                *hash_ret) {
+	return _ccs_binding_hash((_ccs_binding_data_t *)data, hash_ret);
+}
+
+static ccs_result_t
+_ccs_configuration_cmp(_ccs_configuration_data_t *data,
+                       ccs_configuration_t        other,
+                       int                       *cmp_ret) {
+	return _ccs_binding_cmp((_ccs_binding_data_t *)data, (ccs_binding_t)other, cmp_ret);
+}
+
 static _ccs_configuration_ops_t _configuration_ops =
-    { {&_ccs_configuration_del} };
+    { {&_ccs_configuration_del},
+      &_ccs_configuration_hash,
+      &_ccs_configuration_cmp };
 
 ccs_result_t
 ccs_create_configuration(ccs_configuration_space_t configuration_space,
@@ -131,7 +146,8 @@ ccs_result_t
 ccs_configuration_hash(ccs_configuration_t  configuration,
                        ccs_hash_t          *hash_ret) {
 	CCS_CHECK_OBJ(configuration, CCS_CONFIGURATION);
-	return _ccs_binding_hash((ccs_binding_t)configuration, hash_ret);
+	_ccs_configuration_ops_t *ops = ccs_configuration_get_ops(configuration);
+	return ops->hash(configuration->data, hash_ret);
 }
 
 ccs_result_t
@@ -140,7 +156,7 @@ ccs_configuration_cmp(ccs_configuration_t  configuration,
                       int                 *cmp_ret) {
 	CCS_CHECK_OBJ(configuration, CCS_CONFIGURATION);
 	CCS_CHECK_OBJ(other_configuration, CCS_CONFIGURATION);
-	return _ccs_binding_cmp((ccs_binding_t)configuration,
-		 (ccs_binding_t)other_configuration, cmp_ret);
+	_ccs_configuration_ops_t *ops = ccs_configuration_get_ops(configuration);
+	return ops->cmp(configuration->data, other_configuration, cmp_ret);
 }
 

@@ -15,6 +15,7 @@ from .expression import *
 from .expression_parser import *
 from .context import *
 from .configuration_space import *
+from .binding import *
 from .configuration import *
 from .objective_space import *
 from .evaluation import *

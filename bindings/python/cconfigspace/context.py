@@ -1,5 +1,5 @@
 import ctypes as ct
-from .base import Object, Error, ccs_error, _ccs_get_function, ccs_context, ccs_hyperparameter
+from .base import Object, Error, ccs_error, _ccs_get_function, ccs_context, ccs_hyperparameter, ccs_datum, ccs_datum_fix
 from .hyperparameter import Hyperparameter
 
 ccs_context_get_name = _ccs_get_function("ccs_context_get_name", [ccs_context, ct.POINTER(ct.c_char_p)])
@@ -11,6 +11,7 @@ ccs_context_get_hyperparameter_index_by_name = _ccs_get_function("ccs_context_ge
 ccs_context_get_hyperparameter_index = _ccs_get_function("ccs_context_get_hyperparameter_index", [ccs_context, ccs_hyperparameter, ct.POINTER(ct.c_size_t)])
 ccs_context_get_hyperparameter_indexes = _ccs_get_function("ccs_context_get_hyperparameter_indexes", [ccs_context, ct.c_size_t, ct.POINTER(ccs_hyperparameter), ct.POINTER(ct.c_size_t)])
 ccs_context_get_hyperparameters = _ccs_get_function("ccs_context_get_hyperparameters", [ccs_context, ct.c_size_t, ct.POINTER(ccs_hyperparameter), ct.POINTER(ct.c_size_t)])
+ccs_context_validate_value = _ccs_get_function("ccs_context_validate_value", [ccs_context, ct.c_size_t, ccs_datum_fix, ct.POINTER(ccs_datum)])
 
 class Context(Object):
 
@@ -74,3 +75,18 @@ class Context(Object):
     res = ccs_context_get_hyperparameters(self.handle, count, v, None)
     Error.check(res)
     return [Hyperparameter.from_handle(ccs_hyperparameter(x)) for x in v]
+
+  def validate_value(self, hyperparameter, value):
+    if isinstance(hyperparameter, Hyperparameter):
+      hyperparameter = hyperparameter_index(hyperparameter)
+    elif isinstance(hyperparameter, str):
+      hyperparameter = hyperparameter_index_by_name(hyperparameter)
+    pv = ccs_datum(value)
+    v = ccs_datum_fix()
+    v.value = pv._value.i
+    v.type = pv.type
+    v.flags = pv.flags
+    vo = ccs_datum()
+    res = ccs_context_validate_value(self.handle, hyperparameter, v, ct.byref(vo))
+    Error.check(res)
+    return vo.value

@@ -66,7 +66,7 @@ class CConfigSpaceTestTuner < Minitest::Test
         discard = false
         optimums = optimums.collect { |o|
           unless discard
-            case e.cmp(o)
+            case e.compare(o)
             when :CCS_EQUIVALENT, :CCS_WORSE
               discard = true
               o

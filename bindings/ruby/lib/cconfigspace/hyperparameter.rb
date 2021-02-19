@@ -26,6 +26,8 @@ module CCS
   attach_function :ccs_hyperparameter_get_default_distribution, [:ccs_hyperparameter_t, :pointer], :ccs_result_t
   attach_function :ccs_hyperparameter_check_value, [:ccs_hyperparameter_t, :ccs_datum_t, :pointer], :ccs_result_t
   attach_function :ccs_hyperparameter_check_values, [:ccs_hyperparameter_t, :size_t, :pointer, :pointer], :ccs_result_t
+  attach_function :ccs_hyperparameter_validate_value, [:ccs_hyperparameter_t, :ccs_datum_t, :pointer, :pointer], :ccs_result_t
+  attach_function :ccs_hyperparameter_validate_values, [:ccs_hyperparameter_t, :size_t, :pointer, :pointer, :pointer], :ccs_result_t
   attach_function :ccs_hyperparameter_sample, [:ccs_hyperparameter_t, :ccs_distribution_t, :ccs_rng_t, :pointer], :ccs_result_t
   attach_function :ccs_hyperparameter_samples, [:ccs_hyperparameter_t, :ccs_distribution_t, :ccs_rng_t, :size_t, :pointer], :ccs_result_t
 

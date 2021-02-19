@@ -25,6 +25,7 @@ ccs_hyperparameter      = ccs_object
 ccs_expression          = ccs_object
 ccs_context             = ccs_object
 ccs_configuration_space = ccs_object
+ccs_binding             = ccs_object
 ccs_configuration       = ccs_object
 ccs_objective_space     = ccs_object
 ccs_evaluation          = ccs_object
@@ -216,7 +217,8 @@ class ccs_error(CEnumeration):
     'SAMPLING_UNSUCCESSFUL',
     'INACTIVE_HYPERPARAMETER',
     'OUT_OF_MEMORY',
-    'UNSUPPORTED_OPERATION' ]
+    'UNSUPPORTED_OPERATION',
+    'INVALID_EVALUATION' ]
 
 class ccs_data_type(CEnumeration):
   _members_ = [
@@ -230,7 +232,9 @@ class ccs_data_type(CEnumeration):
 
 class ccs_datum_flag(CEnumeration):
   _members_ = [
-    ('FLAG_DEFAULT', 0) ]
+    ('DEFAULT', 0),
+    ('TRANSIENT', (1 << 0)),
+    ('UNPOOLED', (1 << 1))]
  
 ccs_datum_flags = ct.c_uint
 
@@ -332,7 +336,7 @@ class ccs_datum(ct.Structure):
       self.type = ccs_data_type.STRING
       self._string = str.encode(v)
       self._value.s = ct.c_char_p(self._string)
-      self.flags = 0
+      self.flags = ccs_datum_flag.TRANSIENT
     elif v is ccs_inactive:
       self.type = ccs_data_type.INACTIVE
       self._value.i = 0
@@ -341,7 +345,7 @@ class ccs_datum(ct.Structure):
       self.type = ccs_data_type.OBJECT
       self._object = v
       self._value.o = v.handle
-      self.flags = 0
+      self.flags = ccs_datum_flag.TRANSIENT
     else:
       raise Error(ccs_error(ccs_error.INVALID_VALUE))
 
@@ -473,5 +477,6 @@ from .hyperparameter import Hyperparameter
 from .expression import Expression
 from .configuration_space import ConfigurationSpace
 from .configuration import Configuration
+from .objective_space import ObjectiveSpace
 from .evaluation import Evaluation
 from .tuner import Tuner

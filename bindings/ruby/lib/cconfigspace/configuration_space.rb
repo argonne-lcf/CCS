@@ -233,5 +233,4 @@ module CCS
       count.times.collect { |i| Configuration::new(ptr[i].read_pointer, retain: false) }
     end
   end
-
 end

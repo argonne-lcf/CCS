@@ -15,8 +15,45 @@ _ccs_evaluation_del(ccs_object_t object) {
 	return CCS_SUCCESS;
 }
 
+static ccs_result_t
+_ccs_evaluation_hash(_ccs_evaluation_data_t  *data,
+                    ccs_hash_t              *hash_ret) {
+	ccs_hash_t h, ht;
+	ccs_result_t err = _ccs_binding_hash((_ccs_binding_data_t *)data, &h);
+	if (err)
+		return err;
+	err = ccs_configuration_hash(data->configuration, &ht);
+	if (err)
+		return err;
+	h = _hash_combine(h, ht);
+	HASH_JEN(&(data->error), sizeof(data->error), ht);
+	h = _hash_combine(h, ht);
+	*hash_ret = h;
+	return CCS_SUCCESS;
+}
+
+static ccs_result_t
+_ccs_evaluation_cmp(_ccs_evaluation_data_t *data,
+                    ccs_evaluation_t        other,
+                    int                    *cmp_ret) {
+	ccs_result_t err =
+		_ccs_binding_cmp((_ccs_binding_data_t *)data, (ccs_binding_t)other, cmp_ret);
+	if (err)
+		return err;
+	_ccs_evaluation_data_t *other_data = other->data;
+	if (*cmp_ret)
+		return CCS_SUCCESS;
+	*cmp_ret = data->error < other_data->error ? -1 :
+	           data->error > other_data->error ?  1 : 0;
+	if (*cmp_ret)
+		return CCS_SUCCESS;
+	return ccs_configuration_cmp(data->configuration, other_data->configuration, cmp_ret);
+}
+
 static _ccs_evaluation_ops_t _evaluation_ops =
-    { {&_ccs_evaluation_del} };
+    { {&_ccs_evaluation_del},
+      &_ccs_evaluation_hash,
+      &_ccs_evaluation_cmp };
 
 ccs_result_t
 ccs_create_evaluation(ccs_objective_space_t  objective_space,
@@ -221,6 +258,24 @@ ccs_evaluation_get_objective_values(ccs_evaluation_t  evaluation,
 	return CCS_SUCCESS;
 }
 
+ccs_result_t
+ccs_evaluation_hash(ccs_evaluation_t  evaluation,
+                    ccs_hash_t       *hash_ret) {
+	CCS_CHECK_OBJ(evaluation, CCS_EVALUATION);
+	_ccs_evaluation_ops_t *ops = ccs_evaluation_get_ops(evaluation);
+	return ops->hash(evaluation->data, hash_ret);
+}
+
+ccs_result_t
+ccs_evaluation_cmp(ccs_evaluation_t  evaluation,
+                   ccs_evaluation_t  other_evaluation,
+                   int              *cmp_ret) {
+	CCS_CHECK_OBJ(evaluation, CCS_CONFIGURATION);
+	CCS_CHECK_OBJ(other_evaluation, CCS_CONFIGURATION);
+	_ccs_evaluation_ops_t *ops = ccs_evaluation_get_ops(evaluation);
+	return ops->cmp(evaluation->data, other_evaluation, cmp_ret);
+}
+
 static inline int
 _numeric_compare(const ccs_datum_t *a, const ccs_datum_t *b) {
 	if (a->type == CCS_FLOAT) {
@@ -232,9 +287,9 @@ _numeric_compare(const ccs_datum_t *a, const ccs_datum_t *b) {
 
 //Could be using memoization here.
 ccs_result_t
-ccs_evaluation_cmp(ccs_evaluation_t  evaluation,
-                   ccs_evaluation_t  other_evaluation,
-                   ccs_comparison_t  *result_ret) {
+ccs_evaluation_compare(ccs_evaluation_t  evaluation,
+                       ccs_evaluation_t  other_evaluation,
+                       ccs_comparison_t  *result_ret) {
 	CCS_CHECK_OBJ(evaluation, CCS_EVALUATION);
 	CCS_CHECK_OBJ(other_evaluation, CCS_EVALUATION);
 	CCS_CHECK_PTR(result_ret);

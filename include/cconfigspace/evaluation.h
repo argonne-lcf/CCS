@@ -80,9 +80,13 @@ ccs_evaluation_get_objective_values(ccs_evaluation_t  evaluation,
                                     size_t           *num_values_ret);
 
 extern ccs_result_t
-ccs_evaluation_cmp(ccs_evaluation_t  evaluation,
-                   ccs_evaluation_t  other_evaluation,
-                   ccs_comparison_t  *result_ret);
+ccs_evaluation_hash(ccs_evaluation_t  evaluation,
+                    ccs_hash_t       *hash_ret);
+
+extern ccs_result_t
+ccs_evaluation_compare(ccs_evaluation_t  evaluation,
+                       ccs_evaluation_t  other_evaluation,
+                       ccs_comparison_t  *result_ret);
 
 #ifdef __cplusplus
 }

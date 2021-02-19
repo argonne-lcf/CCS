@@ -12,22 +12,17 @@ module CCS
   end
 
   attach_function :ccs_create_evaluation, [:ccs_objective_space_t, :ccs_configuration_t, :ccs_result_t, :size_t, :pointer, :pointer, :pointer], :ccs_result_t
-  attach_function :ccs_evaluation_get_objective_space, [:ccs_evaluation_t, :pointer], :ccs_result_t
   attach_function :ccs_evaluation_get_configuration, [:ccs_evaluation_t, :pointer], :ccs_result_t
-  attach_function :ccs_evaluation_get_user_data, [:ccs_evaluation_t, :pointer], :ccs_result_t
   attach_function :ccs_evaluation_get_error, [:ccs_evaluation_t, :pointer], :ccs_result_t
   attach_function :ccs_evaluation_set_error, [:ccs_evaluation_t, :ccs_result_t], :ccs_result_t
-  attach_function :ccs_evaluation_get_value, [:ccs_evaluation_t, :size_t, :pointer], :ccs_result_t
-  attach_function :ccs_evaluation_set_value, [:ccs_evaluation_t, :size_t, :ccs_datum_t], :ccs_result_t
-  attach_function :ccs_evaluation_get_values, [:ccs_evaluation_t, :size_t, :pointer, :pointer], :ccs_result_t
-  attach_function :ccs_evaluation_get_value_by_name, [:ccs_evaluation_t, :string, :ccs_datum_t], :ccs_result_t
   attach_function :ccs_evaluation_get_objective_value, [:ccs_evaluation_t, :size_t, :pointer], :ccs_result_t
   attach_function :ccs_evaluation_get_objective_values, [:ccs_evaluation_t, :size_t, :pointer, :pointer], :ccs_result_t
-  attach_function :ccs_evaluation_cmp, [:ccs_evaluation_t, :ccs_evaluation_t, :pointer], :ccs_result_t
-  class Evaluation < Object
-    add_handle_property :objective_space, :ccs_objective_space_t, :ccs_evaluation_get_objective_space, memoize: true
+  attach_function :ccs_evaluation_compare, [:ccs_evaluation_t, :ccs_evaluation_t, :pointer], :ccs_result_t
+  attach_function :ccs_evaluation_check, [:ccs_evaluation_t], :ccs_result_t
+
+  class Evaluation < Binding
+    alias objective_space context
     add_handle_property :configuration, :ccs_configuration_t, :ccs_evaluation_get_configuration, memoize: true
-    add_property :user_data, :pointer, :ccs_evaluation_get_user_data, memoize: true
     add_property :error, :ccs_result_t, :ccs_evaluation_get_error, memoize: false
 
     def initialize(handle = nil, retain: false, auto_release: true,
@@ -63,55 +58,6 @@ module CCS
       err
     end
 
-    def set_value(hyperparameter, value)
-      d = Datum.from_value(value)
-      case hyperparameter
-      when String, Symbol
-        hyperparameter = objective_space.hyperparameter_index_by_name(hyperparameter)
-      when Hyperparameter
-        hyperparameter = objective_space.hyperparameter_index(hyperparameter)
-      end
-      res = CCS.ccs_evaluation_set_value(@handle, hyperparameter, d)
-      CCS.error_check(res)
-      self
-    end
-
-    def value(hyperparameter)
-      ptr = MemoryPointer::new(:ccs_datum_t)
-      case hyperparameter
-      when String
-        res = CCS.ccs_evaluation_get_value_by_name(@handle, hyperparameter, ptr)
-      when Symbol
-        res = CCS.ccs_evaluation_get_value_by_name(@handle, hyperparameter.inspect, ptr)
-      when Hyperparameter
-        res = CCS.ccs_evaluation_get_value(@handle, objective_space.hyperparameter_index(hyperparameter), ptr)
-      when Integer
-        res = CCS.ccs_evaluation_get_value(@handle, hyperparameter, ptr)
-      else
-        raise CCSError, :CCS_INVALID_VALUE
-      end
-      CCS.error_check(res)
-      Datum::new(ptr).value
-    end
-
-    def num_values
-      @num_values ||= begin
-        ptr = MemoryPointer::new(:size_t)
-        res = CCS.ccs_evaluation_get_values(@handle, 0, nil, ptr)
-        CCS.error_check(res)
-        ptr.read_size_t
-      end
-    end
-
-    def values
-      count = num_values
-      return [] if count == 0
-      values = MemoryPointer::new(:ccs_datum_t, count)
-      res = CCS.ccs_evaluation_get_values(@handle, count, values, nil)
-      CCS.error_check(res)
-      count.times.collect { |i| Datum::new(values[i]).value }
-    end
-
     def num_objective_values
       @num_values ||= begin
         ptr = MemoryPointer::new(:size_t)
@@ -130,16 +76,22 @@ module CCS
       count.times.collect { |i| Datum::new(values[i]).value }
     end
 
-    def cmp(other)
+    def check
+      res = CCS.ccs_evaluation_check(@handle)
+      CCS.error_check(res)
+      self
+    end
+
+    def compare(other)
       ptr = MemoryPointer::new(:ccs_objective_type_t)
-      res = CCS.ccs_evaluation_cmp(@handle, other, ptr)
+      res = CCS.ccs_evaluation_compare(@handle, other, ptr)
       CCS.error_check(res)
       ptr.read_ccs_comparison_t
     end
 
     def <=>(other)
       ptr = MemoryPointer::new(:ccs_objective_type_t)
-      res = CCS.ccs_evaluation_cmp(@handle, other, ptr)
+      res = CCS.ccs_evaluation_compare(@handle, other, ptr)
       CCS.error_check(res)
       r = ptr.read_int32
       r == 2 ? nil : r 

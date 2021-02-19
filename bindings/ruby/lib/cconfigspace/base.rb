@@ -73,6 +73,7 @@ module CCS
   typedef :pointer, :ccs_expression_t
   typedef :pointer, :ccs_context_t
   typedef :pointer, :ccs_configuration_space_t
+  typedef :pointer, :ccs_binding_t
   typedef :pointer, :ccs_configuration_t
   typedef :pointer, :ccs_objective_space_t
   typedef :pointer, :ccs_evaluation_t
@@ -85,6 +86,7 @@ module CCS
     alias read_ccs_expression_t read_pointer
     alias read_ccs_context_t read_pointer
     alias read_ccs_configuration_space_t read_pointer
+    alias read_ccs_binding_t read_pointer
     alias read_ccs_configuration_t read_pointer
     alias read_ccs_objective_space_t read_pointer
     alias read_ccs_evaluation_t read_pointer
@@ -112,7 +114,8 @@ module CCS
     :CCS_SAMPLING_UNSUCCESSFUL,
     :CCS_INACTIVE_HYPERPARAMETER,
     :CCS_OUT_OF_MEMORY,
-    :CCS_UNSUPPORTED_OPERATION ]
+    :CCS_UNSUPPORTED_OPERATION,
+    :CCS_INVALID_EVALUATION ]
 
   ObjectType = enum FFI::Type::INT32, :ccs_object_type_t, [
     :CCS_RNG,
@@ -124,6 +127,7 @@ module CCS
     :CCS_OBJECTIVE_SPACE,
     :CCS_EVALUATION,
     :CCS_TUNER ]
+
   class MemoryPointer
     def read_ccs_object_type_t
       ObjectType.from_native(read_int32, nil)
@@ -140,10 +144,13 @@ module CCS
     :CCS_OBJECT ]
 
   DatumFlag = enum FFI::Type::INT32, :ccs_datum_flag_t, [
-    :CCS_FLAG_DEFAULT ]
+    :CCS_FLAG_DEFAULT, 0,
+    :CCS_FLAG_TRANSIENT, (1 << 0),
+    :CCS_FLAG_UNPOOLED, (1 << 1) ]
 
-  DatumFlags = bitmask FFI::Type::INT32, :ccs_datum_flags_t, [
-    ]
+  DatumFlags = bitmask FFI::Type::UINT32, :ccs_datum_flags_t, [
+    :CCS_FLAG_TRANSIENT,
+    :CCS_FLAG_UNPOOLED ]
 
   NumericType = enum FFI::Type::INT64, :ccs_numeric_type_t, [
     :CCS_NUM_INTEGER, DataType.to_native(:CCS_INTEGER, nil),
@@ -238,6 +245,15 @@ module CCS
     INACTIVE[:type] = :CCS_INACTIVE
     INACTIVE[:value][:i] = 0
     INACTIVE[:flags] = 0
+
+    def flags
+      self[:flags]
+    end
+
+    def flags=(v)
+      self[:flags] = v
+    end
+
     def value
       case self[:type]
       when :CCS_NONE
@@ -296,7 +312,7 @@ module CCS
         end
         self[:type] = :CCS_STRING
         self[:value][:s] = ptr
-        self[:flags] = 0
+        self[:flags] = :CCS_FLAG_TRANSIENT
       when Object
         if object_store
           object_store.push v
@@ -305,7 +321,7 @@ module CCS
         end
         self[:type] = :CCS_OBJECT
         self[:value][:o] = v.handle
-        self[:flags] = 0
+        self[:flags] = :CCS_FLAG_TRANSIENT
       else
         raise CCSError, :CCS_INVALID_TYPE
       end
@@ -340,13 +356,13 @@ module CCS
         d.instance_variable_set(:@string, ptr)
         d[:type] = :CCS_STRING
         d[:value][:s] = ptr
-        d[:flags] = 0
+        d[:flags] = :CCS_FLAG_TRANSIENT
         d
       when Object
         d = self::new
         d[:type] = :CCS_OBJECT
         d[:value][:o] = v.handle
-        d[:flags] = 0
+        d[:flags] = :CCS_FLAG_TRANSIENT
         d.instance_variable_set(:@object, v)
         d
       else

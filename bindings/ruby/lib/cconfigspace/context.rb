@@ -8,6 +8,8 @@ module CCS
   attach_function :ccs_context_get_hyperparameter_index, [:ccs_context_t, :ccs_hyperparameter_t, :pointer], :ccs_result_t
   attach_function :ccs_context_get_hyperparameter_indexes, [:ccs_context_t, :size_t, :pointer, :pointer], :ccs_result_t
   attach_function :ccs_context_get_hyperparameters, [:ccs_context_t, :size_t, :pointer, :pointer], :ccs_result_t
+  attach_function :ccs_context_validate_value, [:ccs_context_t, :size_t, :ccs_datum_t, :pointer], :ccs_result_t
+
   class Context < Object
     add_property :user_data, :pointer, :ccs_context_get_user_data, memoize: true
     add_property :num_hyperparameters, :size_t, :ccs_context_get_num_hyperparameters, memoize: false
@@ -58,6 +60,20 @@ module CCS
       res = CCS.ccs_context_get_hyperparameters(@handle, count, ptr, nil)
       CCS.error_check(res)
       count.times.collect { |i| Hyperparameter.from_handle(ptr[i].read_pointer) }
+    end
+
+    def validate_value(hyperparameter, value)
+      ptr = MemoryPointer::new(:ccs_datum_t)
+      d = Datum.from_value(value)
+      case hyperparameter
+      when String, Symbol
+        hyperparameter = hyperparameter_index_by_name(hyperparameter)
+      when Hyperparameter
+        hyperparameter = hyperparameter_index(hyperparameter)
+      end
+      res = CCS.ccs_context_validate_value(@handle, hyperparameter, d, ptr)
+      CCS.error_check(res)
+      Datum::new(ptr).value
     end
 
   end
