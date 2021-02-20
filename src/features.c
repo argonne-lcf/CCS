@@ -15,8 +15,23 @@ _ccs_features_del(ccs_object_t object) {
 	return CCS_SUCCESS;
 }
 
+static ccs_result_t
+_ccs_features_hash(_ccs_features_data_t *data,
+                   ccs_hash_t           *hash_ret) {
+	return _ccs_binding_hash((_ccs_binding_data_t *)data, hash_ret);
+}
+
+static ccs_result_t
+_ccs_features_cmp(_ccs_features_data_t *data,
+                  ccs_features_t        other,
+                  int                       *cmp_ret) {
+	return _ccs_binding_cmp((_ccs_binding_data_t *)data, (ccs_binding_t)other, cmp_ret);
+}
+
 static _ccs_features_ops_t _features_ops =
-    { {&_ccs_features_del} };
+    { {&_ccs_features_del},
+      &_ccs_features_hash,
+      &_ccs_features_cmp };
 
 ccs_result_t
 ccs_create_features(ccs_features_space_t  features_space,
@@ -44,16 +59,28 @@ ccs_create_features(ccs_features_space_t  features_space,
 		free((void*)mem);
 		return err;
 	}
-	ccs_features_t config = (ccs_features_t)mem;
-	_ccs_object_init(&(config->obj), CCS_FEATURES, (_ccs_object_ops_t*)&_features_ops);
-	config->data = (struct _ccs_features_data_s*)(mem + sizeof(struct _ccs_features_s));
-	config->data->user_data = user_data;
-	config->data->num_values = num;
-	config->data->features_space = features_space;
-	config->data->values = (ccs_datum_t *)(mem + sizeof(struct _ccs_features_s) + sizeof(struct _ccs_features_data_s));
-	if (values)
-		memcpy(config->data->values, values, num*sizeof(ccs_datum_t));
-	*features_ret = config;
+	ccs_features_t feat = (ccs_features_t)mem;
+	_ccs_object_init(&(feat->obj), CCS_FEATURES, (_ccs_object_ops_t*)&_features_ops);
+	feat->data = (struct _ccs_features_data_s*)(mem + sizeof(struct _ccs_features_s));
+	feat->data->user_data = user_data;
+	feat->data->num_values = num;
+	feat->data->features_space = features_space;
+	feat->data->values = (ccs_datum_t *)(mem + sizeof(struct _ccs_features_s) + sizeof(struct _ccs_features_data_s));
+	if (values) {
+		memcpy(feat->data->values, values, num*sizeof(ccs_datum_t));
+		for (size_t i = 0; i < num_values; i++) {
+			if (values[i].flags & CCS_FLAG_TRANSIENT) {
+				err = ccs_features_space_validate_value(
+					features_space, i, values[i],
+					 feat->data->values + i);
+				if (unlikely(err)) {
+					free((void*)mem);
+					return err;
+				}
+			}
+		}
+	}
+	*features_ret = feat;
 	return CCS_SUCCESS;
 }
 
@@ -61,18 +88,16 @@ ccs_result_t
 ccs_features_get_features_space(ccs_features_t        features,
                                 ccs_features_space_t *features_space_ret) {
 	CCS_CHECK_OBJ(features, CCS_FEATURES);
-	CCS_CHECK_PTR(features_space_ret);
-	*features_space_ret = features->data->features_space;
-	return CCS_SUCCESS;
+	return _ccs_binding_get_context(
+		(ccs_binding_t)features, (ccs_context_t *)features_space_ret);
 }
 
 ccs_result_t
 ccs_features_get_user_data(ccs_features_t   features,
                            void           **user_data_ret) {
 	CCS_CHECK_OBJ(features, CCS_FEATURES);
-	CCS_CHECK_PTR(user_data_ret);
-	*user_data_ret = features->data->user_data;
-	return CCS_SUCCESS;
+	return _ccs_binding_get_user_data(
+		(ccs_binding_t)features, user_data_ret);
 }
 
 ccs_result_t
@@ -80,11 +105,8 @@ ccs_features_get_value(ccs_features_t  features,
                        size_t          index,
                        ccs_datum_t    *value_ret) {
 	CCS_CHECK_OBJ(features, CCS_FEATURES);
-	CCS_CHECK_PTR(value_ret);
-	if (index >= features->data->num_values)
-		return -CCS_OUT_OF_BOUNDS;
-	*value_ret = features->data->values[index];
-	return CCS_SUCCESS;
+	return _ccs_binding_get_value(
+		(ccs_binding_t)features, index, value_ret);
 }
 
 ccs_result_t
@@ -92,10 +114,8 @@ ccs_features_set_value(ccs_features_t features,
                        size_t         index,
                        ccs_datum_t    value) {
 	CCS_CHECK_OBJ(features, CCS_FEATURES);
-	if (index >= features->data->num_values)
-		return -CCS_OUT_OF_BOUNDS;
-	features->data->values[index] = value;
-	return CCS_SUCCESS;
+	return _ccs_binding_set_value(
+		(ccs_binding_t)features, index, value);
 }
 
 ccs_result_t
@@ -104,22 +124,8 @@ ccs_features_get_values(ccs_features_t  features,
                         ccs_datum_t    *values,
                         size_t         *num_values_ret) {
 	CCS_CHECK_OBJ(features, CCS_FEATURES);
-	CCS_CHECK_ARY(num_values, values);
-	if (!num_values_ret && !values)
-		return -CCS_INVALID_VALUE;
-	size_t num = features->data->num_values;
-	if (values) {
-		if (num_values < num)
-			return -CCS_INVALID_VALUE;
-		memcpy(values, features->data->values, num*sizeof(ccs_datum_t));
-		for (size_t i = num; i < num_values; i++) {
-			values[i].type = CCS_NONE;
-			values[i].value.i = 0;
-		}
-	}
-	if (num_values_ret)
-		*num_values_ret = num;
-	return CCS_SUCCESS;
+	return _ccs_binding_get_values(
+		(ccs_binding_t)features, num_values, values, num_values_ret);
 }
 
 ccs_result_t
@@ -127,15 +133,8 @@ ccs_features_get_value_by_name(ccs_features_t  features,
                                const char     *name,
                                ccs_datum_t    *value_ret) {
 	CCS_CHECK_OBJ(features, CCS_FEATURES);
-	CCS_CHECK_PTR(name);
-	size_t index;
-	ccs_result_t err;
-	err = ccs_features_space_get_hyperparameter_index_by_name(
-		features->data->features_space, name, &index);
-	if (err)
-		return err;
-	*value_ret = features->data->values[index];
-	return CCS_SUCCESS;
+	return _ccs_binding_get_value_by_name(
+		(ccs_binding_t)features, name, value_ret);
 }
 
 ccs_result_t
@@ -149,18 +148,8 @@ ccs_result_t
 ccs_features_hash(ccs_features_t  features,
                   ccs_hash_t     *hash_ret) {
 	CCS_CHECK_OBJ(features, CCS_FEATURES);
-	CCS_CHECK_PTR(hash_ret);
-	_ccs_features_data_t *data = features->data;
-	ccs_hash_t h, ht;
-	HASH_JEN(&(data->features_space), sizeof(data->features_space), h);
-	HASH_JEN(&(data->num_values), sizeof(data->num_values), ht);
-	h = _hash_combine(h, ht);
-	for (size_t i = 0; i < data->num_values; i++) {
-		ht = _hash_datum(data->values + i);
-		h = _hash_combine(h, ht);
-	}
-	*hash_ret = h;
-	return CCS_SUCCESS;
+	_ccs_features_ops_t *ops = ccs_features_get_ops(features);
+	return ops->hash(features->data, hash_ret);
 }
 
 ccs_result_t
@@ -169,25 +158,7 @@ ccs_features_cmp(ccs_features_t  features,
                  int            *cmp_ret) {
 	CCS_CHECK_OBJ(features, CCS_FEATURES);
 	CCS_CHECK_OBJ(other_features, CCS_FEATURES);
-	CCS_CHECK_PTR(cmp_ret);
-	if (features == other_features) {
-		*cmp_ret = 0;
-		return CCS_SUCCESS;
-	}
-	_ccs_features_data_t *data = features->data;
-	_ccs_features_data_t *other_data = other_features->data;
-	*cmp_ret = data->features_space < other_data->features_space ? -1 :
-	           data->features_space > other_data->features_space ?  1 : 0;
-	if (*cmp_ret)
-		return CCS_SUCCESS;
-	*cmp_ret = data->num_values < other_data->num_values ? -1 :
-	           data->num_values > other_data->num_values ?  1 : 0;
-	if (*cmp_ret)
-		return CCS_SUCCESS;
-	for (size_t i = 0; i < data->num_values; i++) {
-		if ( (*cmp_ret = _datum_cmp(data->values + i, other_data->values + i)) )
-			return CCS_SUCCESS;
-	}
-	return CCS_SUCCESS;
+	_ccs_features_ops_t *ops = ccs_features_get_ops(features);
+	return ops->cmp(features->data, other_features, cmp_ret);
 }
 

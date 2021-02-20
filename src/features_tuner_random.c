@@ -85,7 +85,7 @@ _ccs_features_tuner_random_tell(_ccs_features_tuner_data_t *data,
 			while ( (eval = (ccs_features_evaluation_t *)utarray_next(d->old_optimums, eval)) ) {
 				if (!discard) {
 					ccs_comparison_t cmp;
-					err = ccs_features_evaluation_cmp(evaluations[i], *eval, &cmp);
+					err = ccs_features_evaluation_compare(evaluations[i], *eval, &cmp);
 					if (err)
 						discard = 1;
 					else switch (cmp) {

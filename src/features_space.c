@@ -214,6 +214,18 @@ ccs_features_space_get_hyperparameter_index(
 }
 
 ccs_result_t
+ccs_features_space_get_hyperparameter_indexes(
+		ccs_features_space_t  features_space,
+		size_t                num_hyperparameters,
+		ccs_hyperparameter_t *hyperparameters,
+		size_t               *indexes) {
+	CCS_CHECK_OBJ(features_space, CCS_FEATURES_SPACE);
+	return _ccs_context_get_hyperparameter_indexes(
+		(ccs_context_t)features_space, num_hyperparameters,
+		 hyperparameters, indexes);
+}
+
+ccs_result_t
 ccs_features_space_get_hyperparameters(ccs_features_space_t  features_space,
                                        size_t                num_hyperparameters,
                                        ccs_hyperparameter_t *hyperparameters,
@@ -222,6 +234,16 @@ ccs_features_space_get_hyperparameters(ccs_features_space_t  features_space,
 	return _ccs_context_get_hyperparameters(
 		(ccs_context_t)features_space, num_hyperparameters,
 		hyperparameters, num_hyperparameters_ret);
+}
+
+ccs_result_t
+ccs_features_space_validate_value(ccs_features_space_t  features_space,
+                                  size_t                index,
+                                  ccs_datum_t           value,
+                                  ccs_datum_t          *value_ret) {
+	CCS_CHECK_OBJ(features_space, CCS_FEATURES_SPACE);
+	return _ccs_context_validate_value((ccs_context_t)features_space,
+	                                   index, value, value_ret);
 }
 
 static inline ccs_result_t

@@ -71,7 +71,7 @@ ccs_create_configuration(ccs_configuration_space_t configuration_space,
 			if (values[i].flags & CCS_FLAG_TRANSIENT) {
 				err = ccs_configuration_space_validate_value(
 					configuration_space, i, values[i],
-					 config->data->values + i);
+					config->data->values + i);
 				if (unlikely(err)) {
 					free((void*)mem);
 					return err;

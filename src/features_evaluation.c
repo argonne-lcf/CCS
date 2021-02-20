@@ -16,8 +16,54 @@ _ccs_features_evaluation_del(ccs_object_t object) {
 	return CCS_SUCCESS;
 }
 
+static ccs_result_t
+_ccs_features_evaluation_hash(_ccs_features_evaluation_data_t  *data,
+                              ccs_hash_t                       *hash_ret) {
+	ccs_hash_t h, ht;
+	ccs_result_t err = _ccs_binding_hash((_ccs_binding_data_t *)data, &h);
+	if (err)
+		return err;
+	err = ccs_configuration_hash(data->configuration, &ht);
+	if (err)
+		return err;
+	h = _hash_combine(h, ht);
+	err = ccs_features_hash(data->features, &ht);
+	if (err)
+		return err;
+	h = _hash_combine(h, ht);
+	HASH_JEN(&(data->error), sizeof(data->error), ht);
+	h = _hash_combine(h, ht);
+	*hash_ret = h;
+	return CCS_SUCCESS;
+}
+
+static ccs_result_t
+_ccs_features_evaluation_cmp(_ccs_features_evaluation_data_t *data,
+                             ccs_features_evaluation_t        other,
+                             int                             *cmp_ret) {
+	ccs_result_t err =
+		_ccs_binding_cmp((_ccs_binding_data_t *)data, (ccs_binding_t)other, cmp_ret);
+	if (err)
+		return err;
+	if (*cmp_ret)
+		return CCS_SUCCESS;
+	_ccs_features_evaluation_data_t *other_data = other->data;
+	*cmp_ret = data->error < other_data->error ? -1 :
+	           data->error > other_data->error ?  1 : 0;
+	if (*cmp_ret)
+		return CCS_SUCCESS;
+	err = ccs_configuration_cmp(data->configuration, other_data->configuration, cmp_ret);
+	if (err)
+		return err;
+	if (*cmp_ret)
+		return CCS_SUCCESS;
+	return ccs_features_cmp(data->features, other_data->features, cmp_ret);
+}
+
 static _ccs_features_evaluation_ops_t _features_evaluation_ops =
-    { {&_ccs_features_evaluation_del} };
+    { {&_ccs_features_evaluation_del},
+      &_ccs_features_evaluation_hash,
+      &_ccs_features_evaluation_cmp };
 
 ccs_result_t
 ccs_create_features_evaluation(ccs_objective_space_t      objective_space,
@@ -74,8 +120,20 @@ ccs_create_features_evaluation(ccs_objective_space_t      objective_space,
 	eval->data->features = features;
 	eval->data->error = error;
 	eval->data->values = (ccs_datum_t *)(mem + sizeof(struct _ccs_features_evaluation_s) + sizeof(struct _ccs_features_evaluation_data_s));
-	if (values)
+	if (values) {
 		memcpy(eval->data->values, values, num*sizeof(ccs_datum_t));
+		for (size_t i = 0; i < num_values; i++) {
+			if (values[i].flags & CCS_FLAG_TRANSIENT) {
+				err = ccs_objective_space_validate_value(
+					objective_space, i, values[i],
+					eval->data->values + i);
+				if (unlikely(err)) {
+					free((void*)mem);
+					return err;
+				}
+			}
+		}
+	}
 	*evaluation_ret = eval;
 	return CCS_SUCCESS;
 }
@@ -84,9 +142,8 @@ ccs_result_t
 ccs_features_evaluation_get_objective_space(ccs_features_evaluation_t       evaluation,
                                             ccs_objective_space_t *objective_space_ret) {
 	CCS_CHECK_OBJ(evaluation, CCS_FEATURES_EVALUATION);
-	CCS_CHECK_PTR(objective_space_ret);
-	*objective_space_ret = evaluation->data->objective_space;
-	return CCS_SUCCESS;
+	return _ccs_binding_get_context(
+		(ccs_binding_t)evaluation, (ccs_context_t *)objective_space_ret);
 }
 
 ccs_result_t
@@ -111,9 +168,8 @@ ccs_result_t
 ccs_features_evaluation_get_user_data(ccs_features_evaluation_t   evaluation,
                                       void                      **user_data_ret) {
 	CCS_CHECK_OBJ(evaluation, CCS_FEATURES_EVALUATION);
-	CCS_CHECK_PTR(user_data_ret);
-	*user_data_ret = evaluation->data->user_data;
-	return CCS_SUCCESS;
+	return _ccs_binding_get_user_data(
+		(ccs_binding_t)evaluation, user_data_ret);
 }
 
 ccs_result_t
@@ -138,11 +194,8 @@ ccs_features_evaluation_get_value(ccs_features_evaluation_t  evaluation,
                                   size_t                     index,
                                   ccs_datum_t               *value_ret) {
 	CCS_CHECK_OBJ(evaluation, CCS_FEATURES_EVALUATION);
-	CCS_CHECK_PTR(value_ret);
-	if (index >= evaluation->data->num_values)
-		return -CCS_OUT_OF_BOUNDS;
-	*value_ret = evaluation->data->values[index];
-	return CCS_SUCCESS;
+	return _ccs_binding_get_value(
+		(ccs_binding_t)evaluation, index, value_ret);
 }
 
 ccs_result_t
@@ -150,10 +203,8 @@ ccs_features_evaluation_set_value(ccs_features_evaluation_t evaluation,
                                   size_t                    index,
                                   ccs_datum_t               value) {
 	CCS_CHECK_OBJ(evaluation, CCS_FEATURES_EVALUATION);
-	if (index >= evaluation->data->num_values)
-		return -CCS_OUT_OF_BOUNDS;
-	evaluation->data->values[index] = value;
-	return CCS_SUCCESS;
+	return _ccs_binding_set_value(
+		(ccs_binding_t)evaluation, index, value);
 }
 
 ccs_result_t
@@ -162,22 +213,8 @@ ccs_features_evaluation_get_values(ccs_features_evaluation_t  evaluation,
                                    ccs_datum_t               *values,
                                    size_t                    *num_values_ret) {
 	CCS_CHECK_OBJ(evaluation, CCS_FEATURES_EVALUATION);
-	CCS_CHECK_ARY(num_values, values);
-	if (!num_values_ret && !values)
-		return -CCS_INVALID_VALUE;
-	size_t num = evaluation->data->num_values;
-	if (values) {
-		if (num_values < num)
-			return -CCS_INVALID_VALUE;
-		memcpy(values, evaluation->data->values, num*sizeof(ccs_datum_t));
-		for (size_t i = num; i < num_values; i++) {
-			values[i].type = CCS_NONE;
-			values[i].value.i = 0;
-		}
-	}
-	if (num_values_ret)
-		*num_values_ret = num;
-	return CCS_SUCCESS;
+	return _ccs_binding_get_values(
+		(ccs_binding_t)evaluation, num_values, values, num_values_ret);
 }
 
 ccs_result_t
@@ -185,15 +222,15 @@ ccs_features_evaluation_get_value_by_name(ccs_features_evaluation_t  evaluation,
                                           const char                *name,
                                           ccs_datum_t               *value_ret) {
 	CCS_CHECK_OBJ(evaluation, CCS_FEATURES_EVALUATION);
-	CCS_CHECK_PTR(name);
-	size_t index;
-	ccs_result_t err;
-	err = ccs_objective_space_get_hyperparameter_index_by_name(
-		evaluation->data->objective_space, name, &index);
-	if (err)
-		return err;
-	*value_ret = evaluation->data->values[index];
-	return CCS_SUCCESS;
+	return _ccs_binding_get_value_by_name(
+		(ccs_binding_t)evaluation, name, value_ret);
+}
+
+ccs_result_t
+ccs_features_evaluation_check(ccs_features_evaluation_t  evaluation) {
+	CCS_CHECK_OBJ(evaluation, CCS_FEATURES_EVALUATION);
+	return ccs_objective_space_check_evaluation_values(
+		evaluation->data->objective_space, evaluation->data->num_values, evaluation->data->values);
 }
 
 ccs_result_t
@@ -263,11 +300,30 @@ _numeric_compare(const ccs_datum_t *a, const ccs_datum_t *b) {
 	}
 }
 
-//Could be using memoization here.
+ccs_result_t
+ccs_features_evaluation_hash(ccs_features_evaluation_t  evaluation,
+                             ccs_hash_t          *hash_ret) {
+	CCS_CHECK_OBJ(evaluation, CCS_FEATURES_EVALUATION);
+	_ccs_features_evaluation_ops_t *ops = ccs_features_evaluation_get_ops(evaluation);
+	return ops->hash(evaluation->data, hash_ret);
+}
+
 ccs_result_t
 ccs_features_evaluation_cmp(ccs_features_evaluation_t  evaluation,
                             ccs_features_evaluation_t  other_evaluation,
-                            ccs_comparison_t          *result_ret) {
+                            int                       *cmp_ret) {
+	CCS_CHECK_OBJ(evaluation, CCS_FEATURES_EVALUATION);
+	CCS_CHECK_OBJ(other_evaluation, CCS_FEATURES_EVALUATION);
+	_ccs_features_evaluation_ops_t *ops = ccs_features_evaluation_get_ops(evaluation);
+	return ops->cmp(evaluation->data, other_evaluation, cmp_ret);
+}
+
+
+//Could be using memoization here.
+ccs_result_t
+ccs_features_evaluation_compare(ccs_features_evaluation_t  evaluation,
+                                ccs_features_evaluation_t  other_evaluation,
+                                ccs_comparison_t          *result_ret) {
 	CCS_CHECK_OBJ(evaluation, CCS_FEATURES_EVALUATION);
 	CCS_CHECK_OBJ(other_evaluation, CCS_FEATURES_EVALUATION);
 	CCS_CHECK_PTR(result_ret);

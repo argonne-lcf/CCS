@@ -17,7 +17,7 @@ _ccs_evaluation_del(ccs_object_t object) {
 
 static ccs_result_t
 _ccs_evaluation_hash(_ccs_evaluation_data_t  *data,
-                    ccs_hash_t              *hash_ret) {
+                     ccs_hash_t              *hash_ret) {
 	ccs_hash_t h, ht;
 	ccs_result_t err = _ccs_binding_hash((_ccs_binding_data_t *)data, &h);
 	if (err)
@@ -40,9 +40,9 @@ _ccs_evaluation_cmp(_ccs_evaluation_data_t *data,
 		_ccs_binding_cmp((_ccs_binding_data_t *)data, (ccs_binding_t)other, cmp_ret);
 	if (err)
 		return err;
-	_ccs_evaluation_data_t *other_data = other->data;
 	if (*cmp_ret)
 		return CCS_SUCCESS;
+	_ccs_evaluation_data_t *other_data = other->data;
 	*cmp_ret = data->error < other_data->error ? -1 :
 	           data->error > other_data->error ?  1 : 0;
 	if (*cmp_ret)

@@ -55,10 +55,23 @@ ccs_features_space_get_hyperparameter_index(
 		size_t               *index_ret);
 
 extern ccs_result_t
+ccs_features_space_get_hyperparameter_indexes(
+		ccs_features_space_t  features_space,
+		size_t                num_hyperparameters,
+		ccs_hyperparameter_t *hyperparameters,
+		size_t               *indexes);
+
+extern ccs_result_t
 ccs_features_space_get_hyperparameters(ccs_features_space_t  features_space,
                                        size_t                num_hyperparameters,
                                        ccs_hyperparameter_t *hyperparameters,
                                        size_t               *num_hyperparameters_ret);
+
+extern ccs_result_t
+ccs_features_space_validate_value(ccs_features_space_t  features_space,
+                                  size_t                index,
+                                  ccs_datum_t           value,
+                                  ccs_datum_t          *value_ret);
 
 extern ccs_result_t
 ccs_features_space_check_features(ccs_features_space_t features_space,

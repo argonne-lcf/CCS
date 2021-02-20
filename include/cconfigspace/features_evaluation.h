@@ -77,9 +77,18 @@ ccs_features_evaluation_get_objective_values(
 		size_t                    *num_values_ret);
 
 extern ccs_result_t
+ccs_features_evaluation_hash(ccs_features_evaluation_t  evaluation,
+                             ccs_hash_t          *hash_ret);
+
+extern ccs_result_t
 ccs_features_evaluation_cmp(ccs_features_evaluation_t  features_evaluation,
                             ccs_features_evaluation_t  other_features_evaluation,
-                            ccs_comparison_t          *result_ret);
+                            int                       *cmp_ret);
+
+extern ccs_result_t
+ccs_features_evaluation_compare(ccs_features_evaluation_t  features_evaluation,
+                                ccs_features_evaluation_t  other_features_evaluation,
+                                ccs_comparison_t          *result_ret);
 
 #ifdef __cplusplus
 }
