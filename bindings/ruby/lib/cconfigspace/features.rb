@@ -1,21 +1,11 @@
 module CCS
 
   attach_function :ccs_create_features, [:ccs_features_space_t, :size_t, :pointer, :pointer, :pointer], :ccs_result_t
-  attach_function :ccs_features_get_features_space, [:ccs_features_t, :pointer], :ccs_result_t
-  attach_function :ccs_features_get_user_data, [:ccs_features_t, :pointer], :ccs_result_t
-  attach_function :ccs_features_get_value, [:ccs_features_t, :size_t, :pointer], :ccs_result_t
-  attach_function :ccs_features_set_value, [:ccs_features_t, :size_t, :ccs_datum_t], :ccs_result_t
-  attach_function :ccs_features_get_values, [:ccs_features_t, :size_t, :pointer, :pointer], :ccs_result_t
-  attach_function :ccs_features_get_value_by_name, [:ccs_features_t, :string, :pointer], :ccs_result_t
   attach_function :ccs_features_check, [:ccs_features_t], :ccs_result_t
-  attach_function :ccs_features_hash, [:ccs_features_t, :pointer], :ccs_result_t
-  attach_function :ccs_features_cmp, [:ccs_features_t, :ccs_features_t, :pointer], :ccs_result_t
 
-  class Features < Object
+  class Features < Binding
+    alias features_space context
     include Comparable
-    add_property :user_data, :pointer, :ccs_features_get_user_data, memoize: true
-    add_property :hash, :ccs_hash_t, :ccs_features_hash, memoize: false
-    add_handle_property :features_space, :ccs_features_space_t, :ccs_features_get_features_space, memoize: true
 
     def initialize(handle = nil, retain: false, auto_release: true,
                    features_space: nil,  values: nil, user_data: nil)
@@ -42,71 +32,12 @@ module CCS
       self::new(handle, retain: retain, auto_release: auto_release)
     end
 
-    def set_value(hyperparameter, value)
-      d = Datum.from_value(value)
-      case hyperparameter
-      when String, Symbol
-        hyperparameter = features_space.hyperparameter_index_by_name(hyperparameter)
-      when Hyperparameter
-        hyperparameter = features_space.hyperparameter_index(hyperparameter)
-      end
-      res = CCS.ccs_features_set_value(@handle, hyperparameter, d)
-      CCS.error_check(res)
-      self
-    end
-
-    def value(hyperparameter)
-      ptr = MemoryPointer::new(:ccs_datum_t)
-      case hyperparameter
-      when String
-        res = CCS.ccs_features_get_value_by_name(@handle, hyperparameter, ptr)
-      when Symbol
-        res = CCS.ccs_features_get_value_by_name(@handle, hyperparameter.inspect, ptr)
-      when Hyperparameter
-        res = CCS.ccs_features_get_value(@handle, features_space.hyperparameter_index(hyperparameter), ptr)
-      when Integer
-        res = CCS.ccs_features_get_value(@handle, hyperparameter, ptr)
-      else
-        raise CCSError, :CCS_INVALID_VALUE
-      end
-      CCS.error_check(res)
-      Datum::new(ptr).value
-    end
-
-    def num_values
-      @num_values ||= begin
-        ptr = MemoryPointer::new(:size_t)
-        res = CCS.ccs_features_get_values(@handle, 0, nil, ptr)
-        CCS.error_check(res)
-        ptr.read_size_t
-      end
-    end
-
-    def values
-      count = num_values
-      return [] if count == 0
-      values = MemoryPointer::new(:ccs_datum_t, count)
-      res = CCS.ccs_features_get_values(@handle, count, values, nil)
-      CCS.error_check(res)
-      count.times.collect { |i| Datum::new(values[i]).value }
-    end
-
     def check
       res = CCS.ccs_features_check(@handle)
       CCS.error_check(res)
       self
     end
 
-    def <=>(other)
-      ptr = MemoryPointer::new(:int)
-      res = CCS.ccs_features_cmp(@handle, other, ptr)
-      CCS.error_check(res)
-      return ptr.read_int
-    end
-
-    def to_h
-      features_space.hyperparameters.collect(&:name).zip(values).to_h
-    end
   end
 
 end

@@ -9,7 +9,7 @@ ccs_binding_set_value = _ccs_get_function("ccs_binding_set_value", [ccs_binding,
 ccs_binding_get_values = _ccs_get_function("ccs_binding_get_values", [ccs_binding, ct.c_size_t, ct.POINTER(ccs_datum), ct.POINTER(ct.c_size_t)])
 ccs_binding_get_value_by_name = _ccs_get_function("ccs_binding_get_value_by_name", [ccs_binding, ct.c_char_p, ct.POINTER(ccs_datum)])
 ccs_binding_hash = _ccs_get_function("ccs_binding_hash", [ccs_binding, ct.POINTER(ccs_hash)])
-ccs_binding_cmp = _ccs_get_function("ccs_binding_cmp", [ccs_binding, ct.POINTER(ccs_int)])
+ccs_binding_cmp = _ccs_get_function("ccs_binding_cmp", [ccs_binding, ccs_binding, ct.POINTER(ccs_int)])
 
 class Binding(Object):
 

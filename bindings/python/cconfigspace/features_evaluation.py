@@ -8,23 +8,20 @@ from .features_space import FeaturesSpace
 from .features import Features
 from .objective_space import ObjectiveSpace
 from .evaluation import ccs_comparison
+from .binding import Binding
 
 ccs_create_features_evaluation = _ccs_get_function("ccs_create_features_evaluation", [ccs_objective_space, ccs_configuration, ccs_features, ccs_result, ct.c_size_t, ct.POINTER(ccs_datum), ct.c_void_p, ct.POINTER(ccs_features_evaluation)])
 ccs_features_evaluation_get_objective_space = _ccs_get_function("ccs_features_evaluation_get_objective_space", [ccs_features_evaluation, ct.POINTER(ccs_objective_space)])
 ccs_features_evaluation_get_configuration = _ccs_get_function("ccs_features_evaluation_get_configuration", [ccs_features_evaluation, ct.POINTER(ccs_configuration)])
 ccs_features_evaluation_get_features = _ccs_get_function("ccs_features_evaluation_get_features", [ccs_features_evaluation, ct.POINTER(ccs_features)])
-ccs_features_evaluation_get_user_data = _ccs_get_function("ccs_features_evaluation_get_user_data", [ccs_features_evaluation, ct.POINTER(ct.c_void_p)])
 ccs_features_evaluation_get_error = _ccs_get_function("ccs_features_evaluation_get_error", [ccs_features_evaluation, ct.POINTER(ccs_result)])
 ccs_features_evaluation_set_error = _ccs_get_function("ccs_features_evaluation_set_error", [ccs_features_evaluation, ccs_result])
-ccs_features_evaluation_get_value = _ccs_get_function("ccs_features_evaluation_get_value", [ccs_features_evaluation, ct.c_size_t, ct.POINTER(ccs_datum)])
-ccs_features_evaluation_set_value = _ccs_get_function("ccs_features_evaluation_set_value", [ccs_features_evaluation, ct.c_size_t, ccs_datum_fix])
-ccs_features_evaluation_get_values = _ccs_get_function("ccs_features_evaluation_get_values", [ccs_features_evaluation, ct.c_size_t, ct.POINTER(ccs_datum), ct.POINTER(ct.c_size_t)])
-ccs_features_evaluation_get_value_by_name = _ccs_get_function("ccs_features_evaluation_get_value_by_name", [ccs_features_evaluation, ct.c_char_p, ccs_datum])
 ccs_features_evaluation_get_objective_value = _ccs_get_function("ccs_features_evaluation_get_objective_value", [ccs_features_evaluation, ct.c_size_t, ct.POINTER(ccs_datum)])
 ccs_features_evaluation_get_objective_values = _ccs_get_function("ccs_features_evaluation_get_objective_values", [ccs_features_evaluation, ct.c_size_t, ct.POINTER(ccs_datum), ct.POINTER(ct.c_size_t)])
-ccs_features_evaluation_cmp = _ccs_get_function("ccs_features_evaluation_cmp", [ccs_features_evaluation, ccs_features_evaluation, ct.POINTER(ccs_comparison)])
+ccs_features_evaluation_compare = _ccs_get_function("ccs_features_evaluation_compare", [ccs_features_evaluation, ccs_features_evaluation, ct.POINTER(ccs_comparison)])
+ccs_features_evaluation_check = _ccs_get_function("ccs_features_evaluation_check", [ccs_features_evaluation])
 
-class FeaturesEvaluation(Object):
+class FeaturesEvaluation(Binding):
   def __init__(self, handle = None, retain = False, auto_release = True,
                objective_space = None, configuration = None, features = None, error = ccs_error.SUCCESS, values = None, user_data = None):
     if handle is None:
@@ -46,16 +43,6 @@ class FeaturesEvaluation(Object):
   @classmethod
   def from_handle(cls, handle, retain = True, auto_release = True):
     return cls(handle = handle, retain = retain, auto_release = auto_release)
-
-  @property
-  def user_data(self):
-    if hasattr(self, "_user_data"):
-      return self._user_data
-    v = ct.c_void_p()
-    res = ccs_features_evaluation_get_user_data(self.handle, ct.byref(v))
-    Error.check(res)
-    self._user_data = v
-    return v
 
   @property
   def objective_space(self):
@@ -99,49 +86,6 @@ class FeaturesEvaluation(Object):
     res = ccs_features_evaluation_set_error(self.handle, v)
     Error.check(res)
 
-  def set_value(self, hyperparameter, value):
-    if isinstance(hyperparameter, Hyperparameter):
-      hyperparameter = self.objective_space.hyperparameter_index(hyperparameter)
-    elif isinstance(hyperparameter, str):
-      hyperparameter = self.objective_space.hyperparameter_index_by_name(hyperparameter)
-    pv = ccs_datum(value)
-    v = ccs_datum_fix()
-    v.value = pv._value.i
-    v.type = pv.type
-    res = ccs_features_evaluation_set_value(self.handle, hyperparameter, v)
-    Error.check(res)
-
-  def value(self, hyperparameter):
-    v = ccs_datum()
-    if isinstance(hyperparameter, Hyperparameter):
-      res = ccs_features_evaluation_get_value(self.handle, self.objective_space.hyperparameter_index(hyperparameter), ct.byref(v))
-    elif isinstance(hyperparameter, str):
-      res = ccs_features_evaluation_get_value_by_name(self.handle, str.encode(hyperparameter), ct.byref(v))
-    else:
-      res = ccs_features_evaluation_get_value(self.handle, hyperparameter, ct.byref(v))
-    Error.check(res)
-    return v.value
-
-  @property
-  def num_values(self):
-    if hasattr(self, "_num_values"):
-      return self._num_values
-    v = ct.c_size_t()
-    res = ccs_features_evaluation_get_values(self.handle, 0, None, ct.byref(v))
-    Error.check(res)
-    self._num_values = v.value
-    return self._num_values
-
-  @property
-  def values(self):
-    sz = self.num_values
-    if sz == 0:
-      return []
-    v = (ccs_datum * sz)()
-    res = ccs_features_evaluation_get_values(self.handle, sz, v, None)
-    Error.check(res)
-    return [x.value for x in v]
-
   @property
   def num_objective_values(self):
     if hasattr(self, "_num_objective_values"):
@@ -162,8 +106,12 @@ class FeaturesEvaluation(Object):
     Error.check(res)
     return [x.value for x in v]
 
-  def cmp(self, other):
+  def compare(self, other):
     v = ccs_comparison(0)
-    res = ccs_features_evaluation_cmp(self.handle, other.handle, ct.byref(v))
+    res = ccs_features_evaluation_compare(self.handle, other.handle, ct.byref(v))
     Error.check(res)
     return v.value
+
+  def check(self):
+    res = res = ccs_features_evaluation(self.handle)
+    Error.check(res)
