@@ -3,7 +3,7 @@ on: [push, pull_request]
 
 jobs:
   build-and-check:
-    name: Build ${{ matrix.os }} ${{ matrix.name }}
+    name: Build and Check ${{ matrix.os }} ${{ matrix.name }}
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
@@ -57,7 +57,7 @@ jobs:
             build/samples/test_ruby.log
 
   build-and-check-valgrind:
-    name: Build ${{ matrix.os }} ${{ matrix.name }}
+    name: Build and Check Valgrind ${{ matrix.os }} ${{ matrix.name }}
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
@@ -109,7 +109,7 @@ jobs:
             build/samples/test_ruby.log
 
   build-and-check-ruby:
-    name: Build ${{ matrix.os }} ${{ matrix.name }}
+    name: Build and Check Ruby ${{ matrix.os }} ${{ matrix.name }}
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
@@ -132,7 +132,7 @@ jobs:
           LIBCCONFIGSPACE_SO: ${{ github.workspace }}/build/src/.libs/libcconfigspace.so
 
   build-and-check-python:
-    name: Build ${{ matrix.os }} ${{ matrix.name }}
+    name: Build and Check Python ${{ matrix.os }} ${{ matrix.name }}
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
