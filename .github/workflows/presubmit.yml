@@ -1,0 +1,22 @@
+name: Presubmit
+on: [push, pull_request]
+
+jobs:
+  build-and-check:
+    name: Build ${{ matrix.os }} ${{ matrix.name }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+
+    steps:
+      - uses: actions/checkout@v2
+      - run: sudo apt-get update
+      - run: sudo apt-get install -y gcc valgrind ruby-dev libgsl-dev python3-dev
+      - run: mkdir -p build
+      - run: ../configure
+        working-directory: build
+      - run: make
+        working-directory: build
+      - run: make check
+        working-directory: build
