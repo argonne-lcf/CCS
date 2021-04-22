@@ -107,3 +107,26 @@ jobs:
             build/samples/test_python.log
             build/samples/test-suite.log
             build/samples/test_ruby.log
+
+  build-and-check-ruby:
+    name: Build ${{ matrix.os }} ${{ matrix.name }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+
+    steps:
+      - uses: actions/checkout@v2
+      - run: sudo apt-get update
+      - run: sudo apt-get install -y gcc ruby-dev libgsl-dev python3-dev
+      - run: gem install --user-install rake ffi whittle
+      - run: ./autogen.sh
+      - run: mkdir -p build
+      - run: ../configure
+        working-directory: build
+      - run: make
+        working-directory: build
+      - run: rake test
+        working-directory: bindings/ruby
+        env:
+          LIBCCONFIGSPACE_SO: ${{ github.workspace }}/build/src/.libs/libcconfigspace.so
