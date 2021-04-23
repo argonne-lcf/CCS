@@ -90,6 +90,9 @@ ccs_features_evaluation_compare(ccs_features_evaluation_t  features_evaluation,
                                 ccs_features_evaluation_t  other_features_evaluation,
                                 ccs_comparison_t          *result_ret);
 
+extern ccs_result_t
+ccs_features_evaluation_check(ccs_features_evaluation_t  evaluation);
+
 #ifdef __cplusplus
 }
 #endif
