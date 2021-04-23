@@ -2,7 +2,22 @@ name: Presubmit
 on: [push, pull_request]
 
 jobs:
+  pre_job:
+    runs-on: ubuntu-latest
+    outputs:
+      should_skip: ${{ steps.skip_check.outputs.should_skip }}
+    steps:
+      - id: skip_check
+        uses: fkirc/skip-duplicate-actions@master
+        with:
+          concurrent_skipping: 'same_content'
+          skip_after_successful_duplicate: 'true'
+          paths_ignore: '["**/README.md"]'
+          do_not_skip: '["pull_request"]'
+
   build-and-check:
+    needs: pre_job
+    if: ${{ needs.pre_job.outputs.should_skip != 'true' }}
     name: Build and Check ${{ matrix.os }} ${{ matrix.name }}
     runs-on: ${{ matrix.os }}
     strategy:
@@ -56,7 +71,65 @@ jobs:
             build/samples/test-suite.log
             build/samples/test_ruby.log
 
+  build-and-check-cxx:
+    needs: pre_job
+    if: ${{ needs.pre_job.outputs.should_skip != 'true' }}
+    name: Build and Check C++ ${{ matrix.os }} ${{ matrix.name }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+
+    steps:
+      - uses: actions/checkout@v2
+      - run: sudo apt-get update
+      - run: sudo apt-get install -y gcc g++ ruby-dev libgsl-dev python3-dev
+      - run: gem install --user-install rake ffi whittle
+      - run: pip3 install --user parglare==0.12.0
+      - run: ./autogen.sh
+      - run: mkdir -p build
+      - run: ../configure CC=g++
+        working-directory: build
+      - run: make
+        working-directory: build
+      - run: make check
+        working-directory: build
+      - uses: actions/upload-artifact@v2
+        if: failure()
+        with:
+          name: build-and-check
+          path: |
+            build/tests/test_mixture_distribution.log
+            build/tests/test_user_defined_tuner.log
+            build/tests/test_random_features_tuner.log
+            build/tests/test_random_tuner.log
+            build/tests/test_categorical_hyperparameter.log
+            build/tests/test_condition.log
+            build/tests/test_configuration_space.log
+            build/tests/test_uniform_distribution.log
+            build/tests/test_features_space.log
+            build/tests/test_roulette_distribution.log
+            build/tests/test_interval.log
+            build/tests/test-suite-memcheck.log
+            build/tests/test_ordinal_hyperparameter.log
+            build/tests/test_forbidden.log
+            build/tests/test_numerical_hyperparameter.log
+            build/tests/test_discrete_hyperparameter.log
+            build/tests/test_normal_distribution.log
+            build/tests/test_tree.log
+            build/tests/test_user_defined_features_tuner.log
+            build/tests/test-suite.log
+            build/tests/test_multivariate_distribution.log
+            build/tests/test_expression.log
+            build/tests/test_rng.log
+            build/config.log
+            build/samples/test_python.log
+            build/samples/test-suite.log
+            build/samples/test_ruby.log
+
   build-and-check-valgrind:
+    needs: pre_job
+    if: ${{ needs.pre_job.outputs.should_skip != 'true' }}
     name: Build and Check Valgrind ${{ matrix.os }} ${{ matrix.name }}
     runs-on: ${{ matrix.os }}
     strategy:
@@ -109,6 +182,8 @@ jobs:
             build/samples/test_ruby.log
 
   build-and-check-ruby:
+    needs: pre_job
+    if: ${{ needs.pre_job.outputs.should_skip != 'true' }}
     name: Build and Check Ruby ${{ matrix.os }} ${{ matrix.name }}
     runs-on: ${{ matrix.os }}
     strategy:
@@ -132,6 +207,8 @@ jobs:
           LIBCCONFIGSPACE_SO: ${{ github.workspace }}/build/src/.libs/libcconfigspace.so
 
   build-and-check-python:
+    needs: pre_job
+    if: ${{ needs.pre_job.outputs.should_skip != 'true' }}
     name: Build and Check Python ${{ matrix.os }} ${{ matrix.name }}
     runs-on: ${{ matrix.os }}
     strategy:
