@@ -6,7 +6,7 @@ setup(
     version = "0.0.1",
     author = "Brice Videau",
     author_email = "bvideau@anl.gov",
-    url = "https://xgitlab.cels.anl.gov/videau/cconfigspace",
+    url = "https://github.com/argonne-lcf/CCS",
     packages = ["cconfigspace"],
     package_dir={'cconfigspace': 'cconfigspace'},
     license='BSD-3-Clause'
