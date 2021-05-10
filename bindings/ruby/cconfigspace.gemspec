@@ -3,7 +3,7 @@ Gem::Specification.new do |s|
   s.version = "0.0.1"
   s.author = "Brice Videau"
   s.email = "bvideau@anl.gov"
-  s.homepage = "https://xgitlab.cels.anl.gov/videau/cconfigspace"
+  s.homepage = "https://github.com/argonne-lcf/CCS"
   s.summary = "cconfigspace (CCS) ruby bindings"
   s.description = "cconfigspace is a gem defining bindings for the CCS: C Configuration Space and Tuning Library"
   s.files = Dir['cconfigspace.gemspec', 'LICENSE', 'lib/**/*.rb']
