@@ -60,7 +60,7 @@ module CCS
         ptr = MemoryPointer::new(:ccs_numeric_type_t, dimension)
         res = CCS.ccs_distribution_get_data_types(@handle, ptr)
         CCS.error_check(res)
-        ptr.read_array_of_int64(dimension).collect { |i| NumericType.from_native(i, nil) }
+        ptr.read_array_of_int32(dimension).collect { |i| NumericType.from_native(i, nil) }
       end
     end
 
