@@ -22,8 +22,26 @@ AC_PROG_CC_STDC
 AC_TYPE_SIZE_T
 AC_HEADER_ASSERT
 
-#
-PKG_CHECK_MODULES([RUBY], [ruby >= 2.3])
+# Check Ruby
+PKG_CHECK_MODULES([RUBY], [ruby >= 2.3], [HAVE_RB=yes], [HAVE_RB=no])
+if test "x$HAVE_RB" != xyes;
+then
+  AC_PATH_PROG([RUBY], [ruby])
+  if test "x$RUBY" != x;
+  then
+    RUBYHDRDIR=`$RUBY -e 'puts RbConfig::CONFIG[["rubyhdrdir"]]'`
+    RUBYARCHHDRDIR=`$RUBY -e 'puts RbConfig::CONFIG[["rubyarchhdrdir"]]'`
+    LIBRUBYARG=`$RUBY -e 'puts RbConfig::CONFIG[["LIBRUBYARG"]]'`
+    RUBY_CFLAGS="-I$RUBYARCHHDRDIR -I$RUBYHDRDIR"
+    RUBY_LIBS="$LIBRUBYARG -lm"
+    AC_SUBST([RUBY_CFLAGS])
+    AC_SUBST([RUBY_LIBS])
+    HAVE_RB=yes
+  else
+    HAVE_RB=no
+  fi
+fi
+AM_CONDITIONAL([HAVE_RUBY],[test "x$HAVE_RB" = xyes])
 PKG_CHECK_MODULES([PYTHON], [python3-embed >= 3.6])
 
 #check for libraries
