@@ -118,72 +118,6 @@ class CEnumeration(ct.c_int, metaclass=CEnumerationType):
   def __str__(self):
     return "%s.%s" % (self.__class__.__name__, self.name)
 
-class CEnumerationType64(type(ct.c_longlong)):
-  def __new__(metacls, name, bases, dict):
-    if not "_members_" in dict:
-      raise ValueError("CEnumeration must define a _members_ attribute")
-    last = -1
-    if isinstance(dict["_members_"], list):
-      _members_ = {}
-      for item in dict["_members_"]:
-        if isinstance(item, tuple):
-          (i, v) = item
-          _members_[i] = v
-          last = v
-        else:
-          last += 1
-          _members_[item] = last
-      dict["_members_"] = _members_
-    _reverse_members_ = {}
-    for key,value in dict["_members_"].items():
-      dict[key] = value
-      _reverse_members_[value] = key
-    dict["_reverse_members_"] = _reverse_members_
-    cls = type(ct.c_longlong).__new__(metacls, name, bases, dict)
-    for key,value in cls._members_.items():
-      globals()[key] = value
-    return cls
-
-  def __contains__(self, value):
-    return value in self._members_.values()
-
-  def __repr__(self):
-    return "<Enumeration %s>" % self.__name__
-
-class CEnumeration64(ct.c_longlong, metaclass=CEnumerationType64):
-  _members_ = {}
-  def __init__(self, value):
-    ct.c_longlong.__init__(self, value)
-
-  def __repr__(self):
-    return "<member %s(%d) of %r>" % (self.name, self.value, self.__class__)
-
-  def __str__(self):
-    return "%s.%s" % (self.__class__.__name__, self.name)
-
-  def __eq__(self, other):
-    if isinstance(other, int):
-      return self.value == other
-    else:
-      return self.value == other.value
-
-  @property
-  def name(self):
-    if self.value in self._reverse_members_:
-      return self._reverse_members_[self.value]
-    else:
-      raise ValueError("No enumeration member with value %r" % value)
-
-  @classmethod
-  def from_param(cls, param):
-    if isinstance(param, CEnumeration):
-      if param.__class__ != cls:
-        raise ValueError("Cannot mix enumeration members")
-      else:
-        return param
-    else:
-      return cls(param)
-
 class ccs_object_type(CEnumeration):
   _members_ = [
     ('RNG', 0),
@@ -238,7 +172,7 @@ class ccs_datum_flag(CEnumeration):
  
 ccs_datum_flags = ct.c_uint
 
-class ccs_numeric_type(CEnumeration64):
+class ccs_numeric_type(CEnumeration):
   _members_ = [
     ('NUM_INTEGER', ccs_data_type.INTEGER),
     ('NUM_FLOAT', ccs_data_type.FLOAT) ]
