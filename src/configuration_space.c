@@ -6,11 +6,6 @@
 static ccs_result_t
 _generate_constraints(ccs_configuration_space_t configuration_space);
 
-static inline _ccs_configuration_space_ops_t *
-ccs_configuration_space_get_ops(ccs_configuration_space_t configuration_space) {
-	return (_ccs_configuration_space_ops_t *)configuration_space->obj.ops;
-}
-
 static ccs_result_t
 _ccs_configuration_space_del(ccs_object_t object) {
 	ccs_configuration_space_t configuration_space = (ccs_configuration_space_t)object;
