@@ -3,6 +3,8 @@
 #include <cconfigspace.h>
 #include <string.h>
 
+#define NUM_SAMPLES 10000
+
 void test_create() {
 	ccs_hyperparameter_t       hyperparameter;
 	ccs_hyperparameter_type_t  type;
@@ -74,8 +76,8 @@ void test_samples() {
 	ccs_rng_t                  rng;
 	ccs_hyperparameter_t       hyperparameter;
 	ccs_distribution_t         distribution;
-	const size_t               num_samples = 10000;
-	ccs_datum_t                samples[num_samples];
+	const size_t               num_samples = NUM_SAMPLES;
+	ccs_datum_t                samples[NUM_SAMPLES];
 	ccs_result_t               err;
 
 	err = ccs_rng_create(&rng);
@@ -111,8 +113,8 @@ void test_oversampling() {
 	ccs_rng_t                  rng;
 	ccs_hyperparameter_t       hyperparameter;
 	ccs_distribution_t         distribution;
-	const size_t               num_samples = 10000;
-	ccs_datum_t                samples[num_samples];
+	const size_t               num_samples = NUM_SAMPLES;
+	ccs_datum_t                samples[NUM_SAMPLES];
 	ccs_result_t               err;
 
 	err = ccs_rng_create(&rng);
