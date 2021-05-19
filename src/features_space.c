@@ -3,11 +3,6 @@
 #include "features_internal.h"
 #include "utlist.h"
 
-static inline _ccs_features_space_ops_t *
-ccs_features_space_get_ops(ccs_features_space_t features_space) {
-	return (_ccs_features_space_ops_t *)features_space->obj.ops;
-}
-
 static ccs_result_t
 _ccs_features_space_del(ccs_object_t object) {
 	ccs_features_space_t features_space = (ccs_features_space_t)object;
