@@ -32,6 +32,10 @@ AC_HEADER_ASSERT
 
 AM_CONDITIONAL([ISMACOS], [test "x$macos" = xyes])
 
+AC_ARG_ENABLE([strict], AS_HELP_STRING([--enable-strict], [Enable -Werror]))
+
+AM_CONDITIONAL([STRICT], [test "x$enable_strict" = xyes])
+
 # Check Ruby
 PKG_CHECK_MODULES([RUBY], [ruby >= 2.3], [HAVE_RB=yes], [HAVE_RB=no])
 if test "x$HAVE_RB" != xyes;

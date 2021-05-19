@@ -1,8 +1,11 @@
 AM_COLOR_TESTS = yes
 
 test_ruby_CFLAGS = -I$(top_srcdir)/include -Wall -Wextra -Wpedantic $(RUBY_CFLAGS) -Wno-deprecated-declarations
+
 if !ISMACOS
+if STRICT
 test_ruby_CFLAGS += -Werror
+endif
 endif
 
 test_ruby_LDFLAGS = ../src/libcconfigspace.la $(RUBY_LIBS)
