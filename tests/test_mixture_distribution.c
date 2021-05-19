@@ -6,18 +6,21 @@
 #include <gsl/gsl_randist.h>
 #include <gsl/gsl_cdf.h>
 
+#define NUM_DISTRIBS 2
+#define NUM_SAMPLES 10000
+
 void test_create_mixture_distribution() {
-	ccs_distribution_t      distrib = NULL, distribs[2], distribs_ret[2];
+	ccs_distribution_t      distrib = NULL, distribs[NUM_DISTRIBS], distribs_ret[NUM_DISTRIBS];
 	ccs_result_t            err = CCS_SUCCESS;
 	int32_t                 refcount;
 	ccs_object_type_t       otype;
 	ccs_distribution_type_t dtype;
 	ccs_numeric_type_t      data_type;
 	ccs_interval_t          interval;
-	const size_t            num_distribs = 2;
-	ccs_float_t             weights[num_distribs];
+	const size_t            num_distribs = NUM_DISTRIBS;
+	ccs_float_t             weights[NUM_DISTRIBS];
 	size_t                  num_distribs_ret;
-	ccs_float_t             weights_ret[num_distribs];
+	ccs_float_t             weights_ret[NUM_DISTRIBS];
 	const ccs_float_t       epsilon = 1e-15;
 
 	for(size_t i = 0; i < num_distribs; i++) {
@@ -101,13 +104,13 @@ void test_create_mixture_distribution() {
 }
 
 void test_mixture_distribution() {
-	ccs_distribution_t distrib = NULL, distribs[2];
+	ccs_distribution_t distrib = NULL, distribs[NUM_DISTRIBS];
 	ccs_rng_t          rng = NULL;
 	ccs_result_t       err = CCS_SUCCESS;
-	const size_t       num_distribs = 2;
-	ccs_float_t        weights[num_distribs];
-	const size_t       num_samples = 10000;
-	ccs_numeric_t      samples[num_samples];
+	const size_t       num_distribs = NUM_DISTRIBS;
+	ccs_float_t        weights[NUM_DISTRIBS];
+	const size_t       num_samples = NUM_SAMPLES;
+	ccs_numeric_t      samples[NUM_SAMPLES];
 
 	for(size_t i = 0; i < num_distribs; i++) {
 		weights[i] = 1.0;
@@ -159,14 +162,14 @@ void test_mixture_distribution() {
 }
 
 void test_mixture_distribution_strided_samples() {
-	ccs_distribution_t t_distrib = NULL, distrib = NULL, distribs[2];
-	ccs_distribution_t t_distribs[2];
+	ccs_distribution_t t_distrib = NULL, distrib = NULL, distribs[NUM_DISTRIBS];
+	ccs_distribution_t t_distribs[NUM_DISTRIBS];
 	ccs_rng_t          rng = NULL;
 	ccs_result_t       err = CCS_SUCCESS;
-	const size_t       num_t_distribs = 2;
-	const size_t       num_distribs = 2;
-	const size_t       num_samples = 10000;
-	ccs_numeric_t      samples[num_samples*(num_distribs+1)];
+	const size_t       num_t_distribs = NUM_DISTRIBS;
+	const size_t       num_distribs = NUM_DISTRIBS;
+	const size_t       num_samples = NUM_SAMPLES;
+	ccs_numeric_t      samples[NUM_SAMPLES*(NUM_DISTRIBS+1)];
 	ccs_float_t        weights[] = { 1.0, 1.0 };
 
 	err = ccs_rng_create(&rng);
@@ -205,16 +208,16 @@ void test_mixture_distribution_strided_samples() {
 		&t_distrib);
 	assert( err == CCS_SUCCESS );
 
-	err = ccs_distribution_strided_samples(distrib, rng, num_samples, 3, samples);
+	err = ccs_distribution_strided_samples(distrib, rng, num_samples, NUM_DISTRIBS + 1, samples);
 	assert( err == CCS_SUCCESS );
 
 	for (size_t i = 0; i < num_samples; i++) {
-		assert( samples[3*i].f >= -5.0 );
-		assert( samples[3*i].f <   5.0 );
-		assert( samples[3*i + 1].i >= -5 );
-		assert( samples[3*i + 1].i <   5 );
+		assert( samples[(NUM_DISTRIBS + 1)*i].f >= -5.0 );
+		assert( samples[(NUM_DISTRIBS + 1)*i].f <   5.0 );
+		assert( samples[(NUM_DISTRIBS + 1)*i + 1].i >= -5 );
+		assert( samples[(NUM_DISTRIBS + 1)*i + 1].i <   5 );
 	}
-	double mean = gsl_stats_mean((double*)samples, 3, num_samples);
+	double mean = gsl_stats_mean((double*)samples, NUM_DISTRIBS + 1, num_samples);
 	assert( mean < 0.0 + 0.1 );
 	assert( mean > 0.0 - 0.1 );
 
@@ -231,15 +234,15 @@ void test_mixture_distribution_strided_samples() {
 }
 
 void test_mixture_distribution_soa_samples() {
-	ccs_distribution_t t_distrib = NULL, distrib = NULL, distribs[2];
-	ccs_distribution_t t_distribs[2];
+	ccs_distribution_t t_distrib = NULL, distrib = NULL, distribs[NUM_DISTRIBS];
+	ccs_distribution_t t_distribs[NUM_DISTRIBS];
 	ccs_rng_t          rng = NULL;
 	ccs_result_t       err = CCS_SUCCESS;
-	const size_t       num_t_distribs = 2;
-	const size_t       num_distribs = 2;
-	const size_t       num_samples = 10000;
-	ccs_numeric_t      samples1[num_samples];
-	ccs_numeric_t      samples2[num_samples];
+	const size_t       num_t_distribs = NUM_DISTRIBS;
+	const size_t       num_distribs = NUM_DISTRIBS;
+	const size_t       num_samples = NUM_SAMPLES;
+	ccs_numeric_t      samples1[NUM_SAMPLES];
+	ccs_numeric_t      samples2[NUM_SAMPLES];
 	ccs_numeric_t     *samples[] = { samples1, samples2 };
 	ccs_float_t        weights[] = { 1.0, 1.0 };
 

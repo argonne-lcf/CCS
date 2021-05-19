@@ -6,17 +6,20 @@
 #include <gsl/gsl_randist.h>
 #include <gsl/gsl_cdf.h>
 
+#define NUM_DISTRIBS 2
+#define NUM_SAMPLES 10000
+
 void test_create_multivariate_distribution() {
-	const size_t            num_distribs = 2;
+	const size_t            num_distribs = NUM_DISTRIBS;
 	ccs_distribution_t      distrib = NULL;
-	ccs_distribution_t      distribs[num_distribs];
-	ccs_distribution_t      distribs_ret[num_distribs];
+	ccs_distribution_t      distribs[NUM_DISTRIBS];
+	ccs_distribution_t      distribs_ret[NUM_DISTRIBS];
 	ccs_result_t            err = CCS_SUCCESS;
 	int32_t                 refcount;
 	ccs_object_type_t       otype;
 	ccs_distribution_type_t dtype;
-	ccs_numeric_type_t      data_types[2];
-	ccs_interval_t          intervals[num_distribs];
+	ccs_numeric_type_t      data_types[NUM_DISTRIBS];
+	ccs_interval_t          intervals[NUM_DISTRIBS];
 	size_t                  num_distribs_ret;
 
 	err = ccs_create_uniform_distribution(
@@ -92,12 +95,12 @@ void test_create_multivariate_distribution() {
 }
 
 void test_multivariate_distribution() {
-	ccs_distribution_t distrib = NULL, distribs[2];
+	ccs_distribution_t distrib = NULL, distribs[NUM_DISTRIBS];
 	ccs_rng_t          rng = NULL;
 	ccs_result_t       err = CCS_SUCCESS;
-	const size_t       num_distribs = 2;
-	const size_t       num_samples = 10000;
-	ccs_numeric_t      samples[num_samples*num_distribs];
+	const size_t       num_distribs = NUM_DISTRIBS;
+	const size_t       num_samples = NUM_SAMPLES;
+	ccs_numeric_t      samples[NUM_SAMPLES*NUM_DISTRIBS];
 
 	err = ccs_rng_create(&rng);
 	assert( err == CCS_SUCCESS );
@@ -130,12 +133,12 @@ void test_multivariate_distribution() {
 	assert( err == CCS_SUCCESS );
 
 	for (size_t i = 0; i < num_samples; i++) {
-		assert( samples[2*i].f >= -5.0 );
-		assert( samples[2*i].f <   5.0 );
-		assert( samples[2*i + 1].i >= -5 );
-		assert( samples[2*i + 1].i <   5 );
+		assert( samples[NUM_DISTRIBS*i].f >= -5.0 );
+		assert( samples[NUM_DISTRIBS*i].f <   5.0 );
+		assert( samples[NUM_DISTRIBS*i + 1].i >= -5 );
+		assert( samples[NUM_DISTRIBS*i + 1].i <   5 );
 	}
-	double mean = gsl_stats_mean((double*)samples, 2, num_samples);
+	double mean = gsl_stats_mean((double*)samples, NUM_DISTRIBS, num_samples);
 	assert( mean < 0.0 + 0.1 );
 	assert( mean > 0.0 - 0.1 );
 
@@ -150,12 +153,12 @@ void test_multivariate_distribution() {
 }
 
 void test_multivariate_distribution_strided_samples() {
-	ccs_distribution_t distrib = NULL, distribs[2];
+	ccs_distribution_t distrib = NULL, distribs[NUM_DISTRIBS];
 	ccs_rng_t          rng = NULL;
 	ccs_result_t       err = CCS_SUCCESS;
-	const size_t       num_distribs = 2;
-	const size_t       num_samples = 10000;
-	ccs_numeric_t      samples[num_samples*(num_distribs+1)];
+	const size_t       num_distribs = NUM_DISTRIBS;
+	const size_t       num_samples = NUM_SAMPLES;
+	ccs_numeric_t      samples[NUM_SAMPLES*(NUM_DISTRIBS+1)];
 
 	err = ccs_rng_create(&rng);
 	assert( err == CCS_SUCCESS );
@@ -184,16 +187,16 @@ void test_multivariate_distribution_strided_samples() {
 		&distrib);
 	assert( err == CCS_SUCCESS );
 
-	err = ccs_distribution_strided_samples(distrib, rng, num_samples, 3, samples);
+	err = ccs_distribution_strided_samples(distrib, rng, num_samples, NUM_DISTRIBS+1, samples);
 	assert( err == CCS_SUCCESS );
 
 	for (size_t i = 0; i < num_samples; i++) {
-		assert( samples[3*i].f >= -5.0 );
-		assert( samples[3*i].f <   5.0 );
-		assert( samples[3*i + 1].i >= -5 );
-		assert( samples[3*i + 1].i <   5 );
+		assert( samples[(NUM_DISTRIBS+1)*i].f >= -5.0 );
+		assert( samples[(NUM_DISTRIBS+1)*i].f <   5.0 );
+		assert( samples[(NUM_DISTRIBS+1)*i + 1].i >= -5 );
+		assert( samples[(NUM_DISTRIBS+1)*i + 1].i <   5 );
 	}
-	double mean = gsl_stats_mean((double*)samples, 3, num_samples);
+	double mean = gsl_stats_mean((double*)samples, NUM_DISTRIBS+1, num_samples);
 	assert( mean < 0.0 + 0.1 );
 	assert( mean > 0.0 - 0.1 );
 
@@ -208,13 +211,13 @@ void test_multivariate_distribution_strided_samples() {
 }
 
 void test_multivariate_distribution_soa_samples() {
-	ccs_distribution_t distrib = NULL, distribs[2];
+	ccs_distribution_t distrib = NULL, distribs[NUM_DISTRIBS];
 	ccs_rng_t          rng = NULL;
 	ccs_result_t       err = CCS_SUCCESS;
-	const size_t       num_distribs = 2;
-	const size_t       num_samples = 10000;
-	ccs_numeric_t      samples1[num_samples];
-	ccs_numeric_t      samples2[num_samples];
+	const size_t       num_distribs = NUM_DISTRIBS;
+	const size_t       num_samples = NUM_SAMPLES;
+	ccs_numeric_t      samples1[NUM_SAMPLES];
+	ccs_numeric_t      samples2[NUM_SAMPLES];
 	ccs_numeric_t     *samples[] = { samples1, samples2 };
 
 	err = ccs_rng_create(&rng);
@@ -268,13 +271,13 @@ void test_multivariate_distribution_soa_samples() {
 }
 
 void test_distribution_hyperparameters_sample() {
-	const size_t         num_distribs = 2;
-	ccs_distribution_t   distrib = NULL, distribs[num_distribs];
-	ccs_hyperparameter_t params[num_distribs];
+	const size_t         num_distribs = NUM_DISTRIBS;
+	ccs_distribution_t   distrib = NULL, distribs[NUM_DISTRIBS];
+	ccs_hyperparameter_t params[NUM_DISTRIBS];
 	ccs_rng_t            rng = NULL;
 	ccs_result_t         err = CCS_SUCCESS;
-	const size_t         num_samples = 10000;
-	ccs_datum_t          samples[num_samples*num_distribs];
+	const size_t         num_samples = NUM_SAMPLES;
+	ccs_datum_t          samples[NUM_SAMPLES*NUM_DISTRIBS];
 
 	err = ccs_rng_create(&rng);
 	assert( err == CCS_SUCCESS );
@@ -319,18 +322,18 @@ void test_distribution_hyperparameters_sample() {
 	assert( err == CCS_SUCCESS );
 
 	for (size_t i = 0; i < num_samples; i++) {
-		assert( samples[2*i].type == CCS_FLOAT );
-		assert( samples[2*i].value.f >= -5.0 );
-		assert( samples[2*i].value.f <   5.0 );
-		assert( samples[2*i + 1].type == CCS_FLOAT );
-		assert( samples[2*i + 1].value.f >= -4.0 );
-		assert( samples[2*i + 1].value.f <   6.0 );
+		assert( samples[NUM_DISTRIBS*i].type == CCS_FLOAT );
+		assert( samples[NUM_DISTRIBS*i].value.f >= -5.0 );
+		assert( samples[NUM_DISTRIBS*i].value.f <   5.0 );
+		assert( samples[NUM_DISTRIBS*i + 1].type == CCS_FLOAT );
+		assert( samples[NUM_DISTRIBS*i + 1].value.f >= -4.0 );
+		assert( samples[NUM_DISTRIBS*i + 1].value.f <   6.0 );
 	}
-	double mean = gsl_stats_mean((double*)samples, 4, num_samples);
+	double mean = gsl_stats_mean((double*)samples, NUM_DISTRIBS*2, num_samples);
 	assert( mean < 0.0 + 0.1 );
 	assert( mean > 0.0 - 0.1 );
 
-	mean = gsl_stats_mean((double*)samples + 2, 4, num_samples);
+	mean = gsl_stats_mean((double*)samples + 2, NUM_DISTRIBS*2, num_samples);
 	assert( mean < 1.0 + 0.1 );
 	assert( mean > 1.0 - 0.1 );
 
@@ -347,13 +350,13 @@ void test_distribution_hyperparameters_sample() {
 }
 
 void test_distribution_hyperparameters_sample_oversampling() {
-	const size_t         num_distribs = 2;
-	ccs_distribution_t   distrib = NULL, distribs[num_distribs];
-	ccs_hyperparameter_t params[num_distribs];
+	const size_t         num_distribs = NUM_DISTRIBS;
+	ccs_distribution_t   distrib = NULL, distribs[NUM_DISTRIBS];
+	ccs_hyperparameter_t params[NUM_DISTRIBS];
 	ccs_rng_t            rng = NULL;
 	ccs_result_t         err = CCS_SUCCESS;
-	const size_t         num_samples = 10000;
-	ccs_datum_t          samples[num_samples*num_distribs];
+	const size_t         num_samples = NUM_SAMPLES;
+	ccs_datum_t          samples[NUM_SAMPLES*NUM_DISTRIBS];
 
 	err = ccs_rng_create(&rng);
 	assert( err == CCS_SUCCESS );
@@ -398,18 +401,18 @@ void test_distribution_hyperparameters_sample_oversampling() {
 	assert( err == CCS_SUCCESS );
 
 	for (size_t i = 0; i < num_samples; i++) {
-		assert( samples[2*i].type == CCS_FLOAT );
-		assert( samples[2*i].value.f >= -5.0 );
-		assert( samples[2*i].value.f <   5.0 );
-		assert( samples[2*i + 1].type == CCS_FLOAT );
-		assert( samples[2*i + 1].value.f >= -4.0 );
-		assert( samples[2*i + 1].value.f <   6.0 );
+		assert( samples[NUM_DISTRIBS*i].type == CCS_FLOAT );
+		assert( samples[NUM_DISTRIBS*i].value.f >= -5.0 );
+		assert( samples[NUM_DISTRIBS*i].value.f <   5.0 );
+		assert( samples[NUM_DISTRIBS*i + 1].type == CCS_FLOAT );
+		assert( samples[NUM_DISTRIBS*i + 1].value.f >= -4.0 );
+		assert( samples[NUM_DISTRIBS*i + 1].value.f <   6.0 );
 	}
-	double mean = gsl_stats_mean((double*)samples, 4, num_samples);
+	double mean = gsl_stats_mean((double*)samples, NUM_DISTRIBS*2, num_samples);
 	assert( mean < 0.0 + 0.1 );
 	assert( mean > 0.0 - 0.1 );
 
-	mean = gsl_stats_mean((double*)samples + 2, 4, num_samples);
+	mean = gsl_stats_mean((double*)samples + 2, NUM_DISTRIBS*2, num_samples);
 	assert( mean < 1.0 + 0.1 );
 	assert( mean > 1.0 - 0.1 );
 

@@ -2,6 +2,10 @@
 #include <assert.h>
 #include <cconfigspace.h>
 
+#define NUM_SAMPLES 100
+#define NUM_SAMPLES_BIG 1000
+
+
 static void test_create_uniform_distribution() {
 	ccs_distribution_t      distrib = NULL;
 	ccs_result_t            err = CCS_SUCCESS;
@@ -117,8 +121,6 @@ static void test_create_uniform_distribution_errors() {
 
 }
 
-#define NUM_SAMPLES 100
-
 static void test_uniform_distribution_int() {
 	ccs_distribution_t distrib = NULL;
 	ccs_rng_t          rng = NULL;
@@ -152,8 +154,6 @@ static void test_uniform_distribution_int() {
 	err = ccs_release_object(rng);
 	assert( err == CCS_SUCCESS );
 }
-
-#define NUM_SAMPLES_BIG 1000
 
 static void test_uniform_distribution_int_log() {
 	ccs_distribution_t distrib = NULL;
