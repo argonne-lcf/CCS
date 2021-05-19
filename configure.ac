@@ -8,6 +8,14 @@ AC_CONFIG_SRCDIR([src/cconfigspace.c])
 AC_CONFIG_AUX_DIR([m4])
 AC_CONFIG_MACRO_DIR([m4])
 
+# detect OS
+AC_CANONICAL_HOST
+case $host_os in
+  *macos*) macos="yes" ;;
+  *darwin*) macos="yes" ;;
+  *) macos="no" ;;
+esac
+
 # automake should fail on any error
 AM_INIT_AUTOMAKE([-Wall -Werror foreign 1.12])
 AM_PROG_AR
@@ -21,6 +29,8 @@ AC_PROG_CC
 AC_PROG_CC_STDC
 AC_TYPE_SIZE_T
 AC_HEADER_ASSERT
+
+AM_CONDITIONAL([ISMACOS], [test "x$macos" = xyes])
 
 # Check Ruby
 PKG_CHECK_MODULES([RUBY], [ruby >= 2.3], [HAVE_RB=yes], [HAVE_RB=no])
@@ -41,7 +51,7 @@ then
     HAVE_RB=no
   fi
 fi
-AM_CONDITIONAL([HAVE_RUBY],[test "x$HAVE_RB" = xyes])
+AM_CONDITIONAL([HAVE_RUBY], [test "x$HAVE_RB" = xyes])
 PKG_CHECK_MODULES([PYTHON], [python3-embed >= 3.6])
 
 #check for libraries
