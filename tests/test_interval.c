@@ -132,6 +132,8 @@ void test_intersect_int() {
 
 	err = ccs_interval_intersect(&interval1, &interval2, &intersection);
 	assert( err == CCS_SUCCESS );
+	err = ccs_interval_empty(&intersection, &empty);
+	assert( err == CCS_SUCCESS );
 	assert( !empty );
 	assert( intersection.type == CCS_NUM_INTEGER );
 	assert( intersection.lower.i == 2 );
@@ -160,6 +162,8 @@ void test_union_float() {
 
 	err = ccs_interval_union(&interval1, &interval2, &u);
 	assert( err == CCS_SUCCESS );
+	err = ccs_interval_empty(&u, &empty);
+	assert( err == CCS_SUCCESS );
 	assert( !empty );
 	assert( u.type == CCS_NUM_FLOAT );
 	assert( u.lower.f == -3.0 );
@@ -187,6 +191,8 @@ void test_union_int() {
 	interval2.upper_included = CCS_TRUE;
 
 	err = ccs_interval_union(&interval1, &interval2, &u);
+	assert( err == CCS_SUCCESS );
+	err = ccs_interval_empty(&u, &empty);
 	assert( err == CCS_SUCCESS );
 	assert( !empty );
 	assert( u.type == CCS_NUM_INTEGER );
