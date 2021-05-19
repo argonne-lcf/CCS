@@ -425,7 +425,7 @@ void test_distribution_hyperparameters_sample_oversampling() {
 	assert( err == CCS_SUCCESS );
 }
 
-int main(int argc, char *argv[]) {
+int main() {
 	ccs_init();
 	test_create_multivariate_distribution();
 	test_multivariate_distribution();

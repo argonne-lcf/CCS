@@ -171,7 +171,7 @@ void test_oversampling() {
 	assert( err == CCS_SUCCESS );
 }
 
-int main(int argc, char *argv[]) {
+int main() {
 	ccs_init();
 	test_create();
 	test_samples();

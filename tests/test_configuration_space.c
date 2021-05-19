@@ -367,7 +367,7 @@ void test_set_distribution() {
 	assert( err == CCS_SUCCESS );
 }
 
-int main(int argc, char *argv[]) {
+int main() {
 	ccs_init();
 	test_create();
 	test_add();

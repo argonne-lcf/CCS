@@ -486,7 +486,7 @@ static void test_uniform_distribution_soa_samples() {
 }
 
 
-int main(int argc, char *argv[]) {
+int main() {
 	ccs_init();
 	test_create_uniform_distribution();
 	test_create_uniform_distribution_errors();

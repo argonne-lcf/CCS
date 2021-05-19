@@ -337,7 +337,7 @@ void test_roulette_distribution_soa_samples() {
 	assert( err == CCS_SUCCESS );
 }
 
-int main(int argc, char *argv[]) {
+int main() {
 	ccs_init();
 	test_create_roulette_distribution();
 	test_create_roulette_distribution_errors();

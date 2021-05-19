@@ -632,7 +632,7 @@ static void test_normal_distribution_soa_samples() {
 	assert( err == CCS_SUCCESS );
 }
 
-int main(int argc, char *argv[]) {
+int main() {
 	ccs_init();
 	test_create_normal_distribution();
 	test_create_normal_distribution_errors();
