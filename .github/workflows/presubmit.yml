@@ -146,7 +146,7 @@ jobs:
       - run: pip3 install --user parglare==0.12.0
       - run: ./autogen.sh
       - run: mkdir -p build
-      - run: ../configure --enable-strict CC=clang
+      - run: ../configure CC=clang
         working-directory: build
       - run: make
         working-directory: build
