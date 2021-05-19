@@ -42,8 +42,9 @@ then
     RUBYHDRDIR=`$RUBY -e 'puts RbConfig::CONFIG[["rubyhdrdir"]]'`
     RUBYARCHHDRDIR=`$RUBY -e 'puts RbConfig::CONFIG[["rubyarchhdrdir"]]'`
     LIBRUBYARG=`$RUBY -e 'puts RbConfig::CONFIG[["LIBRUBYARG"]]'`
+    RUBYLIBDIR=`$RUBY -e 'puts RbConfig::CONFIG[["rubylibdir"]]'`
     RUBY_CFLAGS="-I$RUBYARCHHDRDIR -I$RUBYHDRDIR"
-    RUBY_LIBS="$LIBRUBYARG -lm"
+    RUBY_LIBS="-L$RUBYLIBDIR $LIBRUBYARG -lm"
     AC_SUBST([RUBY_CFLAGS])
     AC_SUBST([RUBY_LIBS])
     HAVE_RB=yes
