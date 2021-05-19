@@ -46,6 +46,7 @@ then
     RUBY_CFLAGS="-I$RUBYARCHHDRDIR -I$RUBYHDRDIR"
     RUBY_LIBS="-L$RUBYLIBDIR $LIBRUBYARG -lm"
     echo `ruby -e 'require "pp"; pp RbConfig::CONFIG' |grep lib`
+    echo `find /usr/local/Cellar/ruby@2.7/2.7.3/`
     AC_SUBST([RUBY_CFLAGS])
     AC_SUBST([RUBY_LIBS])
     HAVE_RB=yes
