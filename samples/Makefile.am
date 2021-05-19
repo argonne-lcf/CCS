@@ -10,7 +10,12 @@ endif
 
 test_ruby_LDFLAGS = ../src/libcconfigspace.la $(RUBY_LIBS)
 
-test_python_CFLAGS = -I$(top_srcdir)/include -Wall -Wextra -Wpedantic -Werror $(PYTHON_CFLAGS)
+test_python_CFLAGS = -I$(top_srcdir)/include -Wall -Wextra -Wpedantic $(PYTHON_CFLAGS)
+
+if STRICT
+test_python_CFLAGS += -Werror
+endif
+
 test_python_LDFLAGS = ../src/libcconfigspace.la $(PYTHON_LIBS)
 
 CCONFIGSPACE_TESTS = \
