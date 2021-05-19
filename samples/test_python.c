@@ -50,7 +50,7 @@ void create_problem(ccs_configuration_space_t *cs, ccs_objective_space_t *os) {
 	assert( err == CCS_SUCCESS );
 	err = ccs_release_object(hyperparameter3);
 	assert( err == CCS_SUCCESS );
-	err = ccs_release_object(&expression);
+	err = ccs_release_object(expression);
 	assert( err == CCS_SUCCESS );
 
 	*cs = cspace;
