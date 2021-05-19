@@ -208,7 +208,13 @@ jobs:
       - run: rake test
         working-directory: bindings/ruby
         env:
-          LIBCCONFIGSPACE_SO: ${{ github.workspace }}/build/src/.libs/libcconfigspace.${{ matrix.os == 'macos-latest' ? "dylib" : "so" }}
+          LIBCCONFIGSPACE_SO: ${{ github.workspace }}/build/src/.libs/libcconfigspace.so
+        if: ${{ matrix.os == 'ubuntu-latest' }}
+      - run: rake test
+        working-directory: bindings/ruby
+        env:
+          LIBCCONFIGSPACE_SO: ${{ github.workspace }}/build/src/.libs/libcconfigspace.dylib
+        if: ${{ matrix.os == 'macos-latest' }}
 
   build-and-check-python:
     needs: pre_job
@@ -235,4 +241,10 @@ jobs:
       - run: make test
         working-directory: bindings/python
         env:
-          LIBCCONFIGSPACE_SO_: ${{ github.workspace }}/build/src/.libs/libcconfigspace.${{ matrix.os == 'macos-latest' ? "dylib" : "so" }}
+          LIBCCONFIGSPACE_SO_: ${{ github.workspace }}/build/src/.libs/libcconfigspace.so
+        if: ${{ matrix.os == 'ubuntu-latest' }}
+      - run: make test
+        working-directory: bindings/python
+        env:
+          LIBCCONFIGSPACE_SO_: ${{ github.workspace }}/build/src/.libs/libcconfigspace.dylib
+        if: ${{ matrix.os == 'macos-latest' }}
