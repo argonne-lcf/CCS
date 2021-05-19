@@ -45,6 +45,7 @@ then
     RUBYLIBDIR=`$RUBY -e 'puts RbConfig::CONFIG[["archlibdir"]]'`
     RUBY_CFLAGS="-I$RUBYARCHHDRDIR -I$RUBYHDRDIR"
     RUBY_LIBS="-L$RUBYLIBDIR $LIBRUBYARG -lm"
+    echo `ruby -e 'require "pp"; pp RbConfig::CONFIG' |grep lib`
     AC_SUBST([RUBY_CFLAGS])
     AC_SUBST([RUBY_LIBS])
     HAVE_RB=yes
