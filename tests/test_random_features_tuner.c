@@ -182,7 +182,7 @@ void test() {
 	assert( err == CCS_SUCCESS );
 }
 
-int main(int argc, char *argv[]) {
+int main() {
 	ccs_init();
 	test();
 	return 0;
