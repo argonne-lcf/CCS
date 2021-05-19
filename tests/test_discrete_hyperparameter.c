@@ -3,6 +3,9 @@
 #include <cconfigspace.h>
 #include <string.h>
 
+#define NUM_POSSIBLE_VALUES 4
+#define NUM_SAMPLES 10000
+
 void test_create() {
 	ccs_hyperparameter_t       hyperparameter;
 	ccs_hyperparameter_type_t  type;
@@ -14,8 +17,8 @@ void test_create() {
 	ccs_distribution_t         distribution;
 	ccs_distribution_type_t    dist_type;
 	ccs_interval_t             interval;
-	const size_t               num_possible_values = 4;
-	ccs_datum_t                possible_values[num_possible_values];
+	const size_t               num_possible_values = NUM_POSSIBLE_VALUES;
+	ccs_datum_t                possible_values[NUM_POSSIBLE_VALUES];
 	const size_t               default_value_index = 2;
 
 	for(size_t i = 0; i < num_possible_values; i++) {
@@ -83,11 +86,11 @@ void test_samples() {
 	ccs_rng_t            rng;
 	ccs_hyperparameter_t hyperparameter;
 	ccs_distribution_t   distribution;
-	const size_t         num_samples = 10000;
-	ccs_datum_t          samples[num_samples];
+	const size_t         num_samples = NUM_SAMPLES;
+	ccs_datum_t          samples[NUM_SAMPLES];
 	ccs_result_t         err;
-	const size_t         num_possible_values = 4;
-	ccs_datum_t          possible_values[num_possible_values];
+	const size_t         num_possible_values = NUM_POSSIBLE_VALUES;
+	ccs_datum_t          possible_values[NUM_POSSIBLE_VALUES];
 	const size_t         default_value_index = 2;
 
 	for(size_t i = 0; i < num_possible_values; i++) {
@@ -129,11 +132,11 @@ void test_oversampling() {
 	ccs_rng_t            rng;
 	ccs_hyperparameter_t hyperparameter;
 	ccs_distribution_t   distribution;
-	const size_t         num_samples = 10000;
-	ccs_datum_t          samples[num_samples];
+	const size_t         num_samples = NUM_SAMPLES;
+	ccs_datum_t          samples[NUM_SAMPLES];
 	ccs_result_t         err;
-	const size_t         num_possible_values = 4;
-	ccs_datum_t          possible_values[num_possible_values];
+	const size_t         num_possible_values = NUM_POSSIBLE_VALUES;
+	ccs_datum_t          possible_values[NUM_POSSIBLE_VALUES];
 	const size_t         default_value_index = 2;
 
 	for(size_t i = 0; i < num_possible_values; i++) {
@@ -171,7 +174,7 @@ void test_oversampling() {
 	assert( err == CCS_SUCCESS );
 }
 
-int main(int argc, char *argv[]) {
+int main() {
 	ccs_init();
 	test_create();
 	test_samples();

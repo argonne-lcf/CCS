@@ -1,6 +1,6 @@
 AM_CPPFLAGS = -I$(top_srcdir)/include
 
-AM_CFLAGS = -Wall -Werror -Wpedantic
+AM_CFLAGS = -Wall -Wextra -Werror -Wpedantic
 
 lib_LTLIBRARIES = libcconfigspace.la
 

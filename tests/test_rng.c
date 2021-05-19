@@ -116,7 +116,7 @@ static void test_rng_uniform() {
 	assert( err == CCS_SUCCESS );
 }
 
-int main(int argc, char *argv[]) {
+int main() {
 	ccs_init();
 	test_rng_create_with_type();
 	test_rng_create();

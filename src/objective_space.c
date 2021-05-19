@@ -2,11 +2,6 @@
 #include "objective_space_internal.h"
 #include "evaluation_internal.h"
 
-static inline _ccs_objective_space_ops_t *
-ccs_objective_space_get_ops(ccs_objective_space_t objective_space) {
-	return (_ccs_objective_space_ops_t *)objective_space->obj.ops;
-}
-
 static ccs_result_t
 _ccs_objective_space_del(ccs_object_t object) {
 	ccs_objective_space_t objective_space = (ccs_objective_space_t)object;

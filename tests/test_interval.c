@@ -102,6 +102,8 @@ void test_intersect_float() {
 
 	err = ccs_interval_intersect(&interval1, &interval2, &intersection);
 	assert( err == CCS_SUCCESS );
+	err = ccs_interval_empty(&intersection, &empty);
+	assert( err == CCS_SUCCESS );
 	assert( !empty );
 	assert( intersection.type == CCS_NUM_FLOAT );
 	assert( intersection.lower.f == 2.0 );
@@ -129,6 +131,8 @@ void test_intersect_int() {
 	interval2.upper_included = CCS_TRUE;
 
 	err = ccs_interval_intersect(&interval1, &interval2, &intersection);
+	assert( err == CCS_SUCCESS );
+	err = ccs_interval_empty(&intersection, &empty);
 	assert( err == CCS_SUCCESS );
 	assert( !empty );
 	assert( intersection.type == CCS_NUM_INTEGER );
@@ -158,6 +162,8 @@ void test_union_float() {
 
 	err = ccs_interval_union(&interval1, &interval2, &u);
 	assert( err == CCS_SUCCESS );
+	err = ccs_interval_empty(&u, &empty);
+	assert( err == CCS_SUCCESS );
 	assert( !empty );
 	assert( u.type == CCS_NUM_FLOAT );
 	assert( u.lower.f == -3.0 );
@@ -185,6 +191,8 @@ void test_union_int() {
 	interval2.upper_included = CCS_TRUE;
 
 	err = ccs_interval_union(&interval1, &interval2, &u);
+	assert( err == CCS_SUCCESS );
+	err = ccs_interval_empty(&u, &empty);
 	assert( err == CCS_SUCCESS );
 	assert( !empty );
 	assert( u.type == CCS_NUM_INTEGER );
@@ -299,7 +307,7 @@ void test_interval_include_int() {
 	assert( !ccs_interval_include(&interval, CCSI(5)) );
 }
 
-int main(int argc, char *argv[]) {
+int main() {
 	ccs_init();
 	test_empty_float();
 	test_empty_int();

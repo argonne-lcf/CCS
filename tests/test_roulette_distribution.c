@@ -6,6 +6,9 @@
 #include <gsl/gsl_randist.h>
 #include <gsl/gsl_cdf.h>
 
+#define NUM_AREAS 4
+#define NUM_SAMPLES 10000
+
 void test_create_roulette_distribution() {
 	ccs_distribution_t      distrib = NULL;
 	ccs_result_t            err = CCS_SUCCESS;
@@ -14,10 +17,10 @@ void test_create_roulette_distribution() {
 	ccs_distribution_type_t dtype;
 	ccs_numeric_type_t      data_type;
 	ccs_interval_t          interval;
-	const size_t            num_areas = 4;
-	ccs_float_t             areas[num_areas];
+	const size_t            num_areas = NUM_AREAS;
+	ccs_float_t             areas[NUM_AREAS];
 	size_t                  num_areas_ret;
-	ccs_float_t             areas_ret[num_areas];
+	ccs_float_t             areas_ret[NUM_AREAS];
 	const ccs_float_t       epsilon = 1e-15;
 
 	for(size_t i = 0; i < num_areas; i++) {
@@ -75,8 +78,8 @@ void test_create_roulette_distribution() {
 void test_create_roulette_distribution_errors() {
 	ccs_distribution_t      distrib = NULL;
 	ccs_result_t            err = CCS_SUCCESS;
-	const size_t            num_areas = 4;
-	ccs_float_t             areas[num_areas];
+	const size_t            num_areas = NUM_AREAS;
+	ccs_float_t             areas[NUM_AREAS];
 
 	for(size_t i = 0; i < num_areas; i++) {
 		areas[i] = (double)(i+1);
@@ -119,11 +122,11 @@ void test_roulette_distribution() {
 	ccs_distribution_t distrib = NULL;
 	ccs_rng_t          rng = NULL;
 	ccs_result_t       err = CCS_SUCCESS;
-	const size_t       num_samples = 10000;
-	ccs_numeric_t      samples[num_samples];
-	const size_t       num_areas = 4;
-	ccs_float_t        areas[num_areas];
-	int                counts[num_areas];
+	const size_t       num_samples = NUM_SAMPLES;
+	ccs_numeric_t      samples[NUM_SAMPLES];
+	const size_t       num_areas = NUM_AREAS;
+	ccs_float_t        areas[NUM_AREAS];
+	int                counts[NUM_AREAS];
 
 	for(size_t i = 0; i < num_areas; i++) {
 		areas[i] = (double)(i+1);
@@ -166,11 +169,11 @@ void test_roulette_distribution_zero() {
 	ccs_distribution_t distrib = NULL;
 	ccs_rng_t          rng = NULL;
 	ccs_result_t       err = CCS_SUCCESS;
-	const size_t       num_samples = 8000;
-	ccs_numeric_t      samples[num_samples];
-	const size_t       num_areas = 4;
-	ccs_float_t        areas[num_areas];
-	int                counts[num_areas];
+	const size_t       num_samples = NUM_SAMPLES;
+	ccs_numeric_t      samples[NUM_SAMPLES];
+	const size_t       num_areas = NUM_AREAS;
+	ccs_float_t        areas[NUM_AREAS];
+	int                counts[NUM_AREAS];
 
 	for(size_t i = 0; i < num_areas; i++) {
 		areas[i] = (double)(i+1);
@@ -215,13 +218,13 @@ void test_roulette_distribution_strided_samples() {
 	ccs_distribution_t distrib2 = NULL;
 	ccs_rng_t          rng = NULL;
 	ccs_result_t       err = CCS_SUCCESS;
-	const size_t       num_samples = 10000;
-	ccs_numeric_t      samples[num_samples*2];
-	const size_t       num_areas = 4;
-	ccs_float_t        areas1[num_areas];
-	ccs_float_t        areas2[num_areas];
-	int                counts1[num_areas];
-	int                counts2[num_areas];
+	const size_t       num_samples = NUM_SAMPLES;
+	ccs_numeric_t      samples[NUM_SAMPLES*2];
+	const size_t       num_areas = NUM_AREAS;
+	ccs_float_t        areas1[NUM_AREAS];
+	ccs_float_t        areas2[NUM_AREAS];
+	int                counts1[NUM_AREAS];
+	int                counts2[NUM_AREAS];
 
 	for(size_t i = 0; i < num_areas; i++) {
 		areas1[i] = (double)(i+1);
@@ -292,11 +295,11 @@ void test_roulette_distribution_soa_samples() {
 	ccs_distribution_t distrib = NULL;
 	ccs_rng_t          rng = NULL;
 	ccs_result_t       err = CCS_SUCCESS;
-	const size_t       num_samples = 10000;
-	ccs_numeric_t      samples[num_samples];
-	const size_t       num_areas = 4;
-	ccs_float_t        areas[num_areas];
-	int                counts[num_areas];
+	const size_t       num_samples = NUM_SAMPLES;
+	ccs_numeric_t      samples[NUM_SAMPLES];
+	const size_t       num_areas = NUM_AREAS;
+	ccs_float_t        areas[NUM_AREAS];
+	int                counts[NUM_AREAS];
 	ccs_numeric_t     *p_samples;
 
 	for(size_t i = 0; i < num_areas; i++) {
@@ -337,7 +340,7 @@ void test_roulette_distribution_soa_samples() {
 	assert( err == CCS_SUCCESS );
 }
 
-int main(int argc, char *argv[]) {
+int main() {
 	ccs_init();
 	test_create_roulette_distribution();
 	test_create_roulette_distribution_errors();

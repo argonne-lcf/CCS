@@ -876,6 +876,7 @@ _ccs_expr_list_eval(_ccs_expression_data_t *data,
                     ccs_context_t           context,
                     ccs_datum_t            *values,
                     ccs_datum_t            *result) {
+	(void)data; (void)context; (void)values; (void)result;
 	return -CCS_UNSUPPORTED_OPERATION;
 }
 
@@ -889,6 +890,7 @@ _ccs_expr_literal_eval(_ccs_expression_data_t *data,
                        ccs_context_t           context,
                        ccs_datum_t            *values,
                        ccs_datum_t            *result) {
+	(void)context; (void)values;
 	_ccs_expression_literal_data_t *d =
 		(_ccs_expression_literal_data_t *)data;
 	*result = d->value;

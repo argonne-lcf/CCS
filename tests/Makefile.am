@@ -1,6 +1,6 @@
 AM_COLOR_TESTS = yes
 
-AM_CFLAGS = -I$(top_srcdir)/include -Wall -Werror -Wpedantic
+AM_CFLAGS = -I$(top_srcdir)/include -Wall -Wextra -Werror -Wpedantic
 AM_LDFLAGS = ../src/libcconfigspace.la
 
 CCONFIGSPACE_TESTS = \

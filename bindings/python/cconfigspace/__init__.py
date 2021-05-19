@@ -1,10 +1,14 @@
+import platform
 import ctypes as ct
 import os
 
 if os.environ.get('LIBCCONFIGSPACE_SO_'):
   libcconfigspace = ct.cdll.LoadLibrary(os.environ.get('LIBCCONFIGSPACE_SO_'))
 else:
-  libcconfigspace = ct.cdll.LoadLibrary('libcconfigspace.so.0.0.0')
+  if platform.uname()[0] == "Linux":
+    libcconfigspace = ct.cdll.LoadLibrary('libcconfigspace.so.0.0.0')
+  else:
+    libcconfigspace = ct.cdll.LoadLibrary('libcconfigspace.dylib')
 
 from .base import *
 from .rng import *

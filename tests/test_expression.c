@@ -832,7 +832,7 @@ void test_check_context() {
 	assert( err == CCS_SUCCESS );
 }
 
-int main(int argc, char *argv[]) {
+int main() {
 	ccs_init();
 	test_equal_literal();
 	test_equal_numerical();

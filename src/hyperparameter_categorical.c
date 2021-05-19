@@ -121,8 +121,8 @@ _ccs_hyperparameter_categorical_convert_samples(
 			results[i] = d->possible_values[values[i].i].d;
 	} else {
 		for(size_t i = 0; i < num_values; i++) {
-			size_t index = (size_t)values[i].i;
-			if (index >= 0 && index < d->num_possible_values)
+			ccs_int_t index = (size_t)values[i].i;
+			if (index >= 0 && (size_t)index < d->num_possible_values)
 				results[i] = d->possible_values[index].d;
 			else
 				results[i] = ccs_inactive;

@@ -6,6 +6,8 @@
 #include <gsl/gsl_randist.h>
 #include <gsl/gsl_cdf.h>
 
+#define NUM_SAMPLES 10000
+
 static void test_create_normal_distribution() {
 	ccs_distribution_t      distrib = NULL;
 	ccs_result_t            err = CCS_SUCCESS;
@@ -125,10 +127,10 @@ static void test_normal_distribution_int() {
 	ccs_distribution_t distrib = NULL;
 	ccs_rng_t          rng = NULL;
 	ccs_result_t       err = CCS_SUCCESS;
-	const size_t       num_samples = 10000;
+	const size_t       num_samples = NUM_SAMPLES;
 	const ccs_float_t  mu = 1;
 	const ccs_float_t  sigma = 2;
-	ccs_numeric_t      samples[num_samples];
+	ccs_numeric_t      samples[NUM_SAMPLES];
 	double             mean, sig;
 	ccs_interval_t     interval;
 
@@ -172,10 +174,10 @@ static void test_normal_distribution_float() {
 	ccs_distribution_t distrib = NULL;
 	ccs_rng_t          rng = NULL;
 	ccs_result_t       err = CCS_SUCCESS;
-	const size_t       num_samples = 10000;
+	const size_t       num_samples = NUM_SAMPLES;
 	const ccs_float_t  mu = 1;
 	const ccs_float_t  sigma = 2;
-	ccs_numeric_t      samples[num_samples];
+	ccs_numeric_t      samples[NUM_SAMPLES];
 	double             mean, sig;
 	ccs_interval_t     interval;
 
@@ -218,10 +220,10 @@ static void test_normal_distribution_int_log() {
 	ccs_distribution_t distrib = NULL;
 	ccs_rng_t          rng = NULL;
 	ccs_result_t       err = CCS_SUCCESS;
-	const size_t       num_samples = 10000;
+	const size_t       num_samples = NUM_SAMPLES;
 	const ccs_float_t  mu = 1;
 	const ccs_float_t  sigma = 2;
-	ccs_numeric_t      samples[num_samples];
+	ccs_numeric_t      samples[NUM_SAMPLES];
 	double             mean, sig;
 	double             tmean, tsigma, alpha, zee, pdfa;
 	ccs_interval_t     interval;
@@ -274,10 +276,10 @@ static void test_normal_distribution_float_log() {
 	ccs_distribution_t distrib = NULL;
 	ccs_rng_t          rng = NULL;
 	ccs_result_t       err = CCS_SUCCESS;
-	const size_t       num_samples = 10000;
+	const size_t       num_samples = NUM_SAMPLES;
 	const ccs_float_t  mu = 1;
 	const ccs_float_t  sigma = 2;
-	ccs_numeric_t      samples[num_samples];
+	ccs_numeric_t      samples[NUM_SAMPLES];
 	double             mean, sig;
 	ccs_interval_t     interval;
 
@@ -321,11 +323,11 @@ static void test_normal_distribution_int_quantize() {
 	ccs_distribution_t distrib = NULL;
 	ccs_rng_t          rng = NULL;
 	ccs_result_t       err = CCS_SUCCESS;
-	const size_t       num_samples = 10000;
+	const size_t       num_samples = NUM_SAMPLES;
 	const ccs_float_t  mu = 1;
 	const ccs_float_t  sigma = 2;
 	const ccs_int_t    q = 2L;
-	ccs_numeric_t      samples[num_samples];
+	ccs_numeric_t      samples[NUM_SAMPLES];
 	double             mean, sig;
 	ccs_interval_t     interval;
 
@@ -369,10 +371,10 @@ static void test_normal_distribution_float_quantize() {
 	ccs_distribution_t distrib = NULL;
 	ccs_rng_t          rng = NULL;
 	ccs_result_t       err = CCS_SUCCESS;
-	const size_t       num_samples = 10000;
+	const size_t       num_samples = NUM_SAMPLES;
 	const ccs_float_t  mu = 1;
 	const ccs_float_t  sigma = 2;
-	ccs_numeric_t      samples[num_samples];
+	ccs_numeric_t      samples[NUM_SAMPLES];
 	double             mean, sig;
 	ccs_interval_t     interval;
 
@@ -415,11 +417,11 @@ static void test_normal_distribution_int_log_quantize() {
 	ccs_distribution_t distrib = NULL;
 	ccs_rng_t          rng = NULL;
 	ccs_result_t       err = CCS_SUCCESS;
-	const size_t       num_samples = 10000;
+	const size_t       num_samples = NUM_SAMPLES;
 	const ccs_float_t  mu = 3;
 	const ccs_float_t  sigma = 2;
 	const ccs_int_t    quantize = 2L;
-	ccs_numeric_t      samples[num_samples];
+	ccs_numeric_t      samples[NUM_SAMPLES];
 	double             mean, sig;
 	double             tmean, tsigma, alpha, zee, pdfa;
 	ccs_interval_t     interval;
@@ -472,11 +474,11 @@ static void test_normal_distribution_float_log_quantize() {
 	ccs_distribution_t distrib = NULL;
 	ccs_rng_t          rng = NULL;
 	ccs_result_t       err = CCS_SUCCESS;
-	const size_t       num_samples = 10000;
+	const size_t       num_samples = NUM_SAMPLES;
 	const ccs_float_t  mu = 3;
 	const ccs_float_t  sigma = 2;
 	const ccs_float_t  quantization = 2.0;
-	ccs_numeric_t      samples[num_samples];
+	ccs_numeric_t      samples[NUM_SAMPLES];
 	double             mean, sig;
 	double             tmean, tsigma, alpha, zee, pdfa;
 	ccs_interval_t     interval;
@@ -529,12 +531,12 @@ static void test_normal_distribution_strided_samples() {
 	ccs_distribution_t distrib2 = NULL;
 	ccs_rng_t          rng = NULL;
 	ccs_result_t       err = CCS_SUCCESS;
-	const size_t       num_samples = 10000;
+	const size_t       num_samples = NUM_SAMPLES;
 	const ccs_float_t  mu1 = 1;
 	const ccs_float_t  sigma1 = 2;
 	const ccs_float_t  mu2 = 0;
 	const ccs_float_t  sigma2 = 2;
-	ccs_numeric_t      samples[num_samples*2];
+	ccs_numeric_t      samples[NUM_SAMPLES*2];
 	double             mean, sig;
 
 	err = ccs_rng_create(&rng);
@@ -588,10 +590,10 @@ static void test_normal_distribution_soa_samples() {
 	ccs_distribution_t distrib = NULL;
 	ccs_rng_t          rng = NULL;
 	ccs_result_t       err = CCS_SUCCESS;
-	const size_t       num_samples = 10000;
+	const size_t       num_samples = NUM_SAMPLES;
 	const ccs_float_t  mu = 1;
 	const ccs_float_t  sigma = 2;
-	ccs_numeric_t      samples[num_samples];
+	ccs_numeric_t      samples[NUM_SAMPLES];
 	double             mean, sig;
 	ccs_interval_t     interval;
 	ccs_numeric_t     *p_samples;
@@ -632,7 +634,7 @@ static void test_normal_distribution_soa_samples() {
 	assert( err == CCS_SUCCESS );
 }
 
-int main(int argc, char *argv[]) {
+int main() {
 	ccs_init();
 	test_create_normal_distribution();
 	test_create_normal_distribution_errors();

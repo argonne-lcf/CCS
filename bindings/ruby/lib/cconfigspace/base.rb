@@ -152,7 +152,7 @@ module CCS
     :CCS_FLAG_TRANSIENT,
     :CCS_FLAG_UNPOOLED ]
 
-  NumericType = enum FFI::Type::INT64, :ccs_numeric_type_t, [
+  NumericType = enum FFI::Type::INT32, :ccs_numeric_type_t, [
     :CCS_NUM_INTEGER, DataType.to_native(:CCS_INTEGER, nil),
     :CCS_NUM_FLOAT, DataType.to_native(:CCS_FLOAT, nil) ]
   class MemoryPointer

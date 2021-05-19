@@ -2,6 +2,10 @@
 #include <assert.h>
 #include <cconfigspace.h>
 
+#define NUM_SAMPLES 100
+#define NUM_SAMPLES_BIG 1000
+
+
 static void test_create_uniform_distribution() {
 	ccs_distribution_t      distrib = NULL;
 	ccs_result_t            err = CCS_SUCCESS;
@@ -121,10 +125,10 @@ static void test_uniform_distribution_int() {
 	ccs_distribution_t distrib = NULL;
 	ccs_rng_t          rng = NULL;
 	ccs_result_t       err = CCS_SUCCESS;
-	const size_t       num_samples = 100;
+	const size_t       num_samples = NUM_SAMPLES;
 	ccs_int_t          lower = -10;
 	ccs_int_t          upper = 11;
-	ccs_numeric_t      samples[num_samples];
+	ccs_numeric_t      samples[NUM_SAMPLES];
 
 	err = ccs_rng_create(&rng);
 	assert( err == CCS_SUCCESS );
@@ -155,10 +159,10 @@ static void test_uniform_distribution_int_log() {
 	ccs_distribution_t distrib = NULL;
 	ccs_rng_t          rng = NULL;
 	ccs_result_t       err = CCS_SUCCESS;
-	const size_t       num_samples = 1000;
+	const size_t       num_samples = NUM_SAMPLES_BIG;
 	ccs_int_t          lower = 1;
 	ccs_int_t          upper = 100;
-	ccs_numeric_t      samples[num_samples];
+	ccs_numeric_t      samples[NUM_SAMPLES_BIG];
 
 	err = ccs_rng_create(&rng);
 	assert( err == CCS_SUCCESS );
@@ -189,11 +193,11 @@ static void test_uniform_distribution_int_log_quantize() {
 	ccs_distribution_t distrib = NULL;
 	ccs_rng_t          rng = NULL;
 	ccs_result_t       err = CCS_SUCCESS;
-	const size_t       num_samples = 1000;
+	const size_t       num_samples = NUM_SAMPLES_BIG;
 	ccs_int_t          lower = 1;
 	ccs_int_t          upper = 101;
 	ccs_int_t          quantize = 2;
-	ccs_numeric_t      samples[num_samples];
+	ccs_numeric_t      samples[NUM_SAMPLES_BIG];
 
 	err = ccs_rng_create(&rng);
 	assert( err == CCS_SUCCESS );
@@ -225,11 +229,11 @@ static void test_uniform_distribution_int_quantize() {
 	ccs_distribution_t distrib = NULL;
 	ccs_rng_t          rng = NULL;
 	ccs_result_t       err = CCS_SUCCESS;
-	const size_t       num_samples = 100;
+	const size_t       num_samples = NUM_SAMPLES;
 	ccs_int_t          lower = -10;
 	ccs_int_t          upper = 12;
 	ccs_int_t          quantize = 2;
-	ccs_numeric_t      samples[num_samples];
+	ccs_numeric_t      samples[NUM_SAMPLES];
 
 	err = ccs_rng_create(&rng);
 	assert( err == CCS_SUCCESS );
@@ -261,10 +265,10 @@ static void test_uniform_distribution_float() {
 	ccs_distribution_t distrib = NULL;
 	ccs_rng_t          rng = NULL;
 	ccs_result_t       err = CCS_SUCCESS;
-	const size_t       num_samples = 100;
+	const size_t       num_samples = NUM_SAMPLES;
 	ccs_float_t        lower = -10;
 	ccs_float_t        upper = 11;
-	ccs_numeric_t      samples[num_samples];
+	ccs_numeric_t      samples[NUM_SAMPLES];
 
 	err = ccs_rng_create(&rng);
 	assert( err == CCS_SUCCESS );
@@ -295,10 +299,10 @@ static void test_uniform_distribution_float_log() {
 	ccs_distribution_t distrib = NULL;
 	ccs_rng_t          rng = NULL;
 	ccs_result_t       err = CCS_SUCCESS;
-	const size_t       num_samples = 1000;
+	const size_t       num_samples = NUM_SAMPLES_BIG;
 	ccs_float_t        lower = 1;
 	ccs_float_t        upper = 100;
-	ccs_numeric_t      samples[num_samples];
+	ccs_numeric_t      samples[NUM_SAMPLES_BIG];
 
 	err = ccs_rng_create(&rng);
 	assert( err == CCS_SUCCESS );
@@ -329,11 +333,11 @@ static void test_uniform_distribution_float_log_quantize() {
 	ccs_distribution_t distrib = NULL;
 	ccs_rng_t          rng = NULL;
 	ccs_result_t       err = CCS_SUCCESS;
-	const size_t       num_samples = 1000;
+	const size_t       num_samples = NUM_SAMPLES_BIG;
 	ccs_float_t        lower = 1;
 	ccs_float_t        upper = 101;
 	ccs_float_t        quantize = 2;
-	ccs_numeric_t      samples[num_samples];
+	ccs_numeric_t      samples[NUM_SAMPLES_BIG];
 
 	err = ccs_rng_create(&rng);
 	assert( err == CCS_SUCCESS );
@@ -364,11 +368,11 @@ static void test_uniform_distribution_float_quantize() {
 	ccs_distribution_t distrib = NULL;
 	ccs_rng_t          rng = NULL;
 	ccs_result_t       err = CCS_SUCCESS;
-	const size_t       num_samples = 100;
+	const size_t       num_samples = NUM_SAMPLES;
 	ccs_float_t        lower = -10;
 	ccs_float_t        upper = 12;
 	ccs_float_t        quantize = 2;
-	ccs_numeric_t      samples[num_samples];
+	ccs_numeric_t      samples[NUM_SAMPLES];
 
 	err = ccs_rng_create(&rng);
 	assert( err == CCS_SUCCESS );
@@ -400,12 +404,12 @@ static void test_uniform_distribution_strided_samples() {
 	ccs_distribution_t distrib2 = NULL;
 	ccs_rng_t          rng = NULL;
 	ccs_result_t       err = CCS_SUCCESS;
-	const size_t       num_samples = 100;
+	const size_t       num_samples = NUM_SAMPLES;
 	ccs_int_t          lower1 = -10;
 	ccs_int_t          upper1 = 11;
 	ccs_int_t          lower2 = 12;
 	ccs_int_t          upper2 = 20;
-	ccs_numeric_t      samples[num_samples*2];
+	ccs_numeric_t      samples[NUM_SAMPLES*2];
 
 	err = ccs_rng_create(&rng);
 	assert( err == CCS_SUCCESS );
@@ -453,10 +457,10 @@ static void test_uniform_distribution_soa_samples() {
 	ccs_distribution_t distrib = NULL;
 	ccs_rng_t          rng = NULL;
 	ccs_result_t       err = CCS_SUCCESS;
-	const size_t       num_samples = 100;
+	const size_t       num_samples = NUM_SAMPLES;
 	ccs_float_t        lower = -10;
 	ccs_float_t        upper = 11;
-	ccs_numeric_t      samples[num_samples];
+	ccs_numeric_t      samples[NUM_SAMPLES];
 	ccs_numeric_t     *p_samples;
 
 	err = ccs_rng_create(&rng);
@@ -486,7 +490,7 @@ static void test_uniform_distribution_soa_samples() {
 }
 
 
-int main(int argc, char *argv[]) {
+int main() {
 	ccs_init();
 	test_create_uniform_distribution();
 	test_create_uniform_distribution_errors();
