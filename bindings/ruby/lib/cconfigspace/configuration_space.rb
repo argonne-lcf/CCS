@@ -146,6 +146,18 @@ module CCS
       }
     end
 
+    def conditional_hyperparameters
+      hps = hyperparameters
+      conds = conditions
+      hps.each_with_index.select { |h, i| conds[i] }.collect { |h, i| h }.to_a
+    end
+
+    def unconditional_hyperparameters
+      hps = hyperparameters
+      conds = conditions
+      hps.each_with_index.select { |h, i| !conds[i] }.collect { |h, i| h }.to_a
+    end
+
     def add_forbidden_clause(expression)
       if expression.kind_of? String
         expression = ExpressionParser::new(self).parse(expression)

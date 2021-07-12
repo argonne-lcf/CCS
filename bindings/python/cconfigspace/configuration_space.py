@@ -139,6 +139,18 @@ class ConfigurationSpace(Context):
     Error.check(res)
     return [Expression.from_handle(ccs_expression(x)) if x else None for x in v]    
 
+  @property
+  def conditional_hyperparameters(self):
+    hps = self.hyperparameters
+    conds = self.conditions
+    return [x for x, y in zip(hps, conds) if y is not None]
+
+  @property
+  def unconditional_hyperparameters(self):
+    hps = self.hyperparameters
+    conds = self.conditions
+    return [x for x, y in zip(hps, conds) if y is None]
+
   def add_forbidden_clause(self, expression):
     if isinstance(expression, str):
       expression = ccs_parser.parse(expression, context = PContext(extra=self))

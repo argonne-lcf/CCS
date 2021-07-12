@@ -73,10 +73,17 @@ class CConfigSpaceTestConfigurationSpace < Minitest::Test
     e3 = CCS::Expression::new(type: :CCS_LESS, nodes: [h1, 0.0])
     cs.add_forbidden_clause(e3)
     conditions = cs.conditions
+    conditional_hyperparameters = cs.conditional_hyperparameters
+    unconditional_hyperparameters = cs.unconditional_hyperparameters
     assert_equal( 3, conditions.length )
     assert_equal( e2.handle, conditions[0].handle )
     assert_nil( conditions[1] )
     assert_equal( e1.handle, conditions[2].handle )
+    assert_equal( 2, conditional_hyperparameters.length )
+    assert_equal( 1, unconditional_hyperparameters.length )
+    assert_equal( h1.handle, conditional_hyperparameters[0].handle )
+    assert_equal( h3.handle, conditional_hyperparameters[1].handle )
+    assert_equal( h2.handle, unconditional_hyperparameters[0].handle )
     forbidden_clauses = cs.forbidden_clauses
     assert_equal( 1, forbidden_clauses.length )
     assert_equal( e3.handle, forbidden_clauses[0].handle )

@@ -72,12 +72,19 @@ class TestConfigurationSpace(unittest.TestCase):
     e3 = ccs.Expression(t = ccs.LESS, nodes = [h1, 0.0])
     cs.add_forbidden_clause(e3)
     conditions = cs.conditions
+    conditional_hyperparameters = cs.conditional_hyperparameters
+    unconditional_hyperparameters = cs.unconditional_hyperparameters
     self.assertEqual( 3, len(conditions) )
     self.assertEqual( e2.handle.value, conditions[0].handle.value )
     self.assertIsNone( conditions[1] )
     self.assertEqual( e1.handle.value, conditions[2].handle.value )
+    self.assertEqual( 2, len(conditional_hyperparameters) )
+    self.assertEqual( 1, len(unconditional_hyperparameters) )
+    self.assertEqual( h1.handle.value, conditional_hyperparameters[0].handle.value )
+    self.assertEqual( h3.handle.value, conditional_hyperparameters[1].handle.value )
+    self.assertEqual( h2.handle.value, unconditional_hyperparameters[0].handle.value )
     forbidden_clauses = cs.forbidden_clauses
-    self.assertEqual( 1, len(forbidden_clauses))
+    self.assertEqual( 1, len(forbidden_clauses) )
     self.assertEqual( e3.handle.value, forbidden_clauses[0].handle.value )
 
   def extract_active_parameters(self, values):
