@@ -161,8 +161,8 @@ class ccs_error(CEnumeration):
     'OUT_OF_MEMORY',
     'UNSUPPORTED_OPERATION',
     'INVALID_EVALUATION',
-    'CCS_INVALID_FEATURES',
-    'CCS_INVALID_FEATURES_TUNER' ]
+    'INVALID_FEATURES',
+    'INVALID_FEATURES_TUNER' ]
 
 class ccs_data_type(CEnumeration):
   _members_ = [
