@@ -429,9 +429,9 @@ from .hyperparameter import Hyperparameter
 from .expression import Expression
 from .configuration_space import ConfigurationSpace
 from .configuration import Configuration
-from .objective_space import ObjectiveSpace
 from .features_space import FeaturesSpace
 from .features import Features
+from .objective_space import ObjectiveSpace
 from .evaluation import Evaluation
 from .features_evaluation import FeaturesEvaluation
 from .tuner import Tuner

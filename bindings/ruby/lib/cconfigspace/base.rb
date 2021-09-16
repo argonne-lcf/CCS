@@ -124,7 +124,8 @@ module CCS
     :CCS_OUT_OF_MEMORY,
     :CCS_UNSUPPORTED_OPERATION,
     :CCS_INVALID_EVALUATION,
-    :CCS_INVALID_FEATURES ]
+    :CCS_INVALID_FEATURES,
+    :CCS_INVALID_FEATURES_TUNER ]
 
   ObjectType = enum FFI::Type::INT32, :ccs_object_type_t, [
     :CCS_RNG,
