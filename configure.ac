@@ -19,6 +19,7 @@ esac
 # automake should fail on any error
 AM_INIT_AUTOMAKE([-Wall -Werror foreign 1.12])
 AM_PROG_AR
+AM_PROG_CC_C_O
 
 # check for libtool
 LT_INIT
