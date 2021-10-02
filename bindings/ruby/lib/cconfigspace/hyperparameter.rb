@@ -8,10 +8,11 @@ module CCS
   end
 
   HyperparameterType = enum FFI::Type::INT32, :ccs_hyperparameter_type_t, [
-    :CCS_NUMERICAL,
-    :CCS_CATEGORICAL,
-    :CCS_ORDINAL,
-    :CCS_DISCRETE
+    :CCS_HYPERPARAMETER_TYPE_NUMERICAL,
+    :CCS_HYPERPARAMETER_TYPE_CATEGORICAL,
+    :CCS_HYPERPARAMETER_TYPE_ORDINAL,
+    :CCS_HYPERPARAMETER_TYPE_DISCRETE,
+    :CCS_HYPERPARAMETER_TYPE_STRING
   ]
   class MemoryPointer
     def read_ccs_hyperparameter_type_t
@@ -44,14 +45,16 @@ module CCS
       res = CCS.ccs_hyperparameter_get_type(handle, ptr)
       CCS.error_check(res)
       case ptr.read_ccs_hyperparameter_type_t
-      when :CCS_NUMERICAL
+      when :CCS_HYPERPARAMETER_TYPE_NUMERICAL
         NumericalHyperparameter
-      when :CCS_CATEGORICAL
+      when :CCS_HYPERPARAMETER_TYPE_CATEGORICAL
         CategoricalHyperparameter
-      when :CCS_ORDINAL
+      when :CCS_HYPERPARAMETER_TYPE_ORDINAL
         OrdinalHyperparameter
-      when :CCS_DISCRETE
+      when :CCS_HYPERPARAMETER_TYPE_DISCRETE
         DiscreteHyperparameter
+      when :CCS_HYPERPARAMETER_TYPE_STRING
+        StringHyperparameter
       else
         raise CCSError, :CCS_INVALID_HYPERPARAMETER
       end.new(handle, retain: retain, auto_release: auto_release)
@@ -320,6 +323,22 @@ module CCS
         res = CCS.ccs_discrete_hyperparameter_get_values(@handle, count, ptr, nil)
         CCS.error_check(res)
         count.times.collect { |i| Datum::new(ptr[i]).value }
+      end
+    end
+  end
+
+  attach_function :ccs_create_string_hyperparameter, [:string, :pointer, :pointer],  :ccs_result_t
+  class StringHyperparameter < Hyperparameter
+    def initialize(handle = nil, retain: false, auto_release: true,
+                   name: Hyperparameter.default_name, user_data: nil)
+      if handle
+        super(handle, retain: retain, auto_release: auto_release)
+      else
+        ptr = MemoryPointer::new(:ccs_hyperparameter_t)
+        name = name.inspect if name.kind_of?(Symbol)
+        res = CCS.ccs_create_string_hyperparameter(name, user_data, ptr)
+        CCS.error_check(res)
+        super(ptr.read_ccs_hyperparameter_t, retain: false)
       end
     end
   end

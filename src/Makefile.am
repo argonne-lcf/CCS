@@ -24,6 +24,7 @@ libcconfigspace_la_SOURCES = \
 			hyperparameter.c \
 			hyperparameter_internal.h \
 			hyperparameter_numerical.c \
+			hyperparameter_string.c \
 			uthash.h \
 			datum_uthash.h \
 			datum_hash.h \

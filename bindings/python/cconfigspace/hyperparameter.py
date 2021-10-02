@@ -5,11 +5,13 @@ from .rng import ccs_default_rng
 from .distribution import Distribution
 
 class ccs_hyperparameter_type(CEnumeration):
+  _scope_ = True
   _members_ = [
     ('NUMERICAL', 0),
     'CATEGORICAL',
     'ORDINAL',
-    'DISCRETE'
+    'DISCRETE',
+    'STRING'
   ]
 
 ccs_hyperparameter_get_type = _ccs_get_function("ccs_hyperparameter_get_type", [ccs_hyperparameter, ct.POINTER(ccs_hyperparameter_type)])
@@ -38,6 +40,8 @@ class Hyperparameter(Object):
       return OrdinalHyperparameter(handle = handle, retain = retain, auto_release = auto_release)
     elif v == ccs_hyperparameter_type.DISCRETE:
       return DiscreteHyperparameter(handle = handle, retain = retain, auto_release = auto_release)
+    elif v == ccs_hyperparameter_type.STRING:
+      return StringHyperparameter(handle = handle, retain = retain, auto_release = auto_release)
     else:
       raise Error(ccs_error(ccs_error.INVALID_HYPERPARAMETER))
 
@@ -345,4 +349,17 @@ class DiscreteHyperparameter(Hyperparameter):
     Error.check(res)
     return [x.value for x in v]
 
+ccs_create_string_hyperparameter = _ccs_get_function("ccs_create_string_hyperparameter", [ct.c_char_p, ct.c_void_p, ct.POINTER(ccs_hyperparameter)])
 
+class StringHyperparameter(Hyperparameter):
+  def __init__(self, handle = None, retain = False, auto_release = True,
+               name = None, user_data = None):
+    if handle is None:
+      if name is None:
+        name = NumericalHyperparameter.default_name()
+      handle = ccs_hyperparameter()
+      res = ccs_create_string_hyperparameter(str.encode(name), user_data, ct.byref(handle))
+      Error.check(res)
+      super().__init__(handle = handle, retain = False)
+    else:
+      super().__init__(handle = handle, retain = retain, auto_release = auto_release)

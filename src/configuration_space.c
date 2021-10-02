@@ -163,6 +163,16 @@ ccs_configuration_space_add_hyperparameter(ccs_configuration_space_t configurati
 	CCS_CHECK_OBJ(configuration_space, CCS_CONFIGURATION_SPACE);
 	CCS_CHECK_OBJ(hyperparameter, CCS_HYPERPARAMETER);
 	ccs_result_t err;
+	ccs_hyperparameter_type_t type;
+
+	err = ccs_hyperparameter_get_type(hyperparameter, &type);
+	if (err)
+		goto error;
+	if (CCS_HYPERPARAMETER_TYPE_STRING == type) {
+		err = -CCS_INVALID_HYPERPARAMETER;
+		goto error;
+	}
+
 	const char *name;
 	size_t sz_name;
 	_ccs_hyperparameter_wrapper_cs_t *p_hyper_wrapper;

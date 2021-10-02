@@ -34,7 +34,7 @@ void test_create() {
 
 	err = ccs_hyperparameter_get_type(hyperparameter, &type);
 	assert( err == CCS_SUCCESS );
-	assert( type == CCS_ORDINAL );
+	assert( type == CCS_HYPERPARAMETER_TYPE_ORDINAL );
 
 	err = ccs_hyperparameter_get_default_value(hyperparameter, &default_value);
 	assert( err == CCS_SUCCESS );

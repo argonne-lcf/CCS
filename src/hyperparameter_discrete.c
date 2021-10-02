@@ -207,7 +207,7 @@ ccs_create_discrete_hyperparameter(const char           *name,
 	_ccs_hyperparameter_discrete_data_t *hyperparam_data =
 	    (_ccs_hyperparameter_discrete_data_t *)(mem +
 	         sizeof(struct _ccs_hyperparameter_s));
-	hyperparam_data->common_data.type = CCS_DISCRETE;
+	hyperparam_data->common_data.type = CCS_HYPERPARAMETER_TYPE_DISCRETE;
 	hyperparam_data->common_data.name = (char *)(mem +
 	    sizeof(struct _ccs_hyperparameter_s) +
 	    sizeof(_ccs_hyperparameter_discrete_data_t) +

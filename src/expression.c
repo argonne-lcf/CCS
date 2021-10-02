@@ -210,11 +210,11 @@ static _ccs_expression_ops_t _ccs_expr_and_ops = {
 } while(0)
 
 #define check_hypers(param, v, t) do { \
-	if (t == CCS_ORDINAL || t == CCS_CATEGORICAL) { \
+	if (t == CCS_HYPERPARAMETER_TYPE_ORDINAL || t == CCS_HYPERPARAMETER_TYPE_CATEGORICAL) { \
 		_ccs_expression_variable_data_t *d = \
 			(_ccs_expression_variable_data_t *)param->data; \
 		check_values(d->hyperparameter, v); \
-	} else if (t == CCS_NUMERICAL || t == CCS_DISCRETE) {\
+	} else if (t == CCS_HYPERPARAMETER_TYPE_NUMERICAL || t == CCS_HYPERPARAMETER_TYPE_DISCRETE) {\
 		if (v.type != CCS_INTEGER && v.type != CCS_FLOAT) \
 			return -CCS_INVALID_VALUE; \
 	} \
@@ -358,12 +358,12 @@ _ccs_expr_less_eval(_ccs_expression_data_t *data,
 	ccs_hyperparameter_type_t htr = CCS_HYPERPARAMETER_TYPE_MAX;
 
 	eval_left_right(data, context, values, left, right, &htl, &htr);
-	if (htl == CCS_CATEGORICAL || htr == CCS_CATEGORICAL)
+	if (htl == CCS_HYPERPARAMETER_TYPE_CATEGORICAL || htr == CCS_HYPERPARAMETER_TYPE_CATEGORICAL)
 		return -CCS_INVALID_VALUE;
 	check_hypers(data->nodes[0], right, htl);
 	check_hypers(data->nodes[1], left, htr);
 	ccs_result_t err;
-	if (htl == CCS_ORDINAL) {
+	if (htl == CCS_HYPERPARAMETER_TYPE_ORDINAL) {
 		ccs_int_t cmp;
 		_ccs_expression_variable_data_t *d =
 			(_ccs_expression_variable_data_t *)data->nodes[0]->data;
@@ -375,7 +375,7 @@ _ccs_expr_less_eval(_ccs_expression_data_t *data,
 		*result = (cmp < 0 ? ccs_true : ccs_false);
 		return CCS_SUCCESS;
 	}
-	if (htr == CCS_ORDINAL) {
+	if (htr == CCS_HYPERPARAMETER_TYPE_ORDINAL) {
 		ccs_int_t cmp;
 		_ccs_expression_variable_data_t *d =
 			(_ccs_expression_variable_data_t *)data->nodes[1]->data;
@@ -411,12 +411,12 @@ _ccs_expr_greater_eval(_ccs_expression_data_t *data,
 	ccs_hyperparameter_type_t htr = CCS_HYPERPARAMETER_TYPE_MAX;
 
 	eval_left_right(data, context, values, left, right, &htl, &htr);
-	if (htl == CCS_CATEGORICAL || htr == CCS_CATEGORICAL)
+	if (htl == CCS_HYPERPARAMETER_TYPE_CATEGORICAL || htr == CCS_HYPERPARAMETER_TYPE_CATEGORICAL)
 		return -CCS_INVALID_VALUE;
 	check_hypers(data->nodes[0], right, htl);
 	check_hypers(data->nodes[1], left, htr);
 	ccs_result_t err;
-	if (htl == CCS_ORDINAL) {
+	if (htl == CCS_HYPERPARAMETER_TYPE_ORDINAL) {
 		ccs_int_t cmp;
 		_ccs_expression_variable_data_t *d =
 			(_ccs_expression_variable_data_t *)data->nodes[0]->data;
@@ -428,7 +428,7 @@ _ccs_expr_greater_eval(_ccs_expression_data_t *data,
 		*result = (cmp > 0 ? ccs_true : ccs_false);
 		return CCS_SUCCESS;
 	}
-	if (htr == CCS_ORDINAL) {
+	if (htr == CCS_HYPERPARAMETER_TYPE_ORDINAL) {
 		ccs_int_t cmp;
 		_ccs_expression_variable_data_t *d =
 			(_ccs_expression_variable_data_t *)data->nodes[1]->data;
@@ -464,12 +464,12 @@ _ccs_expr_less_or_equal_eval(_ccs_expression_data_t *data,
 	ccs_hyperparameter_type_t htr = CCS_HYPERPARAMETER_TYPE_MAX;
 
 	eval_left_right(data, context, values, left, right, &htl, &htr);
-	if (htl == CCS_CATEGORICAL || htr == CCS_CATEGORICAL)
+	if (htl == CCS_HYPERPARAMETER_TYPE_CATEGORICAL || htr == CCS_HYPERPARAMETER_TYPE_CATEGORICAL)
 		return -CCS_INVALID_VALUE;
 	check_hypers(data->nodes[0], right, htl);
 	check_hypers(data->nodes[1], left, htr);
 	ccs_result_t err;
-	if (htl == CCS_ORDINAL) {
+	if (htl == CCS_HYPERPARAMETER_TYPE_ORDINAL) {
 		ccs_int_t cmp;
 		_ccs_expression_variable_data_t *d =
 			(_ccs_expression_variable_data_t *)data->nodes[0]->data;
@@ -481,7 +481,7 @@ _ccs_expr_less_or_equal_eval(_ccs_expression_data_t *data,
 		*result = (cmp <= 0 ? ccs_true : ccs_false);
 		return CCS_SUCCESS;
 	}
-	if (htr == CCS_ORDINAL) {
+	if (htr == CCS_HYPERPARAMETER_TYPE_ORDINAL) {
 		ccs_int_t cmp;
 		_ccs_expression_variable_data_t *d =
 			(_ccs_expression_variable_data_t *)data->nodes[1]->data;
@@ -517,12 +517,12 @@ _ccs_expr_greater_or_equal_eval(_ccs_expression_data_t *data,
 	ccs_hyperparameter_type_t htr = CCS_HYPERPARAMETER_TYPE_MAX;
 
 	eval_left_right(data, context, values, left, right, &htl, &htr);
-	if (htl == CCS_CATEGORICAL || htr == CCS_CATEGORICAL)
+	if (htl == CCS_HYPERPARAMETER_TYPE_CATEGORICAL || htr == CCS_HYPERPARAMETER_TYPE_CATEGORICAL)
 		return -CCS_INVALID_VALUE;
 	check_hypers(data->nodes[0], right, htl);
 	check_hypers(data->nodes[1], left, htr);
 	ccs_result_t err;
-	if (htl == CCS_ORDINAL) {
+	if (htl == CCS_HYPERPARAMETER_TYPE_ORDINAL) {
 		ccs_int_t cmp;
 		_ccs_expression_variable_data_t *d =
 			(_ccs_expression_variable_data_t *)data->nodes[0]->data;
@@ -534,7 +534,7 @@ _ccs_expr_greater_or_equal_eval(_ccs_expression_data_t *data,
 		*result = (cmp >= 0 ? ccs_true : ccs_false);
 		return CCS_SUCCESS;
 	}
-	if (htr == CCS_ORDINAL) {
+	if (htr == CCS_HYPERPARAMETER_TYPE_ORDINAL) {
 		ccs_int_t cmp;
 		_ccs_expression_variable_data_t *d =
 			(_ccs_expression_variable_data_t *)data->nodes[1]->data;

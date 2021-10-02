@@ -34,8 +34,8 @@ static const UT_icd _hyperparameter_wrapper_icd = {
 }
 ccs_result_t
 ccs_create_features_space(const char                *name,
-                               void                      *user_data,
-                               ccs_features_space_t *features_space_ret) {
+                          void                      *user_data,
+                          ccs_features_space_t *features_space_ret) {
 	ccs_result_t err;
 	CCS_CHECK_PTR(name);
 	CCS_CHECK_PTR(features_space_ret);
@@ -65,14 +65,14 @@ arrays:
 
 ccs_result_t
 ccs_features_space_get_name(ccs_features_space_t   features_space,
-                                 const char                **name_ret) {
+                            const char                **name_ret) {
 	CCS_CHECK_OBJ(features_space, CCS_FEATURES_SPACE);
 	return _ccs_context_get_name((ccs_context_t)features_space, name_ret);
 }
 
 ccs_result_t
 ccs_features_space_get_user_data(ccs_features_space_t   features_space,
-                                      void                      **user_data_ret) {
+                                 void                      **user_data_ret) {
 	CCS_CHECK_OBJ(features_space, CCS_FEATURES_SPACE);
 	return _ccs_context_get_user_data((ccs_context_t)features_space, user_data_ret);
 }

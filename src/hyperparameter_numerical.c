@@ -123,7 +123,7 @@ _ccs_hyperparameter_numerical_samples(_ccs_hyperparameter_data_t *data,
 	return CCS_SUCCESS;
 }
 
-ccs_result_t
+static ccs_result_t
 _ccs_hyperparameter_numerical_get_default_distribution(
 		_ccs_hyperparameter_data_t *data,
 		ccs_distribution_t         *distribution) {
@@ -135,7 +135,7 @@ _ccs_hyperparameter_numerical_get_default_distribution(
 	                                       distribution);
 }
 
-ccs_result_t
+static ccs_result_t
 _ccs_hyperparameter_numerical_convert_samples(
 		_ccs_hyperparameter_data_t *data,
 		ccs_bool_t                  oversampling,
@@ -222,7 +222,7 @@ ccs_create_numerical_hyperparameter(const char           *name,
 	ccs_hyperparameter_t hyperparam = (ccs_hyperparameter_t)mem;
 	_ccs_object_init(&(hyperparam->obj), CCS_HYPERPARAMETER, (_ccs_object_ops_t *)&_ccs_hyperparameter_numerical_ops);
 	_ccs_hyperparameter_numerical_data_t *hyperparam_data = (_ccs_hyperparameter_numerical_data_t *)(mem + sizeof(struct _ccs_hyperparameter_s));
-	hyperparam_data->common_data.type = CCS_NUMERICAL;
+	hyperparam_data->common_data.type = CCS_HYPERPARAMETER_TYPE_NUMERICAL;
 	hyperparam_data->common_data.name = (char *)(mem + sizeof(struct _ccs_hyperparameter_s) + sizeof(_ccs_hyperparameter_numerical_data_t));
 	strcpy((char *)hyperparam_data->common_data.name, name);
 	hyperparam_data->common_data.user_data = user_data;

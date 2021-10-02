@@ -66,6 +66,9 @@ class CEnumerationType(type(ct.c_int)):
   def __new__(metacls, name, bases, dict):
     if not "_members_" in dict:
       raise ValueError("CEnumeration must define a _members_ attribute")
+    scope = False
+    if "_scope_" in dict:
+      scope = dict["_scope_"]
     last = -1
     if isinstance(dict["_members_"], list):
       _members_ = {}
@@ -85,7 +88,10 @@ class CEnumerationType(type(ct.c_int)):
     dict["_reverse_members_"] = _reverse_members_
     cls = type(ct.c_int).__new__(metacls, name, bases, dict)
     for key,value in cls._members_.items():
-      globals()[key] = value
+      if scope:
+        globals()[name.removeprefix("ccs_").upper() + "_" + key] = value
+      else:
+        globals()[key] = value
     return cls
 
   def __contains__(self, value):

@@ -6,10 +6,11 @@ extern "C" {
 #endif
 
 enum ccs_hyperparameter_type_e {
-	CCS_NUMERICAL,
-	CCS_CATEGORICAL,
-	CCS_ORDINAL,
-	CCS_DISCRETE,
+	CCS_HYPERPARAMETER_TYPE_NUMERICAL,
+	CCS_HYPERPARAMETER_TYPE_CATEGORICAL,
+	CCS_HYPERPARAMETER_TYPE_ORDINAL,
+	CCS_HYPERPARAMETER_TYPE_DISCRETE,
+	CCS_HYPERPARAMETER_TYPE_STRING,
 	CCS_HYPERPARAMETER_TYPE_MAX,
 	CCS_HYPERPARAMETER_TYPE_FORCE_32BIT = INT_MAX
 };
@@ -82,6 +83,15 @@ ccs_discrete_hyperparameter_get_values(ccs_hyperparameter_t  hyperparameter,
                                        size_t                num_possible_values,
                                        ccs_datum_t          *possible_values,
                                        size_t               *num_possible_values_ret);
+
+/* An hyperparameter to represent an undetermined string, to be used within
+   feature space. Cannot be sampled and thus doesn't have a default value.
+   Checks will always return valid unless the value is not a string. */
+
+extern ccs_result_t
+ccs_create_string_hyperparameter(const char           *name,
+                                 void                 *user_data,
+                                 ccs_hyperparameter_t *hyperparameter_ret);
 
 //   Accessors
 

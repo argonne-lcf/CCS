@@ -17,7 +17,7 @@ class TestHyperparameter(unittest.TestCase):
     values = [0.2, 1.5, 2, 7.2]
     h = ccs.DiscreteHyperparameter(values = values)
     self.assertEqual( ccs.HYPERPARAMETER, h.object_type )
-    self.assertEqual( ccs.DISCRETE, h.type )
+    self.assertEqual( ccs.HYPERPARAMETER_TYPE_DISCRETE, h.type )
     self.assertTrue( h.name[:5] == "param" )
     self.assertIsNone( h.user_data.value )
     self.assertEqual( 0.2, h.default_value )
@@ -53,7 +53,7 @@ class TestHyperparameter(unittest.TestCase):
     values = ["foo", 2, 3.0]
     h = ccs.OrdinalHyperparameter(values = values)
     self.assertEqual( ccs.HYPERPARAMETER, h.object_type )
-    self.assertEqual( ccs.ORDINAL, h.type )
+    self.assertEqual( ccs.HYPERPARAMETER_TYPE_ORDINAL, h.type )
     self.assertTrue( h.name[:5] == "param" )
     self.assertIsNone( h.user_data.value )
     self.assertEqual( "foo", h.default_value )
@@ -79,7 +79,7 @@ class TestHyperparameter(unittest.TestCase):
     values = ["foo", 2, 3.0]
     h = ccs.CategoricalHyperparameter(values = values)
     self.assertEqual( ccs.HYPERPARAMETER, h.object_type )
-    self.assertEqual( ccs.CATEGORICAL, h.type )
+    self.assertEqual( ccs.HYPERPARAMETER_TYPE_CATEGORICAL, h.type )
     self.assertTrue( h.name[:5] == "param" )
     self.assertIsNone( h.user_data.value )
     self.assertEqual( "foo", h.default_value )
@@ -103,7 +103,7 @@ class TestHyperparameter(unittest.TestCase):
   def test_numerical(self):
     h = ccs.NumericalHyperparameter()
     self.assertEqual( ccs.HYPERPARAMETER, h.object_type )
-    self.assertEqual( ccs.NUMERICAL, h.type )
+    self.assertEqual( ccs.HYPERPARAMETER_TYPE_NUMERICAL, h.type )
     self.assertTrue( h.name[:5] == "param" )
     self.assertIsNone( h.user_data.value )
     self.assertEqual( 0.0, h.default_value )
@@ -125,7 +125,7 @@ class TestHyperparameter(unittest.TestCase):
   def test_numerical_float(self):
     h = ccs.NumericalHyperparameter.float(lower = 0.0, upper = 1.0)
     self.assertEqual( ccs.HYPERPARAMETER, h.object_type )
-    self.assertEqual( ccs.NUMERICAL, h.type )
+    self.assertEqual( ccs.HYPERPARAMETER_TYPE_NUMERICAL, h.type )
     self.assertTrue( h.name[:5] == "param" )
     self.assertIsNone( h.user_data.value )
     self.assertEqual( 0.0, h.default_value )
@@ -147,7 +147,7 @@ class TestHyperparameter(unittest.TestCase):
   def test_numerical_int(self):
     h = ccs.NumericalHyperparameter.int(lower = 0, upper = 100)
     self.assertEqual( ccs.HYPERPARAMETER, h.object_type )
-    self.assertEqual( ccs.NUMERICAL, h.type )
+    self.assertEqual( ccs.HYPERPARAMETER_TYPE_NUMERICAL, h.type )
     self.assertTrue( h.name[:5] == "param" )
     self.assertIsNone( h.user_data.value )
     self.assertEqual( 0, h.default_value )
@@ -165,6 +165,15 @@ class TestHyperparameter(unittest.TestCase):
     for v in vals:
       self.assertIsInstance( v, int )
       self.assertTrue( v >= 0 and v < 100 )
+
+  def test_string(self):
+    h = ccs.StringHyperparameter()
+    self.assertEqual( ccs.HYPERPARAMETER, h.object_type )
+    self.assertEqual( ccs.HYPERPARAMETER_TYPE_STRING, h.type )
+    self.assertTrue( h.name[:5] == "param" )
+    self.assertIsNone( h.user_data.value )
+    with self.assertRaises( ccs.Error ):
+      h.sample()
 
 if __name__ == '__main__':
     unittest.main()
