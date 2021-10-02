@@ -306,10 +306,13 @@ void test_mixture_distribution_soa_samples() {
 	err = ccs_release_object(rng);
 	assert( err == CCS_SUCCESS );
 }
+
 int main() {
 	ccs_init();
 	test_create_mixture_distribution();
 	test_mixture_distribution();
 	test_mixture_distribution_strided_samples();
 	test_mixture_distribution_soa_samples();
+	ccs_fini();
+	return 0;
 }

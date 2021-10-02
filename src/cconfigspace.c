@@ -14,6 +14,11 @@ ccs_init() {
 	return CCS_SUCCESS;
 }
 
+ccs_result_t
+ccs_fini() {
+	return CCS_SUCCESS;
+}
+
 ccs_version_t
 ccs_get_version() {
 	return ccs_version;

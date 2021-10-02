@@ -268,5 +268,6 @@ int main() {
 	test_add();
 	test_add_list();
 	test_features();
+	ccs_fini();
 	return 0;
 }

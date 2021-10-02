@@ -504,5 +504,6 @@ int main() {
 	test_uniform_distribution_float_log_quantize();
 	test_uniform_distribution_strided_samples();
 	test_uniform_distribution_soa_samples();
+	ccs_fini();
 	return 0;
 }

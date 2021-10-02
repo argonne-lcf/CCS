@@ -436,4 +436,6 @@ int main() {
 	test_multivariate_distribution_soa_samples();
 	test_distribution_hyperparameters_sample();
 	test_distribution_hyperparameters_sample_oversampling();
+	ccs_fini();
+	return 0;
 }

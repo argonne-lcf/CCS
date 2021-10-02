@@ -374,5 +374,6 @@ int main() {
 	test_add_list();
 	test_sample();
 	test_set_distribution();
+	ccs_fini();
 	return 0;
 }

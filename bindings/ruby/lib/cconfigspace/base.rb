@@ -387,6 +387,7 @@ module CCS
   typedef Datum.by_value, :ccs_datum_t
 
   attach_function :ccs_init, [], :ccs_result_t
+  attach_function :ccs_fini, [], :ccs_result_t
   attach_function :ccs_get_version, [], :ccs_version_t
   attach_function :ccs_retain_object, [:ccs_object_t], :ccs_result_t
   attach_function :ccs_release_object, [:ccs_object_t], :ccs_result_t

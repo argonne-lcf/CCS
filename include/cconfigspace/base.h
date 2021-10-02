@@ -272,6 +272,9 @@ extern const ccs_datum_t ccs_false;
 extern ccs_result_t
 ccs_init();
 
+extern ccs_result_t
+ccs_fini();
+
 extern ccs_version_t
 ccs_get_version();
 

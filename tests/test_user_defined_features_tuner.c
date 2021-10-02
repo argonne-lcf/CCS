@@ -289,6 +289,7 @@ void test() {
 int main() {
 	ccs_init();
 	test();
+	ccs_fini();
 	return 0;
 }
 

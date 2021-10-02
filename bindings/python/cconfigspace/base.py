@@ -303,6 +303,7 @@ class Error(Exception):
       raise cls(ccs_error(-err))
 
 ccs_init = _ccs_get_function("ccs_init")
+ccs_fini = _ccs_get_function("ccs_fini")
 ccs_get_version = _ccs_get_function("ccs_get_version", restype = ccs_version)
 ccs_retain_object = _ccs_get_function("ccs_retain_object", [ccs_object])
 ccs_release_object = _ccs_get_function("ccs_release_object", [ccs_object])

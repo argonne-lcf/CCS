@@ -419,5 +419,6 @@ int main() {
 	test_compare_float();
 	test_compare_string();
 	test_validate();
+	ccs_fini();
 	return 0;
 }
