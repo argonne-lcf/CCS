@@ -128,7 +128,7 @@ enum ccs_numeric_type_e {
 	CCS_NUM_INTEGER = CCS_INTEGER,
 	CCS_NUM_FLOAT = CCS_FLOAT,
 	CCS_NUM_TYPE_MAX,
-	CCS_NUM_TYPE_FORCE_64BIT = INT32_MAX
+	CCS_NUM_TYPE_FORCE_32BIT = INT32_MAX
 };
 
 typedef enum ccs_numeric_type_e ccs_numeric_type_t;
