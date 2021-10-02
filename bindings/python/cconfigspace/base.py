@@ -89,7 +89,10 @@ class CEnumerationType(type(ct.c_int)):
     cls = type(ct.c_int).__new__(metacls, name, bases, dict)
     for key,value in cls._members_.items():
       if scope:
-        globals()[name.removeprefix("ccs_").upper() + "_" + key] = value
+        cls_name = name.upper()
+        if name.startswith("ccs_"):
+          cls_name = cls_name[4:]
+        globals()[cls_name + "_" + key] = value
       else:
         globals()[key] = value
     return cls
