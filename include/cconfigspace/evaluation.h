@@ -84,9 +84,14 @@ ccs_evaluation_hash(ccs_evaluation_t  evaluation,
                     ccs_hash_t       *hash_ret);
 
 extern ccs_result_t
+ccs_evaluation_cmp(ccs_evaluation_t  evaluation,
+                   ccs_evaluation_t  other_evaluation,
+                   int              *cmp_ret);
+
+extern ccs_result_t
 ccs_evaluation_compare(ccs_evaluation_t  evaluation,
                        ccs_evaluation_t  other_evaluation,
-                       ccs_comparison_t  *result_ret);
+                       ccs_comparison_t *result_ret);
 
 #ifdef __cplusplus
 }
