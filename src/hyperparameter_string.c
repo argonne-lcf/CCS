@@ -24,8 +24,6 @@ _ccs_hyperparameter_string_del(ccs_object_t o) {
 
 #undef uthash_nonfatal_oom
 #define uthash_nonfatal_oom(elt) { \
-	HASH_CLEAR(hh, data->stored_values); \
-	free((void*)mem); \
 	return -CCS_OUT_OF_MEMORY; \
 }
 
@@ -59,6 +57,7 @@ _ccs_hyperparameter_string_check_values(_ccs_hyperparameter_data_t *data,
 						p->d = ccs_string((char *)((intptr_t)p + sizeof(_ccs_hash_datum_t)));
 					} else
 						p->d = ccs_string(NULL);
+					HASH_ADD(hh, d->stored_values, d, sizeof(ccs_datum_t), p);
 				}
 				values_ret[i] = p->d;
 			} else {
