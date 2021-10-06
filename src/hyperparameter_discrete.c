@@ -94,7 +94,7 @@ _ccs_hyperparameter_discrete_samples(_ccs_hyperparameter_data_t *data,
 	return CCS_SUCCESS;
 }
 
-ccs_result_t
+static ccs_result_t
 _ccs_hyperparameter_discrete_get_default_distribution(
 		_ccs_hyperparameter_data_t *data,
 		ccs_distribution_t         *distribution) {
@@ -106,7 +106,7 @@ _ccs_hyperparameter_discrete_get_default_distribution(
 	                                       distribution);
 }
 
-ccs_result_t
+static ccs_result_t
 _ccs_hyperparameter_discrete_convert_samples(
 		_ccs_hyperparameter_data_t *data,
 		ccs_bool_t                  oversampling,
@@ -243,7 +243,7 @@ ccs_create_discrete_hyperparameter(const char           *name,
 	return CCS_SUCCESS;
 }
 
-extern ccs_result_t
+ccs_result_t
 ccs_discrete_hyperparameter_get_values(ccs_hyperparameter_t  hyperparameter,
                                        size_t                num_possible_values,
                                        ccs_datum_t          *possible_values,
