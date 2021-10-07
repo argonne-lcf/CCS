@@ -31,6 +31,7 @@ AC_PROG_CC_STDC
 AC_TYPE_SIZE_T
 AC_HEADER_ASSERT
 AC_PROG_CXX
+AX_CXX_COMPILE_STDCXX([14], [noext], [mandatory])
 
 AM_CONDITIONAL([ISMACOS], [test "x$macos" = xyes])
 

@@ -20,7 +20,11 @@
 #define CCS_DEBUG 0
 #endif
 
-#define CCS_DEBUG_MSG(fmt, ...) do { \
+#define CCS_DEBUG_MSG(fmt) do { \
+  if(CCS_DEBUG) fprintf(stderr, fmt); \
+} while(0)
+
+#define CCS_DEBUG_MSG_ARGS(fmt, ...) do { \
   if(CCS_DEBUG) fprintf(stderr, fmt, ##__VA_ARGS__); \
 } while(0)
 
@@ -167,7 +171,7 @@ static ccs_hyperparameter_t variable_info_to_hyperparameter(
   ccs_hyperparameter_t ret;
   switch (info->valueQuantity) {
   case CandidateValueType::kokkos_value_set:
-    CCS_DEBUG_MSG("\tvalue set (%zu)\n", info->candidates.set.size);
+    CCS_DEBUG_MSG_ARGS("\tvalue set (%zu)\n", info->candidates.set.size);
     {
       ccs_datum_t *values = new ccs_datum_t[info->candidates.set.size];
       for (size_t i = 0; i < info->candidates.set.size; i++) {
@@ -209,7 +213,7 @@ static ccs_hyperparameter_t variable_info_to_hyperparameter(
     CCS_DEBUG_MSG("\tvalue range: ");
     switch (info->type) {
     case ValueType::kokkos_value_double:
-      CCS_DEBUG_MSG("double: %s%f..%f%s step: %f\n",
+      CCS_DEBUG_MSG_ARGS("double: %s%f..%f%s step: %f\n",
         info->candidates.range.openLower ? "(" : "[",
         info->candidates.range.lower.double_value,
         info->candidates.range.upper.double_value,
@@ -237,7 +241,7 @@ static ccs_hyperparameter_t variable_info_to_hyperparameter(
       }
       break;
     case ValueType::kokkos_value_int64:
-      CCS_DEBUG_MSG("int: %s%" PRId64 "..%" PRId64 "%s step: %" PRId64 "\n",
+      CCS_DEBUG_MSG_ARGS("int: %s%" PRId64 "..%" PRId64 "%s step: %" PRId64 "\n",
         info->candidates.range.openLower ? "(" : "[",
         info->candidates.range.lower.int_value,
         info->candidates.range.upper.int_value,
@@ -311,9 +315,9 @@ kokkosp_declare_input_type(const char *name, const size_t id,
   clock_gettime(CLOCK_MONOTONIC, &prof_start);
 #endif
 
-  CCS_DEBUG_MSG("Got context variable: %s\n", name);
+  CCS_DEBUG_MSG_ARGS("Got context variable: %s\n", name);
   features[id] = variable_info_to_hyperparameter(name, info);
-  CCS_DEBUG_MSG("...mapped to %p\n", (void *)features[id]);
+  CCS_DEBUG_MSG_ARGS("...mapped to %p\n", (void *)features[id]);
 
 #if CCS_PROFILE
   clock_gettime(CLOCK_MONOTONIC, &prof_stop);
@@ -330,9 +334,9 @@ kokkosp_declare_output_type(const char *name, const size_t id,
   clock_gettime(CLOCK_MONOTONIC, &prof_start);
 #endif
 
-  CCS_DEBUG_MSG("Got tuning variable: %s\n", name);
+  CCS_DEBUG_MSG_ARGS("Got tuning variable: %s\n", name);
   hyperparameters[id] = variable_info_to_hyperparameter(name, info);
-  CCS_DEBUG_MSG("...mapped to %p\n", (void *)hyperparameters[id]);
+  CCS_DEBUG_MSG_ARGS("...mapped to %p\n", (void *)hyperparameters[id]);
 
 #if CCS_PROFILE
   clock_gettime(CLOCK_MONOTONIC, &prof_stop);
@@ -348,16 +352,16 @@ set_value(
   switch(tuningValue->metadata->type) {
   case ValueType::kokkos_value_double:
     tuningValue->value.double_value = d->value.f;
-    CCS_DEBUG_MSG("sent: %f\n", tuningValue->value.double_value);
+    CCS_DEBUG_MSG_ARGS("sent: %f\n", tuningValue->value.double_value);
     break;
   case ValueType::kokkos_value_int64:
     tuningValue->value.int_value = d->value.i;
-    CCS_DEBUG_MSG("sent: %" PRId64 "\n", tuningValue->value.int_value);
+    CCS_DEBUG_MSG_ARGS("sent: %" PRId64 "\n", tuningValue->value.int_value);
     break;
   case ValueType::kokkos_value_string:
     strncpy(tuningValue->value.string_value, d->value.s,
             KOKKOS_TOOLS_TUNING_STRING_LENGTH);
-    CCS_DEBUG_MSG("sent: %s\n", tuningValue->value.string_value);
+    CCS_DEBUG_MSG_ARGS("sent: %s\n", tuningValue->value.string_value);
     break;
   default:
     assert(false && "Unknown ValueType");
@@ -370,15 +374,15 @@ extract_value(
     ccs_datum_t *d) {
   switch(tuningValue->metadata->type) {
   case ValueType::kokkos_value_double:
-    CCS_DEBUG_MSG("received: %f\n", tuningValue->value.double_value);
+    CCS_DEBUG_MSG_ARGS("received: %f\n", tuningValue->value.double_value);
     *d = ccs_float(tuningValue->value.double_value);
     break;
   case ValueType::kokkos_value_int64:
-    CCS_DEBUG_MSG("received: %" PRId64 "\n", tuningValue->value.int_value);
+    CCS_DEBUG_MSG_ARGS("received: %" PRId64 "\n", tuningValue->value.int_value);
     *d = ccs_int(tuningValue->value.int_value);
     break;
   case ValueType::kokkos_value_string:
-    CCS_DEBUG_MSG("received: %s\n", tuningValue->value.string_value);
+    CCS_DEBUG_MSG_ARGS("received: %s\n", tuningValue->value.string_value);
     *d = ccs_string(tuningValue->value.string_value);
     d->flags = CCS_FLAG_TRANSIENT;
     break;
@@ -411,7 +415,8 @@ extern "C" void kokkosp_request_values(
   struct timespec           start;
   bool                      converged;
 
-  CCS_DEBUG_MSG("Querying variables: %zu, numContextVariables: %zu, numTuningVariables: %zu\n", contextId, numContextVariables, numTuningVariables);
+  CCS_DEBUG_MSG_ARGS("Querying variables: %zu, numContextVariables: %zu, numTuningVariables: %zu\n",
+                     contextId, numContextVariables, numTuningVariables);
 
 #if CCS_PROFILE
   struct timespec           prof_start, prof_stop;
@@ -534,7 +539,7 @@ extern "C" void kokkosp_request_values(
 }
 
 extern "C" void kokkosp_begin_context(size_t contextId) {
-  CCS_DEBUG_MSG("Entering region: %zu\n", contextId);
+  CCS_DEBUG_MSG_ARGS("Entering region: %zu\n", contextId);
 }
 
 extern "C" void kokkosp_end_context(size_t contextId) {
@@ -546,7 +551,7 @@ extern "C" void kokkosp_end_context(size_t contextId) {
   bool                      converged;
 
   clock_gettime(CLOCK_MONOTONIC, &stop);
-  CCS_DEBUG_MSG("Leaving region: %zu\n", contextId);
+  CCS_DEBUG_MSG_ARGS("Leaving region: %zu\n", contextId);
 
   auto ctx = contexts.find(contextId);
   if (ctx == contexts.end())
@@ -574,7 +579,7 @@ extern "C" void kokkosp_end_context(size_t contextId) {
     ccs_datum_t elapsed = ccs_int(
        ((ccs_int_t)(stop.tv_sec)  - (ccs_int_t)(start.tv_sec)) * 1000000000
       + (ccs_int_t)(stop.tv_nsec) - (ccs_int_t)(start.tv_nsec));
-    CCS_DEBUG_MSG("elapsed time: %f ms\n", elapsed.value.i / 1000000.0);
+    CCS_DEBUG_MSG_ARGS("elapsed time: %f ms\n", elapsed.value.i / 1000000.0);
 
     CCS_CHECK(ccs_features_tuner_get_objective_space(tuner, &objective_space));
     CCS_CHECK(ccs_create_features_evaluation(objective_space, configuration, feat,
