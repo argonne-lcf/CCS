@@ -130,6 +130,7 @@ ccs_create_string_hyperparameter(const char           *name,
 	hyperparam_data->common_data.name = (char *)(mem + sizeof(struct _ccs_hyperparameter_s) + sizeof(_ccs_hyperparameter_string_data_t));
 	strcpy((char *)hyperparam_data->common_data.name, name);
 	hyperparam_data->common_data.user_data = user_data;
+	hyperparam_data->common_data.interval.type = CCS_NUM_INTEGER;
 	hyperparam_data->stored_values = NULL;
 	hyperparam->data = (_ccs_hyperparameter_data_t *)hyperparam_data;
 	*hyperparameter_ret = hyperparam;
