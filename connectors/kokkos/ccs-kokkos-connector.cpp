@@ -25,7 +25,7 @@
 } while(0)
 
 #define CCS_DEBUG_MSG_ARGS(fmt, ...) do { \
-  if(CCS_DEBUG) fprintf(stderr, fmt, ##__VA_ARGS__); \
+  if(CCS_DEBUG) fprintf(stderr, fmt, __VA_ARGS__); \
 } while(0)
 
 #ifndef CCS_PROFILE
