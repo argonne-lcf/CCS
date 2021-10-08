@@ -41,11 +41,9 @@ _ccs_features_tuner_random_ask(_ccs_features_tuner_data_t *data,
 		*num_configurations_ret = 1;
 		return CCS_SUCCESS;
 	}
-	ccs_result_t err;
-	err = ccs_configuration_space_samples(d->common_data.configuration_space,
-	                                      num_configurations, configurations);
-	if (err)
-		return err;
+	CCS_VALIDATE(ccs_configuration_space_samples(
+	               d->common_data.configuration_space,
+	               num_configurations, configurations));
 	if (num_configurations_ret)
 		*num_configurations_ret = num_configurations;
 	return CCS_SUCCESS;
@@ -64,10 +62,8 @@ _ccs_features_tuner_random_tell(_ccs_features_tuner_data_t *data,
 	ccs_result_t err;
 	for (size_t i = 0; i < num_evaluations; i++) {
 		ccs_result_t error;
-		err = ccs_features_evaluation_get_error(evaluations[i], &error);
-		if (err)
-			return err;
-		if (!error) {
+		CCS_VALIDATE(ccs_features_evaluation_get_error(evaluations[i], &error));
+		if (error == CCS_SUCCESS) {
 			int discard = 0;
 			UT_array *tmp;
 			ccs_retain_object(evaluations[i]);
@@ -138,14 +134,9 @@ _ccs_features_tuner_random_get_optimums(
 		size_t index = 0;
 		ccs_features_t feat;
 		int cmp;
-		ccs_result_t err;
 		while ( (eval = (ccs_features_evaluation_t *)utarray_next(d->optimums, eval)) ) {
-			err = ccs_features_evaluation_get_features(*eval, &feat);
-			if (unlikely(err != CCS_SUCCESS))
-				return err;
-			err = ccs_features_cmp(features, feat, &cmp);
-			if (unlikely(err != CCS_SUCCESS))
-				return err;
+			CCS_VALIDATE(ccs_features_evaluation_get_features(*eval, &feat));
+			CCS_VALIDATE(ccs_features_cmp(features, feat, &cmp));
 			if (cmp == 0)
 				count += 1;
 		}
@@ -154,12 +145,8 @@ _ccs_features_tuner_random_get_optimums(
 				return -CCS_INVALID_VALUE;
 			eval = NULL;
 			while ( (eval = (ccs_features_evaluation_t *)utarray_next(d->optimums, eval)) ) {
-				err = ccs_features_evaluation_get_features(*eval, &feat);
-				if (unlikely(err != CCS_SUCCESS))
-					return err;
-				err = ccs_features_cmp(features, feat, &cmp);
-				if (unlikely(err != CCS_SUCCESS))
-					return err;
+				CCS_VALIDATE(ccs_features_evaluation_get_features(*eval, &feat));
+				CCS_VALIDATE(ccs_features_cmp(features, feat, &cmp));
 				if (cmp == 0)
 					evaluations[index++] = *eval;
 			}
@@ -198,14 +185,9 @@ _ccs_features_tuner_random_get_history(
 		ccs_features_t feat;
 		int cmp;
 		size_t index = 0;
-		ccs_result_t err;
 		while ( (eval = (ccs_features_evaluation_t *)utarray_next(d->history, eval)) ) {
-			err = ccs_features_evaluation_get_features(*eval, &feat);
-			if (unlikely(err != CCS_SUCCESS))
-				return err;
-			err = ccs_features_cmp(features, feat, &cmp);
-			if (unlikely(err != CCS_SUCCESS))
-				return err;
+			CCS_VALIDATE(ccs_features_evaluation_get_features(*eval, &feat));
+			CCS_VALIDATE(ccs_features_cmp(features, feat, &cmp));
 			if (cmp == 0)
 				count += 1;
 		}
@@ -214,12 +196,8 @@ _ccs_features_tuner_random_get_history(
 				return -CCS_INVALID_VALUE;
 			eval = NULL;
 			while ( (eval = (ccs_features_evaluation_t *)utarray_next(d->history, eval)) ) {
-				err = ccs_features_evaluation_get_features(*eval, &feat);
-				if (unlikely(err != CCS_SUCCESS))
-					return err;
-				err = ccs_features_cmp(features, feat, &cmp);
-				if (unlikely(err != CCS_SUCCESS))
-					return err;
+				CCS_VALIDATE(ccs_features_evaluation_get_features(*eval, &feat));
+				CCS_VALIDATE(ccs_features_cmp(features, feat, &cmp));
 				if (cmp == 0)
 					evaluations[index++] = *eval;
 			}
@@ -236,39 +214,26 @@ static ccs_result_t
 _ccs_features_tuner_random_suggest(_ccs_features_tuner_data_t *data,
                                    ccs_features_t              features,
                                    ccs_configuration_t        *configuration) {
-	ccs_result_t err;
 	_ccs_random_features_tuner_data_t *d = (_ccs_random_features_tuner_data_t *)data;
 	size_t count = 0;
 	ccs_features_evaluation_t *eval = NULL;
 	ccs_features_t feat;
 	int cmp;
 	while ( (eval = (ccs_features_evaluation_t *)utarray_next(d->optimums, eval)) ) {
-		err = ccs_features_evaluation_get_features(*eval, &feat);
-		if (unlikely(err != CCS_SUCCESS))
-			return err;
-		err = ccs_features_cmp(features, feat, &cmp);
-		if (unlikely(err != CCS_SUCCESS))
-			return err;
+		CCS_VALIDATE(ccs_features_evaluation_get_features(*eval, &feat));
+		CCS_VALIDATE(ccs_features_cmp(features, feat, &cmp));
 		if (cmp == 0)
 			count += 1;
 	}
 	if (count > 0) {
 		ccs_rng_t rng;
 		unsigned long int indx;
-		err = ccs_configuration_space_get_rng(d->common_data.configuration_space, &rng);
-		if (err)
-			return err;
-		err = ccs_rng_get(rng, &indx);
-		if (err)
-			return err;
+		CCS_VALIDATE(ccs_configuration_space_get_rng(d->common_data.configuration_space, &rng));
+		CCS_VALIDATE(ccs_rng_get(rng, &indx));
 		indx = indx % count;
 		while ( (eval = (ccs_features_evaluation_t *)utarray_next(d->optimums, eval)) ) {
-			err = ccs_features_evaluation_get_features(*eval, &feat);
-			if (unlikely(err != CCS_SUCCESS))
-				return err;
-			err = ccs_features_cmp(features, feat, &cmp);
-			if (unlikely(err != CCS_SUCCESS))
-				return err;
+			CCS_VALIDATE(ccs_features_evaluation_get_features(*eval, &feat));
+			CCS_VALIDATE(ccs_features_cmp(features, feat, &cmp));
 			if (cmp == 0) {
 				if (indx == 0)
 					break;
@@ -276,17 +241,10 @@ _ccs_features_tuner_random_suggest(_ccs_features_tuner_data_t *data,
 					indx--;
 			}
 		}
-		err = ccs_features_evaluation_get_configuration(*eval, configuration);
-		if (err)
-			return err;
-		err = ccs_retain_object(*configuration);
-		if (err)
-			return err;
-	} else {
-		err = _ccs_features_tuner_random_ask(data, features, 1, configuration, NULL);
-		if (err)
-			return err;
-	}
+		CCS_VALIDATE(ccs_features_evaluation_get_configuration(*eval, configuration));
+		CCS_VALIDATE(ccs_retain_object(*configuration));
+	} else
+		CCS_VALIDATE(_ccs_features_tuner_random_ask(data, features, 1, configuration, NULL));
 	return CCS_SUCCESS;
 }
 
@@ -332,15 +290,10 @@ ccs_create_random_features_tuner(const char                *name,
 	ccs_features_tuner_t tun;
 	_ccs_random_features_tuner_data_t * data;
 	ccs_result_t err;
-	err = ccs_retain_object(configuration_space);
-	if (err)
-		goto errmemory;
-	err = ccs_retain_object(objective_space);
-	if (err)
-		goto errospace;
-	err = ccs_retain_object(features_space);
-	if (err)
-		goto errconfigs;
+
+	CCS_VALIDATE_ERR_GOTO(err, ccs_retain_object(configuration_space), errmemory);
+	CCS_VALIDATE_ERR_GOTO(err, ccs_retain_object(objective_space), errcspace);
+	CCS_VALIDATE_ERR_GOTO(err, ccs_retain_object(features_space), errospace);
 	tun = (ccs_features_tuner_t)mem;
 	_ccs_object_init(&(tun->obj), CCS_FEATURES_TUNER, (_ccs_object_ops_t *)&_ccs_features_tuner_random_ops);
 	tun->data = (struct _ccs_features_tuner_data_s *)(mem + sizeof(struct _ccs_features_tuner_s));
@@ -367,10 +320,10 @@ arrays:
 	if (data->old_optimums)
 		utarray_free(data->old_optimums);
 	ccs_release_object(features_space);
-errconfigs:
-	ccs_release_object(configuration_space);
 errospace:
 	ccs_release_object(objective_space);
+errcspace:
+	ccs_release_object(configuration_space);
 errmemory:
 	free((void *)mem);
 	return err;

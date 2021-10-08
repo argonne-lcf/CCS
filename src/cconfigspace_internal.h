@@ -40,6 +40,23 @@ _ccs_interval_include(ccs_interval_t *interval, ccs_numeric_t value) {
 		return -CCS_INVALID_VALUE; \
 } while (0)
 
+#define CCS_VALIDATE_ERR_GOTO(err, cmd, label) do { \
+	err = (cmd); \
+	if (unlikely(err != CCS_SUCCESS)) \
+		goto label; \
+} while (0)
+
+#define CCS_VALIDATE_ERR(err, cmd) do { \
+	err = (cmd); \
+	if (unlikely(err != CCS_SUCCESS)) \
+		return err; \
+} while (0)
+
+#define CCS_VALIDATE(cmd) do { \
+	ccs_result_t _err; \
+	CCS_VALIDATE_ERR(_err, cmd); \
+} while(0)
+
 struct _ccs_object_ops_s {
 	ccs_result_t (*del)(ccs_object_t object);
 };
