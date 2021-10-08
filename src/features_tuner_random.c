@@ -291,9 +291,10 @@ ccs_create_random_features_tuner(const char                *name,
 	_ccs_random_features_tuner_data_t * data;
 	ccs_result_t err;
 
-	CCS_VALIDATE_ERR_GOTO(err, ccs_retain_object(configuration_space), errmemory);
-	CCS_VALIDATE_ERR_GOTO(err, ccs_retain_object(objective_space), errcspace);
-	CCS_VALIDATE_ERR_GOTO(err, ccs_retain_object(features_space), errospace);
+	CCS_VALIDATE_ERR_GOTO(err, ccs_retain_object(configuration_space), errmem);
+	CCS_VALIDATE_ERR_GOTO(err, ccs_retain_object(objective_space), errcs);
+	CCS_VALIDATE_ERR_GOTO(err, ccs_retain_object(features_space), erros);
+
 	tun = (ccs_features_tuner_t)mem;
 	_ccs_object_init(&(tun->obj), CCS_FEATURES_TUNER, (_ccs_object_ops_t *)&_ccs_features_tuner_random_ops);
 	tun->data = (struct _ccs_features_tuner_data_s *)(mem + sizeof(struct _ccs_features_tuner_s));
@@ -320,11 +321,11 @@ arrays:
 	if (data->old_optimums)
 		utarray_free(data->old_optimums);
 	ccs_release_object(features_space);
-errospace:
+erros:
 	ccs_release_object(objective_space);
-errcspace:
+errcs:
 	ccs_release_object(configuration_space);
-errmemory:
+errmem:
 	free((void *)mem);
 	return err;
 }

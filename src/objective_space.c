@@ -112,23 +112,17 @@ ccs_objective_space_add_hyperparameter(ccs_objective_space_t objective_space,
 	const char *name;
 	size_t sz_name;
 	_ccs_hyperparameter_wrapper_t *p_hyper_wrapper;
-	err = ccs_hyperparameter_get_name(hyperparameter, &name);
-	if (err)
-		goto error;
+	CCS_VALIDATE(ccs_hyperparameter_get_name(hyperparameter, &name));
 	sz_name = strlen(name);
 	HASH_FIND(hh_name, objective_space->data->name_hash,
 	          name, sz_name, p_hyper_wrapper);
-	if (p_hyper_wrapper) {
-		err = -CCS_INVALID_HYPERPARAMETER;
-		goto error;
-	}
+	if (p_hyper_wrapper)
+		return -CCS_INVALID_HYPERPARAMETER;
 	UT_array *hyperparameters;
 	unsigned int index;
 	_ccs_hyperparameter_wrapper_t hyper_wrapper;
 	hyper_wrapper.hyperparameter = hyperparameter;
-	err = ccs_retain_object(hyperparameter);
-	if (err)
-		goto error;
+	CCS_VALIDATE(ccs_retain_object(hyperparameter));
 
 	hyperparameters = objective_space->data->hyperparameters;
 	index = utarray_len(hyperparameters);
@@ -152,7 +146,6 @@ errorutarray:
 	utarray_pop_back(hyperparameters);
 errorhyper:
 	ccs_release_object(hyperparameter);
-error:
 	return err;
 }
 #undef  utarray_oom
@@ -164,13 +157,10 @@ ccs_objective_space_add_hyperparameters(ccs_objective_space_t  objective_space,
                                         ccs_hyperparameter_t  *hyperparameters) {
 	CCS_CHECK_OBJ(objective_space, CCS_OBJECTIVE_SPACE);
 	CCS_CHECK_ARY(num_hyperparameters, hyperparameters);
-	for (size_t i = 0; i < num_hyperparameters; i++) {
-		ccs_result_t err =
+	for (size_t i = 0; i < num_hyperparameters; i++)
+		CCS_VALIDATE(
 		    ccs_objective_space_add_hyperparameter( objective_space,
-		                                            hyperparameters[i]);
-		if (err)
-			return err;
-	}
+		                                            hyperparameters[i]));
 	return CCS_SUCCESS;
 }
 
@@ -251,7 +241,6 @@ static inline ccs_result_t
 _check_evaluation(ccs_objective_space_t  objective_space,
                   size_t                 num_values,
                   ccs_datum_t           *values) {
-	ccs_result_t err;
 	UT_array *array = objective_space->data->hyperparameters;
 	if (num_values != utarray_len(array))
 		return -CCS_INVALID_EVALUATION;
@@ -259,11 +248,9 @@ _check_evaluation(ccs_objective_space_t  objective_space,
 		ccs_bool_t res;
 		_ccs_hyperparameter_wrapper_t *wrapper =
 			(_ccs_hyperparameter_wrapper_t *)utarray_eltptr(array, i);
-		err = ccs_hyperparameter_check_value(wrapper->hyperparameter,
-	                                             values[i], &res);
-		if (unlikely(err))
-			return err;
-		if (res == CCS_FALSE)
+		CCS_VALIDATE(ccs_hyperparameter_check_value(wrapper->hyperparameter,
+	                                                    values[i], &res));
+		if (unlikely(res == CCS_FALSE))
 			return -CCS_INVALID_EVALUATION;
 	}
 	return CCS_SUCCESS;
@@ -309,14 +296,9 @@ ccs_objective_space_add_objective(ccs_objective_space_t objective_space,
                                   ccs_expression_t      expression,
                                   ccs_objective_type_t  type) {
 	CCS_CHECK_OBJ(objective_space, CCS_OBJECTIVE_SPACE);
-	ccs_result_t err;
-	err = ccs_expression_check_context(expression,
-	                                   (ccs_context_t)objective_space);
-	if (err)
-		return err;
-	err = ccs_retain_object(expression);
-	if (err)
-		return err;
+	CCS_VALIDATE(ccs_expression_check_context(
+	  expression, (ccs_context_t)objective_space));
+	CCS_VALIDATE(ccs_retain_object(expression));
 	_ccs_objective_t objective;
 	objective.expression = expression;
 	objective.type = type;
@@ -333,14 +315,9 @@ ccs_objective_space_add_objectives(ccs_objective_space_t  objective_space,
 	CCS_CHECK_ARY(num_objectives, expressions);
 	CCS_CHECK_ARY(num_objectives, types);
 	for (size_t i = 0; i < num_objectives; i++) {
-		ccs_result_t err;
-		err = ccs_expression_check_context(expressions[i],
-		                                   (ccs_context_t)objective_space);
-		if (err)
-			return err;
-		err = ccs_retain_object(expressions[i]);
-		if (err)
-			return err;
+		CCS_VALIDATE(ccs_expression_check_context(
+		  expressions[i], (ccs_context_t)objective_space));
+		CCS_VALIDATE(ccs_retain_object(expressions[i]));
 		_ccs_objective_t objective;
 		objective.expression = expressions[i];
 		objective.type = types[i];
