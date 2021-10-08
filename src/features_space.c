@@ -96,35 +96,39 @@ ccs_features_space_add_hyperparameter(ccs_features_space_t features_space,
 	const char *name;
 	size_t sz_name;
 	_ccs_hyperparameter_wrapper_t *p_hyper_wrapper;
-	err = ccs_hyperparameter_get_name(hyperparameter, &name);
-	if (err)
-		goto error;
+	CCS_VALIDATE(ccs_hyperparameter_get_name(hyperparameter, &name));
 	sz_name = strlen(name);
 	HASH_FIND(hh_name, features_space->data->name_hash,
 	          name, sz_name, p_hyper_wrapper);
-	if (p_hyper_wrapper) {
-		err = -CCS_INVALID_HYPERPARAMETER;
-		goto error;
-	}
+	if (p_hyper_wrapper)
+		return -CCS_INVALID_HYPERPARAMETER;
 	UT_array *hyperparameters;
 	unsigned int index;
 	_ccs_hyperparameter_wrapper_t hyper_wrapper;
 	hyper_wrapper.hyperparameter = hyperparameter;
-	err = ccs_retain_object(hyperparameter);
-	if (err)
-		goto error;
+	CCS_VALIDATE(ccs_retain_object(hyperparameter));
 
 	hyperparameters = features_space->data->hyperparameters;
 	index = utarray_len(hyperparameters);
 	hyper_wrapper.index = index;
 	hyper_wrapper.name = name;
-	HASH_CLEAR(hh_name, features_space->data->name_hash);
-	HASH_CLEAR(hh_handle, features_space->data->handle_hash);
+
+	p_hyper_wrapper = utarray_front(hyperparameters);
 	utarray_push_back(hyperparameters, &hyper_wrapper);
 
-	p_hyper_wrapper = NULL;
-        // Rehash in case utarray_push_back triggered a memory reallocation
-        while ( (p_hyper_wrapper = (_ccs_hyperparameter_wrapper_t*)utarray_next(hyperparameters, p_hyper_wrapper)) ) {
+	// Check for address change and rehash if needed
+	if (p_hyper_wrapper != utarray_front(hyperparameters)) {
+		HASH_CLEAR(hh_name, features_space->data->name_hash);
+		HASH_CLEAR(hh_handle, features_space->data->handle_hash);
+		p_hyper_wrapper = NULL;
+		while ( (p_hyper_wrapper = (_ccs_hyperparameter_wrapper_t*)utarray_next(hyperparameters, p_hyper_wrapper)) ) {
+			HASH_ADD_KEYPTR( hh_name, features_space->data->name_hash,
+			                 p_hyper_wrapper->name, strlen(p_hyper_wrapper->name), p_hyper_wrapper );
+			HASH_ADD( hh_handle, features_space->data->handle_hash,
+			          hyperparameter, sizeof(ccs_hyperparameter_t), p_hyper_wrapper );
+		}
+	} else {
+		p_hyper_wrapper = utarray_back(hyperparameters);
 		HASH_ADD_KEYPTR( hh_name, features_space->data->name_hash,
 		                 p_hyper_wrapper->name, strlen(p_hyper_wrapper->name), p_hyper_wrapper );
 		HASH_ADD( hh_handle, features_space->data->handle_hash,
@@ -136,7 +140,6 @@ errorutarray:
 	utarray_pop_back(hyperparameters);
 errorhyper:
 	ccs_release_object(hyperparameter);
-error:
 	return err;
 }
 #undef  utarray_oom
