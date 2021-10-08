@@ -129,11 +129,11 @@ ccs_objective_space_add_hyperparameter(ccs_objective_space_t objective_space,
 	hyper_wrapper.index = index;
 	hyper_wrapper.name = name;
 
-	p_hyper_wrapper = utarray_front(hyperparameters);
+	p_hyper_wrapper = (_ccs_hyperparameter_wrapper_t*)utarray_front(hyperparameters);
 	utarray_push_back(hyperparameters, &hyper_wrapper);
 
 	// Check for address change and rehash if needed
-	if (p_hyper_wrapper != utarray_front(hyperparameters)) {
+	if (p_hyper_wrapper != (_ccs_hyperparameter_wrapper_t*)utarray_front(hyperparameters)) {
 		HASH_CLEAR(hh_name, objective_space->data->name_hash);
 		HASH_CLEAR(hh_handle, objective_space->data->handle_hash);
 		p_hyper_wrapper = NULL;
@@ -145,7 +145,7 @@ ccs_objective_space_add_hyperparameter(ccs_objective_space_t objective_space,
 			          hyperparameter, sizeof(ccs_hyperparameter_t), p_hyper_wrapper );
 		}
 	} else {
-		p_hyper_wrapper = utarray_back(hyperparameters);
+		p_hyper_wrapper = (_ccs_hyperparameter_wrapper_t*)utarray_back(hyperparameters);
 		HASH_ADD_KEYPTR( hh_name, objective_space->data->name_hash,
 		                 p_hyper_wrapper->name, strlen(p_hyper_wrapper->name), p_hyper_wrapper );
 		HASH_ADD( hh_handle, objective_space->data->handle_hash,
