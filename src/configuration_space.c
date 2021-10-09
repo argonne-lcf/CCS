@@ -223,7 +223,6 @@ ccs_configuration_space_add_hyperparameter(ccs_configuration_space_t configurati
 
 	hyperparameters = configuration_space->data->hyperparameters;
 	index = utarray_len(hyperparameters);
-	printf("%zu\n", index);
 	hyper_hash->hyperparameter = hyperparameter;
 	hyper_hash->name = name;
 	hyper_hash->index = index;
