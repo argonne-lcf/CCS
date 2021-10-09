@@ -69,14 +69,10 @@ ccs_create_mixture_distribution(size_t              num_distributions,
 
 	size_t             dimension, i, j;
 	ccs_result_t       err;
-	err = ccs_distribution_get_dimension(distributions[0], &dimension);
-	if (err)
-		return err;
+	CCS_VALIDATE(ccs_distribution_get_dimension(distributions[0], &dimension));
 	for(i = 1; i < num_distributions; i++) {
 		size_t             dimension_tmp;
-		err = ccs_distribution_get_dimension(distributions[i], &dimension_tmp);
-		if (err)
-			return err;
+		CCS_VALIDATE(ccs_distribution_get_dimension(distributions[i], &dimension_tmp));
 		if (dimension != dimension_tmp)
 			return -CCS_INVALID_DISTRIBUTION;
 	}
@@ -138,13 +134,13 @@ ccs_create_mixture_distribution(size_t              num_distributions,
 	distrib_data->common_data.data_types  = (ccs_numeric_type_t *)(cur_mem);
 	cur_mem += sizeof(ccs_numeric_type_t)*dimension;
 
-	err = ccs_distribution_get_data_types(distributions[0], distrib_data->common_data.data_types);
-	if (err)
-		goto tmpmemory;
+	CCS_VALIDATE_ERR_GOTO(err,
+	  ccs_distribution_get_data_types(distributions[0], distrib_data->common_data.data_types),
+	  tmpmemory);
 	for (i = 1; i < num_distributions; i++) {
-		err = ccs_distribution_get_data_types(distributions[i], data_types_tmp);
-		if (err)
-			goto tmpmemory;
+		CCS_VALIDATE_ERR_GOTO(err,
+		  ccs_distribution_get_data_types(distributions[i], data_types_tmp),
+		  tmpmemory);
 		for (j = 0; j < dimension; j++)
 			if(distrib_data->common_data.data_types[j] != data_types_tmp[j]) {
 				err = -CCS_INVALID_DISTRIBUTION;
@@ -152,18 +148,17 @@ ccs_create_mixture_distribution(size_t              num_distributions,
 			}
 	}
 
-	err = ccs_distribution_get_bounds(distributions[0], distrib_data->bounds);
-	if (err)
-		goto tmpmemory;
+	CCS_VALIDATE_ERR_GOTO(err,
+	  ccs_distribution_get_bounds(distributions[0], distrib_data->bounds),
+	  tmpmemory);
 	for (i = 1; i < num_distributions; i++) {
-		err = ccs_distribution_get_bounds(distributions[i], bounds_tmp);
-		if (err)
-			goto tmpmemory;
+		CCS_VALIDATE_ERR_GOTO(err,
+		  ccs_distribution_get_bounds(distributions[i], bounds_tmp),
+		  tmpmemory);
 		for (j = 0; j < dimension; j++) {
-			err = ccs_interval_union(distrib_data->bounds + j, bounds_tmp + j,
-			                         distrib_data->bounds + j);
-			if (err)
-				goto tmpmemory;
+			CCS_VALIDATE_ERR_GOTO(err,
+			  ccs_interval_union(distrib_data->bounds + j, bounds_tmp + j,
+			                         distrib_data->bounds + j), tmpmemory);
 		}
 	}
 
@@ -177,9 +172,7 @@ ccs_create_mixture_distribution(size_t              num_distributions,
 		return -CCS_INVALID_VALUE;
 	}
 	for (i = 0; i < num_distributions; i++) {
-		err = ccs_retain_object(distributions[i]);
-		if (err)
-			goto distrib;
+		CCS_VALIDATE_ERR_GOTO(err, ccs_retain_object(distributions[i]), distrib);
 		distrib_data->distributions[i] = distributions[i];
 	}
 	distrib->data = (_ccs_distribution_data_t *)distrib_data;
@@ -220,16 +213,12 @@ _ccs_distribution_mixture_samples(_ccs_distribution_data_t *data,
 	size_t dim = d->common_data.dimension;
 
 	gsl_rng *grng;
-	ccs_result_t err = ccs_rng_get_gsl_rng(rng, &grng);
-	if (err)
-		return err;
+	CCS_VALIDATE(ccs_rng_get_gsl_rng(rng, &grng));
 
 	for (size_t i = 0; i < num_values; i++) {
 		ccs_float_t rnd = gsl_rng_uniform(grng);
 		ccs_int_t index = ccs_dichotomic_search(d->num_distributions, d->weights, rnd);
-		err = ccs_distribution_get_ops(d->distributions[index])->samples(d->distributions[index]->data, rng, 1, values + i*dim);
-		if (err)
-			return err;
+		CCS_VALIDATE(ccs_distribution_get_ops(d->distributions[index])->samples(d->distributions[index]->data, rng, 1, values + i*dim));
 	}
 	return CCS_SUCCESS;
 }
@@ -243,16 +232,12 @@ _ccs_distribution_mixture_strided_samples(_ccs_distribution_data_t *data,
 	_ccs_distribution_mixture_data_t *d = (_ccs_distribution_mixture_data_t *)data;
 
 	gsl_rng *grng;
-	ccs_result_t err = ccs_rng_get_gsl_rng(rng, &grng);
-	if (err)
-		return err;
+	CCS_VALIDATE(ccs_rng_get_gsl_rng(rng, &grng));
 
 	for (size_t i = 0; i < num_values; i++) {
 		ccs_float_t rnd = gsl_rng_uniform(grng);
 		ccs_int_t index = ccs_dichotomic_search(d->num_distributions, d->weights, rnd);
-		err = ccs_distribution_get_ops(d->distributions[index])->samples(d->distributions[index]->data, rng, 1, values + i*stride);
-		if (err)
-			return err;
+		CCS_VALIDATE(ccs_distribution_get_ops(d->distributions[index])->samples(d->distributions[index]->data, rng, 1, values + i*stride));
 	}
 	return CCS_SUCCESS;
 }
@@ -277,9 +262,7 @@ _ccs_distribution_mixture_soa_samples(_ccs_distribution_data_t  *data,
 		return CCS_SUCCESS;
 
 	gsl_rng *grng;
-	ccs_result_t err = ccs_rng_get_gsl_rng(rng, &grng);
-	if (err)
-		return err;
+	CCS_VALIDATE(ccs_rng_get_gsl_rng(rng, &grng));
 
 	for (size_t i = 0; i < num_values; i++) {
 		ccs_float_t rnd = gsl_rng_uniform(grng);
@@ -287,9 +270,7 @@ _ccs_distribution_mixture_soa_samples(_ccs_distribution_data_t  *data,
 		for (size_t j = 0; j < dim; j++)
 			if (values[j])
 				p_values[j] = values[j] + i;
-		err = ccs_distribution_get_ops(d->distributions[index])->soa_samples(d->distributions[index]->data, rng, 1, p_values);
-		if (err)
-			return err;
+		CCS_VALIDATE(ccs_distribution_get_ops(d->distributions[index])->soa_samples(d->distributions[index]->data, rng, 1, p_values));
 	}
 	return CCS_SUCCESS;
 }

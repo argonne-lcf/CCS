@@ -92,9 +92,7 @@ _ccs_distribution_uniform_strided_samples(_ccs_distribution_data_t *data,
 	const ccs_numeric_t       internal_upper = d->internal_upper;
 	const int                 quantize       = d->quantize;
 	gsl_rng *grng;
-	ccs_result_t err = ccs_rng_get_gsl_rng(rng, &grng);
-	if (err)
-		return err;
+	CCS_VALIDATE(ccs_rng_get_gsl_rng(rng, &grng));
 
 	if (data_type == CCS_NUM_FLOAT) {
 		for (i = 0; i < num_values; i++) {
@@ -151,9 +149,7 @@ _ccs_distribution_uniform_samples(_ccs_distribution_data_t *data,
 	const ccs_numeric_t       internal_upper = d->internal_upper;
 	const int                 quantize       = d->quantize;
 	gsl_rng *grng;
-	ccs_result_t err = ccs_rng_get_gsl_rng(rng, &grng);
-	if (err)
-		return err;
+	CCS_VALIDATE(ccs_rng_get_gsl_rng(rng, &grng));
 
 	if (data_type == CCS_NUM_FLOAT) {
 		for (i = 0; i < num_values; i++) {

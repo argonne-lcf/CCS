@@ -146,13 +146,9 @@ ccs_features_space_add_hyperparameters(ccs_features_space_t  features_space,
                                        ccs_hyperparameter_t *hyperparameters) {
 	CCS_CHECK_OBJ(features_space, CCS_FEATURES_SPACE);
 	CCS_CHECK_ARY(num_hyperparameters, hyperparameters);
-	for (size_t i = 0; i < num_hyperparameters; i++) {
-		ccs_result_t err =
-		    ccs_features_space_add_hyperparameter(features_space,
-		                                          hyperparameters[i]);
-		if (err)
-			return err;
-	}
+	for (size_t i = 0; i < num_hyperparameters; i++)
+		CCS_VALIDATE(ccs_features_space_add_hyperparameter(
+		    features_space, hyperparameters[i]));
 	return CCS_SUCCESS;
 }
 
@@ -243,7 +239,6 @@ static inline ccs_result_t
 _check_features(ccs_features_space_t  features_space,
                 size_t                num_values,
                 ccs_datum_t          *values) {
-	ccs_result_t err;
 	UT_array *array = features_space->data->hyperparameters;
 	if (num_values != utarray_len(array))
 		return -CCS_INVALID_FEATURES;
@@ -251,10 +246,8 @@ _check_features(ccs_features_space_t  features_space,
 		ccs_bool_t res;
 		_ccs_hyperparameter_wrapper_t *wrapper =
 			(_ccs_hyperparameter_wrapper_t *)utarray_eltptr(array, i);
-		err = ccs_hyperparameter_check_value(wrapper->hyperparameter,
-	                                             values[i], &res);
-		if (unlikely(err))
-			return err;
+		CCS_VALIDATE(ccs_hyperparameter_check_value(
+		    wrapper->hyperparameter, values[i], &res));
 		if (res == CCS_FALSE)
 			return -CCS_INVALID_FEATURES;
 	}

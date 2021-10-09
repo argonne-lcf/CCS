@@ -44,9 +44,7 @@ ccs_create_features(ccs_features_space_t  features_space,
 	CCS_CHECK_ARY(num_values, values);
 	ccs_result_t err;
 	size_t num;
-	err = ccs_features_space_get_num_hyperparameters(features_space, &num);
-	if (err)
-		return err;
+	CCS_VALIDATE(ccs_features_space_get_num_hyperparameters(features_space, &num));
 	if (values && num != num_values)
 		return -CCS_INVALID_VALUE;
 	uintptr_t mem = (uintptr_t)calloc(1, sizeof(struct _ccs_features_s) +
@@ -54,11 +52,7 @@ ccs_create_features(ccs_features_space_t  features_space,
 	                                     num * sizeof(ccs_datum_t));
 	if (!mem)
 		return -CCS_OUT_OF_MEMORY;
-	err = ccs_retain_object(features_space);
-	if (err) {
-		free((void*)mem);
-		return err;
-	}
+	CCS_VALIDATE_ERR_GOTO(err, ccs_retain_object(features_space), errmem);
 	ccs_features_t feat = (ccs_features_t)mem;
 	_ccs_object_init(&(feat->obj), CCS_FEATURES, (_ccs_object_ops_t*)&_features_ops);
 	feat->data = (struct _ccs_features_data_s*)(mem + sizeof(struct _ccs_features_s));
@@ -68,20 +62,18 @@ ccs_create_features(ccs_features_space_t  features_space,
 	feat->data->values = (ccs_datum_t *)(mem + sizeof(struct _ccs_features_s) + sizeof(struct _ccs_features_data_s));
 	if (values) {
 		memcpy(feat->data->values, values, num*sizeof(ccs_datum_t));
-		for (size_t i = 0; i < num_values; i++) {
-			if (values[i].flags & CCS_FLAG_TRANSIENT) {
-				err = ccs_features_space_validate_value(
-					features_space, i, values[i],
-					 feat->data->values + i);
-				if (unlikely(err)) {
-					free((void*)mem);
-					return err;
-				}
-			}
-		}
+		for (size_t i = 0; i < num_values; i++)
+			if (values[i].flags & CCS_FLAG_TRANSIENT)
+				CCS_VALIDATE_ERR_GOTO(err, ccs_features_space_validate_value(
+					features_space, i, values[i], feat->data->values + i), errfs);
 	}
 	*features_ret = feat;
 	return CCS_SUCCESS;
+errfs:
+	ccs_release_object(features_space);
+errmem:
+	free((void*)mem);
+	return err;
 }
 
 ccs_result_t

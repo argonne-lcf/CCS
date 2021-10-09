@@ -69,9 +69,7 @@ _ccs_distribution_roulette_samples(_ccs_distribution_data_t *data,
 	_ccs_distribution_roulette_data_t *d = (_ccs_distribution_roulette_data_t *)data;
 
 	gsl_rng *grng;
-	ccs_result_t err = ccs_rng_get_gsl_rng(rng, &grng);
-	if (err)
-		return err;
+	CCS_VALIDATE(ccs_rng_get_gsl_rng(rng, &grng));
 
 	for (size_t i = 0; i < num_values; i++) {
 		ccs_float_t rnd = gsl_rng_uniform(grng);
@@ -90,9 +88,7 @@ _ccs_distribution_roulette_strided_samples(_ccs_distribution_data_t *data,
 	_ccs_distribution_roulette_data_t *d = (_ccs_distribution_roulette_data_t *)data;
 
 	gsl_rng *grng;
-	ccs_result_t err = ccs_rng_get_gsl_rng(rng, &grng);
-	if (err)
-		return err;
+	CCS_VALIDATE(ccs_rng_get_gsl_rng(rng, &grng));
 
 	for (size_t i = 0; i < num_values; i++) {
 		ccs_float_t rnd = gsl_rng_uniform(grng);

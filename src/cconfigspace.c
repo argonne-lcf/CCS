@@ -48,9 +48,7 @@ ccs_release_object(ccs_object_t object) {
 			}
 			utarray_free(obj->callbacks);
 		}
-		ccs_result_t err = obj->ops->del(object);
-		if (err)
-			return err;
+		CCS_VALIDATE(obj->ops->del(object));
 		free(object);
 	}
 	return CCS_SUCCESS;

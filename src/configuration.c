@@ -43,9 +43,7 @@ ccs_create_configuration(ccs_configuration_space_t configuration_space,
 	CCS_CHECK_ARY(num_values, values);
 	ccs_result_t err;
 	size_t num;
-	err = ccs_configuration_space_get_num_hyperparameters(configuration_space, &num);
-	if (err)
-		return err;
+	CCS_VALIDATE(ccs_configuration_space_get_num_hyperparameters(configuration_space, &num));
 	if (values && num != num_values)
 		return -CCS_INVALID_VALUE;
 	uintptr_t mem = (uintptr_t)calloc(1, sizeof(struct _ccs_configuration_s) +
@@ -53,12 +51,9 @@ ccs_create_configuration(ccs_configuration_space_t configuration_space,
 	                                     num * sizeof(ccs_datum_t));
 	if (!mem)
 		return -CCS_OUT_OF_MEMORY;
-	err = ccs_retain_object(configuration_space);
-	if (err) {
-		free((void*)mem);
-		return err;
-	}
-	ccs_configuration_t config = (ccs_configuration_t)mem;
+	CCS_VALIDATE_ERR_GOTO(err, ccs_retain_object(configuration_space), errmem);
+	ccs_configuration_t config;
+	config = (ccs_configuration_t)mem;
 	_ccs_object_init(&(config->obj), CCS_CONFIGURATION, (_ccs_object_ops_t*)&_configuration_ops);
 	config->data = (struct _ccs_configuration_data_s*)(mem + sizeof(struct _ccs_configuration_s));
 	config->data->user_data = user_data;
@@ -67,20 +62,17 @@ ccs_create_configuration(ccs_configuration_space_t configuration_space,
 	config->data->values = (ccs_datum_t *)(mem + sizeof(struct _ccs_configuration_s) + sizeof(struct _ccs_configuration_data_s));
 	if (values) {
 		memcpy(config->data->values, values, num*sizeof(ccs_datum_t));
-		for (size_t i = 0; i < num_values; i++) {
-			if (values[i].flags & CCS_FLAG_TRANSIENT) {
-				err = ccs_configuration_space_validate_value(
+		for (size_t i = 0; i < num_values; i++)
+			if (values[i].flags & CCS_FLAG_TRANSIENT)
+				CCS_VALIDATE_ERR_GOTO(err, ccs_configuration_space_validate_value(
 					configuration_space, i, values[i],
-					config->data->values + i);
-				if (unlikely(err)) {
-					free((void*)mem);
-					return err;
-				}
-			}
-		}
+					config->data->values + i), errmem);
 	}
 	*configuration_ret = config;
 	return CCS_SUCCESS;
+errmem:
+	free((void*)mem);
+	return err;
 }
 
 ccs_result_t

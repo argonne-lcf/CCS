@@ -53,25 +53,18 @@ ccs_distribution_check_oversampling(ccs_distribution_t  distribution,
 	CCS_CHECK_OBJ(distribution, CCS_DISTRIBUTION);
 	CCS_CHECK_PTR(intervals);
 	CCS_CHECK_PTR(oversamplings);
-	ccs_result_t err;
 	size_t dim = ((_ccs_distribution_common_data_t *)(distribution->data))->dimension;
 
 	ccs_interval_t *d_intervals = (ccs_interval_t *)alloca(sizeof(ccs_interval_t)*dim);
 
-	err = ccs_distribution_get_bounds(distribution, d_intervals);
-	if (err)
-		return err;
+	CCS_VALIDATE(ccs_distribution_get_bounds(distribution, d_intervals));
 
 	for(size_t i = 0; i < dim; i++) {
 		ccs_interval_t intersection;
-		err = ccs_interval_intersect(d_intervals+i, intervals+i, &intersection);
-		if (err)
-			return err;
+		CCS_VALIDATE(ccs_interval_intersect(d_intervals+i, intervals+i, &intersection));
 
 		ccs_bool_t eql;
-		err = ccs_interval_equal(d_intervals+i, &intersection, &eql);
-		if (err)
-			return err;
+		CCS_VALIDATE(ccs_interval_equal(d_intervals+i, &intersection, &eql));
 		oversamplings[i] = eql ? CCS_FALSE : CCS_TRUE;
 	}
 	return CCS_SUCCESS;
@@ -148,14 +141,9 @@ ccs_distribution_hyperparameters_samples(ccs_distribution_t    distribution,
 	ccs_interval_t *intervals = (ccs_interval_t *)alloca(dim*sizeof(ccs_interval_t));
 	ccs_numeric_t **p_vs = (ccs_numeric_t **)alloca(dim*sizeof(ccs_numeric_t *));
 
-	for (size_t i =0; i < dim; i++) {
-		err = ccs_hyperparameter_sampling_interval(hyperparameters[i], intervals+i);
-		if (err)
-			return err;
-	}
-	err = ccs_distribution_check_oversampling(distribution, intervals, oversamplings);
-	if (err)
-		return err;
+	for (size_t i =0; i < dim; i++)
+		CCS_VALIDATE(ccs_hyperparameter_sampling_interval(hyperparameters[i], intervals+i));
+	CCS_VALIDATE(ccs_distribution_check_oversampling(distribution, intervals, oversamplings));
 
 	for (size_t i =0; i < dim; i++)
 		if (oversamplings[i]) {
@@ -169,15 +157,12 @@ ccs_distribution_hyperparameters_samples(ccs_distribution_t    distribution,
 	p_vs[0] = (ccs_numeric_t *)(mem + num_values * dim * sizeof(ccs_datum_t));
 	for (size_t i = 1; i < dim; i++)
 		p_vs[i] =  p_vs[i-1] + num_values;
-	err = ccs_distribution_soa_samples(distribution, rng, num_values, p_vs);
-	if (err)
-		goto memory;
+	CCS_VALIDATE_ERR_GOTO(err, ccs_distribution_soa_samples(distribution, rng, num_values, p_vs), errmem);
 
-	for (size_t i = 0; i < dim; i++) {
-		err = ccs_hyperparameter_convert_samples(hyperparameters[i], oversamplings[i], num_values, p_vs[i], ds + i*num_values);
-		if (err)
-			goto memory;
-	}
+	for (size_t i = 0; i < dim; i++)
+		CCS_VALIDATE_ERR_GOTO(err,
+		    ccs_hyperparameter_convert_samples(hyperparameters[i], oversamplings[i], num_values, p_vs[i], ds + i*num_values),
+		    errmem);
 
 	if (!oversampling) {
 		for (size_t j = 0; j < num_values; j++)
@@ -200,22 +185,26 @@ ccs_distribution_hyperparameters_samples(ccs_distribution_t    distribution,
 		}
 		size_t coeff = 2;
 		while (found < num_values) {
+			if (coeff > 32) {
+				err = -CCS_SAMPLING_UNSUCCESSFUL;
+				goto errmem;
+			}
 			size_t buff_len = (num_values - found)*coeff;
-			free((void *)mem);
-			mem = (uintptr_t)malloc(buff_len * dim * (sizeof(ccs_numeric_t) + sizeof(ccs_datum_t)));
-			if (!mem)
+			uintptr_t oldmem = mem;
+			mem = (uintptr_t)realloc((void *)oldmem, buff_len * dim * (sizeof(ccs_numeric_t) + sizeof(ccs_datum_t)));
+			if (unlikely(!mem)) {
+				if (oldmem)
+					free((void*)oldmem);
 				return -CCS_OUT_OF_MEMORY;
+			}
 			ccs_datum_t *ds = (ccs_datum_t *)mem;
 			p_vs[0] = (ccs_numeric_t *)(mem + buff_len * dim * sizeof(ccs_datum_t));
 			for (size_t i = 1; i < dim; i++)
 				p_vs[i] =  p_vs[i-1] + buff_len;
-			err = ccs_distribution_soa_samples(distribution, rng, buff_len, p_vs);
-			if (err)
-				goto memory;
+			CCS_VALIDATE_ERR_GOTO(err, ccs_distribution_soa_samples(distribution, rng, buff_len, p_vs), errmem);
 			for (size_t i = 0; i < dim; i++) {
-				err = ccs_hyperparameter_convert_samples(hyperparameters[i], oversamplings[i], buff_len, p_vs[i], ds + i*buff_len);
-				if (err)
-					goto memory;
+				CCS_VALIDATE_ERR_GOTO(err, ccs_hyperparameter_convert_samples(
+				    hyperparameters[i], oversamplings[i], buff_len, p_vs[i], ds + i*buff_len), errmem);
 			}
 
 			for (size_t j = 0; j < buff_len && found < num_values; j++) {
@@ -232,16 +221,11 @@ ccs_distribution_hyperparameters_samples(ccs_distribution_t    distribution,
 					found++;
 			}
 			coeff <<= 1;
-			if (coeff > 32) {
-				err = -CCS_SAMPLING_UNSUCCESSFUL;
-				goto memory;
-			}
 		}
 	}
 
-	free((void *)mem);
-	return CCS_SUCCESS;
-memory:
+	err = CCS_SUCCESS;
+errmem:
 	free((void *)mem);
 	return err;
 }

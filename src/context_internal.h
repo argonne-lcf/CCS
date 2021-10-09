@@ -177,12 +177,9 @@ _ccs_context_validate_value(ccs_context_t  context,
 	    utarray_eltptr(context->data->hyperparameters, (unsigned int)index);
 	if (!wrapper)
 		return -CCS_OUT_OF_BOUNDS;
-	ccs_result_t err;
 	ccs_bool_t valid;
-	err = ccs_hyperparameter_validate_value(wrapper->hyperparameter,
-	                                        value, value_ret, &valid);
-	if (err)
-		return err;
+	CCS_VALIDATE(ccs_hyperparameter_validate_value(wrapper->hyperparameter,
+	                                               value, value_ret, &valid));
 	if (!valid)
 		return -CCS_INVALID_VALUE;
 	return CCS_SUCCESS;
