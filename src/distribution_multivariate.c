@@ -72,9 +72,7 @@ ccs_create_multivariate_distribution(size_t              num_distributions,
 
         for (i = 0; i < num_distributions; i++) {
 		size_t dim;
-		err = ccs_distribution_get_dimension(distributions[i], &dim);
-		if (err)
-			return err;
+		CCS_VALIDATE(ccs_distribution_get_dimension(distributions[i], &dim));
 		dimension += dim;
 	}
 
@@ -111,21 +109,19 @@ ccs_create_multivariate_distribution(size_t              num_distributions,
 	dimension = 0;
         for (i = 0; i < num_distributions; i++) {
 		size_t dim;
-		err = ccs_distribution_get_data_types(distributions[i], distrib_data->common_data.data_types + dimension);
-		if (err)
-			goto memory;
-		err = ccs_distribution_get_bounds(distributions[i], distrib_data->bounds + dimension);
-		err = ccs_distribution_get_dimension(distributions[i], &dim);
-		if (err)
-			goto memory;
+		CCS_VALIDATE_ERR_GOTO(err,
+		  ccs_distribution_get_data_types(distributions[i], distrib_data->common_data.data_types + dimension),
+		  errmemory);
+		CCS_VALIDATE_ERR_GOTO(err,
+		  ccs_distribution_get_bounds(distributions[i], distrib_data->bounds + dimension),
+		  errmemory);
+		CCS_VALIDATE_ERR_GOTO(err, ccs_distribution_get_dimension(distributions[i], &dim), errmemory);
 		distrib_data->dimensions[i] = dim;
 		dimension += dim;
 	}
 
 	for (i = 0; i < num_distributions; i++) {
-		err = ccs_retain_object(distributions[i]);
-		if (err)
-			goto distrib;
+		CCS_VALIDATE_ERR_GOTO(err, ccs_retain_object(distributions[i]), distrib);
 		distrib_data->distributions[i] = distributions[i];
 	}
 	distrib->data = (_ccs_distribution_data_t *)distrib_data;
@@ -137,7 +133,7 @@ distrib:
 		if (distrib_data->distributions[i])
 			ccs_release_object(distributions[i]);
 	}
-memory:
+errmemory:
 	free((void *)mem);
 	return err;
 }
@@ -165,12 +161,9 @@ _ccs_distribution_multivariate_samples(_ccs_distribution_data_t *data,
 		(_ccs_distribution_multivariate_data_t *)data;
 
 	for (size_t i = 0; i < d->num_distributions; i++) {
-		ccs_result_t err;
-		err = ccs_distribution_get_ops(d->distributions[i])->strided_samples(
+		CCS_VALIDATE(ccs_distribution_get_ops(d->distributions[i])->strided_samples(
 			d->distributions[i]->data, rng, num_values,
-			d->common_data.dimension, values);
-		if (err)
-			return err;
+			d->common_data.dimension, values));
 		values += d->dimensions[i];
 	}
 	return CCS_SUCCESS;
@@ -186,12 +179,9 @@ _ccs_distribution_multivariate_strided_samples(_ccs_distribution_data_t *data,
 		(_ccs_distribution_multivariate_data_t *)data;
 	
 	for (size_t i = 0; i < d->num_distributions; i++) {
-		ccs_result_t err;
-		err = ccs_distribution_get_ops(d->distributions[i])->strided_samples(
+		CCS_VALIDATE(ccs_distribution_get_ops(d->distributions[i])->strided_samples(
 			d->distributions[i]->data, rng, num_values,
-			stride, values);
-		if (err)
-			return err;
+			stride, values));
 		values += d->dimensions[i];
 	}
 	return CCS_SUCCESS;
@@ -206,11 +196,8 @@ _ccs_distribution_multivariate_soa_samples(_ccs_distribution_data_t  *data,
 		(_ccs_distribution_multivariate_data_t *)data;
 	
 	for (size_t i = 0; i < d->num_distributions; i++) {
-		ccs_result_t err;
-		err = ccs_distribution_get_ops(d->distributions[i])->soa_samples(
-			d->distributions[i]->data, rng, num_values, values);
-		if (err)
-			return err;
+		CCS_VALIDATE(ccs_distribution_get_ops(d->distributions[i])->soa_samples(
+			d->distributions[i]->data, rng, num_values, values));
 		values += d->dimensions[i];
 	}
 	return CCS_SUCCESS;

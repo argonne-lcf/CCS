@@ -208,9 +208,7 @@ _ccs_distribution_normal_samples(_ccs_distribution_data_t *data,
 	const ccs_float_t      sigma          = d->sigma;
 	const int              quantize       = d->quantize;
 	gsl_rng *grng;
-	ccs_result_t err = ccs_rng_get_gsl_rng(rng, &grng);
-	if (err)
-		return err;
+	CCS_VALIDATE(ccs_rng_get_gsl_rng(rng, &grng));
 	if (data_type == CCS_NUM_FLOAT)
 		return _ccs_distribution_normal_samples_float(grng, scale_type,
                                                               quantization.f, mu,
@@ -323,9 +321,7 @@ _ccs_distribution_normal_strided_samples(_ccs_distribution_data_t *data,
 	const ccs_float_t      sigma          = d->sigma;
 	const int              quantize       = d->quantize;
 	gsl_rng *grng;
-	ccs_result_t err = ccs_rng_get_gsl_rng(rng, &grng);
-	if (err)
-		return err;
+	CCS_VALIDATE(ccs_rng_get_gsl_rng(rng, &grng));
 	if (data_type == CCS_NUM_FLOAT)
 		return _ccs_distribution_normal_strided_samples_float(grng, scale_type,
 		                                                      quantization.f, mu,

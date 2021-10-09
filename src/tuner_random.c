@@ -36,11 +36,8 @@ _ccs_tuner_random_ask(_ccs_tuner_data_t   *data,
 		*num_configurations_ret = 1;
 		return CCS_SUCCESS;
 	}
-	ccs_result_t err;
-	err = ccs_configuration_space_samples(d->common_data.configuration_space,
-	                                      num_configurations, configurations);
-	if (err)
-		return err;
+	CCS_VALIDATE(ccs_configuration_space_samples(
+	    d->common_data.configuration_space, num_configurations, configurations));
 	if (num_configurations_ret)
 		*num_configurations_ret = num_configurations;
 	return CCS_SUCCESS;
@@ -59,9 +56,7 @@ _ccs_tuner_random_tell(_ccs_tuner_data_t *data,
 	ccs_result_t err;
 	for (size_t i = 0; i < num_evaluations; i++) {
 		ccs_result_t error;
-		err = ccs_evaluation_get_error(evaluations[i], &error);
-		if (err)
-			return err;
+		CCS_VALIDATE(ccs_evaluation_get_error(evaluations[i], &error));
 		if (!error) {
 			int discard = 0;
 			UT_array *tmp;
@@ -154,32 +149,20 @@ _ccs_tuner_random_get_history(_ccs_tuner_data_t *data,
 static ccs_result_t
 _ccs_tuner_random_suggest(_ccs_tuner_data_t   *data,
                           ccs_configuration_t *configuration) {
-	ccs_result_t err;
 	_ccs_random_tuner_data_t *d = (_ccs_random_tuner_data_t *)data;
 	size_t count = utarray_len(d->optimums);
 	if (count > 0) {
 		ccs_rng_t rng;
 		unsigned long int indx;
-		err = ccs_configuration_space_get_rng(d->common_data.configuration_space, &rng);
-		if (err)
-			return err;
-		err = ccs_rng_get(rng, &indx);
-		if (err)
-			return err;
+		CCS_VALIDATE(ccs_configuration_space_get_rng(d->common_data.configuration_space, &rng));
+		CCS_VALIDATE(ccs_rng_get(rng, &indx));
 		indx = indx % count;
 		ccs_evaluation_t *eval =
 			(ccs_evaluation_t *)utarray_eltptr(d->optimums, indx);
-		err = ccs_evaluation_get_configuration(*eval, configuration);
-		if (err)
-			return err;
-		err = ccs_retain_object(*configuration);
-		if (err)
-			return err;
-	} else {
-		err = _ccs_tuner_random_ask(data, 1, configuration, NULL);
-		if (err)
-			return err;
-	}
+		CCS_VALIDATE(ccs_evaluation_get_configuration(*eval, configuration));
+		CCS_VALIDATE(ccs_retain_object(*configuration));
+	} else
+		CCS_VALIDATE(_ccs_tuner_random_ask(data, 1, configuration, NULL));
 	return CCS_SUCCESS;
 }
 
@@ -223,12 +206,8 @@ ccs_create_random_tuner(const char                *name,
 	ccs_tuner_t tun;
 	_ccs_random_tuner_data_t * data;
 	ccs_result_t err;
-	err = ccs_retain_object(configuration_space);
-	if (err)
-		goto errmemory;
-	err = ccs_retain_object(objective_space);
-	if (err)
-		goto errconfigs;
+	CCS_VALIDATE_ERR_GOTO(err, ccs_retain_object(configuration_space), errmemory);
+	CCS_VALIDATE_ERR_GOTO(err, ccs_retain_object(objective_space), errconfigs);
 	tun = (ccs_tuner_t)mem;
 	_ccs_object_init(&(tun->obj), CCS_TUNER, (_ccs_object_ops_t *)&_ccs_tuner_random_ops);
 	tun->data = (struct _ccs_tuner_data_s *)(mem + sizeof(struct _ccs_tuner_s));

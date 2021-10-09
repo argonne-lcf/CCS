@@ -29,7 +29,6 @@ libcconfigspace_la_SOURCES = \
 			datum_uthash.h \
 			datum_hash.h \
 			hyperparameter_categorical.c \
-			hyperparameter_discrete.c \
 			utarray.h \
 			context.c \
 			context_internal.h \

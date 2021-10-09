@@ -117,15 +117,10 @@ ccs_create_user_defined_features_tuner(
 	ccs_features_tuner_t tun;
 	_ccs_user_defined_features_tuner_data_t * data;
 	ccs_result_t err;
-	err = ccs_retain_object(configuration_space);
-	if (err)
-		goto errmem;
-	err = ccs_retain_object(objective_space);
-	if (err)
-		goto errcs;
-	err = ccs_retain_object(features_space);
-	if (err)
-		goto erros;
+
+	CCS_VALIDATE_ERR_GOTO(err, ccs_retain_object(configuration_space), errmem);
+	CCS_VALIDATE_ERR_GOTO(err, ccs_retain_object(objective_space), errcs);
+	CCS_VALIDATE_ERR_GOTO(err, ccs_retain_object(features_space), erros);
 
 	tun = (ccs_features_tuner_t)mem;
 	_ccs_object_init(&(tun->obj), CCS_FEATURES_TUNER, (_ccs_object_ops_t *)&_ccs_features_tuner_user_defined_ops);

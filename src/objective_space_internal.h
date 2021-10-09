@@ -23,12 +23,12 @@ struct _ccs_objective_space_s {
 };
 
 struct _ccs_objective_space_data_s {
-	const char                     *name;
-	void                           *user_data;
-	UT_array                       *hyperparameters;
-	_ccs_hyperparameter_wrapper_t  *name_hash;
-	_ccs_hyperparameter_wrapper_t  *handle_hash;
-	UT_array                       *objectives;
+	const char                       *name;
+	void                             *user_data;
+	UT_array                         *hyperparameters;
+	_ccs_hyperparameter_index_hash_t *name_hash;
+	_ccs_hyperparameter_index_hash_t *handle_hash;
+	UT_array                         *objectives;
 };
 
 

@@ -107,12 +107,8 @@ ccs_create_user_defined_tuner(const char                      *name,
 	ccs_tuner_t tun;
 	_ccs_user_defined_tuner_data_t * data;
 	ccs_result_t err;
-	err = ccs_retain_object(configuration_space);
-	if (err)
-		goto errmem;
-	err = ccs_retain_object(objective_space);
-	if (err)
-		goto errcs;
+	CCS_VALIDATE_ERR_GOTO(err, ccs_retain_object(configuration_space), errmem);
+	CCS_VALIDATE_ERR_GOTO(err, ccs_retain_object(objective_space), errcs);
 
 	tun = (ccs_tuner_t)mem;
 	_ccs_object_init(&(tun->obj), CCS_TUNER, (_ccs_object_ops_t *)&_ccs_tuner_user_defined_ops);
