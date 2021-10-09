@@ -96,7 +96,7 @@ ccs_objective_space_get_user_data(ccs_objective_space_t   objective_space,
 #undef  utarray_oom
 #define utarray_oom() { \
 	err = -CCS_OUT_OF_MEMORY; \
-	goto errorhyper; \
+	goto errormem; \
 }
 #undef uthash_nonfatal_oom
 #define uthash_nonfatal_oom(elt) { \
@@ -111,50 +111,41 @@ ccs_objective_space_add_hyperparameter(ccs_objective_space_t objective_space,
 	ccs_result_t err;
 	const char *name;
 	size_t sz_name;
-	_ccs_hyperparameter_wrapper_t *p_hyper_wrapper;
+	_ccs_hyperparameter_index_hash_t *hyper_hash;
 	CCS_VALIDATE(ccs_hyperparameter_get_name(hyperparameter, &name));
 	sz_name = strlen(name);
 	HASH_FIND(hh_name, objective_space->data->name_hash,
-	          name, sz_name, p_hyper_wrapper);
-	if (p_hyper_wrapper)
+	          name, sz_name, hyper_hash);
+	if (hyper_hash)
 		return -CCS_INVALID_HYPERPARAMETER;
 	UT_array *hyperparameters;
-	unsigned int index;
+	CCS_VALIDATE(ccs_retain_object(hyperparameter));
 	_ccs_hyperparameter_wrapper_t hyper_wrapper;
 	hyper_wrapper.hyperparameter = hyperparameter;
-	CCS_VALIDATE(ccs_retain_object(hyperparameter));
 
 	hyperparameters = objective_space->data->hyperparameters;
-	index = utarray_len(hyperparameters);
-	hyper_wrapper.index = index;
-	hyper_wrapper.name = name;
 
-	p_hyper_wrapper = (_ccs_hyperparameter_wrapper_t*)utarray_front(hyperparameters);
+	hyper_hash = (_ccs_hyperparameter_index_hash_t *)malloc(sizeof(_ccs_hyperparameter_index_hash_t));
+	if (!hyper_hash) {
+		err = -CCS_OUT_OF_MEMORY;
+		goto errorhyper;
+	}
+	hyper_hash->hyperparameter = hyperparameter;
+	hyper_hash->name = name;
+	hyper_hash->index = utarray_len(hyperparameters);
+
 	utarray_push_back(hyperparameters, &hyper_wrapper);
 
-	// Check for address change and rehash if needed
-	if (p_hyper_wrapper != (_ccs_hyperparameter_wrapper_t*)utarray_front(hyperparameters)) {
-		HASH_CLEAR(hh_name, objective_space->data->name_hash);
-		HASH_CLEAR(hh_handle, objective_space->data->handle_hash);
-		p_hyper_wrapper = NULL;
-		while ( (p_hyper_wrapper = (_ccs_hyperparameter_wrapper_t*)
-		           utarray_next(hyperparameters, p_hyper_wrapper)) ) {
-			HASH_ADD_KEYPTR( hh_name, objective_space->data->name_hash,
-			                 p_hyper_wrapper->name, strlen(p_hyper_wrapper->name), p_hyper_wrapper );
-			HASH_ADD( hh_handle, objective_space->data->handle_hash,
-			          hyperparameter, sizeof(ccs_hyperparameter_t), p_hyper_wrapper );
-		}
-	} else {
-		p_hyper_wrapper = (_ccs_hyperparameter_wrapper_t*)utarray_back(hyperparameters);
-		HASH_ADD_KEYPTR( hh_name, objective_space->data->name_hash,
-		                 p_hyper_wrapper->name, strlen(p_hyper_wrapper->name), p_hyper_wrapper );
-		HASH_ADD( hh_handle, objective_space->data->handle_hash,
-		          hyperparameter, sizeof(ccs_hyperparameter_t), p_hyper_wrapper );
-	}
+	HASH_ADD_KEYPTR( hh_name, objective_space->data->name_hash,
+	                 hyper_hash->name, sz_name, hyper_hash );
+	HASH_ADD( hh_handle, objective_space->data->handle_hash,
+	          hyperparameter, sizeof(ccs_hyperparameter_t), hyper_hash );
 
 	return CCS_SUCCESS;
 errorutarray:
 	utarray_pop_back(hyperparameters);
+errormem:
+	free(hyper_hash);
 errorhyper:
 	ccs_release_object(hyperparameter);
 	return err;

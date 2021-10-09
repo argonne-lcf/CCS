@@ -24,12 +24,15 @@ _ccs_configuration_space_del(ccs_object_t object) {
 		ccs_release_object(*expr);
 	}
 	HASH_CLEAR(hh_name, configuration_space->data->name_hash);
-	HASH_CLEAR(hh_handle, configuration_space->data->handle_hash);
+	_ccs_hyperparameter_index_hash_t *elem, *tmpelem;
+	HASH_ITER(hh_handle, configuration_space->data->handle_hash, elem, tmpelem) {
+		HASH_DELETE(hh_handle, configuration_space->data->handle_hash, elem);
+		free(elem);
+	}
 	utarray_free(configuration_space->data->hyperparameters);
 	utarray_free(configuration_space->data->forbidden_clauses);
 	utarray_free(configuration_space->data->sorted_indexes);
-	_ccs_distribution_wrapper_t *dw;
-	_ccs_distribution_wrapper_t *tmp;
+	_ccs_distribution_wrapper_t *dw, *tmp;
 	DL_FOREACH_SAFE(configuration_space->data->distribution_list, dw, tmp) {
 		DL_DELETE(configuration_space->data->distribution_list, dw);
 		ccs_release_object(dw->distribution);
@@ -171,15 +174,15 @@ ccs_configuration_space_add_hyperparameter(ccs_configuration_space_t configurati
 
 	const char *name;
 	size_t sz_name;
-	_ccs_hyperparameter_wrapper_cs_t *p_hyper_wrapper;
+	_ccs_hyperparameter_index_hash_t *hyper_hash;
 	CCS_VALIDATE(ccs_hyperparameter_get_name(hyperparameter, &name));
 	sz_name = strlen(name);
 	HASH_FIND(hh_name, configuration_space->data->name_hash,
-	          name, sz_name, p_hyper_wrapper);
-	if (p_hyper_wrapper)
+	          name, sz_name, hyper_hash);
+	if (hyper_hash)
 		return -CCS_INVALID_HYPERPARAMETER;
 	UT_array *hyperparameters;
-	unsigned int index;
+	size_t index;
 	size_t dimension;
 	_ccs_hyperparameter_wrapper_cs_t hyper_wrapper;
 	_ccs_distribution_wrapper_t *distrib_wrapper;
@@ -211,48 +214,43 @@ ccs_configuration_space_add_hyperparameter(ccs_configuration_space_t configurati
 	distrib_wrapper->distribution = distribution;
 	distrib_wrapper->dimension = dimension;
 	distrib_wrapper->hyperparameter_indexes = (size_t *)(pmem + sizeof(_ccs_distribution_wrapper_t));
+
+	hyper_hash = (_ccs_hyperparameter_index_hash_t *)malloc(sizeof(_ccs_hyperparameter_index_hash_t));
+	if (!hyper_hash) {
+		err = -CCS_OUT_OF_MEMORY;
+		goto errordistrib_wrapper;
+	}
+
 	hyperparameters = configuration_space->data->hyperparameters;
 	index = utarray_len(hyperparameters);
+	printf("%zu\n", index);
+	hyper_hash->hyperparameter = hyperparameter;
+	hyper_hash->name = name;
+	hyper_hash->index = index;
 	distrib_wrapper->hyperparameter_indexes[0] = index;
-	hyper_wrapper.index = index;
 	hyper_wrapper.distribution_index = 0;
 	hyper_wrapper.distribution = distrib_wrapper;
-	hyper_wrapper.name = name;
 	hyper_wrapper.condition = NULL;
 	hyper_wrapper.parents = NULL;
 	hyper_wrapper.children = NULL;
 	utarray_new(hyper_wrapper.parents, &_size_t_icd);
 	utarray_new(hyper_wrapper.children, &_size_t_icd);
 
-	p_hyper_wrapper = (_ccs_hyperparameter_wrapper_cs_t *)utarray_front(hyperparameters);
 	utarray_push_back(hyperparameters, &hyper_wrapper);
-	utarray_push_back(configuration_space->data->sorted_indexes, &(hyper_wrapper.index));
+	utarray_push_back(configuration_space->data->sorted_indexes, &index);
 
-	// Check for address change and rehash if needed
-	if (p_hyper_wrapper != (_ccs_hyperparameter_wrapper_cs_t *)utarray_front(hyperparameters)) {
-		HASH_CLEAR(hh_name, configuration_space->data->name_hash);
-		HASH_CLEAR(hh_handle, configuration_space->data->handle_hash);
-		p_hyper_wrapper = NULL;
-		while ( (p_hyper_wrapper = (_ccs_hyperparameter_wrapper_cs_t *)utarray_next(hyperparameters, p_hyper_wrapper)) ) {
-			HASH_ADD_KEYPTR( hh_name, configuration_space->data->name_hash,
-			                 p_hyper_wrapper->name, strlen(p_hyper_wrapper->name), p_hyper_wrapper );
-			//WARNING: from this point on error handling is flunky....
-			HASH_ADD( hh_handle, configuration_space->data->handle_hash,
-			          hyperparameter, sizeof(ccs_hyperparameter_t), p_hyper_wrapper );
-		}
-	} else {
-		p_hyper_wrapper = (_ccs_hyperparameter_wrapper_cs_t *)utarray_back(hyperparameters);
-		HASH_ADD_KEYPTR( hh_name, configuration_space->data->name_hash,
-		                 p_hyper_wrapper->name, strlen(p_hyper_wrapper->name), p_hyper_wrapper );
-		HASH_ADD( hh_handle, configuration_space->data->handle_hash,
-		          hyperparameter, sizeof(ccs_hyperparameter_t), p_hyper_wrapper );
-	}
+	HASH_ADD_KEYPTR( hh_name, configuration_space->data->name_hash,
+	                 hyper_hash->name, sz_name, hyper_hash );
+	HASH_ADD( hh_handle, configuration_space->data->handle_hash,
+	          hyperparameter, sizeof(ccs_hyperparameter_t), hyper_hash );
 	DL_APPEND( configuration_space->data->distribution_list, distrib_wrapper );
 
 	return CCS_SUCCESS;
 errorutarray:
 	utarray_pop_back(hyperparameters);
 errordistrib_wrapper:
+	if (hyper_hash)
+		free(hyper_hash);
 	if (hyper_wrapper.parents)
 		utarray_free(hyper_wrapper.parents);
 	if (hyper_wrapper.children)
@@ -980,7 +978,8 @@ _recompute_graph(ccs_configuration_space_t configuration_space) {
 		utarray_clear(wrapper->children);
 	}
 	wrapper = NULL;
-	while ( (wrapper = (_ccs_hyperparameter_wrapper_cs_t *)utarray_next(array, wrapper)) ) {
+	for (size_t index = 0; index < utarray_len(array); index++) {
+		wrapper = (_ccs_hyperparameter_wrapper_cs_t *)utarray_eltptr(array, (unsigned int)index);
 		if (!wrapper->condition)
 			continue;
 		size_t count;
@@ -1013,7 +1012,7 @@ _recompute_graph(ccs_configuration_space_t configuration_space) {
 		for (size_t i = 0; i < count; i++) {
 			utarray_push_back(wrapper->parents, parents_index + i);
 			parent_wrapper = (_ccs_hyperparameter_wrapper_cs_t *)utarray_eltptr(array, parents_index[i]);
-			utarray_push_back(parent_wrapper->children, &(wrapper->index));
+			utarray_push_back(parent_wrapper->children, &index);
 		}
 		free((void *)mem);
 	}
