@@ -16,7 +16,11 @@ _ccs_objective_space_del(ccs_object_t object) {
 		ccs_release_object(obj->expression);
 	}
 	HASH_CLEAR(hh_name, objective_space->data->name_hash);
-	HASH_CLEAR(hh_handle, objective_space->data->handle_hash);
+	_ccs_hyperparameter_index_hash_t *elem, *tmpelem;
+	HASH_ITER(hh_handle, objective_space->data->handle_hash, elem, tmpelem) {
+		HASH_DELETE(hh_handle, objective_space->data->handle_hash, elem);
+		free(elem);
+	}
 	utarray_free(objective_space->data->hyperparameters);
 	utarray_free(objective_space->data->objectives);
 	return CCS_SUCCESS;

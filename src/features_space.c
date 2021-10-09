@@ -12,7 +12,11 @@ _ccs_features_space_del(ccs_object_t object) {
 		ccs_release_object(wrapper->hyperparameter);
 	}
 	HASH_CLEAR(hh_name, features_space->data->name_hash);
-	HASH_CLEAR(hh_handle, features_space->data->handle_hash);
+	_ccs_hyperparameter_index_hash_t *elem, *tmpelem;
+	HASH_ITER(hh_handle, features_space->data->handle_hash, elem, tmpelem) {
+		HASH_DELETE(hh_handle, features_space->data->handle_hash, elem);
+		free(elem);
+	}
 	utarray_free(features_space->data->hyperparameters);
 	return CCS_SUCCESS;
 }
