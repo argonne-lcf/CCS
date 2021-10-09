@@ -85,7 +85,8 @@ ccs_create_configuration_space(const char                *name,
 	ccs_rng_t rng;
 	CCS_VALIDATE_ERR_GOTO(err, ccs_rng_create(&rng), errmem);
 
-	ccs_configuration_space_t config_space = (ccs_configuration_space_t)mem;
+	ccs_configuration_space_t config_space;
+	config_space = (ccs_configuration_space_t)mem;
 	_ccs_object_init(&(config_space->obj), CCS_CONFIGURATION_SPACE, (_ccs_object_ops_t *)&_configuration_space_ops);
 	config_space->data = (struct _ccs_configuration_space_data_s*)(mem + sizeof(struct _ccs_configuration_space_s));
 	config_space->data->name = (const char *)(mem + sizeof(struct _ccs_configuration_space_s) + sizeof(struct _ccs_configuration_space_data_s));

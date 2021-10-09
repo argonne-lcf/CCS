@@ -993,10 +993,12 @@ ccs_create_variable(ccs_hyperparameter_t  hyperparameter,
 	if (!mem)
 		return -CCS_OUT_OF_MEMORY;
 	CCS_VALIDATE_ERR_GOTO(err, ccs_retain_object(hyperparameter), errmem);
-	ccs_expression_t expression = (ccs_expression_t)mem;
+	ccs_expression_t expression;
+	expression = (ccs_expression_t)mem;
 	_ccs_object_init(&(expression->obj), CCS_EXPRESSION,
 		(_ccs_object_ops_t*)_ccs_expression_ops_broker(CCS_VARIABLE));
-	_ccs_expression_variable_data_t *expression_data =
+	_ccs_expression_variable_data_t *expression_data;
+	expression_data =
 		(_ccs_expression_variable_data_t *)
 			(mem + sizeof(struct _ccs_expression_s));
 	expression_data->expr.type = CCS_VARIABLE;
@@ -1240,10 +1242,10 @@ ccs_expression_get_hyperparameters(ccs_expression_t      expression,
 		return -CCS_INVALID_VALUE;
 	ccs_result_t err;
 	UT_array *array;
+	size_t count = 0;
 	utarray_new(array, &_hyperparameter_icd);
 	CCS_VALIDATE_ERR_GOTO(err, _get_hyperparameters(expression, array), errutarray);
 	utarray_sort(array, &_hyper_sort);
-	size_t count = 0;
 	if (utarray_len(array) > 0) {
 		ccs_hyperparameter_t  previous = NULL;
 		ccs_hyperparameter_t *p_h = NULL;
