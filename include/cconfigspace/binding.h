@@ -5,6 +5,11 @@
 extern "C" {
 #endif
 
+/**
+ * @file binding.h
+ * A Binding is set of value in a Context see context.h.
+ */
+
 extern ccs_result_t
 ccs_binding_get_context(ccs_binding_t  binding,
                         ccs_context_t *context_ret);

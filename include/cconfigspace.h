@@ -22,4 +22,10 @@
 #include "cconfigspace/tuner.h"
 #include "cconfigspace/features_tuner.h"
 
+/**
+ * @file cconfigspace.h
+ * The C configuration Space and Tuning library (CCS) provides an interface to
+ * define tuning problems and auto-tuners.
+ */
+
 #endif //_CCONFIGSPACE_H
