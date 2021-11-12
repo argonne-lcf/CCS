@@ -244,6 +244,15 @@ static inline int ccs_datum_cmp(ccs_datum_t a, ccs_datum_t b) {
 				return 1;
 			else
 				return strcmp(a.value.s, b.value.s);
+			break;
+		case CCS_INTEGER:
+			return a.value.i < b.value.i ? -1 :
+				a.value.i > b.value.i ? 1 : 0;
+			break;
+		case CCS_FLOAT:
+			return a.value.f < b.value.f ? -1 :
+				a.value.f > b.value.f ? 1 : 0;
+			break;
 		case CCS_NONE:
 		case CCS_INACTIVE:
 			return 0;
