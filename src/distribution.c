@@ -192,7 +192,7 @@ ccs_distribution_hyperparameters_samples(ccs_distribution_t    distribution,
 			size_t buff_len = (num_values - found)*coeff;
 			uintptr_t oldmem = mem;
 			mem = (uintptr_t)realloc((void *)oldmem, buff_len * dim * (sizeof(ccs_numeric_t) + sizeof(ccs_datum_t)));
-			if (unlikely(!mem)) {
+			if (CCS_UNLIKELY(!mem)) {
 				if (oldmem)
 					free((void*)oldmem);
 				return -CCS_OUT_OF_MEMORY;

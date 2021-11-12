@@ -76,7 +76,7 @@ _ccs_hyperparameter_categorical_samples(_ccs_hyperparameter_data_t *data,
 			size_t buff_sz = (num_values - found)*coeff;
 			ccs_int_t *oldvs = vs;
 			vs = (ccs_int_t *)realloc(oldvs, sizeof(ccs_int_t)*buff_sz);
-			if (unlikely(!vs)) {
+			if (CCS_UNLIKELY(!vs)) {
 				if (oldvs)
 					free(oldvs);
 				return -CCS_OUT_OF_MEMORY;
@@ -305,7 +305,7 @@ ccs_ordinal_hyperparameter_compare_values(ccs_hyperparameter_t  hyperparameter,
 	_ccs_hash_datum_t *p1, *p2;
 	HASH_FIND(hh, d->hash, &value1, sizeof(ccs_datum_t), p1);
 	HASH_FIND(hh, d->hash, &value2, sizeof(ccs_datum_t), p2);
-	if (likely(p1 && p2)) {
+	if (CCS_LIKELY(p1 && p2)) {
 		if (p1 < p2)
 			*comp_ret = -1;
 		else if (p1 > p2)

@@ -8,9 +8,9 @@
 extern "C" {
 #endif
 
-#define likely(x)      __builtin_expect(!!(x), 1)
-#define unlikely(x)    __builtin_expect(!!(x), 0)
 
+#define CCS_LIKELY(x)      __builtin_expect(!!(x), 1)
+#define CCS_UNLIKELY(x)    __builtin_expect(!!(x), 0)
 typedef double   ccs_float_t;
 typedef int64_t  ccs_int_t;
 typedef int32_t  ccs_bool_t;

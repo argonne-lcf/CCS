@@ -256,7 +256,7 @@ _check_evaluation(ccs_objective_space_t  objective_space,
 			(_ccs_hyperparameter_wrapper_t *)utarray_eltptr(array, i);
 		CCS_VALIDATE(ccs_hyperparameter_check_value(wrapper->hyperparameter,
 	                                                    values[i], &res));
-		if (unlikely(res == CCS_FALSE))
+		if (CCS_UNLIKELY(res == CCS_FALSE))
 			return -CCS_INVALID_EVALUATION;
 	}
 	return CCS_SUCCESS;

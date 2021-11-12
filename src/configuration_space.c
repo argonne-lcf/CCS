@@ -793,7 +793,7 @@ errc:
 //		err = ccs_hyperparameter_samples(wrapper->hyperparameter,
 //		                                 wrapper->distribution->distribution,
 //						 rng, num_configurations, p_values);
-//		if (unlikely(err)) {
+//		if (CCS_UNLIKELY(err)) {
 //			free(values);
 //			return err;
 //		}
@@ -802,7 +802,7 @@ errc:
 //	size_t i;
 //	for(i = 0; i < num_configurations; i++) {
 //		err = ccs_create_configuration(configuration_space, 0, NULL, NULL, configurations + i);
-//		if (unlikely(err)) {
+//		if (CCS_UNLIKELY(err)) {
 //			free(values);
 //			for(size_t j = 0; j < i; j++)
 //				ccs_release_object(configurations + j);

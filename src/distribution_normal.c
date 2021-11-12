@@ -172,19 +172,19 @@ _ccs_distribution_normal_samples_int(gsl_rng                *grng,
 						values[i].f = gsl_ran_gaussian(grng, sigma) + mu;
 					} while (values[i].f < lq);
 					values[i].f = exp(values[i].f);
-				} while (unlikely(values[i].f - q > (ccs_float_t)CCS_INT_MAX));
+				} while (CCS_UNLIKELY(values[i].f - q > (ccs_float_t)CCS_INT_MAX));
 		else
 			for (i = 0; i < num_values; i++)
 				do {
 					values[i].f = gsl_ran_gaussian_tail(grng, lq - mu, sigma) + mu;
 					values[i].f = exp(values[i].f);
-				} while (unlikely(values[i].f - q > (ccs_float_t)CCS_INT_MAX));
+				} while (CCS_UNLIKELY(values[i].f - q > (ccs_float_t)CCS_INT_MAX));
 	}
 	else
 		for (i = 0; i < num_values; i++)
 			do {
 				values[i].f = gsl_ran_gaussian(grng, sigma) + mu;
-			} while (unlikely(values[i].f - q > (ccs_float_t)CCS_INT_MAX || values[i].f + q < (ccs_float_t)CCS_INT_MIN));
+			} while (CCS_UNLIKELY(values[i].f - q > (ccs_float_t)CCS_INT_MAX || values[i].f + q < (ccs_float_t)CCS_INT_MIN));
 	if (quantize) {
 		ccs_float_t rquantization = 1.0 / quantization;
 		for (i = 0; i < num_values; i++)
@@ -284,19 +284,19 @@ _ccs_distribution_normal_strided_samples_int(gsl_rng                *grng,
 						values[i*stride].f = gsl_ran_gaussian(grng, sigma) + mu;
 					} while (values[i*stride].f < lq);
 					values[i*stride].f = exp(values[i*stride].f);
-				} while (unlikely(values[i*stride].f - q > (ccs_float_t)CCS_INT_MAX));
+				} while (CCS_UNLIKELY(values[i*stride].f - q > (ccs_float_t)CCS_INT_MAX));
 		else
 			for (i = 0; i < num_values; i++)
 				do {
 					values[i*stride].f = gsl_ran_gaussian_tail(grng, lq - mu, sigma) + mu;
 					values[i*stride].f = exp(values[i*stride].f);
-				} while (unlikely(values[i*stride].f - q > (ccs_float_t)CCS_INT_MAX));
+				} while (CCS_UNLIKELY(values[i*stride].f - q > (ccs_float_t)CCS_INT_MAX));
 	}
 	else
 		for (i = 0; i < num_values; i++)
 			do {
 				values[i*stride].f = gsl_ran_gaussian(grng, sigma) + mu;
-			} while (unlikely(values[i*stride].f - q > (ccs_float_t)CCS_INT_MAX || values[i*stride].f + q < (ccs_float_t)CCS_INT_MIN));
+			} while (CCS_UNLIKELY(values[i*stride].f - q > (ccs_float_t)CCS_INT_MAX || values[i*stride].f + q < (ccs_float_t)CCS_INT_MIN));
 	if (quantize) {
 		ccs_float_t rquantization = 1.0 / quantization;
 		for (i = 0; i < num_values; i++)

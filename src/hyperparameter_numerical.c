@@ -95,7 +95,7 @@ _ccs_hyperparameter_numerical_samples(_ccs_hyperparameter_data_t *data,
 			size_t buff_sz = (num_values - found)*coeff;
 			ccs_numeric_t *oldvs = vs;
 			vs = (ccs_numeric_t *)realloc(oldvs, sizeof(ccs_numeric_t)*buff_sz);
-			if (unlikely(!vs)) {
+			if (CCS_UNLIKELY(!vs)) {
 				if (oldvs)
 					free(oldvs);
 				return -CCS_OUT_OF_MEMORY;
