@@ -130,11 +130,10 @@ ccs_configuration_space_set_rng(ccs_configuration_space_t configuration_space,
                                 ccs_rng_t                 rng) {
 	CCS_CHECK_OBJ(configuration_space, CCS_CONFIGURATION_SPACE);
 	CCS_CHECK_OBJ(rng, CCS_RNG);
-	ccs_result_t err;
-	err = ccs_release_object(configuration_space->data->rng);
-	if(err)
-		return err;
+	CCS_VALIDATE(ccs_retain_object(rng));
+	ccs_rng_t tmp = configuration_space->data->rng;
 	configuration_space->data->rng = rng;
+	CCS_VALIDATE(ccs_release_object(tmp));
 	return CCS_SUCCESS;
 }
 
