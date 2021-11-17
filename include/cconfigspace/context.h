@@ -29,7 +29,7 @@ ccs_context_get_name(ccs_context_t   context,
                      const char    **name_ret);
 
 /**
- * Get the associated `user_data` pointer.
+ * Get the associated `user_data` pointer of a context.
  * @param[in] context
  * @param[out] user_data_ret a pointer to `void *` variable that will contain
  *                           the value of the `user_data`
@@ -82,7 +82,7 @@ ccs_context_get_num_hyperparameters(ccs_context_t  context,
  * @return #CCS_SUCCESS on success
  * @return -#CCS_INVALID_OBJECT if \p context is not a valid CCS object
  * @return -#CCS_INVALID_VALUE if \p hyperparameter_ret is NULL
- * @return -#CCS_OUT_OF_BOUNDS if \index is greater than the count of
+ * @return -#CCS_OUT_OF_BOUNDS if \p index is greater than the count of
  *                             hyperparameters in the context
  */
 extern ccs_result_t
@@ -132,7 +132,8 @@ ccs_context_get_hyperparameter_index_by_name(ccs_context_t  context,
  *                                hyperparameters is not NULL \p
  *                                num_hyperparameters must be greater then 0
  * @param[in] hyperparameters an array of \p num_hyperparameters that will
- *                            contain the returned hyperparameters or NULL
+ *                            contain the returned hyperparameters or NULL. If
+ *                            the array is too big, extra values are set to NULL
  * @param[out] num_hyperparameters_ret a pointer to a variable that will contain
  *                                     the number of hyperparameters that are or
  *                                     would be returned. Can be NULL
@@ -157,7 +158,7 @@ ccs_context_get_hyperparameters(ccs_context_t          context,
  * @param[in] num_hyperparameters the number of hyperparameters to query the
  *                                index for
  * @param[in] hyperparameters an array of \p num_hyperparameters hyperparameters
- *                            to query the inde for
+ *                            to query the index for
  * @param[out] indexes an array of \p num_hyperparameters indices that will
  *                     contain the values of the hyperparamters indices
  * @return #CCS_SUCCESS on success
