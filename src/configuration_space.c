@@ -79,7 +79,10 @@ ccs_create_configuration_space(const char                *name,
 	CCS_CHECK_PTR(name);
 	CCS_CHECK_PTR(configuration_space_ret);
 	ccs_result_t err;
-	uintptr_t mem = (uintptr_t)calloc(1, sizeof(struct _ccs_configuration_space_s) + sizeof(struct _ccs_configuration_space_data_s) + strlen(name) + 1);
+	uintptr_t mem = (uintptr_t)calloc(1,
+	  sizeof(struct _ccs_configuration_space_s) +
+	  sizeof(struct _ccs_configuration_space_data_s) +
+	  strlen(name) + 1);
 	if (!mem)
 		return -CCS_OUT_OF_MEMORY;
 	ccs_rng_t rng;
@@ -87,13 +90,21 @@ ccs_create_configuration_space(const char                *name,
 
 	ccs_configuration_space_t config_space;
 	config_space = (ccs_configuration_space_t)mem;
-	_ccs_object_init(&(config_space->obj), CCS_CONFIGURATION_SPACE, (_ccs_object_ops_t *)&_configuration_space_ops);
-	config_space->data = (struct _ccs_configuration_space_data_s*)(mem + sizeof(struct _ccs_configuration_space_s));
-	config_space->data->name = (const char *)(mem + sizeof(struct _ccs_configuration_space_s) + sizeof(struct _ccs_configuration_space_data_s));
+	_ccs_object_init(&(config_space->obj),
+	                 CCS_CONFIGURATION_SPACE,
+	                 (_ccs_object_ops_t *)&_configuration_space_ops);
+	config_space->data =
+	  (struct _ccs_configuration_space_data_s*)(
+	    mem + sizeof(struct _ccs_configuration_space_s));
+	config_space->data->name =
+	  (const char *)(mem + sizeof(struct _ccs_configuration_space_s) +
+	                 sizeof(struct _ccs_configuration_space_data_s));
 	config_space->data->user_data = user_data;
 	config_space->data->rng = rng;
-	utarray_new(config_space->data->hyperparameters, &_hyperparameter_wrapper_icd);
-	utarray_new(config_space->data->forbidden_clauses, &_forbidden_clauses_icd);
+	utarray_new(config_space->data->hyperparameters,
+	            &_hyperparameter_wrapper_icd);
+	utarray_new(config_space->data->forbidden_clauses,
+	            &_forbidden_clauses_icd);
 	utarray_new(config_space->data->sorted_indexes, &_size_t_icd);
 	config_space->data->graph_ok = CCS_TRUE;
 	strcpy((char *)(config_space->data->name), name);
