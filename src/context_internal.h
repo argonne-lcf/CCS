@@ -43,7 +43,6 @@ _ccs_context_get_hyperparameter_index(
 		ccs_context_t         context,
 		ccs_hyperparameter_t  hyperparameter,
 		size_t               *index_ret) {
-	CCS_CHECK_OBJ(hyperparameter, CCS_HYPERPARAMETER);
 	CCS_CHECK_PTR(index_ret);
 	_ccs_context_data_t *data = context->data;
 	_ccs_hyperparameter_index_hash_t *wrapper;

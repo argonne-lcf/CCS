@@ -48,11 +48,10 @@ ccs_context_get_user_data(ccs_context_t   context,
  * @param[out] index_ret a pointer to the variable which will contain the index
  *                       of the hyperparameter
  * @return #CCS_SUCCESS on success
- * @return -#CCS_INVALID_OBJECT if \p context is not a valid CCS object
- * @return -#CCS_INVALID_HYPERPARAMETER if \p hyperparameter is not a valid CCS
- *                                      hyperparameter or if \p context does not
- *                                      contain \p hyperparameter
+ * @return -#CCS_INVALID_OBJECT if \p context is not a valid CCS object;
  * @return -#CCS_INVALID_VALUE if \p index_ret is NULL
+ * @return -#CCS_INVALID_HYPERPARAMETER if \p context does not contain \p
+ *                                      hyperparameter
  */
 extern ccs_result_t
 ccs_context_get_hyperparameter_index(ccs_context_t         context,
@@ -130,7 +129,7 @@ ccs_context_get_hyperparameter_index_by_name(ccs_context_t  context,
  * @param[in] num_hyperparameters is the number of hyperparameters that can be
  *                                added to \p hyperparameters. If \p
  *                                hyperparameters is not NULL \p
- *                                num_hyperparameters must be greater then 0
+ *                                num_hyperparameters must be greater than 0
  * @param[in] hyperparameters an array of \p num_hyperparameters that will
  *                            contain the returned hyperparameters or NULL. If
  *                            the array is too big, extra values are set to NULL
@@ -141,7 +140,7 @@ ccs_context_get_hyperparameter_index_by_name(ccs_context_t  context,
  * @return -#CCS_INVALID_OBJECT if \p context is not a valid CCS object
  * @return -#CCS_INVALID_VALUE if \p hyperparameters is NULL and \p
  *                             num_hyperparameters is greater than 0; or if \p
- *                             hyperparameters is NULL and
+ *                             hyperparameters is NULL and \p
  *                             num_hyperparameters_ret is NULL; or if
  *                             \p num_hyperparameters is less than the number of
  *                             hyperparameters that would be returned
