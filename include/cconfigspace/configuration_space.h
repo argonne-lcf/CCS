@@ -35,7 +35,7 @@ ccs_create_configuration_space(
 
 /**
  * Get the name of a configuration space.
- * @param[in] configuration space
+ * @param[in] configuration_space
  * @param[out] name_ret a pointer to a `char *` variable which will contain a
  *                      pointer to the configuration space name.
  * @return #CCS_SUCCESS on success
@@ -385,7 +385,8 @@ ccs_configuration_space_validate_value(
  * Set the active condition of a hyperparameter in a configuration space given
  * it's index.
  * @param[in, out] configuration_space
- * @param[in] index the index of the hyperparameter to set the condition
+ * @param[in] hyperparameter_index the index of the hyperparameter to set the
+ *                                 condition
  * @param[in] expression the condition to associate to the hyperparameter
  * @return #CCS_SUCCESS on success
  * @return -#CCS_INVALID_OBJECT if \p configuration_space is not a valid CCS
@@ -412,7 +413,8 @@ ccs_configuration_space_set_condition(
  * Get the active condition of a hyperparameter in a configuration space given
  * it's index.
  * @param[in] configuration_space
- * @param[in] index the index of the hyperparameter to get the condition
+ * @param[in] hyperparameter_index the index of the hyperparameter to get the
+ *                                 condition
  * @param[out] expression_ret a pointer to the variable that will contain the
  *                            expression, or NULL if the hyperparameter is not
  *                            associated with a condition

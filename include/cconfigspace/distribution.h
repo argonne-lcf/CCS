@@ -1,29 +1,60 @@
 #ifndef _CCS_DISTRIBUTION
 #define _CCS_DISTRIBUTION
 
+/**
+ * @file distribution.h
+ * A Distribution is the probability distribution of a random variable. CCS
+ * supports discrete and contiguous random variables. CCS also supports
+ * composing distributions to create mixture distributions or multivariate
+ * distributions.
+ */
+
 #ifdef __cplusplus
 extern "C" {
 #endif
 
+/**
+ * CCS distribution types.
+ */
 enum ccs_distribution_type_e {
+	/** A uniform distribution over floating point or integer values */
 	CCS_UNIFORM,
+	/** A normal distribution over floating point or integer values */
 	CCS_NORMAL,
+	/** A roulette wheel selection distribution */
 	CCS_ROULETTE,
+	/** A mixture distribution */
 	CCS_MIXTURE,
+	/** A multivariate distribution */
 	CCS_MULTIVARIATE,
+	/** Guard */
 	CCS_DISTRIBUTION_TYPE_MAX,
-	CCS_DISTRIBUTION_TYPE_FORCE_32BIT = INT_MAX
+	/** Try forcing 32 bits value for bindings */
+	CCS_DISTRIBUTION_TYPE_FORCE_32BIT = INT32_MAX
 };
 
+/**
+ * A commodity type to represent CCS distribution type.
+ */
 typedef enum ccs_distribution_type_e ccs_distribution_type_t;
 
+/**
+ * CCS scale types.
+ */
 enum ccs_scale_type_e {
+	/** A linear scale */
 	CCS_LINEAR,
+	/** A logarithmic scale */
 	CCS_LOGARITHMIC,
+	/** Guard */
 	CCS_SCALE_TYPE_MAX,
-	CCS_SCALE_TYPE_FORCE_32BIT = INT_MAX
+	/** Try forcing 32 bits value for bindings */
+	CCS_SCALE_TYPE_FORCE_32BIT = INT32_MAX
 };
 
+/**
+ * A commodity type to represent CCS scale type.
+ */
 typedef enum ccs_scale_type_e ccs_scale_type_t;
 
 // Distribution

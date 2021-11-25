@@ -43,9 +43,13 @@ typedef uint32_t ccs_hash_t;
  * A structure representing a version of the CCS API.
  */
 typedef struct {
+	/** Revision version number */
 	uint16_t revision;
+	/** Patch version number */
 	uint16_t patch;
+	/** Minor version number */
 	uint16_t minor;
+	/** Major version number */
 	uint16_t major;
 } ccs_version_t;
 
