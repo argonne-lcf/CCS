@@ -300,6 +300,8 @@ ccs_evaluation_compare(ccs_evaluation_t  evaluation,
 		CCS_VALIDATE(ccs_expression_eval(expression,
 		    (ccs_context_t)evaluation->data->objective_space,
 		    other_evaluation->data->values, values + 1));
+		// Maybe relax to allow comparing Numerical values of different
+		// types.
 		if ((values[0].type != CCS_INTEGER && values[0].type != CCS_FLOAT) ||
 		     values[0].type != values[1].type) {
 			*result_ret = CCS_NOT_COMPARABLE;
