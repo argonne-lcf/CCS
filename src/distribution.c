@@ -75,6 +75,7 @@ ccs_distribution_sample(ccs_distribution_t  distribution,
                         ccs_rng_t           rng,
                         ccs_numeric_t      *value_ret) {
 	CCS_CHECK_OBJ(distribution, CCS_DISTRIBUTION);
+	CCS_CHECK_OBJ(rng, CCS_RNG);
 	CCS_CHECK_PTR(value_ret);
 	_ccs_distribution_ops_t *ops = ccs_distribution_get_ops(distribution);
 	return ops->samples(distribution->data, rng, 1, value_ret);
@@ -86,6 +87,7 @@ ccs_distribution_samples(ccs_distribution_t  distribution,
                          size_t              num_values,
                          ccs_numeric_t      *values) {
 	CCS_CHECK_OBJ(distribution, CCS_DISTRIBUTION);
+	CCS_CHECK_OBJ(rng, CCS_RNG);
 	if (!num_values)
 		return CCS_SUCCESS;
 	CCS_CHECK_ARY(num_values, values);
@@ -100,6 +102,7 @@ ccs_distribution_strided_samples(ccs_distribution_t  distribution,
                                  size_t              stride,
                                  ccs_numeric_t      *values) {
 	CCS_CHECK_OBJ(distribution, CCS_DISTRIBUTION);
+	CCS_CHECK_OBJ(rng, CCS_RNG);
 	if (stride < ((_ccs_distribution_common_data_t *)(distribution->data))->dimension)
 		return -CCS_INVALID_VALUE;
 	if (!num_values)
@@ -115,6 +118,7 @@ ccs_distribution_soa_samples(ccs_distribution_t   distribution,
                              size_t               num_values,
                              ccs_numeric_t      **values) {
 	CCS_CHECK_OBJ(distribution, CCS_DISTRIBUTION);
+	CCS_CHECK_OBJ(rng, CCS_RNG);
 	if (!num_values)
 		return CCS_SUCCESS;
 	CCS_CHECK_ARY(num_values, values);
@@ -129,8 +133,11 @@ ccs_distribution_hyperparameters_samples(ccs_distribution_t    distribution,
                                          size_t                num_values,
                                          ccs_datum_t          *values) {
 	CCS_CHECK_OBJ(distribution, CCS_DISTRIBUTION);
-	CCS_CHECK_PTR(hyperparameters);
-	CCS_CHECK_PTR(values);
+	CCS_CHECK_OBJ(rng, CCS_RNG);
+	if (!num_values)
+		return CCS_SUCCESS;
+	CCS_CHECK_ARY(num_values, hyperparameters);
+	CCS_CHECK_ARY(num_values, values);
 	ccs_result_t err;
 	size_t dim = ((_ccs_distribution_common_data_t *)(distribution->data))->dimension;
 	if (dim  == 1)
