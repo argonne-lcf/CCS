@@ -397,8 +397,10 @@ ccs_distribution_check_oversampling(ccs_distribution_t  distribution,
  * @return -#CCS_INVALID_VALUE if \p mu_ret is NULL and \p sigma_ret is NULL and
  *                             \p scale_ret is NULL and \p quantization_ret is
  *                             NULL
- * @return -#CCS_INVALID_OBJECT if \p distribution is not a valid CCS normal
+ * @return -#CCS_INVALID_OBJECT if \p distribution is not a valid CCS
  *                              distribution
+ * @return -#CCS_INVALID_DISTRIBUTION if \p distribution is not a normal
+ *                                    distribution
  */
 extern ccs_result_t
 ccs_normal_distribution_get_parameters(ccs_distribution_t  distribution,
@@ -423,8 +425,10 @@ ccs_normal_distribution_get_parameters(ccs_distribution_t  distribution,
  * @return -#CCS_INVALID_VALUE if \p lower_ret is NULL and \p upper_ret is NULL
  *                             and \p scale_ret is NULL and \p quantization_ret
  *                             is NULL
- * @return -#CCS_INVALID_OBJECT if \p distribution is not a valid CCS normal
+ * @return -#CCS_INVALID_OBJECT if \p distribution is not a valid CCS
  *                              distribution
+ * @return -#CCS_INVALID_DISTRIBUTION if \p distribution is not a uniform
+ *                                    distribution
  */
 extern ccs_result_t
 ccs_uniform_distribution_get_parameters(ccs_distribution_t  distribution,
@@ -440,8 +444,10 @@ ccs_uniform_distribution_get_parameters(ccs_distribution_t  distribution,
  *                           number of areas of the distribution
  * @return #CCS_SUCCESS on success
  * @return -#CCS_INVALID_VALUE if \p num_areas_ret is NULL
- * @return -#CCS_INVALID_OBJECT if \p distribution is not a valid CCS normal
+ * @return -#CCS_INVALID_OBJECT if \p distribution is not a valid CCS
  *                              distribution
+ * @return -#CCS_INVALID_DISTRIBUTION if \p distribution is not a roulette
+ *                                    distribution
  */
 extern ccs_result_t
 ccs_roulette_distribution_get_num_areas(ccs_distribution_t  distribution,
@@ -463,8 +469,10 @@ ccs_roulette_distribution_get_num_areas(ccs_distribution_t  distribution,
  * @return -#CCS_INVALID_VALUE if \p areas is NULL and num_areas is greater than
  *                             0; or if \p areas is NULL and num_areas_ret is
  *                             NULL
- * @return -#CCS_INVALID_OBJECT if \p distribution is not a valid CCS normal
+ * @return -#CCS_INVALID_OBJECT if \p distribution is not a valid CCS
  *                              distribution
+ * @return -#CCS_INVALID_DISTRIBUTION if \p distribution is not a roulette
+ *                                    distribution
  */
 extern ccs_result_t
 ccs_roulette_distribution_get_areas(ccs_distribution_t  distribution,
@@ -480,70 +488,259 @@ ccs_roulette_distribution_get_areas(ccs_distribution_t  distribution,
  *                                  distribution
  * @return #CCS_SUCCESS on success
  * @return -#CCS_INVALID_VALUE if \p num_distributions_ret is NULL
- * @return -#CCS_INVALID_OBJECT if \p distribution is not a valid CCS normal
+ * @return -#CCS_INVALID_OBJECT if \p distribution is not a valid CCS
  *                              distribution
+ * @return -#CCS_INVALID_DISTRIBUTION if \p distribution is not a mixture
+ *                                    distribution
  */
 extern ccs_result_t
-ccs_mixture_distribution_get_num_distributions(ccs_distribution_t  distribution,
-                                               size_t             *num_distributions_ret);
+ccs_mixture_distribution_get_num_distributions(
+	ccs_distribution_t  distribution,
+	size_t             *num_distributions_ret);
 
+/**
+ * Get the distributions contained in a mixture distribution.
+ * @param[in] distribution
+ * @param[in] num_distributions the number of distributions that can be
+ *                              contained in \p distributions. If \p
+ *                              distributions is not NULL, \p num_distributions
+ *                              must be greater than 0
+ * @param[out] distributions an array of \p distributions that will contain the
+ *                           returned distributions, or NULL. If the array is
+ *                           too big, extra values are set to NULL
+ * @param[out] num_distributions_ret a pointer to a variable that will contain
+ *                                   the number of distributions that are or
+ *                                   would be returned. Can be NULL
+ * @return #CCS_SUCCESS on success
+ * @return -#CCS_INVALID_VALUE if \p distributions is NULL and num_distributions
+ *                             is greater than 0; or if \p distributions is NULL
+ *                             and num_distributions_ret is NULL
+ * @return -#CCS_INVALID_OBJECT if \p distribution is not a valid CCS
+ *                              distribution
+ * @return -#CCS_INVALID_DISTRIBUTION if \p distribution is not a mixture
+ *                                    distribution
+ */
 extern ccs_result_t
-ccs_mixture_distribution_get_distributions(ccs_distribution_t  distribution,
-                                           size_t              num_distributions,
-                                           ccs_distribution_t *distributions,
-                                           size_t             *num_distributions_ret);
+ccs_mixture_distribution_get_distributions(
+	ccs_distribution_t  distribution,
+	size_t              num_distributions,
+	ccs_distribution_t *distributions,
+	size_t             *num_distributions_ret);
 
+/**
+ * Get the normalized weights of a mixture distribution.
+ * @param[in] distribution
+ * @param[in] num_weights the number of weight that can be contained in \p
+ *                        weights. If \p weights is not NULL, \p num_weights
+ *                        must be greater than 0
+ * @param[out] weights an array of \p num_weights floating point values that
+ *                     will contain the weights of the distributions, or NULL.
+ *                     If the array is too big, extra values are set to 0
+ * @param[out] num_weights_ret a pointer to a variable that will contain the
+ *                             number of weights that are or would be returned.
+ *                             Can be NULL
+ * @return #CCS_SUCCESS on success
+ * @return -#CCS_INVALID_VALUE if \p weights is NULL and num_weights is greater
+ *                             than 0; or if \p weights is NULL and
+ *                             num_weights_ret is NULL
+ * @return -#CCS_INVALID_OBJECT if \p distribution is not a valid CCS
+ *                              distribution
+ * @return -#CCS_INVALID_DISTRIBUTION if \p distribution is not a mixture
+ *                                    distribution
+ */
 extern ccs_result_t
 ccs_mixture_distribution_get_weights(ccs_distribution_t  distribution,
                                      size_t              num_weights,
                                      ccs_float_t        *weights,
                                      size_t             *num_weights_ret);
 
+/**
+ * Get the number of distributions contained in a multivariate distribution.
+ * @param[in] distribution
+ * @param[in] num_distributions_ret a pointer to a variable that will contain
+ *                                  the number of distributions contained in the
+ *                                  distribution
+ * @return #CCS_SUCCESS on success
+ * @return -#CCS_INVALID_VALUE if \p num_distributions_ret is NULL
+ * @return -#CCS_INVALID_OBJECT if \p distribution is not a valid CCS
+ *                              distribution
+ * @return -#CCS_INVALID_DISTRIBUTION if \p distribution is not a multivariate
+ *                                    distribution
+ */
 extern ccs_result_t
-ccs_multivariate_distribution_get_num_distributions(ccs_distribution_t  distribution,
-                                                    size_t             *num_distributions_ret);
+ccs_multivariate_distribution_get_num_distributions(
+	ccs_distribution_t  distribution,
+	size_t             *num_distributions_ret);
 
+/**
+ * Get the distributions contained in a multivariate distribution.
+ * @param[in] distribution
+ * @param[in] num_distributions the number of distributions that can be
+ *                              contained in \p distributions. If \p
+ *                              distributions is not NULL, \p num_distributions
+ *                              must be greater than 0
+ * @param[out] distributions an array of \p distributions that will contain the
+ *                           returned distributions, or NULL. If the array is
+ *                           too big, extra values are set to NULL
+ * @param[out] num_distributions_ret a pointer to a variable that will contain
+ *                                   the number of distributions that are or
+ *                                   would be returned. Can be NULL
+ * @return #CCS_SUCCESS on success
+ * @return -#CCS_INVALID_VALUE if \p distributions is NULL and num_distributions
+ *                             is greater than 0; or if \p distributions is NULL
+ *                             and num_distributions_ret is NULL
+ * @return -#CCS_INVALID_OBJECT if \p distribution is not a valid CCS
+ *                              distribution
+ * @return -#CCS_INVALID_DISTRIBUTION if \p distribution is not a multivariate
+ *                                    distribution
+ */
 extern ccs_result_t
-ccs_multivariate_distribution_get_distributions(ccs_distribution_t  distribution,
-                                                size_t              num_distributions,
-                                                ccs_distribution_t *distributions,
-                                                size_t             *num_distributions_ret);
+ccs_multivariate_distribution_get_distributions(
+	ccs_distribution_t  distribution,
+	size_t              num_distributions,
+	ccs_distribution_t *distributions,
+	size_t             *num_distributions_ret);
 
-//   Sampling Interface
+/**
+ * Get a random sample from a distribution.
+ * @param[in] distribution
+ * @param[in,out] rng the random number generator to use
+ * @param[out] values an array of numeric values the same dimension as the
+ *             distribution. Will contain the sampled values. The type of the
+ *             numeric returned depends on the data type of each dimension (see
+ *             #ccs_distribution_get_data_types)
+ * @return #CCS_SUCCESS on success
+ * @return -#CCS_INVALID_VALUE if \p values is NULL
+ * @return -#CCS_INVALID_OBJECT if \p distribution is not a valid CCS
+ *                              distribution; or if \p rng is not a valid CCS
+ *                              rng
+ */
 extern ccs_result_t
 ccs_distribution_sample(ccs_distribution_t  distribution,
                         ccs_rng_t           rng,
-                        ccs_numeric_t      *value);
+                        ccs_numeric_t      *values);
 
+/**
+ * Get a collection of random samples from a distribution.
+ * @param[in] distribution
+ * @param[in,out] rng the random number generator to use
+ * @param[in] num_samples the number of samples to get
+ * @param[out] values an array of numeric values. The dimension of the array
+ *                    should be the dimension of the distribution times \p
+ *                    num_samples. Values will be in an array of structures
+ *                    ordering, so values from a single sample will be
+ *                    contiguous in memory
+ * @return #CCS_SUCCESS on success
+ * @return -#CCS_INVALID_VALUE if \p values is NULL and \p num_samples is
+ *                             greater than 0
+ * @return -#CCS_INVALID_OBJECT if \p distribution is not a valid CCS
+ *                              distribution; or if \p rng is not a valid CCS
+ *                              rng
+ */
 extern ccs_result_t
 ccs_distribution_samples(ccs_distribution_t  distribution,
                          ccs_rng_t           rng,
-                         size_t              num_values,
+                         size_t              num_samples,
                          ccs_numeric_t      *values);
 
-// Stride between elements given in number of ccs_numeric_t.
-// stride equal to the the distribution dimension is
-// equivalent to ccs_distribution_samples
+/**
+ * Get a collection of random samples from a distribution. Each sample is stride
+ * ccs_numeric_t element apart in memory. A stride equal to the the distribution
+ * dimension is equivalent to calling #ccs_distribution_samples.
+ * @param[in] distribution
+ * @param[in,out] rng the random number generator to use
+ * @param[in] num_samples the number of samples to get
+ * @param[in] stride the distance in memory that will separate two samples
+ *                   successive samples. The value is given in number of
+ *                   ccs_numeric_t
+ * @param[out] values an array of numeric values. The dimension of the array
+ *                    should be the stride times \p num_samples minus stride
+ *                    plus the dimension of the distribution. Values will be in
+ *                    an array of structures ordering, so values from a single
+ *                    sample will be contiguous in memory
+ * @return #CCS_SUCCESS on success
+ * @return -#CCS_INVALID_VALUE if \p values is NULL and \p num_samples is
+ *                             greater than 0; or if \p stride is less than the
+ *                             distribution dimension
+ * @return -#CCS_INVALID_OBJECT if \p distribution is not a valid CCS
+ *                              distribution; or if \p rng is not a valid CCS
+ *                              rng
+ */
 extern ccs_result_t
 ccs_distribution_strided_samples(ccs_distribution_t  distribution,
                                  ccs_rng_t           rng,
-                                 size_t              num_values,
+                                 size_t              num_samples,
                                  size_t              stride,
                                  ccs_numeric_t      *values);
 
+/**
+ * Get a collection of random samples from a distribution. Each sample
+ * components will be stored contiguously in it's own array.
+ * @param[in] distribution
+ * @param[in,out] rng the random number generator to use
+ * @param[in] num_samples the number of samples to get
+ * @param[out] values an array of arrays of numeric values. The array dimension
+ *                    is the dimension of the distribution, while the contained
+ *                    arrays have a dimension of num_samples. If a value inside
+ *                    the array is NULL this dimension is ignored.
+ * @return #CCS_SUCCESS on success
+ * @return -#CCS_INVALID_VALUE if \p values is NULL
+ * @return -#CCS_INVALID_OBJECT if \p distribution is not a valid CCS
+ *                              distribution; or if \p rng is not a valid CCS
+ *                              rng
+ */
 extern ccs_result_t
 ccs_distribution_soa_samples(ccs_distribution_t   distribution,
                              ccs_rng_t            rng,
-                             size_t               num_values,
+                             size_t               num_samples,
                              ccs_numeric_t      **values);
-
+/**
+ * Get a collection of random hyperparameters' samples by sampling a
+ * distribution.
+ * @param[in] distribution
+ * @param[in,out] rng the random number generator to use
+ * @param[in] hyperparameters an array of hyperparameters. The dimension of the
+ *                            array must be qual to the dimension of the
+ *                            distribution
+ * @param[in] num_samples the number of samples to get
+ * @param[out] values an array of datum values. The dimension of the array
+ *                    should be the dimension of the distribution times \p
+ *                    num_samples. Values will be in an array of structures
+ *                    ordering, so values from a single sample will be
+ *                    contiguous in memory
+ * @return #CCS_SUCCESS on success
+ * @return -#CCS_INVALID_VALUE if \p values is NULL and \p num_samples is
+ *                             greater than 0; or if \p hyperparameters is NULL
+ *                             and \p num_samples is greater than 0
+ * @return -#CCS_INVALID_OBJECT if \p distribution is not a valid CCS
+ *                              distribution; or if \p rng is not a valid CCS
+ *                              rng; or if at least one of the hyperparameters
+ *                              provided is NULL
+ */
 extern ccs_result_t
 ccs_distribution_hyperparameters_samples(ccs_distribution_t    distribution,
                                          ccs_rng_t             rng,
                                          ccs_hyperparameter_t *hyperparameters,
-                                         size_t                num_values,
+                                         size_t                num_samples,
                                          ccs_datum_t          *values);
 
+/**
+ * Get a random hyperparameters' sample by sampling a distribution.
+ * @param[in] distribution
+ * @param[in,out] rng the random number generator to use
+ * @param[in] hyperparameters an array of hyperparameters. The dimension of the
+ *                            array must be qual to the dimension of the
+ *                            distribution
+ * @param[out] values an array of datum of the same dimension as the
+ *             distribution. Will contain the sampled values.
+ * @return #CCS_SUCCESS on success
+ * @return -#CCS_INVALID_VALUE if \p values is NULL; or if \p hyperparameters is
+ *                             NULL
+ * @return -#CCS_INVALID_OBJECT if \p distribution is not a valid CCS
+ *                              distribution; or if \p rng is not a valid CCS
+ *                              rng; or if at least one of the hyperparameters
+ *                              provided is NULL
+ */
 extern ccs_result_t
 ccs_distribution_hyperparameters_sample(ccs_distribution_t    distribution,
                                         ccs_rng_t             rng,
