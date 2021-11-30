@@ -248,6 +248,11 @@ ccs_evaluation_cmp(ccs_evaluation_t  evaluation,
                    int              *cmp_ret) {
 	CCS_CHECK_OBJ(evaluation, CCS_CONFIGURATION);
 	CCS_CHECK_OBJ(other_evaluation, CCS_CONFIGURATION);
+	CCS_CHECK_PTR(cmp_ret);
+	if (evaluation == other_evaluation) {
+		*cmp_ret = 0;
+		return CCS_SUCCESS;
+	}
 	_ccs_evaluation_ops_t *ops = ccs_evaluation_get_ops(evaluation);
 	return ops->cmp(evaluation->data, other_evaluation, cmp_ret);
 }

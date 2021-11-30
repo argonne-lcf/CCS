@@ -76,6 +76,11 @@ ccs_binding_cmp(ccs_binding_t  binding,
 		return -CCS_INVALID_OBJECT;
 	if (!other_binding || !other_binding->data)
 		return -CCS_INVALID_OBJECT;
+	CCS_CHECK_PTR(cmp_ret);
+	if (binding == other_binding) {
+		*cmp_ret = 0;
+		return CCS_SUCCESS;
+	}
 	_ccs_binding_ops_t *ops = ccs_binding_get_ops(binding);
 	return ops->cmp(binding->data, other_binding, cmp_ret);
 }
