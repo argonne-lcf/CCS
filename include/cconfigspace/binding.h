@@ -135,8 +135,9 @@ ccs_binding_hash(ccs_binding_t  binding,
  *                     if the first binding is found to be respectively lesser
  *                     than, equal, or greater then the second binding
  * @return #CCS_SUCCESS on success
- * @return -#CCS_INVALID_OBJECT if \p binding or other_binding are not a valid
- *                              CCS object
+ * @return -#CCS_INVALID_OBJECT if \p binding or \p other_binding are not valid
+ *                              CCS objects
+ * @return -#CCS_INVALID_VALUE if \p cmp_ret is NULL
  */
 extern ccs_result_t
 ccs_binding_cmp(ccs_binding_t  binding,

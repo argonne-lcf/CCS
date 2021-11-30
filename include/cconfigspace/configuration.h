@@ -25,7 +25,7 @@ extern "C" {
  * @return #CCS_SUCCESS on success
  * @return -#CCS_INVALID_OBJECT if \p configuration_space is not a valid CCS
  *                              configuration space
- * @return -#CCS_INVALID_VALUE if \p configuration_ret is NULL; or if if \p
+ * @return -#CCS_INVALID_VALUE if \p configuration_ret is NULL; or if \p
  *                             values is NULL and \p num_values is greater than
  *                             0; or if the number of values provided is not
  *                             equal to the number of hyperparameters in the
@@ -48,7 +48,7 @@ ccs_create_configuration(ccs_configuration_space_t configuration_space,
  * @return #CCS_SUCCESS on success
  * @return -#CCS_INVALID_OBJECT if \p configuration is not a valid CCS
  *                              configuration
- * @return -#CCS_INVALID_VALUE if \p configuration_ret is NULL
+ * @return -#CCS_INVALID_VALUE if \p configuration_space_ret is NULL
  */
 extern ccs_result_t
 ccs_configuration_get_configuration_space(
