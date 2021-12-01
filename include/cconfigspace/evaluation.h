@@ -8,9 +8,9 @@ extern "C" {
 /**
  * @file evaluation.h
  * An evaluation is a binding (see binding.h) over an objective space given a
- * specific configuration (see configuration.h). Evaluations over the same
- * objective space are weakly ordered if objective space contains more than one
- * objective. Evaluation that have failed must report an error code.
+ * specific configuration (see configuration.h). Successful evaluations over the
+ * same objective space are weakly ordered by their objective values. Evaluation
+ * that have failed must report an error code.
  */
 
 /**
@@ -39,9 +39,10 @@ typedef enum ccs_comparison_e ccs_comparison_t;
 /**
  * Create a new instance of an evaluation on a given objective_space for a given
  * configuration.
- * @param[in] objective_space
- * @param[in] configuration
- * @param[in] error
+ * @param[in] objective_space the objective space to associate with the
+ *                            evaluation
+ * @param[in] configuration the configuration to associate with the evaluation
+ * @param[in] error the error code associated with the evaluation
  * @param[in] num_values the number of provided values to initialize the
  *                       evaluation
  * @param[in] values an optional array of values to initialize the evaluation
@@ -122,7 +123,8 @@ ccs_evaluation_get_error(ccs_evaluation_t  evaluation,
                          ccs_result_t     *error_ret);
 
 /**
- * Set the error code associated with an evaluation.
+ * Set the error code associated with an evaluation. A successful
+ * evaluation should have it's error set to #CCS_SUCCESS.
  * @param[in,out] evaluation
  * @param[in] error the error code associated withe the evaluation
  * @return #CCS_SUCCESS on success
@@ -157,7 +159,7 @@ ccs_evaluation_get_value(ccs_evaluation_t  evaluation,
  *                  space
  * @param[in] value the value
  * @return #CCS_SUCCESS on success
- * @return -#CCS_INVALID_OBJECT if \p evaluation is not a valid CCS object
+ * @return -#CCS_INVALID_OBJECT if \p evaluation is not a valid CCS evaluation
  * @return -#CCS_INVALID_VALUE if \p value_ret is NULL
  * @return -#CCS_OUT_OF_BOUNDS if \p index is greater than the count of
  *                             hyperparameters in the objective space
@@ -180,7 +182,7 @@ ccs_evaluation_set_value(ccs_evaluation_t evaluation,
  *                            number of values that are or would be returned.
  *                            Can be NULL
  * @return #CCS_SUCCESS on success
- * @return -#CCS_INVALID_OBJECT if \p evaluation is not a valid CCS object
+ * @return -#CCS_INVALID_OBJECT if \p evaluation is not a valid CCS evaluation
  * @return -#CCS_INVALID_VALUE if \p values is NULL and \p num_values is greater
  *                             than 0; or if \p values is NULL and
  *                             num_values_ret is NULL; or if num_values is less
@@ -198,7 +200,7 @@ ccs_evaluation_get_values(ccs_evaluation_t  evaluation,
  * @param[in] name the name of the hyperparameter whose value to retrieve
  * @param[out] value_ret a pointer to the variable that will hold the value
  * @return #CCS_SUCCESS on success
- * @return -#CCS_INVALID_OBJECT if \p evaluation is not a valid CCS object
+ * @return -#CCS_INVALID_OBJECT if \p evaluation is not a valid CCS evaluation
  * @return -#CCS_INVALID_VALUE if \p value_ret is NULL
  * @return -#CCS_INVALID_NAME if no hyperparameter with such \p name exist in
  *                            the \p objective space
@@ -212,7 +214,7 @@ ccs_evaluation_get_value_by_name(ccs_evaluation_t  evaluation,
  * Check that an evaluation values are valid in the objective space.
  * @param[in] evaluation
  * @return #CCS_SUCCESS on success
- * @return -#CCS_INVALID_OBJECT if \p evaluation is not a valid CCS object
+ * @return -#CCS_INVALID_OBJECT if \p evaluation is not a valid CCS evaluation
  * @return -#CCS_INVALID_EVALUATION if \p evaluation was found to be invalid in
  *                                  the context of the objective space
  */
@@ -227,7 +229,7 @@ ccs_evaluation_check(ccs_evaluation_t  evaluation);
  * @param[out] value_ret a pointer to the variable that will contain the value
  *                       of the objective
  * @return #CCS_SUCCESS on success
- * @return -#CCS_INVALID_OBJECT if \p evaluation is not a valid CCS object
+ * @return -#CCS_INVALID_OBJECT if \p evaluation is not a valid CCS evaluation
  * @return -#CCS_INVALID_VALUE if \p value_ret is NULL; or if there was an issue
  *                             evaluating the objective
  * @return -#CCS_OUT_OF_BOUNDS if \p index is greater than the number of
@@ -250,7 +252,7 @@ ccs_evaluation_get_objective_value(ccs_evaluation_t  evaluation,
  *                            contain the number of values that are or would be
  *                            returned. Can be NULL
  * @return #CCS_SUCCESS on success
- * @return -#CCS_INVALID_OBJECT if \p evaluation is not a valid CCS object
+ * @return -#CCS_INVALID_OBJECT if \p evaluation is not a valid CCS evaluation
  * @return -#CCS_INVALID_VALUE if \p values is NULL and \p num_values is greater
  *                             than 0; or if values is NULL and num_values_ret
  *                             is NULL; or if there was an issue evaluating any
@@ -264,13 +266,13 @@ ccs_evaluation_get_objective_values(ccs_evaluation_t  evaluation,
 
 /**
  * Compute a hash value for the evaluation by hashing together the objective
- * space reference, the configuration, the number of values, and the values
+ * space reference, the configuration, the number of values, the values
  * themselves, and the associated error.
  * @param[in] evaluation
  * @param[out] hash_ret the address of the variable that will contain the hash
  *                      value.
  * @return #CCS_SUCCESS on success
- * @return -#CCS_INVALID_OBJECT if \p evaluation is not a valid CCS object
+ * @return -#CCS_INVALID_OBJECT if \p evaluation is not a valid CCS evaluation
  * @return -#CCS_INVALID_VALUE if \p hash_ret is NULL
  */
 extern ccs_result_t
@@ -278,8 +280,8 @@ ccs_evaluation_hash(ccs_evaluation_t  evaluation,
                     ccs_hash_t       *hash_ret);
 
 /**
- * Define a strict ordering of evaluation instances. Context, number of values and
- * values, error codes,  are compared.
+ * Define a strict ordering of evaluation instances. Objective space,
+ * configuration, number of values, values, and error codes are compared.
  * @param[in] evaluation the first evaluation
  * @param[in] other_evaluation the second evaluation
  * @param[out] cmp_ret a pointer to the variable that will contain the result
@@ -303,7 +305,7 @@ ccs_evaluation_cmp(ccs_evaluation_t  evaluation,
  * @param[out] result_ret a pointer to the variable that will contain the result
  *                        of the comparison. Will contain #CCS_BETTER,
  *                        #CCS_EQUIVALENT, #CCS_WORSE, or #CCS_NOT_COMPARABLE if
- *                        the first configuration is found to be respectively
+ *                        the first evaluation is found to be respectively
  *                        better, equivalent, worse, or not comparable with the
  *                        second evaluation.
  * @return #CCS_SUCCESS on success
