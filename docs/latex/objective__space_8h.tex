@@ -1,0 +1,613 @@
+\hypertarget{objective__space_8h}{}\doxysection{include/cconfigspace/objective\+\_\+space.h File Reference}
+\label{objective__space_8h}\index{include/cconfigspace/objective\_space.h@{include/cconfigspace/objective\_space.h}}
+
+
+An objective space is a context (see \mbox{\hyperlink{context_8h}{context.\+h}}) defining a set of hyperparameters.  
+
+
+This graph shows which files directly or indirectly include this file\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=196pt]{objective__space_8h__dep__incl}
+\end{center}
+\end{figure}
+\doxysubsection*{Typedefs}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{objective__space_8h_a49560ed68081c4a271a0b37140219317}\label{objective__space_8h_a49560ed68081c4a271a0b37140219317}} 
+typedef enum \mbox{\hyperlink{objective__space_8h_ad53ba7d87bc8e2bf2d2a94fb2e7d49f9}{ccs\+\_\+objective\+\_\+type\+\_\+e}} \mbox{\hyperlink{objective__space_8h_a49560ed68081c4a271a0b37140219317}{ccs\+\_\+objective\+\_\+type\+\_\+t}}
+\begin{DoxyCompactList}\small\item\em A commodity type to represent objective types. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Enumerations}
+\begin{DoxyCompactItemize}
+\item 
+enum \mbox{\hyperlink{objective__space_8h_ad53ba7d87bc8e2bf2d2a94fb2e7d49f9}{ccs\+\_\+objective\+\_\+type\+\_\+e}} \{ \mbox{\hyperlink{objective__space_8h_ad53ba7d87bc8e2bf2d2a94fb2e7d49f9a0ea73b7f0deece531647b3cf0215e371}{CCS\+\_\+\+MINIMIZE}}
+, \mbox{\hyperlink{objective__space_8h_ad53ba7d87bc8e2bf2d2a94fb2e7d49f9a44c7640848031c8166a0285cdd2e237d}{CCS\+\_\+\+MAXIMIZE}}
+, \mbox{\hyperlink{objective__space_8h_ad53ba7d87bc8e2bf2d2a94fb2e7d49f9a2ee742609c669980a9bc9ce3ef3c41e9}{CCS\+\_\+\+OBJECTIVE\+\_\+\+TYPE\+\_\+\+MAX}}
+, \mbox{\hyperlink{objective__space_8h_ad53ba7d87bc8e2bf2d2a94fb2e7d49f9a638fb46711a71e5e61ca90ee1f0a4a8f}{CCS\+\_\+\+OBJECTIVE\+\_\+\+TYPE\+\_\+\+FORCE\+\_\+32\+BIT}} = INT\+\_\+\+MAX
+ \}
+\begin{DoxyCompactList}\small\item\em Types of CCS objetives. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} \mbox{\hyperlink{objective__space_8h_a55b637c8b31e750e9705ff8386b8936e}{ccs\+\_\+create\+\_\+objective\+\_\+space}} (const char $\ast$name, \mbox{\hyperlink{base_8h_a645a0bae9ad3d85455ef2b06101146f7}{ccs\+\_\+objective\+\_\+space\+\_\+t}} $\ast$objective\+\_\+space\+\_\+ret)
+\begin{DoxyCompactList}\small\item\em Create a new empty objective space. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} \mbox{\hyperlink{objective__space_8h_a3eedf76436ea352ca202c714394baa1f}{ccs\+\_\+objective\+\_\+space\+\_\+get\+\_\+name}} (\mbox{\hyperlink{base_8h_a645a0bae9ad3d85455ef2b06101146f7}{ccs\+\_\+objective\+\_\+space\+\_\+t}} objective\+\_\+space, const char $\ast$$\ast$name\+\_\+ret)
+\begin{DoxyCompactList}\small\item\em Get the name of a objective space. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} \mbox{\hyperlink{objective__space_8h_ac04595aab23ebe17577bd9f1d382ad47}{ccs\+\_\+objective\+\_\+space\+\_\+add\+\_\+hyperparameter}} (\mbox{\hyperlink{base_8h_a645a0bae9ad3d85455ef2b06101146f7}{ccs\+\_\+objective\+\_\+space\+\_\+t}} objective\+\_\+space, \mbox{\hyperlink{base_8h_a0b796ce449059870d5bbb77f20925b50}{ccs\+\_\+hyperparameter\+\_\+t}} hyperparameter)
+\begin{DoxyCompactList}\small\item\em Add a hyperparameter to the objective space. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} \mbox{\hyperlink{objective__space_8h_a53abb91a23be5b384367f8d51e8ae358}{ccs\+\_\+objective\+\_\+space\+\_\+add\+\_\+hyperparameters}} (\mbox{\hyperlink{base_8h_a645a0bae9ad3d85455ef2b06101146f7}{ccs\+\_\+objective\+\_\+space\+\_\+t}} objective\+\_\+space, size\+\_\+t num\+\_\+hyperparameters, \mbox{\hyperlink{base_8h_a0b796ce449059870d5bbb77f20925b50}{ccs\+\_\+hyperparameter\+\_\+t}} $\ast$hyperparameters)
+\begin{DoxyCompactList}\small\item\em Add hyperparameters to the objective space. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} \mbox{\hyperlink{objective__space_8h_a8315d0d116fb4761a38f34da9c4a00df}{ccs\+\_\+objective\+\_\+space\+\_\+get\+\_\+num\+\_\+hyperparameters}} (\mbox{\hyperlink{base_8h_a645a0bae9ad3d85455ef2b06101146f7}{ccs\+\_\+objective\+\_\+space\+\_\+t}} objective\+\_\+space, size\+\_\+t $\ast$num\+\_\+hyperparameters\+\_\+ret)
+\begin{DoxyCompactList}\small\item\em Get the number of hyperparameters in a objective space. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} \mbox{\hyperlink{objective__space_8h_afd956ff5384651c7f89b0152bca217a8}{ccs\+\_\+objective\+\_\+space\+\_\+get\+\_\+hyperparameter}} (\mbox{\hyperlink{base_8h_a645a0bae9ad3d85455ef2b06101146f7}{ccs\+\_\+objective\+\_\+space\+\_\+t}} objective\+\_\+space, size\+\_\+t index, \mbox{\hyperlink{base_8h_a0b796ce449059870d5bbb77f20925b50}{ccs\+\_\+hyperparameter\+\_\+t}} $\ast$hyperparameter\+\_\+ret)
+\begin{DoxyCompactList}\small\item\em Get an hyperparameter in a objective space given its index. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} \mbox{\hyperlink{objective__space_8h_ac159302802729bbb99bb38ff0a8080d7}{ccs\+\_\+objective\+\_\+space\+\_\+get\+\_\+hyperparameter\+\_\+by\+\_\+name}} (\mbox{\hyperlink{base_8h_a645a0bae9ad3d85455ef2b06101146f7}{ccs\+\_\+objective\+\_\+space\+\_\+t}} objective\+\_\+space, const char $\ast$name, \mbox{\hyperlink{base_8h_a0b796ce449059870d5bbb77f20925b50}{ccs\+\_\+hyperparameter\+\_\+t}} $\ast$hyperparameter\+\_\+ret)
+\begin{DoxyCompactList}\small\item\em Get an hyperparameter in a objective space given its name. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} \mbox{\hyperlink{objective__space_8h_ac92ef63e9a4db7bedcd7c5eacc099a40}{ccs\+\_\+objective\+\_\+space\+\_\+get\+\_\+hyperparameter\+\_\+index\+\_\+by\+\_\+name}} (\mbox{\hyperlink{base_8h_a645a0bae9ad3d85455ef2b06101146f7}{ccs\+\_\+objective\+\_\+space\+\_\+t}} objective\+\_\+space, const char $\ast$name, size\+\_\+t $\ast$index\+\_\+ret)
+\begin{DoxyCompactList}\small\item\em Get the index of an hyperparameter in the objective space given its name. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} \mbox{\hyperlink{objective__space_8h_ab737f50ca570e7acf88ecee047653004}{ccs\+\_\+objective\+\_\+space\+\_\+get\+\_\+hyperparameter\+\_\+index}} (\mbox{\hyperlink{base_8h_a645a0bae9ad3d85455ef2b06101146f7}{ccs\+\_\+objective\+\_\+space\+\_\+t}} objective\+\_\+space, \mbox{\hyperlink{base_8h_a0b796ce449059870d5bbb77f20925b50}{ccs\+\_\+hyperparameter\+\_\+t}} hyperparameter, size\+\_\+t $\ast$index\+\_\+ret)
+\begin{DoxyCompactList}\small\item\em Get the index of an hyperparameter in the objective space. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} \mbox{\hyperlink{objective__space_8h_a9fdf4db98825ed673e2346f55583a683}{ccs\+\_\+objective\+\_\+space\+\_\+get\+\_\+hyperparameter\+\_\+indexes}} (\mbox{\hyperlink{base_8h_a645a0bae9ad3d85455ef2b06101146f7}{ccs\+\_\+objective\+\_\+space\+\_\+t}} objective\+\_\+space, size\+\_\+t num\+\_\+hyperparameters, \mbox{\hyperlink{base_8h_a0b796ce449059870d5bbb77f20925b50}{ccs\+\_\+hyperparameter\+\_\+t}} $\ast$hyperparameters, size\+\_\+t $\ast$indexes)
+\begin{DoxyCompactList}\small\item\em Get the indices of a set of hyperparameters in a objective space. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} \mbox{\hyperlink{objective__space_8h_aa0a18deff0a3f9a4a94379abc71242b3}{ccs\+\_\+objective\+\_\+space\+\_\+get\+\_\+hyperparameters}} (\mbox{\hyperlink{base_8h_a645a0bae9ad3d85455ef2b06101146f7}{ccs\+\_\+objective\+\_\+space\+\_\+t}} objective\+\_\+space, size\+\_\+t num\+\_\+hyperparameters, \mbox{\hyperlink{base_8h_a0b796ce449059870d5bbb77f20925b50}{ccs\+\_\+hyperparameter\+\_\+t}} $\ast$hyperparameters, size\+\_\+t $\ast$num\+\_\+hyperparameters\+\_\+ret)
+\begin{DoxyCompactList}\small\item\em Get the hyperparameters in the given objective space. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} \mbox{\hyperlink{objective__space_8h_a8d5da3dea964f021373c5176cee187ec}{ccs\+\_\+objective\+\_\+space\+\_\+check\+\_\+evaluation}} (\mbox{\hyperlink{base_8h_a645a0bae9ad3d85455ef2b06101146f7}{ccs\+\_\+objective\+\_\+space\+\_\+t}} objective\+\_\+space, \mbox{\hyperlink{base_8h_a7dbc00be0122046c2ba9b6d188d57a13}{ccs\+\_\+evaluation\+\_\+t}} evaluation, \mbox{\hyperlink{base_8h_a0e8ba2dfd397017939e6ea2ebc4bb037}{ccs\+\_\+bool\+\_\+t}} $\ast$is\+\_\+valid\+\_\+ret)
+\begin{DoxyCompactList}\small\item\em Check that an evaluation is a valid in an objective space. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} \mbox{\hyperlink{objective__space_8h_af15c995f210e18d4cedf3f784d3ba857}{ccs\+\_\+objective\+\_\+space\+\_\+check\+\_\+evaluation\+\_\+values}} (\mbox{\hyperlink{base_8h_a645a0bae9ad3d85455ef2b06101146f7}{ccs\+\_\+objective\+\_\+space\+\_\+t}} objective\+\_\+space, size\+\_\+t num\+\_\+values, \mbox{\hyperlink{base_8h_a36bc36b2bb0d0613453dd731cdcd2048}{ccs\+\_\+datum\+\_\+t}} $\ast$values, \mbox{\hyperlink{base_8h_a0e8ba2dfd397017939e6ea2ebc4bb037}{ccs\+\_\+bool\+\_\+t}} $\ast$is\+\_\+valid\+\_\+ret)
+\begin{DoxyCompactList}\small\item\em Check that a set of values would create a valid evaluation for an objective space. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} \mbox{\hyperlink{objective__space_8h_a7fc370716c47b45822a495b2a5d58f4a}{ccs\+\_\+objective\+\_\+space\+\_\+validate\+\_\+value}} (\mbox{\hyperlink{base_8h_a645a0bae9ad3d85455ef2b06101146f7}{ccs\+\_\+objective\+\_\+space\+\_\+t}} objective\+\_\+space, size\+\_\+t index, \mbox{\hyperlink{base_8h_a36bc36b2bb0d0613453dd731cdcd2048}{ccs\+\_\+datum\+\_\+t}} value, \mbox{\hyperlink{base_8h_a36bc36b2bb0d0613453dd731cdcd2048}{ccs\+\_\+datum\+\_\+t}} $\ast$value\+\_\+ret)
+\begin{DoxyCompactList}\small\item\em Validate that a given value at the given index is valid in a objective space, and return a sanitized value. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} \mbox{\hyperlink{objective__space_8h_a773a12530fb2ec2597acd783bbc067d3}{ccs\+\_\+objective\+\_\+space\+\_\+add\+\_\+objective}} (\mbox{\hyperlink{base_8h_a645a0bae9ad3d85455ef2b06101146f7}{ccs\+\_\+objective\+\_\+space\+\_\+t}} objective\+\_\+space, \mbox{\hyperlink{base_8h_a211f0df32aa85683492513cbf0d7805b}{ccs\+\_\+expression\+\_\+t}} expression, \mbox{\hyperlink{objective__space_8h_a49560ed68081c4a271a0b37140219317}{ccs\+\_\+objective\+\_\+type\+\_\+t}} type)
+\begin{DoxyCompactList}\small\item\em Add an objective to an objective space. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} \mbox{\hyperlink{objective__space_8h_ae33a8bc239feda12f67a02c027e35b14}{ccs\+\_\+objective\+\_\+space\+\_\+add\+\_\+objectives}} (\mbox{\hyperlink{base_8h_a645a0bae9ad3d85455ef2b06101146f7}{ccs\+\_\+objective\+\_\+space\+\_\+t}} objective\+\_\+space, size\+\_\+t num\+\_\+objectives, \mbox{\hyperlink{base_8h_a211f0df32aa85683492513cbf0d7805b}{ccs\+\_\+expression\+\_\+t}} $\ast$expressions, \mbox{\hyperlink{objective__space_8h_a49560ed68081c4a271a0b37140219317}{ccs\+\_\+objective\+\_\+type\+\_\+t}} $\ast$types)
+\begin{DoxyCompactList}\small\item\em Add a list of objectives to an objective space. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} \mbox{\hyperlink{objective__space_8h_a9def315f2f35d743184753ef23a3371e}{ccs\+\_\+objective\+\_\+space\+\_\+get\+\_\+objective}} (\mbox{\hyperlink{base_8h_a645a0bae9ad3d85455ef2b06101146f7}{ccs\+\_\+objective\+\_\+space\+\_\+t}} objective\+\_\+space, size\+\_\+t index, \mbox{\hyperlink{base_8h_a211f0df32aa85683492513cbf0d7805b}{ccs\+\_\+expression\+\_\+t}} $\ast$expression\+\_\+ret, \mbox{\hyperlink{objective__space_8h_a49560ed68081c4a271a0b37140219317}{ccs\+\_\+objective\+\_\+type\+\_\+t}} $\ast$type\+\_\+ret)
+\begin{DoxyCompactList}\small\item\em Get the objective of rank index in a objective space. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} \mbox{\hyperlink{objective__space_8h_a53b895916fc8bf5be889a89d0178fa5d}{ccs\+\_\+objective\+\_\+space\+\_\+get\+\_\+objectives}} (\mbox{\hyperlink{base_8h_a645a0bae9ad3d85455ef2b06101146f7}{ccs\+\_\+objective\+\_\+space\+\_\+t}} objective\+\_\+space, size\+\_\+t num\+\_\+objectives, \mbox{\hyperlink{base_8h_a211f0df32aa85683492513cbf0d7805b}{ccs\+\_\+expression\+\_\+t}} $\ast$expressions, \mbox{\hyperlink{objective__space_8h_a49560ed68081c4a271a0b37140219317}{ccs\+\_\+objective\+\_\+type\+\_\+t}} $\ast$types, size\+\_\+t $\ast$num\+\_\+objectives\+\_\+ret)
+\begin{DoxyCompactList}\small\item\em Get the objectives in a objective space. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+An objective space is a context (see \mbox{\hyperlink{context_8h}{context.\+h}}) defining a set of hyperparameters. 
+
+Objective space also define a list of expressions (see \mbox{\hyperlink{expression_8h}{expression.\+h}}) over those hyperparameters called objectives. 
+
+\doxysubsection{Enumeration Type Documentation}
+\mbox{\Hypertarget{objective__space_8h_ad53ba7d87bc8e2bf2d2a94fb2e7d49f9}\label{objective__space_8h_ad53ba7d87bc8e2bf2d2a94fb2e7d49f9}} 
+\index{objective\_space.h@{objective\_space.h}!ccs\_objective\_type\_e@{ccs\_objective\_type\_e}}
+\index{ccs\_objective\_type\_e@{ccs\_objective\_type\_e}!objective\_space.h@{objective\_space.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_objective\_type\_e}{ccs\_objective\_type\_e}}
+{\footnotesize\ttfamily enum \mbox{\hyperlink{objective__space_8h_ad53ba7d87bc8e2bf2d2a94fb2e7d49f9}{ccs\+\_\+objective\+\_\+type\+\_\+e}}}
+
+
+
+Types of CCS objetives. 
+
+\begin{DoxyEnumFields}{Enumerator}
+\raisebox{\heightof{T}}[0pt][0pt]{\index{CCS\_MINIMIZE@{CCS\_MINIMIZE}!objective\_space.h@{objective\_space.h}}\index{objective\_space.h@{objective\_space.h}!CCS\_MINIMIZE@{CCS\_MINIMIZE}}}\mbox{\Hypertarget{objective__space_8h_ad53ba7d87bc8e2bf2d2a94fb2e7d49f9a0ea73b7f0deece531647b3cf0215e371}\label{objective__space_8h_ad53ba7d87bc8e2bf2d2a94fb2e7d49f9a0ea73b7f0deece531647b3cf0215e371}} 
+CCS\+\_\+\+MINIMIZE&Objective should be minimized. \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{CCS\_MAXIMIZE@{CCS\_MAXIMIZE}!objective\_space.h@{objective\_space.h}}\index{objective\_space.h@{objective\_space.h}!CCS\_MAXIMIZE@{CCS\_MAXIMIZE}}}\mbox{\Hypertarget{objective__space_8h_ad53ba7d87bc8e2bf2d2a94fb2e7d49f9a44c7640848031c8166a0285cdd2e237d}\label{objective__space_8h_ad53ba7d87bc8e2bf2d2a94fb2e7d49f9a44c7640848031c8166a0285cdd2e237d}} 
+CCS\+\_\+\+MAXIMIZE&Objective should be maximized. \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{CCS\_OBJECTIVE\_TYPE\_MAX@{CCS\_OBJECTIVE\_TYPE\_MAX}!objective\_space.h@{objective\_space.h}}\index{objective\_space.h@{objective\_space.h}!CCS\_OBJECTIVE\_TYPE\_MAX@{CCS\_OBJECTIVE\_TYPE\_MAX}}}\mbox{\Hypertarget{objective__space_8h_ad53ba7d87bc8e2bf2d2a94fb2e7d49f9a2ee742609c669980a9bc9ce3ef3c41e9}\label{objective__space_8h_ad53ba7d87bc8e2bf2d2a94fb2e7d49f9a2ee742609c669980a9bc9ce3ef3c41e9}} 
+CCS\+\_\+\+OBJECTIVE\+\_\+\+TYPE\+\_\+\+MAX&Guard. \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{CCS\_OBJECTIVE\_TYPE\_FORCE\_32BIT@{CCS\_OBJECTIVE\_TYPE\_FORCE\_32BIT}!objective\_space.h@{objective\_space.h}}\index{objective\_space.h@{objective\_space.h}!CCS\_OBJECTIVE\_TYPE\_FORCE\_32BIT@{CCS\_OBJECTIVE\_TYPE\_FORCE\_32BIT}}}\mbox{\Hypertarget{objective__space_8h_ad53ba7d87bc8e2bf2d2a94fb2e7d49f9a638fb46711a71e5e61ca90ee1f0a4a8f}\label{objective__space_8h_ad53ba7d87bc8e2bf2d2a94fb2e7d49f9a638fb46711a71e5e61ca90ee1f0a4a8f}} 
+CCS\+\_\+\+OBJECTIVE\+\_\+\+TYPE\+\_\+\+FORCE\+\_\+32\+BIT&Try forcing 32 bits value for bindings. \\
+\hline
+
+\end{DoxyEnumFields}
+
+
+\doxysubsection{Function Documentation}
+\mbox{\Hypertarget{objective__space_8h_a55b637c8b31e750e9705ff8386b8936e}\label{objective__space_8h_a55b637c8b31e750e9705ff8386b8936e}} 
+\index{objective\_space.h@{objective\_space.h}!ccs\_create\_objective\_space@{ccs\_create\_objective\_space}}
+\index{ccs\_create\_objective\_space@{ccs\_create\_objective\_space}!objective\_space.h@{objective\_space.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_create\_objective\_space()}{ccs\_create\_objective\_space()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} ccs\+\_\+create\+\_\+objective\+\_\+space (\begin{DoxyParamCaption}\item[{const char $\ast$}]{name,  }\item[{\mbox{\hyperlink{base_8h_a645a0bae9ad3d85455ef2b06101146f7}{ccs\+\_\+objective\+\_\+space\+\_\+t}} $\ast$}]{objective\+\_\+space\+\_\+ret }\end{DoxyParamCaption})}
+
+
+
+Create a new empty objective space. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em name} & pointer to a string that will be copied internally \\
+\hline
+\mbox{\texttt{ out}}  & {\em objective\+\_\+space\+\_\+ret} & a pointer to the variable that will hold the newly created objective space \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a092b9c7d2bc9ac00a6f53e251c8619b8}{CCS\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0adb4bc5cfc4f985bf59ae223f3e22b9f9}{CCS\+\_\+\+INVALID\+\_\+\+VALUE}} if {\ttfamily name} is NULL; or if {\ttfamily objective\+\_\+space\+\_\+ret} is NULL 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a3b3381e910957ad1fbe1d633b12eff79}{CCS\+\_\+\+OUT\+\_\+\+OF\+\_\+\+MEMORY}} if there was a lack of memory to allocate the new objective space 
+\end{DoxyReturn}
+\mbox{\Hypertarget{objective__space_8h_ac04595aab23ebe17577bd9f1d382ad47}\label{objective__space_8h_ac04595aab23ebe17577bd9f1d382ad47}} 
+\index{objective\_space.h@{objective\_space.h}!ccs\_objective\_space\_add\_hyperparameter@{ccs\_objective\_space\_add\_hyperparameter}}
+\index{ccs\_objective\_space\_add\_hyperparameter@{ccs\_objective\_space\_add\_hyperparameter}!objective\_space.h@{objective\_space.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_objective\_space\_add\_hyperparameter()}{ccs\_objective\_space\_add\_hyperparameter()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} ccs\+\_\+objective\+\_\+space\+\_\+add\+\_\+hyperparameter (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_a645a0bae9ad3d85455ef2b06101146f7}{ccs\+\_\+objective\+\_\+space\+\_\+t}}}]{objective\+\_\+space,  }\item[{\mbox{\hyperlink{base_8h_a0b796ce449059870d5bbb77f20925b50}{ccs\+\_\+hyperparameter\+\_\+t}}}]{hyperparameter }\end{DoxyParamCaption})}
+
+
+
+Add a hyperparameter to the objective space. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in,out}}  & {\em objective\+\_\+space} & \\
+\hline
+\mbox{\texttt{ in}}  & {\em hyperparameter} & the hyperparameter to add to the objective space \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a092b9c7d2bc9ac00a6f53e251c8619b8}{CCS\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a4707835c3fcb2303089c76bbcbf96df5}{CCS\+\_\+\+INVALID\+\_\+\+OBJECT}} if {\ttfamily objective\+\_\+space} is not a valid CCS objective space; or {\ttfamily hyperparameter} is not a valid CCS hyperparameter 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0afab391c5bc22e7ba89710930ec04028d}{CCS\+\_\+\+INVALID\+\_\+\+HYPERPARAMETER}} if {\ttfamily hyperparameter} is already in the objective space; or if a hyperparameter with the same name already exists in the objective space 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a3b3381e910957ad1fbe1d633b12eff79}{CCS\+\_\+\+OUT\+\_\+\+OF\+\_\+\+MEMORY}} if a memory could not be allocated to store the additional hyperparameter and associated data structures 
+\end{DoxyReturn}
+\mbox{\Hypertarget{objective__space_8h_a53abb91a23be5b384367f8d51e8ae358}\label{objective__space_8h_a53abb91a23be5b384367f8d51e8ae358}} 
+\index{objective\_space.h@{objective\_space.h}!ccs\_objective\_space\_add\_hyperparameters@{ccs\_objective\_space\_add\_hyperparameters}}
+\index{ccs\_objective\_space\_add\_hyperparameters@{ccs\_objective\_space\_add\_hyperparameters}!objective\_space.h@{objective\_space.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_objective\_space\_add\_hyperparameters()}{ccs\_objective\_space\_add\_hyperparameters()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} ccs\+\_\+objective\+\_\+space\+\_\+add\+\_\+hyperparameters (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_a645a0bae9ad3d85455ef2b06101146f7}{ccs\+\_\+objective\+\_\+space\+\_\+t}}}]{objective\+\_\+space,  }\item[{size\+\_\+t}]{num\+\_\+hyperparameters,  }\item[{\mbox{\hyperlink{base_8h_a0b796ce449059870d5bbb77f20925b50}{ccs\+\_\+hyperparameter\+\_\+t}} $\ast$}]{hyperparameters }\end{DoxyParamCaption})}
+
+
+
+Add hyperparameters to the objective space. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in,out}}  & {\em objective\+\_\+space} & \\
+\hline
+\mbox{\texttt{ in}}  & {\em num\+\_\+hyperparameters} & the number of provided hyperparameters \\
+\hline
+\mbox{\texttt{ in}}  & {\em hyperparameters} & an array of {\ttfamily num\+\_\+hyperparameters} hyperparameters to add to the objective space \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a092b9c7d2bc9ac00a6f53e251c8619b8}{CCS\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a4707835c3fcb2303089c76bbcbf96df5}{CCS\+\_\+\+INVALID\+\_\+\+OBJECT}} if {\ttfamily objective\+\_\+space} is not a valid CCS objective space; or a hyperparameter is not a valid CCS hyperparameter 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0adb4bc5cfc4f985bf59ae223f3e22b9f9}{CCS\+\_\+\+INVALID\+\_\+\+VALUE}} if {\ttfamily hyperparameters} is NULL and {\ttfamily num\+\_\+hyperparameters} is greater than 0 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0afab391c5bc22e7ba89710930ec04028d}{CCS\+\_\+\+INVALID\+\_\+\+HYPERPARAMETER}} if a hyperparameter is already in the objective space; or if a hyperparameter with the same name already exists in the objective space 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a3b3381e910957ad1fbe1d633b12eff79}{CCS\+\_\+\+OUT\+\_\+\+OF\+\_\+\+MEMORY}} if memory could not be allocated to store additional hyperparameters and associated data structures 
+\end{DoxyReturn}
+\mbox{\Hypertarget{objective__space_8h_a773a12530fb2ec2597acd783bbc067d3}\label{objective__space_8h_a773a12530fb2ec2597acd783bbc067d3}} 
+\index{objective\_space.h@{objective\_space.h}!ccs\_objective\_space\_add\_objective@{ccs\_objective\_space\_add\_objective}}
+\index{ccs\_objective\_space\_add\_objective@{ccs\_objective\_space\_add\_objective}!objective\_space.h@{objective\_space.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_objective\_space\_add\_objective()}{ccs\_objective\_space\_add\_objective()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} ccs\+\_\+objective\+\_\+space\+\_\+add\+\_\+objective (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_a645a0bae9ad3d85455ef2b06101146f7}{ccs\+\_\+objective\+\_\+space\+\_\+t}}}]{objective\+\_\+space,  }\item[{\mbox{\hyperlink{base_8h_a211f0df32aa85683492513cbf0d7805b}{ccs\+\_\+expression\+\_\+t}}}]{expression,  }\item[{\mbox{\hyperlink{objective__space_8h_a49560ed68081c4a271a0b37140219317}{ccs\+\_\+objective\+\_\+type\+\_\+t}}}]{type }\end{DoxyParamCaption})}
+
+
+
+Add an objective to an objective space. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in,out}}  & {\em objective\+\_\+space} & \\
+\hline
+\mbox{\texttt{ in}}  & {\em expression} & the forbidden clause to dd to the configuration space \\
+\hline
+\mbox{\texttt{ in}}  & {\em type} & the type of the objective, either \mbox{\hyperlink{objective__space_8h_ad53ba7d87bc8e2bf2d2a94fb2e7d49f9a44c7640848031c8166a0285cdd2e237d}{CCS\+\_\+\+MAXIMIZE}} or \mbox{\hyperlink{objective__space_8h_ad53ba7d87bc8e2bf2d2a94fb2e7d49f9a0ea73b7f0deece531647b3cf0215e371}{CCS\+\_\+\+MINIMIZE}} \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a092b9c7d2bc9ac00a6f53e251c8619b8}{CCS\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a4707835c3fcb2303089c76bbcbf96df5}{CCS\+\_\+\+INVALID\+\_\+\+OBJECT}} if {\ttfamily objective\+\_\+space} is not a valid CCS objective space; or if {\ttfamily expression} is not a valid CCS expression 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0afab391c5bc22e7ba89710930ec04028d}{CCS\+\_\+\+INVALID\+\_\+\+HYPERPARAMETER}} if expression references a hyperparameter that is not in the objective space 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a3b3381e910957ad1fbe1d633b12eff79}{CCS\+\_\+\+OUT\+\_\+\+OF\+\_\+\+MEMORY}} if there was not enough memory to allocate internal data structures 
+\end{DoxyReturn}
+\mbox{\Hypertarget{objective__space_8h_ae33a8bc239feda12f67a02c027e35b14}\label{objective__space_8h_ae33a8bc239feda12f67a02c027e35b14}} 
+\index{objective\_space.h@{objective\_space.h}!ccs\_objective\_space\_add\_objectives@{ccs\_objective\_space\_add\_objectives}}
+\index{ccs\_objective\_space\_add\_objectives@{ccs\_objective\_space\_add\_objectives}!objective\_space.h@{objective\_space.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_objective\_space\_add\_objectives()}{ccs\_objective\_space\_add\_objectives()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} ccs\+\_\+objective\+\_\+space\+\_\+add\+\_\+objectives (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_a645a0bae9ad3d85455ef2b06101146f7}{ccs\+\_\+objective\+\_\+space\+\_\+t}}}]{objective\+\_\+space,  }\item[{size\+\_\+t}]{num\+\_\+objectives,  }\item[{\mbox{\hyperlink{base_8h_a211f0df32aa85683492513cbf0d7805b}{ccs\+\_\+expression\+\_\+t}} $\ast$}]{expressions,  }\item[{\mbox{\hyperlink{objective__space_8h_a49560ed68081c4a271a0b37140219317}{ccs\+\_\+objective\+\_\+type\+\_\+t}} $\ast$}]{types }\end{DoxyParamCaption})}
+
+
+
+Add a list of objectives to an objective space. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in,out}}  & {\em objective\+\_\+space} & \\
+\hline
+\mbox{\texttt{ in}}  & {\em num\+\_\+objectives} & the number of provided expressions \\
+\hline
+\mbox{\texttt{ in}}  & {\em expressions} & an array o {\ttfamily num\+\_\+objectives} expressions to add as objectives to the objective space \\
+\hline
+\mbox{\texttt{ in}}  & {\em types} & an array o {\ttfamily num\+\_\+objectives} types of objectives \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a092b9c7d2bc9ac00a6f53e251c8619b8}{CCS\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a4707835c3fcb2303089c76bbcbf96df5}{CCS\+\_\+\+INVALID\+\_\+\+OBJECT}} if {\ttfamily objective\+\_\+space} is not a valid CCS objective space; or if at least one of the provided expressions is not a valid CCS expression 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0adb4bc5cfc4f985bf59ae223f3e22b9f9}{CCS\+\_\+\+INVALID\+\_\+\+VALUE}} if {\ttfamily expressions} is NULL and {\ttfamily num\+\_\+objectives} is greater than 0 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0afab391c5bc22e7ba89710930ec04028d}{CCS\+\_\+\+INVALID\+\_\+\+HYPERPARAMETER}} if an expression references a hyperparameter that is not in the objective space 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a3b3381e910957ad1fbe1d633b12eff79}{CCS\+\_\+\+OUT\+\_\+\+OF\+\_\+\+MEMORY}} if there was not enough memory to allocate internal data structures 
+\end{DoxyReturn}
+\mbox{\Hypertarget{objective__space_8h_a8d5da3dea964f021373c5176cee187ec}\label{objective__space_8h_a8d5da3dea964f021373c5176cee187ec}} 
+\index{objective\_space.h@{objective\_space.h}!ccs\_objective\_space\_check\_evaluation@{ccs\_objective\_space\_check\_evaluation}}
+\index{ccs\_objective\_space\_check\_evaluation@{ccs\_objective\_space\_check\_evaluation}!objective\_space.h@{objective\_space.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_objective\_space\_check\_evaluation()}{ccs\_objective\_space\_check\_evaluation()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} ccs\+\_\+objective\+\_\+space\+\_\+check\+\_\+evaluation (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_a645a0bae9ad3d85455ef2b06101146f7}{ccs\+\_\+objective\+\_\+space\+\_\+t}}}]{objective\+\_\+space,  }\item[{\mbox{\hyperlink{base_8h_a7dbc00be0122046c2ba9b6d188d57a13}{ccs\+\_\+evaluation\+\_\+t}}}]{evaluation,  }\item[{\mbox{\hyperlink{base_8h_a0e8ba2dfd397017939e6ea2ebc4bb037}{ccs\+\_\+bool\+\_\+t}} $\ast$}]{is\+\_\+valid\+\_\+ret }\end{DoxyParamCaption})}
+
+
+
+Check that an evaluation is a valid in an objective space. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em objective\+\_\+space} & \\
+\hline
+\mbox{\texttt{ in}}  & {\em evaluation} & \\
+\hline
+\mbox{\texttt{ out}}  & {\em is\+\_\+valid\+\_\+ret} & a pointer to a variable that will hold the result of the check. Result will be CCS\+\_\+\+TRUE if the evaluation is valid. Result will be CCS\+\_\+\+FALSE if an hyperparameter value is not a valid value for this hyperparameter; \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a092b9c7d2bc9ac00a6f53e251c8619b8}{CCS\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a4707835c3fcb2303089c76bbcbf96df5}{CCS\+\_\+\+INVALID\+\_\+\+OBJECT}} if {\ttfamily objective\+\_\+space} is not a valid CCS objective space; or if {\ttfamily evaluation} is not a valid CCS evaluation 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a957e738a9f970257eddfc79cab5a78fc}{CCS\+\_\+\+INVALID\+\_\+\+EVALUATION}} if {\ttfamily evaluation} is not associated to the objective space; or if the number of values contained in {\ttfamily evaluation} is not equal to the number of hyperparameters in the features space 
+\end{DoxyReturn}
+\mbox{\Hypertarget{objective__space_8h_af15c995f210e18d4cedf3f784d3ba857}\label{objective__space_8h_af15c995f210e18d4cedf3f784d3ba857}} 
+\index{objective\_space.h@{objective\_space.h}!ccs\_objective\_space\_check\_evaluation\_values@{ccs\_objective\_space\_check\_evaluation\_values}}
+\index{ccs\_objective\_space\_check\_evaluation\_values@{ccs\_objective\_space\_check\_evaluation\_values}!objective\_space.h@{objective\_space.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_objective\_space\_check\_evaluation\_values()}{ccs\_objective\_space\_check\_evaluation\_values()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} ccs\+\_\+objective\+\_\+space\+\_\+check\+\_\+evaluation\+\_\+values (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_a645a0bae9ad3d85455ef2b06101146f7}{ccs\+\_\+objective\+\_\+space\+\_\+t}}}]{objective\+\_\+space,  }\item[{size\+\_\+t}]{num\+\_\+values,  }\item[{\mbox{\hyperlink{base_8h_a36bc36b2bb0d0613453dd731cdcd2048}{ccs\+\_\+datum\+\_\+t}} $\ast$}]{values,  }\item[{\mbox{\hyperlink{base_8h_a0e8ba2dfd397017939e6ea2ebc4bb037}{ccs\+\_\+bool\+\_\+t}} $\ast$}]{is\+\_\+valid\+\_\+ret }\end{DoxyParamCaption})}
+
+
+
+Check that a set of values would create a valid evaluation for an objective space. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em objective\+\_\+space} & \\
+\hline
+\mbox{\texttt{ in}}  & {\em num\+\_\+values} & the number of provided values \\
+\hline
+\mbox{\texttt{ in}}  & {\em values} & an array of {\ttfamily num\+\_\+values} values that would become an evaluation \\
+\hline
+\mbox{\texttt{ out}}  & {\em is\+\_\+valid\+\_\+ret} & a pointer to a variable that will hold the result of the check. Result will be CCS\+\_\+\+TRUE if the evaluation is valid. Result will be CCS\+\_\+\+FALSE if an hyperparameter value is not a valid value for this hyperparameter; \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a092b9c7d2bc9ac00a6f53e251c8619b8}{CCS\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a4707835c3fcb2303089c76bbcbf96df5}{CCS\+\_\+\+INVALID\+\_\+\+OBJECT}} if {\ttfamily objective\+\_\+space} is not a valid CCS objective space 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0adb4bc5cfc4f985bf59ae223f3e22b9f9}{CCS\+\_\+\+INVALID\+\_\+\+VALUE}} if {\ttfamily values} is NULL and num\+\_\+values is greater than 0 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a957e738a9f970257eddfc79cab5a78fc}{CCS\+\_\+\+INVALID\+\_\+\+EVALUATION}} if {\ttfamily num\+\_\+values} is not equal to the number of hyperparameters in the objective space 
+\end{DoxyReturn}
+\mbox{\Hypertarget{objective__space_8h_afd956ff5384651c7f89b0152bca217a8}\label{objective__space_8h_afd956ff5384651c7f89b0152bca217a8}} 
+\index{objective\_space.h@{objective\_space.h}!ccs\_objective\_space\_get\_hyperparameter@{ccs\_objective\_space\_get\_hyperparameter}}
+\index{ccs\_objective\_space\_get\_hyperparameter@{ccs\_objective\_space\_get\_hyperparameter}!objective\_space.h@{objective\_space.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_objective\_space\_get\_hyperparameter()}{ccs\_objective\_space\_get\_hyperparameter()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} ccs\+\_\+objective\+\_\+space\+\_\+get\+\_\+hyperparameter (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_a645a0bae9ad3d85455ef2b06101146f7}{ccs\+\_\+objective\+\_\+space\+\_\+t}}}]{objective\+\_\+space,  }\item[{size\+\_\+t}]{index,  }\item[{\mbox{\hyperlink{base_8h_a0b796ce449059870d5bbb77f20925b50}{ccs\+\_\+hyperparameter\+\_\+t}} $\ast$}]{hyperparameter\+\_\+ret }\end{DoxyParamCaption})}
+
+
+
+Get an hyperparameter in a objective space given its index. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em objective\+\_\+space} & \\
+\hline
+\mbox{\texttt{ in}}  & {\em index} & the index of the hyperparameter to retrieve \\
+\hline
+\mbox{\texttt{ out}}  & {\em hyperparameter\+\_\+ret} & a pointer to the variable that will contain the hyperparameter \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a092b9c7d2bc9ac00a6f53e251c8619b8}{CCS\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a4707835c3fcb2303089c76bbcbf96df5}{CCS\+\_\+\+INVALID\+\_\+\+OBJECT}} if {\ttfamily objective\+\_\+space} is not a valid CCS objective space 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0adb4bc5cfc4f985bf59ae223f3e22b9f9}{CCS\+\_\+\+INVALID\+\_\+\+VALUE}} if {\ttfamily hyperparameter\+\_\+ret} is NULL 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a3f898f2b0f178de079c2cd22a99b1950}{CCS\+\_\+\+OUT\+\_\+\+OF\+\_\+\+BOUNDS}} if {\ttfamily index} is greater than the count of hyperparameters in the objective space 
+\end{DoxyReturn}
+\mbox{\Hypertarget{objective__space_8h_ac159302802729bbb99bb38ff0a8080d7}\label{objective__space_8h_ac159302802729bbb99bb38ff0a8080d7}} 
+\index{objective\_space.h@{objective\_space.h}!ccs\_objective\_space\_get\_hyperparameter\_by\_name@{ccs\_objective\_space\_get\_hyperparameter\_by\_name}}
+\index{ccs\_objective\_space\_get\_hyperparameter\_by\_name@{ccs\_objective\_space\_get\_hyperparameter\_by\_name}!objective\_space.h@{objective\_space.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_objective\_space\_get\_hyperparameter\_by\_name()}{ccs\_objective\_space\_get\_hyperparameter\_by\_name()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} ccs\+\_\+objective\+\_\+space\+\_\+get\+\_\+hyperparameter\+\_\+by\+\_\+name (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_a645a0bae9ad3d85455ef2b06101146f7}{ccs\+\_\+objective\+\_\+space\+\_\+t}}}]{objective\+\_\+space,  }\item[{const char $\ast$}]{name,  }\item[{\mbox{\hyperlink{base_8h_a0b796ce449059870d5bbb77f20925b50}{ccs\+\_\+hyperparameter\+\_\+t}} $\ast$}]{hyperparameter\+\_\+ret }\end{DoxyParamCaption})}
+
+
+
+Get an hyperparameter in a objective space given its name. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em objective\+\_\+space} & \\
+\hline
+\mbox{\texttt{ in}}  & {\em name} & the name of the hyperparameter to retrieve \\
+\hline
+\mbox{\texttt{ out}}  & {\em hyperparameter\+\_\+ret} & a pointer to the variable that will contain the hyperparameter \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a092b9c7d2bc9ac00a6f53e251c8619b8}{CCS\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a4707835c3fcb2303089c76bbcbf96df5}{CCS\+\_\+\+INVALID\+\_\+\+OBJECT}} if {\ttfamily objective\+\_\+space} is not a valid CCS objective space 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0adb4bc5cfc4f985bf59ae223f3e22b9f9}{CCS\+\_\+\+INVALID\+\_\+\+VALUE}} if {\ttfamily name} or {\ttfamily hyperparameter\+\_\+ret} are NULL 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a75f19038a842b629c262db908c37471c}{CCS\+\_\+\+INVALID\+\_\+\+NAME}} if no hyperparameter with such {\ttfamily name} exist in the {\ttfamily objective} space 
+\end{DoxyReturn}
+\mbox{\Hypertarget{objective__space_8h_ab737f50ca570e7acf88ecee047653004}\label{objective__space_8h_ab737f50ca570e7acf88ecee047653004}} 
+\index{objective\_space.h@{objective\_space.h}!ccs\_objective\_space\_get\_hyperparameter\_index@{ccs\_objective\_space\_get\_hyperparameter\_index}}
+\index{ccs\_objective\_space\_get\_hyperparameter\_index@{ccs\_objective\_space\_get\_hyperparameter\_index}!objective\_space.h@{objective\_space.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_objective\_space\_get\_hyperparameter\_index()}{ccs\_objective\_space\_get\_hyperparameter\_index()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} ccs\+\_\+objective\+\_\+space\+\_\+get\+\_\+hyperparameter\+\_\+index (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_a645a0bae9ad3d85455ef2b06101146f7}{ccs\+\_\+objective\+\_\+space\+\_\+t}}}]{objective\+\_\+space,  }\item[{\mbox{\hyperlink{base_8h_a0b796ce449059870d5bbb77f20925b50}{ccs\+\_\+hyperparameter\+\_\+t}}}]{hyperparameter,  }\item[{size\+\_\+t $\ast$}]{index\+\_\+ret }\end{DoxyParamCaption})}
+
+
+
+Get the index of an hyperparameter in the objective space. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em objective\+\_\+space} & \\
+\hline
+\mbox{\texttt{ in}}  & {\em hyperparameter} & \\
+\hline
+\mbox{\texttt{ out}}  & {\em index\+\_\+ret} & a pointer to the variable which will contain the index of the hyperparameter \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a092b9c7d2bc9ac00a6f53e251c8619b8}{CCS\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a4707835c3fcb2303089c76bbcbf96df5}{CCS\+\_\+\+INVALID\+\_\+\+OBJECT}} if {\ttfamily objective\+\_\+space} is not a valid CCS objective space 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0adb4bc5cfc4f985bf59ae223f3e22b9f9}{CCS\+\_\+\+INVALID\+\_\+\+VALUE}} if {\ttfamily index\+\_\+ret} is NULL 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0afab391c5bc22e7ba89710930ec04028d}{CCS\+\_\+\+INVALID\+\_\+\+HYPERPARAMETER}} if {\ttfamily objective\+\_\+space} does not contain {\ttfamily hyperparameter} 
+\end{DoxyReturn}
+\mbox{\Hypertarget{objective__space_8h_ac92ef63e9a4db7bedcd7c5eacc099a40}\label{objective__space_8h_ac92ef63e9a4db7bedcd7c5eacc099a40}} 
+\index{objective\_space.h@{objective\_space.h}!ccs\_objective\_space\_get\_hyperparameter\_index\_by\_name@{ccs\_objective\_space\_get\_hyperparameter\_index\_by\_name}}
+\index{ccs\_objective\_space\_get\_hyperparameter\_index\_by\_name@{ccs\_objective\_space\_get\_hyperparameter\_index\_by\_name}!objective\_space.h@{objective\_space.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_objective\_space\_get\_hyperparameter\_index\_by\_name()}{ccs\_objective\_space\_get\_hyperparameter\_index\_by\_name()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} ccs\+\_\+objective\+\_\+space\+\_\+get\+\_\+hyperparameter\+\_\+index\+\_\+by\+\_\+name (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_a645a0bae9ad3d85455ef2b06101146f7}{ccs\+\_\+objective\+\_\+space\+\_\+t}}}]{objective\+\_\+space,  }\item[{const char $\ast$}]{name,  }\item[{size\+\_\+t $\ast$}]{index\+\_\+ret }\end{DoxyParamCaption})}
+
+
+
+Get the index of an hyperparameter in the objective space given its name. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em objective\+\_\+space} & \\
+\hline
+\mbox{\texttt{ in}}  & {\em name} & the name of the hyperparameter to retrieve the index of \\
+\hline
+\mbox{\texttt{ out}}  & {\em index\+\_\+ret} & a pointer to the variable that will contain the index of hyperparameter in the {\ttfamily objective\+\_\+space} \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a092b9c7d2bc9ac00a6f53e251c8619b8}{CCS\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a4707835c3fcb2303089c76bbcbf96df5}{CCS\+\_\+\+INVALID\+\_\+\+OBJECT}} if {\ttfamily objective\+\_\+space} is not a valid CCS objective space 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0adb4bc5cfc4f985bf59ae223f3e22b9f9}{CCS\+\_\+\+INVALID\+\_\+\+VALUE}} if {\ttfamily name} or {\ttfamily index\+\_\+ret} are NULL 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a75f19038a842b629c262db908c37471c}{CCS\+\_\+\+INVALID\+\_\+\+NAME}} if no hyperparameter with such {\ttfamily name} exist in the objective space 
+\end{DoxyReturn}
+\mbox{\Hypertarget{objective__space_8h_a9fdf4db98825ed673e2346f55583a683}\label{objective__space_8h_a9fdf4db98825ed673e2346f55583a683}} 
+\index{objective\_space.h@{objective\_space.h}!ccs\_objective\_space\_get\_hyperparameter\_indexes@{ccs\_objective\_space\_get\_hyperparameter\_indexes}}
+\index{ccs\_objective\_space\_get\_hyperparameter\_indexes@{ccs\_objective\_space\_get\_hyperparameter\_indexes}!objective\_space.h@{objective\_space.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_objective\_space\_get\_hyperparameter\_indexes()}{ccs\_objective\_space\_get\_hyperparameter\_indexes()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} ccs\+\_\+objective\+\_\+space\+\_\+get\+\_\+hyperparameter\+\_\+indexes (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_a645a0bae9ad3d85455ef2b06101146f7}{ccs\+\_\+objective\+\_\+space\+\_\+t}}}]{objective\+\_\+space,  }\item[{size\+\_\+t}]{num\+\_\+hyperparameters,  }\item[{\mbox{\hyperlink{base_8h_a0b796ce449059870d5bbb77f20925b50}{ccs\+\_\+hyperparameter\+\_\+t}} $\ast$}]{hyperparameters,  }\item[{size\+\_\+t $\ast$}]{indexes }\end{DoxyParamCaption})}
+
+
+
+Get the indices of a set of hyperparameters in a objective space. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em objective\+\_\+space} & \\
+\hline
+\mbox{\texttt{ in}}  & {\em num\+\_\+hyperparameters} & the number of hyperparameters to query the index for \\
+\hline
+\mbox{\texttt{ in}}  & {\em hyperparameters} & an array of {\ttfamily num\+\_\+hyperparameters} hyperparameters to query the index for \\
+\hline
+\mbox{\texttt{ out}}  & {\em indexes} & an array of {\ttfamily num\+\_\+hyperparameters} indices that will contain the values of the hyperparamters indices \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a092b9c7d2bc9ac00a6f53e251c8619b8}{CCS\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a4707835c3fcb2303089c76bbcbf96df5}{CCS\+\_\+\+INVALID\+\_\+\+OBJECT}} if {\ttfamily objective\+\_\+space} is not a valid CCS objective space 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0adb4bc5cfc4f985bf59ae223f3e22b9f9}{CCS\+\_\+\+INVALID\+\_\+\+VALUE}} if {\ttfamily hyperparameters} is NULL and {\ttfamily num\+\_\+hyperparameters} is greater than 0; or if {\ttfamily indexes} is NULL and {\ttfamily num\+\_\+hyperparameters} is greater than 0 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0afab391c5bc22e7ba89710930ec04028d}{CCS\+\_\+\+INVALID\+\_\+\+HYPERPARAMETER}} if at least one of the hyperparameters is not contained in {\ttfamily objective\+\_\+space} 
+\end{DoxyReturn}
+\mbox{\Hypertarget{objective__space_8h_aa0a18deff0a3f9a4a94379abc71242b3}\label{objective__space_8h_aa0a18deff0a3f9a4a94379abc71242b3}} 
+\index{objective\_space.h@{objective\_space.h}!ccs\_objective\_space\_get\_hyperparameters@{ccs\_objective\_space\_get\_hyperparameters}}
+\index{ccs\_objective\_space\_get\_hyperparameters@{ccs\_objective\_space\_get\_hyperparameters}!objective\_space.h@{objective\_space.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_objective\_space\_get\_hyperparameters()}{ccs\_objective\_space\_get\_hyperparameters()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} ccs\+\_\+objective\+\_\+space\+\_\+get\+\_\+hyperparameters (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_a645a0bae9ad3d85455ef2b06101146f7}{ccs\+\_\+objective\+\_\+space\+\_\+t}}}]{objective\+\_\+space,  }\item[{size\+\_\+t}]{num\+\_\+hyperparameters,  }\item[{\mbox{\hyperlink{base_8h_a0b796ce449059870d5bbb77f20925b50}{ccs\+\_\+hyperparameter\+\_\+t}} $\ast$}]{hyperparameters,  }\item[{size\+\_\+t $\ast$}]{num\+\_\+hyperparameters\+\_\+ret }\end{DoxyParamCaption})}
+
+
+
+Get the hyperparameters in the given objective space. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em objective\+\_\+space} & \\
+\hline
+\mbox{\texttt{ in}}  & {\em num\+\_\+hyperparameters} & is the number of hyperparameters that can be added to {\ttfamily hyperparameters}. If {\ttfamily hyperparameters} is not NULL {\ttfamily num\+\_\+hyperparameters} must be greater than 0 \\
+\hline
+\mbox{\texttt{ in}}  & {\em hyperparameters} & an array of {\ttfamily num\+\_\+hyperparameters} that will contain the returned hyperparameters or NULL. If the array is too big, extra values are set to NULL \\
+\hline
+\mbox{\texttt{ out}}  & {\em num\+\_\+hyperparameters\+\_\+ret} & a pointer to a variable that will contain the number of hyperparameters that are or would be returned. Can be NULL \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a092b9c7d2bc9ac00a6f53e251c8619b8}{CCS\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a4707835c3fcb2303089c76bbcbf96df5}{CCS\+\_\+\+INVALID\+\_\+\+OBJECT}} if {\ttfamily objective\+\_\+space} is not a valid CCS objective space 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0adb4bc5cfc4f985bf59ae223f3e22b9f9}{CCS\+\_\+\+INVALID\+\_\+\+VALUE}} if {\ttfamily hyperparameters} is NULL and {\ttfamily num\+\_\+hyperparameters} is greater than 0; or if {\ttfamily hyperparameters} is NULL and num\+\_\+hyperparameters\+\_\+ret is NULL; or if {\ttfamily num\+\_\+hyperparameters} is less than the number of hyperparameters that would be returned 
+\end{DoxyReturn}
+\mbox{\Hypertarget{objective__space_8h_a3eedf76436ea352ca202c714394baa1f}\label{objective__space_8h_a3eedf76436ea352ca202c714394baa1f}} 
+\index{objective\_space.h@{objective\_space.h}!ccs\_objective\_space\_get\_name@{ccs\_objective\_space\_get\_name}}
+\index{ccs\_objective\_space\_get\_name@{ccs\_objective\_space\_get\_name}!objective\_space.h@{objective\_space.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_objective\_space\_get\_name()}{ccs\_objective\_space\_get\_name()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} ccs\+\_\+objective\+\_\+space\+\_\+get\+\_\+name (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_a645a0bae9ad3d85455ef2b06101146f7}{ccs\+\_\+objective\+\_\+space\+\_\+t}}}]{objective\+\_\+space,  }\item[{const char $\ast$$\ast$}]{name\+\_\+ret }\end{DoxyParamCaption})}
+
+
+
+Get the name of a objective space. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em objective\+\_\+space} & \\
+\hline
+\mbox{\texttt{ out}}  & {\em name\+\_\+ret} & a pointer to a {\ttfamily char $\ast$} variable which will contain a pointer to the objective space name. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a092b9c7d2bc9ac00a6f53e251c8619b8}{CCS\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a4707835c3fcb2303089c76bbcbf96df5}{CCS\+\_\+\+INVALID\+\_\+\+OBJECT}} if {\ttfamily objective} space is not a valid CCS objective space 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0adb4bc5cfc4f985bf59ae223f3e22b9f9}{CCS\+\_\+\+INVALID\+\_\+\+VALUE}} if {\ttfamily name\+\_\+ret} is NULL 
+\end{DoxyReturn}
+\mbox{\Hypertarget{objective__space_8h_a8315d0d116fb4761a38f34da9c4a00df}\label{objective__space_8h_a8315d0d116fb4761a38f34da9c4a00df}} 
+\index{objective\_space.h@{objective\_space.h}!ccs\_objective\_space\_get\_num\_hyperparameters@{ccs\_objective\_space\_get\_num\_hyperparameters}}
+\index{ccs\_objective\_space\_get\_num\_hyperparameters@{ccs\_objective\_space\_get\_num\_hyperparameters}!objective\_space.h@{objective\_space.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_objective\_space\_get\_num\_hyperparameters()}{ccs\_objective\_space\_get\_num\_hyperparameters()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} ccs\+\_\+objective\+\_\+space\+\_\+get\+\_\+num\+\_\+hyperparameters (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_a645a0bae9ad3d85455ef2b06101146f7}{ccs\+\_\+objective\+\_\+space\+\_\+t}}}]{objective\+\_\+space,  }\item[{size\+\_\+t $\ast$}]{num\+\_\+hyperparameters\+\_\+ret }\end{DoxyParamCaption})}
+
+
+
+Get the number of hyperparameters in a objective space. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em objective\+\_\+space} & \\
+\hline
+\mbox{\texttt{ out}}  & {\em num\+\_\+hyperparameters\+\_\+ret} & a pointer to the variable that will contain the number of hyperparameters in the objective space \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a092b9c7d2bc9ac00a6f53e251c8619b8}{CCS\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a4707835c3fcb2303089c76bbcbf96df5}{CCS\+\_\+\+INVALID\+\_\+\+OBJECT}} if {\ttfamily objective\+\_\+space} is not a valid CCS objective space 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0adb4bc5cfc4f985bf59ae223f3e22b9f9}{CCS\+\_\+\+INVALID\+\_\+\+VALUE}} if {\ttfamily num\+\_\+hyperparameters\+\_\+ret} is NULL 
+\end{DoxyReturn}
+\mbox{\Hypertarget{objective__space_8h_a9def315f2f35d743184753ef23a3371e}\label{objective__space_8h_a9def315f2f35d743184753ef23a3371e}} 
+\index{objective\_space.h@{objective\_space.h}!ccs\_objective\_space\_get\_objective@{ccs\_objective\_space\_get\_objective}}
+\index{ccs\_objective\_space\_get\_objective@{ccs\_objective\_space\_get\_objective}!objective\_space.h@{objective\_space.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_objective\_space\_get\_objective()}{ccs\_objective\_space\_get\_objective()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} ccs\+\_\+objective\+\_\+space\+\_\+get\+\_\+objective (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_a645a0bae9ad3d85455ef2b06101146f7}{ccs\+\_\+objective\+\_\+space\+\_\+t}}}]{objective\+\_\+space,  }\item[{size\+\_\+t}]{index,  }\item[{\mbox{\hyperlink{base_8h_a211f0df32aa85683492513cbf0d7805b}{ccs\+\_\+expression\+\_\+t}} $\ast$}]{expression\+\_\+ret,  }\item[{\mbox{\hyperlink{objective__space_8h_a49560ed68081c4a271a0b37140219317}{ccs\+\_\+objective\+\_\+type\+\_\+t}} $\ast$}]{type\+\_\+ret }\end{DoxyParamCaption})}
+
+
+
+Get the objective of rank index in a objective space. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em objective\+\_\+space} & \\
+\hline
+\mbox{\texttt{ in}}  & {\em index} & the index of the objective to retrieve \\
+\hline
+\mbox{\texttt{ out}}  & {\em expression\+\_\+ret} & a pointer to the variable that will contain the returned expression \\
+\hline
+\mbox{\texttt{ out}}  & {\em type\+\_\+ret} & a pointer to the variable that will contain the returned objective type \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a092b9c7d2bc9ac00a6f53e251c8619b8}{CCS\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a4707835c3fcb2303089c76bbcbf96df5}{CCS\+\_\+\+INVALID\+\_\+\+OBJECT}} if {\ttfamily objective\+\_\+space} is not a valid CCS objective space 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0adb4bc5cfc4f985bf59ae223f3e22b9f9}{CCS\+\_\+\+INVALID\+\_\+\+VALUE}} if {\ttfamily expression\+\_\+ret} or {\ttfamily type\+\_\+ret} are NULL 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a3f898f2b0f178de079c2cd22a99b1950}{CCS\+\_\+\+OUT\+\_\+\+OF\+\_\+\+BOUNDS}} if {\ttfamily index} is greater than the number of objectives in the objective space 
+\end{DoxyReturn}
+\mbox{\Hypertarget{objective__space_8h_a53b895916fc8bf5be889a89d0178fa5d}\label{objective__space_8h_a53b895916fc8bf5be889a89d0178fa5d}} 
+\index{objective\_space.h@{objective\_space.h}!ccs\_objective\_space\_get\_objectives@{ccs\_objective\_space\_get\_objectives}}
+\index{ccs\_objective\_space\_get\_objectives@{ccs\_objective\_space\_get\_objectives}!objective\_space.h@{objective\_space.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_objective\_space\_get\_objectives()}{ccs\_objective\_space\_get\_objectives()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} ccs\+\_\+objective\+\_\+space\+\_\+get\+\_\+objectives (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_a645a0bae9ad3d85455ef2b06101146f7}{ccs\+\_\+objective\+\_\+space\+\_\+t}}}]{objective\+\_\+space,  }\item[{size\+\_\+t}]{num\+\_\+objectives,  }\item[{\mbox{\hyperlink{base_8h_a211f0df32aa85683492513cbf0d7805b}{ccs\+\_\+expression\+\_\+t}} $\ast$}]{expressions,  }\item[{\mbox{\hyperlink{objective__space_8h_a49560ed68081c4a271a0b37140219317}{ccs\+\_\+objective\+\_\+type\+\_\+t}} $\ast$}]{types,  }\item[{size\+\_\+t $\ast$}]{num\+\_\+objectives\+\_\+ret }\end{DoxyParamCaption})}
+
+
+
+Get the objectives in a objective space. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em objective\+\_\+space} & \\
+\hline
+\mbox{\texttt{ in}}  & {\em num\+\_\+objectives} & the number of expressions that can be added to {\ttfamily expressions}. If {\ttfamily expressions} is not NULL, {\ttfamily num\+\_\+objectives} must be greater than 0 \\
+\hline
+\mbox{\texttt{ out}}  & {\em expressions} & an array of {\ttfamily num\+\_\+objectives} that will contain the returned expressions, or NULL. If the array is too big, extra values are set to NULL \\
+\hline
+\mbox{\texttt{ out}}  & {\em types} & an array of {\ttfamily num\+\_\+objectives} types that will contain the objective types \\
+\hline
+\mbox{\texttt{ out}}  & {\em num\+\_\+objectives\+\_\+ret} & a pointer to a variable that will contain the number of expressions that are or would be returned. Can be NULL \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a092b9c7d2bc9ac00a6f53e251c8619b8}{CCS\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a4707835c3fcb2303089c76bbcbf96df5}{CCS\+\_\+\+INVALID\+\_\+\+OBJECT}} if {\ttfamily objective\+\_\+space} is not a valid CCS objective space 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0adb4bc5cfc4f985bf59ae223f3e22b9f9}{CCS\+\_\+\+INVALID\+\_\+\+VALUE}} if {\ttfamily expressions} is NULL and {\ttfamily num\+\_\+objectives} is greater than 0; if {\ttfamily types} is NULL and {\ttfamily num\+\_\+objectives} is greater than 0; or if or if {\ttfamily expressions} is NULL and {\ttfamily num\+\_\+objectives\+\_\+ret} is NULL; or if {\ttfamily num\+\_\+objectives} is less than then number of expressions that would be returned 
+\end{DoxyReturn}
+\mbox{\Hypertarget{objective__space_8h_a7fc370716c47b45822a495b2a5d58f4a}\label{objective__space_8h_a7fc370716c47b45822a495b2a5d58f4a}} 
+\index{objective\_space.h@{objective\_space.h}!ccs\_objective\_space\_validate\_value@{ccs\_objective\_space\_validate\_value}}
+\index{ccs\_objective\_space\_validate\_value@{ccs\_objective\_space\_validate\_value}!objective\_space.h@{objective\_space.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_objective\_space\_validate\_value()}{ccs\_objective\_space\_validate\_value()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} ccs\+\_\+objective\+\_\+space\+\_\+validate\+\_\+value (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_a645a0bae9ad3d85455ef2b06101146f7}{ccs\+\_\+objective\+\_\+space\+\_\+t}}}]{objective\+\_\+space,  }\item[{size\+\_\+t}]{index,  }\item[{\mbox{\hyperlink{base_8h_a36bc36b2bb0d0613453dd731cdcd2048}{ccs\+\_\+datum\+\_\+t}}}]{value,  }\item[{\mbox{\hyperlink{base_8h_a36bc36b2bb0d0613453dd731cdcd2048}{ccs\+\_\+datum\+\_\+t}} $\ast$}]{value\+\_\+ret }\end{DoxyParamCaption})}
+
+
+
+Validate that a given value at the given index is valid in a objective space, and return a sanitized value. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em objective\+\_\+space} & \\
+\hline
+\mbox{\texttt{ in}}  & {\em index} & the index of the value in the objective\+\_\+space \\
+\hline
+\mbox{\texttt{ in}}  & {\em value} & the datum to validate \\
+\hline
+\mbox{\texttt{ out}}  & {\em value\+\_\+ret} & a pointer that will contain the validated value. If {\ttfamily value} is a string {\ttfamily value\+\_\+ret} will contain a non transient string. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a092b9c7d2bc9ac00a6f53e251c8619b8}{CCS\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a4707835c3fcb2303089c76bbcbf96df5}{CCS\+\_\+\+INVALID\+\_\+\+OBJECT}} if {\ttfamily objective\+\_\+space} is not a valid CCS objective space 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a3f898f2b0f178de079c2cd22a99b1950}{CCS\+\_\+\+OUT\+\_\+\+OF\+\_\+\+BOUNDS}} if index is greater than the number of hyperparameters in {\ttfamily objective\+\_\+space} 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a3b3381e910957ad1fbe1d633b12eff79}{CCS\+\_\+\+OUT\+\_\+\+OF\+\_\+\+MEMORY}} if there was a lack of memory while memoizing a string 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0adb4bc5cfc4f985bf59ae223f3e22b9f9}{CCS\+\_\+\+INVALID\+\_\+\+VALUE}} if the value did not validate or if value\+\_\+ret is NULL 
+\end{DoxyReturn}

@@ -1,0 +1,46 @@
+\hypertarget{structccs__user__defined__features__tuner__vector__s}{}\doxysection{ccs\+\_\+user\+\_\+defined\+\_\+features\+\_\+tuner\+\_\+vector\+\_\+s Struct Reference}
+\label{structccs__user__defined__features__tuner__vector__s}\index{ccs\_user\_defined\_features\_tuner\_vector\_s@{ccs\_user\_defined\_features\_tuner\_vector\_s}}
+
+
+A structure that define the callbacks the user must provide to create a user defined features tuner.  
+
+
+
+
+{\ttfamily \#include $<$features\+\_\+tuner.\+h$>$}
+
+\doxysubsection*{Data Fields}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{structccs__user__defined__features__tuner__vector__s_acaf8b0cb3d8766c57bee075e292db0b9}\label{structccs__user__defined__features__tuner__vector__s_acaf8b0cb3d8766c57bee075e292db0b9}} 
+\mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}}($\ast$ \mbox{\hyperlink{structccs__user__defined__features__tuner__vector__s_acaf8b0cb3d8766c57bee075e292db0b9}{del}} )(\mbox{\hyperlink{base_8h_a0ac750666d5233792ae5da6654bd5305}{ccs\+\_\+features\+\_\+tuner\+\_\+t}} features\+\_\+tuner)
+\begin{DoxyCompactList}\small\item\em The deletion callback that will be called once the reference count of the features tuner reaches 0. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{structccs__user__defined__features__tuner__vector__s_a4d6bd3851ed8015ff25ab0ad8f276399}\label{structccs__user__defined__features__tuner__vector__s_a4d6bd3851ed8015ff25ab0ad8f276399}} 
+\mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}}($\ast$ \mbox{\hyperlink{structccs__user__defined__features__tuner__vector__s_a4d6bd3851ed8015ff25ab0ad8f276399}{ask}} )(\mbox{\hyperlink{base_8h_a0ac750666d5233792ae5da6654bd5305}{ccs\+\_\+features\+\_\+tuner\+\_\+t}} features\+\_\+tuner, \mbox{\hyperlink{base_8h_a9900ffdbd4cc438a987efababa74c6a3}{ccs\+\_\+features\+\_\+t}} features, size\+\_\+t num\+\_\+configurations, \mbox{\hyperlink{base_8h_a6b2a7ac41257359ed28ae334bf760634}{ccs\+\_\+configuration\+\_\+t}} $\ast$configurations, size\+\_\+t $\ast$num\+\_\+configurations\+\_\+ret)
+\begin{DoxyCompactList}\small\item\em The features tuner ask interface see ccs\+\_\+features\+\_\+tuner\+\_\+ask. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{structccs__user__defined__features__tuner__vector__s_a179b0cafb3d2ea02bbd75c461d2e1170}\label{structccs__user__defined__features__tuner__vector__s_a179b0cafb3d2ea02bbd75c461d2e1170}} 
+\mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}}($\ast$ \mbox{\hyperlink{structccs__user__defined__features__tuner__vector__s_a179b0cafb3d2ea02bbd75c461d2e1170}{tell}} )(\mbox{\hyperlink{base_8h_a0ac750666d5233792ae5da6654bd5305}{ccs\+\_\+features\+\_\+tuner\+\_\+t}} features\+\_\+tuner, size\+\_\+t num\+\_\+evaluations, \mbox{\hyperlink{base_8h_a3ddf9ffad5de733e23200d48a8f55711}{ccs\+\_\+features\+\_\+evaluation\+\_\+t}} $\ast$evaluations)
+\begin{DoxyCompactList}\small\item\em The features tuner tell interface see ccs\+\_\+features\+\_\+tuner\+\_\+tell. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{structccs__user__defined__features__tuner__vector__s_adb5a03cbd5cdbe74c25441665059bfc0}\label{structccs__user__defined__features__tuner__vector__s_adb5a03cbd5cdbe74c25441665059bfc0}} 
+\mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}}($\ast$ \mbox{\hyperlink{structccs__user__defined__features__tuner__vector__s_adb5a03cbd5cdbe74c25441665059bfc0}{get\+\_\+optimums}} )(\mbox{\hyperlink{base_8h_a0ac750666d5233792ae5da6654bd5305}{ccs\+\_\+features\+\_\+tuner\+\_\+t}} features\+\_\+tuner, \mbox{\hyperlink{base_8h_a9900ffdbd4cc438a987efababa74c6a3}{ccs\+\_\+features\+\_\+t}} features, size\+\_\+t num\+\_\+evaluations, \mbox{\hyperlink{base_8h_a3ddf9ffad5de733e23200d48a8f55711}{ccs\+\_\+features\+\_\+evaluation\+\_\+t}} $\ast$evaluations, size\+\_\+t $\ast$num\+\_\+evaluations\+\_\+ret)
+\begin{DoxyCompactList}\small\item\em The features tuner get\+\_\+optimums interface see ccs\+\_\+features\+\_\+tuner\+\_\+get\+\_\+optimums. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{structccs__user__defined__features__tuner__vector__s_aac23fab9e0ebdc0811d5a0b60ed37dd2}\label{structccs__user__defined__features__tuner__vector__s_aac23fab9e0ebdc0811d5a0b60ed37dd2}} 
+\mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}}($\ast$ \mbox{\hyperlink{structccs__user__defined__features__tuner__vector__s_aac23fab9e0ebdc0811d5a0b60ed37dd2}{get\+\_\+history}} )(\mbox{\hyperlink{base_8h_a0ac750666d5233792ae5da6654bd5305}{ccs\+\_\+features\+\_\+tuner\+\_\+t}} features\+\_\+tuner, \mbox{\hyperlink{base_8h_a9900ffdbd4cc438a987efababa74c6a3}{ccs\+\_\+features\+\_\+t}} features, size\+\_\+t num\+\_\+evaluations, \mbox{\hyperlink{base_8h_a3ddf9ffad5de733e23200d48a8f55711}{ccs\+\_\+features\+\_\+evaluation\+\_\+t}} $\ast$evaluations, size\+\_\+t $\ast$num\+\_\+evaluations\+\_\+ret)
+\begin{DoxyCompactList}\small\item\em The features tuner get\+\_\+history interface see ccs\+\_\+features\+\_\+tuner\+\_\+get\+\_\+history. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{structccs__user__defined__features__tuner__vector__s_a55b2727b15fc03e44f2e4385e1d85f25}\label{structccs__user__defined__features__tuner__vector__s_a55b2727b15fc03e44f2e4385e1d85f25}} 
+\mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}}($\ast$ \mbox{\hyperlink{structccs__user__defined__features__tuner__vector__s_a55b2727b15fc03e44f2e4385e1d85f25}{suggest}} )(\mbox{\hyperlink{base_8h_a0ac750666d5233792ae5da6654bd5305}{ccs\+\_\+features\+\_\+tuner\+\_\+t}} features\+\_\+tuner, \mbox{\hyperlink{base_8h_a9900ffdbd4cc438a987efababa74c6a3}{ccs\+\_\+features\+\_\+t}} features, \mbox{\hyperlink{base_8h_a6b2a7ac41257359ed28ae334bf760634}{ccs\+\_\+configuration\+\_\+t}} $\ast$configuration)
+\begin{DoxyCompactList}\small\item\em The features tuner suggest interface see ccs\+\_\+features\+\_\+tuner\+\_\+suggest, can be NULL. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{structccs__user__defined__features__tuner__vector__s_a4a85c78fc8a33589b7b73fab252241dc}\label{structccs__user__defined__features__tuner__vector__s_a4a85c78fc8a33589b7b73fab252241dc}} 
+\mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}}($\ast$ \mbox{\hyperlink{structccs__user__defined__features__tuner__vector__s_a4a85c78fc8a33589b7b73fab252241dc}{serialize\+\_\+user\+\_\+state}} )(\mbox{\hyperlink{base_8h_a0ac750666d5233792ae5da6654bd5305}{ccs\+\_\+features\+\_\+tuner\+\_\+t}} features\+\_\+tuner, size\+\_\+t sate\+\_\+size, void $\ast$state, size\+\_\+t $\ast$state\+\_\+size\+\_\+ret)
+\begin{DoxyCompactList}\small\item\em The tuner serialization interface, can be NULL, in which case common tuner data, history and optimums will be serialized. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{structccs__user__defined__features__tuner__vector__s_a1bd5a1f73598e31a54ae887584b44cd3}\label{structccs__user__defined__features__tuner__vector__s_a1bd5a1f73598e31a54ae887584b44cd3}} 
+\mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}}($\ast$ \mbox{\hyperlink{structccs__user__defined__features__tuner__vector__s_a1bd5a1f73598e31a54ae887584b44cd3}{deserialize\+\_\+state}} )(\mbox{\hyperlink{base_8h_a0ac750666d5233792ae5da6654bd5305}{ccs\+\_\+features\+\_\+tuner\+\_\+t}} features\+\_\+tuner, size\+\_\+t size\+\_\+history, \mbox{\hyperlink{base_8h_a3ddf9ffad5de733e23200d48a8f55711}{ccs\+\_\+features\+\_\+evaluation\+\_\+t}} $\ast$history, size\+\_\+t num\+\_\+optimums, \mbox{\hyperlink{base_8h_a3ddf9ffad5de733e23200d48a8f55711}{ccs\+\_\+features\+\_\+evaluation\+\_\+t}} $\ast$optimums, size\+\_\+t state\+\_\+size, const void $\ast$state)
+\begin{DoxyCompactList}\small\item\em The features\+\_\+tuner deserialization interface, can be NULL, in which case, the history will be set through the tell interface. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+A structure that define the callbacks the user must provide to create a user defined features tuner. 
+
+The documentation for this struct was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+include/cconfigspace/\mbox{\hyperlink{features__tuner_8h}{features\+\_\+tuner.\+h}}\end{DoxyCompactItemize}

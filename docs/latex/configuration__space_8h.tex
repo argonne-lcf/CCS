@@ -1,0 +1,865 @@
+\hypertarget{configuration__space_8h}{}\doxysection{include/cconfigspace/configuration\+\_\+space.h File Reference}
+\label{configuration__space_8h}\index{include/cconfigspace/configuration\_space.h@{include/cconfigspace/configuration\_space.h}}
+
+
+A configuration space is a context (see \mbox{\hyperlink{context_8h}{context.\+h}}) defining a set of hyperparameters.  
+
+
+This graph shows which files directly or indirectly include this file\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=196pt]{configuration__space_8h__dep__incl}
+\end{center}
+\end{figure}
+\doxysubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} \mbox{\hyperlink{configuration__space_8h_a94aacd5548479f758b7c4ebc4c6766e9}{ccs\+\_\+create\+\_\+configuration\+\_\+space}} (const char $\ast$name, \mbox{\hyperlink{base_8h_ab2f25e603cb52fce2391e78d5edac824}{ccs\+\_\+configuration\+\_\+space\+\_\+t}} $\ast$configuration\+\_\+space\+\_\+ret)
+\begin{DoxyCompactList}\small\item\em Create a new empty configuration space. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} \mbox{\hyperlink{configuration__space_8h_a0116569a3c8d84155cd2dde291889b52}{ccs\+\_\+configuration\+\_\+space\+\_\+get\+\_\+name}} (\mbox{\hyperlink{base_8h_ab2f25e603cb52fce2391e78d5edac824}{ccs\+\_\+configuration\+\_\+space\+\_\+t}} configuration\+\_\+space, const char $\ast$$\ast$name\+\_\+ret)
+\begin{DoxyCompactList}\small\item\em Get the name of a configuration space. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} \mbox{\hyperlink{configuration__space_8h_ac94b6ef9ed20718e9c6d4c3509daa8d6}{ccs\+\_\+configuration\+\_\+space\+\_\+set\+\_\+rng}} (\mbox{\hyperlink{base_8h_ab2f25e603cb52fce2391e78d5edac824}{ccs\+\_\+configuration\+\_\+space\+\_\+t}} configuration\+\_\+space, \mbox{\hyperlink{base_8h_ae22dde737fcdf67d5a9fa497bc054027}{ccs\+\_\+rng\+\_\+t}} rng)
+\begin{DoxyCompactList}\small\item\em Set (replace) the internal rng of the configuration space. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} \mbox{\hyperlink{configuration__space_8h_a06c4b714c8d1fab9061c41b6806fa6e0}{ccs\+\_\+configuration\+\_\+space\+\_\+get\+\_\+rng}} (\mbox{\hyperlink{base_8h_ab2f25e603cb52fce2391e78d5edac824}{ccs\+\_\+configuration\+\_\+space\+\_\+t}} configuration\+\_\+space, \mbox{\hyperlink{base_8h_ae22dde737fcdf67d5a9fa497bc054027}{ccs\+\_\+rng\+\_\+t}} $\ast$rng\+\_\+ret)
+\begin{DoxyCompactList}\small\item\em Get the internal rng of the configuration space. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} \mbox{\hyperlink{configuration__space_8h_a8385f9a64c3f6675518882764fa6f530}{ccs\+\_\+configuration\+\_\+space\+\_\+add\+\_\+hyperparameter}} (\mbox{\hyperlink{base_8h_ab2f25e603cb52fce2391e78d5edac824}{ccs\+\_\+configuration\+\_\+space\+\_\+t}} configuration\+\_\+space, \mbox{\hyperlink{base_8h_a0b796ce449059870d5bbb77f20925b50}{ccs\+\_\+hyperparameter\+\_\+t}} hyperparameter, \mbox{\hyperlink{base_8h_ae36e9cd8818547939b8d03da347b3f56}{ccs\+\_\+distribution\+\_\+t}} distribution)
+\begin{DoxyCompactList}\small\item\em Add a hyperparameter to the configuration space. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} \mbox{\hyperlink{configuration__space_8h_a8533d817ce31e10e4ffea4db5b89efa1}{ccs\+\_\+configuration\+\_\+space\+\_\+add\+\_\+hyperparameters}} (\mbox{\hyperlink{base_8h_ab2f25e603cb52fce2391e78d5edac824}{ccs\+\_\+configuration\+\_\+space\+\_\+t}} configuration\+\_\+space, size\+\_\+t num\+\_\+hyperparameters, \mbox{\hyperlink{base_8h_a0b796ce449059870d5bbb77f20925b50}{ccs\+\_\+hyperparameter\+\_\+t}} $\ast$hyperparameters, \mbox{\hyperlink{base_8h_ae36e9cd8818547939b8d03da347b3f56}{ccs\+\_\+distribution\+\_\+t}} $\ast$distributions)
+\begin{DoxyCompactList}\small\item\em Add hyperparameters to the configuration space. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} \mbox{\hyperlink{configuration__space_8h_ac88fe3b5eaabcc97361d34c61acfd9fb}{ccs\+\_\+configuration\+\_\+space\+\_\+set\+\_\+distribution}} (\mbox{\hyperlink{base_8h_ab2f25e603cb52fce2391e78d5edac824}{ccs\+\_\+configuration\+\_\+space\+\_\+t}} configuration\+\_\+space, \mbox{\hyperlink{base_8h_ae36e9cd8818547939b8d03da347b3f56}{ccs\+\_\+distribution\+\_\+t}} distribution, size\+\_\+t $\ast$indices)
+\begin{DoxyCompactList}\small\item\em Set the distribution of one or more hyperparameters. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} \mbox{\hyperlink{configuration__space_8h_a6e71810c0f76532095020974ddcdfca9}{ccs\+\_\+configuration\+\_\+space\+\_\+get\+\_\+num\+\_\+hyperparameters}} (\mbox{\hyperlink{base_8h_ab2f25e603cb52fce2391e78d5edac824}{ccs\+\_\+configuration\+\_\+space\+\_\+t}} configuration\+\_\+space, size\+\_\+t $\ast$num\+\_\+hyperparameters\+\_\+ret)
+\begin{DoxyCompactList}\small\item\em Get the number of hyperparameters in a configuration space. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} \mbox{\hyperlink{configuration__space_8h_a9faf11c38734711da34db6fe3544a9ea}{ccs\+\_\+configuration\+\_\+space\+\_\+get\+\_\+hyperparameter}} (\mbox{\hyperlink{base_8h_ab2f25e603cb52fce2391e78d5edac824}{ccs\+\_\+configuration\+\_\+space\+\_\+t}} configuration\+\_\+space, size\+\_\+t index, \mbox{\hyperlink{base_8h_a0b796ce449059870d5bbb77f20925b50}{ccs\+\_\+hyperparameter\+\_\+t}} $\ast$hyperparameter\+\_\+ret)
+\begin{DoxyCompactList}\small\item\em Get an hyperparameter in a configuration space given its index. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} \mbox{\hyperlink{configuration__space_8h_acf25793d9d79c7ed608b95cec3fb2cea}{ccs\+\_\+configuration\+\_\+space\+\_\+get\+\_\+hyperparameter\+\_\+distribution}} (\mbox{\hyperlink{base_8h_ab2f25e603cb52fce2391e78d5edac824}{ccs\+\_\+configuration\+\_\+space\+\_\+t}} configuration\+\_\+space, size\+\_\+t index, \mbox{\hyperlink{base_8h_ae36e9cd8818547939b8d03da347b3f56}{ccs\+\_\+distribution\+\_\+t}} $\ast$distribution\+\_\+ret, size\+\_\+t $\ast$index\+\_\+ret)
+\begin{DoxyCompactList}\small\item\em Get an hyperparameter\textquotesingle{}s distribution in a configuration space given its index. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} \mbox{\hyperlink{configuration__space_8h_acdfa16fe40ced01e6dbdcb486dc5aefc}{ccs\+\_\+configuration\+\_\+space\+\_\+get\+\_\+hyperparameter\+\_\+by\+\_\+name}} (\mbox{\hyperlink{base_8h_ab2f25e603cb52fce2391e78d5edac824}{ccs\+\_\+configuration\+\_\+space\+\_\+t}} configuration\+\_\+space, const char $\ast$name, \mbox{\hyperlink{base_8h_a0b796ce449059870d5bbb77f20925b50}{ccs\+\_\+hyperparameter\+\_\+t}} $\ast$hyperparameter\+\_\+ret)
+\begin{DoxyCompactList}\small\item\em Get an hyperparameter in a configuration space given its name. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} \mbox{\hyperlink{configuration__space_8h_abf9166ea5e4bd03b2995e786d29182c4}{ccs\+\_\+configuration\+\_\+space\+\_\+get\+\_\+hyperparameter\+\_\+index\+\_\+by\+\_\+name}} (\mbox{\hyperlink{base_8h_ab2f25e603cb52fce2391e78d5edac824}{ccs\+\_\+configuration\+\_\+space\+\_\+t}} configuration\+\_\+space, const char $\ast$name, size\+\_\+t $\ast$index\+\_\+ret)
+\begin{DoxyCompactList}\small\item\em Get the index of an hyperparameter in the configuration space given its name. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} \mbox{\hyperlink{configuration__space_8h_acbbf40246fe5ffa287df291a018d2b61}{ccs\+\_\+configuration\+\_\+space\+\_\+get\+\_\+hyperparameter\+\_\+index}} (\mbox{\hyperlink{base_8h_ab2f25e603cb52fce2391e78d5edac824}{ccs\+\_\+configuration\+\_\+space\+\_\+t}} configuration\+\_\+space, \mbox{\hyperlink{base_8h_a0b796ce449059870d5bbb77f20925b50}{ccs\+\_\+hyperparameter\+\_\+t}} hyperparameter, size\+\_\+t $\ast$index\+\_\+ret)
+\begin{DoxyCompactList}\small\item\em Get the index of an hyperparameter in the configuration space. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} \mbox{\hyperlink{configuration__space_8h_afb79be41f9a1e6a1bc69822351351bff}{ccs\+\_\+configuration\+\_\+space\+\_\+get\+\_\+hyperparameter\+\_\+indexes}} (\mbox{\hyperlink{base_8h_ab2f25e603cb52fce2391e78d5edac824}{ccs\+\_\+configuration\+\_\+space\+\_\+t}} configuration\+\_\+space, size\+\_\+t num\+\_\+hyperparameters, \mbox{\hyperlink{base_8h_a0b796ce449059870d5bbb77f20925b50}{ccs\+\_\+hyperparameter\+\_\+t}} $\ast$hyperparameters, size\+\_\+t $\ast$indexes)
+\begin{DoxyCompactList}\small\item\em Get the indices of a set of hyperparameters in a configuration space. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} \mbox{\hyperlink{configuration__space_8h_aef93177292379ee005ccef5a2ebe019c}{ccs\+\_\+configuration\+\_\+space\+\_\+get\+\_\+hyperparameters}} (\mbox{\hyperlink{base_8h_ab2f25e603cb52fce2391e78d5edac824}{ccs\+\_\+configuration\+\_\+space\+\_\+t}} configuration\+\_\+space, size\+\_\+t num\+\_\+hyperparameters, \mbox{\hyperlink{base_8h_a0b796ce449059870d5bbb77f20925b50}{ccs\+\_\+hyperparameter\+\_\+t}} $\ast$hyperparameters, size\+\_\+t $\ast$num\+\_\+hyperparameters\+\_\+ret)
+\begin{DoxyCompactList}\small\item\em Get the hyperparameters in the given configuration space. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} \mbox{\hyperlink{configuration__space_8h_a639d3d1d276d93af2d1af0abe47be304}{ccs\+\_\+configuration\+\_\+space\+\_\+validate\+\_\+value}} (\mbox{\hyperlink{base_8h_ab2f25e603cb52fce2391e78d5edac824}{ccs\+\_\+configuration\+\_\+space\+\_\+t}} configuration\+\_\+space, size\+\_\+t index, \mbox{\hyperlink{base_8h_a36bc36b2bb0d0613453dd731cdcd2048}{ccs\+\_\+datum\+\_\+t}} value, \mbox{\hyperlink{base_8h_a36bc36b2bb0d0613453dd731cdcd2048}{ccs\+\_\+datum\+\_\+t}} $\ast$value\+\_\+ret)
+\begin{DoxyCompactList}\small\item\em Validate that a given value at the given index is valid in a configuration space, and return a sanitized value. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} \mbox{\hyperlink{configuration__space_8h_a5792428a3ee980401ac3be28ecdda232}{ccs\+\_\+configuration\+\_\+space\+\_\+set\+\_\+condition}} (\mbox{\hyperlink{base_8h_ab2f25e603cb52fce2391e78d5edac824}{ccs\+\_\+configuration\+\_\+space\+\_\+t}} configuration\+\_\+space, size\+\_\+t hyperparameter\+\_\+index, \mbox{\hyperlink{base_8h_a211f0df32aa85683492513cbf0d7805b}{ccs\+\_\+expression\+\_\+t}} expression)
+\begin{DoxyCompactList}\small\item\em Set the active condition of a hyperparameter in a configuration space given it\textquotesingle{}s index. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} \mbox{\hyperlink{configuration__space_8h_a0f9ed16e1fb824b303fb350b63447656}{ccs\+\_\+configuration\+\_\+space\+\_\+get\+\_\+condition}} (\mbox{\hyperlink{base_8h_ab2f25e603cb52fce2391e78d5edac824}{ccs\+\_\+configuration\+\_\+space\+\_\+t}} configuration\+\_\+space, size\+\_\+t hyperparameter\+\_\+index, \mbox{\hyperlink{base_8h_a211f0df32aa85683492513cbf0d7805b}{ccs\+\_\+expression\+\_\+t}} $\ast$expression\+\_\+ret)
+\begin{DoxyCompactList}\small\item\em Get the active condition of a hyperparameter in a configuration space given it\textquotesingle{}s index. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} \mbox{\hyperlink{configuration__space_8h_a4dc333433ddb36e4f75d7ed31c618e3b}{ccs\+\_\+configuration\+\_\+space\+\_\+get\+\_\+conditions}} (\mbox{\hyperlink{base_8h_ab2f25e603cb52fce2391e78d5edac824}{ccs\+\_\+configuration\+\_\+space\+\_\+t}} configuration\+\_\+space, size\+\_\+t num\+\_\+expressions, \mbox{\hyperlink{base_8h_a211f0df32aa85683492513cbf0d7805b}{ccs\+\_\+expression\+\_\+t}} $\ast$expressions, size\+\_\+t $\ast$num\+\_\+expressions\+\_\+ret)
+\begin{DoxyCompactList}\small\item\em Get the active conditions of the hyperparameters in a configuration space. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} \mbox{\hyperlink{configuration__space_8h_a4643630980a5eb1785673219b6fea9e2}{ccs\+\_\+configuration\+\_\+space\+\_\+add\+\_\+forbidden\+\_\+clause}} (\mbox{\hyperlink{base_8h_ab2f25e603cb52fce2391e78d5edac824}{ccs\+\_\+configuration\+\_\+space\+\_\+t}} configuration\+\_\+space, \mbox{\hyperlink{base_8h_a211f0df32aa85683492513cbf0d7805b}{ccs\+\_\+expression\+\_\+t}} expression)
+\begin{DoxyCompactList}\small\item\em Add a forbidden clause to a configuration space. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} \mbox{\hyperlink{configuration__space_8h_aa9aed05f4bbd7aa11d2ab3db2b96bccc}{ccs\+\_\+configuration\+\_\+space\+\_\+add\+\_\+forbidden\+\_\+clauses}} (\mbox{\hyperlink{base_8h_ab2f25e603cb52fce2391e78d5edac824}{ccs\+\_\+configuration\+\_\+space\+\_\+t}} configuration\+\_\+space, size\+\_\+t num\+\_\+expressions, \mbox{\hyperlink{base_8h_a211f0df32aa85683492513cbf0d7805b}{ccs\+\_\+expression\+\_\+t}} $\ast$expressions)
+\begin{DoxyCompactList}\small\item\em Add a list of forbidden clauses to a configuration space. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} \mbox{\hyperlink{configuration__space_8h_a08a3d14a8f7bf9405bff8a86cb945c19}{ccs\+\_\+configuration\+\_\+space\+\_\+get\+\_\+forbidden\+\_\+clause}} (\mbox{\hyperlink{base_8h_ab2f25e603cb52fce2391e78d5edac824}{ccs\+\_\+configuration\+\_\+space\+\_\+t}} configuration\+\_\+space, size\+\_\+t index, \mbox{\hyperlink{base_8h_a211f0df32aa85683492513cbf0d7805b}{ccs\+\_\+expression\+\_\+t}} $\ast$expression\+\_\+ret)
+\begin{DoxyCompactList}\small\item\em Get the forbidden clause of rank index in a configuration space. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} \mbox{\hyperlink{configuration__space_8h_aab0ae09fc61f88fd800f654797aa032b}{ccs\+\_\+configuration\+\_\+space\+\_\+get\+\_\+forbidden\+\_\+clauses}} (\mbox{\hyperlink{base_8h_ab2f25e603cb52fce2391e78d5edac824}{ccs\+\_\+configuration\+\_\+space\+\_\+t}} configuration\+\_\+space, size\+\_\+t num\+\_\+expressions, \mbox{\hyperlink{base_8h_a211f0df32aa85683492513cbf0d7805b}{ccs\+\_\+expression\+\_\+t}} $\ast$expressions, size\+\_\+t $\ast$num\+\_\+expressions\+\_\+ret)
+\begin{DoxyCompactList}\small\item\em Get the forbidden clauses in a configuration space. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} \mbox{\hyperlink{configuration__space_8h_abd20f2fdd0dfa821c71136e650592a66}{ccs\+\_\+configuration\+\_\+space\+\_\+check\+\_\+configuration}} (\mbox{\hyperlink{base_8h_ab2f25e603cb52fce2391e78d5edac824}{ccs\+\_\+configuration\+\_\+space\+\_\+t}} configuration\+\_\+space, \mbox{\hyperlink{base_8h_a6b2a7ac41257359ed28ae334bf760634}{ccs\+\_\+configuration\+\_\+t}} configuration, \mbox{\hyperlink{base_8h_a0e8ba2dfd397017939e6ea2ebc4bb037}{ccs\+\_\+bool\+\_\+t}} $\ast$is\+\_\+valid\+\_\+ret)
+\begin{DoxyCompactList}\small\item\em Check that a configuration is a valid in a configuration space. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} \mbox{\hyperlink{configuration__space_8h_a4717991e727c34a5756b0529b7ea4da7}{ccs\+\_\+configuration\+\_\+space\+\_\+check\+\_\+configuration\+\_\+values}} (\mbox{\hyperlink{base_8h_ab2f25e603cb52fce2391e78d5edac824}{ccs\+\_\+configuration\+\_\+space\+\_\+t}} configuration\+\_\+space, size\+\_\+t num\+\_\+values, \mbox{\hyperlink{base_8h_a36bc36b2bb0d0613453dd731cdcd2048}{ccs\+\_\+datum\+\_\+t}} $\ast$values, \mbox{\hyperlink{base_8h_a0e8ba2dfd397017939e6ea2ebc4bb037}{ccs\+\_\+bool\+\_\+t}} $\ast$is\+\_\+valid\+\_\+ret)
+\begin{DoxyCompactList}\small\item\em Check that a set of values would create a valid configuration for a configuration space. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} \mbox{\hyperlink{configuration__space_8h_af3aa722f384ab52419fe76b1052f3455}{ccs\+\_\+configuration\+\_\+space\+\_\+get\+\_\+default\+\_\+configuration}} (\mbox{\hyperlink{base_8h_ab2f25e603cb52fce2391e78d5edac824}{ccs\+\_\+configuration\+\_\+space\+\_\+t}} configuration\+\_\+space, \mbox{\hyperlink{base_8h_a6b2a7ac41257359ed28ae334bf760634}{ccs\+\_\+configuration\+\_\+t}} $\ast$configuration\+\_\+ret)
+\begin{DoxyCompactList}\small\item\em Get the default configuration of a configuration space. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} \mbox{\hyperlink{configuration__space_8h_aaaecec4ddeaf04c4567d994066979142}{ccs\+\_\+configuration\+\_\+space\+\_\+sample}} (\mbox{\hyperlink{base_8h_ab2f25e603cb52fce2391e78d5edac824}{ccs\+\_\+configuration\+\_\+space\+\_\+t}} configuration\+\_\+space, \mbox{\hyperlink{base_8h_a6b2a7ac41257359ed28ae334bf760634}{ccs\+\_\+configuration\+\_\+t}} $\ast$configuration\+\_\+ret)
+\begin{DoxyCompactList}\small\item\em Get a configuration sampled randomly from a configuration space. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} \mbox{\hyperlink{configuration__space_8h_a1efa423dde2b7c6da681050749b527a4}{ccs\+\_\+configuration\+\_\+space\+\_\+samples}} (\mbox{\hyperlink{base_8h_ab2f25e603cb52fce2391e78d5edac824}{ccs\+\_\+configuration\+\_\+space\+\_\+t}} configuration\+\_\+space, size\+\_\+t num\+\_\+configurations, \mbox{\hyperlink{base_8h_a6b2a7ac41257359ed28ae334bf760634}{ccs\+\_\+configuration\+\_\+t}} $\ast$configurations)
+\begin{DoxyCompactList}\small\item\em Get a given number of configurations sampled randomly from a configuration space. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+A configuration space is a context (see \mbox{\hyperlink{context_8h}{context.\+h}}) defining a set of hyperparameters. 
+
+Configuration space also offer as constraints system to describe conditional hyperparameter activation as well as forbidden hyperparameter configurations. Sampling distributions of hyperparameters can be specified. 
+
+\doxysubsection{Function Documentation}
+\mbox{\Hypertarget{configuration__space_8h_a4643630980a5eb1785673219b6fea9e2}\label{configuration__space_8h_a4643630980a5eb1785673219b6fea9e2}} 
+\index{configuration\_space.h@{configuration\_space.h}!ccs\_configuration\_space\_add\_forbidden\_clause@{ccs\_configuration\_space\_add\_forbidden\_clause}}
+\index{ccs\_configuration\_space\_add\_forbidden\_clause@{ccs\_configuration\_space\_add\_forbidden\_clause}!configuration\_space.h@{configuration\_space.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_configuration\_space\_add\_forbidden\_clause()}{ccs\_configuration\_space\_add\_forbidden\_clause()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} ccs\+\_\+configuration\+\_\+space\+\_\+add\+\_\+forbidden\+\_\+clause (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_ab2f25e603cb52fce2391e78d5edac824}{ccs\+\_\+configuration\+\_\+space\+\_\+t}}}]{configuration\+\_\+space,  }\item[{\mbox{\hyperlink{base_8h_a211f0df32aa85683492513cbf0d7805b}{ccs\+\_\+expression\+\_\+t}}}]{expression }\end{DoxyParamCaption})}
+
+
+
+Add a forbidden clause to a configuration space. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in,out}}  & {\em configuration\+\_\+space} & \\
+\hline
+\mbox{\texttt{ in}}  & {\em expression} & the forbidden clause to dd to the configuration space \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a092b9c7d2bc9ac00a6f53e251c8619b8}{CCS\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a4707835c3fcb2303089c76bbcbf96df5}{CCS\+\_\+\+INVALID\+\_\+\+OBJECT}} if {\ttfamily configuration\+\_\+space} is not a valid CCS configuration space; or if {\ttfamily expression} is not a valid CCS expression 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0afab391c5bc22e7ba89710930ec04028d}{CCS\+\_\+\+INVALID\+\_\+\+HYPERPARAMETER}} if expression references a hyperparameter that is not in the configuration space 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a3b3381e910957ad1fbe1d633b12eff79}{CCS\+\_\+\+OUT\+\_\+\+OF\+\_\+\+MEMORY}} if there was not enough memory to allocate internal data structures 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a28f1dd1ef65c3fc0a6c410e03af1fbce}{CCS\+\_\+\+INVALID\+\_\+\+CONFIGURATION}} if adding the forbidden clause would render the default configuration invalid 
+\end{DoxyReturn}
+\mbox{\Hypertarget{configuration__space_8h_aa9aed05f4bbd7aa11d2ab3db2b96bccc}\label{configuration__space_8h_aa9aed05f4bbd7aa11d2ab3db2b96bccc}} 
+\index{configuration\_space.h@{configuration\_space.h}!ccs\_configuration\_space\_add\_forbidden\_clauses@{ccs\_configuration\_space\_add\_forbidden\_clauses}}
+\index{ccs\_configuration\_space\_add\_forbidden\_clauses@{ccs\_configuration\_space\_add\_forbidden\_clauses}!configuration\_space.h@{configuration\_space.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_configuration\_space\_add\_forbidden\_clauses()}{ccs\_configuration\_space\_add\_forbidden\_clauses()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} ccs\+\_\+configuration\+\_\+space\+\_\+add\+\_\+forbidden\+\_\+clauses (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_ab2f25e603cb52fce2391e78d5edac824}{ccs\+\_\+configuration\+\_\+space\+\_\+t}}}]{configuration\+\_\+space,  }\item[{size\+\_\+t}]{num\+\_\+expressions,  }\item[{\mbox{\hyperlink{base_8h_a211f0df32aa85683492513cbf0d7805b}{ccs\+\_\+expression\+\_\+t}} $\ast$}]{expressions }\end{DoxyParamCaption})}
+
+
+
+Add a list of forbidden clauses to a configuration space. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in,out}}  & {\em configuration\+\_\+space} & \\
+\hline
+\mbox{\texttt{ in}}  & {\em num\+\_\+expressions} & the number of provided expressions \\
+\hline
+\mbox{\texttt{ in}}  & {\em expressions} & an array o {\ttfamily num\+\_\+expressions} expressions to add as forbidden clauses to the configuration space \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a092b9c7d2bc9ac00a6f53e251c8619b8}{CCS\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a4707835c3fcb2303089c76bbcbf96df5}{CCS\+\_\+\+INVALID\+\_\+\+OBJECT}} if {\ttfamily configuration\+\_\+space} is not a valid CCS configuration space; or if at least one of the provided expressions is not a valid CCS expression 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0adb4bc5cfc4f985bf59ae223f3e22b9f9}{CCS\+\_\+\+INVALID\+\_\+\+VALUE}} if {\ttfamily expressions} is NULL and {\ttfamily num\+\_\+expressions} is greater than 0 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0afab391c5bc22e7ba89710930ec04028d}{CCS\+\_\+\+INVALID\+\_\+\+HYPERPARAMETER}} if an expression references a hyperparameter that is not in the configuration space 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a3b3381e910957ad1fbe1d633b12eff79}{CCS\+\_\+\+OUT\+\_\+\+OF\+\_\+\+MEMORY}} if there was not enough memory to allocate internal data structures 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a28f1dd1ef65c3fc0a6c410e03af1fbce}{CCS\+\_\+\+INVALID\+\_\+\+CONFIGURATION}} if adding one of the provided forbidden clause would render the default configuration invalid 
+\end{DoxyReturn}
+\mbox{\Hypertarget{configuration__space_8h_a8385f9a64c3f6675518882764fa6f530}\label{configuration__space_8h_a8385f9a64c3f6675518882764fa6f530}} 
+\index{configuration\_space.h@{configuration\_space.h}!ccs\_configuration\_space\_add\_hyperparameter@{ccs\_configuration\_space\_add\_hyperparameter}}
+\index{ccs\_configuration\_space\_add\_hyperparameter@{ccs\_configuration\_space\_add\_hyperparameter}!configuration\_space.h@{configuration\_space.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_configuration\_space\_add\_hyperparameter()}{ccs\_configuration\_space\_add\_hyperparameter()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} ccs\+\_\+configuration\+\_\+space\+\_\+add\+\_\+hyperparameter (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_ab2f25e603cb52fce2391e78d5edac824}{ccs\+\_\+configuration\+\_\+space\+\_\+t}}}]{configuration\+\_\+space,  }\item[{\mbox{\hyperlink{base_8h_a0b796ce449059870d5bbb77f20925b50}{ccs\+\_\+hyperparameter\+\_\+t}}}]{hyperparameter,  }\item[{\mbox{\hyperlink{base_8h_ae36e9cd8818547939b8d03da347b3f56}{ccs\+\_\+distribution\+\_\+t}}}]{distribution }\end{DoxyParamCaption})}
+
+
+
+Add a hyperparameter to the configuration space. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in,out}}  & {\em configuration\+\_\+space} & \\
+\hline
+\mbox{\texttt{ in}}  & {\em hyperparameter} & the hyperparameter to add to the configuration space \\
+\hline
+\mbox{\texttt{ in}}  & {\em distribution} & optional, the 1 dimensional distribution to associate to the hyperparameter. If NULL is passed, the default distribution of the hyperparameter is used. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a092b9c7d2bc9ac00a6f53e251c8619b8}{CCS\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a4707835c3fcb2303089c76bbcbf96df5}{CCS\+\_\+\+INVALID\+\_\+\+OBJECT}} if {\ttfamily configuration\+\_\+space} is not a valid CCS configuration space; or {\ttfamily hyperparameter} is not a valid CCS hyperparameter; or if distribution is given and distribution is not a valid CCS distribution 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0afab391c5bc22e7ba89710930ec04028d}{CCS\+\_\+\+INVALID\+\_\+\+HYPERPARAMETER}} if {\ttfamily hyperparameter\textquotesingle{}s} type is CCS\+\_\+\+HYPERPARAMETER\+\_\+\+TYPE\+\_\+\+STRING; or if {\ttfamily hyperparameter} is already in the configuration space 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a2199c049fddf061a424dab07e2e1422b}{CCS\+\_\+\+INVALID\+\_\+\+DISTRIBUTION}} if {\ttfamily distribution} has more than one dimension 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a3b3381e910957ad1fbe1d633b12eff79}{CCS\+\_\+\+OUT\+\_\+\+OF\+\_\+\+MEMORY}} if a memory could not be allocated to store the additional hyperparameter and associated data structures 
+\end{DoxyReturn}
+\mbox{\Hypertarget{configuration__space_8h_a8533d817ce31e10e4ffea4db5b89efa1}\label{configuration__space_8h_a8533d817ce31e10e4ffea4db5b89efa1}} 
+\index{configuration\_space.h@{configuration\_space.h}!ccs\_configuration\_space\_add\_hyperparameters@{ccs\_configuration\_space\_add\_hyperparameters}}
+\index{ccs\_configuration\_space\_add\_hyperparameters@{ccs\_configuration\_space\_add\_hyperparameters}!configuration\_space.h@{configuration\_space.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_configuration\_space\_add\_hyperparameters()}{ccs\_configuration\_space\_add\_hyperparameters()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} ccs\+\_\+configuration\+\_\+space\+\_\+add\+\_\+hyperparameters (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_ab2f25e603cb52fce2391e78d5edac824}{ccs\+\_\+configuration\+\_\+space\+\_\+t}}}]{configuration\+\_\+space,  }\item[{size\+\_\+t}]{num\+\_\+hyperparameters,  }\item[{\mbox{\hyperlink{base_8h_a0b796ce449059870d5bbb77f20925b50}{ccs\+\_\+hyperparameter\+\_\+t}} $\ast$}]{hyperparameters,  }\item[{\mbox{\hyperlink{base_8h_ae36e9cd8818547939b8d03da347b3f56}{ccs\+\_\+distribution\+\_\+t}} $\ast$}]{distributions }\end{DoxyParamCaption})}
+
+
+
+Add hyperparameters to the configuration space. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in,out}}  & {\em configuration\+\_\+space} & \\
+\hline
+\mbox{\texttt{ in}}  & {\em num\+\_\+hyperparameters} & the number of provided hyperparameters \\
+\hline
+\mbox{\texttt{ in}}  & {\em hyperparameters} & an array of {\ttfamily num\+\_\+hyperparameters} hyperparameters to add to the configuration space \\
+\hline
+\mbox{\texttt{ in}}  & {\em distributions} & optional, an array of {\ttfamily num\+\_\+hyperparameters} distributions. If NULL, hyperparameter\textquotesingle{}s default distributions are used. If the array is provided each distribution is optional, and NULL can be provided to use the default distribution for a specific hyperparameter \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a092b9c7d2bc9ac00a6f53e251c8619b8}{CCS\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a4707835c3fcb2303089c76bbcbf96df5}{CCS\+\_\+\+INVALID\+\_\+\+OBJECT}} if {\ttfamily configuration\+\_\+space} is not a valid CCS configuration space; or a hyperparameter is not a valid CCS hyperparameter; or if a given distribution is not a valid CCS distribution 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0adb4bc5cfc4f985bf59ae223f3e22b9f9}{CCS\+\_\+\+INVALID\+\_\+\+VALUE}} if {\ttfamily hyperparameters} is NULL and {\ttfamily num\+\_\+hyperparameters} is greater than 0 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0afab391c5bc22e7ba89710930ec04028d}{CCS\+\_\+\+INVALID\+\_\+\+HYPERPARAMETER}} if a hyperparameter\textquotesingle{}s type is CCS\+\_\+\+HYPERPARAMETER\+\_\+\+TYPE\+\_\+\+STRING; or if a hyperparameter is already in the configuration space; or if a hyperparameter with the same name already exists in the configuration space 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a2199c049fddf061a424dab07e2e1422b}{CCS\+\_\+\+INVALID\+\_\+\+DISTRIBUTION}} if a distribution has more than one dimension 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a3b3381e910957ad1fbe1d633b12eff79}{CCS\+\_\+\+OUT\+\_\+\+OF\+\_\+\+MEMORY}} if memory could not be allocated to store additional hyperparameters and associated data structures 
+\end{DoxyReturn}
+\mbox{\Hypertarget{configuration__space_8h_abd20f2fdd0dfa821c71136e650592a66}\label{configuration__space_8h_abd20f2fdd0dfa821c71136e650592a66}} 
+\index{configuration\_space.h@{configuration\_space.h}!ccs\_configuration\_space\_check\_configuration@{ccs\_configuration\_space\_check\_configuration}}
+\index{ccs\_configuration\_space\_check\_configuration@{ccs\_configuration\_space\_check\_configuration}!configuration\_space.h@{configuration\_space.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_configuration\_space\_check\_configuration()}{ccs\_configuration\_space\_check\_configuration()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} ccs\+\_\+configuration\+\_\+space\+\_\+check\+\_\+configuration (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_ab2f25e603cb52fce2391e78d5edac824}{ccs\+\_\+configuration\+\_\+space\+\_\+t}}}]{configuration\+\_\+space,  }\item[{\mbox{\hyperlink{base_8h_a6b2a7ac41257359ed28ae334bf760634}{ccs\+\_\+configuration\+\_\+t}}}]{configuration,  }\item[{\mbox{\hyperlink{base_8h_a0e8ba2dfd397017939e6ea2ebc4bb037}{ccs\+\_\+bool\+\_\+t}} $\ast$}]{is\+\_\+valid\+\_\+ret }\end{DoxyParamCaption})}
+
+
+
+Check that a configuration is a valid in a configuration space. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em configuration\+\_\+space} & \\
+\hline
+\mbox{\texttt{ in}}  & {\em configuration} & \\
+\hline
+\mbox{\texttt{ out}}  & {\em is\+\_\+valid\+\_\+ret} & a pointer to a variable that will hold the result of the check. Result will be CCS\+\_\+\+TRUE if the configuration is valid. Result will be CCS\+\_\+\+FALSE if an active hyperparameter value is not a valid value for this hyperparameter; or if an inactive hyperparameter value is not inactive; or if a forbidden clause would be evaluating to \mbox{\hyperlink{base_8h_a53b00391d9d49c8a0febf8b3a959dee2}{ccs\+\_\+true}} \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a092b9c7d2bc9ac00a6f53e251c8619b8}{CCS\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a4707835c3fcb2303089c76bbcbf96df5}{CCS\+\_\+\+INVALID\+\_\+\+OBJECT}} if {\ttfamily configuration\+\_\+space} is not a valid CCS configuration space; or if {\ttfamily configuration} is not a valid CCS configuration 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a28f1dd1ef65c3fc0a6c410e03af1fbce}{CCS\+\_\+\+INVALID\+\_\+\+CONFIGURATION}} if {\ttfamily configuration} is not associated to the configuration space 
+\end{DoxyReturn}
+\mbox{\Hypertarget{configuration__space_8h_a4717991e727c34a5756b0529b7ea4da7}\label{configuration__space_8h_a4717991e727c34a5756b0529b7ea4da7}} 
+\index{configuration\_space.h@{configuration\_space.h}!ccs\_configuration\_space\_check\_configuration\_values@{ccs\_configuration\_space\_check\_configuration\_values}}
+\index{ccs\_configuration\_space\_check\_configuration\_values@{ccs\_configuration\_space\_check\_configuration\_values}!configuration\_space.h@{configuration\_space.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_configuration\_space\_check\_configuration\_values()}{ccs\_configuration\_space\_check\_configuration\_values()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} ccs\+\_\+configuration\+\_\+space\+\_\+check\+\_\+configuration\+\_\+values (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_ab2f25e603cb52fce2391e78d5edac824}{ccs\+\_\+configuration\+\_\+space\+\_\+t}}}]{configuration\+\_\+space,  }\item[{size\+\_\+t}]{num\+\_\+values,  }\item[{\mbox{\hyperlink{base_8h_a36bc36b2bb0d0613453dd731cdcd2048}{ccs\+\_\+datum\+\_\+t}} $\ast$}]{values,  }\item[{\mbox{\hyperlink{base_8h_a0e8ba2dfd397017939e6ea2ebc4bb037}{ccs\+\_\+bool\+\_\+t}} $\ast$}]{is\+\_\+valid\+\_\+ret }\end{DoxyParamCaption})}
+
+
+
+Check that a set of values would create a valid configuration for a configuration space. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em configuration\+\_\+space} & \\
+\hline
+\mbox{\texttt{ in}}  & {\em num\+\_\+values} & the number of provided values \\
+\hline
+\mbox{\texttt{ in}}  & {\em values} & an array of {\ttfamily num\+\_\+values} values that would become a configuration \\
+\hline
+\mbox{\texttt{ out}}  & {\em is\+\_\+valid\+\_\+ret} & a pointer to a variable that will hold the result of the check. Result will be CCS\+\_\+\+TRUE if the configuration is valid. Result will be CCS\+\_\+\+FALSE if an active hyperparameter value is not a valid value for this hyperparameter; or if an inactive hyperparameter value is not inactive; or if a forbidden clause would be evaluating to \mbox{\hyperlink{base_8h_a53b00391d9d49c8a0febf8b3a959dee2}{ccs\+\_\+true}} \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a092b9c7d2bc9ac00a6f53e251c8619b8}{CCS\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a4707835c3fcb2303089c76bbcbf96df5}{CCS\+\_\+\+INVALID\+\_\+\+OBJECT}} if {\ttfamily configuration\+\_\+space} is not a valid CCS configuration space 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0adb4bc5cfc4f985bf59ae223f3e22b9f9}{CCS\+\_\+\+INVALID\+\_\+\+VALUE}} if {\ttfamily values} is NULL and num\+\_\+values is greater than 0 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a28f1dd1ef65c3fc0a6c410e03af1fbce}{CCS\+\_\+\+INVALID\+\_\+\+CONFIGURATION}} if {\ttfamily num\+\_\+values} is not equal to the number of hyperparameters in the configuration space 
+\end{DoxyReturn}
+\mbox{\Hypertarget{configuration__space_8h_a0f9ed16e1fb824b303fb350b63447656}\label{configuration__space_8h_a0f9ed16e1fb824b303fb350b63447656}} 
+\index{configuration\_space.h@{configuration\_space.h}!ccs\_configuration\_space\_get\_condition@{ccs\_configuration\_space\_get\_condition}}
+\index{ccs\_configuration\_space\_get\_condition@{ccs\_configuration\_space\_get\_condition}!configuration\_space.h@{configuration\_space.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_configuration\_space\_get\_condition()}{ccs\_configuration\_space\_get\_condition()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} ccs\+\_\+configuration\+\_\+space\+\_\+get\+\_\+condition (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_ab2f25e603cb52fce2391e78d5edac824}{ccs\+\_\+configuration\+\_\+space\+\_\+t}}}]{configuration\+\_\+space,  }\item[{size\+\_\+t}]{hyperparameter\+\_\+index,  }\item[{\mbox{\hyperlink{base_8h_a211f0df32aa85683492513cbf0d7805b}{ccs\+\_\+expression\+\_\+t}} $\ast$}]{expression\+\_\+ret }\end{DoxyParamCaption})}
+
+
+
+Get the active condition of a hyperparameter in a configuration space given it\textquotesingle{}s index. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em configuration\+\_\+space} & \\
+\hline
+\mbox{\texttt{ in}}  & {\em hyperparameter\+\_\+index} & the index of the hyperparameter to get the condition \\
+\hline
+\mbox{\texttt{ out}}  & {\em expression\+\_\+ret} & a pointer to the variable that will contain the expression, or NULL if the hyperparameter is not associated with a condition \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a092b9c7d2bc9ac00a6f53e251c8619b8}{CCS\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a4707835c3fcb2303089c76bbcbf96df5}{CCS\+\_\+\+INVALID\+\_\+\+OBJECT}} if {\ttfamily configuration\+\_\+space} is not a valid CCS configuration space 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a3f898f2b0f178de079c2cd22a99b1950}{CCS\+\_\+\+OUT\+\_\+\+OF\+\_\+\+BOUNDS}} if index is greater than the number of hyperparameters in {\ttfamily configuration\+\_\+space} 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0adb4bc5cfc4f985bf59ae223f3e22b9f9}{CCS\+\_\+\+INVALID\+\_\+\+VALUE}} if {\ttfamily expression\+\_\+ret} is NULL 
+\end{DoxyReturn}
+\mbox{\Hypertarget{configuration__space_8h_a4dc333433ddb36e4f75d7ed31c618e3b}\label{configuration__space_8h_a4dc333433ddb36e4f75d7ed31c618e3b}} 
+\index{configuration\_space.h@{configuration\_space.h}!ccs\_configuration\_space\_get\_conditions@{ccs\_configuration\_space\_get\_conditions}}
+\index{ccs\_configuration\_space\_get\_conditions@{ccs\_configuration\_space\_get\_conditions}!configuration\_space.h@{configuration\_space.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_configuration\_space\_get\_conditions()}{ccs\_configuration\_space\_get\_conditions()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} ccs\+\_\+configuration\+\_\+space\+\_\+get\+\_\+conditions (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_ab2f25e603cb52fce2391e78d5edac824}{ccs\+\_\+configuration\+\_\+space\+\_\+t}}}]{configuration\+\_\+space,  }\item[{size\+\_\+t}]{num\+\_\+expressions,  }\item[{\mbox{\hyperlink{base_8h_a211f0df32aa85683492513cbf0d7805b}{ccs\+\_\+expression\+\_\+t}} $\ast$}]{expressions,  }\item[{size\+\_\+t $\ast$}]{num\+\_\+expressions\+\_\+ret }\end{DoxyParamCaption})}
+
+
+
+Get the active conditions of the hyperparameters in a configuration space. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em configuration\+\_\+space} & \\
+\hline
+\mbox{\texttt{ in}}  & {\em num\+\_\+expressions} & is the number of expressions that can be added to {\ttfamily expressions}. If {\ttfamily expressions} is not NULL, {\ttfamily num\+\_\+expressions} must be greater than 0 \\
+\hline
+\mbox{\texttt{ out}}  & {\em expressions} & an array of {\ttfamily num\+\_\+expressions} that will contain the returned expression, or NULL. If the array is too big, extra values are set to NULL. If an hyperparameter is not associated to an expression NULL will be returned for this hyperparameter. \\
+\hline
+\mbox{\texttt{ out}}  & {\em num\+\_\+expressions\+\_\+ret} & a pointer to a variable that will contain the number of expression that are or would be returned. Can be NULL \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a092b9c7d2bc9ac00a6f53e251c8619b8}{CCS\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a4707835c3fcb2303089c76bbcbf96df5}{CCS\+\_\+\+INVALID\+\_\+\+OBJECT}} if {\ttfamily configuration\+\_\+space} is not a valid CCS configuration space 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0adb4bc5cfc4f985bf59ae223f3e22b9f9}{CCS\+\_\+\+INVALID\+\_\+\+VALUE}} if {\ttfamily expressions} is NULL and {\ttfamily num\+\_\+expressions} is greater than 0; or if {\ttfamily expressions} is NULL and num\+\_\+expressions\+\_\+ret is NULL; or if num\+\_\+expressions is is less than the number of hyperparameters contained by configuration\+\_\+space 
+\end{DoxyReturn}
+\mbox{\Hypertarget{configuration__space_8h_af3aa722f384ab52419fe76b1052f3455}\label{configuration__space_8h_af3aa722f384ab52419fe76b1052f3455}} 
+\index{configuration\_space.h@{configuration\_space.h}!ccs\_configuration\_space\_get\_default\_configuration@{ccs\_configuration\_space\_get\_default\_configuration}}
+\index{ccs\_configuration\_space\_get\_default\_configuration@{ccs\_configuration\_space\_get\_default\_configuration}!configuration\_space.h@{configuration\_space.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_configuration\_space\_get\_default\_configuration()}{ccs\_configuration\_space\_get\_default\_configuration()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} ccs\+\_\+configuration\+\_\+space\+\_\+get\+\_\+default\+\_\+configuration (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_ab2f25e603cb52fce2391e78d5edac824}{ccs\+\_\+configuration\+\_\+space\+\_\+t}}}]{configuration\+\_\+space,  }\item[{\mbox{\hyperlink{base_8h_a6b2a7ac41257359ed28ae334bf760634}{ccs\+\_\+configuration\+\_\+t}} $\ast$}]{configuration\+\_\+ret }\end{DoxyParamCaption})}
+
+
+
+Get the default configuration of a configuration space. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em configuration\+\_\+space} & \\
+\hline
+\mbox{\texttt{ out}}  & {\em configuration\+\_\+ret} & a pointer to the variable that will contain the returned default configuration \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a092b9c7d2bc9ac00a6f53e251c8619b8}{CCS\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a4707835c3fcb2303089c76bbcbf96df5}{CCS\+\_\+\+INVALID\+\_\+\+OBJECT}} if {\ttfamily configuration\+\_\+space} is not a valid CCS configuration space 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0adb4bc5cfc4f985bf59ae223f3e22b9f9}{CCS\+\_\+\+INVALID\+\_\+\+VALUE}} if configuration\+\_\+ret is NULL 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a3b3381e910957ad1fbe1d633b12eff79}{CCS\+\_\+\+OUT\+\_\+\+OF\+\_\+\+MEMORY}} if there was not enough memory to allocate the new configuration 
+\end{DoxyReturn}
+\mbox{\Hypertarget{configuration__space_8h_a08a3d14a8f7bf9405bff8a86cb945c19}\label{configuration__space_8h_a08a3d14a8f7bf9405bff8a86cb945c19}} 
+\index{configuration\_space.h@{configuration\_space.h}!ccs\_configuration\_space\_get\_forbidden\_clause@{ccs\_configuration\_space\_get\_forbidden\_clause}}
+\index{ccs\_configuration\_space\_get\_forbidden\_clause@{ccs\_configuration\_space\_get\_forbidden\_clause}!configuration\_space.h@{configuration\_space.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_configuration\_space\_get\_forbidden\_clause()}{ccs\_configuration\_space\_get\_forbidden\_clause()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} ccs\+\_\+configuration\+\_\+space\+\_\+get\+\_\+forbidden\+\_\+clause (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_ab2f25e603cb52fce2391e78d5edac824}{ccs\+\_\+configuration\+\_\+space\+\_\+t}}}]{configuration\+\_\+space,  }\item[{size\+\_\+t}]{index,  }\item[{\mbox{\hyperlink{base_8h_a211f0df32aa85683492513cbf0d7805b}{ccs\+\_\+expression\+\_\+t}} $\ast$}]{expression\+\_\+ret }\end{DoxyParamCaption})}
+
+
+
+Get the forbidden clause of rank index in a configuration space. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em configuration\+\_\+space} & \\
+\hline
+\mbox{\texttt{ in}}  & {\em index} & the index of the forbidden clause to retrieve \\
+\hline
+\mbox{\texttt{ out}}  & {\em expression\+\_\+ret} & a pointer to the variable that will contain the returned expression \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a092b9c7d2bc9ac00a6f53e251c8619b8}{CCS\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a4707835c3fcb2303089c76bbcbf96df5}{CCS\+\_\+\+INVALID\+\_\+\+OBJECT}} if {\ttfamily configuration\+\_\+space} is not a valid CCS configuration space 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0adb4bc5cfc4f985bf59ae223f3e22b9f9}{CCS\+\_\+\+INVALID\+\_\+\+VALUE}} if {\ttfamily expression\+\_\+ret} is NULL 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a3f898f2b0f178de079c2cd22a99b1950}{CCS\+\_\+\+OUT\+\_\+\+OF\+\_\+\+BOUNDS}} if {\ttfamily index} is greater than the number of forbidden clauses in the configuration space 
+\end{DoxyReturn}
+\mbox{\Hypertarget{configuration__space_8h_aab0ae09fc61f88fd800f654797aa032b}\label{configuration__space_8h_aab0ae09fc61f88fd800f654797aa032b}} 
+\index{configuration\_space.h@{configuration\_space.h}!ccs\_configuration\_space\_get\_forbidden\_clauses@{ccs\_configuration\_space\_get\_forbidden\_clauses}}
+\index{ccs\_configuration\_space\_get\_forbidden\_clauses@{ccs\_configuration\_space\_get\_forbidden\_clauses}!configuration\_space.h@{configuration\_space.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_configuration\_space\_get\_forbidden\_clauses()}{ccs\_configuration\_space\_get\_forbidden\_clauses()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} ccs\+\_\+configuration\+\_\+space\+\_\+get\+\_\+forbidden\+\_\+clauses (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_ab2f25e603cb52fce2391e78d5edac824}{ccs\+\_\+configuration\+\_\+space\+\_\+t}}}]{configuration\+\_\+space,  }\item[{size\+\_\+t}]{num\+\_\+expressions,  }\item[{\mbox{\hyperlink{base_8h_a211f0df32aa85683492513cbf0d7805b}{ccs\+\_\+expression\+\_\+t}} $\ast$}]{expressions,  }\item[{size\+\_\+t $\ast$}]{num\+\_\+expressions\+\_\+ret }\end{DoxyParamCaption})}
+
+
+
+Get the forbidden clauses in a configuration space. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em configuration\+\_\+space} & \\
+\hline
+\mbox{\texttt{ in}}  & {\em num\+\_\+expressions} & the number of expressions that can be added to {\ttfamily expressions}. If {\ttfamily expressions} is not NULL, {\ttfamily num\+\_\+expressions} must be greater than 0 \\
+\hline
+\mbox{\texttt{ out}}  & {\em expressions} & an array of {\ttfamily num\+\_\+expressions} that will contain the returned expressions, or NULL. If the array is too big, extra values are set to NULL \\
+\hline
+\mbox{\texttt{ out}}  & {\em num\+\_\+expressions\+\_\+ret} & a pointer to a variable that will contain the number of expressions that are or would be returned. Can be NULL \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a092b9c7d2bc9ac00a6f53e251c8619b8}{CCS\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a4707835c3fcb2303089c76bbcbf96df5}{CCS\+\_\+\+INVALID\+\_\+\+OBJECT}} if {\ttfamily configuration\+\_\+space} is not a valid CCS configuration space 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0adb4bc5cfc4f985bf59ae223f3e22b9f9}{CCS\+\_\+\+INVALID\+\_\+\+VALUE}} if {\ttfamily expressions} is NULL and {\ttfamily num\+\_\+expressions} is greater than 0; or if or if {\ttfamily expressions} is NULL and {\ttfamily num\+\_\+expressions\+\_\+ret} is NULL; or if {\ttfamily num\+\_\+expressions} is less than then number of expressions that would be returned 
+\end{DoxyReturn}
+\mbox{\Hypertarget{configuration__space_8h_a9faf11c38734711da34db6fe3544a9ea}\label{configuration__space_8h_a9faf11c38734711da34db6fe3544a9ea}} 
+\index{configuration\_space.h@{configuration\_space.h}!ccs\_configuration\_space\_get\_hyperparameter@{ccs\_configuration\_space\_get\_hyperparameter}}
+\index{ccs\_configuration\_space\_get\_hyperparameter@{ccs\_configuration\_space\_get\_hyperparameter}!configuration\_space.h@{configuration\_space.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_configuration\_space\_get\_hyperparameter()}{ccs\_configuration\_space\_get\_hyperparameter()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} ccs\+\_\+configuration\+\_\+space\+\_\+get\+\_\+hyperparameter (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_ab2f25e603cb52fce2391e78d5edac824}{ccs\+\_\+configuration\+\_\+space\+\_\+t}}}]{configuration\+\_\+space,  }\item[{size\+\_\+t}]{index,  }\item[{\mbox{\hyperlink{base_8h_a0b796ce449059870d5bbb77f20925b50}{ccs\+\_\+hyperparameter\+\_\+t}} $\ast$}]{hyperparameter\+\_\+ret }\end{DoxyParamCaption})}
+
+
+
+Get an hyperparameter in a configuration space given its index. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em configuration\+\_\+space} & \\
+\hline
+\mbox{\texttt{ in}}  & {\em index} & the index of the hyperparameter to retrieve \\
+\hline
+\mbox{\texttt{ out}}  & {\em hyperparameter\+\_\+ret} & a pointer to the variable that will contain the hyperparameter \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a092b9c7d2bc9ac00a6f53e251c8619b8}{CCS\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a4707835c3fcb2303089c76bbcbf96df5}{CCS\+\_\+\+INVALID\+\_\+\+OBJECT}} if {\ttfamily configuration\+\_\+space} is not a valid CCS configuration space 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0adb4bc5cfc4f985bf59ae223f3e22b9f9}{CCS\+\_\+\+INVALID\+\_\+\+VALUE}} if {\ttfamily hyperparameter\+\_\+ret} is NULL 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a3f898f2b0f178de079c2cd22a99b1950}{CCS\+\_\+\+OUT\+\_\+\+OF\+\_\+\+BOUNDS}} if {\ttfamily index} is greater than the count of hyperparameters in the configuration space 
+\end{DoxyReturn}
+\mbox{\Hypertarget{configuration__space_8h_acdfa16fe40ced01e6dbdcb486dc5aefc}\label{configuration__space_8h_acdfa16fe40ced01e6dbdcb486dc5aefc}} 
+\index{configuration\_space.h@{configuration\_space.h}!ccs\_configuration\_space\_get\_hyperparameter\_by\_name@{ccs\_configuration\_space\_get\_hyperparameter\_by\_name}}
+\index{ccs\_configuration\_space\_get\_hyperparameter\_by\_name@{ccs\_configuration\_space\_get\_hyperparameter\_by\_name}!configuration\_space.h@{configuration\_space.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_configuration\_space\_get\_hyperparameter\_by\_name()}{ccs\_configuration\_space\_get\_hyperparameter\_by\_name()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} ccs\+\_\+configuration\+\_\+space\+\_\+get\+\_\+hyperparameter\+\_\+by\+\_\+name (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_ab2f25e603cb52fce2391e78d5edac824}{ccs\+\_\+configuration\+\_\+space\+\_\+t}}}]{configuration\+\_\+space,  }\item[{const char $\ast$}]{name,  }\item[{\mbox{\hyperlink{base_8h_a0b796ce449059870d5bbb77f20925b50}{ccs\+\_\+hyperparameter\+\_\+t}} $\ast$}]{hyperparameter\+\_\+ret }\end{DoxyParamCaption})}
+
+
+
+Get an hyperparameter in a configuration space given its name. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em configuration\+\_\+space} & \\
+\hline
+\mbox{\texttt{ in}}  & {\em name} & the name of the hyperparameter to retrieve \\
+\hline
+\mbox{\texttt{ out}}  & {\em hyperparameter\+\_\+ret} & a pointer to the variable that will contain the hyperparameter \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a092b9c7d2bc9ac00a6f53e251c8619b8}{CCS\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a4707835c3fcb2303089c76bbcbf96df5}{CCS\+\_\+\+INVALID\+\_\+\+OBJECT}} if {\ttfamily configuration\+\_\+space} is not a valid CCS configuration space 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0adb4bc5cfc4f985bf59ae223f3e22b9f9}{CCS\+\_\+\+INVALID\+\_\+\+VALUE}} if {\ttfamily name} or {\ttfamily hyperparameter\+\_\+ret} are NULL 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a75f19038a842b629c262db908c37471c}{CCS\+\_\+\+INVALID\+\_\+\+NAME}} if no hyperparameter with such {\ttfamily name} exist in the {\ttfamily configuration} space 
+\end{DoxyReturn}
+\mbox{\Hypertarget{configuration__space_8h_acf25793d9d79c7ed608b95cec3fb2cea}\label{configuration__space_8h_acf25793d9d79c7ed608b95cec3fb2cea}} 
+\index{configuration\_space.h@{configuration\_space.h}!ccs\_configuration\_space\_get\_hyperparameter\_distribution@{ccs\_configuration\_space\_get\_hyperparameter\_distribution}}
+\index{ccs\_configuration\_space\_get\_hyperparameter\_distribution@{ccs\_configuration\_space\_get\_hyperparameter\_distribution}!configuration\_space.h@{configuration\_space.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_configuration\_space\_get\_hyperparameter\_distribution()}{ccs\_configuration\_space\_get\_hyperparameter\_distribution()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} ccs\+\_\+configuration\+\_\+space\+\_\+get\+\_\+hyperparameter\+\_\+distribution (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_ab2f25e603cb52fce2391e78d5edac824}{ccs\+\_\+configuration\+\_\+space\+\_\+t}}}]{configuration\+\_\+space,  }\item[{size\+\_\+t}]{index,  }\item[{\mbox{\hyperlink{base_8h_ae36e9cd8818547939b8d03da347b3f56}{ccs\+\_\+distribution\+\_\+t}} $\ast$}]{distribution\+\_\+ret,  }\item[{size\+\_\+t $\ast$}]{index\+\_\+ret }\end{DoxyParamCaption})}
+
+
+
+Get an hyperparameter\textquotesingle{}s distribution in a configuration space given its index. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em configuration\+\_\+space} & \\
+\hline
+\mbox{\texttt{ in}}  & {\em index} & the index of the hyperparameter \\
+\hline
+\mbox{\texttt{ out}}  & {\em distribution\+\_\+ret} & a pointer to the variable that will contain the distribution \\
+\hline
+\mbox{\texttt{ out}}  & {\em index\+\_\+ret} & a pointer to the variable that will contain the index of the component in the distribution \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a092b9c7d2bc9ac00a6f53e251c8619b8}{CCS\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a4707835c3fcb2303089c76bbcbf96df5}{CCS\+\_\+\+INVALID\+\_\+\+OBJECT}} if {\ttfamily configuration\+\_\+space} is not a valid CCS configuration space 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0adb4bc5cfc4f985bf59ae223f3e22b9f9}{CCS\+\_\+\+INVALID\+\_\+\+VALUE}} if {\ttfamily distribution\+\_\+ret} is NULL; or if {\ttfamily index\+\_\+ret} is NULL 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a3f898f2b0f178de079c2cd22a99b1950}{CCS\+\_\+\+OUT\+\_\+\+OF\+\_\+\+BOUNDS}} if {\ttfamily index} is greater than the count of hyperparameters in the configuration space 
+\end{DoxyReturn}
+\mbox{\Hypertarget{configuration__space_8h_acbbf40246fe5ffa287df291a018d2b61}\label{configuration__space_8h_acbbf40246fe5ffa287df291a018d2b61}} 
+\index{configuration\_space.h@{configuration\_space.h}!ccs\_configuration\_space\_get\_hyperparameter\_index@{ccs\_configuration\_space\_get\_hyperparameter\_index}}
+\index{ccs\_configuration\_space\_get\_hyperparameter\_index@{ccs\_configuration\_space\_get\_hyperparameter\_index}!configuration\_space.h@{configuration\_space.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_configuration\_space\_get\_hyperparameter\_index()}{ccs\_configuration\_space\_get\_hyperparameter\_index()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} ccs\+\_\+configuration\+\_\+space\+\_\+get\+\_\+hyperparameter\+\_\+index (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_ab2f25e603cb52fce2391e78d5edac824}{ccs\+\_\+configuration\+\_\+space\+\_\+t}}}]{configuration\+\_\+space,  }\item[{\mbox{\hyperlink{base_8h_a0b796ce449059870d5bbb77f20925b50}{ccs\+\_\+hyperparameter\+\_\+t}}}]{hyperparameter,  }\item[{size\+\_\+t $\ast$}]{index\+\_\+ret }\end{DoxyParamCaption})}
+
+
+
+Get the index of an hyperparameter in the configuration space. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em configuration\+\_\+space} & \\
+\hline
+\mbox{\texttt{ in}}  & {\em hyperparameter} & \\
+\hline
+\mbox{\texttt{ out}}  & {\em index\+\_\+ret} & a pointer to the variable which will contain the index of the hyperparameter \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a092b9c7d2bc9ac00a6f53e251c8619b8}{CCS\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a4707835c3fcb2303089c76bbcbf96df5}{CCS\+\_\+\+INVALID\+\_\+\+OBJECT}} if {\ttfamily configuration\+\_\+space} is not a valid CCS configuration space 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0adb4bc5cfc4f985bf59ae223f3e22b9f9}{CCS\+\_\+\+INVALID\+\_\+\+VALUE}} if {\ttfamily index\+\_\+ret} is NULL 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0afab391c5bc22e7ba89710930ec04028d}{CCS\+\_\+\+INVALID\+\_\+\+HYPERPARAMETER}} if {\ttfamily configuration\+\_\+space} does not contain {\ttfamily hyperparameter} 
+\end{DoxyReturn}
+\mbox{\Hypertarget{configuration__space_8h_abf9166ea5e4bd03b2995e786d29182c4}\label{configuration__space_8h_abf9166ea5e4bd03b2995e786d29182c4}} 
+\index{configuration\_space.h@{configuration\_space.h}!ccs\_configuration\_space\_get\_hyperparameter\_index\_by\_name@{ccs\_configuration\_space\_get\_hyperparameter\_index\_by\_name}}
+\index{ccs\_configuration\_space\_get\_hyperparameter\_index\_by\_name@{ccs\_configuration\_space\_get\_hyperparameter\_index\_by\_name}!configuration\_space.h@{configuration\_space.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_configuration\_space\_get\_hyperparameter\_index\_by\_name()}{ccs\_configuration\_space\_get\_hyperparameter\_index\_by\_name()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} ccs\+\_\+configuration\+\_\+space\+\_\+get\+\_\+hyperparameter\+\_\+index\+\_\+by\+\_\+name (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_ab2f25e603cb52fce2391e78d5edac824}{ccs\+\_\+configuration\+\_\+space\+\_\+t}}}]{configuration\+\_\+space,  }\item[{const char $\ast$}]{name,  }\item[{size\+\_\+t $\ast$}]{index\+\_\+ret }\end{DoxyParamCaption})}
+
+
+
+Get the index of an hyperparameter in the configuration space given its name. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em configuration\+\_\+space} & \\
+\hline
+\mbox{\texttt{ in}}  & {\em name} & the name of the hyperparameter to retrieve the index of \\
+\hline
+\mbox{\texttt{ out}}  & {\em index\+\_\+ret} & a pointer to the variable that will contain the index of hyperparameter in the {\ttfamily configuration\+\_\+space} \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a092b9c7d2bc9ac00a6f53e251c8619b8}{CCS\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a4707835c3fcb2303089c76bbcbf96df5}{CCS\+\_\+\+INVALID\+\_\+\+OBJECT}} if {\ttfamily configuration\+\_\+space} is not a valid CCS configuration space 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0adb4bc5cfc4f985bf59ae223f3e22b9f9}{CCS\+\_\+\+INVALID\+\_\+\+VALUE}} if {\ttfamily name} or {\ttfamily index\+\_\+ret} are NULL 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a75f19038a842b629c262db908c37471c}{CCS\+\_\+\+INVALID\+\_\+\+NAME}} if no hyperparameter with such {\ttfamily name} exist in the configuration space 
+\end{DoxyReturn}
+\mbox{\Hypertarget{configuration__space_8h_afb79be41f9a1e6a1bc69822351351bff}\label{configuration__space_8h_afb79be41f9a1e6a1bc69822351351bff}} 
+\index{configuration\_space.h@{configuration\_space.h}!ccs\_configuration\_space\_get\_hyperparameter\_indexes@{ccs\_configuration\_space\_get\_hyperparameter\_indexes}}
+\index{ccs\_configuration\_space\_get\_hyperparameter\_indexes@{ccs\_configuration\_space\_get\_hyperparameter\_indexes}!configuration\_space.h@{configuration\_space.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_configuration\_space\_get\_hyperparameter\_indexes()}{ccs\_configuration\_space\_get\_hyperparameter\_indexes()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} ccs\+\_\+configuration\+\_\+space\+\_\+get\+\_\+hyperparameter\+\_\+indexes (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_ab2f25e603cb52fce2391e78d5edac824}{ccs\+\_\+configuration\+\_\+space\+\_\+t}}}]{configuration\+\_\+space,  }\item[{size\+\_\+t}]{num\+\_\+hyperparameters,  }\item[{\mbox{\hyperlink{base_8h_a0b796ce449059870d5bbb77f20925b50}{ccs\+\_\+hyperparameter\+\_\+t}} $\ast$}]{hyperparameters,  }\item[{size\+\_\+t $\ast$}]{indexes }\end{DoxyParamCaption})}
+
+
+
+Get the indices of a set of hyperparameters in a configuration space. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em configuration\+\_\+space} & \\
+\hline
+\mbox{\texttt{ in}}  & {\em num\+\_\+hyperparameters} & the number of hyperparameters to query the index for \\
+\hline
+\mbox{\texttt{ in}}  & {\em hyperparameters} & an array of {\ttfamily num\+\_\+hyperparameters} hyperparameters to query the index for \\
+\hline
+\mbox{\texttt{ out}}  & {\em indexes} & an array of {\ttfamily num\+\_\+hyperparameters} indices that will contain the values of the hyperparamters indices \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a092b9c7d2bc9ac00a6f53e251c8619b8}{CCS\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a4707835c3fcb2303089c76bbcbf96df5}{CCS\+\_\+\+INVALID\+\_\+\+OBJECT}} if {\ttfamily configuration\+\_\+space} is not a valid CCS configuration space 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0adb4bc5cfc4f985bf59ae223f3e22b9f9}{CCS\+\_\+\+INVALID\+\_\+\+VALUE}} if {\ttfamily hyperparameters} is NULL and {\ttfamily num\+\_\+hyperparameters} is greater than 0; or if {\ttfamily indexes} is NULL and {\ttfamily num\+\_\+hyperparameters} is greater than 0 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0afab391c5bc22e7ba89710930ec04028d}{CCS\+\_\+\+INVALID\+\_\+\+HYPERPARAMETER}} if at least one of the hyperparameters is not contained in {\ttfamily configuration\+\_\+space} 
+\end{DoxyReturn}
+\mbox{\Hypertarget{configuration__space_8h_aef93177292379ee005ccef5a2ebe019c}\label{configuration__space_8h_aef93177292379ee005ccef5a2ebe019c}} 
+\index{configuration\_space.h@{configuration\_space.h}!ccs\_configuration\_space\_get\_hyperparameters@{ccs\_configuration\_space\_get\_hyperparameters}}
+\index{ccs\_configuration\_space\_get\_hyperparameters@{ccs\_configuration\_space\_get\_hyperparameters}!configuration\_space.h@{configuration\_space.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_configuration\_space\_get\_hyperparameters()}{ccs\_configuration\_space\_get\_hyperparameters()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} ccs\+\_\+configuration\+\_\+space\+\_\+get\+\_\+hyperparameters (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_ab2f25e603cb52fce2391e78d5edac824}{ccs\+\_\+configuration\+\_\+space\+\_\+t}}}]{configuration\+\_\+space,  }\item[{size\+\_\+t}]{num\+\_\+hyperparameters,  }\item[{\mbox{\hyperlink{base_8h_a0b796ce449059870d5bbb77f20925b50}{ccs\+\_\+hyperparameter\+\_\+t}} $\ast$}]{hyperparameters,  }\item[{size\+\_\+t $\ast$}]{num\+\_\+hyperparameters\+\_\+ret }\end{DoxyParamCaption})}
+
+
+
+Get the hyperparameters in the given configuration space. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em configuration\+\_\+space} & \\
+\hline
+\mbox{\texttt{ in}}  & {\em num\+\_\+hyperparameters} & is the number of hyperparameters that can be added to {\ttfamily hyperparameters}. If {\ttfamily hyperparameters} is not NULL {\ttfamily num\+\_\+hyperparameters} must be greater than 0 \\
+\hline
+\mbox{\texttt{ out}}  & {\em hyperparameters} & an array of {\ttfamily num\+\_\+hyperparameters} that will contain the returned hyperparameters or NULL. If the array is too big, extra values are set to NULL \\
+\hline
+\mbox{\texttt{ out}}  & {\em num\+\_\+hyperparameters\+\_\+ret} & a pointer to a variable that will contain the number of hyperparameters that are or would be returned. Can be NULL \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a092b9c7d2bc9ac00a6f53e251c8619b8}{CCS\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a4707835c3fcb2303089c76bbcbf96df5}{CCS\+\_\+\+INVALID\+\_\+\+OBJECT}} if {\ttfamily configuration\+\_\+space} is not a valid CCS configuration space 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0adb4bc5cfc4f985bf59ae223f3e22b9f9}{CCS\+\_\+\+INVALID\+\_\+\+VALUE}} if {\ttfamily hyperparameters} is NULL and {\ttfamily num\+\_\+hyperparameters} is greater than 0; or if {\ttfamily hyperparameters} is NULL and num\+\_\+hyperparameters\+\_\+ret is NULL; or if {\ttfamily num\+\_\+hyperparameters} is less than the number of hyperparameters that would be returned 
+\end{DoxyReturn}
+\mbox{\Hypertarget{configuration__space_8h_a0116569a3c8d84155cd2dde291889b52}\label{configuration__space_8h_a0116569a3c8d84155cd2dde291889b52}} 
+\index{configuration\_space.h@{configuration\_space.h}!ccs\_configuration\_space\_get\_name@{ccs\_configuration\_space\_get\_name}}
+\index{ccs\_configuration\_space\_get\_name@{ccs\_configuration\_space\_get\_name}!configuration\_space.h@{configuration\_space.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_configuration\_space\_get\_name()}{ccs\_configuration\_space\_get\_name()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} ccs\+\_\+configuration\+\_\+space\+\_\+get\+\_\+name (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_ab2f25e603cb52fce2391e78d5edac824}{ccs\+\_\+configuration\+\_\+space\+\_\+t}}}]{configuration\+\_\+space,  }\item[{const char $\ast$$\ast$}]{name\+\_\+ret }\end{DoxyParamCaption})}
+
+
+
+Get the name of a configuration space. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em configuration\+\_\+space} & \\
+\hline
+\mbox{\texttt{ out}}  & {\em name\+\_\+ret} & a pointer to a {\ttfamily char $\ast$} variable which will contain a pointer to the configuration space name. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a092b9c7d2bc9ac00a6f53e251c8619b8}{CCS\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a4707835c3fcb2303089c76bbcbf96df5}{CCS\+\_\+\+INVALID\+\_\+\+OBJECT}} if {\ttfamily configuration\+\_\+space} is not a valid CCS configuration space 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0adb4bc5cfc4f985bf59ae223f3e22b9f9}{CCS\+\_\+\+INVALID\+\_\+\+VALUE}} if {\ttfamily name\+\_\+ret} is NULL 
+\end{DoxyReturn}
+\mbox{\Hypertarget{configuration__space_8h_a6e71810c0f76532095020974ddcdfca9}\label{configuration__space_8h_a6e71810c0f76532095020974ddcdfca9}} 
+\index{configuration\_space.h@{configuration\_space.h}!ccs\_configuration\_space\_get\_num\_hyperparameters@{ccs\_configuration\_space\_get\_num\_hyperparameters}}
+\index{ccs\_configuration\_space\_get\_num\_hyperparameters@{ccs\_configuration\_space\_get\_num\_hyperparameters}!configuration\_space.h@{configuration\_space.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_configuration\_space\_get\_num\_hyperparameters()}{ccs\_configuration\_space\_get\_num\_hyperparameters()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} ccs\+\_\+configuration\+\_\+space\+\_\+get\+\_\+num\+\_\+hyperparameters (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_ab2f25e603cb52fce2391e78d5edac824}{ccs\+\_\+configuration\+\_\+space\+\_\+t}}}]{configuration\+\_\+space,  }\item[{size\+\_\+t $\ast$}]{num\+\_\+hyperparameters\+\_\+ret }\end{DoxyParamCaption})}
+
+
+
+Get the number of hyperparameters in a configuration space. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em configuration\+\_\+space} & \\
+\hline
+\mbox{\texttt{ out}}  & {\em num\+\_\+hyperparameters\+\_\+ret} & a pointer to the variable that will contain the number of hyperparameters in the configuration space \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a092b9c7d2bc9ac00a6f53e251c8619b8}{CCS\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a4707835c3fcb2303089c76bbcbf96df5}{CCS\+\_\+\+INVALID\+\_\+\+OBJECT}} if {\ttfamily configuration\+\_\+space} is not a valid CCS configuration space 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0adb4bc5cfc4f985bf59ae223f3e22b9f9}{CCS\+\_\+\+INVALID\+\_\+\+VALUE}} if {\ttfamily num\+\_\+hyperparameters\+\_\+ret} is NULL 
+\end{DoxyReturn}
+\mbox{\Hypertarget{configuration__space_8h_a06c4b714c8d1fab9061c41b6806fa6e0}\label{configuration__space_8h_a06c4b714c8d1fab9061c41b6806fa6e0}} 
+\index{configuration\_space.h@{configuration\_space.h}!ccs\_configuration\_space\_get\_rng@{ccs\_configuration\_space\_get\_rng}}
+\index{ccs\_configuration\_space\_get\_rng@{ccs\_configuration\_space\_get\_rng}!configuration\_space.h@{configuration\_space.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_configuration\_space\_get\_rng()}{ccs\_configuration\_space\_get\_rng()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} ccs\+\_\+configuration\+\_\+space\+\_\+get\+\_\+rng (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_ab2f25e603cb52fce2391e78d5edac824}{ccs\+\_\+configuration\+\_\+space\+\_\+t}}}]{configuration\+\_\+space,  }\item[{\mbox{\hyperlink{base_8h_ae22dde737fcdf67d5a9fa497bc054027}{ccs\+\_\+rng\+\_\+t}} $\ast$}]{rng\+\_\+ret }\end{DoxyParamCaption})}
+
+
+
+Get the internal rng of the configuration space. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em configuration\+\_\+space} & \\
+\hline
+\mbox{\texttt{ out}}  & {\em rng\+\_\+ret} & a pointer to the variable that will contain the rng \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a092b9c7d2bc9ac00a6f53e251c8619b8}{CCS\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a4707835c3fcb2303089c76bbcbf96df5}{CCS\+\_\+\+INVALID\+\_\+\+OBJECT}} if {\ttfamily configuration\+\_\+space} is not a valid CCS configuration space; or {\ttfamily rng\+\_\+ret} is NULL 
+\end{DoxyReturn}
+\mbox{\Hypertarget{configuration__space_8h_aaaecec4ddeaf04c4567d994066979142}\label{configuration__space_8h_aaaecec4ddeaf04c4567d994066979142}} 
+\index{configuration\_space.h@{configuration\_space.h}!ccs\_configuration\_space\_sample@{ccs\_configuration\_space\_sample}}
+\index{ccs\_configuration\_space\_sample@{ccs\_configuration\_space\_sample}!configuration\_space.h@{configuration\_space.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_configuration\_space\_sample()}{ccs\_configuration\_space\_sample()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} ccs\+\_\+configuration\+\_\+space\+\_\+sample (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_ab2f25e603cb52fce2391e78d5edac824}{ccs\+\_\+configuration\+\_\+space\+\_\+t}}}]{configuration\+\_\+space,  }\item[{\mbox{\hyperlink{base_8h_a6b2a7ac41257359ed28ae334bf760634}{ccs\+\_\+configuration\+\_\+t}} $\ast$}]{configuration\+\_\+ret }\end{DoxyParamCaption})}
+
+
+
+Get a configuration sampled randomly from a configuration space. 
+
+Hyperparameters that were not specified distributions are sampled according to their default distribution. Hyperparameter that are found to be inactive will have the \mbox{\hyperlink{base_8h_a6f863aa138666864095f4e757897eb13}{ccs\+\_\+inactive}} value. Returned configuration is valid. 
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em configuration\+\_\+space} & \\
+\hline
+\mbox{\texttt{ out}}  & {\em configuration\+\_\+ret} & a pointer to the variable that will contain the returned configuration \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a092b9c7d2bc9ac00a6f53e251c8619b8}{CCS\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a4707835c3fcb2303089c76bbcbf96df5}{CCS\+\_\+\+INVALID\+\_\+\+OBJECT}} if {\ttfamily configuration\+\_\+space} is not a valid CCS configuration space 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0adb4bc5cfc4f985bf59ae223f3e22b9f9}{CCS\+\_\+\+INVALID\+\_\+\+VALUE}} if configuration\+\_\+ret is NULL 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0af9a4405d2ae21ce28cd2413e8644be11}{CCS\+\_\+\+SAMPLING\+\_\+\+UNSUCCESSFUL}} if no valid configuration could be sampled 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a3b3381e910957ad1fbe1d633b12eff79}{CCS\+\_\+\+OUT\+\_\+\+OF\+\_\+\+MEMORY}} if there was not enough memory to allocate the new configuration 
+\end{DoxyReturn}
+\mbox{\Hypertarget{configuration__space_8h_a1efa423dde2b7c6da681050749b527a4}\label{configuration__space_8h_a1efa423dde2b7c6da681050749b527a4}} 
+\index{configuration\_space.h@{configuration\_space.h}!ccs\_configuration\_space\_samples@{ccs\_configuration\_space\_samples}}
+\index{ccs\_configuration\_space\_samples@{ccs\_configuration\_space\_samples}!configuration\_space.h@{configuration\_space.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_configuration\_space\_samples()}{ccs\_configuration\_space\_samples()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} ccs\+\_\+configuration\+\_\+space\+\_\+samples (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_ab2f25e603cb52fce2391e78d5edac824}{ccs\+\_\+configuration\+\_\+space\+\_\+t}}}]{configuration\+\_\+space,  }\item[{size\+\_\+t}]{num\+\_\+configurations,  }\item[{\mbox{\hyperlink{base_8h_a6b2a7ac41257359ed28ae334bf760634}{ccs\+\_\+configuration\+\_\+t}} $\ast$}]{configurations }\end{DoxyParamCaption})}
+
+
+
+Get a given number of configurations sampled randomly from a configuration space. 
+
+Hyperparameters that were not specified distributions are sampled according to their default distribution. Hyperparameter that are found to be inactive will have the \mbox{\hyperlink{base_8h_a6f863aa138666864095f4e757897eb13}{ccs\+\_\+inactive}} value. Returned configurations are valid. 
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em configuration\+\_\+space} & \\
+\hline
+\mbox{\texttt{ in}}  & {\em num\+\_\+configurations} & the number of requested configurations \\
+\hline
+\mbox{\texttt{ out}}  & {\em configurations} & an array of {\ttfamily num\+\_\+configurations} that will contain the requested configurations \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a092b9c7d2bc9ac00a6f53e251c8619b8}{CCS\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a4707835c3fcb2303089c76bbcbf96df5}{CCS\+\_\+\+INVALID\+\_\+\+OBJECT}} if {\ttfamily configuration\+\_\+space} is not a valid CCS configuration space 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0adb4bc5cfc4f985bf59ae223f3e22b9f9}{CCS\+\_\+\+INVALID\+\_\+\+VALUE}} if {\ttfamily configurations} is NULL and {\ttfamily num\+\_\+configurations} is greater than 0 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0af9a4405d2ae21ce28cd2413e8644be11}{CCS\+\_\+\+SAMPLING\+\_\+\+UNSUCCESSFUL}} if no or not enough valid configurations could be sampled. Configurations that could be sampled will be returned contiguously, and the rest will be NULL 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a3b3381e910957ad1fbe1d633b12eff79}{CCS\+\_\+\+OUT\+\_\+\+OF\+\_\+\+MEMORY}} if there was not enough memory to allocate new configurations. Configurations that could be allocated will be returned, and the rest will be NULL 
+\end{DoxyReturn}
+\mbox{\Hypertarget{configuration__space_8h_a5792428a3ee980401ac3be28ecdda232}\label{configuration__space_8h_a5792428a3ee980401ac3be28ecdda232}} 
+\index{configuration\_space.h@{configuration\_space.h}!ccs\_configuration\_space\_set\_condition@{ccs\_configuration\_space\_set\_condition}}
+\index{ccs\_configuration\_space\_set\_condition@{ccs\_configuration\_space\_set\_condition}!configuration\_space.h@{configuration\_space.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_configuration\_space\_set\_condition()}{ccs\_configuration\_space\_set\_condition()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} ccs\+\_\+configuration\+\_\+space\+\_\+set\+\_\+condition (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_ab2f25e603cb52fce2391e78d5edac824}{ccs\+\_\+configuration\+\_\+space\+\_\+t}}}]{configuration\+\_\+space,  }\item[{size\+\_\+t}]{hyperparameter\+\_\+index,  }\item[{\mbox{\hyperlink{base_8h_a211f0df32aa85683492513cbf0d7805b}{ccs\+\_\+expression\+\_\+t}}}]{expression }\end{DoxyParamCaption})}
+
+
+
+Set the active condition of a hyperparameter in a configuration space given it\textquotesingle{}s index. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in,out}}  & {\em configuration\+\_\+space} & \\
+\hline
+\mbox{\texttt{ in}}  & {\em hyperparameter\+\_\+index} & the index of the hyperparameter to set the condition \\
+\hline
+\mbox{\texttt{ in}}  & {\em expression} & the condition to associate to the hyperparameter \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a092b9c7d2bc9ac00a6f53e251c8619b8}{CCS\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a4707835c3fcb2303089c76bbcbf96df5}{CCS\+\_\+\+INVALID\+\_\+\+OBJECT}} if {\ttfamily configuration\+\_\+space} is not a valid CCS configuration space; or if {\ttfamily expression} is not a valid CCS expression 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a3f898f2b0f178de079c2cd22a99b1950}{CCS\+\_\+\+OUT\+\_\+\+OF\+\_\+\+BOUNDS}} if index is greater than the number of hyperparameters in {\ttfamily configuration\+\_\+space} 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0afab391c5bc22e7ba89710930ec04028d}{CCS\+\_\+\+INVALID\+\_\+\+HYPERPARAMETER}} if hyperparameter at index is already associated with a condition; or if the condition references a hyperparameter that is not in the configuration space 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a3b3381e910957ad1fbe1d633b12eff79}{CCS\+\_\+\+OUT\+\_\+\+OF\+\_\+\+MEMORY}} if there was not enough memory to process the dependency graph 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a415d13fcca7c4044a18452bb2c5cd30a}{CCS\+\_\+\+INVALID\+\_\+\+GRAPH}} if the addition of the condition would cause the dependency graph to become invalid (cyclic) 
+\end{DoxyReturn}
+\mbox{\Hypertarget{configuration__space_8h_ac88fe3b5eaabcc97361d34c61acfd9fb}\label{configuration__space_8h_ac88fe3b5eaabcc97361d34c61acfd9fb}} 
+\index{configuration\_space.h@{configuration\_space.h}!ccs\_configuration\_space\_set\_distribution@{ccs\_configuration\_space\_set\_distribution}}
+\index{ccs\_configuration\_space\_set\_distribution@{ccs\_configuration\_space\_set\_distribution}!configuration\_space.h@{configuration\_space.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_configuration\_space\_set\_distribution()}{ccs\_configuration\_space\_set\_distribution()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} ccs\+\_\+configuration\+\_\+space\+\_\+set\+\_\+distribution (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_ab2f25e603cb52fce2391e78d5edac824}{ccs\+\_\+configuration\+\_\+space\+\_\+t}}}]{configuration\+\_\+space,  }\item[{\mbox{\hyperlink{base_8h_ae36e9cd8818547939b8d03da347b3f56}{ccs\+\_\+distribution\+\_\+t}}}]{distribution,  }\item[{size\+\_\+t $\ast$}]{indices }\end{DoxyParamCaption})}
+
+
+
+Set the distribution of one or more hyperparameters. 
+
+Existing distributions are discarded, and if a hyperparameter is left without a distribution it\textquotesingle{}s default distribution is used. 
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in,out}}  & {\em configuration\+\_\+space} & \\
+\hline
+\mbox{\texttt{ in}}  & {\em distribution} & the distribution to associate to the hyperparameters at the indices given by {\ttfamily indices} \\
+\hline
+\mbox{\texttt{ in}}  & {\em indices} & an array of hyperparameters indices with as many elements as the dimension of the distribution \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a092b9c7d2bc9ac00a6f53e251c8619b8}{CCS\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a4707835c3fcb2303089c76bbcbf96df5}{CCS\+\_\+\+INVALID\+\_\+\+OBJECT}} if {\ttfamily configuration\+\_\+space} is not a valid CCS configuration space; or distribution is not a valid CCS distribution 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0adb4bc5cfc4f985bf59ae223f3e22b9f9}{CCS\+\_\+\+INVALID\+\_\+\+VALUE}} if {\ttfamily indices} is NULL; or if indices contains values greater or equal to the number of hyperparameters in the configuration space; or if indices contain duplicate values 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a3b3381e910957ad1fbe1d633b12eff79}{CCS\+\_\+\+OUT\+\_\+\+OF\+\_\+\+MEMORY}} if a memory could not be allocated to store additional hyperparameters and associated data structures 
+\end{DoxyReturn}
+\mbox{\Hypertarget{configuration__space_8h_ac94b6ef9ed20718e9c6d4c3509daa8d6}\label{configuration__space_8h_ac94b6ef9ed20718e9c6d4c3509daa8d6}} 
+\index{configuration\_space.h@{configuration\_space.h}!ccs\_configuration\_space\_set\_rng@{ccs\_configuration\_space\_set\_rng}}
+\index{ccs\_configuration\_space\_set\_rng@{ccs\_configuration\_space\_set\_rng}!configuration\_space.h@{configuration\_space.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_configuration\_space\_set\_rng()}{ccs\_configuration\_space\_set\_rng()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} ccs\+\_\+configuration\+\_\+space\+\_\+set\+\_\+rng (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_ab2f25e603cb52fce2391e78d5edac824}{ccs\+\_\+configuration\+\_\+space\+\_\+t}}}]{configuration\+\_\+space,  }\item[{\mbox{\hyperlink{base_8h_ae22dde737fcdf67d5a9fa497bc054027}{ccs\+\_\+rng\+\_\+t}}}]{rng }\end{DoxyParamCaption})}
+
+
+
+Set (replace) the internal rng of the configuration space. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in,out}}  & {\em configuration\+\_\+space} & \\
+\hline
+\mbox{\texttt{ in}}  & {\em rng} & the rng to use in the configuration space \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a092b9c7d2bc9ac00a6f53e251c8619b8}{CCS\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a4707835c3fcb2303089c76bbcbf96df5}{CCS\+\_\+\+INVALID\+\_\+\+OBJECT}} if {\ttfamily configuration\+\_\+space} is not a valid CCS configuration space; or {\ttfamily rng} is not a valid CCS rng 
+\end{DoxyReturn}
+\mbox{\Hypertarget{configuration__space_8h_a639d3d1d276d93af2d1af0abe47be304}\label{configuration__space_8h_a639d3d1d276d93af2d1af0abe47be304}} 
+\index{configuration\_space.h@{configuration\_space.h}!ccs\_configuration\_space\_validate\_value@{ccs\_configuration\_space\_validate\_value}}
+\index{ccs\_configuration\_space\_validate\_value@{ccs\_configuration\_space\_validate\_value}!configuration\_space.h@{configuration\_space.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_configuration\_space\_validate\_value()}{ccs\_configuration\_space\_validate\_value()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} ccs\+\_\+configuration\+\_\+space\+\_\+validate\+\_\+value (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_ab2f25e603cb52fce2391e78d5edac824}{ccs\+\_\+configuration\+\_\+space\+\_\+t}}}]{configuration\+\_\+space,  }\item[{size\+\_\+t}]{index,  }\item[{\mbox{\hyperlink{base_8h_a36bc36b2bb0d0613453dd731cdcd2048}{ccs\+\_\+datum\+\_\+t}}}]{value,  }\item[{\mbox{\hyperlink{base_8h_a36bc36b2bb0d0613453dd731cdcd2048}{ccs\+\_\+datum\+\_\+t}} $\ast$}]{value\+\_\+ret }\end{DoxyParamCaption})}
+
+
+
+Validate that a given value at the given index is valid in a configuration space, and return a sanitized value. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em configuration\+\_\+space} & \\
+\hline
+\mbox{\texttt{ in}}  & {\em index} & the index of the value in the configuration\+\_\+space \\
+\hline
+\mbox{\texttt{ in}}  & {\em value} & the datum to validate \\
+\hline
+\mbox{\texttt{ out}}  & {\em value\+\_\+ret} & a pointer that will contain the validated value. If {\ttfamily value} is a string {\ttfamily value\+\_\+ret} will contain a non transient string. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a092b9c7d2bc9ac00a6f53e251c8619b8}{CCS\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a4707835c3fcb2303089c76bbcbf96df5}{CCS\+\_\+\+INVALID\+\_\+\+OBJECT}} if {\ttfamily configuration\+\_\+space} is not a valid CCS configuration space 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a3f898f2b0f178de079c2cd22a99b1950}{CCS\+\_\+\+OUT\+\_\+\+OF\+\_\+\+BOUNDS}} if index is greater than the number of hyperparameters in {\ttfamily configuration\+\_\+space} 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a3b3381e910957ad1fbe1d633b12eff79}{CCS\+\_\+\+OUT\+\_\+\+OF\+\_\+\+MEMORY}} if there was a lack of memory while memoizing a string 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0adb4bc5cfc4f985bf59ae223f3e22b9f9}{CCS\+\_\+\+INVALID\+\_\+\+VALUE}} if the value did not validate or if value\+\_\+ret is NULL 
+\end{DoxyReturn}
+\mbox{\Hypertarget{configuration__space_8h_a94aacd5548479f758b7c4ebc4c6766e9}\label{configuration__space_8h_a94aacd5548479f758b7c4ebc4c6766e9}} 
+\index{configuration\_space.h@{configuration\_space.h}!ccs\_create\_configuration\_space@{ccs\_create\_configuration\_space}}
+\index{ccs\_create\_configuration\_space@{ccs\_create\_configuration\_space}!configuration\_space.h@{configuration\_space.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_create\_configuration\_space()}{ccs\_create\_configuration\_space()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} ccs\+\_\+create\+\_\+configuration\+\_\+space (\begin{DoxyParamCaption}\item[{const char $\ast$}]{name,  }\item[{\mbox{\hyperlink{base_8h_ab2f25e603cb52fce2391e78d5edac824}{ccs\+\_\+configuration\+\_\+space\+\_\+t}} $\ast$}]{configuration\+\_\+space\+\_\+ret }\end{DoxyParamCaption})}
+
+
+
+Create a new empty configuration space. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em name} & pointer to a string that will be copied internally \\
+\hline
+\mbox{\texttt{ out}}  & {\em configuration\+\_\+space\+\_\+ret} & a pointer to the variable that will hold the newly created configuration space \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a092b9c7d2bc9ac00a6f53e251c8619b8}{CCS\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0adb4bc5cfc4f985bf59ae223f3e22b9f9}{CCS\+\_\+\+INVALID\+\_\+\+VALUE}} if {\ttfamily name} is NULL; or if {\ttfamily configuration\+\_\+space\+\_\+ret} is NULL 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a3b3381e910957ad1fbe1d633b12eff79}{CCS\+\_\+\+OUT\+\_\+\+OF\+\_\+\+MEMORY}} if there was a lack of memory to allocate the new configuration space 
+\end{DoxyReturn}

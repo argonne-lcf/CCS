@@ -1,0 +1,1023 @@
+\hypertarget{distribution_8h}{}\doxysection{include/cconfigspace/distribution.h File Reference}
+\label{distribution_8h}\index{include/cconfigspace/distribution.h@{include/cconfigspace/distribution.h}}
+
+
+A Distribution is the probability distribution of a random variable.  
+
+
+This graph shows which files directly or indirectly include this file\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=196pt]{distribution_8h__dep__incl}
+\end{center}
+\end{figure}
+\doxysubsection*{Typedefs}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{distribution_8h_a8ca331ecfee206be6ade03c26e714caa}\label{distribution_8h_a8ca331ecfee206be6ade03c26e714caa}} 
+typedef enum \mbox{\hyperlink{distribution_8h_ad4380ac9755e809b433ddb789845b0aa}{ccs\+\_\+distribution\+\_\+type\+\_\+e}} \mbox{\hyperlink{distribution_8h_a8ca331ecfee206be6ade03c26e714caa}{ccs\+\_\+distribution\+\_\+type\+\_\+t}}
+\begin{DoxyCompactList}\small\item\em A commodity type to represent CCS distribution type. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{distribution_8h_a9d958c454b336fa93ad593cd404148ce}\label{distribution_8h_a9d958c454b336fa93ad593cd404148ce}} 
+typedef enum \mbox{\hyperlink{distribution_8h_a2037df849c91a7e69b8a789d82fdce61}{ccs\+\_\+scale\+\_\+type\+\_\+e}} \mbox{\hyperlink{distribution_8h_a9d958c454b336fa93ad593cd404148ce}{ccs\+\_\+scale\+\_\+type\+\_\+t}}
+\begin{DoxyCompactList}\small\item\em A commodity type to represent CCS scale type. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Enumerations}
+\begin{DoxyCompactItemize}
+\item 
+enum \mbox{\hyperlink{distribution_8h_ad4380ac9755e809b433ddb789845b0aa}{ccs\+\_\+distribution\+\_\+type\+\_\+e}} \{ \newline
+\mbox{\hyperlink{distribution_8h_ad4380ac9755e809b433ddb789845b0aaa3dbfd0926b00efb7e441948c4602552d}{CCS\+\_\+\+UNIFORM}}
+, \mbox{\hyperlink{distribution_8h_ad4380ac9755e809b433ddb789845b0aaa85a3e9e31f7b78aa5f38b68058b2556f}{CCS\+\_\+\+NORMAL}}
+, \mbox{\hyperlink{distribution_8h_ad4380ac9755e809b433ddb789845b0aaacac408a336ee378d31f0a9f11a8bb40b}{CCS\+\_\+\+ROULETTE}}
+, \mbox{\hyperlink{distribution_8h_ad4380ac9755e809b433ddb789845b0aaa827ba1f552275a74fabe07226b1410e7}{CCS\+\_\+\+MIXTURE}}
+, \newline
+\mbox{\hyperlink{distribution_8h_ad4380ac9755e809b433ddb789845b0aaa1b48300857d45fe7f1d32f53edf8d2f4}{CCS\+\_\+\+MULTIVARIATE}}
+, \mbox{\hyperlink{distribution_8h_ad4380ac9755e809b433ddb789845b0aaa32a371480ee1fb6b8e33a32c9e49061d}{CCS\+\_\+\+DISTRIBUTION\+\_\+\+TYPE\+\_\+\+MAX}}
+, \mbox{\hyperlink{distribution_8h_ad4380ac9755e809b433ddb789845b0aaad8895af4e8a2b89d57bdcc965d6999c6}{CCS\+\_\+\+DISTRIBUTION\+\_\+\+TYPE\+\_\+\+FORCE\+\_\+32\+BIT}} = INT32\+\_\+\+MAX
+ \}
+\begin{DoxyCompactList}\small\item\em CCS distribution types. \end{DoxyCompactList}\item 
+enum \mbox{\hyperlink{distribution_8h_a2037df849c91a7e69b8a789d82fdce61}{ccs\+\_\+scale\+\_\+type\+\_\+e}} \{ \mbox{\hyperlink{distribution_8h_a2037df849c91a7e69b8a789d82fdce61a9c0dbfafc09b7025260a89c9aec7adb5}{CCS\+\_\+\+LINEAR}}
+, \mbox{\hyperlink{distribution_8h_a2037df849c91a7e69b8a789d82fdce61a974cd3064b3391067af99a7e7dd0ab85}{CCS\+\_\+\+LOGARITHMIC}}
+, \mbox{\hyperlink{distribution_8h_a2037df849c91a7e69b8a789d82fdce61a73379bac356856cb108e4e3068c1e2b5}{CCS\+\_\+\+SCALE\+\_\+\+TYPE\+\_\+\+MAX}}
+, \mbox{\hyperlink{distribution_8h_a2037df849c91a7e69b8a789d82fdce61ab901376068f79a39ad9135f9842576a9}{CCS\+\_\+\+SCALE\+\_\+\+TYPE\+\_\+\+FORCE\+\_\+32\+BIT}} = INT32\+\_\+\+MAX
+ \}
+\begin{DoxyCompactList}\small\item\em CCS scale types. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} \mbox{\hyperlink{distribution_8h_adbea69ae369167216aeb5c1cc7cb130e}{ccs\+\_\+create\+\_\+normal\+\_\+distribution}} (\mbox{\hyperlink{base_8h_abb2e002510c51102a01c222ebd36ce2c}{ccs\+\_\+numeric\+\_\+type\+\_\+t}} data\+\_\+type, \mbox{\hyperlink{base_8h_a8a8cddcd4f5ce78a2fbb0a44743e88c5}{ccs\+\_\+float\+\_\+t}} mu, \mbox{\hyperlink{base_8h_a8a8cddcd4f5ce78a2fbb0a44743e88c5}{ccs\+\_\+float\+\_\+t}} sigma, \mbox{\hyperlink{distribution_8h_a9d958c454b336fa93ad593cd404148ce}{ccs\+\_\+scale\+\_\+type\+\_\+t}} scale, \mbox{\hyperlink{base_8h_a981ec36df2f80935afde8b7a481f2d14}{ccs\+\_\+numeric\+\_\+t}} quantization, \mbox{\hyperlink{base_8h_ae36e9cd8818547939b8d03da347b3f56}{ccs\+\_\+distribution\+\_\+t}} $\ast$distribution\+\_\+ret)
+\begin{DoxyCompactList}\small\item\em Create a new normal distribution of the specified data type. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} \mbox{\hyperlink{distribution_8h_a96e8bf8d718e9f43ce4b8035d76fb865}{ccs\+\_\+create\+\_\+normal\+\_\+int\+\_\+distribution}} (\mbox{\hyperlink{base_8h_a8a8cddcd4f5ce78a2fbb0a44743e88c5}{ccs\+\_\+float\+\_\+t}} mu, \mbox{\hyperlink{base_8h_a8a8cddcd4f5ce78a2fbb0a44743e88c5}{ccs\+\_\+float\+\_\+t}} sigma, \mbox{\hyperlink{distribution_8h_a9d958c454b336fa93ad593cd404148ce}{ccs\+\_\+scale\+\_\+type\+\_\+t}} scale, \mbox{\hyperlink{base_8h_a04670829a660b2aab58c0377468f0de8}{ccs\+\_\+int\+\_\+t}} quantization, \mbox{\hyperlink{base_8h_ae36e9cd8818547939b8d03da347b3f56}{ccs\+\_\+distribution\+\_\+t}} $\ast$distribution\+\_\+ret)
+\begin{DoxyCompactList}\small\item\em Create a new normal distribution of integer values. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} \mbox{\hyperlink{distribution_8h_a09575c79f59e570a841be660ee88a84a}{ccs\+\_\+create\+\_\+normal\+\_\+float\+\_\+distribution}} (\mbox{\hyperlink{base_8h_a8a8cddcd4f5ce78a2fbb0a44743e88c5}{ccs\+\_\+float\+\_\+t}} mu, \mbox{\hyperlink{base_8h_a8a8cddcd4f5ce78a2fbb0a44743e88c5}{ccs\+\_\+float\+\_\+t}} sigma, \mbox{\hyperlink{distribution_8h_a9d958c454b336fa93ad593cd404148ce}{ccs\+\_\+scale\+\_\+type\+\_\+t}} scale, \mbox{\hyperlink{base_8h_a8a8cddcd4f5ce78a2fbb0a44743e88c5}{ccs\+\_\+float\+\_\+t}} quantization, \mbox{\hyperlink{base_8h_ae36e9cd8818547939b8d03da347b3f56}{ccs\+\_\+distribution\+\_\+t}} $\ast$distribution\+\_\+ret)
+\begin{DoxyCompactList}\small\item\em Create a new normal distribution of floating point values. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} \mbox{\hyperlink{distribution_8h_addbe61f7bbefb2541d3b78907840653f}{ccs\+\_\+create\+\_\+uniform\+\_\+distribution}} (\mbox{\hyperlink{base_8h_abb2e002510c51102a01c222ebd36ce2c}{ccs\+\_\+numeric\+\_\+type\+\_\+t}} data\+\_\+type, \mbox{\hyperlink{base_8h_a981ec36df2f80935afde8b7a481f2d14}{ccs\+\_\+numeric\+\_\+t}} lower, \mbox{\hyperlink{base_8h_a981ec36df2f80935afde8b7a481f2d14}{ccs\+\_\+numeric\+\_\+t}} upper, \mbox{\hyperlink{distribution_8h_a9d958c454b336fa93ad593cd404148ce}{ccs\+\_\+scale\+\_\+type\+\_\+t}} scale, \mbox{\hyperlink{base_8h_a981ec36df2f80935afde8b7a481f2d14}{ccs\+\_\+numeric\+\_\+t}} quantization, \mbox{\hyperlink{base_8h_ae36e9cd8818547939b8d03da347b3f56}{ccs\+\_\+distribution\+\_\+t}} $\ast$distribution\+\_\+ret)
+\begin{DoxyCompactList}\small\item\em Create a new uniform distribution of the specified data type. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} \mbox{\hyperlink{distribution_8h_acb9c2f0912281852e5ca59ec706f2e2d}{ccs\+\_\+create\+\_\+uniform\+\_\+int\+\_\+distribution}} (\mbox{\hyperlink{base_8h_a04670829a660b2aab58c0377468f0de8}{ccs\+\_\+int\+\_\+t}} lower, \mbox{\hyperlink{base_8h_a04670829a660b2aab58c0377468f0de8}{ccs\+\_\+int\+\_\+t}} upper, \mbox{\hyperlink{distribution_8h_a9d958c454b336fa93ad593cd404148ce}{ccs\+\_\+scale\+\_\+type\+\_\+t}} scale, \mbox{\hyperlink{base_8h_a04670829a660b2aab58c0377468f0de8}{ccs\+\_\+int\+\_\+t}} quantization, \mbox{\hyperlink{base_8h_ae36e9cd8818547939b8d03da347b3f56}{ccs\+\_\+distribution\+\_\+t}} $\ast$distribution\+\_\+ret)
+\begin{DoxyCompactList}\small\item\em Create a new uniform distribution of integer values. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} \mbox{\hyperlink{distribution_8h_ac13ec03461e2b00bb7a0de35614141a7}{ccs\+\_\+create\+\_\+uniform\+\_\+float\+\_\+distribution}} (\mbox{\hyperlink{base_8h_a8a8cddcd4f5ce78a2fbb0a44743e88c5}{ccs\+\_\+float\+\_\+t}} lower, \mbox{\hyperlink{base_8h_a8a8cddcd4f5ce78a2fbb0a44743e88c5}{ccs\+\_\+float\+\_\+t}} upper, \mbox{\hyperlink{distribution_8h_a9d958c454b336fa93ad593cd404148ce}{ccs\+\_\+scale\+\_\+type\+\_\+t}} scale, \mbox{\hyperlink{base_8h_a8a8cddcd4f5ce78a2fbb0a44743e88c5}{ccs\+\_\+float\+\_\+t}} quantization, \mbox{\hyperlink{base_8h_ae36e9cd8818547939b8d03da347b3f56}{ccs\+\_\+distribution\+\_\+t}} $\ast$distribution\+\_\+ret)
+\begin{DoxyCompactList}\small\item\em Create a new uniform distribution of floating point values. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} \mbox{\hyperlink{distribution_8h_a9b81b9eef97f52746d1281a3b3ae9f38}{ccs\+\_\+create\+\_\+roulette\+\_\+distribution}} (size\+\_\+t num\+\_\+areas, \mbox{\hyperlink{base_8h_a8a8cddcd4f5ce78a2fbb0a44743e88c5}{ccs\+\_\+float\+\_\+t}} $\ast$areas, \mbox{\hyperlink{base_8h_ae36e9cd8818547939b8d03da347b3f56}{ccs\+\_\+distribution\+\_\+t}} $\ast$distribution\+\_\+ret)
+\begin{DoxyCompactList}\small\item\em Create a new area proportional distribution of integer values. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} \mbox{\hyperlink{distribution_8h_af65ed66da3846510235aeffff79c1841}{ccs\+\_\+create\+\_\+mixture\+\_\+distribution}} (size\+\_\+t num\+\_\+distributions, \mbox{\hyperlink{base_8h_ae36e9cd8818547939b8d03da347b3f56}{ccs\+\_\+distribution\+\_\+t}} $\ast$distributions, \mbox{\hyperlink{base_8h_a8a8cddcd4f5ce78a2fbb0a44743e88c5}{ccs\+\_\+float\+\_\+t}} $\ast$weights, \mbox{\hyperlink{base_8h_ae36e9cd8818547939b8d03da347b3f56}{ccs\+\_\+distribution\+\_\+t}} $\ast$distribution\+\_\+ret)
+\begin{DoxyCompactList}\small\item\em Create a new mixture distribution. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} \mbox{\hyperlink{distribution_8h_a3d3d1bf50ea973fa36dedc92a5cc6eb1}{ccs\+\_\+create\+\_\+multivariate\+\_\+distribution}} (size\+\_\+t num\+\_\+distributions, \mbox{\hyperlink{base_8h_ae36e9cd8818547939b8d03da347b3f56}{ccs\+\_\+distribution\+\_\+t}} $\ast$distributions, \mbox{\hyperlink{base_8h_ae36e9cd8818547939b8d03da347b3f56}{ccs\+\_\+distribution\+\_\+t}} $\ast$distribution\+\_\+ret)
+\begin{DoxyCompactList}\small\item\em Create a new multivariate distribution. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} \mbox{\hyperlink{distribution_8h_a72b9da1d1e2b1e673d1c59a1aa39ccf7}{ccs\+\_\+distribution\+\_\+get\+\_\+type}} (\mbox{\hyperlink{base_8h_ae36e9cd8818547939b8d03da347b3f56}{ccs\+\_\+distribution\+\_\+t}} distribution, \mbox{\hyperlink{distribution_8h_a8ca331ecfee206be6ade03c26e714caa}{ccs\+\_\+distribution\+\_\+type\+\_\+t}} $\ast$type\+\_\+ret)
+\begin{DoxyCompactList}\small\item\em Get the type of a distribution. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} \mbox{\hyperlink{distribution_8h_a991f6ecae5af9bc7d1f72629f1ad671e}{ccs\+\_\+distribution\+\_\+get\+\_\+dimension}} (\mbox{\hyperlink{base_8h_ae36e9cd8818547939b8d03da347b3f56}{ccs\+\_\+distribution\+\_\+t}} distribution, size\+\_\+t $\ast$dimension\+\_\+ret)
+\begin{DoxyCompactList}\small\item\em Get the dimensionality of a distribution. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} \mbox{\hyperlink{distribution_8h_a0c058cbb24c659f434cf7d2868512283}{ccs\+\_\+distribution\+\_\+get\+\_\+data\+\_\+types}} (\mbox{\hyperlink{base_8h_ae36e9cd8818547939b8d03da347b3f56}{ccs\+\_\+distribution\+\_\+t}} distribution, \mbox{\hyperlink{base_8h_abb2e002510c51102a01c222ebd36ce2c}{ccs\+\_\+numeric\+\_\+type\+\_\+t}} $\ast$data\+\_\+types\+\_\+ret)
+\begin{DoxyCompactList}\small\item\em Get the data types of a distribution. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} \mbox{\hyperlink{distribution_8h_ae058cbc24bd370900fbe10e2db69af64}{ccs\+\_\+distribution\+\_\+get\+\_\+bounds}} (\mbox{\hyperlink{base_8h_ae36e9cd8818547939b8d03da347b3f56}{ccs\+\_\+distribution\+\_\+t}} distribution, \mbox{\hyperlink{interval_8h_a9659e1ee54b3809075e58db013e96558}{ccs\+\_\+interval\+\_\+t}} $\ast$interval\+\_\+ret)
+\begin{DoxyCompactList}\small\item\em Get the bounds of a distribution. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} \mbox{\hyperlink{distribution_8h_a9cb54fff21ea65bc4fc4f9d8c0b28161}{ccs\+\_\+distribution\+\_\+check\+\_\+oversampling}} (\mbox{\hyperlink{base_8h_ae36e9cd8818547939b8d03da347b3f56}{ccs\+\_\+distribution\+\_\+t}} distribution, \mbox{\hyperlink{interval_8h_a9659e1ee54b3809075e58db013e96558}{ccs\+\_\+interval\+\_\+t}} $\ast$intervals, \mbox{\hyperlink{base_8h_a0e8ba2dfd397017939e6ea2ebc4bb037}{ccs\+\_\+bool\+\_\+t}} $\ast$oversamplings\+\_\+ret)
+\begin{DoxyCompactList}\small\item\em Check if a distribution could return values outside of the given intervals. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} \mbox{\hyperlink{distribution_8h_a9e23824b9585441b4e3b324ad8e7987e}{ccs\+\_\+normal\+\_\+distribution\+\_\+get\+\_\+parameters}} (\mbox{\hyperlink{base_8h_ae36e9cd8818547939b8d03da347b3f56}{ccs\+\_\+distribution\+\_\+t}} distribution, \mbox{\hyperlink{base_8h_a8a8cddcd4f5ce78a2fbb0a44743e88c5}{ccs\+\_\+float\+\_\+t}} $\ast$mu\+\_\+ret, \mbox{\hyperlink{base_8h_a8a8cddcd4f5ce78a2fbb0a44743e88c5}{ccs\+\_\+float\+\_\+t}} $\ast$sigma\+\_\+ret, \mbox{\hyperlink{distribution_8h_a9d958c454b336fa93ad593cd404148ce}{ccs\+\_\+scale\+\_\+type\+\_\+t}} $\ast$scale\+\_\+ret, \mbox{\hyperlink{base_8h_a981ec36df2f80935afde8b7a481f2d14}{ccs\+\_\+numeric\+\_\+t}} $\ast$quantization\+\_\+ret)
+\begin{DoxyCompactList}\small\item\em Get the parameters of a normal distribution. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} \mbox{\hyperlink{distribution_8h_a5fad054155168295395e248c1f561cdb}{ccs\+\_\+uniform\+\_\+distribution\+\_\+get\+\_\+parameters}} (\mbox{\hyperlink{base_8h_ae36e9cd8818547939b8d03da347b3f56}{ccs\+\_\+distribution\+\_\+t}} distribution, \mbox{\hyperlink{base_8h_a981ec36df2f80935afde8b7a481f2d14}{ccs\+\_\+numeric\+\_\+t}} $\ast$lower\+\_\+ret, \mbox{\hyperlink{base_8h_a981ec36df2f80935afde8b7a481f2d14}{ccs\+\_\+numeric\+\_\+t}} $\ast$upper\+\_\+ret, \mbox{\hyperlink{distribution_8h_a9d958c454b336fa93ad593cd404148ce}{ccs\+\_\+scale\+\_\+type\+\_\+t}} $\ast$scale\+\_\+ret, \mbox{\hyperlink{base_8h_a981ec36df2f80935afde8b7a481f2d14}{ccs\+\_\+numeric\+\_\+t}} $\ast$quantization\+\_\+ret)
+\begin{DoxyCompactList}\small\item\em Get the parameters of a uniform distribution. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} \mbox{\hyperlink{distribution_8h_a16569c3e48986c553faacfec981ad575}{ccs\+\_\+roulette\+\_\+distribution\+\_\+get\+\_\+num\+\_\+areas}} (\mbox{\hyperlink{base_8h_ae36e9cd8818547939b8d03da347b3f56}{ccs\+\_\+distribution\+\_\+t}} distribution, size\+\_\+t $\ast$num\+\_\+areas\+\_\+ret)
+\begin{DoxyCompactList}\small\item\em Get the number areas of a roulette distribution. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} \mbox{\hyperlink{distribution_8h_a33c63deba5ab24630f5e6d22cd69d89a}{ccs\+\_\+roulette\+\_\+distribution\+\_\+get\+\_\+areas}} (\mbox{\hyperlink{base_8h_ae36e9cd8818547939b8d03da347b3f56}{ccs\+\_\+distribution\+\_\+t}} distribution, size\+\_\+t num\+\_\+areas, \mbox{\hyperlink{base_8h_a8a8cddcd4f5ce78a2fbb0a44743e88c5}{ccs\+\_\+float\+\_\+t}} $\ast$areas, size\+\_\+t $\ast$num\+\_\+areas\+\_\+ret)
+\begin{DoxyCompactList}\small\item\em Get the normalized areas of a roulette distribution. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} \mbox{\hyperlink{distribution_8h_ab779c37d95708dccfffa3a723532bfd8}{ccs\+\_\+mixture\+\_\+distribution\+\_\+get\+\_\+num\+\_\+distributions}} (\mbox{\hyperlink{base_8h_ae36e9cd8818547939b8d03da347b3f56}{ccs\+\_\+distribution\+\_\+t}} distribution, size\+\_\+t $\ast$num\+\_\+distributions\+\_\+ret)
+\begin{DoxyCompactList}\small\item\em Get the number of distributions contained in a mixture distribution. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} \mbox{\hyperlink{distribution_8h_a96875cade4a201f1dffff9eb56d7c3f5}{ccs\+\_\+mixture\+\_\+distribution\+\_\+get\+\_\+distributions}} (\mbox{\hyperlink{base_8h_ae36e9cd8818547939b8d03da347b3f56}{ccs\+\_\+distribution\+\_\+t}} distribution, size\+\_\+t num\+\_\+distributions, \mbox{\hyperlink{base_8h_ae36e9cd8818547939b8d03da347b3f56}{ccs\+\_\+distribution\+\_\+t}} $\ast$distributions, size\+\_\+t $\ast$num\+\_\+distributions\+\_\+ret)
+\begin{DoxyCompactList}\small\item\em Get the distributions contained in a mixture distribution. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} \mbox{\hyperlink{distribution_8h_a0a0a5a88ed673bd0b36ce70c1d38bb4a}{ccs\+\_\+mixture\+\_\+distribution\+\_\+get\+\_\+weights}} (\mbox{\hyperlink{base_8h_ae36e9cd8818547939b8d03da347b3f56}{ccs\+\_\+distribution\+\_\+t}} distribution, size\+\_\+t num\+\_\+weights, \mbox{\hyperlink{base_8h_a8a8cddcd4f5ce78a2fbb0a44743e88c5}{ccs\+\_\+float\+\_\+t}} $\ast$weights, size\+\_\+t $\ast$num\+\_\+weights\+\_\+ret)
+\begin{DoxyCompactList}\small\item\em Get the normalized weights of a mixture distribution. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} \mbox{\hyperlink{distribution_8h_a4414987676a111b90acd7d39161d1912}{ccs\+\_\+multivariate\+\_\+distribution\+\_\+get\+\_\+num\+\_\+distributions}} (\mbox{\hyperlink{base_8h_ae36e9cd8818547939b8d03da347b3f56}{ccs\+\_\+distribution\+\_\+t}} distribution, size\+\_\+t $\ast$num\+\_\+distributions\+\_\+ret)
+\begin{DoxyCompactList}\small\item\em Get the number of distributions contained in a multivariate distribution. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} \mbox{\hyperlink{distribution_8h_ae17715ed4ac81d2eb7a913123789f6b4}{ccs\+\_\+multivariate\+\_\+distribution\+\_\+get\+\_\+distributions}} (\mbox{\hyperlink{base_8h_ae36e9cd8818547939b8d03da347b3f56}{ccs\+\_\+distribution\+\_\+t}} distribution, size\+\_\+t num\+\_\+distributions, \mbox{\hyperlink{base_8h_ae36e9cd8818547939b8d03da347b3f56}{ccs\+\_\+distribution\+\_\+t}} $\ast$distributions, size\+\_\+t $\ast$num\+\_\+distributions\+\_\+ret)
+\begin{DoxyCompactList}\small\item\em Get the distributions contained in a multivariate distribution. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} \mbox{\hyperlink{distribution_8h_a805862b7eefe177c5d12d69cc193f8e9}{ccs\+\_\+distribution\+\_\+sample}} (\mbox{\hyperlink{base_8h_ae36e9cd8818547939b8d03da347b3f56}{ccs\+\_\+distribution\+\_\+t}} distribution, \mbox{\hyperlink{base_8h_ae22dde737fcdf67d5a9fa497bc054027}{ccs\+\_\+rng\+\_\+t}} rng, \mbox{\hyperlink{base_8h_a981ec36df2f80935afde8b7a481f2d14}{ccs\+\_\+numeric\+\_\+t}} $\ast$values)
+\begin{DoxyCompactList}\small\item\em Get a random sample from a distribution. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} \mbox{\hyperlink{distribution_8h_a67aba8fd95baf01cd3bee06ce6c607d6}{ccs\+\_\+distribution\+\_\+samples}} (\mbox{\hyperlink{base_8h_ae36e9cd8818547939b8d03da347b3f56}{ccs\+\_\+distribution\+\_\+t}} distribution, \mbox{\hyperlink{base_8h_ae22dde737fcdf67d5a9fa497bc054027}{ccs\+\_\+rng\+\_\+t}} rng, size\+\_\+t num\+\_\+samples, \mbox{\hyperlink{base_8h_a981ec36df2f80935afde8b7a481f2d14}{ccs\+\_\+numeric\+\_\+t}} $\ast$values)
+\begin{DoxyCompactList}\small\item\em Get a collection of random samples from a distribution. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} \mbox{\hyperlink{distribution_8h_a7322990e6283893d3b92190cf8fab347}{ccs\+\_\+distribution\+\_\+strided\+\_\+samples}} (\mbox{\hyperlink{base_8h_ae36e9cd8818547939b8d03da347b3f56}{ccs\+\_\+distribution\+\_\+t}} distribution, \mbox{\hyperlink{base_8h_ae22dde737fcdf67d5a9fa497bc054027}{ccs\+\_\+rng\+\_\+t}} rng, size\+\_\+t num\+\_\+samples, size\+\_\+t stride, \mbox{\hyperlink{base_8h_a981ec36df2f80935afde8b7a481f2d14}{ccs\+\_\+numeric\+\_\+t}} $\ast$values)
+\begin{DoxyCompactList}\small\item\em Get a collection of random samples from a distribution. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} \mbox{\hyperlink{distribution_8h_aa9aace76919ad341dda8f138df823494}{ccs\+\_\+distribution\+\_\+soa\+\_\+samples}} (\mbox{\hyperlink{base_8h_ae36e9cd8818547939b8d03da347b3f56}{ccs\+\_\+distribution\+\_\+t}} distribution, \mbox{\hyperlink{base_8h_ae22dde737fcdf67d5a9fa497bc054027}{ccs\+\_\+rng\+\_\+t}} rng, size\+\_\+t num\+\_\+samples, \mbox{\hyperlink{base_8h_a981ec36df2f80935afde8b7a481f2d14}{ccs\+\_\+numeric\+\_\+t}} $\ast$$\ast$values)
+\begin{DoxyCompactList}\small\item\em Get a collection of random samples from a distribution. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} \mbox{\hyperlink{distribution_8h_abb409bec0ec325e3c5a3c130ee64cd6b}{ccs\+\_\+distribution\+\_\+hyperparameters\+\_\+samples}} (\mbox{\hyperlink{base_8h_ae36e9cd8818547939b8d03da347b3f56}{ccs\+\_\+distribution\+\_\+t}} distribution, \mbox{\hyperlink{base_8h_ae22dde737fcdf67d5a9fa497bc054027}{ccs\+\_\+rng\+\_\+t}} rng, \mbox{\hyperlink{base_8h_a0b796ce449059870d5bbb77f20925b50}{ccs\+\_\+hyperparameter\+\_\+t}} $\ast$hyperparameters, size\+\_\+t num\+\_\+samples, \mbox{\hyperlink{base_8h_a36bc36b2bb0d0613453dd731cdcd2048}{ccs\+\_\+datum\+\_\+t}} $\ast$values)
+\begin{DoxyCompactList}\small\item\em Get a collection of random hyperparameters\textquotesingle{} samples by sampling a distribution. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} \mbox{\hyperlink{distribution_8h_a1ccf1f3cbe18d277fd1e00e103fefcaf}{ccs\+\_\+distribution\+\_\+hyperparameters\+\_\+sample}} (\mbox{\hyperlink{base_8h_ae36e9cd8818547939b8d03da347b3f56}{ccs\+\_\+distribution\+\_\+t}} distribution, \mbox{\hyperlink{base_8h_ae22dde737fcdf67d5a9fa497bc054027}{ccs\+\_\+rng\+\_\+t}} rng, \mbox{\hyperlink{base_8h_a0b796ce449059870d5bbb77f20925b50}{ccs\+\_\+hyperparameter\+\_\+t}} $\ast$hyperparameters, \mbox{\hyperlink{base_8h_a36bc36b2bb0d0613453dd731cdcd2048}{ccs\+\_\+datum\+\_\+t}} $\ast$values)
+\begin{DoxyCompactList}\small\item\em Get a random hyperparameters\textquotesingle{} sample by sampling a distribution. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+A Distribution is the probability distribution of a random variable. 
+
+CCS supports discrete and contiguous random variables. CCS also supports composing distributions to create mixture distributions or multivariate distributions. 
+
+\doxysubsection{Enumeration Type Documentation}
+\mbox{\Hypertarget{distribution_8h_ad4380ac9755e809b433ddb789845b0aa}\label{distribution_8h_ad4380ac9755e809b433ddb789845b0aa}} 
+\index{distribution.h@{distribution.h}!ccs\_distribution\_type\_e@{ccs\_distribution\_type\_e}}
+\index{ccs\_distribution\_type\_e@{ccs\_distribution\_type\_e}!distribution.h@{distribution.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_distribution\_type\_e}{ccs\_distribution\_type\_e}}
+{\footnotesize\ttfamily enum \mbox{\hyperlink{distribution_8h_ad4380ac9755e809b433ddb789845b0aa}{ccs\+\_\+distribution\+\_\+type\+\_\+e}}}
+
+
+
+CCS distribution types. 
+
+\begin{DoxyEnumFields}{Enumerator}
+\raisebox{\heightof{T}}[0pt][0pt]{\index{CCS\_UNIFORM@{CCS\_UNIFORM}!distribution.h@{distribution.h}}\index{distribution.h@{distribution.h}!CCS\_UNIFORM@{CCS\_UNIFORM}}}\mbox{\Hypertarget{distribution_8h_ad4380ac9755e809b433ddb789845b0aaa3dbfd0926b00efb7e441948c4602552d}\label{distribution_8h_ad4380ac9755e809b433ddb789845b0aaa3dbfd0926b00efb7e441948c4602552d}} 
+CCS\+\_\+\+UNIFORM&A uniform distribution over floating point or integer values. \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{CCS\_NORMAL@{CCS\_NORMAL}!distribution.h@{distribution.h}}\index{distribution.h@{distribution.h}!CCS\_NORMAL@{CCS\_NORMAL}}}\mbox{\Hypertarget{distribution_8h_ad4380ac9755e809b433ddb789845b0aaa85a3e9e31f7b78aa5f38b68058b2556f}\label{distribution_8h_ad4380ac9755e809b433ddb789845b0aaa85a3e9e31f7b78aa5f38b68058b2556f}} 
+CCS\+\_\+\+NORMAL&A normal distribution over floating point or integer values. \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{CCS\_ROULETTE@{CCS\_ROULETTE}!distribution.h@{distribution.h}}\index{distribution.h@{distribution.h}!CCS\_ROULETTE@{CCS\_ROULETTE}}}\mbox{\Hypertarget{distribution_8h_ad4380ac9755e809b433ddb789845b0aaacac408a336ee378d31f0a9f11a8bb40b}\label{distribution_8h_ad4380ac9755e809b433ddb789845b0aaacac408a336ee378d31f0a9f11a8bb40b}} 
+CCS\+\_\+\+ROULETTE&A roulette wheel selection distribution. \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{CCS\_MIXTURE@{CCS\_MIXTURE}!distribution.h@{distribution.h}}\index{distribution.h@{distribution.h}!CCS\_MIXTURE@{CCS\_MIXTURE}}}\mbox{\Hypertarget{distribution_8h_ad4380ac9755e809b433ddb789845b0aaa827ba1f552275a74fabe07226b1410e7}\label{distribution_8h_ad4380ac9755e809b433ddb789845b0aaa827ba1f552275a74fabe07226b1410e7}} 
+CCS\+\_\+\+MIXTURE&A mixture distribution. \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{CCS\_MULTIVARIATE@{CCS\_MULTIVARIATE}!distribution.h@{distribution.h}}\index{distribution.h@{distribution.h}!CCS\_MULTIVARIATE@{CCS\_MULTIVARIATE}}}\mbox{\Hypertarget{distribution_8h_ad4380ac9755e809b433ddb789845b0aaa1b48300857d45fe7f1d32f53edf8d2f4}\label{distribution_8h_ad4380ac9755e809b433ddb789845b0aaa1b48300857d45fe7f1d32f53edf8d2f4}} 
+CCS\+\_\+\+MULTIVARIATE&A multivariate distribution. \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{CCS\_DISTRIBUTION\_TYPE\_MAX@{CCS\_DISTRIBUTION\_TYPE\_MAX}!distribution.h@{distribution.h}}\index{distribution.h@{distribution.h}!CCS\_DISTRIBUTION\_TYPE\_MAX@{CCS\_DISTRIBUTION\_TYPE\_MAX}}}\mbox{\Hypertarget{distribution_8h_ad4380ac9755e809b433ddb789845b0aaa32a371480ee1fb6b8e33a32c9e49061d}\label{distribution_8h_ad4380ac9755e809b433ddb789845b0aaa32a371480ee1fb6b8e33a32c9e49061d}} 
+CCS\+\_\+\+DISTRIBUTION\+\_\+\+TYPE\+\_\+\+MAX&Guard. \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{CCS\_DISTRIBUTION\_TYPE\_FORCE\_32BIT@{CCS\_DISTRIBUTION\_TYPE\_FORCE\_32BIT}!distribution.h@{distribution.h}}\index{distribution.h@{distribution.h}!CCS\_DISTRIBUTION\_TYPE\_FORCE\_32BIT@{CCS\_DISTRIBUTION\_TYPE\_FORCE\_32BIT}}}\mbox{\Hypertarget{distribution_8h_ad4380ac9755e809b433ddb789845b0aaad8895af4e8a2b89d57bdcc965d6999c6}\label{distribution_8h_ad4380ac9755e809b433ddb789845b0aaad8895af4e8a2b89d57bdcc965d6999c6}} 
+CCS\+\_\+\+DISTRIBUTION\+\_\+\+TYPE\+\_\+\+FORCE\+\_\+32\+BIT&Try forcing 32 bits value for bindings. \\
+\hline
+
+\end{DoxyEnumFields}
+\mbox{\Hypertarget{distribution_8h_a2037df849c91a7e69b8a789d82fdce61}\label{distribution_8h_a2037df849c91a7e69b8a789d82fdce61}} 
+\index{distribution.h@{distribution.h}!ccs\_scale\_type\_e@{ccs\_scale\_type\_e}}
+\index{ccs\_scale\_type\_e@{ccs\_scale\_type\_e}!distribution.h@{distribution.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_scale\_type\_e}{ccs\_scale\_type\_e}}
+{\footnotesize\ttfamily enum \mbox{\hyperlink{distribution_8h_a2037df849c91a7e69b8a789d82fdce61}{ccs\+\_\+scale\+\_\+type\+\_\+e}}}
+
+
+
+CCS scale types. 
+
+\begin{DoxyEnumFields}{Enumerator}
+\raisebox{\heightof{T}}[0pt][0pt]{\index{CCS\_LINEAR@{CCS\_LINEAR}!distribution.h@{distribution.h}}\index{distribution.h@{distribution.h}!CCS\_LINEAR@{CCS\_LINEAR}}}\mbox{\Hypertarget{distribution_8h_a2037df849c91a7e69b8a789d82fdce61a9c0dbfafc09b7025260a89c9aec7adb5}\label{distribution_8h_a2037df849c91a7e69b8a789d82fdce61a9c0dbfafc09b7025260a89c9aec7adb5}} 
+CCS\+\_\+\+LINEAR&A linear scale. \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{CCS\_LOGARITHMIC@{CCS\_LOGARITHMIC}!distribution.h@{distribution.h}}\index{distribution.h@{distribution.h}!CCS\_LOGARITHMIC@{CCS\_LOGARITHMIC}}}\mbox{\Hypertarget{distribution_8h_a2037df849c91a7e69b8a789d82fdce61a974cd3064b3391067af99a7e7dd0ab85}\label{distribution_8h_a2037df849c91a7e69b8a789d82fdce61a974cd3064b3391067af99a7e7dd0ab85}} 
+CCS\+\_\+\+LOGARITHMIC&A logarithmic scale. \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{CCS\_SCALE\_TYPE\_MAX@{CCS\_SCALE\_TYPE\_MAX}!distribution.h@{distribution.h}}\index{distribution.h@{distribution.h}!CCS\_SCALE\_TYPE\_MAX@{CCS\_SCALE\_TYPE\_MAX}}}\mbox{\Hypertarget{distribution_8h_a2037df849c91a7e69b8a789d82fdce61a73379bac356856cb108e4e3068c1e2b5}\label{distribution_8h_a2037df849c91a7e69b8a789d82fdce61a73379bac356856cb108e4e3068c1e2b5}} 
+CCS\+\_\+\+SCALE\+\_\+\+TYPE\+\_\+\+MAX&Guard. \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{CCS\_SCALE\_TYPE\_FORCE\_32BIT@{CCS\_SCALE\_TYPE\_FORCE\_32BIT}!distribution.h@{distribution.h}}\index{distribution.h@{distribution.h}!CCS\_SCALE\_TYPE\_FORCE\_32BIT@{CCS\_SCALE\_TYPE\_FORCE\_32BIT}}}\mbox{\Hypertarget{distribution_8h_a2037df849c91a7e69b8a789d82fdce61ab901376068f79a39ad9135f9842576a9}\label{distribution_8h_a2037df849c91a7e69b8a789d82fdce61ab901376068f79a39ad9135f9842576a9}} 
+CCS\+\_\+\+SCALE\+\_\+\+TYPE\+\_\+\+FORCE\+\_\+32\+BIT&Try forcing 32 bits value for bindings. \\
+\hline
+
+\end{DoxyEnumFields}
+
+
+\doxysubsection{Function Documentation}
+\mbox{\Hypertarget{distribution_8h_af65ed66da3846510235aeffff79c1841}\label{distribution_8h_af65ed66da3846510235aeffff79c1841}} 
+\index{distribution.h@{distribution.h}!ccs\_create\_mixture\_distribution@{ccs\_create\_mixture\_distribution}}
+\index{ccs\_create\_mixture\_distribution@{ccs\_create\_mixture\_distribution}!distribution.h@{distribution.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_create\_mixture\_distribution()}{ccs\_create\_mixture\_distribution()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} ccs\+\_\+create\+\_\+mixture\+\_\+distribution (\begin{DoxyParamCaption}\item[{size\+\_\+t}]{num\+\_\+distributions,  }\item[{\mbox{\hyperlink{base_8h_ae36e9cd8818547939b8d03da347b3f56}{ccs\+\_\+distribution\+\_\+t}} $\ast$}]{distributions,  }\item[{\mbox{\hyperlink{base_8h_a8a8cddcd4f5ce78a2fbb0a44743e88c5}{ccs\+\_\+float\+\_\+t}} $\ast$}]{weights,  }\item[{\mbox{\hyperlink{base_8h_ae36e9cd8818547939b8d03da347b3f56}{ccs\+\_\+distribution\+\_\+t}} $\ast$}]{distribution\+\_\+ret }\end{DoxyParamCaption})}
+
+
+
+Create a new mixture distribution. 
+
+Mixture distributions have the same dimensionality as the distributions they are mixing. 
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em num\+\_\+distributions} & the number of distribution to mix together \\
+\hline
+\mbox{\texttt{ in}}  & {\em distributions} & an array of {\ttfamily num\+\_\+distributions} distributions to mix together \\
+\hline
+\mbox{\texttt{ in}}  & {\em weights} & an array of {\ttfamily num\+\_\+distributions} positive floating point values representing the probability of sampling from one of the given distributions \\
+\hline
+\mbox{\texttt{ out}}  & {\em distribution\+\_\+ret} & a pointer to the variable that will contain the newly created distribution \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a092b9c7d2bc9ac00a6f53e251c8619b8}{CCS\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0adb4bc5cfc4f985bf59ae223f3e22b9f9}{CCS\+\_\+\+INVALID\+\_\+\+VALUE}} if {\ttfamily distribution\+\_\+ret} is NULL; or if num\+\_\+distributions is 0; or if distributions is NULL; or if {\ttfamily weights} is NULL; or if the sum of the weight is 0; or if the weights could not be normalized 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a2199c049fddf061a424dab07e2e1422b}{CCS\+\_\+\+INVALID\+\_\+\+DISTRIBUTION}} if the distributions have different dimensions; or if distributions do not all have the same data types 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a4707835c3fcb2303089c76bbcbf96df5}{CCS\+\_\+\+INVALID\+\_\+\+OBJECT}} if at least one of the distributions is not a valid CCS distributions 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a3b3381e910957ad1fbe1d633b12eff79}{CCS\+\_\+\+OUT\+\_\+\+OF\+\_\+\+MEMORY}} if there was not enough memory to allocate the new distribution 
+\end{DoxyReturn}
+\mbox{\Hypertarget{distribution_8h_a3d3d1bf50ea973fa36dedc92a5cc6eb1}\label{distribution_8h_a3d3d1bf50ea973fa36dedc92a5cc6eb1}} 
+\index{distribution.h@{distribution.h}!ccs\_create\_multivariate\_distribution@{ccs\_create\_multivariate\_distribution}}
+\index{ccs\_create\_multivariate\_distribution@{ccs\_create\_multivariate\_distribution}!distribution.h@{distribution.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_create\_multivariate\_distribution()}{ccs\_create\_multivariate\_distribution()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} ccs\+\_\+create\+\_\+multivariate\+\_\+distribution (\begin{DoxyParamCaption}\item[{size\+\_\+t}]{num\+\_\+distributions,  }\item[{\mbox{\hyperlink{base_8h_ae36e9cd8818547939b8d03da347b3f56}{ccs\+\_\+distribution\+\_\+t}} $\ast$}]{distributions,  }\item[{\mbox{\hyperlink{base_8h_ae36e9cd8818547939b8d03da347b3f56}{ccs\+\_\+distribution\+\_\+t}} $\ast$}]{distribution\+\_\+ret }\end{DoxyParamCaption})}
+
+
+
+Create a new multivariate distribution. 
+
+Multivariate distributions have a dimensionality equal to the sum of the dimensionality of their component distributions. 
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em num\+\_\+distributions} & the number of distributions to compose \\
+\hline
+\mbox{\texttt{ in}}  & {\em distributions} & an array of {\ttfamily num\+\_\+distributions} distributions to compose \\
+\hline
+\mbox{\texttt{ out}}  & {\em distribution\+\_\+ret} & a pointer to the variable that will contain the newly created distribution \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a092b9c7d2bc9ac00a6f53e251c8619b8}{CCS\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0adb4bc5cfc4f985bf59ae223f3e22b9f9}{CCS\+\_\+\+INVALID\+\_\+\+VALUE}} if {\ttfamily distribution\+\_\+ret} is NULL; or if num\+\_\+distributions is 0; or if distributions is NULL 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a4707835c3fcb2303089c76bbcbf96df5}{CCS\+\_\+\+INVALID\+\_\+\+OBJECT}} if at least one of the distributions is not a valid CCS distributions 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a3b3381e910957ad1fbe1d633b12eff79}{CCS\+\_\+\+OUT\+\_\+\+OF\+\_\+\+MEMORY}} if there was not enough memory to allocate the new distribution 
+\end{DoxyReturn}
+\mbox{\Hypertarget{distribution_8h_adbea69ae369167216aeb5c1cc7cb130e}\label{distribution_8h_adbea69ae369167216aeb5c1cc7cb130e}} 
+\index{distribution.h@{distribution.h}!ccs\_create\_normal\_distribution@{ccs\_create\_normal\_distribution}}
+\index{ccs\_create\_normal\_distribution@{ccs\_create\_normal\_distribution}!distribution.h@{distribution.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_create\_normal\_distribution()}{ccs\_create\_normal\_distribution()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} ccs\+\_\+create\+\_\+normal\+\_\+distribution (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_abb2e002510c51102a01c222ebd36ce2c}{ccs\+\_\+numeric\+\_\+type\+\_\+t}}}]{data\+\_\+type,  }\item[{\mbox{\hyperlink{base_8h_a8a8cddcd4f5ce78a2fbb0a44743e88c5}{ccs\+\_\+float\+\_\+t}}}]{mu,  }\item[{\mbox{\hyperlink{base_8h_a8a8cddcd4f5ce78a2fbb0a44743e88c5}{ccs\+\_\+float\+\_\+t}}}]{sigma,  }\item[{\mbox{\hyperlink{distribution_8h_a9d958c454b336fa93ad593cd404148ce}{ccs\+\_\+scale\+\_\+type\+\_\+t}}}]{scale,  }\item[{\mbox{\hyperlink{base_8h_a981ec36df2f80935afde8b7a481f2d14}{ccs\+\_\+numeric\+\_\+t}}}]{quantization,  }\item[{\mbox{\hyperlink{base_8h_ae36e9cd8818547939b8d03da347b3f56}{ccs\+\_\+distribution\+\_\+t}} $\ast$}]{distribution\+\_\+ret }\end{DoxyParamCaption})}
+
+
+
+Create a new normal distribution of the specified data type. 
+
+Normal distributions are unidimensional. 
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em data\+\_\+type} & can be either \mbox{\hyperlink{base_8h_aff930046a5f66cb75b311330b6461b9aac2f87bcb8e2cb21d8b6f0b7ab1cd1705}{CCS\+\_\+\+NUM\+\_\+\+INTEGER}} or \mbox{\hyperlink{base_8h_aff930046a5f66cb75b311330b6461b9aa5077c0a0bd923e732a382045cccaed81}{CCS\+\_\+\+NUM\+\_\+\+FLOAT}} \\
+\hline
+\mbox{\texttt{ in}}  & {\em mu} & mean of the distribution \\
+\hline
+\mbox{\texttt{ in}}  & {\em sigma} & standard deviation of the distribution \\
+\hline
+\mbox{\texttt{ in}}  & {\em scale} & an be either \mbox{\hyperlink{distribution_8h_a2037df849c91a7e69b8a789d82fdce61a9c0dbfafc09b7025260a89c9aec7adb5}{CCS\+\_\+\+LINEAR}} or \mbox{\hyperlink{distribution_8h_a2037df849c91a7e69b8a789d82fdce61a974cd3064b3391067af99a7e7dd0ab85}{CCS\+\_\+\+LOGARITHMIC}} \\
+\hline
+\mbox{\texttt{ in}}  & {\em quantization} & quantization of the results, 0 means no quantization. Must be a ccs\+\_\+int\+\_\+t if {\ttfamily data\+\_\+type} is \mbox{\hyperlink{base_8h_aff930046a5f66cb75b311330b6461b9aac2f87bcb8e2cb21d8b6f0b7ab1cd1705}{CCS\+\_\+\+NUM\+\_\+\+INTEGER}} or a ccs\+\_\+float\+\_\+t if {\ttfamily data\+\_\+type} is \mbox{\hyperlink{base_8h_aff930046a5f66cb75b311330b6461b9aa5077c0a0bd923e732a382045cccaed81}{CCS\+\_\+\+NUM\+\_\+\+FLOAT}} \\
+\hline
+\mbox{\texttt{ out}}  & {\em distribution\+\_\+ret} & a pointer to the variable that will contain the newly created distribution \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a092b9c7d2bc9ac00a6f53e251c8619b8}{CCS\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0adb4bc5cfc4f985bf59ae223f3e22b9f9}{CCS\+\_\+\+INVALID\+\_\+\+VALUE}} if {\ttfamily distribution\+\_\+ret} is NULL; or if {\ttfamily quantization} is less than 0 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a5ef8b94d2dc8bbde508c4dd79b34047a}{CCS\+\_\+\+INVALID\+\_\+\+TYPE}} if {\ttfamily data\+\_\+type} is neither \mbox{\hyperlink{base_8h_aff930046a5f66cb75b311330b6461b9aac2f87bcb8e2cb21d8b6f0b7ab1cd1705}{CCS\+\_\+\+NUM\+\_\+\+INTEGER}} nor \mbox{\hyperlink{base_8h_aff930046a5f66cb75b311330b6461b9aa5077c0a0bd923e732a382045cccaed81}{CCS\+\_\+\+NUM\+\_\+\+FLOAT}} 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0aff40665f1940c0fa4949810912742fb1}{CCS\+\_\+\+INVALID\+\_\+\+SCALE}} if {\ttfamily scale} is neither \mbox{\hyperlink{distribution_8h_a2037df849c91a7e69b8a789d82fdce61a9c0dbfafc09b7025260a89c9aec7adb5}{CCS\+\_\+\+LINEAR}} nor \mbox{\hyperlink{distribution_8h_a2037df849c91a7e69b8a789d82fdce61a974cd3064b3391067af99a7e7dd0ab85}{CCS\+\_\+\+LOGARITHMIC}} 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a3b3381e910957ad1fbe1d633b12eff79}{CCS\+\_\+\+OUT\+\_\+\+OF\+\_\+\+MEMORY}} if there was not enough memory to allocate the new distribution 
+\end{DoxyReturn}
+\mbox{\Hypertarget{distribution_8h_a09575c79f59e570a841be660ee88a84a}\label{distribution_8h_a09575c79f59e570a841be660ee88a84a}} 
+\index{distribution.h@{distribution.h}!ccs\_create\_normal\_float\_distribution@{ccs\_create\_normal\_float\_distribution}}
+\index{ccs\_create\_normal\_float\_distribution@{ccs\_create\_normal\_float\_distribution}!distribution.h@{distribution.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_create\_normal\_float\_distribution()}{ccs\_create\_normal\_float\_distribution()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} ccs\+\_\+create\+\_\+normal\+\_\+float\+\_\+distribution (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_a8a8cddcd4f5ce78a2fbb0a44743e88c5}{ccs\+\_\+float\+\_\+t}}}]{mu,  }\item[{\mbox{\hyperlink{base_8h_a8a8cddcd4f5ce78a2fbb0a44743e88c5}{ccs\+\_\+float\+\_\+t}}}]{sigma,  }\item[{\mbox{\hyperlink{distribution_8h_a9d958c454b336fa93ad593cd404148ce}{ccs\+\_\+scale\+\_\+type\+\_\+t}}}]{scale,  }\item[{\mbox{\hyperlink{base_8h_a8a8cddcd4f5ce78a2fbb0a44743e88c5}{ccs\+\_\+float\+\_\+t}}}]{quantization,  }\item[{\mbox{\hyperlink{base_8h_ae36e9cd8818547939b8d03da347b3f56}{ccs\+\_\+distribution\+\_\+t}} $\ast$}]{distribution\+\_\+ret }\end{DoxyParamCaption})}
+
+
+
+Create a new normal distribution of floating point values. 
+
+Normal distributions are unidimensional. 
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em mu} & mean of the distribution \\
+\hline
+\mbox{\texttt{ in}}  & {\em sigma} & standard deviation of the distribution \\
+\hline
+\mbox{\texttt{ in}}  & {\em scale} & an be either \mbox{\hyperlink{distribution_8h_a2037df849c91a7e69b8a789d82fdce61a9c0dbfafc09b7025260a89c9aec7adb5}{CCS\+\_\+\+LINEAR}} or \mbox{\hyperlink{distribution_8h_a2037df849c91a7e69b8a789d82fdce61a974cd3064b3391067af99a7e7dd0ab85}{CCS\+\_\+\+LOGARITHMIC}} \\
+\hline
+\mbox{\texttt{ in}}  & {\em quantization} & quantization of the results, 0 means no quantization. \\
+\hline
+\mbox{\texttt{ out}}  & {\em distribution\+\_\+ret} & a pointer to the variable that will contain the newly created distribution \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a092b9c7d2bc9ac00a6f53e251c8619b8}{CCS\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0adb4bc5cfc4f985bf59ae223f3e22b9f9}{CCS\+\_\+\+INVALID\+\_\+\+VALUE}} if {\ttfamily distribution\+\_\+ret} is NULL; or if {\ttfamily quantization} is less than 0 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0aff40665f1940c0fa4949810912742fb1}{CCS\+\_\+\+INVALID\+\_\+\+SCALE}} if {\ttfamily scale} is neither \mbox{\hyperlink{distribution_8h_a2037df849c91a7e69b8a789d82fdce61a9c0dbfafc09b7025260a89c9aec7adb5}{CCS\+\_\+\+LINEAR}} nor \mbox{\hyperlink{distribution_8h_a2037df849c91a7e69b8a789d82fdce61a974cd3064b3391067af99a7e7dd0ab85}{CCS\+\_\+\+LOGARITHMIC}} 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a3b3381e910957ad1fbe1d633b12eff79}{CCS\+\_\+\+OUT\+\_\+\+OF\+\_\+\+MEMORY}} if there was not enough memory to allocate the new distribution 
+\end{DoxyReturn}
+\mbox{\Hypertarget{distribution_8h_a96e8bf8d718e9f43ce4b8035d76fb865}\label{distribution_8h_a96e8bf8d718e9f43ce4b8035d76fb865}} 
+\index{distribution.h@{distribution.h}!ccs\_create\_normal\_int\_distribution@{ccs\_create\_normal\_int\_distribution}}
+\index{ccs\_create\_normal\_int\_distribution@{ccs\_create\_normal\_int\_distribution}!distribution.h@{distribution.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_create\_normal\_int\_distribution()}{ccs\_create\_normal\_int\_distribution()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} ccs\+\_\+create\+\_\+normal\+\_\+int\+\_\+distribution (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_a8a8cddcd4f5ce78a2fbb0a44743e88c5}{ccs\+\_\+float\+\_\+t}}}]{mu,  }\item[{\mbox{\hyperlink{base_8h_a8a8cddcd4f5ce78a2fbb0a44743e88c5}{ccs\+\_\+float\+\_\+t}}}]{sigma,  }\item[{\mbox{\hyperlink{distribution_8h_a9d958c454b336fa93ad593cd404148ce}{ccs\+\_\+scale\+\_\+type\+\_\+t}}}]{scale,  }\item[{\mbox{\hyperlink{base_8h_a04670829a660b2aab58c0377468f0de8}{ccs\+\_\+int\+\_\+t}}}]{quantization,  }\item[{\mbox{\hyperlink{base_8h_ae36e9cd8818547939b8d03da347b3f56}{ccs\+\_\+distribution\+\_\+t}} $\ast$}]{distribution\+\_\+ret }\end{DoxyParamCaption})}
+
+
+
+Create a new normal distribution of integer values. 
+
+Normal distributions are unidimensional. 
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em mu} & mean of the distribution \\
+\hline
+\mbox{\texttt{ in}}  & {\em sigma} & standard deviation of the distribution \\
+\hline
+\mbox{\texttt{ in}}  & {\em scale} & an be either \mbox{\hyperlink{distribution_8h_a2037df849c91a7e69b8a789d82fdce61a9c0dbfafc09b7025260a89c9aec7adb5}{CCS\+\_\+\+LINEAR}} or \mbox{\hyperlink{distribution_8h_a2037df849c91a7e69b8a789d82fdce61a974cd3064b3391067af99a7e7dd0ab85}{CCS\+\_\+\+LOGARITHMIC}} \\
+\hline
+\mbox{\texttt{ in}}  & {\em quantization} & quantization of the results, 0 means no quantization. \\
+\hline
+\mbox{\texttt{ out}}  & {\em distribution\+\_\+ret} & a pointer to the variable that will contain the newly created distribution \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a092b9c7d2bc9ac00a6f53e251c8619b8}{CCS\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0adb4bc5cfc4f985bf59ae223f3e22b9f9}{CCS\+\_\+\+INVALID\+\_\+\+VALUE}} if {\ttfamily distribution\+\_\+ret} is NULL; or if {\ttfamily quantization} is less than 0 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0aff40665f1940c0fa4949810912742fb1}{CCS\+\_\+\+INVALID\+\_\+\+SCALE}} if {\ttfamily scale} is neither \mbox{\hyperlink{distribution_8h_a2037df849c91a7e69b8a789d82fdce61a9c0dbfafc09b7025260a89c9aec7adb5}{CCS\+\_\+\+LINEAR}} nor \mbox{\hyperlink{distribution_8h_a2037df849c91a7e69b8a789d82fdce61a974cd3064b3391067af99a7e7dd0ab85}{CCS\+\_\+\+LOGARITHMIC}} 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a3b3381e910957ad1fbe1d633b12eff79}{CCS\+\_\+\+OUT\+\_\+\+OF\+\_\+\+MEMORY}} if there was not enough memory to allocate the new distribution 
+\end{DoxyReturn}
+\mbox{\Hypertarget{distribution_8h_a9b81b9eef97f52746d1281a3b3ae9f38}\label{distribution_8h_a9b81b9eef97f52746d1281a3b3ae9f38}} 
+\index{distribution.h@{distribution.h}!ccs\_create\_roulette\_distribution@{ccs\_create\_roulette\_distribution}}
+\index{ccs\_create\_roulette\_distribution@{ccs\_create\_roulette\_distribution}!distribution.h@{distribution.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_create\_roulette\_distribution()}{ccs\_create\_roulette\_distribution()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} ccs\+\_\+create\+\_\+roulette\+\_\+distribution (\begin{DoxyParamCaption}\item[{size\+\_\+t}]{num\+\_\+areas,  }\item[{\mbox{\hyperlink{base_8h_a8a8cddcd4f5ce78a2fbb0a44743e88c5}{ccs\+\_\+float\+\_\+t}} $\ast$}]{areas,  }\item[{\mbox{\hyperlink{base_8h_ae36e9cd8818547939b8d03da347b3f56}{ccs\+\_\+distribution\+\_\+t}} $\ast$}]{distribution\+\_\+ret }\end{DoxyParamCaption})}
+
+
+
+Create a new area proportional distribution of integer values. 
+
+Roulette distributions are unidimensional. 
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em num\+\_\+areas} & the number of areas \\
+\hline
+\mbox{\texttt{ in}}  & {\em areas} & an array of {\ttfamily num\+\_\+areas} positive floating point values representing the probability of a given area to be sampled. \\
+\hline
+\mbox{\texttt{ out}}  & {\em distribution\+\_\+ret} & a pointer to the variable that will contain the newly created distribution \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a092b9c7d2bc9ac00a6f53e251c8619b8}{CCS\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0adb4bc5cfc4f985bf59ae223f3e22b9f9}{CCS\+\_\+\+INVALID\+\_\+\+VALUE}} if {\ttfamily distribution\+\_\+ret} is NULL; or if {\ttfamily areas} is NULL; or if the sum of the areas is 0; or if the areas could not be normalized 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a3b3381e910957ad1fbe1d633b12eff79}{CCS\+\_\+\+OUT\+\_\+\+OF\+\_\+\+MEMORY}} if there was not enough memory to allocate the new distribution 
+\end{DoxyReturn}
+\mbox{\Hypertarget{distribution_8h_addbe61f7bbefb2541d3b78907840653f}\label{distribution_8h_addbe61f7bbefb2541d3b78907840653f}} 
+\index{distribution.h@{distribution.h}!ccs\_create\_uniform\_distribution@{ccs\_create\_uniform\_distribution}}
+\index{ccs\_create\_uniform\_distribution@{ccs\_create\_uniform\_distribution}!distribution.h@{distribution.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_create\_uniform\_distribution()}{ccs\_create\_uniform\_distribution()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} ccs\+\_\+create\+\_\+uniform\+\_\+distribution (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_abb2e002510c51102a01c222ebd36ce2c}{ccs\+\_\+numeric\+\_\+type\+\_\+t}}}]{data\+\_\+type,  }\item[{\mbox{\hyperlink{base_8h_a981ec36df2f80935afde8b7a481f2d14}{ccs\+\_\+numeric\+\_\+t}}}]{lower,  }\item[{\mbox{\hyperlink{base_8h_a981ec36df2f80935afde8b7a481f2d14}{ccs\+\_\+numeric\+\_\+t}}}]{upper,  }\item[{\mbox{\hyperlink{distribution_8h_a9d958c454b336fa93ad593cd404148ce}{ccs\+\_\+scale\+\_\+type\+\_\+t}}}]{scale,  }\item[{\mbox{\hyperlink{base_8h_a981ec36df2f80935afde8b7a481f2d14}{ccs\+\_\+numeric\+\_\+t}}}]{quantization,  }\item[{\mbox{\hyperlink{base_8h_ae36e9cd8818547939b8d03da347b3f56}{ccs\+\_\+distribution\+\_\+t}} $\ast$}]{distribution\+\_\+ret }\end{DoxyParamCaption})}
+
+
+
+Create a new uniform distribution of the specified data type. 
+
+Uniform distributions are unidimensional. 
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em data\+\_\+type} & can be either \mbox{\hyperlink{base_8h_aff930046a5f66cb75b311330b6461b9aac2f87bcb8e2cb21d8b6f0b7ab1cd1705}{CCS\+\_\+\+NUM\+\_\+\+INTEGER}} or \mbox{\hyperlink{base_8h_aff930046a5f66cb75b311330b6461b9aa5077c0a0bd923e732a382045cccaed81}{CCS\+\_\+\+NUM\+\_\+\+FLOAT}} \\
+\hline
+\mbox{\texttt{ in}}  & {\em lower} & the lower bound of the distribution, included. Must be a ccs\+\_\+int\+\_\+t if {\ttfamily data\+\_\+type} is \mbox{\hyperlink{base_8h_aff930046a5f66cb75b311330b6461b9aac2f87bcb8e2cb21d8b6f0b7ab1cd1705}{CCS\+\_\+\+NUM\+\_\+\+INTEGER}} or a ccs\+\_\+float\+\_\+t if {\ttfamily data\+\_\+type} is \mbox{\hyperlink{base_8h_aff930046a5f66cb75b311330b6461b9aa5077c0a0bd923e732a382045cccaed81}{CCS\+\_\+\+NUM\+\_\+\+FLOAT}} \\
+\hline
+\mbox{\texttt{ in}}  & {\em upper} & the upper bound of the distribution, excluded. Must be a ccs\+\_\+int\+\_\+t if {\ttfamily data\+\_\+type} is \mbox{\hyperlink{base_8h_aff930046a5f66cb75b311330b6461b9aac2f87bcb8e2cb21d8b6f0b7ab1cd1705}{CCS\+\_\+\+NUM\+\_\+\+INTEGER}} or a ccs\+\_\+float\+\_\+t if {\ttfamily data\+\_\+type} is \mbox{\hyperlink{base_8h_aff930046a5f66cb75b311330b6461b9aa5077c0a0bd923e732a382045cccaed81}{CCS\+\_\+\+NUM\+\_\+\+FLOAT}} \\
+\hline
+\mbox{\texttt{ in}}  & {\em scale} & an be either \mbox{\hyperlink{distribution_8h_a2037df849c91a7e69b8a789d82fdce61a9c0dbfafc09b7025260a89c9aec7adb5}{CCS\+\_\+\+LINEAR}} or \mbox{\hyperlink{distribution_8h_a2037df849c91a7e69b8a789d82fdce61a974cd3064b3391067af99a7e7dd0ab85}{CCS\+\_\+\+LOGARITHMIC}} \\
+\hline
+\mbox{\texttt{ in}}  & {\em quantization} & quantization of the results, 0 means no quantization. Must be a ccs\+\_\+int\+\_\+t if {\ttfamily data\+\_\+type} is \mbox{\hyperlink{base_8h_aff930046a5f66cb75b311330b6461b9aac2f87bcb8e2cb21d8b6f0b7ab1cd1705}{CCS\+\_\+\+NUM\+\_\+\+INTEGER}} or a ccs\+\_\+float\+\_\+t if {\ttfamily data\+\_\+type} is \mbox{\hyperlink{base_8h_aff930046a5f66cb75b311330b6461b9aa5077c0a0bd923e732a382045cccaed81}{CCS\+\_\+\+NUM\+\_\+\+FLOAT}} \\
+\hline
+\mbox{\texttt{ out}}  & {\em distribution\+\_\+ret} & a pointer to the variable that will contain the newly created distribution \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a092b9c7d2bc9ac00a6f53e251c8619b8}{CCS\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0adb4bc5cfc4f985bf59ae223f3e22b9f9}{CCS\+\_\+\+INVALID\+\_\+\+VALUE}} if {\ttfamily distribution\+\_\+ret} is NULL; or if {\ttfamily quantization} is less than 0; or if the range defined by {\ttfamily lower} and {\ttfamily upper} is empty or smaller than the quantization; or if {\ttfamily scale} is \mbox{\hyperlink{distribution_8h_a2037df849c91a7e69b8a789d82fdce61a974cd3064b3391067af99a7e7dd0ab85}{CCS\+\_\+\+LOGARITHMIC}} {\ttfamily lower} is less or equal to 0 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a5ef8b94d2dc8bbde508c4dd79b34047a}{CCS\+\_\+\+INVALID\+\_\+\+TYPE}} if {\ttfamily data\+\_\+type} is neither \mbox{\hyperlink{base_8h_aff930046a5f66cb75b311330b6461b9aac2f87bcb8e2cb21d8b6f0b7ab1cd1705}{CCS\+\_\+\+NUM\+\_\+\+INTEGER}} nor \mbox{\hyperlink{base_8h_aff930046a5f66cb75b311330b6461b9aa5077c0a0bd923e732a382045cccaed81}{CCS\+\_\+\+NUM\+\_\+\+FLOAT}} 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0aff40665f1940c0fa4949810912742fb1}{CCS\+\_\+\+INVALID\+\_\+\+SCALE}} if {\ttfamily scale} is neither \mbox{\hyperlink{distribution_8h_a2037df849c91a7e69b8a789d82fdce61a9c0dbfafc09b7025260a89c9aec7adb5}{CCS\+\_\+\+LINEAR}} nor \mbox{\hyperlink{distribution_8h_a2037df849c91a7e69b8a789d82fdce61a974cd3064b3391067af99a7e7dd0ab85}{CCS\+\_\+\+LOGARITHMIC}} 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a3b3381e910957ad1fbe1d633b12eff79}{CCS\+\_\+\+OUT\+\_\+\+OF\+\_\+\+MEMORY}} if there was not enough memory to allocate the new distribution 
+\end{DoxyReturn}
+\mbox{\Hypertarget{distribution_8h_ac13ec03461e2b00bb7a0de35614141a7}\label{distribution_8h_ac13ec03461e2b00bb7a0de35614141a7}} 
+\index{distribution.h@{distribution.h}!ccs\_create\_uniform\_float\_distribution@{ccs\_create\_uniform\_float\_distribution}}
+\index{ccs\_create\_uniform\_float\_distribution@{ccs\_create\_uniform\_float\_distribution}!distribution.h@{distribution.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_create\_uniform\_float\_distribution()}{ccs\_create\_uniform\_float\_distribution()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} ccs\+\_\+create\+\_\+uniform\+\_\+float\+\_\+distribution (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_a8a8cddcd4f5ce78a2fbb0a44743e88c5}{ccs\+\_\+float\+\_\+t}}}]{lower,  }\item[{\mbox{\hyperlink{base_8h_a8a8cddcd4f5ce78a2fbb0a44743e88c5}{ccs\+\_\+float\+\_\+t}}}]{upper,  }\item[{\mbox{\hyperlink{distribution_8h_a9d958c454b336fa93ad593cd404148ce}{ccs\+\_\+scale\+\_\+type\+\_\+t}}}]{scale,  }\item[{\mbox{\hyperlink{base_8h_a8a8cddcd4f5ce78a2fbb0a44743e88c5}{ccs\+\_\+float\+\_\+t}}}]{quantization,  }\item[{\mbox{\hyperlink{base_8h_ae36e9cd8818547939b8d03da347b3f56}{ccs\+\_\+distribution\+\_\+t}} $\ast$}]{distribution\+\_\+ret }\end{DoxyParamCaption})}
+
+
+
+Create a new uniform distribution of floating point values. 
+
+Uniform distributions are unidimensional. 
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em lower} & the lower bound of the distribution, included. \\
+\hline
+\mbox{\texttt{ in}}  & {\em upper} & the upper bound of the distribution, excluded. \\
+\hline
+\mbox{\texttt{ in}}  & {\em scale} & an be either \mbox{\hyperlink{distribution_8h_a2037df849c91a7e69b8a789d82fdce61a9c0dbfafc09b7025260a89c9aec7adb5}{CCS\+\_\+\+LINEAR}} or \mbox{\hyperlink{distribution_8h_a2037df849c91a7e69b8a789d82fdce61a974cd3064b3391067af99a7e7dd0ab85}{CCS\+\_\+\+LOGARITHMIC}} \\
+\hline
+\mbox{\texttt{ in}}  & {\em quantization} & quantization of the results, 0 means no quantization. \\
+\hline
+\mbox{\texttt{ out}}  & {\em distribution\+\_\+ret} & a pointer to the variable that will contain the newly created distribution \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a092b9c7d2bc9ac00a6f53e251c8619b8}{CCS\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0adb4bc5cfc4f985bf59ae223f3e22b9f9}{CCS\+\_\+\+INVALID\+\_\+\+VALUE}} if {\ttfamily distribution\+\_\+ret} is NULL; or if {\ttfamily quantization} is less than 0; or if the range defined by {\ttfamily lower} and {\ttfamily upper} is empty or smaller than the quantization; or if {\ttfamily scale} is \mbox{\hyperlink{distribution_8h_a2037df849c91a7e69b8a789d82fdce61a974cd3064b3391067af99a7e7dd0ab85}{CCS\+\_\+\+LOGARITHMIC}} {\ttfamily lower} is less or equal to 0 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0aff40665f1940c0fa4949810912742fb1}{CCS\+\_\+\+INVALID\+\_\+\+SCALE}} if {\ttfamily scale} is neither \mbox{\hyperlink{distribution_8h_a2037df849c91a7e69b8a789d82fdce61a9c0dbfafc09b7025260a89c9aec7adb5}{CCS\+\_\+\+LINEAR}} nor \mbox{\hyperlink{distribution_8h_a2037df849c91a7e69b8a789d82fdce61a974cd3064b3391067af99a7e7dd0ab85}{CCS\+\_\+\+LOGARITHMIC}} 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a3b3381e910957ad1fbe1d633b12eff79}{CCS\+\_\+\+OUT\+\_\+\+OF\+\_\+\+MEMORY}} if there was not enough memory to allocate the new distribution 
+\end{DoxyReturn}
+\mbox{\Hypertarget{distribution_8h_acb9c2f0912281852e5ca59ec706f2e2d}\label{distribution_8h_acb9c2f0912281852e5ca59ec706f2e2d}} 
+\index{distribution.h@{distribution.h}!ccs\_create\_uniform\_int\_distribution@{ccs\_create\_uniform\_int\_distribution}}
+\index{ccs\_create\_uniform\_int\_distribution@{ccs\_create\_uniform\_int\_distribution}!distribution.h@{distribution.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_create\_uniform\_int\_distribution()}{ccs\_create\_uniform\_int\_distribution()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} ccs\+\_\+create\+\_\+uniform\+\_\+int\+\_\+distribution (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_a04670829a660b2aab58c0377468f0de8}{ccs\+\_\+int\+\_\+t}}}]{lower,  }\item[{\mbox{\hyperlink{base_8h_a04670829a660b2aab58c0377468f0de8}{ccs\+\_\+int\+\_\+t}}}]{upper,  }\item[{\mbox{\hyperlink{distribution_8h_a9d958c454b336fa93ad593cd404148ce}{ccs\+\_\+scale\+\_\+type\+\_\+t}}}]{scale,  }\item[{\mbox{\hyperlink{base_8h_a04670829a660b2aab58c0377468f0de8}{ccs\+\_\+int\+\_\+t}}}]{quantization,  }\item[{\mbox{\hyperlink{base_8h_ae36e9cd8818547939b8d03da347b3f56}{ccs\+\_\+distribution\+\_\+t}} $\ast$}]{distribution\+\_\+ret }\end{DoxyParamCaption})}
+
+
+
+Create a new uniform distribution of integer values. 
+
+Uniform distributions are unidimensional. 
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em lower} & the lower bound of the distribution, included. \\
+\hline
+\mbox{\texttt{ in}}  & {\em upper} & the upper bound of the distribution, excluded. \\
+\hline
+\mbox{\texttt{ in}}  & {\em scale} & an be either \mbox{\hyperlink{distribution_8h_a2037df849c91a7e69b8a789d82fdce61a9c0dbfafc09b7025260a89c9aec7adb5}{CCS\+\_\+\+LINEAR}} or \mbox{\hyperlink{distribution_8h_a2037df849c91a7e69b8a789d82fdce61a974cd3064b3391067af99a7e7dd0ab85}{CCS\+\_\+\+LOGARITHMIC}} \\
+\hline
+\mbox{\texttt{ in}}  & {\em quantization} & quantization of the results, 0 means no quantization. \\
+\hline
+\mbox{\texttt{ out}}  & {\em distribution\+\_\+ret} & a pointer to the variable that will contain the newly created distribution \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a092b9c7d2bc9ac00a6f53e251c8619b8}{CCS\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0adb4bc5cfc4f985bf59ae223f3e22b9f9}{CCS\+\_\+\+INVALID\+\_\+\+VALUE}} if {\ttfamily distribution\+\_\+ret} is NULL; or if {\ttfamily quantization} is less than 0; or if the range defined by {\ttfamily lower} and {\ttfamily upper} is empty or smaller than the quantization; or if {\ttfamily scale} is \mbox{\hyperlink{distribution_8h_a2037df849c91a7e69b8a789d82fdce61a974cd3064b3391067af99a7e7dd0ab85}{CCS\+\_\+\+LOGARITHMIC}} {\ttfamily lower} is less or equal to 0 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0aff40665f1940c0fa4949810912742fb1}{CCS\+\_\+\+INVALID\+\_\+\+SCALE}} if {\ttfamily scale} is neither \mbox{\hyperlink{distribution_8h_a2037df849c91a7e69b8a789d82fdce61a9c0dbfafc09b7025260a89c9aec7adb5}{CCS\+\_\+\+LINEAR}} nor \mbox{\hyperlink{distribution_8h_a2037df849c91a7e69b8a789d82fdce61a974cd3064b3391067af99a7e7dd0ab85}{CCS\+\_\+\+LOGARITHMIC}} 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a3b3381e910957ad1fbe1d633b12eff79}{CCS\+\_\+\+OUT\+\_\+\+OF\+\_\+\+MEMORY}} if there was not enough memory to allocate the new distribution 
+\end{DoxyReturn}
+\mbox{\Hypertarget{distribution_8h_a9cb54fff21ea65bc4fc4f9d8c0b28161}\label{distribution_8h_a9cb54fff21ea65bc4fc4f9d8c0b28161}} 
+\index{distribution.h@{distribution.h}!ccs\_distribution\_check\_oversampling@{ccs\_distribution\_check\_oversampling}}
+\index{ccs\_distribution\_check\_oversampling@{ccs\_distribution\_check\_oversampling}!distribution.h@{distribution.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_distribution\_check\_oversampling()}{ccs\_distribution\_check\_oversampling()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} ccs\+\_\+distribution\+\_\+check\+\_\+oversampling (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_ae36e9cd8818547939b8d03da347b3f56}{ccs\+\_\+distribution\+\_\+t}}}]{distribution,  }\item[{\mbox{\hyperlink{interval_8h_a9659e1ee54b3809075e58db013e96558}{ccs\+\_\+interval\+\_\+t}} $\ast$}]{intervals,  }\item[{\mbox{\hyperlink{base_8h_a0e8ba2dfd397017939e6ea2ebc4bb037}{ccs\+\_\+bool\+\_\+t}} $\ast$}]{oversamplings\+\_\+ret }\end{DoxyParamCaption})}
+
+
+
+Check if a distribution could return values outside of the given intervals. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em distribution} & \\
+\hline
+\mbox{\texttt{ in}}  & {\em intervals} & an array of intervals of the same dimension as the distribution \\
+\hline
+\mbox{\texttt{ out}}  & {\em oversamplings\+\_\+ret} & an array of boolean values of the same dimension as the distribution, that contain the result of the oversampling test for each dimension \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a092b9c7d2bc9ac00a6f53e251c8619b8}{CCS\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0adb4bc5cfc4f985bf59ae223f3e22b9f9}{CCS\+\_\+\+INVALID\+\_\+\+VALUE}} if {\ttfamily intervals} is NULL; or if {\ttfamily oversamplings\+\_\+ret} is NULL 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a4707835c3fcb2303089c76bbcbf96df5}{CCS\+\_\+\+INVALID\+\_\+\+OBJECT}} if {\ttfamily distribution} is not a valid CCS distribution 
+\end{DoxyReturn}
+\mbox{\Hypertarget{distribution_8h_ae058cbc24bd370900fbe10e2db69af64}\label{distribution_8h_ae058cbc24bd370900fbe10e2db69af64}} 
+\index{distribution.h@{distribution.h}!ccs\_distribution\_get\_bounds@{ccs\_distribution\_get\_bounds}}
+\index{ccs\_distribution\_get\_bounds@{ccs\_distribution\_get\_bounds}!distribution.h@{distribution.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_distribution\_get\_bounds()}{ccs\_distribution\_get\_bounds()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} ccs\+\_\+distribution\+\_\+get\+\_\+bounds (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_ae36e9cd8818547939b8d03da347b3f56}{ccs\+\_\+distribution\+\_\+t}}}]{distribution,  }\item[{\mbox{\hyperlink{interval_8h_a9659e1ee54b3809075e58db013e96558}{ccs\+\_\+interval\+\_\+t}} $\ast$}]{interval\+\_\+ret }\end{DoxyParamCaption})}
+
+
+
+Get the bounds of a distribution. 
+
+Bounds are intervals that should contain all possible values returned by a distribution\textquotesingle{}s dimension. 
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em distribution} & \\
+\hline
+\mbox{\texttt{ out}}  & {\em interval\+\_\+ret} & an array of intervals of the same dimension as the distribution, that will contain the possible intervals of each dimension of the distribution \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a092b9c7d2bc9ac00a6f53e251c8619b8}{CCS\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0adb4bc5cfc4f985bf59ae223f3e22b9f9}{CCS\+\_\+\+INVALID\+\_\+\+VALUE}} if {\ttfamily interval\+\_\+ret} is NULL 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a4707835c3fcb2303089c76bbcbf96df5}{CCS\+\_\+\+INVALID\+\_\+\+OBJECT}} if {\ttfamily distribution} is not a valid CCS distribution 
+\end{DoxyReturn}
+\mbox{\Hypertarget{distribution_8h_a0c058cbb24c659f434cf7d2868512283}\label{distribution_8h_a0c058cbb24c659f434cf7d2868512283}} 
+\index{distribution.h@{distribution.h}!ccs\_distribution\_get\_data\_types@{ccs\_distribution\_get\_data\_types}}
+\index{ccs\_distribution\_get\_data\_types@{ccs\_distribution\_get\_data\_types}!distribution.h@{distribution.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_distribution\_get\_data\_types()}{ccs\_distribution\_get\_data\_types()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} ccs\+\_\+distribution\+\_\+get\+\_\+data\+\_\+types (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_ae36e9cd8818547939b8d03da347b3f56}{ccs\+\_\+distribution\+\_\+t}}}]{distribution,  }\item[{\mbox{\hyperlink{base_8h_abb2e002510c51102a01c222ebd36ce2c}{ccs\+\_\+numeric\+\_\+type\+\_\+t}} $\ast$}]{data\+\_\+types\+\_\+ret }\end{DoxyParamCaption})}
+
+
+
+Get the data types of a distribution. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em distribution} & \\
+\hline
+\mbox{\texttt{ out}}  & {\em data\+\_\+types\+\_\+ret} & an array of numeric types of the same dimension as the distribution, that will contain the data types of each dimension of the distribution \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a092b9c7d2bc9ac00a6f53e251c8619b8}{CCS\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0adb4bc5cfc4f985bf59ae223f3e22b9f9}{CCS\+\_\+\+INVALID\+\_\+\+VALUE}} if {\ttfamily data\+\_\+types\+\_\+ret} is NULL 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a4707835c3fcb2303089c76bbcbf96df5}{CCS\+\_\+\+INVALID\+\_\+\+OBJECT}} if {\ttfamily distribution} is not a valid CCS distribution 
+\end{DoxyReturn}
+\mbox{\Hypertarget{distribution_8h_a991f6ecae5af9bc7d1f72629f1ad671e}\label{distribution_8h_a991f6ecae5af9bc7d1f72629f1ad671e}} 
+\index{distribution.h@{distribution.h}!ccs\_distribution\_get\_dimension@{ccs\_distribution\_get\_dimension}}
+\index{ccs\_distribution\_get\_dimension@{ccs\_distribution\_get\_dimension}!distribution.h@{distribution.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_distribution\_get\_dimension()}{ccs\_distribution\_get\_dimension()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} ccs\+\_\+distribution\+\_\+get\+\_\+dimension (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_ae36e9cd8818547939b8d03da347b3f56}{ccs\+\_\+distribution\+\_\+t}}}]{distribution,  }\item[{size\+\_\+t $\ast$}]{dimension\+\_\+ret }\end{DoxyParamCaption})}
+
+
+
+Get the dimensionality of a distribution. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em distribution} & \\
+\hline
+\mbox{\texttt{ out}}  & {\em dimension\+\_\+ret} & a pointer to the variable that will contain the dimension of the distribution \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a092b9c7d2bc9ac00a6f53e251c8619b8}{CCS\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0adb4bc5cfc4f985bf59ae223f3e22b9f9}{CCS\+\_\+\+INVALID\+\_\+\+VALUE}} if {\ttfamily dimension\+\_\+ret} is NULL 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a4707835c3fcb2303089c76bbcbf96df5}{CCS\+\_\+\+INVALID\+\_\+\+OBJECT}} if {\ttfamily distribution} is not a valid CCS distribution 
+\end{DoxyReturn}
+\mbox{\Hypertarget{distribution_8h_a72b9da1d1e2b1e673d1c59a1aa39ccf7}\label{distribution_8h_a72b9da1d1e2b1e673d1c59a1aa39ccf7}} 
+\index{distribution.h@{distribution.h}!ccs\_distribution\_get\_type@{ccs\_distribution\_get\_type}}
+\index{ccs\_distribution\_get\_type@{ccs\_distribution\_get\_type}!distribution.h@{distribution.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_distribution\_get\_type()}{ccs\_distribution\_get\_type()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} ccs\+\_\+distribution\+\_\+get\+\_\+type (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_ae36e9cd8818547939b8d03da347b3f56}{ccs\+\_\+distribution\+\_\+t}}}]{distribution,  }\item[{\mbox{\hyperlink{distribution_8h_a8ca331ecfee206be6ade03c26e714caa}{ccs\+\_\+distribution\+\_\+type\+\_\+t}} $\ast$}]{type\+\_\+ret }\end{DoxyParamCaption})}
+
+
+
+Get the type of a distribution. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em distribution} & \\
+\hline
+\mbox{\texttt{ out}}  & {\em type\+\_\+ret} & a pointer to the variable that will contain the type of the distribution \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a092b9c7d2bc9ac00a6f53e251c8619b8}{CCS\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0adb4bc5cfc4f985bf59ae223f3e22b9f9}{CCS\+\_\+\+INVALID\+\_\+\+VALUE}} if {\ttfamily type\+\_\+ret} is NULL 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a4707835c3fcb2303089c76bbcbf96df5}{CCS\+\_\+\+INVALID\+\_\+\+OBJECT}} if {\ttfamily distribution} is not a valid CCS distribution 
+\end{DoxyReturn}
+\mbox{\Hypertarget{distribution_8h_a1ccf1f3cbe18d277fd1e00e103fefcaf}\label{distribution_8h_a1ccf1f3cbe18d277fd1e00e103fefcaf}} 
+\index{distribution.h@{distribution.h}!ccs\_distribution\_hyperparameters\_sample@{ccs\_distribution\_hyperparameters\_sample}}
+\index{ccs\_distribution\_hyperparameters\_sample@{ccs\_distribution\_hyperparameters\_sample}!distribution.h@{distribution.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_distribution\_hyperparameters\_sample()}{ccs\_distribution\_hyperparameters\_sample()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} ccs\+\_\+distribution\+\_\+hyperparameters\+\_\+sample (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_ae36e9cd8818547939b8d03da347b3f56}{ccs\+\_\+distribution\+\_\+t}}}]{distribution,  }\item[{\mbox{\hyperlink{base_8h_ae22dde737fcdf67d5a9fa497bc054027}{ccs\+\_\+rng\+\_\+t}}}]{rng,  }\item[{\mbox{\hyperlink{base_8h_a0b796ce449059870d5bbb77f20925b50}{ccs\+\_\+hyperparameter\+\_\+t}} $\ast$}]{hyperparameters,  }\item[{\mbox{\hyperlink{base_8h_a36bc36b2bb0d0613453dd731cdcd2048}{ccs\+\_\+datum\+\_\+t}} $\ast$}]{values }\end{DoxyParamCaption})}
+
+
+
+Get a random hyperparameters\textquotesingle{} sample by sampling a distribution. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em distribution} & \\
+\hline
+\mbox{\texttt{ in,out}}  & {\em rng} & the random number generator to use \\
+\hline
+\mbox{\texttt{ in}}  & {\em hyperparameters} & an array of hyperparameters. The dimension of the array must be qual to the dimension of the distribution \\
+\hline
+\mbox{\texttt{ out}}  & {\em values} & an array of datum of the same dimension as the distribution. Will contain the sampled values. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a092b9c7d2bc9ac00a6f53e251c8619b8}{CCS\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0adb4bc5cfc4f985bf59ae223f3e22b9f9}{CCS\+\_\+\+INVALID\+\_\+\+VALUE}} if {\ttfamily values} is NULL; or if {\ttfamily hyperparameters} is NULL 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a4707835c3fcb2303089c76bbcbf96df5}{CCS\+\_\+\+INVALID\+\_\+\+OBJECT}} if {\ttfamily distribution} is not a valid CCS distribution; or if {\ttfamily rng} is not a valid CCS rng; or if at least one of the hyperparameters provided is NULL 
+\end{DoxyReturn}
+\mbox{\Hypertarget{distribution_8h_abb409bec0ec325e3c5a3c130ee64cd6b}\label{distribution_8h_abb409bec0ec325e3c5a3c130ee64cd6b}} 
+\index{distribution.h@{distribution.h}!ccs\_distribution\_hyperparameters\_samples@{ccs\_distribution\_hyperparameters\_samples}}
+\index{ccs\_distribution\_hyperparameters\_samples@{ccs\_distribution\_hyperparameters\_samples}!distribution.h@{distribution.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_distribution\_hyperparameters\_samples()}{ccs\_distribution\_hyperparameters\_samples()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} ccs\+\_\+distribution\+\_\+hyperparameters\+\_\+samples (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_ae36e9cd8818547939b8d03da347b3f56}{ccs\+\_\+distribution\+\_\+t}}}]{distribution,  }\item[{\mbox{\hyperlink{base_8h_ae22dde737fcdf67d5a9fa497bc054027}{ccs\+\_\+rng\+\_\+t}}}]{rng,  }\item[{\mbox{\hyperlink{base_8h_a0b796ce449059870d5bbb77f20925b50}{ccs\+\_\+hyperparameter\+\_\+t}} $\ast$}]{hyperparameters,  }\item[{size\+\_\+t}]{num\+\_\+samples,  }\item[{\mbox{\hyperlink{base_8h_a36bc36b2bb0d0613453dd731cdcd2048}{ccs\+\_\+datum\+\_\+t}} $\ast$}]{values }\end{DoxyParamCaption})}
+
+
+
+Get a collection of random hyperparameters\textquotesingle{} samples by sampling a distribution. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em distribution} & \\
+\hline
+\mbox{\texttt{ in,out}}  & {\em rng} & the random number generator to use \\
+\hline
+\mbox{\texttt{ in}}  & {\em hyperparameters} & an array of hyperparameters. The dimension of the array must be qual to the dimension of the distribution \\
+\hline
+\mbox{\texttt{ in}}  & {\em num\+\_\+samples} & the number of samples to get \\
+\hline
+\mbox{\texttt{ out}}  & {\em values} & an array of datum values. The dimension of the array should be the dimension of the distribution times {\ttfamily num\+\_\+samples}. Values will be in an array of structures ordering, so values from a single sample will be contiguous in memory \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a092b9c7d2bc9ac00a6f53e251c8619b8}{CCS\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0adb4bc5cfc4f985bf59ae223f3e22b9f9}{CCS\+\_\+\+INVALID\+\_\+\+VALUE}} if {\ttfamily values} is NULL and {\ttfamily num\+\_\+samples} is greater than 0; or if {\ttfamily hyperparameters} is NULL and {\ttfamily num\+\_\+samples} is greater than 0 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a4707835c3fcb2303089c76bbcbf96df5}{CCS\+\_\+\+INVALID\+\_\+\+OBJECT}} if {\ttfamily distribution} is not a valid CCS distribution; or if {\ttfamily rng} is not a valid CCS rng; or if at least one of the hyperparameters provided is NULL 
+\end{DoxyReturn}
+\mbox{\Hypertarget{distribution_8h_a805862b7eefe177c5d12d69cc193f8e9}\label{distribution_8h_a805862b7eefe177c5d12d69cc193f8e9}} 
+\index{distribution.h@{distribution.h}!ccs\_distribution\_sample@{ccs\_distribution\_sample}}
+\index{ccs\_distribution\_sample@{ccs\_distribution\_sample}!distribution.h@{distribution.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_distribution\_sample()}{ccs\_distribution\_sample()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} ccs\+\_\+distribution\+\_\+sample (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_ae36e9cd8818547939b8d03da347b3f56}{ccs\+\_\+distribution\+\_\+t}}}]{distribution,  }\item[{\mbox{\hyperlink{base_8h_ae22dde737fcdf67d5a9fa497bc054027}{ccs\+\_\+rng\+\_\+t}}}]{rng,  }\item[{\mbox{\hyperlink{base_8h_a981ec36df2f80935afde8b7a481f2d14}{ccs\+\_\+numeric\+\_\+t}} $\ast$}]{values }\end{DoxyParamCaption})}
+
+
+
+Get a random sample from a distribution. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em distribution} & \\
+\hline
+\mbox{\texttt{ in,out}}  & {\em rng} & the random number generator to use \\
+\hline
+\mbox{\texttt{ out}}  & {\em values} & an array of numeric values the same dimension as the distribution. Will contain the sampled values. The type of the numeric returned depends on the data type of each dimension (see \mbox{\hyperlink{distribution_8h_a0c058cbb24c659f434cf7d2868512283}{ccs\+\_\+distribution\+\_\+get\+\_\+data\+\_\+types}}) \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a092b9c7d2bc9ac00a6f53e251c8619b8}{CCS\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0adb4bc5cfc4f985bf59ae223f3e22b9f9}{CCS\+\_\+\+INVALID\+\_\+\+VALUE}} if {\ttfamily values} is NULL 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a4707835c3fcb2303089c76bbcbf96df5}{CCS\+\_\+\+INVALID\+\_\+\+OBJECT}} if {\ttfamily distribution} is not a valid CCS distribution; or if {\ttfamily rng} is not a valid CCS rng 
+\end{DoxyReturn}
+\mbox{\Hypertarget{distribution_8h_a67aba8fd95baf01cd3bee06ce6c607d6}\label{distribution_8h_a67aba8fd95baf01cd3bee06ce6c607d6}} 
+\index{distribution.h@{distribution.h}!ccs\_distribution\_samples@{ccs\_distribution\_samples}}
+\index{ccs\_distribution\_samples@{ccs\_distribution\_samples}!distribution.h@{distribution.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_distribution\_samples()}{ccs\_distribution\_samples()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} ccs\+\_\+distribution\+\_\+samples (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_ae36e9cd8818547939b8d03da347b3f56}{ccs\+\_\+distribution\+\_\+t}}}]{distribution,  }\item[{\mbox{\hyperlink{base_8h_ae22dde737fcdf67d5a9fa497bc054027}{ccs\+\_\+rng\+\_\+t}}}]{rng,  }\item[{size\+\_\+t}]{num\+\_\+samples,  }\item[{\mbox{\hyperlink{base_8h_a981ec36df2f80935afde8b7a481f2d14}{ccs\+\_\+numeric\+\_\+t}} $\ast$}]{values }\end{DoxyParamCaption})}
+
+
+
+Get a collection of random samples from a distribution. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em distribution} & \\
+\hline
+\mbox{\texttt{ in,out}}  & {\em rng} & the random number generator to use \\
+\hline
+\mbox{\texttt{ in}}  & {\em num\+\_\+samples} & the number of samples to get \\
+\hline
+\mbox{\texttt{ out}}  & {\em values} & an array of numeric values. The dimension of the array should be the dimension of the distribution times {\ttfamily num\+\_\+samples}. Values will be in an array of structures ordering, so values from a single sample will be contiguous in memory \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a092b9c7d2bc9ac00a6f53e251c8619b8}{CCS\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0adb4bc5cfc4f985bf59ae223f3e22b9f9}{CCS\+\_\+\+INVALID\+\_\+\+VALUE}} if {\ttfamily values} is NULL and {\ttfamily num\+\_\+samples} is greater than 0 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a4707835c3fcb2303089c76bbcbf96df5}{CCS\+\_\+\+INVALID\+\_\+\+OBJECT}} if {\ttfamily distribution} is not a valid CCS distribution; or if {\ttfamily rng} is not a valid CCS rng 
+\end{DoxyReturn}
+\mbox{\Hypertarget{distribution_8h_aa9aace76919ad341dda8f138df823494}\label{distribution_8h_aa9aace76919ad341dda8f138df823494}} 
+\index{distribution.h@{distribution.h}!ccs\_distribution\_soa\_samples@{ccs\_distribution\_soa\_samples}}
+\index{ccs\_distribution\_soa\_samples@{ccs\_distribution\_soa\_samples}!distribution.h@{distribution.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_distribution\_soa\_samples()}{ccs\_distribution\_soa\_samples()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} ccs\+\_\+distribution\+\_\+soa\+\_\+samples (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_ae36e9cd8818547939b8d03da347b3f56}{ccs\+\_\+distribution\+\_\+t}}}]{distribution,  }\item[{\mbox{\hyperlink{base_8h_ae22dde737fcdf67d5a9fa497bc054027}{ccs\+\_\+rng\+\_\+t}}}]{rng,  }\item[{size\+\_\+t}]{num\+\_\+samples,  }\item[{\mbox{\hyperlink{base_8h_a981ec36df2f80935afde8b7a481f2d14}{ccs\+\_\+numeric\+\_\+t}} $\ast$$\ast$}]{values }\end{DoxyParamCaption})}
+
+
+
+Get a collection of random samples from a distribution. 
+
+Each sample components will be stored contiguously in it\textquotesingle{}s own array. 
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em distribution} & \\
+\hline
+\mbox{\texttt{ in,out}}  & {\em rng} & the random number generator to use \\
+\hline
+\mbox{\texttt{ in}}  & {\em num\+\_\+samples} & the number of samples to get \\
+\hline
+\mbox{\texttt{ out}}  & {\em values} & an array of arrays of numeric values. The array dimension is the dimension of the distribution, while the contained arrays have a dimension of num\+\_\+samples. If a value inside the array is NULL this dimension is ignored. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a092b9c7d2bc9ac00a6f53e251c8619b8}{CCS\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0adb4bc5cfc4f985bf59ae223f3e22b9f9}{CCS\+\_\+\+INVALID\+\_\+\+VALUE}} if {\ttfamily values} is NULL 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a4707835c3fcb2303089c76bbcbf96df5}{CCS\+\_\+\+INVALID\+\_\+\+OBJECT}} if {\ttfamily distribution} is not a valid CCS distribution; or if {\ttfamily rng} is not a valid CCS rng 
+\end{DoxyReturn}
+\mbox{\Hypertarget{distribution_8h_a7322990e6283893d3b92190cf8fab347}\label{distribution_8h_a7322990e6283893d3b92190cf8fab347}} 
+\index{distribution.h@{distribution.h}!ccs\_distribution\_strided\_samples@{ccs\_distribution\_strided\_samples}}
+\index{ccs\_distribution\_strided\_samples@{ccs\_distribution\_strided\_samples}!distribution.h@{distribution.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_distribution\_strided\_samples()}{ccs\_distribution\_strided\_samples()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} ccs\+\_\+distribution\+\_\+strided\+\_\+samples (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_ae36e9cd8818547939b8d03da347b3f56}{ccs\+\_\+distribution\+\_\+t}}}]{distribution,  }\item[{\mbox{\hyperlink{base_8h_ae22dde737fcdf67d5a9fa497bc054027}{ccs\+\_\+rng\+\_\+t}}}]{rng,  }\item[{size\+\_\+t}]{num\+\_\+samples,  }\item[{size\+\_\+t}]{stride,  }\item[{\mbox{\hyperlink{base_8h_a981ec36df2f80935afde8b7a481f2d14}{ccs\+\_\+numeric\+\_\+t}} $\ast$}]{values }\end{DoxyParamCaption})}
+
+
+
+Get a collection of random samples from a distribution. 
+
+Each sample is stride ccs\+\_\+numeric\+\_\+t element apart in memory. A stride equal to the the distribution dimension is equivalent to calling \mbox{\hyperlink{distribution_8h_a67aba8fd95baf01cd3bee06ce6c607d6}{ccs\+\_\+distribution\+\_\+samples}}. 
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em distribution} & \\
+\hline
+\mbox{\texttt{ in,out}}  & {\em rng} & the random number generator to use \\
+\hline
+\mbox{\texttt{ in}}  & {\em num\+\_\+samples} & the number of samples to get \\
+\hline
+\mbox{\texttt{ in}}  & {\em stride} & the distance in memory that will separate two samples successive samples. The value is given in number of ccs\+\_\+numeric\+\_\+t \\
+\hline
+\mbox{\texttt{ out}}  & {\em values} & an array of numeric values. The dimension of the array should be the stride times {\ttfamily num\+\_\+samples} minus stride plus the dimension of the distribution. Values will be in an array of structures ordering, so values from a single sample will be contiguous in memory \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a092b9c7d2bc9ac00a6f53e251c8619b8}{CCS\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0adb4bc5cfc4f985bf59ae223f3e22b9f9}{CCS\+\_\+\+INVALID\+\_\+\+VALUE}} if {\ttfamily values} is NULL and {\ttfamily num\+\_\+samples} is greater than 0; or if {\ttfamily stride} is less than the distribution dimension 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a4707835c3fcb2303089c76bbcbf96df5}{CCS\+\_\+\+INVALID\+\_\+\+OBJECT}} if {\ttfamily distribution} is not a valid CCS distribution; or if {\ttfamily rng} is not a valid CCS rng 
+\end{DoxyReturn}
+\mbox{\Hypertarget{distribution_8h_a96875cade4a201f1dffff9eb56d7c3f5}\label{distribution_8h_a96875cade4a201f1dffff9eb56d7c3f5}} 
+\index{distribution.h@{distribution.h}!ccs\_mixture\_distribution\_get\_distributions@{ccs\_mixture\_distribution\_get\_distributions}}
+\index{ccs\_mixture\_distribution\_get\_distributions@{ccs\_mixture\_distribution\_get\_distributions}!distribution.h@{distribution.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_mixture\_distribution\_get\_distributions()}{ccs\_mixture\_distribution\_get\_distributions()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} ccs\+\_\+mixture\+\_\+distribution\+\_\+get\+\_\+distributions (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_ae36e9cd8818547939b8d03da347b3f56}{ccs\+\_\+distribution\+\_\+t}}}]{distribution,  }\item[{size\+\_\+t}]{num\+\_\+distributions,  }\item[{\mbox{\hyperlink{base_8h_ae36e9cd8818547939b8d03da347b3f56}{ccs\+\_\+distribution\+\_\+t}} $\ast$}]{distributions,  }\item[{size\+\_\+t $\ast$}]{num\+\_\+distributions\+\_\+ret }\end{DoxyParamCaption})}
+
+
+
+Get the distributions contained in a mixture distribution. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em distribution} & \\
+\hline
+\mbox{\texttt{ in}}  & {\em num\+\_\+distributions} & the number of distributions that can be contained in {\ttfamily distributions}. If {\ttfamily distributions} is not NULL, {\ttfamily num\+\_\+distributions} must be greater than 0 \\
+\hline
+\mbox{\texttt{ out}}  & {\em distributions} & an array of {\ttfamily distributions} that will contain the returned distributions, or NULL. If the array is too big, extra values are set to NULL \\
+\hline
+\mbox{\texttt{ out}}  & {\em num\+\_\+distributions\+\_\+ret} & a pointer to a variable that will contain the number of distributions that are or would be returned. Can be NULL \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a092b9c7d2bc9ac00a6f53e251c8619b8}{CCS\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0adb4bc5cfc4f985bf59ae223f3e22b9f9}{CCS\+\_\+\+INVALID\+\_\+\+VALUE}} if {\ttfamily distributions} is NULL and num\+\_\+distributions is greater than 0; or if {\ttfamily distributions} is NULL and num\+\_\+distributions\+\_\+ret is NULL 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a4707835c3fcb2303089c76bbcbf96df5}{CCS\+\_\+\+INVALID\+\_\+\+OBJECT}} if {\ttfamily distribution} is not a valid CCS distribution 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a2199c049fddf061a424dab07e2e1422b}{CCS\+\_\+\+INVALID\+\_\+\+DISTRIBUTION}} if {\ttfamily distribution} is not a mixture distribution 
+\end{DoxyReturn}
+\mbox{\Hypertarget{distribution_8h_ab779c37d95708dccfffa3a723532bfd8}\label{distribution_8h_ab779c37d95708dccfffa3a723532bfd8}} 
+\index{distribution.h@{distribution.h}!ccs\_mixture\_distribution\_get\_num\_distributions@{ccs\_mixture\_distribution\_get\_num\_distributions}}
+\index{ccs\_mixture\_distribution\_get\_num\_distributions@{ccs\_mixture\_distribution\_get\_num\_distributions}!distribution.h@{distribution.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_mixture\_distribution\_get\_num\_distributions()}{ccs\_mixture\_distribution\_get\_num\_distributions()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} ccs\+\_\+mixture\+\_\+distribution\+\_\+get\+\_\+num\+\_\+distributions (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_ae36e9cd8818547939b8d03da347b3f56}{ccs\+\_\+distribution\+\_\+t}}}]{distribution,  }\item[{size\+\_\+t $\ast$}]{num\+\_\+distributions\+\_\+ret }\end{DoxyParamCaption})}
+
+
+
+Get the number of distributions contained in a mixture distribution. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em distribution} & \\
+\hline
+\mbox{\texttt{ in}}  & {\em num\+\_\+distributions\+\_\+ret} & a pointer to a variable that will contain the number of distributions contained in the distribution \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a092b9c7d2bc9ac00a6f53e251c8619b8}{CCS\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0adb4bc5cfc4f985bf59ae223f3e22b9f9}{CCS\+\_\+\+INVALID\+\_\+\+VALUE}} if {\ttfamily num\+\_\+distributions\+\_\+ret} is NULL 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a4707835c3fcb2303089c76bbcbf96df5}{CCS\+\_\+\+INVALID\+\_\+\+OBJECT}} if {\ttfamily distribution} is not a valid CCS distribution 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a2199c049fddf061a424dab07e2e1422b}{CCS\+\_\+\+INVALID\+\_\+\+DISTRIBUTION}} if {\ttfamily distribution} is not a mixture distribution 
+\end{DoxyReturn}
+\mbox{\Hypertarget{distribution_8h_a0a0a5a88ed673bd0b36ce70c1d38bb4a}\label{distribution_8h_a0a0a5a88ed673bd0b36ce70c1d38bb4a}} 
+\index{distribution.h@{distribution.h}!ccs\_mixture\_distribution\_get\_weights@{ccs\_mixture\_distribution\_get\_weights}}
+\index{ccs\_mixture\_distribution\_get\_weights@{ccs\_mixture\_distribution\_get\_weights}!distribution.h@{distribution.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_mixture\_distribution\_get\_weights()}{ccs\_mixture\_distribution\_get\_weights()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} ccs\+\_\+mixture\+\_\+distribution\+\_\+get\+\_\+weights (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_ae36e9cd8818547939b8d03da347b3f56}{ccs\+\_\+distribution\+\_\+t}}}]{distribution,  }\item[{size\+\_\+t}]{num\+\_\+weights,  }\item[{\mbox{\hyperlink{base_8h_a8a8cddcd4f5ce78a2fbb0a44743e88c5}{ccs\+\_\+float\+\_\+t}} $\ast$}]{weights,  }\item[{size\+\_\+t $\ast$}]{num\+\_\+weights\+\_\+ret }\end{DoxyParamCaption})}
+
+
+
+Get the normalized weights of a mixture distribution. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em distribution} & \\
+\hline
+\mbox{\texttt{ in}}  & {\em num\+\_\+weights} & the number of weight that can be contained in {\ttfamily weights}. If {\ttfamily weights} is not NULL, {\ttfamily num\+\_\+weights} must be greater than 0 \\
+\hline
+\mbox{\texttt{ out}}  & {\em weights} & an array of {\ttfamily num\+\_\+weights} floating point values that will contain the weights of the distributions, or NULL. If the array is too big, extra values are set to 0 \\
+\hline
+\mbox{\texttt{ out}}  & {\em num\+\_\+weights\+\_\+ret} & a pointer to a variable that will contain the number of weights that are or would be returned. Can be NULL \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a092b9c7d2bc9ac00a6f53e251c8619b8}{CCS\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0adb4bc5cfc4f985bf59ae223f3e22b9f9}{CCS\+\_\+\+INVALID\+\_\+\+VALUE}} if {\ttfamily weights} is NULL and num\+\_\+weights is greater than 0; or if {\ttfamily weights} is NULL and num\+\_\+weights\+\_\+ret is NULL 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a4707835c3fcb2303089c76bbcbf96df5}{CCS\+\_\+\+INVALID\+\_\+\+OBJECT}} if {\ttfamily distribution} is not a valid CCS distribution 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a2199c049fddf061a424dab07e2e1422b}{CCS\+\_\+\+INVALID\+\_\+\+DISTRIBUTION}} if {\ttfamily distribution} is not a mixture distribution 
+\end{DoxyReturn}
+\mbox{\Hypertarget{distribution_8h_ae17715ed4ac81d2eb7a913123789f6b4}\label{distribution_8h_ae17715ed4ac81d2eb7a913123789f6b4}} 
+\index{distribution.h@{distribution.h}!ccs\_multivariate\_distribution\_get\_distributions@{ccs\_multivariate\_distribution\_get\_distributions}}
+\index{ccs\_multivariate\_distribution\_get\_distributions@{ccs\_multivariate\_distribution\_get\_distributions}!distribution.h@{distribution.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_multivariate\_distribution\_get\_distributions()}{ccs\_multivariate\_distribution\_get\_distributions()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} ccs\+\_\+multivariate\+\_\+distribution\+\_\+get\+\_\+distributions (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_ae36e9cd8818547939b8d03da347b3f56}{ccs\+\_\+distribution\+\_\+t}}}]{distribution,  }\item[{size\+\_\+t}]{num\+\_\+distributions,  }\item[{\mbox{\hyperlink{base_8h_ae36e9cd8818547939b8d03da347b3f56}{ccs\+\_\+distribution\+\_\+t}} $\ast$}]{distributions,  }\item[{size\+\_\+t $\ast$}]{num\+\_\+distributions\+\_\+ret }\end{DoxyParamCaption})}
+
+
+
+Get the distributions contained in a multivariate distribution. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em distribution} & \\
+\hline
+\mbox{\texttt{ in}}  & {\em num\+\_\+distributions} & the number of distributions that can be contained in {\ttfamily distributions}. If {\ttfamily distributions} is not NULL, {\ttfamily num\+\_\+distributions} must be greater than 0 \\
+\hline
+\mbox{\texttt{ out}}  & {\em distributions} & an array of {\ttfamily distributions} that will contain the returned distributions, or NULL. If the array is too big, extra values are set to NULL \\
+\hline
+\mbox{\texttt{ out}}  & {\em num\+\_\+distributions\+\_\+ret} & a pointer to a variable that will contain the number of distributions that are or would be returned. Can be NULL \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a092b9c7d2bc9ac00a6f53e251c8619b8}{CCS\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0adb4bc5cfc4f985bf59ae223f3e22b9f9}{CCS\+\_\+\+INVALID\+\_\+\+VALUE}} if {\ttfamily distributions} is NULL and num\+\_\+distributions is greater than 0; or if {\ttfamily distributions} is NULL and num\+\_\+distributions\+\_\+ret is NULL 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a4707835c3fcb2303089c76bbcbf96df5}{CCS\+\_\+\+INVALID\+\_\+\+OBJECT}} if {\ttfamily distribution} is not a valid CCS distribution 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a2199c049fddf061a424dab07e2e1422b}{CCS\+\_\+\+INVALID\+\_\+\+DISTRIBUTION}} if {\ttfamily distribution} is not a multivariate distribution 
+\end{DoxyReturn}
+\mbox{\Hypertarget{distribution_8h_a4414987676a111b90acd7d39161d1912}\label{distribution_8h_a4414987676a111b90acd7d39161d1912}} 
+\index{distribution.h@{distribution.h}!ccs\_multivariate\_distribution\_get\_num\_distributions@{ccs\_multivariate\_distribution\_get\_num\_distributions}}
+\index{ccs\_multivariate\_distribution\_get\_num\_distributions@{ccs\_multivariate\_distribution\_get\_num\_distributions}!distribution.h@{distribution.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_multivariate\_distribution\_get\_num\_distributions()}{ccs\_multivariate\_distribution\_get\_num\_distributions()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} ccs\+\_\+multivariate\+\_\+distribution\+\_\+get\+\_\+num\+\_\+distributions (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_ae36e9cd8818547939b8d03da347b3f56}{ccs\+\_\+distribution\+\_\+t}}}]{distribution,  }\item[{size\+\_\+t $\ast$}]{num\+\_\+distributions\+\_\+ret }\end{DoxyParamCaption})}
+
+
+
+Get the number of distributions contained in a multivariate distribution. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em distribution} & \\
+\hline
+\mbox{\texttt{ in}}  & {\em num\+\_\+distributions\+\_\+ret} & a pointer to a variable that will contain the number of distributions contained in the distribution \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a092b9c7d2bc9ac00a6f53e251c8619b8}{CCS\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0adb4bc5cfc4f985bf59ae223f3e22b9f9}{CCS\+\_\+\+INVALID\+\_\+\+VALUE}} if {\ttfamily num\+\_\+distributions\+\_\+ret} is NULL 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a4707835c3fcb2303089c76bbcbf96df5}{CCS\+\_\+\+INVALID\+\_\+\+OBJECT}} if {\ttfamily distribution} is not a valid CCS distribution 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a2199c049fddf061a424dab07e2e1422b}{CCS\+\_\+\+INVALID\+\_\+\+DISTRIBUTION}} if {\ttfamily distribution} is not a multivariate distribution 
+\end{DoxyReturn}
+\mbox{\Hypertarget{distribution_8h_a9e23824b9585441b4e3b324ad8e7987e}\label{distribution_8h_a9e23824b9585441b4e3b324ad8e7987e}} 
+\index{distribution.h@{distribution.h}!ccs\_normal\_distribution\_get\_parameters@{ccs\_normal\_distribution\_get\_parameters}}
+\index{ccs\_normal\_distribution\_get\_parameters@{ccs\_normal\_distribution\_get\_parameters}!distribution.h@{distribution.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_normal\_distribution\_get\_parameters()}{ccs\_normal\_distribution\_get\_parameters()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} ccs\+\_\+normal\+\_\+distribution\+\_\+get\+\_\+parameters (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_ae36e9cd8818547939b8d03da347b3f56}{ccs\+\_\+distribution\+\_\+t}}}]{distribution,  }\item[{\mbox{\hyperlink{base_8h_a8a8cddcd4f5ce78a2fbb0a44743e88c5}{ccs\+\_\+float\+\_\+t}} $\ast$}]{mu\+\_\+ret,  }\item[{\mbox{\hyperlink{base_8h_a8a8cddcd4f5ce78a2fbb0a44743e88c5}{ccs\+\_\+float\+\_\+t}} $\ast$}]{sigma\+\_\+ret,  }\item[{\mbox{\hyperlink{distribution_8h_a9d958c454b336fa93ad593cd404148ce}{ccs\+\_\+scale\+\_\+type\+\_\+t}} $\ast$}]{scale\+\_\+ret,  }\item[{\mbox{\hyperlink{base_8h_a981ec36df2f80935afde8b7a481f2d14}{ccs\+\_\+numeric\+\_\+t}} $\ast$}]{quantization\+\_\+ret }\end{DoxyParamCaption})}
+
+
+
+Get the parameters of a normal distribution. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em distribution} & \\
+\hline
+\mbox{\texttt{ out}}  & {\em mu\+\_\+ret} & an optional pointer to the variable that will contain the mean of the distribution \\
+\hline
+\mbox{\texttt{ out}}  & {\em sigma\+\_\+ret} & an optional pointer to the variable that will contain the standard deviation of the distribution \\
+\hline
+\mbox{\texttt{ out}}  & {\em scale\+\_\+ret} & an optional pointer to the variable that will contain the scale used by the distribution \\
+\hline
+\mbox{\texttt{ out}}  & {\em quantization\+\_\+ret} & an optional pointer to the variable that will contain the quantization used by the distribution \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a092b9c7d2bc9ac00a6f53e251c8619b8}{CCS\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0adb4bc5cfc4f985bf59ae223f3e22b9f9}{CCS\+\_\+\+INVALID\+\_\+\+VALUE}} if {\ttfamily mu\+\_\+ret} is NULL and {\ttfamily sigma\+\_\+ret} is NULL and {\ttfamily scale\+\_\+ret} is NULL and {\ttfamily quantization\+\_\+ret} is NULL 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a4707835c3fcb2303089c76bbcbf96df5}{CCS\+\_\+\+INVALID\+\_\+\+OBJECT}} if {\ttfamily distribution} is not a valid CCS distribution 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a2199c049fddf061a424dab07e2e1422b}{CCS\+\_\+\+INVALID\+\_\+\+DISTRIBUTION}} if {\ttfamily distribution} is not a normal distribution 
+\end{DoxyReturn}
+\mbox{\Hypertarget{distribution_8h_a33c63deba5ab24630f5e6d22cd69d89a}\label{distribution_8h_a33c63deba5ab24630f5e6d22cd69d89a}} 
+\index{distribution.h@{distribution.h}!ccs\_roulette\_distribution\_get\_areas@{ccs\_roulette\_distribution\_get\_areas}}
+\index{ccs\_roulette\_distribution\_get\_areas@{ccs\_roulette\_distribution\_get\_areas}!distribution.h@{distribution.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_roulette\_distribution\_get\_areas()}{ccs\_roulette\_distribution\_get\_areas()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} ccs\+\_\+roulette\+\_\+distribution\+\_\+get\+\_\+areas (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_ae36e9cd8818547939b8d03da347b3f56}{ccs\+\_\+distribution\+\_\+t}}}]{distribution,  }\item[{size\+\_\+t}]{num\+\_\+areas,  }\item[{\mbox{\hyperlink{base_8h_a8a8cddcd4f5ce78a2fbb0a44743e88c5}{ccs\+\_\+float\+\_\+t}} $\ast$}]{areas,  }\item[{size\+\_\+t $\ast$}]{num\+\_\+areas\+\_\+ret }\end{DoxyParamCaption})}
+
+
+
+Get the normalized areas of a roulette distribution. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em distribution} & \\
+\hline
+\mbox{\texttt{ in}}  & {\em num\+\_\+areas} & the number of area that can be contained in {\ttfamily areas}. If {\ttfamily areas} is not NULL, {\ttfamily num\+\_\+areas} must be greater than 0 \\
+\hline
+\mbox{\texttt{ out}}  & {\em areas} & an array of {\ttfamily num\+\_\+areas} floating point values that will contain the areas of the distributions, or NULL. If the array is too big, extra values are set to 0 \\
+\hline
+\mbox{\texttt{ out}}  & {\em num\+\_\+areas\+\_\+ret} & a pointer to a variable that will contain the number of areas that are or would be returned. Can be NULL \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a092b9c7d2bc9ac00a6f53e251c8619b8}{CCS\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0adb4bc5cfc4f985bf59ae223f3e22b9f9}{CCS\+\_\+\+INVALID\+\_\+\+VALUE}} if {\ttfamily areas} is NULL and num\+\_\+areas is greater than 0; or if {\ttfamily areas} is NULL and num\+\_\+areas\+\_\+ret is NULL 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a4707835c3fcb2303089c76bbcbf96df5}{CCS\+\_\+\+INVALID\+\_\+\+OBJECT}} if {\ttfamily distribution} is not a valid CCS distribution 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a2199c049fddf061a424dab07e2e1422b}{CCS\+\_\+\+INVALID\+\_\+\+DISTRIBUTION}} if {\ttfamily distribution} is not a roulette distribution 
+\end{DoxyReturn}
+\mbox{\Hypertarget{distribution_8h_a16569c3e48986c553faacfec981ad575}\label{distribution_8h_a16569c3e48986c553faacfec981ad575}} 
+\index{distribution.h@{distribution.h}!ccs\_roulette\_distribution\_get\_num\_areas@{ccs\_roulette\_distribution\_get\_num\_areas}}
+\index{ccs\_roulette\_distribution\_get\_num\_areas@{ccs\_roulette\_distribution\_get\_num\_areas}!distribution.h@{distribution.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_roulette\_distribution\_get\_num\_areas()}{ccs\_roulette\_distribution\_get\_num\_areas()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} ccs\+\_\+roulette\+\_\+distribution\+\_\+get\+\_\+num\+\_\+areas (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_ae36e9cd8818547939b8d03da347b3f56}{ccs\+\_\+distribution\+\_\+t}}}]{distribution,  }\item[{size\+\_\+t $\ast$}]{num\+\_\+areas\+\_\+ret }\end{DoxyParamCaption})}
+
+
+
+Get the number areas of a roulette distribution. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em distribution} & \\
+\hline
+\mbox{\texttt{ out}}  & {\em num\+\_\+areas\+\_\+ret} & a pointer to the variable that will contain the number of areas of the distribution \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a092b9c7d2bc9ac00a6f53e251c8619b8}{CCS\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0adb4bc5cfc4f985bf59ae223f3e22b9f9}{CCS\+\_\+\+INVALID\+\_\+\+VALUE}} if {\ttfamily num\+\_\+areas\+\_\+ret} is NULL 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a4707835c3fcb2303089c76bbcbf96df5}{CCS\+\_\+\+INVALID\+\_\+\+OBJECT}} if {\ttfamily distribution} is not a valid CCS distribution 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a2199c049fddf061a424dab07e2e1422b}{CCS\+\_\+\+INVALID\+\_\+\+DISTRIBUTION}} if {\ttfamily distribution} is not a roulette distribution 
+\end{DoxyReturn}
+\mbox{\Hypertarget{distribution_8h_a5fad054155168295395e248c1f561cdb}\label{distribution_8h_a5fad054155168295395e248c1f561cdb}} 
+\index{distribution.h@{distribution.h}!ccs\_uniform\_distribution\_get\_parameters@{ccs\_uniform\_distribution\_get\_parameters}}
+\index{ccs\_uniform\_distribution\_get\_parameters@{ccs\_uniform\_distribution\_get\_parameters}!distribution.h@{distribution.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_uniform\_distribution\_get\_parameters()}{ccs\_uniform\_distribution\_get\_parameters()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} ccs\+\_\+uniform\+\_\+distribution\+\_\+get\+\_\+parameters (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_ae36e9cd8818547939b8d03da347b3f56}{ccs\+\_\+distribution\+\_\+t}}}]{distribution,  }\item[{\mbox{\hyperlink{base_8h_a981ec36df2f80935afde8b7a481f2d14}{ccs\+\_\+numeric\+\_\+t}} $\ast$}]{lower\+\_\+ret,  }\item[{\mbox{\hyperlink{base_8h_a981ec36df2f80935afde8b7a481f2d14}{ccs\+\_\+numeric\+\_\+t}} $\ast$}]{upper\+\_\+ret,  }\item[{\mbox{\hyperlink{distribution_8h_a9d958c454b336fa93ad593cd404148ce}{ccs\+\_\+scale\+\_\+type\+\_\+t}} $\ast$}]{scale\+\_\+ret,  }\item[{\mbox{\hyperlink{base_8h_a981ec36df2f80935afde8b7a481f2d14}{ccs\+\_\+numeric\+\_\+t}} $\ast$}]{quantization\+\_\+ret }\end{DoxyParamCaption})}
+
+
+
+Get the parameters of a uniform distribution. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em distribution} & \\
+\hline
+\mbox{\texttt{ out}}  & {\em lower\+\_\+ret} & an optional pointer to the variable that will contain the lower bound of the distribution \\
+\hline
+\mbox{\texttt{ out}}  & {\em upper\+\_\+ret} & an optional pointer to the variable that will contain the upper bound of the distribution \\
+\hline
+\mbox{\texttt{ out}}  & {\em scale\+\_\+ret} & an optional pointer to the variable that will contain the scale used by the distribution \\
+\hline
+\mbox{\texttt{ out}}  & {\em quantization\+\_\+ret} & an optional pointer to the variable that will contain the quantization used by the distribution \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a092b9c7d2bc9ac00a6f53e251c8619b8}{CCS\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0adb4bc5cfc4f985bf59ae223f3e22b9f9}{CCS\+\_\+\+INVALID\+\_\+\+VALUE}} if {\ttfamily lower\+\_\+ret} is NULL and {\ttfamily upper\+\_\+ret} is NULL and {\ttfamily scale\+\_\+ret} is NULL and {\ttfamily quantization\+\_\+ret} is NULL 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a4707835c3fcb2303089c76bbcbf96df5}{CCS\+\_\+\+INVALID\+\_\+\+OBJECT}} if {\ttfamily distribution} is not a valid CCS distribution 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a2199c049fddf061a424dab07e2e1422b}{CCS\+\_\+\+INVALID\+\_\+\+DISTRIBUTION}} if {\ttfamily distribution} is not a uniform distribution 
+\end{DoxyReturn}

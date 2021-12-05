@@ -1,0 +1,758 @@
+\hypertarget{hyperparameter_8h}{}\doxysection{include/cconfigspace/hyperparameter.h File Reference}
+\label{hyperparameter_8h}\index{include/cconfigspace/hyperparameter.h@{include/cconfigspace/hyperparameter.h}}
+
+
+Hyperparameters are parameters the when grouped together define a tuning context (see \mbox{\hyperlink{context_8h}{context.\+h}}).  
+
+
+This graph shows which files directly or indirectly include this file\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=196pt]{hyperparameter_8h__dep__incl}
+\end{center}
+\end{figure}
+\doxysubsection*{Typedefs}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{hyperparameter_8h_acd145700408a39a0506eac5da26cfb46}\label{hyperparameter_8h_acd145700408a39a0506eac5da26cfb46}} 
+typedef enum \mbox{\hyperlink{hyperparameter_8h_a4572c55f1ca4cfea112cf6e330e72a0b}{ccs\+\_\+hyperparameter\+\_\+type\+\_\+e}} \mbox{\hyperlink{hyperparameter_8h_acd145700408a39a0506eac5da26cfb46}{ccs\+\_\+hyperparameter\+\_\+type\+\_\+t}}
+\begin{DoxyCompactList}\small\item\em A commodity type to represent a hyperparameter type. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Enumerations}
+\begin{DoxyCompactItemize}
+\item 
+enum \mbox{\hyperlink{hyperparameter_8h_a4572c55f1ca4cfea112cf6e330e72a0b}{ccs\+\_\+hyperparameter\+\_\+type\+\_\+e}} \{ \newline
+\mbox{\hyperlink{hyperparameter_8h_a4572c55f1ca4cfea112cf6e330e72a0ba110770866699f3ff88104121757fd574}{CCS\+\_\+\+HYPERPARAMETER\+\_\+\+TYPE\+\_\+\+NUMERICAL}}
+, \mbox{\hyperlink{hyperparameter_8h_a4572c55f1ca4cfea112cf6e330e72a0ba848ae2735e94a2446fa8cde52b29f98b}{CCS\+\_\+\+HYPERPARAMETER\+\_\+\+TYPE\+\_\+\+CATEGORICAL}}
+, \mbox{\hyperlink{hyperparameter_8h_a4572c55f1ca4cfea112cf6e330e72a0baf972d3f1873e556899e1336e0df11b55}{CCS\+\_\+\+HYPERPARAMETER\+\_\+\+TYPE\+\_\+\+ORDINAL}}
+, \mbox{\hyperlink{hyperparameter_8h_a4572c55f1ca4cfea112cf6e330e72a0ba6c314c929c0a2e38c59502ce28f6ee25}{CCS\+\_\+\+HYPERPARAMETER\+\_\+\+TYPE\+\_\+\+DISCRETE}}
+, \newline
+\mbox{\hyperlink{hyperparameter_8h_a4572c55f1ca4cfea112cf6e330e72a0bac4356405c7fe21f09cbc4db9e28453f4}{CCS\+\_\+\+HYPERPARAMETER\+\_\+\+TYPE\+\_\+\+STRING}}
+, \mbox{\hyperlink{hyperparameter_8h_a4572c55f1ca4cfea112cf6e330e72a0bac629460e948db0f657a6e1116fa6cdbd}{CCS\+\_\+\+HYPERPARAMETER\+\_\+\+TYPE\+\_\+\+MAX}}
+, \mbox{\hyperlink{hyperparameter_8h_a4572c55f1ca4cfea112cf6e330e72a0ba2d7c66312cc4c8f3a89b1d65d5fb3cf2}{CCS\+\_\+\+HYPERPARAMETER\+\_\+\+TYPE\+\_\+\+FORCE\+\_\+32\+BIT}} = INT\+\_\+\+MAX
+ \}
+\begin{DoxyCompactList}\small\item\em CCS hyperparameter types. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} \mbox{\hyperlink{hyperparameter_8h_ab13120891603ecb9a4c7c2200cfddebf}{ccs\+\_\+create\+\_\+numerical\+\_\+hyperparameter}} (const char $\ast$name, \mbox{\hyperlink{base_8h_abb2e002510c51102a01c222ebd36ce2c}{ccs\+\_\+numeric\+\_\+type\+\_\+t}} data\+\_\+type, \mbox{\hyperlink{base_8h_a981ec36df2f80935afde8b7a481f2d14}{ccs\+\_\+numeric\+\_\+t}} lower, \mbox{\hyperlink{base_8h_a981ec36df2f80935afde8b7a481f2d14}{ccs\+\_\+numeric\+\_\+t}} upper, \mbox{\hyperlink{base_8h_a981ec36df2f80935afde8b7a481f2d14}{ccs\+\_\+numeric\+\_\+t}} quantization, \mbox{\hyperlink{base_8h_a981ec36df2f80935afde8b7a481f2d14}{ccs\+\_\+numeric\+\_\+t}} default\+\_\+value, \mbox{\hyperlink{base_8h_a0b796ce449059870d5bbb77f20925b50}{ccs\+\_\+hyperparameter\+\_\+t}} $\ast$hyperparameter\+\_\+ret)
+\begin{DoxyCompactList}\small\item\em Create a new numerical hyperparameter of the specified data\+\_\+type. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} \mbox{\hyperlink{hyperparameter_8h_ac0d421d3f592610f912c50739e5b5d68}{ccs\+\_\+numerical\+\_\+hyperparameter\+\_\+get\+\_\+parameters}} (\mbox{\hyperlink{base_8h_a0b796ce449059870d5bbb77f20925b50}{ccs\+\_\+hyperparameter\+\_\+t}} hyperparameter, \mbox{\hyperlink{base_8h_abb2e002510c51102a01c222ebd36ce2c}{ccs\+\_\+numeric\+\_\+type\+\_\+t}} $\ast$data\+\_\+type\+\_\+ret, \mbox{\hyperlink{base_8h_a981ec36df2f80935afde8b7a481f2d14}{ccs\+\_\+numeric\+\_\+t}} $\ast$lower\+\_\+ret, \mbox{\hyperlink{base_8h_a981ec36df2f80935afde8b7a481f2d14}{ccs\+\_\+numeric\+\_\+t}} $\ast$upper\+\_\+ret, \mbox{\hyperlink{base_8h_a981ec36df2f80935afde8b7a481f2d14}{ccs\+\_\+numeric\+\_\+t}} $\ast$quantization\+\_\+ret)
+\begin{DoxyCompactList}\small\item\em Get the parameters used to create a numerical hyperparameter. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} \mbox{\hyperlink{hyperparameter_8h_aa2aefdfc0d826f26e20054eb51137519}{ccs\+\_\+create\+\_\+categorical\+\_\+hyperparameter}} (const char $\ast$name, size\+\_\+t num\+\_\+possible\+\_\+values, \mbox{\hyperlink{base_8h_a36bc36b2bb0d0613453dd731cdcd2048}{ccs\+\_\+datum\+\_\+t}} $\ast$possible\+\_\+values, size\+\_\+t default\+\_\+value\+\_\+index, \mbox{\hyperlink{base_8h_a0b796ce449059870d5bbb77f20925b50}{ccs\+\_\+hyperparameter\+\_\+t}} $\ast$hyperparameter\+\_\+ret)
+\begin{DoxyCompactList}\small\item\em Create a new categorical hyperparameter. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} \mbox{\hyperlink{hyperparameter_8h_a5656b71268e5238c192f65009d177866}{ccs\+\_\+categorical\+\_\+hyperparameter\+\_\+get\+\_\+values}} (\mbox{\hyperlink{base_8h_a0b796ce449059870d5bbb77f20925b50}{ccs\+\_\+hyperparameter\+\_\+t}} hyperparameter, size\+\_\+t num\+\_\+possible\+\_\+values, \mbox{\hyperlink{base_8h_a36bc36b2bb0d0613453dd731cdcd2048}{ccs\+\_\+datum\+\_\+t}} $\ast$possible\+\_\+values, size\+\_\+t $\ast$num\+\_\+possible\+\_\+values\+\_\+ret)
+\begin{DoxyCompactList}\small\item\em Get the possible values of a categorical hyperparameter. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} \mbox{\hyperlink{hyperparameter_8h_a5864e079719ae0d38f9edde719ab070a}{ccs\+\_\+create\+\_\+ordinal\+\_\+hyperparameter}} (const char $\ast$name, size\+\_\+t num\+\_\+possible\+\_\+values, \mbox{\hyperlink{base_8h_a36bc36b2bb0d0613453dd731cdcd2048}{ccs\+\_\+datum\+\_\+t}} $\ast$possible\+\_\+values, size\+\_\+t default\+\_\+value\+\_\+index, \mbox{\hyperlink{base_8h_a0b796ce449059870d5bbb77f20925b50}{ccs\+\_\+hyperparameter\+\_\+t}} $\ast$hyperparameter\+\_\+ret)
+\begin{DoxyCompactList}\small\item\em Create a new ordinal hyperparameter. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} \mbox{\hyperlink{hyperparameter_8h_a4e4c8c8f460c3036df92af960cd68a25}{ccs\+\_\+ordinal\+\_\+hyperparameter\+\_\+get\+\_\+values}} (\mbox{\hyperlink{base_8h_a0b796ce449059870d5bbb77f20925b50}{ccs\+\_\+hyperparameter\+\_\+t}} hyperparameter, size\+\_\+t num\+\_\+possible\+\_\+values, \mbox{\hyperlink{base_8h_a36bc36b2bb0d0613453dd731cdcd2048}{ccs\+\_\+datum\+\_\+t}} $\ast$possible\+\_\+values, size\+\_\+t $\ast$num\+\_\+possible\+\_\+values\+\_\+ret)
+\begin{DoxyCompactList}\small\item\em Get the possible values of an ordinal hyperparameter. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} \mbox{\hyperlink{hyperparameter_8h_a8501bd8f66efcc5f31a2f5e3e64670b1}{ccs\+\_\+ordinal\+\_\+hyperparameter\+\_\+compare\+\_\+values}} (\mbox{\hyperlink{base_8h_a0b796ce449059870d5bbb77f20925b50}{ccs\+\_\+hyperparameter\+\_\+t}} hyperparameter, \mbox{\hyperlink{base_8h_a36bc36b2bb0d0613453dd731cdcd2048}{ccs\+\_\+datum\+\_\+t}} value1, \mbox{\hyperlink{base_8h_a36bc36b2bb0d0613453dd731cdcd2048}{ccs\+\_\+datum\+\_\+t}} value2, \mbox{\hyperlink{base_8h_a04670829a660b2aab58c0377468f0de8}{ccs\+\_\+int\+\_\+t}} $\ast$comp\+\_\+ret)
+\begin{DoxyCompactList}\small\item\em Compare two values in the context of an ordinal hyperparameter. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} \mbox{\hyperlink{hyperparameter_8h_aba2ea14ec557cfa9570e8397803f9dfe}{ccs\+\_\+create\+\_\+discrete\+\_\+hyperparameter}} (const char $\ast$name, size\+\_\+t num\+\_\+possible\+\_\+values, \mbox{\hyperlink{base_8h_a36bc36b2bb0d0613453dd731cdcd2048}{ccs\+\_\+datum\+\_\+t}} $\ast$possible\+\_\+values, size\+\_\+t default\+\_\+value\+\_\+index, \mbox{\hyperlink{base_8h_a0b796ce449059870d5bbb77f20925b50}{ccs\+\_\+hyperparameter\+\_\+t}} $\ast$hyperparameter\+\_\+ret)
+\begin{DoxyCompactList}\small\item\em Create a new discrete hyperparameter. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} \mbox{\hyperlink{hyperparameter_8h_a79cc5464045d47d72310c44cd7ee00bf}{ccs\+\_\+discrete\+\_\+hyperparameter\+\_\+get\+\_\+values}} (\mbox{\hyperlink{base_8h_a0b796ce449059870d5bbb77f20925b50}{ccs\+\_\+hyperparameter\+\_\+t}} hyperparameter, size\+\_\+t num\+\_\+possible\+\_\+values, \mbox{\hyperlink{base_8h_a36bc36b2bb0d0613453dd731cdcd2048}{ccs\+\_\+datum\+\_\+t}} $\ast$possible\+\_\+values, size\+\_\+t $\ast$num\+\_\+possible\+\_\+values\+\_\+ret)
+\begin{DoxyCompactList}\small\item\em Get the possible values of an discrete hyperparameter. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} \mbox{\hyperlink{hyperparameter_8h_aa4b470ba1faa0630eb3a96b89297b709}{ccs\+\_\+create\+\_\+string\+\_\+hyperparameter}} (const char $\ast$name, \mbox{\hyperlink{base_8h_a0b796ce449059870d5bbb77f20925b50}{ccs\+\_\+hyperparameter\+\_\+t}} $\ast$hyperparameter\+\_\+ret)
+\begin{DoxyCompactList}\small\item\em Create an new hyperparameter representing an undetermined string, to be used within feature space. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} \mbox{\hyperlink{hyperparameter_8h_ad6d6293dd730b955500d3f71b6b48d90}{ccs\+\_\+hyperparameter\+\_\+get\+\_\+type}} (\mbox{\hyperlink{base_8h_a0b796ce449059870d5bbb77f20925b50}{ccs\+\_\+hyperparameter\+\_\+t}} hyperparameter, \mbox{\hyperlink{hyperparameter_8h_acd145700408a39a0506eac5da26cfb46}{ccs\+\_\+hyperparameter\+\_\+type\+\_\+t}} $\ast$type\+\_\+ret)
+\begin{DoxyCompactList}\small\item\em Get the type of a hyperparameter. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} \mbox{\hyperlink{hyperparameter_8h_aeba3b0b8bfee25d2cf75e576582a420d}{ccs\+\_\+hyperparameter\+\_\+get\+\_\+default\+\_\+value}} (\mbox{\hyperlink{base_8h_a0b796ce449059870d5bbb77f20925b50}{ccs\+\_\+hyperparameter\+\_\+t}} hyperparameter, \mbox{\hyperlink{base_8h_a36bc36b2bb0d0613453dd731cdcd2048}{ccs\+\_\+datum\+\_\+t}} $\ast$value\+\_\+ret)
+\begin{DoxyCompactList}\small\item\em Get the default value of an hyperparameter. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} \mbox{\hyperlink{hyperparameter_8h_a9264238e216366c5f814c151a32213ed}{ccs\+\_\+hyperparameter\+\_\+get\+\_\+name}} (\mbox{\hyperlink{base_8h_a0b796ce449059870d5bbb77f20925b50}{ccs\+\_\+hyperparameter\+\_\+t}} hyperparameter, const char $\ast$$\ast$name\+\_\+ret)
+\begin{DoxyCompactList}\small\item\em Get the name of a hyperparameter. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} \mbox{\hyperlink{hyperparameter_8h_a686d8ae0e2435c5cf79f3de1c2ebc120}{ccs\+\_\+hyperparameter\+\_\+get\+\_\+default\+\_\+distribution}} (\mbox{\hyperlink{base_8h_a0b796ce449059870d5bbb77f20925b50}{ccs\+\_\+hyperparameter\+\_\+t}} hyperparameter, \mbox{\hyperlink{base_8h_ae36e9cd8818547939b8d03da347b3f56}{ccs\+\_\+distribution\+\_\+t}} $\ast$distribution\+\_\+ret)
+\begin{DoxyCompactList}\small\item\em Get the default distribution of a hyperparameter. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} \mbox{\hyperlink{hyperparameter_8h_ab8d10d0122ad4d92ddefc9882229f736}{ccs\+\_\+hyperparameter\+\_\+check\+\_\+value}} (\mbox{\hyperlink{base_8h_a0b796ce449059870d5bbb77f20925b50}{ccs\+\_\+hyperparameter\+\_\+t}} hyperparameter, \mbox{\hyperlink{base_8h_a36bc36b2bb0d0613453dd731cdcd2048}{ccs\+\_\+datum\+\_\+t}} value, \mbox{\hyperlink{base_8h_a0e8ba2dfd397017939e6ea2ebc4bb037}{ccs\+\_\+bool\+\_\+t}} $\ast$result\+\_\+ret)
+\begin{DoxyCompactList}\small\item\em Check if a value is acceptable for a hyperparameter. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} \mbox{\hyperlink{hyperparameter_8h_a489206cbda39583a7910face420eaaad}{ccs\+\_\+hyperparameter\+\_\+check\+\_\+values}} (\mbox{\hyperlink{base_8h_a0b796ce449059870d5bbb77f20925b50}{ccs\+\_\+hyperparameter\+\_\+t}} hyperparameter, size\+\_\+t num\+\_\+values, const \mbox{\hyperlink{base_8h_a36bc36b2bb0d0613453dd731cdcd2048}{ccs\+\_\+datum\+\_\+t}} $\ast$values, \mbox{\hyperlink{base_8h_a0e8ba2dfd397017939e6ea2ebc4bb037}{ccs\+\_\+bool\+\_\+t}} $\ast$results)
+\begin{DoxyCompactList}\small\item\em Check if an array of values are acceptable for a hyperparameter. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} \mbox{\hyperlink{hyperparameter_8h_a563718ed1b4ccaef27ff27286859bfe5}{ccs\+\_\+hyperparameter\+\_\+validate\+\_\+value}} (\mbox{\hyperlink{base_8h_a0b796ce449059870d5bbb77f20925b50}{ccs\+\_\+hyperparameter\+\_\+t}} hyperparameter, \mbox{\hyperlink{base_8h_a36bc36b2bb0d0613453dd731cdcd2048}{ccs\+\_\+datum\+\_\+t}} value, \mbox{\hyperlink{base_8h_a36bc36b2bb0d0613453dd731cdcd2048}{ccs\+\_\+datum\+\_\+t}} $\ast$value\+\_\+ret, \mbox{\hyperlink{base_8h_a0e8ba2dfd397017939e6ea2ebc4bb037}{ccs\+\_\+bool\+\_\+t}} $\ast$result\+\_\+ret)
+\begin{DoxyCompactList}\small\item\em Check if a value is acceptable for a hyperparameter and if it is return a marshalled value. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} \mbox{\hyperlink{hyperparameter_8h_a78c6f4340c60e4ee2c83422c1d7ffd18}{ccs\+\_\+hyperparameter\+\_\+validate\+\_\+values}} (\mbox{\hyperlink{base_8h_a0b796ce449059870d5bbb77f20925b50}{ccs\+\_\+hyperparameter\+\_\+t}} hyperparameter, size\+\_\+t num\+\_\+values, const \mbox{\hyperlink{base_8h_a36bc36b2bb0d0613453dd731cdcd2048}{ccs\+\_\+datum\+\_\+t}} $\ast$values, \mbox{\hyperlink{base_8h_a36bc36b2bb0d0613453dd731cdcd2048}{ccs\+\_\+datum\+\_\+t}} $\ast$values\+\_\+ret, \mbox{\hyperlink{base_8h_a0e8ba2dfd397017939e6ea2ebc4bb037}{ccs\+\_\+bool\+\_\+t}} $\ast$results)
+\begin{DoxyCompactList}\small\item\em Check if an array of values are acceptable for a hyperparameter and return marshalled values if they are valid. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} \mbox{\hyperlink{hyperparameter_8h_abc1d43b49c305881afdbb29ecaac9097}{ccs\+\_\+hyperparameter\+\_\+convert\+\_\+samples}} (\mbox{\hyperlink{base_8h_a0b796ce449059870d5bbb77f20925b50}{ccs\+\_\+hyperparameter\+\_\+t}} hyperparameter, \mbox{\hyperlink{base_8h_a0e8ba2dfd397017939e6ea2ebc4bb037}{ccs\+\_\+bool\+\_\+t}} oversampling, size\+\_\+t num\+\_\+values, const \mbox{\hyperlink{base_8h_a981ec36df2f80935afde8b7a481f2d14}{ccs\+\_\+numeric\+\_\+t}} $\ast$values, \mbox{\hyperlink{base_8h_a36bc36b2bb0d0613453dd731cdcd2048}{ccs\+\_\+datum\+\_\+t}} $\ast$results)
+\begin{DoxyCompactList}\small\item\em Convert numerical samples into samples from the hyperparameter. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} \mbox{\hyperlink{hyperparameter_8h_affaf4e956bf8eb8b1071eca438d75d2f}{ccs\+\_\+hyperparameter\+\_\+sample}} (\mbox{\hyperlink{base_8h_a0b796ce449059870d5bbb77f20925b50}{ccs\+\_\+hyperparameter\+\_\+t}} hyperparameter, \mbox{\hyperlink{base_8h_ae36e9cd8818547939b8d03da347b3f56}{ccs\+\_\+distribution\+\_\+t}} distribution, \mbox{\hyperlink{base_8h_ae22dde737fcdf67d5a9fa497bc054027}{ccs\+\_\+rng\+\_\+t}} rng, \mbox{\hyperlink{base_8h_a36bc36b2bb0d0613453dd731cdcd2048}{ccs\+\_\+datum\+\_\+t}} $\ast$value\+\_\+ret)
+\begin{DoxyCompactList}\small\item\em Get a sample from the hyperparameter sampled by a given distribution. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} \mbox{\hyperlink{hyperparameter_8h_a35fc3ccc35d9845ead78df56cd5be640}{ccs\+\_\+hyperparameter\+\_\+samples}} (\mbox{\hyperlink{base_8h_a0b796ce449059870d5bbb77f20925b50}{ccs\+\_\+hyperparameter\+\_\+t}} hyperparameter, \mbox{\hyperlink{base_8h_ae36e9cd8818547939b8d03da347b3f56}{ccs\+\_\+distribution\+\_\+t}} distribution, \mbox{\hyperlink{base_8h_ae22dde737fcdf67d5a9fa497bc054027}{ccs\+\_\+rng\+\_\+t}} rng, size\+\_\+t num\+\_\+values, \mbox{\hyperlink{base_8h_a36bc36b2bb0d0613453dd731cdcd2048}{ccs\+\_\+datum\+\_\+t}} $\ast$values)
+\begin{DoxyCompactList}\small\item\em Get samples from the hyperparameter sampled by a given distribution. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} \mbox{\hyperlink{hyperparameter_8h_af895ac0d7a05ec6268ab56f1e145b20c}{ccs\+\_\+hyperparameter\+\_\+sampling\+\_\+interval}} (\mbox{\hyperlink{base_8h_a0b796ce449059870d5bbb77f20925b50}{ccs\+\_\+hyperparameter\+\_\+t}} hyperparameter, \mbox{\hyperlink{interval_8h_a9659e1ee54b3809075e58db013e96558}{ccs\+\_\+interval\+\_\+t}} $\ast$interval\+\_\+ret)
+\begin{DoxyCompactList}\small\item\em Get the valid sampling interval of the hyperparameter. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Hyperparameters are parameters the when grouped together define a tuning context (see \mbox{\hyperlink{context_8h}{context.\+h}}). 
+
+Most hyperparameters can be sampled according to a distribution\textquotesingle{}s dimension (see \mbox{\hyperlink{distribution_8h}{distribution.\+h}}). 
+
+\doxysubsection{Enumeration Type Documentation}
+\mbox{\Hypertarget{hyperparameter_8h_a4572c55f1ca4cfea112cf6e330e72a0b}\label{hyperparameter_8h_a4572c55f1ca4cfea112cf6e330e72a0b}} 
+\index{hyperparameter.h@{hyperparameter.h}!ccs\_hyperparameter\_type\_e@{ccs\_hyperparameter\_type\_e}}
+\index{ccs\_hyperparameter\_type\_e@{ccs\_hyperparameter\_type\_e}!hyperparameter.h@{hyperparameter.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_hyperparameter\_type\_e}{ccs\_hyperparameter\_type\_e}}
+{\footnotesize\ttfamily enum \mbox{\hyperlink{hyperparameter_8h_a4572c55f1ca4cfea112cf6e330e72a0b}{ccs\+\_\+hyperparameter\+\_\+type\+\_\+e}}}
+
+
+
+CCS hyperparameter types. 
+
+\begin{DoxyEnumFields}{Enumerator}
+\raisebox{\heightof{T}}[0pt][0pt]{\index{CCS\_HYPERPARAMETER\_TYPE\_NUMERICAL@{CCS\_HYPERPARAMETER\_TYPE\_NUMERICAL}!hyperparameter.h@{hyperparameter.h}}\index{hyperparameter.h@{hyperparameter.h}!CCS\_HYPERPARAMETER\_TYPE\_NUMERICAL@{CCS\_HYPERPARAMETER\_TYPE\_NUMERICAL}}}\mbox{\Hypertarget{hyperparameter_8h_a4572c55f1ca4cfea112cf6e330e72a0ba110770866699f3ff88104121757fd574}\label{hyperparameter_8h_a4572c55f1ca4cfea112cf6e330e72a0ba110770866699f3ff88104121757fd574}} 
+CCS\+\_\+\+HYPERPARAMETER\+\_\+\+TYPE\+\_\+\+NUMERICAL&A numerical hyperparameter, over intergers or floating point values. \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{CCS\_HYPERPARAMETER\_TYPE\_CATEGORICAL@{CCS\_HYPERPARAMETER\_TYPE\_CATEGORICAL}!hyperparameter.h@{hyperparameter.h}}\index{hyperparameter.h@{hyperparameter.h}!CCS\_HYPERPARAMETER\_TYPE\_CATEGORICAL@{CCS\_HYPERPARAMETER\_TYPE\_CATEGORICAL}}}\mbox{\Hypertarget{hyperparameter_8h_a4572c55f1ca4cfea112cf6e330e72a0ba848ae2735e94a2446fa8cde52b29f98b}\label{hyperparameter_8h_a4572c55f1ca4cfea112cf6e330e72a0ba848ae2735e94a2446fa8cde52b29f98b}} 
+CCS\+\_\+\+HYPERPARAMETER\+\_\+\+TYPE\+\_\+\+CATEGORICAL&A categorical hyperparameter. A set of values with no intrinsic ordering between its elements. \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{CCS\_HYPERPARAMETER\_TYPE\_ORDINAL@{CCS\_HYPERPARAMETER\_TYPE\_ORDINAL}!hyperparameter.h@{hyperparameter.h}}\index{hyperparameter.h@{hyperparameter.h}!CCS\_HYPERPARAMETER\_TYPE\_ORDINAL@{CCS\_HYPERPARAMETER\_TYPE\_ORDINAL}}}\mbox{\Hypertarget{hyperparameter_8h_a4572c55f1ca4cfea112cf6e330e72a0baf972d3f1873e556899e1336e0df11b55}\label{hyperparameter_8h_a4572c55f1ca4cfea112cf6e330e72a0baf972d3f1873e556899e1336e0df11b55}} 
+CCS\+\_\+\+HYPERPARAMETER\+\_\+\+TYPE\+\_\+\+ORDINAL&An ordinal hyperparameter. A set of values with an intrinsic ordering between its elements. \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{CCS\_HYPERPARAMETER\_TYPE\_DISCRETE@{CCS\_HYPERPARAMETER\_TYPE\_DISCRETE}!hyperparameter.h@{hyperparameter.h}}\index{hyperparameter.h@{hyperparameter.h}!CCS\_HYPERPARAMETER\_TYPE\_DISCRETE@{CCS\_HYPERPARAMETER\_TYPE\_DISCRETE}}}\mbox{\Hypertarget{hyperparameter_8h_a4572c55f1ca4cfea112cf6e330e72a0ba6c314c929c0a2e38c59502ce28f6ee25}\label{hyperparameter_8h_a4572c55f1ca4cfea112cf6e330e72a0ba6c314c929c0a2e38c59502ce28f6ee25}} 
+CCS\+\_\+\+HYPERPARAMETER\+\_\+\+TYPE\+\_\+\+DISCRETE&A discrete hyperparameter. A set of numerical values. \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{CCS\_HYPERPARAMETER\_TYPE\_STRING@{CCS\_HYPERPARAMETER\_TYPE\_STRING}!hyperparameter.h@{hyperparameter.h}}\index{hyperparameter.h@{hyperparameter.h}!CCS\_HYPERPARAMETER\_TYPE\_STRING@{CCS\_HYPERPARAMETER\_TYPE\_STRING}}}\mbox{\Hypertarget{hyperparameter_8h_a4572c55f1ca4cfea112cf6e330e72a0bac4356405c7fe21f09cbc4db9e28453f4}\label{hyperparameter_8h_a4572c55f1ca4cfea112cf6e330e72a0bac4356405c7fe21f09cbc4db9e28453f4}} 
+CCS\+\_\+\+HYPERPARAMETER\+\_\+\+TYPE\+\_\+\+STRING&A string hyperparameter. Cannot be sampled. \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{CCS\_HYPERPARAMETER\_TYPE\_MAX@{CCS\_HYPERPARAMETER\_TYPE\_MAX}!hyperparameter.h@{hyperparameter.h}}\index{hyperparameter.h@{hyperparameter.h}!CCS\_HYPERPARAMETER\_TYPE\_MAX@{CCS\_HYPERPARAMETER\_TYPE\_MAX}}}\mbox{\Hypertarget{hyperparameter_8h_a4572c55f1ca4cfea112cf6e330e72a0bac629460e948db0f657a6e1116fa6cdbd}\label{hyperparameter_8h_a4572c55f1ca4cfea112cf6e330e72a0bac629460e948db0f657a6e1116fa6cdbd}} 
+CCS\+\_\+\+HYPERPARAMETER\+\_\+\+TYPE\+\_\+\+MAX&Guard. \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{CCS\_HYPERPARAMETER\_TYPE\_FORCE\_32BIT@{CCS\_HYPERPARAMETER\_TYPE\_FORCE\_32BIT}!hyperparameter.h@{hyperparameter.h}}\index{hyperparameter.h@{hyperparameter.h}!CCS\_HYPERPARAMETER\_TYPE\_FORCE\_32BIT@{CCS\_HYPERPARAMETER\_TYPE\_FORCE\_32BIT}}}\mbox{\Hypertarget{hyperparameter_8h_a4572c55f1ca4cfea112cf6e330e72a0ba2d7c66312cc4c8f3a89b1d65d5fb3cf2}\label{hyperparameter_8h_a4572c55f1ca4cfea112cf6e330e72a0ba2d7c66312cc4c8f3a89b1d65d5fb3cf2}} 
+CCS\+\_\+\+HYPERPARAMETER\+\_\+\+TYPE\+\_\+\+FORCE\+\_\+32\+BIT&Try forcing 32 bits value for bindings. \\
+\hline
+
+\end{DoxyEnumFields}
+
+
+\doxysubsection{Function Documentation}
+\mbox{\Hypertarget{hyperparameter_8h_a5656b71268e5238c192f65009d177866}\label{hyperparameter_8h_a5656b71268e5238c192f65009d177866}} 
+\index{hyperparameter.h@{hyperparameter.h}!ccs\_categorical\_hyperparameter\_get\_values@{ccs\_categorical\_hyperparameter\_get\_values}}
+\index{ccs\_categorical\_hyperparameter\_get\_values@{ccs\_categorical\_hyperparameter\_get\_values}!hyperparameter.h@{hyperparameter.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_categorical\_hyperparameter\_get\_values()}{ccs\_categorical\_hyperparameter\_get\_values()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} ccs\+\_\+categorical\+\_\+hyperparameter\+\_\+get\+\_\+values (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_a0b796ce449059870d5bbb77f20925b50}{ccs\+\_\+hyperparameter\+\_\+t}}}]{hyperparameter,  }\item[{size\+\_\+t}]{num\+\_\+possible\+\_\+values,  }\item[{\mbox{\hyperlink{base_8h_a36bc36b2bb0d0613453dd731cdcd2048}{ccs\+\_\+datum\+\_\+t}} $\ast$}]{possible\+\_\+values,  }\item[{size\+\_\+t $\ast$}]{num\+\_\+possible\+\_\+values\+\_\+ret }\end{DoxyParamCaption})}
+
+
+
+Get the possible values of a categorical hyperparameter. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em hyperparameter} & \\
+\hline
+\mbox{\texttt{ in}}  & {\em num\+\_\+possible\+\_\+values} & {\ttfamily the} size of the {\ttfamily possible\+\_\+values} array \\
+\hline
+\mbox{\texttt{ out}}  & {\em possible\+\_\+values} & an array of {\ttfamily num\+\_\+possible\+\_\+values} values that will contain the returned possible values. Can be NULL \\
+\hline
+\mbox{\texttt{ out}}  & {\em num\+\_\+possible\+\_\+values\+\_\+ret} & a pointer to a variable that will contain the number of values that are or would be returned. Can be NULL \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a092b9c7d2bc9ac00a6f53e251c8619b8}{CCS\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a4707835c3fcb2303089c76bbcbf96df5}{CCS\+\_\+\+INVALID\+\_\+\+OBJECT}} if {\ttfamily hyperparameter} is not a valid CCS hyperparameter 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0afab391c5bc22e7ba89710930ec04028d}{CCS\+\_\+\+INVALID\+\_\+\+HYPERPARAMETER}} if {\ttfamily hyperparameter} is not a categorical hyperparameter 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0adb4bc5cfc4f985bf59ae223f3e22b9f9}{CCS\+\_\+\+INVALID\+\_\+\+VALUE}} if {\ttfamily possible\+\_\+values} is NULL and {\ttfamily num\+\_\+possible\+\_\+values} is greater than 0; or if {\ttfamily possible\+\_\+values} is NULL and {\ttfamily num\+\_\+possible\+\_\+values\+\_\+ret} is NULL; or if num\+\_\+possible\+\_\+values is less than the number of values that would be returned 
+\end{DoxyReturn}
+\mbox{\Hypertarget{hyperparameter_8h_aa2aefdfc0d826f26e20054eb51137519}\label{hyperparameter_8h_aa2aefdfc0d826f26e20054eb51137519}} 
+\index{hyperparameter.h@{hyperparameter.h}!ccs\_create\_categorical\_hyperparameter@{ccs\_create\_categorical\_hyperparameter}}
+\index{ccs\_create\_categorical\_hyperparameter@{ccs\_create\_categorical\_hyperparameter}!hyperparameter.h@{hyperparameter.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_create\_categorical\_hyperparameter()}{ccs\_create\_categorical\_hyperparameter()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} ccs\+\_\+create\+\_\+categorical\+\_\+hyperparameter (\begin{DoxyParamCaption}\item[{const char $\ast$}]{name,  }\item[{size\+\_\+t}]{num\+\_\+possible\+\_\+values,  }\item[{\mbox{\hyperlink{base_8h_a36bc36b2bb0d0613453dd731cdcd2048}{ccs\+\_\+datum\+\_\+t}} $\ast$}]{possible\+\_\+values,  }\item[{size\+\_\+t}]{default\+\_\+value\+\_\+index,  }\item[{\mbox{\hyperlink{base_8h_a0b796ce449059870d5bbb77f20925b50}{ccs\+\_\+hyperparameter\+\_\+t}} $\ast$}]{hyperparameter\+\_\+ret }\end{DoxyParamCaption})}
+
+
+
+Create a new categorical hyperparameter. 
+
+Categorical hyperparameters can be sampled using distributions over integers. 
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em name} & name of the hyperparameter \\
+\hline
+\mbox{\texttt{ in}}  & {\em num\+\_\+possible\+\_\+values} & the size of the {\ttfamily possible\+\_\+values} array \\
+\hline
+\mbox{\texttt{ in}}  & {\em possible\+\_\+values} & an array of {\ttfamily num\+\_\+possible\+\_\+values} values that represent the possible values that the hyperparameter can take \\
+\hline
+\mbox{\texttt{ in}}  & {\em default\+\_\+value\+\_\+index} & the index of the default value in the {\ttfamily possible\+\_\+values} array \\
+\hline
+\mbox{\texttt{ out}}  & {\em hyperparameter\+\_\+ret} & a pointer to the variable that will hold the newly created categorical hyperparameter \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a092b9c7d2bc9ac00a6f53e251c8619b8}{CCS\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0adb4bc5cfc4f985bf59ae223f3e22b9f9}{CCS\+\_\+\+INVALID\+\_\+\+VALUE}} if {\ttfamily name} is NULL; or if {\ttfamily hyperparameter\+\_\+ret} is NULL 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a3b3381e910957ad1fbe1d633b12eff79}{CCS\+\_\+\+OUT\+\_\+\+OF\+\_\+\+MEMORY}} if there was a lack of memory to allocate the new hyperparameter 
+\end{DoxyReturn}
+\mbox{\Hypertarget{hyperparameter_8h_aba2ea14ec557cfa9570e8397803f9dfe}\label{hyperparameter_8h_aba2ea14ec557cfa9570e8397803f9dfe}} 
+\index{hyperparameter.h@{hyperparameter.h}!ccs\_create\_discrete\_hyperparameter@{ccs\_create\_discrete\_hyperparameter}}
+\index{ccs\_create\_discrete\_hyperparameter@{ccs\_create\_discrete\_hyperparameter}!hyperparameter.h@{hyperparameter.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_create\_discrete\_hyperparameter()}{ccs\_create\_discrete\_hyperparameter()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} ccs\+\_\+create\+\_\+discrete\+\_\+hyperparameter (\begin{DoxyParamCaption}\item[{const char $\ast$}]{name,  }\item[{size\+\_\+t}]{num\+\_\+possible\+\_\+values,  }\item[{\mbox{\hyperlink{base_8h_a36bc36b2bb0d0613453dd731cdcd2048}{ccs\+\_\+datum\+\_\+t}} $\ast$}]{possible\+\_\+values,  }\item[{size\+\_\+t}]{default\+\_\+value\+\_\+index,  }\item[{\mbox{\hyperlink{base_8h_a0b796ce449059870d5bbb77f20925b50}{ccs\+\_\+hyperparameter\+\_\+t}} $\ast$}]{hyperparameter\+\_\+ret }\end{DoxyParamCaption})}
+
+
+
+Create a new discrete hyperparameter. 
+
+Discrete hyperparameters can be sampled using distributions over integers. Their elements must be of type \mbox{\hyperlink{base_8h_a302e6ecbf08c6c8a059fc775c88f21c0a3ef8367b20382d8dfdce0b63c72113d1}{CCS\+\_\+\+INTEGER}} or \mbox{\hyperlink{base_8h_a302e6ecbf08c6c8a059fc775c88f21c0a43c4742e43ef6794cac5489f3dc038de}{CCS\+\_\+\+FLOAT}}. 
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em name} & name of the hyperparameter \\
+\hline
+\mbox{\texttt{ in}}  & {\em num\+\_\+possible\+\_\+values} & the size of the {\ttfamily possible\+\_\+values} array \\
+\hline
+\mbox{\texttt{ in}}  & {\em possible\+\_\+values} & an array of {\ttfamily num\+\_\+possible\+\_\+values} values that represent the possible values that the hyperparameter can take. \\
+\hline
+\mbox{\texttt{ in}}  & {\em default\+\_\+value\+\_\+index} & the index of the default value in the {\ttfamily possible\+\_\+values} array \\
+\hline
+\mbox{\texttt{ out}}  & {\em hyperparameter\+\_\+ret} & a pointer to the variable that will hold the newly created discrete hyperparameter \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a092b9c7d2bc9ac00a6f53e251c8619b8}{CCS\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0adb4bc5cfc4f985bf59ae223f3e22b9f9}{CCS\+\_\+\+INVALID\+\_\+\+VALUE}} if {\ttfamily name} is NULL; or if {\ttfamily hyperparameter\+\_\+ret} is NULL 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a3b3381e910957ad1fbe1d633b12eff79}{CCS\+\_\+\+OUT\+\_\+\+OF\+\_\+\+MEMORY}} if there was a lack of memory to allocate the new hyperparameter 
+\end{DoxyReturn}
+\mbox{\Hypertarget{hyperparameter_8h_ab13120891603ecb9a4c7c2200cfddebf}\label{hyperparameter_8h_ab13120891603ecb9a4c7c2200cfddebf}} 
+\index{hyperparameter.h@{hyperparameter.h}!ccs\_create\_numerical\_hyperparameter@{ccs\_create\_numerical\_hyperparameter}}
+\index{ccs\_create\_numerical\_hyperparameter@{ccs\_create\_numerical\_hyperparameter}!hyperparameter.h@{hyperparameter.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_create\_numerical\_hyperparameter()}{ccs\_create\_numerical\_hyperparameter()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} ccs\+\_\+create\+\_\+numerical\+\_\+hyperparameter (\begin{DoxyParamCaption}\item[{const char $\ast$}]{name,  }\item[{\mbox{\hyperlink{base_8h_abb2e002510c51102a01c222ebd36ce2c}{ccs\+\_\+numeric\+\_\+type\+\_\+t}}}]{data\+\_\+type,  }\item[{\mbox{\hyperlink{base_8h_a981ec36df2f80935afde8b7a481f2d14}{ccs\+\_\+numeric\+\_\+t}}}]{lower,  }\item[{\mbox{\hyperlink{base_8h_a981ec36df2f80935afde8b7a481f2d14}{ccs\+\_\+numeric\+\_\+t}}}]{upper,  }\item[{\mbox{\hyperlink{base_8h_a981ec36df2f80935afde8b7a481f2d14}{ccs\+\_\+numeric\+\_\+t}}}]{quantization,  }\item[{\mbox{\hyperlink{base_8h_a981ec36df2f80935afde8b7a481f2d14}{ccs\+\_\+numeric\+\_\+t}}}]{default\+\_\+value,  }\item[{\mbox{\hyperlink{base_8h_a0b796ce449059870d5bbb77f20925b50}{ccs\+\_\+hyperparameter\+\_\+t}} $\ast$}]{hyperparameter\+\_\+ret }\end{DoxyParamCaption})}
+
+
+
+Create a new numerical hyperparameter of the specified data\+\_\+type. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em name} & name of the hyperparameter \\
+\hline
+\mbox{\texttt{ in}}  & {\em data\+\_\+type} & type of numerical data \\
+\hline
+\mbox{\texttt{ in}}  & {\em lower} & lower bound (included) \\
+\hline
+\mbox{\texttt{ in}}  & {\em upper} & upper bound (excluded) \\
+\hline
+\mbox{\texttt{ in}}  & {\em quantization} & quantization of the values. 0 means no quantization \\
+\hline
+\mbox{\texttt{ in}}  & {\em default\+\_\+value} & default value of the hyperparameter \\
+\hline
+\mbox{\texttt{ out}}  & {\em hyperparameter\+\_\+ret} & a pointer to the variable that will hold the newly created numerical hyperparameter \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a092b9c7d2bc9ac00a6f53e251c8619b8}{CCS\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0adb4bc5cfc4f985bf59ae223f3e22b9f9}{CCS\+\_\+\+INVALID\+\_\+\+VALUE}} if {\ttfamily name} is NULL; or if {\ttfamily hyperparameter\+\_\+ret} is NULL; or if quantization is less than 0; or if default value is not a valid value for the hyperparameter 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a5ef8b94d2dc8bbde508c4dd79b34047a}{CCS\+\_\+\+INVALID\+\_\+\+TYPE}} if data\+\_\+type is neither \mbox{\hyperlink{base_8h_aff930046a5f66cb75b311330b6461b9aa5077c0a0bd923e732a382045cccaed81}{CCS\+\_\+\+NUM\+\_\+\+FLOAT}} or \mbox{\hyperlink{base_8h_aff930046a5f66cb75b311330b6461b9aac2f87bcb8e2cb21d8b6f0b7ab1cd1705}{CCS\+\_\+\+NUM\+\_\+\+INTEGER}} 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a3b3381e910957ad1fbe1d633b12eff79}{CCS\+\_\+\+OUT\+\_\+\+OF\+\_\+\+MEMORY}} if there was a lack of memory to allocate the new numerical hyperparameter 
+\end{DoxyReturn}
+\mbox{\Hypertarget{hyperparameter_8h_a5864e079719ae0d38f9edde719ab070a}\label{hyperparameter_8h_a5864e079719ae0d38f9edde719ab070a}} 
+\index{hyperparameter.h@{hyperparameter.h}!ccs\_create\_ordinal\_hyperparameter@{ccs\_create\_ordinal\_hyperparameter}}
+\index{ccs\_create\_ordinal\_hyperparameter@{ccs\_create\_ordinal\_hyperparameter}!hyperparameter.h@{hyperparameter.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_create\_ordinal\_hyperparameter()}{ccs\_create\_ordinal\_hyperparameter()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} ccs\+\_\+create\+\_\+ordinal\+\_\+hyperparameter (\begin{DoxyParamCaption}\item[{const char $\ast$}]{name,  }\item[{size\+\_\+t}]{num\+\_\+possible\+\_\+values,  }\item[{\mbox{\hyperlink{base_8h_a36bc36b2bb0d0613453dd731cdcd2048}{ccs\+\_\+datum\+\_\+t}} $\ast$}]{possible\+\_\+values,  }\item[{size\+\_\+t}]{default\+\_\+value\+\_\+index,  }\item[{\mbox{\hyperlink{base_8h_a0b796ce449059870d5bbb77f20925b50}{ccs\+\_\+hyperparameter\+\_\+t}} $\ast$}]{hyperparameter\+\_\+ret }\end{DoxyParamCaption})}
+
+
+
+Create a new ordinal hyperparameter. 
+
+Ordinal hyperparameters can be sampled using distributions over integers. Their elements have an intrinsic ordering which is the same as the orders of the provided values. 
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em name} & name of the hyperparameter \\
+\hline
+\mbox{\texttt{ in}}  & {\em num\+\_\+possible\+\_\+values} & the size of the {\ttfamily possible\+\_\+values} array \\
+\hline
+\mbox{\texttt{ in}}  & {\em possible\+\_\+values} & an array of {\ttfamily num\+\_\+possible\+\_\+values} values that represent the possible values that the hyperparameter can take \\
+\hline
+\mbox{\texttt{ in}}  & {\em default\+\_\+value\+\_\+index} & the index of the default value in the {\ttfamily possible\+\_\+values} array \\
+\hline
+\mbox{\texttt{ out}}  & {\em hyperparameter\+\_\+ret} & a pointer to the variable that will hold the newly created ordinal hyperparameter \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a092b9c7d2bc9ac00a6f53e251c8619b8}{CCS\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0adb4bc5cfc4f985bf59ae223f3e22b9f9}{CCS\+\_\+\+INVALID\+\_\+\+VALUE}} if {\ttfamily name} is NULL; or if {\ttfamily hyperparameter\+\_\+ret} is NULL 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a3b3381e910957ad1fbe1d633b12eff79}{CCS\+\_\+\+OUT\+\_\+\+OF\+\_\+\+MEMORY}} if there was a lack of memory to allocate the new hyperparameter 
+\end{DoxyReturn}
+\mbox{\Hypertarget{hyperparameter_8h_aa4b470ba1faa0630eb3a96b89297b709}\label{hyperparameter_8h_aa4b470ba1faa0630eb3a96b89297b709}} 
+\index{hyperparameter.h@{hyperparameter.h}!ccs\_create\_string\_hyperparameter@{ccs\_create\_string\_hyperparameter}}
+\index{ccs\_create\_string\_hyperparameter@{ccs\_create\_string\_hyperparameter}!hyperparameter.h@{hyperparameter.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_create\_string\_hyperparameter()}{ccs\_create\_string\_hyperparameter()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} ccs\+\_\+create\+\_\+string\+\_\+hyperparameter (\begin{DoxyParamCaption}\item[{const char $\ast$}]{name,  }\item[{\mbox{\hyperlink{base_8h_a0b796ce449059870d5bbb77f20925b50}{ccs\+\_\+hyperparameter\+\_\+t}} $\ast$}]{hyperparameter\+\_\+ret }\end{DoxyParamCaption})}
+
+
+
+Create an new hyperparameter representing an undetermined string, to be used within feature space. 
+
+Cannot be sampled and thus doesn\textquotesingle{}t have a default value. Checks will always return valid unless the value is not a string. 
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em name} & name of the hyperparameter \\
+\hline
+\mbox{\texttt{ out}}  & {\em hyperparameter\+\_\+ret} & a pointer to the variable that will hold the newly created string hyperparameter \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a092b9c7d2bc9ac00a6f53e251c8619b8}{CCS\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0adb4bc5cfc4f985bf59ae223f3e22b9f9}{CCS\+\_\+\+INVALID\+\_\+\+VALUE}} if {\ttfamily name} is NULL; or if {\ttfamily hyperparameter\+\_\+ret} is NULL 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a3b3381e910957ad1fbe1d633b12eff79}{CCS\+\_\+\+OUT\+\_\+\+OF\+\_\+\+MEMORY}} if there was a lack of memory to allocate the new hyperparameter 
+\end{DoxyReturn}
+\mbox{\Hypertarget{hyperparameter_8h_a79cc5464045d47d72310c44cd7ee00bf}\label{hyperparameter_8h_a79cc5464045d47d72310c44cd7ee00bf}} 
+\index{hyperparameter.h@{hyperparameter.h}!ccs\_discrete\_hyperparameter\_get\_values@{ccs\_discrete\_hyperparameter\_get\_values}}
+\index{ccs\_discrete\_hyperparameter\_get\_values@{ccs\_discrete\_hyperparameter\_get\_values}!hyperparameter.h@{hyperparameter.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_discrete\_hyperparameter\_get\_values()}{ccs\_discrete\_hyperparameter\_get\_values()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} ccs\+\_\+discrete\+\_\+hyperparameter\+\_\+get\+\_\+values (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_a0b796ce449059870d5bbb77f20925b50}{ccs\+\_\+hyperparameter\+\_\+t}}}]{hyperparameter,  }\item[{size\+\_\+t}]{num\+\_\+possible\+\_\+values,  }\item[{\mbox{\hyperlink{base_8h_a36bc36b2bb0d0613453dd731cdcd2048}{ccs\+\_\+datum\+\_\+t}} $\ast$}]{possible\+\_\+values,  }\item[{size\+\_\+t $\ast$}]{num\+\_\+possible\+\_\+values\+\_\+ret }\end{DoxyParamCaption})}
+
+
+
+Get the possible values of an discrete hyperparameter. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em hyperparameter} & \\
+\hline
+\mbox{\texttt{ in}}  & {\em num\+\_\+possible\+\_\+values} & {\ttfamily the} size of the {\ttfamily possible\+\_\+values} array \\
+\hline
+\mbox{\texttt{ out}}  & {\em possible\+\_\+values} & an array of {\ttfamily num\+\_\+possible\+\_\+values} values that will contain the returned possible values. Can be NULL \\
+\hline
+\mbox{\texttt{ out}}  & {\em num\+\_\+possible\+\_\+values\+\_\+ret} & a pointer to a variable that will contain the number of values that are or would be returned. Can be NULL \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a092b9c7d2bc9ac00a6f53e251c8619b8}{CCS\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a4707835c3fcb2303089c76bbcbf96df5}{CCS\+\_\+\+INVALID\+\_\+\+OBJECT}} if {\ttfamily hyperparameter} is not a valid CCS hyperparameter 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0afab391c5bc22e7ba89710930ec04028d}{CCS\+\_\+\+INVALID\+\_\+\+HYPERPARAMETER}} if {\ttfamily hyperparameter} is not a discrete hyperparameter 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0adb4bc5cfc4f985bf59ae223f3e22b9f9}{CCS\+\_\+\+INVALID\+\_\+\+VALUE}} if {\ttfamily possible\+\_\+values} is NULL and {\ttfamily num\+\_\+possible\+\_\+values} is greater than 0; or if {\ttfamily possible\+\_\+values} is NULL and {\ttfamily num\+\_\+possible\+\_\+values\+\_\+ret} is NULL; or if num\+\_\+possible\+\_\+values is less than the number of values that would be returned 
+\end{DoxyReturn}
+\mbox{\Hypertarget{hyperparameter_8h_ab8d10d0122ad4d92ddefc9882229f736}\label{hyperparameter_8h_ab8d10d0122ad4d92ddefc9882229f736}} 
+\index{hyperparameter.h@{hyperparameter.h}!ccs\_hyperparameter\_check\_value@{ccs\_hyperparameter\_check\_value}}
+\index{ccs\_hyperparameter\_check\_value@{ccs\_hyperparameter\_check\_value}!hyperparameter.h@{hyperparameter.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_hyperparameter\_check\_value()}{ccs\_hyperparameter\_check\_value()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} ccs\+\_\+hyperparameter\+\_\+check\+\_\+value (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_a0b796ce449059870d5bbb77f20925b50}{ccs\+\_\+hyperparameter\+\_\+t}}}]{hyperparameter,  }\item[{\mbox{\hyperlink{base_8h_a36bc36b2bb0d0613453dd731cdcd2048}{ccs\+\_\+datum\+\_\+t}}}]{value,  }\item[{\mbox{\hyperlink{base_8h_a0e8ba2dfd397017939e6ea2ebc4bb037}{ccs\+\_\+bool\+\_\+t}} $\ast$}]{result\+\_\+ret }\end{DoxyParamCaption})}
+
+
+
+Check if a value is acceptable for a hyperparameter. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em hyperparameter} & \\
+\hline
+\mbox{\texttt{ in}}  & {\em value} & the value to check the validity of \\
+\hline
+\mbox{\texttt{ out}}  & {\em result\+\_\+ret} & a pointer to the variable that will contain the result of the check \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a092b9c7d2bc9ac00a6f53e251c8619b8}{CCS\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a4707835c3fcb2303089c76bbcbf96df5}{CCS\+\_\+\+INVALID\+\_\+\+OBJECT}} if {\ttfamily hyperparameter} is not a valid CCS hyperparameter 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0adb4bc5cfc4f985bf59ae223f3e22b9f9}{CCS\+\_\+\+INVALID\+\_\+\+VALUE}} if {\ttfamily result\+\_\+ret} is NULL 
+\end{DoxyReturn}
+\mbox{\Hypertarget{hyperparameter_8h_a489206cbda39583a7910face420eaaad}\label{hyperparameter_8h_a489206cbda39583a7910face420eaaad}} 
+\index{hyperparameter.h@{hyperparameter.h}!ccs\_hyperparameter\_check\_values@{ccs\_hyperparameter\_check\_values}}
+\index{ccs\_hyperparameter\_check\_values@{ccs\_hyperparameter\_check\_values}!hyperparameter.h@{hyperparameter.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_hyperparameter\_check\_values()}{ccs\_hyperparameter\_check\_values()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} ccs\+\_\+hyperparameter\+\_\+check\+\_\+values (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_a0b796ce449059870d5bbb77f20925b50}{ccs\+\_\+hyperparameter\+\_\+t}}}]{hyperparameter,  }\item[{size\+\_\+t}]{num\+\_\+values,  }\item[{const \mbox{\hyperlink{base_8h_a36bc36b2bb0d0613453dd731cdcd2048}{ccs\+\_\+datum\+\_\+t}} $\ast$}]{values,  }\item[{\mbox{\hyperlink{base_8h_a0e8ba2dfd397017939e6ea2ebc4bb037}{ccs\+\_\+bool\+\_\+t}} $\ast$}]{results }\end{DoxyParamCaption})}
+
+
+
+Check if an array of values are acceptable for a hyperparameter. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em hyperparameter} & \\
+\hline
+\mbox{\texttt{ in}}  & {\em num\+\_\+values} & the size of the {\ttfamily values} array \\
+\hline
+\mbox{\texttt{ in}}  & {\em values} & an array of {\ttfamily num\+\_\+values} values to check \\
+\hline
+\mbox{\texttt{ out}}  & {\em results} & an array of {\ttfamily num\+\_\+values} cc\+\_\+bool\+\_\+t values that will contain the results the individual checks \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a092b9c7d2bc9ac00a6f53e251c8619b8}{CCS\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a4707835c3fcb2303089c76bbcbf96df5}{CCS\+\_\+\+INVALID\+\_\+\+OBJECT}} if {\ttfamily hyperparameter} is not a valid CCS hyperparameter 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0adb4bc5cfc4f985bf59ae223f3e22b9f9}{CCS\+\_\+\+INVALID\+\_\+\+VALUE}} if {\ttfamily values} or {\ttfamily results} are NULL and {\ttfamily num\+\_\+values} is greater than 0 
+\end{DoxyReturn}
+\mbox{\Hypertarget{hyperparameter_8h_abc1d43b49c305881afdbb29ecaac9097}\label{hyperparameter_8h_abc1d43b49c305881afdbb29ecaac9097}} 
+\index{hyperparameter.h@{hyperparameter.h}!ccs\_hyperparameter\_convert\_samples@{ccs\_hyperparameter\_convert\_samples}}
+\index{ccs\_hyperparameter\_convert\_samples@{ccs\_hyperparameter\_convert\_samples}!hyperparameter.h@{hyperparameter.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_hyperparameter\_convert\_samples()}{ccs\_hyperparameter\_convert\_samples()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} ccs\+\_\+hyperparameter\+\_\+convert\+\_\+samples (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_a0b796ce449059870d5bbb77f20925b50}{ccs\+\_\+hyperparameter\+\_\+t}}}]{hyperparameter,  }\item[{\mbox{\hyperlink{base_8h_a0e8ba2dfd397017939e6ea2ebc4bb037}{ccs\+\_\+bool\+\_\+t}}}]{oversampling,  }\item[{size\+\_\+t}]{num\+\_\+values,  }\item[{const \mbox{\hyperlink{base_8h_a981ec36df2f80935afde8b7a481f2d14}{ccs\+\_\+numeric\+\_\+t}} $\ast$}]{values,  }\item[{\mbox{\hyperlink{base_8h_a36bc36b2bb0d0613453dd731cdcd2048}{ccs\+\_\+datum\+\_\+t}} $\ast$}]{results }\end{DoxyParamCaption})}
+
+
+
+Convert numerical samples into samples from the hyperparameter. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em hyperparameter} & \\
+\hline
+\mbox{\texttt{ in}}  & {\em oversampling} & if \mbox{\hyperlink{base_8h_a4598e8e24f836accf0ebc8c73973714d}{CCS\+\_\+\+TRUE}} values can be outside of the hyperparameter sampling interval (see \mbox{\hyperlink{hyperparameter_8h_af895ac0d7a05ec6268ab56f1e145b20c}{ccs\+\_\+hyperparameter\+\_\+sampling\+\_\+interval}}), else they must be within the sampling interval \\
+\hline
+\mbox{\texttt{ in}}  & {\em num\+\_\+values} & the size of the {\ttfamily values} array \\
+\hline
+\mbox{\texttt{ in}}  & {\em values} & an array of {\ttfamily num\+\_\+values} values to convert \\
+\hline
+\mbox{\texttt{ out}}  & {\em results} & an array of {\ttfamily num\+\_\+values} values that will contain the converted values. If oversampling is \mbox{\hyperlink{base_8h_a4598e8e24f836accf0ebc8c73973714d}{CCS\+\_\+\+TRUE}} values outside of the sampling interval will be converted to \mbox{\hyperlink{base_8h_a6f863aa138666864095f4e757897eb13}{ccs\+\_\+inactive}} \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a092b9c7d2bc9ac00a6f53e251c8619b8}{CCS\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a4707835c3fcb2303089c76bbcbf96df5}{CCS\+\_\+\+INVALID\+\_\+\+OBJECT}} if {\ttfamily hyperparameter} is not a valid CCS hyperparameter 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0adb4bc5cfc4f985bf59ae223f3e22b9f9}{CCS\+\_\+\+INVALID\+\_\+\+VALUE}} if {\ttfamily values} or {\ttfamily results} are NULL and {\ttfamily num\+\_\+values} is greater than 0 
+\end{DoxyReturn}
+\mbox{\Hypertarget{hyperparameter_8h_a686d8ae0e2435c5cf79f3de1c2ebc120}\label{hyperparameter_8h_a686d8ae0e2435c5cf79f3de1c2ebc120}} 
+\index{hyperparameter.h@{hyperparameter.h}!ccs\_hyperparameter\_get\_default\_distribution@{ccs\_hyperparameter\_get\_default\_distribution}}
+\index{ccs\_hyperparameter\_get\_default\_distribution@{ccs\_hyperparameter\_get\_default\_distribution}!hyperparameter.h@{hyperparameter.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_hyperparameter\_get\_default\_distribution()}{ccs\_hyperparameter\_get\_default\_distribution()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} ccs\+\_\+hyperparameter\+\_\+get\+\_\+default\+\_\+distribution (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_a0b796ce449059870d5bbb77f20925b50}{ccs\+\_\+hyperparameter\+\_\+t}}}]{hyperparameter,  }\item[{\mbox{\hyperlink{base_8h_ae36e9cd8818547939b8d03da347b3f56}{ccs\+\_\+distribution\+\_\+t}} $\ast$}]{distribution\+\_\+ret }\end{DoxyParamCaption})}
+
+
+
+Get the default distribution of a hyperparameter. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em hyperparameter} & \\
+\hline
+\mbox{\texttt{ out}}  & {\em distribution\+\_\+ret} & a pointer to the variable that will contained the returned distribution \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a092b9c7d2bc9ac00a6f53e251c8619b8}{CCS\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a4707835c3fcb2303089c76bbcbf96df5}{CCS\+\_\+\+INVALID\+\_\+\+OBJECT}} if {\ttfamily hyperparameter} is not a valid CCS hyperparameter 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0adb4bc5cfc4f985bf59ae223f3e22b9f9}{CCS\+\_\+\+INVALID\+\_\+\+VALUE}} if {\ttfamily distribution\+\_\+ret} is NULL 
+\end{DoxyReturn}
+\mbox{\Hypertarget{hyperparameter_8h_aeba3b0b8bfee25d2cf75e576582a420d}\label{hyperparameter_8h_aeba3b0b8bfee25d2cf75e576582a420d}} 
+\index{hyperparameter.h@{hyperparameter.h}!ccs\_hyperparameter\_get\_default\_value@{ccs\_hyperparameter\_get\_default\_value}}
+\index{ccs\_hyperparameter\_get\_default\_value@{ccs\_hyperparameter\_get\_default\_value}!hyperparameter.h@{hyperparameter.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_hyperparameter\_get\_default\_value()}{ccs\_hyperparameter\_get\_default\_value()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} ccs\+\_\+hyperparameter\+\_\+get\+\_\+default\+\_\+value (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_a0b796ce449059870d5bbb77f20925b50}{ccs\+\_\+hyperparameter\+\_\+t}}}]{hyperparameter,  }\item[{\mbox{\hyperlink{base_8h_a36bc36b2bb0d0613453dd731cdcd2048}{ccs\+\_\+datum\+\_\+t}} $\ast$}]{value\+\_\+ret }\end{DoxyParamCaption})}
+
+
+
+Get the default value of an hyperparameter. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em hyperparameter} & \\
+\hline
+\mbox{\texttt{ out}}  & {\em value\+\_\+ret} & pointer to the variable that will contain the default value of the hyperparameter \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a092b9c7d2bc9ac00a6f53e251c8619b8}{CCS\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0adb4bc5cfc4f985bf59ae223f3e22b9f9}{CCS\+\_\+\+INVALID\+\_\+\+VALUE}} if {\ttfamily value\+\_\+ret} is NULL 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a4707835c3fcb2303089c76bbcbf96df5}{CCS\+\_\+\+INVALID\+\_\+\+OBJECT}} if {\ttfamily distribution} is not a valid CCS hyperparameter 
+\end{DoxyReturn}
+\mbox{\Hypertarget{hyperparameter_8h_a9264238e216366c5f814c151a32213ed}\label{hyperparameter_8h_a9264238e216366c5f814c151a32213ed}} 
+\index{hyperparameter.h@{hyperparameter.h}!ccs\_hyperparameter\_get\_name@{ccs\_hyperparameter\_get\_name}}
+\index{ccs\_hyperparameter\_get\_name@{ccs\_hyperparameter\_get\_name}!hyperparameter.h@{hyperparameter.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_hyperparameter\_get\_name()}{ccs\_hyperparameter\_get\_name()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} ccs\+\_\+hyperparameter\+\_\+get\+\_\+name (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_a0b796ce449059870d5bbb77f20925b50}{ccs\+\_\+hyperparameter\+\_\+t}}}]{hyperparameter,  }\item[{const char $\ast$$\ast$}]{name\+\_\+ret }\end{DoxyParamCaption})}
+
+
+
+Get the name of a hyperparameter. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em hyperparameter} & \\
+\hline
+\mbox{\texttt{ out}}  & {\em name\+\_\+ret} & a pointer to the variable that will contain a pointer to the name of the hyperparameter \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a092b9c7d2bc9ac00a6f53e251c8619b8}{CCS\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0adb4bc5cfc4f985bf59ae223f3e22b9f9}{CCS\+\_\+\+INVALID\+\_\+\+VALUE}} if {\ttfamily name\+\_\+ret} is NULL 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a4707835c3fcb2303089c76bbcbf96df5}{CCS\+\_\+\+INVALID\+\_\+\+OBJECT}} if {\ttfamily distribution} is not a valid CCS hyperparameter 
+\end{DoxyReturn}
+\mbox{\Hypertarget{hyperparameter_8h_ad6d6293dd730b955500d3f71b6b48d90}\label{hyperparameter_8h_ad6d6293dd730b955500d3f71b6b48d90}} 
+\index{hyperparameter.h@{hyperparameter.h}!ccs\_hyperparameter\_get\_type@{ccs\_hyperparameter\_get\_type}}
+\index{ccs\_hyperparameter\_get\_type@{ccs\_hyperparameter\_get\_type}!hyperparameter.h@{hyperparameter.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_hyperparameter\_get\_type()}{ccs\_hyperparameter\_get\_type()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} ccs\+\_\+hyperparameter\+\_\+get\+\_\+type (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_a0b796ce449059870d5bbb77f20925b50}{ccs\+\_\+hyperparameter\+\_\+t}}}]{hyperparameter,  }\item[{\mbox{\hyperlink{hyperparameter_8h_acd145700408a39a0506eac5da26cfb46}{ccs\+\_\+hyperparameter\+\_\+type\+\_\+t}} $\ast$}]{type\+\_\+ret }\end{DoxyParamCaption})}
+
+
+
+Get the type of a hyperparameter. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em hyperparameter} & \\
+\hline
+\mbox{\texttt{ out}}  & {\em type\+\_\+ret} & a pointer to the variable that will contain the type of the hyperparameter \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a092b9c7d2bc9ac00a6f53e251c8619b8}{CCS\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0adb4bc5cfc4f985bf59ae223f3e22b9f9}{CCS\+\_\+\+INVALID\+\_\+\+VALUE}} if {\ttfamily type\+\_\+ret} is NULL 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a4707835c3fcb2303089c76bbcbf96df5}{CCS\+\_\+\+INVALID\+\_\+\+OBJECT}} if {\ttfamily distribution} is not a valid CCS hyperparameter 
+\end{DoxyReturn}
+\mbox{\Hypertarget{hyperparameter_8h_affaf4e956bf8eb8b1071eca438d75d2f}\label{hyperparameter_8h_affaf4e956bf8eb8b1071eca438d75d2f}} 
+\index{hyperparameter.h@{hyperparameter.h}!ccs\_hyperparameter\_sample@{ccs\_hyperparameter\_sample}}
+\index{ccs\_hyperparameter\_sample@{ccs\_hyperparameter\_sample}!hyperparameter.h@{hyperparameter.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_hyperparameter\_sample()}{ccs\_hyperparameter\_sample()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} ccs\+\_\+hyperparameter\+\_\+sample (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_a0b796ce449059870d5bbb77f20925b50}{ccs\+\_\+hyperparameter\+\_\+t}}}]{hyperparameter,  }\item[{\mbox{\hyperlink{base_8h_ae36e9cd8818547939b8d03da347b3f56}{ccs\+\_\+distribution\+\_\+t}}}]{distribution,  }\item[{\mbox{\hyperlink{base_8h_ae22dde737fcdf67d5a9fa497bc054027}{ccs\+\_\+rng\+\_\+t}}}]{rng,  }\item[{\mbox{\hyperlink{base_8h_a36bc36b2bb0d0613453dd731cdcd2048}{ccs\+\_\+datum\+\_\+t}} $\ast$}]{value\+\_\+ret }\end{DoxyParamCaption})}
+
+
+
+Get a sample from the hyperparameter sampled by a given distribution. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em hyperparameter} & \\
+\hline
+\mbox{\texttt{ in}}  & {\em distribution} & the distribution to sample the hyperparameter with \\
+\hline
+\mbox{\texttt{ in}}  & {\em rng} & the random number generator to use \\
+\hline
+\mbox{\texttt{ out}}  & {\em value\+\_\+ret} & a pointer to the variable that will contain the sampled value \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a092b9c7d2bc9ac00a6f53e251c8619b8}{CCS\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a4707835c3fcb2303089c76bbcbf96df5}{CCS\+\_\+\+INVALID\+\_\+\+OBJECT}} if {\ttfamily hyperparameter} is not a valid CCS hyperparameter; or if {\ttfamily distribution} is not a valid CCS distribution; or if {\ttfamily rng} is not a valid CCS random number generator 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0adb4bc5cfc4f985bf59ae223f3e22b9f9}{CCS\+\_\+\+INVALID\+\_\+\+VALUE}} if {\ttfamily value\+\_\+ret} is NULL 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0af9a4405d2ae21ce28cd2413e8644be11}{CCS\+\_\+\+SAMPLING\+\_\+\+UNSUCCESSFUL}} if the sample could not be generated, because the probability of obtaining a valid sample is too low 
+\end{DoxyReturn}
+\mbox{\Hypertarget{hyperparameter_8h_a35fc3ccc35d9845ead78df56cd5be640}\label{hyperparameter_8h_a35fc3ccc35d9845ead78df56cd5be640}} 
+\index{hyperparameter.h@{hyperparameter.h}!ccs\_hyperparameter\_samples@{ccs\_hyperparameter\_samples}}
+\index{ccs\_hyperparameter\_samples@{ccs\_hyperparameter\_samples}!hyperparameter.h@{hyperparameter.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_hyperparameter\_samples()}{ccs\_hyperparameter\_samples()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} ccs\+\_\+hyperparameter\+\_\+samples (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_a0b796ce449059870d5bbb77f20925b50}{ccs\+\_\+hyperparameter\+\_\+t}}}]{hyperparameter,  }\item[{\mbox{\hyperlink{base_8h_ae36e9cd8818547939b8d03da347b3f56}{ccs\+\_\+distribution\+\_\+t}}}]{distribution,  }\item[{\mbox{\hyperlink{base_8h_ae22dde737fcdf67d5a9fa497bc054027}{ccs\+\_\+rng\+\_\+t}}}]{rng,  }\item[{size\+\_\+t}]{num\+\_\+values,  }\item[{\mbox{\hyperlink{base_8h_a36bc36b2bb0d0613453dd731cdcd2048}{ccs\+\_\+datum\+\_\+t}} $\ast$}]{values }\end{DoxyParamCaption})}
+
+
+
+Get samples from the hyperparameter sampled by a given distribution. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em hyperparameter} & \\
+\hline
+\mbox{\texttt{ in}}  & {\em distribution} & the distribution to sample the hyperparameter with \\
+\hline
+\mbox{\texttt{ in}}  & {\em rng} & the random number generator to use \\
+\hline
+\mbox{\texttt{ in}}  & {\em num\+\_\+values} & the number of queried values \\
+\hline
+\mbox{\texttt{ out}}  & {\em values} & an array of {\ttfamily num\+\_\+values} values will contain the sampled values \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a092b9c7d2bc9ac00a6f53e251c8619b8}{CCS\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a4707835c3fcb2303089c76bbcbf96df5}{CCS\+\_\+\+INVALID\+\_\+\+OBJECT}} if {\ttfamily hyperparameter} is not a valid CCS hyperparameter; or if {\ttfamily distribution} is not a valid CCS distribution; or if {\ttfamily rng} is not a valid CCS random number generator 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0adb4bc5cfc4f985bf59ae223f3e22b9f9}{CCS\+\_\+\+INVALID\+\_\+\+VALUE}} if {\ttfamily values} is NULL and {\ttfamily num\+\_\+values} is greater than 0 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0af9a4405d2ae21ce28cd2413e8644be11}{CCS\+\_\+\+SAMPLING\+\_\+\+UNSUCCESSFUL}} if not enough samples could not be generated, because the probability of obtaining a valid sample is too low 
+\end{DoxyReturn}
+\mbox{\Hypertarget{hyperparameter_8h_af895ac0d7a05ec6268ab56f1e145b20c}\label{hyperparameter_8h_af895ac0d7a05ec6268ab56f1e145b20c}} 
+\index{hyperparameter.h@{hyperparameter.h}!ccs\_hyperparameter\_sampling\_interval@{ccs\_hyperparameter\_sampling\_interval}}
+\index{ccs\_hyperparameter\_sampling\_interval@{ccs\_hyperparameter\_sampling\_interval}!hyperparameter.h@{hyperparameter.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_hyperparameter\_sampling\_interval()}{ccs\_hyperparameter\_sampling\_interval()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} ccs\+\_\+hyperparameter\+\_\+sampling\+\_\+interval (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_a0b796ce449059870d5bbb77f20925b50}{ccs\+\_\+hyperparameter\+\_\+t}}}]{hyperparameter,  }\item[{\mbox{\hyperlink{interval_8h_a9659e1ee54b3809075e58db013e96558}{ccs\+\_\+interval\+\_\+t}} $\ast$}]{interval\+\_\+ret }\end{DoxyParamCaption})}
+
+
+
+Get the valid sampling interval of the hyperparameter. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em hyperparameter} & \\
+\hline
+\mbox{\texttt{ out}}  & {\em interval\+\_\+ret} & a pointer to the variable that will contain the returned interval \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a092b9c7d2bc9ac00a6f53e251c8619b8}{CCS\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a4707835c3fcb2303089c76bbcbf96df5}{CCS\+\_\+\+INVALID\+\_\+\+OBJECT}} if {\ttfamily hyperparameter} is not a valid CCS hyperparameter 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0adb4bc5cfc4f985bf59ae223f3e22b9f9}{CCS\+\_\+\+INVALID\+\_\+\+VALUE}} if {\ttfamily interval\+\_\+ret} is NULL 
+\end{DoxyReturn}
+\mbox{\Hypertarget{hyperparameter_8h_a563718ed1b4ccaef27ff27286859bfe5}\label{hyperparameter_8h_a563718ed1b4ccaef27ff27286859bfe5}} 
+\index{hyperparameter.h@{hyperparameter.h}!ccs\_hyperparameter\_validate\_value@{ccs\_hyperparameter\_validate\_value}}
+\index{ccs\_hyperparameter\_validate\_value@{ccs\_hyperparameter\_validate\_value}!hyperparameter.h@{hyperparameter.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_hyperparameter\_validate\_value()}{ccs\_hyperparameter\_validate\_value()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} ccs\+\_\+hyperparameter\+\_\+validate\+\_\+value (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_a0b796ce449059870d5bbb77f20925b50}{ccs\+\_\+hyperparameter\+\_\+t}}}]{hyperparameter,  }\item[{\mbox{\hyperlink{base_8h_a36bc36b2bb0d0613453dd731cdcd2048}{ccs\+\_\+datum\+\_\+t}}}]{value,  }\item[{\mbox{\hyperlink{base_8h_a36bc36b2bb0d0613453dd731cdcd2048}{ccs\+\_\+datum\+\_\+t}} $\ast$}]{value\+\_\+ret,  }\item[{\mbox{\hyperlink{base_8h_a0e8ba2dfd397017939e6ea2ebc4bb037}{ccs\+\_\+bool\+\_\+t}} $\ast$}]{result\+\_\+ret }\end{DoxyParamCaption})}
+
+
+
+Check if a value is acceptable for a hyperparameter and if it is return a marshalled value. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em hyperparameter} & \\
+\hline
+\mbox{\texttt{ in}}  & {\em value} & the value to check the validity of \\
+\hline
+\mbox{\texttt{ out}}  & {\em value\+\_\+ret} & a pointer to the variable that will contain the marshalled value or \mbox{\hyperlink{base_8h_a6f863aa138666864095f4e757897eb13}{ccs\+\_\+inactive}} if the value is not valid \\
+\hline
+\mbox{\texttt{ out}}  & {\em result\+\_\+ret} & a pointer to the variable that will contain the result of the check \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a092b9c7d2bc9ac00a6f53e251c8619b8}{CCS\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a4707835c3fcb2303089c76bbcbf96df5}{CCS\+\_\+\+INVALID\+\_\+\+OBJECT}} if {\ttfamily hyperparameter} is not a valid CCS hyperparameter 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0adb4bc5cfc4f985bf59ae223f3e22b9f9}{CCS\+\_\+\+INVALID\+\_\+\+VALUE}} if {\ttfamily result\+\_\+ret} or {\ttfamily value\+\_\+ret} is NULL 
+\end{DoxyReturn}
+\mbox{\Hypertarget{hyperparameter_8h_a78c6f4340c60e4ee2c83422c1d7ffd18}\label{hyperparameter_8h_a78c6f4340c60e4ee2c83422c1d7ffd18}} 
+\index{hyperparameter.h@{hyperparameter.h}!ccs\_hyperparameter\_validate\_values@{ccs\_hyperparameter\_validate\_values}}
+\index{ccs\_hyperparameter\_validate\_values@{ccs\_hyperparameter\_validate\_values}!hyperparameter.h@{hyperparameter.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_hyperparameter\_validate\_values()}{ccs\_hyperparameter\_validate\_values()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} ccs\+\_\+hyperparameter\+\_\+validate\+\_\+values (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_a0b796ce449059870d5bbb77f20925b50}{ccs\+\_\+hyperparameter\+\_\+t}}}]{hyperparameter,  }\item[{size\+\_\+t}]{num\+\_\+values,  }\item[{const \mbox{\hyperlink{base_8h_a36bc36b2bb0d0613453dd731cdcd2048}{ccs\+\_\+datum\+\_\+t}} $\ast$}]{values,  }\item[{\mbox{\hyperlink{base_8h_a36bc36b2bb0d0613453dd731cdcd2048}{ccs\+\_\+datum\+\_\+t}} $\ast$}]{values\+\_\+ret,  }\item[{\mbox{\hyperlink{base_8h_a0e8ba2dfd397017939e6ea2ebc4bb037}{ccs\+\_\+bool\+\_\+t}} $\ast$}]{results }\end{DoxyParamCaption})}
+
+
+
+Check if an array of values are acceptable for a hyperparameter and return marshalled values if they are valid. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em hyperparameter} & \\
+\hline
+\mbox{\texttt{ in}}  & {\em num\+\_\+values} & the size of the {\ttfamily values} array \\
+\hline
+\mbox{\texttt{ in}}  & {\em values} & an array of {\ttfamily num\+\_\+values} values to check \\
+\hline
+\mbox{\texttt{ out}}  & {\em values\+\_\+ret} & an array of {\ttfamily num\+\_\+values} values that will contain the marshalled values, or \mbox{\hyperlink{base_8h_a6f863aa138666864095f4e757897eb13}{ccs\+\_\+inactive}} if values are invalid \\
+\hline
+\mbox{\texttt{ out}}  & {\em results} & an array of {\ttfamily num\+\_\+values} cc\+\_\+bool\+\_\+t values that will contain the results the individual checks \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a092b9c7d2bc9ac00a6f53e251c8619b8}{CCS\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a4707835c3fcb2303089c76bbcbf96df5}{CCS\+\_\+\+INVALID\+\_\+\+OBJECT}} if {\ttfamily hyperparameter} is not a valid CCS hyperparameter 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0adb4bc5cfc4f985bf59ae223f3e22b9f9}{CCS\+\_\+\+INVALID\+\_\+\+VALUE}} if {\ttfamily values} or {\ttfamily results} or {\ttfamily values\+\_\+ret} are NULL and {\ttfamily num\+\_\+values} is greater than 0 
+\end{DoxyReturn}
+\mbox{\Hypertarget{hyperparameter_8h_ac0d421d3f592610f912c50739e5b5d68}\label{hyperparameter_8h_ac0d421d3f592610f912c50739e5b5d68}} 
+\index{hyperparameter.h@{hyperparameter.h}!ccs\_numerical\_hyperparameter\_get\_parameters@{ccs\_numerical\_hyperparameter\_get\_parameters}}
+\index{ccs\_numerical\_hyperparameter\_get\_parameters@{ccs\_numerical\_hyperparameter\_get\_parameters}!hyperparameter.h@{hyperparameter.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_numerical\_hyperparameter\_get\_parameters()}{ccs\_numerical\_hyperparameter\_get\_parameters()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} ccs\+\_\+numerical\+\_\+hyperparameter\+\_\+get\+\_\+parameters (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_a0b796ce449059870d5bbb77f20925b50}{ccs\+\_\+hyperparameter\+\_\+t}}}]{hyperparameter,  }\item[{\mbox{\hyperlink{base_8h_abb2e002510c51102a01c222ebd36ce2c}{ccs\+\_\+numeric\+\_\+type\+\_\+t}} $\ast$}]{data\+\_\+type\+\_\+ret,  }\item[{\mbox{\hyperlink{base_8h_a981ec36df2f80935afde8b7a481f2d14}{ccs\+\_\+numeric\+\_\+t}} $\ast$}]{lower\+\_\+ret,  }\item[{\mbox{\hyperlink{base_8h_a981ec36df2f80935afde8b7a481f2d14}{ccs\+\_\+numeric\+\_\+t}} $\ast$}]{upper\+\_\+ret,  }\item[{\mbox{\hyperlink{base_8h_a981ec36df2f80935afde8b7a481f2d14}{ccs\+\_\+numeric\+\_\+t}} $\ast$}]{quantization\+\_\+ret }\end{DoxyParamCaption})}
+
+
+
+Get the parameters used to create a numerical hyperparameter. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em hyperparameter} & \\
+\hline
+\mbox{\texttt{ out}}  & {\em data\+\_\+type\+\_\+ret} & a pointer to the variable that will contain the data type of the numerical hyperparameter \\
+\hline
+\mbox{\texttt{ out}}  & {\em lower\+\_\+ret} & a pointer to the variable that will contain the lower bound of the numerical hyperparameter \\
+\hline
+\mbox{\texttt{ out}}  & {\em upper\+\_\+ret} & a pointer to the variable that will contain the upper bound of the numerical hyperparameter \\
+\hline
+\mbox{\texttt{ out}}  & {\em quantization\+\_\+ret} & a pointer that will contain the quantization of the numerical hyperparameter \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a092b9c7d2bc9ac00a6f53e251c8619b8}{CCS\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a4707835c3fcb2303089c76bbcbf96df5}{CCS\+\_\+\+INVALID\+\_\+\+OBJECT}} if {\ttfamily hyperparameter} is not a valid CCS hyperparameter 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0afab391c5bc22e7ba89710930ec04028d}{CCS\+\_\+\+INVALID\+\_\+\+HYPERPARAMETER}} if {\ttfamily hyperparameter} is not a numerical hyperparameter 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0adb4bc5cfc4f985bf59ae223f3e22b9f9}{CCS\+\_\+\+INVALID\+\_\+\+VALUE}} if {\ttfamily data\+\_\+type\+\_\+ret} is NULL and {\ttfamily lower\+\_\+ret} is NULL and {\ttfamily upper\+\_\+ret} is NULL and {\ttfamily quantization\+\_\+ret} is NULL 
+\end{DoxyReturn}
+\mbox{\Hypertarget{hyperparameter_8h_a8501bd8f66efcc5f31a2f5e3e64670b1}\label{hyperparameter_8h_a8501bd8f66efcc5f31a2f5e3e64670b1}} 
+\index{hyperparameter.h@{hyperparameter.h}!ccs\_ordinal\_hyperparameter\_compare\_values@{ccs\_ordinal\_hyperparameter\_compare\_values}}
+\index{ccs\_ordinal\_hyperparameter\_compare\_values@{ccs\_ordinal\_hyperparameter\_compare\_values}!hyperparameter.h@{hyperparameter.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_ordinal\_hyperparameter\_compare\_values()}{ccs\_ordinal\_hyperparameter\_compare\_values()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} ccs\+\_\+ordinal\+\_\+hyperparameter\+\_\+compare\+\_\+values (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_a0b796ce449059870d5bbb77f20925b50}{ccs\+\_\+hyperparameter\+\_\+t}}}]{hyperparameter,  }\item[{\mbox{\hyperlink{base_8h_a36bc36b2bb0d0613453dd731cdcd2048}{ccs\+\_\+datum\+\_\+t}}}]{value1,  }\item[{\mbox{\hyperlink{base_8h_a36bc36b2bb0d0613453dd731cdcd2048}{ccs\+\_\+datum\+\_\+t}}}]{value2,  }\item[{\mbox{\hyperlink{base_8h_a04670829a660b2aab58c0377468f0de8}{ccs\+\_\+int\+\_\+t}} $\ast$}]{comp\+\_\+ret }\end{DoxyParamCaption})}
+
+
+
+Compare two values in the context of an ordinal hyperparameter. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em hyperparameter} & \\
+\hline
+\mbox{\texttt{ in}}  & {\em value1} & the first value to compare \\
+\hline
+\mbox{\texttt{ in}}  & {\em value2} & the second value to compare \\
+\hline
+\mbox{\texttt{ out}}  & {\em comp\+\_\+ret} & the result of the comparison, -\/1, 1, or 0 if {\ttfamily value1} is found to be respectively lesser than, grater then or equal to value2 \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a092b9c7d2bc9ac00a6f53e251c8619b8}{CCS\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a4707835c3fcb2303089c76bbcbf96df5}{CCS\+\_\+\+INVALID\+\_\+\+OBJECT}} if {\ttfamily hyperparameter} is not a valid CCS 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0afab391c5bc22e7ba89710930ec04028d}{CCS\+\_\+\+INVALID\+\_\+\+HYPERPARAMETER}} if {\ttfamily hyperparameter} is not an ordinal hyperparameter 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0adb4bc5cfc4f985bf59ae223f3e22b9f9}{CCS\+\_\+\+INVALID\+\_\+\+VALUE}} if {\ttfamily comp\+\_\+ret} is NULL; or if value1 or value2 are not one of the hyperparameter possible values 
+\end{DoxyReturn}
+\mbox{\Hypertarget{hyperparameter_8h_a4e4c8c8f460c3036df92af960cd68a25}\label{hyperparameter_8h_a4e4c8c8f460c3036df92af960cd68a25}} 
+\index{hyperparameter.h@{hyperparameter.h}!ccs\_ordinal\_hyperparameter\_get\_values@{ccs\_ordinal\_hyperparameter\_get\_values}}
+\index{ccs\_ordinal\_hyperparameter\_get\_values@{ccs\_ordinal\_hyperparameter\_get\_values}!hyperparameter.h@{hyperparameter.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_ordinal\_hyperparameter\_get\_values()}{ccs\_ordinal\_hyperparameter\_get\_values()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} ccs\+\_\+ordinal\+\_\+hyperparameter\+\_\+get\+\_\+values (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_a0b796ce449059870d5bbb77f20925b50}{ccs\+\_\+hyperparameter\+\_\+t}}}]{hyperparameter,  }\item[{size\+\_\+t}]{num\+\_\+possible\+\_\+values,  }\item[{\mbox{\hyperlink{base_8h_a36bc36b2bb0d0613453dd731cdcd2048}{ccs\+\_\+datum\+\_\+t}} $\ast$}]{possible\+\_\+values,  }\item[{size\+\_\+t $\ast$}]{num\+\_\+possible\+\_\+values\+\_\+ret }\end{DoxyParamCaption})}
+
+
+
+Get the possible values of an ordinal hyperparameter. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em hyperparameter} & \\
+\hline
+\mbox{\texttt{ in}}  & {\em num\+\_\+possible\+\_\+values} & {\ttfamily the} size of the {\ttfamily possible\+\_\+values} array \\
+\hline
+\mbox{\texttt{ out}}  & {\em possible\+\_\+values} & an array of {\ttfamily num\+\_\+possible\+\_\+values} values that will contain the returned possible values. Can be NULL \\
+\hline
+\mbox{\texttt{ out}}  & {\em num\+\_\+possible\+\_\+values\+\_\+ret} & a pointer to a variable that will contain the number of values that are or would be returned. Can be NULL \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a092b9c7d2bc9ac00a6f53e251c8619b8}{CCS\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a4707835c3fcb2303089c76bbcbf96df5}{CCS\+\_\+\+INVALID\+\_\+\+OBJECT}} if {\ttfamily hyperparameter} is not a valid CCS hyperparameter 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0afab391c5bc22e7ba89710930ec04028d}{CCS\+\_\+\+INVALID\+\_\+\+HYPERPARAMETER}} if {\ttfamily hyperparameter} is not an ordinal hyperparameter 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0adb4bc5cfc4f985bf59ae223f3e22b9f9}{CCS\+\_\+\+INVALID\+\_\+\+VALUE}} if {\ttfamily possible\+\_\+values} is NULL and {\ttfamily num\+\_\+possible\+\_\+values} is greater than 0; or if {\ttfamily possible\+\_\+values} is NULL and {\ttfamily num\+\_\+possible\+\_\+values\+\_\+ret} is NULL; or if num\+\_\+possible\+\_\+values is less than the number of values that would be returned 
+\end{DoxyReturn}

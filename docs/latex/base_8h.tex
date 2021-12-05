@@ -1,0 +1,1314 @@
+\hypertarget{base_8h}{}\doxysection{include/cconfigspace/base.h File Reference}
+\label{base_8h}\index{include/cconfigspace/base.h@{include/cconfigspace/base.h}}
+
+
+Base definition of CCS objects and types.  
+
+
+{\ttfamily \#include $<$limits.\+h$>$}\newline
+{\ttfamily \#include $<$math.\+h$>$}\newline
+{\ttfamily \#include $<$string.\+h$>$}\newline
+Include dependency graph for base.\+h\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=261pt]{base_8h__incl}
+\end{center}
+\end{figure}
+This graph shows which files directly or indirectly include this file\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=196pt]{base_8h__dep__incl}
+\end{center}
+\end{figure}
+\doxysubsection*{Data Structures}
+\begin{DoxyCompactItemize}
+\item 
+struct \mbox{\hyperlink{structccs__version__t}{ccs\+\_\+version\+\_\+t}}
+\begin{DoxyCompactList}\small\item\em A structure representing a version of the CCS API. \end{DoxyCompactList}\item 
+union \mbox{\hyperlink{unionccs__numeric__u}{ccs\+\_\+numeric\+\_\+u}}
+\begin{DoxyCompactList}\small\item\em A union that can contain either a ccs\+\_\+int\+\_\+t or a ccs\+\_\+float\+\_\+t. \end{DoxyCompactList}\item 
+union \mbox{\hyperlink{unionccs__value__u}{ccs\+\_\+value\+\_\+u}}
+\begin{DoxyCompactList}\small\item\em A union that represent a CCS datum value. \end{DoxyCompactList}\item 
+struct \mbox{\hyperlink{structccs__datum__s}{ccs\+\_\+datum\+\_\+s}}
+\begin{DoxyCompactList}\small\item\em A Structure containing a CCS datum. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Macros}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{base_8h_a4598e8e24f836accf0ebc8c73973714d}\label{base_8h_a4598e8e24f836accf0ebc8c73973714d}} 
+\#define \mbox{\hyperlink{base_8h_a4598e8e24f836accf0ebc8c73973714d}{CCS\+\_\+\+TRUE}}~((\mbox{\hyperlink{base_8h_a0e8ba2dfd397017939e6ea2ebc4bb037}{ccs\+\_\+bool\+\_\+t}})(1))
+\begin{DoxyCompactList}\small\item\em A macro providing the true value of a ccs\+\_\+bool\+\_\+t. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{base_8h_a20d15198405a9b9c79c8a093345bc67b}\label{base_8h_a20d15198405a9b9c79c8a093345bc67b}} 
+\#define \mbox{\hyperlink{base_8h_a20d15198405a9b9c79c8a093345bc67b}{CCS\+\_\+\+FALSE}}~((\mbox{\hyperlink{base_8h_a0e8ba2dfd397017939e6ea2ebc4bb037}{ccs\+\_\+bool\+\_\+t}})(0))
+\begin{DoxyCompactList}\small\item\em A macro providing the false value of a ccs\+\_\+bool\+\_\+t. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{base_8h_a7666d2bb94c3ed4f9144b6491831baf4}\label{base_8h_a7666d2bb94c3ed4f9144b6491831baf4}} 
+\#define \mbox{\hyperlink{base_8h_a7666d2bb94c3ed4f9144b6491831baf4}{CCS\+\_\+\+INT\+\_\+\+MAX}}~INT64\+\_\+\+MAX
+\begin{DoxyCompactList}\small\item\em A macro defining the maximum value of a ccs\+\_\+int\+\_\+t. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{base_8h_ae05b097e60486f51313bce2185f46104}\label{base_8h_ae05b097e60486f51313bce2185f46104}} 
+\#define \mbox{\hyperlink{base_8h_ae05b097e60486f51313bce2185f46104}{CCS\+\_\+\+INT\+\_\+\+MIN}}~INT64\+\_\+\+MIN
+\begin{DoxyCompactList}\small\item\em A macro defining the minimum value of a ccs\+\_\+int\+\_\+t. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{base_8h_a0f679c4f68eb6fd123528fc3d4b5ea83}\label{base_8h_a0f679c4f68eb6fd123528fc3d4b5ea83}} 
+\#define \mbox{\hyperlink{base_8h_a0f679c4f68eb6fd123528fc3d4b5ea83}{CCS\+\_\+\+INFINITY}}~INFINITY
+\begin{DoxyCompactList}\small\item\em A macro defining the (positive) infinity value of a ccs\+\_\+float\+\_\+t. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{base_8h_a45983647bcbee69a30ff7127f68b4996}\label{base_8h_a45983647bcbee69a30ff7127f68b4996}} 
+\#define \mbox{\hyperlink{base_8h_a45983647bcbee69a30ff7127f68b4996}{CCSF}}(v)~((\mbox{\hyperlink{base_8h_a981ec36df2f80935afde8b7a481f2d14}{ccs\+\_\+numeric\+\_\+t}})\{ .f = v \})
+\begin{DoxyCompactList}\small\item\em A macro casting a value to a CCS floating point numeric. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{base_8h_ad8abe32f624b57aac52bfcb55216ee46}\label{base_8h_ad8abe32f624b57aac52bfcb55216ee46}} 
+\#define \mbox{\hyperlink{base_8h_ad8abe32f624b57aac52bfcb55216ee46}{CCSI}}(v)~((\mbox{\hyperlink{base_8h_a981ec36df2f80935afde8b7a481f2d14}{ccs\+\_\+numeric\+\_\+t}})\{ .i = v \})
+\begin{DoxyCompactList}\small\item\em A macro casting a value to a CCS integer numeric. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{base_8h_a7154476578dc8d30cbc3a74b25675c2b}\label{base_8h_a7154476578dc8d30cbc3a74b25675c2b}} 
+\#define \mbox{\hyperlink{base_8h_a7154476578dc8d30cbc3a74b25675c2b}{CCS\+\_\+\+NONE\+\_\+\+VAL}}~\{\{0\}, \mbox{\hyperlink{base_8h_a302e6ecbf08c6c8a059fc775c88f21c0a5da899dad2804ad5c46047ab479e3f78}{CCS\+\_\+\+NONE}}, \mbox{\hyperlink{base_8h_a2213c712c40d15eaa43f3aa0244344b1a8d2874eac4ca299a9c3444f14c09f066}{CCS\+\_\+\+FLAG\+\_\+\+DEFAULT}}\}
+\begin{DoxyCompactList}\small\item\em A macro defining the none datum value. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{base_8h_a25e18c52a279f47b8557c61826f26c06}\label{base_8h_a25e18c52a279f47b8557c61826f26c06}} 
+\#define \mbox{\hyperlink{base_8h_a25e18c52a279f47b8557c61826f26c06}{CCS\+\_\+\+INACTIVE\+\_\+\+VAL}}~\{\{0\}, \mbox{\hyperlink{base_8h_a302e6ecbf08c6c8a059fc775c88f21c0a954da35bcbf30d885a2bbf550de2cf84}{CCS\+\_\+\+INACTIVE}}, \mbox{\hyperlink{base_8h_a2213c712c40d15eaa43f3aa0244344b1a8d2874eac4ca299a9c3444f14c09f066}{CCS\+\_\+\+FLAG\+\_\+\+DEFAULT}}\}
+\begin{DoxyCompactList}\small\item\em A macro defining the inactive datum value. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{base_8h_ae200c0ce1ba5a2b9ad0ba262a3e3e1eb}\label{base_8h_ae200c0ce1ba5a2b9ad0ba262a3e3e1eb}} 
+\#define \mbox{\hyperlink{base_8h_ae200c0ce1ba5a2b9ad0ba262a3e3e1eb}{CCS\+\_\+\+TRUE\+\_\+\+VAL}}~\{\{.i = \mbox{\hyperlink{base_8h_a4598e8e24f836accf0ebc8c73973714d}{CCS\+\_\+\+TRUE}}\}, \mbox{\hyperlink{base_8h_a302e6ecbf08c6c8a059fc775c88f21c0a37721ea5078323c2f1b2f83990f54fc7}{CCS\+\_\+\+BOOLEAN}}, \mbox{\hyperlink{base_8h_a2213c712c40d15eaa43f3aa0244344b1a8d2874eac4ca299a9c3444f14c09f066}{CCS\+\_\+\+FLAG\+\_\+\+DEFAULT}}\}
+\begin{DoxyCompactList}\small\item\em A macro defining the true boolean datum value. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{base_8h_aa53d3bf1a331d9c0d58787fc936fdf30}\label{base_8h_aa53d3bf1a331d9c0d58787fc936fdf30}} 
+\#define \mbox{\hyperlink{base_8h_aa53d3bf1a331d9c0d58787fc936fdf30}{CCS\+\_\+\+FALSE\+\_\+\+VAL}}~\{\{.i = \mbox{\hyperlink{base_8h_a20d15198405a9b9c79c8a093345bc67b}{CCS\+\_\+\+FALSE}}\}, \mbox{\hyperlink{base_8h_a302e6ecbf08c6c8a059fc775c88f21c0a37721ea5078323c2f1b2f83990f54fc7}{CCS\+\_\+\+BOOLEAN}}, \mbox{\hyperlink{base_8h_a2213c712c40d15eaa43f3aa0244344b1a8d2874eac4ca299a9c3444f14c09f066}{CCS\+\_\+\+FLAG\+\_\+\+DEFAULT}}\}
+\begin{DoxyCompactList}\small\item\em A macro defining the false boolean datum value. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Typedefs}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{base_8h_a8a8cddcd4f5ce78a2fbb0a44743e88c5}\label{base_8h_a8a8cddcd4f5ce78a2fbb0a44743e88c5}} 
+typedef double \mbox{\hyperlink{base_8h_a8a8cddcd4f5ce78a2fbb0a44743e88c5}{ccs\+\_\+float\+\_\+t}}
+\begin{DoxyCompactList}\small\item\em A CCS floating point type. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{base_8h_a04670829a660b2aab58c0377468f0de8}\label{base_8h_a04670829a660b2aab58c0377468f0de8}} 
+typedef int64\+\_\+t \mbox{\hyperlink{base_8h_a04670829a660b2aab58c0377468f0de8}{ccs\+\_\+int\+\_\+t}}
+\begin{DoxyCompactList}\small\item\em A CCS integer type. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{base_8h_a0e8ba2dfd397017939e6ea2ebc4bb037}\label{base_8h_a0e8ba2dfd397017939e6ea2ebc4bb037}} 
+typedef int32\+\_\+t \mbox{\hyperlink{base_8h_a0e8ba2dfd397017939e6ea2ebc4bb037}{ccs\+\_\+bool\+\_\+t}}
+\begin{DoxyCompactList}\small\item\em A CCS boolean type. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{base_8h_a8ab762d1e926e05224180c4f3455bf40}\label{base_8h_a8ab762d1e926e05224180c4f3455bf40}} 
+typedef uint32\+\_\+t \mbox{\hyperlink{base_8h_a8ab762d1e926e05224180c4f3455bf40}{ccs\+\_\+hash\+\_\+t}}
+\begin{DoxyCompactList}\small\item\em A CCS hashing value type. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{base_8h_ae22dde737fcdf67d5a9fa497bc054027}\label{base_8h_ae22dde737fcdf67d5a9fa497bc054027}} 
+typedef struct \+\_\+ccs\+\_\+rng\+\_\+s $\ast$ \mbox{\hyperlink{base_8h_ae22dde737fcdf67d5a9fa497bc054027}{ccs\+\_\+rng\+\_\+t}}
+\begin{DoxyCompactList}\small\item\em An opaque type defining a CCS random generator. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{base_8h_ae36e9cd8818547939b8d03da347b3f56}\label{base_8h_ae36e9cd8818547939b8d03da347b3f56}} 
+typedef struct \+\_\+ccs\+\_\+distribution\+\_\+s $\ast$ \mbox{\hyperlink{base_8h_ae36e9cd8818547939b8d03da347b3f56}{ccs\+\_\+distribution\+\_\+t}}
+\begin{DoxyCompactList}\small\item\em An opaque type defining a CCS distribution. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{base_8h_a0b796ce449059870d5bbb77f20925b50}\label{base_8h_a0b796ce449059870d5bbb77f20925b50}} 
+typedef struct \+\_\+ccs\+\_\+hyperparameter\+\_\+s $\ast$ \mbox{\hyperlink{base_8h_a0b796ce449059870d5bbb77f20925b50}{ccs\+\_\+hyperparameter\+\_\+t}}
+\begin{DoxyCompactList}\small\item\em An opaque type defining a CCS hyperparameter. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{base_8h_a211f0df32aa85683492513cbf0d7805b}\label{base_8h_a211f0df32aa85683492513cbf0d7805b}} 
+typedef struct \+\_\+ccs\+\_\+expression\+\_\+s $\ast$ \mbox{\hyperlink{base_8h_a211f0df32aa85683492513cbf0d7805b}{ccs\+\_\+expression\+\_\+t}}
+\begin{DoxyCompactList}\small\item\em An opaque type defining a CCS expression. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{base_8h_a89a96617bf78b097e103ee8c8e281b7b}\label{base_8h_a89a96617bf78b097e103ee8c8e281b7b}} 
+typedef struct \+\_\+ccs\+\_\+context\+\_\+s $\ast$ \mbox{\hyperlink{base_8h_a89a96617bf78b097e103ee8c8e281b7b}{ccs\+\_\+context\+\_\+t}}
+\begin{DoxyCompactList}\small\item\em An opaque type defining a CCS context. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{base_8h_ab2f25e603cb52fce2391e78d5edac824}\label{base_8h_ab2f25e603cb52fce2391e78d5edac824}} 
+typedef struct \+\_\+ccs\+\_\+configuration\+\_\+space\+\_\+s $\ast$ \mbox{\hyperlink{base_8h_ab2f25e603cb52fce2391e78d5edac824}{ccs\+\_\+configuration\+\_\+space\+\_\+t}}
+\begin{DoxyCompactList}\small\item\em An opaque type defining a CCS configuration space. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{base_8h_a3123ce820c89b10be4ee76bd15c7a607}\label{base_8h_a3123ce820c89b10be4ee76bd15c7a607}} 
+typedef struct \+\_\+ccs\+\_\+binding\+\_\+s $\ast$ \mbox{\hyperlink{base_8h_a3123ce820c89b10be4ee76bd15c7a607}{ccs\+\_\+binding\+\_\+t}}
+\begin{DoxyCompactList}\small\item\em An opaque type defining a CCS binding. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{base_8h_a6b2a7ac41257359ed28ae334bf760634}\label{base_8h_a6b2a7ac41257359ed28ae334bf760634}} 
+typedef struct \+\_\+ccs\+\_\+configuration\+\_\+s $\ast$ \mbox{\hyperlink{base_8h_a6b2a7ac41257359ed28ae334bf760634}{ccs\+\_\+configuration\+\_\+t}}
+\begin{DoxyCompactList}\small\item\em An opaque type defining a CCS configuration. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{base_8h_ade427f7fbfb71d0bb03d237785fa574f}\label{base_8h_ade427f7fbfb71d0bb03d237785fa574f}} 
+typedef struct \+\_\+ccs\+\_\+features\+\_\+space\+\_\+s $\ast$ \mbox{\hyperlink{base_8h_ade427f7fbfb71d0bb03d237785fa574f}{ccs\+\_\+features\+\_\+space\+\_\+t}}
+\begin{DoxyCompactList}\small\item\em An opaque type defining a CCS features space. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{base_8h_a9900ffdbd4cc438a987efababa74c6a3}\label{base_8h_a9900ffdbd4cc438a987efababa74c6a3}} 
+typedef struct \+\_\+ccs\+\_\+features\+\_\+s $\ast$ \mbox{\hyperlink{base_8h_a9900ffdbd4cc438a987efababa74c6a3}{ccs\+\_\+features\+\_\+t}}
+\begin{DoxyCompactList}\small\item\em An opaque type defining a CCS features. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{base_8h_a645a0bae9ad3d85455ef2b06101146f7}\label{base_8h_a645a0bae9ad3d85455ef2b06101146f7}} 
+typedef struct \+\_\+ccs\+\_\+objective\+\_\+space\+\_\+s $\ast$ \mbox{\hyperlink{base_8h_a645a0bae9ad3d85455ef2b06101146f7}{ccs\+\_\+objective\+\_\+space\+\_\+t}}
+\begin{DoxyCompactList}\small\item\em An opaque type defining a CCS objective space. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{base_8h_a7dbc00be0122046c2ba9b6d188d57a13}\label{base_8h_a7dbc00be0122046c2ba9b6d188d57a13}} 
+typedef struct \+\_\+ccs\+\_\+evaluation\+\_\+s $\ast$ \mbox{\hyperlink{base_8h_a7dbc00be0122046c2ba9b6d188d57a13}{ccs\+\_\+evaluation\+\_\+t}}
+\begin{DoxyCompactList}\small\item\em An opaque type defining a CCS evaluation. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{base_8h_a3ddf9ffad5de733e23200d48a8f55711}\label{base_8h_a3ddf9ffad5de733e23200d48a8f55711}} 
+typedef struct \+\_\+ccs\+\_\+features\+\_\+evaluation\+\_\+s $\ast$ \mbox{\hyperlink{base_8h_a3ddf9ffad5de733e23200d48a8f55711}{ccs\+\_\+features\+\_\+evaluation\+\_\+t}}
+\begin{DoxyCompactList}\small\item\em An opaque type defining a CCS features evaluation. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{base_8h_a7760c93f0ff0a5a31bc1e0878936f4a8}\label{base_8h_a7760c93f0ff0a5a31bc1e0878936f4a8}} 
+typedef struct \+\_\+ccs\+\_\+tuner\+\_\+s $\ast$ \mbox{\hyperlink{base_8h_a7760c93f0ff0a5a31bc1e0878936f4a8}{ccs\+\_\+tuner\+\_\+t}}
+\begin{DoxyCompactList}\small\item\em An opaque type defining a CCS tuner. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{base_8h_a0ac750666d5233792ae5da6654bd5305}\label{base_8h_a0ac750666d5233792ae5da6654bd5305}} 
+typedef struct \+\_\+ccs\+\_\+features\+\_\+tuner\+\_\+s $\ast$ \mbox{\hyperlink{base_8h_a0ac750666d5233792ae5da6654bd5305}{ccs\+\_\+features\+\_\+tuner\+\_\+t}}
+\begin{DoxyCompactList}\small\item\em An opaque type defining a CCS features tuner. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{base_8h_add9179f790195c71872783fd97b03a84}\label{base_8h_add9179f790195c71872783fd97b03a84}} 
+typedef struct \+\_\+ccs\+\_\+map\+\_\+s $\ast$ \mbox{\hyperlink{base_8h_add9179f790195c71872783fd97b03a84}{ccs\+\_\+map\+\_\+t}}
+\begin{DoxyCompactList}\small\item\em An opaque type defining a CCS key-\/value store. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{base_8h_aa8ed63786cc9dd9d8fc7bdbbd07b1511}\label{base_8h_aa8ed63786cc9dd9d8fc7bdbbd07b1511}} 
+typedef struct \+\_\+ccs\+\_\+error\+\_\+stack\+\_\+s $\ast$ \mbox{\hyperlink{base_8h_aa8ed63786cc9dd9d8fc7bdbbd07b1511}{ccs\+\_\+error\+\_\+stack\+\_\+t}}
+\begin{DoxyCompactList}\small\item\em An opaque type defining a CCS error statck. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{base_8h_ae9196f976941f7eb184ae0e23f24968c}\label{base_8h_ae9196f976941f7eb184ae0e23f24968c}} 
+typedef enum \mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0}{ccs\+\_\+error\+\_\+e}} \mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}}
+\begin{DoxyCompactList}\small\item\em A commodity type to represent CCS errors and returned by most functione. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{base_8h_a1b1499bb58b18ba9d1b480f59159cd64}\label{base_8h_a1b1499bb58b18ba9d1b480f59159cd64}} 
+typedef int32\+\_\+t \mbox{\hyperlink{base_8h_a1b1499bb58b18ba9d1b480f59159cd64}{ccs\+\_\+result\+\_\+t}}
+\begin{DoxyCompactList}\small\item\em The result type used for evaluations. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{base_8h_abe7655334e4b2c15e8e0a853a7acbb47}\label{base_8h_abe7655334e4b2c15e8e0a853a7acbb47}} 
+typedef enum \mbox{\hyperlink{base_8h_a3d560375b0c5393435e65d760d3d6c60}{ccs\+\_\+object\+\_\+type\+\_\+e}} \mbox{\hyperlink{base_8h_abe7655334e4b2c15e8e0a853a7acbb47}{ccs\+\_\+object\+\_\+type\+\_\+t}}
+\begin{DoxyCompactList}\small\item\em A commodity type to represent CCS object types. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{base_8h_a2388f49d0ddd4c59ea7ea2fc5f046303}\label{base_8h_a2388f49d0ddd4c59ea7ea2fc5f046303}} 
+typedef enum \mbox{\hyperlink{base_8h_a302e6ecbf08c6c8a059fc775c88f21c0}{ccs\+\_\+data\+\_\+type\+\_\+e}} \mbox{\hyperlink{base_8h_a2388f49d0ddd4c59ea7ea2fc5f046303}{ccs\+\_\+data\+\_\+type\+\_\+t}}
+\begin{DoxyCompactList}\small\item\em A commodity type to represent CCS data types. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{base_8h_a6754982f23704161ccc150dad85017e6}\label{base_8h_a6754982f23704161ccc150dad85017e6}} 
+typedef enum \mbox{\hyperlink{base_8h_a2213c712c40d15eaa43f3aa0244344b1}{ccs\+\_\+datum\+\_\+flag\+\_\+e}} \mbox{\hyperlink{base_8h_a6754982f23704161ccc150dad85017e6}{ccs\+\_\+datum\+\_\+flag\+\_\+t}}
+\begin{DoxyCompactList}\small\item\em A commodity type to represent CCS datum flags. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{base_8h_a440d0ba247ae9c7a23b4e87e6780b5b0}\label{base_8h_a440d0ba247ae9c7a23b4e87e6780b5b0}} 
+typedef uint32\+\_\+t \mbox{\hyperlink{base_8h_a440d0ba247ae9c7a23b4e87e6780b5b0}{ccs\+\_\+datum\+\_\+flags\+\_\+t}}
+\begin{DoxyCompactList}\small\item\em A type representing the combination of flags that can be attached to a CCS datum. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{base_8h_abb2e002510c51102a01c222ebd36ce2c}\label{base_8h_abb2e002510c51102a01c222ebd36ce2c}} 
+typedef enum \mbox{\hyperlink{base_8h_aff930046a5f66cb75b311330b6461b9a}{ccs\+\_\+numeric\+\_\+type\+\_\+e}} \mbox{\hyperlink{base_8h_abb2e002510c51102a01c222ebd36ce2c}{ccs\+\_\+numeric\+\_\+type\+\_\+t}}
+\begin{DoxyCompactList}\small\item\em A commodity type to represent CCS numeric types. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{base_8h_a1a81d15e4085243bd2dc081be098b0ff}\label{base_8h_a1a81d15e4085243bd2dc081be098b0ff}} 
+typedef void $\ast$ \mbox{\hyperlink{base_8h_a1a81d15e4085243bd2dc081be098b0ff}{ccs\+\_\+object\+\_\+t}}
+\begin{DoxyCompactList}\small\item\em A type representing a generic CCS object. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{base_8h_a981ec36df2f80935afde8b7a481f2d14}\label{base_8h_a981ec36df2f80935afde8b7a481f2d14}} 
+typedef union \mbox{\hyperlink{unionccs__numeric__u}{ccs\+\_\+numeric\+\_\+u}} \mbox{\hyperlink{base_8h_a981ec36df2f80935afde8b7a481f2d14}{ccs\+\_\+numeric\+\_\+t}}
+\begin{DoxyCompactList}\small\item\em A commodity type to represent CCS numeric values. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{base_8h_a3c274ebfd028f804605b0cb72bde15dd}\label{base_8h_a3c274ebfd028f804605b0cb72bde15dd}} 
+typedef union \mbox{\hyperlink{unionccs__value__u}{ccs\+\_\+value\+\_\+u}} \mbox{\hyperlink{base_8h_a3c274ebfd028f804605b0cb72bde15dd}{ccs\+\_\+value\+\_\+t}}
+\begin{DoxyCompactList}\small\item\em A commodity type to represent a CCS datum value. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{base_8h_a36bc36b2bb0d0613453dd731cdcd2048}\label{base_8h_a36bc36b2bb0d0613453dd731cdcd2048}} 
+typedef struct \mbox{\hyperlink{structccs__datum__s}{ccs\+\_\+datum\+\_\+s}} \mbox{\hyperlink{base_8h_a36bc36b2bb0d0613453dd731cdcd2048}{ccs\+\_\+datum\+\_\+t}}
+\begin{DoxyCompactList}\small\item\em A commodity type to represent a CCS datum. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{base_8h_aab7c44cebeb507237ca92fab826fddbe}\label{base_8h_aab7c44cebeb507237ca92fab826fddbe}} 
+typedef void($\ast$ \mbox{\hyperlink{base_8h_aab7c44cebeb507237ca92fab826fddbe}{ccs\+\_\+object\+\_\+release\+\_\+callback\+\_\+t}}) (\mbox{\hyperlink{base_8h_a1a81d15e4085243bd2dc081be098b0ff}{ccs\+\_\+object\+\_\+t}} object, void $\ast$user\+\_\+data)
+\begin{DoxyCompactList}\small\item\em The type of CCS object destruction callbacks. \end{DoxyCompactList}\item 
+typedef \mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}}($\ast$ \mbox{\hyperlink{base_8h_a8ee33ef1beb44a7ef90f4f18e12dfe07}{ccs\+\_\+object\+\_\+serialize\+\_\+callback\+\_\+t}}) (\mbox{\hyperlink{base_8h_a1a81d15e4085243bd2dc081be098b0ff}{ccs\+\_\+object\+\_\+t}} object, size\+\_\+t serialize\+\_\+data\+\_\+size, void $\ast$serialize\+\_\+data, size\+\_\+t $\ast$serialize\+\_\+data\+\_\+size\+\_\+ret, void $\ast$callback\+\_\+user\+\_\+data)
+\begin{DoxyCompactList}\small\item\em The type of CCS object serialization callbacks. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{base_8h_adbf0f7b67dad01309743c9e28497ce7e}\label{base_8h_adbf0f7b67dad01309743c9e28497ce7e}} 
+typedef enum \mbox{\hyperlink{base_8h_aee35e17e2c4b6c620583f02bfc0d0d63}{ccs\+\_\+serialize\+\_\+format\+\_\+e}} \mbox{\hyperlink{base_8h_adbf0f7b67dad01309743c9e28497ce7e}{ccs\+\_\+serialize\+\_\+format\+\_\+t}}
+\begin{DoxyCompactList}\small\item\em A commodity type to represent CCS serialization formats. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{base_8h_a199b4aca3a5ff0f76d2b8a9a48761d27}\label{base_8h_a199b4aca3a5ff0f76d2b8a9a48761d27}} 
+typedef enum \mbox{\hyperlink{base_8h_a667b141436fe4eaa49b29bc7d345276f}{ccs\+\_\+serialize\+\_\+operation\+\_\+e}} \mbox{\hyperlink{base_8h_a199b4aca3a5ff0f76d2b8a9a48761d27}{ccs\+\_\+serialize\+\_\+operation\+\_\+t}}
+\begin{DoxyCompactList}\small\item\em A commodity type to represent CCS serializaiton operations. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{base_8h_a04bf8dcc31c258cf530faa36a564fdb0}\label{base_8h_a04bf8dcc31c258cf530faa36a564fdb0}} 
+typedef enum \mbox{\hyperlink{base_8h_af6807b68beea46540b0a3b7d8bf81306}{ccs\+\_\+serialize\+\_\+option\+\_\+e}} \mbox{\hyperlink{base_8h_a04bf8dcc31c258cf530faa36a564fdb0}{ccs\+\_\+serialize\+\_\+option\+\_\+t}}
+\begin{DoxyCompactList}\small\item\em A commodity type to represent CCS serialization options. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{base_8h_a8593c1ea859d3f0e43409fb8f857b883}\label{base_8h_a8593c1ea859d3f0e43409fb8f857b883}} 
+typedef \mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}}($\ast$ \mbox{\hyperlink{base_8h_a8593c1ea859d3f0e43409fb8f857b883}{ccs\+\_\+object\+\_\+deserialize\+\_\+callback\+\_\+t}}) (\mbox{\hyperlink{base_8h_a1a81d15e4085243bd2dc081be098b0ff}{ccs\+\_\+object\+\_\+t}} object, size\+\_\+t serialize\+\_\+data\+\_\+size, const char $\ast$serialize\+\_\+data, void $\ast$callback\+\_\+user\+\_\+data)
+\begin{DoxyCompactList}\small\item\em A commodity type to represent CCS deserializaiton callbacks. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{base_8h_a024176b3e38b1746f3479851a7db3be4}\label{base_8h_a024176b3e38b1746f3479851a7db3be4}} 
+typedef enum \mbox{\hyperlink{base_8h_a0aaa0b0f7e7d3552c906df81238796a6}{ccs\+\_\+deserialize\+\_\+option\+\_\+e}} \mbox{\hyperlink{base_8h_a024176b3e38b1746f3479851a7db3be4}{ccs\+\_\+deserialize\+\_\+option\+\_\+t}}
+\begin{DoxyCompactList}\small\item\em A commodity type to represent CCS deserialization options. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Enumerations}
+\begin{DoxyCompactItemize}
+\item 
+enum \mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0}{ccs\+\_\+error\+\_\+e}} \{ \newline
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a3c3c45dfd718bf769e14ee99b71d20ba}{CCS\+\_\+\+ERROR\+\_\+\+MAX}} = 2
+, \mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a30733d67f443f47f9404faffebb41b46}{CCS\+\_\+\+AGAIN}} = 1
+, \mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a092b9c7d2bc9ac00a6f53e251c8619b8}{CCS\+\_\+\+SUCCESS}} = 0
+, \mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a4707835c3fcb2303089c76bbcbf96df5}{CCS\+\_\+\+INVALID\+\_\+\+OBJECT}} = -\/1
+, \newline
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0adb4bc5cfc4f985bf59ae223f3e22b9f9}{CCS\+\_\+\+INVALID\+\_\+\+VALUE}} = -\/2
+, \mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a5ef8b94d2dc8bbde508c4dd79b34047a}{CCS\+\_\+\+INVALID\+\_\+\+TYPE}} = -\/3
+, \mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0aff40665f1940c0fa4949810912742fb1}{CCS\+\_\+\+INVALID\+\_\+\+SCALE}} = -\/4
+, \mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a2199c049fddf061a424dab07e2e1422b}{CCS\+\_\+\+INVALID\+\_\+\+DISTRIBUTION}} = -\/5
+, \newline
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0af63ecda9c861b6a844eb626bd67124b0}{CCS\+\_\+\+INVALID\+\_\+\+EXPRESSION}} = -\/6
+, \mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0afab391c5bc22e7ba89710930ec04028d}{CCS\+\_\+\+INVALID\+\_\+\+HYPERPARAMETER}} = -\/7
+, \mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a28f1dd1ef65c3fc0a6c410e03af1fbce}{CCS\+\_\+\+INVALID\+\_\+\+CONFIGURATION}} = -\/8
+, \mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a75f19038a842b629c262db908c37471c}{CCS\+\_\+\+INVALID\+\_\+\+NAME}} = -\/9
+, \newline
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0ad126ae62778c74ef66ff161855bd940f}{CCS\+\_\+\+INVALID\+\_\+\+CONDITION}} = -\/10
+, \mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0ab21301b7d334b0a7e27d8b2c00934015}{CCS\+\_\+\+INVALID\+\_\+\+TUNER}} = -\/11
+, \mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a415d13fcca7c4044a18452bb2c5cd30a}{CCS\+\_\+\+INVALID\+\_\+\+GRAPH}} = -\/12
+, \mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a746a5c542f22d6ff30554c2c58458486}{CCS\+\_\+\+TYPE\+\_\+\+NOT\+\_\+\+COMPARABLE}} = -\/13
+, \newline
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a8580ac1fd26223ac44516385b8ac235a}{CCS\+\_\+\+INVALID\+\_\+\+BOUNDS}} = -\/14
+, \mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a3f898f2b0f178de079c2cd22a99b1950}{CCS\+\_\+\+OUT\+\_\+\+OF\+\_\+\+BOUNDS}} = -\/15
+, \mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0af9a4405d2ae21ce28cd2413e8644be11}{CCS\+\_\+\+SAMPLING\+\_\+\+UNSUCCESSFUL}} = -\/16
+, \mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a3b3381e910957ad1fbe1d633b12eff79}{CCS\+\_\+\+OUT\+\_\+\+OF\+\_\+\+MEMORY}} = -\/17
+, \newline
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0ac3872a6f3030563c0740d1af47347c00}{CCS\+\_\+\+UNSUPPORTED\+\_\+\+OPERATION}} = -\/18
+, \mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a957e738a9f970257eddfc79cab5a78fc}{CCS\+\_\+\+INVALID\+\_\+\+EVALUATION}} = -\/19
+, \mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a611e5a4781ba519cc0223dc079fcd5de}{CCS\+\_\+\+INVALID\+\_\+\+FEATURES}} = -\/20
+, \mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0aac0236e9272e37080880b24a2a590aa3}{CCS\+\_\+\+INVALID\+\_\+\+FEATURES\+\_\+\+TUNER}} = -\/21
+, \newline
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0acddad10fdd8809ff1633e0e8ace5c811}{CCS\+\_\+\+INVALID\+\_\+\+FILE\+\_\+\+PATH}} = -\/22
+, \mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a1a6748c15dcb4afc1ae93e816b889a45}{CCS\+\_\+\+NOT\+\_\+\+ENOUGH\+\_\+\+DATA}} = -\/23
+, \mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0aaf70ad77032d0fa1051bcd6f859dd0a3}{CCS\+\_\+\+HANDLE\+\_\+\+DUPLICATE}} = -\/24
+, \mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0aa6b9d51e05de9f9f8303f6548319e57f}{CCS\+\_\+\+INVALID\+\_\+\+HANDLE}} = -\/25
+, \newline
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a99217bbbe69b782e90d4a03d399e11f2}{CCS\+\_\+\+SYSTEM\+\_\+\+ERROR}} = -\/26
+, \mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a83bc630dd152c0a57149184760f5191c}{CCS\+\_\+\+EXTERNAL\+\_\+\+ERROR}} = -\/27
+, \mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0af829f9adecbcb9557bcb69d672df99bc}{CCS\+\_\+\+ERROR\+\_\+\+MIN}} = -\/28
+, \mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0aafe837dab466f0d3f9d2533e7a723179}{CCS\+\_\+\+ERROR\+\_\+\+FORCE\+\_\+32\+BIT}} = INT32\+\_\+\+MAX
+ \}
+\begin{DoxyCompactList}\small\item\em The different possible return codes of a CCS function. \end{DoxyCompactList}\item 
+enum \mbox{\hyperlink{base_8h_a3d560375b0c5393435e65d760d3d6c60}{ccs\+\_\+object\+\_\+type\+\_\+e}} \{ \newline
+\mbox{\hyperlink{base_8h_a3d560375b0c5393435e65d760d3d6c60a79de073e86b311f26a4fcb264479c27b}{CCS\+\_\+\+RNG}}
+, \mbox{\hyperlink{base_8h_a3d560375b0c5393435e65d760d3d6c60af800a065de65e46b793c462244741112}{CCS\+\_\+\+DISTRIBUTION}}
+, \mbox{\hyperlink{base_8h_a3d560375b0c5393435e65d760d3d6c60a4840994f8029cf28e6745e189f7c1f8d}{CCS\+\_\+\+HYPERPARAMETER}}
+, \mbox{\hyperlink{base_8h_a3d560375b0c5393435e65d760d3d6c60a7d3b12be1e43110f29269ab1a9aabc47}{CCS\+\_\+\+EXPRESSION}}
+, \newline
+\mbox{\hyperlink{base_8h_a3d560375b0c5393435e65d760d3d6c60a283fd9f47819b3c0aeab9af968f2b3a5}{CCS\+\_\+\+CONFIGURATION\+\_\+\+SPACE}}
+, \mbox{\hyperlink{base_8h_a3d560375b0c5393435e65d760d3d6c60a9454f23c5a25368ca93e1c2e7f6a6b27}{CCS\+\_\+\+CONFIGURATION}}
+, \mbox{\hyperlink{base_8h_a3d560375b0c5393435e65d760d3d6c60ad05fcf203a11eedac2c6451bb50975ac}{CCS\+\_\+\+OBJECTIVE\+\_\+\+SPACE}}
+, \mbox{\hyperlink{base_8h_a3d560375b0c5393435e65d760d3d6c60adffba0ee3c4b3cad5a5d9be5f3eb3d17}{CCS\+\_\+\+EVALUATION}}
+, \newline
+\mbox{\hyperlink{base_8h_a3d560375b0c5393435e65d760d3d6c60a80a0a9dd811fce38bbd39a99232d9368}{CCS\+\_\+\+TUNER}}
+, \mbox{\hyperlink{base_8h_a3d560375b0c5393435e65d760d3d6c60af3ecf0b89fd2729d788c29a31d630e2d}{CCS\+\_\+\+FEATURES\+\_\+\+SPACE}}
+, \mbox{\hyperlink{base_8h_a3d560375b0c5393435e65d760d3d6c60a8547f6f68449f67ea6adc159dad1a35b}{CCS\+\_\+\+FEATURES}}
+, \mbox{\hyperlink{base_8h_a3d560375b0c5393435e65d760d3d6c60af6dd95f562b7f89eda1a5ed14d32dbc5}{CCS\+\_\+\+FEATURES\+\_\+\+EVALUATION}}
+, \newline
+\mbox{\hyperlink{base_8h_a3d560375b0c5393435e65d760d3d6c60a43e79cece117e0081a920be3a8535ed4}{CCS\+\_\+\+FEATURES\+\_\+\+TUNER}}
+, \mbox{\hyperlink{base_8h_a3d560375b0c5393435e65d760d3d6c60aa40cb25ea809cf2aba091118691072d6}{CCS\+\_\+\+MAP}}
+, \mbox{\hyperlink{base_8h_a3d560375b0c5393435e65d760d3d6c60a8489180b663d4a004e89e92b92d85540}{CCS\+\_\+\+ERROR\+\_\+\+STACK}}
+, \mbox{\hyperlink{base_8h_a3d560375b0c5393435e65d760d3d6c60a211a0856c3405f8c87860694ee4db10d}{CCS\+\_\+\+OBJECT\+\_\+\+TYPE\+\_\+\+MAX}}
+, \newline
+\mbox{\hyperlink{base_8h_a3d560375b0c5393435e65d760d3d6c60ae800cc73429cf1f647fd01664d4e9381}{CCS\+\_\+\+OBJECT\+\_\+\+TYPE\+\_\+\+FORCE\+\_\+32\+BIT}} = INT32\+\_\+\+MAX
+ \}
+\begin{DoxyCompactList}\small\item\em CCS object types. \end{DoxyCompactList}\item 
+enum \mbox{\hyperlink{base_8h_a302e6ecbf08c6c8a059fc775c88f21c0}{ccs\+\_\+data\+\_\+type\+\_\+e}} \{ \newline
+\mbox{\hyperlink{base_8h_a302e6ecbf08c6c8a059fc775c88f21c0a5da899dad2804ad5c46047ab479e3f78}{CCS\+\_\+\+NONE}}
+, \mbox{\hyperlink{base_8h_a302e6ecbf08c6c8a059fc775c88f21c0a3ef8367b20382d8dfdce0b63c72113d1}{CCS\+\_\+\+INTEGER}}
+, \mbox{\hyperlink{base_8h_a302e6ecbf08c6c8a059fc775c88f21c0a43c4742e43ef6794cac5489f3dc038de}{CCS\+\_\+\+FLOAT}}
+, \mbox{\hyperlink{base_8h_a302e6ecbf08c6c8a059fc775c88f21c0a37721ea5078323c2f1b2f83990f54fc7}{CCS\+\_\+\+BOOLEAN}}
+, \newline
+\mbox{\hyperlink{base_8h_a302e6ecbf08c6c8a059fc775c88f21c0af1ccb6cfa2ff1bfca7571e77b916e946}{CCS\+\_\+\+STRING}}
+, \mbox{\hyperlink{base_8h_a302e6ecbf08c6c8a059fc775c88f21c0a954da35bcbf30d885a2bbf550de2cf84}{CCS\+\_\+\+INACTIVE}}
+, \mbox{\hyperlink{base_8h_a302e6ecbf08c6c8a059fc775c88f21c0acd87e27d98d3f1113fd6cfda26893f87}{CCS\+\_\+\+OBJECT}}
+, \mbox{\hyperlink{base_8h_a302e6ecbf08c6c8a059fc775c88f21c0ab369a0441f2ff77e1c35bd645b2b2e0e}{CCS\+\_\+\+DATA\+\_\+\+TYPE\+\_\+\+MAX}}
+, \newline
+\mbox{\hyperlink{base_8h_a302e6ecbf08c6c8a059fc775c88f21c0acd3b4b60c7d0767d9fa1cda66d6cbfcf}{CCS\+\_\+\+DATA\+\_\+\+TYPE\+\_\+\+FORCE\+\_\+32\+BIT}} = INT32\+\_\+\+MAX
+ \}
+\begin{DoxyCompactList}\small\item\em CCS supported data types. \end{DoxyCompactList}\item 
+enum \mbox{\hyperlink{base_8h_a2213c712c40d15eaa43f3aa0244344b1}{ccs\+\_\+datum\+\_\+flag\+\_\+e}} \{ \newline
+\mbox{\hyperlink{base_8h_a2213c712c40d15eaa43f3aa0244344b1a8d2874eac4ca299a9c3444f14c09f066}{CCS\+\_\+\+FLAG\+\_\+\+DEFAULT}} = 0
+, \mbox{\hyperlink{base_8h_a2213c712c40d15eaa43f3aa0244344b1a2533918a2304aed0a2739c7bc47f0819}{CCS\+\_\+\+FLAG\+\_\+\+TRANSIENT}} = (1 $<$$<$ 0)
+, \mbox{\hyperlink{base_8h_a2213c712c40d15eaa43f3aa0244344b1a41694a7edbe990ae9b8153f9796d50d5}{CCS\+\_\+\+FLAG\+\_\+\+UNPOOLED}} = (1 $<$$<$ 1)
+, \mbox{\hyperlink{base_8h_a2213c712c40d15eaa43f3aa0244344b1a63bd05dadf9e9f8cb71e817561f9825c}{CCS\+\_\+\+FLAG\+\_\+\+ID}} = (1 $<$$<$ 2)
+, \newline
+\mbox{\hyperlink{base_8h_a2213c712c40d15eaa43f3aa0244344b1a0b0d859495b4cf1d6fe9d507f678300b}{CCS\+\_\+\+DATUM\+\_\+\+FLAG\+\_\+\+FORCE\+\_\+32\+BIT}} = INT32\+\_\+\+MAX
+ \}
+\begin{DoxyCompactList}\small\item\em Flags that can be attached to a CCS datum. \end{DoxyCompactList}\item 
+enum \mbox{\hyperlink{base_8h_aff930046a5f66cb75b311330b6461b9a}{ccs\+\_\+numeric\+\_\+type\+\_\+e}} \{ \mbox{\hyperlink{base_8h_aff930046a5f66cb75b311330b6461b9aac2f87bcb8e2cb21d8b6f0b7ab1cd1705}{CCS\+\_\+\+NUM\+\_\+\+INTEGER}} = CCS\+\_\+\+INTEGER
+, \mbox{\hyperlink{base_8h_aff930046a5f66cb75b311330b6461b9aa5077c0a0bd923e732a382045cccaed81}{CCS\+\_\+\+NUM\+\_\+\+FLOAT}} = CCS\+\_\+\+FLOAT
+, \mbox{\hyperlink{base_8h_aff930046a5f66cb75b311330b6461b9aa02849d59e47a8471564df13aa894eefc}{CCS\+\_\+\+NUM\+\_\+\+TYPE\+\_\+\+MAX}}
+, \mbox{\hyperlink{base_8h_aff930046a5f66cb75b311330b6461b9aa45d1b2ff48b2b2466e81306ccc6098cb}{CCS\+\_\+\+NUM\+\_\+\+TYPE\+\_\+\+FORCE\+\_\+32\+BIT}} = INT32\+\_\+\+MAX
+ \}
+\begin{DoxyCompactList}\small\item\em The subset of CCS data types that represent numerical data. \end{DoxyCompactList}\item 
+enum \mbox{\hyperlink{base_8h_aee35e17e2c4b6c620583f02bfc0d0d63}{ccs\+\_\+serialize\+\_\+format\+\_\+e}} \{ \mbox{\hyperlink{base_8h_aee35e17e2c4b6c620583f02bfc0d0d63aaa99abc5e79f124791f26c4f6cc070d9}{CCS\+\_\+\+SERIALIZE\+\_\+\+FORMAT\+\_\+\+BINARY}}
+, \mbox{\hyperlink{base_8h_aee35e17e2c4b6c620583f02bfc0d0d63ab4d2a79ec776e83339b68661ffda699f}{CCS\+\_\+\+SERIALIZE\+\_\+\+FORMAT\+\_\+\+MAX}}
+, \mbox{\hyperlink{base_8h_aee35e17e2c4b6c620583f02bfc0d0d63a360ea86a60411aca8bbeedb0685336f2}{CCS\+\_\+\+SERIALIZE\+\_\+\+FORMAT\+\_\+\+FORCE\+\_\+32\+BIT}} = INT32\+\_\+\+MAX
+ \}
+\begin{DoxyCompactList}\small\item\em The different serialization formats supported by CCS. \end{DoxyCompactList}\item 
+enum \mbox{\hyperlink{base_8h_a667b141436fe4eaa49b29bc7d345276f}{ccs\+\_\+serialize\+\_\+operation\+\_\+e}} \{ \newline
+\mbox{\hyperlink{base_8h_a667b141436fe4eaa49b29bc7d345276fa67f861cdf365670315ac525fc9ec4287}{CCS\+\_\+\+SERIALIZE\+\_\+\+OPERATION\+\_\+\+SIZE}}
+, \mbox{\hyperlink{base_8h_a667b141436fe4eaa49b29bc7d345276fa66a117baf5b1a8d832b26d36c962ba2b}{CCS\+\_\+\+SERIALIZE\+\_\+\+OPERATION\+\_\+\+MEMORY}}
+, \mbox{\hyperlink{base_8h_a667b141436fe4eaa49b29bc7d345276fa1af1fb064e7669208241df3f7ac44a5c}{CCS\+\_\+\+SERIALIZE\+\_\+\+OPERATION\+\_\+\+FILE}}
+, \mbox{\hyperlink{base_8h_a667b141436fe4eaa49b29bc7d345276fa12daf6e087d16e6eca625a81ec996c8b}{CCS\+\_\+\+SERIALIZE\+\_\+\+OPERATION\+\_\+\+FILE\+\_\+\+DESCRIPTOR}}
+, \newline
+\mbox{\hyperlink{base_8h_a667b141436fe4eaa49b29bc7d345276fa139c83b61dadb90e15cba2199addcd09}{CCS\+\_\+\+SERIALIZE\+\_\+\+OPERATION\+\_\+\+MAX}}
+, \mbox{\hyperlink{base_8h_a667b141436fe4eaa49b29bc7d345276fae3b2e2199d720d8a7adbb82490baab8a}{CCS\+\_\+\+SERIALIZE\+\_\+\+OPERATION\+\_\+\+FORCE\+\_\+32\+BIT}} = INT32\+\_\+\+MAX
+ \}
+\begin{DoxyCompactList}\small\item\em The different serialization operations supported by CCS. \end{DoxyCompactList}\item 
+enum \mbox{\hyperlink{base_8h_af6807b68beea46540b0a3b7d8bf81306}{ccs\+\_\+serialize\+\_\+option\+\_\+e}} \{ \newline
+\mbox{\hyperlink{base_8h_af6807b68beea46540b0a3b7d8bf81306aee199f42078be30ac99bd6a80139d0f4}{CCS\+\_\+\+SERIALIZE\+\_\+\+OPTION\+\_\+\+END}} = 0
+, \mbox{\hyperlink{base_8h_af6807b68beea46540b0a3b7d8bf81306ac85f72e185a0d3b1ccf891628c5c88ab}{CCS\+\_\+\+SERIALIZE\+\_\+\+OPTION\+\_\+\+NON\+\_\+\+BLOCKING}}
+, \mbox{\hyperlink{base_8h_af6807b68beea46540b0a3b7d8bf81306a8267631347cfb616d2e1c2215e615c5a}{CCS\+\_\+\+SERIALIZE\+\_\+\+OPTION\+\_\+\+CALLBACK}}
+, \mbox{\hyperlink{base_8h_af6807b68beea46540b0a3b7d8bf81306acabf42447b9cea788413a58148cb87d0}{CCS\+\_\+\+SERIALIZE\+\_\+\+OPTION\+\_\+\+MAX}}
+, \newline
+\mbox{\hyperlink{base_8h_af6807b68beea46540b0a3b7d8bf81306a81592e58bfbca65c9856822e317679e5}{CCS\+\_\+\+SERIALIZE\+\_\+\+OPTION\+\_\+\+FORCE\+\_\+32\+BIT}} = INT32\+\_\+\+MAX
+ \}
+\begin{DoxyCompactList}\small\item\em The different serialization options. \end{DoxyCompactList}\item 
+enum \mbox{\hyperlink{base_8h_a0aaa0b0f7e7d3552c906df81238796a6}{ccs\+\_\+deserialize\+\_\+option\+\_\+e}} \{ \newline
+\mbox{\hyperlink{base_8h_a0aaa0b0f7e7d3552c906df81238796a6ae70e8920cace60c7a8084cda59e950cc}{CCS\+\_\+\+DESERIALIZE\+\_\+\+OPTION\+\_\+\+END}} = 0
+, \mbox{\hyperlink{base_8h_a0aaa0b0f7e7d3552c906df81238796a6af012676c2d25c70af01e49b03a314af7}{CCS\+\_\+\+DESERIALIZE\+\_\+\+OPTION\+\_\+\+HANDLE\+\_\+\+MAP}}
+, \mbox{\hyperlink{base_8h_a0aaa0b0f7e7d3552c906df81238796a6a222b979a0ad6cdbae8c7ba9b4d6dc93f}{CCS\+\_\+\+DESERIALIZE\+\_\+\+OPTION\+\_\+\+VECTOR}}
+, \mbox{\hyperlink{base_8h_a0aaa0b0f7e7d3552c906df81238796a6af488be05ce3e6d1c3d2cd5f27a04c148}{CCS\+\_\+\+DESERIALIZE\+\_\+\+OPTION\+\_\+\+DATA}}
+, \newline
+\mbox{\hyperlink{base_8h_a0aaa0b0f7e7d3552c906df81238796a6ab86ed17b20e39f39c94ce6fd08218db7}{CCS\+\_\+\+DESERIALIZE\+\_\+\+OPTION\+\_\+\+NON\+\_\+\+BLOCKING}}
+, \mbox{\hyperlink{base_8h_a0aaa0b0f7e7d3552c906df81238796a6a97f904527e611eeb5a5623c1940efe0e}{CCS\+\_\+\+DESERIALIZE\+\_\+\+CALLBACK}}
+, \mbox{\hyperlink{base_8h_a0aaa0b0f7e7d3552c906df81238796a6af6e87748be781471a8738407a30b867d}{CCS\+\_\+\+DESERIALIZE\+\_\+\+OPTION\+\_\+\+MAX}}
+, \mbox{\hyperlink{base_8h_a0aaa0b0f7e7d3552c906df81238796a6ac3a0acb83dfcf9c472d51fcea6ce9722}{CCS\+\_\+\+DESERIALIZE\+\_\+\+OPTION\+\_\+\+FORCE\+\_\+32\+BIT}} = INT32\+\_\+\+MAX
+ \}
+\begin{DoxyCompactList}\small\item\em The different deserialization options. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+static \mbox{\hyperlink{base_8h_a36bc36b2bb0d0613453dd731cdcd2048}{ccs\+\_\+datum\+\_\+t}} \mbox{\hyperlink{base_8h_a3df659eafffe94924dfb38e660a31457}{ccs\+\_\+bool}} (\mbox{\hyperlink{base_8h_a0e8ba2dfd397017939e6ea2ebc4bb037}{ccs\+\_\+bool\+\_\+t}} v)
+\begin{DoxyCompactList}\small\item\em A helper function to construct a datum containing a boolean value. \end{DoxyCompactList}\item 
+static \mbox{\hyperlink{base_8h_a36bc36b2bb0d0613453dd731cdcd2048}{ccs\+\_\+datum\+\_\+t}} \mbox{\hyperlink{base_8h_a91afc7cc2047f5f11879e0f1579ce6fc}{ccs\+\_\+float}} (\mbox{\hyperlink{base_8h_a8a8cddcd4f5ce78a2fbb0a44743e88c5}{ccs\+\_\+float\+\_\+t}} v)
+\begin{DoxyCompactList}\small\item\em A helper function to construct a datum containing a floating point value. \end{DoxyCompactList}\item 
+static \mbox{\hyperlink{base_8h_a36bc36b2bb0d0613453dd731cdcd2048}{ccs\+\_\+datum\+\_\+t}} \mbox{\hyperlink{base_8h_abbf3424e75419b393cfebf4f363749e4}{ccs\+\_\+int}} (\mbox{\hyperlink{base_8h_a04670829a660b2aab58c0377468f0de8}{ccs\+\_\+int\+\_\+t}} v)
+\begin{DoxyCompactList}\small\item\em A helper function to construct a datum containing an integer value. \end{DoxyCompactList}\item 
+static \mbox{\hyperlink{base_8h_a36bc36b2bb0d0613453dd731cdcd2048}{ccs\+\_\+datum\+\_\+t}} \mbox{\hyperlink{base_8h_af4f35fa301520b1cc8d008da72015391}{ccs\+\_\+object}} (\mbox{\hyperlink{base_8h_a1a81d15e4085243bd2dc081be098b0ff}{ccs\+\_\+object\+\_\+t}} v)
+\begin{DoxyCompactList}\small\item\em A helper function to construct a datum containing a CCS object value. \end{DoxyCompactList}\item 
+static \mbox{\hyperlink{base_8h_a36bc36b2bb0d0613453dd731cdcd2048}{ccs\+\_\+datum\+\_\+t}} \mbox{\hyperlink{base_8h_a03d8ebf0681247d405e8e2b029557061}{ccs\+\_\+string}} (const char $\ast$v)
+\begin{DoxyCompactList}\small\item\em A helper function to construct a datum containing a string value. \end{DoxyCompactList}\item 
+static int \mbox{\hyperlink{base_8h_ad0129f5cd522a0b805d3f8c1499858bb}{ccs\+\_\+datum\+\_\+cmp}} (\mbox{\hyperlink{base_8h_a36bc36b2bb0d0613453dd731cdcd2048}{ccs\+\_\+datum\+\_\+t}} a, \mbox{\hyperlink{base_8h_a36bc36b2bb0d0613453dd731cdcd2048}{ccs\+\_\+datum\+\_\+t}} b)
+\begin{DoxyCompactList}\small\item\em A helper function providing a strict ordering of datum. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} \mbox{\hyperlink{base_8h_add36548755d359a9feb615e706abe1bf}{ccs\+\_\+init}} ()
+\begin{DoxyCompactList}\small\item\em The library initialization function. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} \mbox{\hyperlink{base_8h_a4bba7455ec8ccd7d51a5f8ac5f7e6621}{ccs\+\_\+fini}} ()
+\begin{DoxyCompactList}\small\item\em The library deinitialization function. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} \mbox{\hyperlink{base_8h_a098a77b95dcc60d29c788ebe7b65bfe1}{ccs\+\_\+get\+\_\+error\+\_\+name}} (\mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} error, const char $\ast$$\ast$name)
+\begin{DoxyCompactList}\small\item\em Return the string corresponding to the provided CCS error. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{structccs__version__t}{ccs\+\_\+version\+\_\+t}} \mbox{\hyperlink{base_8h_ab9b32d2d4d0b1041c92d639826b63f4a}{ccs\+\_\+get\+\_\+version}} ()
+\begin{DoxyCompactList}\small\item\em Query the library API version. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} \mbox{\hyperlink{base_8h_afb226ae251259f6eece1bedb5d7c601a}{ccs\+\_\+retain\+\_\+object}} (\mbox{\hyperlink{base_8h_a1a81d15e4085243bd2dc081be098b0ff}{ccs\+\_\+object\+\_\+t}} object)
+\begin{DoxyCompactList}\small\item\em Retain a CCS object, incrementing the internal reference counting. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} \mbox{\hyperlink{base_8h_aa7f09b977433e517de83af03e86da5c1}{ccs\+\_\+release\+\_\+object}} (\mbox{\hyperlink{base_8h_a1a81d15e4085243bd2dc081be098b0ff}{ccs\+\_\+object\+\_\+t}} object)
+\begin{DoxyCompactList}\small\item\em Release a CCS object, decrementing the internal reference counting. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} \mbox{\hyperlink{base_8h_a2daa6d874d1d933193aaf3f24b579c7c}{ccs\+\_\+object\+\_\+get\+\_\+type}} (\mbox{\hyperlink{base_8h_a1a81d15e4085243bd2dc081be098b0ff}{ccs\+\_\+object\+\_\+t}} object, \mbox{\hyperlink{base_8h_abe7655334e4b2c15e8e0a853a7acbb47}{ccs\+\_\+object\+\_\+type\+\_\+t}} $\ast$type\+\_\+ret)
+\begin{DoxyCompactList}\small\item\em Get a CCS object type. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} \mbox{\hyperlink{base_8h_a19323fcb233a7a0c5098832bb4ea359f}{ccs\+\_\+object\+\_\+get\+\_\+refcount}} (\mbox{\hyperlink{base_8h_a1a81d15e4085243bd2dc081be098b0ff}{ccs\+\_\+object\+\_\+t}} object, int32\+\_\+t $\ast$refcount\+\_\+ret)
+\begin{DoxyCompactList}\small\item\em Get an object internal reference counting. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} \mbox{\hyperlink{base_8h_a2576030397e2d5d26ab0da922d513df3}{ccs\+\_\+object\+\_\+set\+\_\+destroy\+\_\+callback}} (\mbox{\hyperlink{base_8h_a1a81d15e4085243bd2dc081be098b0ff}{ccs\+\_\+object\+\_\+t}} object, \mbox{\hyperlink{base_8h_aab7c44cebeb507237ca92fab826fddbe}{ccs\+\_\+object\+\_\+release\+\_\+callback\+\_\+t}} callback, void $\ast$user\+\_\+data)
+\begin{DoxyCompactList}\small\item\em Attach a destruction callback to a CCS object. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} \mbox{\hyperlink{base_8h_afd6573353b0af3e8666ed7667a8094ee}{ccs\+\_\+object\+\_\+set\+\_\+user\+\_\+data}} (\mbox{\hyperlink{base_8h_a1a81d15e4085243bd2dc081be098b0ff}{ccs\+\_\+object\+\_\+t}} object, void $\ast$user\+\_\+data)
+\begin{DoxyCompactList}\small\item\em Set the associated {\ttfamily user\+\_\+data} pointer of a CCS object. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} \mbox{\hyperlink{base_8h_a344e959e8785169d8795f2152f46a66f}{ccs\+\_\+object\+\_\+get\+\_\+user\+\_\+data}} (\mbox{\hyperlink{base_8h_a1a81d15e4085243bd2dc081be098b0ff}{ccs\+\_\+object\+\_\+t}} object, void $\ast$$\ast$user\+\_\+data\+\_\+ret)
+\begin{DoxyCompactList}\small\item\em Get the associated {\ttfamily user\+\_\+data} pointer of a CCS object. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} \mbox{\hyperlink{base_8h_a7540ffe154728290430ccabba71b188c}{ccs\+\_\+object\+\_\+set\+\_\+serialize\+\_\+callback}} (\mbox{\hyperlink{base_8h_a1a81d15e4085243bd2dc081be098b0ff}{ccs\+\_\+object\+\_\+t}} object, \mbox{\hyperlink{base_8h_a8ee33ef1beb44a7ef90f4f18e12dfe07}{ccs\+\_\+object\+\_\+serialize\+\_\+callback\+\_\+t}} callback, void $\ast$user\+\_\+data)
+\begin{DoxyCompactList}\small\item\em Set the object serialization callback. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} \mbox{\hyperlink{base_8h_a3e48feefd023f1ad4bbc848b14325420}{ccs\+\_\+object\+\_\+serialize}} (\mbox{\hyperlink{base_8h_a1a81d15e4085243bd2dc081be098b0ff}{ccs\+\_\+object\+\_\+t}} object, \mbox{\hyperlink{base_8h_adbf0f7b67dad01309743c9e28497ce7e}{ccs\+\_\+serialize\+\_\+format\+\_\+t}} format, \mbox{\hyperlink{base_8h_a199b4aca3a5ff0f76d2b8a9a48761d27}{ccs\+\_\+serialize\+\_\+operation\+\_\+t}} operation,...)
+\begin{DoxyCompactList}\small\item\em Perform a serialization operation on a CCS object. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} \mbox{\hyperlink{base_8h_a83d7208f8fbfa4013d94fc0bae4da0fc}{ccs\+\_\+object\+\_\+deserialize}} (\mbox{\hyperlink{base_8h_a1a81d15e4085243bd2dc081be098b0ff}{ccs\+\_\+object\+\_\+t}} $\ast$object\+\_\+ret, \mbox{\hyperlink{base_8h_adbf0f7b67dad01309743c9e28497ce7e}{ccs\+\_\+serialize\+\_\+format\+\_\+t}} format, \mbox{\hyperlink{base_8h_a199b4aca3a5ff0f76d2b8a9a48761d27}{ccs\+\_\+serialize\+\_\+operation\+\_\+t}} operation,...)
+\begin{DoxyCompactList}\small\item\em Perform a deserialization operation and returns a new CCS object. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{base_8h_a547bab0ffae7ff81698e68842fc7dff8}\label{base_8h_a547bab0ffae7ff81698e68842fc7dff8}} 
+const \mbox{\hyperlink{structccs__version__t}{ccs\+\_\+version\+\_\+t}} \mbox{\hyperlink{base_8h_a547bab0ffae7ff81698e68842fc7dff8}{ccs\+\_\+version}}
+\begin{DoxyCompactList}\small\item\em A variable containing the current version of the CCS library. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{base_8h_a153118015e137a0dcc4a4cda6716de48}\label{base_8h_a153118015e137a0dcc4a4cda6716de48}} 
+const \mbox{\hyperlink{base_8h_a36bc36b2bb0d0613453dd731cdcd2048}{ccs\+\_\+datum\+\_\+t}} \mbox{\hyperlink{base_8h_a153118015e137a0dcc4a4cda6716de48}{ccs\+\_\+none}}
+\begin{DoxyCompactList}\small\item\em A variable containing an empty datum. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{base_8h_a6f863aa138666864095f4e757897eb13}\label{base_8h_a6f863aa138666864095f4e757897eb13}} 
+const \mbox{\hyperlink{base_8h_a36bc36b2bb0d0613453dd731cdcd2048}{ccs\+\_\+datum\+\_\+t}} \mbox{\hyperlink{base_8h_a6f863aa138666864095f4e757897eb13}{ccs\+\_\+inactive}}
+\begin{DoxyCompactList}\small\item\em A variable containing an inactive datum. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{base_8h_a53b00391d9d49c8a0febf8b3a959dee2}\label{base_8h_a53b00391d9d49c8a0febf8b3a959dee2}} 
+const \mbox{\hyperlink{base_8h_a36bc36b2bb0d0613453dd731cdcd2048}{ccs\+\_\+datum\+\_\+t}} \mbox{\hyperlink{base_8h_a53b00391d9d49c8a0febf8b3a959dee2}{ccs\+\_\+true}}
+\begin{DoxyCompactList}\small\item\em A variable containing a boolean true datum. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{base_8h_a6758849ef2e789bb31f9d37074373cc4}\label{base_8h_a6758849ef2e789bb31f9d37074373cc4}} 
+const \mbox{\hyperlink{base_8h_a36bc36b2bb0d0613453dd731cdcd2048}{ccs\+\_\+datum\+\_\+t}} \mbox{\hyperlink{base_8h_a6758849ef2e789bb31f9d37074373cc4}{ccs\+\_\+false}}
+\begin{DoxyCompactList}\small\item\em A variable containing a boolean false datum. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Base definition of CCS objects and types. 
+
+
+
+\doxysubsection{Typedef Documentation}
+\mbox{\Hypertarget{base_8h_a8ee33ef1beb44a7ef90f4f18e12dfe07}\label{base_8h_a8ee33ef1beb44a7ef90f4f18e12dfe07}} 
+\index{base.h@{base.h}!ccs\_object\_serialize\_callback\_t@{ccs\_object\_serialize\_callback\_t}}
+\index{ccs\_object\_serialize\_callback\_t@{ccs\_object\_serialize\_callback\_t}!base.h@{base.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_object\_serialize\_callback\_t}{ccs\_object\_serialize\_callback\_t}}
+{\footnotesize\ttfamily typedef \mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}}($\ast$ ccs\+\_\+object\+\_\+serialize\+\_\+callback\+\_\+t) (\mbox{\hyperlink{base_8h_a1a81d15e4085243bd2dc081be098b0ff}{ccs\+\_\+object\+\_\+t}} object, size\+\_\+t serialize\+\_\+data\+\_\+size, void $\ast$serialize\+\_\+data, size\+\_\+t $\ast$serialize\+\_\+data\+\_\+size\+\_\+ret, void $\ast$callback\+\_\+user\+\_\+data)}
+
+
+
+The type of CCS object serialization callbacks. 
+
+This callback is used to serialize object information that CCS is not aware of, the most glaring example being the object associated user\+\_\+data. 
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em object} & a CCS object \\
+\hline
+\mbox{\texttt{ in}}  & {\em serialize\+\_\+data\+\_\+size} & the size of the memory pointed to by {\ttfamily serialize\+\_\+data}, can be zero when querying the size \\
+\hline
+\mbox{\texttt{ out}}  & {\em serialize\+\_\+data} & a pointer to a memory area of size {\ttfamily serialize\+\_\+data\+\_\+size}. Can be NULL when {\ttfamily serialize\+\_\+data\+\_\+size} is zero \\
+\hline
+\mbox{\texttt{ out}}  & {\em serialize\+\_\+data\+\_\+size\+\_\+ret} & a pointer to the variable that will contain the required user size to serialize the object. \\
+\hline
+\mbox{\texttt{ in}}  & {\em callback\+\_\+user\+\_\+data} & the pointer provided when the callback was attached. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a092b9c7d2bc9ac00a6f53e251c8619b8}{CCS\+\_\+\+SUCCESS}} on success 
+
+an error code on error 
+\end{DoxyReturn}
+
+
+\doxysubsection{Enumeration Type Documentation}
+\mbox{\Hypertarget{base_8h_a302e6ecbf08c6c8a059fc775c88f21c0}\label{base_8h_a302e6ecbf08c6c8a059fc775c88f21c0}} 
+\index{base.h@{base.h}!ccs\_data\_type\_e@{ccs\_data\_type\_e}}
+\index{ccs\_data\_type\_e@{ccs\_data\_type\_e}!base.h@{base.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_data\_type\_e}{ccs\_data\_type\_e}}
+{\footnotesize\ttfamily enum \mbox{\hyperlink{base_8h_a302e6ecbf08c6c8a059fc775c88f21c0}{ccs\+\_\+data\+\_\+type\+\_\+e}}}
+
+
+
+CCS supported data types. 
+
+\begin{DoxyEnumFields}{Enumerator}
+\raisebox{\heightof{T}}[0pt][0pt]{\index{CCS\_NONE@{CCS\_NONE}!base.h@{base.h}}\index{base.h@{base.h}!CCS\_NONE@{CCS\_NONE}}}\mbox{\Hypertarget{base_8h_a302e6ecbf08c6c8a059fc775c88f21c0a5da899dad2804ad5c46047ab479e3f78}\label{base_8h_a302e6ecbf08c6c8a059fc775c88f21c0a5da899dad2804ad5c46047ab479e3f78}} 
+CCS\+\_\+\+NONE&An empty value \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{CCS\_INTEGER@{CCS\_INTEGER}!base.h@{base.h}}\index{base.h@{base.h}!CCS\_INTEGER@{CCS\_INTEGER}}}\mbox{\Hypertarget{base_8h_a302e6ecbf08c6c8a059fc775c88f21c0a3ef8367b20382d8dfdce0b63c72113d1}\label{base_8h_a302e6ecbf08c6c8a059fc775c88f21c0a3ef8367b20382d8dfdce0b63c72113d1}} 
+CCS\+\_\+\+INTEGER&A ccs\+\_\+int\+\_\+t \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{CCS\_FLOAT@{CCS\_FLOAT}!base.h@{base.h}}\index{base.h@{base.h}!CCS\_FLOAT@{CCS\_FLOAT}}}\mbox{\Hypertarget{base_8h_a302e6ecbf08c6c8a059fc775c88f21c0a43c4742e43ef6794cac5489f3dc038de}\label{base_8h_a302e6ecbf08c6c8a059fc775c88f21c0a43c4742e43ef6794cac5489f3dc038de}} 
+CCS\+\_\+\+FLOAT&A ccs\+\_\+float\+\_\+t \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{CCS\_BOOLEAN@{CCS\_BOOLEAN}!base.h@{base.h}}\index{base.h@{base.h}!CCS\_BOOLEAN@{CCS\_BOOLEAN}}}\mbox{\Hypertarget{base_8h_a302e6ecbf08c6c8a059fc775c88f21c0a37721ea5078323c2f1b2f83990f54fc7}\label{base_8h_a302e6ecbf08c6c8a059fc775c88f21c0a37721ea5078323c2f1b2f83990f54fc7}} 
+CCS\+\_\+\+BOOLEAN&A ccs\+\_\+bool\+\_\+t \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{CCS\_STRING@{CCS\_STRING}!base.h@{base.h}}\index{base.h@{base.h}!CCS\_STRING@{CCS\_STRING}}}\mbox{\Hypertarget{base_8h_a302e6ecbf08c6c8a059fc775c88f21c0af1ccb6cfa2ff1bfca7571e77b916e946}\label{base_8h_a302e6ecbf08c6c8a059fc775c88f21c0af1ccb6cfa2ff1bfca7571e77b916e946}} 
+CCS\+\_\+\+STRING&A pointer to a NULL terminated string \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{CCS\_INACTIVE@{CCS\_INACTIVE}!base.h@{base.h}}\index{base.h@{base.h}!CCS\_INACTIVE@{CCS\_INACTIVE}}}\mbox{\Hypertarget{base_8h_a302e6ecbf08c6c8a059fc775c88f21c0a954da35bcbf30d885a2bbf550de2cf84}\label{base_8h_a302e6ecbf08c6c8a059fc775c88f21c0a954da35bcbf30d885a2bbf550de2cf84}} 
+CCS\+\_\+\+INACTIVE&An inactive value \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{CCS\_OBJECT@{CCS\_OBJECT}!base.h@{base.h}}\index{base.h@{base.h}!CCS\_OBJECT@{CCS\_OBJECT}}}\mbox{\Hypertarget{base_8h_a302e6ecbf08c6c8a059fc775c88f21c0acd87e27d98d3f1113fd6cfda26893f87}\label{base_8h_a302e6ecbf08c6c8a059fc775c88f21c0acd87e27d98d3f1113fd6cfda26893f87}} 
+CCS\+\_\+\+OBJECT&A CCS object \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{CCS\_DATA\_TYPE\_MAX@{CCS\_DATA\_TYPE\_MAX}!base.h@{base.h}}\index{base.h@{base.h}!CCS\_DATA\_TYPE\_MAX@{CCS\_DATA\_TYPE\_MAX}}}\mbox{\Hypertarget{base_8h_a302e6ecbf08c6c8a059fc775c88f21c0ab369a0441f2ff77e1c35bd645b2b2e0e}\label{base_8h_a302e6ecbf08c6c8a059fc775c88f21c0ab369a0441f2ff77e1c35bd645b2b2e0e}} 
+CCS\+\_\+\+DATA\+\_\+\+TYPE\+\_\+\+MAX&Guard \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{CCS\_DATA\_TYPE\_FORCE\_32BIT@{CCS\_DATA\_TYPE\_FORCE\_32BIT}!base.h@{base.h}}\index{base.h@{base.h}!CCS\_DATA\_TYPE\_FORCE\_32BIT@{CCS\_DATA\_TYPE\_FORCE\_32BIT}}}\mbox{\Hypertarget{base_8h_a302e6ecbf08c6c8a059fc775c88f21c0acd3b4b60c7d0767d9fa1cda66d6cbfcf}\label{base_8h_a302e6ecbf08c6c8a059fc775c88f21c0acd3b4b60c7d0767d9fa1cda66d6cbfcf}} 
+CCS\+\_\+\+DATA\+\_\+\+TYPE\+\_\+\+FORCE\+\_\+32\+BIT&Try forcing 32 bits value for bindings. \\
+\hline
+
+\end{DoxyEnumFields}
+\mbox{\Hypertarget{base_8h_a2213c712c40d15eaa43f3aa0244344b1}\label{base_8h_a2213c712c40d15eaa43f3aa0244344b1}} 
+\index{base.h@{base.h}!ccs\_datum\_flag\_e@{ccs\_datum\_flag\_e}}
+\index{ccs\_datum\_flag\_e@{ccs\_datum\_flag\_e}!base.h@{base.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_datum\_flag\_e}{ccs\_datum\_flag\_e}}
+{\footnotesize\ttfamily enum \mbox{\hyperlink{base_8h_a2213c712c40d15eaa43f3aa0244344b1}{ccs\+\_\+datum\+\_\+flag\+\_\+e}}}
+
+
+
+Flags that can be attached to a CCS datum. 
+
+\begin{DoxyEnumFields}{Enumerator}
+\raisebox{\heightof{T}}[0pt][0pt]{\index{CCS\_FLAG\_DEFAULT@{CCS\_FLAG\_DEFAULT}!base.h@{base.h}}\index{base.h@{base.h}!CCS\_FLAG\_DEFAULT@{CCS\_FLAG\_DEFAULT}}}\mbox{\Hypertarget{base_8h_a2213c712c40d15eaa43f3aa0244344b1a8d2874eac4ca299a9c3444f14c09f066}\label{base_8h_a2213c712c40d15eaa43f3aa0244344b1a8d2874eac4ca299a9c3444f14c09f066}} 
+CCS\+\_\+\+FLAG\+\_\+\+DEFAULT&Empty default flags. \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{CCS\_FLAG\_TRANSIENT@{CCS\_FLAG\_TRANSIENT}!base.h@{base.h}}\index{base.h@{base.h}!CCS\_FLAG\_TRANSIENT@{CCS\_FLAG\_TRANSIENT}}}\mbox{\Hypertarget{base_8h_a2213c712c40d15eaa43f3aa0244344b1a2533918a2304aed0a2739c7bc47f0819}\label{base_8h_a2213c712c40d15eaa43f3aa0244344b1a2533918a2304aed0a2739c7bc47f0819}} 
+CCS\+\_\+\+FLAG\+\_\+\+TRANSIENT&The value given to CCS is a pointer and is not guaranteed to stay allocated. \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{CCS\_FLAG\_UNPOOLED@{CCS\_FLAG\_UNPOOLED}!base.h@{base.h}}\index{base.h@{base.h}!CCS\_FLAG\_UNPOOLED@{CCS\_FLAG\_UNPOOLED}}}\mbox{\Hypertarget{base_8h_a2213c712c40d15eaa43f3aa0244344b1a41694a7edbe990ae9b8153f9796d50d5}\label{base_8h_a2213c712c40d15eaa43f3aa0244344b1a41694a7edbe990ae9b8153f9796d50d5}} 
+CCS\+\_\+\+FLAG\+\_\+\+UNPOOLED&The value returned by CCS is a pointer and is not associated to a CCS object and needs to be freed by the user (unused). \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{CCS\_FLAG\_ID@{CCS\_FLAG\_ID}!base.h@{base.h}}\index{base.h@{base.h}!CCS\_FLAG\_ID@{CCS\_FLAG\_ID}}}\mbox{\Hypertarget{base_8h_a2213c712c40d15eaa43f3aa0244344b1a63bd05dadf9e9f8cb71e817561f9825c}\label{base_8h_a2213c712c40d15eaa43f3aa0244344b1a63bd05dadf9e9f8cb71e817561f9825c}} 
+CCS\+\_\+\+FLAG\+\_\+\+ID&The object handle is just an identifier. \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{CCS\_DATUM\_FLAG\_FORCE\_32BIT@{CCS\_DATUM\_FLAG\_FORCE\_32BIT}!base.h@{base.h}}\index{base.h@{base.h}!CCS\_DATUM\_FLAG\_FORCE\_32BIT@{CCS\_DATUM\_FLAG\_FORCE\_32BIT}}}\mbox{\Hypertarget{base_8h_a2213c712c40d15eaa43f3aa0244344b1a0b0d859495b4cf1d6fe9d507f678300b}\label{base_8h_a2213c712c40d15eaa43f3aa0244344b1a0b0d859495b4cf1d6fe9d507f678300b}} 
+CCS\+\_\+\+DATUM\+\_\+\+FLAG\+\_\+\+FORCE\+\_\+32\+BIT&Try forcing 32 bits value for bindings. \\
+\hline
+
+\end{DoxyEnumFields}
+\mbox{\Hypertarget{base_8h_a0aaa0b0f7e7d3552c906df81238796a6}\label{base_8h_a0aaa0b0f7e7d3552c906df81238796a6}} 
+\index{base.h@{base.h}!ccs\_deserialize\_option\_e@{ccs\_deserialize\_option\_e}}
+\index{ccs\_deserialize\_option\_e@{ccs\_deserialize\_option\_e}!base.h@{base.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_deserialize\_option\_e}{ccs\_deserialize\_option\_e}}
+{\footnotesize\ttfamily enum \mbox{\hyperlink{base_8h_a0aaa0b0f7e7d3552c906df81238796a6}{ccs\+\_\+deserialize\+\_\+option\+\_\+e}}}
+
+
+
+The different deserialization options. 
+
+\begin{DoxyEnumFields}{Enumerator}
+\raisebox{\heightof{T}}[0pt][0pt]{\index{CCS\_DESERIALIZE\_OPTION\_END@{CCS\_DESERIALIZE\_OPTION\_END}!base.h@{base.h}}\index{base.h@{base.h}!CCS\_DESERIALIZE\_OPTION\_END@{CCS\_DESERIALIZE\_OPTION\_END}}}\mbox{\Hypertarget{base_8h_a0aaa0b0f7e7d3552c906df81238796a6ae70e8920cace60c7a8084cda59e950cc}\label{base_8h_a0aaa0b0f7e7d3552c906df81238796a6ae70e8920cace60c7a8084cda59e950cc}} 
+CCS\+\_\+\+DESERIALIZE\+\_\+\+OPTION\+\_\+\+END&Option list terminator. \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{CCS\_DESERIALIZE\_OPTION\_HANDLE\_MAP@{CCS\_DESERIALIZE\_OPTION\_HANDLE\_MAP}!base.h@{base.h}}\index{base.h@{base.h}!CCS\_DESERIALIZE\_OPTION\_HANDLE\_MAP@{CCS\_DESERIALIZE\_OPTION\_HANDLE\_MAP}}}\mbox{\Hypertarget{base_8h_a0aaa0b0f7e7d3552c906df81238796a6af012676c2d25c70af01e49b03a314af7}\label{base_8h_a0aaa0b0f7e7d3552c906df81238796a6af012676c2d25c70af01e49b03a314af7}} 
+CCS\+\_\+\+DESERIALIZE\+\_\+\+OPTION\+\_\+\+HANDLE\+\_\+\+MAP&The next parameter is a ccs\+\_\+handle\+\_\+map\+\_\+t object that must contain the mappings required to deserialize an object (usually bindings or expressions). I given, will also add a mapping between the object original handle and its current handle. \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{CCS\_DESERIALIZE\_OPTION\_VECTOR@{CCS\_DESERIALIZE\_OPTION\_VECTOR}!base.h@{base.h}}\index{base.h@{base.h}!CCS\_DESERIALIZE\_OPTION\_VECTOR@{CCS\_DESERIALIZE\_OPTION\_VECTOR}}}\mbox{\Hypertarget{base_8h_a0aaa0b0f7e7d3552c906df81238796a6a222b979a0ad6cdbae8c7ba9b4d6dc93f}\label{base_8h_a0aaa0b0f7e7d3552c906df81238796a6a222b979a0ad6cdbae8c7ba9b4d6dc93f}} 
+CCS\+\_\+\+DESERIALIZE\+\_\+\+OPTION\+\_\+\+VECTOR&The next parameter is a pointer to a ccs object vector struct, for user defined tuners. \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{CCS\_DESERIALIZE\_OPTION\_DATA@{CCS\_DESERIALIZE\_OPTION\_DATA}!base.h@{base.h}}\index{base.h@{base.h}!CCS\_DESERIALIZE\_OPTION\_DATA@{CCS\_DESERIALIZE\_OPTION\_DATA}}}\mbox{\Hypertarget{base_8h_a0aaa0b0f7e7d3552c906df81238796a6af488be05ce3e6d1c3d2cd5f27a04c148}\label{base_8h_a0aaa0b0f7e7d3552c906df81238796a6af488be05ce3e6d1c3d2cd5f27a04c148}} 
+CCS\+\_\+\+DESERIALIZE\+\_\+\+OPTION\+\_\+\+DATA&The next parameter is a pointer to a ccs object internal data, for user defined tuners. \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{CCS\_DESERIALIZE\_OPTION\_NON\_BLOCKING@{CCS\_DESERIALIZE\_OPTION\_NON\_BLOCKING}!base.h@{base.h}}\index{base.h@{base.h}!CCS\_DESERIALIZE\_OPTION\_NON\_BLOCKING@{CCS\_DESERIALIZE\_OPTION\_NON\_BLOCKING}}}\mbox{\Hypertarget{base_8h_a0aaa0b0f7e7d3552c906df81238796a6ab86ed17b20e39f39c94ce6fd08218db7}\label{base_8h_a0aaa0b0f7e7d3552c906df81238796a6ab86ed17b20e39f39c94ce6fd08218db7}} 
+CCS\+\_\+\+DESERIALIZE\+\_\+\+OPTION\+\_\+\+NON\+\_\+\+BLOCKING&The file descriptor operation is non-\/blocking. The next parameter is a pointer to a void $\ast$ variable (initialized to NULL) that will hold the state of the serialization in order to restart. The function performing the operation will return \mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a30733d67f443f47f9404faffebb41b46}{CCS\+\_\+\+AGAIN}} if the operation has not completed. The state is managed internally. \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{CCS\_DESERIALIZE\_CALLBACK@{CCS\_DESERIALIZE\_CALLBACK}!base.h@{base.h}}\index{base.h@{base.h}!CCS\_DESERIALIZE\_CALLBACK@{CCS\_DESERIALIZE\_CALLBACK}}}\mbox{\Hypertarget{base_8h_a0aaa0b0f7e7d3552c906df81238796a6a97f904527e611eeb5a5623c1940efe0e}\label{base_8h_a0aaa0b0f7e7d3552c906df81238796a6a97f904527e611eeb5a5623c1940efe0e}} 
+CCS\+\_\+\+DESERIALIZE\+\_\+\+CALLBACK&The next parameters are a deserialization callback and it\textquotesingle{}s user\+\_\+data. This callback will be called for all objects that had their user\+\_\+data serialized. If no such callback is provided the object\textquotesingle{}s user\+\_\+data value will not be set. \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{CCS\_DESERIALIZE\_OPTION\_MAX@{CCS\_DESERIALIZE\_OPTION\_MAX}!base.h@{base.h}}\index{base.h@{base.h}!CCS\_DESERIALIZE\_OPTION\_MAX@{CCS\_DESERIALIZE\_OPTION\_MAX}}}\mbox{\Hypertarget{base_8h_a0aaa0b0f7e7d3552c906df81238796a6af6e87748be781471a8738407a30b867d}\label{base_8h_a0aaa0b0f7e7d3552c906df81238796a6af6e87748be781471a8738407a30b867d}} 
+CCS\+\_\+\+DESERIALIZE\+\_\+\+OPTION\+\_\+\+MAX&Guard. \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{CCS\_DESERIALIZE\_OPTION\_FORCE\_32BIT@{CCS\_DESERIALIZE\_OPTION\_FORCE\_32BIT}!base.h@{base.h}}\index{base.h@{base.h}!CCS\_DESERIALIZE\_OPTION\_FORCE\_32BIT@{CCS\_DESERIALIZE\_OPTION\_FORCE\_32BIT}}}\mbox{\Hypertarget{base_8h_a0aaa0b0f7e7d3552c906df81238796a6ac3a0acb83dfcf9c472d51fcea6ce9722}\label{base_8h_a0aaa0b0f7e7d3552c906df81238796a6ac3a0acb83dfcf9c472d51fcea6ce9722}} 
+CCS\+\_\+\+DESERIALIZE\+\_\+\+OPTION\+\_\+\+FORCE\+\_\+32\+BIT&Try forcing 32 bits value for bindings. \\
+\hline
+
+\end{DoxyEnumFields}
+\mbox{\Hypertarget{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0}\label{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0}} 
+\index{base.h@{base.h}!ccs\_error\_e@{ccs\_error\_e}}
+\index{ccs\_error\_e@{ccs\_error\_e}!base.h@{base.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_error\_e}{ccs\_error\_e}}
+{\footnotesize\ttfamily enum \mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0}{ccs\+\_\+error\+\_\+e}}}
+
+
+
+The different possible return codes of a CCS function. 
+
+Error codes are returned negated. \begin{DoxyEnumFields}{Enumerator}
+\raisebox{\heightof{T}}[0pt][0pt]{\index{CCS\_ERROR\_MAX@{CCS\_ERROR\_MAX}!base.h@{base.h}}\index{base.h@{base.h}!CCS\_ERROR\_MAX@{CCS\_ERROR\_MAX}}}\mbox{\Hypertarget{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a3c3c45dfd718bf769e14ee99b71d20ba}\label{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a3c3c45dfd718bf769e14ee99b71d20ba}} 
+CCS\+\_\+\+ERROR\+\_\+\+MAX&Guard. \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{CCS\_AGAIN@{CCS\_AGAIN}!base.h@{base.h}}\index{base.h@{base.h}!CCS\_AGAIN@{CCS\_AGAIN}}}\mbox{\Hypertarget{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a30733d67f443f47f9404faffebb41b46}\label{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a30733d67f443f47f9404faffebb41b46}} 
+CCS\+\_\+\+AGAIN&Try again. \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{CCS\_SUCCESS@{CCS\_SUCCESS}!base.h@{base.h}}\index{base.h@{base.h}!CCS\_SUCCESS@{CCS\_SUCCESS}}}\mbox{\Hypertarget{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a092b9c7d2bc9ac00a6f53e251c8619b8}\label{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a092b9c7d2bc9ac00a6f53e251c8619b8}} 
+CCS\+\_\+\+SUCCESS&Success. \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{CCS\_INVALID\_OBJECT@{CCS\_INVALID\_OBJECT}!base.h@{base.h}}\index{base.h@{base.h}!CCS\_INVALID\_OBJECT@{CCS\_INVALID\_OBJECT}}}\mbox{\Hypertarget{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a4707835c3fcb2303089c76bbcbf96df5}\label{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a4707835c3fcb2303089c76bbcbf96df5}} 
+CCS\+\_\+\+INVALID\+\_\+\+OBJECT&Not a CCS object or not initialized. \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{CCS\_INVALID\_VALUE@{CCS\_INVALID\_VALUE}!base.h@{base.h}}\index{base.h@{base.h}!CCS\_INVALID\_VALUE@{CCS\_INVALID\_VALUE}}}\mbox{\Hypertarget{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0adb4bc5cfc4f985bf59ae223f3e22b9f9}\label{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0adb4bc5cfc4f985bf59ae223f3e22b9f9}} 
+CCS\+\_\+\+INVALID\+\_\+\+VALUE&Parameter has an invalid value. \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{CCS\_INVALID\_TYPE@{CCS\_INVALID\_TYPE}!base.h@{base.h}}\index{base.h@{base.h}!CCS\_INVALID\_TYPE@{CCS\_INVALID\_TYPE}}}\mbox{\Hypertarget{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a5ef8b94d2dc8bbde508c4dd79b34047a}\label{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a5ef8b94d2dc8bbde508c4dd79b34047a}} 
+CCS\+\_\+\+INVALID\+\_\+\+TYPE&The data type is invalid. \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{CCS\_INVALID\_SCALE@{CCS\_INVALID\_SCALE}!base.h@{base.h}}\index{base.h@{base.h}!CCS\_INVALID\_SCALE@{CCS\_INVALID\_SCALE}}}\mbox{\Hypertarget{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0aff40665f1940c0fa4949810912742fb1}\label{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0aff40665f1940c0fa4949810912742fb1}} 
+CCS\+\_\+\+INVALID\+\_\+\+SCALE&The provided scale is invalid. \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{CCS\_INVALID\_DISTRIBUTION@{CCS\_INVALID\_DISTRIBUTION}!base.h@{base.h}}\index{base.h@{base.h}!CCS\_INVALID\_DISTRIBUTION@{CCS\_INVALID\_DISTRIBUTION}}}\mbox{\Hypertarget{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a2199c049fddf061a424dab07e2e1422b}\label{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a2199c049fddf061a424dab07e2e1422b}} 
+CCS\+\_\+\+INVALID\+\_\+\+DISTRIBUTION&The provided distribution is invalid. \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{CCS\_INVALID\_EXPRESSION@{CCS\_INVALID\_EXPRESSION}!base.h@{base.h}}\index{base.h@{base.h}!CCS\_INVALID\_EXPRESSION@{CCS\_INVALID\_EXPRESSION}}}\mbox{\Hypertarget{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0af63ecda9c861b6a844eb626bd67124b0}\label{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0af63ecda9c861b6a844eb626bd67124b0}} 
+CCS\+\_\+\+INVALID\+\_\+\+EXPRESSION&The provided expression is invalid. \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{CCS\_INVALID\_HYPERPARAMETER@{CCS\_INVALID\_HYPERPARAMETER}!base.h@{base.h}}\index{base.h@{base.h}!CCS\_INVALID\_HYPERPARAMETER@{CCS\_INVALID\_HYPERPARAMETER}}}\mbox{\Hypertarget{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0afab391c5bc22e7ba89710930ec04028d}\label{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0afab391c5bc22e7ba89710930ec04028d}} 
+CCS\+\_\+\+INVALID\+\_\+\+HYPERPARAMETER&The provided hyperparameter is invalid. \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{CCS\_INVALID\_CONFIGURATION@{CCS\_INVALID\_CONFIGURATION}!base.h@{base.h}}\index{base.h@{base.h}!CCS\_INVALID\_CONFIGURATION@{CCS\_INVALID\_CONFIGURATION}}}\mbox{\Hypertarget{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a28f1dd1ef65c3fc0a6c410e03af1fbce}\label{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a28f1dd1ef65c3fc0a6c410e03af1fbce}} 
+CCS\+\_\+\+INVALID\+\_\+\+CONFIGURATION&The provided configuration is invalid. \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{CCS\_INVALID\_NAME@{CCS\_INVALID\_NAME}!base.h@{base.h}}\index{base.h@{base.h}!CCS\_INVALID\_NAME@{CCS\_INVALID\_NAME}}}\mbox{\Hypertarget{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a75f19038a842b629c262db908c37471c}\label{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a75f19038a842b629c262db908c37471c}} 
+CCS\+\_\+\+INVALID\+\_\+\+NAME&The hyperparameter name is invalid. \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{CCS\_INVALID\_CONDITION@{CCS\_INVALID\_CONDITION}!base.h@{base.h}}\index{base.h@{base.h}!CCS\_INVALID\_CONDITION@{CCS\_INVALID\_CONDITION}}}\mbox{\Hypertarget{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0ad126ae62778c74ef66ff161855bd940f}\label{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0ad126ae62778c74ef66ff161855bd940f}} 
+CCS\+\_\+\+INVALID\+\_\+\+CONDITION&The condition is invalid (unused) \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{CCS\_INVALID\_TUNER@{CCS\_INVALID\_TUNER}!base.h@{base.h}}\index{base.h@{base.h}!CCS\_INVALID\_TUNER@{CCS\_INVALID\_TUNER}}}\mbox{\Hypertarget{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0ab21301b7d334b0a7e27d8b2c00934015}\label{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0ab21301b7d334b0a7e27d8b2c00934015}} 
+CCS\+\_\+\+INVALID\+\_\+\+TUNER&The provided tuner is invalid. \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{CCS\_INVALID\_GRAPH@{CCS\_INVALID\_GRAPH}!base.h@{base.h}}\index{base.h@{base.h}!CCS\_INVALID\_GRAPH@{CCS\_INVALID\_GRAPH}}}\mbox{\Hypertarget{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a415d13fcca7c4044a18452bb2c5cd30a}\label{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a415d13fcca7c4044a18452bb2c5cd30a}} 
+CCS\+\_\+\+INVALID\+\_\+\+GRAPH&The constraint graph would be invalid. \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{CCS\_TYPE\_NOT\_COMPARABLE@{CCS\_TYPE\_NOT\_COMPARABLE}!base.h@{base.h}}\index{base.h@{base.h}!CCS\_TYPE\_NOT\_COMPARABLE@{CCS\_TYPE\_NOT\_COMPARABLE}}}\mbox{\Hypertarget{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a746a5c542f22d6ff30554c2c58458486}\label{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a746a5c542f22d6ff30554c2c58458486}} 
+CCS\+\_\+\+TYPE\+\_\+\+NOT\+\_\+\+COMPARABLE&The type is not comparable (unused) \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{CCS\_INVALID\_BOUNDS@{CCS\_INVALID\_BOUNDS}!base.h@{base.h}}\index{base.h@{base.h}!CCS\_INVALID\_BOUNDS@{CCS\_INVALID\_BOUNDS}}}\mbox{\Hypertarget{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a8580ac1fd26223ac44516385b8ac235a}\label{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a8580ac1fd26223ac44516385b8ac235a}} 
+CCS\+\_\+\+INVALID\+\_\+\+BOUNDS&The bounds are invalid (unused) \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{CCS\_OUT\_OF\_BOUNDS@{CCS\_OUT\_OF\_BOUNDS}!base.h@{base.h}}\index{base.h@{base.h}!CCS\_OUT\_OF\_BOUNDS@{CCS\_OUT\_OF\_BOUNDS}}}\mbox{\Hypertarget{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a3f898f2b0f178de079c2cd22a99b1950}\label{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a3f898f2b0f178de079c2cd22a99b1950}} 
+CCS\+\_\+\+OUT\+\_\+\+OF\+\_\+\+BOUNDS&The index is out of bounds. \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{CCS\_SAMPLING\_UNSUCCESSFUL@{CCS\_SAMPLING\_UNSUCCESSFUL}!base.h@{base.h}}\index{base.h@{base.h}!CCS\_SAMPLING\_UNSUCCESSFUL@{CCS\_SAMPLING\_UNSUCCESSFUL}}}\mbox{\Hypertarget{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0af9a4405d2ae21ce28cd2413e8644be11}\label{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0af9a4405d2ae21ce28cd2413e8644be11}} 
+CCS\+\_\+\+SAMPLING\+\_\+\+UNSUCCESSFUL&Could not gather enough samples. \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{CCS\_OUT\_OF\_MEMORY@{CCS\_OUT\_OF\_MEMORY}!base.h@{base.h}}\index{base.h@{base.h}!CCS\_OUT\_OF\_MEMORY@{CCS\_OUT\_OF\_MEMORY}}}\mbox{\Hypertarget{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a3b3381e910957ad1fbe1d633b12eff79}\label{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a3b3381e910957ad1fbe1d633b12eff79}} 
+CCS\+\_\+\+OUT\+\_\+\+OF\+\_\+\+MEMORY&An allocation failed due to lack of available memory. \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{CCS\_UNSUPPORTED\_OPERATION@{CCS\_UNSUPPORTED\_OPERATION}!base.h@{base.h}}\index{base.h@{base.h}!CCS\_UNSUPPORTED\_OPERATION@{CCS\_UNSUPPORTED\_OPERATION}}}\mbox{\Hypertarget{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0ac3872a6f3030563c0740d1af47347c00}\label{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0ac3872a6f3030563c0740d1af47347c00}} 
+CCS\+\_\+\+UNSUPPORTED\+\_\+\+OPERATION&The object does not support this operation. \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{CCS\_INVALID\_EVALUATION@{CCS\_INVALID\_EVALUATION}!base.h@{base.h}}\index{base.h@{base.h}!CCS\_INVALID\_EVALUATION@{CCS\_INVALID\_EVALUATION}}}\mbox{\Hypertarget{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a957e738a9f970257eddfc79cab5a78fc}\label{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a957e738a9f970257eddfc79cab5a78fc}} 
+CCS\+\_\+\+INVALID\+\_\+\+EVALUATION&The provided evaluation is invalid. \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{CCS\_INVALID\_FEATURES@{CCS\_INVALID\_FEATURES}!base.h@{base.h}}\index{base.h@{base.h}!CCS\_INVALID\_FEATURES@{CCS\_INVALID\_FEATURES}}}\mbox{\Hypertarget{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a611e5a4781ba519cc0223dc079fcd5de}\label{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a611e5a4781ba519cc0223dc079fcd5de}} 
+CCS\+\_\+\+INVALID\+\_\+\+FEATURES&The provided features is invalid. \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{CCS\_INVALID\_FEATURES\_TUNER@{CCS\_INVALID\_FEATURES\_TUNER}!base.h@{base.h}}\index{base.h@{base.h}!CCS\_INVALID\_FEATURES\_TUNER@{CCS\_INVALID\_FEATURES\_TUNER}}}\mbox{\Hypertarget{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0aac0236e9272e37080880b24a2a590aa3}\label{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0aac0236e9272e37080880b24a2a590aa3}} 
+CCS\+\_\+\+INVALID\+\_\+\+FEATURES\+\_\+\+TUNER&The provided features tuner is invalid. \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{CCS\_INVALID\_FILE\_PATH@{CCS\_INVALID\_FILE\_PATH}!base.h@{base.h}}\index{base.h@{base.h}!CCS\_INVALID\_FILE\_PATH@{CCS\_INVALID\_FILE\_PATH}}}\mbox{\Hypertarget{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0acddad10fdd8809ff1633e0e8ace5c811}\label{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0acddad10fdd8809ff1633e0e8ace5c811}} 
+CCS\+\_\+\+INVALID\+\_\+\+FILE\+\_\+\+PATH&The provided file path is invalid. \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{CCS\_NOT\_ENOUGH\_DATA@{CCS\_NOT\_ENOUGH\_DATA}!base.h@{base.h}}\index{base.h@{base.h}!CCS\_NOT\_ENOUGH\_DATA@{CCS\_NOT\_ENOUGH\_DATA}}}\mbox{\Hypertarget{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a1a6748c15dcb4afc1ae93e816b889a45}\label{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a1a6748c15dcb4afc1ae93e816b889a45}} 
+CCS\+\_\+\+NOT\+\_\+\+ENOUGH\+\_\+\+DATA&The provided buffer or file is too short. \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{CCS\_HANDLE\_DUPLICATE@{CCS\_HANDLE\_DUPLICATE}!base.h@{base.h}}\index{base.h@{base.h}!CCS\_HANDLE\_DUPLICATE@{CCS\_HANDLE\_DUPLICATE}}}\mbox{\Hypertarget{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0aaf70ad77032d0fa1051bcd6f859dd0a3}\label{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0aaf70ad77032d0fa1051bcd6f859dd0a3}} 
+CCS\+\_\+\+HANDLE\+\_\+\+DUPLICATE&The handle was a duplicate. \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{CCS\_INVALID\_HANDLE@{CCS\_INVALID\_HANDLE}!base.h@{base.h}}\index{base.h@{base.h}!CCS\_INVALID\_HANDLE@{CCS\_INVALID\_HANDLE}}}\mbox{\Hypertarget{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0aa6b9d51e05de9f9f8303f6548319e57f}\label{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0aa6b9d51e05de9f9f8303f6548319e57f}} 
+CCS\+\_\+\+INVALID\+\_\+\+HANDLE&The handle was not found. \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{CCS\_SYSTEM\_ERROR@{CCS\_SYSTEM\_ERROR}!base.h@{base.h}}\index{base.h@{base.h}!CCS\_SYSTEM\_ERROR@{CCS\_SYSTEM\_ERROR}}}\mbox{\Hypertarget{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a99217bbbe69b782e90d4a03d399e11f2}\label{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a99217bbbe69b782e90d4a03d399e11f2}} 
+CCS\+\_\+\+SYSTEM\+\_\+\+ERROR&A system error occured. \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{CCS\_EXTERNAL\_ERROR@{CCS\_EXTERNAL\_ERROR}!base.h@{base.h}}\index{base.h@{base.h}!CCS\_EXTERNAL\_ERROR@{CCS\_EXTERNAL\_ERROR}}}\mbox{\Hypertarget{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a83bc630dd152c0a57149184760f5191c}\label{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a83bc630dd152c0a57149184760f5191c}} 
+CCS\+\_\+\+EXTERNAL\+\_\+\+ERROR&External error occured (binding?) \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{CCS\_ERROR\_MIN@{CCS\_ERROR\_MIN}!base.h@{base.h}}\index{base.h@{base.h}!CCS\_ERROR\_MIN@{CCS\_ERROR\_MIN}}}\mbox{\Hypertarget{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0af829f9adecbcb9557bcb69d672df99bc}\label{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0af829f9adecbcb9557bcb69d672df99bc}} 
+CCS\+\_\+\+ERROR\+\_\+\+MIN&Guard. \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{CCS\_ERROR\_FORCE\_32BIT@{CCS\_ERROR\_FORCE\_32BIT}!base.h@{base.h}}\index{base.h@{base.h}!CCS\_ERROR\_FORCE\_32BIT@{CCS\_ERROR\_FORCE\_32BIT}}}\mbox{\Hypertarget{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0aafe837dab466f0d3f9d2533e7a723179}\label{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0aafe837dab466f0d3f9d2533e7a723179}} 
+CCS\+\_\+\+ERROR\+\_\+\+FORCE\+\_\+32\+BIT&Try forcing 32 bits value for bindings. \\
+\hline
+
+\end{DoxyEnumFields}
+\mbox{\Hypertarget{base_8h_aff930046a5f66cb75b311330b6461b9a}\label{base_8h_aff930046a5f66cb75b311330b6461b9a}} 
+\index{base.h@{base.h}!ccs\_numeric\_type\_e@{ccs\_numeric\_type\_e}}
+\index{ccs\_numeric\_type\_e@{ccs\_numeric\_type\_e}!base.h@{base.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_numeric\_type\_e}{ccs\_numeric\_type\_e}}
+{\footnotesize\ttfamily enum \mbox{\hyperlink{base_8h_aff930046a5f66cb75b311330b6461b9a}{ccs\+\_\+numeric\+\_\+type\+\_\+e}}}
+
+
+
+The subset of CCS data types that represent numerical data. 
+
+\begin{DoxyEnumFields}{Enumerator}
+\raisebox{\heightof{T}}[0pt][0pt]{\index{CCS\_NUM\_INTEGER@{CCS\_NUM\_INTEGER}!base.h@{base.h}}\index{base.h@{base.h}!CCS\_NUM\_INTEGER@{CCS\_NUM\_INTEGER}}}\mbox{\Hypertarget{base_8h_aff930046a5f66cb75b311330b6461b9aac2f87bcb8e2cb21d8b6f0b7ab1cd1705}\label{base_8h_aff930046a5f66cb75b311330b6461b9aac2f87bcb8e2cb21d8b6f0b7ab1cd1705}} 
+CCS\+\_\+\+NUM\+\_\+\+INTEGER&A ccs\+\_\+int\+\_\+t \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{CCS\_NUM\_FLOAT@{CCS\_NUM\_FLOAT}!base.h@{base.h}}\index{base.h@{base.h}!CCS\_NUM\_FLOAT@{CCS\_NUM\_FLOAT}}}\mbox{\Hypertarget{base_8h_aff930046a5f66cb75b311330b6461b9aa5077c0a0bd923e732a382045cccaed81}\label{base_8h_aff930046a5f66cb75b311330b6461b9aa5077c0a0bd923e732a382045cccaed81}} 
+CCS\+\_\+\+NUM\+\_\+\+FLOAT&A ccs\+\_\+float\+\_\+t \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{CCS\_NUM\_TYPE\_MAX@{CCS\_NUM\_TYPE\_MAX}!base.h@{base.h}}\index{base.h@{base.h}!CCS\_NUM\_TYPE\_MAX@{CCS\_NUM\_TYPE\_MAX}}}\mbox{\Hypertarget{base_8h_aff930046a5f66cb75b311330b6461b9aa02849d59e47a8471564df13aa894eefc}\label{base_8h_aff930046a5f66cb75b311330b6461b9aa02849d59e47a8471564df13aa894eefc}} 
+CCS\+\_\+\+NUM\+\_\+\+TYPE\+\_\+\+MAX&Guard \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{CCS\_NUM\_TYPE\_FORCE\_32BIT@{CCS\_NUM\_TYPE\_FORCE\_32BIT}!base.h@{base.h}}\index{base.h@{base.h}!CCS\_NUM\_TYPE\_FORCE\_32BIT@{CCS\_NUM\_TYPE\_FORCE\_32BIT}}}\mbox{\Hypertarget{base_8h_aff930046a5f66cb75b311330b6461b9aa45d1b2ff48b2b2466e81306ccc6098cb}\label{base_8h_aff930046a5f66cb75b311330b6461b9aa45d1b2ff48b2b2466e81306ccc6098cb}} 
+CCS\+\_\+\+NUM\+\_\+\+TYPE\+\_\+\+FORCE\+\_\+32\+BIT&Try forcing 32 bits value for bindings. \\
+\hline
+
+\end{DoxyEnumFields}
+\mbox{\Hypertarget{base_8h_a3d560375b0c5393435e65d760d3d6c60}\label{base_8h_a3d560375b0c5393435e65d760d3d6c60}} 
+\index{base.h@{base.h}!ccs\_object\_type\_e@{ccs\_object\_type\_e}}
+\index{ccs\_object\_type\_e@{ccs\_object\_type\_e}!base.h@{base.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_object\_type\_e}{ccs\_object\_type\_e}}
+{\footnotesize\ttfamily enum \mbox{\hyperlink{base_8h_a3d560375b0c5393435e65d760d3d6c60}{ccs\+\_\+object\+\_\+type\+\_\+e}}}
+
+
+
+CCS object types. 
+
+\begin{DoxyEnumFields}{Enumerator}
+\raisebox{\heightof{T}}[0pt][0pt]{\index{CCS\_RNG@{CCS\_RNG}!base.h@{base.h}}\index{base.h@{base.h}!CCS\_RNG@{CCS\_RNG}}}\mbox{\Hypertarget{base_8h_a3d560375b0c5393435e65d760d3d6c60a79de073e86b311f26a4fcb264479c27b}\label{base_8h_a3d560375b0c5393435e65d760d3d6c60a79de073e86b311f26a4fcb264479c27b}} 
+CCS\+\_\+\+RNG&A random number generator \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{CCS\_DISTRIBUTION@{CCS\_DISTRIBUTION}!base.h@{base.h}}\index{base.h@{base.h}!CCS\_DISTRIBUTION@{CCS\_DISTRIBUTION}}}\mbox{\Hypertarget{base_8h_a3d560375b0c5393435e65d760d3d6c60af800a065de65e46b793c462244741112}\label{base_8h_a3d560375b0c5393435e65d760d3d6c60af800a065de65e46b793c462244741112}} 
+CCS\+\_\+\+DISTRIBUTION&A numerical distribution \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{CCS\_HYPERPARAMETER@{CCS\_HYPERPARAMETER}!base.h@{base.h}}\index{base.h@{base.h}!CCS\_HYPERPARAMETER@{CCS\_HYPERPARAMETER}}}\mbox{\Hypertarget{base_8h_a3d560375b0c5393435e65d760d3d6c60a4840994f8029cf28e6745e189f7c1f8d}\label{base_8h_a3d560375b0c5393435e65d760d3d6c60a4840994f8029cf28e6745e189f7c1f8d}} 
+CCS\+\_\+\+HYPERPARAMETER&A hyperparameter \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{CCS\_EXPRESSION@{CCS\_EXPRESSION}!base.h@{base.h}}\index{base.h@{base.h}!CCS\_EXPRESSION@{CCS\_EXPRESSION}}}\mbox{\Hypertarget{base_8h_a3d560375b0c5393435e65d760d3d6c60a7d3b12be1e43110f29269ab1a9aabc47}\label{base_8h_a3d560375b0c5393435e65d760d3d6c60a7d3b12be1e43110f29269ab1a9aabc47}} 
+CCS\+\_\+\+EXPRESSION&An arithmetic expression \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{CCS\_CONFIGURATION\_SPACE@{CCS\_CONFIGURATION\_SPACE}!base.h@{base.h}}\index{base.h@{base.h}!CCS\_CONFIGURATION\_SPACE@{CCS\_CONFIGURATION\_SPACE}}}\mbox{\Hypertarget{base_8h_a3d560375b0c5393435e65d760d3d6c60a283fd9f47819b3c0aeab9af968f2b3a5}\label{base_8h_a3d560375b0c5393435e65d760d3d6c60a283fd9f47819b3c0aeab9af968f2b3a5}} 
+CCS\+\_\+\+CONFIGURATION\+\_\+\+SPACE&A configuration space \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{CCS\_CONFIGURATION@{CCS\_CONFIGURATION}!base.h@{base.h}}\index{base.h@{base.h}!CCS\_CONFIGURATION@{CCS\_CONFIGURATION}}}\mbox{\Hypertarget{base_8h_a3d560375b0c5393435e65d760d3d6c60a9454f23c5a25368ca93e1c2e7f6a6b27}\label{base_8h_a3d560375b0c5393435e65d760d3d6c60a9454f23c5a25368ca93e1c2e7f6a6b27}} 
+CCS\+\_\+\+CONFIGURATION&A configuration \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{CCS\_OBJECTIVE\_SPACE@{CCS\_OBJECTIVE\_SPACE}!base.h@{base.h}}\index{base.h@{base.h}!CCS\_OBJECTIVE\_SPACE@{CCS\_OBJECTIVE\_SPACE}}}\mbox{\Hypertarget{base_8h_a3d560375b0c5393435e65d760d3d6c60ad05fcf203a11eedac2c6451bb50975ac}\label{base_8h_a3d560375b0c5393435e65d760d3d6c60ad05fcf203a11eedac2c6451bb50975ac}} 
+CCS\+\_\+\+OBJECTIVE\+\_\+\+SPACE&An objective space \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{CCS\_EVALUATION@{CCS\_EVALUATION}!base.h@{base.h}}\index{base.h@{base.h}!CCS\_EVALUATION@{CCS\_EVALUATION}}}\mbox{\Hypertarget{base_8h_a3d560375b0c5393435e65d760d3d6c60adffba0ee3c4b3cad5a5d9be5f3eb3d17}\label{base_8h_a3d560375b0c5393435e65d760d3d6c60adffba0ee3c4b3cad5a5d9be5f3eb3d17}} 
+CCS\+\_\+\+EVALUATION&An evaluation of a configuration \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{CCS\_TUNER@{CCS\_TUNER}!base.h@{base.h}}\index{base.h@{base.h}!CCS\_TUNER@{CCS\_TUNER}}}\mbox{\Hypertarget{base_8h_a3d560375b0c5393435e65d760d3d6c60a80a0a9dd811fce38bbd39a99232d9368}\label{base_8h_a3d560375b0c5393435e65d760d3d6c60a80a0a9dd811fce38bbd39a99232d9368}} 
+CCS\+\_\+\+TUNER&A tuner \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{CCS\_FEATURES\_SPACE@{CCS\_FEATURES\_SPACE}!base.h@{base.h}}\index{base.h@{base.h}!CCS\_FEATURES\_SPACE@{CCS\_FEATURES\_SPACE}}}\mbox{\Hypertarget{base_8h_a3d560375b0c5393435e65d760d3d6c60af3ecf0b89fd2729d788c29a31d630e2d}\label{base_8h_a3d560375b0c5393435e65d760d3d6c60af3ecf0b89fd2729d788c29a31d630e2d}} 
+CCS\+\_\+\+FEATURES\+\_\+\+SPACE&A features space \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{CCS\_FEATURES@{CCS\_FEATURES}!base.h@{base.h}}\index{base.h@{base.h}!CCS\_FEATURES@{CCS\_FEATURES}}}\mbox{\Hypertarget{base_8h_a3d560375b0c5393435e65d760d3d6c60a8547f6f68449f67ea6adc159dad1a35b}\label{base_8h_a3d560375b0c5393435e65d760d3d6c60a8547f6f68449f67ea6adc159dad1a35b}} 
+CCS\+\_\+\+FEATURES&A features \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{CCS\_FEATURES\_EVALUATION@{CCS\_FEATURES\_EVALUATION}!base.h@{base.h}}\index{base.h@{base.h}!CCS\_FEATURES\_EVALUATION@{CCS\_FEATURES\_EVALUATION}}}\mbox{\Hypertarget{base_8h_a3d560375b0c5393435e65d760d3d6c60af6dd95f562b7f89eda1a5ed14d32dbc5}\label{base_8h_a3d560375b0c5393435e65d760d3d6c60af6dd95f562b7f89eda1a5ed14d32dbc5}} 
+CCS\+\_\+\+FEATURES\+\_\+\+EVALUATION&An evaluation of a configuration given specific features \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{CCS\_FEATURES\_TUNER@{CCS\_FEATURES\_TUNER}!base.h@{base.h}}\index{base.h@{base.h}!CCS\_FEATURES\_TUNER@{CCS\_FEATURES\_TUNER}}}\mbox{\Hypertarget{base_8h_a3d560375b0c5393435e65d760d3d6c60a43e79cece117e0081a920be3a8535ed4}\label{base_8h_a3d560375b0c5393435e65d760d3d6c60a43e79cece117e0081a920be3a8535ed4}} 
+CCS\+\_\+\+FEATURES\+\_\+\+TUNER&A features aware tuner \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{CCS\_MAP@{CCS\_MAP}!base.h@{base.h}}\index{base.h@{base.h}!CCS\_MAP@{CCS\_MAP}}}\mbox{\Hypertarget{base_8h_a3d560375b0c5393435e65d760d3d6c60aa40cb25ea809cf2aba091118691072d6}\label{base_8h_a3d560375b0c5393435e65d760d3d6c60aa40cb25ea809cf2aba091118691072d6}} 
+CCS\+\_\+\+MAP&A key value store \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{CCS\_ERROR\_STACK@{CCS\_ERROR\_STACK}!base.h@{base.h}}\index{base.h@{base.h}!CCS\_ERROR\_STACK@{CCS\_ERROR\_STACK}}}\mbox{\Hypertarget{base_8h_a3d560375b0c5393435e65d760d3d6c60a8489180b663d4a004e89e92b92d85540}\label{base_8h_a3d560375b0c5393435e65d760d3d6c60a8489180b663d4a004e89e92b92d85540}} 
+CCS\+\_\+\+ERROR\+\_\+\+STACK&An error stack \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{CCS\_OBJECT\_TYPE\_MAX@{CCS\_OBJECT\_TYPE\_MAX}!base.h@{base.h}}\index{base.h@{base.h}!CCS\_OBJECT\_TYPE\_MAX@{CCS\_OBJECT\_TYPE\_MAX}}}\mbox{\Hypertarget{base_8h_a3d560375b0c5393435e65d760d3d6c60a211a0856c3405f8c87860694ee4db10d}\label{base_8h_a3d560375b0c5393435e65d760d3d6c60a211a0856c3405f8c87860694ee4db10d}} 
+CCS\+\_\+\+OBJECT\+\_\+\+TYPE\+\_\+\+MAX&Guard \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{CCS\_OBJECT\_TYPE\_FORCE\_32BIT@{CCS\_OBJECT\_TYPE\_FORCE\_32BIT}!base.h@{base.h}}\index{base.h@{base.h}!CCS\_OBJECT\_TYPE\_FORCE\_32BIT@{CCS\_OBJECT\_TYPE\_FORCE\_32BIT}}}\mbox{\Hypertarget{base_8h_a3d560375b0c5393435e65d760d3d6c60ae800cc73429cf1f647fd01664d4e9381}\label{base_8h_a3d560375b0c5393435e65d760d3d6c60ae800cc73429cf1f647fd01664d4e9381}} 
+CCS\+\_\+\+OBJECT\+\_\+\+TYPE\+\_\+\+FORCE\+\_\+32\+BIT&Try forcing 32 bits value for bindings. \\
+\hline
+
+\end{DoxyEnumFields}
+\mbox{\Hypertarget{base_8h_aee35e17e2c4b6c620583f02bfc0d0d63}\label{base_8h_aee35e17e2c4b6c620583f02bfc0d0d63}} 
+\index{base.h@{base.h}!ccs\_serialize\_format\_e@{ccs\_serialize\_format\_e}}
+\index{ccs\_serialize\_format\_e@{ccs\_serialize\_format\_e}!base.h@{base.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_serialize\_format\_e}{ccs\_serialize\_format\_e}}
+{\footnotesize\ttfamily enum \mbox{\hyperlink{base_8h_aee35e17e2c4b6c620583f02bfc0d0d63}{ccs\+\_\+serialize\+\_\+format\+\_\+e}}}
+
+
+
+The different serialization formats supported by CCS. 
+
+\begin{DoxyEnumFields}{Enumerator}
+\raisebox{\heightof{T}}[0pt][0pt]{\index{CCS\_SERIALIZE\_FORMAT\_BINARY@{CCS\_SERIALIZE\_FORMAT\_BINARY}!base.h@{base.h}}\index{base.h@{base.h}!CCS\_SERIALIZE\_FORMAT\_BINARY@{CCS\_SERIALIZE\_FORMAT\_BINARY}}}\mbox{\Hypertarget{base_8h_aee35e17e2c4b6c620583f02bfc0d0d63aaa99abc5e79f124791f26c4f6cc070d9}\label{base_8h_aee35e17e2c4b6c620583f02bfc0d0d63aaa99abc5e79f124791f26c4f6cc070d9}} 
+CCS\+\_\+\+SERIALIZE\+\_\+\+FORMAT\+\_\+\+BINARY&A binary format that should be compact and performant. \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{CCS\_SERIALIZE\_FORMAT\_MAX@{CCS\_SERIALIZE\_FORMAT\_MAX}!base.h@{base.h}}\index{base.h@{base.h}!CCS\_SERIALIZE\_FORMAT\_MAX@{CCS\_SERIALIZE\_FORMAT\_MAX}}}\mbox{\Hypertarget{base_8h_aee35e17e2c4b6c620583f02bfc0d0d63ab4d2a79ec776e83339b68661ffda699f}\label{base_8h_aee35e17e2c4b6c620583f02bfc0d0d63ab4d2a79ec776e83339b68661ffda699f}} 
+CCS\+\_\+\+SERIALIZE\+\_\+\+FORMAT\+\_\+\+MAX&Guard. \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{CCS\_SERIALIZE\_FORMAT\_FORCE\_32BIT@{CCS\_SERIALIZE\_FORMAT\_FORCE\_32BIT}!base.h@{base.h}}\index{base.h@{base.h}!CCS\_SERIALIZE\_FORMAT\_FORCE\_32BIT@{CCS\_SERIALIZE\_FORMAT\_FORCE\_32BIT}}}\mbox{\Hypertarget{base_8h_aee35e17e2c4b6c620583f02bfc0d0d63a360ea86a60411aca8bbeedb0685336f2}\label{base_8h_aee35e17e2c4b6c620583f02bfc0d0d63a360ea86a60411aca8bbeedb0685336f2}} 
+CCS\+\_\+\+SERIALIZE\+\_\+\+FORMAT\+\_\+\+FORCE\+\_\+32\+BIT&Try forcing 32 bits value for bindings. \\
+\hline
+
+\end{DoxyEnumFields}
+\mbox{\Hypertarget{base_8h_a667b141436fe4eaa49b29bc7d345276f}\label{base_8h_a667b141436fe4eaa49b29bc7d345276f}} 
+\index{base.h@{base.h}!ccs\_serialize\_operation\_e@{ccs\_serialize\_operation\_e}}
+\index{ccs\_serialize\_operation\_e@{ccs\_serialize\_operation\_e}!base.h@{base.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_serialize\_operation\_e}{ccs\_serialize\_operation\_e}}
+{\footnotesize\ttfamily enum \mbox{\hyperlink{base_8h_a667b141436fe4eaa49b29bc7d345276f}{ccs\+\_\+serialize\+\_\+operation\+\_\+e}}}
+
+
+
+The different serialization operations supported by CCS. 
+
+\begin{DoxyEnumFields}{Enumerator}
+\raisebox{\heightof{T}}[0pt][0pt]{\index{CCS\_SERIALIZE\_OPERATION\_SIZE@{CCS\_SERIALIZE\_OPERATION\_SIZE}!base.h@{base.h}}\index{base.h@{base.h}!CCS\_SERIALIZE\_OPERATION\_SIZE@{CCS\_SERIALIZE\_OPERATION\_SIZE}}}\mbox{\Hypertarget{base_8h_a667b141436fe4eaa49b29bc7d345276fa67f861cdf365670315ac525fc9ec4287}\label{base_8h_a667b141436fe4eaa49b29bc7d345276fa67f861cdf365670315ac525fc9ec4287}} 
+CCS\+\_\+\+SERIALIZE\+\_\+\+OPERATION\+\_\+\+SIZE&Query the memory footprint of the serialized object. \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{CCS\_SERIALIZE\_OPERATION\_MEMORY@{CCS\_SERIALIZE\_OPERATION\_MEMORY}!base.h@{base.h}}\index{base.h@{base.h}!CCS\_SERIALIZE\_OPERATION\_MEMORY@{CCS\_SERIALIZE\_OPERATION\_MEMORY}}}\mbox{\Hypertarget{base_8h_a667b141436fe4eaa49b29bc7d345276fa66a117baf5b1a8d832b26d36c962ba2b}\label{base_8h_a667b141436fe4eaa49b29bc7d345276fa66a117baf5b1a8d832b26d36c962ba2b}} 
+CCS\+\_\+\+SERIALIZE\+\_\+\+OPERATION\+\_\+\+MEMORY&Serialize the object in a user provided memory buffer. \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{CCS\_SERIALIZE\_OPERATION\_FILE@{CCS\_SERIALIZE\_OPERATION\_FILE}!base.h@{base.h}}\index{base.h@{base.h}!CCS\_SERIALIZE\_OPERATION\_FILE@{CCS\_SERIALIZE\_OPERATION\_FILE}}}\mbox{\Hypertarget{base_8h_a667b141436fe4eaa49b29bc7d345276fa1af1fb064e7669208241df3f7ac44a5c}\label{base_8h_a667b141436fe4eaa49b29bc7d345276fa1af1fb064e7669208241df3f7ac44a5c}} 
+CCS\+\_\+\+SERIALIZE\+\_\+\+OPERATION\+\_\+\+FILE&Serialize the object in a file at the given path. \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{CCS\_SERIALIZE\_OPERATION\_FILE\_DESCRIPTOR@{CCS\_SERIALIZE\_OPERATION\_FILE\_DESCRIPTOR}!base.h@{base.h}}\index{base.h@{base.h}!CCS\_SERIALIZE\_OPERATION\_FILE\_DESCRIPTOR@{CCS\_SERIALIZE\_OPERATION\_FILE\_DESCRIPTOR}}}\mbox{\Hypertarget{base_8h_a667b141436fe4eaa49b29bc7d345276fa12daf6e087d16e6eca625a81ec996c8b}\label{base_8h_a667b141436fe4eaa49b29bc7d345276fa12daf6e087d16e6eca625a81ec996c8b}} 
+CCS\+\_\+\+SERIALIZE\+\_\+\+OPERATION\+\_\+\+FILE\+\_\+\+DESCRIPTOR&Serialize the ojbect in the given file descriptor. \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{CCS\_SERIALIZE\_OPERATION\_MAX@{CCS\_SERIALIZE\_OPERATION\_MAX}!base.h@{base.h}}\index{base.h@{base.h}!CCS\_SERIALIZE\_OPERATION\_MAX@{CCS\_SERIALIZE\_OPERATION\_MAX}}}\mbox{\Hypertarget{base_8h_a667b141436fe4eaa49b29bc7d345276fa139c83b61dadb90e15cba2199addcd09}\label{base_8h_a667b141436fe4eaa49b29bc7d345276fa139c83b61dadb90e15cba2199addcd09}} 
+CCS\+\_\+\+SERIALIZE\+\_\+\+OPERATION\+\_\+\+MAX&Guard. \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{CCS\_SERIALIZE\_OPERATION\_FORCE\_32BIT@{CCS\_SERIALIZE\_OPERATION\_FORCE\_32BIT}!base.h@{base.h}}\index{base.h@{base.h}!CCS\_SERIALIZE\_OPERATION\_FORCE\_32BIT@{CCS\_SERIALIZE\_OPERATION\_FORCE\_32BIT}}}\mbox{\Hypertarget{base_8h_a667b141436fe4eaa49b29bc7d345276fae3b2e2199d720d8a7adbb82490baab8a}\label{base_8h_a667b141436fe4eaa49b29bc7d345276fae3b2e2199d720d8a7adbb82490baab8a}} 
+CCS\+\_\+\+SERIALIZE\+\_\+\+OPERATION\+\_\+\+FORCE\+\_\+32\+BIT&Try forcing 32 bits value for bindings. \\
+\hline
+
+\end{DoxyEnumFields}
+\mbox{\Hypertarget{base_8h_af6807b68beea46540b0a3b7d8bf81306}\label{base_8h_af6807b68beea46540b0a3b7d8bf81306}} 
+\index{base.h@{base.h}!ccs\_serialize\_option\_e@{ccs\_serialize\_option\_e}}
+\index{ccs\_serialize\_option\_e@{ccs\_serialize\_option\_e}!base.h@{base.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_serialize\_option\_e}{ccs\_serialize\_option\_e}}
+{\footnotesize\ttfamily enum \mbox{\hyperlink{base_8h_af6807b68beea46540b0a3b7d8bf81306}{ccs\+\_\+serialize\+\_\+option\+\_\+e}}}
+
+
+
+The different serialization options. 
+
+\begin{DoxyEnumFields}{Enumerator}
+\raisebox{\heightof{T}}[0pt][0pt]{\index{CCS\_SERIALIZE\_OPTION\_END@{CCS\_SERIALIZE\_OPTION\_END}!base.h@{base.h}}\index{base.h@{base.h}!CCS\_SERIALIZE\_OPTION\_END@{CCS\_SERIALIZE\_OPTION\_END}}}\mbox{\Hypertarget{base_8h_af6807b68beea46540b0a3b7d8bf81306aee199f42078be30ac99bd6a80139d0f4}\label{base_8h_af6807b68beea46540b0a3b7d8bf81306aee199f42078be30ac99bd6a80139d0f4}} 
+CCS\+\_\+\+SERIALIZE\+\_\+\+OPTION\+\_\+\+END&Option list terminator. \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{CCS\_SERIALIZE\_OPTION\_NON\_BLOCKING@{CCS\_SERIALIZE\_OPTION\_NON\_BLOCKING}!base.h@{base.h}}\index{base.h@{base.h}!CCS\_SERIALIZE\_OPTION\_NON\_BLOCKING@{CCS\_SERIALIZE\_OPTION\_NON\_BLOCKING}}}\mbox{\Hypertarget{base_8h_af6807b68beea46540b0a3b7d8bf81306ac85f72e185a0d3b1ccf891628c5c88ab}\label{base_8h_af6807b68beea46540b0a3b7d8bf81306ac85f72e185a0d3b1ccf891628c5c88ab}} 
+CCS\+\_\+\+SERIALIZE\+\_\+\+OPTION\+\_\+\+NON\+\_\+\+BLOCKING&The file descriptor operation is non-\/blocking. The next parameter is a pointer to a void $\ast$ variable (initialized to NULL) that will hold the state of the serialization in order to restart. The function performing the operation will return \mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a30733d67f443f47f9404faffebb41b46}{CCS\+\_\+\+AGAIN}} if the operation has not completed. The state is managed internally. \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{CCS\_SERIALIZE\_OPTION\_CALLBACK@{CCS\_SERIALIZE\_OPTION\_CALLBACK}!base.h@{base.h}}\index{base.h@{base.h}!CCS\_SERIALIZE\_OPTION\_CALLBACK@{CCS\_SERIALIZE\_OPTION\_CALLBACK}}}\mbox{\Hypertarget{base_8h_af6807b68beea46540b0a3b7d8bf81306a8267631347cfb616d2e1c2215e615c5a}\label{base_8h_af6807b68beea46540b0a3b7d8bf81306a8267631347cfb616d2e1c2215e615c5a}} 
+CCS\+\_\+\+SERIALIZE\+\_\+\+OPTION\+\_\+\+CALLBACK&The next parameters are a serialization callback and it\textquotesingle{}s user\+\_\+data. This callback will be called for all objects that have user\+\_\+data set and have not a serialization callback set via ccs\+\_\+object\+\_\+set\+\_\+serialize\+\_\+callback \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{CCS\_SERIALIZE\_OPTION\_MAX@{CCS\_SERIALIZE\_OPTION\_MAX}!base.h@{base.h}}\index{base.h@{base.h}!CCS\_SERIALIZE\_OPTION\_MAX@{CCS\_SERIALIZE\_OPTION\_MAX}}}\mbox{\Hypertarget{base_8h_af6807b68beea46540b0a3b7d8bf81306acabf42447b9cea788413a58148cb87d0}\label{base_8h_af6807b68beea46540b0a3b7d8bf81306acabf42447b9cea788413a58148cb87d0}} 
+CCS\+\_\+\+SERIALIZE\+\_\+\+OPTION\+\_\+\+MAX&Guard. \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{CCS\_SERIALIZE\_OPTION\_FORCE\_32BIT@{CCS\_SERIALIZE\_OPTION\_FORCE\_32BIT}!base.h@{base.h}}\index{base.h@{base.h}!CCS\_SERIALIZE\_OPTION\_FORCE\_32BIT@{CCS\_SERIALIZE\_OPTION\_FORCE\_32BIT}}}\mbox{\Hypertarget{base_8h_af6807b68beea46540b0a3b7d8bf81306a81592e58bfbca65c9856822e317679e5}\label{base_8h_af6807b68beea46540b0a3b7d8bf81306a81592e58bfbca65c9856822e317679e5}} 
+CCS\+\_\+\+SERIALIZE\+\_\+\+OPTION\+\_\+\+FORCE\+\_\+32\+BIT&Try forcing 32 bits value for bindings. \\
+\hline
+
+\end{DoxyEnumFields}
+
+
+\doxysubsection{Function Documentation}
+\mbox{\Hypertarget{base_8h_a3df659eafffe94924dfb38e660a31457}\label{base_8h_a3df659eafffe94924dfb38e660a31457}} 
+\index{base.h@{base.h}!ccs\_bool@{ccs\_bool}}
+\index{ccs\_bool@{ccs\_bool}!base.h@{base.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_bool()}{ccs\_bool()}}
+{\footnotesize\ttfamily static \mbox{\hyperlink{base_8h_a36bc36b2bb0d0613453dd731cdcd2048}{ccs\+\_\+datum\+\_\+t}} ccs\+\_\+bool (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_a0e8ba2dfd397017939e6ea2ebc4bb037}{ccs\+\_\+bool\+\_\+t}}}]{v }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}}
+
+
+
+A helper function to construct a datum containing a boolean value. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em v} & \mbox{\hyperlink{base_8h_a4598e8e24f836accf0ebc8c73973714d}{CCS\+\_\+\+TRUE}} or \mbox{\hyperlink{base_8h_a20d15198405a9b9c79c8a093345bc67b}{CCS\+\_\+\+FALSE}} \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+a CCS datum value 
+\end{DoxyReturn}
+\mbox{\Hypertarget{base_8h_ad0129f5cd522a0b805d3f8c1499858bb}\label{base_8h_ad0129f5cd522a0b805d3f8c1499858bb}} 
+\index{base.h@{base.h}!ccs\_datum\_cmp@{ccs\_datum\_cmp}}
+\index{ccs\_datum\_cmp@{ccs\_datum\_cmp}!base.h@{base.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_datum\_cmp()}{ccs\_datum\_cmp()}}
+{\footnotesize\ttfamily static int ccs\+\_\+datum\+\_\+cmp (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_a36bc36b2bb0d0613453dd731cdcd2048}{ccs\+\_\+datum\+\_\+t}}}]{a,  }\item[{\mbox{\hyperlink{base_8h_a36bc36b2bb0d0613453dd731cdcd2048}{ccs\+\_\+datum\+\_\+t}}}]{b }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}}
+
+
+
+A helper function providing a strict ordering of datum. 
+
+Flags are not taken into account. 
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em a} & the first datum \\
+\hline
+\mbox{\texttt{ in}}  & {\em b} & the second datum \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+-\/1, 0, or 1 if the first datum is found to be respectively lesser than, equal, or greater than the second datum 
+\end{DoxyReturn}
+\mbox{\Hypertarget{base_8h_a4bba7455ec8ccd7d51a5f8ac5f7e6621}\label{base_8h_a4bba7455ec8ccd7d51a5f8ac5f7e6621}} 
+\index{base.h@{base.h}!ccs\_fini@{ccs\_fini}}
+\index{ccs\_fini@{ccs\_fini}!base.h@{base.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_fini()}{ccs\_fini()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} ccs\+\_\+fini (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+The library deinitialization function. 
+
+Should be called after all opertaions using the library are performed. \begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a092b9c7d2bc9ac00a6f53e251c8619b8}{CCS\+\_\+\+SUCCESS}} 
+\end{DoxyReturn}
+\mbox{\Hypertarget{base_8h_a91afc7cc2047f5f11879e0f1579ce6fc}\label{base_8h_a91afc7cc2047f5f11879e0f1579ce6fc}} 
+\index{base.h@{base.h}!ccs\_float@{ccs\_float}}
+\index{ccs\_float@{ccs\_float}!base.h@{base.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_float()}{ccs\_float()}}
+{\footnotesize\ttfamily static \mbox{\hyperlink{base_8h_a36bc36b2bb0d0613453dd731cdcd2048}{ccs\+\_\+datum\+\_\+t}} ccs\+\_\+float (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_a8a8cddcd4f5ce78a2fbb0a44743e88c5}{ccs\+\_\+float\+\_\+t}}}]{v }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}}
+
+
+
+A helper function to construct a datum containing a floating point value. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em v} & a floating point value. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+a CCS datum value 
+\end{DoxyReturn}
+\mbox{\Hypertarget{base_8h_a098a77b95dcc60d29c788ebe7b65bfe1}\label{base_8h_a098a77b95dcc60d29c788ebe7b65bfe1}} 
+\index{base.h@{base.h}!ccs\_get\_error\_name@{ccs\_get\_error\_name}}
+\index{ccs\_get\_error\_name@{ccs\_get\_error\_name}!base.h@{base.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_get\_error\_name()}{ccs\_get\_error\_name()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} ccs\+\_\+get\+\_\+error\+\_\+name (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}}}]{error,  }\item[{const char $\ast$$\ast$}]{name }\end{DoxyParamCaption})}
+
+
+
+Return the string corresponding to the provided CCS error. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em error} & the CCS error \\
+\hline
+\mbox{\texttt{ out}}  & {\em name} & a pointer to a variable that will contain the string representation of the error name. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a092b9c7d2bc9ac00a6f53e251c8619b8}{CCS\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0adb4bc5cfc4f985bf59ae223f3e22b9f9}{CCS\+\_\+\+INVALID\+\_\+\+VALUE}} if {\ttfamily name} is NULL or if {\ttfamily error} is not a valid CCS error code 
+\end{DoxyReturn}
+\mbox{\Hypertarget{base_8h_ab9b32d2d4d0b1041c92d639826b63f4a}\label{base_8h_ab9b32d2d4d0b1041c92d639826b63f4a}} 
+\index{base.h@{base.h}!ccs\_get\_version@{ccs\_get\_version}}
+\index{ccs\_get\_version@{ccs\_get\_version}!base.h@{base.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_get\_version()}{ccs\_get\_version()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{structccs__version__t}{ccs\+\_\+version\+\_\+t}} ccs\+\_\+get\+\_\+version (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Query the library API version. 
+
+\begin{DoxyReturn}{Returns}
+the library API version 
+\end{DoxyReturn}
+\mbox{\Hypertarget{base_8h_add36548755d359a9feb615e706abe1bf}\label{base_8h_add36548755d359a9feb615e706abe1bf}} 
+\index{base.h@{base.h}!ccs\_init@{ccs\_init}}
+\index{ccs\_init@{ccs\_init}!base.h@{base.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_init()}{ccs\_init()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} ccs\+\_\+init (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+The library initialization function. 
+
+Should be called before any operation using the library are performed. \begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a092b9c7d2bc9ac00a6f53e251c8619b8}{CCS\+\_\+\+SUCCESS}} 
+\end{DoxyReturn}
+\mbox{\Hypertarget{base_8h_abbf3424e75419b393cfebf4f363749e4}\label{base_8h_abbf3424e75419b393cfebf4f363749e4}} 
+\index{base.h@{base.h}!ccs\_int@{ccs\_int}}
+\index{ccs\_int@{ccs\_int}!base.h@{base.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_int()}{ccs\_int()}}
+{\footnotesize\ttfamily static \mbox{\hyperlink{base_8h_a36bc36b2bb0d0613453dd731cdcd2048}{ccs\+\_\+datum\+\_\+t}} ccs\+\_\+int (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_a04670829a660b2aab58c0377468f0de8}{ccs\+\_\+int\+\_\+t}}}]{v }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}}
+
+
+
+A helper function to construct a datum containing an integer value. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em v} & a signed integer. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+a CCS datum value 
+\end{DoxyReturn}
+\mbox{\Hypertarget{base_8h_af4f35fa301520b1cc8d008da72015391}\label{base_8h_af4f35fa301520b1cc8d008da72015391}} 
+\index{base.h@{base.h}!ccs\_object@{ccs\_object}}
+\index{ccs\_object@{ccs\_object}!base.h@{base.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_object()}{ccs\_object()}}
+{\footnotesize\ttfamily static \mbox{\hyperlink{base_8h_a36bc36b2bb0d0613453dd731cdcd2048}{ccs\+\_\+datum\+\_\+t}} ccs\+\_\+object (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_a1a81d15e4085243bd2dc081be098b0ff}{ccs\+\_\+object\+\_\+t}}}]{v }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}}
+
+
+
+A helper function to construct a datum containing a CCS object value. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em v} & a CCS object. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+a CCS datum value 
+\end{DoxyReturn}
+\mbox{\Hypertarget{base_8h_a83d7208f8fbfa4013d94fc0bae4da0fc}\label{base_8h_a83d7208f8fbfa4013d94fc0bae4da0fc}} 
+\index{base.h@{base.h}!ccs\_object\_deserialize@{ccs\_object\_deserialize}}
+\index{ccs\_object\_deserialize@{ccs\_object\_deserialize}!base.h@{base.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_object\_deserialize()}{ccs\_object\_deserialize()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} ccs\+\_\+object\+\_\+deserialize (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_a1a81d15e4085243bd2dc081be098b0ff}{ccs\+\_\+object\+\_\+t}} $\ast$}]{object\+\_\+ret,  }\item[{\mbox{\hyperlink{base_8h_adbf0f7b67dad01309743c9e28497ce7e}{ccs\+\_\+serialize\+\_\+format\+\_\+t}}}]{format,  }\item[{\mbox{\hyperlink{base_8h_a199b4aca3a5ff0f76d2b8a9a48761d27}{ccs\+\_\+serialize\+\_\+operation\+\_\+t}}}]{operation,  }\item[{}]{... }\end{DoxyParamCaption})}
+
+
+
+Perform a deserialization operation and returns a new CCS object. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ out}}  & {\em object\+\_\+ret} & a pointer to the variable that will hold the newly created CCS object \\
+\hline
+\mbox{\texttt{ in}}  & {\em format} & the requested serialization format \\
+\hline
+\mbox{\texttt{ in}}  & {\em operation} & the requested serialization operation \\
+\hline
+\mbox{\texttt{ in,out}}  & {\em ...} & list of parameters that depend on the selected {\ttfamily operation}, followed by a CCS\+\_\+\+SERIALIZE\+\_\+\+OPTION\+\_\+\+END terminated list of options \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a092b9c7d2bc9ac00a6f53e251c8619b8}{CCS\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a4707835c3fcb2303089c76bbcbf96df5}{CCS\+\_\+\+INVALID\+\_\+\+OBJECT}} if {\ttfamily object} is found to be invalid 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0adb4bc5cfc4f985bf59ae223f3e22b9f9}{CCS\+\_\+\+INVALID\+\_\+\+VALUE}} if parameters and option combination are unsupported 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a3b3381e910957ad1fbe1d633b12eff79}{CCS\+\_\+\+OUT\+\_\+\+OF\+\_\+\+MEMORY}} if required memory could not be allocated 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a1a6748c15dcb4afc1ae93e816b889a45}{CCS\+\_\+\+NOT\+\_\+\+ENOUGH\+\_\+\+DATA}} in case where the provided buffer is too small for the requested operation 
+\end{DoxyReturn}
+\mbox{\Hypertarget{base_8h_a19323fcb233a7a0c5098832bb4ea359f}\label{base_8h_a19323fcb233a7a0c5098832bb4ea359f}} 
+\index{base.h@{base.h}!ccs\_object\_get\_refcount@{ccs\_object\_get\_refcount}}
+\index{ccs\_object\_get\_refcount@{ccs\_object\_get\_refcount}!base.h@{base.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_object\_get\_refcount()}{ccs\_object\_get\_refcount()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} ccs\+\_\+object\+\_\+get\+\_\+refcount (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_a1a81d15e4085243bd2dc081be098b0ff}{ccs\+\_\+object\+\_\+t}}}]{object,  }\item[{int32\+\_\+t $\ast$}]{refcount\+\_\+ret }\end{DoxyParamCaption})}
+
+
+
+Get an object internal reference counting. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em object} & a CCS object \\
+\hline
+\mbox{\texttt{ out}}  & {\em refcount\+\_\+ret} & a pointer to a int32\+\_\+t variable that will contain the refcount \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a092b9c7d2bc9ac00a6f53e251c8619b8}{CCS\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a4707835c3fcb2303089c76bbcbf96df5}{CCS\+\_\+\+INVALID\+\_\+\+OBJECT}} if {\ttfamily object} is found to be invalid 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0adb4bc5cfc4f985bf59ae223f3e22b9f9}{CCS\+\_\+\+INVALID\+\_\+\+VALUE}} if {\ttfamily refcount\+\_\+ret} is NULL 
+\end{DoxyReturn}
+\mbox{\Hypertarget{base_8h_a2daa6d874d1d933193aaf3f24b579c7c}\label{base_8h_a2daa6d874d1d933193aaf3f24b579c7c}} 
+\index{base.h@{base.h}!ccs\_object\_get\_type@{ccs\_object\_get\_type}}
+\index{ccs\_object\_get\_type@{ccs\_object\_get\_type}!base.h@{base.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_object\_get\_type()}{ccs\_object\_get\_type()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} ccs\+\_\+object\+\_\+get\+\_\+type (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_a1a81d15e4085243bd2dc081be098b0ff}{ccs\+\_\+object\+\_\+t}}}]{object,  }\item[{\mbox{\hyperlink{base_8h_abe7655334e4b2c15e8e0a853a7acbb47}{ccs\+\_\+object\+\_\+type\+\_\+t}} $\ast$}]{type\+\_\+ret }\end{DoxyParamCaption})}
+
+
+
+Get a CCS object type. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em object} & a CCS object \\
+\hline
+\mbox{\texttt{ out}}  & {\em type\+\_\+ret} & a pointer to a ccs\+\_\+object\+\_\+type\+\_\+t variable that will contain the type \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a092b9c7d2bc9ac00a6f53e251c8619b8}{CCS\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a4707835c3fcb2303089c76bbcbf96df5}{CCS\+\_\+\+INVALID\+\_\+\+OBJECT}} if the object is found to be invalid 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0adb4bc5cfc4f985bf59ae223f3e22b9f9}{CCS\+\_\+\+INVALID\+\_\+\+VALUE}} if type\+\_\+ret is NULL 
+\end{DoxyReturn}
+\mbox{\Hypertarget{base_8h_a344e959e8785169d8795f2152f46a66f}\label{base_8h_a344e959e8785169d8795f2152f46a66f}} 
+\index{base.h@{base.h}!ccs\_object\_get\_user\_data@{ccs\_object\_get\_user\_data}}
+\index{ccs\_object\_get\_user\_data@{ccs\_object\_get\_user\_data}!base.h@{base.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_object\_get\_user\_data()}{ccs\_object\_get\_user\_data()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} ccs\+\_\+object\+\_\+get\+\_\+user\+\_\+data (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_a1a81d15e4085243bd2dc081be098b0ff}{ccs\+\_\+object\+\_\+t}}}]{object,  }\item[{void $\ast$$\ast$}]{user\+\_\+data\+\_\+ret }\end{DoxyParamCaption})}
+
+
+
+Get the associated {\ttfamily user\+\_\+data} pointer of a CCS object. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em object} & a CCS object \\
+\hline
+\mbox{\texttt{ out}}  & {\em user\+\_\+data\+\_\+ret} & a pointer to a {\ttfamily void $\ast$} variable that will contain the value of the {\ttfamily user\+\_\+data} \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a092b9c7d2bc9ac00a6f53e251c8619b8}{CCS\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a4707835c3fcb2303089c76bbcbf96df5}{CCS\+\_\+\+INVALID\+\_\+\+OBJECT}} if {\ttfamily object} is found to be invalid 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0adb4bc5cfc4f985bf59ae223f3e22b9f9}{CCS\+\_\+\+INVALID\+\_\+\+VALUE}} if {\ttfamily user\+\_\+data\+\_\+ret} is NULL 
+\end{DoxyReturn}
+\mbox{\Hypertarget{base_8h_a3e48feefd023f1ad4bbc848b14325420}\label{base_8h_a3e48feefd023f1ad4bbc848b14325420}} 
+\index{base.h@{base.h}!ccs\_object\_serialize@{ccs\_object\_serialize}}
+\index{ccs\_object\_serialize@{ccs\_object\_serialize}!base.h@{base.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_object\_serialize()}{ccs\_object\_serialize()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} ccs\+\_\+object\+\_\+serialize (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_a1a81d15e4085243bd2dc081be098b0ff}{ccs\+\_\+object\+\_\+t}}}]{object,  }\item[{\mbox{\hyperlink{base_8h_adbf0f7b67dad01309743c9e28497ce7e}{ccs\+\_\+serialize\+\_\+format\+\_\+t}}}]{format,  }\item[{\mbox{\hyperlink{base_8h_a199b4aca3a5ff0f76d2b8a9a48761d27}{ccs\+\_\+serialize\+\_\+operation\+\_\+t}}}]{operation,  }\item[{}]{... }\end{DoxyParamCaption})}
+
+
+
+Perform a serialization operation on a CCS object. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em object} & a CCS object \\
+\hline
+\mbox{\texttt{ in}}  & {\em format} & the requested serialization format \\
+\hline
+\mbox{\texttt{ in}}  & {\em operation} & the requested serialization operation \\
+\hline
+\mbox{\texttt{ in,out}}  & {\em ...} & list of parameters that depend on the selected {\ttfamily operation}, followed by a CCS\+\_\+\+SERIALIZE\+\_\+\+OPTION\+\_\+\+END terminated list of options \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a092b9c7d2bc9ac00a6f53e251c8619b8}{CCS\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a4707835c3fcb2303089c76bbcbf96df5}{CCS\+\_\+\+INVALID\+\_\+\+OBJECT}} if {\ttfamily object} is found to be invalid 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0adb4bc5cfc4f985bf59ae223f3e22b9f9}{CCS\+\_\+\+INVALID\+\_\+\+VALUE}} if parameters and option combination are unsupported 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a3b3381e910957ad1fbe1d633b12eff79}{CCS\+\_\+\+OUT\+\_\+\+OF\+\_\+\+MEMORY}} if required memory could not be allocated 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a1a6748c15dcb4afc1ae93e816b889a45}{CCS\+\_\+\+NOT\+\_\+\+ENOUGH\+\_\+\+DATA}} in case where the provided buffer is too small for the requested operation 
+\end{DoxyReturn}
+\mbox{\Hypertarget{base_8h_a2576030397e2d5d26ab0da922d513df3}\label{base_8h_a2576030397e2d5d26ab0da922d513df3}} 
+\index{base.h@{base.h}!ccs\_object\_set\_destroy\_callback@{ccs\_object\_set\_destroy\_callback}}
+\index{ccs\_object\_set\_destroy\_callback@{ccs\_object\_set\_destroy\_callback}!base.h@{base.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_object\_set\_destroy\_callback()}{ccs\_object\_set\_destroy\_callback()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} ccs\+\_\+object\+\_\+set\+\_\+destroy\+\_\+callback (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_a1a81d15e4085243bd2dc081be098b0ff}{ccs\+\_\+object\+\_\+t}}}]{object,  }\item[{\mbox{\hyperlink{base_8h_aab7c44cebeb507237ca92fab826fddbe}{ccs\+\_\+object\+\_\+release\+\_\+callback\+\_\+t}}}]{callback,  }\item[{void $\ast$}]{user\+\_\+data }\end{DoxyParamCaption})}
+
+
+
+Attach a destruction callback to a CCS object. 
+
+Destruction callbacks are called in reverse order they were attached. 
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in,out}}  & {\em object} & a CCS object \\
+\hline
+\mbox{\texttt{ in}}  & {\em callback} & the destruction callback to attach \\
+\hline
+\mbox{\texttt{ in}}  & {\em user\+\_\+data} & an optional pointer that will be passed to the callback \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a092b9c7d2bc9ac00a6f53e251c8619b8}{CCS\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a4707835c3fcb2303089c76bbcbf96df5}{CCS\+\_\+\+INVALID\+\_\+\+OBJECT}} if {\ttfamily object} is found to be invalid 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0adb4bc5cfc4f985bf59ae223f3e22b9f9}{CCS\+\_\+\+INVALID\+\_\+\+VALUE}} if {\ttfamily callback} is NULL 
+\end{DoxyReturn}
+\mbox{\Hypertarget{base_8h_a7540ffe154728290430ccabba71b188c}\label{base_8h_a7540ffe154728290430ccabba71b188c}} 
+\index{base.h@{base.h}!ccs\_object\_set\_serialize\_callback@{ccs\_object\_set\_serialize\_callback}}
+\index{ccs\_object\_set\_serialize\_callback@{ccs\_object\_set\_serialize\_callback}!base.h@{base.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_object\_set\_serialize\_callback()}{ccs\_object\_set\_serialize\_callback()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} ccs\+\_\+object\+\_\+set\+\_\+serialize\+\_\+callback (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_a1a81d15e4085243bd2dc081be098b0ff}{ccs\+\_\+object\+\_\+t}}}]{object,  }\item[{\mbox{\hyperlink{base_8h_a8ee33ef1beb44a7ef90f4f18e12dfe07}{ccs\+\_\+object\+\_\+serialize\+\_\+callback\+\_\+t}}}]{callback,  }\item[{void $\ast$}]{user\+\_\+data }\end{DoxyParamCaption})}
+
+
+
+Set the object serialization callback. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in,out}}  & {\em object} & a CCS object \\
+\hline
+\mbox{\texttt{ in}}  & {\em callback} & the serialization callback to attach, eventually replacing the previous callback. Can be NULL in which case the previous callback is removed, if it exists \\
+\hline
+\mbox{\texttt{ in}}  & {\em user\+\_\+data} & an optional pointer that will be passed to the callback \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a092b9c7d2bc9ac00a6f53e251c8619b8}{CCS\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a4707835c3fcb2303089c76bbcbf96df5}{CCS\+\_\+\+INVALID\+\_\+\+OBJECT}} if {\ttfamily object} is found to be invalid 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0adb4bc5cfc4f985bf59ae223f3e22b9f9}{CCS\+\_\+\+INVALID\+\_\+\+VALUE}} if {\ttfamily callback} is NULL 
+\end{DoxyReturn}
+\mbox{\Hypertarget{base_8h_afd6573353b0af3e8666ed7667a8094ee}\label{base_8h_afd6573353b0af3e8666ed7667a8094ee}} 
+\index{base.h@{base.h}!ccs\_object\_set\_user\_data@{ccs\_object\_set\_user\_data}}
+\index{ccs\_object\_set\_user\_data@{ccs\_object\_set\_user\_data}!base.h@{base.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_object\_set\_user\_data()}{ccs\_object\_set\_user\_data()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} ccs\+\_\+object\+\_\+set\+\_\+user\+\_\+data (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_a1a81d15e4085243bd2dc081be098b0ff}{ccs\+\_\+object\+\_\+t}}}]{object,  }\item[{void $\ast$}]{user\+\_\+data }\end{DoxyParamCaption})}
+
+
+
+Set the associated {\ttfamily user\+\_\+data} pointer of a CCS object. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em object} & a CCS object \\
+\hline
+\mbox{\texttt{ in}}  & {\em user\+\_\+data} & a pointer to the user data to attach to this object \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a092b9c7d2bc9ac00a6f53e251c8619b8}{CCS\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a4707835c3fcb2303089c76bbcbf96df5}{CCS\+\_\+\+INVALID\+\_\+\+OBJECT}} if {\ttfamily object} is found to be invalid 
+\end{DoxyReturn}
+\mbox{\Hypertarget{base_8h_aa7f09b977433e517de83af03e86da5c1}\label{base_8h_aa7f09b977433e517de83af03e86da5c1}} 
+\index{base.h@{base.h}!ccs\_release\_object@{ccs\_release\_object}}
+\index{ccs\_release\_object@{ccs\_release\_object}!base.h@{base.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_release\_object()}{ccs\_release\_object()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} ccs\+\_\+release\+\_\+object (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_a1a81d15e4085243bd2dc081be098b0ff}{ccs\+\_\+object\+\_\+t}}}]{object }\end{DoxyParamCaption})}
+
+
+
+Release a CCS object, decrementing the internal reference counting. 
+
+When the internsal reference count reaches zero, the destruction callbacks are called and the object is freed 
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in,out}}  & {\em object} & a CCS object \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a092b9c7d2bc9ac00a6f53e251c8619b8}{CCS\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a4707835c3fcb2303089c76bbcbf96df5}{CCS\+\_\+\+INVALID\+\_\+\+OBJECT}} if the object is found to be invalid 
+
+an error code given by the object destructor 
+\end{DoxyReturn}
+\mbox{\Hypertarget{base_8h_afb226ae251259f6eece1bedb5d7c601a}\label{base_8h_afb226ae251259f6eece1bedb5d7c601a}} 
+\index{base.h@{base.h}!ccs\_retain\_object@{ccs\_retain\_object}}
+\index{ccs\_retain\_object@{ccs\_retain\_object}!base.h@{base.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_retain\_object()}{ccs\_retain\_object()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} ccs\+\_\+retain\+\_\+object (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_a1a81d15e4085243bd2dc081be098b0ff}{ccs\+\_\+object\+\_\+t}}}]{object }\end{DoxyParamCaption})}
+
+
+
+Retain a CCS object, incrementing the internal reference counting. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in,out}}  & {\em object} & a CCS object \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a092b9c7d2bc9ac00a6f53e251c8619b8}{CCS\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a4707835c3fcb2303089c76bbcbf96df5}{CCS\+\_\+\+INVALID\+\_\+\+OBJECT}} if the object is found to be invalid 
+\end{DoxyReturn}
+\mbox{\Hypertarget{base_8h_a03d8ebf0681247d405e8e2b029557061}\label{base_8h_a03d8ebf0681247d405e8e2b029557061}} 
+\index{base.h@{base.h}!ccs\_string@{ccs\_string}}
+\index{ccs\_string@{ccs\_string}!base.h@{base.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_string()}{ccs\_string()}}
+{\footnotesize\ttfamily static \mbox{\hyperlink{base_8h_a36bc36b2bb0d0613453dd731cdcd2048}{ccs\+\_\+datum\+\_\+t}} ccs\+\_\+string (\begin{DoxyParamCaption}\item[{const char $\ast$}]{v }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}}
+
+
+
+A helper function to construct a datum containing a string value. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em v} & a pointer to a NULL terminated string. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+a CCS datum value 
+\end{DoxyReturn}

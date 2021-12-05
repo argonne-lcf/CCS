@@ -1,0 +1,439 @@
+\hypertarget{features__space_8h}{}\doxysection{include/cconfigspace/features\+\_\+space.h File Reference}
+\label{features__space_8h}\index{include/cconfigspace/features\_space.h@{include/cconfigspace/features\_space.h}}
+
+
+A features space is a context (see \mbox{\hyperlink{context_8h}{context.\+h}}) defining a set of hyperparameters.  
+
+
+This graph shows which files directly or indirectly include this file\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=196pt]{features__space_8h__dep__incl}
+\end{center}
+\end{figure}
+\doxysubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} \mbox{\hyperlink{features__space_8h_a2da98e3a3a5acf477a45a2a9d4007eac}{ccs\+\_\+create\+\_\+features\+\_\+space}} (const char $\ast$name, \mbox{\hyperlink{base_8h_ade427f7fbfb71d0bb03d237785fa574f}{ccs\+\_\+features\+\_\+space\+\_\+t}} $\ast$features\+\_\+space\+\_\+ret)
+\begin{DoxyCompactList}\small\item\em Create a new empty features space. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} \mbox{\hyperlink{features__space_8h_ac1a1eee5eaf28417f1e715f8f1debd64}{ccs\+\_\+features\+\_\+space\+\_\+get\+\_\+name}} (\mbox{\hyperlink{base_8h_ade427f7fbfb71d0bb03d237785fa574f}{ccs\+\_\+features\+\_\+space\+\_\+t}} features\+\_\+space, const char $\ast$$\ast$name\+\_\+ret)
+\begin{DoxyCompactList}\small\item\em Get the name of a features space. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} \mbox{\hyperlink{features__space_8h_a070a80a06a927156f1c72a6a65d769a5}{ccs\+\_\+features\+\_\+space\+\_\+add\+\_\+hyperparameter}} (\mbox{\hyperlink{base_8h_ade427f7fbfb71d0bb03d237785fa574f}{ccs\+\_\+features\+\_\+space\+\_\+t}} features\+\_\+space, \mbox{\hyperlink{base_8h_a0b796ce449059870d5bbb77f20925b50}{ccs\+\_\+hyperparameter\+\_\+t}} hyperparameter)
+\begin{DoxyCompactList}\small\item\em Add a hyperparameter to the features space. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} \mbox{\hyperlink{features__space_8h_a8e4848e4230f07b1f016db43deaeb04a}{ccs\+\_\+features\+\_\+space\+\_\+add\+\_\+hyperparameters}} (\mbox{\hyperlink{base_8h_ade427f7fbfb71d0bb03d237785fa574f}{ccs\+\_\+features\+\_\+space\+\_\+t}} features\+\_\+space, size\+\_\+t num\+\_\+hyperparameters, \mbox{\hyperlink{base_8h_a0b796ce449059870d5bbb77f20925b50}{ccs\+\_\+hyperparameter\+\_\+t}} $\ast$hyperparameters)
+\begin{DoxyCompactList}\small\item\em Add hyperparameters to the features space. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} \mbox{\hyperlink{features__space_8h_a6a1a4adf2ff12c4d99581f35ba70a74b}{ccs\+\_\+features\+\_\+space\+\_\+get\+\_\+num\+\_\+hyperparameters}} (\mbox{\hyperlink{base_8h_ade427f7fbfb71d0bb03d237785fa574f}{ccs\+\_\+features\+\_\+space\+\_\+t}} features\+\_\+space, size\+\_\+t $\ast$num\+\_\+hyperparameters\+\_\+ret)
+\begin{DoxyCompactList}\small\item\em Get the number of hyperparameters in a features space. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} \mbox{\hyperlink{features__space_8h_a618cbc3de36017b6330f6e8a851f56c1}{ccs\+\_\+features\+\_\+space\+\_\+get\+\_\+hyperparameter}} (\mbox{\hyperlink{base_8h_ade427f7fbfb71d0bb03d237785fa574f}{ccs\+\_\+features\+\_\+space\+\_\+t}} features\+\_\+space, size\+\_\+t index, \mbox{\hyperlink{base_8h_a0b796ce449059870d5bbb77f20925b50}{ccs\+\_\+hyperparameter\+\_\+t}} $\ast$hyperparameter\+\_\+ret)
+\begin{DoxyCompactList}\small\item\em Get an hyperparameter in a features space given its index. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} \mbox{\hyperlink{features__space_8h_a2d821837d3c5f4f873653f296b9d31e5}{ccs\+\_\+features\+\_\+space\+\_\+get\+\_\+hyperparameter\+\_\+by\+\_\+name}} (\mbox{\hyperlink{base_8h_ade427f7fbfb71d0bb03d237785fa574f}{ccs\+\_\+features\+\_\+space\+\_\+t}} features\+\_\+space, const char $\ast$name, \mbox{\hyperlink{base_8h_a0b796ce449059870d5bbb77f20925b50}{ccs\+\_\+hyperparameter\+\_\+t}} $\ast$hyperparameter\+\_\+ret)
+\begin{DoxyCompactList}\small\item\em Get an hyperparameter in a features space given its name. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} \mbox{\hyperlink{features__space_8h_ae95f12f770d58d7ad3299c9c77529607}{ccs\+\_\+features\+\_\+space\+\_\+get\+\_\+hyperparameter\+\_\+index\+\_\+by\+\_\+name}} (\mbox{\hyperlink{base_8h_ade427f7fbfb71d0bb03d237785fa574f}{ccs\+\_\+features\+\_\+space\+\_\+t}} features\+\_\+space, const char $\ast$name, size\+\_\+t $\ast$index\+\_\+ret)
+\begin{DoxyCompactList}\small\item\em Get the index of an hyperparameter in the features space given its name. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} \mbox{\hyperlink{features__space_8h_a5a23d6b16649daf81bd050a61a57fccc}{ccs\+\_\+features\+\_\+space\+\_\+get\+\_\+hyperparameter\+\_\+index}} (\mbox{\hyperlink{base_8h_ade427f7fbfb71d0bb03d237785fa574f}{ccs\+\_\+features\+\_\+space\+\_\+t}} features\+\_\+space, \mbox{\hyperlink{base_8h_a0b796ce449059870d5bbb77f20925b50}{ccs\+\_\+hyperparameter\+\_\+t}} hyperparameter, size\+\_\+t $\ast$index\+\_\+ret)
+\begin{DoxyCompactList}\small\item\em Get the index of an hyperparameter in the features space. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} \mbox{\hyperlink{features__space_8h_a532fe8c1737e67d3845d95ab5b0ca893}{ccs\+\_\+features\+\_\+space\+\_\+get\+\_\+hyperparameter\+\_\+indexes}} (\mbox{\hyperlink{base_8h_ade427f7fbfb71d0bb03d237785fa574f}{ccs\+\_\+features\+\_\+space\+\_\+t}} features\+\_\+space, size\+\_\+t num\+\_\+hyperparameters, \mbox{\hyperlink{base_8h_a0b796ce449059870d5bbb77f20925b50}{ccs\+\_\+hyperparameter\+\_\+t}} $\ast$hyperparameters, size\+\_\+t $\ast$indexes)
+\begin{DoxyCompactList}\small\item\em Get the indices of a set of hyperparameters in a features space. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} \mbox{\hyperlink{features__space_8h_a350342ad033c55380509b95d85d0a748}{ccs\+\_\+features\+\_\+space\+\_\+get\+\_\+hyperparameters}} (\mbox{\hyperlink{base_8h_ade427f7fbfb71d0bb03d237785fa574f}{ccs\+\_\+features\+\_\+space\+\_\+t}} features\+\_\+space, size\+\_\+t num\+\_\+hyperparameters, \mbox{\hyperlink{base_8h_a0b796ce449059870d5bbb77f20925b50}{ccs\+\_\+hyperparameter\+\_\+t}} $\ast$hyperparameters, size\+\_\+t $\ast$num\+\_\+hyperparameters\+\_\+ret)
+\begin{DoxyCompactList}\small\item\em Get the hyperparameters in the given features space. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} \mbox{\hyperlink{features__space_8h_a749e4b55217b6ba7dad86fa659efdb5f}{ccs\+\_\+features\+\_\+space\+\_\+validate\+\_\+value}} (\mbox{\hyperlink{base_8h_ade427f7fbfb71d0bb03d237785fa574f}{ccs\+\_\+features\+\_\+space\+\_\+t}} features\+\_\+space, size\+\_\+t index, \mbox{\hyperlink{base_8h_a36bc36b2bb0d0613453dd731cdcd2048}{ccs\+\_\+datum\+\_\+t}} value, \mbox{\hyperlink{base_8h_a36bc36b2bb0d0613453dd731cdcd2048}{ccs\+\_\+datum\+\_\+t}} $\ast$value\+\_\+ret)
+\begin{DoxyCompactList}\small\item\em Validate that a given value at the given index is valid in a features space, and return a sanitized value. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} \mbox{\hyperlink{features__space_8h_a1d644e22d573522fe2333109e4879c30}{ccs\+\_\+features\+\_\+space\+\_\+check\+\_\+features}} (\mbox{\hyperlink{base_8h_ade427f7fbfb71d0bb03d237785fa574f}{ccs\+\_\+features\+\_\+space\+\_\+t}} features\+\_\+space, \mbox{\hyperlink{base_8h_a9900ffdbd4cc438a987efababa74c6a3}{ccs\+\_\+features\+\_\+t}} features, \mbox{\hyperlink{base_8h_a0e8ba2dfd397017939e6ea2ebc4bb037}{ccs\+\_\+bool\+\_\+t}} $\ast$is\+\_\+valid\+\_\+ret)
+\begin{DoxyCompactList}\small\item\em Check that a features is a valid in a features space. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} \mbox{\hyperlink{features__space_8h_a8de5dc082b913fea4ab1451f3215e561}{ccs\+\_\+features\+\_\+space\+\_\+check\+\_\+features\+\_\+values}} (\mbox{\hyperlink{base_8h_ade427f7fbfb71d0bb03d237785fa574f}{ccs\+\_\+features\+\_\+space\+\_\+t}} features\+\_\+space, size\+\_\+t num\+\_\+values, \mbox{\hyperlink{base_8h_a36bc36b2bb0d0613453dd731cdcd2048}{ccs\+\_\+datum\+\_\+t}} $\ast$values, \mbox{\hyperlink{base_8h_a0e8ba2dfd397017939e6ea2ebc4bb037}{ccs\+\_\+bool\+\_\+t}} $\ast$is\+\_\+valid\+\_\+ret)
+\begin{DoxyCompactList}\small\item\em Check that a set of values would create a valid features for a features space. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+A features space is a context (see \mbox{\hyperlink{context_8h}{context.\+h}}) defining a set of hyperparameters. 
+
+
+
+\doxysubsection{Function Documentation}
+\mbox{\Hypertarget{features__space_8h_a2da98e3a3a5acf477a45a2a9d4007eac}\label{features__space_8h_a2da98e3a3a5acf477a45a2a9d4007eac}} 
+\index{features\_space.h@{features\_space.h}!ccs\_create\_features\_space@{ccs\_create\_features\_space}}
+\index{ccs\_create\_features\_space@{ccs\_create\_features\_space}!features\_space.h@{features\_space.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_create\_features\_space()}{ccs\_create\_features\_space()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} ccs\+\_\+create\+\_\+features\+\_\+space (\begin{DoxyParamCaption}\item[{const char $\ast$}]{name,  }\item[{\mbox{\hyperlink{base_8h_ade427f7fbfb71d0bb03d237785fa574f}{ccs\+\_\+features\+\_\+space\+\_\+t}} $\ast$}]{features\+\_\+space\+\_\+ret }\end{DoxyParamCaption})}
+
+
+
+Create a new empty features space. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em name} & pointer to a string that will be copied internally \\
+\hline
+\mbox{\texttt{ out}}  & {\em features\+\_\+space\+\_\+ret} & a pointer to the variable that will hold the newly created features space \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a092b9c7d2bc9ac00a6f53e251c8619b8}{CCS\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0adb4bc5cfc4f985bf59ae223f3e22b9f9}{CCS\+\_\+\+INVALID\+\_\+\+VALUE}} if {\ttfamily name} is NULL; or if {\ttfamily features\+\_\+space\+\_\+ret} is NULL 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a3b3381e910957ad1fbe1d633b12eff79}{CCS\+\_\+\+OUT\+\_\+\+OF\+\_\+\+MEMORY}} if there was a lack of memory to allocate the new features space 
+\end{DoxyReturn}
+\mbox{\Hypertarget{features__space_8h_a070a80a06a927156f1c72a6a65d769a5}\label{features__space_8h_a070a80a06a927156f1c72a6a65d769a5}} 
+\index{features\_space.h@{features\_space.h}!ccs\_features\_space\_add\_hyperparameter@{ccs\_features\_space\_add\_hyperparameter}}
+\index{ccs\_features\_space\_add\_hyperparameter@{ccs\_features\_space\_add\_hyperparameter}!features\_space.h@{features\_space.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_features\_space\_add\_hyperparameter()}{ccs\_features\_space\_add\_hyperparameter()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} ccs\+\_\+features\+\_\+space\+\_\+add\+\_\+hyperparameter (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_ade427f7fbfb71d0bb03d237785fa574f}{ccs\+\_\+features\+\_\+space\+\_\+t}}}]{features\+\_\+space,  }\item[{\mbox{\hyperlink{base_8h_a0b796ce449059870d5bbb77f20925b50}{ccs\+\_\+hyperparameter\+\_\+t}}}]{hyperparameter }\end{DoxyParamCaption})}
+
+
+
+Add a hyperparameter to the features space. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in,out}}  & {\em features\+\_\+space} & \\
+\hline
+\mbox{\texttt{ in}}  & {\em hyperparameter} & the hyperparameter to add to the features space \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a092b9c7d2bc9ac00a6f53e251c8619b8}{CCS\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a4707835c3fcb2303089c76bbcbf96df5}{CCS\+\_\+\+INVALID\+\_\+\+OBJECT}} if {\ttfamily features\+\_\+space} is not a valid CCS features space; or {\ttfamily hyperparameter} is not a valid CCS hyperparameter 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0afab391c5bc22e7ba89710930ec04028d}{CCS\+\_\+\+INVALID\+\_\+\+HYPERPARAMETER}} if {\ttfamily hyperparameter} is already in the features space; or if a hyperparameter with the same name already exists in the features space 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a3b3381e910957ad1fbe1d633b12eff79}{CCS\+\_\+\+OUT\+\_\+\+OF\+\_\+\+MEMORY}} if a memory could not be allocated to store the additional hyperparameter and associated data structures 
+\end{DoxyReturn}
+\mbox{\Hypertarget{features__space_8h_a8e4848e4230f07b1f016db43deaeb04a}\label{features__space_8h_a8e4848e4230f07b1f016db43deaeb04a}} 
+\index{features\_space.h@{features\_space.h}!ccs\_features\_space\_add\_hyperparameters@{ccs\_features\_space\_add\_hyperparameters}}
+\index{ccs\_features\_space\_add\_hyperparameters@{ccs\_features\_space\_add\_hyperparameters}!features\_space.h@{features\_space.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_features\_space\_add\_hyperparameters()}{ccs\_features\_space\_add\_hyperparameters()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} ccs\+\_\+features\+\_\+space\+\_\+add\+\_\+hyperparameters (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_ade427f7fbfb71d0bb03d237785fa574f}{ccs\+\_\+features\+\_\+space\+\_\+t}}}]{features\+\_\+space,  }\item[{size\+\_\+t}]{num\+\_\+hyperparameters,  }\item[{\mbox{\hyperlink{base_8h_a0b796ce449059870d5bbb77f20925b50}{ccs\+\_\+hyperparameter\+\_\+t}} $\ast$}]{hyperparameters }\end{DoxyParamCaption})}
+
+
+
+Add hyperparameters to the features space. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in,out}}  & {\em features\+\_\+space} & \\
+\hline
+\mbox{\texttt{ in}}  & {\em num\+\_\+hyperparameters} & the number of provided hyperparameters \\
+\hline
+\mbox{\texttt{ in}}  & {\em hyperparameters} & an array of {\ttfamily num\+\_\+hyperparameters} hyperparameters to add to the features space \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a092b9c7d2bc9ac00a6f53e251c8619b8}{CCS\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a4707835c3fcb2303089c76bbcbf96df5}{CCS\+\_\+\+INVALID\+\_\+\+OBJECT}} if {\ttfamily features\+\_\+space} is not a valid CCS features space; or a hyperparameter is not a valid CCS hyperparameter 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0adb4bc5cfc4f985bf59ae223f3e22b9f9}{CCS\+\_\+\+INVALID\+\_\+\+VALUE}} if {\ttfamily hyperparameters} is NULL and {\ttfamily num\+\_\+hyperparameters} is greater than 0 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0afab391c5bc22e7ba89710930ec04028d}{CCS\+\_\+\+INVALID\+\_\+\+HYPERPARAMETER}} if a hyperparameter is already in the features space; or if a hyperparameter with the same name already exists in the features space 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a3b3381e910957ad1fbe1d633b12eff79}{CCS\+\_\+\+OUT\+\_\+\+OF\+\_\+\+MEMORY}} if memory could not be allocated to store additional hyperparameters and associated data structures 
+\end{DoxyReturn}
+\mbox{\Hypertarget{features__space_8h_a1d644e22d573522fe2333109e4879c30}\label{features__space_8h_a1d644e22d573522fe2333109e4879c30}} 
+\index{features\_space.h@{features\_space.h}!ccs\_features\_space\_check\_features@{ccs\_features\_space\_check\_features}}
+\index{ccs\_features\_space\_check\_features@{ccs\_features\_space\_check\_features}!features\_space.h@{features\_space.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_features\_space\_check\_features()}{ccs\_features\_space\_check\_features()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} ccs\+\_\+features\+\_\+space\+\_\+check\+\_\+features (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_ade427f7fbfb71d0bb03d237785fa574f}{ccs\+\_\+features\+\_\+space\+\_\+t}}}]{features\+\_\+space,  }\item[{\mbox{\hyperlink{base_8h_a9900ffdbd4cc438a987efababa74c6a3}{ccs\+\_\+features\+\_\+t}}}]{features,  }\item[{\mbox{\hyperlink{base_8h_a0e8ba2dfd397017939e6ea2ebc4bb037}{ccs\+\_\+bool\+\_\+t}} $\ast$}]{is\+\_\+valid\+\_\+ret }\end{DoxyParamCaption})}
+
+
+
+Check that a features is a valid in a features space. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em features\+\_\+space} & \\
+\hline
+\mbox{\texttt{ in}}  & {\em features} & \\
+\hline
+\mbox{\texttt{ out}}  & {\em is\+\_\+valid\+\_\+ret} & a pointer to a variable that will hold the result of the check. Result will be CCS\+\_\+\+TRUE if the features is valid. Result will be CCS\+\_\+\+FALSE if an hyperparameter value is not a valid value for this hyperparameter; \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a092b9c7d2bc9ac00a6f53e251c8619b8}{CCS\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a4707835c3fcb2303089c76bbcbf96df5}{CCS\+\_\+\+INVALID\+\_\+\+OBJECT}} if {\ttfamily features\+\_\+space} is not a valid CCS features space; or if {\ttfamily features} is not a valid CCS features 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a611e5a4781ba519cc0223dc079fcd5de}{CCS\+\_\+\+INVALID\+\_\+\+FEATURES}} if {\ttfamily features} is not associated to the features space; or if the number of values contained in {\ttfamily features} is not equal to the number of hyperparameters in the features space 
+\end{DoxyReturn}
+\mbox{\Hypertarget{features__space_8h_a8de5dc082b913fea4ab1451f3215e561}\label{features__space_8h_a8de5dc082b913fea4ab1451f3215e561}} 
+\index{features\_space.h@{features\_space.h}!ccs\_features\_space\_check\_features\_values@{ccs\_features\_space\_check\_features\_values}}
+\index{ccs\_features\_space\_check\_features\_values@{ccs\_features\_space\_check\_features\_values}!features\_space.h@{features\_space.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_features\_space\_check\_features\_values()}{ccs\_features\_space\_check\_features\_values()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} ccs\+\_\+features\+\_\+space\+\_\+check\+\_\+features\+\_\+values (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_ade427f7fbfb71d0bb03d237785fa574f}{ccs\+\_\+features\+\_\+space\+\_\+t}}}]{features\+\_\+space,  }\item[{size\+\_\+t}]{num\+\_\+values,  }\item[{\mbox{\hyperlink{base_8h_a36bc36b2bb0d0613453dd731cdcd2048}{ccs\+\_\+datum\+\_\+t}} $\ast$}]{values,  }\item[{\mbox{\hyperlink{base_8h_a0e8ba2dfd397017939e6ea2ebc4bb037}{ccs\+\_\+bool\+\_\+t}} $\ast$}]{is\+\_\+valid\+\_\+ret }\end{DoxyParamCaption})}
+
+
+
+Check that a set of values would create a valid features for a features space. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em features\+\_\+space} & \\
+\hline
+\mbox{\texttt{ in}}  & {\em num\+\_\+values} & the number of provided values \\
+\hline
+\mbox{\texttt{ in}}  & {\em values} & an array of {\ttfamily num\+\_\+values} values that would become a features \\
+\hline
+\mbox{\texttt{ out}}  & {\em is\+\_\+valid\+\_\+ret} & a pointer to a variable that will hold the result of the check. Result will be CCS\+\_\+\+TRUE if the features is valid. Result will be CCS\+\_\+\+FALSE if an hyperparameter value is not a valid value for this hyperparameter; \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a092b9c7d2bc9ac00a6f53e251c8619b8}{CCS\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a4707835c3fcb2303089c76bbcbf96df5}{CCS\+\_\+\+INVALID\+\_\+\+OBJECT}} if {\ttfamily features\+\_\+space} is not a valid CCS features space 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0adb4bc5cfc4f985bf59ae223f3e22b9f9}{CCS\+\_\+\+INVALID\+\_\+\+VALUE}} if {\ttfamily values} is NULL and num\+\_\+values is greater than 0 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a611e5a4781ba519cc0223dc079fcd5de}{CCS\+\_\+\+INVALID\+\_\+\+FEATURES}} if {\ttfamily num\+\_\+values} is not equal to the number of hyperparameters in the features space 
+\end{DoxyReturn}
+\mbox{\Hypertarget{features__space_8h_a618cbc3de36017b6330f6e8a851f56c1}\label{features__space_8h_a618cbc3de36017b6330f6e8a851f56c1}} 
+\index{features\_space.h@{features\_space.h}!ccs\_features\_space\_get\_hyperparameter@{ccs\_features\_space\_get\_hyperparameter}}
+\index{ccs\_features\_space\_get\_hyperparameter@{ccs\_features\_space\_get\_hyperparameter}!features\_space.h@{features\_space.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_features\_space\_get\_hyperparameter()}{ccs\_features\_space\_get\_hyperparameter()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} ccs\+\_\+features\+\_\+space\+\_\+get\+\_\+hyperparameter (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_ade427f7fbfb71d0bb03d237785fa574f}{ccs\+\_\+features\+\_\+space\+\_\+t}}}]{features\+\_\+space,  }\item[{size\+\_\+t}]{index,  }\item[{\mbox{\hyperlink{base_8h_a0b796ce449059870d5bbb77f20925b50}{ccs\+\_\+hyperparameter\+\_\+t}} $\ast$}]{hyperparameter\+\_\+ret }\end{DoxyParamCaption})}
+
+
+
+Get an hyperparameter in a features space given its index. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em features\+\_\+space} & \\
+\hline
+\mbox{\texttt{ in}}  & {\em index} & the index of the hyperparameter to retrieve \\
+\hline
+\mbox{\texttt{ out}}  & {\em hyperparameter\+\_\+ret} & a pointer to the variable that will contain the hyperparameter \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a092b9c7d2bc9ac00a6f53e251c8619b8}{CCS\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a4707835c3fcb2303089c76bbcbf96df5}{CCS\+\_\+\+INVALID\+\_\+\+OBJECT}} if {\ttfamily features\+\_\+space} is not a valid CCS features space 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0adb4bc5cfc4f985bf59ae223f3e22b9f9}{CCS\+\_\+\+INVALID\+\_\+\+VALUE}} if {\ttfamily hyperparameter\+\_\+ret} is NULL 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a3f898f2b0f178de079c2cd22a99b1950}{CCS\+\_\+\+OUT\+\_\+\+OF\+\_\+\+BOUNDS}} if {\ttfamily index} is greater than the count of hyperparameters in the features space 
+\end{DoxyReturn}
+\mbox{\Hypertarget{features__space_8h_a2d821837d3c5f4f873653f296b9d31e5}\label{features__space_8h_a2d821837d3c5f4f873653f296b9d31e5}} 
+\index{features\_space.h@{features\_space.h}!ccs\_features\_space\_get\_hyperparameter\_by\_name@{ccs\_features\_space\_get\_hyperparameter\_by\_name}}
+\index{ccs\_features\_space\_get\_hyperparameter\_by\_name@{ccs\_features\_space\_get\_hyperparameter\_by\_name}!features\_space.h@{features\_space.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_features\_space\_get\_hyperparameter\_by\_name()}{ccs\_features\_space\_get\_hyperparameter\_by\_name()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} ccs\+\_\+features\+\_\+space\+\_\+get\+\_\+hyperparameter\+\_\+by\+\_\+name (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_ade427f7fbfb71d0bb03d237785fa574f}{ccs\+\_\+features\+\_\+space\+\_\+t}}}]{features\+\_\+space,  }\item[{const char $\ast$}]{name,  }\item[{\mbox{\hyperlink{base_8h_a0b796ce449059870d5bbb77f20925b50}{ccs\+\_\+hyperparameter\+\_\+t}} $\ast$}]{hyperparameter\+\_\+ret }\end{DoxyParamCaption})}
+
+
+
+Get an hyperparameter in a features space given its name. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em features\+\_\+space} & \\
+\hline
+\mbox{\texttt{ in}}  & {\em name} & the name of the hyperparameter to retrieve \\
+\hline
+\mbox{\texttt{ out}}  & {\em hyperparameter\+\_\+ret} & a pointer to the variable that will contain the hyperparameter \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a092b9c7d2bc9ac00a6f53e251c8619b8}{CCS\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a4707835c3fcb2303089c76bbcbf96df5}{CCS\+\_\+\+INVALID\+\_\+\+OBJECT}} if {\ttfamily features\+\_\+space} is not a valid CCS features space 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0adb4bc5cfc4f985bf59ae223f3e22b9f9}{CCS\+\_\+\+INVALID\+\_\+\+VALUE}} if {\ttfamily name} or {\ttfamily hyperparameter\+\_\+ret} are NULL 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a75f19038a842b629c262db908c37471c}{CCS\+\_\+\+INVALID\+\_\+\+NAME}} if no hyperparameter with such {\ttfamily name} exist in the {\ttfamily features} space 
+\end{DoxyReturn}
+\mbox{\Hypertarget{features__space_8h_a5a23d6b16649daf81bd050a61a57fccc}\label{features__space_8h_a5a23d6b16649daf81bd050a61a57fccc}} 
+\index{features\_space.h@{features\_space.h}!ccs\_features\_space\_get\_hyperparameter\_index@{ccs\_features\_space\_get\_hyperparameter\_index}}
+\index{ccs\_features\_space\_get\_hyperparameter\_index@{ccs\_features\_space\_get\_hyperparameter\_index}!features\_space.h@{features\_space.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_features\_space\_get\_hyperparameter\_index()}{ccs\_features\_space\_get\_hyperparameter\_index()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} ccs\+\_\+features\+\_\+space\+\_\+get\+\_\+hyperparameter\+\_\+index (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_ade427f7fbfb71d0bb03d237785fa574f}{ccs\+\_\+features\+\_\+space\+\_\+t}}}]{features\+\_\+space,  }\item[{\mbox{\hyperlink{base_8h_a0b796ce449059870d5bbb77f20925b50}{ccs\+\_\+hyperparameter\+\_\+t}}}]{hyperparameter,  }\item[{size\+\_\+t $\ast$}]{index\+\_\+ret }\end{DoxyParamCaption})}
+
+
+
+Get the index of an hyperparameter in the features space. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em features\+\_\+space} & \\
+\hline
+\mbox{\texttt{ in}}  & {\em hyperparameter} & \\
+\hline
+\mbox{\texttt{ out}}  & {\em index\+\_\+ret} & a pointer to the variable which will contain the index of the hyperparameter \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a092b9c7d2bc9ac00a6f53e251c8619b8}{CCS\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a4707835c3fcb2303089c76bbcbf96df5}{CCS\+\_\+\+INVALID\+\_\+\+OBJECT}} if {\ttfamily features\+\_\+space} is not a valid CCS features space 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0adb4bc5cfc4f985bf59ae223f3e22b9f9}{CCS\+\_\+\+INVALID\+\_\+\+VALUE}} if {\ttfamily index\+\_\+ret} is NULL 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0afab391c5bc22e7ba89710930ec04028d}{CCS\+\_\+\+INVALID\+\_\+\+HYPERPARAMETER}} if {\ttfamily features\+\_\+space} does not contain {\ttfamily hyperparameter} 
+\end{DoxyReturn}
+\mbox{\Hypertarget{features__space_8h_ae95f12f770d58d7ad3299c9c77529607}\label{features__space_8h_ae95f12f770d58d7ad3299c9c77529607}} 
+\index{features\_space.h@{features\_space.h}!ccs\_features\_space\_get\_hyperparameter\_index\_by\_name@{ccs\_features\_space\_get\_hyperparameter\_index\_by\_name}}
+\index{ccs\_features\_space\_get\_hyperparameter\_index\_by\_name@{ccs\_features\_space\_get\_hyperparameter\_index\_by\_name}!features\_space.h@{features\_space.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_features\_space\_get\_hyperparameter\_index\_by\_name()}{ccs\_features\_space\_get\_hyperparameter\_index\_by\_name()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} ccs\+\_\+features\+\_\+space\+\_\+get\+\_\+hyperparameter\+\_\+index\+\_\+by\+\_\+name (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_ade427f7fbfb71d0bb03d237785fa574f}{ccs\+\_\+features\+\_\+space\+\_\+t}}}]{features\+\_\+space,  }\item[{const char $\ast$}]{name,  }\item[{size\+\_\+t $\ast$}]{index\+\_\+ret }\end{DoxyParamCaption})}
+
+
+
+Get the index of an hyperparameter in the features space given its name. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em features\+\_\+space} & \\
+\hline
+\mbox{\texttt{ in}}  & {\em name} & the name of the hyperparameter to retrieve the index of \\
+\hline
+\mbox{\texttt{ out}}  & {\em index\+\_\+ret} & a pointer to the variable that will contain the index of hyperparameter in the {\ttfamily features\+\_\+space} \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a092b9c7d2bc9ac00a6f53e251c8619b8}{CCS\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a4707835c3fcb2303089c76bbcbf96df5}{CCS\+\_\+\+INVALID\+\_\+\+OBJECT}} if {\ttfamily features\+\_\+space} is not a valid CCS features space 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0adb4bc5cfc4f985bf59ae223f3e22b9f9}{CCS\+\_\+\+INVALID\+\_\+\+VALUE}} if {\ttfamily name} or {\ttfamily index\+\_\+ret} are NULL 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a75f19038a842b629c262db908c37471c}{CCS\+\_\+\+INVALID\+\_\+\+NAME}} if no hyperparameter with such {\ttfamily name} exist in the features space 
+\end{DoxyReturn}
+\mbox{\Hypertarget{features__space_8h_a532fe8c1737e67d3845d95ab5b0ca893}\label{features__space_8h_a532fe8c1737e67d3845d95ab5b0ca893}} 
+\index{features\_space.h@{features\_space.h}!ccs\_features\_space\_get\_hyperparameter\_indexes@{ccs\_features\_space\_get\_hyperparameter\_indexes}}
+\index{ccs\_features\_space\_get\_hyperparameter\_indexes@{ccs\_features\_space\_get\_hyperparameter\_indexes}!features\_space.h@{features\_space.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_features\_space\_get\_hyperparameter\_indexes()}{ccs\_features\_space\_get\_hyperparameter\_indexes()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} ccs\+\_\+features\+\_\+space\+\_\+get\+\_\+hyperparameter\+\_\+indexes (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_ade427f7fbfb71d0bb03d237785fa574f}{ccs\+\_\+features\+\_\+space\+\_\+t}}}]{features\+\_\+space,  }\item[{size\+\_\+t}]{num\+\_\+hyperparameters,  }\item[{\mbox{\hyperlink{base_8h_a0b796ce449059870d5bbb77f20925b50}{ccs\+\_\+hyperparameter\+\_\+t}} $\ast$}]{hyperparameters,  }\item[{size\+\_\+t $\ast$}]{indexes }\end{DoxyParamCaption})}
+
+
+
+Get the indices of a set of hyperparameters in a features space. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em features\+\_\+space} & \\
+\hline
+\mbox{\texttt{ in}}  & {\em num\+\_\+hyperparameters} & the number of hyperparameters to query the index for \\
+\hline
+\mbox{\texttt{ in}}  & {\em hyperparameters} & an array of {\ttfamily num\+\_\+hyperparameters} hyperparameters to query the index for \\
+\hline
+\mbox{\texttt{ out}}  & {\em indexes} & an array of {\ttfamily num\+\_\+hyperparameters} indices that will contain the values of the hyperparamters indices \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a092b9c7d2bc9ac00a6f53e251c8619b8}{CCS\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a4707835c3fcb2303089c76bbcbf96df5}{CCS\+\_\+\+INVALID\+\_\+\+OBJECT}} if {\ttfamily features\+\_\+space} is not a valid CCS features space 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0adb4bc5cfc4f985bf59ae223f3e22b9f9}{CCS\+\_\+\+INVALID\+\_\+\+VALUE}} if {\ttfamily hyperparameters} is NULL and {\ttfamily num\+\_\+hyperparameters} is greater than 0; or if {\ttfamily indexes} is NULL and {\ttfamily num\+\_\+hyperparameters} is greater than 0 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0afab391c5bc22e7ba89710930ec04028d}{CCS\+\_\+\+INVALID\+\_\+\+HYPERPARAMETER}} if at least one of the hyperparameters is not contained in {\ttfamily features\+\_\+space} 
+\end{DoxyReturn}
+\mbox{\Hypertarget{features__space_8h_a350342ad033c55380509b95d85d0a748}\label{features__space_8h_a350342ad033c55380509b95d85d0a748}} 
+\index{features\_space.h@{features\_space.h}!ccs\_features\_space\_get\_hyperparameters@{ccs\_features\_space\_get\_hyperparameters}}
+\index{ccs\_features\_space\_get\_hyperparameters@{ccs\_features\_space\_get\_hyperparameters}!features\_space.h@{features\_space.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_features\_space\_get\_hyperparameters()}{ccs\_features\_space\_get\_hyperparameters()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} ccs\+\_\+features\+\_\+space\+\_\+get\+\_\+hyperparameters (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_ade427f7fbfb71d0bb03d237785fa574f}{ccs\+\_\+features\+\_\+space\+\_\+t}}}]{features\+\_\+space,  }\item[{size\+\_\+t}]{num\+\_\+hyperparameters,  }\item[{\mbox{\hyperlink{base_8h_a0b796ce449059870d5bbb77f20925b50}{ccs\+\_\+hyperparameter\+\_\+t}} $\ast$}]{hyperparameters,  }\item[{size\+\_\+t $\ast$}]{num\+\_\+hyperparameters\+\_\+ret }\end{DoxyParamCaption})}
+
+
+
+Get the hyperparameters in the given features space. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em features\+\_\+space} & \\
+\hline
+\mbox{\texttt{ in}}  & {\em num\+\_\+hyperparameters} & is the number of hyperparameters that can be added to {\ttfamily hyperparameters}. If {\ttfamily hyperparameters} is not NULL {\ttfamily num\+\_\+hyperparameters} must be greater than 0 \\
+\hline
+\mbox{\texttt{ in}}  & {\em hyperparameters} & an array of {\ttfamily num\+\_\+hyperparameters} that will contain the returned hyperparameters or NULL. If the array is too big, extra values are set to NULL \\
+\hline
+\mbox{\texttt{ out}}  & {\em num\+\_\+hyperparameters\+\_\+ret} & a pointer to a variable that will contain the number of hyperparameters that are or would be returned. Can be NULL \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a092b9c7d2bc9ac00a6f53e251c8619b8}{CCS\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a4707835c3fcb2303089c76bbcbf96df5}{CCS\+\_\+\+INVALID\+\_\+\+OBJECT}} if {\ttfamily features\+\_\+space} is not a valid CCS features space 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0adb4bc5cfc4f985bf59ae223f3e22b9f9}{CCS\+\_\+\+INVALID\+\_\+\+VALUE}} if {\ttfamily hyperparameters} is NULL and {\ttfamily num\+\_\+hyperparameters} is greater than 0; or if {\ttfamily hyperparameters} is NULL and num\+\_\+hyperparameters\+\_\+ret is NULL; or if {\ttfamily num\+\_\+hyperparameters} is less than the number of hyperparameters that would be returned 
+\end{DoxyReturn}
+\mbox{\Hypertarget{features__space_8h_ac1a1eee5eaf28417f1e715f8f1debd64}\label{features__space_8h_ac1a1eee5eaf28417f1e715f8f1debd64}} 
+\index{features\_space.h@{features\_space.h}!ccs\_features\_space\_get\_name@{ccs\_features\_space\_get\_name}}
+\index{ccs\_features\_space\_get\_name@{ccs\_features\_space\_get\_name}!features\_space.h@{features\_space.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_features\_space\_get\_name()}{ccs\_features\_space\_get\_name()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} ccs\+\_\+features\+\_\+space\+\_\+get\+\_\+name (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_ade427f7fbfb71d0bb03d237785fa574f}{ccs\+\_\+features\+\_\+space\+\_\+t}}}]{features\+\_\+space,  }\item[{const char $\ast$$\ast$}]{name\+\_\+ret }\end{DoxyParamCaption})}
+
+
+
+Get the name of a features space. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em features\+\_\+space} & \\
+\hline
+\mbox{\texttt{ out}}  & {\em name\+\_\+ret} & a pointer to a {\ttfamily char $\ast$} variable which will contain a pointer to the features space name. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a092b9c7d2bc9ac00a6f53e251c8619b8}{CCS\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a4707835c3fcb2303089c76bbcbf96df5}{CCS\+\_\+\+INVALID\+\_\+\+OBJECT}} if {\ttfamily features} space is not a valid CCS features space 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0adb4bc5cfc4f985bf59ae223f3e22b9f9}{CCS\+\_\+\+INVALID\+\_\+\+VALUE}} if {\ttfamily name\+\_\+ret} is NULL 
+\end{DoxyReturn}
+\mbox{\Hypertarget{features__space_8h_a6a1a4adf2ff12c4d99581f35ba70a74b}\label{features__space_8h_a6a1a4adf2ff12c4d99581f35ba70a74b}} 
+\index{features\_space.h@{features\_space.h}!ccs\_features\_space\_get\_num\_hyperparameters@{ccs\_features\_space\_get\_num\_hyperparameters}}
+\index{ccs\_features\_space\_get\_num\_hyperparameters@{ccs\_features\_space\_get\_num\_hyperparameters}!features\_space.h@{features\_space.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_features\_space\_get\_num\_hyperparameters()}{ccs\_features\_space\_get\_num\_hyperparameters()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} ccs\+\_\+features\+\_\+space\+\_\+get\+\_\+num\+\_\+hyperparameters (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_ade427f7fbfb71d0bb03d237785fa574f}{ccs\+\_\+features\+\_\+space\+\_\+t}}}]{features\+\_\+space,  }\item[{size\+\_\+t $\ast$}]{num\+\_\+hyperparameters\+\_\+ret }\end{DoxyParamCaption})}
+
+
+
+Get the number of hyperparameters in a features space. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em features\+\_\+space} & \\
+\hline
+\mbox{\texttt{ out}}  & {\em num\+\_\+hyperparameters\+\_\+ret} & a pointer to the variable that will contain the number of hyperparameters in the features space \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a092b9c7d2bc9ac00a6f53e251c8619b8}{CCS\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a4707835c3fcb2303089c76bbcbf96df5}{CCS\+\_\+\+INVALID\+\_\+\+OBJECT}} if {\ttfamily features\+\_\+space} is not a valid CCS features space 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0adb4bc5cfc4f985bf59ae223f3e22b9f9}{CCS\+\_\+\+INVALID\+\_\+\+VALUE}} if {\ttfamily num\+\_\+hyperparameters\+\_\+ret} is NULL 
+\end{DoxyReturn}
+\mbox{\Hypertarget{features__space_8h_a749e4b55217b6ba7dad86fa659efdb5f}\label{features__space_8h_a749e4b55217b6ba7dad86fa659efdb5f}} 
+\index{features\_space.h@{features\_space.h}!ccs\_features\_space\_validate\_value@{ccs\_features\_space\_validate\_value}}
+\index{ccs\_features\_space\_validate\_value@{ccs\_features\_space\_validate\_value}!features\_space.h@{features\_space.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_features\_space\_validate\_value()}{ccs\_features\_space\_validate\_value()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} ccs\+\_\+features\+\_\+space\+\_\+validate\+\_\+value (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_ade427f7fbfb71d0bb03d237785fa574f}{ccs\+\_\+features\+\_\+space\+\_\+t}}}]{features\+\_\+space,  }\item[{size\+\_\+t}]{index,  }\item[{\mbox{\hyperlink{base_8h_a36bc36b2bb0d0613453dd731cdcd2048}{ccs\+\_\+datum\+\_\+t}}}]{value,  }\item[{\mbox{\hyperlink{base_8h_a36bc36b2bb0d0613453dd731cdcd2048}{ccs\+\_\+datum\+\_\+t}} $\ast$}]{value\+\_\+ret }\end{DoxyParamCaption})}
+
+
+
+Validate that a given value at the given index is valid in a features space, and return a sanitized value. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em features\+\_\+space} & \\
+\hline
+\mbox{\texttt{ in}}  & {\em index} & the index of the value in the features\+\_\+space \\
+\hline
+\mbox{\texttt{ in}}  & {\em value} & the datum to validate \\
+\hline
+\mbox{\texttt{ out}}  & {\em value\+\_\+ret} & a pointer that will contain the validated value. If {\ttfamily value} is a string {\ttfamily value\+\_\+ret} will contain a non transient string. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a092b9c7d2bc9ac00a6f53e251c8619b8}{CCS\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a4707835c3fcb2303089c76bbcbf96df5}{CCS\+\_\+\+INVALID\+\_\+\+OBJECT}} if {\ttfamily features\+\_\+space} is not a valid CCS features space 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a3f898f2b0f178de079c2cd22a99b1950}{CCS\+\_\+\+OUT\+\_\+\+OF\+\_\+\+BOUNDS}} if index is greater than the number of hyperparameters in {\ttfamily features\+\_\+space} 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a3b3381e910957ad1fbe1d633b12eff79}{CCS\+\_\+\+OUT\+\_\+\+OF\+\_\+\+MEMORY}} if there was a lack of memory while memoizing a string 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0adb4bc5cfc4f985bf59ae223f3e22b9f9}{CCS\+\_\+\+INVALID\+\_\+\+VALUE}} if the value did not validate or if value\+\_\+ret is NULL 
+\end{DoxyReturn}

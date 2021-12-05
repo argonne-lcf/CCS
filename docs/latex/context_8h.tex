@@ -1,0 +1,293 @@
+\hypertarget{context_8h}{}\doxysection{include/cconfigspace/context.h File Reference}
+\label{context_8h}\index{include/cconfigspace/context.h@{include/cconfigspace/context.h}}
+
+
+A Context is a collection of hyperparameters defining a value space.  
+
+
+This graph shows which files directly or indirectly include this file\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=196pt]{context_8h__dep__incl}
+\end{center}
+\end{figure}
+\doxysubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} \mbox{\hyperlink{context_8h_a8bc38e9bbf66332ebad6a3a67922758a}{ccs\+\_\+context\+\_\+get\+\_\+name}} (\mbox{\hyperlink{base_8h_a89a96617bf78b097e103ee8c8e281b7b}{ccs\+\_\+context\+\_\+t}} context, const char $\ast$$\ast$name\+\_\+ret)
+\begin{DoxyCompactList}\small\item\em Get the name of a context. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} \mbox{\hyperlink{context_8h_a855070c6904f713aa42bb23879b8b6a7}{ccs\+\_\+context\+\_\+get\+\_\+hyperparameter\+\_\+index}} (\mbox{\hyperlink{base_8h_a89a96617bf78b097e103ee8c8e281b7b}{ccs\+\_\+context\+\_\+t}} context, \mbox{\hyperlink{base_8h_a0b796ce449059870d5bbb77f20925b50}{ccs\+\_\+hyperparameter\+\_\+t}} hyperparameter, size\+\_\+t $\ast$index\+\_\+ret)
+\begin{DoxyCompactList}\small\item\em Get the index of an hyperparameter in the context. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} \mbox{\hyperlink{context_8h_a663e10463333d07afd695d119ba7e509}{ccs\+\_\+context\+\_\+get\+\_\+num\+\_\+hyperparameters}} (\mbox{\hyperlink{base_8h_a89a96617bf78b097e103ee8c8e281b7b}{ccs\+\_\+context\+\_\+t}} context, size\+\_\+t $\ast$num\+\_\+hyperparameters\+\_\+ret)
+\begin{DoxyCompactList}\small\item\em Get the number of hyperparameters in the given context. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} \mbox{\hyperlink{context_8h_ab122b7cd00cef10bc8fd5047a4949d0b}{ccs\+\_\+context\+\_\+get\+\_\+hyperparameter}} (\mbox{\hyperlink{base_8h_a89a96617bf78b097e103ee8c8e281b7b}{ccs\+\_\+context\+\_\+t}} context, size\+\_\+t index, \mbox{\hyperlink{base_8h_a0b796ce449059870d5bbb77f20925b50}{ccs\+\_\+hyperparameter\+\_\+t}} $\ast$hyperparameter\+\_\+ret)
+\begin{DoxyCompactList}\small\item\em Get an hyperparameter in a context given its index. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} \mbox{\hyperlink{context_8h_a3df458afbe872d7d874f314546f896d6}{ccs\+\_\+context\+\_\+get\+\_\+hyperparameter\+\_\+by\+\_\+name}} (\mbox{\hyperlink{base_8h_a89a96617bf78b097e103ee8c8e281b7b}{ccs\+\_\+context\+\_\+t}} context, const char $\ast$name, \mbox{\hyperlink{base_8h_a0b796ce449059870d5bbb77f20925b50}{ccs\+\_\+hyperparameter\+\_\+t}} $\ast$hyperparameter\+\_\+ret)
+\begin{DoxyCompactList}\small\item\em Get an hyperparameter in a context given its name. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} \mbox{\hyperlink{context_8h_a2fcf47a41d437525d28242eb2f9add72}{ccs\+\_\+context\+\_\+get\+\_\+hyperparameter\+\_\+index\+\_\+by\+\_\+name}} (\mbox{\hyperlink{base_8h_a89a96617bf78b097e103ee8c8e281b7b}{ccs\+\_\+context\+\_\+t}} context, const char $\ast$name, size\+\_\+t $\ast$index\+\_\+ret)
+\begin{DoxyCompactList}\small\item\em Get the index of an hyperparameter in the context given its name. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} \mbox{\hyperlink{context_8h_af076b0e440f3f4fe9bb41dac6fca8a33}{ccs\+\_\+context\+\_\+get\+\_\+hyperparameters}} (\mbox{\hyperlink{base_8h_a89a96617bf78b097e103ee8c8e281b7b}{ccs\+\_\+context\+\_\+t}} context, size\+\_\+t num\+\_\+hyperparameters, \mbox{\hyperlink{base_8h_a0b796ce449059870d5bbb77f20925b50}{ccs\+\_\+hyperparameter\+\_\+t}} $\ast$hyperparameters, size\+\_\+t $\ast$num\+\_\+hyperparameters\+\_\+ret)
+\begin{DoxyCompactList}\small\item\em Get the hyperparameters in the given context. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} \mbox{\hyperlink{context_8h_a97f00c3d315828f04b1caf248053bd67}{ccs\+\_\+context\+\_\+get\+\_\+hyperparameter\+\_\+indexes}} (\mbox{\hyperlink{base_8h_a89a96617bf78b097e103ee8c8e281b7b}{ccs\+\_\+context\+\_\+t}} context, size\+\_\+t num\+\_\+hyperparameters, \mbox{\hyperlink{base_8h_a0b796ce449059870d5bbb77f20925b50}{ccs\+\_\+hyperparameter\+\_\+t}} $\ast$hyperparameters, size\+\_\+t $\ast$indexes)
+\begin{DoxyCompactList}\small\item\em Get the indices of a set of hyperparameters in a context. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} \mbox{\hyperlink{context_8h_aad9a983385bfffec2f015932f17e9ac5}{ccs\+\_\+context\+\_\+validate\+\_\+value}} (\mbox{\hyperlink{base_8h_a89a96617bf78b097e103ee8c8e281b7b}{ccs\+\_\+context\+\_\+t}} context, size\+\_\+t index, \mbox{\hyperlink{base_8h_a36bc36b2bb0d0613453dd731cdcd2048}{ccs\+\_\+datum\+\_\+t}} value, \mbox{\hyperlink{base_8h_a36bc36b2bb0d0613453dd731cdcd2048}{ccs\+\_\+datum\+\_\+t}} $\ast$value\+\_\+ret)
+\begin{DoxyCompactList}\small\item\em Validate that a given value at the given index is valid in the context, and return a sanitized value. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+A Context is a collection of hyperparameters defining a value space. 
+
+Each hyperparameter has a specific index that can be used to reference it. The methods defined in this file can be used on objects who re contexts. In practice those are useful for binding to avoid binding the children methods, whereas a C application would rather use the object class specific versions in order to benefit from the added type safety. 
+
+\doxysubsection{Function Documentation}
+\mbox{\Hypertarget{context_8h_ab122b7cd00cef10bc8fd5047a4949d0b}\label{context_8h_ab122b7cd00cef10bc8fd5047a4949d0b}} 
+\index{context.h@{context.h}!ccs\_context\_get\_hyperparameter@{ccs\_context\_get\_hyperparameter}}
+\index{ccs\_context\_get\_hyperparameter@{ccs\_context\_get\_hyperparameter}!context.h@{context.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_context\_get\_hyperparameter()}{ccs\_context\_get\_hyperparameter()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} ccs\+\_\+context\+\_\+get\+\_\+hyperparameter (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_a89a96617bf78b097e103ee8c8e281b7b}{ccs\+\_\+context\+\_\+t}}}]{context,  }\item[{size\+\_\+t}]{index,  }\item[{\mbox{\hyperlink{base_8h_a0b796ce449059870d5bbb77f20925b50}{ccs\+\_\+hyperparameter\+\_\+t}} $\ast$}]{hyperparameter\+\_\+ret }\end{DoxyParamCaption})}
+
+
+
+Get an hyperparameter in a context given its index. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em context} & \\
+\hline
+\mbox{\texttt{ in}}  & {\em index} & the index of the hyperparameter to retrieve \\
+\hline
+\mbox{\texttt{ out}}  & {\em hyperparameter\+\_\+ret} & a pointer to the variable that will contain the hyperparameter \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a092b9c7d2bc9ac00a6f53e251c8619b8}{CCS\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a4707835c3fcb2303089c76bbcbf96df5}{CCS\+\_\+\+INVALID\+\_\+\+OBJECT}} if {\ttfamily context} is not a valid CCS object 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0adb4bc5cfc4f985bf59ae223f3e22b9f9}{CCS\+\_\+\+INVALID\+\_\+\+VALUE}} if {\ttfamily hyperparameter\+\_\+ret} is NULL 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a3f898f2b0f178de079c2cd22a99b1950}{CCS\+\_\+\+OUT\+\_\+\+OF\+\_\+\+BOUNDS}} if {\ttfamily index} is greater than the count of hyperparameters in the context 
+\end{DoxyReturn}
+\mbox{\Hypertarget{context_8h_a3df458afbe872d7d874f314546f896d6}\label{context_8h_a3df458afbe872d7d874f314546f896d6}} 
+\index{context.h@{context.h}!ccs\_context\_get\_hyperparameter\_by\_name@{ccs\_context\_get\_hyperparameter\_by\_name}}
+\index{ccs\_context\_get\_hyperparameter\_by\_name@{ccs\_context\_get\_hyperparameter\_by\_name}!context.h@{context.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_context\_get\_hyperparameter\_by\_name()}{ccs\_context\_get\_hyperparameter\_by\_name()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} ccs\+\_\+context\+\_\+get\+\_\+hyperparameter\+\_\+by\+\_\+name (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_a89a96617bf78b097e103ee8c8e281b7b}{ccs\+\_\+context\+\_\+t}}}]{context,  }\item[{const char $\ast$}]{name,  }\item[{\mbox{\hyperlink{base_8h_a0b796ce449059870d5bbb77f20925b50}{ccs\+\_\+hyperparameter\+\_\+t}} $\ast$}]{hyperparameter\+\_\+ret }\end{DoxyParamCaption})}
+
+
+
+Get an hyperparameter in a context given its name. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em context} & \\
+\hline
+\mbox{\texttt{ in}}  & {\em name} & the name of the hyperparameter to retrieve \\
+\hline
+\mbox{\texttt{ out}}  & {\em hyperparameter\+\_\+ret} & a pointer to the variable that will contain the hyperparameter \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a092b9c7d2bc9ac00a6f53e251c8619b8}{CCS\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a4707835c3fcb2303089c76bbcbf96df5}{CCS\+\_\+\+INVALID\+\_\+\+OBJECT}} if {\ttfamily context} is not a valid CCS object 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0adb4bc5cfc4f985bf59ae223f3e22b9f9}{CCS\+\_\+\+INVALID\+\_\+\+VALUE}} if {\ttfamily name} or {\ttfamily hyperparameter\+\_\+ret} are NULL 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a75f19038a842b629c262db908c37471c}{CCS\+\_\+\+INVALID\+\_\+\+NAME}} if no hyperparameter with such {\ttfamily name} exist in the {\ttfamily context} 
+\end{DoxyReturn}
+\mbox{\Hypertarget{context_8h_a855070c6904f713aa42bb23879b8b6a7}\label{context_8h_a855070c6904f713aa42bb23879b8b6a7}} 
+\index{context.h@{context.h}!ccs\_context\_get\_hyperparameter\_index@{ccs\_context\_get\_hyperparameter\_index}}
+\index{ccs\_context\_get\_hyperparameter\_index@{ccs\_context\_get\_hyperparameter\_index}!context.h@{context.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_context\_get\_hyperparameter\_index()}{ccs\_context\_get\_hyperparameter\_index()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} ccs\+\_\+context\+\_\+get\+\_\+hyperparameter\+\_\+index (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_a89a96617bf78b097e103ee8c8e281b7b}{ccs\+\_\+context\+\_\+t}}}]{context,  }\item[{\mbox{\hyperlink{base_8h_a0b796ce449059870d5bbb77f20925b50}{ccs\+\_\+hyperparameter\+\_\+t}}}]{hyperparameter,  }\item[{size\+\_\+t $\ast$}]{index\+\_\+ret }\end{DoxyParamCaption})}
+
+
+
+Get the index of an hyperparameter in the context. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em context} & \\
+\hline
+\mbox{\texttt{ in}}  & {\em hyperparameter} & \\
+\hline
+\mbox{\texttt{ out}}  & {\em index\+\_\+ret} & a pointer to the variable which will contain the index of the hyperparameter \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a092b9c7d2bc9ac00a6f53e251c8619b8}{CCS\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a4707835c3fcb2303089c76bbcbf96df5}{CCS\+\_\+\+INVALID\+\_\+\+OBJECT}} if {\ttfamily context} is not a valid CCS object; 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0adb4bc5cfc4f985bf59ae223f3e22b9f9}{CCS\+\_\+\+INVALID\+\_\+\+VALUE}} if {\ttfamily index\+\_\+ret} is NULL 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0afab391c5bc22e7ba89710930ec04028d}{CCS\+\_\+\+INVALID\+\_\+\+HYPERPARAMETER}} if {\ttfamily context} does not contain {\ttfamily hyperparameter} 
+\end{DoxyReturn}
+\mbox{\Hypertarget{context_8h_a2fcf47a41d437525d28242eb2f9add72}\label{context_8h_a2fcf47a41d437525d28242eb2f9add72}} 
+\index{context.h@{context.h}!ccs\_context\_get\_hyperparameter\_index\_by\_name@{ccs\_context\_get\_hyperparameter\_index\_by\_name}}
+\index{ccs\_context\_get\_hyperparameter\_index\_by\_name@{ccs\_context\_get\_hyperparameter\_index\_by\_name}!context.h@{context.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_context\_get\_hyperparameter\_index\_by\_name()}{ccs\_context\_get\_hyperparameter\_index\_by\_name()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} ccs\+\_\+context\+\_\+get\+\_\+hyperparameter\+\_\+index\+\_\+by\+\_\+name (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_a89a96617bf78b097e103ee8c8e281b7b}{ccs\+\_\+context\+\_\+t}}}]{context,  }\item[{const char $\ast$}]{name,  }\item[{size\+\_\+t $\ast$}]{index\+\_\+ret }\end{DoxyParamCaption})}
+
+
+
+Get the index of an hyperparameter in the context given its name. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em context} & \\
+\hline
+\mbox{\texttt{ in}}  & {\em name} & the name of the hyperparameter to retrieve the index of \\
+\hline
+\mbox{\texttt{ out}}  & {\em index\+\_\+ret} & a pointer to the variable that will contain the index of hyperparameter in the {\ttfamily context} \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a092b9c7d2bc9ac00a6f53e251c8619b8}{CCS\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a4707835c3fcb2303089c76bbcbf96df5}{CCS\+\_\+\+INVALID\+\_\+\+OBJECT}} if {\ttfamily context} is not a valid CCS object 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0adb4bc5cfc4f985bf59ae223f3e22b9f9}{CCS\+\_\+\+INVALID\+\_\+\+VALUE}} if {\ttfamily name} or {\ttfamily index\+\_\+ret} are NULL 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a75f19038a842b629c262db908c37471c}{CCS\+\_\+\+INVALID\+\_\+\+NAME}} if no hyperparameter with such {\ttfamily name} exist in the context 
+\end{DoxyReturn}
+\mbox{\Hypertarget{context_8h_a97f00c3d315828f04b1caf248053bd67}\label{context_8h_a97f00c3d315828f04b1caf248053bd67}} 
+\index{context.h@{context.h}!ccs\_context\_get\_hyperparameter\_indexes@{ccs\_context\_get\_hyperparameter\_indexes}}
+\index{ccs\_context\_get\_hyperparameter\_indexes@{ccs\_context\_get\_hyperparameter\_indexes}!context.h@{context.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_context\_get\_hyperparameter\_indexes()}{ccs\_context\_get\_hyperparameter\_indexes()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} ccs\+\_\+context\+\_\+get\+\_\+hyperparameter\+\_\+indexes (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_a89a96617bf78b097e103ee8c8e281b7b}{ccs\+\_\+context\+\_\+t}}}]{context,  }\item[{size\+\_\+t}]{num\+\_\+hyperparameters,  }\item[{\mbox{\hyperlink{base_8h_a0b796ce449059870d5bbb77f20925b50}{ccs\+\_\+hyperparameter\+\_\+t}} $\ast$}]{hyperparameters,  }\item[{size\+\_\+t $\ast$}]{indexes }\end{DoxyParamCaption})}
+
+
+
+Get the indices of a set of hyperparameters in a context. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em context} & \\
+\hline
+\mbox{\texttt{ in}}  & {\em num\+\_\+hyperparameters} & the number of hyperparameters to query the index for \\
+\hline
+\mbox{\texttt{ in}}  & {\em hyperparameters} & an array of {\ttfamily num\+\_\+hyperparameters} hyperparameters to query the index for \\
+\hline
+\mbox{\texttt{ out}}  & {\em indexes} & an array of {\ttfamily num\+\_\+hyperparameters} indices that will contain the values of the hyperparamters indices \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a092b9c7d2bc9ac00a6f53e251c8619b8}{CCS\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a4707835c3fcb2303089c76bbcbf96df5}{CCS\+\_\+\+INVALID\+\_\+\+OBJECT}} if {\ttfamily context} is not a valid CCS object 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0adb4bc5cfc4f985bf59ae223f3e22b9f9}{CCS\+\_\+\+INVALID\+\_\+\+VALUE}} if {\ttfamily hyperparameters} is NULL and {\ttfamily num\+\_\+hyperparameters} is greater than 0; or if {\ttfamily indexes} is NULL and {\ttfamily num\+\_\+hyperparameters} is greater than 0 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0afab391c5bc22e7ba89710930ec04028d}{CCS\+\_\+\+INVALID\+\_\+\+HYPERPARAMETER}} if at least one of the hyperparameters is not contained in {\ttfamily context} 
+\end{DoxyReturn}
+\mbox{\Hypertarget{context_8h_af076b0e440f3f4fe9bb41dac6fca8a33}\label{context_8h_af076b0e440f3f4fe9bb41dac6fca8a33}} 
+\index{context.h@{context.h}!ccs\_context\_get\_hyperparameters@{ccs\_context\_get\_hyperparameters}}
+\index{ccs\_context\_get\_hyperparameters@{ccs\_context\_get\_hyperparameters}!context.h@{context.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_context\_get\_hyperparameters()}{ccs\_context\_get\_hyperparameters()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} ccs\+\_\+context\+\_\+get\+\_\+hyperparameters (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_a89a96617bf78b097e103ee8c8e281b7b}{ccs\+\_\+context\+\_\+t}}}]{context,  }\item[{size\+\_\+t}]{num\+\_\+hyperparameters,  }\item[{\mbox{\hyperlink{base_8h_a0b796ce449059870d5bbb77f20925b50}{ccs\+\_\+hyperparameter\+\_\+t}} $\ast$}]{hyperparameters,  }\item[{size\+\_\+t $\ast$}]{num\+\_\+hyperparameters\+\_\+ret }\end{DoxyParamCaption})}
+
+
+
+Get the hyperparameters in the given context. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em context} & \\
+\hline
+\mbox{\texttt{ in}}  & {\em num\+\_\+hyperparameters} & is the number of hyperparameters that can be added to {\ttfamily hyperparameters}. If {\ttfamily hyperparameters} is not NULL {\ttfamily num\+\_\+hyperparameters} must be greater than 0 \\
+\hline
+\mbox{\texttt{ in}}  & {\em hyperparameters} & an array of {\ttfamily num\+\_\+hyperparameters} that will contain the returned hyperparameters or NULL. If the array is too big, extra values are set to NULL \\
+\hline
+\mbox{\texttt{ out}}  & {\em num\+\_\+hyperparameters\+\_\+ret} & a pointer to a variable that will contain the number of hyperparameters that are or would be returned. Can be NULL \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a092b9c7d2bc9ac00a6f53e251c8619b8}{CCS\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a4707835c3fcb2303089c76bbcbf96df5}{CCS\+\_\+\+INVALID\+\_\+\+OBJECT}} if {\ttfamily context} is not a valid CCS object 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0adb4bc5cfc4f985bf59ae223f3e22b9f9}{CCS\+\_\+\+INVALID\+\_\+\+VALUE}} if {\ttfamily hyperparameters} is NULL and {\ttfamily num\+\_\+hyperparameters} is greater than 0; or if {\ttfamily hyperparameters} is NULL and {\ttfamily num\+\_\+hyperparameters\+\_\+ret} is NULL; or if {\ttfamily num\+\_\+hyperparameters} is less than the number of hyperparameters that would be returned 
+\end{DoxyReturn}
+\mbox{\Hypertarget{context_8h_a8bc38e9bbf66332ebad6a3a67922758a}\label{context_8h_a8bc38e9bbf66332ebad6a3a67922758a}} 
+\index{context.h@{context.h}!ccs\_context\_get\_name@{ccs\_context\_get\_name}}
+\index{ccs\_context\_get\_name@{ccs\_context\_get\_name}!context.h@{context.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_context\_get\_name()}{ccs\_context\_get\_name()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} ccs\+\_\+context\+\_\+get\+\_\+name (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_a89a96617bf78b097e103ee8c8e281b7b}{ccs\+\_\+context\+\_\+t}}}]{context,  }\item[{const char $\ast$$\ast$}]{name\+\_\+ret }\end{DoxyParamCaption})}
+
+
+
+Get the name of a context. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em context} & \\
+\hline
+\mbox{\texttt{ out}}  & {\em name\+\_\+ret} & a pointer to a {\ttfamily char $\ast$} variable which will contain a pointer to the context name. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a092b9c7d2bc9ac00a6f53e251c8619b8}{CCS\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a4707835c3fcb2303089c76bbcbf96df5}{CCS\+\_\+\+INVALID\+\_\+\+OBJECT}} if {\ttfamily context} is not a valid CCS object 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0adb4bc5cfc4f985bf59ae223f3e22b9f9}{CCS\+\_\+\+INVALID\+\_\+\+VALUE}} if {\ttfamily name\+\_\+ret} is NULL 
+\end{DoxyReturn}
+\mbox{\Hypertarget{context_8h_a663e10463333d07afd695d119ba7e509}\label{context_8h_a663e10463333d07afd695d119ba7e509}} 
+\index{context.h@{context.h}!ccs\_context\_get\_num\_hyperparameters@{ccs\_context\_get\_num\_hyperparameters}}
+\index{ccs\_context\_get\_num\_hyperparameters@{ccs\_context\_get\_num\_hyperparameters}!context.h@{context.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_context\_get\_num\_hyperparameters()}{ccs\_context\_get\_num\_hyperparameters()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} ccs\+\_\+context\+\_\+get\+\_\+num\+\_\+hyperparameters (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_a89a96617bf78b097e103ee8c8e281b7b}{ccs\+\_\+context\+\_\+t}}}]{context,  }\item[{size\+\_\+t $\ast$}]{num\+\_\+hyperparameters\+\_\+ret }\end{DoxyParamCaption})}
+
+
+
+Get the number of hyperparameters in the given context. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em context} & \\
+\hline
+\mbox{\texttt{ out}}  & {\em num\+\_\+hyperparameters\+\_\+ret} & a pointer to the variable which will contain the number of hyperparameters in {\ttfamily context} \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a092b9c7d2bc9ac00a6f53e251c8619b8}{CCS\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a4707835c3fcb2303089c76bbcbf96df5}{CCS\+\_\+\+INVALID\+\_\+\+OBJECT}} if {\ttfamily context} is not a valid CCS object 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0adb4bc5cfc4f985bf59ae223f3e22b9f9}{CCS\+\_\+\+INVALID\+\_\+\+VALUE}} if {\ttfamily num\+\_\+hyperparameters\+\_\+ret} is NULL 
+\end{DoxyReturn}
+\mbox{\Hypertarget{context_8h_aad9a983385bfffec2f015932f17e9ac5}\label{context_8h_aad9a983385bfffec2f015932f17e9ac5}} 
+\index{context.h@{context.h}!ccs\_context\_validate\_value@{ccs\_context\_validate\_value}}
+\index{ccs\_context\_validate\_value@{ccs\_context\_validate\_value}!context.h@{context.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_context\_validate\_value()}{ccs\_context\_validate\_value()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} ccs\+\_\+context\+\_\+validate\+\_\+value (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_a89a96617bf78b097e103ee8c8e281b7b}{ccs\+\_\+context\+\_\+t}}}]{context,  }\item[{size\+\_\+t}]{index,  }\item[{\mbox{\hyperlink{base_8h_a36bc36b2bb0d0613453dd731cdcd2048}{ccs\+\_\+datum\+\_\+t}}}]{value,  }\item[{\mbox{\hyperlink{base_8h_a36bc36b2bb0d0613453dd731cdcd2048}{ccs\+\_\+datum\+\_\+t}} $\ast$}]{value\+\_\+ret }\end{DoxyParamCaption})}
+
+
+
+Validate that a given value at the given index is valid in the context, and return a sanitized value. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em context} & \\
+\hline
+\mbox{\texttt{ in}}  & {\em index} & the index of the value in the context \\
+\hline
+\mbox{\texttt{ in}}  & {\em value} & the datum to validate \\
+\hline
+\mbox{\texttt{ out}}  & {\em value\+\_\+ret} & a pointer that will contain the validated value. If {\ttfamily value} is a string {\ttfamily value\+\_\+ret} will contain a non transient string. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a092b9c7d2bc9ac00a6f53e251c8619b8}{CCS\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a4707835c3fcb2303089c76bbcbf96df5}{CCS\+\_\+\+INVALID\+\_\+\+OBJECT}} if {\ttfamily context} is not a valid CCS object 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a3f898f2b0f178de079c2cd22a99b1950}{CCS\+\_\+\+OUT\+\_\+\+OF\+\_\+\+BOUNDS}} if index is greater than the number of hyperparameters in {\ttfamily context} 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a3b3381e910957ad1fbe1d633b12eff79}{CCS\+\_\+\+OUT\+\_\+\+OF\+\_\+\+MEMORY}} if there was a lack of memory while memoizing a string 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0adb4bc5cfc4f985bf59ae223f3e22b9f9}{CCS\+\_\+\+INVALID\+\_\+\+VALUE}} if the value did not validate or if value\+\_\+ret is NULL 
+\end{DoxyReturn}

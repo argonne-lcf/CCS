@@ -1,0 +1,263 @@
+\hypertarget{rng_8h}{}\doxysection{include/cconfigspace/rng.h File Reference}
+\label{rng_8h}\index{include/cconfigspace/rng.h@{include/cconfigspace/rng.h}}
+
+
+CCS rng define random number generators.  
+
+
+{\ttfamily \#include $<$gsl/gsl\+\_\+rng.\+h$>$}\newline
+Include dependency graph for rng.\+h\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=188pt]{rng_8h__incl}
+\end{center}
+\end{figure}
+This graph shows which files directly or indirectly include this file\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=196pt]{rng_8h__dep__incl}
+\end{center}
+\end{figure}
+\doxysubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} \mbox{\hyperlink{rng_8h_a4b354c8b7defdf0039a41c77e1db0c13}{ccs\+\_\+create\+\_\+rng}} (\mbox{\hyperlink{base_8h_ae22dde737fcdf67d5a9fa497bc054027}{ccs\+\_\+rng\+\_\+t}} $\ast$rng\+\_\+ret)
+\begin{DoxyCompactList}\small\item\em Create a new random number generator using the gsl default type (see gsl\+\_\+rng\+\_\+default). \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} \mbox{\hyperlink{rng_8h_ae9c00ebb5ed48bbc5d7589e59926f02d}{ccs\+\_\+create\+\_\+rng\+\_\+with\+\_\+type}} (const gsl\+\_\+rng\+\_\+type $\ast$rng\+\_\+type, \mbox{\hyperlink{base_8h_ae22dde737fcdf67d5a9fa497bc054027}{ccs\+\_\+rng\+\_\+t}} $\ast$rng\+\_\+ret)
+\begin{DoxyCompactList}\small\item\em Create a new random number generator using the provided gsl type (see gsl\+\_\+rng\+\_\+type). \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} \mbox{\hyperlink{rng_8h_a76494a3e2ee8881c25d223021ab83f61}{ccs\+\_\+rng\+\_\+get\+\_\+type}} (\mbox{\hyperlink{base_8h_ae22dde737fcdf67d5a9fa497bc054027}{ccs\+\_\+rng\+\_\+t}} rng, const gsl\+\_\+rng\+\_\+type $\ast$$\ast$rng\+\_\+type\+\_\+ret)
+\begin{DoxyCompactList}\small\item\em Get the gsl type of a random number generator. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} \mbox{\hyperlink{rng_8h_a6f5d8110673c875de501fc215867e0f8}{ccs\+\_\+rng\+\_\+set\+\_\+seed}} (\mbox{\hyperlink{base_8h_ae22dde737fcdf67d5a9fa497bc054027}{ccs\+\_\+rng\+\_\+t}} rng, unsigned long int seed)
+\begin{DoxyCompactList}\small\item\em Set the seed of a random number generator. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} \mbox{\hyperlink{rng_8h_a4b472d07c39705580542adde25de3ebb}{ccs\+\_\+rng\+\_\+get}} (\mbox{\hyperlink{base_8h_ae22dde737fcdf67d5a9fa497bc054027}{ccs\+\_\+rng\+\_\+t}} rng, unsigned long int $\ast$value\+\_\+ret)
+\begin{DoxyCompactList}\small\item\em Get a random integer from a random number generator. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} \mbox{\hyperlink{rng_8h_af288213b3831dffc45cb259b509fb177}{ccs\+\_\+rng\+\_\+uniform}} (\mbox{\hyperlink{base_8h_ae22dde737fcdf67d5a9fa497bc054027}{ccs\+\_\+rng\+\_\+t}} rng, \mbox{\hyperlink{base_8h_a8a8cddcd4f5ce78a2fbb0a44743e88c5}{ccs\+\_\+float\+\_\+t}} $\ast$value\+\_\+ret)
+\begin{DoxyCompactList}\small\item\em Get a random floating point value uniformly sampled in the interval \mbox{[}0.\+0, 1.\+0). \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} \mbox{\hyperlink{rng_8h_aa0ec397651fa11ad5c4d7bee103efeb9}{ccs\+\_\+rng\+\_\+get\+\_\+gsl\+\_\+rng}} (\mbox{\hyperlink{base_8h_ae22dde737fcdf67d5a9fa497bc054027}{ccs\+\_\+rng\+\_\+t}} rng, gsl\+\_\+rng $\ast$$\ast$gsl\+\_\+rng\+\_\+ret)
+\begin{DoxyCompactList}\small\item\em Get the underlying gsl random number generator. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} \mbox{\hyperlink{rng_8h_a0972aaa44a62d05543c55a4ce1a1a128}{ccs\+\_\+rng\+\_\+min}} (\mbox{\hyperlink{base_8h_ae22dde737fcdf67d5a9fa497bc054027}{ccs\+\_\+rng\+\_\+t}} rng, unsigned long int $\ast$value\+\_\+ret)
+\begin{DoxyCompactList}\small\item\em Get the minimum value that can be returned by \mbox{\hyperlink{rng_8h_a4b472d07c39705580542adde25de3ebb}{ccs\+\_\+rng\+\_\+get}}. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} \mbox{\hyperlink{rng_8h_ac776e4eaad0927082fc67927ef0b7efe}{ccs\+\_\+rng\+\_\+max}} (\mbox{\hyperlink{base_8h_ae22dde737fcdf67d5a9fa497bc054027}{ccs\+\_\+rng\+\_\+t}} rng, unsigned long int $\ast$value\+\_\+ret)
+\begin{DoxyCompactList}\small\item\em Get the maximum value that can be returned by \mbox{\hyperlink{rng_8h_a4b472d07c39705580542adde25de3ebb}{ccs\+\_\+rng\+\_\+get}}. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+CCS rng define random number generators. 
+
+For now they are wrappers over gsl random number generators. 
+
+\doxysubsection{Function Documentation}
+\mbox{\Hypertarget{rng_8h_a4b354c8b7defdf0039a41c77e1db0c13}\label{rng_8h_a4b354c8b7defdf0039a41c77e1db0c13}} 
+\index{rng.h@{rng.h}!ccs\_create\_rng@{ccs\_create\_rng}}
+\index{ccs\_create\_rng@{ccs\_create\_rng}!rng.h@{rng.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_create\_rng()}{ccs\_create\_rng()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} ccs\+\_\+create\+\_\+rng (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_ae22dde737fcdf67d5a9fa497bc054027}{ccs\+\_\+rng\+\_\+t}} $\ast$}]{rng\+\_\+ret }\end{DoxyParamCaption})}
+
+
+
+Create a new random number generator using the gsl default type (see gsl\+\_\+rng\+\_\+default). 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ out}}  & {\em rng\+\_\+ret} & a pointer to the variable that will contain the returned random number generator \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a092b9c7d2bc9ac00a6f53e251c8619b8}{CCS\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0adb4bc5cfc4f985bf59ae223f3e22b9f9}{CCS\+\_\+\+INVALID\+\_\+\+VALUE}} if {\ttfamily rng\+\_\+ret} is NULL 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a3b3381e910957ad1fbe1d633b12eff79}{CCS\+\_\+\+OUT\+\_\+\+OF\+\_\+\+MEMORY}} if there was not enough memory to allocate the new random number generator 
+\end{DoxyReturn}
+\mbox{\Hypertarget{rng_8h_ae9c00ebb5ed48bbc5d7589e59926f02d}\label{rng_8h_ae9c00ebb5ed48bbc5d7589e59926f02d}} 
+\index{rng.h@{rng.h}!ccs\_create\_rng\_with\_type@{ccs\_create\_rng\_with\_type}}
+\index{ccs\_create\_rng\_with\_type@{ccs\_create\_rng\_with\_type}!rng.h@{rng.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_create\_rng\_with\_type()}{ccs\_create\_rng\_with\_type()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} ccs\+\_\+create\+\_\+rng\+\_\+with\+\_\+type (\begin{DoxyParamCaption}\item[{const gsl\+\_\+rng\+\_\+type $\ast$}]{rng\+\_\+type,  }\item[{\mbox{\hyperlink{base_8h_ae22dde737fcdf67d5a9fa497bc054027}{ccs\+\_\+rng\+\_\+t}} $\ast$}]{rng\+\_\+ret }\end{DoxyParamCaption})}
+
+
+
+Create a new random number generator using the provided gsl type (see gsl\+\_\+rng\+\_\+type). 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em rng\+\_\+type} & a pointer to the type of gsl random number generator to use. \\
+\hline
+\mbox{\texttt{ out}}  & {\em rng\+\_\+ret} & a pointer to the variable that will contain the returned random number generator \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a092b9c7d2bc9ac00a6f53e251c8619b8}{CCS\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0adb4bc5cfc4f985bf59ae223f3e22b9f9}{CCS\+\_\+\+INVALID\+\_\+\+VALUE}} if {\ttfamily rng\+\_\+ret} or {\ttfamily rng\+\_\+type} are NULL 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a3b3381e910957ad1fbe1d633b12eff79}{CCS\+\_\+\+OUT\+\_\+\+OF\+\_\+\+MEMORY}} if there was not enough memory to allocate the new random number generator 
+\end{DoxyReturn}
+\mbox{\Hypertarget{rng_8h_a4b472d07c39705580542adde25de3ebb}\label{rng_8h_a4b472d07c39705580542adde25de3ebb}} 
+\index{rng.h@{rng.h}!ccs\_rng\_get@{ccs\_rng\_get}}
+\index{ccs\_rng\_get@{ccs\_rng\_get}!rng.h@{rng.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_rng\_get()}{ccs\_rng\_get()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} ccs\+\_\+rng\+\_\+get (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_ae22dde737fcdf67d5a9fa497bc054027}{ccs\+\_\+rng\+\_\+t}}}]{rng,  }\item[{unsigned long int $\ast$}]{value\+\_\+ret }\end{DoxyParamCaption})}
+
+
+
+Get a random integer from a random number generator. 
+
+Integer is contained between the value returned by \mbox{\hyperlink{rng_8h_a0972aaa44a62d05543c55a4ce1a1a128}{ccs\+\_\+rng\+\_\+min}} and \mbox{\hyperlink{rng_8h_ac776e4eaad0927082fc67927ef0b7efe}{ccs\+\_\+rng\+\_\+max}}, both included. 
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em rng} & \\
+\hline
+\mbox{\texttt{ out}}  & {\em value\+\_\+ret} & a pointer to the variable that will contain the returned value \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a092b9c7d2bc9ac00a6f53e251c8619b8}{CCS\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a4707835c3fcb2303089c76bbcbf96df5}{CCS\+\_\+\+INVALID\+\_\+\+OBJECT}} if {\ttfamily rng} is not a valid CCS random number generator 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0adb4bc5cfc4f985bf59ae223f3e22b9f9}{CCS\+\_\+\+INVALID\+\_\+\+VALUE}} if {\ttfamily value\+\_\+ret} is NULL 
+\end{DoxyReturn}
+\mbox{\Hypertarget{rng_8h_aa0ec397651fa11ad5c4d7bee103efeb9}\label{rng_8h_aa0ec397651fa11ad5c4d7bee103efeb9}} 
+\index{rng.h@{rng.h}!ccs\_rng\_get\_gsl\_rng@{ccs\_rng\_get\_gsl\_rng}}
+\index{ccs\_rng\_get\_gsl\_rng@{ccs\_rng\_get\_gsl\_rng}!rng.h@{rng.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_rng\_get\_gsl\_rng()}{ccs\_rng\_get\_gsl\_rng()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} ccs\+\_\+rng\+\_\+get\+\_\+gsl\+\_\+rng (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_ae22dde737fcdf67d5a9fa497bc054027}{ccs\+\_\+rng\+\_\+t}}}]{rng,  }\item[{gsl\+\_\+rng $\ast$$\ast$}]{gsl\+\_\+rng\+\_\+ret }\end{DoxyParamCaption})}
+
+
+
+Get the underlying gsl random number generator. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em rng} & \\
+\hline
+\mbox{\texttt{ out}}  & {\em gsl\+\_\+rng\+\_\+ret} & a pointer to the variable that will contain a pointer to the underlying random number generator \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a092b9c7d2bc9ac00a6f53e251c8619b8}{CCS\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a4707835c3fcb2303089c76bbcbf96df5}{CCS\+\_\+\+INVALID\+\_\+\+OBJECT}} if {\ttfamily rng} is not a valid CCS random number generator 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0adb4bc5cfc4f985bf59ae223f3e22b9f9}{CCS\+\_\+\+INVALID\+\_\+\+VALUE}} if {\ttfamily gsl\+\_\+rng\+\_\+ret} is NULL 
+\end{DoxyReturn}
+\mbox{\Hypertarget{rng_8h_a76494a3e2ee8881c25d223021ab83f61}\label{rng_8h_a76494a3e2ee8881c25d223021ab83f61}} 
+\index{rng.h@{rng.h}!ccs\_rng\_get\_type@{ccs\_rng\_get\_type}}
+\index{ccs\_rng\_get\_type@{ccs\_rng\_get\_type}!rng.h@{rng.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_rng\_get\_type()}{ccs\_rng\_get\_type()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} ccs\+\_\+rng\+\_\+get\+\_\+type (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_ae22dde737fcdf67d5a9fa497bc054027}{ccs\+\_\+rng\+\_\+t}}}]{rng,  }\item[{const gsl\+\_\+rng\+\_\+type $\ast$$\ast$}]{rng\+\_\+type\+\_\+ret }\end{DoxyParamCaption})}
+
+
+
+Get the gsl type of a random number generator. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em rng} & \\
+\hline
+\mbox{\texttt{ out}}  & {\em rng\+\_\+type\+\_\+ret} & a pointer that will contained a pointer to the returned gsl random number generator type. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a092b9c7d2bc9ac00a6f53e251c8619b8}{CCS\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a4707835c3fcb2303089c76bbcbf96df5}{CCS\+\_\+\+INVALID\+\_\+\+OBJECT}} if {\ttfamily rng} is not a valid CCS random number generator 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0adb4bc5cfc4f985bf59ae223f3e22b9f9}{CCS\+\_\+\+INVALID\+\_\+\+VALUE}} if {\ttfamily rng\+\_\+type\+\_\+ret} is NULL 
+\end{DoxyReturn}
+\mbox{\Hypertarget{rng_8h_ac776e4eaad0927082fc67927ef0b7efe}\label{rng_8h_ac776e4eaad0927082fc67927ef0b7efe}} 
+\index{rng.h@{rng.h}!ccs\_rng\_max@{ccs\_rng\_max}}
+\index{ccs\_rng\_max@{ccs\_rng\_max}!rng.h@{rng.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_rng\_max()}{ccs\_rng\_max()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} ccs\+\_\+rng\+\_\+max (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_ae22dde737fcdf67d5a9fa497bc054027}{ccs\+\_\+rng\+\_\+t}}}]{rng,  }\item[{unsigned long int $\ast$}]{value\+\_\+ret }\end{DoxyParamCaption})}
+
+
+
+Get the maximum value that can be returned by \mbox{\hyperlink{rng_8h_a4b472d07c39705580542adde25de3ebb}{ccs\+\_\+rng\+\_\+get}}. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em rng} & \\
+\hline
+\mbox{\texttt{ out}}  & {\em value\+\_\+ret} & a pointer to the variable that will contain the returned value \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a092b9c7d2bc9ac00a6f53e251c8619b8}{CCS\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a4707835c3fcb2303089c76bbcbf96df5}{CCS\+\_\+\+INVALID\+\_\+\+OBJECT}} if {\ttfamily rng} is not a valid CCS random number generator 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0adb4bc5cfc4f985bf59ae223f3e22b9f9}{CCS\+\_\+\+INVALID\+\_\+\+VALUE}} if {\ttfamily value\+\_\+ret} is NULL 
+\end{DoxyReturn}
+\mbox{\Hypertarget{rng_8h_a0972aaa44a62d05543c55a4ce1a1a128}\label{rng_8h_a0972aaa44a62d05543c55a4ce1a1a128}} 
+\index{rng.h@{rng.h}!ccs\_rng\_min@{ccs\_rng\_min}}
+\index{ccs\_rng\_min@{ccs\_rng\_min}!rng.h@{rng.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_rng\_min()}{ccs\_rng\_min()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} ccs\+\_\+rng\+\_\+min (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_ae22dde737fcdf67d5a9fa497bc054027}{ccs\+\_\+rng\+\_\+t}}}]{rng,  }\item[{unsigned long int $\ast$}]{value\+\_\+ret }\end{DoxyParamCaption})}
+
+
+
+Get the minimum value that can be returned by \mbox{\hyperlink{rng_8h_a4b472d07c39705580542adde25de3ebb}{ccs\+\_\+rng\+\_\+get}}. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em rng} & \\
+\hline
+\mbox{\texttt{ out}}  & {\em value\+\_\+ret} & a pointer to the variable that will contain the returned value \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a092b9c7d2bc9ac00a6f53e251c8619b8}{CCS\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a4707835c3fcb2303089c76bbcbf96df5}{CCS\+\_\+\+INVALID\+\_\+\+OBJECT}} if {\ttfamily rng} is not a valid CCS random number generator 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0adb4bc5cfc4f985bf59ae223f3e22b9f9}{CCS\+\_\+\+INVALID\+\_\+\+VALUE}} if {\ttfamily value\+\_\+ret} is NULL 
+\end{DoxyReturn}
+\mbox{\Hypertarget{rng_8h_a6f5d8110673c875de501fc215867e0f8}\label{rng_8h_a6f5d8110673c875de501fc215867e0f8}} 
+\index{rng.h@{rng.h}!ccs\_rng\_set\_seed@{ccs\_rng\_set\_seed}}
+\index{ccs\_rng\_set\_seed@{ccs\_rng\_set\_seed}!rng.h@{rng.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_rng\_set\_seed()}{ccs\_rng\_set\_seed()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} ccs\+\_\+rng\+\_\+set\+\_\+seed (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_ae22dde737fcdf67d5a9fa497bc054027}{ccs\+\_\+rng\+\_\+t}}}]{rng,  }\item[{unsigned long int}]{seed }\end{DoxyParamCaption})}
+
+
+
+Set the seed of a random number generator. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em rng} & \\
+\hline
+\mbox{\texttt{ in}}  & {\em seed} & the seed to use with the random number generator \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a092b9c7d2bc9ac00a6f53e251c8619b8}{CCS\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a4707835c3fcb2303089c76bbcbf96df5}{CCS\+\_\+\+INVALID\+\_\+\+OBJECT}} if {\ttfamily rng} is not a valid CCS random number generator 
+\end{DoxyReturn}
+\mbox{\Hypertarget{rng_8h_af288213b3831dffc45cb259b509fb177}\label{rng_8h_af288213b3831dffc45cb259b509fb177}} 
+\index{rng.h@{rng.h}!ccs\_rng\_uniform@{ccs\_rng\_uniform}}
+\index{ccs\_rng\_uniform@{ccs\_rng\_uniform}!rng.h@{rng.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_rng\_uniform()}{ccs\_rng\_uniform()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ae9196f976941f7eb184ae0e23f24968c}{ccs\+\_\+error\+\_\+t}} ccs\+\_\+rng\+\_\+uniform (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_ae22dde737fcdf67d5a9fa497bc054027}{ccs\+\_\+rng\+\_\+t}}}]{rng,  }\item[{\mbox{\hyperlink{base_8h_a8a8cddcd4f5ce78a2fbb0a44743e88c5}{ccs\+\_\+float\+\_\+t}} $\ast$}]{value\+\_\+ret }\end{DoxyParamCaption})}
+
+
+
+Get a random floating point value uniformly sampled in the interval \mbox{[}0.\+0, 1.\+0). 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em rng} & \\
+\hline
+\mbox{\texttt{ out}}  & {\em value\+\_\+ret} & a pointer to the variable that will contain the returned value \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a092b9c7d2bc9ac00a6f53e251c8619b8}{CCS\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0a4707835c3fcb2303089c76bbcbf96df5}{CCS\+\_\+\+INVALID\+\_\+\+OBJECT}} if {\ttfamily rng} is not a valid CCS random number generator 
+
+\mbox{\hyperlink{base_8h_ab6b30ac20e0d2ed57f641e0426b96de0adb4bc5cfc4f985bf59ae223f3e22b9f9}{CCS\+\_\+\+INVALID\+\_\+\+VALUE}} if {\ttfamily value\+\_\+ret} is NULL 
+\end{DoxyReturn}
