@@ -112,9 +112,9 @@ ccs_configuration_set_value(ccs_configuration_t configuration,
  * Get all the values in the configuration.
  * @param[in] configuration
  * @param[in] num_values the size of the \p values array
- * @param[out] values an array of size \p num_values to hold the returned values
- *                    or NULL. If the array is too big, extra values are set to
- *                    #CCS_NONE 
+ * @param[out] values an array of size \p num_values to hold the returned
+ *                    values, or NULL. If the array is too big, extra values
+ *                    are set to #CCS_NONE
  * @param[out] num_values_ret a pointer to a variable that will contain the
  *                            number of values that are or would be returned.
  *                            Can be NULL
@@ -123,8 +123,9 @@ ccs_configuration_set_value(ccs_configuration_t configuration,
  *                              configuration
  * @return -#CCS_INVALID_VALUE if \p values is NULL and \p num_values is greater
  *                             than 0; or if \p values is NULL and
- *                             num_values_ret is NULL; or if num_values is less
- *                             than the number of values that would be returned
+ *                             num_values_ret is NULL; or if \p num_values is
+ *                             less than the number of values that would be
+ *                             returned
  */
 extern ccs_result_t
 ccs_configuration_get_values(ccs_configuration_t  configuration,
@@ -168,7 +169,7 @@ ccs_configuration_check(ccs_configuration_t configuration);
  * themselves.
  * @param[in] configuration
  * @param[out] hash_ret the address of the variable that will contain the hash
- *                      value.
+ *                      value
  * @return #CCS_SUCCESS on success
  * @return -#CCS_INVALID_OBJECT if \p configuration is not a valid CCS
  *                              configuration
@@ -189,8 +190,8 @@ ccs_configuration_hash(ccs_configuration_t  configuration,
  *                     lesser than, equal, or greater then the second
  *                     configuration
  * @return #CCS_SUCCESS on success
- * @return -#CCS_INVALID_OBJECT if \p configuration or other_configuration are
- *                              not a valid CCS object
+ * @return -#CCS_INVALID_OBJECT if \p configuration or \p other_configuration
+ *                              are not a valid CCS object
  */
 extern ccs_result_t
 ccs_configuration_cmp(ccs_configuration_t  configuration,

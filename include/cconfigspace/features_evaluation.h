@@ -284,8 +284,8 @@ ccs_features_evaluation_get_objective_values(
  * @return -#CCS_INVALID_VALUE if \p hash_ret is NULL
  */
 extern ccs_result_t
-ccs_features_evaluation_hash(ccs_features_evaluation_t  evaluation,
-                             ccs_hash_t          *hash_ret);
+ccs_features_evaluation_hash(ccs_features_evaluation_t  features_evaluation,
+                             ccs_hash_t                *hash_ret);
 
 /**
  * Define a strict ordering of features evaluation instances. Objective space,
@@ -349,7 +349,7 @@ ccs_features_evaluation_compare(
  *                                  space
  */
 extern ccs_result_t
-ccs_features_evaluation_check(ccs_features_evaluation_t  evaluation);
+ccs_features_evaluation_check(ccs_features_evaluation_t features_evaluation);
 
 #ifdef __cplusplus
 }

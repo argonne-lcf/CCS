@@ -138,12 +138,15 @@ ccs_configuration_space_add_hyperparameter(
  * @return -#CCS_INVALID_VALUE if \p hyperparameters is NULL and \p
  *                             num_hyperparameters is greater than 0
  * @return -#CCS_INVALID_HYPERPARAMETER if a hyperparameter's type is
- *                                      CCS_HYPERPARAMETER_TYPE_STRING; or if \p
+ *                                      CCS_HYPERPARAMETER_TYPE_STRING; or if
  *                                      a hyperparameter is already in the
- *                                      configuration space
+ *                                      configuration space; or if a
+ *                                      hyperparameter with the same name
+ *                                      already exists in the configuration
+ *                                      space
  * @return -#CCS_INVALID_DISTRIBUTION if a distribution has more than one
  *                                    dimension
- * @return -#CCS_OUT_OF_MEMORY if a memory could not be allocated to store
+ * @return -#CCS_OUT_OF_MEMORY if memory could not be allocated to store
  *                             additional hyperparameters and associated data
  *                             structures
  */
@@ -585,7 +588,7 @@ ccs_configuration_space_check_configuration(
  * configuration space.
  * @param[in] configuration_space
  * @param[in] num_values the number of provided values
- * @param[in] values an array of \p num_values values taht would become a
+ * @param[in] values an array of \p num_values values that would become a
  *                   configuration
  * @return #CCS_SUCCESS on success
  * @return -#CCS_INVALID_OBJECT if \p configuration_space is not a valid CCS
