@@ -1286,7 +1286,6 @@ ccs_result_t
 ccs_expression_check_context(ccs_expression_t expression,
                              ccs_context_t    context) {
 	CCS_CHECK_OBJ(expression, CCS_EXPRESSION);
-	CCS_CHECK_PTR(context);
 	ccs_result_t err;
 	UT_array *array;
 	utarray_new(array, &_hyperparameter_icd);
