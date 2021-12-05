@@ -1,6 +1,12 @@
 #ifndef _DISTRIBUTION_INTERNAL_H
 #define _DISTRIBUTION_INTERNAL_H
 
+#define CCS_CHECK_DISTRIBUTION(o, t) do { \
+	CCS_CHECK_OBJ(o, CCS_DISTRIBUTION); \
+	if (CCS_UNLIKELY(((_ccs_distribution_common_data_t*)distribution->data)->type != (t))) \
+		return -CCS_INVALID_DISTRIBUTION; \
+} while (0)
+
 struct _ccs_distribution_data_s;
 typedef struct _ccs_distribution_data_s _ccs_distribution_data_t;
 

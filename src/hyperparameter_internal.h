@@ -1,6 +1,12 @@
 #ifndef _HYPERPARAMETER_INTERNAL_H
 #define _HYPERPARAMETER_INTERNAL_H
 
+#define CCS_CHECK_HYPERPARAMETER(o, t) do { \
+	CCS_CHECK_OBJ(o, CCS_HYPERPARAMETER); \
+	if (CCS_UNLIKELY(((_ccs_hyperparameter_common_data_t*)(hyperparameter->data))->type != (t))) \
+		return -CCS_INVALID_HYPERPARAMETER; \
+} while (0)
+
 struct _ccs_hyperparameter_data_s;
 typedef struct _ccs_hyperparameter_data_s _ccs_hyperparameter_data_t;
 

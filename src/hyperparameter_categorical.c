@@ -248,7 +248,6 @@ _ccs_categorical_hyperparameter_get_values(ccs_hyperparameter_t  hyperparameter,
                                            size_t                num_possible_values,
                                            ccs_datum_t          *possible_values,
                                            size_t               *num_possible_values_ret) {
-	CCS_CHECK_OBJ(hyperparameter, CCS_HYPERPARAMETER);
 	CCS_CHECK_ARY(num_possible_values, possible_values);
 	if (!possible_values && !num_possible_values_ret)
 		return -CCS_INVALID_VALUE;
@@ -288,6 +287,7 @@ ccs_categorical_hyperparameter_get_values(ccs_hyperparameter_t  hyperparameter,
                                           size_t                num_possible_values,
                                           ccs_datum_t          *possible_values,
                                           size_t               *num_possible_values_ret) {
+	CCS_CHECK_HYPERPARAMETER(hyperparameter, CCS_HYPERPARAMETER_TYPE_CATEGORICAL);
 	return _ccs_categorical_hyperparameter_get_values(hyperparameter,
 	                                                  num_possible_values,
 	                                                  possible_values,
@@ -299,7 +299,7 @@ ccs_ordinal_hyperparameter_compare_values(ccs_hyperparameter_t  hyperparameter,
                                           ccs_datum_t           value1,
                                           ccs_datum_t           value2,
                                           ccs_int_t            *comp_ret) {
-	CCS_CHECK_OBJ(hyperparameter, CCS_HYPERPARAMETER);
+	CCS_CHECK_HYPERPARAMETER(hyperparameter, CCS_HYPERPARAMETER_TYPE_ORDINAL);
 	CCS_CHECK_PTR(comp_ret);
 	_ccs_hyperparameter_categorical_data_t *d = ((_ccs_hyperparameter_categorical_data_t *)(hyperparameter->data));
 	_ccs_hash_datum_t *p1, *p2;
@@ -339,6 +339,7 @@ ccs_ordinal_hyperparameter_get_values(ccs_hyperparameter_t  hyperparameter,
                                       size_t                num_possible_values,
                                       ccs_datum_t          *possible_values,
                                       size_t               *num_possible_values_ret) {
+	CCS_CHECK_HYPERPARAMETER(hyperparameter, CCS_HYPERPARAMETER_TYPE_ORDINAL);
 	return _ccs_categorical_hyperparameter_get_values(hyperparameter,
 	                                                  num_possible_values,
 	                                                  possible_values,
@@ -366,6 +367,7 @@ ccs_discrete_hyperparameter_get_values(ccs_hyperparameter_t  hyperparameter,
                                        size_t                num_possible_values,
                                        ccs_datum_t          *possible_values,
                                        size_t               *num_possible_values_ret) {
+	CCS_CHECK_HYPERPARAMETER(hyperparameter, CCS_HYPERPARAMETER_TYPE_DISCRETE);
 	return _ccs_categorical_hyperparameter_get_values(hyperparameter,
 	                                                  num_possible_values,
 	                                                  possible_values,

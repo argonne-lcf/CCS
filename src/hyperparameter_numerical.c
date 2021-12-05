@@ -252,7 +252,7 @@ ccs_numerical_hyperparameter_get_parameters(ccs_hyperparameter_t  hyperparameter
                                             ccs_numeric_t        *lower_ret,
                                             ccs_numeric_t        *upper_ret,
                                             ccs_numeric_t        *quantization_ret) {
-	CCS_CHECK_OBJ(hyperparameter, CCS_HYPERPARAMETER);
+	CCS_CHECK_HYPERPARAMETER(hyperparameter, CCS_HYPERPARAMETER_TYPE_NUMERICAL);
 	if (!data_type_ret && !lower_ret && !upper_ret && !quantization_ret)
 		return -CCS_INVALID_VALUE;
 	_ccs_hyperparameter_numerical_data_t *d =

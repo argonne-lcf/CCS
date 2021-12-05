@@ -277,9 +277,7 @@ ccs_uniform_distribution_get_parameters(ccs_distribution_t  distribution,
                                         ccs_numeric_t      *upper_ret,
                                         ccs_scale_type_t   *scale_type_ret,
                                         ccs_numeric_t      *quantization_ret) {
-	CCS_CHECK_OBJ(distribution, CCS_DISTRIBUTION);
-	if (((_ccs_distribution_common_data_t*)distribution->data)->type != CCS_UNIFORM)
-		return -CCS_INVALID_DISTRIBUTION;
+	CCS_CHECK_DISTRIBUTION(distribution, CCS_UNIFORM);
 	if (!lower_ret && !upper_ret && !scale_type_ret && !quantization_ret)
 		return -CCS_INVALID_VALUE;
 	_ccs_distribution_uniform_data_t * data = (_ccs_distribution_uniform_data_t *)distribution->data;

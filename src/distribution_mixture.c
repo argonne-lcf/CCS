@@ -278,10 +278,8 @@ _ccs_distribution_mixture_soa_samples(_ccs_distribution_data_t  *data,
 ccs_result_t
 ccs_mixture_distribution_get_num_distributions(ccs_distribution_t  distribution,
                                                size_t             *num_distributions_ret) {
-	CCS_CHECK_OBJ(distribution, CCS_DISTRIBUTION);
+	CCS_CHECK_DISTRIBUTION(distribution, CCS_MIXTURE);
 	CCS_CHECK_PTR(num_distributions_ret);
-	if (((_ccs_distribution_common_data_t*)distribution->data)->type != CCS_MIXTURE)
-		return -CCS_INVALID_DISTRIBUTION;
 	_ccs_distribution_mixture_data_t * data = (_ccs_distribution_mixture_data_t *)distribution->data;
 	*num_distributions_ret = data->num_distributions;
 	return CCS_SUCCESS;
@@ -292,10 +290,8 @@ ccs_mixture_distribution_get_distributions(ccs_distribution_t  distribution,
                                            size_t              num_distributions,
                                            ccs_distribution_t *distributions,
                                            size_t             *num_distributions_ret) {
-	CCS_CHECK_OBJ(distribution, CCS_DISTRIBUTION);
+	CCS_CHECK_DISTRIBUTION(distribution, CCS_MIXTURE);
 	CCS_CHECK_ARY(num_distributions, distributions);
-	if (((_ccs_distribution_common_data_t*)distribution->data)->type != CCS_MIXTURE)
-		return -CCS_INVALID_DISTRIBUTION;
 	if (!distributions && !num_distributions_ret)
 		return -CCS_INVALID_VALUE;
 	_ccs_distribution_mixture_data_t * data = (_ccs_distribution_mixture_data_t *)distribution->data;
@@ -317,10 +313,8 @@ ccs_mixture_distribution_get_weights(ccs_distribution_t  distribution,
                                      size_t              num_weights,
                                      ccs_float_t        *weights,
                                      size_t             *num_weights_ret) {
-	CCS_CHECK_OBJ(distribution, CCS_DISTRIBUTION);
+	CCS_CHECK_DISTRIBUTION(distribution, CCS_MIXTURE);
 	CCS_CHECK_ARY(num_weights, weights);
-	if (((_ccs_distribution_common_data_t*)distribution->data)->type != CCS_MIXTURE)
-		return -CCS_INVALID_DISTRIBUTION;
 	if (!weights && !num_weights_ret)
 		return -CCS_INVALID_VALUE;
 	_ccs_distribution_mixture_data_t * data = (_ccs_distribution_mixture_data_t *)distribution->data;
