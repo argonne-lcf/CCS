@@ -108,6 +108,7 @@ ccs_hyperparameter_sample(ccs_hyperparameter_t  hyperparameter,
                           ccs_datum_t          *value_ret) {
 	CCS_CHECK_OBJ(hyperparameter, CCS_HYPERPARAMETER);
 	CCS_CHECK_OBJ(distribution, CCS_DISTRIBUTION);
+	CCS_CHECK_OBJ(rng, CCS_RNG);
 	CCS_CHECK_PTR(value_ret);
 	_ccs_hyperparameter_ops_t *ops = ccs_hyperparameter_get_ops(hyperparameter);
 	return ops->samples(hyperparameter->data, distribution, rng, 1, value_ret);
@@ -121,6 +122,7 @@ ccs_hyperparameter_samples(ccs_hyperparameter_t  hyperparameter,
                            ccs_datum_t          *values) {
 	CCS_CHECK_OBJ(hyperparameter, CCS_HYPERPARAMETER);
 	CCS_CHECK_OBJ(distribution, CCS_DISTRIBUTION);
+	CCS_CHECK_OBJ(rng, CCS_RNG);
 	CCS_CHECK_ARY(num_values, values);
 	if (!num_values)
 		return CCS_SUCCESS;
