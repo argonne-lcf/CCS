@@ -860,6 +860,7 @@ _ccs_expr_variable_eval(_ccs_expression_data_t *data,
 	_ccs_expression_variable_data_t *d =
 		(_ccs_expression_variable_data_t *)data;
 	size_t index;
+	CCS_CHECK_PTR(values);
 	CCS_VALIDATE(ccs_context_get_hyperparameter_index(context,
 	    (ccs_hyperparameter_t)(d->hyperparameter), &index));
 	*result = values[index];
