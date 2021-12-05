@@ -86,6 +86,8 @@ ccs_features_tuner_ask(ccs_features_tuner_t  tuner,
 	CCS_CHECK_ARY(num_configurations, configurations);
 	if (!configurations && !num_configurations_ret)
 		return -CCS_INVALID_VALUE;
+	/* TODO: check that the provided features are compatible with the
+	 * features space */
 	_ccs_features_tuner_ops_t *ops = ccs_features_tuner_get_ops(tuner);
 	return ops->ask(tuner->data, features, num_configurations, configurations, num_configurations_ret);
 }
@@ -112,6 +114,8 @@ ccs_features_tuner_get_optimums(ccs_features_tuner_t       tuner,
 	CCS_CHECK_ARY(num_evaluations, evaluations);
 	if (!evaluations && !num_evaluations_ret)
 		return -CCS_INVALID_VALUE;
+	/* TODO: check that the provided features are compatible with the
+	 * features space */
 	_ccs_features_tuner_ops_t *ops = ccs_features_tuner_get_ops(tuner);
 	return ops->get_optimums(tuner->data, features, num_evaluations, evaluations, num_evaluations_ret);
 }
@@ -128,6 +132,8 @@ ccs_features_tuner_get_history(ccs_features_tuner_t       tuner,
 	CCS_CHECK_ARY(num_evaluations, evaluations);
 	if (!evaluations && !num_evaluations_ret)
 		return -CCS_INVALID_VALUE;
+	/* TODO: check that the provided features are compatible with the
+	 * features space */
 	_ccs_features_tuner_ops_t *ops = ccs_features_tuner_get_ops(tuner);
 	return ops->get_history(tuner->data, features, num_evaluations, evaluations, num_evaluations_ret);
 }
@@ -137,11 +143,13 @@ ccs_features_tuner_suggest(ccs_features_tuner_t  tuner,
                            ccs_features_t        features,
                            ccs_configuration_t  *configuration) {
 	CCS_CHECK_OBJ(tuner, CCS_FEATURES_TUNER);
-	CCS_CHECK_OBJ(features, CCS_FEATURES);
-	CCS_CHECK_PTR(configuration);
 	_ccs_features_tuner_ops_t *ops = ccs_features_tuner_get_ops(tuner);
 	if (!ops->suggest)
 		return -CCS_UNSUPPORTED_OPERATION;
+	CCS_CHECK_OBJ(features, CCS_FEATURES);
+	CCS_CHECK_PTR(configuration);
+	/* TODO: check that the provided features are compatible with the
+	 * features space */
 	return ops->suggest(tuner->data, features, configuration);
 }
 

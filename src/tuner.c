@@ -75,6 +75,8 @@ ccs_tuner_tell(ccs_tuner_t       tuner,
                ccs_evaluation_t *evaluations) {
 	CCS_CHECK_OBJ(tuner, CCS_TUNER);
 	CCS_CHECK_ARY(num_evaluations, evaluations);
+        /* TODO: check that evaluations have the same objective and
+         * configuration sapce than the tuner */
 	_ccs_tuner_ops_t *ops = ccs_tuner_get_ops(tuner);
 	return ops->tell(tuner->data, num_evaluations, evaluations);
 }
@@ -109,9 +111,9 @@ ccs_result_t
 ccs_tuner_suggest(ccs_tuner_t          tuner,
                   ccs_configuration_t *configuration) {
 	CCS_CHECK_OBJ(tuner, CCS_TUNER);
-	CCS_CHECK_PTR(configuration);
 	_ccs_tuner_ops_t *ops = ccs_tuner_get_ops(tuner);
 	if (!ops->suggest)
 		return -CCS_UNSUPPORTED_OPERATION;
+	CCS_CHECK_PTR(configuration);
 	return ops->suggest(tuner->data, configuration);
 }

@@ -6,6 +6,11 @@ extern "C" {
 #endif
 
 /**
+ * @file interval.h
+ * Interval define ranges over numeric values.
+ */
+
+/**
  * A structure defining an interval over numeric values
  */
 struct ccs_interval_s {
