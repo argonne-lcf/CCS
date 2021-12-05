@@ -1,0 +1,436 @@
+\hypertarget{tree__tuner_8h}{}\doxysection{include/cconfigspace/tree\+\_\+tuner.h File Reference}
+\label{tree__tuner_8h}\index{include/cconfigspace/tree\_tuner.h@{include/cconfigspace/tree\_tuner.h}}
+
+
+A CCS tree tuner defines an ask and tell interface to optimize an objective space (see \mbox{\hyperlink{objective__space_8h}{objective\+\_\+space.\+h}}) given a tree space (see \mbox{\hyperlink{tree__space_8h}{tree\+\_\+space.\+h}}).  
+
+
+This graph shows which files directly or indirectly include this file\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=196pt]{tree__tuner_8h__dep__incl}
+\end{center}
+\end{figure}
+\doxysubsection*{Data Structures}
+\begin{DoxyCompactItemize}
+\item 
+struct \mbox{\hyperlink{structccs__user__defined__tree__tuner__vector__s}{ccs\+\_\+user\+\_\+defined\+\_\+tree\+\_\+tuner\+\_\+vector\+\_\+s}}
+\begin{DoxyCompactList}\small\item\em A structure that define the callbacks the user must provide to create a user defined tree tuner. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Typedefs}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{tree__tuner_8h_a05a06ac84359acaa7db92bac063d2c5f}\label{tree__tuner_8h_a05a06ac84359acaa7db92bac063d2c5f}} 
+typedef enum \mbox{\hyperlink{tree__tuner_8h_a7c79f1d96e07c3fd67a7f9bd9241d4b2}{ccs\+\_\+tree\+\_\+tuner\+\_\+type\+\_\+e}} \mbox{\hyperlink{tree__tuner_8h_a05a06ac84359acaa7db92bac063d2c5f}{ccs\+\_\+tree\+\_\+tuner\+\_\+type\+\_\+t}}
+\begin{DoxyCompactList}\small\item\em A commodity type to represent CCS tree tuner types. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{tree__tuner_8h_a1e9197404a954d8892a02f94c18e71f5}\label{tree__tuner_8h_a1e9197404a954d8892a02f94c18e71f5}} 
+typedef struct \mbox{\hyperlink{structccs__user__defined__tree__tuner__vector__s}{ccs\+\_\+user\+\_\+defined\+\_\+tree\+\_\+tuner\+\_\+vector\+\_\+s}} \mbox{\hyperlink{tree__tuner_8h_a1e9197404a954d8892a02f94c18e71f5}{ccs\+\_\+user\+\_\+defined\+\_\+tree\+\_\+tuner\+\_\+vector\+\_\+t}}
+\begin{DoxyCompactList}\small\item\em a commodity type to represent a user defined tuner callback vector. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Enumerations}
+\begin{DoxyCompactItemize}
+\item 
+enum \mbox{\hyperlink{tree__tuner_8h_a7c79f1d96e07c3fd67a7f9bd9241d4b2}{ccs\+\_\+tree\+\_\+tuner\+\_\+type\+\_\+e}} \{ \mbox{\hyperlink{tree__tuner_8h_a7c79f1d96e07c3fd67a7f9bd9241d4b2a4c65f5f43d6ed1914d82ce483d8d0f80}{CCS\+\_\+\+TREE\+\_\+\+TUNER\+\_\+\+TYPE\+\_\+\+RANDOM}}
+, \mbox{\hyperlink{tree__tuner_8h_a7c79f1d96e07c3fd67a7f9bd9241d4b2aada978619aa4d713d55162c5a49a7c63}{CCS\+\_\+\+TREE\+\_\+\+TUNER\+\_\+\+TYPE\+\_\+\+USER\+\_\+\+DEFINED}}
+, \mbox{\hyperlink{tree__tuner_8h_a7c79f1d96e07c3fd67a7f9bd9241d4b2a1d0d78d4573c8446ff61abe112a08c2a}{CCS\+\_\+\+TREE\+\_\+\+TUNER\+\_\+\+TYPE\+\_\+\+MAX}}
+, \mbox{\hyperlink{tree__tuner_8h_a7c79f1d96e07c3fd67a7f9bd9241d4b2ad9845b16e8f1935320b9838c4682c22d}{CCS\+\_\+\+TREE\+\_\+\+TUNER\+\_\+\+TYPE\+\_\+32\+BIT}} = INT\+\_\+\+MAX
+ \}
+\begin{DoxyCompactList}\small\item\em CCS supported tuner types. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} \mbox{\hyperlink{tree__tuner_8h_a929e8ecc094130ae952493e8f0f6a4d9}{ccs\+\_\+tree\+\_\+tuner\+\_\+get\+\_\+type}} (\mbox{\hyperlink{base_8h_ac7766344cfc56477399913967089e1f5}{ccs\+\_\+tree\+\_\+tuner\+\_\+t}} tuner, \mbox{\hyperlink{tree__tuner_8h_a05a06ac84359acaa7db92bac063d2c5f}{ccs\+\_\+tree\+\_\+tuner\+\_\+type\+\_\+t}} $\ast$type\+\_\+ret)
+\begin{DoxyCompactList}\small\item\em Get the type of a tree tuner. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} \mbox{\hyperlink{tree__tuner_8h_a2b504bf9a1751fe4715cc55eecc0540f}{ccs\+\_\+tree\+\_\+tuner\+\_\+get\+\_\+name}} (\mbox{\hyperlink{base_8h_ac7766344cfc56477399913967089e1f5}{ccs\+\_\+tree\+\_\+tuner\+\_\+t}} tuner, const char $\ast$$\ast$name\+\_\+ret)
+\begin{DoxyCompactList}\small\item\em Get the name of a tree tuner. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} \mbox{\hyperlink{tree__tuner_8h_aae6b692be271dbd72f55e63fa657ceeb}{ccs\+\_\+tree\+\_\+tuner\+\_\+get\+\_\+tree\+\_\+space}} (\mbox{\hyperlink{base_8h_ac7766344cfc56477399913967089e1f5}{ccs\+\_\+tree\+\_\+tuner\+\_\+t}} tuner, \mbox{\hyperlink{base_8h_a17f468f642fba08b75bf3aa77ff0bfd9}{ccs\+\_\+tree\+\_\+space\+\_\+t}} $\ast$tree\+\_\+space\+\_\+ret)
+\begin{DoxyCompactList}\small\item\em Get the associated tree space. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} \mbox{\hyperlink{tree__tuner_8h_a7c3a5dfc5f575ed2283438af9d95938b}{ccs\+\_\+tree\+\_\+tuner\+\_\+get\+\_\+objective\+\_\+space}} (\mbox{\hyperlink{base_8h_ac7766344cfc56477399913967089e1f5}{ccs\+\_\+tree\+\_\+tuner\+\_\+t}} tuner, \mbox{\hyperlink{base_8h_a645a0bae9ad3d85455ef2b06101146f7}{ccs\+\_\+objective\+\_\+space\+\_\+t}} $\ast$objective\+\_\+space\+\_\+ret)
+\begin{DoxyCompactList}\small\item\em Get the associated objective space. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} \mbox{\hyperlink{tree__tuner_8h_a45063f153a59948b5c12e5075e336fd0}{ccs\+\_\+tree\+\_\+tuner\+\_\+ask}} (\mbox{\hyperlink{base_8h_ac7766344cfc56477399913967089e1f5}{ccs\+\_\+tree\+\_\+tuner\+\_\+t}} tuner, size\+\_\+t num\+\_\+configurations, \mbox{\hyperlink{base_8h_a8d77e69135c6c9077d7cf22e952ee411}{ccs\+\_\+tree\+\_\+configuration\+\_\+t}} $\ast$configurations, size\+\_\+t $\ast$num\+\_\+configurations\+\_\+ret)
+\begin{DoxyCompactList}\small\item\em Ask a tree tuner for a set of configurations to evaluate. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} \mbox{\hyperlink{tree__tuner_8h_a414a5f72a3253778306fa67f67140974}{ccs\+\_\+tree\+\_\+tuner\+\_\+tell}} (\mbox{\hyperlink{base_8h_ac7766344cfc56477399913967089e1f5}{ccs\+\_\+tree\+\_\+tuner\+\_\+t}} tuner, size\+\_\+t num\+\_\+evaluations, \mbox{\hyperlink{base_8h_a83520825ddd9981c45a85d2cc865b75e}{ccs\+\_\+tree\+\_\+evaluation\+\_\+t}} $\ast$evaluations)
+\begin{DoxyCompactList}\small\item\em Give a list of results to a tree tuner through tree evaluations. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} \mbox{\hyperlink{tree__tuner_8h_aa22b2fc07d4a9c51d80c36153fa18ea8}{ccs\+\_\+tree\+\_\+tuner\+\_\+suggest}} (\mbox{\hyperlink{base_8h_ac7766344cfc56477399913967089e1f5}{ccs\+\_\+tree\+\_\+tuner\+\_\+t}} tuner, \mbox{\hyperlink{base_8h_a8d77e69135c6c9077d7cf22e952ee411}{ccs\+\_\+tree\+\_\+configuration\+\_\+t}} $\ast$configuration)
+\begin{DoxyCompactList}\small\item\em Ask a tree tuner to suggest a good configuration. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} \mbox{\hyperlink{tree__tuner_8h_a778507f4ae266f81b7f6381610f3fc2a}{ccs\+\_\+tree\+\_\+tuner\+\_\+get\+\_\+optima}} (\mbox{\hyperlink{base_8h_ac7766344cfc56477399913967089e1f5}{ccs\+\_\+tree\+\_\+tuner\+\_\+t}} tuner, size\+\_\+t num\+\_\+evaluations, \mbox{\hyperlink{base_8h_a83520825ddd9981c45a85d2cc865b75e}{ccs\+\_\+tree\+\_\+evaluation\+\_\+t}} $\ast$evaluations, size\+\_\+t $\ast$num\+\_\+evaluations\+\_\+ret)
+\begin{DoxyCompactList}\small\item\em Ask a tree tuner for the discovered Pareto front. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} \mbox{\hyperlink{tree__tuner_8h_aae374a6a3b0c6079667cdb3eb4722406}{ccs\+\_\+tree\+\_\+tuner\+\_\+get\+\_\+history}} (\mbox{\hyperlink{base_8h_ac7766344cfc56477399913967089e1f5}{ccs\+\_\+tree\+\_\+tuner\+\_\+t}} tuner, size\+\_\+t num\+\_\+evaluations, \mbox{\hyperlink{base_8h_a83520825ddd9981c45a85d2cc865b75e}{ccs\+\_\+tree\+\_\+evaluation\+\_\+t}} $\ast$evaluations, size\+\_\+t $\ast$num\+\_\+evaluations\+\_\+ret)
+\begin{DoxyCompactList}\small\item\em Ask a tree tuner for the evaluation history. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} \mbox{\hyperlink{tree__tuner_8h_a1b66a3a0a7a26a5bfd5ee14c27cbde76}{ccs\+\_\+create\+\_\+random\+\_\+tree\+\_\+tuner}} (const char $\ast$name, \mbox{\hyperlink{base_8h_a17f468f642fba08b75bf3aa77ff0bfd9}{ccs\+\_\+tree\+\_\+space\+\_\+t}} tree\+\_\+space, \mbox{\hyperlink{base_8h_a645a0bae9ad3d85455ef2b06101146f7}{ccs\+\_\+objective\+\_\+space\+\_\+t}} objective\+\_\+space, \mbox{\hyperlink{base_8h_ac7766344cfc56477399913967089e1f5}{ccs\+\_\+tree\+\_\+tuner\+\_\+t}} $\ast$tuner\+\_\+ret)
+\begin{DoxyCompactList}\small\item\em Create a new random tree tuner. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} \mbox{\hyperlink{tree__tuner_8h_a48b2fbad64052680e61eadbfce4320fa}{ccs\+\_\+create\+\_\+user\+\_\+defined\+\_\+tree\+\_\+tuner}} (const char $\ast$name, \mbox{\hyperlink{base_8h_a17f468f642fba08b75bf3aa77ff0bfd9}{ccs\+\_\+tree\+\_\+space\+\_\+t}} tree\+\_\+space, \mbox{\hyperlink{base_8h_a645a0bae9ad3d85455ef2b06101146f7}{ccs\+\_\+objective\+\_\+space\+\_\+t}} objective\+\_\+space, \mbox{\hyperlink{tree__tuner_8h_a1e9197404a954d8892a02f94c18e71f5}{ccs\+\_\+user\+\_\+defined\+\_\+tree\+\_\+tuner\+\_\+vector\+\_\+t}} $\ast$vector, void $\ast$tuner\+\_\+data, \mbox{\hyperlink{base_8h_ac7766344cfc56477399913967089e1f5}{ccs\+\_\+tree\+\_\+tuner\+\_\+t}} $\ast$tuner\+\_\+ret)
+\begin{DoxyCompactList}\small\item\em Create a new user defined tree tuner. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} \mbox{\hyperlink{tree__tuner_8h_a825573b6d268ee63c2b1ff528bcdb56c}{ccs\+\_\+user\+\_\+defined\+\_\+tree\+\_\+tuner\+\_\+get\+\_\+tuner\+\_\+data}} (\mbox{\hyperlink{base_8h_ac7766344cfc56477399913967089e1f5}{ccs\+\_\+tree\+\_\+tuner\+\_\+t}} tuner, void $\ast$$\ast$tuner\+\_\+data\+\_\+ret)
+\begin{DoxyCompactList}\small\item\em Get the user defined tree tuner internal data pointer. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+A CCS tree tuner defines an ask and tell interface to optimize an objective space (see \mbox{\hyperlink{objective__space_8h}{objective\+\_\+space.\+h}}) given a tree space (see \mbox{\hyperlink{tree__space_8h}{tree\+\_\+space.\+h}}). 
+
+The tuner will propose tree configurations (see \mbox{\hyperlink{tree__configuration_8h}{tree\+\_\+configuration.\+h}}) and the user will return tree evaluations (see \mbox{\hyperlink{tree__evaluation_8h}{tree\+\_\+evaluation.\+h}}). 
+
+\doxysubsection{Enumeration Type Documentation}
+\mbox{\Hypertarget{tree__tuner_8h_a7c79f1d96e07c3fd67a7f9bd9241d4b2}\label{tree__tuner_8h_a7c79f1d96e07c3fd67a7f9bd9241d4b2}} 
+\index{tree\_tuner.h@{tree\_tuner.h}!ccs\_tree\_tuner\_type\_e@{ccs\_tree\_tuner\_type\_e}}
+\index{ccs\_tree\_tuner\_type\_e@{ccs\_tree\_tuner\_type\_e}!tree\_tuner.h@{tree\_tuner.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_tree\_tuner\_type\_e}{ccs\_tree\_tuner\_type\_e}}
+{\footnotesize\ttfamily enum \mbox{\hyperlink{tree__tuner_8h_a7c79f1d96e07c3fd67a7f9bd9241d4b2}{ccs\+\_\+tree\+\_\+tuner\+\_\+type\+\_\+e}}}
+
+
+
+CCS supported tuner types. 
+
+\begin{DoxyEnumFields}{Enumerator}
+\raisebox{\heightof{T}}[0pt][0pt]{\index{CCS\_TREE\_TUNER\_TYPE\_RANDOM@{CCS\_TREE\_TUNER\_TYPE\_RANDOM}!tree\_tuner.h@{tree\_tuner.h}}\index{tree\_tuner.h@{tree\_tuner.h}!CCS\_TREE\_TUNER\_TYPE\_RANDOM@{CCS\_TREE\_TUNER\_TYPE\_RANDOM}}}\mbox{\Hypertarget{tree__tuner_8h_a7c79f1d96e07c3fd67a7f9bd9241d4b2a4c65f5f43d6ed1914d82ce483d8d0f80}\label{tree__tuner_8h_a7c79f1d96e07c3fd67a7f9bd9241d4b2a4c65f5f43d6ed1914d82ce483d8d0f80}} 
+CCS\+\_\+\+TREE\+\_\+\+TUNER\+\_\+\+TYPE\+\_\+\+RANDOM&A random tuner. \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{CCS\_TREE\_TUNER\_TYPE\_USER\_DEFINED@{CCS\_TREE\_TUNER\_TYPE\_USER\_DEFINED}!tree\_tuner.h@{tree\_tuner.h}}\index{tree\_tuner.h@{tree\_tuner.h}!CCS\_TREE\_TUNER\_TYPE\_USER\_DEFINED@{CCS\_TREE\_TUNER\_TYPE\_USER\_DEFINED}}}\mbox{\Hypertarget{tree__tuner_8h_a7c79f1d96e07c3fd67a7f9bd9241d4b2aada978619aa4d713d55162c5a49a7c63}\label{tree__tuner_8h_a7c79f1d96e07c3fd67a7f9bd9241d4b2aada978619aa4d713d55162c5a49a7c63}} 
+CCS\+\_\+\+TREE\+\_\+\+TUNER\+\_\+\+TYPE\+\_\+\+USER\+\_\+\+DEFINED&A user defined tuner. \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{CCS\_TREE\_TUNER\_TYPE\_MAX@{CCS\_TREE\_TUNER\_TYPE\_MAX}!tree\_tuner.h@{tree\_tuner.h}}\index{tree\_tuner.h@{tree\_tuner.h}!CCS\_TREE\_TUNER\_TYPE\_MAX@{CCS\_TREE\_TUNER\_TYPE\_MAX}}}\mbox{\Hypertarget{tree__tuner_8h_a7c79f1d96e07c3fd67a7f9bd9241d4b2a1d0d78d4573c8446ff61abe112a08c2a}\label{tree__tuner_8h_a7c79f1d96e07c3fd67a7f9bd9241d4b2a1d0d78d4573c8446ff61abe112a08c2a}} 
+CCS\+\_\+\+TREE\+\_\+\+TUNER\+\_\+\+TYPE\+\_\+\+MAX&Guard. \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{CCS\_TREE\_TUNER\_TYPE\_32BIT@{CCS\_TREE\_TUNER\_TYPE\_32BIT}!tree\_tuner.h@{tree\_tuner.h}}\index{tree\_tuner.h@{tree\_tuner.h}!CCS\_TREE\_TUNER\_TYPE\_32BIT@{CCS\_TREE\_TUNER\_TYPE\_32BIT}}}\mbox{\Hypertarget{tree__tuner_8h_a7c79f1d96e07c3fd67a7f9bd9241d4b2ad9845b16e8f1935320b9838c4682c22d}\label{tree__tuner_8h_a7c79f1d96e07c3fd67a7f9bd9241d4b2ad9845b16e8f1935320b9838c4682c22d}} 
+CCS\+\_\+\+TREE\+\_\+\+TUNER\+\_\+\+TYPE\+\_\+32\+BIT&Try forcing 32 bits value for bindings. \\
+\hline
+
+\end{DoxyEnumFields}
+
+
+\doxysubsection{Function Documentation}
+\mbox{\Hypertarget{tree__tuner_8h_a1b66a3a0a7a26a5bfd5ee14c27cbde76}\label{tree__tuner_8h_a1b66a3a0a7a26a5bfd5ee14c27cbde76}} 
+\index{tree\_tuner.h@{tree\_tuner.h}!ccs\_create\_random\_tree\_tuner@{ccs\_create\_random\_tree\_tuner}}
+\index{ccs\_create\_random\_tree\_tuner@{ccs\_create\_random\_tree\_tuner}!tree\_tuner.h@{tree\_tuner.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_create\_random\_tree\_tuner()}{ccs\_create\_random\_tree\_tuner()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} ccs\+\_\+create\+\_\+random\+\_\+tree\+\_\+tuner (\begin{DoxyParamCaption}\item[{const char $\ast$}]{name,  }\item[{\mbox{\hyperlink{base_8h_a17f468f642fba08b75bf3aa77ff0bfd9}{ccs\+\_\+tree\+\_\+space\+\_\+t}}}]{tree\+\_\+space,  }\item[{\mbox{\hyperlink{base_8h_a645a0bae9ad3d85455ef2b06101146f7}{ccs\+\_\+objective\+\_\+space\+\_\+t}}}]{objective\+\_\+space,  }\item[{\mbox{\hyperlink{base_8h_ac7766344cfc56477399913967089e1f5}{ccs\+\_\+tree\+\_\+tuner\+\_\+t}} $\ast$}]{tuner\+\_\+ret }\end{DoxyParamCaption})}
+
+
+
+Create a new random tree tuner. 
+
+The random tuner should be viewed as a baseline for evaluating tuners, and as a tool for developing interfaces. 
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em name} & the name of the tree tuner \\
+\hline
+\mbox{\texttt{ in}}  & {\em tree\+\_\+space} & the configuration space to explore \\
+\hline
+\mbox{\texttt{ in}}  & {\em objective\+\_\+space} & the objective space to potimize \\
+\hline
+\mbox{\texttt{ out}}  & {\em tuner\+\_\+ret} & a pointer to the variable that will contain the newly created tree tuner \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445a9941bd690a240532191c41365f48e8b8}{CCS\+\_\+\+RESULT\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445aa3816f69f71f044629bdb21f618ab0e8}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+OBJECT}} if {\ttfamily tree\+\_\+space} is not a valid CCS tree space; or if {\ttfamily objective\+\_\+space} is not a valid CCS objective space 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445ab3d1bba2839da0c0fb34fbc00c4be7d5}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+VALUE}} if {\ttfamily name} is NULL; or if {\ttfamily tuner\+\_\+ret} is NULL 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445aba9b4719b46466cd185bf1a41a232ff6}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+OUT\+\_\+\+OF\+\_\+\+MEMORY}} if there was not enough memory to allocate the new tree tuner instance 
+\end{DoxyReturn}
+\mbox{\Hypertarget{tree__tuner_8h_a48b2fbad64052680e61eadbfce4320fa}\label{tree__tuner_8h_a48b2fbad64052680e61eadbfce4320fa}} 
+\index{tree\_tuner.h@{tree\_tuner.h}!ccs\_create\_user\_defined\_tree\_tuner@{ccs\_create\_user\_defined\_tree\_tuner}}
+\index{ccs\_create\_user\_defined\_tree\_tuner@{ccs\_create\_user\_defined\_tree\_tuner}!tree\_tuner.h@{tree\_tuner.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_create\_user\_defined\_tree\_tuner()}{ccs\_create\_user\_defined\_tree\_tuner()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} ccs\+\_\+create\+\_\+user\+\_\+defined\+\_\+tree\+\_\+tuner (\begin{DoxyParamCaption}\item[{const char $\ast$}]{name,  }\item[{\mbox{\hyperlink{base_8h_a17f468f642fba08b75bf3aa77ff0bfd9}{ccs\+\_\+tree\+\_\+space\+\_\+t}}}]{tree\+\_\+space,  }\item[{\mbox{\hyperlink{base_8h_a645a0bae9ad3d85455ef2b06101146f7}{ccs\+\_\+objective\+\_\+space\+\_\+t}}}]{objective\+\_\+space,  }\item[{\mbox{\hyperlink{tree__tuner_8h_a1e9197404a954d8892a02f94c18e71f5}{ccs\+\_\+user\+\_\+defined\+\_\+tree\+\_\+tuner\+\_\+vector\+\_\+t}} $\ast$}]{vector,  }\item[{void $\ast$}]{tuner\+\_\+data,  }\item[{\mbox{\hyperlink{base_8h_ac7766344cfc56477399913967089e1f5}{ccs\+\_\+tree\+\_\+tuner\+\_\+t}} $\ast$}]{tuner\+\_\+ret }\end{DoxyParamCaption})}
+
+
+
+Create a new user defined tree tuner. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em name} & the name of the tuner \\
+\hline
+\mbox{\texttt{ in}}  & {\em tree\+\_\+space} & the tree space to explore \\
+\hline
+\mbox{\texttt{ in}}  & {\em objective\+\_\+space} & the objective space to optimize \\
+\hline
+\mbox{\texttt{ in}}  & {\em vector} & the vector of callbacks implementing the tuner interface \\
+\hline
+\mbox{\texttt{ in}}  & {\em tuner\+\_\+data} & a pointer to the tuner internal data structures. Can be NULL \\
+\hline
+\mbox{\texttt{ out}}  & {\em tuner\+\_\+ret} & a pointer to the variable that will contain the newly created tuner \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445a9941bd690a240532191c41365f48e8b8}{CCS\+\_\+\+RESULT\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445aa3816f69f71f044629bdb21f618ab0e8}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+OBJECT}} if {\ttfamily tree\+\_\+space} is not a valid CCS tree space; or if {\ttfamily objective\+\_\+space} is not a valid CCS objective space 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445ab3d1bba2839da0c0fb34fbc00c4be7d5}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+VALUE}} if {\ttfamily name} is NULL; or if {\ttfamily tuner\+\_\+ret} is NULL; or if {\ttfamily vector} is NULL; or if any interface pointer except suggest is NULL 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445aba9b4719b46466cd185bf1a41a232ff6}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+OUT\+\_\+\+OF\+\_\+\+MEMORY}} if there was not enough memory to allocate the newi tree tuner instance 
+\end{DoxyReturn}
+\mbox{\Hypertarget{tree__tuner_8h_a45063f153a59948b5c12e5075e336fd0}\label{tree__tuner_8h_a45063f153a59948b5c12e5075e336fd0}} 
+\index{tree\_tuner.h@{tree\_tuner.h}!ccs\_tree\_tuner\_ask@{ccs\_tree\_tuner\_ask}}
+\index{ccs\_tree\_tuner\_ask@{ccs\_tree\_tuner\_ask}!tree\_tuner.h@{tree\_tuner.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_tree\_tuner\_ask()}{ccs\_tree\_tuner\_ask()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} ccs\+\_\+tree\+\_\+tuner\+\_\+ask (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_ac7766344cfc56477399913967089e1f5}{ccs\+\_\+tree\+\_\+tuner\+\_\+t}}}]{tuner,  }\item[{size\+\_\+t}]{num\+\_\+configurations,  }\item[{\mbox{\hyperlink{base_8h_a8d77e69135c6c9077d7cf22e952ee411}{ccs\+\_\+tree\+\_\+configuration\+\_\+t}} $\ast$}]{configurations,  }\item[{size\+\_\+t $\ast$}]{num\+\_\+configurations\+\_\+ret }\end{DoxyParamCaption})}
+
+
+
+Ask a tree tuner for a set of configurations to evaluate. 
+
+Configuration\textquotesingle{}s ownership is transferred to the user who doesn\textquotesingle{}t need to retain them, but will need to release them once the user is done using them. 
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in,out}}  & {\em tuner} & \\
+\hline
+\mbox{\texttt{ in}}  & {\em num\+\_\+configurations} & the number of configurations requested by the user \\
+\hline
+\mbox{\texttt{ out}}  & {\em configurations} & an array of {\ttfamily num\+\_\+configurations} configurations that will contain the returned configurations. Can be NULL \\
+\hline
+\mbox{\texttt{ out}}  & {\em num\+\_\+configurations\+\_\+ret} & a pointer to the variable that will contain the number of configuration that are returned, or, if {\ttfamily configurations} is NULL, a suggestion for the number of configuration to ask for \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445a9941bd690a240532191c41365f48e8b8}{CCS\+\_\+\+RESULT\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445aa3816f69f71f044629bdb21f618ab0e8}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+OBJECT}} if {\ttfamily tuner} is not a valid CCSi tree tuner 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445ab3d1bba2839da0c0fb34fbc00c4be7d5}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+VALUE}} if {\ttfamily configurations} is NULL and {\ttfamily num\+\_\+configurations} is greater than 0; or if {\ttfamily configurations} and {\ttfamily num\+\_\+configurations\+\_\+ret} are both NULL 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445a6e66230929714d8d2b7354ecd6766542}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+SAMPLING\+\_\+\+UNSUCCESSFUL}} if no or not enough valid configurations could be sampled. Configurations that could be sampled will be returned contiguously, and the rest will be NULL 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445aba9b4719b46466cd185bf1a41a232ff6}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+OUT\+\_\+\+OF\+\_\+\+MEMORY}} if there was not enough memory to allocate new configurations. Configurations that could be allocated will be returned, and the rest will be NULL 
+\end{DoxyReturn}
+\mbox{\Hypertarget{tree__tuner_8h_aae374a6a3b0c6079667cdb3eb4722406}\label{tree__tuner_8h_aae374a6a3b0c6079667cdb3eb4722406}} 
+\index{tree\_tuner.h@{tree\_tuner.h}!ccs\_tree\_tuner\_get\_history@{ccs\_tree\_tuner\_get\_history}}
+\index{ccs\_tree\_tuner\_get\_history@{ccs\_tree\_tuner\_get\_history}!tree\_tuner.h@{tree\_tuner.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_tree\_tuner\_get\_history()}{ccs\_tree\_tuner\_get\_history()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} ccs\+\_\+tree\+\_\+tuner\+\_\+get\+\_\+history (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_ac7766344cfc56477399913967089e1f5}{ccs\+\_\+tree\+\_\+tuner\+\_\+t}}}]{tuner,  }\item[{size\+\_\+t}]{num\+\_\+evaluations,  }\item[{\mbox{\hyperlink{base_8h_a83520825ddd9981c45a85d2cc865b75e}{ccs\+\_\+tree\+\_\+evaluation\+\_\+t}} $\ast$}]{evaluations,  }\item[{size\+\_\+t $\ast$}]{num\+\_\+evaluations\+\_\+ret }\end{DoxyParamCaption})}
+
+
+
+Ask a tree tuner for the evaluation history. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em tuner} & \\
+\hline
+\mbox{\texttt{ in}}  & {\em num\+\_\+evaluations} & the size of the {\ttfamily evaluations} array \\
+\hline
+\mbox{\texttt{ out}}  & {\em evaluations} & an array of {\ttfamily num\+\_\+evaluations} that will contain the the history \\
+\hline
+\mbox{\texttt{ out}}  & {\em num\+\_\+evaluations\+\_\+ret} & a pointer to the variable that will contain the number of evaluations that are or would be returned \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445a9941bd690a240532191c41365f48e8b8}{CCS\+\_\+\+RESULT\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445aa3816f69f71f044629bdb21f618ab0e8}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+OBJECT}} if {\ttfamily tuner} is not a valid CCS tree tuner 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445ab3d1bba2839da0c0fb34fbc00c4be7d5}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+VALUE}} if {\ttfamily evaluations} is NULL and num\+\_\+evaluations is greater than 0; or if {\ttfamily evaluations} is NULL and {\ttfamily num\+\_\+evaluations\+\_\+ret} is NULL 
+\end{DoxyReturn}
+\mbox{\Hypertarget{tree__tuner_8h_a2b504bf9a1751fe4715cc55eecc0540f}\label{tree__tuner_8h_a2b504bf9a1751fe4715cc55eecc0540f}} 
+\index{tree\_tuner.h@{tree\_tuner.h}!ccs\_tree\_tuner\_get\_name@{ccs\_tree\_tuner\_get\_name}}
+\index{ccs\_tree\_tuner\_get\_name@{ccs\_tree\_tuner\_get\_name}!tree\_tuner.h@{tree\_tuner.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_tree\_tuner\_get\_name()}{ccs\_tree\_tuner\_get\_name()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} ccs\+\_\+tree\+\_\+tuner\+\_\+get\+\_\+name (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_ac7766344cfc56477399913967089e1f5}{ccs\+\_\+tree\+\_\+tuner\+\_\+t}}}]{tuner,  }\item[{const char $\ast$$\ast$}]{name\+\_\+ret }\end{DoxyParamCaption})}
+
+
+
+Get the name of a tree tuner. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em tuner} & \\
+\hline
+\mbox{\texttt{ out}}  & {\em name\+\_\+ret} & a pointer to the variable that will contain a pointer to the name of the tree tuner \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445a9941bd690a240532191c41365f48e8b8}{CCS\+\_\+\+RESULT\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445aa3816f69f71f044629bdb21f618ab0e8}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+OBJECT}} if {\ttfamily tuner} is not a valid CCS tuner 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445ab3d1bba2839da0c0fb34fbc00c4be7d5}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+VALUE}} if {\ttfamily name\+\_\+ret} is NULL 
+\end{DoxyReturn}
+\mbox{\Hypertarget{tree__tuner_8h_a7c3a5dfc5f575ed2283438af9d95938b}\label{tree__tuner_8h_a7c3a5dfc5f575ed2283438af9d95938b}} 
+\index{tree\_tuner.h@{tree\_tuner.h}!ccs\_tree\_tuner\_get\_objective\_space@{ccs\_tree\_tuner\_get\_objective\_space}}
+\index{ccs\_tree\_tuner\_get\_objective\_space@{ccs\_tree\_tuner\_get\_objective\_space}!tree\_tuner.h@{tree\_tuner.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_tree\_tuner\_get\_objective\_space()}{ccs\_tree\_tuner\_get\_objective\_space()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} ccs\+\_\+tree\+\_\+tuner\+\_\+get\+\_\+objective\+\_\+space (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_ac7766344cfc56477399913967089e1f5}{ccs\+\_\+tree\+\_\+tuner\+\_\+t}}}]{tuner,  }\item[{\mbox{\hyperlink{base_8h_a645a0bae9ad3d85455ef2b06101146f7}{ccs\+\_\+objective\+\_\+space\+\_\+t}} $\ast$}]{objective\+\_\+space\+\_\+ret }\end{DoxyParamCaption})}
+
+
+
+Get the associated objective space. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em tuner} & \\
+\hline
+\mbox{\texttt{ out}}  & {\em objective\+\_\+space\+\_\+ret} & a pointer to the variable that will contain the objective space \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445a9941bd690a240532191c41365f48e8b8}{CCS\+\_\+\+RESULT\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445aa3816f69f71f044629bdb21f618ab0e8}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+OBJECT}} if {\ttfamily tuner} is not a valid CCS tree tuner 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445ab3d1bba2839da0c0fb34fbc00c4be7d5}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+VALUE}} if {\ttfamily objective\+\_\+space\+\_\+ret} is NULL 
+\end{DoxyReturn}
+\mbox{\Hypertarget{tree__tuner_8h_a778507f4ae266f81b7f6381610f3fc2a}\label{tree__tuner_8h_a778507f4ae266f81b7f6381610f3fc2a}} 
+\index{tree\_tuner.h@{tree\_tuner.h}!ccs\_tree\_tuner\_get\_optima@{ccs\_tree\_tuner\_get\_optima}}
+\index{ccs\_tree\_tuner\_get\_optima@{ccs\_tree\_tuner\_get\_optima}!tree\_tuner.h@{tree\_tuner.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_tree\_tuner\_get\_optima()}{ccs\_tree\_tuner\_get\_optima()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} ccs\+\_\+tree\+\_\+tuner\+\_\+get\+\_\+optima (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_ac7766344cfc56477399913967089e1f5}{ccs\+\_\+tree\+\_\+tuner\+\_\+t}}}]{tuner,  }\item[{size\+\_\+t}]{num\+\_\+evaluations,  }\item[{\mbox{\hyperlink{base_8h_a83520825ddd9981c45a85d2cc865b75e}{ccs\+\_\+tree\+\_\+evaluation\+\_\+t}} $\ast$}]{evaluations,  }\item[{size\+\_\+t $\ast$}]{num\+\_\+evaluations\+\_\+ret }\end{DoxyParamCaption})}
+
+
+
+Ask a tree tuner for the discovered Pareto front. 
+
+For single objective objective spaces this would be the best point found. 
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em tuner} & \\
+\hline
+\mbox{\texttt{ in}}  & {\em num\+\_\+evaluations} & the size of the {\ttfamily evaluations} array \\
+\hline
+\mbox{\texttt{ out}}  & {\em evaluations} & an array of {\ttfamily num\+\_\+evaluations} that will contain the optimal evaluations \\
+\hline
+\mbox{\texttt{ out}}  & {\em num\+\_\+evaluations\+\_\+ret} & a pointer to the variable that will contain the number of evaluations that are or would be returned \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445a9941bd690a240532191c41365f48e8b8}{CCS\+\_\+\+RESULT\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445aa3816f69f71f044629bdb21f618ab0e8}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+OBJECT}} if {\ttfamily tuner} is not a valid CCS tree tuner 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445ab3d1bba2839da0c0fb34fbc00c4be7d5}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+VALUE}} if {\ttfamily evaluations} is NULL and num\+\_\+evaluations is greater than 0; or if {\ttfamily evaluations} is NULL and {\ttfamily num\+\_\+evaluations\+\_\+ret} is NULL 
+\end{DoxyReturn}
+\mbox{\Hypertarget{tree__tuner_8h_aae6b692be271dbd72f55e63fa657ceeb}\label{tree__tuner_8h_aae6b692be271dbd72f55e63fa657ceeb}} 
+\index{tree\_tuner.h@{tree\_tuner.h}!ccs\_tree\_tuner\_get\_tree\_space@{ccs\_tree\_tuner\_get\_tree\_space}}
+\index{ccs\_tree\_tuner\_get\_tree\_space@{ccs\_tree\_tuner\_get\_tree\_space}!tree\_tuner.h@{tree\_tuner.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_tree\_tuner\_get\_tree\_space()}{ccs\_tree\_tuner\_get\_tree\_space()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} ccs\+\_\+tree\+\_\+tuner\+\_\+get\+\_\+tree\+\_\+space (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_ac7766344cfc56477399913967089e1f5}{ccs\+\_\+tree\+\_\+tuner\+\_\+t}}}]{tuner,  }\item[{\mbox{\hyperlink{base_8h_a17f468f642fba08b75bf3aa77ff0bfd9}{ccs\+\_\+tree\+\_\+space\+\_\+t}} $\ast$}]{tree\+\_\+space\+\_\+ret }\end{DoxyParamCaption})}
+
+
+
+Get the associated tree space. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em tuner} & \\
+\hline
+\mbox{\texttt{ out}}  & {\em tree\+\_\+space\+\_\+ret} & a pointer to the variable that will contain the tree space \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445a9941bd690a240532191c41365f48e8b8}{CCS\+\_\+\+RESULT\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445aa3816f69f71f044629bdb21f618ab0e8}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+OBJECT}} if {\ttfamily tuner} is not a valid CCS tree tuner 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445ab3d1bba2839da0c0fb34fbc00c4be7d5}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+VALUE}} if {\ttfamily tree\+\_\+space\+\_\+ret} is NULL 
+\end{DoxyReturn}
+\mbox{\Hypertarget{tree__tuner_8h_a929e8ecc094130ae952493e8f0f6a4d9}\label{tree__tuner_8h_a929e8ecc094130ae952493e8f0f6a4d9}} 
+\index{tree\_tuner.h@{tree\_tuner.h}!ccs\_tree\_tuner\_get\_type@{ccs\_tree\_tuner\_get\_type}}
+\index{ccs\_tree\_tuner\_get\_type@{ccs\_tree\_tuner\_get\_type}!tree\_tuner.h@{tree\_tuner.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_tree\_tuner\_get\_type()}{ccs\_tree\_tuner\_get\_type()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} ccs\+\_\+tree\+\_\+tuner\+\_\+get\+\_\+type (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_ac7766344cfc56477399913967089e1f5}{ccs\+\_\+tree\+\_\+tuner\+\_\+t}}}]{tuner,  }\item[{\mbox{\hyperlink{tree__tuner_8h_a05a06ac84359acaa7db92bac063d2c5f}{ccs\+\_\+tree\+\_\+tuner\+\_\+type\+\_\+t}} $\ast$}]{type\+\_\+ret }\end{DoxyParamCaption})}
+
+
+
+Get the type of a tree tuner. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em tuner} & \\
+\hline
+\mbox{\texttt{ out}}  & {\em type\+\_\+ret} & a pointer to the variable that will contain the returned tree tuner type \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445a9941bd690a240532191c41365f48e8b8}{CCS\+\_\+\+RESULT\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445aa3816f69f71f044629bdb21f618ab0e8}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+OBJECT}} if {\ttfamily tuner} is not a valid CCS tree tuner 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445ab3d1bba2839da0c0fb34fbc00c4be7d5}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+VALUE}} if {\ttfamily type\+\_\+ret} is NULL 
+\end{DoxyReturn}
+\mbox{\Hypertarget{tree__tuner_8h_aa22b2fc07d4a9c51d80c36153fa18ea8}\label{tree__tuner_8h_aa22b2fc07d4a9c51d80c36153fa18ea8}} 
+\index{tree\_tuner.h@{tree\_tuner.h}!ccs\_tree\_tuner\_suggest@{ccs\_tree\_tuner\_suggest}}
+\index{ccs\_tree\_tuner\_suggest@{ccs\_tree\_tuner\_suggest}!tree\_tuner.h@{tree\_tuner.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_tree\_tuner\_suggest()}{ccs\_tree\_tuner\_suggest()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} ccs\+\_\+tree\+\_\+tuner\+\_\+suggest (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_ac7766344cfc56477399913967089e1f5}{ccs\+\_\+tree\+\_\+tuner\+\_\+t}}}]{tuner,  }\item[{\mbox{\hyperlink{base_8h_a8d77e69135c6c9077d7cf22e952ee411}{ccs\+\_\+tree\+\_\+configuration\+\_\+t}} $\ast$}]{configuration }\end{DoxyParamCaption})}
+
+
+
+Ask a tree tuner to suggest a good configuration. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in,out}}  & {\em tuner} & \\
+\hline
+\mbox{\texttt{ out}}  & {\em configuration} & a pointer to the variable that will contain the suggested configuration \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445a9941bd690a240532191c41365f48e8b8}{CCS\+\_\+\+RESULT\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445aa3816f69f71f044629bdb21f618ab0e8}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+OBJECT}} if {\ttfamily tuner} is not a valid CCS tree tuner 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445ab3d1bba2839da0c0fb34fbc00c4be7d5}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+VALUE}} if {\ttfamily configuration} is NULL 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445a1013737030343023066c39d66ae16e95}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+UNSUPPORTED\+\_\+\+OPERATION}} if the tuner does not support the suggest interface 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445aba9b4719b46466cd185bf1a41a232ff6}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+OUT\+\_\+\+OF\+\_\+\+MEMORY}} if there was not enough memory to allocate new configurations 
+\end{DoxyReturn}
+\mbox{\Hypertarget{tree__tuner_8h_a414a5f72a3253778306fa67f67140974}\label{tree__tuner_8h_a414a5f72a3253778306fa67f67140974}} 
+\index{tree\_tuner.h@{tree\_tuner.h}!ccs\_tree\_tuner\_tell@{ccs\_tree\_tuner\_tell}}
+\index{ccs\_tree\_tuner\_tell@{ccs\_tree\_tuner\_tell}!tree\_tuner.h@{tree\_tuner.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_tree\_tuner\_tell()}{ccs\_tree\_tuner\_tell()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} ccs\+\_\+tree\+\_\+tuner\+\_\+tell (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_ac7766344cfc56477399913967089e1f5}{ccs\+\_\+tree\+\_\+tuner\+\_\+t}}}]{tuner,  }\item[{size\+\_\+t}]{num\+\_\+evaluations,  }\item[{\mbox{\hyperlink{base_8h_a83520825ddd9981c45a85d2cc865b75e}{ccs\+\_\+tree\+\_\+evaluation\+\_\+t}} $\ast$}]{evaluations }\end{DoxyParamCaption})}
+
+
+
+Give a list of results to a tree tuner through tree evaluations. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in,out}}  & {\em tuner} & \\
+\hline
+\mbox{\texttt{ in}}  & {\em num\+\_\+evaluations} & the size of the {\ttfamily evaluations} array \\
+\hline
+\mbox{\texttt{ in}}  & {\em evaluations} & an array of {\ttfamily num\+\_\+evaluations} to provide to the tuner \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445a9941bd690a240532191c41365f48e8b8}{CCS\+\_\+\+RESULT\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445aa3816f69f71f044629bdb21f618ab0e8}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+OBJECT}} if {\ttfamily tuner} is not a valid CCS tree tuner; or if one of the evaluations is not a valid CCS tree evaluation 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445ab3d1bba2839da0c0fb34fbc00c4be7d5}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+VALUE}} if {\ttfamily evaluations} is NULL and {\ttfamily num\+\_\+evaluations} is greater than 0 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445a861411c9e67478ea8aff1c5338dc91c4}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+EVALUATION}} if an evaluation is not a valid tree evaluation for the problem the tuner is optimizing 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445aba9b4719b46466cd185bf1a41a232ff6}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+OUT\+\_\+\+OF\+\_\+\+MEMORY}} if there was not enough memory to allocate internal data structures 
+\end{DoxyReturn}
+\mbox{\Hypertarget{tree__tuner_8h_a825573b6d268ee63c2b1ff528bcdb56c}\label{tree__tuner_8h_a825573b6d268ee63c2b1ff528bcdb56c}} 
+\index{tree\_tuner.h@{tree\_tuner.h}!ccs\_user\_defined\_tree\_tuner\_get\_tuner\_data@{ccs\_user\_defined\_tree\_tuner\_get\_tuner\_data}}
+\index{ccs\_user\_defined\_tree\_tuner\_get\_tuner\_data@{ccs\_user\_defined\_tree\_tuner\_get\_tuner\_data}!tree\_tuner.h@{tree\_tuner.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_user\_defined\_tree\_tuner\_get\_tuner\_data()}{ccs\_user\_defined\_tree\_tuner\_get\_tuner\_data()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} ccs\+\_\+user\+\_\+defined\+\_\+tree\+\_\+tuner\+\_\+get\+\_\+tuner\+\_\+data (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_ac7766344cfc56477399913967089e1f5}{ccs\+\_\+tree\+\_\+tuner\+\_\+t}}}]{tuner,  }\item[{void $\ast$$\ast$}]{tuner\+\_\+data\+\_\+ret }\end{DoxyParamCaption})}
+
+
+
+Get the user defined tree tuner internal data pointer. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em tuner} & \\
+\hline
+\mbox{\texttt{ out}}  & {\em tuner\+\_\+data\+\_\+ret} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445a9941bd690a240532191c41365f48e8b8}{CCS\+\_\+\+RESULT\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445aa3816f69f71f044629bdb21f618ab0e8}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+OBJECT}} if {\ttfamily tuner} is not a valid CCS tree tuner 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445aa6625a771c1f7530d5ba5e117579f492}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+TUNER}} if {\ttfamily tuner} is not a user defined tree tuner 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445ab3d1bba2839da0c0fb34fbc00c4be7d5}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+VALUE}} if {\ttfamily tuner\+\_\+data\+\_\+ret} is NULL 
+\end{DoxyReturn}

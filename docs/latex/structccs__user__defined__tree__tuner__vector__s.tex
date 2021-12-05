@@ -1,0 +1,46 @@
+\hypertarget{structccs__user__defined__tree__tuner__vector__s}{}\doxysection{ccs\+\_\+user\+\_\+defined\+\_\+tree\+\_\+tuner\+\_\+vector\+\_\+s Struct Reference}
+\label{structccs__user__defined__tree__tuner__vector__s}\index{ccs\_user\_defined\_tree\_tuner\_vector\_s@{ccs\_user\_defined\_tree\_tuner\_vector\_s}}
+
+
+A structure that define the callbacks the user must provide to create a user defined tree tuner.  
+
+
+
+
+{\ttfamily \#include $<$tree\+\_\+tuner.\+h$>$}
+
+\doxysubsection*{Data Fields}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{structccs__user__defined__tree__tuner__vector__s_af464aaae7143f752984c2273306c282c}\label{structccs__user__defined__tree__tuner__vector__s_af464aaae7143f752984c2273306c282c}} 
+\mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}}($\ast$ \mbox{\hyperlink{structccs__user__defined__tree__tuner__vector__s_af464aaae7143f752984c2273306c282c}{del}} )(\mbox{\hyperlink{base_8h_ac7766344cfc56477399913967089e1f5}{ccs\+\_\+tree\+\_\+tuner\+\_\+t}} tuner)
+\begin{DoxyCompactList}\small\item\em The deletion callback that will be called once the reference count of the tuner reaches 0. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{structccs__user__defined__tree__tuner__vector__s_ad97756fa01f2dc806c309b2508caf617}\label{structccs__user__defined__tree__tuner__vector__s_ad97756fa01f2dc806c309b2508caf617}} 
+\mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}}($\ast$ \mbox{\hyperlink{structccs__user__defined__tree__tuner__vector__s_ad97756fa01f2dc806c309b2508caf617}{ask}} )(\mbox{\hyperlink{base_8h_ac7766344cfc56477399913967089e1f5}{ccs\+\_\+tree\+\_\+tuner\+\_\+t}} tuner, size\+\_\+t num\+\_\+configurations, \mbox{\hyperlink{base_8h_a8d77e69135c6c9077d7cf22e952ee411}{ccs\+\_\+tree\+\_\+configuration\+\_\+t}} $\ast$configurations, size\+\_\+t $\ast$num\+\_\+configurations\+\_\+ret)
+\begin{DoxyCompactList}\small\item\em The tree tuner ask interface see ccs\+\_\+tree\+\_\+tuner\+\_\+ask. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{structccs__user__defined__tree__tuner__vector__s_af0e07f49eef8399a23ba21b66b240c5a}\label{structccs__user__defined__tree__tuner__vector__s_af0e07f49eef8399a23ba21b66b240c5a}} 
+\mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}}($\ast$ \mbox{\hyperlink{structccs__user__defined__tree__tuner__vector__s_af0e07f49eef8399a23ba21b66b240c5a}{tell}} )(\mbox{\hyperlink{base_8h_ac7766344cfc56477399913967089e1f5}{ccs\+\_\+tree\+\_\+tuner\+\_\+t}} tuner, size\+\_\+t num\+\_\+evaluations, \mbox{\hyperlink{base_8h_a83520825ddd9981c45a85d2cc865b75e}{ccs\+\_\+tree\+\_\+evaluation\+\_\+t}} $\ast$evaluations)
+\begin{DoxyCompactList}\small\item\em The tree tuner tell interface see ccs\+\_\+tree\+\_\+tuner\+\_\+tell. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{structccs__user__defined__tree__tuner__vector__s_a859c72fab2c8f5bdfa8dbf51840bbd2b}\label{structccs__user__defined__tree__tuner__vector__s_a859c72fab2c8f5bdfa8dbf51840bbd2b}} 
+\mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}}($\ast$ \mbox{\hyperlink{structccs__user__defined__tree__tuner__vector__s_a859c72fab2c8f5bdfa8dbf51840bbd2b}{get\+\_\+optima}} )(\mbox{\hyperlink{base_8h_ac7766344cfc56477399913967089e1f5}{ccs\+\_\+tree\+\_\+tuner\+\_\+t}} tuner, size\+\_\+t num\+\_\+evaluations, \mbox{\hyperlink{base_8h_a83520825ddd9981c45a85d2cc865b75e}{ccs\+\_\+tree\+\_\+evaluation\+\_\+t}} $\ast$evaluations, size\+\_\+t $\ast$num\+\_\+evaluations\+\_\+ret)
+\begin{DoxyCompactList}\small\item\em The tree tuner get\+\_\+optima interface see ccs\+\_\+tree\+\_\+tuner\+\_\+get\+\_\+optima. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{structccs__user__defined__tree__tuner__vector__s_af32ea4af1059b3b36af61d406873e97f}\label{structccs__user__defined__tree__tuner__vector__s_af32ea4af1059b3b36af61d406873e97f}} 
+\mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}}($\ast$ \mbox{\hyperlink{structccs__user__defined__tree__tuner__vector__s_af32ea4af1059b3b36af61d406873e97f}{get\+\_\+history}} )(\mbox{\hyperlink{base_8h_ac7766344cfc56477399913967089e1f5}{ccs\+\_\+tree\+\_\+tuner\+\_\+t}} tuner, size\+\_\+t num\+\_\+evaluations, \mbox{\hyperlink{base_8h_a83520825ddd9981c45a85d2cc865b75e}{ccs\+\_\+tree\+\_\+evaluation\+\_\+t}} $\ast$evaluations, size\+\_\+t $\ast$num\+\_\+evaluations\+\_\+ret)
+\begin{DoxyCompactList}\small\item\em The tree tuner get\+\_\+history interface see ccs\+\_\+tree\+\_\+tuner\+\_\+get\+\_\+history. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{structccs__user__defined__tree__tuner__vector__s_ac3214c03f57bb65bda340ddd67da240d}\label{structccs__user__defined__tree__tuner__vector__s_ac3214c03f57bb65bda340ddd67da240d}} 
+\mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}}($\ast$ \mbox{\hyperlink{structccs__user__defined__tree__tuner__vector__s_ac3214c03f57bb65bda340ddd67da240d}{suggest}} )(\mbox{\hyperlink{base_8h_ac7766344cfc56477399913967089e1f5}{ccs\+\_\+tree\+\_\+tuner\+\_\+t}} tuner, \mbox{\hyperlink{base_8h_a8d77e69135c6c9077d7cf22e952ee411}{ccs\+\_\+tree\+\_\+configuration\+\_\+t}} $\ast$configuration)
+\begin{DoxyCompactList}\small\item\em The tree tuner suggest interface see ccs\+\_\+tree\+\_\+tuner\+\_\+suggest, can be NULL. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{structccs__user__defined__tree__tuner__vector__s_aae0ca0ad11ea2ffdfa3d98d4ab2a0671}\label{structccs__user__defined__tree__tuner__vector__s_aae0ca0ad11ea2ffdfa3d98d4ab2a0671}} 
+\mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}}($\ast$ \mbox{\hyperlink{structccs__user__defined__tree__tuner__vector__s_aae0ca0ad11ea2ffdfa3d98d4ab2a0671}{serialize\+\_\+user\+\_\+state}} )(\mbox{\hyperlink{base_8h_ac7766344cfc56477399913967089e1f5}{ccs\+\_\+tree\+\_\+tuner\+\_\+t}} tuner, size\+\_\+t sate\+\_\+size, void $\ast$state, size\+\_\+t $\ast$state\+\_\+size\+\_\+ret)
+\begin{DoxyCompactList}\small\item\em The tree tuner serialization interface, can be NULL, in which case common tuner data, history and optima will be serialized. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{structccs__user__defined__tree__tuner__vector__s_a754d26d0bece42f1b6694db82853ec9d}\label{structccs__user__defined__tree__tuner__vector__s_a754d26d0bece42f1b6694db82853ec9d}} 
+\mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}}($\ast$ \mbox{\hyperlink{structccs__user__defined__tree__tuner__vector__s_a754d26d0bece42f1b6694db82853ec9d}{deserialize\+\_\+state}} )(\mbox{\hyperlink{base_8h_ac7766344cfc56477399913967089e1f5}{ccs\+\_\+tree\+\_\+tuner\+\_\+t}} tuner, size\+\_\+t size\+\_\+history, \mbox{\hyperlink{base_8h_a83520825ddd9981c45a85d2cc865b75e}{ccs\+\_\+tree\+\_\+evaluation\+\_\+t}} $\ast$history, size\+\_\+t num\+\_\+optima, \mbox{\hyperlink{base_8h_a83520825ddd9981c45a85d2cc865b75e}{ccs\+\_\+tree\+\_\+evaluation\+\_\+t}} $\ast$optima, size\+\_\+t state\+\_\+size, const void $\ast$state)
+\begin{DoxyCompactList}\small\item\em The tree tuner deserialization interface, can be NULL, in which case, the history will be set through the tell interface. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+A structure that define the callbacks the user must provide to create a user defined tree tuner. 
+
+The documentation for this struct was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+include/cconfigspace/\mbox{\hyperlink{tree__tuner_8h}{tree\+\_\+tuner.\+h}}\end{DoxyCompactItemize}

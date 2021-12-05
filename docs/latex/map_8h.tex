@@ -1,0 +1,240 @@
+\hypertarget{map_8h}{}\doxysection{include/cconfigspace/map.h File Reference}
+\label{map_8h}\index{include/cconfigspace/map.h@{include/cconfigspace/map.h}}
+
+
+CCS map defines a key-\/value store.  
+
+
+This graph shows which files directly or indirectly include this file\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=196pt]{map_8h__dep__incl}
+\end{center}
+\end{figure}
+\doxysubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} \mbox{\hyperlink{map_8h_ade06ca9438b2a42faec594c3e3eb8a95}{ccs\+\_\+create\+\_\+map}} (\mbox{\hyperlink{base_8h_add9179f790195c71872783fd97b03a84}{ccs\+\_\+map\+\_\+t}} $\ast$map\+\_\+ret)
+\begin{DoxyCompactList}\small\item\em Create a new map. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} \mbox{\hyperlink{map_8h_a3213ab7d085991098dc0ffc560e45cff}{ccs\+\_\+map\+\_\+set}} (\mbox{\hyperlink{base_8h_add9179f790195c71872783fd97b03a84}{ccs\+\_\+map\+\_\+t}} map, \mbox{\hyperlink{base_8h_a36bc36b2bb0d0613453dd731cdcd2048}{ccs\+\_\+datum\+\_\+t}} key, \mbox{\hyperlink{base_8h_a36bc36b2bb0d0613453dd731cdcd2048}{ccs\+\_\+datum\+\_\+t}} value)
+\begin{DoxyCompactList}\small\item\em Associate a key to a value in a map param\mbox{[}in,out\mbox{]} map param\mbox{[}in\mbox{]} key if a transient string it will be memoized, if a CCS object it will be retained unless \mbox{\hyperlink{base_8h_a2213c712c40d15eaa43f3aa0244344b1a703362e07e43409dc45610c9e6f8f2f8}{CCS\+\_\+\+DATUM\+\_\+\+FLAG\+\_\+\+ID}} is used. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} \mbox{\hyperlink{map_8h_afa02d48a9ffe2990293cb7729d985fe3}{ccs\+\_\+map\+\_\+exist}} (\mbox{\hyperlink{base_8h_add9179f790195c71872783fd97b03a84}{ccs\+\_\+map\+\_\+t}} map, \mbox{\hyperlink{base_8h_a36bc36b2bb0d0613453dd731cdcd2048}{ccs\+\_\+datum\+\_\+t}} key, \mbox{\hyperlink{base_8h_a0e8ba2dfd397017939e6ea2ebc4bb037}{ccs\+\_\+bool\+\_\+t}} $\ast$exist)
+\begin{DoxyCompactList}\small\item\em Check if a key exists in a map param\mbox{[}in\mbox{]} map param\mbox{[}in\mbox{]} key param\mbox{[}out\mbox{]} exist a pointer to a variable that will hold the result of the search. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} \mbox{\hyperlink{map_8h_a0092129b1bb58e2eddb9a49ab2cc286d}{ccs\+\_\+map\+\_\+get}} (\mbox{\hyperlink{base_8h_add9179f790195c71872783fd97b03a84}{ccs\+\_\+map\+\_\+t}} map, \mbox{\hyperlink{base_8h_a36bc36b2bb0d0613453dd731cdcd2048}{ccs\+\_\+datum\+\_\+t}} key, \mbox{\hyperlink{base_8h_a36bc36b2bb0d0613453dd731cdcd2048}{ccs\+\_\+datum\+\_\+t}} $\ast$value\+\_\+ret)
+\begin{DoxyCompactList}\small\item\em Get the value associated with a key param\mbox{[}in\mbox{]} map param\mbox{[}in\mbox{]} key param\mbox{[}out\mbox{]} value\+\_\+ret a pointer to a variable that will hold the returned value or ccs\+\_\+none if not found. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} \mbox{\hyperlink{map_8h_a7007a7e9bd5effa82e382ff9142e9efe}{ccs\+\_\+map\+\_\+del}} (\mbox{\hyperlink{base_8h_add9179f790195c71872783fd97b03a84}{ccs\+\_\+map\+\_\+t}} map, \mbox{\hyperlink{base_8h_a36bc36b2bb0d0613453dd731cdcd2048}{ccs\+\_\+datum\+\_\+t}} key)
+\begin{DoxyCompactList}\small\item\em Delete a key in a map param\mbox{[}in,out\mbox{]} map param\mbox{[}in\mbox{]} key. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} \mbox{\hyperlink{map_8h_a4e43e05ba3ad9bf7ed8135451031ea0a}{ccs\+\_\+map\+\_\+get\+\_\+keys}} (\mbox{\hyperlink{base_8h_add9179f790195c71872783fd97b03a84}{ccs\+\_\+map\+\_\+t}} map, size\+\_\+t num\+\_\+keys, \mbox{\hyperlink{base_8h_a36bc36b2bb0d0613453dd731cdcd2048}{ccs\+\_\+datum\+\_\+t}} $\ast$keys, size\+\_\+t $\ast$num\+\_\+keys\+\_\+ret)
+\begin{DoxyCompactList}\small\item\em Get the keys contained in a map. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} \mbox{\hyperlink{map_8h_a0fc4020e983cde370d4ebecaaf405271}{ccs\+\_\+map\+\_\+get\+\_\+values}} (\mbox{\hyperlink{base_8h_add9179f790195c71872783fd97b03a84}{ccs\+\_\+map\+\_\+t}} map, size\+\_\+t num\+\_\+values, \mbox{\hyperlink{base_8h_a36bc36b2bb0d0613453dd731cdcd2048}{ccs\+\_\+datum\+\_\+t}} $\ast$values, size\+\_\+t $\ast$num\+\_\+values\+\_\+ret)
+\begin{DoxyCompactList}\small\item\em Get the values contained in a map. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} \mbox{\hyperlink{map_8h_abc65445df97ec270c98b20ea17b8e0f6}{ccs\+\_\+map\+\_\+get\+\_\+pairs}} (\mbox{\hyperlink{base_8h_add9179f790195c71872783fd97b03a84}{ccs\+\_\+map\+\_\+t}} map, size\+\_\+t num\+\_\+pairs, \mbox{\hyperlink{base_8h_a36bc36b2bb0d0613453dd731cdcd2048}{ccs\+\_\+datum\+\_\+t}} $\ast$keys, \mbox{\hyperlink{base_8h_a36bc36b2bb0d0613453dd731cdcd2048}{ccs\+\_\+datum\+\_\+t}} $\ast$values, size\+\_\+t $\ast$num\+\_\+pairs\+\_\+ret)
+\begin{DoxyCompactList}\small\item\em Get the keys and values contained in a map. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} \mbox{\hyperlink{map_8h_aafc7cd1eb10b0515f878cf12f81eed85}{ccs\+\_\+map\+\_\+clear}} (\mbox{\hyperlink{base_8h_add9179f790195c71872783fd97b03a84}{ccs\+\_\+map\+\_\+t}} map)
+\begin{DoxyCompactList}\small\item\em Remove all pairs from a map. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+CCS map defines a key-\/value store. 
+
+
+
+\doxysubsection{Function Documentation}
+\mbox{\Hypertarget{map_8h_ade06ca9438b2a42faec594c3e3eb8a95}\label{map_8h_ade06ca9438b2a42faec594c3e3eb8a95}} 
+\index{map.h@{map.h}!ccs\_create\_map@{ccs\_create\_map}}
+\index{ccs\_create\_map@{ccs\_create\_map}!map.h@{map.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_create\_map()}{ccs\_create\_map()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} ccs\+\_\+create\+\_\+map (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_add9179f790195c71872783fd97b03a84}{ccs\+\_\+map\+\_\+t}} $\ast$}]{map\+\_\+ret }\end{DoxyParamCaption})}
+
+
+
+Create a new map. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ out}}  & {\em map\+\_\+ret} & a pointer to the variable that will contain the returned map \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445a9941bd690a240532191c41365f48e8b8}{CCS\+\_\+\+RESULT\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445ab3d1bba2839da0c0fb34fbc00c4be7d5}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+VALUE}} if {\ttfamily rng\+\_\+ret} is NULL 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445aba9b4719b46466cd185bf1a41a232ff6}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+OUT\+\_\+\+OF\+\_\+\+MEMORY}} if there was not enough memory to allocate the new map 
+\end{DoxyReturn}
+\mbox{\Hypertarget{map_8h_aafc7cd1eb10b0515f878cf12f81eed85}\label{map_8h_aafc7cd1eb10b0515f878cf12f81eed85}} 
+\index{map.h@{map.h}!ccs\_map\_clear@{ccs\_map\_clear}}
+\index{ccs\_map\_clear@{ccs\_map\_clear}!map.h@{map.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_map\_clear()}{ccs\_map\_clear()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} ccs\+\_\+map\+\_\+clear (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_add9179f790195c71872783fd97b03a84}{ccs\+\_\+map\+\_\+t}}}]{map }\end{DoxyParamCaption})}
+
+
+
+Remove all pairs from a map. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in,out}}  & {\em map} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445a9941bd690a240532191c41365f48e8b8}{CCS\+\_\+\+RESULT\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445aa3816f69f71f044629bdb21f618ab0e8}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+OBJECT}} if {\ttfamily map} is not a valid CCS map 
+\end{DoxyReturn}
+\mbox{\Hypertarget{map_8h_a7007a7e9bd5effa82e382ff9142e9efe}\label{map_8h_a7007a7e9bd5effa82e382ff9142e9efe}} 
+\index{map.h@{map.h}!ccs\_map\_del@{ccs\_map\_del}}
+\index{ccs\_map\_del@{ccs\_map\_del}!map.h@{map.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_map\_del()}{ccs\_map\_del()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} ccs\+\_\+map\+\_\+del (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_add9179f790195c71872783fd97b03a84}{ccs\+\_\+map\+\_\+t}}}]{map,  }\item[{\mbox{\hyperlink{base_8h_a36bc36b2bb0d0613453dd731cdcd2048}{ccs\+\_\+datum\+\_\+t}}}]{key }\end{DoxyParamCaption})}
+
+
+
+Delete a key in a map param\mbox{[}in,out\mbox{]} map param\mbox{[}in\mbox{]} key. 
+
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445a9941bd690a240532191c41365f48e8b8}{CCS\+\_\+\+RESULT\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445aa3816f69f71f044629bdb21f618ab0e8}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+OBJECT}} if {\ttfamily map} is not a valid CCS map 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445ab3d1bba2839da0c0fb34fbc00c4be7d5}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+VALUE}} if {\ttfamily key} does not exist in {\ttfamily map} 
+\end{DoxyReturn}
+\mbox{\Hypertarget{map_8h_afa02d48a9ffe2990293cb7729d985fe3}\label{map_8h_afa02d48a9ffe2990293cb7729d985fe3}} 
+\index{map.h@{map.h}!ccs\_map\_exist@{ccs\_map\_exist}}
+\index{ccs\_map\_exist@{ccs\_map\_exist}!map.h@{map.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_map\_exist()}{ccs\_map\_exist()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} ccs\+\_\+map\+\_\+exist (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_add9179f790195c71872783fd97b03a84}{ccs\+\_\+map\+\_\+t}}}]{map,  }\item[{\mbox{\hyperlink{base_8h_a36bc36b2bb0d0613453dd731cdcd2048}{ccs\+\_\+datum\+\_\+t}}}]{key,  }\item[{\mbox{\hyperlink{base_8h_a0e8ba2dfd397017939e6ea2ebc4bb037}{ccs\+\_\+bool\+\_\+t}} $\ast$}]{exist }\end{DoxyParamCaption})}
+
+
+
+Check if a key exists in a map param\mbox{[}in\mbox{]} map param\mbox{[}in\mbox{]} key param\mbox{[}out\mbox{]} exist a pointer to a variable that will hold the result of the search. 
+
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445a9941bd690a240532191c41365f48e8b8}{CCS\+\_\+\+RESULT\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445aa3816f69f71f044629bdb21f618ab0e8}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+OBJECT}} if {\ttfamily map} is not a valid CCS map 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445ab3d1bba2839da0c0fb34fbc00c4be7d5}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+VALUE}} if {\ttfamily exist} is NULL 
+\end{DoxyReturn}
+\mbox{\Hypertarget{map_8h_a0092129b1bb58e2eddb9a49ab2cc286d}\label{map_8h_a0092129b1bb58e2eddb9a49ab2cc286d}} 
+\index{map.h@{map.h}!ccs\_map\_get@{ccs\_map\_get}}
+\index{ccs\_map\_get@{ccs\_map\_get}!map.h@{map.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_map\_get()}{ccs\_map\_get()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} ccs\+\_\+map\+\_\+get (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_add9179f790195c71872783fd97b03a84}{ccs\+\_\+map\+\_\+t}}}]{map,  }\item[{\mbox{\hyperlink{base_8h_a36bc36b2bb0d0613453dd731cdcd2048}{ccs\+\_\+datum\+\_\+t}}}]{key,  }\item[{\mbox{\hyperlink{base_8h_a36bc36b2bb0d0613453dd731cdcd2048}{ccs\+\_\+datum\+\_\+t}} $\ast$}]{value\+\_\+ret }\end{DoxyParamCaption})}
+
+
+
+Get the value associated with a key param\mbox{[}in\mbox{]} map param\mbox{[}in\mbox{]} key param\mbox{[}out\mbox{]} value\+\_\+ret a pointer to a variable that will hold the returned value or ccs\+\_\+none if not found. 
+
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445a9941bd690a240532191c41365f48e8b8}{CCS\+\_\+\+RESULT\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445aa3816f69f71f044629bdb21f618ab0e8}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+OBJECT}} if {\ttfamily map} is not a valid CCS map 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445ab3d1bba2839da0c0fb34fbc00c4be7d5}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+VALUE}} if {\ttfamily value\+\_\+ret} is NUL 
+\end{DoxyReturn}
+\mbox{\Hypertarget{map_8h_a4e43e05ba3ad9bf7ed8135451031ea0a}\label{map_8h_a4e43e05ba3ad9bf7ed8135451031ea0a}} 
+\index{map.h@{map.h}!ccs\_map\_get\_keys@{ccs\_map\_get\_keys}}
+\index{ccs\_map\_get\_keys@{ccs\_map\_get\_keys}!map.h@{map.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_map\_get\_keys()}{ccs\_map\_get\_keys()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} ccs\+\_\+map\+\_\+get\+\_\+keys (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_add9179f790195c71872783fd97b03a84}{ccs\+\_\+map\+\_\+t}}}]{map,  }\item[{size\+\_\+t}]{num\+\_\+keys,  }\item[{\mbox{\hyperlink{base_8h_a36bc36b2bb0d0613453dd731cdcd2048}{ccs\+\_\+datum\+\_\+t}} $\ast$}]{keys,  }\item[{size\+\_\+t $\ast$}]{num\+\_\+keys\+\_\+ret }\end{DoxyParamCaption})}
+
+
+
+Get the keys contained in a map. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em map} & \\
+\hline
+\mbox{\texttt{ in}}  & {\em num\+\_\+keys} & the number of keys that can be added to {\ttfamily keys}. If {\ttfamily keys} is not NULL, num\+\_\+keys must be greater than 0 \\
+\hline
+\mbox{\texttt{ out}}  & {\em keys} & an array of {\ttfamily num\+\_\+keys} ccs\+\_\+datum\+\_\+t that will contain the returned keys of NULL. If the array is too big, extra values will be set to ccs\+\_\+none \\
+\hline
+\mbox{\texttt{ out}}  & {\em num\+\_\+keys\+\_\+ret} & a pointer to a variable that will contain the number of keys that are or would be returned. Can be NULL \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445a9941bd690a240532191c41365f48e8b8}{CCS\+\_\+\+RESULT\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445aa3816f69f71f044629bdb21f618ab0e8}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+OBJECT}} if {\ttfamily map} is not a valid CCS map 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445ab3d1bba2839da0c0fb34fbc00c4be7d5}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+VALUE}} if {\ttfamily keys} is NULL and {\ttfamily num\+\_\+keys} is greater than 0; or if {\ttfamily keys} is NULL and num\+\_\+keys\+\_\+ret is NULL; or if {\ttfamily num\+\_\+keys} is less than the number of keys that would be returned 
+\end{DoxyReturn}
+\mbox{\Hypertarget{map_8h_abc65445df97ec270c98b20ea17b8e0f6}\label{map_8h_abc65445df97ec270c98b20ea17b8e0f6}} 
+\index{map.h@{map.h}!ccs\_map\_get\_pairs@{ccs\_map\_get\_pairs}}
+\index{ccs\_map\_get\_pairs@{ccs\_map\_get\_pairs}!map.h@{map.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_map\_get\_pairs()}{ccs\_map\_get\_pairs()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} ccs\+\_\+map\+\_\+get\+\_\+pairs (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_add9179f790195c71872783fd97b03a84}{ccs\+\_\+map\+\_\+t}}}]{map,  }\item[{size\+\_\+t}]{num\+\_\+pairs,  }\item[{\mbox{\hyperlink{base_8h_a36bc36b2bb0d0613453dd731cdcd2048}{ccs\+\_\+datum\+\_\+t}} $\ast$}]{keys,  }\item[{\mbox{\hyperlink{base_8h_a36bc36b2bb0d0613453dd731cdcd2048}{ccs\+\_\+datum\+\_\+t}} $\ast$}]{values,  }\item[{size\+\_\+t $\ast$}]{num\+\_\+pairs\+\_\+ret }\end{DoxyParamCaption})}
+
+
+
+Get the keys and values contained in a map. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em map} & \\
+\hline
+\mbox{\texttt{ in}}  & {\em num\+\_\+pairs} & the number of keys that can be added to {\ttfamily keys}. If {\ttfamily keys} is not NULL, num\+\_\+pairs must be greater than 0 \\
+\hline
+\mbox{\texttt{ out}}  & {\em keys} & an array of {\ttfamily num\+\_\+pairs} ccs\+\_\+datum\+\_\+t that will contain the returned keys of NULL. If the array is too big, extra values will be set to ccs\+\_\+none \\
+\hline
+\mbox{\texttt{ out}}  & {\em values} & an array of {\ttfamily num\+\_\+pairs} ccs\+\_\+datum\+\_\+t that will contain the returned values of NULL. If the array is too big, extra values will be set to ccs\+\_\+none \\
+\hline
+\mbox{\texttt{ out}}  & {\em num\+\_\+pairs\+\_\+ret} & a pointer to a variable that will contain the number of keys that are or would be returned. Can be NULL \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445a9941bd690a240532191c41365f48e8b8}{CCS\+\_\+\+RESULT\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445aa3816f69f71f044629bdb21f618ab0e8}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+OBJECT}} if {\ttfamily map} is not a valid CCS map 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445ab3d1bba2839da0c0fb34fbc00c4be7d5}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+VALUE}} if {\ttfamily keys} is NULL and {\ttfamily num\+\_\+pairs} is greater than 0; or if {\ttfamily keys} is NULL and num\+\_\+pairs\+\_\+ret is NULL; or if {\ttfamily num\+\_\+pairs} is less than the number of values that would be returned; if {\ttfamily values} is NULL and {\ttfamily num\+\_\+pairs} is greater than 0; or if {\ttfamily values} is NULL and num\+\_\+pairs\+\_\+ret is NULL; or if {\ttfamily num\+\_\+pairs} is less than the number of values that would be returned 
+\end{DoxyReturn}
+\mbox{\Hypertarget{map_8h_a0fc4020e983cde370d4ebecaaf405271}\label{map_8h_a0fc4020e983cde370d4ebecaaf405271}} 
+\index{map.h@{map.h}!ccs\_map\_get\_values@{ccs\_map\_get\_values}}
+\index{ccs\_map\_get\_values@{ccs\_map\_get\_values}!map.h@{map.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_map\_get\_values()}{ccs\_map\_get\_values()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} ccs\+\_\+map\+\_\+get\+\_\+values (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_add9179f790195c71872783fd97b03a84}{ccs\+\_\+map\+\_\+t}}}]{map,  }\item[{size\+\_\+t}]{num\+\_\+values,  }\item[{\mbox{\hyperlink{base_8h_a36bc36b2bb0d0613453dd731cdcd2048}{ccs\+\_\+datum\+\_\+t}} $\ast$}]{values,  }\item[{size\+\_\+t $\ast$}]{num\+\_\+values\+\_\+ret }\end{DoxyParamCaption})}
+
+
+
+Get the values contained in a map. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em map} & \\
+\hline
+\mbox{\texttt{ in}}  & {\em num\+\_\+values} & the number of values that can be added to {\ttfamily values}. If {\ttfamily values} is not NULL, num\+\_\+values must be greater than 0 \\
+\hline
+\mbox{\texttt{ out}}  & {\em values} & an array of {\ttfamily num\+\_\+values} ccs\+\_\+datum\+\_\+t that will contain the returned values of NULL. If the array is too big, extra values will be set to ccs\+\_\+none \\
+\hline
+\mbox{\texttt{ out}}  & {\em num\+\_\+values\+\_\+ret} & a pointer to a variable that will contain the number of values that are or would be returned. Can be NULL \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445a9941bd690a240532191c41365f48e8b8}{CCS\+\_\+\+RESULT\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445aa3816f69f71f044629bdb21f618ab0e8}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+OBJECT}} if {\ttfamily map} is not a valid CCS map 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445ab3d1bba2839da0c0fb34fbc00c4be7d5}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+VALUE}} if {\ttfamily values} is NULL and {\ttfamily num\+\_\+values} is greater than 0; or if {\ttfamily values} is NULL and num\+\_\+values\+\_\+ret is NULL; or if {\ttfamily num\+\_\+values} is less than the number of values that would be returned 
+\end{DoxyReturn}
+\mbox{\Hypertarget{map_8h_a3213ab7d085991098dc0ffc560e45cff}\label{map_8h_a3213ab7d085991098dc0ffc560e45cff}} 
+\index{map.h@{map.h}!ccs\_map\_set@{ccs\_map\_set}}
+\index{ccs\_map\_set@{ccs\_map\_set}!map.h@{map.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_map\_set()}{ccs\_map\_set()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} ccs\+\_\+map\+\_\+set (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_add9179f790195c71872783fd97b03a84}{ccs\+\_\+map\+\_\+t}}}]{map,  }\item[{\mbox{\hyperlink{base_8h_a36bc36b2bb0d0613453dd731cdcd2048}{ccs\+\_\+datum\+\_\+t}}}]{key,  }\item[{\mbox{\hyperlink{base_8h_a36bc36b2bb0d0613453dd731cdcd2048}{ccs\+\_\+datum\+\_\+t}}}]{value }\end{DoxyParamCaption})}
+
+
+
+Associate a key to a value in a map param\mbox{[}in,out\mbox{]} map param\mbox{[}in\mbox{]} key if a transient string it will be memoized, if a CCS object it will be retained unless \mbox{\hyperlink{base_8h_a2213c712c40d15eaa43f3aa0244344b1a703362e07e43409dc45610c9e6f8f2f8}{CCS\+\_\+\+DATUM\+\_\+\+FLAG\+\_\+\+ID}} is used. 
+
+param\mbox{[}in\mbox{]} value if a transient string it will be memoized, if a CCS object it will be retained unless \mbox{\hyperlink{base_8h_a2213c712c40d15eaa43f3aa0244344b1a703362e07e43409dc45610c9e6f8f2f8}{CCS\+\_\+\+DATUM\+\_\+\+FLAG\+\_\+\+ID}} is used. \begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445a9941bd690a240532191c41365f48e8b8}{CCS\+\_\+\+RESULT\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445aa3816f69f71f044629bdb21f618ab0e8}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+OBJECT}} if {\ttfamily map} is not a valid CCS map 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445aba9b4719b46466cd185bf1a41a232ff6}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+OUT\+\_\+\+OF\+\_\+\+MEMORY}} if there was not enough memory to allocate data structures 
+\end{DoxyReturn}

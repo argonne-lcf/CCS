@@ -1,0 +1,250 @@
+\hypertarget{tree__configuration_8h}{}\doxysection{include/cconfigspace/tree\+\_\+configuration.h File Reference}
+\label{tree__configuration_8h}\index{include/cconfigspace/tree\_configuration.h@{include/cconfigspace/tree\_configuration.h}}
+
+
+A tree configuration is a position on the tree (see \mbox{\hyperlink{tree_8h}{tree.\+h}}) of a tree space (see \mbox{\hyperlink{tree__space_8h}{tree\+\_\+space.\+h}}).  
+
+
+This graph shows which files directly or indirectly include this file\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=196pt]{tree__configuration_8h__dep__incl}
+\end{center}
+\end{figure}
+\doxysubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} \mbox{\hyperlink{tree__configuration_8h_afaeb1d8fe95ff3dbde414576096dfb61}{ccs\+\_\+create\+\_\+tree\+\_\+configuration}} (\mbox{\hyperlink{base_8h_a17f468f642fba08b75bf3aa77ff0bfd9}{ccs\+\_\+tree\+\_\+space\+\_\+t}} tree\+\_\+space, size\+\_\+t position\+\_\+size, const size\+\_\+t $\ast$position, \mbox{\hyperlink{base_8h_a8d77e69135c6c9077d7cf22e952ee411}{ccs\+\_\+tree\+\_\+configuration\+\_\+t}} $\ast$configuration\+\_\+ret)
+\begin{DoxyCompactList}\small\item\em Create a new instance of a tree configuration on a given tree\+\_\+space. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} \mbox{\hyperlink{tree__configuration_8h_a28b9a1def21f398a9bc6bdbe9b9c524c}{ccs\+\_\+tree\+\_\+configuration\+\_\+get\+\_\+tree\+\_\+space}} (\mbox{\hyperlink{base_8h_a8d77e69135c6c9077d7cf22e952ee411}{ccs\+\_\+tree\+\_\+configuration\+\_\+t}} configuration, \mbox{\hyperlink{base_8h_a17f468f642fba08b75bf3aa77ff0bfd9}{ccs\+\_\+tree\+\_\+space\+\_\+t}} $\ast$tree\+\_\+space\+\_\+ret)
+\begin{DoxyCompactList}\small\item\em Get the tree space associated to the configuration. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} \mbox{\hyperlink{tree__configuration_8h_a0c7eac55b5ba2ae70e9140732180a0d7}{ccs\+\_\+tree\+\_\+configuration\+\_\+get\+\_\+position}} (\mbox{\hyperlink{base_8h_a8d77e69135c6c9077d7cf22e952ee411}{ccs\+\_\+tree\+\_\+configuration\+\_\+t}} configuration, size\+\_\+t position\+\_\+size, size\+\_\+t $\ast$position, size\+\_\+t $\ast$position\+\_\+size\+\_\+ret)
+\begin{DoxyCompactList}\small\item\em Get the position of the configuration. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} \mbox{\hyperlink{tree__configuration_8h_ac12f908ce15dca87258d40065c1a0b22}{ccs\+\_\+tree\+\_\+configuration\+\_\+get\+\_\+values}} (\mbox{\hyperlink{base_8h_a8d77e69135c6c9077d7cf22e952ee411}{ccs\+\_\+tree\+\_\+configuration\+\_\+t}} configuration, size\+\_\+t num\+\_\+values, \mbox{\hyperlink{base_8h_a36bc36b2bb0d0613453dd731cdcd2048}{ccs\+\_\+datum\+\_\+t}} $\ast$values, size\+\_\+t $\ast$num\+\_\+values\+\_\+ret)
+\begin{DoxyCompactList}\small\item\em Get the values along the path of the configuration. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} \mbox{\hyperlink{tree__configuration_8h_a5831320ab3b8089c8cd1b8a709e85b28}{ccs\+\_\+tree\+\_\+configuration\+\_\+get\+\_\+node}} (\mbox{\hyperlink{base_8h_a8d77e69135c6c9077d7cf22e952ee411}{ccs\+\_\+tree\+\_\+configuration\+\_\+t}} configuration, \mbox{\hyperlink{base_8h_aa1637be0f29845650cb939959ce7d2c5}{ccs\+\_\+tree\+\_\+t}} $\ast$node\+\_\+ret)
+\begin{DoxyCompactList}\small\item\em Get the node pointed to by the configuration. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} \mbox{\hyperlink{tree__configuration_8h_a246e069652971e919af1490972cd3e03}{ccs\+\_\+tree\+\_\+configuration\+\_\+check}} (\mbox{\hyperlink{base_8h_a8d77e69135c6c9077d7cf22e952ee411}{ccs\+\_\+tree\+\_\+configuration\+\_\+t}} configuration, \mbox{\hyperlink{base_8h_a0e8ba2dfd397017939e6ea2ebc4bb037}{ccs\+\_\+bool\+\_\+t}} $\ast$is\+\_\+valid\+\_\+ret)
+\begin{DoxyCompactList}\small\item\em Verify that the position of the configuration is a valid position in the tree space. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} \mbox{\hyperlink{tree__configuration_8h_a97851bcfb8c7d8b6ba0f508f588b6963}{ccs\+\_\+tree\+\_\+configuration\+\_\+hash}} (\mbox{\hyperlink{base_8h_a8d77e69135c6c9077d7cf22e952ee411}{ccs\+\_\+tree\+\_\+configuration\+\_\+t}} configuration, \mbox{\hyperlink{base_8h_a8ab762d1e926e05224180c4f3455bf40}{ccs\+\_\+hash\+\_\+t}} $\ast$hash\+\_\+ret)
+\begin{DoxyCompactList}\small\item\em Compute a hash value for the configuration by hashing together the tree space reference, the position size and the position values. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} \mbox{\hyperlink{tree__configuration_8h_abd4e798199108973b3f2e748a000fc2d}{ccs\+\_\+tree\+\_\+configuration\+\_\+cmp}} (\mbox{\hyperlink{base_8h_a8d77e69135c6c9077d7cf22e952ee411}{ccs\+\_\+tree\+\_\+configuration\+\_\+t}} configuration, \mbox{\hyperlink{base_8h_a8d77e69135c6c9077d7cf22e952ee411}{ccs\+\_\+tree\+\_\+configuration\+\_\+t}} other\+\_\+configuration, int $\ast$cmp\+\_\+ret)
+\begin{DoxyCompactList}\small\item\em Define a strict ordering of tree configuration instances. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+A tree configuration is a position on the tree (see \mbox{\hyperlink{tree_8h}{tree.\+h}}) of a tree space (see \mbox{\hyperlink{tree__space_8h}{tree\+\_\+space.\+h}}). 
+
+
+
+\doxysubsection{Function Documentation}
+\mbox{\Hypertarget{tree__configuration_8h_afaeb1d8fe95ff3dbde414576096dfb61}\label{tree__configuration_8h_afaeb1d8fe95ff3dbde414576096dfb61}} 
+\index{tree\_configuration.h@{tree\_configuration.h}!ccs\_create\_tree\_configuration@{ccs\_create\_tree\_configuration}}
+\index{ccs\_create\_tree\_configuration@{ccs\_create\_tree\_configuration}!tree\_configuration.h@{tree\_configuration.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_create\_tree\_configuration()}{ccs\_create\_tree\_configuration()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} ccs\+\_\+create\+\_\+tree\+\_\+configuration (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_a17f468f642fba08b75bf3aa77ff0bfd9}{ccs\+\_\+tree\+\_\+space\+\_\+t}}}]{tree\+\_\+space,  }\item[{size\+\_\+t}]{position\+\_\+size,  }\item[{const size\+\_\+t $\ast$}]{position,  }\item[{\mbox{\hyperlink{base_8h_a8d77e69135c6c9077d7cf22e952ee411}{ccs\+\_\+tree\+\_\+configuration\+\_\+t}} $\ast$}]{configuration\+\_\+ret }\end{DoxyParamCaption})}
+
+
+
+Create a new instance of a tree configuration on a given tree\+\_\+space. 
+
+An empty position targets the root of the tree. 
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em tree\+\_\+space} & \\
+\hline
+\mbox{\texttt{ in}}  & {\em position\+\_\+size} & the number of entries in the {\ttfamily position} array \\
+\hline
+\mbox{\texttt{ in}}  & {\em position} & an array of indexes defining a location in the tree. can be NULL if {\ttfamily position\+\_\+size} is 0 \\
+\hline
+\mbox{\texttt{ out}}  & {\em configuration\+\_\+ret} & a pointer to the variable that will hold the newly created tree configuration \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445a9941bd690a240532191c41365f48e8b8}{CCS\+\_\+\+RESULT\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445aa3816f69f71f044629bdb21f618ab0e8}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+OBJECT}} if {\ttfamily tree} space is not a valid CCS tree space 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445ab3d1bba2839da0c0fb34fbc00c4be7d5}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+VALUE}} if {\ttfamily configuration\+\_\+ret} is NULL; or if {\ttfamily position} is NULL and {\ttfamily position\+\_\+size} is greater than 0 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445aba9b4719b46466cd185bf1a41a232ff6}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+OUT\+\_\+\+OF\+\_\+\+MEMORY}} if there was a lack of memory to allocate the new tree configuration 
+\end{DoxyReturn}
+\mbox{\Hypertarget{tree__configuration_8h_a246e069652971e919af1490972cd3e03}\label{tree__configuration_8h_a246e069652971e919af1490972cd3e03}} 
+\index{tree\_configuration.h@{tree\_configuration.h}!ccs\_tree\_configuration\_check@{ccs\_tree\_configuration\_check}}
+\index{ccs\_tree\_configuration\_check@{ccs\_tree\_configuration\_check}!tree\_configuration.h@{tree\_configuration.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_tree\_configuration\_check()}{ccs\_tree\_configuration\_check()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} ccs\+\_\+tree\+\_\+configuration\+\_\+check (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_a8d77e69135c6c9077d7cf22e952ee411}{ccs\+\_\+tree\+\_\+configuration\+\_\+t}}}]{configuration,  }\item[{\mbox{\hyperlink{base_8h_a0e8ba2dfd397017939e6ea2ebc4bb037}{ccs\+\_\+bool\+\_\+t}} $\ast$}]{is\+\_\+valid\+\_\+ret }\end{DoxyParamCaption})}
+
+
+
+Verify that the position of the configuration is a valid position in the tree space. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em configuration} & \\
+\hline
+\mbox{\texttt{ out}}  & {\em is\+\_\+valid\+\_\+ret} & a pointer to a variable that will hold the result of the check. Result will be \mbox{\hyperlink{base_8h_a4598e8e24f836accf0ebc8c73973714d}{CCS\+\_\+\+TRUE}} if the configuration is valid. Result will be \mbox{\hyperlink{base_8h_a20d15198405a9b9c79c8a093345bc67b}{CCS\+\_\+\+FALSE}} if the position does not reference a node of the tree. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445a9941bd690a240532191c41365f48e8b8}{CCS\+\_\+\+RESULT\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445aa3816f69f71f044629bdb21f618ab0e8}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+OBJECT}} if {\ttfamily configuration} is not a valid CCS tree configuration 
+\end{DoxyReturn}
+\mbox{\Hypertarget{tree__configuration_8h_abd4e798199108973b3f2e748a000fc2d}\label{tree__configuration_8h_abd4e798199108973b3f2e748a000fc2d}} 
+\index{tree\_configuration.h@{tree\_configuration.h}!ccs\_tree\_configuration\_cmp@{ccs\_tree\_configuration\_cmp}}
+\index{ccs\_tree\_configuration\_cmp@{ccs\_tree\_configuration\_cmp}!tree\_configuration.h@{tree\_configuration.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_tree\_configuration\_cmp()}{ccs\_tree\_configuration\_cmp()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} ccs\+\_\+tree\+\_\+configuration\+\_\+cmp (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_a8d77e69135c6c9077d7cf22e952ee411}{ccs\+\_\+tree\+\_\+configuration\+\_\+t}}}]{configuration,  }\item[{\mbox{\hyperlink{base_8h_a8d77e69135c6c9077d7cf22e952ee411}{ccs\+\_\+tree\+\_\+configuration\+\_\+t}}}]{other\+\_\+configuration,  }\item[{int $\ast$}]{cmp\+\_\+ret }\end{DoxyParamCaption})}
+
+
+
+Define a strict ordering of tree configuration instances. 
+
+Tree space, size of position and position values are compared. 
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em configuration} & the first configuration \\
+\hline
+\mbox{\texttt{ in}}  & {\em other\+\_\+configuration} & the second configuration \\
+\hline
+\mbox{\texttt{ out}}  & {\em cmp\+\_\+ret} & the pointer to the variable that will contain the result of the comparison. Will contain -\/1, 0, or 1 depending on if the first configuration is found to be respectively lesser than, equal, or greater then the second configuration \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445a9941bd690a240532191c41365f48e8b8}{CCS\+\_\+\+RESULT\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445aa3816f69f71f044629bdb21f618ab0e8}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+OBJECT}} if {\ttfamily configuration} or {\ttfamily other\+\_\+configuration} are not a valid CCS tree configurations 
+\end{DoxyReturn}
+\mbox{\Hypertarget{tree__configuration_8h_a5831320ab3b8089c8cd1b8a709e85b28}\label{tree__configuration_8h_a5831320ab3b8089c8cd1b8a709e85b28}} 
+\index{tree\_configuration.h@{tree\_configuration.h}!ccs\_tree\_configuration\_get\_node@{ccs\_tree\_configuration\_get\_node}}
+\index{ccs\_tree\_configuration\_get\_node@{ccs\_tree\_configuration\_get\_node}!tree\_configuration.h@{tree\_configuration.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_tree\_configuration\_get\_node()}{ccs\_tree\_configuration\_get\_node()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} ccs\+\_\+tree\+\_\+configuration\+\_\+get\+\_\+node (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_a8d77e69135c6c9077d7cf22e952ee411}{ccs\+\_\+tree\+\_\+configuration\+\_\+t}}}]{configuration,  }\item[{\mbox{\hyperlink{base_8h_aa1637be0f29845650cb939959ce7d2c5}{ccs\+\_\+tree\+\_\+t}} $\ast$}]{node\+\_\+ret }\end{DoxyParamCaption})}
+
+
+
+Get the node pointed to by the configuration. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em configuration} & \\
+\hline
+\mbox{\texttt{ out}}  & {\em node\+\_\+ret} & a pointer to a variable that will contain the node to be returned \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445a9941bd690a240532191c41365f48e8b8}{CCS\+\_\+\+RESULT\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445aa3816f69f71f044629bdb21f618ab0e8}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+OBJECT}} if {\ttfamily configuration} is not a valid CCS tree configuration 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445a753eb0ac863f753772eb3a60379af791}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+TREE}} if the configuration\textquotesingle{}s position does not reference a node in the tree. 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445ab3d1bba2839da0c0fb34fbc00c4be7d5}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+VALUE}} {\ttfamily node\+\_\+ret} is NULL 
+\end{DoxyReturn}
+\mbox{\Hypertarget{tree__configuration_8h_a0c7eac55b5ba2ae70e9140732180a0d7}\label{tree__configuration_8h_a0c7eac55b5ba2ae70e9140732180a0d7}} 
+\index{tree\_configuration.h@{tree\_configuration.h}!ccs\_tree\_configuration\_get\_position@{ccs\_tree\_configuration\_get\_position}}
+\index{ccs\_tree\_configuration\_get\_position@{ccs\_tree\_configuration\_get\_position}!tree\_configuration.h@{tree\_configuration.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_tree\_configuration\_get\_position()}{ccs\_tree\_configuration\_get\_position()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} ccs\+\_\+tree\+\_\+configuration\+\_\+get\+\_\+position (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_a8d77e69135c6c9077d7cf22e952ee411}{ccs\+\_\+tree\+\_\+configuration\+\_\+t}}}]{configuration,  }\item[{size\+\_\+t}]{position\+\_\+size,  }\item[{size\+\_\+t $\ast$}]{position,  }\item[{size\+\_\+t $\ast$}]{position\+\_\+size\+\_\+ret }\end{DoxyParamCaption})}
+
+
+
+Get the position of the configuration. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em configuration} & \\
+\hline
+\mbox{\texttt{ in}}  & {\em position\+\_\+size} & the size of the {\ttfamily position} array \\
+\hline
+\mbox{\texttt{ out}}  & {\em position} & an array of size {\ttfamily position\+\_\+size} to hold the returned values, or NULL. If the array is too big, extra values are set to 0 \\
+\hline
+\mbox{\texttt{ out}}  & {\em position\+\_\+size\+\_\+ret} & a pointer to a variable that will contain the number of values that are or would be returned. Can be NULL \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445a9941bd690a240532191c41365f48e8b8}{CCS\+\_\+\+RESULT\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445aa3816f69f71f044629bdb21f618ab0e8}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+OBJECT}} if {\ttfamily configuration} is not a valid CCS tree configuration 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445ab3d1bba2839da0c0fb34fbc00c4be7d5}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+VALUE}} if {\ttfamily position} is NULL and {\ttfamily position\+\_\+size} is greater than 0; or if {\ttfamily position} is NULL and {\ttfamily position\+\_\+size\+\_\+ret} is NULL; or if {\ttfamily position\+\_\+size} is less than the number of values that would be returned 
+\end{DoxyReturn}
+\mbox{\Hypertarget{tree__configuration_8h_a28b9a1def21f398a9bc6bdbe9b9c524c}\label{tree__configuration_8h_a28b9a1def21f398a9bc6bdbe9b9c524c}} 
+\index{tree\_configuration.h@{tree\_configuration.h}!ccs\_tree\_configuration\_get\_tree\_space@{ccs\_tree\_configuration\_get\_tree\_space}}
+\index{ccs\_tree\_configuration\_get\_tree\_space@{ccs\_tree\_configuration\_get\_tree\_space}!tree\_configuration.h@{tree\_configuration.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_tree\_configuration\_get\_tree\_space()}{ccs\_tree\_configuration\_get\_tree\_space()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} ccs\+\_\+tree\+\_\+configuration\+\_\+get\+\_\+tree\+\_\+space (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_a8d77e69135c6c9077d7cf22e952ee411}{ccs\+\_\+tree\+\_\+configuration\+\_\+t}}}]{configuration,  }\item[{\mbox{\hyperlink{base_8h_a17f468f642fba08b75bf3aa77ff0bfd9}{ccs\+\_\+tree\+\_\+space\+\_\+t}} $\ast$}]{tree\+\_\+space\+\_\+ret }\end{DoxyParamCaption})}
+
+
+
+Get the tree space associated to the configuration. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em configuration} & \\
+\hline
+\mbox{\texttt{ out}}  & {\em tree\+\_\+space\+\_\+ret} & a pointer to the variable that will contain the tree space \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445a9941bd690a240532191c41365f48e8b8}{CCS\+\_\+\+RESULT\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445aa3816f69f71f044629bdb21f618ab0e8}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+OBJECT}} if {\ttfamily configuration} is not a valid CCS configuration 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445ab3d1bba2839da0c0fb34fbc00c4be7d5}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+VALUE}} if {\ttfamily configuration\+\_\+space\+\_\+ret} is NULL 
+\end{DoxyReturn}
+\mbox{\Hypertarget{tree__configuration_8h_ac12f908ce15dca87258d40065c1a0b22}\label{tree__configuration_8h_ac12f908ce15dca87258d40065c1a0b22}} 
+\index{tree\_configuration.h@{tree\_configuration.h}!ccs\_tree\_configuration\_get\_values@{ccs\_tree\_configuration\_get\_values}}
+\index{ccs\_tree\_configuration\_get\_values@{ccs\_tree\_configuration\_get\_values}!tree\_configuration.h@{tree\_configuration.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_tree\_configuration\_get\_values()}{ccs\_tree\_configuration\_get\_values()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} ccs\+\_\+tree\+\_\+configuration\+\_\+get\+\_\+values (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_a8d77e69135c6c9077d7cf22e952ee411}{ccs\+\_\+tree\+\_\+configuration\+\_\+t}}}]{configuration,  }\item[{size\+\_\+t}]{num\+\_\+values,  }\item[{\mbox{\hyperlink{base_8h_a36bc36b2bb0d0613453dd731cdcd2048}{ccs\+\_\+datum\+\_\+t}} $\ast$}]{values,  }\item[{size\+\_\+t $\ast$}]{num\+\_\+values\+\_\+ret }\end{DoxyParamCaption})}
+
+
+
+Get the values along the path of the configuration. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em configuration} & \\
+\hline
+\mbox{\texttt{ in}}  & {\em num\+\_\+values} & the size of the {\ttfamily values} array \\
+\hline
+\mbox{\texttt{ out}}  & {\em values} & an array of size {\ttfamily num\+\_\+values} to hold the returned values, or NULL. If the array is too big, extra values are set to \mbox{\hyperlink{base_8h_a302e6ecbf08c6c8a059fc775c88f21c0a706a91fea9636301fa8ca6dec809fd1e}{CCS\+\_\+\+DATA\+\_\+\+TYPE\+\_\+\+NONE}} \\
+\hline
+\mbox{\texttt{ out}}  & {\em num\+\_\+values\+\_\+ret} & a pointer to a variable that will contain the number of values that are or would be returned. Can be NULL \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445a9941bd690a240532191c41365f48e8b8}{CCS\+\_\+\+RESULT\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445aa3816f69f71f044629bdb21f618ab0e8}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+OBJECT}} if {\ttfamily configuration} is not a valid CCS tree configuration 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445a753eb0ac863f753772eb3a60379af791}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+TREE}} if the configuration\textquotesingle{}s position does not reference a node in the tree. 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445ab3d1bba2839da0c0fb34fbc00c4be7d5}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+VALUE}} if {\ttfamily values} is NULL and {\ttfamily num\+\_\+values} is greater than 0; or if {\ttfamily values} is NULL and {\ttfamily num\+\_\+values\+\_\+ret} is NULL; or if {\ttfamily num\+\_\+values} is less than the number of values that would be returned 
+\end{DoxyReturn}
+\mbox{\Hypertarget{tree__configuration_8h_a97851bcfb8c7d8b6ba0f508f588b6963}\label{tree__configuration_8h_a97851bcfb8c7d8b6ba0f508f588b6963}} 
+\index{tree\_configuration.h@{tree\_configuration.h}!ccs\_tree\_configuration\_hash@{ccs\_tree\_configuration\_hash}}
+\index{ccs\_tree\_configuration\_hash@{ccs\_tree\_configuration\_hash}!tree\_configuration.h@{tree\_configuration.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_tree\_configuration\_hash()}{ccs\_tree\_configuration\_hash()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} ccs\+\_\+tree\+\_\+configuration\+\_\+hash (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_a8d77e69135c6c9077d7cf22e952ee411}{ccs\+\_\+tree\+\_\+configuration\+\_\+t}}}]{configuration,  }\item[{\mbox{\hyperlink{base_8h_a8ab762d1e926e05224180c4f3455bf40}{ccs\+\_\+hash\+\_\+t}} $\ast$}]{hash\+\_\+ret }\end{DoxyParamCaption})}
+
+
+
+Compute a hash value for the configuration by hashing together the tree space reference, the position size and the position values. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em configuration} & \\
+\hline
+\mbox{\texttt{ out}}  & {\em hash\+\_\+ret} & the address of the variable that will contain the hash value \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445a9941bd690a240532191c41365f48e8b8}{CCS\+\_\+\+RESULT\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445aa3816f69f71f044629bdb21f618ab0e8}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+OBJECT}} if {\ttfamily configuration} is not a valid CCS tree configuration 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445ab3d1bba2839da0c0fb34fbc00c4be7d5}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+VALUE}} if {\ttfamily hash\+\_\+ret} is NULL 
+\end{DoxyReturn}

@@ -1,0 +1,864 @@
+\hypertarget{expression_8h}{}\doxysection{include/cconfigspace/expression.h File Reference}
+\label{expression_8h}\index{include/cconfigspace/expression.h@{include/cconfigspace/expression.h}}
+
+
+An expression in CCS is a combination of constants, variables (parameters), and operators.  
+
+
+This graph shows which files directly or indirectly include this file\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=196pt]{expression_8h__dep__incl}
+\end{center}
+\end{figure}
+\doxysubsection*{Typedefs}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{expression_8h_ace5a553a6440585e7530e448813d64ae}\label{expression_8h_ace5a553a6440585e7530e448813d64ae}} 
+typedef enum \mbox{\hyperlink{expression_8h_abb49409e85924f2b77e152d7f9fa52c9}{ccs\+\_\+expression\+\_\+type\+\_\+e}} \mbox{\hyperlink{expression_8h_ace5a553a6440585e7530e448813d64ae}{ccs\+\_\+expression\+\_\+type\+\_\+t}}
+\begin{DoxyCompactList}\small\item\em A commodity type to represent an expression type. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{expression_8h_a68b3fc02b2f6f7548cc0c8fd23357d7a}\label{expression_8h_a68b3fc02b2f6f7548cc0c8fd23357d7a}} 
+typedef enum \mbox{\hyperlink{expression_8h_abd247ea6f943061feeb8650560df52b4}{ccs\+\_\+associativity\+\_\+type\+\_\+e}} \mbox{\hyperlink{expression_8h_a68b3fc02b2f6f7548cc0c8fd23357d7a}{ccs\+\_\+associativity\+\_\+type\+\_\+t}}
+\begin{DoxyCompactList}\small\item\em A commodity type to represent an associativity. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{expression_8h_a399bb7694e2c1a5bdc2a2571227f6057}\label{expression_8h_a399bb7694e2c1a5bdc2a2571227f6057}} 
+typedef enum \mbox{\hyperlink{expression_8h_af1692d89096228942239843afb9c75ff}{ccs\+\_\+terminal\+\_\+type\+\_\+e}} \mbox{\hyperlink{expression_8h_a399bb7694e2c1a5bdc2a2571227f6057}{ccs\+\_\+terminal\+\_\+type\+\_\+t}}
+\begin{DoxyCompactList}\small\item\em A commodity type to represend CCS terminal types. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Enumerations}
+\begin{DoxyCompactItemize}
+\item 
+enum \mbox{\hyperlink{expression_8h_abb49409e85924f2b77e152d7f9fa52c9}{ccs\+\_\+expression\+\_\+type\+\_\+e}} \{ \newline
+\mbox{\hyperlink{expression_8h_abb49409e85924f2b77e152d7f9fa52c9a8aec31856d810758a17c91b06c34ff3d}{CCS\+\_\+\+EXPRESSION\+\_\+\+TYPE\+\_\+\+OR}} = 0
+, \mbox{\hyperlink{expression_8h_abb49409e85924f2b77e152d7f9fa52c9a7e152bb29998b5f756e1b0e1e47d5229}{CCS\+\_\+\+EXPRESSION\+\_\+\+TYPE\+\_\+\+AND}}
+, \mbox{\hyperlink{expression_8h_abb49409e85924f2b77e152d7f9fa52c9a1f785f2d01e5079dd57ddc5433d958bc}{CCS\+\_\+\+EXPRESSION\+\_\+\+TYPE\+\_\+\+EQUAL}}
+, \mbox{\hyperlink{expression_8h_abb49409e85924f2b77e152d7f9fa52c9a53f3d988a00aebd7c3666a09e9200264}{CCS\+\_\+\+EXPRESSION\+\_\+\+TYPE\+\_\+\+NOT\+\_\+\+EQUAL}}
+, \newline
+\mbox{\hyperlink{expression_8h_abb49409e85924f2b77e152d7f9fa52c9abfee9a94a1fe8b5222dc17a8fbe065aa}{CCS\+\_\+\+EXPRESSION\+\_\+\+TYPE\+\_\+\+LESS}}
+, \mbox{\hyperlink{expression_8h_abb49409e85924f2b77e152d7f9fa52c9ae4534723cddd92b37dedd331d9275e21}{CCS\+\_\+\+EXPRESSION\+\_\+\+TYPE\+\_\+\+GREATER}}
+, \mbox{\hyperlink{expression_8h_abb49409e85924f2b77e152d7f9fa52c9a0207295db4d22b2e9abd3e17df7f1252}{CCS\+\_\+\+EXPRESSION\+\_\+\+TYPE\+\_\+\+LESS\+\_\+\+OR\+\_\+\+EQUAL}}
+, \mbox{\hyperlink{expression_8h_abb49409e85924f2b77e152d7f9fa52c9a7a3cf8606fb65b6fbf4d68f6d9017cab}{CCS\+\_\+\+EXPRESSION\+\_\+\+TYPE\+\_\+\+GREATER\+\_\+\+OR\+\_\+\+EQUAL}}
+, \newline
+\mbox{\hyperlink{expression_8h_abb49409e85924f2b77e152d7f9fa52c9ab9f156f568afe8c2dae276ef157c298c}{CCS\+\_\+\+EXPRESSION\+\_\+\+TYPE\+\_\+\+ADD}}
+, \mbox{\hyperlink{expression_8h_abb49409e85924f2b77e152d7f9fa52c9ad3cddae7b0746d632d13f06fca11b51b}{CCS\+\_\+\+EXPRESSION\+\_\+\+TYPE\+\_\+\+SUBSTRACT}}
+, \mbox{\hyperlink{expression_8h_abb49409e85924f2b77e152d7f9fa52c9a6e8a1bf87b98dcb9f43e6a030ade0619}{CCS\+\_\+\+EXPRESSION\+\_\+\+TYPE\+\_\+\+MULTIPLY}}
+, \mbox{\hyperlink{expression_8h_abb49409e85924f2b77e152d7f9fa52c9a3fa8b7da089bf1cc1205dcad1d135c7f}{CCS\+\_\+\+EXPRESSION\+\_\+\+TYPE\+\_\+\+DIVIDE}}
+, \newline
+\mbox{\hyperlink{expression_8h_abb49409e85924f2b77e152d7f9fa52c9a14be1bdebef457a449c7c843aff23f56}{CCS\+\_\+\+EXPRESSION\+\_\+\+TYPE\+\_\+\+MODULO}}
+, \mbox{\hyperlink{expression_8h_abb49409e85924f2b77e152d7f9fa52c9aba35ab8d726ececd0d869c1e8f866960}{CCS\+\_\+\+EXPRESSION\+\_\+\+TYPE\+\_\+\+POSITIVE}}
+, \mbox{\hyperlink{expression_8h_abb49409e85924f2b77e152d7f9fa52c9a187aa250aaeeea7bc05b202e247d1def}{CCS\+\_\+\+EXPRESSION\+\_\+\+TYPE\+\_\+\+NEGATIVE}}
+, \mbox{\hyperlink{expression_8h_abb49409e85924f2b77e152d7f9fa52c9a10cc07cc14ea9e949795021ed98df4bf}{CCS\+\_\+\+EXPRESSION\+\_\+\+TYPE\+\_\+\+NOT}}
+, \newline
+\mbox{\hyperlink{expression_8h_abb49409e85924f2b77e152d7f9fa52c9a783f8f9c020870e2642d2ced50fd75b6}{CCS\+\_\+\+EXPRESSION\+\_\+\+TYPE\+\_\+\+IN}}
+, \mbox{\hyperlink{expression_8h_abb49409e85924f2b77e152d7f9fa52c9aea0160e9c5d0f71baba9f14654144c49}{CCS\+\_\+\+EXPRESSION\+\_\+\+TYPE\+\_\+\+LIST}}
+, \mbox{\hyperlink{expression_8h_abb49409e85924f2b77e152d7f9fa52c9a3e5b2d2374221cc07e160f83ba82f2d4}{CCS\+\_\+\+EXPRESSION\+\_\+\+TYPE\+\_\+\+LITERAL}}
+, \mbox{\hyperlink{expression_8h_abb49409e85924f2b77e152d7f9fa52c9ad3e2846b46b0006af3da41f168ab06f1}{CCS\+\_\+\+EXPRESSION\+\_\+\+TYPE\+\_\+\+VARIABLE}}
+, \newline
+\mbox{\hyperlink{expression_8h_abb49409e85924f2b77e152d7f9fa52c9a15a9766ce06301845b460bc7dfed6aec}{CCS\+\_\+\+EXPRESSION\+\_\+\+TYPE\+\_\+\+MAX}}
+, \mbox{\hyperlink{expression_8h_abb49409e85924f2b77e152d7f9fa52c9a08bb13613c70741b94bb30fa10b053a0}{CCS\+\_\+\+EXPRESSION\+\_\+\+FORCE\+\_\+32\+BIT}} = INT32\+\_\+\+MAX
+ \}
+\begin{DoxyCompactList}\small\item\em Supported expression types. \end{DoxyCompactList}\item 
+enum \mbox{\hyperlink{expression_8h_abd247ea6f943061feeb8650560df52b4}{ccs\+\_\+associativity\+\_\+type\+\_\+e}} \{ \newline
+\mbox{\hyperlink{expression_8h_abd247ea6f943061feeb8650560df52b4a57b63764d1a43ab3dfddc6cb44a7cc3a}{CCS\+\_\+\+ASSOCIATIVITY\+\_\+\+TYPE\+\_\+\+NONE}} = 0
+, \mbox{\hyperlink{expression_8h_abd247ea6f943061feeb8650560df52b4a0f0b4a6ff4c5a34b3b638780f629e285}{CCS\+\_\+\+ASSOCIATIVITY\+\_\+\+TYPE\+\_\+\+LEFT\+\_\+\+TO\+\_\+\+RIGHT}}
+, \mbox{\hyperlink{expression_8h_abd247ea6f943061feeb8650560df52b4aa86a55ec3749ac2e33debaebbc598657}{CCS\+\_\+\+ASSOCIATIVITY\+\_\+\+TYPE\+\_\+\+RIGHT\+\_\+\+TO\+\_\+\+LEFT}}
+, \mbox{\hyperlink{expression_8h_abd247ea6f943061feeb8650560df52b4a869cc468b2be40df6b5d76d95b93d202}{CCS\+\_\+\+ASSOCIATIVITY\+\_\+\+TYPE\+\_\+\+MAX}}
+, \newline
+\mbox{\hyperlink{expression_8h_abd247ea6f943061feeb8650560df52b4ac7750ee08e78acb068e4876db222b451}{CCS\+\_\+\+ASSOCIATIVITY\+\_\+\+TYPE\+\_\+\+FORCE\+\_\+32\+BIT}} = INT32\+\_\+\+MAX
+ \}
+\begin{DoxyCompactList}\small\item\em Associativity of CCS operators\+: \end{DoxyCompactList}\item 
+enum \mbox{\hyperlink{expression_8h_af1692d89096228942239843afb9c75ff}{ccs\+\_\+terminal\+\_\+type\+\_\+e}} \{ \newline
+\mbox{\hyperlink{expression_8h_af1692d89096228942239843afb9c75ffa5db77590587e4d08b8f883a97517aa45}{CCS\+\_\+\+TERMINAL\+\_\+\+TYPE\+\_\+\+NONE}} = 0
+, \mbox{\hyperlink{expression_8h_af1692d89096228942239843afb9c75ffa3ea1b551762a19a57049ef2f1512700d}{CCS\+\_\+\+TERMINAL\+\_\+\+TYPE\+\_\+\+TRUE}}
+, \mbox{\hyperlink{expression_8h_af1692d89096228942239843afb9c75ffa873bf50922b3c6f9397e2002020b5d3c}{CCS\+\_\+\+TERMINAL\+\_\+\+TYPE\+\_\+\+FALSE}}
+, \mbox{\hyperlink{expression_8h_af1692d89096228942239843afb9c75ffa4d64386736ef1b4dc9b6468e2e818bd0}{CCS\+\_\+\+TERMINAL\+\_\+\+TYPE\+\_\+\+STRING}}
+, \newline
+\mbox{\hyperlink{expression_8h_af1692d89096228942239843afb9c75ffa1bdbf8df8d521d3a1999becfb090ddce}{CCS\+\_\+\+TERMINAL\+\_\+\+TYPE\+\_\+\+IDENTIFIER}}
+, \mbox{\hyperlink{expression_8h_af1692d89096228942239843afb9c75ffaa839260892b281ea791a83fa81db1697}{CCS\+\_\+\+TERMINAL\+\_\+\+TYPE\+\_\+\+INTEGER}}
+, \mbox{\hyperlink{expression_8h_af1692d89096228942239843afb9c75ffa8ef3e5036d6e6408573197ef13815a4b}{CCS\+\_\+\+TERMINAL\+\_\+\+TYPE\+\_\+\+FLOAT}}
+, \mbox{\hyperlink{expression_8h_af1692d89096228942239843afb9c75ffa6caf36525b95f1137854843d04a9f1b4}{CCS\+\_\+\+TERMINAL\+\_\+\+TYPE\+\_\+\+MAX}}
+, \newline
+\mbox{\hyperlink{expression_8h_af1692d89096228942239843afb9c75ffad399fbe33a155c45be248da7117e5a4b}{CCS\+\_\+\+TERMINAL\+\_\+\+FORCE\+\_\+32\+BIT}} = INT32\+\_\+\+MAX
+ \}
+\begin{DoxyCompactList}\small\item\em The different terminal types of ccs expressions. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} \mbox{\hyperlink{expression_8h_a550c8ba60ed615a86cde892d0d1ef575}{ccs\+\_\+create\+\_\+expression}} (\mbox{\hyperlink{expression_8h_ace5a553a6440585e7530e448813d64ae}{ccs\+\_\+expression\+\_\+type\+\_\+t}} type, size\+\_\+t num\+\_\+nodes, \mbox{\hyperlink{base_8h_a36bc36b2bb0d0613453dd731cdcd2048}{ccs\+\_\+datum\+\_\+t}} $\ast$nodes, \mbox{\hyperlink{base_8h_a211f0df32aa85683492513cbf0d7805b}{ccs\+\_\+expression\+\_\+t}} $\ast$expression\+\_\+ret)
+\begin{DoxyCompactList}\small\item\em Create a new expression. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} \mbox{\hyperlink{expression_8h_a1c158d19d45f77386dbcce5fbab3bc7c}{ccs\+\_\+create\+\_\+binary\+\_\+expression}} (\mbox{\hyperlink{expression_8h_ace5a553a6440585e7530e448813d64ae}{ccs\+\_\+expression\+\_\+type\+\_\+t}} type, \mbox{\hyperlink{base_8h_a36bc36b2bb0d0613453dd731cdcd2048}{ccs\+\_\+datum\+\_\+t}} node\+\_\+left, \mbox{\hyperlink{base_8h_a36bc36b2bb0d0613453dd731cdcd2048}{ccs\+\_\+datum\+\_\+t}} node\+\_\+right, \mbox{\hyperlink{base_8h_a211f0df32aa85683492513cbf0d7805b}{ccs\+\_\+expression\+\_\+t}} $\ast$expression\+\_\+ret)
+\begin{DoxyCompactList}\small\item\em Create a new binary expression. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} \mbox{\hyperlink{expression_8h_a77d7d9416eed815bb56a4c4e6a0c0ffd}{ccs\+\_\+create\+\_\+unary\+\_\+expression}} (\mbox{\hyperlink{expression_8h_ace5a553a6440585e7530e448813d64ae}{ccs\+\_\+expression\+\_\+type\+\_\+t}} type, \mbox{\hyperlink{base_8h_a36bc36b2bb0d0613453dd731cdcd2048}{ccs\+\_\+datum\+\_\+t}} node, \mbox{\hyperlink{base_8h_a211f0df32aa85683492513cbf0d7805b}{ccs\+\_\+expression\+\_\+t}} $\ast$expression\+\_\+ret)
+\begin{DoxyCompactList}\small\item\em Create a new unary expression. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} \mbox{\hyperlink{expression_8h_aa1348789c19208ff55b46ae0f82bb300}{ccs\+\_\+create\+\_\+literal}} (\mbox{\hyperlink{base_8h_a36bc36b2bb0d0613453dd731cdcd2048}{ccs\+\_\+datum\+\_\+t}} value, \mbox{\hyperlink{base_8h_a211f0df32aa85683492513cbf0d7805b}{ccs\+\_\+expression\+\_\+t}} $\ast$expression\+\_\+ret)
+\begin{DoxyCompactList}\small\item\em Create a new literal expression. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} \mbox{\hyperlink{expression_8h_a6b1fe9fc08e1196928bbec4339d1e1be}{ccs\+\_\+create\+\_\+variable}} (\mbox{\hyperlink{base_8h_a5f6612e0ada336e4189faad69075f477}{ccs\+\_\+parameter\+\_\+t}} parameter, \mbox{\hyperlink{base_8h_a211f0df32aa85683492513cbf0d7805b}{ccs\+\_\+expression\+\_\+t}} $\ast$expression\+\_\+ret)
+\begin{DoxyCompactList}\small\item\em Create a new variable expression. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} \mbox{\hyperlink{expression_8h_a25a9572ec58e476df5a5ff9dc1ac211b}{ccs\+\_\+expression\+\_\+get\+\_\+type}} (\mbox{\hyperlink{base_8h_a211f0df32aa85683492513cbf0d7805b}{ccs\+\_\+expression\+\_\+t}} expression, \mbox{\hyperlink{expression_8h_ace5a553a6440585e7530e448813d64ae}{ccs\+\_\+expression\+\_\+type\+\_\+t}} $\ast$type\+\_\+ret)
+\begin{DoxyCompactList}\small\item\em Get the type of an expression. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} \mbox{\hyperlink{expression_8h_af69366366ab6116f90e6d7519e90900e}{ccs\+\_\+expression\+\_\+get\+\_\+num\+\_\+nodes}} (\mbox{\hyperlink{base_8h_a211f0df32aa85683492513cbf0d7805b}{ccs\+\_\+expression\+\_\+t}} expression, size\+\_\+t $\ast$num\+\_\+nodes\+\_\+ret)
+\begin{DoxyCompactList}\small\item\em Get the number of child node of an expression. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} \mbox{\hyperlink{expression_8h_a450103c49908e0723767242f9f62ace6}{ccs\+\_\+expression\+\_\+get\+\_\+nodes}} (\mbox{\hyperlink{base_8h_a211f0df32aa85683492513cbf0d7805b}{ccs\+\_\+expression\+\_\+t}} expression, size\+\_\+t num\+\_\+nodes, \mbox{\hyperlink{base_8h_a211f0df32aa85683492513cbf0d7805b}{ccs\+\_\+expression\+\_\+t}} $\ast$nodes, size\+\_\+t $\ast$num\+\_\+nodes\+\_\+ret)
+\begin{DoxyCompactList}\small\item\em Get the child nodes of an expression. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} \mbox{\hyperlink{expression_8h_a19229ce06083f64c5d16c0991060da4c}{ccs\+\_\+literal\+\_\+get\+\_\+value}} (\mbox{\hyperlink{base_8h_a211f0df32aa85683492513cbf0d7805b}{ccs\+\_\+expression\+\_\+t}} expression, \mbox{\hyperlink{base_8h_a36bc36b2bb0d0613453dd731cdcd2048}{ccs\+\_\+datum\+\_\+t}} $\ast$value\+\_\+ret)
+\begin{DoxyCompactList}\small\item\em Get the value of a literal expression. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} \mbox{\hyperlink{expression_8h_a7e62b9dfd145b8dc602a77ef41e79f67}{ccs\+\_\+variable\+\_\+get\+\_\+parameter}} (\mbox{\hyperlink{base_8h_a211f0df32aa85683492513cbf0d7805b}{ccs\+\_\+expression\+\_\+t}} expression, \mbox{\hyperlink{base_8h_a5f6612e0ada336e4189faad69075f477}{ccs\+\_\+parameter\+\_\+t}} $\ast$parameter\+\_\+ret)
+\begin{DoxyCompactList}\small\item\em Get the parameter of a variable expression. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} \mbox{\hyperlink{expression_8h_adc213cb89461357ffd52db32ed39de00}{ccs\+\_\+expression\+\_\+eval}} (\mbox{\hyperlink{base_8h_a211f0df32aa85683492513cbf0d7805b}{ccs\+\_\+expression\+\_\+t}} expression, \mbox{\hyperlink{base_8h_a89a96617bf78b097e103ee8c8e281b7b}{ccs\+\_\+context\+\_\+t}} context, \mbox{\hyperlink{base_8h_a36bc36b2bb0d0613453dd731cdcd2048}{ccs\+\_\+datum\+\_\+t}} $\ast$values, \mbox{\hyperlink{base_8h_a36bc36b2bb0d0613453dd731cdcd2048}{ccs\+\_\+datum\+\_\+t}} $\ast$result\+\_\+ret)
+\begin{DoxyCompactList}\small\item\em Get the value of an expression in a given context, provided a list of values for the context parameters. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} \mbox{\hyperlink{expression_8h_a3c5a838fe21710acfa91dda2ac262976}{ccs\+\_\+expression\+\_\+list\+\_\+eval\+\_\+node}} (\mbox{\hyperlink{base_8h_a211f0df32aa85683492513cbf0d7805b}{ccs\+\_\+expression\+\_\+t}} expression, \mbox{\hyperlink{base_8h_a89a96617bf78b097e103ee8c8e281b7b}{ccs\+\_\+context\+\_\+t}} context, \mbox{\hyperlink{base_8h_a36bc36b2bb0d0613453dd731cdcd2048}{ccs\+\_\+datum\+\_\+t}} $\ast$values, size\+\_\+t index, \mbox{\hyperlink{base_8h_a36bc36b2bb0d0613453dd731cdcd2048}{ccs\+\_\+datum\+\_\+t}} $\ast$result\+\_\+ret)
+\begin{DoxyCompactList}\small\item\em Evaluate the entry of a list at a given index, in a given context, provided a list of values for the context parameters. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} \mbox{\hyperlink{expression_8h_a4ee96cb3133ad7dcb5664befcc4ec731}{ccs\+\_\+expression\+\_\+get\+\_\+parameters}} (\mbox{\hyperlink{base_8h_a211f0df32aa85683492513cbf0d7805b}{ccs\+\_\+expression\+\_\+t}} expression, size\+\_\+t num\+\_\+parameters, \mbox{\hyperlink{base_8h_a5f6612e0ada336e4189faad69075f477}{ccs\+\_\+parameter\+\_\+t}} $\ast$parameters, size\+\_\+t $\ast$num\+\_\+parameters\+\_\+ret)
+\begin{DoxyCompactList}\small\item\em Get the parameters used in an expression. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} \mbox{\hyperlink{expression_8h_a1fb748599e714e1d58312f51c1dcc6ce}{ccs\+\_\+expression\+\_\+check\+\_\+context}} (\mbox{\hyperlink{base_8h_a211f0df32aa85683492513cbf0d7805b}{ccs\+\_\+expression\+\_\+t}} expression, \mbox{\hyperlink{base_8h_a89a96617bf78b097e103ee8c8e281b7b}{ccs\+\_\+context\+\_\+t}} context)
+\begin{DoxyCompactList}\small\item\em Validate that an expression can be evaluated in the given context. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+const int \mbox{\hyperlink{expression_8h_aa208300bffd72affb7b541ba4b69845f}{ccs\+\_\+expression\+\_\+precedence}} \mbox{[}$\,$\mbox{]}
+\begin{DoxyCompactList}\small\item\em An array of precedence of operators as defined by CCS grammar\+: \end{DoxyCompactList}\item 
+const \mbox{\hyperlink{expression_8h_a68b3fc02b2f6f7548cc0c8fd23357d7a}{ccs\+\_\+associativity\+\_\+type\+\_\+t}} \mbox{\hyperlink{expression_8h_ae15e4ae67d2a3b20d35633d7787b4725}{ccs\+\_\+expression\+\_\+associativity}} \mbox{[}$\,$\mbox{]}
+\begin{DoxyCompactList}\small\item\em An array of associativity of operators as defined by CCS grammar\+: \end{DoxyCompactList}\item 
+const char $\ast$ \mbox{\hyperlink{expression_8h_a4bb67544c402de6e48bf69dc8dd73c31}{ccs\+\_\+expression\+\_\+symbols}} \mbox{[}$\,$\mbox{]}
+\begin{DoxyCompactList}\small\item\em An array of suggested symbols (NULL terminated strings) for CCS operators. \end{DoxyCompactList}\item 
+const int \mbox{\hyperlink{expression_8h_a250932e942a11a3c0af573712bdefc55}{ccs\+\_\+expression\+\_\+arity}} \mbox{[}$\,$\mbox{]}
+\begin{DoxyCompactList}\small\item\em An array of arity of CCS operators. \end{DoxyCompactList}\item 
+const int \mbox{\hyperlink{expression_8h_ac4e6b439865fd19df362a739859b0c86}{ccs\+\_\+terminal\+\_\+precedence}} \mbox{[}$\,$\mbox{]}
+\begin{DoxyCompactList}\small\item\em An array of integers defining terminal precedence in order to disambiguate NONE, TRUE and FALSE from identifiers\+: \end{DoxyCompactList}\item 
+const char $\ast$ \mbox{\hyperlink{expression_8h_a6c9ddc06e61e7500437fa2d4de7e56ff}{ccs\+\_\+terminal\+\_\+regexp}} \mbox{[}$\,$\mbox{]}
+\begin{DoxyCompactList}\small\item\em An array of regexp that define terminals\+: \end{DoxyCompactList}\item 
+const char $\ast$ \mbox{\hyperlink{expression_8h_a9cf2c282415e728a3be111b2c7be8b6c}{ccs\+\_\+terminal\+\_\+symbols}} \mbox{[}$\,$\mbox{]}
+\begin{DoxyCompactList}\small\item\em An array of symbols (NULL terminated strings) for terminals that define them\+: \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+An expression in CCS is a combination of constants, variables (parameters), and operators. 
+
+Expressions are usually evaluated in the context of a binding where parameters are associated values. For convinience CCS suggests a grammar that can be used to create an expression parser. 
+
+\doxysubsection{Enumeration Type Documentation}
+\mbox{\Hypertarget{expression_8h_abd247ea6f943061feeb8650560df52b4}\label{expression_8h_abd247ea6f943061feeb8650560df52b4}} 
+\index{expression.h@{expression.h}!ccs\_associativity\_type\_e@{ccs\_associativity\_type\_e}}
+\index{ccs\_associativity\_type\_e@{ccs\_associativity\_type\_e}!expression.h@{expression.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_associativity\_type\_e}{ccs\_associativity\_type\_e}}
+{\footnotesize\ttfamily enum \mbox{\hyperlink{expression_8h_abd247ea6f943061feeb8650560df52b4}{ccs\+\_\+associativity\+\_\+type\+\_\+e}}}
+
+
+
+Associativity of CCS operators\+: 
+
+\begin{DoxyEnumFields}{Enumerator}
+\raisebox{\heightof{T}}[0pt][0pt]{\index{CCS\_ASSOCIATIVITY\_TYPE\_NONE@{CCS\_ASSOCIATIVITY\_TYPE\_NONE}!expression.h@{expression.h}}\index{expression.h@{expression.h}!CCS\_ASSOCIATIVITY\_TYPE\_NONE@{CCS\_ASSOCIATIVITY\_TYPE\_NONE}}}\mbox{\Hypertarget{expression_8h_abd247ea6f943061feeb8650560df52b4a57b63764d1a43ab3dfddc6cb44a7cc3a}\label{expression_8h_abd247ea6f943061feeb8650560df52b4a57b63764d1a43ab3dfddc6cb44a7cc3a}} 
+CCS\+\_\+\+ASSOCIATIVITY\+\_\+\+TYPE\+\_\+\+NONE&No associativity. \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{CCS\_ASSOCIATIVITY\_TYPE\_LEFT\_TO\_RIGHT@{CCS\_ASSOCIATIVITY\_TYPE\_LEFT\_TO\_RIGHT}!expression.h@{expression.h}}\index{expression.h@{expression.h}!CCS\_ASSOCIATIVITY\_TYPE\_LEFT\_TO\_RIGHT@{CCS\_ASSOCIATIVITY\_TYPE\_LEFT\_TO\_RIGHT}}}\mbox{\Hypertarget{expression_8h_abd247ea6f943061feeb8650560df52b4a0f0b4a6ff4c5a34b3b638780f629e285}\label{expression_8h_abd247ea6f943061feeb8650560df52b4a0f0b4a6ff4c5a34b3b638780f629e285}} 
+CCS\+\_\+\+ASSOCIATIVITY\+\_\+\+TYPE\+\_\+\+LEFT\+\_\+\+TO\+\_\+\+RIGHT&left to right associativity \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{CCS\_ASSOCIATIVITY\_TYPE\_RIGHT\_TO\_LEFT@{CCS\_ASSOCIATIVITY\_TYPE\_RIGHT\_TO\_LEFT}!expression.h@{expression.h}}\index{expression.h@{expression.h}!CCS\_ASSOCIATIVITY\_TYPE\_RIGHT\_TO\_LEFT@{CCS\_ASSOCIATIVITY\_TYPE\_RIGHT\_TO\_LEFT}}}\mbox{\Hypertarget{expression_8h_abd247ea6f943061feeb8650560df52b4aa86a55ec3749ac2e33debaebbc598657}\label{expression_8h_abd247ea6f943061feeb8650560df52b4aa86a55ec3749ac2e33debaebbc598657}} 
+CCS\+\_\+\+ASSOCIATIVITY\+\_\+\+TYPE\+\_\+\+RIGHT\+\_\+\+TO\+\_\+\+LEFT&right to left associativity \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{CCS\_ASSOCIATIVITY\_TYPE\_MAX@{CCS\_ASSOCIATIVITY\_TYPE\_MAX}!expression.h@{expression.h}}\index{expression.h@{expression.h}!CCS\_ASSOCIATIVITY\_TYPE\_MAX@{CCS\_ASSOCIATIVITY\_TYPE\_MAX}}}\mbox{\Hypertarget{expression_8h_abd247ea6f943061feeb8650560df52b4a869cc468b2be40df6b5d76d95b93d202}\label{expression_8h_abd247ea6f943061feeb8650560df52b4a869cc468b2be40df6b5d76d95b93d202}} 
+CCS\+\_\+\+ASSOCIATIVITY\+\_\+\+TYPE\+\_\+\+MAX&Guard. \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{CCS\_ASSOCIATIVITY\_TYPE\_FORCE\_32BIT@{CCS\_ASSOCIATIVITY\_TYPE\_FORCE\_32BIT}!expression.h@{expression.h}}\index{expression.h@{expression.h}!CCS\_ASSOCIATIVITY\_TYPE\_FORCE\_32BIT@{CCS\_ASSOCIATIVITY\_TYPE\_FORCE\_32BIT}}}\mbox{\Hypertarget{expression_8h_abd247ea6f943061feeb8650560df52b4ac7750ee08e78acb068e4876db222b451}\label{expression_8h_abd247ea6f943061feeb8650560df52b4ac7750ee08e78acb068e4876db222b451}} 
+CCS\+\_\+\+ASSOCIATIVITY\+\_\+\+TYPE\+\_\+\+FORCE\+\_\+32\+BIT&Try forcing 32 bits value for bindings. \\
+\hline
+
+\end{DoxyEnumFields}
+\mbox{\Hypertarget{expression_8h_abb49409e85924f2b77e152d7f9fa52c9}\label{expression_8h_abb49409e85924f2b77e152d7f9fa52c9}} 
+\index{expression.h@{expression.h}!ccs\_expression\_type\_e@{ccs\_expression\_type\_e}}
+\index{ccs\_expression\_type\_e@{ccs\_expression\_type\_e}!expression.h@{expression.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_expression\_type\_e}{ccs\_expression\_type\_e}}
+{\footnotesize\ttfamily enum \mbox{\hyperlink{expression_8h_abb49409e85924f2b77e152d7f9fa52c9}{ccs\+\_\+expression\+\_\+type\+\_\+e}}}
+
+
+
+Supported expression types. 
+
+\begin{DoxyEnumFields}{Enumerator}
+\raisebox{\heightof{T}}[0pt][0pt]{\index{CCS\_EXPRESSION\_TYPE\_OR@{CCS\_EXPRESSION\_TYPE\_OR}!expression.h@{expression.h}}\index{expression.h@{expression.h}!CCS\_EXPRESSION\_TYPE\_OR@{CCS\_EXPRESSION\_TYPE\_OR}}}\mbox{\Hypertarget{expression_8h_abb49409e85924f2b77e152d7f9fa52c9a8aec31856d810758a17c91b06c34ff3d}\label{expression_8h_abb49409e85924f2b77e152d7f9fa52c9a8aec31856d810758a17c91b06c34ff3d}} 
+CCS\+\_\+\+EXPRESSION\+\_\+\+TYPE\+\_\+\+OR&Or boolean operator. \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{CCS\_EXPRESSION\_TYPE\_AND@{CCS\_EXPRESSION\_TYPE\_AND}!expression.h@{expression.h}}\index{expression.h@{expression.h}!CCS\_EXPRESSION\_TYPE\_AND@{CCS\_EXPRESSION\_TYPE\_AND}}}\mbox{\Hypertarget{expression_8h_abb49409e85924f2b77e152d7f9fa52c9a7e152bb29998b5f756e1b0e1e47d5229}\label{expression_8h_abb49409e85924f2b77e152d7f9fa52c9a7e152bb29998b5f756e1b0e1e47d5229}} 
+CCS\+\_\+\+EXPRESSION\+\_\+\+TYPE\+\_\+\+AND&And boolean operator. \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{CCS\_EXPRESSION\_TYPE\_EQUAL@{CCS\_EXPRESSION\_TYPE\_EQUAL}!expression.h@{expression.h}}\index{expression.h@{expression.h}!CCS\_EXPRESSION\_TYPE\_EQUAL@{CCS\_EXPRESSION\_TYPE\_EQUAL}}}\mbox{\Hypertarget{expression_8h_abb49409e85924f2b77e152d7f9fa52c9a1f785f2d01e5079dd57ddc5433d958bc}\label{expression_8h_abb49409e85924f2b77e152d7f9fa52c9a1f785f2d01e5079dd57ddc5433d958bc}} 
+CCS\+\_\+\+EXPRESSION\+\_\+\+TYPE\+\_\+\+EQUAL&Equality test operator. \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{CCS\_EXPRESSION\_TYPE\_NOT\_EQUAL@{CCS\_EXPRESSION\_TYPE\_NOT\_EQUAL}!expression.h@{expression.h}}\index{expression.h@{expression.h}!CCS\_EXPRESSION\_TYPE\_NOT\_EQUAL@{CCS\_EXPRESSION\_TYPE\_NOT\_EQUAL}}}\mbox{\Hypertarget{expression_8h_abb49409e85924f2b77e152d7f9fa52c9a53f3d988a00aebd7c3666a09e9200264}\label{expression_8h_abb49409e85924f2b77e152d7f9fa52c9a53f3d988a00aebd7c3666a09e9200264}} 
+CCS\+\_\+\+EXPRESSION\+\_\+\+TYPE\+\_\+\+NOT\+\_\+\+EQUAL&Inequality test operator. \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{CCS\_EXPRESSION\_TYPE\_LESS@{CCS\_EXPRESSION\_TYPE\_LESS}!expression.h@{expression.h}}\index{expression.h@{expression.h}!CCS\_EXPRESSION\_TYPE\_LESS@{CCS\_EXPRESSION\_TYPE\_LESS}}}\mbox{\Hypertarget{expression_8h_abb49409e85924f2b77e152d7f9fa52c9abfee9a94a1fe8b5222dc17a8fbe065aa}\label{expression_8h_abb49409e85924f2b77e152d7f9fa52c9abfee9a94a1fe8b5222dc17a8fbe065aa}} 
+CCS\+\_\+\+EXPRESSION\+\_\+\+TYPE\+\_\+\+LESS&Lesser than comparison operator. \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{CCS\_EXPRESSION\_TYPE\_GREATER@{CCS\_EXPRESSION\_TYPE\_GREATER}!expression.h@{expression.h}}\index{expression.h@{expression.h}!CCS\_EXPRESSION\_TYPE\_GREATER@{CCS\_EXPRESSION\_TYPE\_GREATER}}}\mbox{\Hypertarget{expression_8h_abb49409e85924f2b77e152d7f9fa52c9ae4534723cddd92b37dedd331d9275e21}\label{expression_8h_abb49409e85924f2b77e152d7f9fa52c9ae4534723cddd92b37dedd331d9275e21}} 
+CCS\+\_\+\+EXPRESSION\+\_\+\+TYPE\+\_\+\+GREATER&Greater than comparison operator. \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{CCS\_EXPRESSION\_TYPE\_LESS\_OR\_EQUAL@{CCS\_EXPRESSION\_TYPE\_LESS\_OR\_EQUAL}!expression.h@{expression.h}}\index{expression.h@{expression.h}!CCS\_EXPRESSION\_TYPE\_LESS\_OR\_EQUAL@{CCS\_EXPRESSION\_TYPE\_LESS\_OR\_EQUAL}}}\mbox{\Hypertarget{expression_8h_abb49409e85924f2b77e152d7f9fa52c9a0207295db4d22b2e9abd3e17df7f1252}\label{expression_8h_abb49409e85924f2b77e152d7f9fa52c9a0207295db4d22b2e9abd3e17df7f1252}} 
+CCS\+\_\+\+EXPRESSION\+\_\+\+TYPE\+\_\+\+LESS\+\_\+\+OR\+\_\+\+EQUAL&Lesser than or equal comparison operator. \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{CCS\_EXPRESSION\_TYPE\_GREATER\_OR\_EQUAL@{CCS\_EXPRESSION\_TYPE\_GREATER\_OR\_EQUAL}!expression.h@{expression.h}}\index{expression.h@{expression.h}!CCS\_EXPRESSION\_TYPE\_GREATER\_OR\_EQUAL@{CCS\_EXPRESSION\_TYPE\_GREATER\_OR\_EQUAL}}}\mbox{\Hypertarget{expression_8h_abb49409e85924f2b77e152d7f9fa52c9a7a3cf8606fb65b6fbf4d68f6d9017cab}\label{expression_8h_abb49409e85924f2b77e152d7f9fa52c9a7a3cf8606fb65b6fbf4d68f6d9017cab}} 
+CCS\+\_\+\+EXPRESSION\+\_\+\+TYPE\+\_\+\+GREATER\+\_\+\+OR\+\_\+\+EQUAL&Greater than or equal comparison operator. \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{CCS\_EXPRESSION\_TYPE\_ADD@{CCS\_EXPRESSION\_TYPE\_ADD}!expression.h@{expression.h}}\index{expression.h@{expression.h}!CCS\_EXPRESSION\_TYPE\_ADD@{CCS\_EXPRESSION\_TYPE\_ADD}}}\mbox{\Hypertarget{expression_8h_abb49409e85924f2b77e152d7f9fa52c9ab9f156f568afe8c2dae276ef157c298c}\label{expression_8h_abb49409e85924f2b77e152d7f9fa52c9ab9f156f568afe8c2dae276ef157c298c}} 
+CCS\+\_\+\+EXPRESSION\+\_\+\+TYPE\+\_\+\+ADD&Addition operator. \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{CCS\_EXPRESSION\_TYPE\_SUBSTRACT@{CCS\_EXPRESSION\_TYPE\_SUBSTRACT}!expression.h@{expression.h}}\index{expression.h@{expression.h}!CCS\_EXPRESSION\_TYPE\_SUBSTRACT@{CCS\_EXPRESSION\_TYPE\_SUBSTRACT}}}\mbox{\Hypertarget{expression_8h_abb49409e85924f2b77e152d7f9fa52c9ad3cddae7b0746d632d13f06fca11b51b}\label{expression_8h_abb49409e85924f2b77e152d7f9fa52c9ad3cddae7b0746d632d13f06fca11b51b}} 
+CCS\+\_\+\+EXPRESSION\+\_\+\+TYPE\+\_\+\+SUBSTRACT&Substraction operator. \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{CCS\_EXPRESSION\_TYPE\_MULTIPLY@{CCS\_EXPRESSION\_TYPE\_MULTIPLY}!expression.h@{expression.h}}\index{expression.h@{expression.h}!CCS\_EXPRESSION\_TYPE\_MULTIPLY@{CCS\_EXPRESSION\_TYPE\_MULTIPLY}}}\mbox{\Hypertarget{expression_8h_abb49409e85924f2b77e152d7f9fa52c9a6e8a1bf87b98dcb9f43e6a030ade0619}\label{expression_8h_abb49409e85924f2b77e152d7f9fa52c9a6e8a1bf87b98dcb9f43e6a030ade0619}} 
+CCS\+\_\+\+EXPRESSION\+\_\+\+TYPE\+\_\+\+MULTIPLY&Multiplication operator. \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{CCS\_EXPRESSION\_TYPE\_DIVIDE@{CCS\_EXPRESSION\_TYPE\_DIVIDE}!expression.h@{expression.h}}\index{expression.h@{expression.h}!CCS\_EXPRESSION\_TYPE\_DIVIDE@{CCS\_EXPRESSION\_TYPE\_DIVIDE}}}\mbox{\Hypertarget{expression_8h_abb49409e85924f2b77e152d7f9fa52c9a3fa8b7da089bf1cc1205dcad1d135c7f}\label{expression_8h_abb49409e85924f2b77e152d7f9fa52c9a3fa8b7da089bf1cc1205dcad1d135c7f}} 
+CCS\+\_\+\+EXPRESSION\+\_\+\+TYPE\+\_\+\+DIVIDE&Division operator. \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{CCS\_EXPRESSION\_TYPE\_MODULO@{CCS\_EXPRESSION\_TYPE\_MODULO}!expression.h@{expression.h}}\index{expression.h@{expression.h}!CCS\_EXPRESSION\_TYPE\_MODULO@{CCS\_EXPRESSION\_TYPE\_MODULO}}}\mbox{\Hypertarget{expression_8h_abb49409e85924f2b77e152d7f9fa52c9a14be1bdebef457a449c7c843aff23f56}\label{expression_8h_abb49409e85924f2b77e152d7f9fa52c9a14be1bdebef457a449c7c843aff23f56}} 
+CCS\+\_\+\+EXPRESSION\+\_\+\+TYPE\+\_\+\+MODULO&Modulo operator. \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{CCS\_EXPRESSION\_TYPE\_POSITIVE@{CCS\_EXPRESSION\_TYPE\_POSITIVE}!expression.h@{expression.h}}\index{expression.h@{expression.h}!CCS\_EXPRESSION\_TYPE\_POSITIVE@{CCS\_EXPRESSION\_TYPE\_POSITIVE}}}\mbox{\Hypertarget{expression_8h_abb49409e85924f2b77e152d7f9fa52c9aba35ab8d726ececd0d869c1e8f866960}\label{expression_8h_abb49409e85924f2b77e152d7f9fa52c9aba35ab8d726ececd0d869c1e8f866960}} 
+CCS\+\_\+\+EXPRESSION\+\_\+\+TYPE\+\_\+\+POSITIVE&Unary plus operator. \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{CCS\_EXPRESSION\_TYPE\_NEGATIVE@{CCS\_EXPRESSION\_TYPE\_NEGATIVE}!expression.h@{expression.h}}\index{expression.h@{expression.h}!CCS\_EXPRESSION\_TYPE\_NEGATIVE@{CCS\_EXPRESSION\_TYPE\_NEGATIVE}}}\mbox{\Hypertarget{expression_8h_abb49409e85924f2b77e152d7f9fa52c9a187aa250aaeeea7bc05b202e247d1def}\label{expression_8h_abb49409e85924f2b77e152d7f9fa52c9a187aa250aaeeea7bc05b202e247d1def}} 
+CCS\+\_\+\+EXPRESSION\+\_\+\+TYPE\+\_\+\+NEGATIVE&Unary minus operator. \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{CCS\_EXPRESSION\_TYPE\_NOT@{CCS\_EXPRESSION\_TYPE\_NOT}!expression.h@{expression.h}}\index{expression.h@{expression.h}!CCS\_EXPRESSION\_TYPE\_NOT@{CCS\_EXPRESSION\_TYPE\_NOT}}}\mbox{\Hypertarget{expression_8h_abb49409e85924f2b77e152d7f9fa52c9a10cc07cc14ea9e949795021ed98df4bf}\label{expression_8h_abb49409e85924f2b77e152d7f9fa52c9a10cc07cc14ea9e949795021ed98df4bf}} 
+CCS\+\_\+\+EXPRESSION\+\_\+\+TYPE\+\_\+\+NOT&Not boolean operator. \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{CCS\_EXPRESSION\_TYPE\_IN@{CCS\_EXPRESSION\_TYPE\_IN}!expression.h@{expression.h}}\index{expression.h@{expression.h}!CCS\_EXPRESSION\_TYPE\_IN@{CCS\_EXPRESSION\_TYPE\_IN}}}\mbox{\Hypertarget{expression_8h_abb49409e85924f2b77e152d7f9fa52c9a783f8f9c020870e2642d2ced50fd75b6}\label{expression_8h_abb49409e85924f2b77e152d7f9fa52c9a783f8f9c020870e2642d2ced50fd75b6}} 
+CCS\+\_\+\+EXPRESSION\+\_\+\+TYPE\+\_\+\+IN&List inclusion test operator. \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{CCS\_EXPRESSION\_TYPE\_LIST@{CCS\_EXPRESSION\_TYPE\_LIST}!expression.h@{expression.h}}\index{expression.h@{expression.h}!CCS\_EXPRESSION\_TYPE\_LIST@{CCS\_EXPRESSION\_TYPE\_LIST}}}\mbox{\Hypertarget{expression_8h_abb49409e85924f2b77e152d7f9fa52c9aea0160e9c5d0f71baba9f14654144c49}\label{expression_8h_abb49409e85924f2b77e152d7f9fa52c9aea0160e9c5d0f71baba9f14654144c49}} 
+CCS\+\_\+\+EXPRESSION\+\_\+\+TYPE\+\_\+\+LIST&List. \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{CCS\_EXPRESSION\_TYPE\_LITERAL@{CCS\_EXPRESSION\_TYPE\_LITERAL}!expression.h@{expression.h}}\index{expression.h@{expression.h}!CCS\_EXPRESSION\_TYPE\_LITERAL@{CCS\_EXPRESSION\_TYPE\_LITERAL}}}\mbox{\Hypertarget{expression_8h_abb49409e85924f2b77e152d7f9fa52c9a3e5b2d2374221cc07e160f83ba82f2d4}\label{expression_8h_abb49409e85924f2b77e152d7f9fa52c9a3e5b2d2374221cc07e160f83ba82f2d4}} 
+CCS\+\_\+\+EXPRESSION\+\_\+\+TYPE\+\_\+\+LITERAL&Literal constant. \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{CCS\_EXPRESSION\_TYPE\_VARIABLE@{CCS\_EXPRESSION\_TYPE\_VARIABLE}!expression.h@{expression.h}}\index{expression.h@{expression.h}!CCS\_EXPRESSION\_TYPE\_VARIABLE@{CCS\_EXPRESSION\_TYPE\_VARIABLE}}}\mbox{\Hypertarget{expression_8h_abb49409e85924f2b77e152d7f9fa52c9ad3e2846b46b0006af3da41f168ab06f1}\label{expression_8h_abb49409e85924f2b77e152d7f9fa52c9ad3e2846b46b0006af3da41f168ab06f1}} 
+CCS\+\_\+\+EXPRESSION\+\_\+\+TYPE\+\_\+\+VARIABLE&Variable. \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{CCS\_EXPRESSION\_TYPE\_MAX@{CCS\_EXPRESSION\_TYPE\_MAX}!expression.h@{expression.h}}\index{expression.h@{expression.h}!CCS\_EXPRESSION\_TYPE\_MAX@{CCS\_EXPRESSION\_TYPE\_MAX}}}\mbox{\Hypertarget{expression_8h_abb49409e85924f2b77e152d7f9fa52c9a15a9766ce06301845b460bc7dfed6aec}\label{expression_8h_abb49409e85924f2b77e152d7f9fa52c9a15a9766ce06301845b460bc7dfed6aec}} 
+CCS\+\_\+\+EXPRESSION\+\_\+\+TYPE\+\_\+\+MAX&Guard. \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{CCS\_EXPRESSION\_FORCE\_32BIT@{CCS\_EXPRESSION\_FORCE\_32BIT}!expression.h@{expression.h}}\index{expression.h@{expression.h}!CCS\_EXPRESSION\_FORCE\_32BIT@{CCS\_EXPRESSION\_FORCE\_32BIT}}}\mbox{\Hypertarget{expression_8h_abb49409e85924f2b77e152d7f9fa52c9a08bb13613c70741b94bb30fa10b053a0}\label{expression_8h_abb49409e85924f2b77e152d7f9fa52c9a08bb13613c70741b94bb30fa10b053a0}} 
+CCS\+\_\+\+EXPRESSION\+\_\+\+FORCE\+\_\+32\+BIT&Try forcing 32 bits value for bindings. \\
+\hline
+
+\end{DoxyEnumFields}
+\mbox{\Hypertarget{expression_8h_af1692d89096228942239843afb9c75ff}\label{expression_8h_af1692d89096228942239843afb9c75ff}} 
+\index{expression.h@{expression.h}!ccs\_terminal\_type\_e@{ccs\_terminal\_type\_e}}
+\index{ccs\_terminal\_type\_e@{ccs\_terminal\_type\_e}!expression.h@{expression.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_terminal\_type\_e}{ccs\_terminal\_type\_e}}
+{\footnotesize\ttfamily enum \mbox{\hyperlink{expression_8h_af1692d89096228942239843afb9c75ff}{ccs\+\_\+terminal\+\_\+type\+\_\+e}}}
+
+
+
+The different terminal types of ccs expressions. 
+
+\begin{DoxyEnumFields}{Enumerator}
+\raisebox{\heightof{T}}[0pt][0pt]{\index{CCS\_TERMINAL\_TYPE\_NONE@{CCS\_TERMINAL\_TYPE\_NONE}!expression.h@{expression.h}}\index{expression.h@{expression.h}!CCS\_TERMINAL\_TYPE\_NONE@{CCS\_TERMINAL\_TYPE\_NONE}}}\mbox{\Hypertarget{expression_8h_af1692d89096228942239843afb9c75ffa5db77590587e4d08b8f883a97517aa45}\label{expression_8h_af1692d89096228942239843afb9c75ffa5db77590587e4d08b8f883a97517aa45}} 
+CCS\+\_\+\+TERMINAL\+\_\+\+TYPE\+\_\+\+NONE&The \mbox{\hyperlink{base_8h_a7154476578dc8d30cbc3a74b25675c2b}{CCS\+\_\+\+NONE\+\_\+\+VAL}} value. \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{CCS\_TERMINAL\_TYPE\_TRUE@{CCS\_TERMINAL\_TYPE\_TRUE}!expression.h@{expression.h}}\index{expression.h@{expression.h}!CCS\_TERMINAL\_TYPE\_TRUE@{CCS\_TERMINAL\_TYPE\_TRUE}}}\mbox{\Hypertarget{expression_8h_af1692d89096228942239843afb9c75ffa3ea1b551762a19a57049ef2f1512700d}\label{expression_8h_af1692d89096228942239843afb9c75ffa3ea1b551762a19a57049ef2f1512700d}} 
+CCS\+\_\+\+TERMINAL\+\_\+\+TYPE\+\_\+\+TRUE&The \mbox{\hyperlink{base_8h_ae200c0ce1ba5a2b9ad0ba262a3e3e1eb}{CCS\+\_\+\+TRUE\+\_\+\+VAL}} value. \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{CCS\_TERMINAL\_TYPE\_FALSE@{CCS\_TERMINAL\_TYPE\_FALSE}!expression.h@{expression.h}}\index{expression.h@{expression.h}!CCS\_TERMINAL\_TYPE\_FALSE@{CCS\_TERMINAL\_TYPE\_FALSE}}}\mbox{\Hypertarget{expression_8h_af1692d89096228942239843afb9c75ffa873bf50922b3c6f9397e2002020b5d3c}\label{expression_8h_af1692d89096228942239843afb9c75ffa873bf50922b3c6f9397e2002020b5d3c}} 
+CCS\+\_\+\+TERMINAL\+\_\+\+TYPE\+\_\+\+FALSE&The \mbox{\hyperlink{base_8h_aa53d3bf1a331d9c0d58787fc936fdf30}{CCS\+\_\+\+FALSE\+\_\+\+VAL}} value. \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{CCS\_TERMINAL\_TYPE\_STRING@{CCS\_TERMINAL\_TYPE\_STRING}!expression.h@{expression.h}}\index{expression.h@{expression.h}!CCS\_TERMINAL\_TYPE\_STRING@{CCS\_TERMINAL\_TYPE\_STRING}}}\mbox{\Hypertarget{expression_8h_af1692d89096228942239843afb9c75ffa4d64386736ef1b4dc9b6468e2e818bd0}\label{expression_8h_af1692d89096228942239843afb9c75ffa4d64386736ef1b4dc9b6468e2e818bd0}} 
+CCS\+\_\+\+TERMINAL\+\_\+\+TYPE\+\_\+\+STRING&A \mbox{\hyperlink{base_8h_a302e6ecbf08c6c8a059fc775c88f21c0a4f006bf5ea2c2220524476553c74d27a}{CCS\+\_\+\+DATA\+\_\+\+TYPE\+\_\+\+STRING}} value. \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{CCS\_TERMINAL\_TYPE\_IDENTIFIER@{CCS\_TERMINAL\_TYPE\_IDENTIFIER}!expression.h@{expression.h}}\index{expression.h@{expression.h}!CCS\_TERMINAL\_TYPE\_IDENTIFIER@{CCS\_TERMINAL\_TYPE\_IDENTIFIER}}}\mbox{\Hypertarget{expression_8h_af1692d89096228942239843afb9c75ffa1bdbf8df8d521d3a1999becfb090ddce}\label{expression_8h_af1692d89096228942239843afb9c75ffa1bdbf8df8d521d3a1999becfb090ddce}} 
+CCS\+\_\+\+TERMINAL\+\_\+\+TYPE\+\_\+\+IDENTIFIER&An identifer (name of a parameter) \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{CCS\_TERMINAL\_TYPE\_INTEGER@{CCS\_TERMINAL\_TYPE\_INTEGER}!expression.h@{expression.h}}\index{expression.h@{expression.h}!CCS\_TERMINAL\_TYPE\_INTEGER@{CCS\_TERMINAL\_TYPE\_INTEGER}}}\mbox{\Hypertarget{expression_8h_af1692d89096228942239843afb9c75ffaa839260892b281ea791a83fa81db1697}\label{expression_8h_af1692d89096228942239843afb9c75ffaa839260892b281ea791a83fa81db1697}} 
+CCS\+\_\+\+TERMINAL\+\_\+\+TYPE\+\_\+\+INTEGER&A \mbox{\hyperlink{base_8h_a302e6ecbf08c6c8a059fc775c88f21c0a3d4862507a1f37105cb55b2bc86da2ba}{CCS\+\_\+\+DATA\+\_\+\+TYPE\+\_\+\+INT}} value. \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{CCS\_TERMINAL\_TYPE\_FLOAT@{CCS\_TERMINAL\_TYPE\_FLOAT}!expression.h@{expression.h}}\index{expression.h@{expression.h}!CCS\_TERMINAL\_TYPE\_FLOAT@{CCS\_TERMINAL\_TYPE\_FLOAT}}}\mbox{\Hypertarget{expression_8h_af1692d89096228942239843afb9c75ffa8ef3e5036d6e6408573197ef13815a4b}\label{expression_8h_af1692d89096228942239843afb9c75ffa8ef3e5036d6e6408573197ef13815a4b}} 
+CCS\+\_\+\+TERMINAL\+\_\+\+TYPE\+\_\+\+FLOAT&A \mbox{\hyperlink{base_8h_a302e6ecbf08c6c8a059fc775c88f21c0af16cc524a593159022f6bb0f81c6ac0d}{CCS\+\_\+\+DATA\+\_\+\+TYPE\+\_\+\+FLOAT}} value. \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{CCS\_TERMINAL\_TYPE\_MAX@{CCS\_TERMINAL\_TYPE\_MAX}!expression.h@{expression.h}}\index{expression.h@{expression.h}!CCS\_TERMINAL\_TYPE\_MAX@{CCS\_TERMINAL\_TYPE\_MAX}}}\mbox{\Hypertarget{expression_8h_af1692d89096228942239843afb9c75ffa6caf36525b95f1137854843d04a9f1b4}\label{expression_8h_af1692d89096228942239843afb9c75ffa6caf36525b95f1137854843d04a9f1b4}} 
+CCS\+\_\+\+TERMINAL\+\_\+\+TYPE\+\_\+\+MAX&Guard. \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{CCS\_TERMINAL\_FORCE\_32BIT@{CCS\_TERMINAL\_FORCE\_32BIT}!expression.h@{expression.h}}\index{expression.h@{expression.h}!CCS\_TERMINAL\_FORCE\_32BIT@{CCS\_TERMINAL\_FORCE\_32BIT}}}\mbox{\Hypertarget{expression_8h_af1692d89096228942239843afb9c75ffad399fbe33a155c45be248da7117e5a4b}\label{expression_8h_af1692d89096228942239843afb9c75ffad399fbe33a155c45be248da7117e5a4b}} 
+CCS\+\_\+\+TERMINAL\+\_\+\+FORCE\+\_\+32\+BIT&Try forcing 32 bits value for bindings. \\
+\hline
+
+\end{DoxyEnumFields}
+
+
+\doxysubsection{Function Documentation}
+\mbox{\Hypertarget{expression_8h_a1c158d19d45f77386dbcce5fbab3bc7c}\label{expression_8h_a1c158d19d45f77386dbcce5fbab3bc7c}} 
+\index{expression.h@{expression.h}!ccs\_create\_binary\_expression@{ccs\_create\_binary\_expression}}
+\index{ccs\_create\_binary\_expression@{ccs\_create\_binary\_expression}!expression.h@{expression.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_create\_binary\_expression()}{ccs\_create\_binary\_expression()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} ccs\+\_\+create\+\_\+binary\+\_\+expression (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{expression_8h_ace5a553a6440585e7530e448813d64ae}{ccs\+\_\+expression\+\_\+type\+\_\+t}}}]{type,  }\item[{\mbox{\hyperlink{base_8h_a36bc36b2bb0d0613453dd731cdcd2048}{ccs\+\_\+datum\+\_\+t}}}]{node\+\_\+left,  }\item[{\mbox{\hyperlink{base_8h_a36bc36b2bb0d0613453dd731cdcd2048}{ccs\+\_\+datum\+\_\+t}}}]{node\+\_\+right,  }\item[{\mbox{\hyperlink{base_8h_a211f0df32aa85683492513cbf0d7805b}{ccs\+\_\+expression\+\_\+t}} $\ast$}]{expression\+\_\+ret }\end{DoxyParamCaption})}
+
+
+
+Create a new binary expression. 
+
+Convenience wrapper around \mbox{\hyperlink{expression_8h_a550c8ba60ed615a86cde892d0d1ef575}{ccs\+\_\+create\+\_\+expression}} for binary operators. 
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em type} & the type of the expression \\
+\hline
+\mbox{\texttt{ in}}  & {\em node\+\_\+left} & left child node \\
+\hline
+\mbox{\texttt{ in}}  & {\em node\+\_\+right} & right child node \\
+\hline
+\mbox{\texttt{ out}}  & {\em expression\+\_\+ret} & a pointer to the variable that will hold the newly created expression \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445a9941bd690a240532191c41365f48e8b8}{CCS\+\_\+\+RESULT\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445ab3d1bba2839da0c0fb34fbc00c4be7d5}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+VALUE}} if {\ttfamily type} is not a valid CCS expression type; or if {\ttfamily type} arity is not 2; or if {\ttfamily node\+\_\+left} or {\ttfamily node\+\_\+right} are of type \mbox{\hyperlink{base_8h_a302e6ecbf08c6c8a059fc775c88f21c0a92d2f03bf95e5e040386842fa79f418b}{CCS\+\_\+\+DATA\+\_\+\+TYPE\+\_\+\+OBJECT}} but are neither a \mbox{\hyperlink{base_8h_a3d560375b0c5393435e65d760d3d6c60a23dc56e4333be6da44f11e452dd3780a}{CCS\+\_\+\+OBJECT\+\_\+\+TYPE\+\_\+\+PARAMETER}} nor a \mbox{\hyperlink{base_8h_a3d560375b0c5393435e65d760d3d6c60a9fa50994bde7ec33a555f01b206db0e1}{CCS\+\_\+\+OBJECT\+\_\+\+TYPE\+\_\+\+EXPRESSION}}; or if {\ttfamily node\+\_\+left} or {\ttfamily node\+\_\+right} are not of type \mbox{\hyperlink{base_8h_a302e6ecbf08c6c8a059fc775c88f21c0a92d2f03bf95e5e040386842fa79f418b}{CCS\+\_\+\+DATA\+\_\+\+TYPE\+\_\+\+OBJECT}}, \mbox{\hyperlink{base_8h_a302e6ecbf08c6c8a059fc775c88f21c0a706a91fea9636301fa8ca6dec809fd1e}{CCS\+\_\+\+DATA\+\_\+\+TYPE\+\_\+\+NONE}}, \mbox{\hyperlink{base_8h_a302e6ecbf08c6c8a059fc775c88f21c0a3d4862507a1f37105cb55b2bc86da2ba}{CCS\+\_\+\+DATA\+\_\+\+TYPE\+\_\+\+INT}}, \mbox{\hyperlink{base_8h_a302e6ecbf08c6c8a059fc775c88f21c0af16cc524a593159022f6bb0f81c6ac0d}{CCS\+\_\+\+DATA\+\_\+\+TYPE\+\_\+\+FLOAT}}, \mbox{\hyperlink{base_8h_a302e6ecbf08c6c8a059fc775c88f21c0a154fe68347b002dd9f4a35607119d3bf}{CCS\+\_\+\+DATA\+\_\+\+TYPE\+\_\+\+BOOL}}, or \mbox{\hyperlink{base_8h_a302e6ecbf08c6c8a059fc775c88f21c0a4f006bf5ea2c2220524476553c74d27a}{CCS\+\_\+\+DATA\+\_\+\+TYPE\+\_\+\+STRING}}; or if {\ttfamily expression\+\_\+ret} is NULL 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445aa3816f69f71f044629bdb21f618ab0e8}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+OBJECT}} if {\ttfamily node\+\_\+left} or {\ttfamily node\+\_\+right} are of type \mbox{\hyperlink{base_8h_a302e6ecbf08c6c8a059fc775c88f21c0a92d2f03bf95e5e040386842fa79f418b}{CCS\+\_\+\+DATA\+\_\+\+TYPE\+\_\+\+OBJECT}} but the object is not a valid CCS object 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445aba9b4719b46466cd185bf1a41a232ff6}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+OUT\+\_\+\+OF\+\_\+\+MEMORY}} if there was a lack of memory to allocate the new expression 
+\end{DoxyReturn}
+\mbox{\Hypertarget{expression_8h_a550c8ba60ed615a86cde892d0d1ef575}\label{expression_8h_a550c8ba60ed615a86cde892d0d1ef575}} 
+\index{expression.h@{expression.h}!ccs\_create\_expression@{ccs\_create\_expression}}
+\index{ccs\_create\_expression@{ccs\_create\_expression}!expression.h@{expression.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_create\_expression()}{ccs\_create\_expression()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} ccs\+\_\+create\+\_\+expression (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{expression_8h_ace5a553a6440585e7530e448813d64ae}{ccs\+\_\+expression\+\_\+type\+\_\+t}}}]{type,  }\item[{size\+\_\+t}]{num\+\_\+nodes,  }\item[{\mbox{\hyperlink{base_8h_a36bc36b2bb0d0613453dd731cdcd2048}{ccs\+\_\+datum\+\_\+t}} $\ast$}]{nodes,  }\item[{\mbox{\hyperlink{base_8h_a211f0df32aa85683492513cbf0d7805b}{ccs\+\_\+expression\+\_\+t}} $\ast$}]{expression\+\_\+ret }\end{DoxyParamCaption})}
+
+
+
+Create a new expression. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em type} & the type of the expression \\
+\hline
+\mbox{\texttt{ in}}  & {\em num\+\_\+nodes} & the number of the expression children nodes. Must be compatible with the arity of the expression \\
+\hline
+\mbox{\texttt{ in}}  & {\em nodes} & an array of {\ttfamily num\+\_\+nodes} expressions \\
+\hline
+\mbox{\texttt{ out}}  & {\em expression\+\_\+ret} & a pointer to the variable that will hold the newly created expression \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445a9941bd690a240532191c41365f48e8b8}{CCS\+\_\+\+RESULT\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445ab3d1bba2839da0c0fb34fbc00c4be7d5}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+VALUE}} if {\ttfamily type} is not a valid CCS expression type; or if {\ttfamily num\+\_\+nodes} is not compatible with the arity of {\ttfamily type}; or if one the nodes given is of type \mbox{\hyperlink{base_8h_a302e6ecbf08c6c8a059fc775c88f21c0a92d2f03bf95e5e040386842fa79f418b}{CCS\+\_\+\+DATA\+\_\+\+TYPE\+\_\+\+OBJECT}} but is neither a \mbox{\hyperlink{base_8h_a3d560375b0c5393435e65d760d3d6c60a23dc56e4333be6da44f11e452dd3780a}{CCS\+\_\+\+OBJECT\+\_\+\+TYPE\+\_\+\+PARAMETER}} nor a \mbox{\hyperlink{base_8h_a3d560375b0c5393435e65d760d3d6c60a9fa50994bde7ec33a555f01b206db0e1}{CCS\+\_\+\+OBJECT\+\_\+\+TYPE\+\_\+\+EXPRESSION}}; or if one the nodes given node is not a type \mbox{\hyperlink{base_8h_a302e6ecbf08c6c8a059fc775c88f21c0a92d2f03bf95e5e040386842fa79f418b}{CCS\+\_\+\+DATA\+\_\+\+TYPE\+\_\+\+OBJECT}}, \mbox{\hyperlink{base_8h_a302e6ecbf08c6c8a059fc775c88f21c0a706a91fea9636301fa8ca6dec809fd1e}{CCS\+\_\+\+DATA\+\_\+\+TYPE\+\_\+\+NONE}}, \mbox{\hyperlink{base_8h_a302e6ecbf08c6c8a059fc775c88f21c0a3d4862507a1f37105cb55b2bc86da2ba}{CCS\+\_\+\+DATA\+\_\+\+TYPE\+\_\+\+INT}}, \mbox{\hyperlink{base_8h_a302e6ecbf08c6c8a059fc775c88f21c0af16cc524a593159022f6bb0f81c6ac0d}{CCS\+\_\+\+DATA\+\_\+\+TYPE\+\_\+\+FLOAT}}, \mbox{\hyperlink{base_8h_a302e6ecbf08c6c8a059fc775c88f21c0a154fe68347b002dd9f4a35607119d3bf}{CCS\+\_\+\+DATA\+\_\+\+TYPE\+\_\+\+BOOL}}, or \mbox{\hyperlink{base_8h_a302e6ecbf08c6c8a059fc775c88f21c0a4f006bf5ea2c2220524476553c74d27a}{CCS\+\_\+\+DATA\+\_\+\+TYPE\+\_\+\+STRING}}; or if {\ttfamily expression\+\_\+ret} is NULL 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445aa3816f69f71f044629bdb21f618ab0e8}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+OBJECT}} if one the nodes given is of type \mbox{\hyperlink{base_8h_a302e6ecbf08c6c8a059fc775c88f21c0a92d2f03bf95e5e040386842fa79f418b}{CCS\+\_\+\+DATA\+\_\+\+TYPE\+\_\+\+OBJECT}} but the object is not a valid CCS object 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445aba9b4719b46466cd185bf1a41a232ff6}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+OUT\+\_\+\+OF\+\_\+\+MEMORY}} if there was a lack of memory to allocate the new expression 
+\end{DoxyReturn}
+\mbox{\Hypertarget{expression_8h_aa1348789c19208ff55b46ae0f82bb300}\label{expression_8h_aa1348789c19208ff55b46ae0f82bb300}} 
+\index{expression.h@{expression.h}!ccs\_create\_literal@{ccs\_create\_literal}}
+\index{ccs\_create\_literal@{ccs\_create\_literal}!expression.h@{expression.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_create\_literal()}{ccs\_create\_literal()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} ccs\+\_\+create\+\_\+literal (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_a36bc36b2bb0d0613453dd731cdcd2048}{ccs\+\_\+datum\+\_\+t}}}]{value,  }\item[{\mbox{\hyperlink{base_8h_a211f0df32aa85683492513cbf0d7805b}{ccs\+\_\+expression\+\_\+t}} $\ast$}]{expression\+\_\+ret }\end{DoxyParamCaption})}
+
+
+
+Create a new literal expression. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em value} & the value of the literal \\
+\hline
+\mbox{\texttt{ out}}  & {\em expression\+\_\+ret} & a pointer to the variable that will hold the newly created expression. If value is of type \mbox{\hyperlink{base_8h_a302e6ecbf08c6c8a059fc775c88f21c0a4f006bf5ea2c2220524476553c74d27a}{CCS\+\_\+\+DATA\+\_\+\+TYPE\+\_\+\+STRING}}, the string value is memoized \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445a9941bd690a240532191c41365f48e8b8}{CCS\+\_\+\+RESULT\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445ab3d1bba2839da0c0fb34fbc00c4be7d5}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+VALUE}} if {\ttfamily value} is not of type \mbox{\hyperlink{base_8h_a302e6ecbf08c6c8a059fc775c88f21c0a706a91fea9636301fa8ca6dec809fd1e}{CCS\+\_\+\+DATA\+\_\+\+TYPE\+\_\+\+NONE}}, \mbox{\hyperlink{base_8h_a302e6ecbf08c6c8a059fc775c88f21c0a3d4862507a1f37105cb55b2bc86da2ba}{CCS\+\_\+\+DATA\+\_\+\+TYPE\+\_\+\+INT}}, \mbox{\hyperlink{base_8h_a302e6ecbf08c6c8a059fc775c88f21c0af16cc524a593159022f6bb0f81c6ac0d}{CCS\+\_\+\+DATA\+\_\+\+TYPE\+\_\+\+FLOAT}}, \mbox{\hyperlink{base_8h_a302e6ecbf08c6c8a059fc775c88f21c0a154fe68347b002dd9f4a35607119d3bf}{CCS\+\_\+\+DATA\+\_\+\+TYPE\+\_\+\+BOOL}}, or \mbox{\hyperlink{base_8h_a302e6ecbf08c6c8a059fc775c88f21c0a4f006bf5ea2c2220524476553c74d27a}{CCS\+\_\+\+DATA\+\_\+\+TYPE\+\_\+\+STRING}}; or if {\ttfamily expression\+\_\+ret} is NULL 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445aba9b4719b46466cd185bf1a41a232ff6}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+OUT\+\_\+\+OF\+\_\+\+MEMORY}} if there was a lack of memory to allocate the new expression 
+\end{DoxyReturn}
+\mbox{\Hypertarget{expression_8h_a77d7d9416eed815bb56a4c4e6a0c0ffd}\label{expression_8h_a77d7d9416eed815bb56a4c4e6a0c0ffd}} 
+\index{expression.h@{expression.h}!ccs\_create\_unary\_expression@{ccs\_create\_unary\_expression}}
+\index{ccs\_create\_unary\_expression@{ccs\_create\_unary\_expression}!expression.h@{expression.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_create\_unary\_expression()}{ccs\_create\_unary\_expression()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} ccs\+\_\+create\+\_\+unary\+\_\+expression (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{expression_8h_ace5a553a6440585e7530e448813d64ae}{ccs\+\_\+expression\+\_\+type\+\_\+t}}}]{type,  }\item[{\mbox{\hyperlink{base_8h_a36bc36b2bb0d0613453dd731cdcd2048}{ccs\+\_\+datum\+\_\+t}}}]{node,  }\item[{\mbox{\hyperlink{base_8h_a211f0df32aa85683492513cbf0d7805b}{ccs\+\_\+expression\+\_\+t}} $\ast$}]{expression\+\_\+ret }\end{DoxyParamCaption})}
+
+
+
+Create a new unary expression. 
+
+Convenience wrapper around \mbox{\hyperlink{expression_8h_a550c8ba60ed615a86cde892d0d1ef575}{ccs\+\_\+create\+\_\+expression}} for unary expressions. 
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em type} & the type of the expression \\
+\hline
+\mbox{\texttt{ in}}  & {\em node} & child node \\
+\hline
+\mbox{\texttt{ out}}  & {\em expression\+\_\+ret} & a pointer to the variable that will hold the newly created expression \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445a9941bd690a240532191c41365f48e8b8}{CCS\+\_\+\+RESULT\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445ab3d1bba2839da0c0fb34fbc00c4be7d5}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+VALUE}} if {\ttfamily type} is not a valid CCS expression type; or if {\ttfamily type} arity is not 1; or if {\ttfamily node} is of type \mbox{\hyperlink{base_8h_a302e6ecbf08c6c8a059fc775c88f21c0a92d2f03bf95e5e040386842fa79f418b}{CCS\+\_\+\+DATA\+\_\+\+TYPE\+\_\+\+OBJECT}} but is neither a \mbox{\hyperlink{base_8h_a3d560375b0c5393435e65d760d3d6c60a23dc56e4333be6da44f11e452dd3780a}{CCS\+\_\+\+OBJECT\+\_\+\+TYPE\+\_\+\+PARAMETER}} nor a \mbox{\hyperlink{base_8h_a3d560375b0c5393435e65d760d3d6c60a9fa50994bde7ec33a555f01b206db0e1}{CCS\+\_\+\+OBJECT\+\_\+\+TYPE\+\_\+\+EXPRESSION}}; or if {\ttfamily node} is not of type \mbox{\hyperlink{base_8h_a302e6ecbf08c6c8a059fc775c88f21c0a92d2f03bf95e5e040386842fa79f418b}{CCS\+\_\+\+DATA\+\_\+\+TYPE\+\_\+\+OBJECT}}, \mbox{\hyperlink{base_8h_a302e6ecbf08c6c8a059fc775c88f21c0a706a91fea9636301fa8ca6dec809fd1e}{CCS\+\_\+\+DATA\+\_\+\+TYPE\+\_\+\+NONE}}, \mbox{\hyperlink{base_8h_a302e6ecbf08c6c8a059fc775c88f21c0a3d4862507a1f37105cb55b2bc86da2ba}{CCS\+\_\+\+DATA\+\_\+\+TYPE\+\_\+\+INT}}, \mbox{\hyperlink{base_8h_a302e6ecbf08c6c8a059fc775c88f21c0af16cc524a593159022f6bb0f81c6ac0d}{CCS\+\_\+\+DATA\+\_\+\+TYPE\+\_\+\+FLOAT}}, \mbox{\hyperlink{base_8h_a302e6ecbf08c6c8a059fc775c88f21c0a154fe68347b002dd9f4a35607119d3bf}{CCS\+\_\+\+DATA\+\_\+\+TYPE\+\_\+\+BOOL}}, or \mbox{\hyperlink{base_8h_a302e6ecbf08c6c8a059fc775c88f21c0a4f006bf5ea2c2220524476553c74d27a}{CCS\+\_\+\+DATA\+\_\+\+TYPE\+\_\+\+STRING}}; or if {\ttfamily expression\+\_\+ret} is NULL 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445aa3816f69f71f044629bdb21f618ab0e8}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+OBJECT}} if {\ttfamily node} is of type \mbox{\hyperlink{base_8h_a302e6ecbf08c6c8a059fc775c88f21c0a92d2f03bf95e5e040386842fa79f418b}{CCS\+\_\+\+DATA\+\_\+\+TYPE\+\_\+\+OBJECT}} but the object is not a valid CCS object 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445aba9b4719b46466cd185bf1a41a232ff6}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+OUT\+\_\+\+OF\+\_\+\+MEMORY}} if there was a lack of memory to allocate the new expression 
+\end{DoxyReturn}
+\mbox{\Hypertarget{expression_8h_a6b1fe9fc08e1196928bbec4339d1e1be}\label{expression_8h_a6b1fe9fc08e1196928bbec4339d1e1be}} 
+\index{expression.h@{expression.h}!ccs\_create\_variable@{ccs\_create\_variable}}
+\index{ccs\_create\_variable@{ccs\_create\_variable}!expression.h@{expression.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_create\_variable()}{ccs\_create\_variable()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} ccs\+\_\+create\+\_\+variable (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_a5f6612e0ada336e4189faad69075f477}{ccs\+\_\+parameter\+\_\+t}}}]{parameter,  }\item[{\mbox{\hyperlink{base_8h_a211f0df32aa85683492513cbf0d7805b}{ccs\+\_\+expression\+\_\+t}} $\ast$}]{expression\+\_\+ret }\end{DoxyParamCaption})}
+
+
+
+Create a new variable expression. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em parameter} & parameter to use as a variable \\
+\hline
+\mbox{\texttt{ out}}  & {\em expression\+\_\+ret} & a pointer to the variable that will hold the newly created expression \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445a9941bd690a240532191c41365f48e8b8}{CCS\+\_\+\+RESULT\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445ab3d1bba2839da0c0fb34fbc00c4be7d5}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+VALUE}} if {\ttfamily expression\+\_\+ret} is NULL 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445aa3816f69f71f044629bdb21f618ab0e8}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+OBJECT}} if {\ttfamily parameter} is not a valid CCS parameter 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445aba9b4719b46466cd185bf1a41a232ff6}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+OUT\+\_\+\+OF\+\_\+\+MEMORY}} if there was a lack of memory to allocate the new expression 
+\end{DoxyReturn}
+\mbox{\Hypertarget{expression_8h_a1fb748599e714e1d58312f51c1dcc6ce}\label{expression_8h_a1fb748599e714e1d58312f51c1dcc6ce}} 
+\index{expression.h@{expression.h}!ccs\_expression\_check\_context@{ccs\_expression\_check\_context}}
+\index{ccs\_expression\_check\_context@{ccs\_expression\_check\_context}!expression.h@{expression.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_expression\_check\_context()}{ccs\_expression\_check\_context()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} ccs\+\_\+expression\+\_\+check\+\_\+context (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_a211f0df32aa85683492513cbf0d7805b}{ccs\+\_\+expression\+\_\+t}}}]{expression,  }\item[{\mbox{\hyperlink{base_8h_a89a96617bf78b097e103ee8c8e281b7b}{ccs\+\_\+context\+\_\+t}}}]{context }\end{DoxyParamCaption})}
+
+
+
+Validate that an expression can be evaluated in the given context. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em expression} & \\
+\hline
+\mbox{\texttt{ in}}  & {\em context} & the context to verify the expression can be evaluated in. Can be NULL \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445a9941bd690a240532191c41365f48e8b8}{CCS\+\_\+\+RESULT\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445aa3816f69f71f044629bdb21f618ab0e8}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+OBJECT}} if {\ttfamily expression} is not a valid CCS expression; or if expression depends on a parameter and {\ttfamily context} is not a valid CCS context 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445ab3d1bba2839da0c0fb34fbc00c4be7d5}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+VALUE}} if the expression depends on a parameter and {\ttfamily context} is NULL 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445ad0d95ac551c4b542dccb908a3287da4c}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+PARAMETER}} if {\ttfamily context} does not contain one of the parameters referenced by the expression 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445aba9b4719b46466cd185bf1a41a232ff6}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+OUT\+\_\+\+OF\+\_\+\+MEMORY}} if there was not enough memory to allocate temporary storage 
+\end{DoxyReturn}
+\mbox{\Hypertarget{expression_8h_adc213cb89461357ffd52db32ed39de00}\label{expression_8h_adc213cb89461357ffd52db32ed39de00}} 
+\index{expression.h@{expression.h}!ccs\_expression\_eval@{ccs\_expression\_eval}}
+\index{ccs\_expression\_eval@{ccs\_expression\_eval}!expression.h@{expression.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_expression\_eval()}{ccs\_expression\_eval()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} ccs\+\_\+expression\+\_\+eval (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_a211f0df32aa85683492513cbf0d7805b}{ccs\+\_\+expression\+\_\+t}}}]{expression,  }\item[{\mbox{\hyperlink{base_8h_a89a96617bf78b097e103ee8c8e281b7b}{ccs\+\_\+context\+\_\+t}}}]{context,  }\item[{\mbox{\hyperlink{base_8h_a36bc36b2bb0d0613453dd731cdcd2048}{ccs\+\_\+datum\+\_\+t}} $\ast$}]{values,  }\item[{\mbox{\hyperlink{base_8h_a36bc36b2bb0d0613453dd731cdcd2048}{ccs\+\_\+datum\+\_\+t}} $\ast$}]{result\+\_\+ret }\end{DoxyParamCaption})}
+
+
+
+Get the value of an expression in a given context, provided a list of values for the context parameters. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em expression} & \\
+\hline
+\mbox{\texttt{ in}}  & {\em context} & the context to evaluate the expression into. Can be NULL \\
+\hline
+\mbox{\texttt{ in}}  & {\em values} & an array of values, one for each parameter in {\ttfamily context}. Can be NULL \\
+\hline
+\mbox{\texttt{ out}}  & {\em result\+\_\+ret} & a pointer to a variable that will contain the result of the evaluation of the expression. Result can be \mbox{\hyperlink{base_8h_a6f863aa138666864095f4e757897eb13}{ccs\+\_\+inactive}} when the result depend on an inactive parameter \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445a9941bd690a240532191c41365f48e8b8}{CCS\+\_\+\+RESULT\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445aa3816f69f71f044629bdb21f618ab0e8}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+OBJECT}} if {\ttfamily expression} is not a valid CCS variable expression; or if {\ttfamily context} is NULL and expression must evaluate a variable 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445ab3d1bba2839da0c0fb34fbc00c4be7d5}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+VALUE}} if {\ttfamily result\+\_\+ret} is NULL; or if {\ttfamily values} is NULL and expression must evaluate a variable; or if an illegal arithmetic or comparison operation would have occurred; or if a non boolean value is used in a boolean operation 
+\end{DoxyReturn}
+\mbox{\Hypertarget{expression_8h_a450103c49908e0723767242f9f62ace6}\label{expression_8h_a450103c49908e0723767242f9f62ace6}} 
+\index{expression.h@{expression.h}!ccs\_expression\_get\_nodes@{ccs\_expression\_get\_nodes}}
+\index{ccs\_expression\_get\_nodes@{ccs\_expression\_get\_nodes}!expression.h@{expression.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_expression\_get\_nodes()}{ccs\_expression\_get\_nodes()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} ccs\+\_\+expression\+\_\+get\+\_\+nodes (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_a211f0df32aa85683492513cbf0d7805b}{ccs\+\_\+expression\+\_\+t}}}]{expression,  }\item[{size\+\_\+t}]{num\+\_\+nodes,  }\item[{\mbox{\hyperlink{base_8h_a211f0df32aa85683492513cbf0d7805b}{ccs\+\_\+expression\+\_\+t}} $\ast$}]{nodes,  }\item[{size\+\_\+t $\ast$}]{num\+\_\+nodes\+\_\+ret }\end{DoxyParamCaption})}
+
+
+
+Get the child nodes of an expression. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em expression} & \\
+\hline
+\mbox{\texttt{ in}}  & {\em num\+\_\+nodes} & the size of the {\ttfamily nodes} array \\
+\hline
+\mbox{\texttt{ out}}  & {\em nodes} & an array of size {\ttfamily num\+\_\+nodes} to hold the returned values or NULL. If the array is too big, extra values are set NULL \\
+\hline
+\mbox{\texttt{ out}}  & {\em num\+\_\+nodes\+\_\+ret} & a pointer to a variable that will contain the number of nodes that are or would be returned. Can be NULL \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445a9941bd690a240532191c41365f48e8b8}{CCS\+\_\+\+RESULT\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445aa3816f69f71f044629bdb21f618ab0e8}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+OBJECT}} if {\ttfamily expression} is not a valid CCS expression 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445ab3d1bba2839da0c0fb34fbc00c4be7d5}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+VALUE}} if {\ttfamily nodes} is NULL and {\ttfamily num\+\_\+nodes} is greater than 0; or if {\ttfamily nodes} is NULL and num\+\_\+nodes\+\_\+ret is NULL; or if num\+\_\+values is less than the number of values that would be returned 
+\end{DoxyReturn}
+\mbox{\Hypertarget{expression_8h_af69366366ab6116f90e6d7519e90900e}\label{expression_8h_af69366366ab6116f90e6d7519e90900e}} 
+\index{expression.h@{expression.h}!ccs\_expression\_get\_num\_nodes@{ccs\_expression\_get\_num\_nodes}}
+\index{ccs\_expression\_get\_num\_nodes@{ccs\_expression\_get\_num\_nodes}!expression.h@{expression.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_expression\_get\_num\_nodes()}{ccs\_expression\_get\_num\_nodes()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} ccs\+\_\+expression\+\_\+get\+\_\+num\+\_\+nodes (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_a211f0df32aa85683492513cbf0d7805b}{ccs\+\_\+expression\+\_\+t}}}]{expression,  }\item[{size\+\_\+t $\ast$}]{num\+\_\+nodes\+\_\+ret }\end{DoxyParamCaption})}
+
+
+
+Get the number of child node of an expression. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em expression} & \\
+\hline
+\mbox{\texttt{ out}}  & {\em num\+\_\+nodes\+\_\+ret} & a pointer to the variable that will contain the number of child node of the expression \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445a9941bd690a240532191c41365f48e8b8}{CCS\+\_\+\+RESULT\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445ab3d1bba2839da0c0fb34fbc00c4be7d5}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+VALUE}} if {\ttfamily num\+\_\+nodes\+\_\+ret} is NULL 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445aa3816f69f71f044629bdb21f618ab0e8}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+OBJECT}} if {\ttfamily expression} is not a valid CCS expression 
+\end{DoxyReturn}
+\mbox{\Hypertarget{expression_8h_a4ee96cb3133ad7dcb5664befcc4ec731}\label{expression_8h_a4ee96cb3133ad7dcb5664befcc4ec731}} 
+\index{expression.h@{expression.h}!ccs\_expression\_get\_parameters@{ccs\_expression\_get\_parameters}}
+\index{ccs\_expression\_get\_parameters@{ccs\_expression\_get\_parameters}!expression.h@{expression.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_expression\_get\_parameters()}{ccs\_expression\_get\_parameters()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} ccs\+\_\+expression\+\_\+get\+\_\+parameters (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_a211f0df32aa85683492513cbf0d7805b}{ccs\+\_\+expression\+\_\+t}}}]{expression,  }\item[{size\+\_\+t}]{num\+\_\+parameters,  }\item[{\mbox{\hyperlink{base_8h_a5f6612e0ada336e4189faad69075f477}{ccs\+\_\+parameter\+\_\+t}} $\ast$}]{parameters,  }\item[{size\+\_\+t $\ast$}]{num\+\_\+parameters\+\_\+ret }\end{DoxyParamCaption})}
+
+
+
+Get the parameters used in an expression. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em expression} & \\
+\hline
+\mbox{\texttt{ in}}  & {\em num\+\_\+parameters} & the size of the {\ttfamily parameters} array \\
+\hline
+\mbox{\texttt{ in}}  & {\em parameters} & an array of size {\ttfamily num\+\_\+parameters} to hold the returned values, or NULL. If the array is too big, extra values are set to NULL \\
+\hline
+\mbox{\texttt{ out}}  & {\em num\+\_\+parameters\+\_\+ret} & a pointer to a variable that will contain the number of parameters that are or would be returned. Can be NULL \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445a9941bd690a240532191c41365f48e8b8}{CCS\+\_\+\+RESULT\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445aa3816f69f71f044629bdb21f618ab0e8}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+OBJECT}} if {\ttfamily expression} is not a valid CCS expression 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445ab3d1bba2839da0c0fb34fbc00c4be7d5}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+VALUE}} if {\ttfamily parameters} is NULL and {\ttfamily num\+\_\+parameters} is greater than 0; or if {\ttfamily parameters} is NULL and {\ttfamily num\+\_\+parameters\+\_\+ret} is NULL; or if {\ttfamily num\+\_\+parameters} is less than the number of parameters that would be returned 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445aba9b4719b46466cd185bf1a41a232ff6}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+OUT\+\_\+\+OF\+\_\+\+MEMORY}} if there was not enough memory to allocate temporary storage 
+\end{DoxyReturn}
+\mbox{\Hypertarget{expression_8h_a25a9572ec58e476df5a5ff9dc1ac211b}\label{expression_8h_a25a9572ec58e476df5a5ff9dc1ac211b}} 
+\index{expression.h@{expression.h}!ccs\_expression\_get\_type@{ccs\_expression\_get\_type}}
+\index{ccs\_expression\_get\_type@{ccs\_expression\_get\_type}!expression.h@{expression.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_expression\_get\_type()}{ccs\_expression\_get\_type()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} ccs\+\_\+expression\+\_\+get\+\_\+type (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_a211f0df32aa85683492513cbf0d7805b}{ccs\+\_\+expression\+\_\+t}}}]{expression,  }\item[{\mbox{\hyperlink{expression_8h_ace5a553a6440585e7530e448813d64ae}{ccs\+\_\+expression\+\_\+type\+\_\+t}} $\ast$}]{type\+\_\+ret }\end{DoxyParamCaption})}
+
+
+
+Get the type of an expression. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em expression} & \\
+\hline
+\mbox{\texttt{ out}}  & {\em type\+\_\+ret} & a pointer to the variable that will contain the type of the expression \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445a9941bd690a240532191c41365f48e8b8}{CCS\+\_\+\+RESULT\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445ab3d1bba2839da0c0fb34fbc00c4be7d5}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+VALUE}} if {\ttfamily type\+\_\+ret} is NULL 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445aa3816f69f71f044629bdb21f618ab0e8}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+OBJECT}} if {\ttfamily expression} is not a valid CCS expression 
+\end{DoxyReturn}
+\mbox{\Hypertarget{expression_8h_a3c5a838fe21710acfa91dda2ac262976}\label{expression_8h_a3c5a838fe21710acfa91dda2ac262976}} 
+\index{expression.h@{expression.h}!ccs\_expression\_list\_eval\_node@{ccs\_expression\_list\_eval\_node}}
+\index{ccs\_expression\_list\_eval\_node@{ccs\_expression\_list\_eval\_node}!expression.h@{expression.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_expression\_list\_eval\_node()}{ccs\_expression\_list\_eval\_node()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} ccs\+\_\+expression\+\_\+list\+\_\+eval\+\_\+node (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_a211f0df32aa85683492513cbf0d7805b}{ccs\+\_\+expression\+\_\+t}}}]{expression,  }\item[{\mbox{\hyperlink{base_8h_a89a96617bf78b097e103ee8c8e281b7b}{ccs\+\_\+context\+\_\+t}}}]{context,  }\item[{\mbox{\hyperlink{base_8h_a36bc36b2bb0d0613453dd731cdcd2048}{ccs\+\_\+datum\+\_\+t}} $\ast$}]{values,  }\item[{size\+\_\+t}]{index,  }\item[{\mbox{\hyperlink{base_8h_a36bc36b2bb0d0613453dd731cdcd2048}{ccs\+\_\+datum\+\_\+t}} $\ast$}]{result\+\_\+ret }\end{DoxyParamCaption})}
+
+
+
+Evaluate the entry of a list at a given index, in a given context, provided a list of values for the context parameters. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em expression} & \\
+\hline
+\mbox{\texttt{ in}}  & {\em context} & the context to evaluate the expression into. Can be NULL \\
+\hline
+\mbox{\texttt{ in}}  & {\em values} & an array of values, one for each parameter in {\ttfamily context}. Can be NULL \\
+\hline
+\mbox{\texttt{ in}}  & {\em index} & index of the child node to evaluate \\
+\hline
+\mbox{\texttt{ out}}  & {\em result\+\_\+ret} & a pointer to a variable that will contain the result of the evaluation of the expression. Result can be \mbox{\hyperlink{base_8h_a6f863aa138666864095f4e757897eb13}{ccs\+\_\+inactive}} when the result depend on an inactive parameter \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445a9941bd690a240532191c41365f48e8b8}{CCS\+\_\+\+RESULT\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445aa3816f69f71f044629bdb21f618ab0e8}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+OBJECT}} if {\ttfamily expression} is not a valid CCS expression; or if {\ttfamily context} is NULL and {\ttfamily expression} must evaluate a variable 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445a371ef1beb134c816c28d1822aa37affd}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+EXPRESSION}} if {\ttfamily expression} is not a \mbox{\hyperlink{expression_8h_abb49409e85924f2b77e152d7f9fa52c9aea0160e9c5d0f71baba9f14654144c49}{CCS\+\_\+\+EXPRESSION\+\_\+\+TYPE\+\_\+\+LIST}} 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445af49329ea0e10def334ff276577661d45}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+OUT\+\_\+\+OF\+\_\+\+BOUNDS}} if {\ttfamily index} is greater than the number of child nodes in the list 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445ab3d1bba2839da0c0fb34fbc00c4be7d5}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+VALUE}} if {\ttfamily result\+\_\+ret} is NULL; or if {\ttfamily values} is NULL and expression must evaluate a variable; or if an illegal arithmetic or comparison operation would have occurred; or if a non boolean value is used in a boolean operation 
+\end{DoxyReturn}
+\mbox{\Hypertarget{expression_8h_a19229ce06083f64c5d16c0991060da4c}\label{expression_8h_a19229ce06083f64c5d16c0991060da4c}} 
+\index{expression.h@{expression.h}!ccs\_literal\_get\_value@{ccs\_literal\_get\_value}}
+\index{ccs\_literal\_get\_value@{ccs\_literal\_get\_value}!expression.h@{expression.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_literal\_get\_value()}{ccs\_literal\_get\_value()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} ccs\+\_\+literal\+\_\+get\+\_\+value (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_a211f0df32aa85683492513cbf0d7805b}{ccs\+\_\+expression\+\_\+t}}}]{expression,  }\item[{\mbox{\hyperlink{base_8h_a36bc36b2bb0d0613453dd731cdcd2048}{ccs\+\_\+datum\+\_\+t}} $\ast$}]{value\+\_\+ret }\end{DoxyParamCaption})}
+
+
+
+Get the value of a literal expression. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em expression} & \\
+\hline
+\mbox{\texttt{ out}}  & {\em value\+\_\+ret} & a pointer to a variable that will contain the value of the literal \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445a9941bd690a240532191c41365f48e8b8}{CCS\+\_\+\+RESULT\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445aa3816f69f71f044629bdb21f618ab0e8}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+OBJECT}} if {\ttfamily expression} is not a valid CCS expression 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445a371ef1beb134c816c28d1822aa37affd}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+EXPRESSION}} if {\ttfamily expression} is not a \mbox{\hyperlink{expression_8h_abb49409e85924f2b77e152d7f9fa52c9a3e5b2d2374221cc07e160f83ba82f2d4}{CCS\+\_\+\+EXPRESSION\+\_\+\+TYPE\+\_\+\+LITERAL}} 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445ab3d1bba2839da0c0fb34fbc00c4be7d5}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+VALUE}} if {\ttfamily value\+\_\+ret} is NULL 
+\end{DoxyReturn}
+\mbox{\Hypertarget{expression_8h_a7e62b9dfd145b8dc602a77ef41e79f67}\label{expression_8h_a7e62b9dfd145b8dc602a77ef41e79f67}} 
+\index{expression.h@{expression.h}!ccs\_variable\_get\_parameter@{ccs\_variable\_get\_parameter}}
+\index{ccs\_variable\_get\_parameter@{ccs\_variable\_get\_parameter}!expression.h@{expression.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_variable\_get\_parameter()}{ccs\_variable\_get\_parameter()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} ccs\+\_\+variable\+\_\+get\+\_\+parameter (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_a211f0df32aa85683492513cbf0d7805b}{ccs\+\_\+expression\+\_\+t}}}]{expression,  }\item[{\mbox{\hyperlink{base_8h_a5f6612e0ada336e4189faad69075f477}{ccs\+\_\+parameter\+\_\+t}} $\ast$}]{parameter\+\_\+ret }\end{DoxyParamCaption})}
+
+
+
+Get the parameter of a variable expression. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em expression} & \\
+\hline
+\mbox{\texttt{ out}}  & {\em parameter\+\_\+ret} & a pointer to a variable that will contain the parameter \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445a9941bd690a240532191c41365f48e8b8}{CCS\+\_\+\+RESULT\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445aa3816f69f71f044629bdb21f618ab0e8}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+OBJECT}} if {\ttfamily expression} is not a valid CCS expression 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445a371ef1beb134c816c28d1822aa37affd}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+EXPRESSION}} if {\ttfamily expression} is not a \mbox{\hyperlink{expression_8h_abb49409e85924f2b77e152d7f9fa52c9ad3e2846b46b0006af3da41f168ab06f1}{CCS\+\_\+\+EXPRESSION\+\_\+\+TYPE\+\_\+\+VARIABLE}} 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445ab3d1bba2839da0c0fb34fbc00c4be7d5}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+VALUE}} if {\ttfamily parameter\+\_\+ret} is NULL 
+\end{DoxyReturn}
+
+
+\doxysubsection{Variable Documentation}
+\mbox{\Hypertarget{expression_8h_a250932e942a11a3c0af573712bdefc55}\label{expression_8h_a250932e942a11a3c0af573712bdefc55}} 
+\index{expression.h@{expression.h}!ccs\_expression\_arity@{ccs\_expression\_arity}}
+\index{ccs\_expression\_arity@{ccs\_expression\_arity}!expression.h@{expression.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_expression\_arity}{ccs\_expression\_arity}}
+{\footnotesize\ttfamily const int ccs\+\_\+expression\+\_\+arity\mbox{[}$\,$\mbox{]}\hspace{0.3cm}{\ttfamily [extern]}}
+
+
+
+An array of arity of CCS operators. 
+
+
+\begin{DoxyItemize}
+\item 2\+: OR
+\item 2\+: AND
+\item 2\+: EQUAL, NOT\+\_\+\+EQUAL
+\item 2\+: LESS, GREATER, LESS\+\_\+\+OR\+\_\+\+EQUAL, GREATER\+\_\+\+OR\+\_\+\+EQUAL
+\item 2\+: ADD, SUBSTRACT
+\item 2\+: MULTIPLY, DIVIDE, MODULO
+\item 1\+: POSITIVE, NEGATIVE, NOT
+\item 2\+: IN
+\item -\/1\+: LIST
+\item 0\+: LITERAL, VARIABLE 
+\end{DoxyItemize}\mbox{\Hypertarget{expression_8h_ae15e4ae67d2a3b20d35633d7787b4725}\label{expression_8h_ae15e4ae67d2a3b20d35633d7787b4725}} 
+\index{expression.h@{expression.h}!ccs\_expression\_associativity@{ccs\_expression\_associativity}}
+\index{ccs\_expression\_associativity@{ccs\_expression\_associativity}!expression.h@{expression.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_expression\_associativity}{ccs\_expression\_associativity}}
+{\footnotesize\ttfamily const \mbox{\hyperlink{expression_8h_a68b3fc02b2f6f7548cc0c8fd23357d7a}{ccs\+\_\+associativity\+\_\+type\+\_\+t}} ccs\+\_\+expression\+\_\+associativity\mbox{[}$\,$\mbox{]}\hspace{0.3cm}{\ttfamily [extern]}}
+
+
+
+An array of associativity of operators as defined by CCS grammar\+: 
+
+
+\begin{DoxyItemize}
+\item left\+: OR
+\item left\+: AND
+\item left\+: EQUAL, NOT\+\_\+\+EQUAL
+\item left\+: LESS, GREATER, LESS\+\_\+\+OR\+\_\+\+EQUAL, GREATER\+\_\+\+OR\+\_\+\+EQUAL
+\item left\+: ADD, SUBSTRACT
+\item left\+: MULTIPLY, DIVIDE, MODULO
+\item right\+: POSITIVE, NEGATIVE, NOT
+\item left\+: IN
+\item left\+: LIST
+\item none\+: LITERAL, VARIABLE 
+\end{DoxyItemize}\mbox{\Hypertarget{expression_8h_aa208300bffd72affb7b541ba4b69845f}\label{expression_8h_aa208300bffd72affb7b541ba4b69845f}} 
+\index{expression.h@{expression.h}!ccs\_expression\_precedence@{ccs\_expression\_precedence}}
+\index{ccs\_expression\_precedence@{ccs\_expression\_precedence}!expression.h@{expression.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_expression\_precedence}{ccs\_expression\_precedence}}
+{\footnotesize\ttfamily const int ccs\+\_\+expression\+\_\+precedence\mbox{[}$\,$\mbox{]}\hspace{0.3cm}{\ttfamily [extern]}}
+
+
+
+An array of precedence of operators as defined by CCS grammar\+: 
+
+
+\begin{DoxyItemize}
+\item 0 \+: OR
+\item 1 \+: AND
+\item 2 \+: EQUAL, NOT\+\_\+\+EQUAL
+\item 3 \+: LESS, GREATER, LESS\+\_\+\+OR\+\_\+\+EQUAL, GREATER\+\_\+\+OR\+\_\+\+EQUAL
+\item 4 \+: ADD, SUBSTRACT
+\item 5 \+: MULTIPLY, DIVIDE, MODULO
+\item 6 \+: POSITIVE, NEGATIVE, NOT
+\item 7 \+: IN
+\item max -\/ 1\+: LIST
+\item max \+: LITERAL, VARIABLE
+\end{DoxyItemize}
+
+Those are similar to C\textquotesingle{}s precedence \mbox{\Hypertarget{expression_8h_a4bb67544c402de6e48bf69dc8dd73c31}\label{expression_8h_a4bb67544c402de6e48bf69dc8dd73c31}} 
+\index{expression.h@{expression.h}!ccs\_expression\_symbols@{ccs\_expression\_symbols}}
+\index{ccs\_expression\_symbols@{ccs\_expression\_symbols}!expression.h@{expression.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_expression\_symbols}{ccs\_expression\_symbols}}
+{\footnotesize\ttfamily const char$\ast$ ccs\+\_\+expression\+\_\+symbols\mbox{[}$\,$\mbox{]}\hspace{0.3cm}{\ttfamily [extern]}}
+
+
+
+An array of suggested symbols (NULL terminated strings) for CCS operators. 
+
+
+\begin{DoxyItemize}
+\item OR\+: $\vert$$\vert$
+\item AND\+: \&\&
+\item EQUAL\+: ==
+\item NOT\+\_\+\+EQUAL\+: !=
+\item LESS\+: $<$
+\item GREATER\+: $>$
+\item LESS\+\_\+\+OR\+\_\+\+EQUAL\+: $<$=
+\item GREATER\+\_\+\+OR\+\_\+\+EQUAL\+: $>$=
+\item ADD\+: +
+\item SUBSTRACT\+: -\/
+\item MULTIPLY\+: $\ast$
+\item DIVIDE\+: /
+\item MODULO\+: \%
+\item POSITIVE\+: +
+\item NEGATIVE\+: -\/
+\item NOT\+: !
+\item IN\+: \#
+\item LIST\+: NULL
+\item LITERAL\+: NULL
+\item VARIABLE\+: NULL 
+\end{DoxyItemize}\mbox{\Hypertarget{expression_8h_ac4e6b439865fd19df362a739859b0c86}\label{expression_8h_ac4e6b439865fd19df362a739859b0c86}} 
+\index{expression.h@{expression.h}!ccs\_terminal\_precedence@{ccs\_terminal\_precedence}}
+\index{ccs\_terminal\_precedence@{ccs\_terminal\_precedence}!expression.h@{expression.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_terminal\_precedence}{ccs\_terminal\_precedence}}
+{\footnotesize\ttfamily const int ccs\+\_\+terminal\+\_\+precedence\mbox{[}$\,$\mbox{]}\hspace{0.3cm}{\ttfamily [extern]}}
+
+
+
+An array of integers defining terminal precedence in order to disambiguate NONE, TRUE and FALSE from identifiers\+: 
+
+
+\begin{DoxyItemize}
+\item 0\+: STRING, IDENTIFIER, INTEGER, FLOAT
+\item 1\+: NONE, TRUE, FALSE 
+\end{DoxyItemize}\mbox{\Hypertarget{expression_8h_a6c9ddc06e61e7500437fa2d4de7e56ff}\label{expression_8h_a6c9ddc06e61e7500437fa2d4de7e56ff}} 
+\index{expression.h@{expression.h}!ccs\_terminal\_regexp@{ccs\_terminal\_regexp}}
+\index{ccs\_terminal\_regexp@{ccs\_terminal\_regexp}!expression.h@{expression.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_terminal\_regexp}{ccs\_terminal\_regexp}}
+{\footnotesize\ttfamily const char$\ast$ ccs\+\_\+terminal\+\_\+regexp\mbox{[}$\,$\mbox{]}\hspace{0.3cm}{\ttfamily [extern]}}
+
+
+
+An array of regexp that define terminals\+: 
+
+
+\begin{DoxyItemize}
+\item NONE\+: /none/
+\item TRUE\+: /true/
+\item FALSE\+: /false/
+\item STRING\+: /\char`\"{}(\mbox{[}$^\wedge$\textbackslash{}0\textbackslash{}t\textbackslash{}n\textbackslash{}r\textbackslash{}f\char`\"{}\textbackslash{}\textbackslash{}\mbox{]}$\vert$\textbackslash{}\textbackslash{}\mbox{[}0tnrf\char`\"{}\textbackslash{}\textbackslash{}\mbox{]})+\char`\"{}$\vert$\textquotesingle{}(\mbox{[}$^\wedge$\textbackslash{}0\textbackslash{}t\textbackslash{}n\textbackslash{}r\textbackslash{}f\textquotesingle{}\textbackslash{}\textbackslash{}\mbox{]}$\vert$\textbackslash{}\textbackslash{}\mbox{[}0tnrf\textquotesingle{}\textbackslash{}\textbackslash{}\mbox{]})+\textquotesingle{}/
+\item IDENTIFIER\+: /\mbox{[}a-\/z\+A-\/\+Z\+\_\+\mbox{]}\mbox{[}a-\/z\+A-\/\+Z\+\_\+0-\/9\mbox{]}/
+\item INTEGER\+: /-\/?\mbox{[}0-\/9\mbox{]}+/
+\item FLOAT\+: /-\/?\mbox{[}0-\/9\mbox{]}+(\mbox{[}eE\mbox{]}\mbox{[}+-\/\mbox{]}?\mbox{[}0-\/9\mbox{]}+$\vert$\textbackslash{}.\mbox{[}0-\/9\mbox{]}+(\mbox{[}eE\mbox{]}\mbox{[}+-\/\mbox{]}?\mbox{[}0-\/9\mbox{]}+)?)/ 
+\end{DoxyItemize}\mbox{\Hypertarget{expression_8h_a9cf2c282415e728a3be111b2c7be8b6c}\label{expression_8h_a9cf2c282415e728a3be111b2c7be8b6c}} 
+\index{expression.h@{expression.h}!ccs\_terminal\_symbols@{ccs\_terminal\_symbols}}
+\index{ccs\_terminal\_symbols@{ccs\_terminal\_symbols}!expression.h@{expression.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_terminal\_symbols}{ccs\_terminal\_symbols}}
+{\footnotesize\ttfamily const char$\ast$ ccs\+\_\+terminal\+\_\+symbols\mbox{[}$\,$\mbox{]}\hspace{0.3cm}{\ttfamily [extern]}}
+
+
+
+An array of symbols (NULL terminated strings) for terminals that define them\+: 
+
+
+\begin{DoxyItemize}
+\item NONE\+: \char`\"{}none\char`\"{}
+\item TRUE\+: \char`\"{}true\char`\"{}
+\item FALSE\+: \char`\"{}false\char`\"{}
+\item STRING\+: NULL
+\item IDENTIFIER\+: NULL
+\item INTEGER\+: NULL
+\item FLOAT\+: NULL 
+\end{DoxyItemize}

@@ -1,0 +1,512 @@
+\hypertarget{evaluation_8h}{}\doxysection{include/cconfigspace/evaluation.h File Reference}
+\label{evaluation_8h}\index{include/cconfigspace/evaluation.h@{include/cconfigspace/evaluation.h}}
+
+
+An evaluation is a binding (see \mbox{\hyperlink{binding_8h}{binding.\+h}}) over an objective space (see \mbox{\hyperlink{objective__space_8h}{objective\+\_\+space.\+h}}) given a specific configuration (see \mbox{\hyperlink{configuration_8h}{configuration.\+h}}).  
+
+
+This graph shows which files directly or indirectly include this file\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=196pt]{evaluation_8h__dep__incl}
+\end{center}
+\end{figure}
+\doxysubsection*{Typedefs}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{evaluation_8h_afd12128e22930525ca6e5a7bc83adde5}\label{evaluation_8h_afd12128e22930525ca6e5a7bc83adde5}} 
+typedef enum \mbox{\hyperlink{evaluation_8h_a5afbd1b39b8fee136d6e1ebc2b302ff0}{ccs\+\_\+comparison\+\_\+e}} \mbox{\hyperlink{evaluation_8h_afd12128e22930525ca6e5a7bc83adde5}{ccs\+\_\+comparison\+\_\+t}}
+\begin{DoxyCompactList}\small\item\em A commodity type to represent CCS the result of comparing evaluations. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Enumerations}
+\begin{DoxyCompactItemize}
+\item 
+enum \mbox{\hyperlink{evaluation_8h_a5afbd1b39b8fee136d6e1ebc2b302ff0}{ccs\+\_\+comparison\+\_\+e}} \{ \newline
+\mbox{\hyperlink{evaluation_8h_a5afbd1b39b8fee136d6e1ebc2b302ff0ab55a3d084f9d3d18505f3af7512834c4}{CCS\+\_\+\+COMPARISON\+\_\+\+BETTER}} = -\/1
+, \mbox{\hyperlink{evaluation_8h_a5afbd1b39b8fee136d6e1ebc2b302ff0a3743c7c0b851e375b64baec49206b125}{CCS\+\_\+\+COMPARISON\+\_\+\+EQUIVALENT}} = 0
+, \mbox{\hyperlink{evaluation_8h_a5afbd1b39b8fee136d6e1ebc2b302ff0a91e771ce76dd7b08ca3fdfe0a807085e}{CCS\+\_\+\+COMPARISON\+\_\+\+WORSE}} = 1
+, \mbox{\hyperlink{evaluation_8h_a5afbd1b39b8fee136d6e1ebc2b302ff0a6aaa7439a3daef462143101165980073}{CCS\+\_\+\+COMPARISON\+\_\+\+NOT\+\_\+\+COMPARABLE}} = 2
+, \newline
+\mbox{\hyperlink{evaluation_8h_a5afbd1b39b8fee136d6e1ebc2b302ff0a95057ff864f72b11a5dafb795d8c533d}{CCS\+\_\+\+COMPARISON\+\_\+\+MAX}}
+, \mbox{\hyperlink{evaluation_8h_a5afbd1b39b8fee136d6e1ebc2b302ff0a2706c8dc6840592bf0376e875f0ca30f}{CCS\+\_\+\+COMPARISON\+\_\+\+FORCE\+\_\+32\+BIT}} = INT32\+\_\+\+MAX
+ \}
+\begin{DoxyCompactList}\small\item\em The different possible return codes when comparing two evaluations. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} \mbox{\hyperlink{evaluation_8h_a23f0db8b12e332c9110b1d5d5609f0de}{ccs\+\_\+create\+\_\+evaluation}} (\mbox{\hyperlink{base_8h_a645a0bae9ad3d85455ef2b06101146f7}{ccs\+\_\+objective\+\_\+space\+\_\+t}} objective\+\_\+space, \mbox{\hyperlink{base_8h_a6b2a7ac41257359ed28ae334bf760634}{ccs\+\_\+configuration\+\_\+t}} configuration, \mbox{\hyperlink{base_8h_a63acf1f87b11fc67aa84e68a4415109b}{ccs\+\_\+evaluation\+\_\+result\+\_\+t}} result, size\+\_\+t num\+\_\+values, \mbox{\hyperlink{base_8h_a36bc36b2bb0d0613453dd731cdcd2048}{ccs\+\_\+datum\+\_\+t}} $\ast$values, \mbox{\hyperlink{base_8h_a7dbc00be0122046c2ba9b6d188d57a13}{ccs\+\_\+evaluation\+\_\+t}} $\ast$evaluation\+\_\+ret)
+\begin{DoxyCompactList}\small\item\em Create a new instance of an evaluation on a given objective\+\_\+space for a given configuration. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} \mbox{\hyperlink{evaluation_8h_a95bf8ff18dde3c51120a0ea886f49a8a}{ccs\+\_\+evaluation\+\_\+get\+\_\+objective\+\_\+space}} (\mbox{\hyperlink{base_8h_a7dbc00be0122046c2ba9b6d188d57a13}{ccs\+\_\+evaluation\+\_\+t}} evaluation, \mbox{\hyperlink{base_8h_a645a0bae9ad3d85455ef2b06101146f7}{ccs\+\_\+objective\+\_\+space\+\_\+t}} $\ast$objective\+\_\+space\+\_\+ret)
+\begin{DoxyCompactList}\small\item\em Get the objective space associated with an evaluation. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} \mbox{\hyperlink{evaluation_8h_a3ebbbeb7d70f11fe776f585281c28a13}{ccs\+\_\+evaluation\+\_\+get\+\_\+configuration}} (\mbox{\hyperlink{base_8h_a7dbc00be0122046c2ba9b6d188d57a13}{ccs\+\_\+evaluation\+\_\+t}} evaluation, \mbox{\hyperlink{base_8h_a6b2a7ac41257359ed28ae334bf760634}{ccs\+\_\+configuration\+\_\+t}} $\ast$configuration\+\_\+ret)
+\begin{DoxyCompactList}\small\item\em Get the configuration associated with an evaluation. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} \mbox{\hyperlink{evaluation_8h_af3b2b6ce84443b6b1618e4880d14b51c}{ccs\+\_\+evaluation\+\_\+get\+\_\+result}} (\mbox{\hyperlink{base_8h_a7dbc00be0122046c2ba9b6d188d57a13}{ccs\+\_\+evaluation\+\_\+t}} evaluation, \mbox{\hyperlink{base_8h_a63acf1f87b11fc67aa84e68a4415109b}{ccs\+\_\+evaluation\+\_\+result\+\_\+t}} $\ast$result\+\_\+ret)
+\begin{DoxyCompactList}\small\item\em Get the result code associated with an evaluation. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} \mbox{\hyperlink{evaluation_8h_a93250de5eea1f692c4d6b679fd5fa210}{ccs\+\_\+evaluation\+\_\+set\+\_\+result}} (\mbox{\hyperlink{base_8h_a7dbc00be0122046c2ba9b6d188d57a13}{ccs\+\_\+evaluation\+\_\+t}} evaluation, \mbox{\hyperlink{base_8h_a63acf1f87b11fc67aa84e68a4415109b}{ccs\+\_\+evaluation\+\_\+result\+\_\+t}} result)
+\begin{DoxyCompactList}\small\item\em Set the result code associated with an evaluation. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} \mbox{\hyperlink{evaluation_8h_af220b9152027e9710b9f6e4f3bf66bc5}{ccs\+\_\+evaluation\+\_\+get\+\_\+value}} (\mbox{\hyperlink{base_8h_a7dbc00be0122046c2ba9b6d188d57a13}{ccs\+\_\+evaluation\+\_\+t}} evaluation, size\+\_\+t index, \mbox{\hyperlink{base_8h_a36bc36b2bb0d0613453dd731cdcd2048}{ccs\+\_\+datum\+\_\+t}} $\ast$value\+\_\+ret)
+\begin{DoxyCompactList}\small\item\em Get the value of the parameter at the given index. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} \mbox{\hyperlink{evaluation_8h_a5b448f87d4f4f4706cc07fb02e71d87c}{ccs\+\_\+evaluation\+\_\+set\+\_\+value}} (\mbox{\hyperlink{base_8h_a7dbc00be0122046c2ba9b6d188d57a13}{ccs\+\_\+evaluation\+\_\+t}} evaluation, size\+\_\+t index, \mbox{\hyperlink{base_8h_a36bc36b2bb0d0613453dd731cdcd2048}{ccs\+\_\+datum\+\_\+t}} value)
+\begin{DoxyCompactList}\small\item\em Set the value of the parameter at the given index. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} \mbox{\hyperlink{evaluation_8h_a46a53c39a282890c7ea620b848d6c436}{ccs\+\_\+evaluation\+\_\+get\+\_\+values}} (\mbox{\hyperlink{base_8h_a7dbc00be0122046c2ba9b6d188d57a13}{ccs\+\_\+evaluation\+\_\+t}} evaluation, size\+\_\+t num\+\_\+values, \mbox{\hyperlink{base_8h_a36bc36b2bb0d0613453dd731cdcd2048}{ccs\+\_\+datum\+\_\+t}} $\ast$values, size\+\_\+t $\ast$num\+\_\+values\+\_\+ret)
+\begin{DoxyCompactList}\small\item\em Get all the values in an evaluation. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} \mbox{\hyperlink{evaluation_8h_a1b48f3cbdbaf3f5a38dee0d75f5b5b1c}{ccs\+\_\+evaluation\+\_\+get\+\_\+value\+\_\+by\+\_\+name}} (\mbox{\hyperlink{base_8h_a7dbc00be0122046c2ba9b6d188d57a13}{ccs\+\_\+evaluation\+\_\+t}} evaluation, const char $\ast$name, \mbox{\hyperlink{base_8h_a36bc36b2bb0d0613453dd731cdcd2048}{ccs\+\_\+datum\+\_\+t}} $\ast$value\+\_\+ret)
+\begin{DoxyCompactList}\small\item\em Get the value of the parameter with the given name. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} \mbox{\hyperlink{evaluation_8h_ac0161df021af64ad71e89493679f7bc6}{ccs\+\_\+evaluation\+\_\+check}} (\mbox{\hyperlink{base_8h_a7dbc00be0122046c2ba9b6d188d57a13}{ccs\+\_\+evaluation\+\_\+t}} evaluation, \mbox{\hyperlink{base_8h_a0e8ba2dfd397017939e6ea2ebc4bb037}{ccs\+\_\+bool\+\_\+t}} $\ast$is\+\_\+valid\+\_\+ret)
+\begin{DoxyCompactList}\small\item\em Check that an evaluation values are valid in the objective space. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} \mbox{\hyperlink{evaluation_8h_a199a761d9f21ecc048722fddc4b2e27e}{ccs\+\_\+evaluation\+\_\+get\+\_\+objective\+\_\+value}} (\mbox{\hyperlink{base_8h_a7dbc00be0122046c2ba9b6d188d57a13}{ccs\+\_\+evaluation\+\_\+t}} evaluation, size\+\_\+t index, \mbox{\hyperlink{base_8h_a36bc36b2bb0d0613453dd731cdcd2048}{ccs\+\_\+datum\+\_\+t}} $\ast$value\+\_\+ret)
+\begin{DoxyCompactList}\small\item\em Get the value of an objective for a valid evaluation in the context of its objective space. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} \mbox{\hyperlink{evaluation_8h_aa2b649fb2d424e05a45a51be58cee32b}{ccs\+\_\+evaluation\+\_\+get\+\_\+objective\+\_\+values}} (\mbox{\hyperlink{base_8h_a7dbc00be0122046c2ba9b6d188d57a13}{ccs\+\_\+evaluation\+\_\+t}} evaluation, size\+\_\+t num\+\_\+values, \mbox{\hyperlink{base_8h_a36bc36b2bb0d0613453dd731cdcd2048}{ccs\+\_\+datum\+\_\+t}} $\ast$values, size\+\_\+t $\ast$num\+\_\+values\+\_\+ret)
+\begin{DoxyCompactList}\small\item\em Get the values of the objectives for a valid evaluation in the context of its objective space. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} \mbox{\hyperlink{evaluation_8h_a81d5a5f58d4ef22f0713b421e8f7bd61}{ccs\+\_\+evaluation\+\_\+hash}} (\mbox{\hyperlink{base_8h_a7dbc00be0122046c2ba9b6d188d57a13}{ccs\+\_\+evaluation\+\_\+t}} evaluation, \mbox{\hyperlink{base_8h_a8ab762d1e926e05224180c4f3455bf40}{ccs\+\_\+hash\+\_\+t}} $\ast$hash\+\_\+ret)
+\begin{DoxyCompactList}\small\item\em Compute a hash value for the evaluation by hashing together the objective space reference, the configuration, the number of values, the values themselves, and the associated result. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} \mbox{\hyperlink{evaluation_8h_a71aea18e9748b3e2b2ef6c017f1f79ee}{ccs\+\_\+evaluation\+\_\+cmp}} (\mbox{\hyperlink{base_8h_a7dbc00be0122046c2ba9b6d188d57a13}{ccs\+\_\+evaluation\+\_\+t}} evaluation, \mbox{\hyperlink{base_8h_a7dbc00be0122046c2ba9b6d188d57a13}{ccs\+\_\+evaluation\+\_\+t}} other\+\_\+evaluation, int $\ast$cmp\+\_\+ret)
+\begin{DoxyCompactList}\small\item\em Define a strict ordering of evaluation instances. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} \mbox{\hyperlink{evaluation_8h_afb2477f4fd99eb3eaa2c5e247601525d}{ccs\+\_\+evaluation\+\_\+compare}} (\mbox{\hyperlink{base_8h_a7dbc00be0122046c2ba9b6d188d57a13}{ccs\+\_\+evaluation\+\_\+t}} evaluation, \mbox{\hyperlink{base_8h_a7dbc00be0122046c2ba9b6d188d57a13}{ccs\+\_\+evaluation\+\_\+t}} other\+\_\+evaluation, \mbox{\hyperlink{evaluation_8h_afd12128e22930525ca6e5a7bc83adde5}{ccs\+\_\+comparison\+\_\+t}} $\ast$result\+\_\+ret)
+\begin{DoxyCompactList}\small\item\em Compare two successful evaluations objectives. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+An evaluation is a binding (see \mbox{\hyperlink{binding_8h}{binding.\+h}}) over an objective space (see \mbox{\hyperlink{objective__space_8h}{objective\+\_\+space.\+h}}) given a specific configuration (see \mbox{\hyperlink{configuration_8h}{configuration.\+h}}). 
+
+Successful evaluations over the same objective space are weakly ordered by their objective values. Evaluation that have failed must report a result code different than CCS\+\_\+\+RESULT\+\_\+\+SUCCESS. 
+
+\doxysubsection{Enumeration Type Documentation}
+\mbox{\Hypertarget{evaluation_8h_a5afbd1b39b8fee136d6e1ebc2b302ff0}\label{evaluation_8h_a5afbd1b39b8fee136d6e1ebc2b302ff0}} 
+\index{evaluation.h@{evaluation.h}!ccs\_comparison\_e@{ccs\_comparison\_e}}
+\index{ccs\_comparison\_e@{ccs\_comparison\_e}!evaluation.h@{evaluation.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_comparison\_e}{ccs\_comparison\_e}}
+{\footnotesize\ttfamily enum \mbox{\hyperlink{evaluation_8h_a5afbd1b39b8fee136d6e1ebc2b302ff0}{ccs\+\_\+comparison\+\_\+e}}}
+
+
+
+The different possible return codes when comparing two evaluations. 
+
+\begin{DoxyEnumFields}{Enumerator}
+\raisebox{\heightof{T}}[0pt][0pt]{\index{CCS\_COMPARISON\_BETTER@{CCS\_COMPARISON\_BETTER}!evaluation.h@{evaluation.h}}\index{evaluation.h@{evaluation.h}!CCS\_COMPARISON\_BETTER@{CCS\_COMPARISON\_BETTER}}}\mbox{\Hypertarget{evaluation_8h_a5afbd1b39b8fee136d6e1ebc2b302ff0ab55a3d084f9d3d18505f3af7512834c4}\label{evaluation_8h_a5afbd1b39b8fee136d6e1ebc2b302ff0ab55a3d084f9d3d18505f3af7512834c4}} 
+CCS\+\_\+\+COMPARISON\+\_\+\+BETTER&The first configuration is better then the second. \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{CCS\_COMPARISON\_EQUIVALENT@{CCS\_COMPARISON\_EQUIVALENT}!evaluation.h@{evaluation.h}}\index{evaluation.h@{evaluation.h}!CCS\_COMPARISON\_EQUIVALENT@{CCS\_COMPARISON\_EQUIVALENT}}}\mbox{\Hypertarget{evaluation_8h_a5afbd1b39b8fee136d6e1ebc2b302ff0a3743c7c0b851e375b64baec49206b125}\label{evaluation_8h_a5afbd1b39b8fee136d6e1ebc2b302ff0a3743c7c0b851e375b64baec49206b125}} 
+CCS\+\_\+\+COMPARISON\+\_\+\+EQUIVALENT&The two configurations are equivalent. \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{CCS\_COMPARISON\_WORSE@{CCS\_COMPARISON\_WORSE}!evaluation.h@{evaluation.h}}\index{evaluation.h@{evaluation.h}!CCS\_COMPARISON\_WORSE@{CCS\_COMPARISON\_WORSE}}}\mbox{\Hypertarget{evaluation_8h_a5afbd1b39b8fee136d6e1ebc2b302ff0a91e771ce76dd7b08ca3fdfe0a807085e}\label{evaluation_8h_a5afbd1b39b8fee136d6e1ebc2b302ff0a91e771ce76dd7b08ca3fdfe0a807085e}} 
+CCS\+\_\+\+COMPARISON\+\_\+\+WORSE&The first configuration is worse than the second. \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{CCS\_COMPARISON\_NOT\_COMPARABLE@{CCS\_COMPARISON\_NOT\_COMPARABLE}!evaluation.h@{evaluation.h}}\index{evaluation.h@{evaluation.h}!CCS\_COMPARISON\_NOT\_COMPARABLE@{CCS\_COMPARISON\_NOT\_COMPARABLE}}}\mbox{\Hypertarget{evaluation_8h_a5afbd1b39b8fee136d6e1ebc2b302ff0a6aaa7439a3daef462143101165980073}\label{evaluation_8h_a5afbd1b39b8fee136d6e1ebc2b302ff0a6aaa7439a3daef462143101165980073}} 
+CCS\+\_\+\+COMPARISON\+\_\+\+NOT\+\_\+\+COMPARABLE&The two configurations cannot be compared. \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{CCS\_COMPARISON\_MAX@{CCS\_COMPARISON\_MAX}!evaluation.h@{evaluation.h}}\index{evaluation.h@{evaluation.h}!CCS\_COMPARISON\_MAX@{CCS\_COMPARISON\_MAX}}}\mbox{\Hypertarget{evaluation_8h_a5afbd1b39b8fee136d6e1ebc2b302ff0a95057ff864f72b11a5dafb795d8c533d}\label{evaluation_8h_a5afbd1b39b8fee136d6e1ebc2b302ff0a95057ff864f72b11a5dafb795d8c533d}} 
+CCS\+\_\+\+COMPARISON\+\_\+\+MAX&Guard. \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{CCS\_COMPARISON\_FORCE\_32BIT@{CCS\_COMPARISON\_FORCE\_32BIT}!evaluation.h@{evaluation.h}}\index{evaluation.h@{evaluation.h}!CCS\_COMPARISON\_FORCE\_32BIT@{CCS\_COMPARISON\_FORCE\_32BIT}}}\mbox{\Hypertarget{evaluation_8h_a5afbd1b39b8fee136d6e1ebc2b302ff0a2706c8dc6840592bf0376e875f0ca30f}\label{evaluation_8h_a5afbd1b39b8fee136d6e1ebc2b302ff0a2706c8dc6840592bf0376e875f0ca30f}} 
+CCS\+\_\+\+COMPARISON\+\_\+\+FORCE\+\_\+32\+BIT&Try forcing 32 bits value for bindings. \\
+\hline
+
+\end{DoxyEnumFields}
+
+
+\doxysubsection{Function Documentation}
+\mbox{\Hypertarget{evaluation_8h_a23f0db8b12e332c9110b1d5d5609f0de}\label{evaluation_8h_a23f0db8b12e332c9110b1d5d5609f0de}} 
+\index{evaluation.h@{evaluation.h}!ccs\_create\_evaluation@{ccs\_create\_evaluation}}
+\index{ccs\_create\_evaluation@{ccs\_create\_evaluation}!evaluation.h@{evaluation.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_create\_evaluation()}{ccs\_create\_evaluation()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} ccs\+\_\+create\+\_\+evaluation (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_a645a0bae9ad3d85455ef2b06101146f7}{ccs\+\_\+objective\+\_\+space\+\_\+t}}}]{objective\+\_\+space,  }\item[{\mbox{\hyperlink{base_8h_a6b2a7ac41257359ed28ae334bf760634}{ccs\+\_\+configuration\+\_\+t}}}]{configuration,  }\item[{\mbox{\hyperlink{base_8h_a63acf1f87b11fc67aa84e68a4415109b}{ccs\+\_\+evaluation\+\_\+result\+\_\+t}}}]{result,  }\item[{size\+\_\+t}]{num\+\_\+values,  }\item[{\mbox{\hyperlink{base_8h_a36bc36b2bb0d0613453dd731cdcd2048}{ccs\+\_\+datum\+\_\+t}} $\ast$}]{values,  }\item[{\mbox{\hyperlink{base_8h_a7dbc00be0122046c2ba9b6d188d57a13}{ccs\+\_\+evaluation\+\_\+t}} $\ast$}]{evaluation\+\_\+ret }\end{DoxyParamCaption})}
+
+
+
+Create a new instance of an evaluation on a given objective\+\_\+space for a given configuration. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em objective\+\_\+space} & the objective space to associate with the evaluation \\
+\hline
+\mbox{\texttt{ in}}  & {\em configuration} & the configuration to associate with the evaluation \\
+\hline
+\mbox{\texttt{ in}}  & {\em result} & the result code associated with the evaluation \\
+\hline
+\mbox{\texttt{ in}}  & {\em num\+\_\+values} & the number of provided values to initialize the evaluation \\
+\hline
+\mbox{\texttt{ in}}  & {\em values} & an optional array of values to initialize the evaluation \\
+\hline
+\mbox{\texttt{ out}}  & {\em evaluation\+\_\+ret} & a pointer to the variable that will hold the newly created evaluation \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445a9941bd690a240532191c41365f48e8b8}{CCS\+\_\+\+RESULT\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445aa3816f69f71f044629bdb21f618ab0e8}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+OBJECT}} if {\ttfamily objective\+\_\+space} is not a valid CCS objective space; or if {\ttfamily configuration} is not a valid CCS configuration 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445ab3d1bba2839da0c0fb34fbc00c4be7d5}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+VALUE}} if {\ttfamily evaluation\+\_\+ret} is NULL; or if {\ttfamily values} is NULL and {\ttfamily num\+\_\+values} is greater than 0; or if the number of values provided is not equal to the number of parameters in the objective space 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445aba9b4719b46466cd185bf1a41a232ff6}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+OUT\+\_\+\+OF\+\_\+\+MEMORY}} if there was a lack of memory to allocate the new evaluation 
+\end{DoxyReturn}
+\mbox{\Hypertarget{evaluation_8h_ac0161df021af64ad71e89493679f7bc6}\label{evaluation_8h_ac0161df021af64ad71e89493679f7bc6}} 
+\index{evaluation.h@{evaluation.h}!ccs\_evaluation\_check@{ccs\_evaluation\_check}}
+\index{ccs\_evaluation\_check@{ccs\_evaluation\_check}!evaluation.h@{evaluation.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_evaluation\_check()}{ccs\_evaluation\_check()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} ccs\+\_\+evaluation\+\_\+check (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_a7dbc00be0122046c2ba9b6d188d57a13}{ccs\+\_\+evaluation\+\_\+t}}}]{evaluation,  }\item[{\mbox{\hyperlink{base_8h_a0e8ba2dfd397017939e6ea2ebc4bb037}{ccs\+\_\+bool\+\_\+t}} $\ast$}]{is\+\_\+valid\+\_\+ret }\end{DoxyParamCaption})}
+
+
+
+Check that an evaluation values are valid in the objective space. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em evaluation} & \\
+\hline
+\mbox{\texttt{ out}}  & {\em is\+\_\+valid\+\_\+ret} & a pointer to a variable that will hold the result of the check. Result will be \mbox{\hyperlink{base_8h_a4598e8e24f836accf0ebc8c73973714d}{CCS\+\_\+\+TRUE}} if the evaluation is valid. Result will be \mbox{\hyperlink{base_8h_a20d15198405a9b9c79c8a093345bc67b}{CCS\+\_\+\+FALSE}} if an parameter value is not a valid value for this parameter \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445a9941bd690a240532191c41365f48e8b8}{CCS\+\_\+\+RESULT\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445aa3816f69f71f044629bdb21f618ab0e8}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+OBJECT}} if {\ttfamily evaluation} is not a valid CCS evaluation 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445a861411c9e67478ea8aff1c5338dc91c4}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+EVALUATION}} if {\ttfamily evaluation} was found to be invalid in the context of the objective space 
+\end{DoxyReturn}
+\mbox{\Hypertarget{evaluation_8h_a71aea18e9748b3e2b2ef6c017f1f79ee}\label{evaluation_8h_a71aea18e9748b3e2b2ef6c017f1f79ee}} 
+\index{evaluation.h@{evaluation.h}!ccs\_evaluation\_cmp@{ccs\_evaluation\_cmp}}
+\index{ccs\_evaluation\_cmp@{ccs\_evaluation\_cmp}!evaluation.h@{evaluation.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_evaluation\_cmp()}{ccs\_evaluation\_cmp()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} ccs\+\_\+evaluation\+\_\+cmp (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_a7dbc00be0122046c2ba9b6d188d57a13}{ccs\+\_\+evaluation\+\_\+t}}}]{evaluation,  }\item[{\mbox{\hyperlink{base_8h_a7dbc00be0122046c2ba9b6d188d57a13}{ccs\+\_\+evaluation\+\_\+t}}}]{other\+\_\+evaluation,  }\item[{int $\ast$}]{cmp\+\_\+ret }\end{DoxyParamCaption})}
+
+
+
+Define a strict ordering of evaluation instances. 
+
+Objective space, configuration, number of values, values, and result codes are compared. 
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em evaluation} & the first evaluation \\
+\hline
+\mbox{\texttt{ in}}  & {\em other\+\_\+evaluation} & the second evaluation \\
+\hline
+\mbox{\texttt{ out}}  & {\em cmp\+\_\+ret} & a pointer to the variable that will contain the result of the comparison. Will contain -\/1, 0, or 1 depending on if the first evaluation is found to be respectively lesser than, equal, or greater then the second evaluation \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445a9941bd690a240532191c41365f48e8b8}{CCS\+\_\+\+RESULT\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445aa3816f69f71f044629bdb21f618ab0e8}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+OBJECT}} if {\ttfamily evaluation} or {\ttfamily other\+\_\+evaluation} are not valid CCS evaluations 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445ab3d1bba2839da0c0fb34fbc00c4be7d5}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+VALUE}} if {\ttfamily cmp\+\_\+ret} is NULL 
+\end{DoxyReturn}
+\mbox{\Hypertarget{evaluation_8h_afb2477f4fd99eb3eaa2c5e247601525d}\label{evaluation_8h_afb2477f4fd99eb3eaa2c5e247601525d}} 
+\index{evaluation.h@{evaluation.h}!ccs\_evaluation\_compare@{ccs\_evaluation\_compare}}
+\index{ccs\_evaluation\_compare@{ccs\_evaluation\_compare}!evaluation.h@{evaluation.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_evaluation\_compare()}{ccs\_evaluation\_compare()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} ccs\+\_\+evaluation\+\_\+compare (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_a7dbc00be0122046c2ba9b6d188d57a13}{ccs\+\_\+evaluation\+\_\+t}}}]{evaluation,  }\item[{\mbox{\hyperlink{base_8h_a7dbc00be0122046c2ba9b6d188d57a13}{ccs\+\_\+evaluation\+\_\+t}}}]{other\+\_\+evaluation,  }\item[{\mbox{\hyperlink{evaluation_8h_afd12128e22930525ca6e5a7bc83adde5}{ccs\+\_\+comparison\+\_\+t}} $\ast$}]{result\+\_\+ret }\end{DoxyParamCaption})}
+
+
+
+Compare two successful evaluations objectives. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em evaluation} & the first evaluation \\
+\hline
+\mbox{\texttt{ in}}  & {\em other\+\_\+evaluation} & the second evaluation \\
+\hline
+\mbox{\texttt{ out}}  & {\em result\+\_\+ret} & a pointer to the variable that will contain the result of the comparison. Will contain \mbox{\hyperlink{evaluation_8h_a5afbd1b39b8fee136d6e1ebc2b302ff0ab55a3d084f9d3d18505f3af7512834c4}{CCS\+\_\+\+COMPARISON\+\_\+\+BETTER}}, \mbox{\hyperlink{evaluation_8h_a5afbd1b39b8fee136d6e1ebc2b302ff0a3743c7c0b851e375b64baec49206b125}{CCS\+\_\+\+COMPARISON\+\_\+\+EQUIVALENT}}, \mbox{\hyperlink{evaluation_8h_a5afbd1b39b8fee136d6e1ebc2b302ff0a91e771ce76dd7b08ca3fdfe0a807085e}{CCS\+\_\+\+COMPARISON\+\_\+\+WORSE}}, or \mbox{\hyperlink{evaluation_8h_a5afbd1b39b8fee136d6e1ebc2b302ff0a6aaa7439a3daef462143101165980073}{CCS\+\_\+\+COMPARISON\+\_\+\+NOT\+\_\+\+COMPARABLE}} if the first evaluation is found to be respectively better, equivalent, worse, or not comparable with the second evaluation. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445a9941bd690a240532191c41365f48e8b8}{CCS\+\_\+\+RESULT\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445aa3816f69f71f044629bdb21f618ab0e8}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+OBJECT}} if {\ttfamily evaluation} or {\ttfamily other\+\_\+evaluation} are not valid CCS evaluations; or if {\ttfamily evaluation} and {\ttfamily other\+\_\+evaluation} do not share the same objective space; or if any of the configuration is associated a result code different than CCS\+\_\+\+SUCESS 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445ab3d1bba2839da0c0fb34fbc00c4be7d5}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+VALUE}} if {\ttfamily result\+\_\+ret} is NULL; or if there was an issue evaluating any of the objectives 
+\end{DoxyReturn}
+\mbox{\Hypertarget{evaluation_8h_a3ebbbeb7d70f11fe776f585281c28a13}\label{evaluation_8h_a3ebbbeb7d70f11fe776f585281c28a13}} 
+\index{evaluation.h@{evaluation.h}!ccs\_evaluation\_get\_configuration@{ccs\_evaluation\_get\_configuration}}
+\index{ccs\_evaluation\_get\_configuration@{ccs\_evaluation\_get\_configuration}!evaluation.h@{evaluation.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_evaluation\_get\_configuration()}{ccs\_evaluation\_get\_configuration()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} ccs\+\_\+evaluation\+\_\+get\+\_\+configuration (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_a7dbc00be0122046c2ba9b6d188d57a13}{ccs\+\_\+evaluation\+\_\+t}}}]{evaluation,  }\item[{\mbox{\hyperlink{base_8h_a6b2a7ac41257359ed28ae334bf760634}{ccs\+\_\+configuration\+\_\+t}} $\ast$}]{configuration\+\_\+ret }\end{DoxyParamCaption})}
+
+
+
+Get the configuration associated with an evaluation. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em evaluation} & \\
+\hline
+\mbox{\texttt{ out}}  & {\em configuration\+\_\+ret} & a pointer to the variable that will contain the configuration \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445a9941bd690a240532191c41365f48e8b8}{CCS\+\_\+\+RESULT\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445aa3816f69f71f044629bdb21f618ab0e8}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+OBJECT}} if {\ttfamily evaluation} is not a valid CCS evaluation 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445ab3d1bba2839da0c0fb34fbc00c4be7d5}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+VALUE}} if {\ttfamily configuration\+\_\+ret} is NULL 
+\end{DoxyReturn}
+\mbox{\Hypertarget{evaluation_8h_a95bf8ff18dde3c51120a0ea886f49a8a}\label{evaluation_8h_a95bf8ff18dde3c51120a0ea886f49a8a}} 
+\index{evaluation.h@{evaluation.h}!ccs\_evaluation\_get\_objective\_space@{ccs\_evaluation\_get\_objective\_space}}
+\index{ccs\_evaluation\_get\_objective\_space@{ccs\_evaluation\_get\_objective\_space}!evaluation.h@{evaluation.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_evaluation\_get\_objective\_space()}{ccs\_evaluation\_get\_objective\_space()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} ccs\+\_\+evaluation\+\_\+get\+\_\+objective\+\_\+space (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_a7dbc00be0122046c2ba9b6d188d57a13}{ccs\+\_\+evaluation\+\_\+t}}}]{evaluation,  }\item[{\mbox{\hyperlink{base_8h_a645a0bae9ad3d85455ef2b06101146f7}{ccs\+\_\+objective\+\_\+space\+\_\+t}} $\ast$}]{objective\+\_\+space\+\_\+ret }\end{DoxyParamCaption})}
+
+
+
+Get the objective space associated with an evaluation. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em evaluation} & \\
+\hline
+\mbox{\texttt{ out}}  & {\em objective\+\_\+space\+\_\+ret} & a pointer to the variable that will contain the objective space \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445a9941bd690a240532191c41365f48e8b8}{CCS\+\_\+\+RESULT\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445aa3816f69f71f044629bdb21f618ab0e8}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+OBJECT}} if {\ttfamily evaluation} is not a valid CCS evaluation 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445ab3d1bba2839da0c0fb34fbc00c4be7d5}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+VALUE}} if {\ttfamily objective\+\_\+space\+\_\+ret} is NULL 
+\end{DoxyReturn}
+\mbox{\Hypertarget{evaluation_8h_a199a761d9f21ecc048722fddc4b2e27e}\label{evaluation_8h_a199a761d9f21ecc048722fddc4b2e27e}} 
+\index{evaluation.h@{evaluation.h}!ccs\_evaluation\_get\_objective\_value@{ccs\_evaluation\_get\_objective\_value}}
+\index{ccs\_evaluation\_get\_objective\_value@{ccs\_evaluation\_get\_objective\_value}!evaluation.h@{evaluation.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_evaluation\_get\_objective\_value()}{ccs\_evaluation\_get\_objective\_value()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} ccs\+\_\+evaluation\+\_\+get\+\_\+objective\+\_\+value (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_a7dbc00be0122046c2ba9b6d188d57a13}{ccs\+\_\+evaluation\+\_\+t}}}]{evaluation,  }\item[{size\+\_\+t}]{index,  }\item[{\mbox{\hyperlink{base_8h_a36bc36b2bb0d0613453dd731cdcd2048}{ccs\+\_\+datum\+\_\+t}} $\ast$}]{value\+\_\+ret }\end{DoxyParamCaption})}
+
+
+
+Get the value of an objective for a valid evaluation in the context of its objective space. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em evaluation} & \\
+\hline
+\mbox{\texttt{ in}}  & {\em index} & the index of the objective in the objective space \\
+\hline
+\mbox{\texttt{ out}}  & {\em value\+\_\+ret} & a pointer to the variable that will contain the value of the objective \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445a9941bd690a240532191c41365f48e8b8}{CCS\+\_\+\+RESULT\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445aa3816f69f71f044629bdb21f618ab0e8}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+OBJECT}} if {\ttfamily evaluation} is not a valid CCS evaluation 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445ab3d1bba2839da0c0fb34fbc00c4be7d5}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+VALUE}} if {\ttfamily value\+\_\+ret} is NULL; or if there was an issue evaluating the objective 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445af49329ea0e10def334ff276577661d45}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+OUT\+\_\+\+OF\+\_\+\+BOUNDS}} if {\ttfamily index} is greater than the number of objective in the objective space 
+\end{DoxyReturn}
+\mbox{\Hypertarget{evaluation_8h_aa2b649fb2d424e05a45a51be58cee32b}\label{evaluation_8h_aa2b649fb2d424e05a45a51be58cee32b}} 
+\index{evaluation.h@{evaluation.h}!ccs\_evaluation\_get\_objective\_values@{ccs\_evaluation\_get\_objective\_values}}
+\index{ccs\_evaluation\_get\_objective\_values@{ccs\_evaluation\_get\_objective\_values}!evaluation.h@{evaluation.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_evaluation\_get\_objective\_values()}{ccs\_evaluation\_get\_objective\_values()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} ccs\+\_\+evaluation\+\_\+get\+\_\+objective\+\_\+values (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_a7dbc00be0122046c2ba9b6d188d57a13}{ccs\+\_\+evaluation\+\_\+t}}}]{evaluation,  }\item[{size\+\_\+t}]{num\+\_\+values,  }\item[{\mbox{\hyperlink{base_8h_a36bc36b2bb0d0613453dd731cdcd2048}{ccs\+\_\+datum\+\_\+t}} $\ast$}]{values,  }\item[{size\+\_\+t $\ast$}]{num\+\_\+values\+\_\+ret }\end{DoxyParamCaption})}
+
+
+
+Get the values of the objectives for a valid evaluation in the context of its objective space. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em evaluation} & \\
+\hline
+\mbox{\texttt{ in}}  & {\em num\+\_\+values} & the number of values that {\ttfamily values} can contain \\
+\hline
+\mbox{\texttt{ out}}  & {\em values} & an optional array of values that will contain the returned objective values. If values is bigger than the number of objectives, extra values will be set to \mbox{\hyperlink{base_8h_a302e6ecbf08c6c8a059fc775c88f21c0a706a91fea9636301fa8ca6dec809fd1e}{CCS\+\_\+\+DATA\+\_\+\+TYPE\+\_\+\+NONE}} \\
+\hline
+\mbox{\texttt{ out}}  & {\em num\+\_\+values\+\_\+ret} & an optional pointer to a variable that will contain the number of values that are or would be returned. Can be NULL \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445a9941bd690a240532191c41365f48e8b8}{CCS\+\_\+\+RESULT\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445aa3816f69f71f044629bdb21f618ab0e8}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+OBJECT}} if {\ttfamily evaluation} is not a valid CCS evaluation 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445ab3d1bba2839da0c0fb34fbc00c4be7d5}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+VALUE}} if {\ttfamily values} is NULL and {\ttfamily num\+\_\+values} is greater than 0; or if values is NULL and num\+\_\+values\+\_\+ret is NULL; or if there was an issue evaluating any of the objectives 
+\end{DoxyReturn}
+\mbox{\Hypertarget{evaluation_8h_af3b2b6ce84443b6b1618e4880d14b51c}\label{evaluation_8h_af3b2b6ce84443b6b1618e4880d14b51c}} 
+\index{evaluation.h@{evaluation.h}!ccs\_evaluation\_get\_result@{ccs\_evaluation\_get\_result}}
+\index{ccs\_evaluation\_get\_result@{ccs\_evaluation\_get\_result}!evaluation.h@{evaluation.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_evaluation\_get\_result()}{ccs\_evaluation\_get\_result()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} ccs\+\_\+evaluation\+\_\+get\+\_\+result (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_a7dbc00be0122046c2ba9b6d188d57a13}{ccs\+\_\+evaluation\+\_\+t}}}]{evaluation,  }\item[{\mbox{\hyperlink{base_8h_a63acf1f87b11fc67aa84e68a4415109b}{ccs\+\_\+evaluation\+\_\+result\+\_\+t}} $\ast$}]{result\+\_\+ret }\end{DoxyParamCaption})}
+
+
+
+Get the result code associated with an evaluation. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em evaluation} & \\
+\hline
+\mbox{\texttt{ out}}  & {\em result\+\_\+ret} & a pointer to the variable that will contain the returned result code \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445a9941bd690a240532191c41365f48e8b8}{CCS\+\_\+\+RESULT\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445aa3816f69f71f044629bdb21f618ab0e8}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+OBJECT}} if {\ttfamily evaluation} is not a valid CCS evaluation 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445ab3d1bba2839da0c0fb34fbc00c4be7d5}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+VALUE}} if {\ttfamily result\+\_\+ret} is NULL 
+\end{DoxyReturn}
+\mbox{\Hypertarget{evaluation_8h_af220b9152027e9710b9f6e4f3bf66bc5}\label{evaluation_8h_af220b9152027e9710b9f6e4f3bf66bc5}} 
+\index{evaluation.h@{evaluation.h}!ccs\_evaluation\_get\_value@{ccs\_evaluation\_get\_value}}
+\index{ccs\_evaluation\_get\_value@{ccs\_evaluation\_get\_value}!evaluation.h@{evaluation.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_evaluation\_get\_value()}{ccs\_evaluation\_get\_value()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} ccs\+\_\+evaluation\+\_\+get\+\_\+value (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_a7dbc00be0122046c2ba9b6d188d57a13}{ccs\+\_\+evaluation\+\_\+t}}}]{evaluation,  }\item[{size\+\_\+t}]{index,  }\item[{\mbox{\hyperlink{base_8h_a36bc36b2bb0d0613453dd731cdcd2048}{ccs\+\_\+datum\+\_\+t}} $\ast$}]{value\+\_\+ret }\end{DoxyParamCaption})}
+
+
+
+Get the value of the parameter at the given index. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em evaluation} & \\
+\hline
+\mbox{\texttt{ in}}  & {\em index} & index of the parameter in the associated objective space \\
+\hline
+\mbox{\texttt{ out}}  & {\em value\+\_\+ret} & a pointer to the variable that will hold the value \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445a9941bd690a240532191c41365f48e8b8}{CCS\+\_\+\+RESULT\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445aa3816f69f71f044629bdb21f618ab0e8}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+OBJECT}} if {\ttfamily binding} is not a valid CCS evaluation 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445ab3d1bba2839da0c0fb34fbc00c4be7d5}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+VALUE}} if {\ttfamily value\+\_\+ret} is NULL 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445af49329ea0e10def334ff276577661d45}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+OUT\+\_\+\+OF\+\_\+\+BOUNDS}} if {\ttfamily index} is greater than the count of parameters in the objective space 
+\end{DoxyReturn}
+\mbox{\Hypertarget{evaluation_8h_a1b48f3cbdbaf3f5a38dee0d75f5b5b1c}\label{evaluation_8h_a1b48f3cbdbaf3f5a38dee0d75f5b5b1c}} 
+\index{evaluation.h@{evaluation.h}!ccs\_evaluation\_get\_value\_by\_name@{ccs\_evaluation\_get\_value\_by\_name}}
+\index{ccs\_evaluation\_get\_value\_by\_name@{ccs\_evaluation\_get\_value\_by\_name}!evaluation.h@{evaluation.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_evaluation\_get\_value\_by\_name()}{ccs\_evaluation\_get\_value\_by\_name()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} ccs\+\_\+evaluation\+\_\+get\+\_\+value\+\_\+by\+\_\+name (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_a7dbc00be0122046c2ba9b6d188d57a13}{ccs\+\_\+evaluation\+\_\+t}}}]{evaluation,  }\item[{const char $\ast$}]{name,  }\item[{\mbox{\hyperlink{base_8h_a36bc36b2bb0d0613453dd731cdcd2048}{ccs\+\_\+datum\+\_\+t}} $\ast$}]{value\+\_\+ret }\end{DoxyParamCaption})}
+
+
+
+Get the value of the parameter with the given name. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em evaluation} & \\
+\hline
+\mbox{\texttt{ in}}  & {\em name} & the name of the parameter whose value to retrieve \\
+\hline
+\mbox{\texttt{ out}}  & {\em value\+\_\+ret} & a pointer to the variable that will hold the value \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445a9941bd690a240532191c41365f48e8b8}{CCS\+\_\+\+RESULT\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445aa3816f69f71f044629bdb21f618ab0e8}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+OBJECT}} if {\ttfamily evaluation} is not a valid CCS evaluation 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445ab3d1bba2839da0c0fb34fbc00c4be7d5}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+VALUE}} if {\ttfamily value\+\_\+ret} is NULL 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445a7e77898e2e7d8655ab698813e34171fa}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+NAME}} if no parameter with such {\ttfamily name} exist in the {\ttfamily objective} space 
+\end{DoxyReturn}
+\mbox{\Hypertarget{evaluation_8h_a46a53c39a282890c7ea620b848d6c436}\label{evaluation_8h_a46a53c39a282890c7ea620b848d6c436}} 
+\index{evaluation.h@{evaluation.h}!ccs\_evaluation\_get\_values@{ccs\_evaluation\_get\_values}}
+\index{ccs\_evaluation\_get\_values@{ccs\_evaluation\_get\_values}!evaluation.h@{evaluation.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_evaluation\_get\_values()}{ccs\_evaluation\_get\_values()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} ccs\+\_\+evaluation\+\_\+get\+\_\+values (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_a7dbc00be0122046c2ba9b6d188d57a13}{ccs\+\_\+evaluation\+\_\+t}}}]{evaluation,  }\item[{size\+\_\+t}]{num\+\_\+values,  }\item[{\mbox{\hyperlink{base_8h_a36bc36b2bb0d0613453dd731cdcd2048}{ccs\+\_\+datum\+\_\+t}} $\ast$}]{values,  }\item[{size\+\_\+t $\ast$}]{num\+\_\+values\+\_\+ret }\end{DoxyParamCaption})}
+
+
+
+Get all the values in an evaluation. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em evaluation} & \\
+\hline
+\mbox{\texttt{ in}}  & {\em num\+\_\+values} & the size of the {\ttfamily values} array \\
+\hline
+\mbox{\texttt{ out}}  & {\em values} & an array of size {\ttfamily num\+\_\+values} to hold the returned values or NULL. If the array is too big, extra values are set to \mbox{\hyperlink{base_8h_a302e6ecbf08c6c8a059fc775c88f21c0a706a91fea9636301fa8ca6dec809fd1e}{CCS\+\_\+\+DATA\+\_\+\+TYPE\+\_\+\+NONE}} \\
+\hline
+\mbox{\texttt{ out}}  & {\em num\+\_\+values\+\_\+ret} & a pointer to a variable that will contain the number of values that are or would be returned. Can be NULL \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445a9941bd690a240532191c41365f48e8b8}{CCS\+\_\+\+RESULT\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445aa3816f69f71f044629bdb21f618ab0e8}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+OBJECT}} if {\ttfamily evaluation} is not a valid CCS evaluation 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445ab3d1bba2839da0c0fb34fbc00c4be7d5}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+VALUE}} if {\ttfamily values} is NULL and {\ttfamily num\+\_\+values} is greater than 0; or if {\ttfamily values} is NULL and num\+\_\+values\+\_\+ret is NULL; or if num\+\_\+values is less than the number of values that would be returned 
+\end{DoxyReturn}
+\mbox{\Hypertarget{evaluation_8h_a81d5a5f58d4ef22f0713b421e8f7bd61}\label{evaluation_8h_a81d5a5f58d4ef22f0713b421e8f7bd61}} 
+\index{evaluation.h@{evaluation.h}!ccs\_evaluation\_hash@{ccs\_evaluation\_hash}}
+\index{ccs\_evaluation\_hash@{ccs\_evaluation\_hash}!evaluation.h@{evaluation.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_evaluation\_hash()}{ccs\_evaluation\_hash()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} ccs\+\_\+evaluation\+\_\+hash (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_a7dbc00be0122046c2ba9b6d188d57a13}{ccs\+\_\+evaluation\+\_\+t}}}]{evaluation,  }\item[{\mbox{\hyperlink{base_8h_a8ab762d1e926e05224180c4f3455bf40}{ccs\+\_\+hash\+\_\+t}} $\ast$}]{hash\+\_\+ret }\end{DoxyParamCaption})}
+
+
+
+Compute a hash value for the evaluation by hashing together the objective space reference, the configuration, the number of values, the values themselves, and the associated result. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em evaluation} & \\
+\hline
+\mbox{\texttt{ out}}  & {\em hash\+\_\+ret} & the address of the variable that will contain the hash value. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445a9941bd690a240532191c41365f48e8b8}{CCS\+\_\+\+RESULT\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445aa3816f69f71f044629bdb21f618ab0e8}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+OBJECT}} if {\ttfamily evaluation} is not a valid CCS evaluation 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445ab3d1bba2839da0c0fb34fbc00c4be7d5}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+VALUE}} if {\ttfamily hash\+\_\+ret} is NULL 
+\end{DoxyReturn}
+\mbox{\Hypertarget{evaluation_8h_a93250de5eea1f692c4d6b679fd5fa210}\label{evaluation_8h_a93250de5eea1f692c4d6b679fd5fa210}} 
+\index{evaluation.h@{evaluation.h}!ccs\_evaluation\_set\_result@{ccs\_evaluation\_set\_result}}
+\index{ccs\_evaluation\_set\_result@{ccs\_evaluation\_set\_result}!evaluation.h@{evaluation.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_evaluation\_set\_result()}{ccs\_evaluation\_set\_result()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} ccs\+\_\+evaluation\+\_\+set\+\_\+result (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_a7dbc00be0122046c2ba9b6d188d57a13}{ccs\+\_\+evaluation\+\_\+t}}}]{evaluation,  }\item[{\mbox{\hyperlink{base_8h_a63acf1f87b11fc67aa84e68a4415109b}{ccs\+\_\+evaluation\+\_\+result\+\_\+t}}}]{result }\end{DoxyParamCaption})}
+
+
+
+Set the result code associated with an evaluation. 
+
+A successful evaluation should have it\textquotesingle{}s error set to \mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445a9941bd690a240532191c41365f48e8b8}{CCS\+\_\+\+RESULT\+\_\+\+SUCCESS}}. 
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in,out}}  & {\em evaluation} & \\
+\hline
+\mbox{\texttt{ in}}  & {\em result} & the result code associated withe the evaluation \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445a9941bd690a240532191c41365f48e8b8}{CCS\+\_\+\+RESULT\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445aa3816f69f71f044629bdb21f618ab0e8}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+OBJECT}} if {\ttfamily evaluation} is not a valid CCS evaluation 
+\end{DoxyReturn}
+\mbox{\Hypertarget{evaluation_8h_a5b448f87d4f4f4706cc07fb02e71d87c}\label{evaluation_8h_a5b448f87d4f4f4706cc07fb02e71d87c}} 
+\index{evaluation.h@{evaluation.h}!ccs\_evaluation\_set\_value@{ccs\_evaluation\_set\_value}}
+\index{ccs\_evaluation\_set\_value@{ccs\_evaluation\_set\_value}!evaluation.h@{evaluation.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_evaluation\_set\_value()}{ccs\_evaluation\_set\_value()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} ccs\+\_\+evaluation\+\_\+set\+\_\+value (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_a7dbc00be0122046c2ba9b6d188d57a13}{ccs\+\_\+evaluation\+\_\+t}}}]{evaluation,  }\item[{size\+\_\+t}]{index,  }\item[{\mbox{\hyperlink{base_8h_a36bc36b2bb0d0613453dd731cdcd2048}{ccs\+\_\+datum\+\_\+t}}}]{value }\end{DoxyParamCaption})}
+
+
+
+Set the value of the parameter at the given index. 
+
+Transient values will be validated and memoized if needed. 
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in,out}}  & {\em evaluation} & \\
+\hline
+\mbox{\texttt{ in}}  & {\em index} & index of the parameter in the associated objective space \\
+\hline
+\mbox{\texttt{ in}}  & {\em value} & the value \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445a9941bd690a240532191c41365f48e8b8}{CCS\+\_\+\+RESULT\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445aa3816f69f71f044629bdb21f618ab0e8}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+OBJECT}} if {\ttfamily evaluation} is not a valid CCS evaluation 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445ab3d1bba2839da0c0fb34fbc00c4be7d5}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+VALUE}} if {\ttfamily value\+\_\+ret} is NULL 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445af49329ea0e10def334ff276577661d45}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+OUT\+\_\+\+OF\+\_\+\+BOUNDS}} if {\ttfamily index} is greater than the count of parameters in the objective space 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445aba9b4719b46466cd185bf1a41a232ff6}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+OUT\+\_\+\+OF\+\_\+\+MEMORY}} if there was a lack of memory while memoizing a string 
+\end{DoxyReturn}

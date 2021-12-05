@@ -1,0 +1,342 @@
+\hypertarget{binding_8h}{}\doxysection{include/cconfigspace/binding.h File Reference}
+\label{binding_8h}\index{include/cconfigspace/binding.h@{include/cconfigspace/binding.h}}
+
+
+A Binding is set of value in a Context see \mbox{\hyperlink{context_8h}{context.\+h}}.  
+
+
+This graph shows which files directly or indirectly include this file\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=196pt]{binding_8h__dep__incl}
+\end{center}
+\end{figure}
+\doxysubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} \mbox{\hyperlink{binding_8h_a9c731e35336f1b135ed5de0640023082}{ccs\+\_\+binding\+\_\+get\+\_\+context}} (\mbox{\hyperlink{base_8h_a3123ce820c89b10be4ee76bd15c7a607}{ccs\+\_\+binding\+\_\+t}} binding, \mbox{\hyperlink{base_8h_a89a96617bf78b097e103ee8c8e281b7b}{ccs\+\_\+context\+\_\+t}} $\ast$context\+\_\+ret)
+\begin{DoxyCompactList}\small\item\em Get the context of a binding. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} \mbox{\hyperlink{binding_8h_a427d6bb5840a94a0ceed2846d55c34d4}{ccs\+\_\+binding\+\_\+get\+\_\+value}} (\mbox{\hyperlink{base_8h_a3123ce820c89b10be4ee76bd15c7a607}{ccs\+\_\+binding\+\_\+t}} binding, size\+\_\+t index, \mbox{\hyperlink{base_8h_a36bc36b2bb0d0613453dd731cdcd2048}{ccs\+\_\+datum\+\_\+t}} $\ast$value\+\_\+ret)
+\begin{DoxyCompactList}\small\item\em Get the value of the parameter at the given index. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} \mbox{\hyperlink{binding_8h_a94eeaebb712f4d1bf2a531996fec0dc7}{ccs\+\_\+binding\+\_\+set\+\_\+value}} (\mbox{\hyperlink{base_8h_a3123ce820c89b10be4ee76bd15c7a607}{ccs\+\_\+binding\+\_\+t}} binding, size\+\_\+t index, \mbox{\hyperlink{base_8h_a36bc36b2bb0d0613453dd731cdcd2048}{ccs\+\_\+datum\+\_\+t}} value)
+\begin{DoxyCompactList}\small\item\em Set the value of the parameter at the given index. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} \mbox{\hyperlink{binding_8h_a6bccab6470c19e369b76442573585bc3}{ccs\+\_\+binding\+\_\+get\+\_\+values}} (\mbox{\hyperlink{base_8h_a3123ce820c89b10be4ee76bd15c7a607}{ccs\+\_\+binding\+\_\+t}} binding, size\+\_\+t num\+\_\+values, \mbox{\hyperlink{base_8h_a36bc36b2bb0d0613453dd731cdcd2048}{ccs\+\_\+datum\+\_\+t}} $\ast$values, size\+\_\+t $\ast$num\+\_\+values\+\_\+ret)
+\begin{DoxyCompactList}\small\item\em Get all the values in the binding. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} \mbox{\hyperlink{binding_8h_a98fcaf63becd8caa8c99c996967173cb}{ccs\+\_\+binding\+\_\+set\+\_\+values}} (\mbox{\hyperlink{base_8h_a3123ce820c89b10be4ee76bd15c7a607}{ccs\+\_\+binding\+\_\+t}} binding, size\+\_\+t num\+\_\+values, \mbox{\hyperlink{base_8h_a36bc36b2bb0d0613453dd731cdcd2048}{ccs\+\_\+datum\+\_\+t}} $\ast$values)
+\begin{DoxyCompactList}\small\item\em Set all the values in the binding. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} \mbox{\hyperlink{binding_8h_a9c3d510d72023bda743fbc2cd1daaf00}{ccs\+\_\+binding\+\_\+get\+\_\+value\+\_\+by\+\_\+name}} (\mbox{\hyperlink{base_8h_a3123ce820c89b10be4ee76bd15c7a607}{ccs\+\_\+binding\+\_\+t}} binding, const char $\ast$name, \mbox{\hyperlink{base_8h_a36bc36b2bb0d0613453dd731cdcd2048}{ccs\+\_\+datum\+\_\+t}} $\ast$value\+\_\+ret)
+\begin{DoxyCompactList}\small\item\em Get the value of the parameter with the given name. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} \mbox{\hyperlink{binding_8h_a88d18018ba0f80de05bec39ee4697050}{ccs\+\_\+binding\+\_\+set\+\_\+value\+\_\+by\+\_\+name}} (\mbox{\hyperlink{base_8h_a3123ce820c89b10be4ee76bd15c7a607}{ccs\+\_\+binding\+\_\+t}} binding, const char $\ast$name, \mbox{\hyperlink{base_8h_a36bc36b2bb0d0613453dd731cdcd2048}{ccs\+\_\+datum\+\_\+t}} value)
+\begin{DoxyCompactList}\small\item\em Set the value of the parameter with the given name. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} \mbox{\hyperlink{binding_8h_a143cd8c4b5aefc96c063633a7a8989e6}{ccs\+\_\+binding\+\_\+get\+\_\+value\+\_\+by\+\_\+parameter}} (\mbox{\hyperlink{base_8h_a3123ce820c89b10be4ee76bd15c7a607}{ccs\+\_\+binding\+\_\+t}} binding, \mbox{\hyperlink{base_8h_a5f6612e0ada336e4189faad69075f477}{ccs\+\_\+parameter\+\_\+t}} parameter, \mbox{\hyperlink{base_8h_a36bc36b2bb0d0613453dd731cdcd2048}{ccs\+\_\+datum\+\_\+t}} $\ast$value\+\_\+ret)
+\begin{DoxyCompactList}\small\item\em Get the value of the parameter with the given handle. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} \mbox{\hyperlink{binding_8h_a44a0016024ce02290b588dbf94f0f296}{ccs\+\_\+binding\+\_\+set\+\_\+value\+\_\+by\+\_\+parameter}} (\mbox{\hyperlink{base_8h_a3123ce820c89b10be4ee76bd15c7a607}{ccs\+\_\+binding\+\_\+t}} binding, \mbox{\hyperlink{base_8h_a5f6612e0ada336e4189faad69075f477}{ccs\+\_\+parameter\+\_\+t}} parameter, \mbox{\hyperlink{base_8h_a36bc36b2bb0d0613453dd731cdcd2048}{ccs\+\_\+datum\+\_\+t}} value)
+\begin{DoxyCompactList}\small\item\em Set the value of the parameter with the given handle. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} \mbox{\hyperlink{binding_8h_a91887483a12e565ebff6601bbe2f57fa}{ccs\+\_\+binding\+\_\+hash}} (\mbox{\hyperlink{base_8h_a3123ce820c89b10be4ee76bd15c7a607}{ccs\+\_\+binding\+\_\+t}} binding, \mbox{\hyperlink{base_8h_a8ab762d1e926e05224180c4f3455bf40}{ccs\+\_\+hash\+\_\+t}} $\ast$hash\+\_\+ret)
+\begin{DoxyCompactList}\small\item\em Compute a hash value for the binding by hashing together the context reference, the number of values, and the values themselves. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} \mbox{\hyperlink{binding_8h_a7383889c678e0807fd5eb06ea775d0ae}{ccs\+\_\+binding\+\_\+cmp}} (\mbox{\hyperlink{base_8h_a3123ce820c89b10be4ee76bd15c7a607}{ccs\+\_\+binding\+\_\+t}} binding, \mbox{\hyperlink{base_8h_a3123ce820c89b10be4ee76bd15c7a607}{ccs\+\_\+binding\+\_\+t}} other\+\_\+binding, int $\ast$cmp\+\_\+ret)
+\begin{DoxyCompactList}\small\item\em Define a strict ordering of binding instances. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+A Binding is set of value in a Context see \mbox{\hyperlink{context_8h}{context.\+h}}. 
+
+Those values can be accessed by using the parameter index in the context. 
+
+\doxysubsection{Function Documentation}
+\mbox{\Hypertarget{binding_8h_a7383889c678e0807fd5eb06ea775d0ae}\label{binding_8h_a7383889c678e0807fd5eb06ea775d0ae}} 
+\index{binding.h@{binding.h}!ccs\_binding\_cmp@{ccs\_binding\_cmp}}
+\index{ccs\_binding\_cmp@{ccs\_binding\_cmp}!binding.h@{binding.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_binding\_cmp()}{ccs\_binding\_cmp()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} ccs\+\_\+binding\+\_\+cmp (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_a3123ce820c89b10be4ee76bd15c7a607}{ccs\+\_\+binding\+\_\+t}}}]{binding,  }\item[{\mbox{\hyperlink{base_8h_a3123ce820c89b10be4ee76bd15c7a607}{ccs\+\_\+binding\+\_\+t}}}]{other\+\_\+binding,  }\item[{int $\ast$}]{cmp\+\_\+ret }\end{DoxyParamCaption})}
+
+
+
+Define a strict ordering of binding instances. 
+
+Context, number of values and values are compared. 
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em binding} & the first binding \\
+\hline
+\mbox{\texttt{ in}}  & {\em other\+\_\+binding} & the second binding \\
+\hline
+\mbox{\texttt{ out}}  & {\em cmp\+\_\+ret} & the pointer to the variable that will contain the result of the comparison. Will contain -\/1, 0, or 1 depending on if the first binding is found to be respectively lesser than, equal, or greater then the second binding \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445a9941bd690a240532191c41365f48e8b8}{CCS\+\_\+\+RESULT\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445aa3816f69f71f044629bdb21f618ab0e8}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+OBJECT}} if {\ttfamily binding} or {\ttfamily other\+\_\+binding} are not valid CCS objects 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445ab3d1bba2839da0c0fb34fbc00c4be7d5}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+VALUE}} if {\ttfamily cmp\+\_\+ret} is NULL 
+\end{DoxyReturn}
+\mbox{\Hypertarget{binding_8h_a9c731e35336f1b135ed5de0640023082}\label{binding_8h_a9c731e35336f1b135ed5de0640023082}} 
+\index{binding.h@{binding.h}!ccs\_binding\_get\_context@{ccs\_binding\_get\_context}}
+\index{ccs\_binding\_get\_context@{ccs\_binding\_get\_context}!binding.h@{binding.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_binding\_get\_context()}{ccs\_binding\_get\_context()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} ccs\+\_\+binding\+\_\+get\+\_\+context (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_a3123ce820c89b10be4ee76bd15c7a607}{ccs\+\_\+binding\+\_\+t}}}]{binding,  }\item[{\mbox{\hyperlink{base_8h_a89a96617bf78b097e103ee8c8e281b7b}{ccs\+\_\+context\+\_\+t}} $\ast$}]{context\+\_\+ret }\end{DoxyParamCaption})}
+
+
+
+Get the context of a binding. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em binding} & \\
+\hline
+\mbox{\texttt{ out}}  & {\em context\+\_\+ret} & a pointer to the variable which will contain the context \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445a9941bd690a240532191c41365f48e8b8}{CCS\+\_\+\+RESULT\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445aa3816f69f71f044629bdb21f618ab0e8}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+OBJECT}} if {\ttfamily binding} is not a valid CCS object 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445ab3d1bba2839da0c0fb34fbc00c4be7d5}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+VALUE}} if {\ttfamily context\+\_\+ret} is NULL 
+\end{DoxyReturn}
+\mbox{\Hypertarget{binding_8h_a427d6bb5840a94a0ceed2846d55c34d4}\label{binding_8h_a427d6bb5840a94a0ceed2846d55c34d4}} 
+\index{binding.h@{binding.h}!ccs\_binding\_get\_value@{ccs\_binding\_get\_value}}
+\index{ccs\_binding\_get\_value@{ccs\_binding\_get\_value}!binding.h@{binding.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_binding\_get\_value()}{ccs\_binding\_get\_value()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} ccs\+\_\+binding\+\_\+get\+\_\+value (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_a3123ce820c89b10be4ee76bd15c7a607}{ccs\+\_\+binding\+\_\+t}}}]{binding,  }\item[{size\+\_\+t}]{index,  }\item[{\mbox{\hyperlink{base_8h_a36bc36b2bb0d0613453dd731cdcd2048}{ccs\+\_\+datum\+\_\+t}} $\ast$}]{value\+\_\+ret }\end{DoxyParamCaption})}
+
+
+
+Get the value of the parameter at the given index. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em binding} & \\
+\hline
+\mbox{\texttt{ in}}  & {\em index} & index of the parameter in the associated context \\
+\hline
+\mbox{\texttt{ out}}  & {\em value\+\_\+ret} & a pointer to the variable that will hold the value \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445a9941bd690a240532191c41365f48e8b8}{CCS\+\_\+\+RESULT\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445aa3816f69f71f044629bdb21f618ab0e8}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+OBJECT}} if {\ttfamily binding} is not a valid CCS object 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445ab3d1bba2839da0c0fb34fbc00c4be7d5}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+VALUE}} if {\ttfamily value\+\_\+ret} is NULL 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445af49329ea0e10def334ff276577661d45}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+OUT\+\_\+\+OF\+\_\+\+BOUNDS}} if {\ttfamily index} is greater than the count of parameters in the context 
+\end{DoxyReturn}
+\mbox{\Hypertarget{binding_8h_a9c3d510d72023bda743fbc2cd1daaf00}\label{binding_8h_a9c3d510d72023bda743fbc2cd1daaf00}} 
+\index{binding.h@{binding.h}!ccs\_binding\_get\_value\_by\_name@{ccs\_binding\_get\_value\_by\_name}}
+\index{ccs\_binding\_get\_value\_by\_name@{ccs\_binding\_get\_value\_by\_name}!binding.h@{binding.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_binding\_get\_value\_by\_name()}{ccs\_binding\_get\_value\_by\_name()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} ccs\+\_\+binding\+\_\+get\+\_\+value\+\_\+by\+\_\+name (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_a3123ce820c89b10be4ee76bd15c7a607}{ccs\+\_\+binding\+\_\+t}}}]{binding,  }\item[{const char $\ast$}]{name,  }\item[{\mbox{\hyperlink{base_8h_a36bc36b2bb0d0613453dd731cdcd2048}{ccs\+\_\+datum\+\_\+t}} $\ast$}]{value\+\_\+ret }\end{DoxyParamCaption})}
+
+
+
+Get the value of the parameter with the given name. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em binding} & \\
+\hline
+\mbox{\texttt{ in}}  & {\em name} & the name of the parameter whose value to retrieve \\
+\hline
+\mbox{\texttt{ out}}  & {\em value\+\_\+ret} & a pointer to the variable that will hold the value \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445a9941bd690a240532191c41365f48e8b8}{CCS\+\_\+\+RESULT\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445aa3816f69f71f044629bdb21f618ab0e8}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+OBJECT}} if {\ttfamily binding} is not a valid CCS object 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445ab3d1bba2839da0c0fb34fbc00c4be7d5}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+VALUE}} if {\ttfamily value\+\_\+ret} is NULL 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445a7e77898e2e7d8655ab698813e34171fa}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+NAME}} if no parameter with such {\ttfamily name} exist in the {\ttfamily binding} context 
+\end{DoxyReturn}
+\mbox{\Hypertarget{binding_8h_a143cd8c4b5aefc96c063633a7a8989e6}\label{binding_8h_a143cd8c4b5aefc96c063633a7a8989e6}} 
+\index{binding.h@{binding.h}!ccs\_binding\_get\_value\_by\_parameter@{ccs\_binding\_get\_value\_by\_parameter}}
+\index{ccs\_binding\_get\_value\_by\_parameter@{ccs\_binding\_get\_value\_by\_parameter}!binding.h@{binding.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_binding\_get\_value\_by\_parameter()}{ccs\_binding\_get\_value\_by\_parameter()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} ccs\+\_\+binding\+\_\+get\+\_\+value\+\_\+by\+\_\+parameter (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_a3123ce820c89b10be4ee76bd15c7a607}{ccs\+\_\+binding\+\_\+t}}}]{binding,  }\item[{\mbox{\hyperlink{base_8h_a5f6612e0ada336e4189faad69075f477}{ccs\+\_\+parameter\+\_\+t}}}]{parameter,  }\item[{\mbox{\hyperlink{base_8h_a36bc36b2bb0d0613453dd731cdcd2048}{ccs\+\_\+datum\+\_\+t}} $\ast$}]{value\+\_\+ret }\end{DoxyParamCaption})}
+
+
+
+Get the value of the parameter with the given handle. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em binding} & \\
+\hline
+\mbox{\texttt{ in}}  & {\em parameter} & parameter whose value to retrieve \\
+\hline
+\mbox{\texttt{ out}}  & {\em value\+\_\+ret} & a pointer to the variable that will hold the value \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445a9941bd690a240532191c41365f48e8b8}{CCS\+\_\+\+RESULT\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445aa3816f69f71f044629bdb21f618ab0e8}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+OBJECT}} if {\ttfamily binding} is not a valid CCS object 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445ad0d95ac551c4b542dccb908a3287da4c}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+PARAMETER}} if {\ttfamily parameter} does not exist in the {\ttfamily binding} context 
+\end{DoxyReturn}
+\mbox{\Hypertarget{binding_8h_a6bccab6470c19e369b76442573585bc3}\label{binding_8h_a6bccab6470c19e369b76442573585bc3}} 
+\index{binding.h@{binding.h}!ccs\_binding\_get\_values@{ccs\_binding\_get\_values}}
+\index{ccs\_binding\_get\_values@{ccs\_binding\_get\_values}!binding.h@{binding.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_binding\_get\_values()}{ccs\_binding\_get\_values()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} ccs\+\_\+binding\+\_\+get\+\_\+values (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_a3123ce820c89b10be4ee76bd15c7a607}{ccs\+\_\+binding\+\_\+t}}}]{binding,  }\item[{size\+\_\+t}]{num\+\_\+values,  }\item[{\mbox{\hyperlink{base_8h_a36bc36b2bb0d0613453dd731cdcd2048}{ccs\+\_\+datum\+\_\+t}} $\ast$}]{values,  }\item[{size\+\_\+t $\ast$}]{num\+\_\+values\+\_\+ret }\end{DoxyParamCaption})}
+
+
+
+Get all the values in the binding. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em binding} & \\
+\hline
+\mbox{\texttt{ in}}  & {\em num\+\_\+values} & the size of the {\ttfamily values} array \\
+\hline
+\mbox{\texttt{ out}}  & {\em values} & an array of size {\ttfamily num\+\_\+values} to hold the returned values or NULL. If the array is too big, extra values are set to \mbox{\hyperlink{base_8h_a302e6ecbf08c6c8a059fc775c88f21c0a706a91fea9636301fa8ca6dec809fd1e}{CCS\+\_\+\+DATA\+\_\+\+TYPE\+\_\+\+NONE}} \\
+\hline
+\mbox{\texttt{ out}}  & {\em num\+\_\+values\+\_\+ret} & a pointer to a variable that will contain the number of values that are or would be returned. Can be NULL \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445a9941bd690a240532191c41365f48e8b8}{CCS\+\_\+\+RESULT\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445aa3816f69f71f044629bdb21f618ab0e8}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+OBJECT}} if {\ttfamily binding} is not a valid CCS object 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445ab3d1bba2839da0c0fb34fbc00c4be7d5}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+VALUE}} if {\ttfamily values} is NULL and {\ttfamily num\+\_\+values} is greater than 0; or if {\ttfamily values} is NULL and {\ttfamily num\+\_\+values\+\_\+ret} is NULL; or if {\ttfamily num\+\_\+values} is less than the number of values that would be returned 
+\end{DoxyReturn}
+\mbox{\Hypertarget{binding_8h_a91887483a12e565ebff6601bbe2f57fa}\label{binding_8h_a91887483a12e565ebff6601bbe2f57fa}} 
+\index{binding.h@{binding.h}!ccs\_binding\_hash@{ccs\_binding\_hash}}
+\index{ccs\_binding\_hash@{ccs\_binding\_hash}!binding.h@{binding.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_binding\_hash()}{ccs\_binding\_hash()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} ccs\+\_\+binding\+\_\+hash (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_a3123ce820c89b10be4ee76bd15c7a607}{ccs\+\_\+binding\+\_\+t}}}]{binding,  }\item[{\mbox{\hyperlink{base_8h_a8ab762d1e926e05224180c4f3455bf40}{ccs\+\_\+hash\+\_\+t}} $\ast$}]{hash\+\_\+ret }\end{DoxyParamCaption})}
+
+
+
+Compute a hash value for the binding by hashing together the context reference, the number of values, and the values themselves. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em binding} & \\
+\hline
+\mbox{\texttt{ out}}  & {\em hash\+\_\+ret} & the address of the variable that will contain the hash value. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445a9941bd690a240532191c41365f48e8b8}{CCS\+\_\+\+RESULT\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445aa3816f69f71f044629bdb21f618ab0e8}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+OBJECT}} if {\ttfamily binding} is not a valid CCS object 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445ab3d1bba2839da0c0fb34fbc00c4be7d5}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+VALUE}} if {\ttfamily hash\+\_\+ret} is NULL 
+\end{DoxyReturn}
+\mbox{\Hypertarget{binding_8h_a94eeaebb712f4d1bf2a531996fec0dc7}\label{binding_8h_a94eeaebb712f4d1bf2a531996fec0dc7}} 
+\index{binding.h@{binding.h}!ccs\_binding\_set\_value@{ccs\_binding\_set\_value}}
+\index{ccs\_binding\_set\_value@{ccs\_binding\_set\_value}!binding.h@{binding.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_binding\_set\_value()}{ccs\_binding\_set\_value()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} ccs\+\_\+binding\+\_\+set\+\_\+value (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_a3123ce820c89b10be4ee76bd15c7a607}{ccs\+\_\+binding\+\_\+t}}}]{binding,  }\item[{size\+\_\+t}]{index,  }\item[{\mbox{\hyperlink{base_8h_a36bc36b2bb0d0613453dd731cdcd2048}{ccs\+\_\+datum\+\_\+t}}}]{value }\end{DoxyParamCaption})}
+
+
+
+Set the value of the parameter at the given index. 
+
+Transient values will be validated and memoized if needed. 
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in,out}}  & {\em binding} & \\
+\hline
+\mbox{\texttt{ in}}  & {\em index} & index of the parameter in the associated context \\
+\hline
+\mbox{\texttt{ in}}  & {\em value} & the value \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445a9941bd690a240532191c41365f48e8b8}{CCS\+\_\+\+RESULT\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445aa3816f69f71f044629bdb21f618ab0e8}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+OBJECT}} if {\ttfamily binding} is not a valid CCS object 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445ab3d1bba2839da0c0fb34fbc00c4be7d5}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+VALUE}} if {\ttfamily value\+\_\+ret} is NULL 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445af49329ea0e10def334ff276577661d45}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+OUT\+\_\+\+OF\+\_\+\+BOUNDS}} if {\ttfamily index} is greater than the count of parameters in the context 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445aba9b4719b46466cd185bf1a41a232ff6}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+OUT\+\_\+\+OF\+\_\+\+MEMORY}} if there was a lack of memory while memoizing a string 
+\end{DoxyReturn}
+\mbox{\Hypertarget{binding_8h_a88d18018ba0f80de05bec39ee4697050}\label{binding_8h_a88d18018ba0f80de05bec39ee4697050}} 
+\index{binding.h@{binding.h}!ccs\_binding\_set\_value\_by\_name@{ccs\_binding\_set\_value\_by\_name}}
+\index{ccs\_binding\_set\_value\_by\_name@{ccs\_binding\_set\_value\_by\_name}!binding.h@{binding.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_binding\_set\_value\_by\_name()}{ccs\_binding\_set\_value\_by\_name()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} ccs\+\_\+binding\+\_\+set\+\_\+value\+\_\+by\+\_\+name (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_a3123ce820c89b10be4ee76bd15c7a607}{ccs\+\_\+binding\+\_\+t}}}]{binding,  }\item[{const char $\ast$}]{name,  }\item[{\mbox{\hyperlink{base_8h_a36bc36b2bb0d0613453dd731cdcd2048}{ccs\+\_\+datum\+\_\+t}}}]{value }\end{DoxyParamCaption})}
+
+
+
+Set the value of the parameter with the given name. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in,out}}  & {\em binding} & \\
+\hline
+\mbox{\texttt{ in}}  & {\em name} & the name of the parameter whose value to set \\
+\hline
+\mbox{\texttt{ in}}  & {\em value} & the value \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445a9941bd690a240532191c41365f48e8b8}{CCS\+\_\+\+RESULT\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445aa3816f69f71f044629bdb21f618ab0e8}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+OBJECT}} if {\ttfamily binding} is not a valid CCS object 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445a7e77898e2e7d8655ab698813e34171fa}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+NAME}} if no parameter with such {\ttfamily name} exist in the {\ttfamily binding} context 
+\end{DoxyReturn}
+\mbox{\Hypertarget{binding_8h_a44a0016024ce02290b588dbf94f0f296}\label{binding_8h_a44a0016024ce02290b588dbf94f0f296}} 
+\index{binding.h@{binding.h}!ccs\_binding\_set\_value\_by\_parameter@{ccs\_binding\_set\_value\_by\_parameter}}
+\index{ccs\_binding\_set\_value\_by\_parameter@{ccs\_binding\_set\_value\_by\_parameter}!binding.h@{binding.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_binding\_set\_value\_by\_parameter()}{ccs\_binding\_set\_value\_by\_parameter()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} ccs\+\_\+binding\+\_\+set\+\_\+value\+\_\+by\+\_\+parameter (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_a3123ce820c89b10be4ee76bd15c7a607}{ccs\+\_\+binding\+\_\+t}}}]{binding,  }\item[{\mbox{\hyperlink{base_8h_a5f6612e0ada336e4189faad69075f477}{ccs\+\_\+parameter\+\_\+t}}}]{parameter,  }\item[{\mbox{\hyperlink{base_8h_a36bc36b2bb0d0613453dd731cdcd2048}{ccs\+\_\+datum\+\_\+t}}}]{value }\end{DoxyParamCaption})}
+
+
+
+Set the value of the parameter with the given handle. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in,out}}  & {\em binding} & \\
+\hline
+\mbox{\texttt{ in}}  & {\em parameter} & parameter whose value to set \\
+\hline
+\mbox{\texttt{ in}}  & {\em value} & the value \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445a9941bd690a240532191c41365f48e8b8}{CCS\+\_\+\+RESULT\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445aa3816f69f71f044629bdb21f618ab0e8}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+OBJECT}} if {\ttfamily binding} is not a valid CCS object 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445ad0d95ac551c4b542dccb908a3287da4c}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+PARAMETER}} if {\ttfamily parameter} does not exist in the {\ttfamily binding} context 
+\end{DoxyReturn}
+\mbox{\Hypertarget{binding_8h_a98fcaf63becd8caa8c99c996967173cb}\label{binding_8h_a98fcaf63becd8caa8c99c996967173cb}} 
+\index{binding.h@{binding.h}!ccs\_binding\_set\_values@{ccs\_binding\_set\_values}}
+\index{ccs\_binding\_set\_values@{ccs\_binding\_set\_values}!binding.h@{binding.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_binding\_set\_values()}{ccs\_binding\_set\_values()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} ccs\+\_\+binding\+\_\+set\+\_\+values (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_a3123ce820c89b10be4ee76bd15c7a607}{ccs\+\_\+binding\+\_\+t}}}]{binding,  }\item[{size\+\_\+t}]{num\+\_\+values,  }\item[{\mbox{\hyperlink{base_8h_a36bc36b2bb0d0613453dd731cdcd2048}{ccs\+\_\+datum\+\_\+t}} $\ast$}]{values }\end{DoxyParamCaption})}
+
+
+
+Set all the values in the binding. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in,out}}  & {\em binding} & \\
+\hline
+\mbox{\texttt{ in}}  & {\em num\+\_\+values} & the size of the {\ttfamily values} array \\
+\hline
+\mbox{\texttt{ in}}  & {\em values} & an array of size {\ttfamily num\+\_\+values} \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445a9941bd690a240532191c41365f48e8b8}{CCS\+\_\+\+RESULT\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445aa3816f69f71f044629bdb21f618ab0e8}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+OBJECT}} if {\ttfamily binding} is not a valid CCS object 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445ab3d1bba2839da0c0fb34fbc00c4be7d5}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+VALUE}} if {\ttfamily values} is NULL and {\ttfamily num\+\_\+values} is greater than 0; or if {\ttfamily num\+\_\+values} is not equal to the number of values in the binding 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445aba9b4719b46466cd185bf1a41a232ff6}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+OUT\+\_\+\+OF\+\_\+\+MEMORY}} if there was a lack of memory while memoizing a string 
+\end{DoxyReturn}

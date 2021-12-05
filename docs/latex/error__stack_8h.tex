@@ -1,0 +1,269 @@
+\hypertarget{error__stack_8h}{}\doxysection{include/cconfigspace/error\+\_\+stack.h File Reference}
+\label{error__stack_8h}\index{include/cconfigspace/error\_stack.h@{include/cconfigspace/error\_stack.h}}
+
+
+CCS rich error reporting.  
+
+
+This graph shows which files directly or indirectly include this file\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=196pt]{error__stack_8h__dep__incl}
+\end{center}
+\end{figure}
+\doxysubsection*{Data Structures}
+\begin{DoxyCompactItemize}
+\item 
+struct \mbox{\hyperlink{structccs__error__stack__elem__s}{ccs\+\_\+error\+\_\+stack\+\_\+elem\+\_\+s}}
+\begin{DoxyCompactList}\small\item\em An element of stack. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Typedefs}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{error__stack_8h_a2c4c555aed9f0ec2b4058fe8ef89bd88}\label{error__stack_8h_a2c4c555aed9f0ec2b4058fe8ef89bd88}} 
+typedef struct \mbox{\hyperlink{structccs__error__stack__elem__s}{ccs\+\_\+error\+\_\+stack\+\_\+elem\+\_\+s}} \mbox{\hyperlink{error__stack_8h_a2c4c555aed9f0ec2b4058fe8ef89bd88}{ccs\+\_\+error\+\_\+stack\+\_\+elem\+\_\+t}}
+\begin{DoxyCompactList}\small\item\em A commodity type to represent a CCS stack element. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{base_8h_aa8ed63786cc9dd9d8fc7bdbbd07b1511}{ccs\+\_\+error\+\_\+stack\+\_\+t}} \mbox{\hyperlink{error__stack_8h_aa3769ff4df7a1231699a7f689b71f9ff}{ccs\+\_\+get\+\_\+thread\+\_\+error}} ()
+\begin{DoxyCompactList}\small\item\em Transfers ownership of thread error stack from CCS to the user. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} \mbox{\hyperlink{error__stack_8h_a343c9ff6b6f9fcfea4040a51596e220e}{ccs\+\_\+set\+\_\+thread\+\_\+error}} (\mbox{\hyperlink{base_8h_aa8ed63786cc9dd9d8fc7bdbbd07b1511}{ccs\+\_\+error\+\_\+stack\+\_\+t}} error\+\_\+stack)
+\begin{DoxyCompactList}\small\item\em Transfers ownership of error stack from the user to CCS. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{error__stack_8h_af697701826be1ddd2432ac74168fcb76}\label{error__stack_8h_af697701826be1ddd2432ac74168fcb76}} 
+void \mbox{\hyperlink{error__stack_8h_af697701826be1ddd2432ac74168fcb76}{ccs\+\_\+clear\+\_\+thread\+\_\+error}} ()
+\begin{DoxyCompactList}\small\item\em Clears the error stack of the calling thread, releasing the current error if it existed. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} \mbox{\hyperlink{error__stack_8h_a1ea7ab5411eb1c455731f4ce988fcd94}{ccs\+\_\+create\+\_\+thread\+\_\+error}} (\mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} error\+\_\+code, const char $\ast$msg,...)
+\begin{DoxyCompactList}\small\item\em Creates a new error stack and sets it for the current thread, potentially replacing the previous one. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} \mbox{\hyperlink{error__stack_8h_a352407f93c6ebf974cfbaa21ad71d5f5}{ccs\+\_\+thread\+\_\+error\+\_\+stack\+\_\+push}} (const char $\ast$file, int line, const char $\ast$func)
+\begin{DoxyCompactList}\small\item\em Pushes a stack trace element on the thread error stack. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} \mbox{\hyperlink{error__stack_8h_aeb64bfd4f3568307331848253be975f9}{ccs\+\_\+create\+\_\+error\+\_\+stack}} (\mbox{\hyperlink{base_8h_aa8ed63786cc9dd9d8fc7bdbbd07b1511}{ccs\+\_\+error\+\_\+stack\+\_\+t}} $\ast$error\+\_\+stack\+\_\+ret, \mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} error\+\_\+code, const char $\ast$msg,...)
+\begin{DoxyCompactList}\small\item\em Creates a new error stack object. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} \mbox{\hyperlink{error__stack_8h_a1c45583814d1a8367c5f0ae280928b6a}{ccs\+\_\+error\+\_\+stack\+\_\+push}} (\mbox{\hyperlink{base_8h_aa8ed63786cc9dd9d8fc7bdbbd07b1511}{ccs\+\_\+error\+\_\+stack\+\_\+t}} error\+\_\+stack, const char $\ast$file, int line, const char $\ast$func)
+\begin{DoxyCompactList}\small\item\em Pushes a stack trace element in an error stack. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} \mbox{\hyperlink{error__stack_8h_ac6cdbbce356f3c1b6c9655c3647e5456}{ccs\+\_\+error\+\_\+stack\+\_\+get\+\_\+message}} (\mbox{\hyperlink{base_8h_aa8ed63786cc9dd9d8fc7bdbbd07b1511}{ccs\+\_\+error\+\_\+stack\+\_\+t}} error\+\_\+stack, const char $\ast$$\ast$message\+\_\+ret)
+\begin{DoxyCompactList}\small\item\em Retrieves the message from an error stack. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} \mbox{\hyperlink{error__stack_8h_af2fcefbb9ef641e71dcde486ac9406df}{ccs\+\_\+error\+\_\+stack\+\_\+get\+\_\+code}} (\mbox{\hyperlink{base_8h_aa8ed63786cc9dd9d8fc7bdbbd07b1511}{ccs\+\_\+error\+\_\+stack\+\_\+t}} error\+\_\+stack, \mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} $\ast$error\+\_\+code\+\_\+ret)
+\begin{DoxyCompactList}\small\item\em Retrieves the error code from an error stack. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} \mbox{\hyperlink{error__stack_8h_ae3766310df8076cce434189ba422f9a6}{ccs\+\_\+error\+\_\+stack\+\_\+get\+\_\+elems}} (\mbox{\hyperlink{base_8h_aa8ed63786cc9dd9d8fc7bdbbd07b1511}{ccs\+\_\+error\+\_\+stack\+\_\+t}} error\+\_\+stack, size\+\_\+t $\ast$num\+\_\+elems\+\_\+ret, \mbox{\hyperlink{error__stack_8h_a2c4c555aed9f0ec2b4058fe8ef89bd88}{ccs\+\_\+error\+\_\+stack\+\_\+elem\+\_\+t}} $\ast$$\ast$elems)
+\begin{DoxyCompactList}\small\item\em Retrieves the stack elements from an error stack. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+CCS rich error reporting. 
+
+
+
+\doxysubsection{Function Documentation}
+\mbox{\Hypertarget{error__stack_8h_aeb64bfd4f3568307331848253be975f9}\label{error__stack_8h_aeb64bfd4f3568307331848253be975f9}} 
+\index{error\_stack.h@{error\_stack.h}!ccs\_create\_error\_stack@{ccs\_create\_error\_stack}}
+\index{ccs\_create\_error\_stack@{ccs\_create\_error\_stack}!error\_stack.h@{error\_stack.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_create\_error\_stack()}{ccs\_create\_error\_stack()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} ccs\+\_\+create\+\_\+error\+\_\+stack (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_aa8ed63786cc9dd9d8fc7bdbbd07b1511}{ccs\+\_\+error\+\_\+stack\+\_\+t}} $\ast$}]{error\+\_\+stack\+\_\+ret,  }\item[{\mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}}}]{error\+\_\+code,  }\item[{const char $\ast$}]{msg,  }\item[{}]{... }\end{DoxyParamCaption})}
+
+
+
+Creates a new error stack object. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ out}}  & {\em error\+\_\+stack\+\_\+ret} & a pointer to the variable that will contain the newly created error stack. \\
+\hline
+\mbox{\texttt{ in}}  & {\em error\+\_\+code} & the CCS error code \\
+\hline
+\mbox{\texttt{ in}}  & {\em msg} & a format string for the error message \\
+\hline
+\mbox{\texttt{ in}}  & {\em ...} & a list of optional values to fill the format string \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445a9941bd690a240532191c41365f48e8b8}{CCS\+\_\+\+RESULT\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445ab3d1bba2839da0c0fb34fbc00c4be7d5}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+VALUE}} if {\ttfamily error\+\_\+stack\+\_\+ret} is NULL 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445aba9b4719b46466cd185bf1a41a232ff6}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+OUT\+\_\+\+OF\+\_\+\+MEMORY}} if there was not enough memory to allocate the error stack 
+\end{DoxyReturn}
+\mbox{\Hypertarget{error__stack_8h_a1ea7ab5411eb1c455731f4ce988fcd94}\label{error__stack_8h_a1ea7ab5411eb1c455731f4ce988fcd94}} 
+\index{error\_stack.h@{error\_stack.h}!ccs\_create\_thread\_error@{ccs\_create\_thread\_error}}
+\index{ccs\_create\_thread\_error@{ccs\_create\_thread\_error}!error\_stack.h@{error\_stack.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_create\_thread\_error()}{ccs\_create\_thread\_error()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} ccs\+\_\+create\+\_\+thread\+\_\+error (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}}}]{error\+\_\+code,  }\item[{const char $\ast$}]{msg,  }\item[{}]{... }\end{DoxyParamCaption})}
+
+
+
+Creates a new error stack and sets it for the current thread, potentially replacing the previous one. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em error\+\_\+code} & the CCS error code \\
+\hline
+\mbox{\texttt{ in}}  & {\em msg} & a format string for the error message \\
+\hline
+\mbox{\texttt{ in}}  & {\em ...} & a list of optional values to fill the format string \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445a9941bd690a240532191c41365f48e8b8}{CCS\+\_\+\+RESULT\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445aba9b4719b46466cd185bf1a41a232ff6}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+OUT\+\_\+\+OF\+\_\+\+MEMORY}} if there was not enough memory to allocate the error stack 
+\end{DoxyReturn}
+\mbox{\Hypertarget{error__stack_8h_af2fcefbb9ef641e71dcde486ac9406df}\label{error__stack_8h_af2fcefbb9ef641e71dcde486ac9406df}} 
+\index{error\_stack.h@{error\_stack.h}!ccs\_error\_stack\_get\_code@{ccs\_error\_stack\_get\_code}}
+\index{ccs\_error\_stack\_get\_code@{ccs\_error\_stack\_get\_code}!error\_stack.h@{error\_stack.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_error\_stack\_get\_code()}{ccs\_error\_stack\_get\_code()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} ccs\+\_\+error\+\_\+stack\+\_\+get\+\_\+code (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_aa8ed63786cc9dd9d8fc7bdbbd07b1511}{ccs\+\_\+error\+\_\+stack\+\_\+t}}}]{error\+\_\+stack,  }\item[{\mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} $\ast$}]{error\+\_\+code\+\_\+ret }\end{DoxyParamCaption})}
+
+
+
+Retrieves the error code from an error stack. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em error\+\_\+stack} & \\
+\hline
+\mbox{\texttt{ out}}  & {\em error\+\_\+code\+\_\+ret} & a pointer to a variable that will contain the error code. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445a9941bd690a240532191c41365f48e8b8}{CCS\+\_\+\+RESULT\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445aa3816f69f71f044629bdb21f618ab0e8}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+OBJECT}} if {\ttfamily error\+\_\+stack} is not a valid CCS error stack 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445ab3d1bba2839da0c0fb34fbc00c4be7d5}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+VALUE}} if {\ttfamily error\+\_\+code\+\_\+ret} is NULL 
+\end{DoxyReturn}
+\mbox{\Hypertarget{error__stack_8h_ae3766310df8076cce434189ba422f9a6}\label{error__stack_8h_ae3766310df8076cce434189ba422f9a6}} 
+\index{error\_stack.h@{error\_stack.h}!ccs\_error\_stack\_get\_elems@{ccs\_error\_stack\_get\_elems}}
+\index{ccs\_error\_stack\_get\_elems@{ccs\_error\_stack\_get\_elems}!error\_stack.h@{error\_stack.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_error\_stack\_get\_elems()}{ccs\_error\_stack\_get\_elems()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} ccs\+\_\+error\+\_\+stack\+\_\+get\+\_\+elems (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_aa8ed63786cc9dd9d8fc7bdbbd07b1511}{ccs\+\_\+error\+\_\+stack\+\_\+t}}}]{error\+\_\+stack,  }\item[{size\+\_\+t $\ast$}]{num\+\_\+elems\+\_\+ret,  }\item[{\mbox{\hyperlink{error__stack_8h_a2c4c555aed9f0ec2b4058fe8ef89bd88}{ccs\+\_\+error\+\_\+stack\+\_\+elem\+\_\+t}} $\ast$$\ast$}]{elems }\end{DoxyParamCaption})}
+
+
+
+Retrieves the stack elements from an error stack. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em error\+\_\+stack} & \\
+\hline
+\mbox{\texttt{ out}}  & {\em num\+\_\+elems\+\_\+ret} & a pointer to a variable that will contain the number of stack elements. \\
+\hline
+\mbox{\texttt{ out}}  & {\em elems} & a pointer to a variable that will point to the start of the array of {\ttfamily $\ast$num\+\_\+elems\+\_\+ret} elements. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445aa3816f69f71f044629bdb21f618ab0e8}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+OBJECT}} if {\ttfamily error\+\_\+stack} is not a valid CCS error stack 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445ab3d1bba2839da0c0fb34fbc00c4be7d5}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+VALUE}} if {\ttfamily num\+\_\+elems\+\_\+ret} is NULL; or if {\ttfamily elems} is NULL 
+\end{DoxyReturn}
+\mbox{\Hypertarget{error__stack_8h_ac6cdbbce356f3c1b6c9655c3647e5456}\label{error__stack_8h_ac6cdbbce356f3c1b6c9655c3647e5456}} 
+\index{error\_stack.h@{error\_stack.h}!ccs\_error\_stack\_get\_message@{ccs\_error\_stack\_get\_message}}
+\index{ccs\_error\_stack\_get\_message@{ccs\_error\_stack\_get\_message}!error\_stack.h@{error\_stack.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_error\_stack\_get\_message()}{ccs\_error\_stack\_get\_message()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} ccs\+\_\+error\+\_\+stack\+\_\+get\+\_\+message (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_aa8ed63786cc9dd9d8fc7bdbbd07b1511}{ccs\+\_\+error\+\_\+stack\+\_\+t}}}]{error\+\_\+stack,  }\item[{const char $\ast$$\ast$}]{message\+\_\+ret }\end{DoxyParamCaption})}
+
+
+
+Retrieves the message from an error stack. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em error\+\_\+stack} & \\
+\hline
+\mbox{\texttt{ out}}  & {\em message\+\_\+ret} & a pointer to a variable that will contain the message. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445a9941bd690a240532191c41365f48e8b8}{CCS\+\_\+\+RESULT\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445aa3816f69f71f044629bdb21f618ab0e8}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+OBJECT}} if {\ttfamily error\+\_\+stack} is not a valid CCS error stack 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445ab3d1bba2839da0c0fb34fbc00c4be7d5}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+VALUE}} if {\ttfamily message\+\_\+ret} is NULL 
+\end{DoxyReturn}
+\mbox{\Hypertarget{error__stack_8h_a1c45583814d1a8367c5f0ae280928b6a}\label{error__stack_8h_a1c45583814d1a8367c5f0ae280928b6a}} 
+\index{error\_stack.h@{error\_stack.h}!ccs\_error\_stack\_push@{ccs\_error\_stack\_push}}
+\index{ccs\_error\_stack\_push@{ccs\_error\_stack\_push}!error\_stack.h@{error\_stack.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_error\_stack\_push()}{ccs\_error\_stack\_push()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} ccs\+\_\+error\+\_\+stack\+\_\+push (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_aa8ed63786cc9dd9d8fc7bdbbd07b1511}{ccs\+\_\+error\+\_\+stack\+\_\+t}}}]{error\+\_\+stack,  }\item[{const char $\ast$}]{file,  }\item[{int}]{line,  }\item[{const char $\ast$}]{func }\end{DoxyParamCaption})}
+
+
+
+Pushes a stack trace element in an error stack. 
+
+A call to this function may invalidate pointers obtained previously by \mbox{\hyperlink{error__stack_8h_ae3766310df8076cce434189ba422f9a6}{ccs\+\_\+error\+\_\+stack\+\_\+get\+\_\+elems}} for this error stack. 
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in,out}}  & {\em error\+\_\+stack} & \\
+\hline
+\mbox{\texttt{ in}}  & {\em file} & the name of the file \\
+\hline
+\mbox{\texttt{ in}}  & {\em line} & the line number \\
+\hline
+\mbox{\texttt{ in}}  & {\em func} & the function name \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445a9941bd690a240532191c41365f48e8b8}{CCS\+\_\+\+RESULT\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445aa3816f69f71f044629bdb21f618ab0e8}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+OBJECT}} if {\ttfamily error\+\_\+stack} is not a valid CCS error stack 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445aba9b4719b46466cd185bf1a41a232ff6}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+OUT\+\_\+\+OF\+\_\+\+MEMORY}} if there was not enough memory to allocate new stack elements 
+\end{DoxyReturn}
+\mbox{\Hypertarget{error__stack_8h_aa3769ff4df7a1231699a7f689b71f9ff}\label{error__stack_8h_aa3769ff4df7a1231699a7f689b71f9ff}} 
+\index{error\_stack.h@{error\_stack.h}!ccs\_get\_thread\_error@{ccs\_get\_thread\_error}}
+\index{ccs\_get\_thread\_error@{ccs\_get\_thread\_error}!error\_stack.h@{error\_stack.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_get\_thread\_error()}{ccs\_get\_thread\_error()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_aa8ed63786cc9dd9d8fc7bdbbd07b1511}{ccs\+\_\+error\+\_\+stack\+\_\+t}} ccs\+\_\+get\+\_\+thread\+\_\+error (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Transfers ownership of thread error stack from CCS to the user. 
+
+\begin{DoxyReturn}{Returns}
+the thread specific error stack or NULL if none exist. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{error__stack_8h_a343c9ff6b6f9fcfea4040a51596e220e}\label{error__stack_8h_a343c9ff6b6f9fcfea4040a51596e220e}} 
+\index{error\_stack.h@{error\_stack.h}!ccs\_set\_thread\_error@{ccs\_set\_thread\_error}}
+\index{ccs\_set\_thread\_error@{ccs\_set\_thread\_error}!error\_stack.h@{error\_stack.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_set\_thread\_error()}{ccs\_set\_thread\_error()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} ccs\+\_\+set\+\_\+thread\+\_\+error (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_aa8ed63786cc9dd9d8fc7bdbbd07b1511}{ccs\+\_\+error\+\_\+stack\+\_\+t}}}]{error\+\_\+stack }\end{DoxyParamCaption})}
+
+
+
+Transfers ownership of error stack from the user to CCS. 
+
+If a previous error was owned by the thread it will be released. 
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em error\+\_\+stack} & the error stack to transfer \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445a9941bd690a240532191c41365f48e8b8}{CCS\+\_\+\+RESULT\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445aa3816f69f71f044629bdb21f618ab0e8}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+OBJECT}} if {\ttfamily error\+\_\+stack} is not a valid CCS error stack 
+\end{DoxyReturn}
+\mbox{\Hypertarget{error__stack_8h_a352407f93c6ebf974cfbaa21ad71d5f5}\label{error__stack_8h_a352407f93c6ebf974cfbaa21ad71d5f5}} 
+\index{error\_stack.h@{error\_stack.h}!ccs\_thread\_error\_stack\_push@{ccs\_thread\_error\_stack\_push}}
+\index{ccs\_thread\_error\_stack\_push@{ccs\_thread\_error\_stack\_push}!error\_stack.h@{error\_stack.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_thread\_error\_stack\_push()}{ccs\_thread\_error\_stack\_push()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} ccs\+\_\+thread\+\_\+error\+\_\+stack\+\_\+push (\begin{DoxyParamCaption}\item[{const char $\ast$}]{file,  }\item[{int}]{line,  }\item[{const char $\ast$}]{func }\end{DoxyParamCaption})}
+
+
+
+Pushes a stack trace element on the thread error stack. 
+
+A call to this function may invalidate pointers obtained previously by \mbox{\hyperlink{error__stack_8h_ae3766310df8076cce434189ba422f9a6}{ccs\+\_\+error\+\_\+stack\+\_\+get\+\_\+elems}} for this error stack. 
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em file} & the name of the file \\
+\hline
+\mbox{\texttt{ in}}  & {\em line} & the line number \\
+\hline
+\mbox{\texttt{ in}}  & {\em func} & the function name \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445a9941bd690a240532191c41365f48e8b8}{CCS\+\_\+\+RESULT\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445aa3816f69f71f044629bdb21f618ab0e8}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+OBJECT}} if the thread has no associated error stack 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445aba9b4719b46466cd185bf1a41a232ff6}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+OUT\+\_\+\+OF\+\_\+\+MEMORY}} if there was not enough memory to allocate new stack elements 
+\end{DoxyReturn}

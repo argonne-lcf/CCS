@@ -1,0 +1,78 @@
+\hypertarget{structccs__dynamic__tree__space__vector__s}{}\doxysection{ccs\+\_\+dynamic\+\_\+tree\+\_\+space\+\_\+vector\+\_\+s Struct Reference}
+\label{structccs__dynamic__tree__space__vector__s}\index{ccs\_dynamic\_tree\_space\_vector\_s@{ccs\_dynamic\_tree\_space\_vector\_s}}
+
+
+A structure that define the callbacks the user must provide to create a dynamic tree space.  
+
+
+
+
+{\ttfamily \#include $<$tree\+\_\+space.\+h$>$}
+
+\doxysubsection*{Data Fields}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{structccs__dynamic__tree__space__vector__s_a296996d921e6747627972506179d70bd}\label{structccs__dynamic__tree__space__vector__s_a296996d921e6747627972506179d70bd}} 
+\mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}}($\ast$ \mbox{\hyperlink{structccs__dynamic__tree__space__vector__s_a296996d921e6747627972506179d70bd}{del}} )(\mbox{\hyperlink{base_8h_a17f468f642fba08b75bf3aa77ff0bfd9}{ccs\+\_\+tree\+\_\+space\+\_\+t}} tree\+\_\+space)
+\begin{DoxyCompactList}\small\item\em The deletion callback that will be called once the reference count of the tree space reaches 0. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}}($\ast$ \mbox{\hyperlink{structccs__dynamic__tree__space__vector__s_ad21d55da3556aaf47c5636d072ebb6a1}{get\+\_\+child}} )(\mbox{\hyperlink{base_8h_a17f468f642fba08b75bf3aa77ff0bfd9}{ccs\+\_\+tree\+\_\+space\+\_\+t}} tree\+\_\+space, \mbox{\hyperlink{base_8h_aa1637be0f29845650cb939959ce7d2c5}{ccs\+\_\+tree\+\_\+t}} parent, size\+\_\+t child\+\_\+index, \mbox{\hyperlink{base_8h_aa1637be0f29845650cb939959ce7d2c5}{ccs\+\_\+tree\+\_\+t}} $\ast$child\+\_\+ret)
+\begin{DoxyCompactList}\small\item\em The all back that will be called when querying a missing children in a dynamic tree space. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}}($\ast$ \mbox{\hyperlink{structccs__dynamic__tree__space__vector__s_adf75ebfea6487d70e91217d4a376aed6}{serialize\+\_\+user\+\_\+state}} )(\mbox{\hyperlink{base_8h_a17f468f642fba08b75bf3aa77ff0bfd9}{ccs\+\_\+tree\+\_\+space\+\_\+t}} tree\+\_\+space, size\+\_\+t sate\+\_\+size, void $\ast$state, size\+\_\+t $\ast$state\+\_\+size\+\_\+ret)
+\begin{DoxyCompactList}\small\item\em The tree space serialization interface, can be NULL. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}}($\ast$ \mbox{\hyperlink{structccs__dynamic__tree__space__vector__s_a9e6ce00a6b4615f06cd3383fe8639c71}{deserialize\+\_\+state}} )(\mbox{\hyperlink{base_8h_a17f468f642fba08b75bf3aa77ff0bfd9}{ccs\+\_\+tree\+\_\+space\+\_\+t}} tree\+\_\+space, size\+\_\+t state\+\_\+size, const void $\ast$state)
+\begin{DoxyCompactList}\small\item\em The tree space deserialization interface, can be NULL. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+A structure that define the callbacks the user must provide to create a dynamic tree space. 
+
+\doxysubsection{Field Documentation}
+\mbox{\Hypertarget{structccs__dynamic__tree__space__vector__s_a9e6ce00a6b4615f06cd3383fe8639c71}\label{structccs__dynamic__tree__space__vector__s_a9e6ce00a6b4615f06cd3383fe8639c71}} 
+\index{ccs\_dynamic\_tree\_space\_vector\_s@{ccs\_dynamic\_tree\_space\_vector\_s}!deserialize\_state@{deserialize\_state}}
+\index{deserialize\_state@{deserialize\_state}!ccs\_dynamic\_tree\_space\_vector\_s@{ccs\_dynamic\_tree\_space\_vector\_s}}
+\doxysubsubsection{\texorpdfstring{deserialize\_state}{deserialize\_state}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}}($\ast$ ccs\+\_\+dynamic\+\_\+tree\+\_\+space\+\_\+vector\+\_\+s\+::deserialize\+\_\+state) (\mbox{\hyperlink{base_8h_a17f468f642fba08b75bf3aa77ff0bfd9}{ccs\+\_\+tree\+\_\+space\+\_\+t}} tree\+\_\+space, size\+\_\+t state\+\_\+size, const void $\ast$state)}
+
+
+
+The tree space deserialization interface, can be NULL. 
+
+In this case, only the tree is deserialized. \mbox{\Hypertarget{structccs__dynamic__tree__space__vector__s_ad21d55da3556aaf47c5636d072ebb6a1}\label{structccs__dynamic__tree__space__vector__s_ad21d55da3556aaf47c5636d072ebb6a1}} 
+\index{ccs\_dynamic\_tree\_space\_vector\_s@{ccs\_dynamic\_tree\_space\_vector\_s}!get\_child@{get\_child}}
+\index{get\_child@{get\_child}!ccs\_dynamic\_tree\_space\_vector\_s@{ccs\_dynamic\_tree\_space\_vector\_s}}
+\doxysubsubsection{\texorpdfstring{get\_child}{get\_child}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}}($\ast$ ccs\+\_\+dynamic\+\_\+tree\+\_\+space\+\_\+vector\+\_\+s\+::get\+\_\+child) (\mbox{\hyperlink{base_8h_a17f468f642fba08b75bf3aa77ff0bfd9}{ccs\+\_\+tree\+\_\+space\+\_\+t}} tree\+\_\+space, \mbox{\hyperlink{base_8h_aa1637be0f29845650cb939959ce7d2c5}{ccs\+\_\+tree\+\_\+t}} parent, size\+\_\+t child\+\_\+index, \mbox{\hyperlink{base_8h_aa1637be0f29845650cb939959ce7d2c5}{ccs\+\_\+tree\+\_\+t}} $\ast$child\+\_\+ret)}
+
+
+
+The all back that will be called when querying a missing children in a dynamic tree space. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em tree\+\_\+space} & the dynamic tree space \\
+\hline
+\mbox{\texttt{ in}}  & {\em parent} & the parent of the node being queried \\
+\hline
+\mbox{\texttt{ in}}  & {\em child\+\_\+index} & the index of the child. This value is guaranteed to be less than the arity of the parent node. \\
+\hline
+\mbox{\texttt{ out}}  & {\em child\+\_\+ret} & a pointer to the variable that will contain the returned child node \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445a9941bd690a240532191c41365f48e8b8}{CCS\+\_\+\+RESULT\+\_\+\+SUCCESS}} on success or an error code describing the error encountered 
+\end{DoxyReturn}
+\mbox{\Hypertarget{structccs__dynamic__tree__space__vector__s_adf75ebfea6487d70e91217d4a376aed6}\label{structccs__dynamic__tree__space__vector__s_adf75ebfea6487d70e91217d4a376aed6}} 
+\index{ccs\_dynamic\_tree\_space\_vector\_s@{ccs\_dynamic\_tree\_space\_vector\_s}!serialize\_user\_state@{serialize\_user\_state}}
+\index{serialize\_user\_state@{serialize\_user\_state}!ccs\_dynamic\_tree\_space\_vector\_s@{ccs\_dynamic\_tree\_space\_vector\_s}}
+\doxysubsubsection{\texorpdfstring{serialize\_user\_state}{serialize\_user\_state}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}}($\ast$ ccs\+\_\+dynamic\+\_\+tree\+\_\+space\+\_\+vector\+\_\+s\+::serialize\+\_\+user\+\_\+state) (\mbox{\hyperlink{base_8h_a17f468f642fba08b75bf3aa77ff0bfd9}{ccs\+\_\+tree\+\_\+space\+\_\+t}} tree\+\_\+space, size\+\_\+t sate\+\_\+size, void $\ast$state, size\+\_\+t $\ast$state\+\_\+size\+\_\+ret)}
+
+
+
+The tree space serialization interface, can be NULL. 
+
+The tree is always serialized irrespective of the definition of this callback. 
+
+The documentation for this struct was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+include/cconfigspace/\mbox{\hyperlink{tree__space_8h}{tree\+\_\+space.\+h}}\end{DoxyCompactItemize}

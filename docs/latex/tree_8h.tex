@@ -1,0 +1,542 @@
+\hypertarget{tree_8h}{}\doxysection{include/cconfigspace/tree.h File Reference}
+\label{tree_8h}\index{include/cconfigspace/tree.h@{include/cconfigspace/tree.h}}
+
+
+A CCS tree object represents a node in a tree structure.  
+
+
+This graph shows which files directly or indirectly include this file\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=196pt]{tree_8h__dep__incl}
+\end{center}
+\end{figure}
+\doxysubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} \mbox{\hyperlink{tree_8h_adbeee74f64fcc0e2818c08dc27ce1db8}{ccs\+\_\+create\+\_\+tree}} (size\+\_\+t arity, \mbox{\hyperlink{base_8h_a36bc36b2bb0d0613453dd731cdcd2048}{ccs\+\_\+datum\+\_\+t}} value, \mbox{\hyperlink{base_8h_aa1637be0f29845650cb939959ce7d2c5}{ccs\+\_\+tree\+\_\+t}} $\ast$tree\+\_\+ret)
+\begin{DoxyCompactList}\small\item\em Create new tree node. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} \mbox{\hyperlink{tree_8h_a3d54cd5509c26f204a180a1e8e800573}{ccs\+\_\+tree\+\_\+get\+\_\+value}} (\mbox{\hyperlink{base_8h_aa1637be0f29845650cb939959ce7d2c5}{ccs\+\_\+tree\+\_\+t}} tree, \mbox{\hyperlink{base_8h_a36bc36b2bb0d0613453dd731cdcd2048}{ccs\+\_\+datum\+\_\+t}} $\ast$value\+\_\+ret)
+\begin{DoxyCompactList}\small\item\em Get the value of a tree node. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} \mbox{\hyperlink{tree_8h_ac12d52f3bbcff7645b6f6a1365f59475}{ccs\+\_\+tree\+\_\+get\+\_\+arity}} (\mbox{\hyperlink{base_8h_aa1637be0f29845650cb939959ce7d2c5}{ccs\+\_\+tree\+\_\+t}} tree, size\+\_\+t $\ast$arity\+\_\+ret)
+\begin{DoxyCompactList}\small\item\em Get the arity of a tree node. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} \mbox{\hyperlink{tree_8h_a11b9761ed6cef285a5ac6af2efe3ddd9}{ccs\+\_\+tree\+\_\+set\+\_\+child}} (\mbox{\hyperlink{base_8h_aa1637be0f29845650cb939959ce7d2c5}{ccs\+\_\+tree\+\_\+t}} tree, size\+\_\+t index, \mbox{\hyperlink{base_8h_aa1637be0f29845650cb939959ce7d2c5}{ccs\+\_\+tree\+\_\+t}} child)
+\begin{DoxyCompactList}\small\item\em Set an unset child in a tree node at the given index. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} \mbox{\hyperlink{tree_8h_a9ee30bbcfdca3fbd6976533256d3332c}{ccs\+\_\+tree\+\_\+get\+\_\+child}} (\mbox{\hyperlink{base_8h_aa1637be0f29845650cb939959ce7d2c5}{ccs\+\_\+tree\+\_\+t}} tree, size\+\_\+t index, \mbox{\hyperlink{base_8h_aa1637be0f29845650cb939959ce7d2c5}{ccs\+\_\+tree\+\_\+t}} $\ast$child\+\_\+ret)
+\begin{DoxyCompactList}\small\item\em Query a tree node for the child at the given index. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} \mbox{\hyperlink{tree_8h_acd5806d7ef02a9a09a704d6c608eefd0}{ccs\+\_\+tree\+\_\+get\+\_\+children}} (\mbox{\hyperlink{base_8h_aa1637be0f29845650cb939959ce7d2c5}{ccs\+\_\+tree\+\_\+t}} tree, size\+\_\+t num\+\_\+children, \mbox{\hyperlink{base_8h_aa1637be0f29845650cb939959ce7d2c5}{ccs\+\_\+tree\+\_\+t}} $\ast$children, size\+\_\+t $\ast$num\+\_\+children\+\_\+ret)
+\begin{DoxyCompactList}\small\item\em Query all the children of a tree node. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} \mbox{\hyperlink{tree_8h_a9649a6efb3ae30f145e9d61d324e2e66}{ccs\+\_\+tree\+\_\+get\+\_\+parent}} (\mbox{\hyperlink{base_8h_aa1637be0f29845650cb939959ce7d2c5}{ccs\+\_\+tree\+\_\+t}} tree, \mbox{\hyperlink{base_8h_aa1637be0f29845650cb939959ce7d2c5}{ccs\+\_\+tree\+\_\+t}} $\ast$parent\+\_\+ret, size\+\_\+t $\ast$index\+\_\+ret)
+\begin{DoxyCompactList}\small\item\em Get the parent node of a tree node. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} \mbox{\hyperlink{tree_8h_a8e64babd0ace4534d675ba761b30adc6}{ccs\+\_\+tree\+\_\+get\+\_\+position}} (\mbox{\hyperlink{base_8h_aa1637be0f29845650cb939959ce7d2c5}{ccs\+\_\+tree\+\_\+t}} tree, size\+\_\+t position\+\_\+size, size\+\_\+t $\ast$position, size\+\_\+t $\ast$position\+\_\+size\+\_\+ret)
+\begin{DoxyCompactList}\small\item\em Get the position of a node in it\textquotesingle{}s tree. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} \mbox{\hyperlink{tree_8h_a3a49992b24b88689e61a7e2c591b76d1}{ccs\+\_\+tree\+\_\+get\+\_\+values}} (\mbox{\hyperlink{base_8h_aa1637be0f29845650cb939959ce7d2c5}{ccs\+\_\+tree\+\_\+t}} tree, size\+\_\+t num\+\_\+values, \mbox{\hyperlink{base_8h_a36bc36b2bb0d0613453dd731cdcd2048}{ccs\+\_\+datum\+\_\+t}} $\ast$values, size\+\_\+t $\ast$num\+\_\+values\+\_\+ret)
+\begin{DoxyCompactList}\small\item\em Get the values along the path leading to a node in it\textquotesingle{}s tree. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} \mbox{\hyperlink{tree_8h_a40c81fce30eb0f27773637b40214356b}{ccs\+\_\+tree\+\_\+position\+\_\+is\+\_\+valid}} (\mbox{\hyperlink{base_8h_aa1637be0f29845650cb939959ce7d2c5}{ccs\+\_\+tree\+\_\+t}} tree, size\+\_\+t position\+\_\+size, const size\+\_\+t $\ast$position, \mbox{\hyperlink{base_8h_a0e8ba2dfd397017939e6ea2ebc4bb037}{ccs\+\_\+bool\+\_\+t}} $\ast$is\+\_\+valid\+\_\+ret)
+\begin{DoxyCompactList}\small\item\em Check if a position can be reached from a tree node. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} \mbox{\hyperlink{tree_8h_a7e558b0a2fa894c1e4a9924264876020}{ccs\+\_\+tree\+\_\+get\+\_\+values\+\_\+at\+\_\+position}} (\mbox{\hyperlink{base_8h_aa1637be0f29845650cb939959ce7d2c5}{ccs\+\_\+tree\+\_\+t}} tree, size\+\_\+t position\+\_\+size, const size\+\_\+t $\ast$position, size\+\_\+t num\+\_\+values, \mbox{\hyperlink{base_8h_a36bc36b2bb0d0613453dd731cdcd2048}{ccs\+\_\+datum\+\_\+t}} $\ast$values)
+\begin{DoxyCompactList}\small\item\em Get the values along the path to a given position from a tree node. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} \mbox{\hyperlink{tree_8h_a06582e0f2e7c2cfaaa256e2a329d413e}{ccs\+\_\+tree\+\_\+get\+\_\+node\+\_\+at\+\_\+position}} (\mbox{\hyperlink{base_8h_aa1637be0f29845650cb939959ce7d2c5}{ccs\+\_\+tree\+\_\+t}} tree, size\+\_\+t position\+\_\+size, const size\+\_\+t $\ast$position, \mbox{\hyperlink{base_8h_aa1637be0f29845650cb939959ce7d2c5}{ccs\+\_\+tree\+\_\+t}} $\ast$tree\+\_\+ret)
+\begin{DoxyCompactList}\small\item\em Get the node at a given position from a tree node. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} \mbox{\hyperlink{tree_8h_af90b9fdd178cb21ae8ac3e29dd55b020}{ccs\+\_\+tree\+\_\+get\+\_\+weight}} (\mbox{\hyperlink{base_8h_aa1637be0f29845650cb939959ce7d2c5}{ccs\+\_\+tree\+\_\+t}} tree, \mbox{\hyperlink{base_8h_a8a8cddcd4f5ce78a2fbb0a44743e88c5}{ccs\+\_\+float\+\_\+t}} $\ast$weight\+\_\+ret)
+\begin{DoxyCompactList}\small\item\em Get the weight of a tree node. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} \mbox{\hyperlink{tree_8h_a258778f8446bb1ca2e4cbf1fa823a84d}{ccs\+\_\+tree\+\_\+set\+\_\+weight}} (\mbox{\hyperlink{base_8h_aa1637be0f29845650cb939959ce7d2c5}{ccs\+\_\+tree\+\_\+t}} tree, \mbox{\hyperlink{base_8h_a8a8cddcd4f5ce78a2fbb0a44743e88c5}{ccs\+\_\+float\+\_\+t}} weight)
+\begin{DoxyCompactList}\small\item\em Set the weight of a tree node. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} \mbox{\hyperlink{tree_8h_a9a01feaaf4fe887d596ec8e2554d7ec8}{ccs\+\_\+tree\+\_\+get\+\_\+bias}} (\mbox{\hyperlink{base_8h_aa1637be0f29845650cb939959ce7d2c5}{ccs\+\_\+tree\+\_\+t}} tree, \mbox{\hyperlink{base_8h_a8a8cddcd4f5ce78a2fbb0a44743e88c5}{ccs\+\_\+float\+\_\+t}} $\ast$bias\+\_\+ret)
+\begin{DoxyCompactList}\small\item\em Get the bias of a subtree. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} \mbox{\hyperlink{tree_8h_a7ae758fb901806802e9a644c6d3279c5}{ccs\+\_\+tree\+\_\+set\+\_\+bias}} (\mbox{\hyperlink{base_8h_aa1637be0f29845650cb939959ce7d2c5}{ccs\+\_\+tree\+\_\+t}} tree, \mbox{\hyperlink{base_8h_a8a8cddcd4f5ce78a2fbb0a44743e88c5}{ccs\+\_\+float\+\_\+t}} bias)
+\begin{DoxyCompactList}\small\item\em Set the bias of a tree node. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} \mbox{\hyperlink{tree_8h_adec7dd09040d5d2fa93f245aa8590bd3}{ccs\+\_\+tree\+\_\+sample}} (\mbox{\hyperlink{base_8h_aa1637be0f29845650cb939959ce7d2c5}{ccs\+\_\+tree\+\_\+t}} tree, \mbox{\hyperlink{base_8h_ae22dde737fcdf67d5a9fa497bc054027}{ccs\+\_\+rng\+\_\+t}} rng, size\+\_\+t $\ast$index\+\_\+ret)
+\begin{DoxyCompactList}\small\item\em Sample the child index space of a a tree node. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} \mbox{\hyperlink{tree_8h_a7d4e92f729ccbe8b5e2af1657741ad62}{ccs\+\_\+tree\+\_\+samples}} (\mbox{\hyperlink{base_8h_aa1637be0f29845650cb939959ce7d2c5}{ccs\+\_\+tree\+\_\+t}} tree, \mbox{\hyperlink{base_8h_ae22dde737fcdf67d5a9fa497bc054027}{ccs\+\_\+rng\+\_\+t}} rng, size\+\_\+t num\+\_\+indices, size\+\_\+t $\ast$indices)
+\begin{DoxyCompactList}\small\item\em Sample the child index space of a tree node. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+A CCS tree object represents a node in a tree structure. 
+
+Nodes have a given arity and are associated a give datum. Nodes can be sampled for the index of one of their children, but can also return themselves. By default children are sampled according to their subtree weight. This allows uniform sampling of the whole tree by recursively sampling selected children, and stopping when a node returns itself. This behavior can be changed by modifying individual nodes weights, as well as biasing subtrees. 
+
+\doxysubsection{Function Documentation}
+\mbox{\Hypertarget{tree_8h_adbeee74f64fcc0e2818c08dc27ce1db8}\label{tree_8h_adbeee74f64fcc0e2818c08dc27ce1db8}} 
+\index{tree.h@{tree.h}!ccs\_create\_tree@{ccs\_create\_tree}}
+\index{ccs\_create\_tree@{ccs\_create\_tree}!tree.h@{tree.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_create\_tree()}{ccs\_create\_tree()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} ccs\+\_\+create\+\_\+tree (\begin{DoxyParamCaption}\item[{size\+\_\+t}]{arity,  }\item[{\mbox{\hyperlink{base_8h_a36bc36b2bb0d0613453dd731cdcd2048}{ccs\+\_\+datum\+\_\+t}}}]{value,  }\item[{\mbox{\hyperlink{base_8h_aa1637be0f29845650cb939959ce7d2c5}{ccs\+\_\+tree\+\_\+t}} $\ast$}]{tree\+\_\+ret }\end{DoxyParamCaption})}
+
+
+
+Create new tree node. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em arity} & the arity of the node \\
+\hline
+\mbox{\texttt{ in}}  & {\em value} & the value associated with the node \\
+\hline
+\mbox{\texttt{ out}}  & {\em tree\+\_\+ret} & a pointer to the variable that will hold the newly created tree node. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445a9941bd690a240532191c41365f48e8b8}{CCS\+\_\+\+RESULT\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445aba9b4719b46466cd185bf1a41a232ff6}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+OUT\+\_\+\+OF\+\_\+\+MEMORY}} if there was a lack of memory to allocate the new tree node. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{tree_8h_ac12d52f3bbcff7645b6f6a1365f59475}\label{tree_8h_ac12d52f3bbcff7645b6f6a1365f59475}} 
+\index{tree.h@{tree.h}!ccs\_tree\_get\_arity@{ccs\_tree\_get\_arity}}
+\index{ccs\_tree\_get\_arity@{ccs\_tree\_get\_arity}!tree.h@{tree.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_tree\_get\_arity()}{ccs\_tree\_get\_arity()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} ccs\+\_\+tree\+\_\+get\+\_\+arity (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_aa1637be0f29845650cb939959ce7d2c5}{ccs\+\_\+tree\+\_\+t}}}]{tree,  }\item[{size\+\_\+t $\ast$}]{arity\+\_\+ret }\end{DoxyParamCaption})}
+
+
+
+Get the arity of a tree node. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em tree} & \\
+\hline
+\mbox{\texttt{ out}}  & {\em arity\+\_\+ret} & a pointer to the variable that will contain the arity of the node. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445a9941bd690a240532191c41365f48e8b8}{CCS\+\_\+\+RESULT\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445aa3816f69f71f044629bdb21f618ab0e8}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+OBJECT}} if {\ttfamily tree} is not a valid CCS tree 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445ab3d1bba2839da0c0fb34fbc00c4be7d5}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+VALUE}} if {\ttfamily arity\+\_\+ret} is NULL 
+\end{DoxyReturn}
+\mbox{\Hypertarget{tree_8h_a9a01feaaf4fe887d596ec8e2554d7ec8}\label{tree_8h_a9a01feaaf4fe887d596ec8e2554d7ec8}} 
+\index{tree.h@{tree.h}!ccs\_tree\_get\_bias@{ccs\_tree\_get\_bias}}
+\index{ccs\_tree\_get\_bias@{ccs\_tree\_get\_bias}!tree.h@{tree.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_tree\_get\_bias()}{ccs\_tree\_get\_bias()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} ccs\+\_\+tree\+\_\+get\+\_\+bias (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_aa1637be0f29845650cb939959ce7d2c5}{ccs\+\_\+tree\+\_\+t}}}]{tree,  }\item[{\mbox{\hyperlink{base_8h_a8a8cddcd4f5ce78a2fbb0a44743e88c5}{ccs\+\_\+float\+\_\+t}} $\ast$}]{bias\+\_\+ret }\end{DoxyParamCaption})}
+
+
+
+Get the bias of a subtree. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em tree} & \\
+\hline
+\mbox{\texttt{ out}}  & {\em bias\+\_\+ret} & a pointer to the variable that will contain the returned bias \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445a9941bd690a240532191c41365f48e8b8}{CCS\+\_\+\+RESULT\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445aa3816f69f71f044629bdb21f618ab0e8}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+OBJECT}} if {\ttfamily tree} is not a valid CCS tree 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445ab3d1bba2839da0c0fb34fbc00c4be7d5}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+VALUE}} if {\ttfamily bias\+\_\+ret} is NULL 
+\end{DoxyReturn}
+\mbox{\Hypertarget{tree_8h_a9ee30bbcfdca3fbd6976533256d3332c}\label{tree_8h_a9ee30bbcfdca3fbd6976533256d3332c}} 
+\index{tree.h@{tree.h}!ccs\_tree\_get\_child@{ccs\_tree\_get\_child}}
+\index{ccs\_tree\_get\_child@{ccs\_tree\_get\_child}!tree.h@{tree.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_tree\_get\_child()}{ccs\_tree\_get\_child()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} ccs\+\_\+tree\+\_\+get\+\_\+child (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_aa1637be0f29845650cb939959ce7d2c5}{ccs\+\_\+tree\+\_\+t}}}]{tree,  }\item[{size\+\_\+t}]{index,  }\item[{\mbox{\hyperlink{base_8h_aa1637be0f29845650cb939959ce7d2c5}{ccs\+\_\+tree\+\_\+t}} $\ast$}]{child\+\_\+ret }\end{DoxyParamCaption})}
+
+
+
+Query a tree node for the child at the given index. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em tree} & \\
+\hline
+\mbox{\texttt{ in}}  & {\em index} & \\
+\hline
+\mbox{\texttt{ in}}  & {\em child\+\_\+ret} & a pointer to the variable that will hold the returned child or NULL if the child was undefined \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445a9941bd690a240532191c41365f48e8b8}{CCS\+\_\+\+RESULT\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445aa3816f69f71f044629bdb21f618ab0e8}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+OBJECT}} if {\ttfamily tree} is not a valid CCS tree 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445af49329ea0e10def334ff276577661d45}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+OUT\+\_\+\+OF\+\_\+\+BOUNDS}} if {\ttfamily index} is greater than {\ttfamily tree} arity 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445ab3d1bba2839da0c0fb34fbc00c4be7d5}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+VALUE}} if {\ttfamily child\+\_\+ret} is NULL 
+\end{DoxyReturn}
+\mbox{\Hypertarget{tree_8h_acd5806d7ef02a9a09a704d6c608eefd0}\label{tree_8h_acd5806d7ef02a9a09a704d6c608eefd0}} 
+\index{tree.h@{tree.h}!ccs\_tree\_get\_children@{ccs\_tree\_get\_children}}
+\index{ccs\_tree\_get\_children@{ccs\_tree\_get\_children}!tree.h@{tree.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_tree\_get\_children()}{ccs\_tree\_get\_children()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} ccs\+\_\+tree\+\_\+get\+\_\+children (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_aa1637be0f29845650cb939959ce7d2c5}{ccs\+\_\+tree\+\_\+t}}}]{tree,  }\item[{size\+\_\+t}]{num\+\_\+children,  }\item[{\mbox{\hyperlink{base_8h_aa1637be0f29845650cb939959ce7d2c5}{ccs\+\_\+tree\+\_\+t}} $\ast$}]{children,  }\item[{size\+\_\+t $\ast$}]{num\+\_\+children\+\_\+ret }\end{DoxyParamCaption})}
+
+
+
+Query all the children of a tree node. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em tree} & \\
+\hline
+\mbox{\texttt{ in}}  & {\em num\+\_\+children} & the size of the {\ttfamily children} array \\
+\hline
+\mbox{\texttt{ out}}  & {\em children} & an array of size {\ttfamily num\+\_\+children} to hold the returned values, or NULL. If the array is too big, extra values are set to NULL. If children are undefined, NULL is returned as well \\
+\hline
+\mbox{\texttt{ out}}  & {\em num\+\_\+children\+\_\+ret} & a pointer to a variable that will contain the number of children that are or would be returned. Can be NULL \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445a9941bd690a240532191c41365f48e8b8}{CCS\+\_\+\+RESULT\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445aa3816f69f71f044629bdb21f618ab0e8}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+OBJECT}} if {\ttfamily tree} is not a valid CCS tree 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445ab3d1bba2839da0c0fb34fbc00c4be7d5}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+VALUE}} if {\ttfamily children} is NULL and {\ttfamily num\+\_\+children} is greater than 0; or if {\ttfamily children} is NULL and {\ttfamily num\+\_\+children\+\_\+ret} is NULL; or if {\ttfamily children} is not NULL and {\ttfamily num\+\_\+children} is less than the arity of {\ttfamily tree} 
+\end{DoxyReturn}
+\mbox{\Hypertarget{tree_8h_a06582e0f2e7c2cfaaa256e2a329d413e}\label{tree_8h_a06582e0f2e7c2cfaaa256e2a329d413e}} 
+\index{tree.h@{tree.h}!ccs\_tree\_get\_node\_at\_position@{ccs\_tree\_get\_node\_at\_position}}
+\index{ccs\_tree\_get\_node\_at\_position@{ccs\_tree\_get\_node\_at\_position}!tree.h@{tree.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_tree\_get\_node\_at\_position()}{ccs\_tree\_get\_node\_at\_position()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} ccs\+\_\+tree\+\_\+get\+\_\+node\+\_\+at\+\_\+position (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_aa1637be0f29845650cb939959ce7d2c5}{ccs\+\_\+tree\+\_\+t}}}]{tree,  }\item[{size\+\_\+t}]{position\+\_\+size,  }\item[{const size\+\_\+t $\ast$}]{position,  }\item[{\mbox{\hyperlink{base_8h_aa1637be0f29845650cb939959ce7d2c5}{ccs\+\_\+tree\+\_\+t}} $\ast$}]{tree\+\_\+ret }\end{DoxyParamCaption})}
+
+
+
+Get the node at a given position from a tree node. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em tree} & \\
+\hline
+\mbox{\texttt{ in}}  & {\em position\+\_\+size} & the number of entries in the {\ttfamily position} array \\
+\hline
+\mbox{\texttt{ in}}  & {\em position} & an array of indexes defining a location in the tree space. can be NULL if {\ttfamily position\+\_\+size} is 0 \\
+\hline
+\mbox{\texttt{ out}}  & {\em tree\+\_\+ret} & a pointer to the variable that will contain the node \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445a9941bd690a240532191c41365f48e8b8}{CCS\+\_\+\+RESULT\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445aa3816f69f71f044629bdb21f618ab0e8}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+OBJECT}} if {\ttfamily tree} is not a valid CCS tree 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445ab3d1bba2839da0c0fb34fbc00c4be7d5}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+VALUE}} if {\ttfamily tree\+\_\+ret} is NULL; or if {\ttfamily position} is NULL and {\ttfamily position\+\_\+size} is greater than 0 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445a753eb0ac863f753772eb3a60379af791}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+TREE}} if the position does not define a valid position in the tree space, or if this position is undefined in a static tree space. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{tree_8h_a9649a6efb3ae30f145e9d61d324e2e66}\label{tree_8h_a9649a6efb3ae30f145e9d61d324e2e66}} 
+\index{tree.h@{tree.h}!ccs\_tree\_get\_parent@{ccs\_tree\_get\_parent}}
+\index{ccs\_tree\_get\_parent@{ccs\_tree\_get\_parent}!tree.h@{tree.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_tree\_get\_parent()}{ccs\_tree\_get\_parent()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} ccs\+\_\+tree\+\_\+get\+\_\+parent (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_aa1637be0f29845650cb939959ce7d2c5}{ccs\+\_\+tree\+\_\+t}}}]{tree,  }\item[{\mbox{\hyperlink{base_8h_aa1637be0f29845650cb939959ce7d2c5}{ccs\+\_\+tree\+\_\+t}} $\ast$}]{parent\+\_\+ret,  }\item[{size\+\_\+t $\ast$}]{index\+\_\+ret }\end{DoxyParamCaption})}
+
+
+
+Get the parent node of a tree node. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em tree} & \\
+\hline
+\mbox{\texttt{ out}}  & {\em parent\+\_\+ret} & a pointer to a variable that will contain the returned parent node or NULL if the node has no parent. \\
+\hline
+\mbox{\texttt{ out}}  & {\em index\+\_\+ret} & a pointer to a variable that will contain the index of the node in the parent if it has a parent. Can be NULL \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445a9941bd690a240532191c41365f48e8b8}{CCS\+\_\+\+RESULT\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445aa3816f69f71f044629bdb21f618ab0e8}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+OBJECT}} if {\ttfamily tree} is not a valid CCS tree 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445ab3d1bba2839da0c0fb34fbc00c4be7d5}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+VALUE}} if {\ttfamily parent\+\_\+ret} is NULL 
+\end{DoxyReturn}
+\mbox{\Hypertarget{tree_8h_a8e64babd0ace4534d675ba761b30adc6}\label{tree_8h_a8e64babd0ace4534d675ba761b30adc6}} 
+\index{tree.h@{tree.h}!ccs\_tree\_get\_position@{ccs\_tree\_get\_position}}
+\index{ccs\_tree\_get\_position@{ccs\_tree\_get\_position}!tree.h@{tree.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_tree\_get\_position()}{ccs\_tree\_get\_position()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} ccs\+\_\+tree\+\_\+get\+\_\+position (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_aa1637be0f29845650cb939959ce7d2c5}{ccs\+\_\+tree\+\_\+t}}}]{tree,  }\item[{size\+\_\+t}]{position\+\_\+size,  }\item[{size\+\_\+t $\ast$}]{position,  }\item[{size\+\_\+t $\ast$}]{position\+\_\+size\+\_\+ret }\end{DoxyParamCaption})}
+
+
+
+Get the position of a node in it\textquotesingle{}s tree. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em tree} & \\
+\hline
+\mbox{\texttt{ in}}  & {\em position\+\_\+size} & the size of the {\ttfamily position} array \\
+\hline
+\mbox{\texttt{ out}}  & {\em position} & an array of size {\ttfamily position\+\_\+size} to hold the returned values, or NULL. If the array is too big, extra values are set to 0 \\
+\hline
+\mbox{\texttt{ out}}  & {\em position\+\_\+size\+\_\+ret} & a pointer to a variable that will contain the number of values that are or would be returned. Can be NULL \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445a9941bd690a240532191c41365f48e8b8}{CCS\+\_\+\+RESULT\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445aa3816f69f71f044629bdb21f618ab0e8}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+OBJECT}} if {\ttfamily tree} is not a valid CCS tree 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445ab3d1bba2839da0c0fb34fbc00c4be7d5}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+VALUE}} if {\ttfamily position} is NULL and {\ttfamily position\+\_\+size} is greater than 0; or if {\ttfamily position} is NULL and {\ttfamily position\+\_\+size\+\_\+ret} is NULL; or if {\ttfamily position\+\_\+size} is less than the number of values that would be returned 
+\end{DoxyReturn}
+\mbox{\Hypertarget{tree_8h_a3d54cd5509c26f204a180a1e8e800573}\label{tree_8h_a3d54cd5509c26f204a180a1e8e800573}} 
+\index{tree.h@{tree.h}!ccs\_tree\_get\_value@{ccs\_tree\_get\_value}}
+\index{ccs\_tree\_get\_value@{ccs\_tree\_get\_value}!tree.h@{tree.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_tree\_get\_value()}{ccs\_tree\_get\_value()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} ccs\+\_\+tree\+\_\+get\+\_\+value (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_aa1637be0f29845650cb939959ce7d2c5}{ccs\+\_\+tree\+\_\+t}}}]{tree,  }\item[{\mbox{\hyperlink{base_8h_a36bc36b2bb0d0613453dd731cdcd2048}{ccs\+\_\+datum\+\_\+t}} $\ast$}]{value\+\_\+ret }\end{DoxyParamCaption})}
+
+
+
+Get the value of a tree node. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em tree} & \\
+\hline
+\mbox{\texttt{ out}}  & {\em value\+\_\+ret} & a pointer to the variable that will contain the value associated with the node. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445a9941bd690a240532191c41365f48e8b8}{CCS\+\_\+\+RESULT\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445aa3816f69f71f044629bdb21f618ab0e8}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+OBJECT}} if {\ttfamily tree} is not a valid CCS tree 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445ab3d1bba2839da0c0fb34fbc00c4be7d5}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+VALUE}} if {\ttfamily tree\+\_\+ret} is NULL 
+\end{DoxyReturn}
+\mbox{\Hypertarget{tree_8h_a3a49992b24b88689e61a7e2c591b76d1}\label{tree_8h_a3a49992b24b88689e61a7e2c591b76d1}} 
+\index{tree.h@{tree.h}!ccs\_tree\_get\_values@{ccs\_tree\_get\_values}}
+\index{ccs\_tree\_get\_values@{ccs\_tree\_get\_values}!tree.h@{tree.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_tree\_get\_values()}{ccs\_tree\_get\_values()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} ccs\+\_\+tree\+\_\+get\+\_\+values (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_aa1637be0f29845650cb939959ce7d2c5}{ccs\+\_\+tree\+\_\+t}}}]{tree,  }\item[{size\+\_\+t}]{num\+\_\+values,  }\item[{\mbox{\hyperlink{base_8h_a36bc36b2bb0d0613453dd731cdcd2048}{ccs\+\_\+datum\+\_\+t}} $\ast$}]{values,  }\item[{size\+\_\+t $\ast$}]{num\+\_\+values\+\_\+ret }\end{DoxyParamCaption})}
+
+
+
+Get the values along the path leading to a node in it\textquotesingle{}s tree. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em tree} & \\
+\hline
+\mbox{\texttt{ in}}  & {\em num\+\_\+values} & the size of the {\ttfamily values} array \\
+\hline
+\mbox{\texttt{ out}}  & {\em values} & an array of size {\ttfamily num\+\_\+values} to hold the returned values, or NULL. If the array is too big, extra values are set to \mbox{\hyperlink{base_8h_a302e6ecbf08c6c8a059fc775c88f21c0a706a91fea9636301fa8ca6dec809fd1e}{CCS\+\_\+\+DATA\+\_\+\+TYPE\+\_\+\+NONE}} \\
+\hline
+\mbox{\texttt{ out}}  & {\em num\+\_\+values\+\_\+ret} & a pointer to a variable that will contain the number of values that are or would be returned. Can be NULL \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445a9941bd690a240532191c41365f48e8b8}{CCS\+\_\+\+RESULT\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445aa3816f69f71f044629bdb21f618ab0e8}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+OBJECT}} if {\ttfamily tree} is not a valid CCS tree 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445ab3d1bba2839da0c0fb34fbc00c4be7d5}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+VALUE}} if {\ttfamily values} is NULL and {\ttfamily num\+\_\+values} is greater than 0; or if {\ttfamily values} is NULL and {\ttfamily num\+\_\+values\+\_\+ret} is NULL; or if {\ttfamily num\+\_\+values} is less than the number of values that would be returned 
+\end{DoxyReturn}
+\mbox{\Hypertarget{tree_8h_a7e558b0a2fa894c1e4a9924264876020}\label{tree_8h_a7e558b0a2fa894c1e4a9924264876020}} 
+\index{tree.h@{tree.h}!ccs\_tree\_get\_values\_at\_position@{ccs\_tree\_get\_values\_at\_position}}
+\index{ccs\_tree\_get\_values\_at\_position@{ccs\_tree\_get\_values\_at\_position}!tree.h@{tree.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_tree\_get\_values\_at\_position()}{ccs\_tree\_get\_values\_at\_position()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} ccs\+\_\+tree\+\_\+get\+\_\+values\+\_\+at\+\_\+position (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_aa1637be0f29845650cb939959ce7d2c5}{ccs\+\_\+tree\+\_\+t}}}]{tree,  }\item[{size\+\_\+t}]{position\+\_\+size,  }\item[{const size\+\_\+t $\ast$}]{position,  }\item[{size\+\_\+t}]{num\+\_\+values,  }\item[{\mbox{\hyperlink{base_8h_a36bc36b2bb0d0613453dd731cdcd2048}{ccs\+\_\+datum\+\_\+t}} $\ast$}]{values }\end{DoxyParamCaption})}
+
+
+
+Get the values along the path to a given position from a tree node. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em tree} & \\
+\hline
+\mbox{\texttt{ in}}  & {\em position\+\_\+size} & the number of entries in the {\ttfamily position} array \\
+\hline
+\mbox{\texttt{ in}}  & {\em position} & an array of indexes defining a location in the tree space. can be NULL if {\ttfamily position\+\_\+size} is 0 \\
+\hline
+\mbox{\texttt{ in}}  & {\em num\+\_\+values} & the size of the {\ttfamily values} array \\
+\hline
+\mbox{\texttt{ out}}  & {\em values} & an array of size {\ttfamily num\+\_\+values} to hold the returned values, or NULL. If the array is too big, extra values are set to \mbox{\hyperlink{base_8h_a302e6ecbf08c6c8a059fc775c88f21c0a706a91fea9636301fa8ca6dec809fd1e}{CCS\+\_\+\+DATA\+\_\+\+TYPE\+\_\+\+NONE}} \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445a9941bd690a240532191c41365f48e8b8}{CCS\+\_\+\+RESULT\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445aa3816f69f71f044629bdb21f618ab0e8}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+OBJECT}} if {\ttfamily tree} is not a valid CCS tree 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445a753eb0ac863f753772eb3a60379af791}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+TREE}} if the position does not reference node in the tree. 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445ab3d1bba2839da0c0fb34fbc00c4be7d5}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+VALUE}} if {\ttfamily values} is NULL; if {\ttfamily num\+\_\+values} is less than {\ttfamily position\+\_\+size} + 1; or if {\ttfamily position} is NULL and {\ttfamily position\+\_\+size} is greater than 0 
+\end{DoxyReturn}
+\mbox{\Hypertarget{tree_8h_af90b9fdd178cb21ae8ac3e29dd55b020}\label{tree_8h_af90b9fdd178cb21ae8ac3e29dd55b020}} 
+\index{tree.h@{tree.h}!ccs\_tree\_get\_weight@{ccs\_tree\_get\_weight}}
+\index{ccs\_tree\_get\_weight@{ccs\_tree\_get\_weight}!tree.h@{tree.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_tree\_get\_weight()}{ccs\_tree\_get\_weight()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} ccs\+\_\+tree\+\_\+get\+\_\+weight (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_aa1637be0f29845650cb939959ce7d2c5}{ccs\+\_\+tree\+\_\+t}}}]{tree,  }\item[{\mbox{\hyperlink{base_8h_a8a8cddcd4f5ce78a2fbb0a44743e88c5}{ccs\+\_\+float\+\_\+t}} $\ast$}]{weight\+\_\+ret }\end{DoxyParamCaption})}
+
+
+
+Get the weight of a tree node. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em tree} & \\
+\hline
+\mbox{\texttt{ out}}  & {\em weight\+\_\+ret} & a pointer to the variable that will contain the returned weight \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445a9941bd690a240532191c41365f48e8b8}{CCS\+\_\+\+RESULT\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445aa3816f69f71f044629bdb21f618ab0e8}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+OBJECT}} if {\ttfamily tree} is not a valid CCS tree 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445ab3d1bba2839da0c0fb34fbc00c4be7d5}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+VALUE}} if {\ttfamily weight\+\_\+ret} is NULL 
+\end{DoxyReturn}
+\mbox{\Hypertarget{tree_8h_a40c81fce30eb0f27773637b40214356b}\label{tree_8h_a40c81fce30eb0f27773637b40214356b}} 
+\index{tree.h@{tree.h}!ccs\_tree\_position\_is\_valid@{ccs\_tree\_position\_is\_valid}}
+\index{ccs\_tree\_position\_is\_valid@{ccs\_tree\_position\_is\_valid}!tree.h@{tree.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_tree\_position\_is\_valid()}{ccs\_tree\_position\_is\_valid()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} ccs\+\_\+tree\+\_\+position\+\_\+is\+\_\+valid (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_aa1637be0f29845650cb939959ce7d2c5}{ccs\+\_\+tree\+\_\+t}}}]{tree,  }\item[{size\+\_\+t}]{position\+\_\+size,  }\item[{const size\+\_\+t $\ast$}]{position,  }\item[{\mbox{\hyperlink{base_8h_a0e8ba2dfd397017939e6ea2ebc4bb037}{ccs\+\_\+bool\+\_\+t}} $\ast$}]{is\+\_\+valid\+\_\+ret }\end{DoxyParamCaption})}
+
+
+
+Check if a position can be reached from a tree node. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em tree} & \\
+\hline
+\mbox{\texttt{ in}}  & {\em position\+\_\+size} & the number of entries in the {\ttfamily position} array \\
+\hline
+\mbox{\texttt{ in}}  & {\em position} & an array of indexes defining a location in the tree. \\
+\hline
+\mbox{\texttt{ out}}  & {\em is\+\_\+valid\+\_\+ret} & a pointer to a variable that will hold the result of the check. Result will be CCS\+\_\+\+TRUE if the configuration is valid. Result will be CCS\+\_\+\+FALSE if the position does not reference a node of the tree. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445a9941bd690a240532191c41365f48e8b8}{CCS\+\_\+\+RESULT\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445aa3816f69f71f044629bdb21f618ab0e8}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+OBJECT}} if {\ttfamily tree} is not a valid CCS tree 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445ab3d1bba2839da0c0fb34fbc00c4be7d5}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+VALUE}} if {\ttfamily is\+\_\+valid\+\_\+ret} is NULL; or if {\ttfamily position} is NULL and {\ttfamily position\+\_\+size} is greater than 0 
+\end{DoxyReturn}
+\mbox{\Hypertarget{tree_8h_adec7dd09040d5d2fa93f245aa8590bd3}\label{tree_8h_adec7dd09040d5d2fa93f245aa8590bd3}} 
+\index{tree.h@{tree.h}!ccs\_tree\_sample@{ccs\_tree\_sample}}
+\index{ccs\_tree\_sample@{ccs\_tree\_sample}!tree.h@{tree.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_tree\_sample()}{ccs\_tree\_sample()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} ccs\+\_\+tree\+\_\+sample (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_aa1637be0f29845650cb939959ce7d2c5}{ccs\+\_\+tree\+\_\+t}}}]{tree,  }\item[{\mbox{\hyperlink{base_8h_ae22dde737fcdf67d5a9fa497bc054027}{ccs\+\_\+rng\+\_\+t}}}]{rng,  }\item[{size\+\_\+t $\ast$}]{index\+\_\+ret }\end{DoxyParamCaption})}
+
+
+
+Sample the child index space of a a tree node. 
+
+If the returned index is equal to the arity, the node sampled itself. Sampling is proportional to each subtree weight and to the tree node own weight. A subtree weight is computed as the sum of each of it\textquotesingle{}s subtree weights plus it\textquotesingle{}s root node weight, multiplied by it\textquotesingle{}s bias. 
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em tree} & \\
+\hline
+\mbox{\texttt{ in}}  & {\em rng} & the rng to use while sampling \\
+\hline
+\mbox{\texttt{ out}}  & {\em index\+\_\+ret} & a pointer to the variable that will contain the returned index \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445a9941bd690a240532191c41365f48e8b8}{CCS\+\_\+\+RESULT\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445aa3816f69f71f044629bdb21f618ab0e8}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+OBJECT}} if {\ttfamily tree} is not a valid CCS tree 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445ab3d1bba2839da0c0fb34fbc00c4be7d5}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+VALUE}} if {\ttfamily index\+\_\+ret} is NULL 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445af8535bf05e355a60885af24f9e25ef7c}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+DISTRIBUTION}} if all the weights of {\ttfamily tree} and all it\textquotesingle{}s subtrees are 0 
+\end{DoxyReturn}
+\mbox{\Hypertarget{tree_8h_a7d4e92f729ccbe8b5e2af1657741ad62}\label{tree_8h_a7d4e92f729ccbe8b5e2af1657741ad62}} 
+\index{tree.h@{tree.h}!ccs\_tree\_samples@{ccs\_tree\_samples}}
+\index{ccs\_tree\_samples@{ccs\_tree\_samples}!tree.h@{tree.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_tree\_samples()}{ccs\_tree\_samples()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} ccs\+\_\+tree\+\_\+samples (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_aa1637be0f29845650cb939959ce7d2c5}{ccs\+\_\+tree\+\_\+t}}}]{tree,  }\item[{\mbox{\hyperlink{base_8h_ae22dde737fcdf67d5a9fa497bc054027}{ccs\+\_\+rng\+\_\+t}}}]{rng,  }\item[{size\+\_\+t}]{num\+\_\+indices,  }\item[{size\+\_\+t $\ast$}]{indices }\end{DoxyParamCaption})}
+
+
+
+Sample the child index space of a tree node. 
+
+If the returned index is equal to the arity, the node sampled itself. Sampling is proportional to each subtree weight and to the tree node own weight. A subtree weight is computed as the sum of each of it\textquotesingle{}s subtree weights plus it\textquotesingle{}s root node weight, multiplied by it\textquotesingle{}s bias. 
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em tree} & \\
+\hline
+\mbox{\texttt{ in}}  & {\em rng} & the rng to use while sampling \\
+\hline
+\mbox{\texttt{ in}}  & {\em num\+\_\+indices} & \\
+\hline
+\mbox{\texttt{ out}}  & {\em indices} & an array of {\ttfamily num\+\_\+indices} which will hold the returned values \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445a9941bd690a240532191c41365f48e8b8}{CCS\+\_\+\+RESULT\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445aa3816f69f71f044629bdb21f618ab0e8}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+OBJECT}} if {\ttfamily tree} is not a valid CCS tree 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445ab3d1bba2839da0c0fb34fbc00c4be7d5}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+VALUE}} if {\ttfamily indices} is NULL and {\ttfamily num\+\_\+indices} is greater than 0 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445af8535bf05e355a60885af24f9e25ef7c}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+DISTRIBUTION}} if all the weights of {\ttfamily tree} and all it\textquotesingle{}s subtrees are 0 
+\end{DoxyReturn}
+\mbox{\Hypertarget{tree_8h_a7ae758fb901806802e9a644c6d3279c5}\label{tree_8h_a7ae758fb901806802e9a644c6d3279c5}} 
+\index{tree.h@{tree.h}!ccs\_tree\_set\_bias@{ccs\_tree\_set\_bias}}
+\index{ccs\_tree\_set\_bias@{ccs\_tree\_set\_bias}!tree.h@{tree.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_tree\_set\_bias()}{ccs\_tree\_set\_bias()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} ccs\+\_\+tree\+\_\+set\+\_\+bias (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_aa1637be0f29845650cb939959ce7d2c5}{ccs\+\_\+tree\+\_\+t}}}]{tree,  }\item[{\mbox{\hyperlink{base_8h_a8a8cddcd4f5ce78a2fbb0a44743e88c5}{ccs\+\_\+float\+\_\+t}}}]{bias }\end{DoxyParamCaption})}
+
+
+
+Set the bias of a tree node. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in,out}}  & {\em tree} & \\
+\hline
+\mbox{\texttt{ in}}  & {\em bias} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445a9941bd690a240532191c41365f48e8b8}{CCS\+\_\+\+RESULT\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445aa3816f69f71f044629bdb21f618ab0e8}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+OBJECT}} if {\ttfamily tree} is not a valid CCS tree 
+\end{DoxyReturn}
+\mbox{\Hypertarget{tree_8h_a11b9761ed6cef285a5ac6af2efe3ddd9}\label{tree_8h_a11b9761ed6cef285a5ac6af2efe3ddd9}} 
+\index{tree.h@{tree.h}!ccs\_tree\_set\_child@{ccs\_tree\_set\_child}}
+\index{ccs\_tree\_set\_child@{ccs\_tree\_set\_child}!tree.h@{tree.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_tree\_set\_child()}{ccs\_tree\_set\_child()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} ccs\+\_\+tree\+\_\+set\+\_\+child (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_aa1637be0f29845650cb939959ce7d2c5}{ccs\+\_\+tree\+\_\+t}}}]{tree,  }\item[{size\+\_\+t}]{index,  }\item[{\mbox{\hyperlink{base_8h_aa1637be0f29845650cb939959ce7d2c5}{ccs\+\_\+tree\+\_\+t}}}]{child }\end{DoxyParamCaption})}
+
+
+
+Set an unset child in a tree node at the given index. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em tree} & \\
+\hline
+\mbox{\texttt{ in}}  & {\em index} & \\
+\hline
+\mbox{\texttt{ in}}  & {\em child} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445a9941bd690a240532191c41365f48e8b8}{CCS\+\_\+\+RESULT\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445aa3816f69f71f044629bdb21f618ab0e8}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+OBJECT}} if {\ttfamily tree} is not a valid CCS tree; or if {\ttfamily child} is not a valid CCS tree 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445af49329ea0e10def334ff276577661d45}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+OUT\+\_\+\+OF\+\_\+\+BOUNDS}} if {\ttfamily index} is greater than {\ttfamily tree} arity 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445ab3d1bba2839da0c0fb34fbc00c4be7d5}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+VALUE}} if {\ttfamily tree} already has a child at {\ttfamily index} 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445a753eb0ac863f753772eb3a60379af791}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+TREE}} if {\ttfamily child} is already a child of another node; or if child is the root of a tree space 
+\end{DoxyReturn}
+\mbox{\Hypertarget{tree_8h_a258778f8446bb1ca2e4cbf1fa823a84d}\label{tree_8h_a258778f8446bb1ca2e4cbf1fa823a84d}} 
+\index{tree.h@{tree.h}!ccs\_tree\_set\_weight@{ccs\_tree\_set\_weight}}
+\index{ccs\_tree\_set\_weight@{ccs\_tree\_set\_weight}!tree.h@{tree.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_tree\_set\_weight()}{ccs\_tree\_set\_weight()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} ccs\+\_\+tree\+\_\+set\+\_\+weight (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_aa1637be0f29845650cb939959ce7d2c5}{ccs\+\_\+tree\+\_\+t}}}]{tree,  }\item[{\mbox{\hyperlink{base_8h_a8a8cddcd4f5ce78a2fbb0a44743e88c5}{ccs\+\_\+float\+\_\+t}}}]{weight }\end{DoxyParamCaption})}
+
+
+
+Set the weight of a tree node. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in,out}}  & {\em tree} & \\
+\hline
+\mbox{\texttt{ in}}  & {\em weight} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445a9941bd690a240532191c41365f48e8b8}{CCS\+\_\+\+RESULT\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445aa3816f69f71f044629bdb21f618ab0e8}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+OBJECT}} if {\ttfamily tree} is not a valid CCS tree 
+\end{DoxyReturn}

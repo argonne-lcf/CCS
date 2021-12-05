@@ -1,0 +1,6 @@
+var searchData=
+[
+  ['s_674',['s',['../unionccs__value__u.html#a7800a4ef766789600870ed2aa58f46a6',1,'ccs_value_u']]],
+  ['serialize_5fuser_5fstate_675',['serialize_user_state',['../structccs__user__defined__features__tuner__vector__s.html#ad3fd01c7edb0a0900c38051e68f046fa',1,'ccs_user_defined_features_tuner_vector_s::serialize_user_state()'],['../structccs__dynamic__tree__space__vector__s.html#adf75ebfea6487d70e91217d4a376aed6',1,'ccs_dynamic_tree_space_vector_s::serialize_user_state()'],['../structccs__user__defined__tree__tuner__vector__s.html#aae0ca0ad11ea2ffdfa3d98d4ab2a0671',1,'ccs_user_defined_tree_tuner_vector_s::serialize_user_state()'],['../structccs__user__defined__tuner__vector__s.html#a008aebca0e3cbec0c4a23f9ae1dd6695',1,'ccs_user_defined_tuner_vector_s::serialize_user_state()']]],
+  ['suggest_676',['suggest',['../structccs__user__defined__features__tuner__vector__s.html#afe419047279a8371a96b69ca07adb50f',1,'ccs_user_defined_features_tuner_vector_s::suggest()'],['../structccs__user__defined__tree__tuner__vector__s.html#ac3214c03f57bb65bda340ddd67da240d',1,'ccs_user_defined_tree_tuner_vector_s::suggest()'],['../structccs__user__defined__tuner__vector__s.html#ab99b83466c38dd27ac433ac12487e60c',1,'ccs_user_defined_tuner_vector_s::suggest()']]]
+];

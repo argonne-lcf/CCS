@@ -1,0 +1,169 @@
+\hypertarget{interval_8h}{}\doxysection{include/cconfigspace/interval.h File Reference}
+\label{interval_8h}\index{include/cconfigspace/interval.h@{include/cconfigspace/interval.h}}
+
+
+Interval define ranges over numeric values.  
+
+
+This graph shows which files directly or indirectly include this file\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=196pt]{interval_8h__dep__incl}
+\end{center}
+\end{figure}
+\doxysubsection*{Data Structures}
+\begin{DoxyCompactItemize}
+\item 
+struct \mbox{\hyperlink{structccs__interval__s}{ccs\+\_\+interval\+\_\+s}}
+\begin{DoxyCompactList}\small\item\em A structure defining an interval over numeric values. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Typedefs}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{interval_8h_a9659e1ee54b3809075e58db013e96558}\label{interval_8h_a9659e1ee54b3809075e58db013e96558}} 
+typedef struct \mbox{\hyperlink{structccs__interval__s}{ccs\+\_\+interval\+\_\+s}} \mbox{\hyperlink{interval_8h_a9659e1ee54b3809075e58db013e96558}{ccs\+\_\+interval\+\_\+t}}
+\begin{DoxyCompactList}\small\item\em A commodity type to represent CCS intervals. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} \mbox{\hyperlink{interval_8h_a553a81abd4d5c11d2166c986580b53ed}{ccs\+\_\+interval\+\_\+empty}} (\mbox{\hyperlink{interval_8h_a9659e1ee54b3809075e58db013e96558}{ccs\+\_\+interval\+\_\+t}} $\ast$interval, \mbox{\hyperlink{base_8h_a0e8ba2dfd397017939e6ea2ebc4bb037}{ccs\+\_\+bool\+\_\+t}} $\ast$empty\+\_\+ret)
+\begin{DoxyCompactList}\small\item\em Check if an interval is empty. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} \mbox{\hyperlink{interval_8h_a55e4f278d18d71ac7be40684796ba14a}{ccs\+\_\+interval\+\_\+intersect}} (\mbox{\hyperlink{interval_8h_a9659e1ee54b3809075e58db013e96558}{ccs\+\_\+interval\+\_\+t}} $\ast$interval1, \mbox{\hyperlink{interval_8h_a9659e1ee54b3809075e58db013e96558}{ccs\+\_\+interval\+\_\+t}} $\ast$interval2, \mbox{\hyperlink{interval_8h_a9659e1ee54b3809075e58db013e96558}{ccs\+\_\+interval\+\_\+t}} $\ast$interval\+\_\+res)
+\begin{DoxyCompactList}\small\item\em Compute the intersection of two intervals. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} \mbox{\hyperlink{interval_8h_ac44f633bc7f34e885a9789a1e4d627be}{ccs\+\_\+interval\+\_\+union}} (\mbox{\hyperlink{interval_8h_a9659e1ee54b3809075e58db013e96558}{ccs\+\_\+interval\+\_\+t}} $\ast$interval1, \mbox{\hyperlink{interval_8h_a9659e1ee54b3809075e58db013e96558}{ccs\+\_\+interval\+\_\+t}} $\ast$interval2, \mbox{\hyperlink{interval_8h_a9659e1ee54b3809075e58db013e96558}{ccs\+\_\+interval\+\_\+t}} $\ast$interval\+\_\+res)
+\begin{DoxyCompactList}\small\item\em Compute the union of two intervals. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} \mbox{\hyperlink{interval_8h_ae695563c041f43dcecb0de5f1cb62fa6}{ccs\+\_\+interval\+\_\+equal}} (\mbox{\hyperlink{interval_8h_a9659e1ee54b3809075e58db013e96558}{ccs\+\_\+interval\+\_\+t}} $\ast$interval1, \mbox{\hyperlink{interval_8h_a9659e1ee54b3809075e58db013e96558}{ccs\+\_\+interval\+\_\+t}} $\ast$interval2, \mbox{\hyperlink{base_8h_a0e8ba2dfd397017939e6ea2ebc4bb037}{ccs\+\_\+bool\+\_\+t}} $\ast$equal\+\_\+res)
+\begin{DoxyCompactList}\small\item\em Test the equality of two intervals. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_a0e8ba2dfd397017939e6ea2ebc4bb037}{ccs\+\_\+bool\+\_\+t}} \mbox{\hyperlink{interval_8h_a72ad64bc533d2d62a32b9efc193de5c4}{ccs\+\_\+interval\+\_\+include}} (\mbox{\hyperlink{interval_8h_a9659e1ee54b3809075e58db013e96558}{ccs\+\_\+interval\+\_\+t}} $\ast$interval, \mbox{\hyperlink{base_8h_a981ec36df2f80935afde8b7a481f2d14}{ccs\+\_\+numeric\+\_\+t}} value)
+\begin{DoxyCompactList}\small\item\em Test the inclusion of a numeric value into an interval. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Interval define ranges over numeric values. 
+
+
+
+\doxysubsection{Function Documentation}
+\mbox{\Hypertarget{interval_8h_a553a81abd4d5c11d2166c986580b53ed}\label{interval_8h_a553a81abd4d5c11d2166c986580b53ed}} 
+\index{interval.h@{interval.h}!ccs\_interval\_empty@{ccs\_interval\_empty}}
+\index{ccs\_interval\_empty@{ccs\_interval\_empty}!interval.h@{interval.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_interval\_empty()}{ccs\_interval\_empty()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} ccs\+\_\+interval\+\_\+empty (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{interval_8h_a9659e1ee54b3809075e58db013e96558}{ccs\+\_\+interval\+\_\+t}} $\ast$}]{interval,  }\item[{\mbox{\hyperlink{base_8h_a0e8ba2dfd397017939e6ea2ebc4bb037}{ccs\+\_\+bool\+\_\+t}} $\ast$}]{empty\+\_\+ret }\end{DoxyParamCaption})}
+
+
+
+Check if an interval is empty. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em interval} & a pointer to the interval to check \\
+\hline
+\mbox{\texttt{ out}}  & {\em empty\+\_\+ret} & a pointer to the variable that will contain the check result \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445a9941bd690a240532191c41365f48e8b8}{CCS\+\_\+\+RESULT\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445ab3d1bba2839da0c0fb34fbc00c4be7d5}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+VALUE}} if {\ttfamily interval} or {\ttfamily empty\+\_\+ret} are NULL 
+\end{DoxyReturn}
+\mbox{\Hypertarget{interval_8h_ae695563c041f43dcecb0de5f1cb62fa6}\label{interval_8h_ae695563c041f43dcecb0de5f1cb62fa6}} 
+\index{interval.h@{interval.h}!ccs\_interval\_equal@{ccs\_interval\_equal}}
+\index{ccs\_interval\_equal@{ccs\_interval\_equal}!interval.h@{interval.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_interval\_equal()}{ccs\_interval\_equal()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} ccs\+\_\+interval\+\_\+equal (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{interval_8h_a9659e1ee54b3809075e58db013e96558}{ccs\+\_\+interval\+\_\+t}} $\ast$}]{interval1,  }\item[{\mbox{\hyperlink{interval_8h_a9659e1ee54b3809075e58db013e96558}{ccs\+\_\+interval\+\_\+t}} $\ast$}]{interval2,  }\item[{\mbox{\hyperlink{base_8h_a0e8ba2dfd397017939e6ea2ebc4bb037}{ccs\+\_\+bool\+\_\+t}} $\ast$}]{equal\+\_\+res }\end{DoxyParamCaption})}
+
+
+
+Test the equality of two intervals. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em interval1} & a pointer to the first interval \\
+\hline
+\mbox{\texttt{ in}}  & {\em interval2} & a pointer to the second interval \\
+\hline
+\mbox{\texttt{ out}}  & {\em equal\+\_\+res} & a pointer to the variable that will contain the test result \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445a9941bd690a240532191c41365f48e8b8}{CCS\+\_\+\+RESULT\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445ab3d1bba2839da0c0fb34fbc00c4be7d5}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+VALUE}} if {\ttfamily interval1} or {\ttfamily interval2} or {\ttfamily equal\+\_\+res} are NULL 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445a17d67e08c1b97dcc921675d356646244}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+TYPE}} if {\ttfamily interval1} and {\ttfamily interval2} are intervals over different data types 
+\end{DoxyReturn}
+\mbox{\Hypertarget{interval_8h_a72ad64bc533d2d62a32b9efc193de5c4}\label{interval_8h_a72ad64bc533d2d62a32b9efc193de5c4}} 
+\index{interval.h@{interval.h}!ccs\_interval\_include@{ccs\_interval\_include}}
+\index{ccs\_interval\_include@{ccs\_interval\_include}!interval.h@{interval.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_interval\_include()}{ccs\_interval\_include()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_a0e8ba2dfd397017939e6ea2ebc4bb037}{ccs\+\_\+bool\+\_\+t}} ccs\+\_\+interval\+\_\+include (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{interval_8h_a9659e1ee54b3809075e58db013e96558}{ccs\+\_\+interval\+\_\+t}} $\ast$}]{interval,  }\item[{\mbox{\hyperlink{base_8h_a981ec36df2f80935afde8b7a481f2d14}{ccs\+\_\+numeric\+\_\+t}}}]{value }\end{DoxyParamCaption})}
+
+
+
+Test the inclusion of a numeric value into an interval. 
+
+The user must pass a numeric of the same type as the interval, else results are undefined. 
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em interval} & a pointer to the interval \\
+\hline
+\mbox{\texttt{ in}}  & {\em value} & the value to check for inclusion in the interval \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_a4598e8e24f836accf0ebc8c73973714d}{CCS\+\_\+\+TRUE}} if the interval include the value 
+
+\mbox{\hyperlink{base_8h_a20d15198405a9b9c79c8a093345bc67b}{CCS\+\_\+\+FALSE}} if the interval does not include the value; or if {\ttfamily interval} is NULL 
+\end{DoxyReturn}
+\mbox{\Hypertarget{interval_8h_a55e4f278d18d71ac7be40684796ba14a}\label{interval_8h_a55e4f278d18d71ac7be40684796ba14a}} 
+\index{interval.h@{interval.h}!ccs\_interval\_intersect@{ccs\_interval\_intersect}}
+\index{ccs\_interval\_intersect@{ccs\_interval\_intersect}!interval.h@{interval.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_interval\_intersect()}{ccs\_interval\_intersect()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} ccs\+\_\+interval\+\_\+intersect (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{interval_8h_a9659e1ee54b3809075e58db013e96558}{ccs\+\_\+interval\+\_\+t}} $\ast$}]{interval1,  }\item[{\mbox{\hyperlink{interval_8h_a9659e1ee54b3809075e58db013e96558}{ccs\+\_\+interval\+\_\+t}} $\ast$}]{interval2,  }\item[{\mbox{\hyperlink{interval_8h_a9659e1ee54b3809075e58db013e96558}{ccs\+\_\+interval\+\_\+t}} $\ast$}]{interval\+\_\+res }\end{DoxyParamCaption})}
+
+
+
+Compute the intersection of two intervals. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em interval1} & a pointer to the first interval \\
+\hline
+\mbox{\texttt{ in}}  & {\em interval2} & a pointer to the second interval \\
+\hline
+\mbox{\texttt{ out}}  & {\em interval\+\_\+res} & a pointer to the variable that will contain the intersection of {\ttfamily interval1} and {\ttfamily interval2} \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445a9941bd690a240532191c41365f48e8b8}{CCS\+\_\+\+RESULT\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445ab3d1bba2839da0c0fb34fbc00c4be7d5}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+VALUE}} if {\ttfamily interval1} or {\ttfamily interval2} or{\ttfamily interval\+\_\+res} are NULL 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445a17d67e08c1b97dcc921675d356646244}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+TYPE}} if {\ttfamily interval1} and {\ttfamily interval2} are intervals over different data types 
+\end{DoxyReturn}
+\mbox{\Hypertarget{interval_8h_ac44f633bc7f34e885a9789a1e4d627be}\label{interval_8h_ac44f633bc7f34e885a9789a1e4d627be}} 
+\index{interval.h@{interval.h}!ccs\_interval\_union@{ccs\_interval\_union}}
+\index{ccs\_interval\_union@{ccs\_interval\_union}!interval.h@{interval.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_interval\_union()}{ccs\_interval\_union()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} ccs\+\_\+interval\+\_\+union (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{interval_8h_a9659e1ee54b3809075e58db013e96558}{ccs\+\_\+interval\+\_\+t}} $\ast$}]{interval1,  }\item[{\mbox{\hyperlink{interval_8h_a9659e1ee54b3809075e58db013e96558}{ccs\+\_\+interval\+\_\+t}} $\ast$}]{interval2,  }\item[{\mbox{\hyperlink{interval_8h_a9659e1ee54b3809075e58db013e96558}{ccs\+\_\+interval\+\_\+t}} $\ast$}]{interval\+\_\+res }\end{DoxyParamCaption})}
+
+
+
+Compute the union of two intervals. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em interval1} & a pointer to the first interval \\
+\hline
+\mbox{\texttt{ in}}  & {\em interval2} & a pointer to the second interval \\
+\hline
+\mbox{\texttt{ out}}  & {\em interval\+\_\+res} & a pointer to the variable that will contain the union of {\ttfamily interval1} and {\ttfamily interval2} \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445a9941bd690a240532191c41365f48e8b8}{CCS\+\_\+\+RESULT\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445ab3d1bba2839da0c0fb34fbc00c4be7d5}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+VALUE}} if {\ttfamily interval1} or {\ttfamily interval2} or {\ttfamily interval\+\_\+res} are NULL 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445a17d67e08c1b97dcc921675d356646244}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+TYPE}} if {\ttfamily interval1} and {\ttfamily interval2} are intervals over different data types 
+\end{DoxyReturn}

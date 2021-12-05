@@ -1,0 +1,454 @@
+\hypertarget{tree__evaluation_8h}{}\doxysection{include/cconfigspace/tree\+\_\+evaluation.h File Reference}
+\label{tree__evaluation_8h}\index{include/cconfigspace/tree\_evaluation.h@{include/cconfigspace/tree\_evaluation.h}}
+
+
+A tree evaluation is a binding (see \mbox{\hyperlink{binding_8h}{binding.\+h}}) over an objective space (see \mbox{\hyperlink{objective__space_8h}{objective\+\_\+space.\+h}}) given a specific tree configuration (see \mbox{\hyperlink{tree__configuration_8h}{tree\+\_\+configuration.\+h}}).  
+
+
+This graph shows which files directly or indirectly include this file\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=196pt]{tree__evaluation_8h__dep__incl}
+\end{center}
+\end{figure}
+\doxysubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} \mbox{\hyperlink{tree__evaluation_8h_ad378632388d7966fe8fd8e52f4bb49ba}{ccs\+\_\+create\+\_\+tree\+\_\+evaluation}} (\mbox{\hyperlink{base_8h_a645a0bae9ad3d85455ef2b06101146f7}{ccs\+\_\+objective\+\_\+space\+\_\+t}} objective\+\_\+space, \mbox{\hyperlink{base_8h_a8d77e69135c6c9077d7cf22e952ee411}{ccs\+\_\+tree\+\_\+configuration\+\_\+t}} configuration, \mbox{\hyperlink{base_8h_a63acf1f87b11fc67aa84e68a4415109b}{ccs\+\_\+evaluation\+\_\+result\+\_\+t}} result, size\+\_\+t num\+\_\+values, \mbox{\hyperlink{base_8h_a36bc36b2bb0d0613453dd731cdcd2048}{ccs\+\_\+datum\+\_\+t}} $\ast$values, \mbox{\hyperlink{base_8h_a83520825ddd9981c45a85d2cc865b75e}{ccs\+\_\+tree\+\_\+evaluation\+\_\+t}} $\ast$evaluation\+\_\+ret)
+\begin{DoxyCompactList}\small\item\em Create a new instance of a tree evaluation on a given objective space for a given tree configuration. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} \mbox{\hyperlink{tree__evaluation_8h_a907735210c308176303c552f849844fe}{ccs\+\_\+tree\+\_\+evaluation\+\_\+get\+\_\+objective\+\_\+space}} (\mbox{\hyperlink{base_8h_a83520825ddd9981c45a85d2cc865b75e}{ccs\+\_\+tree\+\_\+evaluation\+\_\+t}} evaluation, \mbox{\hyperlink{base_8h_a645a0bae9ad3d85455ef2b06101146f7}{ccs\+\_\+objective\+\_\+space\+\_\+t}} $\ast$objective\+\_\+space\+\_\+ret)
+\begin{DoxyCompactList}\small\item\em Get the objective space associated with a tree evaluation. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} \mbox{\hyperlink{tree__evaluation_8h_ac182f37f9a65f87b6e2dc49d646522e2}{ccs\+\_\+tree\+\_\+evaluation\+\_\+get\+\_\+configuration}} (\mbox{\hyperlink{base_8h_a83520825ddd9981c45a85d2cc865b75e}{ccs\+\_\+tree\+\_\+evaluation\+\_\+t}} evaluation, \mbox{\hyperlink{base_8h_a8d77e69135c6c9077d7cf22e952ee411}{ccs\+\_\+tree\+\_\+configuration\+\_\+t}} $\ast$configuration\+\_\+ret)
+\begin{DoxyCompactList}\small\item\em Get the configuration associated with a tree evaluation. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} \mbox{\hyperlink{tree__evaluation_8h_a5d51808d506f70455c3be98a2c25778e}{ccs\+\_\+tree\+\_\+evaluation\+\_\+get\+\_\+result}} (\mbox{\hyperlink{base_8h_a83520825ddd9981c45a85d2cc865b75e}{ccs\+\_\+tree\+\_\+evaluation\+\_\+t}} evaluation, \mbox{\hyperlink{base_8h_a63acf1f87b11fc67aa84e68a4415109b}{ccs\+\_\+evaluation\+\_\+result\+\_\+t}} $\ast$result\+\_\+ret)
+\begin{DoxyCompactList}\small\item\em Get the result code associated with a tree evaluation. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} \mbox{\hyperlink{tree__evaluation_8h_a68d9f1359ba13e51a7d7e8404eebb49e}{ccs\+\_\+tree\+\_\+evaluation\+\_\+set\+\_\+result}} (\mbox{\hyperlink{base_8h_a83520825ddd9981c45a85d2cc865b75e}{ccs\+\_\+tree\+\_\+evaluation\+\_\+t}} evaluation, \mbox{\hyperlink{base_8h_a63acf1f87b11fc67aa84e68a4415109b}{ccs\+\_\+evaluation\+\_\+result\+\_\+t}} result)
+\begin{DoxyCompactList}\small\item\em Set the result code associated with a tree evaluation. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} \mbox{\hyperlink{tree__evaluation_8h_ad5026ceb1c2d2d962c5eb7a14f19af8f}{ccs\+\_\+tree\+\_\+evaluation\+\_\+get\+\_\+value}} (\mbox{\hyperlink{base_8h_a83520825ddd9981c45a85d2cc865b75e}{ccs\+\_\+tree\+\_\+evaluation\+\_\+t}} evaluation, size\+\_\+t index, \mbox{\hyperlink{base_8h_a36bc36b2bb0d0613453dd731cdcd2048}{ccs\+\_\+datum\+\_\+t}} $\ast$value\+\_\+ret)
+\begin{DoxyCompactList}\small\item\em Get the value of the parameter at the given index. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} \mbox{\hyperlink{tree__evaluation_8h_ae4cdf997dab22be5caaec7e02dc7c16e}{ccs\+\_\+tree\+\_\+evaluation\+\_\+set\+\_\+value}} (\mbox{\hyperlink{base_8h_a83520825ddd9981c45a85d2cc865b75e}{ccs\+\_\+tree\+\_\+evaluation\+\_\+t}} evaluation, size\+\_\+t index, \mbox{\hyperlink{base_8h_a36bc36b2bb0d0613453dd731cdcd2048}{ccs\+\_\+datum\+\_\+t}} value)
+\begin{DoxyCompactList}\small\item\em Set the value of the parameter at the given index. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} \mbox{\hyperlink{tree__evaluation_8h_ac953d50c2c365c1cc141eb2cb0517f6c}{ccs\+\_\+tree\+\_\+evaluation\+\_\+get\+\_\+values}} (\mbox{\hyperlink{base_8h_a83520825ddd9981c45a85d2cc865b75e}{ccs\+\_\+tree\+\_\+evaluation\+\_\+t}} evaluation, size\+\_\+t num\+\_\+values, \mbox{\hyperlink{base_8h_a36bc36b2bb0d0613453dd731cdcd2048}{ccs\+\_\+datum\+\_\+t}} $\ast$values, size\+\_\+t $\ast$num\+\_\+values\+\_\+ret)
+\begin{DoxyCompactList}\small\item\em Get all the values in a tree evaluation. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} \mbox{\hyperlink{tree__evaluation_8h_af8cbac23e25bbbbed4cfe45c8b86ee5c}{ccs\+\_\+tree\+\_\+evaluation\+\_\+get\+\_\+value\+\_\+by\+\_\+name}} (\mbox{\hyperlink{base_8h_a83520825ddd9981c45a85d2cc865b75e}{ccs\+\_\+tree\+\_\+evaluation\+\_\+t}} evaluation, const char $\ast$name, \mbox{\hyperlink{base_8h_a36bc36b2bb0d0613453dd731cdcd2048}{ccs\+\_\+datum\+\_\+t}} $\ast$value\+\_\+ret)
+\begin{DoxyCompactList}\small\item\em Get the value of the parameter with the given name. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} \mbox{\hyperlink{tree__evaluation_8h_a536f6d9a4f94de5f744f73d280f64fcb}{ccs\+\_\+tree\+\_\+evaluation\+\_\+check}} (\mbox{\hyperlink{base_8h_a83520825ddd9981c45a85d2cc865b75e}{ccs\+\_\+tree\+\_\+evaluation\+\_\+t}} evaluation, \mbox{\hyperlink{base_8h_a0e8ba2dfd397017939e6ea2ebc4bb037}{ccs\+\_\+bool\+\_\+t}} $\ast$is\+\_\+valid\+\_\+ret)
+\begin{DoxyCompactList}\small\item\em Check that an evaluation values are valid in the objective space. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} \mbox{\hyperlink{tree__evaluation_8h_a1feef24d3899d2c297f4f4bf464884c4}{ccs\+\_\+tree\+\_\+evaluation\+\_\+get\+\_\+objective\+\_\+value}} (\mbox{\hyperlink{base_8h_a83520825ddd9981c45a85d2cc865b75e}{ccs\+\_\+tree\+\_\+evaluation\+\_\+t}} evaluation, size\+\_\+t index, \mbox{\hyperlink{base_8h_a36bc36b2bb0d0613453dd731cdcd2048}{ccs\+\_\+datum\+\_\+t}} $\ast$value\+\_\+ret)
+\begin{DoxyCompactList}\small\item\em Get the value of an objective for a valid tree evaluation in the context of its objective space. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} \mbox{\hyperlink{tree__evaluation_8h_a91801282f1186b1264cd4be0c903b32f}{ccs\+\_\+tree\+\_\+evaluation\+\_\+get\+\_\+objective\+\_\+values}} (\mbox{\hyperlink{base_8h_a83520825ddd9981c45a85d2cc865b75e}{ccs\+\_\+tree\+\_\+evaluation\+\_\+t}} evaluation, size\+\_\+t num\+\_\+values, \mbox{\hyperlink{base_8h_a36bc36b2bb0d0613453dd731cdcd2048}{ccs\+\_\+datum\+\_\+t}} $\ast$values, size\+\_\+t $\ast$num\+\_\+values\+\_\+ret)
+\begin{DoxyCompactList}\small\item\em Get the values of the objectives for a valid tree evaluation in the context of its objective space. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} \mbox{\hyperlink{tree__evaluation_8h_a263402dd9388c65aa29f86eadd5dd0af}{ccs\+\_\+tree\+\_\+evaluation\+\_\+hash}} (\mbox{\hyperlink{base_8h_a83520825ddd9981c45a85d2cc865b75e}{ccs\+\_\+tree\+\_\+evaluation\+\_\+t}} evaluation, \mbox{\hyperlink{base_8h_a8ab762d1e926e05224180c4f3455bf40}{ccs\+\_\+hash\+\_\+t}} $\ast$hash\+\_\+ret)
+\begin{DoxyCompactList}\small\item\em Compute a hash value for the tree evaluation by hashing together the objective space reference, the configuration, the number of values, the values themselves, and the associated result. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} \mbox{\hyperlink{tree__evaluation_8h_a1eed4e97bd3e4ea8d774cd1a0bd342f7}{ccs\+\_\+tree\+\_\+evaluation\+\_\+cmp}} (\mbox{\hyperlink{base_8h_a83520825ddd9981c45a85d2cc865b75e}{ccs\+\_\+tree\+\_\+evaluation\+\_\+t}} evaluation, \mbox{\hyperlink{base_8h_a83520825ddd9981c45a85d2cc865b75e}{ccs\+\_\+tree\+\_\+evaluation\+\_\+t}} other\+\_\+evaluation, int $\ast$cmp\+\_\+ret)
+\begin{DoxyCompactList}\small\item\em Define a strict ordering of tree evaluation instances. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} \mbox{\hyperlink{tree__evaluation_8h_ab670f5487ea03a2fee9240e79d23f335}{ccs\+\_\+tree\+\_\+evaluation\+\_\+compare}} (\mbox{\hyperlink{base_8h_a83520825ddd9981c45a85d2cc865b75e}{ccs\+\_\+tree\+\_\+evaluation\+\_\+t}} evaluation, \mbox{\hyperlink{base_8h_a83520825ddd9981c45a85d2cc865b75e}{ccs\+\_\+tree\+\_\+evaluation\+\_\+t}} other\+\_\+evaluation, \mbox{\hyperlink{evaluation_8h_afd12128e22930525ca6e5a7bc83adde5}{ccs\+\_\+comparison\+\_\+t}} $\ast$result\+\_\+ret)
+\begin{DoxyCompactList}\small\item\em Compare two successful tree evaluations objectives. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+A tree evaluation is a binding (see \mbox{\hyperlink{binding_8h}{binding.\+h}}) over an objective space (see \mbox{\hyperlink{objective__space_8h}{objective\+\_\+space.\+h}}) given a specific tree configuration (see \mbox{\hyperlink{tree__configuration_8h}{tree\+\_\+configuration.\+h}}). 
+
+Successful evaluations over the same objective space are weakly ordered by their objective values. Evaluation that have failed must report a result code different than CCS\+\_\+\+RESULT\+\_\+\+SUCCESS. 
+
+\doxysubsection{Function Documentation}
+\mbox{\Hypertarget{tree__evaluation_8h_ad378632388d7966fe8fd8e52f4bb49ba}\label{tree__evaluation_8h_ad378632388d7966fe8fd8e52f4bb49ba}} 
+\index{tree\_evaluation.h@{tree\_evaluation.h}!ccs\_create\_tree\_evaluation@{ccs\_create\_tree\_evaluation}}
+\index{ccs\_create\_tree\_evaluation@{ccs\_create\_tree\_evaluation}!tree\_evaluation.h@{tree\_evaluation.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_create\_tree\_evaluation()}{ccs\_create\_tree\_evaluation()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} ccs\+\_\+create\+\_\+tree\+\_\+evaluation (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_a645a0bae9ad3d85455ef2b06101146f7}{ccs\+\_\+objective\+\_\+space\+\_\+t}}}]{objective\+\_\+space,  }\item[{\mbox{\hyperlink{base_8h_a8d77e69135c6c9077d7cf22e952ee411}{ccs\+\_\+tree\+\_\+configuration\+\_\+t}}}]{configuration,  }\item[{\mbox{\hyperlink{base_8h_a63acf1f87b11fc67aa84e68a4415109b}{ccs\+\_\+evaluation\+\_\+result\+\_\+t}}}]{result,  }\item[{size\+\_\+t}]{num\+\_\+values,  }\item[{\mbox{\hyperlink{base_8h_a36bc36b2bb0d0613453dd731cdcd2048}{ccs\+\_\+datum\+\_\+t}} $\ast$}]{values,  }\item[{\mbox{\hyperlink{base_8h_a83520825ddd9981c45a85d2cc865b75e}{ccs\+\_\+tree\+\_\+evaluation\+\_\+t}} $\ast$}]{evaluation\+\_\+ret }\end{DoxyParamCaption})}
+
+
+
+Create a new instance of a tree evaluation on a given objective space for a given tree configuration. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em objective\+\_\+space} & the objective space to associate with the evaluation \\
+\hline
+\mbox{\texttt{ in}}  & {\em configuration} & the configuration to associate with the evaluation \\
+\hline
+\mbox{\texttt{ in}}  & {\em result} & the result code associated with the evaluation \\
+\hline
+\mbox{\texttt{ in}}  & {\em num\+\_\+values} & the number of provided values to initialize the evaluation \\
+\hline
+\mbox{\texttt{ in}}  & {\em values} & an optional array of values to initialize the evaluation \\
+\hline
+\mbox{\texttt{ out}}  & {\em evaluation\+\_\+ret} & a pointer to the variable that will hold the newly created evaluation \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445a9941bd690a240532191c41365f48e8b8}{CCS\+\_\+\+RESULT\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445aa3816f69f71f044629bdb21f618ab0e8}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+OBJECT}} if {\ttfamily objective\+\_\+space} is not a valid CCS objective space; or if {\ttfamily configuration} is not a valid CCS tree configuration 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445ab3d1bba2839da0c0fb34fbc00c4be7d5}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+VALUE}} if {\ttfamily evaluation\+\_\+ret} is NULL; or if {\ttfamily values} is NULL and {\ttfamily num\+\_\+values} is greater than 0; or if the number of values provided is not equal to the number of parameters in the objective space 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445aba9b4719b46466cd185bf1a41a232ff6}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+OUT\+\_\+\+OF\+\_\+\+MEMORY}} if there was a lack of memory to allocate the new evaluation 
+\end{DoxyReturn}
+\mbox{\Hypertarget{tree__evaluation_8h_a536f6d9a4f94de5f744f73d280f64fcb}\label{tree__evaluation_8h_a536f6d9a4f94de5f744f73d280f64fcb}} 
+\index{tree\_evaluation.h@{tree\_evaluation.h}!ccs\_tree\_evaluation\_check@{ccs\_tree\_evaluation\_check}}
+\index{ccs\_tree\_evaluation\_check@{ccs\_tree\_evaluation\_check}!tree\_evaluation.h@{tree\_evaluation.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_tree\_evaluation\_check()}{ccs\_tree\_evaluation\_check()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} ccs\+\_\+tree\+\_\+evaluation\+\_\+check (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_a83520825ddd9981c45a85d2cc865b75e}{ccs\+\_\+tree\+\_\+evaluation\+\_\+t}}}]{evaluation,  }\item[{\mbox{\hyperlink{base_8h_a0e8ba2dfd397017939e6ea2ebc4bb037}{ccs\+\_\+bool\+\_\+t}} $\ast$}]{is\+\_\+valid\+\_\+ret }\end{DoxyParamCaption})}
+
+
+
+Check that an evaluation values are valid in the objective space. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em evaluation} & \\
+\hline
+\mbox{\texttt{ out}}  & {\em is\+\_\+valid\+\_\+ret} & a pointer to a variable that will hold the result of the check. Result will be \mbox{\hyperlink{base_8h_a4598e8e24f836accf0ebc8c73973714d}{CCS\+\_\+\+TRUE}} if the evaluation is valid. Result will be \mbox{\hyperlink{base_8h_a20d15198405a9b9c79c8a093345bc67b}{CCS\+\_\+\+FALSE}} if an parameter value is not a valid value for this parameter \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445a9941bd690a240532191c41365f48e8b8}{CCS\+\_\+\+RESULT\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445aa3816f69f71f044629bdb21f618ab0e8}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+OBJECT}} if {\ttfamily evaluation} is not a valid CCS tree evaluation 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445a861411c9e67478ea8aff1c5338dc91c4}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+EVALUATION}} if {\ttfamily evaluation} was found to be invalid in the context of the objective space 
+\end{DoxyReturn}
+\mbox{\Hypertarget{tree__evaluation_8h_a1eed4e97bd3e4ea8d774cd1a0bd342f7}\label{tree__evaluation_8h_a1eed4e97bd3e4ea8d774cd1a0bd342f7}} 
+\index{tree\_evaluation.h@{tree\_evaluation.h}!ccs\_tree\_evaluation\_cmp@{ccs\_tree\_evaluation\_cmp}}
+\index{ccs\_tree\_evaluation\_cmp@{ccs\_tree\_evaluation\_cmp}!tree\_evaluation.h@{tree\_evaluation.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_tree\_evaluation\_cmp()}{ccs\_tree\_evaluation\_cmp()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} ccs\+\_\+tree\+\_\+evaluation\+\_\+cmp (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_a83520825ddd9981c45a85d2cc865b75e}{ccs\+\_\+tree\+\_\+evaluation\+\_\+t}}}]{evaluation,  }\item[{\mbox{\hyperlink{base_8h_a83520825ddd9981c45a85d2cc865b75e}{ccs\+\_\+tree\+\_\+evaluation\+\_\+t}}}]{other\+\_\+evaluation,  }\item[{int $\ast$}]{cmp\+\_\+ret }\end{DoxyParamCaption})}
+
+
+
+Define a strict ordering of tree evaluation instances. 
+
+Objective space, configuration, number of values, values, and result codes are compared. 
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em evaluation} & the first evaluation \\
+\hline
+\mbox{\texttt{ in}}  & {\em other\+\_\+evaluation} & the second evaluation \\
+\hline
+\mbox{\texttt{ out}}  & {\em cmp\+\_\+ret} & a pointer to the variable that will contain the result of the comparison. Will contain -\/1, 0, or 1 depending on if the first evaluation is found to be respectively lesser than, equal, or greater then the second evaluation \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445a9941bd690a240532191c41365f48e8b8}{CCS\+\_\+\+RESULT\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445aa3816f69f71f044629bdb21f618ab0e8}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+OBJECT}} if {\ttfamily evaluation} or {\ttfamily other\+\_\+evaluation} are not valid CCS tree evaluations 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445ab3d1bba2839da0c0fb34fbc00c4be7d5}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+VALUE}} if {\ttfamily cmp\+\_\+ret} is NULL 
+\end{DoxyReturn}
+\mbox{\Hypertarget{tree__evaluation_8h_ab670f5487ea03a2fee9240e79d23f335}\label{tree__evaluation_8h_ab670f5487ea03a2fee9240e79d23f335}} 
+\index{tree\_evaluation.h@{tree\_evaluation.h}!ccs\_tree\_evaluation\_compare@{ccs\_tree\_evaluation\_compare}}
+\index{ccs\_tree\_evaluation\_compare@{ccs\_tree\_evaluation\_compare}!tree\_evaluation.h@{tree\_evaluation.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_tree\_evaluation\_compare()}{ccs\_tree\_evaluation\_compare()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} ccs\+\_\+tree\+\_\+evaluation\+\_\+compare (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_a83520825ddd9981c45a85d2cc865b75e}{ccs\+\_\+tree\+\_\+evaluation\+\_\+t}}}]{evaluation,  }\item[{\mbox{\hyperlink{base_8h_a83520825ddd9981c45a85d2cc865b75e}{ccs\+\_\+tree\+\_\+evaluation\+\_\+t}}}]{other\+\_\+evaluation,  }\item[{\mbox{\hyperlink{evaluation_8h_afd12128e22930525ca6e5a7bc83adde5}{ccs\+\_\+comparison\+\_\+t}} $\ast$}]{result\+\_\+ret }\end{DoxyParamCaption})}
+
+
+
+Compare two successful tree evaluations objectives. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em evaluation} & the first evaluation \\
+\hline
+\mbox{\texttt{ in}}  & {\em other\+\_\+evaluation} & the second evaluation \\
+\hline
+\mbox{\texttt{ out}}  & {\em result\+\_\+ret} & a pointer to the variable that will contain the result of the comparison. Will contain \mbox{\hyperlink{evaluation_8h_a5afbd1b39b8fee136d6e1ebc2b302ff0ab55a3d084f9d3d18505f3af7512834c4}{CCS\+\_\+\+COMPARISON\+\_\+\+BETTER}}, \mbox{\hyperlink{evaluation_8h_a5afbd1b39b8fee136d6e1ebc2b302ff0a3743c7c0b851e375b64baec49206b125}{CCS\+\_\+\+COMPARISON\+\_\+\+EQUIVALENT}}, \mbox{\hyperlink{evaluation_8h_a5afbd1b39b8fee136d6e1ebc2b302ff0a91e771ce76dd7b08ca3fdfe0a807085e}{CCS\+\_\+\+COMPARISON\+\_\+\+WORSE}}, or \mbox{\hyperlink{evaluation_8h_a5afbd1b39b8fee136d6e1ebc2b302ff0a6aaa7439a3daef462143101165980073}{CCS\+\_\+\+COMPARISON\+\_\+\+NOT\+\_\+\+COMPARABLE}} if the first evaluation is found to be respectively better, equivalent, worse, or not comparable with the second evaluation. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445a9941bd690a240532191c41365f48e8b8}{CCS\+\_\+\+RESULT\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445aa3816f69f71f044629bdb21f618ab0e8}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+OBJECT}} if {\ttfamily evaluation} or {\ttfamily other\+\_\+evaluation} are not valid CCS tree evaluations; or if {\ttfamily evaluation} and {\ttfamily other\+\_\+evaluation} do not share the same objective space; or if any of the configuration is associated a result code different than CCS\+\_\+\+SUCESS 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445ab3d1bba2839da0c0fb34fbc00c4be7d5}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+VALUE}} if {\ttfamily result\+\_\+ret} is NULL; or if there was an issue evaluating any of the objectives 
+\end{DoxyReturn}
+\mbox{\Hypertarget{tree__evaluation_8h_ac182f37f9a65f87b6e2dc49d646522e2}\label{tree__evaluation_8h_ac182f37f9a65f87b6e2dc49d646522e2}} 
+\index{tree\_evaluation.h@{tree\_evaluation.h}!ccs\_tree\_evaluation\_get\_configuration@{ccs\_tree\_evaluation\_get\_configuration}}
+\index{ccs\_tree\_evaluation\_get\_configuration@{ccs\_tree\_evaluation\_get\_configuration}!tree\_evaluation.h@{tree\_evaluation.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_tree\_evaluation\_get\_configuration()}{ccs\_tree\_evaluation\_get\_configuration()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} ccs\+\_\+tree\+\_\+evaluation\+\_\+get\+\_\+configuration (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_a83520825ddd9981c45a85d2cc865b75e}{ccs\+\_\+tree\+\_\+evaluation\+\_\+t}}}]{evaluation,  }\item[{\mbox{\hyperlink{base_8h_a8d77e69135c6c9077d7cf22e952ee411}{ccs\+\_\+tree\+\_\+configuration\+\_\+t}} $\ast$}]{configuration\+\_\+ret }\end{DoxyParamCaption})}
+
+
+
+Get the configuration associated with a tree evaluation. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em evaluation} & \\
+\hline
+\mbox{\texttt{ out}}  & {\em configuration\+\_\+ret} & a pointer to the variable that will contain the configuration \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445a9941bd690a240532191c41365f48e8b8}{CCS\+\_\+\+RESULT\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445aa3816f69f71f044629bdb21f618ab0e8}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+OBJECT}} if {\ttfamily evaluation} is not a valid CCS tree evaluation 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445ab3d1bba2839da0c0fb34fbc00c4be7d5}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+VALUE}} if {\ttfamily configuration\+\_\+ret} is NULL 
+\end{DoxyReturn}
+\mbox{\Hypertarget{tree__evaluation_8h_a907735210c308176303c552f849844fe}\label{tree__evaluation_8h_a907735210c308176303c552f849844fe}} 
+\index{tree\_evaluation.h@{tree\_evaluation.h}!ccs\_tree\_evaluation\_get\_objective\_space@{ccs\_tree\_evaluation\_get\_objective\_space}}
+\index{ccs\_tree\_evaluation\_get\_objective\_space@{ccs\_tree\_evaluation\_get\_objective\_space}!tree\_evaluation.h@{tree\_evaluation.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_tree\_evaluation\_get\_objective\_space()}{ccs\_tree\_evaluation\_get\_objective\_space()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} ccs\+\_\+tree\+\_\+evaluation\+\_\+get\+\_\+objective\+\_\+space (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_a83520825ddd9981c45a85d2cc865b75e}{ccs\+\_\+tree\+\_\+evaluation\+\_\+t}}}]{evaluation,  }\item[{\mbox{\hyperlink{base_8h_a645a0bae9ad3d85455ef2b06101146f7}{ccs\+\_\+objective\+\_\+space\+\_\+t}} $\ast$}]{objective\+\_\+space\+\_\+ret }\end{DoxyParamCaption})}
+
+
+
+Get the objective space associated with a tree evaluation. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em evaluation} & \\
+\hline
+\mbox{\texttt{ out}}  & {\em objective\+\_\+space\+\_\+ret} & a pointer to the variable that will contain the objective space \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445a9941bd690a240532191c41365f48e8b8}{CCS\+\_\+\+RESULT\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445aa3816f69f71f044629bdb21f618ab0e8}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+OBJECT}} if {\ttfamily evaluation} is not a valid CCS tree evaluation 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445ab3d1bba2839da0c0fb34fbc00c4be7d5}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+VALUE}} if {\ttfamily objective\+\_\+space\+\_\+ret} is NULL 
+\end{DoxyReturn}
+\mbox{\Hypertarget{tree__evaluation_8h_a1feef24d3899d2c297f4f4bf464884c4}\label{tree__evaluation_8h_a1feef24d3899d2c297f4f4bf464884c4}} 
+\index{tree\_evaluation.h@{tree\_evaluation.h}!ccs\_tree\_evaluation\_get\_objective\_value@{ccs\_tree\_evaluation\_get\_objective\_value}}
+\index{ccs\_tree\_evaluation\_get\_objective\_value@{ccs\_tree\_evaluation\_get\_objective\_value}!tree\_evaluation.h@{tree\_evaluation.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_tree\_evaluation\_get\_objective\_value()}{ccs\_tree\_evaluation\_get\_objective\_value()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} ccs\+\_\+tree\+\_\+evaluation\+\_\+get\+\_\+objective\+\_\+value (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_a83520825ddd9981c45a85d2cc865b75e}{ccs\+\_\+tree\+\_\+evaluation\+\_\+t}}}]{evaluation,  }\item[{size\+\_\+t}]{index,  }\item[{\mbox{\hyperlink{base_8h_a36bc36b2bb0d0613453dd731cdcd2048}{ccs\+\_\+datum\+\_\+t}} $\ast$}]{value\+\_\+ret }\end{DoxyParamCaption})}
+
+
+
+Get the value of an objective for a valid tree evaluation in the context of its objective space. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em evaluation} & \\
+\hline
+\mbox{\texttt{ in}}  & {\em index} & the index of the objective in the objective space \\
+\hline
+\mbox{\texttt{ out}}  & {\em value\+\_\+ret} & a pointer to the variable that will contain the value of the objective \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445a9941bd690a240532191c41365f48e8b8}{CCS\+\_\+\+RESULT\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445aa3816f69f71f044629bdb21f618ab0e8}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+OBJECT}} if {\ttfamily evaluation} is not a valid CCS tree evaluation 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445ab3d1bba2839da0c0fb34fbc00c4be7d5}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+VALUE}} if {\ttfamily value\+\_\+ret} is NULL; or if there was an issue evaluating the objective 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445af49329ea0e10def334ff276577661d45}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+OUT\+\_\+\+OF\+\_\+\+BOUNDS}} if {\ttfamily index} is greater than the number of objective in the objective space 
+\end{DoxyReturn}
+\mbox{\Hypertarget{tree__evaluation_8h_a91801282f1186b1264cd4be0c903b32f}\label{tree__evaluation_8h_a91801282f1186b1264cd4be0c903b32f}} 
+\index{tree\_evaluation.h@{tree\_evaluation.h}!ccs\_tree\_evaluation\_get\_objective\_values@{ccs\_tree\_evaluation\_get\_objective\_values}}
+\index{ccs\_tree\_evaluation\_get\_objective\_values@{ccs\_tree\_evaluation\_get\_objective\_values}!tree\_evaluation.h@{tree\_evaluation.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_tree\_evaluation\_get\_objective\_values()}{ccs\_tree\_evaluation\_get\_objective\_values()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} ccs\+\_\+tree\+\_\+evaluation\+\_\+get\+\_\+objective\+\_\+values (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_a83520825ddd9981c45a85d2cc865b75e}{ccs\+\_\+tree\+\_\+evaluation\+\_\+t}}}]{evaluation,  }\item[{size\+\_\+t}]{num\+\_\+values,  }\item[{\mbox{\hyperlink{base_8h_a36bc36b2bb0d0613453dd731cdcd2048}{ccs\+\_\+datum\+\_\+t}} $\ast$}]{values,  }\item[{size\+\_\+t $\ast$}]{num\+\_\+values\+\_\+ret }\end{DoxyParamCaption})}
+
+
+
+Get the values of the objectives for a valid tree evaluation in the context of its objective space. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em evaluation} & \\
+\hline
+\mbox{\texttt{ in}}  & {\em num\+\_\+values} & the number of values that {\ttfamily values} can contain \\
+\hline
+\mbox{\texttt{ out}}  & {\em values} & an optional array of values that will contain the returned objective values. If values is bigger than the number of objectives, extra values will be set to \mbox{\hyperlink{base_8h_a302e6ecbf08c6c8a059fc775c88f21c0a706a91fea9636301fa8ca6dec809fd1e}{CCS\+\_\+\+DATA\+\_\+\+TYPE\+\_\+\+NONE}} \\
+\hline
+\mbox{\texttt{ out}}  & {\em num\+\_\+values\+\_\+ret} & an optional pointer to a variable that will contain the number of values that are or would be returned. Can be NULL \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445a9941bd690a240532191c41365f48e8b8}{CCS\+\_\+\+RESULT\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445aa3816f69f71f044629bdb21f618ab0e8}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+OBJECT}} if {\ttfamily evaluation} is not a valid CCS tree evaluation 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445ab3d1bba2839da0c0fb34fbc00c4be7d5}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+VALUE}} if {\ttfamily values} is NULL and {\ttfamily num\+\_\+values} is greater than 0; or if values is NULL and num\+\_\+values\+\_\+ret is NULL; or if there was an issue evaluating any of the objectives 
+\end{DoxyReturn}
+\mbox{\Hypertarget{tree__evaluation_8h_a5d51808d506f70455c3be98a2c25778e}\label{tree__evaluation_8h_a5d51808d506f70455c3be98a2c25778e}} 
+\index{tree\_evaluation.h@{tree\_evaluation.h}!ccs\_tree\_evaluation\_get\_result@{ccs\_tree\_evaluation\_get\_result}}
+\index{ccs\_tree\_evaluation\_get\_result@{ccs\_tree\_evaluation\_get\_result}!tree\_evaluation.h@{tree\_evaluation.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_tree\_evaluation\_get\_result()}{ccs\_tree\_evaluation\_get\_result()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} ccs\+\_\+tree\+\_\+evaluation\+\_\+get\+\_\+result (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_a83520825ddd9981c45a85d2cc865b75e}{ccs\+\_\+tree\+\_\+evaluation\+\_\+t}}}]{evaluation,  }\item[{\mbox{\hyperlink{base_8h_a63acf1f87b11fc67aa84e68a4415109b}{ccs\+\_\+evaluation\+\_\+result\+\_\+t}} $\ast$}]{result\+\_\+ret }\end{DoxyParamCaption})}
+
+
+
+Get the result code associated with a tree evaluation. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em evaluation} & \\
+\hline
+\mbox{\texttt{ out}}  & {\em result\+\_\+ret} & a pointer to the variable that will contain the returned error code \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445a9941bd690a240532191c41365f48e8b8}{CCS\+\_\+\+RESULT\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445aa3816f69f71f044629bdb21f618ab0e8}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+OBJECT}} if {\ttfamily evaluation} is not a valid CCS tree evaluation 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445ab3d1bba2839da0c0fb34fbc00c4be7d5}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+VALUE}} if {\ttfamily result\+\_\+ret} is NULL 
+\end{DoxyReturn}
+\mbox{\Hypertarget{tree__evaluation_8h_ad5026ceb1c2d2d962c5eb7a14f19af8f}\label{tree__evaluation_8h_ad5026ceb1c2d2d962c5eb7a14f19af8f}} 
+\index{tree\_evaluation.h@{tree\_evaluation.h}!ccs\_tree\_evaluation\_get\_value@{ccs\_tree\_evaluation\_get\_value}}
+\index{ccs\_tree\_evaluation\_get\_value@{ccs\_tree\_evaluation\_get\_value}!tree\_evaluation.h@{tree\_evaluation.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_tree\_evaluation\_get\_value()}{ccs\_tree\_evaluation\_get\_value()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} ccs\+\_\+tree\+\_\+evaluation\+\_\+get\+\_\+value (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_a83520825ddd9981c45a85d2cc865b75e}{ccs\+\_\+tree\+\_\+evaluation\+\_\+t}}}]{evaluation,  }\item[{size\+\_\+t}]{index,  }\item[{\mbox{\hyperlink{base_8h_a36bc36b2bb0d0613453dd731cdcd2048}{ccs\+\_\+datum\+\_\+t}} $\ast$}]{value\+\_\+ret }\end{DoxyParamCaption})}
+
+
+
+Get the value of the parameter at the given index. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em evaluation} & \\
+\hline
+\mbox{\texttt{ in}}  & {\em index} & index of the parameter in the associated objective space \\
+\hline
+\mbox{\texttt{ out}}  & {\em value\+\_\+ret} & a pointer to the variable that will hold the value \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445a9941bd690a240532191c41365f48e8b8}{CCS\+\_\+\+RESULT\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445aa3816f69f71f044629bdb21f618ab0e8}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+OBJECT}} if {\ttfamily binding} is not a valid CCS tree evaluation 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445ab3d1bba2839da0c0fb34fbc00c4be7d5}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+VALUE}} if {\ttfamily value\+\_\+ret} is NULL 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445af49329ea0e10def334ff276577661d45}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+OUT\+\_\+\+OF\+\_\+\+BOUNDS}} if {\ttfamily index} is greater than the count of parameters in the objective space 
+\end{DoxyReturn}
+\mbox{\Hypertarget{tree__evaluation_8h_af8cbac23e25bbbbed4cfe45c8b86ee5c}\label{tree__evaluation_8h_af8cbac23e25bbbbed4cfe45c8b86ee5c}} 
+\index{tree\_evaluation.h@{tree\_evaluation.h}!ccs\_tree\_evaluation\_get\_value\_by\_name@{ccs\_tree\_evaluation\_get\_value\_by\_name}}
+\index{ccs\_tree\_evaluation\_get\_value\_by\_name@{ccs\_tree\_evaluation\_get\_value\_by\_name}!tree\_evaluation.h@{tree\_evaluation.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_tree\_evaluation\_get\_value\_by\_name()}{ccs\_tree\_evaluation\_get\_value\_by\_name()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} ccs\+\_\+tree\+\_\+evaluation\+\_\+get\+\_\+value\+\_\+by\+\_\+name (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_a83520825ddd9981c45a85d2cc865b75e}{ccs\+\_\+tree\+\_\+evaluation\+\_\+t}}}]{evaluation,  }\item[{const char $\ast$}]{name,  }\item[{\mbox{\hyperlink{base_8h_a36bc36b2bb0d0613453dd731cdcd2048}{ccs\+\_\+datum\+\_\+t}} $\ast$}]{value\+\_\+ret }\end{DoxyParamCaption})}
+
+
+
+Get the value of the parameter with the given name. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em evaluation} & \\
+\hline
+\mbox{\texttt{ in}}  & {\em name} & the name of the parameter whose value to retrieve \\
+\hline
+\mbox{\texttt{ out}}  & {\em value\+\_\+ret} & a pointer to the variable that will hold the value \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445a9941bd690a240532191c41365f48e8b8}{CCS\+\_\+\+RESULT\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445aa3816f69f71f044629bdb21f618ab0e8}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+OBJECT}} if {\ttfamily evaluation} is not a valid CCS tree evaluation 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445ab3d1bba2839da0c0fb34fbc00c4be7d5}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+VALUE}} if {\ttfamily value\+\_\+ret} is NULL 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445a7e77898e2e7d8655ab698813e34171fa}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+NAME}} if no parameter with such {\ttfamily name} exist in the {\ttfamily objective} space 
+\end{DoxyReturn}
+\mbox{\Hypertarget{tree__evaluation_8h_ac953d50c2c365c1cc141eb2cb0517f6c}\label{tree__evaluation_8h_ac953d50c2c365c1cc141eb2cb0517f6c}} 
+\index{tree\_evaluation.h@{tree\_evaluation.h}!ccs\_tree\_evaluation\_get\_values@{ccs\_tree\_evaluation\_get\_values}}
+\index{ccs\_tree\_evaluation\_get\_values@{ccs\_tree\_evaluation\_get\_values}!tree\_evaluation.h@{tree\_evaluation.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_tree\_evaluation\_get\_values()}{ccs\_tree\_evaluation\_get\_values()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} ccs\+\_\+tree\+\_\+evaluation\+\_\+get\+\_\+values (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_a83520825ddd9981c45a85d2cc865b75e}{ccs\+\_\+tree\+\_\+evaluation\+\_\+t}}}]{evaluation,  }\item[{size\+\_\+t}]{num\+\_\+values,  }\item[{\mbox{\hyperlink{base_8h_a36bc36b2bb0d0613453dd731cdcd2048}{ccs\+\_\+datum\+\_\+t}} $\ast$}]{values,  }\item[{size\+\_\+t $\ast$}]{num\+\_\+values\+\_\+ret }\end{DoxyParamCaption})}
+
+
+
+Get all the values in a tree evaluation. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em evaluation} & \\
+\hline
+\mbox{\texttt{ in}}  & {\em num\+\_\+values} & the size of the {\ttfamily values} array \\
+\hline
+\mbox{\texttt{ out}}  & {\em values} & an array of size {\ttfamily num\+\_\+values} to hold the returned values or NULL. If the array is too big, extra values are set to \mbox{\hyperlink{base_8h_a302e6ecbf08c6c8a059fc775c88f21c0a706a91fea9636301fa8ca6dec809fd1e}{CCS\+\_\+\+DATA\+\_\+\+TYPE\+\_\+\+NONE}} \\
+\hline
+\mbox{\texttt{ out}}  & {\em num\+\_\+values\+\_\+ret} & a pointer to a variable that will contain the number of values that are or would be returned. Can be NULL \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445a9941bd690a240532191c41365f48e8b8}{CCS\+\_\+\+RESULT\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445aa3816f69f71f044629bdb21f618ab0e8}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+OBJECT}} if {\ttfamily evaluation} is not a valid CCS tree evaluation 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445ab3d1bba2839da0c0fb34fbc00c4be7d5}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+VALUE}} if {\ttfamily values} is NULL and {\ttfamily num\+\_\+values} is greater than 0; or if {\ttfamily values} is NULL and num\+\_\+values\+\_\+ret is NULL; or if num\+\_\+values is less than the number of values that would be returned 
+\end{DoxyReturn}
+\mbox{\Hypertarget{tree__evaluation_8h_a263402dd9388c65aa29f86eadd5dd0af}\label{tree__evaluation_8h_a263402dd9388c65aa29f86eadd5dd0af}} 
+\index{tree\_evaluation.h@{tree\_evaluation.h}!ccs\_tree\_evaluation\_hash@{ccs\_tree\_evaluation\_hash}}
+\index{ccs\_tree\_evaluation\_hash@{ccs\_tree\_evaluation\_hash}!tree\_evaluation.h@{tree\_evaluation.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_tree\_evaluation\_hash()}{ccs\_tree\_evaluation\_hash()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} ccs\+\_\+tree\+\_\+evaluation\+\_\+hash (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_a83520825ddd9981c45a85d2cc865b75e}{ccs\+\_\+tree\+\_\+evaluation\+\_\+t}}}]{evaluation,  }\item[{\mbox{\hyperlink{base_8h_a8ab762d1e926e05224180c4f3455bf40}{ccs\+\_\+hash\+\_\+t}} $\ast$}]{hash\+\_\+ret }\end{DoxyParamCaption})}
+
+
+
+Compute a hash value for the tree evaluation by hashing together the objective space reference, the configuration, the number of values, the values themselves, and the associated result. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em evaluation} & \\
+\hline
+\mbox{\texttt{ out}}  & {\em hash\+\_\+ret} & the address of the variable that will contain the hash value. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445a9941bd690a240532191c41365f48e8b8}{CCS\+\_\+\+RESULT\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445aa3816f69f71f044629bdb21f618ab0e8}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+OBJECT}} if {\ttfamily evaluation} is not a valid CCS tree evaluation 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445ab3d1bba2839da0c0fb34fbc00c4be7d5}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+VALUE}} if {\ttfamily hash\+\_\+ret} is NULL 
+\end{DoxyReturn}
+\mbox{\Hypertarget{tree__evaluation_8h_a68d9f1359ba13e51a7d7e8404eebb49e}\label{tree__evaluation_8h_a68d9f1359ba13e51a7d7e8404eebb49e}} 
+\index{tree\_evaluation.h@{tree\_evaluation.h}!ccs\_tree\_evaluation\_set\_result@{ccs\_tree\_evaluation\_set\_result}}
+\index{ccs\_tree\_evaluation\_set\_result@{ccs\_tree\_evaluation\_set\_result}!tree\_evaluation.h@{tree\_evaluation.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_tree\_evaluation\_set\_result()}{ccs\_tree\_evaluation\_set\_result()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} ccs\+\_\+tree\+\_\+evaluation\+\_\+set\+\_\+result (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_a83520825ddd9981c45a85d2cc865b75e}{ccs\+\_\+tree\+\_\+evaluation\+\_\+t}}}]{evaluation,  }\item[{\mbox{\hyperlink{base_8h_a63acf1f87b11fc67aa84e68a4415109b}{ccs\+\_\+evaluation\+\_\+result\+\_\+t}}}]{result }\end{DoxyParamCaption})}
+
+
+
+Set the result code associated with a tree evaluation. 
+
+A successful evaluation should have it\textquotesingle{}s error set to \mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445a9941bd690a240532191c41365f48e8b8}{CCS\+\_\+\+RESULT\+\_\+\+SUCCESS}}. 
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in,out}}  & {\em evaluation} & \\
+\hline
+\mbox{\texttt{ in}}  & {\em result} & the result code associated withe the evaluation \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445a9941bd690a240532191c41365f48e8b8}{CCS\+\_\+\+RESULT\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445aa3816f69f71f044629bdb21f618ab0e8}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+OBJECT}} if {\ttfamily evaluation} is not a valid CCS tree evaluation 
+\end{DoxyReturn}
+\mbox{\Hypertarget{tree__evaluation_8h_ae4cdf997dab22be5caaec7e02dc7c16e}\label{tree__evaluation_8h_ae4cdf997dab22be5caaec7e02dc7c16e}} 
+\index{tree\_evaluation.h@{tree\_evaluation.h}!ccs\_tree\_evaluation\_set\_value@{ccs\_tree\_evaluation\_set\_value}}
+\index{ccs\_tree\_evaluation\_set\_value@{ccs\_tree\_evaluation\_set\_value}!tree\_evaluation.h@{tree\_evaluation.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_tree\_evaluation\_set\_value()}{ccs\_tree\_evaluation\_set\_value()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} ccs\+\_\+tree\+\_\+evaluation\+\_\+set\+\_\+value (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_a83520825ddd9981c45a85d2cc865b75e}{ccs\+\_\+tree\+\_\+evaluation\+\_\+t}}}]{evaluation,  }\item[{size\+\_\+t}]{index,  }\item[{\mbox{\hyperlink{base_8h_a36bc36b2bb0d0613453dd731cdcd2048}{ccs\+\_\+datum\+\_\+t}}}]{value }\end{DoxyParamCaption})}
+
+
+
+Set the value of the parameter at the given index. 
+
+Transient values will be validated and memoized if needed. 
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in,out}}  & {\em evaluation} & \\
+\hline
+\mbox{\texttt{ in}}  & {\em index} & index of the parameter in the associated objective space \\
+\hline
+\mbox{\texttt{ in}}  & {\em value} & the value \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445a9941bd690a240532191c41365f48e8b8}{CCS\+\_\+\+RESULT\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445aa3816f69f71f044629bdb21f618ab0e8}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+OBJECT}} if {\ttfamily evaluation} is not a valid CCS tree evaluation 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445ab3d1bba2839da0c0fb34fbc00c4be7d5}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+VALUE}} if {\ttfamily value\+\_\+ret} is NULL 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445af49329ea0e10def334ff276577661d45}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+OUT\+\_\+\+OF\+\_\+\+BOUNDS}} if {\ttfamily index} is greater than the count of parameters in the objective space 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445aba9b4719b46466cd185bf1a41a232ff6}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+OUT\+\_\+\+OF\+\_\+\+MEMORY}} if there was a lack of memory while memoizing a string 
+\end{DoxyReturn}

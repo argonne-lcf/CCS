@@ -1,0 +1,436 @@
+\hypertarget{tuner_8h}{}\doxysection{include/cconfigspace/tuner.h File Reference}
+\label{tuner_8h}\index{include/cconfigspace/tuner.h@{include/cconfigspace/tuner.h}}
+
+
+A CCS tuner defines an ask and tell interface to optimize an objective space (see \mbox{\hyperlink{objective__space_8h}{objective\+\_\+space.\+h}}) given a configuration space (see \mbox{\hyperlink{configuration__space_8h}{configuration\+\_\+space.\+h}}).  
+
+
+This graph shows which files directly or indirectly include this file\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=196pt]{tuner_8h__dep__incl}
+\end{center}
+\end{figure}
+\doxysubsection*{Data Structures}
+\begin{DoxyCompactItemize}
+\item 
+struct \mbox{\hyperlink{structccs__user__defined__tuner__vector__s}{ccs\+\_\+user\+\_\+defined\+\_\+tuner\+\_\+vector\+\_\+s}}
+\begin{DoxyCompactList}\small\item\em A structure that define the callbacks the user must provide to create a user defined tuner. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Typedefs}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{tuner_8h_a8f460ca1c8764f969b0771be1b64ab8c}\label{tuner_8h_a8f460ca1c8764f969b0771be1b64ab8c}} 
+typedef enum \mbox{\hyperlink{tuner_8h_a41d9682f0b72ee1d390cb32ecda164cd}{ccs\+\_\+tuner\+\_\+type\+\_\+e}} \mbox{\hyperlink{tuner_8h_a8f460ca1c8764f969b0771be1b64ab8c}{ccs\+\_\+tuner\+\_\+type\+\_\+t}}
+\begin{DoxyCompactList}\small\item\em A commodity type to represent CCS tuner types. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{tuner_8h_a9b34ce7fc49071d51697421b6520270e}\label{tuner_8h_a9b34ce7fc49071d51697421b6520270e}} 
+typedef struct \mbox{\hyperlink{structccs__user__defined__tuner__vector__s}{ccs\+\_\+user\+\_\+defined\+\_\+tuner\+\_\+vector\+\_\+s}} \mbox{\hyperlink{tuner_8h_a9b34ce7fc49071d51697421b6520270e}{ccs\+\_\+user\+\_\+defined\+\_\+tuner\+\_\+vector\+\_\+t}}
+\begin{DoxyCompactList}\small\item\em a commodity type to represent a user defined tuner callback vector. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Enumerations}
+\begin{DoxyCompactItemize}
+\item 
+enum \mbox{\hyperlink{tuner_8h_a41d9682f0b72ee1d390cb32ecda164cd}{ccs\+\_\+tuner\+\_\+type\+\_\+e}} \{ \mbox{\hyperlink{tuner_8h_a41d9682f0b72ee1d390cb32ecda164cda45f98ca80704ca0e01f0467f9af0eb0c}{CCS\+\_\+\+TUNER\+\_\+\+TYPE\+\_\+\+RANDOM}}
+, \mbox{\hyperlink{tuner_8h_a41d9682f0b72ee1d390cb32ecda164cda9c985beb4ff06e1cb279b9a57ff9e804}{CCS\+\_\+\+TUNER\+\_\+\+TYPE\+\_\+\+USER\+\_\+\+DEFINED}}
+, \mbox{\hyperlink{tuner_8h_a41d9682f0b72ee1d390cb32ecda164cda5e052497072a13f3e91331aba7632f0c}{CCS\+\_\+\+TUNER\+\_\+\+TYPE\+\_\+\+MAX}}
+, \mbox{\hyperlink{tuner_8h_a41d9682f0b72ee1d390cb32ecda164cdac49211bfcc669f439e5bcbff921f0119}{CCS\+\_\+\+TUNER\+\_\+\+TYPE\+\_\+32\+BIT}} = INT\+\_\+\+MAX
+ \}
+\begin{DoxyCompactList}\small\item\em CCS supported tuner types. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} \mbox{\hyperlink{tuner_8h_a3e04e25f549135ba25f86972ad097cd5}{ccs\+\_\+tuner\+\_\+get\+\_\+type}} (\mbox{\hyperlink{base_8h_a7760c93f0ff0a5a31bc1e0878936f4a8}{ccs\+\_\+tuner\+\_\+t}} tuner, \mbox{\hyperlink{tuner_8h_a8f460ca1c8764f969b0771be1b64ab8c}{ccs\+\_\+tuner\+\_\+type\+\_\+t}} $\ast$type\+\_\+ret)
+\begin{DoxyCompactList}\small\item\em Get the type of a tuner. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} \mbox{\hyperlink{tuner_8h_a2b9256b97ddedc0ab2c9fb78df58b823}{ccs\+\_\+tuner\+\_\+get\+\_\+name}} (\mbox{\hyperlink{base_8h_a7760c93f0ff0a5a31bc1e0878936f4a8}{ccs\+\_\+tuner\+\_\+t}} tuner, const char $\ast$$\ast$name\+\_\+ret)
+\begin{DoxyCompactList}\small\item\em Get the name of a tuner. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} \mbox{\hyperlink{tuner_8h_a2b786aeeecad21771d02d63c8c9243a5}{ccs\+\_\+tuner\+\_\+get\+\_\+configuration\+\_\+space}} (\mbox{\hyperlink{base_8h_a7760c93f0ff0a5a31bc1e0878936f4a8}{ccs\+\_\+tuner\+\_\+t}} tuner, \mbox{\hyperlink{base_8h_ab2f25e603cb52fce2391e78d5edac824}{ccs\+\_\+configuration\+\_\+space\+\_\+t}} $\ast$configuration\+\_\+space\+\_\+ret)
+\begin{DoxyCompactList}\small\item\em Get the associated configuration space. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} \mbox{\hyperlink{tuner_8h_afbb1bcc9cfe98a0410d11c6545308a8b}{ccs\+\_\+tuner\+\_\+get\+\_\+objective\+\_\+space}} (\mbox{\hyperlink{base_8h_a7760c93f0ff0a5a31bc1e0878936f4a8}{ccs\+\_\+tuner\+\_\+t}} tuner, \mbox{\hyperlink{base_8h_a645a0bae9ad3d85455ef2b06101146f7}{ccs\+\_\+objective\+\_\+space\+\_\+t}} $\ast$objective\+\_\+space\+\_\+ret)
+\begin{DoxyCompactList}\small\item\em Get the associated objective space. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} \mbox{\hyperlink{tuner_8h_a2e84d114d618f5d7b31bd24adf4c1547}{ccs\+\_\+tuner\+\_\+ask}} (\mbox{\hyperlink{base_8h_a7760c93f0ff0a5a31bc1e0878936f4a8}{ccs\+\_\+tuner\+\_\+t}} tuner, size\+\_\+t num\+\_\+configurations, \mbox{\hyperlink{base_8h_a6b2a7ac41257359ed28ae334bf760634}{ccs\+\_\+configuration\+\_\+t}} $\ast$configurations, size\+\_\+t $\ast$num\+\_\+configurations\+\_\+ret)
+\begin{DoxyCompactList}\small\item\em Ask a tuner for a set of configurations to evaluate. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} \mbox{\hyperlink{tuner_8h_a422ee1189a1e5773b160dde1b6d36a2d}{ccs\+\_\+tuner\+\_\+tell}} (\mbox{\hyperlink{base_8h_a7760c93f0ff0a5a31bc1e0878936f4a8}{ccs\+\_\+tuner\+\_\+t}} tuner, size\+\_\+t num\+\_\+evaluations, \mbox{\hyperlink{base_8h_a7dbc00be0122046c2ba9b6d188d57a13}{ccs\+\_\+evaluation\+\_\+t}} $\ast$evaluations)
+\begin{DoxyCompactList}\small\item\em Give a list of results to a tuner through evaluations. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} \mbox{\hyperlink{tuner_8h_ac95118525ed8b936504222f228456ede}{ccs\+\_\+tuner\+\_\+suggest}} (\mbox{\hyperlink{base_8h_a7760c93f0ff0a5a31bc1e0878936f4a8}{ccs\+\_\+tuner\+\_\+t}} tuner, \mbox{\hyperlink{base_8h_a6b2a7ac41257359ed28ae334bf760634}{ccs\+\_\+configuration\+\_\+t}} $\ast$configuration)
+\begin{DoxyCompactList}\small\item\em Ask a tuner to suggest a good configuration. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} \mbox{\hyperlink{tuner_8h_a99a01eaf5bb5bdab2ae1592f1c029990}{ccs\+\_\+tuner\+\_\+get\+\_\+optima}} (\mbox{\hyperlink{base_8h_a7760c93f0ff0a5a31bc1e0878936f4a8}{ccs\+\_\+tuner\+\_\+t}} tuner, size\+\_\+t num\+\_\+evaluations, \mbox{\hyperlink{base_8h_a7dbc00be0122046c2ba9b6d188d57a13}{ccs\+\_\+evaluation\+\_\+t}} $\ast$evaluations, size\+\_\+t $\ast$num\+\_\+evaluations\+\_\+ret)
+\begin{DoxyCompactList}\small\item\em Ask a tuner for the discovered Pareto front. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} \mbox{\hyperlink{tuner_8h_ab34c886a57062ce0d215fdcbb0b7fdbe}{ccs\+\_\+tuner\+\_\+get\+\_\+history}} (\mbox{\hyperlink{base_8h_a7760c93f0ff0a5a31bc1e0878936f4a8}{ccs\+\_\+tuner\+\_\+t}} tuner, size\+\_\+t num\+\_\+evaluations, \mbox{\hyperlink{base_8h_a7dbc00be0122046c2ba9b6d188d57a13}{ccs\+\_\+evaluation\+\_\+t}} $\ast$evaluations, size\+\_\+t $\ast$num\+\_\+evaluations\+\_\+ret)
+\begin{DoxyCompactList}\small\item\em Ask a tuner for the evaluation history. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} \mbox{\hyperlink{tuner_8h_a4210eb55448c4800bf896e076df68705}{ccs\+\_\+create\+\_\+random\+\_\+tuner}} (const char $\ast$name, \mbox{\hyperlink{base_8h_ab2f25e603cb52fce2391e78d5edac824}{ccs\+\_\+configuration\+\_\+space\+\_\+t}} configuration\+\_\+space, \mbox{\hyperlink{base_8h_a645a0bae9ad3d85455ef2b06101146f7}{ccs\+\_\+objective\+\_\+space\+\_\+t}} objective\+\_\+space, \mbox{\hyperlink{base_8h_a7760c93f0ff0a5a31bc1e0878936f4a8}{ccs\+\_\+tuner\+\_\+t}} $\ast$tuner\+\_\+ret)
+\begin{DoxyCompactList}\small\item\em Create a new random tuner. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} \mbox{\hyperlink{tuner_8h_a8b2e1eb9debc2958c75ffb4a947daace}{ccs\+\_\+create\+\_\+user\+\_\+defined\+\_\+tuner}} (const char $\ast$name, \mbox{\hyperlink{base_8h_ab2f25e603cb52fce2391e78d5edac824}{ccs\+\_\+configuration\+\_\+space\+\_\+t}} configuration\+\_\+space, \mbox{\hyperlink{base_8h_a645a0bae9ad3d85455ef2b06101146f7}{ccs\+\_\+objective\+\_\+space\+\_\+t}} objective\+\_\+space, \mbox{\hyperlink{tuner_8h_a9b34ce7fc49071d51697421b6520270e}{ccs\+\_\+user\+\_\+defined\+\_\+tuner\+\_\+vector\+\_\+t}} $\ast$vector, void $\ast$tuner\+\_\+data, \mbox{\hyperlink{base_8h_a7760c93f0ff0a5a31bc1e0878936f4a8}{ccs\+\_\+tuner\+\_\+t}} $\ast$tuner\+\_\+ret)
+\begin{DoxyCompactList}\small\item\em Create a new user defined tuner. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} \mbox{\hyperlink{tuner_8h_a48d66a838340514ff921a3a0c56880ff}{ccs\+\_\+user\+\_\+defined\+\_\+tuner\+\_\+get\+\_\+tuner\+\_\+data}} (\mbox{\hyperlink{base_8h_a7760c93f0ff0a5a31bc1e0878936f4a8}{ccs\+\_\+tuner\+\_\+t}} tuner, void $\ast$$\ast$tuner\+\_\+data\+\_\+ret)
+\begin{DoxyCompactList}\small\item\em Get the user defined tuner internal data pointer. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+A CCS tuner defines an ask and tell interface to optimize an objective space (see \mbox{\hyperlink{objective__space_8h}{objective\+\_\+space.\+h}}) given a configuration space (see \mbox{\hyperlink{configuration__space_8h}{configuration\+\_\+space.\+h}}). 
+
+The tuner will propose configurations (see \mbox{\hyperlink{configuration_8h}{configuration.\+h}}) and the user will return evaluations (see \mbox{\hyperlink{evaluation_8h}{evaluation.\+h}}). 
+
+\doxysubsection{Enumeration Type Documentation}
+\mbox{\Hypertarget{tuner_8h_a41d9682f0b72ee1d390cb32ecda164cd}\label{tuner_8h_a41d9682f0b72ee1d390cb32ecda164cd}} 
+\index{tuner.h@{tuner.h}!ccs\_tuner\_type\_e@{ccs\_tuner\_type\_e}}
+\index{ccs\_tuner\_type\_e@{ccs\_tuner\_type\_e}!tuner.h@{tuner.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_tuner\_type\_e}{ccs\_tuner\_type\_e}}
+{\footnotesize\ttfamily enum \mbox{\hyperlink{tuner_8h_a41d9682f0b72ee1d390cb32ecda164cd}{ccs\+\_\+tuner\+\_\+type\+\_\+e}}}
+
+
+
+CCS supported tuner types. 
+
+\begin{DoxyEnumFields}{Enumerator}
+\raisebox{\heightof{T}}[0pt][0pt]{\index{CCS\_TUNER\_TYPE\_RANDOM@{CCS\_TUNER\_TYPE\_RANDOM}!tuner.h@{tuner.h}}\index{tuner.h@{tuner.h}!CCS\_TUNER\_TYPE\_RANDOM@{CCS\_TUNER\_TYPE\_RANDOM}}}\mbox{\Hypertarget{tuner_8h_a41d9682f0b72ee1d390cb32ecda164cda45f98ca80704ca0e01f0467f9af0eb0c}\label{tuner_8h_a41d9682f0b72ee1d390cb32ecda164cda45f98ca80704ca0e01f0467f9af0eb0c}} 
+CCS\+\_\+\+TUNER\+\_\+\+TYPE\+\_\+\+RANDOM&A random tuner. \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{CCS\_TUNER\_TYPE\_USER\_DEFINED@{CCS\_TUNER\_TYPE\_USER\_DEFINED}!tuner.h@{tuner.h}}\index{tuner.h@{tuner.h}!CCS\_TUNER\_TYPE\_USER\_DEFINED@{CCS\_TUNER\_TYPE\_USER\_DEFINED}}}\mbox{\Hypertarget{tuner_8h_a41d9682f0b72ee1d390cb32ecda164cda9c985beb4ff06e1cb279b9a57ff9e804}\label{tuner_8h_a41d9682f0b72ee1d390cb32ecda164cda9c985beb4ff06e1cb279b9a57ff9e804}} 
+CCS\+\_\+\+TUNER\+\_\+\+TYPE\+\_\+\+USER\+\_\+\+DEFINED&A user defined tuner. \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{CCS\_TUNER\_TYPE\_MAX@{CCS\_TUNER\_TYPE\_MAX}!tuner.h@{tuner.h}}\index{tuner.h@{tuner.h}!CCS\_TUNER\_TYPE\_MAX@{CCS\_TUNER\_TYPE\_MAX}}}\mbox{\Hypertarget{tuner_8h_a41d9682f0b72ee1d390cb32ecda164cda5e052497072a13f3e91331aba7632f0c}\label{tuner_8h_a41d9682f0b72ee1d390cb32ecda164cda5e052497072a13f3e91331aba7632f0c}} 
+CCS\+\_\+\+TUNER\+\_\+\+TYPE\+\_\+\+MAX&Guard. \\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{CCS\_TUNER\_TYPE\_32BIT@{CCS\_TUNER\_TYPE\_32BIT}!tuner.h@{tuner.h}}\index{tuner.h@{tuner.h}!CCS\_TUNER\_TYPE\_32BIT@{CCS\_TUNER\_TYPE\_32BIT}}}\mbox{\Hypertarget{tuner_8h_a41d9682f0b72ee1d390cb32ecda164cdac49211bfcc669f439e5bcbff921f0119}\label{tuner_8h_a41d9682f0b72ee1d390cb32ecda164cdac49211bfcc669f439e5bcbff921f0119}} 
+CCS\+\_\+\+TUNER\+\_\+\+TYPE\+\_\+32\+BIT&Try forcing 32 bits value for bindings. \\
+\hline
+
+\end{DoxyEnumFields}
+
+
+\doxysubsection{Function Documentation}
+\mbox{\Hypertarget{tuner_8h_a4210eb55448c4800bf896e076df68705}\label{tuner_8h_a4210eb55448c4800bf896e076df68705}} 
+\index{tuner.h@{tuner.h}!ccs\_create\_random\_tuner@{ccs\_create\_random\_tuner}}
+\index{ccs\_create\_random\_tuner@{ccs\_create\_random\_tuner}!tuner.h@{tuner.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_create\_random\_tuner()}{ccs\_create\_random\_tuner()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} ccs\+\_\+create\+\_\+random\+\_\+tuner (\begin{DoxyParamCaption}\item[{const char $\ast$}]{name,  }\item[{\mbox{\hyperlink{base_8h_ab2f25e603cb52fce2391e78d5edac824}{ccs\+\_\+configuration\+\_\+space\+\_\+t}}}]{configuration\+\_\+space,  }\item[{\mbox{\hyperlink{base_8h_a645a0bae9ad3d85455ef2b06101146f7}{ccs\+\_\+objective\+\_\+space\+\_\+t}}}]{objective\+\_\+space,  }\item[{\mbox{\hyperlink{base_8h_a7760c93f0ff0a5a31bc1e0878936f4a8}{ccs\+\_\+tuner\+\_\+t}} $\ast$}]{tuner\+\_\+ret }\end{DoxyParamCaption})}
+
+
+
+Create a new random tuner. 
+
+The random tuner should be viewed as a baseline for evaluating tuners, and as a tool for developing interfaces. 
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em name} & the name of the tuner \\
+\hline
+\mbox{\texttt{ in}}  & {\em configuration\+\_\+space} & the configuration space to explore \\
+\hline
+\mbox{\texttt{ in}}  & {\em objective\+\_\+space} & the objective space to potimize \\
+\hline
+\mbox{\texttt{ out}}  & {\em tuner\+\_\+ret} & a pointer to the variable that will contain the newly created tuner \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445a9941bd690a240532191c41365f48e8b8}{CCS\+\_\+\+RESULT\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445aa3816f69f71f044629bdb21f618ab0e8}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+OBJECT}} if {\ttfamily configuration\+\_\+space} is not a valid CCS configuration space; or if {\ttfamily objective\+\_\+space} is not a valid CCS objective space 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445ab3d1bba2839da0c0fb34fbc00c4be7d5}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+VALUE}} if {\ttfamily name} is NULL; or if {\ttfamily tuner\+\_\+ret} is NULL 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445aba9b4719b46466cd185bf1a41a232ff6}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+OUT\+\_\+\+OF\+\_\+\+MEMORY}} if there was not enough memory to allocate the new tuner instance 
+\end{DoxyReturn}
+\mbox{\Hypertarget{tuner_8h_a8b2e1eb9debc2958c75ffb4a947daace}\label{tuner_8h_a8b2e1eb9debc2958c75ffb4a947daace}} 
+\index{tuner.h@{tuner.h}!ccs\_create\_user\_defined\_tuner@{ccs\_create\_user\_defined\_tuner}}
+\index{ccs\_create\_user\_defined\_tuner@{ccs\_create\_user\_defined\_tuner}!tuner.h@{tuner.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_create\_user\_defined\_tuner()}{ccs\_create\_user\_defined\_tuner()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} ccs\+\_\+create\+\_\+user\+\_\+defined\+\_\+tuner (\begin{DoxyParamCaption}\item[{const char $\ast$}]{name,  }\item[{\mbox{\hyperlink{base_8h_ab2f25e603cb52fce2391e78d5edac824}{ccs\+\_\+configuration\+\_\+space\+\_\+t}}}]{configuration\+\_\+space,  }\item[{\mbox{\hyperlink{base_8h_a645a0bae9ad3d85455ef2b06101146f7}{ccs\+\_\+objective\+\_\+space\+\_\+t}}}]{objective\+\_\+space,  }\item[{\mbox{\hyperlink{tuner_8h_a9b34ce7fc49071d51697421b6520270e}{ccs\+\_\+user\+\_\+defined\+\_\+tuner\+\_\+vector\+\_\+t}} $\ast$}]{vector,  }\item[{void $\ast$}]{tuner\+\_\+data,  }\item[{\mbox{\hyperlink{base_8h_a7760c93f0ff0a5a31bc1e0878936f4a8}{ccs\+\_\+tuner\+\_\+t}} $\ast$}]{tuner\+\_\+ret }\end{DoxyParamCaption})}
+
+
+
+Create a new user defined tuner. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em name} & the name of the tuner \\
+\hline
+\mbox{\texttt{ in}}  & {\em configuration\+\_\+space} & the configuration space to explore \\
+\hline
+\mbox{\texttt{ in}}  & {\em objective\+\_\+space} & the objective space to optimize \\
+\hline
+\mbox{\texttt{ in}}  & {\em vector} & the vector of callbacks implementing the tuner interface \\
+\hline
+\mbox{\texttt{ in}}  & {\em tuner\+\_\+data} & a pointer to the tuner internal data structures. Can be NULL \\
+\hline
+\mbox{\texttt{ out}}  & {\em tuner\+\_\+ret} & a pointer to the variable that will contain the newly created tuner \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445a9941bd690a240532191c41365f48e8b8}{CCS\+\_\+\+RESULT\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445aa3816f69f71f044629bdb21f618ab0e8}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+OBJECT}} if {\ttfamily configuration\+\_\+space} is not a valid CCS configuration space; or if {\ttfamily objective\+\_\+space} is not a valid CCS objective space 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445ab3d1bba2839da0c0fb34fbc00c4be7d5}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+VALUE}} if {\ttfamily name} is NULL; or if {\ttfamily tuner\+\_\+ret} is NULL; or if {\ttfamily vector} is NULL; or if any non optional interface pointer is NULL 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445aba9b4719b46466cd185bf1a41a232ff6}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+OUT\+\_\+\+OF\+\_\+\+MEMORY}} if there was not enough memory to allocate the new tuner instance 
+\end{DoxyReturn}
+\mbox{\Hypertarget{tuner_8h_a2e84d114d618f5d7b31bd24adf4c1547}\label{tuner_8h_a2e84d114d618f5d7b31bd24adf4c1547}} 
+\index{tuner.h@{tuner.h}!ccs\_tuner\_ask@{ccs\_tuner\_ask}}
+\index{ccs\_tuner\_ask@{ccs\_tuner\_ask}!tuner.h@{tuner.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_tuner\_ask()}{ccs\_tuner\_ask()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} ccs\+\_\+tuner\+\_\+ask (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_a7760c93f0ff0a5a31bc1e0878936f4a8}{ccs\+\_\+tuner\+\_\+t}}}]{tuner,  }\item[{size\+\_\+t}]{num\+\_\+configurations,  }\item[{\mbox{\hyperlink{base_8h_a6b2a7ac41257359ed28ae334bf760634}{ccs\+\_\+configuration\+\_\+t}} $\ast$}]{configurations,  }\item[{size\+\_\+t $\ast$}]{num\+\_\+configurations\+\_\+ret }\end{DoxyParamCaption})}
+
+
+
+Ask a tuner for a set of configurations to evaluate. 
+
+Configuration\textquotesingle{}s ownership is transferred to the user who doesn\textquotesingle{}t need to retain them, but will need to release them once the user is done using them. 
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in,out}}  & {\em tuner} & \\
+\hline
+\mbox{\texttt{ in}}  & {\em num\+\_\+configurations} & the number of configurations requested by the user \\
+\hline
+\mbox{\texttt{ out}}  & {\em configurations} & an array of {\ttfamily num\+\_\+configurations} configurations that will contain the returned configurations. Can be NULL \\
+\hline
+\mbox{\texttt{ out}}  & {\em num\+\_\+configurations\+\_\+ret} & a pointer to the variable that will contain the number of configuration that are returned, or, if {\ttfamily configurations} is NULL, a suggestion for the number of configuration to ask for \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445a9941bd690a240532191c41365f48e8b8}{CCS\+\_\+\+RESULT\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445aa3816f69f71f044629bdb21f618ab0e8}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+OBJECT}} if {\ttfamily tuner} is not a valid CCS tuner 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445ab3d1bba2839da0c0fb34fbc00c4be7d5}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+VALUE}} if {\ttfamily configurations} is NULL and {\ttfamily num\+\_\+configurations} is greater than 0; or if {\ttfamily configurations} and {\ttfamily num\+\_\+configurations\+\_\+ret} are both NULL 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445a6e66230929714d8d2b7354ecd6766542}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+SAMPLING\+\_\+\+UNSUCCESSFUL}} if no or not enough valid configurations could be sampled. Configurations that could be sampled will be returned contiguously, and the rest will be NULL 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445aba9b4719b46466cd185bf1a41a232ff6}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+OUT\+\_\+\+OF\+\_\+\+MEMORY}} if there was not enough memory to allocate new configurations. Configurations that could be allocated will be returned, and the rest will be NULL 
+\end{DoxyReturn}
+\mbox{\Hypertarget{tuner_8h_a2b786aeeecad21771d02d63c8c9243a5}\label{tuner_8h_a2b786aeeecad21771d02d63c8c9243a5}} 
+\index{tuner.h@{tuner.h}!ccs\_tuner\_get\_configuration\_space@{ccs\_tuner\_get\_configuration\_space}}
+\index{ccs\_tuner\_get\_configuration\_space@{ccs\_tuner\_get\_configuration\_space}!tuner.h@{tuner.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_tuner\_get\_configuration\_space()}{ccs\_tuner\_get\_configuration\_space()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} ccs\+\_\+tuner\+\_\+get\+\_\+configuration\+\_\+space (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_a7760c93f0ff0a5a31bc1e0878936f4a8}{ccs\+\_\+tuner\+\_\+t}}}]{tuner,  }\item[{\mbox{\hyperlink{base_8h_ab2f25e603cb52fce2391e78d5edac824}{ccs\+\_\+configuration\+\_\+space\+\_\+t}} $\ast$}]{configuration\+\_\+space\+\_\+ret }\end{DoxyParamCaption})}
+
+
+
+Get the associated configuration space. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em tuner} & \\
+\hline
+\mbox{\texttt{ out}}  & {\em configuration\+\_\+space\+\_\+ret} & a pointer to the variable that will contain the configuration space \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445a9941bd690a240532191c41365f48e8b8}{CCS\+\_\+\+RESULT\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445aa3816f69f71f044629bdb21f618ab0e8}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+OBJECT}} if {\ttfamily tuner} is not a valid CCS tuner 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445ab3d1bba2839da0c0fb34fbc00c4be7d5}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+VALUE}} if {\ttfamily configuration\+\_\+space\+\_\+ret} is NULL 
+\end{DoxyReturn}
+\mbox{\Hypertarget{tuner_8h_ab34c886a57062ce0d215fdcbb0b7fdbe}\label{tuner_8h_ab34c886a57062ce0d215fdcbb0b7fdbe}} 
+\index{tuner.h@{tuner.h}!ccs\_tuner\_get\_history@{ccs\_tuner\_get\_history}}
+\index{ccs\_tuner\_get\_history@{ccs\_tuner\_get\_history}!tuner.h@{tuner.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_tuner\_get\_history()}{ccs\_tuner\_get\_history()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} ccs\+\_\+tuner\+\_\+get\+\_\+history (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_a7760c93f0ff0a5a31bc1e0878936f4a8}{ccs\+\_\+tuner\+\_\+t}}}]{tuner,  }\item[{size\+\_\+t}]{num\+\_\+evaluations,  }\item[{\mbox{\hyperlink{base_8h_a7dbc00be0122046c2ba9b6d188d57a13}{ccs\+\_\+evaluation\+\_\+t}} $\ast$}]{evaluations,  }\item[{size\+\_\+t $\ast$}]{num\+\_\+evaluations\+\_\+ret }\end{DoxyParamCaption})}
+
+
+
+Ask a tuner for the evaluation history. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em tuner} & \\
+\hline
+\mbox{\texttt{ in}}  & {\em num\+\_\+evaluations} & the size of the {\ttfamily evaluations} array \\
+\hline
+\mbox{\texttt{ out}}  & {\em evaluations} & an array of {\ttfamily num\+\_\+evaluations} that will contain the the history \\
+\hline
+\mbox{\texttt{ out}}  & {\em num\+\_\+evaluations\+\_\+ret} & a pointer to the variable that will contain the number of evaluations that are or would be returned \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445a9941bd690a240532191c41365f48e8b8}{CCS\+\_\+\+RESULT\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445aa3816f69f71f044629bdb21f618ab0e8}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+OBJECT}} if {\ttfamily tuner} is not a valid CCS tuner 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445ab3d1bba2839da0c0fb34fbc00c4be7d5}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+VALUE}} if {\ttfamily evaluations} is NULL and num\+\_\+evaluations is greater than 0; or if {\ttfamily evaluations} is NULL and {\ttfamily num\+\_\+evaluations\+\_\+ret} is NULL 
+\end{DoxyReturn}
+\mbox{\Hypertarget{tuner_8h_a2b9256b97ddedc0ab2c9fb78df58b823}\label{tuner_8h_a2b9256b97ddedc0ab2c9fb78df58b823}} 
+\index{tuner.h@{tuner.h}!ccs\_tuner\_get\_name@{ccs\_tuner\_get\_name}}
+\index{ccs\_tuner\_get\_name@{ccs\_tuner\_get\_name}!tuner.h@{tuner.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_tuner\_get\_name()}{ccs\_tuner\_get\_name()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} ccs\+\_\+tuner\+\_\+get\+\_\+name (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_a7760c93f0ff0a5a31bc1e0878936f4a8}{ccs\+\_\+tuner\+\_\+t}}}]{tuner,  }\item[{const char $\ast$$\ast$}]{name\+\_\+ret }\end{DoxyParamCaption})}
+
+
+
+Get the name of a tuner. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em tuner} & \\
+\hline
+\mbox{\texttt{ out}}  & {\em name\+\_\+ret} & a pointer to the variable that will contain a pointer to the name of the tuner \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445a9941bd690a240532191c41365f48e8b8}{CCS\+\_\+\+RESULT\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445ab3d1bba2839da0c0fb34fbc00c4be7d5}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+VALUE}} if {\ttfamily name\+\_\+ret} is NULL 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445aa3816f69f71f044629bdb21f618ab0e8}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+OBJECT}} if {\ttfamily tuner} is not a valid CCS tuner 
+\end{DoxyReturn}
+\mbox{\Hypertarget{tuner_8h_afbb1bcc9cfe98a0410d11c6545308a8b}\label{tuner_8h_afbb1bcc9cfe98a0410d11c6545308a8b}} 
+\index{tuner.h@{tuner.h}!ccs\_tuner\_get\_objective\_space@{ccs\_tuner\_get\_objective\_space}}
+\index{ccs\_tuner\_get\_objective\_space@{ccs\_tuner\_get\_objective\_space}!tuner.h@{tuner.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_tuner\_get\_objective\_space()}{ccs\_tuner\_get\_objective\_space()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} ccs\+\_\+tuner\+\_\+get\+\_\+objective\+\_\+space (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_a7760c93f0ff0a5a31bc1e0878936f4a8}{ccs\+\_\+tuner\+\_\+t}}}]{tuner,  }\item[{\mbox{\hyperlink{base_8h_a645a0bae9ad3d85455ef2b06101146f7}{ccs\+\_\+objective\+\_\+space\+\_\+t}} $\ast$}]{objective\+\_\+space\+\_\+ret }\end{DoxyParamCaption})}
+
+
+
+Get the associated objective space. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em tuner} & \\
+\hline
+\mbox{\texttt{ out}}  & {\em objective\+\_\+space\+\_\+ret} & a pointer to the variable that will contain the objective space \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445a9941bd690a240532191c41365f48e8b8}{CCS\+\_\+\+RESULT\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445aa3816f69f71f044629bdb21f618ab0e8}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+OBJECT}} if {\ttfamily tuner} is not a valid CCS tuner 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445ab3d1bba2839da0c0fb34fbc00c4be7d5}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+VALUE}} if {\ttfamily objective\+\_\+space\+\_\+ret} is NULL 
+\end{DoxyReturn}
+\mbox{\Hypertarget{tuner_8h_a99a01eaf5bb5bdab2ae1592f1c029990}\label{tuner_8h_a99a01eaf5bb5bdab2ae1592f1c029990}} 
+\index{tuner.h@{tuner.h}!ccs\_tuner\_get\_optima@{ccs\_tuner\_get\_optima}}
+\index{ccs\_tuner\_get\_optima@{ccs\_tuner\_get\_optima}!tuner.h@{tuner.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_tuner\_get\_optima()}{ccs\_tuner\_get\_optima()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} ccs\+\_\+tuner\+\_\+get\+\_\+optima (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_a7760c93f0ff0a5a31bc1e0878936f4a8}{ccs\+\_\+tuner\+\_\+t}}}]{tuner,  }\item[{size\+\_\+t}]{num\+\_\+evaluations,  }\item[{\mbox{\hyperlink{base_8h_a7dbc00be0122046c2ba9b6d188d57a13}{ccs\+\_\+evaluation\+\_\+t}} $\ast$}]{evaluations,  }\item[{size\+\_\+t $\ast$}]{num\+\_\+evaluations\+\_\+ret }\end{DoxyParamCaption})}
+
+
+
+Ask a tuner for the discovered Pareto front. 
+
+For single objective objective spaces this would be the best point found. 
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em tuner} & \\
+\hline
+\mbox{\texttt{ in}}  & {\em num\+\_\+evaluations} & the size of the {\ttfamily evaluations} array \\
+\hline
+\mbox{\texttt{ out}}  & {\em evaluations} & an array of {\ttfamily num\+\_\+evaluations} that will contain the optimal evaluations \\
+\hline
+\mbox{\texttt{ out}}  & {\em num\+\_\+evaluations\+\_\+ret} & a pointer to the variable that will contain the number of evaluations that are or would be returned \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445a9941bd690a240532191c41365f48e8b8}{CCS\+\_\+\+RESULT\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445aa3816f69f71f044629bdb21f618ab0e8}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+OBJECT}} if {\ttfamily tuner} is not a valid CCS tuner 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445ab3d1bba2839da0c0fb34fbc00c4be7d5}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+VALUE}} if {\ttfamily evaluations} is NULL and num\+\_\+evaluations is greater than 0; or if {\ttfamily evaluations} is NULL and {\ttfamily num\+\_\+evaluations\+\_\+ret} is NULL 
+\end{DoxyReturn}
+\mbox{\Hypertarget{tuner_8h_a3e04e25f549135ba25f86972ad097cd5}\label{tuner_8h_a3e04e25f549135ba25f86972ad097cd5}} 
+\index{tuner.h@{tuner.h}!ccs\_tuner\_get\_type@{ccs\_tuner\_get\_type}}
+\index{ccs\_tuner\_get\_type@{ccs\_tuner\_get\_type}!tuner.h@{tuner.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_tuner\_get\_type()}{ccs\_tuner\_get\_type()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} ccs\+\_\+tuner\+\_\+get\+\_\+type (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_a7760c93f0ff0a5a31bc1e0878936f4a8}{ccs\+\_\+tuner\+\_\+t}}}]{tuner,  }\item[{\mbox{\hyperlink{tuner_8h_a8f460ca1c8764f969b0771be1b64ab8c}{ccs\+\_\+tuner\+\_\+type\+\_\+t}} $\ast$}]{type\+\_\+ret }\end{DoxyParamCaption})}
+
+
+
+Get the type of a tuner. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em tuner} & \\
+\hline
+\mbox{\texttt{ out}}  & {\em type\+\_\+ret} & a pointer to the variable that will contain the returned tuner type \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445a9941bd690a240532191c41365f48e8b8}{CCS\+\_\+\+RESULT\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445aa3816f69f71f044629bdb21f618ab0e8}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+OBJECT}} if {\ttfamily tuner} is not a valid CCS tuner 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445ab3d1bba2839da0c0fb34fbc00c4be7d5}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+VALUE}} if {\ttfamily type\+\_\+ret} is NULL 
+\end{DoxyReturn}
+\mbox{\Hypertarget{tuner_8h_ac95118525ed8b936504222f228456ede}\label{tuner_8h_ac95118525ed8b936504222f228456ede}} 
+\index{tuner.h@{tuner.h}!ccs\_tuner\_suggest@{ccs\_tuner\_suggest}}
+\index{ccs\_tuner\_suggest@{ccs\_tuner\_suggest}!tuner.h@{tuner.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_tuner\_suggest()}{ccs\_tuner\_suggest()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} ccs\+\_\+tuner\+\_\+suggest (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_a7760c93f0ff0a5a31bc1e0878936f4a8}{ccs\+\_\+tuner\+\_\+t}}}]{tuner,  }\item[{\mbox{\hyperlink{base_8h_a6b2a7ac41257359ed28ae334bf760634}{ccs\+\_\+configuration\+\_\+t}} $\ast$}]{configuration }\end{DoxyParamCaption})}
+
+
+
+Ask a tuner to suggest a good configuration. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in,out}}  & {\em tuner} & \\
+\hline
+\mbox{\texttt{ out}}  & {\em configuration} & a pointer to the variable that will contain the suggested configuration \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445a9941bd690a240532191c41365f48e8b8}{CCS\+\_\+\+RESULT\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445aa3816f69f71f044629bdb21f618ab0e8}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+OBJECT}} if {\ttfamily tuner} is not a valid CCS tuner 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445ab3d1bba2839da0c0fb34fbc00c4be7d5}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+VALUE}} if {\ttfamily configuration} is NULL 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445a1013737030343023066c39d66ae16e95}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+UNSUPPORTED\+\_\+\+OPERATION}} if the tuner does not support the suggest interface 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445aba9b4719b46466cd185bf1a41a232ff6}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+OUT\+\_\+\+OF\+\_\+\+MEMORY}} if there was not enough memory to allocate new configurations 
+\end{DoxyReturn}
+\mbox{\Hypertarget{tuner_8h_a422ee1189a1e5773b160dde1b6d36a2d}\label{tuner_8h_a422ee1189a1e5773b160dde1b6d36a2d}} 
+\index{tuner.h@{tuner.h}!ccs\_tuner\_tell@{ccs\_tuner\_tell}}
+\index{ccs\_tuner\_tell@{ccs\_tuner\_tell}!tuner.h@{tuner.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_tuner\_tell()}{ccs\_tuner\_tell()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} ccs\+\_\+tuner\+\_\+tell (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_a7760c93f0ff0a5a31bc1e0878936f4a8}{ccs\+\_\+tuner\+\_\+t}}}]{tuner,  }\item[{size\+\_\+t}]{num\+\_\+evaluations,  }\item[{\mbox{\hyperlink{base_8h_a7dbc00be0122046c2ba9b6d188d57a13}{ccs\+\_\+evaluation\+\_\+t}} $\ast$}]{evaluations }\end{DoxyParamCaption})}
+
+
+
+Give a list of results to a tuner through evaluations. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in,out}}  & {\em tuner} & \\
+\hline
+\mbox{\texttt{ in}}  & {\em num\+\_\+evaluations} & the size of the {\ttfamily evaluations} array \\
+\hline
+\mbox{\texttt{ in}}  & {\em evaluations} & an array of {\ttfamily num\+\_\+evaluations} to provide to the tuner \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445a9941bd690a240532191c41365f48e8b8}{CCS\+\_\+\+RESULT\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445aa3816f69f71f044629bdb21f618ab0e8}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+OBJECT}} if {\ttfamily tuner} is not a valid CCS tuner; or if one of the evaluations is not a valid CCS evaluation 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445ab3d1bba2839da0c0fb34fbc00c4be7d5}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+VALUE}} if {\ttfamily evaluations} is NULL and {\ttfamily num\+\_\+evaluations} is greater than 0 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445a861411c9e67478ea8aff1c5338dc91c4}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+EVALUATION}} if an evaluation is not a valid evaluation for the problem the tuner is optimizing 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445aba9b4719b46466cd185bf1a41a232ff6}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+OUT\+\_\+\+OF\+\_\+\+MEMORY}} if there was not enough memory to allocate internal data structures 
+\end{DoxyReturn}
+\mbox{\Hypertarget{tuner_8h_a48d66a838340514ff921a3a0c56880ff}\label{tuner_8h_a48d66a838340514ff921a3a0c56880ff}} 
+\index{tuner.h@{tuner.h}!ccs\_user\_defined\_tuner\_get\_tuner\_data@{ccs\_user\_defined\_tuner\_get\_tuner\_data}}
+\index{ccs\_user\_defined\_tuner\_get\_tuner\_data@{ccs\_user\_defined\_tuner\_get\_tuner\_data}!tuner.h@{tuner.h}}
+\doxysubsubsection{\texorpdfstring{ccs\_user\_defined\_tuner\_get\_tuner\_data()}{ccs\_user\_defined\_tuner\_get\_tuner\_data()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{base_8h_ad0aadedad14b0b29562bda73436b555e}{ccs\+\_\+result\+\_\+t}} ccs\+\_\+user\+\_\+defined\+\_\+tuner\+\_\+get\+\_\+tuner\+\_\+data (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{base_8h_a7760c93f0ff0a5a31bc1e0878936f4a8}{ccs\+\_\+tuner\+\_\+t}}}]{tuner,  }\item[{void $\ast$$\ast$}]{tuner\+\_\+data\+\_\+ret }\end{DoxyParamCaption})}
+
+
+
+Get the user defined tuner internal data pointer. 
+
+
+\begin{DoxyParams}[1]{Parameters}
+\mbox{\texttt{ in}}  & {\em tuner} & \\
+\hline
+\mbox{\texttt{ out}}  & {\em tuner\+\_\+data\+\_\+ret} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445a9941bd690a240532191c41365f48e8b8}{CCS\+\_\+\+RESULT\+\_\+\+SUCCESS}} on success 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445aa3816f69f71f044629bdb21f618ab0e8}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+OBJECT}} if {\ttfamily tuner} is not a valid CCS tuner 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445aa6625a771c1f7530d5ba5e117579f492}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+TUNER}} if {\ttfamily tuner} is not a user defined tuner 
+
+\mbox{\hyperlink{base_8h_a6635811ad8a21c6f231d0f88fab83445ab3d1bba2839da0c0fb34fbc00c4be7d5}{CCS\+\_\+\+RESULT\+\_\+\+ERROR\+\_\+\+INVALID\+\_\+\+VALUE}} if {\ttfamily tuner\+\_\+data\+\_\+ret} is NULL 
+\end{DoxyReturn}
