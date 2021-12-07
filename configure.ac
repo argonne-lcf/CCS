@@ -1,5 +1,5 @@
 # see semver.org for version info
-AC_INIT([cconfigspace],[0.0.1],[bvideau@anl.gov])
+AC_INIT([cconfigspace],m4_normalize(m4_include([VERSION])),[bvideau@anl.gov])
 
 # are we in the right source dir ?
 AC_CONFIG_SRCDIR([src/cconfigspace.c])
