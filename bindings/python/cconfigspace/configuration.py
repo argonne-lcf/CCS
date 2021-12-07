@@ -11,6 +11,17 @@ ccs_configuration_get_configuration_space = _ccs_get_function("ccs_configuration
 ccs_configuration_check = _ccs_get_function("ccs_configuration_check", [ccs_configuration])
 
 class Configuration(Binding):
+  """Class which represents a configuration of hyperparameters.
+
+  Args:
+    handle ([type], optional): [description]. Defaults to None.
+    retain (bool, optional): [description]. Defaults to False.
+    auto_release (bool, optional): [description]. Defaults to True.
+    configuration_space ([type], optional): [description]. Defaults to None.
+    values ([type], optional): [description]. Defaults to None.
+    user_data ([type], optional): [description]. Defaults to None.
+  """
+
   def __init__(self, handle = None, retain = False, auto_release = True,
                configuration_space = None, values = None, user_data = None):
     if handle is None:
@@ -35,6 +46,8 @@ class Configuration(Binding):
 
   @property
   def configuration_space(self):
+    """Returns the configuration space which sampled the current configuration.
+    """
     if hasattr(self, "_configuration_space"):
       return self._configuration_space
     v = ccs_configuration_space()
@@ -44,5 +57,28 @@ class Configuration(Binding):
     return self._configuration_space
 
   def check(self):
+    """Check the validity of the current configuration based on the generative configuration space.
+    """
     res = ccs_configuration_check(self.handle)
     Error.check(res)
+
+  @property
+  def hyperparameters(self):
+    """Returns the list of hyperparameters of the current configuration."""
+    return self.configuration_space.hyperparameters
+
+  def __getitem__(self, idx):
+    if type(idx) is int:
+      return self.values[idx]
+    elif type(idx) is str:
+      return self.value(idx)
+    else:
+      raise ValueError("index should be str or int")
+
+  def to_list(self):
+    """Returns a list copy of hyperparameter values of the current configuration."""
+    return self.values[:]
+
+  def to_dict(self):
+    """Returns a dict copy of the current configuration."""
+    return {hp.name:hp_value for hp, hp_value in zip(self.hyperparameters, self.values)}

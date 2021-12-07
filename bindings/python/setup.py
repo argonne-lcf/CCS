@@ -1,13 +1,40 @@
-from setuptools import setup, find_packages
-from pkg_resources import require
-require("parglare==0.12.0")
+import platform
+import os
+from setuptools import setup
+
+here = os.path.dirname(os.path.abspath(__file__))
+
+NAME = "cconfigspace"
+REQUIRES_PYTHON = ">=3.6"
+
+# Load the package's __version__.py module as a dictionary.
+about = {}
+with open(os.path.join(here, NAME, "__version__.py")) as f:
+  exec(f.read(), about)
+
+def get_lib_extension():
+  system = platform.uname()[0]
+  if system == "Linux":
+    lib_ext = "so.0.0.0"
+  elif system == "Darwin":  # MacOS
+    lib_ext = "dylib"
+  else: # Windows
+    lib_ext = "dll"
+  return lib_ext
+
+
+REQUIRED = ["parglare==0.12.0"]
+
 setup(
-    name = "cconfigspace",
-    version = "0.0.1",
-    author = "Brice Videau",
-    author_email = "bvideau@anl.gov",
-    url = "https://github.com/argonne-lcf/CCS",
-    packages = ["cconfigspace"],
-    package_dir={'cconfigspace': 'cconfigspace'},
-    license='BSD-3-Clause'
-    )
+  name=NAME,
+  version=about["__version__"],
+  author="Brice Videau",
+  author_email="bvideau@anl.gov",
+  python_requires=REQUIRES_PYTHON,
+  url="https://github.com/argonne-lcf/CCS",
+  packages=[NAME],
+  include_package_data=True,
+  package_data={NAME: [f"libcconfigspace.{get_lib_extension()}"]},
+  install_requires=REQUIRED,
+  license="BSD-3-Clause",
+)

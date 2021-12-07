@@ -126,3 +126,7 @@ Makefile
 #Misc
 build*
 src/config.h.in
+
+# IDE and Python
+.vscode
+.ipynb_checkpoints/
