@@ -576,6 +576,8 @@ ccs_get_error_name(ccs_error_t error, const char **name);
 /**
  * Query the library API version.
  * @return the library API version
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_version_t
 ccs_get_version();
@@ -585,6 +587,8 @@ ccs_get_version();
  * @param[in,out] object a CCS object
  * @return #CCS_SUCCESS on success
  * @return -#CCS_INVALID_OBJECT if the object is found to be invalid
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_retain_object(ccs_object_t object);
@@ -597,6 +601,8 @@ ccs_retain_object(ccs_object_t object);
  * @return #CCS_SUCCESS on success
  * @return -#CCS_INVALID_OBJECT if the object is found to be invalid
  * @return an error code given by the object destructor
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_release_object(ccs_object_t object);
@@ -609,6 +615,8 @@ ccs_release_object(ccs_object_t object);
  * @return #CCS_SUCCESS on success
  * @return -#CCS_INVALID_OBJECT if the object is found to be invalid
  * @return -#CCS_INVALID_VALUE if type_ret is NULL
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_object_get_type(ccs_object_t       object,
@@ -622,6 +630,9 @@ ccs_object_get_type(ccs_object_t       object,
  * @return #CCS_SUCCESS on success
  * @return -#CCS_INVALID_OBJECT if \p object is found to be invalid
  * @return -#CCS_INVALID_VALUE if \p refcount_ret is NULL
+ * @remarks
+ *   This function is thread-safe. The reference count returned is for
+ *   informational purpose only and must not be relied on.
  */
 extern ccs_result_t
 ccs_object_get_refcount(ccs_object_t  object,
@@ -630,7 +641,9 @@ ccs_object_get_refcount(ccs_object_t  object,
 /**
  * The type of CCS object destruction callbacks.
  */
-typedef void (*ccs_object_release_callback_t)(ccs_object_t object, void *user_data);
+typedef void (*ccs_object_release_callback_t)(
+	ccs_object_t object,
+	void *user_data);
 
 /**
  * Attach a destruction callback to a CCS object.
@@ -640,6 +653,8 @@ typedef void (*ccs_object_release_callback_t)(ccs_object_t object, void *user_da
  * @return #CCS_SUCCESS on success
  * @return -#CCS_INVALID_OBJECT if \p object is found to be invalid
  * @return -#CCS_INVALID_VALUE if \p callback is NULL
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_object_set_destroy_callback(ccs_object_t                   object,

@@ -3,6 +3,8 @@
 
 #include <cconfigspace.h>
 #include <stdarg.h>
+#include <pthread.h>
+#include <assert.h>
 #include "utarray.h"
 
 static inline ccs_bool_t
@@ -154,6 +156,7 @@ struct _ccs_object_internal_s {
 	ccs_object_type_t  type;
 	int32_t            refcount;
 	void              *user_data;
+	pthread_mutex_t    mutex;
 	UT_array          *callbacks;
 	_ccs_object_ops_t *ops;
 };
@@ -176,6 +179,7 @@ _ccs_object_init(_ccs_object_internal_t *o,
 	o->user_data = user_data;
 	o->callbacks = NULL;
 	o->ops = ops;
+	assert(!pthread_mutex_init(&o->mutex, NULL));
 }
 
 static inline int ccs_is_little_endian(void) {
