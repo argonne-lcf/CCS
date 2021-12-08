@@ -755,6 +755,8 @@ ccs_configuration_space_get_default_configuration(ccs_configuration_space_t  con
                                                   ccs_configuration_t       *configuration_ret) {
 	CCS_CHECK_OBJ(configuration_space, CCS_CONFIGURATION_SPACE);
 	CCS_CHECK_PTR(configuration_ret);
+	if (!configuration_space->data->graph_ok)
+		return -CCS_INVALID_GRAPH;
 	ccs_result_t err;
 	ccs_configuration_t config;
 	CCS_VALIDATE(ccs_create_configuration(configuration_space, 0, NULL, NULL, &config));
@@ -850,7 +852,7 @@ ccs_configuration_space_check_configuration(ccs_configuration_space_t configurat
 	if (configuration->data->configuration_space != configuration_space)
 		return -CCS_INVALID_CONFIGURATION;
 	if (!configuration_space->data->graph_ok)
-		CCS_VALIDATE(_generate_constraints(configuration_space));
+		return -CCS_INVALID_GRAPH;
 	return _check_configuration(configuration_space,
 	                            configuration->data->num_values,
 	                            configuration->data->values);
@@ -863,7 +865,7 @@ ccs_configuration_space_check_configuration_values(ccs_configuration_space_t  co
 	CCS_CHECK_OBJ(configuration_space, CCS_CONFIGURATION_SPACE);
 	CCS_CHECK_ARY(num_values, values);
 	if (!configuration_space->data->graph_ok)
-		CCS_VALIDATE(_generate_constraints(configuration_space));
+		return -CCS_INVALID_GRAPH;
 	return _check_configuration(configuration_space, num_values, values);
 }
 
@@ -937,7 +939,7 @@ ccs_configuration_space_sample(ccs_configuration_space_t  configuration_space,
 	ccs_result_t err;
 	ccs_configuration_t config;
 	if (!configuration_space->data->graph_ok)
-		CCS_VALIDATE(_generate_constraints(configuration_space));
+		return -CCS_INVALID_GRAPH;
 	CCS_VALIDATE(ccs_create_configuration(configuration_space, 0, NULL, NULL, &config));
 	ccs_bool_t found;
 	int counter = 0;
@@ -966,7 +968,7 @@ ccs_configuration_space_samples(ccs_configuration_space_t  configuration_space,
 		return CCS_SUCCESS;
 	ccs_result_t err;
 	if (!configuration_space->data->graph_ok)
-		CCS_VALIDATE(_generate_constraints(configuration_space));
+		return -CCS_INVALID_GRAPH;
 	size_t     counter = 0;
 	size_t     count = 0;
 	ccs_bool_t found;
@@ -1210,6 +1212,7 @@ ccs_configuration_space_set_condition(ccs_configuration_space_t configuration_sp
 erre:
 	ccs_release_object(expression);
 	wrapper->condition = NULL;
+	_generate_constraints(configuration_space);
 	return err;
 }
 
