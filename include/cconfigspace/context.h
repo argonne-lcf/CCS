@@ -24,6 +24,8 @@ extern "C" {
  * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p context is not a valid CCS
  * object
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p name_ret is NULL
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_context_get_name(ccs_context_t context, const char **name_ret);
@@ -40,6 +42,8 @@ ccs_context_get_name(ccs_context_t context, const char **name_ret);
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p index_ret is NULL
  * @return #CCS_RESULT_ERROR_INVALID_PARAMETER if \p context does not contain
  * \p parameter
+ * @remarks
+ *   This function is thread-safe for while threads are only reading context
  */
 extern ccs_result_t
 ccs_context_get_parameter_index(
@@ -56,6 +60,8 @@ ccs_context_get_parameter_index(
  * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p context is not a valid CCS
  * object
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p num_parameters_ret is NULL
+ * @remarks
+ *   This function is thread-safe for while threads are only reading context
  */
 extern ccs_result_t
 ccs_context_get_num_parameters(
@@ -74,6 +80,8 @@ ccs_context_get_num_parameters(
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p parameter_ret is NULL
  * @return #CCS_RESULT_ERROR_OUT_OF_BOUNDS if \p index is greater than the count
  * of parameters in the context
+ * @remarks
+ *   This function is thread-safe for while threads are only reading context
  */
 extern ccs_result_t
 ccs_context_get_parameter(
@@ -94,6 +102,8 @@ ccs_context_get_parameter(
  * NULL
  * @return #CCS_RESULT_ERROR_INVALID_NAME if no parameter with such \p name
  * exist in the \p context
+ * @remarks
+ *   This function is thread-safe for while threads are only reading context
  */
 extern ccs_result_t
 ccs_context_get_parameter_by_name(
@@ -113,6 +123,8 @@ ccs_context_get_parameter_by_name(
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p name or \p index_ret are NULL
  * @return #CCS_RESULT_ERROR_INVALID_NAME if no parameter with such \p name
  * exist in the context
+ * @remarks
+ *   This function is thread-safe for while threads are only reading context
  */
 extern ccs_result_t
 ccs_context_get_parameter_index_by_name(
@@ -139,6 +151,8 @@ ccs_context_get_parameter_index_by_name(
  * num_parameters is greater than 0; or if \p parameters is NULL and \p
  * num_parameters_ret is NULL; or if \p num_parameters is less than the number
  * of parameters that would be returned
+ * @remarks
+ *   This function is thread-safe for while threads are only reading context
  */
 extern ccs_result_t
 ccs_context_get_parameters(
@@ -163,6 +177,8 @@ ccs_context_get_parameters(
  * num_parameters is greater than 0
  * @return #CCS_RESULT_ERROR_INVALID_PARAMETER if at least one of the
  * parameters is not contained in \p context
+ * @remarks
+ *   This function is thread-safe for while threads are only reading context
  */
 extern ccs_result_t
 ccs_context_get_parameter_indexes(
@@ -189,6 +205,8 @@ ccs_context_get_parameter_indexes(
  * memoizing a string
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if the value did not validate or if
  * value_ret is NULL
+ * @remarks
+ *   This function is thread-safe for while threads are only reading context
  */
 extern ccs_result_t
 ccs_context_validate_value(
