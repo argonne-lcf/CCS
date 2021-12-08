@@ -242,7 +242,6 @@ struct _ccs_object_callback_s {
 typedef struct _ccs_object_callback_s _ccs_object_callback_t;
 
 struct _ccs_object_internal_s {
-<<<<<<< HEAD
 	ccs_object_type_t               type;
 	int32_t                         refcount;
 	void                           *user_data;
@@ -270,7 +269,7 @@ _ccs_object_init(
 	o->type                = t;
 	o->refcount            = 1;
 	o->user_data           = NULL;
-	o->mutex               = PTHREAD_MUTEX_INITIALIZER;
+	o->mutex               = (pthread_mutex_t)PTHREAD_MUTEX_INITIALIZER;
 	o->callbacks           = NULL;
 	o->ops                 = ops;
 	o->serialize_callback  = NULL;

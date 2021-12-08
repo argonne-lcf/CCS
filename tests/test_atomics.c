@@ -26,7 +26,7 @@ test_parallel_retain_release()
 
 	err = ccs_create_numerical_parameter(
 		"my_param", CCS_NUMERIC_TYPE_FLOAT, CCSF(-5.0), CCSF(5.0),
-		 CCSF(0.0), CCSF(1.0), &parameter);
+		CCSF(0.0), CCSF(1.0), &parameter);
 	assert(err == CCS_RESULT_SUCCESS);
 
 	pthread_create(&thread1, NULL, &code, parameter);
