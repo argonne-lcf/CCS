@@ -8,7 +8,7 @@ class ccs_version(ct.Structure):
               ("major",    ct.c_ushort)]
 
   def __repr__(self):
-    return "{}.{}.{}.{}".format(self.major, self.minor, self.patch, self.revision)
+    return str(f"{self.major}.{self.minor}.{self.patch}-{self.revision}")
 
   @property
   def short(self):
