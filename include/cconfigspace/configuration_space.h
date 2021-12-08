@@ -536,6 +536,8 @@ ccs_configuration_space_get_forbidden_clauses(
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p is_valid_ret is NULL
  * @return #CCS_RESULT_ERROR_INVALID_CONFIGURATION if \p configuration is not
  * associated to the configuration space
+ * @return #CCS_RESULT_ERROR_INVALID_GRAPH if the graph of constraints could
+ * not be previsoulsy generated
  */
 extern ccs_result_t
 ccs_configuration_space_check_configuration(
@@ -564,6 +566,8 @@ ccs_configuration_space_check_configuration(
  * is greater than 0
  * @return #CCS_RESULT_ERROR_INVALID_CONFIGURATION if \p num_values is not equal
  * to the number of parameters in the configuration space
+ * @return #CCS_RESULT_ERROR_INVALID_GRAPH if the graph of constraints could
+ * not be previsoulsy generated
  */
 extern ccs_result_t
 ccs_configuration_space_check_configuration_values(
@@ -583,6 +587,8 @@ ccs_configuration_space_check_configuration_values(
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if configuration_ret is NULL
  * @return #CCS_RESULT_ERROR_OUT_OF_MEMORY if there was not enough memory to
  * allocate the new configuration
+ * @return #CCS_RESULT_ERROR_INVALID_GRAPH if the graph of constraints could
+ * not be previsoulsy generated
  */
 extern ccs_result_t
 ccs_configuration_space_get_default_configuration(
@@ -605,6 +611,8 @@ ccs_configuration_space_get_default_configuration(
  * could be sampled
  * @return #CCS_RESULT_ERROR_OUT_OF_MEMORY if there was not enough memory to
  * allocate the new configuration
+ * @return #CCS_RESULT_ERROR_INVALID_GRAPH if the graph of constraints could
+ * not be previsoulsy generated
  */
 extern ccs_result_t
 ccs_configuration_space_sample(
@@ -632,6 +640,8 @@ ccs_configuration_space_sample(
  * @return #CCS_RESULT_ERROR_OUT_OF_MEMORY if there was not enough memory to
  * allocate new configurations. Configurations that could be allocated will be
  * returned, and the rest will be NULL
+ * @return #CCS_RESULT_ERROR_INVALID_GRAPH if the graph of constraints could
+ * not be previsoulsy generated
  */
 extern ccs_result_t
 ccs_configuration_space_samples(
