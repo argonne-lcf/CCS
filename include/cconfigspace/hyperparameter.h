@@ -9,7 +9,8 @@ extern "C" {
  * @file hyperparameter.h
  * Hyperparameters are parameters the when grouped together define a tuning
  * context (see context.h). Most hyperparameters can be sampled according to a
- * distribution's dimension (see distribution.h).
+ * distribution's dimension (see distribution.h). Hyperparamters are immutable,
+ * except from a reference counting and callback management point of view.
  */
 
 /**
@@ -70,6 +71,8 @@ typedef enum ccs_hyperparameter_type_e ccs_hyperparameter_type_t;
  *                            #CCS_NUM_INTEGER
  * @return -#CCS_OUT_OF_MEMORY if there was a lack of memory to allocate the new
  *                             numerical hyperparameter
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_create_numerical_hyperparameter(const char           *name,
@@ -100,6 +103,8 @@ ccs_create_numerical_hyperparameter(const char           *name,
  * @return -#CCS_INVALID_VALUE if \p data_type_ret is NULL and \p lower_ret is
  *                             NULL and \p upper_ret is NULL and \p
  *                             quantization_ret is NULL
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_numerical_hyperparameter_get_parameters(
@@ -127,6 +132,8 @@ ccs_numerical_hyperparameter_get_parameters(
  *                             is NULL
  * @return -#CCS_OUT_OF_MEMORY if there was a lack of memory to allocate the new
  *                             hyperparameter
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_create_categorical_hyperparameter(const char           *name,
@@ -157,6 +164,8 @@ ccs_create_categorical_hyperparameter(const char           *name,
  *                             num_possible_values_ret is NULL; or if
  *                             num_possible_values is less than the number of
  *                             values that would be returned
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_categorical_hyperparameter_get_values(
@@ -184,6 +193,8 @@ ccs_categorical_hyperparameter_get_values(
  *                             is NULL
  * @return -#CCS_OUT_OF_MEMORY if there was a lack of memory to allocate the new
  *                             hyperparameter
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_create_ordinal_hyperparameter(const char           *name,
@@ -214,6 +225,8 @@ ccs_create_ordinal_hyperparameter(const char           *name,
  *                             num_possible_values_ret is NULL; or if
  *                             num_possible_values is less than the number of
  *                             values that would be returned
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_ordinal_hyperparameter_get_values(
@@ -236,6 +249,8 @@ ccs_ordinal_hyperparameter_get_values(
  *                                      hyperparameter
  * @return -#CCS_INVALID_VALUE if \p comp_ret is NULL; or if value1 or value2
  *                             are not one of the hyperparameter possible values
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_ordinal_hyperparameter_compare_values(ccs_hyperparameter_t  hyperparameter,
@@ -262,6 +277,8 @@ ccs_ordinal_hyperparameter_compare_values(ccs_hyperparameter_t  hyperparameter,
  *                             is NULL
  * @return -#CCS_OUT_OF_MEMORY if there was a lack of memory to allocate the new
  *                             hyperparameter
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_create_discrete_hyperparameter(const char           *name,
@@ -292,6 +309,8 @@ ccs_create_discrete_hyperparameter(const char           *name,
  *                             num_possible_values_ret is NULL; or if
  *                             num_possible_values is less than the number of
  *                             values that would be returned
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_discrete_hyperparameter_get_values(ccs_hyperparameter_t  hyperparameter,
@@ -313,6 +332,8 @@ ccs_discrete_hyperparameter_get_values(ccs_hyperparameter_t  hyperparameter,
  *                             is NULL
  * @return -#CCS_OUT_OF_MEMORY if there was a lack of memory to allocate the new
  *                             hyperparameter
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_create_string_hyperparameter(const char           *name,
@@ -328,6 +349,8 @@ ccs_create_string_hyperparameter(const char           *name,
  * @return -#CCS_INVALID_VALUE if \p type_ret is NULL
  * @return -#CCS_INVALID_OBJECT if \p distribution is not a valid CCS
  *                              hyperparameter
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_hyperparameter_get_type(ccs_hyperparameter_t       hyperparameter,
@@ -342,6 +365,8 @@ ccs_hyperparameter_get_type(ccs_hyperparameter_t       hyperparameter,
  * @return -#CCS_INVALID_VALUE if \p value_ret is NULL
  * @return -#CCS_INVALID_OBJECT if \p distribution is not a valid CCS
  *                              hyperparameter
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_hyperparameter_get_default_value(ccs_hyperparameter_t  hyperparameter,
@@ -356,6 +381,8 @@ ccs_hyperparameter_get_default_value(ccs_hyperparameter_t  hyperparameter,
  * @return -#CCS_INVALID_VALUE if \p name_ret is NULL
  * @return -#CCS_INVALID_OBJECT if \p distribution is not a valid CCS
  *                              hyperparameter
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_hyperparameter_get_name(ccs_hyperparameter_t   hyperparameter,
@@ -370,6 +397,8 @@ ccs_hyperparameter_get_name(ccs_hyperparameter_t   hyperparameter,
  * @return -#CCS_INVALID_OBJECT if \p hyperparameter is not a valid CCS
  *                              hyperparameter
  * @return -#CCS_INVALID_VALUE if \p distribution_ret is NULL
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_hyperparameter_get_default_distribution(
@@ -386,6 +415,8 @@ ccs_hyperparameter_get_default_distribution(
  * @return -#CCS_INVALID_OBJECT if \p hyperparameter is not a valid CCS
  *                              hyperparameter
  * @return -#CCS_INVALID_VALUE if \p result_ret is NULL
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_hyperparameter_check_value(ccs_hyperparameter_t  hyperparameter,
@@ -404,6 +435,8 @@ ccs_hyperparameter_check_value(ccs_hyperparameter_t  hyperparameter,
  *                              hyperparameter
  * @return -#CCS_INVALID_VALUE if \p values or \p results are NULL and \p
  *                             num_values is greater than 0
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_hyperparameter_check_values(ccs_hyperparameter_t  hyperparameter,
@@ -425,6 +458,8 @@ ccs_hyperparameter_check_values(ccs_hyperparameter_t  hyperparameter,
  * @return -#CCS_INVALID_OBJECT if \p hyperparameter is not a valid CCS
  *                              hyperparameter
  * @return -#CCS_INVALID_VALUE if \p result_ret or \p value_ret is NULL
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_hyperparameter_validate_value(ccs_hyperparameter_t  hyperparameter,
@@ -448,6 +483,8 @@ ccs_hyperparameter_validate_value(ccs_hyperparameter_t  hyperparameter,
  *                              hyperparameter
  * @return -#CCS_INVALID_VALUE if \p values or \p results or \p values_ret are
  *                             NULL and \p num_values is greater than 0
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_hyperparameter_validate_values(ccs_hyperparameter_t  hyperparameter,
@@ -474,6 +511,10 @@ ccs_hyperparameter_validate_values(ccs_hyperparameter_t  hyperparameter,
  *                              hyperparameter
  * @return -#CCS_INVALID_VALUE if \p values or \p results are NULL and \p
  *                             num_values is greater than 0
+ * @return -#CCS_UNSUPPORTED_OPERATION if \p hyperparameter type is
+ *                                     #CCS_HYPERPARAMETER_TYPE_STRING
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_hyperparameter_convert_samples(ccs_hyperparameter_t  hyperparameter,
@@ -498,6 +539,10 @@ ccs_hyperparameter_convert_samples(ccs_hyperparameter_t  hyperparameter,
  * @return -#CCS_SAMPLING_UNSUCCESSFUL if the sample could not be generated,
  *                                     because the probability of obtaining a
  *                                     valid sample is too low
+ * @return -#CCS_UNSUPPORTED_OPERATION if \p hyperparameter type is
+ *                                     #CCS_HYPERPARAMETER_TYPE_STRING
+ * @remarks
+ *   This function is thread-safe if \p rng is only used by one thread at a time
  */
 extern ccs_result_t
 ccs_hyperparameter_sample(ccs_hyperparameter_t  hyperparameter,
@@ -523,6 +568,10 @@ ccs_hyperparameter_sample(ccs_hyperparameter_t  hyperparameter,
  * @return -#CCS_SAMPLING_UNSUCCESSFUL if not enough samples could not be
  *                                     generated, because the probability of
  *                                     obtaining a valid sample is too low
+ * @return -#CCS_UNSUPPORTED_OPERATION if \p hyperparameter type is
+ *                                     #CCS_HYPERPARAMETER_TYPE_STRING
+ * @remarks
+ *   This function is thread-safe if \p rng is only used by one thread at a time
  */
 extern ccs_result_t
 ccs_hyperparameter_samples(ccs_hyperparameter_t  hyperparameter,
@@ -540,6 +589,8 @@ ccs_hyperparameter_samples(ccs_hyperparameter_t  hyperparameter,
  * @return -#CCS_INVALID_OBJECT if \p hyperparameter is not a valid CCS
  *                              hyperparameter
  * @return -#CCS_INVALID_VALUE if \p interval_ret is NULL
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_hyperparameter_sampling_interval(ccs_hyperparameter_t  hyperparameter,

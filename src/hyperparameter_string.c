@@ -7,6 +7,7 @@
 struct _ccs_hyperparameter_string_data_s {
 	_ccs_hyperparameter_common_data_t  common_data;
 	_ccs_hash_datum_t                 *stored_values;
+	pthread_mutex_t                    mutex;
 };
 typedef struct _ccs_hyperparameter_string_data_s _ccs_hyperparameter_string_data_t;
 
@@ -35,6 +36,7 @@ _ccs_hyperparameter_string_del(ccs_object_t o) {
 		HASH_DEL(data->stored_values, current);
 		free(current);
 	}
+	pthread_mutex_destroy(&data->mutex);
 	return CCS_SUCCESS;
 }
 
@@ -97,6 +99,7 @@ _ccs_hyperparameter_string_serialize(
 
 #undef uthash_nonfatal_oom
 #define uthash_nonfatal_oom(elt) { \
+	pthread_mutex_unlock(&d->mutex); \
 	return -CCS_OUT_OF_MEMORY; \
 }
 
@@ -114,6 +117,7 @@ _ccs_hyperparameter_string_check_values(_ccs_hyperparameter_data_t *data,
 		else
 			results[i] = CCS_TRUE;
 	if (values_ret) {
+		pthread_mutex_lock(&d->mutex);
 		for (size_t i = 0; i < num_values; i++)
 			if (results[i] == CCS_TRUE) {
 				_ccs_hash_datum_t *p;
@@ -123,8 +127,10 @@ _ccs_hyperparameter_string_check_values(_ccs_hyperparameter_data_t *data,
 					if (values[i].value.s)
 						sz_str = strlen(values[i].value.s) + 1;
 					p = (_ccs_hash_datum_t *)malloc(sizeof(_ccs_hash_datum_t) + sz_str);
-					if (!p)
+					if (!p) {
+						pthread_mutex_unlock(&d->mutex);
 						return -CCS_OUT_OF_MEMORY;
+					}
 					if (sz_str) {
 						strcpy((char *)((intptr_t)p + sizeof(_ccs_hash_datum_t)), values[i].value.s);
 						p->d = ccs_string((char *)((intptr_t)p + sizeof(_ccs_hash_datum_t)));
@@ -136,6 +142,7 @@ _ccs_hyperparameter_string_check_values(_ccs_hyperparameter_data_t *data,
 			} else {
 				values_ret[i] = ccs_inactive;
 			}
+		pthread_mutex_unlock(&d->mutex);
 	}
 	return CCS_SUCCESS;
 }
@@ -206,6 +213,7 @@ ccs_create_string_hyperparameter(const char           *name,
 	strcpy((char *)hyperparam_data->common_data.name, name);
 	hyperparam_data->common_data.interval.type = CCS_NUM_INTEGER;
 	hyperparam_data->stored_values = NULL;
+	pthread_mutex_init(&hyperparam_data->mutex, NULL);
 	hyperparam->data = (_ccs_hyperparameter_data_t *)hyperparam_data;
 	*hyperparameter_ret = hyperparam;
 
