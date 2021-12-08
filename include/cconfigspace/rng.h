@@ -22,6 +22,8 @@ extern "C" {
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p rng_ret is NULL
  * @return #CCS_RESULT_ERROR_OUT_OF_MEMORY if there was not enough memory to
  * allocate the new random number generator
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_create_rng(ccs_rng_t *rng_ret);
@@ -37,6 +39,8 @@ ccs_create_rng(ccs_rng_t *rng_ret);
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p rng_ret or \p rng_type are NULL
  * @return #CCS_RESULT_ERROR_OUT_OF_MEMORY if there was not enough memory to
  * allocate the new random number generator
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_create_rng_with_type(const gsl_rng_type *rng_type, ccs_rng_t *rng_ret);
@@ -50,6 +54,8 @@ ccs_create_rng_with_type(const gsl_rng_type *rng_type, ccs_rng_t *rng_ret);
  * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p rng is not a valid CCS random
  * number generator
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p rng_type_ret is NULL
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_rng_get_type(ccs_rng_t rng, const gsl_rng_type **rng_type_ret);
@@ -61,6 +67,8 @@ ccs_rng_get_type(ccs_rng_t rng, const gsl_rng_type **rng_type_ret);
  * @return #CCS_RESULT_SUCCESS on success
  * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p rng is not a valid CCS random
  * number generator
+ * @remarks
+ *   This function is NOT thread-safe
  */
 extern ccs_result_t
 ccs_rng_set_seed(ccs_rng_t rng, unsigned long int seed);
@@ -75,6 +83,8 @@ ccs_rng_set_seed(ccs_rng_t rng, unsigned long int seed);
  * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p rng is not a valid CCS random
  * number generator
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p value_ret is NULL
+ * @remarks
+ *   This function is NOT thread-safe
  */
 extern ccs_result_t
 ccs_rng_get(ccs_rng_t rng, unsigned long int *value_ret);
@@ -89,6 +99,8 @@ ccs_rng_get(ccs_rng_t rng, unsigned long int *value_ret);
  * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p rng is not a valid CCS random
  * number generator
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p value_ret is NULL
+ * @remarks
+ *   This function is NOT thread-safe
  */
 extern ccs_result_t
 ccs_rng_uniform(ccs_rng_t rng, ccs_float_t *value_ret);
@@ -102,6 +114,8 @@ ccs_rng_uniform(ccs_rng_t rng, ccs_float_t *value_ret);
  * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p rng is not a valid CCS random
  * number generator
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p gsl_rng_ret is NULL
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_rng_get_gsl_rng(ccs_rng_t rng, gsl_rng **gsl_rng_ret);
@@ -115,6 +129,8 @@ ccs_rng_get_gsl_rng(ccs_rng_t rng, gsl_rng **gsl_rng_ret);
  * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p rng is not a valid CCS random
  * number generator
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p value_ret is NULL
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_rng_min(ccs_rng_t rng, unsigned long int *value_ret);
@@ -128,6 +144,8 @@ ccs_rng_min(ccs_rng_t rng, unsigned long int *value_ret);
  * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p rng is not a valid CCS random
  * number generator
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p value_ret is NULL
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_rng_max(ccs_rng_t rng, unsigned long int *value_ret);
