@@ -29,22 +29,34 @@ ccs_get_version() {
 	return ccs_version;
 }
 
+static inline int32_t
+_ccs_inc_ref(_ccs_object_internal_t *obj) {
+	return CCS_ATOMIC_FETCH_ADD(obj);
+}
+
 ccs_result_t
 ccs_retain_object(ccs_object_t object) {
 	_ccs_object_internal_t *obj = (_ccs_object_internal_t *)object;
-        if (!obj || obj->refcount <= 0)
+        if (CCS_UNLIKELY(!obj || obj->refcount <= 0))
 		return -CCS_INVALID_OBJECT;
-	obj->refcount += 1;
+	int32_t refcount = _ccs_inc_ref(obj);
+	if (CCS_UNLIKELY(refcount <= 0))
+		return -CCS_INVALID_OBJECT;
 	return CCS_SUCCESS;
+}
+
+static inline int32_t
+_ccs_dec_ref(_ccs_object_internal_t *obj) {
+	return CCS_ATOMIC_SUB_FETCH(obj);
 }
 
 ccs_result_t
 ccs_release_object(ccs_object_t object) {
 	_ccs_object_internal_t *obj = (_ccs_object_internal_t *)object;
-	if (!obj || obj->refcount <= 0)
+	if (CCS_UNLIKELY(!obj || obj->refcount <= 0))
 		return -CCS_INVALID_OBJECT;
-	obj->refcount -= 1;
-	if (obj->refcount == 0) {
+	int32_t refcount = _ccs_dec_ref(obj);
+	if (refcount == 0) {
 		if (obj->callbacks) {
 			_ccs_object_callback_t *cb = NULL;
 			while ( (cb = (_ccs_object_callback_t *)
@@ -55,7 +67,8 @@ ccs_release_object(ccs_object_t object) {
 		}
 		CCS_VALIDATE(obj->ops->del(object));
 		free(object);
-	}
+	} else if (CCS_UNLIKELY(refcount < 0))
+		return -CCS_INVALID_OBJECT;
 	return CCS_SUCCESS;
 }
 

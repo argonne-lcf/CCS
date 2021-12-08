@@ -33,6 +33,12 @@ _ccs_interval_include(ccs_interval_t *interval, ccs_numeric_t value) {
  */
 #define CCS_UNLIKELY(x)    __builtin_expect(!!(x), 0)
 
+#define CCS_ATOMIC_FETCH_ADD(obj) \
+	__atomic_fetch_add(&obj->refcount, 1, __ATOMIC_RELAXED)
+
+#define CCS_ATOMIC_SUB_FETCH(obj) \
+	__atomic_sub_fetch(&obj->refcount, 1, __ATOMIC_RELAXED)
+
 #define CCS_CHECK_OBJ(o, t) do { \
 	if (CCS_UNLIKELY(!(o) || \
 	    !((_ccs_object_template_t *)(o))->data || \
