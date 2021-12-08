@@ -78,6 +78,7 @@ ccs_release_object(ccs_object_t object)
 				cb->callback(object, cb->user_data);
 			}
 			utarray_free(obj->callbacks);
+			pthread_mutex_destroy(&obj->mutex);
 		}
 		CCS_VALIDATE(obj->ops->del(object));
 		free(object);
@@ -120,7 +121,9 @@ ccs_object_set_destroy_callback(
 	if (!obj->callbacks)
 		utarray_new(obj->callbacks, &_object_callback_icd);
 	_ccs_object_callback_t cb = {callback, user_data};
+	pthread_mutex_lock(&obj->mutex);
 	utarray_push_back(obj->callbacks, &cb);
+	pthread_mutex_unlock(&obj->mutex);
 	return CCS_RESULT_SUCCESS;
 }
 

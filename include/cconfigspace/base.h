@@ -720,6 +720,8 @@ ccs_get_result_name(ccs_result_t result, const char **name);
 /**
  * Query the library API version.
  * @return the library API version
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_version_t
 ccs_get_version();
@@ -737,6 +739,8 @@ ccs_get_version_string();
  * @param[in,out] object a CCS object
  * @return #CCS_RESULT_SUCCESS on success
  * @return #CCS_RESULT_ERROR_INVALID_OBJECT if the object is found to be invalid
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_retain_object(ccs_object_t object);
@@ -749,6 +753,8 @@ ccs_retain_object(ccs_object_t object);
  * @return #CCS_RESULT_SUCCESS on success
  * @return #CCS_RESULT_ERROR_INVALID_OBJECT if the object is found to be invalid
  * @return an error code given by the object destructor
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_release_object(ccs_object_t object);
@@ -761,6 +767,8 @@ ccs_release_object(ccs_object_t object);
  * @return #CCS_RESULT_SUCCESS on success
  * @return #CCS_RESULT_ERROR_INVALID_OBJECT if the object is found to be invalid
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if type_ret is NULL
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_object_get_type(ccs_object_t object, ccs_object_type_t *type_ret);
@@ -773,6 +781,9 @@ ccs_object_get_type(ccs_object_t object, ccs_object_type_t *type_ret);
  * @return #CCS_RESULT_SUCCESS on success
  * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p object is found to be invalid
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p refcount_ret is NULL
+ * @remarks
+ *   This function is thread-safe. The reference count returned is for
+ *   informational purpose only and must not be relied on.
  */
 extern ccs_result_t
 ccs_object_get_refcount(ccs_object_t object, int32_t *refcount_ret);
@@ -792,6 +803,8 @@ typedef void (
  * @return #CCS_RESULT_SUCCESS on success
  * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p object is found to be invalid
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p callback is NULL
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_object_set_destroy_callback(

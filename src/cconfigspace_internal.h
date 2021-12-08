@@ -3,6 +3,7 @@
 
 #include <cconfigspace.h>
 #include <stdarg.h>
+#include <pthread.h>
 #include "utarray.h"
 
 static inline ccs_bool_t
@@ -241,9 +242,11 @@ struct _ccs_object_callback_s {
 typedef struct _ccs_object_callback_s _ccs_object_callback_t;
 
 struct _ccs_object_internal_s {
+<<<<<<< HEAD
 	ccs_object_type_t               type;
 	int32_t                         refcount;
 	void                           *user_data;
+	pthread_mutex_t                 mutex;
 	UT_array                       *callbacks;
 	_ccs_object_ops_t              *ops;
 	ccs_object_serialize_callback_t serialize_callback;
@@ -267,6 +270,7 @@ _ccs_object_init(
 	o->type                = t;
 	o->refcount            = 1;
 	o->user_data           = NULL;
+	o->mutex               = PTHREAD_MUTEX_INITIALIZER;
 	o->callbacks           = NULL;
 	o->ops                 = ops;
 	o->serialize_callback  = NULL;
