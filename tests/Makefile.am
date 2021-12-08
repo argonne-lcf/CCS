@@ -36,7 +36,10 @@ CCONFIGSPACE_TESTS = \
 	test_static_tree_space \
 	test_dynamic_tree_space \
 	test_random_tree_tuner \
-	test_user_defined_tree_tuner
+	test_user_defined_tree_tuner \
+	test_atomics
+
+test_atomics_LDFLAGS = -lpthread $(AM_LDFLAGS)
 
 # unit tests
 UNIT_TESTS = \

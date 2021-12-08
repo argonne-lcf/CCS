@@ -36,6 +36,12 @@ _ccs_interval_include(ccs_interval_t *interval, ccs_numeric_t value)
 
 #define CCS_RICH_ERRORS 1
 
+#define CCS_ATOMIC_FETCH_ADD(obj)                                              \
+	__atomic_fetch_add(&obj->refcount, 1, __ATOMIC_RELAXED)
+
+#define CCS_ATOMIC_SUB_FETCH(obj)                                              \
+	__atomic_sub_fetch(&obj->refcount, 1, __ATOMIC_RELAXED)
+
 #if CCS_RICH_ERRORS
 #define CCS_ADD_STACK_ELEM()                                                   \
 	do {                                                                   \
