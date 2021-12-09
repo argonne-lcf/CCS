@@ -60,15 +60,26 @@ _ccs_tuner_user_defined_get_history(_ccs_tuner_data_t *data,
 	return d->vector.get_history(d->selfref, num_evaluations, evaluations, num_evaluations_ret);
 }
 
+static ccs_result_t
+_ccs_tuner_user_defined_suggest(_ccs_tuner_data_t   *data,
+                                ccs_configuration_t *configuration_ret) {
+	_ccs_user_defined_tuner_data_t *d =
+		(_ccs_user_defined_tuner_data_t *)data;
+	if (!d->vector.suggest)
+		return -CCS_UNSUPPORTED_OPERATION;
+	return d->vector.suggest(d->selfref, configuration_ret);
+}
+
 static _ccs_tuner_ops_t _ccs_tuner_user_defined_ops = {
 	{ &_ccs_tuner_user_defined_del },
 	&_ccs_tuner_user_defined_ask,
 	&_ccs_tuner_user_defined_tell,
 	&_ccs_tuner_user_defined_get_optimums,
-	&_ccs_tuner_user_defined_get_history
+	&_ccs_tuner_user_defined_get_history,
+	&_ccs_tuner_user_defined_suggest
 };
 
-extern ccs_result_t
+ccs_result_t
 ccs_create_user_defined_tuner(const char                      *name,
                               ccs_configuration_space_t        configuration_space,
                               ccs_objective_space_t            objective_space,
@@ -96,12 +107,8 @@ ccs_create_user_defined_tuner(const char                      *name,
 	ccs_tuner_t tun;
 	_ccs_user_defined_tuner_data_t * data;
 	ccs_result_t err;
-	err = ccs_retain_object(configuration_space);
-	if (err)
-		goto errmem;
-	err = ccs_retain_object(objective_space);
-	if (err)
-		goto errcs;
+	CCS_VALIDATE_ERR_GOTO(err, ccs_retain_object(configuration_space), errmem);
+	CCS_VALIDATE_ERR_GOTO(err, ccs_retain_object(objective_space), errcs);
 
 	tun = (ccs_tuner_t)mem;
 	_ccs_object_init(&(tun->obj), CCS_TUNER, (_ccs_object_ops_t *)&_ccs_tuner_user_defined_ops);

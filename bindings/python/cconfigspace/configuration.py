@@ -1,7 +1,6 @@
 import ctypes as ct
-from .base import Object, Error, ccs_error, _ccs_get_function, ccs_context, ccs_hyperparameter, ccs_configuration_space, ccs_configuration, ccs_rng, ccs_distribution, ccs_expression, ccs_datum, ccs_hash, ccs_int
+from .base import Object, Error, ccs_error, _ccs_get_function, ccs_context, ccs_hyperparameter, ccs_configuration_space, ccs_configuration, ccs_distribution, ccs_expression, ccs_datum, ccs_hash, ccs_int
 from .context import Context
-from .rng import Rng
 from .hyperparameter import Hyperparameter
 from .configuration_space import ConfigurationSpace
 from .binding import Binding
@@ -34,7 +33,7 @@ class Configuration(Binding):
       else:
         vals = None
       handle = ccs_configuration()
-      res = ccs_create_configuration(configuration_space.handle, count, vals, ct.byref(handle))
+      res = ccs_create_configuration(configuration_space.handle, count, vals, user_data, ct.byref(handle))
       Error.check(res)
       super().__init__(handle = handle, retain = False)
     else:

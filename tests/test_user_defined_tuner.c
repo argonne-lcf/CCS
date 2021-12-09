@@ -124,7 +124,8 @@ ccs_user_defined_tuner_vector_t tuner_last_vector = {
 	&tuner_last_ask,
 	&tuner_last_tell,
 	&tuner_last_get_optimums,
-	&tuner_last_get_history
+	&tuner_last_get_history,
+	NULL
 };
 
 void test() {
@@ -216,6 +217,7 @@ void test() {
 int main() {
 	ccs_init();
 	test();
+	ccs_fini();
 	return 0;
 }
 

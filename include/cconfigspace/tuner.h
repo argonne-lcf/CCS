@@ -45,6 +45,10 @@ ccs_tuner_tell(ccs_tuner_t       tuner,
                ccs_evaluation_t *evaluations);
 
 extern ccs_result_t
+ccs_tuner_suggest(ccs_tuner_t          tuner,
+                  ccs_configuration_t *configuration);
+
+extern ccs_result_t
 ccs_tuner_get_optimums(ccs_tuner_t       tuner,
                        size_t            num_evaluations,
                        ccs_evaluation_t *evaluations,
@@ -89,6 +93,10 @@ struct ccs_user_defined_tuner_vector_s {
 		size_t            num_evaluations,
 		ccs_evaluation_t *evaluations,
 		size_t           *num_evaluations_ret);
+
+	ccs_result_t (*suggest)(
+		ccs_tuner_t          tuner,
+		ccs_configuration_t *configuration);
 };
 typedef struct ccs_user_defined_tuner_vector_s ccs_user_defined_tuner_vector_t;
 

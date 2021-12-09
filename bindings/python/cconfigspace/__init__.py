@@ -61,6 +61,10 @@ from .distribution import *
 from .evaluation import *
 from .expression import *
 from .expression_parser import *
+from .features import *
+from .features_evaluation import *
+from .features_space import *
+from .features_tuner import *
 from .hyperparameter import *
 from .interval import *
 from .objective_space import *

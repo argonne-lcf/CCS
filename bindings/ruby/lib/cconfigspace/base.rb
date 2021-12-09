@@ -75,9 +75,13 @@ module CCS
   typedef :pointer, :ccs_configuration_space_t
   typedef :pointer, :ccs_binding_t
   typedef :pointer, :ccs_configuration_t
+  typedef :pointer, :ccs_features_space_t
+  typedef :pointer, :ccs_features_t
   typedef :pointer, :ccs_objective_space_t
   typedef :pointer, :ccs_evaluation_t
+  typedef :pointer, :ccs_features_evaluation_t
   typedef :pointer, :ccs_tuner_t
+  typedef :pointer, :ccs_features_tuner_t
   typedef :pointer, :ccs_object_t
   class MemoryPointer
     alias read_ccs_rng_t read_pointer
@@ -88,9 +92,13 @@ module CCS
     alias read_ccs_configuration_space_t read_pointer
     alias read_ccs_binding_t read_pointer
     alias read_ccs_configuration_t read_pointer
+    alias read_ccs_features_space_t read_pointer
+    alias read_ccs_features_t read_pointer
     alias read_ccs_objective_space_t read_pointer
     alias read_ccs_evaluation_t read_pointer
+    alias read_ccs_features_evaluation_t read_pointer
     alias read_ccs_tuner_t read_pointer
+    alias read_ccs_features_tuner_t read_pointer
     alias read_ccs_object_t read_pointer
   end
 
@@ -115,7 +123,9 @@ module CCS
     :CCS_INACTIVE_HYPERPARAMETER,
     :CCS_OUT_OF_MEMORY,
     :CCS_UNSUPPORTED_OPERATION,
-    :CCS_INVALID_EVALUATION ]
+    :CCS_INVALID_EVALUATION,
+    :CCS_INVALID_FEATURES,
+    :CCS_INVALID_FEATURES_TUNER ]
 
   ObjectType = enum FFI::Type::INT32, :ccs_object_type_t, [
     :CCS_RNG,
@@ -126,7 +136,11 @@ module CCS
     :CCS_CONFIGURATION,
     :CCS_OBJECTIVE_SPACE,
     :CCS_EVALUATION,
-    :CCS_TUNER ]
+    :CCS_TUNER,
+    :CCS_FEATURES_SPACE,
+    :CCS_FEATURES,
+    :CCS_FEATURES_EVALUATION,
+    :CCS_FEATURES_TUNER ]
 
   class MemoryPointer
     def read_ccs_object_type_t
@@ -373,6 +387,7 @@ module CCS
   typedef Datum.by_value, :ccs_datum_t
 
   attach_function :ccs_init, [], :ccs_result_t
+  attach_function :ccs_fini, [], :ccs_result_t
   attach_function :ccs_get_version, [], :ccs_version_t
   attach_function :ccs_retain_object, [:ccs_object_t], :ccs_result_t
   attach_function :ccs_release_object, [:ccs_object_t], :ccs_result_t
@@ -481,12 +496,20 @@ module CCS
         CCS::ConfigurationSpace
       when :CCS_CONFIGURATION
         CCS::Configuration
+      when :CCS_FEATURES_SPACE
+	CCS::FeaturesSpace
+      when :CCS_FEATURES
+	CCS::Features
       when :CCS_OBJECTIVE_SPACE
         CCS::ObjectiveSpace
       when :CCS_EVALUATION
         CCS::Evaluation
+      when :CCS_FEATURES_EVALUATION
+        CCS::FeaturesEvaluation
       when :CCS_TUNER
         CCS::Tuner
+      when :CCS_FEATURES_TUNER
+        CCS::FeaturesTuner
       else
         raise CCSError, :CCS_INVALID_OBJECT
       end.from_handle(handle, **opts)

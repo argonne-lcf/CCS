@@ -319,6 +319,7 @@ int main() {
 	test_equal_int();
 	test_interval_include_float();
 	test_interval_include_int();
+	ccs_fini();
 	return 0;
 }
 

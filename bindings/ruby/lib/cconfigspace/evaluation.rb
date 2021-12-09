@@ -83,14 +83,14 @@ module CCS
     end
 
     def compare(other)
-      ptr = MemoryPointer::new(:ccs_objective_type_t)
+      ptr = MemoryPointer::new(:ccs_comparison_t)
       res = CCS.ccs_evaluation_compare(@handle, other, ptr)
       CCS.error_check(res)
       ptr.read_ccs_comparison_t
     end
 
     def <=>(other)
-      ptr = MemoryPointer::new(:ccs_objective_type_t)
+      ptr = MemoryPointer::new(:ccs_comparison_t)
       res = CCS.ccs_evaluation_compare(@handle, other, ptr)
       CCS.error_check(res)
       r = ptr.read_int32

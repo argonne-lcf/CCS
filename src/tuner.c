@@ -104,3 +104,14 @@ ccs_tuner_get_history(ccs_tuner_t       tuner,
 	_ccs_tuner_ops_t *ops = ccs_tuner_get_ops(tuner);
 	return ops->get_history(tuner->data, num_evaluations, evaluations, num_evaluations_ret);
 }
+
+ccs_result_t
+ccs_tuner_suggest(ccs_tuner_t          tuner,
+                  ccs_configuration_t *configuration) {
+	CCS_CHECK_OBJ(tuner, CCS_TUNER);
+	CCS_CHECK_PTR(configuration);
+	_ccs_tuner_ops_t *ops = ccs_tuner_get_ops(tuner);
+	if (!ops->suggest)
+		return -CCS_UNSUPPORTED_OPERATION;
+	return ops->suggest(tuner->data, configuration);
+}

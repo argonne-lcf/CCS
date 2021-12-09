@@ -14,6 +14,11 @@ ccs_init() {
 	return CCS_SUCCESS;
 }
 
+ccs_result_t
+ccs_fini() {
+	return CCS_SUCCESS;
+}
+
 ccs_version_t
 ccs_get_version() {
 	return ccs_version;
@@ -43,9 +48,7 @@ ccs_release_object(ccs_object_t object) {
 			}
 			utarray_free(obj->callbacks);
 		}
-		ccs_result_t err = obj->ops->del(object);
-		if (err)
-			return err;
+		CCS_VALIDATE(obj->ops->del(object));
 		free(object);
 	}
 	return CCS_SUCCESS;

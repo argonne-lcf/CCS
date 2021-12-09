@@ -24,21 +24,38 @@ _ccs_interval_include(ccs_interval_t *interval, ccs_numeric_t value) {
 }
 
 #define CCS_CHECK_OBJ(o, t) do { \
-	if (unlikely(!(o) || \
+	if (CCS_UNLIKELY(!(o) || \
 	    !((_ccs_object_template_t *)(o))->data || \
 	     ((_ccs_object_template_t *)(o))->obj.type != (t))) \
 		return -CCS_INVALID_OBJECT; \
 } while (0)
 
 #define CCS_CHECK_PTR(p) do { \
-	if (unlikely(!(p))) \
+	if (CCS_UNLIKELY(!(p))) \
 		return -CCS_INVALID_VALUE; \
 } while (0)
 
 #define CCS_CHECK_ARY(c, a) do { \
-	if (unlikely((c > 0) && !(a))) \
+	if (CCS_UNLIKELY((c > 0) && !(a))) \
 		return -CCS_INVALID_VALUE; \
 } while (0)
+
+#define CCS_VALIDATE_ERR_GOTO(err, cmd, label) do { \
+	err = (cmd); \
+	if (CCS_UNLIKELY(err != CCS_SUCCESS)) \
+		goto label; \
+} while (0)
+
+#define CCS_VALIDATE_ERR(err, cmd) do { \
+	err = (cmd); \
+	if (CCS_UNLIKELY(err != CCS_SUCCESS)) \
+		return err; \
+} while (0)
+
+#define CCS_VALIDATE(cmd) do { \
+	ccs_result_t _err; \
+	CCS_VALIDATE_ERR(_err, cmd); \
+} while(0)
 
 struct _ccs_object_ops_s {
 	ccs_result_t (*del)(ccs_object_t object);

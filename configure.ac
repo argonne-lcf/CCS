@@ -19,6 +19,7 @@ esac
 # automake should fail on any error
 AM_INIT_AUTOMAKE([-Wall -Werror foreign 1.12])
 AM_PROG_AR
+AM_PROG_CC_C_O
 
 # check for libtool
 LT_INIT
@@ -29,12 +30,18 @@ AC_PROG_CC
 AC_PROG_CC_STDC
 AC_TYPE_SIZE_T
 AC_HEADER_ASSERT
+AC_PROG_CXX
+AX_CXX_COMPILE_STDCXX([14], [noext], [mandatory])
 
 AM_CONDITIONAL([ISMACOS], [test "x$macos" = xyes])
 
 AC_ARG_ENABLE([strict], AS_HELP_STRING([--enable-strict], [Enable -Werror]))
-
 AM_CONDITIONAL([STRICT], [test "x$enable_strict" = xyes])
+
+AC_ARG_ENABLE([kokkos-connector],
+               AS_HELP_STRING([--enable-kokkos-connector], [Enable CConfigSpace Kokkos connector]),
+               [], [enable_kokkos_connector=yes])
+AM_CONDITIONAL([KOKKOS], [test "x$enable_kokkos_connector" = xyes])
 
 # Check Ruby
 PKG_CHECK_MODULES([RUBY], [ruby >= 2.3], [HAVE_RB=yes], [HAVE_RB=no])
@@ -77,7 +84,12 @@ AC_CONFIG_FILES([Makefile
 		src/Makefile
 		tests/Makefile
 		samples/Makefile
+		connectors/Makefile
 		cconfigspace.pc])
+if test "x$enable_kokkos_connector" = xyes
+then
+AC_CONFIG_FILES([connectors/kokkos/Makefile])
+fi
 AC_CONFIG_LINKS([samples/test_ruby.rb:samples/test_ruby.rb
                  samples/test_python.py:samples/test_python.py])
 AC_OUTPUT

@@ -69,9 +69,7 @@ _ccs_distribution_roulette_samples(_ccs_distribution_data_t *data,
 	_ccs_distribution_roulette_data_t *d = (_ccs_distribution_roulette_data_t *)data;
 
 	gsl_rng *grng;
-	ccs_result_t err = ccs_rng_get_gsl_rng(rng, &grng);
-	if (err)
-		return err;
+	CCS_VALIDATE(ccs_rng_get_gsl_rng(rng, &grng));
 
 	for (size_t i = 0; i < num_values; i++) {
 		ccs_float_t rnd = gsl_rng_uniform(grng);
@@ -90,9 +88,7 @@ _ccs_distribution_roulette_strided_samples(_ccs_distribution_data_t *data,
 	_ccs_distribution_roulette_data_t *d = (_ccs_distribution_roulette_data_t *)data;
 
 	gsl_rng *grng;
-	ccs_result_t err = ccs_rng_get_gsl_rng(rng, &grng);
-	if (err)
-		return err;
+	CCS_VALIDATE(ccs_rng_get_gsl_rng(rng, &grng));
 
 	for (size_t i = 0; i < num_values; i++) {
 		ccs_float_t rnd = gsl_rng_uniform(grng);
@@ -165,10 +161,8 @@ ccs_create_roulette_distribution(size_t              num_areas,
 ccs_result_t
 ccs_roulette_distribution_get_num_areas(ccs_distribution_t  distribution,
                                         size_t             *num_areas_ret) {
-	CCS_CHECK_OBJ(distribution, CCS_DISTRIBUTION);
+	CCS_CHECK_DISTRIBUTION(distribution, CCS_ROULETTE);
 	CCS_CHECK_PTR(num_areas_ret);
-	if (((_ccs_distribution_common_data_t*)distribution->data)->type != CCS_ROULETTE)
-		return -CCS_INVALID_DISTRIBUTION;
 	_ccs_distribution_roulette_data_t * data = (_ccs_distribution_roulette_data_t *)distribution->data;
 	*num_areas_ret = data->num_areas;
 	return CCS_SUCCESS;
@@ -179,10 +173,8 @@ ccs_roulette_distribution_get_areas(ccs_distribution_t  distribution,
                                     size_t              num_areas,
                                     ccs_float_t        *areas,
                                     size_t             *num_areas_ret) {
-	CCS_CHECK_OBJ(distribution, CCS_DISTRIBUTION);
+	CCS_CHECK_DISTRIBUTION(distribution, CCS_ROULETTE);
 	CCS_CHECK_ARY(num_areas, areas);
-	if (((_ccs_distribution_common_data_t*)distribution->data)->type != CCS_ROULETTE)
-		return -CCS_INVALID_DISTRIBUTION;
 	if (!areas && !num_areas_ret)
 		return -CCS_INVALID_VALUE;
 	_ccs_distribution_roulette_data_t * data = (_ccs_distribution_roulette_data_t *)distribution->data;

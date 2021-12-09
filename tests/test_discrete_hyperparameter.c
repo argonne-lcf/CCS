@@ -33,7 +33,7 @@ void test_create() {
 
 	err = ccs_hyperparameter_get_type(hyperparameter, &type);
 	assert( err == CCS_SUCCESS );
-	assert( type == CCS_DISCRETE );
+	assert( type == CCS_HYPERPARAMETER_TYPE_DISCRETE );
 
 	err = ccs_hyperparameter_get_default_value(hyperparameter, &default_value);
 	assert( err == CCS_SUCCESS );
@@ -179,5 +179,6 @@ int main() {
 	test_create();
 	test_samples();
 	test_oversampling();
+	ccs_fini();
 	return 0;
 }

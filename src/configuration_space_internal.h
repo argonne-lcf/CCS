@@ -7,10 +7,6 @@ typedef struct _ccs_distribution_wrapper_s _ccs_distribution_wrapper_t;
 
 struct _ccs_hyperparameter_wrapper_cs_s {
 	ccs_hyperparameter_t         hyperparameter;
-	size_t                       index;
-	const char                  *name;
-        UT_hash_handle               hh_name;
-        UT_hash_handle               hh_handle;
 	size_t                       distribution_index;
 	_ccs_distribution_wrapper_t *distribution;
 	ccs_expression_t             condition;
@@ -44,8 +40,8 @@ struct _ccs_configuration_space_data_s {
 	const char                       *name;
 	void                             *user_data;
 	UT_array                         *hyperparameters;
-	_ccs_hyperparameter_wrapper_cs_t *name_hash;
-	_ccs_hyperparameter_wrapper_cs_t *handle_hash;
+	_ccs_hyperparameter_index_hash_t *name_hash;
+	_ccs_hyperparameter_index_hash_t *handle_hash;
 	ccs_rng_t                         rng;
 	_ccs_distribution_wrapper_t      *distribution_list;
 	UT_array                         *forbidden_clauses;

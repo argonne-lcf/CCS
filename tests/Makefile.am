@@ -20,12 +20,16 @@ CCONFIGSPACE_TESTS = \
 		test_categorical_hyperparameter \
 		test_ordinal_hyperparameter \
 		test_discrete_hyperparameter \
+		test_string_hyperparameter \
 		test_configuration_space \
 		test_expression \
 		test_condition \
 		test_forbidden \
 		test_random_tuner \
-		test_user_defined_tuner
+		test_user_defined_tuner \
+		test_features_space \
+		test_random_features_tuner \
+		test_user_defined_features_tuner
 
 # unit tests
 UNIT_TESTS = \

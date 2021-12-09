@@ -63,12 +63,9 @@ _ccs_binding_set_value(ccs_binding_t binding,
                       ccs_datum_t   value) {
 	if (index >= binding->data->num_values)
 		return -CCS_OUT_OF_BOUNDS;
-	if (value.flags & CCS_FLAG_TRANSIENT) {
-		ccs_result_t err = ccs_context_validate_value(
-			binding->data->context, index, value, &value);
-		if (unlikely(err))
-			return err;
-	}
+	if (value.flags & CCS_FLAG_TRANSIENT)
+		CCS_VALIDATE(ccs_context_validate_value(
+			binding->data->context, index, value, &value));
 	binding->data->values[index] = value;
 	return CCS_SUCCESS;
 }
@@ -102,11 +99,8 @@ _ccs_binding_get_value_by_name(ccs_binding_t  binding,
                                ccs_datum_t   *value_ret) {
 	CCS_CHECK_PTR(name);
 	size_t index;
-	ccs_result_t err;
-	err = ccs_context_get_hyperparameter_index_by_name(
-		binding->data->context, name, &index);
-	if (err)
-		return err;
+	CCS_VALIDATE(ccs_context_get_hyperparameter_index_by_name(
+	               binding->data->context, name, &index));
 	*value_ret = binding->data->values[index];
 	return CCS_SUCCESS;
 }

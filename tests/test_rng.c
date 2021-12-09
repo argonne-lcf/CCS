@@ -123,5 +123,6 @@ int main() {
 	test_rng_min_max();
 	test_rng_get();
 	test_rng_uniform();
+	ccs_fini();
 	return 0;
 }

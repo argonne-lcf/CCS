@@ -856,4 +856,5 @@ int main() {
 	test_in();
 	test_get_hyperparameters();
 	test_check_context();
+	ccs_fini();
 }

@@ -14,8 +14,18 @@
 #include "cconfigspace/binding.h"
 #include "cconfigspace/configuration_space.h"
 #include "cconfigspace/configuration.h"
+#include "cconfigspace/features_space.h"
+#include "cconfigspace/features.h"
 #include "cconfigspace/objective_space.h"
 #include "cconfigspace/evaluation.h"
+#include "cconfigspace/features_evaluation.h"
 #include "cconfigspace/tuner.h"
+#include "cconfigspace/features_tuner.h"
+
+/**
+ * @file cconfigspace.h
+ * The C configuration Space and Tuning library (CCS) provides an interface to
+ * define tuning problems and auto-tuners.
+ */
 
 #endif //_CCONFIGSPACE_H

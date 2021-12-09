@@ -92,9 +92,7 @@ _ccs_distribution_uniform_strided_samples(_ccs_distribution_data_t *data,
 	const ccs_numeric_t       internal_upper = d->internal_upper;
 	const int                 quantize       = d->quantize;
 	gsl_rng *grng;
-	ccs_result_t err = ccs_rng_get_gsl_rng(rng, &grng);
-	if (err)
-		return err;
+	CCS_VALIDATE(ccs_rng_get_gsl_rng(rng, &grng));
 
 	if (data_type == CCS_NUM_FLOAT) {
 		for (i = 0; i < num_values; i++) {
@@ -151,9 +149,7 @@ _ccs_distribution_uniform_samples(_ccs_distribution_data_t *data,
 	const ccs_numeric_t       internal_upper = d->internal_upper;
 	const int                 quantize       = d->quantize;
 	gsl_rng *grng;
-	ccs_result_t err = ccs_rng_get_gsl_rng(rng, &grng);
-	if (err)
-		return err;
+	CCS_VALIDATE(ccs_rng_get_gsl_rng(rng, &grng));
 
 	if (data_type == CCS_NUM_FLOAT) {
 		for (i = 0; i < num_values; i++) {
@@ -281,9 +277,7 @@ ccs_uniform_distribution_get_parameters(ccs_distribution_t  distribution,
                                         ccs_numeric_t      *upper_ret,
                                         ccs_scale_type_t   *scale_type_ret,
                                         ccs_numeric_t      *quantization_ret) {
-	CCS_CHECK_OBJ(distribution, CCS_DISTRIBUTION);
-	if (((_ccs_distribution_common_data_t*)distribution->data)->type != CCS_UNIFORM)
-		return -CCS_INVALID_OBJECT;
+	CCS_CHECK_DISTRIBUTION(distribution, CCS_UNIFORM);
 	if (!lower_ret && !upper_ret && !scale_type_ret && !quantization_ret)
 		return -CCS_INVALID_VALUE;
 	_ccs_distribution_uniform_data_t * data = (_ccs_distribution_uniform_data_t *)distribution->data;

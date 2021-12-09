@@ -64,15 +64,10 @@ _ccs_hyperparameter_numerical_samples(_ccs_hyperparameter_data_t *data,
 	ccs_numeric_t *vs = (ccs_numeric_t *)values + num_values;
         ccs_bool_t oversampling;
 
-	err = ccs_distribution_check_oversampling(distribution,
-	                                          interval,
-	                                          &oversampling);
-	if (err)
-		return err;
-	err = ccs_distribution_samples(distribution,
-	                               rng, num_values, vs);
-	if (err)
-		return err;
+	CCS_VALIDATE(ccs_distribution_check_oversampling(
+	               distribution, interval, &oversampling));
+	CCS_VALIDATE(ccs_distribution_samples(
+	               distribution, rng, num_values, vs));
 	if (!oversampling) {
 		if (type == CCS_NUM_FLOAT) {
 			for(size_t i = 0; i < num_values; i++)
@@ -95,12 +90,20 @@ _ccs_hyperparameter_numerical_samples(_ccs_hyperparameter_data_t *data,
 		vs = NULL;
 		size_t coeff = 2;
 		while (found < num_values) {
+			if (coeff > 32)
+				return -CCS_SAMPLING_UNSUCCESSFUL;
 			size_t buff_sz = (num_values - found)*coeff;
-			vs = (ccs_numeric_t *)malloc(sizeof(ccs_numeric_t)*buff_sz);
-			if (!vs)
+			ccs_numeric_t *oldvs = vs;
+			vs = (ccs_numeric_t *)realloc(oldvs, sizeof(ccs_numeric_t)*buff_sz);
+			if (CCS_UNLIKELY(!vs)) {
+				if (oldvs)
+					free(oldvs);
 				return -CCS_OUT_OF_MEMORY;
-			err = ccs_distribution_samples(distribution, rng,
-			                               buff_sz, vs);
+			}
+			CCS_VALIDATE_ERR_GOTO(err,
+			  ccs_distribution_samples(distribution, rng,
+			                           buff_sz, vs),
+			  errmem);
 			if (type == CCS_NUM_FLOAT) {
 				for(size_t i = 0; i < buff_sz && found < num_values; i++)
 					if (_ccs_interval_include(interval, vs[i]))
@@ -111,19 +114,21 @@ _ccs_hyperparameter_numerical_samples(_ccs_hyperparameter_data_t *data,
 						values[found++].value.i = vs[i].i;
 			}
 			coeff <<= 1;
-			free(vs);
-			if (coeff > 32)
-				return -CCS_SAMPLING_UNSUCCESSFUL;
 		}
+		if (vs)
+			free(vs);
 	}
 	for (size_t i = 0; i < num_values; i++) {
 		values[i].type = (ccs_data_type_t)type;
 		values[i].flags = CCS_FLAG_DEFAULT;
 	}
 	return CCS_SUCCESS;
+errmem:
+	free(vs);
+	return err;
 }
 
-ccs_result_t
+static ccs_result_t
 _ccs_hyperparameter_numerical_get_default_distribution(
 		_ccs_hyperparameter_data_t *data,
 		ccs_distribution_t         *distribution) {
@@ -135,7 +140,7 @@ _ccs_hyperparameter_numerical_get_default_distribution(
 	                                       distribution);
 }
 
-ccs_result_t
+static ccs_result_t
 _ccs_hyperparameter_numerical_convert_samples(
 		_ccs_hyperparameter_data_t *data,
 		ccs_bool_t                  oversampling,
@@ -222,7 +227,7 @@ ccs_create_numerical_hyperparameter(const char           *name,
 	ccs_hyperparameter_t hyperparam = (ccs_hyperparameter_t)mem;
 	_ccs_object_init(&(hyperparam->obj), CCS_HYPERPARAMETER, (_ccs_object_ops_t *)&_ccs_hyperparameter_numerical_ops);
 	_ccs_hyperparameter_numerical_data_t *hyperparam_data = (_ccs_hyperparameter_numerical_data_t *)(mem + sizeof(struct _ccs_hyperparameter_s));
-	hyperparam_data->common_data.type = CCS_NUMERICAL;
+	hyperparam_data->common_data.type = CCS_HYPERPARAMETER_TYPE_NUMERICAL;
 	hyperparam_data->common_data.name = (char *)(mem + sizeof(struct _ccs_hyperparameter_s) + sizeof(_ccs_hyperparameter_numerical_data_t));
 	strcpy((char *)hyperparam_data->common_data.name, name);
 	hyperparam_data->common_data.user_data = user_data;
@@ -247,7 +252,7 @@ ccs_numerical_hyperparameter_get_parameters(ccs_hyperparameter_t  hyperparameter
                                             ccs_numeric_t        *lower_ret,
                                             ccs_numeric_t        *upper_ret,
                                             ccs_numeric_t        *quantization_ret) {
-	CCS_CHECK_OBJ(hyperparameter, CCS_HYPERPARAMETER);
+	CCS_CHECK_HYPERPARAMETER(hyperparameter, CCS_HYPERPARAMETER_TYPE_NUMERICAL);
 	if (!data_type_ret && !lower_ret && !upper_ret && !quantization_ret)
 		return -CCS_INVALID_VALUE;
 	_ccs_hyperparameter_numerical_data_t *d =

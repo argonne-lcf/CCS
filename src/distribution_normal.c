@@ -172,19 +172,19 @@ _ccs_distribution_normal_samples_int(gsl_rng                *grng,
 						values[i].f = gsl_ran_gaussian(grng, sigma) + mu;
 					} while (values[i].f < lq);
 					values[i].f = exp(values[i].f);
-				} while (unlikely(values[i].f - q > (ccs_float_t)CCS_INT_MAX));
+				} while (CCS_UNLIKELY(values[i].f - q > (ccs_float_t)CCS_INT_MAX));
 		else
 			for (i = 0; i < num_values; i++)
 				do {
 					values[i].f = gsl_ran_gaussian_tail(grng, lq - mu, sigma) + mu;
 					values[i].f = exp(values[i].f);
-				} while (unlikely(values[i].f - q > (ccs_float_t)CCS_INT_MAX));
+				} while (CCS_UNLIKELY(values[i].f - q > (ccs_float_t)CCS_INT_MAX));
 	}
 	else
 		for (i = 0; i < num_values; i++)
 			do {
 				values[i].f = gsl_ran_gaussian(grng, sigma) + mu;
-			} while (unlikely(values[i].f - q > (ccs_float_t)CCS_INT_MAX || values[i].f + q < (ccs_float_t)CCS_INT_MIN));
+			} while (CCS_UNLIKELY(values[i].f - q > (ccs_float_t)CCS_INT_MAX || values[i].f + q < (ccs_float_t)CCS_INT_MIN));
 	if (quantize) {
 		ccs_float_t rquantization = 1.0 / quantization;
 		for (i = 0; i < num_values; i++)
@@ -208,9 +208,7 @@ _ccs_distribution_normal_samples(_ccs_distribution_data_t *data,
 	const ccs_float_t      sigma          = d->sigma;
 	const int              quantize       = d->quantize;
 	gsl_rng *grng;
-	ccs_result_t err = ccs_rng_get_gsl_rng(rng, &grng);
-	if (err)
-		return err;
+	CCS_VALIDATE(ccs_rng_get_gsl_rng(rng, &grng));
 	if (data_type == CCS_NUM_FLOAT)
 		return _ccs_distribution_normal_samples_float(grng, scale_type,
                                                               quantization.f, mu,
@@ -286,19 +284,19 @@ _ccs_distribution_normal_strided_samples_int(gsl_rng                *grng,
 						values[i*stride].f = gsl_ran_gaussian(grng, sigma) + mu;
 					} while (values[i*stride].f < lq);
 					values[i*stride].f = exp(values[i*stride].f);
-				} while (unlikely(values[i*stride].f - q > (ccs_float_t)CCS_INT_MAX));
+				} while (CCS_UNLIKELY(values[i*stride].f - q > (ccs_float_t)CCS_INT_MAX));
 		else
 			for (i = 0; i < num_values; i++)
 				do {
 					values[i*stride].f = gsl_ran_gaussian_tail(grng, lq - mu, sigma) + mu;
 					values[i*stride].f = exp(values[i*stride].f);
-				} while (unlikely(values[i*stride].f - q > (ccs_float_t)CCS_INT_MAX));
+				} while (CCS_UNLIKELY(values[i*stride].f - q > (ccs_float_t)CCS_INT_MAX));
 	}
 	else
 		for (i = 0; i < num_values; i++)
 			do {
 				values[i*stride].f = gsl_ran_gaussian(grng, sigma) + mu;
-			} while (unlikely(values[i*stride].f - q > (ccs_float_t)CCS_INT_MAX || values[i*stride].f + q < (ccs_float_t)CCS_INT_MIN));
+			} while (CCS_UNLIKELY(values[i*stride].f - q > (ccs_float_t)CCS_INT_MAX || values[i*stride].f + q < (ccs_float_t)CCS_INT_MIN));
 	if (quantize) {
 		ccs_float_t rquantization = 1.0 / quantization;
 		for (i = 0; i < num_values; i++)
@@ -323,9 +321,7 @@ _ccs_distribution_normal_strided_samples(_ccs_distribution_data_t *data,
 	const ccs_float_t      sigma          = d->sigma;
 	const int              quantize       = d->quantize;
 	gsl_rng *grng;
-	ccs_result_t err = ccs_rng_get_gsl_rng(rng, &grng);
-	if (err)
-		return err;
+	CCS_VALIDATE(ccs_rng_get_gsl_rng(rng, &grng));
 	if (data_type == CCS_NUM_FLOAT)
 		return _ccs_distribution_normal_strided_samples_float(grng, scale_type,
 		                                                      quantization.f, mu,
@@ -398,9 +394,7 @@ ccs_normal_distribution_get_parameters(ccs_distribution_t  distribution,
                                        ccs_float_t        *sigma_ret,
                                        ccs_scale_type_t   *scale_type_ret,
                                        ccs_numeric_t      *quantization_ret) {
-	CCS_CHECK_OBJ(distribution, CCS_DISTRIBUTION);
-	if (((_ccs_distribution_common_data_t*)distribution->data)->type != CCS_NORMAL)
-		return -CCS_INVALID_OBJECT;
+	CCS_CHECK_DISTRIBUTION(distribution, CCS_NORMAL);
 	if (!mu_ret && !sigma_ret && !scale_type_ret && !quantization_ret)
 		return -CCS_INVALID_VALUE;
 	_ccs_distribution_normal_data_t * data = (_ccs_distribution_normal_data_t *)distribution->data;

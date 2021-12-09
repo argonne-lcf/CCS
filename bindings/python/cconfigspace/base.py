@@ -33,9 +33,13 @@ ccs_context             = ccs_object
 ccs_configuration_space = ccs_object
 ccs_binding             = ccs_object
 ccs_configuration       = ccs_object
+ccs_features_space      = ccs_object
+ccs_features            = ccs_object
 ccs_objective_space     = ccs_object
 ccs_evaluation          = ccs_object
+ccs_features_evaluation = ccs_object
 ccs_tuner               = ccs_object
+ccs_features_tuner      = ccs_object
 
 ccs_false = 0
 ccs_true = 1
@@ -68,6 +72,9 @@ class CEnumerationType(type(ct.c_int)):
   def __new__(metacls, name, bases, dict):
     if not "_members_" in dict:
       raise ValueError("CEnumeration must define a _members_ attribute")
+    scope = False
+    if "_scope_" in dict:
+      scope = dict["_scope_"]
     last = -1
     if isinstance(dict["_members_"], list):
       _members_ = {}
@@ -87,7 +94,13 @@ class CEnumerationType(type(ct.c_int)):
     dict["_reverse_members_"] = _reverse_members_
     cls = type(ct.c_int).__new__(metacls, name, bases, dict)
     for key,value in cls._members_.items():
-      globals()[key] = value
+      if scope:
+        cls_name = name.upper()
+        if name.startswith("ccs_"):
+          cls_name = cls_name[4:]
+        globals()[cls_name + "_" + key] = value
+      else:
+        globals()[key] = value
     return cls
 
   def __contains__(self, value):
@@ -134,7 +147,11 @@ class ccs_object_type(CEnumeration):
     'CONFIGURATION',
     'OBJECTIVE_SPACE',
     'EVALUATION',
-    'TUNER' ]
+    'TUNER',
+    'FEATURES_SPACE',
+    'FEATURES',
+    'FEATURES_EVALUATION',
+    'FEATURES_TUNER' ]
 
 class ccs_error(CEnumeration):
   _members_ = [ 
@@ -158,7 +175,9 @@ class ccs_error(CEnumeration):
     'INACTIVE_HYPERPARAMETER',
     'OUT_OF_MEMORY',
     'UNSUPPORTED_OPERATION',
-    'INVALID_EVALUATION' ]
+    'INVALID_EVALUATION',
+    'INVALID_FEATURES',
+    'INVALID_FEATURES_TUNER' ]
 
 class ccs_data_type(CEnumeration):
   _members_ = [
@@ -299,6 +318,7 @@ class Error(Exception):
       raise cls(ccs_error(-err))
 
 ccs_init = _ccs_get_function("ccs_init")
+ccs_fini = _ccs_get_function("ccs_fini")
 ccs_get_version = _ccs_get_function("ccs_get_version", restype = ccs_version)
 ccs_retain_object = _ccs_get_function("ccs_retain_object", [ccs_object])
 ccs_release_object = _ccs_get_function("ccs_release_object", [ccs_object])
@@ -375,12 +395,20 @@ class Object:
       return ConfigurationSpace.from_handle(h, retain = retain, auto_release = auto_release)
     elif v == ccs_object_type.CONFIGURATION:
       return Configuration.from_handle(h, retain = retain, auto_release = auto_release)
+    elif v == ccs_object_type.FEATURES_SPACE:
+      return FeaturesSpace.from_handle(h, retain = retain, auto_release = auto_release)
+    elif v == ccs_object_type.FEATURES:
+      return Features.from_handle(h, retain = retain, auto_release = auto_release)
     elif v == ccs_object_type.OBJECTIVE_SPACE:
       return ObjectiveSpace.from_handle(h, retain = retain, auto_release = auto_release)
     elif v == ccs_object_type.EVALUATION:
       return Evaluation.from_handle(h, retain = retain, auto_release = auto_release)
+    elif v == ccs_object_type.FEATURES_EVALUATION:
+      return FeaturesEvaluation.from_handle(h, retain = retain, auto_release = auto_release)
     elif v == ccs_object_type.TUNER:
       return Tuner.from_handle(h, retain = retain, auto_release = auto_release)
+    elif v == ccs_object_type.FEATURES_TUNER:
+      return FeaturesTuner.from_handle(h, retain = retain, auto_release = auto_release)
     else:
       raise Error(ccs_error(ccs_error.INVALID_OBJECT))
 
@@ -417,6 +445,10 @@ from .hyperparameter import Hyperparameter
 from .expression import Expression
 from .configuration_space import ConfigurationSpace
 from .configuration import Configuration
+from .features_space import FeaturesSpace
+from .features import Features
 from .objective_space import ObjectiveSpace
 from .evaluation import Evaluation
+from .features_evaluation import FeaturesEvaluation
 from .tuner import Tuner
+from .features_tuner import FeaturesTuner

@@ -29,6 +29,10 @@ struct _ccs_tuner_ops_s {
 		size_t             num_evaluations,
 		ccs_evaluation_t  *evaluations,
 		size_t            *num_evaluations_ret);
+
+	ccs_result_t (*suggest)(
+		_ccs_tuner_data_t   *data,
+		ccs_configuration_t *configuration);
 };
 typedef struct _ccs_tuner_ops_s _ccs_tuner_ops_t;
 

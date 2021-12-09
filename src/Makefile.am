@@ -24,11 +24,11 @@ libcconfigspace_la_SOURCES = \
 			hyperparameter.c \
 			hyperparameter_internal.h \
 			hyperparameter_numerical.c \
+			hyperparameter_string.c \
 			uthash.h \
 			datum_uthash.h \
 			datum_hash.h \
 			hyperparameter_categorical.c \
-			hyperparameter_discrete.c \
 			utarray.h \
 			context.c \
 			context_internal.h \
@@ -47,6 +47,16 @@ libcconfigspace_la_SOURCES = \
 			tuner.c \
 			tuner_internal.h \
 			tuner_random.c \
-			tuner_user_defined.c
+			tuner_user_defined.c \
+			features_space.c \
+			features_space_internal.h \
+			features.c \
+			features_internal.h \
+			features_evaluation.c \
+			features_evaluation_internal.h \
+			features_tuner.c \
+			features_tuner_internal.h \
+			features_tuner_random.c \
+			features_tuner_user_defined.c
 
 @VALGRIND_CHECK_RULES@
