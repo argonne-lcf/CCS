@@ -67,6 +67,8 @@ ccs_features_space_get_user_data(ccs_features_space_t   features_space,
  *                              space; or \p hyperparameter is not a valid CCS
  *                              hyperparameter
  * @return -#CCS_INVALID_HYPERPARAMETER if \p hyperparameter is already in the
+ *                                      features space; or if a hyperparameter
+ *                                      with the same name already exists in the
  *                                      features space
  * @return -#CCS_OUT_OF_MEMORY if a memory could not be allocated to store
  *                             the additional hyperparameter and associated data
@@ -91,7 +93,7 @@ ccs_features_space_add_hyperparameter(ccs_features_space_t features_space,
  * @return -#CCS_INVALID_HYPERPARAMETER if a hyperparameter is already in the
  *                                      features space; or if a hyperparameter
  *                                      with the same name already exists in the
- *                                      configuration space
+ *                                      features space
  * @return -#CCS_OUT_OF_MEMORY if memory could not be allocated to store
  *                             additional hyperparameters and associated data
  *                             structures

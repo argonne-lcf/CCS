@@ -2,7 +2,7 @@
 
 ccs_result_t
 ccs_interval_empty(ccs_interval_t *interval, ccs_bool_t *empty_ret) {
-	if (!interval)
+	if (CCS_UNLIKELY(!interval || !empty_ret))
 		return CCS_INVALID_VALUE;
 	// Empty ranges
 	// [l,u] when l> u; ]l,u] when l>=u
@@ -64,9 +64,9 @@ ccs_result_t
 ccs_interval_intersect(ccs_interval_t *interval1,
 		       ccs_interval_t *interval2,
                        ccs_interval_t *interval_res) {
-	if (!interval1 || !interval2 || !interval_res)
+	if (CCS_UNLIKELY(!interval1 || !interval2 || !interval_res))
 		return CCS_INVALID_VALUE;
-	if (interval1->type != interval2->type)
+	if (CCS_UNLIKELY(interval1->type != interval2->type))
 		return CCS_INVALID_TYPE;
 	if (interval1->type  == CCS_NUM_FLOAT) {
 		interval_res->type = CCS_NUM_FLOAT;
@@ -92,9 +92,9 @@ ccs_result_t
 ccs_interval_union(ccs_interval_t *interval1,
                    ccs_interval_t *interval2,
                    ccs_interval_t *interval_res) {
-	if (!interval1 || !interval2 || !interval_res)
+	if (CCS_UNLIKELY(!interval1 || !interval2 || !interval_res))
 		return CCS_INVALID_VALUE;
-	if (interval1->type != interval2->type)
+	if (CCS_UNLIKELY(interval1->type != interval2->type))
 		return CCS_INVALID_TYPE;
 	if (interval1->type  == CCS_NUM_FLOAT) {
 		interval_res->type = CCS_NUM_FLOAT;
@@ -120,9 +120,9 @@ ccs_result_t
 ccs_interval_equal(ccs_interval_t *interval1,
                    ccs_interval_t *interval2,
                    ccs_bool_t     *equal_res) {
-	if (!interval1 || !interval2)
+	if (CCS_UNLIKELY(!interval1 || !interval2 || !equal_res))
 		return CCS_INVALID_VALUE;
-	if (interval1->type != interval2->type)
+	if (CCS_UNLIKELY(interval1->type != interval2->type))
 		return CCS_INVALID_TYPE;
 	if (interval1->type  == CCS_NUM_FLOAT) {
 		*equal_res = (
@@ -147,5 +147,7 @@ ccs_interval_equal(ccs_interval_t *interval1,
 
 ccs_bool_t
 ccs_interval_include(ccs_interval_t *interval, ccs_numeric_t value) {
+	if (CCS_UNLIKELY(!interval))
+		return CCS_FALSE;
 	return _ccs_interval_include(interval, value);
 }

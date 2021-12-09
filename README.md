@@ -6,3 +6,6 @@ describe autotuning problems and autotuners.
 
 CCS has been greatly inspired by https://github.com/automl/ConfigSpace, and was
 first thought as a drop in replacement for the engine of ConfigSpace.
+
+Preliminary Documentation can be found here:
+https://argonne-lcf.github.io/CCS/index.html
