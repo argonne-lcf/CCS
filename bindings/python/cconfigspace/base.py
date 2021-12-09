@@ -8,12 +8,12 @@ class ccs_version(ct.Structure):
               ("major",    ct.c_ushort)]
 
   def __repr__(self):
-    return str(f"{self.major}.{self.minor}.{self.patch}-{self.revision}")
+    return f"{self.major}.{self.minor}.{self.patch}-{self.revision}"
 
   @property
   def short(self):
     """Short version of CConfigSpace C-library"""
-    return str(f"{self.major}.{self.minor}.{self.patch}")
+    return f"{self.major}.{self.minor}.{self.patch}"
 
 
 # Base types

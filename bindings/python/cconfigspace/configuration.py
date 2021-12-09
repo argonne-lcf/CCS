@@ -67,18 +67,4 @@ class Configuration(Binding):
     """Returns the list of hyperparameters of the current configuration."""
     return self.configuration_space.hyperparameters
 
-  def __getitem__(self, idx):
-    if type(idx) is int:
-      return self.values[idx]
-    elif type(idx) is str:
-      return self.value(idx)
-    else:
-      raise ValueError("index should be str or int")
 
-  def to_list(self):
-    """Returns a list copy of hyperparameter values of the current configuration."""
-    return self.values[:]
-
-  def to_dict(self):
-    """Returns a dict copy of the current configuration."""
-    return {hp.name:hp_value for hp, hp_value in zip(self.hyperparameters, self.values)}

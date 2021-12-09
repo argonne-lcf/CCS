@@ -67,8 +67,12 @@ class Binding(Object):
     Error.check(res)
     return v.value
 
+  def __getitem__(self, idx):
+    return self.values(idx)
+
   @property
   def values(self):
+    """Returns a list copy of hyperparameter values of the current configuration."""
     sz = self.num_values
     if sz == 0:
       return []
@@ -130,9 +134,6 @@ class Binding(Object):
     return self.hash
 
   def asdict(self):
-    res = {}
-    hyperparameters = self.context.hyperparameters
-    values = self.values
-    for i in range(len(hyperparameters)):
-      res[hyperparameters[i].name] = values[i]
-    return res
+    """Returns a dict copy of the current configuration."""
+    return {hp.name:hp_value for hp, hp_value in zip(self.context.hyperparameters, self.values)}
+ 

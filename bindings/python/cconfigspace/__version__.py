@@ -1,3 +1,7 @@
-VERSION = (0, 0, 0)
+import os
 
-__version__ = ".".join(map(str, VERSION))
+
+VERSION_FILE = os.path.dirname(os.path.abspath(__file__), "VERSION")
+
+with open(VERSION_FILE, "r") as f:
+    __version__ = f.read()

@@ -1,6 +1,7 @@
 import platform
 import os
 from setuptools import setup
+import shutil
 
 here = os.path.dirname(os.path.abspath(__file__))
 
@@ -8,6 +9,10 @@ NAME = "cconfigspace"
 REQUIRES_PYTHON = ">=3.6"
 
 # Load the package's __version__.py module as a dictionary.
+VERSION_IN = os.path.join(os.path.dirname(os.path.dirname(here)), "VERSION")
+VERSION_OUT = os.path.join(here, NAME, "VERSION")
+shutil.copy(VERSION_IN, VERSION_OUT)
+
 about = {}
 with open(os.path.join(here, NAME, "__version__.py")) as f:
   exec(f.read(), about)
