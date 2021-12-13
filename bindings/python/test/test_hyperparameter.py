@@ -1,7 +1,4 @@
 import unittest
-import sys
-sys.path.insert(1, '.')
-sys.path.insert(1, '..')
 import cconfigspace as ccs
 
 class TestHyperparameter(unittest.TestCase):

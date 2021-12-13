@@ -1,14 +1,56 @@
-import platform
 import ctypes as ct
 import os
+import platform
+import packaging.version
+import warnings
 
-if os.environ.get('LIBCCONFIGSPACE_SO_'):
-  libcconfigspace = ct.cdll.LoadLibrary(os.environ.get('LIBCCONFIGSPACE_SO_'))
-else:
-  if platform.uname()[0] == "Linux":
-    libcconfigspace = ct.cdll.LoadLibrary('libcconfigspace.so.0.0.0')
-  else:
-    libcconfigspace = ct.cdll.LoadLibrary('libcconfigspace.dylib')
+from ctypes.util import find_library
+
+# from .__version__ import __version__
+__version__ = "0.0.1"
+
+
+__ccs_versions___ = [
+  packaging.version.parse(__version__), 
+  packaging.version.parse(__version__)
+  ] # [min, max] ccs versions
+
+
+
+# load configspace library
+
+# test input library from the user
+libcconfigspace_file = os.environ.get("LIBCCONFIGSPACE_SO_")
+
+if libcconfigspace_file is None: 
+  # test if system library is available
+  libcconfigspace_file = find_library("libcconfigspace")
+
+  # default to package lib
+  if libcconfigspace_file is None:
+  
+    # look for the correct lib extension for the current platform
+    system = platform.uname()[0]
+    if system == "Linux":
+      lib_ext = "so.0.0.0"
+    elif system == "Darwin":  # MacOS
+      lib_ext = "0.dylib"
+    else: # Windows
+      lib_ext = "dll"
+
+    # set of path to retrieve build directory
+    package_dir = os.path.dirname(os.path.abspath(__file__))
+    libcconfigspace_file = os.path.join(package_dir, f"libcconfigspace.{lib_ext}")
+
+# load ccs compiled library
+libcconfigspace = ct.cdll.LoadLibrary(libcconfigspace_file)
+
+# check if the ccs library is allowed
+from .base import ccs_get_version
+
+libcconfigspace_version = packaging.version.parse(ccs_get_version().short) 
+if __ccs_versions___[0] > libcconfigspace_version or libcconfigspace_version > __ccs_versions___[1]:
+  warnings.warn(f"The loaded C-library of CConfigSpace has version {libcconfigspace_version} when it should be >={__ccs_versions___[0]}, <{__ccs_versions___[1]}")
 
 from .base import *
 from .rng import *

@@ -1,9 +1,5 @@
 import unittest
-import sys
-sys.path.insert(1, '.')
-sys.path.insert(1, '..')
 import cconfigspace as ccs
-from math import sin
 
 
 class TestInterval(unittest.TestCase):

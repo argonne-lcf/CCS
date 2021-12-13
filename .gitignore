@@ -126,3 +126,4 @@ Makefile
 #Misc
 build*
 src/config.h.in
+.vscode/settings.json

@@ -1,8 +1,5 @@
 import unittest
 import re
-import sys
-sys.path.insert(1, '.')
-sys.path.insert(1, '..')
 import cconfigspace as ccs
 
 class TestConfigurationSpace(unittest.TestCase):
