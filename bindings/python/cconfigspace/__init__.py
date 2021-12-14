@@ -22,13 +22,16 @@ __ccs_versions___ = [
 # test input library from the user
 libcconfigspace_file = os.environ.get("LIBCCONFIGSPACE_SO_")
 
-if libcconfigspace_file is None: 
-  # test if system library is available
+if libcconfigspace_file is not  None:
+  # try loading the user specified library
+  libcconfigspace = ct.cdll.LoadLibrary(libcconfigspace_file)
+else:
+  # test if system library is available (or if the library ws already loaded)
   libcconfigspace_file = find_library("libcconfigspace")
 
   # default to package lib
   if libcconfigspace_file is None:
-  
+
     # look for the correct lib extension for the current platform
     system = platform.uname()[0]
     if system == "Linux":
@@ -38,12 +41,17 @@ if libcconfigspace_file is None:
     else: # Windows
       lib_ext = "dll"
 
+    # create a versioned name for the library (is the library already openened?)
+    libcconfigspace_file = f"libcconfigspace.{lib_ext}"
+
+  # try loading the system library
+  try:
+    libcconfigspace = ct.cdll.LoadLibrary(libcconfigspace_file)
+  except OSError:
     # set of path to retrieve build directory
     package_dir = os.path.dirname(os.path.abspath(__file__))
     libcconfigspace_file = os.path.join(package_dir, f"libcconfigspace.{lib_ext}")
-
-# load ccs compiled library
-libcconfigspace = ct.cdll.LoadLibrary(libcconfigspace_file)
+    libcconfigspace = ct.cdll.LoadLibrary(libcconfigspace_file)
 
 # check if the ccs library is allowed
 from .base import ccs_get_version
