@@ -83,14 +83,14 @@ def build(c, wheel=False, install=False, dev=False, clean=False):
 		c.run(f"cp build/install/lib/{lib_file} cconfigspace/{lib_file}")
 
 		if wheel:
-			c.run("python setup.py bdist_wheel")
+			c.run("python3 setup.py bdist_wheel")
 
 			if install:
-				c.run("pip install dist/*.whl")
+				c.run("pip3 install dist/*.whl")
 
 		else:
 
 			if dev:
-				c.run("pip install -e.")
+				c.run("pip3 install -e.")
 			else:
-				c.run("python setup.py install")
+				c.run("python3 setup.py install")
