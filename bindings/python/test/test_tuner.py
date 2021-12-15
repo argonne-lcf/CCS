@@ -1,8 +1,5 @@
 import unittest
-import sys
 from random import choice
-sys.path.insert(1, '.')
-sys.path.insert(1, '..')
 import cconfigspace as ccs
 from math import sin
 

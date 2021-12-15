@@ -1,6 +1,7 @@
 all:
 
 test: FORCE
-	python3 -m unittest discover -s test/
+
+	PYTHONPATH=`pwd`:$$PYTHONPATH python3 -m unittest discover -s test/
 
 FORCE:

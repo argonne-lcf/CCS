@@ -7,8 +7,13 @@ class ccs_version(ct.Structure):
               ("minor",    ct.c_ushort),
               ("major",    ct.c_ushort)]
 
-  def __str__(self):
-    return "{}.{}.{}.{}".format(self.major, self.minor, self.patch, self.revision)
+  def __repr__(self):
+    return f"{self.major}.{self.minor}.{self.patch}-{self.revision}"
+
+  @property
+  def short(self):
+    """Short version of CConfigSpace C-library"""
+    return f"{self.major}.{self.minor}.{self.patch}"
 
 # Base types
 ccs_float  = ct.c_double
