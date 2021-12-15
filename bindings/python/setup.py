@@ -29,7 +29,10 @@ def get_lib_extension():
 	return lib_ext
 
 
-REQUIRED = ["parglare==0.12.0"]
+REQUIRED = [
+	"parglare==0.12.0",
+	"packaging"
+	]
 
 
 class BinaryDistribution(Distribution):
