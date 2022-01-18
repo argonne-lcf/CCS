@@ -621,6 +621,32 @@ ccs_object_set_destroy_callback(ccs_object_t  object,
                                   void *user_data),
                                 void *user_data);
 
+enum ccs_serialize_format_e {
+	CCS_SERIALIZE_FORMAT_BINARY,
+	CCS_SERIALIZE_FORMAT_FORCE_32BIT = INT32_MAX
+};
+typedef enum ccs_serialize_format_e ccs_serialize_format_t;
+
+enum ccs_serialize_type_e {
+	CCS_SERIALIZE_TYPE_FILE,
+	CCS_SERIALIZE_TYPE_FILE_DESCRIPTOR,
+	CCS_SERIALIZE_TYPE_MEMORY,
+	CCS_SERIALIZE_TYPE_FORCE_32BIT = INT32_MAX
+};
+typedef enum ccs_serialize_type_e ccs_serialize_type_t;
+
+extern ccs_result_t
+ccs_object_serialize(ccs_object_t           object,
+                     ccs_serialize_format_t format,
+                     ccs_serialize_type_t   type,
+                     ...);
+
+extern ccs_result_t
+ccs_object_deserialize(ccs_result_t           *object_ret,
+                       ccs_serialize_format_t  format,
+                       ccs_serialize_type_t    type,
+                       ...);
+
 #ifdef __cplusplus
 }
 #endif
