@@ -94,4 +94,136 @@ _ccs_object_init(_ccs_object_internal_t *o,
 	o->ops = ops;
 }
 
+static inline int ccs_is_little_endian(void) {
+#ifdef __cplusplus
+  uint32_t u = 1;
+  char *pc = (char*)&u;
+  return pc[0];
+#else
+  const union { uint32_t u; char c[4]; } one = { 1 };
+  return one.c[0];
+#endif
+}
+
+static inline uint8_t ccs_bswap_uint8(uint8_t x) {
+  return x;
+}
+
+// Those should be compiled to the bswap instruction when available
+static inline uint16_t ccs_bswap_uint16(uint16_t x) {
+  return ((( x  & 0xff00u ) >> 8 ) |
+          (( x  & 0x00ffu ) << 8 ));
+}
+
+static inline uint32_t ccs_bswap_uint32(uint32_t x) {
+  return ((( x & 0xff000000u ) >> 24 ) |
+          (( x & 0x00ff0000u ) >> 8  ) |
+          (( x & 0x0000ff00u ) << 8  ) |
+          (( x & 0x000000ffu ) << 24 ));
+}
+
+static inline uint64_t ccs_bswap_uint64(uint64_t x) {
+  return ((( x & 0xff00000000000000ull ) >> 56 ) |
+          (( x & 0x00ff000000000000ull ) >> 40 ) |
+          (( x & 0x0000ff0000000000ull ) >> 24 ) |
+          (( x & 0x000000ff00000000ull ) >> 8  ) |
+          (( x & 0x00000000ff000000ull ) << 8  ) |
+          (( x & 0x0000000000ff0000ull ) << 24 ) |
+          (( x & 0x000000000000ff00ull ) << 40 ) |
+          (( x & 0x00000000000000ffull ) << 56 ));
+}
+
+#ifdef __cplusplus
+#define CCS_SWAP_CONVERT(TYPE, MAPPED_NAME, MAPPED_TYPE) \
+do {                                                     \
+  static_assert(sizeof(MAPPED_TYPE) == sizeof(TYPE),     \
+    #MAPPED_TYPE " and " #TYPE " size differ");          \
+  MAPPED_TYPE m = x;                                     \
+  TYPE t;                                                \
+  m = ccs_bswap_ ## MAPPED_NAME(m);                      \
+  memcpy(&t, &m, sizeof(t));                             \
+  return t;                                              \
+} while (0)
+#else
+#define CCS_SWAP_CONVERT(TYPE, MAPPED_NAME, MAPPED_TYPE) \
+do {                                                     \
+  union { TYPE t; MAPPED_TYPE m; } v = { .m = x };       \
+  v.m = ccs_bswap_ ## MAPPED_NAME(v.m);                  \
+  return v.t;                                            \
+} while (0)
+#endif
+
+#ifdef __cplusplus
+#define CCS_CONVERT(TYPE, MAPPED_TYPE)               \
+do {                                                 \
+  static_assert(sizeof(MAPPED_TYPE) == sizeof(TYPE), \
+    #MAPPED_TYPE " and " #TYPE " size differ");      \
+  MAPPED_TYPE m = x;                                 \
+  TYPE t;                                            \
+  memcpy(&t, &m, sizeof(t));                         \
+  return t;                                          \
+} while (0)
+#else
+#define CCS_CONVERT(TYPE, MAPPED_TYPE)             \
+do {                                               \
+  union { TYPE t; MAPPED_TYPE m; } v = { .m = x }; \
+  return v.t;                                      \
+} while (0)
+#endif
+
+#ifdef __cplusplus
+#define CCS_CONVERT_SWAP(TYPE, MAPPED_NAME, MAPPED_TYPE) \
+do {                                                     \
+  static_assert(sizeof(MAPPED_TYPE) == sizeof(TYPE),     \
+    #MAPPED_TYPE " and " #TYPE " size differ");          \
+  TYPE t = x;                                            \
+  MAPPED_TYPE m;                                         \
+  memcpy(&m, &t, sizeof(m));                             \
+  return ccs_bswap_ ## MAPPED_NAME(m);                   \
+} while(0)
+#else
+#define CCS_CONVERT_SWAP(TYPE, MAPPED_NAME, MAPPED_TYPE) \
+do {                                                     \
+  union { TYPE t; MAPPED_TYPE m; } v = { .t = x };       \
+  v.m = ccs_bswap_ ## MAPPED_NAME(v.m);                  \
+  return v.m;                                            \
+} while(0)
+#endif
+
+#define CCS_UNPACKER(NAME, TYPE, MAPPED_NAME, MAPPED_TYPE) \
+static inline TYPE ccs_unpack_ ## NAME (MAPPED_TYPE x) {   \
+  if (ccs_is_little_endian())                              \
+    CCS_CONVERT(TYPE, MAPPED_TYPE);                        \
+  else                                                     \
+    CCS_SWAP_CONVERT(TYPE, MAPPED_NAME, MAPPED_TYPE);      \
+}
+
+#define CCS_PACKER(NAME, TYPE, MAPPED_NAME, MAPPED_TYPE) \
+static inline MAPPED_TYPE ccs_pack_ ## NAME (TYPE x) {   \
+  if (ccs_is_little_endian())                            \
+    CCS_CONVERT(MAPPED_TYPE, TYPE);                      \
+  else                                                   \
+    CCS_CONVERT_SWAP(TYPE, MAPPED_NAME, MAPPED_TYPE);    \
+}
+
+#define CCS_CONVERTER_TYPE(NAME, TYPE, MAPPED_NAME, MAPPED_TYPE) \
+  CCS_UNPACKER(NAME, TYPE, MAPPED_NAME, MAPPED_TYPE)             \
+  CCS_PACKER(NAME, TYPE, MAPPED_NAME, MAPPED_TYPE)
+
+#define CCS_CONVERTER(NAME, TYPE, SIZE)                            \
+  CCS_CONVERTER_TYPE(NAME, TYPE, uint ## SIZE, uint ## SIZE ## _t)
+
+CCS_CONVERTER(uint8, uint8_t, 8)
+CCS_CONVERTER(int8, int8_t, 8)
+CCS_CONVERTER(uint16, uint16_t, 16)
+CCS_CONVERTER(int16, int16_t, 16)
+CCS_CONVERTER(uint32, uint32_t, 32)
+CCS_CONVERTER(int32, int32_t, 32)
+CCS_CONVERTER(uint64, uint64_t, 64)
+CCS_CONVERTER(int64, int64_t, 64)
+CCS_CONVERTER(ccs_hash, ccs_hash_t, 32)
+CCS_CONVERTER(ccs_bool, ccs_bool_t, 32)
+CCS_CONVERTER(ccs_int, ccs_int_t, 64)
+CCS_CONVERTER(ccs_float, ccs_float_t, 64)
+
 #endif //_CONFIGSPACE_INTERNAL_H
