@@ -14,6 +14,72 @@ _ccs_hyperparameter_numerical_del(ccs_object_t o) {
 	return CCS_SUCCESS;
 }
 
+static inline size_t
+_ccs_serialize_bin_size_ccs_hyperparameter_numerical(
+		ccs_hyperparameter_t hyperparameter) {
+	_ccs_hyperparameter_numerical_data_t *data =
+		(_ccs_hyperparameter_numerical_data_t *)(hyperparameter->data);
+	return
+		_ccs_serialize_bin_size_ccs_object_type(CCS_HYPERPARAMETER) +
+		_ccs_serialize_bin_size_ccs_hyperparameter_common_data(
+			&data->common_data) +
+		(data->common_data.interval.type == CCS_NUM_FLOAT ?
+			_ccs_serialize_bin_size_ccs_float(data->quantization.f) :
+			_ccs_serialize_bin_size_ccs_int(data->quantization.i));
+}
+
+static inline char *
+_ccs_serialize_bin_ccs_hyperparameter_numerical(
+		ccs_hyperparameter_t  hyperparameter,
+		size_t               *buffer_size,
+		char                 *buffer) {
+	_ccs_hyperparameter_numerical_data_t *data =
+		(_ccs_hyperparameter_numerical_data_t *)(hyperparameter->data);
+	buffer = _ccs_serialize_bin_ccs_object_type(
+		CCS_HYPERPARAMETER, buffer_size, buffer);
+	buffer = _ccs_serialize_bin_ccs_hyperparameter_common_data(
+		&data->common_data, buffer_size, buffer);
+	if (data->common_data.interval.type == CCS_NUM_FLOAT)
+		buffer = _ccs_serialize_bin_ccs_float(
+		    data->quantization.f, buffer_size, buffer);
+	else
+		buffer = _ccs_serialize_bin_ccs_int(
+		    data->quantization.i, buffer_size, buffer);
+	return buffer;
+}
+
+static ccs_result_t
+_ccs_hyperparameter_numerical_serialize(
+		ccs_object_t             object,
+		ccs_serialize_format_t   format,
+		size_t                  *buffer_size,
+		char                    *buffer,
+		size_t                  *buffer_size_ret,
+		char                   **buffer_ret) {
+	switch(format) {
+	case CCS_SERIALIZE_FORMAT_BINARY:
+	{
+		size_t sz =
+		    _ccs_serialize_bin_size_ccs_hyperparameter_numerical(
+		        (ccs_hyperparameter_t)object);
+		if (buffer_size_ret)
+			*buffer_size_ret += sz;
+		if (buffer) {
+			if (*buffer_size < sz)
+				return -CCS_OUT_OF_MEMORY;
+			buffer = _ccs_serialize_bin_ccs_hyperparameter_numerical(
+			    (ccs_hyperparameter_t)object, buffer_size, buffer);
+			if (buffer_ret)
+				*buffer_ret = buffer;
+		}
+	}
+	break;
+	default:
+		return -CCS_INVALID_VALUE;
+	}
+	return CCS_SUCCESS;
+}
+
 static ccs_result_t
 _ccs_hyperparameter_numerical_check_values(_ccs_hyperparameter_data_t *data,
                                            size_t                num_values,
@@ -179,7 +245,9 @@ _ccs_hyperparameter_numerical_convert_samples(
 }
 
 static _ccs_hyperparameter_ops_t _ccs_hyperparameter_numerical_ops = {
-	{ &_ccs_hyperparameter_numerical_del },
+	{ &_ccs_hyperparameter_numerical_del,
+	  &_ccs_hyperparameter_numerical_serialize,
+	  NULL },
 	&_ccs_hyperparameter_numerical_check_values,
 	&_ccs_hyperparameter_numerical_samples,
 	&_ccs_hyperparameter_numerical_get_default_distribution,

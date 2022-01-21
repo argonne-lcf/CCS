@@ -44,7 +44,7 @@ _ccs_evaluation_cmp(_ccs_evaluation_data_t *data,
 }
 
 static _ccs_evaluation_ops_t _evaluation_ops =
-    { {&_ccs_evaluation_del},
+    { { &_ccs_evaluation_del, NULL, NULL },
       &_ccs_evaluation_hash,
       &_ccs_evaluation_cmp };
 

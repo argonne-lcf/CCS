@@ -167,7 +167,7 @@ _ccs_tuner_random_suggest(_ccs_tuner_data_t   *data,
 }
 
 static _ccs_tuner_ops_t _ccs_tuner_random_ops = {
-	{ &_ccs_tuner_random_del },
+	{ &_ccs_tuner_random_del, NULL, NULL },
 	&_ccs_tuner_random_ask,
 	&_ccs_tuner_random_tell,
 	&_ccs_tuner_random_get_optimums,

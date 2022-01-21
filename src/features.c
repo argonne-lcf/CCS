@@ -29,7 +29,7 @@ _ccs_features_cmp(_ccs_features_data_t *data,
 }
 
 static _ccs_features_ops_t _features_ops =
-    { {&_ccs_features_del},
+    { { &_ccs_features_del, NULL, NULL },
       &_ccs_features_hash,
       &_ccs_features_cmp };
 

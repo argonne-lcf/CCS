@@ -78,7 +78,7 @@ _ccs_features_tuner_user_defined_suggest(_ccs_features_tuner_data_t *data,
 }
 
 static _ccs_features_tuner_ops_t _ccs_features_tuner_user_defined_ops = {
-	{ &_ccs_features_tuner_user_defined_del },
+	{ &_ccs_features_tuner_user_defined_del, NULL, NULL },
 	&_ccs_features_tuner_user_defined_ask,
 	&_ccs_features_tuner_user_defined_tell,
 	&_ccs_features_tuner_user_defined_get_optimums,

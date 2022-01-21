@@ -27,7 +27,7 @@ _ccs_objective_space_del(ccs_object_t object) {
 }
 
 static _ccs_objective_space_ops_t _objective_space_ops =
-    { { {&_ccs_objective_space_del} } };
+    { { {&_ccs_objective_space_del, NULL, NULL} } };
 
 static const UT_icd _hyperparameter_wrapper2_icd = {
 	sizeof(_ccs_hyperparameter_wrapper_t),

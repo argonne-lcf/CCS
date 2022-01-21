@@ -137,7 +137,7 @@ _ccs_hyperparameter_categorical_convert_samples(
 }
 
 static _ccs_hyperparameter_ops_t _ccs_hyperparameter_categorical_ops = {
-	{ &_ccs_hyperparameter_categorical_del },
+	{ &_ccs_hyperparameter_categorical_del, NULL, NULL },
 	&_ccs_hyperparameter_categorical_check_values,
 	&_ccs_hyperparameter_categorical_samples,
 	&_ccs_hyperparameter_categorical_get_default_distribution,

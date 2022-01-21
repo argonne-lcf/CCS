@@ -44,7 +44,7 @@ _ccs_distribution_normal_soa_samples(_ccs_distribution_data_t  *data,
                                      ccs_numeric_t            **values);
 
 static _ccs_distribution_ops_t _ccs_distribution_normal_ops = {
-	{ &_ccs_distribution_del },
+	{ &_ccs_distribution_del, NULL, NULL },
 	&_ccs_distribution_normal_samples,
 	&_ccs_distribution_normal_get_bounds,
 	&_ccs_distribution_normal_strided_samples,

@@ -106,7 +106,7 @@ _ccs_hyperparameter_string_convert_samples(
 }
 
 static _ccs_hyperparameter_ops_t _ccs_hyperparameter_string_ops = {
-	{ &_ccs_hyperparameter_string_del },
+	{ &_ccs_hyperparameter_string_del, NULL, NULL },
 	&_ccs_hyperparameter_string_check_values,
 	&_ccs_hyperparameter_string_samples,
 	&_ccs_hyperparameter_string_get_default_distribution,

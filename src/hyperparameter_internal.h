@@ -54,4 +54,25 @@ struct _ccs_hyperparameter_common_data_s {
 };
 
 typedef struct _ccs_hyperparameter_common_data_s _ccs_hyperparameter_common_data_t;
+
+static inline size_t
+_ccs_serialize_bin_size_ccs_hyperparameter_common_data(
+		_ccs_hyperparameter_common_data_t *data) {
+	return _ccs_serialize_bin_size_ccs_hyperparameter_type(data->type) +
+	       _ccs_serialize_bin_size_string(data->name) +
+	       _ccs_serialize_bin_size_ccs_datum(data->default_value) +
+	       _ccs_serialize_bin_size_ccs_interval(&data->interval);
+}
+
+static inline char *
+_ccs_serialize_bin_ccs_hyperparameter_common_data(
+		_ccs_hyperparameter_common_data_t *data,
+		size_t                            *buffer_size,
+		char                              *buffer) {
+	buffer = _ccs_serialize_bin_ccs_hyperparameter_type(data->type, buffer_size, buffer);
+	buffer = _ccs_serialize_bin_string(data->name, buffer_size, buffer);
+	buffer = _ccs_serialize_bin_ccs_datum(data->default_value, buffer_size, buffer);
+	buffer = _ccs_serialize_bin_ccs_interval(&data->interval, buffer_size, buffer);
+	return buffer;
+}
 #endif //_HYPERPARAMETER_INTERNAL_H

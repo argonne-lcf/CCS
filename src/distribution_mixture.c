@@ -48,7 +48,7 @@ _ccs_distribution_mixture_soa_samples(_ccs_distribution_data_t  *data,
                                       ccs_numeric_t            **values);
 
 static _ccs_distribution_ops_t _ccs_distribution_mixture_ops = {
-	{ &_ccs_distribution_mixture_del },
+	{ &_ccs_distribution_mixture_del, NULL, NULL },
 	&_ccs_distribution_mixture_samples,
 	&_ccs_distribution_mixture_get_bounds,
 	&_ccs_distribution_mixture_strided_samples,

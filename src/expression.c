@@ -165,7 +165,7 @@ _ccs_expr_or_eval(_ccs_expression_data_t *data,
 }
 
 static _ccs_expression_ops_t _ccs_expr_or_ops = {
-	{ &_ccs_expression_del },
+	{ &_ccs_expression_del, NULL, NULL },
 	&_ccs_expr_or_eval
 };
 
@@ -184,7 +184,7 @@ _ccs_expr_and_eval(_ccs_expression_data_t *data,
 }
 
 static _ccs_expression_ops_t _ccs_expr_and_ops = {
-	{ &_ccs_expression_del },
+	{ &_ccs_expression_del, NULL, NULL },
 	&_ccs_expr_and_eval
 };
 
@@ -299,7 +299,7 @@ _ccs_expr_equal_eval(_ccs_expression_data_t *data,
 }
 
 static _ccs_expression_ops_t _ccs_expr_equal_ops = {
-	{ &_ccs_expression_del },
+	{ &_ccs_expression_del, NULL, NULL },
 	&_ccs_expr_equal_eval
 };
 
@@ -329,7 +329,7 @@ _ccs_expr_not_equal_eval(_ccs_expression_data_t *data,
 }
 
 static _ccs_expression_ops_t _ccs_expr_not_equal_ops = {
-	{ &_ccs_expression_del },
+	{ &_ccs_expression_del, NULL, NULL },
 	&_ccs_expr_not_equal_eval
 };
 
@@ -373,7 +373,7 @@ _ccs_expr_less_eval(_ccs_expression_data_t *data,
 }
 
 static _ccs_expression_ops_t _ccs_expr_less_ops = {
-	{ &_ccs_expression_del },
+	{ &_ccs_expression_del, NULL, NULL },
 	&_ccs_expr_less_eval
 };
 
@@ -417,7 +417,7 @@ _ccs_expr_greater_eval(_ccs_expression_data_t *data,
 }
 
 static _ccs_expression_ops_t _ccs_expr_greater_ops = {
-	{ &_ccs_expression_del },
+	{ &_ccs_expression_del, NULL, NULL },
 	&_ccs_expr_greater_eval
 };
 
@@ -461,7 +461,7 @@ _ccs_expr_less_or_equal_eval(_ccs_expression_data_t *data,
 }
 
 static _ccs_expression_ops_t _ccs_expr_less_or_equal_ops = {
-	{ &_ccs_expression_del },
+	{ &_ccs_expression_del, NULL, NULL },
 	&_ccs_expr_less_or_equal_eval
 };
 
@@ -505,7 +505,7 @@ _ccs_expr_greater_or_equal_eval(_ccs_expression_data_t *data,
 }
 
 static _ccs_expression_ops_t _ccs_expr_greater_or_equal_ops = {
-	{ &_ccs_expression_del },
+	{ &_ccs_expression_del, NULL, NULL },
 	&_ccs_expr_greater_or_equal_eval
 };
 
@@ -550,7 +550,7 @@ _ccs_expr_in_eval(_ccs_expression_data_t *data,
 }
 
 static _ccs_expression_ops_t _ccs_expr_in_ops = {
-	{ &_ccs_expression_del },
+	{ &_ccs_expression_del, NULL, NULL },
 	&_ccs_expr_in_eval
 };
 
@@ -587,7 +587,7 @@ _ccs_expr_add_eval(_ccs_expression_data_t *data,
 }
 
 static _ccs_expression_ops_t _ccs_expr_add_ops = {
-	{ &_ccs_expression_del },
+	{ &_ccs_expression_del, NULL, NULL },
 	&_ccs_expr_add_eval
 };
 
@@ -624,7 +624,7 @@ _ccs_expr_substract_eval(_ccs_expression_data_t *data,
 }
 
 static _ccs_expression_ops_t _ccs_expr_substract_ops = {
-	{ &_ccs_expression_del },
+	{ &_ccs_expression_del, NULL, NULL },
 	&_ccs_expr_substract_eval
 };
 
@@ -661,7 +661,7 @@ _ccs_expr_multiply_eval(_ccs_expression_data_t *data,
 }
 
 static _ccs_expression_ops_t _ccs_expr_multiply_ops = {
-	{ &_ccs_expression_del },
+	{ &_ccs_expression_del, NULL, NULL },
 	&_ccs_expr_multiply_eval
 };
 
@@ -706,7 +706,7 @@ _ccs_expr_divide_eval(_ccs_expression_data_t *data,
 }
 
 static _ccs_expression_ops_t _ccs_expr_divide_ops = {
-	{ &_ccs_expression_del },
+	{ &_ccs_expression_del, NULL, NULL },
 	&_ccs_expr_divide_eval
 };
 
@@ -751,7 +751,7 @@ _ccs_expr_modulo_eval(_ccs_expression_data_t *data,
 }
 
 static _ccs_expression_ops_t _ccs_expr_modulo_ops = {
-	{ &_ccs_expression_del },
+	{ &_ccs_expression_del, NULL, NULL },
 	&_ccs_expr_modulo_eval
 };
 
@@ -770,7 +770,7 @@ _ccs_expr_positive_eval(_ccs_expression_data_t *data,
 }
 
 static _ccs_expression_ops_t _ccs_expr_positive_ops = {
-	{ &_ccs_expression_del },
+	{ &_ccs_expression_del, NULL, NULL },
 	&_ccs_expr_positive_eval
 };
 
@@ -791,7 +791,7 @@ _ccs_expr_negative_eval(_ccs_expression_data_t *data,
 }
 
 static _ccs_expression_ops_t _ccs_expr_negative_ops = {
-	{ &_ccs_expression_del },
+	{ &_ccs_expression_del, NULL, NULL },
 	&_ccs_expr_negative_eval
 };
 
@@ -810,7 +810,7 @@ _ccs_expr_not_eval(_ccs_expression_data_t *data,
 }
 
 static _ccs_expression_ops_t _ccs_expr_not_ops = {
-	{ &_ccs_expression_del },
+	{ &_ccs_expression_del, NULL, NULL },
 	&_ccs_expr_not_eval
 };
 
@@ -824,7 +824,7 @@ _ccs_expr_list_eval(_ccs_expression_data_t *data,
 }
 
 static _ccs_expression_ops_t _ccs_expr_list_ops = {
-	{ &_ccs_expression_del },
+	{ &_ccs_expression_del, NULL, NULL },
 	&_ccs_expr_list_eval
 };
 
@@ -841,7 +841,7 @@ _ccs_expr_literal_eval(_ccs_expression_data_t *data,
 }
 
 static _ccs_expression_ops_t _ccs_expr_literal_ops = {
-	{ &_ccs_expression_del },
+	{ &_ccs_expression_del, NULL, NULL },
 	&_ccs_expr_literal_eval
 };
 
@@ -870,7 +870,7 @@ _ccs_expr_variable_eval(_ccs_expression_data_t *data,
 }
 
 static _ccs_expression_ops_t _ccs_expr_variable_ops = {
-	{ &_ccs_expr_variable_del },
+	{ &_ccs_expr_variable_del, NULL, NULL },
 	&_ccs_expr_variable_eval
 };
 

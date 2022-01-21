@@ -28,7 +28,7 @@ _ccs_configuration_cmp(_ccs_configuration_data_t *data,
 }
 
 static _ccs_configuration_ops_t _configuration_ops =
-    { {&_ccs_configuration_del},
+    { {&_ccs_configuration_del, NULL, NULL},
       &_ccs_configuration_hash,
       &_ccs_configuration_cmp };
 

@@ -5,7 +5,7 @@
 static ccs_result_t
 _ccs_rng_del(ccs_object_t object);
 
-static struct _ccs_rng_ops_s _rng_ops = { {&_ccs_rng_del} };
+static struct _ccs_rng_ops_s _rng_ops = { {&_ccs_rng_del, NULL, NULL} };
 
 ccs_result_t
 ccs_rng_create_with_type(const gsl_rng_type *rng_type,

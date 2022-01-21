@@ -249,7 +249,7 @@ _ccs_features_tuner_random_suggest(_ccs_features_tuner_data_t *data,
 }
 
 static _ccs_features_tuner_ops_t _ccs_features_tuner_random_ops = {
-	{ &_ccs_features_tuner_random_del },
+	{ &_ccs_features_tuner_random_del, NULL, NULL },
 	&_ccs_features_tuner_random_ask,
 	&_ccs_features_tuner_random_tell,
 	&_ccs_features_tuner_random_get_optimums,

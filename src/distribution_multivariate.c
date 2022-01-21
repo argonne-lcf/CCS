@@ -48,7 +48,7 @@ _ccs_distribution_multivariate_soa_samples(_ccs_distribution_data_t  *data,
                                            ccs_numeric_t            **values);
 
 static _ccs_distribution_ops_t _ccs_distribution_multivariate_ops = {
-	{ &_ccs_distribution_multivariate_del },
+	{ &_ccs_distribution_multivariate_del, NULL, NULL },
 	&_ccs_distribution_multivariate_samples,
 	&_ccs_distribution_multivariate_get_bounds,
 	&_ccs_distribution_multivariate_strided_samples,

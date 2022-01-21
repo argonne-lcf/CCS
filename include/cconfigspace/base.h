@@ -192,6 +192,8 @@ enum ccs_error_e {
 	CCS_INVALID_FEATURES,
 	/** The provided features tuner is invalid */
 	CCS_INVALID_FEATURES_TUNER,
+	/** The provided file path is invalid */
+	CCS_INVALID_FILE_PATH,
 	/** Guard */
 	CCS_ERROR_MAX,
 	/** Try forcing 32 bits value for bindings */
@@ -628,9 +630,10 @@ enum ccs_serialize_format_e {
 typedef enum ccs_serialize_format_e ccs_serialize_format_t;
 
 enum ccs_serialize_type_e {
-	CCS_SERIALIZE_TYPE_FILE,
-	CCS_SERIALIZE_TYPE_FILE_DESCRIPTOR,
+	CCS_SERIALIZE_TYPE_SIZE,
 	CCS_SERIALIZE_TYPE_MEMORY,
+/*	CCS_SERIALIZE_TYPE_FILE,
+	CCS_SERIALIZE_TYPE_FILE_DESCRIPTOR,*/
 	CCS_SERIALIZE_TYPE_FORCE_32BIT = INT32_MAX
 };
 typedef enum ccs_serialize_type_e ccs_serialize_type_t;
@@ -642,7 +645,7 @@ ccs_object_serialize(ccs_object_t           object,
                      ...);
 
 extern ccs_result_t
-ccs_object_deserialize(ccs_result_t           *object_ret,
+ccs_object_deserialize(ccs_object_t           *object_ret,
                        ccs_serialize_format_t  format,
                        ccs_serialize_type_t    type,
                        ...);
