@@ -16,6 +16,8 @@ void test_create() {
 	ccs_distribution_t         distribution;
 	ccs_distribution_type_t    dist_type;
 	ccs_interval_t             interval;
+	char                      *buff;
+	size_t                     buff_size;
 
 	err = ccs_create_numerical_hyperparameter("my_param", CCS_NUM_FLOAT,
 	                                          CCSF(-5.0), CCSF(5.0),
@@ -65,6 +67,57 @@ void test_create() {
 	err = ccs_hyperparameter_check_value(hyperparameter, default_value, &check);
 	assert( err == CCS_SUCCESS );
 	assert( check == CCS_FALSE );
+
+	err = ccs_object_serialize(hyperparameter, CCS_SERIALIZE_FORMAT_BINARY, CCS_SERIALIZE_TYPE_SIZE, &buff_size);
+	assert( err == CCS_SUCCESS );
+
+	buff = (char *)malloc(buff_size);
+	assert( buff );
+
+	err = ccs_object_serialize(hyperparameter, CCS_SERIALIZE_FORMAT_BINARY, CCS_SERIALIZE_TYPE_MEMORY, buff_size, buff);
+	assert( err == CCS_SUCCESS );
+
+	err = ccs_release_object(distribution);
+	assert( err == CCS_SUCCESS );
+	err = ccs_release_object(hyperparameter);
+	assert( err == CCS_SUCCESS );
+
+	err = ccs_object_deserialize((ccs_object_t*)&hyperparameter, CCS_SERIALIZE_FORMAT_BINARY, CCS_SERIALIZE_TYPE_MEMORY, buff_size, buff);
+	assert( err == CCS_SUCCESS );
+	free(buff);
+
+	err = ccs_hyperparameter_get_type(hyperparameter, &type);
+	assert( err == CCS_SUCCESS );
+	assert( type == CCS_HYPERPARAMETER_TYPE_NUMERICAL );
+
+	err = ccs_hyperparameter_get_default_value(hyperparameter, &default_value);
+	assert( err == CCS_SUCCESS );
+	assert( default_value.type == CCS_FLOAT );
+	assert( default_value.value.f == 1.0 );
+
+	err = ccs_hyperparameter_get_name(hyperparameter, &name);
+	assert( err == CCS_SUCCESS );
+	assert( strcmp(name, "my_param") == 0 );
+
+	err = ccs_hyperparameter_get_user_data(hyperparameter, &user_data);
+	assert( err == CCS_SUCCESS );
+	assert( user_data == NULL );
+
+	err = ccs_hyperparameter_get_default_distribution(hyperparameter, &distribution);
+	assert( err == CCS_SUCCESS );
+	assert( distribution );
+
+	err = ccs_distribution_get_type(distribution, &dist_type);
+	assert( err == CCS_SUCCESS );
+	assert( dist_type == CCS_UNIFORM );
+
+	err = ccs_distribution_get_bounds(distribution, &interval);
+	assert( err == CCS_SUCCESS );
+	assert( interval.type == CCS_NUM_FLOAT );
+	assert( interval.lower.f  == -5.0 );
+	assert( interval.lower_included == CCS_TRUE );
+	assert( interval.upper.f  == 5.0 );
+	assert( interval.upper_included == CCS_FALSE );
 
 	err = ccs_release_object(distribution);
 	assert( err == CCS_SUCCESS );

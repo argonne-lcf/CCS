@@ -194,6 +194,8 @@ enum ccs_error_e {
 	CCS_INVALID_FEATURES_TUNER,
 	/** The provided file path is invalid */
 	CCS_INVALID_FILE_PATH,
+	/** The provided buffer or file is too short */
+	CCS_NOT_ENOUGH_DATA,
 	/** Guard */
 	CCS_ERROR_MAX,
 	/** Try forcing 32 bits value for bindings */
@@ -264,13 +266,20 @@ typedef enum ccs_data_type_e ccs_data_type_t;
 enum ccs_datum_flag_e {
 	/** Empty default flags */
 	CCS_FLAG_DEFAULT = 0,
-	/** The value given to CCS is a pointer and is not guaranteed to stay
+	/**
+	 * The value given to CCS is a pointer and is not guaranteed to stay
 	 * allocated
 	 */
 	CCS_FLAG_TRANSIENT = (1 << 0),
-	/** The value returned by CCS is a pointer and is not associated to a
-	 CCS object and needs to be freed by the user (unused). */
+	/**
+	 * The value returned by CCS is a pointer and is not associated to a
+	 * CCS object and needs to be freed by the user (unused).
+	 */
 	CCS_FLAG_UNPOOLED = (1 << 1),
+	/**
+	 * The object handle is just an identifier.
+	 */
+	CCS_FLAG_ID = (1 << 2),
 	/** Try forcing 32 bits value for bindings */
 	CCS_DATUM_FLAG_FORCE_32BIT = INT32_MAX
 };

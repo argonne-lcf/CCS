@@ -68,22 +68,25 @@ _ccs_interval_include(ccs_interval_t *interval, ccs_numeric_t value) {
 struct _ccs_object_ops_s {
 	ccs_result_t (*del)(ccs_object_t object);
 
+	ccs_result_t (*serialize_size)(
+		ccs_object_t            object,
+		ccs_serialize_format_t  format,
+		size_t                 *cum_size);
+
 	ccs_result_t (*serialize)(
 		ccs_object_t             object,
 		ccs_serialize_format_t   format,
 		size_t                  *buffer_size,
-		char                    *buffer,
-		size_t                  *buffer_size_ret,
-		char                   **buffer_ret);
+		char                   **buffer);
 
-	ccs_result_t (*deserialize)(
+/*	ccs_result_t (*deserialize)(
 		ccs_object_t            *object_ret,
 		ccs_serialize_format_t   format,
 		uint32_t                 version,
 		size_t                  *buffer_size,
 		const char              *buffer,
 		size_t                  *buffer_size_ret,
-		char                   **buffer_ret);
+		char                   **buffer_ret); */
 };
 
 typedef struct _ccs_object_ops_s _ccs_object_ops_t;
@@ -231,23 +234,45 @@ static inline MAPPED_TYPE _ccs_pack_ ## NAME (TYPE x) {  \
     CCS_CONVERT_SWAP(TYPE, MAPPED_NAME, MAPPED_TYPE);    \
 }
 
-#define CCS_SERIALIZER(NAME, TYPE, MAPPED_NAME, MAPPED_TYPE)              \
-static inline char *                                                      \
-_ccs_serialize_bin_ ## NAME (TYPE x, size_t *buffer_size, char *buffer) { \
-  MAPPED_TYPE v = _ccs_pack_ ## NAME (x);                                 \
-  memcpy(buffer, &v, sizeof(MAPPED_TYPE));                                \
-  *buffer_size -= sizeof(MAPPED_TYPE);                                    \
-  return buffer + sizeof(MAPPED_TYPE);                                    \
-}                                                                         \
-static inline size_t _ccs_serialize_bin_size_ ## NAME (TYPE x) {          \
-  (void)x;                                                                \
-  return sizeof(MAPPED_TYPE);                                             \
+#define CCS_SERIALIZER(NAME, TYPE, MAPPED_NAME, MAPPED_TYPE)               \
+static inline ccs_result_t                                                 \
+_ccs_serialize_bin_ ## NAME (TYPE x, size_t *buffer_size, char **buffer) { \
+  if (CCS_UNLIKELY(*buffer_size < sizeof(MAPPED_TYPE)))                    \
+    return -CCS_OUT_OF_MEMORY;                                             \
+  MAPPED_TYPE v = _ccs_pack_ ## NAME (x);                                  \
+  memcpy(*buffer, &v, sizeof(MAPPED_TYPE));                                \
+  *buffer_size -= sizeof(MAPPED_TYPE);                                     \
+  *buffer += sizeof(MAPPED_TYPE);                                          \
+  return CCS_SUCCESS;                                                      \
+}                                                                          \
+static inline size_t _ccs_serialize_bin_size_ ## NAME (TYPE x) {           \
+  (void)x;                                                                 \
+  return sizeof(MAPPED_TYPE);                                              \
+}
+
+#define CCS_DESERIALIZER(NAME, TYPE, MAPPED_NAME, MAPPED_TYPE)                      \
+static inline ccs_result_t                                                          \
+_ccs_peek_bin_ ## NAME (TYPE *x, size_t *buffer_size, const char **buffer) {        \
+  if (CCS_UNLIKELY(*buffer_size < sizeof(MAPPED_TYPE)))                             \
+    return -CCS_NOT_ENOUGH_DATA;                                                    \
+  MAPPED_TYPE v;                                                                    \
+  memcpy(&v, *buffer, sizeof(MAPPED_TYPE));                                         \
+  *x = _ccs_unpack_ ## NAME (v);                                                    \
+  return CCS_SUCCESS;                                                               \
+}                                                                                   \
+static inline ccs_result_t                                                          \
+_ccs_deserialize_bin_ ## NAME (TYPE *x, size_t *buffer_size, const char **buffer) { \
+  CCS_VALIDATE(_ccs_peek_bin_ ## NAME (x, buffer_size, buffer));                    \
+  *buffer_size -= sizeof(MAPPED_TYPE);                                              \
+  *buffer += sizeof(MAPPED_TYPE);                                                   \
+  return CCS_SUCCESS;                                                               \
 }
 
 #define CCS_CONVERTER_TYPE(NAME, TYPE, MAPPED_NAME, MAPPED_TYPE) \
   CCS_UNPACKER(NAME, TYPE, MAPPED_NAME, MAPPED_TYPE)             \
   CCS_PACKER(NAME, TYPE, MAPPED_NAME, MAPPED_TYPE)               \
-  CCS_SERIALIZER(NAME, TYPE, MAPPED_NAME, MAPPED_TYPE)
+  CCS_SERIALIZER(NAME, TYPE, MAPPED_NAME, MAPPED_TYPE)           \
+  CCS_DESERIALIZER(NAME, TYPE, MAPPED_NAME, MAPPED_TYPE)
 
 #define CCS_CONVERTER(NAME, TYPE, SIZE)                            \
   CCS_CONVERTER_TYPE(NAME, TYPE, uint ## SIZE, uint ## SIZE ## _t)
@@ -277,15 +302,32 @@ _ccs_serialize_bin_size_string(const char *str) {
 	return sz + _ccs_serialize_bin_size_uint64(sz);
 }
 
-static inline char *
-_ccs_serialize_bin_string(const char *str,
-                          size_t     *buffer_size,
-                          char       *buffer) {
+static inline ccs_result_t
+_ccs_serialize_bin_string(const char  *str,
+                          size_t      *buffer_size,
+                          char       **buffer) {
 	uint64_t sz = strlen(str) + 1;
-	buffer = _ccs_serialize_bin_uint64(sz, buffer_size, buffer);
-	memcpy(buffer, str, sz);
+	CCS_VALIDATE(_ccs_serialize_bin_uint64(sz, buffer_size, buffer));
+	if (CCS_UNLIKELY(*buffer_size < sz))
+		return -CCS_OUT_OF_MEMORY;
+	memcpy(*buffer, str, sz);
 	*buffer_size -= sz;
-	return buffer + sz;
+	*buffer += sz;
+	return CCS_SUCCESS;
+}
+
+static inline ccs_result_t
+_ccs_deserialize_bin_string(const char **str,
+                            size_t      *buffer_size,
+                            const char **buffer) {
+	uint64_t sz;
+	CCS_VALIDATE(_ccs_deserialize_bin_uint64(&sz, buffer_size, buffer));
+	if (CCS_UNLIKELY(*buffer_size < sz))
+		return -CCS_NOT_ENOUGH_DATA;
+	*str = *buffer;
+	*buffer_size -= sz;
+	*buffer += sz;
+	return CCS_SUCCESS;
 }
 
 static inline size_t
@@ -300,22 +342,40 @@ _ccs_serialize_bin_size_ccs_interval(const ccs_interval_t *interval) {
 	       _ccs_serialize_bin_size_ccs_bool(interval->upper_included);
 }
 
-static inline char *
-_ccs_serialize_bin_ccs_interval(const ccs_interval_t *interval,
-                                size_t               *buffer_size,
-                                char                 *buffer) {
-	buffer = _ccs_serialize_bin_ccs_numeric_type(
-		interval->type, buffer_size, buffer);
+static inline ccs_result_t
+_ccs_serialize_bin_ccs_interval(const ccs_interval_t  *interval,
+                                size_t                *buffer_size,
+                                char                 **buffer) {
+	CCS_VALIDATE(_ccs_serialize_bin_ccs_numeric_type(
+		interval->type, buffer_size, buffer));
 	if (interval->type == CCS_NUM_FLOAT) {
-		buffer = _ccs_serialize_bin_ccs_float(interval->lower.f, buffer_size, buffer);
-		buffer = _ccs_serialize_bin_ccs_float(interval->upper.f, buffer_size, buffer);
+		CCS_VALIDATE(_ccs_serialize_bin_ccs_float(interval->lower.f, buffer_size, buffer));
+		CCS_VALIDATE(_ccs_serialize_bin_ccs_float(interval->upper.f, buffer_size, buffer));
 	} else {
-		buffer = _ccs_serialize_bin_ccs_int(interval->lower.i, buffer_size, buffer);
-		buffer = _ccs_serialize_bin_ccs_int(interval->upper.i, buffer_size, buffer);
+		CCS_VALIDATE(_ccs_serialize_bin_ccs_int(interval->lower.i, buffer_size, buffer));
+		CCS_VALIDATE(_ccs_serialize_bin_ccs_int(interval->upper.i, buffer_size, buffer));
 	}
-	_ccs_serialize_bin_ccs_bool(interval->lower_included, buffer_size, buffer);
-	_ccs_serialize_bin_ccs_bool(interval->upper_included, buffer_size, buffer);
-        return buffer;
+	CCS_VALIDATE(_ccs_serialize_bin_ccs_bool(interval->lower_included, buffer_size, buffer));
+	CCS_VALIDATE(_ccs_serialize_bin_ccs_bool(interval->upper_included, buffer_size, buffer));
+        return CCS_SUCCESS;
+}
+
+static inline ccs_result_t
+_ccs_deserialize_bin_ccs_interval(ccs_interval_t  *interval,
+                                  size_t          *buffer_size,
+                                  const char     **buffer) {
+	CCS_VALIDATE(_ccs_deserialize_bin_ccs_numeric_type(
+		&interval->type, buffer_size, buffer));
+	if (interval->type == CCS_NUM_FLOAT) {
+		CCS_VALIDATE(_ccs_deserialize_bin_ccs_float(&interval->lower.f, buffer_size, buffer));
+		CCS_VALIDATE(_ccs_deserialize_bin_ccs_float(&interval->upper.f, buffer_size, buffer));
+	} else {
+		CCS_VALIDATE(_ccs_deserialize_bin_ccs_int(&interval->lower.i, buffer_size, buffer));
+		CCS_VALIDATE(_ccs_deserialize_bin_ccs_int(&interval->upper.i, buffer_size, buffer));
+	}
+	CCS_VALIDATE(_ccs_deserialize_bin_ccs_bool(&interval->lower_included, buffer_size, buffer));
+	CCS_VALIDATE(_ccs_deserialize_bin_ccs_bool(&interval->upper_included, buffer_size, buffer));
+	return CCS_SUCCESS;
 }
 
 static inline size_t
@@ -348,36 +408,94 @@ _ccs_serialize_bin_size_ccs_datum(ccs_datum_t datum) {
 	return sz;
 }
 
-static inline char *
+static inline ccs_result_t
 _ccs_serialize_bin_ccs_datum(
-		ccs_datum_t  datum,
-		size_t      *buffer_size,
-		char        *buffer) {
-	buffer = _ccs_serialize_bin_ccs_data_type(datum.type, buffer_size, buffer);
-	buffer = _ccs_serialize_bin_ccs_datum_flags(datum.flags, buffer_size, buffer);
+		ccs_datum_t   datum,
+		size_t       *buffer_size,
+		char        **buffer) {
+	CCS_VALIDATE(_ccs_serialize_bin_ccs_data_type(datum.type, buffer_size, buffer));
 	switch(datum.type) {
 	case CCS_NONE:
 	case CCS_INACTIVE:
 		break;
 	case CCS_INTEGER:
-		buffer = _ccs_serialize_bin_ccs_int(datum.value.i, buffer_size, buffer);
+		CCS_VALIDATE(_ccs_serialize_bin_ccs_int(datum.value.i, buffer_size, buffer));
 		break;
 	case CCS_FLOAT:
-		buffer = _ccs_serialize_bin_ccs_float(datum.value.f, buffer_size, buffer);
+		CCS_VALIDATE(_ccs_serialize_bin_ccs_float(datum.value.f, buffer_size, buffer));
 		break;
 	case CCS_BOOLEAN:
-		buffer = _ccs_serialize_bin_ccs_bool(datum.value.i, buffer_size, buffer);
+		CCS_VALIDATE(_ccs_serialize_bin_ccs_bool(datum.value.i, buffer_size, buffer));
 		break;
 	case CCS_STRING:
-		buffer = _ccs_serialize_bin_string(datum.value.s, buffer_size, buffer);
+		CCS_VALIDATE(_ccs_serialize_bin_string(datum.value.s, buffer_size, buffer));
 		break;
 	case CCS_OBJECT:
-		buffer = _ccs_serialize_bin_ccs_object(datum.value.o, buffer_size, buffer);
+		CCS_VALIDATE(_ccs_serialize_bin_ccs_object(datum.value.o, buffer_size, buffer));
 		break;
-	default: /* should be a hard error */
-		;
+	default:
+		return -CCS_INVALID_TYPE;
 	}
-	return buffer;
+	return CCS_SUCCESS;
+}
+
+static inline ccs_result_t
+_ccs_deserialize_bin_ccs_datum(
+		ccs_datum_t  *datum,
+		size_t       *buffer_size,
+		const char  **buffer) {
+	ccs_data_type_t type;
+	CCS_VALIDATE(_ccs_deserialize_bin_ccs_data_type(&type, buffer_size, buffer));
+	datum->flags = CCS_FLAG_DEFAULT;
+	switch(type) {
+	case CCS_NONE:
+		*datum = ccs_none;
+		break;
+	case CCS_INACTIVE:
+		*datum = ccs_inactive;
+		break;
+	case CCS_INTEGER:
+		{
+		ccs_int_t i;
+		CCS_VALIDATE(_ccs_deserialize_bin_ccs_int(&i, buffer_size, buffer));
+		*datum = ccs_int(i);
+		}
+		break;
+	case CCS_FLOAT:
+		{
+		ccs_float_t f;
+		CCS_VALIDATE(_ccs_deserialize_bin_ccs_float(&f, buffer_size, buffer));
+		*datum = ccs_float(f);
+		}
+		break;
+	case CCS_BOOLEAN:
+		{
+		ccs_bool_t b;
+		CCS_VALIDATE(_ccs_deserialize_bin_ccs_bool(&b, buffer_size, buffer));
+		*datum = ccs_bool(b);
+		}
+		break;
+	case CCS_STRING:
+		{
+		const char *s;
+		CCS_VALIDATE(_ccs_deserialize_bin_string(&s, buffer_size, buffer));
+		*datum = ccs_string(s);
+		datum->flags |= CCS_FLAG_TRANSIENT;
+		}
+		break;
+	case CCS_OBJECT:
+		{
+		ccs_object_t o;
+		CCS_VALIDATE(_ccs_deserialize_bin_ccs_object(&o, buffer_size, buffer));
+		*datum = ccs_object(o);
+		datum->flags |= CCS_FLAG_ID;
+		}
+		break;
+	default:
+		*datum = ccs_none;
+		return -CCS_INVALID_TYPE;
+	}
+	return CCS_SUCCESS;
 }
 
 #endif //_CONFIGSPACE_INTERNAL_H

@@ -64,15 +64,75 @@ _ccs_serialize_bin_size_ccs_hyperparameter_common_data(
 	       _ccs_serialize_bin_size_ccs_interval(&data->interval);
 }
 
-static inline char *
+static inline ccs_result_t
 _ccs_serialize_bin_ccs_hyperparameter_common_data(
-		_ccs_hyperparameter_common_data_t *data,
-		size_t                            *buffer_size,
-		char                              *buffer) {
-	buffer = _ccs_serialize_bin_ccs_hyperparameter_type(data->type, buffer_size, buffer);
-	buffer = _ccs_serialize_bin_string(data->name, buffer_size, buffer);
-	buffer = _ccs_serialize_bin_ccs_datum(data->default_value, buffer_size, buffer);
-	buffer = _ccs_serialize_bin_ccs_interval(&data->interval, buffer_size, buffer);
-	return buffer;
+		_ccs_hyperparameter_common_data_t  *data,
+		size_t                             *buffer_size,
+		char                              **buffer) {
+	CCS_VALIDATE(_ccs_serialize_bin_ccs_hyperparameter_type(data->type, buffer_size, buffer));
+	CCS_VALIDATE(_ccs_serialize_bin_string(data->name, buffer_size, buffer));
+	CCS_VALIDATE(_ccs_serialize_bin_ccs_datum(data->default_value, buffer_size, buffer));
+	CCS_VALIDATE(_ccs_serialize_bin_ccs_interval(&data->interval, buffer_size, buffer));
+	return CCS_SUCCESS;
 }
+
+static inline ccs_result_t
+_ccs_deserialize_bin_ccs_hyperparameter_common_data(
+		_ccs_hyperparameter_common_data_t  *data,
+		size_t                             *buffer_size,
+		const char                        **buffer) {
+	CCS_VALIDATE(_ccs_deserialize_bin_ccs_hyperparameter_type(&data->type, buffer_size, buffer));
+	CCS_VALIDATE(_ccs_deserialize_bin_string(&data->name, buffer_size, buffer));
+	CCS_VALIDATE(_ccs_deserialize_bin_ccs_datum(&data->default_value, buffer_size, buffer));
+	CCS_VALIDATE(_ccs_deserialize_bin_ccs_interval(&data->interval, buffer_size, buffer));
+	return CCS_SUCCESS;
+}
+
+struct _ccs_hyperparameter_numerical_data_s {
+	_ccs_hyperparameter_common_data_t common_data;
+	ccs_numeric_t                     quantization;
+};
+typedef struct _ccs_hyperparameter_numerical_data_s _ccs_hyperparameter_numerical_data_t;
+
+static inline size_t
+_ccs_serialize_bin_size_ccs_hyperparameter_numerical_data(
+		_ccs_hyperparameter_numerical_data_t *data) {
+	return _ccs_serialize_bin_size_ccs_hyperparameter_common_data(&data->common_data) +
+	       (data->common_data.interval.type == CCS_NUM_FLOAT ?
+			_ccs_serialize_bin_size_ccs_float(data->quantization.f) :
+			_ccs_serialize_bin_size_ccs_int(data->quantization.i));
+}
+
+static inline ccs_result_t
+_ccs_serialize_bin_ccs_hyperparameter_numerical_data(
+		_ccs_hyperparameter_numerical_data_t  *data,
+		size_t                                *buffer_size,
+		char                                 **buffer) {
+	CCS_VALIDATE(_ccs_serialize_bin_ccs_hyperparameter_common_data(
+		&data->common_data, buffer_size, buffer));
+	if (data->common_data.interval.type == CCS_NUM_FLOAT)
+		CCS_VALIDATE(_ccs_serialize_bin_ccs_float(
+			data->quantization.f, buffer_size, buffer));
+	else
+		CCS_VALIDATE(_ccs_serialize_bin_ccs_int(
+			data->quantization.i, buffer_size, buffer));
+	return CCS_SUCCESS;
+}
+
+static inline ccs_result_t
+_ccs_deserialize_bin_ccs_hyperparameter_numerical_data(
+		_ccs_hyperparameter_numerical_data_t  *data,
+		size_t                                *buffer_size,
+		const char                           **buffer) {
+	CCS_VALIDATE(_ccs_deserialize_bin_ccs_hyperparameter_common_data(
+		&data->common_data, buffer_size, buffer));
+	if (data->common_data.interval.type == CCS_NUM_FLOAT)
+		CCS_VALIDATE(_ccs_deserialize_bin_ccs_float(
+			&data->quantization.f, buffer_size, buffer));
+	else
+		CCS_VALIDATE(_ccs_deserialize_bin_ccs_int(
+			&data->quantization.i, buffer_size, buffer));
+	return CCS_SUCCESS;
+}
+
 #endif //_HYPERPARAMETER_INTERNAL_H
