@@ -588,8 +588,8 @@ ccs_release_object(ccs_object_t object);
 /**
  * Get a CCS object type.
  * @param[in] object a CCS object
- * @param[out] type_ret a pointer to a ccs_object_type_t variable that will contain
- *                 the type
+ * @param[out] type_ret a pointer to a ccs_object_type_t variable that will
+ *                      contain the type
  * @return #CCS_SUCCESS on success
  * @return -#CCS_INVALID_OBJECT if the object is found to be invalid
  * @return -#CCS_INVALID_VALUE if type_ret is NULL
@@ -601,8 +601,8 @@ ccs_object_get_type(ccs_object_t       object,
 /**
  * Get an object internal reference counting.
  * @param[in] object a CCS object
- * @param[out] refcount_ret a pointer to a int32_t variable that will contain the
- *                     refcount
+ * @param[out] refcount_ret a pointer to a int32_t variable that will contain
+ *                          the refcount
  * @return #CCS_SUCCESS on success
  * @return -#CCS_INVALID_OBJECT if \p object is found to be invalid
  * @return -#CCS_INVALID_VALUE if \p refcount_ret is NULL
@@ -626,11 +626,9 @@ typedef void (*ccs_object_release_callback_t)(ccs_object_t object, void *user_da
  * @return -#CCS_INVALID_VALUE if \p callback is NULL
  */
 extern ccs_result_t
-ccs_object_set_destroy_callback(ccs_object_t  object,
-                                void (*callback)(
-                                  ccs_object_t object,
-                                  void *user_data),
-                                void *user_data);
+ccs_object_set_destroy_callback(ccs_object_t                   object,
+                                ccs_object_release_callback_t  callback,
+                                void                          *user_data);
 
 /**
  * Set the associated `user_data` pointer of a CCS object.

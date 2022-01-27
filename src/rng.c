@@ -17,7 +17,8 @@ ccs_rng_create_with_type(const gsl_rng_type *rng_type,
 	if (!grng) {
 		return -CCS_OUT_OF_MEMORY;
 	}
-	uintptr_t mem = (uintptr_t)calloc(1, sizeof(struct _ccs_rng_s) + sizeof(struct _ccs_rng_data_s));
+	uintptr_t mem = (uintptr_t)calloc(1, sizeof(struct _ccs_rng_s) +
+	                                     sizeof(struct _ccs_rng_data_s));
 
 	if (!mem) {
 		gsl_rng_free(grng);
