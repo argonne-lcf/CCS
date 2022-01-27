@@ -285,12 +285,11 @@ ccs_create_numerical_hyperparameter(const char           *name,
 	interval.upper_included = CCS_FALSE;
 
 	ccs_hyperparameter_t hyperparam = (ccs_hyperparameter_t)mem;
-	_ccs_object_init(&(hyperparam->obj), CCS_HYPERPARAMETER, (_ccs_object_ops_t *)&_ccs_hyperparameter_numerical_ops);
+	_ccs_object_init(&(hyperparam->obj), CCS_HYPERPARAMETER, user_data, (_ccs_object_ops_t *)&_ccs_hyperparameter_numerical_ops);
 	_ccs_hyperparameter_numerical_data_t *hyperparam_data = (_ccs_hyperparameter_numerical_data_t *)(mem + sizeof(struct _ccs_hyperparameter_s));
 	hyperparam_data->common_data.type = CCS_HYPERPARAMETER_TYPE_NUMERICAL;
 	hyperparam_data->common_data.name = (char *)(mem + sizeof(struct _ccs_hyperparameter_s) + sizeof(_ccs_hyperparameter_numerical_data_t));
 	strcpy((char *)hyperparam_data->common_data.name, name);
-	hyperparam_data->common_data.user_data = user_data;
 	if (data_type == CCS_NUM_FLOAT) {
 		hyperparam_data->common_data.default_value.type = CCS_FLOAT;
 		hyperparam_data->common_data.default_value.value.f = default_value.f;

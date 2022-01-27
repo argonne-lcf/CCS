@@ -62,20 +62,6 @@ ccs_features_tuner_get_name(ccs_features_tuner_t   features_tuner,
                             const char           **name_ret);
 
 /**
- * Get the associated `user_data` pointer of a features tuner.
- * @param[in] features_tuner
- * @param[out] user_data_ret a pointer to a `void *` variable that will contain
- *                           the value of the `user_data`
- * @return #CCS_SUCCESS on success
- * @return -#CCS_INVALID_OBJECT if \p features_tuner is not a valid CCS features
- *                              tuner
- * @return -#CCS_INVALID_VALUE if \p user_data_ret is NULL
- */
-extern ccs_result_t
-ccs_features_tuner_get_user_data(ccs_features_tuner_t   features_tuner,
-                                 void                 **user_data_ret);
-
-/**
  * Get the associated configuration space.
  * @param[in] features_tuner
  * @param[out] configuration_space_ret a pointer to the variable that will

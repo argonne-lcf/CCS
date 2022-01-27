@@ -124,12 +124,11 @@ ccs_create_string_hyperparameter(const char           *name,
 		return -CCS_OUT_OF_MEMORY;
 
 	ccs_hyperparameter_t hyperparam = (ccs_hyperparameter_t)mem;
-	_ccs_object_init(&(hyperparam->obj), CCS_HYPERPARAMETER, (_ccs_object_ops_t *)&_ccs_hyperparameter_string_ops);
+	_ccs_object_init(&(hyperparam->obj), CCS_HYPERPARAMETER, user_data, (_ccs_object_ops_t *)&_ccs_hyperparameter_string_ops);
 	_ccs_hyperparameter_string_data_t *hyperparam_data = (_ccs_hyperparameter_string_data_t *)(mem + sizeof(struct _ccs_hyperparameter_s));
 	hyperparam_data->common_data.type = CCS_HYPERPARAMETER_TYPE_STRING;
 	hyperparam_data->common_data.name = (char *)(mem + sizeof(struct _ccs_hyperparameter_s) + sizeof(_ccs_hyperparameter_string_data_t));
 	strcpy((char *)hyperparam_data->common_data.name, name);
-	hyperparam_data->common_data.user_data = user_data;
 	hyperparam_data->common_data.interval.type = CCS_NUM_INTEGER;
 	hyperparam_data->stored_values = NULL;
 	hyperparam->data = (_ccs_hyperparameter_data_t *)hyperparam_data;

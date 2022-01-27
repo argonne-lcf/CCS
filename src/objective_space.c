@@ -61,14 +61,13 @@ ccs_create_objective_space(const char            *name,
 		return -CCS_OUT_OF_MEMORY;
 	ccs_result_t err;
 	ccs_objective_space_t obj_space = (ccs_objective_space_t)mem;
-	_ccs_object_init(&(obj_space->obj), CCS_OBJECTIVE_SPACE,
+	_ccs_object_init(&(obj_space->obj), CCS_OBJECTIVE_SPACE, user_data,
 		(_ccs_object_ops_t *)&_objective_space_ops);
 	obj_space->data = (struct _ccs_objective_space_data_s*)(mem +
 		sizeof(struct _ccs_objective_space_s));
 	obj_space->data->name = (const char *)(mem +
 		sizeof(struct _ccs_objective_space_s) +
 		sizeof(struct _ccs_objective_space_data_s));
-	obj_space->data->user_data = user_data;
 	utarray_new(obj_space->data->hyperparameters, &_hyperparameter_wrapper2_icd);
 	utarray_new(obj_space->data->objectives, &_objectives_icd);
 	strcpy((char *)(obj_space->data->name), name);
@@ -88,13 +87,6 @@ ccs_objective_space_get_name(ccs_objective_space_t   objective_space,
                              const char            **name_ret) {
 	CCS_CHECK_OBJ(objective_space, CCS_OBJECTIVE_SPACE);
 	return _ccs_context_get_name((ccs_context_t)objective_space, name_ret);
-}
-
-ccs_result_t
-ccs_objective_space_get_user_data(ccs_objective_space_t   objective_space,
-                                  void                  **user_data_ret) {
-	CCS_CHECK_OBJ(objective_space, CCS_OBJECTIVE_SPACE);
-	return _ccs_context_get_user_data((ccs_context_t)objective_space, user_data_ret);
 }
 
 #undef  utarray_oom

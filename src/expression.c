@@ -959,7 +959,7 @@ ccs_create_literal(ccs_datum_t       value,
 	if(!mem)
 		return -CCS_OUT_OF_MEMORY;
 	ccs_expression_t expression = (ccs_expression_t)mem;
-	_ccs_object_init(&(expression->obj), CCS_EXPRESSION,
+	_ccs_object_init(&(expression->obj), CCS_EXPRESSION, NULL,
 		(_ccs_object_ops_t*)_ccs_expression_ops_broker(CCS_LITERAL));
 	_ccs_expression_literal_data_t *expression_data =
 		 (_ccs_expression_literal_data_t *)
@@ -996,7 +996,7 @@ ccs_create_variable(ccs_hyperparameter_t  hyperparameter,
 	CCS_VALIDATE_ERR_GOTO(err, ccs_retain_object(hyperparameter), errmem);
 	ccs_expression_t expression;
 	expression = (ccs_expression_t)mem;
-	_ccs_object_init(&(expression->obj), CCS_EXPRESSION,
+	_ccs_object_init(&(expression->obj), CCS_EXPRESSION, NULL,
 		(_ccs_object_ops_t*)_ccs_expression_ops_broker(CCS_VARIABLE));
 	_ccs_expression_variable_data_t *expression_data;
 	expression_data =
@@ -1045,7 +1045,7 @@ ccs_create_expression(ccs_expression_type_t  type,
 		return -CCS_OUT_OF_MEMORY;
 
 	ccs_expression_t expression = (ccs_expression_t)mem;
-	_ccs_object_init(&(expression->obj), CCS_EXPRESSION,
+	_ccs_object_init(&(expression->obj), CCS_EXPRESSION, NULL,
 	                 (_ccs_object_ops_t*)_ccs_expression_ops_broker(type));
 	_ccs_expression_data_t *expression_data =
 	    (_ccs_expression_data_t *)(mem + sizeof(struct _ccs_expression_s));

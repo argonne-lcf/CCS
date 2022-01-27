@@ -12,7 +12,6 @@ module CCS
 
   attach_function :ccs_tuner_get_type, [:ccs_tuner_t, :pointer], :ccs_result_t
   attach_function :ccs_tuner_get_name, [:ccs_tuner_t, :pointer], :ccs_result_t
-  attach_function :ccs_tuner_get_user_data, [:ccs_tuner_t, :pointer], :ccs_result_t
   attach_function :ccs_tuner_get_configuration_space, [:ccs_tuner_t, :pointer], :ccs_result_t
   attach_function :ccs_tuner_get_objective_space, [:ccs_tuner_t, :pointer], :ccs_result_t
   attach_function :ccs_tuner_ask, [:ccs_tuner_t, :size_t, :pointer, :pointer], :ccs_result_t
@@ -24,7 +23,6 @@ module CCS
 
   class Tuner < Object
     add_property :type, :ccs_tuner_type_t, :ccs_tuner_get_type, memoize: true
-    add_property :user_data, :pointer, :ccs_tuner_get_user_data, memoize: true
     add_handle_property :configuration_space, :ccs_configuration_space_t, :ccs_tuner_get_configuration_space, memoize: true
     add_handle_property :objective_space, :ccs_objective_space_t, :ccs_tuner_get_objective_space, memoize: true
 

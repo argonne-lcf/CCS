@@ -91,7 +91,7 @@ ccs_create_configuration_space(const char                *name,
 	ccs_configuration_space_t config_space;
 	config_space = (ccs_configuration_space_t)mem;
 	_ccs_object_init(&(config_space->obj),
-	                 CCS_CONFIGURATION_SPACE,
+	                 CCS_CONFIGURATION_SPACE, user_data,
 	                 (_ccs_object_ops_t *)&_configuration_space_ops);
 	config_space->data =
 	  (struct _ccs_configuration_space_data_s*)(
@@ -99,7 +99,6 @@ ccs_create_configuration_space(const char                *name,
 	config_space->data->name =
 	  (const char *)(mem + sizeof(struct _ccs_configuration_space_s) +
 	                 sizeof(struct _ccs_configuration_space_data_s));
-	config_space->data->user_data = user_data;
 	config_space->data->rng = rng;
 	utarray_new(config_space->data->hyperparameters,
 	            &_hyperparameter_wrapper_icd);
@@ -127,13 +126,6 @@ ccs_configuration_space_get_name(ccs_configuration_space_t   configuration_space
                                  const char                **name_ret) {
 	CCS_CHECK_OBJ(configuration_space, CCS_CONFIGURATION_SPACE);
 	return _ccs_context_get_name((ccs_context_t)configuration_space, name_ret);
-}
-
-ccs_result_t
-ccs_configuration_space_get_user_data(ccs_configuration_space_t   configuration_space,
-                                      void                      **user_data_ret) {
-	CCS_CHECK_OBJ(configuration_space, CCS_CONFIGURATION_SPACE);
-	return _ccs_context_get_user_data((ccs_context_t)configuration_space, user_data_ret);
 }
 
 ccs_result_t

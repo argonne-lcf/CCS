@@ -98,10 +98,11 @@ struct _ccs_object_callback_s {
 typedef struct _ccs_object_callback_s _ccs_object_callback_t;
 
 struct _ccs_object_internal_s {
-	ccs_object_type_t              type;
-	int32_t                        refcount;
-	UT_array                      *callbacks;
-	_ccs_object_ops_t             *ops;
+	ccs_object_type_t  type;
+	int32_t            refcount;
+	void              *user_data;
+	UT_array          *callbacks;
+	_ccs_object_ops_t *ops;
 };
 
 typedef struct _ccs_object_internal_s _ccs_object_internal_t;
@@ -115,9 +116,11 @@ typedef struct _ccs_object_template_s _ccs_object_template_t;
 static inline __attribute__((always_inline)) void
 _ccs_object_init(_ccs_object_internal_t *o,
                  ccs_object_type_t       t,
+                 void                   *user_data,
                  _ccs_object_ops_t      *ops) {
 	o->type = t;
 	o->refcount = 1;
+	o->user_data = user_data;
 	o->callbacks = NULL;
 	o->ops = ops;
 }

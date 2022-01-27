@@ -16,7 +16,6 @@ class ccs_features_tuner_type(CEnumeration):
 
 ccs_features_tuner_get_type = _ccs_get_function("ccs_features_tuner_get_type", [ccs_features_tuner, ct.POINTER(ccs_features_tuner_type)])
 ccs_features_tuner_get_name = _ccs_get_function("ccs_features_tuner_get_name", [ccs_features_tuner, ct.POINTER(ct.c_char_p)])
-ccs_features_tuner_get_user_data = _ccs_get_function("ccs_features_tuner_get_user_data", [ccs_features_tuner, ct.POINTER(ct.c_void_p)])
 ccs_features_tuner_get_configuration_space = _ccs_get_function("ccs_features_tuner_get_configuration_space", [ccs_features_tuner, ct.POINTER(ccs_configuration_space)])
 ccs_features_tuner_get_objective_space = _ccs_get_function("ccs_features_tuner_get_objective_space", [ccs_features_tuner, ct.POINTER(ccs_objective_space)])
 ccs_features_tuner_get_features_space = _ccs_get_function("ccs_features_tuner_get_features_space", [ccs_features_tuner, ct.POINTER(ccs_features_space)])
@@ -49,16 +48,6 @@ class FeaturesTuner(Object):
     Error.check(res)
     self._type = v.value
     return self._type
-
-  @property
-  def user_data(self):
-    if hasattr(self, "_user_data"):
-      return self._user_data
-    v = ct.c_void_p()
-    res = ccs_features_tuner_get_user_data(self.handle, ct.byref(v))
-    Error.check(res)
-    self._user_data = v
-    return v
 
   @property
   def name(self):

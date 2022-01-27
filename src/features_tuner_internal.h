@@ -48,7 +48,6 @@ struct _ccs_features_tuner_s {
 struct _ccs_features_tuner_common_data_s {
 	ccs_features_tuner_type_t  type;
 	const char                *name;
-	void                      *user_data;
 	ccs_configuration_space_t  configuration_space;
 	ccs_objective_space_t      objective_space;
 	ccs_features_space_t       features_space;

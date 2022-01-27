@@ -97,19 +97,6 @@ ccs_evaluation_get_configuration(ccs_evaluation_t     evaluation,
                                  ccs_configuration_t *configuration_ret);
 
 /**
- * Get the user data pointer associated with an evaluation.
- * @param[in] evaluation
- * @param[out] user_data_ret a pointer to `void *` variable that will contain
- *                           the value of the `user_data`
- * @return #CCS_SUCCESS on success
- * @return -#CCS_INVALID_OBJECT if \p evaluation is not a valid CCS evaluation
- * @return -#CCS_INVALID_VALUE if \p user_data_ret is NULL
- */
-extern ccs_result_t
-ccs_evaluation_get_user_data(ccs_evaluation_t   evaluation,
-                             void             **user_data_ret);
-
-/**
  * Get the error code associated with an evaluation.
  * @param[in] evaluation
  * @param[out] error_ret a pointer to the variable that will contain the

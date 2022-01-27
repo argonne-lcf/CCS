@@ -44,20 +44,6 @@ ccs_features_space_get_name(ccs_features_space_t   features_space,
                             const char           **name_ret);
 
 /**
- * Get the associated `user_data` pointer of a features space.
- * @param[in] features_space
- * @param[out] user_data_ret a pointer to `void *` variable that will contain
- *                           the value of the `user_data`
- * @return #CCS_SUCCESS on success
- * @return -#CCS_INVALID_OBJECT if \p features_space is not a valid CCS features
- *                              space
- * @return -#CCS_INVALID_VALUE if \p user_data_ret is NULL
- */
-extern ccs_result_t
-ccs_features_space_get_user_data(ccs_features_space_t   features_space,
-                                 void                 **user_data_ret);
-
-/**
  * Add a hyperparameter to the features space.
  * @param[in,out] features_space
  * @param[in] hyperparameter the hyperparameter to add to the features

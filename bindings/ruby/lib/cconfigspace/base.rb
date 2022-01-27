@@ -395,6 +395,8 @@ module CCS
   attach_function :ccs_object_get_refcount, [:ccs_object_t, :pointer], :ccs_result_t
   callback :ccs_object_release_callback, [:ccs_object_t, :pointer], :void
   attach_function :ccs_object_set_destroy_callback, [:ccs_object_t, :ccs_object_release_callback, :pointer], :ccs_result_t
+  attach_function :ccs_object_set_user_data, [:ccs_object_t, :pointer], :ccs_result_t
+  attach_function :ccs_object_get_user_data, [:ccs_object_t, :pointer], :ccs_result_t
 
   class << self
     alias version ccs_get_version
@@ -461,6 +463,7 @@ module CCS
 
     add_property :object_type, :ccs_object_type_t, :ccs_object_get_type, memoize: true
     add_property :refcount, :uint32, :ccs_object_get_refcount
+    add_property :user_data, :pointer, :ccs_object_get_user_data
     attr_reader :handle
 
     def initialize(handle, retain: false, auto_release: true)
@@ -522,6 +525,12 @@ module CCS
     def set_destroy_callback(user_data: nil, &block)
       CCS.set_destroy_callback(@handle, user_data: user_data, &block)
       self
+    end
+
+    def user_data=(ud)
+      res = CCS.ccs_object_set_user_data(@handle, ud)
+      CCS.error_check(res)
+      ud
     end
 
   end

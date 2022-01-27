@@ -55,9 +55,8 @@ ccs_create_features(ccs_features_space_t  features_space,
 	CCS_VALIDATE_ERR_GOTO(err, ccs_retain_object(features_space), errmem);
 	ccs_features_t feat;
 	feat = (ccs_features_t)mem;
-	_ccs_object_init(&(feat->obj), CCS_FEATURES, (_ccs_object_ops_t*)&_features_ops);
+	_ccs_object_init(&(feat->obj), CCS_FEATURES, user_data, (_ccs_object_ops_t*)&_features_ops);
 	feat->data = (struct _ccs_features_data_s*)(mem + sizeof(struct _ccs_features_s));
-	feat->data->user_data = user_data;
 	feat->data->num_values = num;
 	feat->data->features_space = features_space;
 	feat->data->values = (ccs_datum_t *)(mem + sizeof(struct _ccs_features_s) + sizeof(struct _ccs_features_data_s));
@@ -83,14 +82,6 @@ ccs_features_get_features_space(ccs_features_t        features,
 	CCS_CHECK_OBJ(features, CCS_FEATURES);
 	return _ccs_binding_get_context(
 		(ccs_binding_t)features, (ccs_context_t *)features_space_ret);
-}
-
-ccs_result_t
-ccs_features_get_user_data(ccs_features_t   features,
-                           void           **user_data_ret) {
-	CCS_CHECK_OBJ(features, CCS_FEATURES);
-	return _ccs_binding_get_user_data(
-		(ccs_binding_t)features, user_data_ret);
 }
 
 ccs_result_t

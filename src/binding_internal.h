@@ -19,7 +19,6 @@ struct _ccs_binding_ops_s {
 typedef struct _ccs_binding_ops_s _ccs_binding_ops_t;
 
 struct _ccs_binding_data_s {
-	void          *user_data;
 	ccs_context_t  context;
 	size_t         num_values;
 	ccs_datum_t   *values;
@@ -35,14 +34,6 @@ _ccs_binding_get_context(ccs_binding_t  binding,
                          ccs_context_t *context_ret) {
 	CCS_CHECK_PTR(context_ret);
 	*context_ret = binding->data->context;
-	return CCS_SUCCESS;
-}
-
-static inline ccs_result_t
-_ccs_binding_get_user_data(ccs_binding_t   binding,
-                           void          **user_data_ret) {
-	CCS_CHECK_PTR(user_data_ret);
-	*user_data_ret = binding->data->user_data;
 	return CCS_SUCCESS;
 }
 

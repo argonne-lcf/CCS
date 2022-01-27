@@ -54,9 +54,8 @@ ccs_create_configuration(ccs_configuration_space_t configuration_space,
 	CCS_VALIDATE_ERR_GOTO(err, ccs_retain_object(configuration_space), errmem);
 	ccs_configuration_t config;
 	config = (ccs_configuration_t)mem;
-	_ccs_object_init(&(config->obj), CCS_CONFIGURATION, (_ccs_object_ops_t*)&_configuration_ops);
+	_ccs_object_init(&(config->obj), CCS_CONFIGURATION, user_data, (_ccs_object_ops_t*)&_configuration_ops);
 	config->data = (struct _ccs_configuration_data_s*)(mem + sizeof(struct _ccs_configuration_s));
-	config->data->user_data = user_data;
 	config->data->num_values = num;
 	config->data->configuration_space = configuration_space;
 	config->data->values = (ccs_datum_t *)(mem + sizeof(struct _ccs_configuration_s) + sizeof(struct _ccs_configuration_data_s));
@@ -81,14 +80,6 @@ ccs_configuration_get_configuration_space(ccs_configuration_t        configurati
 	CCS_CHECK_OBJ(configuration, CCS_CONFIGURATION);
 	return _ccs_binding_get_context(
 		(ccs_binding_t)configuration, (ccs_context_t *)configuration_space_ret);
-}
-
-ccs_result_t
-ccs_configuration_get_user_data(ccs_configuration_t   configuration,
-                                void                **user_data_ret) {
-	CCS_CHECK_OBJ(configuration, CCS_CONFIGURATION);
-	return _ccs_binding_get_user_data(
-		(ccs_binding_t)configuration, user_data_ret);
 }
 
 ccs_result_t

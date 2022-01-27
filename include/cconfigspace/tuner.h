@@ -59,19 +59,6 @@ ccs_tuner_get_name(ccs_tuner_t   tuner,
                    const char  **name_ret);
 
 /**
- * Get the associated `user_data` pointer of a tuner.
- * @param[in] tuner
- * @param[out] user_data_ret a pointer to a `void *` variable that will contain
- *                           the value of the `user_data`
- * @return #CCS_SUCCESS on success
- * @return -#CCS_INVALID_OBJECT if \p tuner is not a valid CCS tuner
- * @return -#CCS_INVALID_VALUE if \p user_data_ret is NULL
- */
-extern ccs_result_t
-ccs_tuner_get_user_data(ccs_tuner_t   tuner,
-                        void        **user_data_ret);
-
-/**
  * Get the associated configuration space.
  * @param[in] tuner
  * @param[out] configuration_space_ret a pointer to the variable that will

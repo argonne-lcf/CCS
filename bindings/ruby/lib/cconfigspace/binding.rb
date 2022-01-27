@@ -1,6 +1,5 @@
 module CCS
   attach_function :ccs_binding_get_context, [:ccs_binding_t, :pointer], :ccs_result_t
-  attach_function :ccs_binding_get_user_data, [:ccs_binding_t, :pointer], :ccs_result_t
   attach_function :ccs_binding_get_value, [:ccs_binding_t, :size_t, :pointer], :ccs_result_t
   attach_function :ccs_binding_set_value, [:ccs_binding_t, :size_t, :ccs_datum_t], :ccs_result_t
   attach_function :ccs_binding_get_values, [:ccs_binding_t, :size_t, :pointer, :pointer], :ccs_result_t
@@ -10,7 +9,6 @@ module CCS
 
   class Binding < Object
     include Comparable
-    add_property :user_data, :pointer, :ccs_binding_get_user_data, memoize: true
     add_property :hash, :ccs_hash_t, :ccs_binding_hash, memoize: false
     add_handle_property :context, :ccs_context_t, :ccs_binding_get_context, memoize: true
 

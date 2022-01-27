@@ -3,7 +3,6 @@ from .base import Object, Error, ccs_error, _ccs_get_function, ccs_context, ccs_
 from .hyperparameter import Hyperparameter
 
 ccs_context_get_name = _ccs_get_function("ccs_context_get_name", [ccs_context, ct.POINTER(ct.c_char_p)])
-ccs_context_get_user_data = _ccs_get_function("ccs_context_get_user_data", [ccs_context, ct.POINTER(ct.c_void_p)])
 ccs_context_get_num_hyperparameters = _ccs_get_function("ccs_context_get_num_hyperparameters", [ccs_context, ct.POINTER(ct.c_size_t)])
 ccs_context_get_hyperparameter = _ccs_get_function("ccs_context_get_hyperparameter", [ccs_context, ct.c_size_t, ct.POINTER(ccs_hyperparameter)])
 ccs_context_get_hyperparameter_by_name = _ccs_get_function("ccs_context_get_hyperparameter_by_name", [ccs_context, ct.c_char_p, ct.POINTER(ccs_hyperparameter)])
@@ -14,16 +13,6 @@ ccs_context_get_hyperparameters = _ccs_get_function("ccs_context_get_hyperparame
 ccs_context_validate_value = _ccs_get_function("ccs_context_validate_value", [ccs_context, ct.c_size_t, ccs_datum_fix, ct.POINTER(ccs_datum)])
 
 class Context(Object):
-
-  @property
-  def user_data(self):
-    if hasattr(self, "_user_data"):
-      return self._user_data
-    v = ct.c_void_p()
-    res = ccs_context_get_user_data(self.handle, ct.byref(v))
-    Error.check(res)
-    self._user_data = v
-    return v
 
   @property
   def name(self):

@@ -1,6 +1,5 @@
 module CCS
   attach_function :ccs_context_get_name, [:ccs_context_t, :pointer], :ccs_result_t
-  attach_function :ccs_context_get_user_data, [:ccs_context_t, :pointer], :ccs_result_t
   attach_function :ccs_context_get_num_hyperparameters, [:ccs_context_t, :pointer], :ccs_result_t
   attach_function :ccs_context_get_hyperparameter, [:ccs_context_t, :size_t, :pointer], :ccs_result_t
   attach_function :ccs_context_get_hyperparameter_by_name, [:ccs_context_t, :string, :pointer], :ccs_result_t
@@ -11,7 +10,6 @@ module CCS
   attach_function :ccs_context_validate_value, [:ccs_context_t, :size_t, :ccs_datum_t, :pointer], :ccs_result_t
 
   class Context < Object
-    add_property :user_data, :pointer, :ccs_context_get_user_data, memoize: true
     add_property :num_hyperparameters, :size_t, :ccs_context_get_num_hyperparameters, memoize: false
 
     def name

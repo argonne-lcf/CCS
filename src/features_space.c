@@ -48,14 +48,13 @@ ccs_create_features_space(const char                *name,
 		return -CCS_OUT_OF_MEMORY;
 
 	ccs_features_space_t feat_space = (ccs_features_space_t)mem;
-	_ccs_object_init(&(feat_space->obj), CCS_FEATURES_SPACE,
+	_ccs_object_init(&(feat_space->obj), CCS_FEATURES_SPACE, user_data,
 		(_ccs_object_ops_t *)&_features_space_ops);
 	feat_space->data = (struct _ccs_features_space_data_s*)(mem +
 		sizeof(struct _ccs_features_space_s));
 	feat_space->data->name = (const char *)(mem +
 		sizeof(struct _ccs_features_space_s) +
 		sizeof(struct _ccs_features_space_data_s));
-	feat_space->data->user_data = user_data;
 	utarray_new(feat_space->data->hyperparameters, &_hyperparameter_wrapper_icd);
 	strcpy((char *)(feat_space->data->name), name);
 	*features_space_ret = feat_space;
@@ -72,13 +71,6 @@ ccs_features_space_get_name(ccs_features_space_t   features_space,
                             const char                **name_ret) {
 	CCS_CHECK_OBJ(features_space, CCS_FEATURES_SPACE);
 	return _ccs_context_get_name((ccs_context_t)features_space, name_ret);
-}
-
-ccs_result_t
-ccs_features_space_get_user_data(ccs_features_space_t   features_space,
-                                 void                      **user_data_ret) {
-	CCS_CHECK_OBJ(features_space, CCS_FEATURES_SPACE);
-	return _ccs_context_get_user_data((ccs_context_t)features_space, user_data_ret);
 }
 
 #undef  utarray_oom

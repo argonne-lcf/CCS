@@ -320,6 +320,8 @@ ccs_object_get_type = _ccs_get_function("ccs_object_get_type", [ccs_object, ct.P
 ccs_object_get_refcount = _ccs_get_function("ccs_object_get_refcount", [ccs_object, ct.POINTER(ct.c_int)])
 ccs_object_destroy_callback_type = ct.CFUNCTYPE(None, ccs_object, ct.c_void_p)
 ccs_object_set_destroy_callback = _ccs_get_function("ccs_object_set_destroy_callback", [ccs_object, ccs_object_destroy_callback_type, ct.c_void_p])
+ccs_object_set_user_data = _ccs_get_function("ccs_object_set_user_data", [ccs_context, ct.c_void_p])
+ccs_object_get_user_data = _ccs_get_function("ccs_object_get_user_data", [ccs_context, ct.POINTER(ct.c_void_p)])
 
 _res = ccs_init()
 Error.check(_res)
@@ -360,6 +362,19 @@ class Object:
     res = ccs_object_get_refcount(self.handle, ct.byref(c))
     Error.check(res)
     return c.value
+
+  @property
+  def user_data(self):
+    v = ct.c_void_p()
+    res = ccs_object_get_user_data(self.handle, ct.byref(v))
+    Error.check(res)
+    return v
+
+  @user_data.setter
+  def user_data(sekf, ud):
+    res = ccs_object_set_user_data(self.handle, ud)
+    Error.check(res)
+    return ud
 
   @classmethod
   def from_handle(cls, h):

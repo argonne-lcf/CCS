@@ -102,6 +102,26 @@ ccs_object_set_destroy_callback(ccs_object_t  object,
 	return CCS_SUCCESS;
 }
 
+ccs_result_t
+ccs_object_set_user_data(ccs_object_t  object,
+                         void         *user_data) {
+	_ccs_object_internal_t *obj = (_ccs_object_internal_t *)object;
+	if (!obj)
+		return -CCS_INVALID_OBJECT;
+	obj->user_data = user_data;
+	return CCS_SUCCESS;
+}
+
+ccs_result_t
+ccs_object_get_user_data(ccs_object_t   object,
+                         void         **user_data_ret) {
+	_ccs_object_internal_t *obj = (_ccs_object_internal_t *)object;
+	if (!obj)
+		return -CCS_INVALID_OBJECT;
+	CCS_CHECK_PTR(user_data_ret);
+	*user_data_ret = obj->user_data;
+	return CCS_SUCCESS;
+}
 
 static size_t
 _ccs_serialize_header_size(ccs_serialize_format_t format) {

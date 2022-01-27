@@ -196,7 +196,7 @@ _ccs_create_categorical_hyperparameter(ccs_hyperparameter_type_t  type,
 	interval.upper_included = CCS_FALSE;
 
 	ccs_hyperparameter_t hyperparam = (ccs_hyperparameter_t)mem;
-	_ccs_object_init(&(hyperparam->obj), CCS_HYPERPARAMETER, (_ccs_object_ops_t *)&_ccs_hyperparameter_categorical_ops);
+	_ccs_object_init(&(hyperparam->obj), CCS_HYPERPARAMETER, user_data, (_ccs_object_ops_t *)&_ccs_hyperparameter_categorical_ops);
 	_ccs_hyperparameter_categorical_data_t *hyperparam_data =
 	    (_ccs_hyperparameter_categorical_data_t *)(mem +
 	         sizeof(struct _ccs_hyperparameter_s));
@@ -206,7 +206,6 @@ _ccs_create_categorical_hyperparameter(ccs_hyperparameter_type_t  type,
 	    sizeof(_ccs_hyperparameter_categorical_data_t) +
 	    sizeof(_ccs_hash_datum_t) * num_possible_values);
 	strcpy((char *)hyperparam_data->common_data.name, name);
-	hyperparam_data->common_data.user_data = user_data;
 	hyperparam_data->common_data.interval = interval;
 	hyperparam_data->num_possible_values = num_possible_values;
         _ccs_hash_datum_t *pvs = (_ccs_hash_datum_t *)(mem +

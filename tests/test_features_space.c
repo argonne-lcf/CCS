@@ -39,7 +39,7 @@ void test_create() {
 	assert( err == CCS_SUCCESS );
 	assert( strcmp(name, "my_features_space") == 0 );
 
-	err = ccs_features_space_get_user_data(features_space, &user_data);
+	err = ccs_object_get_user_data(features_space, &user_data);
 	assert( err == CCS_SUCCESS );
 	assert( user_data == (void *)0xdeadbeef );
 
@@ -195,7 +195,7 @@ void test_features() {
 	assert( err == CCS_SUCCESS );
 	assert( features_space == features_space_ret );
 
-	err = ccs_features_get_user_data(features1, &user_data_ret);
+	err = ccs_object_get_user_data(features1, &user_data_ret);
 	assert( err == CCS_SUCCESS );
 	assert( (void*)0xdeadbeef == user_data_ret );
 

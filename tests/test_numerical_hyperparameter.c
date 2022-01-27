@@ -39,7 +39,7 @@ void test_create() {
 	assert( err == CCS_SUCCESS );
 	assert( strcmp(name, "my_param") == 0 );
 
-	err = ccs_hyperparameter_get_user_data(hyperparameter, &user_data);
+	err = ccs_object_get_user_data(hyperparameter, &user_data);
 	assert( err == CCS_SUCCESS );
 	assert( user_data == (void *)0xdeadbeef );
 
@@ -99,7 +99,7 @@ void test_create() {
 	assert( err == CCS_SUCCESS );
 	assert( strcmp(name, "my_param") == 0 );
 
-	err = ccs_hyperparameter_get_user_data(hyperparameter, &user_data);
+	err = ccs_object_get_user_data(hyperparameter, &user_data);
 	assert( err == CCS_SUCCESS );
 	assert( user_data == NULL );
 

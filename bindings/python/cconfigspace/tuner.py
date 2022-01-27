@@ -14,7 +14,6 @@ class ccs_tuner_type(CEnumeration):
 
 ccs_tuner_get_type = _ccs_get_function("ccs_tuner_get_type", [ccs_tuner, ct.POINTER(ccs_tuner_type)])
 ccs_tuner_get_name = _ccs_get_function("ccs_tuner_get_name", [ccs_tuner, ct.POINTER(ct.c_char_p)])
-ccs_tuner_get_user_data = _ccs_get_function("ccs_tuner_get_user_data", [ccs_tuner, ct.POINTER(ct.c_void_p)])
 ccs_tuner_get_configuration_space = _ccs_get_function("ccs_tuner_get_configuration_space", [ccs_tuner, ct.POINTER(ccs_configuration_space)])
 ccs_tuner_get_objective_space = _ccs_get_function("ccs_tuner_get_objective_space", [ccs_tuner, ct.POINTER(ccs_objective_space)])
 ccs_tuner_ask = _ccs_get_function("ccs_tuner_ask", [ccs_tuner, ct.c_size_t, ct.POINTER(ccs_configuration), ct.POINTER(ct.c_size_t)])
@@ -46,16 +45,6 @@ class Tuner(Object):
     Error.check(res)
     self._type = v.value
     return self._type
-
-  @property
-  def user_data(self):
-    if hasattr(self, "_user_data"):
-      return self._user_data
-    v = ct.c_void_p()
-    res = ccs_tuner_get_user_data(self.handle, ct.byref(v))
-    Error.check(res)
-    self._user_data = v
-    return v
 
   @property
   def name(self):

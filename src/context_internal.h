@@ -27,7 +27,6 @@ typedef struct _ccs_hyperparameter_index_hash_s _ccs_hyperparameter_index_hash_t
 
 struct _ccs_context_data_s {
 	const char                       *name;
-	void                             *user_data;
 	UT_array                         *hyperparameters;
 	_ccs_hyperparameter_index_hash_t *name_hash;
 	_ccs_hyperparameter_index_hash_t *handle_hash;
@@ -184,11 +183,4 @@ _ccs_context_validate_value(ccs_context_t  context,
 	return CCS_SUCCESS;
 }
 
-static inline ccs_result_t
-_ccs_context_get_user_data(ccs_context_t   context,
-                           void          **user_data_ret) {
-	CCS_CHECK_PTR(user_data_ret);
-	*user_data_ret = context->data->user_data;
-	return CCS_SUCCESS;
-}
 #endif //_CONTEXT_INTERNAL_H

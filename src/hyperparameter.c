@@ -34,16 +34,6 @@ ccs_hyperparameter_get_name(ccs_hyperparameter_t   hyperparameter,
 }
 
 ccs_result_t
-ccs_hyperparameter_get_user_data(ccs_hyperparameter_t   hyperparameter,
-                                 void                 **user_data_ret) {
-	CCS_CHECK_OBJ(hyperparameter, CCS_HYPERPARAMETER);
-	CCS_CHECK_PTR(user_data_ret);
-	*user_data_ret = ((_ccs_hyperparameter_common_data_t *)(hyperparameter->data))->user_data;
-	return CCS_SUCCESS;
-}
-
-
-ccs_result_t
 ccs_hyperparameter_get_default_distribution(ccs_hyperparameter_t  hyperparameter,
                                             ccs_distribution_t   *distribution_ret) {
 	CCS_CHECK_OBJ(hyperparameter, CCS_HYPERPARAMETER);

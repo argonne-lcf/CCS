@@ -48,7 +48,6 @@ struct _ccs_hyperparameter_s {
 struct _ccs_hyperparameter_common_data_s {
 	ccs_hyperparameter_type_t  type;
 	const char                *name;
-	void                      *user_data;
 	ccs_datum_t                default_value;
 	ccs_interval_t             interval;
 };

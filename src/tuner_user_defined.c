@@ -111,14 +111,13 @@ ccs_create_user_defined_tuner(const char                      *name,
 	CCS_VALIDATE_ERR_GOTO(err, ccs_retain_object(objective_space), errcs);
 
 	tun = (ccs_tuner_t)mem;
-	_ccs_object_init(&(tun->obj), CCS_TUNER, (_ccs_object_ops_t *)&_ccs_tuner_user_defined_ops);
+	_ccs_object_init(&(tun->obj), CCS_TUNER, user_data, (_ccs_object_ops_t *)&_ccs_tuner_user_defined_ops);
 	tun->data = (struct _ccs_tuner_data_s *)(mem + sizeof(struct _ccs_tuner_s));
 	data = (_ccs_user_defined_tuner_data_t *)tun->data;
 	data->common_data.type = CCS_TUNER_USER_DEFINED;
 	data->common_data.name = (const char *)(mem +
 		sizeof(struct _ccs_tuner_s) +
 		sizeof(struct _ccs_user_defined_tuner_data_s));
-	data->common_data.user_data = user_data;
 	data->common_data.configuration_space = configuration_space;
 	data->common_data.objective_space = objective_space;
         data->selfref = tun;

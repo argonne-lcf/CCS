@@ -632,6 +632,30 @@ ccs_object_set_destroy_callback(ccs_object_t  object,
                                   void *user_data),
                                 void *user_data);
 
+/**
+ * Set the associated `user_data` pointer of a CCS object.
+ * @param[in] object a CCS object
+ * @param[in] user_data a pointer to the user data to attach to this object
+ * @return #CCS_SUCCESS on success
+ * @return -#CCS_INVALID_OBJECT if \p object is found to be invalid
+ */
+extern ccs_result_t
+ccs_object_set_user_data(ccs_object_t  object,
+                         void         *user_data);
+
+/**
+ * Get the associated `user_data` pointer of a CCS object.
+ * @param[in] object a CCS object
+ * @param[out] user_data_ret a pointer to a `void *` variable that will contain
+ *                           the value of the `user_data`
+ * @return #CCS_SUCCESS on success
+ * @return -#CCS_INVALID_OBJECT if \p object is found to be invalid
+ * @return -#CCS_INVALID_VALUE if \p user_data_ret is NULL
+ */
+extern ccs_result_t
+ccs_object_get_user_data(ccs_object_t   object,
+                         void         **user_data_ret);
+
 enum ccs_serialize_format_e {
 	CCS_SERIALIZE_FORMAT_BINARY,
 	CCS_SERIALIZE_FORMAT_FORCE_32BIT = INT32_MAX
