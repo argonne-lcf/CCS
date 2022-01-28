@@ -39,13 +39,9 @@ _ccs_hyperparameter_numerical_serialize_size(
 		size_t                 *cum_size) {
 	switch(format) {
 	case CCS_SERIALIZE_FORMAT_BINARY:
-	{
-		size_t sz =
-		     _ccs_serialize_bin_size_ccs_hyperparameter_numerical(
-		        (ccs_hyperparameter_t)object);
-		*cum_size += sz;
-	}
-	break;
+		*cum_size += _ccs_serialize_bin_size_ccs_hyperparameter_numerical(
+			(ccs_hyperparameter_t)object);
+		break;
 	default:
 		return -CCS_INVALID_VALUE;
 	}
@@ -60,11 +56,9 @@ _ccs_hyperparameter_numerical_serialize(
 		char                   **buffer) {
 	switch(format) {
 	case CCS_SERIALIZE_FORMAT_BINARY:
-	{
 		CCS_VALIDATE(_ccs_serialize_bin_ccs_hyperparameter_numerical(
 		    (ccs_hyperparameter_t)object, buffer_size, buffer));
-	}
-	break;
+		break;
 	default:
 		return -CCS_INVALID_VALUE;
 	}
