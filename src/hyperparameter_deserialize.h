@@ -129,7 +129,7 @@ _ccs_deserialize_bin_hyperparameter(
 	CCS_VALIDATE(_ccs_deserialize_bin_ccs_object_internal(
 		&obj, buffer_size, buffer));
 	if (CCS_UNLIKELY(obj.type != CCS_HYPERPARAMETER))
-		return CCS_INVALID_TYPE;
+		return -CCS_INVALID_TYPE;
 
 	ccs_hyperparameter_type_t htype;
 	CCS_VALIDATE(_ccs_peek_bin_ccs_hyperparameter_type(
