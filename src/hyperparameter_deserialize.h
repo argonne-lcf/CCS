@@ -31,6 +31,94 @@ _ccs_deserialize_bin_hyperparameter_numerical(
 	return CCS_SUCCESS;
 }
 
+struct _ccs_hyperparameter_categorical_data_mock_s {
+	_ccs_hyperparameter_common_data_t  common_data;
+	size_t                             num_possible_values;
+	ccs_datum_t                       *possible_values;
+};
+typedef struct _ccs_hyperparameter_categorical_data_mock_s _ccs_hyperparameter_categorical_data_mock_t;
+
+static inline size_t
+_ccs_deserialize_bin_ccs_hyperparameter_categorical_data(
+		_ccs_hyperparameter_categorical_data_mock_t  *data,
+		size_t                                       *buffer_size,
+		const char                                  **buffer) {
+	CCS_VALIDATE(_ccs_deserialize_bin_ccs_hyperparameter_common_data(
+		&data->common_data, buffer_size, buffer));
+	uint64_t num_possible_values;
+	CCS_VALIDATE(_ccs_deserialize_bin_uint64(
+		&num_possible_values, buffer_size, buffer));
+	data->num_possible_values = num_possible_values;
+	data->possible_values =
+		(ccs_datum_t *)malloc(num_possible_values*sizeof(ccs_datum_t));
+	if (!data->possible_values)
+		return -CCS_OUT_OF_MEMORY;
+	for (size_t i = 0; i < num_possible_values; i++)
+		CCS_VALIDATE(_ccs_deserialize_bin_ccs_datum(
+			data->possible_values + i, buffer_size, buffer));
+	return CCS_SUCCESS;
+}
+
+static inline ccs_result_t
+_ccs_deserialize_bin_hyperparameter_categorical(
+		ccs_hyperparameter_t    *hyperparameter_ret,
+		uint32_t                 version,
+		size_t                  *buffer_size,
+		const char             **buffer) {
+	(void)version;
+	ccs_result_t res = CCS_SUCCESS;
+	_ccs_hyperparameter_categorical_data_mock_t data;
+	CCS_VALIDATE(_ccs_deserialize_bin_ccs_hyperparameter_categorical_data(
+		&data, buffer_size, buffer));
+	size_t default_value_index;
+	int found = 0;
+	for (size_t i = 0; i < data.num_possible_values; i++)
+		if (!ccs_datum_cmp(data.common_data.default_value, data.possible_values[i])) {
+			found = 1;
+			default_value_index = i;
+		}
+	if (!found) {
+		res = -CCS_INVALID_VALUE;
+		goto end;
+	}
+
+	switch (data.common_data.type) {
+	case CCS_HYPERPARAMETER_TYPE_CATEGORICAL:
+		CCS_VALIDATE_ERR_GOTO(res, ccs_create_categorical_hyperparameter(
+			data.common_data.name,
+			data.num_possible_values,
+			data.possible_values,
+			default_value_index,
+			NULL,
+			hyperparameter_ret), end);
+		break;
+	case CCS_HYPERPARAMETER_TYPE_ORDINAL:
+		CCS_VALIDATE_ERR_GOTO(res, ccs_create_ordinal_hyperparameter(
+			data.common_data.name,
+			data.num_possible_values,
+			data.possible_values,
+			default_value_index,
+			NULL,
+			hyperparameter_ret), end);
+		break;
+	case CCS_HYPERPARAMETER_TYPE_DISCRETE:
+		CCS_VALIDATE_ERR_GOTO(res, ccs_create_discrete_hyperparameter(
+			data.common_data.name,
+			data.num_possible_values,
+			data.possible_values,
+			default_value_index,
+			NULL,
+			hyperparameter_ret), end);
+		break;
+	default:
+		res = -CCS_INVALID_TYPE;
+		goto end;
+	}
+end:
+	free(data.possible_values);
+	return res;
+}
+
 static inline ccs_result_t
 _ccs_deserialize_bin_hyperparameter(
 		ccs_hyperparameter_t    *hyperparameter_ret,
@@ -49,6 +137,12 @@ _ccs_deserialize_bin_hyperparameter(
 	switch (htype) {
 	case CCS_HYPERPARAMETER_TYPE_NUMERICAL:
 		CCS_VALIDATE(_ccs_deserialize_bin_hyperparameter_numerical(
+			hyperparameter_ret, version, buffer_size, buffer));
+		break;
+	case CCS_HYPERPARAMETER_TYPE_CATEGORICAL:
+	case CCS_HYPERPARAMETER_TYPE_ORDINAL:
+	case CCS_HYPERPARAMETER_TYPE_DISCRETE:
+		CCS_VALIDATE(_ccs_deserialize_bin_hyperparameter_categorical(
 			hyperparameter_ret, version, buffer_size, buffer));
 		break;
 	default:

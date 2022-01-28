@@ -6,31 +6,20 @@
 #define NUM_POSSIBLE_VALUES 4
 #define NUM_SAMPLES 10000
 
-void test_create() {
-	ccs_hyperparameter_t       hyperparameter;
+static void compare_hyperparameter(
+		ccs_hyperparameter_t hyperparameter,
+		const size_t         num_possible_values,
+		ccs_datum_t          possible_values[],
+		const size_t         default_value_index) {
+	ccs_result_t               err;
 	ccs_hyperparameter_type_t  type;
 	ccs_datum_t                default_value;
-	ccs_result_t               err;
-	ccs_bool_t                 check;
 	const char                *name;
 	void *                     user_data;
 	ccs_distribution_t         distribution;
 	ccs_distribution_type_t    dist_type;
 	ccs_interval_t             interval;
-	const size_t               num_possible_values = NUM_POSSIBLE_VALUES;
-	ccs_datum_t                possible_values[NUM_POSSIBLE_VALUES];
-	const size_t               default_value_index = 2;
-
-	for(size_t i = 0; i < num_possible_values; i++) {
-		possible_values[i].type = CCS_INTEGER;
-		possible_values[i].value.i = (i+1)*2;
-	}
-
-	err = ccs_create_ordinal_hyperparameter("my_param", num_possible_values,
-	                                        possible_values, default_value_index,
-	                                        (void *)0xdeadbeef,
-	                                        &hyperparameter);
-	assert( err == CCS_SUCCESS );
+	ccs_bool_t                 check;
 
 	err = ccs_hyperparameter_get_type(hyperparameter, &type);
 	assert( err == CCS_SUCCESS );
@@ -79,6 +68,48 @@ void test_create() {
 
 	err = ccs_release_object(distribution);
 	assert( err == CCS_SUCCESS );
+}
+
+void test_create() {
+	ccs_hyperparameter_t  hyperparameter;
+	ccs_result_t          err;
+	const size_t          num_possible_values = NUM_POSSIBLE_VALUES;
+	ccs_datum_t           possible_values[NUM_POSSIBLE_VALUES];
+	const size_t          default_value_index = 2;
+	char                 *buff;
+	size_t                buff_size;
+
+	for(size_t i = 0; i < num_possible_values; i++) {
+		possible_values[i].type = CCS_INTEGER;
+		possible_values[i].value.i = (i+1)*2;
+	}
+
+	err = ccs_create_ordinal_hyperparameter("my_param", num_possible_values,
+	                                        possible_values, default_value_index,
+	                                        (void *)0xdeadbeef,
+	                                        &hyperparameter);
+	assert( err == CCS_SUCCESS );
+
+	compare_hyperparameter(hyperparameter, num_possible_values, possible_values, default_value_index);
+
+	err = ccs_object_serialize(hyperparameter, CCS_SERIALIZE_FORMAT_BINARY, CCS_SERIALIZE_TYPE_SIZE, &buff_size);
+	assert( err == CCS_SUCCESS );
+
+	buff = (char *)malloc(buff_size);
+	assert( buff );
+
+	err = ccs_object_serialize(hyperparameter, CCS_SERIALIZE_FORMAT_BINARY, CCS_SERIALIZE_TYPE_MEMORY, buff_size, buff);
+	assert( err == CCS_SUCCESS );
+
+	err = ccs_release_object(hyperparameter);
+	assert( err == CCS_SUCCESS );
+
+	err = ccs_object_deserialize((ccs_object_t*)&hyperparameter, CCS_SERIALIZE_FORMAT_BINARY, CCS_SERIALIZE_TYPE_MEMORY, buff_size, buff);
+	assert( err == CCS_SUCCESS );
+	free(buff);
+
+	compare_hyperparameter(hyperparameter, num_possible_values, possible_values, default_value_index);
+
 	err = ccs_release_object(hyperparameter);
 	assert( err == CCS_SUCCESS );
 }
