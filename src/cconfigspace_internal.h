@@ -367,7 +367,9 @@ _ccs_deserialize_bin_ccs_blob(
 		_ccs_blob_t *b,
 		size_t      *buffer_size,
 		const char **buffer) {
-	CCS_VALIDATE(_ccs_deserialize_bin_uint64(&b->sz, buffer_size, buffer));
+	uint64_t sz;
+	CCS_VALIDATE(_ccs_deserialize_bin_uint64(&sz, buffer_size, buffer));
+	b->sz = sz;
 	if (CCS_UNLIKELY(*buffer_size < b->sz))
 		return -CCS_OUT_OF_MEMORY;
 	b->blob = *buffer;
