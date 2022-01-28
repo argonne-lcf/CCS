@@ -69,4 +69,28 @@ ccs_dichotomic_search(ccs_int_t size, ccs_float_t *values, ccs_float_t target) {
 	return index;
 }
 
+static inline size_t
+_ccs_serialize_bin_size_ccs_distribution_common_data(
+		_ccs_distribution_common_data_t *data) {
+	return _ccs_serialize_bin_size_ccs_distribution_type(data->type);
+}
+
+static inline ccs_result_t
+_ccs_serialize_bin_ccs_distribution_common_data(
+		_ccs_distribution_common_data_t  *data,
+		size_t                             *buffer_size,
+		char                              **buffer) {
+	CCS_VALIDATE(_ccs_serialize_bin_ccs_distribution_type(data->type, buffer_size, buffer));
+	return CCS_SUCCESS;
+}
+
+static inline ccs_result_t
+_ccs_deserialize_bin_ccs_distribution_common_data(
+		_ccs_distribution_common_data_t  *data,
+		size_t                             *buffer_size,
+		const char                        **buffer) {
+	CCS_VALIDATE(_ccs_deserialize_bin_ccs_distribution_type(&data->type, buffer_size, buffer));
+	return CCS_SUCCESS;
+}
+
 #endif //_DISTRIBUTION_INTERNAL_H

@@ -5,9 +5,9 @@
 #define NUM_SAMPLES 100
 #define NUM_SAMPLES_BIG 1000
 
-
-static void test_create_uniform_distribution() {
-	ccs_distribution_t      distrib = NULL;
+static void compare_distribution(
+		ccs_distribution_t distrib,
+		ccs_int_t l, ccs_int_t u, ccs_int_t q) {
 	ccs_result_t            err = CCS_SUCCESS;
 	int32_t                 refcount;
 	ccs_object_type_t       otype;
@@ -16,18 +16,6 @@ static void test_create_uniform_distribution() {
 	ccs_numeric_type_t      data_type;
 	ccs_numeric_t           quantization, lower, upper;
 	ccs_interval_t          interval;
-	ccs_int_t               l = -10L;
-	ccs_int_t               u = 11L;
-	ccs_int_t               q = 0L;
-
-	err = ccs_create_uniform_distribution(
-		CCS_NUM_INTEGER,
-		CCSI(l),
-		CCSI(u),
-		CCS_LINEAR,
-		CCSI(q),
-		&distrib);
-	assert( err == CCS_SUCCESS );
 
 	err = ccs_object_get_type(distrib, &otype);
 	assert( err == CCS_SUCCESS );
@@ -59,6 +47,45 @@ static void test_create_uniform_distribution() {
 	err = ccs_object_get_refcount(distrib, &refcount);
 	assert( err == CCS_SUCCESS );
 	assert( refcount == 1 );
+}
+
+static void test_create_uniform_distribution() {
+	ccs_distribution_t  distrib = NULL;
+	ccs_result_t        err = CCS_SUCCESS;
+	ccs_int_t           l = -10L;
+	ccs_int_t           u = 11L;
+	ccs_int_t           q = 0L;
+	char               *buff;
+	size_t              buff_size;
+
+	err = ccs_create_uniform_distribution(
+		CCS_NUM_INTEGER,
+		CCSI(l),
+		CCSI(u),
+		CCS_LINEAR,
+		CCSI(q),
+		&distrib);
+	assert( err == CCS_SUCCESS );
+
+	compare_distribution(distrib, l, u, q);
+
+	err = ccs_object_serialize(distrib, CCS_SERIALIZE_FORMAT_BINARY, CCS_SERIALIZE_TYPE_SIZE, &buff_size);
+	assert( err == CCS_SUCCESS );
+
+	buff = (char *)malloc(buff_size);
+	assert( buff );
+
+	err = ccs_object_serialize(distrib, CCS_SERIALIZE_FORMAT_BINARY, CCS_SERIALIZE_TYPE_MEMORY, buff_size, buff);
+	assert( err == CCS_SUCCESS );
+
+	err = ccs_release_object(distrib);
+	assert( err == CCS_SUCCESS );
+
+	err = ccs_object_deserialize((ccs_object_t*)&distrib, CCS_SERIALIZE_FORMAT_BINARY, CCS_SERIALIZE_TYPE_MEMORY, buff_size, buff);
+	assert( err == CCS_SUCCESS );
+	free(buff);
+
+	compare_distribution(distrib, l, u, q);
 
 	err = ccs_release_object(distrib);
 	assert( err == CCS_SUCCESS );

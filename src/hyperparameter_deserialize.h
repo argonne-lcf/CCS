@@ -133,10 +133,10 @@ _ccs_deserialize_bin_ccs_hyperparameter_string_data(
 
 static inline ccs_result_t
 _ccs_deserialize_bin_hyperparameter_string(
-		ccs_hyperparameter_t    *hyperparameter_ret,
-		uint32_t                 version,
-		size_t                  *buffer_size,
-		const char             **buffer) {
+		ccs_hyperparameter_t  *hyperparameter_ret,
+		uint32_t               version,
+		size_t                *buffer_size,
+		const char           **buffer) {
 	(void)version;
 	_ccs_hyperparameter_string_data_mock_t data;
 	CCS_VALIDATE(_ccs_deserialize_bin_ccs_hyperparameter_string_data(

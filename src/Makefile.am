@@ -11,8 +11,9 @@ lib_LTLIBRARIES = libcconfigspace.la
 libcconfigspace_la_SOURCES = \
 	cconfigspace.c \
 	cconfigspace_internal.h \
-	hyperparameter_deserialize.h \
 	rng_deserialize.h \
+	distribution_deserialize.h \
+	hyperparameter_deserialize.h \
 	interval.c \
 	rng.c \
 	rng_internal.h \

@@ -233,6 +233,7 @@ ccs_object_serialize(ccs_object_t           object,
 }
 
 #include "rng_deserialize.h"
+#include "distribution_deserialize.h"
 #include "hyperparameter_deserialize.h"
 
 static inline ccs_result_t
@@ -250,14 +251,19 @@ _ccs_object_deserialize(ccs_object_t            *object_ret,
 		CCS_VALIDATE(_ccs_peek_bin_ccs_object_type(
 			&otype, buffer_size, buffer));
 		switch(otype) {
-		case CCS_HYPERPARAMETER:
-			CCS_VALIDATE(_ccs_hyperparameter_deserialize(
-				(ccs_hyperparameter_t *)object_ret,
-				format, version, buffer_size, buffer));
-			break;
 		case CCS_RNG:
 			CCS_VALIDATE(_ccs_rng_deserialize(
 				(ccs_rng_t *)object_ret,
+				format, version, buffer_size, buffer));
+			break;
+		case CCS_DISTRIBUTION:
+			CCS_VALIDATE(_ccs_distribution_deserialize(
+				(ccs_distribution_t *)object_ret,
+				format, version, buffer_size, buffer));
+			break;
+		case CCS_HYPERPARAMETER:
+			CCS_VALIDATE(_ccs_hyperparameter_deserialize(
+				(ccs_hyperparameter_t *)object_ret,
 				format, version, buffer_size, buffer));
 			break;
 		default:

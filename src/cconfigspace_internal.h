@@ -298,8 +298,10 @@ CCS_CONVERTER(ccs_numeric_type, ccs_numeric_type_t, 32)
 CCS_CONVERTER(ccs_hyperparameter_type, ccs_hyperparameter_type_t, 32)
 CCS_CONVERTER(ccs_datum_flags, ccs_datum_flags_t, 32)
 CCS_CONVERTER(ccs_data_type, ccs_data_type_t, 32)
-CCS_CONVERTER(ccs_object, ccs_object_t, 64)
 CCS_CONVERTER(ccs_object_type, ccs_object_type_t, 32)
+CCS_CONVERTER(ccs_scale_type, ccs_scale_type_t, 32)
+CCS_CONVERTER(ccs_distribution_type, ccs_distribution_type_t, 32)
+CCS_CONVERTER(ccs_object, ccs_object_t, 64)
 CCS_CONVERTER(ccs_user_data, ccs_user_data_t, 64)
 
 static inline size_t
