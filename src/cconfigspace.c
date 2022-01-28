@@ -232,6 +232,7 @@ ccs_object_serialize(ccs_object_t           object,
 	return CCS_SUCCESS;
 }
 
+#include "rng_deserialize.h"
 #include "hyperparameter_deserialize.h"
 
 static inline ccs_result_t
@@ -252,6 +253,11 @@ _ccs_object_deserialize(ccs_object_t            *object_ret,
 		case CCS_HYPERPARAMETER:
 			CCS_VALIDATE(_ccs_hyperparameter_deserialize(
 				(ccs_hyperparameter_t *)object_ret,
+				format, version, buffer_size, buffer));
+			break;
+		case CCS_RNG:
+			CCS_VALIDATE(_ccs_rng_deserialize(
+				(ccs_rng_t *)object_ret,
 				format, version, buffer_size, buffer));
 			break;
 		default:

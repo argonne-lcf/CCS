@@ -36,9 +36,12 @@ static void test_rng_create_with_type() {
 }
 
 static void test_rng_create() {
-	ccs_rng_t           rng = NULL;
+	ccs_rng_t           rng = NULL, rng2 = NULL;
 	ccs_result_t        err = CCS_SUCCESS;
-	const gsl_rng_type *t;
+	const gsl_rng_type *t, *t2;
+	char               *buff;
+	size_t              buff_size;
+	unsigned long int   i = 0, i2 = 0;
 
 	err = ccs_rng_create(NULL);
 	assert( err == -CCS_INVALID_VALUE );
@@ -48,7 +51,36 @@ static void test_rng_create() {
 	err = ccs_rng_get_type(rng, &t);
 	assert( err == CCS_SUCCESS );
 	assert( t == gsl_rng_default );
+
+	err = ccs_rng_get(rng, &i);
+	assert( err == CCS_SUCCESS );
+
+	err = ccs_object_serialize(rng, CCS_SERIALIZE_FORMAT_BINARY, CCS_SERIALIZE_TYPE_SIZE, &buff_size);
+	assert( err == CCS_SUCCESS );
+
+	buff = (char *)malloc(buff_size);
+	assert( buff );
+
+	err = ccs_object_serialize(rng, CCS_SERIALIZE_FORMAT_BINARY, CCS_SERIALIZE_TYPE_MEMORY, buff_size, buff);
+	assert( err == CCS_SUCCESS );
+
+	err = ccs_object_deserialize((ccs_object_t*)&rng2, CCS_SERIALIZE_FORMAT_BINARY, CCS_SERIALIZE_TYPE_MEMORY, buff_size, buff);
+	assert( err == CCS_SUCCESS );
+	free(buff);
+
+	err = ccs_rng_get_type(rng2, &t2);
+	assert( err == CCS_SUCCESS );
+	assert( t == t2 );
+
+	err = ccs_rng_get(rng, &i);
+	assert( err == CCS_SUCCESS );
+	err = ccs_rng_get(rng2, &i2);
+	assert( err == CCS_SUCCESS );
+	assert( i == i2 );
+
 	err = ccs_release_object(rng);
+	assert( err == CCS_SUCCESS );
+	err = ccs_release_object(rng2);
 	assert( err == CCS_SUCCESS );
 }
 

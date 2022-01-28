@@ -336,6 +336,46 @@ _ccs_deserialize_bin_string(const char **str,
 	return CCS_SUCCESS;
 }
 
+struct _ccs_blob_s {
+	size_t      sz;
+	const void *blob;
+};
+typedef struct _ccs_blob_s _ccs_blob_t;
+
+static inline size_t
+_ccs_serialize_bin_size_ccs_blob(_ccs_blob_t *b) {
+	return _ccs_serialize_bin_size_uint64(b->sz) +
+	       b->sz;
+}
+
+static inline ccs_result_t
+_ccs_serialize_bin_ccs_blob(
+		_ccs_blob_t *b,
+		size_t      *buffer_size,
+		char       **buffer) {
+	CCS_VALIDATE(_ccs_serialize_bin_uint64(b->sz, buffer_size, buffer));
+	if (CCS_UNLIKELY(*buffer_size < b->sz))
+		return -CCS_OUT_OF_MEMORY;
+	memcpy(*buffer, b->blob, b->sz);
+	*buffer_size -= b->sz;
+	*buffer += b->sz;
+	return CCS_SUCCESS;
+}
+
+static inline ccs_result_t
+_ccs_deserialize_bin_ccs_blob(
+		_ccs_blob_t *b,
+		size_t      *buffer_size,
+		const char **buffer) {
+	CCS_VALIDATE(_ccs_deserialize_bin_uint64(&b->sz, buffer_size, buffer));
+	if (CCS_UNLIKELY(*buffer_size < b->sz))
+		return -CCS_OUT_OF_MEMORY;
+	b->blob = *buffer;
+	*buffer_size -= b->sz;
+	*buffer += b->sz;
+	return CCS_SUCCESS;
+}
+
 static inline size_t
 _ccs_serialize_bin_size_ccs_interval(const ccs_interval_t *interval) {
 	return _ccs_serialize_bin_size_ccs_numeric_type(interval->type) +

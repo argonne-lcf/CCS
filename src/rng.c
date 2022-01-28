@@ -3,9 +3,92 @@
 #include <stdlib.h>
 
 static ccs_result_t
-_ccs_rng_del(ccs_object_t object);
+_ccs_rng_del(ccs_object_t object) {
+	gsl_rng_free(((ccs_rng_t)object)->data->rng);
+	((ccs_rng_t)object)->data->rng = NULL;
+	return CCS_SUCCESS;
+}
 
-static struct _ccs_rng_ops_s _rng_ops = { {&_ccs_rng_del, NULL, NULL} };
+static inline size_t
+_ccs_serialize_bin_size_ccs_rng_data(_ccs_rng_data_t *data) {
+	_ccs_blob_t b = { gsl_rng_size(data->rng), gsl_rng_state(data->rng) };
+	return _ccs_serialize_bin_size_string(gsl_rng_name(data->rng)) +
+	       _ccs_serialize_bin_size_ccs_bool(ccs_is_little_endian()) +
+	       _ccs_serialize_bin_size_ccs_blob(&b);
+}
+
+static inline ccs_result_t
+_ccs_serialize_bin_ccs_rng_data(
+		_ccs_rng_data_t  *data,
+		size_t           *buffer_size,
+		char            **buffer) {
+	CCS_VALIDATE(_ccs_serialize_bin_string(
+		gsl_rng_name(data->rng), buffer_size, buffer));
+	CCS_VALIDATE(_ccs_serialize_bin_ccs_bool(
+		ccs_is_little_endian(), buffer_size, buffer));
+	_ccs_blob_t b = { gsl_rng_size(data->rng), gsl_rng_state(data->rng) };
+	CCS_VALIDATE(_ccs_serialize_bin_ccs_blob(&b, buffer_size, buffer));
+	return CCS_SUCCESS;
+}
+
+static inline size_t
+_ccs_serialize_bin_size_ccs_rng(ccs_rng_t rng) {
+	_ccs_rng_data_t *data = (_ccs_rng_data_t *)(rng->data);
+	return  _ccs_serialize_bin_size_ccs_object_internal(
+			(_ccs_object_internal_t *)rng) +
+		_ccs_serialize_bin_size_ccs_rng_data(data);
+}
+
+static inline ccs_result_t
+_ccs_serialize_bin_ccs_rng(
+		ccs_rng_t rng,
+		size_t                *buffer_size,
+		char                 **buffer) {
+	_ccs_rng_data_t *data = (_ccs_rng_data_t *)(rng->data);
+	CCS_VALIDATE(_ccs_serialize_bin_ccs_object_internal(
+		(_ccs_object_internal_t *)rng, buffer_size, buffer));
+	CCS_VALIDATE(_ccs_serialize_bin_ccs_rng_data(
+		data, buffer_size, buffer));
+	return CCS_SUCCESS;
+}
+
+static ccs_result_t
+_ccs_rng_serialize_size(
+		ccs_object_t            object,
+		ccs_serialize_format_t  format,
+		size_t                 *cum_size) {
+	switch(format) {
+	case CCS_SERIALIZE_FORMAT_BINARY:
+		*cum_size += _ccs_serialize_bin_size_ccs_rng((ccs_rng_t)object);
+		break;
+	default:
+		return -CCS_INVALID_VALUE;
+	}
+	return CCS_SUCCESS;
+}
+
+static ccs_result_t
+_ccs_rng_serialize(
+		ccs_object_t             object,
+		ccs_serialize_format_t   format,
+		size_t                  *buffer_size,
+		char                   **buffer) {
+	switch(format) {
+	case CCS_SERIALIZE_FORMAT_BINARY:
+		CCS_VALIDATE(_ccs_serialize_bin_ccs_rng(
+			(ccs_rng_t)object, buffer_size, buffer));
+		break;
+	default:
+		return -CCS_INVALID_VALUE;
+	}
+	return CCS_SUCCESS;
+}
+
+static struct _ccs_rng_ops_s _rng_ops = {
+	{ &_ccs_rng_del,
+	  &_ccs_rng_serialize_size,
+	  &_ccs_rng_serialize }
+};
 
 ccs_result_t
 ccs_rng_create_with_type(const gsl_rng_type *rng_type,
@@ -36,13 +119,6 @@ ccs_rng_create_with_type(const gsl_rng_type *rng_type,
 ccs_result_t
 ccs_rng_create(ccs_rng_t *rng_ret) {
 	return ccs_rng_create_with_type(gsl_rng_default, rng_ret);
-}
-
-static ccs_result_t
-_ccs_rng_del(ccs_object_t object) {
-	gsl_rng_free(((ccs_rng_t)object)->data->rng);
-	((ccs_rng_t)object)->data->rng = NULL;
-	return CCS_SUCCESS;
 }
 
 ccs_result_t
