@@ -13,7 +13,8 @@ _ccs_serialize_bin_size_ccs_hyperparameter_numerical(
 		ccs_hyperparameter_t hyperparameter) {
 	_ccs_hyperparameter_numerical_data_t *data =
 		(_ccs_hyperparameter_numerical_data_t *)(hyperparameter->data);
-	return	_ccs_serialize_bin_size_ccs_object_type(CCS_HYPERPARAMETER) +
+	return	_ccs_serialize_bin_size_ccs_object_internal(
+			(_ccs_object_internal_t *)hyperparameter) +
 	        _ccs_serialize_bin_size_ccs_hyperparameter_numerical_data(data);
 }
 
@@ -24,8 +25,8 @@ _ccs_serialize_bin_ccs_hyperparameter_numerical(
 		char                 **buffer) {
 	_ccs_hyperparameter_numerical_data_t *data =
 		(_ccs_hyperparameter_numerical_data_t *)(hyperparameter->data);
-	CCS_VALIDATE(_ccs_serialize_bin_ccs_object_type(
-		CCS_HYPERPARAMETER, buffer_size, buffer));
+	CCS_VALIDATE(_ccs_serialize_bin_ccs_object_internal(
+		(_ccs_object_internal_t *)hyperparameter, buffer_size, buffer));
 	CCS_VALIDATE(_ccs_serialize_bin_ccs_hyperparameter_numerical_data(
 		data, buffer_size, buffer));
 	return CCS_SUCCESS;
@@ -69,8 +70,6 @@ _ccs_hyperparameter_numerical_serialize(
 	}
 	return CCS_SUCCESS;
 }
-
-
 
 static ccs_result_t
 _ccs_hyperparameter_numerical_check_values(_ccs_hyperparameter_data_t *data,

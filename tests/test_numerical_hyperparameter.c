@@ -5,26 +5,16 @@
 
 #define NUM_SAMPLES 10000
 
-void test_create() {
-	ccs_hyperparameter_t       hyperparameter;
+static void compare_hyperparameter(ccs_hyperparameter_t hyperparameter) {
+	ccs_result_t               err;
 	ccs_hyperparameter_type_t  type;
 	ccs_datum_t                default_value;
-	ccs_result_t               err;
-	ccs_bool_t                 check;
 	const char                *name;
 	void *                     user_data;
 	ccs_distribution_t         distribution;
 	ccs_distribution_type_t    dist_type;
 	ccs_interval_t             interval;
-	char                      *buff;
-	size_t                     buff_size;
-
-	err = ccs_create_numerical_hyperparameter("my_param", CCS_NUM_FLOAT,
-	                                          CCSF(-5.0), CCSF(5.0),
-	                                          CCSF(0.0), CCSF(1.0),
-	                                          (void *)0xdeadbeef,
-	                                          &hyperparameter);
-	assert( err == CCS_SUCCESS );
+	ccs_bool_t                 check;
 
 	err = ccs_hyperparameter_get_type(hyperparameter, &type);
 	assert( err == CCS_SUCCESS );
@@ -59,14 +49,32 @@ void test_create() {
 	assert( interval.upper.f  == 5.0 );
 	assert( interval.upper_included == CCS_FALSE );
 
-	err = ccs_hyperparameter_check_value(hyperparameter, default_value, &check);
+	err = ccs_hyperparameter_check_value(hyperparameter, ccs_float(1.0), &check);
 	assert( err == CCS_SUCCESS );
 	assert( check == CCS_TRUE );
 
-	default_value.value.f = 6.0;
-	err = ccs_hyperparameter_check_value(hyperparameter, default_value, &check);
+	err = ccs_hyperparameter_check_value(hyperparameter, ccs_float(6.0), &check);
 	assert( err == CCS_SUCCESS );
 	assert( check == CCS_FALSE );
+
+	err = ccs_release_object(distribution);
+	assert( err == CCS_SUCCESS );
+}
+
+static void test_create() {
+	ccs_hyperparameter_t       hyperparameter;
+	ccs_result_t               err;
+	char                      *buff;
+	size_t                     buff_size;
+
+	err = ccs_create_numerical_hyperparameter("my_param", CCS_NUM_FLOAT,
+	                                          CCSF(-5.0), CCSF(5.0),
+	                                          CCSF(0.0), CCSF(1.0),
+	                                          (void *)0xdeadbeef,
+	                                          &hyperparameter);
+	assert( err == CCS_SUCCESS );
+
+	compare_hyperparameter(hyperparameter);
 
 	err = ccs_object_serialize(hyperparameter, CCS_SERIALIZE_FORMAT_BINARY, CCS_SERIALIZE_TYPE_SIZE, &buff_size);
 	assert( err == CCS_SUCCESS );
@@ -77,8 +85,6 @@ void test_create() {
 	err = ccs_object_serialize(hyperparameter, CCS_SERIALIZE_FORMAT_BINARY, CCS_SERIALIZE_TYPE_MEMORY, buff_size, buff);
 	assert( err == CCS_SUCCESS );
 
-	err = ccs_release_object(distribution);
-	assert( err == CCS_SUCCESS );
 	err = ccs_release_object(hyperparameter);
 	assert( err == CCS_SUCCESS );
 
@@ -86,41 +92,8 @@ void test_create() {
 	assert( err == CCS_SUCCESS );
 	free(buff);
 
-	err = ccs_hyperparameter_get_type(hyperparameter, &type);
-	assert( err == CCS_SUCCESS );
-	assert( type == CCS_HYPERPARAMETER_TYPE_NUMERICAL );
+	compare_hyperparameter(hyperparameter);
 
-	err = ccs_hyperparameter_get_default_value(hyperparameter, &default_value);
-	assert( err == CCS_SUCCESS );
-	assert( default_value.type == CCS_FLOAT );
-	assert( default_value.value.f == 1.0 );
-
-	err = ccs_hyperparameter_get_name(hyperparameter, &name);
-	assert( err == CCS_SUCCESS );
-	assert( strcmp(name, "my_param") == 0 );
-
-	err = ccs_object_get_user_data(hyperparameter, &user_data);
-	assert( err == CCS_SUCCESS );
-	assert( user_data == NULL );
-
-	err = ccs_hyperparameter_get_default_distribution(hyperparameter, &distribution);
-	assert( err == CCS_SUCCESS );
-	assert( distribution );
-
-	err = ccs_distribution_get_type(distribution, &dist_type);
-	assert( err == CCS_SUCCESS );
-	assert( dist_type == CCS_UNIFORM );
-
-	err = ccs_distribution_get_bounds(distribution, &interval);
-	assert( err == CCS_SUCCESS );
-	assert( interval.type == CCS_NUM_FLOAT );
-	assert( interval.lower.f  == -5.0 );
-	assert( interval.lower_included == CCS_TRUE );
-	assert( interval.upper.f  == 5.0 );
-	assert( interval.upper_included == CCS_FALSE );
-
-	err = ccs_release_object(distribution);
-	assert( err == CCS_SUCCESS );
 	err = ccs_release_object(hyperparameter);
 	assert( err == CCS_SUCCESS );
 }

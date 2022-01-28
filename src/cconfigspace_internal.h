@@ -62,6 +62,8 @@ _ccs_interval_include(ccs_interval_t *interval, ccs_numeric_t value) {
 #define CCS_SERIALIZATION_API_VERSION \
 	((CCS_SERIALIZATION_API_VERSION_TYPE)1)
 
+typedef void *ccs_user_data_t;
+
 /* "CCS" */
 #define CCS_MAGIC_TAG { 0x43, 0x43, 0x53, 0x00 }
 
@@ -298,6 +300,7 @@ CCS_CONVERTER(ccs_datum_flags, ccs_datum_flags_t, 32)
 CCS_CONVERTER(ccs_data_type, ccs_data_type_t, 32)
 CCS_CONVERTER(ccs_object, ccs_object_t, 64)
 CCS_CONVERTER(ccs_object_type, ccs_object_type_t, 32)
+CCS_CONVERTER(ccs_user_data, ccs_user_data_t, 64)
 
 static inline size_t
 _ccs_serialize_bin_size_string(const char *str) {
@@ -498,6 +501,37 @@ _ccs_deserialize_bin_ccs_datum(
 		*datum = ccs_none;
 		return -CCS_INVALID_TYPE;
 	}
+	return CCS_SUCCESS;
+}
+
+static inline size_t
+_ccs_serialize_bin_size_ccs_object_internal(
+		_ccs_object_internal_t *obj) {
+	return _ccs_serialize_bin_size_ccs_object_type(obj->type) +
+	       _ccs_serialize_bin_size_ccs_user_data(obj->user_data);
+}
+
+static inline ccs_result_t
+_ccs_serialize_bin_ccs_object_internal(
+		_ccs_object_internal_t  *obj,
+		size_t                  *buffer_size,
+		char                   **buffer) {
+	CCS_VALIDATE(_ccs_serialize_bin_ccs_object_type(
+		obj->type, buffer_size, buffer));
+	CCS_VALIDATE(_ccs_serialize_bin_ccs_user_data(
+		obj->user_data, buffer_size, buffer));
+	return CCS_SUCCESS;
+}
+
+static inline ccs_result_t
+_ccs_deserialize_bin_ccs_object_internal(
+		_ccs_object_internal_t  *obj,
+		size_t                  *buffer_size,
+		const char             **buffer) {
+	CCS_VALIDATE(_ccs_deserialize_bin_ccs_object_type(
+		&obj->type, buffer_size, buffer));
+	CCS_VALIDATE(_ccs_deserialize_bin_ccs_user_data(
+		&obj->user_data, buffer_size, buffer));
 	return CCS_SUCCESS;
 }
 

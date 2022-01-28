@@ -37,10 +37,10 @@ _ccs_deserialize_bin_hyperparameter(
 		uint32_t                 version,
 		size_t                  *buffer_size,
 		const char             **buffer) {
-	ccs_object_type_t otype;
-	CCS_VALIDATE(_ccs_deserialize_bin_ccs_object_type(
-		&otype, buffer_size, buffer));
-	if (CCS_UNLIKELY(otype != CCS_HYPERPARAMETER))
+	_ccs_object_internal_t obj;
+	CCS_VALIDATE(_ccs_deserialize_bin_ccs_object_internal(
+		&obj, buffer_size, buffer));
+	if (CCS_UNLIKELY(obj.type != CCS_HYPERPARAMETER))
 		return CCS_INVALID_TYPE;
 
 	ccs_hyperparameter_type_t htype;
@@ -54,6 +54,7 @@ _ccs_deserialize_bin_hyperparameter(
 	default:
 		return -CCS_UNSUPPORTED_OPERATION;
 	}
+	ccs_object_set_user_data(*hyperparameter_ret, obj.user_data);
 
 	return CCS_SUCCESS;
 }
