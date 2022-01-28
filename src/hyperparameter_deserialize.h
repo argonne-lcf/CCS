@@ -119,6 +119,35 @@ end:
 	return res;
 }
 
+typedef _ccs_hyperparameter_common_data_t _ccs_hyperparameter_string_data_mock_t;
+
+static inline ccs_result_t
+_ccs_deserialize_bin_ccs_hyperparameter_string_data(
+		_ccs_hyperparameter_string_data_mock_t  *data,
+		size_t                                  *buffer_size,
+		const char                             **buffer) {
+	CCS_VALIDATE(_ccs_deserialize_bin_ccs_hyperparameter_common_data(
+		data, buffer_size, buffer));
+	return CCS_SUCCESS;
+}
+
+static inline ccs_result_t
+_ccs_deserialize_bin_hyperparameter_string(
+		ccs_hyperparameter_t    *hyperparameter_ret,
+		uint32_t                 version,
+		size_t                  *buffer_size,
+		const char             **buffer) {
+	(void)version;
+	_ccs_hyperparameter_string_data_mock_t data;
+	CCS_VALIDATE(_ccs_deserialize_bin_ccs_hyperparameter_string_data(
+		&data, buffer_size, buffer));
+	CCS_VALIDATE(ccs_create_string_hyperparameter(
+		data.name,
+		NULL,
+		hyperparameter_ret));
+	return CCS_SUCCESS;
+}
+
 static inline ccs_result_t
 _ccs_deserialize_bin_hyperparameter(
 		ccs_hyperparameter_t    *hyperparameter_ret,
@@ -143,6 +172,10 @@ _ccs_deserialize_bin_hyperparameter(
 	case CCS_HYPERPARAMETER_TYPE_ORDINAL:
 	case CCS_HYPERPARAMETER_TYPE_DISCRETE:
 		CCS_VALIDATE(_ccs_deserialize_bin_hyperparameter_categorical(
+			hyperparameter_ret, version, buffer_size, buffer));
+		break;
+	case CCS_HYPERPARAMETER_TYPE_STRING:
+		CCS_VALIDATE(_ccs_deserialize_bin_hyperparameter_string(
 			hyperparameter_ret, version, buffer_size, buffer));
 		break;
 	default:

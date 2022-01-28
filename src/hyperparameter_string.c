@@ -10,6 +10,22 @@ struct _ccs_hyperparameter_string_data_s {
 };
 typedef struct _ccs_hyperparameter_string_data_s _ccs_hyperparameter_string_data_t;
 
+static inline size_t
+_ccs_serialize_bin_size_ccs_hyperparameter_string_data(
+		_ccs_hyperparameter_string_data_t *data) {
+	return _ccs_serialize_bin_size_ccs_hyperparameter_common_data(&data->common_data);
+}
+
+static inline size_t
+_ccs_serialize_bin_ccs_hyperparameter_string_data(
+		_ccs_hyperparameter_string_data_t  *data,
+		size_t                             *buffer_size,
+		char                              **buffer) {
+	CCS_VALIDATE(_ccs_serialize_bin_ccs_hyperparameter_common_data(
+		&data->common_data, buffer_size, buffer));
+	return CCS_SUCCESS;
+}
+
 static ccs_result_t
 _ccs_hyperparameter_string_del(ccs_object_t o) {
 	ccs_hyperparameter_t d = (ccs_hyperparameter_t)o;
@@ -18,6 +34,69 @@ _ccs_hyperparameter_string_del(ccs_object_t o) {
 	HASH_ITER(hh, data->stored_values, current, tmp) {
 		HASH_DEL(data->stored_values, current);
 		free(current);
+	}
+	return CCS_SUCCESS;
+}
+
+static inline size_t
+_ccs_serialize_bin_size_ccs_hyperparameter_string(
+		ccs_hyperparameter_t hyperparameter) {
+	_ccs_hyperparameter_string_data_t *data =
+		(_ccs_hyperparameter_string_data_t *)(hyperparameter->data);
+	return  _ccs_serialize_bin_size_ccs_object_internal(
+			(_ccs_object_internal_t *)hyperparameter) +
+		_ccs_serialize_bin_size_ccs_hyperparameter_string_data(data);
+}
+
+static inline ccs_result_t
+_ccs_serialize_bin_ccs_hyperparameter_string(
+		ccs_hyperparameter_t   hyperparameter,
+		size_t                *buffer_size,
+		char                 **buffer) {
+	_ccs_hyperparameter_string_data_t *data =
+		(_ccs_hyperparameter_string_data_t *)(hyperparameter->data);
+	CCS_VALIDATE(_ccs_serialize_bin_ccs_object_internal(
+		(_ccs_object_internal_t *)hyperparameter, buffer_size, buffer));
+	CCS_VALIDATE(_ccs_serialize_bin_ccs_hyperparameter_string_data(
+		data, buffer_size, buffer));
+	return CCS_SUCCESS;
+}
+
+static ccs_result_t
+_ccs_hyperparameter_string_serialize_size(
+		ccs_object_t            object,
+		ccs_serialize_format_t  format,
+		size_t                 *cum_size) {
+	switch(format) {
+	case CCS_SERIALIZE_FORMAT_BINARY:
+	{
+		size_t sz =
+		     _ccs_serialize_bin_size_ccs_hyperparameter_string(
+		        (ccs_hyperparameter_t)object);
+		*cum_size += sz;
+	}
+	break;
+	default:
+		return -CCS_INVALID_VALUE;
+	}
+	return CCS_SUCCESS;
+}
+
+static ccs_result_t
+_ccs_hyperparameter_string_serialize(
+		ccs_object_t             object,
+		ccs_serialize_format_t   format,
+		size_t                  *buffer_size,
+		char                   **buffer) {
+	switch(format) {
+	case CCS_SERIALIZE_FORMAT_BINARY:
+	{
+		CCS_VALIDATE(_ccs_serialize_bin_ccs_hyperparameter_string(
+		    (ccs_hyperparameter_t)object, buffer_size, buffer));
+	}
+	break;
+	default:
+		return -CCS_INVALID_VALUE;
 	}
 	return CCS_SUCCESS;
 }
@@ -106,7 +185,9 @@ _ccs_hyperparameter_string_convert_samples(
 }
 
 static _ccs_hyperparameter_ops_t _ccs_hyperparameter_string_ops = {
-	{ &_ccs_hyperparameter_string_del, NULL, NULL },
+	{ &_ccs_hyperparameter_string_del,
+	  &_ccs_hyperparameter_string_serialize_size,
+	  &_ccs_hyperparameter_string_serialize },
 	&_ccs_hyperparameter_string_check_values,
 	&_ccs_hyperparameter_string_samples,
 	&_ccs_hyperparameter_string_get_default_distribution,
