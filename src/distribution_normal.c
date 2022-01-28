@@ -15,8 +15,103 @@ struct _ccs_distribution_normal_data_s {
 typedef struct _ccs_distribution_normal_data_s _ccs_distribution_normal_data_t;
 
 static ccs_result_t
-_ccs_distribution_del(ccs_object_t o) {
+_ccs_distribution_normal_del(ccs_object_t o) {
 	(void)o;
+	return CCS_SUCCESS;
+}
+
+static inline size_t
+_ccs_serialize_bin_size_ccs_distribution_normal_data(
+		_ccs_distribution_normal_data_t *data) {
+	return _ccs_serialize_bin_size_ccs_distribution_common_data(&data->common_data) +
+	       _ccs_serialize_bin_size_ccs_numeric_type(data->common_data.data_types[0]) +
+	       _ccs_serialize_bin_size_ccs_scale_type(data->scale_type) +
+	       _ccs_serialize_bin_size_ccs_float(data->mu) +
+	       _ccs_serialize_bin_size_ccs_float(data->sigma) +
+	       (data->common_data.data_types[0] == CCS_NUM_FLOAT ?
+		_ccs_serialize_bin_size_ccs_float(data->quantization.f) :
+		_ccs_serialize_bin_size_ccs_int(data->quantization.i));
+}
+
+static inline ccs_result_t
+_ccs_serialize_bin_ccs_distribution_normal_data(
+		_ccs_distribution_normal_data_t  *data,
+		size_t                            *buffer_size,
+		char                             **buffer) {
+	CCS_VALIDATE(_ccs_serialize_bin_ccs_distribution_common_data(
+		&data->common_data, buffer_size, buffer));
+	CCS_VALIDATE(_ccs_serialize_bin_ccs_numeric_type(
+		data->common_data.data_types[0], buffer_size, buffer));
+	CCS_VALIDATE(_ccs_serialize_bin_ccs_scale_type(
+		data->scale_type, buffer_size, buffer));
+	CCS_VALIDATE(_ccs_serialize_bin_ccs_float(
+		data->mu, buffer_size, buffer));
+	CCS_VALIDATE(_ccs_serialize_bin_ccs_float(
+		data->sigma, buffer_size, buffer));
+	if (data->common_data.data_types[0] == CCS_NUM_FLOAT) {
+		CCS_VALIDATE(_ccs_serialize_bin_ccs_float(
+			data->quantization.f, buffer_size, buffer));
+	} else {
+		CCS_VALIDATE(_ccs_serialize_bin_ccs_int(
+			data->quantization.i, buffer_size, buffer));
+	}
+	return CCS_SUCCESS;
+}
+
+static inline size_t
+_ccs_serialize_bin_size_ccs_distribution_normal(
+		ccs_distribution_t distribution) {
+	_ccs_distribution_normal_data_t *data =
+		(_ccs_distribution_normal_data_t *)(distribution->data);
+	return	_ccs_serialize_bin_size_ccs_object_internal(
+			(_ccs_object_internal_t *)distribution) +
+	        _ccs_serialize_bin_size_ccs_distribution_normal_data(data);
+}
+
+static inline ccs_result_t
+_ccs_serialize_bin_ccs_distribution_normal(
+		ccs_distribution_t   distribution,
+		size_t              *buffer_size,
+		char               **buffer) {
+	_ccs_distribution_normal_data_t *data =
+		(_ccs_distribution_normal_data_t *)(distribution->data);
+	CCS_VALIDATE(_ccs_serialize_bin_ccs_object_internal(
+		(_ccs_object_internal_t *)distribution, buffer_size, buffer));
+	CCS_VALIDATE(_ccs_serialize_bin_ccs_distribution_normal_data(
+		data, buffer_size, buffer));
+	return CCS_SUCCESS;
+}
+
+static ccs_result_t
+_ccs_distribution_normal_serialize_size(
+		ccs_object_t            object,
+		ccs_serialize_format_t  format,
+		size_t                 *cum_size) {
+	switch(format) {
+	case CCS_SERIALIZE_FORMAT_BINARY:
+		*cum_size += _ccs_serialize_bin_size_ccs_distribution_normal(
+			(ccs_distribution_t)object);
+		break;
+	default:
+		return -CCS_INVALID_VALUE;
+	}
+	return CCS_SUCCESS;
+}
+
+static ccs_result_t
+_ccs_distribution_normal_serialize(
+		ccs_object_t             object,
+		ccs_serialize_format_t   format,
+		size_t                  *buffer_size,
+		char                   **buffer) {
+	switch(format) {
+	case CCS_SERIALIZE_FORMAT_BINARY:
+		CCS_VALIDATE(_ccs_serialize_bin_ccs_distribution_normal(
+		    (ccs_distribution_t)object, buffer_size, buffer));
+		break;
+	default:
+		return -CCS_INVALID_VALUE;
+	}
 	return CCS_SUCCESS;
 }
 
@@ -44,7 +139,9 @@ _ccs_distribution_normal_soa_samples(_ccs_distribution_data_t  *data,
                                      ccs_numeric_t            **values);
 
 static _ccs_distribution_ops_t _ccs_distribution_normal_ops = {
-	{ &_ccs_distribution_del, NULL, NULL },
+	{ &_ccs_distribution_normal_del,
+	  &_ccs_distribution_normal_serialize_size,
+	  &_ccs_distribution_normal_serialize },
 	&_ccs_distribution_normal_samples,
 	&_ccs_distribution_normal_get_bounds,
 	&_ccs_distribution_normal_strided_samples,

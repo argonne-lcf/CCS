@@ -62,6 +62,60 @@ _ccs_deserialize_bin_distribution_uniform(
 	return CCS_SUCCESS;
 }
 
+struct _ccs_distribution_normal_data_mock_s {
+	_ccs_distribution_common_data_t common_data;
+	ccs_numeric_type_t              data_type;
+	ccs_scale_type_t                scale_type;
+	ccs_float_t                     mu;
+	ccs_float_t                     sigma;
+	ccs_numeric_t                   quantization;
+};
+typedef struct _ccs_distribution_normal_data_mock_s _ccs_distribution_normal_data_mock_t;
+
+static inline ccs_result_t
+_ccs_deserialize_bin_ccs_distribution_normal_data(
+		_ccs_distribution_normal_data_mock_t  *data,
+		size_t                                 *buffer_size,
+		const char                            **buffer) {
+	CCS_VALIDATE(_ccs_deserialize_bin_ccs_distribution_common_data(
+		&data->common_data, buffer_size, buffer));
+	CCS_VALIDATE(_ccs_deserialize_bin_ccs_numeric_type(
+		&data->data_type, buffer_size, buffer));
+	CCS_VALIDATE(_ccs_deserialize_bin_ccs_scale_type(
+		&data->scale_type, buffer_size, buffer));
+	CCS_VALIDATE(_ccs_deserialize_bin_ccs_float(
+		&data->mu, buffer_size, buffer));
+	CCS_VALIDATE(_ccs_deserialize_bin_ccs_float(
+		&data->sigma, buffer_size, buffer));
+	if (data->data_type == CCS_NUM_FLOAT)
+		CCS_VALIDATE(_ccs_deserialize_bin_ccs_float(
+			&data->quantization.f, buffer_size, buffer));
+	else
+		CCS_VALIDATE(_ccs_deserialize_bin_ccs_int(
+			&data->quantization.i, buffer_size, buffer));
+	return CCS_SUCCESS;
+}
+
+static inline ccs_result_t
+_ccs_deserialize_bin_distribution_normal(
+		ccs_distribution_t  *distribution_ret,
+		uint32_t             version,
+		size_t              *buffer_size,
+		const char         **buffer) {
+	(void)version;
+	_ccs_distribution_normal_data_mock_t data;
+	CCS_VALIDATE(_ccs_deserialize_bin_ccs_distribution_normal_data(
+		&data, buffer_size, buffer));
+	CCS_VALIDATE(ccs_create_normal_distribution(
+		data.data_type,
+		data.mu,
+		data.sigma,
+		data.scale_type,
+		data.quantization,
+		distribution_ret));
+	return CCS_SUCCESS;
+}
+
 static inline ccs_result_t
 _ccs_deserialize_bin_distribution(
 		ccs_distribution_t  *distribution_ret,
@@ -80,6 +134,10 @@ _ccs_deserialize_bin_distribution(
 	switch (dtype) {
 	case CCS_UNIFORM:
 		CCS_VALIDATE(_ccs_deserialize_bin_distribution_uniform(
+			distribution_ret, version, buffer_size, buffer));
+		break;
+	case CCS_NORMAL:
+		CCS_VALIDATE(_ccs_deserialize_bin_distribution_normal(
 			distribution_ret, version, buffer_size, buffer));
 		break;
 	default:

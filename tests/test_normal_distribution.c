@@ -8,8 +8,9 @@
 
 #define NUM_SAMPLES 10000
 
-static void test_create_normal_distribution() {
-	ccs_distribution_t      distrib = NULL;
+static void compare_distribution(
+		ccs_distribution_t distrib,
+		ccs_float_t m, ccs_float_t s, ccs_numeric_t q) {
 	ccs_result_t            err = CCS_SUCCESS;
 	int32_t                 refcount;
 	ccs_object_type_t       otype;
@@ -19,15 +20,6 @@ static void test_create_normal_distribution() {
 	ccs_numeric_t           quantization;
 	ccs_float_t             mu, sigma;
 	ccs_interval_t          interval;
-
-	err = ccs_create_normal_distribution(
-		CCS_NUM_FLOAT,
-		1.0,
-		2.0,
-		CCS_LINEAR,
-		CCSF(0.0),
-		&distrib);
-	assert( err == CCS_SUCCESS );
 
 	err = ccs_object_get_type(distrib, &otype);
 	assert( err == CCS_SUCCESS );
@@ -51,14 +43,50 @@ static void test_create_normal_distribution() {
 
 	err = ccs_normal_distribution_get_parameters(distrib, &mu, &sigma, &stype, &quantization);
 	assert( err == CCS_SUCCESS );
-	assert( mu == 1.0 );
-	assert( sigma == 2.0 );
+	assert( mu == m );
+	assert( sigma == s );
 	assert( stype == CCS_LINEAR );
-	assert( quantization.f == 0.0 );
+	assert( quantization.f == q.f );
 
 	err = ccs_object_get_refcount(distrib, &refcount);
 	assert( err == CCS_SUCCESS );
 	assert( refcount == 1 );
+}
+
+static void test_create_normal_distribution() {
+	ccs_distribution_t  distrib = NULL;
+	ccs_result_t        err = CCS_SUCCESS;
+	char               *buff;
+	size_t              buff_size;
+
+	err = ccs_create_normal_distribution(
+		CCS_NUM_FLOAT,
+		1.0,
+		2.0,
+		CCS_LINEAR,
+		CCSF(0.0),
+		&distrib);
+	assert( err == CCS_SUCCESS );
+
+	compare_distribution(distrib, 1.0, 2.0, CCSF(0.0));
+
+	err = ccs_object_serialize(distrib, CCS_SERIALIZE_FORMAT_BINARY, CCS_SERIALIZE_TYPE_SIZE, &buff_size);
+	assert( err == CCS_SUCCESS );
+
+	buff = (char *)malloc(buff_size);
+	assert( buff );
+
+	err = ccs_object_serialize(distrib, CCS_SERIALIZE_FORMAT_BINARY, CCS_SERIALIZE_TYPE_MEMORY, buff_size, buff);
+	assert( err == CCS_SUCCESS );
+
+	err = ccs_release_object(distrib);
+	assert( err == CCS_SUCCESS );
+
+	err = ccs_object_deserialize((ccs_object_t*)&distrib, CCS_SERIALIZE_FORMAT_BINARY, CCS_SERIALIZE_TYPE_MEMORY, buff_size, buff);
+	assert( err == CCS_SUCCESS );
+	free(buff);
+
+	compare_distribution(distrib, 1.0, 2.0, CCSF(0.0));
 
 	err = ccs_release_object(distrib);
 	assert( err == CCS_SUCCESS );
