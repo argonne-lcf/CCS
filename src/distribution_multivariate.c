@@ -24,6 +24,93 @@ _ccs_distribution_multivariate_del(ccs_object_t o) {
 	return CCS_SUCCESS;
 }
 
+static inline ccs_result_t
+_ccs_serialize_bin_size_ccs_distribution_multivariate_data(
+		_ccs_distribution_multivariate_data_t *data,
+		size_t *cum_size) {
+	*cum_size += _ccs_serialize_bin_size_ccs_distribution_common_data(&data->common_data);
+	*cum_size += _ccs_serialize_bin_size_uint64(data->num_distributions);
+	for (size_t i = 0; i < data->num_distributions; i++)
+		CCS_VALIDATE(data->distributions[i]->obj.ops->serialize_size(
+			data->distributions[i], CCS_SERIALIZE_FORMAT_BINARY, cum_size));
+	return CCS_SUCCESS;
+}
+
+static inline ccs_result_t
+_ccs_serialize_bin_ccs_distribution_multivariate_data(
+		_ccs_distribution_multivariate_data_t  *data,
+		size_t                            *buffer_size,
+		char                             **buffer) {
+	CCS_VALIDATE(_ccs_serialize_bin_ccs_distribution_common_data(
+		&data->common_data, buffer_size, buffer));
+	CCS_VALIDATE(_ccs_serialize_bin_uint64(
+		data->num_distributions, buffer_size, buffer));
+	for (size_t i = 0; i < data->num_distributions; i++)
+		CCS_VALIDATE(data->distributions[i]->obj.ops->serialize(
+			data->distributions[i], CCS_SERIALIZE_FORMAT_BINARY, buffer_size, buffer));
+	return CCS_SUCCESS;
+}
+
+static inline ccs_result_t
+_ccs_serialize_bin_size_ccs_distribution_multivariate(
+		ccs_distribution_t distribution,
+		size_t *cum_size) {
+	_ccs_distribution_multivariate_data_t *data =
+		(_ccs_distribution_multivariate_data_t *)(distribution->data);
+	*cum_size += _ccs_serialize_bin_size_ccs_object_internal(
+		(_ccs_object_internal_t *)distribution);
+	CCS_VALIDATE(_ccs_serialize_bin_size_ccs_distribution_multivariate_data(
+		data, cum_size));
+	return CCS_SUCCESS;
+}
+
+static inline ccs_result_t
+_ccs_serialize_bin_ccs_distribution_multivariate(
+		ccs_distribution_t   distribution,
+		size_t              *buffer_size,
+		char               **buffer) {
+	_ccs_distribution_multivariate_data_t *data =
+		(_ccs_distribution_multivariate_data_t *)(distribution->data);
+	CCS_VALIDATE(_ccs_serialize_bin_ccs_object_internal(
+		(_ccs_object_internal_t *)distribution, buffer_size, buffer));
+	CCS_VALIDATE(_ccs_serialize_bin_ccs_distribution_multivariate_data(
+		data, buffer_size, buffer));
+	return CCS_SUCCESS;
+}
+
+static ccs_result_t
+_ccs_distribution_multivariate_serialize_size(
+		ccs_object_t            object,
+		ccs_serialize_format_t  format,
+		size_t                 *cum_size) {
+	switch(format) {
+	case CCS_SERIALIZE_FORMAT_BINARY:
+		CCS_VALIDATE(_ccs_serialize_bin_size_ccs_distribution_multivariate(
+			(ccs_distribution_t)object, cum_size));
+		break;
+	default:
+		return -CCS_INVALID_VALUE;
+	}
+	return CCS_SUCCESS;
+}
+
+static ccs_result_t
+_ccs_distribution_multivariate_serialize(
+		ccs_object_t             object,
+		ccs_serialize_format_t   format,
+		size_t                  *buffer_size,
+		char                   **buffer) {
+	switch(format) {
+	case CCS_SERIALIZE_FORMAT_BINARY:
+		CCS_VALIDATE(_ccs_serialize_bin_ccs_distribution_multivariate(
+		    (ccs_distribution_t)object, buffer_size, buffer));
+		break;
+	default:
+		return -CCS_INVALID_VALUE;
+	}
+	return CCS_SUCCESS;
+}
+
 static ccs_result_t
 _ccs_distribution_multivariate_get_bounds(_ccs_distribution_data_t *data,
                                           ccs_interval_t           *interval_ret);
@@ -48,7 +135,9 @@ _ccs_distribution_multivariate_soa_samples(_ccs_distribution_data_t  *data,
                                            ccs_numeric_t            **values);
 
 static _ccs_distribution_ops_t _ccs_distribution_multivariate_ops = {
-	{ &_ccs_distribution_multivariate_del, NULL, NULL },
+	{ &_ccs_distribution_multivariate_del,
+	  &_ccs_distribution_multivariate_serialize_size,
+	  &_ccs_distribution_multivariate_serialize },
 	&_ccs_distribution_multivariate_samples,
 	&_ccs_distribution_multivariate_get_bounds,
 	&_ccs_distribution_multivariate_strided_samples,

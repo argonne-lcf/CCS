@@ -129,14 +129,16 @@ void test_create_mixture_distribution() {
 	err = ccs_release_object(distrib);
 	assert( err == CCS_SUCCESS );
 
+	err = ccs_object_deserialize((ccs_object_t*)&distrib, CCS_SERIALIZE_FORMAT_BINARY, CCS_SERIALIZE_TYPE_MEMORY, buff_size, buff);
+	assert( err == CCS_SUCCESS );
+	free(buff);
+
+	compare_distribution(distrib, num_distribs, distribs, weights);
+
 	for (size_t i = 0; i < num_distribs; i++) {
 		err = ccs_release_object(distribs[i]);
 		assert( err == CCS_SUCCESS );
 	}
-
-	err = ccs_object_deserialize((ccs_object_t*)&distrib, CCS_SERIALIZE_FORMAT_BINARY, CCS_SERIALIZE_TYPE_MEMORY, buff_size, buff);
-	assert( err == CCS_SUCCESS );
-	free(buff);
 
 	err = ccs_release_object(distrib);
 	assert( err == CCS_SUCCESS );
