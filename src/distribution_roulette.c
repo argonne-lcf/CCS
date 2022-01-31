@@ -12,8 +12,90 @@ struct _ccs_distribution_roulette_data_s {
 typedef struct _ccs_distribution_roulette_data_s _ccs_distribution_roulette_data_t;
 
 static ccs_result_t
-_ccs_distribution_del(ccs_object_t o) {
+_ccs_distribution_roulette_del(ccs_object_t o) {
 	(void)o;
+	return CCS_SUCCESS;
+}
+
+static inline size_t
+_ccs_serialize_bin_size_ccs_distribution_roulette_data(
+		_ccs_distribution_roulette_data_t *data) {
+	size_t sz = _ccs_serialize_bin_size_ccs_distribution_common_data(&data->common_data);
+	sz += _ccs_serialize_bin_size_uint64(data->num_areas);
+	for (size_t i = 0; i < data->num_areas; i++)
+		sz += _ccs_serialize_bin_size_ccs_float(data->areas[i+1]-data->areas[i]);
+	return sz;
+}
+
+static inline ccs_result_t
+_ccs_serialize_bin_ccs_distribution_roulette_data(
+		_ccs_distribution_roulette_data_t  *data,
+		size_t                             *buffer_size,
+		char                              **buffer) {
+	CCS_VALIDATE(_ccs_serialize_bin_ccs_distribution_common_data(
+		&data->common_data, buffer_size, buffer));
+	CCS_VALIDATE(_ccs_serialize_bin_uint64(
+		data->num_areas, buffer_size, buffer));
+	for (size_t i = 0; i < data->num_areas; i++)
+		CCS_VALIDATE(_ccs_serialize_bin_ccs_float(
+			data->areas[i+1]-data->areas[i], buffer_size, buffer));
+	return CCS_SUCCESS;
+}
+
+static inline size_t
+_ccs_serialize_bin_size_ccs_distribution_roulette(
+		ccs_distribution_t distribution) {
+	_ccs_distribution_roulette_data_t *data =
+		(_ccs_distribution_roulette_data_t *)(distribution->data);
+	return	_ccs_serialize_bin_size_ccs_object_internal(
+			(_ccs_object_internal_t *)distribution) +
+	        _ccs_serialize_bin_size_ccs_distribution_roulette_data(data);
+}
+
+static inline ccs_result_t
+_ccs_serialize_bin_ccs_distribution_roulette(
+		ccs_distribution_t   distribution,
+		size_t              *buffer_size,
+		char               **buffer) {
+	_ccs_distribution_roulette_data_t *data =
+		(_ccs_distribution_roulette_data_t *)(distribution->data);
+	CCS_VALIDATE(_ccs_serialize_bin_ccs_object_internal(
+		(_ccs_object_internal_t *)distribution, buffer_size, buffer));
+	CCS_VALIDATE(_ccs_serialize_bin_ccs_distribution_roulette_data(
+		data, buffer_size, buffer));
+	return CCS_SUCCESS;
+}
+
+static ccs_result_t
+_ccs_distribution_roulette_serialize_size(
+		ccs_object_t            object,
+		ccs_serialize_format_t  format,
+		size_t                 *cum_size) {
+	switch(format) {
+	case CCS_SERIALIZE_FORMAT_BINARY:
+		*cum_size += _ccs_serialize_bin_size_ccs_distribution_roulette(
+			(ccs_distribution_t)object);
+		break;
+	default:
+		return -CCS_INVALID_VALUE;
+	}
+	return CCS_SUCCESS;
+}
+
+static ccs_result_t
+_ccs_distribution_roulette_serialize(
+		ccs_object_t             object,
+		ccs_serialize_format_t   format,
+		size_t                  *buffer_size,
+		char                   **buffer) {
+	switch(format) {
+	case CCS_SERIALIZE_FORMAT_BINARY:
+		CCS_VALIDATE(_ccs_serialize_bin_ccs_distribution_roulette(
+		    (ccs_distribution_t)object, buffer_size, buffer));
+		break;
+	default:
+		return -CCS_INVALID_VALUE;
+	}
 	return CCS_SUCCESS;
 }
 
@@ -41,7 +123,9 @@ _ccs_distribution_roulette_soa_samples(_ccs_distribution_data_t  *data,
                                        ccs_numeric_t            **values);
 
 static _ccs_distribution_ops_t _ccs_distribution_roulette_ops = {
-	{ &_ccs_distribution_del, NULL, NULL },
+	{ &_ccs_distribution_roulette_del,
+	  &_ccs_distribution_roulette_serialize_size,
+	  &_ccs_distribution_roulette_serialize },
 	&_ccs_distribution_roulette_samples,
 	&_ccs_distribution_roulette_get_bounds,
 	&_ccs_distribution_roulette_strided_samples,

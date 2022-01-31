@@ -116,6 +116,50 @@ _ccs_deserialize_bin_distribution_normal(
 	return CCS_SUCCESS;
 }
 
+struct _ccs_distribution_roulette_data_mock_s {
+	_ccs_distribution_common_data_t  common_data;
+	size_t                           num_areas;
+	ccs_float_t                     *areas;
+};
+typedef struct _ccs_distribution_roulette_data_mock_s _ccs_distribution_roulette_data_mock_t;
+
+static inline ccs_result_t
+_ccs_deserialize_bin_ccs_distribution_roulette_data(
+		_ccs_distribution_roulette_data_mock_t  *data,
+		size_t                                  *buffer_size,
+		const char                             **buffer) {
+	CCS_VALIDATE(_ccs_deserialize_bin_ccs_distribution_common_data(
+		&data->common_data, buffer_size, buffer));
+	uint64_t num_areas;
+	CCS_VALIDATE(_ccs_deserialize_bin_uint64(
+		&num_areas, buffer_size, buffer));
+	data->num_areas = num_areas;
+	data->areas = (ccs_float_t *)malloc(num_areas*sizeof(ccs_float_t));
+	if (!data->areas)
+		return -CCS_OUT_OF_MEMORY;
+	for (size_t i = 0; i < data->num_areas; i++)
+		CCS_VALIDATE(_ccs_deserialize_bin_ccs_float(
+			data->areas + i, buffer_size, buffer));
+	return CCS_SUCCESS;
+}
+
+static inline ccs_result_t
+_ccs_deserialize_bin_distribution_roulette(
+		ccs_distribution_t  *distribution_ret,
+		uint32_t             version,
+		size_t              *buffer_size,
+		const char         **buffer) {
+	(void)version;
+	_ccs_distribution_roulette_data_mock_t data;
+	CCS_VALIDATE(_ccs_deserialize_bin_ccs_distribution_roulette_data(
+		&data, buffer_size, buffer));
+	CCS_VALIDATE(ccs_create_roulette_distribution(
+		data.num_areas,
+		data.areas,
+		distribution_ret));
+	return CCS_SUCCESS;
+}
+
 static inline ccs_result_t
 _ccs_deserialize_bin_distribution(
 		ccs_distribution_t  *distribution_ret,
@@ -140,6 +184,10 @@ _ccs_deserialize_bin_distribution(
 		CCS_VALIDATE(_ccs_deserialize_bin_distribution_normal(
 			distribution_ret, version, buffer_size, buffer));
 		break;
+	case CCS_ROULETTE:
+		CCS_VALIDATE(_ccs_deserialize_bin_distribution_roulette(
+			distribution_ret, version, buffer_size, buffer));
+		break;
 	default:
 		return -CCS_UNSUPPORTED_OPERATION;
 	}
@@ -150,7 +198,7 @@ _ccs_deserialize_bin_distribution(
 
 static ccs_result_t
 _ccs_distribution_deserialize(
-		ccs_distribution_t    *distribution_ret,
+		ccs_distribution_t      *distribution_ret,
 		ccs_serialize_format_t   format,
 		uint32_t                 version,
 		size_t                  *buffer_size,
