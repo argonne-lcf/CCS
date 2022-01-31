@@ -67,11 +67,12 @@ _ccs_deserialize_bin_hyperparameter_categorical(
 		const char             **buffer) {
 	(void)version;
 	ccs_result_t res = CCS_SUCCESS;
-	_ccs_hyperparameter_categorical_data_mock_t data;
-	CCS_VALIDATE(_ccs_deserialize_bin_ccs_hyperparameter_categorical_data(
-		&data, buffer_size, buffer));
-	size_t default_value_index;
 	int found = 0;
+	_ccs_hyperparameter_categorical_data_mock_t data;
+	data.possible_values = NULL;
+	CCS_VALIDATE_ERR_GOTO(res, _ccs_deserialize_bin_ccs_hyperparameter_categorical_data(
+		&data, buffer_size, buffer), end);
+	size_t default_value_index;
 	for (size_t i = 0; i < data.num_possible_values; i++)
 		if (!ccs_datum_cmp(data.common_data.default_value, data.possible_values[i])) {
 			found = 1;
@@ -115,7 +116,8 @@ _ccs_deserialize_bin_hyperparameter_categorical(
 		goto end;
 	}
 end:
-	free(data.possible_values);
+	if (data.possible_values)
+		free(data.possible_values);
 	return res;
 }
 

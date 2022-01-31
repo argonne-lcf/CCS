@@ -9,48 +9,19 @@
 #define NUM_DISTRIBS 2
 #define NUM_SAMPLES 10000
 
-void test_create_mixture_distribution() {
-	ccs_distribution_t      distrib = NULL, distribs[NUM_DISTRIBS], distribs_ret[NUM_DISTRIBS];
+static void compare_distribution(
+		ccs_distribution_t distrib,
+		size_t num_distribs, ccs_distribution_t distribs[], ccs_float_t weights[]) {
 	ccs_result_t            err = CCS_SUCCESS;
+	ccs_distribution_t      distribs_ret[NUM_DISTRIBS];
 	int32_t                 refcount;
 	ccs_object_type_t       otype;
 	ccs_distribution_type_t dtype;
 	ccs_numeric_type_t      data_type;
 	ccs_interval_t          interval;
-	const size_t            num_distribs = NUM_DISTRIBS;
-	ccs_float_t             weights[NUM_DISTRIBS];
 	size_t                  num_distribs_ret;
 	ccs_float_t             weights_ret[NUM_DISTRIBS];
 	const ccs_float_t       epsilon = 1e-15;
-
-	for(size_t i = 0; i < num_distribs; i++) {
-		weights[i] = (double)(i+1);
-	}
-
-	err = ccs_create_uniform_distribution(
-		CCS_NUM_FLOAT,
-		CCSF(-10.0),
-		CCSF(0.0),
-		CCS_LINEAR,
-		CCSF(0.0),
-		distribs);
-	assert( err == CCS_SUCCESS );
-
-	err = ccs_create_uniform_distribution(
-		CCS_NUM_FLOAT,
-		CCSF(0.0),
-		CCSF(10.0),
-		CCS_LINEAR,
-		CCSF(0.0),
-		distribs + 1);
-	assert( err == CCS_SUCCESS );
-
-	err = ccs_create_mixture_distribution(
-		num_distribs,
-		distribs,
-		weights,
-		&distrib);
-	assert( err == CCS_SUCCESS );
 
 	err = ccs_object_get_type(distrib, &otype);
 	assert( err == CCS_SUCCESS );
@@ -79,8 +50,19 @@ void test_create_mixture_distribution() {
 	err = ccs_mixture_distribution_get_distributions(distrib, num_distribs, distribs_ret, &num_distribs_ret);
 	assert( err == CCS_SUCCESS );
 	assert( num_distribs_ret == num_distribs );
-	for (size_t i = 0; i < num_distribs; i++)
-		assert( distribs_ret[i] == distribs[i] );
+	for (size_t i = 0; i < num_distribs; i++) {
+		ccs_interval_t interval_ref;
+		err = ccs_distribution_get_bounds(distribs_ret[i], &interval);
+		assert( err == CCS_SUCCESS );
+		err = ccs_distribution_get_bounds(distribs[i], &interval_ref);
+		assert( err == CCS_SUCCESS );
+
+		assert( interval.type == interval.type );
+		assert( interval.lower.f == interval_ref.lower.f );
+		assert( interval.lower_included == interval_ref.lower_included );
+		assert( interval.upper.f == interval_ref.upper.f );
+		assert( interval.upper_included == interval_ref.upper_included );
+	}
 
 	err = ccs_mixture_distribution_get_weights(distrib, num_distribs, weights_ret, &num_distribs_ret);
 	assert( err == CCS_SUCCESS );
@@ -94,11 +76,68 @@ void test_create_mixture_distribution() {
 	err = ccs_object_get_refcount(distrib, &refcount);
 	assert( err == CCS_SUCCESS );
 	assert( refcount == 1 );
+}
+
+void test_create_mixture_distribution() {
+	ccs_distribution_t  distrib = NULL, distribs[NUM_DISTRIBS];
+	ccs_result_t        err = CCS_SUCCESS;
+	const size_t        num_distribs = NUM_DISTRIBS;
+	ccs_float_t         weights[NUM_DISTRIBS];
+	char               *buff;
+	size_t              buff_size;
+
+	for(size_t i = 0; i < num_distribs; i++) {
+		weights[i] = (ccs_float_t)(i+1);
+	}
+
+	err = ccs_create_uniform_distribution(
+		CCS_NUM_FLOAT,
+		CCSF(-10.0),
+		CCSF(0.0),
+		CCS_LINEAR,
+		CCSF(0.0),
+		distribs);
+	assert( err == CCS_SUCCESS );
+
+	err = ccs_create_uniform_distribution(
+		CCS_NUM_FLOAT,
+		CCSF(0.0),
+		CCSF(10.0),
+		CCS_LINEAR,
+		CCSF(0.0),
+		distribs + 1);
+	assert( err == CCS_SUCCESS );
+
+	err = ccs_create_mixture_distribution(
+		num_distribs,
+		distribs,
+		weights,
+		&distrib);
+	assert( err == CCS_SUCCESS );
+
+	compare_distribution(distrib, num_distribs, distribs, weights);
+
+	err = ccs_object_serialize(distrib, CCS_SERIALIZE_FORMAT_BINARY, CCS_SERIALIZE_TYPE_SIZE, &buff_size);
+	assert( err == CCS_SUCCESS );
+
+	buff = (char *)malloc(buff_size);
+	assert( buff );
+
+	err = ccs_object_serialize(distrib, CCS_SERIALIZE_FORMAT_BINARY, CCS_SERIALIZE_TYPE_MEMORY, buff_size, buff);
+	assert( err == CCS_SUCCESS );
+
+	err = ccs_release_object(distrib);
+	assert( err == CCS_SUCCESS );
 
 	for (size_t i = 0; i < num_distribs; i++) {
 		err = ccs_release_object(distribs[i]);
 		assert( err == CCS_SUCCESS );
 	}
+
+	err = ccs_object_deserialize((ccs_object_t*)&distrib, CCS_SERIALIZE_FORMAT_BINARY, CCS_SERIALIZE_TYPE_MEMORY, buff_size, buff);
+	assert( err == CCS_SUCCESS );
+	free(buff);
+
 	err = ccs_release_object(distrib);
 	assert( err == CCS_SUCCESS );
 }

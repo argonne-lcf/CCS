@@ -71,7 +71,7 @@ void test_create_roulette_distribution() {
 	size_t              buff_size;
 
 	for(size_t i = 0; i < num_areas; i++) {
-		areas[i] = (double)(i+1);
+		areas[i] = (ccs_float_t)(i+1);
 	}
 
 	err = ccs_create_roulette_distribution(
