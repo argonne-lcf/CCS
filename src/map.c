@@ -98,6 +98,7 @@ ccs_map_set(ccs_map_t   map,
 	_ccs_map_data_t *d = map->data;
 	size_t sz = sizeof(_ccs_map_datum_t);
 	size_t sz1 = 0;
+	uintptr_t mem = NULL;
 	size_t sz2 = 0;
 	_ccs_map_datum_t *old_entry = NULL;
 	HASH_FIND(hh, d->map, &key, sizeof(ccs_datum_t), old_entry);
@@ -108,7 +109,7 @@ ccs_map_set(ccs_map_t   map,
 	CCS_VALIDATE_ERR_GOTO(res, _ccs_map_check_datum(key, &sz, &sz1), err);
 	CCS_VALIDATE_ERR_GOTO(res, _ccs_map_check_datum(value, &sz, &sz2), err_o1);
 
-	uintptr_t mem = (uintptr_t)calloc(1, sz);
+	mem = (uintptr_t)calloc(1, sz);
 	if (!mem) {
 		res = -CCS_OUT_OF_MEMORY;
 		goto err_o2;
