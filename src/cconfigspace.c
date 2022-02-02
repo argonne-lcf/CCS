@@ -241,7 +241,8 @@ _ccs_object_deserialize_options(ccs_serialize_format_t             format,
                                 va_list                            args,
                                 _ccs_object_deserialize_options_t *opts) {
 	(void)format;
-	ccs_deserialize_option_t opt = va_arg(args, ccs_deserialize_option_t);
+	ccs_deserialize_option_t opt =
+		(ccs_deserialize_option_t)va_arg(args, int);
 	while (opt != CCS_DESERIALIZE_OPTION_END) {
 		switch (opt) {
 		case CCS_DESERIALIZE_OPTION_HANDLE_MAP:
@@ -252,6 +253,7 @@ _ccs_object_deserialize_options(ccs_serialize_format_t             format,
 		default:
 			return CCS_INVALID_VALUE;
 		}
+		opt = (ccs_deserialize_option_t)va_arg(args, int);
 	}
 	return CCS_SUCCESS;
 }
