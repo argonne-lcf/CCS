@@ -98,7 +98,7 @@ ccs_map_set(ccs_map_t   map,
 	_ccs_map_data_t *d = map->data;
 	size_t sz = sizeof(_ccs_map_datum_t);
 	size_t sz1 = 0;
-	uintptr_t mem = NULL;
+	uintptr_t mem = 0;
 	size_t sz2 = 0;
 	_ccs_map_datum_t *old_entry = NULL;
 	HASH_FIND(hh, d->map, &key, sizeof(ccs_datum_t), old_entry);
