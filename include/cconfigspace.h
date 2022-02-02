@@ -21,6 +21,7 @@
 #include "cconfigspace/features_evaluation.h"
 #include "cconfigspace/tuner.h"
 #include "cconfigspace/features_tuner.h"
+#include "cconfigspace/map.h"
 
 /**
  * @file cconfigspace.h

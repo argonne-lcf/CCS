@@ -70,11 +70,11 @@ extern const ccs_version_t ccs_version;
 /**
  * A macro defining the maximum value of a ccs_int_t.
  */
-#define CCS_INT_MAX LLONG_MAX
+#define CCS_INT_MAX INT64_MAX
 /**
  * A macro defining the minimum value of a ccs_int_t.
  */
-#define CCS_INT_MIN LLONG_MIN
+#define CCS_INT_MIN INT64_MIN
 /**
  * A macro defining the (positive) infinity value of a ccs_float_t.
  */
@@ -140,6 +140,10 @@ typedef struct _ccs_tuner_s               *ccs_tuner_t;
  * An opaque type defining a CCS features tuner.
  */
 typedef struct _ccs_features_tuner_s      *ccs_features_tuner_t;
+/**
+ * An opaque type defining a CCS key-value store.
+ */
+typedef struct _ccs_map_s                 *ccs_map_t;
 
 /**
  * The different possible return codes of a CCS function.
@@ -229,6 +233,7 @@ enum ccs_object_type_e {
 	CCS_FEATURES,            /*!< A features */
 	CCS_FEATURES_EVALUATION, /*!< An evaluation of a configuration given specific features */
 	CCS_FEATURES_TUNER,      /*!< A features aware tuner */
+	CCS_MAP,                 /*!< A key value store */
 	CCS_OBJECT_TYPE_MAX,     /*!< Guard */
 	/** Try forcing 32 bits value for bindings */
 	CCS_OBJECT_TYPE_FORCE_32BIT = INT32_MAX
@@ -656,6 +661,7 @@ ccs_object_get_user_data(ccs_object_t   object,
 
 enum ccs_serialize_format_e {
 	CCS_SERIALIZE_FORMAT_BINARY,
+	CCS_SERIALIZE_FORMAT_MAX,
 	CCS_SERIALIZE_FORMAT_FORCE_32BIT = INT32_MAX
 };
 typedef enum ccs_serialize_format_e ccs_serialize_format_t;
@@ -665,6 +671,7 @@ enum ccs_serialize_type_e {
 	CCS_SERIALIZE_TYPE_MEMORY,
 /*	CCS_SERIALIZE_TYPE_FILE,
 	CCS_SERIALIZE_TYPE_FILE_DESCRIPTOR,*/
+	CCS_SERIALIZE_TYPE_MAX,
 	CCS_SERIALIZE_TYPE_FORCE_32BIT = INT32_MAX
 };
 typedef enum ccs_serialize_type_e ccs_serialize_type_t;

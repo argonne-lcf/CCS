@@ -60,6 +60,8 @@ libcconfigspace_la_SOURCES = \
 	features_tuner.c \
 	features_tuner_internal.h \
 	features_tuner_random.c \
-	features_tuner_user_defined.c
+	features_tuner_user_defined.c \
+	map_internal.h \
+	map.c
 
 @VALGRIND_CHECK_RULES@

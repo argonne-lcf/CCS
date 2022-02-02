@@ -102,10 +102,10 @@ _ccs_hyperparameter_string_serialize(
 
 static ccs_result_t
 _ccs_hyperparameter_string_check_values(_ccs_hyperparameter_data_t *data,
-                                        size_t                num_values,
-                                        const ccs_datum_t    *values,
-                                        ccs_datum_t          *values_ret,
-                                        ccs_bool_t           *results) {
+                                        size_t                      num_values,
+                                        const ccs_datum_t          *values,
+                                        ccs_datum_t                *values_ret,
+                                        ccs_bool_t                 *results) {
 	_ccs_hyperparameter_string_data_t *d =
 	    (_ccs_hyperparameter_string_data_t *)data;
 	for(size_t i = 0; i < num_values; i++)
