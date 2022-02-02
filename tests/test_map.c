@@ -101,7 +101,7 @@ void test_map() {
 	err = ccs_map_get_keys(map, 0, NULL, &d_count);
 	assert( err == CCS_SUCCESS );
 	assert( d_count == 5 );
-	keys = calloc( d_count, sizeof(ccs_datum_t));
+	keys = (ccs_datum_t *)calloc( d_count, sizeof(ccs_datum_t));
 	assert( keys );
 	err = ccs_map_get_keys(map, d_count, keys, NULL);
 	assert( err == CCS_SUCCESS );
@@ -109,7 +109,7 @@ void test_map() {
 	err = ccs_map_get_values(map, 0, NULL, &d_count);
 	assert( err == CCS_SUCCESS );
 	assert( d_count == 5 );
-	values = calloc( d_count, sizeof(ccs_datum_t));
+	values = (ccs_datum_t *)calloc( d_count, sizeof(ccs_datum_t));
 	assert( values );
 	err = ccs_map_get_values(map, d_count, values, NULL);
 	assert( err == CCS_SUCCESS );
