@@ -237,14 +237,37 @@ ccs_object_serialize(ccs_object_t           object,
 #include "hyperparameter_deserialize.h"
 
 static inline ccs_result_t
+_ccs_object_deserialize_options(ccs_serialize_format_t             format,
+                                va_list                            args,
+                                _ccs_object_deserialize_options_t *opts) {
+	(void)format;
+	ccs_deserialize_option_t opt = va_arg(args, ccs_deserialize_option_t);
+	while (opt != CCS_DESERIALIZE_OPTION_END) {
+		switch (opt) {
+		case CCS_DESERIALIZE_OPTION_HANDLE_MAP:
+			opts->handle_map = va_arg(args, ccs_map_t);
+			CCS_CHECK_OBJ(opts->handle_map, CCS_MAP);
+			CCS_CHECK_PTR(opts->handle_map);
+			break;
+		default:
+			return CCS_INVALID_VALUE;
+		}
+	}
+	return CCS_SUCCESS;
+}
+
+static inline ccs_result_t
 _ccs_object_deserialize(ccs_object_t            *object_ret,
                         ccs_serialize_format_t   format,
                         size_t                  *buffer_size,
-                        const char             **buffer) {
+                        const char             **buffer,
+                        va_list args) {
 	uint32_t version;
+	_ccs_object_deserialize_options_t opts = { NULL };
+	CCS_VALIDATE(_ccs_object_deserialize_options(format, args, &opts));
 	CCS_VALIDATE(_ccs_deserialize_header(
 		format, buffer_size, buffer, &version));
-	switch(format) {
+	switch (format) {
 	case CCS_SERIALIZE_FORMAT_BINARY:
 	{
 		ccs_object_type_t otype;
@@ -254,17 +277,17 @@ _ccs_object_deserialize(ccs_object_t            *object_ret,
 		case CCS_RNG:
 			CCS_VALIDATE(_ccs_rng_deserialize(
 				(ccs_rng_t *)object_ret,
-				format, version, buffer_size, buffer));
+				format, version, buffer_size, buffer, &opts));
 			break;
 		case CCS_DISTRIBUTION:
 			CCS_VALIDATE(_ccs_distribution_deserialize(
 				(ccs_distribution_t *)object_ret,
-				format, version, buffer_size, buffer));
+				format, version, buffer_size, buffer, &opts));
 			break;
 		case CCS_HYPERPARAMETER:
 			CCS_VALIDATE(_ccs_hyperparameter_deserialize(
 				(ccs_hyperparameter_t *)object_ret,
-				format, version, buffer_size, buffer));
+				format, version, buffer_size, buffer, &opts));
 			break;
 		default:
 			return -CCS_UNSUPPORTED_OPERATION;
@@ -277,11 +300,13 @@ _ccs_object_deserialize(ccs_object_t            *object_ret,
 	return CCS_SUCCESS;
 }
 
+
 ccs_result_t
 ccs_object_deserialize(ccs_object_t           *object_ret,
                        ccs_serialize_format_t  format,
                        ccs_serialize_type_t    type,
                        ...) {
+	ccs_result_t res = CCS_SUCCESS;
 	va_list args;
 	const char *buffer = NULL;
 	size_t buffer_size = 0;
@@ -289,20 +314,25 @@ ccs_object_deserialize(ccs_object_t           *object_ret,
 	if (!object_ret)
 		return -CCS_INVALID_VALUE;
 
-	switch(type) {
+	switch (type) {
 	case CCS_SERIALIZE_TYPE_MEMORY:
 		va_start(args, type);
 		buffer_size = va_arg(args, size_t);
 		buffer = va_arg(args, const char *);
+		if(CCS_UNLIKELY(!buffer)) {
+			res = -CCS_INVALID_VALUE;
+			goto end_memory;
+		}
+		CCS_VALIDATE_ERR_GOTO(res, _ccs_object_deserialize(
+			object_ret, format, &buffer_size, &buffer, args),
+			end_memory);
+end_memory:
 		va_end(args);
-		CCS_CHECK_PTR(buffer);
-		CCS_VALIDATE(_ccs_object_deserialize(
-			object_ret, format, &buffer_size, &buffer));
 		break;
 	default:
 		return -CCS_INVALID_VALUE;
 	}
 
-	return CCS_SUCCESS;
+	return res;
 }
 

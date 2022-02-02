@@ -7,14 +7,17 @@ static const gsl_rng_type **_ccs_gsl_rng_types = NULL;
 
 static inline ccs_result_t
 _ccs_deserialize_bin_rng(
-		ccs_rng_t   *rng_ret,
-		uint32_t     version,
-		size_t      *buffer_size,
-		const char **buffer) {
+		ccs_rng_t                          *rng_ret,
+		uint32_t                            version,
+		size_t                             *buffer_size,
+		const char                        **buffer,
+		_ccs_object_deserialize_options_t  *opts) {
 	(void)version;
+	ccs_result_t res;
 	_ccs_object_internal_t obj;
+	ccs_object_t handle;
 	CCS_VALIDATE(_ccs_deserialize_bin_ccs_object_internal(
-		&obj, buffer_size, buffer));
+		&obj, buffer_size, buffer, &handle));
 	if (CCS_UNLIKELY(obj.type != CCS_RNG))
 		return -CCS_INVALID_TYPE;
 
@@ -42,22 +45,34 @@ _ccs_deserialize_bin_rng(
 	if (b.sz == gsl_rng_size((*rng_ret)->data->rng) &&
 	    little_endian == ccs_is_little_endian())
 		memcpy(gsl_rng_state((*rng_ret)->data->rng), b.blob, b.sz);
-	ccs_object_set_user_data(*rng_ret, obj.user_data);
+	CCS_VALIDATE_ERR_GOTO(res,
+		ccs_object_set_user_data(*rng_ret, obj.user_data),
+		err_rng);
+	if (opts->handle_map)
+		CCS_VALIDATE_ERR_GOTO(res,
+			_ccs_object_handle_check_add(
+				opts->handle_map, handle,
+				(ccs_object_t)*rng_ret),
+			err_rng);
 
 	return CCS_SUCCESS;
+err_rng:
+	ccs_release_object(*rng_ret);
+	return res;
 }
 
 static ccs_result_t
 _ccs_rng_deserialize(
-		ccs_rng_t               *rng_ret,
-		ccs_serialize_format_t   format,
-		uint32_t                 version,
-		size_t                  *buffer_size,
-		const char             **buffer) {
+		ccs_rng_t                          *rng_ret,
+		ccs_serialize_format_t              format,
+		uint32_t                            version,
+		size_t                             *buffer_size,
+		const char                        **buffer,
+		_ccs_object_deserialize_options_t  *opts) {
 	switch(format) {
 	case CCS_SERIALIZE_FORMAT_BINARY:
 		CCS_VALIDATE(_ccs_deserialize_bin_rng(
-			rng_ret, version, buffer_size, buffer));
+			rng_ret, version, buffer_size, buffer, opts));
 		break;
 	default:
 		return -CCS_INVALID_VALUE;

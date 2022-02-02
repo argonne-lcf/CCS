@@ -94,7 +94,7 @@ void test_create_roulette_distribution() {
 	err = ccs_release_object(distrib);
 	assert( err == CCS_SUCCESS );
 
-	err = ccs_object_deserialize((ccs_object_t*)&distrib, CCS_SERIALIZE_FORMAT_BINARY, CCS_SERIALIZE_TYPE_MEMORY, buff_size, buff);
+	err = ccs_object_deserialize((ccs_object_t*)&distrib, CCS_SERIALIZE_FORMAT_BINARY, CCS_SERIALIZE_TYPE_MEMORY, buff_size, buff, CCS_DESERIALIZE_OPTION_END);
 	assert( err == CCS_SUCCESS );
 	free(buff);
 

@@ -200,6 +200,8 @@ enum ccs_error_e {
 	CCS_INVALID_FILE_PATH,
 	/** The provided buffer or file is too short */
 	CCS_NOT_ENOUGH_DATA,
+	/** The handle was a duplicate */
+	CCS_HANDLE_DUPLICATE,
 	/** Guard */
 	CCS_ERROR_MAX,
 	/** Try forcing 32 bits value for bindings */
@@ -675,6 +677,15 @@ enum ccs_serialize_type_e {
 	CCS_SERIALIZE_TYPE_FORCE_32BIT = INT32_MAX
 };
 typedef enum ccs_serialize_type_e ccs_serialize_type_t;
+
+enum ccs_deserialize_option_e {
+	/** The next parameter is a ccs_handle_map_t object */
+	CCS_DESERIALIZE_OPTION_END = 0,
+	CCS_DESERIALIZE_OPTION_HANDLE_MAP,
+	CCS_DESERIALIZE_OPTION_MAX,
+	CCS_DESERIALIZE_OPTION_FORCE_32BIT = INT32_MAX
+};
+typedef enum ccs_deserialize_option_e ccs_deserialize_option_t;
 
 extern ccs_result_t
 ccs_object_serialize(ccs_object_t           object,

@@ -152,13 +152,16 @@ _ccs_deserialize_bin_hyperparameter_string(
 
 static inline ccs_result_t
 _ccs_deserialize_bin_hyperparameter(
-		ccs_hyperparameter_t    *hyperparameter_ret,
-		uint32_t                 version,
-		size_t                  *buffer_size,
-		const char             **buffer) {
+		ccs_hyperparameter_t               *hyperparameter_ret,
+		uint32_t                            version,
+		size_t                             *buffer_size,
+		const char                        **buffer,
+		_ccs_object_deserialize_options_t  *opts) {
 	_ccs_object_internal_t obj;
+	ccs_object_t handle;
+	ccs_result_t res;
 	CCS_VALIDATE(_ccs_deserialize_bin_ccs_object_internal(
-		&obj, buffer_size, buffer));
+		&obj, buffer_size, buffer, &handle));
 	if (CCS_UNLIKELY(obj.type != CCS_HYPERPARAMETER))
 		return -CCS_INVALID_TYPE;
 
@@ -183,22 +186,34 @@ _ccs_deserialize_bin_hyperparameter(
 	default:
 		return -CCS_UNSUPPORTED_OPERATION;
 	}
-	ccs_object_set_user_data(*hyperparameter_ret, obj.user_data);
+	CCS_VALIDATE_ERR_GOTO(res,
+		ccs_object_set_user_data(*hyperparameter_ret, obj.user_data),
+		err_hyper);
+	if (opts->handle_map)
+		CCS_VALIDATE_ERR_GOTO(res,
+			_ccs_object_handle_check_add(
+				opts->handle_map, handle,
+				(ccs_object_t)*hyperparameter_ret),
+			err_hyper);
 
 	return CCS_SUCCESS;
+err_hyper:
+	ccs_release_object(*hyperparameter_ret);
+	return res;
 }
 
 static ccs_result_t
 _ccs_hyperparameter_deserialize(
-		ccs_hyperparameter_t    *hyperparameter_ret,
-		ccs_serialize_format_t   format,
-		uint32_t                 version,
-		size_t                  *buffer_size,
-		const char             **buffer) {
+		ccs_hyperparameter_t               *hyperparameter_ret,
+		ccs_serialize_format_t              format,
+		uint32_t                            version,
+		size_t                             *buffer_size,
+		const char                        **buffer,
+		_ccs_object_deserialize_options_t  *opts) {
 	switch(format) {
 	case CCS_SERIALIZE_FORMAT_BINARY:
 		CCS_VALIDATE(_ccs_deserialize_bin_hyperparameter(
-			hyperparameter_ret, version, buffer_size, buffer));
+			hyperparameter_ret, version, buffer_size, buffer, opts));
 		break;
 	default:
 		return -CCS_INVALID_VALUE;
