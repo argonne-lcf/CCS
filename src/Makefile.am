@@ -11,12 +11,10 @@ lib_LTLIBRARIES = libcconfigspace.la
 libcconfigspace_la_SOURCES = \
 	cconfigspace.c \
 	cconfigspace_internal.h \
-	rng_deserialize.h \
-	distribution_deserialize.h \
-	hyperparameter_deserialize.h \
 	interval.c \
 	rng.c \
 	rng_internal.h \
+	rng_deserialize.h \
 	distribution.c \
 	distribution_internal.h \
 	distribution_uniform.c \
@@ -24,10 +22,12 @@ libcconfigspace_la_SOURCES = \
 	distribution_roulette.c \
 	distribution_mixture.c \
 	distribution_multivariate.c \
+	distribution_deserialize.h \
 	hyperparameter.c \
 	hyperparameter_internal.h \
 	hyperparameter_numerical.c \
 	hyperparameter_string.c \
+	hyperparameter_deserialize.h \
 	uthash.h \
 	datum_uthash.h \
 	datum_hash.h \
@@ -43,6 +43,7 @@ libcconfigspace_la_SOURCES = \
 	configuration_internal.h \
 	expression.c \
 	expression_internal.h \
+	expression_deserialize.h \
 	objective_space.c \
 	objective_space_internal.h \
 	evaluation.c \

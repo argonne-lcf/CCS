@@ -832,6 +832,173 @@ void test_check_context() {
 	assert( err == CCS_SUCCESS );
 }
 
+void test_deserialize_literal() {
+	ccs_result_t           err;
+	ccs_expression_t       expression;
+	ccs_object_type_t      otype;
+	ccs_expression_type_t  etype;
+	char                  *buff;
+	size_t                 buff_size;
+	ccs_datum_t            d;
+
+	err = ccs_create_literal(ccs_float(3.0), &expression);
+	assert( err == CCS_SUCCESS );
+
+	err = ccs_object_serialize(expression, CCS_SERIALIZE_FORMAT_BINARY, CCS_SERIALIZE_TYPE_SIZE, &buff_size);
+	assert( err == CCS_SUCCESS );
+	buff = (char *)malloc(buff_size);
+	assert( buff );
+
+	err = ccs_object_serialize(expression, CCS_SERIALIZE_FORMAT_BINARY, CCS_SERIALIZE_TYPE_MEMORY, buff_size, buff);
+	assert( err == CCS_SUCCESS );
+
+	err = ccs_release_object(expression);
+	assert( err == CCS_SUCCESS );
+
+	err = ccs_object_deserialize((ccs_object_t*)&expression, CCS_SERIALIZE_FORMAT_BINARY, CCS_SERIALIZE_TYPE_MEMORY, buff_size, buff, CCS_DESERIALIZE_OPTION_END);
+	assert( err == CCS_SUCCESS );
+
+	err = ccs_object_get_type(expression, &otype);
+	assert( err == CCS_SUCCESS );
+	assert( otype == CCS_EXPRESSION );
+
+	err = ccs_expression_get_type(expression, &etype);
+	assert( err == CCS_SUCCESS );
+	assert( etype == CCS_LITERAL );
+
+	err = ccs_literal_get_value(expression, &d);
+	assert( err == CCS_SUCCESS );
+	assert( d.type == CCS_FLOAT );
+	assert( d.value.f == 3.0 );
+
+	err = ccs_release_object(expression);
+	assert( err == CCS_SUCCESS );
+	free(buff);
+}
+
+void test_deserialize_variable() {
+	ccs_result_t           err;
+	ccs_hyperparameter_t   hyperparameter;
+	ccs_map_t              handle_map;
+	ccs_expression_t       expression;
+	ccs_object_type_t      otype;
+	ccs_expression_type_t  etype;
+	char                  *buff;
+	size_t                 buff_size;
+	ccs_datum_t            d;
+
+	hyperparameter = create_dummy_numerical("param");
+
+	err = ccs_create_variable(hyperparameter, &expression);
+	assert( err == CCS_SUCCESS );
+
+	err = ccs_object_serialize(expression, CCS_SERIALIZE_FORMAT_BINARY, CCS_SERIALIZE_TYPE_SIZE, &buff_size);
+	assert( err == CCS_SUCCESS );
+	buff = (char *)malloc(buff_size);
+	assert( buff );
+
+	err = ccs_object_serialize(expression, CCS_SERIALIZE_FORMAT_BINARY, CCS_SERIALIZE_TYPE_MEMORY, buff_size, buff);
+	assert( err == CCS_SUCCESS );
+
+	err = ccs_release_object(expression);
+	assert( err == CCS_SUCCESS );
+
+	err = ccs_object_deserialize((ccs_object_t*)&expression, CCS_SERIALIZE_FORMAT_BINARY, CCS_SERIALIZE_TYPE_MEMORY, buff_size, buff, CCS_DESERIALIZE_OPTION_END);
+	assert( err == -CCS_INVALID_OBJECT );
+
+	err = ccs_create_map(&handle_map);
+	assert( err == CCS_SUCCESS );
+
+	err = ccs_object_deserialize((ccs_object_t*)&expression, CCS_SERIALIZE_FORMAT_BINARY, CCS_SERIALIZE_TYPE_MEMORY, buff_size, buff,
+	                             CCS_DESERIALIZE_OPTION_HANDLE_MAP, handle_map, CCS_DESERIALIZE_OPTION_END);
+	assert( err == -CCS_INVALID_HANDLE );
+
+	d = ccs_object(hyperparameter);
+	d.flags |= CCS_FLAG_ID;
+	err = ccs_map_set(handle_map, d, ccs_object(hyperparameter));
+	assert( err == CCS_SUCCESS );
+
+	err = ccs_release_object(hyperparameter);
+	assert( err == CCS_SUCCESS );
+
+	err = ccs_object_deserialize((ccs_object_t*)&expression, CCS_SERIALIZE_FORMAT_BINARY, CCS_SERIALIZE_TYPE_MEMORY, buff_size, buff,
+	                             CCS_DESERIALIZE_OPTION_HANDLE_MAP, handle_map, CCS_DESERIALIZE_OPTION_END);
+	assert( err == CCS_SUCCESS );
+
+	err = ccs_object_get_type(expression, &otype);
+	assert( err == CCS_SUCCESS );
+	assert( otype == CCS_EXPRESSION );
+
+	err = ccs_expression_get_type(expression, &etype);
+	assert( err == CCS_SUCCESS );
+	assert( etype == CCS_VARIABLE );
+
+	err = ccs_variable_get_hyperparameter(expression, &hyperparameter);
+	assert( err == CCS_SUCCESS );
+
+	err = ccs_release_object(handle_map);
+	assert( err == CCS_SUCCESS );
+	err = ccs_release_object(expression);
+	assert( err == CCS_SUCCESS );
+	free(buff);
+}
+
+void test_deserialize() {
+	ccs_result_t          err;
+	ccs_expression_t      expression;
+	ccs_hyperparameter_t  hyperparameter;
+	ccs_map_t             handle_map;
+	char                 *buff;
+	size_t                buff_size;
+	ccs_datum_t           d;
+
+	hyperparameter = create_dummy_numerical("param");
+
+	err = ccs_create_binary_expression(CCS_ADD, ccs_float(3.0), ccs_object(hyperparameter), &expression);
+	assert( err == CCS_SUCCESS );
+
+	err = ccs_object_serialize(expression, CCS_SERIALIZE_FORMAT_BINARY, CCS_SERIALIZE_TYPE_SIZE, &buff_size);
+	assert( err == CCS_SUCCESS );
+	buff = (char *)malloc(buff_size);
+	assert( buff );
+
+	err = ccs_object_serialize(expression, CCS_SERIALIZE_FORMAT_BINARY, CCS_SERIALIZE_TYPE_MEMORY, buff_size, buff);
+	assert( err == CCS_SUCCESS );
+
+	err = ccs_release_object(expression);
+	assert( err == CCS_SUCCESS );
+
+	err = ccs_object_deserialize((ccs_object_t*)&expression, CCS_SERIALIZE_FORMAT_BINARY, CCS_SERIALIZE_TYPE_MEMORY, buff_size, buff,
+	                             CCS_DESERIALIZE_OPTION_END);
+	assert( err == -CCS_INVALID_OBJECT );
+
+	err = ccs_create_map(&handle_map);
+	assert( err == CCS_SUCCESS );
+
+	err = ccs_object_deserialize((ccs_object_t*)&expression, CCS_SERIALIZE_FORMAT_BINARY, CCS_SERIALIZE_TYPE_MEMORY, buff_size, buff,
+	                             CCS_DESERIALIZE_OPTION_HANDLE_MAP, handle_map, CCS_DESERIALIZE_OPTION_END);
+	assert( err == -CCS_INVALID_HANDLE );
+
+	d = ccs_object(hyperparameter);
+	d.flags |= CCS_FLAG_ID;
+	err = ccs_map_set(handle_map, d, ccs_object(hyperparameter));
+	assert( err == CCS_SUCCESS );
+
+	err = ccs_release_object(hyperparameter);
+	assert( err == CCS_SUCCESS );
+
+	err = ccs_object_deserialize((ccs_object_t*)&expression, CCS_SERIALIZE_FORMAT_BINARY, CCS_SERIALIZE_TYPE_MEMORY, buff_size, buff,
+	                             CCS_DESERIALIZE_OPTION_HANDLE_MAP, handle_map, CCS_DESERIALIZE_OPTION_END);
+	assert( err == CCS_SUCCESS );
+
+	err = ccs_release_object(expression);
+	assert( err == CCS_SUCCESS );
+
+	err = ccs_release_object(handle_map);
+	assert( err == CCS_SUCCESS );
+	free(buff);
+}
+
 int main() {
 	ccs_init();
 	test_equal_literal();
@@ -856,5 +1023,8 @@ int main() {
 	test_in();
 	test_get_hyperparameters();
 	test_check_context();
+	test_deserialize_literal();
+	test_deserialize_variable();
+	test_deserialize();
 	ccs_fini();
 }

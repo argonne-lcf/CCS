@@ -27,7 +27,7 @@ _ccs_distribution_mixture_del(ccs_object_t o) {
 static inline ccs_result_t
 _ccs_serialize_bin_size_ccs_distribution_mixture_data(
 		_ccs_distribution_mixture_data_t *data,
-		size_t *cum_size) {
+		size_t                           *cum_size) {
 	*cum_size += _ccs_serialize_bin_size_ccs_distribution_common_data(&data->common_data);
 	*cum_size += _ccs_serialize_bin_size_uint64(data->num_distributions);
 	for (size_t i = 0; i < data->num_distributions; i++) {
@@ -58,8 +58,8 @@ _ccs_serialize_bin_ccs_distribution_mixture_data(
 
 static inline ccs_result_t
 _ccs_serialize_bin_size_ccs_distribution_mixture(
-		ccs_distribution_t distribution,
-		size_t *cum_size) {
+		ccs_distribution_t  distribution,
+		size_t             *cum_size) {
 	_ccs_distribution_mixture_data_t *data =
 		(_ccs_distribution_mixture_data_t *)(distribution->data);
 	*cum_size += _ccs_serialize_bin_size_ccs_object_internal(

@@ -202,6 +202,8 @@ enum ccs_error_e {
 	CCS_NOT_ENOUGH_DATA,
 	/** The handle was a duplicate */
 	CCS_HANDLE_DUPLICATE,
+	/** The handle was not found */
+	CCS_INVALID_HANDLE,
 	/** Guard */
 	CCS_ERROR_MAX,
 	/** Try forcing 32 bits value for bindings */

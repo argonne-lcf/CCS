@@ -96,6 +96,93 @@ _ccs_expression_del(ccs_object_t o) {
 }
 
 static inline ccs_result_t
+_ccs_serialize_bin_size_ccs_expression_data(
+		_ccs_expression_data_t *data,
+		size_t                 *cum_size) {
+	*cum_size += _ccs_serialize_bin_size_ccs_expression_type(data->type);
+	*cum_size += _ccs_serialize_bin_size_uint64(data->num_nodes);
+	for (size_t i = 0; i < data->num_nodes; i++)
+		CCS_VALIDATE(data->nodes[i]->obj.ops->serialize_size(
+			data->nodes[i], CCS_SERIALIZE_FORMAT_BINARY, cum_size));
+	return CCS_SUCCESS;
+}
+
+static inline ccs_result_t
+_ccs_serialize_bin_ccs_expression_data(
+		_ccs_expression_data_t  *data,
+		size_t                  *buffer_size,
+		char                   **buffer) {
+	CCS_VALIDATE(_ccs_serialize_bin_ccs_expression_type(
+		data->type, buffer_size, buffer));
+	CCS_VALIDATE(_ccs_serialize_bin_uint64(
+		data->num_nodes, buffer_size, buffer));
+	for (size_t i = 0; i < data->num_nodes; i++)
+		CCS_VALIDATE(data->nodes[i]->obj.ops->serialize(
+			data->nodes[i], CCS_SERIALIZE_FORMAT_BINARY, buffer_size, buffer));
+	return CCS_SUCCESS;
+}
+
+static inline ccs_result_t
+_ccs_serialize_bin_size_ccs_expression(
+		ccs_expression_t  expression,
+		size_t           *cum_size) {
+	_ccs_expression_data_t *data =
+		(_ccs_expression_data_t *)(expression->data);
+	*cum_size += _ccs_serialize_bin_size_ccs_object_internal(
+		(_ccs_object_internal_t *)expression);
+	CCS_VALIDATE(_ccs_serialize_bin_size_ccs_expression_data(
+		data, cum_size));
+	return CCS_SUCCESS;
+}
+
+static inline ccs_result_t
+_ccs_serialize_bin_ccs_expression(
+		ccs_expression_t   expression,
+		size_t            *buffer_size,
+		char             **buffer) {
+	_ccs_expression_data_t *data =
+		(_ccs_expression_data_t *)(expression->data);
+	CCS_VALIDATE(_ccs_serialize_bin_ccs_object_internal(
+		(_ccs_object_internal_t *)expression, buffer_size, buffer));
+	CCS_VALIDATE(_ccs_serialize_bin_ccs_expression_data(
+		data, buffer_size, buffer));
+	return CCS_SUCCESS;
+}
+
+static ccs_result_t
+_ccs_expression_serialize_size(
+		ccs_object_t            object,
+		ccs_serialize_format_t  format,
+		size_t                 *cum_size) {
+	switch(format) {
+	case CCS_SERIALIZE_FORMAT_BINARY:
+		CCS_VALIDATE(_ccs_serialize_bin_size_ccs_expression(
+			(ccs_expression_t)object, cum_size));
+		break;
+	default:
+		return -CCS_INVALID_VALUE;
+	}
+	return CCS_SUCCESS;
+}
+
+static ccs_result_t
+_ccs_expression_serialize(
+		ccs_object_t             object,
+		ccs_serialize_format_t   format,
+		size_t                  *buffer_size,
+		char                   **buffer) {
+	switch(format) {
+	case CCS_SERIALIZE_FORMAT_BINARY:
+		CCS_VALIDATE(_ccs_serialize_bin_ccs_expression(
+		    (ccs_expression_t)object, buffer_size, buffer));
+		break;
+	default:
+		return -CCS_INVALID_VALUE;
+	}
+	return CCS_SUCCESS;
+}
+
+static inline ccs_result_t
 _ccs_expr_node_eval(ccs_expression_t           n,
                     ccs_context_t              context,
                     ccs_datum_t               *values,
@@ -165,7 +252,9 @@ _ccs_expr_or_eval(_ccs_expression_data_t *data,
 }
 
 static _ccs_expression_ops_t _ccs_expr_or_ops = {
-	{ &_ccs_expression_del, NULL, NULL },
+	{ &_ccs_expression_del,
+	  &_ccs_expression_serialize_size,
+	  &_ccs_expression_serialize },
 	&_ccs_expr_or_eval
 };
 
@@ -184,7 +273,9 @@ _ccs_expr_and_eval(_ccs_expression_data_t *data,
 }
 
 static _ccs_expression_ops_t _ccs_expr_and_ops = {
-	{ &_ccs_expression_del, NULL, NULL },
+	{ &_ccs_expression_del,
+	  &_ccs_expression_serialize_size,
+	  &_ccs_expression_serialize },
 	&_ccs_expr_and_eval
 };
 
@@ -329,7 +420,9 @@ _ccs_expr_not_equal_eval(_ccs_expression_data_t *data,
 }
 
 static _ccs_expression_ops_t _ccs_expr_not_equal_ops = {
-	{ &_ccs_expression_del, NULL, NULL },
+	{ &_ccs_expression_del,
+	  &_ccs_expression_serialize_size,
+	  &_ccs_expression_serialize },
 	&_ccs_expr_not_equal_eval
 };
 
@@ -373,7 +466,9 @@ _ccs_expr_less_eval(_ccs_expression_data_t *data,
 }
 
 static _ccs_expression_ops_t _ccs_expr_less_ops = {
-	{ &_ccs_expression_del, NULL, NULL },
+	{ &_ccs_expression_del,
+	  &_ccs_expression_serialize_size,
+	  &_ccs_expression_serialize },
 	&_ccs_expr_less_eval
 };
 
@@ -417,7 +512,9 @@ _ccs_expr_greater_eval(_ccs_expression_data_t *data,
 }
 
 static _ccs_expression_ops_t _ccs_expr_greater_ops = {
-	{ &_ccs_expression_del, NULL, NULL },
+	{ &_ccs_expression_del,
+	  &_ccs_expression_serialize_size,
+	  &_ccs_expression_serialize },
 	&_ccs_expr_greater_eval
 };
 
@@ -461,7 +558,9 @@ _ccs_expr_less_or_equal_eval(_ccs_expression_data_t *data,
 }
 
 static _ccs_expression_ops_t _ccs_expr_less_or_equal_ops = {
-	{ &_ccs_expression_del, NULL, NULL },
+	{ &_ccs_expression_del,
+	  &_ccs_expression_serialize_size,
+	  &_ccs_expression_serialize },
 	&_ccs_expr_less_or_equal_eval
 };
 
@@ -505,7 +604,9 @@ _ccs_expr_greater_or_equal_eval(_ccs_expression_data_t *data,
 }
 
 static _ccs_expression_ops_t _ccs_expr_greater_or_equal_ops = {
-	{ &_ccs_expression_del, NULL, NULL },
+	{ &_ccs_expression_del,
+	  &_ccs_expression_serialize_size,
+	  &_ccs_expression_serialize },
 	&_ccs_expr_greater_or_equal_eval
 };
 
@@ -550,7 +651,9 @@ _ccs_expr_in_eval(_ccs_expression_data_t *data,
 }
 
 static _ccs_expression_ops_t _ccs_expr_in_ops = {
-	{ &_ccs_expression_del, NULL, NULL },
+	{ &_ccs_expression_del,
+	  &_ccs_expression_serialize_size,
+	  &_ccs_expression_serialize },
 	&_ccs_expr_in_eval
 };
 
@@ -587,7 +690,9 @@ _ccs_expr_add_eval(_ccs_expression_data_t *data,
 }
 
 static _ccs_expression_ops_t _ccs_expr_add_ops = {
-	{ &_ccs_expression_del, NULL, NULL },
+	{ &_ccs_expression_del,
+	  &_ccs_expression_serialize_size,
+	  &_ccs_expression_serialize },
 	&_ccs_expr_add_eval
 };
 
@@ -624,7 +729,9 @@ _ccs_expr_substract_eval(_ccs_expression_data_t *data,
 }
 
 static _ccs_expression_ops_t _ccs_expr_substract_ops = {
-	{ &_ccs_expression_del, NULL, NULL },
+	{ &_ccs_expression_del,
+	  &_ccs_expression_serialize_size,
+	  &_ccs_expression_serialize },
 	&_ccs_expr_substract_eval
 };
 
@@ -661,7 +768,9 @@ _ccs_expr_multiply_eval(_ccs_expression_data_t *data,
 }
 
 static _ccs_expression_ops_t _ccs_expr_multiply_ops = {
-	{ &_ccs_expression_del, NULL, NULL },
+	{ &_ccs_expression_del,
+	  &_ccs_expression_serialize_size,
+	  &_ccs_expression_serialize },
 	&_ccs_expr_multiply_eval
 };
 
@@ -706,7 +815,9 @@ _ccs_expr_divide_eval(_ccs_expression_data_t *data,
 }
 
 static _ccs_expression_ops_t _ccs_expr_divide_ops = {
-	{ &_ccs_expression_del, NULL, NULL },
+	{ &_ccs_expression_del,
+	  &_ccs_expression_serialize_size,
+	  &_ccs_expression_serialize },
 	&_ccs_expr_divide_eval
 };
 
@@ -751,7 +862,9 @@ _ccs_expr_modulo_eval(_ccs_expression_data_t *data,
 }
 
 static _ccs_expression_ops_t _ccs_expr_modulo_ops = {
-	{ &_ccs_expression_del, NULL, NULL },
+	{ &_ccs_expression_del,
+	  &_ccs_expression_serialize_size,
+	  &_ccs_expression_serialize },
 	&_ccs_expr_modulo_eval
 };
 
@@ -770,7 +883,9 @@ _ccs_expr_positive_eval(_ccs_expression_data_t *data,
 }
 
 static _ccs_expression_ops_t _ccs_expr_positive_ops = {
-	{ &_ccs_expression_del, NULL, NULL },
+	{ &_ccs_expression_del,
+	  &_ccs_expression_serialize_size,
+	  &_ccs_expression_serialize },
 	&_ccs_expr_positive_eval
 };
 
@@ -791,7 +906,9 @@ _ccs_expr_negative_eval(_ccs_expression_data_t *data,
 }
 
 static _ccs_expression_ops_t _ccs_expr_negative_ops = {
-	{ &_ccs_expression_del, NULL, NULL },
+	{ &_ccs_expression_del,
+	  &_ccs_expression_serialize_size,
+	  &_ccs_expression_serialize },
 	&_ccs_expr_negative_eval
 };
 
@@ -810,7 +927,9 @@ _ccs_expr_not_eval(_ccs_expression_data_t *data,
 }
 
 static _ccs_expression_ops_t _ccs_expr_not_ops = {
-	{ &_ccs_expression_del, NULL, NULL },
+	{ &_ccs_expression_del,
+	  &_ccs_expression_serialize_size,
+	  &_ccs_expression_serialize },
 	&_ccs_expr_not_eval
 };
 
@@ -824,7 +943,9 @@ _ccs_expr_list_eval(_ccs_expression_data_t *data,
 }
 
 static _ccs_expression_ops_t _ccs_expr_list_ops = {
-	{ &_ccs_expression_del, NULL, NULL },
+	{ &_ccs_expression_del,
+	  &_ccs_expression_serialize_size,
+	  &_ccs_expression_serialize },
 	&_ccs_expr_list_eval
 };
 
@@ -840,8 +961,92 @@ _ccs_expr_literal_eval(_ccs_expression_data_t *data,
 	return CCS_SUCCESS;
 }
 
+static inline ccs_result_t
+_ccs_serialize_bin_size_ccs_expression_literal_data(
+		_ccs_expression_literal_data_t *data,
+		size_t                         *cum_size) {
+	CCS_VALIDATE(_ccs_serialize_bin_size_ccs_expression_data(
+		&data->expr, cum_size));
+	*cum_size += _ccs_serialize_bin_size_ccs_datum(data->value);
+	return CCS_SUCCESS;
+}
+
+static inline ccs_result_t
+_ccs_serialize_bin_ccs_expression_literal_data(
+		_ccs_expression_literal_data_t  *data,
+		size_t                          *buffer_size,
+		char                           **buffer) {
+	CCS_VALIDATE(_ccs_serialize_bin_ccs_expression_data(
+		&data->expr, buffer_size, buffer));
+	CCS_VALIDATE(_ccs_serialize_bin_ccs_datum(
+		data->value, buffer_size, buffer));
+	return CCS_SUCCESS;
+}
+
+static inline ccs_result_t
+_ccs_serialize_bin_size_ccs_expression_literal(
+		ccs_expression_t  expression,
+		size_t           *cum_size) {
+	_ccs_expression_literal_data_t *data =
+		(_ccs_expression_literal_data_t *)(expression->data);
+	*cum_size += _ccs_serialize_bin_size_ccs_object_internal(
+		(_ccs_object_internal_t *)expression);
+	CCS_VALIDATE(_ccs_serialize_bin_size_ccs_expression_literal_data(
+		data, cum_size));
+	return CCS_SUCCESS;
+}
+
+static inline ccs_result_t
+_ccs_serialize_bin_ccs_expression_literal(
+		ccs_expression_t   expression,
+		size_t            *buffer_size,
+		char             **buffer) {
+	_ccs_expression_literal_data_t *data =
+		(_ccs_expression_literal_data_t *)(expression->data);
+	CCS_VALIDATE(_ccs_serialize_bin_ccs_object_internal(
+		(_ccs_object_internal_t *)expression, buffer_size, buffer));
+	CCS_VALIDATE(_ccs_serialize_bin_ccs_expression_literal_data(
+		data, buffer_size, buffer));
+	return CCS_SUCCESS;
+}
+
+static ccs_result_t
+_ccs_expression_literal_serialize_size(
+		ccs_object_t            object,
+		ccs_serialize_format_t  format,
+		size_t                 *cum_size) {
+	switch(format) {
+	case CCS_SERIALIZE_FORMAT_BINARY:
+		CCS_VALIDATE(_ccs_serialize_bin_size_ccs_expression_literal(
+			(ccs_expression_t)object, cum_size));
+		break;
+	default:
+		return -CCS_INVALID_VALUE;
+	}
+	return CCS_SUCCESS;
+}
+
+static ccs_result_t
+_ccs_expression_literal_serialize(
+		ccs_object_t             object,
+		ccs_serialize_format_t   format,
+		size_t                  *buffer_size,
+		char                   **buffer) {
+	switch(format) {
+	case CCS_SERIALIZE_FORMAT_BINARY:
+		CCS_VALIDATE(_ccs_serialize_bin_ccs_expression_literal(
+		    (ccs_expression_t)object, buffer_size, buffer));
+		break;
+	default:
+		return -CCS_INVALID_VALUE;
+	}
+	return CCS_SUCCESS;
+}
+
 static _ccs_expression_ops_t _ccs_expr_literal_ops = {
-	{ &_ccs_expression_del, NULL, NULL },
+	{ &_ccs_expression_del,
+	  &_ccs_expression_literal_serialize_size,
+	  &_ccs_expression_literal_serialize },
 	&_ccs_expr_literal_eval
 };
 
@@ -850,6 +1055,88 @@ _ccs_expr_variable_del(ccs_object_t o) {
 	_ccs_expression_variable_data_t *d =
 		(_ccs_expression_variable_data_t *)((ccs_expression_t)o)->data;
 	return ccs_release_object(d->hyperparameter);
+}
+
+static inline ccs_result_t
+_ccs_serialize_bin_size_ccs_expression_variable_data(
+		_ccs_expression_variable_data_t *data,
+		size_t                         *cum_size) {
+	CCS_VALIDATE(_ccs_serialize_bin_size_ccs_expression_data(
+		&data->expr, cum_size));
+	*cum_size += _ccs_serialize_bin_size_ccs_object(data->hyperparameter);
+	return CCS_SUCCESS;
+}
+
+static inline ccs_result_t
+_ccs_serialize_bin_ccs_expression_variable_data(
+		_ccs_expression_variable_data_t  *data,
+		size_t                          *buffer_size,
+		char                           **buffer) {
+	CCS_VALIDATE(_ccs_serialize_bin_ccs_expression_data(
+		&data->expr, buffer_size, buffer));
+	CCS_VALIDATE(_ccs_serialize_bin_ccs_object(
+		data->hyperparameter, buffer_size, buffer));
+	return CCS_SUCCESS;
+}
+
+static inline ccs_result_t
+_ccs_serialize_bin_size_ccs_expression_variable(
+		ccs_expression_t  expression,
+		size_t           *cum_size) {
+	_ccs_expression_variable_data_t *data =
+		(_ccs_expression_variable_data_t *)(expression->data);
+	*cum_size += _ccs_serialize_bin_size_ccs_object_internal(
+		(_ccs_object_internal_t *)expression);
+	CCS_VALIDATE(_ccs_serialize_bin_size_ccs_expression_variable_data(
+		data, cum_size));
+	return CCS_SUCCESS;
+}
+
+static inline ccs_result_t
+_ccs_serialize_bin_ccs_expression_variable(
+		ccs_expression_t   expression,
+		size_t            *buffer_size,
+		char             **buffer) {
+	_ccs_expression_variable_data_t *data =
+		(_ccs_expression_variable_data_t *)(expression->data);
+	CCS_VALIDATE(_ccs_serialize_bin_ccs_object_internal(
+		(_ccs_object_internal_t *)expression, buffer_size, buffer));
+	CCS_VALIDATE(_ccs_serialize_bin_ccs_expression_variable_data(
+		data, buffer_size, buffer));
+	return CCS_SUCCESS;
+}
+
+static ccs_result_t
+_ccs_expression_variable_serialize_size(
+		ccs_object_t            object,
+		ccs_serialize_format_t  format,
+		size_t                 *cum_size) {
+	switch(format) {
+	case CCS_SERIALIZE_FORMAT_BINARY:
+		CCS_VALIDATE(_ccs_serialize_bin_size_ccs_expression_variable(
+			(ccs_expression_t)object, cum_size));
+		break;
+	default:
+		return -CCS_INVALID_VALUE;
+	}
+	return CCS_SUCCESS;
+}
+
+static ccs_result_t
+_ccs_expression_variable_serialize(
+		ccs_object_t             object,
+		ccs_serialize_format_t   format,
+		size_t                  *buffer_size,
+		char                   **buffer) {
+	switch(format) {
+	case CCS_SERIALIZE_FORMAT_BINARY:
+		CCS_VALIDATE(_ccs_serialize_bin_ccs_expression_variable(
+			(ccs_expression_t)object, buffer_size, buffer));
+		break;
+	default:
+		return -CCS_INVALID_VALUE;
+	}
+	return CCS_SUCCESS;
 }
 
 static ccs_result_t
@@ -870,7 +1157,9 @@ _ccs_expr_variable_eval(_ccs_expression_data_t *data,
 }
 
 static _ccs_expression_ops_t _ccs_expr_variable_ops = {
-	{ &_ccs_expr_variable_del, NULL, NULL },
+	{ &_ccs_expr_variable_del,
+	  &_ccs_expression_variable_serialize_size,
+	  &_ccs_expression_variable_serialize },
 	&_ccs_expr_variable_eval
 };
 

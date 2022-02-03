@@ -301,6 +301,7 @@ CCS_CONVERTER(ccs_data_type, ccs_data_type_t, 32)
 CCS_CONVERTER(ccs_object_type, ccs_object_type_t, 32)
 CCS_CONVERTER(ccs_scale_type, ccs_scale_type_t, 32)
 CCS_CONVERTER(ccs_distribution_type, ccs_distribution_type_t, 32)
+CCS_CONVERTER(ccs_expression_type, ccs_expression_type_t, 32)
 CCS_CONVERTER(ccs_object, ccs_object_t, 64)
 CCS_CONVERTER(ccs_user_data, ccs_user_data_t, 64)
 
@@ -432,7 +433,6 @@ static inline size_t
 _ccs_serialize_bin_size_ccs_datum(ccs_datum_t datum) {
 	size_t sz = 0;
 	sz += _ccs_serialize_bin_size_ccs_data_type(datum.type);
-	sz += _ccs_serialize_bin_size_ccs_datum_flags(datum.flags);
 	switch(datum.type) {
 	case CCS_NONE:
 	case CCS_INACTIVE:
@@ -602,6 +602,7 @@ _ccs_object_handle_check_add(
 
 struct _ccs_object_deserialize_options_s {
 	ccs_map_t handle_map;
+	ccs_bool_t map_values;
 };
 typedef struct _ccs_object_deserialize_options_s _ccs_object_deserialize_options_t;
 
