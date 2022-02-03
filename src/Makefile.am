@@ -35,6 +35,7 @@ libcconfigspace_la_SOURCES = \
 	utarray.h \
 	context.c \
 	context_internal.h \
+	context_deserialize.h \
 	configuration_space.c \
 	configuration_space_internal.h \
 	binding.c \
@@ -54,6 +55,7 @@ libcconfigspace_la_SOURCES = \
 	tuner_user_defined.c \
 	features_space.c \
 	features_space_internal.h \
+	features_space_deserialize.h \
 	features.c \
 	features_internal.h \
 	features_evaluation.c \

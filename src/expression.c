@@ -1070,8 +1070,8 @@ _ccs_serialize_bin_size_ccs_expression_variable_data(
 static inline ccs_result_t
 _ccs_serialize_bin_ccs_expression_variable_data(
 		_ccs_expression_variable_data_t  *data,
-		size_t                          *buffer_size,
-		char                           **buffer) {
+		size_t                           *buffer_size,
+		char                            **buffer) {
 	CCS_VALIDATE(_ccs_serialize_bin_ccs_expression_data(
 		&data->expr, buffer_size, buffer));
 	CCS_VALIDATE(_ccs_serialize_bin_ccs_object(

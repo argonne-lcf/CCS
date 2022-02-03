@@ -21,8 +21,43 @@ _ccs_features_space_del(ccs_object_t object) {
 	return CCS_SUCCESS;
 }
 
+static ccs_result_t
+_ccs_features_space_serialize_size(
+		ccs_object_t            object,
+		ccs_serialize_format_t  format,
+		size_t                 *cum_size) {
+	switch(format) {
+	case CCS_SERIALIZE_FORMAT_BINARY:
+		CCS_VALIDATE(_ccs_serialize_bin_size_ccs_context(
+			(ccs_context_t)object, cum_size));
+		break;
+	default:
+		return -CCS_INVALID_VALUE;
+	}
+	return CCS_SUCCESS;
+}
+
+static ccs_result_t
+_ccs_features_space_serialize(
+		ccs_object_t             object,
+		ccs_serialize_format_t   format,
+		size_t                  *buffer_size,
+		char                   **buffer) {
+	switch(format) {
+	case CCS_SERIALIZE_FORMAT_BINARY:
+		CCS_VALIDATE(_ccs_serialize_bin_ccs_context(
+			(ccs_context_t)object, buffer_size, buffer));
+		break;
+	default:
+		return -CCS_INVALID_VALUE;
+	}
+	return CCS_SUCCESS;
+}
+
 static _ccs_features_space_ops_t _features_space_ops =
-    { { {&_ccs_features_space_del, NULL, NULL} } };
+    { { {&_ccs_features_space_del,
+         &_ccs_features_space_serialize_size,
+         &_ccs_features_space_serialize} } };
 
 static const UT_icd _hyperparameter_wrapper_icd = {
 	sizeof(_ccs_hyperparameter_wrapper_t),
@@ -37,8 +72,8 @@ static const UT_icd _hyperparameter_wrapper_icd = {
 	goto arrays; \
 }
 ccs_result_t
-ccs_create_features_space(const char                *name,
-                          void                      *user_data,
+ccs_create_features_space(const char           *name,
+                          void                 *user_data,
                           ccs_features_space_t *features_space_ret) {
 	ccs_result_t err;
 	CCS_CHECK_PTR(name);
