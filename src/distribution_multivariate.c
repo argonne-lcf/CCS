@@ -27,7 +27,7 @@ _ccs_distribution_multivariate_del(ccs_object_t o) {
 static inline ccs_result_t
 _ccs_serialize_bin_size_ccs_distribution_multivariate_data(
 		_ccs_distribution_multivariate_data_t *data,
-		size_t *cum_size) {
+		size_t                                *cum_size) {
 	*cum_size += _ccs_serialize_bin_size_ccs_distribution_common_data(&data->common_data);
 	*cum_size += _ccs_serialize_bin_size_uint64(data->num_distributions);
 	for (size_t i = 0; i < data->num_distributions; i++)
@@ -39,8 +39,8 @@ _ccs_serialize_bin_size_ccs_distribution_multivariate_data(
 static inline ccs_result_t
 _ccs_serialize_bin_ccs_distribution_multivariate_data(
 		_ccs_distribution_multivariate_data_t  *data,
-		size_t                            *buffer_size,
-		char                             **buffer) {
+		size_t                                 *buffer_size,
+		char                                  **buffer) {
 	CCS_VALIDATE(_ccs_serialize_bin_ccs_distribution_common_data(
 		&data->common_data, buffer_size, buffer));
 	CCS_VALIDATE(_ccs_serialize_bin_uint64(

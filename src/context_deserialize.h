@@ -17,6 +17,7 @@ _ccs_deserialize_bin_ccs_context_data(
 		size_t                             *buffer_size,
 		const char                        **buffer,
 		_ccs_object_deserialize_options_t  *opts) {
+	data->num_hyperparameters = 0;
 	data->hyperparameters = NULL;
 	CCS_VALIDATE(_ccs_deserialize_bin_string(
 		&data->name, buffer_size, buffer));

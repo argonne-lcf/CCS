@@ -237,6 +237,7 @@ ccs_object_serialize(ccs_object_t           object,
 #include "hyperparameter_deserialize.h"
 #include "expression_deserialize.h"
 #include "features_space_deserialize.h"
+#include "configuration_space_deserialize.h"
 
 static inline ccs_result_t
 _ccs_object_deserialize_options(ccs_serialize_format_t             format,
@@ -301,6 +302,11 @@ _ccs_object_deserialize(ccs_object_t            *object_ret,
 		case CCS_FEATURES_SPACE:
 			CCS_VALIDATE(_ccs_features_space_deserialize(
 				(ccs_features_space_t *)object_ret,
+				format, version, buffer_size, buffer, &opts));
+			break;
+		case CCS_CONFIGURATION_SPACE:
+			CCS_VALIDATE(_ccs_configuration_space_deserialize(
+				(ccs_configuration_space_t *)object_ret,
 				format, version, buffer_size, buffer, &opts));
 			break;
 		default:

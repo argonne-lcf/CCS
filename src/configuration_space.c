@@ -1,6 +1,8 @@
 #include "cconfigspace_internal.h"
 #include "configuration_space_internal.h"
 #include "configuration_internal.h"
+#include "distribution_internal.h"
+#include "expression_internal.h"
 #include "utlist.h"
 
 static ccs_result_t
@@ -42,8 +44,204 @@ _ccs_configuration_space_del(ccs_object_t object) {
 	return CCS_SUCCESS;
 }
 
+static inline ccs_result_t
+_ccs_serialize_bin_size_ccs_configuration_space_data(
+		_ccs_configuration_space_data_t *data,
+		size_t                          *cum_size) {
+	size_t condition_count;
+	_ccs_hyperparameter_wrapper_cs_t *wrapper;
+	size_t distribution_count;
+	_ccs_distribution_wrapper_t *dw;
+	ccs_expression_t *expr;
+
+	*cum_size += _ccs_serialize_bin_size_string(data->name);
+	*cum_size += _ccs_serialize_bin_size_uint64(
+		utarray_len(data->hyperparameters));
+
+	condition_count = 0;
+	wrapper = NULL;
+	while ( (wrapper = (_ccs_hyperparameter_wrapper_cs_t *)utarray_next(data->hyperparameters, wrapper)) )
+		if (wrapper->condition)
+			condition_count++;
+	*cum_size += _ccs_serialize_bin_size_uint64(condition_count);
+
+	DL_COUNT(data->distribution_list, dw, distribution_count);
+	*cum_size += _ccs_serialize_bin_size_uint64(distribution_count);
+
+	*cum_size += _ccs_serialize_bin_size_uint64(
+		utarray_len(data->forbidden_clauses));
+
+	/* hyperparameters */
+	wrapper = NULL;
+	while ( (wrapper = (_ccs_hyperparameter_wrapper_cs_t *)utarray_next(data->hyperparameters, wrapper)) )
+		CCS_VALIDATE(wrapper->hyperparameter->obj.ops->serialize_size(
+			wrapper->hyperparameter, CCS_SERIALIZE_FORMAT_BINARY, cum_size));
+
+	/* conditions */
+	condition_count = 0;
+	wrapper = NULL;
+	while ( (wrapper = (_ccs_hyperparameter_wrapper_cs_t *)utarray_next(data->hyperparameters, wrapper)) ) {
+		if (wrapper->condition) {
+			/* hyperparam index and condition */
+			*cum_size += _ccs_serialize_bin_size_uint64(condition_count);
+			CCS_VALIDATE(wrapper->condition->obj.ops->serialize_size(
+				wrapper->condition, CCS_SERIALIZE_FORMAT_BINARY, cum_size));
+		}
+		condition_count++;
+	}
+
+	/* distributions */
+	dw = NULL;
+	DL_FOREACH(data->distribution_list, dw) {
+		CCS_VALIDATE(dw->distribution->obj.ops->serialize_size(
+			dw->distribution, CCS_SERIALIZE_FORMAT_BINARY, cum_size));
+		*cum_size += _ccs_serialize_bin_size_uint64(dw->dimension);
+		for (size_t i = 0; i < dw->dimension; i++)
+			*cum_size += _ccs_serialize_bin_size_uint64(dw->hyperparameter_indexes[i]);
+	}
+
+	/* forbidden clauses */
+	expr = NULL;
+	while ( (expr = (ccs_expression_t *)utarray_next(data->forbidden_clauses, expr)) )
+		CCS_VALIDATE((*expr)->obj.ops->serialize_size(
+			*expr, CCS_SERIALIZE_FORMAT_BINARY, cum_size));
+	return CCS_SUCCESS;
+}
+
+static inline ccs_result_t
+_ccs_serialize_bin_ccs_configuration_space_data(
+		_ccs_configuration_space_data_t  *data,
+		size_t                           *buffer_size,
+		char                            **buffer) {
+	size_t condition_count;
+	_ccs_hyperparameter_wrapper_cs_t *wrapper;
+	size_t distribution_count;
+	_ccs_distribution_wrapper_t *dw;
+	ccs_expression_t *expr;
+
+	CCS_VALIDATE(_ccs_serialize_bin_string(
+		data->name, buffer_size, buffer));
+	CCS_VALIDATE(_ccs_serialize_bin_uint64(
+		utarray_len(data->hyperparameters), buffer_size, buffer));
+
+	condition_count = 0;
+	wrapper = NULL;
+	while ( (wrapper = (_ccs_hyperparameter_wrapper_cs_t *)utarray_next(data->hyperparameters, wrapper)) )
+		if (wrapper->condition)
+			condition_count++;
+	CCS_VALIDATE(_ccs_serialize_bin_uint64(
+		condition_count, buffer_size, buffer));
+
+	DL_COUNT(data->distribution_list, dw, distribution_count);
+	CCS_VALIDATE(_ccs_serialize_bin_uint64(
+		distribution_count, buffer_size, buffer));
+
+	CCS_VALIDATE(_ccs_serialize_bin_uint64(
+		utarray_len(data->forbidden_clauses), buffer_size, buffer));
+
+	/* hyperparameters */
+	wrapper = NULL;
+	while ( (wrapper = (_ccs_hyperparameter_wrapper_cs_t *)utarray_next(data->hyperparameters, wrapper)) )
+		CCS_VALIDATE(wrapper->hyperparameter->obj.ops->serialize(
+			wrapper->hyperparameter, CCS_SERIALIZE_FORMAT_BINARY, buffer_size, buffer));
+
+	/* conditions */
+	condition_count = 0;
+	wrapper = NULL;
+	while ( (wrapper = (_ccs_hyperparameter_wrapper_cs_t *)utarray_next(data->hyperparameters, wrapper)) ) {
+		if (wrapper->condition) {
+			CCS_VALIDATE(_ccs_serialize_bin_uint64(
+				condition_count, buffer_size, buffer));
+			CCS_VALIDATE(wrapper->condition->obj.ops->serialize(
+				wrapper->condition, CCS_SERIALIZE_FORMAT_BINARY, buffer_size, buffer));
+		}
+		condition_count++;
+	}
+
+	/* distributions */
+	dw = NULL;
+	DL_FOREACH(data->distribution_list, dw) {
+		CCS_VALIDATE(dw->distribution->obj.ops->serialize(
+			dw->distribution, CCS_SERIALIZE_FORMAT_BINARY, buffer_size, buffer));
+		CCS_VALIDATE(_ccs_serialize_bin_uint64(
+			dw->dimension, buffer_size, buffer));
+		for (size_t i = 0; i < dw->dimension; i++)
+			CCS_VALIDATE(_ccs_serialize_bin_uint64(
+				dw->hyperparameter_indexes[i], buffer_size, buffer));
+	}
+
+	/* forbidden clauses */
+	expr = NULL;
+	while ( (expr = (ccs_expression_t *)utarray_next(data->forbidden_clauses, expr)) )
+		CCS_VALIDATE((*expr)->obj.ops->serialize(
+			*expr, CCS_SERIALIZE_FORMAT_BINARY, buffer_size, buffer));
+	return CCS_SUCCESS;
+}
+
+static inline ccs_result_t
+_ccs_serialize_bin_size_ccs_configuration_space(
+		ccs_configuration_space_t  configuration_space,
+		size_t                    *cum_size) {
+	_ccs_configuration_space_data_t *data =
+		(_ccs_configuration_space_data_t *)(configuration_space->data);
+	*cum_size += _ccs_serialize_bin_size_ccs_object_internal(
+		(_ccs_object_internal_t *)configuration_space);
+	CCS_VALIDATE(_ccs_serialize_bin_size_ccs_configuration_space_data(
+		data, cum_size));
+	return CCS_SUCCESS;
+}
+
+static inline ccs_result_t
+_ccs_serialize_bin_ccs_configuration_space(
+		ccs_configuration_space_t   configuration_space,
+		size_t                     *buffer_size,
+		char                      **buffer) {
+	_ccs_configuration_space_data_t *data =
+		(_ccs_configuration_space_data_t *)(configuration_space->data);
+	CCS_VALIDATE(_ccs_serialize_bin_ccs_object_internal(
+		(_ccs_object_internal_t *)configuration_space, buffer_size, buffer));
+	CCS_VALIDATE(_ccs_serialize_bin_ccs_configuration_space_data(
+		data, buffer_size, buffer));
+	return CCS_SUCCESS;
+}
+
+static ccs_result_t
+_ccs_configuration_space_serialize_size(
+		ccs_object_t            object,
+		ccs_serialize_format_t  format,
+		size_t                 *cum_size) {
+	switch(format) {
+	case CCS_SERIALIZE_FORMAT_BINARY:
+		CCS_VALIDATE(_ccs_serialize_bin_size_ccs_configuration_space(
+			(ccs_configuration_space_t)object, cum_size));
+		break;
+	default:
+		return -CCS_INVALID_VALUE;
+	}
+	return CCS_SUCCESS;
+}
+
+static ccs_result_t
+_ccs_configuration_space_serialize(
+		ccs_object_t             object,
+		ccs_serialize_format_t   format,
+		size_t                  *buffer_size,
+		char                   **buffer) {
+	switch(format) {
+	case CCS_SERIALIZE_FORMAT_BINARY:
+		CCS_VALIDATE(_ccs_serialize_bin_ccs_configuration_space(
+		    (ccs_configuration_space_t)object, buffer_size, buffer));
+		break;
+	default:
+		return -CCS_INVALID_VALUE;
+	}
+	return CCS_SUCCESS;
+}
+
 static _ccs_configuration_space_ops_t _configuration_space_ops =
-    { { {&_ccs_configuration_space_del, NULL, NULL} } };
+    { { {&_ccs_configuration_space_del,
+         &_ccs_configuration_space_serialize_size,
+         &_ccs_configuration_space_serialize} } };
 
 static const UT_icd _hyperparameter_wrapper_icd = {
 	sizeof(_ccs_hyperparameter_wrapper_cs_t),

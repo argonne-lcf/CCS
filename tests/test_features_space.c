@@ -264,13 +264,12 @@ void test_features() {
 
 void test_deserialize() {
 	ccs_hyperparameter_t  hyperparameters[3], hyperparameters_new[3];
-	ccs_features_space_t  features_space;
+	ccs_features_space_t  features_space, features_space_ref;
 	ccs_map_t             map;
 	ccs_result_t          err;
 	char                 *buff;
 	size_t                buff_size;
 	ccs_datum_t           d;
-	ccs_bool_t            found;
 
 	err = ccs_create_features_space("my_config_space", NULL,
 	                                &features_space);
@@ -299,6 +298,7 @@ void test_deserialize() {
 		err = ccs_release_object(hyperparameters[i]);
 		assert( err == CCS_SUCCESS );
 	}
+	features_space_ref = features_space;
 	err = ccs_release_object(features_space);
 	assert( err == CCS_SUCCESS );
 
@@ -328,16 +328,12 @@ void test_deserialize() {
 	err = ccs_features_space_get_hyperparameter_by_name(features_space, "param3", &hyperparameters_new[2]);
 	assert( err == CCS_SUCCESS );
 
-	for (size_t i = 0; i < 3; i++) {
-		err = ccs_map_exist(map, ccs_object(hyperparameters[i]), &found);
-		assert( err == CCS_SUCCESS );
-		assert( found );
-		err = ccs_map_get(map, ccs_object(hyperparameters[i]), &d);
-		assert( err == CCS_SUCCESS );
-		assert( d.type == CCS_OBJECT );
-		assert( d.value.o == hyperparameters_new[i] );
-	}
-	
+	err = ccs_map_get(map, ccs_object(features_space_ref), &d);
+	assert( err == CCS_SUCCESS );
+	fprintf(stderr, "%d\n", d.type);
+	assert( d.type == CCS_OBJECT );
+	assert( d.value.o == features_space );
+
 	err = ccs_release_object(map);
 	assert( err == CCS_SUCCESS );
 	err = ccs_release_object(features_space);
