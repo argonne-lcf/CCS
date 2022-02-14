@@ -48,6 +48,7 @@ libcconfigspace_la_SOURCES = \
 	expression_deserialize.h \
 	objective_space.c \
 	objective_space_internal.h \
+	objective_space_deserialize.h \
 	evaluation.c \
 	evaluation_internal.h \
 	tuner.c \
