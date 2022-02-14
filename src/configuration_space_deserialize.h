@@ -3,20 +3,22 @@
 #include "context_deserialize.h"
 #include "expression_deserialize.h"
 #include "distribution_deserialize.h"
+#include "rng_deserialize.h"
 
 struct _ccs_configuration_space_data_mock_s {
-	const char               *name;
-	size_t                    num_hyperparameters;
-	size_t                    num_conditions;
-	size_t                    num_distributions;
-	size_t                    num_forbidden_clauses;
-	ccs_hyperparameter_t     *hyperparameters;
-	size_t                   *cond_hyperparameter_indices;
-	ccs_expression_t         *conditions;
-	ccs_distribution_t       *distributions;
-	size_t                   *dimensions;
-	size_t                   *distrib_hyperparameter_indices;
-	ccs_expression_t         *forbidden_clauses;
+	const char           *name;
+	size_t                num_hyperparameters;
+	size_t                num_conditions;
+	size_t                num_distributions;
+	size_t                num_forbidden_clauses;
+	ccs_rng_t             rng;
+	ccs_hyperparameter_t *hyperparameters;
+	size_t               *cond_hyperparameter_indices;
+	ccs_expression_t     *conditions;
+	ccs_distribution_t   *distributions;
+	size_t               *dimensions;
+	size_t               *distrib_hyperparameter_indices;
+	ccs_expression_t     *forbidden_clauses;
 };
 typedef struct _ccs_configuration_space_data_mock_s _ccs_configuration_space_data_mock_t;
 
@@ -44,6 +46,8 @@ _ccs_deserialize_bin_ccs_configuration_space_data(
 	CCS_VALIDATE(_ccs_deserialize_bin_uint64(
 		&num, buffer_size, buffer));
 	data->num_forbidden_clauses = num;
+	CCS_VALIDATE(_ccs_deserialize_bin_rng(
+		&data->rng, version, buffer_size, buffer, opts));
 
 	if (!(data->num_hyperparameters + data->num_conditions + data->num_distributions + data->num_forbidden_clauses))
 		return CCS_SUCCESS;
@@ -126,11 +130,13 @@ _ccs_deserialize_bin_configuration_space(
 	new_opts.map_values = CCS_TRUE;
 	CCS_VALIDATE(ccs_create_map(&new_opts.handle_map));
 
-	_ccs_configuration_space_data_mock_t data = {NULL, 0, 0, 0, 0, NULL, NULL, NULL, NULL, NULL, NULL, NULL};
+	_ccs_configuration_space_data_mock_t data = {NULL, 0, 0, 0, 0, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL};
 	CCS_VALIDATE_ERR_GOTO(res, _ccs_deserialize_bin_ccs_configuration_space_data(
 		&data, version, buffer_size, buffer, &new_opts), end);
 	CCS_VALIDATE_ERR_GOTO(res, ccs_create_configuration_space(
 		data.name, obj.user_data, configuration_space_ret), end);
+	CCS_VALIDATE_ERR_GOTO(res, ccs_configuration_space_set_rng(
+		*configuration_space_ret, data.rng), end);
 	CCS_VALIDATE_ERR_GOTO(res, ccs_configuration_space_add_hyperparameters(
 		*configuration_space_ret, data.num_hyperparameters, data.hyperparameters, NULL),
 		err_configuration_space);
@@ -161,6 +167,8 @@ err_configuration_space:
 	ccs_release_object(*configuration_space_ret);
 	*configuration_space_ret = NULL;
 end:
+	if (data.rng)
+		ccs_release_object(data.rng);
 	if (data.hyperparameters)
 		for (size_t i = 0; i < data.num_hyperparameters; i++)
 			if(data.hyperparameters[i])

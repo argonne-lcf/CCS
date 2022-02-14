@@ -3,6 +3,7 @@
 #include "configuration_internal.h"
 #include "distribution_internal.h"
 #include "expression_internal.h"
+#include "rng_internal.h"
 #include "utlist.h"
 
 static ccs_result_t
@@ -71,6 +72,10 @@ _ccs_serialize_bin_size_ccs_configuration_space_data(
 	*cum_size += _ccs_serialize_bin_size_uint64(
 		utarray_len(data->forbidden_clauses));
 
+	/* rng */
+	CCS_VALIDATE(data->rng->obj.ops->serialize_size(
+		data->rng, CCS_SERIALIZE_FORMAT_BINARY, cum_size));
+
 	/* hyperparameters */
 	wrapper = NULL;
 	while ( (wrapper = (_ccs_hyperparameter_wrapper_cs_t *)utarray_next(data->hyperparameters, wrapper)) )
@@ -138,6 +143,10 @@ _ccs_serialize_bin_ccs_configuration_space_data(
 
 	CCS_VALIDATE(_ccs_serialize_bin_uint64(
 		utarray_len(data->forbidden_clauses), buffer_size, buffer));
+
+	/* rng */
+	CCS_VALIDATE(data->rng->obj.ops->serialize(
+		data->rng, CCS_SERIALIZE_FORMAT_BINARY, buffer_size, buffer));
 
 	/* hyperparameters */
 	wrapper = NULL;
