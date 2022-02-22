@@ -1,5 +1,8 @@
 ACLOCAL_AMFLAGS = -I m4
-SUBDIRS = src include tests samples connectors
+SUBDIRS = src include tests connectors
+if SAMPLES
+SUBDIRS += samples
+endif
 
 pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = cconfigspace.pc

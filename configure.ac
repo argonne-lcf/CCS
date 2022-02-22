@@ -43,6 +43,9 @@ AC_ARG_ENABLE([kokkos-connector],
                [], [enable_kokkos_connector=yes])
 AM_CONDITIONAL([KOKKOS], [test "x$enable_kokkos_connector" = xyes])
 
+AC_ARG_ENABLE([samples], AS_HELP_STRING([--enable-samples], [Enable interoperability samples]))
+AM_CONDITIONAL([SAMPLES], [test "x$enable_samples" = xyes])
+
 # Check Ruby
 PKG_CHECK_MODULES([RUBY], [ruby >= 2.3], [HAVE_RB=yes], [HAVE_RB=no])
 if test "x$HAVE_RB" != xyes;
@@ -64,7 +67,10 @@ then
   fi
 fi
 AM_CONDITIONAL([HAVE_RUBY], [test "x$HAVE_RB" = xyes])
-PKG_CHECK_MODULES([PYTHON], [python3-embed >= 3.6])
+if test "x$enable_samples" = xyes;
+then
+  PKG_CHECK_MODULES([PYTHON], [python3-embed >= 3.6])
+fi
 
 #check for libraries
 AC_CHECK_LIB([m],[cos])
@@ -83,12 +89,15 @@ AC_CONFIG_FILES([Makefile
 		include/Makefile
 		src/Makefile
 		tests/Makefile
-		samples/Makefile
 		connectors/Makefile
 		cconfigspace.pc])
+if test "x$enable_samples" = xyes
+then
+  AC_CONFIG_FILES([samples/Makefile])
+fi
 if test "x$enable_kokkos_connector" = xyes
 then
-AC_CONFIG_FILES([connectors/kokkos/Makefile])
+  AC_CONFIG_FILES([connectors/kokkos/Makefile])
 fi
 AC_CONFIG_LINKS([samples/test_ruby.rb:samples/test_ruby.rb
                  samples/test_python.py:samples/test_python.py])
