@@ -43,7 +43,9 @@ AC_ARG_ENABLE([kokkos-connector],
                [], [enable_kokkos_connector=yes])
 AM_CONDITIONAL([KOKKOS], [test "x$enable_kokkos_connector" = xyes])
 
-AC_ARG_ENABLE([samples], AS_HELP_STRING([--enable-samples], [Enable interoperability samples]))
+AC_ARG_ENABLE([samples],
+              AS_HELP_STRING([--enable-samples], [Enable interoperability samples]),
+              [], [enable_samples=yes])
 AM_CONDITIONAL([SAMPLES], [test "x$enable_samples" = xyes])
 
 # Check Ruby
