@@ -202,7 +202,7 @@ _ccs_deserialize_bin_ccs_binding_data(
 		&num_values, buffer_size, buffer));
 	data->num_values = num_values;
 	if (num_values) {
-		data->values = calloc(num_values, sizeof(ccs_datum_t));
+		data->values = (ccs_datum_t *)calloc(num_values, sizeof(ccs_datum_t));
 		if (!data->values)
 			return -CCS_OUT_OF_MEMORY;
 		for (size_t i = 0; i < data->num_values; i++)
