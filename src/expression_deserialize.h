@@ -34,7 +34,7 @@ _ccs_deserialize_bin_ccs_expression_data(
 	data->num_nodes = num_nodes;
 	if (num_nodes) {
 		data->nodes = (ccs_datum_t *)
-			calloc(data->num_nodes, sizeof(ccs_datum_t));
+			calloc(num_nodes, sizeof(ccs_datum_t));
 		if (!data->nodes)
 			return -CCS_OUT_OF_MEMORY;
 		for (size_t i = 0; i < data->num_nodes; i++) {
