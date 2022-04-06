@@ -378,6 +378,72 @@ ccs_hyperparameter_t create_numerical(const char * name) {
 	return hyperparameter;
 }
 
+void test_configuration_deserialize() {
+	ccs_hyperparameter_t       hyperparameters[3];
+	ccs_configuration_space_t  configuration_space;
+	ccs_configuration_t        configuration, configuration_ref;
+	char                      *buff;
+	size_t                     buff_size;
+	ccs_map_t                  map;
+	ccs_datum_t                d;
+	ccs_result_t               err;
+	int                        cmp;
+
+	err = ccs_create_configuration_space("my_config_space", NULL,
+	                                     &configuration_space);
+	assert( err == CCS_SUCCESS );
+
+	hyperparameters[0] = create_numerical("param1");
+	hyperparameters[1] = create_numerical("param2");
+	hyperparameters[2] = create_numerical("param3");
+	err = ccs_configuration_space_add_hyperparameters(configuration_space, 3,
+	                                                  hyperparameters, NULL);
+	assert( err == CCS_SUCCESS );
+	err = ccs_configuration_space_sample(configuration_space, &configuration_ref);
+	assert( err == CCS_SUCCESS );
+
+	err = ccs_create_map(&map);
+	assert( err == CCS_SUCCESS );
+	err = ccs_object_serialize(configuration_ref, CCS_SERIALIZE_FORMAT_BINARY, CCS_SERIALIZE_TYPE_SIZE, &buff_size);
+	assert( err == CCS_SUCCESS );
+	buff = (char *)malloc(buff_size);
+	assert( buff );
+
+	err = ccs_object_serialize(configuration_ref, CCS_SERIALIZE_FORMAT_BINARY, CCS_SERIALIZE_TYPE_MEMORY, buff_size, buff);
+	assert( err == CCS_SUCCESS );
+
+	err = ccs_object_deserialize((ccs_object_t*)&configuration, CCS_SERIALIZE_FORMAT_BINARY, CCS_SERIALIZE_TYPE_MEMORY, buff_size, buff,
+	                             CCS_DESERIALIZE_OPTION_HANDLE_MAP, map, CCS_DESERIALIZE_OPTION_END);
+	assert( err == -CCS_INVALID_HANDLE );
+
+	d = ccs_object(configuration_space);
+	d.flags |= CCS_FLAG_ID;
+	err = ccs_map_set(map, d, ccs_object(configuration_space));
+	assert( err == CCS_SUCCESS );
+
+	err = ccs_object_deserialize((ccs_object_t*)&configuration, CCS_SERIALIZE_FORMAT_BINARY, CCS_SERIALIZE_TYPE_MEMORY, buff_size, buff,
+	                             CCS_DESERIALIZE_OPTION_HANDLE_MAP, map, CCS_DESERIALIZE_OPTION_END);
+	assert( err == CCS_SUCCESS );
+
+	err = ccs_configuration_cmp(configuration_ref, configuration, &cmp);
+	assert( err == CCS_SUCCESS );
+	assert( !cmp );
+
+	free(buff);
+	err = ccs_release_object(configuration_space);
+	assert( err == CCS_SUCCESS );
+	err = ccs_release_object(configuration_ref);
+	assert( err == CCS_SUCCESS );
+	err = ccs_release_object(configuration);
+	assert( err == CCS_SUCCESS );
+	err = ccs_release_object(map);
+	assert( err == CCS_SUCCESS );
+	for (size_t i = 0; i < 3; i++) {
+		err = ccs_release_object(hyperparameters[i]);
+		assert( err == CCS_SUCCESS );
+	}
+}
+
 void test_deserialize() {
 	ccs_hyperparameter_t       hyperparameters[3];
 	ccs_configuration_space_t  space, space_ref;
@@ -547,6 +613,7 @@ int main() {
 	test_sample();
 	test_set_distribution();
 	test_deserialize();
+	test_configuration_deserialize();
 	ccs_fini();
 	return 0;
 }

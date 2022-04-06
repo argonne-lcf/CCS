@@ -192,16 +192,13 @@ _ccs_deserialize_bin_ccs_binding_data(
 		size_t                             *buffer_size,
 		const char                        **buffer) {
 	(void)version;
-	data->context = NULL;
-	data->num_values = 0;
-	data->values = NULL;
 	CCS_VALIDATE(_ccs_deserialize_bin_ccs_object(
 		(ccs_object_t *)&data->context, buffer_size, buffer));
 	uint64_t num_values;
 	CCS_VALIDATE(_ccs_deserialize_bin_uint64(
 		&num_values, buffer_size, buffer));
 	data->num_values = num_values;
-	if (num_values) {
+	if (data->num_values) {
 		data->values = (ccs_datum_t *)calloc(num_values, sizeof(ccs_datum_t));
 		if (!data->values)
 			return -CCS_OUT_OF_MEMORY;

@@ -43,6 +43,7 @@ libcconfigspace_la_SOURCES = \
 	binding_internal.h \
 	configuration.c \
 	configuration_internal.h \
+	configuration_deserialize.h \
 	expression.c \
 	expression_internal.h \
 	expression_deserialize.h \
@@ -60,6 +61,7 @@ libcconfigspace_la_SOURCES = \
 	features_space_deserialize.h \
 	features.c \
 	features_internal.h \
+	features_deserialize.h \
 	features_evaluation.c \
 	features_evaluation_internal.h \
 	features_tuner.c \
