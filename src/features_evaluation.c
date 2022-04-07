@@ -16,6 +16,87 @@ _ccs_features_evaluation_del(ccs_object_t object) {
 	return CCS_SUCCESS;
 }
 
+static inline size_t
+_ccs_serialize_bin_size_ccs_features_evaluation_data(_ccs_features_evaluation_data_t *data) {
+	size_t sz = _ccs_serialize_bin_size_ccs_binding_data((_ccs_binding_data_t *)data);
+	sz += _ccs_serialize_bin_size_ccs_object(data->configuration);
+	sz += _ccs_serialize_bin_size_ccs_object(data->features);
+	sz += _ccs_serialize_bin_size_ccs_result(data->error);
+	return sz;
+}
+
+static inline ccs_result_t
+_ccs_serialize_bin_ccs_features_evaluation_data(
+		_ccs_features_evaluation_data_t  *data,
+		size_t                           *buffer_size,
+		char                            **buffer) {
+	CCS_VALIDATE(_ccs_serialize_bin_ccs_binding_data(
+		(_ccs_binding_data_t *)data, buffer_size, buffer));
+	CCS_VALIDATE(_ccs_serialize_bin_ccs_object(
+		data->configuration, buffer_size, buffer));
+	CCS_VALIDATE(_ccs_serialize_bin_ccs_object(
+		data->features, buffer_size, buffer));
+	CCS_VALIDATE(_ccs_serialize_bin_ccs_result(
+		data->error, buffer_size, buffer));
+	return CCS_SUCCESS;
+}
+
+static inline ccs_result_t
+_ccs_serialize_bin_size_ccs_features_evaluation(
+		ccs_features_evaluation_t  features_evaluation,
+		size_t                    *cum_size) {
+	*cum_size += _ccs_serialize_bin_size_ccs_object_internal(
+		(_ccs_object_internal_t *)features_evaluation);
+	*cum_size += _ccs_serialize_bin_size_ccs_features_evaluation_data(
+		features_evaluation->data);
+	return CCS_SUCCESS;
+}
+
+static inline ccs_result_t
+_ccs_serialize_bin_ccs_features_evaluation(
+		ccs_features_evaluation_t   features_evaluation,
+		size_t                     *buffer_size,
+		char                      **buffer) {
+	CCS_VALIDATE(_ccs_serialize_bin_ccs_object_internal(
+		(_ccs_object_internal_t *)features_evaluation, buffer_size, buffer));
+	CCS_VALIDATE(_ccs_serialize_bin_ccs_features_evaluation_data(
+		features_evaluation->data, buffer_size, buffer));
+	return CCS_SUCCESS;
+}
+
+static ccs_result_t
+_ccs_features_evaluation_serialize_size(
+		ccs_object_t            object,
+		ccs_serialize_format_t  format,
+		size_t                 *cum_size) {
+	switch(format) {
+	case CCS_SERIALIZE_FORMAT_BINARY:
+		CCS_VALIDATE(_ccs_serialize_bin_size_ccs_features_evaluation(
+			(ccs_features_evaluation_t)object, cum_size));
+		break;
+	default:
+		return -CCS_INVALID_VALUE;
+	}
+	return CCS_SUCCESS;
+}
+
+static ccs_result_t
+_ccs_features_evaluation_serialize(
+		ccs_object_t             object,
+		ccs_serialize_format_t   format,
+		size_t                  *buffer_size,
+		char                   **buffer) {
+	switch(format) {
+	case CCS_SERIALIZE_FORMAT_BINARY:
+		CCS_VALIDATE(_ccs_serialize_bin_ccs_features_evaluation(
+			(ccs_features_evaluation_t)object, buffer_size, buffer));
+		break;
+	default:
+		return -CCS_INVALID_VALUE;
+	}
+	return CCS_SUCCESS;
+}
+
 static ccs_result_t
 _ccs_features_evaluation_hash(_ccs_features_evaluation_data_t  *data,
                               ccs_hash_t                       *hash_ret) {
@@ -52,7 +133,9 @@ _ccs_features_evaluation_cmp(_ccs_features_evaluation_data_t *data,
 }
 
 static _ccs_features_evaluation_ops_t _features_evaluation_ops =
-    { { &_ccs_features_evaluation_del, NULL, NULL },
+    { { &_ccs_features_evaluation_del,
+        &_ccs_features_evaluation_serialize_size,
+	&_ccs_features_evaluation_serialize },
       &_ccs_features_evaluation_hash,
       &_ccs_features_evaluation_cmp };
 

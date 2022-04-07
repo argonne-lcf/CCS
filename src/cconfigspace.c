@@ -240,7 +240,9 @@ ccs_object_serialize(ccs_object_t           object,
 #include "configuration_space_deserialize.h"
 #include "objective_space_deserialize.h"
 #include "configuration_deserialize.h"
+#include "evaluation_deserialize.h"
 #include "features_deserialize.h"
+#include "features_evaluation_deserialize.h"
 
 static inline ccs_result_t
 _ccs_object_deserialize_options(ccs_serialize_format_t             format,
@@ -322,9 +324,19 @@ _ccs_object_deserialize(ccs_object_t            *object_ret,
 				(ccs_configuration_t *)object_ret,
 				format, version, buffer_size, buffer, &opts));
 			break;
+		case CCS_EVALUATION:
+			CCS_VALIDATE(_ccs_evaluation_deserialize(
+				(ccs_evaluation_t *)object_ret,
+				format, version, buffer_size, buffer, &opts));
+			break;
 		case CCS_FEATURES:
 			CCS_VALIDATE(_ccs_features_deserialize(
 				(ccs_features_t *)object_ret,
+				format, version, buffer_size, buffer, &opts));
+			break;
+		case CCS_FEATURES_EVALUATION:
+			CCS_VALIDATE(_ccs_features_evaluation_deserialize(
+				(ccs_features_evaluation_t *)object_ret,
 				format, version, buffer_size, buffer, &opts));
 			break;
 		default:

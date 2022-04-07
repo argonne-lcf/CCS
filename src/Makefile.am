@@ -23,16 +23,16 @@ libcconfigspace_la_SOURCES = \
 	distribution_mixture.c \
 	distribution_multivariate.c \
 	distribution_deserialize.h \
+	uthash.h \
+	utarray.h \
+	datum_uthash.h \
+	datum_hash.h \
 	hyperparameter.c \
 	hyperparameter_internal.h \
 	hyperparameter_numerical.c \
 	hyperparameter_string.c \
-	hyperparameter_deserialize.h \
-	uthash.h \
-	datum_uthash.h \
-	datum_hash.h \
 	hyperparameter_categorical.c \
-	utarray.h \
+	hyperparameter_deserialize.h \
 	context.c \
 	context_internal.h \
 	context_deserialize.h \
@@ -52,6 +52,7 @@ libcconfigspace_la_SOURCES = \
 	objective_space_deserialize.h \
 	evaluation.c \
 	evaluation_internal.h \
+	evaluation_deserialize.h \
 	tuner.c \
 	tuner_internal.h \
 	tuner_random.c \
@@ -64,6 +65,7 @@ libcconfigspace_la_SOURCES = \
 	features_deserialize.h \
 	features_evaluation.c \
 	features_evaluation_internal.h \
+	features_evaluation_deserialize.h \
 	features_tuner.c \
 	features_tuner_internal.h \
 	features_tuner_random.c \

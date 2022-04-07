@@ -28,8 +28,8 @@ struct _ccs_evaluation_data_s {
 	ccs_objective_space_t  objective_space;
 	size_t                 num_values;
 	ccs_datum_t           *values;
-	ccs_result_t           error;
 	ccs_configuration_t    configuration;
+	ccs_result_t           error;
 };
 
 #endif //_EVALUATION_INTERNAL_H

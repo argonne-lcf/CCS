@@ -303,6 +303,7 @@ CCS_CONVERTER(ccs_scale_type, ccs_scale_type_t, 32)
 CCS_CONVERTER(ccs_distribution_type, ccs_distribution_type_t, 32)
 CCS_CONVERTER(ccs_expression_type, ccs_expression_type_t, 32)
 CCS_CONVERTER(ccs_objective_type, ccs_objective_type_t, 32)
+CCS_CONVERTER(ccs_result, ccs_result_t, 32)
 CCS_CONVERTER(ccs_object, ccs_object_t, 64)
 CCS_CONVERTER(ccs_user_data, ccs_user_data_t, 64)
 

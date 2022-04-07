@@ -1,0 +1,119 @@
+#ifndef _FEATURES_EVALUATION_DESERIALIZE_H
+#define _FEATURES_EVALUATION_DESERIALIZE_H
+#include "cconfigspace_internal.h"
+#include "features_evaluation_internal.h"
+
+struct _ccs_features_evaluation_data_mock_s {
+	_ccs_binding_data_t base;
+	ccs_configuration_t configuration;
+	ccs_features_t      features;
+	ccs_result_t        error;
+};
+typedef struct _ccs_features_evaluation_data_mock_s _ccs_features_evaluation_data_mock_t;
+
+static inline ccs_result_t
+_ccs_deserialize_bin_ccs_features_evaluation_data(
+		_ccs_features_evaluation_data_mock_t  *data,
+		uint32_t                               version,
+		size_t                                *buffer_size,
+		const char                           **buffer) {
+	CCS_VALIDATE(_ccs_deserialize_bin_ccs_binding_data(
+		&data->base, version, buffer_size, buffer));
+	CCS_VALIDATE(_ccs_deserialize_bin_ccs_object(
+		(ccs_object_t *)&data->configuration, buffer_size, buffer));
+	CCS_VALIDATE(_ccs_deserialize_bin_ccs_object(
+		(ccs_object_t *)&data->features, buffer_size, buffer));
+	CCS_VALIDATE(_ccs_deserialize_bin_ccs_result(
+		&data->error, buffer_size, buffer));
+	return CCS_SUCCESS;
+}
+
+static inline ccs_result_t
+_ccs_deserialize_bin_features_evaluation(
+		ccs_features_evaluation_t          *features_evaluation_ret,
+		uint32_t                            version,
+		size_t                             *buffer_size,
+		const char                        **buffer,
+		_ccs_object_deserialize_options_t  *opts) {
+	CCS_CHECK_PTR(opts);
+	CCS_CHECK_OBJ(opts->handle_map, CCS_MAP);
+	_ccs_object_internal_t obj;
+	ccs_object_t handle;
+	ccs_datum_t d;
+	ccs_objective_space_t os;
+	ccs_configuration_t c;
+	ccs_features_t f;
+	ccs_result_t res = CCS_SUCCESS;
+	CCS_VALIDATE(_ccs_deserialize_bin_ccs_object_internal(
+		&obj, buffer_size, buffer, &handle));
+	if (CCS_UNLIKELY(obj.type != CCS_FEATURES_EVALUATION))
+		return -CCS_INVALID_TYPE;
+
+	_ccs_features_evaluation_data_mock_t data = { {NULL, 0, NULL}, NULL, NULL, CCS_SUCCESS};
+	CCS_VALIDATE_ERR_GOTO(res, _ccs_deserialize_bin_ccs_features_evaluation_data(
+		&data, version, buffer_size, buffer), end);
+
+	CCS_VALIDATE_ERR_GOTO(res, ccs_map_get(
+		opts->handle_map, ccs_object(data.base.context), &d), end);
+	if (CCS_UNLIKELY(d.type != CCS_OBJECT)) {
+		res = -CCS_INVALID_HANDLE;
+		goto end;
+	}
+	os = (ccs_objective_space_t)(d.value.o);
+
+	CCS_VALIDATE_ERR_GOTO(res, ccs_map_get(
+		opts->handle_map, ccs_object(data.configuration), &d), end);
+	if (CCS_UNLIKELY(d.type != CCS_OBJECT)) {
+		res = -CCS_INVALID_HANDLE;
+		goto end;
+	}
+	c = (ccs_configuration_t)(d.value.o);
+
+	CCS_VALIDATE_ERR_GOTO(res, ccs_map_get(
+		opts->handle_map, ccs_object(data.features), &d), end);
+	if (CCS_UNLIKELY(d.type != CCS_OBJECT)) {
+		res = -CCS_INVALID_HANDLE;
+		goto end;
+	}
+	f = (ccs_features_t)(d.value.o);
+
+	CCS_VALIDATE_ERR_GOTO(res, ccs_create_features_evaluation(
+		os, c, f, data.error, data.base.num_values, data.base.values, obj.user_data, features_evaluation_ret), end);
+
+	if (opts->map_values)
+		CCS_VALIDATE_ERR_GOTO(res,
+			_ccs_object_handle_check_add(
+				opts->handle_map, handle,
+				(ccs_object_t)*features_evaluation_ret),
+			err_features_evaluation);
+	goto end;
+
+err_features_evaluation:
+	ccs_release_object(*features_evaluation_ret);
+	*features_evaluation_ret = NULL;
+end:
+	if (data.base.values)
+		free(data.base.values);
+	return res;
+}
+
+static ccs_result_t
+_ccs_features_evaluation_deserialize(
+		ccs_features_evaluation_t          *features_evaluation_ret,
+		ccs_serialize_format_t              format,
+		uint32_t                            version,
+		size_t                             *buffer_size,
+		const char                        **buffer,
+		_ccs_object_deserialize_options_t  *opts) {
+	switch(format) {
+	case CCS_SERIALIZE_FORMAT_BINARY:
+		CCS_VALIDATE(_ccs_deserialize_bin_features_evaluation(
+			features_evaluation_ret, version, buffer_size, buffer, opts));
+		break;
+	default:
+		return -CCS_INVALID_VALUE;
+	}
+	return CCS_SUCCESS;
+}
+
+#endif //_FEATURES_EVALUATION_DESERIALIZE_H
