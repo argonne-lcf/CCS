@@ -1,5 +1,7 @@
 #include "cconfigspace_internal.h"
 #include "features_evaluation_internal.h"
+#include "configuration_internal.h"
+#include "features_internal.h"
 #include <string.h>
 
 static inline _ccs_features_evaluation_ops_t *
@@ -16,13 +18,17 @@ _ccs_features_evaluation_del(ccs_object_t object) {
 	return CCS_SUCCESS;
 }
 
-static inline size_t
-_ccs_serialize_bin_size_ccs_features_evaluation_data(_ccs_features_evaluation_data_t *data) {
-	size_t sz = _ccs_serialize_bin_size_ccs_binding_data((_ccs_binding_data_t *)data);
-	sz += _ccs_serialize_bin_size_ccs_object(data->configuration);
-	sz += _ccs_serialize_bin_size_ccs_object(data->features);
-	sz += _ccs_serialize_bin_size_ccs_result(data->error);
-	return sz;
+static inline ccs_result_t
+_ccs_serialize_bin_size_ccs_features_evaluation_data(
+		_ccs_features_evaluation_data_t *data,
+		size_t                          *cum_size) {
+	*cum_size += _ccs_serialize_bin_size_ccs_binding_data((_ccs_binding_data_t *)data);
+	CCS_VALIDATE(data->configuration->obj.ops->serialize_size(
+		data->configuration, CCS_SERIALIZE_FORMAT_BINARY, cum_size));
+	CCS_VALIDATE(data->features->obj.ops->serialize_size(
+		data->features, CCS_SERIALIZE_FORMAT_BINARY, cum_size));
+	*cum_size += _ccs_serialize_bin_size_ccs_result(data->error);
+	return CCS_SUCCESS;
 }
 
 static inline ccs_result_t
@@ -32,10 +38,10 @@ _ccs_serialize_bin_ccs_features_evaluation_data(
 		char                            **buffer) {
 	CCS_VALIDATE(_ccs_serialize_bin_ccs_binding_data(
 		(_ccs_binding_data_t *)data, buffer_size, buffer));
-	CCS_VALIDATE(_ccs_serialize_bin_ccs_object(
-		data->configuration, buffer_size, buffer));
-	CCS_VALIDATE(_ccs_serialize_bin_ccs_object(
-		data->features, buffer_size, buffer));
+	CCS_VALIDATE(data->configuration->obj.ops->serialize(
+		data->configuration, CCS_SERIALIZE_FORMAT_BINARY, buffer_size, buffer));
+	CCS_VALIDATE(data->features->obj.ops->serialize(
+		data->features, CCS_SERIALIZE_FORMAT_BINARY, buffer_size, buffer));
 	CCS_VALIDATE(_ccs_serialize_bin_ccs_result(
 		data->error, buffer_size, buffer));
 	return CCS_SUCCESS;
@@ -47,8 +53,8 @@ _ccs_serialize_bin_size_ccs_features_evaluation(
 		size_t                    *cum_size) {
 	*cum_size += _ccs_serialize_bin_size_ccs_object_internal(
 		(_ccs_object_internal_t *)features_evaluation);
-	*cum_size += _ccs_serialize_bin_size_ccs_features_evaluation_data(
-		features_evaluation->data);
+	CCS_VALIDATE(_ccs_serialize_bin_size_ccs_features_evaluation_data(
+		features_evaluation->data, cum_size));
 	return CCS_SUCCESS;
 }
 

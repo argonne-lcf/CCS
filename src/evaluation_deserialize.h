@@ -2,6 +2,7 @@
 #define _EVALUATION_DESERIALIZE_H
 #include "cconfigspace_internal.h"
 #include "evaluation_internal.h"
+#include "configuration_deserialize.h"
 
 struct _ccs_evaluation_data_mock_s {
 	_ccs_binding_data_t base;
@@ -12,14 +13,15 @@ typedef struct _ccs_evaluation_data_mock_s _ccs_evaluation_data_mock_t;
 
 static inline ccs_result_t
 _ccs_deserialize_bin_ccs_evaluation_data(
-		_ccs_evaluation_data_mock_t  *data,
-		uint32_t                      version,
-		size_t                       *buffer_size,
-		const char                  **buffer) {
+		_ccs_evaluation_data_mock_t        *data,
+		uint32_t                            version,
+		size_t                             *buffer_size,
+		const char                        **buffer,
+		_ccs_object_deserialize_options_t  *opts) {
 	CCS_VALIDATE(_ccs_deserialize_bin_ccs_binding_data(
 		&data->base, version, buffer_size, buffer));
-	CCS_VALIDATE(_ccs_deserialize_bin_ccs_object(
-		(ccs_object_t *)&data->configuration, buffer_size, buffer));
+	CCS_VALIDATE(_ccs_deserialize_bin_configuration(
+		&data->configuration, version, buffer_size, buffer, opts));
 	CCS_VALIDATE(_ccs_deserialize_bin_ccs_result(
 		&data->error, buffer_size, buffer));
 	return CCS_SUCCESS;
@@ -38,7 +40,6 @@ _ccs_deserialize_bin_evaluation(
 	ccs_object_t handle;
 	ccs_datum_t d;
 	ccs_objective_space_t os;
-	ccs_configuration_t c;
 	ccs_result_t res = CCS_SUCCESS;
 	CCS_VALIDATE(_ccs_deserialize_bin_ccs_object_internal(
 		&obj, buffer_size, buffer, &handle));
@@ -47,7 +48,7 @@ _ccs_deserialize_bin_evaluation(
 
 	_ccs_evaluation_data_mock_t data = { {NULL, 0, NULL}, NULL, CCS_SUCCESS};
 	CCS_VALIDATE_ERR_GOTO(res, _ccs_deserialize_bin_ccs_evaluation_data(
-		&data, version, buffer_size, buffer), end);
+		&data, version, buffer_size, buffer, opts), end);
 
 	CCS_VALIDATE_ERR_GOTO(res, ccs_map_get(
 		opts->handle_map, ccs_object(data.base.context), &d), end);
@@ -57,16 +58,8 @@ _ccs_deserialize_bin_evaluation(
 	}
 	os = (ccs_objective_space_t)(d.value.o);
 
-	CCS_VALIDATE_ERR_GOTO(res, ccs_map_get(
-		opts->handle_map, ccs_object(data.configuration), &d), end);
-	if (CCS_UNLIKELY(d.type != CCS_OBJECT)) {
-		res = -CCS_INVALID_HANDLE;
-		goto end;
-	}
-	c = (ccs_configuration_t)(d.value.o);
-
 	CCS_VALIDATE_ERR_GOTO(res, ccs_create_evaluation(
-		os, c, data.error, data.base.num_values, data.base.values, obj.user_data, evaluation_ret), end);
+		os, data.configuration, data.error, data.base.num_values, data.base.values, obj.user_data, evaluation_ret), end);
 
 	if (opts->map_values)
 		CCS_VALIDATE_ERR_GOTO(res,
@@ -80,6 +73,8 @@ err_evaluation:
 	ccs_release_object(*evaluation_ret);
 	*evaluation_ret = NULL;
 end:
+	if (data.configuration)
+		ccs_release_object(data.configuration);
 	if (data.base.values)
 		free(data.base.values);
 	return res;

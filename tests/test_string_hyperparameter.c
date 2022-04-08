@@ -55,7 +55,6 @@ void test_create() {
 	err = ccs_object_serialize(hyperparameter, CCS_SERIALIZE_FORMAT_BINARY, CCS_SERIALIZE_TYPE_SIZE, &buff_size);
 	assert( err == CCS_SUCCESS );
 
-	fprintf(stderr, "%zu\n", buff_size);
 	buff = (char *)malloc(buff_size);
 	assert( buff );
 

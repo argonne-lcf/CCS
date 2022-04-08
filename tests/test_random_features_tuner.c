@@ -260,18 +260,18 @@ void test_evaluation_deserialize() {
 	                             CCS_DESERIALIZE_OPTION_HANDLE_MAP, map, CCS_DESERIALIZE_OPTION_END);
 	assert( err == -CCS_INVALID_HANDLE );
 
-	d = ccs_object(features_on);
+	d = ccs_object(fspace);
 	d.flags |= CCS_FLAG_ID;
-	err = ccs_map_set(map, d, ccs_object(features_on));
+	err = ccs_map_set(map, d, ccs_object(fspace));
 	assert( err == CCS_SUCCESS );
 
 	err = ccs_object_deserialize((ccs_object_t*)&evaluation, CCS_SERIALIZE_FORMAT_BINARY, CCS_SERIALIZE_TYPE_MEMORY, buff_size, buff,
 	                             CCS_DESERIALIZE_OPTION_HANDLE_MAP, map, CCS_DESERIALIZE_OPTION_END);
 	assert( err == -CCS_INVALID_HANDLE );
 
-	d = ccs_object(configuration);
+	d = ccs_object(cspace);
 	d.flags |= CCS_FLAG_ID;
-	err = ccs_map_set(map, d, ccs_object(configuration));
+	err = ccs_map_set(map, d, ccs_object(cspace));
 	assert( err == CCS_SUCCESS );
 
 	err = ccs_object_deserialize((ccs_object_t*)&evaluation, CCS_SERIALIZE_FORMAT_BINARY, CCS_SERIALIZE_TYPE_MEMORY, buff_size, buff,

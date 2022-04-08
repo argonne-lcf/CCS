@@ -21,8 +21,12 @@ void test() {
 	ccs_configuration_space_t cspace;
 	ccs_objective_space_t     ospace;
 	ccs_expression_t          expression;
-	ccs_tuner_t               tuner;
+	ccs_tuner_t               tuner, tuner_copy;
 	ccs_result_t              err;
+	ccs_datum_t               d;
+	char                     *buff;
+	size_t                    buff_size;
+	ccs_map_t                 map;
 
 	hyperparameter1 = create_numerical("x", -5.0, 5.0);
 	hyperparameter2 = create_numerical("y", -5.0, 5.0);
@@ -90,6 +94,39 @@ void test() {
 	err = ccs_evaluation_get_objective_value(evaluation, 0, &res);
 	assert( res.value.f == min.value.f );
 
+	/* Test (de)serialization */
+	err = ccs_create_map(&map);
+	assert( err == CCS_SUCCESS );
+	err = ccs_object_serialize(tuner, CCS_SERIALIZE_FORMAT_BINARY, CCS_SERIALIZE_TYPE_SIZE, &buff_size);
+	assert( err == CCS_SUCCESS );
+	buff = (char *)malloc(buff_size);
+	assert( buff );
+
+	err = ccs_object_serialize(tuner, CCS_SERIALIZE_FORMAT_BINARY, CCS_SERIALIZE_TYPE_MEMORY, buff_size, buff);
+	assert( err == CCS_SUCCESS );
+
+	err = ccs_object_deserialize((ccs_object_t*)&tuner_copy, CCS_SERIALIZE_FORMAT_BINARY, CCS_SERIALIZE_TYPE_MEMORY, buff_size, buff,
+	                             CCS_DESERIALIZE_OPTION_HANDLE_MAP, map, CCS_DESERIALIZE_OPTION_END);
+	assert( err == CCS_SUCCESS );
+
+	err = ccs_tuner_get_history(tuner_copy, 100, history, &count);
+	assert( err == CCS_SUCCESS );
+	assert( count == 100 );
+
+	err = ccs_tuner_get_optimums(tuner_copy, 1, &evaluation, &count);
+	assert( err == CCS_SUCCESS );
+	assert( count == 1 );
+
+	err = ccs_map_get(map, ccs_object((ccs_object_t)tuner), &d);
+	assert( err == CCS_SUCCESS );
+	assert( d.type == CCS_OBJECT );
+	assert( d.value.o == (ccs_object_t)tuner_copy );
+
+	free(buff);
+	err = ccs_release_object(map);
+	assert( err == CCS_SUCCESS );
+	err = ccs_release_object(tuner_copy);
+	assert( err == CCS_SUCCESS );
 	err = ccs_release_object(expression);
 	assert( err == CCS_SUCCESS );
 	err = ccs_release_object(hyperparameter1);
@@ -171,9 +208,9 @@ void test_evaluation_deserialize() {
 	                             CCS_DESERIALIZE_OPTION_HANDLE_MAP, map, CCS_DESERIALIZE_OPTION_END);
 	assert( err == -CCS_INVALID_HANDLE );
 
-	d = ccs_object(configuration);
+	d = ccs_object(cspace);
 	d.flags |= CCS_FLAG_ID;
-	err = ccs_map_set(map, d, ccs_object(configuration));
+	err = ccs_map_set(map, d, ccs_object(cspace));
 	assert( err == CCS_SUCCESS );
 
 	err = ccs_object_deserialize((ccs_object_t*)&evaluation, CCS_SERIALIZE_FORMAT_BINARY, CCS_SERIALIZE_TYPE_MEMORY, buff_size, buff,
