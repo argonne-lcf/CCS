@@ -566,6 +566,9 @@ ccs_init();
 extern ccs_result_t
 ccs_fini();
 
+extern ccs_result_t
+ccs_get_error_name(ccs_error_t error, const char **name);
+
 /**
  * Query the library API version.
  * @return the library API version

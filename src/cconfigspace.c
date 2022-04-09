@@ -244,6 +244,7 @@ ccs_object_serialize(ccs_object_t           object,
 #include "features_deserialize.h"
 #include "features_evaluation_deserialize.h"
 #include "tuner_deserialize.h"
+#include "features_tuner_deserialize.h"
 
 static inline ccs_result_t
 _ccs_object_deserialize_options(ccs_serialize_format_t             format,
@@ -345,6 +346,11 @@ _ccs_object_deserialize(ccs_object_t            *object_ret,
 				(ccs_tuner_t *)object_ret,
 				format, version, buffer_size, buffer, &opts));
 			break;
+		case CCS_FEATURES_TUNER:
+			CCS_VALIDATE(_ccs_features_tuner_deserialize(
+				(ccs_features_tuner_t *)object_ret,
+				format, version, buffer_size, buffer, &opts));
+			break;
 		default:
 			return -CCS_UNSUPPORTED_OPERATION;
 		}
@@ -392,3 +398,44 @@ end_memory:
 	return res;
 }
 
+#define ETOCASE(value) \
+case value: \
+  *name = #value; \
+  break
+
+ccs_result_t
+ccs_get_error_name(ccs_error_t error, const char **name) {
+	switch(-error) {
+	ETOCASE(CCS_SUCCESS);
+	ETOCASE(CCS_INVALID_OBJECT);
+	ETOCASE(CCS_INVALID_VALUE);
+	ETOCASE(CCS_INVALID_TYPE);
+	ETOCASE(CCS_INVALID_SCALE);
+	ETOCASE(CCS_INVALID_DISTRIBUTION);
+	ETOCASE(CCS_INVALID_EXPRESSION);
+	ETOCASE(CCS_INVALID_HYPERPARAMETER);
+	ETOCASE(CCS_INVALID_CONFIGURATION);
+	ETOCASE(CCS_INVALID_NAME);
+	ETOCASE(CCS_INVALID_CONDITION);
+	ETOCASE(CCS_INVALID_TUNER);
+	ETOCASE(CCS_INVALID_GRAPH);
+	ETOCASE(CCS_TYPE_NOT_COMPARABLE);
+	ETOCASE(CCS_INVALID_BOUNDS);
+	ETOCASE(CCS_OUT_OF_BOUNDS);
+	ETOCASE(CCS_SAMPLING_UNSUCCESSFUL);
+	ETOCASE(CCS_INACTIVE_HYPERPARAMETER);
+	ETOCASE(CCS_OUT_OF_MEMORY);
+	ETOCASE(CCS_UNSUPPORTED_OPERATION);
+	ETOCASE(CCS_INVALID_EVALUATION);
+	ETOCASE(CCS_INVALID_FEATURES);
+	ETOCASE(CCS_INVALID_FEATURES_TUNER);
+	ETOCASE(CCS_INVALID_FILE_PATH);
+	ETOCASE(CCS_NOT_ENOUGH_DATA);
+	ETOCASE(CCS_HANDLE_DUPLICATE);
+	ETOCASE(CCS_INVALID_HANDLE);
+	default:
+		*name = NULL;
+		return CCS_INVALID_VALUE;
+	}
+	return CCS_SUCCESS;
+}

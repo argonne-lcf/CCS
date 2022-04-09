@@ -40,6 +40,7 @@ _ccs_deserialize_bin_features_evaluation(
 		_ccs_object_deserialize_options_t  *opts) {
 	CCS_CHECK_PTR(opts);
 	CCS_CHECK_OBJ(opts->handle_map, CCS_MAP);
+	_ccs_object_deserialize_options_t new_opts = *opts;
 	_ccs_object_internal_t obj;
 	ccs_object_t handle;
 	ccs_datum_t d;
@@ -50,9 +51,10 @@ _ccs_deserialize_bin_features_evaluation(
 	if (CCS_UNLIKELY(obj.type != CCS_FEATURES_EVALUATION))
 		return -CCS_INVALID_TYPE;
 
+	new_opts.map_values = CCS_FALSE;
 	_ccs_features_evaluation_data_mock_t data = { {NULL, 0, NULL}, NULL, NULL, CCS_SUCCESS};
 	CCS_VALIDATE_ERR_GOTO(res, _ccs_deserialize_bin_ccs_features_evaluation_data(
-		&data, version, buffer_size, buffer, opts), end);
+		&data, version, buffer_size, buffer, &new_opts), end);
 
 	CCS_VALIDATE_ERR_GOTO(res, ccs_map_get(
 		opts->handle_map, ccs_object(data.base.context), &d), end);

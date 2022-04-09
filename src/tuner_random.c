@@ -28,7 +28,6 @@ _ccs_tuner_random_del(ccs_object_t o) {
 	return CCS_SUCCESS;
 }
 
-
 static inline ccs_result_t
 _ccs_serialize_bin_size_ccs_random_tuner_data(
 		_ccs_random_tuner_data_t *data,
