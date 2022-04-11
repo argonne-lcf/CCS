@@ -271,6 +271,25 @@ struct ccs_user_defined_tuner_vector_s {
 	ccs_result_t (*suggest)(
 		ccs_tuner_t          tuner,
 		ccs_configuration_t *configuration);
+
+	/** The tuner serialization interface, can be NULL, in which case
+            common tuner data, history and optimums will be serialized */
+	ccs_result_t (*serialize_user_state)(
+		ccs_tuner_t   tuner,
+		size_t        sate_size,
+		void         *state,
+		size_t       *state_size_ret);
+
+	/** The tuner deserialization interface, can be NULL, in which case,
+            the history will be set through the tell interface */
+	ccs_result_t (*deserialize_state)(
+		ccs_tuner_t       tuner,
+		size_t            size_history,
+		ccs_evaluation_t *history,
+		size_t            num_optimums,
+		ccs_evaluation_t *optimums,
+		size_t            state_size,
+		const void       *state);
 };
 
 /**

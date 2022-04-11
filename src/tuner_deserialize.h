@@ -15,23 +15,35 @@ struct _ccs_random_tuner_data_mock_s {
 typedef struct _ccs_random_tuner_data_mock_s _ccs_random_tuner_data_mock_t;
 
 static inline ccs_result_t
-_ccs_deserialize_bin_size_ccs_random_tuner_data(
-		_ccs_random_tuner_data_mock_t         *data,
-		uint32_t                               version,
-		size_t                                *buffer_size,
-		const char                           **buffer,
-		_ccs_object_deserialize_options_t     *opts) {
+_ccs_deserialize_bin_size_ccs_tuner_common_data(
+		_ccs_tuner_common_data_t           *data,
+		uint32_t                            version,
+		size_t                             *buffer_size,
+		const char                        **buffer,
+		_ccs_object_deserialize_options_t  *opts) {
+	CCS_VALIDATE(_ccs_deserialize_bin_ccs_tuner_type(
+		&data->type, buffer_size, buffer));
+	CCS_VALIDATE(_ccs_deserialize_bin_string(
+		&data->name, buffer_size, buffer));
+	CCS_VALIDATE(_ccs_deserialize_bin_configuration_space(
+		&data->configuration_space, version, buffer_size, buffer, opts));
+	CCS_VALIDATE(_ccs_deserialize_bin_objective_space(
+		&data->objective_space, version, buffer_size, buffer, opts));
+	return CCS_SUCCESS;
+}
+
+static inline ccs_result_t
+_ccs_deserialize_bin_ccs_random_tuner_data(
+		_ccs_random_tuner_data_mock_t      *data,
+		uint32_t                            version,
+		size_t                             *buffer_size,
+		const char                        **buffer,
+		_ccs_object_deserialize_options_t  *opts) {
 	uint64_t num;
 	uintptr_t mem;
 
-	CCS_VALIDATE(_ccs_deserialize_bin_ccs_tuner_type(
-		&data->common_data.type, buffer_size, buffer));
-	CCS_VALIDATE(_ccs_deserialize_bin_string(
-		&data->common_data.name, buffer_size, buffer));
-	CCS_VALIDATE(_ccs_deserialize_bin_configuration_space(
-		&data->common_data.configuration_space, version, buffer_size, buffer, opts));
-	CCS_VALIDATE(_ccs_deserialize_bin_objective_space(
-		&data->common_data.objective_space, version, buffer_size, buffer, opts));
+	CCS_VALIDATE(_ccs_deserialize_bin_size_ccs_tuner_common_data(
+		&data->common_data, version, buffer_size, buffer, opts));
 	CCS_VALIDATE(_ccs_deserialize_bin_uint64(
 		&num, buffer_size, buffer));
 	data->size_history = num;
@@ -92,8 +104,8 @@ _ccs_deserialize_bin_random_tuner(
 		_ccs_object_deserialize_options_t  *opts) {
 	_ccs_random_tuner_data_mock_t data = {{(ccs_tuner_type_t)0, NULL, NULL, NULL}, 0, 0, NULL, NULL};
 	_ccs_random_tuner_data_clone_t *odata = NULL;
-	ccs_result_t res;
-	CCS_VALIDATE_ERR_GOTO(res, _ccs_deserialize_bin_size_ccs_random_tuner_data(
+	ccs_result_t res = CCS_SUCCESS;
+	CCS_VALIDATE_ERR_GOTO(res, _ccs_deserialize_bin_ccs_random_tuner_data(
 		&data, version, buffer_size, buffer, opts), end);
 	CCS_VALIDATE_ERR_GOTO(res, ccs_create_random_tuner(
 		data.common_data.name, data.common_data.configuration_space, data.common_data.objective_space,
@@ -103,8 +115,6 @@ _ccs_deserialize_bin_random_tuner(
 		utarray_push_back(odata->history, data.history + i);
 	for (size_t i = 0; i < data.size_optimums; i++)
 		utarray_push_back(odata->optimums, data.optimums + i);
-
-	res =  CCS_SUCCESS;
 	goto end;
 tuner:
 	ccs_release_object(*tuner_ret);
@@ -123,6 +133,66 @@ end:
 }
 
 #undef  utarray_oom
+
+struct _ccs_user_defined_tuner_data_mock_s {
+	_ccs_random_tuner_data_mock_t base_data;
+	_ccs_blob_t                   blob;
+};
+typedef struct _ccs_user_defined_tuner_data_mock_s _ccs_user_defined_tuner_data_mock_t;
+
+static inline ccs_result_t
+_ccs_deserialize_bin_ccs_user_defined_tuner_data(
+		_ccs_user_defined_tuner_data_mock_t  *data,
+		uint32_t                              version,
+		size_t                               *buffer_size,
+		const char                          **buffer,
+		_ccs_object_deserialize_options_t    *opts) {
+	CCS_VALIDATE(_ccs_deserialize_bin_ccs_random_tuner_data(
+		&data->base_data, version, buffer_size, buffer, opts));
+	CCS_VALIDATE(_ccs_deserialize_bin_ccs_blob(
+		&data->blob, buffer_size, buffer));
+	return CCS_SUCCESS;
+}
+
+static inline ccs_result_t
+_ccs_deserialize_bin_user_defined_tuner(
+		_ccs_object_internal_t             *obj,
+		ccs_tuner_t                        *tuner_ret,
+		uint32_t                            version,
+		size_t                             *buffer_size,
+		const char                        **buffer,
+		_ccs_object_deserialize_options_t  *opts) {
+	_ccs_user_defined_tuner_data_mock_t data = {{{(ccs_tuner_type_t)0, NULL, NULL, NULL}, 0, 0, NULL, NULL}, {0, NULL}};
+	ccs_user_defined_tuner_vector_t *vector = (ccs_user_defined_tuner_vector_t *)opts->vector;
+	ccs_result_t res = CCS_SUCCESS;
+	CCS_VALIDATE_ERR_GOTO(res, _ccs_deserialize_bin_ccs_user_defined_tuner_data(
+		&data, version, buffer_size, buffer, opts), end);
+	CCS_VALIDATE_ERR_GOTO(res, ccs_create_user_defined_tuner(
+		data.base_data.common_data.name, data.base_data.common_data.configuration_space, data.base_data.common_data.objective_space,
+		obj->user_data, vector, opts->data, tuner_ret), evaluations);
+	if (vector->deserialize_state)
+		CCS_VALIDATE_ERR_GOTO(res, vector->deserialize_state(
+			*tuner_ret, data.base_data.size_history, data.base_data.history, data.base_data.size_optimums, data.base_data.optimums,
+			data.blob.sz, data.blob.blob), tuner);
+	else
+		CCS_VALIDATE_ERR_GOTO(res, vector->tell(
+			*tuner_ret, data.base_data.size_history, data.base_data.history), tuner);
+	goto evaluations;
+tuner:
+	ccs_release_object(*tuner_ret);
+	*tuner_ret = NULL;
+evaluations:
+	for (size_t i = 0; i < data.base_data.size_history; i++)
+		ccs_release_object(data.base_data.history[i]);
+end:
+	if (data.base_data.common_data.configuration_space)
+		ccs_release_object(data.base_data.common_data.configuration_space);
+	if (data.base_data.common_data.objective_space)
+		ccs_release_object(data.base_data.common_data.objective_space);
+	if (data.base_data.history)
+		free(data.base_data.history);
+	return res;
+}
 
 static inline ccs_result_t
 _ccs_deserialize_bin_tuner(
@@ -143,6 +213,8 @@ _ccs_deserialize_bin_tuner(
 	ccs_tuner_type_t ttype;
 	CCS_VALIDATE(_ccs_peek_bin_ccs_tuner_type(
 		&ttype, buffer_size, buffer));
+	if (ttype == CCS_TUNER_USER_DEFINED)
+		CCS_CHECK_PTR(opts->vector);
 
 	new_opts.map_values = CCS_TRUE;
 	CCS_VALIDATE(ccs_create_map(&new_opts.handle_map));
@@ -150,6 +222,10 @@ _ccs_deserialize_bin_tuner(
 	switch (ttype) {
 	case CCS_TUNER_RANDOM:
 		CCS_VALIDATE_ERR_GOTO(res, _ccs_deserialize_bin_random_tuner(
+			&obj, tuner_ret, version, buffer_size, buffer, &new_opts), end);
+		break;
+	case CCS_TUNER_USER_DEFINED:
+		CCS_VALIDATE_ERR_GOTO(res, _ccs_deserialize_bin_user_defined_tuner(
 			&obj, tuner_ret, version, buffer_size, buffer, &new_opts), end);
 		break;
 	default:
@@ -173,7 +249,7 @@ end:
 
 static ccs_result_t
 _ccs_tuner_deserialize(
-		ccs_tuner_t               *tuner_ret,
+		ccs_tuner_t                        *tuner_ret,
 		ccs_serialize_format_t              format,
 		uint32_t                            version,
 		size_t                             *buffer_size,

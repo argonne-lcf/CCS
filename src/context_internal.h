@@ -1,6 +1,9 @@
 #ifndef _CONTEXT_INTERNAL_H
 #define _CONTEXT_INTERNAL_H
 #include "utarray.h"
+#ifdef HASH_NONFATAL_OOM
+#undef HASH_NONFATAL_OOM
+#endif
 #define HASH_NONFATAL_OOM 1
 #include "uthash.h"
 #include "hyperparameter_internal.h"

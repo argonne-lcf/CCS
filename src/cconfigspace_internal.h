@@ -243,7 +243,7 @@ static inline MAPPED_TYPE _ccs_pack_ ## NAME (TYPE x) {  \
 static inline ccs_result_t                                                 \
 _ccs_serialize_bin_ ## NAME (TYPE x, size_t *buffer_size, char **buffer) { \
   if (CCS_UNLIKELY(*buffer_size < sizeof(MAPPED_TYPE)))                    \
-    return -CCS_OUT_OF_MEMORY;                                             \
+    return -CCS_NOT_ENOUGH_DATA;                                           \
   MAPPED_TYPE v = _ccs_pack_ ## NAME (x);                                  \
   memcpy(*buffer, &v, sizeof(MAPPED_TYPE));                                \
   *buffer_size -= sizeof(MAPPED_TYPE);                                     \
@@ -322,7 +322,7 @@ _ccs_serialize_bin_string(const char  *str,
 	uint64_t sz = strlen(str) + 1;
 	CCS_VALIDATE(_ccs_serialize_bin_uint64(sz, buffer_size, buffer));
 	if (CCS_UNLIKELY(*buffer_size < sz))
-		return -CCS_OUT_OF_MEMORY;
+		return -CCS_NOT_ENOUGH_DATA;
 	memcpy(*buffer, str, sz);
 	*buffer_size -= sz;
 	*buffer += sz;
@@ -362,7 +362,7 @@ _ccs_serialize_bin_ccs_blob(
 		char       **buffer) {
 	CCS_VALIDATE(_ccs_serialize_bin_uint64(b->sz, buffer_size, buffer));
 	if (CCS_UNLIKELY(*buffer_size < b->sz))
-		return -CCS_OUT_OF_MEMORY;
+		return -CCS_NOT_ENOUGH_DATA;
 	memcpy(*buffer, b->blob, b->sz);
 	*buffer_size -= b->sz;
 	*buffer += b->sz;
@@ -378,7 +378,7 @@ _ccs_deserialize_bin_ccs_blob(
 	CCS_VALIDATE(_ccs_deserialize_bin_uint64(&sz, buffer_size, buffer));
 	b->sz = sz;
 	if (CCS_UNLIKELY(*buffer_size < b->sz))
-		return -CCS_OUT_OF_MEMORY;
+		return -CCS_NOT_ENOUGH_DATA;
 	b->blob = *buffer;
 	*buffer_size -= b->sz;
 	*buffer += b->sz;
@@ -607,6 +607,8 @@ _ccs_object_handle_check_add(
 struct _ccs_object_deserialize_options_s {
 	ccs_map_t handle_map;
 	ccs_bool_t map_values;
+	void * vector;
+	void * data;
 };
 typedef struct _ccs_object_deserialize_options_s _ccs_object_deserialize_options_t;
 

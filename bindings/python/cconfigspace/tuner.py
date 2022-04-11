@@ -141,14 +141,6 @@ class RandomTuner(Tuner):
       super().__init__(handle = handle, retain = retain, auto_release = auto_release)
 
 
-class ccs_tuner_common_data(ct.Structure):
-  _fields_ = [
-    ('type', ccs_tuner_type),
-    ('name', ct.c_char_p),
-    ('user_data', ct.c_void_p),
-    ('configuration_space', ccs_configuration_space),
-    ('objective_space', ccs_objective_space) ]
-
 ccs_user_defined_tuner_del_type = ct.CFUNCTYPE(ccs_result, ccs_tuner)
 ccs_user_defined_tuner_ask_type = ct.CFUNCTYPE(ccs_result, ccs_tuner, ct.c_size_t, ct.POINTER(ccs_configuration), ct.POINTER(ct.c_size_t))
 ccs_user_defined_tuner_tell_type = ct.CFUNCTYPE(ccs_result, ccs_tuner, ct.c_size_t, ct.POINTER(ccs_evaluation))
@@ -163,7 +155,9 @@ class ccs_user_defined_tuner_vector(ct.Structure):
     ('tell', ccs_user_defined_tuner_tell_type),
     ('get_optimums', ccs_user_defined_tuner_get_optimums_type),
     ('get_history', ccs_user_defined_tuner_get_history_type),
-    ('suggest', ccs_user_defined_tuner_suggest_type) ]
+    ('suggest', ccs_user_defined_tuner_suggest_type),
+    ('serialize', ct.c_void_p),
+    ('deserialize', ct.c_void_p) ]
 
 ccs_create_user_defined_tuner = _ccs_get_function("ccs_create_user_defined_tuner", [ct.c_char_p, ccs_configuration_space, ccs_objective_space, ct.c_void_p, ct.POINTER(ccs_user_defined_tuner_vector), ct.c_void_p, ct.POINTER(ccs_tuner)])
 ccs_user_defined_tuner_get_tuner_data = _ccs_get_function("ccs_user_defined_tuner_get_tuner_data", [ccs_tuner, ct.POINTER(ct.c_void_p)])

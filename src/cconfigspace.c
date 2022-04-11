@@ -258,7 +258,13 @@ _ccs_object_deserialize_options(ccs_serialize_format_t             format,
 		case CCS_DESERIALIZE_OPTION_HANDLE_MAP:
 			opts->handle_map = va_arg(args, ccs_map_t);
 			CCS_CHECK_OBJ(opts->handle_map, CCS_MAP);
-			CCS_CHECK_PTR(opts->handle_map);
+			break;
+		case CCS_DESERIALIZE_OPTION_VECTOR:
+			opts->vector = va_arg(args, void *);
+			CCS_CHECK_PTR(opts->vector);
+			break;
+		case CCS_DESERIALIZE_OPTION_DATA:
+			opts->data = va_arg(args, void *);
 			break;
 		default:
 			return CCS_INVALID_VALUE;
@@ -275,7 +281,7 @@ _ccs_object_deserialize(ccs_object_t            *object_ret,
                         const char             **buffer,
                         va_list args) {
 	uint32_t version;
-	_ccs_object_deserialize_options_t opts = { NULL, CCS_TRUE };
+	_ccs_object_deserialize_options_t opts = { NULL, CCS_TRUE, NULL, NULL };
 	CCS_VALIDATE(_ccs_object_deserialize_options(format, args, &opts));
 	CCS_VALIDATE(_ccs_deserialize_header(
 		format, buffer_size, buffer, &version));
