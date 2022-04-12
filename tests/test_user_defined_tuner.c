@@ -138,7 +138,7 @@ void test() {
 	ccs_expression_t          expression;
 	ccs_tuner_t               tuner, tuner_copy;
 	ccs_result_t              err;
-	tuner_last_t              *tuner_data;
+	tuner_last_t             *tuner_data;
 	ccs_datum_t               d;
 	char                     *buff;
 	size_t                    buff_size;

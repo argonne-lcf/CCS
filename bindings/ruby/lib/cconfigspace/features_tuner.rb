@@ -135,7 +135,9 @@ module CCS
            :tell, :ccs_user_defined_features_tuner_tell,
            :get_optimums, :ccs_user_defined_features_tuner_get_optimums,
            :get_history, :ccs_user_defined_features_tuner_get_history,
-           :suggest, :ccs_user_defined_features_tuner_suggest
+           :suggest, :ccs_user_defined_features_tuner_suggest,
+           :serialize, :pointer,
+           :deserialize, :pointer
   end
   typedef UserDefinedFeaturesTunerVector.by_value, :ccs_user_defined_features_tuner_vector_t
 

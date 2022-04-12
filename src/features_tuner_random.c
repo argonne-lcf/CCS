@@ -1,8 +1,5 @@
 #include "cconfigspace_internal.h"
 #include "features_tuner_internal.h"
-#include "configuration_space_internal.h"
-#include "objective_space_internal.h"
-#include "features_space_internal.h"
 #include "features_evaluation_internal.h"
 
 #include "utarray.h"
@@ -37,14 +34,8 @@ _ccs_serialize_bin_size_ccs_random_features_tuner_data(
 		_ccs_random_features_tuner_data_t *data,
 		size_t                            *cum_size) {
 	ccs_features_evaluation_t *e = NULL;
-	*cum_size += _ccs_serialize_bin_size_ccs_features_tuner_type(data->common_data.type);
-	*cum_size += _ccs_serialize_bin_size_string(data->common_data.name);
-	CCS_VALIDATE(data->common_data.configuration_space->obj.ops->serialize_size(
-		data->common_data.configuration_space, CCS_SERIALIZE_FORMAT_BINARY, cum_size));
-	CCS_VALIDATE(data->common_data.objective_space->obj.ops->serialize_size(
-		data->common_data.objective_space, CCS_SERIALIZE_FORMAT_BINARY, cum_size));
-	CCS_VALIDATE(data->common_data.features_space->obj.ops->serialize_size(
-		data->common_data.features_space, CCS_SERIALIZE_FORMAT_BINARY, cum_size));
+	CCS_VALIDATE(_ccs_serialize_bin_size_ccs_features_tuner_common_data(
+		&data->common_data, cum_size));
 	*cum_size += _ccs_serialize_bin_size_uint64(
 		utarray_len(data->history));
 	*cum_size += _ccs_serialize_bin_size_uint64(
@@ -64,16 +55,8 @@ _ccs_serialize_bin_ccs_random_features_tuner_data(
 		size_t                             *buffer_size,
 		char                              **buffer) {
 	ccs_features_evaluation_t *e = NULL;
-	CCS_VALIDATE(_ccs_serialize_bin_ccs_features_tuner_type(
-		data->common_data.type, buffer_size, buffer));
-	CCS_VALIDATE(_ccs_serialize_bin_string(
-		data->common_data.name, buffer_size, buffer));
-	CCS_VALIDATE(data->common_data.configuration_space->obj.ops->serialize(
-		data->common_data.configuration_space, CCS_SERIALIZE_FORMAT_BINARY, buffer_size, buffer));
-	CCS_VALIDATE(data->common_data.objective_space->obj.ops->serialize(
-		data->common_data.objective_space, CCS_SERIALIZE_FORMAT_BINARY, buffer_size, buffer));
-	CCS_VALIDATE(data->common_data.features_space->obj.ops->serialize(
-		data->common_data.features_space, CCS_SERIALIZE_FORMAT_BINARY, buffer_size, buffer));
+	CCS_VALIDATE(_ccs_serialize_bin_ccs_features_tuner_common_data(
+		&data->common_data, buffer_size, buffer));
 	CCS_VALIDATE(_ccs_serialize_bin_uint64(
 		utarray_len(data->history), buffer_size, buffer));
 	CCS_VALIDATE(_ccs_serialize_bin_uint64(

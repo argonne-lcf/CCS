@@ -171,7 +171,9 @@ class ccs_user_defined_features_tuner_vector(ct.Structure):
     ('tell', ccs_user_defined_features_tuner_tell_type),
     ('get_optimums', ccs_user_defined_features_tuner_get_optimums_type),
     ('get_history', ccs_user_defined_features_tuner_get_history_type),
-    ('suggest', ccs_user_defined_features_tuner_suggest_type) ]
+    ('suggest', ccs_user_defined_features_tuner_suggest_type),
+    ('serialize', ct.c_void_p),
+    ('deserialize', ct.c_void_p) ]
 
 ccs_create_user_defined_features_tuner = _ccs_get_function("ccs_create_user_defined_features_tuner", [ct.c_char_p, ccs_configuration_space, ccs_features_space, ccs_objective_space, ct.c_void_p, ct.POINTER(ccs_user_defined_features_tuner_vector), ct.c_void_p, ct.POINTER(ccs_features_tuner)])
 ccs_user_defined_features_tuner_get_tuner_data = _ccs_get_function("ccs_user_defined_features_tuner_get_tuner_data", [ccs_features_tuner, ct.POINTER(ct.c_void_p)])
