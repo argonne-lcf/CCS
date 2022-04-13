@@ -122,6 +122,13 @@ void test_map() {
 	free(keys);
 	free(values);
 
+	err = ccs_map_clear(map);
+	assert( err == CCS_SUCCESS );
+
+	err = ccs_map_get_pairs(map, 0, NULL, NULL, &d_count);
+	assert( err == CCS_SUCCESS );
+	assert( d_count == 0 );
+
 	err = ccs_release_object(hp);
 	assert( err == CCS_SUCCESS );
 

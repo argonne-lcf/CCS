@@ -45,6 +45,7 @@ class TestFeaturesTuner(unittest.TestCase):
     self.assertEqual(200, t.history_size())
     self.assertEqual(150, t.history_size(features = features_on))
     self.assertEqual(50, t.history_size(features = features_off))
+    optims_ref = t.optimums()
     optims = t.optimums(features = features_on)
     objs = [x.objective_values for x in optims]
     objs.sort(key = lambda x: x[0])
@@ -57,11 +58,20 @@ class TestFeaturesTuner(unittest.TestCase):
     # assert pareto front
     self.assertTrue(all(objs[i][1] >= objs[i+1][1] for i in range(len(objs)-1)))
     self.assertTrue(t.suggest(features_off) in [x.configuration for x in optims])
+    # test serialization
+    buff = t.serialize()
+    t_copy = ccs.deserialize(buff)
+    hist = t_copy.history()
+    self.assertEqual(200, len(hist))
+    optims_2 = t_copy.optimums()
+    self.assertEqual(len(optims_ref), len(optims_2))
 
 
   def test_user_defined(self):
-    history = []
-    optimums = []
+    class TunerData:
+      def __init__(self):
+        self.history = []
+        self.optimums = []
 
     def delete(tuner):
       return None
@@ -74,13 +84,11 @@ class TestFeaturesTuner(unittest.TestCase):
         return (cs.samples(count), count)
 
     def tell(tuner, evaluations):
-      nonlocal history
-      nonlocal optimums
-      history += evaluations
+      tuner.tuner_data.history += evaluations
       for e in evaluations:
         discard = False
         new_optimums = []
-        for o in optimums:
+        for o in tuner.tuner_data.optimums:
           if discard:
             new_optimums.append(o)
           else:
@@ -92,30 +100,30 @@ class TestFeaturesTuner(unittest.TestCase):
               new_optimums.append(o)
         if not discard:
           new_optimums.append(e)
-        optimums = new_optimums
+        tuner.tuner_data.optimums = new_optimums
       return None
 
     def get_history(tuner, features):
       if features is not None:
-        return list(filter(lambda e: e.features == features, history))
+        return list(filter(lambda e: e.features == features, tuner.tuner_data.history))
       else:
-        return history
+        return tuner.tuner_data.history
 
     def get_optimums(tuner, features):
       if features is not None:
-        return list(filter(lambda e: e.features == features, optimums))
+        return list(filter(lambda e: e.features == features, tuner.tuner_data.optimums))
       else:
-        return optimums
+        return tuner.tuner_data.optimums
 
     def suggest(tuner, features):
-      optis = list(filter(lambda e: e.features == features, optimums))
+      optis = list(filter(lambda e: e.features == features, tuner.tuner_data.optimums))
       if not optis:
         return ask(tuner, features, 1)
       else:
         return choice(optis).configuration
 
     (cs, fs, os) = self.create_tuning_problem()
-    t = ccs.UserDefinedFeaturesTuner(name = "tuner", configuration_space = cs, features_space = fs, objective_space = os, delete = delete, ask = ask, tell = tell, get_optimums = get_optimums, get_history = get_history, suggest = suggest)
+    t = ccs.UserDefinedFeaturesTuner(name = "tuner", configuration_space = cs, features_space = fs, objective_space = os, delete = delete, ask = ask, tell = tell, get_optimums = get_optimums, get_history = get_history, suggest = suggest, tuner_data = TunerData())
     t2 = ccs.Object.from_handle(t.handle)
     self.assertEqual("tuner", t.name)
     self.assertEqual(ccs.FEATURES_TUNER_USER_DEFINED, t.type)
@@ -136,6 +144,7 @@ class TestFeaturesTuner(unittest.TestCase):
     self.assertEqual(200, t.history_size())
     self.assertEqual(150, t.history_size(features = features_on))
     self.assertEqual(50, t.history_size(features = features_off))
+    optims_ref = t.optimums()
     optims = t.optimums(features = features_on)
     objs = [x.objective_values for x in optims]
     objs.sort(key = lambda x: x[0])
@@ -148,6 +157,13 @@ class TestFeaturesTuner(unittest.TestCase):
     # assert pareto front
     self.assertTrue(all(objs[i][1] >= objs[i+1][1] for i in range(len(objs)-1)))
     self.assertTrue(t.suggest(features_off) in [x.configuration for x in optims])
+    # test serialization
+    buff = t.serialize()
+    t_copy = ccs.UserDefinedFeaturesTuner.deserialize(buff, delete = delete, ask = ask, tell = tell, get_optimums = get_optimums, get_history = get_history, suggest = suggest, tuner_data = TunerData())
+    hist = t_copy.history()
+    self.assertEqual(200, len(hist))
+    optims_2 = t_copy.optimums()
+    self.assertEqual(len(optims_ref), len(optims_2))
 
 
 if __name__ == '__main__':

@@ -28,6 +28,23 @@ class TestHyperparameter(unittest.TestCase):
     for v in vals:
       self.assertTrue( v in values )
 
+  def test_serialize_discrete(self):
+    values = [0.2, 1.5, 2, 7.2]
+    href = ccs.DiscreteHyperparameter(values = values)
+    buff = href.serialize()
+    h = ccs.Object.deserialize(buff)
+    self.assertEqual( ccs.HYPERPARAMETER, h.object_type )
+    self.assertEqual( ccs.HYPERPARAMETER_TYPE_DISCRETE, h.type )
+    self.assertTrue( h.name[:5] == "param" )
+    self.assertIsNone( h.user_data.value )
+    self.assertEqual( 0.2, h.default_value )
+    self.assertFalse( h.check_value("foo") )
+    v = h.sample()
+    self.assertTrue( v in values )
+    vals = h.samples(100)
+    for v in vals:
+      self.assertTrue( v in values )
+
   def test_ordinal_compare(self):
     values = ["foo", 2, 3.0]
     h = ccs.OrdinalHyperparameter(values = values)
@@ -52,6 +69,27 @@ class TestHyperparameter(unittest.TestCase):
   def test_ordinal(self):
     values = ["foo", 2, 3.0]
     h = ccs.OrdinalHyperparameter(values = values)
+    self.assertEqual( ccs.HYPERPARAMETER, h.object_type )
+    self.assertEqual( ccs.HYPERPARAMETER_TYPE_ORDINAL, h.type )
+    self.assertTrue( h.name[:5] == "param" )
+    self.assertIsNone( h.user_data.value )
+    self.assertEqual( "foo", h.default_value )
+    self.assertEqual( ccs.UNIFORM, h.default_distribution.type )
+    self.assertEqual( values, h.values )
+    for v in values:
+      self.assertTrue( h.check_value(v) )
+    self.assertFalse( h.check_value("bar") )
+    v = h.sample()
+    self.assertTrue( v in values )
+    vals = h.samples(100)
+    for v in vals:
+      self.assertTrue( v in values )
+
+  def test_serialize_ordinal(self):
+    values = ["foo", 2, 3.0]
+    href = ccs.OrdinalHyperparameter(values = values)
+    buff = href.serialize()
+    h = ccs.Object.deserialize(buff)
     self.assertEqual( ccs.HYPERPARAMETER, h.object_type )
     self.assertEqual( ccs.HYPERPARAMETER_TYPE_ORDINAL, h.type )
     self.assertTrue( h.name[:5] == "param" )
@@ -94,6 +132,27 @@ class TestHyperparameter(unittest.TestCase):
     for v in vals:
       self.assertTrue( v in values )
 
+  def test_serialize_categorical(self):
+    values = ["foo", 2, 3.0]
+    href = ccs.CategoricalHyperparameter(values = values)
+    buff = href.serialize()
+    h = ccs.Object.deserialize(buff)
+    self.assertEqual( ccs.HYPERPARAMETER, h.object_type )
+    self.assertEqual( ccs.HYPERPARAMETER_TYPE_CATEGORICAL, h.type )
+    self.assertTrue( h.name[:5] == "param" )
+    self.assertIsNone( h.user_data.value )
+    self.assertEqual( "foo", h.default_value )
+    self.assertEqual( ccs.UNIFORM, h.default_distribution.type )
+    self.assertEqual( values, h.values )
+    for v in values:
+      self.assertTrue( h.check_value(v) )
+    self.assertFalse( h.check_value("bar") )
+    v = h.sample()
+    self.assertTrue( v in values )
+    vals = h.samples(100)
+    for v in vals:
+      self.assertTrue( v in values )
+
   def test_from_handle_numerical(self):
     h = ccs.NumericalHyperparameter()
     h2 = ccs.Object.from_handle(h.handle)
@@ -102,6 +161,30 @@ class TestHyperparameter(unittest.TestCase):
 
   def test_numerical(self):
     h = ccs.NumericalHyperparameter()
+    self.assertEqual( ccs.HYPERPARAMETER, h.object_type )
+    self.assertEqual( ccs.HYPERPARAMETER_TYPE_NUMERICAL, h.type )
+    self.assertTrue( h.name[:5] == "param" )
+    self.assertIsNone( h.user_data.value )
+    self.assertEqual( 0.0, h.default_value )
+    self.assertEqual( ccs.UNIFORM, h.default_distribution.type )
+    self.assertEqual( ccs.NUM_FLOAT, h.data_type )
+    self.assertEqual( 0.0, h.lower )
+    self.assertEqual( 1.0, h.upper )
+    self.assertEqual( 0.0, h.quantization )
+    self.assertTrue( h.check_value(0.5) )
+    self.assertFalse( h.check_value(1.5) )
+    v = h.sample()
+    self.assertIsInstance( v, float )
+    self.assertTrue( v >= 0.0 and v < 1.0 )
+    vals = h.samples(100)
+    for v in vals:
+      self.assertIsInstance( v, float )
+      self.assertTrue( v >= 0.0 and v < 1.0 )
+
+  def test_serialize_numerical(self):
+    href = ccs.NumericalHyperparameter()
+    buff = href.serialize()
+    h = ccs.Object.deserialize(buff)
     self.assertEqual( ccs.HYPERPARAMETER, h.object_type )
     self.assertEqual( ccs.HYPERPARAMETER_TYPE_NUMERICAL, h.type )
     self.assertTrue( h.name[:5] == "param" )
@@ -168,6 +251,17 @@ class TestHyperparameter(unittest.TestCase):
 
   def test_string(self):
     h = ccs.StringHyperparameter()
+    self.assertEqual( ccs.HYPERPARAMETER, h.object_type )
+    self.assertEqual( ccs.HYPERPARAMETER_TYPE_STRING, h.type )
+    self.assertTrue( h.name[:5] == "param" )
+    self.assertIsNone( h.user_data.value )
+    with self.assertRaises( ccs.Error ):
+      h.sample()
+
+  def test_serialize_string(self):
+    href = ccs.StringHyperparameter()
+    buff = href.serialize()
+    h = ccs.Object.deserialize(buff)
     self.assertEqual( ccs.HYPERPARAMETER, h.object_type )
     self.assertEqual( ccs.HYPERPARAMETER_TYPE_STRING, h.type )
     self.assertTrue( h.name[:5] == "param" )

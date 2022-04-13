@@ -60,6 +60,9 @@ ccs_map_get_pairs(ccs_map_t    map,
                   ccs_datum_t *values,
                   size_t      *num_pairs_ret);
 
+extern ccs_result_t
+ccs_map_clear(ccs_map_t    map);
+
 #ifdef __cplusplus
 }
 #endif

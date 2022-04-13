@@ -89,11 +89,8 @@ class Hyperparameter(Object):
     return self._default_distribution
 
   def check_value(self, value):
-    proxy = ccs_datum()
-    proxy.value = value
-    v = ccs_datum_fix()
-    v.value = proxy._value.i
-    v.type = proxy.type
+    pv = ccs_datum(value)
+    v = ccs_datum_fix(pv)
     b = ccs_bool()
     res = ccs_hyperparameter_check_value(self.handle, v, ct.byref(b))
     Error.check(res)
@@ -297,12 +294,8 @@ class OrdinalHyperparameter(Hyperparameter):
   def compare(self, value1, value2):
     pv1 = ccs_datum(value1)
     pv2 = ccs_datum(value2)
-    v1 = ccs_datum_fix()
-    v2 = ccs_datum_fix()
-    v1.value = pv1._value.i
-    v1.type = pv1.type
-    v2.value = pv2._value.i
-    v2.type = pv2.type
+    v1 = ccs_datum_fix(pv1)
+    v2 = ccs_datum_fix(pv2)
     c = ccs_int()
     res = ccs_ordinal_hyperparameter_compare_values(self.handle, v1, v2, ct.byref(c))
     Error.check(res)

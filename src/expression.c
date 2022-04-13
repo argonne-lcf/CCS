@@ -390,7 +390,9 @@ _ccs_expr_equal_eval(_ccs_expression_data_t *data,
 }
 
 static _ccs_expression_ops_t _ccs_expr_equal_ops = {
-	{ &_ccs_expression_del, NULL, NULL },
+	{ &_ccs_expression_del,
+	  &_ccs_expression_serialize_size,
+	  &_ccs_expression_serialize },
 	&_ccs_expr_equal_eval
 };
 

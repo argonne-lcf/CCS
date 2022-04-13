@@ -38,10 +38,7 @@ class Binding(Object):
     elif isinstance(hyperparameter, str):
       hyperparameter = self.context.hyperparameter_index_by_name(hyperparameter)
     pv = ccs_datum(value)
-    v = ccs_datum_fix()
-    v.value = pv._value.i
-    v.type = pv.type
-    v.flags = pv.flags
+    v = ccs_datum_fix(pv)
     res = ccs_binding_set_value(self.handle, hyperparameter, v)
     Error.check(res)
 

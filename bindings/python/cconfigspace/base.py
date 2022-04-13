@@ -34,6 +34,7 @@ ccs_evaluation          = ccs_object
 ccs_features_evaluation = ccs_object
 ccs_tuner               = ccs_object
 ccs_features_tuner      = ccs_object
+ccs_map                 = ccs_object
 
 ccs_false = 0
 ccs_true = 1
@@ -145,7 +146,8 @@ class ccs_object_type(CEnumeration):
     'FEATURES_SPACE',
     'FEATURES',
     'FEATURES_EVALUATION',
-    'FEATURES_TUNER' ]
+    'FEATURES_TUNER',
+    'MAP' ]
 
 class ccs_error(CEnumeration):
   _members_ = [ 
@@ -171,7 +173,11 @@ class ccs_error(CEnumeration):
     'UNSUPPORTED_OPERATION',
     'INVALID_EVALUATION',
     'INVALID_FEATURES',
-    'INVALID_FEATURES_TUNER' ]
+    'INVALID_FEATURES_TUNER',
+    'INVALID_FILE_PATH',
+    'NOT_ENOUGH_DATA',
+    'HANDLE_DUPLICATE',
+    'INVALID_HANDLE' ]
 
 class ccs_data_type(CEnumeration):
   _members_ = [
@@ -230,6 +236,13 @@ class ccs_datum_fix(ct.Structure):
   _fields_ = [('value', ccs_int),
               ('type', ccs_data_type),
               ('flags', ccs_datum_flags)]
+
+  def __init__(self, v = None):
+    super().__init__()
+    if v:
+      self.value = v._value.i
+      self.type = v._type
+      self.flags = v.flags
 
 class ccs_datum(ct.Structure):
   _fields_ = [('_value', ccs_value),
@@ -311,8 +324,28 @@ class Error(Exception):
     if err < 0:
       raise cls(ccs_error(-err))
 
+class ccs_serialize_format(CEnumeration):
+  _members_ = [
+    ('BINARY', 0)
+  ]
+
+class ccs_serialize_type(CEnumeration):
+  _members_ = [
+    ('SIZE', 0),
+    'MEMORY'
+  ]
+
+class ccs_deserialize_option(CEnumeration):
+  _members_ = [
+    ('END', 0),
+    'HANDLE_MAP',
+    'VECTOR',
+    'DATA'
+  ]
+
 ccs_init = _ccs_get_function("ccs_init")
 ccs_fini = _ccs_get_function("ccs_fini")
+ccs_get_error_name = _ccs_get_function("ccs_get_error_name", [ccs_error, ct.POINTER(ct.c_char_p)])
 ccs_get_version = _ccs_get_function("ccs_get_version", restype = ccs_version)
 ccs_retain_object = _ccs_get_function("ccs_retain_object", [ccs_object])
 ccs_release_object = _ccs_get_function("ccs_release_object", [ccs_object])
@@ -322,6 +355,11 @@ ccs_object_destroy_callback_type = ct.CFUNCTYPE(None, ccs_object, ct.c_void_p)
 ccs_object_set_destroy_callback = _ccs_get_function("ccs_object_set_destroy_callback", [ccs_object, ccs_object_destroy_callback_type, ct.c_void_p])
 ccs_object_set_user_data = _ccs_get_function("ccs_object_set_user_data", [ccs_context, ct.c_void_p])
 ccs_object_get_user_data = _ccs_get_function("ccs_object_get_user_data", [ccs_context, ct.POINTER(ct.c_void_p)])
+# Variadic methods
+ccs_object_serialize = getattr(libcconfigspace, "ccs_object_serialize")
+ccs_object_serialize.restype = ccs_result
+ccs_object_deserialize = getattr(libcconfigspace, "ccs_object_deserialize")
+ccs_object_deserialize.restype = ccs_result
 
 _res = ccs_init()
 Error.check(_res)
@@ -377,20 +415,10 @@ class Object:
     return ud
 
   @classmethod
-  def from_handle(cls, h):
+  def _from_handle(cls, h, retain, auto_release):
     t = ccs_object_type(0)
     res = ccs_object_get_type(h, ct.byref(t))
     Error.check(res)
-    r = ct.c_int(0)
-    res = ccs_object_get_refcount(h, ct.byref(r))
-    Error.check(res)
-    r = r.value
-    if r == 0:
-      retain = False
-      auto_release = False
-    else:
-      retain = True
-      auto_release = True
     v = t.value
     if v == ccs_object_type.RNG:
       return Rng.from_handle(h, retain = retain, auto_release = auto_release)
@@ -418,13 +446,69 @@ class Object:
       return Tuner.from_handle(h, retain = retain, auto_release = auto_release)
     elif v == ccs_object_type.FEATURES_TUNER:
       return FeaturesTuner.from_handle(h, retain = retain, auto_release = auto_release)
+    elif v == ccs_object_type.MAP:
+      return Map.from_handle(h, retain = retain, auto_release = auto_release)
     else:
       raise Error(ccs_error(ccs_error.INVALID_OBJECT))
+
+  @classmethod
+  def from_handle(cls, h):
+    r = ct.c_int(0)
+    res = ccs_object_get_refcount(h, ct.byref(r))
+    Error.check(res)
+    r = r.value
+    if r == 0:
+      retain = False
+      auto_release = False
+    else:
+      retain = True
+      auto_release = True
+    return cls._from_handle(h, retain, auto_release)
 
   def set_destroy_callback(self, callback, user_data = None):
     _set_destroy_callback(self.handle, callback, user_data = user_data)
 
+  def serialize(self, format = 'binary', type = 'memory'):
+    s = ct.c_size_t(0)
+    if format == 'binary':
+      res = ccs_object_serialize(self.handle, ccs_serialize_format.BINARY, ccs_serialize_type.SIZE, ct.byref(s))
+      Error.check(res)
+    else:
+      raise Error(ccs_error(ccs_error.INVALID_VALUE))
+    if type == 'memory':
+      v = (ct.c_byte * s.value)()
+      res = ccs_object_serialize(self.handle, ccs_serialize_format.BINARY, ccs_serialize_type.MEMORY, ct.sizeof(v), v)
+      Error.check(res)
+      return v
+    else:
+      raise Error(ccs_error(ccs_error.INVALID_VALUE))
+
+  @classmethod
+  def deserialize(cls, value, format = 'binary', type = 'memory', handle_map = None, vector = None, data = None):
+    o = ccs_object(0)
+    options = [ccs_deserialize_option.END]
+    if handle_map:
+      options = [ccs_deserialize_option.HANDLE_MAP, handle_map.handle] + options
+    if vector:
+      options = [ccs_deserialize_option.VECTOR, ct.byref(vector)] + options
+    if data:
+      options = [ccs_deserialize_option.DATA, ct.py_object(data)] + options
+    if type == 'memory':
+      s = ct.c_size_t(ct.sizeof(value))
+      if format == 'binary':
+        res = ccs_object_deserialize(ct.byref(o), ccs_serialize_format.BINARY, ccs_serialize_type.MEMORY, s, value,
+                                     *options)
+        Error.check(res)
+        return cls._from_handle(o, False, True)
+      else:
+        raise Error(ccs_error(ccs_error.INVALID_VALUE))
+    else:
+      raise Error(ccs_error(ccs_error.INVALID_VALUE))
+
 _callbacks = {}
+
+def deserialize(value, format = 'binary', type = 'memory', handle_map = None):
+  return Object.deserialize(value, format = format, type = type, handle_map = handle_map)
 
 def _set_destroy_callback(handle, callback, user_data = None):
   if callback is None:
@@ -461,3 +545,4 @@ from .evaluation import Evaluation
 from .features_evaluation import FeaturesEvaluation
 from .tuner import Tuner
 from .features_tuner import FeaturesTuner
+from .map import Map

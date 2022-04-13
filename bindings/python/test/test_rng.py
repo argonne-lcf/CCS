@@ -36,6 +36,15 @@ class TestRng(unittest.TestCase):
     v2 = rng.get()
     self.assertEqual(v1, v2)
 
+  def test_serialize(self):
+    rng = ccs.Rng()
+    rng.seed = 10
+    buff = rng.serialize()
+    rng2 = ccs.Object.deserialize(buff)
+    self.assertEqual( ccs.RNG, rng2.object_type )
+    v1 = rng.get()
+    v2 = rng2.get()
+    self.assertEqual(v1, v2)
 
 if __name__ == '__main__':
     unittest.main()

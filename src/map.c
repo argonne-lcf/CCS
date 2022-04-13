@@ -260,3 +260,12 @@ ccs_map_get_pairs(ccs_map_t    map,
 		*num_pairs_ret = count;
 	return CCS_SUCCESS;
 }
+
+ccs_result_t
+ccs_map_clear(ccs_map_t    map) {
+	CCS_CHECK_OBJ(map, CCS_MAP);
+	_ccs_map_datum_t *current = NULL, *tmp;
+	HASH_ITER(hh, map->data->map, current, tmp)
+		_ccs_map_remove(map->data, current);
+	return CCS_SUCCESS;
+}

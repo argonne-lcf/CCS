@@ -71,10 +71,7 @@ class Context(Object):
     elif isinstance(hyperparameter, str):
       hyperparameter = hyperparameter_index_by_name(hyperparameter)
     pv = ccs_datum(value)
-    v = ccs_datum_fix()
-    v.value = pv._value.i
-    v.type = pv.type
-    v.flags = pv.flags
+    v = ccs_datum_fix(pv)
     vo = ccs_datum()
     res = ccs_context_validate_value(self.handle, hyperparameter, v, ct.byref(vo))
     Error.check(res)

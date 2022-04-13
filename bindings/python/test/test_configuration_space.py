@@ -266,6 +266,19 @@ class TestConfigurationSpace(unittest.TestCase):
       self.assertFalse( s.value('p1') == '#pragma omp #P2' and  s.value('p2') == ' ' )
       self.assertFalse( s.value('p1') == '#pragma omp #P3' and  s.value('p3') == ' ' )
 
+    buff = cs.serialize()
+    cs_copy = ccs.Object.deserialize(buff)
+    for i in range(1000):
+      s = cs_copy.sample()
+      s.check()
+      active_params = self.extract_active_parameters(s.values)
+      for par in active_params:
+        self.assertNotEqual( ccs.ccs_inactive, s.value(par) )
+      for par in list(set(all_params) - set(active_params)):
+        self.assertEqual( ccs.ccs_inactive, s.value(par) )
+      self.assertFalse( s.value('p1') == '#pragma omp #P2' and  s.value('p2') == ' ' )
+      self.assertFalse( s.value('p1') == '#pragma omp #P3' and  s.value('p3') == ' ' )
+
 
 if __name__ == '__main__':
     unittest.main()
