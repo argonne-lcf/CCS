@@ -245,6 +245,7 @@ ccs_object_serialize(ccs_object_t           object,
 #include "features_evaluation_deserialize.h"
 #include "tuner_deserialize.h"
 #include "features_tuner_deserialize.h"
+#include "map_deserialize.h"
 
 static inline ccs_result_t
 _ccs_object_deserialize_options(ccs_serialize_format_t             format,
@@ -355,6 +356,11 @@ _ccs_object_deserialize(ccs_object_t            *object_ret,
 		case CCS_FEATURES_TUNER:
 			CCS_VALIDATE(_ccs_features_tuner_deserialize(
 				(ccs_features_tuner_t *)object_ret,
+				format, version, buffer_size, buffer, &opts));
+			break;
+		case CCS_MAP:
+			CCS_VALIDATE(_ccs_map_deserialize(
+				(ccs_map_t *)object_ret,
 				format, version, buffer_size, buffer, &opts));
 			break;
 		default:

@@ -16,7 +16,7 @@ _ccs_serialize_bin_size_ccs_hyperparameter_string_data(
 	return _ccs_serialize_bin_size_ccs_hyperparameter_common_data(&data->common_data);
 }
 
-static inline size_t
+static inline ccs_result_t
 _ccs_serialize_bin_ccs_hyperparameter_string_data(
 		_ccs_hyperparameter_string_data_t  *data,
 		size_t                             *buffer_size,

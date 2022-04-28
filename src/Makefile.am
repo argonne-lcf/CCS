@@ -17,22 +17,22 @@ libcconfigspace_la_SOURCES = \
 	rng_deserialize.h \
 	distribution.c \
 	distribution_internal.h \
+	distribution_deserialize.h \
 	distribution_uniform.c \
 	distribution_normal.c \
 	distribution_roulette.c \
 	distribution_mixture.c \
 	distribution_multivariate.c \
-	distribution_deserialize.h \
 	uthash.h \
 	utarray.h \
 	datum_uthash.h \
 	datum_hash.h \
 	hyperparameter.c \
 	hyperparameter_internal.h \
+	hyperparameter_deserialize.h \
 	hyperparameter_numerical.c \
 	hyperparameter_string.c \
 	hyperparameter_categorical.c \
-	hyperparameter_deserialize.h \
 	context.c \
 	context_internal.h \
 	context_deserialize.h \
@@ -55,9 +55,9 @@ libcconfigspace_la_SOURCES = \
 	evaluation_deserialize.h \
 	tuner.c \
 	tuner_internal.h \
+	tuner_deserialize.h \
 	tuner_random.c \
 	tuner_user_defined.c \
-	tuner_deserialize.h \
 	features_space.c \
 	features_space_internal.h \
 	features_space_deserialize.h \
@@ -69,9 +69,11 @@ libcconfigspace_la_SOURCES = \
 	features_evaluation_deserialize.h \
 	features_tuner.c \
 	features_tuner_internal.h \
+	features_tuner_deserialize.h \
 	features_tuner_random.c \
 	features_tuner_user_defined.c \
+	map.c \
 	map_internal.h \
-	map.c
+	map_deserialize.h
 
 @VALGRIND_CHECK_RULES@

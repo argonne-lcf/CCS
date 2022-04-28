@@ -38,7 +38,7 @@ struct _ccs_hyperparameter_categorical_data_mock_s {
 };
 typedef struct _ccs_hyperparameter_categorical_data_mock_s _ccs_hyperparameter_categorical_data_mock_t;
 
-static inline size_t
+static inline ccs_result_t
 _ccs_deserialize_bin_ccs_hyperparameter_categorical_data(
 		_ccs_hyperparameter_categorical_data_mock_t  *data,
 		size_t                                       *buffer_size,

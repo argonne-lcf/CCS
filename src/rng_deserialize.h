@@ -58,6 +58,7 @@ _ccs_deserialize_bin_rng(
 	return CCS_SUCCESS;
 err_rng:
 	ccs_release_object(*rng_ret);
+	*rng_ret = NULL;
 	return res;
 }
 

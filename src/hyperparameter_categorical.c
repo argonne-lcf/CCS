@@ -22,7 +22,7 @@ _ccs_serialize_bin_size_ccs_hyperparameter_categorical_data(
 	return sz;
 }
 
-static inline size_t
+static inline ccs_result_t
 _ccs_serialize_bin_ccs_hyperparameter_categorical_data(
 		_ccs_hyperparameter_categorical_data_t  *data,
 		size_t                                  *buffer_size,

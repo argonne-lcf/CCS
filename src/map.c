@@ -44,8 +44,93 @@ _ccs_map_del(ccs_object_t o) {
 	return CCS_SUCCESS;
 }
 
+static inline size_t
+_ccs_serialize_bin_size_ccs_map_data(
+		_ccs_map_data_t *data) {
+	size_t sz = 0;
+	_ccs_map_datum_t *current = NULL, *tmp;
+	sz += _ccs_serialize_bin_size_uint64(HASH_COUNT(data->map));
+	HASH_ITER(hh, data->map, current, tmp) {
+		sz += _ccs_serialize_bin_size_ccs_datum(current->key);
+		sz += _ccs_serialize_bin_size_ccs_datum(current->value);
+	}
+	return sz;
+}
+
+static inline ccs_result_t
+_ccs_serialize_bin_ccs_map_data(
+		_ccs_map_data_t  *data,
+		size_t           *buffer_size,
+		char            **buffer) {
+	_ccs_map_datum_t *current = NULL, *tmp;
+	CCS_VALIDATE(_ccs_serialize_bin_uint64(
+		HASH_COUNT(data->map), buffer_size, buffer));
+	HASH_ITER(hh, data->map, current, tmp) {
+		CCS_VALIDATE(_ccs_serialize_bin_ccs_datum(
+			current->key, buffer_size, buffer));
+		CCS_VALIDATE(_ccs_serialize_bin_ccs_datum(
+			current->value, buffer_size, buffer));
+	}
+	return CCS_SUCCESS;
+}
+
+static inline size_t
+_ccs_serialize_bin_size_ccs_map(ccs_map_t map) {
+	_ccs_map_data_t *data = (_ccs_map_data_t *)(map->data);
+	return _ccs_serialize_bin_size_ccs_object_internal(
+			(_ccs_object_internal_t *)map) +
+	       _ccs_serialize_bin_size_ccs_map_data(data);
+}
+
+static inline ccs_result_t
+_ccs_serialize_bin_ccs_map(
+		ccs_map_t   map,
+		size_t     *buffer_size,
+		char      **buffer) {
+	_ccs_map_data_t *data = (_ccs_map_data_t *)(map->data);
+	CCS_VALIDATE(_ccs_serialize_bin_ccs_object_internal(
+		(_ccs_object_internal_t *)map, buffer_size, buffer));
+	CCS_VALIDATE(_ccs_serialize_bin_ccs_map_data(
+		data, buffer_size, buffer));
+	return CCS_SUCCESS;
+}
+
+static ccs_result_t
+_ccs_map_serialize_size(
+		ccs_object_t            object,
+		ccs_serialize_format_t  format,
+		size_t                 *cum_size) {
+	switch(format) {
+	case CCS_SERIALIZE_FORMAT_BINARY:
+		*cum_size += _ccs_serialize_bin_size_ccs_map((ccs_map_t)object);
+		break;
+	default:
+		return -CCS_INVALID_VALUE;
+	}
+	return CCS_SUCCESS;
+}
+
+static ccs_result_t
+_ccs_map_serialize(
+		ccs_object_t             object,
+		ccs_serialize_format_t   format,
+		size_t                  *buffer_size,
+		char                   **buffer) {
+	switch(format) {
+	case CCS_SERIALIZE_FORMAT_BINARY:
+		CCS_VALIDATE(_ccs_serialize_bin_ccs_map(
+			(ccs_map_t)object, buffer_size, buffer));
+		break;
+	default:
+		return -CCS_INVALID_VALUE;
+	}
+	return CCS_SUCCESS;
+}
+
 static _ccs_map_ops_t _ccs_map_ops = {
-	{ &_ccs_map_del, NULL, NULL }
+	{ &_ccs_map_del,
+	  &_ccs_map_serialize_size,
+	  &_ccs_map_serialize }
 };
 
 ccs_result_t

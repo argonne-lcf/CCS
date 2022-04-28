@@ -3,13 +3,15 @@
 #include <cconfigspace.h>
 
 void test_map() {
-	ccs_map_t             map;
+	ccs_map_t             map, map2;
 	ccs_bool_t            found;
 	ccs_datum_t           d1, d2, d3, d_ret, *keys, *values;
 	size_t                d_count;
 	ccs_result_t          err = CCS_SUCCESS;
 	char                 *str1, *str2;
 	ccs_hyperparameter_t  hp;
+	char                 *buff;
+	size_t                buff_size;
 
 	err = ccs_create_map(&map);
 	assert( err == CCS_SUCCESS );
@@ -119,6 +121,30 @@ void test_map() {
 	assert( d_count == 5 );
 	err = ccs_map_get_pairs(map, d_count, keys, values, NULL);
 	assert( err == CCS_SUCCESS );
+
+	err = ccs_object_serialize(map, CCS_SERIALIZE_FORMAT_BINARY, CCS_SERIALIZE_TYPE_SIZE, &buff_size);
+	assert( err == CCS_SUCCESS );
+
+	buff = (char *)malloc(buff_size);
+	assert( buff );
+
+	err = ccs_object_serialize(map, CCS_SERIALIZE_FORMAT_BINARY, CCS_SERIALIZE_TYPE_MEMORY, buff_size, buff);
+	assert( err == CCS_SUCCESS );
+
+	err = ccs_object_deserialize((ccs_object_t*)&map2, CCS_SERIALIZE_FORMAT_BINARY, CCS_SERIALIZE_TYPE_MEMORY, buff_size, buff, CCS_DESERIALIZE_OPTION_END);
+	assert( err == CCS_SUCCESS );
+	free(buff);
+
+	err = ccs_map_get_pairs(map2, 0, NULL, NULL, &d_count);
+	assert( err == CCS_SUCCESS );
+	assert( d_count == 5 );
+
+	for (size_t i = 0; i < d_count; i++) {
+		err = ccs_map_get(map, keys[i], &d_ret);
+		assert( err == CCS_SUCCESS );
+		assert( !ccs_datum_cmp(values[i], d_ret) );
+	}
+
 	free(keys);
 	free(values);
 
@@ -129,6 +155,8 @@ void test_map() {
 	assert( err == CCS_SUCCESS );
 	assert( d_count == 0 );
 
+	err = ccs_release_object(map2);
+	assert( err == CCS_SUCCESS );
 	err = ccs_release_object(hp);
 	assert( err == CCS_SUCCESS );
 
