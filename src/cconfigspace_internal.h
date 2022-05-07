@@ -166,6 +166,39 @@ static inline uint64_t ccs_bswap_uint64(uint64_t x) {
           (( x & 0x00000000000000ffull ) << 56 ));
 }
 
+// https://stackoverflow.com/a/48924178
+static inline uint8_t ccs_zigzag_encode_int8(int8_t x) {
+  return ( ( uint8_t ) x << 1 ) ^ -( ( uint8_t ) x >> 7 );
+}
+
+static inline uint16_t ccs_zigzag_encode_int16(int16_t x) {
+  return ( ( uint16_t ) x << 1 ) ^ -( ( uint16_t ) x >> 15 );
+}
+
+static inline uint32_t ccs_zigzag_encode_int32(int32_t x) {
+  return ( ( uint32_t ) x << 1 ) ^ -( ( uint32_t ) x >> 31 );
+}
+
+static inline uint64_t ccs_zigzag_encode_int64(int64_t x) {
+  return ( ( uint64_t ) x << 1 ) ^ -( ( uint64_t ) x >> 63 );
+}
+
+static inline int8_t ccs_zigzag_decode_int8(uint8_t x) {
+  return ( int8_t ) ( ( x >> 1 ) ^ -( x & 0x1 ) );
+}
+
+static inline int16_t ccs_zigzag_decode_int16(uint16_t x) {
+  return ( int16_t ) ( ( x >> 1 ) ^ -( x & 0x1 ) );
+}
+
+static inline int32_t ccs_zigzag_decode_int32(uint32_t x) {
+  return ( int32_t ) ( ( x >> 1 ) ^ -( x & 0x1 ) );
+}
+
+static inline int64_t ccs_zigzag_decode_int64(uint64_t x) {
+  return ( int64_t ) ( ( x >> 1 ) ^ -( x & 0x1 ) );
+}
+
 #ifdef __cplusplus
 #define CCS_SWAP_CONVERT(TYPE, MAPPED_NAME, MAPPED_TYPE) \
 do {                                                     \
@@ -239,6 +272,120 @@ static inline MAPPED_TYPE _ccs_pack_ ## NAME (TYPE x) {  \
     CCS_CONVERT_SWAP(TYPE, MAPPED_NAME, MAPPED_TYPE);    \
 }
 
+// This serializer works on unsigned types
+// It uses https://en.wikipedia.org/wiki/LEB128
+#define CCS_COMPRESSED_SERIALIZER(NAME, TYPE, MAPPED_NAME, MAPPED_TYPE)    \
+static inline ccs_result_t                                                 \
+_ccs_serialize_bin_ ## NAME (TYPE x, size_t *buffer_size, char **buffer) { \
+  size_t buff_size = *buffer_size;                                         \
+  uint8_t *buff = (uint8_t *)*buffer;                                      \
+  MAPPED_TYPE v = (MAPPED_TYPE)x;                                          \
+  do {                                                                     \
+    if (CCS_UNLIKELY(buff_size < 1))                                       \
+      return -CCS_NOT_ENOUGH_DATA;                                         \
+    uint8_t y = v & 0x7f;                                                  \
+    v >>= 7;                                                               \
+    if (v) y |= 0x80;                                                      \
+    *buff = y;                                                             \
+    buff_size -= 1;                                                        \
+    buff += 1;                                                             \
+  } while (v);                                                             \
+  *buffer_size = buff_size;                                                \
+  *buffer = (char *)buff;                                                  \
+  return CCS_SUCCESS;                                                      \
+}                                                                          \
+static inline size_t                                                       \
+_ccs_serialize_bin_size_ ## NAME (TYPE x) {                                \
+  size_t sz = 0;                                                           \
+  MAPPED_TYPE v = (MAPPED_TYPE)x;                                          \
+  do {                                                                     \
+    sz += 1;                                                               \
+    v >>= 7;                                                               \
+  } while(v);                                                              \
+  return sz;                                                               \
+}
+
+#define CCS_COMPRESSED_DESERIALIZER(NAME, TYPE, MAPPED_NAME, MAPPED_TYPE)           \
+static inline ccs_result_t                                                          \
+_ccs_deserialize_bin_ ## NAME (TYPE *x, size_t *buffer_size, const char **buffer) { \
+  size_t buff_size = *buffer_size;                                                  \
+  const uint8_t *buff = (const uint8_t *)*buffer;                                   \
+  MAPPED_TYPE v = 0;                                                                \
+  MAPPED_TYPE shift = 0;                                                            \
+  MAPPED_TYPE y;                                                                    \
+  do {                                                                              \
+    if (CCS_UNLIKELY(buff_size < 1))                                                \
+      return -CCS_NOT_ENOUGH_DATA;                                                  \
+    y = *buff;                                                                      \
+    v |= (y & 0x7f) << shift;                                                       \
+    buff_size -= 1;                                                                 \
+    buff += 1;                                                                      \
+    shift += 7;                                                                     \
+  } while(y & 0x80);                                                                \
+  *x = (TYPE)v;                                                                     \
+  *buffer_size = buff_size;                                                         \
+  *buffer = (const char *)buff;                                                     \
+  return CCS_SUCCESS;                                                               \
+}                                                                                   \
+static inline ccs_result_t                                                          \
+_ccs_peek_bin_ ## NAME (TYPE *x, size_t *buffer_size, const char **buffer) {        \
+  size_t buff_size = *buffer_size;                                                  \
+  const char *buff = *buffer;                                                       \
+  return _ccs_deserialize_bin_ ## NAME (x, &buff_size, &buff);                      \
+}
+
+#define CCS_COMPRESSED_SERIALIZER_SIGNED(NAME, TYPE, MAPPED_NAME, MAPPED_TYPE) \
+static inline ccs_result_t                                                     \
+_ccs_serialize_bin_ ## NAME (TYPE x, size_t *buffer_size, char **buffer) {     \
+  return _ccs_serialize_bin_u ## MAPPED_NAME (                                 \
+    ccs_zigzag_encode_ ## MAPPED_NAME (x), buffer_size, buffer);               \
+}                                                                              \
+static inline size_t                                                           \
+_ccs_serialize_bin_size_ ## NAME (TYPE x) {                                    \
+  return _ccs_serialize_bin_size_u ## MAPPED_NAME (                            \
+    ccs_zigzag_encode_ ## MAPPED_NAME (x));                                    \
+}
+
+#define CCS_COMPRESSED_DESERIALIZER_SIGNED(NAME, TYPE, MAPPED_NAME, MAPPED_TYPE)    \
+static inline ccs_result_t                                                          \
+_ccs_deserialize_bin_ ## NAME (TYPE *x, size_t *buffer_size, const char **buffer) { \
+  u ## MAPPED_TYPE v;                                                               \
+  CCS_VALIDATE(_ccs_deserialize_bin_u ## MAPPED_NAME (&v, buffer_size, buffer));    \
+  *x = ccs_zigzag_decode_ ## MAPPED_NAME (v);                                       \
+  return CCS_SUCCESS;                                                               \
+}                                                                                   \
+static inline ccs_result_t                                                          \
+_ccs_peek_bin_ ## NAME (TYPE *x, size_t *buffer_size, const char **buffer) {        \
+  size_t buff_size = *buffer_size;                                                  \
+  const char *buff = *buffer;                                                       \
+  return _ccs_deserialize_bin_ ## NAME (x, &buff_size, &buff);                      \
+}
+
+#define CCS_COMPRESSED_SERIALIZER_POINTER(NAME, TYPE, MAPPED_NAME, MAPPED_TYPE)  \
+static inline ccs_result_t                                                       \
+_ccs_serialize_bin_ ## NAME (TYPE x, size_t *buffer_size, char **buffer) {       \
+  return _ccs_serialize_bin_uint64((uint64_t)(uintptr_t)x, buffer_size, buffer); \
+}                                                                                \
+static inline size_t                                                             \
+_ccs_serialize_bin_size_ ## NAME (TYPE x) {                                      \
+  return _ccs_serialize_bin_size_uint64((uint64_t)(uintptr_t)x);                 \
+}   
+
+#define CCS_COMPRESSED_DESERIALIZER_POINTER(NAME, TYPE, MAPPED_NAME, MAPPED_TYPE)   \
+static inline ccs_result_t                                                          \
+_ccs_deserialize_bin_ ## NAME (TYPE *x, size_t *buffer_size, const char **buffer) { \
+  uint64_t v;                                                                       \
+  CCS_VALIDATE(_ccs_deserialize_bin_uint64(&v, buffer_size, buffer));               \
+  *x = (TYPE)(MAPPED_TYPE)v;                                                        \
+  return CCS_SUCCESS;                                                               \
+}                                                                                   \
+static inline ccs_result_t                                                          \
+_ccs_peek_bin_ ## NAME (TYPE *x, size_t *buffer_size, const char **buffer) {        \
+  size_t buff_size = *buffer_size;                                                  \
+  const char *buff = *buffer;                                                       \
+  return _ccs_deserialize_bin_ ## NAME (x, &buff_size, &buff);                      \
+}
+
 #define CCS_SERIALIZER(NAME, TYPE, MAPPED_NAME, MAPPED_TYPE)               \
 static inline ccs_result_t                                                 \
 _ccs_serialize_bin_ ## NAME (TYPE x, size_t *buffer_size, char **buffer) { \
@@ -250,7 +397,8 @@ _ccs_serialize_bin_ ## NAME (TYPE x, size_t *buffer_size, char **buffer) { \
   *buffer += sizeof(MAPPED_TYPE);                                          \
   return CCS_SUCCESS;                                                      \
 }                                                                          \
-static inline size_t _ccs_serialize_bin_size_ ## NAME (TYPE x) {           \
+static inline size_t                                                       \
+_ccs_serialize_bin_size_ ## NAME (TYPE x) {                                \
   (void)x;                                                                 \
   return sizeof(MAPPED_TYPE);                                              \
 }
@@ -282,6 +430,29 @@ _ccs_deserialize_bin_ ## NAME (TYPE *x, size_t *buffer_size, const char **buffer
 #define CCS_CONVERTER(NAME, TYPE, SIZE)                            \
   CCS_CONVERTER_TYPE(NAME, TYPE, uint ## SIZE, uint ## SIZE ## _t)
 
+#define CCS_CONVERTER_COMPRESSED_TYPE(NAME, TYPE, MAPPED_NAME, MAPPED_TYPE) \
+  CCS_COMPRESSED_SERIALIZER(NAME, TYPE, MAPPED_NAME, MAPPED_TYPE)           \
+  CCS_COMPRESSED_DESERIALIZER(NAME, TYPE, MAPPED_NAME, MAPPED_TYPE)
+
+#define CCS_CONVERTER_COMPRESSED(NAME, TYPE, SIZE)                            \
+  CCS_CONVERTER_COMPRESSED_TYPE(NAME, TYPE, uint ## SIZE, uint ## SIZE ## _t)
+
+#define CCS_CONVERTER_COMPRESSED_SIGNED_TYPE(NAME, TYPE, MAPPED_NAME, MAPPED_TYPE) \
+  CCS_COMPRESSED_SERIALIZER_SIGNED(NAME, TYPE, MAPPED_NAME, MAPPED_TYPE)           \
+  CCS_COMPRESSED_DESERIALIZER_SIGNED(NAME, TYPE, MAPPED_NAME, MAPPED_TYPE)
+
+#define CCS_CONVERTER_COMPRESSED_SIGNED(NAME, TYPE, SIZE) \
+  CCS_CONVERTER_COMPRESSED_SIGNED_TYPE(NAME, TYPE, int ## SIZE, int ## SIZE ## _t)
+
+#define CCS_CONVERTER_COMPRESSED_POINTER_TYPE(NAME, TYPE, MAPPED_NAME, MAPPED_TYPE) \
+  CCS_COMPRESSED_SERIALIZER_POINTER(NAME, TYPE, MAPPED_NAME, MAPPED_TYPE)           \
+  CCS_COMPRESSED_DESERIALIZER_POINTER(NAME, TYPE, MAPPED_NAME, MAPPED_TYPE)
+
+#define CCS_CONVERTER_COMPRESSED_POINTER(NAME, TYPE) \
+  CCS_CONVERTER_COMPRESSED_POINTER_TYPE(NAME, TYPE, uintptr, uintptr_t)
+
+#define CCS_USE_COMPRESSED
+#ifndef CCS_USE_COMPRESSED
 CCS_CONVERTER(uint8, uint8_t, 8)
 CCS_CONVERTER(int8, int8_t, 8)
 CCS_CONVERTER(uint16, uint16_t, 16)
@@ -308,6 +479,34 @@ CCS_CONVERTER(ccs_features_tuner_type, ccs_features_tuner_type_t, 32)
 CCS_CONVERTER(ccs_result, ccs_result_t, 32)
 CCS_CONVERTER(ccs_object, ccs_object_t, 64)
 CCS_CONVERTER(ccs_user_data, ccs_user_data_t, 64)
+#else
+CCS_CONVERTER(uint8, uint8_t, 8)
+CCS_CONVERTER(int8, int8_t, 8)
+CCS_CONVERTER_COMPRESSED(uint16, uint16_t, 16)
+CCS_CONVERTER_COMPRESSED_SIGNED(int16, int16_t, 16)
+CCS_CONVERTER_COMPRESSED(uint32, uint32_t, 32)
+CCS_CONVERTER_COMPRESSED_SIGNED(int32, int32_t, 32)
+CCS_CONVERTER_COMPRESSED(uint64, uint64_t, 64)
+CCS_CONVERTER_COMPRESSED_SIGNED(int64, int64_t, 64)
+CCS_CONVERTER(ccs_hash, ccs_hash_t, 32)
+CCS_CONVERTER_COMPRESSED(ccs_bool, ccs_bool_t, 32)
+CCS_CONVERTER_COMPRESSED_SIGNED(ccs_int, ccs_int_t, 64)
+CCS_CONVERTER(ccs_float, ccs_float_t, 64)
+CCS_CONVERTER_COMPRESSED(ccs_numeric_type, ccs_numeric_type_t, 32)
+CCS_CONVERTER_COMPRESSED(ccs_hyperparameter_type, ccs_hyperparameter_type_t, 32)
+CCS_CONVERTER_COMPRESSED(ccs_datum_flags, ccs_datum_flags_t, 32)
+CCS_CONVERTER_COMPRESSED(ccs_data_type, ccs_data_type_t, 32)
+CCS_CONVERTER_COMPRESSED(ccs_object_type, ccs_object_type_t, 32)
+CCS_CONVERTER_COMPRESSED(ccs_scale_type, ccs_scale_type_t, 32)
+CCS_CONVERTER_COMPRESSED(ccs_distribution_type, ccs_distribution_type_t, 32)
+CCS_CONVERTER_COMPRESSED(ccs_expression_type, ccs_expression_type_t, 32)
+CCS_CONVERTER_COMPRESSED(ccs_objective_type, ccs_objective_type_t, 32)
+CCS_CONVERTER_COMPRESSED(ccs_tuner_type, ccs_tuner_type_t, 32)
+CCS_CONVERTER_COMPRESSED(ccs_features_tuner_type, ccs_features_tuner_type_t, 32)
+CCS_CONVERTER_COMPRESSED_SIGNED(ccs_result, ccs_result_t, 32)
+CCS_CONVERTER_COMPRESSED_POINTER(ccs_object, ccs_object_t)
+CCS_CONVERTER_COMPRESSED_POINTER(ccs_user_data, ccs_user_data_t)
+#endif
 
 static inline size_t
 _ccs_serialize_bin_size_string(const char *str) {
