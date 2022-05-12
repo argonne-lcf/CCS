@@ -1,6 +1,6 @@
 AM_COLOR_TESTS = yes
 
-test_ruby_CFLAGS = -I$(top_srcdir)/include -Wall -Wextra -Wpedantic $(RUBY_CFLAGS) -Wno-deprecated-declarations
+test_ruby_CFLAGS = -I$(top_srcdir)/include -Wall -Wextra $(RUBY_CFLAGS) -Wno-deprecated-declarations
 
 if !ISMACOS
 if STRICT

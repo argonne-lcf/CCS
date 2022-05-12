@@ -1,6 +1,7 @@
 AM_CPPFLAGS = -I$(top_srcdir)/include
 
-AM_CFLAGS = -Wall -Wextra -Wpedantic
+AM_CFLAGS = -Wall -Wextra -Wpedantic $(GSL_CFLAGS)
+AM_LDFLAGS = $(GSL_LIBS)
 
 if STRICT
 AM_CFLAGS += -Werror

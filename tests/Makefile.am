@@ -1,12 +1,12 @@
 AM_COLOR_TESTS = yes
 
-AM_CFLAGS = -I$(top_srcdir)/include -Wall -Wextra -Wpedantic
+AM_CFLAGS = -I$(top_srcdir)/include -Wall -Wextra -Wpedantic $(GSL_CFLAGS)
 
 if STRICT
 AM_CFLAGS += -Werror
 endif
 
-AM_LDFLAGS = ../src/libcconfigspace.la
+AM_LDFLAGS = ../src/libcconfigspace.la $(GSL_LIBS)
 
 CCONFIGSPACE_TESTS = \
 		test_rng \

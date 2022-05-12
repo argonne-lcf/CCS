@@ -73,11 +73,7 @@ if test "x$enable_samples" = xyes;
 then
   PKG_CHECK_MODULES([PYTHON], [python3-embed >= 3.6])
 fi
-
-#check for libraries
-AC_CHECK_LIB([m],[cos])
-AC_CHECK_LIB([gslcblas],[cblas_dgemm])
-AC_CHECK_LIB([gsl],[gsl_blas_dgemm])
+PKG_CHECK_MODULES([GSL], [gsl])
 
 #check for valgrind
 AX_VALGRIND_DFLT([helgrind], [off])
