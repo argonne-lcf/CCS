@@ -1,8 +1,16 @@
 #include <stdlib.h>
-#include <assert.h>
 #include <cconfigspace.h>
 #include <string.h>
+// Ruby 3+ bleeds NDEBUG
+// see https://bugs.ruby-lang.org/issues/18777#change-97580
+#ifdef NDEBUG
 #include <ruby.h>
+#else
+#include <ruby.h>
+#undef NDEBUG
+#endif
+// DO NOT MOVE. If assert.h is included before ruby.h asserts will turn to no-op.
+#include <assert.h>
 
 ccs_hyperparameter_t create_numerical(const char * name, double lower, double upper) {
 	ccs_hyperparameter_t hyperparameter;
