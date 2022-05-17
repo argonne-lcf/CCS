@@ -14,15 +14,6 @@ extern "C" {
 #endif
 
 /**
- * The statement x is likely evaluating to true.
- */
-#define CCS_LIKELY(x)      __builtin_expect(!!(x), 1)
-/**
- * The statement x is likely evaluating to false.
- */
-#define CCS_UNLIKELY(x)    __builtin_expect(!!(x), 0)
-
-/**
  * A CCS floating point type
  */
 typedef double   ccs_float_t;
