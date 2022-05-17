@@ -61,11 +61,47 @@ _ccs_interval_include(ccs_interval_t *interval, ccs_numeric_t value) {
 #define CCS_SERIALIZATION_API_VERSION_TYPE uint32_t
 #define CCS_SERIALIZATION_API_VERSION \
 	((CCS_SERIALIZATION_API_VERSION_TYPE)1)
+#define CCS_SERIALIZATION_API_VERSION_SERIALIZE_BIN _ccs_serialize_bin_uint32
+#define CCS_SERIALIZATION_API_VERSION_SERIALIZE_SIZE_BIN _ccs_serialize_bin_size_uint32
+#define CCS_SERIALIZATION_API_VERSION_DESERIALIZE_BIN _ccs_deserialize_bin_uint32
 
 typedef void *ccs_user_data_t;
 
 /* "CCS" */
 #define CCS_MAGIC_TAG { 0x43, 0x43, 0x53, 0x00 }
+static const char _ccs_magic_tag[4] = CCS_MAGIC_TAG;
+
+static inline ccs_result_t
+_ccs_serialize_bin_magic_tag(
+		const char  *tag,
+		size_t      *buffer_size,
+		char       **buffer) {
+	if (CCS_UNLIKELY(*buffer_size < 4))
+		return -CCS_NOT_ENOUGH_DATA;
+	memcpy(*buffer, tag, 4);
+	*buffer += 4;
+	*buffer_size -= 4;
+	return CCS_SUCCESS;
+}
+
+static inline size_t
+_ccs_serialize_bin_size_magic_tag(
+		const char  *tag) {
+	return strlen(tag) + 1;
+}
+
+static inline ccs_result_t
+_ccs_deserialize_bin_magic_tag(
+		char        *tag,
+		size_t      *buffer_size,
+		const char **buffer) {
+	if (CCS_UNLIKELY(*buffer_size < 4))
+		return -CCS_NOT_ENOUGH_DATA;
+	memcpy(tag, *buffer, 4);
+	*buffer += 4;
+	*buffer_size -= 4;
+	return CCS_SUCCESS;
+}
 
 struct _ccs_object_ops_s {
 	ccs_result_t (*del)(ccs_object_t object);

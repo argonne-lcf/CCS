@@ -1,6 +1,11 @@
 #include "cconfigspace_internal.h"
 #include <stdlib.h>
 #include <gsl/gsl_rng.h>
+#include <sys/mman.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+#include <errno.h>
+#include <unistd.h>
 
 const ccs_datum_t ccs_none = CCS_NONE_VAL;
 const ccs_datum_t ccs_inactive = CCS_INACTIVE_VAL;
@@ -128,7 +133,8 @@ _ccs_serialize_header_size(ccs_serialize_format_t format) {
 	switch(format) {
 	case CCS_SERIALIZE_FORMAT_BINARY:
 		/* MAGIC + size */
-		return 4 + sizeof(CCS_SERIALIZATION_API_VERSION_TYPE);
+		return _ccs_serialize_bin_size_magic_tag(_ccs_magic_tag) +
+		       CCS_SERIALIZATION_API_VERSION_SERIALIZE_SIZE_BIN(CCS_SERIALIZATION_API_VERSION);
 		break;
 	default:
 		return 0;
@@ -143,13 +149,9 @@ _ccs_serialize_header(
 	switch(format) {
 	case CCS_SERIALIZE_FORMAT_BINARY:
 	{
-		if (CCS_UNLIKELY(*buffer_size < 4))
-			return -CCS_OUT_OF_MEMORY;
-		const char tag[4] = CCS_MAGIC_TAG;
-		memcpy(*buffer, tag, 4);
-		*buffer += 4;
-		*buffer_size -= 4;
-		CCS_VALIDATE(_ccs_serialize_bin_uint32(
+		CCS_VALIDATE(_ccs_serialize_bin_magic_tag(
+			_ccs_magic_tag, buffer_size, buffer));
+		CCS_VALIDATE(CCS_SERIALIZATION_API_VERSION_SERIALIZE_BIN(
 		    CCS_SERIALIZATION_API_VERSION, buffer_size, buffer));
 	}
 	break;
@@ -168,16 +170,12 @@ _ccs_deserialize_header(
 	switch(format) {
 	case CCS_SERIALIZE_FORMAT_BINARY:
 	{
-		if (CCS_UNLIKELY(*buffer_size < 4))
-			return -CCS_NOT_ENOUGH_DATA;
-		const char ccs_tag[4] = CCS_MAGIC_TAG;
 		char tag[4];
-		memcpy(tag, *buffer, 4);
-		*buffer += 4;
-		*buffer_size -= 4;
-		if (CCS_UNLIKELY(memcmp(tag, ccs_tag, 4)))
+		CCS_VALIDATE(_ccs_deserialize_bin_magic_tag(
+			tag, buffer_size, buffer));
+		if (CCS_UNLIKELY(memcmp(tag, _ccs_magic_tag, 4)))
 			return -CCS_INVALID_VALUE;
-		CCS_VALIDATE(_ccs_deserialize_bin_uint32(
+		CCS_VALIDATE(CCS_SERIALIZATION_API_VERSION_DESERIALIZE_BIN(
 			version, buffer_size, buffer));
 		if (CCS_UNLIKELY(*version > CCS_SERIALIZATION_API_VERSION))
 			return -CCS_INVALID_VALUE;
@@ -226,6 +224,51 @@ ccs_object_serialize(ccs_object_t           object,
 		CCS_VALIDATE(obj->ops->serialize(
 		    object, format, &buffer_size, &buffer));
 		break;
+	case CCS_SERIALIZE_TYPE_FILE:
+	{
+		const char *path;
+		int fd;
+		ccs_result_t res;
+		va_start(args, type);
+		path = va_arg(args, const char *);
+		va_end(args);
+		CCS_CHECK_PTR(path);
+		fd = open(path, O_CREAT | O_TRUNC | O_RDWR,
+			S_IRUSR | S_IWUSR | S_IWGRP | S_IRGRP | S_IROTH); // 664
+		if (CCS_UNLIKELY(fd == -1))
+			return -CCS_INVALID_FILE_PATH;
+		CCS_VALIDATE_ERR_GOTO(res, ccs_object_serialize(
+			object, format, CCS_SERIALIZE_TYPE_SIZE, &buffer_size), err_file_fd);
+		buffer = (char *)mmap(0, buffer_size, PROT_READ|PROT_WRITE, MAP_SHARED, fd, 0);
+		if (CCS_UNLIKELY(buffer == MAP_FAILED)) {
+			switch(errno) {
+			case ENOMEM:
+				res = -CCS_OUT_OF_MEMORY;
+				break;
+			case EACCES:
+				res = -CCS_INVALID_FILE_PATH;
+				break;
+			default:
+				res = -CCS_SYSTEM_ERROR;
+			}
+			goto err_file_fd;
+		}
+		if (CCS_UNLIKELY(ftruncate(fd, buffer_size) == -1)) {
+			res = -CCS_SYSTEM_ERROR;
+			goto err_file_map;
+		}
+		CCS_VALIDATE_ERR_GOTO(res, ccs_object_serialize(
+			object, format, CCS_SERIALIZE_TYPE_MEMORY, buffer_size, buffer), err_file_map);
+		if (msync(buffer, buffer_size, MS_SYNC) == -1)
+			res = -CCS_SYSTEM_ERROR;
+err_file_map:
+		munmap(buffer, buffer_size);
+err_file_fd:
+		close(fd);
+		return res;
+        }
+	case CCS_SERIALIZE_TYPE_FILE_DESCRIPTOR:
+		return -CCS_UNSUPPORTED_OPERATION;
 	default:
 		return -CCS_INVALID_VALUE;
 	}

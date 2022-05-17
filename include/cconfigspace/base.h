@@ -204,6 +204,8 @@ enum ccs_error_e {
 	CCS_HANDLE_DUPLICATE,
 	/** The handle was not found */
 	CCS_INVALID_HANDLE,
+	/** A system error occured */
+	CCS_SYSTEM_ERROR,
 	/** Guard */
 	CCS_ERROR_MAX,
 	/** Try forcing 32 bits value for bindings */
@@ -676,8 +678,8 @@ typedef enum ccs_serialize_format_e ccs_serialize_format_t;
 enum ccs_serialize_type_e {
 	CCS_SERIALIZE_TYPE_SIZE,
 	CCS_SERIALIZE_TYPE_MEMORY,
-/*	CCS_SERIALIZE_TYPE_FILE,
-	CCS_SERIALIZE_TYPE_FILE_DESCRIPTOR,*/
+	CCS_SERIALIZE_TYPE_FILE,
+	CCS_SERIALIZE_TYPE_FILE_DESCRIPTOR,
 	CCS_SERIALIZE_TYPE_MAX,
 	CCS_SERIALIZE_TYPE_FORCE_32BIT = INT32_MAX
 };

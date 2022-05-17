@@ -1,5 +1,6 @@
 import unittest
 import sys
+import os as _os
 from random import choice
 sys.path.insert(1, '.')
 sys.path.insert(1, '..')
@@ -136,6 +137,8 @@ class TestTuner(unittest.TestCase):
     objs.sort(key = lambda x: x[0])
     self.assertTrue(all(objs[i][1] >= objs[i+1][1] for i in range(len(objs)-1)))
     self.assertTrue(t.suggest in [x.configuration for x in optims])
+    t.serialize(type = 'file', path = 'tuner.ccs')
+    _os.remove('tuner.ccs')
 
 
 if __name__ == '__main__':

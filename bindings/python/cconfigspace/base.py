@@ -177,7 +177,8 @@ class ccs_error(CEnumeration):
     'INVALID_FILE_PATH',
     'NOT_ENOUGH_DATA',
     'HANDLE_DUPLICATE',
-    'INVALID_HANDLE' ]
+    'INVALID_HANDLE',
+    'CCS_SYSTEM_ERROR' ]
 
 class ccs_data_type(CEnumeration):
   _members_ = [
@@ -332,7 +333,9 @@ class ccs_serialize_format(CEnumeration):
 class ccs_serialize_type(CEnumeration):
   _members_ = [
     ('SIZE', 0),
-    'MEMORY'
+    'MEMORY',
+    'FILE',
+    'FILE_DESCRIPTOR'
   ]
 
 class ccs_deserialize_option(CEnumeration):
@@ -468,8 +471,14 @@ class Object:
   def set_destroy_callback(self, callback, user_data = None):
     _set_destroy_callback(self.handle, callback, user_data = user_data)
 
-  def serialize(self, format = 'binary', type = 'memory'):
+  def serialize(self, format = 'binary', type = 'memory', path = None):
     s = ct.c_size_t(0)
+    if type == 'file':
+      p = str.encode(path)
+      pp = ct.c_char_p(p);
+      res = ccs_object_serialize(self.handle, ccs_serialize_format.BINARY, ccs_serialize_type.FILE, pp)
+      Error.check(res)
+      return None
     if format == 'binary':
       res = ccs_object_serialize(self.handle, ccs_serialize_format.BINARY, ccs_serialize_type.SIZE, ct.byref(s))
       Error.check(res)
