@@ -471,29 +471,30 @@ class Object:
   def set_destroy_callback(self, callback, user_data = None):
     _set_destroy_callback(self.handle, callback, user_data = user_data)
 
-  def serialize(self, format = 'binary', type = 'memory', path = None):
-    s = ct.c_size_t(0)
-    if type == 'file':
+  def serialize(self, format = 'binary', path = None):
+    if format != 'binary':
+      raise Error(ccs_error(ccs_error.INVALID_VALUE))
+    if path:
       p = str.encode(path)
-      pp = ct.c_char_p(p);
+      pp = ct.c_char_p(p)
       res = ccs_object_serialize(self.handle, ccs_serialize_format.BINARY, ccs_serialize_type.FILE, pp)
       Error.check(res)
       return None
-    if format == 'binary':
+    else:
+      s = ct.c_size_t(0)
       res = ccs_object_serialize(self.handle, ccs_serialize_format.BINARY, ccs_serialize_type.SIZE, ct.byref(s))
       Error.check(res)
-    else:
-      raise Error(ccs_error(ccs_error.INVALID_VALUE))
-    if type == 'memory':
       v = (ct.c_byte * s.value)()
       res = ccs_object_serialize(self.handle, ccs_serialize_format.BINARY, ccs_serialize_type.MEMORY, ct.sizeof(v), v)
       Error.check(res)
       return v
-    else:
-      raise Error(ccs_error(ccs_error.INVALID_VALUE))
 
   @classmethod
-  def deserialize(cls, value, format = 'binary', type = 'memory', handle_map = None, vector = None, data = None):
+  def deserialize(cls, format = 'binary', handle_map = None, vector = None, data = None, path = None, buffer = None):
+    if format != 'binary':
+      raise Error(ccs_error(ccs_error.INVALID_VALUE))
+    if path and buffer:
+      raise Error(ccs_error(ccs_error.INVALID_VALUE))
     o = ccs_object(0)
     options = [ccs_deserialize_option.END]
     if handle_map:
@@ -502,22 +503,24 @@ class Object:
       options = [ccs_deserialize_option.VECTOR, ct.byref(vector)] + options
     if data:
       options = [ccs_deserialize_option.DATA, ct.py_object(data)] + options
-    if type == 'memory':
-      s = ct.c_size_t(ct.sizeof(value))
-      if format == 'binary':
-        res = ccs_object_deserialize(ct.byref(o), ccs_serialize_format.BINARY, ccs_serialize_type.MEMORY, s, value,
-                                     *options)
-        Error.check(res)
-        return cls._from_handle(o, False, True)
-      else:
-        raise Error(ccs_error(ccs_error.INVALID_VALUE))
+    if buffer:
+      s = ct.c_size_t(ct.sizeof(buffer))
+      res = ccs_object_deserialize(ct.byref(o), ccs_serialize_format.BINARY, ccs_serialize_type.MEMORY, s, buffer, *options)
+      Error.check(res)
+      return cls._from_handle(o, False, True)
+    elif path:
+      p = str.encode(path)
+      pp = ct.c_char_p(p)
+      res = ccs_object_deserialize(ct.byref(o), ccs_serialize_format.BINARY, ccs_serialize_type.FILE, pp, *options)
+      Error.check(res)
+      return cls._from_handle(o, False, True)
     else:
       raise Error(ccs_error(ccs_error.INVALID_VALUE))
 
 _callbacks = {}
 
-def deserialize(value, format = 'binary', type = 'memory', handle_map = None):
-  return Object.deserialize(value, format = format, type = type, handle_map = handle_map)
+def deserialize(format = 'binary', handle_map = None, path = None, buffer = None):
+  return Object.deserialize(format = format, handle_map = handle_map, path = path, buffer = buffer)
 
 def _set_destroy_callback(handle, callback, user_data = None):
   if callback is None:

@@ -32,7 +32,7 @@ class TestHyperparameter(unittest.TestCase):
     values = [0.2, 1.5, 2, 7.2]
     href = ccs.DiscreteHyperparameter(values = values)
     buff = href.serialize()
-    h = ccs.Object.deserialize(buff)
+    h = ccs.Object.deserialize(buffer = buff)
     self.assertEqual( ccs.HYPERPARAMETER, h.object_type )
     self.assertEqual( ccs.HYPERPARAMETER_TYPE_DISCRETE, h.type )
     self.assertTrue( h.name[:5] == "param" )
@@ -89,7 +89,7 @@ class TestHyperparameter(unittest.TestCase):
     values = ["foo", 2, 3.0]
     href = ccs.OrdinalHyperparameter(values = values)
     buff = href.serialize()
-    h = ccs.Object.deserialize(buff)
+    h = ccs.Object.deserialize(buffer = buff)
     self.assertEqual( ccs.HYPERPARAMETER, h.object_type )
     self.assertEqual( ccs.HYPERPARAMETER_TYPE_ORDINAL, h.type )
     self.assertTrue( h.name[:5] == "param" )
@@ -136,7 +136,7 @@ class TestHyperparameter(unittest.TestCase):
     values = ["foo", 2, 3.0]
     href = ccs.CategoricalHyperparameter(values = values)
     buff = href.serialize()
-    h = ccs.Object.deserialize(buff)
+    h = ccs.Object.deserialize(buffer = buff)
     self.assertEqual( ccs.HYPERPARAMETER, h.object_type )
     self.assertEqual( ccs.HYPERPARAMETER_TYPE_CATEGORICAL, h.type )
     self.assertTrue( h.name[:5] == "param" )
@@ -184,7 +184,7 @@ class TestHyperparameter(unittest.TestCase):
   def test_serialize_numerical(self):
     href = ccs.NumericalHyperparameter()
     buff = href.serialize()
-    h = ccs.Object.deserialize(buff)
+    h = ccs.Object.deserialize(buffer = buff)
     self.assertEqual( ccs.HYPERPARAMETER, h.object_type )
     self.assertEqual( ccs.HYPERPARAMETER_TYPE_NUMERICAL, h.type )
     self.assertTrue( h.name[:5] == "param" )
@@ -261,7 +261,7 @@ class TestHyperparameter(unittest.TestCase):
   def test_serialize_string(self):
     href = ccs.StringHyperparameter()
     buff = href.serialize()
-    h = ccs.Object.deserialize(buff)
+    h = ccs.Object.deserialize(buffer = buff)
     self.assertEqual( ccs.HYPERPARAMETER, h.object_type )
     self.assertEqual( ccs.HYPERPARAMETER_TYPE_STRING, h.type )
     self.assertTrue( h.name[:5] == "param" )

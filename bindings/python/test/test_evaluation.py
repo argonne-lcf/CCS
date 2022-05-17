@@ -58,7 +58,7 @@ class TestEvaluation(unittest.TestCase):
     handle_map = ccs.Map()
     handle_map[cs] = cs
     handle_map[os] = os
-    ev = ccs.deserialize(buff, handle_map = handle_map)
+    ev = ccs.deserialize(buffer = buff, handle_map = handle_map)
     self.assertEqual( cs.handle.value, ev.configuration.configuration_space.handle.value)
     self.assertEqual( os.handle.value, ev.objective_space.handle.value)
     self.assertEqual( [0.5, 0.6], ev.values )

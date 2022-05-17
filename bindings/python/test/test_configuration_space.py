@@ -267,7 +267,7 @@ class TestConfigurationSpace(unittest.TestCase):
       self.assertFalse( s.value('p1') == '#pragma omp #P3' and  s.value('p3') == ' ' )
 
     buff = cs.serialize()
-    cs_copy = ccs.Object.deserialize(buff)
+    cs_copy = ccs.Object.deserialize(buffer = buff)
     for i in range(1000):
       s = cs_copy.sample()
       s.check()

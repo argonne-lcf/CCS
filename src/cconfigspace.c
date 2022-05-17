@@ -446,6 +446,55 @@ ccs_object_deserialize(ccs_object_t           *object_ret,
 end_memory:
 		va_end(args);
 		break;
+	case CCS_SERIALIZE_TYPE_FILE:
+        {
+		const char *path;
+		int fd;
+		struct stat stat_buffer;
+		va_start(args, type);
+		path = va_arg(args, const char *);
+		if(CCS_UNLIKELY(!path)) {
+			res = -CCS_INVALID_VALUE;
+			goto end_file;
+		}
+		fd = open(path, O_RDONLY);
+		if (CCS_UNLIKELY(fd == -1)) {
+			res = -CCS_INVALID_FILE_PATH;
+			goto end_file;
+		}
+		if (CCS_UNLIKELY(fstat(fd, &stat_buffer) == -1)) {
+			res = -CCS_SYSTEM_ERROR;
+			goto err_file_fd;
+		}
+		buffer_size = stat_buffer.st_size;
+		buffer = (const char *)mmap(0, buffer_size, PROT_READ, MAP_PRIVATE, fd, 0);
+		if (CCS_UNLIKELY(buffer == MAP_FAILED)) {
+			switch(errno) {
+			case ENOMEM:
+				res = -CCS_OUT_OF_MEMORY;
+				break;
+			case EACCES:
+				res = -CCS_INVALID_FILE_PATH;
+				break;
+			default:
+				res = -CCS_SYSTEM_ERROR;
+			}
+			goto err_file_fd;
+		}
+		{
+			const char *b = buffer;
+			size_t bs = buffer_size;
+			CCS_VALIDATE_ERR_GOTO(res, _ccs_object_deserialize(
+				object_ret, format, &bs, &b, args), err_file_map);
+		}
+err_file_map:
+		munmap((void *)buffer, buffer_size);
+err_file_fd:
+		close(fd);
+end_file:
+		va_end(args);
+		break;
+	}
 	default:
 		return -CCS_INVALID_VALUE;
 	}

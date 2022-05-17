@@ -40,7 +40,7 @@ class TestRng(unittest.TestCase):
     rng = ccs.Rng()
     rng.seed = 10
     buff = rng.serialize()
-    rng2 = ccs.Object.deserialize(buff)
+    rng2 = ccs.Object.deserialize(buffer = buff)
     self.assertEqual( ccs.RNG, rng2.object_type )
     v1 = rng.get()
     v2 = rng2.get()

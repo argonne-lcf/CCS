@@ -38,7 +38,7 @@ class TestDistribution(unittest.TestCase):
     s = sum(areas)
     dref = ccs.RouletteDistribution(areas = areas)
     buff = dref.serialize()
-    d = ccs.Object.deserialize(buff)
+    d = ccs.Object.deserialize(buffer = buff)
     self.assertEqual( ccs.DISTRIBUTION, d.object_type )
     self.assertEqual( ccs.ROULETTE, d.type )
     self.assertEqual( ccs.NUM_INTEGER, d.data_type )
@@ -82,7 +82,7 @@ class TestDistribution(unittest.TestCase):
   def test_serialize_normal(self):
     dref = ccs.NormalDistribution()
     buff = dref.serialize()
-    d = ccs.Object.deserialize(buff)
+    d = ccs.Object.deserialize(buffer = buff)
     self.assertEqual( ccs.DISTRIBUTION, d.object_type )
     self.assertEqual( ccs.NORMAL, d.type )
     self.assertEqual( ccs.NUM_FLOAT, d.data_type )
@@ -153,7 +153,7 @@ class TestDistribution(unittest.TestCase):
   def test_serialize_uniform(self):
     dref = ccs.UniformDistribution()
     buff = dref.serialize()
-    d = ccs.Object.deserialize(buff)
+    d = ccs.Object.deserialize(buffer = buff)
     self.assertEqual( ccs.DISTRIBUTION, d.object_type )
     self.assertEqual( ccs.UNIFORM, d.type )
     self.assertEqual( ccs.NUM_FLOAT, d.data_type )
@@ -246,7 +246,7 @@ class TestDistribution(unittest.TestCase):
                       ccs.UniformDistribution.float(lower =  0.0, upper = 2.0) ]
     dref = ccs.MixtureDistribution(distributions = distributions)
     buff = dref.serialize()
-    d = ccs.Object.deserialize(buff)
+    d = ccs.Object.deserialize(buffer = buff)
     self.assertEqual( d.object_type, ccs.DISTRIBUTION )
     self.assertEqual( d.type, ccs.MIXTURE )
     self.assertEqual( d.data_types, [ccs.NUM_FLOAT] )
@@ -274,7 +274,7 @@ class TestDistribution(unittest.TestCase):
                       ccs.UniformDistribution.int(lower =  0, upper = 2) ]
     dref = ccs.MultivariateDistribution(distributions = distributions)
     buff = dref.serialize()
-    d = ccs.Object.deserialize(buff)
+    d = ccs.Object.deserialize(buffer = buff)
     self.assertEqual( d.object_type, ccs.DISTRIBUTION )
     self.assertEqual( d.type, ccs.MULTIVARIATE )
     self.assertEqual( d.data_types, [ccs.NUM_FLOAT, ccs.NUM_INTEGER] )

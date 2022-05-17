@@ -60,7 +60,7 @@ class TestFeaturesTuner(unittest.TestCase):
     self.assertTrue(t.suggest(features_off) in [x.configuration for x in optims])
     # test serialization
     buff = t.serialize()
-    t_copy = ccs.deserialize(buff)
+    t_copy = ccs.deserialize(buffer = buff)
     hist = t_copy.history()
     self.assertEqual(200, len(hist))
     optims_2 = t_copy.optimums()
@@ -159,7 +159,7 @@ class TestFeaturesTuner(unittest.TestCase):
     self.assertTrue(t.suggest(features_off) in [x.configuration for x in optims])
     # test serialization
     buff = t.serialize()
-    t_copy = ccs.UserDefinedFeaturesTuner.deserialize(buff, delete = delete, ask = ask, tell = tell, get_optimums = get_optimums, get_history = get_history, suggest = suggest, tuner_data = TunerData())
+    t_copy = ccs.UserDefinedFeaturesTuner.deserialize(buffer = buff, delete = delete, ask = ask, tell = tell, get_optimums = get_optimums, get_history = get_history, suggest = suggest, tuner_data = TunerData())
     hist = t_copy.history()
     self.assertEqual(200, len(hist))
     optims_2 = t_copy.optimums()
