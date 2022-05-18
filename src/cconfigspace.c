@@ -134,6 +134,7 @@ _ccs_serialize_header_size(ccs_serialize_format_t format) {
 	case CCS_SERIALIZE_FORMAT_BINARY:
 		/* MAGIC + size */
 		return _ccs_serialize_bin_size_magic_tag(_ccs_magic_tag) +
+		       _ccs_serialize_bin_size_uncompressed_uint64(0) +
 		       CCS_SERIALIZATION_API_VERSION_SERIALIZE_SIZE_BIN(CCS_SERIALIZATION_API_VERSION);
 		break;
 	default:
@@ -141,16 +142,19 @@ _ccs_serialize_header_size(ccs_serialize_format_t format) {
 	}
 }
 
-ccs_result_t
+static ccs_result_t
 _ccs_serialize_header(
 		ccs_serialize_format_t   format,
 		size_t                  *buffer_size,
-		char                   **buffer) {
+		char                   **buffer,
+		size_t                   size) {
 	switch(format) {
 	case CCS_SERIALIZE_FORMAT_BINARY:
 	{
 		CCS_VALIDATE(_ccs_serialize_bin_magic_tag(
 			_ccs_magic_tag, buffer_size, buffer));
+		CCS_VALIDATE(_ccs_serialize_bin_uncompressed_uint64(
+			size, buffer_size, buffer));
 		CCS_VALIDATE(CCS_SERIALIZATION_API_VERSION_SERIALIZE_BIN(
 		    CCS_SERIALIZATION_API_VERSION, buffer_size, buffer));
 	}
@@ -161,20 +165,25 @@ _ccs_serialize_header(
 	return CCS_SUCCESS;
 }
 
-ccs_result_t
+static ccs_result_t
 _ccs_deserialize_header(
 		ccs_serialize_format_t   format,
 		size_t                  *buffer_size,
 		const char             **buffer,
+		size_t                  *size,
 		uint32_t                *version) {
 	switch(format) {
 	case CCS_SERIALIZE_FORMAT_BINARY:
 	{
 		char tag[4];
+		uint64_t sz;
 		CCS_VALIDATE(_ccs_deserialize_bin_magic_tag(
 			tag, buffer_size, buffer));
 		if (CCS_UNLIKELY(memcmp(tag, _ccs_magic_tag, 4)))
 			return -CCS_INVALID_VALUE;
+		CCS_VALIDATE(_ccs_deserialize_bin_uncompressed_uint64(
+			&sz, buffer_size, buffer));
+		*size = sz;
 		CCS_VALIDATE(CCS_SERIALIZATION_API_VERSION_DESERIALIZE_BIN(
 			version, buffer_size, buffer));
 		if (CCS_UNLIKELY(*version > CCS_SERIALIZATION_API_VERSION))
@@ -214,16 +223,22 @@ ccs_object_serialize(ccs_object_t           object,
 		    object, format, p_buffer_size));
 		break;
 	case CCS_SERIALIZE_TYPE_MEMORY:
+	{
 		va_start(args, type);
 		buffer_size = va_arg(args, size_t);
 		buffer = va_arg(args, char *);
 		va_end(args);
+		size_t total_size = buffer_size;
+		char *buffer_start = buffer;
 		CCS_CHECK_PTR(buffer);
 		CCS_VALIDATE(_ccs_serialize_header(
-		    format, &buffer_size, &buffer));
+		    format, &buffer_size, &buffer, 0));
 		CCS_VALIDATE(obj->ops->serialize(
 		    object, format, &buffer_size, &buffer));
+		CCS_VALIDATE(_ccs_serialize_header(
+		    format, &total_size, &buffer_start, total_size - buffer_size));
 		break;
+	}
 	case CCS_SERIALIZE_TYPE_FILE:
 	{
 		const char *path;
@@ -325,10 +340,11 @@ _ccs_object_deserialize(ccs_object_t            *object_ret,
                         const char             **buffer,
                         va_list args) {
 	uint32_t version;
+	size_t   size;
 	_ccs_object_deserialize_options_t opts = { NULL, CCS_TRUE, NULL, NULL };
 	CCS_VALIDATE(_ccs_object_deserialize_options(format, args, &opts));
 	CCS_VALIDATE(_ccs_deserialize_header(
-		format, buffer_size, buffer, &version));
+		format, buffer_size, buffer, &size, &version));
 	switch (format) {
 	case CCS_SERIALIZE_FORMAT_BINARY:
 	{
