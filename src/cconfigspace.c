@@ -283,7 +283,38 @@ err_file_fd:
 		return res;
         }
 	case CCS_SERIALIZE_TYPE_FILE_DESCRIPTOR:
-		return -CCS_UNSUPPORTED_OPERATION;
+	{
+		int fd;
+		ccs_result_t res;
+		char *current_buffer;
+		va_start(args, type);
+		fd = va_arg(args, int);
+		va_end(args);
+		CCS_VALIDATE(ccs_object_serialize(
+			 object, format, CCS_SERIALIZE_TYPE_SIZE, &buffer_size));
+		buffer = (char *)malloc(buffer_size);
+		if (!buffer)
+			return -CCS_OUT_OF_MEMORY;
+		CCS_VALIDATE_ERR_GOTO(res, ccs_object_serialize(
+			object, format, CCS_SERIALIZE_TYPE_MEMORY, buffer_size, buffer), err_fd_buffer);
+		current_buffer = buffer;
+		do {
+			ssize_t count;
+			count = write(fd, current_buffer, buffer_size);
+			if (count == -1) {
+				if (errno != EAGAIN && errno != EINTR) {
+					res = -CCS_SYSTEM_ERROR;
+					goto err_fd_buffer;
+				}
+			} else {
+				buffer_size -= count;
+				current_buffer += count;
+			}
+		} while (buffer_size);
+err_fd_buffer:
+		free(buffer);
+		return res;
+	}
 	default:
 		return -CCS_INVALID_VALUE;
 	}
@@ -334,17 +365,13 @@ _ccs_object_deserialize_options(ccs_serialize_format_t             format,
 }
 
 static inline ccs_result_t
-_ccs_object_deserialize(ccs_object_t            *object_ret,
-                        ccs_serialize_format_t   format,
-                        size_t                  *buffer_size,
-                        const char             **buffer,
-                        va_list args) {
-	uint32_t version;
-	size_t   size;
-	_ccs_object_deserialize_options_t opts = { NULL, CCS_TRUE, NULL, NULL };
-	CCS_VALIDATE(_ccs_object_deserialize_options(format, args, &opts));
-	CCS_VALIDATE(_ccs_deserialize_header(
-		format, buffer_size, buffer, &size, &version));
+_ccs_object_deserialize_with_opts(
+		ccs_object_t                       *object_ret,
+		ccs_serialize_format_t              format,
+		uint32_t                            version,
+		size_t                             *buffer_size,
+		const char                        **buffer,
+		_ccs_object_deserialize_options_t  *opts) {
 	switch (format) {
 	case CCS_SERIALIZE_FORMAT_BINARY:
 	{
@@ -355,72 +382,72 @@ _ccs_object_deserialize(ccs_object_t            *object_ret,
 		case CCS_RNG:
 			CCS_VALIDATE(_ccs_rng_deserialize(
 				(ccs_rng_t *)object_ret,
-				format, version, buffer_size, buffer, &opts));
+				format, version, buffer_size, buffer, opts));
 			break;
 		case CCS_DISTRIBUTION:
 			CCS_VALIDATE(_ccs_distribution_deserialize(
 				(ccs_distribution_t *)object_ret,
-				format, version, buffer_size, buffer, &opts));
+				format, version, buffer_size, buffer, opts));
 			break;
 		case CCS_HYPERPARAMETER:
 			CCS_VALIDATE(_ccs_hyperparameter_deserialize(
 				(ccs_hyperparameter_t *)object_ret,
-				format, version, buffer_size, buffer, &opts));
+				format, version, buffer_size, buffer, opts));
 			break;
 		case CCS_EXPRESSION:
 			CCS_VALIDATE(_ccs_expression_deserialize(
 				(ccs_expression_t *)object_ret,
-				format, version, buffer_size, buffer, &opts));
+				format, version, buffer_size, buffer, opts));
 			break;
 		case CCS_FEATURES_SPACE:
 			CCS_VALIDATE(_ccs_features_space_deserialize(
 				(ccs_features_space_t *)object_ret,
-				format, version, buffer_size, buffer, &opts));
+				format, version, buffer_size, buffer, opts));
 			break;
 		case CCS_CONFIGURATION_SPACE:
 			CCS_VALIDATE(_ccs_configuration_space_deserialize(
 				(ccs_configuration_space_t *)object_ret,
-				format, version, buffer_size, buffer, &opts));
+				format, version, buffer_size, buffer, opts));
 			break;
 		case CCS_OBJECTIVE_SPACE:
 			CCS_VALIDATE(_ccs_objective_space_deserialize(
 				(ccs_objective_space_t *)object_ret,
-				format, version, buffer_size, buffer, &opts));
+				format, version, buffer_size, buffer, opts));
 			break;
 		case CCS_CONFIGURATION:
 			CCS_VALIDATE(_ccs_configuration_deserialize(
 				(ccs_configuration_t *)object_ret,
-				format, version, buffer_size, buffer, &opts));
+				format, version, buffer_size, buffer, opts));
 			break;
 		case CCS_EVALUATION:
 			CCS_VALIDATE(_ccs_evaluation_deserialize(
 				(ccs_evaluation_t *)object_ret,
-				format, version, buffer_size, buffer, &opts));
+				format, version, buffer_size, buffer, opts));
 			break;
 		case CCS_FEATURES:
 			CCS_VALIDATE(_ccs_features_deserialize(
 				(ccs_features_t *)object_ret,
-				format, version, buffer_size, buffer, &opts));
+				format, version, buffer_size, buffer, opts));
 			break;
 		case CCS_FEATURES_EVALUATION:
 			CCS_VALIDATE(_ccs_features_evaluation_deserialize(
 				(ccs_features_evaluation_t *)object_ret,
-				format, version, buffer_size, buffer, &opts));
+				format, version, buffer_size, buffer, opts));
 			break;
 		case CCS_TUNER:
 			CCS_VALIDATE(_ccs_tuner_deserialize(
 				(ccs_tuner_t *)object_ret,
-				format, version, buffer_size, buffer, &opts));
+				format, version, buffer_size, buffer, opts));
 			break;
 		case CCS_FEATURES_TUNER:
 			CCS_VALIDATE(_ccs_features_tuner_deserialize(
 				(ccs_features_tuner_t *)object_ret,
-				format, version, buffer_size, buffer, &opts));
+				format, version, buffer_size, buffer, opts));
 			break;
 		case CCS_MAP:
 			CCS_VALIDATE(_ccs_map_deserialize(
 				(ccs_map_t *)object_ret,
-				format, version, buffer_size, buffer, &opts));
+				format, version, buffer_size, buffer, opts));
 			break;
 		default:
 			return -CCS_UNSUPPORTED_OPERATION;
@@ -430,6 +457,23 @@ _ccs_object_deserialize(ccs_object_t            *object_ret,
 	default:
 		return -CCS_INVALID_VALUE;
 	}
+	return CCS_SUCCESS;
+}
+
+static inline ccs_result_t
+_ccs_object_deserialize(ccs_object_t            *object_ret,
+                        ccs_serialize_format_t   format,
+                        size_t                  *buffer_size,
+                        const char             **buffer,
+                        va_list                  args) {
+	uint32_t version;
+	size_t   size;
+	_ccs_object_deserialize_options_t opts = { NULL, CCS_TRUE, NULL, NULL };
+	CCS_VALIDATE(_ccs_object_deserialize_options(format, args, &opts));
+	CCS_VALIDATE(_ccs_deserialize_header(
+		format, buffer_size, buffer, &size, &version));
+	CCS_VALIDATE(_ccs_object_deserialize_with_opts(
+		object_ret, format, version, buffer_size, buffer, &opts));
 	return CCS_SUCCESS;
 }
 
@@ -508,6 +552,66 @@ err_file_map:
 err_file_fd:
 		close(fd);
 end_file:
+		va_end(args);
+		break;
+	}
+	case CCS_SERIALIZE_TYPE_FILE_DESCRIPTOR:
+	{
+		int fd;
+		char *current_buffer;
+		size_t current_size;
+		uint32_t version;
+		buffer_size = current_size = _ccs_serialize_header_size(format);
+		buffer = current_buffer = (char *)malloc(buffer_size);
+		if (!buffer)
+			return -CCS_OUT_OF_MEMORY;
+		va_start(args, type);
+		fd = va_arg(args, int);
+		do {
+			ssize_t count;
+			count = read(fd, current_buffer, current_size);
+			if (count == -1) {
+				if (errno != EAGAIN && errno != EINTR) {
+					res = -CCS_SYSTEM_ERROR;
+					goto err_fd_buffer;
+				}
+			} else {
+				current_size -= count;
+				current_buffer += count;
+			}
+		} while (current_size);
+		current_size = buffer_size;
+		current_buffer = (char *)buffer;
+		CCS_VALIDATE_ERR_GOTO(res, _ccs_deserialize_header(
+			format, &current_size, (const char **)&current_buffer, &buffer_size, &version), err_fd_buffer);
+		current_buffer = (char *)realloc((void *)buffer, buffer_size);
+		if (!current_buffer) {
+			res = -CCS_OUT_OF_MEMORY;
+			goto err_fd_buffer;
+		}
+		buffer = current_buffer;
+		current_size = buffer_size;
+		current_buffer += _ccs_serialize_header_size(format);
+		current_size -= _ccs_serialize_header_size(format);
+		do {
+			ssize_t count;
+			count = read(fd, current_buffer, current_size);
+			if (count == -1) {
+				if (errno != EAGAIN && errno != EINTR) {
+					res = -CCS_SYSTEM_ERROR;
+					goto err_fd_buffer;
+				}
+			} else {
+				current_size -= count;
+				current_buffer += count;
+			}
+		} while (current_size);
+		current_buffer = (char *)buffer;
+		current_size = buffer_size;
+		CCS_VALIDATE_ERR_GOTO(res, _ccs_object_deserialize(
+			object_ret, format, &current_size, (const char **)&current_buffer, args), err_fd_buffer);
+err_fd_buffer:
+		free((void *)buffer);
 		va_end(args);
 		break;
 	}

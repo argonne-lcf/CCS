@@ -471,13 +471,20 @@ class Object:
   def set_destroy_callback(self, callback, user_data = None):
     _set_destroy_callback(self.handle, callback, user_data = user_data)
 
-  def serialize(self, format = 'binary', path = None):
+  def serialize(self, format = 'binary', path = None, file_descriptor = None):
     if format != 'binary':
+      raise Error(ccs_error(ccs_error.INVALID_VALUE))
+    if path and file_descriptor:
       raise Error(ccs_error(ccs_error.INVALID_VALUE))
     if path:
       p = str.encode(path)
       pp = ct.c_char_p(p)
       res = ccs_object_serialize(self.handle, ccs_serialize_format.BINARY, ccs_serialize_type.FILE, pp)
+      Error.check(res)
+      return None
+    elif file_descriptor:
+      fd = ct.c_int(file_descriptor)
+      res = ccs_object_serialize(self.handle, ccs_serialize_format.BINARY, ccs_serialize_type.FILE_DESCRIPTOR, fd)
       Error.check(res)
       return None
     else:
@@ -490,10 +497,17 @@ class Object:
       return v
 
   @classmethod
-  def deserialize(cls, format = 'binary', handle_map = None, vector = None, data = None, path = None, buffer = None):
+  def deserialize(cls, format = 'binary', handle_map = None, vector = None, data = None, path = None, buffer = None, file_descriptor = None):
     if format != 'binary':
       raise Error(ccs_error(ccs_error.INVALID_VALUE))
-    if path and buffer:
+    mode_count = 0;
+    if path:
+      mode_count += 1
+    if buffer:
+      mode_count += 1
+    if file_descriptor:
+      mode_count += 1
+    if not mode_count == 1:
       raise Error(ccs_error(ccs_error.INVALID_VALUE))
     o = ccs_object(0)
     options = [ccs_deserialize_option.END]
@@ -506,16 +520,17 @@ class Object:
     if buffer:
       s = ct.c_size_t(ct.sizeof(buffer))
       res = ccs_object_deserialize(ct.byref(o), ccs_serialize_format.BINARY, ccs_serialize_type.MEMORY, s, buffer, *options)
-      Error.check(res)
-      return cls._from_handle(o, False, True)
     elif path:
       p = str.encode(path)
       pp = ct.c_char_p(p)
       res = ccs_object_deserialize(ct.byref(o), ccs_serialize_format.BINARY, ccs_serialize_type.FILE, pp, *options)
-      Error.check(res)
-      return cls._from_handle(o, False, True)
+    elif file_descriptor:
+      fd = ct.c_int(file_descriptor)
+      res = ccs_object_deserialize(ct.byref(o), ccs_serialize_format.BINARY, ccs_serialize_type.FILE_DESCRIPTOR, fd, *options)
     else:
       raise Error(ccs_error(ccs_error.INVALID_VALUE))
+    Error.check(res)
+    return cls._from_handle(o, False, True)
 
 _callbacks = {}
 

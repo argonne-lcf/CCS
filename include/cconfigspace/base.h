@@ -677,8 +677,8 @@ enum ccs_serialize_type_e {
 typedef enum ccs_serialize_type_e ccs_serialize_type_t;
 
 enum ccs_deserialize_option_e {
-	/** The next parameter is a ccs_handle_map_t object */
 	CCS_DESERIALIZE_OPTION_END = 0,
+	/** The next parameter is a ccs_handle_map_t object */
 	CCS_DESERIALIZE_OPTION_HANDLE_MAP,
 	CCS_DESERIALIZE_OPTION_VECTOR,
 	CCS_DESERIALIZE_OPTION_DATA,
