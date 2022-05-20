@@ -853,11 +853,27 @@ _ccs_object_handle_check_add(
 	return CCS_SUCCESS;
 }
 
+struct _ccs_file_descriptor_state_s {
+	char     *base;
+	size_t    base_size;
+	char     *buffer;
+	size_t    buffer_size;
+	int       fd;
+	uint32_t  version;
+};
+typedef struct _ccs_file_descriptor_state_s _ccs_file_descriptor_state_t;
+
+struct _ccs_object_serialize_options_s {
+	_ccs_file_descriptor_state_t **ppfd_state;
+};
+typedef struct _ccs_object_serialize_options_s _ccs_object_serialize_options_t;
+
 struct _ccs_object_deserialize_options_s {
-	ccs_map_t handle_map;
-	ccs_bool_t map_values;
-	void * vector;
-	void * data;
+	ccs_map_t                      handle_map;
+	ccs_bool_t                     map_values;
+	_ccs_file_descriptor_state_t **ppfd_state;
+	void                          *vector;
+	void                          *data;
 };
 typedef struct _ccs_object_deserialize_options_s _ccs_object_deserialize_options_t;
 

@@ -196,6 +196,31 @@ _ccs_deserialize_header(
 	return CCS_SUCCESS;
 }
 
+static inline ccs_result_t
+_ccs_object_serialize_options(
+		ccs_serialize_format_t           format,
+		ccs_serialize_type_t             type,
+		va_list                          args,
+		_ccs_object_serialize_options_t *opts) {
+	(void)format;
+	ccs_serialize_option_t opt =
+		(ccs_serialize_option_t)va_arg(args, int32_t);
+	while (opt != CCS_SERIALIZE_OPTION_END) {
+		switch (opt) {
+		case CCS_SERIALIZE_OPTION_NON_BLOCKING:
+			if (type != CCS_SERIALIZE_TYPE_FILE_DESCRIPTOR)
+				return -CCS_INVALID_VALUE;
+			opts->ppfd_state = va_arg(args, _ccs_file_descriptor_state_t **);
+			CCS_CHECK_PTR(opts->ppfd_state);
+			break;
+		default:
+			return -CCS_INVALID_VALUE;
+		}
+		opt = (ccs_serialize_option_t)va_arg(args, int32_t);
+	}
+	return CCS_SUCCESS;
+}
+
 ccs_result_t
 ccs_object_serialize(ccs_object_t           object,
                      ccs_serialize_format_t format,
@@ -203,9 +228,6 @@ ccs_object_serialize(ccs_object_t           object,
                      ...) {
 	_ccs_object_internal_t *obj = (_ccs_object_internal_t *)object;
 	va_list args;
-	char *buffer = NULL;
-	size_t *p_buffer_size = NULL;
-	size_t buffer_size = 0;
 
 	if (!obj)
 		return -CCS_INVALID_OBJECT;
@@ -214,6 +236,8 @@ ccs_object_serialize(ccs_object_t           object,
 
 	switch(type) {
 	case CCS_SERIALIZE_TYPE_SIZE:
+	{
+		size_t *p_buffer_size = NULL;
 		va_start(args, type);
 		p_buffer_size = va_arg(args, size_t *);
 		va_end(args);
@@ -222,8 +246,11 @@ ccs_object_serialize(ccs_object_t           object,
 		CCS_VALIDATE(obj->ops->serialize_size(
 		    object, format, p_buffer_size));
 		break;
+	}
 	case CCS_SERIALIZE_TYPE_MEMORY:
 	{
+		char *buffer = NULL;
+		size_t buffer_size = 0;
 		va_start(args, type);
 		buffer_size = va_arg(args, size_t);
 		buffer = va_arg(args, char *);
@@ -241,6 +268,8 @@ ccs_object_serialize(ccs_object_t           object,
 	}
 	case CCS_SERIALIZE_TYPE_FILE:
 	{
+		char *buffer = NULL;
+		size_t buffer_size = 0;
 		const char *path;
 		int fd;
 		ccs_result_t res;
@@ -286,33 +315,77 @@ err_file_fd:
 	{
 		int fd;
 		ccs_result_t res;
-		char *current_buffer;
+		_ccs_object_serialize_options_t opts = {NULL};
+		_ccs_file_descriptor_state_t state = {NULL, 0, NULL, 0, -1, 0};
+		_ccs_file_descriptor_state_t *pstate = NULL;
 		va_start(args, type);
 		fd = va_arg(args, int);
-		va_end(args);
-		CCS_VALIDATE(ccs_object_serialize(
-			 object, format, CCS_SERIALIZE_TYPE_SIZE, &buffer_size));
-		buffer = (char *)malloc(buffer_size);
-		if (!buffer)
-			return -CCS_OUT_OF_MEMORY;
-		CCS_VALIDATE_ERR_GOTO(res, ccs_object_serialize(
-			object, format, CCS_SERIALIZE_TYPE_MEMORY, buffer_size, buffer), err_fd_buffer);
-		current_buffer = buffer;
+		CCS_VALIDATE_ERR_GOTO(res, _ccs_object_serialize_options(
+			format, type, args, &opts), err_fd_args);
+		/* non blocking */
+		if (opts.ppfd_state) {
+			/* restart */
+			if (*(opts.ppfd_state)) {
+				/* check coherency */
+				if ((*(opts.ppfd_state))->fd != fd) {
+					res = -CCS_INVALID_VALUE;
+					goto err_fd_args;
+				}
+				pstate = *(opts.ppfd_state);
+			}
+		} else
+			pstate = &state;
+		/* if non blocking start or blocking */
+		if (!pstate || !pstate->base) {
+			size_t object_size;
+			CCS_VALIDATE_ERR_GOTO(res, ccs_object_serialize(
+				object, format, CCS_SERIALIZE_TYPE_SIZE, &object_size), err_fd_args);
+			/* initialize user_state */
+			if (!pstate) {
+				char *mem = (char *)malloc(sizeof(_ccs_file_descriptor_state_t) + object_size);
+				if (!mem) {
+					res = -CCS_OUT_OF_MEMORY;
+					goto err_fd_args;
+				}
+				*(opts.ppfd_state) = pstate = (_ccs_file_descriptor_state_t *)mem;
+				pstate->base_size = sizeof(_ccs_file_descriptor_state_t) + object_size;
+				pstate->buffer = mem + sizeof(_ccs_file_descriptor_state_t);
+			} else {
+				pstate->base = (char *)malloc(object_size);
+				if (!pstate->base) {
+					res = -CCS_OUT_OF_MEMORY;
+					goto err_fd_args;
+				}
+				pstate->base_size = object_size;
+				pstate->buffer = pstate->base;
+			}
+			pstate->buffer_size = object_size;
+			pstate->fd = fd;
+			CCS_VALIDATE_ERR_GOTO(res, ccs_object_serialize(
+				object, format, CCS_SERIALIZE_TYPE_MEMORY, pstate->buffer_size, pstate->buffer), err_fd_buffer);
+		}
 		do {
 			ssize_t count;
-			count = write(fd, current_buffer, buffer_size);
+			count = write(fd, pstate->buffer, pstate->buffer_size);
 			if (count == -1) {
 				if (errno != EAGAIN && errno != EINTR) {
 					res = -CCS_SYSTEM_ERROR;
 					goto err_fd_buffer;
+				} else if (errno == EAGAIN && opts.ppfd_state) {
+					res = -CCS_AGAIN;
+					goto err_fd_args;
 				}
 			} else {
-				buffer_size -= count;
-				current_buffer += count;
+				pstate->buffer_size -= count;
+				pstate->buffer += count;
 			}
-		} while (buffer_size);
+		} while (pstate->buffer_size);
 err_fd_buffer:
-		free(buffer);
+		free(pstate->base);
+		if (opts.ppfd_state)
+			*(opts.ppfd_state) = NULL;
+err_fd_args:
+                va_end(args);
 		return res;
 	}
 	default:
@@ -337,12 +410,14 @@ err_fd_buffer:
 #include "map_deserialize.h"
 
 static inline ccs_result_t
-_ccs_object_deserialize_options(ccs_serialize_format_t             format,
-                                va_list                            args,
-                                _ccs_object_deserialize_options_t *opts) {
+_ccs_object_deserialize_options(
+		ccs_serialize_format_t             format,
+		ccs_serialize_type_t               type,
+		va_list                            args,
+		_ccs_object_deserialize_options_t *opts) {
 	(void)format;
 	ccs_deserialize_option_t opt =
-		(ccs_deserialize_option_t)va_arg(args, int);
+		(ccs_deserialize_option_t)va_arg(args, int32_t);
 	while (opt != CCS_DESERIALIZE_OPTION_END) {
 		switch (opt) {
 		case CCS_DESERIALIZE_OPTION_HANDLE_MAP:
@@ -356,10 +431,16 @@ _ccs_object_deserialize_options(ccs_serialize_format_t             format,
 		case CCS_DESERIALIZE_OPTION_DATA:
 			opts->data = va_arg(args, void *);
 			break;
+		case CCS_DESERIALIZE_OPTION_NON_BLOCKING:
+			if (type != CCS_SERIALIZE_TYPE_FILE_DESCRIPTOR)
+				return -CCS_INVALID_VALUE;
+			opts->ppfd_state = va_arg(args, _ccs_file_descriptor_state_t **);
+			CCS_CHECK_PTR(opts->ppfd_state);
+			break;
 		default:
-			return CCS_INVALID_VALUE;
+			return -CCS_INVALID_VALUE;
 		}
-		opt = (ccs_deserialize_option_t)va_arg(args, int);
+		opt = (ccs_deserialize_option_t)va_arg(args, int32_t);
 	}
 	return CCS_SUCCESS;
 }
@@ -452,8 +533,8 @@ _ccs_object_deserialize_with_opts(
 		default:
 			return -CCS_UNSUPPORTED_OPERATION;
 		}
+		break;
 	}
-	break;
 	default:
 		return -CCS_INVALID_VALUE;
 	}
@@ -463,13 +544,14 @@ _ccs_object_deserialize_with_opts(
 static inline ccs_result_t
 _ccs_object_deserialize(ccs_object_t            *object_ret,
                         ccs_serialize_format_t   format,
+			ccs_serialize_type_t     type,
                         size_t                  *buffer_size,
                         const char             **buffer,
                         va_list                  args) {
 	uint32_t version;
 	size_t   size;
-	_ccs_object_deserialize_options_t opts = { NULL, CCS_TRUE, NULL, NULL };
-	CCS_VALIDATE(_ccs_object_deserialize_options(format, args, &opts));
+	_ccs_object_deserialize_options_t opts = { NULL, CCS_TRUE, NULL, NULL, NULL };
+	CCS_VALIDATE(_ccs_object_deserialize_options(format, type, args, &opts));
 	CCS_VALIDATE(_ccs_deserialize_header(
 		format, buffer_size, buffer, &size, &version));
 	CCS_VALIDATE(_ccs_object_deserialize_with_opts(
@@ -478,147 +560,224 @@ _ccs_object_deserialize(ccs_object_t            *object_ret,
 }
 
 
-ccs_result_t
-ccs_object_deserialize(ccs_object_t           *object_ret,
-                       ccs_serialize_format_t  format,
-                       ccs_serialize_type_t    type,
-                       ...) {
+static inline ccs_result_t
+_ccs_object_deserialize_memory(
+		ccs_object_t           *object_ret,
+		ccs_serialize_format_t  format,
+		ccs_serialize_type_t    type,
+		va_list                 args) {
+	size_t buffer_size = va_arg(args, size_t);
+	const char *buffer = va_arg(args, const char *);
+
+	CCS_CHECK_PTR(buffer);
+	CCS_VALIDATE(_ccs_object_deserialize(
+		object_ret, format, type, &buffer_size, &buffer, args));
+	return CCS_SUCCESS;
+}
+
+static inline ccs_result_t
+_ccs_object_deserialize_file(
+		ccs_object_t           *object_ret,
+		ccs_serialize_format_t  format,
+		ccs_serialize_type_t    type,
+		va_list                 args) {
 	ccs_result_t res = CCS_SUCCESS;
-	va_list args;
-	const char *buffer = NULL;
 	size_t buffer_size = 0;
-
-	if (!object_ret)
-		return -CCS_INVALID_VALUE;
-
-	switch (type) {
-	case CCS_SERIALIZE_TYPE_MEMORY:
-		va_start(args, type);
-		buffer_size = va_arg(args, size_t);
-		buffer = va_arg(args, const char *);
-		if(CCS_UNLIKELY(!buffer)) {
-			res = -CCS_INVALID_VALUE;
-			goto end_memory;
-		}
-		CCS_VALIDATE_ERR_GOTO(res, _ccs_object_deserialize(
-			object_ret, format, &buffer_size, &buffer, args),
-			end_memory);
-end_memory:
-		va_end(args);
-		break;
-	case CCS_SERIALIZE_TYPE_FILE:
-        {
-		const char *path;
-		int fd;
-		struct stat stat_buffer;
-		va_start(args, type);
-		path = va_arg(args, const char *);
-		if(CCS_UNLIKELY(!path)) {
-			res = -CCS_INVALID_VALUE;
-			goto end_file;
-		}
-		fd = open(path, O_RDONLY);
-		if (CCS_UNLIKELY(fd == -1)) {
-			res = -CCS_INVALID_FILE_PATH;
-			goto end_file;
-		}
-		if (CCS_UNLIKELY(fstat(fd, &stat_buffer) == -1)) {
-			res = -CCS_SYSTEM_ERROR;
-			goto err_file_fd;
-		}
-		buffer_size = stat_buffer.st_size;
-		buffer = (const char *)mmap(0, buffer_size, PROT_READ, MAP_PRIVATE, fd, 0);
-		if (CCS_UNLIKELY(buffer == MAP_FAILED)) {
-			switch(errno) {
-			case ENOMEM:
-				res = -CCS_OUT_OF_MEMORY;
-				break;
-			case EACCES:
-				res = -CCS_INVALID_FILE_PATH;
-				break;
-			default:
-				res = -CCS_SYSTEM_ERROR;
-			}
-			goto err_file_fd;
-		}
-		{
-			const char *b = buffer;
-			size_t bs = buffer_size;
-			CCS_VALIDATE_ERR_GOTO(res, _ccs_object_deserialize(
-				object_ret, format, &bs, &b, args), err_file_map);
-		}
-err_file_map:
-		munmap((void *)buffer, buffer_size);
-err_file_fd:
-		close(fd);
-end_file:
-		va_end(args);
-		break;
+	const char *buffer = NULL;
+	int fd;
+	struct stat stat_buffer;
+	const char *path = va_arg(args, const char *);
+	CCS_CHECK_PTR(path);
+	fd = open(path, O_RDONLY);
+	if (CCS_UNLIKELY(fd == -1))
+		return -CCS_INVALID_FILE_PATH;
+	if (CCS_UNLIKELY(fstat(fd, &stat_buffer) == -1)) {
+		res = -CCS_SYSTEM_ERROR;
+		goto err_file_fd;
 	}
-	case CCS_SERIALIZE_TYPE_FILE_DESCRIPTOR:
+	buffer_size = stat_buffer.st_size;
+	buffer = (const char *)mmap(0, buffer_size, PROT_READ, MAP_PRIVATE, fd, 0);
+	if (CCS_UNLIKELY(buffer == MAP_FAILED)) {
+		switch(errno) {
+		case ENOMEM:
+			res = -CCS_OUT_OF_MEMORY;
+			break;
+		case EACCES:
+			res = -CCS_INVALID_FILE_PATH;
+			break;
+		default:
+			res = -CCS_SYSTEM_ERROR;
+		}
+		goto err_file_fd;
+	}
 	{
-		int fd;
-		char *current_buffer;
-		size_t current_size;
-		uint32_t version;
-		buffer_size = current_size = _ccs_serialize_header_size(format);
-		buffer = current_buffer = (char *)malloc(buffer_size);
-		if (!buffer)
+		const char *b = buffer;
+		size_t bs = buffer_size;
+		CCS_VALIDATE_ERR_GOTO(res, _ccs_object_deserialize(
+			object_ret, format, type, &bs, &b, args), err_file_map);
+	}
+err_file_map:
+	munmap((void *)buffer, buffer_size);
+err_file_fd:
+	close(fd);
+	return res;
+}
+
+static inline ccs_result_t
+_ccs_object_deserialize_file_descriptor_read_loop(
+		_ccs_file_descriptor_state_t *pstate,
+		int                           non_blocking) {
+	do {
+		ssize_t count;
+		count = read(pstate->fd, pstate->buffer, pstate->buffer_size);
+		if (count == -1) {
+			if (errno != EAGAIN && errno != EINTR) {
+				return -CCS_SYSTEM_ERROR;
+			/* if non blocking and try again */
+			} else if (errno == EAGAIN && non_blocking)
+				return -CCS_AGAIN;
+		} else {
+			pstate->buffer_size -= count;
+			pstate->buffer += count;
+		}
+	} while (pstate->buffer_size);
+	return CCS_SUCCESS;
+}
+
+#define FD_READ_LOOP(pstate, non_blocking) \
+do { \
+	res = _ccs_object_deserialize_file_descriptor_read_loop(pstate, non_blocking); \
+	switch (res) { \
+	case CCS_SUCCESS: \
+		break; \
+	case -CCS_AGAIN: \
+		return res;\
+	default: \
+		goto err_fd_buffer; \
+	} \
+} while (0)
+
+static inline ccs_result_t
+_ccs_object_deserialize_file_descriptor(
+		ccs_object_t           *object_ret,
+		ccs_serialize_format_t  format,
+		ccs_serialize_type_t    type,
+		va_list                 args) {
+	ccs_result_t res = CCS_SUCCESS;
+	int fd;
+	int non_blocking;
+	size_t header_size;
+	ssize_t  offset;
+	_ccs_object_deserialize_options_t opts = { NULL, CCS_TRUE, NULL, NULL, NULL };
+	_ccs_file_descriptor_state_t state = {NULL, 0, NULL, 0, -1, 0};
+	_ccs_file_descriptor_state_t *pstate = NULL;
+	fd = va_arg(args, int);
+	CCS_VALIDATE(_ccs_object_deserialize_options(
+		format, type, args, &opts));
+	non_blocking = !!(opts.ppfd_state);
+	header_size = _ccs_serialize_header_size(format);
+	/* non blocking */
+	if (non_blocking) {
+		/* restart */
+		if (*(opts.ppfd_state)) {
+			/* check coherency */
+			if ((*(opts.ppfd_state))->fd != fd)
+				return -CCS_INVALID_VALUE;
+			pstate = *(opts.ppfd_state);
+		}
+	} else
+		pstate = &state;
+	/* if non blocking start or blocking, allocate buffer for header */
+	if (!pstate || !pstate->base) {
+		offset = 0;
+		if (non_blocking)
+			offset += sizeof(_ccs_file_descriptor_state_t);
+		char *mem = (char *)malloc(offset + header_size);
+		if (CCS_UNLIKELY(!mem))
 			return -CCS_OUT_OF_MEMORY;
-		va_start(args, type);
-		fd = va_arg(args, int);
-		do {
-			ssize_t count;
-			count = read(fd, current_buffer, current_size);
-			if (count == -1) {
-				if (errno != EAGAIN && errno != EINTR) {
-					res = -CCS_SYSTEM_ERROR;
-					goto err_fd_buffer;
-				}
-			} else {
-				current_size -= count;
-				current_buffer += count;
-			}
-		} while (current_size);
-		current_size = buffer_size;
-		current_buffer = (char *)buffer;
+		if (non_blocking) {
+			*(opts.ppfd_state) = pstate = (_ccs_file_descriptor_state_t *)mem;
+			pstate->base_size = 0; /* Use zero as header phase marker */
+		} else
+			pstate->base_size = header_size;
+		pstate->base = mem;
+		pstate->buffer = mem + offset;
+		pstate->buffer_size = header_size;
+		pstate->fd = fd;
+	}
+	/* if blocking or in first phase non blocking, read header to query total read size */
+	if (!non_blocking || !pstate->base_size) {
+		size_t   object_size;
+		char    *new_buffer;
+		FD_READ_LOOP(pstate, non_blocking);
+		/* rewind */
+		pstate->buffer_size += header_size;
+		pstate->buffer -= header_size;
+		/* decode header */
 		CCS_VALIDATE_ERR_GOTO(res, _ccs_deserialize_header(
-			format, &current_size, (const char **)&current_buffer, &buffer_size, &version), err_fd_buffer);
-		current_buffer = (char *)realloc((void *)buffer, buffer_size);
-		if (!current_buffer) {
+			format, &pstate->buffer_size, (const char **)&pstate->buffer, &object_size, &pstate->version), err_fd_buffer);
+		/* reallocate buffer to account for whole size */
+		if (non_blocking)
+			pstate->base_size = sizeof(_ccs_file_descriptor_state_t) + object_size;
+		else
+			pstate->base_size = object_size;
+		new_buffer = (char *)realloc(pstate->base, pstate->base_size);
+		if (CCS_UNLIKELY(!new_buffer)) {
 			res = -CCS_OUT_OF_MEMORY;
 			goto err_fd_buffer;
 		}
-		buffer = current_buffer;
-		current_size = buffer_size;
-		current_buffer += _ccs_serialize_header_size(format);
-		current_size -= _ccs_serialize_header_size(format);
-		do {
-			ssize_t count;
-			count = read(fd, current_buffer, current_size);
-			if (count == -1) {
-				if (errno != EAGAIN && errno != EINTR) {
-					res = -CCS_SYSTEM_ERROR;
-					goto err_fd_buffer;
-				}
-			} else {
-				current_size -= count;
-				current_buffer += count;
-			}
-		} while (current_size);
-		current_buffer = (char *)buffer;
-		current_size = buffer_size;
-		CCS_VALIDATE_ERR_GOTO(res, _ccs_object_deserialize(
-			object_ret, format, &current_size, (const char **)&current_buffer, args), err_fd_buffer);
+		pstate->base = new_buffer;
+		/* seek to after the header */
+		offset = header_size;
+		if (non_blocking)
+			offset += sizeof(_ccs_file_descriptor_state_t);
+		pstate->buffer_size = pstate->base_size - offset;
+		pstate->buffer = pstate->base + offset;
+	}
+	/* read rest of object */
+	FD_READ_LOOP(pstate, non_blocking);
+	/* rewind */
+	offset = header_size;
+	if (non_blocking)
+		offset += sizeof(_ccs_file_descriptor_state_t);
+	pstate->buffer_size = pstate->base_size - offset;
+	pstate->buffer = pstate->base + offset;
+	/* decode object */
+	CCS_VALIDATE_ERR_GOTO(res, _ccs_object_deserialize_with_opts(
+		object_ret, format, pstate->version, &pstate->buffer_size, (const char **)&pstate->buffer, &opts), err_fd_buffer);
 err_fd_buffer:
-		free((void *)buffer);
-		va_end(args);
-		break;
-	}
-	default:
-		return -CCS_INVALID_VALUE;
-	}
+	free(pstate->base);
+	if (opts.ppfd_state)
+		*(opts.ppfd_state) = NULL;
+	return res;
+}
 
+ccs_result_t
+ccs_object_deserialize(
+		ccs_object_t           *object_ret,
+		ccs_serialize_format_t  format,
+		ccs_serialize_type_t    type,
+		...) {
+	ccs_result_t res = CCS_SUCCESS;
+	va_list args;
+
+	CCS_CHECK_PTR(object_ret);
+
+	va_start(args, type);
+	switch (type) {
+	case CCS_SERIALIZE_TYPE_MEMORY:
+		res = _ccs_object_deserialize_memory(object_ret, format, type, args);
+		break;
+	case CCS_SERIALIZE_TYPE_FILE:
+		res = _ccs_object_deserialize_file(object_ret, format, type, args);
+		break;
+	case CCS_SERIALIZE_TYPE_FILE_DESCRIPTOR:
+		res = _ccs_object_deserialize_file_descriptor(object_ret, format, type, args);
+		break;
+	default:
+		res = -CCS_INVALID_VALUE;
+	}
+	va_end(args);
 	return res;
 }
 

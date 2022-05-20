@@ -197,6 +197,8 @@ enum ccs_error_e {
 	CCS_INVALID_HANDLE,
 	/** A system error occured */
 	CCS_SYSTEM_ERROR,
+	/** Try again */
+	CCS_AGAIN,
 	/** Guard */
 	CCS_ERROR_MAX,
 	/** Try forcing 32 bits value for bindings */
@@ -676,12 +678,25 @@ enum ccs_serialize_type_e {
 };
 typedef enum ccs_serialize_type_e ccs_serialize_type_t;
 
+enum ccs_serialize_option_e {
+	CCS_SERIALIZE_OPTION_END = 0,
+	/** The next parameter is a pointer to a void * variable (initialized to NULL) that will hold the state */
+	CCS_SERIALIZE_OPTION_NON_BLOCKING,
+	CCS_SERIALIZE_OPTION_MAX,
+	CCS_SERIALIZE_OPTION_FORCE_32BIT = INT32_MAX
+};
+typedef enum ccs_serialize_option_e ccs_serialize_option_t;
+
 enum ccs_deserialize_option_e {
 	CCS_DESERIALIZE_OPTION_END = 0,
 	/** The next parameter is a ccs_handle_map_t object */
 	CCS_DESERIALIZE_OPTION_HANDLE_MAP,
+	/** The next parameter is a pointer to a ccs object vector struct */
 	CCS_DESERIALIZE_OPTION_VECTOR,
+	/** The next parameter is a pointer to a ccs object internal data */
 	CCS_DESERIALIZE_OPTION_DATA,
+	/** The next parameter is a pointer to a void * variable (initialized to NULL) that will hold the state */
+	CCS_DESERIALIZE_OPTION_NON_BLOCKING,
 	CCS_DESERIALIZE_OPTION_MAX,
 	CCS_DESERIALIZE_OPTION_FORCE_32BIT = INT32_MAX
 };

@@ -178,7 +178,8 @@ class ccs_error(CEnumeration):
     'NOT_ENOUGH_DATA',
     'HANDLE_DUPLICATE',
     'INVALID_HANDLE',
-    'CCS_SYSTEM_ERROR' ]
+    'SYSTEM_ERROR',
+    'AGAIN' ]
 
 class ccs_data_type(CEnumeration):
   _members_ = [
@@ -338,12 +339,19 @@ class ccs_serialize_type(CEnumeration):
     'FILE_DESCRIPTOR'
   ]
 
+class ccs_serialize_option(CEnumeration):
+  _members_ = [
+    ('END', 0),
+    'NON_BLOCKING'
+  ]
+
 class ccs_deserialize_option(CEnumeration):
   _members_ = [
     ('END', 0),
     'HANDLE_MAP',
     'VECTOR',
-    'DATA'
+    'DATA',
+    'NON_BLOCKING'
   ]
 
 ccs_init = _ccs_get_function("ccs_init")
@@ -476,6 +484,7 @@ class Object:
       raise Error(ccs_error(ccs_error.INVALID_VALUE))
     if path and file_descriptor:
       raise Error(ccs_error(ccs_error.INVALID_VALUE))
+    options = [ccs_serialize_option.END]
     if path:
       p = str.encode(path)
       pp = ct.c_char_p(p)
@@ -484,7 +493,7 @@ class Object:
       return None
     elif file_descriptor:
       fd = ct.c_int(file_descriptor)
-      res = ccs_object_serialize(self.handle, ccs_serialize_format.BINARY, ccs_serialize_type.FILE_DESCRIPTOR, fd)
+      res = ccs_object_serialize(self.handle, ccs_serialize_format.BINARY, ccs_serialize_type.FILE_DESCRIPTOR, fd, *options)
       Error.check(res)
       return None
     else:
