@@ -285,13 +285,13 @@ void test_deserialize() {
 
 	check_features(features_space, 3, hyperparameters);
 
-	err = ccs_object_serialize(features_space, CCS_SERIALIZE_FORMAT_BINARY, CCS_SERIALIZE_TYPE_SIZE, &buff_size);
+	err = ccs_object_serialize(features_space, CCS_SERIALIZE_FORMAT_BINARY, CCS_SERIALIZE_OPERATION_SIZE, &buff_size);
 	assert( err == CCS_SUCCESS );
 
 	buff = (char *)malloc(buff_size);
 	assert( buff );
 
-	err = ccs_object_serialize(features_space, CCS_SERIALIZE_FORMAT_BINARY, CCS_SERIALIZE_TYPE_MEMORY, buff_size, buff);
+	err = ccs_object_serialize(features_space, CCS_SERIALIZE_FORMAT_BINARY, CCS_SERIALIZE_OPERATION_MEMORY, buff_size, buff);
 	assert( err == CCS_SUCCESS );
 
 	for (size_t i = 0; i < 3; i++) {
@@ -302,7 +302,7 @@ void test_deserialize() {
 	err = ccs_release_object(features_space);
 	assert( err == CCS_SUCCESS );
 
-	err = ccs_object_deserialize((ccs_object_t*)&features_space, CCS_SERIALIZE_FORMAT_BINARY, CCS_SERIALIZE_TYPE_MEMORY, buff_size, buff, CCS_DESERIALIZE_OPTION_END);
+	err = ccs_object_deserialize((ccs_object_t*)&features_space, CCS_SERIALIZE_FORMAT_BINARY, CCS_SERIALIZE_OPERATION_MEMORY, buff_size, buff, CCS_DESERIALIZE_OPTION_END);
 	assert( err == CCS_SUCCESS );
 
 	err = ccs_features_space_get_hyperparameter_by_name(features_space, "param1", &hyperparameters_new[0]);
@@ -317,7 +317,7 @@ void test_deserialize() {
 
 	err = ccs_create_map(&map);
 	assert( err == CCS_SUCCESS );
-	err = ccs_object_deserialize((ccs_object_t*)&features_space, CCS_SERIALIZE_FORMAT_BINARY, CCS_SERIALIZE_TYPE_MEMORY, buff_size, buff,
+	err = ccs_object_deserialize((ccs_object_t*)&features_space, CCS_SERIALIZE_FORMAT_BINARY, CCS_SERIALIZE_OPERATION_MEMORY, buff_size, buff,
 	                             CCS_DESERIALIZE_OPTION_HANDLE_MAP, map, CCS_DESERIALIZE_OPTION_END);
 	assert( err == CCS_SUCCESS );
 
@@ -367,15 +367,15 @@ void test_features_deserialize() {
 
 	err = ccs_create_map(&map);
 	assert( err == CCS_SUCCESS );
-	err = ccs_object_serialize(features_ref, CCS_SERIALIZE_FORMAT_BINARY, CCS_SERIALIZE_TYPE_SIZE, &buff_size);
+	err = ccs_object_serialize(features_ref, CCS_SERIALIZE_FORMAT_BINARY, CCS_SERIALIZE_OPERATION_SIZE, &buff_size);
 	assert( err == CCS_SUCCESS );
 	buff = (char *)malloc(buff_size);
 	assert( buff );
 
-	err = ccs_object_serialize(features_ref, CCS_SERIALIZE_FORMAT_BINARY, CCS_SERIALIZE_TYPE_MEMORY, buff_size, buff);
+	err = ccs_object_serialize(features_ref, CCS_SERIALIZE_FORMAT_BINARY, CCS_SERIALIZE_OPERATION_MEMORY, buff_size, buff);
 	assert( err == CCS_SUCCESS );
 
-	err = ccs_object_deserialize((ccs_object_t*)&features, CCS_SERIALIZE_FORMAT_BINARY, CCS_SERIALIZE_TYPE_MEMORY, buff_size, buff,
+	err = ccs_object_deserialize((ccs_object_t*)&features, CCS_SERIALIZE_FORMAT_BINARY, CCS_SERIALIZE_OPERATION_MEMORY, buff_size, buff,
 	                             CCS_DESERIALIZE_OPTION_HANDLE_MAP, map, CCS_DESERIALIZE_OPTION_END);
 	assert( err == -CCS_INVALID_HANDLE );
 
@@ -384,7 +384,7 @@ void test_features_deserialize() {
 	err = ccs_map_set(map, d, ccs_object(features_space));
 	assert( err == CCS_SUCCESS );
 
-	err = ccs_object_deserialize((ccs_object_t*)&features, CCS_SERIALIZE_FORMAT_BINARY, CCS_SERIALIZE_TYPE_MEMORY, buff_size, buff,
+	err = ccs_object_deserialize((ccs_object_t*)&features, CCS_SERIALIZE_FORMAT_BINARY, CCS_SERIALIZE_OPERATION_MEMORY, buff_size, buff,
 	                             CCS_DESERIALIZE_OPTION_HANDLE_MAP, map, CCS_DESERIALIZE_OPTION_END);
 	assert( err == CCS_SUCCESS );
 

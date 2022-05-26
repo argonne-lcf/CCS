@@ -338,7 +338,7 @@ class ccs_serialize_format(CEnumeration):
     ('BINARY', 0)
   ]
 
-class ccs_serialize_type(CEnumeration):
+class ccs_serialize_operation(CEnumeration):
   _members_ = [
     ('SIZE', 0),
     'MEMORY',
@@ -495,20 +495,20 @@ class Object:
     if path:
       p = str.encode(path)
       pp = ct.c_char_p(p)
-      res = ccs_object_serialize(self.handle, ccs_serialize_format.BINARY, ccs_serialize_type.FILE, pp)
+      res = ccs_object_serialize(self.handle, ccs_serialize_format.BINARY, ccs_serialize_operation.FILE, pp)
       Error.check(res)
       return None
     elif file_descriptor:
       fd = ct.c_int(file_descriptor)
-      res = ccs_object_serialize(self.handle, ccs_serialize_format.BINARY, ccs_serialize_type.FILE_DESCRIPTOR, fd, *options)
+      res = ccs_object_serialize(self.handle, ccs_serialize_format.BINARY, ccs_serialize_operation.FILE_DESCRIPTOR, fd, *options)
       Error.check(res)
       return None
     else:
       s = ct.c_size_t(0)
-      res = ccs_object_serialize(self.handle, ccs_serialize_format.BINARY, ccs_serialize_type.SIZE, ct.byref(s))
+      res = ccs_object_serialize(self.handle, ccs_serialize_format.BINARY, ccs_serialize_operation.SIZE, ct.byref(s))
       Error.check(res)
       v = (ct.c_byte * s.value)()
-      res = ccs_object_serialize(self.handle, ccs_serialize_format.BINARY, ccs_serialize_type.MEMORY, ct.sizeof(v), v)
+      res = ccs_object_serialize(self.handle, ccs_serialize_format.BINARY, ccs_serialize_operation.MEMORY, ct.sizeof(v), v)
       Error.check(res)
       return v
 
@@ -535,14 +535,14 @@ class Object:
       options = [ccs_deserialize_option.DATA, ct.py_object(data)] + options
     if buffer:
       s = ct.c_size_t(ct.sizeof(buffer))
-      res = ccs_object_deserialize(ct.byref(o), ccs_serialize_format.BINARY, ccs_serialize_type.MEMORY, s, buffer, *options)
+      res = ccs_object_deserialize(ct.byref(o), ccs_serialize_format.BINARY, ccs_serialize_operation.MEMORY, s, buffer, *options)
     elif path:
       p = str.encode(path)
       pp = ct.c_char_p(p)
-      res = ccs_object_deserialize(ct.byref(o), ccs_serialize_format.BINARY, ccs_serialize_type.FILE, pp, *options)
+      res = ccs_object_deserialize(ct.byref(o), ccs_serialize_format.BINARY, ccs_serialize_operation.FILE, pp, *options)
     elif file_descriptor:
       fd = ct.c_int(file_descriptor)
-      res = ccs_object_deserialize(ct.byref(o), ccs_serialize_format.BINARY, ccs_serialize_type.FILE_DESCRIPTOR, fd, *options)
+      res = ccs_object_deserialize(ct.byref(o), ccs_serialize_format.BINARY, ccs_serialize_operation.FILE_DESCRIPTOR, fd, *options)
     else:
       raise Error(ccs_error(ccs_error.INVALID_VALUE))
     Error.check(res)

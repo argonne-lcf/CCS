@@ -660,23 +660,30 @@ ccs_object_set_user_data(ccs_object_t  object,
 extern ccs_result_t
 ccs_object_get_user_data(ccs_object_t   object,
                          void         **user_data_ret);
-
+/**
+ * The different serialization formats supported by CCS.
+ */
 enum ccs_serialize_format_e {
+	/** A binary format that should be compact and performant. */
 	CCS_SERIALIZE_FORMAT_BINARY,
 	CCS_SERIALIZE_FORMAT_MAX,
 	CCS_SERIALIZE_FORMAT_FORCE_32BIT = INT32_MAX
 };
 typedef enum ccs_serialize_format_e ccs_serialize_format_t;
 
-enum ccs_serialize_type_e {
-	CCS_SERIALIZE_TYPE_SIZE,
-	CCS_SERIALIZE_TYPE_MEMORY,
-	CCS_SERIALIZE_TYPE_FILE,
-	CCS_SERIALIZE_TYPE_FILE_DESCRIPTOR,
-	CCS_SERIALIZE_TYPE_MAX,
-	CCS_SERIALIZE_TYPE_FORCE_32BIT = INT32_MAX
+/**
+ * The different serialization operations supported by CCS.
+ */
+enum ccs_serialize_operation_e {
+	/** Query the memory footprint of the serialized object */
+	CCS_SERIALIZE_OPERATION_SIZE,
+	CCS_SERIALIZE_OPERATION_MEMORY,
+	CCS_SERIALIZE_OPERATION_FILE,
+	CCS_SERIALIZE_OPERATION_FILE_DESCRIPTOR,
+	CCS_SERIALIZE_OPERATION_MAX,
+	CCS_SERIALIZE_OPERATION_FORCE_32BIT = INT32_MAX
 };
-typedef enum ccs_serialize_type_e ccs_serialize_type_t;
+typedef enum ccs_serialize_operation_e ccs_serialize_operation_t;
 
 enum ccs_serialize_option_e {
 	CCS_SERIALIZE_OPTION_END = 0,
@@ -703,15 +710,15 @@ enum ccs_deserialize_option_e {
 typedef enum ccs_deserialize_option_e ccs_deserialize_option_t;
 
 extern ccs_result_t
-ccs_object_serialize(ccs_object_t           object,
-                     ccs_serialize_format_t format,
-                     ccs_serialize_type_t   type,
+ccs_object_serialize(ccs_object_t              object,
+                     ccs_serialize_format_t    format,
+                     ccs_serialize_operation_t type,
                      ...);
 
 extern ccs_result_t
-ccs_object_deserialize(ccs_object_t           *object_ret,
-                       ccs_serialize_format_t  format,
-                       ccs_serialize_type_t    type,
+ccs_object_deserialize(ccs_object_t              *object_ret,
+                       ccs_serialize_format_t     format,
+                       ccs_serialize_operation_t  type,
                        ...);
 
 #ifdef __cplusplus

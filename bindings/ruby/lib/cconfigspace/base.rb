@@ -209,11 +209,11 @@ module CCS
   SerializeFormat = enum FFI::Type::INT32, :ccs_serialize_format_t, [
     :CCS_SERIALIZE_FORMAT_BINARY ]
 
-  SerializeType = enum FFI::Type::INT32, :ccs_serialize_type_t, [
-    :CCS_SERIALIZE_TYPE_SIZE,
-    :CCS_SERIALIZE_TYPE_MEMORY,
-    :CCS_SERIALIZE_TYPE_FILE,
-    :CCS_SERIALIZE_TYPE_FILE_DESCRIPTOR ]
+  SerializeOperation = enum FFI::Type::INT32, :ccs_serialize_operation_t, [
+    :CCS_SERIALIZE_OPERATION_SIZE,
+    :CCS_SERIALIZE_OPERATION_MEMORY,
+    :CCS_SERIALIZE_OPERATION_FILE,
+    :CCS_SERIALIZE_OPERATION_FILE_DESCRIPTOR ]
 
   SerializeOption = enum FFI::Type::INT32, :ccs_serialize_option_t, [
     :CCS_SERIALIZE_OPTION_END, 0,
@@ -461,8 +461,8 @@ module CCS
   attach_function :ccs_object_set_destroy_callback, [:ccs_object_t, :ccs_object_release_callback, :pointer], :ccs_result_t
   attach_function :ccs_object_set_user_data, [:ccs_object_t, :pointer], :ccs_result_t
   attach_function :ccs_object_get_user_data, [:ccs_object_t, :pointer], :ccs_result_t
-  attach_function :ccs_object_serialize, [:ccs_object_t, :ccs_serialize_format_t, :ccs_serialize_type_t, :varargs], :ccs_result_t
-  attach_function :ccs_object_deserialize, [:ccs_object_t, :ccs_serialize_format_t, :ccs_serialize_type_t, :varargs], :ccs_result_t
+  attach_function :ccs_object_serialize, [:ccs_object_t, :ccs_serialize_format_t, :ccs_serialize_operation_t, :varargs], :ccs_result_t
+  attach_function :ccs_object_deserialize, [:ccs_object_t, :ccs_serialize_format_t, :ccs_serialize_operation_t, :varargs], :ccs_result_t
 
   class << self
     alias version ccs_get_version
@@ -608,23 +608,23 @@ module CCS
       format = :CCS_SERIALIZE_FORMAT_BINARY
       if path
         result = nil
-        type = :CCS_SERIALIZE_TYPE_FILE
+        operation = :CCS_SERIALIZE_OPERATION_FILE
         varargs = [:string, path] + options
       elsif file_descriptor
         result = nil
-        type = :CCS_SERIALIZE_TYPE_FILE_DESCRIPTOR
+        operation = :CCS_SERIALIZE_OPERATION_FILE_DESCRIPTOR
         varargs = [:int, file_descriptor] + options
       else
-        type = :CCS_SERIALIZE_TYPE_SIZE
+        operation = :CCS_SERIALIZE_OPERATION_SIZE
         sz = MemoryPointer::new(:size_t)
         varargs = [:pointer, sz] + options
-        res = CCS.ccs_object_serialize(@handle, format, type, *varargs)
+        res = CCS.ccs_object_serialize(@handle, format, operation, *varargs)
         CCS.error_check(res)
-        type = :CCS_SERIALIZE_TYPE_MEMORY
+        operation = :CCS_SERIALIZE_OPERATION_MEMORY
         result = MemoryPointer::new(sz.read_size_t)
         varargs = [:size_t, sz.read_size_t, :pointer, result] + options
       end
-      res = CCS.ccs_object_serialize(@handle, format, type, *varargs)
+      res = CCS.ccs_object_serialize(@handle, format, operation, *varargs)
       CCS.error_check(res)
       return result
     end
@@ -644,18 +644,18 @@ module CCS
       options.concat [:ccs_deserialize_option_t, :CCS_DESERIALIZE_OPTION_DATA, :value, data] if data
       options.concat [:ccs_deserialize_option_t, :CCS_DESERIALIZE_OPTION_END]
       if buffer
-        type = :CCS_SERIALIZE_TYPE_MEMORY
+        operation = :CCS_SERIALIZE_OPERATION_MEMORY
         varargs = [:size_t, buffer.size, :pointer, buffer] + options
       elsif path
-        type = :CCS_SERIALIZE_TYPE_FILE 
+        operation = :CCS_SERIALIZE_OPERATION_FILE
         varargs = [:string, path] + options
       elsif file_descriptor
-        type = :CCS_SERIALIZE_TYPE_FILE_DESCRIPTOR
+        operation = :CCS_SERIALIZE_OPERATION_FILE_DESCRIPTOR
         varargs = [:int, file_descriptor] + options
       else
         raise CCSError, :CCS_INVALID_VALUE
       end
-      res = CCS.ccs_object_deserialize(ptr, format, type, *varargs)
+      res = CCS.ccs_object_deserialize(ptr, format, operation, *varargs)
       CCS.error_check(res)
       return _from_handle(ptr.read_ccs_object_t, retain: false, auto_release: true)
     end
