@@ -829,6 +829,8 @@ ccs_get_error_name(ccs_error_t error, const char **name) {
 	ETOCASE(CCS_NOT_ENOUGH_DATA);
 	ETOCASE(CCS_HANDLE_DUPLICATE);
 	ETOCASE(CCS_INVALID_HANDLE);
+	ETOCASE(CCS_SYSTEM_ERROR);
+	ETOCASE(CCS_AGAIN);
 	default:
 		*name = NULL;
 		return CCS_INVALID_VALUE;
