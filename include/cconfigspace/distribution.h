@@ -6,7 +6,8 @@
  * A Distribution is the probability distribution of a random variable. CCS
  * supports discrete and contiguous random variables. CCS also supports
  * composing distributions to create mixture distributions or multivariate
- * distributions.
+ * distributions. Distributions are immutable except from a reference counting
+ * and callback management point of view.
  */
 
 #ifdef __cplusplus
@@ -79,6 +80,8 @@ typedef enum ccs_scale_type_e ccs_scale_type_t;
  *                             #CCS_LOGARITHMIC
  * @return -#CCS_OUT_OF_MEMORY if there was not enough memory to allocate the
  *                             new distribution
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_create_normal_distribution(ccs_numeric_type_t  data_type,
@@ -104,6 +107,8 @@ ccs_create_normal_distribution(ccs_numeric_type_t  data_type,
  *                             #CCS_LOGARITHMIC
  * @return -#CCS_OUT_OF_MEMORY if there was not enough memory to allocate the
  *                             new distribution
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_create_normal_int_distribution(ccs_float_t         mu,
@@ -128,6 +133,8 @@ ccs_create_normal_int_distribution(ccs_float_t         mu,
  *                             #CCS_LOGARITHMIC
  * @return -#CCS_OUT_OF_MEMORY if there was not enough memory to allocate the
  *                             new distribution
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_create_normal_float_distribution(ccs_float_t         mu,
@@ -165,6 +172,8 @@ ccs_create_normal_float_distribution(ccs_float_t         mu,
  *                             #CCS_LOGARITHMIC
  * @return -#CCS_OUT_OF_MEMORY if there was not enough memory to allocate the
  *                             new distribution
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_create_uniform_distribution(ccs_numeric_type_t  data_type,
@@ -193,6 +202,8 @@ ccs_create_uniform_distribution(ccs_numeric_type_t  data_type,
  *                             #CCS_LOGARITHMIC
  * @return -#CCS_OUT_OF_MEMORY if there was not enough memory to allocate the
  *                             new distribution
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_create_uniform_int_distribution(ccs_int_t           lower,
@@ -220,6 +231,8 @@ ccs_create_uniform_int_distribution(ccs_int_t           lower,
  *                             #CCS_LOGARITHMIC
  * @return -#CCS_OUT_OF_MEMORY if there was not enough memory to allocate the
  *                             new distribution
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_create_uniform_float_distribution(ccs_float_t         lower,
@@ -242,6 +255,8 @@ ccs_create_uniform_float_distribution(ccs_float_t         lower,
  *                             areas could not be normalized
  * @return -#CCS_OUT_OF_MEMORY if there was not enough memory to allocate the
  *                             new distribution
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_create_roulette_distribution(size_t              num_areas,
@@ -272,6 +287,8 @@ ccs_create_roulette_distribution(size_t              num_areas,
  *                              valid CCS distributions
  * @return -#CCS_OUT_OF_MEMORY if there was not enough memory to allocate the
  *                             new distribution
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_create_mixture_distribution(size_t              num_distributions,
@@ -296,6 +313,8 @@ ccs_create_mixture_distribution(size_t              num_distributions,
  *                              valid CCS distributions
  * @return -#CCS_OUT_OF_MEMORY if there was not enough memory to allocate the
  *                             new distribution
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_create_multivariate_distribution(size_t              num_distributions,
@@ -311,6 +330,8 @@ ccs_create_multivariate_distribution(size_t              num_distributions,
  * @return -#CCS_INVALID_VALUE if \p type_ret is NULL
  * @return -#CCS_INVALID_OBJECT if \p distribution is not a valid CCS
  *                              distribution
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_distribution_get_type(ccs_distribution_t       distribution,
@@ -325,6 +346,8 @@ ccs_distribution_get_type(ccs_distribution_t       distribution,
  * @return -#CCS_INVALID_VALUE if \p dimension_ret is NULL
  * @return -#CCS_INVALID_OBJECT if \p distribution is not a valid CCS
  *                              distribution
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_distribution_get_dimension(ccs_distribution_t  distribution,
@@ -340,6 +363,8 @@ ccs_distribution_get_dimension(ccs_distribution_t  distribution,
  * @return -#CCS_INVALID_VALUE if \p data_types_ret is NULL
  * @return -#CCS_INVALID_OBJECT if \p distribution is not a valid CCS
  *                              distribution
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_distribution_get_data_types(ccs_distribution_t       distribution,
@@ -356,6 +381,8 @@ ccs_distribution_get_data_types(ccs_distribution_t       distribution,
  * @return -#CCS_INVALID_VALUE if \p interval_ret is NULL
  * @return -#CCS_INVALID_OBJECT if \p distribution is not a valid CCS
  *                              distribution
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_distribution_get_bounds(ccs_distribution_t  distribution,
@@ -375,6 +402,8 @@ ccs_distribution_get_bounds(ccs_distribution_t  distribution,
  *                             oversamplings_ret is NULL
  * @return -#CCS_INVALID_OBJECT if \p distribution is not a valid CCS
  *                              distribution
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_distribution_check_oversampling(ccs_distribution_t  distribution,
@@ -401,6 +430,8 @@ ccs_distribution_check_oversampling(ccs_distribution_t  distribution,
  *                              distribution
  * @return -#CCS_INVALID_DISTRIBUTION if \p distribution is not a normal
  *                                    distribution
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_normal_distribution_get_parameters(ccs_distribution_t  distribution,
@@ -429,6 +460,8 @@ ccs_normal_distribution_get_parameters(ccs_distribution_t  distribution,
  *                              distribution
  * @return -#CCS_INVALID_DISTRIBUTION if \p distribution is not a uniform
  *                                    distribution
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_uniform_distribution_get_parameters(ccs_distribution_t  distribution,
@@ -448,6 +481,8 @@ ccs_uniform_distribution_get_parameters(ccs_distribution_t  distribution,
  *                              distribution
  * @return -#CCS_INVALID_DISTRIBUTION if \p distribution is not a roulette
  *                                    distribution
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_roulette_distribution_get_num_areas(ccs_distribution_t  distribution,
@@ -473,6 +508,8 @@ ccs_roulette_distribution_get_num_areas(ccs_distribution_t  distribution,
  *                              distribution
  * @return -#CCS_INVALID_DISTRIBUTION if \p distribution is not a roulette
  *                                    distribution
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_roulette_distribution_get_areas(ccs_distribution_t  distribution,
@@ -492,6 +529,8 @@ ccs_roulette_distribution_get_areas(ccs_distribution_t  distribution,
  *                              distribution
  * @return -#CCS_INVALID_DISTRIBUTION if \p distribution is not a mixture
  *                                    distribution
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_mixture_distribution_get_num_distributions(
@@ -519,6 +558,8 @@ ccs_mixture_distribution_get_num_distributions(
  *                              distribution
  * @return -#CCS_INVALID_DISTRIBUTION if \p distribution is not a mixture
  *                                    distribution
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_mixture_distribution_get_distributions(
@@ -547,6 +588,8 @@ ccs_mixture_distribution_get_distributions(
  *                              distribution
  * @return -#CCS_INVALID_DISTRIBUTION if \p distribution is not a mixture
  *                                    distribution
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_mixture_distribution_get_weights(ccs_distribution_t  distribution,
@@ -566,6 +609,8 @@ ccs_mixture_distribution_get_weights(ccs_distribution_t  distribution,
  *                              distribution
  * @return -#CCS_INVALID_DISTRIBUTION if \p distribution is not a multivariate
  *                                    distribution
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_multivariate_distribution_get_num_distributions(
@@ -593,6 +638,8 @@ ccs_multivariate_distribution_get_num_distributions(
  *                              distribution
  * @return -#CCS_INVALID_DISTRIBUTION if \p distribution is not a multivariate
  *                                    distribution
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_multivariate_distribution_get_distributions(
@@ -614,6 +661,8 @@ ccs_multivariate_distribution_get_distributions(
  * @return -#CCS_INVALID_OBJECT if \p distribution is not a valid CCS
  *                              distribution; or if \p rng is not a valid CCS
  *                              rng
+ * @remarks
+ *   This function is thread-safe if \p rng is only used by one thread at a time
  */
 extern ccs_result_t
 ccs_distribution_sample(ccs_distribution_t  distribution,
@@ -636,6 +685,8 @@ ccs_distribution_sample(ccs_distribution_t  distribution,
  * @return -#CCS_INVALID_OBJECT if \p distribution is not a valid CCS
  *                              distribution; or if \p rng is not a valid CCS
  *                              rng
+ * @remarks
+ *   This function is thread-safe if \p rng is only used by one thread at a time
  */
 extern ccs_result_t
 ccs_distribution_samples(ccs_distribution_t  distribution,
@@ -665,6 +716,8 @@ ccs_distribution_samples(ccs_distribution_t  distribution,
  * @return -#CCS_INVALID_OBJECT if \p distribution is not a valid CCS
  *                              distribution; or if \p rng is not a valid CCS
  *                              rng
+ * @remarks
+ *   This function is thread-safe if \p rng is only used by one thread at a time
  */
 extern ccs_result_t
 ccs_distribution_strided_samples(ccs_distribution_t  distribution,
@@ -688,6 +741,8 @@ ccs_distribution_strided_samples(ccs_distribution_t  distribution,
  * @return -#CCS_INVALID_OBJECT if \p distribution is not a valid CCS
  *                              distribution; or if \p rng is not a valid CCS
  *                              rng
+ * @remarks
+ *   This function is thread-safe if \p rng is only used by one thread at a time
  */
 extern ccs_result_t
 ccs_distribution_soa_samples(ccs_distribution_t   distribution,
@@ -716,6 +771,8 @@ ccs_distribution_soa_samples(ccs_distribution_t   distribution,
  *                              distribution; or if \p rng is not a valid CCS
  *                              rng; or if at least one of the hyperparameters
  *                              provided is NULL
+ * @remarks
+ *   This function is thread-safe if \p rng is only used by one thread at a time
  */
 extern ccs_result_t
 ccs_distribution_hyperparameters_samples(ccs_distribution_t    distribution,
@@ -740,6 +797,8 @@ ccs_distribution_hyperparameters_samples(ccs_distribution_t    distribution,
  *                              distribution; or if \p rng is not a valid CCS
  *                              rng; or if at least one of the hyperparameters
  *                              provided is NULL
+ * @remarks
+ *   This function is thread-safe if \p rng is only used by one thread at a time
  */
 extern ccs_result_t
 ccs_distribution_hyperparameters_sample(ccs_distribution_t    distribution,

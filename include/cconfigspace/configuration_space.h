@@ -562,6 +562,8 @@ ccs_configuration_space_get_forbidden_clauses(
  *                                     value is not a valid value for this
  *                                     hyperparameter; or if a forbidden clause
  *                                     would be evaluating to #ccs_true
+ * @return -#CCS_INVALID_GRAPH if the graph of constraints could not be
+ *                             generated, because of a lack of memory
  */
 extern ccs_result_t
 ccs_configuration_space_check_configuration(
@@ -587,6 +589,8 @@ ccs_configuration_space_check_configuration(
  *                                     for this hyperparameter; or if a
  *                                     forbidden clause would be evaluating to
  *                                     #ccs_true
+ * @return -#CCS_INVALID_GRAPH if the graph of constraints could not be
+ *                             generated, because of a lack of memory
  */
 extern ccs_result_t
 ccs_configuration_space_check_configuration_values(
@@ -605,6 +609,8 @@ ccs_configuration_space_check_configuration_values(
  * @return -#CCS_INVALID_VALUE if configuration_ret is NULL
  * @return -#CCS_OUT_OF_MEMORY if there was not enough memory to allocate the
  *                             new configuration
+ * @return -#CCS_INVALID_GRAPH if the graph of constraints could not be
+ *                             generated, because of a lack of memory
  */
 extern ccs_result_t
 ccs_configuration_space_get_default_configuration(
@@ -627,6 +633,8 @@ ccs_configuration_space_get_default_configuration(
  *                                     sampled
  * @return -#CCS_OUT_OF_MEMORY if there was not enough memory to allocate the
  *                             new configuration
+ * @return -#CCS_INVALID_GRAPH if the graph of constraints could not be
+ *                             generated, because of a lack of memory
  */
 extern ccs_result_t
 ccs_configuration_space_sample(ccs_configuration_space_t  configuration_space,
@@ -655,6 +663,8 @@ ccs_configuration_space_sample(ccs_configuration_space_t  configuration_space,
  *                             configurations. Configurations that could be
  *                             allocated will be returned, and the rest will be
  *                             NULL
+ * @return -#CCS_INVALID_GRAPH if the graph of constraints could not be
+ *                             generated, because of a lack of memory
  */
 extern ccs_result_t
 ccs_configuration_space_samples(ccs_configuration_space_t  configuration_space,

@@ -30,7 +30,10 @@ CCONFIGSPACE_TESTS = \
 		test_features_space \
 		test_random_features_tuner \
 		test_user_defined_features_tuner \
-		test_map
+		test_map \
+		test_atomics
+
+test_atomics_LDFLAGS = -lpthread $(AM_LDFLAGS)
 
 # unit tests
 UNIT_TESTS = \
