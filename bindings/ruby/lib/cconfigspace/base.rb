@@ -16,6 +16,26 @@ module CCS
         super(*args)
       end
     end
+    alias read_ccs_float_t  read_double
+    alias get_ccs_float_t   get_double
+    alias read_array_of_ccs_float_t  read_array_of_double
+    alias write_array_of_ccs_float_t  write_array_of_double
+    alias read_ccs_int_t    read_int64
+    alias get_ccs_int_t     get_int64
+    alias read_array_of_ccs_int_t  read_array_of_int64
+    alias write_array_of_ccs_int_t  write_array_of_int64
+    alias read_ccs_bool_t   read_int32
+    alias read_ccs_result_t read_int32
+    alias read_ccs_hash_t   read_uint32
+    if FFI.find_type(:size_t).size == 8
+      alias read_size_t read_uint64
+      alias write_size_t write_uint64
+      alias write_array_of_size_t write_array_of_uint64
+    else
+      alias read_size_t read_uint32
+      alias write_size_t write_uint32
+      alias write_array_of_size_t write_array_of_uint32
+    end
   end
 
   class MemoryPointer < FFI::MemoryPointer
@@ -67,40 +87,58 @@ module CCS
   TRUE = 1
   FALSE = 0
 
-  typedef :pointer, :ccs_rng_t
-  typedef :pointer, :ccs_distribution_t
-  typedef :pointer, :ccs_hyperparameter_t
-  typedef :pointer, :ccs_expression_t
-  typedef :pointer, :ccs_context_t
-  typedef :pointer, :ccs_configuration_space_t
-  typedef :pointer, :ccs_binding_t
-  typedef :pointer, :ccs_configuration_t
-  typedef :pointer, :ccs_features_space_t
-  typedef :pointer, :ccs_features_t
-  typedef :pointer, :ccs_objective_space_t
-  typedef :pointer, :ccs_evaluation_t
-  typedef :pointer, :ccs_features_evaluation_t
-  typedef :pointer, :ccs_tuner_t
-  typedef :pointer, :ccs_features_tuner_t
   typedef :pointer, :ccs_object_t
+  typedef :ccs_object_t, :ccs_rng_t
+  typedef :ccs_object_t, :ccs_distribution_t
+  typedef :ccs_object_t, :ccs_hyperparameter_t
+  typedef :ccs_object_t, :ccs_expression_t
+  typedef :ccs_object_t, :ccs_context_t
+  typedef :ccs_object_t, :ccs_configuration_space_t
+  typedef :ccs_object_t, :ccs_binding_t
+  typedef :ccs_object_t, :ccs_configuration_t
+  typedef :ccs_object_t, :ccs_features_space_t
+  typedef :ccs_object_t, :ccs_features_t
+  typedef :ccs_object_t, :ccs_objective_space_t
+  typedef :ccs_object_t, :ccs_evaluation_t
+  typedef :ccs_object_t, :ccs_features_evaluation_t
+  typedef :ccs_object_t, :ccs_tuner_t
+  typedef :ccs_object_t, :ccs_features_tuner_t
+  typedef :ccs_object_t, :ccs_map_t
   class MemoryPointer
-    alias read_ccs_rng_t read_pointer
-    alias read_ccs_distribution_t read_pointer
-    alias read_ccs_hyperparameter_t read_pointer
-    alias read_ccs_expression_t read_pointer
-    alias read_ccs_context_t read_pointer
-    alias read_ccs_configuration_space_t read_pointer
-    alias read_ccs_binding_t read_pointer
-    alias read_ccs_configuration_t read_pointer
-    alias read_ccs_features_space_t read_pointer
-    alias read_ccs_features_t read_pointer
-    alias read_ccs_objective_space_t read_pointer
-    alias read_ccs_evaluation_t read_pointer
-    alias read_ccs_features_evaluation_t read_pointer
-    alias read_ccs_tuner_t read_pointer
-    alias read_ccs_features_tuner_t read_pointer
     alias read_ccs_object_t read_pointer
+    alias read_ccs_rng_t read_ccs_object_t
+    alias read_ccs_distribution_t read_ccs_object_t
+    alias read_ccs_hyperparameter_t read_ccs_object_t
+    alias read_ccs_expression_t read_ccs_object_t
+    alias read_ccs_context_t read_ccs_object_t
+    alias read_ccs_configuration_space_t read_ccs_object_t
+    alias read_ccs_binding_t read_ccs_object_t
+    alias read_ccs_configuration_t read_ccs_object_t
+    alias read_ccs_features_space_t read_ccs_object_t
+    alias read_ccs_features_t read_ccs_object_t
+    alias read_ccs_objective_space_t read_ccs_object_t
+    alias read_ccs_evaluation_t read_ccs_object_t
+    alias read_ccs_features_evaluation_t read_ccs_object_t
+    alias read_ccs_tuner_t read_ccs_object_t
+    alias read_ccs_features_tuner_t read_ccs_object_t
+    alias read_ccs_map_t read_ccs_object_t
   end
+
+  ObjectType = enum FFI::Type::INT32, :ccs_object_type_t, [
+    :CCS_RNG,
+    :CCS_DISTRIBUTION,
+    :CCS_HYPERPARAMETER,
+    :CCS_EXPRESSION,
+    :CCS_CONFIGURATION_SPACE,
+    :CCS_CONFIGURATION,
+    :CCS_OBJECTIVE_SPACE,
+    :CCS_EVALUATION,
+    :CCS_TUNER,
+    :CCS_FEATURES_SPACE,
+    :CCS_FEATURES,
+    :CCS_FEATURES_EVALUATION,
+    :CCS_FEATURES_TUNER,
+    :CCS_MAP ]
 
   Error = enum FFI::Type::INT32, :ccs_error_t, [
     :CCS_SUCCESS,
@@ -125,22 +163,13 @@ module CCS
     :CCS_UNSUPPORTED_OPERATION,
     :CCS_INVALID_EVALUATION,
     :CCS_INVALID_FEATURES,
-    :CCS_INVALID_FEATURES_TUNER ]
-
-  ObjectType = enum FFI::Type::INT32, :ccs_object_type_t, [
-    :CCS_RNG,
-    :CCS_DISTRIBUTION,
-    :CCS_HYPERPARAMETER,
-    :CCS_EXPRESSION,
-    :CCS_CONFIGURATION_SPACE,
-    :CCS_CONFIGURATION,
-    :CCS_OBJECTIVE_SPACE,
-    :CCS_EVALUATION,
-    :CCS_TUNER,
-    :CCS_FEATURES_SPACE,
-    :CCS_FEATURES,
-    :CCS_FEATURES_EVALUATION,
-    :CCS_FEATURES_TUNER ]
+    :CCS_INVALID_FEATURES_TUNER,
+    :CCS_INVALID_FILE_PATH,
+    :CCS_NOT_ENOUGH_DATA,
+    :CCS_HANDLE_DUPLICATE,
+    :CCS_INVALID_HANDLE,
+    :CCS_SYSTEM_ERROR,
+    :CCS_AGAIN ]
 
   class MemoryPointer
     def read_ccs_object_type_t
@@ -170,11 +199,32 @@ module CCS
   NumericType = enum FFI::Type::INT32, :ccs_numeric_type_t, [
     :CCS_NUM_INTEGER, DataType.to_native(:CCS_INTEGER, nil),
     :CCS_NUM_FLOAT, DataType.to_native(:CCS_FLOAT, nil) ]
+
   class MemoryPointer
     def read_ccs_numeric_type_t
       NumericType.from_native(read_int32, nil)
     end
   end
+
+  SerializeFormat = enum FFI::Type::INT32, :ccs_serialize_format_t, [
+    :CCS_SERIALIZE_FORMAT_BINARY ]
+
+  SerializeType = enum FFI::Type::INT32, :ccs_serialize_type_t, [
+    :CCS_SERIALIZE_TYPE_SIZE,
+    :CCS_SERIALIZE_TYPE_MEMORY,
+    :CCS_SERIALIZE_TYPE_FILE,
+    :CCS_SERIALIZE_TYPE_FILE_DESCRIPTOR ]
+
+  SerializeOption = enum FFI::Type::INT32, :ccs_serialize_option_t, [
+    :CCS_SERIALIZE_OPTION_END, 0,
+    :CCS_SERIALIZE_OPTION_NON_BLOCKING ]
+
+  DeserializeOptions = enum FFI::Type::INT32, :ccs_deserialize_option_t, [
+    :CCS_DESERIALIZE_OPTION_END, 0,
+    :CCS_DESERIALIZE_OPTION_HANDLE_MAP,
+    :CCS_DESERIALIZE_OPTION_VECTOR,
+    :CCS_DESERIALIZE_OPTION_DATA,
+    :CCS_DESERIALIZE_OPTION_NON_BLOCKING ]
 
   class Numeric < FFI::Union
     layout :f, :ccs_float_t,
@@ -401,6 +451,7 @@ module CCS
 
   attach_function :ccs_init, [], :ccs_result_t
   attach_function :ccs_fini, [], :ccs_result_t
+  attach_function :ccs_get_error_name, [:ccs_error_t, :pointer], :ccs_result_t
   attach_function :ccs_get_version, [], :ccs_version_t
   attach_function :ccs_retain_object, [:ccs_object_t], :ccs_result_t
   attach_function :ccs_release_object, [:ccs_object_t], :ccs_result_t
@@ -410,6 +461,8 @@ module CCS
   attach_function :ccs_object_set_destroy_callback, [:ccs_object_t, :ccs_object_release_callback, :pointer], :ccs_result_t
   attach_function :ccs_object_set_user_data, [:ccs_object_t, :pointer], :ccs_result_t
   attach_function :ccs_object_get_user_data, [:ccs_object_t, :pointer], :ccs_result_t
+  attach_function :ccs_object_serialize, [:ccs_object_t, :ccs_serialize_format_t, :ccs_serialize_type_t, :varargs], :ccs_result_t
+  attach_function :ccs_object_deserialize, [:ccs_object_t, :ccs_serialize_format_t, :ccs_serialize_type_t, :varargs], :ccs_result_t
 
   class << self
     alias version ccs_get_version
@@ -491,14 +544,10 @@ module CCS
       ObjectSpace.define_finalizer(self, Releaser::new(handle)) if auto_release
     end
 
-    def self.from_handle(handle)
+    def self._from_handle(handle, retain: true, auto_release: true)
       ptr = MemoryPointer::new(:ccs_object_type_t)
       res = CCS.ccs_object_get_type(handle, ptr)
       CCS.error_check(res)
-      ptr2 = MemoryPointer::new(:int32)
-      res = CCS.ccs_object_get_refcount(handle, ptr2)
-      CCS.error_check(res)
-      opts = ptr2.read_int32 == 0 ? {retain: false, auto_release: false} : {}
       case ptr.read_ccs_object_type_t
       when :CCS_RNG
         CCS::Rng
@@ -526,9 +575,21 @@ module CCS
         CCS::Tuner
       when :CCS_FEATURES_TUNER
         CCS::FeaturesTuner
+      when :CCS_MAP
+        CCS::Map
       else
         raise CCSError, :CCS_INVALID_OBJECT
-      end.from_handle(handle, **opts)
+      end.from_handle(handle, retain: retain, auto_release: auto_release)
+    end
+
+    private_class_method :_from_handle
+
+    def self.from_handle(handle)
+      ptr2 = MemoryPointer::new(:int32)
+      res = CCS.ccs_object_get_refcount(handle, ptr2)
+      CCS.error_check(res)
+      opts = ptr2.read_int32 == 0 ? {retain: false, auto_release: false} : {}
+      _from_handle(handle, **opts)
     end
 
     def to_ptr
@@ -538,6 +599,65 @@ module CCS
     def set_destroy_callback(user_data: nil, &block)
       CCS.set_destroy_callback(@handle, user_data: user_data, &block)
       self
+    end
+
+    def serialize(format: :binary, path: nil, file_descriptor: nil)
+      raise CCSError, :CCS_INVALID_VALUE if format != :binary
+      raise CCSError, :CCS_INVALID_VALUE if path && file_descriptor
+      options = [:ccs_serialize_option_t, :CCS_SERIALIZE_OPTION_END]
+      format = :CCS_SERIALIZE_FORMAT_BINARY
+      if path
+        result = nil
+        type = :CCS_SERIALIZE_TYPE_FILE
+        varargs = [:string, path] + options
+      elsif file_descriptor
+        result = nil
+        type = :CCS_SERIALIZE_TYPE_FILE_DESCRIPTOR
+        varargs = [:int, file_descriptor] + options
+      else
+        type = :CCS_SERIALIZE_TYPE_SIZE
+        sz = MemoryPointer::new(:size_t)
+        varargs = [:pointer, sz] + options
+        res = CCS.ccs_object_serialize(@handle, format, type, *varargs)
+        CCS.error_check(res)
+        type = :CCS_SERIALIZE_TYPE_MEMORY
+        result = MemoryPointer::new(sz.read_size_t)
+        varargs = [:size_t, sz.read_size_t, :pointer, result] + options
+      end
+      res = CCS.ccs_object_serialize(@handle, format, type, *varargs)
+      CCS.error_check(res)
+      return result
+    end
+
+    def self.deserialize(format: :binary, handle_map: nil, vector: nil, data: nil, path: nil, buffer: nil, file_descriptor: nil)
+      raise CCSError, :CCS_INVALID_VALUE if format != :binary
+      format = :CCS_SERIALIZE_FORMAT_BINARY
+      mode_count = 0
+      mode_count += 1 if path
+      mode_count += 1 if buffer
+      mode_count += 1 if file_descriptor
+      raise CCSError, :CCS_INVALID_VALUE unless mode_count == 1
+      ptr = MemoryPointer::new(:ccs_object_t)
+      options = []
+      options.concat [:ccs_deserialize_option_t, :CCS_DESERIALIZE_OPTION_HANDLE_MAP, :ccs_map_t, handle_map.handle] if handle_map
+      options.concat [:ccs_deserialize_option_t, :CCS_DESERIALIZE_OPTION_VECTOR, :pointer, vector] if vector
+      options.concat [:ccs_deserialize_option_t, :CCS_DESERIALIZE_OPTION_DATA, :value, data] if data
+      options.concat [:ccs_deserialize_option_t, :CCS_DESERIALIZE_OPTION_END]
+      if buffer
+        type = :CCS_SERIALIZE_TYPE_MEMORY
+        varargs = [:size_t, buffer.size, :pointer, buffer] + options
+      elsif path
+        type = :CCS_SERIALIZE_TYPE_FILE 
+        varargs = [:string, path] + options
+      elsif file_descriptor
+        type = :CCS_SERIALIZE_TYPE_FILE_DESCRIPTOR
+        varargs = [:int, file_descriptor] + options
+      else
+        raise CCSError, :CCS_INVALID_VALUE
+      end
+      res = CCS.ccs_object_deserialize(ptr, format, type, *varargs)
+      CCS.error_check(res)
+      return _from_handle(ptr.read_ccs_object_t, retain: false, auto_release: true)
     end
 
     def user_data=(ud)
@@ -561,6 +681,10 @@ module CCS
     end
     res = CCS.ccs_object_set_destroy_callback(handle, cb_wrapper, user_data)
     CCS.error_check(res)
+  end
+
+  def self.deserialize(format: :binary, handle_map: nil, path: nil, buffer: nil)
+    return CCS::Object.deserialize(format: format, handle_map: handle_map, path: path, buffer: buffer)
   end
 
 end

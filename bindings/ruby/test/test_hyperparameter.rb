@@ -14,14 +14,12 @@ class CConfigSpaceTestHyperparameter < Minitest::Test
     assert_equal( h.class, h2.class )
   end
 
-  def test_discrete
-    values = [0, 1.5, 2, 7.2]
-    h = CCS::DiscreteHyperparameter::new(values: values)
+  def discrete_check(values, h)
     assert_equal( :CCS_HYPERPARAMETER, h.object_type )
     assert_equal( :CCS_HYPERPARAMETER_TYPE_DISCRETE, h.type )
     assert_match( /param/, h.name )
     assert( h.user_data.null? )
-    assert_equal( 0, h.default_value )
+    assert_equal( 0.2, h.default_value )
     values.each { |v| assert( h.check_value(v) ) }
     refute( h.check_value("foo") )
     v = h.sample
@@ -30,6 +28,20 @@ class CConfigSpaceTestHyperparameter < Minitest::Test
     vals.each { |v|
       assert( values.include? v )
     }
+  end
+
+  def test_discrete
+    values = [0.2, 1.5, 2, 7.2]
+    h = CCS::DiscreteHyperparameter::new(values: values)
+    discrete_check(values, h)
+  end
+
+  def test_serialize_discrete
+    values = [0.2, 1.5, 2, 7.2]
+    href = CCS::DiscreteHyperparameter::new(values: values)
+    buff = href.serialize
+    h = CCS::deserialize(buffer: buff)
+    discrete_check(values, h)
   end
 
   def test_ordinal_compare
@@ -54,9 +66,7 @@ class CConfigSpaceTestHyperparameter < Minitest::Test
     assert_equal( h.class, h2.class )
   end
 
-  def test_ordinal
-    values = ["foo", 2, 3.0]
-    h = CCS::OrdinalHyperparameter::new(values: values)
+  def ordinal_check(values, h)
     assert_equal( :CCS_HYPERPARAMETER, h.object_type )
     assert_equal( :CCS_HYPERPARAMETER_TYPE_ORDINAL, h.type )
     assert_match( /param/, h.name )
@@ -76,6 +86,20 @@ class CConfigSpaceTestHyperparameter < Minitest::Test
     }
   end
 
+  def test_ordinal
+    values = ["foo", 2, 3.0]
+    h = CCS::OrdinalHyperparameter::new(values: values)
+    ordinal_check(values, h)
+  end
+
+  def test_serialize_ordinal
+    values = ["foo", 2, 3.0]
+    href = CCS::OrdinalHyperparameter::new(values: values)
+    buff = href.serialize
+    h = CCS::deserialize(buffer: buff)
+    ordinal_check(values, h)
+  end
+
   def test_from_handle_categorical
     values = ["foo", 2, 3.0]
     h = CCS::CategoricalHyperparameter::new(values: values)
@@ -83,9 +107,7 @@ class CConfigSpaceTestHyperparameter < Minitest::Test
     assert_equal( h.class, h2.class )
   end
 
-  def test_categorical
-    values = ["foo", 2, 3.0]
-    h = CCS::CategoricalHyperparameter::new(values: values)
+  def categorical_check(values, h)
     assert_equal( :CCS_HYPERPARAMETER, h.object_type )
     assert_equal( :CCS_HYPERPARAMETER_TYPE_CATEGORICAL, h.type )
     assert_match( /param/, h.name )
@@ -105,14 +127,27 @@ class CConfigSpaceTestHyperparameter < Minitest::Test
     }
   end
 
+  def test_categorical
+    values = ["foo", 2, 3.0]
+    h = CCS::CategoricalHyperparameter::new(values: values)
+    categorical_check(values, h)
+  end
+
+  def test_serialize_categorical
+    values = ["foo", 2, 3.0]
+    href = CCS::CategoricalHyperparameter::new(values: values)
+    buff = href.serialize
+    h = CCS::deserialize(buffer: buff)
+    categorical_check(values, h)
+  end
+
   def test_from_handle_numerical
     h = CCS::NumericalHyperparameter::new
     h2 = CCS::Object::from_handle(h)
     assert_equal( h.class, h2.class )
   end
 
-  def test_create_numerical
-    h = CCS::NumericalHyperparameter::new
+  def numerical_check(h)
     assert_equal( :CCS_HYPERPARAMETER, h.object_type )
     assert_equal( :CCS_HYPERPARAMETER_TYPE_NUMERICAL, h.type )
     assert_match( /param/, h.name )
@@ -129,6 +164,18 @@ class CConfigSpaceTestHyperparameter < Minitest::Test
       assert( v.kind_of?(Float) )
       assert( v >= 0.0 && v < 1.0 )
     }
+  end
+
+  def test_create_numerical
+    h = CCS::NumericalHyperparameter::new
+    numerical_check(h)
+  end
+
+  def test_serialize_numerical
+    href = CCS::NumericalHyperparameter::new
+    buff = href.serialize
+    h = CCS::deserialize(buffer: buff)
+    numerical_check(h)
   end
 
   def test_create_numerical_float
@@ -178,14 +225,25 @@ class CConfigSpaceTestHyperparameter < Minitest::Test
     }
   end
 
-  def test_create_string
-    h = CCS::StringHyperparameter::new
+  def string_check(h)
     assert_equal( :CCS_HYPERPARAMETER_TYPE_STRING, h.type )
     assert_match( /param/, h.name )
     assert( h.user_data.null? )
     assert_raises CCS::CCSError do
       h.sample
     end
+  end
+
+  def test_create_string
+    h = CCS::StringHyperparameter::new
+    string_check(h)
+  end
+
+  def test_serialize_string
+    href = CCS::StringHyperparameter::new
+    buff = href.serialize
+    h = CCS::deserialize(buffer: buff)
+    string_check(h)
   end
 
 end

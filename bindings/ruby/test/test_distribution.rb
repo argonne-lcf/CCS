@@ -14,10 +14,8 @@ class CConfigSpaceTestDistribution < Minitest::Test
     assert_equal( d.class, d2.class )
   end
 
-  def test_create_roulette
-    areas = [ 1.0, 2.0, 1.0, 0.5 ]
+  def roulette_check(areas, d)
     sum = areas.reduce(:+)
-    d = CCS::RouletteDistribution::new(areas: areas)
     assert_equal( :CCS_DISTRIBUTION, d.object_type )
     assert_equal( :CCS_ROULETTE, d.type )
     assert_equal( :CCS_NUM_INTEGER, d.data_type )
@@ -36,14 +34,27 @@ class CConfigSpaceTestDistribution < Minitest::Test
     refute( i.upper_included? )
   end
 
+  def test_create_roulette
+    areas = [ 1.0, 2.0, 1.0, 0.5 ]
+    d = CCS::RouletteDistribution::new(areas: areas)
+    roulette_check(areas, d)
+  end
+
+  def test_serialize_roulette
+    areas = [ 1.0, 2.0, 1.0, 0.5 ]
+    dref = CCS::RouletteDistribution::new(areas: areas)
+    buff = dref.serialize
+    d = CCS::deserialize(buffer: buff)
+    roulette_check(areas, d)
+  end
+
   def test_from_handle_normal
     d = CCS::NormalDistribution::new
     d2 = CCS::Object::from_handle(d)
     assert_equal( d.class, d2.class )
   end
 
-  def test_create_normal
-    d = CCS::NormalDistribution::new
+  def normal_check(d)
     assert( d.object_type == :CCS_DISTRIBUTION )
     assert( d.type == :CCS_NORMAL )
     assert( d.data_type == :CCS_NUM_FLOAT )
@@ -57,6 +68,18 @@ class CConfigSpaceTestDistribution < Minitest::Test
     assert_equal( Float::INFINITY, i.upper )
     refute( i.lower_included? )
     refute( i.upper_included? )
+  end
+
+  def test_create_normal
+    d = CCS::NormalDistribution::new
+    normal_check(d)
+  end
+
+  def test_serialize_normal
+    dref = CCS::NormalDistribution::new
+    buff = dref.serialize
+    d = CCS::deserialize(buffer: buff)
+    normal_check(d)
   end
 
   def test_create_normal_int
@@ -100,8 +123,7 @@ class CConfigSpaceTestDistribution < Minitest::Test
     assert_equal( d.class, d2.class )
   end
 
-  def test_create_uniform
-    d = CCS::UniformDistribution::new
+  def uniform_check(d)
     assert( d.object_type == :CCS_DISTRIBUTION )
     assert( d.type == :CCS_UNIFORM )
     assert( d.data_type == :CCS_NUM_FLOAT )
@@ -113,6 +135,18 @@ class CConfigSpaceTestDistribution < Minitest::Test
     assert_equal( 1.0, i.upper )
     assert( i.lower_included? )
     refute( i.upper_included? )
+  end
+
+  def test_create_uniform
+    d = CCS::UniformDistribution::new
+    uniform_check(d)
+  end
+
+  def test_serialize_uniform
+    dref = CCS::UniformDistribution::new
+    buff = dref.serialize
+    d = CCS::deserialize(buffer: buff)
+    uniform_check(d)
   end
 
   def test_create_uniform_float
@@ -194,6 +228,23 @@ class CConfigSpaceTestDistribution < Minitest::Test
     assert_equal( d.class, d2.class )
   end
 
+  def test_serialize_mixture
+    distributions = [ CCS::UniformDistribution::float(lower: -5.0, upper: 0.0), CCS::UniformDistribution::float(lower: 0.0, upper: 2.0) ]
+    dref = CCS::MixtureDistribution::new(distributions: distributions)
+    buff = dref.serialize
+    d = CCS::deserialize(buffer: buff)
+    assert( d.object_type == :CCS_DISTRIBUTION )
+    assert( d.type == :CCS_MIXTURE )
+    assert( d.data_types == [:CCS_NUM_FLOAT] )
+    assert( d.weights == [0.5, 0.5] )
+    distributions.each_with_index { |d2ref, i|
+      d2 = d.distributions[i]
+      assert_equal( d2ref.class, d2.class )
+      assert_equal( d2ref.lower, d2.lower )
+      assert_equal( d2ref.upper, d2.upper )
+    }
+  end
+
   def test_create_multivariate
     distributions = [ CCS::UniformDistribution::float(lower: -5.0, upper: 0.0), CCS::UniformDistribution::int(lower: 0, upper: 2) ]
     d = CCS::MultivariateDistribution::new(distributions: distributions)
@@ -203,6 +254,22 @@ class CConfigSpaceTestDistribution < Minitest::Test
     assert( d.distributions.collect(&:handle) == distributions.collect(&:handle) )
     d2 = CCS::Object::from_handle(d)
     assert_equal( d.class, d2.class )
+  end
+
+  def test_serialize_multivariate
+    distributions = [ CCS::UniformDistribution::float(lower: -5.0, upper: 0.0), CCS::UniformDistribution::int(lower: 0, upper: 2) ]
+    dref = CCS::MultivariateDistribution::new(distributions: distributions)
+    buff = dref.serialize
+    d = CCS::deserialize(buffer: buff)
+    assert( d.object_type == :CCS_DISTRIBUTION )
+    assert( d.type == :CCS_MULTIVARIATE )
+    assert( d.data_types == [:CCS_NUM_FLOAT, :CCS_NUM_INTEGER] )
+    distributions.each_with_index { |d2ref, i|
+      d2 = d.distributions[i]
+      assert_equal( d2ref.class, d2.class )
+      assert_equal( d2ref.lower, d2.lower )
+      assert_equal( d2ref.upper, d2.upper )
+    }
   end
 
   def test_mixture_multidim
