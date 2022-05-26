@@ -25,7 +25,6 @@ struct _ccs_configuration_s {
 };
 
 struct _ccs_configuration_data_s {
-	void                      *user_data;
 	ccs_configuration_space_t  configuration_space;
 	size_t                     num_values;
 	ccs_datum_t               *values;

@@ -1,8 +1,12 @@
 #ifndef _CONTEXT_INTERNAL_H
 #define _CONTEXT_INTERNAL_H
 #include "utarray.h"
+#ifdef HASH_NONFATAL_OOM
+#undef HASH_NONFATAL_OOM
+#endif
 #define HASH_NONFATAL_OOM 1
 #include "uthash.h"
+#include "hyperparameter_internal.h"
 
 typedef struct _ccs_context_data_s _ccs_context_data_t;
 
@@ -27,7 +31,6 @@ typedef struct _ccs_hyperparameter_index_hash_s _ccs_hyperparameter_index_hash_t
 
 struct _ccs_context_data_s {
 	const char                       *name;
-	void                             *user_data;
 	UT_array                         *hyperparameters;
 	_ccs_hyperparameter_index_hash_t *name_hash;
 	_ccs_hyperparameter_index_hash_t *handle_hash;
@@ -185,10 +188,56 @@ _ccs_context_validate_value(ccs_context_t  context,
 }
 
 static inline ccs_result_t
-_ccs_context_get_user_data(ccs_context_t   context,
-                           void          **user_data_ret) {
-	CCS_CHECK_PTR(user_data_ret);
-	*user_data_ret = context->data->user_data;
+_ccs_serialize_bin_size_ccs_context_data(
+		_ccs_context_data_t *data,
+		size_t              *cum_size) {
+	*cum_size += _ccs_serialize_bin_size_string(data->name);
+	*cum_size += _ccs_serialize_bin_size_uint64(
+		utarray_len(data->hyperparameters));
+	_ccs_hyperparameter_wrapper_t *wrapper = NULL;
+	while ( (wrapper = (_ccs_hyperparameter_wrapper_t *)utarray_next(data->hyperparameters, wrapper)) )
+		CCS_VALIDATE(wrapper->hyperparameter->obj.ops->serialize_size(
+			wrapper->hyperparameter, CCS_SERIALIZE_FORMAT_BINARY, cum_size));
 	return CCS_SUCCESS;
 }
+
+static inline ccs_result_t
+_ccs_serialize_bin_ccs_context_data(
+		_ccs_context_data_t  *data,
+		size_t               *buffer_size,
+		char                **buffer) {
+	CCS_VALIDATE(_ccs_serialize_bin_string(
+		data->name, buffer_size, buffer));
+	CCS_VALIDATE(_ccs_serialize_bin_uint64(
+		utarray_len(data->hyperparameters), buffer_size, buffer));
+	_ccs_hyperparameter_wrapper_t *wrapper = NULL;
+	while ( (wrapper = (_ccs_hyperparameter_wrapper_t *)utarray_next(data->hyperparameters, wrapper)) )
+		CCS_VALIDATE(wrapper->hyperparameter->obj.ops->serialize(
+			wrapper->hyperparameter, CCS_SERIALIZE_FORMAT_BINARY, buffer_size, buffer));
+	return CCS_SUCCESS;
+}
+
+static inline ccs_result_t
+_ccs_serialize_bin_size_ccs_context(
+		ccs_context_t   context,
+		size_t         *cum_size) {
+	*cum_size += _ccs_serialize_bin_size_ccs_object_internal(
+		(_ccs_object_internal_t *)context);
+	CCS_VALIDATE(_ccs_serialize_bin_size_ccs_context_data(
+		context->data, cum_size));
+	return CCS_SUCCESS;
+}
+
+static inline ccs_result_t
+_ccs_serialize_bin_ccs_context(
+		ccs_context_t   context,
+		size_t         *buffer_size,
+		char          **buffer) {
+	CCS_VALIDATE(_ccs_serialize_bin_ccs_object_internal(
+		(_ccs_object_internal_t *)context, buffer_size, buffer));
+	CCS_VALIDATE(_ccs_serialize_bin_ccs_context_data(
+		context->data, buffer_size, buffer));
+	return CCS_SUCCESS;
+}
+
 #endif //_CONTEXT_INTERNAL_H

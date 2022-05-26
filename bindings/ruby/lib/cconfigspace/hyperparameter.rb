@@ -23,7 +23,6 @@ module CCS
   attach_function :ccs_hyperparameter_get_type, [:ccs_hyperparameter_t, :pointer], :ccs_result_t
   attach_function :ccs_hyperparameter_get_default_value, [:ccs_hyperparameter_t, :pointer], :ccs_result_t
   attach_function :ccs_hyperparameter_get_name, [:ccs_hyperparameter_t, :pointer], :ccs_result_t
-  attach_function :ccs_hyperparameter_get_user_data, [:ccs_hyperparameter_t, :pointer], :ccs_result_t
   attach_function :ccs_hyperparameter_get_default_distribution, [:ccs_hyperparameter_t, :pointer], :ccs_result_t
   attach_function :ccs_hyperparameter_check_value, [:ccs_hyperparameter_t, :ccs_datum_t, :pointer], :ccs_result_t
   attach_function :ccs_hyperparameter_check_values, [:ccs_hyperparameter_t, :size_t, :pointer, :pointer], :ccs_result_t
@@ -34,7 +33,6 @@ module CCS
 
   class Hyperparameter < Object
     add_property :type, :ccs_hyperparameter_type_t, :ccs_hyperparameter_get_type, memoize:true
-    add_property :user_data, :pointer, :ccs_hyperparameter_get_user_data, memoize: true
 
     def self.default_name
       "param%03d" % CCS.get_id

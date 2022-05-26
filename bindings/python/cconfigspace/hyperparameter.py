@@ -17,7 +17,6 @@ class ccs_hyperparameter_type(CEnumeration):
 ccs_hyperparameter_get_type = _ccs_get_function("ccs_hyperparameter_get_type", [ccs_hyperparameter, ct.POINTER(ccs_hyperparameter_type)])
 ccs_hyperparameter_get_default_value = _ccs_get_function("ccs_hyperparameter_get_default_value", [ccs_hyperparameter, ct.POINTER(ccs_datum)])
 ccs_hyperparameter_get_name = _ccs_get_function("ccs_hyperparameter_get_name", [ccs_hyperparameter, ct.POINTER(ct.c_char_p)])
-ccs_hyperparameter_get_user_data = _ccs_get_function("ccs_hyperparameter_get_user_data", [ccs_hyperparameter, ct.POINTER(ct.c_void_p)])
 ccs_hyperparameter_get_default_distribution = _ccs_get_function("ccs_hyperparameter_get_default_distribution", [ccs_hyperparameter, ct.POINTER(ccs_distribution)])
 ccs_hyperparameter_check_value = _ccs_get_function("ccs_hyperparameter_check_value", [ccs_hyperparameter, ccs_datum_fix, ct.POINTER(ccs_bool)])
 ccs_hyperparameter_check_values = _ccs_get_function("ccs_hyperparameter_check_values", [ccs_hyperparameter, ct.c_size_t, ct.POINTER(ccs_datum), ct.POINTER(ccs_bool)])
@@ -60,16 +59,6 @@ class Hyperparameter(Object):
     return self._type
 
   @property
-  def user_data(self):
-    if hasattr(self, "_user_data"):
-      return self._user_data
-    v = ct.c_void_p()
-    res = ccs_hyperparameter_get_user_data(self.handle, ct.byref(v))
-    Error.check(res)
-    self._user_data = v
-    return v
-
-  @property
   def name(self):
     if hasattr(self, "_name"):
       return self._name
@@ -100,11 +89,8 @@ class Hyperparameter(Object):
     return self._default_distribution
 
   def check_value(self, value):
-    proxy = ccs_datum()
-    proxy.value = value
-    v = ccs_datum_fix()
-    v.value = proxy._value.i
-    v.type = proxy.type
+    pv = ccs_datum(value)
+    v = ccs_datum_fix(pv)
     b = ccs_bool()
     res = ccs_hyperparameter_check_value(self.handle, v, ct.byref(b))
     Error.check(res)
@@ -308,12 +294,8 @@ class OrdinalHyperparameter(Hyperparameter):
   def compare(self, value1, value2):
     pv1 = ccs_datum(value1)
     pv2 = ccs_datum(value2)
-    v1 = ccs_datum_fix()
-    v2 = ccs_datum_fix()
-    v1.value = pv1._value.i
-    v1.type = pv1.type
-    v2.value = pv2._value.i
-    v2.type = pv2.type
+    v1 = ccs_datum_fix(pv1)
+    v2 = ccs_datum_fix(pv2)
     c = ccs_int()
     res = ccs_ordinal_hyperparameter_compare_values(self.handle, v1, v2, ct.byref(c))
     Error.check(res)

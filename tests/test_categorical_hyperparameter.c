@@ -11,34 +11,20 @@ void free_data(ccs_object_t o, void *user_data) {
 	free(user_data);
 }
 
-void test_create() {
-	ccs_hyperparameter_t       hyperparameter;
+static void compare_hyperparameter(
+		ccs_hyperparameter_t hyperparameter,
+		const size_t         num_possible_values,
+		ccs_datum_t          possible_values[],
+		const size_t         default_value_index) {
+	ccs_result_t               err;
 	ccs_hyperparameter_type_t  type;
 	ccs_datum_t                default_value;
-	ccs_result_t               err;
-	ccs_bool_t                 check;
 	const char                *name;
 	void *                     user_data;
 	ccs_distribution_t         distribution;
 	ccs_distribution_type_t    dist_type;
 	ccs_interval_t             interval;
-	const size_t               num_possible_values = NUM_POSSIBLE_VALUES;
-	ccs_datum_t                possible_values[NUM_POSSIBLE_VALUES];
-	const size_t               default_value_index = 2;
-
-	for(size_t i = 0; i < num_possible_values; i++) {
-		possible_values[i].type = CCS_INTEGER;
-		possible_values[i].value.i = (i+1)*2;
-	}
-
-	user_data = (void *)strdup("hello");
-
-	err = ccs_create_categorical_hyperparameter("my_param", num_possible_values,
-	                                            possible_values, default_value_index,
-	                                            user_data, &hyperparameter);
-	assert( err == CCS_SUCCESS );
-
-	err = ccs_object_set_destroy_callback(hyperparameter, &free_data, user_data);
+	ccs_bool_t                 check;
 
 	err = ccs_hyperparameter_get_type(hyperparameter, &type);
 	assert( err == CCS_SUCCESS );
@@ -53,7 +39,7 @@ void test_create() {
 	assert( err == CCS_SUCCESS );
 	assert( strcmp(name, "my_param") == 0 );
 
-	err = ccs_hyperparameter_get_user_data(hyperparameter, &user_data);
+	err = ccs_object_get_user_data(hyperparameter, &user_data);
 	assert( err == CCS_SUCCESS );
 	assert( !strcmp((char *)user_data, "hello") );
 
@@ -87,6 +73,53 @@ void test_create() {
 
 	err = ccs_release_object(distribution);
 	assert( err == CCS_SUCCESS );
+}
+
+void test_create() {
+	ccs_hyperparameter_t  hyperparameter;
+	ccs_result_t          err;
+	void *                user_data;
+	const size_t          num_possible_values = NUM_POSSIBLE_VALUES;
+	ccs_datum_t           possible_values[NUM_POSSIBLE_VALUES];
+	const size_t          default_value_index = 2;
+	char                 *buff;
+	size_t                buff_size;
+
+	for(size_t i = 0; i < num_possible_values; i++) {
+		possible_values[i].type = CCS_INTEGER;
+		possible_values[i].value.i = (i+1)*2;
+	}
+
+	user_data = (void *)strdup("hello");
+
+	err = ccs_create_categorical_hyperparameter("my_param", num_possible_values,
+	                                            possible_values, default_value_index,
+	                                            user_data, &hyperparameter);
+	assert( err == CCS_SUCCESS );
+
+	compare_hyperparameter(hyperparameter, num_possible_values, possible_values, default_value_index);
+
+	err = ccs_object_serialize(hyperparameter, CCS_SERIALIZE_FORMAT_BINARY, CCS_SERIALIZE_OPERATION_SIZE, &buff_size);
+	assert( err == CCS_SUCCESS );
+
+	buff = (char *)malloc(buff_size);
+	assert( buff );
+
+	err = ccs_object_serialize(hyperparameter, CCS_SERIALIZE_FORMAT_BINARY, CCS_SERIALIZE_OPERATION_MEMORY, buff_size, buff);
+	assert( err == CCS_SUCCESS );
+
+	err = ccs_release_object(hyperparameter);
+	assert( err == CCS_SUCCESS );
+
+	err = ccs_object_deserialize((ccs_object_t*)&hyperparameter, CCS_SERIALIZE_FORMAT_BINARY, CCS_SERIALIZE_OPERATION_MEMORY, buff_size, buff, CCS_DESERIALIZE_OPTION_END);
+	assert( err == CCS_SUCCESS );
+	free(buff);
+
+	err = ccs_object_set_destroy_callback(hyperparameter, &free_data, user_data);
+	assert( err == CCS_SUCCESS );
+
+	compare_hyperparameter(hyperparameter, num_possible_values, possible_values, default_value_index);
+
 	err = ccs_release_object(hyperparameter);
 	assert( err == CCS_SUCCESS );
 }
@@ -107,7 +140,7 @@ void test_samples() {
 		possible_values[i].value.i = (i+1)*2;
 	}
 
-	err = ccs_rng_create(&rng);
+	err = ccs_create_rng(&rng);
 	assert( err == CCS_SUCCESS );
 	err = ccs_create_categorical_hyperparameter("my_param", num_possible_values,
 	                                            possible_values, default_value_index,
@@ -153,7 +186,7 @@ void test_oversampling() {
 		possible_values[i].value.i = (i+1)*2;
 	}
 
-	err = ccs_rng_create(&rng);
+	err = ccs_create_rng(&rng);
 	assert( err == CCS_SUCCESS );
 	err = ccs_create_uniform_int_distribution(0, num_possible_values+1,
 	                                          CCS_LINEAR, 0, &distribution);

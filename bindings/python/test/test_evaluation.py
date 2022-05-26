@@ -40,5 +40,29 @@ class TestEvaluation(unittest.TestCase):
     self.assertEqual( ccs.NOT_COMPARABLE, ev1.compare(ev4) )
     self.assertEqual( ccs.NOT_COMPARABLE, ev4.compare(ev1) )
 
+  def test_serialize(self):
+    cs = ccs.ConfigurationSpace(name = "cspace")
+    h1 = ccs.NumericalHyperparameter()
+    h2 = ccs.NumericalHyperparameter()
+    h3 = ccs.NumericalHyperparameter()
+    cs.add_hyperparameters([h1, h2, h3])
+    os = ccs.ObjectiveSpace(name = "ospace")
+    v1 = ccs.NumericalHyperparameter()
+    v2 = ccs.NumericalHyperparameter()
+    os.add_hyperparameters([v1, v2])
+    e1 = ccs.Variable(hyperparameter = v1)
+    e2 = ccs.Variable(hyperparameter = v2)
+    os.add_objectives( { e1: ccs.MAXIMIZE, e2: ccs.MINIMIZE } )
+    evref = ccs.Evaluation(objective_space = os, configuration = cs.sample(), values = [0.5, 0.6])
+    buff = evref.serialize()
+    handle_map = ccs.Map()
+    handle_map[cs] = cs
+    handle_map[os] = os
+    ev = ccs.deserialize(buffer = buff, handle_map = handle_map)
+    self.assertEqual( cs.handle.value, ev.configuration.configuration_space.handle.value)
+    self.assertEqual( os.handle.value, ev.objective_space.handle.value)
+    self.assertEqual( [0.5, 0.6], ev.values )
+    self.assertEqual( [0.5, 0.6], ev.objective_values )
+
 if __name__ == '__main__':
     unittest.main()

@@ -25,19 +25,6 @@ ccs_binding_get_context(ccs_binding_t  binding,
                         ccs_context_t *context_ret);
 
 /**
- * Get the associated `user_data` pointer.
- * @param[in] binding
- * @param[out] user_data_ret a pointer to `void *` variable that will contain
- *                           the value of the `user_data`
- * @return #CCS_SUCCESS on success
- * @return -#CCS_INVALID_OBJECT if \p binding is not a valid CCS object
- * @return -#CCS_INVALID_VALUE if \p user_data_ret is NULL
- */
-extern ccs_result_t
-ccs_binding_get_user_data(ccs_binding_t   binding,
-                          void          **user_data_ret);
-
-/**
  * Get the value of the hyperparameter at the given index.
  * @param[in] binding
  * @param[in] index index of the hyperparameter in the associated context

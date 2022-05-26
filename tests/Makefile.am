@@ -1,12 +1,12 @@
 AM_COLOR_TESTS = yes
 
-AM_CFLAGS = -I$(top_srcdir)/include -Wall -Wextra -Wpedantic
+AM_CFLAGS = -I$(top_srcdir)/include -Wall -Wextra -Wpedantic $(GSL_CFLAGS)
 
 if STRICT
 AM_CFLAGS += -Werror
 endif
 
-AM_LDFLAGS = ../src/libcconfigspace.la
+AM_LDFLAGS = ../src/libcconfigspace.la $(GSL_LIBS)
 
 CCONFIGSPACE_TESTS = \
 		test_rng \
@@ -29,7 +29,8 @@ CCONFIGSPACE_TESTS = \
 		test_user_defined_tuner \
 		test_features_space \
 		test_random_features_tuner \
-		test_user_defined_features_tuner
+		test_user_defined_features_tuner \
+		test_map
 
 # unit tests
 UNIT_TESTS = \

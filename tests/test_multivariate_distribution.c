@@ -9,42 +9,17 @@
 #define NUM_DISTRIBS 2
 #define NUM_SAMPLES 10000
 
-void test_create_multivariate_distribution() {
-	const size_t            num_distribs = NUM_DISTRIBS;
-	ccs_distribution_t      distrib = NULL;
-	ccs_distribution_t      distribs[NUM_DISTRIBS];
-	ccs_distribution_t      distribs_ret[NUM_DISTRIBS];
+static void compare_distribution(
+		ccs_distribution_t distrib,
+		size_t num_distribs, ccs_distribution_t distribs[]) {
 	ccs_result_t            err = CCS_SUCCESS;
+	ccs_distribution_t      distribs_ret[NUM_DISTRIBS];
 	int32_t                 refcount;
 	ccs_object_type_t       otype;
 	ccs_distribution_type_t dtype;
 	ccs_numeric_type_t      data_types[NUM_DISTRIBS];
 	ccs_interval_t          intervals[NUM_DISTRIBS];
 	size_t                  num_distribs_ret;
-
-	err = ccs_create_uniform_distribution(
-		CCS_NUM_FLOAT,
-		CCSF(-5.0),
-		CCSF(5.0),
-		CCS_LINEAR,
-		CCSF(0.0),
-		distribs);
-	assert( err == CCS_SUCCESS );
-
-	err = ccs_create_uniform_distribution(
-		CCS_NUM_INTEGER,
-		CCSI(-5),
-		CCSI(5),
-		CCS_LINEAR,
-		CCSI(0),
-		distribs + 1);
-	assert( err == CCS_SUCCESS );
-
-	err = ccs_create_multivariate_distribution(
-		num_distribs,
-		distribs,
-		&distrib);
-	assert( err == CCS_SUCCESS );
 
 	err = ccs_object_get_type(distrib, &otype);
 	assert( err == CCS_SUCCESS );
@@ -79,17 +54,87 @@ void test_create_multivariate_distribution() {
 	err = ccs_multivariate_distribution_get_distributions(distrib, num_distribs, distribs_ret, &num_distribs_ret);
 	assert( err == CCS_SUCCESS );
 	assert( num_distribs_ret == num_distribs );
-	for (size_t i = 0; i < num_distribs; i++)
-		assert( distribs_ret[i] == distribs[i] );
+	for (size_t i = 0; i < num_distribs; i++) {
+		ccs_interval_t interval_ref;
+		err = ccs_distribution_get_bounds(distribs[i], &interval_ref);
+		assert( err == CCS_SUCCESS );
+
+		assert( intervals[i].type == interval_ref.type );
+		if (intervals[i].type == CCS_NUM_FLOAT) {
+			assert( intervals[i].lower.f == interval_ref.lower.f );
+			assert( intervals[i].lower_included == interval_ref.lower_included );
+			assert( intervals[i].upper.f == interval_ref.upper.f );
+			assert( intervals[i].upper_included == interval_ref.upper_included );
+		} else {
+			assert( intervals[i].lower.i == interval_ref.lower.i );
+			assert( intervals[i].lower_included == interval_ref.lower_included );
+			assert( intervals[i].upper.i == interval_ref.upper.i );
+			assert( intervals[i].upper_included == interval_ref.upper_included );
+		}
+	}
 
 	err = ccs_object_get_refcount(distrib, &refcount);
 	assert( err == CCS_SUCCESS );
 	assert( refcount == 1 );
+}
+
+void test_create_multivariate_distribution() {
+	const size_t        num_distribs = NUM_DISTRIBS;
+	ccs_distribution_t  distrib = NULL;
+	ccs_distribution_t  distribs[NUM_DISTRIBS];
+	ccs_result_t        err = CCS_SUCCESS;
+	char               *buff;
+	size_t              buff_size;
+
+	err = ccs_create_uniform_distribution(
+		CCS_NUM_FLOAT,
+		CCSF(-5.0),
+		CCSF(5.0),
+		CCS_LINEAR,
+		CCSF(0.0),
+		distribs);
+	assert( err == CCS_SUCCESS );
+
+	err = ccs_create_uniform_distribution(
+		CCS_NUM_INTEGER,
+		CCSI(-5),
+		CCSI(5),
+		CCS_LINEAR,
+		CCSI(0),
+		distribs + 1);
+	assert( err == CCS_SUCCESS );
+
+	err = ccs_create_multivariate_distribution(
+		num_distribs,
+		distribs,
+		&distrib);
+	assert( err == CCS_SUCCESS );
+
+	compare_distribution(distrib, num_distribs, distribs);
+
+	err = ccs_object_serialize(distrib, CCS_SERIALIZE_FORMAT_BINARY, CCS_SERIALIZE_OPERATION_SIZE, &buff_size);
+	assert( err == CCS_SUCCESS );
+
+	buff = (char *)malloc(buff_size);
+	assert( buff );
+
+	err = ccs_object_serialize(distrib, CCS_SERIALIZE_FORMAT_BINARY, CCS_SERIALIZE_OPERATION_MEMORY, buff_size, buff);
+	assert( err == CCS_SUCCESS );
+
+	err = ccs_release_object(distrib);
+	assert( err == CCS_SUCCESS );
+
+	err = ccs_object_deserialize((ccs_object_t*)&distrib, CCS_SERIALIZE_FORMAT_BINARY, CCS_SERIALIZE_OPERATION_MEMORY, buff_size, buff, CCS_DESERIALIZE_OPTION_END);
+	assert( err == CCS_SUCCESS );
+	free(buff);
+
+	compare_distribution(distrib, num_distribs, distribs);
 
 	for (size_t i = 0; i < num_distribs; i++) {
 		err = ccs_release_object(distribs[i]);
 		assert( err == CCS_SUCCESS );
 	}
+
 	err = ccs_release_object(distrib);
 	assert( err == CCS_SUCCESS );
 }
@@ -102,7 +147,7 @@ void test_multivariate_distribution() {
 	const size_t       num_samples = NUM_SAMPLES;
 	ccs_numeric_t      samples[NUM_SAMPLES*NUM_DISTRIBS];
 
-	err = ccs_rng_create(&rng);
+	err = ccs_create_rng(&rng);
 	assert( err == CCS_SUCCESS );
 
 	err = ccs_create_uniform_distribution(
@@ -160,7 +205,7 @@ void test_multivariate_distribution_strided_samples() {
 	const size_t       num_samples = NUM_SAMPLES;
 	ccs_numeric_t      samples[NUM_SAMPLES*(NUM_DISTRIBS+1)];
 
-	err = ccs_rng_create(&rng);
+	err = ccs_create_rng(&rng);
 	assert( err == CCS_SUCCESS );
 
 	err = ccs_create_uniform_distribution(
@@ -220,7 +265,7 @@ void test_multivariate_distribution_soa_samples() {
 	ccs_numeric_t      samples2[NUM_SAMPLES];
 	ccs_numeric_t     *samples[] = { samples1, samples2 };
 
-	err = ccs_rng_create(&rng);
+	err = ccs_create_rng(&rng);
 	assert( err == CCS_SUCCESS );
 
 	err = ccs_create_uniform_distribution(
@@ -279,7 +324,7 @@ void test_distribution_hyperparameters_sample() {
 	const size_t         num_samples = NUM_SAMPLES;
 	ccs_datum_t          samples[NUM_SAMPLES*NUM_DISTRIBS];
 
-	err = ccs_rng_create(&rng);
+	err = ccs_create_rng(&rng);
 	assert( err == CCS_SUCCESS );
 
 	err = ccs_create_uniform_distribution(
@@ -358,7 +403,7 @@ void test_distribution_hyperparameters_sample_oversampling() {
 	const size_t         num_samples = NUM_SAMPLES;
 	ccs_datum_t          samples[NUM_SAMPLES*NUM_DISTRIBS];
 
-	err = ccs_rng_create(&rng);
+	err = ccs_create_rng(&rng);
 	assert( err == CCS_SUCCESS );
 
 	err = ccs_create_normal_distribution(

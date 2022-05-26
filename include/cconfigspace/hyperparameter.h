@@ -362,20 +362,6 @@ ccs_hyperparameter_get_name(ccs_hyperparameter_t   hyperparameter,
                             const char           **name_ret);
 
 /**
- * Get the associated `user_data` pointer of a hyperparameter.
- * @param[in] hyperparameter
- * @param[out] user_data_ret a pointer to a `void *` variable that will contain
- *                           the value of the `user_data`
- * @return #CCS_SUCCESS on success
- * @return -#CCS_INVALID_OBJECT if \p hyperparameter is not a valid CCS
- *                              hyperparameter
- * @return -#CCS_INVALID_VALUE if \p user_data_ret is NULL
- */
-extern ccs_result_t
-ccs_hyperparameter_get_user_data(ccs_hyperparameter_t   hyperparameter,
-                                 void                 **user_data_ret);
-
-/**
  * Get the default distribution of a hyperparameter.
  * @param[in] hyperparameter
  * @param[out] distribution_ret a pointer to the variable that will contained

@@ -47,4 +47,29 @@ class CConfigSpaceTestEvaluation < Minitest::Test
     assert_equal( :CCS_NOT_COMPARABLE, ev4.compare(ev1) )
   end
 
+  def test_serialize
+    cs = CCS::ConfigurationSpace::new(name: "cspace")
+    h1 = CCS::NumericalHyperparameter::new
+    h2 = CCS::NumericalHyperparameter::new
+    h3 = CCS::NumericalHyperparameter::new
+    cs.add_hyperparameters [h1, h2, h3]
+    os = CCS::ObjectiveSpace::new(name: "ospace")
+    v1 = CCS::NumericalHyperparameter::new
+    v2 = CCS::NumericalHyperparameter::new
+    os.add_hyperparameters [v1, v2]
+    e1 = CCS::Variable::new(hyperparameter: v1)
+    e2 = CCS::Variable::new(hyperparameter: v2)
+    os.add_objectives( { e1 => :CCS_MAXIMIZE, e2 => :CCS_MINIMIZE } )
+    evref = CCS::Evaluation::new(objective_space: os, configuration: cs.sample, values: [0.5, 0.6])
+    buff = evref.serialize
+    handle_map = CCS::Map::new()
+    handle_map[cs] = cs
+    handle_map[os] = os
+    ev = CCS::deserialize(buffer: buff, handle_map: handle_map)
+    assert_equal( cs.handle, ev.configuration.configuration_space.handle )
+    assert_equal( os.handle, ev.objective_space.handle )
+    assert_equal( [0.5, 0.6], ev.values )
+    assert_equal( [0.5, 0.6], ev.objective_values )
+  end
+
 end

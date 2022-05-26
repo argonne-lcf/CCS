@@ -102,12 +102,8 @@ class Expression(Object):
   def binary(cls, t, left, right):
     pvleft = ccs_datum(left)
     pvright = ccs_datum(right)
-    vleft = ccs_datum_fix()
-    vright = ccs_datum_fix()
-    vleft.value = pvleft._value.i
-    vleft.type = pvleft.type
-    vright.value = pvright._value.i
-    vright.type = pvright.type
+    vleft = ccs_datum_fix(pvleft)
+    vright = ccs_datum_fix(pvright)
     handle = ccs_expression()
     res = ccs_create_binary_expression(t, vleft, vright, ct.byref(handle))
     Error.check(res)
@@ -116,9 +112,7 @@ class Expression(Object):
   @classmethod
   def unary(cls, t, node):
     pvnode = ccs_datum(node)
-    vnode = ccs_datum_fix()
-    vnode.value = pvnode._value.i
-    vnode.type = pvnode.type
+    vnode = ccs_datum_fix(pvnode)
     handle = ccs_expression()
     res = ccs_create_unary_expression(t, vnode, ct.byref(handle))
     Error.check(res)
@@ -214,9 +208,7 @@ class Literal(Expression):
     if handle is None:
       handle = ccs_expression()
       pv = ccs_datum(value)
-      v = ccs_datum_fix()
-      v.value = pv._value.i
-      v.type = pv.type
+      v = ccs_datum_fix(pv)
       res = ccs_create_literal(v, ct.byref(handle))
       Error.check(res)
       super().__init__(handle = handle, retain = False)

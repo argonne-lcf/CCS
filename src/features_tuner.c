@@ -29,17 +29,6 @@ ccs_features_tuner_get_name(ccs_features_tuner_t   tuner,
 }
 
 ccs_result_t
-ccs_features_tuner_get_user_data(ccs_features_tuner_t   tuner,
-                                 void                 **user_data_ret) {
-	CCS_CHECK_OBJ(tuner, CCS_FEATURES_TUNER);
-	CCS_CHECK_PTR(user_data_ret);
-	_ccs_features_tuner_common_data_t *d =
-	    (_ccs_features_tuner_common_data_t *)tuner->data;
-	*user_data_ret = d->user_data;
-	return CCS_SUCCESS;
-}
-
-ccs_result_t
 ccs_features_tuner_get_configuration_space(
 		ccs_features_tuner_t       tuner,
 		ccs_configuration_space_t *configuration_space_ret) {

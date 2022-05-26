@@ -24,7 +24,7 @@ extern "C" {
  *                             new random number generator
  */
 extern ccs_result_t
-ccs_rng_create(ccs_rng_t *rng_ret);
+ccs_create_rng(ccs_rng_t *rng_ret);
 
 /**
  * Create a new random number generator using the provided gsl type (see
@@ -39,7 +39,7 @@ ccs_rng_create(ccs_rng_t *rng_ret);
  *                             new random number generator
  */
 extern ccs_result_t
-ccs_rng_create_with_type(const gsl_rng_type *rng_type,
+ccs_create_rng_with_type(const gsl_rng_type *rng_type,
                          ccs_rng_t          *rng_ret);
 
 /**

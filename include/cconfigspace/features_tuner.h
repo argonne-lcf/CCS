@@ -62,20 +62,6 @@ ccs_features_tuner_get_name(ccs_features_tuner_t   features_tuner,
                             const char           **name_ret);
 
 /**
- * Get the associated `user_data` pointer of a features tuner.
- * @param[in] features_tuner
- * @param[out] user_data_ret a pointer to a `void *` variable that will contain
- *                           the value of the `user_data`
- * @return #CCS_SUCCESS on success
- * @return -#CCS_INVALID_OBJECT if \p features_tuner is not a valid CCS features
- *                              tuner
- * @return -#CCS_INVALID_VALUE if \p user_data_ret is NULL
- */
-extern ccs_result_t
-ccs_features_tuner_get_user_data(ccs_features_tuner_t   features_tuner,
-                                 void                 **user_data_ret);
-
-/**
  * Get the associated configuration space.
  * @param[in] features_tuner
  * @param[out] configuration_space_ret a pointer to the variable that will
@@ -352,6 +338,25 @@ struct ccs_user_defined_features_tuner_vector_s {
 		ccs_features_tuner_t  features_tuner,
 		ccs_features_t        features,
 		ccs_configuration_t  *configuration);
+
+	/** The tuner serialization interface, can be NULL, in which case
+            common tuner data, history and optimums will be serialized */
+	ccs_result_t (*serialize_user_state)(
+		ccs_features_tuner_t  features_tuner,
+		size_t                sate_size,
+		void                 *state,
+		size_t               *state_size_ret);
+
+	/** The features_tuner deserialization interface, can be NULL, in which case,
+            the history will be set through the tell interface */
+	ccs_result_t (*deserialize_state)(
+		ccs_features_tuner_t       features_tuner,
+		size_t                     size_history,
+		ccs_features_evaluation_t *history,
+		size_t                     num_optimums,
+		ccs_features_evaluation_t *optimums,
+		size_t                     state_size,
+		const void                *state);
 };
 
 /**

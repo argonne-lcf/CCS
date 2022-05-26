@@ -1,6 +1,6 @@
 module CCS
 
-  attach_function :ccs_rng_create, [:pointer], :ccs_result_t
+  attach_function :ccs_create_rng, [:pointer], :ccs_result_t
   attach_function :ccs_rng_set_seed, [:ccs_rng_t, :ulong], :ccs_result_t
   attach_function :ccs_rng_get, [:ccs_rng_t, :pointer], :ccs_result_t
   attach_function :ccs_rng_min, [:ccs_rng_t, :pointer], :ccs_result_t
@@ -16,7 +16,7 @@ module CCS
         super
       else
         ptr = MemoryPointer::new(:ccs_rng_t)
-        res = CCS.ccs_rng_create(ptr)
+        res = CCS.ccs_create_rng(ptr)
         CCS.error_check(res)
         super(ptr.read_pointer, retain: false)
       end

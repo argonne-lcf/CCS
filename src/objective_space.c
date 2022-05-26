@@ -1,6 +1,7 @@
 #include "cconfigspace_internal.h"
 #include "objective_space_internal.h"
 #include "evaluation_internal.h"
+#include "expression_internal.h"
 
 static ccs_result_t
 _ccs_objective_space_del(ccs_object_t object) {
@@ -26,8 +27,133 @@ _ccs_objective_space_del(ccs_object_t object) {
 	return CCS_SUCCESS;
 }
 
+static inline ccs_result_t
+_ccs_serialize_bin_size_ccs_objective_space_data(
+		_ccs_objective_space_data_t *data,
+		size_t                      *cum_size) {
+	_ccs_hyperparameter_wrapper_t *wrapper;
+	_ccs_objective_t *objective;
+
+	*cum_size += _ccs_serialize_bin_size_string(data->name);
+	*cum_size += _ccs_serialize_bin_size_uint64(
+		utarray_len(data->hyperparameters));
+	*cum_size += _ccs_serialize_bin_size_uint64(
+		utarray_len(data->objectives));
+
+	/* hyperparameters */
+	wrapper = NULL;
+	while ( (wrapper = (_ccs_hyperparameter_wrapper_t *)utarray_next(data->hyperparameters, wrapper)) )
+		CCS_VALIDATE(wrapper->hyperparameter->obj.ops->serialize_size(
+			wrapper->hyperparameter, CCS_SERIALIZE_FORMAT_BINARY, cum_size));
+
+	/* objectives */
+	objective = NULL;
+	while ( (objective = (_ccs_objective_t *)utarray_next(data->objectives, objective)) ) {
+		CCS_VALIDATE(objective->expression->obj.ops->serialize_size(
+			objective->expression, CCS_SERIALIZE_FORMAT_BINARY, cum_size));
+		*cum_size += _ccs_serialize_bin_size_ccs_objective_type(objective->type);
+	}
+
+	return CCS_SUCCESS;
+}
+
+static inline ccs_result_t
+_ccs_serialize_bin_ccs_objective_space_data(
+		_ccs_objective_space_data_t  *data,
+		size_t                       *buffer_size,
+		char                        **buffer) {
+	_ccs_hyperparameter_wrapper_t *wrapper;
+	_ccs_objective_t *objective;
+
+	CCS_VALIDATE(_ccs_serialize_bin_string(
+		data->name, buffer_size, buffer));
+	CCS_VALIDATE(_ccs_serialize_bin_uint64(
+		utarray_len(data->hyperparameters), buffer_size, buffer));
+	CCS_VALIDATE(_ccs_serialize_bin_uint64(
+		utarray_len(data->objectives), buffer_size, buffer));
+
+	/* hyperparameters */
+	wrapper = NULL;
+	while ( (wrapper = (_ccs_hyperparameter_wrapper_t *)utarray_next(data->hyperparameters, wrapper)) )
+		CCS_VALIDATE(wrapper->hyperparameter->obj.ops->serialize(
+			wrapper->hyperparameter, CCS_SERIALIZE_FORMAT_BINARY, buffer_size, buffer));
+
+	/* objectives */
+	objective = NULL;
+	while ( (objective = (_ccs_objective_t *)utarray_next(data->objectives, objective)) ) {
+		CCS_VALIDATE(objective->expression->obj.ops->serialize(
+			objective->expression, CCS_SERIALIZE_FORMAT_BINARY, buffer_size, buffer));
+		CCS_VALIDATE(_ccs_serialize_bin_ccs_objective_type(
+			objective->type, buffer_size, buffer));
+	}
+
+	return CCS_SUCCESS;
+}
+
+static inline ccs_result_t
+_ccs_serialize_bin_size_ccs_objective_space(
+		ccs_objective_space_t  objective_space,
+		size_t                *cum_size) {
+	_ccs_objective_space_data_t *data =
+		(_ccs_objective_space_data_t *)(objective_space->data);
+	*cum_size += _ccs_serialize_bin_size_ccs_object_internal(
+		(_ccs_object_internal_t *)objective_space);
+	CCS_VALIDATE(_ccs_serialize_bin_size_ccs_objective_space_data(
+		data, cum_size));
+	return CCS_SUCCESS;
+}
+
+static inline ccs_result_t
+_ccs_serialize_bin_ccs_objective_space(
+		ccs_objective_space_t   objective_space,
+		size_t                 *buffer_size,
+		char                  **buffer) {
+	_ccs_objective_space_data_t *data =
+		(_ccs_objective_space_data_t *)(objective_space->data);
+	CCS_VALIDATE(_ccs_serialize_bin_ccs_object_internal(
+		(_ccs_object_internal_t *)objective_space, buffer_size, buffer));
+	CCS_VALIDATE(_ccs_serialize_bin_ccs_objective_space_data(
+		data, buffer_size, buffer));
+	return CCS_SUCCESS;
+}
+
+static ccs_result_t
+_ccs_objective_space_serialize_size(
+		ccs_object_t            object,
+		ccs_serialize_format_t  format,
+		size_t                 *cum_size) {
+	switch(format) {
+	case CCS_SERIALIZE_FORMAT_BINARY:
+		CCS_VALIDATE(_ccs_serialize_bin_size_ccs_objective_space(
+			(ccs_objective_space_t)object, cum_size));
+		break;
+	default:
+		return -CCS_INVALID_VALUE;
+	}
+	return CCS_SUCCESS;
+}
+
+static ccs_result_t
+_ccs_objective_space_serialize(
+		ccs_object_t             object,
+		ccs_serialize_format_t   format,
+		size_t                  *buffer_size,
+		char                   **buffer) {
+	switch(format) {
+	case CCS_SERIALIZE_FORMAT_BINARY:
+		CCS_VALIDATE(_ccs_serialize_bin_ccs_objective_space(
+		    (ccs_objective_space_t)object, buffer_size, buffer));
+		break;
+	default:
+		return -CCS_INVALID_VALUE;
+	}
+	return CCS_SUCCESS;
+}
+
 static _ccs_objective_space_ops_t _objective_space_ops =
-    { { {&_ccs_objective_space_del} } };
+    { { {&_ccs_objective_space_del,
+         &_ccs_objective_space_serialize_size,
+         &_ccs_objective_space_serialize} } };
 
 static const UT_icd _hyperparameter_wrapper2_icd = {
 	sizeof(_ccs_hyperparameter_wrapper_t),
@@ -61,14 +187,13 @@ ccs_create_objective_space(const char            *name,
 		return -CCS_OUT_OF_MEMORY;
 	ccs_result_t err;
 	ccs_objective_space_t obj_space = (ccs_objective_space_t)mem;
-	_ccs_object_init(&(obj_space->obj), CCS_OBJECTIVE_SPACE,
+	_ccs_object_init(&(obj_space->obj), CCS_OBJECTIVE_SPACE, user_data,
 		(_ccs_object_ops_t *)&_objective_space_ops);
 	obj_space->data = (struct _ccs_objective_space_data_s*)(mem +
 		sizeof(struct _ccs_objective_space_s));
 	obj_space->data->name = (const char *)(mem +
 		sizeof(struct _ccs_objective_space_s) +
 		sizeof(struct _ccs_objective_space_data_s));
-	obj_space->data->user_data = user_data;
 	utarray_new(obj_space->data->hyperparameters, &_hyperparameter_wrapper2_icd);
 	utarray_new(obj_space->data->objectives, &_objectives_icd);
 	strcpy((char *)(obj_space->data->name), name);
@@ -88,13 +213,6 @@ ccs_objective_space_get_name(ccs_objective_space_t   objective_space,
                              const char            **name_ret) {
 	CCS_CHECK_OBJ(objective_space, CCS_OBJECTIVE_SPACE);
 	return _ccs_context_get_name((ccs_context_t)objective_space, name_ret);
-}
-
-ccs_result_t
-ccs_objective_space_get_user_data(ccs_objective_space_t   objective_space,
-                                  void                  **user_data_ret) {
-	CCS_CHECK_OBJ(objective_space, CCS_OBJECTIVE_SPACE);
-	return _ccs_context_get_user_data((ccs_context_t)objective_space, user_data_ret);
 }
 
 #undef  utarray_oom

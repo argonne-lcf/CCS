@@ -39,7 +39,7 @@ void test_create() {
 	assert( err == CCS_SUCCESS );
 	assert( strcmp(name, "my_features_space") == 0 );
 
-	err = ccs_features_space_get_user_data(features_space, &user_data);
+	err = ccs_object_get_user_data(features_space, &user_data);
 	assert( err == CCS_SUCCESS );
 	assert( user_data == (void *)0xdeadbeef );
 
@@ -195,7 +195,7 @@ void test_features() {
 	assert( err == CCS_SUCCESS );
 	assert( features_space == features_space_ret );
 
-	err = ccs_features_get_user_data(features1, &user_data_ret);
+	err = ccs_object_get_user_data(features1, &user_data_ret);
 	assert( err == CCS_SUCCESS );
 	assert( (void*)0xdeadbeef == user_data_ret );
 
@@ -262,12 +262,159 @@ void test_features() {
 	assert( err == CCS_SUCCESS );
 }
 
+void test_deserialize() {
+	ccs_hyperparameter_t  hyperparameters[3], hyperparameters_new[3];
+	ccs_features_space_t  features_space, features_space_ref;
+	ccs_map_t             map;
+	ccs_result_t          err;
+	char                 *buff;
+	size_t                buff_size;
+	ccs_datum_t           d;
+
+	err = ccs_create_features_space("my_config_space", NULL,
+	                                &features_space);
+	assert( err == CCS_SUCCESS );
+
+	hyperparameters[0] = create_dummy_hyperparameter("param1");
+	hyperparameters[1] = create_dummy_hyperparameter("param2");
+	hyperparameters[2] = create_dummy_hyperparameter("param3");
+
+	err = ccs_features_space_add_hyperparameters(features_space, 3,
+	                                             hyperparameters);
+	assert( err == CCS_SUCCESS );
+
+	check_features(features_space, 3, hyperparameters);
+
+	err = ccs_object_serialize(features_space, CCS_SERIALIZE_FORMAT_BINARY, CCS_SERIALIZE_OPERATION_SIZE, &buff_size);
+	assert( err == CCS_SUCCESS );
+
+	buff = (char *)malloc(buff_size);
+	assert( buff );
+
+	err = ccs_object_serialize(features_space, CCS_SERIALIZE_FORMAT_BINARY, CCS_SERIALIZE_OPERATION_MEMORY, buff_size, buff);
+	assert( err == CCS_SUCCESS );
+
+	for (size_t i = 0; i < 3; i++) {
+		err = ccs_release_object(hyperparameters[i]);
+		assert( err == CCS_SUCCESS );
+	}
+	features_space_ref = features_space;
+	err = ccs_release_object(features_space);
+	assert( err == CCS_SUCCESS );
+
+	err = ccs_object_deserialize((ccs_object_t*)&features_space, CCS_SERIALIZE_FORMAT_BINARY, CCS_SERIALIZE_OPERATION_MEMORY, buff_size, buff, CCS_DESERIALIZE_OPTION_END);
+	assert( err == CCS_SUCCESS );
+
+	err = ccs_features_space_get_hyperparameter_by_name(features_space, "param1", &hyperparameters_new[0]);
+	assert( err == CCS_SUCCESS );
+	err = ccs_features_space_get_hyperparameter_by_name(features_space, "param2", &hyperparameters_new[1]);
+	assert( err == CCS_SUCCESS );
+	err = ccs_features_space_get_hyperparameter_by_name(features_space, "param3", &hyperparameters_new[2]);
+	assert( err == CCS_SUCCESS );
+
+	err = ccs_release_object(features_space);
+	assert( err == CCS_SUCCESS );
+
+	err = ccs_create_map(&map);
+	assert( err == CCS_SUCCESS );
+	err = ccs_object_deserialize((ccs_object_t*)&features_space, CCS_SERIALIZE_FORMAT_BINARY, CCS_SERIALIZE_OPERATION_MEMORY, buff_size, buff,
+	                             CCS_DESERIALIZE_OPTION_HANDLE_MAP, map, CCS_DESERIALIZE_OPTION_END);
+	assert( err == CCS_SUCCESS );
+
+	err = ccs_features_space_get_hyperparameter_by_name(features_space, "param1", &hyperparameters_new[0]);
+	assert( err == CCS_SUCCESS );
+	err = ccs_features_space_get_hyperparameter_by_name(features_space, "param2", &hyperparameters_new[1]);
+	assert( err == CCS_SUCCESS );
+	err = ccs_features_space_get_hyperparameter_by_name(features_space, "param3", &hyperparameters_new[2]);
+	assert( err == CCS_SUCCESS );
+
+	err = ccs_map_get(map, ccs_object(features_space_ref), &d);
+	assert( err == CCS_SUCCESS );
+	assert( d.type == CCS_OBJECT );
+	assert( d.value.o == features_space );
+
+	err = ccs_release_object(map);
+	assert( err == CCS_SUCCESS );
+	err = ccs_release_object(features_space);
+	assert( err == CCS_SUCCESS );
+	free(buff);
+}
+
+void test_features_deserialize() {
+	ccs_hyperparameter_t  hyperparameters[3];
+	ccs_features_space_t  features_space;
+	ccs_features_t        features, features_ref;
+	ccs_datum_t           values[3] =
+		{ ccs_float(-1.0), ccs_float(0.0), ccs_float(1.0) };
+	char                 *buff;
+	size_t                buff_size;
+	ccs_map_t             map;
+	ccs_datum_t           d;
+	ccs_result_t          err;
+	int                   cmp;
+
+	err = ccs_create_features_space("my_config_space", NULL,
+	                                     &features_space);
+	assert( err == CCS_SUCCESS );
+
+	hyperparameters[0] = create_dummy_hyperparameter("param1");
+	hyperparameters[1] = create_dummy_hyperparameter("param2");
+	hyperparameters[2] = create_dummy_hyperparameter("param3");
+	err = ccs_features_space_add_hyperparameters(features_space, 3, hyperparameters);
+	assert( err == CCS_SUCCESS );
+	err = ccs_create_features(features_space, 3, values, (void*)0xdeadbeef, &features_ref);
+	assert( err == CCS_SUCCESS );
+
+	err = ccs_create_map(&map);
+	assert( err == CCS_SUCCESS );
+	err = ccs_object_serialize(features_ref, CCS_SERIALIZE_FORMAT_BINARY, CCS_SERIALIZE_OPERATION_SIZE, &buff_size);
+	assert( err == CCS_SUCCESS );
+	buff = (char *)malloc(buff_size);
+	assert( buff );
+
+	err = ccs_object_serialize(features_ref, CCS_SERIALIZE_FORMAT_BINARY, CCS_SERIALIZE_OPERATION_MEMORY, buff_size, buff);
+	assert( err == CCS_SUCCESS );
+
+	err = ccs_object_deserialize((ccs_object_t*)&features, CCS_SERIALIZE_FORMAT_BINARY, CCS_SERIALIZE_OPERATION_MEMORY, buff_size, buff,
+	                             CCS_DESERIALIZE_OPTION_HANDLE_MAP, map, CCS_DESERIALIZE_OPTION_END);
+	assert( err == -CCS_INVALID_HANDLE );
+
+	d = ccs_object(features_space);
+	d.flags |= CCS_FLAG_ID;
+	err = ccs_map_set(map, d, ccs_object(features_space));
+	assert( err == CCS_SUCCESS );
+
+	err = ccs_object_deserialize((ccs_object_t*)&features, CCS_SERIALIZE_FORMAT_BINARY, CCS_SERIALIZE_OPERATION_MEMORY, buff_size, buff,
+	                             CCS_DESERIALIZE_OPTION_HANDLE_MAP, map, CCS_DESERIALIZE_OPTION_END);
+	assert( err == CCS_SUCCESS );
+
+	err = ccs_features_cmp(features_ref, features, &cmp);
+	assert( err == CCS_SUCCESS );
+	assert( !cmp );
+
+	free(buff);
+	err = ccs_release_object(features_space);
+	assert( err == CCS_SUCCESS );
+	err = ccs_release_object(features_ref);
+	assert( err == CCS_SUCCESS );
+	err = ccs_release_object(features);
+	assert( err == CCS_SUCCESS );
+	err = ccs_release_object(map);
+	assert( err == CCS_SUCCESS );
+	for (size_t i = 0; i < 3; i++) {
+		err = ccs_release_object(hyperparameters[i]);
+		assert( err == CCS_SUCCESS );
+	}
+}
+
 int main() {
 	ccs_init();
 	test_create();
 	test_add();
 	test_add_list();
 	test_features();
+	test_deserialize();
+	test_features_deserialize();
 	ccs_fini();
 	return 0;
 }

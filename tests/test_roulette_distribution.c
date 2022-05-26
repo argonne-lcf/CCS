@@ -9,29 +9,19 @@
 #define NUM_AREAS 4
 #define NUM_SAMPLES 10000
 
-void test_create_roulette_distribution() {
-	ccs_distribution_t      distrib = NULL;
+
+static void compare_distribution(
+		ccs_distribution_t distrib,
+		size_t num_areas, const ccs_float_t areas[]) {
 	ccs_result_t            err = CCS_SUCCESS;
 	int32_t                 refcount;
 	ccs_object_type_t       otype;
 	ccs_distribution_type_t dtype;
 	ccs_numeric_type_t      data_type;
 	ccs_interval_t          interval;
-	const size_t            num_areas = NUM_AREAS;
-	ccs_float_t             areas[NUM_AREAS];
 	size_t                  num_areas_ret;
 	ccs_float_t             areas_ret[NUM_AREAS];
 	const ccs_float_t       epsilon = 1e-15;
-
-	for(size_t i = 0; i < num_areas; i++) {
-		areas[i] = (double)(i+1);
-	}
-
-	err = ccs_create_roulette_distribution(
-		num_areas,
-		areas,
-		&distrib);
-	assert( err == CCS_SUCCESS );
 
 	err = ccs_object_get_type(distrib, &otype);
 	assert( err == CCS_SUCCESS );
@@ -70,6 +60,45 @@ void test_create_roulette_distribution() {
 	err = ccs_object_get_refcount(distrib, &refcount);
 	assert( err == CCS_SUCCESS );
 	assert( refcount == 1 );
+}
+
+void test_create_roulette_distribution() {
+	ccs_distribution_t  distrib = NULL;
+	ccs_result_t        err = CCS_SUCCESS;
+	const size_t        num_areas = NUM_AREAS;
+	ccs_float_t         areas[NUM_AREAS];
+	char               *buff;
+	size_t              buff_size;
+
+	for(size_t i = 0; i < num_areas; i++) {
+		areas[i] = (ccs_float_t)(i+1);
+	}
+
+	err = ccs_create_roulette_distribution(
+		num_areas,
+		areas,
+		&distrib);
+	assert( err == CCS_SUCCESS );
+
+	compare_distribution(distrib, num_areas, areas);
+
+	err = ccs_object_serialize(distrib, CCS_SERIALIZE_FORMAT_BINARY, CCS_SERIALIZE_OPERATION_SIZE, &buff_size);
+	assert( err == CCS_SUCCESS );
+
+	buff = (char *)malloc(buff_size);
+	assert( buff );
+
+	err = ccs_object_serialize(distrib, CCS_SERIALIZE_FORMAT_BINARY, CCS_SERIALIZE_OPERATION_MEMORY, buff_size, buff);
+	assert( err == CCS_SUCCESS );
+
+	err = ccs_release_object(distrib);
+	assert( err == CCS_SUCCESS );
+
+	err = ccs_object_deserialize((ccs_object_t*)&distrib, CCS_SERIALIZE_FORMAT_BINARY, CCS_SERIALIZE_OPERATION_MEMORY, buff_size, buff, CCS_DESERIALIZE_OPTION_END);
+	assert( err == CCS_SUCCESS );
+	free(buff);
+
+	compare_distribution(distrib, num_areas, areas);
 
 	err = ccs_release_object(distrib);
 	assert( err == CCS_SUCCESS );
@@ -133,7 +162,7 @@ void test_roulette_distribution() {
 	        counts[i] = 0;
 	}
 
-	err = ccs_rng_create(&rng);
+	err = ccs_create_rng(&rng);
 	assert( err == CCS_SUCCESS );
 	err = ccs_create_roulette_distribution(
 		num_areas,
@@ -181,7 +210,7 @@ void test_roulette_distribution_zero() {
 	}
 	areas[1] = 0.0;
 
-	err = ccs_rng_create(&rng);
+	err = ccs_create_rng(&rng);
 	assert( err == CCS_SUCCESS );
 	err = ccs_create_roulette_distribution(
 		num_areas,
@@ -233,7 +262,7 @@ void test_roulette_distribution_strided_samples() {
 	        counts2[i] = 0;
 	}
 
-	err = ccs_rng_create(&rng);
+	err = ccs_create_rng(&rng);
 	assert( err == CCS_SUCCESS );
 	err = ccs_create_roulette_distribution(
 		num_areas,
@@ -307,7 +336,7 @@ void test_roulette_distribution_soa_samples() {
 	        counts[i] = 0;
 	}
 
-	err = ccs_rng_create(&rng);
+	err = ccs_create_rng(&rng);
 	assert( err == CCS_SUCCESS );
 	err = ccs_create_roulette_distribution(
 		num_areas,

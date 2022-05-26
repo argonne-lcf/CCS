@@ -19,7 +19,6 @@ struct _ccs_binding_ops_s {
 typedef struct _ccs_binding_ops_s _ccs_binding_ops_t;
 
 struct _ccs_binding_data_s {
-	void          *user_data;
 	ccs_context_t  context;
 	size_t         num_values;
 	ccs_datum_t   *values;
@@ -35,14 +34,6 @@ _ccs_binding_get_context(ccs_binding_t  binding,
                          ccs_context_t *context_ret) {
 	CCS_CHECK_PTR(context_ret);
 	*context_ret = binding->data->context;
-	return CCS_SUCCESS;
-}
-
-static inline ccs_result_t
-_ccs_binding_get_user_data(ccs_binding_t   binding,
-                           void          **user_data_ret) {
-	CCS_CHECK_PTR(user_data_ret);
-	*user_data_ret = binding->data->user_data;
 	return CCS_SUCCESS;
 }
 
@@ -142,6 +133,78 @@ _ccs_binding_cmp(_ccs_binding_data_t  *data,
 	for (size_t i = 0; i < data->num_values; i++) {
 		if ( (*cmp_ret = _datum_cmp(data->values + i, other_data->values + i)) )
 			return CCS_SUCCESS;
+	}
+	return CCS_SUCCESS;
+}
+
+static inline size_t
+_ccs_serialize_bin_size_ccs_binding_data(
+		_ccs_binding_data_t *data) {
+	size_t sz = _ccs_serialize_bin_size_ccs_object(data->context);
+	sz += _ccs_serialize_bin_size_uint64(data->num_values);
+	for (size_t i = 0; i < data->num_values; i++)
+		sz += _ccs_serialize_bin_size_ccs_datum(data->values[i]);
+	return sz;
+}
+
+static inline ccs_result_t
+_ccs_serialize_bin_ccs_binding_data(
+		_ccs_binding_data_t  *data,
+		size_t               *buffer_size,
+		char                **buffer) {
+	CCS_VALIDATE(_ccs_serialize_bin_ccs_object(
+		data->context, buffer_size, buffer));
+	CCS_VALIDATE(_ccs_serialize_bin_uint64(
+		data->num_values, buffer_size, buffer));
+	for (size_t i = 0; i < data->num_values; i++)
+		CCS_VALIDATE(_ccs_serialize_bin_ccs_datum(
+			data->values[i], buffer_size, buffer));
+	return CCS_SUCCESS;
+}
+
+static inline ccs_result_t
+_ccs_serialize_bin_size_ccs_binding(
+		ccs_binding_t   binding,
+		size_t         *cum_size) {
+	*cum_size += _ccs_serialize_bin_size_ccs_object_internal(
+		(_ccs_object_internal_t *)binding);
+	*cum_size += _ccs_serialize_bin_size_ccs_binding_data(
+		binding->data);
+	return CCS_SUCCESS;
+}
+
+static inline ccs_result_t
+_ccs_serialize_bin_ccs_binding(
+		ccs_binding_t   binding,
+		size_t         *buffer_size,
+		char          **buffer) {
+	CCS_VALIDATE(_ccs_serialize_bin_ccs_object_internal(
+		(_ccs_object_internal_t *)binding, buffer_size, buffer));
+	CCS_VALIDATE(_ccs_serialize_bin_ccs_binding_data(
+		binding->data, buffer_size, buffer));
+	return CCS_SUCCESS;
+}
+
+static inline ccs_result_t
+_ccs_deserialize_bin_ccs_binding_data(
+		_ccs_binding_data_t                *data,
+		uint32_t                            version,
+		size_t                             *buffer_size,
+		const char                        **buffer) {
+	(void)version;
+	CCS_VALIDATE(_ccs_deserialize_bin_ccs_object(
+		(ccs_object_t *)&data->context, buffer_size, buffer));
+	uint64_t num_values;
+	CCS_VALIDATE(_ccs_deserialize_bin_uint64(
+		&num_values, buffer_size, buffer));
+	data->num_values = num_values;
+	if (data->num_values) {
+		data->values = (ccs_datum_t *)calloc(num_values, sizeof(ccs_datum_t));
+		if (!data->values)
+			return -CCS_OUT_OF_MEMORY;
+		for (size_t i = 0; i < data->num_values; i++)
+			CCS_VALIDATE(_ccs_deserialize_bin_ccs_datum(
+				data->values + i, buffer_size, buffer));
 	}
 	return CCS_SUCCESS;
 }

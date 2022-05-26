@@ -92,11 +92,3 @@ ccs_context_get_name(ccs_context_t   context,
 		return -CCS_INVALID_OBJECT;
 	return _ccs_context_get_name(context, name_ret);
 }
-
-ccs_result_t
-ccs_context_get_user_data(ccs_context_t   context,
-                          void          **user_data_ret) {
-	if (!context || !context->data)
-		return -CCS_INVALID_OBJECT;
-	return _ccs_context_get_user_data(context, user_data_ret);
-}

@@ -54,19 +54,6 @@ ccs_features_get_features_space(ccs_features_t        features,
                                 ccs_features_space_t *features_space_ret);
 
 /**
- * Get the associated `user_data` pointer.
- * @param[in] features
- * @param[out] user_data_ret a pointer to `void *` variable that will contain
- *                           the value of the `user_data`
- * @return #CCS_SUCCESS on success
- * @return -#CCS_INVALID_OBJECT if \p features is not a valid CCS features
- * @return -#CCS_INVALID_VALUE if \p user_data_ret is NULL
- */
-extern ccs_result_t
-ccs_features_get_user_data(ccs_features_t   features,
-                           void           **user_data_ret);
-
-/**
  * Get the value of the hyperparameter at the given index.
  * @param[in] features
  * @param[in] index index of the hyperparameter in the associated features space

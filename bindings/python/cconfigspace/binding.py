@@ -3,7 +3,6 @@ from .base import Object, Error, ccs_error, _ccs_get_function, ccs_context, ccs_
 from .hyperparameter import Hyperparameter
 
 ccs_binding_get_context = _ccs_get_function("ccs_binding_get_context", [ccs_binding, ct.POINTER(ccs_context)])
-ccs_binding_get_user_data = _ccs_get_function("ccs_binding_get_user_data", [ccs_binding, ct.POINTER(ct.c_void_p)])
 ccs_binding_get_value = _ccs_get_function("ccs_binding_get_value", [ccs_binding, ct.c_size_t, ct.POINTER(ccs_datum)])
 ccs_binding_set_value = _ccs_get_function("ccs_binding_set_value", [ccs_binding, ct.c_size_t, ccs_datum_fix])
 ccs_binding_get_values = _ccs_get_function("ccs_binding_get_values", [ccs_binding, ct.c_size_t, ct.POINTER(ccs_datum), ct.POINTER(ct.c_size_t)])
@@ -12,16 +11,6 @@ ccs_binding_hash = _ccs_get_function("ccs_binding_hash", [ccs_binding, ct.POINTE
 ccs_binding_cmp = _ccs_get_function("ccs_binding_cmp", [ccs_binding, ccs_binding, ct.POINTER(ccs_int)])
 
 class Binding(Object):
-
-  @property
-  def user_data(self):
-    if hasattr(self, "_user_data"):
-      return self._user_data
-    v = ct.c_void_p()
-    res = ccs_binding_get_user_data(self.handle, ct.byref(v))
-    Error.check(res)
-    self._user_data = v
-    return v
 
   @property
   def context(self):
@@ -49,10 +38,7 @@ class Binding(Object):
     elif isinstance(hyperparameter, str):
       hyperparameter = self.context.hyperparameter_index_by_name(hyperparameter)
     pv = ccs_datum(value)
-    v = ccs_datum_fix()
-    v.value = pv._value.i
-    v.type = pv.type
-    v.flags = pv.flags
+    v = ccs_datum_fix(pv)
     res = ccs_binding_set_value(self.handle, hyperparameter, v)
     Error.check(res)
 

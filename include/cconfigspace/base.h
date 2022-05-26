@@ -14,15 +14,6 @@ extern "C" {
 #endif
 
 /**
- * The statement x is likely evaluating to true.
- */
-#define CCS_LIKELY(x)      __builtin_expect(!!(x), 1)
-/**
- * The statement x is likely evaluating to false.
- */
-#define CCS_UNLIKELY(x)    __builtin_expect(!!(x), 0)
-
-/**
  * A CCS floating point type
  */
 typedef double   ccs_float_t;
@@ -70,11 +61,11 @@ extern const ccs_version_t ccs_version;
 /**
  * A macro defining the maximum value of a ccs_int_t.
  */
-#define CCS_INT_MAX LLONG_MAX
+#define CCS_INT_MAX INT64_MAX
 /**
  * A macro defining the minimum value of a ccs_int_t.
  */
-#define CCS_INT_MIN LLONG_MIN
+#define CCS_INT_MIN INT64_MIN
 /**
  * A macro defining the (positive) infinity value of a ccs_float_t.
  */
@@ -140,6 +131,10 @@ typedef struct _ccs_tuner_s               *ccs_tuner_t;
  * An opaque type defining a CCS features tuner.
  */
 typedef struct _ccs_features_tuner_s      *ccs_features_tuner_t;
+/**
+ * An opaque type defining a CCS key-value store.
+ */
+typedef struct _ccs_map_s                 *ccs_map_t;
 
 /**
  * The different possible return codes of a CCS function.
@@ -192,6 +187,18 @@ enum ccs_error_e {
 	CCS_INVALID_FEATURES,
 	/** The provided features tuner is invalid */
 	CCS_INVALID_FEATURES_TUNER,
+	/** The provided file path is invalid */
+	CCS_INVALID_FILE_PATH,
+	/** The provided buffer or file is too short */
+	CCS_NOT_ENOUGH_DATA,
+	/** The handle was a duplicate */
+	CCS_HANDLE_DUPLICATE,
+	/** The handle was not found */
+	CCS_INVALID_HANDLE,
+	/** A system error occured */
+	CCS_SYSTEM_ERROR,
+	/** Try again */
+	CCS_AGAIN,
 	/** Guard */
 	CCS_ERROR_MAX,
 	/** Try forcing 32 bits value for bindings */
@@ -225,6 +232,7 @@ enum ccs_object_type_e {
 	CCS_FEATURES,            /*!< A features */
 	CCS_FEATURES_EVALUATION, /*!< An evaluation of a configuration given specific features */
 	CCS_FEATURES_TUNER,      /*!< A features aware tuner */
+	CCS_MAP,                 /*!< A key value store */
 	CCS_OBJECT_TYPE_MAX,     /*!< Guard */
 	/** Try forcing 32 bits value for bindings */
 	CCS_OBJECT_TYPE_FORCE_32BIT = INT32_MAX
@@ -262,13 +270,20 @@ typedef enum ccs_data_type_e ccs_data_type_t;
 enum ccs_datum_flag_e {
 	/** Empty default flags */
 	CCS_FLAG_DEFAULT = 0,
-	/** The value given to CCS is a pointer and is not guaranteed to stay
+	/**
+	 * The value given to CCS is a pointer and is not guaranteed to stay
 	 * allocated
 	 */
 	CCS_FLAG_TRANSIENT = (1 << 0),
-	/** The value returned by CCS is a pointer and is not associated to a
-	 CCS object and needs to be freed by the user (unused). */
+	/**
+	 * The value returned by CCS is a pointer and is not associated to a
+	 * CCS object and needs to be freed by the user (unused).
+	 */
 	CCS_FLAG_UNPOOLED = (1 << 1),
+	/**
+	 * The object handle is just an identifier.
+	 */
+	CCS_FLAG_ID = (1 << 2),
 	/** Try forcing 32 bits value for bindings */
 	CCS_DATUM_FLAG_FORCE_32BIT = INT32_MAX
 };
@@ -547,6 +562,18 @@ extern ccs_result_t
 ccs_fini();
 
 /**
+ * Return the string corresponding to the provided CCS error.
+ * @param[in] error the CCS error
+ * @param[out] name a pointer to a variable that will contain the string
+ *             representation of the error name.
+ * @return #CCS_SUCCESS on success
+ * @return -#CCS_INVALID_VALUE if \p name is NULL or if \p error is not a valid
+ *                             CCS error code
+ */
+extern ccs_result_t
+ccs_get_error_name(ccs_error_t error, const char **name);
+
+/**
  * Query the library API version.
  * @return the library API version
  */
@@ -577,8 +604,8 @@ ccs_release_object(ccs_object_t object);
 /**
  * Get a CCS object type.
  * @param[in] object a CCS object
- * @param[out] type_ret a pointer to a ccs_object_type_t variable that will contain
- *                 the type
+ * @param[out] type_ret a pointer to a ccs_object_type_t variable that will
+ *                      contain the type
  * @return #CCS_SUCCESS on success
  * @return -#CCS_INVALID_OBJECT if the object is found to be invalid
  * @return -#CCS_INVALID_VALUE if type_ret is NULL
@@ -590,8 +617,8 @@ ccs_object_get_type(ccs_object_t       object,
 /**
  * Get an object internal reference counting.
  * @param[in] object a CCS object
- * @param[out] refcount_ret a pointer to a int32_t variable that will contain the
- *                     refcount
+ * @param[out] refcount_ret a pointer to a int32_t variable that will contain
+ *                          the refcount
  * @return #CCS_SUCCESS on success
  * @return -#CCS_INVALID_OBJECT if \p object is found to be invalid
  * @return -#CCS_INVALID_VALUE if \p refcount_ret is NULL
@@ -615,11 +642,158 @@ typedef void (*ccs_object_release_callback_t)(ccs_object_t object, void *user_da
  * @return -#CCS_INVALID_VALUE if \p callback is NULL
  */
 extern ccs_result_t
-ccs_object_set_destroy_callback(ccs_object_t  object,
-                                void (*callback)(
-                                  ccs_object_t object,
-                                  void *user_data),
-                                void *user_data);
+ccs_object_set_destroy_callback(ccs_object_t                   object,
+                                ccs_object_release_callback_t  callback,
+                                void                          *user_data);
+
+/**
+ * Set the associated `user_data` pointer of a CCS object.
+ * @param[in] object a CCS object
+ * @param[in] user_data a pointer to the user data to attach to this object
+ * @return #CCS_SUCCESS on success
+ * @return -#CCS_INVALID_OBJECT if \p object is found to be invalid
+ */
+extern ccs_result_t
+ccs_object_set_user_data(ccs_object_t  object,
+                         void         *user_data);
+
+/**
+ * Get the associated `user_data` pointer of a CCS object.
+ * @param[in] object a CCS object
+ * @param[out] user_data_ret a pointer to a `void *` variable that will contain
+ *                           the value of the `user_data`
+ * @return #CCS_SUCCESS on success
+ * @return -#CCS_INVALID_OBJECT if \p object is found to be invalid
+ * @return -#CCS_INVALID_VALUE if \p user_data_ret is NULL
+ */
+extern ccs_result_t
+ccs_object_get_user_data(ccs_object_t   object,
+                         void         **user_data_ret);
+/**
+ * The different serialization formats supported by CCS.
+ */
+enum ccs_serialize_format_e {
+	/** A binary format that should be compact and performant. */
+	CCS_SERIALIZE_FORMAT_BINARY,
+	/** Guard */
+	CCS_SERIALIZE_FORMAT_MAX,
+	/** Try forcing 32 bits value for bindings */
+	CCS_SERIALIZE_FORMAT_FORCE_32BIT = INT32_MAX
+};
+typedef enum ccs_serialize_format_e ccs_serialize_format_t;
+
+/**
+ * The different serialization operations supported by CCS.
+ */
+enum ccs_serialize_operation_e {
+	/** Query the memory footprint of the serialized object */
+	CCS_SERIALIZE_OPERATION_SIZE,
+	/** Serialize the object in a user provided memory buffer */
+	CCS_SERIALIZE_OPERATION_MEMORY,
+	/** Serialize the object in a file at the given path */
+	CCS_SERIALIZE_OPERATION_FILE,
+	/** Serialize the ojbect in the given file descriptor */
+	CCS_SERIALIZE_OPERATION_FILE_DESCRIPTOR,
+	/** Guard */
+	CCS_SERIALIZE_OPERATION_MAX,
+	/** Try forcing 32 bits value for bindings */
+	CCS_SERIALIZE_OPERATION_FORCE_32BIT = INT32_MAX
+};
+typedef enum ccs_serialize_operation_e ccs_serialize_operation_t;
+
+/**
+ * The different serialization options.
+ */
+enum ccs_serialize_option_e {
+	/** Option list terminator */
+	CCS_SERIALIZE_OPTION_END = 0,
+	/** The file descriptor operation is non-blocking. The next parameter is
+         *  a pointer to a void * variable (initialized to NULL) that will hold
+         *  the state of the serialization in order to restart. The function
+         *  performing the operation will return -#CCS_AGAIN if the operation has
+         *  not completed. The state is managed internally. */
+	CCS_SERIALIZE_OPTION_NON_BLOCKING,
+	/** Guard */
+	CCS_SERIALIZE_OPTION_MAX,
+	/** Try forcing 32 bits value for bindings */
+	CCS_SERIALIZE_OPTION_FORCE_32BIT = INT32_MAX
+};
+typedef enum ccs_serialize_option_e ccs_serialize_option_t;
+
+/**
+ * The different deserialization options.
+ */
+enum ccs_deserialize_option_e {
+	/** Option list terminator */
+	CCS_DESERIALIZE_OPTION_END = 0,
+	/** The next parameter is a ccs_handle_map_t object that must contain
+         *  the mappings required to deserialize an object (usually bindings or
+         *  expressions). I given, will also add a mapping between the object
+         *  original handle and its current handle. */
+	CCS_DESERIALIZE_OPTION_HANDLE_MAP,
+	/** The next parameter is a pointer to a ccs object vector struct, for
+         *  user defined tuners */
+	CCS_DESERIALIZE_OPTION_VECTOR,
+	/** The next parameter is a pointer to a ccs object internal data, for
+         *  user defined tuners */
+	CCS_DESERIALIZE_OPTION_DATA,
+	/** The file descriptor operation is non-blocking. The next parameter is
+         *  a pointer to a void * variable (initialized to NULL) that will hold
+         *  the state of the serialization in order to restart. The function
+         *  performing the operation will return -#CCS_AGAIN if the operation has
+         *  not completed. The state is managed internally. */
+	CCS_DESERIALIZE_OPTION_NON_BLOCKING,
+	/** Guard */
+	CCS_DESERIALIZE_OPTION_MAX,
+	/** Try forcing 32 bits value for bindings */
+	CCS_DESERIALIZE_OPTION_FORCE_32BIT = INT32_MAX
+};
+typedef enum ccs_deserialize_option_e ccs_deserialize_option_t;
+
+/**
+ * Perform a serialization operation on a CCS object.
+ * @param[in] object a CCS object
+ * @param[in] format the requested serialization format
+ * @param[in] operation the requested serialization operation
+ * @param[in,out] ... list of parameters that depend on the selected \p
+ *                    operation, followed by a CCS_SERIALIZE_OPTION_END
+ *                    terminated list of options
+ * @return #CCS_SUCCESS on success
+ * @return -#CCS_INVALID_OBJECT if \p object is found to be invalid
+ * @return -#CCS_INVALID_VALUE if parameters and option combination are
+ *                             unsupported
+ * @return -#CCS_OUT_OF_MEMORY if required memory could not be allocated
+ * @return -#CCS_NOT_ENOUGH_DATA in case where the provided buffer is too small
+ *                               for the requested operation
+ */
+extern ccs_result_t
+ccs_object_serialize(ccs_object_t              object,
+                     ccs_serialize_format_t    format,
+                     ccs_serialize_operation_t operation,
+                     ...);
+
+/**
+ * Perform a deserialization operation and returns a new CCS object.
+ * @param[out] object_ret a pointer to the variable that will hold the
+ *                        newly created CCS object
+ * @param[in] format the requested serialization format
+ * @param[in] operation the requested serialization operation
+ * @param[in,out] ... list of parameters that depend on the selected \p
+ *                    operation, followed by a CCS_SERIALIZE_OPTION_END
+ *                    terminated list of options
+ * @return #CCS_SUCCESS on success
+ * @return -#CCS_INVALID_OBJECT if \p object is found to be invalid
+ * @return -#CCS_INVALID_VALUE if parameters and option combination are
+ *                             unsupported
+ * @return -#CCS_OUT_OF_MEMORY if required memory could not be allocated
+ * @return -#CCS_NOT_ENOUGH_DATA in case where the provided buffer is too small
+ *                               for the requested operation
+ */
+extern ccs_result_t
+ccs_object_deserialize(ccs_object_t              *object_ret,
+                       ccs_serialize_format_t     format,
+                       ccs_serialize_operation_t  operation,
+                       ...);
 
 #ifdef __cplusplus
 }

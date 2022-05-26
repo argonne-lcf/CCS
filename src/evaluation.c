@@ -1,5 +1,6 @@
 #include "cconfigspace_internal.h"
 #include "evaluation_internal.h"
+#include "configuration_internal.h"
 #include <string.h>
 
 static inline _ccs_evaluation_ops_t *
@@ -12,6 +13,87 @@ _ccs_evaluation_del(ccs_object_t object) {
 	ccs_evaluation_t evaluation = (ccs_evaluation_t)object;
 	ccs_release_object(evaluation->data->objective_space);
 	ccs_release_object(evaluation->data->configuration);
+	return CCS_SUCCESS;
+}
+
+static inline ccs_result_t
+_ccs_serialize_bin_size_ccs_evaluation_data(
+		_ccs_evaluation_data_t *data,
+		size_t                 *cum_size) {
+	*cum_size += _ccs_serialize_bin_size_ccs_binding_data((_ccs_binding_data_t *)data);
+	CCS_VALIDATE(data->configuration->obj.ops->serialize_size(
+		data->configuration, CCS_SERIALIZE_FORMAT_BINARY, cum_size));
+	*cum_size += _ccs_serialize_bin_size_ccs_result(data->error);
+	return CCS_SUCCESS;
+}
+
+static inline ccs_result_t
+_ccs_serialize_bin_ccs_evaluation_data(
+		_ccs_evaluation_data_t  *data,
+		size_t                  *buffer_size,
+		char                   **buffer) {
+	CCS_VALIDATE(_ccs_serialize_bin_ccs_binding_data(
+		(_ccs_binding_data_t *)data, buffer_size, buffer));
+	CCS_VALIDATE(data->configuration->obj.ops->serialize(
+		data->configuration, CCS_SERIALIZE_FORMAT_BINARY, buffer_size, buffer));
+	CCS_VALIDATE(_ccs_serialize_bin_ccs_result(
+		data->error, buffer_size, buffer));
+	return CCS_SUCCESS;
+}
+
+static inline ccs_result_t
+_ccs_serialize_bin_size_ccs_evaluation(
+		ccs_evaluation_t  evaluation,
+		size_t           *cum_size) {
+	*cum_size += _ccs_serialize_bin_size_ccs_object_internal(
+		(_ccs_object_internal_t *)evaluation);
+	CCS_VALIDATE(_ccs_serialize_bin_size_ccs_evaluation_data(
+		evaluation->data, cum_size));
+	return CCS_SUCCESS;
+}
+
+static inline ccs_result_t
+_ccs_serialize_bin_ccs_evaluation(
+		ccs_evaluation_t   evaluation,
+		size_t            *buffer_size,
+		char             **buffer) {
+	CCS_VALIDATE(_ccs_serialize_bin_ccs_object_internal(
+		(_ccs_object_internal_t *)evaluation, buffer_size, buffer));
+	CCS_VALIDATE(_ccs_serialize_bin_ccs_evaluation_data(
+		evaluation->data, buffer_size, buffer));
+	return CCS_SUCCESS;
+}
+
+static ccs_result_t
+_ccs_evaluation_serialize_size(
+		ccs_object_t            object,
+		ccs_serialize_format_t  format,
+		size_t                 *cum_size) {
+	switch(format) {
+	case CCS_SERIALIZE_FORMAT_BINARY:
+		CCS_VALIDATE(_ccs_serialize_bin_size_ccs_evaluation(
+			(ccs_evaluation_t)object, cum_size));
+		break;
+	default:
+		return -CCS_INVALID_VALUE;
+	}
+	return CCS_SUCCESS;
+}
+
+static ccs_result_t
+_ccs_evaluation_serialize(
+		ccs_object_t             object,
+		ccs_serialize_format_t   format,
+		size_t                  *buffer_size,
+		char                   **buffer) {
+	switch(format) {
+	case CCS_SERIALIZE_FORMAT_BINARY:
+		CCS_VALIDATE(_ccs_serialize_bin_ccs_evaluation(
+			(ccs_evaluation_t)object, buffer_size, buffer));
+		break;
+	default:
+		return -CCS_INVALID_VALUE;
+	}
 	return CCS_SUCCESS;
 }
 
@@ -44,7 +126,9 @@ _ccs_evaluation_cmp(_ccs_evaluation_data_t *data,
 }
 
 static _ccs_evaluation_ops_t _evaluation_ops =
-    { {&_ccs_evaluation_del},
+    { { &_ccs_evaluation_del,
+        &_ccs_evaluation_serialize_size,
+	&_ccs_evaluation_serialize },
       &_ccs_evaluation_hash,
       &_ccs_evaluation_cmp };
 
@@ -74,9 +158,8 @@ ccs_create_evaluation(ccs_objective_space_t  objective_space,
 	CCS_VALIDATE_ERR_GOTO(err, ccs_retain_object(configuration), erros);
 	ccs_evaluation_t eval;
 	eval = (ccs_evaluation_t)mem;
-	_ccs_object_init(&(eval->obj), CCS_EVALUATION, (_ccs_object_ops_t*)&_evaluation_ops);
+	_ccs_object_init(&(eval->obj), CCS_EVALUATION, user_data, (_ccs_object_ops_t*)&_evaluation_ops);
 	eval->data = (struct _ccs_evaluation_data_s*)(mem + sizeof(struct _ccs_evaluation_s));
-	eval->data->user_data = user_data;
 	eval->data->num_values = num;
 	eval->data->objective_space = objective_space;
 	eval->data->configuration = configuration;
@@ -115,14 +198,6 @@ ccs_evaluation_get_configuration(ccs_evaluation_t     evaluation,
 	CCS_CHECK_PTR(configuration_ret);
 	*configuration_ret = evaluation->data->configuration;
 	return CCS_SUCCESS;
-}
-
-ccs_result_t
-ccs_evaluation_get_user_data(ccs_evaluation_t   evaluation,
-                             void             **user_data_ret) {
-	CCS_CHECK_OBJ(evaluation, CCS_EVALUATION);
-	return _ccs_binding_get_user_data(
-		(ccs_binding_t)evaluation, user_data_ret);
 }
 
 ccs_result_t
@@ -246,8 +321,8 @@ ccs_result_t
 ccs_evaluation_cmp(ccs_evaluation_t  evaluation,
                    ccs_evaluation_t  other_evaluation,
                    int              *cmp_ret) {
-	CCS_CHECK_OBJ(evaluation, CCS_CONFIGURATION);
-	CCS_CHECK_OBJ(other_evaluation, CCS_CONFIGURATION);
+	CCS_CHECK_OBJ(evaluation, CCS_EVALUATION);
+	CCS_CHECK_OBJ(other_evaluation, CCS_EVALUATION);
 	CCS_CHECK_PTR(cmp_ret);
 	if (evaluation == other_evaluation) {
 		*cmp_ret = 0;

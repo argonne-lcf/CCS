@@ -49,21 +49,6 @@ ccs_configuration_space_get_name(
 	const char                **name_ret);
 
 /**
- * Get the associated `user_data` pointer of a configuration space.
- * @param[in] configuration_space
- * @param[out] user_data_ret a pointer to `void *` variable that will contain
- *                           the value of the `user_data`
- * @return #CCS_SUCCESS on success
- * @return -#CCS_INVALID_OBJECT if \p configuration_space is not a valid CCS
- *                              configuration space
- * @return -#CCS_INVALID_VALUE if \p user_data_ret is NULL
- */
-extern ccs_result_t
-ccs_configuration_space_get_user_data(
-	ccs_configuration_space_t   configuration_space,
-	void                      **user_data_ret);
-
-/**
  * Set (replace) the internal rng of the configuration space.
  * @param[in,out] configuration_space
  * @param[in] rng the rng to use in the configuration space

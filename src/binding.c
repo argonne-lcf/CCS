@@ -15,14 +15,6 @@ ccs_binding_get_context(ccs_binding_t  binding,
 }
 
 ccs_result_t
-ccs_binding_get_user_data(ccs_binding_t   binding,
-                          void          **user_data_ret) {
-	if (!binding || !binding->data)
-		return -CCS_INVALID_OBJECT;
-	return _ccs_binding_get_user_data(binding, user_data_ret);
-}
-
-ccs_result_t
 ccs_binding_get_value(ccs_binding_t  binding,
                       size_t         index,
                       ccs_datum_t   *value_ret) {

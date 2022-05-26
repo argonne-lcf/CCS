@@ -99,21 +99,6 @@ ccs_features_evaluation_get_features(
 		ccs_features_t            *features_ret);
 
 /**
- * Get the user data pointer associated with a features evaluation.
- * @param[in] features_evaluation
- * @param[out] user_data_ret a pointer to `void *` variable that will contain
- *                           the value of the `user_data`
- * @return #CCS_SUCCESS on success
- * @return -#CCS_INVALID_OBJECT if \p features_evaluation is not a valid CCS
- *                              features evaluation
- * @return -#CCS_INVALID_VALUE if \p user_data_ret is NULL
- */
-extern ccs_result_t
-ccs_features_evaluation_get_user_data(
-	ccs_features_evaluation_t   features_evaluation,
-	void                      **user_data_ret);
-
-/**
  * Get the error code associated with a features evaluation.
  * @param[in] features_evaluation
  * @param[out] error_ret a pointer to the variable that will contain the

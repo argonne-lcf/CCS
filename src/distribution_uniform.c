@@ -18,8 +18,109 @@ struct _ccs_distribution_uniform_data_s {
 typedef struct _ccs_distribution_uniform_data_s _ccs_distribution_uniform_data_t;
 
 static ccs_result_t
-_ccs_distribution_del(ccs_object_t o) {
+_ccs_distribution_uniform_del(ccs_object_t o) {
 	(void)o;
+	return CCS_SUCCESS;
+}
+
+static inline size_t
+_ccs_serialize_bin_size_ccs_distribution_uniform_data(
+		_ccs_distribution_uniform_data_t *data) {
+	return _ccs_serialize_bin_size_ccs_distribution_common_data(&data->common_data) +
+	       _ccs_serialize_bin_size_ccs_numeric_type(data->common_data.data_types[0]) +
+	       _ccs_serialize_bin_size_ccs_scale_type(data->scale_type) +
+	       (data->common_data.data_types[0] == CCS_NUM_FLOAT ?
+		_ccs_serialize_bin_size_ccs_float(data->lower.f) +
+		_ccs_serialize_bin_size_ccs_float(data->upper.f) +
+		_ccs_serialize_bin_size_ccs_float(data->quantization.f) :
+		_ccs_serialize_bin_size_ccs_int(data->lower.i) +
+		_ccs_serialize_bin_size_ccs_int(data->upper.i) +
+		_ccs_serialize_bin_size_ccs_int(data->quantization.i));
+}
+
+static inline ccs_result_t
+_ccs_serialize_bin_ccs_distribution_uniform_data(
+		_ccs_distribution_uniform_data_t  *data,
+		size_t                            *buffer_size,
+		char                             **buffer) {
+	CCS_VALIDATE(_ccs_serialize_bin_ccs_distribution_common_data(
+		&data->common_data, buffer_size, buffer));
+	CCS_VALIDATE(_ccs_serialize_bin_ccs_numeric_type(
+		data->common_data.data_types[0], buffer_size, buffer));
+	CCS_VALIDATE(_ccs_serialize_bin_ccs_scale_type(
+		data->scale_type, buffer_size, buffer));
+	if (data->common_data.data_types[0] == CCS_NUM_FLOAT) {
+		CCS_VALIDATE(_ccs_serialize_bin_ccs_float(
+			data->lower.f, buffer_size, buffer));
+		CCS_VALIDATE(_ccs_serialize_bin_ccs_float(
+			data->upper.f, buffer_size, buffer));
+		CCS_VALIDATE(_ccs_serialize_bin_ccs_float(
+			data->quantization.f, buffer_size, buffer));
+	} else {
+		CCS_VALIDATE(_ccs_serialize_bin_ccs_int(
+			data->lower.i, buffer_size, buffer));
+		CCS_VALIDATE(_ccs_serialize_bin_ccs_int(
+			data->upper.i, buffer_size, buffer));
+		CCS_VALIDATE(_ccs_serialize_bin_ccs_int(
+			data->quantization.i, buffer_size, buffer));
+	}
+	return CCS_SUCCESS;
+}
+
+static inline size_t
+_ccs_serialize_bin_size_ccs_distribution_uniform(
+		ccs_distribution_t distribution) {
+	_ccs_distribution_uniform_data_t *data =
+		(_ccs_distribution_uniform_data_t *)(distribution->data);
+	return	_ccs_serialize_bin_size_ccs_object_internal(
+			(_ccs_object_internal_t *)distribution) +
+	        _ccs_serialize_bin_size_ccs_distribution_uniform_data(data);
+}
+
+static inline ccs_result_t
+_ccs_serialize_bin_ccs_distribution_uniform(
+		ccs_distribution_t   distribution,
+		size_t              *buffer_size,
+		char               **buffer) {
+	_ccs_distribution_uniform_data_t *data =
+		(_ccs_distribution_uniform_data_t *)(distribution->data);
+	CCS_VALIDATE(_ccs_serialize_bin_ccs_object_internal(
+		(_ccs_object_internal_t *)distribution, buffer_size, buffer));
+	CCS_VALIDATE(_ccs_serialize_bin_ccs_distribution_uniform_data(
+		data, buffer_size, buffer));
+	return CCS_SUCCESS;
+}
+
+static ccs_result_t
+_ccs_distribution_uniform_serialize_size(
+		ccs_object_t            object,
+		ccs_serialize_format_t  format,
+		size_t                 *cum_size) {
+	switch(format) {
+	case CCS_SERIALIZE_FORMAT_BINARY:
+		*cum_size += _ccs_serialize_bin_size_ccs_distribution_uniform(
+			(ccs_distribution_t)object);
+		break;
+	default:
+		return -CCS_INVALID_VALUE;
+	}
+	return CCS_SUCCESS;
+}
+
+static ccs_result_t
+_ccs_distribution_uniform_serialize(
+		ccs_object_t             object,
+		ccs_serialize_format_t   format,
+		size_t                  *buffer_size,
+		char                   **buffer) {
+	switch(format) {
+	case CCS_SERIALIZE_FORMAT_BINARY:
+		CCS_VALIDATE(_ccs_serialize_bin_ccs_distribution_uniform(
+		    (ccs_distribution_t)object, buffer_size, buffer));
+		break;
+	default:
+		return -CCS_INVALID_VALUE;
+	}
 	return CCS_SUCCESS;
 }
 
@@ -47,7 +148,9 @@ _ccs_distribution_uniform_soa_samples(_ccs_distribution_data_t  *data,
                                       ccs_numeric_t            **values);
 
 static _ccs_distribution_ops_t _ccs_distribution_uniform_ops = {
-	{ &_ccs_distribution_del },
+	{ &_ccs_distribution_uniform_del,
+	  &_ccs_distribution_uniform_serialize_size,
+	  &_ccs_distribution_uniform_serialize },
 	&_ccs_distribution_uniform_samples,
 	&_ccs_distribution_uniform_get_bounds,
 	&_ccs_distribution_uniform_strided_samples,
@@ -230,7 +333,7 @@ ccs_create_uniform_distribution(ccs_numeric_type_t  data_type,
 	if (!mem)
 		return -CCS_OUT_OF_MEMORY;
 	ccs_distribution_t distrib = (ccs_distribution_t)mem;
-	_ccs_object_init(&(distrib->obj), CCS_DISTRIBUTION, (_ccs_object_ops_t *)&_ccs_distribution_uniform_ops);
+	_ccs_object_init(&(distrib->obj), CCS_DISTRIBUTION, NULL, (_ccs_object_ops_t *)&_ccs_distribution_uniform_ops);
         _ccs_distribution_uniform_data_t * distrib_data = (_ccs_distribution_uniform_data_t *)(mem + sizeof(struct _ccs_distribution_s));
 	distrib_data->common_data.data_types    = (ccs_numeric_type_t *)(mem + sizeof(struct _ccs_distribution_s) + sizeof(_ccs_distribution_uniform_data_t));
 	distrib_data->common_data.type          = CCS_UNIFORM;

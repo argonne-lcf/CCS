@@ -1,5 +1,6 @@
 #include "cconfigspace_internal.h"
 #include "features_tuner_internal.h"
+#include "features_evaluation_internal.h"
 
 #include "utarray.h"
 
@@ -25,6 +26,106 @@ _ccs_features_tuner_random_del(ccs_object_t o) {
 	utarray_free(d->history);
 	utarray_free(d->optimums);
 	utarray_free(d->old_optimums);
+	return CCS_SUCCESS;
+}
+
+static inline ccs_result_t
+_ccs_serialize_bin_size_ccs_random_features_tuner_data(
+		_ccs_random_features_tuner_data_t *data,
+		size_t                            *cum_size) {
+	ccs_features_evaluation_t *e = NULL;
+	CCS_VALIDATE(_ccs_serialize_bin_size_ccs_features_tuner_common_data(
+		&data->common_data, cum_size));
+	*cum_size += _ccs_serialize_bin_size_uint64(
+		utarray_len(data->history));
+	*cum_size += _ccs_serialize_bin_size_uint64(
+		utarray_len(data->optimums));
+	while ( (e = (ccs_features_evaluation_t *)utarray_next(data->history, e)) )
+		CCS_VALIDATE((*e)->obj.ops->serialize_size(
+			*e, CCS_SERIALIZE_FORMAT_BINARY, cum_size));
+	e = NULL;
+	while ( (e = (ccs_features_evaluation_t *)utarray_next(data->optimums, e)) )
+		*cum_size += _ccs_serialize_bin_size_ccs_object(*e);
+	return CCS_SUCCESS;
+}
+
+static inline ccs_result_t
+_ccs_serialize_bin_ccs_random_features_tuner_data(
+		_ccs_random_features_tuner_data_t  *data,
+		size_t                             *buffer_size,
+		char                              **buffer) {
+	ccs_features_evaluation_t *e = NULL;
+	CCS_VALIDATE(_ccs_serialize_bin_ccs_features_tuner_common_data(
+		&data->common_data, buffer_size, buffer));
+	CCS_VALIDATE(_ccs_serialize_bin_uint64(
+		utarray_len(data->history), buffer_size, buffer));
+	CCS_VALIDATE(_ccs_serialize_bin_uint64(
+		utarray_len(data->optimums), buffer_size, buffer));
+	while ( (e = (ccs_features_evaluation_t *)utarray_next(data->history, e)) )
+		CCS_VALIDATE((*e)->obj.ops->serialize(
+			*e, CCS_SERIALIZE_FORMAT_BINARY, buffer_size, buffer));
+	e = NULL;
+	while ( (e = (ccs_features_evaluation_t *)utarray_next(data->optimums, e)) )
+		CCS_VALIDATE(_ccs_serialize_bin_ccs_object(*e, buffer_size, buffer));
+	return CCS_SUCCESS;
+}
+
+static inline ccs_result_t
+_ccs_serialize_bin_size_ccs_random_features_tuner(
+		ccs_features_tuner_t  features_tuner,
+		size_t               *cum_size) {
+	_ccs_random_features_tuner_data_t *data =
+		(_ccs_random_features_tuner_data_t *)(features_tuner->data);
+	*cum_size += _ccs_serialize_bin_size_ccs_object_internal(
+		(_ccs_object_internal_t *)features_tuner);
+	CCS_VALIDATE(_ccs_serialize_bin_size_ccs_random_features_tuner_data(data, cum_size));
+	return CCS_SUCCESS;
+}
+
+static inline ccs_result_t
+_ccs_serialize_bin_ccs_random_features_tuner(
+		ccs_features_tuner_t   features_tuner,
+		size_t                *buffer_size,
+		char                 **buffer) {
+	_ccs_random_features_tuner_data_t *data =
+		(_ccs_random_features_tuner_data_t *)(features_tuner->data);
+	CCS_VALIDATE(_ccs_serialize_bin_ccs_object_internal(
+		(_ccs_object_internal_t *)features_tuner, buffer_size, buffer));
+	CCS_VALIDATE(_ccs_serialize_bin_ccs_random_features_tuner_data(
+		data, buffer_size, buffer));
+	return CCS_SUCCESS;
+}
+
+static ccs_result_t
+_ccs_random_features_tuner_serialize_size(
+		ccs_object_t            object,
+		ccs_serialize_format_t  format,
+		size_t                 *cum_size) {
+	switch(format) {
+	case CCS_SERIALIZE_FORMAT_BINARY:
+		CCS_VALIDATE(_ccs_serialize_bin_size_ccs_random_features_tuner(
+			(ccs_features_tuner_t)object, cum_size));
+		break;
+	default:
+		return -CCS_INVALID_VALUE;
+	}
+	return CCS_SUCCESS;
+}
+
+static ccs_result_t
+_ccs_random_features_tuner_serialize(
+		ccs_object_t             object,
+		ccs_serialize_format_t   format,
+		size_t                  *buffer_size,
+		char                   **buffer) {
+	switch(format) {
+	case CCS_SERIALIZE_FORMAT_BINARY:
+		CCS_VALIDATE(_ccs_serialize_bin_ccs_random_features_tuner(
+			(ccs_features_tuner_t)object, buffer_size, buffer));
+		break;
+	default:
+		return -CCS_INVALID_VALUE;
+	}
 	return CCS_SUCCESS;
 }
 
@@ -249,7 +350,9 @@ _ccs_features_tuner_random_suggest(_ccs_features_tuner_data_t *data,
 }
 
 static _ccs_features_tuner_ops_t _ccs_features_tuner_random_ops = {
-	{ &_ccs_features_tuner_random_del },
+	{ &_ccs_features_tuner_random_del,
+	  &_ccs_random_features_tuner_serialize_size,
+	  &_ccs_random_features_tuner_serialize },
 	&_ccs_features_tuner_random_ask,
 	&_ccs_features_tuner_random_tell,
 	&_ccs_features_tuner_random_get_optimums,
@@ -296,13 +399,12 @@ ccs_create_random_features_tuner(const char                *name,
 	CCS_VALIDATE_ERR_GOTO(err, ccs_retain_object(features_space), erros);
 
 	tun = (ccs_features_tuner_t)mem;
-	_ccs_object_init(&(tun->obj), CCS_FEATURES_TUNER, (_ccs_object_ops_t *)&_ccs_features_tuner_random_ops);
+	_ccs_object_init(&(tun->obj), CCS_FEATURES_TUNER, user_data, (_ccs_object_ops_t *)&_ccs_features_tuner_random_ops);
 	tun->data = (struct _ccs_features_tuner_data_s *)(mem + sizeof(struct _ccs_features_tuner_s));
 	data = (_ccs_random_features_tuner_data_t *)tun->data;
 	data->common_data.type = CCS_FEATURES_TUNER_RANDOM;
 	data->common_data.name = (const char *)(mem + sizeof(struct _ccs_features_tuner_s) +
                                                       sizeof(struct _ccs_random_features_tuner_data_s));
-	data->common_data.user_data = user_data;
 	data->common_data.configuration_space = configuration_space;
 	data->common_data.objective_space = objective_space;
 	data->common_data.features_space = features_space;

@@ -39,7 +39,7 @@ void test_create() {
 	assert( err == CCS_SUCCESS );
 	assert( strcmp(name, "my_config_space") == 0 );
 
-	err = ccs_configuration_space_get_user_data(configuration_space, &user_data);
+	err = ccs_object_get_user_data(configuration_space, &user_data);
 	assert( err == CCS_SUCCESS );
 	assert( user_data == (void *)0xdeadbeef );
 
@@ -367,6 +367,244 @@ void test_set_distribution() {
 	assert( err == CCS_SUCCESS );
 }
 
+ccs_hyperparameter_t create_numerical(const char * name) {
+	ccs_hyperparameter_t hyperparameter;
+	ccs_result_t         err;
+	err = ccs_create_numerical_hyperparameter(name, CCS_NUM_FLOAT,
+	                                          CCSF(-5.0), CCSF(5.0),
+	                                          CCSF(0.0), CCSF(0.0),
+	                                          NULL, &hyperparameter);
+	assert( err == CCS_SUCCESS );
+	return hyperparameter;
+}
+
+void test_configuration_deserialize() {
+	ccs_hyperparameter_t       hyperparameters[3];
+	ccs_configuration_space_t  configuration_space;
+	ccs_configuration_t        configuration, configuration_ref;
+	char                      *buff;
+	size_t                     buff_size;
+	ccs_map_t                  map;
+	ccs_datum_t                d;
+	ccs_result_t               err;
+	int                        cmp;
+
+	err = ccs_create_configuration_space("my_config_space", NULL,
+	                                     &configuration_space);
+	assert( err == CCS_SUCCESS );
+
+	hyperparameters[0] = create_numerical("param1");
+	hyperparameters[1] = create_numerical("param2");
+	hyperparameters[2] = create_numerical("param3");
+	err = ccs_configuration_space_add_hyperparameters(configuration_space, 3,
+	                                                  hyperparameters, NULL);
+	assert( err == CCS_SUCCESS );
+	err = ccs_configuration_space_sample(configuration_space, &configuration_ref);
+	assert( err == CCS_SUCCESS );
+
+	err = ccs_create_map(&map);
+	assert( err == CCS_SUCCESS );
+	err = ccs_object_serialize(configuration_ref, CCS_SERIALIZE_FORMAT_BINARY, CCS_SERIALIZE_OPERATION_SIZE, &buff_size);
+	assert( err == CCS_SUCCESS );
+	buff = (char *)malloc(buff_size);
+	assert( buff );
+
+	err = ccs_object_serialize(configuration_ref, CCS_SERIALIZE_FORMAT_BINARY, CCS_SERIALIZE_OPERATION_MEMORY, buff_size, buff);
+	assert( err == CCS_SUCCESS );
+
+	err = ccs_object_deserialize((ccs_object_t*)&configuration, CCS_SERIALIZE_FORMAT_BINARY, CCS_SERIALIZE_OPERATION_MEMORY, buff_size, buff,
+	                             CCS_DESERIALIZE_OPTION_HANDLE_MAP, map, CCS_DESERIALIZE_OPTION_END);
+	assert( err == -CCS_INVALID_HANDLE );
+
+	d = ccs_object(configuration_space);
+	d.flags |= CCS_FLAG_ID;
+	err = ccs_map_set(map, d, ccs_object(configuration_space));
+	assert( err == CCS_SUCCESS );
+
+	err = ccs_object_deserialize((ccs_object_t*)&configuration, CCS_SERIALIZE_FORMAT_BINARY, CCS_SERIALIZE_OPERATION_MEMORY, buff_size, buff,
+	                             CCS_DESERIALIZE_OPTION_HANDLE_MAP, map, CCS_DESERIALIZE_OPTION_END);
+	assert( err == CCS_SUCCESS );
+
+	err = ccs_configuration_cmp(configuration_ref, configuration, &cmp);
+	assert( err == CCS_SUCCESS );
+	assert( !cmp );
+
+	free(buff);
+	err = ccs_release_object(configuration_space);
+	assert( err == CCS_SUCCESS );
+	err = ccs_release_object(configuration_ref);
+	assert( err == CCS_SUCCESS );
+	err = ccs_release_object(configuration);
+	assert( err == CCS_SUCCESS );
+	err = ccs_release_object(map);
+	assert( err == CCS_SUCCESS );
+	for (size_t i = 0; i < 3; i++) {
+		err = ccs_release_object(hyperparameters[i]);
+		assert( err == CCS_SUCCESS );
+	}
+}
+
+void test_deserialize() {
+	ccs_hyperparameter_t       hyperparameters[3];
+	ccs_configuration_space_t  space, space_ref;
+	ccs_expression_t           expression, expressions[3];
+	ccs_distribution_t         distribs[2];
+	ccs_distribution_t         distrib;
+	size_t                     hindexes[2];
+	ccs_distribution_t         distrib_ret, distrib_ref;
+	size_t                     dindex_ret;
+	char                      *buff;
+	size_t                     buff_size;
+	size_t                     count;
+	ccs_map_t                  map;
+	ccs_datum_t                d;
+	ccs_result_t               err;
+
+	err = ccs_create_configuration_space("my_config_space", NULL,
+	                                     &space);
+	assert( err == CCS_SUCCESS );
+
+	hyperparameters[0] = create_numerical("param1");
+	hyperparameters[1] = create_numerical("param2");
+	hyperparameters[2] = create_numerical("param3");
+
+	err = ccs_configuration_space_add_hyperparameters(space, 3,
+	                                                  hyperparameters, NULL);
+	assert( err == CCS_SUCCESS );
+
+	err = ccs_create_uniform_distribution(
+		CCS_NUM_FLOAT,
+		CCSF(-4.0),
+		CCSF(4.0),
+		CCS_LINEAR,
+		CCSF(0.0),
+		distribs);
+	assert( err == CCS_SUCCESS );
+
+	err = ccs_create_uniform_distribution(
+		CCS_NUM_FLOAT,
+		CCSF(-3.0),
+		CCSF(3.0),
+		CCS_LINEAR,
+		CCSF(0.0),
+		distribs + 1);
+	assert( err == CCS_SUCCESS );
+
+	err = ccs_create_multivariate_distribution(
+		2,
+		distribs,
+		&distrib);
+	assert( err == CCS_SUCCESS );
+
+	hindexes[0] = 2;
+	hindexes[1] = 0;
+	err = ccs_configuration_space_set_distribution(
+		space, distrib, hindexes);
+	assert( err == CCS_SUCCESS );
+
+	err = ccs_create_binary_expression(CCS_LESS, ccs_object(hyperparameters[1]),
+	                                   ccs_float(0.0), &expression);
+	assert( err == CCS_SUCCESS );
+	err = ccs_configuration_space_set_condition(space, 2, expression);
+	assert( err == CCS_SUCCESS );
+	err = ccs_release_object(expression);
+	assert( err == CCS_SUCCESS );
+
+	err = ccs_create_binary_expression(CCS_LESS, ccs_object(hyperparameters[2]),
+	                                   ccs_float(0.0), &expression);
+	assert( err == CCS_SUCCESS );
+	err = ccs_configuration_space_set_condition(space, 0, expression);
+	assert( err == CCS_SUCCESS );
+	err = ccs_release_object(expression);
+	assert( err == CCS_SUCCESS );
+
+	err = ccs_create_binary_expression(CCS_LESS, ccs_object(hyperparameters[0]),
+	                                   ccs_float(0.0), &expression);
+	assert( err == CCS_SUCCESS );
+	err = ccs_configuration_space_add_forbidden_clause(space, expression);
+	assert( err == CCS_SUCCESS );
+	err = ccs_release_object(expression);
+	assert( err == CCS_SUCCESS );
+
+	for (size_t i = 0; i < 2; i++) {
+		err = ccs_release_object(distribs[i]);
+		assert( err == CCS_SUCCESS );
+	}
+	err = ccs_release_object(distrib);
+	assert( err == CCS_SUCCESS );
+	for (size_t i = 0; i < 3; i++) {
+		err = ccs_release_object(hyperparameters[i]);
+		assert( err == CCS_SUCCESS );
+	}
+
+	err = ccs_object_serialize(space, CCS_SERIALIZE_FORMAT_BINARY, CCS_SERIALIZE_OPERATION_SIZE, &buff_size);
+	assert( err == CCS_SUCCESS );
+
+	buff = (char *)malloc(buff_size);
+	assert( buff );
+
+	err = ccs_object_serialize(space, CCS_SERIALIZE_FORMAT_BINARY, CCS_SERIALIZE_OPERATION_MEMORY, buff_size, buff);
+	assert( err == CCS_SUCCESS );
+
+	space_ref = space;
+	err = ccs_release_object(space);
+	assert( err == CCS_SUCCESS );
+
+	err = ccs_object_deserialize((ccs_object_t*)&space, CCS_SERIALIZE_FORMAT_BINARY, CCS_SERIALIZE_OPERATION_MEMORY, buff_size, buff, CCS_DESERIALIZE_OPTION_END);
+	assert( err == CCS_SUCCESS );
+
+	err = ccs_release_object(space);
+	assert( err == CCS_SUCCESS );
+
+	err = ccs_create_map(&map);
+	assert( err == CCS_SUCCESS );
+	err = ccs_object_deserialize((ccs_object_t*)&space, CCS_SERIALIZE_FORMAT_BINARY, CCS_SERIALIZE_OPERATION_MEMORY, buff_size, buff,
+	                             CCS_DESERIALIZE_OPTION_HANDLE_MAP, map, CCS_DESERIALIZE_OPTION_END);
+	assert( err == CCS_SUCCESS );
+
+	err = ccs_map_get(map, ccs_object(space_ref), &d);
+	assert( err == CCS_SUCCESS );
+	assert( d.type == CCS_OBJECT );
+	assert( d.value.o == space );
+
+	err = ccs_configuration_space_get_hyperparameters(space, 0, NULL, &count);
+	assert( err == CCS_SUCCESS );
+	assert( count == 3 );
+
+	err = ccs_configuration_space_get_hyperparameter_distribution(
+		space, 0, &distrib_ret, &dindex_ret);
+	assert( err == CCS_SUCCESS );
+	assert( distrib_ret );
+	assert( dindex_ret == 1 );
+	distrib_ref = distrib_ret;
+
+	err = ccs_configuration_space_get_hyperparameter_distribution(
+		space, 2, &distrib_ret, &dindex_ret);
+	assert( err == CCS_SUCCESS );
+	assert( distrib_ret == distrib_ref );
+	assert( dindex_ret == 0 );
+
+	err = ccs_configuration_space_get_conditions(space, 3, expressions, NULL);
+	assert( err == CCS_SUCCESS );
+	assert( expressions[0] );
+	assert( !expressions[1] );
+	assert( expressions[2] );
+	assert( expressions[0] != expressions[2] );
+
+	err = ccs_configuration_space_get_forbidden_clauses(space, 3, expressions, &count);
+	assert( err == CCS_SUCCESS );
+	assert( count == 1 );
+	assert( expressions[0] );
+	assert( !expressions[1] );
+	assert( !expressions[2] );
+
+	err = ccs_release_object(map);
+	assert( err == CCS_SUCCESS );
+	err = ccs_release_object(space);
+	assert( err == CCS_SUCCESS );
+	free(buff);
+}
+
 int main() {
 	ccs_init();
 	test_create();
@@ -374,6 +612,8 @@ int main() {
 	test_add_list();
 	test_sample();
 	test_set_distribution();
+	test_deserialize();
+	test_configuration_deserialize();
 	ccs_fini();
 	return 0;
 }

@@ -2,15 +2,66 @@
 #include "hyperparameter_internal.h"
 #include <string.h>
 
-struct _ccs_hyperparameter_numerical_data_s {
-	_ccs_hyperparameter_common_data_t common_data;
-	ccs_numeric_t                     quantization;
-};
-typedef struct _ccs_hyperparameter_numerical_data_s _ccs_hyperparameter_numerical_data_t;
-
 static ccs_result_t
 _ccs_hyperparameter_numerical_del(ccs_object_t o) {
 	(void)o;
+	return CCS_SUCCESS;
+}
+
+static inline size_t
+_ccs_serialize_bin_size_ccs_hyperparameter_numerical(
+		ccs_hyperparameter_t hyperparameter) {
+	_ccs_hyperparameter_numerical_data_t *data =
+		(_ccs_hyperparameter_numerical_data_t *)(hyperparameter->data);
+	return	_ccs_serialize_bin_size_ccs_object_internal(
+			(_ccs_object_internal_t *)hyperparameter) +
+	        _ccs_serialize_bin_size_ccs_hyperparameter_numerical_data(data);
+}
+
+static inline ccs_result_t
+_ccs_serialize_bin_ccs_hyperparameter_numerical(
+		ccs_hyperparameter_t   hyperparameter,
+		size_t                *buffer_size,
+		char                 **buffer) {
+	_ccs_hyperparameter_numerical_data_t *data =
+		(_ccs_hyperparameter_numerical_data_t *)(hyperparameter->data);
+	CCS_VALIDATE(_ccs_serialize_bin_ccs_object_internal(
+		(_ccs_object_internal_t *)hyperparameter, buffer_size, buffer));
+	CCS_VALIDATE(_ccs_serialize_bin_ccs_hyperparameter_numerical_data(
+		data, buffer_size, buffer));
+	return CCS_SUCCESS;
+}
+
+static ccs_result_t
+_ccs_hyperparameter_numerical_serialize_size(
+		ccs_object_t            object,
+		ccs_serialize_format_t  format,
+		size_t                 *cum_size) {
+	switch(format) {
+	case CCS_SERIALIZE_FORMAT_BINARY:
+		*cum_size += _ccs_serialize_bin_size_ccs_hyperparameter_numerical(
+			(ccs_hyperparameter_t)object);
+		break;
+	default:
+		return -CCS_INVALID_VALUE;
+	}
+	return CCS_SUCCESS;
+}
+
+static ccs_result_t
+_ccs_hyperparameter_numerical_serialize(
+		ccs_object_t             object,
+		ccs_serialize_format_t   format,
+		size_t                  *buffer_size,
+		char                   **buffer) {
+	switch(format) {
+	case CCS_SERIALIZE_FORMAT_BINARY:
+		CCS_VALIDATE(_ccs_serialize_bin_ccs_hyperparameter_numerical(
+		    (ccs_hyperparameter_t)object, buffer_size, buffer));
+		break;
+	default:
+		return -CCS_INVALID_VALUE;
+	}
 	return CCS_SUCCESS;
 }
 
@@ -179,7 +230,9 @@ _ccs_hyperparameter_numerical_convert_samples(
 }
 
 static _ccs_hyperparameter_ops_t _ccs_hyperparameter_numerical_ops = {
-	{ &_ccs_hyperparameter_numerical_del },
+	{ &_ccs_hyperparameter_numerical_del,
+	  &_ccs_hyperparameter_numerical_serialize_size,
+	  &_ccs_hyperparameter_numerical_serialize },
 	&_ccs_hyperparameter_numerical_check_values,
 	&_ccs_hyperparameter_numerical_samples,
 	&_ccs_hyperparameter_numerical_get_default_distribution,
@@ -225,12 +278,11 @@ ccs_create_numerical_hyperparameter(const char           *name,
 	interval.upper_included = CCS_FALSE;
 
 	ccs_hyperparameter_t hyperparam = (ccs_hyperparameter_t)mem;
-	_ccs_object_init(&(hyperparam->obj), CCS_HYPERPARAMETER, (_ccs_object_ops_t *)&_ccs_hyperparameter_numerical_ops);
+	_ccs_object_init(&(hyperparam->obj), CCS_HYPERPARAMETER, user_data, (_ccs_object_ops_t *)&_ccs_hyperparameter_numerical_ops);
 	_ccs_hyperparameter_numerical_data_t *hyperparam_data = (_ccs_hyperparameter_numerical_data_t *)(mem + sizeof(struct _ccs_hyperparameter_s));
 	hyperparam_data->common_data.type = CCS_HYPERPARAMETER_TYPE_NUMERICAL;
 	hyperparam_data->common_data.name = (char *)(mem + sizeof(struct _ccs_hyperparameter_s) + sizeof(_ccs_hyperparameter_numerical_data_t));
 	strcpy((char *)hyperparam_data->common_data.name, name);
-	hyperparam_data->common_data.user_data = user_data;
 	if (data_type == CCS_NUM_FLOAT) {
 		hyperparam_data->common_data.default_value.type = CCS_FLOAT;
 		hyperparam_data->common_data.default_value.value.f = default_value.f;

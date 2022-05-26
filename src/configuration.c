@@ -15,6 +15,39 @@ _ccs_configuration_del(ccs_object_t object) {
 }
 
 static ccs_result_t
+_ccs_configuration_serialize_size(
+		ccs_object_t            object,
+		ccs_serialize_format_t  format,
+		size_t                 *cum_size) {
+	switch(format) {
+	case CCS_SERIALIZE_FORMAT_BINARY:
+		CCS_VALIDATE(_ccs_serialize_bin_size_ccs_binding(
+			(ccs_binding_t)object, cum_size));
+		break;
+	default:
+		return -CCS_INVALID_VALUE;
+	}
+	return CCS_SUCCESS;
+}
+
+static ccs_result_t
+_ccs_configuration_serialize(
+		ccs_object_t             object,
+		ccs_serialize_format_t   format,
+		size_t                  *buffer_size,
+		char                   **buffer) {
+	switch(format) {
+	case CCS_SERIALIZE_FORMAT_BINARY:
+		CCS_VALIDATE(_ccs_serialize_bin_ccs_binding(
+			(ccs_binding_t)object, buffer_size, buffer));
+		break;
+	default:
+		return -CCS_INVALID_VALUE;
+	}
+	return CCS_SUCCESS;
+}
+
+static ccs_result_t
 _ccs_configuration_hash(_ccs_configuration_data_t *data,
                         ccs_hash_t                *hash_ret) {
 	return _ccs_binding_hash((_ccs_binding_data_t *)data, hash_ret);
@@ -28,7 +61,9 @@ _ccs_configuration_cmp(_ccs_configuration_data_t *data,
 }
 
 static _ccs_configuration_ops_t _configuration_ops =
-    { {&_ccs_configuration_del},
+    { { &_ccs_configuration_del,
+        &_ccs_configuration_serialize_size,
+        &_ccs_configuration_serialize},
       &_ccs_configuration_hash,
       &_ccs_configuration_cmp };
 
@@ -54,9 +89,8 @@ ccs_create_configuration(ccs_configuration_space_t configuration_space,
 	CCS_VALIDATE_ERR_GOTO(err, ccs_retain_object(configuration_space), errmem);
 	ccs_configuration_t config;
 	config = (ccs_configuration_t)mem;
-	_ccs_object_init(&(config->obj), CCS_CONFIGURATION, (_ccs_object_ops_t*)&_configuration_ops);
+	_ccs_object_init(&(config->obj), CCS_CONFIGURATION, user_data, (_ccs_object_ops_t*)&_configuration_ops);
 	config->data = (struct _ccs_configuration_data_s*)(mem + sizeof(struct _ccs_configuration_s));
-	config->data->user_data = user_data;
 	config->data->num_values = num;
 	config->data->configuration_space = configuration_space;
 	config->data->values = (ccs_datum_t *)(mem + sizeof(struct _ccs_configuration_s) + sizeof(struct _ccs_configuration_data_s));
@@ -81,14 +115,6 @@ ccs_configuration_get_configuration_space(ccs_configuration_t        configurati
 	CCS_CHECK_OBJ(configuration, CCS_CONFIGURATION);
 	return _ccs_binding_get_context(
 		(ccs_binding_t)configuration, (ccs_context_t *)configuration_space_ret);
-}
-
-ccs_result_t
-ccs_configuration_get_user_data(ccs_configuration_t   configuration,
-                                void                **user_data_ret) {
-	CCS_CHECK_OBJ(configuration, CCS_CONFIGURATION);
-	return _ccs_binding_get_user_data(
-		(ccs_binding_t)configuration, user_data_ret);
 }
 
 ccs_result_t

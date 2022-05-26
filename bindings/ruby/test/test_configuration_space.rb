@@ -286,5 +286,21 @@ class CConfigSpaceTestConfigurationSpace < Minitest::Test
       refute( s.value('p1') == '#pragma omp #P3' && s.value('p3') == ' ' )
     }
 
+    buff = cs.serialize
+    cs_copy = CCS::deserialize(buffer: buff)
+    1000.times {
+      s = cs_copy.sample
+      s.check
+      active_params = extract_active_parameters(s.values)
+      active_params.each { |par|
+        refute_equal( CCS::Inactive, s.value(par) )
+      }
+      (all_params - active_params).each { |par|
+        assert_equal( CCS::Inactive, s.value(par) )
+      }
+      refute( s.value('p1') == '#pragma omp #P2' && s.value('p2') == ' ' )
+      refute( s.value('p1') == '#pragma omp #P3' && s.value('p3') == ' ' )
+    }
+
   end
 end
