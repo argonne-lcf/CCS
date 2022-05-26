@@ -39,7 +39,7 @@ ccs_create_configuration_space(
  * @param[out] name_ret a pointer to a `char *` variable which will contain a
  *                      pointer to the configuration space name.
  * @return #CCS_SUCCESS on success
- * @return -#CCS_INVALID_OBJECT if \p configuration space is not a valid CCS
+ * @return -#CCS_INVALID_OBJECT if \p configuration_space is not a valid CCS
  *                              configuration space
  * @return -#CCS_INVALID_VALUE if \p name_ret is NULL
  */
@@ -320,9 +320,9 @@ ccs_configuration_space_get_hyperparameter_indexes(
  *                                added to \p hyperparameters. If \p
  *                                hyperparameters is not NULL \p
  *                                num_hyperparameters must be greater than 0
- * @param[in] hyperparameters an array of \p num_hyperparameters that will
- *                            contain the returned hyperparameters or NULL. If
- *                            the array is too big, extra values are set to NULL
+ * @param[out] hyperparameters an array of \p num_hyperparameters that will
+ *                             contain the returned hyperparameters or NULL. If
+ *                             the array is too big, extra values are set to NULL
  * @param[out] num_hyperparameters_ret a pointer to a variable that will contain
  *                                     the number of hyperparameters that are or
  *                                     would be returned. Can be NULL

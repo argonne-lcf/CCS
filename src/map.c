@@ -256,9 +256,9 @@ ccs_map_del(ccs_map_t    map,
 	CCS_CHECK_OBJ(map, CCS_MAP);
 	_ccs_map_datum_t *entry;
 	HASH_FIND(hh, map->data->map, &key, sizeof(ccs_datum_t), entry);
-	if (entry) {
+	if (entry)
 		_ccs_map_remove(map->data, entry);
-	} else
+	else
 		return -CCS_INVALID_VALUE;
 	return CCS_SUCCESS;
 }
