@@ -142,7 +142,7 @@ ccs_object_get_user_data(ccs_object_t object, void **user_data_ret)
 	CCS_CHECK_BASE_OBJ(object);
 	CCS_CHECK_PTR(user_data_ret);
 	_ccs_object_internal_t *obj = (_ccs_object_internal_t *)object;
-	*user_data_ret = CCS_ATOMIC_LOAD(obj->user_data);
+	*user_data_ret              = CCS_ATOMIC_LOAD(obj->user_data);
 	return CCS_RESULT_SUCCESS;
 }
 

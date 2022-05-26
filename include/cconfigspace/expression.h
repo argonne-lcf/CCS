@@ -551,7 +551,7 @@ ccs_expression_get_parameters(
  * @return #CCS_RESULT_ERROR_OUT_OF_MEMORY if there was not enough memory to
  * allocate temporary storage
  * @remarks
- *   This function is thread-safe for while threads are only reading context
+ *   This function is thread-safe while threads are only reading context
  */
 extern ccs_result_t
 ccs_expression_check_context(ccs_expression_t expression, ccs_context_t context);

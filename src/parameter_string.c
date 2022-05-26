@@ -261,9 +261,9 @@ ccs_create_string_parameter(const char *name, ccs_parameter_t *parameter_ret)
 	strcpy((char *)parameter_data->common_data.name, name);
 	parameter_data->common_data.interval.type = CCS_NUMERIC_TYPE_INT;
 	parameter_data->stored_values             = NULL;
-	parameter_data->mutex                     = (pthread_mutex_t)PTHREAD_MUTEX_INITIALIZER;
-	parameter->data = (_ccs_parameter_data_t *)parameter_data;
-	*parameter_ret  = parameter;
+	parameter_data->mutex = (pthread_mutex_t)PTHREAD_MUTEX_INITIALIZER;
+	parameter->data       = (_ccs_parameter_data_t *)parameter_data;
+	*parameter_ret        = parameter;
 
 	return CCS_RESULT_SUCCESS;
 }
