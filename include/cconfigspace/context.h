@@ -42,7 +42,7 @@ ccs_context_get_name(ccs_context_t   context,
  * @return -#CCS_INVALID_HYPERPARAMETER if \p context does not contain \p
  *                                      hyperparameter
  * @remarks
- *   This function is thread-safe for while threads are only reading context
+ *   This function is thread-safe while threads are only reading context
  */
 extern ccs_result_t
 ccs_context_get_hyperparameter_index(ccs_context_t         context,
@@ -59,7 +59,7 @@ ccs_context_get_hyperparameter_index(ccs_context_t         context,
  * @return -#CCS_INVALID_OBJECT if \p context is not a valid CCS object
  * @return -#CCS_INVALID_VALUE if \p num_hyperparameters_ret is NULL
  * @remarks
- *   This function is thread-safe for while threads are only reading context
+ *   This function is thread-safe while threads are only reading context
  */
 extern ccs_result_t
 ccs_context_get_num_hyperparameters(ccs_context_t  context,
@@ -77,7 +77,7 @@ ccs_context_get_num_hyperparameters(ccs_context_t  context,
  * @return -#CCS_OUT_OF_BOUNDS if \p index is greater than the count of
  *                             hyperparameters in the context
  * @remarks
- *   This function is thread-safe for while threads are only reading context
+ *   This function is thread-safe while threads are only reading context
  */
 extern ccs_result_t
 ccs_context_get_hyperparameter(ccs_context_t         context,
@@ -96,7 +96,7 @@ ccs_context_get_hyperparameter(ccs_context_t         context,
  * @return -#CCS_INVALID_NAME if no hyperparameter with such \p name exist in
  *                            the \p context
  * @remarks
- *   This function is thread-safe for while threads are only reading context
+ *   This function is thread-safe while threads are only reading context
  */
 extern ccs_result_t
 ccs_context_get_hyperparameter_by_name(ccs_context_t         context,
@@ -115,7 +115,7 @@ ccs_context_get_hyperparameter_by_name(ccs_context_t         context,
  * @return -#CCS_INVALID_NAME if no hyperparameter with such \p name exist in
  *                            the context
  * @remarks
- *   This function is thread-safe for while threads are only reading context
+ *   This function is thread-safe while threads are only reading context
  */
 extern ccs_result_t
 ccs_context_get_hyperparameter_index_by_name(ccs_context_t  context,
@@ -144,7 +144,7 @@ ccs_context_get_hyperparameter_index_by_name(ccs_context_t  context,
  *                             \p num_hyperparameters is less than the number of
  *                             hyperparameters that would be returned
  * @remarks
- *   This function is thread-safe for while threads are only reading context
+ *   This function is thread-safe while threads are only reading context
  */
 extern ccs_result_t
 ccs_context_get_hyperparameters(ccs_context_t          context,
@@ -170,7 +170,7 @@ ccs_context_get_hyperparameters(ccs_context_t          context,
  * @return -#CCS_INVALID_HYPERPARAMETER if at least one of the hyperparameters
  *                                      is not contained in \p context
  * @remarks
- *   This function is thread-safe for while threads are only reading context
+ *   This function is thread-safe while threads are only reading context
  */
 extern ccs_result_t
 ccs_context_get_hyperparameter_indexes(
@@ -197,7 +197,7 @@ ccs_context_get_hyperparameter_indexes(
  * @return -#CCS_INVALID_VALUE if the value did not validate or if value_ret is
  *                             NULL
  * @remarks
- *   This function is thread-safe for while threads are only reading context
+ *   This function is thread-safe while threads are only reading context
  */
 extern ccs_result_t
 ccs_context_validate_value(ccs_context_t  context,
