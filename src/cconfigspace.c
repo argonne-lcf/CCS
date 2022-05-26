@@ -31,7 +31,7 @@ ccs_get_version() {
 
 static inline int32_t
 _ccs_inc_ref(_ccs_object_internal_t *obj) {
-	return CCS_ATOMIC_FETCH_ADD(obj);
+	return CCS_ATOMIC_FETCH_ADD(obj->refcount);
 }
 
 ccs_result_t
@@ -47,7 +47,7 @@ ccs_retain_object(ccs_object_t object) {
 
 static inline int32_t
 _ccs_dec_ref(_ccs_object_internal_t *obj) {
-	return CCS_ATOMIC_SUB_FETCH(obj);
+	return CCS_ATOMIC_SUB_FETCH(obj->refcount);
 }
 
 ccs_result_t
@@ -77,8 +77,7 @@ ccs_result_t
 ccs_object_get_type(ccs_object_t       object,
                      ccs_object_type_t *type_ret) {
 	_ccs_object_internal_t *obj = (_ccs_object_internal_t *)object;
-	if (!obj)
-		return -CCS_INVALID_OBJECT;
+	CCS_CHECK_BASE_OBJ(obj);
 	CCS_CHECK_PTR(type_ret);
 	*type_ret = obj->type;
 	return CCS_SUCCESS;
@@ -88,10 +87,9 @@ ccs_result_t
 ccs_object_get_refcount(ccs_object_t  object,
                          int32_t      *refcount_ret) {
 	_ccs_object_internal_t *obj = (_ccs_object_internal_t *)object;
-	if (!obj)
-		return -CCS_INVALID_OBJECT;
+	CCS_CHECK_BASE_OBJ(obj);
 	CCS_CHECK_PTR(refcount_ret);
-	*refcount_ret = obj->refcount;
+	*refcount_ret = CCS_ATOMIC_LOAD(obj->refcount);
 	return CCS_SUCCESS;
 }
 
@@ -103,16 +101,12 @@ static const UT_icd _object_callback_icd = {
 };
 
 ccs_result_t
-ccs_object_set_destroy_callback(ccs_object_t  object,
-                                void (*callback)(
-                                  ccs_object_t object,
-                                  void *user_data),
-                                void *user_data) {
+ccs_object_set_destroy_callback(ccs_object_t                   object,
+                                ccs_object_release_callback_t  callback,
+                                void                          *user_data) {
 	_ccs_object_internal_t *obj = (_ccs_object_internal_t *)object;
-	if (!obj)
-		return -CCS_INVALID_OBJECT;
-	if (!callback)
-		return -CCS_INVALID_VALUE;
+	CCS_CHECK_BASE_OBJ(obj);
+	CCS_CHECK_PTR(callback);
 	if (!obj->callbacks)
 		utarray_new(obj->callbacks, &_object_callback_icd);
 
@@ -127,9 +121,8 @@ ccs_result_t
 ccs_object_set_user_data(ccs_object_t  object,
                          void         *user_data) {
 	_ccs_object_internal_t *obj = (_ccs_object_internal_t *)object;
-	if (!obj)
-		return -CCS_INVALID_OBJECT;
-	obj->user_data = user_data;
+	CCS_CHECK_BASE_OBJ(obj);
+	CCS_ATOMIC_STORE(obj->user_data, user_data);
 	return CCS_SUCCESS;
 }
 
@@ -137,10 +130,9 @@ ccs_result_t
 ccs_object_get_user_data(ccs_object_t   object,
                          void         **user_data_ret) {
 	_ccs_object_internal_t *obj = (_ccs_object_internal_t *)object;
-	if (!obj)
-		return -CCS_INVALID_OBJECT;
+	CCS_CHECK_BASE_OBJ(obj);
 	CCS_CHECK_PTR(user_data_ret);
-	*user_data_ret = obj->user_data;
+	*user_data_ret = CCS_ATOMIC_LOAD(obj->user_data);
 	return CCS_SUCCESS;
 }
 
@@ -400,9 +392,9 @@ ccs_object_serialize(
 	ccs_result_t res;
 	va_list args;
 
-	if (!obj || !obj->ops)
+	if (CCS_UNLIKELY(!obj || !obj->ops))
 		return -CCS_INVALID_OBJECT;
-	if (!obj->ops->serialize)
+	if (CCS_UNLIKELY(!obj->ops->serialize))
 		return -CCS_UNSUPPORTED_OPERATION;
 
 	va_start(args, operation);

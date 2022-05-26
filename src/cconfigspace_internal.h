@@ -35,11 +35,22 @@ _ccs_interval_include(ccs_interval_t *interval, ccs_numeric_t value) {
  */
 #define CCS_UNLIKELY(x)    __builtin_expect(!!(x), 0)
 
-#define CCS_ATOMIC_FETCH_ADD(obj) \
-	__atomic_fetch_add(&obj->refcount, 1, __ATOMIC_RELAXED)
+#define CCS_ATOMIC_FETCH_ADD(val) \
+	__atomic_fetch_add(&(val), 1, __ATOMIC_RELAXED)
 
-#define CCS_ATOMIC_SUB_FETCH(obj) \
-	__atomic_sub_fetch(&obj->refcount, 1, __ATOMIC_RELAXED)
+#define CCS_ATOMIC_SUB_FETCH(val) \
+	__atomic_sub_fetch(&(val), 1, __ATOMIC_RELAXED)
+
+#define CCS_ATOMIC_LOAD(val) \
+	__atomic_load_n(&(val), __ATOMIC_RELAXED)
+
+#define CCS_ATOMIC_STORE(val, set) \
+	__atomic_store_n(&(val), set, __ATOMIC_RELAXED)
+
+#define CCS_CHECK_BASE_OBJ(o) do { \
+	if (CCS_UNLIKELY(!(o))) \
+		return -CCS_INVALID_OBJECT; \
+} while (0)
 
 #define CCS_CHECK_OBJ(o, t) do { \
 	if (CCS_UNLIKELY(!(o) || \

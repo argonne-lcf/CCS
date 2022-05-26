@@ -569,6 +569,8 @@ ccs_fini();
  * @return #CCS_SUCCESS on success
  * @return -#CCS_INVALID_VALUE if \p name is NULL or if \p error is not a valid
  *                             CCS error code
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_get_error_name(ccs_error_t error, const char **name);
@@ -667,6 +669,8 @@ ccs_object_set_destroy_callback(ccs_object_t                   object,
  * @param[in] user_data a pointer to the user data to attach to this object
  * @return #CCS_SUCCESS on success
  * @return -#CCS_INVALID_OBJECT if \p object is found to be invalid
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_object_set_user_data(ccs_object_t  object,
@@ -680,6 +684,8 @@ ccs_object_set_user_data(ccs_object_t  object,
  * @return #CCS_SUCCESS on success
  * @return -#CCS_INVALID_OBJECT if \p object is found to be invalid
  * @return -#CCS_INVALID_VALUE if \p user_data_ret is NULL
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_object_get_user_data(ccs_object_t   object,
