@@ -157,7 +157,7 @@ static void test_uniform_distribution_int() {
 	ccs_int_t          upper = 11;
 	ccs_numeric_t      samples[NUM_SAMPLES];
 
-	err = ccs_rng_create(&rng);
+	err = ccs_create_rng(&rng);
 	assert( err == CCS_SUCCESS );
 	err = ccs_create_uniform_distribution(
 		CCS_NUM_INTEGER,
@@ -191,7 +191,7 @@ static void test_uniform_distribution_int_log() {
 	ccs_int_t          upper = 100;
 	ccs_numeric_t      samples[NUM_SAMPLES_BIG];
 
-	err = ccs_rng_create(&rng);
+	err = ccs_create_rng(&rng);
 	assert( err == CCS_SUCCESS );
 	err = ccs_create_uniform_distribution(
 		CCS_NUM_INTEGER,
@@ -226,7 +226,7 @@ static void test_uniform_distribution_int_log_quantize() {
 	ccs_int_t          quantize = 2;
 	ccs_numeric_t      samples[NUM_SAMPLES_BIG];
 
-	err = ccs_rng_create(&rng);
+	err = ccs_create_rng(&rng);
 	assert( err == CCS_SUCCESS );
 	err = ccs_create_uniform_distribution(
 		CCS_NUM_INTEGER,
@@ -262,7 +262,7 @@ static void test_uniform_distribution_int_quantize() {
 	ccs_int_t          quantize = 2;
 	ccs_numeric_t      samples[NUM_SAMPLES];
 
-	err = ccs_rng_create(&rng);
+	err = ccs_create_rng(&rng);
 	assert( err == CCS_SUCCESS );
 	err = ccs_create_uniform_distribution(
 		CCS_NUM_INTEGER,
@@ -297,7 +297,7 @@ static void test_uniform_distribution_float() {
 	ccs_float_t        upper = 11;
 	ccs_numeric_t      samples[NUM_SAMPLES];
 
-	err = ccs_rng_create(&rng);
+	err = ccs_create_rng(&rng);
 	assert( err == CCS_SUCCESS );
 	err = ccs_create_uniform_distribution(
 		CCS_NUM_FLOAT,
@@ -331,7 +331,7 @@ static void test_uniform_distribution_float_log() {
 	ccs_float_t        upper = 100;
 	ccs_numeric_t      samples[NUM_SAMPLES_BIG];
 
-	err = ccs_rng_create(&rng);
+	err = ccs_create_rng(&rng);
 	assert( err == CCS_SUCCESS );
 	err = ccs_create_uniform_distribution(
 		CCS_NUM_FLOAT,
@@ -366,7 +366,7 @@ static void test_uniform_distribution_float_log_quantize() {
 	ccs_float_t        quantize = 2;
 	ccs_numeric_t      samples[NUM_SAMPLES_BIG];
 
-	err = ccs_rng_create(&rng);
+	err = ccs_create_rng(&rng);
 	assert( err == CCS_SUCCESS );
 	err = ccs_create_uniform_distribution(
 		CCS_NUM_FLOAT,
@@ -401,7 +401,7 @@ static void test_uniform_distribution_float_quantize() {
 	ccs_float_t        quantize = 2;
 	ccs_numeric_t      samples[NUM_SAMPLES];
 
-	err = ccs_rng_create(&rng);
+	err = ccs_create_rng(&rng);
 	assert( err == CCS_SUCCESS );
 	err = ccs_create_uniform_distribution(
 		CCS_NUM_FLOAT,
@@ -438,7 +438,7 @@ static void test_uniform_distribution_strided_samples() {
 	ccs_int_t          upper2 = 20;
 	ccs_numeric_t      samples[NUM_SAMPLES*2];
 
-	err = ccs_rng_create(&rng);
+	err = ccs_create_rng(&rng);
 	assert( err == CCS_SUCCESS );
 	err = ccs_create_uniform_distribution(
 		CCS_NUM_INTEGER,
@@ -490,7 +490,7 @@ static void test_uniform_distribution_soa_samples() {
 	ccs_numeric_t      samples[NUM_SAMPLES];
 	ccs_numeric_t     *p_samples;
 
-	err = ccs_rng_create(&rng);
+	err = ccs_create_rng(&rng);
 	assert( err == CCS_SUCCESS );
 	err = ccs_create_uniform_distribution(
 		CCS_NUM_FLOAT,

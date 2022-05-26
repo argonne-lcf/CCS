@@ -106,7 +106,7 @@ void test_samples() {
 	ccs_datum_t                samples[NUM_SAMPLES];
 	ccs_result_t               err;
 
-	err = ccs_rng_create(&rng);
+	err = ccs_create_rng(&rng);
 	assert( err == CCS_SUCCESS );
 	err = ccs_create_numerical_hyperparameter("my_param", CCS_NUM_FLOAT,
 	                                          CCSF(-5.0), CCSF(5.0),
@@ -143,7 +143,7 @@ void test_oversampling() {
 	ccs_datum_t                samples[NUM_SAMPLES];
 	ccs_result_t               err;
 
-	err = ccs_rng_create(&rng);
+	err = ccs_create_rng(&rng);
 	assert( err == CCS_SUCCESS );
 
 	err = ccs_create_normal_float_distribution(0.0, 1.0, CCS_LINEAR, 0.0,

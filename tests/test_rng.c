@@ -15,11 +15,11 @@ static void test_rng_create_with_type() {
 	while (*t1++)
 		type_count++;
 	selected = rand() % type_count;
-	err = ccs_rng_create_with_type(t2[selected], NULL);
+	err = ccs_create_rng_with_type(t2[selected], NULL);
 	assert( err == -CCS_INVALID_VALUE );
-	err = ccs_rng_create_with_type(NULL, &rng);
+	err = ccs_create_rng_with_type(NULL, &rng);
 	assert( err == -CCS_INVALID_VALUE );
-	err = ccs_rng_create_with_type(t2[selected], &rng);
+	err = ccs_create_rng_with_type(t2[selected], &rng);
 	assert( err == CCS_SUCCESS );
 	assert( rng );
 	err = ccs_rng_get_type(rng, &t);
@@ -43,9 +43,9 @@ static void test_rng_create() {
 	size_t              buff_size;
 	unsigned long int   i = 0, i2 = 0;
 
-	err = ccs_rng_create(NULL);
+	err = ccs_create_rng(NULL);
 	assert( err == -CCS_INVALID_VALUE );
-	err = ccs_rng_create(&rng);
+	err = ccs_create_rng(&rng);
 	assert( err == CCS_SUCCESS );
 	assert( rng );
 	err = ccs_rng_get_type(rng, &t);
@@ -89,7 +89,7 @@ static void test_rng_min_max() {
 	ccs_result_t      err = CCS_SUCCESS;
 	unsigned long int imin = 0;
 	unsigned long int imax = 0;
-	err = ccs_rng_create(&rng);
+	err = ccs_create_rng(&rng);
 	assert( err == CCS_SUCCESS );
 	err = ccs_rng_min(NULL, &imin);
 	assert( err == -CCS_INVALID_OBJECT );
@@ -115,7 +115,7 @@ static void test_rng_get() {
 	unsigned long int imin = 0;
 	unsigned long int imax = 0;
 
-	err = ccs_rng_create(&rng);
+	err = ccs_create_rng(&rng);
 	assert( err == CCS_SUCCESS );
 	err = ccs_rng_min(rng, &imin);
 	assert( err == CCS_SUCCESS );
@@ -136,7 +136,7 @@ static void test_rng_uniform() {
 	ccs_result_t err = CCS_SUCCESS;
 	double       d = -1.0;
 
-	err = ccs_rng_create(&rng);
+	err = ccs_create_rng(&rng);
 	assert( err == CCS_SUCCESS );
 	for (int j = 0; j < 100; j++) {
 		err = ccs_rng_uniform(rng, &d);

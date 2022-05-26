@@ -162,7 +162,7 @@ void test_roulette_distribution() {
 	        counts[i] = 0;
 	}
 
-	err = ccs_rng_create(&rng);
+	err = ccs_create_rng(&rng);
 	assert( err == CCS_SUCCESS );
 	err = ccs_create_roulette_distribution(
 		num_areas,
@@ -210,7 +210,7 @@ void test_roulette_distribution_zero() {
 	}
 	areas[1] = 0.0;
 
-	err = ccs_rng_create(&rng);
+	err = ccs_create_rng(&rng);
 	assert( err == CCS_SUCCESS );
 	err = ccs_create_roulette_distribution(
 		num_areas,
@@ -262,7 +262,7 @@ void test_roulette_distribution_strided_samples() {
 	        counts2[i] = 0;
 	}
 
-	err = ccs_rng_create(&rng);
+	err = ccs_create_rng(&rng);
 	assert( err == CCS_SUCCESS );
 	err = ccs_create_roulette_distribution(
 		num_areas,
@@ -336,7 +336,7 @@ void test_roulette_distribution_soa_samples() {
 	        counts[i] = 0;
 	}
 
-	err = ccs_rng_create(&rng);
+	err = ccs_create_rng(&rng);
 	assert( err == CCS_SUCCESS );
 	err = ccs_create_roulette_distribution(
 		num_areas,

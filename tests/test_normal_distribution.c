@@ -162,7 +162,7 @@ static void test_normal_distribution_int() {
 	double             mean, sig;
 	ccs_interval_t     interval;
 
-	err = ccs_rng_create(&rng);
+	err = ccs_create_rng(&rng);
 	assert( err == CCS_SUCCESS );
 	err = ccs_create_normal_distribution(
 		CCS_NUM_INTEGER,
@@ -209,7 +209,7 @@ static void test_normal_distribution_float() {
 	double             mean, sig;
 	ccs_interval_t     interval;
 
-	err = ccs_rng_create(&rng);
+	err = ccs_create_rng(&rng);
 	assert( err == CCS_SUCCESS );
 	err = ccs_create_normal_distribution(
 		CCS_NUM_FLOAT,
@@ -256,7 +256,7 @@ static void test_normal_distribution_int_log() {
 	double             tmean, tsigma, alpha, zee, pdfa;
 	ccs_interval_t     interval;
 
-	err = ccs_rng_create(&rng);
+	err = ccs_create_rng(&rng);
 	assert( err == CCS_SUCCESS );
 	err = ccs_create_normal_distribution(
 		CCS_NUM_INTEGER,
@@ -311,7 +311,7 @@ static void test_normal_distribution_float_log() {
 	double             mean, sig;
 	ccs_interval_t     interval;
 
-	err = ccs_rng_create(&rng);
+	err = ccs_create_rng(&rng);
 	assert( err == CCS_SUCCESS );
 	err = ccs_create_normal_distribution(
 		CCS_NUM_FLOAT,
@@ -359,7 +359,7 @@ static void test_normal_distribution_int_quantize() {
 	double             mean, sig;
 	ccs_interval_t     interval;
 
-	err = ccs_rng_create(&rng);
+	err = ccs_create_rng(&rng);
 	assert( err == CCS_SUCCESS );
 	err = ccs_create_normal_distribution(
 		CCS_NUM_INTEGER,
@@ -406,7 +406,7 @@ static void test_normal_distribution_float_quantize() {
 	double             mean, sig;
 	ccs_interval_t     interval;
 
-	err = ccs_rng_create(&rng);
+	err = ccs_create_rng(&rng);
 	assert( err == CCS_SUCCESS );
 	err = ccs_create_normal_distribution(
 		CCS_NUM_FLOAT,
@@ -454,7 +454,7 @@ static void test_normal_distribution_int_log_quantize() {
 	double             tmean, tsigma, alpha, zee, pdfa;
 	ccs_interval_t     interval;
 
-	err = ccs_rng_create(&rng);
+	err = ccs_create_rng(&rng);
 	assert( err == CCS_SUCCESS );
 	err = ccs_create_normal_distribution(
 		CCS_NUM_INTEGER,
@@ -511,7 +511,7 @@ static void test_normal_distribution_float_log_quantize() {
 	double             tmean, tsigma, alpha, zee, pdfa;
 	ccs_interval_t     interval;
 
-	err = ccs_rng_create(&rng);
+	err = ccs_create_rng(&rng);
 	assert( err == CCS_SUCCESS );
 	err = ccs_create_normal_distribution(
 		CCS_NUM_FLOAT,
@@ -567,7 +567,7 @@ static void test_normal_distribution_strided_samples() {
 	ccs_numeric_t      samples[NUM_SAMPLES*2];
 	double             mean, sig;
 
-	err = ccs_rng_create(&rng);
+	err = ccs_create_rng(&rng);
 	assert( err == CCS_SUCCESS );
 	err = ccs_create_normal_distribution(
 		CCS_NUM_FLOAT,
@@ -626,7 +626,7 @@ static void test_normal_distribution_soa_samples() {
 	ccs_interval_t     interval;
 	ccs_numeric_t     *p_samples;
 
-	err = ccs_rng_create(&rng);
+	err = ccs_create_rng(&rng);
 	assert( err == CCS_SUCCESS );
 	err = ccs_create_normal_distribution(
 		CCS_NUM_FLOAT,

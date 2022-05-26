@@ -293,7 +293,7 @@ ccs_create_configuration_space(const char                *name,
 	if (!mem)
 		return -CCS_OUT_OF_MEMORY;
 	ccs_rng_t rng;
-	CCS_VALIDATE_ERR_GOTO(err, ccs_rng_create(&rng), errmem);
+	CCS_VALIDATE_ERR_GOTO(err, ccs_create_rng(&rng), errmem);
 
 	ccs_configuration_space_t config_space;
 	config_space = (ccs_configuration_space_t)mem;

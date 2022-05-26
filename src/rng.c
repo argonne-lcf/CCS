@@ -91,7 +91,7 @@ static struct _ccs_rng_ops_s _rng_ops = {
 };
 
 ccs_result_t
-ccs_rng_create_with_type(const gsl_rng_type *rng_type,
+ccs_create_rng_with_type(const gsl_rng_type *rng_type,
                          ccs_rng_t          *rng_ret) {
 	CCS_CHECK_PTR(rng_type);
 	CCS_CHECK_PTR(rng_ret);
@@ -117,8 +117,8 @@ ccs_rng_create_with_type(const gsl_rng_type *rng_type,
 }
 
 ccs_result_t
-ccs_rng_create(ccs_rng_t *rng_ret) {
-	return ccs_rng_create_with_type(gsl_rng_default, rng_ret);
+ccs_create_rng(ccs_rng_t *rng_ret) {
+	return ccs_create_rng_with_type(gsl_rng_default, rng_ret);
 }
 
 ccs_result_t

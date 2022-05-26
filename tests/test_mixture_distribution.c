@@ -157,7 +157,7 @@ void test_mixture_distribution() {
 		weights[i] = 1.0;
 	}
 
-	err = ccs_rng_create(&rng);
+	err = ccs_create_rng(&rng);
 	assert( err == CCS_SUCCESS );
 
 	err = ccs_create_uniform_distribution(
@@ -213,7 +213,7 @@ void test_mixture_distribution_strided_samples() {
 	ccs_numeric_t      samples[NUM_SAMPLES*(NUM_DISTRIBS+1)];
 	ccs_float_t        weights[] = { 1.0, 1.0 };
 
-	err = ccs_rng_create(&rng);
+	err = ccs_create_rng(&rng);
 	assert( err == CCS_SUCCESS );
 
 	err = ccs_create_uniform_distribution(
@@ -287,7 +287,7 @@ void test_mixture_distribution_soa_samples() {
 	ccs_numeric_t     *samples[] = { samples1, samples2 };
 	ccs_float_t        weights[] = { 1.0, 1.0 };
 
-	err = ccs_rng_create(&rng);
+	err = ccs_create_rng(&rng);
 	assert( err == CCS_SUCCESS );
 
 	err = ccs_create_uniform_distribution(

@@ -147,7 +147,7 @@ void test_multivariate_distribution() {
 	const size_t       num_samples = NUM_SAMPLES;
 	ccs_numeric_t      samples[NUM_SAMPLES*NUM_DISTRIBS];
 
-	err = ccs_rng_create(&rng);
+	err = ccs_create_rng(&rng);
 	assert( err == CCS_SUCCESS );
 
 	err = ccs_create_uniform_distribution(
@@ -205,7 +205,7 @@ void test_multivariate_distribution_strided_samples() {
 	const size_t       num_samples = NUM_SAMPLES;
 	ccs_numeric_t      samples[NUM_SAMPLES*(NUM_DISTRIBS+1)];
 
-	err = ccs_rng_create(&rng);
+	err = ccs_create_rng(&rng);
 	assert( err == CCS_SUCCESS );
 
 	err = ccs_create_uniform_distribution(
@@ -265,7 +265,7 @@ void test_multivariate_distribution_soa_samples() {
 	ccs_numeric_t      samples2[NUM_SAMPLES];
 	ccs_numeric_t     *samples[] = { samples1, samples2 };
 
-	err = ccs_rng_create(&rng);
+	err = ccs_create_rng(&rng);
 	assert( err == CCS_SUCCESS );
 
 	err = ccs_create_uniform_distribution(
@@ -324,7 +324,7 @@ void test_distribution_hyperparameters_sample() {
 	const size_t         num_samples = NUM_SAMPLES;
 	ccs_datum_t          samples[NUM_SAMPLES*NUM_DISTRIBS];
 
-	err = ccs_rng_create(&rng);
+	err = ccs_create_rng(&rng);
 	assert( err == CCS_SUCCESS );
 
 	err = ccs_create_uniform_distribution(
@@ -403,7 +403,7 @@ void test_distribution_hyperparameters_sample_oversampling() {
 	const size_t         num_samples = NUM_SAMPLES;
 	ccs_datum_t          samples[NUM_SAMPLES*NUM_DISTRIBS];
 
-	err = ccs_rng_create(&rng);
+	err = ccs_create_rng(&rng);
 	assert( err == CCS_SUCCESS );
 
 	err = ccs_create_normal_distribution(

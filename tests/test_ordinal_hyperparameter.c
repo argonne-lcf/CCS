@@ -151,7 +151,7 @@ void test_samples() {
 		possible_values[i].value.i = (i+1)*2;
 	}
 
-	err = ccs_rng_create(&rng);
+	err = ccs_create_rng(&rng);
 	assert( err == CCS_SUCCESS );
 	err = ccs_create_ordinal_hyperparameter("my_param", num_possible_values,
 	                                        possible_values, default_value_index,
@@ -197,7 +197,7 @@ void test_oversampling() {
 		possible_values[i].value.i = (i+1)*2;
 	}
 
-	err = ccs_rng_create(&rng);
+	err = ccs_create_rng(&rng);
 	assert( err == CCS_SUCCESS );
 	err = ccs_create_uniform_int_distribution(0, num_possible_values+1,
 	                                          CCS_LINEAR, 0, &distribution);

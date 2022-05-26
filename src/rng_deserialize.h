@@ -39,7 +39,7 @@ _ccs_deserialize_bin_rng(
 	if (CCS_UNLIKELY(!*t))
 		return -CCS_INVALID_VALUE;
 
-	CCS_VALIDATE(ccs_rng_create_with_type(*t, rng_ret));
+	CCS_VALIDATE(ccs_create_rng_with_type(*t, rng_ret));
 	/* try to restore the state of the rng, might be non portable,
 	   so silently bail if failure */
 	if (b.sz == gsl_rng_size((*rng_ret)->data->rng) &&

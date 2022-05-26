@@ -2,7 +2,7 @@ import ctypes as ct
 from . import libcconfigspace
 from .base import Object, Error, ccs_float, ccs_result, ccs_rng, _ccs_get_function
 
-ccs_rng_create = _ccs_get_function("ccs_rng_create", [ct.POINTER(ccs_rng)])
+ccs_create_rng = _ccs_get_function("ccs_create_rng", [ct.POINTER(ccs_rng)])
 ccs_rng_set_seed = _ccs_get_function("ccs_rng_set_seed", [ccs_rng, ct.c_ulong])
 ccs_rng_get = _ccs_get_function("ccs_rng_get", [ccs_rng, ct.POINTER(ct.c_ulong)])
 ccs_rng_uniform = _ccs_get_function("ccs_rng_uniform", [ccs_rng, ct.POINTER(ccs_float)])
@@ -13,7 +13,7 @@ class Rng(Object):
   def __init__(self, handle = None, retain = False, auto_release = True):
     if handle is None:
       handle = ccs_rng(0)
-      res = ccs_rng_create(ct.byref(handle))
+      res = ccs_create_rng(ct.byref(handle))
       Error.check(res)
       super().__init__(handle = handle, retain = False)
     else:
