@@ -1,4 +1,5 @@
 require 'ffi'
+require 'ffi-value'
 
 require_relative 'cconfigspace/base'
 require_relative 'cconfigspace/interval'

@@ -10,5 +10,6 @@ Gem::Specification.new do |s|
   s.license = 'BSD-3-Clause'
   s.required_ruby_version = '>= 2.3.0'
   s.add_dependency 'ffi', '~> 1.13', '>=1.13.0'
+  s.add_dependency 'ffi-value', '~> 0.1', '>=0.1.1'
   s.add_dependency 'whittle', '~> 0.0', '>=0.0.8'
 end
