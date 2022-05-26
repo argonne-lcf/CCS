@@ -160,7 +160,8 @@ module CCS
   DatumFlag = enum FFI::Type::INT32, :ccs_datum_flag_t, [
     :CCS_FLAG_DEFAULT, 0,
     :CCS_FLAG_TRANSIENT, (1 << 0),
-    :CCS_FLAG_UNPOOLED, (1 << 1) ]
+    :CCS_FLAG_UNPOOLED, (1 << 1),
+    :CCS_FLAG_ID, (1 << 2) ]
 
   DatumFlags = bitmask FFI::Type::UINT32, :ccs_datum_flags_t, [
     :CCS_FLAG_TRANSIENT,
@@ -283,7 +284,11 @@ module CCS
       when :CCS_INACTIVE
         Inactive
       when :CCS_OBJECT
-        Object::from_handle(self[:value][:o])
+        if self[:flags].include?( :CCS_FLAG_ID )
+          Object::new(self[:value][:o], retain: false, auto_release: false)
+        else
+          Object::from_handle(self[:value][:o])
+        end
       else
         raise CCSError, :CCS_INVALID_TYPE
       end
@@ -328,14 +333,18 @@ module CCS
         self[:value][:s] = ptr
         self[:flags] = :CCS_FLAG_TRANSIENT
       when Object
-        if object_store
-          object_store.push v
-        else
-          @object = v
-        end
         self[:type] = :CCS_OBJECT
         self[:value][:o] = v.handle
-        self[:flags] = :CCS_FLAG_TRANSIENT
+        if v.class == Object
+          self[:flags] = :CCS_FLAG_ID
+        else
+          if object_store
+            object_store.push v
+          else
+            @object = v
+          end
+          self[:flags] = :CCS_FLAG_TRANSIENT
+        end
       else
         raise CCSError, :CCS_INVALID_TYPE
       end
@@ -376,8 +385,12 @@ module CCS
         d = self::new
         d[:type] = :CCS_OBJECT
         d[:value][:o] = v.handle
-        d[:flags] = :CCS_FLAG_TRANSIENT
-        d.instance_variable_set(:@object, v)
+        if v.class == Object
+          d[:flags] = :CCS_FLAG_ID
+        else
+          d[:flags] = :CCS_FLAG_TRANSIENT
+          d.instance_variable_set(:@object, v)
+        end
         d
       else
         raise CCSError, :CCS_INVALID_TYPE

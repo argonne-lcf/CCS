@@ -195,7 +195,8 @@ class ccs_datum_flag(CEnumeration):
   _members_ = [
     ('DEFAULT', 0),
     ('TRANSIENT', (1 << 0)),
-    ('UNPOOLED', (1 << 1))]
+    ('UNPOOLED', (1 << 1)),
+    ('ID', (1 << 2))]
  
 ccs_datum_flags = ct.c_uint
 
@@ -278,7 +279,10 @@ class ccs_datum(ct.Structure):
     elif self.type == ccs_data_type.INACTIVE:
       return ccs_inactive
     elif self.type == ccs_data_type.OBJECT:
-      return Object.from_handle(ct.c_void_p(self._value.o))
+      if self.flags == ccs_datum_flag.ID:
+        return Object(ct.c_void_p(self._value.o), retain = False, auto_release = False)
+      else:
+        return Object.from_handle(ct.c_void_p(self._value.o))
     else:
       raise Error(ccs_error(ccs_error.INVALID_VALUE))
 
@@ -311,9 +315,12 @@ class ccs_datum(ct.Structure):
       self.flags = 0
     elif isinstance(v, Object):
       self.type = ccs_data_type.OBJECT
-      self._object = v
       self._value.o = v.handle
-      self.flags = ccs_datum_flag.TRANSIENT
+      if type(v) == Object:
+        self.flags = ccs_datum_flag.ID
+      else:
+        self._object = v
+        self.flags = ccs_datum_flag.TRANSIENT
     else:
       raise Error(ccs_error(ccs_error.INVALID_VALUE))
 
