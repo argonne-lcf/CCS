@@ -7,6 +7,9 @@ ccs_binding_get_value = _ccs_get_function("ccs_binding_get_value", [ccs_binding,
 ccs_binding_set_value = _ccs_get_function("ccs_binding_set_value", [ccs_binding, ct.c_size_t, ccs_datum_fix])
 ccs_binding_get_values = _ccs_get_function("ccs_binding_get_values", [ccs_binding, ct.c_size_t, ct.POINTER(ccs_datum), ct.POINTER(ct.c_size_t)])
 ccs_binding_get_value_by_name = _ccs_get_function("ccs_binding_get_value_by_name", [ccs_binding, ct.c_char_p, ct.POINTER(ccs_datum)])
+ccs_binding_set_value_by_name = _ccs_get_function("ccs_binding_set_value_by_name", [ccs_binding, ct.c_char_p, ccs_datum_fix])
+ccs_binding_get_value_by_hyperparameter = _ccs_get_function("ccs_binding_get_value_by_hyperparameter", [ccs_binding, ccs_hyperparameter, ct.POINTER(ccs_datum)])
+ccs_binding_set_value_by_hyperparameter = _ccs_get_function("ccs_binding_set_value_by_hyperparameter", [ccs_binding, ccs_hyperparameter, ccs_datum_fix])
 ccs_binding_hash = _ccs_get_function("ccs_binding_hash", [ccs_binding, ct.POINTER(ccs_hash)])
 ccs_binding_cmp = _ccs_get_function("ccs_binding_cmp", [ccs_binding, ccs_binding, ct.POINTER(ccs_int)])
 
@@ -33,19 +36,20 @@ class Binding(Object):
     return self._num_values
 
   def set_value(self, hyperparameter, value):
-    if isinstance(hyperparameter, Hyperparameter):
-      hyperparameter = self.context.hyperparameter_index(hyperparameter)
-    elif isinstance(hyperparameter, str):
-      hyperparameter = self.context.hyperparameter_index_by_name(hyperparameter)
     pv = ccs_datum(value)
     v = ccs_datum_fix(pv)
-    res = ccs_binding_set_value(self.handle, hyperparameter, v)
+    if isinstance(hyperparameter, Hyperparameter):
+      res = ccs_binding_set_value_by_hyperparameter(self.handle, hyperparameter.handle, v)
+    elif isinstance(hyperparameter, str):
+      res = ccs_binding_set_value_by_name(self.handle, str.encode(hyperparameter), ct.byref(v))
+    else:
+      res = ccs_binding_set_value(self.handle, hyperparameter, v)
     Error.check(res)
 
   def value(self, hyperparameter):
     v = ccs_datum()
     if isinstance(hyperparameter, Hyperparameter):
-      res = ccs_binding_get_value(self.handle, self.context.hyperparameter_index(hyperparameter), ct.byref(v))
+      res = ccs_binding_get_value_by_hyperparameter(self.handle, hyperparameter.handle, ct.byref(v))
     elif isinstance(hyperparameter, str):
       res = ccs_binding_get_value_by_name(self.handle, str.encode(hyperparameter), ct.byref(v))
     else:

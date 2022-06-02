@@ -52,7 +52,7 @@ static inline ccs_result_t
 _ccs_binding_set_value(ccs_binding_t binding,
                       size_t        index,
                       ccs_datum_t   value) {
-	if (index >= binding->data->num_values)
+	if (CCS_UNLIKELY(index >= binding->data->num_values))
 		return -CCS_OUT_OF_BOUNDS;
 	if (value.flags & CCS_FLAG_TRANSIENT)
 		CCS_VALIDATE(ccs_context_validate_value(
@@ -91,9 +91,39 @@ _ccs_binding_get_value_by_name(ccs_binding_t  binding,
 	CCS_CHECK_PTR(name);
 	size_t index;
 	CCS_VALIDATE(ccs_context_get_hyperparameter_index_by_name(
-	               binding->data->context, name, &index));
-	*value_ret = binding->data->values[index];
-	return CCS_SUCCESS;
+		binding->data->context, name, &index));
+	return _ccs_binding_get_value(binding, index, value_ret);
+}
+
+static inline ccs_result_t
+_ccs_binding_set_value_by_name(ccs_binding_t  binding,
+                               const char    *name,
+                               ccs_datum_t    value) {
+	CCS_CHECK_PTR(name);
+	size_t index;
+	CCS_VALIDATE(ccs_context_get_hyperparameter_index_by_name(
+		binding->data->context, name, &index));
+	return _ccs_binding_set_value(binding, index, value);
+}
+
+static inline ccs_result_t
+_ccs_binding_get_value_by_hyperparameter(ccs_binding_t         binding,
+                                         ccs_hyperparameter_t  hyperparameter,
+                                         ccs_datum_t          *value_ret) {
+	size_t index;
+	CCS_VALIDATE(ccs_context_get_hyperparameter_index(
+		binding->data->context, hyperparameter, &index));
+	return _ccs_binding_get_value(binding, index, value_ret);
+}
+
+static inline ccs_result_t
+_ccs_binding_set_value_by_hyperparameter(ccs_binding_t        binding,
+                                         ccs_hyperparameter_t hyperparameter,
+                                         ccs_datum_t          value) {
+	size_t index;
+	CCS_VALIDATE(ccs_context_get_hyperparameter_index(
+		binding->data->context, hyperparameter, &index));
+	return _ccs_binding_set_value(binding, index, value);
 }
 
 static inline ccs_result_t

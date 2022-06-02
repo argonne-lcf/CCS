@@ -4,6 +4,9 @@ module CCS
   attach_function :ccs_binding_set_value, [:ccs_binding_t, :size_t, :ccs_datum_t], :ccs_result_t
   attach_function :ccs_binding_get_values, [:ccs_binding_t, :size_t, :pointer, :pointer], :ccs_result_t
   attach_function :ccs_binding_get_value_by_name, [:ccs_binding_t, :string, :pointer], :ccs_result_t
+  attach_function :ccs_binding_set_value_by_name, [:ccs_binding_t, :string, :ccs_datum_t], :ccs_result_t
+  attach_function :ccs_binding_get_value_by_hyperparameter, [:ccs_binding_t, :ccs_hyperparameter_t, :pointer], :ccs_result_t
+  attach_function :ccs_binding_set_value_by_hyperparameter, [:ccs_binding_t, :ccs_hyperparameter_t, :ccs_datum_t], :ccs_result_t
   attach_function :ccs_binding_hash, [:ccs_binding_t, :pointer], :ccs_result_t
   attach_function :ccs_binding_cmp, [:ccs_binding_t, :ccs_binding_t, :pointer], :ccs_result_t
 
@@ -14,31 +17,38 @@ module CCS
 
     def set_value(hyperparameter, value)
       d = Datum.from_value(value)
-      case hyperparameter
-      when String, Symbol
-        hyperparameter = context.hyperparameter_index_by_name(hyperparameter)
-      when Hyperparameter
-        hyperparameter = context.hyperparameter_index(hyperparameter)
-      end
-      res = CCS.ccs_binding_set_value(@handle, hyperparameter, d)
+      res = case hyperparameter
+        when String
+          CCS.ccs_binding_set_value_by_name(@handle, hyperparameter, d)
+        when Symbol
+          name = hyperparameter.inspect
+          CCS.ccs_binding_set_value_by_name(@handle, name, d)
+        when Hyperparameter
+          CCS.ccs_binding_set_value_by_hyperparameter(@handle, hyperparameter.handle, d)
+        when Integer
+          CCS.ccs_binding_set_value(@handle, hyperparameter, d)
+        else
+          raise CCSError, :CCS_INVALID_VALUE
+        end
       CCS.error_check(res)
       self
     end
 
     def value(hyperparameter)
       ptr = MemoryPointer::new(:ccs_datum_t)
-      case hyperparameter
-      when String
-        res = CCS.ccs_binding_get_value_by_name(@handle, hyperparameter, ptr)
-      when Symbol
-        res = CCS.ccs_binding_get_value_by_name(@handle, hyperparameter.inspect, ptr)
-      when Hyperparameter
-        res = CCS.ccs_binding_get_value(@handle, contex.hyperparameter_index(hyperparameter), ptr)
-      when Integer
-        res = CCS.ccs_binding_get_value(@handle, hyperparameter, ptr)
-      else
-        raise CCSError, :CCS_INVALID_VALUE
-      end
+      res = case hyperparameter
+        when String
+          CCS.ccs_binding_get_value_by_name(@handle, hyperparameter, ptr)
+        when Symbol
+          name = hyperparameter.inspect
+          CCS.ccs_binding_get_value_by_name(@handle, name, ptr)
+        when Hyperparameter
+          CCS.ccs_binding_get_by_hyperparameter(@handle, hyperparameter.handle, ptr)
+        when Integer
+          CCS.ccs_binding_get_value(@handle, hyperparameter, ptr)
+        else
+          raise CCSError, :CCS_INVALID_VALUE
+        end
       CCS.error_check(res)
       Datum::new(ptr).value
     end

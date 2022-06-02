@@ -91,12 +91,57 @@ ccs_binding_get_values(ccs_binding_t  binding,
  * @return -#CCS_INVALID_OBJECT if \p binding is not a valid CCS object
  * @return -#CCS_INVALID_VALUE if \p value_ret is NULL
  * @return -#CCS_INVALID_NAME if no hyperparameter with such \p name exist in
- *                            the \p context
+ *                            the \p binding context
  */
 extern ccs_result_t
 ccs_binding_get_value_by_name(ccs_binding_t  binding,
                               const char    *name,
                               ccs_datum_t   *value_ret);
+
+/**
+ * Set the value of the hyperparameter with the given name.
+ * @param[in,out] binding
+ * @param[in] name the name of the hyperparameter whose value to set
+ * @param[in] value the value
+ * @return #CCS_SUCCESS on success
+ * @return -#CCS_INVALID_OBJECT if \p binding is not a valid CCS object
+ * @return -#CCS_INVALID_NAME if no hyperparameter with such \p name exist in
+ *                            the \p binding context
+ */
+extern ccs_result_t
+ccs_binding_set_value_by_name(ccs_binding_t  binding,
+                              const char    *name,
+                              ccs_datum_t    value);
+
+/**
+ * Get the value of the hyperparameter with the given handle.
+ * @param[in] binding
+ * @param[in] hyperparameter hyperparameter whose value to retrieve
+ * @param[out] value_ret a pointer to the variable that will hold the value
+ * @return #CCS_SUCCESS on success
+ * @return -#CCS_INVALID_OBJECT if \p binding is not a valid CCS object
+ * @return -#CCS_INVALID_HYPERPARAMETER if \p hyperparameter does not exist in
+ *                                      the \p binding context
+ */
+extern ccs_result_t
+ccs_binding_get_value_by_hyperparameter(ccs_binding_t         binding,
+                                        ccs_hyperparameter_t  hyperparameter,
+                                        ccs_datum_t          *value_ret);
+
+/**
+ * Set the value of the hyperparameter with the given handle.
+ * @param[in,out] binding
+ * @param[in] hyperparameter hyperparameter whose value to set
+ * @param[in] value the value
+ * @return #CCS_SUCCESS on success
+ * @return -#CCS_INVALID_OBJECT if \p binding is not a valid CCS object
+ * @return -#CCS_INVALID_HYPERPARAMETER if \p hyperparameter does not exist in
+ *                                      the \p binding context
+ */
+extern ccs_result_t
+ccs_binding_set_value_by_hyperparameter(ccs_binding_t        binding,
+                                        ccs_hyperparameter_t hyperparameter,
+                                        ccs_datum_t          value);
 
 /**
  * Compute a hash value for the binding by hashing together the context

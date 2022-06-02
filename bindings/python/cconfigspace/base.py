@@ -266,19 +266,20 @@ class ccs_datum(ct.Structure):
 
   @property
   def value(self):
-    if self.type == ccs_data_type.NONE:
+    t = self.type
+    if t == ccs_data_type.NONE:
       return None
-    elif self.type == ccs_data_type.INTEGER:
+    elif t == ccs_data_type.INTEGER:
       return self._value.i
-    elif self.type == ccs_data_type.FLOAT:
+    elif t == ccs_data_type.FLOAT:
       return self._value.f
-    elif self.type == ccs_data_type.BOOLEAN:
+    elif t == ccs_data_type.BOOLEAN:
       return False if self._value.i == ccs_false else True
-    elif self.type == ccs_data_type.STRING:
+    elif t == ccs_data_type.STRING:
       return self._value.s.decode()
-    elif self.type == ccs_data_type.INACTIVE:
+    elif t == ccs_data_type.INACTIVE:
       return ccs_inactive
-    elif self.type == ccs_data_type.OBJECT:
+    elif t == ccs_data_type.OBJECT:
       if self.flags == ccs_datum_flag.ID:
         return Object(ct.c_void_p(self._value.o), retain = False, auto_release = False)
       else:
