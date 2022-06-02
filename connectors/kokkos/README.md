@@ -71,4 +71,4 @@ export KOKKOS_PROFILE_LIBRARY=$CCS_INSTALL/lib/cconfigspace/ccs-kokkos-connector
 time ./two_var.exe
 unset KOKKOS_PROFILE_LIBRARY KOKKOS_TUNE_INTERNALS
 ```
-The second time should be significantly smaller then the first one. Be aware that `simple_features` without autotuning can more than an hour to run, while it should take a few minutes to run using CCS random tuner.
+The second time should be significantly smaller then the first one. Be aware that `simple_features` without autotuning can take more than an hour to run, while it should take a few minutes to run using CCS random tuner.
