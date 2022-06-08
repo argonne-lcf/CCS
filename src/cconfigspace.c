@@ -306,7 +306,7 @@ _ccs_object_deserialize_user_data(
 			&serialize_data_size, buffer_size, buffer));
 		if (opts->deserialize_callback)
 			CCS_VALIDATE(opts->deserialize_callback(
-				object, (size_t)serialize_data_size, *buffer, opts->deserialize_user_data));
+				object, (size_t)serialize_data_size, serialize_data_size == 0 ? NULL : *buffer, opts->deserialize_user_data));
 		if (serialize_data_size) {
 			*buffer_size -= serialize_data_size;
 			*buffer += serialize_data_size;

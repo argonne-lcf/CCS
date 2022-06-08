@@ -181,9 +181,6 @@ _ccs_deserialize_bin_expression(
 		CCS_VALIDATE(_ccs_deserialize_bin_expression_general(
 			expression_ret, version, buffer_size, buffer, &new_opts));
 	}
-	CCS_VALIDATE_ERR_GOTO(res,
-		ccs_object_set_user_data(*expression_ret, obj.user_data),
-		err_exp);
 	if (opts && opts->map_values && opts->handle_map)
 		CCS_VALIDATE_ERR_GOTO(res,
 			_ccs_object_handle_check_add(

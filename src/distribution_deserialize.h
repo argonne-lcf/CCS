@@ -335,9 +335,6 @@ _ccs_deserialize_bin_distribution(
 	default:
 		return -CCS_UNSUPPORTED_OPERATION;
 	}
-	CCS_VALIDATE_ERR_GOTO(res,
-		ccs_object_set_user_data(*distribution_ret, obj.user_data),
-		err_dis);
 	if (opts && opts->handle_map)
 		CCS_VALIDATE_ERR_GOTO(res,
 			_ccs_object_handle_check_add(

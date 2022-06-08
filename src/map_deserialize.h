@@ -60,9 +60,6 @@ _ccs_deserialize_bin_map(
 		CCS_VALIDATE_ERR_GOTO(res, ccs_map_set(
 			*map_ret, data.pairs[i].key, data.pairs[i].value),
 			err_map);
-	CCS_VALIDATE_ERR_GOTO(res,
-		ccs_object_set_user_data(*map_ret, obj.user_data),
-		err_map);
 	if (opts->handle_map)
 		CCS_VALIDATE_ERR_GOTO(res,
 			_ccs_object_handle_check_add(

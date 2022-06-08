@@ -134,7 +134,7 @@ _ccs_deserialize_bin_configuration_space(
 	CCS_VALIDATE_ERR_GOTO(res, _ccs_deserialize_bin_ccs_configuration_space_data(
 		&data, version, buffer_size, buffer, &new_opts), end);
 	CCS_VALIDATE_ERR_GOTO(res, ccs_create_configuration_space(
-		data.name, obj.user_data, configuration_space_ret), end);
+		data.name, NULL, configuration_space_ret), end);
 	CCS_VALIDATE_ERR_GOTO(res, ccs_configuration_space_set_rng(
 		*configuration_space_ret, data.rng), end);
 	CCS_VALIDATE_ERR_GOTO(res, ccs_configuration_space_add_hyperparameters(

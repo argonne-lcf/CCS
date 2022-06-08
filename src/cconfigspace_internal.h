@@ -522,7 +522,6 @@ CCS_CONVERTER(ccs_tuner_type, ccs_tuner_type_t, 32)
 CCS_CONVERTER(ccs_features_tuner_type, ccs_features_tuner_type_t, 32)
 CCS_CONVERTER(ccs_result, ccs_result_t, 32)
 CCS_CONVERTER(ccs_object, ccs_object_t, 64)
-CCS_CONVERTER(ccs_user_data, ccs_user_data_t, 64)
 #else
 CCS_CONVERTER(uint8, uint8_t, 8)
 CCS_CONVERTER(int8, int8_t, 8)
@@ -550,7 +549,6 @@ CCS_CONVERTER_COMPRESSED(ccs_tuner_type, ccs_tuner_type_t, 32)
 CCS_CONVERTER_COMPRESSED(ccs_features_tuner_type, ccs_features_tuner_type_t, 32)
 CCS_CONVERTER_COMPRESSED_SIGNED(ccs_result, ccs_result_t, 32)
 CCS_CONVERTER_COMPRESSED_POINTER(ccs_object, ccs_object_t)
-CCS_CONVERTER_COMPRESSED_POINTER(ccs_user_data, ccs_user_data_t)
 #endif
 
 static inline size_t
@@ -800,8 +798,7 @@ static inline size_t
 _ccs_serialize_bin_size_ccs_object_internal(
 		_ccs_object_internal_t *obj) {
 	return _ccs_serialize_bin_size_ccs_object_type(obj->type) +
-	       _ccs_serialize_bin_size_ccs_object((ccs_object_t)obj) +
-	       _ccs_serialize_bin_size_ccs_user_data(obj->user_data);
+	       _ccs_serialize_bin_size_ccs_object((ccs_object_t)obj);
 }
 
 static inline ccs_result_t
@@ -813,8 +810,6 @@ _ccs_serialize_bin_ccs_object_internal(
 		obj->type, buffer_size, buffer));
 	CCS_VALIDATE(_ccs_serialize_bin_ccs_object(
 		(ccs_object_t)obj, buffer_size, buffer));
-	CCS_VALIDATE(_ccs_serialize_bin_ccs_user_data(
-		obj->user_data, buffer_size, buffer));
 	return CCS_SUCCESS;
 }
 
@@ -828,8 +823,6 @@ _ccs_deserialize_bin_ccs_object_internal(
 		&obj->type, buffer_size, buffer));
 	CCS_VALIDATE(_ccs_deserialize_bin_ccs_object(
 		handle_ret, buffer_size, buffer));
-	CCS_VALIDATE(_ccs_deserialize_bin_ccs_user_data(
-		&obj->user_data, buffer_size, buffer));
 	return CCS_SUCCESS;
 }
 

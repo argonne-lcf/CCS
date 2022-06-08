@@ -800,12 +800,8 @@ enum ccs_deserialize_option_e {
 	CCS_DESERIALIZE_OPTION_NON_BLOCKING,
 	/** The next parameters are a deserialization callback and it's user_data.
 	 *  This callback will be called for all objects that had their
-	 *  user_data serialized. If no such callback is provided the user_data
-	 *  value will be set to the value it had when the object was
-	 *  serialized. The callback is responsible for modifying the object
-	 *  state (user_data for instance).  When the callback is called, the
-	 *  object has it's user_data field set to the value it had when it was
-	 *  serialized. */
+	 *  user_data serialized. If no such callback is provided the object's
+	 *  user_data value will not be set. */
 	CCS_DESERIALIZE_CALLBACK,
 	/** Guard */
 	CCS_DESERIALIZE_OPTION_MAX,
