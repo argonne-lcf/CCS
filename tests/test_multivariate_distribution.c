@@ -348,13 +348,13 @@ void test_distribution_hyperparameters_sample() {
 	err = ccs_create_numerical_hyperparameter("param1", CCS_NUM_FLOAT,
 	                                          CCSF(-5.0), CCSF(5.0),
 	                                          CCSF(0.0), CCSF(0.0),
-	                                          NULL, params);
+	                                          params);
 	assert( err == CCS_SUCCESS );
 
 	err = ccs_create_numerical_hyperparameter("param2", CCS_NUM_FLOAT,
 	                                          CCSF(-4.0), CCSF(6.0),
 	                                          CCSF(0.0), CCSF(1.0),
-	                                          NULL, params + 1);
+	                                          params + 1);
 	assert( err == CCS_SUCCESS );
 
 	err = ccs_create_multivariate_distribution(
@@ -427,13 +427,13 @@ void test_distribution_hyperparameters_sample_oversampling() {
 	err = ccs_create_numerical_hyperparameter("param1", CCS_NUM_FLOAT,
 	                                          CCSF(-5.0), CCSF(5.0),
 	                                          CCSF(0.0), CCSF(0.0),
-	                                          NULL, params);
+	                                          params);
 	assert( err == CCS_SUCCESS );
 
 	err = ccs_create_numerical_hyperparameter("param2", CCS_NUM_FLOAT,
 	                                          CCSF(-4.0), CCSF(6.0),
 	                                          CCSF(0.0), CCSF(1.0),
-	                                          NULL, params + 1);
+	                                          params + 1);
 	assert( err == CCS_SUCCESS );
 
 	err = ccs_create_multivariate_distribution(

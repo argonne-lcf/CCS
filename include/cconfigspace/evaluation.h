@@ -46,8 +46,6 @@ typedef enum ccs_comparison_e ccs_comparison_t;
  * @param[in] num_values the number of provided values to initialize the
  *                       evaluation
  * @param[in] values an optional array of values to initialize the evaluation
- * @param[in] user_data a pointer to the user data to attach to this evaluation
- *                      instance
  * @param[out] evaluation_ret a pointer to the variable that will hold the
  *             newly created evaluation
  * @return #CCS_SUCCESS on success
@@ -67,7 +65,6 @@ ccs_create_evaluation(ccs_objective_space_t  objective_space,
                       ccs_result_t           error,
                       size_t                 num_values,
                       ccs_datum_t           *values,
-                      void                  *user_data,
                       ccs_evaluation_t      *evaluation_ret);
 
 /**

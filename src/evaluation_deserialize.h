@@ -61,7 +61,7 @@ _ccs_deserialize_bin_evaluation(
 	os = (ccs_objective_space_t)(d.value.o);
 
 	CCS_VALIDATE_ERR_GOTO(res, ccs_create_evaluation(
-		os, data.configuration, data.error, data.base.num_values, data.base.values, NULL, evaluation_ret), end);
+		os, data.configuration, data.error, data.base.num_values, data.base.values, evaluation_ret), end);
 
 	if (opts->map_values)
 		CCS_VALIDATE_ERR_GOTO(res,

@@ -14,8 +14,6 @@ extern "C" {
 /**
  * Create a new empty features space.
  * @param[in] name pointer to a string that will be copied internally
- * @param[in] user_data a pointer to the user data to attach to this features
- *                      space instance
  * @param[out] features_space_ret a pointer to the variable that will hold
  *                                     the newly created features space
  * @return #CCS_SUCCESS on success
@@ -26,7 +24,6 @@ extern "C" {
  */
 extern ccs_result_t
 ccs_create_features_space(const char           *name,
-                          void                 *user_data,
                           ccs_features_space_t *features_space_ret);
 
 /**

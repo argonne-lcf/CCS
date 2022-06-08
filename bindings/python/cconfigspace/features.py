@@ -5,13 +5,13 @@ from .hyperparameter import Hyperparameter
 from .features_space import FeaturesSpace
 from .binding import Binding
 
-ccs_create_features = _ccs_get_function("ccs_create_features", [ccs_features_space, ct.c_size_t, ct.POINTER(ccs_datum), ct.c_void_p, ct.POINTER(ccs_features)])
+ccs_create_features = _ccs_get_function("ccs_create_features", [ccs_features_space, ct.c_size_t, ct.POINTER(ccs_datum), ct.POINTER(ccs_features)])
 ccs_features_get_features_space = _ccs_get_function("ccs_features_get_features_space", [ccs_features, ct.POINTER(ccs_features_space)])
 ccs_features_check = _ccs_get_function("ccs_features_check", [ccs_features])
 
 class Features(Binding):
   def __init__(self, handle = None, retain = False, auto_release = True,
-               features_space = None, values = None, user_data = None):
+               features_space = None, values = None):
     if handle is None:
       count = 0
       if values:
@@ -22,7 +22,7 @@ class Features(Binding):
       else:
         vals = None
       handle = ccs_features()
-      res = ccs_create_features(features_space.handle, count, vals, user_data, ct.byref(handle))
+      res = ccs_create_features(features_space.handle, count, vals, ct.byref(handle))
       Error.check(res)
       super().__init__(handle = handle, retain = False)
     else:

@@ -8,7 +8,7 @@ from .expression_parser import ccs_parser
 from .rng import Rng
 from parglare.parser import Context as PContext
 
-ccs_create_configuration_space = _ccs_get_function("ccs_create_configuration_space", [ct.c_char_p, ct.c_void_p, ct.POINTER(ccs_configuration_space)])
+ccs_create_configuration_space = _ccs_get_function("ccs_create_configuration_space", [ct.c_char_p, ct.POINTER(ccs_configuration_space)])
 ccs_configuration_space_set_rng = _ccs_get_function("ccs_configuration_space_set_rng", [ccs_configuration_space, ccs_rng])
 ccs_configuration_space_get_rng = _ccs_get_function("ccs_configuration_space_get_rng", [ccs_configuration_space, ct.POINTER(ccs_rng)])
 ccs_configuration_space_add_hyperparameter = _ccs_get_function("ccs_configuration_space_add_hyperparameter", [ccs_configuration_space, ccs_hyperparameter, ccs_distribution])
@@ -30,10 +30,10 @@ ccs_configuration_space_samples = _ccs_get_function("ccs_configuration_space_sam
 
 class ConfigurationSpace(Context):
   def __init__(self, handle = None, retain = False, auto_release = True,
-               name = "", user_data = None):
+               name = ""):
     if handle is None:
       handle = ccs_configuration_space()
-      res = ccs_create_configuration_space(str.encode(name), user_data, ct.byref(handle))
+      res = ccs_create_configuration_space(str.encode(name), ct.byref(handle))
       Error.check(res)
       super().__init__(handle = handle, retain = False)
     else:

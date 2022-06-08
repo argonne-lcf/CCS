@@ -71,7 +71,6 @@ ccs_result_t
 ccs_create_configuration(ccs_configuration_space_t configuration_space,
                          size_t                    num_values,
                          ccs_datum_t              *values,
-                         void                     *user_data,
                          ccs_configuration_t      *configuration_ret) {
 	CCS_CHECK_OBJ(configuration_space, CCS_CONFIGURATION_SPACE);
 	CCS_CHECK_PTR(configuration_ret);
@@ -89,7 +88,7 @@ ccs_create_configuration(ccs_configuration_space_t configuration_space,
 	CCS_VALIDATE_ERR_GOTO(err, ccs_retain_object(configuration_space), errmem);
 	ccs_configuration_t config;
 	config = (ccs_configuration_t)mem;
-	_ccs_object_init(&(config->obj), CCS_CONFIGURATION, user_data, (_ccs_object_ops_t*)&_configuration_ops);
+	_ccs_object_init(&(config->obj), CCS_CONFIGURATION, (_ccs_object_ops_t*)&_configuration_ops);
 	config->data = (struct _ccs_configuration_data_s*)(mem + sizeof(struct _ccs_configuration_s));
 	config->data->num_values = num;
 	config->data->configuration_space = configuration_space;

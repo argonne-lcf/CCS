@@ -24,7 +24,7 @@ _ccs_deserialize_bin_features_space(
 	CCS_VALIDATE_ERR_GOTO(res, _ccs_deserialize_bin_ccs_context_data(
 		&data, version, buffer_size, buffer, &new_opts), end);
 	CCS_VALIDATE_ERR_GOTO(res, ccs_create_features_space(
-		data.name, NULL, features_space_ret), end);
+		data.name, features_space_ret), end);
 	CCS_VALIDATE_ERR_GOTO(res, ccs_features_space_add_hyperparameters(
 		*features_space_ret, data.num_hyperparameters, data.hyperparameters),
 		err_features_space);

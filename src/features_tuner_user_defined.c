@@ -257,7 +257,6 @@ ccs_create_user_defined_features_tuner(
 		ccs_configuration_space_t                 configuration_space,
 		ccs_features_space_t                      features_space,
 		ccs_objective_space_t                     objective_space,
-		void                                     *user_data,
 		ccs_user_defined_features_tuner_vector_t *vector,
 		void                                     *tuner_data,
 		ccs_features_tuner_t                     *tuner_ret) {
@@ -288,7 +287,7 @@ ccs_create_user_defined_features_tuner(
 	CCS_VALIDATE_ERR_GOTO(err, ccs_retain_object(features_space), erros);
 
 	tun = (ccs_features_tuner_t)mem;
-	_ccs_object_init(&(tun->obj), CCS_FEATURES_TUNER, user_data, (_ccs_object_ops_t *)&_ccs_features_tuner_user_defined_ops);
+	_ccs_object_init(&(tun->obj), CCS_FEATURES_TUNER, (_ccs_object_ops_t *)&_ccs_features_tuner_user_defined_ops);
 	tun->data = (struct _ccs_features_tuner_data_s *)(mem + sizeof(struct _ccs_features_tuner_s));
 	data = (_ccs_user_defined_features_tuner_data_t *)tun->data;
 	data->common_data.type = CCS_FEATURES_TUNER_USER_DEFINED;

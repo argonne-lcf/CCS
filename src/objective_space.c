@@ -177,7 +177,6 @@ static const UT_icd _objectives_icd = {
 
 ccs_result_t
 ccs_create_objective_space(const char            *name,
-                           void                  *user_data,
                            ccs_objective_space_t *objective_space_ret) {
 	CCS_CHECK_PTR(name);
 	CCS_CHECK_PTR(objective_space_ret);
@@ -187,7 +186,7 @@ ccs_create_objective_space(const char            *name,
 		return -CCS_OUT_OF_MEMORY;
 	ccs_result_t err;
 	ccs_objective_space_t obj_space = (ccs_objective_space_t)mem;
-	_ccs_object_init(&(obj_space->obj), CCS_OBJECTIVE_SPACE, user_data,
+	_ccs_object_init(&(obj_space->obj), CCS_OBJECTIVE_SPACE,
 		(_ccs_object_ops_t *)&_objective_space_ops);
 	obj_space->data = (struct _ccs_objective_space_data_s*)(mem +
 		sizeof(struct _ccs_objective_space_s));

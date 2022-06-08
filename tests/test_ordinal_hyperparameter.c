@@ -81,7 +81,7 @@ void test_create() {
 
 	err = ccs_create_ordinal_hyperparameter("my_param", num_possible_values,
 	                                        possible_values, default_value_index,
-	                                        NULL, &hyperparameter);
+	                                        &hyperparameter);
 	assert( err == CCS_SUCCESS );
 
 	compare_hyperparameter(hyperparameter, num_possible_values, possible_values, default_value_index);
@@ -124,7 +124,6 @@ void test_create_error() {
 
 	err = ccs_create_ordinal_hyperparameter("my_param", num_possible_values,
 	                                        possible_values, default_value_index,
-	                                        NULL,
 	                                        &hyperparameter);
 	assert( err == -CCS_INVALID_VALUE );
 }
@@ -149,7 +148,7 @@ void test_samples() {
 	assert( err == CCS_SUCCESS );
 	err = ccs_create_ordinal_hyperparameter("my_param", num_possible_values,
 	                                        possible_values, default_value_index,
-	                                        NULL, &hyperparameter);
+	                                        &hyperparameter);
 	assert( err == CCS_SUCCESS );
 
 	err = ccs_hyperparameter_get_default_distribution(hyperparameter, &distribution);
@@ -199,7 +198,7 @@ void test_oversampling() {
 
 	err = ccs_create_ordinal_hyperparameter("my_param", num_possible_values,
 	                                        possible_values, default_value_index,
-	                                        NULL, &hyperparameter);
+	                                        &hyperparameter);
 	assert( err == CCS_SUCCESS );
 
 	err = ccs_hyperparameter_samples(hyperparameter, distribution, rng,
@@ -239,7 +238,7 @@ void test_compare() {
 
 	err = ccs_create_ordinal_hyperparameter("my_param", num_possible_values,
 	                                        possible_values, default_value_index,
-	                                        NULL, &hyperparameter);
+	                                        &hyperparameter);
 	assert( err == CCS_SUCCESS );
 
 	err = ccs_ordinal_hyperparameter_compare_values(
@@ -294,7 +293,7 @@ void test_compare_float() {
 
 	err = ccs_create_ordinal_hyperparameter("my_param", num_possible_values,
 	                                        possible_values, default_value_index,
-	                                        NULL, &hyperparameter);
+	                                        &hyperparameter);
 	assert( err == CCS_SUCCESS );
 
 	err = ccs_ordinal_hyperparameter_compare_values(
@@ -349,7 +348,7 @@ void test_compare_string() {
 
 	err = ccs_create_ordinal_hyperparameter("my_param", num_possible_values,
 	                                        possible_values, default_value_index,
-	                                        NULL, &hyperparameter);
+	                                        &hyperparameter);
 	assert( err == CCS_SUCCESS );
 
 	err = ccs_ordinal_hyperparameter_compare_values(
@@ -407,7 +406,7 @@ void test_validate() {
 
 	err = ccs_create_ordinal_hyperparameter("my_param", num_possible_values,
 	                                        possible_values, default_value_index,
-	                                        NULL, &hyperparameter);
+	                                        &hyperparameter);
 	assert( err == CCS_SUCCESS );
 
 	err = ccs_hyperparameter_validate_values(hyperparameter, num_possible_values,

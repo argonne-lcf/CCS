@@ -35,7 +35,7 @@ _ccs_deserialize_bin_features(
 	cs = (ccs_features_space_t)(d.value.o);
 
 	CCS_VALIDATE_ERR_GOTO(res, ccs_create_features(
-		cs, data.num_values, data.values, NULL, features_ret), end);
+		cs, data.num_values, data.values, features_ret), end);
 
 	if (opts->map_values)
 		CCS_VALIDATE_ERR_GOTO(res,

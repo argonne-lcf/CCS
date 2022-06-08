@@ -126,11 +126,11 @@ module CCS
     end
   end
 
-  attach_function :ccs_create_numerical_hyperparameter, [:string, :ccs_numeric_type_t, :ccs_numeric_t, :ccs_numeric_t, :ccs_numeric_t, :ccs_numeric_t, :pointer, :pointer], :ccs_result_t
+  attach_function :ccs_create_numerical_hyperparameter, [:string, :ccs_numeric_type_t, :ccs_numeric_t, :ccs_numeric_t, :ccs_numeric_t, :ccs_numeric_t, :pointer], :ccs_result_t
   attach_function :ccs_numerical_hyperparameter_get_parameters, [:ccs_hyperparameter_t, :pointer, :pointer, :pointer, :pointer], :ccs_result_t
   class NumericalHyperparameter < Hyperparameter
     def initialize(handle = nil, retain: false, auto_release: true,
-                   name: Hyperparameter.default_name, data_type: :CCS_NUM_FLOAT, lower: 0.0, upper: 1.0, quantization: 0.0, default: lower, user_data: nil)
+                   name: Hyperparameter.default_name, data_type: :CCS_NUM_FLOAT, lower: 0.0, upper: 1.0, quantization: 0.0, default: lower)
       if (handle)
         super(handle, retain: retain, auto_release: auto_release)
       else
@@ -150,18 +150,18 @@ module CCS
           raise CCSError, :CCS_INVALID_TYPE
         end
         name = name.inspect if name.kind_of?(Symbol)
-        res = CCS.ccs_create_numerical_hyperparameter(name, data_type, lower, upper, quantization, default, user_data, ptr)
+        res = CCS.ccs_create_numerical_hyperparameter(name, data_type, lower, upper, quantization, default, ptr)
         CCS.error_check(res)
         super(ptr.read_pointer, retain: false)
       end
     end
 
-    def self.int(name: default_name, lower:, upper:, quantization: 0, default: lower, user_data: nil)
-      self.new(nil, name: name, data_type: :CCS_NUM_INTEGER, lower: lower, upper: upper, quantization: quantization, default: default, user_data: user_data)
+    def self.int(name: default_name, lower:, upper:, quantization: 0, default: lower)
+      self.new(nil, name: name, data_type: :CCS_NUM_INTEGER, lower: lower, upper: upper, quantization: quantization, default: default)
     end
  
-    def self.float(name: default_name, lower:, upper:, quantization: 0.0, default: lower, user_data: nil)
-      self.new(nil, name: name, data_type: :CCS_NUM_FLOAT, lower: lower, upper: upper, quantization: quantization, default: default, user_data: user_data)
+    def self.float(name: default_name, lower:, upper:, quantization: 0.0, default: lower)
+      self.new(nil, name: name, data_type: :CCS_NUM_FLOAT, lower: lower, upper: upper, quantization: quantization, default: default)
     end
 
     def data_type
@@ -213,11 +213,11 @@ module CCS
     end
   end
 
-  attach_function :ccs_create_categorical_hyperparameter, [:string, :size_t, :pointer, :size_t, :pointer, :pointer],  :ccs_result_t
+  attach_function :ccs_create_categorical_hyperparameter, [:string, :size_t, :pointer, :size_t, :pointer],  :ccs_result_t
   attach_function :ccs_categorical_hyperparameter_get_values, [:ccs_hyperparameter_t, :size_t, :pointer, :pointer], :ccs_result_t
   class CategoricalHyperparameter < Hyperparameter
     def initialize(handle = nil, retain: false, auto_release: true,
-                   name: Hyperparameter.default_name, values: [], default_index: 0, user_data: nil)
+                   name: Hyperparameter.default_name, values: [], default_index: 0)
       if handle
         super(handle, retain: retain, auto_release: auto_release)
       else
@@ -227,7 +227,7 @@ module CCS
         values.each_with_index{ |v, i| Datum::new(vals[i]).value = v }
         ptr = MemoryPointer::new(:ccs_hyperparameter_t)
         name = name.inspect if name.kind_of?(Symbol)
-        res = CCS.ccs_create_categorical_hyperparameter(name, count, vals, default_index, user_data, ptr)
+        res = CCS.ccs_create_categorical_hyperparameter(name, count, vals, default_index, ptr)
         CCS.error_check(res)
         super(ptr.read_ccs_hyperparameter_t, retain: false)
       end
@@ -247,12 +247,12 @@ module CCS
     end
   end
 
-  attach_function :ccs_create_ordinal_hyperparameter, [:string, :size_t, :pointer, :size_t, :pointer, :pointer],  :ccs_result_t
+  attach_function :ccs_create_ordinal_hyperparameter, [:string, :size_t, :pointer, :size_t, :pointer],  :ccs_result_t
   attach_function :ccs_ordinal_hyperparameter_compare_values, [:ccs_hyperparameter_t, :ccs_datum_t, :ccs_datum_t, :pointer], :ccs_result_t
   attach_function :ccs_ordinal_hyperparameter_get_values, [:ccs_hyperparameter_t, :size_t, :pointer, :pointer], :ccs_result_t
   class OrdinalHyperparameter < Hyperparameter
     def initialize(handle = nil, retain: false, auto_release: true,
-                   name: Hyperparameter.default_name, values: [], default_index: 0, user_data: nil)
+                   name: Hyperparameter.default_name, values: [], default_index: 0)
       if handle
         super(handle, retain: retain, auto_release: auto_release)
       else
@@ -262,7 +262,7 @@ module CCS
         values.each_with_index{ |v, i| Datum::new(vals[i]).value = v }
         ptr = MemoryPointer::new(:ccs_hyperparameter_t)
         name = name.inspect if name.kind_of?(Symbol)
-        res = CCS.ccs_create_ordinal_hyperparameter(name, count, vals, default_index, user_data, ptr)
+        res = CCS.ccs_create_ordinal_hyperparameter(name, count, vals, default_index, ptr)
         CCS.error_check(res)
         super(ptr.read_ccs_hyperparameter_t, retain: false)
       end
@@ -291,11 +291,11 @@ module CCS
     end
   end
 
-  attach_function :ccs_create_discrete_hyperparameter, [:string, :size_t, :pointer, :size_t, :pointer, :pointer],  :ccs_result_t
+  attach_function :ccs_create_discrete_hyperparameter, [:string, :size_t, :pointer, :size_t, :pointer],  :ccs_result_t
   attach_function :ccs_discrete_hyperparameter_get_values, [:ccs_hyperparameter_t, :size_t, :pointer, :pointer], :ccs_result_t
   class DiscreteHyperparameter < Hyperparameter
     def initialize(handle = nil, retain: false, auto_release: true,
-                   name: Hyperparameter.default_name, values: [], default_index: 0, user_data: nil)
+                   name: Hyperparameter.default_name, values: [], default_index: 0)
       if handle
         super(handle, retain: retain, auto_release: auto_release)
       else
@@ -305,7 +305,7 @@ module CCS
         values.each_with_index{ |v, i| Datum::new(vals[i]).value = v }
         ptr = MemoryPointer::new(:ccs_hyperparameter_t)
         name = name.inspect if name.kind_of?(Symbol)
-        res = CCS.ccs_create_discrete_hyperparameter(name, count, vals, default_index, user_data, ptr)
+        res = CCS.ccs_create_discrete_hyperparameter(name, count, vals, default_index, ptr)
         CCS.error_check(res)
         super(ptr.read_ccs_hyperparameter_t, retain: false)
       end
@@ -325,16 +325,16 @@ module CCS
     end
   end
 
-  attach_function :ccs_create_string_hyperparameter, [:string, :pointer, :pointer],  :ccs_result_t
+  attach_function :ccs_create_string_hyperparameter, [:string, :pointer],  :ccs_result_t
   class StringHyperparameter < Hyperparameter
     def initialize(handle = nil, retain: false, auto_release: true,
-                   name: Hyperparameter.default_name, user_data: nil)
+                   name: Hyperparameter.default_name)
       if handle
         super(handle, retain: retain, auto_release: auto_release)
       else
         ptr = MemoryPointer::new(:ccs_hyperparameter_t)
         name = name.inspect if name.kind_of?(Symbol)
-        res = CCS.ccs_create_string_hyperparameter(name, user_data, ptr)
+        res = CCS.ccs_create_string_hyperparameter(name, ptr)
         CCS.error_check(res)
         super(ptr.read_ccs_hyperparameter_t, retain: false)
       end

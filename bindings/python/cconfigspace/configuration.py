@@ -5,13 +5,13 @@ from .hyperparameter import Hyperparameter
 from .configuration_space import ConfigurationSpace
 from .binding import Binding
 
-ccs_create_configuration = _ccs_get_function("ccs_create_configuration", [ccs_configuration_space, ct.c_size_t, ct.POINTER(ccs_datum), ct.c_void_p, ct.POINTER(ccs_configuration)])
+ccs_create_configuration = _ccs_get_function("ccs_create_configuration", [ccs_configuration_space, ct.c_size_t, ct.POINTER(ccs_datum), ct.POINTER(ccs_configuration)])
 ccs_configuration_get_configuration_space = _ccs_get_function("ccs_configuration_get_configuration_space", [ccs_configuration, ct.POINTER(ccs_configuration_space)])
 ccs_configuration_check = _ccs_get_function("ccs_configuration_check", [ccs_configuration])
 
 class Configuration(Binding):
   def __init__(self, handle = None, retain = False, auto_release = True,
-               configuration_space = None, values = None, user_data = None):
+               configuration_space = None, values = None):
     if handle is None:
       count = 0
       if values:
@@ -22,7 +22,7 @@ class Configuration(Binding):
       else:
         vals = None
       handle = ccs_configuration()
-      res = ccs_create_configuration(configuration_space.handle, count, vals, user_data, ct.byref(handle))
+      res = ccs_create_configuration(configuration_space.handle, count, vals, ct.byref(handle))
       Error.check(res)
       super().__init__(handle = handle, retain = False)
     else:

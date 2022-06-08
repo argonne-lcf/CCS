@@ -27,7 +27,7 @@ _ccs_deserialize_bin_hyperparameter_numerical(
 		(data.common_data.interval.type == CCS_NUM_FLOAT ?
 			CCSF(data.common_data.default_value.value.f) :
 			CCSI(data.common_data.default_value.value.i)),
-		NULL, hyperparameter_ret));
+		hyperparameter_ret));
 	return CCS_SUCCESS;
 }
 
@@ -90,7 +90,6 @@ _ccs_deserialize_bin_hyperparameter_categorical(
 			data.num_possible_values,
 			data.possible_values,
 			default_value_index,
-			NULL,
 			hyperparameter_ret), end);
 		break;
 	case CCS_HYPERPARAMETER_TYPE_ORDINAL:
@@ -99,7 +98,6 @@ _ccs_deserialize_bin_hyperparameter_categorical(
 			data.num_possible_values,
 			data.possible_values,
 			default_value_index,
-			NULL,
 			hyperparameter_ret), end);
 		break;
 	case CCS_HYPERPARAMETER_TYPE_DISCRETE:
@@ -108,7 +106,6 @@ _ccs_deserialize_bin_hyperparameter_categorical(
 			data.num_possible_values,
 			data.possible_values,
 			default_value_index,
-			NULL,
 			hyperparameter_ret), end);
 		break;
 	default:
@@ -145,7 +142,6 @@ _ccs_deserialize_bin_hyperparameter_string(
 		&data, buffer_size, buffer));
 	CCS_VALIDATE(ccs_create_string_hyperparameter(
 		data.name,
-		NULL,
 		hyperparameter_ret));
 	return CCS_SUCCESS;
 }

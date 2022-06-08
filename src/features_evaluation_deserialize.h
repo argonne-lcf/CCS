@@ -65,7 +65,7 @@ _ccs_deserialize_bin_features_evaluation(
 	os = (ccs_objective_space_t)(d.value.o);
 
 	CCS_VALIDATE_ERR_GOTO(res, ccs_create_features_evaluation(
-		os, data.configuration, data.features, data.error, data.base.num_values, data.base.values, NULL, features_evaluation_ret), end);
+		os, data.configuration, data.features, data.error, data.base.num_values, data.base.values, features_evaluation_ret), end);
 
 	if (opts->map_values)
 		CCS_VALIDATE_ERR_GOTO(res,

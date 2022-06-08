@@ -333,7 +333,7 @@ ccs_create_uniform_distribution(ccs_numeric_type_t  data_type,
 	if (!mem)
 		return -CCS_OUT_OF_MEMORY;
 	ccs_distribution_t distrib = (ccs_distribution_t)mem;
-	_ccs_object_init(&(distrib->obj), CCS_DISTRIBUTION, NULL, (_ccs_object_ops_t *)&_ccs_distribution_uniform_ops);
+	_ccs_object_init(&(distrib->obj), CCS_DISTRIBUTION, (_ccs_object_ops_t *)&_ccs_distribution_uniform_ops);
         _ccs_distribution_uniform_data_t * distrib_data = (_ccs_distribution_uniform_data_t *)(mem + sizeof(struct _ccs_distribution_s));
 	distrib_data->common_data.data_types    = (ccs_numeric_type_t *)(mem + sizeof(struct _ccs_distribution_s) + sizeof(_ccs_distribution_uniform_data_t));
 	distrib_data->common_data.type          = CCS_UNIFORM;

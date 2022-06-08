@@ -9,7 +9,7 @@ ccs_hyperparameter_t create_numerical(const char * name, double lower, double up
 	err = ccs_create_numerical_hyperparameter(name, CCS_NUM_FLOAT,
 	                                          CCSF(lower), CCSF(upper),
 	                                          CCSF(0.0), CCSF(0),
-	                                          NULL, &hyperparameter);
+	                                          &hyperparameter);
 	assert( err == CCS_SUCCESS );
 	return hyperparameter;
 }
@@ -36,7 +36,7 @@ void test() {
 	hyperparameter1 = create_numerical("x", -5.0, 5.0);
 	hyperparameter2 = create_numerical("y", -5.0, 5.0);
 
-	err = ccs_create_configuration_space("2dplane", NULL, &cspace);
+	err = ccs_create_configuration_space("2dplane", &cspace);
 	assert( err == CCS_SUCCESS );
 	err = ccs_configuration_space_add_hyperparameter(cspace, hyperparameter1, NULL);
 	assert( err == CCS_SUCCESS );
@@ -47,7 +47,7 @@ void test() {
 	err = ccs_create_variable(hyperparameter3, &expression);
 	assert( err == CCS_SUCCESS );
 
-	err = ccs_create_objective_space("height", NULL, &ospace);
+	err = ccs_create_objective_space("height", &ospace);
 	assert( err == CCS_SUCCESS );
 	err = ccs_objective_space_add_hyperparameter(ospace, hyperparameter3);
 	assert( err == CCS_SUCCESS );
@@ -55,20 +55,20 @@ void test() {
 	assert( err == CCS_SUCCESS );
 
 	err = ccs_create_categorical_hyperparameter("red knob", 2, knobs_values, 0,
-	                                            NULL, &feature);
+	                                            &feature);
 	assert( err == CCS_SUCCESS );
 
-	err = ccs_create_features_space("knobs", NULL, &fspace);
+	err = ccs_create_features_space("knobs", &fspace);
 	assert( err == CCS_SUCCESS );
 	err = ccs_features_space_add_hyperparameter(fspace, feature);
 	assert( err == CCS_SUCCESS );
-	err = ccs_create_features(fspace, 1, knobs_values, NULL, &features_on);
+	err = ccs_create_features(fspace, 1, knobs_values, &features_on);
 	assert( err == CCS_SUCCESS );
-	err = ccs_create_features(fspace, 1, knobs_values + 1, NULL, &features_off);
+	err = ccs_create_features(fspace, 1, knobs_values + 1, &features_off);
 	assert( err == CCS_SUCCESS );
 
 	err = ccs_create_random_features_tuner("problem", cspace, fspace, ospace,
-	                                       NULL, &tuner);
+	                                       &tuner);
 	assert( err == CCS_SUCCESS );
 
 	for (size_t i = 0; i < 50; i++) {
@@ -82,7 +82,7 @@ void test() {
 		res = ccs_float((values[0].value.f - 1)*(values[0].value.f - 1) +
 		                (values[1].value.f - 2)*(values[1].value.f - 2));
 		err = ccs_create_features_evaluation(ospace, configuration, features_on,
-		                               CCS_SUCCESS, 1, &res, NULL, &evaluation);
+		                               CCS_SUCCESS, 1, &res, &evaluation);
 		assert( err == CCS_SUCCESS );
 		err = ccs_features_tuner_tell(tuner, 1, &evaluation);
 		assert( err == CCS_SUCCESS );
@@ -103,7 +103,7 @@ void test() {
 		res = ccs_float((values[0].value.f - 1)*(values[0].value.f - 1) +
 		                (values[1].value.f - 2)*(values[1].value.f - 2));
 		err = ccs_create_features_evaluation(ospace, configuration, features_off,
-		                               CCS_SUCCESS, 1, &res, NULL, &evaluation);
+		                               CCS_SUCCESS, 1, &res, &evaluation);
 		assert( err == CCS_SUCCESS );
 		err = ccs_features_tuner_tell(tuner, 1, &evaluation);
 		assert( err == CCS_SUCCESS );
@@ -241,7 +241,7 @@ void test_evaluation_deserialize() {
 	hyperparameter1 = create_numerical("x", -5.0, 5.0);
 	hyperparameter2 = create_numerical("y", -5.0, 5.0);
 
-	err = ccs_create_configuration_space("2dplane", NULL, &cspace);
+	err = ccs_create_configuration_space("2dplane", &cspace);
 	assert( err == CCS_SUCCESS );
 	err = ccs_configuration_space_add_hyperparameter(cspace, hyperparameter1, NULL);
 	assert( err == CCS_SUCCESS );
@@ -255,15 +255,15 @@ void test_evaluation_deserialize() {
 	assert( err == CCS_SUCCESS );
 
 	err = ccs_create_categorical_hyperparameter("red knob", 2, knobs_values, 0,
-	                                            NULL, &feature);
+	                                            &feature);
 	assert( err == CCS_SUCCESS );
 
-	err = ccs_create_features_space("knobs", NULL, &fspace);
+	err = ccs_create_features_space("knobs", &fspace);
 	assert( err == CCS_SUCCESS );
 	err = ccs_features_space_add_hyperparameter(fspace, feature);
 	assert( err == CCS_SUCCESS );
-	err = ccs_create_features(fspace, 1, knobs_values, NULL, &features_on);
-	err = ccs_create_objective_space("height", NULL, &ospace);
+	err = ccs_create_features(fspace, 1, knobs_values, &features_on);
+	err = ccs_create_objective_space("height", &ospace);
 	assert( err == CCS_SUCCESS );
 	err = ccs_objective_space_add_hyperparameter(ospace, hyperparameter3);
 	assert( err == CCS_SUCCESS );
@@ -271,7 +271,7 @@ void test_evaluation_deserialize() {
 	assert( err == CCS_SUCCESS );
 
 	res = ccs_float(1.5);
-	err = ccs_create_features_evaluation(ospace, configuration, features_on, CCS_SUCCESS, 1, &res, NULL, &evaluation_ref);
+	err = ccs_create_features_evaluation(ospace, configuration, features_on, CCS_SUCCESS, 1, &res, &evaluation_ref);
 	assert( err == CCS_SUCCESS );
 
 	err = ccs_create_map(&map);

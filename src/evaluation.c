@@ -138,7 +138,6 @@ ccs_create_evaluation(ccs_objective_space_t  objective_space,
                       ccs_result_t           error,
                       size_t                 num_values,
                       ccs_datum_t           *values,
-                      void                  *user_data,
                       ccs_evaluation_t      *evaluation_ret) {
 	CCS_CHECK_OBJ(objective_space, CCS_OBJECTIVE_SPACE);
 	CCS_CHECK_OBJ(configuration, CCS_CONFIGURATION);
@@ -158,7 +157,7 @@ ccs_create_evaluation(ccs_objective_space_t  objective_space,
 	CCS_VALIDATE_ERR_GOTO(err, ccs_retain_object(configuration), erros);
 	ccs_evaluation_t eval;
 	eval = (ccs_evaluation_t)mem;
-	_ccs_object_init(&(eval->obj), CCS_EVALUATION, user_data, (_ccs_object_ops_t*)&_evaluation_ops);
+	_ccs_object_init(&(eval->obj), CCS_EVALUATION, (_ccs_object_ops_t*)&_evaluation_ops);
 	eval->data = (struct _ccs_evaluation_data_s*)(mem + sizeof(struct _ccs_evaluation_s));
 	eval->data->num_values = num;
 	eval->data->objective_space = objective_space;

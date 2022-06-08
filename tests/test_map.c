@@ -74,7 +74,6 @@ void test_map() {
 	err = ccs_create_numerical_hyperparameter("my_param", CCS_NUM_FLOAT,
 	                                          CCSF(-5.0), CCSF(5.0),
 	                                          CCSF(0.0), CCSF(1.0),
-	                                          (void *)0xdeadbeef,
 	                                          &hp);
 	assert( err == CCS_SUCCESS );
 

@@ -41,7 +41,7 @@ void test_create() {
 	char                 *buff;
 	size_t                buff_size;
 
-	err = ccs_create_string_hyperparameter("my_param", NULL, &hyperparameter);
+	err = ccs_create_string_hyperparameter("my_param", &hyperparameter);
 	assert( err == CCS_SUCCESS );
 
 	compare_hyperparameter(hyperparameter);
@@ -74,7 +74,7 @@ void test_string_memoization() {
 	ccs_bool_t            check;
 	char                 *str;
 
-	err = ccs_create_string_hyperparameter("my_param", NULL, &hyperparameter);
+	err = ccs_create_string_hyperparameter("my_param", &hyperparameter);
 	assert( err == CCS_SUCCESS );
 
 	str = strdup("my string");

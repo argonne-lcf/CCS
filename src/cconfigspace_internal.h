@@ -156,11 +156,10 @@ typedef struct _ccs_object_template_s _ccs_object_template_t;
 static inline __attribute__((always_inline)) void
 _ccs_object_init(_ccs_object_internal_t *o,
                  ccs_object_type_t       t,
-                 void                   *user_data,
                  _ccs_object_ops_t      *ops) {
 	o->type = t;
 	o->refcount = 1;
-	o->user_data = user_data;
+	o->user_data = NULL;
 	o->callbacks = NULL;
 	o->ops = ops;
 	o->serialize_callback = NULL;

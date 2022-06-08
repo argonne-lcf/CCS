@@ -65,7 +65,6 @@ static void test_create() {
 	err = ccs_create_numerical_hyperparameter("my_param", CCS_NUM_FLOAT,
 	                                          CCSF(-5.0), CCSF(5.0),
 	                                          CCSF(0.0), CCSF(1.0),
-	                                          NULL,
 	                                          &hyperparameter);
 	assert( err == CCS_SUCCESS );
 
@@ -106,7 +105,7 @@ void test_samples() {
 	err = ccs_create_numerical_hyperparameter("my_param", CCS_NUM_FLOAT,
 	                                          CCSF(-5.0), CCSF(5.0),
 	                                          CCSF(0.0), CCSF(1.0),
-	                                          NULL, &hyperparameter);
+	                                          &hyperparameter);
 	assert( err == CCS_SUCCESS );
 
 	err = ccs_hyperparameter_get_default_distribution(hyperparameter, &distribution);
@@ -148,7 +147,7 @@ void test_oversampling() {
 	err = ccs_create_numerical_hyperparameter("my_param", CCS_NUM_FLOAT,
 	                                          CCSF(-1.0), CCSF(1.0),
 	                                          CCSF(0.0), CCSF(0.0),
-	                                          NULL, &hyperparameter);
+	                                          &hyperparameter);
 	assert( err == CCS_SUCCESS );
 
 	err = ccs_hyperparameter_samples(hyperparameter, distribution, rng,

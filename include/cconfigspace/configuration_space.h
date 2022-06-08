@@ -17,8 +17,6 @@ extern "C" {
 /**
  * Create a new empty configuration space.
  * @param[in] name pointer to a string that will be copied internally
- * @param[in] user_data a pointer to the user data to attach to this
- *                      configuration space instance
  * @param[out] configuration_space_ret a pointer to the variable that will hold
  *                                     the newly created configuration space
  * @return #CCS_SUCCESS on success
@@ -30,7 +28,6 @@ extern "C" {
 extern ccs_result_t
 ccs_create_configuration_space(
 	const char                *name,
-	void                      *user_data,
 	ccs_configuration_space_t *configuration_space_ret);
 
 /**

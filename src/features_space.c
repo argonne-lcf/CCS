@@ -73,7 +73,6 @@ static const UT_icd _hyperparameter_wrapper_icd = {
 }
 ccs_result_t
 ccs_create_features_space(const char           *name,
-                          void                 *user_data,
                           ccs_features_space_t *features_space_ret) {
 	ccs_result_t err;
 	CCS_CHECK_PTR(name);
@@ -83,7 +82,7 @@ ccs_create_features_space(const char           *name,
 		return -CCS_OUT_OF_MEMORY;
 
 	ccs_features_space_t feat_space = (ccs_features_space_t)mem;
-	_ccs_object_init(&(feat_space->obj), CCS_FEATURES_SPACE, user_data,
+	_ccs_object_init(&(feat_space->obj), CCS_FEATURES_SPACE,
 		(_ccs_object_ops_t *)&_features_space_ops);
 	feat_space->data = (struct _ccs_features_space_data_s*)(mem +
 		sizeof(struct _ccs_features_space_s));

@@ -82,7 +82,7 @@ _ccs_deserialize_bin_objective_space(
 	CCS_VALIDATE_ERR_GOTO(res, _ccs_deserialize_bin_ccs_objective_space_data(
 		&data, version, buffer_size, buffer, &new_opts), end);
 	CCS_VALIDATE_ERR_GOTO(res, ccs_create_objective_space(
-		data.name, NULL, objective_space_ret), end);
+		data.name, objective_space_ret), end);
 	CCS_VALIDATE_ERR_GOTO(res, ccs_objective_space_add_hyperparameters(
 		*objective_space_ret, data.num_hyperparameters, data.hyperparameters),
 		err_objective_space);

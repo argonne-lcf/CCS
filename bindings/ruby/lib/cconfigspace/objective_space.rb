@@ -18,7 +18,7 @@ module CCS
     end
   end
 
-  attach_function :ccs_create_objective_space, [:string, :pointer, :pointer], :ccs_result_t
+  attach_function :ccs_create_objective_space, [:string, :pointer], :ccs_result_t
   attach_function :ccs_objective_space_add_hyperparameter, [:ccs_objective_space_t, :ccs_hyperparameter_t], :ccs_result_t
   attach_function :ccs_objective_space_add_hyperparameters, [:ccs_objective_space_t, :size_t, :pointer], :ccs_result_t
   attach_function :ccs_objective_space_add_objective, [:ccs_objective_space_t, :ccs_expression_t, :ccs_objective_type_t], :ccs_result_t
@@ -31,12 +31,12 @@ module CCS
   class ObjectiveSpace < Context
 
     def initialize(handle = nil, retain: false, auto_release: true,
-                   name: "", user_data: nil)
+                   name: "")
       if handle
         super(handle, retain: retain, auto_release: auto_release)
       else
         ptr = MemoryPointer::new(:ccs_objective_space_t)
-        res = CCS.ccs_create_objective_space(name, user_data, ptr)
+        res = CCS.ccs_create_objective_space(name, ptr)
         CCS.error_check(res)
         super(ptr.read_ccs_objective_space_t, retain: false)
       end

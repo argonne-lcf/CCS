@@ -140,7 +140,7 @@ ccs_create_map(ccs_map_t *map_ret) {
 	if (!mem)
 		return -CCS_OUT_OF_MEMORY;
 	ccs_map_t map = (ccs_map_t)mem;
-	_ccs_object_init(&(map->obj), CCS_MAP, NULL, (_ccs_object_ops_t *)&_ccs_map_ops);
+	_ccs_object_init(&(map->obj), CCS_MAP, (_ccs_object_ops_t *)&_ccs_map_ops);
 	map->data = (_ccs_map_data_t *)(mem + sizeof(struct _ccs_map_s));
 	*map_ret = map;
 	return CCS_SUCCESS;

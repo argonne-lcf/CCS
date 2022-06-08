@@ -25,8 +25,6 @@ extern "C" {
  * @param[in] num_values the number of provided values to initialize the
  *                       evaluation
  * @param[in] values an optional array of values to initialize the evaluation
- * @param[in] user_data a pointer to the user data to attach to this evaluation
- *                      instance
  * @param[out] features_evaluation_ret a pointer to the variable that will hold
  *                                     the newly created evaluation
  * @return #CCS_SUCCESS on success
@@ -50,7 +48,6 @@ ccs_create_features_evaluation(
 	ccs_result_t               error,
 	size_t                     num_values,
 	ccs_datum_t               *values,
-	void                      *user_data,
 	ccs_features_evaluation_t *features_evaluation_ret);
 
 /**

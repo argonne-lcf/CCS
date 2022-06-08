@@ -132,7 +132,10 @@ void test_create() {
 
 	err = ccs_create_categorical_hyperparameter("my_param", num_possible_values,
 	                                            possible_values, default_value_index,
-	                                            user_data, &hyperparameter);
+	                                            &hyperparameter);
+	assert( err == CCS_SUCCESS );
+
+	err = ccs_object_set_user_data(hyperparameter, user_data);
 	assert( err == CCS_SUCCESS );
 
 	err = ccs_object_set_destroy_callback(hyperparameter, &free_data, user_data);
@@ -185,7 +188,7 @@ void test_samples() {
 	assert( err == CCS_SUCCESS );
 	err = ccs_create_categorical_hyperparameter("my_param", num_possible_values,
 	                                            possible_values, default_value_index,
-	                                            NULL, &hyperparameter);
+	                                            &hyperparameter);
 	assert( err == CCS_SUCCESS );
 
 	err = ccs_hyperparameter_get_default_distribution(hyperparameter, &distribution);
@@ -235,7 +238,7 @@ void test_oversampling() {
 
 	err = ccs_create_categorical_hyperparameter("my_param", num_possible_values,
 	                                            possible_values, default_value_index,
-	                                            NULL, &hyperparameter);
+	                                            &hyperparameter);
 	assert( err == CCS_SUCCESS );
 
 	err = ccs_hyperparameter_samples(hyperparameter, distribution, rng,

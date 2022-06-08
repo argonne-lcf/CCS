@@ -81,7 +81,7 @@ void test_create() {
 
 	err = ccs_create_discrete_hyperparameter("my_param", num_possible_values,
 	                                         possible_values, default_value_index,
-	                                         NULL, &hyperparameter);
+	                                         &hyperparameter);
 	assert( err == CCS_SUCCESS );
 
 	compare_hyperparameter(hyperparameter, num_possible_values, possible_values, default_value_index);
@@ -128,7 +128,7 @@ void test_samples() {
 	assert( err == CCS_SUCCESS );
 	err = ccs_create_discrete_hyperparameter("my_param", num_possible_values,
 	                                         possible_values, default_value_index,
-	                                         NULL, &hyperparameter);
+	                                         &hyperparameter);
 	assert( err == CCS_SUCCESS );
 
 	err = ccs_hyperparameter_get_default_distribution(hyperparameter, &distribution);
@@ -178,7 +178,7 @@ void test_oversampling() {
 
 	err = ccs_create_discrete_hyperparameter("my_param", num_possible_values,
 	                                         possible_values, default_value_index,
-	                                         NULL, &hyperparameter);
+	                                         &hyperparameter);
 	assert( err == CCS_SUCCESS );
 
 	err = ccs_hyperparameter_samples(hyperparameter, distribution, rng,

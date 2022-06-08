@@ -281,7 +281,6 @@ static UT_icd _size_t_icd = {
 }
 ccs_result_t
 ccs_create_configuration_space(const char                *name,
-                               void                      *user_data,
                                ccs_configuration_space_t *configuration_space_ret) {
 	CCS_CHECK_PTR(name);
 	CCS_CHECK_PTR(configuration_space_ret);
@@ -297,8 +296,7 @@ ccs_create_configuration_space(const char                *name,
 
 	ccs_configuration_space_t config_space;
 	config_space = (ccs_configuration_space_t)mem;
-	_ccs_object_init(&(config_space->obj),
-	                 CCS_CONFIGURATION_SPACE, user_data,
+	_ccs_object_init(&(config_space->obj), CCS_CONFIGURATION_SPACE,
 	                 (_ccs_object_ops_t *)&_configuration_space_ops);
 	config_space->data =
 	  (struct _ccs_configuration_space_data_s*)(
@@ -757,7 +755,7 @@ ccs_configuration_space_get_default_configuration(ccs_configuration_space_t  con
 	CCS_CHECK_PTR(configuration_ret);
 	ccs_result_t err;
 	ccs_configuration_t config;
-	CCS_VALIDATE(ccs_create_configuration(configuration_space, 0, NULL, NULL, &config));
+	CCS_VALIDATE(ccs_create_configuration(configuration_space, 0, NULL, &config));
 	UT_array *array = configuration_space->data->hyperparameters;
 	_ccs_hyperparameter_wrapper_cs_t *wrapper = NULL;
 	ccs_datum_t *values = config->data->values;
@@ -938,7 +936,7 @@ ccs_configuration_space_sample(ccs_configuration_space_t  configuration_space,
 	ccs_configuration_t config;
 	if (!configuration_space->data->graph_ok)
 		CCS_VALIDATE(_generate_constraints(configuration_space));
-	CCS_VALIDATE(ccs_create_configuration(configuration_space, 0, NULL, NULL, &config));
+	CCS_VALIDATE(ccs_create_configuration(configuration_space, 0, NULL, &config));
 	ccs_bool_t found;
 	int counter = 0;
 	do {
@@ -977,7 +975,7 @@ ccs_configuration_space_samples(ccs_configuration_space_t  configuration_space,
 		configurations[i] = NULL;
 	while (count < num_configurations && counter < 100 * num_configurations) {
 		if (!config)
-			CCS_VALIDATE(ccs_create_configuration(configuration_space, 0, NULL, NULL, &config));
+			CCS_VALIDATE(ccs_create_configuration(configuration_space, 0, NULL, &config));
 		CCS_VALIDATE_ERR_GOTO(err, _sample(configuration_space, config, &found), errc);
 		counter++;
 		if (found) {
@@ -1010,7 +1008,7 @@ errc:
 //	}
 //	size_t i;
 //	for(i = 0; i < num_configurations; i++) {
-//		err = ccs_create_configuration(configuration_space, 0, NULL, NULL, configurations + i);
+//		err = ccs_create_configuration(configuration_space, 0, NULL, configurations + i);
 //		if (CCS_UNLIKELY(err)) {
 //			free(values);
 //			for(size_t j = 0; j < i; j++)

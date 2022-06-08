@@ -72,7 +72,6 @@ ccs_result_t
 ccs_create_features(ccs_features_space_t  features_space,
                     size_t                num_values,
                     ccs_datum_t          *values,
-                    void                 *user_data,
                     ccs_features_t       *features_ret) {
 	CCS_CHECK_OBJ(features_space, CCS_FEATURES_SPACE);
 	CCS_CHECK_PTR(features_ret);
@@ -90,7 +89,7 @@ ccs_create_features(ccs_features_space_t  features_space,
 	CCS_VALIDATE_ERR_GOTO(err, ccs_retain_object(features_space), errmem);
 	ccs_features_t feat;
 	feat = (ccs_features_t)mem;
-	_ccs_object_init(&(feat->obj), CCS_FEATURES, user_data, (_ccs_object_ops_t*)&_features_ops);
+	_ccs_object_init(&(feat->obj), CCS_FEATURES, (_ccs_object_ops_t*)&_features_ops);
 	feat->data = (struct _ccs_features_data_s*)(mem + sizeof(struct _ccs_features_s));
 	feat->data->num_values = num;
 	feat->data->features_space = features_space;

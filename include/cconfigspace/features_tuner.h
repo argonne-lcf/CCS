@@ -262,8 +262,6 @@ ccs_features_tuner_get_history(ccs_features_tuner_t       features_tuner,
  * @param[in] configuration_space the configuration space to explore
  * @param[in] features_space the features space
  * @param[in] objective_space the objective space to potimize
- * @param[in] user_data a pointer to the user data to attach to this
- *                      features tuner instance
  * @param[out] features_tuner_ret a pointer to the variable that will contain
  *                                the newly created features tuner
  * @return #CCS_SUCCESS on success
@@ -280,7 +278,6 @@ ccs_create_random_features_tuner(const char                *name,
                                  ccs_configuration_space_t  configuration_space,
                                  ccs_features_space_t       features_space,
                                  ccs_objective_space_t      objective_space,
-                                 void                      *user_data,
                                  ccs_features_tuner_t      *features_tuner_ret);
 
 /**
@@ -371,8 +368,6 @@ typedef struct ccs_user_defined_features_tuner_vector_s
  * @param[in] configuration_space the configuration space to explore
  * @param[in] features_space the features space
  * @param[in] objective_space the objective space to potimize
- * @param[in] user_data a pointer to the user data to attach to this
- *                      features tuner instance
  * @param[in] vector the vector of callbacks implementing the features tuner interface
  * @param[in] tuner_data a pointer to the features tuner internal data
  *                       structures. Can be NULL
@@ -395,7 +390,6 @@ ccs_create_user_defined_features_tuner(
 		ccs_configuration_space_t                 configuration_space,
 		ccs_features_space_t                      features_space,
 		ccs_objective_space_t                     objective_space,
-		void                                     *user_data,
 		ccs_user_defined_features_tuner_vector_t *vector,
 		void                                     *tuner_data,
 		ccs_features_tuner_t                     *features_tuner_ret);

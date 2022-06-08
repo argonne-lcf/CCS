@@ -190,7 +190,6 @@ static _ccs_hyperparameter_ops_t _ccs_hyperparameter_string_ops = {
 
 extern ccs_result_t
 ccs_create_string_hyperparameter(const char           *name,
-                                 void                 *user_data,
                                  ccs_hyperparameter_t *hyperparameter_ret) {
 	CCS_CHECK_PTR(name);
 	CCS_CHECK_PTR(hyperparameter_ret);
@@ -199,7 +198,7 @@ ccs_create_string_hyperparameter(const char           *name,
 		return -CCS_OUT_OF_MEMORY;
 
 	ccs_hyperparameter_t hyperparam = (ccs_hyperparameter_t)mem;
-	_ccs_object_init(&(hyperparam->obj), CCS_HYPERPARAMETER, user_data, (_ccs_object_ops_t *)&_ccs_hyperparameter_string_ops);
+	_ccs_object_init(&(hyperparam->obj), CCS_HYPERPARAMETER, (_ccs_object_ops_t *)&_ccs_hyperparameter_string_ops);
 	_ccs_hyperparameter_string_data_t *hyperparam_data = (_ccs_hyperparameter_string_data_t *)(mem + sizeof(struct _ccs_hyperparameter_s));
 	hyperparam_data->common_data.type = CCS_HYPERPARAMETER_TYPE_STRING;
 	hyperparam_data->common_data.name = (char *)(mem + sizeof(struct _ccs_hyperparameter_s) + sizeof(_ccs_hyperparameter_string_data_t));

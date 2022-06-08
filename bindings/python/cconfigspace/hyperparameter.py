@@ -130,12 +130,12 @@ class Hyperparameter(Object):
     return self.__class__ == other.__class__ and self.handle.value == other.handle.value
 
 
-ccs_create_numerical_hyperparameter = _ccs_get_function("ccs_create_numerical_hyperparameter", [ct.c_char_p, ccs_numeric_type, ccs_int, ccs_int, ccs_int, ccs_int, ct.c_void_p, ct.POINTER(ccs_hyperparameter)])
+ccs_create_numerical_hyperparameter = _ccs_get_function("ccs_create_numerical_hyperparameter", [ct.c_char_p, ccs_numeric_type, ccs_int, ccs_int, ccs_int, ccs_int, ct.POINTER(ccs_hyperparameter)])
 ccs_numerical_hyperparameter_get_parameters = _ccs_get_function("ccs_numerical_hyperparameter_get_parameters", [ccs_hyperparameter, ct.POINTER(ccs_numeric_type), ct.POINTER(ccs_numeric), ct.POINTER(ccs_numeric), ct.POINTER(ccs_numeric)])
 
 class NumericalHyperparameter(Hyperparameter):
   def __init__(self, handle = None, retain = False, auto_release = True,
-               name = None, data_type = ccs_numeric_type.NUM_FLOAT, lower = 0.0, upper = 1.0, quantization = 0.0, default = None, user_data = None):
+               name = None, data_type = ccs_numeric_type.NUM_FLOAT, lower = 0.0, upper = 1.0, quantization = 0.0, default = None):
     if handle is None:
       if name is None:
         name = NumericalHyperparameter.default_name()
@@ -158,19 +158,19 @@ class NumericalHyperparameter(Hyperparameter):
       else:
         raise Error(ccs_error(ccs_error.INVALID_VALUE))
       handle = ccs_hyperparameter()
-      res = ccs_create_numerical_hyperparameter(str.encode(name), data_type, l.i, u.i, q.i, d.i, user_data, ct.byref(handle))
+      res = ccs_create_numerical_hyperparameter(str.encode(name), data_type, l.i, u.i, q.i, d.i, ct.byref(handle))
       Error.check(res)
       super().__init__(handle = handle, retain = False)
     else:
       super().__init__(handle = handle, retain = retain, auto_release = auto_release)
 
   @classmethod
-  def int(cls, lower, upper, name = None, quantization = 0, default = None, user_data = None):
-    return cls(handle = None, name = name, data_type =  ccs_numeric_type.NUM_INTEGER, lower = lower, upper = upper, quantization = quantization, default = default, user_data = user_data)
+  def int(cls, lower, upper, name = None, quantization = 0, default = None):
+    return cls(handle = None, name = name, data_type =  ccs_numeric_type.NUM_INTEGER, lower = lower, upper = upper, quantization = quantization, default = default)
   
   @classmethod
-  def float(cls, lower, upper, name = None, quantization = 0.0, default = None, user_data = None):
-    return cls(handle = None, name = name, data_type =  ccs_numeric_type.NUM_FLOAT, lower = lower, upper = upper, quantization = quantization, default = default, user_data = user_data)
+  def float(cls, lower, upper, name = None, quantization = 0.0, default = None):
+    return cls(handle = None, name = name, data_type =  ccs_numeric_type.NUM_FLOAT, lower = lower, upper = upper, quantization = quantization, default = default)
 
   @property
   def data_type(self):
@@ -230,12 +230,12 @@ class NumericalHyperparameter(Hyperparameter):
       raise Error(ccs_error(ccs_error.INVALID_VALUE))
     return self._quantization
 
-ccs_create_categorical_hyperparameter = _ccs_get_function("ccs_create_categorical_hyperparameter", [ct.c_char_p, ct.c_size_t, ct.POINTER(ccs_datum), ct.c_size_t, ct.c_void_p, ct.POINTER(ccs_hyperparameter)])
+ccs_create_categorical_hyperparameter = _ccs_get_function("ccs_create_categorical_hyperparameter", [ct.c_char_p, ct.c_size_t, ct.POINTER(ccs_datum), ct.c_size_t, ct.POINTER(ccs_hyperparameter)])
 ccs_categorical_hyperparameter_get_values = _ccs_get_function("ccs_categorical_hyperparameter_get_values", [ccs_hyperparameter, ct.c_size_t, ct.POINTER(ccs_datum), ct.POINTER(ct.c_size_t)])
 
 class CategoricalHyperparameter(Hyperparameter):
   def __init__(self, handle = None, retain = False, auto_release = True,
-               name = None, values = [], default_index = 0, user_data = None):
+               name = None, values = [], default_index = 0):
     if handle is None:
       if name is None:
         name = NumericalHyperparameter.default_name()
@@ -244,7 +244,7 @@ class CategoricalHyperparameter(Hyperparameter):
       v = (ccs_datum*sz)()
       for i in range(sz):
         v[i].value = values[i]
-      res = ccs_create_categorical_hyperparameter(str.encode(name), sz, v, default_index, user_data, ct.byref(handle))
+      res = ccs_create_categorical_hyperparameter(str.encode(name), sz, v, default_index, ct.byref(handle))
       Error.check(res)
       super().__init__(handle = handle, retain = False)
     else:
@@ -260,13 +260,13 @@ class CategoricalHyperparameter(Hyperparameter):
     Error.check(res)
     return [x.value for x in v]
 
-ccs_create_ordinal_hyperparameter = _ccs_get_function("ccs_create_ordinal_hyperparameter", [ct.c_char_p, ct.c_size_t, ct.POINTER(ccs_datum), ct.c_size_t, ct.c_void_p, ct.POINTER(ccs_hyperparameter)])
+ccs_create_ordinal_hyperparameter = _ccs_get_function("ccs_create_ordinal_hyperparameter", [ct.c_char_p, ct.c_size_t, ct.POINTER(ccs_datum), ct.c_size_t, ct.POINTER(ccs_hyperparameter)])
 ccs_ordinal_hyperparameter_compare_values = _ccs_get_function("ccs_ordinal_hyperparameter_compare_values", [ccs_hyperparameter, ccs_datum_fix, ccs_datum_fix, ct.POINTER(ccs_int)])
 ccs_ordinal_hyperparameter_get_values = _ccs_get_function("ccs_ordinal_hyperparameter_get_values", [ccs_hyperparameter, ct.c_size_t, ct.POINTER(ccs_datum), ct.POINTER(ct.c_size_t)])
 
 class OrdinalHyperparameter(Hyperparameter):
   def __init__(self, handle = None, retain = False, auto_release = True,
-               name = None, values = [], default_index = 0, user_data = None):
+               name = None, values = [], default_index = 0):
     if handle is None:
       if name is None:
         name = NumericalHyperparameter.default_name()
@@ -275,7 +275,7 @@ class OrdinalHyperparameter(Hyperparameter):
       v = (ccs_datum*sz)()
       for i in range(sz):
         v[i].value = values[i]
-      res = ccs_create_ordinal_hyperparameter(str.encode(name), sz, v, default_index, user_data, ct.byref(handle))
+      res = ccs_create_ordinal_hyperparameter(str.encode(name), sz, v, default_index, ct.byref(handle))
       Error.check(res)
       super().__init__(handle = handle, retain = False)
     else:
@@ -301,12 +301,12 @@ class OrdinalHyperparameter(Hyperparameter):
     Error.check(res)
     return c.value
 
-ccs_create_discrete_hyperparameter = _ccs_get_function("ccs_create_discrete_hyperparameter", [ct.c_char_p, ct.c_size_t, ct.POINTER(ccs_datum), ct.c_size_t, ct.c_void_p, ct.POINTER(ccs_hyperparameter)])
+ccs_create_discrete_hyperparameter = _ccs_get_function("ccs_create_discrete_hyperparameter", [ct.c_char_p, ct.c_size_t, ct.POINTER(ccs_datum), ct.c_size_t, ct.POINTER(ccs_hyperparameter)])
 ccs_discrete_hyperparameter_get_values = _ccs_get_function("ccs_discrete_hyperparameter_get_values", [ccs_hyperparameter, ct.c_size_t, ct.POINTER(ccs_datum), ct.POINTER(ct.c_size_t)])
 
 class DiscreteHyperparameter(Hyperparameter):
   def __init__(self, handle = None, retain = False, auto_release = True,
-               name = None, values = [], default_index = 0, user_data = None):
+               name = None, values = [], default_index = 0):
     if handle is None:
       if name is None:
         name = NumericalHyperparameter.default_name()
@@ -315,7 +315,7 @@ class DiscreteHyperparameter(Hyperparameter):
       v = (ccs_datum*sz)()
       for i in range(sz):
         v[i].value = values[i]
-      res = ccs_create_discrete_hyperparameter(str.encode(name), sz, v, default_index, user_data, ct.byref(handle))
+      res = ccs_create_discrete_hyperparameter(str.encode(name), sz, v, default_index, ct.byref(handle))
       Error.check(res)
       super().__init__(handle = handle, retain = False)
     else:
@@ -331,16 +331,16 @@ class DiscreteHyperparameter(Hyperparameter):
     Error.check(res)
     return [x.value for x in v]
 
-ccs_create_string_hyperparameter = _ccs_get_function("ccs_create_string_hyperparameter", [ct.c_char_p, ct.c_void_p, ct.POINTER(ccs_hyperparameter)])
+ccs_create_string_hyperparameter = _ccs_get_function("ccs_create_string_hyperparameter", [ct.c_char_p, ct.POINTER(ccs_hyperparameter)])
 
 class StringHyperparameter(Hyperparameter):
   def __init__(self, handle = None, retain = False, auto_release = True,
-               name = None, user_data = None):
+               name = None):
     if handle is None:
       if name is None:
         name = NumericalHyperparameter.default_name()
       handle = ccs_hyperparameter()
-      res = ccs_create_string_hyperparameter(str.encode(name), user_data, ct.byref(handle))
+      res = ccs_create_string_hyperparameter(str.encode(name), ct.byref(handle))
       Error.check(res)
       super().__init__(handle = handle, retain = False)
     else:
