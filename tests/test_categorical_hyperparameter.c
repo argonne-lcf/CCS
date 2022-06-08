@@ -75,6 +75,44 @@ static void compare_hyperparameter(
 	assert( err == CCS_SUCCESS );
 }
 
+ccs_result_t
+serialize_callback(
+		ccs_object_t  object,
+		size_t        serialize_data_size,
+		void         *serialize_data,
+		size_t       *serialize_data_size_ret,
+		void         *callback_user_data) {
+	void *user_data;
+	size_t sz;
+	assert( callback_user_data == (void*)0xdeadbeef );
+	ccs_result_t err = ccs_object_get_user_data(object, &user_data);
+	assert( err == CCS_SUCCESS );
+	assert(user_data);
+	sz = strlen((char *)user_data) + 1;
+	if (serialize_data_size_ret)
+		*serialize_data_size_ret = sz;
+	assert( !(serialize_data && serialize_data_size < sz) );
+	if (serialize_data)
+		strncpy((char *)serialize_data, (char *)user_data, sz);
+	return CCS_SUCCESS;
+}
+
+ccs_result_t
+deserialize_callback(
+		ccs_object_t  object,
+		size_t        serialize_data_size,
+		void         *serialize_data,
+		void         *callback_user_data) {
+	assert( callback_user_data == (void*)0xbeefdead );
+	assert( strlen((char *)serialize_data) + 1 == serialize_data_size );
+	void *user_data = (void *)strdup((char *)serialize_data);
+	ccs_result_t err = ccs_object_set_user_data(object, user_data);
+	assert( err == CCS_SUCCESS );
+	err = ccs_object_set_destroy_callback(object, &free_data, user_data);
+	assert( err == CCS_SUCCESS );
+	return CCS_SUCCESS;
+}
+
 void test_create() {
 	ccs_hyperparameter_t  hyperparameter;
 	ccs_result_t          err;
@@ -97,6 +135,12 @@ void test_create() {
 	                                            user_data, &hyperparameter);
 	assert( err == CCS_SUCCESS );
 
+	err = ccs_object_set_destroy_callback(hyperparameter, &free_data, user_data);
+	assert( err == CCS_SUCCESS );
+
+	err = ccs_object_set_serialize_callback(hyperparameter, serialize_callback, (void*)0xdeadbeef);
+	assert( err == CCS_SUCCESS );
+
 	compare_hyperparameter(hyperparameter, num_possible_values, possible_values, default_value_index);
 
 	err = ccs_object_serialize(hyperparameter, CCS_SERIALIZE_FORMAT_BINARY, CCS_SERIALIZE_OPERATION_SIZE, &buff_size);
@@ -111,12 +155,9 @@ void test_create() {
 	err = ccs_release_object(hyperparameter);
 	assert( err == CCS_SUCCESS );
 
-	err = ccs_object_deserialize((ccs_object_t*)&hyperparameter, CCS_SERIALIZE_FORMAT_BINARY, CCS_SERIALIZE_OPERATION_MEMORY, buff_size, buff, CCS_DESERIALIZE_OPTION_END);
+	err = ccs_object_deserialize((ccs_object_t*)&hyperparameter, CCS_SERIALIZE_FORMAT_BINARY, CCS_SERIALIZE_OPERATION_MEMORY, buff_size, buff, CCS_DESERIALIZE_CALLBACK, &deserialize_callback, (void*)0xbeefdead, CCS_DESERIALIZE_OPTION_END);
 	assert( err == CCS_SUCCESS );
 	free(buff);
-
-	err = ccs_object_set_destroy_callback(hyperparameter, &free_data, user_data);
-	assert( err == CCS_SUCCESS );
 
 	compare_hyperparameter(hyperparameter, num_possible_values, possible_values, default_value_index);
 

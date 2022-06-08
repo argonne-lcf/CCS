@@ -125,15 +125,6 @@ struct _ccs_object_ops_s {
 		ccs_serialize_format_t   format,
 		size_t                  *buffer_size,
 		char                   **buffer);
-
-/*	ccs_result_t (*deserialize)(
-		ccs_object_t            *object_ret,
-		ccs_serialize_format_t   format,
-		uint32_t                 version,
-		size_t                  *buffer_size,
-		const char              *buffer,
-		size_t                  *buffer_size_ret,
-		char                   **buffer_ret); */
 };
 
 typedef struct _ccs_object_ops_s _ccs_object_ops_t;
@@ -145,11 +136,13 @@ struct _ccs_object_callback_s {
 typedef struct _ccs_object_callback_s _ccs_object_callback_t;
 
 struct _ccs_object_internal_s {
-	ccs_object_type_t  type;
-	int32_t            refcount;
-	void              *user_data;
-	UT_array          *callbacks;
-	_ccs_object_ops_t *ops;
+	ccs_object_type_t                type;
+	int32_t                          refcount;
+	void                            *user_data;
+	UT_array                        *callbacks;
+	_ccs_object_ops_t               *ops;
+	ccs_object_serialize_callback_t  serialize_callback;
+	void                            *serialize_user_data;
 };
 
 typedef struct _ccs_object_internal_s _ccs_object_internal_t;
@@ -170,6 +163,8 @@ _ccs_object_init(_ccs_object_internal_t *o,
 	o->user_data = user_data;
 	o->callbacks = NULL;
 	o->ops = ops;
+	o->serialize_callback = NULL;
+	o->serialize_user_data = NULL;
 }
 
 static inline int ccs_is_little_endian(void) {
@@ -869,11 +864,13 @@ struct _ccs_object_serialize_options_s {
 typedef struct _ccs_object_serialize_options_s _ccs_object_serialize_options_t;
 
 struct _ccs_object_deserialize_options_s {
-	ccs_map_t                      handle_map;
-	ccs_bool_t                     map_values;
-	_ccs_file_descriptor_state_t **ppfd_state;
-	void                          *vector;
-	void                          *data;
+	ccs_map_t                           handle_map;
+	ccs_bool_t                          map_values;
+	_ccs_file_descriptor_state_t      **ppfd_state;
+	void                               *vector;
+	void                               *data;
+	ccs_object_deserialize_callback_t   deserialize_callback;
+	void                               *deserialize_user_data;
 };
 typedef struct _ccs_object_deserialize_options_s _ccs_object_deserialize_options_t;
 
