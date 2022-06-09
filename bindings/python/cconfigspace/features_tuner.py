@@ -387,7 +387,7 @@ class UserDefinedFeaturesTuner(FeaturesTuner):
       super().__init__(handle = handle, retain = retain, auto_release = auto_release)
 
   @classmethod
-  def deserialize(cls, delete, ask, tell, get_optimums, get_history, suggest = None, serialize = None, deserialize = None, tuner_data = None, format = 'binary', handle_map = None, path = None, buffer = None, file_descriptor = None):
+  def deserialize(cls, delete, ask, tell, get_optimums, get_history, suggest = None, serialize = None, deserialize = None, tuner_data = None, format = 'binary', handle_map = None, path = None, buffer = None, file_descriptor = None, callback = None, callback_data = None):
     if delete is None or ask is None or tell is None or get_optimums is None or get_history is None:
       raise Error(ccs_error(ccs_error.INVALID_VALUE))
     (delete_wrapper,
@@ -415,7 +415,7 @@ class UserDefinedFeaturesTuner(FeaturesTuner):
     vector.suggest = suggest_wrapper_func
     vector.serialize = serialize_wrapper_func
     vector.deserialize = deserialize_wrapper_func
-    res = super().deserialize(format = format, handle_map = handle_map, vector = vector, data = tuner_data, path = path, buffer = buffer, file_descriptor = file_descriptor)
+    res = super().deserialize(format = format, handle_map = handle_map, vector = vector, data = tuner_data, path = path, buffer = buffer, file_descriptor = file_descriptor, callback = callback, callback_data = callback_data)
     _register_vector(res.handle, [delete_wrapper, ask_wrapper, tell_wrapper, get_optimums_wrapper, get_history_wrapper, suggest_wrapper, serialize_wrapper, deserialize_wrapper, delete_wrapper_func, ask_wrapper_func, tell_wrapper_func, get_optimums_wrapper_func, get_history_wrapper_func, suggest_wrapper_func, serialize_wrapper_func, deserialize_wrapper_func, tuner_data])
     return res
 

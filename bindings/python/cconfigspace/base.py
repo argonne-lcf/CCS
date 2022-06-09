@@ -359,7 +359,8 @@ class ccs_deserialize_option(CEnumeration):
     'HANDLE_MAP',
     'VECTOR',
     'DATA',
-    'NON_BLOCKING'
+    'NON_BLOCKING',
+    'CALLBACK'
   ]
 
 ccs_init = _ccs_get_function("ccs_init")
@@ -372,8 +373,11 @@ ccs_object_get_type = _ccs_get_function("ccs_object_get_type", [ccs_object, ct.P
 ccs_object_get_refcount = _ccs_get_function("ccs_object_get_refcount", [ccs_object, ct.POINTER(ct.c_int)])
 ccs_object_destroy_callback_type = ct.CFUNCTYPE(None, ccs_object, ct.c_void_p)
 ccs_object_set_destroy_callback = _ccs_get_function("ccs_object_set_destroy_callback", [ccs_object, ccs_object_destroy_callback_type, ct.c_void_p])
-ccs_object_set_user_data = _ccs_get_function("ccs_object_set_user_data", [ccs_context, ct.c_void_p])
-ccs_object_get_user_data = _ccs_get_function("ccs_object_get_user_data", [ccs_context, ct.POINTER(ct.c_void_p)])
+ccs_object_set_user_data = _ccs_get_function("ccs_object_set_user_data", [ccs_object, ct.c_void_p])
+ccs_object_get_user_data = _ccs_get_function("ccs_object_get_user_data", [ccs_object, ct.POINTER(ct.c_void_p)])
+ccs_object_serialize_callback_type = ct.CFUNCTYPE(ccs_result, ccs_object, ct.c_size_t, ct.c_void_p, ct.POINTER(ct.c_size_t), ct.c_void_p)
+ccs_object_set_serialize_callback = _ccs_get_function("ccs_object_set_serialize_callback", [ccs_object, ccs_object_serialize_callback_type, ct.c_void_p])
+ccs_object_deserialize_callback_type = ct.CFUNCTYPE(ccs_result, ccs_object, ct.c_size_t, ct.c_void_p, ct.c_void_p)
 # Variadic methods
 ccs_object_serialize = getattr(libcconfigspace, "ccs_object_serialize")
 ccs_object_serialize.restype = ccs_result
@@ -514,7 +518,7 @@ class Object:
       return v
 
   @classmethod
-  def deserialize(cls, format = 'binary', handle_map = None, vector = None, data = None, path = None, buffer = None, file_descriptor = None):
+  def deserialize(cls, format = 'binary', handle_map = None, vector = None, data = None, path = None, buffer = None, file_descriptor = None, callback = None, callback_data = None):
     if format != 'binary':
       raise Error(ccs_error(ccs_error.INVALID_VALUE))
     mode_count = 0;
@@ -534,6 +538,20 @@ class Object:
       options = [ccs_deserialize_option.VECTOR, ct.byref(vector)] + options
     if data:
       options = [ccs_deserialize_option.DATA, ct.py_object(data)] + options
+    if callback:
+      def cb_wrapper(obj, serialize_data_size, serialize_data, cb_data):
+        try:
+          p_sd = ct.cast(serialize_data, ct.c_void_p)
+          if p_sd.value is None:
+            serialized = None
+          else:
+            serialized = ct.cast(p_sd, POINTER(c_byte * serialize_data_size))
+          callback(Object.from_handle(obj), serialized, cb_data)
+          return ccs_error.SUCCESS
+        except Error as e:
+          return -e.message.value
+      cb_wrapper_func = ccs_object_deserialize_callback_type(cb_wrapper)
+      options = [ccs_deserialize_option.CALLBACK, cb_wrapper_func, ct.py_object(callback_data)]
     if buffer:
       s = ct.c_size_t(ct.sizeof(buffer))
       res = ccs_object_deserialize(ct.byref(o), ccs_serialize_format.BINARY, ccs_serialize_operation.MEMORY, s, buffer, *options)
@@ -593,8 +611,8 @@ def _register_serialize_callback(handle, callback_data):
     _register_destroy_callback(handle)
   _data_store[value]['serialize_calback'] = callback_data
 
-def deserialize(format = 'binary', handle_map = None, path = None, buffer = None):
-  return Object.deserialize(format = format, handle_map = handle_map, path = path, buffer = buffer)
+def deserialize(format = 'binary', handle_map = None, path = None, buffer = None, callback = None, callback_data = None):
+  return Object.deserialize(format = format, handle_map = handle_map, path = path, buffer = buffer, callback = callback, callback_data = callback_data)
 
 def _set_destroy_callback(handle, callback, user_data = None):
   if callback is None:
@@ -606,6 +624,31 @@ def _set_destroy_callback(handle, callback, user_data = None):
   Error.check(res)
   _register_callback(handle, [callback, cb_wrapper, cb_wrapper_func, user_data])
 
+def _set_serialize_callback(handle, callback, user_data = None):
+  if callback is None:
+    res = ccs_object_set_serialize_callback(handle, None, None)
+    Error.check(res)
+    _register_serialize_callback(handle, None)
+  else:
+    ptr = ct.c_int(32)
+    def cb_wrapper(obj, serialize_data_size, serialize_data, serialize_data_size_ret, data):
+      try:
+        p_sd = ct.cast(serialize_data, ct.c_void_p)
+        p_sdsz = ct.cast(serialize_data_size_ret, ct.c_void_p)
+        serialized = callback(Tuner.from_handle(tun), data, True if state_size == 0 else False)
+        if p_sd.value is not None and serialize_data_size < ct.sizeof(serialized):
+          raise Error(ccs_error(ccs_error.INVALID_VALUE))
+        if p_sd.value is not None:
+          ct.memmove(p_sd, ct.byref(serialized), ct.sizeof(serialized))
+        if p_sdsz.value is not None:
+          p_state_size[0] = ct.sizeof(serialized)
+        return ccs_error.SUCCESS
+      except Error as e:
+        return -e.message.value
+    cb_wrapper_func = ccs_object_serialize_callback_type(cb_wrapper)
+    res = ccs_object_set_serialize_callback(handle, cb_wrapper_func, user_data)
+    Error.check(res)
+    _register_serialize_callback(handle, [callback, cb_wrapper, cb_wrapper_func, user_data])
 
 _ccs_id = 0
 def _ccs_get_id():
@@ -613,6 +656,7 @@ def _ccs_get_id():
   res = _ccs_id
   _ccs_id += 1
   return res
+
 from .rng import Rng
 from .distribution import Distribution
 from .hyperparameter import Hyperparameter

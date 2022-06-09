@@ -295,7 +295,7 @@ module CCS
       end
     end
 
-    def self.deserialize(del: nil, ask: nil, tell: nil, get_optimums: nil, get_history: nil, suggest: nil, serialize: nil, deserialize: nil, tuner_data: nil, format: :binary, handle_map: nil, path: nil, buffer: nil, file_descriptor: nil)
+    def self.deserialize(del: nil, ask: nil, tell: nil, get_optimums: nil, get_history: nil, suggest: nil, serialize: nil, deserialize: nil, tuner_data: nil, format: :binary, handle_map: nil, path: nil, buffer: nil, file_descriptor: nil, callback: nil, callback_data: nil)
       raise CCSError, :CCS_INVALID_VALUE if del.nil? || ask.nil? || tell.nil? || get_optimums.nil? || get_history.nil?
       delwrapper, askwrapper, tellwrapper, get_optimumswrapper, get_historywrapper, suggestwrapper, serializewrapper, deserializewrapper =
         CCS.wrap_user_defined_tuner_callbacks(del, ask, tell, get_optimums, get_history, suggest, serialize, deserialize)
@@ -308,7 +308,7 @@ module CCS
       vector[:suggest] = suggestwrapper
       vector[:serialize] = serializewrapper
       vector[:deserialize] = deserializewrapper
-      res = super(format: format, handle_map: handle_map, vector: vector.to_ptr, data: tuner_data, path: path, buffer: buffer, file_descriptor: file_descriptor)
+      res = super(format: format, handle_map: handle_map, vector: vector.to_ptr, data: tuner_data, path: path, buffer: buffer, file_descriptor: file_descriptor, callback: callback, callback_data: callback_data)
       CCS.register_vector(res.handle, [delwrapper, askwrapper, tellwrapper, get_optimumswrapper, get_historywrapper, suggestwrapper, serializewrapper, deserializewrapper, tuner_data])
       res
     end
