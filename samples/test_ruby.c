@@ -115,17 +115,29 @@ void test() {
 	ccs_configuration_space_t cs;
 	ccs_objective_space_t     os;
 	ccs_result_t              err;
+	int state;
+	VALUE ruby_stack_start;
 
 	create_problem(&cs, &os);
 
+	ruby_init_stack(&ruby_stack_start);
 	ruby_init();
-	ruby_init_loadpath();
+	{
+		int dummy_argc = 2;
+		char *dummy_argv[] = {"ccs-ruby", "-e_=0"};
+		ruby_options(dummy_argc, dummy_argv);
+	}
 	ruby_script("test_ruby");
-	int state;
+	ruby_init_loadpath();
+	rb_eval_string_protect("require 'rubygems'", &state);
+	if (state) {
+		ruby_cleanup(state);
+		exit(1);
+	}
 	rb_eval_string_protect("require_relative './test_ruby.rb'", &state);
 	if (state) {
 		ruby_cleanup(state);
-		return;
+		exit(1);
 	}
 	VALUE tuner;
 	tuner = rb_funcall(rb_current_receiver(), rb_intern("create_test_tuner"),
