@@ -549,7 +549,49 @@ class Object:
     Error.check(res)
     return cls._from_handle(o, False, True)
 
-_callbacks = {}
+_data_store = {}
+
+# Delete wrappers are responsible for deregistering the object data_store
+def _register_vector(handle, vector_data):
+  value = handle.value
+  if value in _data_store:
+    raise Error(ccs_error(ccs_error.INVALID_VALUE))
+  _data_store[value] = dict.fromkeys(['callbacks', 'user_data', 'serialize_calback'])
+  _data_store[value]['callbacks'] = vector_data
+
+def _unregister_vector(handle):
+  value = handle.value
+  del _data_store[value]
+
+# If objects don't have a user-defined del operation, then
+# the first time a data needs to be registered a destruction callback is attached.
+def _register_destroy_callback(handle):
+  value = handle.value
+  def cb(obj, data):
+    del _data_store[value]
+  cb_func = ccs_object_destroy_callback_type(cb)
+  res = ccs_object_set_destroy_callback(handle, cb_func, None)
+  Error.check(res)
+  _data_store[value] = dict.fromkeys(['callbacks', 'user_data', 'serialize_calback'])
+  _data_store[value]['callbacks'] = [ [ cb, cb_func ] ]
+
+def _register_callback(handle, callback_data):
+  value = handle.value
+  if value not in _data_store:
+    _register_destroy_callback(handle)
+  _data_store[value]['callbacks'].append( callback_data )
+
+def _register_user_data(handle, user_data):
+  value = handle.value
+  if value not in _data_store:
+    _register_destroy_callback(handle)
+  _data_store[value]['user_data'] = user_data
+
+def _register_serialize_callback(handle, callback_data):
+  value = handle.value
+  if value not in _data_store:
+    _register_destroy_callback(handle)
+  _data_store[value]['serialize_calback'] = callback_data
 
 def deserialize(format = 'binary', handle_map = None, path = None, buffer = None):
   return Object.deserialize(format = format, handle_map = handle_map, path = path, buffer = buffer)
@@ -557,17 +599,12 @@ def deserialize(format = 'binary', handle_map = None, path = None, buffer = None
 def _set_destroy_callback(handle, callback, user_data = None):
   if callback is None:
     raise Error(ccs_error(ccs_error.INVALID_VALUE))
-  ptr = ct.c_int(32)
   def cb_wrapper(obj, data):
-    try:
-      callback(Object.from_handle(obj), data)
-      del _callbacks[ct.addressof(ptr)]
-    except Error as e:
-      None
+    callback(Object.from_handle(obj), data)
   cb_wrapper_func = ccs_object_destroy_callback_type(cb_wrapper)
   res = ccs_object_set_destroy_callback(handle, cb_wrapper_func, user_data)
   Error.check(res)
-  _callbacks[ct.addressof(ptr)] = (cb_wrapper_func, user_data, ptr)
+  _register_callback(handle, [callback, cb_wrapper, cb_wrapper_func, user_data])
 
 
 _ccs_id = 0

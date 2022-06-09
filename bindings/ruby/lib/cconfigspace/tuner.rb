@@ -145,7 +145,7 @@ module CCS
     delwrapper = lambda { |tun|
       begin
         del.call(CCS::Object.from_handle(tun))
-        @@callbacks.delete(delwrapper)
+        CCS.unregister_vector(tun)
         CCSError.to_native(:CCS_SUCCESS)
       rescue CCSError => e
         e.to_native
@@ -289,8 +289,9 @@ module CCS
         ptr = MemoryPointer::new(:ccs_tuner_t)
         res = CCS.ccs_create_user_defined_tuner(name, configuration_space, objective_space, vector, tuner_data, ptr)
         CCS.error_check(res)
-        super(ptr.read_ccs_tuner_t, retain: false)
-        CCS.class_variable_get(:@@callbacks)[delwrapper] = [askwrapper, tellwrapper, get_optimumswrapper, get_historywrapper, suggestwrapper, serializewrapper, deserializewrapper, tuner_data]
+        handle = ptr.read_ccs_tuner_t
+        super(handle, retain: false)
+        CCS.register_vector(handle, [delwrapper, askwrapper, tellwrapper, get_optimumswrapper, get_historywrapper, suggestwrapper, serializewrapper, deserializewrapper, tuner_data])
       end
     end
 
@@ -308,7 +309,7 @@ module CCS
       vector[:serialize] = serializewrapper
       vector[:deserialize] = deserializewrapper
       res = super(format: format, handle_map: handle_map, vector: vector.to_ptr, data: tuner_data, path: path, buffer: buffer, file_descriptor: file_descriptor)
-      CCS.class_variable_get(:@@callbacks)[delwrapper] = [askwrapper, tellwrapper, get_optimumswrapper, get_historywrapper, suggestwrapper, serializewrapper, deserializewrapper, tuner_data]
+      CCS.register_vector(res.handle, [delwrapper, askwrapper, tellwrapper, get_optimumswrapper, get_historywrapper, suggestwrapper, serializewrapper, deserializewrapper, tuner_data])
       res
     end
   end

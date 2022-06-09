@@ -668,8 +668,60 @@ module CCS
 
   end
 
-  @@callbacks = {}
+  @@data_store = Hash.new { |h, k| h[k] = { callbacks: [], user_data: nil, serialize_calback: nil } }
+
+  # Delete wrappers are responsible for deregistering the object data_store
+  def self.register_vector(handle, vector_data)
+    value = handle.address
+    raise CCSError, :CCS_INVALID_VALUE if @@data_store.include?(value)
+    @@data_store[value][:callbacks].push vector_data
+  end
+
+  def self.unregister_vector(handle)
+    value = handle.address
+    @@data_store.delete(value)
+  end
+
+  # If objects don't have a user-defined del operation, then the first time a
+  # data needs to be registered a destruction callback is attached.
+  def self.register_destroy_callback(handle)
+    value = handle.address
+    cb = lambda { |_, _|
+      @@data_store.delete(value)
+    }
+    res = CCS.ccs_object_set_destroy_callback(handle, cb, nil)
+    CCS.error_check(res)
+    @@data_store[value][:callbacks].push cb
+  end
+
+  def self.register_user_data(handle, user_data)
+    value = handle.address
+    register_destroy_callback(handle) unless @@data_store.include?(value)
+    @@data_store[value][:user_data] = user_data
+  end
+
+  def self.register_callback(handle, callback_data)
+    value = handle.address
+    register_destroy_callback(handle) unless @@data_store.include?(value)
+    @@data_store[value][:callbacks].push callback_data
+  end
+
+  def self.register_serialize_callback(handle, callback_data)
+    value = handle.address
+    register_destroy_callback(handle) unless @@data_store.include?(value)
+    @@data_store[value][:serialize_calback] = callback_data
+  end
+
   def self.set_destroy_callback(handle, user_data: nil, &block)
+    raise CCSError, :CCS_INVALID_VALUE if !block
+    cb_wrapper = lambda { |object, data|
+      block.call(Object.from_handle(object), data)
+    }
+    res = CCS.ccs_object_set_destroy_callback(handle, cb_wrapper, user_data)
+    CCS.error_check(res)
+    register_callback(handle, [cb_wrapper, user_data])
+  end
+
     if block
       cb_wrapper = lambda { |object, data|
         block.call(Object.from_handle(object), data)
