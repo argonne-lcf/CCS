@@ -124,8 +124,8 @@ void test() {
 	ruby_init();
 	{
 		int dummy_argc = 2;
-		char *dummy_argv[] = {"ccs-ruby", "-e_=0"};
-		ruby_options(dummy_argc, dummy_argv);
+		const char *dummy_argv[] = {"ccs-ruby", "-e_=0"};
+		ruby_options(dummy_argc, (char **) dummy_argv);
 	}
 	ruby_script("test_ruby");
 	ruby_init_loadpath();
