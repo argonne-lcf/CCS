@@ -500,7 +500,7 @@ class Object:
     if path:
       p = str.encode(path)
       pp = ct.c_char_p(p)
-      res = ccs_object_serialize(self.handle, ccs_serialize_format.BINARY, ccs_serialize_operation.FILE, pp)
+      res = ccs_object_serialize(self.handle, ccs_serialize_format.BINARY, ccs_serialize_operation.FILE, pp, *options)
       Error.check(res)
       return None
     elif file_descriptor:
@@ -510,10 +510,10 @@ class Object:
       return None
     else:
       s = ct.c_size_t(0)
-      res = ccs_object_serialize(self.handle, ccs_serialize_format.BINARY, ccs_serialize_operation.SIZE, ct.byref(s))
+      res = ccs_object_serialize(self.handle, ccs_serialize_format.BINARY, ccs_serialize_operation.SIZE, ct.byref(s), *options)
       Error.check(res)
       v = (ct.c_byte * s.value)()
-      res = ccs_object_serialize(self.handle, ccs_serialize_format.BINARY, ccs_serialize_operation.MEMORY, ct.sizeof(v), v)
+      res = ccs_object_serialize(self.handle, ccs_serialize_format.BINARY, ccs_serialize_operation.MEMORY, ct.sizeof(v), v, *options)
       Error.check(res)
       return v
 
@@ -581,8 +581,8 @@ def _unregister_vector(handle):
   value = handle.value
   del _data_store[value]
 
-# If objects don't have a user-defined del operation, then
-# the first time a data needs to be registered a destruction callback is attached.
+# If objects don't have a user-defined del operation, then the first time a
+# data needs to be registered a destruction callback is attached.
 def _register_destroy_callback(handle):
   value = handle.value
   def cb(obj, data):
