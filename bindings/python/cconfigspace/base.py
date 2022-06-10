@@ -350,7 +350,8 @@ class ccs_serialize_operation(CEnumeration):
 class ccs_serialize_option(CEnumeration):
   _members_ = [
     ('END', 0),
-    'NON_BLOCKING'
+    'NON_BLOCKING',
+    'CALLBACK'
   ]
 
 class ccs_deserialize_option(CEnumeration):
@@ -491,12 +492,29 @@ class Object:
   def set_destroy_callback(self, callback, user_data = None):
     _set_destroy_callback(self.handle, callback, user_data = user_data)
 
-  def serialize(self, format = 'binary', path = None, file_descriptor = None):
+  def serialize(self, format = 'binary', path = None, file_descriptor = None, callback = None, callback_data = None):
     if format != 'binary':
       raise Error(ccs_error(ccs_error.INVALID_VALUE))
     if path and file_descriptor:
       raise Error(ccs_error(ccs_error.INVALID_VALUE))
     options = [ccs_serialize_option.END]
+    if callback:
+      def cb_wrapper(obj, serialize_data_size, serialize_data, serialize_data_size_ret, data):
+        try:
+          p_sd = ct.cast(serialize_data, ct.c_void_p)
+          p_sdsz = ct.cast(serialize_data_size_ret, ct.c_void_p)
+          serialized = callback(Tuner.from_handle(tun), data, True if state_size == 0 else False)
+          if p_sd.value is not None and serialize_data_size < ct.sizeof(serialized):
+            raise Error(ccs_error(ccs_error.INVALID_VALUE))
+          if p_sd.value is not None:
+            ct.memmove(p_sd, ct.byref(serialized), ct.sizeof(serialized))
+          if p_sdsz.value is not None:
+            p_state_size[0] = ct.sizeof(serialized)
+          return ccs_error.SUCCESS
+        except Error as e:
+          return -e.message.value
+      cb_wrapper_func = ccs_object_serialize_callback_type(cb_wrapper)
+      options = [ccs_serialize_option.CALLBACK, cb_wrapper_func, ct.py_object(callback_data)]
     if path:
       p = str.encode(path)
       pp = ct.c_char_p(p)

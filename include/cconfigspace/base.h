@@ -761,6 +761,11 @@ enum ccs_serialize_option_e {
          *  performing the operation will return -#CCS_AGAIN if the operation has
          *  not completed. The state is managed internally. */
 	CCS_SERIALIZE_OPTION_NON_BLOCKING,
+	/** The next parameters are a serialization callback and it's user_data.
+         *  This callback will be called for all objects that have user_data set
+         *  and have not a serialization callback set via
+         *  ccs_object_set_serialize_callback */
+	CCS_SERIALIZE_OPTION_CALLBACK,
 	/** Guard */
 	CCS_SERIALIZE_OPTION_MAX,
 	/** Try forcing 32 bits value for bindings */

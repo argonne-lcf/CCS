@@ -851,7 +851,9 @@ struct _ccs_file_descriptor_state_s {
 typedef struct _ccs_file_descriptor_state_s _ccs_file_descriptor_state_t;
 
 struct _ccs_object_serialize_options_s {
-	_ccs_file_descriptor_state_t **ppfd_state;
+	_ccs_file_descriptor_state_t    **ppfd_state;
+	ccs_object_serialize_callback_t   serialize_callback;
+	void                             *serialize_user_data;
 };
 typedef struct _ccs_object_serialize_options_s _ccs_object_serialize_options_t;
 

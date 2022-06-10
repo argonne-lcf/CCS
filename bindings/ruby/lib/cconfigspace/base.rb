@@ -217,7 +217,8 @@ module CCS
 
   SerializeOption = enum FFI::Type::INT32, :ccs_serialize_option_t, [
     :CCS_SERIALIZE_OPTION_END, 0,
-    :CCS_SERIALIZE_OPTION_NON_BLOCKING ]
+    :CCS_SERIALIZE_OPTION_NON_BLOCKING,
+    :CCS_SERIALIZE_OPTION_CALLBACK ]
 
   DeserializeOptions = enum FFI::Type::INT32, :ccs_deserialize_option_t, [
     :CCS_DESERIALIZE_OPTION_END, 0,
@@ -610,10 +611,25 @@ module CCS
       self
     end
 
-    def serialize(format: :binary, path: nil, file_descriptor: nil)
+    def serialize(format: :binary, path: nil, file_descriptor: nil, callback: nil, callback_data: nil)
       raise CCSError, :CCS_INVALID_VALUE if format != :binary
       raise CCSError, :CCS_INVALID_VALUE if path && file_descriptor
-      options = [:ccs_serialize_option_t, :CCS_SERIALIZE_OPTION_END]
+      options = []
+      if callback
+        cb_wrapper = lambda { |object, serialize_data_size, serialize_data, serialize_data_size_ret, cb_data|
+          begin
+            serialized = block.call(Object.from_handle(object), cb_data, serialize_data_size == 0 ? true : false)
+            raise CCSError, :CCS_INVALID_VALUE if !serialize_data.null? && serialize_data_size < serialized.size
+            serialize_data_size.write_bytes(state.read_bytes(serialized.size)) unless serialize_data.null?
+            Pointer.new(serialize_data_size_ret).write_size_t(serialized.size) unless serialize_data_size_ret.null?
+            CCSError.to_native(:CCS_SUCCESS)
+          rescue CCSError => e
+            e.to_native
+          end
+          options.concat [:ccs_serialize_option_t, :CCS_SERIALIZE_OPTION_CALLBACK, :ccs_object_serialize_callback, cb_wrapper, :value, callback_data]
+        }
+      end
+      options.concat [:ccs_serialize_option_t, :CCS_SERIALIZE_OPTION_END]
       format = :CCS_SERIALIZE_FORMAT_BINARY
       if path
         result = nil
