@@ -29,8 +29,9 @@ _ccs_objective_space_del(ccs_object_t object) {
 
 static inline ccs_result_t
 _ccs_serialize_bin_size_ccs_objective_space_data(
-		_ccs_objective_space_data_t *data,
-		size_t                      *cum_size) {
+		_ccs_objective_space_data_t     *data,
+		size_t                          *cum_size,
+		_ccs_object_serialize_options_t *opts) {
 	_ccs_hyperparameter_wrapper_t *wrapper;
 	_ccs_objective_t *objective;
 
@@ -44,13 +45,13 @@ _ccs_serialize_bin_size_ccs_objective_space_data(
 	wrapper = NULL;
 	while ( (wrapper = (_ccs_hyperparameter_wrapper_t *)utarray_next(data->hyperparameters, wrapper)) )
 		CCS_VALIDATE(wrapper->hyperparameter->obj.ops->serialize_size(
-			wrapper->hyperparameter, CCS_SERIALIZE_FORMAT_BINARY, cum_size));
+			wrapper->hyperparameter, CCS_SERIALIZE_FORMAT_BINARY, cum_size, opts));
 
 	/* objectives */
 	objective = NULL;
 	while ( (objective = (_ccs_objective_t *)utarray_next(data->objectives, objective)) ) {
 		CCS_VALIDATE(objective->expression->obj.ops->serialize_size(
-			objective->expression, CCS_SERIALIZE_FORMAT_BINARY, cum_size));
+			objective->expression, CCS_SERIALIZE_FORMAT_BINARY, cum_size, opts));
 		*cum_size += _ccs_serialize_bin_size_ccs_objective_type(objective->type);
 	}
 
@@ -59,9 +60,10 @@ _ccs_serialize_bin_size_ccs_objective_space_data(
 
 static inline ccs_result_t
 _ccs_serialize_bin_ccs_objective_space_data(
-		_ccs_objective_space_data_t  *data,
-		size_t                       *buffer_size,
-		char                        **buffer) {
+		_ccs_objective_space_data_t      *data,
+		size_t                           *buffer_size,
+		char                            **buffer,
+		_ccs_object_serialize_options_t  *opts) {
 	_ccs_hyperparameter_wrapper_t *wrapper;
 	_ccs_objective_t *objective;
 
@@ -76,13 +78,13 @@ _ccs_serialize_bin_ccs_objective_space_data(
 	wrapper = NULL;
 	while ( (wrapper = (_ccs_hyperparameter_wrapper_t *)utarray_next(data->hyperparameters, wrapper)) )
 		CCS_VALIDATE(wrapper->hyperparameter->obj.ops->serialize(
-			wrapper->hyperparameter, CCS_SERIALIZE_FORMAT_BINARY, buffer_size, buffer));
+			wrapper->hyperparameter, CCS_SERIALIZE_FORMAT_BINARY, buffer_size, buffer, opts));
 
 	/* objectives */
 	objective = NULL;
 	while ( (objective = (_ccs_objective_t *)utarray_next(data->objectives, objective)) ) {
 		CCS_VALIDATE(objective->expression->obj.ops->serialize(
-			objective->expression, CCS_SERIALIZE_FORMAT_BINARY, buffer_size, buffer));
+			objective->expression, CCS_SERIALIZE_FORMAT_BINARY, buffer_size, buffer, opts));
 		CCS_VALIDATE(_ccs_serialize_bin_ccs_objective_type(
 			objective->type, buffer_size, buffer));
 	}
@@ -92,61 +94,69 @@ _ccs_serialize_bin_ccs_objective_space_data(
 
 static inline ccs_result_t
 _ccs_serialize_bin_size_ccs_objective_space(
-		ccs_objective_space_t  objective_space,
-		size_t                *cum_size) {
+		ccs_objective_space_t            objective_space,
+		size_t                          *cum_size,
+		_ccs_object_serialize_options_t *opts) {
 	_ccs_objective_space_data_t *data =
 		(_ccs_objective_space_data_t *)(objective_space->data);
 	*cum_size += _ccs_serialize_bin_size_ccs_object_internal(
 		(_ccs_object_internal_t *)objective_space);
 	CCS_VALIDATE(_ccs_serialize_bin_size_ccs_objective_space_data(
-		data, cum_size));
+		data, cum_size, opts));
 	return CCS_SUCCESS;
 }
 
 static inline ccs_result_t
 _ccs_serialize_bin_ccs_objective_space(
-		ccs_objective_space_t   objective_space,
-		size_t                 *buffer_size,
-		char                  **buffer) {
+		ccs_objective_space_t             objective_space,
+		size_t                           *buffer_size,
+		char                            **buffer,
+		_ccs_object_serialize_options_t  *opts) {
 	_ccs_objective_space_data_t *data =
 		(_ccs_objective_space_data_t *)(objective_space->data);
 	CCS_VALIDATE(_ccs_serialize_bin_ccs_object_internal(
 		(_ccs_object_internal_t *)objective_space, buffer_size, buffer));
 	CCS_VALIDATE(_ccs_serialize_bin_ccs_objective_space_data(
-		data, buffer_size, buffer));
+		data, buffer_size, buffer, opts));
 	return CCS_SUCCESS;
 }
 
 static ccs_result_t
 _ccs_objective_space_serialize_size(
-		ccs_object_t            object,
-		ccs_serialize_format_t  format,
-		size_t                 *cum_size) {
+		ccs_object_t                     object,
+		ccs_serialize_format_t           format,
+		size_t                          *cum_size,
+		_ccs_object_serialize_options_t *opts) {
 	switch(format) {
 	case CCS_SERIALIZE_FORMAT_BINARY:
 		CCS_VALIDATE(_ccs_serialize_bin_size_ccs_objective_space(
-			(ccs_objective_space_t)object, cum_size));
+			(ccs_objective_space_t)object, cum_size, opts));
 		break;
 	default:
 		return -CCS_INVALID_VALUE;
 	}
+	CCS_VALIDATE(_ccs_object_serialize_user_data_size(
+		object, format, cum_size, opts));
 	return CCS_SUCCESS;
 }
 
 static ccs_result_t
 _ccs_objective_space_serialize(
-		ccs_object_t             object,
-		ccs_serialize_format_t   format,
-		size_t                  *buffer_size,
-		char                   **buffer) {
+		ccs_object_t                      object,
+		ccs_serialize_format_t            format,
+		size_t                           *buffer_size,
+		char                            **buffer,
+		_ccs_object_serialize_options_t  *opts) {
 	switch(format) {
 	case CCS_SERIALIZE_FORMAT_BINARY:
 		CCS_VALIDATE(_ccs_serialize_bin_ccs_objective_space(
-		    (ccs_objective_space_t)object, buffer_size, buffer));
+		    (ccs_objective_space_t)object, buffer_size, buffer, opts));
 		break;
 	default:
 		return -CCS_INVALID_VALUE;
 	}
+	CCS_VALIDATE(_ccs_object_serialize_user_data(
+		object, format, buffer_size, buffer, opts));
 	return CCS_SUCCESS;
 }
 

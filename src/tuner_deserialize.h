@@ -25,10 +25,10 @@ _ccs_deserialize_bin_size_ccs_tuner_common_data(
 		&data->type, buffer_size, buffer));
 	CCS_VALIDATE(_ccs_deserialize_bin_string(
 		&data->name, buffer_size, buffer));
-	CCS_VALIDATE(_ccs_deserialize_bin_configuration_space(
-		&data->configuration_space, version, buffer_size, buffer, opts));
-	CCS_VALIDATE(_ccs_deserialize_bin_objective_space(
-		&data->objective_space, version, buffer_size, buffer, opts));
+	CCS_VALIDATE(_ccs_configuration_space_deserialize(
+		&data->configuration_space, CCS_SERIALIZE_FORMAT_BINARY, version, buffer_size, buffer, opts));
+	CCS_VALIDATE(_ccs_objective_space_deserialize(
+		&data->objective_space, CCS_SERIALIZE_FORMAT_BINARY, version, buffer_size, buffer, opts));
 	return CCS_SUCCESS;
 }
 
@@ -63,8 +63,8 @@ _ccs_deserialize_bin_ccs_random_tuner_data(
 	data->optimums = (ccs_evaluation_t *)mem;
 
 	for (size_t i = 0; i < data->size_history; i++)
-		CCS_VALIDATE(_ccs_deserialize_bin_evaluation(
-			data->history + i, version, buffer_size, buffer, opts));
+		CCS_VALIDATE(_ccs_evaluation_deserialize(
+			data->history + i, CCS_SERIALIZE_FORMAT_BINARY, version, buffer_size, buffer, opts));
 
 	for (size_t i = 0; i < data->size_optimums; i++)
 		CCS_VALIDATE(_ccs_deserialize_bin_ccs_object(
@@ -261,6 +261,8 @@ _ccs_tuner_deserialize(
 	default:
 		return -CCS_INVALID_VALUE;
 	}
+	CCS_VALIDATE(_ccs_object_deserialize_user_data(
+		(ccs_object_t)*tuner_ret, format, version, buffer_size, buffer, opts));
 	return CCS_SUCCESS;
 }
 

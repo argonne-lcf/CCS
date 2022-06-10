@@ -166,8 +166,9 @@ end:
 }
 
 static inline ccs_result_t
-_ccs_deserialize_bin_distribution(
+_ccs_distribution_deserialize(
 		ccs_distribution_t                 *distribution_ret,
+		ccs_serialize_format_t              format,
 		uint32_t                            version,
 		size_t                             *buffer_size,
 		const char                        **buffer,
@@ -186,7 +187,10 @@ _ccs_deserialize_bin_ccs_distribution_mixture_data(
 		_ccs_distribution_mixture_data_mock_t  *data,
 		uint32_t                                version,
 		size_t                                 *buffer_size,
-		const char                            **buffer) {
+		const char                            **buffer,
+		_ccs_object_deserialize_options_t      *opts) {
+	_ccs_object_deserialize_options_t new_opts = *opts;
+	new_opts.handle_map = NULL;
 	CCS_VALIDATE(_ccs_deserialize_bin_ccs_distribution_common_data(
 		&data->common_data, buffer_size, buffer));
 	uint64_t num_distributions;
@@ -204,24 +208,25 @@ _ccs_deserialize_bin_ccs_distribution_mixture_data(
 	for (size_t i = 0; i < data->num_distributions; i++) {
 		CCS_VALIDATE(_ccs_deserialize_bin_ccs_float(
 			data->weights + i, buffer_size, buffer));
-		CCS_VALIDATE(_ccs_deserialize_bin_distribution(
-			data->distributions + i, version, buffer_size, buffer, NULL));
+		CCS_VALIDATE(_ccs_distribution_deserialize(
+			data->distributions + i, CCS_SERIALIZE_FORMAT_BINARY, version, buffer_size, buffer, &new_opts));
 	}
 	return CCS_SUCCESS;
 }
 
 static inline ccs_result_t
 _ccs_deserialize_bin_distribution_mixture(
-		ccs_distribution_t  *distribution_ret,
-		uint32_t             version,
-		size_t              *buffer_size,
-		const char         **buffer) {
+		ccs_distribution_t                 *distribution_ret,
+		uint32_t                            version,
+		size_t                             *buffer_size,
+		const char                        **buffer,
+		_ccs_object_deserialize_options_t  *opts) {
 	ccs_result_t res = CCS_SUCCESS;
 	_ccs_distribution_mixture_data_mock_t data;
 	data.distributions = NULL;
 	data.weights = NULL;
 	CCS_VALIDATE_ERR_GOTO(res, _ccs_deserialize_bin_ccs_distribution_mixture_data(
-		&data, version, buffer_size, buffer), end);
+		&data, version, buffer_size, buffer, opts), end);
 	CCS_VALIDATE_ERR_GOTO(res, ccs_create_mixture_distribution(
 		data.num_distributions,
 		data.distributions,
@@ -251,7 +256,10 @@ _ccs_deserialize_bin_ccs_distribution_multivariate_data(
 		_ccs_distribution_multivariate_data_mock_t  *data,
 		uint32_t                                     version,
 		size_t                                      *buffer_size,
-		const char                                 **buffer) {
+		const char                                 **buffer,
+		_ccs_object_deserialize_options_t           *opts) {
+	_ccs_object_deserialize_options_t new_opts = *opts;
+	new_opts.handle_map = NULL;
 	CCS_VALIDATE(_ccs_deserialize_bin_ccs_distribution_common_data(
 		&data->common_data, buffer_size, buffer));
 	uint64_t num_distributions;
@@ -263,22 +271,23 @@ _ccs_deserialize_bin_ccs_distribution_multivariate_data(
 	if (!data->distributions)
 		return -CCS_OUT_OF_MEMORY;
 	for (size_t i = 0; i < data->num_distributions; i++)
-		CCS_VALIDATE(_ccs_deserialize_bin_distribution(
-			data->distributions + i, version, buffer_size, buffer, NULL));
+		CCS_VALIDATE(_ccs_distribution_deserialize(
+			data->distributions + i, CCS_SERIALIZE_FORMAT_BINARY, version, buffer_size, buffer, &new_opts));
 	return CCS_SUCCESS;
 }
 
 static inline ccs_result_t
 _ccs_deserialize_bin_distribution_multivariate(
-		ccs_distribution_t  *distribution_ret,
-		uint32_t             version,
-		size_t              *buffer_size,
-		const char         **buffer) {
+		ccs_distribution_t                 *distribution_ret,
+		uint32_t                            version,
+		size_t                             *buffer_size,
+		const char                        **buffer,
+		_ccs_object_deserialize_options_t  *opts) {
 	ccs_result_t res = CCS_SUCCESS;
 	_ccs_distribution_multivariate_data_mock_t data;
 	data.distributions = NULL;
 	CCS_VALIDATE_ERR_GOTO(res, _ccs_deserialize_bin_ccs_distribution_multivariate_data(
-		&data, version, buffer_size, buffer), end);
+		&data, version, buffer_size, buffer, opts), end);
 	CCS_VALIDATE_ERR_GOTO(res, ccs_create_multivariate_distribution(
 		data.num_distributions,
 		data.distributions,
@@ -326,11 +335,11 @@ _ccs_deserialize_bin_distribution(
 		break;
 	case CCS_MIXTURE:
 		CCS_VALIDATE(_ccs_deserialize_bin_distribution_mixture(
-			distribution_ret, version, buffer_size, buffer));
+			distribution_ret, version, buffer_size, buffer, opts));
 		break;
 	case CCS_MULTIVARIATE:
 		CCS_VALIDATE(_ccs_deserialize_bin_distribution_multivariate(
-			distribution_ret, version, buffer_size, buffer));
+			distribution_ret, version, buffer_size, buffer, opts));
 		break;
 	default:
 		return -CCS_UNSUPPORTED_OPERATION;
@@ -364,6 +373,8 @@ _ccs_distribution_deserialize(
 	default:
 		return -CCS_INVALID_VALUE;
 	}
+	CCS_VALIDATE(_ccs_object_deserialize_user_data(
+		(ccs_object_t)*distribution_ret, format, version, buffer_size, buffer, opts));
 	return CCS_SUCCESS;
 }
 

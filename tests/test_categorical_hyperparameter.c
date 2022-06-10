@@ -164,6 +164,18 @@ void test_create() {
 
 	compare_hyperparameter(hyperparameter, num_possible_values, possible_values, default_value_index);
 
+	err = ccs_object_serialize(hyperparameter, CCS_SERIALIZE_FORMAT_BINARY, CCS_SERIALIZE_OPERATION_SIZE, &buff_size, CCS_SERIALIZE_OPTION_CALLBACK, serialize_callback, (void*)0xdeadbeef, CCS_SERIALIZE_OPTION_END);
+	assert( err == CCS_SUCCESS );
+
+	buff = (char *)malloc(buff_size);
+	assert( buff );
+
+	err = ccs_object_serialize(hyperparameter, CCS_SERIALIZE_FORMAT_BINARY, CCS_SERIALIZE_OPERATION_MEMORY, buff_size, buff, CCS_SERIALIZE_OPTION_CALLBACK, serialize_callback, (void*)0xdeadbeef, CCS_SERIALIZE_OPTION_END);
+	assert( err == CCS_SUCCESS );
+	free(buff);
+
+	compare_hyperparameter(hyperparameter, num_possible_values, possible_values, default_value_index);
+
 	err = ccs_release_object(hyperparameter);
 	assert( err == CCS_SUCCESS );
 }

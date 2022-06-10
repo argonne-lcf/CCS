@@ -240,103 +240,6 @@ _ccs_object_serialize_options(
 }
 
 static inline ccs_result_t
-_ccs_object_serialize_user_data_size(
-		ccs_object_t                     object,
-		ccs_serialize_format_t           format,
-		size_t                          *buffer_size,
-		_ccs_object_serialize_options_t *opts) {
-	switch(format) {
-	case CCS_SERIALIZE_FORMAT_BINARY:
-	{
-		_ccs_object_internal_t *obj = (_ccs_object_internal_t *)object;
-		size_t serialize_data_size = 0;
-		if (obj->serialize_callback)
-			CCS_VALIDATE(obj->serialize_callback(
-				object, 0, NULL, &serialize_data_size, obj->serialize_user_data));
-		else if (opts->serialize_callback)
-			CCS_VALIDATE(opts->serialize_callback(
-				object, 0, NULL, &serialize_data_size, opts->serialize_user_data));
-		*buffer_size += _ccs_serialize_bin_size_uint64(serialize_data_size) + serialize_data_size;
-		break;
-	}
-	default:
-		return -CCS_INVALID_VALUE;
-	}
-	return CCS_SUCCESS;
-}
-
-static inline ccs_result_t
-_ccs_object_serialize_user_data(
-		ccs_object_t                      object,
-		ccs_serialize_format_t            format,
-		size_t                           *buffer_size,
-		char                            **buffer,
-		_ccs_object_serialize_options_t  *opts) {
-	switch(format) {
-	case CCS_SERIALIZE_FORMAT_BINARY:
-	{
-		_ccs_object_internal_t *obj = (_ccs_object_internal_t *)object;
-		size_t serialize_data_size = 0;
-		/* optimization would require using an uncompressed size */
-		if (obj->serialize_callback)
-			CCS_VALIDATE(obj->serialize_callback(
-				object, 0, NULL, &serialize_data_size, obj->serialize_user_data));
-		else if (opts->serialize_callback)
-			CCS_VALIDATE(opts->serialize_callback(
-				object, 0, NULL, &serialize_data_size, opts->serialize_user_data));
-		CCS_VALIDATE(_ccs_serialize_bin_uint64(
-			serialize_data_size, buffer_size, buffer));
-		if (CCS_UNLIKELY(*buffer_size < serialize_data_size))
-			return -CCS_NOT_ENOUGH_DATA;
-		if (obj->serialize_callback)
-			CCS_VALIDATE(obj->serialize_callback(
-				object, serialize_data_size, *buffer, NULL, obj->serialize_user_data));
-		else if (opts->serialize_callback)
-			CCS_VALIDATE(opts->serialize_callback(
-				object, serialize_data_size, *buffer, NULL, opts->serialize_user_data));
-		if (serialize_data_size) {
-			*buffer_size -= serialize_data_size;
-			*buffer += serialize_data_size;
-		}
-		break;
-	}
-	default:
-		return -CCS_INVALID_VALUE;
-	}
-	return CCS_SUCCESS;
-}
-
-static inline ccs_result_t
-_ccs_object_deserialize_user_data(
-		ccs_object_t                        object,
-		ccs_serialize_format_t              format,
-		uint32_t                            version,
-		size_t                             *buffer_size,
-		const char                        **buffer,
-		_ccs_object_deserialize_options_t  *opts) {
-	(void)version;
-	switch(format) {
-	case CCS_SERIALIZE_FORMAT_BINARY:
-	{
-		uint64_t serialize_data_size;
-		CCS_VALIDATE(_ccs_deserialize_bin_uint64(
-			&serialize_data_size, buffer_size, buffer));
-		if (opts->deserialize_callback)
-			CCS_VALIDATE(opts->deserialize_callback(
-				object, (size_t)serialize_data_size, serialize_data_size == 0 ? NULL : *buffer, opts->deserialize_user_data));
-		if (serialize_data_size) {
-			*buffer_size -= serialize_data_size;
-			*buffer += serialize_data_size;
-		}
-		break;
-	}
-	default:
-		return -CCS_INVALID_VALUE;
-	}
-	return CCS_SUCCESS;
-}
-
-static inline ccs_result_t
 _ccs_object_serialize_size_with_opts(
 		ccs_object_t                     object,
 		ccs_serialize_format_t           format,
@@ -344,16 +247,15 @@ _ccs_object_serialize_size_with_opts(
 		_ccs_object_serialize_options_t *opts) {
 	_ccs_object_internal_t *obj = (_ccs_object_internal_t *)object;
 	*buffer_size = _ccs_serialize_header_size(format);
-	CCS_VALIDATE(obj->ops->serialize_size(object, format, buffer_size));
-	CCS_VALIDATE(_ccs_object_serialize_user_data_size(object, format, buffer_size, opts));
+	CCS_VALIDATE(obj->ops->serialize_size(object, format, buffer_size, opts));
 	return CCS_SUCCESS;
 }
 
 static inline ccs_result_t
 _ccs_object_serialize_size(
-		ccs_object_t            object,
-		ccs_serialize_format_t  format,
-		va_list                 args) {
+		ccs_object_t           object,
+		ccs_serialize_format_t format,
+		va_list                args) {
 	size_t *p_buffer_size = NULL;
 	p_buffer_size = va_arg(args, size_t *);
 	_ccs_object_serialize_options_t opts = {NULL, NULL, NULL};
@@ -377,8 +279,6 @@ _ccs_object_serialize_memory_with_opts(
 	CCS_VALIDATE(_ccs_serialize_header(
 	    format, &buffer_size, &buffer, 0));
 	CCS_VALIDATE(obj->ops->serialize(
-	    object, format, &buffer_size, &buffer));
-	CCS_VALIDATE(_ccs_object_serialize_user_data(
 	    object, format, &buffer_size, &buffer, opts));
 	CCS_VALIDATE(_ccs_serialize_header(
 	    format, &total_size, &buffer_start, total_size - buffer_size));
@@ -725,8 +625,6 @@ _ccs_object_deserialize(ccs_object_t               *object_ret,
 		format, buffer_size, buffer, &size, &version));
 	CCS_VALIDATE(_ccs_object_deserialize_with_opts(
 		object_ret, format, version, buffer_size, buffer, &opts));
-	CCS_VALIDATE(_ccs_object_deserialize_user_data(
-		*object_ret, format, version, buffer_size, buffer, &opts));
 	return CCS_SUCCESS;
 }
 
@@ -913,8 +811,6 @@ _ccs_object_deserialize_file_descriptor(
 	/* decode object */
 	CCS_VALIDATE_ERR_GOTO(res, _ccs_object_deserialize_with_opts(
 		object_ret, format, pstate->version, &pstate->buffer_size, (const char **)&pstate->buffer, &opts), err_fd_buffer);
-	CCS_VALIDATE_ERR_GOTO(res, _ccs_object_deserialize_user_data(
-		*object_ret, format, pstate->version, &pstate->buffer_size, (const char **)&pstate->buffer, &opts), err_fd_buffer);
 err_fd_buffer:
 	free(pstate->base);
 	if (opts.ppfd_state)

@@ -34,9 +34,10 @@ _ccs_serialize_bin_ccs_hyperparameter_numerical(
 
 static ccs_result_t
 _ccs_hyperparameter_numerical_serialize_size(
-		ccs_object_t            object,
-		ccs_serialize_format_t  format,
-		size_t                 *cum_size) {
+		ccs_object_t                     object,
+		ccs_serialize_format_t           format,
+		size_t                          *cum_size,
+		_ccs_object_serialize_options_t *opts) {
 	switch(format) {
 	case CCS_SERIALIZE_FORMAT_BINARY:
 		*cum_size += _ccs_serialize_bin_size_ccs_hyperparameter_numerical(
@@ -45,15 +46,18 @@ _ccs_hyperparameter_numerical_serialize_size(
 	default:
 		return -CCS_INVALID_VALUE;
 	}
+	CCS_VALIDATE(_ccs_object_serialize_user_data_size(
+		object, format, cum_size, opts));
 	return CCS_SUCCESS;
 }
 
 static ccs_result_t
 _ccs_hyperparameter_numerical_serialize(
-		ccs_object_t             object,
-		ccs_serialize_format_t   format,
-		size_t                  *buffer_size,
-		char                   **buffer) {
+		ccs_object_t                      object,
+		ccs_serialize_format_t            format,
+		size_t                           *buffer_size,
+		char                            **buffer,
+		_ccs_object_serialize_options_t  *opts) {
 	switch(format) {
 	case CCS_SERIALIZE_FORMAT_BINARY:
 		CCS_VALIDATE(_ccs_serialize_bin_ccs_hyperparameter_numerical(
@@ -62,6 +66,8 @@ _ccs_hyperparameter_numerical_serialize(
 	default:
 		return -CCS_INVALID_VALUE;
 	}
+	CCS_VALIDATE(_ccs_object_serialize_user_data(
+		object, format, buffer_size, buffer, opts));
 	return CCS_SUCCESS;
 }
 

@@ -54,30 +54,32 @@ typedef struct _ccs_tuner_common_data_s _ccs_tuner_common_data_t;
 
 static inline ccs_result_t
 _ccs_serialize_bin_size_ccs_tuner_common_data(
-		_ccs_tuner_common_data_t *data,
-		size_t                   *cum_size) {
+		_ccs_tuner_common_data_t        *data,
+		size_t                          *cum_size,
+		_ccs_object_serialize_options_t *opts) {
 	*cum_size += _ccs_serialize_bin_size_ccs_tuner_type(data->type);
 	*cum_size += _ccs_serialize_bin_size_string(data->name);
 	CCS_VALIDATE(data->configuration_space->obj.ops->serialize_size(
-		data->configuration_space, CCS_SERIALIZE_FORMAT_BINARY, cum_size));
+		data->configuration_space, CCS_SERIALIZE_FORMAT_BINARY, cum_size, opts));
 	CCS_VALIDATE(data->objective_space->obj.ops->serialize_size(
-		data->objective_space, CCS_SERIALIZE_FORMAT_BINARY, cum_size));
+		data->objective_space, CCS_SERIALIZE_FORMAT_BINARY, cum_size, opts));
 	return CCS_SUCCESS;
 }
 
 static inline ccs_result_t
 _ccs_serialize_bin_ccs_tuner_common_data(
-		_ccs_tuner_common_data_t  *data,
-		size_t                    *buffer_size,
-		char                     **buffer) {
+		_ccs_tuner_common_data_t         *data,
+		size_t                           *buffer_size,
+		char                            **buffer,
+		_ccs_object_serialize_options_t  *opts) {
 	CCS_VALIDATE(_ccs_serialize_bin_ccs_tuner_type(
 		data->type, buffer_size, buffer));
 	CCS_VALIDATE(_ccs_serialize_bin_string(
 		data->name, buffer_size, buffer));
 	CCS_VALIDATE(data->configuration_space->obj.ops->serialize(
-		 data->configuration_space, CCS_SERIALIZE_FORMAT_BINARY, buffer_size, buffer));
+		 data->configuration_space, CCS_SERIALIZE_FORMAT_BINARY, buffer_size, buffer, opts));
 	CCS_VALIDATE(data->objective_space->obj.ops->serialize(
-		data->objective_space, CCS_SERIALIZE_FORMAT_BINARY, buffer_size, buffer));
+		data->objective_space, CCS_SERIALIZE_FORMAT_BINARY, buffer_size, buffer, opts));
 	return CCS_SUCCESS;
 }
 

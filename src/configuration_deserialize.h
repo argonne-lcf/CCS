@@ -70,6 +70,8 @@ _ccs_configuration_deserialize(
 	default:
 		return -CCS_INVALID_VALUE;
 	}
+	CCS_VALIDATE(_ccs_object_deserialize_user_data(
+		(ccs_object_t)*configuration_ret, format, version, buffer_size, buffer, opts));
 	return CCS_SUCCESS;
 }
 

@@ -112,19 +112,38 @@ _ccs_deserialize_bin_magic_tag(
 	return CCS_SUCCESS;
 }
 
+struct _ccs_file_descriptor_state_s {
+	char     *base;
+	size_t    base_size;
+	char     *buffer;
+	size_t    buffer_size;
+	int       fd;
+	uint32_t  version;
+};
+typedef struct _ccs_file_descriptor_state_s _ccs_file_descriptor_state_t;
+
+struct _ccs_object_serialize_options_s {
+	_ccs_file_descriptor_state_t    **ppfd_state;
+	ccs_object_serialize_callback_t   serialize_callback;
+	void                             *serialize_user_data;
+};
+typedef struct _ccs_object_serialize_options_s _ccs_object_serialize_options_t;
+
 struct _ccs_object_ops_s {
 	ccs_result_t (*del)(ccs_object_t object);
 
 	ccs_result_t (*serialize_size)(
-		ccs_object_t            object,
-		ccs_serialize_format_t  format,
-		size_t                 *cum_size);
+		ccs_object_t                     object,
+		ccs_serialize_format_t           format,
+		size_t                          *cum_size,
+		_ccs_object_serialize_options_t *opts);
 
 	ccs_result_t (*serialize)(
-		ccs_object_t             object,
-		ccs_serialize_format_t   format,
-		size_t                  *buffer_size,
-		char                   **buffer);
+		ccs_object_t                      object,
+		ccs_serialize_format_t            format,
+		size_t                           *buffer_size,
+		char                            **buffer,
+		_ccs_object_serialize_options_t  *opts);
 };
 
 typedef struct _ccs_object_ops_s _ccs_object_ops_t;
@@ -840,23 +859,6 @@ _ccs_object_handle_check_add(
 	return CCS_SUCCESS;
 }
 
-struct _ccs_file_descriptor_state_s {
-	char     *base;
-	size_t    base_size;
-	char     *buffer;
-	size_t    buffer_size;
-	int       fd;
-	uint32_t  version;
-};
-typedef struct _ccs_file_descriptor_state_s _ccs_file_descriptor_state_t;
-
-struct _ccs_object_serialize_options_s {
-	_ccs_file_descriptor_state_t    **ppfd_state;
-	ccs_object_serialize_callback_t   serialize_callback;
-	void                             *serialize_user_data;
-};
-typedef struct _ccs_object_serialize_options_s _ccs_object_serialize_options_t;
-
 struct _ccs_object_deserialize_options_s {
 	ccs_map_t                           handle_map;
 	ccs_bool_t                          map_values;
@@ -867,5 +869,103 @@ struct _ccs_object_deserialize_options_s {
 	void                               *deserialize_user_data;
 };
 typedef struct _ccs_object_deserialize_options_s _ccs_object_deserialize_options_t;
+
+static inline ccs_result_t
+_ccs_object_serialize_user_data_size(
+		ccs_object_t                     object,
+		ccs_serialize_format_t           format,
+		size_t                          *buffer_size,
+		_ccs_object_serialize_options_t *opts) {
+	switch(format) {
+	case CCS_SERIALIZE_FORMAT_BINARY:
+	{
+		_ccs_object_internal_t *obj = (_ccs_object_internal_t *)object;
+		size_t serialize_data_size = 0;
+		if (obj->serialize_callback)
+			CCS_VALIDATE(obj->serialize_callback(
+				object, 0, NULL, &serialize_data_size, obj->serialize_user_data));
+		else if (opts->serialize_callback)
+			CCS_VALIDATE(opts->serialize_callback(
+				object, 0, NULL, &serialize_data_size, opts->serialize_user_data));
+		*buffer_size += _ccs_serialize_bin_size_uint64(serialize_data_size) + serialize_data_size;
+		break;
+	}
+	default:
+		return -CCS_INVALID_VALUE;
+	}
+	return CCS_SUCCESS;
+}
+
+
+static inline ccs_result_t
+_ccs_object_serialize_user_data(
+		ccs_object_t                      object,
+		ccs_serialize_format_t            format,
+		size_t                           *buffer_size,
+		char                            **buffer,
+		_ccs_object_serialize_options_t  *opts) {
+	switch(format) {
+	case CCS_SERIALIZE_FORMAT_BINARY:
+	{
+		_ccs_object_internal_t *obj = (_ccs_object_internal_t *)object;
+		size_t serialize_data_size = 0;
+		/* optimization would require using an uncompressed size */
+		if (obj->serialize_callback)
+			CCS_VALIDATE(obj->serialize_callback(
+				object, 0, NULL, &serialize_data_size, obj->serialize_user_data));
+		else if (opts->serialize_callback)
+			CCS_VALIDATE(opts->serialize_callback(
+				object, 0, NULL, &serialize_data_size, opts->serialize_user_data));
+		CCS_VALIDATE(_ccs_serialize_bin_uint64(
+			serialize_data_size, buffer_size, buffer));
+		if (CCS_UNLIKELY(*buffer_size < serialize_data_size))
+			return -CCS_NOT_ENOUGH_DATA;
+		if (obj->serialize_callback)
+			CCS_VALIDATE(obj->serialize_callback(
+				object, serialize_data_size, *buffer, NULL, obj->serialize_user_data));
+		else if (opts->serialize_callback)
+			CCS_VALIDATE(opts->serialize_callback(
+				object, serialize_data_size, *buffer, NULL, opts->serialize_user_data));
+		if (serialize_data_size) {
+			*buffer_size -= serialize_data_size;
+			*buffer += serialize_data_size;
+		}
+		break;
+	}
+	default:
+		return -CCS_INVALID_VALUE;
+	}
+	return CCS_SUCCESS;
+}
+
+static inline ccs_result_t
+_ccs_object_deserialize_user_data(
+		ccs_object_t                        object,
+		ccs_serialize_format_t              format,
+		uint32_t                            version,
+		size_t                             *buffer_size,
+		const char                        **buffer,
+		_ccs_object_deserialize_options_t  *opts) {
+	(void)version;
+	switch(format) {
+	case CCS_SERIALIZE_FORMAT_BINARY:
+	{
+		uint64_t serialize_data_size;
+		CCS_VALIDATE(_ccs_deserialize_bin_uint64(
+			&serialize_data_size, buffer_size, buffer));
+		if (opts->deserialize_callback)
+			CCS_VALIDATE(opts->deserialize_callback(
+				object, (size_t)serialize_data_size, serialize_data_size == 0 ? NULL : *buffer, opts->deserialize_user_data));
+		if (serialize_data_size) {
+			*buffer_size -= serialize_data_size;
+			*buffer += serialize_data_size;
+		}
+		break;
+	}
+	default:
+		return -CCS_INVALID_VALUE;
+	}
+	return CCS_SUCCESS;
+}
 
 #endif //_CONFIGSPACE_INTERNAL_H

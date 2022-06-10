@@ -175,6 +175,9 @@ void test() {
 
 	err = ccs_object_deserialize((ccs_object_t*)&tuner_copy, CCS_SERIALIZE_FORMAT_BINARY, CCS_SERIALIZE_OPERATION_MEMORY, buff_size, buff,
 	                             CCS_DESERIALIZE_OPTION_HANDLE_MAP, map, CCS_DESERIALIZE_OPTION_END);
+	char *msg;
+	ccs_get_error_name(err, &msg);
+	fprintf(stderr, "%s\n", msg);
 	assert( err == CCS_SUCCESS );
 
 	err = ccs_map_get(map, ccs_object((ccs_object_t)tuner), &d);

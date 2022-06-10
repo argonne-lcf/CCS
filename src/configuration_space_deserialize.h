@@ -46,8 +46,8 @@ _ccs_deserialize_bin_ccs_configuration_space_data(
 	CCS_VALIDATE(_ccs_deserialize_bin_uint64(
 		&num, buffer_size, buffer));
 	data->num_forbidden_clauses = num;
-	CCS_VALIDATE(_ccs_deserialize_bin_rng(
-		&data->rng, version, buffer_size, buffer, opts));
+	CCS_VALIDATE(_ccs_rng_deserialize(
+		&data->rng, CCS_SERIALIZE_FORMAT_BINARY, version, buffer_size, buffer, opts));
 
 	if (!(data->num_hyperparameters + data->num_conditions + data->num_distributions + data->num_forbidden_clauses))
 		return CCS_SUCCESS;
@@ -74,24 +74,24 @@ _ccs_deserialize_bin_ccs_configuration_space_data(
 	data->forbidden_clauses = (ccs_expression_t *)mem;
 
 	for (size_t i = 0; i < data->num_hyperparameters; i++)
-		CCS_VALIDATE(_ccs_deserialize_bin_hyperparameter(
-			data->hyperparameters + i, version, buffer_size, buffer, opts));
+		CCS_VALIDATE(_ccs_hyperparameter_deserialize(
+			data->hyperparameters + i, CCS_SERIALIZE_FORMAT_BINARY, version, buffer_size, buffer, opts));
 
 	for (size_t i = 0; i < data->num_conditions; i++) {
 		uint64_t index;
 		CCS_VALIDATE(_ccs_deserialize_bin_uint64(
 			&index, buffer_size, buffer));
 		data->cond_hyperparameter_indices[i] = index;
-		CCS_VALIDATE(_ccs_deserialize_bin_expression(
-			data->conditions + i, version, buffer_size, buffer, opts));
+		CCS_VALIDATE(_ccs_expression_deserialize(
+			data->conditions + i, CCS_SERIALIZE_FORMAT_BINARY, version, buffer_size, buffer, opts));
 	}
 
 	size_t *indices;
 	indices = data->distrib_hyperparameter_indices;
 	for (size_t i = 0; i < data->num_distributions; i++) {
 		uint64_t dimension;
-		CCS_VALIDATE(_ccs_deserialize_bin_distribution(
-			data->distributions + i, version, buffer_size, buffer, opts));
+		CCS_VALIDATE(_ccs_distribution_deserialize(
+			data->distributions + i, CCS_SERIALIZE_FORMAT_BINARY, version, buffer_size, buffer, opts));
 		CCS_VALIDATE(_ccs_deserialize_bin_uint64(
 			&dimension, buffer_size, buffer));
 		data->dimensions[i] = dimension;
@@ -104,8 +104,8 @@ _ccs_deserialize_bin_ccs_configuration_space_data(
 	}
 
 	for (size_t i = 0; i < data->num_forbidden_clauses; i++) {
-		CCS_VALIDATE(_ccs_deserialize_bin_expression(
-			data->forbidden_clauses + i, version, buffer_size, buffer, opts));
+		CCS_VALIDATE(_ccs_expression_deserialize(
+			data->forbidden_clauses + i, CCS_SERIALIZE_FORMAT_BINARY, version, buffer_size, buffer, opts));
 	}
 
 	return CCS_SUCCESS;
@@ -207,6 +207,8 @@ _ccs_configuration_space_deserialize(
 	default:
 		return -CCS_INVALID_VALUE;
 	}
+	CCS_VALIDATE(_ccs_object_deserialize_user_data(
+		(ccs_object_t)*configuration_space_ret, format, version, buffer_size, buffer, opts));
 	return CCS_SUCCESS;
 }
 
