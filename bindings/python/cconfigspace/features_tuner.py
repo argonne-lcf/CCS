@@ -426,7 +426,10 @@ class UserDefinedFeaturesTuner(FeaturesTuner):
     v = ct.c_void_p()
     res = ccs_user_defined_features_tuner_get_tuner_data(self.handle, ct.byref(v))
     Error.check(res)
-    self._tuner_data = ct.cast(v, ct.py_object).value
+    if v:
+      self._tuner_data = ct.cast(v, ct.py_object).value
+    else:
+      self._tuner_data = None
     return self._tuner_data
 
 
