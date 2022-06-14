@@ -881,12 +881,14 @@ _ccs_object_serialize_user_data_size(
 	{
 		_ccs_object_internal_t *obj = (_ccs_object_internal_t *)object;
 		size_t serialize_data_size = 0;
-		if (obj->serialize_callback)
-			CCS_VALIDATE(obj->serialize_callback(
-				object, 0, NULL, &serialize_data_size, obj->serialize_user_data));
-		else if (opts->serialize_callback)
-			CCS_VALIDATE(opts->serialize_callback(
-				object, 0, NULL, &serialize_data_size, opts->serialize_user_data));
+		if (obj->user_data) {
+			if (obj->serialize_callback)
+				CCS_VALIDATE(obj->serialize_callback(
+					object, 0, NULL, &serialize_data_size, obj->serialize_user_data));
+			else if (opts->serialize_callback)
+				CCS_VALIDATE(opts->serialize_callback(
+					object, 0, NULL, &serialize_data_size, opts->serialize_user_data));
+		}
 		*buffer_size += _ccs_serialize_bin_size_uint64(serialize_data_size) + serialize_data_size;
 		break;
 	}
@@ -910,22 +912,26 @@ _ccs_object_serialize_user_data(
 		_ccs_object_internal_t *obj = (_ccs_object_internal_t *)object;
 		size_t serialize_data_size = 0;
 		/* optimization would require using an uncompressed size */
-		if (obj->serialize_callback)
-			CCS_VALIDATE(obj->serialize_callback(
-				object, 0, NULL, &serialize_data_size, obj->serialize_user_data));
-		else if (opts->serialize_callback)
-			CCS_VALIDATE(opts->serialize_callback(
-				object, 0, NULL, &serialize_data_size, opts->serialize_user_data));
+		if (obj->user_data) {
+			if (obj->serialize_callback)
+				CCS_VALIDATE(obj->serialize_callback(
+					object, 0, NULL, &serialize_data_size, obj->serialize_user_data));
+			else if (opts->serialize_callback)
+				CCS_VALIDATE(opts->serialize_callback(
+					object, 0, NULL, &serialize_data_size, opts->serialize_user_data));
+		}
 		CCS_VALIDATE(_ccs_serialize_bin_uint64(
 			serialize_data_size, buffer_size, buffer));
-		if (CCS_UNLIKELY(*buffer_size < serialize_data_size))
-			return -CCS_NOT_ENOUGH_DATA;
-		if (obj->serialize_callback)
-			CCS_VALIDATE(obj->serialize_callback(
-				object, serialize_data_size, *buffer, NULL, obj->serialize_user_data));
-		else if (opts->serialize_callback)
-			CCS_VALIDATE(opts->serialize_callback(
-				object, serialize_data_size, *buffer, NULL, opts->serialize_user_data));
+		if (obj->user_data) {
+			if (CCS_UNLIKELY(*buffer_size < serialize_data_size))
+				return -CCS_NOT_ENOUGH_DATA;
+			if (obj->serialize_callback)
+				CCS_VALIDATE(obj->serialize_callback(
+					object, serialize_data_size, *buffer, NULL, obj->serialize_user_data));
+			else if (opts->serialize_callback)
+				CCS_VALIDATE(opts->serialize_callback(
+					object, serialize_data_size, *buffer, NULL, opts->serialize_user_data));
+		}
 		if (serialize_data_size) {
 			*buffer_size -= serialize_data_size;
 			*buffer += serialize_data_size;
@@ -953,10 +959,10 @@ _ccs_object_deserialize_user_data(
 		uint64_t serialize_data_size;
 		CCS_VALIDATE(_ccs_deserialize_bin_uint64(
 			&serialize_data_size, buffer_size, buffer));
-		if (opts->deserialize_callback)
-			CCS_VALIDATE(opts->deserialize_callback(
-				object, (size_t)serialize_data_size, serialize_data_size == 0 ? NULL : *buffer, opts->deserialize_user_data));
 		if (serialize_data_size) {
+			if (opts->deserialize_callback)
+				CCS_VALIDATE(opts->deserialize_callback(
+					object, (size_t)serialize_data_size, *buffer, opts->deserialize_user_data));
 			*buffer_size -= serialize_data_size;
 			*buffer += serialize_data_size;
 		}
