@@ -45,9 +45,6 @@ _ccs_deserialize_bin_rng(
 	if (b.sz == gsl_rng_size((*rng_ret)->data->rng) &&
 	    little_endian == ccs_is_little_endian())
 		memcpy(gsl_rng_state((*rng_ret)->data->rng), b.blob, b.sz);
-	CCS_VALIDATE_ERR_GOTO(res,
-		ccs_object_set_user_data(*rng_ret, obj.user_data),
-		err_rng);
 	if (opts->handle_map)
 		CCS_VALIDATE_ERR_GOTO(res,
 			_ccs_object_handle_check_add(
@@ -78,6 +75,8 @@ _ccs_rng_deserialize(
 	default:
 		return -CCS_INVALID_VALUE;
 	}
+	CCS_VALIDATE(_ccs_object_deserialize_user_data(
+		(ccs_object_t)*rng_ret, format, version, buffer_size, buffer, opts));
 	return CCS_SUCCESS;
 }
 

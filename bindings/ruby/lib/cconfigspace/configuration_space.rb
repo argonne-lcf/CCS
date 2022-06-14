@@ -1,5 +1,5 @@
 module CCS
-  attach_function :ccs_create_configuration_space, [:string, :pointer, :pointer], :ccs_result_t
+  attach_function :ccs_create_configuration_space, [:string, :pointer], :ccs_result_t
   attach_function :ccs_configuration_space_set_rng, [:ccs_configuration_space_t, :ccs_rng_t], :ccs_result_t
   attach_function :ccs_configuration_space_get_rng, [:ccs_configuration_space_t, :pointer], :ccs_result_t
   attach_function :ccs_configuration_space_add_hyperparameter, [:ccs_configuration_space_t, :ccs_hyperparameter_t, :ccs_distribution_t], :ccs_result_t
@@ -22,12 +22,12 @@ module CCS
   class ConfigurationSpace < Context
 
     def initialize(handle = nil, retain: false, auto_release: true,
-                   name: "", user_data: nil)
+                   name: "")
       if handle
         super(handle, retain: retain, auto_release: auto_release)
       else
         ptr = MemoryPointer::new(:ccs_configuration_space_t)
-        res = CCS.ccs_create_configuration_space(name, user_data, ptr)
+        res = CCS.ccs_create_configuration_space(name, ptr)
         CCS.error_check(res)
         super(ptr.read_ccs_configuration_space_t, retain:false)
       end

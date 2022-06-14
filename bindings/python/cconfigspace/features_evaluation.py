@@ -10,7 +10,7 @@ from .objective_space import ObjectiveSpace
 from .evaluation import ccs_comparison
 from .binding import Binding
 
-ccs_create_features_evaluation = _ccs_get_function("ccs_create_features_evaluation", [ccs_objective_space, ccs_configuration, ccs_features, ccs_result, ct.c_size_t, ct.POINTER(ccs_datum), ct.c_void_p, ct.POINTER(ccs_features_evaluation)])
+ccs_create_features_evaluation = _ccs_get_function("ccs_create_features_evaluation", [ccs_objective_space, ccs_configuration, ccs_features, ccs_result, ct.c_size_t, ct.POINTER(ccs_datum), ct.POINTER(ccs_features_evaluation)])
 ccs_features_evaluation_get_objective_space = _ccs_get_function("ccs_features_evaluation_get_objective_space", [ccs_features_evaluation, ct.POINTER(ccs_objective_space)])
 ccs_features_evaluation_get_configuration = _ccs_get_function("ccs_features_evaluation_get_configuration", [ccs_features_evaluation, ct.POINTER(ccs_configuration)])
 ccs_features_evaluation_get_features = _ccs_get_function("ccs_features_evaluation_get_features", [ccs_features_evaluation, ct.POINTER(ccs_features)])
@@ -23,7 +23,7 @@ ccs_features_evaluation_check = _ccs_get_function("ccs_features_evaluation_check
 
 class FeaturesEvaluation(Binding):
   def __init__(self, handle = None, retain = False, auto_release = True,
-               objective_space = None, configuration = None, features = None, error = ccs_error.SUCCESS, values = None, user_data = None):
+               objective_space = None, configuration = None, features = None, error = ccs_error.SUCCESS, values = None):
     if handle is None:
       count = 0
       if values:
@@ -34,7 +34,7 @@ class FeaturesEvaluation(Binding):
       else:
         vals = None
       handle = ccs_features_evaluation()
-      res = ccs_create_features_evaluation(objective_space.handle, configuration.handle, features.handle, error, count, vals, user_data, ct.byref(handle))
+      res = ccs_create_features_evaluation(objective_space.handle, configuration.handle, features.handle, error, count, vals, ct.byref(handle))
       Error.check(res)
       super().__init__(handle = handle, retain = False)
     else:

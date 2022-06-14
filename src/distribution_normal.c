@@ -84,9 +84,10 @@ _ccs_serialize_bin_ccs_distribution_normal(
 
 static ccs_result_t
 _ccs_distribution_normal_serialize_size(
-		ccs_object_t            object,
-		ccs_serialize_format_t  format,
-		size_t                 *cum_size) {
+		ccs_object_t                     object,
+		ccs_serialize_format_t           format,
+		size_t                          *cum_size,
+		_ccs_object_serialize_options_t *opts) {
 	switch(format) {
 	case CCS_SERIALIZE_FORMAT_BINARY:
 		*cum_size += _ccs_serialize_bin_size_ccs_distribution_normal(
@@ -95,15 +96,18 @@ _ccs_distribution_normal_serialize_size(
 	default:
 		return -CCS_INVALID_VALUE;
 	}
+	CCS_VALIDATE(_ccs_object_serialize_user_data_size(
+		object, format, cum_size, opts));
 	return CCS_SUCCESS;
 }
 
 static ccs_result_t
 _ccs_distribution_normal_serialize(
-		ccs_object_t             object,
-		ccs_serialize_format_t   format,
-		size_t                  *buffer_size,
-		char                   **buffer) {
+		ccs_object_t                      object,
+		ccs_serialize_format_t            format,
+		size_t                           *buffer_size,
+		char                            **buffer,
+		_ccs_object_serialize_options_t  *opts) {
 	switch(format) {
 	case CCS_SERIALIZE_FORMAT_BINARY:
 		CCS_VALIDATE(_ccs_serialize_bin_ccs_distribution_normal(
@@ -112,6 +116,8 @@ _ccs_distribution_normal_serialize(
 	default:
 		return -CCS_INVALID_VALUE;
 	}
+	CCS_VALIDATE(_ccs_object_serialize_user_data(
+		object, format, buffer_size, buffer, opts));
 	return CCS_SUCCESS;
 }
 
@@ -463,7 +469,7 @@ ccs_create_normal_distribution(ccs_numeric_type_t  data_type,
 	if (!mem)
 		return -CCS_OUT_OF_MEMORY;
 	ccs_distribution_t distrib = (ccs_distribution_t)mem;
-	_ccs_object_init(&(distrib->obj), CCS_DISTRIBUTION, NULL, (_ccs_object_ops_t *)&_ccs_distribution_normal_ops);
+	_ccs_object_init(&(distrib->obj), CCS_DISTRIBUTION, (_ccs_object_ops_t *)&_ccs_distribution_normal_ops);
         _ccs_distribution_normal_data_t * distrib_data = (_ccs_distribution_normal_data_t *)(mem + sizeof(struct _ccs_distribution_s));
 	distrib_data->common_data.data_types    = (ccs_numeric_type_t *)(mem + sizeof(struct _ccs_distribution_s) + sizeof(_ccs_distribution_normal_data_t));
 	distrib_data->common_data.type          = CCS_NORMAL;

@@ -35,7 +35,7 @@ _ccs_deserialize_bin_features(
 	cs = (ccs_features_space_t)(d.value.o);
 
 	CCS_VALIDATE_ERR_GOTO(res, ccs_create_features(
-		cs, data.num_values, data.values, obj.user_data, features_ret), end);
+		cs, data.num_values, data.values, features_ret), end);
 
 	if (opts->map_values)
 		CCS_VALIDATE_ERR_GOTO(res,
@@ -70,6 +70,8 @@ _ccs_features_deserialize(
 	default:
 		return -CCS_INVALID_VALUE;
 	}
+	CCS_VALIDATE(_ccs_object_deserialize_user_data(
+		(ccs_object_t)*features_ret, format, version, buffer_size, buffer, opts));
 	return CCS_SUCCESS;
 }
 

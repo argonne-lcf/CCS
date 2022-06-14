@@ -10,7 +10,7 @@ ccs_hyperparameter_t create_numerical(const char * name) {
 	err = ccs_create_numerical_hyperparameter(name, CCS_NUM_FLOAT,
 	                                          CCSF(-1.0), CCSF(1.0),
 	                                          CCSF(0.0), CCSF(0),
-	                                          NULL, &hyperparameter);
+	                                          &hyperparameter);
 	assert( err == CCS_SUCCESS );
 	return hyperparameter;
 }
@@ -27,7 +27,7 @@ test_simple() {
 
 	hyperparameter1 = create_numerical("param1");
 	hyperparameter2 = create_numerical("param2");
-	err = ccs_create_configuration_space("space", NULL, &space);
+	err = ccs_create_configuration_space("space", &space);
 	assert( err == CCS_SUCCESS );
 	err = ccs_configuration_space_add_hyperparameter(space, hyperparameter1, NULL);
 	assert( err == CCS_SUCCESS );
@@ -101,7 +101,7 @@ test_combined() {
 	hyperparameters[1] = create_numerical("param2");
 	hyperparameters[2] = create_numerical("param3");
 
-	err = ccs_create_configuration_space("space", NULL, &space);
+	err = ccs_create_configuration_space("space", &space);
 	assert( err == CCS_SUCCESS );
 
 	err = ccs_configuration_space_add_hyperparameters(space, 3, hyperparameters,

@@ -20,8 +20,8 @@ _ccs_deserialize_bin_ccs_evaluation_data(
 		_ccs_object_deserialize_options_t  *opts) {
 	CCS_VALIDATE(_ccs_deserialize_bin_ccs_binding_data(
 		&data->base, version, buffer_size, buffer));
-	CCS_VALIDATE(_ccs_deserialize_bin_configuration(
-		&data->configuration, version, buffer_size, buffer, opts));
+	CCS_VALIDATE(_ccs_configuration_deserialize(
+		&data->configuration, CCS_SERIALIZE_FORMAT_BINARY, version, buffer_size, buffer, opts));
 	CCS_VALIDATE(_ccs_deserialize_bin_ccs_result(
 		&data->error, buffer_size, buffer));
 	return CCS_SUCCESS;
@@ -61,7 +61,7 @@ _ccs_deserialize_bin_evaluation(
 	os = (ccs_objective_space_t)(d.value.o);
 
 	CCS_VALIDATE_ERR_GOTO(res, ccs_create_evaluation(
-		os, data.configuration, data.error, data.base.num_values, data.base.values, obj.user_data, evaluation_ret), end);
+		os, data.configuration, data.error, data.base.num_values, data.base.values, evaluation_ret), end);
 
 	if (opts->map_values)
 		CCS_VALIDATE_ERR_GOTO(res,
@@ -98,6 +98,8 @@ _ccs_evaluation_deserialize(
 	default:
 		return -CCS_INVALID_VALUE;
 	}
+	CCS_VALIDATE(_ccs_object_deserialize_user_data(
+		(ccs_object_t)*evaluation_ret, format, version, buffer_size, buffer, opts));
 	return CCS_SUCCESS;
 }
 

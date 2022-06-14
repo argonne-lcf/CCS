@@ -35,8 +35,6 @@ typedef enum ccs_objective_type_e ccs_objective_type_t;
 /**
  * Create a new empty objective space.
  * @param[in] name pointer to a string that will be copied internally
- * @param[in] user_data a pointer to the user data to attach to this
- *                      objective space instance
  * @param[out] objective_space_ret a pointer to the variable that will hold
  *                                     the newly created objective space
  * @return #CCS_SUCCESS on success
@@ -47,7 +45,6 @@ typedef enum ccs_objective_type_e ccs_objective_type_t;
  */
 extern ccs_result_t
 ccs_create_objective_space(const char            *name,
-                           void                  *user_data,
                            ccs_objective_space_t *objective_space_ret);
 
 /**

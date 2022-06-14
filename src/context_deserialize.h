@@ -31,8 +31,8 @@ _ccs_deserialize_bin_ccs_context_data(
 		if (!data->hyperparameters)
 			return -CCS_OUT_OF_MEMORY;
 		for (size_t i = 0; i < data->num_hyperparameters; i++)
-			CCS_VALIDATE(_ccs_deserialize_bin_hyperparameter(
-				data->hyperparameters + i, version, buffer_size, buffer, opts));
+			CCS_VALIDATE(_ccs_hyperparameter_deserialize(
+				data->hyperparameters + i, CCS_SERIALIZE_FORMAT_BINARY, version, buffer_size, buffer, opts));
 	}
 	return CCS_SUCCESS;
 }

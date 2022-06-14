@@ -13,7 +13,7 @@ class ccs_objective_type(CEnumeration):
     ('MINIMIZE', 0),
     'MAXIMIZE' ]
 
-ccs_create_objective_space = _ccs_get_function("ccs_create_objective_space", [ct.c_char_p, ct.c_void_p, ct.POINTER(ccs_objective_space)])
+ccs_create_objective_space = _ccs_get_function("ccs_create_objective_space", [ct.c_char_p, ct.POINTER(ccs_objective_space)])
 ccs_objective_space_add_hyperparameter = _ccs_get_function("ccs_objective_space_add_hyperparameter", [ccs_objective_space, ccs_hyperparameter])
 ccs_objective_space_add_hyperparameters = _ccs_get_function("ccs_objective_space_add_hyperparameters", [ccs_objective_space, ct.c_size_t, ct.POINTER(ccs_hyperparameter)])
 ccs_objective_space_add_objective = _ccs_get_function("ccs_objective_space_add_objective", [ccs_objective_space, ccs_expression, ccs_objective_type])
@@ -25,10 +25,10 @@ ccs_objective_space_check_evaluation_values = _ccs_get_function("ccs_objective_s
 
 class ObjectiveSpace(Context):
   def __init__(self, handle = None, retain = False, auto_release = True,
-               name = "", user_data = None):
+               name = ""):
     if handle is None:
       handle = ccs_objective_space()
-      res = ccs_create_objective_space(str.encode(name), user_data, ct.byref(handle))
+      res = ccs_create_objective_space(str.encode(name), ct.byref(handle))
       Error.check(res)
       super().__init__(handle = handle, retain = False)
     else:

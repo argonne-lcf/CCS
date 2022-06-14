@@ -71,9 +71,10 @@ _ccs_serialize_bin_ccs_hyperparameter_categorical(
 
 static ccs_result_t
 _ccs_hyperparameter_categorical_serialize_size(
-		ccs_object_t            object,
-		ccs_serialize_format_t  format,
-		size_t                 *cum_size) {
+		ccs_object_t                     object,
+		ccs_serialize_format_t           format,
+		size_t                          *cum_size,
+		_ccs_object_serialize_options_t *opts) {
 	switch(format) {
 	case CCS_SERIALIZE_FORMAT_BINARY:
 		*cum_size += _ccs_serialize_bin_size_ccs_hyperparameter_categorical(
@@ -82,15 +83,18 @@ _ccs_hyperparameter_categorical_serialize_size(
 	default:
 		return -CCS_INVALID_VALUE;
 	}
+	CCS_VALIDATE(_ccs_object_serialize_user_data_size(
+		object, format, cum_size, opts));
 	return CCS_SUCCESS;
 }
 
 static ccs_result_t
 _ccs_hyperparameter_categorical_serialize(
-		ccs_object_t             object,
-		ccs_serialize_format_t   format,
-		size_t                  *buffer_size,
-		char                   **buffer) {
+		ccs_object_t                      object,
+		ccs_serialize_format_t            format,
+		size_t                           *buffer_size,
+		char                            **buffer,
+		_ccs_object_serialize_options_t  *opts) {
 	switch(format) {
 	case CCS_SERIALIZE_FORMAT_BINARY:
 		CCS_VALIDATE(_ccs_serialize_bin_ccs_hyperparameter_categorical(
@@ -99,6 +103,8 @@ _ccs_hyperparameter_categorical_serialize(
 	default:
 		return -CCS_INVALID_VALUE;
 	}
+	CCS_VALIDATE(_ccs_object_serialize_user_data(
+		object, format, buffer_size, buffer, opts));
 	return CCS_SUCCESS;
 }
 
@@ -241,7 +247,6 @@ _ccs_create_categorical_hyperparameter(ccs_hyperparameter_type_t  type,
                                        size_t                     num_possible_values,
                                        ccs_datum_t               *possible_values,
                                        size_t                     default_value_index,
-                                       void                      *user_data,
                                        ccs_hyperparameter_t      *hyperparameter_ret) {
 	CCS_CHECK_PTR(name);
 	CCS_CHECK_PTR(hyperparameter_ret);
@@ -280,7 +285,7 @@ _ccs_create_categorical_hyperparameter(ccs_hyperparameter_type_t  type,
 	interval.upper_included = CCS_FALSE;
 
 	ccs_hyperparameter_t hyperparam = (ccs_hyperparameter_t)mem;
-	_ccs_object_init(&(hyperparam->obj), CCS_HYPERPARAMETER, user_data, (_ccs_object_ops_t *)&_ccs_hyperparameter_categorical_ops);
+	_ccs_object_init(&(hyperparam->obj), CCS_HYPERPARAMETER, (_ccs_object_ops_t *)&_ccs_hyperparameter_categorical_ops);
 	_ccs_hyperparameter_categorical_data_t *hyperparam_data =
 	    (_ccs_hyperparameter_categorical_data_t *)(mem +
 	         sizeof(struct _ccs_hyperparameter_s));
@@ -354,14 +359,12 @@ ccs_create_categorical_hyperparameter(const char           *name,
                                       size_t                num_possible_values,
                                       ccs_datum_t          *possible_values,
                                       size_t                default_value_index,
-                                      void                 *user_data,
                                       ccs_hyperparameter_t *hyperparameter_ret) {
 	return _ccs_create_categorical_hyperparameter(CCS_HYPERPARAMETER_TYPE_CATEGORICAL,
 	                                              name,
 	                                              num_possible_values,
 	                                              possible_values,
 	                                              default_value_index,
-	                                              user_data,
 	                                              hyperparameter_ret);
 }
 
@@ -406,14 +409,12 @@ ccs_create_ordinal_hyperparameter(const char           *name,
                                   size_t                num_possible_values,
                                   ccs_datum_t          *possible_values,
                                   size_t                default_value_index,
-                                  void                 *user_data,
                                   ccs_hyperparameter_t *hyperparameter_ret) {
 	return _ccs_create_categorical_hyperparameter(CCS_HYPERPARAMETER_TYPE_ORDINAL,
 	                                              name,
 	                                              num_possible_values,
 	                                              possible_values,
 	                                              default_value_index,
-	                                              user_data,
 	                                              hyperparameter_ret);
 }
 
@@ -434,14 +435,12 @@ ccs_create_discrete_hyperparameter(const char           *name,
                                    size_t                num_possible_values,
                                    ccs_datum_t          *possible_values,
                                    size_t                default_value_index,
-                                   void                 *user_data,
                                    ccs_hyperparameter_t *hyperparameter_ret) {
 	return _ccs_create_categorical_hyperparameter(CCS_HYPERPARAMETER_TYPE_DISCRETE,
 	                                              name,
 	                                              num_possible_values,
 	                                              possible_values,
 	                                              default_value_index,
-	                                              user_data,
 	                                              hyperparameter_ret);
 }
 

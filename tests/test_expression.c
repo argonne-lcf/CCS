@@ -12,7 +12,7 @@ ccs_hyperparameter_t create_dummy_numerical(const char * name) {
 	err = ccs_create_numerical_hyperparameter(name, CCS_NUM_FLOAT,
 	                                          CCSF(-5.0), CCSF(5.0),
 	                                          CCSF(0.0), CCSF(d),
-	                                          NULL, &hyperparameter);
+	                                          &hyperparameter);
 	d += 1.0;
 	if (d >= 5.0)
 		d = -5.0;
@@ -30,7 +30,7 @@ ccs_hyperparameter_t create_dummy_categorical(const char * name) {
 	possible_values[3] = ccs_none;
 
 	err = ccs_create_categorical_hyperparameter(name, 4, possible_values, 0,
-	                                            NULL, &hyperparameter);
+	                                            &hyperparameter);
 	assert( err == CCS_SUCCESS );
 	return hyperparameter;
 }
@@ -45,7 +45,7 @@ ccs_hyperparameter_t create_dummy_ordinal(const char * name) {
 	possible_values[3] = ccs_none;
 
 	err = ccs_create_ordinal_hyperparameter(name, 4, possible_values, 0,
-	                                        NULL, &hyperparameter);
+	                                        &hyperparameter);
 	assert( err == CCS_SUCCESS );
 	return hyperparameter;
 }
@@ -134,7 +134,7 @@ void test_equal_numerical() {
 	ccs_datum_t               values[2];
 	ccs_result_t              err;
 
-	err = ccs_create_configuration_space("my_config_space", NULL,
+	err = ccs_create_configuration_space("my_config_space",
 	                                     &configuration_space);
 	assert( err == CCS_SUCCESS );
 	
@@ -179,7 +179,7 @@ void test_equal_categorical() {
 	ccs_datum_t               values[2];
 	ccs_result_t              err;
 
-	err = ccs_create_configuration_space("my_config_space", NULL,
+	err = ccs_create_configuration_space("my_config_space",
 	                                     &configuration_space);
 	assert( err == CCS_SUCCESS );
 	hyperparameters[0] = create_dummy_categorical("param1");
@@ -214,7 +214,7 @@ void test_equal_ordinal() {
 	ccs_datum_t               values[2];
 	ccs_result_t              err;
 
-	err = ccs_create_configuration_space("my_config_space", NULL,
+	err = ccs_create_configuration_space("my_config_space",
 	                                     &configuration_space);
 	assert( err == CCS_SUCCESS );
 	hyperparameters[0] = create_dummy_ordinal("param1");
@@ -790,7 +790,7 @@ void test_check_context() {
 	hyperparameter2 = create_dummy_numerical("param2");
 	hyperparameter3 = create_dummy_ordinal("param3");
 
-	err = ccs_create_configuration_space("space", NULL, &space);
+	err = ccs_create_configuration_space("space", &space);
 	assert( err == CCS_SUCCESS );
 	err = ccs_configuration_space_add_hyperparameter(space, hyperparameter1, NULL);
 	assert( err == CCS_SUCCESS );
@@ -844,12 +844,12 @@ void test_deserialize_literal() {
 	err = ccs_create_literal(ccs_float(3.0), &expression);
 	assert( err == CCS_SUCCESS );
 
-	err = ccs_object_serialize(expression, CCS_SERIALIZE_FORMAT_BINARY, CCS_SERIALIZE_OPERATION_SIZE, &buff_size);
+	err = ccs_object_serialize(expression, CCS_SERIALIZE_FORMAT_BINARY, CCS_SERIALIZE_OPERATION_SIZE, &buff_size, CCS_SERIALIZE_OPTION_END);
 	assert( err == CCS_SUCCESS );
 	buff = (char *)malloc(buff_size);
 	assert( buff );
 
-	err = ccs_object_serialize(expression, CCS_SERIALIZE_FORMAT_BINARY, CCS_SERIALIZE_OPERATION_MEMORY, buff_size, buff);
+	err = ccs_object_serialize(expression, CCS_SERIALIZE_FORMAT_BINARY, CCS_SERIALIZE_OPERATION_MEMORY, buff_size, buff, CCS_SERIALIZE_OPTION_END);
 	assert( err == CCS_SUCCESS );
 
 	err = ccs_release_object(expression);
@@ -892,12 +892,12 @@ void test_deserialize_variable() {
 	err = ccs_create_variable(hyperparameter, &expression);
 	assert( err == CCS_SUCCESS );
 
-	err = ccs_object_serialize(expression, CCS_SERIALIZE_FORMAT_BINARY, CCS_SERIALIZE_OPERATION_SIZE, &buff_size);
+	err = ccs_object_serialize(expression, CCS_SERIALIZE_FORMAT_BINARY, CCS_SERIALIZE_OPERATION_SIZE, &buff_size, CCS_SERIALIZE_OPTION_END);
 	assert( err == CCS_SUCCESS );
 	buff = (char *)malloc(buff_size);
 	assert( buff );
 
-	err = ccs_object_serialize(expression, CCS_SERIALIZE_FORMAT_BINARY, CCS_SERIALIZE_OPERATION_MEMORY, buff_size, buff);
+	err = ccs_object_serialize(expression, CCS_SERIALIZE_FORMAT_BINARY, CCS_SERIALIZE_OPERATION_MEMORY, buff_size, buff, CCS_SERIALIZE_OPTION_END);
 	assert( err == CCS_SUCCESS );
 
 	err = ccs_release_object(expression);
@@ -957,12 +957,12 @@ void test_deserialize() {
 	err = ccs_create_binary_expression(CCS_ADD, ccs_float(3.0), ccs_object(hyperparameter), &expression);
 	assert( err == CCS_SUCCESS );
 
-	err = ccs_object_serialize(expression, CCS_SERIALIZE_FORMAT_BINARY, CCS_SERIALIZE_OPERATION_SIZE, &buff_size);
+	err = ccs_object_serialize(expression, CCS_SERIALIZE_FORMAT_BINARY, CCS_SERIALIZE_OPERATION_SIZE, &buff_size, CCS_SERIALIZE_OPTION_END);
 	assert( err == CCS_SUCCESS );
 	buff = (char *)malloc(buff_size);
 	assert( buff );
 
-	err = ccs_object_serialize(expression, CCS_SERIALIZE_FORMAT_BINARY, CCS_SERIALIZE_OPERATION_MEMORY, buff_size, buff);
+	err = ccs_object_serialize(expression, CCS_SERIALIZE_FORMAT_BINARY, CCS_SERIALIZE_OPERATION_MEMORY, buff_size, buff, CCS_SERIALIZE_OPTION_END);
 	assert( err == CCS_SUCCESS );
 
 	err = ccs_release_object(expression);

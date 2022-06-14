@@ -57,8 +57,6 @@ typedef enum ccs_hyperparameter_type_e ccs_hyperparameter_type_t;
  * @param[in] upper upper bound (excluded)
  * @param[in] quantization quantization of the values. 0 means no quantization
  * @param[in] default_value default value of the hyperparameter
- * @param[in] user_data a pointer to the user data to attach to this numerical
- *                      hyperparameter instance
  * @param[out] hyperparameter_ret a pointer to the variable that will hold the
  *                                newly created numerical hyperparameter
  * @return #CCS_SUCCESS on success
@@ -78,7 +76,6 @@ ccs_create_numerical_hyperparameter(const char           *name,
                                     ccs_numeric_t         upper,
                                     ccs_numeric_t         quantization,
                                     ccs_numeric_t         default_value,
-                                    void                 *user_data,
                                     ccs_hyperparameter_t *hyperparameter_ret);
 
 /**
@@ -118,8 +115,6 @@ ccs_numerical_hyperparameter_get_parameters(
  *            represent the possible values that the hyperparameter can take
  * @param[in] default_value_index the index of the default value in the
  *                                \p possible_values array
- * @param[in] user_data a pointer to the user data to attach to this categorical
- *                      hyperparameter instance
  * @param[out] hyperparameter_ret a pointer to the variable that will hold the
  *                                newly created categorical hyperparameter
  * @return #CCS_SUCCESS on success
@@ -133,7 +128,6 @@ ccs_create_categorical_hyperparameter(const char           *name,
                                       size_t                num_possible_values,
                                       ccs_datum_t          *possible_values,
                                       size_t                default_value_index,
-                                      void                 *user_data,
                                       ccs_hyperparameter_t *hyperparameter_ret);
 
 /**
@@ -175,8 +169,6 @@ ccs_categorical_hyperparameter_get_values(
  *            represent the possible values that the hyperparameter can take
  * @param[in] default_value_index the index of the default value in the
  *                                \p possible_values array
- * @param[in] user_data a pointer to the user data to attach to this ordinal
- *                      hyperparameter instance
  * @param[out] hyperparameter_ret a pointer to the variable that will hold the
  *                                newly created ordinal hyperparameter
  * @return #CCS_SUCCESS on success
@@ -190,7 +182,6 @@ ccs_create_ordinal_hyperparameter(const char           *name,
                                   size_t                num_possible_values,
                                   ccs_datum_t          *possible_values,
                                   size_t                default_value_index,
-                                  void                 *user_data,
                                   ccs_hyperparameter_t *hyperparameter_ret);
 
 /**
@@ -253,8 +244,6 @@ ccs_ordinal_hyperparameter_compare_values(ccs_hyperparameter_t  hyperparameter,
  *            represent the possible values that the hyperparameter can take.
  * @param[in] default_value_index the index of the default value in the
  *                                \p possible_values array
- * @param[in] user_data a pointer to the user data to attach to this discrete
- *                      hyperparameter instance
  * @param[out] hyperparameter_ret a pointer to the variable that will hold the
  *                                newly created discrete hyperparameter
  * @return #CCS_SUCCESS on success
@@ -268,7 +257,6 @@ ccs_create_discrete_hyperparameter(const char           *name,
                                    size_t                num_possible_values,
                                    ccs_datum_t          *possible_values,
                                    size_t                default_value_index,
-                                   void                 *user_data,
                                    ccs_hyperparameter_t *hyperparameter_ret);
 
 /**
@@ -304,8 +292,6 @@ ccs_discrete_hyperparameter_get_values(ccs_hyperparameter_t  hyperparameter,
  * within feature space. Cannot be sampled and thus doesn't have a default
  * value. Checks will always return valid unless the value is not a string.
  * @param[in] name name of the hyperparameter
- * @param[in] user_data a pointer to the user data to attach to this discrete
- *                      hyperparameter instance
  * @param[out] hyperparameter_ret a pointer to the variable that will hold the
  *                                newly created string hyperparameter
  * @return #CCS_SUCCESS on success
@@ -316,7 +302,6 @@ ccs_discrete_hyperparameter_get_values(ccs_hyperparameter_t  hyperparameter,
  */
 extern ccs_result_t
 ccs_create_string_hyperparameter(const char           *name,
-                                 void                 *user_data,
                                  ccs_hyperparameter_t *hyperparameter_ret);
 
 /**

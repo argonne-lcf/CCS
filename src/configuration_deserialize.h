@@ -35,7 +35,7 @@ _ccs_deserialize_bin_configuration(
 	cs = (ccs_configuration_space_t)(d.value.o);
 
 	CCS_VALIDATE_ERR_GOTO(res, ccs_create_configuration(
-		cs, data.num_values, data.values, obj.user_data, configuration_ret), end);
+		cs, data.num_values, data.values, configuration_ret), end);
 
 	if (opts->map_values)
 		CCS_VALIDATE_ERR_GOTO(res,
@@ -70,6 +70,8 @@ _ccs_configuration_deserialize(
 	default:
 		return -CCS_INVALID_VALUE;
 	}
+	CCS_VALIDATE(_ccs_object_deserialize_user_data(
+		(ccs_object_t)*configuration_ret, format, version, buffer_size, buffer, opts));
 	return CCS_SUCCESS;
 }
 

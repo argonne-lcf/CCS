@@ -97,88 +97,98 @@ _ccs_expression_del(ccs_object_t o) {
 
 static inline ccs_result_t
 _ccs_serialize_bin_size_ccs_expression_data(
-		_ccs_expression_data_t *data,
-		size_t                 *cum_size) {
+		_ccs_expression_data_t          *data,
+		size_t                          *cum_size,
+		_ccs_object_serialize_options_t *opts) {
 	*cum_size += _ccs_serialize_bin_size_ccs_expression_type(data->type);
 	*cum_size += _ccs_serialize_bin_size_uint64(data->num_nodes);
 	for (size_t i = 0; i < data->num_nodes; i++)
 		CCS_VALIDATE(data->nodes[i]->obj.ops->serialize_size(
-			data->nodes[i], CCS_SERIALIZE_FORMAT_BINARY, cum_size));
+			data->nodes[i], CCS_SERIALIZE_FORMAT_BINARY, cum_size, opts));
 	return CCS_SUCCESS;
 }
 
 static inline ccs_result_t
 _ccs_serialize_bin_ccs_expression_data(
-		_ccs_expression_data_t  *data,
-		size_t                  *buffer_size,
-		char                   **buffer) {
+		_ccs_expression_data_t           *data,
+		size_t                           *buffer_size,
+		char                            **buffer,
+		_ccs_object_serialize_options_t  *opts) {
 	CCS_VALIDATE(_ccs_serialize_bin_ccs_expression_type(
 		data->type, buffer_size, buffer));
 	CCS_VALIDATE(_ccs_serialize_bin_uint64(
 		data->num_nodes, buffer_size, buffer));
 	for (size_t i = 0; i < data->num_nodes; i++)
 		CCS_VALIDATE(data->nodes[i]->obj.ops->serialize(
-			data->nodes[i], CCS_SERIALIZE_FORMAT_BINARY, buffer_size, buffer));
+			data->nodes[i], CCS_SERIALIZE_FORMAT_BINARY, buffer_size, buffer, opts));
 	return CCS_SUCCESS;
 }
 
 static inline ccs_result_t
 _ccs_serialize_bin_size_ccs_expression(
-		ccs_expression_t  expression,
-		size_t           *cum_size) {
+		ccs_expression_t                 expression,
+		size_t                          *cum_size,
+		_ccs_object_serialize_options_t *opts) {
 	_ccs_expression_data_t *data =
 		(_ccs_expression_data_t *)(expression->data);
 	*cum_size += _ccs_serialize_bin_size_ccs_object_internal(
 		(_ccs_object_internal_t *)expression);
 	CCS_VALIDATE(_ccs_serialize_bin_size_ccs_expression_data(
-		data, cum_size));
+		data, cum_size, opts));
 	return CCS_SUCCESS;
 }
 
 static inline ccs_result_t
 _ccs_serialize_bin_ccs_expression(
-		ccs_expression_t   expression,
-		size_t            *buffer_size,
-		char             **buffer) {
+		ccs_expression_t                  expression,
+		size_t                           *buffer_size,
+		char                            **buffer,
+		_ccs_object_serialize_options_t  *opts) {
 	_ccs_expression_data_t *data =
 		(_ccs_expression_data_t *)(expression->data);
 	CCS_VALIDATE(_ccs_serialize_bin_ccs_object_internal(
 		(_ccs_object_internal_t *)expression, buffer_size, buffer));
 	CCS_VALIDATE(_ccs_serialize_bin_ccs_expression_data(
-		data, buffer_size, buffer));
+		data, buffer_size, buffer, opts));
 	return CCS_SUCCESS;
 }
 
 static ccs_result_t
 _ccs_expression_serialize_size(
-		ccs_object_t            object,
-		ccs_serialize_format_t  format,
-		size_t                 *cum_size) {
+		ccs_object_t                     object,
+		ccs_serialize_format_t           format,
+		size_t                          *cum_size,
+		_ccs_object_serialize_options_t *opts) {
 	switch(format) {
 	case CCS_SERIALIZE_FORMAT_BINARY:
 		CCS_VALIDATE(_ccs_serialize_bin_size_ccs_expression(
-			(ccs_expression_t)object, cum_size));
+			(ccs_expression_t)object, cum_size, opts));
 		break;
 	default:
 		return -CCS_INVALID_VALUE;
 	}
+	CCS_VALIDATE(_ccs_object_serialize_user_data_size(
+		object, format, cum_size, opts));
 	return CCS_SUCCESS;
 }
 
 static ccs_result_t
 _ccs_expression_serialize(
-		ccs_object_t             object,
-		ccs_serialize_format_t   format,
-		size_t                  *buffer_size,
-		char                   **buffer) {
+		ccs_object_t                      object,
+		ccs_serialize_format_t            format,
+		size_t                           *buffer_size,
+		char                            **buffer,
+		_ccs_object_serialize_options_t  *opts) {
 	switch(format) {
 	case CCS_SERIALIZE_FORMAT_BINARY:
 		CCS_VALIDATE(_ccs_serialize_bin_ccs_expression(
-		    (ccs_expression_t)object, buffer_size, buffer));
+		    (ccs_expression_t)object, buffer_size, buffer, opts));
 		break;
 	default:
 		return -CCS_INVALID_VALUE;
 	}
+	CCS_VALIDATE(_ccs_object_serialize_user_data(
+		object, format, buffer_size, buffer, opts));
 	return CCS_SUCCESS;
 }
 
@@ -965,21 +975,23 @@ _ccs_expr_literal_eval(_ccs_expression_data_t *data,
 
 static inline ccs_result_t
 _ccs_serialize_bin_size_ccs_expression_literal_data(
-		_ccs_expression_literal_data_t *data,
-		size_t                         *cum_size) {
+		_ccs_expression_literal_data_t  *data,
+		size_t                          *cum_size,
+		_ccs_object_serialize_options_t *opts) {
 	CCS_VALIDATE(_ccs_serialize_bin_size_ccs_expression_data(
-		&data->expr, cum_size));
+		&data->expr, cum_size, opts));
 	*cum_size += _ccs_serialize_bin_size_ccs_datum(data->value);
 	return CCS_SUCCESS;
 }
 
 static inline ccs_result_t
 _ccs_serialize_bin_ccs_expression_literal_data(
-		_ccs_expression_literal_data_t  *data,
-		size_t                          *buffer_size,
-		char                           **buffer) {
+		_ccs_expression_literal_data_t   *data,
+		size_t                           *buffer_size,
+		char                            **buffer,
+		_ccs_object_serialize_options_t  *opts) {
 	CCS_VALIDATE(_ccs_serialize_bin_ccs_expression_data(
-		&data->expr, buffer_size, buffer));
+		&data->expr, buffer_size, buffer, opts));
 	CCS_VALIDATE(_ccs_serialize_bin_ccs_datum(
 		data->value, buffer_size, buffer));
 	return CCS_SUCCESS;
@@ -987,61 +999,69 @@ _ccs_serialize_bin_ccs_expression_literal_data(
 
 static inline ccs_result_t
 _ccs_serialize_bin_size_ccs_expression_literal(
-		ccs_expression_t  expression,
-		size_t           *cum_size) {
+		ccs_expression_t                 expression,
+		size_t                          *cum_size,
+		_ccs_object_serialize_options_t *opts) {
 	_ccs_expression_literal_data_t *data =
 		(_ccs_expression_literal_data_t *)(expression->data);
 	*cum_size += _ccs_serialize_bin_size_ccs_object_internal(
 		(_ccs_object_internal_t *)expression);
 	CCS_VALIDATE(_ccs_serialize_bin_size_ccs_expression_literal_data(
-		data, cum_size));
+		data, cum_size, opts));
 	return CCS_SUCCESS;
 }
 
 static inline ccs_result_t
 _ccs_serialize_bin_ccs_expression_literal(
-		ccs_expression_t   expression,
-		size_t            *buffer_size,
-		char             **buffer) {
+		ccs_expression_t                  expression,
+		size_t                           *buffer_size,
+		char                            **buffer,
+		_ccs_object_serialize_options_t  *opts) {
 	_ccs_expression_literal_data_t *data =
 		(_ccs_expression_literal_data_t *)(expression->data);
 	CCS_VALIDATE(_ccs_serialize_bin_ccs_object_internal(
 		(_ccs_object_internal_t *)expression, buffer_size, buffer));
 	CCS_VALIDATE(_ccs_serialize_bin_ccs_expression_literal_data(
-		data, buffer_size, buffer));
+		data, buffer_size, buffer, opts));
 	return CCS_SUCCESS;
 }
 
 static ccs_result_t
 _ccs_expression_literal_serialize_size(
-		ccs_object_t            object,
-		ccs_serialize_format_t  format,
-		size_t                 *cum_size) {
+		ccs_object_t                     object,
+		ccs_serialize_format_t           format,
+		size_t                          *cum_size,
+		_ccs_object_serialize_options_t *opts) {
 	switch(format) {
 	case CCS_SERIALIZE_FORMAT_BINARY:
 		CCS_VALIDATE(_ccs_serialize_bin_size_ccs_expression_literal(
-			(ccs_expression_t)object, cum_size));
+			(ccs_expression_t)object, cum_size, opts));
 		break;
 	default:
 		return -CCS_INVALID_VALUE;
 	}
+	CCS_VALIDATE(_ccs_object_serialize_user_data_size(
+		object, format, cum_size, opts));
 	return CCS_SUCCESS;
 }
 
 static ccs_result_t
 _ccs_expression_literal_serialize(
-		ccs_object_t             object,
-		ccs_serialize_format_t   format,
-		size_t                  *buffer_size,
-		char                   **buffer) {
+		ccs_object_t                      object,
+		ccs_serialize_format_t            format,
+		size_t                           *buffer_size,
+		char                            **buffer,
+		_ccs_object_serialize_options_t  *opts) {
 	switch(format) {
 	case CCS_SERIALIZE_FORMAT_BINARY:
 		CCS_VALIDATE(_ccs_serialize_bin_ccs_expression_literal(
-		    (ccs_expression_t)object, buffer_size, buffer));
+		    (ccs_expression_t)object, buffer_size, buffer, opts));
 		break;
 	default:
 		return -CCS_INVALID_VALUE;
 	}
+	CCS_VALIDATE(_ccs_object_serialize_user_data(
+		object, format, buffer_size, buffer, opts));
 	return CCS_SUCCESS;
 }
 
@@ -1062,9 +1082,10 @@ _ccs_expr_variable_del(ccs_object_t o) {
 static inline ccs_result_t
 _ccs_serialize_bin_size_ccs_expression_variable_data(
 		_ccs_expression_variable_data_t *data,
-		size_t                         *cum_size) {
+		size_t                          *cum_size,
+		_ccs_object_serialize_options_t *opts) {
 	CCS_VALIDATE(_ccs_serialize_bin_size_ccs_expression_data(
-		&data->expr, cum_size));
+		&data->expr, cum_size, opts));
 	*cum_size += _ccs_serialize_bin_size_ccs_object(data->hyperparameter);
 	return CCS_SUCCESS;
 }
@@ -1073,9 +1094,10 @@ static inline ccs_result_t
 _ccs_serialize_bin_ccs_expression_variable_data(
 		_ccs_expression_variable_data_t  *data,
 		size_t                           *buffer_size,
-		char                            **buffer) {
+		char                            **buffer,
+		_ccs_object_serialize_options_t  *opts) {
 	CCS_VALIDATE(_ccs_serialize_bin_ccs_expression_data(
-		&data->expr, buffer_size, buffer));
+		&data->expr, buffer_size, buffer, opts));
 	CCS_VALIDATE(_ccs_serialize_bin_ccs_object(
 		data->hyperparameter, buffer_size, buffer));
 	return CCS_SUCCESS;
@@ -1083,61 +1105,69 @@ _ccs_serialize_bin_ccs_expression_variable_data(
 
 static inline ccs_result_t
 _ccs_serialize_bin_size_ccs_expression_variable(
-		ccs_expression_t  expression,
-		size_t           *cum_size) {
+		ccs_expression_t                 expression,
+		size_t                          *cum_size,
+		_ccs_object_serialize_options_t *opts) {
 	_ccs_expression_variable_data_t *data =
 		(_ccs_expression_variable_data_t *)(expression->data);
 	*cum_size += _ccs_serialize_bin_size_ccs_object_internal(
 		(_ccs_object_internal_t *)expression);
 	CCS_VALIDATE(_ccs_serialize_bin_size_ccs_expression_variable_data(
-		data, cum_size));
+		data, cum_size, opts));
 	return CCS_SUCCESS;
 }
 
 static inline ccs_result_t
 _ccs_serialize_bin_ccs_expression_variable(
-		ccs_expression_t   expression,
-		size_t            *buffer_size,
-		char             **buffer) {
+		ccs_expression_t                  expression,
+		size_t                           *buffer_size,
+		char                            **buffer,
+		_ccs_object_serialize_options_t  *opts) {
 	_ccs_expression_variable_data_t *data =
 		(_ccs_expression_variable_data_t *)(expression->data);
 	CCS_VALIDATE(_ccs_serialize_bin_ccs_object_internal(
 		(_ccs_object_internal_t *)expression, buffer_size, buffer));
 	CCS_VALIDATE(_ccs_serialize_bin_ccs_expression_variable_data(
-		data, buffer_size, buffer));
+		data, buffer_size, buffer, opts));
 	return CCS_SUCCESS;
 }
 
 static ccs_result_t
 _ccs_expression_variable_serialize_size(
-		ccs_object_t            object,
-		ccs_serialize_format_t  format,
-		size_t                 *cum_size) {
+		ccs_object_t                     object,
+		ccs_serialize_format_t           format,
+		size_t                          *cum_size,
+		_ccs_object_serialize_options_t *opts) {
 	switch(format) {
 	case CCS_SERIALIZE_FORMAT_BINARY:
 		CCS_VALIDATE(_ccs_serialize_bin_size_ccs_expression_variable(
-			(ccs_expression_t)object, cum_size));
+			(ccs_expression_t)object, cum_size, opts));
 		break;
 	default:
 		return -CCS_INVALID_VALUE;
 	}
+	CCS_VALIDATE(_ccs_object_serialize_user_data_size(
+		object, format, cum_size, opts));
 	return CCS_SUCCESS;
 }
 
 static ccs_result_t
 _ccs_expression_variable_serialize(
-		ccs_object_t             object,
-		ccs_serialize_format_t   format,
-		size_t                  *buffer_size,
-		char                   **buffer) {
+		ccs_object_t                      object,
+		ccs_serialize_format_t            format,
+		size_t                           *buffer_size,
+		char                            **buffer,
+		_ccs_object_serialize_options_t  *opts) {
 	switch(format) {
 	case CCS_SERIALIZE_FORMAT_BINARY:
 		CCS_VALIDATE(_ccs_serialize_bin_ccs_expression_variable(
-			(ccs_expression_t)object, buffer_size, buffer));
+			(ccs_expression_t)object, buffer_size, buffer, opts));
 		break;
 	default:
 		return -CCS_INVALID_VALUE;
 	}
+	CCS_VALIDATE(_ccs_object_serialize_user_data(
+		object, format, buffer_size, buffer, opts));
 	return CCS_SUCCESS;
 }
 
@@ -1250,7 +1280,7 @@ ccs_create_literal(ccs_datum_t       value,
 	if(!mem)
 		return -CCS_OUT_OF_MEMORY;
 	ccs_expression_t expression = (ccs_expression_t)mem;
-	_ccs_object_init(&(expression->obj), CCS_EXPRESSION, NULL,
+	_ccs_object_init(&(expression->obj), CCS_EXPRESSION,
 		(_ccs_object_ops_t*)_ccs_expression_ops_broker(CCS_LITERAL));
 	_ccs_expression_literal_data_t *expression_data =
 		 (_ccs_expression_literal_data_t *)
@@ -1287,7 +1317,7 @@ ccs_create_variable(ccs_hyperparameter_t  hyperparameter,
 	CCS_VALIDATE_ERR_GOTO(err, ccs_retain_object(hyperparameter), errmem);
 	ccs_expression_t expression;
 	expression = (ccs_expression_t)mem;
-	_ccs_object_init(&(expression->obj), CCS_EXPRESSION, NULL,
+	_ccs_object_init(&(expression->obj), CCS_EXPRESSION,
 		(_ccs_object_ops_t*)_ccs_expression_ops_broker(CCS_VARIABLE));
 	_ccs_expression_variable_data_t *expression_data;
 	expression_data =
@@ -1336,7 +1366,7 @@ ccs_create_expression(ccs_expression_type_t  type,
 		return -CCS_OUT_OF_MEMORY;
 
 	ccs_expression_t expression = (ccs_expression_t)mem;
-	_ccs_object_init(&(expression->obj), CCS_EXPRESSION, NULL,
+	_ccs_object_init(&(expression->obj), CCS_EXPRESSION,
 	                 (_ccs_object_ops_t*)_ccs_expression_ops_broker(type));
 	_ccs_expression_data_t *expression_data =
 	    (_ccs_expression_data_t *)(mem + sizeof(struct _ccs_expression_s));

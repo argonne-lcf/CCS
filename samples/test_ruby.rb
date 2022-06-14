@@ -1,4 +1,3 @@
-require 'rubygems'
 require_relative '../bindings/ruby/lib/cconfigspace'
 
 class TestTuner < CCS::UserDefinedTuner

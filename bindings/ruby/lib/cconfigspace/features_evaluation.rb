@@ -1,5 +1,5 @@
 module CCS
-  attach_function :ccs_create_features_evaluation, [:ccs_objective_space_t, :ccs_configuration_t, :ccs_features_t, :ccs_result_t, :size_t, :pointer, :pointer, :pointer], :ccs_result_t
+  attach_function :ccs_create_features_evaluation, [:ccs_objective_space_t, :ccs_configuration_t, :ccs_features_t, :ccs_result_t, :size_t, :pointer, :pointer], :ccs_result_t
   attach_function :ccs_features_evaluation_get_configuration, [:ccs_features_evaluation_t, :pointer], :ccs_result_t
   attach_function :ccs_features_evaluation_get_features, [:ccs_features_evaluation_t, :pointer], :ccs_result_t
   attach_function :ccs_features_evaluation_get_error, [:ccs_features_evaluation_t, :pointer], :ccs_result_t
@@ -15,7 +15,7 @@ module CCS
     add_property :error, :ccs_result_t, :ccs_features_evaluation_get_error, memoize: false
 
     def initialize(handle = nil, retain: false, auto_release: true,
-                   objective_space: nil, configuration: nil, features: nil, error: :CCS_SUCCESS, values: nil, user_data: nil)
+                   objective_space: nil, configuration: nil, features: nil, error: :CCS_SUCCESS, values: nil)
       if handle
         super(handle, retain: retain, auto_release: auto_release)
       else
@@ -29,7 +29,7 @@ module CCS
           count = 0
         end
         ptr = MemoryPointer::new(:ccs_features_evaluation_t)
-        res = CCS.ccs_create_features_evaluation(objective_space, configuration, features, error, count, values, user_data, ptr)
+        res = CCS.ccs_create_features_evaluation(objective_space, configuration, features, error, count, values, ptr)
         CCS.error_check(res)
         super(ptr.read_ccs_features_evaluation_t, retain: false)
         @objective_space = objective_space

@@ -18,8 +18,6 @@ extern "C" {
  * @param[in] num_values the number of provided values to initialize the
  *            configuration
  * @param[in] values an optional array of values to initialize the configuration
- * @param[in] user_data a pointer to the user data to attach to this
- *                      configuration instance
  * @param[out] configuration_ret a pointer to the variable that will hold the
  *             newly created configuration
  * @return #CCS_SUCCESS on success
@@ -37,7 +35,6 @@ extern ccs_result_t
 ccs_create_configuration(ccs_configuration_space_t configuration_space,
                          size_t                    num_values,
                          ccs_datum_t              *values,
-                         void                     *user_data,
                          ccs_configuration_t      *configuration_ret);
 
 /**

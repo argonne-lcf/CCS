@@ -46,12 +46,12 @@ _ccs_deserialize_bin_ccs_objective_space_data(
 	data->objective_types = (ccs_objective_type_t *)mem;
 
 	for (size_t i = 0; i < data->num_hyperparameters; i++)
-		CCS_VALIDATE(_ccs_deserialize_bin_hyperparameter(
-			data->hyperparameters + i, version, buffer_size, buffer, opts));
+		CCS_VALIDATE(_ccs_hyperparameter_deserialize(
+			data->hyperparameters + i, CCS_SERIALIZE_FORMAT_BINARY, version, buffer_size, buffer, opts));
 
 	for (size_t i = 0; i < data->num_objectives; i++) {
-		CCS_VALIDATE(_ccs_deserialize_bin_expression(
-			data->objectives + i, version, buffer_size, buffer, opts));
+		CCS_VALIDATE(_ccs_expression_deserialize(
+			data->objectives + i, CCS_SERIALIZE_FORMAT_BINARY, version, buffer_size, buffer, opts));
 		CCS_VALIDATE(_ccs_deserialize_bin_ccs_objective_type(
 			data->objective_types + i, buffer_size, buffer));
 	}
@@ -82,7 +82,7 @@ _ccs_deserialize_bin_objective_space(
 	CCS_VALIDATE_ERR_GOTO(res, _ccs_deserialize_bin_ccs_objective_space_data(
 		&data, version, buffer_size, buffer, &new_opts), end);
 	CCS_VALIDATE_ERR_GOTO(res, ccs_create_objective_space(
-		data.name, obj.user_data, objective_space_ret), end);
+		data.name, objective_space_ret), end);
 	CCS_VALIDATE_ERR_GOTO(res, ccs_objective_space_add_hyperparameters(
 		*objective_space_ret, data.num_hyperparameters, data.hyperparameters),
 		err_objective_space);
@@ -131,6 +131,8 @@ _ccs_objective_space_deserialize(
 	default:
 		return -CCS_INVALID_VALUE;
 	}
+	CCS_VALIDATE(_ccs_object_deserialize_user_data(
+		(ccs_object_t)*objective_space_ret, format, version, buffer_size, buffer, opts));
 	return CCS_SUCCESS;
 }
 

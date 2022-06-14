@@ -209,8 +209,6 @@ ccs_tuner_get_history(ccs_tuner_t       tuner,
  * @param[in] name the name of the tuner
  * @param[in] configuration_space the configuration space to explore
  * @param[in] objective_space the objective space to potimize
- * @param[in] user_data a pointer to the user data to attach to this
- *                      tuner instance
  * @param[out] tuner_ret a pointer to the variable that will contain the newly
  *                       created tuner
  * @return #CCS_SUCCESS on success
@@ -225,7 +223,6 @@ extern ccs_result_t
 ccs_create_random_tuner(const char                *name,
                         ccs_configuration_space_t  configuration_space,
                         ccs_objective_space_t      objective_space,
-                        void                      *user_data,
                         ccs_tuner_t               *tuner_ret);
 
 /**
@@ -302,8 +299,6 @@ typedef struct ccs_user_defined_tuner_vector_s ccs_user_defined_tuner_vector_t;
  * @param[in] name the name of the tuner
  * @param[in] configuration_space the configuration space to explore
  * @param[in] objective_space the objective space to potimize
- * @param[in] user_data a pointer to the user data to attach to this
- *                      tuner instance
  * @param[in] vector the vector of callbacks implementing the tuner interface
  * @param[in] tuner_data a pointer to the tuner internal data structures. Can be
  *                       NULL
@@ -323,7 +318,6 @@ extern ccs_result_t
 ccs_create_user_defined_tuner(const char                      *name,
                               ccs_configuration_space_t        configuration_space,
                               ccs_objective_space_t            objective_space,
-                              void                            *user_data,
                               ccs_user_defined_tuner_vector_t *vector,
                               void                            *tuner_data,
                               ccs_tuner_t                     *tuner_ret);

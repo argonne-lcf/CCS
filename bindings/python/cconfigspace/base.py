@@ -1,4 +1,5 @@
 import ctypes as ct
+import json
 from . import libcconfigspace
 
 class ccs_version(ct.Structure):
@@ -150,7 +151,7 @@ class ccs_object_type(CEnumeration):
     'MAP' ]
 
 class ccs_error(CEnumeration):
-  _members_ = [ 
+  _members_ = [
     ('SUCCESS', 0),
     'INVALID_OBJECT',
     'INVALID_VALUE',
@@ -197,7 +198,7 @@ class ccs_datum_flag(CEnumeration):
     ('TRANSIENT', (1 << 0)),
     ('UNPOOLED', (1 << 1)),
     ('ID', (1 << 2))]
- 
+
 ccs_datum_flags = ct.c_uint
 
 class ccs_numeric_type(CEnumeration):
@@ -350,7 +351,8 @@ class ccs_serialize_operation(CEnumeration):
 class ccs_serialize_option(CEnumeration):
   _members_ = [
     ('END', 0),
-    'NON_BLOCKING'
+    'NON_BLOCKING',
+    'CALLBACK'
   ]
 
 class ccs_deserialize_option(CEnumeration):
@@ -359,7 +361,8 @@ class ccs_deserialize_option(CEnumeration):
     'HANDLE_MAP',
     'VECTOR',
     'DATA',
-    'NON_BLOCKING'
+    'NON_BLOCKING',
+    'CALLBACK'
   ]
 
 ccs_init = _ccs_get_function("ccs_init")
@@ -372,8 +375,11 @@ ccs_object_get_type = _ccs_get_function("ccs_object_get_type", [ccs_object, ct.P
 ccs_object_get_refcount = _ccs_get_function("ccs_object_get_refcount", [ccs_object, ct.POINTER(ct.c_int)])
 ccs_object_destroy_callback_type = ct.CFUNCTYPE(None, ccs_object, ct.c_void_p)
 ccs_object_set_destroy_callback = _ccs_get_function("ccs_object_set_destroy_callback", [ccs_object, ccs_object_destroy_callback_type, ct.c_void_p])
-ccs_object_set_user_data = _ccs_get_function("ccs_object_set_user_data", [ccs_context, ct.c_void_p])
-ccs_object_get_user_data = _ccs_get_function("ccs_object_get_user_data", [ccs_context, ct.POINTER(ct.c_void_p)])
+ccs_object_set_user_data = _ccs_get_function("ccs_object_set_user_data", [ccs_object, ct.py_object])
+ccs_object_get_user_data = _ccs_get_function("ccs_object_get_user_data", [ccs_object, ct.POINTER(ct.c_void_p)])
+ccs_object_serialize_callback_type = ct.CFUNCTYPE(ccs_result, ccs_object, ct.c_size_t, ct.c_void_p, ct.POINTER(ct.c_size_t), ct.c_void_p)
+ccs_object_set_serialize_callback = _ccs_get_function("ccs_object_set_serialize_callback", [ccs_object, ccs_object_serialize_callback_type, ct.c_void_p])
+ccs_object_deserialize_callback_type = ct.CFUNCTYPE(ccs_result, ccs_object, ct.c_size_t, ct.c_void_p, ct.c_void_p)
 # Variadic methods
 ccs_object_serialize = getattr(libcconfigspace, "ccs_object_serialize")
 ccs_object_serialize.restype = ccs_result
@@ -425,12 +431,21 @@ class Object:
     v = ct.c_void_p()
     res = ccs_object_get_user_data(self.handle, ct.byref(v))
     Error.check(res)
+    if v:
+      v = ct.cast(v, ct.py_object).value
+    else:
+      v = None
     return v
 
   @user_data.setter
-  def user_data(sekf, ud):
-    res = ccs_object_set_user_data(self.handle, ud)
+  def user_data(self, ud):
+    if ud is not None:
+      c_ud = ct.py_object(ud)
+    else:
+      c_ud = None
+    res = ccs_object_set_user_data(self.handle, c_ud)
     Error.check(res)
+    _register_user_data(self._handle, ud)
     return ud
 
   @classmethod
@@ -487,16 +502,22 @@ class Object:
   def set_destroy_callback(self, callback, user_data = None):
     _set_destroy_callback(self.handle, callback, user_data = user_data)
 
-  def serialize(self, format = 'binary', path = None, file_descriptor = None):
+  def serialize(self, format = 'binary', path = None, file_descriptor = None, callback = None, callback_data = None):
     if format != 'binary':
       raise Error(ccs_error(ccs_error.INVALID_VALUE))
     if path and file_descriptor:
       raise Error(ccs_error(ccs_error.INVALID_VALUE))
     options = [ccs_serialize_option.END]
+    if callback:
+      cb_wrapper = _get_serialize_callback_wrapper(callback)
+      cb_wrapper_func = ccs_object_serialize_callback_type(cb_wrapper)
+      options = [ccs_serialize_option.CALLBACK, cb_wrapper_func, ct.py_object(callback_data)] + options
+    elif _default_user_data_serializer:
+      options = [ccs_serialize_option.CALLBACK, _default_user_data_serializer, ct.py_object()] + options
     if path:
       p = str.encode(path)
       pp = ct.c_char_p(p)
-      res = ccs_object_serialize(self.handle, ccs_serialize_format.BINARY, ccs_serialize_operation.FILE, pp)
+      res = ccs_object_serialize(self.handle, ccs_serialize_format.BINARY, ccs_serialize_operation.FILE, pp, *options)
       Error.check(res)
       return None
     elif file_descriptor:
@@ -506,15 +527,15 @@ class Object:
       return None
     else:
       s = ct.c_size_t(0)
-      res = ccs_object_serialize(self.handle, ccs_serialize_format.BINARY, ccs_serialize_operation.SIZE, ct.byref(s))
+      res = ccs_object_serialize(self.handle, ccs_serialize_format.BINARY, ccs_serialize_operation.SIZE, ct.byref(s), *options)
       Error.check(res)
       v = (ct.c_byte * s.value)()
-      res = ccs_object_serialize(self.handle, ccs_serialize_format.BINARY, ccs_serialize_operation.MEMORY, ct.sizeof(v), v)
+      res = ccs_object_serialize(self.handle, ccs_serialize_format.BINARY, ccs_serialize_operation.MEMORY, ct.sizeof(v), v, *options)
       Error.check(res)
       return v
 
   @classmethod
-  def deserialize(cls, format = 'binary', handle_map = None, vector = None, data = None, path = None, buffer = None, file_descriptor = None):
+  def deserialize(cls, format = 'binary', handle_map = None, vector = None, data = None, path = None, buffer = None, file_descriptor = None, callback = None, callback_data = None):
     if format != 'binary':
       raise Error(ccs_error(ccs_error.INVALID_VALUE))
     mode_count = 0;
@@ -534,6 +555,12 @@ class Object:
       options = [ccs_deserialize_option.VECTOR, ct.byref(vector)] + options
     if data:
       options = [ccs_deserialize_option.DATA, ct.py_object(data)] + options
+    if callback:
+      cb_wrapper = _get_deserialize_callback_wrapper(callback)
+      cb_wrapper_func = ccs_object_deserialize_callback_type(cb_wrapper)
+      options = [ccs_deserialize_option.CALLBACK, cb_wrapper_func, ct.py_object(callback_data)] + options
+    elif _default_user_data_deserializer:
+      options = [ccs_deserialize_option.CALLBACK, _default_user_data_deserializer, ct.py_object()] + options
     if buffer:
       s = ct.c_size_t(ct.sizeof(buffer))
       res = ccs_object_deserialize(ct.byref(o), ccs_serialize_format.BINARY, ccs_serialize_operation.MEMORY, s, buffer, *options)
@@ -549,26 +576,132 @@ class Object:
     Error.check(res)
     return cls._from_handle(o, False, True)
 
-_callbacks = {}
+_data_store = {}
 
-def deserialize(format = 'binary', handle_map = None, path = None, buffer = None):
-  return Object.deserialize(format = format, handle_map = handle_map, path = path, buffer = buffer)
+def _get_serialize_callback_wrapper(callback):
+  def serialize_callback_wrapper(obj, serialize_data_size, serialize_data, serialize_data_size_ret, cb_data):
+    try:
+      p_sd = ct.cast(serialize_data, ct.c_void_p)
+      p_sdsz = ct.cast(serialize_data_size_ret, ct.POINTER(ct.c_size_t))
+      cb_data = ct.cast(cb_data, ct.c_void_p)
+      if cb_data:
+        cb_data = ct.cast(cb_data, ct.py_object).value
+      else:
+        cb_data = None
+      serialized = callback(Object.from_handle(ccs_object(obj)), cb_data, True if serialize_data_size == 0 else False)
+      if p_sd and serialize_data_size < ct.sizeof(serialized):
+        raise Error(ccs_error(ccs_error.INVALID_VALUE))
+      if p_sd:
+        ct.memmove(p_sd, ct.byref(serialized), ct.sizeof(serialized))
+      if p_sdsz:
+        p_sdsz[0] = ct.sizeof(serialized)
+      return ccs_error.SUCCESS
+    except Error as e:
+      return -e.message.value
+  return serialize_callback_wrapper
+
+def _get_deserialize_callback_wrapper(callback):
+  def deserialize_callback_wrapper(obj, serialize_data_size, serialize_data, cb_data):
+    try:
+      p_sd = ct.cast(serialize_data, ct.c_void_p)
+      cb_data = ct.cast(cb_data, ct.c_void_p)
+      if cb_data:
+        cb_data = ct.cast(cb_data, ct.py_object).value
+      else:
+        cb_data = None
+      if p_sd:
+        serialized = ct.cast(p_sd, ct.POINTER(ct.c_byte * serialize_data_size))
+      else:
+        serialized = None
+      callback(Object.from_handle(ccs_object(obj)), serialized, cb_data)
+      return ccs_error.SUCCESS
+    except Error as e:
+      return -e.message.value
+  return deserialize_callback_wrapper
+
+def _json_user_data_serializer(obj, data, size):
+  string = json.dumps(obj.user_data).encode("ascii")
+  return ct.create_string_buffer(string)
+
+def _json_user_data_deserializer(obj, serialized, data):
+  serialized = ct.cast(serialized, ct.c_char_p)
+  obj.user_data = json.loads(serialized.value)
+
+_json_user_data_serializer_wrap = _get_serialize_callback_wrapper(_json_user_data_serializer)
+_json_user_data_serializer_func = ccs_object_serialize_callback_type(_json_user_data_serializer_wrap)
+
+_json_user_data_deserializer_wrap = _get_deserialize_callback_wrapper(_json_user_data_deserializer)
+_json_user_data_deserializer_func = ccs_object_deserialize_callback_type(_json_user_data_deserializer_wrap)
+
+_default_user_data_serializer = _json_user_data_serializer_func
+_default_user_data_deserializer = _json_user_data_deserializer_func
+
+# Delete wrappers are responsible for deregistering the object data_store
+def _register_vector(handle, vector_data):
+  value = handle.value
+  if value in _data_store:
+    raise Error(ccs_error(ccs_error.INVALID_VALUE))
+  _data_store[value] = dict.fromkeys(['callbacks', 'user_data', 'serialize_calback'])
+  _data_store[value]['callbacks'] = vector_data
+
+def _unregister_vector(handle):
+  value = handle.value
+  del _data_store[value]
+
+# If objects don't have a user-defined del operation, then the first time a
+# data needs to be registered a destruction callback is attached.
+def _register_destroy_callback(handle):
+  value = handle.value
+  def cb(obj, data):
+    del _data_store[value]
+  cb_func = ccs_object_destroy_callback_type(cb)
+  res = ccs_object_set_destroy_callback(handle, cb_func, None)
+  Error.check(res)
+  _data_store[value] = dict.fromkeys(['callbacks', 'user_data', 'serialize_calback'])
+  _data_store[value]['callbacks'] = [ [ cb, cb_func ] ]
+
+def _register_callback(handle, callback_data):
+  value = handle.value
+  if value not in _data_store:
+    _register_destroy_callback(handle)
+  _data_store[value]['callbacks'].append( callback_data )
+
+def _register_user_data(handle, user_data):
+  value = handle.value
+  if value not in _data_store:
+    _register_destroy_callback(handle)
+  _data_store[value]['user_data'] = user_data
+
+def _register_serialize_callback(handle, callback_data):
+  value = handle.value
+  if value not in _data_store:
+    _register_destroy_callback(handle)
+  _data_store[value]['serialize_calback'] = callback_data
+
+def deserialize(format = 'binary', handle_map = None, path = None, buffer = None, callback = None, callback_data = None):
+  return Object.deserialize(format = format, handle_map = handle_map, path = path, buffer = buffer, callback = callback, callback_data = callback_data)
 
 def _set_destroy_callback(handle, callback, user_data = None):
   if callback is None:
     raise Error(ccs_error(ccs_error.INVALID_VALUE))
-  ptr = ct.c_int(32)
   def cb_wrapper(obj, data):
-    try:
-      callback(Object.from_handle(obj), data)
-      del _callbacks[ct.addressof(ptr)]
-    except Error as e:
-      None
+    callback(Object.from_handle(obj), data)
   cb_wrapper_func = ccs_object_destroy_callback_type(cb_wrapper)
   res = ccs_object_set_destroy_callback(handle, cb_wrapper_func, user_data)
   Error.check(res)
-  _callbacks[ct.addressof(ptr)] = (cb_wrapper_func, user_data, ptr)
+  _register_callback(handle, [callback, cb_wrapper, cb_wrapper_func, user_data])
 
+def _set_serialize_callback(handle, callback, user_data = None):
+  if callback is None:
+    res = ccs_object_set_serialize_callback(handle, None, None)
+    Error.check(res)
+    _register_serialize_callback(handle, None)
+  else:
+    cb_wrapper = _get_serialize_callback_wrapper(callback)
+    cb_wrapper_func = ccs_object_serialize_callback_type(cb_wrapper)
+    res = ccs_object_set_serialize_callback(handle, cb_wrapper_func, user_data)
+    Error.check(res)
+    _register_serialize_callback(handle, [callback, cb_wrapper, cb_wrapper_func, user_data])
 
 _ccs_id = 0
 def _ccs_get_id():
@@ -576,6 +709,7 @@ def _ccs_get_id():
   res = _ccs_id
   _ccs_id += 1
   return res
+
 from .rng import Rng
 from .distribution import Distribution
 from .hyperparameter import Hyperparameter

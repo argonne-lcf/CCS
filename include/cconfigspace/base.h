@@ -634,8 +634,9 @@ typedef void (*ccs_object_release_callback_t)(ccs_object_t object, void *user_da
 
 /**
  * Attach a destruction callback to a CCS object.
+ * Destruction callbacks are called in reverse order they were attached.
  * @param[in,out] object a CCS object
- * @param[in] callback the detruction callback to attach
+ * @param[in] callback the destruction callback to attach
  * @param[in] user_data an optional pointer that will be passed to the callback
  * @return #CCS_SUCCESS on success
  * @return -#CCS_INVALID_OBJECT if \p object is found to be invalid
@@ -669,6 +670,53 @@ ccs_object_set_user_data(ccs_object_t  object,
 extern ccs_result_t
 ccs_object_get_user_data(ccs_object_t   object,
                          void         **user_data_ret);
+
+/**
+ * The type of CCS object serialization callbacks.
+ * This callback is used to serialize object information that CCS is not
+ * aware of, the most glaring example being the object associated user_data.
+ * @param[in] object a CCS object
+ * @param[in] serialize_data_size the size of the memory pointed to by
+ *                                \p serialize_data, can be zero when
+ *                                querying the size
+ * @param[out] serialize_data a pointer to a memory area of size \p
+ *                            serialize_data_size. Can be NULL when \p
+ *                            serialize_data_size is zero
+ * @param[out] serialize_data_size_ret a pointer to the variable that will
+ *                                     contain the required user size to
+ *                                     serialize the object.
+ * @param[in] callback_user_data the pointer provided when the callback
+ *                               was attached.
+ * @return #CCS_SUCCESS on success
+ * @return an error code on error
+ */
+typedef ccs_result_t
+(*ccs_object_serialize_callback_t)(
+	ccs_object_t  object,
+	size_t        serialize_data_size,
+	void         *serialize_data,
+	size_t       *serialize_data_size_ret,
+	void         *callback_user_data);
+
+/**
+ * Set the object serialization callback.
+ * @param[in,out] object a CCS object
+ * @param[in] callback the serialization callback to attach, eventually
+ *                     replacing the previous callback. Can be NULL in
+ *                     which case the previous callback is removed, if it
+ *                     exists
+ * @param[in] user_data an optional pointer that will be passed to the
+ *                      callback
+ * @return #CCS_SUCCESS on success
+ * @return -#CCS_INVALID_OBJECT if \p object is found to be invalid
+ * @return -#CCS_INVALID_VALUE if \p callback is NULL
+ */
+extern ccs_result_t
+ccs_object_set_serialize_callback(
+		ccs_object_t                     object,
+		ccs_object_serialize_callback_t  callback,
+		void                            *user_data);
+
 /**
  * The different serialization formats supported by CCS.
  */
@@ -713,12 +761,24 @@ enum ccs_serialize_option_e {
          *  performing the operation will return -#CCS_AGAIN if the operation has
          *  not completed. The state is managed internally. */
 	CCS_SERIALIZE_OPTION_NON_BLOCKING,
+	/** The next parameters are a serialization callback and it's user_data.
+         *  This callback will be called for all objects that have user_data set
+         *  and have not a serialization callback set via
+         *  ccs_object_set_serialize_callback */
+	CCS_SERIALIZE_OPTION_CALLBACK,
 	/** Guard */
 	CCS_SERIALIZE_OPTION_MAX,
 	/** Try forcing 32 bits value for bindings */
 	CCS_SERIALIZE_OPTION_FORCE_32BIT = INT32_MAX
 };
 typedef enum ccs_serialize_option_e ccs_serialize_option_t;
+
+typedef ccs_result_t
+(*ccs_object_deserialize_callback_t)(
+	ccs_object_t  object,
+	size_t        serialize_data_size,
+	const char   *serialize_data,
+	void         *callback_user_data);
 
 /**
  * The different deserialization options.
@@ -743,6 +803,11 @@ enum ccs_deserialize_option_e {
          *  performing the operation will return -#CCS_AGAIN if the operation has
          *  not completed. The state is managed internally. */
 	CCS_DESERIALIZE_OPTION_NON_BLOCKING,
+	/** The next parameters are a deserialization callback and it's user_data.
+	 *  This callback will be called for all objects that had their
+	 *  user_data serialized. If no such callback is provided the object's
+	 *  user_data value will not be set. */
+	CCS_DESERIALIZE_CALLBACK,
 	/** Guard */
 	CCS_DESERIALIZE_OPTION_MAX,
 	/** Try forcing 32 bits value for bindings */

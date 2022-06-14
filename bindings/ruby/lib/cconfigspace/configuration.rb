@@ -1,13 +1,13 @@
 module CCS
 
-  attach_function :ccs_create_configuration, [:ccs_configuration_space_t, :size_t, :pointer, :pointer, :pointer], :ccs_result_t
+  attach_function :ccs_create_configuration, [:ccs_configuration_space_t, :size_t, :pointer, :pointer], :ccs_result_t
   attach_function :ccs_configuration_check, [:ccs_configuration_t], :ccs_result_t
 
   class Configuration < Binding
     alias configuration_space context
 
     def initialize(handle = nil, retain: false, auto_release: true,
-                   configuration_space: nil,  values: nil, user_data: nil)
+                   configuration_space: nil,  values: nil)
       if (handle)
         super(handle, retain: retain, auto_release: auto_release)
       else
@@ -21,7 +21,7 @@ module CCS
           count = 0
         end
         ptr = MemoryPointer::new(:ccs_configuration_t)
-        res = CCS.ccs_create_configuration(configuration_space, count, values, user_data, ptr)
+        res = CCS.ccs_create_configuration(configuration_space, count, values, ptr)
         CCS.error_check(res)
         super(ptr.read_ccs_configuration_t, retain: false)
       end

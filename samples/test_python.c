@@ -10,7 +10,7 @@ ccs_hyperparameter_t create_numerical(const char * name, double lower, double up
 	err = ccs_create_numerical_hyperparameter(name, CCS_NUM_FLOAT,
 	                                          CCSF(lower), CCSF(upper),
 	                                          CCSF(0.0), CCSF(0),
-	                                          NULL, &hyperparameter);
+	                                          &hyperparameter);
 	assert( err == CCS_SUCCESS );
 	return hyperparameter;
 }
@@ -26,7 +26,7 @@ void create_problem(ccs_configuration_space_t *cs, ccs_objective_space_t *os) {
 	hyperparameter1 = create_numerical("x", -5.0, 5.0);
 	hyperparameter2 = create_numerical("y", -5.0, 5.0);
 
-	err = ccs_create_configuration_space("2dplane", NULL, &cspace);
+	err = ccs_create_configuration_space("2dplane", &cspace);
 	assert( err == CCS_SUCCESS );
 	err = ccs_configuration_space_add_hyperparameter(cspace, hyperparameter1, NULL);
 	assert( err == CCS_SUCCESS );
@@ -37,7 +37,7 @@ void create_problem(ccs_configuration_space_t *cs, ccs_objective_space_t *os) {
 	err = ccs_create_variable(hyperparameter3, &expression);
 	assert( err == CCS_SUCCESS );
 
-	err = ccs_create_objective_space("height", NULL, &ospace);
+	err = ccs_create_objective_space("height", &ospace);
 	assert( err == CCS_SUCCESS );
 	err = ccs_objective_space_add_hyperparameter(ospace, hyperparameter3);
 	assert( err == CCS_SUCCESS );
@@ -70,7 +70,7 @@ void test_tuner(ccs_tuner_t tuner, ccs_objective_space_t ospace) {
 		assert( err == CCS_SUCCESS );
 		res = ccs_float((values[0].value.f - 1)*(values[0].value.f - 1) +
 		                (values[1].value.f - 2)*(values[1].value.f - 2));
-		ccs_create_evaluation(ospace, configuration, CCS_SUCCESS, 1, &res, NULL, &evaluation);
+		ccs_create_evaluation(ospace, configuration, CCS_SUCCESS, 1, &res, &evaluation);
 		err = ccs_tuner_tell(tuner, 1, &evaluation);
 		assert( err == CCS_SUCCESS );
 		err = ccs_release_object(configuration);

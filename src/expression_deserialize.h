@@ -18,6 +18,15 @@ _ccs_deserialize_bin_expression(
 		const char                        **buffer,
 		_ccs_object_deserialize_options_t  *opts);
 
+static ccs_result_t
+_ccs_expression_deserialize(
+		ccs_expression_t                   *expression_ret,
+		ccs_serialize_format_t              format,
+		uint32_t                            version,
+		size_t                             *buffer_size,
+		const char                        **buffer,
+		_ccs_object_deserialize_options_t  *opts);
+
 static inline ccs_result_t
 _ccs_deserialize_bin_ccs_expression_data(
 		_ccs_expression_data_mock_t        *data,
@@ -39,8 +48,8 @@ _ccs_deserialize_bin_ccs_expression_data(
 			return -CCS_OUT_OF_MEMORY;
 		for (size_t i = 0; i < data->num_nodes; i++) {
 			ccs_expression_t expr;
-			CCS_VALIDATE(_ccs_deserialize_bin_expression(
-				&expr, version, buffer_size, buffer, opts));
+			CCS_VALIDATE(_ccs_expression_deserialize(
+				&expr, CCS_SERIALIZE_FORMAT_BINARY, version, buffer_size, buffer, opts));
 			data->nodes[i].type = CCS_OBJECT;
 			data->nodes[i].value.o = expr;
 		}
@@ -181,9 +190,6 @@ _ccs_deserialize_bin_expression(
 		CCS_VALIDATE(_ccs_deserialize_bin_expression_general(
 			expression_ret, version, buffer_size, buffer, &new_opts));
 	}
-	CCS_VALIDATE_ERR_GOTO(res,
-		ccs_object_set_user_data(*expression_ret, obj.user_data),
-		err_exp);
 	if (opts && opts->map_values && opts->handle_map)
 		CCS_VALIDATE_ERR_GOTO(res,
 			_ccs_object_handle_check_add(
@@ -213,6 +219,8 @@ _ccs_expression_deserialize(
 	default:
 		return -CCS_INVALID_VALUE;
 	}
+	CCS_VALIDATE(_ccs_object_deserialize_user_data(
+		(ccs_object_t)*expression_ret, format, version, buffer_size, buffer, opts));
 	return CCS_SUCCESS;
 }
 

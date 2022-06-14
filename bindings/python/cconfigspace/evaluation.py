@@ -14,7 +14,7 @@ class ccs_comparison(CEnumeration):
     ('WORSE', 1),
     ('NOT_COMPARABLE', 2) ]
 
-ccs_create_evaluation = _ccs_get_function("ccs_create_evaluation", [ccs_objective_space, ccs_configuration, ccs_result, ct.c_size_t, ct.POINTER(ccs_datum), ct.c_void_p, ct.POINTER(ccs_evaluation)])
+ccs_create_evaluation = _ccs_get_function("ccs_create_evaluation", [ccs_objective_space, ccs_configuration, ccs_result, ct.c_size_t, ct.POINTER(ccs_datum), ct.POINTER(ccs_evaluation)])
 ccs_evaluation_get_objective_space = _ccs_get_function("ccs_evaluation_get_objective_space", [ccs_evaluation, ct.POINTER(ccs_objective_space)])
 ccs_evaluation_get_configuration = _ccs_get_function("ccs_evaluation_get_configuration", [ccs_evaluation, ct.POINTER(ccs_configuration)])
 ccs_evaluation_get_error = _ccs_get_function("ccs_evaluation_get_error", [ccs_evaluation, ct.POINTER(ccs_result)])
@@ -26,7 +26,7 @@ ccs_evaluation_check = _ccs_get_function("ccs_evaluation_check", [ccs_evaluation
 
 class Evaluation(Binding):
   def __init__(self, handle = None, retain = False, auto_release = True,
-               objective_space = None, configuration = None, error = ccs_error.SUCCESS, values = None, user_data = None):
+               objective_space = None, configuration = None, error = ccs_error.SUCCESS, values = None):
     if handle is None:
       count = 0
       if values:
@@ -37,7 +37,7 @@ class Evaluation(Binding):
       else:
         vals = None
       handle = ccs_evaluation()
-      res = ccs_create_evaluation(objective_space.handle, configuration.handle, error, count, vals, user_data, ct.byref(handle))
+      res = ccs_create_evaluation(objective_space.handle, configuration.handle, error, count, vals, ct.byref(handle))
       Error.check(res)
       super().__init__(handle = handle, retain = False)
     else:

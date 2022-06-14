@@ -3,7 +3,7 @@ from .base import Object, Error, CEnumeration, ccs_error, _ccs_get_function, ccs
 from .context import Context
 from .hyperparameter import Hyperparameter
 
-ccs_create_features_space = _ccs_get_function("ccs_create_features_space", [ct.c_char_p, ct.c_void_p, ct.POINTER(ccs_features_space)])
+ccs_create_features_space = _ccs_get_function("ccs_create_features_space", [ct.c_char_p, ct.POINTER(ccs_features_space)])
 ccs_features_space_add_hyperparameter = _ccs_get_function("ccs_features_space_add_hyperparameter", [ccs_features_space, ccs_hyperparameter])
 ccs_features_space_add_hyperparameters = _ccs_get_function("ccs_features_space_add_hyperparameters", [ccs_features_space, ct.c_size_t, ct.POINTER(ccs_hyperparameter)])
 ccs_features_space_check_features = _ccs_get_function("ccs_features_space_check_features", [ccs_features_space, ccs_features])
@@ -11,10 +11,10 @@ ccs_features_space_check_features_values = _ccs_get_function("ccs_features_space
 
 class FeaturesSpace(Context):
   def __init__(self, handle = None, retain = False, auto_release = True,
-               name = "", user_data = None):
+               name = ""):
     if handle is None:
       handle = ccs_features_space()
-      res = ccs_create_features_space(str.encode(name), user_data, ct.byref(handle))
+      res = ccs_create_features_space(str.encode(name), ct.byref(handle))
       Error.check(res)
       super().__init__(handle = handle, retain = False)
     else:

@@ -9,7 +9,6 @@ static void compare_hyperparameter(
 	ccs_hyperparameter_type_t  type;
 	ccs_datum_t                default_value;
 	const char                *name;
-	void *                     user_data;
 	ccs_distribution_t         distribution;
 	ccs_interval_t             interval;
 	ccs_bool_t                 check;
@@ -25,10 +24,6 @@ static void compare_hyperparameter(
 	err = ccs_hyperparameter_get_name(hyperparameter, &name);
 	assert( err == CCS_SUCCESS );
 	assert( strcmp(name, "my_param") == 0 );
-
-	err = ccs_object_get_user_data(hyperparameter, &user_data);
-	assert( err == CCS_SUCCESS );
-	assert( (void*)0xdeadbeef == user_data );
 
 	err = ccs_hyperparameter_get_default_distribution(hyperparameter, &distribution);
 	assert( err == -CCS_UNSUPPORTED_OPERATION );
@@ -46,19 +41,18 @@ void test_create() {
 	char                 *buff;
 	size_t                buff_size;
 
-	err = ccs_create_string_hyperparameter("my_param", (void *)0xdeadbeef,
-	                                       &hyperparameter);
+	err = ccs_create_string_hyperparameter("my_param", &hyperparameter);
 	assert( err == CCS_SUCCESS );
 
 	compare_hyperparameter(hyperparameter);
 
-	err = ccs_object_serialize(hyperparameter, CCS_SERIALIZE_FORMAT_BINARY, CCS_SERIALIZE_OPERATION_SIZE, &buff_size);
+	err = ccs_object_serialize(hyperparameter, CCS_SERIALIZE_FORMAT_BINARY, CCS_SERIALIZE_OPERATION_SIZE, &buff_size, CCS_SERIALIZE_OPTION_END);
 	assert( err == CCS_SUCCESS );
 
 	buff = (char *)malloc(buff_size);
 	assert( buff );
 
-	err = ccs_object_serialize(hyperparameter, CCS_SERIALIZE_FORMAT_BINARY, CCS_SERIALIZE_OPERATION_MEMORY, buff_size, buff);
+	err = ccs_object_serialize(hyperparameter, CCS_SERIALIZE_FORMAT_BINARY, CCS_SERIALIZE_OPERATION_MEMORY, buff_size, buff, CCS_SERIALIZE_OPTION_END);
 	assert( err == CCS_SUCCESS );
 
 	err = ccs_release_object(hyperparameter);
@@ -80,7 +74,7 @@ void test_string_memoization() {
 	ccs_bool_t            check;
 	char                 *str;
 
-	err = ccs_create_string_hyperparameter("my_param", NULL, &hyperparameter);
+	err = ccs_create_string_hyperparameter("my_param", &hyperparameter);
 	assert( err == CCS_SUCCESS );
 
 	str = strdup("my string");

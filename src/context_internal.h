@@ -189,23 +189,25 @@ _ccs_context_validate_value(ccs_context_t  context,
 
 static inline ccs_result_t
 _ccs_serialize_bin_size_ccs_context_data(
-		_ccs_context_data_t *data,
-		size_t              *cum_size) {
+		_ccs_context_data_t             *data,
+		size_t                          *cum_size,
+		_ccs_object_serialize_options_t *opts) {
 	*cum_size += _ccs_serialize_bin_size_string(data->name);
 	*cum_size += _ccs_serialize_bin_size_uint64(
 		utarray_len(data->hyperparameters));
 	_ccs_hyperparameter_wrapper_t *wrapper = NULL;
 	while ( (wrapper = (_ccs_hyperparameter_wrapper_t *)utarray_next(data->hyperparameters, wrapper)) )
 		CCS_VALIDATE(wrapper->hyperparameter->obj.ops->serialize_size(
-			wrapper->hyperparameter, CCS_SERIALIZE_FORMAT_BINARY, cum_size));
+			wrapper->hyperparameter, CCS_SERIALIZE_FORMAT_BINARY, cum_size, opts));
 	return CCS_SUCCESS;
 }
 
 static inline ccs_result_t
 _ccs_serialize_bin_ccs_context_data(
-		_ccs_context_data_t  *data,
-		size_t               *buffer_size,
-		char                **buffer) {
+		_ccs_context_data_t              *data,
+		size_t                           *buffer_size,
+		char                            **buffer,
+		_ccs_object_serialize_options_t  *opts) {
 	CCS_VALIDATE(_ccs_serialize_bin_string(
 		data->name, buffer_size, buffer));
 	CCS_VALIDATE(_ccs_serialize_bin_uint64(
@@ -213,30 +215,32 @@ _ccs_serialize_bin_ccs_context_data(
 	_ccs_hyperparameter_wrapper_t *wrapper = NULL;
 	while ( (wrapper = (_ccs_hyperparameter_wrapper_t *)utarray_next(data->hyperparameters, wrapper)) )
 		CCS_VALIDATE(wrapper->hyperparameter->obj.ops->serialize(
-			wrapper->hyperparameter, CCS_SERIALIZE_FORMAT_BINARY, buffer_size, buffer));
+			wrapper->hyperparameter, CCS_SERIALIZE_FORMAT_BINARY, buffer_size, buffer, opts));
 	return CCS_SUCCESS;
 }
 
 static inline ccs_result_t
 _ccs_serialize_bin_size_ccs_context(
-		ccs_context_t   context,
-		size_t         *cum_size) {
+		ccs_context_t                    context,
+		size_t                          *cum_size,
+		_ccs_object_serialize_options_t *opts) {
 	*cum_size += _ccs_serialize_bin_size_ccs_object_internal(
 		(_ccs_object_internal_t *)context);
 	CCS_VALIDATE(_ccs_serialize_bin_size_ccs_context_data(
-		context->data, cum_size));
+		context->data, cum_size, opts));
 	return CCS_SUCCESS;
 }
 
 static inline ccs_result_t
 _ccs_serialize_bin_ccs_context(
-		ccs_context_t   context,
-		size_t         *buffer_size,
-		char          **buffer) {
+		ccs_context_t                     context,
+		size_t                           *buffer_size,
+		char                            **buffer,
+		_ccs_object_serialize_options_t  *opts) {
 	CCS_VALIDATE(_ccs_serialize_bin_ccs_object_internal(
 		(_ccs_object_internal_t *)context, buffer_size, buffer));
 	CCS_VALIDATE(_ccs_serialize_bin_ccs_context_data(
-		context->data, buffer_size, buffer));
+		context->data, buffer_size, buffer, opts));
 	return CCS_SUCCESS;
 }
 

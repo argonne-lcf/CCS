@@ -19,7 +19,7 @@ module CCS
   attach_function :ccs_tuner_get_optimums, [:ccs_tuner_t, :size_t, :pointer, :pointer], :ccs_result_t
   attach_function :ccs_tuner_get_history, [:ccs_tuner_t, :size_t, :pointer, :pointer], :ccs_result_t
   attach_function :ccs_tuner_suggest, [:ccs_tuner_t, :pointer], :ccs_result_t
-  attach_function :ccs_create_random_tuner, [:string, :ccs_configuration_space_t, :ccs_objective_space_t, :pointer, :pointer], :ccs_result_t
+  attach_function :ccs_create_random_tuner, [:string, :ccs_configuration_space_t, :ccs_objective_space_t, :pointer], :ccs_result_t
 
   class Tuner < Object
     add_property :type, :ccs_tuner_type_t, :ccs_tuner_get_type, memoize: true
@@ -108,12 +108,12 @@ module CCS
 
   class RandomTuner < Tuner
     def initialize(handle = nil, retain: false, auto_release: true,
-                   name: nil, configuration_space: nil, objective_space: nil, user_data: nil)
+                   name: nil, configuration_space: nil, objective_space: nil)
       if handle
         super(handle, retain: retain, auto_release: auto_release)
       else
         ptr = MemoryPointer::new(:ccs_tuner_t)
-        res = CCS.ccs_create_random_tuner(name, configuration_space, objective_space, user_data, ptr)
+        res = CCS.ccs_create_random_tuner(name, configuration_space, objective_space, ptr)
         CCS.error_check(res)
         super(ptr.read_ccs_tuner_t, retain: false)
       end
@@ -145,7 +145,7 @@ module CCS
     delwrapper = lambda { |tun|
       begin
         del.call(CCS::Object.from_handle(tun))
-        @@callbacks.delete(delwrapper)
+        CCS.unregister_vector(tun)
         CCSError.to_native(:CCS_SUCCESS)
       rescue CCSError => e
         e.to_native
@@ -234,7 +234,7 @@ module CCS
           begin
             state = serialize(Tuner.from_handle(tun), state_size == 0 ? true : false)
             raise CCSError, :CCS_INVALID_VALUE if !p_state.null? && state_size < state.size
-            p_state.write_bytes(state.read_bytes(state_size)) unless p_state.null?
+            p_state.write_bytes(state.read_bytes(state.size)) unless p_state.null?
             Pointer.new(p_state_size).write_size_t(state.size) unless p_state_size.null?
             CCSError.to_native(:CCS_SUCCESS)
           rescue CCSError => e
@@ -263,13 +263,13 @@ module CCS
     return [delwrapper, askwrapper, tellwrapper, get_optimumswrapper, get_historywrapper, suggestwrapper, serializewrapper, deserializewrapper]
   end
 
-  attach_function :ccs_create_user_defined_tuner, [:string, :ccs_configuration_space_t, :ccs_objective_space_t, :pointer, UserDefinedTunerVector.by_ref, :value, :pointer], :ccs_result_t
+  attach_function :ccs_create_user_defined_tuner, [:string, :ccs_configuration_space_t, :ccs_objective_space_t, UserDefinedTunerVector.by_ref, :value, :pointer], :ccs_result_t
   attach_function :ccs_user_defined_tuner_get_tuner_data, [:ccs_tuner_t, :pointer], :ccs_result_t
   class UserDefinedTuner < Tuner
     add_property :tuner_data, :value, :ccs_user_defined_tuner_get_tuner_data, memoize: true
 
     def initialize(handle = nil, retain: false, auto_release: true,
-                   name: nil, configuration_space: nil, objective_space: nil, user_data: nil,
+                   name: nil, configuration_space: nil, objective_space: nil,
                    del: nil, ask: nil, tell: nil, get_optimums: nil, get_history: nil, suggest: nil, serialize: nil, deserialize: nil, tuner_data: nil)
       if handle
         super(handle, retain: retain, auto_release: auto_release)
@@ -287,14 +287,15 @@ module CCS
         vector[:serialize] = serializewrapper
         vector[:deserialize] = deserializewrapper
         ptr = MemoryPointer::new(:ccs_tuner_t)
-        res = CCS.ccs_create_user_defined_tuner(name, configuration_space, objective_space, user_data, vector, tuner_data, ptr)
+        res = CCS.ccs_create_user_defined_tuner(name, configuration_space, objective_space, vector, tuner_data, ptr)
         CCS.error_check(res)
-        super(ptr.read_ccs_tuner_t, retain: false)
-        CCS.class_variable_get(:@@callbacks)[delwrapper] = [askwrapper, tellwrapper, get_optimumswrapper, get_historywrapper, suggestwrapper, serializewrapper, deserializewrapper, user_data, tuner_data]
+        handle = ptr.read_ccs_tuner_t
+        super(handle, retain: false)
+        CCS.register_vector(handle, [delwrapper, askwrapper, tellwrapper, get_optimumswrapper, get_historywrapper, suggestwrapper, serializewrapper, deserializewrapper, tuner_data])
       end
     end
 
-    def self.deserialize(del: nil, ask: nil, tell: nil, get_optimums: nil, get_history: nil, suggest: nil, serialize: nil, deserialize: nil, tuner_data: nil, format: :binary, handle_map: nil, path: nil, buffer: nil, file_descriptor: nil)
+    def self.deserialize(del: nil, ask: nil, tell: nil, get_optimums: nil, get_history: nil, suggest: nil, serialize: nil, deserialize: nil, tuner_data: nil, format: :binary, handle_map: nil, path: nil, buffer: nil, file_descriptor: nil, callback: nil, callback_data: nil)
       raise CCSError, :CCS_INVALID_VALUE if del.nil? || ask.nil? || tell.nil? || get_optimums.nil? || get_history.nil?
       delwrapper, askwrapper, tellwrapper, get_optimumswrapper, get_historywrapper, suggestwrapper, serializewrapper, deserializewrapper =
         CCS.wrap_user_defined_tuner_callbacks(del, ask, tell, get_optimums, get_history, suggest, serialize, deserialize)
@@ -307,8 +308,8 @@ module CCS
       vector[:suggest] = suggestwrapper
       vector[:serialize] = serializewrapper
       vector[:deserialize] = deserializewrapper
-      res = super(format: format, handle_map: handle_map, vector: vector.to_ptr, data: tuner_data, path: path, buffer: buffer, file_descriptor: file_descriptor)
-      CCS.class_variable_get(:@@callbacks)[delwrapper] = [askwrapper, tellwrapper, get_optimumswrapper, get_historywrapper, suggestwrapper, serializewrapper, deserializewrapper, nil, tuner_data]
+      res = super(format: format, handle_map: handle_map, vector: vector.to_ptr, data: tuner_data, path: path, buffer: buffer, file_descriptor: file_descriptor, callback: callback, callback_data: callback_data)
+      CCS.register_vector(res.handle, [delwrapper, askwrapper, tellwrapper, get_optimumswrapper, get_historywrapper, suggestwrapper, serializewrapper, deserializewrapper, tuner_data])
       res
     end
   end

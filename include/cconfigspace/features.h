@@ -18,10 +18,6 @@ extern "C" {
  * @param[in] num_values the number of provided values to initialize the
  *                       features instance
  * @param[in] values an optional array of values to initialize the features
- *                   user_data a pointer to the user data to attach to this
- *                   features instance
- * @param[in] user_data a pointer to the user data to attach to this features
- *                      instance
  * @param[out] features_ret a pointer to the variable that will hold the newly
  *                          created features
  * @return #CCS_SUCCESS on success
@@ -37,7 +33,6 @@ extern ccs_result_t
 ccs_create_features(ccs_features_space_t features_space,
                     size_t               num_values,
                     ccs_datum_t         *values,
-                    void                *user_data,
                     ccs_features_t      *features_ret);
 
 /**

@@ -128,6 +128,19 @@ ccs_object_get_user_data(ccs_object_t   object,
 	return CCS_SUCCESS;
 }
 
+ccs_result_t
+ccs_object_set_serialize_callback(
+		ccs_object_t                     object,
+		ccs_object_serialize_callback_t  callback,
+		void                            *user_data) {
+	_ccs_object_internal_t *obj = (_ccs_object_internal_t *)object;
+	if (!obj)
+		return -CCS_INVALID_OBJECT;
+	obj->serialize_callback = callback;
+	obj->serialize_user_data = user_data;
+	return CCS_SUCCESS;
+}
+
 static size_t
 _ccs_serialize_header_size(ccs_serialize_format_t format) {
 	switch(format) {
@@ -213,6 +226,11 @@ _ccs_object_serialize_options(
 			opts->ppfd_state = va_arg(args, _ccs_file_descriptor_state_t **);
 			CCS_CHECK_PTR(opts->ppfd_state);
 			break;
+		case CCS_SERIALIZE_OPTION_CALLBACK:
+			opts->serialize_callback = va_arg(args, ccs_object_serialize_callback_t);
+			CCS_CHECK_PTR(opts->serialize_callback);
+			opts->serialize_user_data = va_arg(args, void *);
+			break;
 		default:
 			return -CCS_INVALID_VALUE;
 		}
@@ -222,16 +240,48 @@ _ccs_object_serialize_options(
 }
 
 static inline ccs_result_t
-_ccs_object_serialize_size(
-		ccs_object_t            object,
-		ccs_serialize_format_t  format,
-		va_list                 args) {
+_ccs_object_serialize_size_with_opts(
+		ccs_object_t                     object,
+		ccs_serialize_format_t           format,
+		size_t                          *buffer_size,
+		_ccs_object_serialize_options_t *opts) {
 	_ccs_object_internal_t *obj = (_ccs_object_internal_t *)object;
+	*buffer_size = _ccs_serialize_header_size(format);
+	CCS_VALIDATE(obj->ops->serialize_size(object, format, buffer_size, opts));
+	return CCS_SUCCESS;
+}
+
+static inline ccs_result_t
+_ccs_object_serialize_size(
+		ccs_object_t           object,
+		ccs_serialize_format_t format,
+		va_list                args) {
 	size_t *p_buffer_size = NULL;
 	p_buffer_size = va_arg(args, size_t *);
+	_ccs_object_serialize_options_t opts = {NULL, NULL, NULL};
+	CCS_VALIDATE(_ccs_object_serialize_options(
+		format, CCS_SERIALIZE_OPERATION_SIZE, args, &opts));
 	CCS_CHECK_PTR(p_buffer_size);
-	*p_buffer_size = _ccs_serialize_header_size(format);
-	CCS_VALIDATE(obj->ops->serialize_size(object, format, p_buffer_size));
+	return _ccs_object_serialize_size_with_opts(
+		object, format, p_buffer_size, &opts);
+}
+
+static inline ccs_result_t
+_ccs_object_serialize_memory_with_opts(
+		ccs_object_t                     object,
+		ccs_serialize_format_t           format,
+		size_t                           buffer_size,
+		char                            *buffer,
+		_ccs_object_serialize_options_t *opts) {
+	_ccs_object_internal_t *obj = (_ccs_object_internal_t *)object;
+	size_t total_size = buffer_size;
+	char *buffer_start = buffer;
+	CCS_VALIDATE(_ccs_serialize_header(
+	    format, &buffer_size, &buffer, 0));
+	CCS_VALIDATE(obj->ops->serialize(
+	    object, format, &buffer_size, &buffer, opts));
+	CCS_VALIDATE(_ccs_serialize_header(
+	    format, &total_size, &buffer_start, total_size - buffer_size));
 	return CCS_SUCCESS;
 }
 
@@ -240,21 +290,16 @@ _ccs_object_serialize_memory(
 		ccs_object_t            object,
 		ccs_serialize_format_t  format,
 		va_list                 args) {
-	_ccs_object_internal_t *obj = (_ccs_object_internal_t *)object;
 	char *buffer = NULL;
 	size_t buffer_size = 0;
+	_ccs_object_serialize_options_t opts = {NULL, NULL, NULL};
 	buffer_size = va_arg(args, size_t);
 	buffer = va_arg(args, char *);
-	size_t total_size = buffer_size;
-	char *buffer_start = buffer;
 	CCS_CHECK_PTR(buffer);
-	CCS_VALIDATE(_ccs_serialize_header(
-	    format, &buffer_size, &buffer, 0));
-	CCS_VALIDATE(obj->ops->serialize(
-	    object, format, &buffer_size, &buffer));
-	CCS_VALIDATE(_ccs_serialize_header(
-	    format, &total_size, &buffer_start, total_size - buffer_size));
-	return CCS_SUCCESS;
+	CCS_VALIDATE(_ccs_object_serialize_options(
+		format, CCS_SERIALIZE_OPERATION_MEMORY, args, &opts));
+	return _ccs_object_serialize_memory_with_opts(
+		object, format, buffer_size, buffer, &opts);
 }
 
 static inline ccs_result_t
@@ -267,14 +312,17 @@ _ccs_object_serialize_file(
 	const char *path;
 	int fd;
 	ccs_result_t res;
+	_ccs_object_serialize_options_t opts = {NULL, NULL, NULL};
 	path = va_arg(args, const char *);
 	CCS_CHECK_PTR(path);
+	CCS_VALIDATE(_ccs_object_serialize_options(
+		format, CCS_SERIALIZE_OPERATION_FILE, args, &opts));
 	fd = open(path, O_CREAT | O_TRUNC | O_RDWR,
 		S_IRUSR | S_IWUSR | S_IWGRP | S_IRGRP | S_IROTH); // 664
 	if (CCS_UNLIKELY(fd == -1))
 		return -CCS_INVALID_FILE_PATH;
-	CCS_VALIDATE_ERR_GOTO(res, ccs_object_serialize(
-		object, format, CCS_SERIALIZE_OPERATION_SIZE, &buffer_size), err_file_fd);
+	CCS_VALIDATE_ERR_GOTO(res, _ccs_object_serialize_size_with_opts(
+		object, format, &buffer_size, &opts), err_file_fd);
 	buffer = (char *)mmap(0, buffer_size, PROT_READ|PROT_WRITE, MAP_SHARED, fd, 0);
 	if (CCS_UNLIKELY(buffer == MAP_FAILED)) {
 		switch(errno) {
@@ -293,8 +341,8 @@ _ccs_object_serialize_file(
 		res = -CCS_SYSTEM_ERROR;
 		goto err_file_map;
 	}
-	CCS_VALIDATE_ERR_GOTO(res, ccs_object_serialize(
-		object, format, CCS_SERIALIZE_OPERATION_MEMORY, buffer_size, buffer), err_file_map);
+	CCS_VALIDATE_ERR_GOTO(res, _ccs_object_serialize_memory_with_opts(
+		object, format, buffer_size, buffer, &opts), err_file_map);
 	if (msync(buffer, buffer_size, MS_SYNC) == -1)
 		res = -CCS_SYSTEM_ERROR;
 err_file_map:
@@ -311,7 +359,7 @@ _ccs_object_serialize_file_descriptor(
 		va_list                 args) {
 	int fd;
 	ccs_result_t res;
-	_ccs_object_serialize_options_t opts = {NULL};
+	_ccs_object_serialize_options_t opts = {NULL, NULL, NULL};
 	_ccs_file_descriptor_state_t state = {NULL, 0, NULL, 0, -1, 0};
 	_ccs_file_descriptor_state_t *pstate = NULL;
 	fd = va_arg(args, int);
@@ -331,8 +379,8 @@ _ccs_object_serialize_file_descriptor(
 	/* if non blocking start or blocking */
 	if (!pstate || !pstate->base) {
 		size_t object_size;
-		CCS_VALIDATE(ccs_object_serialize(
-			object, format, CCS_SERIALIZE_OPERATION_SIZE, &object_size));
+		CCS_VALIDATE(_ccs_object_serialize_size_with_opts(
+			object, format, &object_size, &opts));
 		/* initialize user_state */
 		if (!pstate) {
 			char *mem = (char *)malloc(sizeof(_ccs_file_descriptor_state_t) + object_size);
@@ -350,8 +398,8 @@ _ccs_object_serialize_file_descriptor(
 		}
 		pstate->buffer_size = object_size;
 		pstate->fd = fd;
-		CCS_VALIDATE_ERR_GOTO(res, ccs_object_serialize(
-			object, format, CCS_SERIALIZE_OPERATION_MEMORY, pstate->buffer_size, pstate->buffer), err_fd_buffer);
+		CCS_VALIDATE_ERR_GOTO(res, _ccs_object_serialize_memory_with_opts(
+			object, format, pstate->buffer_size, pstate->buffer, &opts), err_fd_buffer);
 	}
 	do {
 		ssize_t count;
@@ -452,6 +500,11 @@ _ccs_object_deserialize_options(
 				return -CCS_INVALID_VALUE;
 			opts->ppfd_state = va_arg(args, _ccs_file_descriptor_state_t **);
 			CCS_CHECK_PTR(opts->ppfd_state);
+			break;
+		case CCS_DESERIALIZE_CALLBACK:
+			opts->deserialize_callback = va_arg(args, ccs_object_deserialize_callback_t);
+			CCS_CHECK_PTR(opts->deserialize_callback);
+			opts->deserialize_user_data = va_arg(args, void *);
 			break;
 		default:
 			return -CCS_INVALID_VALUE;
@@ -566,7 +619,7 @@ _ccs_object_deserialize(ccs_object_t               *object_ret,
                         va_list                     args) {
 	uint32_t version;
 	size_t   size;
-	_ccs_object_deserialize_options_t opts = { NULL, CCS_TRUE, NULL, NULL, NULL };
+	_ccs_object_deserialize_options_t opts = { NULL, CCS_TRUE, NULL, NULL, NULL, NULL, NULL };
 	CCS_VALIDATE(_ccs_object_deserialize_options(format, operation, args, &opts));
 	CCS_VALIDATE(_ccs_deserialize_header(
 		format, buffer_size, buffer, &size, &version));
@@ -681,7 +734,7 @@ _ccs_object_deserialize_file_descriptor(
 	int non_blocking;
 	size_t header_size;
 	ssize_t  offset;
-	_ccs_object_deserialize_options_t opts = { NULL, CCS_TRUE, NULL, NULL, NULL };
+	_ccs_object_deserialize_options_t opts = { NULL, CCS_TRUE, NULL, NULL, NULL, NULL, NULL };
 	_ccs_file_descriptor_state_t state = {NULL, 0, NULL, 0, -1, 0};
 	_ccs_file_descriptor_state_t *pstate = NULL;
 	fd = va_arg(args, int);

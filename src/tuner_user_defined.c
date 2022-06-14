@@ -23,34 +23,17 @@ _ccs_tuner_user_defined_del(ccs_object_t o) {
 }
 
 static inline ccs_result_t
-_ccs_serialize_bin_size_ccs_user_defined_tuner_data(
-		_ccs_user_defined_tuner_data_t *data,
-		size_t                         *cum_size) {
-	CCS_VALIDATE(_ccs_serialize_bin_size_ccs_tuner_common_data(
-		&data->common_data, cum_size));
-	return CCS_SUCCESS;
-}
-
-static inline ccs_result_t
-_ccs_serialize_bin_ccs_user_defined_tuner_data(
-		_ccs_user_defined_tuner_data_t *data,
-		size_t                         *buffer_size,
-		char                          **buffer) {
-	CCS_VALIDATE(_ccs_serialize_bin_ccs_tuner_common_data(
-		&data->common_data, buffer_size, buffer));
-	return CCS_SUCCESS;
-}
-
-static inline ccs_result_t
 _ccs_serialize_bin_size_ccs_user_defined_tuner(
-		ccs_tuner_t  tuner,
-		size_t      *cum_size) {
+		ccs_tuner_t                      tuner,
+		size_t                          *cum_size,
+		_ccs_object_serialize_options_t *opts) {
 	ccs_result_t res = CCS_SUCCESS;
 	_ccs_user_defined_tuner_data_t *data =
 		(_ccs_user_defined_tuner_data_t *)(tuner->data);
 	*cum_size += _ccs_serialize_bin_size_ccs_object_internal(
 		(_ccs_object_internal_t *)tuner);
-	CCS_VALIDATE(_ccs_serialize_bin_size_ccs_user_defined_tuner_data(data, cum_size));
+	CCS_VALIDATE(_ccs_serialize_bin_size_ccs_tuner_common_data(
+		&data->common_data, cum_size, opts));
 	size_t history_size = 0;
 	size_t num_optimums = 0;
 	size_t state_size = 0;
@@ -69,7 +52,7 @@ _ccs_serialize_bin_size_ccs_user_defined_tuner(
 			CCS_VALIDATE_ERR_GOTO(res, data->vector.get_history(tuner, history_size, history, NULL), end);
 			for (size_t i = 0; i < history_size; i++)
 				CCS_VALIDATE_ERR_GOTO(res, history[i]->obj.ops->serialize_size(
-					history[i], CCS_SERIALIZE_FORMAT_BINARY, cum_size), end);
+					history[i], CCS_SERIALIZE_FORMAT_BINARY, cum_size, opts), end);
 		}
 		if (num_optimums) {
 			CCS_VALIDATE_ERR_GOTO(res, data->vector.get_optimums(tuner, num_optimums, optimums, NULL), end);
@@ -90,16 +73,17 @@ end:
 
 static inline ccs_result_t
 _ccs_serialize_bin_ccs_user_defined_tuner(
-		ccs_tuner_t   tuner,
-		size_t       *buffer_size,
-		char        **buffer) {
+		ccs_tuner_t                       tuner,
+		size_t                           *buffer_size,
+		char                            **buffer,
+		_ccs_object_serialize_options_t  *opts) {
 	ccs_result_t res = CCS_SUCCESS;
 	_ccs_user_defined_tuner_data_t *data =
 		(_ccs_user_defined_tuner_data_t *)(tuner->data);
 	CCS_VALIDATE(_ccs_serialize_bin_ccs_object_internal(
 		(_ccs_object_internal_t *)tuner, buffer_size, buffer));
-	CCS_VALIDATE(_ccs_serialize_bin_ccs_user_defined_tuner_data(
-		data, buffer_size, buffer));
+	CCS_VALIDATE(_ccs_serialize_bin_ccs_tuner_common_data(
+		&data->common_data, buffer_size, buffer, opts));
 	size_t history_size = 0;
 	size_t num_optimums = 0;
 	size_t state_size = 0;
@@ -120,7 +104,7 @@ _ccs_serialize_bin_ccs_user_defined_tuner(
 			CCS_VALIDATE_ERR_GOTO(res, data->vector.get_history(tuner, history_size, history, NULL), end);
 			for (size_t i = 0; i < history_size; i++)
 				CCS_VALIDATE_ERR_GOTO(res, history[i]->obj.ops->serialize(
-					history[i], CCS_SERIALIZE_FORMAT_BINARY, buffer_size, buffer), end);
+					history[i], CCS_SERIALIZE_FORMAT_BINARY, buffer_size, buffer, opts), end);
 		}
 		if (num_optimums) {
 			CCS_VALIDATE_ERR_GOTO(res, data->vector.get_optimums(tuner, num_optimums, optimums, NULL), end);
@@ -152,34 +136,40 @@ end:
 
 static ccs_result_t
 _ccs_tuner_user_defined_serialize_size(
-		ccs_object_t            object,
-		ccs_serialize_format_t  format,
-		size_t                 *cum_size) {
+		ccs_object_t                     object,
+		ccs_serialize_format_t           format,
+		size_t                          *cum_size,
+		_ccs_object_serialize_options_t *opts) {
 	switch(format) {
 	case CCS_SERIALIZE_FORMAT_BINARY:
 		CCS_VALIDATE(_ccs_serialize_bin_size_ccs_user_defined_tuner(
-			(ccs_tuner_t)object, cum_size));
+			(ccs_tuner_t)object, cum_size, opts));
 		break;
 	default:
 		return -CCS_INVALID_VALUE;
 	}
+	CCS_VALIDATE(_ccs_object_serialize_user_data_size(
+		object, format, cum_size, opts));
 	return CCS_SUCCESS;
 }
 
 static ccs_result_t
 _ccs_tuner_user_defined_serialize(
-		ccs_object_t             object,
-		ccs_serialize_format_t   format,
-		size_t                  *buffer_size,
-		char                   **buffer) {
+		ccs_object_t                      object,
+		ccs_serialize_format_t            format,
+		size_t                           *buffer_size,
+		char                            **buffer,
+		_ccs_object_serialize_options_t  *opts) {
 	switch(format) {
 	case CCS_SERIALIZE_FORMAT_BINARY:
 		CCS_VALIDATE(_ccs_serialize_bin_ccs_user_defined_tuner(
-			(ccs_tuner_t)object, buffer_size, buffer));
+			(ccs_tuner_t)object, buffer_size, buffer, opts));
 		break;
 	default:
 		return -CCS_INVALID_VALUE;
 	}
+	CCS_VALIDATE(_ccs_object_serialize_user_data(
+		object, format, buffer_size, buffer, opts));
 	return CCS_SUCCESS;
 }
 
@@ -247,7 +237,6 @@ ccs_result_t
 ccs_create_user_defined_tuner(const char                      *name,
                               ccs_configuration_space_t        configuration_space,
                               ccs_objective_space_t            objective_space,
-                              void                            *user_data,
                               ccs_user_defined_tuner_vector_t *vector,
                               void                            *tuner_data,
                               ccs_tuner_t                     *tuner_ret) {
@@ -275,7 +264,7 @@ ccs_create_user_defined_tuner(const char                      *name,
 	CCS_VALIDATE_ERR_GOTO(err, ccs_retain_object(objective_space), errcs);
 
 	tun = (ccs_tuner_t)mem;
-	_ccs_object_init(&(tun->obj), CCS_TUNER, user_data, (_ccs_object_ops_t *)&_ccs_tuner_user_defined_ops);
+	_ccs_object_init(&(tun->obj), CCS_TUNER, (_ccs_object_ops_t *)&_ccs_tuner_user_defined_ops);
 	tun->data = (struct _ccs_tuner_data_s *)(mem + sizeof(struct _ccs_tuner_s));
 	data = (_ccs_user_defined_tuner_data_t *)tun->data;
 	data->common_data.type = CCS_TUNER_USER_DEFINED;

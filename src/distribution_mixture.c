@@ -27,13 +27,14 @@ _ccs_distribution_mixture_del(ccs_object_t o) {
 static inline ccs_result_t
 _ccs_serialize_bin_size_ccs_distribution_mixture_data(
 		_ccs_distribution_mixture_data_t *data,
-		size_t                           *cum_size) {
+		size_t                           *cum_size,
+		_ccs_object_serialize_options_t  *opts) {
 	*cum_size += _ccs_serialize_bin_size_ccs_distribution_common_data(&data->common_data);
 	*cum_size += _ccs_serialize_bin_size_uint64(data->num_distributions);
 	for (size_t i = 0; i < data->num_distributions; i++) {
 		*cum_size += _ccs_serialize_bin_size_ccs_float(data->weights[i+1] - data->weights[i]);
 		CCS_VALIDATE(data->distributions[i]->obj.ops->serialize_size(
-			data->distributions[i], CCS_SERIALIZE_FORMAT_BINARY, cum_size));
+			data->distributions[i], CCS_SERIALIZE_FORMAT_BINARY, cum_size, opts));
 	}
 	return CCS_SUCCESS;
 }
@@ -42,7 +43,8 @@ static inline ccs_result_t
 _ccs_serialize_bin_ccs_distribution_mixture_data(
 		_ccs_distribution_mixture_data_t  *data,
 		size_t                            *buffer_size,
-		char                             **buffer) {
+		char                             **buffer,
+		_ccs_object_serialize_options_t   *opts) {
 	CCS_VALIDATE(_ccs_serialize_bin_ccs_distribution_common_data(
 		&data->common_data, buffer_size, buffer));
 	CCS_VALIDATE(_ccs_serialize_bin_uint64(
@@ -51,68 +53,76 @@ _ccs_serialize_bin_ccs_distribution_mixture_data(
 		CCS_VALIDATE(_ccs_serialize_bin_ccs_float(
 			data->weights[i+1] - data->weights[i], buffer_size, buffer));
 		CCS_VALIDATE(data->distributions[i]->obj.ops->serialize(
-			data->distributions[i], CCS_SERIALIZE_FORMAT_BINARY, buffer_size, buffer));
+			data->distributions[i], CCS_SERIALIZE_FORMAT_BINARY, buffer_size, buffer, opts));
 	}
 	return CCS_SUCCESS;
 }
 
 static inline ccs_result_t
 _ccs_serialize_bin_size_ccs_distribution_mixture(
-		ccs_distribution_t  distribution,
-		size_t             *cum_size) {
+		ccs_distribution_t              distribution,
+		size_t                          *cum_size,
+		_ccs_object_serialize_options_t *opts) {
 	_ccs_distribution_mixture_data_t *data =
 		(_ccs_distribution_mixture_data_t *)(distribution->data);
 	*cum_size += _ccs_serialize_bin_size_ccs_object_internal(
 		(_ccs_object_internal_t *)distribution);
 	CCS_VALIDATE(_ccs_serialize_bin_size_ccs_distribution_mixture_data(
-		data, cum_size));
+		data, cum_size, opts));
 	return CCS_SUCCESS;
 }
 
 static inline ccs_result_t
 _ccs_serialize_bin_ccs_distribution_mixture(
-		ccs_distribution_t   distribution,
-		size_t              *buffer_size,
-		char               **buffer) {
+		ccs_distribution_t                distribution,
+		size_t                           *buffer_size,
+		char                            **buffer,
+		_ccs_object_serialize_options_t  *opts) {
 	_ccs_distribution_mixture_data_t *data =
 		(_ccs_distribution_mixture_data_t *)(distribution->data);
 	CCS_VALIDATE(_ccs_serialize_bin_ccs_object_internal(
 		(_ccs_object_internal_t *)distribution, buffer_size, buffer));
 	CCS_VALIDATE(_ccs_serialize_bin_ccs_distribution_mixture_data(
-		data, buffer_size, buffer));
+		data, buffer_size, buffer, opts));
 	return CCS_SUCCESS;
 }
 
 static ccs_result_t
 _ccs_distribution_mixture_serialize_size(
-		ccs_object_t            object,
-		ccs_serialize_format_t  format,
-		size_t                 *cum_size) {
+		ccs_object_t                     object,
+		ccs_serialize_format_t           format,
+		size_t                          *cum_size,
+		_ccs_object_serialize_options_t *opts) {
 	switch(format) {
 	case CCS_SERIALIZE_FORMAT_BINARY:
 		CCS_VALIDATE(_ccs_serialize_bin_size_ccs_distribution_mixture(
-			(ccs_distribution_t)object, cum_size));
+			(ccs_distribution_t)object, cum_size, opts));
 		break;
 	default:
 		return -CCS_INVALID_VALUE;
 	}
+	CCS_VALIDATE(_ccs_object_serialize_user_data_size(
+		object, format, cum_size, opts));
 	return CCS_SUCCESS;
 }
 
 static ccs_result_t
 _ccs_distribution_mixture_serialize(
-		ccs_object_t             object,
-		ccs_serialize_format_t   format,
-		size_t                  *buffer_size,
-		char                   **buffer) {
+		ccs_object_t                      object,
+		ccs_serialize_format_t            format,
+		size_t                           *buffer_size,
+		char                            **buffer,
+		_ccs_object_serialize_options_t  *opts) {
 	switch(format) {
 	case CCS_SERIALIZE_FORMAT_BINARY:
 		CCS_VALIDATE(_ccs_serialize_bin_ccs_distribution_mixture(
-		    (ccs_distribution_t)object, buffer_size, buffer));
+		    (ccs_distribution_t)object, buffer_size, buffer, opts));
 		break;
 	default:
 		return -CCS_INVALID_VALUE;
 	}
+	CCS_VALIDATE(_ccs_object_serialize_user_data(
+		object, format, buffer_size, buffer, opts));
 	return CCS_SUCCESS;
 }
 
@@ -213,7 +223,7 @@ ccs_create_mixture_distribution(size_t              num_distributions,
 
 	distrib = (ccs_distribution_t)cur_mem;
 	cur_mem += sizeof(struct _ccs_distribution_s);
-	_ccs_object_init(&(distrib->obj), CCS_DISTRIBUTION, NULL, (_ccs_object_ops_t *)&_ccs_distribution_mixture_ops);
+	_ccs_object_init(&(distrib->obj), CCS_DISTRIBUTION, (_ccs_object_ops_t *)&_ccs_distribution_mixture_ops);
 	distrib_data = (_ccs_distribution_mixture_data_t *)(cur_mem);
 	cur_mem += sizeof(_ccs_distribution_mixture_data_t);
 	distrib_data->common_data.type        = CCS_MIXTURE;

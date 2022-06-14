@@ -25,10 +25,10 @@ _ccs_deserialize_bin_size_ccs_tuner_common_data(
 		&data->type, buffer_size, buffer));
 	CCS_VALIDATE(_ccs_deserialize_bin_string(
 		&data->name, buffer_size, buffer));
-	CCS_VALIDATE(_ccs_deserialize_bin_configuration_space(
-		&data->configuration_space, version, buffer_size, buffer, opts));
-	CCS_VALIDATE(_ccs_deserialize_bin_objective_space(
-		&data->objective_space, version, buffer_size, buffer, opts));
+	CCS_VALIDATE(_ccs_configuration_space_deserialize(
+		&data->configuration_space, CCS_SERIALIZE_FORMAT_BINARY, version, buffer_size, buffer, opts));
+	CCS_VALIDATE(_ccs_objective_space_deserialize(
+		&data->objective_space, CCS_SERIALIZE_FORMAT_BINARY, version, buffer_size, buffer, opts));
 	return CCS_SUCCESS;
 }
 
@@ -63,8 +63,8 @@ _ccs_deserialize_bin_ccs_random_tuner_data(
 	data->optimums = (ccs_evaluation_t *)mem;
 
 	for (size_t i = 0; i < data->size_history; i++)
-		CCS_VALIDATE(_ccs_deserialize_bin_evaluation(
-			data->history + i, version, buffer_size, buffer, opts));
+		CCS_VALIDATE(_ccs_evaluation_deserialize(
+			data->history + i, CCS_SERIALIZE_FORMAT_BINARY, version, buffer_size, buffer, opts));
 
 	for (size_t i = 0; i < data->size_optimums; i++)
 		CCS_VALIDATE(_ccs_deserialize_bin_ccs_object(
@@ -96,7 +96,6 @@ typedef struct _ccs_random_tuner_data_clone_s _ccs_random_tuner_data_clone_t;
 
 static inline ccs_result_t
 _ccs_deserialize_bin_random_tuner(
-		_ccs_object_internal_t             *obj,
 		ccs_tuner_t                        *tuner_ret,
 		uint32_t                            version,
 		size_t                             *buffer_size,
@@ -109,7 +108,7 @@ _ccs_deserialize_bin_random_tuner(
 		&data, version, buffer_size, buffer, opts), end);
 	CCS_VALIDATE_ERR_GOTO(res, ccs_create_random_tuner(
 		data.common_data.name, data.common_data.configuration_space, data.common_data.objective_space,
-		obj->user_data, tuner_ret), evaluations);
+		tuner_ret), evaluations);
 	odata = (_ccs_random_tuner_data_clone_t *)((*tuner_ret)->data);
 	for (size_t i = 0; i < data.size_history; i++)
 		utarray_push_back(odata->history, data.history + i);
@@ -156,7 +155,6 @@ _ccs_deserialize_bin_ccs_user_defined_tuner_data(
 
 static inline ccs_result_t
 _ccs_deserialize_bin_user_defined_tuner(
-		_ccs_object_internal_t             *obj,
 		ccs_tuner_t                        *tuner_ret,
 		uint32_t                            version,
 		size_t                             *buffer_size,
@@ -169,7 +167,7 @@ _ccs_deserialize_bin_user_defined_tuner(
 		&data, version, buffer_size, buffer, opts), end);
 	CCS_VALIDATE_ERR_GOTO(res, ccs_create_user_defined_tuner(
 		data.base_data.common_data.name, data.base_data.common_data.configuration_space, data.base_data.common_data.objective_space,
-		obj->user_data, vector, opts->data, tuner_ret), evaluations);
+		vector, opts->data, tuner_ret), evaluations);
 	if (vector->deserialize_state)
 		CCS_VALIDATE_ERR_GOTO(res, vector->deserialize_state(
 			*tuner_ret, data.base_data.size_history, data.base_data.history, data.base_data.size_optimums, data.base_data.optimums,
@@ -222,11 +220,11 @@ _ccs_deserialize_bin_tuner(
 	switch (ttype) {
 	case CCS_TUNER_RANDOM:
 		CCS_VALIDATE_ERR_GOTO(res, _ccs_deserialize_bin_random_tuner(
-			&obj, tuner_ret, version, buffer_size, buffer, &new_opts), end);
+			tuner_ret, version, buffer_size, buffer, &new_opts), end);
 		break;
 	case CCS_TUNER_USER_DEFINED:
 		CCS_VALIDATE_ERR_GOTO(res, _ccs_deserialize_bin_user_defined_tuner(
-			&obj, tuner_ret, version, buffer_size, buffer, &new_opts), end);
+			tuner_ret, version, buffer_size, buffer, &new_opts), end);
 		break;
 	default:
 		return -CCS_UNSUPPORTED_OPERATION;
@@ -263,6 +261,8 @@ _ccs_tuner_deserialize(
 	default:
 		return -CCS_INVALID_VALUE;
 	}
+	CCS_VALIDATE(_ccs_object_deserialize_user_data(
+		(ccs_object_t)*tuner_ret, format, version, buffer_size, buffer, opts));
 	return CCS_SUCCESS;
 }
 
