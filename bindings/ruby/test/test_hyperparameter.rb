@@ -18,7 +18,7 @@ class CConfigSpaceTestHyperparameter < Minitest::Test
     assert_equal( :CCS_HYPERPARAMETER, h.object_type )
     assert_equal( :CCS_HYPERPARAMETER_TYPE_DISCRETE, h.type )
     assert_match( /param/, h.name )
-    assert( h.user_data.null? )
+    assert_nil( h.user_data )
     assert_equal( 0.2, h.default_value )
     values.each { |v| assert( h.check_value(v) ) }
     refute( h.check_value("foo") )
@@ -70,7 +70,7 @@ class CConfigSpaceTestHyperparameter < Minitest::Test
     assert_equal( :CCS_HYPERPARAMETER, h.object_type )
     assert_equal( :CCS_HYPERPARAMETER_TYPE_ORDINAL, h.type )
     assert_match( /param/, h.name )
-    assert( h.user_data.null? )
+    assert_nil( h.user_data )
     assert_equal( "foo", h.default_value )
     assert_equal( :CCS_UNIFORM, h.default_distribution.type )
     assert_equal( values, h.values )
@@ -111,7 +111,7 @@ class CConfigSpaceTestHyperparameter < Minitest::Test
     assert_equal( :CCS_HYPERPARAMETER, h.object_type )
     assert_equal( :CCS_HYPERPARAMETER_TYPE_CATEGORICAL, h.type )
     assert_match( /param/, h.name )
-    assert( h.user_data.null? )
+    assert_equal( {'foo': ['bar', 'baz']}, h.user_data )
     assert_equal( "foo", h.default_value )
     assert_equal( :CCS_UNIFORM, h.default_distribution.type )
     assert_equal( values, h.values )
@@ -130,12 +130,15 @@ class CConfigSpaceTestHyperparameter < Minitest::Test
   def test_categorical
     values = ["foo", 2, 3.0]
     h = CCS::CategoricalHyperparameter::new(values: values)
+    h.user_data = {'foo': ['bar', 'baz']}
+    GC.start
     categorical_check(values, h)
   end
 
   def test_serialize_categorical
     values = ["foo", 2, 3.0]
     href = CCS::CategoricalHyperparameter::new(values: values)
+    href.user_data = {'foo': ['bar', 'baz']}
     buff = href.serialize
     h = CCS::deserialize(buffer: buff)
     categorical_check(values, h)
@@ -151,7 +154,7 @@ class CConfigSpaceTestHyperparameter < Minitest::Test
     assert_equal( :CCS_HYPERPARAMETER, h.object_type )
     assert_equal( :CCS_HYPERPARAMETER_TYPE_NUMERICAL, h.type )
     assert_match( /param/, h.name )
-    assert( h.user_data.null? )
+    assert_nil( h.user_data )
     assert_equal( 0.0, h.default_value )
     assert_equal( :CCS_UNIFORM, h.default_distribution.type )
     assert( h.check_value(0.5) )
@@ -183,7 +186,7 @@ class CConfigSpaceTestHyperparameter < Minitest::Test
     assert_equal( :CCS_HYPERPARAMETER, h.object_type )
     assert_equal( :CCS_HYPERPARAMETER_TYPE_NUMERICAL, h.type )
     assert_match( /param/, h.name )
-    assert( h.user_data.null? )
+    assert_nil( h.user_data )
     assert_equal( 0.0, h.default_value )
     assert_equal( :CCS_UNIFORM, h.default_distribution.type )
     assert_equal( :CCS_NUM_FLOAT, h.data_type )
@@ -206,7 +209,7 @@ class CConfigSpaceTestHyperparameter < Minitest::Test
     h = CCS::NumericalHyperparameter::int(lower: 0, upper: 100)
     assert_equal( :CCS_HYPERPARAMETER_TYPE_NUMERICAL, h.type )
     assert_match( /param/, h.name )
-    assert( h.user_data.null? )
+    assert_nil( h.user_data )
     assert_equal( 0, h.default_value )
     assert_equal( :CCS_UNIFORM, h.default_distribution.type )
     assert_equal( :CCS_NUM_INTEGER, h.data_type )
@@ -228,7 +231,7 @@ class CConfigSpaceTestHyperparameter < Minitest::Test
   def string_check(h)
     assert_equal( :CCS_HYPERPARAMETER_TYPE_STRING, h.type )
     assert_match( /param/, h.name )
-    assert( h.user_data.null? )
+    assert_nil( h.user_data )
     assert_raises CCS::CCSError do
       h.sample
     end
