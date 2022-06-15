@@ -64,7 +64,7 @@ void test_error_stack() {
 
 	ccs_set_thread_error(s1);
 
-	res = ccs_create_error_stack(&s2, CCS_INVALID_OBJECT, "An invalid object was specified for %s", "obj");
+	res = ccs_create_error_stack(&s2, CCS_INVALID_OBJECT, NULL);
 	assert( CCS_SUCCESS == res );
 
 	ccs_set_thread_error(s2);

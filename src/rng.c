@@ -63,7 +63,7 @@ _ccs_rng_serialize_size(
 		*cum_size += _ccs_serialize_bin_size_ccs_rng((ccs_rng_t)object);
 		break;
 	default:
-		return -CCS_INVALID_VALUE;
+		CCS_THROW(CCS_INVALID_VALUE, "Unsupported serialization format: %d", format);
 	}
 	CCS_VALIDATE(_ccs_object_serialize_user_data_size(
 		object, format, cum_size, opts));
@@ -83,7 +83,7 @@ _ccs_rng_serialize(
 			(ccs_rng_t)object, buffer_size, buffer));
 		break;
 	default:
-		return -CCS_INVALID_VALUE;
+		CCS_THROW(CCS_INVALID_VALUE, "Unsupported serialization format: %d", format);
 	}
 	CCS_VALIDATE(_ccs_object_serialize_user_data(
 		object, format, buffer_size, buffer, opts));
@@ -103,15 +103,13 @@ ccs_create_rng_with_type(const gsl_rng_type *rng_type,
 	CCS_CHECK_PTR(rng_ret);
 	gsl_rng *grng = gsl_rng_alloc(rng_type);
 
-	if (!grng) {
-		return -CCS_OUT_OF_MEMORY;
-	}
+	CCS_REFUTE(!grng, CCS_OUT_OF_MEMORY);
 	uintptr_t mem = (uintptr_t)calloc(1, sizeof(struct _ccs_rng_s) +
 	                                     sizeof(struct _ccs_rng_data_s));
 
 	if (!mem) {
 		gsl_rng_free(grng);
-		return -CCS_OUT_OF_MEMORY;
+		CCS_THROW(CCS_OUT_OF_MEMORY, NULL);
 	}
 	ccs_rng_t rng = (ccs_rng_t)mem;
 	_ccs_object_init(&(rng->obj), CCS_RNG, (_ccs_object_ops_t *)&_rng_ops);

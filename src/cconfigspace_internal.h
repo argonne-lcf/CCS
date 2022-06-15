@@ -33,33 +33,73 @@ _ccs_interval_include(ccs_interval_t *interval, ccs_numeric_t value) {
  */
 #define CCS_UNLIKELY(x)    __builtin_expect(!!(x), 0)
 
-#define CCS_CHECK_OBJ(o, t) do { \
-	if (CCS_UNLIKELY(!(o) || \
-	    !((_ccs_object_template_t *)(o))->data || \
-	     ((_ccs_object_template_t *)(o))->obj.type != (t))) \
-		return -CCS_INVALID_OBJECT; \
+#define CCS_RICH_ERRORS 1
+
+#if CCS_RICH_ERRORS
+#define CCS_CREATE_ERROR(error, ...) do { \
+	ccs_error_stack_t es; \
+	ccs_create_error_stack(&es, error, __VA_ARGS__); \
+	ccs_error_stack_push(es, __FILE__, __LINE__, __func__); \
+	ccs_set_thread_error(es); \
+} while (0)
+#else
+#define CCS_CREATE_ERROR(error, ...) do { \
+} while (0)
+#endif
+
+#if CCS_RICH_ERRORS
+#define CCS_ADD_STACK_ELEM() do { \
+	ccs_error_stack_t es; \
+	es = ccs_get_thread_error(); \
+	ccs_error_stack_push(es, __FILE__, __LINE__, __func__); \
+	ccs_set_thread_error(es); \
+} while (0)
+#else
+#define CCS_ADD_STACK_ELEM() do { \
+} while (0)
+#endif
+
+#define CCS_THROW(error, ...) do { \
+	CCS_CREATE_ERROR(error, __VA_ARGS__); \
+	return -error; \
 } while (0)
 
-#define CCS_CHECK_PTR(p) do { \
-	if (CCS_UNLIKELY(!(p))) \
-		return -CCS_INVALID_VALUE; \
+#define CCS_THROW_ERR_GOTO(err, error, label, ...) do { \
+	CCS_CREATE_ERROR(error, __VA_ARGS__); \
+	err = error; \
+	goto label; \
 } while (0)
 
-#define CCS_CHECK_ARY(c, a) do { \
-	if (CCS_UNLIKELY((c > 0) && !(a))) \
-		return -CCS_INVALID_VALUE; \
+#define CCS_REFUTE_MSG(cond, error, ...) do { \
+	if (CCS_UNLIKELY(cond)) \
+		CCS_THROW(error, __VA_ARGS__); \
 } while (0)
+
+#define CCS_CHECK_OBJ(o, t) CCS_REFUTE_MSG(!(o) || \
+		!((_ccs_object_template_t *)(o))->data || \
+		((_ccs_object_template_t *)(o))->obj.type != (t), \
+	CCS_INVALID_OBJECT, "Invalid CCS object '%s' == %p supplied, expected %s", #o, o, #t)
+
+#define CCS_CHECK_PTR(p) CCS_REFUTE_MSG(!(p), CCS_INVALID_VALUE, "NULL pointer supplied '%s'", #p);
+
+#define CCS_CHECK_ARY(c, a) CCS_REFUTE_MSG((c > 0) && !(a), CCS_INVALID_VALUE, "Invalid array '%s' == %p of size '%s' == %zu supplied", #a, a, #c, c)
+
+#define CCS_REFUTE(cond, error) CCS_REFUTE_MSG(cond, error, "%s: Error condition '%s' was verified", #error, #cond)
 
 #define CCS_VALIDATE_ERR_GOTO(err, cmd, label) do { \
 	err = (cmd); \
-	if (CCS_UNLIKELY(err != CCS_SUCCESS)) \
+	if (CCS_UNLIKELY(err != CCS_SUCCESS)) {\
+		CCS_ADD_STACK_ELEM(); \
 		goto label; \
+	} \
 } while (0)
 
 #define CCS_VALIDATE_ERR(err, cmd) do { \
 	err = (cmd); \
-	if (CCS_UNLIKELY(err != CCS_SUCCESS)) \
+	if (CCS_UNLIKELY(err != CCS_SUCCESS)) { \
+		CCS_ADD_STACK_ELEM(); \
 		return err; \
+	} \
 } while (0)
 
 #define CCS_VALIDATE(cmd) do { \
@@ -85,8 +125,7 @@ _ccs_serialize_bin_magic_tag(
 		const char  *tag,
 		size_t      *buffer_size,
 		char       **buffer) {
-	if (CCS_UNLIKELY(*buffer_size < 4))
-		return -CCS_NOT_ENOUGH_DATA;
+	CCS_REFUTE(*buffer_size < 4, CCS_NOT_ENOUGH_DATA);
 	memcpy(*buffer, tag, 4);
 	*buffer += 4;
 	*buffer_size -= 4;
@@ -104,8 +143,7 @@ _ccs_deserialize_bin_magic_tag(
 		char        *tag,
 		size_t      *buffer_size,
 		const char **buffer) {
-	if (CCS_UNLIKELY(*buffer_size < 4))
-		return -CCS_NOT_ENOUGH_DATA;
+	CCS_REFUTE(*buffer_size < 4, CCS_NOT_ENOUGH_DATA);
 	memcpy(tag, *buffer, 4);
 	*buffer += 4;
 	*buffer_size -= 4;
@@ -339,8 +377,7 @@ _ccs_serialize_bin_ ## NAME (TYPE x, size_t *buffer_size, char **buffer) { \
   uint8_t *buff = (uint8_t *)*buffer;                                      \
   MAPPED_TYPE v = (MAPPED_TYPE)x;                                          \
   do {                                                                     \
-    if (CCS_UNLIKELY(buff_size < 1))                                       \
-      return -CCS_NOT_ENOUGH_DATA;                                         \
+    CCS_REFUTE(buff_size < 1, CCS_NOT_ENOUGH_DATA);                        \
     uint8_t y = v & 0x7f;                                                  \
     v >>= 7;                                                               \
     if (v) y |= 0x80;                                                      \
@@ -372,8 +409,7 @@ _ccs_deserialize_bin_ ## NAME (TYPE *x, size_t *buffer_size, const char **buffer
   MAPPED_TYPE shift = 0;                                                            \
   MAPPED_TYPE y;                                                                    \
   do {                                                                              \
-    if (CCS_UNLIKELY(buff_size < 1))                                                \
-      return -CCS_NOT_ENOUGH_DATA;                                                  \
+    CCS_REFUTE(buff_size < 1, CCS_NOT_ENOUGH_DATA);                                 \
     y = *buff;                                                                      \
     v |= (y & 0x7f) << shift;                                                       \
     buff_size -= 1;                                                                 \
@@ -447,8 +483,7 @@ _ccs_peek_bin_ ## NAME (TYPE *x, size_t *buffer_size, const char **buffer) {    
 #define CCS_SERIALIZER(NAME, TYPE, MAPPED_NAME, MAPPED_TYPE)               \
 static inline ccs_result_t                                                 \
 _ccs_serialize_bin_ ## NAME (TYPE x, size_t *buffer_size, char **buffer) { \
-  if (CCS_UNLIKELY(*buffer_size < sizeof(MAPPED_TYPE)))                    \
-    return -CCS_NOT_ENOUGH_DATA;                                           \
+  CCS_REFUTE(*buffer_size < sizeof(MAPPED_TYPE), CCS_NOT_ENOUGH_DATA);     \
   MAPPED_TYPE v = _ccs_pack_ ## NAME (x);                                  \
   memcpy(*buffer, &v, sizeof(MAPPED_TYPE));                                \
   *buffer_size -= sizeof(MAPPED_TYPE);                                     \
@@ -464,8 +499,7 @@ _ccs_serialize_bin_size_ ## NAME (TYPE x) {                                \
 #define CCS_DESERIALIZER(NAME, TYPE, MAPPED_NAME, MAPPED_TYPE)                      \
 static inline ccs_result_t                                                          \
 _ccs_peek_bin_ ## NAME (TYPE *x, size_t *buffer_size, const char **buffer) {        \
-  if (CCS_UNLIKELY(*buffer_size < sizeof(MAPPED_TYPE)))                             \
-    return -CCS_NOT_ENOUGH_DATA;                                                    \
+  CCS_REFUTE(*buffer_size < sizeof(MAPPED_TYPE), CCS_NOT_ENOUGH_DATA);              \
   MAPPED_TYPE v;                                                                    \
   memcpy(&v, *buffer, sizeof(MAPPED_TYPE));                                         \
   *x = _ccs_unpack_ ## NAME (v);                                                    \
@@ -581,8 +615,7 @@ _ccs_serialize_bin_string(const char  *str,
                           char       **buffer) {
 	uint64_t sz = strlen(str) + 1;
 	CCS_VALIDATE(_ccs_serialize_bin_uint64(sz, buffer_size, buffer));
-	if (CCS_UNLIKELY(*buffer_size < sz))
-		return -CCS_NOT_ENOUGH_DATA;
+	CCS_REFUTE(*buffer_size < sz, CCS_NOT_ENOUGH_DATA);
 	memcpy(*buffer, str, sz);
 	*buffer_size -= sz;
 	*buffer += sz;
@@ -595,8 +628,7 @@ _ccs_deserialize_bin_string(const char **str,
                             const char **buffer) {
 	uint64_t sz;
 	CCS_VALIDATE(_ccs_deserialize_bin_uint64(&sz, buffer_size, buffer));
-	if (CCS_UNLIKELY(*buffer_size < sz))
-		return -CCS_NOT_ENOUGH_DATA;
+	CCS_REFUTE(*buffer_size < sz, CCS_NOT_ENOUGH_DATA);
 	*str = *buffer;
 	*buffer_size -= sz;
 	*buffer += sz;
@@ -621,8 +653,7 @@ _ccs_serialize_bin_ccs_blob(
 		size_t      *buffer_size,
 		char       **buffer) {
 	CCS_VALIDATE(_ccs_serialize_bin_uint64(b->sz, buffer_size, buffer));
-	if (CCS_UNLIKELY(*buffer_size < b->sz))
-		return -CCS_NOT_ENOUGH_DATA;
+	CCS_REFUTE(*buffer_size < b->sz, CCS_NOT_ENOUGH_DATA);
 	memcpy(*buffer, b->blob, b->sz);
 	*buffer_size -= b->sz;
 	*buffer += b->sz;
@@ -637,8 +668,7 @@ _ccs_deserialize_bin_ccs_blob(
 	uint64_t sz;
 	CCS_VALIDATE(_ccs_deserialize_bin_uint64(&sz, buffer_size, buffer));
 	b->sz = sz;
-	if (CCS_UNLIKELY(*buffer_size < b->sz))
-		return -CCS_NOT_ENOUGH_DATA;
+	CCS_REFUTE(*buffer_size < b->sz, CCS_NOT_ENOUGH_DATA);
 	b->blob = *buffer;
 	*buffer_size -= b->sz;
 	*buffer += b->sz;
@@ -748,7 +778,7 @@ _ccs_serialize_bin_ccs_datum(
 		CCS_VALIDATE(_ccs_serialize_bin_ccs_object(datum.value.o, buffer_size, buffer));
 		break;
 	default:
-		return -CCS_INVALID_TYPE;
+		CCS_THROW(CCS_INVALID_TYPE, "Unsupported datum type: %d", datum.type);
 	}
 	return CCS_SUCCESS;
 }
@@ -807,7 +837,7 @@ _ccs_deserialize_bin_ccs_datum(
 		break;
 	default:
 		*datum = ccs_none;
-		return -CCS_INVALID_TYPE;
+		CCS_THROW(CCS_INVALID_TYPE, "Unsupported datum type: %d", type);
 	}
 	return CCS_SUCCESS;
 }
@@ -853,8 +883,7 @@ _ccs_object_handle_check_add(
 	ccs_datum_t d = ccs_object(handle);
 	d.flags |= CCS_FLAG_ID;
 	CCS_VALIDATE(ccs_map_exist(map, d, &found));
-	if (CCS_UNLIKELY(found))
-		return -CCS_HANDLE_DUPLICATE;
+	CCS_REFUTE(found, CCS_HANDLE_DUPLICATE);
 	CCS_VALIDATE(ccs_map_set(map, d, ccs_object(obj)));
 	return CCS_SUCCESS;
 }
@@ -893,7 +922,7 @@ _ccs_object_serialize_user_data_size(
 		break;
 	}
 	default:
-		return -CCS_INVALID_VALUE;
+		CCS_THROW(CCS_INVALID_VALUE, "Unsupported serialization format: %d", format);
 	}
 	return CCS_SUCCESS;
 }
@@ -939,7 +968,7 @@ _ccs_object_serialize_user_data(
 		break;
 	}
 	default:
-		return -CCS_INVALID_VALUE;
+		CCS_THROW(CCS_INVALID_VALUE, "Unsupported serialization format: %d", format);
 	}
 	return CCS_SUCCESS;
 }
@@ -969,7 +998,7 @@ _ccs_object_deserialize_user_data(
 		break;
 	}
 	default:
-		return -CCS_INVALID_VALUE;
+		CCS_THROW(CCS_INVALID_VALUE, "Unsupported serialization format: %d", format);
 	}
 	return CCS_SUCCESS;
 }
