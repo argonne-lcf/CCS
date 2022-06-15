@@ -135,6 +135,10 @@ typedef struct _ccs_features_tuner_s      *ccs_features_tuner_t;
  * An opaque type defining a CCS key-value store.
  */
 typedef struct _ccs_map_s                 *ccs_map_t;
+/**
+ * An opaque type defining a CCS error statck.
+ */
+typedef struct _ccs_error_stack_s         *ccs_error_stack_t;
 
 /**
  * The different possible return codes of a CCS function.
@@ -233,6 +237,7 @@ enum ccs_object_type_e {
 	CCS_FEATURES_EVALUATION, /*!< An evaluation of a configuration given specific features */
 	CCS_FEATURES_TUNER,      /*!< A features aware tuner */
 	CCS_MAP,                 /*!< A key value store */
+	CCS_ERROR_STACK,         /*!< An error stack */
 	CCS_OBJECT_TYPE_MAX,     /*!< Guard */
 	/** Try forcing 32 bits value for bindings */
 	CCS_OBJECT_TYPE_FORCE_32BIT = INT32_MAX

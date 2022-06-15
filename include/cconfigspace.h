@@ -5,6 +5,7 @@
 #include <stdint.h>
 #include <limits.h>
 #include "cconfigspace/base.h"
+#include "cconfigspace/error_stack.h"
 #include "cconfigspace/interval.h"
 #include "cconfigspace/rng.h"
 #include "cconfigspace/distribution.h"

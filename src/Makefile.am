@@ -12,6 +12,8 @@ lib_LTLIBRARIES = libcconfigspace.la
 libcconfigspace_la_SOURCES = \
 	cconfigspace.c \
 	cconfigspace_internal.h \
+	error_stack.c \
+	error_stack_internal.h \
 	interval.c \
 	rng.c \
 	rng_internal.h \
