@@ -351,8 +351,9 @@ void test_evaluation_deserialize() {
 int main() {
 	ccs_init();
 	test();
-	ccs_fini();
 	test_evaluation_deserialize();
+	ccs_clear_thread_error();
+	ccs_fini();
 	return 0;
 }
 

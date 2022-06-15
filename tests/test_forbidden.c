@@ -208,6 +208,7 @@ int main() {
 	ccs_init();
 	test_simple();
 	test_combined();
+	ccs_clear_thread_error();
 	ccs_fini();
 	return 0;
 }

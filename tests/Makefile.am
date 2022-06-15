@@ -42,4 +42,5 @@ TEST_PROGS = $(UNIT_TESTS)
 check_PROGRAMS = $(TEST_PROGS)
 TESTS = $(TEST_PROGS)
 
+VALGRIND_memcheck_FLAGS = --leak-check=full --show-leak-kinds=all --errors-for-leak-kinds=all
 @VALGRIND_CHECK_RULES@

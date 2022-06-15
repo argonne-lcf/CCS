@@ -201,6 +201,7 @@ int main() {
 	ccs_init();
 	test_simple();
 	test_transitive();
+	ccs_clear_thread_error();
 	ccs_fini();
 	return 0;
 }

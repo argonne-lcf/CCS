@@ -377,6 +377,7 @@ int main() {
 	test_roulette_distribution_zero();
 	test_roulette_distribution_strided_samples();
 	test_roulette_distribution_soa_samples();
+	ccs_clear_thread_error();
 	ccs_fini();
 	return 0;
 }

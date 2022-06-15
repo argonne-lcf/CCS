@@ -676,6 +676,7 @@ int main() {
 	test_normal_distribution_float_log_quantize();
 	test_normal_distribution_strided_samples();
 	test_normal_distribution_soa_samples();
+	ccs_clear_thread_error();
 	ccs_fini();
 	return 0;
 }
