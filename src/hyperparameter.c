@@ -39,7 +39,8 @@ ccs_hyperparameter_get_default_distribution(ccs_hyperparameter_t  hyperparameter
 	CCS_CHECK_OBJ(hyperparameter, CCS_HYPERPARAMETER);
 	CCS_CHECK_PTR(distribution_ret);
 	_ccs_hyperparameter_ops_t *ops = ccs_hyperparameter_get_ops(hyperparameter);
-	return ops->get_default_distribution( hyperparameter->data, distribution_ret);
+	CCS_VALIDATE(ops->get_default_distribution( hyperparameter->data, distribution_ret));
+	return CCS_SUCCESS;
 }
 
 ccs_result_t
@@ -49,7 +50,8 @@ ccs_hyperparameter_check_value(ccs_hyperparameter_t  hyperparameter,
 	CCS_CHECK_OBJ(hyperparameter, CCS_HYPERPARAMETER);
 	CCS_CHECK_PTR(result_ret);
 	_ccs_hyperparameter_ops_t *ops = ccs_hyperparameter_get_ops(hyperparameter);
-	return ops->check_values(hyperparameter->data, 1, &value, NULL, result_ret);
+	CCS_VALIDATE(ops->check_values(hyperparameter->data, 1, &value, NULL, result_ret));
+	return CCS_SUCCESS;
 }
 
 ccs_result_t
@@ -61,7 +63,8 @@ ccs_hyperparameter_check_values(ccs_hyperparameter_t  hyperparameter,
 	CCS_CHECK_ARY(num_values, values);
 	CCS_CHECK_ARY(num_values, results);
 	_ccs_hyperparameter_ops_t *ops = ccs_hyperparameter_get_ops(hyperparameter);
-	return ops->check_values(hyperparameter->data, num_values, values, NULL, results);
+	CCS_VALIDATE(ops->check_values(hyperparameter->data, num_values, values, NULL, results));
+	return CCS_SUCCESS;
 }
 
 ccs_result_t
@@ -73,7 +76,8 @@ ccs_hyperparameter_validate_value(ccs_hyperparameter_t  hyperparameter,
 	CCS_CHECK_PTR(value_ret);
 	CCS_CHECK_PTR(result_ret);
 	_ccs_hyperparameter_ops_t *ops = ccs_hyperparameter_get_ops(hyperparameter);
-	return ops->check_values(hyperparameter->data, 1, &value, value_ret, result_ret);
+	CCS_VALIDATE(ops->check_values(hyperparameter->data, 1, &value, value_ret, result_ret));
+	return CCS_SUCCESS;
 }
 
 ccs_result_t
@@ -87,7 +91,8 @@ ccs_hyperparameter_validate_values(ccs_hyperparameter_t  hyperparameter,
 	CCS_CHECK_ARY(num_values, values_ret);
 	CCS_CHECK_ARY(num_values, results);
 	_ccs_hyperparameter_ops_t *ops = ccs_hyperparameter_get_ops(hyperparameter);
-	return ops->check_values(hyperparameter->data, num_values, values, values_ret, results);
+	CCS_VALIDATE(ops->check_values(hyperparameter->data, num_values, values, values_ret, results));
+	return CCS_SUCCESS;
 }
 
 
@@ -101,7 +106,8 @@ ccs_hyperparameter_sample(ccs_hyperparameter_t  hyperparameter,
 	CCS_CHECK_OBJ(rng, CCS_RNG);
 	CCS_CHECK_PTR(value_ret);
 	_ccs_hyperparameter_ops_t *ops = ccs_hyperparameter_get_ops(hyperparameter);
-	return ops->samples(hyperparameter->data, distribution, rng, 1, value_ret);
+	CCS_VALIDATE(ops->samples(hyperparameter->data, distribution, rng, 1, value_ret));
+	return CCS_SUCCESS;
 }
 
 ccs_result_t
@@ -117,7 +123,8 @@ ccs_hyperparameter_samples(ccs_hyperparameter_t  hyperparameter,
 	if (!num_values)
 		return CCS_SUCCESS;
 	_ccs_hyperparameter_ops_t *ops = ccs_hyperparameter_get_ops(hyperparameter);
-	return ops->samples(hyperparameter->data, distribution, rng, num_values, values);
+	CCS_VALIDATE(ops->samples(hyperparameter->data, distribution, rng, num_values, values));
+	return CCS_SUCCESS;
 }
 
 ccs_result_t
@@ -132,7 +139,8 @@ ccs_hyperparameter_convert_samples(ccs_hyperparameter_t  hyperparameter,
 	if (!num_values)
 		return CCS_SUCCESS;
 	_ccs_hyperparameter_ops_t *ops = ccs_hyperparameter_get_ops(hyperparameter);
-	return ops->convert_samples(hyperparameter->data, oversampling, num_values, values, results);
+	CCS_VALIDATE(ops->convert_samples(hyperparameter->data, oversampling, num_values, values, results));
+	return CCS_SUCCESS;
 }
 
 ccs_result_t
@@ -143,4 +151,3 @@ ccs_hyperparameter_sampling_interval(ccs_hyperparameter_t  hyperparameter,
 	*interval_ret = ((_ccs_hyperparameter_common_data_t *)(hyperparameter->data))->interval;
 	return CCS_SUCCESS;
 }
-

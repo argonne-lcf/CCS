@@ -55,8 +55,7 @@ _ccs_deserialize_bin_ccs_random_tuner_data(
 		return CCS_SUCCESS;
 	mem = (uintptr_t)calloc(
 		(data->size_history + data->size_optimums), sizeof(ccs_evaluation_t));
-	if (!mem)
-		return -CCS_OUT_OF_MEMORY;
+	CCS_REFUTE(!mem, CCS_OUT_OF_MEMORY);
 
 	data->history = (ccs_evaluation_t *)mem;
 	mem += data->size_history * sizeof(ccs_evaluation_t);
@@ -73,8 +72,7 @@ _ccs_deserialize_bin_ccs_random_tuner_data(
 		ccs_datum_t d;
 		CCS_VALIDATE(ccs_map_get(
 			opts->handle_map, ccs_object(data->optimums[i]), &d));
-		if (CCS_UNLIKELY(d.type != CCS_OBJECT))
-			return -CCS_INVALID_HANDLE;
+		CCS_REFUTE(d.type != CCS_OBJECT, CCS_INVALID_HANDLE);
 		data->optimums[i] = (ccs_evaluation_t)(d.value.o);
 	}
 	return CCS_SUCCESS;
@@ -90,8 +88,7 @@ typedef struct _ccs_random_tuner_data_clone_s _ccs_random_tuner_data_clone_t;
 
 #undef  utarray_oom
 #define utarray_oom() { \
-	res = -CCS_OUT_OF_MEMORY; \
-	goto tuner; \
+	CCS_RAISE_ERR_GOTO(res, CCS_OUT_OF_MEMORY, tuner, "Out of memory to allocate array"); \
 }
 
 static inline ccs_result_t
@@ -205,8 +202,7 @@ _ccs_deserialize_bin_tuner(
 	ccs_result_t res;
 	CCS_VALIDATE(_ccs_deserialize_bin_ccs_object_internal(
 		&obj, buffer_size, buffer, &handle));
-	if (CCS_UNLIKELY(obj.type != CCS_TUNER))
-		return -CCS_INVALID_TYPE;
+	CCS_REFUTE(obj.type != CCS_TUNER, CCS_INVALID_TYPE);
 
 	ccs_tuner_type_t ttype;
 	CCS_VALIDATE(_ccs_peek_bin_ccs_tuner_type(
@@ -227,7 +223,7 @@ _ccs_deserialize_bin_tuner(
 			tuner_ret, version, buffer_size, buffer, &new_opts), end);
 		break;
 	default:
-		return -CCS_UNSUPPORTED_OPERATION;
+		CCS_RAISE(CCS_INVALID_TYPE, "Unsupported tuner type: %d", ttype);
 	}
 	if (opts->handle_map)
 		CCS_VALIDATE_ERR_GOTO(res,
@@ -259,7 +255,7 @@ _ccs_tuner_deserialize(
 			tuner_ret, version, buffer_size, buffer, opts));
 		break;
 	default:
-		return -CCS_INVALID_VALUE;
+		CCS_RAISE(CCS_INVALID_VALUE, "Unsupported serialization format: %d", format);
 	}
 	CCS_VALIDATE(_ccs_object_deserialize_user_data(
 		(ccs_object_t)*tuner_ret, format, version, buffer_size, buffer, opts));

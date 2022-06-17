@@ -1,10 +1,7 @@
 #include "cconfigspace_internal.h"
 #include "binding_internal.h"
 
-#define CCS_CHECK_BINDING(b) do { \
-	if (CCS_UNLIKELY(!(b) || !(b)->data)) \
-		return -CCS_INVALID_OBJECT; \
-} while (0)
+#define CCS_CHECK_BINDING(b) CCS_REFUTE_MSG(CCS_UNLIKELY(!(b) || !(b)->data), CCS_INVALID_OBJECT, "Invalid CCS binding '%s' == %p supplied", #b, b)
 
 static inline _ccs_binding_ops_t *
 ccs_binding_get_ops(ccs_binding_t binding) {
@@ -15,7 +12,8 @@ ccs_result_t
 ccs_binding_get_context(ccs_binding_t  binding,
                         ccs_context_t *context_ret) {
 	CCS_CHECK_BINDING(binding);
-	return _ccs_binding_get_context(binding, context_ret);
+	CCS_VALIDATE(_ccs_binding_get_context(binding, context_ret));
+	return CCS_SUCCESS;
 }
 
 ccs_result_t
@@ -23,7 +21,8 @@ ccs_binding_get_value(ccs_binding_t  binding,
                       size_t         index,
                       ccs_datum_t   *value_ret) {
 	CCS_CHECK_BINDING(binding);
-	return _ccs_binding_get_value(binding, index, value_ret);
+	CCS_VALIDATE(_ccs_binding_get_value(binding, index, value_ret));
+	return CCS_SUCCESS;
 }
 
 ccs_result_t
@@ -31,7 +30,8 @@ ccs_binding_set_value(ccs_binding_t binding,
                       size_t        index,
                       ccs_datum_t   value) {
 	CCS_CHECK_BINDING(binding);
-	return _ccs_binding_set_value(binding, index, value);
+	CCS_VALIDATE(_ccs_binding_set_value(binding, index, value));
+	return CCS_SUCCESS;
 }
 
 ccs_result_t
@@ -40,7 +40,8 @@ ccs_binding_get_values(ccs_binding_t  binding,
                        ccs_datum_t   *values,
                        size_t        *num_values_ret) {
 	CCS_CHECK_BINDING(binding);
-	return _ccs_binding_get_values(binding, num_values, values, num_values_ret);
+	CCS_VALIDATE(_ccs_binding_get_values(binding, num_values, values, num_values_ret));
+	return CCS_SUCCESS;
 }
 
 ccs_result_t
@@ -48,7 +49,8 @@ ccs_binding_get_value_by_name(ccs_binding_t  binding,
                               const char    *name,
                               ccs_datum_t   *value_ret) {
 	CCS_CHECK_BINDING(binding);
-	return _ccs_binding_get_value_by_name(binding, name, value_ret);
+	CCS_VALIDATE(_ccs_binding_get_value_by_name(binding, name, value_ret));
+	return CCS_SUCCESS;
 }
 
 ccs_result_t
@@ -56,7 +58,8 @@ ccs_binding_set_value_by_name(ccs_binding_t  binding,
                               const char    *name,
                               ccs_datum_t    value) {
 	CCS_CHECK_BINDING(binding);
-	return _ccs_binding_set_value_by_name(binding, name, value);
+	CCS_VALIDATE(_ccs_binding_set_value_by_name(binding, name, value));
+	return CCS_SUCCESS;
 }
 
 ccs_result_t
@@ -64,7 +67,8 @@ ccs_binding_get_value_by_hyperparameter(ccs_binding_t         binding,
                                         ccs_hyperparameter_t  hyperparameter,
                                         ccs_datum_t          *value_ret) {
 	CCS_CHECK_BINDING(binding);
-	return _ccs_binding_get_value_by_hyperparameter(binding, hyperparameter, value_ret);
+	CCS_VALIDATE(_ccs_binding_get_value_by_hyperparameter(binding, hyperparameter, value_ret));
+	return CCS_SUCCESS;
 }
 
 ccs_result_t
@@ -72,7 +76,8 @@ ccs_binding_set_value_by_hyperparameter(ccs_binding_t        binding,
                                         ccs_hyperparameter_t hyperparameter,
                                         ccs_datum_t          value) {
 	CCS_CHECK_BINDING(binding);
-	return _ccs_binding_set_value_by_hyperparameter(binding, hyperparameter, value);
+	CCS_VALIDATE(_ccs_binding_set_value_by_hyperparameter(binding, hyperparameter, value));
+	return CCS_SUCCESS;
 }
 
 ccs_result_t
@@ -80,7 +85,8 @@ ccs_binding_hash(ccs_binding_t  binding,
                  ccs_hash_t    *hash_ret) {
 	CCS_CHECK_BINDING(binding);
 	_ccs_binding_ops_t *ops = ccs_binding_get_ops(binding);
-	return ops->hash(binding->data, hash_ret);
+	CCS_VALIDATE(ops->hash(binding->data, hash_ret));
+	return CCS_SUCCESS;
 }
 
 ccs_result_t
@@ -95,7 +101,6 @@ ccs_binding_cmp(ccs_binding_t  binding,
 		return CCS_SUCCESS;
 	}
 	_ccs_binding_ops_t *ops = ccs_binding_get_ops(binding);
-	return ops->cmp(binding->data, other_binding, cmp_ret);
+	CCS_VALIDATE(ops->cmp(binding->data, other_binding, cmp_ret));
+	return CCS_SUCCESS;
 }
-
-

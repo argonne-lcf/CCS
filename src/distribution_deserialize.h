@@ -135,8 +135,7 @@ _ccs_deserialize_bin_ccs_distribution_roulette_data(
 		&num_areas, buffer_size, buffer));
 	data->num_areas = num_areas;
 	data->areas = (ccs_float_t *)malloc(num_areas*sizeof(ccs_float_t));
-	if (!data->areas)
-		return -CCS_OUT_OF_MEMORY;
+	CCS_REFUTE(!data->areas, CCS_OUT_OF_MEMORY);
 	for (size_t i = 0; i < data->num_areas; i++)
 		CCS_VALIDATE(_ccs_deserialize_bin_ccs_float(
 			data->areas + i, buffer_size, buffer));
@@ -199,12 +198,10 @@ _ccs_deserialize_bin_ccs_distribution_mixture_data(
 	data->num_distributions = num_distributions;
 	data->distributions = (ccs_distribution_t *)
 		calloc(data->num_distributions, sizeof(ccs_distribution_t));
-	if (!data->distributions)
-		return -CCS_OUT_OF_MEMORY;
+	CCS_REFUTE(!data->distributions, CCS_OUT_OF_MEMORY);
 	data->weights = (ccs_float_t *)
 		malloc(sizeof(ccs_float_t) * data->num_distributions);
-	if (!data->weights)
-		return -CCS_OUT_OF_MEMORY;
+	CCS_REFUTE(!data->weights, CCS_OUT_OF_MEMORY);
 	for (size_t i = 0; i < data->num_distributions; i++) {
 		CCS_VALIDATE(_ccs_deserialize_bin_ccs_float(
 			data->weights + i, buffer_size, buffer));
@@ -268,8 +265,7 @@ _ccs_deserialize_bin_ccs_distribution_multivariate_data(
 	data->num_distributions = num_distributions;
 	data->distributions = (ccs_distribution_t *)
 		calloc(data->num_distributions, sizeof(ccs_distribution_t));
-	if (!data->distributions)
-		return -CCS_OUT_OF_MEMORY;
+	CCS_REFUTE(!data->distributions, CCS_OUT_OF_MEMORY);
 	for (size_t i = 0; i < data->num_distributions; i++)
 		CCS_VALIDATE(_ccs_distribution_deserialize(
 			data->distributions + i, CCS_SERIALIZE_FORMAT_BINARY, version, buffer_size, buffer, &new_opts));
@@ -314,8 +310,7 @@ _ccs_deserialize_bin_distribution(
 	ccs_result_t res;
 	CCS_VALIDATE(_ccs_deserialize_bin_ccs_object_internal(
 		&obj, buffer_size, buffer, &handle));
-	if (CCS_UNLIKELY(obj.type != CCS_DISTRIBUTION))
-		return -CCS_INVALID_TYPE;
+	CCS_REFUTE(obj.type != CCS_DISTRIBUTION, CCS_INVALID_TYPE);
 
 	ccs_distribution_type_t dtype;
 	CCS_VALIDATE(_ccs_peek_bin_ccs_distribution_type(
@@ -342,7 +337,7 @@ _ccs_deserialize_bin_distribution(
 			distribution_ret, version, buffer_size, buffer, opts));
 		break;
 	default:
-		return -CCS_UNSUPPORTED_OPERATION;
+		CCS_RAISE(CCS_UNSUPPORTED_OPERATION, "Unsupported distribution type: %d", dtype);
 	}
 	if (opts && opts->handle_map)
 		CCS_VALIDATE_ERR_GOTO(res,
@@ -371,7 +366,7 @@ _ccs_distribution_deserialize(
 			distribution_ret, version, buffer_size, buffer, opts));
 		break;
 	default:
-		return -CCS_INVALID_VALUE;
+		CCS_RAISE(CCS_INVALID_VALUE, "Unsupported serialization format: %d", format);
 	}
 	CCS_VALIDATE(_ccs_object_deserialize_user_data(
 		(ccs_object_t)*distribution_ret, format, version, buffer_size, buffer, opts));

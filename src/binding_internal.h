@@ -42,8 +42,7 @@ _ccs_binding_get_value(ccs_binding_t  binding,
                        size_t         index,
                        ccs_datum_t   *value_ret) {
 	CCS_CHECK_PTR(value_ret);
-	if (index >= binding->data->num_values)
-		return -CCS_OUT_OF_BOUNDS;
+	CCS_REFUTE(index >= binding->data->num_values, CCS_OUT_OF_BOUNDS);
 	*value_ret = binding->data->values[index];
 	return CCS_SUCCESS;
 }
@@ -52,8 +51,7 @@ static inline ccs_result_t
 _ccs_binding_set_value(ccs_binding_t binding,
                       size_t        index,
                       ccs_datum_t   value) {
-	if (CCS_UNLIKELY(index >= binding->data->num_values))
-		return -CCS_OUT_OF_BOUNDS;
+	CCS_REFUTE(index >= binding->data->num_values, CCS_OUT_OF_BOUNDS);
 	if (value.flags & CCS_FLAG_TRANSIENT)
 		CCS_VALIDATE(ccs_context_validate_value(
 			binding->data->context, index, value, &value));
@@ -67,12 +65,10 @@ _ccs_binding_get_values(ccs_binding_t  binding,
                         ccs_datum_t   *values,
                         size_t        *num_values_ret) {
 	CCS_CHECK_ARY(num_values, values);
-	if (!num_values_ret && !values)
-		return -CCS_INVALID_VALUE;
+	CCS_REFUTE(!num_values_ret && !values, CCS_INVALID_VALUE);
 	size_t num = binding->data->num_values;
 	if (values) {
-		if (num_values < num)
-			return -CCS_INVALID_VALUE;
+		CCS_REFUTE(num_values < num, CCS_INVALID_VALUE);
 		memcpy(values, binding->data->values, num*sizeof(ccs_datum_t));
 		for (size_t i = num; i < num_values; i++) {
 			values[i].type = CCS_NONE;
@@ -92,7 +88,8 @@ _ccs_binding_get_value_by_name(ccs_binding_t  binding,
 	size_t index;
 	CCS_VALIDATE(ccs_context_get_hyperparameter_index_by_name(
 		binding->data->context, name, &index));
-	return _ccs_binding_get_value(binding, index, value_ret);
+	CCS_VALIDATE(_ccs_binding_get_value(binding, index, value_ret));
+	return CCS_SUCCESS;
 }
 
 static inline ccs_result_t
@@ -103,7 +100,8 @@ _ccs_binding_set_value_by_name(ccs_binding_t  binding,
 	size_t index;
 	CCS_VALIDATE(ccs_context_get_hyperparameter_index_by_name(
 		binding->data->context, name, &index));
-	return _ccs_binding_set_value(binding, index, value);
+	CCS_VALIDATE(_ccs_binding_set_value(binding, index, value));
+	return CCS_SUCCESS;
 }
 
 static inline ccs_result_t
@@ -113,7 +111,8 @@ _ccs_binding_get_value_by_hyperparameter(ccs_binding_t         binding,
 	size_t index;
 	CCS_VALIDATE(ccs_context_get_hyperparameter_index(
 		binding->data->context, hyperparameter, &index));
-	return _ccs_binding_get_value(binding, index, value_ret);
+	CCS_VALIDATE(_ccs_binding_get_value(binding, index, value_ret));
+	return CCS_SUCCESS;
 }
 
 static inline ccs_result_t
@@ -123,7 +122,8 @@ _ccs_binding_set_value_by_hyperparameter(ccs_binding_t        binding,
 	size_t index;
 	CCS_VALIDATE(ccs_context_get_hyperparameter_index(
 		binding->data->context, hyperparameter, &index));
-	return _ccs_binding_set_value(binding, index, value);
+	CCS_VALIDATE(_ccs_binding_set_value(binding, index, value));
+	return CCS_SUCCESS;
 }
 
 static inline ccs_result_t
@@ -230,8 +230,7 @@ _ccs_deserialize_bin_ccs_binding_data(
 	data->num_values = num_values;
 	if (data->num_values) {
 		data->values = (ccs_datum_t *)calloc(num_values, sizeof(ccs_datum_t));
-		if (!data->values)
-			return -CCS_OUT_OF_MEMORY;
+		CCS_REFUTE(!data->values, CCS_OUT_OF_MEMORY);
 		for (size_t i = 0; i < data->num_values; i++)
 			CCS_VALIDATE(_ccs_deserialize_bin_ccs_datum(
 				data->values + i, buffer_size, buffer));

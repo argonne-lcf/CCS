@@ -53,10 +53,10 @@ ccs_tuner_ask(ccs_tuner_t          tuner,
               size_t              *num_configurations_ret) {
 	CCS_CHECK_OBJ(tuner, CCS_TUNER);
 	CCS_CHECK_ARY(num_configurations, configurations);
-	if (!configurations && !num_configurations_ret)
-		return -CCS_INVALID_VALUE;
+	CCS_REFUTE(!configurations && !num_configurations_ret, CCS_INVALID_VALUE);
 	_ccs_tuner_ops_t *ops = ccs_tuner_get_ops(tuner);
-	return ops->ask(tuner->data, num_configurations, configurations, num_configurations_ret);
+	CCS_VALIDATE(ops->ask(tuner->data, num_configurations, configurations, num_configurations_ret));
+	return CCS_SUCCESS;
 }
 
 ccs_result_t
@@ -68,7 +68,8 @@ ccs_tuner_tell(ccs_tuner_t       tuner,
         /* TODO: check that evaluations have the same objective and
          * configuration sapce than the tuner */
 	_ccs_tuner_ops_t *ops = ccs_tuner_get_ops(tuner);
-	return ops->tell(tuner->data, num_evaluations, evaluations);
+	CCS_VALIDATE(ops->tell(tuner->data, num_evaluations, evaluations));
+	return CCS_SUCCESS;
 }
 
 ccs_result_t
@@ -78,10 +79,10 @@ ccs_tuner_get_optimums(ccs_tuner_t       tuner,
                        size_t           *num_evaluations_ret) {
 	CCS_CHECK_OBJ(tuner, CCS_TUNER);
 	CCS_CHECK_ARY(num_evaluations, evaluations);
-	if (!evaluations && !num_evaluations_ret)
-		return -CCS_INVALID_VALUE;
+	CCS_REFUTE(!evaluations && !num_evaluations_ret, CCS_INVALID_VALUE);
 	_ccs_tuner_ops_t *ops = ccs_tuner_get_ops(tuner);
-	return ops->get_optimums(tuner->data, num_evaluations, evaluations, num_evaluations_ret);
+	CCS_VALIDATE(ops->get_optimums(tuner->data, num_evaluations, evaluations, num_evaluations_ret));
+	return CCS_SUCCESS;
 }
 
 ccs_result_t
@@ -91,10 +92,10 @@ ccs_tuner_get_history(ccs_tuner_t       tuner,
                       size_t           *num_evaluations_ret) {
 	CCS_CHECK_OBJ(tuner, CCS_TUNER);
 	CCS_CHECK_ARY(num_evaluations, evaluations);
-	if (!evaluations && !num_evaluations_ret)
-		return -CCS_INVALID_VALUE;
+	CCS_REFUTE(!evaluations && !num_evaluations_ret, CCS_INVALID_VALUE);
 	_ccs_tuner_ops_t *ops = ccs_tuner_get_ops(tuner);
-	return ops->get_history(tuner->data, num_evaluations, evaluations, num_evaluations_ret);
+	CCS_VALIDATE(ops->get_history(tuner->data, num_evaluations, evaluations, num_evaluations_ret));
+	return CCS_SUCCESS;
 }
 
 ccs_result_t
@@ -102,8 +103,8 @@ ccs_tuner_suggest(ccs_tuner_t          tuner,
                   ccs_configuration_t *configuration) {
 	CCS_CHECK_OBJ(tuner, CCS_TUNER);
 	_ccs_tuner_ops_t *ops = ccs_tuner_get_ops(tuner);
-	if (!ops->suggest)
-		return -CCS_UNSUPPORTED_OPERATION;
+	CCS_REFUTE(!ops->suggest, CCS_UNSUPPORTED_OPERATION);
 	CCS_CHECK_PTR(configuration);
-	return ops->suggest(tuner->data, configuration);
+	CCS_VALIDATE(ops->suggest(tuner->data, configuration));
+	return CCS_SUCCESS;
 }

@@ -48,8 +48,7 @@ _ccs_deserialize_bin_features_evaluation(
 	ccs_result_t res = CCS_SUCCESS;
 	CCS_VALIDATE(_ccs_deserialize_bin_ccs_object_internal(
 		&obj, buffer_size, buffer, &handle));
-	if (CCS_UNLIKELY(obj.type != CCS_FEATURES_EVALUATION))
-		return -CCS_INVALID_TYPE;
+	CCS_REFUTE(obj.type != CCS_FEATURES_EVALUATION, CCS_INVALID_TYPE);
 
 	new_opts.map_values = CCS_FALSE;
 	_ccs_features_evaluation_data_mock_t data = { {NULL, 0, NULL}, NULL, NULL, CCS_SUCCESS};
@@ -58,10 +57,7 @@ _ccs_deserialize_bin_features_evaluation(
 
 	CCS_VALIDATE_ERR_GOTO(res, ccs_map_get(
 		opts->handle_map, ccs_object(data.base.context), &d), end);
-	if (CCS_UNLIKELY(d.type != CCS_OBJECT)) {
-		res = -CCS_INVALID_HANDLE;
-		goto end;
-	}
+	CCS_REFUTE_ERR_GOTO(res, d.type != CCS_OBJECT, CCS_INVALID_HANDLE, end);
 	os = (ccs_objective_space_t)(d.value.o);
 
 	CCS_VALIDATE_ERR_GOTO(res, ccs_create_features_evaluation(
@@ -102,7 +98,7 @@ _ccs_features_evaluation_deserialize(
 			features_evaluation_ret, version, buffer_size, buffer, opts));
 		break;
 	default:
-		return -CCS_INVALID_VALUE;
+		CCS_RAISE(CCS_INVALID_VALUE, "Unsupported serialization format: %d", format);
 	}
 	CCS_VALIDATE(_ccs_object_deserialize_user_data(
 		(ccs_object_t)*features_evaluation_ret, format, version, buffer_size, buffer, opts));

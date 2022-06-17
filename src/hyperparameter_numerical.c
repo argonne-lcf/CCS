@@ -44,7 +44,7 @@ _ccs_hyperparameter_numerical_serialize_size(
 			(ccs_hyperparameter_t)object);
 		break;
 	default:
-		return -CCS_INVALID_VALUE;
+		CCS_RAISE(CCS_INVALID_VALUE, "Unsupported serialization format: %d", format);
 	}
 	CCS_VALIDATE(_ccs_object_serialize_user_data_size(
 		object, format, cum_size, opts));
@@ -64,7 +64,7 @@ _ccs_hyperparameter_numerical_serialize(
 		    (ccs_hyperparameter_t)object, buffer_size, buffer));
 		break;
 	default:
-		return -CCS_INVALID_VALUE;
+		CCS_RAISE(CCS_INVALID_VALUE, "Unsupported serialization format: %d", format);
 	}
 	CCS_VALIDATE(_ccs_object_serialize_user_data(
 		object, format, buffer_size, buffer, opts));
@@ -147,15 +147,14 @@ _ccs_hyperparameter_numerical_samples(_ccs_hyperparameter_data_t *data,
 		vs = NULL;
 		size_t coeff = 2;
 		while (found < num_values) {
-			if (coeff > 32)
-				return -CCS_SAMPLING_UNSUCCESSFUL;
+			CCS_REFUTE(coeff > 32, CCS_SAMPLING_UNSUCCESSFUL);
 			size_t buff_sz = (num_values - found)*coeff;
 			ccs_numeric_t *oldvs = vs;
 			vs = (ccs_numeric_t *)realloc(oldvs, sizeof(ccs_numeric_t)*buff_sz);
 			if (CCS_UNLIKELY(!vs)) {
 				if (oldvs)
 					free(oldvs);
-				return -CCS_OUT_OF_MEMORY;
+				CCS_RAISE(CCS_OUT_OF_MEMORY, "Not enough memory to reallocate buffer");
 			}
 			CCS_VALIDATE_ERR_GOTO(err,
 			  ccs_distribution_samples(distribution, rng,
@@ -191,10 +190,10 @@ _ccs_hyperparameter_numerical_get_default_distribution(
 		ccs_distribution_t         *distribution) {
 	_ccs_hyperparameter_numerical_data_t *d = (_ccs_hyperparameter_numerical_data_t *)data;
 	ccs_interval_t *interval = &(d->common_data.interval);
-	return ccs_create_uniform_distribution(interval->type,
-	                                       interval->lower, interval->upper,
-	                                       CCS_LINEAR, d->quantization,
-	                                       distribution);
+	CCS_VALIDATE(ccs_create_uniform_distribution(
+		interval->type, interval->lower, interval->upper,
+		CCS_LINEAR, d->quantization, distribution));
+	return CCS_SUCCESS;
 }
 
 static ccs_result_t
@@ -255,25 +254,11 @@ ccs_create_numerical_hyperparameter(const char           *name,
                                     ccs_hyperparameter_t *hyperparameter_ret) {
 	CCS_CHECK_PTR(name);
 	CCS_CHECK_PTR(hyperparameter_ret);
-	if (data_type != CCS_NUM_FLOAT && data_type != CCS_NUM_INTEGER)
-		return -CCS_INVALID_TYPE;
-	if (data_type == CCS_NUM_INTEGER && (
-		lower.i >= upper.i ||
-		quantization.i < 0 ||
-		quantization.i > upper.i - lower.i ||
-		default_value.i < lower.i ||
-		default_value.i >= upper.i ) )
-		return -CCS_INVALID_VALUE;
-	if (data_type == CCS_NUM_FLOAT && (
-		lower.f >= upper.f ||
-		quantization.f < 0.0 ||
-		quantization.f > upper.f - lower.f ||
-		default_value.f < lower.f ||
-		default_value.f >= upper.f ) )
-		return -CCS_INVALID_VALUE;
+	CCS_REFUTE(data_type != CCS_NUM_FLOAT && data_type != CCS_NUM_INTEGER, CCS_INVALID_TYPE);
+	CCS_REFUTE(data_type == CCS_NUM_INTEGER && (lower.i >= upper.i || quantization.i < 0 || quantization.i > upper.i - lower.i || default_value.i < lower.i || default_value.i >= upper.i), CCS_INVALID_VALUE);
+	CCS_REFUTE(data_type == CCS_NUM_FLOAT && (lower.f >= upper.f || quantization.f < 0.0 || quantization.f > upper.f - lower.f || default_value.f < lower.f || default_value.f >= upper.f), CCS_INVALID_VALUE);
 	uintptr_t mem = (uintptr_t)calloc(1, sizeof(struct _ccs_hyperparameter_s) + sizeof(_ccs_hyperparameter_numerical_data_t) + strlen(name) + 1);
-	if (!mem)
-		return -CCS_OUT_OF_MEMORY;
+	CCS_REFUTE(!mem, CCS_OUT_OF_MEMORY);
 
 	ccs_interval_t interval;
 	interval.type = data_type;
@@ -310,8 +295,7 @@ ccs_numerical_hyperparameter_get_parameters(ccs_hyperparameter_t  hyperparameter
                                             ccs_numeric_t        *upper_ret,
                                             ccs_numeric_t        *quantization_ret) {
 	CCS_CHECK_HYPERPARAMETER(hyperparameter, CCS_HYPERPARAMETER_TYPE_NUMERICAL);
-	if (!data_type_ret && !lower_ret && !upper_ret && !quantization_ret)
-		return -CCS_INVALID_VALUE;
+	CCS_REFUTE(!data_type_ret && !lower_ret && !upper_ret && !quantization_ret, CCS_INVALID_VALUE);
 	_ccs_hyperparameter_numerical_data_t *d =
 		(_ccs_hyperparameter_numerical_data_t *)hyperparameter->data;
         if (data_type_ret)

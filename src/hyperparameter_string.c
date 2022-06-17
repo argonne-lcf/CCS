@@ -74,7 +74,7 @@ _ccs_hyperparameter_string_serialize_size(
 			(ccs_hyperparameter_t)object);
 		break;
 	default:
-		return -CCS_INVALID_VALUE;
+		CCS_RAISE(CCS_INVALID_VALUE, "Unsupported serialization format: %d", format);
 	}
 	CCS_VALIDATE(_ccs_object_serialize_user_data_size(
 		object, format, cum_size, opts));
@@ -94,7 +94,7 @@ _ccs_hyperparameter_string_serialize(
 		    (ccs_hyperparameter_t)object, buffer_size, buffer));
 		break;
 	default:
-		return -CCS_INVALID_VALUE;
+		CCS_RAISE(CCS_INVALID_VALUE, "Unsupported serialization format: %d", format);
 	}
 	CCS_VALIDATE(_ccs_object_serialize_user_data(
 		object, format, buffer_size, buffer, opts));
@@ -103,7 +103,7 @@ _ccs_hyperparameter_string_serialize(
 
 #undef uthash_nonfatal_oom
 #define uthash_nonfatal_oom(elt) { \
-	return -CCS_OUT_OF_MEMORY; \
+	CCS_RAISE(CCS_OUT_OF_MEMORY, "Not enough memory to allocate array"); \
 }
 
 static ccs_result_t
@@ -129,8 +129,7 @@ _ccs_hyperparameter_string_check_values(_ccs_hyperparameter_data_t *data,
 					if (values[i].value.s)
 						sz_str = strlen(values[i].value.s) + 1;
 					p = (_ccs_hash_datum_t *)malloc(sizeof(_ccs_hash_datum_t) + sz_str);
-					if (!p)
-						return -CCS_OUT_OF_MEMORY;
+					CCS_REFUTE(!p, CCS_OUT_OF_MEMORY);
 					if (sz_str) {
 						strcpy((char *)((intptr_t)p + sizeof(_ccs_hash_datum_t)), values[i].value.s);
 						p->d = ccs_string((char *)((intptr_t)p + sizeof(_ccs_hash_datum_t)));
@@ -157,7 +156,7 @@ _ccs_hyperparameter_string_samples(_ccs_hyperparameter_data_t *data,
 	(void)rng;
 	(void)num_values;
 	(void)values;
-	return -CCS_UNSUPPORTED_OPERATION;
+	CCS_RAISE(CCS_UNSUPPORTED_OPERATION, "String hyperparameters cannot be sampled");
 }
 
 static ccs_result_t
@@ -166,7 +165,7 @@ _ccs_hyperparameter_string_get_default_distribution(
 		ccs_distribution_t         *distribution) {
 	(void)data;
 	(void)distribution;
-	return -CCS_UNSUPPORTED_OPERATION;
+	CCS_RAISE(CCS_UNSUPPORTED_OPERATION, "String hyperparameters don't have default distributions");
 }
 
 static ccs_result_t
@@ -181,7 +180,7 @@ _ccs_hyperparameter_string_convert_samples(
 	(void)num_values;
 	(void)values;
 	(void)results;
-	return -CCS_UNSUPPORTED_OPERATION;
+	CCS_RAISE(CCS_UNSUPPORTED_OPERATION, "String hyperparameters cannot convert samples");
 }
 
 static _ccs_hyperparameter_ops_t _ccs_hyperparameter_string_ops = {
@@ -200,8 +199,7 @@ ccs_create_string_hyperparameter(const char           *name,
 	CCS_CHECK_PTR(name);
 	CCS_CHECK_PTR(hyperparameter_ret);
 	uintptr_t mem = (uintptr_t)calloc(1, sizeof(struct _ccs_hyperparameter_s) + sizeof(_ccs_hyperparameter_string_data_t) + strlen(name) + 1);
-	if (!mem)
-		return -CCS_OUT_OF_MEMORY;
+	CCS_REFUTE(!mem, CCS_OUT_OF_MEMORY);
 
 	ccs_hyperparameter_t hyperparam = (ccs_hyperparameter_t)mem;
 	_ccs_object_init(&(hyperparam->obj), CCS_HYPERPARAMETER, (_ccs_object_ops_t *)&_ccs_hyperparameter_string_ops);

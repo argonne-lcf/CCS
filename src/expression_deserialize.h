@@ -44,8 +44,7 @@ _ccs_deserialize_bin_ccs_expression_data(
 	if (num_nodes) {
 		data->nodes = (ccs_datum_t *)
 			calloc(num_nodes, sizeof(ccs_datum_t));
-		if (!data->nodes)
-			return -CCS_OUT_OF_MEMORY;
+		CCS_REFUTE(!data->nodes, CCS_OUT_OF_MEMORY);
 		for (size_t i = 0; i < data->num_nodes; i++) {
 			ccs_expression_t expr;
 			CCS_VALIDATE(_ccs_expression_deserialize(
@@ -125,8 +124,7 @@ _ccs_deserialize_bin_expression_variable(
 	ccs_hyperparameter_t h;
 	CCS_VALIDATE(ccs_map_get(
 		opts->handle_map, ccs_object(data.hyperparameter), &d));
-	if (CCS_UNLIKELY(d.type != CCS_OBJECT))
-		return -CCS_INVALID_HANDLE;
+	CCS_REFUTE(d.type != CCS_OBJECT, CCS_INVALID_HANDLE);
 	h = (ccs_hyperparameter_t)(d.value.o);
 	CCS_VALIDATE(ccs_create_variable(h, expression_ret));
 	return CCS_SUCCESS;
@@ -169,8 +167,7 @@ _ccs_deserialize_bin_expression(
 	ccs_result_t res;
 	CCS_VALIDATE(_ccs_deserialize_bin_ccs_object_internal(
 		&obj, buffer_size, buffer, &handle));
-	if (CCS_UNLIKELY(obj.type != CCS_EXPRESSION))
-		return -CCS_INVALID_TYPE;
+	CCS_REFUTE(obj.type != CCS_EXPRESSION, CCS_INVALID_TYPE);
 
 	ccs_expression_type_t dtype;
 	CCS_VALIDATE(_ccs_peek_bin_ccs_expression_type(
@@ -185,8 +182,7 @@ _ccs_deserialize_bin_expression(
 			expression_ret, version, buffer_size, buffer, &new_opts));
 		break;
 	default:
-		if (dtype < CCS_OR || dtype >= CCS_EXPRESSION_TYPE_MAX)
-			return -CCS_UNSUPPORTED_OPERATION;
+		CCS_REFUTE(dtype < CCS_OR || dtype >= CCS_EXPRESSION_TYPE_MAX, CCS_UNSUPPORTED_OPERATION);
 		CCS_VALIDATE(_ccs_deserialize_bin_expression_general(
 			expression_ret, version, buffer_size, buffer, &new_opts));
 	}
@@ -217,7 +213,7 @@ _ccs_expression_deserialize(
 			expression_ret, version, buffer_size, buffer, opts));
 		break;
 	default:
-		return -CCS_INVALID_VALUE;
+		CCS_RAISE(CCS_INVALID_VALUE, "Unsupported serialization format: %d", format);
 	}
 	CCS_VALIDATE(_ccs_object_deserialize_user_data(
 		(ccs_object_t)*expression_ret, format, version, buffer_size, buffer, opts));

@@ -3,8 +3,7 @@
 
 #define CCS_CHECK_DISTRIBUTION(o, t) do { \
 	CCS_CHECK_OBJ(o, CCS_DISTRIBUTION); \
-	if (CCS_UNLIKELY(((_ccs_distribution_common_data_t*)distribution->data)->type != (t))) \
-		return -CCS_INVALID_DISTRIBUTION; \
+	CCS_REFUTE(((_ccs_distribution_common_data_t*)distribution->data)->type != (t), CCS_INVALID_DISTRIBUTION); \
 } while (0)
 
 struct _ccs_distribution_data_s;

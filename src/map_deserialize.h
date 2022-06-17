@@ -25,8 +25,7 @@ _ccs_deserialize_bin_ccs_map_data(
 		&num_pairs, buffer_size, buffer));
 	data->num_pairs = num_pairs;
 	data->pairs = (_ccs_map_pair_t *)malloc(num_pairs*sizeof(_ccs_map_pair_t));
-	if (!data->pairs)
-		return -CCS_OUT_OF_MEMORY;
+	CCS_REFUTE(!data->pairs, CCS_OUT_OF_MEMORY);
 	for (size_t i = 0; i < num_pairs; i++) {
 		CCS_VALIDATE(_ccs_deserialize_bin_ccs_datum(
 			&data->pairs[i].key, buffer_size, buffer));
@@ -50,8 +49,7 @@ _ccs_deserialize_bin_map(
 	ccs_object_t handle;
 	CCS_VALIDATE(_ccs_deserialize_bin_ccs_object_internal(
 		&obj, buffer_size, buffer, &handle));
-	if (CCS_UNLIKELY(obj.type != CCS_MAP))
-		return -CCS_INVALID_TYPE;
+	CCS_REFUTE(obj.type != CCS_MAP, CCS_INVALID_TYPE);
 
 	CCS_VALIDATE_ERR_GOTO(res, _ccs_deserialize_bin_ccs_map_data(
 		&data, buffer_size, buffer), end);
@@ -90,7 +88,7 @@ _ccs_map_deserialize(
 			map_ret, version, buffer_size, buffer, opts));
 		break;
 	default:
-		return -CCS_INVALID_VALUE;
+		CCS_RAISE(CCS_INVALID_VALUE, "Unsupported serialization format: %d", format);
 	}
 	CCS_VALIDATE(_ccs_object_deserialize_user_data(
 		(ccs_object_t)*map_ret, format, version, buffer_size, buffer, opts));

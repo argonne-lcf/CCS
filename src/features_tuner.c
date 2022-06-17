@@ -73,12 +73,13 @@ ccs_features_tuner_ask(ccs_features_tuner_t  tuner,
 	CCS_CHECK_OBJ(tuner, CCS_FEATURES_TUNER);
 	CCS_CHECK_OBJ(features, CCS_FEATURES);
 	CCS_CHECK_ARY(num_configurations, configurations);
-	if (!configurations && !num_configurations_ret)
-		return -CCS_INVALID_VALUE;
-	/* TODO: check that the provided features are compatible with the
-	 * features space */
+	CCS_REFUTE(!configurations && !num_configurations_ret, CCS_INVALID_VALUE);
+	_ccs_features_tuner_common_data_t *d =
+	    (_ccs_features_tuner_common_data_t *)tuner->data;
+	CCS_VALIDATE(ccs_features_space_check_features(d->features_space, features));
 	_ccs_features_tuner_ops_t *ops = ccs_features_tuner_get_ops(tuner);
-	return ops->ask(tuner->data, features, num_configurations, configurations, num_configurations_ret);
+	CCS_VALIDATE(ops->ask(tuner->data, features, num_configurations, configurations, num_configurations_ret));
+	return CCS_SUCCESS;
 }
 
 ccs_result_t
@@ -88,7 +89,8 @@ ccs_features_tuner_tell(ccs_features_tuner_t       tuner,
 	CCS_CHECK_OBJ(tuner, CCS_FEATURES_TUNER);
 	CCS_CHECK_ARY(num_evaluations, evaluations);
 	_ccs_features_tuner_ops_t *ops = ccs_features_tuner_get_ops(tuner);
-	return ops->tell(tuner->data, num_evaluations, evaluations);
+	CCS_VALIDATE(ops->tell(tuner->data, num_evaluations, evaluations));
+	return CCS_SUCCESS;
 }
 
 ccs_result_t
@@ -101,12 +103,10 @@ ccs_features_tuner_get_optimums(ccs_features_tuner_t       tuner,
 	if (features)
 		CCS_CHECK_OBJ(features, CCS_FEATURES);
 	CCS_CHECK_ARY(num_evaluations, evaluations);
-	if (!evaluations && !num_evaluations_ret)
-		return -CCS_INVALID_VALUE;
-	/* TODO: check that the provided features are compatible with the
-	 * features space */
+	CCS_REFUTE(!evaluations && !num_evaluations_ret, CCS_INVALID_VALUE);
 	_ccs_features_tuner_ops_t *ops = ccs_features_tuner_get_ops(tuner);
-	return ops->get_optimums(tuner->data, features, num_evaluations, evaluations, num_evaluations_ret);
+	CCS_VALIDATE(ops->get_optimums(tuner->data, features, num_evaluations, evaluations, num_evaluations_ret));
+	return CCS_SUCCESS;
 }
 
 ccs_result_t
@@ -119,12 +119,10 @@ ccs_features_tuner_get_history(ccs_features_tuner_t       tuner,
 	if (features)
 		CCS_CHECK_OBJ(features, CCS_FEATURES);
 	CCS_CHECK_ARY(num_evaluations, evaluations);
-	if (!evaluations && !num_evaluations_ret)
-		return -CCS_INVALID_VALUE;
-	/* TODO: check that the provided features are compatible with the
-	 * features space */
+	CCS_REFUTE(!evaluations && !num_evaluations_ret, CCS_INVALID_VALUE);
 	_ccs_features_tuner_ops_t *ops = ccs_features_tuner_get_ops(tuner);
-	return ops->get_history(tuner->data, features, num_evaluations, evaluations, num_evaluations_ret);
+	CCS_VALIDATE(ops->get_history(tuner->data, features, num_evaluations, evaluations, num_evaluations_ret));
+	return CCS_SUCCESS;
 }
 
 ccs_result_t
@@ -133,13 +131,14 @@ ccs_features_tuner_suggest(ccs_features_tuner_t  tuner,
                            ccs_configuration_t  *configuration) {
 	CCS_CHECK_OBJ(tuner, CCS_FEATURES_TUNER);
 	_ccs_features_tuner_ops_t *ops = ccs_features_tuner_get_ops(tuner);
-	if (!ops->suggest)
-		return -CCS_UNSUPPORTED_OPERATION;
+	CCS_REFUTE(!ops->suggest, CCS_UNSUPPORTED_OPERATION);
 	CCS_CHECK_OBJ(features, CCS_FEATURES);
 	CCS_CHECK_PTR(configuration);
-	/* TODO: check that the provided features are compatible with the
-	 * features space */
-	return ops->suggest(tuner->data, features, configuration);
+	_ccs_features_tuner_common_data_t *d =
+	    (_ccs_features_tuner_common_data_t *)tuner->data;
+	CCS_VALIDATE(ccs_features_space_check_features(d->features_space, features));
+	CCS_VALIDATE(ops->suggest(tuner->data, features, configuration));
+	return CCS_SUCCESS;
 }
 
 

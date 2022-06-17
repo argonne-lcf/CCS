@@ -230,7 +230,7 @@ _ccs_configuration_space_serialize_size(
 			(ccs_configuration_space_t)object, cum_size, opts));
 		break;
 	default:
-		return -CCS_INVALID_VALUE;
+		CCS_RAISE(CCS_INVALID_VALUE, "Unsupported serialization format: %d", format);
 	}
 	CCS_VALIDATE(_ccs_object_serialize_user_data_size(
 		object, format, cum_size, opts));
@@ -250,7 +250,7 @@ _ccs_configuration_space_serialize(
 		    (ccs_configuration_space_t)object, buffer_size, buffer, opts));
 		break;
 	default:
-		return -CCS_INVALID_VALUE;
+		CCS_RAISE(CCS_INVALID_VALUE, "Unsupported serialization format: %d", format);
 	}
 	CCS_VALIDATE(_ccs_object_serialize_user_data(
 		object, format, buffer_size, buffer, opts));
@@ -286,8 +286,7 @@ static UT_icd _size_t_icd = {
 #undef  utarray_oom
 #define utarray_oom() { \
 	ccs_release_object(config_space->data->rng); \
-	err = -CCS_OUT_OF_MEMORY; \
-	goto errarrays; \
+	CCS_RAISE_ERR_GOTO(err, CCS_OUT_OF_MEMORY, errarrays, "Out of memory to allocate array"); \
 }
 ccs_result_t
 ccs_create_configuration_space(const char                *name,
@@ -299,8 +298,7 @@ ccs_create_configuration_space(const char                *name,
 	  sizeof(struct _ccs_configuration_space_s) +
 	  sizeof(struct _ccs_configuration_space_data_s) +
 	  strlen(name) + 1);
-	if (!mem)
-		return -CCS_OUT_OF_MEMORY;
+	CCS_REFUTE(!mem, CCS_OUT_OF_MEMORY);
 	ccs_rng_t rng;
 	CCS_VALIDATE_ERR_GOTO(err, ccs_create_rng(&rng), errmem);
 
@@ -340,7 +338,8 @@ ccs_result_t
 ccs_configuration_space_get_name(ccs_configuration_space_t   configuration_space,
                                  const char                **name_ret) {
 	CCS_CHECK_OBJ(configuration_space, CCS_CONFIGURATION_SPACE);
-	return _ccs_context_get_name((ccs_context_t)configuration_space, name_ret);
+	CCS_VALIDATE(_ccs_context_get_name((ccs_context_t)configuration_space, name_ret));
+	return CCS_SUCCESS;
 }
 
 ccs_result_t
@@ -367,13 +366,11 @@ ccs_configuration_space_get_rng(ccs_configuration_space_t  configuration_space,
 
 #undef  utarray_oom
 #define utarray_oom() { \
-	err = -CCS_OUT_OF_MEMORY; \
-	goto errordistrib_wrapper; \
+	CCS_RAISE_ERR_GOTO(err, CCS_OUT_OF_MEMORY, errordistrib_wrapper, "Out of memory to allocate array"); \
 }
 #undef uthash_nonfatal_oom
 #define uthash_nonfatal_oom(elt) { \
-	err = -CCS_OUT_OF_MEMORY; \
-	goto errorutarray; \
+	CCS_RAISE_ERR_GOTO(err, CCS_OUT_OF_MEMORY, errorutarray, "Out of memory to allocate hash"); \
 }
 ccs_result_t
 ccs_configuration_space_add_hyperparameter(ccs_configuration_space_t configuration_space,
@@ -385,8 +382,7 @@ ccs_configuration_space_add_hyperparameter(ccs_configuration_space_t configurati
 	ccs_hyperparameter_type_t type;
 
 	CCS_VALIDATE(ccs_hyperparameter_get_type(hyperparameter, &type));
-	if (CCS_HYPERPARAMETER_TYPE_STRING == type)
-		return -CCS_INVALID_HYPERPARAMETER;
+	CCS_REFUTE(CCS_HYPERPARAMETER_TYPE_STRING == type, CCS_INVALID_HYPERPARAMETER);
 
 	const char *name;
 	size_t sz_name;
@@ -395,8 +391,7 @@ ccs_configuration_space_add_hyperparameter(ccs_configuration_space_t configurati
 	sz_name = strlen(name);
 	HASH_FIND(hh_name, configuration_space->data->name_hash,
 	          name, sz_name, hyper_hash);
-	if (hyper_hash)
-		return -CCS_INVALID_HYPERPARAMETER;
+	CCS_REFUTE_MSG(hyper_hash, CCS_INVALID_HYPERPARAMETER, "An hyperparameter with name '%s' already exists in the configuration space", name);
 	UT_array *hyperparameters;
 	size_t index;
 	size_t dimension;
@@ -410,10 +405,8 @@ ccs_configuration_space_add_hyperparameter(ccs_configuration_space_t configurati
 		CCS_VALIDATE_ERR_GOTO(err,
 		  ccs_distribution_get_dimension(distribution, &dimension),
 		  errorhyper);
-		if (dimension != 1) {
-			err = -CCS_INVALID_DISTRIBUTION;
-			goto errorhyper;
-		}
+		CCS_REFUTE_ERR_GOTO(err,
+			dimension != 1, CCS_INVALID_DISTRIBUTION, errorhyper);
 		CCS_VALIDATE_ERR_GOTO(err, ccs_retain_object(distribution), errorhyper);
 	} else {
 		CCS_VALIDATE_ERR_GOTO(err,
@@ -422,20 +415,16 @@ ccs_configuration_space_add_hyperparameter(ccs_configuration_space_t configurati
 		dimension = 1;
 	}
 	pmem = (uintptr_t)malloc(sizeof(_ccs_distribution_wrapper_t) + sizeof(size_t)*dimension);
-	if (!pmem) {
-		err = -CCS_OUT_OF_MEMORY;
-		goto errordistrib;
-	}
+	CCS_REFUTE_ERR_GOTO(err,
+		!pmem, CCS_OUT_OF_MEMORY, errordistrib);
         distrib_wrapper = (_ccs_distribution_wrapper_t *)pmem;
 	distrib_wrapper->distribution = distribution;
 	distrib_wrapper->dimension = dimension;
 	distrib_wrapper->hyperparameter_indexes = (size_t *)(pmem + sizeof(_ccs_distribution_wrapper_t));
 
 	hyper_hash = (_ccs_hyperparameter_index_hash_t *)malloc(sizeof(_ccs_hyperparameter_index_hash_t));
-	if (!hyper_hash) {
-		err = -CCS_OUT_OF_MEMORY;
-		goto errordistrib_wrapper;
-	}
+	CCS_REFUTE_ERR_GOTO(err,
+		!hyper_hash, CCS_OUT_OF_MEMORY, errordistrib_wrapper);
 
 	hyperparameters = configuration_space->data->hyperparameters;
 	index = utarray_len(hyperparameters);
@@ -497,22 +486,16 @@ ccs_configuration_space_set_distribution(ccs_configuration_space_t  configuratio
 	CCS_VALIDATE(ccs_distribution_get_dimension(distribution, &dim));
 
 	for (size_t i = 0; i < dim; i++) {
-		if (indexes[i] >= num_hyperparameters)
-			return -CCS_INVALID_VALUE;
+		CCS_REFUTE(indexes[i] >= num_hyperparameters, CCS_INVALID_VALUE);
 		// Check duplicate entries
-		for (size_t j = 0;  j < i; j++)
-			if (indexes[i] == indexes[j])
-				return -CCS_INVALID_VALUE;
 		for (size_t j = i + 1;  j < dim; j++)
-			if (indexes[i] == indexes[j])
-				return -CCS_INVALID_VALUE;
+			CCS_REFUTE(indexes[i] == indexes[j], CCS_INVALID_VALUE);
 	}
 
 	uintptr_t cur_mem;
 	uintptr_t mem = (uintptr_t)malloc(sizeof(void *)*num_hyperparameters*2 +
 		sizeof(size_t)*num_hyperparameters);
-	if (!mem)
-		return -CCS_OUT_OF_MEMORY;
+	CCS_REFUTE(!mem, CCS_OUT_OF_MEMORY);
 	cur_mem = mem;
 	_ccs_distribution_wrapper_t **p_dwrappers_to_del =
 		 (_ccs_distribution_wrapper_t **)cur_mem;
@@ -545,10 +528,7 @@ ccs_configuration_space_set_distribution(ccs_configuration_space_t  configuratio
 	}
 
 	uintptr_t dmem = (uintptr_t)malloc(sizeof(_ccs_distribution_wrapper_t) + sizeof(size_t)*dim);
-	if (!dmem) {
-		err = -CCS_OUT_OF_MEMORY;
-		goto memory;
-	}
+	CCS_REFUTE_ERR_GOTO(err, !dmem, CCS_OUT_OF_MEMORY, memory);
 
 	dwrapper = (_ccs_distribution_wrapper_t *)dmem;
 	dwrapper->distribution = distribution;
@@ -570,10 +550,7 @@ ccs_configuration_space_set_distribution(ccs_configuration_space_t  configuratio
 	to_add_count = 1;
 	for (size_t i = 0; i < without_distrib_count; i++) {
 		dmem = (uintptr_t)malloc(sizeof(_ccs_distribution_wrapper_t) + sizeof(size_t));
-		if (!dmem) {
-			err = -CCS_OUT_OF_MEMORY;
-			goto memory;
-		}
+		CCS_REFUTE_ERR_GOTO(err, !dmem, CCS_OUT_OF_MEMORY, memory);
 		dwrapper = (_ccs_distribution_wrapper_t *)dmem;
 		dwrapper->hyperparameter_indexes = (size_t *)(dmem + sizeof(_ccs_distribution_wrapper_t));
 		dwrapper->dimension = 1;
@@ -625,8 +602,7 @@ ccs_configuration_space_get_hyperparameter_distribution(
 
 	_ccs_hyperparameter_wrapper_cs_t *wrapper = (_ccs_hyperparameter_wrapper_cs_t*)
 		utarray_eltptr(configuration_space->data->hyperparameters, (unsigned int)index);
-	if (!wrapper)
-		return -CCS_OUT_OF_BOUNDS;
+	CCS_REFUTE(!wrapper, CCS_OUT_OF_BOUNDS);
 	*distribution_ret = wrapper->distribution->distribution;
 	*index_ret = wrapper->distribution_index;
 	return CCS_SUCCESS;
@@ -653,8 +629,9 @@ ccs_result_t
 ccs_configuration_space_get_num_hyperparameters(ccs_configuration_space_t  configuration_space,
                                                 size_t                     *num_hyperparameters_ret) {
 	CCS_CHECK_OBJ(configuration_space, CCS_CONFIGURATION_SPACE);
-	return _ccs_context_get_num_hyperparameters(
-		(ccs_context_t)configuration_space, num_hyperparameters_ret);
+	CCS_VALIDATE(_ccs_context_get_num_hyperparameters(
+		(ccs_context_t)configuration_space, num_hyperparameters_ret));
+	return CCS_SUCCESS;
 }
 
 ccs_result_t
@@ -662,8 +639,9 @@ ccs_configuration_space_get_hyperparameter(ccs_configuration_space_t  configurat
                                            size_t                     index,
                                            ccs_hyperparameter_t      *hyperparameter_ret) {
 	CCS_CHECK_OBJ(configuration_space, CCS_CONFIGURATION_SPACE);
-	return _ccs_context_get_hyperparameter(
-		(ccs_context_t)configuration_space, index, hyperparameter_ret);
+	CCS_VALIDATE(_ccs_context_get_hyperparameter(
+		(ccs_context_t)configuration_space, index, hyperparameter_ret));
+	return CCS_SUCCESS;
 }
 
 ccs_result_t
@@ -672,8 +650,9 @@ ccs_configuration_space_get_hyperparameter_by_name(
 		const char *               name,
 		ccs_hyperparameter_t      *hyperparameter_ret) {
 	CCS_CHECK_OBJ(configuration_space, CCS_CONFIGURATION_SPACE);
-	return _ccs_context_get_hyperparameter_by_name(
-		(ccs_context_t)configuration_space, name, hyperparameter_ret);
+	CCS_VALIDATE(_ccs_context_get_hyperparameter_by_name(
+		(ccs_context_t)configuration_space, name, hyperparameter_ret));
+	return CCS_SUCCESS;
 }
 
 ccs_result_t
@@ -682,8 +661,9 @@ ccs_configuration_space_get_hyperparameter_index_by_name(
 		const char                *name,
 		size_t                    *index_ret) {
 	CCS_CHECK_OBJ(configuration_space, CCS_CONFIGURATION_SPACE);
-	return _ccs_context_get_hyperparameter_index_by_name(
-		(ccs_context_t)configuration_space, name, index_ret);
+	CCS_VALIDATE(_ccs_context_get_hyperparameter_index_by_name(
+		(ccs_context_t)configuration_space, name, index_ret));
+	return CCS_SUCCESS;
 }
 
 ccs_result_t
@@ -692,9 +672,10 @@ ccs_configuration_space_get_hyperparameter_index(
 		ccs_hyperparameter_t       hyperparameter,
 		size_t                    *index_ret) {
 	CCS_CHECK_OBJ(configuration_space, CCS_CONFIGURATION_SPACE);
-	return _ccs_context_get_hyperparameter_index(
+	CCS_VALIDATE(_ccs_context_get_hyperparameter_index(
 		(ccs_context_t)(configuration_space),
-		hyperparameter, index_ret);
+		hyperparameter, index_ret));
+	return CCS_SUCCESS;
 }
 
 ccs_result_t
@@ -704,9 +685,10 @@ ccs_configuration_space_get_hyperparameter_indexes(
 		ccs_hyperparameter_t      *hyperparameters,
 		size_t                    *indexes) {
 	CCS_CHECK_OBJ(configuration_space, CCS_CONFIGURATION_SPACE);
-	return _ccs_context_get_hyperparameter_indexes(
+	CCS_VALIDATE(_ccs_context_get_hyperparameter_indexes(
 		(ccs_context_t)configuration_space, num_hyperparameters,
-		 hyperparameters, indexes);
+		 hyperparameters, indexes));
+	return CCS_SUCCESS;
 }
 
 ccs_result_t
@@ -716,9 +698,10 @@ ccs_configuration_space_get_hyperparameters(
 		ccs_hyperparameter_t      *hyperparameters,
 		size_t                    *num_hyperparameters_ret) {
 	CCS_CHECK_OBJ(configuration_space, CCS_CONFIGURATION_SPACE);
-	return _ccs_context_get_hyperparameters(
+	CCS_VALIDATE(_ccs_context_get_hyperparameters(
 		(ccs_context_t)configuration_space, num_hyperparameters,
-		hyperparameters, num_hyperparameters_ret);
+		hyperparameters, num_hyperparameters_ret));
+	return CCS_SUCCESS;
 }
 
 ccs_result_t
@@ -727,8 +710,9 @@ ccs_configuration_space_validate_value(ccs_configuration_space_t  configuration_
                                        ccs_datum_t                value,
                                        ccs_datum_t               *value_ret) {
 	CCS_CHECK_OBJ(configuration_space, CCS_CONFIGURATION_SPACE);
-	return _ccs_context_validate_value((ccs_context_t)configuration_space,
-	                                   index, value, value_ret);
+	CCS_VALIDATE(_ccs_context_validate_value((ccs_context_t)configuration_space,
+	                                   index, value, value_ret));
+	return CCS_SUCCESS;
 }
 
 static ccs_result_t
@@ -745,6 +729,7 @@ _set_actives(ccs_configuration_space_t configuration_space,
 			continue;
 		ccs_datum_t result;
 		ccs_result_t err;
+//TODO fixme when revamped error codes
 		err = ccs_expression_eval(wrapper->condition,
 		                          (ccs_context_t)configuration_space,
 		                          values, &result);
@@ -791,6 +776,7 @@ _test_forbidden(ccs_configuration_space_t  configuration_space,
 	while ( (p_expression = (ccs_expression_t *)
 	               utarray_next(array, p_expression)) ) {
 		ccs_datum_t result;
+//TODO fixme when revamped error codes
 		err = ccs_expression_eval(*p_expression,
 		                          (ccs_context_t)configuration_space,
 		                          values, &result);
@@ -805,6 +791,7 @@ _test_forbidden(ccs_configuration_space_t  configuration_space,
 	return CCS_SUCCESS;
 }
 
+//TODO fixme when revamped error codes
 static inline ccs_result_t
 _check_configuration(ccs_configuration_space_t  configuration_space,
                      size_t                     num_values,
@@ -850,6 +837,7 @@ _check_configuration(ccs_configuration_space_t  configuration_space,
 	return CCS_SUCCESS;
 }
 
+//TODO fixme when revamped error codes
 ccs_result_t
 ccs_configuration_space_check_configuration(ccs_configuration_space_t configuration_space,
                                             ccs_configuration_t       configuration) {
@@ -864,6 +852,7 @@ ccs_configuration_space_check_configuration(ccs_configuration_space_t configurat
 	                            configuration->data->values);
 }
 
+//TODO fixme when revamped error codes
 ccs_result_t
 ccs_configuration_space_check_configuration_values(ccs_configuration_space_t  configuration_space,
                                                    size_t                     num_values,
@@ -892,8 +881,7 @@ _sample(ccs_configuration_space_t  configuration_space,
 	ccs_hyperparameter_t *hps;
 	uintptr_t mem;
 	mem = (uintptr_t) malloc(num_hyperparameters * (sizeof(ccs_datum_t) + sizeof(ccs_hyperparameter_t)));
-	if (!mem)
-		return -CCS_OUT_OF_MEMORY;
+	CCS_REFUTE(!mem, CCS_OUT_OF_MEMORY);
 
 	p_values = (ccs_datum_t *)mem;
 	hps = (ccs_hyperparameter_t *)(mem + num_hyperparameters*sizeof(ccs_datum_t));
@@ -912,8 +900,6 @@ _sample(ccs_configuration_space_t  configuration_space,
 	}
 	CCS_VALIDATE_ERR_GOTO(err, _set_actives(configuration_space, config), memory);
 	CCS_VALIDATE_ERR_GOTO(err, _test_forbidden(configuration_space, config->data->values, found), memory);
-	free((void *)mem);
-	return CCS_SUCCESS;
 memory:
 	free((void *)mem);
 	return err;
@@ -953,10 +939,7 @@ ccs_configuration_space_sample(ccs_configuration_space_t  configuration_space,
 		CCS_VALIDATE_ERR_GOTO(err, _sample(configuration_space, config, &found), errc);
 		counter++;
 	} while (!found && counter < 100);
-	if (!found) {
-		err = -CCS_SAMPLING_UNSUCCESSFUL;
-		goto errc;
-	}
+	CCS_REFUTE_ERR_GOTO(err, !found, CCS_SAMPLING_UNSUCCESSFUL, errc);
 	*configuration_ret = config;
 	return CCS_SUCCESS;
 errc:
@@ -993,8 +976,7 @@ ccs_configuration_space_samples(ccs_configuration_space_t  configuration_space,
 			config = NULL;
 		}
 	}
-	if (count < num_configurations)
-		return -CCS_SAMPLING_UNSUCCESSFUL;
+	CCS_REFUTE(count < num_configurations, CCS_SAMPLING_UNSUCCESSFUL);
 	return CCS_SUCCESS;
 errc:
 	ccs_release_object(config);
@@ -1088,8 +1070,7 @@ _topological_sort(ccs_configuration_space_t configuration_space) {
 
 	struct _hyper_list_s *list = (struct _hyper_list_s *)calloc(1,
 		sizeof(struct _hyper_list_s) * count);
-	if (!list)
-		return -CCS_OUT_OF_MEMORY;
+	CCS_REFUTE(!list, CCS_OUT_OF_MEMORY);
 	struct _hyper_list_s *queue = NULL;
 
 	_ccs_hyperparameter_wrapper_cs_t *wrapper = NULL;
@@ -1119,15 +1100,13 @@ _topological_sort(ccs_configuration_space_t configuration_space) {
 		processed++;
 	};
 	free(list);
-	if (processed < count)
-		return -CCS_INVALID_GRAPH;
+	CCS_REFUTE(processed < count, CCS_INVALID_GRAPH);
 	return CCS_SUCCESS;
 }
 
 #undef  utarray_oom
 #define utarray_oom() { \
-	err = -CCS_OUT_OF_MEMORY; \
-	goto errmem; \
+	CCS_RAISE_ERR_GOTO(err, CCS_OUT_OF_MEMORY, errmem, "Not enough memory to allocate array"); \
 }
 static ccs_result_t
 _recompute_graph(ccs_configuration_space_t configuration_space) {
@@ -1139,7 +1118,7 @@ _recompute_graph(ccs_configuration_space_t configuration_space) {
 	}
 	wrapper = NULL;
 	intptr_t mem = 0;
-	ccs_result_t err;
+	ccs_result_t err = CCS_SUCCESS;
 	for (size_t index = 0; index < utarray_len(array); index++) {
 		wrapper = (_ccs_hyperparameter_wrapper_cs_t *)utarray_eltptr(array, (unsigned int)index);
 		if (!wrapper->condition)
@@ -1156,8 +1135,7 @@ _recompute_graph(ccs_configuration_space_t configuration_space) {
 			(sizeof(ccs_hyperparameter_t) + sizeof(size_t)));
 		if (!mem) {
 			mem = oldmem;
-			err = -CCS_OUT_OF_MEMORY;
-			goto errmem;
+			CCS_RAISE_ERR_GOTO(err, CCS_OUT_OF_MEMORY, errmem, "Not enough memory to reallocate array");
 		}
 		parents = (ccs_hyperparameter_t *)mem;
 		parents_index = (size_t *)(mem + count * sizeof(ccs_hyperparameter_t));
@@ -1176,7 +1154,6 @@ _recompute_graph(ccs_configuration_space_t configuration_space) {
 		_uniq_size_t_array(wrapper->parents);
 		_uniq_size_t_array(wrapper->children);
         }
-	err = CCS_SUCCESS;
 errmem:
 	if (mem)
 		free((void *)mem);
@@ -1204,10 +1181,8 @@ ccs_configuration_space_set_condition(ccs_configuration_space_t configuration_sp
 	_ccs_hyperparameter_wrapper_cs_t *wrapper = (_ccs_hyperparameter_wrapper_cs_t*)
 	    utarray_eltptr(configuration_space->data->hyperparameters,
 	                   (unsigned int)hyperparameter_index);
-	if (!wrapper)
-		return -CCS_OUT_OF_BOUNDS;
-	if (wrapper->condition)
-		return -CCS_INVALID_HYPERPARAMETER;
+	CCS_REFUTE(!wrapper, CCS_OUT_OF_BOUNDS);
+	CCS_REFUTE(wrapper->condition, CCS_INVALID_HYPERPARAMETER);
 	ccs_result_t err;
 	CCS_VALIDATE(ccs_retain_object(expression));
 	wrapper->condition = expression;
@@ -1230,8 +1205,7 @@ ccs_configuration_space_get_condition(ccs_configuration_space_t  configuration_s
 	_ccs_hyperparameter_wrapper_cs_t *wrapper = (_ccs_hyperparameter_wrapper_cs_t*)
 	    utarray_eltptr(configuration_space->data->hyperparameters,
 	                   (unsigned int)hyperparameter_index);
-	if (!wrapper)
-		return -CCS_OUT_OF_BOUNDS;
+	CCS_REFUTE(!wrapper, CCS_OUT_OF_BOUNDS);
 	*expression_ret = wrapper->condition;
 	return CCS_SUCCESS;
 }
@@ -1243,28 +1217,26 @@ ccs_configuration_space_get_conditions(ccs_configuration_space_t  configuration_
                                        size_t                    *num_expressions_ret) {
 	CCS_CHECK_OBJ(configuration_space, CCS_CONFIGURATION_SPACE);
 	CCS_CHECK_ARY(num_expressions, expressions);
-	if (!expressions && !num_expressions_ret)
-		return -CCS_INVALID_VALUE;
+	CCS_REFUTE(!expressions && !num_expressions_ret, CCS_INVALID_VALUE);
 	UT_array *array = configuration_space->data->hyperparameters;
-	size_t size = utarray_len(array);
+	size_t num_hyperparameters = utarray_len(array);
 	if (expressions) {
-		if (num_expressions < size)
-			return -CCS_INVALID_VALUE;
+		CCS_REFUTE(num_expressions < num_hyperparameters, CCS_INVALID_VALUE);
 		_ccs_hyperparameter_wrapper_cs_t *wrapper = NULL;
 		size_t index = 0;
 		while ( (wrapper = (_ccs_hyperparameter_wrapper_cs_t *)utarray_next(array, wrapper)) )
 			expressions[index++] = wrapper->condition;
-		for (size_t i = size; i < num_expressions; i++)
+		for (size_t i = num_hyperparameters; i < num_expressions; i++)
 			expressions[i] = NULL;
 	}
 	if (num_expressions_ret)
-		*num_expressions_ret = size;
+		*num_expressions_ret = num_hyperparameters;
 	return CCS_SUCCESS;
 }
 
 #undef  utarray_oom
 #define utarray_oom() { \
-	return -CCS_OUT_OF_MEMORY; \
+	CCS_RAISE(CCS_OUT_OF_MEMORY, "Out of memory to allocate array"); \
 }
 ccs_result_t
 ccs_configuration_space_add_forbidden_clause(ccs_configuration_space_t configuration_space,
@@ -1284,9 +1256,9 @@ ccs_configuration_space_add_forbidden_clause(ccs_configuration_space_t configura
 	                          &d);
 	ccs_release_object(config);
 	if (err && err != -CCS_INACTIVE_HYPERPARAMETER)
-		return err;
+		CCS_VALIDATE(err);
 	if (!err && d.type == CCS_BOOLEAN && d.value.i == CCS_TRUE)
-		return -CCS_INVALID_CONFIGURATION;
+		CCS_RAISE(CCS_INVALID_CONFIGURATION, "Default configuration is invalid");
 	CCS_VALIDATE(ccs_retain_object(expression));
 	utarray_push_back(configuration_space->data->forbidden_clauses, &expression);
 	return CCS_SUCCESS;
@@ -1315,8 +1287,7 @@ ccs_configuration_space_get_forbidden_clause(ccs_configuration_space_t  configur
 	ccs_expression_t *p_expr = (ccs_expression_t*)
 	    utarray_eltptr(configuration_space->data->forbidden_clauses,
 	                   (unsigned int)index);
-	if (!p_expr)
-		return -CCS_OUT_OF_BOUNDS;
+	CCS_REFUTE(!p_expr, CCS_OUT_OF_BOUNDS);
 	*expression_ret = *p_expr;
 	return CCS_SUCCESS;
 }
@@ -1328,21 +1299,19 @@ ccs_configuration_space_get_forbidden_clauses(ccs_configuration_space_t  configu
                                               size_t                    *num_expressions_ret) {
 	CCS_CHECK_OBJ(configuration_space, CCS_CONFIGURATION_SPACE);
 	CCS_CHECK_ARY(num_expressions, expressions);
-	if (!expressions && !num_expressions_ret)
-		return -CCS_INVALID_VALUE;
+	CCS_REFUTE(!expressions && !num_expressions_ret, CCS_INVALID_VALUE);
 	UT_array *array = configuration_space->data->forbidden_clauses;
-	size_t size = utarray_len(array);
+	size_t num_forbidden_clauses = utarray_len(array);
 	if (expressions) {
-		if (num_expressions < size)
-			return -CCS_INVALID_VALUE;
+		CCS_REFUTE(num_expressions < num_forbidden_clauses, CCS_INVALID_VALUE);
 		ccs_expression_t *p_expr = NULL;
 		size_t index = 0;
 		while ( (p_expr = (ccs_expression_t *)utarray_next(array, p_expr)) )
 			expressions[index++] = *p_expr;
-		for (size_t i = size; i < num_expressions; i++)
+		for (size_t i = num_forbidden_clauses; i < num_expressions; i++)
 			expressions[i] = NULL;
 	}
 	if (num_expressions_ret)
-		*num_expressions_ret = size;
+		*num_expressions_ret = num_forbidden_clauses;
 	return CCS_SUCCESS;
 }

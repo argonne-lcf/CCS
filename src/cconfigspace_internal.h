@@ -59,21 +59,26 @@ _ccs_interval_include(ccs_interval_t *interval, ccs_numeric_t value) {
 } while (0)
 #endif
 
-#define CCS_THROW(error, ...) do { \
+#define CCS_RAISE(error, ...) do { \
 	CCS_CREATE_ERROR(error, __VA_ARGS__); \
 	return -error; \
 } while (0)
 
-#define CCS_THROW_ERR_GOTO(err, error, label, ...) do { \
+#define CCS_RAISE_ERR_GOTO(err, error, label, ...) do { \
 	CCS_CREATE_ERROR(error, __VA_ARGS__); \
-	err = error; \
+	err = -error; \
 	goto label; \
 } while (0)
 
 #define CCS_REFUTE_MSG(cond, error, ...) do { \
 	if (CCS_UNLIKELY(cond)) \
-		CCS_THROW(error, __VA_ARGS__); \
+		CCS_RAISE(error, __VA_ARGS__); \
 } while (0)
+
+#define CCS_REFUTE_MSG_ERR_GOTO(err, cond, error, label, ...) do { \
+	if (CCS_UNLIKELY(cond)) \
+		CCS_RAISE_ERR_GOTO(err, error, label, __VA_ARGS__); \
+} while(0)
 
 #define CCS_CHECK_OBJ(o, t) CCS_REFUTE_MSG(!(o) || \
 		!((_ccs_object_template_t *)(o))->data || \
@@ -85,6 +90,8 @@ _ccs_interval_include(ccs_interval_t *interval, ccs_numeric_t value) {
 #define CCS_CHECK_ARY(c, a) CCS_REFUTE_MSG((c > 0) && !(a), CCS_INVALID_VALUE, "Invalid array '%s' == %p of size '%s' == %zu supplied", #a, a, #c, c)
 
 #define CCS_REFUTE(cond, error) CCS_REFUTE_MSG(cond, error, "%s: Error condition '%s' was verified", #error, #cond)
+
+#define CCS_REFUTE_ERR_GOTO(err, cond, error, label) CCS_REFUTE_MSG_ERR_GOTO(err, cond, error, label, "%s: Error condition '%s' was verified", #error, #cond)
 
 #define CCS_VALIDATE_ERR_GOTO(err, cmd, label) do { \
 	err = (cmd); \
@@ -778,7 +785,7 @@ _ccs_serialize_bin_ccs_datum(
 		CCS_VALIDATE(_ccs_serialize_bin_ccs_object(datum.value.o, buffer_size, buffer));
 		break;
 	default:
-		CCS_THROW(CCS_INVALID_TYPE, "Unsupported datum type: %d", datum.type);
+		CCS_RAISE(CCS_INVALID_TYPE, "Unsupported datum type: %d", datum.type);
 	}
 	return CCS_SUCCESS;
 }
@@ -837,7 +844,7 @@ _ccs_deserialize_bin_ccs_datum(
 		break;
 	default:
 		*datum = ccs_none;
-		CCS_THROW(CCS_INVALID_TYPE, "Unsupported datum type: %d", type);
+		CCS_RAISE(CCS_INVALID_TYPE, "Unsupported datum type: %d", type);
 	}
 	return CCS_SUCCESS;
 }
@@ -922,7 +929,7 @@ _ccs_object_serialize_user_data_size(
 		break;
 	}
 	default:
-		CCS_THROW(CCS_INVALID_VALUE, "Unsupported serialization format: %d", format);
+		CCS_RAISE(CCS_INVALID_VALUE, "Unsupported serialization format: %d", format);
 	}
 	return CCS_SUCCESS;
 }
@@ -968,7 +975,7 @@ _ccs_object_serialize_user_data(
 		break;
 	}
 	default:
-		CCS_THROW(CCS_INVALID_VALUE, "Unsupported serialization format: %d", format);
+		CCS_RAISE(CCS_INVALID_VALUE, "Unsupported serialization format: %d", format);
 	}
 	return CCS_SUCCESS;
 }
@@ -998,7 +1005,7 @@ _ccs_object_deserialize_user_data(
 		break;
 	}
 	default:
-		CCS_THROW(CCS_INVALID_VALUE, "Unsupported serialization format: %d", format);
+		CCS_RAISE(CCS_INVALID_VALUE, "Unsupported serialization format: %d", format);
 	}
 	return CCS_SUCCESS;
 }

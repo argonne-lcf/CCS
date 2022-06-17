@@ -165,7 +165,7 @@ _ccs_expression_serialize_size(
 			(ccs_expression_t)object, cum_size, opts));
 		break;
 	default:
-		return -CCS_INVALID_VALUE;
+		CCS_RAISE(CCS_INVALID_VALUE, "Unsupported serialization format: %d", format);
 	}
 	CCS_VALIDATE(_ccs_object_serialize_user_data_size(
 		object, format, cum_size, opts));
@@ -185,7 +185,7 @@ _ccs_expression_serialize(
 		    (ccs_expression_t)object, buffer_size, buffer, opts));
 		break;
 	default:
-		return -CCS_INVALID_VALUE;
+		CCS_RAISE(CCS_INVALID_VALUE, "Unsupported serialization format: %d", format);
 	}
 	CCS_VALIDATE(_ccs_object_serialize_user_data(
 		object, format, buffer_size, buffer, opts));
@@ -204,18 +204,22 @@ _ccs_expr_node_eval(ccs_expression_t           n,
 		CCS_VALIDATE(ccs_hyperparameter_get_type(
 			(ccs_hyperparameter_t)(d->hyperparameter), ht));
 	}
-	return ccs_expression_eval(n, context, values, result);
+	CCS_VALIDATE(ccs_expression_eval(n, context, values, result));
+	return CCS_SUCCESS;
 }
 
+//TODO fix when finished revamping error codes
 #define eval_node(data, context, values, node, ht) do { \
 	CCS_VALIDATE(_ccs_expr_node_eval(data->nodes[0], context, values, &node, ht)); \
 } while(0)
 
+//TODO fix when finished revamping error codes
 #define eval_left_right(data, context, values, left, right, htl, htr) do { \
 	CCS_VALIDATE(_ccs_expr_node_eval(data->nodes[0], context, values, &left, htl)); \
 	CCS_VALIDATE(_ccs_expr_node_eval(data->nodes[1], context, values, &right, htr)); \
 } while (0)
 
+//TODO fix when finished revamping error codes
 static ccs_result_t
 _ccs_expr_or_eval(_ccs_expression_data_t *data,
                   ccs_context_t           context,
@@ -230,10 +234,9 @@ _ccs_expr_or_eval(_ccs_expression_data_t *data,
         errl = _ccs_expr_node_eval(data->nodes[0], context, values, &left, NULL);
         if (errl) {
 		if (errl != -CCS_INACTIVE_HYPERPARAMETER)
-			return errl;
+			CCS_VALIDATE(errl);
 	} else {
-		if (left.type != CCS_BOOLEAN)
-			return -CCS_INVALID_VALUE;
+		CCS_REFUTE(left.type != CCS_BOOLEAN, CCS_INVALID_VALUE);
 		if (left.value.i) {
 			*result = ccs_true;
 			return CCS_SUCCESS;
@@ -242,10 +245,9 @@ _ccs_expr_or_eval(_ccs_expression_data_t *data,
 	errr = _ccs_expr_node_eval(data->nodes[1], context, values, &right, NULL);
         if (errr) {
 		if (errr != -CCS_INACTIVE_HYPERPARAMETER)
-			return errr;
+			CCS_VALIDATE(errr);
 	} else {
-		if (right.type != CCS_BOOLEAN)
-			return -CCS_INVALID_VALUE;
+		CCS_REFUTE(right.type != CCS_BOOLEAN, CCS_INVALID_VALUE);
 		if (right.value.i) {
                         *result = ccs_true;
 			return CCS_SUCCESS;
@@ -276,8 +278,7 @@ _ccs_expr_and_eval(_ccs_expression_data_t *data,
 	ccs_datum_t left;
 	ccs_datum_t right;
 	eval_left_right(data, context, values, left, right, NULL, NULL);
-	if (left.type != CCS_BOOLEAN || right.type != CCS_BOOLEAN)
-		return -CCS_INVALID_VALUE;
+	CCS_REFUTE(left.type != CCS_BOOLEAN || right.type != CCS_BOOLEAN, CCS_INVALID_VALUE);
 	*result = ((left.value.i && right.value.i) ? ccs_true : ccs_false);
 	return CCS_SUCCESS;
 }
@@ -292,8 +293,7 @@ static _ccs_expression_ops_t _ccs_expr_and_ops = {
 #define check_values(param, v) do { \
 	ccs_bool_t valid; \
 	CCS_VALIDATE(ccs_hyperparameter_check_value(param, v, &valid)); \
-	if (!valid) \
-		return -CCS_INVALID_VALUE; \
+	CCS_REFUTE(!valid, CCS_INVALID_VALUE); \
 } while(0)
 
 #define check_hypers(param, v, t) do { \
@@ -301,10 +301,8 @@ static _ccs_expression_ops_t _ccs_expr_and_ops = {
 		_ccs_expression_variable_data_t *d = \
 			(_ccs_expression_variable_data_t *)param->data; \
 		check_values(d->hyperparameter, v); \
-	} else if (t == CCS_HYPERPARAMETER_TYPE_NUMERICAL || t == CCS_HYPERPARAMETER_TYPE_DISCRETE) {\
-		if (v.type != CCS_INTEGER && v.type != CCS_FLOAT) \
-			return -CCS_INVALID_VALUE; \
-	} \
+	} else if (t == CCS_HYPERPARAMETER_TYPE_NUMERICAL || t == CCS_HYPERPARAMETER_TYPE_DISCRETE) \
+		CCS_REFUTE(v.type != CCS_INTEGER && v.type != CCS_FLOAT, CCS_INVALID_VALUE); \
 } while(0)
 
 static inline ccs_int_t
@@ -318,6 +316,7 @@ _ccs_string_cmp(const char *a, const char *b) {
 	return strcmp(a, b);
 }
 
+//TODO fix when finished revamping error codes
 static inline ccs_result_t
 _ccs_datum_test_equal_generic(ccs_datum_t *a, ccs_datum_t *b, ccs_bool_t *equal) {
 	if (a->type == b->type) {
@@ -360,7 +359,7 @@ _ccs_datum_cmp_generic(ccs_datum_t *a, ccs_datum_t *b, ccs_int_t *cmp) {
 			       a->value.f > b->value.f ?  1 : 0;
 			break;
 		default:
-			return -CCS_INVALID_VALUE;
+			CCS_RAISE(CCS_INVALID_VALUE, "Type %d is not comparable", a->type);
 		}
 	} else {
 		if (a->type == CCS_INTEGER && b->type == CCS_FLOAT) {
@@ -370,12 +369,13 @@ _ccs_datum_cmp_generic(ccs_datum_t *a, ccs_datum_t *b, ccs_int_t *cmp) {
 			*cmp = a->value.f < b->value.i ? -1 :
 			       a->value.f > b->value.i ?  1 : 0;
 		} else {
-			return -CCS_INVALID_VALUE;
+			CCS_RAISE(CCS_INVALID_VALUE, "Types %d and %d are not comparable", a->type, b->type);
 		}
 	}
 	return CCS_SUCCESS;
 }
 
+//TODO fix when finished revamping error codes
 static ccs_result_t
 _ccs_expr_equal_eval(_ccs_expression_data_t *data,
                      ccs_context_t           context,
@@ -406,6 +406,7 @@ static _ccs_expression_ops_t _ccs_expr_equal_ops = {
 	&_ccs_expr_equal_eval
 };
 
+//TODO fix when finished revamping error codes
 static ccs_result_t
 _ccs_expr_not_equal_eval(_ccs_expression_data_t *data,
                          ccs_context_t           context,
@@ -421,13 +422,11 @@ _ccs_expr_not_equal_eval(_ccs_expression_data_t *data,
 	check_hypers(data->nodes[1], left, htr);
 	ccs_bool_t equal;
 	ccs_result_t err = _ccs_datum_test_equal_generic(&left, &right, &equal);
-	if(htl != CCS_HYPERPARAMETER_TYPE_MAX || htr != CCS_HYPERPARAMETER_TYPE_MAX) {
-		*result = (equal ? ccs_false : ccs_true);
-	} else {
-		if (err)
-			return err;
-		*result = (equal ? ccs_false : ccs_true);
-	}
+	if (htl == CCS_HYPERPARAMETER_TYPE_MAX &&
+	    htr == CCS_HYPERPARAMETER_TYPE_MAX &&
+	    err)
+		return err;
+	*result = (equal ? ccs_false : ccs_true);
 	return CCS_SUCCESS;
 }
 
@@ -449,8 +448,7 @@ _ccs_expr_less_eval(_ccs_expression_data_t *data,
 	ccs_hyperparameter_type_t htr = CCS_HYPERPARAMETER_TYPE_MAX;
 
 	eval_left_right(data, context, values, left, right, &htl, &htr);
-	if (htl == CCS_HYPERPARAMETER_TYPE_CATEGORICAL || htr == CCS_HYPERPARAMETER_TYPE_CATEGORICAL)
-		return -CCS_INVALID_VALUE;
+	CCS_REFUTE(htl == CCS_HYPERPARAMETER_TYPE_CATEGORICAL || htr == CCS_HYPERPARAMETER_TYPE_CATEGORICAL, CCS_INVALID_VALUE);
 	check_hypers(data->nodes[0], right, htl);
 	check_hypers(data->nodes[1], left, htr);
 	if (htl == CCS_HYPERPARAMETER_TYPE_ORDINAL) {
@@ -495,8 +493,7 @@ _ccs_expr_greater_eval(_ccs_expression_data_t *data,
 	ccs_hyperparameter_type_t htr = CCS_HYPERPARAMETER_TYPE_MAX;
 
 	eval_left_right(data, context, values, left, right, &htl, &htr);
-	if (htl == CCS_HYPERPARAMETER_TYPE_CATEGORICAL || htr == CCS_HYPERPARAMETER_TYPE_CATEGORICAL)
-		return -CCS_INVALID_VALUE;
+	CCS_REFUTE(htl == CCS_HYPERPARAMETER_TYPE_CATEGORICAL || htr == CCS_HYPERPARAMETER_TYPE_CATEGORICAL, CCS_INVALID_VALUE);
 	check_hypers(data->nodes[0], right, htl);
 	check_hypers(data->nodes[1], left, htr);
 	if (htl == CCS_HYPERPARAMETER_TYPE_ORDINAL) {
@@ -541,8 +538,7 @@ _ccs_expr_less_or_equal_eval(_ccs_expression_data_t *data,
 	ccs_hyperparameter_type_t htr = CCS_HYPERPARAMETER_TYPE_MAX;
 
 	eval_left_right(data, context, values, left, right, &htl, &htr);
-	if (htl == CCS_HYPERPARAMETER_TYPE_CATEGORICAL || htr == CCS_HYPERPARAMETER_TYPE_CATEGORICAL)
-		return -CCS_INVALID_VALUE;
+	CCS_REFUTE(htl == CCS_HYPERPARAMETER_TYPE_CATEGORICAL || htr == CCS_HYPERPARAMETER_TYPE_CATEGORICAL, CCS_INVALID_VALUE);
 	check_hypers(data->nodes[0], right, htl);
 	check_hypers(data->nodes[1], left, htr);
 	if (htl == CCS_HYPERPARAMETER_TYPE_ORDINAL) {
@@ -587,8 +583,7 @@ _ccs_expr_greater_or_equal_eval(_ccs_expression_data_t *data,
 	ccs_hyperparameter_type_t htr = CCS_HYPERPARAMETER_TYPE_MAX;
 
 	eval_left_right(data, context, values, left, right, &htl, &htr);
-	if (htl == CCS_HYPERPARAMETER_TYPE_CATEGORICAL || htr == CCS_HYPERPARAMETER_TYPE_CATEGORICAL)
-		return -CCS_INVALID_VALUE;
+	CCS_REFUTE(htl == CCS_HYPERPARAMETER_TYPE_CATEGORICAL || htr == CCS_HYPERPARAMETER_TYPE_CATEGORICAL, CCS_INVALID_VALUE);
 	check_hypers(data->nodes[0], right, htl);
 	check_hypers(data->nodes[1], left, htr);
 	if (htl == CCS_HYPERPARAMETER_TYPE_ORDINAL) {
@@ -622,6 +617,7 @@ static _ccs_expression_ops_t _ccs_expr_greater_or_equal_ops = {
 	&_ccs_expr_greater_or_equal_eval
 };
 
+//TODO fix when finished revamping error codes
 static ccs_result_t
 _ccs_expr_in_eval(_ccs_expression_data_t *data,
                   ccs_context_t           context,
@@ -629,8 +625,7 @@ _ccs_expr_in_eval(_ccs_expression_data_t *data,
                   ccs_datum_t            *result) {
 	ccs_expression_type_t etype;
 	CCS_VALIDATE(ccs_expression_get_type(data->nodes[1], &etype));
-	if (etype != CCS_LIST)
-		return -CCS_INVALID_VALUE;
+	CCS_REFUTE(etype != CCS_LIST, CCS_INVALID_VALUE);
 	size_t num_nodes;
 	CCS_VALIDATE(ccs_expression_get_num_nodes(data->nodes[1], &num_nodes));
 	if (num_nodes == 0) {
@@ -681,24 +676,20 @@ _ccs_expr_add_eval(_ccs_expression_data_t *data,
 		if (right.type == CCS_INTEGER) {
 			*result = ccs_int(left.value.i + right.value.i);
 			return CCS_SUCCESS;
-		}
-		if (right.type == CCS_FLOAT) {
+		} else if (right.type == CCS_FLOAT) {
 			*result = ccs_float(left.value.i + right.value.f);
 			return CCS_SUCCESS;
 		}
-		return -CCS_INVALID_VALUE;
-	}
-	if (left.type == CCS_FLOAT) {
+	} else if (left.type == CCS_FLOAT) {
 		if (right.type == CCS_INTEGER) {
 			*result = ccs_float(left.value.f + right.value.i);
 			return CCS_SUCCESS;
-		}
-		if (right.type == CCS_FLOAT) {
+		} else if (right.type == CCS_FLOAT) {
 			*result = ccs_float(left.value.f + right.value.f);
 			return CCS_SUCCESS;
 		}
 	}
-	return -CCS_INVALID_VALUE;
+	CCS_RAISE(CCS_INVALID_VALUE, "Incompatibles type for addition");
 }
 
 static _ccs_expression_ops_t _ccs_expr_add_ops = {
@@ -720,24 +711,20 @@ _ccs_expr_substract_eval(_ccs_expression_data_t *data,
 		if (right.type == CCS_INTEGER) {
 			*result = ccs_int(left.value.i - right.value.i);
 			return CCS_SUCCESS;
-		}
-		if (right.type == CCS_FLOAT) {
+		} else if (right.type == CCS_FLOAT) {
 			*result = ccs_float(left.value.i - right.value.f);
 			return CCS_SUCCESS;
 		}
-		return -CCS_INVALID_VALUE;
-	}
-	if (left.type == CCS_FLOAT) {
+	} else if (left.type == CCS_FLOAT) {
 		if (right.type == CCS_INTEGER) {
 			*result = ccs_float(left.value.f - right.value.i);
 			return CCS_SUCCESS;
-		}
-		if (right.type == CCS_FLOAT) {
+		} else if (right.type == CCS_FLOAT) {
 			*result = ccs_float(left.value.f - right.value.f);
 			return CCS_SUCCESS;
 		}
 	}
-	return -CCS_INVALID_VALUE;
+	CCS_RAISE(CCS_INVALID_VALUE, "Incompatible types for substraction");
 }
 
 static _ccs_expression_ops_t _ccs_expr_substract_ops = {
@@ -759,24 +746,20 @@ _ccs_expr_multiply_eval(_ccs_expression_data_t *data,
 		if (right.type == CCS_INTEGER) {
 			*result = ccs_int(left.value.i * right.value.i);
 			return CCS_SUCCESS;
-		}
-		if (right.type == CCS_FLOAT) {
+		} else if (right.type == CCS_FLOAT) {
 			*result = ccs_float(left.value.i * right.value.f);
 			return CCS_SUCCESS;
 		}
-		return -CCS_INVALID_VALUE;
-	}
-	if (left.type == CCS_FLOAT) {
+	} else if (left.type == CCS_FLOAT) {
 		if (right.type == CCS_INTEGER) {
 			*result = ccs_float(left.value.f * right.value.i);
 			return CCS_SUCCESS;
-		}
-		if (right.type == CCS_FLOAT) {
+		} else if (right.type == CCS_FLOAT) {
 			*result = ccs_float(left.value.f * right.value.f);
 			return CCS_SUCCESS;
 		}
 	}
-	return -CCS_INVALID_VALUE;
+	CCS_RAISE(CCS_INVALID_VALUE, "Incompatible types for multiplication");
 }
 
 static _ccs_expression_ops_t _ccs_expr_multiply_ops = {
@@ -796,34 +779,26 @@ _ccs_expr_divide_eval(_ccs_expression_data_t *data,
 	eval_left_right(data, context, values, left, right, NULL, NULL);
 	if (left.type == CCS_INTEGER) {
 		if (right.type == CCS_INTEGER) {
-			if (right.value.i == 0)
-				return -CCS_INVALID_VALUE;
+			CCS_REFUTE(right.value.i == 0, CCS_INVALID_VALUE);
 			*result = ccs_int(left.value.i / right.value.i);
 			return CCS_SUCCESS;
-		}
-		if (right.type == CCS_FLOAT) {
-			if (right.value.f == 0.0)
-				return -CCS_INVALID_VALUE;
+		} else if (right.type == CCS_FLOAT) {
+			CCS_REFUTE(right.value.f == 0.0, CCS_INVALID_VALUE);
 			*result = ccs_float(left.value.i / right.value.f);
 			return CCS_SUCCESS;
 		}
-		return -CCS_INVALID_VALUE;
-	}
-	if (left.type == CCS_FLOAT) {
+	} else if (left.type == CCS_FLOAT) {
 		if (right.type == CCS_INTEGER) {
-			if (right.value.i == 0)
-				return -CCS_INVALID_VALUE;
+			CCS_REFUTE(right.value.i == 0, CCS_INVALID_VALUE);
 			*result = ccs_float(left.value.f / right.value.i);
 			return CCS_SUCCESS;
-		}
-		if (right.type == CCS_FLOAT) {
-			if (right.value.f == 0.0)
-				return -CCS_INVALID_VALUE;
+		} else if (right.type == CCS_FLOAT) {
+			CCS_REFUTE(right.value.f == 0.0, CCS_INVALID_VALUE);
 			*result = ccs_float(left.value.f / right.value.f);
 			return CCS_SUCCESS;
 		}
 	}
-	return -CCS_INVALID_VALUE;
+	CCS_RAISE(CCS_INVALID_VALUE, "Incompatible types for division");
 }
 
 static _ccs_expression_ops_t _ccs_expr_divide_ops = {
@@ -843,34 +818,26 @@ _ccs_expr_modulo_eval(_ccs_expression_data_t *data,
 	eval_left_right(data, context, values, left, right, NULL, NULL);
 	if (left.type == CCS_INTEGER) {
 		if (right.type == CCS_INTEGER) {
-			if (right.value.i == 0)
-				return -CCS_INVALID_VALUE;
+			CCS_REFUTE(right.value.i == 0, CCS_INVALID_VALUE);
 			*result = ccs_int(left.value.i % right.value.i);
 			return CCS_SUCCESS;
-		}
-		if (right.type == CCS_FLOAT) {
-			if (right.value.f == 0.0)
-				return -CCS_INVALID_VALUE;
+		} else if (right.type == CCS_FLOAT) {
+			CCS_REFUTE(right.value.f == 0.0, CCS_INVALID_VALUE);
 			*result = ccs_float(fmod(left.value.i, right.value.f));
 			return CCS_SUCCESS;
 		}
-		return -CCS_INVALID_VALUE;
-	}
-	if (left.type == CCS_FLOAT) {
+	} else if (left.type == CCS_FLOAT) {
 		if (right.type == CCS_INTEGER) {
-			if (right.value.i == 0)
-				return -CCS_INVALID_VALUE;
+			CCS_REFUTE(right.value.i == 0, CCS_INVALID_VALUE);
 			*result = ccs_float(fmod(left.value.f, right.value.i));
 			return CCS_SUCCESS;
-		}
-		if (right.type == CCS_FLOAT) {
-			if (right.value.f == 0.0)
-				return -CCS_INVALID_VALUE;
+		} else if (right.type == CCS_FLOAT) {
+			CCS_REFUTE(right.value.f == 0.0, CCS_INVALID_VALUE);
 			*result = ccs_float(fmod(left.value.f, right.value.f));
 			return CCS_SUCCESS;
 		}
 	}
-	return -CCS_INVALID_VALUE;
+	CCS_RAISE(CCS_INVALID_VALUE, "Incompatible types for modulo");
 }
 
 static _ccs_expression_ops_t _ccs_expr_modulo_ops = {
@@ -887,9 +854,7 @@ _ccs_expr_positive_eval(_ccs_expression_data_t *data,
                         ccs_datum_t            *result) {
 	ccs_datum_t node;
 	eval_node(data, context, values, node, NULL);
-	if (node.type != CCS_INTEGER && node.type != CCS_FLOAT) {
-		return -CCS_INVALID_VALUE;
-	}
+	CCS_REFUTE(node.type != CCS_INTEGER && node.type != CCS_FLOAT, CCS_INVALID_VALUE);
 	*result = node;
 	return CCS_SUCCESS;
 }
@@ -908,12 +873,12 @@ _ccs_expr_negative_eval(_ccs_expression_data_t *data,
                         ccs_datum_t            *result) {
 	ccs_datum_t node;
 	eval_node(data, context, values, node, NULL);
+	CCS_REFUTE(node.type != CCS_INTEGER && node.type != CCS_FLOAT, CCS_INVALID_VALUE);
 	if (node.type == CCS_INTEGER) {
 		*result = ccs_int(- node.value.i);
 	} else if (node.type == CCS_FLOAT) {
 		*result = ccs_float(- node.value.f);
-	} else
-		return -CCS_INVALID_VALUE;
+	}
 	return CCS_SUCCESS;
 }
 
@@ -931,10 +896,8 @@ _ccs_expr_not_eval(_ccs_expression_data_t *data,
                    ccs_datum_t            *result) {
 	ccs_datum_t node;
 	eval_node(data, context, values, node, NULL);
-	if (node.type == CCS_BOOLEAN) {
-		*result = (node.value.i ? ccs_false : ccs_true);
-	} else
-		return -CCS_INVALID_VALUE;
+	CCS_REFUTE(node.type != CCS_BOOLEAN, CCS_INVALID_VALUE);
+	*result = (node.value.i ? ccs_false : ccs_true);
 	return CCS_SUCCESS;
 }
 
@@ -951,7 +914,7 @@ _ccs_expr_list_eval(_ccs_expression_data_t *data,
                     ccs_datum_t            *values,
                     ccs_datum_t            *result) {
 	(void)data; (void)context; (void)values; (void)result;
-	return -CCS_UNSUPPORTED_OPERATION;
+	CCS_RAISE(CCS_UNSUPPORTED_OPERATION, "Lists cannot be avaluated");
 }
 
 static _ccs_expression_ops_t _ccs_expr_list_ops = {
@@ -1038,7 +1001,7 @@ _ccs_expression_literal_serialize_size(
 			(ccs_expression_t)object, cum_size, opts));
 		break;
 	default:
-		return -CCS_INVALID_VALUE;
+		CCS_RAISE(CCS_INVALID_VALUE, "Unsupported serialization format: %d", format);
 	}
 	CCS_VALIDATE(_ccs_object_serialize_user_data_size(
 		object, format, cum_size, opts));
@@ -1058,7 +1021,7 @@ _ccs_expression_literal_serialize(
 		    (ccs_expression_t)object, buffer_size, buffer, opts));
 		break;
 	default:
-		return -CCS_INVALID_VALUE;
+		CCS_RAISE(CCS_INVALID_VALUE, "Unsupported serialization format: %d", format);
 	}
 	CCS_VALIDATE(_ccs_object_serialize_user_data(
 		object, format, buffer_size, buffer, opts));
@@ -1076,7 +1039,8 @@ static ccs_result_t
 _ccs_expr_variable_del(ccs_object_t o) {
 	_ccs_expression_variable_data_t *d =
 		(_ccs_expression_variable_data_t *)((ccs_expression_t)o)->data;
-	return ccs_release_object(d->hyperparameter);
+	CCS_VALIDATE(ccs_release_object(d->hyperparameter));
+	return CCS_SUCCESS;
 }
 
 static inline ccs_result_t
@@ -1144,7 +1108,7 @@ _ccs_expression_variable_serialize_size(
 			(ccs_expression_t)object, cum_size, opts));
 		break;
 	default:
-		return -CCS_INVALID_VALUE;
+		CCS_RAISE(CCS_INVALID_VALUE, "Unsupported serialization format: %d", format);
 	}
 	CCS_VALIDATE(_ccs_object_serialize_user_data_size(
 		object, format, cum_size, opts));
@@ -1164,7 +1128,7 @@ _ccs_expression_variable_serialize(
 			(ccs_expression_t)object, buffer_size, buffer, opts));
 		break;
 	default:
-		return -CCS_INVALID_VALUE;
+		CCS_RAISE(CCS_INVALID_VALUE, "Unsupported serialization format: %d", format);
 	}
 	CCS_VALIDATE(_ccs_object_serialize_user_data(
 		object, format, buffer_size, buffer, opts));
@@ -1266,8 +1230,7 @@ _ccs_expression_ops_broker(ccs_expression_type_t  expression_type) {
 ccs_result_t
 ccs_create_literal(ccs_datum_t       value,
                    ccs_expression_t *expression_ret) {
-	if (value.type < CCS_NONE || value.type > CCS_STRING)
-		return -CCS_INVALID_VALUE;
+	CCS_REFUTE(value.type < CCS_NONE || value.type > CCS_STRING, CCS_INVALID_VALUE);
 	CCS_CHECK_PTR(expression_ret);
 	size_t size_str = 0;
 	if (value.type == CCS_STRING && value.value.s) {
@@ -1277,8 +1240,7 @@ ccs_create_literal(ccs_datum_t       value,
 		sizeof(struct _ccs_expression_s) +
 		sizeof(struct _ccs_expression_literal_data_s) +
 		size_str);
-	if(!mem)
-		return -CCS_OUT_OF_MEMORY;
+	CCS_REFUTE(!mem, CCS_OUT_OF_MEMORY);
 	ccs_expression_t expression = (ccs_expression_t)mem;
 	_ccs_object_init(&(expression->obj), CCS_EXPRESSION,
 		(_ccs_object_ops_t*)_ccs_expression_ops_broker(CCS_LITERAL));
@@ -1312,8 +1274,7 @@ ccs_create_variable(ccs_hyperparameter_t  hyperparameter,
 	uintptr_t mem = (uintptr_t)calloc(1,
 		sizeof(struct _ccs_expression_s) +
 		sizeof(struct _ccs_expression_variable_data_s));
-	if (!mem)
-		return -CCS_OUT_OF_MEMORY;
+	CCS_REFUTE(!mem, CCS_OUT_OF_MEMORY);
 	CCS_VALIDATE_ERR_GOTO(err, ccs_retain_object(hyperparameter), errmem);
 	ccs_expression_t expression;
 	expression = (ccs_expression_t)mem;
@@ -1342,28 +1303,24 @@ ccs_create_expression(ccs_expression_type_t  type,
                       ccs_expression_t      *expression_ret) {
 	CCS_CHECK_ARY(num_nodes, nodes);
 	CCS_CHECK_PTR(expression_ret);
-	if (type < CCS_OR || type > CCS_LIST)
-		return -CCS_INVALID_VALUE;
+	CCS_REFUTE(type < CCS_OR || type > CCS_LIST, CCS_INVALID_VALUE);
 	int arity = ccs_expression_arity[type];
-	if (arity >= 0 && num_nodes != (size_t)arity)
-		return -CCS_INVALID_VALUE;
+	CCS_REFUTE(arity >= 0 && num_nodes != (size_t)arity, CCS_INVALID_VALUE);
 	ccs_result_t err;
 	for(size_t i = 0; i < num_nodes; i++){
 		if (nodes[i].type == CCS_OBJECT) {
-			ccs_object_type_t t;
-			CCS_VALIDATE(ccs_object_get_type(nodes[i].value.o, &t));
-			if (t != CCS_HYPERPARAMETER && t != CCS_EXPRESSION)
-				return -CCS_INVALID_VALUE;
-		} else if (nodes[i].type < CCS_NONE || nodes[i].type > CCS_STRING)
-			return -CCS_INVALID_VALUE;
+			ccs_object_type_t object_type;
+			CCS_VALIDATE(ccs_object_get_type(nodes[i].value.o, &object_type));
+			CCS_REFUTE(object_type != CCS_HYPERPARAMETER && object_type != CCS_EXPRESSION, CCS_INVALID_VALUE);
+		} else
+			CCS_REFUTE(nodes[i].type < CCS_NONE || nodes[i].type > CCS_STRING, CCS_INVALID_VALUE);
 	}
 
 	uintptr_t mem = (uintptr_t)calloc(1,
 	    sizeof(struct _ccs_expression_s) +
 	    sizeof(struct _ccs_expression_data_s) +
 	    num_nodes*sizeof(ccs_expression_t));
-	if (!mem)
-		return -CCS_OUT_OF_MEMORY;
+	CCS_REFUTE(!mem, CCS_OUT_OF_MEMORY);
 
 	ccs_expression_t expression = (ccs_expression_t)mem;
 	_ccs_object_init(&(expression->obj), CCS_EXPRESSION,
@@ -1415,14 +1372,16 @@ ccs_create_binary_expression(ccs_expression_type_t  type,
 	ccs_datum_t nodes[2];
 	nodes[0] = node_left;
 	nodes[1] = node_right;
-	return ccs_create_expression(type, 2, nodes, expression_ret);
+	CCS_VALIDATE(ccs_create_expression(type, 2, nodes, expression_ret));
+	return CCS_SUCCESS;
 }
 
 ccs_result_t
 ccs_create_unary_expression(ccs_expression_type_t  type,
                             ccs_datum_t            node,
                             ccs_expression_t      *expression_ret) {
-	return ccs_create_expression(type, 1, &node, expression_ret);
+	CCS_VALIDATE(ccs_create_expression(type, 1, &node, expression_ret));
+	return CCS_SUCCESS;
 }
 
 ccs_result_t
@@ -1433,7 +1392,8 @@ ccs_expression_eval(ccs_expression_t  expression,
 	CCS_CHECK_OBJ(expression, CCS_EXPRESSION);
 	CCS_CHECK_PTR(result_ret);
 	_ccs_expression_ops_t *ops = ccs_expression_get_ops(expression);
-	return ops->eval(expression->data, context, values, result_ret);
+	CCS_VALIDATE(ops->eval(expression->data, context, values, result_ret));
+	return CCS_SUCCESS;
 }
 
 ccs_result_t
@@ -1452,13 +1412,11 @@ ccs_expression_get_nodes(ccs_expression_t  expression,
                          size_t           *num_nodes_ret) {
 	CCS_CHECK_OBJ(expression, CCS_EXPRESSION);
 	CCS_CHECK_ARY(num_nodes, nodes);
-	if (!num_nodes_ret && !nodes)
-		return -CCS_INVALID_VALUE;
+	CCS_REFUTE(!num_nodes_ret && !nodes, CCS_INVALID_VALUE);
 	size_t count = expression->data->num_nodes;
 	if (nodes) {
+		CCS_REFUTE(num_nodes < count, CCS_INVALID_VALUE);
 		ccs_expression_t *p_nodes = expression->data->nodes;
-		if (num_nodes < count)
-			return -CCS_INVALID_VALUE;
 		for (size_t i = 0; i < count; i++)
 			nodes[i] = p_nodes[i];
 		for (size_t i = count; i < num_nodes; i++)
@@ -1477,11 +1435,9 @@ ccs_expression_list_eval_node(ccs_expression_t  expression,
                               ccs_datum_t      *result) {
 	CCS_CHECK_OBJ(expression, CCS_EXPRESSION);
 	CCS_CHECK_PTR(result);
-	if (expression->data->type != CCS_LIST)
-		return -CCS_INVALID_EXPRESSION;
+	CCS_REFUTE(expression->data->type != CCS_LIST, CCS_INVALID_EXPRESSION);
 	ccs_datum_t node;
-	if (index >= expression->data->num_nodes)
-		return -CCS_OUT_OF_BOUNDS;
+	CCS_REFUTE(index >= expression->data->num_nodes, CCS_OUT_OF_BOUNDS);
 	CCS_VALIDATE(_ccs_expr_node_eval(expression->data->nodes[index], context, values, &node, NULL));
 	*result = node;
 	return CCS_SUCCESS;
@@ -1501,8 +1457,7 @@ ccs_literal_get_value(ccs_expression_t  expression,
                       ccs_datum_t      *value_ret) {
 	CCS_CHECK_OBJ(expression, CCS_EXPRESSION);
 	CCS_CHECK_PTR(value_ret);
-	if (expression->data->type != CCS_LITERAL)
-		return -CCS_INVALID_EXPRESSION;
+	CCS_REFUTE(expression->data->type != CCS_LITERAL, CCS_INVALID_EXPRESSION);
 	_ccs_expression_literal_data_t *d =
 		(_ccs_expression_literal_data_t *)expression->data;
 	*value_ret = d->value;
@@ -1514,8 +1469,7 @@ ccs_variable_get_hyperparameter(ccs_expression_t      expression,
                                 ccs_hyperparameter_t *hyperparameter_ret) {
 	CCS_CHECK_OBJ(expression, CCS_EXPRESSION);
 	CCS_CHECK_PTR(hyperparameter_ret);
-	if (expression->data->type != CCS_VARIABLE)
-		return -CCS_INVALID_EXPRESSION;
+	CCS_REFUTE(expression->data->type != CCS_VARIABLE, CCS_INVALID_EXPRESSION);
 	_ccs_expression_variable_data_t *d =
 		(_ccs_expression_variable_data_t *)expression->data;
 	*hyperparameter_ret = d->hyperparameter;
@@ -1524,7 +1478,7 @@ ccs_variable_get_hyperparameter(ccs_expression_t      expression,
 
 #undef  utarray_oom
 #define utarray_oom() { \
-	return -CCS_OUT_OF_MEMORY; \
+	CCS_RAISE(CCS_OUT_OF_MEMORY, "Not enough memory to allocate array"); \
 }
 
 static ccs_result_t _get_hyperparameters(ccs_expression_t  expression,
@@ -1560,9 +1514,8 @@ ccs_expression_get_hyperparameters(ccs_expression_t      expression,
                                    size_t               *num_hyperparameters_ret) {
 	CCS_CHECK_OBJ(expression, CCS_EXPRESSION);
 	CCS_CHECK_ARY(num_hyperparameters, hyperparameters);
-	if (!hyperparameters && !num_hyperparameters_ret)
-		return -CCS_INVALID_VALUE;
-	ccs_result_t err;
+	CCS_REFUTE(!hyperparameters && !num_hyperparameters_ret, CCS_INVALID_VALUE);
+	ccs_result_t err = CCS_SUCCESS;
 	UT_array *array;
 	size_t count = 0;
 	utarray_new(array, &_hyperparameter_icd);
@@ -1580,10 +1533,7 @@ ccs_expression_get_hyperparameters(ccs_expression_t      expression,
 	} else
 		count = 0;
 	if (hyperparameters) {
-		if (count > num_hyperparameters) {
-			err = -CCS_INVALID_VALUE;
-			goto errutarray;
-		}
+		CCS_REFUTE_ERR_GOTO(err, count > num_hyperparameters, CCS_INVALID_VALUE, errutarray);
 		ccs_hyperparameter_t  previous = NULL;
 		ccs_hyperparameter_t *p_h = NULL;
 		size_t index = 0;
@@ -1598,7 +1548,6 @@ ccs_expression_get_hyperparameters(ccs_expression_t      expression,
 	}
 	if (num_hyperparameters_ret)
 		*num_hyperparameters_ret = count;
-	err = CCS_SUCCESS;
 errutarray:
 	utarray_free(array);
 	return err;
@@ -1608,16 +1557,13 @@ ccs_result_t
 ccs_expression_check_context(ccs_expression_t expression,
                              ccs_context_t    context) {
 	CCS_CHECK_OBJ(expression, CCS_EXPRESSION);
-	ccs_result_t err;
+	ccs_result_t err = CCS_SUCCESS;
 	UT_array *array;
 	utarray_new(array, &_hyperparameter_icd);
 	CCS_VALIDATE_ERR_GOTO(err, _get_hyperparameters(expression, array), errutarray);
 	utarray_sort(array, &_hyper_sort);
 	if (utarray_len(array) > 0) {
-		if (!context) {
-			err = -CCS_INVALID_VALUE;
-			goto errutarray;
-		}
+		CCS_REFUTE_ERR_GOTO(err, !context, CCS_INVALID_VALUE, errutarray);
 		ccs_hyperparameter_t  previous = NULL;
 		ccs_hyperparameter_t *p_h = NULL;
 		while ( (p_h = (ccs_hyperparameter_t *)utarray_next(array, p_h)) ) {
@@ -1629,9 +1575,7 @@ ccs_expression_check_context(ccs_expression_t expression,
 			}
 		}
 	}
-	err = CCS_SUCCESS;
 errutarray:
 	utarray_free(array);
 	return err;
 }
-

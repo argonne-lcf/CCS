@@ -46,8 +46,7 @@ _ccs_serialize_bin_size_ccs_user_defined_features_tuner(
 	*cum_size += _ccs_serialize_bin_size_uint64(num_optimums);
 	if (0 != history_size + num_optimums) {
 		history = (ccs_features_evaluation_t *)calloc(sizeof(ccs_features_evaluation_t), history_size + num_optimums);
-		if (!history)
-			return -CCS_OUT_OF_MEMORY;
+		CCS_REFUTE(!history, CCS_OUT_OF_MEMORY);
 		optimums = history + history_size;
 		if (history_size) {
 			CCS_VALIDATE_ERR_GOTO(res, data->vector.get_history(features_tuner, NULL, history_size, history, NULL), end);
@@ -98,8 +97,7 @@ _ccs_serialize_bin_ccs_user_defined_features_tuner(
 		num_optimums, buffer_size, buffer));
 	if (0 != history_size + num_optimums) {
 		history = (ccs_features_evaluation_t *)calloc(sizeof(ccs_features_evaluation_t), history_size + num_optimums);
-		if (!history)
-			return -CCS_OUT_OF_MEMORY;
+		CCS_REFUTE(!history, CCS_OUT_OF_MEMORY);
 		optimums = history + history_size;
 		if (history_size) {
 			CCS_VALIDATE_ERR_GOTO(res, data->vector.get_history(features_tuner, NULL, history_size, history, NULL), end);
@@ -120,10 +118,7 @@ _ccs_serialize_bin_ccs_user_defined_features_tuner(
 	CCS_VALIDATE_ERR_GOTO(res, _ccs_serialize_bin_uint64(
 		state_size, buffer_size, buffer), end);
 	if (state_size) {
-		if (*buffer_size < state_size) {
-			res = -CCS_NOT_ENOUGH_DATA;
-			goto end;
-		}
+		CCS_REFUTE_ERR_GOTO(res, *buffer_size < state_size, CCS_NOT_ENOUGH_DATA, end);
 		CCS_VALIDATE_ERR_GOTO(res, data->vector.serialize_user_state(
 			features_tuner, state_size, *buffer, NULL), end);
 		*buffer_size -= state_size;
@@ -147,7 +142,7 @@ _ccs_features_tuner_user_defined_serialize_size(
 			(ccs_features_tuner_t)object, cum_size, opts));
 		break;
 	default:
-		return -CCS_INVALID_VALUE;
+		CCS_RAISE(CCS_INVALID_VALUE, "Unsupported serialization format: %d", format);
 	}
 	CCS_VALIDATE(_ccs_object_serialize_user_data_size(
 		object, format, cum_size, opts));
@@ -167,7 +162,7 @@ _ccs_features_tuner_user_defined_serialize(
 			(ccs_features_tuner_t)object, buffer_size, buffer, opts));
 		break;
 	default:
-		return -CCS_INVALID_VALUE;
+		CCS_RAISE(CCS_INVALID_VALUE, "Unsupported serialization format: %d", format);
 	}
 	CCS_VALIDATE(_ccs_object_serialize_user_data(
 		object, format, buffer_size, buffer, opts));
@@ -183,7 +178,8 @@ _ccs_features_tuner_user_defined_ask(
 		size_t                     *num_configurations_ret) {
 	_ccs_user_defined_features_tuner_data_t *d =
 		(_ccs_user_defined_features_tuner_data_t *)data;
-	return d->vector.ask(d->selfref, features, num_configurations, configurations, num_configurations_ret);
+	CCS_VALIDATE(d->vector.ask(d->selfref, features, num_configurations, configurations, num_configurations_ret));
+	return CCS_SUCCESS;
 }
 
 static ccs_result_t
@@ -192,7 +188,8 @@ _ccs_features_tuner_user_defined_tell(_ccs_features_tuner_data_t *data,
                                       ccs_features_evaluation_t  *evaluations) {
 	_ccs_user_defined_features_tuner_data_t *d =
 		(_ccs_user_defined_features_tuner_data_t *)data;
-	return d->vector.tell(d->selfref, num_evaluations, evaluations);
+	CCS_VALIDATE(d->vector.tell(d->selfref, num_evaluations, evaluations));
+	return CCS_SUCCESS;
 }
 
 static ccs_result_t
@@ -204,7 +201,8 @@ _ccs_features_tuner_user_defined_get_optimums(
 		size_t                     *num_evaluations_ret) {
 	_ccs_user_defined_features_tuner_data_t *d =
 		(_ccs_user_defined_features_tuner_data_t *)data;
-	return d->vector.get_optimums(d->selfref, features, num_evaluations, evaluations, num_evaluations_ret);
+	CCS_VALIDATE(d->vector.get_optimums(d->selfref, features, num_evaluations, evaluations, num_evaluations_ret));
+	return CCS_SUCCESS;
 }
 
 static ccs_result_t
@@ -216,7 +214,8 @@ _ccs_features_tuner_user_defined_get_history(
 		size_t                     *num_evaluations_ret) {
 	_ccs_user_defined_features_tuner_data_t *d =
 		(_ccs_user_defined_features_tuner_data_t *)data;
-	return d->vector.get_history(d->selfref, features, num_evaluations, evaluations, num_evaluations_ret);
+	CCS_VALIDATE(d->vector.get_history(d->selfref, features, num_evaluations, evaluations, num_evaluations_ret));
+	return CCS_SUCCESS;
 }
 
 static ccs_result_t
@@ -225,9 +224,9 @@ _ccs_features_tuner_user_defined_suggest(_ccs_features_tuner_data_t *data,
                                          ccs_configuration_t        *configuration_ret) {
 	_ccs_user_defined_features_tuner_data_t *d =
 		(_ccs_user_defined_features_tuner_data_t *)data;
-	if (!d->vector.suggest)
-		return -CCS_UNSUPPORTED_OPERATION;
-	return d->vector.suggest(d->selfref, features, configuration_ret);
+	CCS_REFUTE(!d->vector.suggest, CCS_UNSUPPORTED_OPERATION);
+	CCS_VALIDATE(d->vector.suggest(d->selfref, features, configuration_ret));
+	return CCS_SUCCESS;
 }
 
 static _ccs_features_tuner_ops_t _ccs_features_tuner_user_defined_ops = {
@@ -266,8 +265,7 @@ ccs_create_user_defined_features_tuner(
 		sizeof(struct _ccs_features_tuner_s) +
 		sizeof(struct _ccs_user_defined_features_tuner_data_s) +
 		strlen(name) + 1);
-	if (!mem)
-		return -CCS_OUT_OF_MEMORY;
+	CCS_REFUTE(!mem, CCS_OUT_OF_MEMORY);
 	ccs_features_tuner_t tun;
 	_ccs_user_defined_features_tuner_data_t * data;
 	ccs_result_t err;
@@ -309,8 +307,7 @@ ccs_user_defined_features_tuner_get_tuner_data(ccs_features_tuner_t   tuner,
 	CCS_CHECK_PTR(tuner_data_ret);
 	_ccs_user_defined_features_tuner_data_t *d =
 		(_ccs_user_defined_features_tuner_data_t *)tuner->data;
-        if (d->common_data.type != CCS_FEATURES_TUNER_USER_DEFINED)
-		return -CCS_INVALID_FEATURES_TUNER;
+        CCS_REFUTE(d->common_data.type != CCS_FEATURES_TUNER_USER_DEFINED, CCS_INVALID_FEATURES_TUNER);
 	*tuner_data_ret = d->tuner_data;
 	return CCS_SUCCESS;
 }

@@ -94,7 +94,7 @@ _ccs_distribution_multivariate_serialize_size(
 			(ccs_distribution_t)object, cum_size, opts));
 		break;
 	default:
-		return -CCS_INVALID_VALUE;
+		CCS_RAISE(CCS_INVALID_VALUE, "Unsupported serialization format: %d", format);
 	}
 	CCS_VALIDATE(_ccs_object_serialize_user_data_size(
 		object, format, cum_size, opts));
@@ -114,7 +114,7 @@ _ccs_distribution_multivariate_serialize(
 		    (ccs_distribution_t)object, buffer_size, buffer, opts));
 		break;
 	default:
-		return -CCS_INVALID_VALUE;
+		CCS_RAISE(CCS_INVALID_VALUE, "Unsupported serialization format: %d", format);
 	}
 	CCS_VALIDATE(_ccs_object_serialize_user_data(
 		object, format, buffer_size, buffer, opts));
@@ -160,8 +160,7 @@ ccs_create_multivariate_distribution(size_t              num_distributions,
                                      ccs_distribution_t *distribution_ret) {
 	CCS_CHECK_ARY(num_distributions, distributions);
 	CCS_CHECK_PTR(distribution_ret);
-	if (!num_distributions || num_distributions > INT64_MAX)
-		return -CCS_INVALID_VALUE;
+	CCS_REFUTE(!num_distributions || num_distributions > INT64_MAX, CCS_INVALID_VALUE);
 
 	ccs_result_t err;
 	size_t       i = 0;
@@ -184,8 +183,7 @@ ccs_create_multivariate_distribution(size_t              num_distributions,
 		sizeof(ccs_interval_t)*dimension +
 		sizeof(ccs_numeric_type_t)*dimension);
 
-	if (!mem)
-		return -CCS_OUT_OF_MEMORY;
+	CCS_REFUTE(!mem, CCS_OUT_OF_MEMORY);
         cur_mem = mem;
 
 	distrib = (ccs_distribution_t)cur_mem;
@@ -319,12 +317,10 @@ ccs_multivariate_distribution_get_distributions(ccs_distribution_t  distribution
                                            size_t             *num_distributions_ret) {
 	CCS_CHECK_DISTRIBUTION(distribution, CCS_MULTIVARIATE);
 	CCS_CHECK_ARY(num_distributions, distributions);
-	if (!distributions && !num_distributions_ret)
-		return -CCS_INVALID_VALUE;
+	CCS_REFUTE(!distributions && !num_distributions_ret, CCS_INVALID_VALUE);
 	_ccs_distribution_multivariate_data_t * data = (_ccs_distribution_multivariate_data_t *)distribution->data;
 	if (distributions) {
-		if (num_distributions < data->num_distributions)
-			return -CCS_INVALID_VALUE;
+		CCS_REFUTE(num_distributions < data->num_distributions, CCS_INVALID_VALUE);
 		for (size_t i = 0; i < data->num_distributions; i++)
 			distributions[i] = data->distributions[i];
 		for (size_t i = data->num_distributions; i < num_distributions; i++)
@@ -334,4 +330,3 @@ ccs_multivariate_distribution_get_distributions(ccs_distribution_t  distribution
 		*num_distributions_ret = data->num_distributions;
 	return CCS_SUCCESS;
 }
-

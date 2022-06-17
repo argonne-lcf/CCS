@@ -109,7 +109,7 @@ _ccs_tuner_random_serialize_size(
 			(ccs_tuner_t)object, cum_size, opts));
 		break;
 	default:
-		return -CCS_INVALID_VALUE;
+		CCS_RAISE(CCS_INVALID_VALUE, "Unsupported serialization format: %d", format);
 	}
 	CCS_VALIDATE(_ccs_object_serialize_user_data_size(
 		object, format, cum_size, opts));
@@ -129,7 +129,7 @@ _ccs_tuner_random_serialize(
 			(ccs_tuner_t)object, buffer_size, buffer, opts));
 		break;
 	default:
-		return -CCS_INVALID_VALUE;
+		CCS_RAISE(CCS_INVALID_VALUE, "Unsupported serialization format: %d", format);
 	}
 	CCS_VALIDATE(_ccs_object_serialize_user_data(
 		object, format, buffer_size, buffer, opts));
@@ -155,7 +155,7 @@ _ccs_tuner_random_ask(_ccs_tuner_data_t   *data,
 #undef  utarray_oom
 #define utarray_oom() { \
 	ccs_release_object(evaluations[i]); \
-	return -CCS_OUT_OF_MEMORY; \
+	CCS_RAISE(CCS_OUT_OF_MEMORY, "Out of memory to allocate array"); \
 }
 static ccs_result_t
 _ccs_tuner_random_tell(_ccs_tuner_data_t *data,
@@ -180,7 +180,7 @@ _ccs_tuner_random_tell(_ccs_tuner_data_t *data,
 #undef  utarray_oom
 #define utarray_oom() { \
 	d->optimums = d->old_optimums; \
-	return -CCS_OUT_OF_MEMORY; \
+	CCS_RAISE(CCS_OUT_OF_MEMORY, "Out of memory to allocate array"); \
 }
 			while ( (eval = (ccs_evaluation_t *)utarray_next(d->old_optimums, eval)) ) {
 				if (!discard) {
@@ -220,8 +220,7 @@ _ccs_tuner_random_get_optimums(_ccs_tuner_data_t *data,
 	_ccs_random_tuner_data_t *d = (_ccs_random_tuner_data_t *)data;
 	size_t count = utarray_len(d->optimums);
 	if (evaluations) {
-		if (num_evaluations < count)
-			return -CCS_INVALID_VALUE;
+		CCS_REFUTE(num_evaluations < count, CCS_INVALID_VALUE);
 		ccs_evaluation_t *eval = NULL;
 		size_t index = 0;
 		while ( (eval = (ccs_evaluation_t *)utarray_next(d->optimums, eval)) )
@@ -242,8 +241,7 @@ _ccs_tuner_random_get_history(_ccs_tuner_data_t *data,
 	_ccs_random_tuner_data_t *d = (_ccs_random_tuner_data_t *)data;
 	size_t count = utarray_len(d->history);
 	if (evaluations) {
-		if (num_evaluations < count)
-			return -CCS_INVALID_VALUE;
+		CCS_REFUTE(num_evaluations < count, CCS_INVALID_VALUE);
 		ccs_evaluation_t *eval = NULL;
 		size_t index = 0;
 		while ( (eval = (ccs_evaluation_t *)utarray_next(d->history, eval)) )
@@ -296,8 +294,7 @@ static const UT_icd _evaluation_icd = {
 
 #undef  utarray_oom
 #define utarray_oom() { \
-	err = -CCS_OUT_OF_MEMORY; \
-	goto arrays; \
+	CCS_RAISE_ERR_GOTO(err, CCS_OUT_OF_MEMORY, arrays, "Out of memory to allocate array"); \
 }
 ccs_result_t
 ccs_create_random_tuner(const char                *name,
@@ -312,8 +309,7 @@ ccs_create_random_tuner(const char                *name,
 	uintptr_t mem = (uintptr_t)calloc(1, sizeof(struct _ccs_tuner_s) +
 	                                     sizeof(struct _ccs_random_tuner_data_s) +
 	                                     strlen(name) + 1);
-	if (!mem)
-		return -CCS_OUT_OF_MEMORY;
+	CCS_REFUTE(!mem, CCS_OUT_OF_MEMORY);
 	ccs_tuner_t tun;
 	_ccs_random_tuner_data_t * data;
 	ccs_result_t err;
