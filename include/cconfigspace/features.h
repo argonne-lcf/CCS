@@ -126,12 +126,18 @@ ccs_features_get_value_by_name(ccs_features_t  features,
 /**
  * Check that the features is a valid features for the features space.
  * @param[in] features
+ * @param[out] is_valid_ret a pointer to a variable that will hold the result
+ *                          of the check. Result will be CCS_TRUE if the
+ *                          features is valid. Result will be CCS_FALSE if
+ *                          an hyperparameter value is not a valid value
+ *                          for this hyperparameter
  * @return #CCS_SUCCESS on success
  * @return -#CCS_INVALID_OBJECT if \p features is not a valid CCS features
  * @return -#CCS_INVALID_CONFIGURATION if \p features is found to be invalid
  */
 extern ccs_result_t
-ccs_features_check(ccs_features_t features);
+ccs_features_check(ccs_features_t  features,
+                   ccs_bool_t     *is_valid_ret);
 
 /**
  * Compute a hash value for the features by hashing together the features space

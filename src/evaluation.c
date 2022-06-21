@@ -268,10 +268,11 @@ ccs_evaluation_get_value_by_name(ccs_evaluation_t  evaluation,
 }
 
 ccs_result_t
-ccs_evaluation_check(ccs_evaluation_t  evaluation) {
+ccs_evaluation_check(ccs_evaluation_t  evaluation,
+                     ccs_bool_t       *is_valid_ret) {
 	CCS_CHECK_OBJ(evaluation, CCS_EVALUATION);
 	CCS_VALIDATE(ccs_objective_space_check_evaluation(
-		evaluation->data->objective_space, evaluation));
+		evaluation->data->objective_space, evaluation, is_valid_ret));
 	return CCS_SUCCESS;
 }
 

@@ -260,6 +260,11 @@ ccs_features_space_validate_value(ccs_features_space_t  features_space,
  * Check that a features is a valid in a features space.
  * @param[in] features_space
  * @param[in] features
+ * @param[out] is_valid_ret a pointer to a variable that will hold the result
+ *                          of the check. Result will be CCS_TRUE if the
+ *                          features is valid. Result will be CCS_FALSE if
+ *                          an hyperparameter value is not a valid value
+ *                          for this hyperparameter;
  * @return #CCS_SUCCESS on success
  * @return -#CCS_INVALID_OBJECT if \p features_space is not a valid CCS features
  *                              space; or if \p features is not a valid CCS
@@ -268,12 +273,12 @@ ccs_features_space_validate_value(ccs_features_space_t  features_space,
  *                                features space; or if the number of values
  *                                contained in \p features is not equal to the
  *                                number of hyperparameters in the features
- *                                space; or if an active hyperparameter value is
- *                                not a valid value for this hyperparameter
+ *                                space
  */
 extern ccs_result_t
-ccs_features_space_check_features(ccs_features_space_t features_space,
-                                  ccs_features_t       features);
+ccs_features_space_check_features(ccs_features_space_t  features_space,
+                                  ccs_features_t        features,
+                                  ccs_bool_t           *is_valid_ret);
 
 /**
  * Check that a set of values would create a valid features for a
@@ -282,20 +287,24 @@ ccs_features_space_check_features(ccs_features_space_t features_space,
  * @param[in] num_values the number of provided values
  * @param[in] values an array of \p num_values values that would become a
  *                   features
+ * @param[out] is_valid_ret a pointer to a variable that will hold the result
+ *                          of the check. Result will be CCS_TRUE if the
+ *                          features is valid. Result will be CCS_FALSE if
+ *                          an hyperparameter value is not a valid value
+ *                          for this hyperparameter;
  * @return #CCS_SUCCESS on success
  * @return -#CCS_INVALID_OBJECT if \p features_space is not a valid CCS features
  *                              space
  * @return -#CCS_INVALID_VALUE if \p values is NULL and num_values is greater
  *                             than 0
  * @return -#CCS_INVALID_FEATURES if \p num_values is not equal to the number of
- *                                hyperparameters in the features space; or if
- *                                an active hyperparameter value is not a valid
- *                                value for this hyperparameter
+ *                                hyperparameters in the features space
  */
 extern ccs_result_t
 ccs_features_space_check_features_values(ccs_features_space_t  features_space,
                                          size_t                num_values,
-                                         ccs_datum_t          *values);
+                                         ccs_datum_t          *values,
+                                         ccs_bool_t           *is_valid_ret);
 
 #ifdef __cplusplus
 }

@@ -197,13 +197,19 @@ ccs_evaluation_get_value_by_name(ccs_evaluation_t  evaluation,
 /**
  * Check that an evaluation values are valid in the objective space.
  * @param[in] evaluation
+ * @param[out] is_valid_ret a pointer to a variable that will hold the result
+ *                          of the check. Result will be CCS_TRUE if the
+ *                          evaluation is valid. Result will be CCS_FALSE if
+ *                          an hyperparameter value is not a valid value
+ *                          for this hyperparameter
  * @return #CCS_SUCCESS on success
  * @return -#CCS_INVALID_OBJECT if \p evaluation is not a valid CCS evaluation
  * @return -#CCS_INVALID_EVALUATION if \p evaluation was found to be invalid in
  *                                  the context of the objective space
  */
 extern ccs_result_t
-ccs_evaluation_check(ccs_evaluation_t  evaluation);
+ccs_evaluation_check(ccs_evaluation_t  evaluation,
+                     ccs_bool_t       *is_valid_ret);
 
 /**
  * Get the value of an objective for a valid evaluation in the context of its

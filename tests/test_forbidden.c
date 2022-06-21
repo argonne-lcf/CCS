@@ -43,6 +43,7 @@ test_simple() {
 
 	for (int i = 0; i < 100; i ++) {
 		ccs_float_t f;
+		ccs_bool_t check;
 		err = ccs_configuration_space_sample(space, &configuration);
 		assert( err == CCS_SUCCESS );
 		err = ccs_configuration_get_values(configuration, 2, values, NULL);
@@ -53,8 +54,9 @@ test_simple() {
 		assert( values[1].type == CCS_FLOAT );
 		f = values[0].value.f;
 		assert( f >= -1.0 && f < 1.0 );
-		err = ccs_configuration_space_check_configuration(space, configuration);
+		err = ccs_configuration_space_check_configuration(space, configuration, &check);
 		assert( err == CCS_SUCCESS );
+		assert( check );
 		err = ccs_release_object(configuration);
 		assert( err == CCS_SUCCESS );
 	}
@@ -63,6 +65,7 @@ test_simple() {
 
 	for (int i = 0; i < 100; i ++) {
 		ccs_float_t f;
+		ccs_bool_t check;
 		err = ccs_configuration_get_values(configurations[i], 2, values, NULL);
 		assert( err == CCS_SUCCESS );
 		assert( values[0].type == CCS_FLOAT );
@@ -71,8 +74,9 @@ test_simple() {
 		assert( values[1].type == CCS_FLOAT );
 		f = values[0].value.f;
 		assert( f >= -1.0 && f < 1.0 );
-		err = ccs_configuration_space_check_configuration(space, configurations[i]);
+		err = ccs_configuration_space_check_configuration(space, configurations[i], &check);
 		assert( err == CCS_SUCCESS );
+		assert( check );
 		err = ccs_release_object(configurations[i]);
 		assert( err == CCS_SUCCESS );
 	}
@@ -135,6 +139,7 @@ test_combined() {
 
 	for (int i = 0; i < 100; i ++) {
 		ccs_float_t f;
+		ccs_bool_t check;
 		err = ccs_configuration_space_sample(space, &configuration);
 		assert( err == CCS_SUCCESS );
 		err = ccs_configuration_get_values(configuration, 3, values, NULL);
@@ -157,7 +162,7 @@ test_combined() {
 			assert( values[2].type == CCS_INACTIVE );
 			assert( values[0].type == CCS_INACTIVE );
 		}
-		err = ccs_configuration_space_check_configuration(space, configuration);
+		err = ccs_configuration_space_check_configuration(space, configuration, &check);
 		assert( err == CCS_SUCCESS );
 		err = ccs_release_object(configuration);
 		assert( err == CCS_SUCCESS );
@@ -168,8 +173,10 @@ test_combined() {
 
 	for (int i = 0; i < 100; i ++) {
 		ccs_float_t f;
+		ccs_bool_t check;
 		err = ccs_configuration_get_values(configurations[i], 3, values, NULL);
 		assert( err == CCS_SUCCESS );
+		assert( check );
 		assert( values[1].type == CCS_FLOAT );
 		f = values[1].value.f;
 		assert( f >= -1.0 && f < 1.0 );
@@ -188,8 +195,9 @@ test_combined() {
 			assert( values[2].type == CCS_INACTIVE );
 			assert( values[0].type == CCS_INACTIVE );
 		}
-		err = ccs_configuration_space_check_configuration(space, configurations[i]);
+		err = ccs_configuration_space_check_configuration(space, configurations[i], &check);
 		assert( err == CCS_SUCCESS );
+		assert( check );
 		err = ccs_release_object(configurations[i]);
 		assert( err == CCS_SUCCESS );
 	}

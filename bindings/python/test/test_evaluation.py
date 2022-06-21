@@ -24,9 +24,9 @@ class TestEvaluation(unittest.TestCase):
     ev1.set_value(v2, 0.6)
     self.assertEqual( [0.5, 0.6], ev1.values )
     self.assertEqual( [0.5, 0.6], ev1.objective_values )
-    ev1.check
-    os.check(ev1)
-    os.check_values(ev1.values)
+    self.assertTrue( ev1.check )
+    self.assertTrue( os.check(ev1) )
+    self.assertTrue( os.check_values(ev1.values) )
     ev2 = ccs.Evaluation(objective_space = os, configuration = cs.sample(), values = [0.5, 0.6])
     self.assertEqual( [0.5, 0.6], ev2.values )
     self.assertEqual( [0.5, 0.6], ev2.objective_values )

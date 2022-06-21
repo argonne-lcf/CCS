@@ -57,6 +57,7 @@ void check_configuration(ccs_configuration_space_t  configuration_space,
 	ccs_hyperparameter_t *hyperparameters_ret =
 		(ccs_hyperparameter_t *)malloc(sizeof(ccs_hyperparameter_t)*(sz+1));
 	const char           *name;
+	ccs_bool_t            check;
 
 
 	err = ccs_configuration_space_get_num_hyperparameters(configuration_space,
@@ -95,8 +96,9 @@ void check_configuration(ccs_configuration_space_t  configuration_space,
 		configuration_space, &configuration);
 	assert( err == CCS_SUCCESS );
 
-	err = ccs_configuration_check(configuration);
+	err = ccs_configuration_check(configuration, &check);
 	assert( err == CCS_SUCCESS );
+	assert( check );
 	for (size_t i = 0; i < sz; i++) {
 		ccs_datum_t datum;
 		ccs_datum_t hdatum;
@@ -182,6 +184,7 @@ void test_sample() {
 	ccs_configuration_t       configurations[100];
 	ccs_configuration_space_t configuration_space;
 	ccs_result_t              err;
+	ccs_bool_t                check;
 
 	err = ccs_create_configuration_space("my_config_space",
 	                                     &configuration_space);
@@ -203,16 +206,18 @@ void test_sample() {
 	err = ccs_configuration_space_sample(configuration_space, &configuration);
 	assert( err == CCS_SUCCESS );
 
-	err = ccs_configuration_check(configuration);
+	err = ccs_configuration_check(configuration, &check);
 	assert( err == CCS_SUCCESS );
+	assert( check );
 
 	err = ccs_configuration_space_samples(configuration_space,
 	                                      100, configurations);
 	assert( err == CCS_SUCCESS );
 
 	for (size_t i = 0; i < 100; i++) {
-		err = ccs_configuration_check(configurations[i]);
+		err = ccs_configuration_check(configurations[i], &check);
 		assert( err == CCS_SUCCESS );
+		assert( check );
 		err = ccs_release_object(configurations[i]);
 		assert( err == CCS_SUCCESS );
 	}
@@ -237,6 +242,7 @@ void test_set_distribution() {
 	ccs_configuration_t       configurations[100];
 	ccs_configuration_space_t configuration_space;
 	ccs_result_t              err;
+	ccs_bool_t                check;
 
 	err = ccs_create_configuration_space("my_config_space",
 	                                     &configuration_space);
@@ -300,8 +306,9 @@ void test_set_distribution() {
 
 	for (size_t i = 0; i < 100; i++) {
 		ccs_datum_t values[3];
-		err = ccs_configuration_check(configurations[i]);
+		err = ccs_configuration_check(configurations[i], &check);
 		assert( err == CCS_SUCCESS );
+		assert( check );
 		err = ccs_configuration_get_values(configurations[i], 3, values, NULL);
 		assert( err == CCS_SUCCESS );
 		assert( values[0].value.f >= -4.0 );
@@ -336,8 +343,9 @@ void test_set_distribution() {
 
 	for (size_t i = 0; i < 100; i++) {
 		ccs_datum_t values[3];
-		err = ccs_configuration_check(configurations[i]);
+		err = ccs_configuration_check(configurations[i], &check);
 		assert( err == CCS_SUCCESS );
+		assert( check );
 		err = ccs_configuration_get_values(configurations[i], 3, values, NULL);
 		assert( err == CCS_SUCCESS );
 		assert( values[2].value.f >= -4.0 );

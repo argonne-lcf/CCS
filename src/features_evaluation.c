@@ -301,10 +301,11 @@ ccs_features_evaluation_get_value_by_name(ccs_features_evaluation_t  evaluation,
 }
 
 ccs_result_t
-ccs_features_evaluation_check(ccs_features_evaluation_t  evaluation) {
+ccs_features_evaluation_check(ccs_features_evaluation_t  evaluation,
+                              ccs_bool_t                *is_valid_ret) {
 	CCS_CHECK_OBJ(evaluation, CCS_FEATURES_EVALUATION);
 	CCS_VALIDATE(ccs_objective_space_check_evaluation_values(
-		evaluation->data->objective_space, evaluation->data->num_values, evaluation->data->values));
+		evaluation->data->objective_space, evaluation->data->num_values, evaluation->data->values, is_valid_ret));
 	return CCS_SUCCESS;
 }
 

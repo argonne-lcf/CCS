@@ -163,10 +163,11 @@ ccs_configuration_get_value_by_name(ccs_configuration_t  configuration,
 }
 
 ccs_result_t
-ccs_configuration_check(ccs_configuration_t configuration) {
+ccs_configuration_check(ccs_configuration_t  configuration,
+                        ccs_bool_t          *is_valid_ret) {
 	CCS_CHECK_OBJ(configuration, CCS_CONFIGURATION);
 	CCS_VALIDATE(ccs_configuration_space_check_configuration(
-		configuration->data->configuration_space, configuration));
+		configuration->data->configuration_space, configuration, is_valid_ret));
 	return CCS_SUCCESS;
 }
 

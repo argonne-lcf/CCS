@@ -1,7 +1,7 @@
 module CCS
 
   attach_function :ccs_create_features, [:ccs_features_space_t, :size_t, :pointer, :pointer], :ccs_result_t
-  attach_function :ccs_features_check, [:ccs_features_t], :ccs_result_t
+  attach_function :ccs_features_check, [:ccs_features_t, :pointer], :ccs_result_t
 
   class Features < Binding
     alias features_space context
@@ -33,9 +33,10 @@ module CCS
     end
 
     def check
-      res = CCS.ccs_features_check(@handle)
+      ptr = MemoryPointer::new(:ccs_bool_t)
+      res = CCS.ccs_features_check(@handle, ptr)
       CCS.error_check(res)
-      self
+      return ptr.read_ccs_bool_t == CCS::FALSE ? false : true
     end
 
   end

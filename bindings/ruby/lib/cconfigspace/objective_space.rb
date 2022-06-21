@@ -25,8 +25,8 @@ module CCS
   attach_function :ccs_objective_space_add_objectives, [:ccs_objective_space_t, :size_t, :pointer, :pointer], :ccs_result_t
   attach_function :ccs_objective_space_get_objective, [:ccs_objective_space_t, :size_t, :pointer, :pointer], :ccs_result_t
   attach_function :ccs_objective_space_get_objectives, [:ccs_objective_space_t, :size_t, :pointer, :pointer, :pointer], :ccs_result_t
-  attach_function :ccs_objective_space_check_evaluation, [:ccs_objective_space_t, :ccs_evaluation_t], :ccs_result_t
-  attach_function :ccs_objective_space_check_evaluation_values, [:ccs_objective_space_t, :size_t, :pointer], :ccs_result_t
+  attach_function :ccs_objective_space_check_evaluation, [:ccs_objective_space_t, :ccs_evaluation_t, :pointer], :ccs_result_t
+  attach_function :ccs_objective_space_check_evaluation_values, [:ccs_objective_space_t, :size_t, :pointer, :pointer], :ccs_result_t
 
   class ObjectiveSpace < Context
 
@@ -128,9 +128,10 @@ module CCS
     end
 
     def check(evaluation)
-      res = CCS.ccs_objective_space_check_evaluation(@handle, evaluation)
+      ptr = MemoryPointer::new(:ccs_bool_t)
+      res = CCS.ccs_objective_space_check_evaluation(@handle, evaluation, ptr)
       CCS.error_check(res)
-      self
+      return ptr.read_ccs_bool_t == CCS::FALSE ? false : true
     end
 
     def check_values(values)
@@ -138,9 +139,10 @@ module CCS
       raise CCSError, :CCS_INVALID_VALUE if count != num_hyperparameters
       ptr = MemoryPointer::new(:ccs_datum_t, count)
       values.each_with_index {  |v, i| Datum::new(ptr[i]).value = v }
-      res = CCS.ccs_objective_space_check_evaluation_values(@handle, count, ptr)
+      ptr2 = MemoryPointer::new(:ccs_bool_t)
+      res = CCS.ccs_objective_space_check_evaluation_values(@handle, count, ptr, ptr2)
       CCS.error_check(res)
-      self
+      return ptr2.read_ccs_bool_t == CCS::FALSE ? false : true
     end
   end
 end

@@ -323,6 +323,11 @@ ccs_features_evaluation_compare(
 /**
  * Check that a features evaluation values are valid in the objective space.
  * @param[in] features_evaluation
+ * @param[out] is_valid_ret a pointer to a variable that will hold the result
+ *                          of the check. Result will be CCS_TRUE if the
+ *                          features_evaluation is valid. Result will be
+ *                          CCS_FALSE if an hyperparameter value is not a valid
+ *                          value for this hyperparameter
  * @return #CCS_SUCCESS on success
  * @return -#CCS_INVALID_OBJECT if \p features_evaluation is not a valid CCS
  *                              features evaluation
@@ -331,7 +336,8 @@ ccs_features_evaluation_compare(
  *                                  space
  */
 extern ccs_result_t
-ccs_features_evaluation_check(ccs_features_evaluation_t features_evaluation);
+ccs_features_evaluation_check(ccs_features_evaluation_t  features_evaluation,
+                              ccs_bool_t                *is_valid_ret);
 
 #ifdef __cplusplus
 }

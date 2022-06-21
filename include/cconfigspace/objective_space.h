@@ -258,6 +258,11 @@ ccs_objective_space_get_hyperparameters(ccs_objective_space_t  objective_space,
  * Check that an evaluation is a valid in an objective space.
  * @param[in] objective_space
  * @param[in] evaluation
+ * @param[out] is_valid_ret a pointer to a variable that will hold the result
+ *                          of the check. Result will be CCS_TRUE if the
+ *                          evaluation is valid. Result will be CCS_FALSE if
+ *                          an hyperparameter value is not a valid value
+ *                          for this hyperparameter;
  * @return #CCS_SUCCESS on success
  * @return -#CCS_INVALID_OBJECT if \p objective_space is not a valid CCS
  *                              objective space; or if \p evaluation is not a
@@ -266,13 +271,12 @@ ccs_objective_space_get_hyperparameters(ccs_objective_space_t  objective_space,
  *                                  objective space; or if the number of values
  *                                  contained in \p evaluation is not equal to
  *                                  the number of hyperparameters in the
- *                                  features space; or if an active
- *                                  hyperparameter value is not a valid value
- *                                  for this hyperparameter
+ *                                  features space
  */
 extern ccs_result_t
-ccs_objective_space_check_evaluation(ccs_objective_space_t objective_space,
-                                     ccs_evaluation_t      evaluation);
+ccs_objective_space_check_evaluation(ccs_objective_space_t  objective_space,
+                                     ccs_evaluation_t       evaluation,
+                                     ccs_bool_t            *is_valid_ret);
 
 /**
  * Check that a set of values would create a valid evaluation for an
@@ -281,20 +285,24 @@ ccs_objective_space_check_evaluation(ccs_objective_space_t objective_space,
  * @param[in] num_values the number of provided values
  * @param[in] values an array of \p num_values values that would become an
  *                   evaluation
+ * @param[out] is_valid_ret a pointer to a variable that will hold the result
+ *                          of the check. Result will be CCS_TRUE if the
+ *                          evaluation is valid. Result will be CCS_FALSE if
+ *                          an hyperparameter value is not a valid value
+ *                          for this hyperparameter;
  * @return #CCS_SUCCESS on success
  * @return -#CCS_INVALID_OBJECT if \p objective_space is not a valid CCS
  *                              objective space
  * @return -#CCS_INVALID_VALUE if \p values is NULL and num_values is greater
  *                             than 0
  * @return -#CCS_INVALID_EVALUATION if \p num_values is not equal to the number
- *                                  of hyperparameters in the objective space;
- *                                  or if an active hyperparameter value is not
- *                                  a valid value for this hyperparameter
+ *                                  of hyperparameters in the objective space
  */
 extern ccs_result_t
 ccs_objective_space_check_evaluation_values(ccs_objective_space_t  objective_space,
                                             size_t                 num_values,
-                                            ccs_datum_t           *values);
+                                            ccs_datum_t           *values,
+                                            ccs_bool_t            *is_valid_ret);
 
 /**
  * Validate that a given value at the given index is valid in a objective

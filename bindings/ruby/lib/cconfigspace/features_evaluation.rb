@@ -7,7 +7,7 @@ module CCS
   attach_function :ccs_features_evaluation_get_objective_value, [:ccs_features_evaluation_t, :size_t, :pointer], :ccs_result_t
   attach_function :ccs_features_evaluation_get_objective_values, [:ccs_features_evaluation_t, :size_t, :pointer, :pointer], :ccs_result_t
   attach_function :ccs_features_evaluation_compare, [:ccs_features_evaluation_t, :ccs_features_evaluation_t, :pointer], :ccs_result_t
-  attach_function :ccs_features_evaluation_check, [:ccs_features_evaluation_t], :ccs_result_t
+  attach_function :ccs_features_evaluation_check, [:ccs_features_evaluation_t, :pointer], :ccs_result_t
   class FeaturesEvaluation < Binding
     alias objective_space context
     add_handle_property :configuration, :ccs_configuration_t, :ccs_features_evaluation_get_configuration, memoize: true
@@ -67,9 +67,10 @@ module CCS
     end
 
     def check
-      res = CCS.ccs_features_evaluation_check(@handle)
+      ptr = MemoryPointer::new(:ccs_bool_t)
+      res = CCS.ccs_features_evaluation_check(@handle, ptr)
       CCS.error_check(res)
-      self
+      return ptr.read_ccs_bool_t == CCS::FALSE ? false : true
     end
 
     def compare(other)

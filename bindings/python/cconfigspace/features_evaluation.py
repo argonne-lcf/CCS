@@ -1,5 +1,5 @@
 import ctypes as ct
-from .base import Object, Error, CEnumeration, ccs_error, ccs_result, _ccs_get_function, ccs_context, ccs_hyperparameter, ccs_configuration_space, ccs_configuration, ccs_features_space, ccs_features, ccs_datum, ccs_datum_fix, ccs_objective_space, ccs_features_evaluation
+from .base import Object, Error, CEnumeration, ccs_error, ccs_result, _ccs_get_function, ccs_context, ccs_hyperparameter, ccs_configuration_space, ccs_configuration, ccs_features_space, ccs_features, ccs_datum, ccs_datum_fix, ccs_objective_space, ccs_features_evaluation, ccs_bool
 from .context import Context
 from .hyperparameter import Hyperparameter
 from .configuration_space import ConfigurationSpace
@@ -19,7 +19,7 @@ ccs_features_evaluation_set_error = _ccs_get_function("ccs_features_evaluation_s
 ccs_features_evaluation_get_objective_value = _ccs_get_function("ccs_features_evaluation_get_objective_value", [ccs_features_evaluation, ct.c_size_t, ct.POINTER(ccs_datum)])
 ccs_features_evaluation_get_objective_values = _ccs_get_function("ccs_features_evaluation_get_objective_values", [ccs_features_evaluation, ct.c_size_t, ct.POINTER(ccs_datum), ct.POINTER(ct.c_size_t)])
 ccs_features_evaluation_compare = _ccs_get_function("ccs_features_evaluation_compare", [ccs_features_evaluation, ccs_features_evaluation, ct.POINTER(ccs_comparison)])
-ccs_features_evaluation_check = _ccs_get_function("ccs_features_evaluation_check", [ccs_features_evaluation])
+ccs_features_evaluation_check = _ccs_get_function("ccs_features_evaluation_check", [ccs_features_evaluation, ct.POINTER(ccs_bool)])
 
 class FeaturesEvaluation(Binding):
   def __init__(self, handle = None, retain = False, auto_release = True,
@@ -113,5 +113,7 @@ class FeaturesEvaluation(Binding):
     return v.value
 
   def check(self):
-    res = res = ccs_features_evaluation(self.handle)
+    valid = ccs_bool()
+    res = res = ccs_features_evaluation(self.handle, ct.byref(valid))
     Error.check(res)
+    return False if valid.value == 0 else True

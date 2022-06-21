@@ -820,48 +820,51 @@ _check_configuration(ccs_configuration_space_t  configuration_space,
 				active = CCS_FALSE;
 			}
 		}
-		if (active != (values[*p_index].type == CCS_INACTIVE ? CCS_FALSE : CCS_TRUE))
-			return -CCS_INVALID_CONFIGURATION;
+		if (active != (values[*p_index].type == CCS_INACTIVE ? CCS_FALSE : CCS_TRUE)) {
+			*is_valid_ret = CCS_FALSE;
+			return CCS_SUCCESS;
+		}
 		if (active) {
-			ccs_bool_t res;
 			CCS_VALIDATE(ccs_hyperparameter_check_value(
-			    wrapper->hyperparameter, values[*p_index], &res));
-			if (res == CCS_FALSE)
-				return -CCS_INVALID_CONFIGURATION;
+			    wrapper->hyperparameter, values[*p_index], is_valid_ret));
+			if (*is_valid_ret == CCS_FALSE)
+				return CCS_SUCCESS;
 		}
 	}
-	ccs_bool_t valid;
-	CCS_VALIDATE(_test_forbidden(configuration_space, values, &valid));
-	if (!valid)
-		return -CCS_INVALID_CONFIGURATION;
+	CCS_VALIDATE(_test_forbidden(configuration_space, values, is_valid_ret));
 	return CCS_SUCCESS;
 }
 
-//TODO fixme when revamped error codes
 ccs_result_t
-ccs_configuration_space_check_configuration(ccs_configuration_space_t configuration_space,
-                                            ccs_configuration_t       configuration) {
+ccs_configuration_space_check_configuration(
+		ccs_configuration_space_t  configuration_space,
+		ccs_configuration_t        configuration,
+		ccs_bool_t                *is_valid_ret) {
 	CCS_CHECK_OBJ(configuration_space, CCS_CONFIGURATION_SPACE);
 	CCS_CHECK_OBJ(configuration, CCS_CONFIGURATION);
 	if (configuration->data->configuration_space != configuration_space)
 		return -CCS_INVALID_CONFIGURATION;
 	if (!configuration_space->data->graph_ok)
 		CCS_VALIDATE(_generate_constraints(configuration_space));
-	return _check_configuration(configuration_space,
-	                            configuration->data->num_values,
-	                            configuration->data->values);
+	CCS_VALIDATE(_check_configuration(configuration_space,
+		configuration->data->num_values,
+		configuration->data->values, is_valid_ret));
+	return CCS_SUCCESS;
 }
 
-//TODO fixme when revamped error codes
 ccs_result_t
-ccs_configuration_space_check_configuration_values(ccs_configuration_space_t  configuration_space,
-                                                   size_t                     num_values,
-                                                   ccs_datum_t               *values) {
+ccs_configuration_space_check_configuration_values(
+		ccs_configuration_space_t  configuration_space,
+		size_t                     num_values,
+		ccs_datum_t               *values,
+		ccs_bool_t                *is_valid_ret) {
 	CCS_CHECK_OBJ(configuration_space, CCS_CONFIGURATION_SPACE);
 	CCS_CHECK_ARY(num_values, values);
 	if (!configuration_space->data->graph_ok)
 		CCS_VALIDATE(_generate_constraints(configuration_space));
-	return _check_configuration(configuration_space, num_values, values);
+	CCS_VALIDATE(_check_configuration(
+		configuration_space, num_values, values, is_valid_ret));
+	return CCS_SUCCESS;
 }
 
 

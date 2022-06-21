@@ -1,5 +1,5 @@
 import ctypes as ct
-from .base import Object, Error, ccs_error, _ccs_get_function, ccs_context, ccs_hyperparameter, ccs_features_space, ccs_features, ccs_datum, ccs_hash, ccs_int
+from .base import Object, Error, ccs_error, _ccs_get_function, ccs_context, ccs_hyperparameter, ccs_features_space, ccs_features, ccs_datum, ccs_hash, ccs_int, ccs_bool
 from .context import Context
 from .hyperparameter import Hyperparameter
 from .features_space import FeaturesSpace
@@ -7,7 +7,7 @@ from .binding import Binding
 
 ccs_create_features = _ccs_get_function("ccs_create_features", [ccs_features_space, ct.c_size_t, ct.POINTER(ccs_datum), ct.POINTER(ccs_features)])
 ccs_features_get_features_space = _ccs_get_function("ccs_features_get_features_space", [ccs_features, ct.POINTER(ccs_features_space)])
-ccs_features_check = _ccs_get_function("ccs_features_check", [ccs_features])
+ccs_features_check = _ccs_get_function("ccs_features_check", [ccs_features, ct.POINTER(ccs_bool)])
 
 class Features(Binding):
   def __init__(self, handle = None, retain = False, auto_release = True,
@@ -43,5 +43,7 @@ class Features(Binding):
     return self._features_space
 
   def check(self):
-    res = ccs_features_check(self.handle)
+    valid = ccs_bool()
+    res = ccs_features_check(self.handle, ct.byref(valid))
     Error.check(res)
+    return False if valid.value == 0 else True

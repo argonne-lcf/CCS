@@ -137,14 +137,22 @@ ccs_configuration_get_value_by_name(ccs_configuration_t  configuration,
  * Check that the configuration is a valid configuration for the configuration
  * space.
  * @param[in] configuration
+ * @param[out] is_valid_ret a pointer to a variable that will hold the result
+ *                          of the check. Result will be CCS_TRUE if the
+ *                          configuration is valid. Result will be CCS_FALSE if
+ *                          an active hyperparameter value is not a valid value
+ *                          for this hyperparameter; or if an inactive
+ *                          hyperparameter value is not inactive; or if a
+ *                          forbidden clause would be evaluating to #ccs_true
  * @return #CCS_SUCCESS on success
  * @return -#CCS_INVALID_OBJECT if \p configuration is not a valid CCS
  *                              configuration
- * @return -#CCS_INVALID_CONFIGURATION if \p configuration is found to be
- *                                     invalid
+ * @return -#CCS_INVALID_CONFIGURATION if \p configuration has become invalid
+ *                                     for the configuration space
  */
 extern ccs_result_t
-ccs_configuration_check(ccs_configuration_t configuration);
+ccs_configuration_check(ccs_configuration_t  configuration,
+                        ccs_bool_t          *is_valid_ret);
 
 /**
  * Compute a hash value for the configuration by hashing together the

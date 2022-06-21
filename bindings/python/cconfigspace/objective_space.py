@@ -1,5 +1,5 @@
 import ctypes as ct
-from .base import Object, Error, CEnumeration, ccs_error, _ccs_get_function, ccs_context, ccs_hyperparameter, ccs_configuration_space, ccs_configuration, ccs_evaluation, ccs_rng, ccs_distribution, ccs_expression, ccs_datum, ccs_objective_space
+from .base import Object, Error, CEnumeration, ccs_error, _ccs_get_function, ccs_context, ccs_hyperparameter, ccs_configuration_space, ccs_configuration, ccs_evaluation, ccs_rng, ccs_distribution, ccs_expression, ccs_datum, ccs_objective_space, ccs_bool
 from .context import Context
 from .hyperparameter import Hyperparameter
 from .expression import Expression
@@ -20,8 +20,8 @@ ccs_objective_space_add_objective = _ccs_get_function("ccs_objective_space_add_o
 ccs_objective_space_add_objectives = _ccs_get_function("ccs_objective_space_add_objectives", [ccs_objective_space, ct.c_size_t, ct.POINTER(ccs_expression), ct.POINTER(ccs_objective_type)])
 ccs_objective_space_get_objective = _ccs_get_function("ccs_objective_space_get_objective", [ccs_objective_space, ct.c_size_t, ct.POINTER(ccs_expression), ct.POINTER(ccs_objective_type)])
 ccs_objective_space_get_objectives = _ccs_get_function("ccs_objective_space_get_objectives", [ccs_objective_space, ct.c_size_t, ct.POINTER(ccs_expression), ct.POINTER(ccs_objective_type), ct.POINTER(ct.c_size_t)])
-ccs_objective_space_check_evaluation = _ccs_get_function("ccs_objective_space_check_evaluation", [ccs_objective_space, ccs_evaluation])
-ccs_objective_space_check_evaluation_values = _ccs_get_function("ccs_objective_space_check_evaluation_values", [ccs_objective_space, ct.c_size_t, ct.POINTER(ccs_datum)])
+ccs_objective_space_check_evaluation = _ccs_get_function("ccs_objective_space_check_evaluation", [ccs_objective_space, ccs_evaluation, ct.POINTER(ccs_bool)])
+ccs_objective_space_check_evaluation_values = _ccs_get_function("ccs_objective_space_check_evaluation_values", [ccs_objective_space, ct.c_size_t, ct.POINTER(ccs_datum), ct.POINTER(ccs_bool)])
 
 class ObjectiveSpace(Context):
   def __init__(self, handle = None, retain = False, auto_release = True,
@@ -98,8 +98,10 @@ class ObjectiveSpace(Context):
     return [(Expression.from_handle(ccs_expression(v[x])), t[x].value) for x in range(sz)]
 
   def check(self, evaluation):
-    res = ccs_objective_space_check_evaluation(self.handle, evaluation.handle)
+    valid = ccs_bool()
+    res = ccs_objective_space_check_evaluation(self.handle, evaluation.handle, ct.byref(valid))
     Error.check(res)
+    return False if valid.value == 0 else True
 
   def check_values(self, values):
     count = len(values)
@@ -108,6 +110,8 @@ class ObjectiveSpace(Context):
     v = (ccs_datum * count)()
     for i in range(count):
       v[i].value = values[i]
-    res = ccs_objective_space_check_evaluation_values(self.handle, count, v)
+    valid = ccs_bool()
+    res = ccs_objective_space_check_evaluation_values(self.handle, count, v, ct.byref(valid))
     Error.check(res)
+    return False if valid.value == 0 else True
 

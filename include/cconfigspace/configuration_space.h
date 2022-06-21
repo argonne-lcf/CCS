@@ -546,24 +546,25 @@ ccs_configuration_space_get_forbidden_clauses(
  * Check that a configuration is a valid in a configuration space.
  * @param[in] configuration_space
  * @param[in] configuration
+ * @param[out] is_valid_ret a pointer to a variable that will hold the result
+ *                          of the check. Result will be CCS_TRUE if the
+ *                          configuration is valid. Result will be CCS_FALSE if
+ *                          an active hyperparameter value is not a valid value
+ *                          for this hyperparameter; or if an inactive
+ *                          hyperparameter value is not inactive; or if a
+ *                          forbidden clause would be evaluating to #ccs_true
  * @return #CCS_SUCCESS on success
  * @return -#CCS_INVALID_OBJECT if \p configuration_space is not a valid CCS
  *                              configuration space; or if \p configuration is
  *                              not a valid CCS configuration
  * @return -#CCS_INVALID_CONFIGURATION if \p configuration is not associated to
- *                                     the configuration space; or if the number
- *                                     of values contained in \p configuration
- *                                     is not equal to the number of
- *                                     hyperparameters in the configuration
- *                                     space; or if an active hyperparameter
- *                                     value is not a valid value for this
- *                                     hyperparameter; or if a forbidden clause
- *                                     would be evaluating to #ccs_true
+ *                                     the configuration space
  */
 extern ccs_result_t
 ccs_configuration_space_check_configuration(
-	ccs_configuration_space_t configuration_space,
-	ccs_configuration_t       configuration);
+	ccs_configuration_space_t  configuration_space,
+	ccs_configuration_t        configuration,
+	ccs_bool_t                *is_valid_ret);
 
 /**
  * Check that a set of values would create a valid configuration for a
@@ -572,6 +573,13 @@ ccs_configuration_space_check_configuration(
  * @param[in] num_values the number of provided values
  * @param[in] values an array of \p num_values values that would become a
  *                   configuration
+ * @param[out] is_valid_ret a pointer to a variable that will hold the result
+ *                          of the check. Result will be CCS_TRUE if the
+ *                          configuration is valid. Result will be CCS_FALSE if
+ *                          an active hyperparameter value is not a valid value
+ *                          for this hyperparameter; or if an inactive
+ *                          hyperparameter value is not inactive; or if a
+ *                          forbidden clause would be evaluating to #ccs_true
  * @return #CCS_SUCCESS on success
  * @return -#CCS_INVALID_OBJECT if \p configuration_space is not a valid CCS
  *                              configuration space
@@ -579,17 +587,14 @@ ccs_configuration_space_check_configuration(
  *                             than 0
  * @return -#CCS_INVALID_CONFIGURATION if \p num_values is not equal to the
  *                                     number of hyperparameters in the
- *                                     configuration space; or if an active
- *                                     hyperparameter value is not a valid value
- *                                     for this hyperparameter; or if a
- *                                     forbidden clause would be evaluating to
- *                                     #ccs_true
+ *                                     configuration space
  */
 extern ccs_result_t
 ccs_configuration_space_check_configuration_values(
 	ccs_configuration_space_t  configuration_space,
 	size_t                     num_values,
-	ccs_datum_t               *values);
+	ccs_datum_t               *values,
+	ccs_bool_t                *is_valid_ret);
 
 /**
  * Get the default configuration of a configuration space

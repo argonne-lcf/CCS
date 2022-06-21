@@ -271,38 +271,42 @@ ccs_features_space_validate_value(ccs_features_space_t  features_space,
 static inline ccs_result_t
 _check_features(ccs_features_space_t  features_space,
                 size_t                num_values,
-                ccs_datum_t          *values) {
+                ccs_datum_t          *values,
+                ccs_bool_t           *is_valid_ret) {
 	UT_array *array = features_space->data->hyperparameters;
 	size_t num_hyperparameters = utarray_len(array);
 	CCS_REFUTE(num_values != num_hyperparameters, CCS_INVALID_FEATURES);
+	*is_valid_ret = CCS_TRUE;
 	for (size_t i = 0; i < num_values; i++) {
-		ccs_bool_t res;
 		_ccs_hyperparameter_wrapper_t *wrapper =
 			(_ccs_hyperparameter_wrapper_t *)utarray_eltptr(array, i);
 		CCS_VALIDATE(ccs_hyperparameter_check_value(
-		    wrapper->hyperparameter, values[i], &res));
-		CCS_REFUTE(res == CCS_FALSE, CCS_INVALID_FEATURES);
+		    wrapper->hyperparameter, values[i], is_valid_ret));
+		if (*is_valid_ret == CCS_FALSE)
+			return CCS_SUCCESS;
 	}
 	return CCS_SUCCESS;
 }
 
 ccs_result_t
-ccs_features_space_check_features(ccs_features_space_t features_space,
-                                  ccs_features_t       features) {
+ccs_features_space_check_features(ccs_features_space_t  features_space,
+                                  ccs_features_t        features,
+                                  ccs_bool_t           *is_valid_ret) {
 	CCS_CHECK_OBJ(features_space, CCS_FEATURES_SPACE);
 	CCS_CHECK_OBJ(features, CCS_FEATURES);
 	CCS_REFUTE(features->data->features_space != features_space, CCS_INVALID_FEATURES);
 	CCS_VALIDATE(_check_features(features_space,
-		features->data->num_values, features->data->values));
+		features->data->num_values, features->data->values, is_valid_ret));
 	return CCS_SUCCESS;
 }
 
 ccs_result_t
 ccs_features_space_check_features_values(ccs_features_space_t  features_space,
                                          size_t                num_values,
-                                         ccs_datum_t          *values) {
+                                         ccs_datum_t          *values,
+                                         ccs_bool_t           *is_valid_ret) {
 	CCS_CHECK_OBJ(features_space, CCS_CONFIGURATION_SPACE);
 	CCS_CHECK_ARY(num_values, values);
-	CCS_VALIDATE(_check_features(features_space, num_values, values));
+	CCS_VALIDATE(_check_features(features_space, num_values, values, is_valid_ret));
 	return CCS_SUCCESS;
 }

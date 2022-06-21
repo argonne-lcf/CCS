@@ -167,10 +167,11 @@ ccs_features_get_value_by_name(ccs_features_t  features,
 }
 
 ccs_result_t
-ccs_features_check(ccs_features_t features) {
+ccs_features_check(ccs_features_t  features,
+                   ccs_bool_t     *is_valid_ret) {
 	CCS_CHECK_OBJ(features, CCS_FEATURES);
 	CCS_VALIDATE(ccs_features_space_check_features(
-		features->data->features_space, features));
+		features->data->features_space, features, is_valid_ret));
 	return CCS_SUCCESS;
 }
 

@@ -168,6 +168,7 @@ void test_features() {
 	ccs_datum_t           datum;
 	size_t                num_values_ret;
 	int                   cmp;
+	ccs_bool_t            check;
 
 	err = ccs_create_features_space("my_config_space",
 	                                &features_space);
@@ -208,14 +209,15 @@ void test_features() {
 	assert( values[1].type == datum.type );
 	assert( values[1].value.f == datum.value.f );
 
-	err = ccs_features_check(features1);
+	err = ccs_features_check(features1, &check);
 	assert( err == CCS_SUCCESS );
+	assert( check );
 
-	err = ccs_features_space_check_features(features_space, features1);
+	err = ccs_features_space_check_features(features_space, features1, &check);
 	assert( err == CCS_SUCCESS );
+	assert( check );
 
 	err = ccs_create_features(features_space, 3, values, &features2);
-
 	assert( err == CCS_SUCCESS );
 
 	err = ccs_features_cmp(features1, features2, &cmp);
@@ -232,11 +234,13 @@ void test_features() {
 	err = ccs_features_set_value(features2, 1, ccs_float(10.0));
 	assert( err == CCS_SUCCESS );
 
-	err = ccs_features_space_check_features(features_space, features2);
-	assert( err == -CCS_INVALID_FEATURES );
+	err = ccs_features_check(features2, &check);
+	assert( err == CCS_SUCCESS );
+	assert( !check );
 
-	err = ccs_features_space_check_features(features_space, features2);
-	assert( err == -CCS_INVALID_FEATURES );
+	err = ccs_features_space_check_features(features_space, features2, &check);
+	assert( err == CCS_SUCCESS );
+	assert( !check );
 
 	for (size_t i = 0; i < 3; i++) {
 		err = ccs_release_object(hyperparameters[i]);

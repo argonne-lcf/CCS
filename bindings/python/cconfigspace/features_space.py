@@ -1,13 +1,13 @@
 import ctypes as ct
-from .base import Object, Error, CEnumeration, ccs_error, _ccs_get_function, ccs_context, ccs_hyperparameter, ccs_features_space, ccs_features, ccs_datum
+from .base import Object, Error, CEnumeration, ccs_error, _ccs_get_function, ccs_context, ccs_hyperparameter, ccs_features_space, ccs_features, ccs_datum, ccs_bool
 from .context import Context
 from .hyperparameter import Hyperparameter
 
 ccs_create_features_space = _ccs_get_function("ccs_create_features_space", [ct.c_char_p, ct.POINTER(ccs_features_space)])
 ccs_features_space_add_hyperparameter = _ccs_get_function("ccs_features_space_add_hyperparameter", [ccs_features_space, ccs_hyperparameter])
 ccs_features_space_add_hyperparameters = _ccs_get_function("ccs_features_space_add_hyperparameters", [ccs_features_space, ct.c_size_t, ct.POINTER(ccs_hyperparameter)])
-ccs_features_space_check_features = _ccs_get_function("ccs_features_space_check_features", [ccs_features_space, ccs_features])
-ccs_features_space_check_features_values = _ccs_get_function("ccs_features_space_check_features_values", [ccs_features_space, ct.c_size_t, ct.POINTER(ccs_datum)])
+ccs_features_space_check_features = _ccs_get_function("ccs_features_space_check_features", [ccs_features_space, ccs_features, ct.POINTER(ccs_bool)])
+ccs_features_space_check_features_values = _ccs_get_function("ccs_features_space_check_features_values", [ccs_features_space, ct.c_size_t, ct.POINTER(ccs_datum), ct.POINTER(ccs_bool)])
 
 class FeaturesSpace(Context):
   def __init__(self, handle = None, retain = False, auto_release = True,
@@ -37,8 +37,10 @@ class FeaturesSpace(Context):
     Error.check(res)
 
   def check(self, features):
-    res = ccs_features_space_check_features(self.handle, features.handle)
+    valid = ccs_bool()
+    res = ccs_features_space_check_features(self.handle, features.handle, ct.byref(valid))
     Error.check(res)
+    return False if valid.value == 0 else True
 
   def check_values(self, values):
     count = len(values)
@@ -47,5 +49,7 @@ class FeaturesSpace(Context):
     v = (ccs_datum * count)()
     for i in range(count):
       v[i].value = values[i]
-    res = ccs_features_space_check_features_values(self.handle, count, v)
+    valid = ccs_bool()
+    res = ccs_features_space_check_features_values(self.handle, count, v, ct.byref(valid))
     Error.check(res)
+    return False if valid.value == 0 else True
