@@ -164,6 +164,7 @@ test_combined() {
 		}
 		err = ccs_configuration_space_check_configuration(space, configuration, &check);
 		assert( err == CCS_SUCCESS );
+		assert( check );
 		err = ccs_release_object(configuration);
 		assert( err == CCS_SUCCESS );
 	}
@@ -176,7 +177,6 @@ test_combined() {
 		ccs_bool_t check;
 		err = ccs_configuration_get_values(configurations[i], 3, values, NULL);
 		assert( err == CCS_SUCCESS );
-		assert( check );
 		assert( values[1].type == CCS_FLOAT );
 		f = values[1].value.f;
 		assert( f >= -1.0 && f < 1.0 );
