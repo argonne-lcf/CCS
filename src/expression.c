@@ -208,18 +208,22 @@ _ccs_expr_node_eval(ccs_expression_t           n,
 	return CCS_SUCCESS;
 }
 
-//TODO fix when finished revamping error codes
-#define eval_node(data, context, values, node, ht) do { \
+#define EVAL_NODE(data, context, values, node, ht) do { \
 	CCS_VALIDATE(_ccs_expr_node_eval(data->nodes[0], context, values, &node, ht)); \
 } while(0)
 
-//TODO fix when finished revamping error codes
-#define eval_left_right(data, context, values, left, right, htl, htr) do { \
+#define EVAL_LEFT_RIGHT(data, context, values, left, right, htl, htr) do { \
 	CCS_VALIDATE(_ccs_expr_node_eval(data->nodes[0], context, values, &left, htl)); \
 	CCS_VALIDATE(_ccs_expr_node_eval(data->nodes[1], context, values, &right, htr)); \
 } while (0)
 
-//TODO fix when finished revamping error codes
+#define RETURN_IF_INACTIVE(node, result) do { \
+	if (node.type == CCS_INACTIVE) { \
+		*result = ccs_inactive; \
+		return CCS_SUCCESS; \
+	} \
+} while (0)
+
 static ccs_result_t
 _ccs_expr_or_eval(_ccs_expression_data_t *data,
                   ccs_context_t           context,
@@ -227,38 +231,22 @@ _ccs_expr_or_eval(_ccs_expression_data_t *data,
                   ccs_datum_t            *result) {
 	ccs_datum_t left;
 	ccs_datum_t right;
-	// Lazy evaluation + avoid inactive branch suppressing a hyper parameter
+	// avoid inactive branch suppressing a hyper parameter
 	// if the other branch is valid.
-	ccs_result_t errl;
-	ccs_result_t errr;
-        errl = _ccs_expr_node_eval(data->nodes[0], context, values, &left, NULL);
-        if (errl) {
-		if (errl != -CCS_INACTIVE_HYPERPARAMETER)
-			CCS_VALIDATE(errl);
-	} else {
-		CCS_REFUTE(left.type != CCS_BOOLEAN, CCS_INVALID_VALUE);
-		if (left.value.i) {
-			*result = ccs_true;
-			return CCS_SUCCESS;
-		}
+        CCS_VALIDATE(_ccs_expr_node_eval(data->nodes[0], context, values, &left, NULL));
+	CCS_VALIDATE(_ccs_expr_node_eval(data->nodes[1], context, values, &right, NULL));
+	CCS_REFUTE(left.type != CCS_BOOLEAN && left.type != CCS_INACTIVE, CCS_INVALID_VALUE);
+	CCS_REFUTE(right.type != CCS_BOOLEAN && right.type != CCS_INACTIVE, CCS_INVALID_VALUE);
+	if (left.type == CCS_BOOLEAN && left.value.i) {
+		*result = ccs_true;
+		return CCS_SUCCESS;
 	}
-	errr = _ccs_expr_node_eval(data->nodes[1], context, values, &right, NULL);
-        if (errr) {
-		if (errr != -CCS_INACTIVE_HYPERPARAMETER)
-			CCS_VALIDATE(errr);
-	} else {
-		CCS_REFUTE(right.type != CCS_BOOLEAN, CCS_INVALID_VALUE);
-		if (right.value.i) {
-                        *result = ccs_true;
-			return CCS_SUCCESS;
-		}
+	if (right.type == CCS_BOOLEAN && right.value.i) {
+		*result = ccs_true;
+		return CCS_SUCCESS;
 	}
-	// Return inactive parameter errors
-	if (errl)
-		return errl;
-	if (errr)
-		return errr;
-
+	RETURN_IF_INACTIVE(left, result);
+	RETURN_IF_INACTIVE(right, result);
 	*result = ccs_false;
 	return CCS_SUCCESS;
 }
@@ -277,7 +265,9 @@ _ccs_expr_and_eval(_ccs_expression_data_t *data,
                   ccs_datum_t             *result) {
 	ccs_datum_t left;
 	ccs_datum_t right;
-	eval_left_right(data, context, values, left, right, NULL, NULL);
+	EVAL_LEFT_RIGHT(data, context, values, left, right, NULL, NULL);
+	RETURN_IF_INACTIVE(left, result);
+	RETURN_IF_INACTIVE(right, result);
 	CCS_REFUTE(left.type != CCS_BOOLEAN || right.type != CCS_BOOLEAN, CCS_INVALID_VALUE);
 	*result = ((left.value.i && right.value.i) ? ccs_true : ccs_false);
 	return CCS_SUCCESS;
@@ -290,17 +280,17 @@ static _ccs_expression_ops_t _ccs_expr_and_ops = {
 	&_ccs_expr_and_eval
 };
 
-#define check_values(param, v) do { \
+#define CHECK_VALUES(param, v) do { \
 	ccs_bool_t valid; \
 	CCS_VALIDATE(ccs_hyperparameter_check_value(param, v, &valid)); \
 	CCS_REFUTE(!valid, CCS_INVALID_VALUE); \
 } while(0)
 
-#define check_hypers(param, v, t) do { \
+#define CHECK_HYPERS(param, v, t) do { \
 	if (t == CCS_HYPERPARAMETER_TYPE_ORDINAL || t == CCS_HYPERPARAMETER_TYPE_CATEGORICAL) { \
 		_ccs_expression_variable_data_t *d = \
 			(_ccs_expression_variable_data_t *)param->data; \
-		check_values(d->hyperparameter, v); \
+		CHECK_VALUES(d->hyperparameter, v); \
 	} else if (t == CCS_HYPERPARAMETER_TYPE_NUMERICAL || t == CCS_HYPERPARAMETER_TYPE_DISCRETE) \
 		CCS_REFUTE(v.type != CCS_INTEGER && v.type != CCS_FLOAT, CCS_INVALID_VALUE); \
 } while(0)
@@ -316,8 +306,7 @@ _ccs_string_cmp(const char *a, const char *b) {
 	return strcmp(a, b);
 }
 
-//TODO fix when finished revamping error codes
-static inline ccs_result_t
+static inline ccs_bool_t
 _ccs_datum_test_equal_generic(ccs_datum_t *a, ccs_datum_t *b, ccs_bool_t *equal) {
 	if (a->type == b->type) {
 		switch(a->type) {
@@ -337,10 +326,10 @@ _ccs_datum_test_equal_generic(ccs_datum_t *a, ccs_datum_t *b, ccs_bool_t *equal)
 			*equal = (a->value.f == b->value.i) ? CCS_TRUE : CCS_FALSE;
 		} else {
 			*equal = CCS_FALSE;
-			return -CCS_INVALID_VALUE;
+			return CCS_FALSE;
 		}
 	}
-	return CCS_SUCCESS;
+	return CCS_TRUE;
 }
 
 static inline ccs_result_t
@@ -375,7 +364,6 @@ _ccs_datum_cmp_generic(ccs_datum_t *a, ccs_datum_t *b, ccs_int_t *cmp) {
 	return CCS_SUCCESS;
 }
 
-//TODO fix when finished revamping error codes
 static ccs_result_t
 _ccs_expr_equal_eval(_ccs_expression_data_t *data,
                      ccs_context_t           context,
@@ -386,15 +374,17 @@ _ccs_expr_equal_eval(_ccs_expression_data_t *data,
 	ccs_hyperparameter_type_t htl = CCS_HYPERPARAMETER_TYPE_MAX;
 	ccs_hyperparameter_type_t htr = CCS_HYPERPARAMETER_TYPE_MAX;
 
-	eval_left_right(data, context, values, left, right, &htl, &htr);
-	check_hypers(data->nodes[0], right, htl);
-	check_hypers(data->nodes[1], left, htr);
+	EVAL_LEFT_RIGHT(data, context, values, left, right, &htl, &htr);
+	RETURN_IF_INACTIVE(left, result);
+	RETURN_IF_INACTIVE(right, result);
+	CHECK_HYPERS(data->nodes[0], right, htl);
+	CHECK_HYPERS(data->nodes[1], left, htr);
 	ccs_bool_t equal;
-	ccs_result_t err = _ccs_datum_test_equal_generic(&left, &right, &equal);
+	ccs_bool_t valid = _ccs_datum_test_equal_generic(&left, &right, &equal);
 	if (htl == CCS_HYPERPARAMETER_TYPE_MAX &&
 	    htr == CCS_HYPERPARAMETER_TYPE_MAX &&
-	    err)
-		return err;
+	    !valid)
+		CCS_RAISE(CCS_INVALID_VALUE, "Types %d and %d are not comparable", left.type, right.type);;
 	*result = (equal ? ccs_true : ccs_false);
 	return CCS_SUCCESS;
 }
@@ -406,7 +396,6 @@ static _ccs_expression_ops_t _ccs_expr_equal_ops = {
 	&_ccs_expr_equal_eval
 };
 
-//TODO fix when finished revamping error codes
 static ccs_result_t
 _ccs_expr_not_equal_eval(_ccs_expression_data_t *data,
                          ccs_context_t           context,
@@ -417,15 +406,17 @@ _ccs_expr_not_equal_eval(_ccs_expression_data_t *data,
 	ccs_hyperparameter_type_t htl = CCS_HYPERPARAMETER_TYPE_MAX;
 	ccs_hyperparameter_type_t htr = CCS_HYPERPARAMETER_TYPE_MAX;
 
-	eval_left_right(data, context, values, left, right, &htl, &htr);
-	check_hypers(data->nodes[0], right, htl);
-	check_hypers(data->nodes[1], left, htr);
+	EVAL_LEFT_RIGHT(data, context, values, left, right, &htl, &htr);
+	RETURN_IF_INACTIVE(left, result);
+	RETURN_IF_INACTIVE(right, result);
+	CHECK_HYPERS(data->nodes[0], right, htl);
+	CHECK_HYPERS(data->nodes[1], left, htr);
 	ccs_bool_t equal;
-	ccs_result_t err = _ccs_datum_test_equal_generic(&left, &right, &equal);
+	ccs_bool_t valid = _ccs_datum_test_equal_generic(&left, &right, &equal);
 	if (htl == CCS_HYPERPARAMETER_TYPE_MAX &&
 	    htr == CCS_HYPERPARAMETER_TYPE_MAX &&
-	    err)
-		return err;
+	    !valid)
+		CCS_RAISE(CCS_INVALID_VALUE, "Types %d and %d are not comparable", left.type, right.type);;
 	*result = (equal ? ccs_false : ccs_true);
 	return CCS_SUCCESS;
 }
@@ -447,10 +438,12 @@ _ccs_expr_less_eval(_ccs_expression_data_t *data,
 	ccs_hyperparameter_type_t htl = CCS_HYPERPARAMETER_TYPE_MAX;
 	ccs_hyperparameter_type_t htr = CCS_HYPERPARAMETER_TYPE_MAX;
 
-	eval_left_right(data, context, values, left, right, &htl, &htr);
+	EVAL_LEFT_RIGHT(data, context, values, left, right, &htl, &htr);
 	CCS_REFUTE(htl == CCS_HYPERPARAMETER_TYPE_CATEGORICAL || htr == CCS_HYPERPARAMETER_TYPE_CATEGORICAL, CCS_INVALID_VALUE);
-	check_hypers(data->nodes[0], right, htl);
-	check_hypers(data->nodes[1], left, htr);
+	RETURN_IF_INACTIVE(left, result);
+	RETURN_IF_INACTIVE(right, result);
+	CHECK_HYPERS(data->nodes[0], right, htl);
+	CHECK_HYPERS(data->nodes[1], left, htr);
 	if (htl == CCS_HYPERPARAMETER_TYPE_ORDINAL) {
 		ccs_int_t cmp;
 		_ccs_expression_variable_data_t *d =
@@ -492,10 +485,12 @@ _ccs_expr_greater_eval(_ccs_expression_data_t *data,
 	ccs_hyperparameter_type_t htl = CCS_HYPERPARAMETER_TYPE_MAX;
 	ccs_hyperparameter_type_t htr = CCS_HYPERPARAMETER_TYPE_MAX;
 
-	eval_left_right(data, context, values, left, right, &htl, &htr);
+	EVAL_LEFT_RIGHT(data, context, values, left, right, &htl, &htr);
 	CCS_REFUTE(htl == CCS_HYPERPARAMETER_TYPE_CATEGORICAL || htr == CCS_HYPERPARAMETER_TYPE_CATEGORICAL, CCS_INVALID_VALUE);
-	check_hypers(data->nodes[0], right, htl);
-	check_hypers(data->nodes[1], left, htr);
+	RETURN_IF_INACTIVE(left, result);
+	RETURN_IF_INACTIVE(right, result);
+	CHECK_HYPERS(data->nodes[0], right, htl);
+	CHECK_HYPERS(data->nodes[1], left, htr);
 	if (htl == CCS_HYPERPARAMETER_TYPE_ORDINAL) {
 		ccs_int_t cmp;
 		_ccs_expression_variable_data_t *d =
@@ -537,10 +532,12 @@ _ccs_expr_less_or_equal_eval(_ccs_expression_data_t *data,
 	ccs_hyperparameter_type_t htl = CCS_HYPERPARAMETER_TYPE_MAX;
 	ccs_hyperparameter_type_t htr = CCS_HYPERPARAMETER_TYPE_MAX;
 
-	eval_left_right(data, context, values, left, right, &htl, &htr);
+	EVAL_LEFT_RIGHT(data, context, values, left, right, &htl, &htr);
 	CCS_REFUTE(htl == CCS_HYPERPARAMETER_TYPE_CATEGORICAL || htr == CCS_HYPERPARAMETER_TYPE_CATEGORICAL, CCS_INVALID_VALUE);
-	check_hypers(data->nodes[0], right, htl);
-	check_hypers(data->nodes[1], left, htr);
+	RETURN_IF_INACTIVE(left, result);
+	RETURN_IF_INACTIVE(right, result);
+	CHECK_HYPERS(data->nodes[0], right, htl);
+	CHECK_HYPERS(data->nodes[1], left, htr);
 	if (htl == CCS_HYPERPARAMETER_TYPE_ORDINAL) {
 		ccs_int_t cmp;
 		_ccs_expression_variable_data_t *d =
@@ -582,10 +579,12 @@ _ccs_expr_greater_or_equal_eval(_ccs_expression_data_t *data,
 	ccs_hyperparameter_type_t htl = CCS_HYPERPARAMETER_TYPE_MAX;
 	ccs_hyperparameter_type_t htr = CCS_HYPERPARAMETER_TYPE_MAX;
 
-	eval_left_right(data, context, values, left, right, &htl, &htr);
+	EVAL_LEFT_RIGHT(data, context, values, left, right, &htl, &htr);
 	CCS_REFUTE(htl == CCS_HYPERPARAMETER_TYPE_CATEGORICAL || htr == CCS_HYPERPARAMETER_TYPE_CATEGORICAL, CCS_INVALID_VALUE);
-	check_hypers(data->nodes[0], right, htl);
-	check_hypers(data->nodes[1], left, htr);
+	RETURN_IF_INACTIVE(left, result);
+	RETURN_IF_INACTIVE(right, result);
+	CHECK_HYPERS(data->nodes[0], right, htl);
+	CHECK_HYPERS(data->nodes[1], left, htr);
 	if (htl == CCS_HYPERPARAMETER_TYPE_ORDINAL) {
 		ccs_int_t cmp;
 		_ccs_expression_variable_data_t *d =
@@ -617,7 +616,6 @@ static _ccs_expression_ops_t _ccs_expr_greater_or_equal_ops = {
 	&_ccs_expr_greater_or_equal_eval
 };
 
-//TODO fix when finished revamping error codes
 static ccs_result_t
 _ccs_expr_in_eval(_ccs_expression_data_t *data,
                   ccs_context_t           context,
@@ -626,34 +624,30 @@ _ccs_expr_in_eval(_ccs_expression_data_t *data,
 	ccs_expression_type_t etype;
 	CCS_VALIDATE(ccs_expression_get_type(data->nodes[1], &etype));
 	CCS_REFUTE(etype != CCS_LIST, CCS_INVALID_VALUE);
-	size_t num_nodes;
-	CCS_VALIDATE(ccs_expression_get_num_nodes(data->nodes[1], &num_nodes));
-	if (num_nodes == 0) {
-		*result = ccs_false;
-		return CCS_SUCCESS;
-	}
-
+	size_t                    num_nodes;
 	ccs_datum_t               left;
+	ccs_bool_t                inactive = CCS_FALSE;
 	ccs_hyperparameter_type_t htl = CCS_HYPERPARAMETER_TYPE_MAX;
-	eval_node(data, context, values, left, &htl);
+	EVAL_NODE(data, context, values, left, &htl);
+	RETURN_IF_INACTIVE(left, result);
+	CCS_VALIDATE(ccs_expression_get_num_nodes(data->nodes[1], &num_nodes));
 	for (size_t i = 0; i < num_nodes; i++) {
 		ccs_datum_t right;
 		CCS_VALIDATE(ccs_expression_list_eval_node(data->nodes[1], context, values, i, &right));
-		check_hypers(data->nodes[0], right, htl);
+		if (right.type == CCS_INACTIVE)
+			inactive = CCS_TRUE;
+		CHECK_HYPERS(data->nodes[0], right, htl);
 		ccs_bool_t equal;
-		ccs_result_t err = _ccs_datum_test_equal_generic(&left, &right, &equal);
-		if (err) {
-			if (err != -CCS_INVALID_VALUE)
-				return err;
-			else
-				continue;
-		}
+		_ccs_datum_test_equal_generic(&left, &right, &equal);
 		if (equal) {
 			*result = ccs_true;
 			return CCS_SUCCESS;
 		}
 	}
-	*result = ccs_false;
+	if (inactive)
+		*result = ccs_inactive;
+	else
+		*result = ccs_false;
 	return CCS_SUCCESS;
 }
 
@@ -671,7 +665,9 @@ _ccs_expr_add_eval(_ccs_expression_data_t *data,
                    ccs_datum_t            *result) {
 	ccs_datum_t left;
 	ccs_datum_t right;
-	eval_left_right(data, context, values, left, right, NULL, NULL);
+	EVAL_LEFT_RIGHT(data, context, values, left, right, NULL, NULL);
+	RETURN_IF_INACTIVE(left, result);
+	RETURN_IF_INACTIVE(right, result);
 	if (left.type == CCS_INTEGER) {
 		if (right.type == CCS_INTEGER) {
 			*result = ccs_int(left.value.i + right.value.i);
@@ -706,7 +702,9 @@ _ccs_expr_substract_eval(_ccs_expression_data_t *data,
                          ccs_datum_t            *result) {
 	ccs_datum_t left;
 	ccs_datum_t right;
-	eval_left_right(data, context, values, left, right, NULL, NULL);
+	EVAL_LEFT_RIGHT(data, context, values, left, right, NULL, NULL);
+	RETURN_IF_INACTIVE(left, result);
+	RETURN_IF_INACTIVE(right, result);
 	if (left.type == CCS_INTEGER) {
 		if (right.type == CCS_INTEGER) {
 			*result = ccs_int(left.value.i - right.value.i);
@@ -741,7 +739,9 @@ _ccs_expr_multiply_eval(_ccs_expression_data_t *data,
                         ccs_datum_t            *result) {
 	ccs_datum_t left;
 	ccs_datum_t right;
-	eval_left_right(data, context, values, left, right, NULL, NULL);
+	EVAL_LEFT_RIGHT(data, context, values, left, right, NULL, NULL);
+	RETURN_IF_INACTIVE(left, result);
+	RETURN_IF_INACTIVE(right, result);
 	if (left.type == CCS_INTEGER) {
 		if (right.type == CCS_INTEGER) {
 			*result = ccs_int(left.value.i * right.value.i);
@@ -776,7 +776,9 @@ _ccs_expr_divide_eval(_ccs_expression_data_t *data,
                       ccs_datum_t            *result) {
 	ccs_datum_t left;
 	ccs_datum_t right;
-	eval_left_right(data, context, values, left, right, NULL, NULL);
+	EVAL_LEFT_RIGHT(data, context, values, left, right, NULL, NULL);
+	RETURN_IF_INACTIVE(left, result);
+	RETURN_IF_INACTIVE(right, result);
 	if (left.type == CCS_INTEGER) {
 		if (right.type == CCS_INTEGER) {
 			CCS_REFUTE(right.value.i == 0, CCS_INVALID_VALUE);
@@ -815,7 +817,9 @@ _ccs_expr_modulo_eval(_ccs_expression_data_t *data,
                       ccs_datum_t            *result) {
 	ccs_datum_t left;
 	ccs_datum_t right;
-	eval_left_right(data, context, values, left, right, NULL, NULL);
+	EVAL_LEFT_RIGHT(data, context, values, left, right, NULL, NULL);
+	RETURN_IF_INACTIVE(left, result);
+	RETURN_IF_INACTIVE(right, result);
 	if (left.type == CCS_INTEGER) {
 		if (right.type == CCS_INTEGER) {
 			CCS_REFUTE(right.value.i == 0, CCS_INVALID_VALUE);
@@ -853,7 +857,8 @@ _ccs_expr_positive_eval(_ccs_expression_data_t *data,
                         ccs_datum_t            *values,
                         ccs_datum_t            *result) {
 	ccs_datum_t node;
-	eval_node(data, context, values, node, NULL);
+	EVAL_NODE(data, context, values, node, NULL);
+	RETURN_IF_INACTIVE(node, result);
 	CCS_REFUTE(node.type != CCS_INTEGER && node.type != CCS_FLOAT, CCS_INVALID_VALUE);
 	*result = node;
 	return CCS_SUCCESS;
@@ -872,7 +877,8 @@ _ccs_expr_negative_eval(_ccs_expression_data_t *data,
                         ccs_datum_t            *values,
                         ccs_datum_t            *result) {
 	ccs_datum_t node;
-	eval_node(data, context, values, node, NULL);
+	EVAL_NODE(data, context, values, node, NULL);
+	RETURN_IF_INACTIVE(node, result);
 	CCS_REFUTE(node.type != CCS_INTEGER && node.type != CCS_FLOAT, CCS_INVALID_VALUE);
 	if (node.type == CCS_INTEGER) {
 		*result = ccs_int(- node.value.i);
@@ -895,7 +901,8 @@ _ccs_expr_not_eval(_ccs_expression_data_t *data,
                    ccs_datum_t            *values,
                    ccs_datum_t            *result) {
 	ccs_datum_t node;
-	eval_node(data, context, values, node, NULL);
+	EVAL_NODE(data, context, values, node, NULL);
+	RETURN_IF_INACTIVE(node, result);
 	CCS_REFUTE(node.type != CCS_BOOLEAN, CCS_INVALID_VALUE);
 	*result = (node.value.i ? ccs_false : ccs_true);
 	return CCS_SUCCESS;
@@ -923,18 +930,6 @@ static _ccs_expression_ops_t _ccs_expr_list_ops = {
 	  &_ccs_expression_serialize },
 	&_ccs_expr_list_eval
 };
-
-static ccs_result_t
-_ccs_expr_literal_eval(_ccs_expression_data_t *data,
-                       ccs_context_t           context,
-                       ccs_datum_t            *values,
-                       ccs_datum_t            *result) {
-	(void)context; (void)values;
-	_ccs_expression_literal_data_t *d =
-		(_ccs_expression_literal_data_t *)data;
-	*result = d->value;
-	return CCS_SUCCESS;
-}
 
 static inline ccs_result_t
 _ccs_serialize_bin_size_ccs_expression_literal_data(
@@ -1025,6 +1020,18 @@ _ccs_expression_literal_serialize(
 	}
 	CCS_VALIDATE(_ccs_object_serialize_user_data(
 		object, format, buffer_size, buffer, opts));
+	return CCS_SUCCESS;
+}
+
+static ccs_result_t
+_ccs_expr_literal_eval(_ccs_expression_data_t *data,
+                       ccs_context_t           context,
+                       ccs_datum_t            *values,
+                       ccs_datum_t            *result) {
+	(void)context; (void)values;
+	_ccs_expression_literal_data_t *d =
+		(_ccs_expression_literal_data_t *)data;
+	*result = d->value;
 	return CCS_SUCCESS;
 }
 
@@ -1147,8 +1154,6 @@ _ccs_expr_variable_eval(_ccs_expression_data_t *data,
 	CCS_VALIDATE(ccs_context_get_hyperparameter_index(context,
 	    (ccs_hyperparameter_t)(d->hyperparameter), &index));
 	*result = values[index];
-	if (result->type == CCS_INACTIVE)
-		return -CCS_INACTIVE_HYPERPARAMETER;
 	return CCS_SUCCESS;
 }
 

@@ -728,16 +728,9 @@ _set_actives(ccs_configuration_space_t configuration_space,
 		if (!wrapper->condition)
 			continue;
 		ccs_datum_t result;
-		ccs_result_t err;
-//TODO fixme when revamped error codes
-		err = ccs_expression_eval(wrapper->condition,
-		                          (ccs_context_t)configuration_space,
-		                          values, &result);
-		if (err) {
-			if (err != -CCS_INACTIVE_HYPERPARAMETER)
-				return err;
-                        values[*p_index] = ccs_inactive;
-		} else if (!(result.type == CCS_BOOLEAN && result.value.i == CCS_TRUE))
+		CCS_VALIDATE(ccs_expression_eval(wrapper->condition,
+			(ccs_context_t)configuration_space, values, &result));
+		if (!(result.type == CCS_BOOLEAN && result.value.i == CCS_TRUE))
 			values[*p_index] = ccs_inactive;
 	}
 	return CCS_SUCCESS;
@@ -769,21 +762,16 @@ static ccs_result_t
 _test_forbidden(ccs_configuration_space_t  configuration_space,
                 ccs_datum_t               *values,
 		ccs_bool_t                *is_valid) {
-	ccs_result_t err;
 	UT_array *array = configuration_space->data->forbidden_clauses;
 	ccs_expression_t *p_expression = NULL;
 	*is_valid = CCS_FALSE;
 	while ( (p_expression = (ccs_expression_t *)
 	               utarray_next(array, p_expression)) ) {
 		ccs_datum_t result;
-//TODO fixme when revamped error codes
-		err = ccs_expression_eval(*p_expression,
-		                          (ccs_context_t)configuration_space,
-		                          values, &result);
-		if (err == -CCS_INACTIVE_HYPERPARAMETER)
+		CCS_VALIDATE(ccs_expression_eval(*p_expression,
+			(ccs_context_t)configuration_space, values, &result));
+		if (result.type == CCS_INACTIVE)
 			continue;
-		else if (err)
-			return err;
 		if (result.type == CCS_BOOLEAN && result.value.i == CCS_TRUE)
 			return CCS_SUCCESS;
 	}
@@ -791,15 +779,14 @@ _test_forbidden(ccs_configuration_space_t  configuration_space,
 	return CCS_SUCCESS;
 }
 
-//TODO fixme when revamped error codes
 static inline ccs_result_t
 _check_configuration(ccs_configuration_space_t  configuration_space,
                      size_t                     num_values,
-                     ccs_datum_t               *values) {
+                     ccs_datum_t               *values,
+                     ccs_bool_t                *is_valid_ret) {
 	UT_array *indexes = configuration_space->data->sorted_indexes;
 	UT_array *array = configuration_space->data->hyperparameters;
-	if (num_values != utarray_len(array))
-		return -CCS_INVALID_CONFIGURATION;
+	CCS_REFUTE(num_values != utarray_len(array), CCS_INVALID_CONFIGURATION);
 	size_t *p_index = NULL;
 	while ( (p_index = (size_t *)utarray_next(indexes, p_index)) ) {
 		ccs_bool_t active = CCS_TRUE;
@@ -807,18 +794,10 @@ _check_configuration(ccs_configuration_space_t  configuration_space,
 		wrapper = (_ccs_hyperparameter_wrapper_cs_t *)utarray_eltptr(array, *p_index);
 		if (wrapper->condition) {
 			ccs_datum_t result;
-			ccs_result_t err;
-			err = ccs_expression_eval(
-				wrapper->condition,
-				(ccs_context_t)configuration_space,
-				values, &result);
-			if (err) {
-				if (err != -CCS_INACTIVE_HYPERPARAMETER)
-					return err;
-                                active = CCS_FALSE;
-			} else if (!(result.type == CCS_BOOLEAN && result.value.i == CCS_TRUE)) {
+			CCS_VALIDATE(ccs_expression_eval(
+				wrapper->condition, (ccs_context_t)configuration_space, values, &result));
+			if (!(result.type == CCS_BOOLEAN && result.value.i == CCS_TRUE))
 				active = CCS_FALSE;
-			}
 		}
 		if (active != (values[*p_index].type == CCS_INACTIVE ? CCS_FALSE : CCS_TRUE)) {
 			*is_valid_ret = CCS_FALSE;
@@ -1239,14 +1218,14 @@ ccs_configuration_space_get_conditions(ccs_configuration_space_t  configuration_
 
 #undef  utarray_oom
 #define utarray_oom() { \
-	CCS_RAISE(CCS_OUT_OF_MEMORY, "Out of memory to allocate array"); \
+	CCS_RAISE_ERR_GOTO(err, CCS_OUT_OF_MEMORY, end, "Out of memory to allocate array"); \
 }
 ccs_result_t
 ccs_configuration_space_add_forbidden_clause(ccs_configuration_space_t configuration_space,
                                              ccs_expression_t          expression) {
 	CCS_CHECK_OBJ(configuration_space, CCS_CONFIGURATION_SPACE);
 	CCS_CHECK_OBJ(expression, CCS_EXPRESSION);
-	ccs_result_t err;
+	ccs_result_t err = CCS_SUCCESS;
 	CCS_VALIDATE(ccs_expression_check_context(
 	    expression, (ccs_context_t)configuration_space));
 	ccs_datum_t d;
@@ -1254,17 +1233,15 @@ ccs_configuration_space_add_forbidden_clause(ccs_configuration_space_t configura
 	CCS_VALIDATE(ccs_configuration_space_get_default_configuration(
 	    configuration_space, &config));
 
-	err = ccs_expression_eval(expression, (ccs_context_t)configuration_space,
-	                          config->data->values,
-	                          &d);
-	ccs_release_object(config);
-	if (err && err != -CCS_INACTIVE_HYPERPARAMETER)
-		CCS_VALIDATE(err);
-	if (!err && d.type == CCS_BOOLEAN && d.value.i == CCS_TRUE)
-		CCS_RAISE(CCS_INVALID_CONFIGURATION, "Default configuration is invalid");
-	CCS_VALIDATE(ccs_retain_object(expression));
+	CCS_VALIDATE_ERR_GOTO(err, ccs_expression_eval(expression, (ccs_context_t)configuration_space,
+		config->data->values, &d), end);
+	if (d.type == CCS_BOOLEAN && d.value.i == CCS_TRUE)
+		CCS_RAISE_ERR_GOTO(err,  CCS_INVALID_CONFIGURATION, end, "Default configuration is invalid");
+	CCS_VALIDATE_ERR_GOTO(err, ccs_retain_object(expression), end);
 	utarray_push_back(configuration_space->data->forbidden_clauses, &expression);
-	return CCS_SUCCESS;
+end:
+	ccs_release_object(config);
+	return err;
 }
 #undef  utarray_oom
 #define utarray_oom() exit(-1)

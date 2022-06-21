@@ -179,8 +179,6 @@ enum ccs_error_e {
 	CCS_OUT_OF_BOUNDS,
 	/** Could not gather enough samples */
 	CCS_SAMPLING_UNSUCCESSFUL,
-	/** The expression evaluates to an inactive hyperparameter */
-	CCS_INACTIVE_HYPERPARAMETER,
 	/** An allocation failed due to lack of available memory */
 	CCS_OUT_OF_MEMORY,
 	/** The object does not support this operation */
