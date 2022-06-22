@@ -6,7 +6,7 @@ ccs_hyperparameter_get_ops(ccs_hyperparameter_t hyperparameter) {
 	return (_ccs_hyperparameter_ops_t *)hyperparameter->obj.ops;
 }
 
-ccs_result_t
+ccs_error_t
 ccs_hyperparameter_get_type(ccs_hyperparameter_t       hyperparameter,
                             ccs_hyperparameter_type_t *type_ret) {
 	CCS_CHECK_OBJ(hyperparameter, CCS_HYPERPARAMETER);
@@ -15,7 +15,7 @@ ccs_hyperparameter_get_type(ccs_hyperparameter_t       hyperparameter,
 	return CCS_SUCCESS;
 }
 
-ccs_result_t
+ccs_error_t
 ccs_hyperparameter_get_default_value(ccs_hyperparameter_t  hyperparameter,
                                      ccs_datum_t          *value_ret) {
 	CCS_CHECK_OBJ(hyperparameter, CCS_HYPERPARAMETER);
@@ -24,7 +24,7 @@ ccs_hyperparameter_get_default_value(ccs_hyperparameter_t  hyperparameter,
 	return CCS_SUCCESS;
 }
 
-ccs_result_t
+ccs_error_t
 ccs_hyperparameter_get_name(ccs_hyperparameter_t   hyperparameter,
                             const char           **name_ret) {
 	CCS_CHECK_OBJ(hyperparameter, CCS_HYPERPARAMETER);
@@ -33,7 +33,7 @@ ccs_hyperparameter_get_name(ccs_hyperparameter_t   hyperparameter,
 	return CCS_SUCCESS;
 }
 
-ccs_result_t
+ccs_error_t
 ccs_hyperparameter_get_default_distribution(ccs_hyperparameter_t  hyperparameter,
                                             ccs_distribution_t   *distribution_ret) {
 	CCS_CHECK_OBJ(hyperparameter, CCS_HYPERPARAMETER);
@@ -43,7 +43,7 @@ ccs_hyperparameter_get_default_distribution(ccs_hyperparameter_t  hyperparameter
 	return CCS_SUCCESS;
 }
 
-ccs_result_t
+ccs_error_t
 ccs_hyperparameter_check_value(ccs_hyperparameter_t  hyperparameter,
                                ccs_datum_t           value,
                                ccs_bool_t           *result_ret) {
@@ -54,7 +54,7 @@ ccs_hyperparameter_check_value(ccs_hyperparameter_t  hyperparameter,
 	return CCS_SUCCESS;
 }
 
-ccs_result_t
+ccs_error_t
 ccs_hyperparameter_check_values(ccs_hyperparameter_t  hyperparameter,
                                 size_t                num_values,
                                 const ccs_datum_t    *values,
@@ -67,7 +67,7 @@ ccs_hyperparameter_check_values(ccs_hyperparameter_t  hyperparameter,
 	return CCS_SUCCESS;
 }
 
-ccs_result_t
+ccs_error_t
 ccs_hyperparameter_validate_value(ccs_hyperparameter_t  hyperparameter,
                                   ccs_datum_t           value,
                                   ccs_datum_t          *value_ret,
@@ -80,7 +80,7 @@ ccs_hyperparameter_validate_value(ccs_hyperparameter_t  hyperparameter,
 	return CCS_SUCCESS;
 }
 
-ccs_result_t
+ccs_error_t
 ccs_hyperparameter_validate_values(ccs_hyperparameter_t  hyperparameter,
                                    size_t                num_values,
                                    const ccs_datum_t    *values,
@@ -96,7 +96,7 @@ ccs_hyperparameter_validate_values(ccs_hyperparameter_t  hyperparameter,
 }
 
 
-ccs_result_t
+ccs_error_t
 ccs_hyperparameter_sample(ccs_hyperparameter_t  hyperparameter,
                           ccs_distribution_t    distribution,
                           ccs_rng_t             rng,
@@ -110,7 +110,7 @@ ccs_hyperparameter_sample(ccs_hyperparameter_t  hyperparameter,
 	return CCS_SUCCESS;
 }
 
-ccs_result_t
+ccs_error_t
 ccs_hyperparameter_samples(ccs_hyperparameter_t  hyperparameter,
                            ccs_distribution_t    distribution,
                            ccs_rng_t             rng,
@@ -127,7 +127,7 @@ ccs_hyperparameter_samples(ccs_hyperparameter_t  hyperparameter,
 	return CCS_SUCCESS;
 }
 
-ccs_result_t
+ccs_error_t
 ccs_hyperparameter_convert_samples(ccs_hyperparameter_t  hyperparameter,
                                    ccs_bool_t            oversampling,
                                    size_t                num_values,
@@ -143,7 +143,7 @@ ccs_hyperparameter_convert_samples(ccs_hyperparameter_t  hyperparameter,
 	return CCS_SUCCESS;
 }
 
-ccs_result_t
+ccs_error_t
 ccs_hyperparameter_sampling_interval(ccs_hyperparameter_t  hyperparameter,
                                      ccs_interval_t       *interval_ret) {
 	CCS_CHECK_OBJ(hyperparameter, CCS_HYPERPARAMETER);

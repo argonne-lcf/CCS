@@ -1,14 +1,14 @@
 module CCS
-  attach_function :ccs_binding_get_context, [:ccs_binding_t, :pointer], :ccs_result_t
-  attach_function :ccs_binding_get_value, [:ccs_binding_t, :size_t, :pointer], :ccs_result_t
-  attach_function :ccs_binding_set_value, [:ccs_binding_t, :size_t, :ccs_datum_t], :ccs_result_t
-  attach_function :ccs_binding_get_values, [:ccs_binding_t, :size_t, :pointer, :pointer], :ccs_result_t
-  attach_function :ccs_binding_get_value_by_name, [:ccs_binding_t, :string, :pointer], :ccs_result_t
-  attach_function :ccs_binding_set_value_by_name, [:ccs_binding_t, :string, :ccs_datum_t], :ccs_result_t
-  attach_function :ccs_binding_get_value_by_hyperparameter, [:ccs_binding_t, :ccs_hyperparameter_t, :pointer], :ccs_result_t
-  attach_function :ccs_binding_set_value_by_hyperparameter, [:ccs_binding_t, :ccs_hyperparameter_t, :ccs_datum_t], :ccs_result_t
-  attach_function :ccs_binding_hash, [:ccs_binding_t, :pointer], :ccs_result_t
-  attach_function :ccs_binding_cmp, [:ccs_binding_t, :ccs_binding_t, :pointer], :ccs_result_t
+  attach_function :ccs_binding_get_context, [:ccs_binding_t, :pointer], :ccs_error_t
+  attach_function :ccs_binding_get_value, [:ccs_binding_t, :size_t, :pointer], :ccs_error_t
+  attach_function :ccs_binding_set_value, [:ccs_binding_t, :size_t, :ccs_datum_t], :ccs_error_t
+  attach_function :ccs_binding_get_values, [:ccs_binding_t, :size_t, :pointer, :pointer], :ccs_error_t
+  attach_function :ccs_binding_get_value_by_name, [:ccs_binding_t, :string, :pointer], :ccs_error_t
+  attach_function :ccs_binding_set_value_by_name, [:ccs_binding_t, :string, :ccs_datum_t], :ccs_error_t
+  attach_function :ccs_binding_get_value_by_hyperparameter, [:ccs_binding_t, :ccs_hyperparameter_t, :pointer], :ccs_error_t
+  attach_function :ccs_binding_set_value_by_hyperparameter, [:ccs_binding_t, :ccs_hyperparameter_t, :ccs_datum_t], :ccs_error_t
+  attach_function :ccs_binding_hash, [:ccs_binding_t, :pointer], :ccs_error_t
+  attach_function :ccs_binding_cmp, [:ccs_binding_t, :ccs_binding_t, :pointer], :ccs_error_t
 
   class Binding < Object
     include Comparable

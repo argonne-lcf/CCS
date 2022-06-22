@@ -7,7 +7,7 @@ double d = -2.0;
 
 ccs_hyperparameter_t create_dummy_hyperparameter(const char * name) {
 	ccs_hyperparameter_t hyperparameter;
-	ccs_result_t         err;
+	ccs_error_t         err;
 	err = ccs_create_numerical_hyperparameter(name, CCS_NUM_FLOAT,
 	                                          CCSF(-5.0), CCSF(5.0),
 	                                          CCSF(0.0), CCSF(d),
@@ -21,7 +21,7 @@ ccs_hyperparameter_t create_dummy_hyperparameter(const char * name) {
 
 void test_create() {
 	ccs_features_space_t  features_space;
-	ccs_result_t           err;
+	ccs_error_t           err;
 	ccs_object_type_t      type;
 	const char            *name;
 	size_t                 sz;
@@ -50,7 +50,7 @@ void check_features(ccs_features_space_t  features_space,
                    size_t                 sz,
                    ccs_hyperparameter_t  *hyperparameters) {
 	ccs_hyperparameter_t  hyperparameter;
-	ccs_result_t          err;
+	ccs_error_t          err;
 	size_t                sz_ret;
 	size_t                index;
 	ccs_hyperparameter_t *hyperparameters_ret =
@@ -95,7 +95,7 @@ void check_features(ccs_features_space_t  features_space,
 void test_add() {
 	ccs_hyperparameter_t hyperparameters[3];
 	ccs_features_space_t features_space;
-	ccs_result_t         err;
+	ccs_error_t         err;
 
 	err = ccs_create_features_space("my_features_space",
 	                                &features_space);
@@ -111,7 +111,7 @@ void test_add() {
 
 	err = ccs_features_space_add_hyperparameter(features_space,
 	                                            hyperparameters[0]);
-	assert( err == -CCS_INVALID_HYPERPARAMETER );
+	assert( err == CCS_INVALID_HYPERPARAMETER );
 
 	err = ccs_features_space_add_hyperparameter(features_space,
 	                                            hyperparameters[1]);
@@ -133,7 +133,7 @@ void test_add() {
 void test_add_list() {
 	ccs_hyperparameter_t hyperparameters[3];
 	ccs_features_space_t features_space;
-	ccs_result_t         err;
+	ccs_error_t         err;
 
 	err = ccs_create_features_space("my_config_space",
 	                                &features_space);
@@ -164,7 +164,7 @@ void test_features() {
 		{ ccs_float(-1.0), ccs_float(0.0), ccs_float(1.0) };
 	ccs_datum_t           values_ret[3];
 	ccs_features_t        features1, features2;
-	ccs_result_t          err;
+	ccs_error_t          err;
 	ccs_datum_t           datum;
 	size_t                num_values_ret;
 	int                   cmp;
@@ -258,7 +258,7 @@ void test_deserialize() {
 	ccs_hyperparameter_t  hyperparameters[3], hyperparameters_new[3];
 	ccs_features_space_t  features_space, features_space_ref;
 	ccs_map_t             map;
-	ccs_result_t          err;
+	ccs_error_t          err;
 	char                 *buff;
 	size_t                buff_size;
 	ccs_datum_t           d;
@@ -341,7 +341,7 @@ void test_features_deserialize() {
 	size_t                buff_size;
 	ccs_map_t             map;
 	ccs_datum_t           d;
-	ccs_result_t          err;
+	ccs_error_t          err;
 	int                   cmp;
 
 	err = ccs_create_features_space("my_config_space", &features_space);
@@ -367,7 +367,7 @@ void test_features_deserialize() {
 
 	err = ccs_object_deserialize((ccs_object_t*)&features, CCS_SERIALIZE_FORMAT_BINARY, CCS_SERIALIZE_OPERATION_MEMORY, buff_size, buff,
 	                             CCS_DESERIALIZE_OPTION_HANDLE_MAP, map, CCS_DESERIALIZE_OPTION_END);
-	assert( err == -CCS_INVALID_HANDLE );
+	assert( err == CCS_INVALID_HANDLE );
 
 	d = ccs_object(features_space);
 	d.flags |= CCS_FLAG_ID;

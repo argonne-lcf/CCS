@@ -71,16 +71,16 @@ typedef enum ccs_scale_type_e ccs_scale_type_t;
  * @param[out] distribution_ret a pointer to the variable that will contain the
  *                              newly created distribution
  * @return #CCS_SUCCESS on success
- * @return -#CCS_INVALID_VALUE if \p distribution_ret is NULL; or if \p
+ * @return #CCS_INVALID_VALUE if \p distribution_ret is NULL; or if \p
  *                             quantization is less than 0
- * @return -#CCS_INVALID_TYPE if \p data_type is neither #CCS_NUM_INTEGER nor
+ * @return #CCS_INVALID_TYPE if \p data_type is neither #CCS_NUM_INTEGER nor
  *                            #CCS_NUM_FLOAT
- * @return -#CCS_INVALID_SCALE if \p scale is neither #CCS_LINEAR nor
+ * @return #CCS_INVALID_SCALE if \p scale is neither #CCS_LINEAR nor
  *                             #CCS_LOGARITHMIC
- * @return -#CCS_OUT_OF_MEMORY if there was not enough memory to allocate the
+ * @return #CCS_OUT_OF_MEMORY if there was not enough memory to allocate the
  *                             new distribution
  */
-extern ccs_result_t
+extern ccs_error_t
 ccs_create_normal_distribution(ccs_numeric_type_t  data_type,
                                ccs_float_t         mu,
                                ccs_float_t         sigma,
@@ -98,14 +98,14 @@ ccs_create_normal_distribution(ccs_numeric_type_t  data_type,
  * @param[out] distribution_ret a pointer to the variable that will contain the
  *                              newly created distribution
  * @return #CCS_SUCCESS on success
- * @return -#CCS_INVALID_VALUE if \p distribution_ret is NULL; or if \p
+ * @return #CCS_INVALID_VALUE if \p distribution_ret is NULL; or if \p
  *                             quantization is less than 0
- * @return -#CCS_INVALID_SCALE if \p scale is neither #CCS_LINEAR nor
+ * @return #CCS_INVALID_SCALE if \p scale is neither #CCS_LINEAR nor
  *                             #CCS_LOGARITHMIC
- * @return -#CCS_OUT_OF_MEMORY if there was not enough memory to allocate the
+ * @return #CCS_OUT_OF_MEMORY if there was not enough memory to allocate the
  *                             new distribution
  */
-extern ccs_result_t
+extern ccs_error_t
 ccs_create_normal_int_distribution(ccs_float_t         mu,
                                    ccs_float_t         sigma,
                                    ccs_scale_type_t    scale,
@@ -122,14 +122,14 @@ ccs_create_normal_int_distribution(ccs_float_t         mu,
  * @param[out] distribution_ret a pointer to the variable that will contain the
  *                              newly created distribution
  * @return #CCS_SUCCESS on success
- * @return -#CCS_INVALID_VALUE if \p distribution_ret is NULL; or if \p
+ * @return #CCS_INVALID_VALUE if \p distribution_ret is NULL; or if \p
  *                             quantization is less than 0
- * @return -#CCS_INVALID_SCALE if \p scale is neither #CCS_LINEAR nor
+ * @return #CCS_INVALID_SCALE if \p scale is neither #CCS_LINEAR nor
  *                             #CCS_LOGARITHMIC
- * @return -#CCS_OUT_OF_MEMORY if there was not enough memory to allocate the
+ * @return #CCS_OUT_OF_MEMORY if there was not enough memory to allocate the
  *                             new distribution
  */
-extern ccs_result_t
+extern ccs_error_t
 ccs_create_normal_float_distribution(ccs_float_t         mu,
                                      ccs_float_t         sigma,
                                      ccs_scale_type_t    scale,
@@ -154,19 +154,19 @@ ccs_create_normal_float_distribution(ccs_float_t         mu,
  * @param[out] distribution_ret a pointer to the variable that will contain the
  *                              newly created distribution
  * @return #CCS_SUCCESS on success
- * @return -#CCS_INVALID_VALUE if \p distribution_ret is NULL; or if \p
+ * @return #CCS_INVALID_VALUE if \p distribution_ret is NULL; or if \p
  *                             quantization is less than 0; or if the range
  *                             defined by \p lower and \p upper is empty or
  *                             smaller than the quantization; or if \p scale is
  *                             #CCS_LOGARITHMIC \p lower is less or equal to 0
- * @return -#CCS_INVALID_TYPE if \p data_type is neither #CCS_NUM_INTEGER nor
+ * @return #CCS_INVALID_TYPE if \p data_type is neither #CCS_NUM_INTEGER nor
  *                            #CCS_NUM_FLOAT
- * @return -#CCS_INVALID_SCALE if \p scale is neither #CCS_LINEAR nor
+ * @return #CCS_INVALID_SCALE if \p scale is neither #CCS_LINEAR nor
  *                             #CCS_LOGARITHMIC
- * @return -#CCS_OUT_OF_MEMORY if there was not enough memory to allocate the
+ * @return #CCS_OUT_OF_MEMORY if there was not enough memory to allocate the
  *                             new distribution
  */
-extern ccs_result_t
+extern ccs_error_t
 ccs_create_uniform_distribution(ccs_numeric_type_t  data_type,
                                 ccs_numeric_t       lower,
                                 ccs_numeric_t       upper,
@@ -184,17 +184,17 @@ ccs_create_uniform_distribution(ccs_numeric_type_t  data_type,
  * @param[out] distribution_ret a pointer to the variable that will contain the
  *                              newly created distribution
  * @return #CCS_SUCCESS on success
- * @return -#CCS_INVALID_VALUE if \p distribution_ret is NULL; or if \p
+ * @return #CCS_INVALID_VALUE if \p distribution_ret is NULL; or if \p
  *                             quantization is less than 0; or if the range
  *                             defined by \p lower and \p upper is empty or
  *                             smaller than the quantization; or if \p scale is
  *                             #CCS_LOGARITHMIC \p lower is less or equal to 0
- * @return -#CCS_INVALID_SCALE if \p scale is neither #CCS_LINEAR nor
+ * @return #CCS_INVALID_SCALE if \p scale is neither #CCS_LINEAR nor
  *                             #CCS_LOGARITHMIC
- * @return -#CCS_OUT_OF_MEMORY if there was not enough memory to allocate the
+ * @return #CCS_OUT_OF_MEMORY if there was not enough memory to allocate the
  *                             new distribution
  */
-extern ccs_result_t
+extern ccs_error_t
 ccs_create_uniform_int_distribution(ccs_int_t           lower,
                                     ccs_int_t           upper,
                                     ccs_scale_type_t    scale,
@@ -211,17 +211,17 @@ ccs_create_uniform_int_distribution(ccs_int_t           lower,
  * @param[out] distribution_ret a pointer to the variable that will contain the
  *                              newly created distribution
  * @return #CCS_SUCCESS on success
- * @return -#CCS_INVALID_VALUE if \p distribution_ret is NULL; or if \p
+ * @return #CCS_INVALID_VALUE if \p distribution_ret is NULL; or if \p
  *                             quantization is less than 0; or if the range
  *                             defined by \p lower and \p upper is empty or
  *                             smaller than the quantization; or if \p scale is
  *                             #CCS_LOGARITHMIC \p lower is less or equal to 0
- * @return -#CCS_INVALID_SCALE if \p scale is neither #CCS_LINEAR nor
+ * @return #CCS_INVALID_SCALE if \p scale is neither #CCS_LINEAR nor
  *                             #CCS_LOGARITHMIC
- * @return -#CCS_OUT_OF_MEMORY if there was not enough memory to allocate the
+ * @return #CCS_OUT_OF_MEMORY if there was not enough memory to allocate the
  *                             new distribution
  */
-extern ccs_result_t
+extern ccs_error_t
 ccs_create_uniform_float_distribution(ccs_float_t         lower,
                                       ccs_float_t         upper,
                                       ccs_scale_type_t    scale,
@@ -237,13 +237,13 @@ ccs_create_uniform_float_distribution(ccs_float_t         lower,
  * @param[out] distribution_ret a pointer to the variable that will contain the
  *                              newly created distribution
  * @return #CCS_SUCCESS on success
- * @return -#CCS_INVALID_VALUE if \p distribution_ret is NULL; or if \p areas is
+ * @return #CCS_INVALID_VALUE if \p distribution_ret is NULL; or if \p areas is
  *                             NULL; or if the sum of the areas is 0; or if the
  *                             areas could not be normalized
- * @return -#CCS_OUT_OF_MEMORY if there was not enough memory to allocate the
+ * @return #CCS_OUT_OF_MEMORY if there was not enough memory to allocate the
  *                             new distribution
  */
-extern ccs_result_t
+extern ccs_error_t
 ccs_create_roulette_distribution(size_t              num_areas,
                                  ccs_float_t        *areas,
                                  ccs_distribution_t *distribution_ret);
@@ -260,20 +260,20 @@ ccs_create_roulette_distribution(size_t              num_areas,
  * @param[out] distribution_ret a pointer to the variable that will contain the
  *                              newly created distribution
  * @return #CCS_SUCCESS on success
- * @return -#CCS_INVALID_VALUE if \p distribution_ret is NULL; or if
+ * @return #CCS_INVALID_VALUE if \p distribution_ret is NULL; or if
  *                             num_distributions is 0; or if distributions is
  *                             NULL; or if \p weights is NULL; or if the sum of
  *                             the weight is 0; or if the weights could not be
  *                             normalized
- * @return -#CCS_INVALID_DISTRIBUTION if the distributions have different
+ * @return #CCS_INVALID_DISTRIBUTION if the distributions have different
  *                                    dimensions; or if distributions do not all
  *                                    have the same data types
- * @return -#CCS_INVALID_OBJECT if at least one of the distributions is not a
+ * @return #CCS_INVALID_OBJECT if at least one of the distributions is not a
  *                              valid CCS distributions
- * @return -#CCS_OUT_OF_MEMORY if there was not enough memory to allocate the
+ * @return #CCS_OUT_OF_MEMORY if there was not enough memory to allocate the
  *                             new distribution
  */
-extern ccs_result_t
+extern ccs_error_t
 ccs_create_mixture_distribution(size_t              num_distributions,
                                 ccs_distribution_t *distributions,
                                 ccs_float_t        *weights,
@@ -289,15 +289,15 @@ ccs_create_mixture_distribution(size_t              num_distributions,
  * @param[out] distribution_ret a pointer to the variable that will contain the
  *                              newly created distribution
  * @return #CCS_SUCCESS on success
- * @return -#CCS_INVALID_VALUE if \p distribution_ret is NULL; or if
+ * @return #CCS_INVALID_VALUE if \p distribution_ret is NULL; or if
  *                             num_distributions is 0; or if distributions is
  *                             NULL
- * @return -#CCS_INVALID_OBJECT if at least one of the distributions is not a
+ * @return #CCS_INVALID_OBJECT if at least one of the distributions is not a
  *                              valid CCS distributions
- * @return -#CCS_OUT_OF_MEMORY if there was not enough memory to allocate the
+ * @return #CCS_OUT_OF_MEMORY if there was not enough memory to allocate the
  *                             new distribution
  */
-extern ccs_result_t
+extern ccs_error_t
 ccs_create_multivariate_distribution(size_t              num_distributions,
                                      ccs_distribution_t *distributions,
                                      ccs_distribution_t *distribution_ret);
@@ -308,11 +308,11 @@ ccs_create_multivariate_distribution(size_t              num_distributions,
  * @param[out] type_ret a pointer to the variable that will contain the type of
  *                      the distribution
  * @return #CCS_SUCCESS on success
- * @return -#CCS_INVALID_VALUE if \p type_ret is NULL
- * @return -#CCS_INVALID_OBJECT if \p distribution is not a valid CCS
+ * @return #CCS_INVALID_VALUE if \p type_ret is NULL
+ * @return #CCS_INVALID_OBJECT if \p distribution is not a valid CCS
  *                              distribution
  */
-extern ccs_result_t
+extern ccs_error_t
 ccs_distribution_get_type(ccs_distribution_t       distribution,
                           ccs_distribution_type_t *type_ret);
 
@@ -322,11 +322,11 @@ ccs_distribution_get_type(ccs_distribution_t       distribution,
  * @param[out] dimension_ret a pointer to the variable that will contain the
  *                           dimension  of the distribution
  * @return #CCS_SUCCESS on success
- * @return -#CCS_INVALID_VALUE if \p dimension_ret is NULL
- * @return -#CCS_INVALID_OBJECT if \p distribution is not a valid CCS
+ * @return #CCS_INVALID_VALUE if \p dimension_ret is NULL
+ * @return #CCS_INVALID_OBJECT if \p distribution is not a valid CCS
  *                              distribution
  */
-extern ccs_result_t
+extern ccs_error_t
 ccs_distribution_get_dimension(ccs_distribution_t  distribution,
                                size_t             *dimension_ret);
 
@@ -337,11 +337,11 @@ ccs_distribution_get_dimension(ccs_distribution_t  distribution,
  *                            the distribution, that will contain the data types
  *                            of each dimension of the distribution
  * @return #CCS_SUCCESS on success
- * @return -#CCS_INVALID_VALUE if \p data_types_ret is NULL
- * @return -#CCS_INVALID_OBJECT if \p distribution is not a valid CCS
+ * @return #CCS_INVALID_VALUE if \p data_types_ret is NULL
+ * @return #CCS_INVALID_OBJECT if \p distribution is not a valid CCS
  *                              distribution
  */
-extern ccs_result_t
+extern ccs_error_t
 ccs_distribution_get_data_types(ccs_distribution_t       distribution,
                                 ccs_numeric_type_t      *data_types_ret);
 
@@ -353,11 +353,11 @@ ccs_distribution_get_data_types(ccs_distribution_t       distribution,
  *                          distribution, that will contain the possible
  *                          intervals of each dimension of the distribution
  * @return #CCS_SUCCESS on success
- * @return -#CCS_INVALID_VALUE if \p interval_ret is NULL
- * @return -#CCS_INVALID_OBJECT if \p distribution is not a valid CCS
+ * @return #CCS_INVALID_VALUE if \p interval_ret is NULL
+ * @return #CCS_INVALID_OBJECT if \p distribution is not a valid CCS
  *                              distribution
  */
-extern ccs_result_t
+extern ccs_error_t
 ccs_distribution_get_bounds(ccs_distribution_t  distribution,
                             ccs_interval_t     *interval_ret);
 
@@ -371,12 +371,12 @@ ccs_distribution_get_bounds(ccs_distribution_t  distribution,
  *                               result of the oversampling test for each
  *                               dimension
  * @return #CCS_SUCCESS on success
- * @return -#CCS_INVALID_VALUE if \p intervals is NULL; or if \p
+ * @return #CCS_INVALID_VALUE if \p intervals is NULL; or if \p
  *                             oversamplings_ret is NULL
- * @return -#CCS_INVALID_OBJECT if \p distribution is not a valid CCS
+ * @return #CCS_INVALID_OBJECT if \p distribution is not a valid CCS
  *                              distribution
  */
-extern ccs_result_t
+extern ccs_error_t
 ccs_distribution_check_oversampling(ccs_distribution_t  distribution,
                                     ccs_interval_t     *intervals,
                                     ccs_bool_t         *oversamplings_ret);
@@ -394,15 +394,15 @@ ccs_distribution_check_oversampling(ccs_distribution_t  distribution,
  *                              contain the quantization used by the
  *                              distribution
  * @return #CCS_SUCCESS on success
- * @return -#CCS_INVALID_VALUE if \p mu_ret is NULL and \p sigma_ret is NULL and
+ * @return #CCS_INVALID_VALUE if \p mu_ret is NULL and \p sigma_ret is NULL and
  *                             \p scale_ret is NULL and \p quantization_ret is
  *                             NULL
- * @return -#CCS_INVALID_OBJECT if \p distribution is not a valid CCS
+ * @return #CCS_INVALID_OBJECT if \p distribution is not a valid CCS
  *                              distribution
- * @return -#CCS_INVALID_DISTRIBUTION if \p distribution is not a normal
+ * @return #CCS_INVALID_DISTRIBUTION if \p distribution is not a normal
  *                                    distribution
  */
-extern ccs_result_t
+extern ccs_error_t
 ccs_normal_distribution_get_parameters(ccs_distribution_t  distribution,
                                        ccs_float_t        *mu_ret,
                                        ccs_float_t        *sigma_ret,
@@ -422,15 +422,15 @@ ccs_normal_distribution_get_parameters(ccs_distribution_t  distribution,
  *                              contain the quantization used by the
  *                              distribution
  * @return #CCS_SUCCESS on success
- * @return -#CCS_INVALID_VALUE if \p lower_ret is NULL and \p upper_ret is NULL
+ * @return #CCS_INVALID_VALUE if \p lower_ret is NULL and \p upper_ret is NULL
  *                             and \p scale_ret is NULL and \p quantization_ret
  *                             is NULL
- * @return -#CCS_INVALID_OBJECT if \p distribution is not a valid CCS
+ * @return #CCS_INVALID_OBJECT if \p distribution is not a valid CCS
  *                              distribution
- * @return -#CCS_INVALID_DISTRIBUTION if \p distribution is not a uniform
+ * @return #CCS_INVALID_DISTRIBUTION if \p distribution is not a uniform
  *                                    distribution
  */
-extern ccs_result_t
+extern ccs_error_t
 ccs_uniform_distribution_get_parameters(ccs_distribution_t  distribution,
                                         ccs_numeric_t      *lower_ret,
                                         ccs_numeric_t      *upper_ret,
@@ -443,13 +443,13 @@ ccs_uniform_distribution_get_parameters(ccs_distribution_t  distribution,
  * @param[out] num_areas_ret a pointer to the variable that will contain the
  *                           number of areas of the distribution
  * @return #CCS_SUCCESS on success
- * @return -#CCS_INVALID_VALUE if \p num_areas_ret is NULL
- * @return -#CCS_INVALID_OBJECT if \p distribution is not a valid CCS
+ * @return #CCS_INVALID_VALUE if \p num_areas_ret is NULL
+ * @return #CCS_INVALID_OBJECT if \p distribution is not a valid CCS
  *                              distribution
- * @return -#CCS_INVALID_DISTRIBUTION if \p distribution is not a roulette
+ * @return #CCS_INVALID_DISTRIBUTION if \p distribution is not a roulette
  *                                    distribution
  */
-extern ccs_result_t
+extern ccs_error_t
 ccs_roulette_distribution_get_num_areas(ccs_distribution_t  distribution,
                                         size_t             *num_areas_ret);
 
@@ -466,15 +466,15 @@ ccs_roulette_distribution_get_num_areas(ccs_distribution_t  distribution,
  *                           number of areas that are or would be returned. Can
  *                           be NULL
  * @return #CCS_SUCCESS on success
- * @return -#CCS_INVALID_VALUE if \p areas is NULL and num_areas is greater than
+ * @return #CCS_INVALID_VALUE if \p areas is NULL and num_areas is greater than
  *                             0; or if \p areas is NULL and num_areas_ret is
  *                             NULL
- * @return -#CCS_INVALID_OBJECT if \p distribution is not a valid CCS
+ * @return #CCS_INVALID_OBJECT if \p distribution is not a valid CCS
  *                              distribution
- * @return -#CCS_INVALID_DISTRIBUTION if \p distribution is not a roulette
+ * @return #CCS_INVALID_DISTRIBUTION if \p distribution is not a roulette
  *                                    distribution
  */
-extern ccs_result_t
+extern ccs_error_t
 ccs_roulette_distribution_get_areas(ccs_distribution_t  distribution,
                                     size_t              num_areas,
                                     ccs_float_t        *areas,
@@ -487,13 +487,13 @@ ccs_roulette_distribution_get_areas(ccs_distribution_t  distribution,
  *                                  the number of distributions contained in the
  *                                  distribution
  * @return #CCS_SUCCESS on success
- * @return -#CCS_INVALID_VALUE if \p num_distributions_ret is NULL
- * @return -#CCS_INVALID_OBJECT if \p distribution is not a valid CCS
+ * @return #CCS_INVALID_VALUE if \p num_distributions_ret is NULL
+ * @return #CCS_INVALID_OBJECT if \p distribution is not a valid CCS
  *                              distribution
- * @return -#CCS_INVALID_DISTRIBUTION if \p distribution is not a mixture
+ * @return #CCS_INVALID_DISTRIBUTION if \p distribution is not a mixture
  *                                    distribution
  */
-extern ccs_result_t
+extern ccs_error_t
 ccs_mixture_distribution_get_num_distributions(
 	ccs_distribution_t  distribution,
 	size_t             *num_distributions_ret);
@@ -512,15 +512,15 @@ ccs_mixture_distribution_get_num_distributions(
  *                                   the number of distributions that are or
  *                                   would be returned. Can be NULL
  * @return #CCS_SUCCESS on success
- * @return -#CCS_INVALID_VALUE if \p distributions is NULL and num_distributions
+ * @return #CCS_INVALID_VALUE if \p distributions is NULL and num_distributions
  *                             is greater than 0; or if \p distributions is NULL
  *                             and num_distributions_ret is NULL
- * @return -#CCS_INVALID_OBJECT if \p distribution is not a valid CCS
+ * @return #CCS_INVALID_OBJECT if \p distribution is not a valid CCS
  *                              distribution
- * @return -#CCS_INVALID_DISTRIBUTION if \p distribution is not a mixture
+ * @return #CCS_INVALID_DISTRIBUTION if \p distribution is not a mixture
  *                                    distribution
  */
-extern ccs_result_t
+extern ccs_error_t
 ccs_mixture_distribution_get_distributions(
 	ccs_distribution_t  distribution,
 	size_t              num_distributions,
@@ -540,15 +540,15 @@ ccs_mixture_distribution_get_distributions(
  *                             number of weights that are or would be returned.
  *                             Can be NULL
  * @return #CCS_SUCCESS on success
- * @return -#CCS_INVALID_VALUE if \p weights is NULL and num_weights is greater
+ * @return #CCS_INVALID_VALUE if \p weights is NULL and num_weights is greater
  *                             than 0; or if \p weights is NULL and
  *                             num_weights_ret is NULL
- * @return -#CCS_INVALID_OBJECT if \p distribution is not a valid CCS
+ * @return #CCS_INVALID_OBJECT if \p distribution is not a valid CCS
  *                              distribution
- * @return -#CCS_INVALID_DISTRIBUTION if \p distribution is not a mixture
+ * @return #CCS_INVALID_DISTRIBUTION if \p distribution is not a mixture
  *                                    distribution
  */
-extern ccs_result_t
+extern ccs_error_t
 ccs_mixture_distribution_get_weights(ccs_distribution_t  distribution,
                                      size_t              num_weights,
                                      ccs_float_t        *weights,
@@ -561,13 +561,13 @@ ccs_mixture_distribution_get_weights(ccs_distribution_t  distribution,
  *                                  the number of distributions contained in the
  *                                  distribution
  * @return #CCS_SUCCESS on success
- * @return -#CCS_INVALID_VALUE if \p num_distributions_ret is NULL
- * @return -#CCS_INVALID_OBJECT if \p distribution is not a valid CCS
+ * @return #CCS_INVALID_VALUE if \p num_distributions_ret is NULL
+ * @return #CCS_INVALID_OBJECT if \p distribution is not a valid CCS
  *                              distribution
- * @return -#CCS_INVALID_DISTRIBUTION if \p distribution is not a multivariate
+ * @return #CCS_INVALID_DISTRIBUTION if \p distribution is not a multivariate
  *                                    distribution
  */
-extern ccs_result_t
+extern ccs_error_t
 ccs_multivariate_distribution_get_num_distributions(
 	ccs_distribution_t  distribution,
 	size_t             *num_distributions_ret);
@@ -586,15 +586,15 @@ ccs_multivariate_distribution_get_num_distributions(
  *                                   the number of distributions that are or
  *                                   would be returned. Can be NULL
  * @return #CCS_SUCCESS on success
- * @return -#CCS_INVALID_VALUE if \p distributions is NULL and num_distributions
+ * @return #CCS_INVALID_VALUE if \p distributions is NULL and num_distributions
  *                             is greater than 0; or if \p distributions is NULL
  *                             and num_distributions_ret is NULL
- * @return -#CCS_INVALID_OBJECT if \p distribution is not a valid CCS
+ * @return #CCS_INVALID_OBJECT if \p distribution is not a valid CCS
  *                              distribution
- * @return -#CCS_INVALID_DISTRIBUTION if \p distribution is not a multivariate
+ * @return #CCS_INVALID_DISTRIBUTION if \p distribution is not a multivariate
  *                                    distribution
  */
-extern ccs_result_t
+extern ccs_error_t
 ccs_multivariate_distribution_get_distributions(
 	ccs_distribution_t  distribution,
 	size_t              num_distributions,
@@ -610,12 +610,12 @@ ccs_multivariate_distribution_get_distributions(
  *             numeric returned depends on the data type of each dimension (see
  *             #ccs_distribution_get_data_types)
  * @return #CCS_SUCCESS on success
- * @return -#CCS_INVALID_VALUE if \p values is NULL
- * @return -#CCS_INVALID_OBJECT if \p distribution is not a valid CCS
+ * @return #CCS_INVALID_VALUE if \p values is NULL
+ * @return #CCS_INVALID_OBJECT if \p distribution is not a valid CCS
  *                              distribution; or if \p rng is not a valid CCS
  *                              rng
  */
-extern ccs_result_t
+extern ccs_error_t
 ccs_distribution_sample(ccs_distribution_t  distribution,
                         ccs_rng_t           rng,
                         ccs_numeric_t      *values);
@@ -631,13 +631,13 @@ ccs_distribution_sample(ccs_distribution_t  distribution,
  *                    ordering, so values from a single sample will be
  *                    contiguous in memory
  * @return #CCS_SUCCESS on success
- * @return -#CCS_INVALID_VALUE if \p values is NULL and \p num_samples is
+ * @return #CCS_INVALID_VALUE if \p values is NULL and \p num_samples is
  *                             greater than 0
- * @return -#CCS_INVALID_OBJECT if \p distribution is not a valid CCS
+ * @return #CCS_INVALID_OBJECT if \p distribution is not a valid CCS
  *                              distribution; or if \p rng is not a valid CCS
  *                              rng
  */
-extern ccs_result_t
+extern ccs_error_t
 ccs_distribution_samples(ccs_distribution_t  distribution,
                          ccs_rng_t           rng,
                          size_t              num_samples,
@@ -659,14 +659,14 @@ ccs_distribution_samples(ccs_distribution_t  distribution,
  *                    an array of structures ordering, so values from a single
  *                    sample will be contiguous in memory
  * @return #CCS_SUCCESS on success
- * @return -#CCS_INVALID_VALUE if \p values is NULL and \p num_samples is
+ * @return #CCS_INVALID_VALUE if \p values is NULL and \p num_samples is
  *                             greater than 0; or if \p stride is less than the
  *                             distribution dimension
- * @return -#CCS_INVALID_OBJECT if \p distribution is not a valid CCS
+ * @return #CCS_INVALID_OBJECT if \p distribution is not a valid CCS
  *                              distribution; or if \p rng is not a valid CCS
  *                              rng
  */
-extern ccs_result_t
+extern ccs_error_t
 ccs_distribution_strided_samples(ccs_distribution_t  distribution,
                                  ccs_rng_t           rng,
                                  size_t              num_samples,
@@ -684,12 +684,12 @@ ccs_distribution_strided_samples(ccs_distribution_t  distribution,
  *                    arrays have a dimension of num_samples. If a value inside
  *                    the array is NULL this dimension is ignored.
  * @return #CCS_SUCCESS on success
- * @return -#CCS_INVALID_VALUE if \p values is NULL
- * @return -#CCS_INVALID_OBJECT if \p distribution is not a valid CCS
+ * @return #CCS_INVALID_VALUE if \p values is NULL
+ * @return #CCS_INVALID_OBJECT if \p distribution is not a valid CCS
  *                              distribution; or if \p rng is not a valid CCS
  *                              rng
  */
-extern ccs_result_t
+extern ccs_error_t
 ccs_distribution_soa_samples(ccs_distribution_t   distribution,
                              ccs_rng_t            rng,
                              size_t               num_samples,
@@ -709,15 +709,15 @@ ccs_distribution_soa_samples(ccs_distribution_t   distribution,
  *                    ordering, so values from a single sample will be
  *                    contiguous in memory
  * @return #CCS_SUCCESS on success
- * @return -#CCS_INVALID_VALUE if \p values is NULL and \p num_samples is
+ * @return #CCS_INVALID_VALUE if \p values is NULL and \p num_samples is
  *                             greater than 0; or if \p hyperparameters is NULL
  *                             and \p num_samples is greater than 0
- * @return -#CCS_INVALID_OBJECT if \p distribution is not a valid CCS
+ * @return #CCS_INVALID_OBJECT if \p distribution is not a valid CCS
  *                              distribution; or if \p rng is not a valid CCS
  *                              rng; or if at least one of the hyperparameters
  *                              provided is NULL
  */
-extern ccs_result_t
+extern ccs_error_t
 ccs_distribution_hyperparameters_samples(ccs_distribution_t    distribution,
                                          ccs_rng_t             rng,
                                          ccs_hyperparameter_t *hyperparameters,
@@ -734,14 +734,14 @@ ccs_distribution_hyperparameters_samples(ccs_distribution_t    distribution,
  * @param[out] values an array of datum of the same dimension as the
  *             distribution. Will contain the sampled values.
  * @return #CCS_SUCCESS on success
- * @return -#CCS_INVALID_VALUE if \p values is NULL; or if \p hyperparameters is
+ * @return #CCS_INVALID_VALUE if \p values is NULL; or if \p hyperparameters is
  *                             NULL
- * @return -#CCS_INVALID_OBJECT if \p distribution is not a valid CCS
+ * @return #CCS_INVALID_OBJECT if \p distribution is not a valid CCS
  *                              distribution; or if \p rng is not a valid CCS
  *                              rng; or if at least one of the hyperparameters
  *                              provided is NULL
  */
-extern ccs_result_t
+extern ccs_error_t
 ccs_distribution_hyperparameters_sample(ccs_distribution_t    distribution,
                                         ccs_rng_t             rng,
                                         ccs_hyperparameter_t *hyperparameters,

@@ -41,7 +41,7 @@ struct _ccs_context_s {
 	_ccs_context_data_t    *data;
 };
 
-static inline ccs_result_t
+static inline ccs_error_t
 _ccs_context_get_hyperparameter_index(
 		ccs_context_t         context,
 		ccs_hyperparameter_t  hyperparameter,
@@ -56,7 +56,7 @@ _ccs_context_get_hyperparameter_index(
 	return CCS_SUCCESS;
 }
 
-static inline ccs_result_t
+static inline ccs_error_t
 _ccs_context_get_num_hyperparameters(
 		ccs_context_t  context,
 		size_t        *num_hyperparameters_ret) {
@@ -65,7 +65,7 @@ _ccs_context_get_num_hyperparameters(
 	return CCS_SUCCESS;
 }
 
-static inline ccs_result_t
+static inline ccs_error_t
 _ccs_context_get_hyperparameter(
 		ccs_context_t         context,
 		size_t                index,
@@ -78,7 +78,7 @@ _ccs_context_get_hyperparameter(
 	return CCS_SUCCESS;
 }
 
-static inline ccs_result_t
+static inline ccs_error_t
 _ccs_context_get_hyperparameter_by_name(
 		ccs_context_t         context,
 		const char *          name,
@@ -95,7 +95,7 @@ _ccs_context_get_hyperparameter_by_name(
 	return CCS_SUCCESS;
 }
 
-static inline ccs_result_t
+static inline ccs_error_t
 _ccs_context_get_hyperparameter_index_by_name(
 		ccs_context_t  context,
 		const char    *name,
@@ -112,7 +112,7 @@ _ccs_context_get_hyperparameter_index_by_name(
 	return CCS_SUCCESS;
 }
 
-static inline ccs_result_t
+static inline ccs_error_t
 _ccs_context_get_hyperparameters(
 		ccs_context_t          context,
 		size_t                 num_hyperparameters,
@@ -136,7 +136,7 @@ _ccs_context_get_hyperparameters(
 	return CCS_SUCCESS;
 }
 
-static inline ccs_result_t
+static inline ccs_error_t
 _ccs_context_get_hyperparameter_indexes(
 		ccs_context_t          context,
 		size_t                 num_hyperparameters,
@@ -154,7 +154,7 @@ _ccs_context_get_hyperparameter_indexes(
 	return CCS_SUCCESS;
 }
 
-static inline ccs_result_t
+static inline ccs_error_t
 _ccs_context_get_name(ccs_context_t   context,
                       const char    **name_ret) {
 	CCS_CHECK_PTR(name_ret);
@@ -162,7 +162,7 @@ _ccs_context_get_name(ccs_context_t   context,
 	return CCS_SUCCESS;
 }
 
-static inline ccs_result_t
+static inline ccs_error_t
 _ccs_context_validate_value(ccs_context_t  context,
                             size_t         index,
                             ccs_datum_t    value,
@@ -178,7 +178,7 @@ _ccs_context_validate_value(ccs_context_t  context,
 	return CCS_SUCCESS;
 }
 
-static inline ccs_result_t
+static inline ccs_error_t
 _ccs_serialize_bin_size_ccs_context_data(
 		_ccs_context_data_t             *data,
 		size_t                          *cum_size,
@@ -193,7 +193,7 @@ _ccs_serialize_bin_size_ccs_context_data(
 	return CCS_SUCCESS;
 }
 
-static inline ccs_result_t
+static inline ccs_error_t
 _ccs_serialize_bin_ccs_context_data(
 		_ccs_context_data_t              *data,
 		size_t                           *buffer_size,
@@ -210,7 +210,7 @@ _ccs_serialize_bin_ccs_context_data(
 	return CCS_SUCCESS;
 }
 
-static inline ccs_result_t
+static inline ccs_error_t
 _ccs_serialize_bin_size_ccs_context(
 		ccs_context_t                    context,
 		size_t                          *cum_size,
@@ -222,7 +222,7 @@ _ccs_serialize_bin_size_ccs_context(
 	return CCS_SUCCESS;
 }
 
-static inline ccs_result_t
+static inline ccs_error_t
 _ccs_serialize_bin_ccs_context(
 		ccs_context_t                     context,
 		size_t                           *buffer_size,

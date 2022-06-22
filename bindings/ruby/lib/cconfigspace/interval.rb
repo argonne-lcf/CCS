@@ -138,9 +138,9 @@ module CCS
   end
   typedef Interval.by_value, :ccs_interval_t
 
-  attach_function :ccs_interval_empty, [Interval.by_ref, :pointer], :ccs_result_t
-  attach_function :ccs_interval_intersect, [Interval.by_ref, Interval.by_ref, Interval.by_ref], :ccs_result_t
-  attach_function :ccs_interval_equal, [Interval.by_ref, Interval.by_ref, :pointer], :ccs_result_t
+  attach_function :ccs_interval_empty, [Interval.by_ref, :pointer], :ccs_error_t
+  attach_function :ccs_interval_intersect, [Interval.by_ref, Interval.by_ref, Interval.by_ref], :ccs_error_t
+  attach_function :ccs_interval_equal, [Interval.by_ref, Interval.by_ref, :pointer], :ccs_error_t
   attach_function :ccs_interval_include, [Interval.by_ref, :ccs_numeric_t], :ccs_bool_t
 
 end

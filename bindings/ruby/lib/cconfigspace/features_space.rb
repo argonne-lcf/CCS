@@ -1,9 +1,9 @@
 module CCS
-  attach_function :ccs_create_features_space, [:string, :pointer], :ccs_result_t
-  attach_function :ccs_features_space_add_hyperparameter, [:ccs_features_space_t, :ccs_hyperparameter_t], :ccs_result_t
-  attach_function :ccs_features_space_add_hyperparameters, [:ccs_features_space_t, :size_t, :pointer], :ccs_result_t
-  attach_function :ccs_features_space_check_features, [:ccs_features_space_t, :ccs_features_t, :pointer], :ccs_result_t
-  attach_function :ccs_features_space_check_features_values, [:ccs_features_space_t, :size_t, :pointer, :pointer], :ccs_result_t
+  attach_function :ccs_create_features_space, [:string, :pointer], :ccs_error_t
+  attach_function :ccs_features_space_add_hyperparameter, [:ccs_features_space_t, :ccs_hyperparameter_t], :ccs_error_t
+  attach_function :ccs_features_space_add_hyperparameters, [:ccs_features_space_t, :size_t, :pointer], :ccs_error_t
+  attach_function :ccs_features_space_check_features, [:ccs_features_space_t, :ccs_features_t, :pointer], :ccs_error_t
+  attach_function :ccs_features_space_check_features_values, [:ccs_features_space_t, :size_t, :pointer, :pointer], :ccs_error_t
 
   class FeaturesSpace < Context
     def initialize(handle = nil, retain: false, auto_release: true,

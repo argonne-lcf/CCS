@@ -5,7 +5,7 @@
 
 static void compare_hyperparameter(
 		ccs_hyperparameter_t hyperparameter) {
-	ccs_result_t               err;
+	ccs_error_t               err;
 	ccs_hyperparameter_type_t  type;
 	ccs_datum_t                default_value;
 	const char                *name;
@@ -26,7 +26,7 @@ static void compare_hyperparameter(
 	assert( strcmp(name, "my_param") == 0 );
 
 	err = ccs_hyperparameter_get_default_distribution(hyperparameter, &distribution);
-	assert( err == -CCS_UNSUPPORTED_OPERATION );
+	assert( err == CCS_UNSUPPORTED_OPERATION );
 
 	err = ccs_hyperparameter_sampling_interval(hyperparameter, &interval);
 	assert( err == CCS_SUCCESS );
@@ -37,7 +37,7 @@ static void compare_hyperparameter(
 
 void test_create() {
 	ccs_hyperparameter_t  hyperparameter;
-	ccs_result_t          err;
+	ccs_error_t          err;
 	char                 *buff;
 	size_t                buff_size;
 
@@ -69,7 +69,7 @@ void test_create() {
 
 void test_string_memoization() {
 	ccs_hyperparameter_t  hyperparameter;
-	ccs_result_t          err;
+	ccs_error_t          err;
 	ccs_datum_t           din, dout, dout2;
 	ccs_bool_t            check;
 	char                 *str;

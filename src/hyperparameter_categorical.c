@@ -22,7 +22,7 @@ _ccs_serialize_bin_size_ccs_hyperparameter_categorical_data(
 	return sz;
 }
 
-static inline ccs_result_t
+static inline ccs_error_t
 _ccs_serialize_bin_ccs_hyperparameter_categorical_data(
 		_ccs_hyperparameter_categorical_data_t  *data,
 		size_t                                  *buffer_size,
@@ -37,7 +37,7 @@ _ccs_serialize_bin_ccs_hyperparameter_categorical_data(
 	return CCS_SUCCESS;
 }
 
-static ccs_result_t
+static ccs_error_t
 _ccs_hyperparameter_categorical_del(ccs_object_t o) {
 	ccs_hyperparameter_t d = (ccs_hyperparameter_t)o;
 	_ccs_hyperparameter_categorical_data_t *data = (_ccs_hyperparameter_categorical_data_t *)(d->data);
@@ -55,7 +55,7 @@ _ccs_serialize_bin_size_ccs_hyperparameter_categorical(
 		_ccs_serialize_bin_size_ccs_hyperparameter_categorical_data(data);
 }
 
-static inline ccs_result_t
+static inline ccs_error_t
 _ccs_serialize_bin_ccs_hyperparameter_categorical(
 		ccs_hyperparameter_t   hyperparameter,
 		size_t                *buffer_size,
@@ -69,7 +69,7 @@ _ccs_serialize_bin_ccs_hyperparameter_categorical(
 	return CCS_SUCCESS;
 }
 
-static ccs_result_t
+static ccs_error_t
 _ccs_hyperparameter_categorical_serialize_size(
 		ccs_object_t                     object,
 		ccs_serialize_format_t           format,
@@ -88,7 +88,7 @@ _ccs_hyperparameter_categorical_serialize_size(
 	return CCS_SUCCESS;
 }
 
-static ccs_result_t
+static ccs_error_t
 _ccs_hyperparameter_categorical_serialize(
 		ccs_object_t                      object,
 		ccs_serialize_format_t            format,
@@ -108,7 +108,7 @@ _ccs_hyperparameter_categorical_serialize(
 	return CCS_SUCCESS;
 }
 
-static ccs_result_t
+static ccs_error_t
 _ccs_hyperparameter_categorical_check_values(_ccs_hyperparameter_data_t *data,
                                              size_t                num_values,
                                              const ccs_datum_t    *values,
@@ -133,7 +133,7 @@ _ccs_hyperparameter_categorical_check_values(_ccs_hyperparameter_data_t *data,
 	return CCS_SUCCESS;
 }
 
-static ccs_result_t
+static ccs_error_t
 _ccs_hyperparameter_categorical_samples(_ccs_hyperparameter_data_t *data,
                                         ccs_distribution_t          distribution,
                                         ccs_rng_t                   rng,
@@ -141,7 +141,7 @@ _ccs_hyperparameter_categorical_samples(_ccs_hyperparameter_data_t *data,
                                         ccs_datum_t                *values) {
 	_ccs_hyperparameter_categorical_data_t *d =
 	    (_ccs_hyperparameter_categorical_data_t *)data;
-	ccs_result_t err;
+	ccs_error_t err;
 	ccs_int_t *vs = (ccs_int_t *)values + num_values;
         ccs_bool_t oversampling;
 	CCS_VALIDATE(ccs_distribution_check_oversampling(
@@ -186,7 +186,7 @@ errmem:
 	return err;
 }
 
-static ccs_result_t
+static ccs_error_t
 _ccs_hyperparameter_categorical_get_default_distribution(
 		_ccs_hyperparameter_data_t *data,
 		ccs_distribution_t         *distribution) {
@@ -198,7 +198,7 @@ _ccs_hyperparameter_categorical_get_default_distribution(
 	return CCS_SUCCESS;
 }
 
-static ccs_result_t
+static ccs_error_t
 _ccs_hyperparameter_categorical_convert_samples(
 		_ccs_hyperparameter_data_t *data,
 		ccs_bool_t                  oversampling,
@@ -240,7 +240,7 @@ static _ccs_hyperparameter_ops_t _ccs_hyperparameter_categorical_ops = {
 	CCS_RAISE(CCS_OUT_OF_MEMORY, "Not enough memory to allocate hash"); \
 }
 
-static inline ccs_result_t
+static inline ccs_error_t
 _ccs_create_categorical_hyperparameter(ccs_hyperparameter_type_t  type,
                                        const char                *name,
                                        size_t                     num_possible_values,
@@ -324,7 +324,7 @@ _ccs_create_categorical_hyperparameter(ccs_hyperparameter_type_t  type,
 	return CCS_SUCCESS;
 }
 
-static inline ccs_result_t
+static inline ccs_error_t
 _ccs_categorical_hyperparameter_get_values(ccs_hyperparameter_t  hyperparameter,
                                            size_t                num_possible_values,
                                            ccs_datum_t          *possible_values,
@@ -345,7 +345,7 @@ _ccs_categorical_hyperparameter_get_values(ccs_hyperparameter_t  hyperparameter,
 	return CCS_SUCCESS;
 }
 
-ccs_result_t
+ccs_error_t
 ccs_create_categorical_hyperparameter(const char           *name,
                                       size_t                num_possible_values,
                                       ccs_datum_t          *possible_values,
@@ -358,7 +358,7 @@ ccs_create_categorical_hyperparameter(const char           *name,
 	return CCS_SUCCESS;
 }
 
-ccs_result_t
+ccs_error_t
 ccs_categorical_hyperparameter_get_values(ccs_hyperparameter_t  hyperparameter,
                                           size_t                num_possible_values,
                                           ccs_datum_t          *possible_values,
@@ -370,7 +370,7 @@ ccs_categorical_hyperparameter_get_values(ccs_hyperparameter_t  hyperparameter,
 	return CCS_SUCCESS;
 }
 
-ccs_result_t
+ccs_error_t
 ccs_ordinal_hyperparameter_compare_values(ccs_hyperparameter_t  hyperparameter,
                                           ccs_datum_t           value1,
                                           ccs_datum_t           value2,
@@ -391,7 +391,7 @@ ccs_ordinal_hyperparameter_compare_values(ccs_hyperparameter_t  hyperparameter,
 	return CCS_SUCCESS;
 }
 
-ccs_result_t
+ccs_error_t
 ccs_create_ordinal_hyperparameter(const char           *name,
                                   size_t                num_possible_values,
                                   ccs_datum_t          *possible_values,
@@ -404,7 +404,7 @@ ccs_create_ordinal_hyperparameter(const char           *name,
 	return CCS_SUCCESS;
 }
 
-ccs_result_t
+ccs_error_t
 ccs_ordinal_hyperparameter_get_values(ccs_hyperparameter_t  hyperparameter,
                                       size_t                num_possible_values,
                                       ccs_datum_t          *possible_values,
@@ -416,7 +416,7 @@ ccs_ordinal_hyperparameter_get_values(ccs_hyperparameter_t  hyperparameter,
 	return CCS_SUCCESS;
 }
 
-ccs_result_t
+ccs_error_t
 ccs_create_discrete_hyperparameter(const char           *name,
                                    size_t                num_possible_values,
                                    ccs_datum_t          *possible_values,
@@ -429,7 +429,7 @@ ccs_create_discrete_hyperparameter(const char           *name,
 	return CCS_SUCCESS;
 }
 
-ccs_result_t
+ccs_error_t
 ccs_discrete_hyperparameter_get_values(ccs_hyperparameter_t  hyperparameter,
                                        size_t                num_possible_values,
                                        ccs_datum_t          *possible_values,

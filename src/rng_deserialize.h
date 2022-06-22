@@ -5,7 +5,7 @@
 
 static const gsl_rng_type **_ccs_gsl_rng_types = NULL;
 
-static inline ccs_result_t
+static inline ccs_error_t
 _ccs_deserialize_bin_rng(
 		ccs_rng_t                          *rng_ret,
 		uint32_t                            version,
@@ -13,7 +13,7 @@ _ccs_deserialize_bin_rng(
 		const char                        **buffer,
 		_ccs_object_deserialize_options_t  *opts) {
 	(void)version;
-	ccs_result_t res;
+	ccs_error_t res;
 	_ccs_object_internal_t obj;
 	ccs_object_t handle;
 	CCS_VALIDATE(_ccs_deserialize_bin_ccs_object_internal(
@@ -57,7 +57,7 @@ err_rng:
 	return res;
 }
 
-static ccs_result_t
+static ccs_error_t
 _ccs_rng_deserialize(
 		ccs_rng_t                          *rng_ret,
 		ccs_serialize_format_t              format,

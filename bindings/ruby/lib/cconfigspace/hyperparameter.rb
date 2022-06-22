@@ -20,16 +20,16 @@ module CCS
     end
   end
 
-  attach_function :ccs_hyperparameter_get_type, [:ccs_hyperparameter_t, :pointer], :ccs_result_t
-  attach_function :ccs_hyperparameter_get_default_value, [:ccs_hyperparameter_t, :pointer], :ccs_result_t
-  attach_function :ccs_hyperparameter_get_name, [:ccs_hyperparameter_t, :pointer], :ccs_result_t
-  attach_function :ccs_hyperparameter_get_default_distribution, [:ccs_hyperparameter_t, :pointer], :ccs_result_t
-  attach_function :ccs_hyperparameter_check_value, [:ccs_hyperparameter_t, :ccs_datum_t, :pointer], :ccs_result_t
-  attach_function :ccs_hyperparameter_check_values, [:ccs_hyperparameter_t, :size_t, :pointer, :pointer], :ccs_result_t
-  attach_function :ccs_hyperparameter_validate_value, [:ccs_hyperparameter_t, :ccs_datum_t, :pointer, :pointer], :ccs_result_t
-  attach_function :ccs_hyperparameter_validate_values, [:ccs_hyperparameter_t, :size_t, :pointer, :pointer, :pointer], :ccs_result_t
-  attach_function :ccs_hyperparameter_sample, [:ccs_hyperparameter_t, :ccs_distribution_t, :ccs_rng_t, :pointer], :ccs_result_t
-  attach_function :ccs_hyperparameter_samples, [:ccs_hyperparameter_t, :ccs_distribution_t, :ccs_rng_t, :size_t, :pointer], :ccs_result_t
+  attach_function :ccs_hyperparameter_get_type, [:ccs_hyperparameter_t, :pointer], :ccs_error_t
+  attach_function :ccs_hyperparameter_get_default_value, [:ccs_hyperparameter_t, :pointer], :ccs_error_t
+  attach_function :ccs_hyperparameter_get_name, [:ccs_hyperparameter_t, :pointer], :ccs_error_t
+  attach_function :ccs_hyperparameter_get_default_distribution, [:ccs_hyperparameter_t, :pointer], :ccs_error_t
+  attach_function :ccs_hyperparameter_check_value, [:ccs_hyperparameter_t, :ccs_datum_t, :pointer], :ccs_error_t
+  attach_function :ccs_hyperparameter_check_values, [:ccs_hyperparameter_t, :size_t, :pointer, :pointer], :ccs_error_t
+  attach_function :ccs_hyperparameter_validate_value, [:ccs_hyperparameter_t, :ccs_datum_t, :pointer, :pointer], :ccs_error_t
+  attach_function :ccs_hyperparameter_validate_values, [:ccs_hyperparameter_t, :size_t, :pointer, :pointer, :pointer], :ccs_error_t
+  attach_function :ccs_hyperparameter_sample, [:ccs_hyperparameter_t, :ccs_distribution_t, :ccs_rng_t, :pointer], :ccs_error_t
+  attach_function :ccs_hyperparameter_samples, [:ccs_hyperparameter_t, :ccs_distribution_t, :ccs_rng_t, :size_t, :pointer], :ccs_error_t
 
   class Hyperparameter < Object
     add_property :type, :ccs_hyperparameter_type_t, :ccs_hyperparameter_get_type, memoize:true
@@ -126,8 +126,8 @@ module CCS
     end
   end
 
-  attach_function :ccs_create_numerical_hyperparameter, [:string, :ccs_numeric_type_t, :ccs_numeric_t, :ccs_numeric_t, :ccs_numeric_t, :ccs_numeric_t, :pointer], :ccs_result_t
-  attach_function :ccs_numerical_hyperparameter_get_parameters, [:ccs_hyperparameter_t, :pointer, :pointer, :pointer, :pointer], :ccs_result_t
+  attach_function :ccs_create_numerical_hyperparameter, [:string, :ccs_numeric_type_t, :ccs_numeric_t, :ccs_numeric_t, :ccs_numeric_t, :ccs_numeric_t, :pointer], :ccs_error_t
+  attach_function :ccs_numerical_hyperparameter_get_parameters, [:ccs_hyperparameter_t, :pointer, :pointer, :pointer, :pointer], :ccs_error_t
   class NumericalHyperparameter < Hyperparameter
     def initialize(handle = nil, retain: false, auto_release: true,
                    name: Hyperparameter.default_name, data_type: :CCS_NUM_FLOAT, lower: 0.0, upper: 1.0, quantization: 0.0, default: lower)
@@ -213,8 +213,8 @@ module CCS
     end
   end
 
-  attach_function :ccs_create_categorical_hyperparameter, [:string, :size_t, :pointer, :size_t, :pointer],  :ccs_result_t
-  attach_function :ccs_categorical_hyperparameter_get_values, [:ccs_hyperparameter_t, :size_t, :pointer, :pointer], :ccs_result_t
+  attach_function :ccs_create_categorical_hyperparameter, [:string, :size_t, :pointer, :size_t, :pointer],  :ccs_error_t
+  attach_function :ccs_categorical_hyperparameter_get_values, [:ccs_hyperparameter_t, :size_t, :pointer, :pointer], :ccs_error_t
   class CategoricalHyperparameter < Hyperparameter
     def initialize(handle = nil, retain: false, auto_release: true,
                    name: Hyperparameter.default_name, values: [], default_index: 0)
@@ -247,9 +247,9 @@ module CCS
     end
   end
 
-  attach_function :ccs_create_ordinal_hyperparameter, [:string, :size_t, :pointer, :size_t, :pointer],  :ccs_result_t
-  attach_function :ccs_ordinal_hyperparameter_compare_values, [:ccs_hyperparameter_t, :ccs_datum_t, :ccs_datum_t, :pointer], :ccs_result_t
-  attach_function :ccs_ordinal_hyperparameter_get_values, [:ccs_hyperparameter_t, :size_t, :pointer, :pointer], :ccs_result_t
+  attach_function :ccs_create_ordinal_hyperparameter, [:string, :size_t, :pointer, :size_t, :pointer],  :ccs_error_t
+  attach_function :ccs_ordinal_hyperparameter_compare_values, [:ccs_hyperparameter_t, :ccs_datum_t, :ccs_datum_t, :pointer], :ccs_error_t
+  attach_function :ccs_ordinal_hyperparameter_get_values, [:ccs_hyperparameter_t, :size_t, :pointer, :pointer], :ccs_error_t
   class OrdinalHyperparameter < Hyperparameter
     def initialize(handle = nil, retain: false, auto_release: true,
                    name: Hyperparameter.default_name, values: [], default_index: 0)
@@ -291,8 +291,8 @@ module CCS
     end
   end
 
-  attach_function :ccs_create_discrete_hyperparameter, [:string, :size_t, :pointer, :size_t, :pointer],  :ccs_result_t
-  attach_function :ccs_discrete_hyperparameter_get_values, [:ccs_hyperparameter_t, :size_t, :pointer, :pointer], :ccs_result_t
+  attach_function :ccs_create_discrete_hyperparameter, [:string, :size_t, :pointer, :size_t, :pointer],  :ccs_error_t
+  attach_function :ccs_discrete_hyperparameter_get_values, [:ccs_hyperparameter_t, :size_t, :pointer, :pointer], :ccs_error_t
   class DiscreteHyperparameter < Hyperparameter
     def initialize(handle = nil, retain: false, auto_release: true,
                    name: Hyperparameter.default_name, values: [], default_index: 0)
@@ -325,7 +325,7 @@ module CCS
     end
   end
 
-  attach_function :ccs_create_string_hyperparameter, [:string, :pointer],  :ccs_result_t
+  attach_function :ccs_create_string_hyperparameter, [:string, :pointer],  :ccs_error_t
   class StringHyperparameter < Hyperparameter
     def initialize(handle = nil, retain: false, auto_release: true,
                    name: Hyperparameter.default_name)

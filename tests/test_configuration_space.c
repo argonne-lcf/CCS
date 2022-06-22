@@ -7,7 +7,7 @@ double d = -2.0;
 
 ccs_hyperparameter_t create_dummy_hyperparameter(const char * name) {
 	ccs_hyperparameter_t hyperparameter;
-	ccs_result_t         err;
+	ccs_error_t         err;
 	err = ccs_create_numerical_hyperparameter(name, CCS_NUM_FLOAT,
 	                                          CCSF(-5.0), CCSF(5.0),
 	                                          CCSF(0.0), CCSF(d),
@@ -21,7 +21,7 @@ ccs_hyperparameter_t create_dummy_hyperparameter(const char * name) {
 
 void test_create() {
 	ccs_configuration_space_t  configuration_space;
-	ccs_result_t               err;
+	ccs_error_t               err;
 	ccs_object_type_t          type;
 	const char                *name;
 	size_t                     sz;
@@ -51,7 +51,7 @@ void check_configuration(ccs_configuration_space_t  configuration_space,
                          ccs_hyperparameter_t      *hyperparameters) {
 	ccs_hyperparameter_t  hyperparameter;
 	ccs_configuration_t   configuration;
-	ccs_result_t          err;
+	ccs_error_t          err;
 	size_t                sz_ret;
 	size_t                index;
 	ccs_hyperparameter_t *hyperparameters_ret =
@@ -116,7 +116,7 @@ void check_configuration(ccs_configuration_space_t  configuration_space,
 void test_add() {
 	ccs_hyperparameter_t      hyperparameters[3];
 	ccs_configuration_space_t configuration_space;
-	ccs_result_t              err;
+	ccs_error_t              err;
 
 	err = ccs_create_configuration_space("my_config_space",
 	                                     &configuration_space);
@@ -132,7 +132,7 @@ void test_add() {
 
 	err = ccs_configuration_space_add_hyperparameter(configuration_space,
 	                                                 hyperparameters[0], NULL);
-	assert( err == -CCS_INVALID_HYPERPARAMETER );
+	assert( err == CCS_INVALID_HYPERPARAMETER );
 
 	err = ccs_configuration_space_add_hyperparameter(configuration_space,
 	                                                 hyperparameters[1], NULL);
@@ -154,7 +154,7 @@ void test_add() {
 void test_add_list() {
 	ccs_hyperparameter_t      hyperparameters[3];
 	ccs_configuration_space_t configuration_space;
-	ccs_result_t              err;
+	ccs_error_t              err;
 
 	err = ccs_create_configuration_space("my_config_space",
 	                                     &configuration_space);
@@ -183,7 +183,7 @@ void test_sample() {
 	ccs_configuration_t       configuration;
 	ccs_configuration_t       configurations[100];
 	ccs_configuration_space_t configuration_space;
-	ccs_result_t              err;
+	ccs_error_t              err;
 	ccs_bool_t                check;
 
 	err = ccs_create_configuration_space("my_config_space",
@@ -241,7 +241,7 @@ void test_set_distribution() {
 	size_t                    dindex_ret;
 	ccs_configuration_t       configurations[100];
 	ccs_configuration_space_t configuration_space;
-	ccs_result_t              err;
+	ccs_error_t              err;
 	ccs_bool_t                check;
 
 	err = ccs_create_configuration_space("my_config_space",
@@ -372,7 +372,7 @@ void test_set_distribution() {
 
 ccs_hyperparameter_t create_numerical(const char * name) {
 	ccs_hyperparameter_t hyperparameter;
-	ccs_result_t         err;
+	ccs_error_t         err;
 	err = ccs_create_numerical_hyperparameter(name, CCS_NUM_FLOAT,
 	                                          CCSF(-5.0), CCSF(5.0),
 	                                          CCSF(0.0), CCSF(0.0),
@@ -389,7 +389,7 @@ void test_configuration_deserialize() {
 	size_t                     buff_size;
 	ccs_map_t                  map;
 	ccs_datum_t                d;
-	ccs_result_t               err;
+	ccs_error_t               err;
 	int                        cmp;
 
 	err = ccs_create_configuration_space("my_config_space",
@@ -417,7 +417,7 @@ void test_configuration_deserialize() {
 
 	err = ccs_object_deserialize((ccs_object_t*)&configuration, CCS_SERIALIZE_FORMAT_BINARY, CCS_SERIALIZE_OPERATION_MEMORY, buff_size, buff,
 	                             CCS_DESERIALIZE_OPTION_HANDLE_MAP, map, CCS_DESERIALIZE_OPTION_END);
-	assert( err == -CCS_INVALID_HANDLE );
+	assert( err == CCS_INVALID_HANDLE );
 
 	d = ccs_object(configuration_space);
 	d.flags |= CCS_FLAG_ID;
@@ -461,7 +461,7 @@ void test_deserialize() {
 	size_t                     count;
 	ccs_map_t                  map;
 	ccs_datum_t                d;
-	ccs_result_t               err;
+	ccs_error_t               err;
 
 	err = ccs_create_configuration_space("my_config_space",
 	                                     &space);

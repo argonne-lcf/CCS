@@ -40,12 +40,6 @@ ccs_map                 = ccs_object
 ccs_false = 0
 ccs_true = 1
 
-def _ccs_get_function(method, argtypes = [], restype = ccs_result):
-  res = getattr(libcconfigspace, method)
-  res.restype = restype
-  res.argtypes = argtypes
-  return res
-
 # https://www.python-course.eu/python3_metaclasses.php
 class Singleton(type):
   _instances = {}
@@ -152,34 +146,34 @@ class ccs_object_type(CEnumeration):
 
 class ccs_error(CEnumeration):
   _members_ = [
-    ('SUCCESS', 0),
-    'INVALID_OBJECT',
-    'INVALID_VALUE',
-    'INVALID_TYPE',
-    'INVALID_SCALE',
-    'INVALID_DISTRIBUTION',
-    'INVALID_EXPRESSION',
-    'INVALID_HYPERPARAMETER',
-    'INVALID_CONFIGURATION',
-    'INVALID_NAME',
-    'INVALID_CONDITION',
-    'INVALID_TUNER',
-    'INVALID_GRAPH',
-    'TYPE_NOT_COMPARABLE',
-    'INVALID_BOUNDS',
-    'OUT_OF_BOUNDS',
-    'SAMPLING_UNSUCCESSFUL',
-    'OUT_OF_MEMORY',
-    'UNSUPPORTED_OPERATION',
-    'INVALID_EVALUATION',
-    'INVALID_FEATURES',
-    'INVALID_FEATURES_TUNER',
-    'INVALID_FILE_PATH',
-    'NOT_ENOUGH_DATA',
-    'HANDLE_DUPLICATE',
-    'INVALID_HANDLE',
-    'SYSTEM_ERROR',
-    'AGAIN' ]
+    ('AGAIN',                    1),
+    ('SUCCESS',                  0),
+    ('INVALID_OBJECT',          -1),
+    ('INVALID_VALUE',           -2),
+    ('INVALID_TYPE',            -3),
+    ('INVALID_SCALE',           -4),
+    ('INVALID_DISTRIBUTION',    -5),
+    ('INVALID_EXPRESSION',      -6),
+    ('INVALID_HYPERPARAMETER',  -7),
+    ('INVALID_CONFIGURATION',   -8),
+    ('INVALID_NAME',            -9),
+    ('INVALID_CONDITION',      -10),
+    ('INVALID_TUNER',          -11),
+    ('INVALID_GRAPH',          -12),
+    ('TYPE_NOT_COMPARABLE',    -13),
+    ('INVALID_BOUNDS',         -14),
+    ('OUT_OF_BOUNDS',          -15),
+    ('SAMPLING_UNSUCCESSFUL',  -16),
+    ('OUT_OF_MEMORY',          -17),
+    ('UNSUPPORTED_OPERATION',  -18),
+    ('INVALID_EVALUATION',     -19),
+    ('INVALID_FEATURES',       -20),
+    ('INVALID_FEATURES_TUNER', -21),
+    ('INVALID_FILE_PATH',      -22),
+    ('NOT_ENOUGH_DATA',        -23),
+    ('HANDLE_DUPLICATE',       -24),
+    ('INVALID_HANDLE',         -25),
+    ('SYSTEM_ERROR',           -26) ]
 
 class ccs_data_type(CEnumeration):
   _members_ = [
@@ -331,8 +325,8 @@ class Error(Exception):
 
   @classmethod
   def check(cls, err):
-    if err < 0:
-      raise cls(ccs_error(-err))
+    if err.value < 0:
+      raise cls(err)
 
 class ccs_serialize_format(CEnumeration):
   _members_ = [
@@ -364,6 +358,12 @@ class ccs_deserialize_option(CEnumeration):
     'CALLBACK'
   ]
 
+def _ccs_get_function(method, argtypes = [], restype = ccs_error):
+  res = getattr(libcconfigspace, method)
+  res.restype = restype
+  res.argtypes = argtypes
+  return res
+
 ccs_init = _ccs_get_function("ccs_init")
 ccs_fini = _ccs_get_function("ccs_fini")
 ccs_get_error_name = _ccs_get_function("ccs_get_error_name", [ccs_error, ct.POINTER(ct.c_char_p)])
@@ -376,14 +376,14 @@ ccs_object_destroy_callback_type = ct.CFUNCTYPE(None, ccs_object, ct.c_void_p)
 ccs_object_set_destroy_callback = _ccs_get_function("ccs_object_set_destroy_callback", [ccs_object, ccs_object_destroy_callback_type, ct.c_void_p])
 ccs_object_set_user_data = _ccs_get_function("ccs_object_set_user_data", [ccs_object, ct.py_object])
 ccs_object_get_user_data = _ccs_get_function("ccs_object_get_user_data", [ccs_object, ct.POINTER(ct.c_void_p)])
-ccs_object_serialize_callback_type = ct.CFUNCTYPE(ccs_result, ccs_object, ct.c_size_t, ct.c_void_p, ct.POINTER(ct.c_size_t), ct.c_void_p)
+ccs_object_serialize_callback_type = ct.CFUNCTYPE(ccs_error, ccs_object, ct.c_size_t, ct.c_void_p, ct.POINTER(ct.c_size_t), ct.c_void_p)
 ccs_object_set_serialize_callback = _ccs_get_function("ccs_object_set_serialize_callback", [ccs_object, ccs_object_serialize_callback_type, ct.c_void_p])
-ccs_object_deserialize_callback_type = ct.CFUNCTYPE(ccs_result, ccs_object, ct.c_size_t, ct.c_void_p, ct.c_void_p)
+ccs_object_deserialize_callback_type = ct.CFUNCTYPE(ccs_error, ccs_object, ct.c_size_t, ct.c_void_p, ct.c_void_p)
 # Variadic methods
 ccs_object_serialize = getattr(libcconfigspace, "ccs_object_serialize")
-ccs_object_serialize.restype = ccs_result
+ccs_object_serialize.restype = ccs_error
 ccs_object_deserialize = getattr(libcconfigspace, "ccs_object_deserialize")
-ccs_object_deserialize.restype = ccs_result
+ccs_object_deserialize.restype = ccs_error
 
 _res = ccs_init()
 Error.check(_res)
@@ -596,7 +596,7 @@ def _get_serialize_callback_wrapper(callback):
         p_sdsz[0] = ct.sizeof(serialized)
       return ccs_error.SUCCESS
     except Error as e:
-      return -e.message.value
+      return e.message.value
   return serialize_callback_wrapper
 
 def _get_deserialize_callback_wrapper(callback):
@@ -615,7 +615,7 @@ def _get_deserialize_callback_wrapper(callback):
       callback(Object.from_handle(ccs_object(obj)), serialized, cb_data)
       return ccs_error.SUCCESS
     except Error as e:
-      return -e.message.value
+      return e.message.value
   return deserialize_callback_wrapper
 
 def _json_user_data_serializer(obj, data, size):

@@ -3,7 +3,7 @@
 #include "cconfigspace_internal.h"
 #include "hyperparameter_internal.h"
 
-static inline ccs_result_t
+static inline ccs_error_t
 _ccs_deserialize_bin_hyperparameter_numerical(
 		ccs_hyperparameter_t    *hyperparameter_ret,
 		uint32_t                 version,
@@ -38,7 +38,7 @@ struct _ccs_hyperparameter_categorical_data_mock_s {
 };
 typedef struct _ccs_hyperparameter_categorical_data_mock_s _ccs_hyperparameter_categorical_data_mock_t;
 
-static inline ccs_result_t
+static inline ccs_error_t
 _ccs_deserialize_bin_ccs_hyperparameter_categorical_data(
 		_ccs_hyperparameter_categorical_data_mock_t  *data,
 		size_t                                       *buffer_size,
@@ -58,14 +58,14 @@ _ccs_deserialize_bin_ccs_hyperparameter_categorical_data(
 	return CCS_SUCCESS;
 }
 
-static inline ccs_result_t
+static inline ccs_error_t
 _ccs_deserialize_bin_hyperparameter_categorical(
 		ccs_hyperparameter_t    *hyperparameter_ret,
 		uint32_t                 version,
 		size_t                  *buffer_size,
 		const char             **buffer) {
 	(void)version;
-	ccs_result_t res = CCS_SUCCESS;
+	ccs_error_t res = CCS_SUCCESS;
 	int found = 0;
 	_ccs_hyperparameter_categorical_data_mock_t data;
 	data.possible_values = NULL;
@@ -115,7 +115,7 @@ end:
 
 typedef _ccs_hyperparameter_common_data_t _ccs_hyperparameter_string_data_mock_t;
 
-static inline ccs_result_t
+static inline ccs_error_t
 _ccs_deserialize_bin_ccs_hyperparameter_string_data(
 		_ccs_hyperparameter_string_data_mock_t  *data,
 		size_t                                  *buffer_size,
@@ -125,7 +125,7 @@ _ccs_deserialize_bin_ccs_hyperparameter_string_data(
 	return CCS_SUCCESS;
 }
 
-static inline ccs_result_t
+static inline ccs_error_t
 _ccs_deserialize_bin_hyperparameter_string(
 		ccs_hyperparameter_t  *hyperparameter_ret,
 		uint32_t               version,
@@ -141,7 +141,7 @@ _ccs_deserialize_bin_hyperparameter_string(
 	return CCS_SUCCESS;
 }
 
-static inline ccs_result_t
+static inline ccs_error_t
 _ccs_deserialize_bin_hyperparameter(
 		ccs_hyperparameter_t               *hyperparameter_ret,
 		uint32_t                            version,
@@ -150,7 +150,7 @@ _ccs_deserialize_bin_hyperparameter(
 		_ccs_object_deserialize_options_t  *opts) {
 	_ccs_object_internal_t obj;
 	ccs_object_t handle;
-	ccs_result_t res;
+	ccs_error_t res;
 	CCS_VALIDATE(_ccs_deserialize_bin_ccs_object_internal(
 		&obj, buffer_size, buffer, &handle));
 	CCS_REFUTE(obj.type != CCS_HYPERPARAMETER, CCS_INVALID_TYPE);
@@ -189,7 +189,7 @@ err_hyper:
 	return res;
 }
 
-static ccs_result_t
+static ccs_error_t
 _ccs_hyperparameter_deserialize(
 		ccs_hyperparameter_t               *hyperparameter_ret,
 		ccs_serialize_format_t              format,

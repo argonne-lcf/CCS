@@ -6,7 +6,7 @@ ccs_tuner_get_ops(ccs_tuner_t tuner) {
 	return (_ccs_tuner_ops_t *)tuner->obj.ops;
 }
 
-ccs_result_t
+ccs_error_t
 ccs_tuner_get_type(ccs_tuner_t       tuner,
                    ccs_tuner_type_t *type_ret) {
 	CCS_CHECK_OBJ(tuner, CCS_TUNER);
@@ -16,7 +16,7 @@ ccs_tuner_get_type(ccs_tuner_t       tuner,
 	return CCS_SUCCESS;
 }
 
-ccs_result_t
+ccs_error_t
 ccs_tuner_get_name(ccs_tuner_t   tuner,
                    const char  **name_ret) {
 	CCS_CHECK_OBJ(tuner, CCS_TUNER);
@@ -26,7 +26,7 @@ ccs_tuner_get_name(ccs_tuner_t   tuner,
 	return CCS_SUCCESS;
 }
 
-ccs_result_t
+ccs_error_t
 ccs_tuner_get_configuration_space(ccs_tuner_t                tuner,
                                   ccs_configuration_space_t *configuration_space_ret) {
 	CCS_CHECK_OBJ(tuner, CCS_TUNER);
@@ -36,7 +36,7 @@ ccs_tuner_get_configuration_space(ccs_tuner_t                tuner,
 	return CCS_SUCCESS;
 }
 
-ccs_result_t
+ccs_error_t
 ccs_tuner_get_objective_space(ccs_tuner_t            tuner,
                               ccs_objective_space_t *objective_space_ret) {
 	CCS_CHECK_OBJ(tuner, CCS_TUNER);
@@ -46,7 +46,7 @@ ccs_tuner_get_objective_space(ccs_tuner_t            tuner,
 	return CCS_SUCCESS;
 }
 
-ccs_result_t
+ccs_error_t
 ccs_tuner_ask(ccs_tuner_t          tuner,
               size_t               num_configurations,
               ccs_configuration_t *configurations,
@@ -59,7 +59,7 @@ ccs_tuner_ask(ccs_tuner_t          tuner,
 	return CCS_SUCCESS;
 }
 
-ccs_result_t
+ccs_error_t
 ccs_tuner_tell(ccs_tuner_t       tuner,
                size_t            num_evaluations,
                ccs_evaluation_t *evaluations) {
@@ -72,7 +72,7 @@ ccs_tuner_tell(ccs_tuner_t       tuner,
 	return CCS_SUCCESS;
 }
 
-ccs_result_t
+ccs_error_t
 ccs_tuner_get_optimums(ccs_tuner_t       tuner,
                        size_t            num_evaluations,
                        ccs_evaluation_t *evaluations,
@@ -85,7 +85,7 @@ ccs_tuner_get_optimums(ccs_tuner_t       tuner,
 	return CCS_SUCCESS;
 }
 
-ccs_result_t
+ccs_error_t
 ccs_tuner_get_history(ccs_tuner_t       tuner,
                       size_t            num_evaluations,
                       ccs_evaluation_t *evaluations,
@@ -98,7 +98,7 @@ ccs_tuner_get_history(ccs_tuner_t       tuner,
 	return CCS_SUCCESS;
 }
 
-ccs_result_t
+ccs_error_t
 ccs_tuner_suggest(ccs_tuner_t          tuner,
                   ccs_configuration_t *configuration) {
 	CCS_CHECK_OBJ(tuner, CCS_TUNER);

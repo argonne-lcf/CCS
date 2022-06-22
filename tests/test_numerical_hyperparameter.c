@@ -6,7 +6,7 @@
 #define NUM_SAMPLES 10000
 
 static void compare_hyperparameter(ccs_hyperparameter_t hyperparameter) {
-	ccs_result_t               err;
+	ccs_error_t               err;
 	ccs_hyperparameter_type_t  type;
 	ccs_datum_t                default_value;
 	const char                *name;
@@ -58,7 +58,7 @@ static void compare_hyperparameter(ccs_hyperparameter_t hyperparameter) {
 
 static void test_create() {
 	ccs_hyperparameter_t       hyperparameter;
-	ccs_result_t               err;
+	ccs_error_t               err;
 	char                      *buff;
 	size_t                     buff_size;
 
@@ -98,7 +98,7 @@ void test_samples() {
 	ccs_distribution_t         distribution;
 	const size_t               num_samples = NUM_SAMPLES;
 	ccs_datum_t                samples[NUM_SAMPLES];
-	ccs_result_t               err;
+	ccs_error_t               err;
 
 	err = ccs_create_rng(&rng);
 	assert( err == CCS_SUCCESS );
@@ -135,7 +135,7 @@ void test_oversampling() {
 	ccs_distribution_t         distribution;
 	const size_t               num_samples = NUM_SAMPLES;
 	ccs_datum_t                samples[NUM_SAMPLES];
-	ccs_result_t               err;
+	ccs_error_t               err;
 
 	err = ccs_create_rng(&rng);
 	assert( err == CCS_SUCCESS );

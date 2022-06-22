@@ -6,10 +6,10 @@
 #include "rng_internal.h"
 #include "utlist.h"
 
-static ccs_result_t
+static ccs_error_t
 _generate_constraints(ccs_configuration_space_t configuration_space);
 
-static ccs_result_t
+static ccs_error_t
 _ccs_configuration_space_del(ccs_object_t object) {
 	ccs_configuration_space_t configuration_space = (ccs_configuration_space_t)object;
 	UT_array *array = configuration_space->data->hyperparameters;
@@ -45,7 +45,7 @@ _ccs_configuration_space_del(ccs_object_t object) {
 	return CCS_SUCCESS;
 }
 
-static inline ccs_result_t
+static inline ccs_error_t
 _ccs_serialize_bin_size_ccs_configuration_space_data(
 		_ccs_configuration_space_data_t *data,
 		size_t                          *cum_size,
@@ -114,7 +114,7 @@ _ccs_serialize_bin_size_ccs_configuration_space_data(
 	return CCS_SUCCESS;
 }
 
-static inline ccs_result_t
+static inline ccs_error_t
 _ccs_serialize_bin_ccs_configuration_space_data(
 		_ccs_configuration_space_data_t  *data,
 		size_t                           *buffer_size,
@@ -189,7 +189,7 @@ _ccs_serialize_bin_ccs_configuration_space_data(
 	return CCS_SUCCESS;
 }
 
-static inline ccs_result_t
+static inline ccs_error_t
 _ccs_serialize_bin_size_ccs_configuration_space(
 		ccs_configuration_space_t        configuration_space,
 		size_t                          *cum_size,
@@ -203,7 +203,7 @@ _ccs_serialize_bin_size_ccs_configuration_space(
 	return CCS_SUCCESS;
 }
 
-static inline ccs_result_t
+static inline ccs_error_t
 _ccs_serialize_bin_ccs_configuration_space(
 		ccs_configuration_space_t         configuration_space,
 		size_t                           *buffer_size,
@@ -218,7 +218,7 @@ _ccs_serialize_bin_ccs_configuration_space(
 	return CCS_SUCCESS;
 }
 
-static ccs_result_t
+static ccs_error_t
 _ccs_configuration_space_serialize_size(
 		ccs_object_t                     object,
 		ccs_serialize_format_t           format,
@@ -237,7 +237,7 @@ _ccs_configuration_space_serialize_size(
 	return CCS_SUCCESS;
 }
 
-static ccs_result_t
+static ccs_error_t
 _ccs_configuration_space_serialize(
 		ccs_object_t                      object,
 		ccs_serialize_format_t            format,
@@ -288,12 +288,12 @@ static UT_icd _size_t_icd = {
 	ccs_release_object(config_space->data->rng); \
 	CCS_RAISE_ERR_GOTO(err, CCS_OUT_OF_MEMORY, errarrays, "Out of memory to allocate array"); \
 }
-ccs_result_t
+ccs_error_t
 ccs_create_configuration_space(const char                *name,
                                ccs_configuration_space_t *configuration_space_ret) {
 	CCS_CHECK_PTR(name);
 	CCS_CHECK_PTR(configuration_space_ret);
-	ccs_result_t err;
+	ccs_error_t err;
 	uintptr_t mem = (uintptr_t)calloc(1,
 	  sizeof(struct _ccs_configuration_space_s) +
 	  sizeof(struct _ccs_configuration_space_data_s) +
@@ -334,7 +334,7 @@ errmem:
 	return err;
 }
 
-ccs_result_t
+ccs_error_t
 ccs_configuration_space_get_name(ccs_configuration_space_t   configuration_space,
                                  const char                **name_ret) {
 	CCS_CHECK_OBJ(configuration_space, CCS_CONFIGURATION_SPACE);
@@ -342,7 +342,7 @@ ccs_configuration_space_get_name(ccs_configuration_space_t   configuration_space
 	return CCS_SUCCESS;
 }
 
-ccs_result_t
+ccs_error_t
 ccs_configuration_space_set_rng(ccs_configuration_space_t configuration_space,
                                 ccs_rng_t                 rng) {
 	CCS_CHECK_OBJ(configuration_space, CCS_CONFIGURATION_SPACE);
@@ -354,7 +354,7 @@ ccs_configuration_space_set_rng(ccs_configuration_space_t configuration_space,
 	return CCS_SUCCESS;
 }
 
-ccs_result_t
+ccs_error_t
 ccs_configuration_space_get_rng(ccs_configuration_space_t  configuration_space,
                                 ccs_rng_t                 *rng_ret) {
 	CCS_CHECK_OBJ(configuration_space, CCS_CONFIGURATION_SPACE);
@@ -372,13 +372,13 @@ ccs_configuration_space_get_rng(ccs_configuration_space_t  configuration_space,
 #define uthash_nonfatal_oom(elt) { \
 	CCS_RAISE_ERR_GOTO(err, CCS_OUT_OF_MEMORY, errorutarray, "Out of memory to allocate hash"); \
 }
-ccs_result_t
+ccs_error_t
 ccs_configuration_space_add_hyperparameter(ccs_configuration_space_t configuration_space,
                                            ccs_hyperparameter_t      hyperparameter,
                                            ccs_distribution_t        distribution) {
 	CCS_CHECK_OBJ(configuration_space, CCS_CONFIGURATION_SPACE);
 	CCS_CHECK_OBJ(hyperparameter, CCS_HYPERPARAMETER);
-	ccs_result_t err;
+	ccs_error_t err;
 	ccs_hyperparameter_type_t type;
 
 	CCS_VALIDATE(ccs_hyperparameter_get_type(hyperparameter, &type));
@@ -469,7 +469,7 @@ errorhyper:
 #undef  utarray_oom
 #define utarray_oom() exit(-1)
 
-ccs_result_t
+ccs_error_t
 ccs_configuration_space_set_distribution(ccs_configuration_space_t  configuration_space,
                                          ccs_distribution_t         distribution,
                                          size_t                    *indexes) {
@@ -479,7 +479,7 @@ ccs_configuration_space_set_distribution(ccs_configuration_space_t  configuratio
 
 	_ccs_distribution_wrapper_t *dwrapper;
 	_ccs_hyperparameter_wrapper_cs_t *hwrapper;
-	ccs_result_t err;
+	ccs_error_t err;
 	UT_array *hyperparameters = configuration_space->data->hyperparameters;
 	size_t num_hyperparameters = utarray_len(hyperparameters);
 	size_t dim;
@@ -590,7 +590,7 @@ memory:
 	return err;
 }
 
-extern ccs_result_t
+extern ccs_error_t
 ccs_configuration_space_get_hyperparameter_distribution(
 		ccs_configuration_space_t  configuration_space,
 		size_t                     index,
@@ -608,7 +608,7 @@ ccs_configuration_space_get_hyperparameter_distribution(
 	return CCS_SUCCESS;
 }
 
-ccs_result_t
+ccs_error_t
 ccs_configuration_space_add_hyperparameters(ccs_configuration_space_t  configuration_space,
                                             size_t                     num_hyperparameters,
                                             ccs_hyperparameter_t      *hyperparameters,
@@ -625,7 +625,7 @@ ccs_configuration_space_add_hyperparameters(ccs_configuration_space_t  configura
 	return CCS_SUCCESS;
 }
 
-ccs_result_t
+ccs_error_t
 ccs_configuration_space_get_num_hyperparameters(ccs_configuration_space_t  configuration_space,
                                                 size_t                     *num_hyperparameters_ret) {
 	CCS_CHECK_OBJ(configuration_space, CCS_CONFIGURATION_SPACE);
@@ -634,7 +634,7 @@ ccs_configuration_space_get_num_hyperparameters(ccs_configuration_space_t  confi
 	return CCS_SUCCESS;
 }
 
-ccs_result_t
+ccs_error_t
 ccs_configuration_space_get_hyperparameter(ccs_configuration_space_t  configuration_space,
                                            size_t                     index,
                                            ccs_hyperparameter_t      *hyperparameter_ret) {
@@ -644,7 +644,7 @@ ccs_configuration_space_get_hyperparameter(ccs_configuration_space_t  configurat
 	return CCS_SUCCESS;
 }
 
-ccs_result_t
+ccs_error_t
 ccs_configuration_space_get_hyperparameter_by_name(
 		ccs_configuration_space_t  configuration_space,
 		const char *               name,
@@ -655,7 +655,7 @@ ccs_configuration_space_get_hyperparameter_by_name(
 	return CCS_SUCCESS;
 }
 
-ccs_result_t
+ccs_error_t
 ccs_configuration_space_get_hyperparameter_index_by_name(
 		ccs_configuration_space_t  configuration_space,
 		const char                *name,
@@ -666,7 +666,7 @@ ccs_configuration_space_get_hyperparameter_index_by_name(
 	return CCS_SUCCESS;
 }
 
-ccs_result_t
+ccs_error_t
 ccs_configuration_space_get_hyperparameter_index(
 		ccs_configuration_space_t  configuration_space,
 		ccs_hyperparameter_t       hyperparameter,
@@ -678,7 +678,7 @@ ccs_configuration_space_get_hyperparameter_index(
 	return CCS_SUCCESS;
 }
 
-ccs_result_t
+ccs_error_t
 ccs_configuration_space_get_hyperparameter_indexes(
 		ccs_configuration_space_t  configuration_space,
 		size_t                     num_hyperparameters,
@@ -691,7 +691,7 @@ ccs_configuration_space_get_hyperparameter_indexes(
 	return CCS_SUCCESS;
 }
 
-ccs_result_t
+ccs_error_t
 ccs_configuration_space_get_hyperparameters(
 		ccs_configuration_space_t  configuration_space,
 		size_t                     num_hyperparameters,
@@ -704,7 +704,7 @@ ccs_configuration_space_get_hyperparameters(
 	return CCS_SUCCESS;
 }
 
-ccs_result_t
+ccs_error_t
 ccs_configuration_space_validate_value(ccs_configuration_space_t  configuration_space,
                                        size_t                     index,
                                        ccs_datum_t                value,
@@ -715,7 +715,7 @@ ccs_configuration_space_validate_value(ccs_configuration_space_t  configuration_
 	return CCS_SUCCESS;
 }
 
-static ccs_result_t
+static ccs_error_t
 _set_actives(ccs_configuration_space_t configuration_space,
              ccs_configuration_t       configuration) {
 	size_t *p_index = NULL;
@@ -736,12 +736,12 @@ _set_actives(ccs_configuration_space_t configuration_space,
 	return CCS_SUCCESS;
 }
 
-ccs_result_t
+ccs_error_t
 ccs_configuration_space_get_default_configuration(ccs_configuration_space_t  configuration_space,
                                                   ccs_configuration_t       *configuration_ret) {
 	CCS_CHECK_OBJ(configuration_space, CCS_CONFIGURATION_SPACE);
 	CCS_CHECK_PTR(configuration_ret);
-	ccs_result_t err;
+	ccs_error_t err;
 	ccs_configuration_t config;
 	CCS_VALIDATE(ccs_create_configuration(configuration_space, 0, NULL, &config));
 	UT_array *array = configuration_space->data->hyperparameters;
@@ -758,7 +758,7 @@ errc:
 	return err;
 }
 
-static ccs_result_t
+static ccs_error_t
 _test_forbidden(ccs_configuration_space_t  configuration_space,
                 ccs_datum_t               *values,
 		ccs_bool_t                *is_valid) {
@@ -779,7 +779,7 @@ _test_forbidden(ccs_configuration_space_t  configuration_space,
 	return CCS_SUCCESS;
 }
 
-static inline ccs_result_t
+static inline ccs_error_t
 _check_configuration(ccs_configuration_space_t  configuration_space,
                      size_t                     num_values,
                      ccs_datum_t               *values,
@@ -814,15 +814,14 @@ _check_configuration(ccs_configuration_space_t  configuration_space,
 	return CCS_SUCCESS;
 }
 
-ccs_result_t
+ccs_error_t
 ccs_configuration_space_check_configuration(
 		ccs_configuration_space_t  configuration_space,
 		ccs_configuration_t        configuration,
 		ccs_bool_t                *is_valid_ret) {
 	CCS_CHECK_OBJ(configuration_space, CCS_CONFIGURATION_SPACE);
 	CCS_CHECK_OBJ(configuration, CCS_CONFIGURATION);
-	if (configuration->data->configuration_space != configuration_space)
-		return -CCS_INVALID_CONFIGURATION;
+	CCS_REFUTE(configuration->data->configuration_space != configuration_space, CCS_INVALID_CONFIGURATION);
 	if (!configuration_space->data->graph_ok)
 		CCS_VALIDATE(_generate_constraints(configuration_space));
 	CCS_VALIDATE(_check_configuration(configuration_space,
@@ -831,7 +830,7 @@ ccs_configuration_space_check_configuration(
 	return CCS_SUCCESS;
 }
 
-ccs_result_t
+ccs_error_t
 ccs_configuration_space_check_configuration_values(
 		ccs_configuration_space_t  configuration_space,
 		size_t                     num_values,
@@ -847,11 +846,11 @@ ccs_configuration_space_check_configuration_values(
 }
 
 
-static ccs_result_t
+static ccs_error_t
 _sample(ccs_configuration_space_t  configuration_space,
         ccs_configuration_t        config,
         ccs_bool_t                *found) {
-	ccs_result_t err;
+	ccs_error_t err;
 	ccs_rng_t rng = configuration_space->data->rng;
 	UT_array *array = configuration_space->data->hyperparameters;
 	_ccs_distribution_wrapper_t *dwrapper = NULL;
@@ -887,7 +886,7 @@ memory:
 	return err;
 }
 
-//static ccs_result_t
+//static ccs_error_t
 //_sample(ccs_configuration_space_t  configuration_space,
 //        ccs_configuration_t        config,
 //        ccs_bool_t                *found) {
@@ -905,12 +904,12 @@ memory:
 //	return CCS_SUCCESS;
 //}
 
-ccs_result_t
+ccs_error_t
 ccs_configuration_space_sample(ccs_configuration_space_t  configuration_space,
                                ccs_configuration_t       *configuration_ret) {
 	CCS_CHECK_OBJ(configuration_space, CCS_CONFIGURATION_SPACE);
 	CCS_CHECK_PTR(configuration_ret);
-	ccs_result_t err;
+	ccs_error_t err;
 	ccs_configuration_t config;
 	if (!configuration_space->data->graph_ok)
 		CCS_VALIDATE(_generate_constraints(configuration_space));
@@ -929,7 +928,7 @@ errc:
 	return err;
 }
 
-ccs_result_t
+ccs_error_t
 ccs_configuration_space_samples(ccs_configuration_space_t  configuration_space,
                                 size_t                     num_configurations,
                                 ccs_configuration_t       *configurations) {
@@ -937,7 +936,7 @@ ccs_configuration_space_samples(ccs_configuration_space_t  configuration_space,
 	CCS_CHECK_ARY(num_configurations, configurations);
 	if (!num_configurations)
 		return CCS_SUCCESS;
-	ccs_result_t err;
+	ccs_error_t err;
 	if (!configuration_space->data->graph_ok)
 		CCS_VALIDATE(_generate_constraints(configuration_space));
 	size_t     counter = 0;
@@ -1042,9 +1041,9 @@ struct _hyper_list_s {
 #undef  utarray_oom
 #define utarray_oom() { \
 	free((void *)list); \
-	return -CCS_OUT_OF_MEMORY; \
+	CCS_RAISE(CCS_OUT_OF_MEMORY, "Not enough memory to allocate array"); \
 }
-static ccs_result_t
+static ccs_error_t
 _topological_sort(ccs_configuration_space_t configuration_space) {
 	utarray_clear(configuration_space->data->sorted_indexes);
 	UT_array *array = configuration_space->data->hyperparameters;
@@ -1090,7 +1089,7 @@ _topological_sort(ccs_configuration_space_t configuration_space) {
 #define utarray_oom() { \
 	CCS_RAISE_ERR_GOTO(err, CCS_OUT_OF_MEMORY, errmem, "Not enough memory to allocate array"); \
 }
-static ccs_result_t
+static ccs_error_t
 _recompute_graph(ccs_configuration_space_t configuration_space) {
 	_ccs_hyperparameter_wrapper_cs_t *wrapper = NULL;
 	UT_array *array = configuration_space->data->hyperparameters;
@@ -1100,7 +1099,7 @@ _recompute_graph(ccs_configuration_space_t configuration_space) {
 	}
 	wrapper = NULL;
 	intptr_t mem = 0;
-	ccs_result_t err = CCS_SUCCESS;
+	ccs_error_t err = CCS_SUCCESS;
 	for (size_t index = 0; index < utarray_len(array); index++) {
 		wrapper = (_ccs_hyperparameter_wrapper_cs_t *)utarray_eltptr(array, (unsigned int)index);
 		if (!wrapper->condition)
@@ -1146,7 +1145,7 @@ errmem:
 	exit(-1); \
 }
 
-static ccs_result_t
+static ccs_error_t
 _generate_constraints(ccs_configuration_space_t configuration_space) {
 	CCS_VALIDATE(_recompute_graph(configuration_space));
 	CCS_VALIDATE(_topological_sort(configuration_space));
@@ -1154,7 +1153,7 @@ _generate_constraints(ccs_configuration_space_t configuration_space) {
 	return CCS_SUCCESS;
 }
 
-ccs_result_t
+ccs_error_t
 ccs_configuration_space_set_condition(ccs_configuration_space_t configuration_space,
                                       size_t                    hyperparameter_index,
                                       ccs_expression_t          expression) {
@@ -1165,7 +1164,7 @@ ccs_configuration_space_set_condition(ccs_configuration_space_t configuration_sp
 	                   (unsigned int)hyperparameter_index);
 	CCS_REFUTE(!wrapper, CCS_OUT_OF_BOUNDS);
 	CCS_REFUTE(wrapper->condition, CCS_INVALID_HYPERPARAMETER);
-	ccs_result_t err;
+	ccs_error_t err;
 	CCS_VALIDATE(ccs_retain_object(expression));
 	wrapper->condition = expression;
 	// Recompute the whole graph for now
@@ -1178,7 +1177,7 @@ erre:
 	return err;
 }
 
-ccs_result_t
+ccs_error_t
 ccs_configuration_space_get_condition(ccs_configuration_space_t  configuration_space,
                                       size_t                     hyperparameter_index,
                                       ccs_expression_t          *expression_ret) {
@@ -1192,7 +1191,7 @@ ccs_configuration_space_get_condition(ccs_configuration_space_t  configuration_s
 	return CCS_SUCCESS;
 }
 
-ccs_result_t
+ccs_error_t
 ccs_configuration_space_get_conditions(ccs_configuration_space_t  configuration_space,
                                        size_t                     num_expressions,
                                        ccs_expression_t          *expressions,
@@ -1220,12 +1219,12 @@ ccs_configuration_space_get_conditions(ccs_configuration_space_t  configuration_
 #define utarray_oom() { \
 	CCS_RAISE_ERR_GOTO(err, CCS_OUT_OF_MEMORY, end, "Out of memory to allocate array"); \
 }
-ccs_result_t
+ccs_error_t
 ccs_configuration_space_add_forbidden_clause(ccs_configuration_space_t configuration_space,
                                              ccs_expression_t          expression) {
 	CCS_CHECK_OBJ(configuration_space, CCS_CONFIGURATION_SPACE);
 	CCS_CHECK_OBJ(expression, CCS_EXPRESSION);
-	ccs_result_t err = CCS_SUCCESS;
+	ccs_error_t err = CCS_SUCCESS;
 	CCS_VALIDATE(ccs_expression_check_context(
 	    expression, (ccs_context_t)configuration_space));
 	ccs_datum_t d;
@@ -1246,7 +1245,7 @@ end:
 #undef  utarray_oom
 #define utarray_oom() exit(-1)
 
-ccs_result_t
+ccs_error_t
 ccs_configuration_space_add_forbidden_clauses(ccs_configuration_space_t  configuration_space,
                                               size_t                     num_expressions,
                                               ccs_expression_t          *expressions) {
@@ -1258,7 +1257,7 @@ ccs_configuration_space_add_forbidden_clauses(ccs_configuration_space_t  configu
 	return CCS_SUCCESS;
 }
 
-ccs_result_t
+ccs_error_t
 ccs_configuration_space_get_forbidden_clause(ccs_configuration_space_t  configuration_space,
                                              size_t                     index,
                                              ccs_expression_t          *expression_ret) {
@@ -1272,7 +1271,7 @@ ccs_configuration_space_get_forbidden_clause(ccs_configuration_space_t  configur
 	return CCS_SUCCESS;
 }
 
-ccs_result_t
+ccs_error_t
 ccs_configuration_space_get_forbidden_clauses(ccs_configuration_space_t  configuration_space,
                                               size_t                     num_expressions,
                                               ccs_expression_t          *expressions,

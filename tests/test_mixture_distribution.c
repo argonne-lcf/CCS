@@ -12,7 +12,7 @@
 static void compare_distribution(
 		ccs_distribution_t distrib,
 		size_t num_distribs, ccs_distribution_t distribs[], ccs_float_t weights[]) {
-	ccs_result_t            err = CCS_SUCCESS;
+	ccs_error_t            err = CCS_SUCCESS;
 	ccs_distribution_t      distribs_ret[NUM_DISTRIBS];
 	int32_t                 refcount;
 	ccs_object_type_t       otype;
@@ -80,7 +80,7 @@ static void compare_distribution(
 
 void test_create_mixture_distribution() {
 	ccs_distribution_t  distrib = NULL, distribs[NUM_DISTRIBS];
-	ccs_result_t        err = CCS_SUCCESS;
+	ccs_error_t        err = CCS_SUCCESS;
 	const size_t        num_distribs = NUM_DISTRIBS;
 	ccs_float_t         weights[NUM_DISTRIBS];
 	char               *buff;
@@ -147,7 +147,7 @@ void test_create_mixture_distribution() {
 void test_mixture_distribution() {
 	ccs_distribution_t distrib = NULL, distribs[NUM_DISTRIBS];
 	ccs_rng_t          rng = NULL;
-	ccs_result_t       err = CCS_SUCCESS;
+	ccs_error_t       err = CCS_SUCCESS;
 	const size_t       num_distribs = NUM_DISTRIBS;
 	ccs_float_t        weights[NUM_DISTRIBS];
 	const size_t       num_samples = NUM_SAMPLES;
@@ -206,7 +206,7 @@ void test_mixture_distribution_strided_samples() {
 	ccs_distribution_t t_distrib = NULL, distrib = NULL, distribs[NUM_DISTRIBS];
 	ccs_distribution_t t_distribs[NUM_DISTRIBS];
 	ccs_rng_t          rng = NULL;
-	ccs_result_t       err = CCS_SUCCESS;
+	ccs_error_t       err = CCS_SUCCESS;
 	const size_t       num_t_distribs = NUM_DISTRIBS;
 	const size_t       num_distribs = NUM_DISTRIBS;
 	const size_t       num_samples = NUM_SAMPLES;
@@ -278,7 +278,7 @@ void test_mixture_distribution_soa_samples() {
 	ccs_distribution_t t_distrib = NULL, distrib = NULL, distribs[NUM_DISTRIBS];
 	ccs_distribution_t t_distribs[NUM_DISTRIBS];
 	ccs_rng_t          rng = NULL;
-	ccs_result_t       err = CCS_SUCCESS;
+	ccs_error_t       err = CCS_SUCCESS;
 	const size_t       num_t_distribs = NUM_DISTRIBS;
 	const size_t       num_distribs = NUM_DISTRIBS;
 	const size_t       num_samples = NUM_SAMPLES;

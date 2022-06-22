@@ -3,7 +3,7 @@
 #include "cconfigspace_internal.h"
 #include "configuration_internal.h"
 
-static inline ccs_result_t
+static inline ccs_error_t
 _ccs_deserialize_bin_configuration(
 		ccs_configuration_t                *configuration_ret,
 		uint32_t                            version,
@@ -16,7 +16,7 @@ _ccs_deserialize_bin_configuration(
 	ccs_object_t handle;
 	ccs_datum_t d;
 	ccs_configuration_space_t cs;
-	ccs_result_t res = CCS_SUCCESS;
+	ccs_error_t res = CCS_SUCCESS;
 	CCS_VALIDATE(_ccs_deserialize_bin_ccs_object_internal(
 		&obj, buffer_size, buffer, &handle));
 	CCS_REFUTE(obj.type != CCS_CONFIGURATION, CCS_INVALID_TYPE);
@@ -50,7 +50,7 @@ end:
 	return res;
 }
 
-static ccs_result_t
+static ccs_error_t
 _ccs_configuration_deserialize(
 		ccs_configuration_t                *configuration_ret,
 		ccs_serialize_format_t              format,

@@ -3,7 +3,7 @@
 #include "features_internal.h"
 #include "utlist.h"
 
-static ccs_result_t
+static ccs_error_t
 _ccs_features_space_del(ccs_object_t object) {
 	ccs_features_space_t features_space = (ccs_features_space_t)object;
 	UT_array *array = features_space->data->hyperparameters;
@@ -21,7 +21,7 @@ _ccs_features_space_del(ccs_object_t object) {
 	return CCS_SUCCESS;
 }
 
-static ccs_result_t
+static ccs_error_t
 _ccs_features_space_serialize_size(
 		ccs_object_t                     object,
 		ccs_serialize_format_t           format,
@@ -40,7 +40,7 @@ _ccs_features_space_serialize_size(
 	return CCS_SUCCESS;
 }
 
-static ccs_result_t
+static ccs_error_t
 _ccs_features_space_serialize(
 		ccs_object_t                      object,
 		ccs_serialize_format_t            format,
@@ -76,10 +76,10 @@ static const UT_icd _hyperparameter_wrapper_icd = {
 #define utarray_oom() { \
 	CCS_RAISE_ERR_GOTO(err, CCS_OUT_OF_MEMORY, arrays, "Not enough memory to allocate array"); \
 }
-ccs_result_t
+ccs_error_t
 ccs_create_features_space(const char           *name,
                           ccs_features_space_t *features_space_ret) {
-	ccs_result_t err;
+	ccs_error_t err;
 	CCS_CHECK_PTR(name);
 	CCS_CHECK_PTR(features_space_ret);
 	uintptr_t mem = (uintptr_t)calloc(1, sizeof(struct _ccs_features_space_s) + sizeof(struct _ccs_features_space_data_s) + strlen(name) + 1);
@@ -104,7 +104,7 @@ arrays:
 	return err;
 }
 
-ccs_result_t
+ccs_error_t
 ccs_features_space_get_name(ccs_features_space_t   features_space,
                             const char                **name_ret) {
 	CCS_CHECK_OBJ(features_space, CCS_FEATURES_SPACE);
@@ -120,12 +120,12 @@ ccs_features_space_get_name(ccs_features_space_t   features_space,
 #define uthash_nonfatal_oom(elt) { \
 	CCS_RAISE_ERR_GOTO(err, CCS_OUT_OF_MEMORY, errorutarray, "Not enough memory to allocate hash"); \
 }
-ccs_result_t
+ccs_error_t
 ccs_features_space_add_hyperparameter(ccs_features_space_t features_space,
                                       ccs_hyperparameter_t hyperparameter) {
 	CCS_CHECK_OBJ(features_space, CCS_FEATURES_SPACE);
 	CCS_CHECK_OBJ(hyperparameter, CCS_HYPERPARAMETER);
-	ccs_result_t err;
+	ccs_error_t err;
 	const char *name;
 	size_t sz_name;
 	_ccs_hyperparameter_index_hash_t *hyper_hash;
@@ -165,7 +165,7 @@ errorhyper:
 #undef  utarray_oom
 #define utarray_oom() exit(-1)
 
-ccs_result_t
+ccs_error_t
 ccs_features_space_add_hyperparameters(ccs_features_space_t  features_space,
                                        size_t                num_hyperparameters,
                                        ccs_hyperparameter_t *hyperparameters) {
@@ -177,7 +177,7 @@ ccs_features_space_add_hyperparameters(ccs_features_space_t  features_space,
 	return CCS_SUCCESS;
 }
 
-ccs_result_t
+ccs_error_t
 ccs_features_space_get_num_hyperparameters(
 		ccs_features_space_t  features_space,
 		size_t               *num_hyperparameters_ret) {
@@ -187,7 +187,7 @@ ccs_features_space_get_num_hyperparameters(
 	return CCS_SUCCESS;
 }
 
-ccs_result_t
+ccs_error_t
 ccs_features_space_get_hyperparameter(ccs_features_space_t  features_space,
                                       size_t                index,
                                       ccs_hyperparameter_t *hyperparameter_ret) {
@@ -197,7 +197,7 @@ ccs_features_space_get_hyperparameter(ccs_features_space_t  features_space,
 	return CCS_SUCCESS;
 }
 
-ccs_result_t
+ccs_error_t
 ccs_features_space_get_hyperparameter_by_name(
 		ccs_features_space_t  features_space,
 		const char *          name,
@@ -208,7 +208,7 @@ ccs_features_space_get_hyperparameter_by_name(
 	return CCS_SUCCESS;
 }
 
-ccs_result_t
+ccs_error_t
 ccs_features_space_get_hyperparameter_index_by_name(
 		ccs_features_space_t  features_space,
 		const char           *name,
@@ -219,7 +219,7 @@ ccs_features_space_get_hyperparameter_index_by_name(
 	return CCS_SUCCESS;
 }
 
-ccs_result_t
+ccs_error_t
 ccs_features_space_get_hyperparameter_index(
 		ccs_features_space_t  features_space,
 		ccs_hyperparameter_t  hyperparameter,
@@ -232,7 +232,7 @@ ccs_features_space_get_hyperparameter_index(
 	return CCS_SUCCESS;
 }
 
-ccs_result_t
+ccs_error_t
 ccs_features_space_get_hyperparameter_indexes(
 		ccs_features_space_t  features_space,
 		size_t                num_hyperparameters,
@@ -245,7 +245,7 @@ ccs_features_space_get_hyperparameter_indexes(
 	return CCS_SUCCESS;
 }
 
-ccs_result_t
+ccs_error_t
 ccs_features_space_get_hyperparameters(ccs_features_space_t  features_space,
                                        size_t                num_hyperparameters,
                                        ccs_hyperparameter_t *hyperparameters,
@@ -257,7 +257,7 @@ ccs_features_space_get_hyperparameters(ccs_features_space_t  features_space,
 	return CCS_SUCCESS;
 }
 
-ccs_result_t
+ccs_error_t
 ccs_features_space_validate_value(ccs_features_space_t  features_space,
                                   size_t                index,
                                   ccs_datum_t           value,
@@ -268,7 +268,7 @@ ccs_features_space_validate_value(ccs_features_space_t  features_space,
 	return CCS_SUCCESS;
 }
 
-static inline ccs_result_t
+static inline ccs_error_t
 _check_features(ccs_features_space_t  features_space,
                 size_t                num_values,
                 ccs_datum_t          *values,
@@ -288,7 +288,7 @@ _check_features(ccs_features_space_t  features_space,
 	return CCS_SUCCESS;
 }
 
-ccs_result_t
+ccs_error_t
 ccs_features_space_check_features(ccs_features_space_t  features_space,
                                   ccs_features_t        features,
                                   ccs_bool_t           *is_valid_ret) {
@@ -300,7 +300,7 @@ ccs_features_space_check_features(ccs_features_space_t  features_space,
 	return CCS_SUCCESS;
 }
 
-ccs_result_t
+ccs_error_t
 ccs_features_space_check_features_values(ccs_features_space_t  features_space,
                                          size_t                num_values,
                                          ccs_datum_t          *values,

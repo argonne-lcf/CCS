@@ -36,37 +36,32 @@ _ccs_interval_include(ccs_interval_t *interval, ccs_numeric_t value) {
 #define CCS_RICH_ERRORS 1
 
 #if CCS_RICH_ERRORS
-#define CCS_CREATE_ERROR(error, ...) do { \
-	ccs_error_stack_t es; \
-	ccs_create_error_stack(&es, error, __VA_ARGS__); \
-	ccs_error_stack_push(es, __FILE__, __LINE__, __func__); \
-	ccs_set_thread_error(es); \
+#define CCS_ADD_STACK_ELEM() do { \
+	ccs_thread_error_stack_push(__FILE__, __LINE__, __func__); \
 } while (0)
 #else
-#define CCS_CREATE_ERROR(error, ...) do { \
+#define CCS_ADD_STACK_ELEM() do { \
 } while (0)
 #endif
 
 #if CCS_RICH_ERRORS
-#define CCS_ADD_STACK_ELEM() do { \
-	ccs_error_stack_t es; \
-	es = ccs_get_thread_error(); \
-	ccs_error_stack_push(es, __FILE__, __LINE__, __func__); \
-	ccs_set_thread_error(es); \
+#define CCS_CREATE_ERROR(error, ...) do { \
+	ccs_create_thread_error(error, __VA_ARGS__); \
+	CCS_ADD_STACK_ELEM(); \
 } while (0)
 #else
-#define CCS_ADD_STACK_ELEM() do { \
+#define CCS_CREATE_ERROR(error, ...) do { \
 } while (0)
 #endif
 
 #define CCS_RAISE(error, ...) do { \
 	CCS_CREATE_ERROR(error, __VA_ARGS__); \
-	return -error; \
+	return error; \
 } while (0)
 
 #define CCS_RAISE_ERR_GOTO(err, error, label, ...) do { \
 	CCS_CREATE_ERROR(error, __VA_ARGS__); \
-	err = -error; \
+	err = error; \
 	goto label; \
 } while (0)
 
@@ -95,7 +90,7 @@ _ccs_interval_include(ccs_interval_t *interval, ccs_numeric_t value) {
 
 #define CCS_VALIDATE_ERR_GOTO(err, cmd, label) do { \
 	err = (cmd); \
-	if (CCS_UNLIKELY(err != CCS_SUCCESS)) {\
+	if (CCS_UNLIKELY(err < CCS_SUCCESS)) {\
 		CCS_ADD_STACK_ELEM(); \
 		goto label; \
 	} \
@@ -103,14 +98,14 @@ _ccs_interval_include(ccs_interval_t *interval, ccs_numeric_t value) {
 
 #define CCS_VALIDATE_ERR(err, cmd) do { \
 	err = (cmd); \
-	if (CCS_UNLIKELY(err != CCS_SUCCESS)) { \
+	if (CCS_UNLIKELY(err < CCS_SUCCESS)) { \
 		CCS_ADD_STACK_ELEM(); \
 		return err; \
 	} \
 } while (0)
 
 #define CCS_VALIDATE(cmd) do { \
-	ccs_result_t _err; \
+	ccs_error_t _err; \
 	CCS_VALIDATE_ERR(_err, cmd); \
 } while(0)
 
@@ -127,7 +122,7 @@ typedef void *ccs_user_data_t;
 #define CCS_MAGIC_TAG { 0x43, 0x43, 0x53, 0x00 }
 static const char _ccs_magic_tag[4] = CCS_MAGIC_TAG;
 
-static inline ccs_result_t
+static inline ccs_error_t
 _ccs_serialize_bin_magic_tag(
 		const char  *tag,
 		size_t      *buffer_size,
@@ -145,7 +140,7 @@ _ccs_serialize_bin_size_magic_tag(
 	return strlen(tag) + 1;
 }
 
-static inline ccs_result_t
+static inline ccs_error_t
 _ccs_deserialize_bin_magic_tag(
 		char        *tag,
 		size_t      *buffer_size,
@@ -175,15 +170,15 @@ struct _ccs_object_serialize_options_s {
 typedef struct _ccs_object_serialize_options_s _ccs_object_serialize_options_t;
 
 struct _ccs_object_ops_s {
-	ccs_result_t (*del)(ccs_object_t object);
+	ccs_error_t (*del)(ccs_object_t object);
 
-	ccs_result_t (*serialize_size)(
+	ccs_error_t (*serialize_size)(
 		ccs_object_t                     object,
 		ccs_serialize_format_t           format,
 		size_t                          *cum_size,
 		_ccs_object_serialize_options_t *opts);
 
-	ccs_result_t (*serialize)(
+	ccs_error_t (*serialize)(
 		ccs_object_t                      object,
 		ccs_serialize_format_t            format,
 		size_t                           *buffer_size,
@@ -378,7 +373,7 @@ static inline MAPPED_TYPE _ccs_pack_ ## NAME (TYPE x) {  \
 // This serializer works on unsigned types
 // It uses https://en.wikipedia.org/wiki/LEB128
 #define CCS_COMPRESSED_SERIALIZER(NAME, TYPE, MAPPED_NAME, MAPPED_TYPE)    \
-static inline ccs_result_t                                                 \
+static inline ccs_error_t                                                 \
 _ccs_serialize_bin_ ## NAME (TYPE x, size_t *buffer_size, char **buffer) { \
   size_t buff_size = *buffer_size;                                         \
   uint8_t *buff = (uint8_t *)*buffer;                                      \
@@ -408,7 +403,7 @@ _ccs_serialize_bin_size_ ## NAME (TYPE x) {                                \
 }
 
 #define CCS_COMPRESSED_DESERIALIZER(NAME, TYPE, MAPPED_NAME, MAPPED_TYPE)           \
-static inline ccs_result_t                                                          \
+static inline ccs_error_t                                                          \
 _ccs_deserialize_bin_ ## NAME (TYPE *x, size_t *buffer_size, const char **buffer) { \
   size_t buff_size = *buffer_size;                                                  \
   const uint8_t *buff = (const uint8_t *)*buffer;                                   \
@@ -428,7 +423,7 @@ _ccs_deserialize_bin_ ## NAME (TYPE *x, size_t *buffer_size, const char **buffer
   *buffer = (const char *)buff;                                                     \
   return CCS_SUCCESS;                                                               \
 }                                                                                   \
-static inline ccs_result_t                                                          \
+static inline ccs_error_t                                                          \
 _ccs_peek_bin_ ## NAME (TYPE *x, size_t *buffer_size, const char **buffer) {        \
   size_t buff_size = *buffer_size;                                                  \
   const char *buff = *buffer;                                                       \
@@ -436,7 +431,7 @@ _ccs_peek_bin_ ## NAME (TYPE *x, size_t *buffer_size, const char **buffer) {    
 }
 
 #define CCS_COMPRESSED_SERIALIZER_SIGNED(NAME, TYPE, MAPPED_NAME, MAPPED_TYPE) \
-static inline ccs_result_t                                                     \
+static inline ccs_error_t                                                     \
 _ccs_serialize_bin_ ## NAME (TYPE x, size_t *buffer_size, char **buffer) {     \
   return _ccs_serialize_bin_u ## MAPPED_NAME (                                 \
     ccs_zigzag_encode_ ## MAPPED_NAME (x), buffer_size, buffer);               \
@@ -448,14 +443,14 @@ _ccs_serialize_bin_size_ ## NAME (TYPE x) {                                    \
 }
 
 #define CCS_COMPRESSED_DESERIALIZER_SIGNED(NAME, TYPE, MAPPED_NAME, MAPPED_TYPE)    \
-static inline ccs_result_t                                                          \
+static inline ccs_error_t                                                          \
 _ccs_deserialize_bin_ ## NAME (TYPE *x, size_t *buffer_size, const char **buffer) { \
   u ## MAPPED_TYPE v;                                                               \
   CCS_VALIDATE(_ccs_deserialize_bin_u ## MAPPED_NAME (&v, buffer_size, buffer));    \
   *x = ccs_zigzag_decode_ ## MAPPED_NAME (v);                                       \
   return CCS_SUCCESS;                                                               \
 }                                                                                   \
-static inline ccs_result_t                                                          \
+static inline ccs_error_t                                                          \
 _ccs_peek_bin_ ## NAME (TYPE *x, size_t *buffer_size, const char **buffer) {        \
   size_t buff_size = *buffer_size;                                                  \
   const char *buff = *buffer;                                                       \
@@ -463,7 +458,7 @@ _ccs_peek_bin_ ## NAME (TYPE *x, size_t *buffer_size, const char **buffer) {    
 }
 
 #define CCS_COMPRESSED_SERIALIZER_POINTER(NAME, TYPE, MAPPED_NAME, MAPPED_TYPE)  \
-static inline ccs_result_t                                                       \
+static inline ccs_error_t                                                       \
 _ccs_serialize_bin_ ## NAME (TYPE x, size_t *buffer_size, char **buffer) {       \
   return _ccs_serialize_bin_uint64((uint64_t)(uintptr_t)x, buffer_size, buffer); \
 }                                                                                \
@@ -473,14 +468,14 @@ _ccs_serialize_bin_size_ ## NAME (TYPE x) {                                     
 }   
 
 #define CCS_COMPRESSED_DESERIALIZER_POINTER(NAME, TYPE, MAPPED_NAME, MAPPED_TYPE)   \
-static inline ccs_result_t                                                          \
+static inline ccs_error_t                                                          \
 _ccs_deserialize_bin_ ## NAME (TYPE *x, size_t *buffer_size, const char **buffer) { \
   uint64_t v;                                                                       \
   CCS_VALIDATE(_ccs_deserialize_bin_uint64(&v, buffer_size, buffer));               \
   *x = (TYPE)(MAPPED_TYPE)v;                                                        \
   return CCS_SUCCESS;                                                               \
 }                                                                                   \
-static inline ccs_result_t                                                          \
+static inline ccs_error_t                                                          \
 _ccs_peek_bin_ ## NAME (TYPE *x, size_t *buffer_size, const char **buffer) {        \
   size_t buff_size = *buffer_size;                                                  \
   const char *buff = *buffer;                                                       \
@@ -488,7 +483,7 @@ _ccs_peek_bin_ ## NAME (TYPE *x, size_t *buffer_size, const char **buffer) {    
 }
 
 #define CCS_SERIALIZER(NAME, TYPE, MAPPED_NAME, MAPPED_TYPE)               \
-static inline ccs_result_t                                                 \
+static inline ccs_error_t                                                 \
 _ccs_serialize_bin_ ## NAME (TYPE x, size_t *buffer_size, char **buffer) { \
   CCS_REFUTE(*buffer_size < sizeof(MAPPED_TYPE), CCS_NOT_ENOUGH_DATA);     \
   MAPPED_TYPE v = _ccs_pack_ ## NAME (x);                                  \
@@ -504,7 +499,7 @@ _ccs_serialize_bin_size_ ## NAME (TYPE x) {                                \
 }
 
 #define CCS_DESERIALIZER(NAME, TYPE, MAPPED_NAME, MAPPED_TYPE)                      \
-static inline ccs_result_t                                                          \
+static inline ccs_error_t                                                          \
 _ccs_peek_bin_ ## NAME (TYPE *x, size_t *buffer_size, const char **buffer) {        \
   CCS_REFUTE(*buffer_size < sizeof(MAPPED_TYPE), CCS_NOT_ENOUGH_DATA);              \
   MAPPED_TYPE v;                                                                    \
@@ -512,7 +507,7 @@ _ccs_peek_bin_ ## NAME (TYPE *x, size_t *buffer_size, const char **buffer) {    
   *x = _ccs_unpack_ ## NAME (v);                                                    \
   return CCS_SUCCESS;                                                               \
 }                                                                                   \
-static inline ccs_result_t                                                          \
+static inline ccs_error_t                                                          \
 _ccs_deserialize_bin_ ## NAME (TYPE *x, size_t *buffer_size, const char **buffer) { \
   CCS_VALIDATE(_ccs_peek_bin_ ## NAME (x, buffer_size, buffer));                    \
   *buffer_size -= sizeof(MAPPED_TYPE);                                              \
@@ -616,7 +611,7 @@ _ccs_serialize_bin_size_string(const char *str) {
 	return sz + _ccs_serialize_bin_size_uint64(sz);
 }
 
-static inline ccs_result_t
+static inline ccs_error_t
 _ccs_serialize_bin_string(const char  *str,
                           size_t      *buffer_size,
                           char       **buffer) {
@@ -629,7 +624,7 @@ _ccs_serialize_bin_string(const char  *str,
 	return CCS_SUCCESS;
 }
 
-static inline ccs_result_t
+static inline ccs_error_t
 _ccs_deserialize_bin_string(const char **str,
                             size_t      *buffer_size,
                             const char **buffer) {
@@ -654,7 +649,7 @@ _ccs_serialize_bin_size_ccs_blob(_ccs_blob_t *b) {
 	       b->sz;
 }
 
-static inline ccs_result_t
+static inline ccs_error_t
 _ccs_serialize_bin_ccs_blob(
 		_ccs_blob_t *b,
 		size_t      *buffer_size,
@@ -667,7 +662,7 @@ _ccs_serialize_bin_ccs_blob(
 	return CCS_SUCCESS;
 }
 
-static inline ccs_result_t
+static inline ccs_error_t
 _ccs_deserialize_bin_ccs_blob(
 		_ccs_blob_t *b,
 		size_t      *buffer_size,
@@ -694,7 +689,7 @@ _ccs_serialize_bin_size_ccs_interval(const ccs_interval_t *interval) {
 	       _ccs_serialize_bin_size_ccs_bool(interval->upper_included);
 }
 
-static inline ccs_result_t
+static inline ccs_error_t
 _ccs_serialize_bin_ccs_interval(const ccs_interval_t  *interval,
                                 size_t                *buffer_size,
                                 char                 **buffer) {
@@ -712,7 +707,7 @@ _ccs_serialize_bin_ccs_interval(const ccs_interval_t  *interval,
         return CCS_SUCCESS;
 }
 
-static inline ccs_result_t
+static inline ccs_error_t
 _ccs_deserialize_bin_ccs_interval(ccs_interval_t  *interval,
                                   size_t          *buffer_size,
                                   const char     **buffer) {
@@ -759,7 +754,7 @@ _ccs_serialize_bin_size_ccs_datum(ccs_datum_t datum) {
 	return sz;
 }
 
-static inline ccs_result_t
+static inline ccs_error_t
 _ccs_serialize_bin_ccs_datum(
 		ccs_datum_t   datum,
 		size_t       *buffer_size,
@@ -790,7 +785,7 @@ _ccs_serialize_bin_ccs_datum(
 	return CCS_SUCCESS;
 }
 
-static inline ccs_result_t
+static inline ccs_error_t
 _ccs_deserialize_bin_ccs_datum(
 		ccs_datum_t  *datum,
 		size_t       *buffer_size,
@@ -856,7 +851,7 @@ _ccs_serialize_bin_size_ccs_object_internal(
 	       _ccs_serialize_bin_size_ccs_object((ccs_object_t)obj);
 }
 
-static inline ccs_result_t
+static inline ccs_error_t
 _ccs_serialize_bin_ccs_object_internal(
 		_ccs_object_internal_t  *obj,
 		size_t                  *buffer_size,
@@ -868,7 +863,7 @@ _ccs_serialize_bin_ccs_object_internal(
 	return CCS_SUCCESS;
 }
 
-static inline ccs_result_t
+static inline ccs_error_t
 _ccs_deserialize_bin_ccs_object_internal(
 		_ccs_object_internal_t  *obj,
 		size_t                  *buffer_size,
@@ -881,7 +876,7 @@ _ccs_deserialize_bin_ccs_object_internal(
 	return CCS_SUCCESS;
 }
 
-static inline ccs_result_t
+static inline ccs_error_t
 _ccs_object_handle_check_add(
 		ccs_map_t map,
 		ccs_object_t handle,
@@ -906,7 +901,7 @@ struct _ccs_object_deserialize_options_s {
 };
 typedef struct _ccs_object_deserialize_options_s _ccs_object_deserialize_options_t;
 
-static inline ccs_result_t
+static inline ccs_error_t
 _ccs_object_serialize_user_data_size(
 		ccs_object_t                     object,
 		ccs_serialize_format_t           format,
@@ -935,7 +930,7 @@ _ccs_object_serialize_user_data_size(
 }
 
 
-static inline ccs_result_t
+static inline ccs_error_t
 _ccs_object_serialize_user_data(
 		ccs_object_t                      object,
 		ccs_serialize_format_t            format,
@@ -959,8 +954,7 @@ _ccs_object_serialize_user_data(
 		CCS_VALIDATE(_ccs_serialize_bin_uint64(
 			serialize_data_size, buffer_size, buffer));
 		if (obj->user_data) {
-			if (CCS_UNLIKELY(*buffer_size < serialize_data_size))
-				return -CCS_NOT_ENOUGH_DATA;
+			CCS_REFUTE(*buffer_size < serialize_data_size, CCS_NOT_ENOUGH_DATA);
 			if (obj->serialize_callback)
 				CCS_VALIDATE(obj->serialize_callback(
 					object, serialize_data_size, *buffer, NULL, obj->serialize_user_data));
@@ -980,7 +974,7 @@ _ccs_object_serialize_user_data(
 	return CCS_SUCCESS;
 }
 
-static inline ccs_result_t
+static inline ccs_error_t
 _ccs_object_deserialize_user_data(
 		ccs_object_t                        object,
 		ccs_serialize_format_t              format,

@@ -5,7 +5,7 @@
 
 void test_error_stack() {
 	ccs_error_stack_t       s1, s2;
-	ccs_result_t            res;
+	ccs_error_t             res;
 	ccs_error_t             err;
 	const char             *msg, *file, *func;
 	int                     line;
@@ -64,12 +64,28 @@ void test_error_stack() {
 
 	ccs_set_thread_error(s1);
 
-	res = ccs_create_error_stack(&s2, CCS_INVALID_OBJECT, NULL);
+	res = ccs_create_thread_error(CCS_INVALID_OBJECT, NULL);
+	assert( CCS_SUCCESS == res );
+	file = __FILE__;
+	line = __LINE__;
+	func = __func__;
+	res = ccs_thread_error_stack_push(file, line, func);
 	assert( CCS_SUCCESS == res );
 
-	ccs_set_thread_error(s2);
+	s2 = ccs_get_thread_error();
+	res = ccs_error_stack_get_code(s2, &err);
+	assert( CCS_SUCCESS == res );
+	assert( CCS_INVALID_OBJECT == err );
 
-	ccs_clear_thread_error();
+	res = ccs_error_stack_get_elems(s2, &num_elem, &elems);
+	assert( CCS_SUCCESS == res );
+	assert( 1 == num_elem );
+	assert( elems );
+	assert( !strcmp(file, elems[0].file) );
+	assert( !strcmp(func, elems[0].func) );
+	assert( line == elems[0].line );
+
+	ccs_release_object(s2);
 }
 
 int main() {

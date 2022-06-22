@@ -1,7 +1,7 @@
 module CCS
 
-  attach_function :ccs_create_features, [:ccs_features_space_t, :size_t, :pointer, :pointer], :ccs_result_t
-  attach_function :ccs_features_check, [:ccs_features_t, :pointer], :ccs_result_t
+  attach_function :ccs_create_features, [:ccs_features_space_t, :size_t, :pointer, :pointer], :ccs_error_t
+  attach_function :ccs_features_check, [:ccs_features_t, :pointer], :ccs_error_t
 
   class Features < Binding
     alias features_space context

@@ -1,7 +1,7 @@
 module CCS
 
-  attach_function :ccs_create_configuration, [:ccs_configuration_space_t, :size_t, :pointer, :pointer], :ccs_result_t
-  attach_function :ccs_configuration_check, [:ccs_configuration_t, :pointer], :ccs_result_t
+  attach_function :ccs_create_configuration, [:ccs_configuration_space_t, :size_t, :pointer, :pointer], :ccs_error_t
+  attach_function :ccs_configuration_check, [:ccs_configuration_t, :pointer], :ccs_error_t
 
   class Configuration < Binding
     alias configuration_space context

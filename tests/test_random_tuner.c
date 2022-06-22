@@ -5,7 +5,7 @@
 
 ccs_hyperparameter_t create_numerical(const char * name, double lower, double upper) {
 	ccs_hyperparameter_t hyperparameter;
-	ccs_result_t         err;
+	ccs_error_t         err;
 	err = ccs_create_numerical_hyperparameter(name, CCS_NUM_FLOAT,
 	                                          CCSF(lower), CCSF(upper),
 	                                          CCSF(0.0), CCSF(0),
@@ -22,7 +22,7 @@ void test() {
 	ccs_objective_space_t     ospace;
 	ccs_expression_t          expression;
 	ccs_tuner_t               tuner, tuner_copy;
-	ccs_result_t              err;
+	ccs_error_t              err;
 	ccs_datum_t               d;
 	char                     *buff;
 	size_t                    buff_size;
@@ -149,7 +149,7 @@ void test_evaluation_deserialize() {
 	ccs_configuration_space_t cspace;
 	ccs_objective_space_t     ospace;
 	ccs_expression_t          expression;
-	ccs_result_t              err;
+	ccs_error_t              err;
 	ccs_configuration_t       configuration;
 	ccs_evaluation_t          evaluation_ref, evaluation;
 	ccs_datum_t               res, d;
@@ -197,7 +197,7 @@ void test_evaluation_deserialize() {
 
 	err = ccs_object_deserialize((ccs_object_t*)&evaluation, CCS_SERIALIZE_FORMAT_BINARY, CCS_SERIALIZE_OPERATION_MEMORY, buff_size, buff,
 	                             CCS_DESERIALIZE_OPTION_HANDLE_MAP, map, CCS_DESERIALIZE_OPTION_END);
-	assert( err == -CCS_INVALID_HANDLE );
+	assert( err == CCS_INVALID_HANDLE );
 
 	d = ccs_object(ospace);
 	d.flags |= CCS_FLAG_ID;
@@ -206,7 +206,7 @@ void test_evaluation_deserialize() {
 
 	err = ccs_object_deserialize((ccs_object_t*)&evaluation, CCS_SERIALIZE_FORMAT_BINARY, CCS_SERIALIZE_OPERATION_MEMORY, buff_size, buff,
 	                             CCS_DESERIALIZE_OPTION_HANDLE_MAP, map, CCS_DESERIALIZE_OPTION_END);
-	assert( err == -CCS_INVALID_HANDLE );
+	assert( err == CCS_INVALID_HANDLE );
 
 	d = ccs_object(cspace);
 	d.flags |= CCS_FLAG_ID;

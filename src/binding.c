@@ -8,7 +8,7 @@ ccs_binding_get_ops(ccs_binding_t binding) {
 	return (_ccs_binding_ops_t *)binding->obj.ops;
 }
 
-ccs_result_t
+ccs_error_t
 ccs_binding_get_context(ccs_binding_t  binding,
                         ccs_context_t *context_ret) {
 	CCS_CHECK_BINDING(binding);
@@ -16,7 +16,7 @@ ccs_binding_get_context(ccs_binding_t  binding,
 	return CCS_SUCCESS;
 }
 
-ccs_result_t
+ccs_error_t
 ccs_binding_get_value(ccs_binding_t  binding,
                       size_t         index,
                       ccs_datum_t   *value_ret) {
@@ -25,7 +25,7 @@ ccs_binding_get_value(ccs_binding_t  binding,
 	return CCS_SUCCESS;
 }
 
-ccs_result_t
+ccs_error_t
 ccs_binding_set_value(ccs_binding_t binding,
                       size_t        index,
                       ccs_datum_t   value) {
@@ -34,7 +34,7 @@ ccs_binding_set_value(ccs_binding_t binding,
 	return CCS_SUCCESS;
 }
 
-ccs_result_t
+ccs_error_t
 ccs_binding_get_values(ccs_binding_t  binding,
                        size_t         num_values,
                        ccs_datum_t   *values,
@@ -44,7 +44,7 @@ ccs_binding_get_values(ccs_binding_t  binding,
 	return CCS_SUCCESS;
 }
 
-ccs_result_t
+ccs_error_t
 ccs_binding_get_value_by_name(ccs_binding_t  binding,
                               const char    *name,
                               ccs_datum_t   *value_ret) {
@@ -53,7 +53,7 @@ ccs_binding_get_value_by_name(ccs_binding_t  binding,
 	return CCS_SUCCESS;
 }
 
-ccs_result_t
+ccs_error_t
 ccs_binding_set_value_by_name(ccs_binding_t  binding,
                               const char    *name,
                               ccs_datum_t    value) {
@@ -62,7 +62,7 @@ ccs_binding_set_value_by_name(ccs_binding_t  binding,
 	return CCS_SUCCESS;
 }
 
-ccs_result_t
+ccs_error_t
 ccs_binding_get_value_by_hyperparameter(ccs_binding_t         binding,
                                         ccs_hyperparameter_t  hyperparameter,
                                         ccs_datum_t          *value_ret) {
@@ -71,7 +71,7 @@ ccs_binding_get_value_by_hyperparameter(ccs_binding_t         binding,
 	return CCS_SUCCESS;
 }
 
-ccs_result_t
+ccs_error_t
 ccs_binding_set_value_by_hyperparameter(ccs_binding_t        binding,
                                         ccs_hyperparameter_t hyperparameter,
                                         ccs_datum_t          value) {
@@ -80,7 +80,7 @@ ccs_binding_set_value_by_hyperparameter(ccs_binding_t        binding,
 	return CCS_SUCCESS;
 }
 
-ccs_result_t
+ccs_error_t
 ccs_binding_hash(ccs_binding_t  binding,
                  ccs_hash_t    *hash_ret) {
 	CCS_CHECK_BINDING(binding);
@@ -89,7 +89,7 @@ ccs_binding_hash(ccs_binding_t  binding,
 	return CCS_SUCCESS;
 }
 
-ccs_result_t
+ccs_error_t
 ccs_binding_cmp(ccs_binding_t  binding,
                 ccs_binding_t  other_binding,
                 int           *cmp_ret) {

@@ -2,7 +2,7 @@
 #include "hyperparameter_internal.h"
 #include <string.h>
 
-static ccs_result_t
+static ccs_error_t
 _ccs_hyperparameter_numerical_del(ccs_object_t o) {
 	(void)o;
 	return CCS_SUCCESS;
@@ -18,7 +18,7 @@ _ccs_serialize_bin_size_ccs_hyperparameter_numerical(
 	        _ccs_serialize_bin_size_ccs_hyperparameter_numerical_data(data);
 }
 
-static inline ccs_result_t
+static inline ccs_error_t
 _ccs_serialize_bin_ccs_hyperparameter_numerical(
 		ccs_hyperparameter_t   hyperparameter,
 		size_t                *buffer_size,
@@ -32,7 +32,7 @@ _ccs_serialize_bin_ccs_hyperparameter_numerical(
 	return CCS_SUCCESS;
 }
 
-static ccs_result_t
+static ccs_error_t
 _ccs_hyperparameter_numerical_serialize_size(
 		ccs_object_t                     object,
 		ccs_serialize_format_t           format,
@@ -51,7 +51,7 @@ _ccs_hyperparameter_numerical_serialize_size(
 	return CCS_SUCCESS;
 }
 
-static ccs_result_t
+static ccs_error_t
 _ccs_hyperparameter_numerical_serialize(
 		ccs_object_t                      object,
 		ccs_serialize_format_t            format,
@@ -71,7 +71,7 @@ _ccs_hyperparameter_numerical_serialize(
 	return CCS_SUCCESS;
 }
 
-static ccs_result_t
+static ccs_error_t
 _ccs_hyperparameter_numerical_check_values(_ccs_hyperparameter_data_t *data,
                                            size_t                num_values,
                                            const ccs_datum_t    *values,
@@ -107,7 +107,7 @@ _ccs_hyperparameter_numerical_check_values(_ccs_hyperparameter_data_t *data,
 	return CCS_SUCCESS;
 }
 
-static ccs_result_t
+static ccs_error_t
 _ccs_hyperparameter_numerical_samples(_ccs_hyperparameter_data_t *data,
                                       ccs_distribution_t          distribution,
                                       ccs_rng_t                   rng,
@@ -117,7 +117,7 @@ _ccs_hyperparameter_numerical_samples(_ccs_hyperparameter_data_t *data,
 	    (_ccs_hyperparameter_numerical_data_t *)data;
 	ccs_numeric_type_t type = d->common_data.interval.type;
 	ccs_interval_t *interval = &(d->common_data.interval);
-	ccs_result_t err;
+	ccs_error_t err;
 	ccs_numeric_t *vs = (ccs_numeric_t *)values + num_values;
         ccs_bool_t oversampling;
 
@@ -184,7 +184,7 @@ errmem:
 	return err;
 }
 
-static ccs_result_t
+static ccs_error_t
 _ccs_hyperparameter_numerical_get_default_distribution(
 		_ccs_hyperparameter_data_t *data,
 		ccs_distribution_t         *distribution) {
@@ -196,7 +196,7 @@ _ccs_hyperparameter_numerical_get_default_distribution(
 	return CCS_SUCCESS;
 }
 
-static ccs_result_t
+static ccs_error_t
 _ccs_hyperparameter_numerical_convert_samples(
 		_ccs_hyperparameter_data_t *data,
 		ccs_bool_t                  oversampling,
@@ -244,7 +244,7 @@ static _ccs_hyperparameter_ops_t _ccs_hyperparameter_numerical_ops = {
 	&_ccs_hyperparameter_numerical_convert_samples
 };
 
-ccs_result_t
+ccs_error_t
 ccs_create_numerical_hyperparameter(const char           *name,
                                     ccs_numeric_type_t    data_type,
                                     ccs_numeric_t         lower,
@@ -288,7 +288,7 @@ ccs_create_numerical_hyperparameter(const char           *name,
 	return CCS_SUCCESS;
 }
 
-ccs_result_t
+ccs_error_t
 ccs_numerical_hyperparameter_get_parameters(ccs_hyperparameter_t  hyperparameter,
                                             ccs_numeric_type_t   *data_type_ret,
                                             ccs_numeric_t        *lower_ret,

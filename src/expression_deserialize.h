@@ -10,7 +10,7 @@ struct _ccs_expression_data_mock_s {
 };
 typedef struct _ccs_expression_data_mock_s _ccs_expression_data_mock_t;
 
-static inline ccs_result_t
+static inline ccs_error_t
 _ccs_deserialize_bin_expression(
 		ccs_expression_t                   *expression_ret,
 		uint32_t                            version,
@@ -18,7 +18,7 @@ _ccs_deserialize_bin_expression(
 		const char                        **buffer,
 		_ccs_object_deserialize_options_t  *opts);
 
-static ccs_result_t
+static ccs_error_t
 _ccs_expression_deserialize(
 		ccs_expression_t                   *expression_ret,
 		ccs_serialize_format_t              format,
@@ -27,7 +27,7 @@ _ccs_expression_deserialize(
 		const char                        **buffer,
 		_ccs_object_deserialize_options_t  *opts);
 
-static inline ccs_result_t
+static inline ccs_error_t
 _ccs_deserialize_bin_ccs_expression_data(
 		_ccs_expression_data_mock_t        *data,
 		uint32_t                            version,
@@ -62,7 +62,7 @@ struct _ccs_expression_literal_data_mock_s {
 };
 typedef struct _ccs_expression_literal_data_mock_s _ccs_expression_literal_data_mock_t;
 
-static inline ccs_result_t
+static inline ccs_error_t
 _ccs_deserialize_bin_ccs_expression_literal_data(
 		_ccs_expression_literal_data_mock_t  *data,
 		uint32_t                              version,
@@ -75,7 +75,7 @@ _ccs_deserialize_bin_ccs_expression_literal_data(
 	return CCS_SUCCESS;
 }
 
-static inline ccs_result_t
+static inline ccs_error_t
 _ccs_deserialize_bin_expression_literal(
 		ccs_expression_t  *expression_ret,
 		uint32_t           version,
@@ -95,7 +95,7 @@ struct _ccs_expression_variable_data_mock_s {
 };
 typedef struct _ccs_expression_variable_data_mock_s _ccs_expression_variable_data_mock_t;
 
-static inline ccs_result_t
+static inline ccs_error_t
 _ccs_deserialize_bin_ccs_expression_variable_data(
 		_ccs_expression_variable_data_mock_t  *data,
 		uint32_t                               version,
@@ -108,7 +108,7 @@ _ccs_deserialize_bin_ccs_expression_variable_data(
 	return CCS_SUCCESS;
 }
 
-static inline ccs_result_t
+static inline ccs_error_t
 _ccs_deserialize_bin_expression_variable(
 		ccs_expression_t                   *expression_ret,
 		uint32_t                            version,
@@ -130,14 +130,14 @@ _ccs_deserialize_bin_expression_variable(
 	return CCS_SUCCESS;
 }
 
-static inline ccs_result_t
+static inline ccs_error_t
 _ccs_deserialize_bin_expression_general(
 		ccs_expression_t                   *expression_ret,
 		uint32_t                            version,
 		size_t                             *buffer_size,
 		const char                        **buffer,
 		_ccs_object_deserialize_options_t  *opts) {
-	ccs_result_t res = CCS_SUCCESS;
+	ccs_error_t res = CCS_SUCCESS;
 	_ccs_expression_data_mock_t data;
 	CCS_VALIDATE_ERR_GOTO(res, _ccs_deserialize_bin_ccs_expression_data(
 		&data, version, buffer_size, buffer, opts), end);
@@ -153,7 +153,7 @@ end:
 	return res;
 }
 
-static inline ccs_result_t
+static inline ccs_error_t
 _ccs_deserialize_bin_expression(
 		ccs_expression_t                   *expression_ret,
 		uint32_t                            version,
@@ -164,7 +164,7 @@ _ccs_deserialize_bin_expression(
 	new_opts.map_values = CCS_FALSE;
 	_ccs_object_internal_t obj;
 	ccs_object_t handle;
-	ccs_result_t res;
+	ccs_error_t res;
 	CCS_VALIDATE(_ccs_deserialize_bin_ccs_object_internal(
 		&obj, buffer_size, buffer, &handle));
 	CCS_REFUTE(obj.type != CCS_EXPRESSION, CCS_INVALID_TYPE);
@@ -199,7 +199,7 @@ err_exp:
 	return res;
 }
 
-static ccs_result_t
+static ccs_error_t
 _ccs_expression_deserialize(
 		ccs_expression_t                   *expression_ret,
 		ccs_serialize_format_t              format,

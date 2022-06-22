@@ -18,7 +18,7 @@ struct _ccs_map_data_s {
 typedef struct _ccs_map_data_s _ccs_map_data_t;
 
 
-static inline ccs_result_t
+static inline ccs_error_t
 _ccs_map_check_object_and_release(ccs_datum_t d) {
 	if (d.type == CCS_OBJECT && !(d.flags & CCS_FLAG_ID))
 		return ccs_release_object(d.value.o);
@@ -34,7 +34,7 @@ _ccs_map_remove(_ccs_map_data_t  *data,
 	free(entry);
 }
 
-static ccs_result_t
+static ccs_error_t
 _ccs_map_del(ccs_object_t o) {
 	ccs_map_t m = (ccs_map_t)o;
 	_ccs_map_data_t *data = (_ccs_map_data_t *)(m->data);
@@ -57,7 +57,7 @@ _ccs_serialize_bin_size_ccs_map_data(
 	return sz;
 }
 
-static inline ccs_result_t
+static inline ccs_error_t
 _ccs_serialize_bin_ccs_map_data(
 		_ccs_map_data_t  *data,
 		size_t           *buffer_size,
@@ -82,7 +82,7 @@ _ccs_serialize_bin_size_ccs_map(ccs_map_t map) {
 	       _ccs_serialize_bin_size_ccs_map_data(data);
 }
 
-static inline ccs_result_t
+static inline ccs_error_t
 _ccs_serialize_bin_ccs_map(
 		ccs_map_t   map,
 		size_t     *buffer_size,
@@ -95,7 +95,7 @@ _ccs_serialize_bin_ccs_map(
 	return CCS_SUCCESS;
 }
 
-static ccs_result_t
+static ccs_error_t
 _ccs_map_serialize_size(
 		ccs_object_t                     object,
 		ccs_serialize_format_t           format,
@@ -113,7 +113,7 @@ _ccs_map_serialize_size(
 	return CCS_SUCCESS;
 }
 
-static ccs_result_t
+static ccs_error_t
 _ccs_map_serialize(
 		ccs_object_t                      object,
 		ccs_serialize_format_t            format,
@@ -139,7 +139,7 @@ static _ccs_map_ops_t _ccs_map_ops = {
 	  &_ccs_map_serialize }
 };
 
-ccs_result_t
+ccs_error_t
 ccs_create_map(ccs_map_t *map_ret) {
 	CCS_CHECK_PTR(map_ret);
 	uintptr_t mem = (uintptr_t)calloc(1, sizeof(struct _ccs_map_s) + sizeof(_ccs_map_data_t));
@@ -156,7 +156,7 @@ ccs_create_map(ccs_map_t *map_ret) {
 	CCS_RAISE_ERR_GOTO(res, CCS_OUT_OF_MEMORY, err_mem, "Not enough memory to allocate Hash"); \
 }
 
-static inline ccs_result_t
+static inline ccs_error_t
 _ccs_map_check_datum(ccs_datum_t d, size_t *cum_sz, size_t *sz) {
 	if (d.type == CCS_STRING && (d.flags & CCS_FLAG_TRANSIENT) && d.value.s)
 		*cum_sz += *sz = strlen(d.value.s) + 1;
@@ -178,12 +178,12 @@ _ccs_map_set_string(ccs_datum_t *d, size_t sz, uintptr_t *mem) {
 	}
 }
 
-ccs_result_t
+ccs_error_t
 ccs_map_set(ccs_map_t   map,
             ccs_datum_t key,
             ccs_datum_t value) {
 	CCS_CHECK_OBJ(map, CCS_MAP);
-	ccs_result_t res = CCS_SUCCESS;
+	ccs_error_t res = CCS_SUCCESS;
 	_ccs_map_data_t *d = map->data;
 	size_t sz = sizeof(_ccs_map_datum_t);
 	size_t sz1 = 0;
@@ -224,7 +224,7 @@ err:
 	return res;
 }
 
-ccs_result_t
+ccs_error_t
 ccs_map_exist(ccs_map_t    map,
               ccs_datum_t  key,
               ccs_bool_t  *exist) {
@@ -236,7 +236,7 @@ ccs_map_exist(ccs_map_t    map,
 	return CCS_SUCCESS;
 }
 
-ccs_result_t
+ccs_error_t
 ccs_map_get(ccs_map_t    map,
             ccs_datum_t  key,
             ccs_datum_t *value_ret) {
@@ -251,7 +251,7 @@ ccs_map_get(ccs_map_t    map,
 	return CCS_SUCCESS;
 }
 
-ccs_result_t
+ccs_error_t
 ccs_map_del(ccs_map_t    map,
             ccs_datum_t  key) {
 	CCS_CHECK_OBJ(map, CCS_MAP);
@@ -262,7 +262,7 @@ ccs_map_del(ccs_map_t    map,
 	return CCS_SUCCESS;
 }
 
-ccs_result_t
+ccs_error_t
 ccs_map_get_keys(ccs_map_t    map,
                  size_t       num_keys,
                  ccs_datum_t *keys,
@@ -285,7 +285,7 @@ ccs_map_get_keys(ccs_map_t    map,
 	return CCS_SUCCESS;
 }
 
-ccs_result_t
+ccs_error_t
 ccs_map_get_values(ccs_map_t    map,
                    size_t       num_values,
                    ccs_datum_t *values,
@@ -308,7 +308,7 @@ ccs_map_get_values(ccs_map_t    map,
 	return CCS_SUCCESS;
 }
 
-ccs_result_t
+ccs_error_t
 ccs_map_get_pairs(ccs_map_t    map,
                   size_t       num_pairs,
                   ccs_datum_t *keys,
@@ -337,7 +337,7 @@ ccs_map_get_pairs(ccs_map_t    map,
 	return CCS_SUCCESS;
 }
 
-ccs_result_t
+ccs_error_t
 ccs_map_clear(ccs_map_t    map) {
 	CCS_CHECK_OBJ(map, CCS_MAP);
 	_ccs_map_datum_t *current = NULL, *tmp;

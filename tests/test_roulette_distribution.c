@@ -13,7 +13,7 @@
 static void compare_distribution(
 		ccs_distribution_t distrib,
 		size_t num_areas, const ccs_float_t areas[]) {
-	ccs_result_t            err = CCS_SUCCESS;
+	ccs_error_t            err = CCS_SUCCESS;
 	int32_t                 refcount;
 	ccs_object_type_t       otype;
 	ccs_distribution_type_t dtype;
@@ -64,7 +64,7 @@ static void compare_distribution(
 
 void test_create_roulette_distribution() {
 	ccs_distribution_t  distrib = NULL;
-	ccs_result_t        err = CCS_SUCCESS;
+	ccs_error_t        err = CCS_SUCCESS;
 	const size_t        num_areas = NUM_AREAS;
 	ccs_float_t         areas[NUM_AREAS];
 	char               *buff;
@@ -106,7 +106,7 @@ void test_create_roulette_distribution() {
 
 void test_create_roulette_distribution_errors() {
 	ccs_distribution_t      distrib = NULL;
-	ccs_result_t            err = CCS_SUCCESS;
+	ccs_error_t            err = CCS_SUCCESS;
 	const size_t            num_areas = NUM_AREAS;
 	ccs_float_t             areas[NUM_AREAS];
 
@@ -118,39 +118,39 @@ void test_create_roulette_distribution_errors() {
 		0,
 		areas,
 		&distrib);
-	assert( err == -CCS_INVALID_VALUE );
+	assert( err == CCS_INVALID_VALUE );
 
 	err = ccs_create_roulette_distribution(
 		SIZE_MAX,
 		areas,
 		&distrib);
-	assert( err == -CCS_INVALID_VALUE );
+	assert( err == CCS_INVALID_VALUE );
 
 	err = ccs_create_roulette_distribution(
 		num_areas,
 		NULL,
 		&distrib);
-	assert( err == -CCS_INVALID_VALUE );
+	assert( err == CCS_INVALID_VALUE );
 
 	err = ccs_create_roulette_distribution(
 		num_areas,
 		areas,
 		NULL);
-	assert( err == -CCS_INVALID_VALUE );
+	assert( err == CCS_INVALID_VALUE );
 
 	areas[1] = -2;
 	err = ccs_create_roulette_distribution(
 		num_areas,
 		areas,
 		&distrib);
-	assert( err == -CCS_INVALID_VALUE );
+	assert( err == CCS_INVALID_VALUE );
 
 }
 
 void test_roulette_distribution() {
 	ccs_distribution_t distrib = NULL;
 	ccs_rng_t          rng = NULL;
-	ccs_result_t       err = CCS_SUCCESS;
+	ccs_error_t       err = CCS_SUCCESS;
 	const size_t       num_samples = NUM_SAMPLES;
 	ccs_numeric_t      samples[NUM_SAMPLES];
 	const size_t       num_areas = NUM_AREAS;
@@ -197,7 +197,7 @@ void test_roulette_distribution() {
 void test_roulette_distribution_zero() {
 	ccs_distribution_t distrib = NULL;
 	ccs_rng_t          rng = NULL;
-	ccs_result_t       err = CCS_SUCCESS;
+	ccs_error_t       err = CCS_SUCCESS;
 	const size_t       num_samples = NUM_SAMPLES;
 	ccs_numeric_t      samples[NUM_SAMPLES];
 	const size_t       num_areas = NUM_AREAS;
@@ -246,7 +246,7 @@ void test_roulette_distribution_strided_samples() {
 	ccs_distribution_t distrib1 = NULL;
 	ccs_distribution_t distrib2 = NULL;
 	ccs_rng_t          rng = NULL;
-	ccs_result_t       err = CCS_SUCCESS;
+	ccs_error_t       err = CCS_SUCCESS;
 	const size_t       num_samples = NUM_SAMPLES;
 	ccs_numeric_t      samples[NUM_SAMPLES*2];
 	const size_t       num_areas = NUM_AREAS;
@@ -323,7 +323,7 @@ void test_roulette_distribution_strided_samples() {
 void test_roulette_distribution_soa_samples() {
 	ccs_distribution_t distrib = NULL;
 	ccs_rng_t          rng = NULL;
-	ccs_result_t       err = CCS_SUCCESS;
+	ccs_error_t       err = CCS_SUCCESS;
 	const size_t       num_samples = NUM_SAMPLES;
 	ccs_numeric_t      samples[NUM_SAMPLES];
 	const size_t       num_areas = NUM_AREAS;

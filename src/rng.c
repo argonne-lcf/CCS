@@ -2,7 +2,7 @@
 #include "rng_internal.h"
 #include <stdlib.h>
 
-static ccs_result_t
+static ccs_error_t
 _ccs_rng_del(ccs_object_t object) {
 	gsl_rng_free(((ccs_rng_t)object)->data->rng);
 	((ccs_rng_t)object)->data->rng = NULL;
@@ -17,7 +17,7 @@ _ccs_serialize_bin_size_ccs_rng_data(_ccs_rng_data_t *data) {
 	       _ccs_serialize_bin_size_ccs_blob(&b);
 }
 
-static inline ccs_result_t
+static inline ccs_error_t
 _ccs_serialize_bin_ccs_rng_data(
 		_ccs_rng_data_t  *data,
 		size_t           *buffer_size,
@@ -39,7 +39,7 @@ _ccs_serialize_bin_size_ccs_rng(ccs_rng_t rng) {
 		_ccs_serialize_bin_size_ccs_rng_data(data);
 }
 
-static inline ccs_result_t
+static inline ccs_error_t
 _ccs_serialize_bin_ccs_rng(
 		ccs_rng_t rng,
 		size_t                *buffer_size,
@@ -52,7 +52,7 @@ _ccs_serialize_bin_ccs_rng(
 	return CCS_SUCCESS;
 }
 
-static ccs_result_t
+static ccs_error_t
 _ccs_rng_serialize_size(
 		ccs_object_t                     object,
 		ccs_serialize_format_t           format,
@@ -70,7 +70,7 @@ _ccs_rng_serialize_size(
 	return CCS_SUCCESS;
 }
 
-static ccs_result_t
+static ccs_error_t
 _ccs_rng_serialize(
 		ccs_object_t                      object,
 		ccs_serialize_format_t            format,
@@ -96,10 +96,10 @@ static struct _ccs_rng_ops_s _rng_ops = {
 	  &_ccs_rng_serialize }
 };
 
-ccs_result_t
+ccs_error_t
 ccs_create_rng_with_type(const gsl_rng_type *rng_type,
                          ccs_rng_t          *rng_ret) {
-	ccs_result_t res = CCS_SUCCESS;
+	ccs_error_t res = CCS_SUCCESS;
 	ccs_rng_t rng;
 	CCS_CHECK_PTR(rng_type);
 	CCS_CHECK_PTR(rng_ret);
@@ -121,12 +121,12 @@ err_rng:
 	return res;
 }
 
-ccs_result_t
+ccs_error_t
 ccs_create_rng(ccs_rng_t *rng_ret) {
 	return ccs_create_rng_with_type(gsl_rng_default, rng_ret);
 }
 
-ccs_result_t
+ccs_error_t
 ccs_rng_get_type(ccs_rng_t            rng,
                  const gsl_rng_type **rng_type_ret) {
 	CCS_CHECK_OBJ(rng, CCS_RNG);
@@ -134,7 +134,7 @@ ccs_rng_get_type(ccs_rng_t            rng,
 	return CCS_SUCCESS;
 }
 
-ccs_result_t
+ccs_error_t
 ccs_rng_set_seed(ccs_rng_t         rng,
                  unsigned long int seed) {
 	CCS_CHECK_OBJ(rng, CCS_RNG);
@@ -142,7 +142,7 @@ ccs_rng_set_seed(ccs_rng_t         rng,
 	return CCS_SUCCESS;
 }
 
-ccs_result_t
+ccs_error_t
 ccs_rng_get(ccs_rng_t          rng,
             unsigned long int *value_ret) {
 	CCS_CHECK_OBJ(rng, CCS_RNG);
@@ -151,7 +151,7 @@ ccs_rng_get(ccs_rng_t          rng,
 	return CCS_SUCCESS;
 }
 
-ccs_result_t
+ccs_error_t
 ccs_rng_uniform(ccs_rng_t    rng,
                 ccs_float_t *value_ret) {
 	CCS_CHECK_OBJ(rng, CCS_RNG);
@@ -160,7 +160,7 @@ ccs_rng_uniform(ccs_rng_t    rng,
 	return CCS_SUCCESS;
 }
 
-ccs_result_t
+ccs_error_t
 ccs_rng_get_gsl_rng(ccs_rng_t   rng,
                     gsl_rng   **gsl_rng_ret) {
 	CCS_CHECK_OBJ(rng, CCS_RNG);
@@ -169,7 +169,7 @@ ccs_rng_get_gsl_rng(ccs_rng_t   rng,
 	return CCS_SUCCESS;
 }
 
-ccs_result_t
+ccs_error_t
 ccs_rng_min(ccs_rng_t          rng,
             unsigned long int *value_ret) {
 	CCS_CHECK_OBJ(rng, CCS_RNG);
@@ -178,7 +178,7 @@ ccs_rng_min(ccs_rng_t          rng,
 	return CCS_SUCCESS;
 }
 
-ccs_result_t
+ccs_error_t
 ccs_rng_max(ccs_rng_t          rng,
             unsigned long int *value_ret) {
 	CCS_CHECK_OBJ(rng, CCS_RNG);

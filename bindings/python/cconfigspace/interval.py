@@ -1,6 +1,6 @@
 import ctypes as ct
 from . import libcconfigspace
-from .base import Error, ccs_error, ccs_numeric_type, ccs_numeric, ccs_float, ccs_int, ccs_result, ccs_bool, ccs_false, ccs_true, _ccs_get_function
+from .base import Error, ccs_error, ccs_numeric_type, ccs_numeric, ccs_float, ccs_int, ccs_bool, ccs_false, ccs_true, _ccs_get_function
 
 class ccs_interval(ct.Structure):
   _fields_ = [('_type', ccs_numeric_type),

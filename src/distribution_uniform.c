@@ -17,7 +17,7 @@ struct _ccs_distribution_uniform_data_s {
 };
 typedef struct _ccs_distribution_uniform_data_s _ccs_distribution_uniform_data_t;
 
-static ccs_result_t
+static ccs_error_t
 _ccs_distribution_uniform_del(ccs_object_t o) {
 	(void)o;
 	return CCS_SUCCESS;
@@ -38,7 +38,7 @@ _ccs_serialize_bin_size_ccs_distribution_uniform_data(
 		_ccs_serialize_bin_size_ccs_int(data->quantization.i));
 }
 
-static inline ccs_result_t
+static inline ccs_error_t
 _ccs_serialize_bin_ccs_distribution_uniform_data(
 		_ccs_distribution_uniform_data_t  *data,
 		size_t                            *buffer_size,
@@ -77,7 +77,7 @@ _ccs_serialize_bin_size_ccs_distribution_uniform(
 	        _ccs_serialize_bin_size_ccs_distribution_uniform_data(data);
 }
 
-static inline ccs_result_t
+static inline ccs_error_t
 _ccs_serialize_bin_ccs_distribution_uniform(
 		ccs_distribution_t   distribution,
 		size_t              *buffer_size,
@@ -91,7 +91,7 @@ _ccs_serialize_bin_ccs_distribution_uniform(
 	return CCS_SUCCESS;
 }
 
-static ccs_result_t
+static ccs_error_t
 _ccs_distribution_uniform_serialize_size(
 		ccs_object_t                     object,
 		ccs_serialize_format_t           format,
@@ -110,7 +110,7 @@ _ccs_distribution_uniform_serialize_size(
 	return CCS_SUCCESS;
 }
 
-static ccs_result_t
+static ccs_error_t
 _ccs_distribution_uniform_serialize(
 		ccs_object_t                      object,
 		ccs_serialize_format_t            format,
@@ -130,24 +130,24 @@ _ccs_distribution_uniform_serialize(
 	return CCS_SUCCESS;
 }
 
-static ccs_result_t
+static ccs_error_t
 _ccs_distribution_uniform_get_bounds(_ccs_distribution_data_t *data,
                                      ccs_interval_t           *interval_ret);
 
-static ccs_result_t
+static ccs_error_t
 _ccs_distribution_uniform_samples(_ccs_distribution_data_t *data,
                                   ccs_rng_t                 rng,
                                   size_t                    num_values,
                                   ccs_numeric_t            *values);
 
-static ccs_result_t
+static ccs_error_t
 _ccs_distribution_uniform_strided_samples(_ccs_distribution_data_t *data,
                                           ccs_rng_t                 rng,
                                           size_t                    num_values,
                                           size_t                    stride,
                                           ccs_numeric_t            *values);
 
-static ccs_result_t
+static ccs_error_t
 _ccs_distribution_uniform_soa_samples(_ccs_distribution_data_t  *data,
                                       ccs_rng_t                  rng,
                                       size_t                     num_values,
@@ -163,7 +163,7 @@ static _ccs_distribution_ops_t _ccs_distribution_uniform_ops = {
 	&_ccs_distribution_uniform_soa_samples
  };
 
-static ccs_result_t
+static ccs_error_t
 _ccs_distribution_uniform_get_bounds(_ccs_distribution_data_t *data,
                                      ccs_interval_t           *interval_ret) {
 	_ccs_distribution_uniform_data_t *d = (_ccs_distribution_uniform_data_t *)data;
@@ -185,7 +185,7 @@ _ccs_distribution_uniform_get_bounds(_ccs_distribution_data_t *data,
 }
 
 
-static ccs_result_t
+static ccs_error_t
 _ccs_distribution_uniform_strided_samples(_ccs_distribution_data_t *data,
                                           ccs_rng_t                 rng,
                                           size_t                    num_values,
@@ -243,7 +243,7 @@ _ccs_distribution_uniform_strided_samples(_ccs_distribution_data_t *data,
 	return CCS_SUCCESS;
 }
 
-static ccs_result_t
+static ccs_error_t
 _ccs_distribution_uniform_samples(_ccs_distribution_data_t *data,
                                   ccs_rng_t                 rng,
                                   size_t                    num_values,
@@ -300,7 +300,7 @@ _ccs_distribution_uniform_samples(_ccs_distribution_data_t *data,
 	return CCS_SUCCESS;
 }
 
-static ccs_result_t
+static ccs_error_t
 _ccs_distribution_uniform_soa_samples(_ccs_distribution_data_t  *data,
                                       ccs_rng_t                  rng,
                                       size_t                     num_values,
@@ -310,7 +310,7 @@ _ccs_distribution_uniform_soa_samples(_ccs_distribution_data_t  *data,
 	return CCS_SUCCESS;
 }
 
-ccs_result_t
+ccs_error_t
 ccs_create_uniform_distribution(ccs_numeric_type_t  data_type,
                                 ccs_numeric_t       lower,
                                 ccs_numeric_t       upper,
@@ -366,7 +366,7 @@ ccs_create_uniform_distribution(ccs_numeric_type_t  data_type,
 	return CCS_SUCCESS;
 }
 
-ccs_result_t
+ccs_error_t
 ccs_uniform_distribution_get_parameters(ccs_distribution_t  distribution,
                                         ccs_numeric_t      *lower_ret,
                                         ccs_numeric_t      *upper_ret,

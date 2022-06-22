@@ -9,7 +9,7 @@ ccs_features_evaluation_get_ops(ccs_features_evaluation_t evaluation) {
 	return (_ccs_features_evaluation_ops_t *)evaluation->obj.ops;
 }
 
-static ccs_result_t
+static ccs_error_t
 _ccs_features_evaluation_del(ccs_object_t object) {
 	ccs_features_evaluation_t evaluation = (ccs_features_evaluation_t)object;
 	ccs_release_object(evaluation->data->objective_space);
@@ -18,7 +18,7 @@ _ccs_features_evaluation_del(ccs_object_t object) {
 	return CCS_SUCCESS;
 }
 
-static inline ccs_result_t
+static inline ccs_error_t
 _ccs_serialize_bin_size_ccs_features_evaluation_data(
 		_ccs_features_evaluation_data_t *data,
 		size_t                          *cum_size,
@@ -32,7 +32,7 @@ _ccs_serialize_bin_size_ccs_features_evaluation_data(
 	return CCS_SUCCESS;
 }
 
-static inline ccs_result_t
+static inline ccs_error_t
 _ccs_serialize_bin_ccs_features_evaluation_data(
 		_ccs_features_evaluation_data_t  *data,
 		size_t                           *buffer_size,
@@ -49,7 +49,7 @@ _ccs_serialize_bin_ccs_features_evaluation_data(
 	return CCS_SUCCESS;
 }
 
-static inline ccs_result_t
+static inline ccs_error_t
 _ccs_serialize_bin_size_ccs_features_evaluation(
 		ccs_features_evaluation_t        features_evaluation,
 		size_t                          *cum_size,
@@ -61,7 +61,7 @@ _ccs_serialize_bin_size_ccs_features_evaluation(
 	return CCS_SUCCESS;
 }
 
-static inline ccs_result_t
+static inline ccs_error_t
 _ccs_serialize_bin_ccs_features_evaluation(
 		ccs_features_evaluation_t         features_evaluation,
 		size_t                           *buffer_size,
@@ -74,7 +74,7 @@ _ccs_serialize_bin_ccs_features_evaluation(
 	return CCS_SUCCESS;
 }
 
-static ccs_result_t
+static ccs_error_t
 _ccs_features_evaluation_serialize_size(
 		ccs_object_t                     object,
 		ccs_serialize_format_t           format,
@@ -93,7 +93,7 @@ _ccs_features_evaluation_serialize_size(
 	return CCS_SUCCESS;
 }
 
-static ccs_result_t
+static ccs_error_t
 _ccs_features_evaluation_serialize(
 		ccs_object_t                      object,
 		ccs_serialize_format_t            format,
@@ -113,7 +113,7 @@ _ccs_features_evaluation_serialize(
 	return CCS_SUCCESS;
 }
 
-static ccs_result_t
+static ccs_error_t
 _ccs_features_evaluation_hash(_ccs_features_evaluation_data_t  *data,
                               ccs_hash_t                       *hash_ret) {
 	ccs_hash_t h, ht;
@@ -128,7 +128,7 @@ _ccs_features_evaluation_hash(_ccs_features_evaluation_data_t  *data,
 	return CCS_SUCCESS;
 }
 
-static ccs_result_t
+static ccs_error_t
 _ccs_features_evaluation_cmp(_ccs_features_evaluation_data_t *data,
                              ccs_features_evaluation_t        other,
                              int                             *cmp_ret) {
@@ -156,7 +156,7 @@ static _ccs_features_evaluation_ops_t _features_evaluation_ops =
       &_ccs_features_evaluation_hash,
       &_ccs_features_evaluation_cmp };
 
-ccs_result_t
+ccs_error_t
 ccs_create_features_evaluation(ccs_objective_space_t      objective_space,
                                ccs_configuration_t        configuration,
                                ccs_features_t             features,
@@ -177,7 +177,7 @@ ccs_create_features_evaluation(ccs_objective_space_t      objective_space,
 		sizeof(struct _ccs_features_evaluation_data_s) +
 		num * sizeof(ccs_datum_t));
 	CCS_REFUTE(!mem, CCS_OUT_OF_MEMORY);
-	ccs_result_t err;
+	ccs_error_t err;
 	CCS_VALIDATE_ERR_GOTO(err, ccs_retain_object(objective_space), errmemory);
 	CCS_VALIDATE_ERR_GOTO(err, ccs_retain_object(configuration), errospace);
 	CCS_VALIDATE_ERR_GOTO(err, ccs_retain_object(features), errconfig);
@@ -215,7 +215,7 @@ errmemory:
 	return err;
 }
 
-ccs_result_t
+ccs_error_t
 ccs_features_evaluation_get_objective_space(ccs_features_evaluation_t       evaluation,
                                             ccs_objective_space_t *objective_space_ret) {
 	CCS_CHECK_OBJ(evaluation, CCS_FEATURES_EVALUATION);
@@ -224,7 +224,7 @@ ccs_features_evaluation_get_objective_space(ccs_features_evaluation_t       eval
 	return CCS_SUCCESS;
 }
 
-ccs_result_t
+ccs_error_t
 ccs_features_evaluation_get_configuration(ccs_features_evaluation_t  evaluation,
                                           ccs_configuration_t       *configuration_ret) {
 	CCS_CHECK_OBJ(evaluation, CCS_FEATURES_EVALUATION);
@@ -233,7 +233,7 @@ ccs_features_evaluation_get_configuration(ccs_features_evaluation_t  evaluation,
 	return CCS_SUCCESS;
 }
 
-ccs_result_t
+ccs_error_t
 ccs_features_evaluation_get_features(ccs_features_evaluation_t  evaluation,
                                      ccs_features_t            *features_ret) {
 	CCS_CHECK_OBJ(evaluation, CCS_FEATURES_EVALUATION);
@@ -242,7 +242,7 @@ ccs_features_evaluation_get_features(ccs_features_evaluation_t  evaluation,
 	return CCS_SUCCESS;
 }
 
-ccs_result_t
+ccs_error_t
 ccs_features_evaluation_get_error(ccs_features_evaluation_t  evaluation,
                                   ccs_result_t              *error_ret) {
 	CCS_CHECK_OBJ(evaluation, CCS_FEATURES_EVALUATION);
@@ -251,7 +251,7 @@ ccs_features_evaluation_get_error(ccs_features_evaluation_t  evaluation,
 	return CCS_SUCCESS;
 }
 
-ccs_result_t
+ccs_error_t
 ccs_features_evaluation_set_error(ccs_features_evaluation_t evaluation,
                                   ccs_result_t              error) {
 	CCS_CHECK_OBJ(evaluation, CCS_FEATURES_EVALUATION);
@@ -259,7 +259,7 @@ ccs_features_evaluation_set_error(ccs_features_evaluation_t evaluation,
 	return CCS_SUCCESS;
 }
 
-ccs_result_t
+ccs_error_t
 ccs_features_evaluation_get_value(ccs_features_evaluation_t  evaluation,
                                   size_t                     index,
                                   ccs_datum_t               *value_ret) {
@@ -269,7 +269,7 @@ ccs_features_evaluation_get_value(ccs_features_evaluation_t  evaluation,
 	return CCS_SUCCESS;
 }
 
-ccs_result_t
+ccs_error_t
 ccs_features_evaluation_set_value(ccs_features_evaluation_t evaluation,
                                   size_t                    index,
                                   ccs_datum_t               value) {
@@ -279,7 +279,7 @@ ccs_features_evaluation_set_value(ccs_features_evaluation_t evaluation,
 	return CCS_SUCCESS;
 }
 
-ccs_result_t
+ccs_error_t
 ccs_features_evaluation_get_values(ccs_features_evaluation_t  evaluation,
                                    size_t                     num_values,
                                    ccs_datum_t               *values,
@@ -290,7 +290,7 @@ ccs_features_evaluation_get_values(ccs_features_evaluation_t  evaluation,
 	return CCS_SUCCESS;
 }
 
-ccs_result_t
+ccs_error_t
 ccs_features_evaluation_get_value_by_name(ccs_features_evaluation_t  evaluation,
                                           const char                *name,
                                           ccs_datum_t               *value_ret) {
@@ -300,7 +300,7 @@ ccs_features_evaluation_get_value_by_name(ccs_features_evaluation_t  evaluation,
 	return CCS_SUCCESS;
 }
 
-ccs_result_t
+ccs_error_t
 ccs_features_evaluation_check(ccs_features_evaluation_t  evaluation,
                               ccs_bool_t                *is_valid_ret) {
 	CCS_CHECK_OBJ(evaluation, CCS_FEATURES_EVALUATION);
@@ -309,7 +309,7 @@ ccs_features_evaluation_check(ccs_features_evaluation_t  evaluation,
 	return CCS_SUCCESS;
 }
 
-ccs_result_t
+ccs_error_t
 ccs_features_evaluation_get_objective_value(ccs_features_evaluation_t  evaluation,
                                             size_t                     index,
                                             ccs_datum_t               *value_ret) {
@@ -325,7 +325,7 @@ ccs_features_evaluation_get_objective_value(ccs_features_evaluation_t  evaluatio
 	return CCS_SUCCESS;
 }
 
-ccs_result_t
+ccs_error_t
 ccs_features_evaluation_get_objective_values(ccs_features_evaluation_t  evaluation,
                                              size_t                     num_values,
                                              ccs_datum_t               *values,
@@ -365,7 +365,7 @@ _numeric_compare(const ccs_datum_t *a, const ccs_datum_t *b) {
 	}
 }
 
-ccs_result_t
+ccs_error_t
 ccs_features_evaluation_hash(ccs_features_evaluation_t  evaluation,
                              ccs_hash_t          *hash_ret) {
 	CCS_CHECK_OBJ(evaluation, CCS_FEATURES_EVALUATION);
@@ -374,7 +374,7 @@ ccs_features_evaluation_hash(ccs_features_evaluation_t  evaluation,
 	return CCS_SUCCESS;
 }
 
-ccs_result_t
+ccs_error_t
 ccs_features_evaluation_cmp(ccs_features_evaluation_t  evaluation,
                             ccs_features_evaluation_t  other_evaluation,
                             int                       *cmp_ret) {
@@ -392,7 +392,7 @@ ccs_features_evaluation_cmp(ccs_features_evaluation_t  evaluation,
 
 
 //Could be using memoization here.
-ccs_result_t
+ccs_error_t
 ccs_features_evaluation_compare(ccs_features_evaluation_t  evaluation,
                                 ccs_features_evaluation_t  other_evaluation,
                                 ccs_comparison_t          *result_ret) {

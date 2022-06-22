@@ -5,7 +5,7 @@
 
 ccs_hyperparameter_t create_numerical(const char * name, double lower, double upper) {
 	ccs_hyperparameter_t hyperparameter;
-	ccs_result_t         err;
+	ccs_error_t         err;
 	err = ccs_create_numerical_hyperparameter(name, CCS_NUM_FLOAT,
 	                                          CCSF(lower), CCSF(upper),
 	                                          CCSF(0.0), CCSF(0),
@@ -19,10 +19,10 @@ struct tuner_last_s {
 };
 typedef struct tuner_last_s tuner_last_t;
 
-ccs_result_t
+ccs_error_t
 tuner_last_del(ccs_tuner_t tuner) {
 	tuner_last_t *tuner_data;
-	ccs_result_t err;
+	ccs_error_t err;
 	err = ccs_user_defined_tuner_get_tuner_data(tuner, (void**)&tuner_data);
 	if (err)
 		return err;
@@ -32,7 +32,7 @@ tuner_last_del(ccs_tuner_t tuner) {
 	return CCS_SUCCESS;
 }
 
-ccs_result_t
+ccs_error_t
 tuner_last_ask(ccs_tuner_t          tuner,
                size_t               num_configurations,
                ccs_configuration_t *configurations,
@@ -41,7 +41,7 @@ tuner_last_ask(ccs_tuner_t          tuner,
 		*num_configurations_ret = 1;
 		return CCS_SUCCESS;
 	}
-	ccs_result_t err;
+	ccs_error_t err;
         ccs_configuration_space_t configuration_space;
 	err = ccs_tuner_get_configuration_space(tuner, &configuration_space);
 	if (err)
@@ -55,13 +55,13 @@ tuner_last_ask(ccs_tuner_t          tuner,
 	return CCS_SUCCESS;
 }
 
-ccs_result_t
+ccs_error_t
 tuner_last_tell(ccs_tuner_t       tuner,
                 size_t            num_evaluations,
                 ccs_evaluation_t *evaluations) {
 	if (!num_evaluations)
 		return CCS_SUCCESS;
-	ccs_result_t err;
+	ccs_error_t err;
 	tuner_last_t *tuner_data;
 	err = ccs_user_defined_tuner_get_tuner_data(tuner, (void**)&tuner_data);
 	if (err)
@@ -75,15 +75,15 @@ tuner_last_tell(ccs_tuner_t       tuner,
 	return CCS_SUCCESS;
 }
 
-ccs_result_t
+ccs_error_t
 tuner_last_get_optimums(ccs_tuner_t       tuner,
                         size_t            num_evaluations,
                         ccs_evaluation_t *evaluations,
                         size_t           *num_evaluations_ret) {
 	if (evaluations) {
 		if (num_evaluations < 1)
-			return -CCS_INVALID_VALUE;
-		ccs_result_t err;
+			return CCS_INVALID_VALUE;
+		ccs_error_t err;
 		tuner_last_t *tuner_data;
 		err = ccs_user_defined_tuner_get_tuner_data(tuner, (void**)&tuner_data);
 		if (err)
@@ -97,15 +97,15 @@ tuner_last_get_optimums(ccs_tuner_t       tuner,
 	return CCS_SUCCESS;
 }
 
-ccs_result_t
+ccs_error_t
 tuner_last_get_history(ccs_tuner_t       tuner,
                        size_t            num_evaluations,
                        ccs_evaluation_t *evaluations,
                        size_t           *num_evaluations_ret) {
 	if (evaluations) {
 		if (num_evaluations < 1)
-			return -CCS_INVALID_VALUE;
-		ccs_result_t err;
+			return CCS_INVALID_VALUE;
+		ccs_error_t err;
 		tuner_last_t *tuner_data;
 		err = ccs_user_defined_tuner_get_tuner_data(tuner, (void**)&tuner_data);
 		if (err)
@@ -137,7 +137,7 @@ void test() {
 	ccs_objective_space_t     ospace;
 	ccs_expression_t          expression;
 	ccs_tuner_t               tuner, tuner_copy;
-	ccs_result_t              err;
+	ccs_error_t              err;
 	tuner_last_t             *tuner_data;
 	ccs_datum_t               d;
 	char                     *buff;

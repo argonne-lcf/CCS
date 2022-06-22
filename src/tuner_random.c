@@ -12,7 +12,7 @@ struct _ccs_random_tuner_data_s {
 };
 typedef struct _ccs_random_tuner_data_s _ccs_random_tuner_data_t;
 
-static ccs_result_t
+static ccs_error_t
 _ccs_tuner_random_del(ccs_object_t o) {
 	_ccs_random_tuner_data_t *d = (_ccs_random_tuner_data_t *)((ccs_tuner_t)o)->data;
 	ccs_release_object(d->common_data.configuration_space);
@@ -26,7 +26,7 @@ _ccs_tuner_random_del(ccs_object_t o) {
 	return CCS_SUCCESS;
 }
 
-static inline ccs_result_t
+static inline ccs_error_t
 _ccs_serialize_bin_size_ccs_random_tuner_data(
 		_ccs_random_tuner_data_t        *data,
 		size_t                          *cum_size,
@@ -47,7 +47,7 @@ _ccs_serialize_bin_size_ccs_random_tuner_data(
 	return CCS_SUCCESS;
 }
 
-static inline ccs_result_t
+static inline ccs_error_t
 _ccs_serialize_bin_ccs_random_tuner_data(
 		_ccs_random_tuner_data_t         *data,
 		size_t                           *buffer_size,
@@ -69,7 +69,7 @@ _ccs_serialize_bin_ccs_random_tuner_data(
 	return CCS_SUCCESS;
 }
 
-static inline ccs_result_t
+static inline ccs_error_t
 _ccs_serialize_bin_size_ccs_random_tuner(
 		ccs_tuner_t                      tuner,
 		size_t                          *cum_size,
@@ -82,7 +82,7 @@ _ccs_serialize_bin_size_ccs_random_tuner(
 	return CCS_SUCCESS;
 }
 
-static inline ccs_result_t
+static inline ccs_error_t
 _ccs_serialize_bin_ccs_random_tuner(
 		ccs_tuner_t                       tuner,
 		size_t                           *buffer_size,
@@ -97,7 +97,7 @@ _ccs_serialize_bin_ccs_random_tuner(
 	return CCS_SUCCESS;
 }
 
-static ccs_result_t
+static ccs_error_t
 _ccs_tuner_random_serialize_size(
 		ccs_object_t                     object,
 		ccs_serialize_format_t           format,
@@ -116,7 +116,7 @@ _ccs_tuner_random_serialize_size(
 	return CCS_SUCCESS;
 }
 
-static ccs_result_t
+static ccs_error_t
 _ccs_tuner_random_serialize(
 		ccs_object_t                      object,
 		ccs_serialize_format_t            format,
@@ -136,7 +136,7 @@ _ccs_tuner_random_serialize(
 	return CCS_SUCCESS;
 }
 
-static ccs_result_t
+static ccs_error_t
 _ccs_tuner_random_ask(_ccs_tuner_data_t   *data,
                       size_t               num_configurations,
                       ccs_configuration_t *configurations,
@@ -157,13 +157,13 @@ _ccs_tuner_random_ask(_ccs_tuner_data_t   *data,
 	ccs_release_object(evaluations[i]); \
 	CCS_RAISE(CCS_OUT_OF_MEMORY, "Out of memory to allocate array"); \
 }
-static ccs_result_t
+static ccs_error_t
 _ccs_tuner_random_tell(_ccs_tuner_data_t *data,
                        size_t             num_evaluations,
                        ccs_evaluation_t  *evaluations) {
 	_ccs_random_tuner_data_t *d = (_ccs_random_tuner_data_t *)data;
 	UT_array *history = d->history;
-	ccs_result_t err;
+	ccs_error_t err;
 	for (size_t i = 0; i < num_evaluations; i++) {
 		ccs_result_t error;
 		CCS_VALIDATE(ccs_evaluation_get_error(evaluations[i], &error));
@@ -212,7 +212,7 @@ _ccs_tuner_random_tell(_ccs_tuner_data_t *data,
 	return CCS_SUCCESS;
 }
 
-static ccs_result_t
+static ccs_error_t
 _ccs_tuner_random_get_optimums(_ccs_tuner_data_t *data,
                                size_t             num_evaluations,
                                ccs_evaluation_t  *evaluations,
@@ -233,7 +233,7 @@ _ccs_tuner_random_get_optimums(_ccs_tuner_data_t *data,
 	return CCS_SUCCESS;
 }
 
-static ccs_result_t
+static ccs_error_t
 _ccs_tuner_random_get_history(_ccs_tuner_data_t *data,
                               size_t             num_evaluations,
                               ccs_evaluation_t  *evaluations,
@@ -254,7 +254,7 @@ _ccs_tuner_random_get_history(_ccs_tuner_data_t *data,
 	return CCS_SUCCESS;
 }
 
-static ccs_result_t
+static ccs_error_t
 _ccs_tuner_random_suggest(_ccs_tuner_data_t   *data,
                           ccs_configuration_t *configuration) {
 	_ccs_random_tuner_data_t *d = (_ccs_random_tuner_data_t *)data;
@@ -296,7 +296,7 @@ static const UT_icd _evaluation_icd = {
 #define utarray_oom() { \
 	CCS_RAISE_ERR_GOTO(err, CCS_OUT_OF_MEMORY, arrays, "Out of memory to allocate array"); \
 }
-ccs_result_t
+ccs_error_t
 ccs_create_random_tuner(const char                *name,
                         ccs_configuration_space_t  configuration_space,
                         ccs_objective_space_t      objective_space,
@@ -312,7 +312,7 @@ ccs_create_random_tuner(const char                *name,
 	CCS_REFUTE(!mem, CCS_OUT_OF_MEMORY);
 	ccs_tuner_t tun;
 	_ccs_random_tuner_data_t * data;
-	ccs_result_t err;
+	ccs_error_t err;
 	CCS_VALIDATE_ERR_GOTO(err, ccs_retain_object(configuration_space), errmemory);
 	CCS_VALIDATE_ERR_GOTO(err, ccs_retain_object(objective_space), errconfigs);
 	tun = (ccs_tuner_t)mem;

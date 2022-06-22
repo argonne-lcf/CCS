@@ -11,7 +11,7 @@ struct _ccs_evaluation_data_mock_s {
 };
 typedef struct _ccs_evaluation_data_mock_s _ccs_evaluation_data_mock_t;
 
-static inline ccs_result_t
+static inline ccs_error_t
 _ccs_deserialize_bin_ccs_evaluation_data(
 		_ccs_evaluation_data_mock_t        *data,
 		uint32_t                            version,
@@ -27,7 +27,7 @@ _ccs_deserialize_bin_ccs_evaluation_data(
 	return CCS_SUCCESS;
 }
 
-static inline ccs_result_t
+static inline ccs_error_t
 _ccs_deserialize_bin_evaluation(
 		ccs_evaluation_t                   *evaluation_ret,
 		uint32_t                            version,
@@ -41,7 +41,7 @@ _ccs_deserialize_bin_evaluation(
 	ccs_object_t handle;
 	ccs_datum_t d;
 	ccs_objective_space_t os;
-	ccs_result_t res = CCS_SUCCESS;
+	ccs_error_t res = CCS_SUCCESS;
 	CCS_VALIDATE(_ccs_deserialize_bin_ccs_object_internal(
 		&obj, buffer_size, buffer, &handle));
 	CCS_REFUTE(obj.type != CCS_EVALUATION, CCS_INVALID_TYPE);
@@ -78,7 +78,7 @@ end:
 	return res;
 }
 
-static ccs_result_t
+static ccs_error_t
 _ccs_evaluation_deserialize(
 		ccs_evaluation_t                   *evaluation_ret,
 		ccs_serialize_format_t              format,

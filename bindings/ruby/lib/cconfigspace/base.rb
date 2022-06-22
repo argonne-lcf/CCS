@@ -142,34 +142,34 @@ module CCS
     :CCS_MAP ]
 
   Error = enum FFI::Type::INT32, :ccs_error_t, [
-    :CCS_SUCCESS,
-    :CCS_INVALID_OBJECT,
-    :CCS_INVALID_VALUE,
-    :CCS_INVALID_TYPE,
-    :CCS_INVALID_SCALE,
-    :CCS_INVALID_DISTRIBUTION,
-    :CCS_INVALID_EXPRESSION,
-    :CCS_INVALID_HYPERPARAMETER,
-    :CCS_INVALID_CONFIGURATION,
-    :CCS_INVALID_NAME,
-    :CCS_INVALID_CONDITION,
-    :CCS_INVALID_TUNER,
-    :CCS_INVALID_GRAPH,
-    :CCS_TYPE_NOT_COMPARABLE,
-    :CCS_INVALID_BOUNDS,
-    :CCS_OUT_OF_BOUNDS,
-    :CCS_SAMPLING_UNSUCCESSFUL,
-    :CCS_OUT_OF_MEMORY,
-    :CCS_UNSUPPORTED_OPERATION,
-    :CCS_INVALID_EVALUATION,
-    :CCS_INVALID_FEATURES,
-    :CCS_INVALID_FEATURES_TUNER,
-    :CCS_INVALID_FILE_PATH,
-    :CCS_NOT_ENOUGH_DATA,
-    :CCS_HANDLE_DUPLICATE,
-    :CCS_INVALID_HANDLE,
-    :CCS_SYSTEM_ERROR,
-    :CCS_AGAIN ]
+    :CCS_AGAIN,                    1,
+    :CCS_SUCCESS,                  0,
+    :CCS_INVALID_OBJECT,          -1,
+    :CCS_INVALID_VALUE,           -2,
+    :CCS_INVALID_TYPE,            -3,
+    :CCS_INVALID_SCALE,           -4,
+    :CCS_INVALID_DISTRIBUTION,    -5,
+    :CCS_INVALID_EXPRESSION,      -6,
+    :CCS_INVALID_HYPERPARAMETER,  -7,
+    :CCS_INVALID_CONFIGURATION,   -8,
+    :CCS_INVALID_NAME,            -9,
+    :CCS_INVALID_CONDITION,      -10,
+    :CCS_INVALID_TUNER,          -11,
+    :CCS_INVALID_GRAPH,          -12,
+    :CCS_TYPE_NOT_COMPARABLE,    -13,
+    :CCS_INVALID_BOUNDS,         -14,
+    :CCS_OUT_OF_BOUNDS,          -15,
+    :CCS_SAMPLING_UNSUCCESSFUL,  -16,
+    :CCS_OUT_OF_MEMORY,          -17,
+    :CCS_UNSUPPORTED_OPERATION,  -18,
+    :CCS_INVALID_EVALUATION,     -19,
+    :CCS_INVALID_FEATURES,       -20,
+    :CCS_INVALID_FEATURES_TUNER, -21,
+    :CCS_INVALID_FILE_PATH,      -22,
+    :CCS_NOT_ENOUGH_DATA,        -23,
+    :CCS_HANDLE_DUPLICATE,       -24,
+    :CCS_INVALID_HANDLE,         -25,
+    :CCS_SYSTEM_ERROR,           -26 ]
 
   class MemoryPointer
     def read_ccs_object_type_t
@@ -451,23 +451,23 @@ module CCS
   end
   typedef Datum.by_value, :ccs_datum_t
 
-  attach_function :ccs_init, [], :ccs_result_t
-  attach_function :ccs_fini, [], :ccs_result_t
-  attach_function :ccs_get_error_name, [:ccs_error_t, :pointer], :ccs_result_t
+  attach_function :ccs_init, [], :ccs_error_t
+  attach_function :ccs_fini, [], :ccs_error_t
+  attach_function :ccs_get_error_name, [:ccs_error_t, :pointer], :ccs_error_t
   attach_function :ccs_get_version, [], :ccs_version_t
-  attach_function :ccs_retain_object, [:ccs_object_t], :ccs_result_t
-  attach_function :ccs_release_object, [:ccs_object_t], :ccs_result_t
-  attach_function :ccs_object_get_type, [:ccs_object_t, :pointer], :ccs_result_t
-  attach_function :ccs_object_get_refcount, [:ccs_object_t, :pointer], :ccs_result_t
+  attach_function :ccs_retain_object, [:ccs_object_t], :ccs_error_t
+  attach_function :ccs_release_object, [:ccs_object_t], :ccs_error_t
+  attach_function :ccs_object_get_type, [:ccs_object_t, :pointer], :ccs_error_t
+  attach_function :ccs_object_get_refcount, [:ccs_object_t, :pointer], :ccs_error_t
   callback :ccs_object_release_callback, [:ccs_object_t, :pointer], :void
-  attach_function :ccs_object_set_destroy_callback, [:ccs_object_t, :ccs_object_release_callback, :pointer], :ccs_result_t
-  attach_function :ccs_object_set_user_data, [:ccs_object_t, :value], :ccs_result_t
-  attach_function :ccs_object_get_user_data, [:ccs_object_t, :pointer], :ccs_result_t
-  callback :ccs_object_serialize_callback, [:ccs_object_t, :size_t, :pointer, :pointer, :value], :ccs_result_t
-  attach_function :ccs_object_set_serialize_callback, [:ccs_object_t, :ccs_object_serialize_callback, :value], :ccs_result_t
-  callback :ccs_object_deserialize_callback, [:ccs_object_t, :size_t, :pointer, :value], :ccs_result_t
-  attach_function :ccs_object_serialize, [:ccs_object_t, :ccs_serialize_format_t, :ccs_serialize_operation_t, :varargs], :ccs_result_t
-  attach_function :ccs_object_deserialize, [:ccs_object_t, :ccs_serialize_format_t, :ccs_serialize_operation_t, :varargs], :ccs_result_t
+  attach_function :ccs_object_set_destroy_callback, [:ccs_object_t, :ccs_object_release_callback, :pointer], :ccs_error_t
+  attach_function :ccs_object_set_user_data, [:ccs_object_t, :value], :ccs_error_t
+  attach_function :ccs_object_get_user_data, [:ccs_object_t, :pointer], :ccs_error_t
+  callback :ccs_object_serialize_callback, [:ccs_object_t, :size_t, :pointer, :pointer, :value], :ccs_error_t
+  attach_function :ccs_object_set_serialize_callback, [:ccs_object_t, :ccs_object_serialize_callback, :value], :ccs_error_t
+  callback :ccs_object_deserialize_callback, [:ccs_object_t, :size_t, :pointer, :value], :ccs_error_t
+  attach_function :ccs_object_serialize, [:ccs_object_t, :ccs_serialize_format_t, :ccs_serialize_operation_t, :varargs], :ccs_error_t
+  attach_function :ccs_object_deserialize, [:ccs_object_t, :ccs_serialize_format_t, :ccs_serialize_operation_t, :varargs], :ccs_error_t
 
   class << self
     alias version ccs_get_version
@@ -475,17 +475,17 @@ module CCS
 
   class CCSError < StandardError
     def self.to_native(sym)
-      -Error.to_native(sym, nil)
+      Error.to_native(sym, nil)
     end
 
     def to_native
-      -Error.to_native(message.to_sym, nil)
+      Error.to_native(message.to_sym, nil)
     end
   end
 
   def self.error_check(result)
-    if result < 0
-      raise CCSError, Error.from_native(-result, nil)
+    if result != :CCS_SUCCESS && result != :CCS_AGAIN
+      raise CCSError, result
     end
   end
 

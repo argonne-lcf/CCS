@@ -8,14 +8,14 @@ ccs_features_get_ops(ccs_features_t features) {
 	return (_ccs_features_ops_t *)features->obj.ops;
 }
 
-static ccs_result_t
+static ccs_error_t
 _ccs_features_del(ccs_object_t object) {
 	ccs_features_t features = (ccs_features_t)object;
 	ccs_release_object(features->data->features_space);
 	return CCS_SUCCESS;
 }
 
-static ccs_result_t
+static ccs_error_t
 _ccs_features_serialize_size(
 		ccs_object_t                     object,
 		ccs_serialize_format_t           format,
@@ -34,7 +34,7 @@ _ccs_features_serialize_size(
 	return CCS_SUCCESS;
 }
 
-static ccs_result_t
+static ccs_error_t
 _ccs_features_serialize(
 		ccs_object_t                      object,
 		ccs_serialize_format_t            format,
@@ -54,14 +54,14 @@ _ccs_features_serialize(
 	return CCS_SUCCESS;
 }
 
-static ccs_result_t
+static ccs_error_t
 _ccs_features_hash(_ccs_features_data_t *data,
                    ccs_hash_t           *hash_ret) {
 	CCS_VALIDATE(_ccs_binding_hash((_ccs_binding_data_t *)data, hash_ret));
 	return CCS_SUCCESS;
 }
 
-static ccs_result_t
+static ccs_error_t
 _ccs_features_cmp(_ccs_features_data_t *data,
                   ccs_features_t        other,
                   int                       *cmp_ret) {
@@ -76,7 +76,7 @@ static _ccs_features_ops_t _features_ops =
       &_ccs_features_hash,
       &_ccs_features_cmp };
 
-ccs_result_t
+ccs_error_t
 ccs_create_features(ccs_features_space_t  features_space,
                     size_t                num_values,
                     ccs_datum_t          *values,
@@ -84,7 +84,7 @@ ccs_create_features(ccs_features_space_t  features_space,
 	CCS_CHECK_OBJ(features_space, CCS_FEATURES_SPACE);
 	CCS_CHECK_PTR(features_ret);
 	CCS_CHECK_ARY(num_values, values);
-	ccs_result_t err;
+	ccs_error_t err;
 	size_t num_hyperparameters;
 	CCS_VALIDATE(ccs_features_space_get_num_hyperparameters(features_space, &num_hyperparameters));
 	CCS_REFUTE(values && num_hyperparameters != num_values, CCS_INVALID_VALUE);
@@ -116,7 +116,7 @@ errmem:
 	return err;
 }
 
-ccs_result_t
+ccs_error_t
 ccs_features_get_features_space(ccs_features_t        features,
                                 ccs_features_space_t *features_space_ret) {
 	CCS_CHECK_OBJ(features, CCS_FEATURES);
@@ -125,7 +125,7 @@ ccs_features_get_features_space(ccs_features_t        features,
 	return CCS_SUCCESS;
 }
 
-ccs_result_t
+ccs_error_t
 ccs_features_get_value(ccs_features_t  features,
                        size_t          index,
                        ccs_datum_t    *value_ret) {
@@ -135,7 +135,7 @@ ccs_features_get_value(ccs_features_t  features,
 	return CCS_SUCCESS;
 }
 
-ccs_result_t
+ccs_error_t
 ccs_features_set_value(ccs_features_t features,
                        size_t         index,
                        ccs_datum_t    value) {
@@ -145,7 +145,7 @@ ccs_features_set_value(ccs_features_t features,
 	return CCS_SUCCESS;
 }
 
-ccs_result_t
+ccs_error_t
 ccs_features_get_values(ccs_features_t  features,
                         size_t          num_values,
                         ccs_datum_t    *values,
@@ -156,7 +156,7 @@ ccs_features_get_values(ccs_features_t  features,
 	return CCS_SUCCESS;
 }
 
-ccs_result_t
+ccs_error_t
 ccs_features_get_value_by_name(ccs_features_t  features,
                                const char     *name,
                                ccs_datum_t    *value_ret) {
@@ -166,7 +166,7 @@ ccs_features_get_value_by_name(ccs_features_t  features,
 	return CCS_SUCCESS;
 }
 
-ccs_result_t
+ccs_error_t
 ccs_features_check(ccs_features_t  features,
                    ccs_bool_t     *is_valid_ret) {
 	CCS_CHECK_OBJ(features, CCS_FEATURES);
@@ -175,7 +175,7 @@ ccs_features_check(ccs_features_t  features,
 	return CCS_SUCCESS;
 }
 
-ccs_result_t
+ccs_error_t
 ccs_features_hash(ccs_features_t  features,
                   ccs_hash_t     *hash_ret) {
 	CCS_CHECK_OBJ(features, CCS_FEATURES);
@@ -184,7 +184,7 @@ ccs_features_hash(ccs_features_t  features,
 	return CCS_SUCCESS;
 }
 
-ccs_result_t
+ccs_error_t
 ccs_features_cmp(ccs_features_t  features,
                  ccs_features_t  other_features,
                  int            *cmp_ret) {
