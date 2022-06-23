@@ -1,5 +1,5 @@
 import ctypes as ct
-from .base import Object, Error, ccs_error, _ccs_get_function, ccs_context, ccs_hyperparameter, ccs_configuration_space, ccs_configuration, ccs_distribution, ccs_expression, ccs_datum, ccs_hash, ccs_int
+from .base import Object, Error, ccs_error, _ccs_get_function, ccs_context, ccs_hyperparameter, ccs_configuration_space, ccs_configuration, ccs_distribution, ccs_expression, ccs_datum, ccs_hash, ccs_int, ccs_bool
 from .context import Context
 from .hyperparameter import Hyperparameter
 from .configuration_space import ConfigurationSpace
@@ -7,7 +7,7 @@ from .binding import Binding
 
 ccs_create_configuration = _ccs_get_function("ccs_create_configuration", [ccs_configuration_space, ct.c_size_t, ct.POINTER(ccs_datum), ct.POINTER(ccs_configuration)])
 ccs_configuration_get_configuration_space = _ccs_get_function("ccs_configuration_get_configuration_space", [ccs_configuration, ct.POINTER(ccs_configuration_space)])
-ccs_configuration_check = _ccs_get_function("ccs_configuration_check", [ccs_configuration])
+ccs_configuration_check = _ccs_get_function("ccs_configuration_check", [ccs_configuration, ct.POINTER(ccs_bool)])
 
 class Configuration(Binding):
   def __init__(self, handle = None, retain = False, auto_release = True,
@@ -17,8 +17,9 @@ class Configuration(Binding):
       if values:
         count = len(values)
         vals = (ccs_datum * count)()
+        ss = []
         for i in range(count):
-          vals[i].value = values[i]
+          vals[i].set_value(values[i], string_store = ss)
       else:
         vals = None
       handle = ccs_configuration()
@@ -43,5 +44,7 @@ class Configuration(Binding):
     return self._configuration_space
 
   def check(self):
-    res = ccs_configuration_check(self.handle)
+    valid = ccs_bool()
+    res = ccs_configuration_check(self.handle, ct.byref(valid))
     Error.check(res)
+    return False if valid.value == 0 else True

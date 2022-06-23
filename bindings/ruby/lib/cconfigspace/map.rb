@@ -1,12 +1,12 @@
 module CCS
-  attach_function :ccs_create_map, [:pointer], :ccs_result_t
-  attach_function :ccs_map_set, [:ccs_map_t, :ccs_datum_t, :ccs_datum_t], :ccs_result_t
-  attach_function :ccs_map_exist, [:ccs_map_t, :ccs_datum_t, :pointer], :ccs_result_t
-  attach_function :ccs_map_get, [:ccs_map_t, :ccs_datum_t, :pointer], :ccs_result_t
-  attach_function :ccs_map_del, [:ccs_map_t, :ccs_datum_t], :ccs_result_t
-  attach_function :ccs_map_get_keys, [:ccs_map_t, :size_t, :pointer, :pointer], :ccs_result_t
-  attach_function :ccs_map_get_values, [:ccs_map_t, :size_t, :pointer, :pointer], :ccs_result_t
-  attach_function :ccs_map_get_pairs, [:ccs_map_t, :size_t, :pointer, :pointer, :pointer], :ccs_result_t
+  attach_function :ccs_create_map, [:pointer], :ccs_error_t
+  attach_function :ccs_map_set, [:ccs_map_t, :ccs_datum_t, :ccs_datum_t], :ccs_error_t
+  attach_function :ccs_map_exist, [:ccs_map_t, :ccs_datum_t, :pointer], :ccs_error_t
+  attach_function :ccs_map_get, [:ccs_map_t, :ccs_datum_t, :pointer], :ccs_error_t
+  attach_function :ccs_map_del, [:ccs_map_t, :ccs_datum_t], :ccs_error_t
+  attach_function :ccs_map_get_keys, [:ccs_map_t, :size_t, :pointer, :pointer], :ccs_error_t
+  attach_function :ccs_map_get_values, [:ccs_map_t, :size_t, :pointer, :pointer], :ccs_error_t
+  attach_function :ccs_map_get_pairs, [:ccs_map_t, :size_t, :pointer, :pointer, :pointer], :ccs_error_t
 
   class Map < Object
     def initialize(handle = nil, retain: false, auto_release: true)
@@ -14,8 +14,7 @@ module CCS
         super
       else
         ptr = MemoryPointer::new(:ccs_map_t)
-        res = CCS.ccs_create_map(ptr)
-        CCS.error_check(res)
+        CCS.error_check CCS.ccs_create_map(ptr)
         super(ptr.read_ccs_map_t, retain: false)
       end
     end
@@ -26,32 +25,28 @@ module CCS
 
     def size
       ptr = MemoryPointer::new(:size_t)
-      res = CCS.ccs_map_get_keys(@handle, 0, nil, ptr)
-      CCS.error_check(res)
+      CCS.error_check CCS.ccs_map_get_keys(@handle, 0, nil, ptr)
       ptr.read_size_t
     end
 
     def [](key)
       ptr = MemoryPointer::new(:ccs_datum_t)
       k = Datum.from_value(key)
-      res = CCS.ccs_map_get(@handle, k, ptr)
-      CCS.error_check(res)
+      CCS.error_check CCS.ccs_map_get(@handle, k, ptr)
       Datum::new(ptr).value
     end
 
     def []=(key, value)
       k = Datum.from_value(key)
       v = Datum.from_value(value)
-      res = CCS.ccs_map_set(@handle, k, v)
-      CCS.error_check(res)
+      CCS.error_check CCS.ccs_map_set(@handle, k, v)
       value
     end
 
     def include?(key)
       k = Datum.from_value(key)
       ptr = MemoryPointer::new(:ccs_bool_t)
-      res = CCS.ccs_map_exist(@handle, k, ptr)
-      CCS.error_check(res)
+      CCS.error_check CCS.ccs_map_exist(@handle, k, ptr)
       ptr.read_ccs_bool_t == CCS::FALSE ? false : true
     end
 
@@ -59,8 +54,7 @@ module CCS
       sz = size
       return [] if count == 0
       keys = MemoryPointer::new(:ccs_datum_t, sz)
-      res = CCS.ccs_map_get_keys(@handle, sz, keys, nil)
-      CCS.error_check(res)
+      CCS.error_check CCS.ccs_map_get_keys(@handle, sz, keys, nil)
       sz.times.collect { |i| Datum::new(keys[i]).value }
     end
 
@@ -68,8 +62,7 @@ module CCS
       sz = size
       return [] if count == 0
       values = MemoryPointer::new(:ccs_datum_t, sz)
-      res = CCS.ccs_map_get_values(@handle, sz, values, nil)
-      CCS.error_check(res)
+      CCS.error_check CCS.ccs_map_get_values(@handle, sz, values, nil)
       sz.times.collect { |i| Datum::new(values[i]).value }
     end
 
@@ -78,8 +71,7 @@ module CCS
       return [] if count == 0
       keys = MemoryPointer::new(:ccs_datum_t, sz)
       values = MemoryPointer::new(:ccs_datum_t, sz)
-      res = CCS.ccs_map_get_pairs(@handle, sz, keys, values, nil)
-      CCS.error_check(res)
+      CCS.error_check CCS.ccs_map_get_pairs(@handle, sz, keys, values, nil)
       sz.times.collect { |i| [Datum::new(keys[i]).value, Datum::new(values[i]).value] }
     end
 

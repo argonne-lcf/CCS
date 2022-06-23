@@ -3,7 +3,7 @@
 #include "cconfigspace_internal.h"
 #include "hyperparameter_internal.h"
 
-static inline ccs_result_t
+static inline ccs_error_t
 _ccs_deserialize_bin_hyperparameter_numerical(
 		ccs_hyperparameter_t    *hyperparameter_ret,
 		uint32_t                 version,
@@ -38,7 +38,7 @@ struct _ccs_hyperparameter_categorical_data_mock_s {
 };
 typedef struct _ccs_hyperparameter_categorical_data_mock_s _ccs_hyperparameter_categorical_data_mock_t;
 
-static inline ccs_result_t
+static inline ccs_error_t
 _ccs_deserialize_bin_ccs_hyperparameter_categorical_data(
 		_ccs_hyperparameter_categorical_data_mock_t  *data,
 		size_t                                       *buffer_size,
@@ -51,22 +51,21 @@ _ccs_deserialize_bin_ccs_hyperparameter_categorical_data(
 	data->num_possible_values = num_possible_values;
 	data->possible_values =
 		(ccs_datum_t *)malloc(num_possible_values*sizeof(ccs_datum_t));
-	if (!data->possible_values)
-		return -CCS_OUT_OF_MEMORY;
+	CCS_REFUTE(!data->possible_values, CCS_OUT_OF_MEMORY);
 	for (size_t i = 0; i < data->num_possible_values; i++)
 		CCS_VALIDATE(_ccs_deserialize_bin_ccs_datum(
 			data->possible_values + i, buffer_size, buffer));
 	return CCS_SUCCESS;
 }
 
-static inline ccs_result_t
+static inline ccs_error_t
 _ccs_deserialize_bin_hyperparameter_categorical(
 		ccs_hyperparameter_t    *hyperparameter_ret,
 		uint32_t                 version,
 		size_t                  *buffer_size,
 		const char             **buffer) {
 	(void)version;
-	ccs_result_t res = CCS_SUCCESS;
+	ccs_error_t res = CCS_SUCCESS;
 	int found = 0;
 	_ccs_hyperparameter_categorical_data_mock_t data;
 	data.possible_values = NULL;
@@ -78,10 +77,7 @@ _ccs_deserialize_bin_hyperparameter_categorical(
 			found = 1;
 			default_value_index = i;
 		}
-	if (!found) {
-		res = -CCS_INVALID_VALUE;
-		goto end;
-	}
+	CCS_REFUTE_ERR_GOTO(res, !found, CCS_INVALID_VALUE, end);
 
 	switch (data.common_data.type) {
 	case CCS_HYPERPARAMETER_TYPE_CATEGORICAL:
@@ -109,8 +105,7 @@ _ccs_deserialize_bin_hyperparameter_categorical(
 			hyperparameter_ret), end);
 		break;
 	default:
-		res = -CCS_INVALID_TYPE;
-		goto end;
+		CCS_RAISE_ERR_GOTO(res, CCS_INVALID_TYPE, end, "Unsupport hyperparameter type: %d", data.common_data.type);
 	}
 end:
 	if (data.possible_values)
@@ -120,7 +115,7 @@ end:
 
 typedef _ccs_hyperparameter_common_data_t _ccs_hyperparameter_string_data_mock_t;
 
-static inline ccs_result_t
+static inline ccs_error_t
 _ccs_deserialize_bin_ccs_hyperparameter_string_data(
 		_ccs_hyperparameter_string_data_mock_t  *data,
 		size_t                                  *buffer_size,
@@ -130,7 +125,7 @@ _ccs_deserialize_bin_ccs_hyperparameter_string_data(
 	return CCS_SUCCESS;
 }
 
-static inline ccs_result_t
+static inline ccs_error_t
 _ccs_deserialize_bin_hyperparameter_string(
 		ccs_hyperparameter_t  *hyperparameter_ret,
 		uint32_t               version,
@@ -146,7 +141,7 @@ _ccs_deserialize_bin_hyperparameter_string(
 	return CCS_SUCCESS;
 }
 
-static inline ccs_result_t
+static inline ccs_error_t
 _ccs_deserialize_bin_hyperparameter(
 		ccs_hyperparameter_t               *hyperparameter_ret,
 		uint32_t                            version,
@@ -155,11 +150,10 @@ _ccs_deserialize_bin_hyperparameter(
 		_ccs_object_deserialize_options_t  *opts) {
 	_ccs_object_internal_t obj;
 	ccs_object_t handle;
-	ccs_result_t res;
+	ccs_error_t res;
 	CCS_VALIDATE(_ccs_deserialize_bin_ccs_object_internal(
 		&obj, buffer_size, buffer, &handle));
-	if (CCS_UNLIKELY(obj.type != CCS_HYPERPARAMETER))
-		return -CCS_INVALID_TYPE;
+	CCS_REFUTE(obj.type != CCS_HYPERPARAMETER, CCS_INVALID_TYPE);
 
 	ccs_hyperparameter_type_t htype;
 	CCS_VALIDATE(_ccs_peek_bin_ccs_hyperparameter_type(
@@ -180,7 +174,7 @@ _ccs_deserialize_bin_hyperparameter(
 			hyperparameter_ret, version, buffer_size, buffer));
 		break;
 	default:
-		return -CCS_UNSUPPORTED_OPERATION;
+		CCS_RAISE(CCS_INVALID_TYPE, "Unsupport hyperparameter type: %d", htype);
 	}
 	if (opts->handle_map)
 		CCS_VALIDATE_ERR_GOTO(res,
@@ -195,7 +189,7 @@ err_hyper:
 	return res;
 }
 
-static ccs_result_t
+static ccs_error_t
 _ccs_hyperparameter_deserialize(
 		ccs_hyperparameter_t               *hyperparameter_ret,
 		ccs_serialize_format_t              format,
@@ -209,7 +203,7 @@ _ccs_hyperparameter_deserialize(
 			hyperparameter_ret, version, buffer_size, buffer, opts));
 		break;
 	default:
-		return -CCS_INVALID_VALUE;
+		CCS_RAISE(CCS_INVALID_VALUE, "Unsupported serialization format: %d", format);
 	}
 	CCS_VALIDATE(_ccs_object_deserialize_user_data(
 		(ccs_object_t)*hyperparameter_ret, format, version, buffer_size, buffer, opts));

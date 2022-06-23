@@ -14,7 +14,7 @@ struct _ccs_distribution_mixture_data_s {
 };
 typedef struct _ccs_distribution_mixture_data_s _ccs_distribution_mixture_data_t;
 
-static ccs_result_t
+static ccs_error_t
 _ccs_distribution_mixture_del(ccs_object_t o) {
 	struct _ccs_distribution_mixture_data_s *data =
 		(struct _ccs_distribution_mixture_data_s *)(((ccs_distribution_t)o)->data);
@@ -24,7 +24,7 @@ _ccs_distribution_mixture_del(ccs_object_t o) {
 	return CCS_SUCCESS;
 }
 
-static inline ccs_result_t
+static inline ccs_error_t
 _ccs_serialize_bin_size_ccs_distribution_mixture_data(
 		_ccs_distribution_mixture_data_t *data,
 		size_t                           *cum_size,
@@ -39,7 +39,7 @@ _ccs_serialize_bin_size_ccs_distribution_mixture_data(
 	return CCS_SUCCESS;
 }
 
-static inline ccs_result_t
+static inline ccs_error_t
 _ccs_serialize_bin_ccs_distribution_mixture_data(
 		_ccs_distribution_mixture_data_t  *data,
 		size_t                            *buffer_size,
@@ -58,7 +58,7 @@ _ccs_serialize_bin_ccs_distribution_mixture_data(
 	return CCS_SUCCESS;
 }
 
-static inline ccs_result_t
+static inline ccs_error_t
 _ccs_serialize_bin_size_ccs_distribution_mixture(
 		ccs_distribution_t              distribution,
 		size_t                          *cum_size,
@@ -72,7 +72,7 @@ _ccs_serialize_bin_size_ccs_distribution_mixture(
 	return CCS_SUCCESS;
 }
 
-static inline ccs_result_t
+static inline ccs_error_t
 _ccs_serialize_bin_ccs_distribution_mixture(
 		ccs_distribution_t                distribution,
 		size_t                           *buffer_size,
@@ -87,7 +87,7 @@ _ccs_serialize_bin_ccs_distribution_mixture(
 	return CCS_SUCCESS;
 }
 
-static ccs_result_t
+static ccs_error_t
 _ccs_distribution_mixture_serialize_size(
 		ccs_object_t                     object,
 		ccs_serialize_format_t           format,
@@ -99,14 +99,14 @@ _ccs_distribution_mixture_serialize_size(
 			(ccs_distribution_t)object, cum_size, opts));
 		break;
 	default:
-		return -CCS_INVALID_VALUE;
+		CCS_RAISE(CCS_INVALID_VALUE, "Unsupported serialization format: %d", format);
 	}
 	CCS_VALIDATE(_ccs_object_serialize_user_data_size(
 		object, format, cum_size, opts));
 	return CCS_SUCCESS;
 }
 
-static ccs_result_t
+static ccs_error_t
 _ccs_distribution_mixture_serialize(
 		ccs_object_t                      object,
 		ccs_serialize_format_t            format,
@@ -119,31 +119,31 @@ _ccs_distribution_mixture_serialize(
 		    (ccs_distribution_t)object, buffer_size, buffer, opts));
 		break;
 	default:
-		return -CCS_INVALID_VALUE;
+		CCS_RAISE(CCS_INVALID_VALUE, "Unsupported serialization format: %d", format);
 	}
 	CCS_VALIDATE(_ccs_object_serialize_user_data(
 		object, format, buffer_size, buffer, opts));
 	return CCS_SUCCESS;
 }
 
-static ccs_result_t
+static ccs_error_t
 _ccs_distribution_mixture_get_bounds(_ccs_distribution_data_t *data,
                                      ccs_interval_t           *interval_ret);
 
-static ccs_result_t
+static ccs_error_t
 _ccs_distribution_mixture_samples(_ccs_distribution_data_t *data,
                                   ccs_rng_t                 rng,
                                   size_t                    num_values,
                                   ccs_numeric_t            *values);
 
-static ccs_result_t
+static ccs_error_t
 _ccs_distribution_mixture_strided_samples(_ccs_distribution_data_t *data,
                                           ccs_rng_t                 rng,
                                           size_t                    num_values,
                                           size_t                    stride,
                                           ccs_numeric_t            *values);
 
-static ccs_result_t
+static ccs_error_t
 _ccs_distribution_mixture_soa_samples(_ccs_distribution_data_t  *data,
                                       ccs_rng_t                  rng,
                                       size_t                     num_values,
@@ -159,7 +159,7 @@ static _ccs_distribution_ops_t _ccs_distribution_mixture_ops = {
 	&_ccs_distribution_mixture_soa_samples
 };
 
-ccs_result_t
+ccs_error_t
 ccs_create_mixture_distribution(size_t              num_distributions,
                                 ccs_distribution_t *distributions,
                                 ccs_float_t        *weights,
@@ -167,30 +167,25 @@ ccs_create_mixture_distribution(size_t              num_distributions,
 	CCS_CHECK_ARY(num_distributions, distributions);
 	CCS_CHECK_ARY(num_distributions, weights);
 	CCS_CHECK_PTR(distribution_ret);
-	if (!num_distributions || num_distributions > INT64_MAX)
-		return -CCS_INVALID_VALUE;
-	ccs_float_t sum = 0.0;
+	CCS_REFUTE(!num_distributions || num_distributions > INT64_MAX, CCS_INVALID_VALUE);
+	ccs_float_t weights_sum = 0.0;
 
 	size_t             dimension, i, j;
-	ccs_result_t       err;
+	ccs_error_t       err;
 	CCS_VALIDATE(ccs_distribution_get_dimension(distributions[0], &dimension));
 	for(i = 1; i < num_distributions; i++) {
-		size_t             dimension_tmp;
-		CCS_VALIDATE(ccs_distribution_get_dimension(distributions[i], &dimension_tmp));
-		if (dimension != dimension_tmp)
-			return -CCS_INVALID_DISTRIBUTION;
+		size_t             other_dimension;
+		CCS_VALIDATE(ccs_distribution_get_dimension(distributions[i], &other_dimension));
+		CCS_REFUTE(dimension != other_dimension, CCS_INVALID_DISTRIBUTION);
 	}
 
 	for(i = 0; i < num_distributions; i++) {
-		if (weights[i] < 0.0)
-			return -CCS_INVALID_VALUE;
-		sum += weights[i];
+		CCS_REFUTE(weights[i] < 0.0, CCS_INVALID_VALUE);
+		weights_sum += weights[i];
 	}
-	if (sum == 0.0)
-		return -CCS_INVALID_VALUE;
-	ccs_float_t inv_sum = 1.0/sum;
-	if (isnan(inv_sum) || !isfinite(inv_sum))
-		return -CCS_INVALID_VALUE;
+	CCS_REFUTE(weights_sum == 0.0, CCS_INVALID_VALUE);
+	ccs_float_t weights_sum_inverse = 1.0/weights_sum;
+	CCS_REFUTE(isnan(weights_sum_inverse) || !isfinite(weights_sum_inverse), CCS_INVALID_VALUE);
 
 	uintptr_t mem;
 	uintptr_t cur_mem;
@@ -207,17 +202,13 @@ ccs_create_mixture_distribution(size_t              num_distributions,
 		sizeof(ccs_float_t)*(num_distributions + 1) +
 		sizeof(ccs_numeric_type_t)*dimension);
 
-	if (!mem)
-		return -CCS_OUT_OF_MEMORY;
+	CCS_REFUTE(!mem, CCS_OUT_OF_MEMORY);
         cur_mem = mem;
 
 	tmp_mem = (uintptr_t)calloc(1,
 		sizeof(ccs_interval_t)*num_distributions +
 		sizeof(ccs_numeric_type_t)*dimension);
-	if (!tmp_mem) {
-		err = -CCS_OUT_OF_MEMORY;
-		goto memory;
-	}
+	CCS_REFUTE_ERR_GOTO(err, !tmp_mem, CCS_OUT_OF_MEMORY, memory);
 	bounds_tmp = (ccs_interval_t *)tmp_mem;
 	data_types_tmp = (ccs_numeric_type_t *)(tmp_mem + sizeof(ccs_interval_t)*num_distributions);
 
@@ -246,10 +237,7 @@ ccs_create_mixture_distribution(size_t              num_distributions,
 		  ccs_distribution_get_data_types(distributions[i], data_types_tmp),
 		  tmpmemory);
 		for (j = 0; j < dimension; j++)
-			if(distrib_data->common_data.data_types[j] != data_types_tmp[j]) {
-				err = -CCS_INVALID_DISTRIBUTION;
-				goto tmpmemory;
-			}
+			CCS_REFUTE_ERR_GOTO(err, distrib_data->common_data.data_types[j] != data_types_tmp[j], CCS_INVALID_DISTRIBUTION, tmpmemory);
 	}
 
 	CCS_VALIDATE_ERR_GOTO(err,
@@ -267,14 +255,10 @@ ccs_create_mixture_distribution(size_t              num_distributions,
 	}
 
 	distrib_data->weights[0] = 0.0;
-	for (i = 1; i <= num_distributions; i++) {
-		distrib_data->weights[i] = distrib_data->weights[i-1] + weights[i-1] * inv_sum;
-	}
+	for (i = 1; i <= num_distributions; i++)
+		distrib_data->weights[i] = distrib_data->weights[i-1] + weights[i-1] * weights_sum_inverse;
 	distrib_data->weights[num_distributions] = 1.0;
-	if (1.0 < distrib_data->weights[num_distributions-1]) {
-		free((void *)mem);
-		return -CCS_INVALID_VALUE;
-	}
+	CCS_REFUTE_ERR_GOTO(err, 1.0 < distrib_data->weights[num_distributions-1], CCS_INVALID_VALUE, memory);
 	for (i = 0; i < num_distributions; i++) {
 		CCS_VALIDATE_ERR_GOTO(err, ccs_retain_object(distributions[i]), distrib);
 		distrib_data->distributions[i] = distributions[i];
@@ -295,7 +279,7 @@ memory:
 	return err;
 }
 
-static ccs_result_t
+static ccs_error_t
 _ccs_distribution_mixture_get_bounds(_ccs_distribution_data_t *data,
                                      ccs_interval_t           *interval_ret) {
 	_ccs_distribution_mixture_data_t *d = (_ccs_distribution_mixture_data_t *)data;
@@ -308,7 +292,7 @@ ccs_distribution_get_ops(ccs_distribution_t distribution) {
 	return (_ccs_distribution_ops_t *)distribution->obj.ops;
 }
 
-static ccs_result_t
+static ccs_error_t
 _ccs_distribution_mixture_samples(_ccs_distribution_data_t *data,
                                   ccs_rng_t                 rng,
                                   size_t                    num_values,
@@ -327,7 +311,7 @@ _ccs_distribution_mixture_samples(_ccs_distribution_data_t *data,
 	return CCS_SUCCESS;
 }
 
-static ccs_result_t
+static ccs_error_t
 _ccs_distribution_mixture_strided_samples(_ccs_distribution_data_t *data,
                                           ccs_rng_t                 rng,
                                           size_t                    num_values,
@@ -347,7 +331,7 @@ _ccs_distribution_mixture_strided_samples(_ccs_distribution_data_t *data,
 }
 
 
-static ccs_result_t
+static ccs_error_t
 _ccs_distribution_mixture_soa_samples(_ccs_distribution_data_t  *data,
                                       ccs_rng_t                  rng,
                                       size_t                     num_values,
@@ -379,7 +363,7 @@ _ccs_distribution_mixture_soa_samples(_ccs_distribution_data_t  *data,
 	return CCS_SUCCESS;
 }
 
-ccs_result_t
+ccs_error_t
 ccs_mixture_distribution_get_num_distributions(ccs_distribution_t  distribution,
                                                size_t             *num_distributions_ret) {
 	CCS_CHECK_DISTRIBUTION(distribution, CCS_MIXTURE);
@@ -389,19 +373,17 @@ ccs_mixture_distribution_get_num_distributions(ccs_distribution_t  distribution,
 	return CCS_SUCCESS;
 }
 
-ccs_result_t
+ccs_error_t
 ccs_mixture_distribution_get_distributions(ccs_distribution_t  distribution,
                                            size_t              num_distributions,
                                            ccs_distribution_t *distributions,
                                            size_t             *num_distributions_ret) {
 	CCS_CHECK_DISTRIBUTION(distribution, CCS_MIXTURE);
 	CCS_CHECK_ARY(num_distributions, distributions);
-	if (!distributions && !num_distributions_ret)
-		return -CCS_INVALID_VALUE;
+	CCS_REFUTE(!distributions && !num_distributions_ret, CCS_INVALID_VALUE);
 	_ccs_distribution_mixture_data_t * data = (_ccs_distribution_mixture_data_t *)distribution->data;
 	if (distributions) {
-		if (num_distributions < data->num_distributions)
-			return -CCS_INVALID_VALUE;
+		CCS_REFUTE(num_distributions < data->num_distributions, CCS_INVALID_VALUE);
 		for (size_t i = 0; i < data->num_distributions; i++)
 			distributions[i] = data->distributions[i];
 		for (size_t i = data->num_distributions; i < num_distributions; i++)
@@ -412,19 +394,17 @@ ccs_mixture_distribution_get_distributions(ccs_distribution_t  distribution,
 	return CCS_SUCCESS;
 }
 
-ccs_result_t
+ccs_error_t
 ccs_mixture_distribution_get_weights(ccs_distribution_t  distribution,
                                      size_t              num_weights,
                                      ccs_float_t        *weights,
                                      size_t             *num_weights_ret) {
 	CCS_CHECK_DISTRIBUTION(distribution, CCS_MIXTURE);
 	CCS_CHECK_ARY(num_weights, weights);
-	if (!weights && !num_weights_ret)
-		return -CCS_INVALID_VALUE;
+	CCS_REFUTE(!weights && !num_weights_ret, CCS_INVALID_VALUE);
 	_ccs_distribution_mixture_data_t * data = (_ccs_distribution_mixture_data_t *)distribution->data;
 	if (weights) {
-		if (num_weights < data->num_distributions)
-			return -CCS_INVALID_VALUE;
+		CCS_REFUTE(num_weights < data->num_distributions, CCS_INVALID_VALUE);
 		for (size_t i = 0; i < data->num_distributions; i++)
 			weights[i] = data->weights[i+1] - data->weights[i];
 		for (size_t i = data->num_distributions; i < num_weights; i++)

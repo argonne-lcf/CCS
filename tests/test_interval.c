@@ -4,7 +4,7 @@
 void test_empty_float() {
 	ccs_interval_t interval;
 	ccs_bool_t     empty;
-	ccs_result_t   err;
+	ccs_error_t   err;
 
 	interval.type = CCS_NUM_FLOAT;
 	interval.lower.f = -3.0;
@@ -45,7 +45,7 @@ void test_empty_float() {
 void test_empty_int() {
 	ccs_interval_t interval;
 	ccs_bool_t     empty;
-	ccs_result_t   err;
+	ccs_error_t   err;
 
 	interval.type = CCS_NUM_INTEGER;
 	interval.lower.i = -3;
@@ -86,7 +86,7 @@ void test_empty_int() {
 void test_intersect_float() {
 	ccs_interval_t interval1, interval2, intersection;
 	ccs_bool_t     empty;
-	ccs_result_t   err;
+	ccs_error_t   err;
 
 	interval1.type = CCS_NUM_FLOAT;
 	interval1.lower.f = -3.0;
@@ -116,7 +116,7 @@ void test_intersect_float() {
 void test_intersect_int() {
 	ccs_interval_t interval1, interval2, intersection;
 	ccs_bool_t     empty;
-	ccs_result_t   err;
+	ccs_error_t   err;
 
 	interval1.type = CCS_NUM_INTEGER;
 	interval1.lower.i = -3;
@@ -146,7 +146,7 @@ void test_intersect_int() {
 void test_union_float() {
 	ccs_interval_t interval1, interval2, u;
 	ccs_bool_t     empty;
-	ccs_result_t   err;
+	ccs_error_t   err;
 
 	interval1.type = CCS_NUM_FLOAT;
 	interval1.lower.f = -3.0;
@@ -176,7 +176,7 @@ void test_union_float() {
 void test_union_int() {
 	ccs_interval_t interval1, interval2, u;
 	ccs_bool_t     empty;
-	ccs_result_t   err;
+	ccs_error_t   err;
 
 	interval1.type = CCS_NUM_INTEGER;
 	interval1.lower.i = -3;
@@ -206,7 +206,7 @@ void test_union_int() {
 void test_equal_float() {
 	ccs_interval_t interval1, interval2;
 	ccs_bool_t     equal;
-	ccs_result_t   err;
+	ccs_error_t   err;
 
 	interval1.type = CCS_NUM_FLOAT;
 	interval1.lower.f = -3.0;
@@ -239,7 +239,7 @@ void test_equal_float() {
 void test_equal_int() {
 	ccs_interval_t interval1, interval2;
 	ccs_bool_t     equal;
-	ccs_result_t   err;
+	ccs_error_t   err;
 
 	interval1.type = CCS_NUM_INTEGER;
 	interval1.lower.i = -3;
@@ -319,6 +319,7 @@ int main() {
 	test_equal_int();
 	test_interval_include_float();
 	test_interval_include_int();
+	ccs_clear_thread_error();
 	ccs_fini();
 	return 0;
 }

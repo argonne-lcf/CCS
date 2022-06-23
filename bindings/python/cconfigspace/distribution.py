@@ -1,6 +1,6 @@
 import ctypes as ct
 from . import libcconfigspace
-from .base import Object, Error, ccs_error, ccs_int, ccs_float, ccs_bool, ccs_result, ccs_rng, ccs_distribution, ccs_numeric_type, ccs_numeric, CEnumeration, NUM_FLOAT, NUM_INTEGER, _ccs_get_function, ccs_false, ccs_true
+from .base import Object, Error, ccs_error, ccs_int, ccs_float, ccs_bool, ccs_rng, ccs_distribution, ccs_numeric_type, ccs_numeric, CEnumeration, NUM_FLOAT, NUM_INTEGER, _ccs_get_function, ccs_false, ccs_true
 from .interval import ccs_interval
 
 class ccs_distribution_type(CEnumeration):

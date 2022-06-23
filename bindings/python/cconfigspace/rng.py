@@ -1,6 +1,6 @@
 import ctypes as ct
 from . import libcconfigspace
-from .base import Object, Error, ccs_float, ccs_result, ccs_rng, _ccs_get_function
+from .base import Object, Error, ccs_float, ccs_rng, _ccs_get_function
 
 ccs_create_rng = _ccs_get_function("ccs_create_rng", [ct.POINTER(ccs_rng)])
 ccs_rng_set_seed = _ccs_get_function("ccs_rng_set_seed", [ccs_rng, ct.c_ulong])

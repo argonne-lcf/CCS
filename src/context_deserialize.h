@@ -10,7 +10,7 @@ struct _ccs_context_data_mock_s {
 };
 typedef struct _ccs_context_data_mock_s _ccs_context_data_mock_t;
 
-static inline ccs_result_t
+static inline ccs_error_t
 _ccs_deserialize_bin_ccs_context_data(
 		_ccs_context_data_mock_t           *data,
 		uint32_t                            version,
@@ -28,8 +28,7 @@ _ccs_deserialize_bin_ccs_context_data(
 	if (data->num_hyperparameters) {
 		data->hyperparameters = (ccs_hyperparameter_t *)
 			calloc(data->num_hyperparameters, sizeof(ccs_hyperparameter_t));
-		if (!data->hyperparameters)
-			return -CCS_OUT_OF_MEMORY;
+		CCS_REFUTE(!data->hyperparameters, CCS_OUT_OF_MEMORY);
 		for (size_t i = 0; i < data->num_hyperparameters; i++)
 			CCS_VALIDATE(_ccs_hyperparameter_deserialize(
 				data->hyperparameters + i, CCS_SERIALIZE_FORMAT_BINARY, version, buffer_size, buffer, opts));

@@ -1,5 +1,5 @@
 import ctypes as ct
-from .base import Object, Error, CEnumeration, ccs_error, ccs_result, _ccs_get_function, ccs_context, ccs_hyperparameter, ccs_configuration_space, ccs_configuration, ccs_datum, ccs_objective_space, ccs_evaluation, ccs_tuner, ccs_retain_object, _register_vector, _unregister_vector
+from .base import Object, Error, CEnumeration, ccs_error, _ccs_get_function, ccs_context, ccs_hyperparameter, ccs_configuration_space, ccs_configuration, ccs_datum, ccs_objective_space, ccs_evaluation, ccs_tuner, ccs_retain_object, _register_vector, _unregister_vector
 from .context import Context
 from .hyperparameter import Hyperparameter
 from .configuration_space import ConfigurationSpace
@@ -141,14 +141,14 @@ class RandomTuner(Tuner):
       super().__init__(handle = handle, retain = retain, auto_release = auto_release)
 
 
-ccs_user_defined_tuner_del_type = ct.CFUNCTYPE(ccs_result, ccs_tuner)
-ccs_user_defined_tuner_ask_type = ct.CFUNCTYPE(ccs_result, ccs_tuner, ct.c_size_t, ct.POINTER(ccs_configuration), ct.POINTER(ct.c_size_t))
-ccs_user_defined_tuner_tell_type = ct.CFUNCTYPE(ccs_result, ccs_tuner, ct.c_size_t, ct.POINTER(ccs_evaluation))
-ccs_user_defined_tuner_get_optimums_type = ct.CFUNCTYPE(ccs_result, ccs_tuner, ct.c_size_t, ct.POINTER(ccs_evaluation), ct.POINTER(ct.c_size_t))
-ccs_user_defined_tuner_get_history_type = ct.CFUNCTYPE(ccs_result, ccs_tuner, ct.c_size_t, ct.POINTER(ccs_evaluation), ct.POINTER(ct.c_size_t))
-ccs_user_defined_tuner_suggest_type = ct.CFUNCTYPE(ccs_result, ccs_tuner, ct.POINTER(ccs_configuration))
-ccs_user_defined_tuner_serialize_type = ct.CFUNCTYPE(ccs_result, ccs_tuner, ct.c_size_t, ct.c_void_p, ct.POINTER(ct.c_size_t))
-ccs_user_defined_tuner_deserialize_type = ct.CFUNCTYPE(ccs_result, ccs_tuner, ct.c_size_t, ct.POINTER(ccs_evaluation), ct.c_size_t, ct.POINTER(ccs_evaluation), ct.c_size_t, ct.c_void_p)
+ccs_user_defined_tuner_del_type = ct.CFUNCTYPE(ccs_error, ccs_tuner)
+ccs_user_defined_tuner_ask_type = ct.CFUNCTYPE(ccs_error, ccs_tuner, ct.c_size_t, ct.POINTER(ccs_configuration), ct.POINTER(ct.c_size_t))
+ccs_user_defined_tuner_tell_type = ct.CFUNCTYPE(ccs_error, ccs_tuner, ct.c_size_t, ct.POINTER(ccs_evaluation))
+ccs_user_defined_tuner_get_optimums_type = ct.CFUNCTYPE(ccs_error, ccs_tuner, ct.c_size_t, ct.POINTER(ccs_evaluation), ct.POINTER(ct.c_size_t))
+ccs_user_defined_tuner_get_history_type = ct.CFUNCTYPE(ccs_error, ccs_tuner, ct.c_size_t, ct.POINTER(ccs_evaluation), ct.POINTER(ct.c_size_t))
+ccs_user_defined_tuner_suggest_type = ct.CFUNCTYPE(ccs_error, ccs_tuner, ct.POINTER(ccs_configuration))
+ccs_user_defined_tuner_serialize_type = ct.CFUNCTYPE(ccs_error, ccs_tuner, ct.c_size_t, ct.c_void_p, ct.POINTER(ct.c_size_t))
+ccs_user_defined_tuner_deserialize_type = ct.CFUNCTYPE(ccs_error, ccs_tuner, ct.c_size_t, ct.POINTER(ccs_evaluation), ct.c_size_t, ct.POINTER(ccs_evaluation), ct.c_size_t, ct.c_void_p)
 
 class ccs_user_defined_tuner_vector(ct.Structure):
   _fields_ = [
@@ -171,8 +171,8 @@ def _wrap_user_defined_callbacks(delete, ask, tell, get_optimums, get_history, s
       delete(Object.from_handle(tun))
       _unregister_vector(tun)
       return ccs_error.SUCCESS
-    except Error as e:
-      return -e.message.value
+    except Exception as e:
+      return Error.set_error(e)
 
   def ask_wrapper(tun, count, p_configurations, p_count):
     try:
@@ -192,8 +192,8 @@ def _wrap_user_defined_callbacks(delete, ask, tell, get_optimums, get_history, s
       if p_c.value is not None:
         p_count[0] = count_ret
       return ccs_error.SUCCESS
-    except Error as e:
-      return -e.message.value
+    except Exception as e:
+      return Error.set_error(e)
 
   def tell_wrapper(tun, count, p_evaluations):
     try:
@@ -206,8 +206,8 @@ def _wrap_user_defined_callbacks(delete, ask, tell, get_optimums, get_history, s
       evals = [Evaluation.from_handle(ccs_evaluation(p_evaluations[i])) for i in range(count)]
       tell(Tuner.from_handle(tun), evals)
       return ccs_error.SUCCESS
-    except Error as e:
-      return -e.message.value
+    except Exception as e:
+      return Error.set_error(e)
 
   def get_optimums_wrapper(tun, count, p_evaluations, p_count):
     try:
@@ -226,8 +226,8 @@ def _wrap_user_defined_callbacks(delete, ask, tell, get_optimums, get_history, s
       if p_c.value is not None:
           p_count[0] = count_ret
       return ccs_error.SUCCESS
-    except Error as e:
-      return -e.message.value
+    except Exception as e:
+      return Error.set_error(e)
 
   def get_history_wrapper(tun, count, p_evaluations, p_count):
     try:
@@ -246,8 +246,8 @@ def _wrap_user_defined_callbacks(delete, ask, tell, get_optimums, get_history, s
       if p_c.value is not None:
           p_count[0] = count_ret
       return ccs_error.SUCCESS
-    except Error as e:
-      return -e.message.value
+    except Exception as e:
+      return Error.set_error(e)
 
   if suggest is not None:
     def suggest_wrapper(tun, p_configuration):
@@ -258,8 +258,8 @@ def _wrap_user_defined_callbacks(delete, ask, tell, get_optimums, get_history, s
         Error.check(res)
         p_configuration[0] = configuration.handle.value
         return ccs_error.SUCCESS
-      except Error as e:
-        return -e.message.value
+      except Exception as e:
+        return Error.set_error(e)
   else:
     suggest_wrapper = 0
 
@@ -277,8 +277,8 @@ def _wrap_user_defined_callbacks(delete, ask, tell, get_optimums, get_history, s
         if p_sz.value is not None:
           p_state_size[0] = ct.sizeof(state)
         return ccs_error.SUCCESS
-      except Error as e:
-        return -e.message.value
+      except Exception as e:
+        return Error.set_error(e)
   else:
     serialize_wrapper = 0
 
@@ -303,8 +303,8 @@ def _wrap_user_defined_callbacks(delete, ask, tell, get_optimums, get_history, s
           state = ct.cast(p_s, POINTER(c_byte * state_size))
         deserialize(Tuner.from_handle(tun), history, optimums, state)
         return ccs_error.SUCCESS
-      except Error as e:
-        return -e.message.value
+      except Exception as e:
+        return Error.set_error(e)
   else:
     deserialize_wrapper = 0
 

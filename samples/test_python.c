@@ -6,7 +6,7 @@
 
 ccs_hyperparameter_t create_numerical(const char * name, double lower, double upper) {
 	ccs_hyperparameter_t hyperparameter;
-	ccs_result_t         err;
+	ccs_error_t         err;
 	err = ccs_create_numerical_hyperparameter(name, CCS_NUM_FLOAT,
 	                                          CCSF(lower), CCSF(upper),
 	                                          CCSF(0.0), CCSF(0),
@@ -21,7 +21,7 @@ void create_problem(ccs_configuration_space_t *cs, ccs_objective_space_t *os) {
 	ccs_configuration_space_t cspace;
 	ccs_objective_space_t     ospace;
 	ccs_expression_t          expression;
-	ccs_result_t              err;
+	ccs_error_t              err;
 
 	hyperparameter1 = create_numerical("x", -5.0, 5.0);
 	hyperparameter2 = create_numerical("y", -5.0, 5.0);
@@ -58,7 +58,7 @@ void create_problem(ccs_configuration_space_t *cs, ccs_objective_space_t *os) {
 }
 
 void test_tuner(ccs_tuner_t tuner, ccs_objective_space_t ospace) {
-	ccs_result_t         err;
+	ccs_error_t         err;
 
 	for (size_t i = 0; i < 100; i++) {
 		ccs_datum_t         values[2], res;
@@ -106,7 +106,7 @@ void test() {
 	ccs_tuner_t               t;
 	ccs_configuration_space_t cs;
 	ccs_objective_space_t     os;
-	ccs_result_t              err;
+	ccs_error_t              err;
 
 	create_problem(&cs, &os);
 

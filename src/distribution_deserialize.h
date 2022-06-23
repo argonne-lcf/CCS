@@ -13,7 +13,7 @@ struct _ccs_distribution_uniform_data_mock_s {
 };
 typedef struct _ccs_distribution_uniform_data_mock_s _ccs_distribution_uniform_data_mock_t;
 
-static inline ccs_result_t
+static inline ccs_error_t
 _ccs_deserialize_bin_ccs_distribution_uniform_data(
 		_ccs_distribution_uniform_data_mock_t  *data,
 		size_t                                 *buffer_size,
@@ -42,7 +42,7 @@ _ccs_deserialize_bin_ccs_distribution_uniform_data(
 	return CCS_SUCCESS;
 }
 
-static inline ccs_result_t
+static inline ccs_error_t
 _ccs_deserialize_bin_distribution_uniform(
 		ccs_distribution_t  *distribution_ret,
 		uint32_t             version,
@@ -72,7 +72,7 @@ struct _ccs_distribution_normal_data_mock_s {
 };
 typedef struct _ccs_distribution_normal_data_mock_s _ccs_distribution_normal_data_mock_t;
 
-static inline ccs_result_t
+static inline ccs_error_t
 _ccs_deserialize_bin_ccs_distribution_normal_data(
 		_ccs_distribution_normal_data_mock_t  *data,
 		size_t                                 *buffer_size,
@@ -96,7 +96,7 @@ _ccs_deserialize_bin_ccs_distribution_normal_data(
 	return CCS_SUCCESS;
 }
 
-static inline ccs_result_t
+static inline ccs_error_t
 _ccs_deserialize_bin_distribution_normal(
 		ccs_distribution_t  *distribution_ret,
 		uint32_t             version,
@@ -123,7 +123,7 @@ struct _ccs_distribution_roulette_data_mock_s {
 };
 typedef struct _ccs_distribution_roulette_data_mock_s _ccs_distribution_roulette_data_mock_t;
 
-static inline ccs_result_t
+static inline ccs_error_t
 _ccs_deserialize_bin_ccs_distribution_roulette_data(
 		_ccs_distribution_roulette_data_mock_t  *data,
 		size_t                                  *buffer_size,
@@ -135,22 +135,21 @@ _ccs_deserialize_bin_ccs_distribution_roulette_data(
 		&num_areas, buffer_size, buffer));
 	data->num_areas = num_areas;
 	data->areas = (ccs_float_t *)malloc(num_areas*sizeof(ccs_float_t));
-	if (!data->areas)
-		return -CCS_OUT_OF_MEMORY;
+	CCS_REFUTE(!data->areas, CCS_OUT_OF_MEMORY);
 	for (size_t i = 0; i < data->num_areas; i++)
 		CCS_VALIDATE(_ccs_deserialize_bin_ccs_float(
 			data->areas + i, buffer_size, buffer));
 	return CCS_SUCCESS;
 }
 
-static inline ccs_result_t
+static inline ccs_error_t
 _ccs_deserialize_bin_distribution_roulette(
 		ccs_distribution_t  *distribution_ret,
 		uint32_t             version,
 		size_t              *buffer_size,
 		const char         **buffer) {
 	(void)version;
-	ccs_result_t res = CCS_SUCCESS;
+	ccs_error_t res = CCS_SUCCESS;
 	_ccs_distribution_roulette_data_mock_t data;
 	data.areas = NULL;
 	CCS_VALIDATE_ERR_GOTO(res, _ccs_deserialize_bin_ccs_distribution_roulette_data(
@@ -165,7 +164,7 @@ end:
 	return res;
 }
 
-static inline ccs_result_t
+static inline ccs_error_t
 _ccs_distribution_deserialize(
 		ccs_distribution_t                 *distribution_ret,
 		ccs_serialize_format_t              format,
@@ -182,7 +181,7 @@ struct _ccs_distribution_mixture_data_mock_s {
 };
 typedef struct _ccs_distribution_mixture_data_mock_s _ccs_distribution_mixture_data_mock_t;
 
-static inline ccs_result_t
+static inline ccs_error_t
 _ccs_deserialize_bin_ccs_distribution_mixture_data(
 		_ccs_distribution_mixture_data_mock_t  *data,
 		uint32_t                                version,
@@ -199,12 +198,10 @@ _ccs_deserialize_bin_ccs_distribution_mixture_data(
 	data->num_distributions = num_distributions;
 	data->distributions = (ccs_distribution_t *)
 		calloc(data->num_distributions, sizeof(ccs_distribution_t));
-	if (!data->distributions)
-		return -CCS_OUT_OF_MEMORY;
+	CCS_REFUTE(!data->distributions, CCS_OUT_OF_MEMORY);
 	data->weights = (ccs_float_t *)
 		malloc(sizeof(ccs_float_t) * data->num_distributions);
-	if (!data->weights)
-		return -CCS_OUT_OF_MEMORY;
+	CCS_REFUTE(!data->weights, CCS_OUT_OF_MEMORY);
 	for (size_t i = 0; i < data->num_distributions; i++) {
 		CCS_VALIDATE(_ccs_deserialize_bin_ccs_float(
 			data->weights + i, buffer_size, buffer));
@@ -214,14 +211,14 @@ _ccs_deserialize_bin_ccs_distribution_mixture_data(
 	return CCS_SUCCESS;
 }
 
-static inline ccs_result_t
+static inline ccs_error_t
 _ccs_deserialize_bin_distribution_mixture(
 		ccs_distribution_t                 *distribution_ret,
 		uint32_t                            version,
 		size_t                             *buffer_size,
 		const char                        **buffer,
 		_ccs_object_deserialize_options_t  *opts) {
-	ccs_result_t res = CCS_SUCCESS;
+	ccs_error_t res = CCS_SUCCESS;
 	_ccs_distribution_mixture_data_mock_t data;
 	data.distributions = NULL;
 	data.weights = NULL;
@@ -251,7 +248,7 @@ struct _ccs_distribution_multivariate_data_mock_s {
 };
 typedef struct _ccs_distribution_multivariate_data_mock_s _ccs_distribution_multivariate_data_mock_t;
 
-static inline ccs_result_t
+static inline ccs_error_t
 _ccs_deserialize_bin_ccs_distribution_multivariate_data(
 		_ccs_distribution_multivariate_data_mock_t  *data,
 		uint32_t                                     version,
@@ -268,22 +265,21 @@ _ccs_deserialize_bin_ccs_distribution_multivariate_data(
 	data->num_distributions = num_distributions;
 	data->distributions = (ccs_distribution_t *)
 		calloc(data->num_distributions, sizeof(ccs_distribution_t));
-	if (!data->distributions)
-		return -CCS_OUT_OF_MEMORY;
+	CCS_REFUTE(!data->distributions, CCS_OUT_OF_MEMORY);
 	for (size_t i = 0; i < data->num_distributions; i++)
 		CCS_VALIDATE(_ccs_distribution_deserialize(
 			data->distributions + i, CCS_SERIALIZE_FORMAT_BINARY, version, buffer_size, buffer, &new_opts));
 	return CCS_SUCCESS;
 }
 
-static inline ccs_result_t
+static inline ccs_error_t
 _ccs_deserialize_bin_distribution_multivariate(
 		ccs_distribution_t                 *distribution_ret,
 		uint32_t                            version,
 		size_t                             *buffer_size,
 		const char                        **buffer,
 		_ccs_object_deserialize_options_t  *opts) {
-	ccs_result_t res = CCS_SUCCESS;
+	ccs_error_t res = CCS_SUCCESS;
 	_ccs_distribution_multivariate_data_mock_t data;
 	data.distributions = NULL;
 	CCS_VALIDATE_ERR_GOTO(res, _ccs_deserialize_bin_ccs_distribution_multivariate_data(
@@ -302,7 +298,7 @@ end:
 	return res;
 }
 
-static inline ccs_result_t
+static inline ccs_error_t
 _ccs_deserialize_bin_distribution(
 		ccs_distribution_t                 *distribution_ret,
 		uint32_t                            version,
@@ -311,11 +307,10 @@ _ccs_deserialize_bin_distribution(
 		_ccs_object_deserialize_options_t  *opts) {
 	_ccs_object_internal_t obj;
 	ccs_object_t handle;
-	ccs_result_t res;
+	ccs_error_t res;
 	CCS_VALIDATE(_ccs_deserialize_bin_ccs_object_internal(
 		&obj, buffer_size, buffer, &handle));
-	if (CCS_UNLIKELY(obj.type != CCS_DISTRIBUTION))
-		return -CCS_INVALID_TYPE;
+	CCS_REFUTE(obj.type != CCS_DISTRIBUTION, CCS_INVALID_TYPE);
 
 	ccs_distribution_type_t dtype;
 	CCS_VALIDATE(_ccs_peek_bin_ccs_distribution_type(
@@ -342,7 +337,7 @@ _ccs_deserialize_bin_distribution(
 			distribution_ret, version, buffer_size, buffer, opts));
 		break;
 	default:
-		return -CCS_UNSUPPORTED_OPERATION;
+		CCS_RAISE(CCS_UNSUPPORTED_OPERATION, "Unsupported distribution type: %d", dtype);
 	}
 	if (opts && opts->handle_map)
 		CCS_VALIDATE_ERR_GOTO(res,
@@ -357,7 +352,7 @@ err_dis:
 	return res;
 }
 
-static ccs_result_t
+static ccs_error_t
 _ccs_distribution_deserialize(
 		ccs_distribution_t                 *distribution_ret,
 		ccs_serialize_format_t              format,
@@ -371,7 +366,7 @@ _ccs_distribution_deserialize(
 			distribution_ret, version, buffer_size, buffer, opts));
 		break;
 	default:
-		return -CCS_INVALID_VALUE;
+		CCS_RAISE(CCS_INVALID_VALUE, "Unsupported serialization format: %d", format);
 	}
 	CCS_VALIDATE(_ccs_object_deserialize_user_data(
 		(ccs_object_t)*distribution_ret, format, version, buffer_size, buffer, opts));

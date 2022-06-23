@@ -15,11 +15,11 @@ extern "C" {
  * @param [out] map_ret a pointer to the variable that will contain the returned
  *                      map
  * @return #CCS_SUCCESS on success
- * @return -#CCS_INVALID_VALUE if \p rng_ret is NULL
- * @return -#CCS_OUT_OF_MEMORY if there was not enough memory to allocate the
+ * @return #CCS_INVALID_VALUE if \p rng_ret is NULL
+ * @return #CCS_OUT_OF_MEMORY if there was not enough memory to allocate the
  *                             new map
  */
-extern ccs_result_t
+extern ccs_error_t
 ccs_create_map(ccs_map_t *map_ret);
 
 /**
@@ -30,11 +30,11 @@ ccs_create_map(ccs_map_t *map_ret);
  * param[in] value if a transient string it will be memoized, if a CCS object
  *                 it will be retained unless #CCS_FLAG_ID is used.
  * @return #CCS_SUCCESS on success
- * @return -#CCS_INVALID_OBJECT if \p map is not a valid CCS map
- * @return -#CCS_OUT_OF_MEMORY if there was not enough memory to allocate data
+ * @return #CCS_INVALID_OBJECT if \p map is not a valid CCS map
+ * @return #CCS_OUT_OF_MEMORY if there was not enough memory to allocate data
  *                             structures
  */
-extern ccs_result_t
+extern ccs_error_t
 ccs_map_set(ccs_map_t   map,
             ccs_datum_t key,
             ccs_datum_t value);
@@ -46,10 +46,10 @@ ccs_map_set(ccs_map_t   map,
  * param[out] exist a pointer to a variable that will hold the result of the
  *                  search
  * @return #CCS_SUCCESS on success
- * @return -#CCS_INVALID_OBJECT if \p map is not a valid CCS map
- * @return -#CCS_INVALID_VALUE if \p exist is NULL
+ * @return #CCS_INVALID_OBJECT if \p map is not a valid CCS map
+ * @return #CCS_INVALID_VALUE if \p exist is NULL
  */
-extern ccs_result_t
+extern ccs_error_t
 ccs_map_exist(ccs_map_t    map,
               ccs_datum_t  key,
               ccs_bool_t  *exist);
@@ -61,10 +61,10 @@ ccs_map_exist(ccs_map_t    map,
  * param[out] value_ret a pointer to a variable that will hold the returned
  *                      value or ccs_none if not found
  * @return #CCS_SUCCESS on success
- * @return -#CCS_INVALID_OBJECT if \p map is not a valid CCS map
- * @return -#CCS_INVALID_VALUE if \p value_ret is NUL
+ * @return #CCS_INVALID_OBJECT if \p map is not a valid CCS map
+ * @return #CCS_INVALID_VALUE if \p value_ret is NUL
  */
-extern ccs_result_t
+extern ccs_error_t
 ccs_map_get(ccs_map_t    map,
             ccs_datum_t  key,
             ccs_datum_t *value_ret);
@@ -74,10 +74,10 @@ ccs_map_get(ccs_map_t    map,
  * param[in,out] map
  * param[in] key
  * @return #CCS_SUCCESS on success
- * @return -#CCS_INVALID_OBJECT if \p map is not a valid CCS map
- * @return -#CCS_INVALID_VALUE if \p key does not exist in \p map
+ * @return #CCS_INVALID_OBJECT if \p map is not a valid CCS map
+ * @return #CCS_INVALID_VALUE if \p key does not exist in \p map
  */
-extern ccs_result_t
+extern ccs_error_t
 ccs_map_del(ccs_map_t    map,
             ccs_datum_t  key);
 
@@ -94,13 +94,13 @@ ccs_map_del(ccs_map_t    map,
  *                          number of keys that are or would be returned. Can
  *                          be NULL
  * @return #CCS_SUCCESS on success
- * @return -#CCS_INVALID_OBJECT if \p map is not a valid CCS map
- * @return -#CCS_INVALID_VALUE if \p keys is NULL and \p num_keys is greater
+ * @return #CCS_INVALID_OBJECT if \p map is not a valid CCS map
+ * @return #CCS_INVALID_VALUE if \p keys is NULL and \p num_keys is greater
  *                             than 0; or if \p keys is NULL and num_keys_ret
  *                             is NULL; or if \p num_keys is less than the
  *                             number of keys that would be returned
  */
-extern ccs_result_t
+extern ccs_error_t
 ccs_map_get_keys(ccs_map_t    map,
                  size_t       num_keys,
                  ccs_datum_t *keys,
@@ -119,13 +119,13 @@ ccs_map_get_keys(ccs_map_t    map,
  *                          number of values that are or would be returned. Can
  *                          be NULL
  * @return #CCS_SUCCESS on success
- * @return -#CCS_INVALID_OBJECT if \p map is not a valid CCS map
- * @return -#CCS_INVALID_VALUE if \p values is NULL and \p num_values is greater
+ * @return #CCS_INVALID_OBJECT if \p map is not a valid CCS map
+ * @return #CCS_INVALID_VALUE if \p values is NULL and \p num_values is greater
  *                             than 0; or if \p values is NULL and num_values_ret
  *                             is NULL; or if \p num_values is less than the
  *                             number of values that would be returned
  */
-extern ccs_result_t
+extern ccs_error_t
 ccs_map_get_values(ccs_map_t    map,
                    size_t       num_values,
                    ccs_datum_t *values,
@@ -147,8 +147,8 @@ ccs_map_get_values(ccs_map_t    map,
  *                          number of keys that are or would be returned. Can
  *                          be NULL
  * @return #CCS_SUCCESS on success
- * @return -#CCS_INVALID_OBJECT if \p map is not a valid CCS map
- * @return -#CCS_INVALID_VALUE if \p keys is NULL and \p num_pairs is greater
+ * @return #CCS_INVALID_OBJECT if \p map is not a valid CCS map
+ * @return #CCS_INVALID_VALUE if \p keys is NULL and \p num_pairs is greater
  *                             than 0; or if \p keys is NULL and num_pairs_ret
  *                             is NULL; or if \p num_pairs is less than the
  *                             number of values that would be returned; if \p
@@ -158,7 +158,7 @@ ccs_map_get_values(ccs_map_t    map,
  *                             of values that would be returned
 
  */
-extern ccs_result_t
+extern ccs_error_t
 ccs_map_get_pairs(ccs_map_t    map,
                   size_t       num_pairs,
                   ccs_datum_t *keys,
@@ -169,9 +169,9 @@ ccs_map_get_pairs(ccs_map_t    map,
  * Remove all pairs from a map
  * @param[in,out] map
  * @return #CCS_SUCCESS on success
- * @return -#CCS_INVALID_OBJECT if \p map is not a valid CCS map
+ * @return #CCS_INVALID_OBJECT if \p map is not a valid CCS map
  */
-extern ccs_result_t
+extern ccs_error_t
 ccs_map_clear(ccs_map_t map);
 
 #ifdef __cplusplus

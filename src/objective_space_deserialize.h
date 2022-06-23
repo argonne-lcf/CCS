@@ -13,7 +13,7 @@ struct _ccs_objective_space_data_mock_s {
 };
 typedef struct _ccs_objective_space_data_mock_s _ccs_objective_space_data_mock_t;
 
-static inline ccs_result_t
+static inline ccs_error_t
 _ccs_deserialize_bin_ccs_objective_space_data(
 		_ccs_objective_space_data_mock_t   *data,
 		uint32_t                            version,
@@ -37,8 +37,7 @@ _ccs_deserialize_bin_ccs_objective_space_data(
 	mem = (uintptr_t)calloc(
 		data->num_hyperparameters * sizeof(ccs_hyperparameter_t) +
 		data->num_objectives * (sizeof(ccs_expression_t) + sizeof(ccs_objective_type_t)), 1);
-	if (!mem)
-		return -CCS_OUT_OF_MEMORY;
+	CCS_REFUTE(!mem, CCS_OUT_OF_MEMORY);
 	data->hyperparameters = (ccs_hyperparameter_t *)mem;
 	mem += data->num_hyperparameters * sizeof(ccs_hyperparameter_t);
 	data->objectives = (ccs_expression_t *)mem;
@@ -59,7 +58,7 @@ _ccs_deserialize_bin_ccs_objective_space_data(
 	return CCS_SUCCESS;
 }
 
-static inline ccs_result_t
+static inline ccs_error_t
 _ccs_deserialize_bin_objective_space(
 		ccs_objective_space_t              *objective_space_ret,
 		uint32_t                            version,
@@ -69,11 +68,10 @@ _ccs_deserialize_bin_objective_space(
 	_ccs_object_deserialize_options_t new_opts = *opts;
 	_ccs_object_internal_t obj;
 	ccs_object_t handle;
-	ccs_result_t res = CCS_SUCCESS;
+	ccs_error_t res = CCS_SUCCESS;
 	CCS_VALIDATE(_ccs_deserialize_bin_ccs_object_internal(
 		&obj, buffer_size, buffer, &handle));
-	if (CCS_UNLIKELY(obj.type != CCS_OBJECTIVE_SPACE))
-		return -CCS_INVALID_TYPE;
+	CCS_REFUTE(obj.type != CCS_OBJECTIVE_SPACE, CCS_INVALID_TYPE);
 
 	new_opts.map_values = CCS_TRUE;
 	CCS_VALIDATE(ccs_create_map(&new_opts.handle_map));
@@ -115,7 +113,7 @@ end:
 	return res;
 }
 
-static ccs_result_t
+static ccs_error_t
 _ccs_objective_space_deserialize(
 		ccs_objective_space_t              *objective_space_ret,
 		ccs_serialize_format_t              format,
@@ -129,7 +127,7 @@ _ccs_objective_space_deserialize(
 			objective_space_ret, version, buffer_size, buffer, opts));
 		break;
 	default:
-		return -CCS_INVALID_VALUE;
+		CCS_RAISE(CCS_INVALID_VALUE, "Unsupported serialization format: %d", format);
 	}
 	CCS_VALIDATE(_ccs_object_deserialize_user_data(
 		(ccs_object_t)*objective_space_ret, format, version, buffer_size, buffer, opts));

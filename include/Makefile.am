@@ -3,6 +3,7 @@ include_HEADERS=cconfigspace.h
 include_ccsdir=$(includedir)/cconfigspace
 include_ccs_HEADERS = \
 	cconfigspace/base.h \
+	cconfigspace/error_stack.h \
 	cconfigspace/rng.h \
 	cconfigspace/distribution.h \
 	cconfigspace/interval.h \

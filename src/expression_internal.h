@@ -7,7 +7,7 @@ typedef struct _ccs_expression_data_s _ccs_expression_data_t;
 struct _ccs_expression_ops_s {
 	_ccs_object_ops_t obj_ops;
 
-	ccs_result_t (*eval)(
+	ccs_error_t (*eval)(
 		_ccs_expression_data_t *data,
 		ccs_context_t           context,
 		ccs_datum_t            *values,

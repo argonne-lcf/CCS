@@ -25,9 +25,9 @@ class CConfigSpaceTestEvaluation < Minitest::Test
     ev1.set_value(v2, 0.6)
     assert_equal( [0.5, 0.6], ev1.values )
     assert_equal( [0.5, 0.6], ev1.objective_values )
-    ev1.check
-    os.check(ev1)
-    os.check_values(ev1.values)
+    assert( ev1.check )
+    assert( os.check(ev1) )
+    assert( os.check_values(ev1.values) )
     ev2 = CCS::Evaluation::new(objective_space: os, configuration: cs.sample, values: [0.5, 0.6])
     assert_equal( [0.5, 0.6], ev2.values )
     assert_equal( [0.5, 0.6], ev2.objective_values )

@@ -10,30 +10,30 @@ typedef struct _ccs_tuner_data_s _ccs_tuner_data_t;
 struct _ccs_tuner_ops_s {
 	_ccs_object_ops_t obj_ops;
 
-	ccs_result_t (*ask)(
+	ccs_error_t (*ask)(
 		_ccs_tuner_data_t   *data,
 		size_t               num_configurations,
 		ccs_configuration_t *configurations,
 		size_t              *num_configurations_ret);
 
-	ccs_result_t (*tell)(
+	ccs_error_t (*tell)(
 		_ccs_tuner_data_t *data,
 		size_t             num_evaluations,
 		ccs_evaluation_t  *evaluations);
 
-	ccs_result_t (*get_optimums)(
+	ccs_error_t (*get_optimums)(
 		_ccs_tuner_data_t *data,
 		size_t             num_evaluations,
 		ccs_evaluation_t  *evaluations,
 		size_t            *num_evaluations_ret);
 
-	ccs_result_t (*get_history)(
+	ccs_error_t (*get_history)(
 		_ccs_tuner_data_t *data,
 		size_t             num_evaluations,
 		ccs_evaluation_t  *evaluations,
 		size_t            *num_evaluations_ret);
 
-	ccs_result_t (*suggest)(
+	ccs_error_t (*suggest)(
 		_ccs_tuner_data_t   *data,
 		ccs_configuration_t *configuration);
 };
@@ -52,7 +52,7 @@ struct _ccs_tuner_common_data_s {
 };
 typedef struct _ccs_tuner_common_data_s _ccs_tuner_common_data_t;
 
-static inline ccs_result_t
+static inline ccs_error_t
 _ccs_serialize_bin_size_ccs_tuner_common_data(
 		_ccs_tuner_common_data_t        *data,
 		size_t                          *cum_size,
@@ -66,7 +66,7 @@ _ccs_serialize_bin_size_ccs_tuner_common_data(
 	return CCS_SUCCESS;
 }
 
-static inline ccs_result_t
+static inline ccs_error_t
 _ccs_serialize_bin_ccs_tuner_common_data(
 		_ccs_tuner_common_data_t         *data,
 		size_t                           *buffer_size,

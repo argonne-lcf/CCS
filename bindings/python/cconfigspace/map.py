@@ -1,6 +1,6 @@
 import ctypes as ct
 from . import libcconfigspace
-from .base import Object, Error, ccs_datum, ccs_datum_fix, ccs_result, ccs_map, _ccs_get_function, ccs_bool
+from .base import Object, Error, ccs_datum, ccs_datum_fix, ccs_map, _ccs_get_function, ccs_bool
 
 ccs_create_map = _ccs_get_function("ccs_create_map", [ct.POINTER(ccs_map)])
 ccs_map_set = _ccs_get_function("ccs_map_set", [ccs_map, ccs_datum_fix, ccs_datum_fix])

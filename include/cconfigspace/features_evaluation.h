@@ -28,19 +28,19 @@ extern "C" {
  * @param[out] features_evaluation_ret a pointer to the variable that will hold
  *                                     the newly created evaluation
  * @return #CCS_SUCCESS on success
- * @return -#CCS_INVALID_OBJECT if \p objective_space is not a valid CCS
+ * @return #CCS_INVALID_OBJECT if \p objective_space is not a valid CCS
  *                              objective space; or if \p configuration is not a
  *                              valid CCS configuration; or the features is not
  *                              a valid CCS features
- * @return -#CCS_INVALID_VALUE if \p features evaluation_ret is NULL; or if \p
+ * @return #CCS_INVALID_VALUE if \p features evaluation_ret is NULL; or if \p
  *                             values is NULL and \p num_values is greater than
  *                             0; or if the number of values provided is not
  *                             equal to the number of hyperparameters in the
  *                             objective space
- * @return -#CCS_OUT_OF_MEMORY if there was a lack of memory to allocate the new
+ * @return #CCS_OUT_OF_MEMORY if there was a lack of memory to allocate the new
  *                             evaluation
  */
-extern ccs_result_t
+extern ccs_error_t
 ccs_create_features_evaluation(
 	ccs_objective_space_t      objective_space,
 	ccs_configuration_t        configuration,
@@ -56,11 +56,11 @@ ccs_create_features_evaluation(
  * @param[out] objective_space_ret a pointer to the variable that will
  *                                 contain the objective space
  * @return #CCS_SUCCESS on success
- * @return -#CCS_INVALID_OBJECT if \p features_evaluation is not a valid CCS
+ * @return #CCS_INVALID_OBJECT if \p features_evaluation is not a valid CCS
  *                              features_evaluation
- * @return -#CCS_INVALID_VALUE if \p objective_space_ret is NULL
+ * @return #CCS_INVALID_VALUE if \p objective_space_ret is NULL
  */
-extern ccs_result_t
+extern ccs_error_t
 ccs_features_evaluation_get_objective_space(
 		ccs_features_evaluation_t  features_evaluation,
 		ccs_objective_space_t     *objective_space_ret);
@@ -71,11 +71,11 @@ ccs_features_evaluation_get_objective_space(
  * @param[out] configuration_ret a pointer to the variable that will contain
  *                               the configuration
  * @return #CCS_SUCCESS on success
- * @return -#CCS_INVALID_OBJECT if \p features_evaluation is not a valid CCS
+ * @return #CCS_INVALID_OBJECT if \p features_evaluation is not a valid CCS
  *                              features_evaluation
- * @return -#CCS_INVALID_VALUE if \p configuration_ret is NULL
+ * @return #CCS_INVALID_VALUE if \p configuration_ret is NULL
  */
-extern ccs_result_t
+extern ccs_error_t
 ccs_features_evaluation_get_configuration(
 		ccs_features_evaluation_t  features_evaluation,
 		ccs_configuration_t       *configuration_ret);
@@ -86,11 +86,11 @@ ccs_features_evaluation_get_configuration(
  * @param[out] features_ret a pointer to the variable that will contain
  *                          the features
  * @return #CCS_SUCCESS on success
- * @return -#CCS_INVALID_OBJECT if \p features_evaluation is not a valid CCS
+ * @return #CCS_INVALID_OBJECT if \p features_evaluation is not a valid CCS
  *                              features_evaluation
- * @return -#CCS_INVALID_VALUE if \p features_ret is NULL
+ * @return #CCS_INVALID_VALUE if \p features_ret is NULL
  */
-extern ccs_result_t
+extern ccs_error_t
 ccs_features_evaluation_get_features(
 		ccs_features_evaluation_t  features_evaluation,
 		ccs_features_t            *features_ret);
@@ -101,11 +101,11 @@ ccs_features_evaluation_get_features(
  * @param[out] error_ret a pointer to the variable that will contain the
  *                       returned error code
  * @return #CCS_SUCCESS on success
- * @return -#CCS_INVALID_OBJECT if \p features_evaluation is not a valid CCS
+ * @return #CCS_INVALID_OBJECT if \p features_evaluation is not a valid CCS
  *                              features evaluation
- * @return -#CCS_INVALID_VALUE if \p error_ret is NULL
+ * @return #CCS_INVALID_VALUE if \p error_ret is NULL
  */
-extern ccs_result_t
+extern ccs_error_t
 ccs_features_evaluation_get_error(
 	ccs_features_evaluation_t  features_evaluation,
 	ccs_result_t              *error_ret);
@@ -116,10 +116,10 @@ ccs_features_evaluation_get_error(
  * @param[in,out] features_evaluation
  * @param[in] error the error code associated withe the features_evaluation
  * @return #CCS_SUCCESS on success
- * @return -#CCS_INVALID_OBJECT if \p features_evaluation is not a valid CCS
+ * @return #CCS_INVALID_OBJECT if \p features_evaluation is not a valid CCS
  *                              features evaluation
  */
-extern ccs_result_t
+extern ccs_error_t
 ccs_features_evaluation_set_error(ccs_features_evaluation_t features_evaluation,
                                   ccs_result_t              error);
 
@@ -130,13 +130,13 @@ ccs_features_evaluation_set_error(ccs_features_evaluation_t features_evaluation,
                     space
  * @param[out] value_ret a pointer to the variable that will hold the value
  * @return #CCS_SUCCESS on success
- * @return -#CCS_INVALID_OBJECT if \p binding is not a valid CCS features
+ * @return #CCS_INVALID_OBJECT if \p binding is not a valid CCS features
  *                              evaluation
- * @return -#CCS_INVALID_VALUE if \p value_ret is NULL
- * @return -#CCS_OUT_OF_BOUNDS if \p index is greater than the count of
+ * @return #CCS_INVALID_VALUE if \p value_ret is NULL
+ * @return #CCS_OUT_OF_BOUNDS if \p index is greater than the count of
  *                             hyperparameters in the objective space
  */
-extern ccs_result_t
+extern ccs_error_t
 ccs_features_evaluation_get_value(
 	ccs_features_evaluation_t  features_evaluation,
 	size_t                     index,
@@ -150,15 +150,15 @@ ccs_features_evaluation_get_value(
  *                  space
  * @param[in] value the value
  * @return #CCS_SUCCESS on success
- * @return -#CCS_INVALID_OBJECT if \p features_evaluation is not a valid CCS
+ * @return #CCS_INVALID_OBJECT if \p features_evaluation is not a valid CCS
  *                              features evaluation
- * @return -#CCS_INVALID_VALUE if \p value_ret is NULL
- * @return -#CCS_OUT_OF_BOUNDS if \p index is greater than the count of
+ * @return #CCS_INVALID_VALUE if \p value_ret is NULL
+ * @return #CCS_OUT_OF_BOUNDS if \p index is greater than the count of
  *                             hyperparameters in the objective space
- * @return -#CCS_OUT_OF_MEMORY if there was a lack of memory while memoizing a
+ * @return #CCS_OUT_OF_MEMORY if there was a lack of memory while memoizing a
  *                             string
  */
-extern ccs_result_t
+extern ccs_error_t
 ccs_features_evaluation_set_value(ccs_features_evaluation_t features_evaluation,
                                   size_t                    index,
                                   ccs_datum_t               value);
@@ -174,14 +174,14 @@ ccs_features_evaluation_set_value(ccs_features_evaluation_t features_evaluation,
  *                            number of values that are or would be returned.
  *                            Can be NULL
  * @return #CCS_SUCCESS on success
- * @return -#CCS_INVALID_OBJECT if \p features_evaluation is not a valid CCS
+ * @return #CCS_INVALID_OBJECT if \p features_evaluation is not a valid CCS
  *                              features evaluation
- * @return -#CCS_INVALID_VALUE if \p values is NULL and \p num_values is greater
+ * @return #CCS_INVALID_VALUE if \p values is NULL and \p num_values is greater
  *                             than 0; or if \p values is NULL and
  *                             num_values_ret is NULL; or if num_values is less
  *                             than the number of values that would be returned
  */
-extern ccs_result_t
+extern ccs_error_t
 ccs_features_evaluation_get_values(
 	ccs_features_evaluation_t  features_evaluation,
 	size_t                     num_values,
@@ -194,13 +194,13 @@ ccs_features_evaluation_get_values(
  * @param[in] name the name of the hyperparameter whose value to retrieve
  * @param[out] value_ret a pointer to the variable that will hold the value
  * @return #CCS_SUCCESS on success
- * @return -#CCS_INVALID_OBJECT if \p features_evaluation is not a valid CCS
+ * @return #CCS_INVALID_OBJECT if \p features_evaluation is not a valid CCS
  *                              features evaluation
- * @return -#CCS_INVALID_VALUE if \p value_ret is NULL
- * @return -#CCS_INVALID_NAME if no hyperparameter with such \p name exist in
+ * @return #CCS_INVALID_VALUE if \p value_ret is NULL
+ * @return #CCS_INVALID_NAME if no hyperparameter with such \p name exist in
  *                            the \p objective space
  */
-extern ccs_result_t
+extern ccs_error_t
 ccs_features_evaluation_get_value_by_name(
 	ccs_features_evaluation_t  features_evaluation,
 	const char                *name,
@@ -214,14 +214,14 @@ ccs_features_evaluation_get_value_by_name(
  * @param[out] value_ret a pointer to the variable that will contain the value
  *                       of the objective
  * @return #CCS_SUCCESS on success
- * @return -#CCS_INVALID_OBJECT if \p features_evaluation is not a valid CCS
+ * @return #CCS_INVALID_OBJECT if \p features_evaluation is not a valid CCS
  *                              features evaluation
- * @return -#CCS_INVALID_VALUE if \p value_ret is NULL; or if there was an issue
+ * @return #CCS_INVALID_VALUE if \p value_ret is NULL; or if there was an issue
  *                             evaluating the objective
- * @return -#CCS_OUT_OF_BOUNDS if \p index is greater than the number of
+ * @return #CCS_OUT_OF_BOUNDS if \p index is greater than the number of
  *                             objective in the objective space
  */
-extern ccs_result_t
+extern ccs_error_t
 ccs_features_evaluation_get_objective_value(
 		ccs_features_evaluation_t  features_evaluation,
 		size_t                     index,
@@ -239,14 +239,14 @@ ccs_features_evaluation_get_objective_value(
  *                            contain the number of values that are or would be
  *                            returned. Can be NULL
  * @return #CCS_SUCCESS on success
- * @return -#CCS_INVALID_OBJECT if \p features_evaluation is not a valid CCS
+ * @return #CCS_INVALID_OBJECT if \p features_evaluation is not a valid CCS
  *                              features evaluation
- * @return -#CCS_INVALID_VALUE if \p values is NULL and \p num_values is greater
+ * @return #CCS_INVALID_VALUE if \p values is NULL and \p num_values is greater
  *                             than 0; or if values is NULL and num_values_ret
  *                             is NULL; or if there was an issue evaluating any
  *                             of the objectives
  */
-extern ccs_result_t
+extern ccs_error_t
 ccs_features_evaluation_get_objective_values(
 		ccs_features_evaluation_t  features_evaluation,
 		size_t                     num_values,
@@ -261,11 +261,11 @@ ccs_features_evaluation_get_objective_values(
  * @param[out] hash_ret the address of the variable that will contain the hash
  *                      value.
  * @return #CCS_SUCCESS on success
- * @return -#CCS_INVALID_OBJECT if \p features_evaluation is not a valid CCS
+ * @return #CCS_INVALID_OBJECT if \p features_evaluation is not a valid CCS
  *                              features evaluation
- * @return -#CCS_INVALID_VALUE if \p hash_ret is NULL
+ * @return #CCS_INVALID_VALUE if \p hash_ret is NULL
  */
-extern ccs_result_t
+extern ccs_error_t
 ccs_features_evaluation_hash(ccs_features_evaluation_t  features_evaluation,
                              ccs_hash_t                *hash_ret);
 
@@ -281,12 +281,12 @@ ccs_features_evaluation_hash(ccs_features_evaluation_t  features_evaluation,
  *                     respectively lesser than, equal, or greater then the
  *                     second features evaluation
  * @return #CCS_SUCCESS on success
- * @return -#CCS_INVALID_OBJECT if \p features_evaluation or \p
+ * @return #CCS_INVALID_OBJECT if \p features_evaluation or \p
  *                              other_features_evaluation are not valid CCS
  *                              features evaluations
- * @return -#CCS_INVALID_VALUE if \p cmp_ret is NULL
+ * @return #CCS_INVALID_VALUE if \p cmp_ret is NULL
  */
-extern ccs_result_t
+extern ccs_error_t
 ccs_features_evaluation_cmp(
 	ccs_features_evaluation_t  features_evaluation,
 	ccs_features_evaluation_t  other_features_evaluation,
@@ -303,7 +303,7 @@ ccs_features_evaluation_cmp(
  *                        respectively better, equivalent, worse, or not
  *                        comparable with the second features evaluation.
  * @return #CCS_SUCCESS on success
- * @return -#CCS_INVALID_OBJECT if \p features_evaluation or \p
+ * @return #CCS_INVALID_OBJECT if \p features_evaluation or \p
  *                              other_features_evaluation are not valid CCS
  *                              features evaluations; or if \p
  *                              features_evaluation and \p
@@ -311,10 +311,10 @@ ccs_features_evaluation_cmp(
  *                              objective space; or if any of the configuration
  *                              is associated an error code different than
  *                              CCS_SUCESS
- * @return -#CCS_INVALID_VALUE if \p result_ret is NULL; or if there was an
+ * @return #CCS_INVALID_VALUE if \p result_ret is NULL; or if there was an
  *                                issue evaluating any of the objectives
  */
-extern ccs_result_t
+extern ccs_error_t
 ccs_features_evaluation_compare(
 	ccs_features_evaluation_t  features_evaluation,
 	ccs_features_evaluation_t  other_features_evaluation,
@@ -323,15 +323,21 @@ ccs_features_evaluation_compare(
 /**
  * Check that a features evaluation values are valid in the objective space.
  * @param[in] features_evaluation
+ * @param[out] is_valid_ret a pointer to a variable that will hold the result
+ *                          of the check. Result will be CCS_TRUE if the
+ *                          features_evaluation is valid. Result will be
+ *                          CCS_FALSE if an hyperparameter value is not a valid
+ *                          value for this hyperparameter
  * @return #CCS_SUCCESS on success
- * @return -#CCS_INVALID_OBJECT if \p features_evaluation is not a valid CCS
+ * @return #CCS_INVALID_OBJECT if \p features_evaluation is not a valid CCS
  *                              features evaluation
- * @return -#CCS_INVALID_EVALUATION if \p features_evaluation was found to be
+ * @return #CCS_INVALID_EVALUATION if \p features_evaluation was found to be
  *                                  invalid in the context of the objective
  *                                  space
  */
-extern ccs_result_t
-ccs_features_evaluation_check(ccs_features_evaluation_t features_evaluation);
+extern ccs_error_t
+ccs_features_evaluation_check(ccs_features_evaluation_t  features_evaluation,
+                              ccs_bool_t                *is_valid_ret);
 
 #ifdef __cplusplus
 }

@@ -6,7 +6,7 @@
 
 ccs_hyperparameter_t create_numerical(const char * name) {
 	ccs_hyperparameter_t hyperparameter;
-	ccs_result_t         err;
+	ccs_error_t         err;
 	err = ccs_create_numerical_hyperparameter(name, CCS_NUM_FLOAT,
 	                                          CCSF(-1.0), CCSF(1.0),
 	                                          CCSF(0.0), CCSF(0),
@@ -23,7 +23,7 @@ test_simple() {
 	ccs_configuration_t       configuration;
 	ccs_datum_t               values[2];
 	ccs_configuration_t       configurations[100];
-	ccs_result_t              err;
+	ccs_error_t              err;
 
 	hyperparameter1 = create_numerical("param1");
 	hyperparameter2 = create_numerical("param2");
@@ -43,6 +43,7 @@ test_simple() {
 
 	for (int i = 0; i < 100; i ++) {
 		ccs_float_t f;
+		ccs_bool_t check;
 		err = ccs_configuration_space_sample(space, &configuration);
 		assert( err == CCS_SUCCESS );
 		err = ccs_configuration_get_values(configuration, 2, values, NULL);
@@ -53,8 +54,9 @@ test_simple() {
 		assert( values[1].type == CCS_FLOAT );
 		f = values[0].value.f;
 		assert( f >= -1.0 && f < 1.0 );
-		err = ccs_configuration_space_check_configuration(space, configuration);
+		err = ccs_configuration_space_check_configuration(space, configuration, &check);
 		assert( err == CCS_SUCCESS );
+		assert( check );
 		err = ccs_release_object(configuration);
 		assert( err == CCS_SUCCESS );
 	}
@@ -63,6 +65,7 @@ test_simple() {
 
 	for (int i = 0; i < 100; i ++) {
 		ccs_float_t f;
+		ccs_bool_t check;
 		err = ccs_configuration_get_values(configurations[i], 2, values, NULL);
 		assert( err == CCS_SUCCESS );
 		assert( values[0].type == CCS_FLOAT );
@@ -71,8 +74,9 @@ test_simple() {
 		assert( values[1].type == CCS_FLOAT );
 		f = values[0].value.f;
 		assert( f >= -1.0 && f < 1.0 );
-		err = ccs_configuration_space_check_configuration(space, configurations[i]);
+		err = ccs_configuration_space_check_configuration(space, configurations[i], &check);
 		assert( err == CCS_SUCCESS );
+		assert( check );
 		err = ccs_release_object(configurations[i]);
 		assert( err == CCS_SUCCESS );
 	}
@@ -95,7 +99,7 @@ test_combined() {
 	ccs_configuration_t       configuration;
 	ccs_datum_t               values[3];
 	ccs_configuration_t       configurations[100];
-	ccs_result_t              err;
+	ccs_error_t              err;
 
 	hyperparameters[0] = create_numerical("param1");
 	hyperparameters[1] = create_numerical("param2");
@@ -135,6 +139,7 @@ test_combined() {
 
 	for (int i = 0; i < 100; i ++) {
 		ccs_float_t f;
+		ccs_bool_t check;
 		err = ccs_configuration_space_sample(space, &configuration);
 		assert( err == CCS_SUCCESS );
 		err = ccs_configuration_get_values(configuration, 3, values, NULL);
@@ -157,8 +162,9 @@ test_combined() {
 			assert( values[2].type == CCS_INACTIVE );
 			assert( values[0].type == CCS_INACTIVE );
 		}
-		err = ccs_configuration_space_check_configuration(space, configuration);
+		err = ccs_configuration_space_check_configuration(space, configuration, &check);
 		assert( err == CCS_SUCCESS );
+		assert( check );
 		err = ccs_release_object(configuration);
 		assert( err == CCS_SUCCESS );
 	}
@@ -168,6 +174,7 @@ test_combined() {
 
 	for (int i = 0; i < 100; i ++) {
 		ccs_float_t f;
+		ccs_bool_t check;
 		err = ccs_configuration_get_values(configurations[i], 3, values, NULL);
 		assert( err == CCS_SUCCESS );
 		assert( values[1].type == CCS_FLOAT );
@@ -188,8 +195,9 @@ test_combined() {
 			assert( values[2].type == CCS_INACTIVE );
 			assert( values[0].type == CCS_INACTIVE );
 		}
-		err = ccs_configuration_space_check_configuration(space, configurations[i]);
+		err = ccs_configuration_space_check_configuration(space, configurations[i], &check);
 		assert( err == CCS_SUCCESS );
+		assert( check );
 		err = ccs_release_object(configurations[i]);
 		assert( err == CCS_SUCCESS );
 	}
@@ -208,6 +216,7 @@ int main() {
 	ccs_init();
 	test_simple();
 	test_combined();
+	ccs_clear_thread_error();
 	ccs_fini();
 	return 0;
 }

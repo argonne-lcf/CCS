@@ -26,13 +26,13 @@ class TestConfigurationSpace(unittest.TestCase):
     self.assertEqual( h3, cs.hyperparameter(2) )
     self.assertEqual( [h1, h2, h3], cs.hyperparameters )
     self.assertEqual( h2, cs.hyperparameter_by_name(h2.name) )
-    cs.check(cs.default_configuration)
+    self.assertTrue( cs.check(cs.default_configuration) )
     c = cs.sample()
-    cs.check(c)
+    self.assertTrue( cs.check(c) )
     self.assertEqual( cs.handle.value, c.configuration_space.handle.value )
-    cs.check_values(cs.sample().values)
+    self.assertTrue( cs.check_values(cs.sample().values) )
     for c in cs.samples(100):
-      cs.check(c)
+      self.assertTrue( cs.check(c) )
 
   def test_set_distribution(self):
     cs = ccs.ConfigurationSpace(name = "space")
@@ -182,7 +182,7 @@ class TestConfigurationSpace(unittest.TestCase):
     all_params = [ "p{}".format(i) for i in range(1,10) ]
     for i in range(1000):
       s = cs.sample()
-      s.check()
+      self.assertTrue( s.check() )
       active_params = self.extract_active_parameters(s.values)
       for par in active_params:
         self.assertNotEqual( ccs.ccs_inactive, s.value(par) )
@@ -257,7 +257,7 @@ class TestConfigurationSpace(unittest.TestCase):
     all_params = [ "p{}".format(i) for i in range(1,10) ]
     for i in range(1000):
       s = cs.sample()
-      s.check()
+      self.assertTrue( s.check() )
       active_params = self.extract_active_parameters(s.values)
       for par in active_params:
         self.assertNotEqual( ccs.ccs_inactive, s.value(par) )
@@ -270,7 +270,7 @@ class TestConfigurationSpace(unittest.TestCase):
     cs_copy = ccs.Object.deserialize(buffer = buff)
     for i in range(1000):
       s = cs_copy.sample()
-      s.check()
+      self.assertTrue( s.check() )
       active_params = self.extract_active_parameters(s.values)
       for par in active_params:
         self.assertNotEqual( ccs.ccs_inactive, s.value(par) )

@@ -3,7 +3,7 @@
 #include "cconfigspace_internal.h"
 #include "features_internal.h"
 
-static inline ccs_result_t
+static inline ccs_error_t
 _ccs_deserialize_bin_features(
 		ccs_features_t                     *features_ret,
 		uint32_t                            version,
@@ -16,11 +16,10 @@ _ccs_deserialize_bin_features(
 	ccs_object_t handle;
 	ccs_datum_t d;
 	ccs_features_space_t cs;
-	ccs_result_t res = CCS_SUCCESS;
+	ccs_error_t res = CCS_SUCCESS;
 	CCS_VALIDATE(_ccs_deserialize_bin_ccs_object_internal(
 		&obj, buffer_size, buffer, &handle));
-	if (CCS_UNLIKELY(obj.type != CCS_FEATURES))
-		return -CCS_INVALID_TYPE;
+	CCS_REFUTE(obj.type != CCS_FEATURES, CCS_INVALID_TYPE);
 
 	_ccs_binding_data_t data = {NULL, 0, NULL};
 	CCS_VALIDATE_ERR_GOTO(res, _ccs_deserialize_bin_ccs_binding_data(
@@ -28,10 +27,7 @@ _ccs_deserialize_bin_features(
 
 	CCS_VALIDATE_ERR_GOTO(res, ccs_map_get(
 		opts->handle_map, ccs_object(data.context), &d), end);
-	if (CCS_UNLIKELY(d.type != CCS_OBJECT)) {
-		res = -CCS_INVALID_HANDLE;
-		goto end;
-	}
+	CCS_REFUTE_ERR_GOTO(res, d.type != CCS_OBJECT, CCS_INVALID_HANDLE, end);
 	cs = (ccs_features_space_t)(d.value.o);
 
 	CCS_VALIDATE_ERR_GOTO(res, ccs_create_features(
@@ -54,7 +50,7 @@ end:
 	return res;
 }
 
-static ccs_result_t
+static ccs_error_t
 _ccs_features_deserialize(
 		ccs_features_t                     *features_ret,
 		ccs_serialize_format_t              format,
@@ -68,7 +64,7 @@ _ccs_features_deserialize(
 			features_ret, version, buffer_size, buffer, opts));
 		break;
 	default:
-		return -CCS_INVALID_VALUE;
+		CCS_RAISE(CCS_INVALID_VALUE, "Unsupported serialization format: %d", format);
 	}
 	CCS_VALIDATE(_ccs_object_deserialize_user_data(
 		(ccs_object_t)*features_ret, format, version, buffer_size, buffer, opts));

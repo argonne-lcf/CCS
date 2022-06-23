@@ -16,7 +16,7 @@ _ccs_serialize_bin_size_ccs_hyperparameter_string_data(
 	return _ccs_serialize_bin_size_ccs_hyperparameter_common_data(&data->common_data);
 }
 
-static inline ccs_result_t
+static inline ccs_error_t
 _ccs_serialize_bin_ccs_hyperparameter_string_data(
 		_ccs_hyperparameter_string_data_t  *data,
 		size_t                             *buffer_size,
@@ -26,7 +26,7 @@ _ccs_serialize_bin_ccs_hyperparameter_string_data(
 	return CCS_SUCCESS;
 }
 
-static ccs_result_t
+static ccs_error_t
 _ccs_hyperparameter_string_del(ccs_object_t o) {
 	ccs_hyperparameter_t d = (ccs_hyperparameter_t)o;
 	_ccs_hyperparameter_string_data_t *data = (_ccs_hyperparameter_string_data_t *)(d->data);
@@ -48,7 +48,7 @@ _ccs_serialize_bin_size_ccs_hyperparameter_string(
 		_ccs_serialize_bin_size_ccs_hyperparameter_string_data(data);
 }
 
-static inline ccs_result_t
+static inline ccs_error_t
 _ccs_serialize_bin_ccs_hyperparameter_string(
 		ccs_hyperparameter_t   hyperparameter,
 		size_t                *buffer_size,
@@ -62,7 +62,7 @@ _ccs_serialize_bin_ccs_hyperparameter_string(
 	return CCS_SUCCESS;
 }
 
-static ccs_result_t
+static ccs_error_t
 _ccs_hyperparameter_string_serialize_size(
 		ccs_object_t                     object,
 		ccs_serialize_format_t           format,
@@ -74,14 +74,14 @@ _ccs_hyperparameter_string_serialize_size(
 			(ccs_hyperparameter_t)object);
 		break;
 	default:
-		return -CCS_INVALID_VALUE;
+		CCS_RAISE(CCS_INVALID_VALUE, "Unsupported serialization format: %d", format);
 	}
 	CCS_VALIDATE(_ccs_object_serialize_user_data_size(
 		object, format, cum_size, opts));
 	return CCS_SUCCESS;
 }
 
-static ccs_result_t
+static ccs_error_t
 _ccs_hyperparameter_string_serialize(
 		ccs_object_t                      object,
 		ccs_serialize_format_t            format,
@@ -94,7 +94,7 @@ _ccs_hyperparameter_string_serialize(
 		    (ccs_hyperparameter_t)object, buffer_size, buffer));
 		break;
 	default:
-		return -CCS_INVALID_VALUE;
+		CCS_RAISE(CCS_INVALID_VALUE, "Unsupported serialization format: %d", format);
 	}
 	CCS_VALIDATE(_ccs_object_serialize_user_data(
 		object, format, buffer_size, buffer, opts));
@@ -103,10 +103,10 @@ _ccs_hyperparameter_string_serialize(
 
 #undef uthash_nonfatal_oom
 #define uthash_nonfatal_oom(elt) { \
-	return -CCS_OUT_OF_MEMORY; \
+	CCS_RAISE(CCS_OUT_OF_MEMORY, "Not enough memory to allocate array"); \
 }
 
-static ccs_result_t
+static ccs_error_t
 _ccs_hyperparameter_string_check_values(_ccs_hyperparameter_data_t *data,
                                         size_t                      num_values,
                                         const ccs_datum_t          *values,
@@ -129,8 +129,7 @@ _ccs_hyperparameter_string_check_values(_ccs_hyperparameter_data_t *data,
 					if (values[i].value.s)
 						sz_str = strlen(values[i].value.s) + 1;
 					p = (_ccs_hash_datum_t *)malloc(sizeof(_ccs_hash_datum_t) + sz_str);
-					if (!p)
-						return -CCS_OUT_OF_MEMORY;
+					CCS_REFUTE(!p, CCS_OUT_OF_MEMORY);
 					if (sz_str) {
 						strcpy((char *)((intptr_t)p + sizeof(_ccs_hash_datum_t)), values[i].value.s);
 						p->d = ccs_string((char *)((intptr_t)p + sizeof(_ccs_hash_datum_t)));
@@ -146,7 +145,7 @@ _ccs_hyperparameter_string_check_values(_ccs_hyperparameter_data_t *data,
 	return CCS_SUCCESS;
 }
 
-static ccs_result_t
+static ccs_error_t
 _ccs_hyperparameter_string_samples(_ccs_hyperparameter_data_t *data,
                                    ccs_distribution_t          distribution,
                                    ccs_rng_t                   rng,
@@ -157,19 +156,19 @@ _ccs_hyperparameter_string_samples(_ccs_hyperparameter_data_t *data,
 	(void)rng;
 	(void)num_values;
 	(void)values;
-	return -CCS_UNSUPPORTED_OPERATION;
+	CCS_RAISE(CCS_UNSUPPORTED_OPERATION, "String hyperparameters cannot be sampled");
 }
 
-static ccs_result_t
+static ccs_error_t
 _ccs_hyperparameter_string_get_default_distribution(
 		_ccs_hyperparameter_data_t *data,
 		ccs_distribution_t         *distribution) {
 	(void)data;
 	(void)distribution;
-	return -CCS_UNSUPPORTED_OPERATION;
+	CCS_RAISE(CCS_UNSUPPORTED_OPERATION, "String hyperparameters don't have default distributions");
 }
 
-static ccs_result_t
+static ccs_error_t
 _ccs_hyperparameter_string_convert_samples(
 		_ccs_hyperparameter_data_t *data,
 		ccs_bool_t                  oversampling,
@@ -181,7 +180,7 @@ _ccs_hyperparameter_string_convert_samples(
 	(void)num_values;
 	(void)values;
 	(void)results;
-	return -CCS_UNSUPPORTED_OPERATION;
+	CCS_RAISE(CCS_UNSUPPORTED_OPERATION, "String hyperparameters cannot convert samples");
 }
 
 static _ccs_hyperparameter_ops_t _ccs_hyperparameter_string_ops = {
@@ -194,14 +193,13 @@ static _ccs_hyperparameter_ops_t _ccs_hyperparameter_string_ops = {
 	&_ccs_hyperparameter_string_convert_samples
 };
 
-extern ccs_result_t
+extern ccs_error_t
 ccs_create_string_hyperparameter(const char           *name,
                                  ccs_hyperparameter_t *hyperparameter_ret) {
 	CCS_CHECK_PTR(name);
 	CCS_CHECK_PTR(hyperparameter_ret);
 	uintptr_t mem = (uintptr_t)calloc(1, sizeof(struct _ccs_hyperparameter_s) + sizeof(_ccs_hyperparameter_string_data_t) + strlen(name) + 1);
-	if (!mem)
-		return -CCS_OUT_OF_MEMORY;
+	CCS_REFUTE(!mem, CCS_OUT_OF_MEMORY);
 
 	ccs_hyperparameter_t hyperparam = (ccs_hyperparameter_t)mem;
 	_ccs_object_init(&(hyperparam->obj), CCS_HYPERPARAMETER, (_ccs_object_ops_t *)&_ccs_hyperparameter_string_ops);

@@ -1,5 +1,5 @@
 import ctypes as ct
-from .base import Object, Error, ccs_error, _ccs_get_function, ccs_context, ccs_hyperparameter, ccs_configuration_space, ccs_configuration, ccs_rng, ccs_distribution, ccs_expression, ccs_datum
+from .base import Object, Error, ccs_error, _ccs_get_function, ccs_context, ccs_hyperparameter, ccs_configuration_space, ccs_configuration, ccs_rng, ccs_distribution, ccs_expression, ccs_datum, ccs_bool
 from .context import Context
 from .distribution import Distribution
 from .hyperparameter import Hyperparameter
@@ -22,8 +22,8 @@ ccs_configuration_space_add_forbidden_clause = _ccs_get_function("ccs_configurat
 ccs_configuration_space_add_forbidden_clauses = _ccs_get_function("ccs_configuration_space_add_forbidden_clauses", [ccs_configuration_space, ct.c_size_t, ccs_expression])
 ccs_configuration_space_get_forbidden_clause = _ccs_get_function("ccs_configuration_space_get_forbidden_clause", [ccs_configuration_space, ct.c_size_t, ct.POINTER(ccs_expression)])
 ccs_configuration_space_get_forbidden_clauses = _ccs_get_function("ccs_configuration_space_get_forbidden_clauses", [ccs_configuration_space, ct.c_size_t, ct.POINTER(ccs_expression), ct.POINTER(ct.c_size_t)])
-ccs_configuration_space_check_configuration = _ccs_get_function("ccs_configuration_space_check_configuration", [ccs_configuration_space, ccs_configuration])
-ccs_configuration_space_check_configuration_values = _ccs_get_function("ccs_configuration_space_check_configuration_values", [ccs_configuration_space, ct.c_size_t, ct.POINTER(ccs_datum)])
+ccs_configuration_space_check_configuration = _ccs_get_function("ccs_configuration_space_check_configuration", [ccs_configuration_space, ccs_configuration, ct.POINTER(ccs_bool)])
+ccs_configuration_space_check_configuration_values = _ccs_get_function("ccs_configuration_space_check_configuration_values", [ccs_configuration_space, ct.c_size_t, ct.POINTER(ccs_datum), ct.POINTER(ccs_bool)])
 ccs_configuration_space_get_default_configuration = _ccs_get_function("ccs_configuration_space_get_default_configuration", [ccs_configuration_space, ct.POINTER(ccs_configuration)])
 ccs_configuration_space_sample = _ccs_get_function("ccs_configuration_space_sample", [ccs_configuration_space, ct.POINTER(ccs_configuration)])
 ccs_configuration_space_samples = _ccs_get_function("ccs_configuration_space_samples", [ccs_configuration_space, ct.c_size_t, ct.POINTER(ccs_configuration)])
@@ -190,18 +190,23 @@ class ConfigurationSpace(Context):
     return [Expression.from_handle(ccs_expression(x)) for x in v]
 
   def check(self, configuration):
-    res = ccs_configuration_space_check_configuration(self.handle, configuration.handle)
+    valid = ccs_bool()
+    res = ccs_configuration_space_check_configuration(self.handle, configuration.handle, ct.byref(valid))
     Error.check(res)
+    return False if valid.value == 0 else True
 
   def check_values(self, values):
     count = len(values)
     if count != self.num_hyperparameters:
       raise Error(ccs_error(ccs_error.INVALID_VALUE))
     v = (ccs_datum * count)()
+    ss = []
     for i in range(count):
-      v[i].value = values[i]
-    res = ccs_configuration_space_check_configuration_values(self.handle, count, v)
+      v[i].set_value(values[i], string_store = ss)
+    valid = ccs_bool()
+    res = ccs_configuration_space_check_configuration_values(self.handle, count, v, ct.byref(valid))
     Error.check(res)
+    return False if valid.value == 0 else True
 
   @property
   def default_configuration(self):

@@ -60,16 +60,16 @@ typedef enum ccs_hyperparameter_type_e ccs_hyperparameter_type_t;
  * @param[out] hyperparameter_ret a pointer to the variable that will hold the
  *                                newly created numerical hyperparameter
  * @return #CCS_SUCCESS on success
- * @return -#CCS_INVALID_VALUE if \p name is NULL; or if \p hyperparameter_ret
+ * @return #CCS_INVALID_VALUE if \p name is NULL; or if \p hyperparameter_ret
  *                             is NULL; or if quantization is less than 0; or if
  *                             default value is not a valid value for the
  *                             hyperparameter
- * @return -#CCS_INVALID_TYPE if data_type is neither #CCS_NUM_FLOAT or
+ * @return #CCS_INVALID_TYPE if data_type is neither #CCS_NUM_FLOAT or
  *                            #CCS_NUM_INTEGER
- * @return -#CCS_OUT_OF_MEMORY if there was a lack of memory to allocate the new
+ * @return #CCS_OUT_OF_MEMORY if there was a lack of memory to allocate the new
  *                             numerical hyperparameter
  */
-extern ccs_result_t
+extern ccs_error_t
 ccs_create_numerical_hyperparameter(const char           *name,
                                     ccs_numeric_type_t    data_type,
                                     ccs_numeric_t         lower,
@@ -90,15 +90,15 @@ ccs_create_numerical_hyperparameter(const char           *name,
  * @param[out] quantization_ret a pointer that will contain the quantization of
  *                              the numerical hyperparameter
  * @return #CCS_SUCCESS on success
- * @return -#CCS_INVALID_OBJECT if \p hyperparameter is not a valid CCS
+ * @return #CCS_INVALID_OBJECT if \p hyperparameter is not a valid CCS
  *                              hyperparameter
- * @return -#CCS_INVALID_HYPERPARAMETER if \p hyperparameter is not a
+ * @return #CCS_INVALID_HYPERPARAMETER if \p hyperparameter is not a
  *                                      numerical hyperparameter
- * @return -#CCS_INVALID_VALUE if \p data_type_ret is NULL and \p lower_ret is
+ * @return #CCS_INVALID_VALUE if \p data_type_ret is NULL and \p lower_ret is
  *                             NULL and \p upper_ret is NULL and \p
  *                             quantization_ret is NULL
  */
-extern ccs_result_t
+extern ccs_error_t
 ccs_numerical_hyperparameter_get_parameters(
 	ccs_hyperparameter_t  hyperparameter,
 	ccs_numeric_type_t   *data_type_ret,
@@ -118,12 +118,12 @@ ccs_numerical_hyperparameter_get_parameters(
  * @param[out] hyperparameter_ret a pointer to the variable that will hold the
  *                                newly created categorical hyperparameter
  * @return #CCS_SUCCESS on success
- * @return -#CCS_INVALID_VALUE if \p name is NULL; or if \p hyperparameter_ret
+ * @return #CCS_INVALID_VALUE if \p name is NULL; or if \p hyperparameter_ret
  *                             is NULL
- * @return -#CCS_OUT_OF_MEMORY if there was a lack of memory to allocate the new
+ * @return #CCS_OUT_OF_MEMORY if there was a lack of memory to allocate the new
  *                             hyperparameter
  */
-extern ccs_result_t
+extern ccs_error_t
 ccs_create_categorical_hyperparameter(const char           *name,
                                       size_t                num_possible_values,
                                       ccs_datum_t          *possible_values,
@@ -141,18 +141,18 @@ ccs_create_categorical_hyperparameter(const char           *name,
  *                                     the number of values that are or would be
  *                                     returned. Can be NULL
  * @return #CCS_SUCCESS on success
- * @return -#CCS_INVALID_OBJECT if \p hyperparameter is not a valid CCS
+ * @return #CCS_INVALID_OBJECT if \p hyperparameter is not a valid CCS
  *                              hyperparameter
- * @return -#CCS_INVALID_HYPERPARAMETER if \p hyperparameter is not a
+ * @return #CCS_INVALID_HYPERPARAMETER if \p hyperparameter is not a
  *                                      categorical hyperparameter
- * @return -#CCS_INVALID_VALUE if \p possible_values is NULL and \p
+ * @return #CCS_INVALID_VALUE if \p possible_values is NULL and \p
  *                             num_possible_values is greater than 0; or if \p
  *                             possible_values is NULL and \p
  *                             num_possible_values_ret is NULL; or if
  *                             num_possible_values is less than the number of
  *                             values that would be returned
  */
-extern ccs_result_t
+extern ccs_error_t
 ccs_categorical_hyperparameter_get_values(
 	ccs_hyperparameter_t  hyperparameter,
 	size_t                num_possible_values,
@@ -172,12 +172,12 @@ ccs_categorical_hyperparameter_get_values(
  * @param[out] hyperparameter_ret a pointer to the variable that will hold the
  *                                newly created ordinal hyperparameter
  * @return #CCS_SUCCESS on success
- * @return -#CCS_INVALID_VALUE if \p name is NULL; or if \p hyperparameter_ret
+ * @return #CCS_INVALID_VALUE if \p name is NULL; or if \p hyperparameter_ret
  *                             is NULL
- * @return -#CCS_OUT_OF_MEMORY if there was a lack of memory to allocate the new
+ * @return #CCS_OUT_OF_MEMORY if there was a lack of memory to allocate the new
  *                             hyperparameter
  */
-extern ccs_result_t
+extern ccs_error_t
 ccs_create_ordinal_hyperparameter(const char           *name,
                                   size_t                num_possible_values,
                                   ccs_datum_t          *possible_values,
@@ -195,18 +195,18 @@ ccs_create_ordinal_hyperparameter(const char           *name,
  *                                     the number of values that are or would be
  *                                     returned. Can be NULL
  * @return #CCS_SUCCESS on success
- * @return -#CCS_INVALID_OBJECT if \p hyperparameter is not a valid CCS
+ * @return #CCS_INVALID_OBJECT if \p hyperparameter is not a valid CCS
  *                              hyperparameter
- * @return -#CCS_INVALID_HYPERPARAMETER if \p hyperparameter is not an ordinal
+ * @return #CCS_INVALID_HYPERPARAMETER if \p hyperparameter is not an ordinal
  *                                      hyperparameter
- * @return -#CCS_INVALID_VALUE if \p possible_values is NULL and \p
+ * @return #CCS_INVALID_VALUE if \p possible_values is NULL and \p
  *                             num_possible_values is greater than 0; or if \p
  *                             possible_values is NULL and \p
  *                             num_possible_values_ret is NULL; or if
  *                             num_possible_values is less than the number of
  *                             values that would be returned
  */
-extern ccs_result_t
+extern ccs_error_t
 ccs_ordinal_hyperparameter_get_values(
 	ccs_hyperparameter_t  hyperparameter,
 	size_t                num_possible_values,
@@ -222,13 +222,13 @@ ccs_ordinal_hyperparameter_get_values(
  *                      is found to be respectively lesser than, grater then or
  *                      equal to value2
  * @return #CCS_SUCCESS on success
- * @return -#CCS_INVALID_OBJECT if \p hyperparameter is not a valid CCS
- * @return -#CCS_INVALID_HYPERPARAMETER if \p hyperparameter is not an ordinal
+ * @return #CCS_INVALID_OBJECT if \p hyperparameter is not a valid CCS
+ * @return #CCS_INVALID_HYPERPARAMETER if \p hyperparameter is not an ordinal
  *                                      hyperparameter
- * @return -#CCS_INVALID_VALUE if \p comp_ret is NULL; or if value1 or value2
+ * @return #CCS_INVALID_VALUE if \p comp_ret is NULL; or if value1 or value2
  *                             are not one of the hyperparameter possible values
  */
-extern ccs_result_t
+extern ccs_error_t
 ccs_ordinal_hyperparameter_compare_values(ccs_hyperparameter_t  hyperparameter,
                                           ccs_datum_t           value1,
                                           ccs_datum_t           value2,
@@ -247,12 +247,12 @@ ccs_ordinal_hyperparameter_compare_values(ccs_hyperparameter_t  hyperparameter,
  * @param[out] hyperparameter_ret a pointer to the variable that will hold the
  *                                newly created discrete hyperparameter
  * @return #CCS_SUCCESS on success
- * @return -#CCS_INVALID_VALUE if \p name is NULL; or if \p hyperparameter_ret
+ * @return #CCS_INVALID_VALUE if \p name is NULL; or if \p hyperparameter_ret
  *                             is NULL
- * @return -#CCS_OUT_OF_MEMORY if there was a lack of memory to allocate the new
+ * @return #CCS_OUT_OF_MEMORY if there was a lack of memory to allocate the new
  *                             hyperparameter
  */
-extern ccs_result_t
+extern ccs_error_t
 ccs_create_discrete_hyperparameter(const char           *name,
                                    size_t                num_possible_values,
                                    ccs_datum_t          *possible_values,
@@ -270,18 +270,18 @@ ccs_create_discrete_hyperparameter(const char           *name,
  *                                     the number of values that are or would be
  *                                     returned. Can be NULL
  * @return #CCS_SUCCESS on success
- * @return -#CCS_INVALID_OBJECT if \p hyperparameter is not a valid CCS
+ * @return #CCS_INVALID_OBJECT if \p hyperparameter is not a valid CCS
  *                              hyperparameter
- * @return -#CCS_INVALID_HYPERPARAMETER if \p hyperparameter is not a discrete
+ * @return #CCS_INVALID_HYPERPARAMETER if \p hyperparameter is not a discrete
  *                                      hyperparameter
- * @return -#CCS_INVALID_VALUE if \p possible_values is NULL and \p
+ * @return #CCS_INVALID_VALUE if \p possible_values is NULL and \p
  *                             num_possible_values is greater than 0; or if \p
  *                             possible_values is NULL and \p
  *                             num_possible_values_ret is NULL; or if
  *                             num_possible_values is less than the number of
  *                             values that would be returned
  */
-extern ccs_result_t
+extern ccs_error_t
 ccs_discrete_hyperparameter_get_values(ccs_hyperparameter_t  hyperparameter,
                                        size_t                num_possible_values,
                                        ccs_datum_t          *possible_values,
@@ -295,12 +295,12 @@ ccs_discrete_hyperparameter_get_values(ccs_hyperparameter_t  hyperparameter,
  * @param[out] hyperparameter_ret a pointer to the variable that will hold the
  *                                newly created string hyperparameter
  * @return #CCS_SUCCESS on success
- * @return -#CCS_INVALID_VALUE if \p name is NULL; or if \p hyperparameter_ret
+ * @return #CCS_INVALID_VALUE if \p name is NULL; or if \p hyperparameter_ret
  *                             is NULL
- * @return -#CCS_OUT_OF_MEMORY if there was a lack of memory to allocate the new
+ * @return #CCS_OUT_OF_MEMORY if there was a lack of memory to allocate the new
  *                             hyperparameter
  */
-extern ccs_result_t
+extern ccs_error_t
 ccs_create_string_hyperparameter(const char           *name,
                                  ccs_hyperparameter_t *hyperparameter_ret);
 
@@ -310,11 +310,11 @@ ccs_create_string_hyperparameter(const char           *name,
  * @param[out] type_ret a pointer to the variable that will contain the type of
  *                      the hyperparameter
  * @return #CCS_SUCCESS on success
- * @return -#CCS_INVALID_VALUE if \p type_ret is NULL
- * @return -#CCS_INVALID_OBJECT if \p distribution is not a valid CCS
+ * @return #CCS_INVALID_VALUE if \p type_ret is NULL
+ * @return #CCS_INVALID_OBJECT if \p distribution is not a valid CCS
  *                              hyperparameter
  */
-extern ccs_result_t
+extern ccs_error_t
 ccs_hyperparameter_get_type(ccs_hyperparameter_t       hyperparameter,
                             ccs_hyperparameter_type_t *type_ret);
 
@@ -324,11 +324,11 @@ ccs_hyperparameter_get_type(ccs_hyperparameter_t       hyperparameter,
  * @param[out] value_ret pointer to the variable that will contain the default
  *                       value of the hyperparameter
  * @return #CCS_SUCCESS on success
- * @return -#CCS_INVALID_VALUE if \p value_ret is NULL
- * @return -#CCS_INVALID_OBJECT if \p distribution is not a valid CCS
+ * @return #CCS_INVALID_VALUE if \p value_ret is NULL
+ * @return #CCS_INVALID_OBJECT if \p distribution is not a valid CCS
  *                              hyperparameter
  */
-extern ccs_result_t
+extern ccs_error_t
 ccs_hyperparameter_get_default_value(ccs_hyperparameter_t  hyperparameter,
                                      ccs_datum_t          *value_ret);
 
@@ -338,11 +338,11 @@ ccs_hyperparameter_get_default_value(ccs_hyperparameter_t  hyperparameter,
  * @param[out] name_ret a pointer to the variable that will contain a pointer to
  *                      the name of the hyperparameter
  * @return #CCS_SUCCESS on success
- * @return -#CCS_INVALID_VALUE if \p name_ret is NULL
- * @return -#CCS_INVALID_OBJECT if \p distribution is not a valid CCS
+ * @return #CCS_INVALID_VALUE if \p name_ret is NULL
+ * @return #CCS_INVALID_OBJECT if \p distribution is not a valid CCS
  *                              hyperparameter
  */
-extern ccs_result_t
+extern ccs_error_t
 ccs_hyperparameter_get_name(ccs_hyperparameter_t   hyperparameter,
                             const char           **name_ret);
 
@@ -352,11 +352,11 @@ ccs_hyperparameter_get_name(ccs_hyperparameter_t   hyperparameter,
  * @param[out] distribution_ret a pointer to the variable that will contained
  *                              the returned distribution
  * @return #CCS_SUCCESS on success
- * @return -#CCS_INVALID_OBJECT if \p hyperparameter is not a valid CCS
+ * @return #CCS_INVALID_OBJECT if \p hyperparameter is not a valid CCS
  *                              hyperparameter
- * @return -#CCS_INVALID_VALUE if \p distribution_ret is NULL
+ * @return #CCS_INVALID_VALUE if \p distribution_ret is NULL
  */
-extern ccs_result_t
+extern ccs_error_t
 ccs_hyperparameter_get_default_distribution(
 	ccs_hyperparameter_t  hyperparameter,
 	ccs_distribution_t   *distribution_ret);
@@ -368,11 +368,11 @@ ccs_hyperparameter_get_default_distribution(
  * @param[out] result_ret a pointer to the variable that will contain the result
  *                        of the check
  * @return #CCS_SUCCESS on success
- * @return -#CCS_INVALID_OBJECT if \p hyperparameter is not a valid CCS
+ * @return #CCS_INVALID_OBJECT if \p hyperparameter is not a valid CCS
  *                              hyperparameter
- * @return -#CCS_INVALID_VALUE if \p result_ret is NULL
+ * @return #CCS_INVALID_VALUE if \p result_ret is NULL
  */
-extern ccs_result_t
+extern ccs_error_t
 ccs_hyperparameter_check_value(ccs_hyperparameter_t  hyperparameter,
                                ccs_datum_t           value,
                                ccs_bool_t           *result_ret);
@@ -385,12 +385,12 @@ ccs_hyperparameter_check_value(ccs_hyperparameter_t  hyperparameter,
  * @param[out] results an array of \p num_values cc_bool_t values that will
  *                     contain the results the individual checks
  * @return #CCS_SUCCESS on success
- * @return -#CCS_INVALID_OBJECT if \p hyperparameter is not a valid CCS
+ * @return #CCS_INVALID_OBJECT if \p hyperparameter is not a valid CCS
  *                              hyperparameter
- * @return -#CCS_INVALID_VALUE if \p values or \p results are NULL and \p
+ * @return #CCS_INVALID_VALUE if \p values or \p results are NULL and \p
  *                             num_values is greater than 0
  */
-extern ccs_result_t
+extern ccs_error_t
 ccs_hyperparameter_check_values(ccs_hyperparameter_t  hyperparameter,
                                 size_t                num_values,
                                 const ccs_datum_t    *values,
@@ -407,11 +407,11 @@ ccs_hyperparameter_check_values(ccs_hyperparameter_t  hyperparameter,
  * @param[out] result_ret a pointer to the variable that will contain the result
  *                        of the check
  * @return #CCS_SUCCESS on success
- * @return -#CCS_INVALID_OBJECT if \p hyperparameter is not a valid CCS
+ * @return #CCS_INVALID_OBJECT if \p hyperparameter is not a valid CCS
  *                              hyperparameter
- * @return -#CCS_INVALID_VALUE if \p result_ret or \p value_ret is NULL
+ * @return #CCS_INVALID_VALUE if \p result_ret or \p value_ret is NULL
  */
-extern ccs_result_t
+extern ccs_error_t
 ccs_hyperparameter_validate_value(ccs_hyperparameter_t  hyperparameter,
                                   ccs_datum_t           value,
                                   ccs_datum_t          *value_ret,
@@ -429,12 +429,12 @@ ccs_hyperparameter_validate_value(ccs_hyperparameter_t  hyperparameter,
  * @param[out] results an array of \p num_values cc_bool_t values that will
  *                     contain the results the individual checks
  * @return #CCS_SUCCESS on success
- * @return -#CCS_INVALID_OBJECT if \p hyperparameter is not a valid CCS
+ * @return #CCS_INVALID_OBJECT if \p hyperparameter is not a valid CCS
  *                              hyperparameter
- * @return -#CCS_INVALID_VALUE if \p values or \p results or \p values_ret are
+ * @return #CCS_INVALID_VALUE if \p values or \p results or \p values_ret are
  *                             NULL and \p num_values is greater than 0
  */
-extern ccs_result_t
+extern ccs_error_t
 ccs_hyperparameter_validate_values(ccs_hyperparameter_t  hyperparameter,
                                    size_t                num_values,
                                    const ccs_datum_t    *values,
@@ -455,12 +455,12 @@ ccs_hyperparameter_validate_values(ccs_hyperparameter_t  hyperparameter,
  *                     outside of the sampling interval will be converted to
  *                     #ccs_inactive
  * @return #CCS_SUCCESS on success
- * @return -#CCS_INVALID_OBJECT if \p hyperparameter is not a valid CCS
+ * @return #CCS_INVALID_OBJECT if \p hyperparameter is not a valid CCS
  *                              hyperparameter
- * @return -#CCS_INVALID_VALUE if \p values or \p results are NULL and \p
+ * @return #CCS_INVALID_VALUE if \p values or \p results are NULL and \p
  *                             num_values is greater than 0
  */
-extern ccs_result_t
+extern ccs_error_t
 ccs_hyperparameter_convert_samples(ccs_hyperparameter_t  hyperparameter,
                                    ccs_bool_t            oversampling,
                                    size_t                num_values,
@@ -475,16 +475,16 @@ ccs_hyperparameter_convert_samples(ccs_hyperparameter_t  hyperparameter,
  * @param[out] value_ret a pointer to the variable that will contain the
  *                       sampled value
  * @return #CCS_SUCCESS on success
- * @return -#CCS_INVALID_OBJECT if \p hyperparameter is not a valid CCS
+ * @return #CCS_INVALID_OBJECT if \p hyperparameter is not a valid CCS
  *                              hyperparameter; or if \p distribution is not a
  *                              valid CCS distribution; or if \p rng is not a
  *                              valid CCS random number generator
- * @return -#CCS_INVALID_VALUE if \p value_ret is NULL
- * @return -#CCS_SAMPLING_UNSUCCESSFUL if the sample could not be generated,
+ * @return #CCS_INVALID_VALUE if \p value_ret is NULL
+ * @return #CCS_SAMPLING_UNSUCCESSFUL if the sample could not be generated,
  *                                     because the probability of obtaining a
  *                                     valid sample is too low
  */
-extern ccs_result_t
+extern ccs_error_t
 ccs_hyperparameter_sample(ccs_hyperparameter_t  hyperparameter,
                           ccs_distribution_t    distribution,
                           ccs_rng_t             rng,
@@ -499,17 +499,17 @@ ccs_hyperparameter_sample(ccs_hyperparameter_t  hyperparameter,
  * @param[out] values an array of \p num_values values will contain the
  *                    sampled values
  * @return #CCS_SUCCESS on success
- * @return -#CCS_INVALID_OBJECT if \p hyperparameter is not a valid CCS
+ * @return #CCS_INVALID_OBJECT if \p hyperparameter is not a valid CCS
  *                              hyperparameter; or if \p distribution is not a
  *                              valid CCS distribution; or if \p rng is not a
  *                              valid CCS random number generator
- * @return -#CCS_INVALID_VALUE if \p values is NULL and \p num_values is greater
+ * @return #CCS_INVALID_VALUE if \p values is NULL and \p num_values is greater
  *                             than 0
- * @return -#CCS_SAMPLING_UNSUCCESSFUL if not enough samples could not be
+ * @return #CCS_SAMPLING_UNSUCCESSFUL if not enough samples could not be
  *                                     generated, because the probability of
  *                                     obtaining a valid sample is too low
  */
-extern ccs_result_t
+extern ccs_error_t
 ccs_hyperparameter_samples(ccs_hyperparameter_t  hyperparameter,
                            ccs_distribution_t    distribution,
                            ccs_rng_t             rng,
@@ -522,11 +522,11 @@ ccs_hyperparameter_samples(ccs_hyperparameter_t  hyperparameter,
  * @param[out] interval_ret a pointer to the variable that will contain the
  *                          returned interval
  * @return #CCS_SUCCESS on success
- * @return -#CCS_INVALID_OBJECT if \p hyperparameter is not a valid CCS
+ * @return #CCS_INVALID_OBJECT if \p hyperparameter is not a valid CCS
  *                              hyperparameter
- * @return -#CCS_INVALID_VALUE if \p interval_ret is NULL
+ * @return #CCS_INVALID_VALUE if \p interval_ret is NULL
  */
-extern ccs_result_t
+extern ccs_error_t
 ccs_hyperparameter_sampling_interval(ccs_hyperparameter_t  hyperparameter,
                                      ccs_interval_t       *interval_ret);
 #ifdef __cplusplus

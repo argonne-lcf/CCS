@@ -1,5 +1,7 @@
 import ctypes as ct
 import json
+import sys
+import traceback
 from . import libcconfigspace
 
 class ccs_version(ct.Structure):
@@ -36,15 +38,10 @@ ccs_features_evaluation = ccs_object
 ccs_tuner               = ccs_object
 ccs_features_tuner      = ccs_object
 ccs_map                 = ccs_object
+ccs_error_stack         = ccs_object
 
 ccs_false = 0
 ccs_true = 1
-
-def _ccs_get_function(method, argtypes = [], restype = ccs_result):
-  res = getattr(libcconfigspace, method)
-  res.restype = restype
-  res.argtypes = argtypes
-  return res
 
 # https://www.python-course.eu/python3_metaclasses.php
 class Singleton(type):
@@ -148,39 +145,40 @@ class ccs_object_type(CEnumeration):
     'FEATURES',
     'FEATURES_EVALUATION',
     'FEATURES_TUNER',
-    'MAP' ]
+    'MAP',
+    'CCS_ERROR_STACK' ]
 
 class ccs_error(CEnumeration):
   _members_ = [
-    ('SUCCESS', 0),
-    'INVALID_OBJECT',
-    'INVALID_VALUE',
-    'INVALID_TYPE',
-    'INVALID_SCALE',
-    'INVALID_DISTRIBUTION',
-    'INVALID_EXPRESSION',
-    'INVALID_HYPERPARAMETER',
-    'INVALID_CONFIGURATION',
-    'INVALID_NAME',
-    'INVALID_CONDITION',
-    'INVALID_TUNER',
-    'INVALID_GRAPH',
-    'TYPE_NOT_COMPARABLE',
-    'INVALID_BOUNDS',
-    'OUT_OF_BOUNDS',
-    'SAMPLING_UNSUCCESSFUL',
-    'INACTIVE_HYPERPARAMETER',
-    'OUT_OF_MEMORY',
-    'UNSUPPORTED_OPERATION',
-    'INVALID_EVALUATION',
-    'INVALID_FEATURES',
-    'INVALID_FEATURES_TUNER',
-    'INVALID_FILE_PATH',
-    'NOT_ENOUGH_DATA',
-    'HANDLE_DUPLICATE',
-    'INVALID_HANDLE',
-    'SYSTEM_ERROR',
-    'AGAIN' ]
+    ('AGAIN',                    1),
+    ('SUCCESS',                  0),
+    ('INVALID_OBJECT',          -1),
+    ('INVALID_VALUE',           -2),
+    ('INVALID_TYPE',            -3),
+    ('INVALID_SCALE',           -4),
+    ('INVALID_DISTRIBUTION',    -5),
+    ('INVALID_EXPRESSION',      -6),
+    ('INVALID_HYPERPARAMETER',  -7),
+    ('INVALID_CONFIGURATION',   -8),
+    ('INVALID_NAME',            -9),
+    ('INVALID_CONDITION',      -10),
+    ('INVALID_TUNER',          -11),
+    ('INVALID_GRAPH',          -12),
+    ('TYPE_NOT_COMPARABLE',    -13),
+    ('INVALID_BOUNDS',         -14),
+    ('OUT_OF_BOUNDS',          -15),
+    ('SAMPLING_UNSUCCESSFUL',  -16),
+    ('OUT_OF_MEMORY',          -17),
+    ('UNSUPPORTED_OPERATION',  -18),
+    ('INVALID_EVALUATION',     -19),
+    ('INVALID_FEATURES',       -20),
+    ('INVALID_FEATURES_TUNER', -21),
+    ('INVALID_FILE_PATH',      -22),
+    ('NOT_ENOUGH_DATA',        -23),
+    ('HANDLE_DUPLICATE',       -24),
+    ('INVALID_HANDLE',         -25),
+    ('SYSTEM_ERROR',           -26),
+    ('EXTERNAL_ERROR',         -27) ]
 
 class ccs_data_type(CEnumeration):
   _members_ = [
@@ -288,8 +286,7 @@ class ccs_datum(ct.Structure):
     else:
       raise Error(ccs_error(ccs_error.INVALID_VALUE))
 
-  @value.setter
-  def value(self, v):
+  def set_value(self, v, string_store = None, object_store = None):
     if v is None:
       self.type = ccs_data_type.NONE
       self._value.i = 0
@@ -308,8 +305,12 @@ class ccs_datum(ct.Structure):
       self.flags = 0
     elif isinstance(v, str):
       self.type = ccs_data_type.STRING
-      self._string = str.encode(v)
-      self._value.s = ct.c_char_p(self._string)
+      s = ct.c_char_p(str.encode(v))
+      if string_store:
+        string_store.append(s)
+      else:
+        self._string = s
+      self._value.s = s
       self.flags = ccs_datum_flag.TRANSIENT
     elif v is ccs_inactive:
       self.type = ccs_data_type.INACTIVE
@@ -326,14 +327,43 @@ class ccs_datum(ct.Structure):
     else:
       raise Error(ccs_error(ccs_error.INVALID_VALUE))
 
+  @value.setter
+  def value(self, v):
+    self.set_value(v)
+
 class Error(Exception):
-  def __init__(self, message):
-    self.message = message
+  def __init__(self, code):
+    # see: https://stackoverflow.com/a/54653137 for ideas
+    self._code = code
+    self._stack = get_thread_error()
+    if self._stack:
+      elems = '\n'.join( [f"  File \"{e.file.decode()}\", line {e.line}, in {e.func.decode()}" for e in self._stack.elems()] )
+      if elems:
+        msg = f"{code}: {self._stack.message}\n{elems}"
+      else:
+        msg = f"{code}: {self._stack.message}"
+      super().__init__(msg)
+    else:
+      super().__init__(code)
 
   @classmethod
   def check(cls, err):
-    if err < 0:
-      raise cls(ccs_error(-err))
+    if err.value < 0:
+      raise cls(err)
+
+  @classmethod
+  def set_error(cls, exc):
+    if isinstance(exc, Error):
+      if exc._stack:
+        stack = exc._stack
+      else:
+        stack = ErrorStack(error = exc._code)
+    else:
+      stack = ErrorStack(error = ccs_error.EXTERNAL_ERROR, message = str(exc))
+    for s in traceback.extract_tb(sys.exc_info()[2]):
+      stack.push(s.filename, s.lineno, s.name)
+    set_thread_error(stack)
+    return stack.code.value
 
 class ccs_serialize_format(CEnumeration):
   _members_ = [
@@ -365,6 +395,12 @@ class ccs_deserialize_option(CEnumeration):
     'CALLBACK'
   ]
 
+def _ccs_get_function(method, argtypes = [], restype = ccs_error):
+  res = getattr(libcconfigspace, method)
+  res.restype = restype
+  res.argtypes = argtypes
+  return res
+
 ccs_init = _ccs_get_function("ccs_init")
 ccs_fini = _ccs_get_function("ccs_fini")
 ccs_get_error_name = _ccs_get_function("ccs_get_error_name", [ccs_error, ct.POINTER(ct.c_char_p)])
@@ -377,14 +413,14 @@ ccs_object_destroy_callback_type = ct.CFUNCTYPE(None, ccs_object, ct.c_void_p)
 ccs_object_set_destroy_callback = _ccs_get_function("ccs_object_set_destroy_callback", [ccs_object, ccs_object_destroy_callback_type, ct.c_void_p])
 ccs_object_set_user_data = _ccs_get_function("ccs_object_set_user_data", [ccs_object, ct.py_object])
 ccs_object_get_user_data = _ccs_get_function("ccs_object_get_user_data", [ccs_object, ct.POINTER(ct.c_void_p)])
-ccs_object_serialize_callback_type = ct.CFUNCTYPE(ccs_result, ccs_object, ct.c_size_t, ct.c_void_p, ct.POINTER(ct.c_size_t), ct.c_void_p)
+ccs_object_serialize_callback_type = ct.CFUNCTYPE(ccs_error, ccs_object, ct.c_size_t, ct.c_void_p, ct.POINTER(ct.c_size_t), ct.c_void_p)
 ccs_object_set_serialize_callback = _ccs_get_function("ccs_object_set_serialize_callback", [ccs_object, ccs_object_serialize_callback_type, ct.c_void_p])
-ccs_object_deserialize_callback_type = ct.CFUNCTYPE(ccs_result, ccs_object, ct.c_size_t, ct.c_void_p, ct.c_void_p)
+ccs_object_deserialize_callback_type = ct.CFUNCTYPE(ccs_error, ccs_object, ct.c_size_t, ct.c_void_p, ct.c_void_p)
 # Variadic methods
 ccs_object_serialize = getattr(libcconfigspace, "ccs_object_serialize")
-ccs_object_serialize.restype = ccs_result
+ccs_object_serialize.restype = ccs_error
 ccs_object_deserialize = getattr(libcconfigspace, "ccs_object_deserialize")
-ccs_object_deserialize.restype = ccs_result
+ccs_object_deserialize.restype = ccs_error
 
 _res = ccs_init()
 Error.check(_res)
@@ -482,6 +518,8 @@ class Object:
       return FeaturesTuner.from_handle(h, retain = retain, auto_release = auto_release)
     elif v == ccs_object_type.MAP:
       return Map.from_handle(h, retain = retain, auto_release = auto_release)
+    elif v == ccs_object_type.ERROR_STACK:
+      return ErrorStack.from_handle(h, retain = retain, auto_release = auto_release)
     else:
       raise Error(ccs_error(ccs_error.INVALID_OBJECT))
 
@@ -596,8 +634,8 @@ def _get_serialize_callback_wrapper(callback):
       if p_sdsz:
         p_sdsz[0] = ct.sizeof(serialized)
       return ccs_error.SUCCESS
-    except Error as e:
-      return -e.message.value
+    except Exception as e:
+      return Error.set_error(e)
   return serialize_callback_wrapper
 
 def _get_deserialize_callback_wrapper(callback):
@@ -615,8 +653,8 @@ def _get_deserialize_callback_wrapper(callback):
         serialized = None
       callback(Object.from_handle(ccs_object(obj)), serialized, cb_data)
       return ccs_error.SUCCESS
-    except Error as e:
-      return -e.message.value
+    except Exception as e:
+      return Error.set_error(e)
   return deserialize_callback_wrapper
 
 def _json_user_data_serializer(obj, data, size):
@@ -641,8 +679,9 @@ def _register_vector(handle, vector_data):
   value = handle.value
   if value in _data_store:
     raise Error(ccs_error(ccs_error.INVALID_VALUE))
-  _data_store[value] = dict.fromkeys(['callbacks', 'user_data', 'serialize_calback'])
+  _data_store[value] = dict.fromkeys(['callbacks', 'user_data', 'serialize_calback', 'strings'])
   _data_store[value]['callbacks'] = vector_data
+  _data_store[value]['strings'] = []
 
 def _unregister_vector(handle):
   value = handle.value
@@ -657,8 +696,9 @@ def _register_destroy_callback(handle):
   cb_func = ccs_object_destroy_callback_type(cb)
   res = ccs_object_set_destroy_callback(handle, cb_func, None)
   Error.check(res)
-  _data_store[value] = dict.fromkeys(['callbacks', 'user_data', 'serialize_calback'])
+  _data_store[value] = dict.fromkeys(['callbacks', 'user_data', 'serialize_calback', 'strings'])
   _data_store[value]['callbacks'] = [ [ cb, cb_func ] ]
+  _data_store[value]['strings'] = []
 
 def _register_callback(handle, callback_data):
   value = handle.value
@@ -671,6 +711,12 @@ def _register_user_data(handle, user_data):
   if value not in _data_store:
     _register_destroy_callback(handle)
   _data_store[value]['user_data'] = user_data
+
+def _register_string(handle, string):
+  value = handle.value
+  if value not in _data_store:
+    _register_destroy_callback(handle)
+  _data_store[value]['strings'].append( string )
 
 def _register_serialize_callback(handle, callback_data):
   value = handle.value
@@ -724,3 +770,4 @@ from .features_evaluation import FeaturesEvaluation
 from .tuner import Tuner
 from .features_tuner import FeaturesTuner
 from .map import Map
+from .error_stack import ErrorStack, get_thread_error, set_thread_error, clear_thread_error

@@ -5,7 +5,7 @@
 
 ccs_hyperparameter_t create_numerical(const char * name, double lower, double upper) {
 	ccs_hyperparameter_t hyperparameter;
-	ccs_result_t         err;
+	ccs_error_t         err;
 	err = ccs_create_numerical_hyperparameter(name, CCS_NUM_FLOAT,
 	                                          CCSF(lower), CCSF(upper),
 	                                          CCSF(0.0), CCSF(0),
@@ -24,7 +24,7 @@ void test() {
 	ccs_objective_space_t     ospace;
 	ccs_expression_t          expression;
 	ccs_features_tuner_t      tuner, tuner_copy;
-	ccs_result_t              err;
+	ccs_error_t              err;
 	ccs_features_t            features_on, features_off;
 	ccs_datum_t               knobs_values[2] =
 		{ ccs_string("on"), ccs_string("off") };
@@ -227,7 +227,7 @@ void test_evaluation_deserialize() {
 	ccs_features_space_t       fspace;
 	ccs_objective_space_t      ospace;
 	ccs_expression_t           expression;
-	ccs_result_t               err;
+	ccs_error_t               err;
 	ccs_configuration_t        configuration;
 	ccs_features_t             features_on;
 	ccs_datum_t                knobs_values[2] = { ccs_string("on"), ccs_string("off") };
@@ -286,7 +286,7 @@ void test_evaluation_deserialize() {
 
 	err = ccs_object_deserialize((ccs_object_t*)&evaluation, CCS_SERIALIZE_FORMAT_BINARY, CCS_SERIALIZE_OPERATION_MEMORY, buff_size, buff,
 	                             CCS_DESERIALIZE_OPTION_HANDLE_MAP, map, CCS_DESERIALIZE_OPTION_END);
-	assert( err == -CCS_INVALID_HANDLE );
+	assert( err == CCS_INVALID_HANDLE );
 
 	d = ccs_object(ospace);
 	d.flags |= CCS_FLAG_ID;
@@ -295,7 +295,7 @@ void test_evaluation_deserialize() {
 
 	err = ccs_object_deserialize((ccs_object_t*)&evaluation, CCS_SERIALIZE_FORMAT_BINARY, CCS_SERIALIZE_OPERATION_MEMORY, buff_size, buff,
 	                             CCS_DESERIALIZE_OPTION_HANDLE_MAP, map, CCS_DESERIALIZE_OPTION_END);
-	assert( err == -CCS_INVALID_HANDLE );
+	assert( err == CCS_INVALID_HANDLE );
 
 	d = ccs_object(fspace);
 	d.flags |= CCS_FLAG_ID;
@@ -304,7 +304,7 @@ void test_evaluation_deserialize() {
 
 	err = ccs_object_deserialize((ccs_object_t*)&evaluation, CCS_SERIALIZE_FORMAT_BINARY, CCS_SERIALIZE_OPERATION_MEMORY, buff_size, buff,
 	                             CCS_DESERIALIZE_OPTION_HANDLE_MAP, map, CCS_DESERIALIZE_OPTION_END);
-	assert( err == -CCS_INVALID_HANDLE );
+	assert( err == CCS_INVALID_HANDLE );
 
 	d = ccs_object(cspace);
 	d.flags |= CCS_FLAG_ID;
@@ -351,8 +351,9 @@ void test_evaluation_deserialize() {
 int main() {
 	ccs_init();
 	test();
-	ccs_fini();
 	test_evaluation_deserialize();
+	ccs_clear_thread_error();
+	ccs_fini();
 	return 0;
 }
 

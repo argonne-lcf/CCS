@@ -7,7 +7,7 @@ void test_map() {
 	ccs_bool_t            found;
 	ccs_datum_t           d1, d2, d3, d_ret, *keys, *values;
 	size_t                d_count;
-	ccs_result_t          err = CCS_SUCCESS;
+	ccs_error_t          err = CCS_SUCCESS;
 	char                 *str1, *str2;
 	ccs_hyperparameter_t  hp;
 	char                 *buff;
@@ -166,6 +166,7 @@ void test_map() {
 int main() {
 	ccs_init();
 	test_map();
+	ccs_clear_thread_error();
 	ccs_fini();
 	return 0;
 }

@@ -8,11 +8,11 @@ typedef struct _ccs_evaluation_data_s _ccs_evaluation_data_t;
 struct _ccs_evaluation_ops_s {
 	_ccs_object_ops_t obj_ops;
 
-	ccs_result_t (*hash)(
+	ccs_error_t (*hash)(
 		_ccs_evaluation_data_t *data,
 		ccs_hash_t             *hash_ret);
 
-	ccs_result_t (*cmp)(
+	ccs_error_t (*cmp)(
 		_ccs_evaluation_data_t *data,
 		ccs_evaluation_t        other,
 		int                    *cmp_ret);

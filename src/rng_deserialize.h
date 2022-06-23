@@ -5,7 +5,7 @@
 
 static const gsl_rng_type **_ccs_gsl_rng_types = NULL;
 
-static inline ccs_result_t
+static inline ccs_error_t
 _ccs_deserialize_bin_rng(
 		ccs_rng_t                          *rng_ret,
 		uint32_t                            version,
@@ -13,13 +13,12 @@ _ccs_deserialize_bin_rng(
 		const char                        **buffer,
 		_ccs_object_deserialize_options_t  *opts) {
 	(void)version;
-	ccs_result_t res;
+	ccs_error_t res;
 	_ccs_object_internal_t obj;
 	ccs_object_t handle;
 	CCS_VALIDATE(_ccs_deserialize_bin_ccs_object_internal(
 		&obj, buffer_size, buffer, &handle));
-	if (CCS_UNLIKELY(obj.type != CCS_RNG))
-		return -CCS_INVALID_TYPE;
+	CCS_REFUTE(obj.type != CCS_RNG, CCS_INVALID_TYPE);
 
 	const char *name;
 	ccs_bool_t little_endian;
@@ -36,8 +35,7 @@ _ccs_deserialize_bin_rng(
 	for (t = _ccs_gsl_rng_types; *t != NULL; t++)
 		if (!strcmp(name, (*t)->name))
 			break;
-	if (CCS_UNLIKELY(!*t))
-		return -CCS_INVALID_VALUE;
+	CCS_REFUTE(!*t, CCS_INVALID_VALUE);
 
 	CCS_VALIDATE(ccs_create_rng_with_type(*t, rng_ret));
 	/* try to restore the state of the rng, might be non portable,
@@ -59,7 +57,7 @@ err_rng:
 	return res;
 }
 
-static ccs_result_t
+static ccs_error_t
 _ccs_rng_deserialize(
 		ccs_rng_t                          *rng_ret,
 		ccs_serialize_format_t              format,
@@ -73,7 +71,7 @@ _ccs_rng_deserialize(
 			rng_ret, version, buffer_size, buffer, opts));
 		break;
 	default:
-		return -CCS_INVALID_VALUE;
+		CCS_RAISE(CCS_INVALID_VALUE, "Unsupported serialization format: %d", format);
 	}
 	CCS_VALIDATE(_ccs_object_deserialize_user_data(
 		(ccs_object_t)*rng_ret, format, version, buffer_size, buffer, opts));

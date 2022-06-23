@@ -49,17 +49,17 @@ typedef enum ccs_comparison_e ccs_comparison_t;
  * @param[out] evaluation_ret a pointer to the variable that will hold the
  *             newly created evaluation
  * @return #CCS_SUCCESS on success
- * @return -#CCS_INVALID_OBJECT if \p objective_space is not a valid CCS
+ * @return #CCS_INVALID_OBJECT if \p objective_space is not a valid CCS
  *                              objective space; or if \p configuration is not a
  *                              valid CCS configuration
- * @return -#CCS_INVALID_VALUE if \p evaluation_ret is NULL; or if \p values is
+ * @return #CCS_INVALID_VALUE if \p evaluation_ret is NULL; or if \p values is
  *                             NULL and \p num_values is greater than 0; or if
  *                             the number of values provided is not equal to the
  *                             number of hyperparameters in the objective space
- * @return -#CCS_OUT_OF_MEMORY if there was a lack of memory to allocate the new
+ * @return #CCS_OUT_OF_MEMORY if there was a lack of memory to allocate the new
  *                             evaluation
  */
-extern ccs_result_t
+extern ccs_error_t
 ccs_create_evaluation(ccs_objective_space_t  objective_space,
                       ccs_configuration_t    configuration,
                       ccs_result_t           error,
@@ -73,10 +73,10 @@ ccs_create_evaluation(ccs_objective_space_t  objective_space,
  * @param[out] objective_space_ret a pointer to the variable that will
  *                                 contain the objective space
  * @return #CCS_SUCCESS on success
- * @return -#CCS_INVALID_OBJECT if \p evaluation is not a valid CCS evaluation
- * @return -#CCS_INVALID_VALUE if \p objective_space_ret is NULL
+ * @return #CCS_INVALID_OBJECT if \p evaluation is not a valid CCS evaluation
+ * @return #CCS_INVALID_VALUE if \p objective_space_ret is NULL
  */
-extern ccs_result_t
+extern ccs_error_t
 ccs_evaluation_get_objective_space(ccs_evaluation_t       evaluation,
                                    ccs_objective_space_t *objective_space_ret);
 
@@ -86,10 +86,10 @@ ccs_evaluation_get_objective_space(ccs_evaluation_t       evaluation,
  * @param[out] configuration_ret a pointer to the variable that will contain
  *                               the configuration
  * @return #CCS_SUCCESS on success
- * @return -#CCS_INVALID_OBJECT if \p evaluation is not a valid CCS evaluation
- * @return -#CCS_INVALID_VALUE if \p configuration_ret is NULL
+ * @return #CCS_INVALID_OBJECT if \p evaluation is not a valid CCS evaluation
+ * @return #CCS_INVALID_VALUE if \p configuration_ret is NULL
  */
-extern ccs_result_t
+extern ccs_error_t
 ccs_evaluation_get_configuration(ccs_evaluation_t     evaluation,
                                  ccs_configuration_t *configuration_ret);
 
@@ -99,10 +99,10 @@ ccs_evaluation_get_configuration(ccs_evaluation_t     evaluation,
  * @param[out] error_ret a pointer to the variable that will contain the
  *                       returned error code
  * @return #CCS_SUCCESS on success
- * @return -#CCS_INVALID_OBJECT if \p evaluation is not a valid CCS evaluation
- * @return -#CCS_INVALID_VALUE if \p error_ret is NULL
+ * @return #CCS_INVALID_OBJECT if \p evaluation is not a valid CCS evaluation
+ * @return #CCS_INVALID_VALUE if \p error_ret is NULL
  */
-extern ccs_result_t
+extern ccs_error_t
 ccs_evaluation_get_error(ccs_evaluation_t  evaluation,
                          ccs_result_t     *error_ret);
 
@@ -112,9 +112,9 @@ ccs_evaluation_get_error(ccs_evaluation_t  evaluation,
  * @param[in,out] evaluation
  * @param[in] error the error code associated withe the evaluation
  * @return #CCS_SUCCESS on success
- * @return -#CCS_INVALID_OBJECT if \p evaluation is not a valid CCS evaluation
+ * @return #CCS_INVALID_OBJECT if \p evaluation is not a valid CCS evaluation
  */
-extern ccs_result_t
+extern ccs_error_t
 ccs_evaluation_set_error(ccs_evaluation_t evaluation,
                          ccs_result_t     error);
 
@@ -125,12 +125,12 @@ ccs_evaluation_set_error(ccs_evaluation_t evaluation,
                     space
  * @param[out] value_ret a pointer to the variable that will hold the value
  * @return #CCS_SUCCESS on success
- * @return -#CCS_INVALID_OBJECT if \p binding is not a valid CCS evaluation
- * @return -#CCS_INVALID_VALUE if \p value_ret is NULL
- * @return -#CCS_OUT_OF_BOUNDS if \p index is greater than the count of
+ * @return #CCS_INVALID_OBJECT if \p binding is not a valid CCS evaluation
+ * @return #CCS_INVALID_VALUE if \p value_ret is NULL
+ * @return #CCS_OUT_OF_BOUNDS if \p index is greater than the count of
  *                             hyperparameters in the objective space
  */
-extern ccs_result_t
+extern ccs_error_t
 ccs_evaluation_get_value(ccs_evaluation_t  evaluation,
                          size_t            index,
                          ccs_datum_t      *value_ret);
@@ -143,14 +143,14 @@ ccs_evaluation_get_value(ccs_evaluation_t  evaluation,
  *                  space
  * @param[in] value the value
  * @return #CCS_SUCCESS on success
- * @return -#CCS_INVALID_OBJECT if \p evaluation is not a valid CCS evaluation
- * @return -#CCS_INVALID_VALUE if \p value_ret is NULL
- * @return -#CCS_OUT_OF_BOUNDS if \p index is greater than the count of
+ * @return #CCS_INVALID_OBJECT if \p evaluation is not a valid CCS evaluation
+ * @return #CCS_INVALID_VALUE if \p value_ret is NULL
+ * @return #CCS_OUT_OF_BOUNDS if \p index is greater than the count of
  *                             hyperparameters in the objective space
- * @return -#CCS_OUT_OF_MEMORY if there was a lack of memory while memoizing a
+ * @return #CCS_OUT_OF_MEMORY if there was a lack of memory while memoizing a
  *                             string
  */
-extern ccs_result_t
+extern ccs_error_t
 ccs_evaluation_set_value(ccs_evaluation_t evaluation,
                          size_t           index,
                          ccs_datum_t      value);
@@ -166,13 +166,13 @@ ccs_evaluation_set_value(ccs_evaluation_t evaluation,
  *                            number of values that are or would be returned.
  *                            Can be NULL
  * @return #CCS_SUCCESS on success
- * @return -#CCS_INVALID_OBJECT if \p evaluation is not a valid CCS evaluation
- * @return -#CCS_INVALID_VALUE if \p values is NULL and \p num_values is greater
+ * @return #CCS_INVALID_OBJECT if \p evaluation is not a valid CCS evaluation
+ * @return #CCS_INVALID_VALUE if \p values is NULL and \p num_values is greater
  *                             than 0; or if \p values is NULL and
  *                             num_values_ret is NULL; or if num_values is less
  *                             than the number of values that would be returned
  */
-extern ccs_result_t
+extern ccs_error_t
 ccs_evaluation_get_values(ccs_evaluation_t  evaluation,
                           size_t            num_values,
                           ccs_datum_t      *values,
@@ -184,12 +184,12 @@ ccs_evaluation_get_values(ccs_evaluation_t  evaluation,
  * @param[in] name the name of the hyperparameter whose value to retrieve
  * @param[out] value_ret a pointer to the variable that will hold the value
  * @return #CCS_SUCCESS on success
- * @return -#CCS_INVALID_OBJECT if \p evaluation is not a valid CCS evaluation
- * @return -#CCS_INVALID_VALUE if \p value_ret is NULL
- * @return -#CCS_INVALID_NAME if no hyperparameter with such \p name exist in
+ * @return #CCS_INVALID_OBJECT if \p evaluation is not a valid CCS evaluation
+ * @return #CCS_INVALID_VALUE if \p value_ret is NULL
+ * @return #CCS_INVALID_NAME if no hyperparameter with such \p name exist in
  *                            the \p objective space
  */
-extern ccs_result_t
+extern ccs_error_t
 ccs_evaluation_get_value_by_name(ccs_evaluation_t  evaluation,
                                  const char       *name,
                                  ccs_datum_t      *value_ret);
@@ -197,13 +197,19 @@ ccs_evaluation_get_value_by_name(ccs_evaluation_t  evaluation,
 /**
  * Check that an evaluation values are valid in the objective space.
  * @param[in] evaluation
+ * @param[out] is_valid_ret a pointer to a variable that will hold the result
+ *                          of the check. Result will be CCS_TRUE if the
+ *                          evaluation is valid. Result will be CCS_FALSE if
+ *                          an hyperparameter value is not a valid value
+ *                          for this hyperparameter
  * @return #CCS_SUCCESS on success
- * @return -#CCS_INVALID_OBJECT if \p evaluation is not a valid CCS evaluation
- * @return -#CCS_INVALID_EVALUATION if \p evaluation was found to be invalid in
+ * @return #CCS_INVALID_OBJECT if \p evaluation is not a valid CCS evaluation
+ * @return #CCS_INVALID_EVALUATION if \p evaluation was found to be invalid in
  *                                  the context of the objective space
  */
-extern ccs_result_t
-ccs_evaluation_check(ccs_evaluation_t  evaluation);
+extern ccs_error_t
+ccs_evaluation_check(ccs_evaluation_t  evaluation,
+                     ccs_bool_t       *is_valid_ret);
 
 /**
  * Get the value of an objective for a valid evaluation in the context of its
@@ -213,13 +219,13 @@ ccs_evaluation_check(ccs_evaluation_t  evaluation);
  * @param[out] value_ret a pointer to the variable that will contain the value
  *                       of the objective
  * @return #CCS_SUCCESS on success
- * @return -#CCS_INVALID_OBJECT if \p evaluation is not a valid CCS evaluation
- * @return -#CCS_INVALID_VALUE if \p value_ret is NULL; or if there was an issue
+ * @return #CCS_INVALID_OBJECT if \p evaluation is not a valid CCS evaluation
+ * @return #CCS_INVALID_VALUE if \p value_ret is NULL; or if there was an issue
  *                             evaluating the objective
- * @return -#CCS_OUT_OF_BOUNDS if \p index is greater than the number of
+ * @return #CCS_OUT_OF_BOUNDS if \p index is greater than the number of
  *                             objective in the objective space
  */
-extern ccs_result_t
+extern ccs_error_t
 ccs_evaluation_get_objective_value(ccs_evaluation_t  evaluation,
                                    size_t            index,
                                    ccs_datum_t      *value_ret);
@@ -236,13 +242,13 @@ ccs_evaluation_get_objective_value(ccs_evaluation_t  evaluation,
  *                            contain the number of values that are or would be
  *                            returned. Can be NULL
  * @return #CCS_SUCCESS on success
- * @return -#CCS_INVALID_OBJECT if \p evaluation is not a valid CCS evaluation
- * @return -#CCS_INVALID_VALUE if \p values is NULL and \p num_values is greater
+ * @return #CCS_INVALID_OBJECT if \p evaluation is not a valid CCS evaluation
+ * @return #CCS_INVALID_VALUE if \p values is NULL and \p num_values is greater
  *                             than 0; or if values is NULL and num_values_ret
  *                             is NULL; or if there was an issue evaluating any
  *                             of the objectives
  */
-extern ccs_result_t
+extern ccs_error_t
 ccs_evaluation_get_objective_values(ccs_evaluation_t  evaluation,
                                     size_t            num_values,
                                     ccs_datum_t      *values,
@@ -256,10 +262,10 @@ ccs_evaluation_get_objective_values(ccs_evaluation_t  evaluation,
  * @param[out] hash_ret the address of the variable that will contain the hash
  *                      value.
  * @return #CCS_SUCCESS on success
- * @return -#CCS_INVALID_OBJECT if \p evaluation is not a valid CCS evaluation
- * @return -#CCS_INVALID_VALUE if \p hash_ret is NULL
+ * @return #CCS_INVALID_OBJECT if \p evaluation is not a valid CCS evaluation
+ * @return #CCS_INVALID_VALUE if \p hash_ret is NULL
  */
-extern ccs_result_t
+extern ccs_error_t
 ccs_evaluation_hash(ccs_evaluation_t  evaluation,
                     ccs_hash_t       *hash_ret);
 
@@ -273,11 +279,11 @@ ccs_evaluation_hash(ccs_evaluation_t  evaluation,
  *                     if the first evaluation is found to be respectively
  *                     lesser than, equal, or greater then the second evaluation
  * @return #CCS_SUCCESS on success
- * @return -#CCS_INVALID_OBJECT if \p evaluation or \p other_evaluation are not
+ * @return #CCS_INVALID_OBJECT if \p evaluation or \p other_evaluation are not
  *                              valid CCS evaluations
- * @return -#CCS_INVALID_VALUE if \p cmp_ret is NULL
+ * @return #CCS_INVALID_VALUE if \p cmp_ret is NULL
  */
-extern ccs_result_t
+extern ccs_error_t
 ccs_evaluation_cmp(ccs_evaluation_t  evaluation,
                    ccs_evaluation_t  other_evaluation,
                    int              *cmp_ret);
@@ -293,16 +299,16 @@ ccs_evaluation_cmp(ccs_evaluation_t  evaluation,
  *                        better, equivalent, worse, or not comparable with the
  *                        second evaluation.
  * @return #CCS_SUCCESS on success
- * @return -#CCS_INVALID_OBJECT if \p evaluation or \p other_evaluation are not
+ * @return #CCS_INVALID_OBJECT if \p evaluation or \p other_evaluation are not
  *                              valid CCS evaluations; or if \p evaluation and
  *                              \p other_evaluation do not share the same
  *                              objective space; or if any of the configuration
  *                              is associated an error code different than
  *                              CCS_SUCESS
- * @return -#CCS_INVALID_VALUE if \p result_ret is NULL; or if there was an
+ * @return #CCS_INVALID_VALUE if \p result_ret is NULL; or if there was an
  *                                issue evaluating any of the objectives
  */
-extern ccs_result_t
+extern ccs_error_t
 ccs_evaluation_compare(ccs_evaluation_t  evaluation,
                        ccs_evaluation_t  other_evaluation,
                        ccs_comparison_t *result_ret);

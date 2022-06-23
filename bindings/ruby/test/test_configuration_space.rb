@@ -26,13 +26,13 @@ class CConfigSpaceTestConfigurationSpace < Minitest::Test
     assert_equal( h3, cs.hyperparameter(2) )
     assert_equal( [h1, h2, h3], cs.hyperparameters )
     assert_equal( h2, cs.hyperparameter_by_name(h2.name) )
-    cs.check(cs.default_configuration)
+    assert( cs.check(cs.default_configuration) )
     c = cs.sample
-    cs.check(c)
+    assert( cs.check(c) )
     assert_equal( cs.handle, c.configuration_space.handle )
-    cs.check_values(cs.sample.values)
+    assert( cs.check_values(cs.sample.values) )
     cs.samples(100).each { |c|
-      cs.check(c)
+      assert( cs.check(c) )
     }
   end
 
@@ -194,7 +194,7 @@ class CConfigSpaceTestConfigurationSpace < Minitest::Test
 
     1000.times {
       s = cs.sample
-      s.check
+      assert( s.check )
       active_params = extract_active_parameters(s.values)
       active_params.each { |par|
         refute_equal( CCS::Inactive, s.value(par) )
@@ -274,7 +274,7 @@ class CConfigSpaceTestConfigurationSpace < Minitest::Test
 
     1000.times {
       s = cs.sample
-      s.check
+      assert( s.check )
       active_params = extract_active_parameters(s.values)
       active_params.each { |par|
         refute_equal( CCS::Inactive, s.value(par) )
@@ -290,7 +290,7 @@ class CConfigSpaceTestConfigurationSpace < Minitest::Test
     cs_copy = CCS::deserialize(buffer: buff)
     1000.times {
       s = cs_copy.sample
-      s.check
+      assert( s.check )
       active_params = extract_active_parameters(s.values)
       active_params.each { |par|
         refute_equal( CCS::Inactive, s.value(par) )

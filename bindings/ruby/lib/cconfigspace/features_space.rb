@@ -1,9 +1,9 @@
 module CCS
-  attach_function :ccs_create_features_space, [:string, :pointer], :ccs_result_t
-  attach_function :ccs_features_space_add_hyperparameter, [:ccs_features_space_t, :ccs_hyperparameter_t], :ccs_result_t
-  attach_function :ccs_features_space_add_hyperparameters, [:ccs_features_space_t, :size_t, :pointer], :ccs_result_t
-  attach_function :ccs_features_space_check_features, [:ccs_features_space_t, :ccs_features_t], :ccs_result_t
-  attach_function :ccs_features_space_check_features_values, [:ccs_features_space_t, :size_t, :pointer], :ccs_result_t
+  attach_function :ccs_create_features_space, [:string, :pointer], :ccs_error_t
+  attach_function :ccs_features_space_add_hyperparameter, [:ccs_features_space_t, :ccs_hyperparameter_t], :ccs_error_t
+  attach_function :ccs_features_space_add_hyperparameters, [:ccs_features_space_t, :size_t, :pointer], :ccs_error_t
+  attach_function :ccs_features_space_check_features, [:ccs_features_space_t, :ccs_features_t, :pointer], :ccs_error_t
+  attach_function :ccs_features_space_check_features_values, [:ccs_features_space_t, :size_t, :pointer, :pointer], :ccs_error_t
 
   class FeaturesSpace < Context
     def initialize(handle = nil, retain: false, auto_release: true,
@@ -12,8 +12,7 @@ module CCS
         super(handle, retain: retain, auto_release: auto_release)
       else
         ptr = MemoryPointer::new(:ccs_features_space_t)
-        res = CCS.ccs_create_features_space(name, ptr)
-        CCS.error_check(res)
+        CCS.error_check CCS.ccs_create_features_space(name, ptr)
         super(ptr.read_ccs_features_space_t, retain: false)
       end
     end
@@ -23,8 +22,7 @@ module CCS
     end
 
     def add_hyperparameter(hyperparameter)
-      res = CCS.ccs_features_space_add_hyperparameter(@handle, hyperparameter)
-      CCS.error_check(res)
+      CCS.error_check CCS.ccs_features_space_add_hyperparameter(@handle, hyperparameter)
       self
     end
 
@@ -33,25 +31,25 @@ module CCS
       return self if count == 0
       p_hypers = MemoryPointer::new(:ccs_hyperparameter_t, count)
       p_hypers.write_array_of_pointer(hyperparameters.collect(&:handle))
-      res = CCS.ccs_features_space_add_hyperparameters(@handle, count, p_hypers)
-      CCS.error_check(res)
+      CCS.error_check CCS.ccs_features_space_add_hyperparameters(@handle, count, p_hypers)
       self
     end
 
     def check(features)
-      res = CCS.ccs_features_space_check_features(@handle, features)
-      CCS.error_check(res)
-      self
+      ptr = MemoryPointer::new(:ccs_bool_t)
+      CCS.error_check CCS.ccs_features_space_check_features(@handle, features, ptr)
+      return ptr.read_ccs_bool_t == CCS::FALSE ? false : true
     end
 
     def check_values(values)
       count = values.size
       raise CCSError, :CCS_INVALID_VALUE if count != num_hyperparameters
+      ss = []
       ptr = MemoryPointer::new(:ccs_datum_t, count)
-      values.each_with_index {  |v, i| Datum::new(ptr[i]).value = v }
-      res = CCS.ccs_features_space_check_features_values(@handle, count, ptr)
-      CCS.error_check(res)
-      self
+      values.each_with_index {  |v, i| Datum::new(ptr[i]).set_value(v, string_store: ss) }
+      ptr2 = MemoryPointer::new(:ccs_bool_t)
+      CCS.error_check CCS.ccs_features_space_check_features_values(@handle, count, ptr, ptr2)
+      return ptr2.read_ccs_bool_t == CCS::FALSE ? false : true
     end
   end
 end

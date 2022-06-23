@@ -30,7 +30,8 @@ CCONFIGSPACE_TESTS = \
 		test_features_space \
 		test_random_features_tuner \
 		test_user_defined_features_tuner \
-		test_map
+		test_map \
+		test_error_stack
 
 # unit tests
 UNIT_TESTS = \
@@ -41,4 +42,5 @@ TEST_PROGS = $(UNIT_TESTS)
 check_PROGRAMS = $(TEST_PROGS)
 TESTS = $(TEST_PROGS)
 
+VALGRIND_memcheck_FLAGS = --leak-check=full --show-leak-kinds=all --errors-for-leak-kinds=all
 @VALGRIND_CHECK_RULES@

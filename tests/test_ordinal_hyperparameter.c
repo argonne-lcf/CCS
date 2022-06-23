@@ -11,7 +11,7 @@ static void compare_hyperparameter(
 		const size_t         num_possible_values,
 		ccs_datum_t          possible_values[],
 		const size_t         default_value_index) {
-	ccs_result_t               err;
+	ccs_error_t               err;
 	ccs_hyperparameter_type_t  type;
 	ccs_datum_t                default_value;
 	const char                *name;
@@ -67,7 +67,7 @@ static void compare_hyperparameter(
 
 void test_create() {
 	ccs_hyperparameter_t  hyperparameter;
-	ccs_result_t          err;
+	ccs_error_t          err;
 	const size_t          num_possible_values = NUM_POSSIBLE_VALUES;
 	ccs_datum_t           possible_values[NUM_POSSIBLE_VALUES];
 	const size_t          default_value_index = 2;
@@ -110,7 +110,7 @@ void test_create() {
 
 void test_create_error() {
 	ccs_hyperparameter_t       hyperparameter;
-	ccs_result_t               err;
+	ccs_error_t               err;
 	const size_t               num_possible_values = NUM_POSSIBLE_VALUES;
 	ccs_datum_t                possible_values[NUM_POSSIBLE_VALUES];
 	const size_t               default_value_index = 2;
@@ -125,7 +125,7 @@ void test_create_error() {
 	err = ccs_create_ordinal_hyperparameter("my_param", num_possible_values,
 	                                        possible_values, default_value_index,
 	                                        &hyperparameter);
-	assert( err == -CCS_INVALID_VALUE );
+	assert( err == CCS_INVALID_VALUE );
 }
 
 void test_samples() {
@@ -134,7 +134,7 @@ void test_samples() {
 	ccs_distribution_t         distribution;
 	const size_t               num_samples = NUM_SAMPLES;
 	ccs_datum_t                samples[NUM_SAMPLES];
-	ccs_result_t               err;
+	ccs_error_t               err;
 	const size_t               num_possible_values = NUM_POSSIBLE_VALUES;
 	ccs_datum_t                possible_values[NUM_POSSIBLE_VALUES];
 	const size_t               default_value_index = 2;
@@ -180,7 +180,7 @@ void test_oversampling() {
 	ccs_distribution_t         distribution;
 	const size_t               num_samples = NUM_SAMPLES;
 	ccs_datum_t                samples[NUM_SAMPLES];
-	ccs_result_t               err;
+	ccs_error_t               err;
 	const size_t               num_possible_values = NUM_POSSIBLE_VALUES;
 	ccs_datum_t                possible_values[NUM_POSSIBLE_VALUES];
 	const size_t               default_value_index = 2;
@@ -222,7 +222,7 @@ void test_oversampling() {
 
 void test_compare() {
 	ccs_hyperparameter_t       hyperparameter;
-	ccs_result_t               err;
+	ccs_error_t               err;
 	const size_t               num_possible_values = NUM_POSSIBLE_VALUES;
 	ccs_datum_t                possible_values[NUM_POSSIBLE_VALUES];
 	const size_t               default_value_index = 2;
@@ -265,7 +265,7 @@ void test_compare() {
 	err = ccs_ordinal_hyperparameter_compare_values(
 		hyperparameter, invalid,
 		possible_values[0], &comp);
-	assert( err == -CCS_INVALID_VALUE );
+	assert( err == CCS_INVALID_VALUE );
 
 	err = ccs_release_object(hyperparameter);
 	assert( err == CCS_SUCCESS );
@@ -273,7 +273,7 @@ void test_compare() {
 
 void test_compare_float() {
 	ccs_hyperparameter_t       hyperparameter;
-	ccs_result_t               err;
+	ccs_error_t               err;
 	const size_t               num_possible_values = NUM_POSSIBLE_VALUES;
 	ccs_datum_t                possible_values[NUM_POSSIBLE_VALUES];
 	const size_t               default_value_index = 2;
@@ -320,7 +320,7 @@ void test_compare_float() {
 	err = ccs_ordinal_hyperparameter_compare_values(
 		hyperparameter, invalid,
 		possible_values[0], &comp);
-	assert( err == -CCS_INVALID_VALUE );
+	assert( err == CCS_INVALID_VALUE );
 
 	err = ccs_release_object(hyperparameter);
 	assert( err == CCS_SUCCESS );
@@ -328,7 +328,7 @@ void test_compare_float() {
 
 void test_compare_string() {
 	ccs_hyperparameter_t       hyperparameter;
-	ccs_result_t               err;
+	ccs_error_t               err;
 	const size_t               num_possible_values = NUM_POSSIBLE_VALUES;
 	ccs_datum_t                possible_values[NUM_POSSIBLE_VALUES];
 	const size_t               default_value_index = 2;
@@ -375,7 +375,7 @@ void test_compare_string() {
 	err = ccs_ordinal_hyperparameter_compare_values(
 		hyperparameter, invalid,
 		possible_values[0], &comp);
-	assert( err == -CCS_INVALID_VALUE );
+	assert( err == CCS_INVALID_VALUE );
 
 	err = ccs_release_object(hyperparameter);
 	assert( err == CCS_SUCCESS );
@@ -383,7 +383,7 @@ void test_compare_string() {
 
 void test_validate() {
 	ccs_hyperparameter_t hyperparameter;
-	ccs_result_t         err;
+	ccs_error_t         err;
 	const size_t         num_possible_values = NUM_POSSIBLE_VALUES;
 	ccs_datum_t          possible_values[NUM_POSSIBLE_VALUES];
 	ccs_datum_t          validated_values[NUM_POSSIBLE_VALUES];
@@ -443,6 +443,7 @@ int main() {
 	test_compare_float();
 	test_compare_string();
 	test_validate();
+	ccs_clear_thread_error();
 	ccs_fini();
 	return 0;
 }

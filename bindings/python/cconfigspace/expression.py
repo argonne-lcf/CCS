@@ -75,8 +75,9 @@ class Expression(Object):
       sz = len(nodes)
       handle = ccs_expression()
       v = (ccs_datum*sz)()
+      ss = []
       for i in range(sz):
-        v[i].value = nodes[i]
+        v[i].set_value(nodes[i], string_store = ss)
       res = ccs_create_expression(t, sz, v, ct.byref(handle))
       Error.check(res)
       super().__init__(handle = handle, retain = False)
@@ -172,8 +173,9 @@ class Expression(Object):
       if count != len(values):
         raise Error(ccs_error(ccs_error.INVALID_VALUE))
       v = (ccs_datum * count)()
+      ss = []
       for i in range(count):
-        v[i].value = values[i]
+        v[i].set_value(values[i], string_store = ss)
       values = v
       context = context.handle
     elif context or values:
@@ -278,8 +280,9 @@ class List(Expression):
       if count != len(values):
         raise Error(ccs_error(ccs_error.INVALID_VALUE))
       v = (ccs_datum * count)()
+      ss = []
       for i in range(count):
-        v[i].value = values[i]
+        v[i].set_value(values[i], string_store = ss)
       values = v
       context = context.handle
     elif context or values:
