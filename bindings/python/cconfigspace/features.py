@@ -17,8 +17,9 @@ class Features(Binding):
       if values:
         count = len(values)
         vals = (ccs_datum * count)()
+        ss = []
         for i in range(count):
-          vals[i].value = values[i]
+          vals[i].set_value(values[i], string_store = ss)
       else:
         vals = None
       handle = ccs_features()

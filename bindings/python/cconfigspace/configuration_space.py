@@ -200,8 +200,9 @@ class ConfigurationSpace(Context):
     if count != self.num_hyperparameters:
       raise Error(ccs_error(ccs_error.INVALID_VALUE))
     v = (ccs_datum * count)()
+    ss = []
     for i in range(count):
-      v[i].value = values[i]
+      v[i].set_value(values[i], string_store = ss)
     valid = ccs_bool()
     res = ccs_configuration_space_check_configuration_values(self.handle, count, v, ct.byref(valid))
     Error.check(res)

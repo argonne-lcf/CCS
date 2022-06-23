@@ -286,8 +286,7 @@ class ccs_datum(ct.Structure):
     else:
       raise Error(ccs_error(ccs_error.INVALID_VALUE))
 
-  @value.setter
-  def value(self, v):
+  def set_value(self, v, string_store = None, object_store = None):
     if v is None:
       self.type = ccs_data_type.NONE
       self._value.i = 0
@@ -306,8 +305,12 @@ class ccs_datum(ct.Structure):
       self.flags = 0
     elif isinstance(v, str):
       self.type = ccs_data_type.STRING
-      self._string = str.encode(v)
-      self._value.s = ct.c_char_p(self._string)
+      s = ct.c_char_p(str.encode(v))
+      if string_store:
+        string_store.append(s)
+      else:
+        self._string = s
+      self._value.s = s
       self.flags = ccs_datum_flag.TRANSIENT
     elif v is ccs_inactive:
       self.type = ccs_data_type.INACTIVE
@@ -323,6 +326,10 @@ class ccs_datum(ct.Structure):
         self.flags = ccs_datum_flag.TRANSIENT
     else:
       raise Error(ccs_error(ccs_error.INVALID_VALUE))
+
+  @value.setter
+  def value(self, v):
+    self.set_value(v)
 
 class Error(Exception):
   def __init__(self, code):

@@ -99,8 +99,9 @@ class Hyperparameter(Object):
   def check_values(self, values):
     sz = len(values)
     v = (ccs_datum * sz)()
+    ss = []
     for i in range(sz):
-      v[i].value = values[i]
+      v[i].set_value(values[i], string_store = ss)
     b = (ccs_bool * sz)()
     res = ccs_hyperparameter_check_values(self.handle, sz, v, b)
     Error.check(res)
@@ -242,8 +243,9 @@ class CategoricalHyperparameter(Hyperparameter):
       sz = len(values)
       handle = ccs_hyperparameter()
       v = (ccs_datum*sz)()
+      ss = []
       for i in range(sz):
-        v[i].value = values[i]
+        v[i].set_value(values[i], string_store = ss)
       res = ccs_create_categorical_hyperparameter(str.encode(name), sz, v, default_index, ct.byref(handle))
       Error.check(res)
       super().__init__(handle = handle, retain = False)
@@ -273,8 +275,9 @@ class OrdinalHyperparameter(Hyperparameter):
       sz = len(values)
       handle = ccs_hyperparameter()
       v = (ccs_datum*sz)()
+      ss = []
       for i in range(sz):
-        v[i].value = values[i]
+        v[i].set_value(values[i], string_store = ss)
       res = ccs_create_ordinal_hyperparameter(str.encode(name), sz, v, default_index, ct.byref(handle))
       Error.check(res)
       super().__init__(handle = handle, retain = False)
@@ -313,8 +316,9 @@ class DiscreteHyperparameter(Hyperparameter):
       sz = len(values)
       handle = ccs_hyperparameter()
       v = (ccs_datum*sz)()
+      ss = []
       for i in range(sz):
-        v[i].value = values[i]
+        v[i].set_value(values[i], string_store = ss)
       res = ccs_create_discrete_hyperparameter(str.encode(name), sz, v, default_index, ct.byref(handle))
       Error.check(res)
       super().__init__(handle = handle, retain = False)

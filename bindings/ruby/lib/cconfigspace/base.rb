@@ -353,7 +353,7 @@ module CCS
       end
     end
 
-    def value=(v, string_store: nil, object_store: nil)
+    def set_value(v, string_store: nil, object_store: nil)
       @string = nil if defined?(@string) && @string
       @object = nil if defined?(@object) && @object
       case v
@@ -407,6 +407,11 @@ module CCS
       else
         raise CCSError, :CCS_INVALID_TYPE
       end
+      self
+    end
+
+    def value=(v)
+      set_value(v)
       v
     end
 

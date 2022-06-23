@@ -94,7 +94,7 @@ module CCS
       count = vals.size
       return [] if count == 0
       values = MemoryPointer::new(:ccs_datum_t, count)
-      vals.each_with_index { |v, i| Datum::new(values[i]).value = v }
+      vals.each_with_index { |v, i| Datum::new(values[i]).set_value(v, string_store: ss) }
       ptr = MemoryPointer::new(:ccs_bool_t, count)
       CCS.error_check CCS.ccs_hyperparameter_check_values(@handle, count, values, ptr)
       count.times.collect { |i| ptr[i].read_ccs_bool_t == CCS::FALSE ? false : true }
@@ -209,9 +209,10 @@ module CCS
         super(handle, retain: retain, auto_release: auto_release)
       else
         count = values.size
-        return [] if count == 0
+        raise CCSError, :CCS_INVALID_VALUE if count == 0
+        ss = []
         vals = MemoryPointer::new(:ccs_datum_t, count)
-        values.each_with_index{ |v, i| Datum::new(vals[i]).value = v }
+        values.each_with_index{ |v, i| Datum::new(vals[i]).set_value(v, string_store: ss) }
         ptr = MemoryPointer::new(:ccs_hyperparameter_t)
         name = name.inspect if name.kind_of?(Symbol)
         CCS.error_check CCS.ccs_create_categorical_hyperparameter(name, count, vals, default_index, ptr)
@@ -241,9 +242,10 @@ module CCS
         super(handle, retain: retain, auto_release: auto_release)
       else
         count = values.size
-        return [] if count == 0
+        raise CCSError, :CCS_INVALID_VALUE if count == 0
+        ss = []
         vals = MemoryPointer::new(:ccs_datum_t, count)
-        values.each_with_index{ |v, i| Datum::new(vals[i]).value = v }
+        values.each_with_index{ |v, i| Datum::new(vals[i]).set_value(v, string_store: ss) }
         ptr = MemoryPointer::new(:ccs_hyperparameter_t)
         name = name.inspect if name.kind_of?(Symbol)
         CCS.error_check CCS.ccs_create_ordinal_hyperparameter(name, count, vals, default_index, ptr)
@@ -280,9 +282,10 @@ module CCS
         super(handle, retain: retain, auto_release: auto_release)
       else
         count = values.size
-        return [] if count == 0
+        raise CCSError, :CCS_INVALID_VALUE if count == 0
+        ss = []
         vals = MemoryPointer::new(:ccs_datum_t, count)
-        values.each_with_index{ |v, i| Datum::new(vals[i]).value = v }
+        values.each_with_index{ |v, i| Datum::new(vals[i]).set_value(v, string_store: ss) }
         ptr = MemoryPointer::new(:ccs_hyperparameter_t)
         name = name.inspect if name.kind_of?(Symbol)
         CCS.error_check CCS.ccs_create_discrete_hyperparameter(name, count, vals, default_index, ptr)

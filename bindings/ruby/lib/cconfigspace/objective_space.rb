@@ -128,8 +128,9 @@ module CCS
     def check_values(values)
       count = values.size
       raise CCSError, :CCS_INVALID_VALUE if count != num_hyperparameters
+      ss = []
       ptr = MemoryPointer::new(:ccs_datum_t, count)
-      values.each_with_index {  |v, i| Datum::new(ptr[i]).value = v }
+      values.each_with_index {  |v, i| Datum::new(ptr[i]).set_value(v, string_store: ss) }
       ptr2 = MemoryPointer::new(:ccs_bool_t)
       CCS.error_check CCS.ccs_objective_space_check_evaluation_values(@handle, count, ptr, ptr2)
       return ptr2.read_ccs_bool_t == CCS::FALSE ? false : true

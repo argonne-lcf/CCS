@@ -105,8 +105,9 @@ module CCS
       else
         count = nodes.size
         p_nodes = MemoryPointer::new(:ccs_datum_t, count)
+        ss = []
         ptr = MemoryPointer::new(:ccs_expression_t)
-        nodes.each_with_index { |n, i| Datum::new(p_nodes[i]).value = n }
+        nodes.each_with_index { |n, i| Datum::new(p_nodes[i]).set_value(n, string_store: ss) }
         CCS.error_check CCS.ccs_create_expression(type, count, p_nodes, ptr)
         super(ptr.read_ccs_expression_t, retain: false)
       end
@@ -150,8 +151,9 @@ module CCS
       if values && context
         count = context.num_hyperparameters
         raise CCSError, :CCS_INVALID_VALUES if values.size != count
+        ss = []
         p_values = MemoryPointer::new(:ccs_datum_t, count)
-        values.each_with_index{ |v, i| Datum::new(p_values[i]).value = v }
+        values.each_with_index{ |v, i| Datum::new(p_values[i]).set_value(v, string_store: ss) }
         values = p_values
       elsif values || context
         raise CCSError, :CCS_INVALID_VALUES
@@ -276,8 +278,9 @@ module CCS
       if values && context
         count = context.num_hyperparameters
         raise CCSError, :CCS_INVALID_VALUES if values.size != count
+        ss = []
         p_values = MemoryPointer::new(:ccs_datum_t, count)
-        values.each_with_index{ |v, i| Datum::new(p_values[i]).value = v }
+        values.each_with_index{ |v, i| Datum::new(p_values[i]).set_value(v, string_store: ss) }
         values = p_values
       elsif values || context
         raise CCSError, :CCS_INVALID_VALUES
