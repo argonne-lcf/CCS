@@ -75,7 +75,7 @@ class ErrorStack(Object):
 def get_thread_error():
   res = ccs_get_thread_error()
   if res:
-    return ErrorStack(handle = res, retain = False)
+    return ErrorStack(handle = res)
   else:
     return None
 

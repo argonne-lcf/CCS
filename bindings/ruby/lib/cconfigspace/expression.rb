@@ -107,16 +107,14 @@ module CCS
         p_nodes = MemoryPointer::new(:ccs_datum_t, count)
         ptr = MemoryPointer::new(:ccs_expression_t)
         nodes.each_with_index { |n, i| Datum::new(p_nodes[i]).value = n }
-        res = CCS.ccs_create_expression(type, count, p_nodes, ptr)
-        CCS.error_check(res)
+        CCS.error_check CCS.ccs_create_expression(type, count, p_nodes, ptr)
         super(ptr.read_ccs_expression_t, retain: false)
       end
     end
 
     def self.from_handle(handle, retain: true, auto_release: true)
       ptr = MemoryPointer::new(:ccs_expression_type_t)
-      res = CCS.ccs_expression_get_type(handle, ptr)
-      CCS.error_check(res)
+      CCS.error_check CCS.ccs_expression_get_type(handle, ptr)
       case ptr.read_ccs_expression_type_t
       when :CCS_LIST
         List
@@ -131,23 +129,20 @@ module CCS
 
     def self.binary(type:, left:, right:)
       ptr = MemoryPointer::new(:ccs_expression_t)
-      res = CCS.ccs_create_binary_expression(type, Datum.from_value(left), Datum.from_value(right), ptr)
-      CCS.error_check(res)
+      CCS.error_check CCS.ccs_create_binary_expression(type, Datum.from_value(left), Datum.from_value(right), ptr)
       self.new(ptr.read_ccs_expression_t, retain: false)
     end
 
     def self.unary(type:, node:)
       ptr = MemoryPointer::new(:ccs_expression_t)
-      res = CCS.ccs_create_unary_expression(type, Datum.from_value(node), ptr)
-      CCS.error_check(res)
+      CCS.error_check CCS.ccs_create_unary_expression(type, Datum.from_value(node), ptr)
       self.new(ptr.read_ccs_expression_t, retain: false)
     end
 
     def nodes
       count = num_nodes
       ptr = MemoryPointer::new(:ccs_expression_t, count)
-      res = CCS.ccs_expression_get_nodes(@handle, count, ptr, nil)
-      CCS.error_check(res)
+      CCS.error_check CCS.ccs_expression_get_nodes(@handle, count, ptr, nil)
       count.times.collect { |i| Expression.from_handle(ptr[i].read_pointer) }
     end
 
@@ -162,31 +157,27 @@ module CCS
         raise CCSError, :CCS_INVALID_VALUES
       end
       ptr = MemoryPointer::new(:ccs_datum_t)
-      res = CCS.ccs_expression_eval(@handle, context, values, ptr)
-      CCS.error_check(res)
+      CCS.error_check CCS.ccs_expression_eval(@handle, context, values, ptr)
       Datum::new(ptr).value
     end
 
     def hyperparameters
       @hyperparameters ||= begin
         ptr = MemoryPointer::new(:size_t)
-        res = CCS.ccs_expression_get_hyperparameters(@handle, 0, nil, ptr)
-        CCS.error_check(res)
+        CCS.error_check CCS.ccs_expression_get_hyperparameters(@handle, 0, nil, ptr)
         count = ptr.read_size_t
         if count == 0
           []
         else
           ptr = MemoryPointer::new(:ccs_hyperparameter_t, count)
-          res = CCS.ccs_expression_get_hyperparameters(@handle, count, ptr, nil)
-          CCS.error_check(res)
+          CCS.error_check CCS.ccs_expression_get_hyperparameters(@handle, count, ptr, nil)
           count.times.collect { |i| Hyperparameters.from_handle(ptr[i].read_ccs_hyperparameter_t) }
         end
       end
     end
 
     def check_context(context)
-      res = CCS.ccs_expression_check_context(@handle, context)
-      CCS.error_check(res)
+      CCS.error_check CCS.ccs_expression_check_context(@handle, context)
       self
     end
 
@@ -221,16 +212,14 @@ module CCS
         super(handle, retain: retain)
       else
         ptr = MemoryPointer::new(:ccs_expression_t)
-        res = CCS.ccs_create_literal(Datum::from_value(value), ptr)
-        CCS.error_check(res)
+        CCS.error_check CCS.ccs_create_literal(Datum::from_value(value), ptr)
         super(ptr.read_ccs_expression_t, retain: false)
       end
     end
 
     def value
       ptr = MemoryPointer::new(:ccs_datum_t)
-      res = CCS.ccs_literal_get_value(@handle, ptr)
-      CCS.error_check(res)
+      CCS.error_check CCS.ccs_literal_get_value(@handle, ptr)
       Datum::new(ptr).value
     end
 
@@ -257,16 +246,14 @@ module CCS
         super(handle, retain: retain)
       else
         ptr = MemoryPointer::new(:ccs_expression_t)
-        res = CCS.ccs_create_variable(hyperparameter, ptr)
-        CCS.error_check(res)
+        CCS.error_check CCS.ccs_create_variable(hyperparameter, ptr)
         super(ptr.read_ccs_expression_t, retain: false)
       end
     end
 
     def hyperparameter
       ptr = MemoryPointer::new(:ccs_hyperparameter_t)
-      res = CCS.ccs_variable_get_hyperparameter(@handle, ptr)
-      CCS.error_check(res)
+      CCS.error_check CCS.ccs_variable_get_hyperparameter(@handle, ptr)
       Hyperparameter.from_handle(ptr.read_ccs_hyperparameter_t)
     end
 
@@ -296,8 +283,7 @@ module CCS
         raise CCSError, :CCS_INVALID_VALUES
       end
       ptr = MemoryPointer::new(:ccs_datum_t)
-      res = CCS.ccs_expression_list_eval_node(@handle, context, values, index, ptr)
-      CCS.error_check(res)
+      CCS.error_check CCS.ccs_expression_list_eval_node(@handle, context, values, index, ptr)
       Datum::new(ptr).value
     end
 

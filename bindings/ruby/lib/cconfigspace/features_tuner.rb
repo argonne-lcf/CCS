@@ -30,8 +30,7 @@ module CCS
 
     def self.from_handle(handle, retain: true, auto_release: true)
       ptr = MemoryPointer::new(:ccs_features_tuner_type_t)
-      res = CCS.ccs_features_tuner_get_type(handle, ptr)
-      CCS.error_check(res)
+      CCS.error_check CCS.ccs_features_tuner_get_type(handle, ptr)
       case ptr.read_ccs_features_tuner_type_t
       when :CCS_FEATURES_TUNER_RANDOM
 	RandomFeaturesTuner
@@ -45,8 +44,7 @@ module CCS
     def name
       @name ||= begin
         ptr = MemoryPointer::new(:pointer)
-        res = CCS.ccs_features_tuner_get_name(@handle, ptr)
-        CCS.error_check(res)
+        CCS.error_check CCS.ccs_features_tuner_get_name(@handle, ptr)
         ptr.read_pointer.read_string
       end
     end
@@ -54,8 +52,7 @@ module CCS
     def ask(features, count = 1)
       p_confs = MemoryPointer::new(:ccs_configuration_t, count)
       p_num = MemoryPointer::new(:size_t)
-      res = CCS.ccs_features_tuner_ask(@handle, features, count, p_confs, p_num)
-      CCS.error_check(res)
+      CCS.error_check CCS.ccs_features_tuner_ask(@handle, features, count, p_confs, p_num)
       count = p_num.read_size_t
       count.times.collect { |i| Configuration::new(p_confs[i].read_pointer, retain: false) }
     end
@@ -64,45 +61,39 @@ module CCS
       count = evaluations.size
       p_evals = MemoryPointer::new(:ccs_features_evaluation_t, count)
       p_evals.write_array_of_pointer(evaluations.collect(&:handle))
-      res = CCS.ccs_features_tuner_tell(@handle, count, p_evals)
-      CCS.error_check(res)
+      CCS.error_check CCS.ccs_features_tuner_tell(@handle, count, p_evals)
       self
     end
 
     def history_size(features: nil)
       p_count = MemoryPointer::new(:size_t)
-      res = CCS.ccs_features_tuner_get_history(@handle, features, 0, nil, p_count)
-      CCS.error_check(res)
+      CCS.error_check CCS.ccs_features_tuner_get_history(@handle, features, 0, nil, p_count)
       return p_count.read_size_t
     end
 
     def history(features: nil)
       count = history_size(features: features)
       p_evals = MemoryPointer::new(:ccs_features_evaluation_t, count)
-      res = CCS.ccs_features_tuner_get_history(@handle, features, count, p_evals, nil)
-      CCS.error_check(res)
+      CCS.error_check CCS.ccs_features_tuner_get_history(@handle, features, count, p_evals, nil)
       count.times.collect { |i| FeaturesEvaluation::from_handle(p_evals[i].read_pointer) }
     end
 
     def num_optimums(features: nil)
       p_count = MemoryPointer::new(:size_t)
-      res = CCS.ccs_features_tuner_get_optimums(@handle, features, 0, nil, p_count)
-      CCS.error_check(res)
+      CCS.error_check CCS.ccs_features_tuner_get_optimums(@handle, features, 0, nil, p_count)
       return p_count.read_size_t
     end
 
     def optimums(features: nil)
       count = num_optimums(features: features)
       p_evals = MemoryPointer::new(:ccs_features_evaluation_t, count)
-      res = CCS.ccs_features_tuner_get_optimums(@handle, features, count, p_evals, nil)
-      CCS.error_check(res)
+      CCS.error_check CCS.ccs_features_tuner_get_optimums(@handle, features, count, p_evals, nil)
       count.times.collect { |i| FeaturesEvaluation::from_handle(p_evals[i].read_pointer) }
     end
 
     def suggest(features)
       p_conf = MemoryPointer::new(:ccs_configuration_t)
-      res = CCS.ccs_features_tuner_suggest(@handle, features, p_conf)
-      CCS.error_check(res)
+      CCS.error_check CCS.ccs_features_tuner_suggest(@handle, features, p_conf)
       Configuration::new(p_conf.read_pointer, retain: false)
     end
 
@@ -115,8 +106,7 @@ module CCS
         super(handle, retain: retain, auto_release: auto_release)
       else
         ptr = MemoryPointer::new(:ccs_features_tuner_t)
-        res = CCS.ccs_create_random_features_tuner(name, configuration_space, features_space, objective_space, ptr)
-        CCS.error_check(res)
+        CCS.error_check CCS.ccs_create_random_features_tuner(name, configuration_space, features_space, objective_space, ptr)
         super(ptr.read_ccs_features_tuner_t, retain: false)
       end
     end
@@ -149,8 +139,8 @@ module CCS
         del.call(CCS::Object.from_handle(tun))
         CCS.unregister_vector(tun)
         CCSError.to_native(:CCS_SUCCESS)
-      rescue CCSError => e
-        e.to_native
+      rescue => e
+        CCS.set_error(e)
       end
     }
     askwrapper = lambda { |tun, features, count, p_configurations, p_count|
@@ -167,8 +157,8 @@ module CCS
         end
         Pointer.new(p_count).write_size_t(count_ret) unless p_count.null?
         CCSError.to_native(:CCS_SUCCESS)
-      rescue CCSError => e
-        e.to_native
+      rescue => e
+        CCS.set_error(e)
       end
     }
     tellwrapper = lambda { |tun, count, p_evaluations|
@@ -178,8 +168,8 @@ module CCS
           tell.call(FeaturesTuner.from_handle(tun), evals)
         end
         CCSError.to_native(:CCS_SUCCESS)
-      rescue CCSError => e
-        e.to_native
+      rescue => e
+        CCS.set_error(e)
       end
     }
     get_optimumswrapper = lambda { |tun, features, count, p_evaluations, p_count|
@@ -194,8 +184,8 @@ module CCS
         end
         Pointer.new(p_count).write_size_t(optimums.size) unless p_count.null?
         CCSError.to_native(:CCS_SUCCESS)
-      rescue CCSError => e
-        e.to_native
+      rescue => e
+        CCS.set_error(e)
       end
     }
     get_historywrapper = lambda { |tun, features, count, p_evaluations, p_count|
@@ -210,8 +200,8 @@ module CCS
         end
         Pointer.new(p_count).write_size_t(history.size) unless p_count.null?
         CCSError.to_native(:CCS_SUCCESS)
-      rescue CCSError => e
-        e.to_native
+      rescue => e
+        CCS.set_error(e)
       end
     }
     suggestwrapper =
@@ -223,8 +213,8 @@ module CCS
             CCS.error_check(err)
             p_configuration.write_pointer(configuration.handle)
             CCSError.to_native(:CCS_SUCCESS)
-          rescue CCSError => e
-            e.to_native
+          rescue => e
+            CCS.set_error(e)
           end
         }
       else
@@ -239,8 +229,8 @@ module CCS
             p_state.write_bytes(state.read_bytes(state.size)) unless p_state.null?
             Pointer.new(p_state_size).write_size_t(state.size) unless p_state_size.null?
             CCSError.to_native(:CCS_SUCCESS)
-          rescue CCSError => e
-            e.to_native
+          rescue => e
+            CCS.set_error(e)
           end
         }
       else
@@ -255,8 +245,8 @@ module CCS
             state = p_state.null? ? nil : p_state.slice(0, state_size)
             deserialize(FeaturesTuner.from_handle(tun), history, optimums, state)
             CCSError.to_native(:CCS_SUCCESS)
-          rescue CCSError => e
-            e.to_native
+          rescue => e
+            CCS.set_error(e)
           end
         }
       else
@@ -289,8 +279,7 @@ module CCS
         vector[:serialize] = serializewrapper
         vector[:deserialize] = deserializewrapper
         ptr = MemoryPointer::new(:ccs_features_tuner_t)
-        res = CCS.ccs_create_user_defined_features_tuner(name, configuration_space, features_space, objective_space, vector, tuner_data, ptr)
-        CCS.error_check(res)
+        CCS.error_check CCS.ccs_create_user_defined_features_tuner(name, configuration_space, features_space, objective_space, vector, tuner_data, ptr)
         handle = ptr.read_ccs_features_tuner_t
         super(handle, retain: false)
         CCS.register_vector(handle, [delwrapper, askwrapper, tellwrapper, get_optimumswrapper, get_historywrapper, suggestwrapper, serializewrapper, deserializewrapper, tuner_data])

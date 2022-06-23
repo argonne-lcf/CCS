@@ -9,7 +9,7 @@ module CCS
 
     def initialize(handle = nil, retain: false, auto_release: true,
                    features_space: nil,  values: nil)
-      if (handle)
+      if handle
         super(handle, retain: retain, auto_release: auto_release)
       else
         if values
@@ -22,8 +22,7 @@ module CCS
           count = 0
         end
         ptr = MemoryPointer::new(:ccs_features_t)
-        res = CCS.ccs_create_features(features_space, count, values, ptr)
-        CCS.error_check(res)
+        CCS.error_check CCS.ccs_create_features(features_space, count, values, ptr)
         super(ptr.read_ccs_features_t, retain: false)
       end
     end
@@ -34,8 +33,7 @@ module CCS
 
     def check
       ptr = MemoryPointer::new(:ccs_bool_t)
-      res = CCS.ccs_features_check(@handle, ptr)
-      CCS.error_check(res)
+      CCS.error_check CCS.ccs_features_check(@handle, ptr)
       return ptr.read_ccs_bool_t == CCS::FALSE ? false : true
     end
 

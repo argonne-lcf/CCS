@@ -12,8 +12,7 @@ module CCS
         super(handle, retain: retain, auto_release: auto_release)
       else
         ptr = MemoryPointer::new(:ccs_features_space_t)
-        res = CCS.ccs_create_features_space(name, ptr)
-        CCS.error_check(res)
+        CCS.error_check CCS.ccs_create_features_space(name, ptr)
         super(ptr.read_ccs_features_space_t, retain: false)
       end
     end
@@ -23,8 +22,7 @@ module CCS
     end
 
     def add_hyperparameter(hyperparameter)
-      res = CCS.ccs_features_space_add_hyperparameter(@handle, hyperparameter)
-      CCS.error_check(res)
+      CCS.error_check CCS.ccs_features_space_add_hyperparameter(@handle, hyperparameter)
       self
     end
 
@@ -33,15 +31,13 @@ module CCS
       return self if count == 0
       p_hypers = MemoryPointer::new(:ccs_hyperparameter_t, count)
       p_hypers.write_array_of_pointer(hyperparameters.collect(&:handle))
-      res = CCS.ccs_features_space_add_hyperparameters(@handle, count, p_hypers)
-      CCS.error_check(res)
+      CCS.error_check CCS.ccs_features_space_add_hyperparameters(@handle, count, p_hypers)
       self
     end
 
     def check(features)
       ptr = MemoryPointer::new(:ccs_bool_t)
-      res = CCS.ccs_features_space_check_features(@handle, features, ptr)
-      CCS.error_check(res)
+      CCS.error_check CCS.ccs_features_space_check_features(@handle, features, ptr)
       return ptr.read_ccs_bool_t == CCS::FALSE ? false : true
     end
 
@@ -51,8 +47,7 @@ module CCS
       ptr = MemoryPointer::new(:ccs_datum_t, count)
       values.each_with_index {  |v, i| Datum::new(ptr[i]).value = v }
       ptr2 = MemoryPointer::new(:ccs_bool_t)
-      res = CCS.ccs_features_space_check_features_values(@handle, count, ptr, ptr2)
-      CCS.error_check(res)
+      CCS.error_check CCS.ccs_features_space_check_features_values(@handle, count, ptr, ptr2)
       return ptr2.read_ccs_bool_t == CCS::FALSE ? false : true
     end
   end

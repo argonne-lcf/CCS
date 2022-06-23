@@ -27,8 +27,7 @@ module CCS
         super(handle, retain: retain, auto_release: auto_release)
       else
         ptr = MemoryPointer::new(:ccs_configuration_space_t)
-        res = CCS.ccs_create_configuration_space(name, ptr)
-        CCS.error_check(res)
+        CCS.error_check CCS.ccs_create_configuration_space(name, ptr)
         super(ptr.read_ccs_configuration_space_t, retain:false)
       end
     end
@@ -39,20 +38,17 @@ module CCS
 
     def rng
       ptr = MemoryPointer::new(:ccs_rng_t)
-      res = CCS.ccs_configuration_space_get_rng(@handle, ptr)
-      CCS.error_check(res)
+      CCS.error_check CCS.ccs_configuration_space_get_rng(@handle, ptr)
       Rng::from_handle(ptr.read_ccs_rng_t)
     end
 
     def rng=(r)
-      res = CCS.ccs_configuration_space_set_rng(@handle, r)
-      CCS.error_check(res)
+      CCS.error_check CCS.ccs_configuration_space_set_rng(@handle, r)
       r
     end
 
     def add_hyperparameter(hyperparameter, distribution: nil)
-      res = CCS.ccs_configuration_space_add_hyperparameter(@handle, hyperparameter, distribution)
-      CCS.error_check(res)
+      CCS.error_check CCS.ccs_configuration_space_add_hyperparameter(@handle, hyperparameter, distribution)
       self
     end
 
@@ -71,8 +67,7 @@ module CCS
       }
       p_hypers = MemoryPointer::new(:size_t, count)
       p_hypers.write_array_of_size_t(hyperparameters)
-      res = CCS.ccs_configuration_space_set_distribution(@handle, distribution, p_hypers)
-      CCS.error_check(res)
+      CCS.error_check CCS.ccs_configuration_space_set_distribution(@handle, distribution, p_hypers)
       self
     end
 
@@ -85,8 +80,7 @@ module CCS
       end
       p_distribution = MemoryPointer::new(:ccs_distribution_t)
       p_indx = MemoryPointer::new(:size_t)
-      res = CCS.ccs_configuration_space_get_hyperparameter_distribution(@handle, hyperparameter, p_distribution, p_indx)
-      CCS.error_check(res)
+      CCS.error_check CCS.ccs_configuration_space_get_hyperparameter_distribution(@handle, hyperparameter, p_distribution, p_indx)
       [CCS::Distribution.from_handle(p_distribution.read_ccs_distribution_t), p_indx.read_size_t]
     end
 
@@ -102,8 +96,7 @@ module CCS
       end
       p_hypers = MemoryPointer::new(:ccs_hyperparameter_t, count)
       p_hypers.write_array_of_pointer(hyperparameters.collect(&:handle))
-      res = CCS.ccs_configuration_space_add_hyperparameters(@handle, count, p_hypers, p_dists)
-      CCS.error_check(res)
+      CCS.error_check CCS.ccs_configuration_space_add_hyperparameters(@handle, count, p_hypers, p_dists)
       self
     end
 
@@ -117,8 +110,7 @@ module CCS
       when String, Symbol
         hyperparameter = hyperparameter_index_by_name(hyperparameter);
       end
-      res = CCS.ccs_configuration_space_set_condition(@handle, hyperparameter, expression)
-      CCS.error_check(res)
+      CCS.error_check CCS.ccs_configuration_space_set_condition(@handle, hyperparameter, expression)
       self
     end
 
@@ -130,8 +122,7 @@ module CCS
         hyperparameter = hyperparameter_index_by_name(hyperparameter);
       end
       ptr = MemoryPointer::new(:ccs_expression_t)
-      res = CCS.ccs_configuration_space_get_condition(@handle, hyperparameter, ptr)
-      CCS.error_check(res)
+      CCS.error_check CCS.ccs_configuration_space_get_condition(@handle, hyperparameter, ptr)
       handle = ptr.read_ccs_expression_t
       handle.null? ? nil : Expression.from_handle(handle)
     end
@@ -139,8 +130,7 @@ module CCS
     def conditions
       count = num_hyperparameters
       ptr = MemoryPointer::new(:ccs_expression_t, count)
-      res = CCS.ccs_configuration_space_get_conditions(@handle, count, ptr, nil)
-      CCS.error_check(res)
+      CCS.error_check CCS.ccs_configuration_space_get_conditions(@handle, count, ptr, nil)
       ptr.read_array_of_pointer(count).collect { |handle|
         handle.null? ? nil : Expression.from_handle(handle)
       }
@@ -162,8 +152,7 @@ module CCS
       if expression.kind_of? String
         expression = ExpressionParser::new(self).parse(expression)
       end
-      res = CCS.ccs_configuration_space_add_forbidden_clause(@handle, expression)
-      CCS.error_check(res)
+      CCS.error_check CCS.ccs_configuration_space_add_forbidden_clause(@handle, expression)
       self
     end
 
@@ -180,37 +169,32 @@ module CCS
       return self if count == 0
       ptr = MemoryPointer::new(:ccs_expression_t, count)
       ptr.write_array_of_pointer(expressions.collect(&:handle))
-      res = CCS.ccs_configuration_space_add_forbidden_clauses(@handle, count, ptr)
-      CCS.error_check(res)
+      CCS.error_check CCS.ccs_configuration_space_add_forbidden_clauses(@handle, count, ptr)
       self
     end
 
     def forbidden_clause(index)
       ptr = MemoryPointer::new(:ccs_expression_t)
-      res = CCS.ccs_configuration_space_get_forbidden_clause(@handle, index, ptr)
-      CCS.error_check(res)
+      CCS.error_check CCS.ccs_configuration_space_get_forbidden_clause(@handle, index, ptr)
       Expression.from_handle(ptr.read_ccs_expression_t)
     end
 
     def num_forbidden_clauses
       ptr = MemoryPointer::new(:size_t)
-      res = CCS.ccs_configuration_space_get_forbidden_clauses(@handle, 0, nil, ptr)
-      CCS.error_check(res)
+      CCS.error_check CCS.ccs_configuration_space_get_forbidden_clauses(@handle, 0, nil, ptr)
       ptr.read_size_t
     end
 
     def forbidden_clauses
       count = num_forbidden_clauses
       ptr = MemoryPointer::new(:ccs_expression_t, count)
-      res = CCS.ccs_configuration_space_get_forbidden_clauses(@handle, count, ptr, nil)
-      CCS.error_check(res)
+      CCS.error_check CCS.ccs_configuration_space_get_forbidden_clauses(@handle, count, ptr, nil)
       count.times.collect { |i| Expression::from_handle(ptr[i].read_pointer) }
     end
 
     def check(configuration)
       ptr = MemoryPointer::new(:ccs_bool_t)
-      res = CCS.ccs_configuration_space_check_configuration(@handle, configuration, ptr)
-      CCS.error_check(res)
+      CCS.error_check CCS.ccs_configuration_space_check_configuration(@handle, configuration, ptr)
       return ptr.read_ccs_bool_t == CCS::FALSE ? false : true
     end
 
@@ -220,30 +204,26 @@ module CCS
       ptr = MemoryPointer::new(:ccs_datum_t, count)
       values.each_with_index {  |v, i| Datum::new(ptr[i]).value = v }
       ptr2 = MemoryPointer::new(:ccs_bool_t)
-      res = CCS.ccs_configuration_space_check_configuration_values(@handle, count, ptr, ptr2)
-      CCS.error_check(res)
+      CCS.error_check CCS.ccs_configuration_space_check_configuration_values(@handle, count, ptr, ptr2)
       return ptr2.read_ccs_bool_t == CCS::FALSE ? false : true
     end
 
     def default_configuration
       ptr = MemoryPointer::new(:ccs_configuration_t)
-      res = CCS.ccs_configuration_space_get_default_configuration(@handle, ptr)
-      CCS.error_check(res)
+      CCS.error_check CCS.ccs_configuration_space_get_default_configuration(@handle, ptr)
       Configuration::new(ptr.read_ccs_configuration_t, retain: false)
     end
 
     def sample
       ptr = MemoryPointer::new(:ccs_configuration_t)
-      res = CCS.ccs_configuration_space_sample(@handle, ptr)
-      CCS.error_check(res)
+      CCS.error_check CCS.ccs_configuration_space_sample(@handle, ptr)
       Configuration::new(ptr.read_ccs_configuration_t, retain: false)
     end
 
     def samples(count)
       return [] if count == 0
       ptr = MemoryPointer::new(:ccs_configuration_t, count)
-      res = CCS.ccs_configuration_space_samples(@handle, count, ptr)
-      CCS.error_check(res)
+      CCS.error_check CCS.ccs_configuration_space_samples(@handle, count, ptr)
       count.times.collect { |i| Configuration::new(ptr[i].read_pointer, retain: false) }
     end
   end

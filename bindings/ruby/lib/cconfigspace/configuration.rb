@@ -21,8 +21,7 @@ module CCS
           count = 0
         end
         ptr = MemoryPointer::new(:ccs_configuration_t)
-        res = CCS.ccs_create_configuration(configuration_space, count, values, ptr)
-        CCS.error_check(res)
+        CCS.error_check CCS.ccs_create_configuration(configuration_space, count, values, ptr)
         super(ptr.read_ccs_configuration_t, retain: false)
       end
     end
@@ -33,8 +32,7 @@ module CCS
 
     def check
       ptr = MemoryPointer::new(:ccs_bool_t)
-      res = CCS.ccs_configuration_check(@handle, ptr)
-      CCS.error_check(res)
+      CCS.error_check CCS.ccs_configuration_check(@handle, ptr)
       return ptr.read_ccs_bool_t == CCS::FALSE ? false : true
     end
 

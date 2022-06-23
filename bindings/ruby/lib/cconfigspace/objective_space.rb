@@ -36,8 +36,7 @@ module CCS
         super(handle, retain: retain, auto_release: auto_release)
       else
         ptr = MemoryPointer::new(:ccs_objective_space_t)
-        res = CCS.ccs_create_objective_space(name, ptr)
-        CCS.error_check(res)
+        CCS.error_check CCS.ccs_create_objective_space(name, ptr)
         super(ptr.read_ccs_objective_space_t, retain: false)
       end
     end
@@ -47,8 +46,7 @@ module CCS
     end
 
     def add_hyperparameter(hyperparameter)
-      res = CCS.ccs_objective_space_add_hyperparameter(@handle, hyperparameter)
-      CCS.error_check(res)
+      CCS.error_check CCS.ccs_objective_space_add_hyperparameter(@handle, hyperparameter)
       self
     end
 
@@ -57,8 +55,7 @@ module CCS
       return self if count == 0
       p_hypers = MemoryPointer::new(:ccs_hyperparameter_t, count)
       p_hypers.write_array_of_pointer(hyperparameters.collect(&:handle))
-      res = CCS.ccs_objective_space_add_hyperparameters(@handle, count, p_hypers)
-      CCS.error_check(res)
+      CCS.error_check CCS.ccs_objective_space_add_hyperparameters(@handle, count, p_hypers)
       self
     end
 
@@ -66,8 +63,7 @@ module CCS
       if expression.kind_of? String
         expression = ExpressionParser::new(self).parse(expression)
       end
-      res = CCS.ccs_objective_space_add_objective(@handle, expression, type)
-      CCS.error_check(res)
+      CCS.error_check CCS.ccs_objective_space_add_objective(@handle, expression, type)
       self
     end
 
@@ -95,23 +91,20 @@ module CCS
       p_types.write_array_of_ccs_objective_type_t(types)
       p_exprs = MemoryPointer::new(:ccs_expression_t, count)
       p_exprs.write_array_of_pointer(expressions.collect(&:handle))
-      res = CCS.ccs_objective_space_add_objectives(@handle, count, p_exprs, p_types)
-      CCS.error_check(res)
+      CCS.error_check CCS.ccs_objective_space_add_objectives(@handle, count, p_exprs, p_types)
       self
     end
 
     def get_objective(index)
       p_type = MemoryPointer::new(:ccs_objective_type_t)
       p_expr = MemoryPointer::new(:ccs_expression_t)
-      res = CCS.ccs_objective_space_get_objective(@handle, index, p_expr, p_type)
-      CCS.error_check(res)
+      CCS.error_check CCS.ccs_objective_space_get_objective(@handle, index, p_expr, p_type)
       return [Expression::from_handle(p_expr.read_ccs_expression_t), p_type.read_ccs_objective_type_t]
     end
 
     def num_objectives
       ptr = MemoryPointer::new(:size_t)
-      res = CCS.ccs_objective_space_get_objectives(@handle, 0, nil, nil, ptr)
-      CCS.error_check(res)
+      CCS.error_check CCS.ccs_objective_space_get_objectives(@handle, 0, nil, nil, ptr)
       ptr.read_size_t
     end
 
@@ -120,8 +113,7 @@ module CCS
       return [] if count == 0
       p_exprs = MemoryPointer::new(:ccs_expression_t, count)
       p_types = MemoryPointer::new(:ccs_objective_type_t, count)
-      res = CCS.ccs_objective_space_get_objectives(@handle, count, p_exprs, p_types, nil)
-      CCS.error_check(res)
+      CCS.error_check CCS.ccs_objective_space_get_objectives(@handle, count, p_exprs, p_types, nil)
       exprs = p_exprs.read_array_of_pointer(count).collect { |p| Expression.from_handle(p) }
       types = p_types.read_array_of_ccs_objective_type_t(count)
       exprs.zip types
@@ -129,8 +121,7 @@ module CCS
 
     def check(evaluation)
       ptr = MemoryPointer::new(:ccs_bool_t)
-      res = CCS.ccs_objective_space_check_evaluation(@handle, evaluation, ptr)
-      CCS.error_check(res)
+      CCS.error_check CCS.ccs_objective_space_check_evaluation(@handle, evaluation, ptr)
       return ptr.read_ccs_bool_t == CCS::FALSE ? false : true
     end
 
@@ -140,8 +131,7 @@ module CCS
       ptr = MemoryPointer::new(:ccs_datum_t, count)
       values.each_with_index {  |v, i| Datum::new(ptr[i]).value = v }
       ptr2 = MemoryPointer::new(:ccs_bool_t)
-      res = CCS.ccs_objective_space_check_evaluation_values(@handle, count, ptr, ptr2)
-      CCS.error_check(res)
+      CCS.error_check CCS.ccs_objective_space_check_evaluation_values(@handle, count, ptr, ptr2)
       return ptr2.read_ccs_bool_t == CCS::FALSE ? false : true
     end
   end

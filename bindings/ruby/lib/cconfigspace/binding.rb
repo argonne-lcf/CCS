@@ -17,39 +17,37 @@ module CCS
 
     def set_value(hyperparameter, value)
       d = Datum.from_value(value)
-      res = case hyperparameter
-        when String
-          CCS.ccs_binding_set_value_by_name(@handle, hyperparameter, d)
-        when Symbol
-          name = hyperparameter.inspect
-          CCS.ccs_binding_set_value_by_name(@handle, name, d)
-        when Hyperparameter
-          CCS.ccs_binding_set_value_by_hyperparameter(@handle, hyperparameter.handle, d)
-        when Integer
-          CCS.ccs_binding_set_value(@handle, hyperparameter, d)
-        else
-          raise CCSError, :CCS_INVALID_VALUE
-        end
-      CCS.error_check(res)
+      case hyperparameter
+      when String
+        CCS.error_check CCS.ccs_binding_set_value_by_name(@handle, hyperparameter, d)
+      when Symbol
+        name = hyperparameter.inspect
+        CCS.error_check CCS.ccs_binding_set_value_by_name(@handle, name, d)
+      when Hyperparameter
+        CCS.error_check CCS.ccs_binding_set_value_by_hyperparameter(@handle, hyperparameter.handle, d)
+      when Integer
+        CCS.error_check CCS.ccs_binding_set_value(@handle, hyperparameter, d)
+      else
+        raise CCSError, :CCS_INVALID_VALUE
+      end
       self
     end
 
     def value(hyperparameter)
       ptr = MemoryPointer::new(:ccs_datum_t)
-      res = case hyperparameter
-        when String
-          CCS.ccs_binding_get_value_by_name(@handle, hyperparameter, ptr)
-        when Symbol
-          name = hyperparameter.inspect
-          CCS.ccs_binding_get_value_by_name(@handle, name, ptr)
-        when Hyperparameter
-          CCS.ccs_binding_get_by_hyperparameter(@handle, hyperparameter.handle, ptr)
-        when Integer
-          CCS.ccs_binding_get_value(@handle, hyperparameter, ptr)
-        else
-          raise CCSError, :CCS_INVALID_VALUE
-        end
-      CCS.error_check(res)
+      case hyperparameter
+      when String
+        CCS.error_check CCS.ccs_binding_get_value_by_name(@handle, hyperparameter, ptr)
+      when Symbol
+        name = hyperparameter.inspect
+        CCS.error_check CCS.ccs_binding_get_value_by_name(@handle, name, ptr)
+      when Hyperparameter
+        CCS.error_check CCS.ccs_binding_get_by_hyperparameter(@handle, hyperparameter.handle, ptr)
+      when Integer
+        CCS.error_check CCS.ccs_binding_get_value(@handle, hyperparameter, ptr)
+      else
+        raise CCSError, :CCS_INVALID_VALUE
+      end
       Datum::new(ptr).value
     end
 
@@ -57,24 +55,21 @@ module CCS
       count = num_values
       return [] if count == 0
       values = MemoryPointer::new(:ccs_datum_t, count)
-      res = CCS.ccs_binding_get_values(@handle, count, values, nil)
-      CCS.error_check(res)
+      CCS.error_check CCS.ccs_binding_get_values(@handle, count, values, nil)
       count.times.collect { |i| Datum::new(values[i]).value }
     end
 
     def num_values
       @num_values ||= begin
         ptr = MemoryPointer::new(:size_t)
-        res = CCS.ccs_binding_get_values(@handle, 0, nil, ptr)
-        CCS.error_check(res)
+        CCS.error_check CCS.ccs_binding_get_values(@handle, 0, nil, ptr)
         ptr.read_size_t
       end
     end
 
     def <=>(other)
       ptr = MemoryPointer::new(:int)
-      res = CCS.ccs_binding_cmp(@handle, other, ptr)
-      CCS.error_check(res)
+      CCS.error_check CCS.ccs_binding_cmp(@handle, other, ptr)
       return ptr.read_int
     end
 

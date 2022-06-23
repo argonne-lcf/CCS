@@ -16,8 +16,7 @@ module CCS
         super
       else
         ptr = MemoryPointer::new(:ccs_rng_t)
-        res = CCS.ccs_create_rng(ptr)
-        CCS.error_check(res)
+        CCS.error_check CCS.ccs_create_rng(ptr)
         super(ptr.read_pointer, retain: false)
       end
     end
@@ -27,22 +26,19 @@ module CCS
     end
 
     def seed=(s)
-      res = CCS.ccs_rng_set_seed(@handle, s)
-      CCS.error_check(res)
+      CCS.error_check CCS.ccs_rng_set_seed(@handle, s)
       s
     end
 
     def get
       ptr = MemoryPointer::new(:ulong)
-      res = CCS.ccs_rng_get(@handle, ptr)
-      CCS.error_check(res)
+      CCS.error_check CCS.ccs_rng_get(@handle, ptr)
       ptr.read_ulong
     end
 
     def uniform
       ptr = MemoryPointer::new(:ccs_float_t)
-      res = CCS.ccs_rng_uniform(@handle, ptr)
-      CCS.error_check(res)
+      CCS.error_check CCS.ccs_rng_uniform(@handle, ptr)
       ptr.read_ccs_float_t
     end
   end

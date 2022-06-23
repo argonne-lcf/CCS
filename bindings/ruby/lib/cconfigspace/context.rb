@@ -15,39 +15,34 @@ module CCS
     def name
       @name ||= begin
         ptr = MemoryPointer::new(:pointer)
-        res = CCS.ccs_context_get_name(@handle, ptr)
-        CCS.error_check(res)
+        CCS.error_check CCS.ccs_context_get_name(@handle, ptr)
         ptr.read_pointer.read_string
       end
     end
 
     def hyperparameter(index)
       ptr = MemoryPointer::new(:ccs_hyperparameter_t)
-      res = CCS.ccs_context_get_hyperparameter(@handle, index, ptr)
-      CCS.error_check(res)
+      CCS.error_check CCS.ccs_context_get_hyperparameter(@handle, index, ptr)
       Hyperparameter.from_handle(ptr.read_ccs_hyperparameter_t)
     end
 
     def hyperparameter_by_name(name)
       name = name.inspect if name.kind_of?(Symbol)
       ptr = MemoryPointer::new(:ccs_hyperparameter_t)
-      res = CCS.ccs_context_get_hyperparameter_by_name(@handle, name, ptr)
-      CCS.error_check(res)
+      CCS.error_check CCS.ccs_context_get_hyperparameter_by_name(@handle, name, ptr)
       Hyperparameter.from_handle(ptr.read_ccs_hyperparameter_t)
     end
 
     def hyperparameter_index_by_name(name)
       name = name.inspect if name.kind_of?(Symbol)
       ptr = MemoryPointer::new(:size_t)
-      res = CCS.ccs_context_get_hyperparameter_index_by_name(@handle, name, ptr)
-      CCS.error_check(res)
+      CCS.error_check CCS.ccs_context_get_hyperparameter_index_by_name(@handle, name, ptr)
       ptr.read_size_t
     end
 
     def hyperparameter_index(hyperparameter)
       ptr = MemoryPointer::new(:size_t)
-      res = CCS.ccs_context_get_hyperparameter_index(@handle, hyperparameter, ptr)
-      CCS.error_check(res)
+      CCS.error_check CCS.ccs_context_get_hyperparameter_index(@handle, hyperparameter, ptr)
       ptr.read_size_t
     end
 
@@ -55,8 +50,7 @@ module CCS
       count = num_hyperparameters
       return [] if count == 0
       ptr = MemoryPointer::new(:ccs_hyperparameter_t, count)
-      res = CCS.ccs_context_get_hyperparameters(@handle, count, ptr, nil)
-      CCS.error_check(res)
+      CCS.error_check CCS.ccs_context_get_hyperparameters(@handle, count, ptr, nil)
       count.times.collect { |i| Hyperparameter.from_handle(ptr[i].read_pointer) }
     end
 
@@ -69,8 +63,7 @@ module CCS
       when Hyperparameter
         hyperparameter = hyperparameter_index(hyperparameter)
       end
-      res = CCS.ccs_context_validate_value(@handle, hyperparameter, d, ptr)
-      CCS.error_check(res)
+      CCS.error_check CCS.ccs_context_validate_value(@handle, hyperparameter, d, ptr)
       Datum::new(ptr).value
     end
 

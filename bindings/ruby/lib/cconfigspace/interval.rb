@@ -96,22 +96,19 @@ module CCS
 
     def empty?
       ptr = MemoryPointer::new(:ccs_bool_t)
-      res = CCS.ccs_interval_empty(self, ptr)
-      CCS.error_check(res)
+      CCS.error_check CCS.ccs_interval_empty(self, ptr)
       ptr.read_ccs_bool_t == CCS::FALSE ? false : true
     end
 
     def intersect(other)
       intersection = Interval::new(type: :CCS_NUM_FLOAT)
-      res = CCS.ccs_interval_intersect(self, other, intersection)
-      CCS.error_check(res)
+      CCS.error_check CCS.ccs_interval_intersect(self, other, intersection)
       return intersection
     end
 
     def ==(other)
       ptr = MemoryPointer::new(:ccs_bool_t)
-      res = CCS.ccs_interval_equal(self, other, ptr)
-      CCS.error_check(res)
+      CCS.error_check CCS.ccs_interval_equal(self, other, ptr)
       ptr.read_ccs_bool_t == CCS::FALSE ? false : true
     end
 

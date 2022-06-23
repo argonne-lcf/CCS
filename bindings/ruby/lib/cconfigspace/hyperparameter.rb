@@ -40,8 +40,7 @@ module CCS
 
     def self.from_handle(handle, retain: true, auto_release: true)
       ptr = MemoryPointer::new(:ccs_hyperparameter_type_t)
-      res = CCS.ccs_hyperparameter_get_type(handle, ptr)
-      CCS.error_check(res)
+      CCS.error_check CCS.ccs_hyperparameter_get_type(handle, ptr)
       case ptr.read_ccs_hyperparameter_type_t
       when :CCS_HYPERPARAMETER_TYPE_NUMERICAL
         NumericalHyperparameter
@@ -61,8 +60,7 @@ module CCS
     def name
       @name ||= begin
         ptr = MemoryPointer::new(:pointer)
-        res = CCS.ccs_hyperparameter_get_name(@handle, ptr)
-        CCS.error_check(res)
+        CCS.error_check CCS.ccs_hyperparameter_get_name(@handle, ptr)
         r = ptr.read_pointer.read_string
         r = r.sub(/^:/, "").to_sym if r.match(/^:/)
         r
@@ -72,8 +70,7 @@ module CCS
     def default_value
       @default_value ||= begin
         ptr = MemoryPointer::new(:ccs_datum_t)
-        res = CCS.ccs_hyperparameter_get_default_value(@handle, ptr)
-        CCS.error_check(res)
+        CCS.error_check CCS.ccs_hyperparameter_get_default_value(@handle, ptr)
         d = Datum::new(ptr)
         d.value
       end
@@ -82,16 +79,14 @@ module CCS
     def default_distribution
       @default_distribution ||= begin
         ptr = MemoryPointer::new(:ccs_distribution_t)
-        res = CCS.ccs_hyperparameter_get_default_distribution(@handle, ptr)
-        CCS.error_check(res)
+        CCS.error_check CCS.ccs_hyperparameter_get_default_distribution(@handle, ptr)
         Object::from_handle(ptr.read_pointer)
       end
     end
 
     def check_value(v)
       ptr = MemoryPointer::new(:ccs_bool_t)
-      res = CCS.ccs_hyperparameter_check_value(@handle, Datum::from_value(v), ptr)
-      CCS.error_check(res)
+      CCS.error_check CCS.ccs_hyperparameter_check_value(@handle, Datum::from_value(v), ptr)
       ptr.read_ccs_bool_t == CCS::FALSE ? false : true
     end
 
@@ -101,23 +96,20 @@ module CCS
       values = MemoryPointer::new(:ccs_datum_t, count)
       vals.each_with_index { |v, i| Datum::new(values[i]).value = v }
       ptr = MemoryPointer::new(:ccs_bool_t, count)
-      res = CCS.ccs_hyperparameter_check_values(@handle, count, values, ptr)
-      CCS.error_check(res)
+      CCS.error_check CCS.ccs_hyperparameter_check_values(@handle, count, values, ptr)
       count.times.collect { |i| ptr[i].read_ccs_bool_t == CCS::FALSE ? false : true }
     end
 
     def sample(distribution: default_distribution, rng: CCS::DefaultRng)
       value = MemoryPointer::new(:ccs_datum_t)
-      res = CCS.ccs_hyperparameter_sample(@handle, distribution, rng, value)
-      CCS.error_check(res)
+      CCS.error_check CCS.ccs_hyperparameter_sample(@handle, distribution, rng, value)
       Datum::new(value).value
     end
 
     def samples(count, distribution: default_distribution, rng: CCS::DefaultRng)
       return [] if count <= 0
       values = MemoryPointer::new(:ccs_datum_t, count)
-      res = CCS.ccs_hyperparameter_samples(@handle, distribution, rng, count, values)
-      CCS.error_check(res)
+      CCS.error_check CCS.ccs_hyperparameter_samples(@handle, distribution, rng, count, values)
       count.times.collect { |i| Datum::new(values[i]).value }
     end
 
@@ -150,8 +142,7 @@ module CCS
           raise CCSError, :CCS_INVALID_TYPE
         end
         name = name.inspect if name.kind_of?(Symbol)
-        res = CCS.ccs_create_numerical_hyperparameter(name, data_type, lower, upper, quantization, default, ptr)
-        CCS.error_check(res)
+        CCS.error_check CCS.ccs_create_numerical_hyperparameter(name, data_type, lower, upper, quantization, default, ptr)
         super(ptr.read_pointer, retain: false)
       end
     end
@@ -167,8 +158,7 @@ module CCS
     def data_type
       @data_type ||= begin
         ptr = MemoryPointer::new(:ccs_numeric_type_t)
-        res = CCS.ccs_numerical_hyperparameter_get_parameters(@handle, ptr, nil, nil, nil)
-        CCS.error_check(res)
+        CCS.error_check CCS.ccs_numerical_hyperparameter_get_parameters(@handle, ptr, nil, nil, nil)
         ptr.read_ccs_numeric_type_t
       end
     end
@@ -176,8 +166,7 @@ module CCS
     def lower
       @lower ||= begin
         ptr = MemoryPointer::new(:ccs_numeric_t)
-        res = CCS.ccs_numerical_hyperparameter_get_parameters(@handle, nil, ptr, nil, nil)
-        CCS.error_check(res)
+        CCS.error_check CCS.ccs_numerical_hyperparameter_get_parameters(@handle, nil, ptr, nil, nil)
         if data_type == :CCS_NUM_FLOAT
           ptr.read_ccs_float_t
         else
@@ -189,8 +178,7 @@ module CCS
     def upper
       @upper ||= begin
         ptr = MemoryPointer::new(:ccs_numeric_t)
-        res = CCS.ccs_numerical_hyperparameter_get_parameters(@handle, nil, nil, ptr, nil)
-        CCS.error_check(res)
+        CCS.error_check CCS.ccs_numerical_hyperparameter_get_parameters(@handle, nil, nil, ptr, nil)
         if data_type == :CCS_NUM_FLOAT
           ptr.read_ccs_float_t
         else
@@ -202,8 +190,7 @@ module CCS
     def quantization
       @quantization ||= begin
         ptr = MemoryPointer::new(:ccs_numeric_t)
-        res = CCS.ccs_numerical_hyperparameter_get_parameters(@handle, nil, nil, nil, ptr)
-        CCS.error_check(res)
+        CCS.error_check CCS.ccs_numerical_hyperparameter_get_parameters(@handle, nil, nil, nil, ptr)
         if data_type == :CCS_NUM_FLOAT
           ptr.read_ccs_float_t
         else
@@ -227,8 +214,7 @@ module CCS
         values.each_with_index{ |v, i| Datum::new(vals[i]).value = v }
         ptr = MemoryPointer::new(:ccs_hyperparameter_t)
         name = name.inspect if name.kind_of?(Symbol)
-        res = CCS.ccs_create_categorical_hyperparameter(name, count, vals, default_index, ptr)
-        CCS.error_check(res)
+        CCS.error_check CCS.ccs_create_categorical_hyperparameter(name, count, vals, default_index, ptr)
         super(ptr.read_ccs_hyperparameter_t, retain: false)
       end
     end
@@ -236,12 +222,10 @@ module CCS
     def values
       @values ||= begin
         ptr = MemoryPointer::new(:size_t)
-        res = CCS.ccs_categorical_hyperparameter_get_values(@handle, 0, nil, ptr)
-        CCS.error_check(res)
+        CCS.error_check CCS.ccs_categorical_hyperparameter_get_values(@handle, 0, nil, ptr)
         count = ptr.read_size_t
         ptr = MemoryPointer::new(:ccs_datum_t, count)
-        res = CCS.ccs_categorical_hyperparameter_get_values(@handle, count, ptr, nil)
-        CCS.error_check(res)
+        CCS.error_check CCS.ccs_categorical_hyperparameter_get_values(@handle, count, ptr, nil)
         count.times.collect { |i| Datum::new(ptr[i]).value }
       end
     end
@@ -262,8 +246,7 @@ module CCS
         values.each_with_index{ |v, i| Datum::new(vals[i]).value = v }
         ptr = MemoryPointer::new(:ccs_hyperparameter_t)
         name = name.inspect if name.kind_of?(Symbol)
-        res = CCS.ccs_create_ordinal_hyperparameter(name, count, vals, default_index, ptr)
-        CCS.error_check(res)
+        CCS.error_check CCS.ccs_create_ordinal_hyperparameter(name, count, vals, default_index, ptr)
         super(ptr.read_ccs_hyperparameter_t, retain: false)
       end
     end
@@ -272,20 +255,17 @@ module CCS
       v1 = Datum::from_value(value1)
       v2 = Datum::from_value(value2)
       ptr = MemoryPointer::new(:ccs_int_t)
-      res = CCS.ccs_ordinal_hyperparameter_compare_values(@handle, v1, v2, ptr)
-      CCS.error_check(res)
+      CCS.error_check CCS.ccs_ordinal_hyperparameter_compare_values(@handle, v1, v2, ptr)
       ptr.read_ccs_int_t
     end
 
     def values
       @values ||= begin
         ptr = MemoryPointer::new(:size_t)
-        res = CCS.ccs_ordinal_hyperparameter_get_values(@handle, 0, nil, ptr)
-        CCS.error_check(res)
+        CCS.error_check CCS.ccs_ordinal_hyperparameter_get_values(@handle, 0, nil, ptr)
         count = ptr.read_size_t
         ptr = MemoryPointer::new(:ccs_datum_t, count)
-        res = CCS.ccs_ordinal_hyperparameter_get_values(@handle, count, ptr, nil)
-        CCS.error_check(res)
+        CCS.error_check CCS.ccs_ordinal_hyperparameter_get_values(@handle, count, ptr, nil)
         count.times.collect { |i| Datum::new(ptr[i]).value }
       end
     end
@@ -305,8 +285,7 @@ module CCS
         values.each_with_index{ |v, i| Datum::new(vals[i]).value = v }
         ptr = MemoryPointer::new(:ccs_hyperparameter_t)
         name = name.inspect if name.kind_of?(Symbol)
-        res = CCS.ccs_create_discrete_hyperparameter(name, count, vals, default_index, ptr)
-        CCS.error_check(res)
+        CCS.error_check CCS.ccs_create_discrete_hyperparameter(name, count, vals, default_index, ptr)
         super(ptr.read_ccs_hyperparameter_t, retain: false)
       end
     end
@@ -314,12 +293,10 @@ module CCS
     def values
       @values ||= begin
         ptr = MemoryPointer::new(:size_t)
-        res = CCS.ccs_discrete_hyperparameter_get_values(@handle, 0, nil, ptr)
-        CCS.error_check(res)
+        CCS.error_check CCS.ccs_discrete_hyperparameter_get_values(@handle, 0, nil, ptr)
         count = ptr.read_size_t
         ptr = MemoryPointer::new(:ccs_datum_t, count)
-        res = CCS.ccs_discrete_hyperparameter_get_values(@handle, count, ptr, nil)
-        CCS.error_check(res)
+        CCS.error_check CCS.ccs_discrete_hyperparameter_get_values(@handle, count, ptr, nil)
         count.times.collect { |i| Datum::new(ptr[i]).value }
       end
     end
@@ -334,8 +311,7 @@ module CCS
       else
         ptr = MemoryPointer::new(:ccs_hyperparameter_t)
         name = name.inspect if name.kind_of?(Symbol)
-        res = CCS.ccs_create_string_hyperparameter(name, ptr)
-        CCS.error_check(res)
+        CCS.error_check CCS.ccs_create_string_hyperparameter(name, ptr)
         super(ptr.read_ccs_hyperparameter_t, retain: false)
       end
     end
