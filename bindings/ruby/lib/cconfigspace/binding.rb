@@ -3,6 +3,7 @@ module CCS
   attach_function :ccs_binding_get_value, [:ccs_binding_t, :size_t, :pointer], :ccs_error_t
   attach_function :ccs_binding_set_value, [:ccs_binding_t, :size_t, :ccs_datum_t], :ccs_error_t
   attach_function :ccs_binding_get_values, [:ccs_binding_t, :size_t, :pointer, :pointer], :ccs_error_t
+  attach_function :ccs_binding_set_values, [:ccs_binding_t, :size_t, :pointer], :ccs_error_t
   attach_function :ccs_binding_get_value_by_name, [:ccs_binding_t, :string, :pointer], :ccs_error_t
   attach_function :ccs_binding_set_value_by_name, [:ccs_binding_t, :string, :ccs_datum_t], :ccs_error_t
   attach_function :ccs_binding_get_value_by_hyperparameter, [:ccs_binding_t, :ccs_hyperparameter_t, :pointer], :ccs_error_t
@@ -57,6 +58,16 @@ module CCS
       values = MemoryPointer::new(:ccs_datum_t, count)
       CCS.error_check CCS.ccs_binding_get_values(@handle, count, values, nil)
       count.times.collect { |i| Datum::new(values[i]).value }
+    end
+
+    def set_values(values)
+      count = values.size
+      raise CCSError, :CCS_INVALID_VALUE if count == 0
+      ss = []
+      vals = MemoryPointer::new(:ccs_datum_t, count)
+      values.each_with_index{ |v, i| Datum::new(vals[i]).set_value(v, string_store: ss) }
+      CCS.error_check CCS.ccs_binding_set_values(@handle, count, vals)
+      self
     end
 
     def num_values

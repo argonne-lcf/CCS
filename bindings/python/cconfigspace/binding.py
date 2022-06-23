@@ -6,6 +6,7 @@ ccs_binding_get_context = _ccs_get_function("ccs_binding_get_context", [ccs_bind
 ccs_binding_get_value = _ccs_get_function("ccs_binding_get_value", [ccs_binding, ct.c_size_t, ct.POINTER(ccs_datum)])
 ccs_binding_set_value = _ccs_get_function("ccs_binding_set_value", [ccs_binding, ct.c_size_t, ccs_datum_fix])
 ccs_binding_get_values = _ccs_get_function("ccs_binding_get_values", [ccs_binding, ct.c_size_t, ct.POINTER(ccs_datum), ct.POINTER(ct.c_size_t)])
+ccs_binding_set_values = _ccs_get_function("ccs_binding_set_values", [ccs_binding, ct.c_size_t, ct.POINTER(ccs_datum)])
 ccs_binding_get_value_by_name = _ccs_get_function("ccs_binding_get_value_by_name", [ccs_binding, ct.c_char_p, ct.POINTER(ccs_datum)])
 ccs_binding_set_value_by_name = _ccs_get_function("ccs_binding_set_value_by_name", [ccs_binding, ct.c_char_p, ccs_datum_fix])
 ccs_binding_get_value_by_hyperparameter = _ccs_get_function("ccs_binding_get_value_by_hyperparameter", [ccs_binding, ccs_hyperparameter, ct.POINTER(ccs_datum)])
@@ -66,6 +67,15 @@ class Binding(Object):
     res = ccs_binding_get_values(self.handle, sz, v, None)
     Error.check(res)
     return [x.value for x in v]
+
+  def set_values(self, values):
+    sz = len(values)
+    v = (ccs_datum*sz)()
+    ss = []
+    for i in range(sz):
+      v[i].set_value(values[i], string_store = ss)
+    res = ccs_binding_set_values(self.handle, sz, v)
+    Error.check(res)
 
   def cmp(self, other):
     v = ccs_int()

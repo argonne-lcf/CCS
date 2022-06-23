@@ -72,15 +72,38 @@ ccs_binding_set_value(ccs_binding_t binding,
  * @return #CCS_SUCCESS on success
  * @return #CCS_INVALID_OBJECT if \p binding is not a valid CCS object
  * @return #CCS_INVALID_VALUE if \p values is NULL and \p num_values is greater
- *                             than 0; or if \p values is NULL and
- *                             num_values_ret is NULL; or if num_values is less
- *                             than the number of values that would be returned
+ *                             than 0; or if \p values is NULL and \p
+ *                             num_values_ret is NULL; or if \p num_values is
+ *                             less than the number of values that would be
+ *                             returned
  */
 extern ccs_error_t
 ccs_binding_get_values(ccs_binding_t  binding,
                        size_t         num_values,
                        ccs_datum_t   *values,
                        size_t        *num_values_ret);
+
+/**
+ * Set all the values in the binding.
+ * @param[in,out] binding
+ * @param[in] num_values the size of the \p values array
+ * @param[in] values an array of size \p num_values
+ * @param[in] num_values_ret a pointer to a variable that will contain the
+ *                            number of values that are or would be returned.
+ *                            Can be NULL
+ * @return #CCS_SUCCESS on success
+ * @return #CCS_INVALID_OBJECT if \p binding is not a valid CCS object
+ * @return #CCS_INVALID_VALUE if \p values is NULL and \p num_values is greater
+ *                            than 0; or if \p num_values is not equal to the
+ *                            number of values in the binding
+ * @return #CCS_OUT_OF_MEMORY if there was a lack of memory while memoizing a
+ *                             string
+ */
+extern ccs_error_t
+ccs_binding_set_values(ccs_binding_t  binding,
+                       size_t         num_values,
+                       ccs_datum_t   *values);
+
 
 /**
  * Get the value of the hyperparameter with the given name.

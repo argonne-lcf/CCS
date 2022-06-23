@@ -81,6 +81,25 @@ _ccs_binding_get_values(ccs_binding_t  binding,
 }
 
 static inline ccs_error_t
+_ccs_binding_set_values(ccs_binding_t  binding,
+                        size_t         num_values,
+                        ccs_datum_t   *values) {
+	CCS_CHECK_ARY(num_values, values);
+	size_t num = binding->data->num_values;
+	CCS_REFUTE(num_values != num, CCS_INVALID_VALUE);
+	if (values) {
+		for (size_t i = 0; i < num_values; i++) {
+			ccs_datum_t value = values[i];
+			if (value.flags & CCS_FLAG_TRANSIENT)
+				CCS_VALIDATE(ccs_context_validate_value(
+					binding->data->context, i, value, &value));
+			binding->data->values[i] = value;
+		}
+	}
+	return CCS_SUCCESS;
+}
+
+static inline ccs_error_t
 _ccs_binding_get_value_by_name(ccs_binding_t  binding,
                                const char    *name,
                                ccs_datum_t   *value_ret) {

@@ -45,6 +45,15 @@ ccs_binding_get_values(ccs_binding_t  binding,
 }
 
 ccs_error_t
+ccs_binding_set_values(ccs_binding_t  binding,
+                       size_t         num_values,
+                       ccs_datum_t   *values) {
+	CCS_CHECK_BINDING(binding);
+	CCS_VALIDATE(_ccs_binding_set_values(binding, num_values, values));
+	return CCS_SUCCESS;
+}
+
+ccs_error_t
 ccs_binding_get_value_by_name(ccs_binding_t  binding,
                               const char    *name,
                               ccs_datum_t   *value_ret) {
