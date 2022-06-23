@@ -88,9 +88,6 @@ ccs_binding_get_values(ccs_binding_t  binding,
  * @param[in,out] binding
  * @param[in] num_values the size of the \p values array
  * @param[in] values an array of size \p num_values
- * @param[in] num_values_ret a pointer to a variable that will contain the
- *                            number of values that are or would be returned.
- *                            Can be NULL
  * @return #CCS_SUCCESS on success
  * @return #CCS_INVALID_OBJECT if \p binding is not a valid CCS object
  * @return #CCS_INVALID_VALUE if \p values is NULL and \p num_values is greater

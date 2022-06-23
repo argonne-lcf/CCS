@@ -735,6 +735,9 @@ enum ccs_serialize_format_e {
 	/** Try forcing 32 bits value for bindings */
 	CCS_SERIALIZE_FORMAT_FORCE_32BIT = INT32_MAX
 };
+/**
+ * A commodity type to represent CCS serialization formats.
+ */
 typedef enum ccs_serialize_format_e ccs_serialize_format_t;
 
 /**
@@ -754,6 +757,9 @@ enum ccs_serialize_operation_e {
 	/** Try forcing 32 bits value for bindings */
 	CCS_SERIALIZE_OPERATION_FORCE_32BIT = INT32_MAX
 };
+/**
+ * A commodity type to represent CCS serializaiton operations.
+ */
 typedef enum ccs_serialize_operation_e ccs_serialize_operation_t;
 
 /**
@@ -778,8 +784,14 @@ enum ccs_serialize_option_e {
 	/** Try forcing 32 bits value for bindings */
 	CCS_SERIALIZE_OPTION_FORCE_32BIT = INT32_MAX
 };
+/**
+ * A commodity type to represent CCS serialization options.
+ */
 typedef enum ccs_serialize_option_e ccs_serialize_option_t;
 
+/**
+ * A commodity type to represent CCS deserializaiton callbacks.
+ */
 typedef ccs_error_t
 (*ccs_object_deserialize_callback_t)(
 	ccs_object_t  object,
@@ -820,6 +832,9 @@ enum ccs_deserialize_option_e {
 	/** Try forcing 32 bits value for bindings */
 	CCS_DESERIALIZE_OPTION_FORCE_32BIT = INT32_MAX
 };
+/**
+ * A commodity type to represent CCS deserialization options.
+ */
 typedef enum ccs_deserialize_option_e ccs_deserialize_option_t;
 
 /**

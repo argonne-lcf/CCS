@@ -426,7 +426,9 @@ ccs_variable_get_hyperparameter(ccs_expression_t      expression,
  * @param[in] values an array of values, one for each hyperparameter in \p
  *                   context. Can be NULL
  * @param[out] result_ret a pointer to a variable that will contain the result
- *                        of the evaluation of the expression
+ *                        of the evaluation of the expression. Result can be
+ *                        #ccs_inactive when the result depend on an inactive
+ *                        hyperparameter
  * @return #CCS_SUCCESS on success
  * @return #CCS_INVALID_OBJECT if \p expression is not a valid CCS variable
  *                              expression; or if \p context is NULL and
@@ -436,9 +438,6 @@ ccs_variable_get_hyperparameter(ccs_expression_t      expression,
  *                             illegal arithmetic or comparison operation would
  *                             have occurred; or if a non boolean value is used
  *                             in a boolean operation
- * @return #CCS_INACTIVE_HYPERPARAMETER if one of the variable was evaluated
- *                                       and found to be inactive during the
- *                                       evaluation
  */
 extern ccs_error_t
 ccs_expression_eval(ccs_expression_t  expression,
@@ -455,7 +454,9 @@ ccs_expression_eval(ccs_expression_t  expression,
  *                   context. Can be NULL
  * @param[in] index index of the child node to evaluate
  * @param[out] result_ret a pointer to a variable that will contain the result
- *                        of the evaluation of the expression
+ *                        of the evaluation of the expression. Result can be
+ *                        #ccs_inactive when the result depend on an inactive
+ *                        hyperparameter
  * @return #CCS_SUCCESS on success
  * @return #CCS_INVALID_OBJECT if \p expression is not a valid CCS expression;
  *                              or if \p context is NULL and \p expression must
@@ -468,9 +469,6 @@ ccs_expression_eval(ccs_expression_t  expression,
  *                             illegal arithmetic or comparison operation would
  *                             have occurred; or if a non boolean value is used
  *                             in a boolean operation
- * @return #CCS_INACTIVE_HYPERPARAMETER if one of the variable was evaluated
- *                                       and found to be inactive during the
- *                                       evaluation
  */
 extern ccs_error_t
 ccs_expression_list_eval_node(ccs_expression_t  expression,
