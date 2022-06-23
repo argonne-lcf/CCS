@@ -1,5 +1,7 @@
 import ctypes as ct
 import json
+import sys
+import traceback
 from . import libcconfigspace
 
 class ccs_version(ct.Structure):
@@ -36,6 +38,7 @@ ccs_features_evaluation = ccs_object
 ccs_tuner               = ccs_object
 ccs_features_tuner      = ccs_object
 ccs_map                 = ccs_object
+ccs_error_stack         = ccs_object
 
 ccs_false = 0
 ccs_true = 1
@@ -142,7 +145,8 @@ class ccs_object_type(CEnumeration):
     'FEATURES',
     'FEATURES_EVALUATION',
     'FEATURES_TUNER',
-    'MAP' ]
+    'MAP',
+    'CCS_ERROR_STACK' ]
 
 class ccs_error(CEnumeration):
   _members_ = [
@@ -173,7 +177,8 @@ class ccs_error(CEnumeration):
     ('NOT_ENOUGH_DATA',        -23),
     ('HANDLE_DUPLICATE',       -24),
     ('INVALID_HANDLE',         -25),
-    ('SYSTEM_ERROR',           -26) ]
+    ('SYSTEM_ERROR',           -26),
+    ('EXTERNAL_ERROR',         -27) ]
 
 class ccs_data_type(CEnumeration):
   _members_ = [
@@ -320,13 +325,38 @@ class ccs_datum(ct.Structure):
       raise Error(ccs_error(ccs_error.INVALID_VALUE))
 
 class Error(Exception):
-  def __init__(self, message):
-    self.message = message
+  def __init__(self, code):
+    # see: https://stackoverflow.com/a/54653137 for ideas
+    self._code = code
+    self._stack = get_thread_error()
+    if self._stack:
+      elems = '\n'.join( [f"  File \"{e.file.decode()}\", line {e.line}, in {e.func.decode()}" for e in self._stack.elems()] )
+      if elems:
+        msg = f"{code}: {self._stack.message}\n{elems}"
+      else:
+        msg = f"{code}: {self._stack.message}"
+      super().__init__(msg)
+    else:
+      super().__init__(code)
 
   @classmethod
   def check(cls, err):
     if err.value < 0:
       raise cls(err)
+
+  @classmethod
+  def set_error(cls, exc):
+    if isinstance(exc, Error):
+      if exc._stack:
+        stack = exc._stack
+      else:
+        stack = ErrorStack(error = exc._code)
+    else:
+      stack = ErrorStack(error = ccs_error.EXTERNAL_ERROR, message = str(exc))
+    for s in traceback.extract_tb(sys.exc_info()[2]):
+      stack.push(s.filename, s.lineno, s.name)
+    set_thread_error(stack)
+    return stack.code.value
 
 class ccs_serialize_format(CEnumeration):
   _members_ = [
@@ -481,6 +511,8 @@ class Object:
       return FeaturesTuner.from_handle(h, retain = retain, auto_release = auto_release)
     elif v == ccs_object_type.MAP:
       return Map.from_handle(h, retain = retain, auto_release = auto_release)
+    elif v == ccs_object_type.ERROR_STACK:
+      return ErrorStack.from_handle(h, retain = retain, auto_release = auto_release)
     else:
       raise Error(ccs_error(ccs_error.INVALID_OBJECT))
 
@@ -595,8 +627,8 @@ def _get_serialize_callback_wrapper(callback):
       if p_sdsz:
         p_sdsz[0] = ct.sizeof(serialized)
       return ccs_error.SUCCESS
-    except Error as e:
-      return e.message.value
+    except Exception as e:
+      return Error.set_error(e)
   return serialize_callback_wrapper
 
 def _get_deserialize_callback_wrapper(callback):
@@ -614,8 +646,8 @@ def _get_deserialize_callback_wrapper(callback):
         serialized = None
       callback(Object.from_handle(ccs_object(obj)), serialized, cb_data)
       return ccs_error.SUCCESS
-    except Error as e:
-      return e.message.value
+    except Exception as e:
+      return Error.set_error(e)
   return deserialize_callback_wrapper
 
 def _json_user_data_serializer(obj, data, size):
@@ -640,8 +672,9 @@ def _register_vector(handle, vector_data):
   value = handle.value
   if value in _data_store:
     raise Error(ccs_error(ccs_error.INVALID_VALUE))
-  _data_store[value] = dict.fromkeys(['callbacks', 'user_data', 'serialize_calback'])
+  _data_store[value] = dict.fromkeys(['callbacks', 'user_data', 'serialize_calback', 'strings'])
   _data_store[value]['callbacks'] = vector_data
+  _data_store[value]['strings'] = []
 
 def _unregister_vector(handle):
   value = handle.value
@@ -656,8 +689,9 @@ def _register_destroy_callback(handle):
   cb_func = ccs_object_destroy_callback_type(cb)
   res = ccs_object_set_destroy_callback(handle, cb_func, None)
   Error.check(res)
-  _data_store[value] = dict.fromkeys(['callbacks', 'user_data', 'serialize_calback'])
+  _data_store[value] = dict.fromkeys(['callbacks', 'user_data', 'serialize_calback', 'strings'])
   _data_store[value]['callbacks'] = [ [ cb, cb_func ] ]
+  _data_store[value]['strings'] = []
 
 def _register_callback(handle, callback_data):
   value = handle.value
@@ -670,6 +704,12 @@ def _register_user_data(handle, user_data):
   if value not in _data_store:
     _register_destroy_callback(handle)
   _data_store[value]['user_data'] = user_data
+
+def _register_string(handle, string):
+  value = handle.value
+  if value not in _data_store:
+    _register_destroy_callback(handle)
+  _data_store[value]['strings'].append( string )
 
 def _register_serialize_callback(handle, callback_data):
   value = handle.value
@@ -723,3 +763,4 @@ from .features_evaluation import FeaturesEvaluation
 from .tuner import Tuner
 from .features_tuner import FeaturesTuner
 from .map import Map
+from .error_stack import ErrorStack, get_thread_error, set_thread_error, clear_thread_error

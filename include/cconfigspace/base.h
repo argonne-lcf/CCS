@@ -203,8 +203,10 @@ enum ccs_error_e {
 	CCS_INVALID_HANDLE =          -25,
 	/** A system error occured */
 	CCS_SYSTEM_ERROR =            -26,
+	/** External error occured (binding?) */
+	CCS_EXTERNAL_ERROR =          -27,
 	/** Guard */
-	CCS_ERROR_MIN =               -37,
+	CCS_ERROR_MIN =               -28,
 	/** Try forcing 32 bits value for bindings */
 	CCS_ERROR_FORCE_32BIT = INT32_MAX
 };

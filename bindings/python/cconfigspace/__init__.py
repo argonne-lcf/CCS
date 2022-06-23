@@ -11,6 +11,7 @@ else:
     libcconfigspace = ct.cdll.LoadLibrary('libcconfigspace.dylib')
 
 from .base import *
+from .error_stack import *
 from .rng import *
 from .interval import *
 from .distribution import *
