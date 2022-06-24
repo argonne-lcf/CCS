@@ -77,8 +77,8 @@ _ccs_serialize_bin_size_ccs_distribution_common_data(
 static inline ccs_error_t
 _ccs_serialize_bin_ccs_distribution_common_data(
 		_ccs_distribution_common_data_t  *data,
-		size_t                             *buffer_size,
-		char                              **buffer) {
+		size_t                           *buffer_size,
+		char                            **buffer) {
 	CCS_VALIDATE(_ccs_serialize_bin_ccs_distribution_type(data->type, buffer_size, buffer));
 	return CCS_SUCCESS;
 }
@@ -86,8 +86,8 @@ _ccs_serialize_bin_ccs_distribution_common_data(
 static inline ccs_error_t
 _ccs_deserialize_bin_ccs_distribution_common_data(
 		_ccs_distribution_common_data_t  *data,
-		size_t                             *buffer_size,
-		const char                        **buffer) {
+		size_t                           *buffer_size,
+		const char                      **buffer) {
 	CCS_VALIDATE(_ccs_deserialize_bin_ccs_distribution_type(&data->type, buffer_size, buffer));
 	return CCS_SUCCESS;
 }
