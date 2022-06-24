@@ -251,16 +251,19 @@ _ccs_create_categorical_hyperparameter(ccs_hyperparameter_type_t  type,
 	CCS_CHECK_PTR(hyperparameter_ret);
 	CCS_CHECK_ARY(num_possible_values, possible_values);
 	CCS_REFUTE(!num_possible_values || num_possible_values <= default_value_index, CCS_INVALID_VALUE);
+	CCS_REFUTE(num_possible_values > CCS_INT_MAX, CCS_INVALID_VALUE);
 	if (type == CCS_HYPERPARAMETER_TYPE_DISCRETE)
 		for(size_t i = 0; i < num_possible_values; i++)
 			CCS_REFUTE(possible_values[i].type != CCS_FLOAT && possible_values[i].type != CCS_INTEGER, CCS_INVALID_VALUE);
 	size_t size_strs = 0;
 	if (type != CCS_HYPERPARAMETER_TYPE_DISCRETE)
-		for(size_t i = 0; i < num_possible_values; i++)
+		for(size_t i = 0; i < num_possible_values; i++) {
+			CCS_REFUTE(possible_values[i].type > CCS_STRING, CCS_INVALID_VALUE);
 			if (possible_values[i].type == CCS_STRING) {
 				CCS_REFUTE(!possible_values[i].value.s, CCS_INVALID_VALUE);
 				size_strs += strlen(possible_values[i].value.s) + 1;
 			}
+		}
 
 	uintptr_t mem = (uintptr_t)calloc(1,
 	    sizeof(struct _ccs_hyperparameter_s) +
