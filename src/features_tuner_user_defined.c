@@ -42,8 +42,8 @@ _ccs_serialize_bin_size_ccs_user_defined_features_tuner(
 	ccs_features_evaluation_t *optimums = NULL;
 	CCS_VALIDATE(data->vector.get_history(features_tuner, NULL, 0, NULL, &history_size));
 	CCS_VALIDATE(data->vector.get_optimums(features_tuner, NULL, 0, NULL, &num_optimums));
-	*cum_size += _ccs_serialize_bin_size_uint64(history_size);
-	*cum_size += _ccs_serialize_bin_size_uint64(num_optimums);
+	*cum_size += _ccs_serialize_bin_size_size(history_size);
+	*cum_size += _ccs_serialize_bin_size_size(num_optimums);
 	if (0 != history_size + num_optimums) {
 		history = (ccs_features_evaluation_t *)calloc(sizeof(ccs_features_evaluation_t), history_size + num_optimums);
 		CCS_REFUTE(!history, CCS_OUT_OF_MEMORY);
@@ -63,7 +63,7 @@ _ccs_serialize_bin_size_ccs_user_defined_features_tuner(
 	if (data->vector.serialize_user_state)
 		CCS_VALIDATE_ERR_GOTO(res, data->vector.serialize_user_state(
 			features_tuner, 0, NULL, &state_size), end);
-	*cum_size += _ccs_serialize_bin_size_uint64(state_size);
+	*cum_size += _ccs_serialize_bin_size_size(state_size);
 	*cum_size += state_size;
 end:
 	if (history)
@@ -91,9 +91,9 @@ _ccs_serialize_bin_ccs_user_defined_features_tuner(
 	ccs_features_evaluation_t *optimums = NULL;
 	CCS_VALIDATE(data->vector.get_history(features_tuner, NULL, 0, NULL, &history_size));
 	CCS_VALIDATE(data->vector.get_optimums(features_tuner, NULL, 0, NULL, &num_optimums));
-	CCS_VALIDATE(_ccs_serialize_bin_uint64(
+	CCS_VALIDATE(_ccs_serialize_bin_size(
 		history_size, buffer_size, buffer));
-	CCS_VALIDATE(_ccs_serialize_bin_uint64(
+	CCS_VALIDATE(_ccs_serialize_bin_size(
 		num_optimums, buffer_size, buffer));
 	if (0 != history_size + num_optimums) {
 		history = (ccs_features_evaluation_t *)calloc(sizeof(ccs_features_evaluation_t), history_size + num_optimums);
@@ -115,7 +115,7 @@ _ccs_serialize_bin_ccs_user_defined_features_tuner(
 	if (data->vector.serialize_user_state)
 		CCS_VALIDATE_ERR_GOTO(res, data->vector.serialize_user_state(
 			features_tuner, 0, NULL, &state_size), end);
-	CCS_VALIDATE_ERR_GOTO(res, _ccs_serialize_bin_uint64(
+	CCS_VALIDATE_ERR_GOTO(res, _ccs_serialize_bin_size(
 		state_size, buffer_size, buffer), end);
 	if (state_size) {
 		CCS_REFUTE_ERR_GOTO(res, *buffer_size < state_size, CCS_NOT_ENOUGH_DATA, end);

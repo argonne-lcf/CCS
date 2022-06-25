@@ -37,13 +37,11 @@ _ccs_deserialize_bin_ccs_expression_data(
 	data->nodes = NULL;
 	CCS_VALIDATE(_ccs_deserialize_bin_ccs_expression_type(
 		&data->type, buffer_size, buffer));
-	uint64_t num_nodes;
-	CCS_VALIDATE(_ccs_deserialize_bin_uint64(
-		&num_nodes, buffer_size, buffer));
-	data->num_nodes = num_nodes;
-	if (num_nodes) {
+	CCS_VALIDATE(_ccs_deserialize_bin_size(
+		&data->num_nodes, buffer_size, buffer));
+	if (data->num_nodes) {
 		data->nodes = (ccs_datum_t *)
-			calloc(num_nodes, sizeof(ccs_datum_t));
+			calloc(data->num_nodes, sizeof(ccs_datum_t));
 		CCS_REFUTE(!data->nodes, CCS_OUT_OF_MEMORY);
 		for (size_t i = 0; i < data->num_nodes; i++) {
 			ccs_expression_t expr;

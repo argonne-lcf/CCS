@@ -101,7 +101,7 @@ _ccs_serialize_bin_size_ccs_expression_data(
 		size_t                          *cum_size,
 		_ccs_object_serialize_options_t *opts) {
 	*cum_size += _ccs_serialize_bin_size_ccs_expression_type(data->type);
-	*cum_size += _ccs_serialize_bin_size_uint64(data->num_nodes);
+	*cum_size += _ccs_serialize_bin_size_size(data->num_nodes);
 	for (size_t i = 0; i < data->num_nodes; i++)
 		CCS_VALIDATE(data->nodes[i]->obj.ops->serialize_size(
 			data->nodes[i], CCS_SERIALIZE_FORMAT_BINARY, cum_size, opts));
@@ -116,7 +116,7 @@ _ccs_serialize_bin_ccs_expression_data(
 		_ccs_object_serialize_options_t  *opts) {
 	CCS_VALIDATE(_ccs_serialize_bin_ccs_expression_type(
 		data->type, buffer_size, buffer));
-	CCS_VALIDATE(_ccs_serialize_bin_uint64(
+	CCS_VALIDATE(_ccs_serialize_bin_size(
 		data->num_nodes, buffer_size, buffer));
 	for (size_t i = 0; i < data->num_nodes; i++)
 		CCS_VALIDATE(data->nodes[i]->obj.ops->serialize(

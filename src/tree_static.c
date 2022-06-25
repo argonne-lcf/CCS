@@ -181,11 +181,12 @@ ccs_create_static_tree(
 		sizeof(struct _ccs_tree_s) +
 		sizeof(_ccs_tree_static_data_t));
 	if (value.type == CCS_STRING) {
-		data->common_data.value = ccs_string((char *)(mem +
+		char *str_pool = (char *)(mem +
 			sizeof(struct _ccs_tree_s) +
 			sizeof(_ccs_tree_static_data_t) +
-			arity * sizeof(ccs_tree_t)));
-		strcpy((char *)data->common_data.value.value.s, value.value.s);
+			arity * sizeof(ccs_tree_t));
+		data->common_data.value = ccs_string(str_pool);
+		strcpy(str_pool, value.value.s);
 	} else {
 		data->common_data.value = value;
 		data->common_data.value.flags = CCS_FLAG_DEFAULT;

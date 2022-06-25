@@ -49,7 +49,7 @@ _ccs_serialize_bin_size_ccs_map_data(
 		_ccs_map_data_t *data) {
 	size_t sz = 0;
 	_ccs_map_datum_t *current = NULL, *tmp;
-	sz += _ccs_serialize_bin_size_uint64(HASH_COUNT(data->map));
+	sz += _ccs_serialize_bin_size_size(HASH_COUNT(data->map));
 	HASH_ITER(hh, data->map, current, tmp) {
 		sz += _ccs_serialize_bin_size_ccs_datum(current->key);
 		sz += _ccs_serialize_bin_size_ccs_datum(current->value);
@@ -63,7 +63,7 @@ _ccs_serialize_bin_ccs_map_data(
 		size_t           *buffer_size,
 		char            **buffer) {
 	_ccs_map_datum_t *current = NULL, *tmp;
-	CCS_VALIDATE(_ccs_serialize_bin_uint64(
+	CCS_VALIDATE(_ccs_serialize_bin_size(
 		HASH_COUNT(data->map), buffer_size, buffer));
 	HASH_ITER(hh, data->map, current, tmp) {
 		CCS_VALIDATE(_ccs_serialize_bin_ccs_datum(

@@ -36,9 +36,9 @@ _ccs_serialize_bin_size_ccs_objective_space_data(
 	_ccs_objective_t *objective;
 
 	*cum_size += _ccs_serialize_bin_size_string(data->name);
-	*cum_size += _ccs_serialize_bin_size_uint64(
+	*cum_size += _ccs_serialize_bin_size_size(
 		utarray_len(data->hyperparameters));
-	*cum_size += _ccs_serialize_bin_size_uint64(
+	*cum_size += _ccs_serialize_bin_size_size(
 		utarray_len(data->objectives));
 
 	/* hyperparameters */
@@ -69,9 +69,9 @@ _ccs_serialize_bin_ccs_objective_space_data(
 
 	CCS_VALIDATE(_ccs_serialize_bin_string(
 		data->name, buffer_size, buffer));
-	CCS_VALIDATE(_ccs_serialize_bin_uint64(
+	CCS_VALIDATE(_ccs_serialize_bin_size(
 		utarray_len(data->hyperparameters), buffer_size, buffer));
-	CCS_VALIDATE(_ccs_serialize_bin_uint64(
+	CCS_VALIDATE(_ccs_serialize_bin_size(
 		utarray_len(data->objectives), buffer_size, buffer));
 
 	/* hyperparameters */

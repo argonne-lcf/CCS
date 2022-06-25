@@ -29,23 +29,18 @@ _ccs_deserialize_bin_ccs_configuration_space_data(
 		size_t                                *buffer_size,
 		const char                           **buffer,
 		_ccs_object_deserialize_options_t     *opts) {
-	uint64_t num;
 	uintptr_t mem;
 
 	CCS_VALIDATE(_ccs_deserialize_bin_string(
 		&data->name, buffer_size, buffer));
-	CCS_VALIDATE(_ccs_deserialize_bin_uint64(
-		&num, buffer_size, buffer));
-	data->num_hyperparameters = num;
-	CCS_VALIDATE(_ccs_deserialize_bin_uint64(
-		&num, buffer_size, buffer));
-	data->num_conditions = num;
-	CCS_VALIDATE(_ccs_deserialize_bin_uint64(
-		&num, buffer_size, buffer));
-	data->num_distributions = num;
-	CCS_VALIDATE(_ccs_deserialize_bin_uint64(
-		&num, buffer_size, buffer));
-	data->num_forbidden_clauses = num;
+	CCS_VALIDATE(_ccs_deserialize_bin_size(
+		&data->num_hyperparameters, buffer_size, buffer));
+	CCS_VALIDATE(_ccs_deserialize_bin_size(
+		&data->num_conditions, buffer_size, buffer));
+	CCS_VALIDATE(_ccs_deserialize_bin_size(
+		&data->num_distributions, buffer_size, buffer));
+	CCS_VALIDATE(_ccs_deserialize_bin_size(
+		&data->num_forbidden_clauses, buffer_size, buffer));
 	CCS_VALIDATE(_ccs_rng_deserialize(
 		&data->rng, CCS_SERIALIZE_FORMAT_BINARY, version, buffer_size, buffer, opts));
 
@@ -77,10 +72,8 @@ _ccs_deserialize_bin_ccs_configuration_space_data(
 			data->hyperparameters + i, CCS_SERIALIZE_FORMAT_BINARY, version, buffer_size, buffer, opts));
 
 	for (size_t i = 0; i < data->num_conditions; i++) {
-		uint64_t index;
-		CCS_VALIDATE(_ccs_deserialize_bin_uint64(
-			&index, buffer_size, buffer));
-		data->cond_hyperparameter_indices[i] = index;
+		CCS_VALIDATE(_ccs_deserialize_bin_size(
+			data->cond_hyperparameter_indices + i, buffer_size, buffer));
 		CCS_VALIDATE(_ccs_expression_deserialize(
 			data->conditions + i, CCS_SERIALIZE_FORMAT_BINARY, version, buffer_size, buffer, opts));
 	}
@@ -88,17 +81,14 @@ _ccs_deserialize_bin_ccs_configuration_space_data(
 	size_t *indices;
 	indices = data->distrib_hyperparameter_indices;
 	for (size_t i = 0; i < data->num_distributions; i++) {
-		uint64_t dimension;
 		CCS_VALIDATE(_ccs_distribution_deserialize(
 			data->distributions + i, CCS_SERIALIZE_FORMAT_BINARY, version, buffer_size, buffer, opts));
-		CCS_VALIDATE(_ccs_deserialize_bin_uint64(
-			&dimension, buffer_size, buffer));
-		data->dimensions[i] = dimension;
-		for (size_t j = 0; j < dimension; j++) {
-			uint64_t index;
-			CCS_VALIDATE(_ccs_deserialize_bin_uint64(
-				&index, buffer_size, buffer));
-			*indices++ = index;
+		CCS_VALIDATE(_ccs_deserialize_bin_size(
+			data->dimensions + i, buffer_size, buffer));
+		for (size_t j = 0; j < data->dimensions[i]; j++) {
+			CCS_VALIDATE(_ccs_deserialize_bin_size(
+				indices, buffer_size, buffer));
+			indices++;
 		}
 	}
 

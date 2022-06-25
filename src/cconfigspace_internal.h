@@ -608,9 +608,34 @@ CCS_CONVERTER_COMPRESSED_POINTER(ccs_object, ccs_object_t)
 #endif
 
 static inline size_t
+_ccs_serialize_bin_size_size(size_t sz) {
+	return _ccs_serialize_bin_size_uint64(sz);
+}
+
+static inline ccs_error_t
+_ccs_serialize_bin_size(
+		size_t   sz,
+		size_t  *buffer_size,
+		char   **buffer) {
+	CCS_VALIDATE(_ccs_serialize_bin_uint64(sz, buffer_size, buffer));
+	return CCS_SUCCESS;
+}
+
+static inline ccs_error_t
+_ccs_deserialize_bin_size(
+		size_t      *sz,
+		size_t      *buffer_size,
+		const char **buffer) {
+	uint64_t tmp;
+	CCS_VALIDATE(_ccs_deserialize_bin_uint64(&tmp, buffer_size, buffer));
+	*sz = tmp;
+	return CCS_SUCCESS;
+}
+
+static inline size_t
 _ccs_serialize_bin_size_string(const char *str) {
 	size_t sz = strlen(str) + 1;
-	return sz + _ccs_serialize_bin_size_uint64(sz);
+	return sz + _ccs_serialize_bin_size_size(sz);
 }
 
 static inline ccs_error_t
@@ -618,7 +643,7 @@ _ccs_serialize_bin_string(const char  *str,
                           size_t      *buffer_size,
                           char       **buffer) {
 	uint64_t sz = strlen(str) + 1;
-	CCS_VALIDATE(_ccs_serialize_bin_uint64(sz, buffer_size, buffer));
+	CCS_VALIDATE(_ccs_serialize_bin_size(sz, buffer_size, buffer));
 	CCS_REFUTE(*buffer_size < sz, CCS_NOT_ENOUGH_DATA);
 	memcpy(*buffer, str, sz);
 	*buffer_size -= sz;
@@ -630,8 +655,8 @@ static inline ccs_error_t
 _ccs_deserialize_bin_string(const char **str,
                             size_t      *buffer_size,
                             const char **buffer) {
-	uint64_t sz;
-	CCS_VALIDATE(_ccs_deserialize_bin_uint64(&sz, buffer_size, buffer));
+	size_t sz;
+	CCS_VALIDATE(_ccs_deserialize_bin_size(&sz, buffer_size, buffer));
 	CCS_REFUTE(*buffer_size < sz, CCS_NOT_ENOUGH_DATA);
 	*str = *buffer;
 	*buffer_size -= sz;
@@ -647,7 +672,7 @@ typedef struct _ccs_blob_s _ccs_blob_t;
 
 static inline size_t
 _ccs_serialize_bin_size_ccs_blob(_ccs_blob_t *b) {
-	return _ccs_serialize_bin_size_uint64(b->sz) +
+	return _ccs_serialize_bin_size_size(b->sz) +
 	       b->sz;
 }
 
@@ -656,7 +681,7 @@ _ccs_serialize_bin_ccs_blob(
 		_ccs_blob_t *b,
 		size_t      *buffer_size,
 		char       **buffer) {
-	CCS_VALIDATE(_ccs_serialize_bin_uint64(b->sz, buffer_size, buffer));
+	CCS_VALIDATE(_ccs_serialize_bin_size(b->sz, buffer_size, buffer));
 	CCS_REFUTE(*buffer_size < b->sz, CCS_NOT_ENOUGH_DATA);
 	memcpy(*buffer, b->blob, b->sz);
 	*buffer_size -= b->sz;
@@ -669,9 +694,7 @@ _ccs_deserialize_bin_ccs_blob(
 		_ccs_blob_t *b,
 		size_t      *buffer_size,
 		const char **buffer) {
-	uint64_t sz;
-	CCS_VALIDATE(_ccs_deserialize_bin_uint64(&sz, buffer_size, buffer));
-	b->sz = sz;
+	CCS_VALIDATE(_ccs_deserialize_bin_size(&b->sz, buffer_size, buffer));
 	CCS_REFUTE(*buffer_size < b->sz, CCS_NOT_ENOUGH_DATA);
 	b->blob = *buffer;
 	*buffer_size -= b->sz;
@@ -922,7 +945,7 @@ _ccs_object_serialize_user_data_size(
 				CCS_VALIDATE(opts->serialize_callback(
 					object, 0, NULL, &serialize_data_size, opts->serialize_user_data));
 		}
-		*buffer_size += _ccs_serialize_bin_size_uint64(serialize_data_size) + serialize_data_size;
+		*buffer_size += _ccs_serialize_bin_size_size(serialize_data_size) + serialize_data_size;
 		break;
 	}
 	default:
@@ -953,7 +976,7 @@ _ccs_object_serialize_user_data(
 				CCS_VALIDATE(opts->serialize_callback(
 					object, 0, NULL, &serialize_data_size, opts->serialize_user_data));
 		}
-		CCS_VALIDATE(_ccs_serialize_bin_uint64(
+		CCS_VALIDATE(_ccs_serialize_bin_size(
 			serialize_data_size, buffer_size, buffer));
 		if (obj->user_data) {
 			CCS_REFUTE(*buffer_size < serialize_data_size, CCS_NOT_ENOUGH_DATA);
@@ -988,13 +1011,13 @@ _ccs_object_deserialize_user_data(
 	switch(format) {
 	case CCS_SERIALIZE_FORMAT_BINARY:
 	{
-		uint64_t serialize_data_size;
-		CCS_VALIDATE(_ccs_deserialize_bin_uint64(
+		size_t serialize_data_size;
+		CCS_VALIDATE(_ccs_deserialize_bin_size(
 			&serialize_data_size, buffer_size, buffer));
 		if (serialize_data_size) {
 			if (opts->deserialize_callback)
 				CCS_VALIDATE(opts->deserialize_callback(
-					object, (size_t)serialize_data_size, *buffer, opts->deserialize_user_data));
+					object, serialize_data_size, *buffer, opts->deserialize_user_data));
 			*buffer_size -= serialize_data_size;
 			*buffer += serialize_data_size;
 		}

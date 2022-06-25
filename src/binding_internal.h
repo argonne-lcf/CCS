@@ -190,7 +190,7 @@ static inline size_t
 _ccs_serialize_bin_size_ccs_binding_data(
 		_ccs_binding_data_t *data) {
 	size_t sz = _ccs_serialize_bin_size_ccs_object(data->context);
-	sz += _ccs_serialize_bin_size_uint64(data->num_values);
+	sz += _ccs_serialize_bin_size_size(data->num_values);
 	for (size_t i = 0; i < data->num_values; i++)
 		sz += _ccs_serialize_bin_size_ccs_datum(data->values[i]);
 	return sz;
@@ -203,7 +203,7 @@ _ccs_serialize_bin_ccs_binding_data(
 		char                **buffer) {
 	CCS_VALIDATE(_ccs_serialize_bin_ccs_object(
 		data->context, buffer_size, buffer));
-	CCS_VALIDATE(_ccs_serialize_bin_uint64(
+	CCS_VALIDATE(_ccs_serialize_bin_size(
 		data->num_values, buffer_size, buffer));
 	for (size_t i = 0; i < data->num_values; i++)
 		CCS_VALIDATE(_ccs_serialize_bin_ccs_datum(
@@ -243,12 +243,10 @@ _ccs_deserialize_bin_ccs_binding_data(
 	(void)version;
 	CCS_VALIDATE(_ccs_deserialize_bin_ccs_object(
 		(ccs_object_t *)&data->context, buffer_size, buffer));
-	uint64_t num_values;
-	CCS_VALIDATE(_ccs_deserialize_bin_uint64(
-		&num_values, buffer_size, buffer));
-	data->num_values = num_values;
+	CCS_VALIDATE(_ccs_deserialize_bin_size(
+		&data->num_values, buffer_size, buffer));
 	if (data->num_values) {
-		data->values = (ccs_datum_t *)calloc(num_values, sizeof(ccs_datum_t));
+		data->values = (ccs_datum_t *)calloc(data->num_values, sizeof(ccs_datum_t));
 		CCS_REFUTE(!data->values, CCS_OUT_OF_MEMORY);
 		for (size_t i = 0; i < data->num_values; i++)
 			CCS_VALIDATE(_ccs_deserialize_bin_ccs_datum(

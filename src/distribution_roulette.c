@@ -21,7 +21,7 @@ static inline size_t
 _ccs_serialize_bin_size_ccs_distribution_roulette_data(
 		_ccs_distribution_roulette_data_t *data) {
 	size_t sz = _ccs_serialize_bin_size_ccs_distribution_common_data(&data->common_data);
-	sz += _ccs_serialize_bin_size_uint64(data->num_areas);
+	sz += _ccs_serialize_bin_size_size(data->num_areas);
 	for (size_t i = 0; i < data->num_areas; i++)
 		sz += _ccs_serialize_bin_size_ccs_float(data->areas[i+1]-data->areas[i]);
 	return sz;
@@ -34,7 +34,7 @@ _ccs_serialize_bin_ccs_distribution_roulette_data(
 		char                              **buffer) {
 	CCS_VALIDATE(_ccs_serialize_bin_ccs_distribution_common_data(
 		&data->common_data, buffer_size, buffer));
-	CCS_VALIDATE(_ccs_serialize_bin_uint64(
+	CCS_VALIDATE(_ccs_serialize_bin_size(
 		data->num_areas, buffer_size, buffer));
 	for (size_t i = 0; i < data->num_areas; i++)
 		CCS_VALIDATE(_ccs_serialize_bin_ccs_float(

@@ -44,7 +44,7 @@ _ccs_serialize_bin_size_ccs_tree_common_data(
 		size_t                          *cum_size,
                 _ccs_object_serialize_options_t *opts) {
 	*cum_size += _ccs_serialize_bin_size_ccs_tree_type(data->type) +
-		_ccs_serialize_bin_size_uint64(data->arity) +
+		_ccs_serialize_bin_size_size(data->arity) +
 		_ccs_serialize_bin_size_ccs_datum(data->value) +
 		_ccs_serialize_bin_size_ccs_bool(data->distribution != NULL);
 	CCS_VALIDATE(data->distribution->obj.ops->serialize_size(
@@ -60,7 +60,7 @@ _ccs_serialize_bin_ccs_tree_common_data(
 		_ccs_object_serialize_options_t  *opts) {
 	CCS_VALIDATE(_ccs_serialize_bin_ccs_tree_type(
 		data->type, buffer_size, buffer));
-	CCS_VALIDATE(_ccs_serialize_bin_uint64(
+	CCS_VALIDATE(_ccs_serialize_bin_size(
 		data->arity, buffer_size, buffer));
 	CCS_VALIDATE(_ccs_serialize_bin_ccs_datum(
 		data->value, buffer_size, buffer));
