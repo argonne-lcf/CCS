@@ -57,7 +57,7 @@ _ccs_serialize_bin_size_ccs_configuration_space_data(
 	ccs_expression_t *expr;
 
 	*cum_size += _ccs_serialize_bin_size_string(data->name);
-	*cum_size += _ccs_serialize_bin_size_uint64(
+	*cum_size += _ccs_serialize_bin_size_size(
 		utarray_len(data->hyperparameters));
 
 	condition_count = 0;
@@ -65,12 +65,12 @@ _ccs_serialize_bin_size_ccs_configuration_space_data(
 	while ( (wrapper = (_ccs_hyperparameter_wrapper_cs_t *)utarray_next(data->hyperparameters, wrapper)) )
 		if (wrapper->condition)
 			condition_count++;
-	*cum_size += _ccs_serialize_bin_size_uint64(condition_count);
+	*cum_size += _ccs_serialize_bin_size_size(condition_count);
 
 	DL_COUNT(data->distribution_list, dw, distribution_count);
-	*cum_size += _ccs_serialize_bin_size_uint64(distribution_count);
+	*cum_size += _ccs_serialize_bin_size_size(distribution_count);
 
-	*cum_size += _ccs_serialize_bin_size_uint64(
+	*cum_size += _ccs_serialize_bin_size_size(
 		utarray_len(data->forbidden_clauses));
 
 	/* rng */
@@ -89,7 +89,7 @@ _ccs_serialize_bin_size_ccs_configuration_space_data(
 	while ( (wrapper = (_ccs_hyperparameter_wrapper_cs_t *)utarray_next(data->hyperparameters, wrapper)) ) {
 		if (wrapper->condition) {
 			/* hyperparam index and condition */
-			*cum_size += _ccs_serialize_bin_size_uint64(condition_count);
+			*cum_size += _ccs_serialize_bin_size_size(condition_count);
 			CCS_VALIDATE(wrapper->condition->obj.ops->serialize_size(
 				wrapper->condition, CCS_SERIALIZE_FORMAT_BINARY, cum_size, opts));
 		}
@@ -101,9 +101,9 @@ _ccs_serialize_bin_size_ccs_configuration_space_data(
 	DL_FOREACH(data->distribution_list, dw) {
 		CCS_VALIDATE(dw->distribution->obj.ops->serialize_size(
 			dw->distribution, CCS_SERIALIZE_FORMAT_BINARY, cum_size, opts));
-		*cum_size += _ccs_serialize_bin_size_uint64(dw->dimension);
+		*cum_size += _ccs_serialize_bin_size_size(dw->dimension);
 		for (size_t i = 0; i < dw->dimension; i++)
-			*cum_size += _ccs_serialize_bin_size_uint64(dw->hyperparameter_indexes[i]);
+			*cum_size += _ccs_serialize_bin_size_size(dw->hyperparameter_indexes[i]);
 	}
 
 	/* forbidden clauses */
@@ -128,7 +128,7 @@ _ccs_serialize_bin_ccs_configuration_space_data(
 
 	CCS_VALIDATE(_ccs_serialize_bin_string(
 		data->name, buffer_size, buffer));
-	CCS_VALIDATE(_ccs_serialize_bin_uint64(
+	CCS_VALIDATE(_ccs_serialize_bin_size(
 		utarray_len(data->hyperparameters), buffer_size, buffer));
 
 	condition_count = 0;
@@ -136,14 +136,14 @@ _ccs_serialize_bin_ccs_configuration_space_data(
 	while ( (wrapper = (_ccs_hyperparameter_wrapper_cs_t *)utarray_next(data->hyperparameters, wrapper)) )
 		if (wrapper->condition)
 			condition_count++;
-	CCS_VALIDATE(_ccs_serialize_bin_uint64(
+	CCS_VALIDATE(_ccs_serialize_bin_size(
 		condition_count, buffer_size, buffer));
 
 	DL_COUNT(data->distribution_list, dw, distribution_count);
-	CCS_VALIDATE(_ccs_serialize_bin_uint64(
+	CCS_VALIDATE(_ccs_serialize_bin_size(
 		distribution_count, buffer_size, buffer));
 
-	CCS_VALIDATE(_ccs_serialize_bin_uint64(
+	CCS_VALIDATE(_ccs_serialize_bin_size(
 		utarray_len(data->forbidden_clauses), buffer_size, buffer));
 
 	/* rng */
@@ -161,7 +161,7 @@ _ccs_serialize_bin_ccs_configuration_space_data(
 	wrapper = NULL;
 	while ( (wrapper = (_ccs_hyperparameter_wrapper_cs_t *)utarray_next(data->hyperparameters, wrapper)) ) {
 		if (wrapper->condition) {
-			CCS_VALIDATE(_ccs_serialize_bin_uint64(
+			CCS_VALIDATE(_ccs_serialize_bin_size(
 				condition_count, buffer_size, buffer));
 			CCS_VALIDATE(wrapper->condition->obj.ops->serialize(
 				wrapper->condition, CCS_SERIALIZE_FORMAT_BINARY, buffer_size, buffer, opts));
@@ -174,10 +174,10 @@ _ccs_serialize_bin_ccs_configuration_space_data(
 	DL_FOREACH(data->distribution_list, dw) {
 		CCS_VALIDATE(dw->distribution->obj.ops->serialize(
 			dw->distribution, CCS_SERIALIZE_FORMAT_BINARY, buffer_size, buffer, opts));
-		CCS_VALIDATE(_ccs_serialize_bin_uint64(
+		CCS_VALIDATE(_ccs_serialize_bin_size(
 			dw->dimension, buffer_size, buffer));
 		for (size_t i = 0; i < dw->dimension; i++)
-			CCS_VALIDATE(_ccs_serialize_bin_uint64(
+			CCS_VALIDATE(_ccs_serialize_bin_size(
 				dw->hyperparameter_indexes[i], buffer_size, buffer));
 	}
 

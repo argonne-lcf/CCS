@@ -21,10 +21,8 @@ _ccs_deserialize_bin_ccs_context_data(
 	data->hyperparameters = NULL;
 	CCS_VALIDATE(_ccs_deserialize_bin_string(
 		&data->name, buffer_size, buffer));
-	uint64_t num_hyperparameters;
-	CCS_VALIDATE(_ccs_deserialize_bin_uint64(
-		&num_hyperparameters, buffer_size, buffer));
-	data->num_hyperparameters = num_hyperparameters;
+	CCS_VALIDATE(_ccs_deserialize_bin_size(
+		&data->num_hyperparameters, buffer_size, buffer));
 	if (data->num_hyperparameters) {
 		data->hyperparameters = (ccs_hyperparameter_t *)
 			calloc(data->num_hyperparameters, sizeof(ccs_hyperparameter_t));

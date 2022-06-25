@@ -30,7 +30,7 @@ _ccs_serialize_bin_size_ccs_distribution_multivariate_data(
 		size_t                                *cum_size,
 		_ccs_object_serialize_options_t       *opts) {
 	*cum_size += _ccs_serialize_bin_size_ccs_distribution_common_data(&data->common_data);
-	*cum_size += _ccs_serialize_bin_size_uint64(data->num_distributions);
+	*cum_size += _ccs_serialize_bin_size_size(data->num_distributions);
 	for (size_t i = 0; i < data->num_distributions; i++)
 		CCS_VALIDATE(data->distributions[i]->obj.ops->serialize_size(
 			data->distributions[i], CCS_SERIALIZE_FORMAT_BINARY, cum_size, opts));
@@ -45,7 +45,7 @@ _ccs_serialize_bin_ccs_distribution_multivariate_data(
 		_ccs_object_serialize_options_t        *opts) {
 	CCS_VALIDATE(_ccs_serialize_bin_ccs_distribution_common_data(
 		&data->common_data, buffer_size, buffer));
-	CCS_VALIDATE(_ccs_serialize_bin_uint64(
+	CCS_VALIDATE(_ccs_serialize_bin_size(
 		data->num_distributions, buffer_size, buffer));
 	for (size_t i = 0; i < data->num_distributions; i++)
 		CCS_VALIDATE(data->distributions[i]->obj.ops->serialize(
