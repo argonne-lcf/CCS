@@ -56,7 +56,7 @@ static ccs_error_t
 	_ccs_tree_dynamic_data_t *cd =
 		(_ccs_tree_dynamic_data_t *)child->data;
 	CCS_REFUTE(cd->wrapper.tree, CCS_INVALID_TREE);
-	ccs_result_t err = CCS_SUCCESS;
+	ccs_error_t err = CCS_SUCCESS;
 	CCS_VALIDATE(ccs_retain_object(child));
 	cd->wrapper.index = index;
 	cd->wrapper.tree = child;
