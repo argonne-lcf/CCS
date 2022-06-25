@@ -40,6 +40,121 @@ _ccs_tree_dynamic_del(ccs_object_t o) {
 	return CCS_SUCCESS;
 }
 
+static inline ccs_error_t
+_ccs_serialize_bin_size_ccs_tree_dynamic_data(
+		_ccs_tree_dynamic_data_t        *data,
+		size_t                          *cum_size,
+		_ccs_object_serialize_options_t *opts) {
+	CCS_VALIDATE(_ccs_serialize_bin_size_ccs_tree_common_data(
+		&data->common_data, cum_size, opts));
+	*cum_size += _ccs_serialize_bin_size_size(data->wrapper.index) +
+		_ccs_serialize_bin_size_ccs_object(data->wrapper.tree) +
+		_ccs_serialize_bin_size_ccs_bool(data->sorted) +
+		_ccs_serialize_bin_size_size(HASH_CNT(hh, data->index_hash));
+	_ccs_tree_wrapper_t *current, *tmp;
+	HASH_ITER(hh, data->index_hash, current, tmp) {
+		*cum_size += _ccs_serialize_bin_size_size(current->index);
+		CCS_VALIDATE(current->tree->obj.ops->serialize_size(
+			current->tree, CCS_SERIALIZE_FORMAT_BINARY, cum_size, opts));
+	}
+	return CCS_SUCCESS;
+}
+
+static inline ccs_error_t
+_ccs_serialize_bin_ccs_tree_dynamic_data(
+		_ccs_tree_dynamic_data_t         *data,
+		size_t                           *buffer_size,
+		char                            **buffer,
+		_ccs_object_serialize_options_t  *opts) {
+	CCS_VALIDATE(_ccs_serialize_bin_ccs_tree_common_data(
+		&data->common_data, buffer_size, buffer, opts));
+	CCS_VALIDATE(_ccs_serialize_bin_size(
+		data->wrapper.index, buffer_size, buffer));
+	CCS_VALIDATE(_ccs_serialize_bin_ccs_object(
+		data->wrapper.tree, buffer_size, buffer));
+	CCS_VALIDATE(_ccs_serialize_bin_ccs_bool(
+		data->sorted, buffer_size, buffer));
+	CCS_VALIDATE(_ccs_serialize_bin_size(
+		HASH_CNT(hh, data->index_hash), buffer_size, buffer));
+	_ccs_tree_wrapper_t *current, *tmp;
+	HASH_ITER(hh, data->index_hash, current, tmp) {
+		CCS_VALIDATE(_ccs_serialize_bin_size(
+			current->index, buffer_size, buffer));
+		CCS_VALIDATE(current->tree->obj.ops->serialize(
+			current->tree, CCS_SERIALIZE_FORMAT_BINARY, buffer_size, buffer, opts));
+	}
+	return CCS_SUCCESS;
+}
+
+static inline ccs_error_t
+_ccs_serialize_bin_size_ccs_tree_dynamic(
+		ccs_tree_t                       tree,
+		size_t                          *cum_size,
+		_ccs_object_serialize_options_t *opts) {
+	_ccs_tree_dynamic_data_t *data =
+		(_ccs_tree_dynamic_data_t *)tree->data;
+	*cum_size += _ccs_serialize_bin_size_ccs_object_internal(
+		(_ccs_object_internal_t *)tree);
+	CCS_VALIDATE(_ccs_serialize_bin_size_ccs_tree_dynamic_data(
+		data, cum_size, opts));
+	return CCS_SUCCESS;
+}
+
+static inline ccs_error_t
+_ccs_serialize_bin_ccs_tree_dynamic(
+		ccs_tree_t                        tree,
+		size_t                           *buffer_size,
+		char                            **buffer,
+		_ccs_object_serialize_options_t  *opts) {
+	_ccs_tree_dynamic_data_t *data =
+		(_ccs_tree_dynamic_data_t *)tree->data;
+	CCS_VALIDATE(_ccs_serialize_bin_ccs_object_internal(
+		 (_ccs_object_internal_t *)tree, buffer_size, buffer));
+	CCS_VALIDATE(_ccs_serialize_bin_ccs_tree_dynamic_data(
+		data, buffer_size, buffer, opts));
+	return CCS_SUCCESS;
+}
+
+static ccs_error_t
+_ccs_tree_dynamic_serialize_size(
+		ccs_object_t                     object,
+		ccs_serialize_format_t           format,
+		size_t                          *cum_size,
+		_ccs_object_serialize_options_t *opts) {
+	switch(format) {
+	case CCS_SERIALIZE_FORMAT_BINARY:
+		CCS_VALIDATE(_ccs_serialize_bin_size_ccs_tree_dynamic(
+			(ccs_tree_t)object, cum_size, opts));
+		break;
+	default:
+		CCS_RAISE(CCS_INVALID_VALUE, "Unsupported serialization format: %d", format);
+	}
+	CCS_VALIDATE(_ccs_object_serialize_user_data_size(
+		object, format, cum_size, opts));
+	return CCS_SUCCESS;
+}
+
+static ccs_error_t
+_ccs_tree_dynamic_serialize(
+		ccs_object_t                      object,
+		ccs_serialize_format_t            format,
+		size_t                           *buffer_size,
+		char                            **buffer,
+		_ccs_object_serialize_options_t  *opts) {
+	switch(format) {
+	case CCS_SERIALIZE_FORMAT_BINARY:
+		CCS_VALIDATE(_ccs_serialize_bin_ccs_tree_dynamic(
+		    (ccs_tree_t)object, buffer_size, buffer, opts));
+		break;
+	default:
+		CCS_RAISE(CCS_INVALID_VALUE, "Unsupported serialization format: %d", format);
+	}
+	CCS_VALIDATE(_ccs_object_serialize_user_data(
+		object, format, buffer_size, buffer, opts));
+	return CCS_SUCCESS;
+}
+
+
 #undef uthash_nonfatal_oom
 #define uthash_nonfatal_oom(elt) { \
 	CCS_RAISE_ERR_GOTO(err, CCS_OUT_OF_MEMORY, retain, "Out of memory to allocate hash"); \
@@ -86,8 +201,8 @@ _ccs_tree_dynamic_get_child(
 
 static _ccs_tree_ops_t _ccs_tree_dynamic_ops = {
 	{ &_ccs_tree_dynamic_del,
-	  NULL,
-	  NULL },
+	  &_ccs_tree_dynamic_serialize_size,
+	  &_ccs_tree_dynamic_serialize },
 	&_ccs_tree_dynamic_set_child,
 	&_ccs_tree_dynamic_get_child
 };
