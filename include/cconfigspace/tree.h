@@ -54,6 +54,26 @@ ccs_tree_get_child(
 	ccs_tree_t *child_ret);
 
 extern ccs_error_t
+ccs_tree_get_parent(
+	ccs_tree_t  tree,
+	ccs_tree_t *parent_ret,
+	size_t     *index_ret);
+
+extern ccs_error_t
+ccs_tree_get_position(
+	ccs_tree_t  tree,
+	size_t      position_size,
+	size_t     *position,
+	size_t     *position_size_ret);
+
+extern ccs_error_t
+ccs_tree_get_node_at_position(
+	ccs_tree_t  tree,
+	size_t      position_size,
+	size_t     *position,
+	ccs_tree_t *tree_ret);
+
+extern ccs_error_t
 ccs_tree_set_distribution(
 	ccs_tree_t         tree,
 	ccs_distribution_t distribution);

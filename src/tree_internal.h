@@ -35,6 +35,8 @@ struct _ccs_tree_common_data_s {
 	size_t             arity;
 	ccs_datum_t        value;
 	ccs_distribution_t distribution;
+	ccs_tree_t         parent; //
+	size_t             index;  // if parent == NULL node contains tree_space handle
 };
 typedef struct _ccs_tree_common_data_s _ccs_tree_common_data_t;
 

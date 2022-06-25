@@ -62,6 +62,73 @@ ccs_tree_get_child(
 	return CCS_SUCCESS;
 }
 
+ccs_error_t
+ccs_tree_get_parent(
+		ccs_tree_t  tree,
+		ccs_tree_t *parent_ret,
+		size_t     *index_ret) {
+	CCS_CHECK_OBJ(tree, CCS_TREE);
+	CCS_CHECK_PTR(parent_ret);
+	ccs_tree_t parent = ((_ccs_tree_common_data_t *)(tree->data))->parent;
+	*parent_ret = parent;
+	if (index_ret && parent)
+		*index_ret = ((_ccs_tree_common_data_t *)(tree->data))->index;
+	return CCS_SUCCESS;
+}
+
+ccs_error_t
+ccs_tree_get_position(
+		ccs_tree_t  tree,
+		size_t      position_size,
+		size_t     *position,
+		size_t     *position_size_ret) {
+	CCS_CHECK_OBJ(tree, CCS_TREE);
+	CCS_CHECK_ARY(position_size, position);
+	CCS_REFUTE(!position && !position_size_ret, CCS_INVALID_VALUE);
+	size_t depth = 0;
+	ccs_tree_t parent = ((_ccs_tree_common_data_t *)(tree->data))->parent;
+	while (parent) {
+		depth++;
+		parent = ((_ccs_tree_common_data_t *)(parent->data))->parent;
+	}
+	if (position)
+		CCS_REFUTE(position_size < depth, CCS_INVALID_VALUE);
+	if (position_size_ret)
+		*position_size_ret = depth;
+	if (position) {
+		size_t index = ((_ccs_tree_common_data_t *)(tree->data))->index;
+		parent = ((_ccs_tree_common_data_t *)(tree->data))->parent;
+		for(size_t i = depth; i < position_size; i++)
+			position[i] = 0;
+		while (parent) {
+			depth--;
+			position[depth] = index;
+			index = ((_ccs_tree_common_data_t *)(parent->data))->index;
+			parent = ((_ccs_tree_common_data_t *)(parent->data))->parent;
+		}
+	}
+	return CCS_SUCCESS;
+}
+
+ccs_error_t
+ccs_tree_get_node_at_position(
+		ccs_tree_t  tree,
+		size_t      position_size,
+		size_t     *position,
+		ccs_tree_t *tree_ret) {
+	CCS_CHECK_OBJ(tree, CCS_TREE);
+	CCS_CHECK_ARY(position_size, position);
+	CCS_CHECK_PTR(tree_ret);
+	*tree_ret = tree;
+	while(position_size) {
+		CCS_VALIDATE(ccs_tree_get_child(*tree_ret, *position, tree_ret));
+		CCS_REFUTE(!*tree_ret, CCS_INVALID_TREE);
+		position_size--;
+		position++;
+	}
+	return CCS_SUCCESS;
+}
+
 static inline void
 _ccs_set_tree_interval(
 		_ccs_tree_common_data_t *data,
