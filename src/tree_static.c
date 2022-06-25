@@ -12,8 +12,13 @@ _ccs_tree_static_del(ccs_object_t o) {
 	struct _ccs_tree_static_data_s *data =
 		(struct _ccs_tree_static_data_s *)(((ccs_tree_t)o)->data);
 	for (size_t i = 0; i < data->common_data.arity; i++)
-		if (data->children[i])
+		if (data->children[i]) {
+			struct _ccs_tree_static_data_s *cd =
+				(struct _ccs_tree_static_data_s *)(data->children[i]->data);
+			cd->common_data.parent = NULL;
+			cd->common_data.index = 0;
 			ccs_release_object(data->children[i]);
+		}
 	return CCS_SUCCESS;
 }
 
@@ -125,7 +130,12 @@ _ccs_tree_static_set_child(
 	_ccs_tree_static_data_t *d =
 		(_ccs_tree_static_data_t *)tree->data;
 	CCS_CHECK_TREE(child, CCS_TREE_TYPE_STATIC);
+	_ccs_tree_static_data_t *cd =
+		(_ccs_tree_static_data_t *)child->data;
+	CCS_REFUTE(cd->common_data.parent, CCS_INVALID_TREE);
 	CCS_VALIDATE(ccs_retain_object(child));
+	cd->common_data.parent = tree;
+	cd->common_data.index = index;
 	d->children[index] = child;
 	return CCS_SUCCESS;
 }
@@ -176,6 +186,7 @@ ccs_create_static_tree(
 		(_ccs_tree_static_data_t *)(mem + sizeof(struct _ccs_tree_s));
 	data->common_data.type = CCS_TREE_TYPE_STATIC;
 	data->common_data.arity = arity;
+	data->common_data.parent = NULL;
 	data->common_data.distribution = NULL;
 	data->children = (ccs_tree_t *)(mem +
 		sizeof(struct _ccs_tree_s) +

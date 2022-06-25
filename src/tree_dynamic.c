@@ -34,8 +34,13 @@ _ccs_tree_dynamic_del(ccs_object_t o) {
 	_ccs_tree_wrapper_t *current, *tmp;
 	HASH_ITER(hh, data->index_hash, current, tmp) {
 		HASH_DEL(data->index_hash, current);
+		struct _ccs_tree_dynamic_data_s *cd =
+			(struct _ccs_tree_dynamic_data_s *)(current->tree->data);
+		cd->common_data.parent = NULL;
+		cd->common_data.index = 0;
+		cd->wrapper.index = 0;
+		cd->wrapper.tree = NULL;
 		ccs_release_object(current->tree);
-		free(current);
 	}
 	return CCS_SUCCESS;
 }
@@ -47,10 +52,7 @@ _ccs_serialize_bin_size_ccs_tree_dynamic_data(
 		_ccs_object_serialize_options_t *opts) {
 	CCS_VALIDATE(_ccs_serialize_bin_size_ccs_tree_common_data(
 		&data->common_data, cum_size, opts));
-	*cum_size += _ccs_serialize_bin_size_size(data->wrapper.index) +
-		_ccs_serialize_bin_size_ccs_object(data->wrapper.tree) +
-		_ccs_serialize_bin_size_ccs_bool(data->sorted) +
-		_ccs_serialize_bin_size_size(HASH_CNT(hh, data->index_hash));
+	*cum_size += _ccs_serialize_bin_size_size(data->wrapper.index);
 	_ccs_tree_wrapper_t *current, *tmp;
 	HASH_ITER(hh, data->index_hash, current, tmp) {
 		*cum_size += _ccs_serialize_bin_size_size(current->index);
@@ -68,12 +70,6 @@ _ccs_serialize_bin_ccs_tree_dynamic_data(
 		_ccs_object_serialize_options_t  *opts) {
 	CCS_VALIDATE(_ccs_serialize_bin_ccs_tree_common_data(
 		&data->common_data, buffer_size, buffer, opts));
-	CCS_VALIDATE(_ccs_serialize_bin_size(
-		data->wrapper.index, buffer_size, buffer));
-	CCS_VALIDATE(_ccs_serialize_bin_ccs_object(
-		data->wrapper.tree, buffer_size, buffer));
-	CCS_VALIDATE(_ccs_serialize_bin_ccs_bool(
-		data->sorted, buffer_size, buffer));
 	CCS_VALIDATE(_ccs_serialize_bin_size(
 		HASH_CNT(hh, data->index_hash), buffer_size, buffer));
 	_ccs_tree_wrapper_t *current, *tmp;
@@ -170,15 +166,19 @@ static ccs_error_t
 		(_ccs_tree_dynamic_data_t *)tree->data;
 	_ccs_tree_dynamic_data_t *cd =
 		(_ccs_tree_dynamic_data_t *)child->data;
-	CCS_REFUTE(cd->wrapper.tree, CCS_INVALID_TREE);
+	CCS_REFUTE(cd->common_data.parent, CCS_INVALID_TREE);
 	ccs_error_t err = CCS_SUCCESS;
 	CCS_VALIDATE(ccs_retain_object(child));
 	cd->wrapper.index = index;
 	cd->wrapper.tree = child;
 	HASH_ADD(hh, d->index_hash, index, sizeof(index), &cd->wrapper);
+	cd->common_data.parent = tree;
+	cd->common_data.index = index;
 	d->sorted = CCS_FALSE;
 	return CCS_SUCCESS;
 retain:
+	cd->wrapper.index = 0;
+	cd->wrapper.tree = NULL;
 	ccs_release_object(child);
 	return err;
 }
@@ -232,6 +232,7 @@ ccs_create_dynamic_tree(
 		(_ccs_tree_dynamic_data_t *)(mem + sizeof(struct _ccs_tree_s));
 	data->common_data.type = CCS_TREE_TYPE_DYNAMIC;
 	data->common_data.arity = arity;
+	data->common_data.parent = NULL;
 	data->common_data.distribution = NULL;
 	data->index_hash = NULL;
 	data->sorted = CCS_FALSE;
