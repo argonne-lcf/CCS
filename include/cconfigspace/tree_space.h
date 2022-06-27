@@ -69,7 +69,7 @@ ccs_tree_space_get_rng(
 	ccs_rng_t        *rng_ret);
 
 extern ccs_error_t
-ccs_tree_space_get_root(
+ccs_tree_space_get_tree(
 	ccs_tree_space_t  tree_space,
 	ccs_tree_t       *tree_ret);
 
