@@ -81,6 +81,9 @@ libcconfigspace_la_SOURCES = \
 	tree.c \
 	tree_internal.h \
 	tree_static.c \
-	tree_dynamic.c
+	tree_dynamic.c \
+	tree_space.c \
+	tree_space_internal.h \
+	tree_space_static.c
 
 @VALGRIND_CHECK_RULES@
