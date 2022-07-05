@@ -10,7 +10,7 @@ The uniform sampling problem consisting in selecting a random node (and position
 
 #### Global Sampling Strategy
 
-Uniformely sampling a static tree is straightforward, with
+Uniformly sampling a static tree is straightforward, with
 $\mathcal{O}(n)$
 space and
 $\mathcal{O}(\log n)$
@@ -20,7 +20,7 @@ to sample the index space.
 Both operations are $\mathcal{O}(n)$ in time.
 TODO: insert ref.
 
-#### Hierachichal sampling strategy
+#### Hierarchical sampling strategy
 
 Sampling can be done while descending through the tree, where each child subtree
 is sampled with a probability proportional to it's subtree weight, and the current
@@ -50,19 +50,19 @@ Please note that biasing sampling of a specific node of the tree is a different 
 
 #### Global Sampling Strategy
 
-In oder to bias sampling of the subtree starting at node $n_i$
+In order to bias sampling of the subtree starting at node $n_i$
 by a factor of $x$,
-the weight corresponding to $n_i$ and all its descendants nodes need to be multiplied by a foactor of $x$ in the roulette distribution.
+the weight corresponding to $n_i$ and all its descendants nodes need to be multiplied by a factor of $x$ in the roulette distribution.
 This is an $\mathcal{O}(n)$ time operation.
 
-#### Hierachichal Sampling Strategy
+#### Hierarchical Sampling Strategy
 
-In oder to bias sampling of the subtree starting at $node $n_i$
+In order to bias sampling of the subtree starting at $node $n_i$
 by a factor of $x$,
 the roulette distributions of the ancestors of the subtree (all nodes leading to $n_i$) need to be updated to account
 for the bias by:
- - multiplying the wheight of the subtree leading to $n_i$ by a factor of $x$ in $n_i$'s parent,
- - updating the the weight of the subtrees leading to $n_i$ by taking into account the subtree udated weight.
+ - multiplying the weight of the subtree leading to $n_i$ by a factor of $x$ in $n_i$'s parent,
+ - updating the weight of the subtrees leading to $n_i$ by taking into account the subtree updated weight.
 This is a
 $\mathcal{O}(k \log_k n)$
 time operation on average,
@@ -73,7 +73,7 @@ where $k$ is the mean arity of the tree.
 Biasing sampling of a specific node is also possible, and requires updating a single weight in the global sampling strategy
 (still an $\mathcal{O}(n)$ time operation).
 
-The hierarchical sampling strategy is a bit more complex, but can be achieved if the biases of subtrees are stored on the node at the base of the subtree. the complexity is the same as biasing a subtree, $\mathcal{O}(k \log_k n)$.
+The hierarchical sampling strategy is a bit more complex, but can be achieved if the biases of subtrees are stored on the node at the base of the subtree. The complexity is the same as biasing a subtree, $\mathcal{O}(k \log_k n)$.
 
 ## The Dynamic Tree Case
 
@@ -90,7 +90,7 @@ $n + a_j$.
 Uniform sampling through the reachable nodes can be done using both strategy given above.
 Nonetheless the cost of updating the different sampling strategy, as new nodes are explored is not the same.
 The global sampling strategy would require traversing the tree every time a new node becomes known and it's arity discovered this is an $\mathcal{O}(n)$.
-A contrario, the hierarchical sampling strategy allows updating the roulette ditributions using a similar algorithm used to bias a subtree, and thus is an $\mathcal{O}(k \log_k n)$ operation.
+On the contrary, the hierarchical sampling strategy allows updating the roulette distributions using a similar algorithm used to bias a subtree, and thus is an $\mathcal{O}(k \log_k n)$ operation.
 
 ### Biased sampling
 
