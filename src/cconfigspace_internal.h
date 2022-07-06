@@ -80,6 +80,11 @@ _ccs_interval_include(ccs_interval_t *interval, ccs_numeric_t value) {
 		((_ccs_object_template_t *)(o))->obj.type != (t), \
 	CCS_INVALID_OBJECT, "Invalid CCS object '%s' == %p supplied, expected %s", #o, o, #t)
 
+#define CCS_CHECK_OBJ_ERR_GOTO(err, o, t, label) CCS_REFUTE_MSG_ERR_GOTO(err, !(o) || \
+		!((_ccs_object_template_t *)(o))->data || \
+		((_ccs_object_template_t *)(o))->obj.type != (t), \
+	CCS_INVALID_OBJECT, label, "Invalid CCS object '%s' == %p supplied, expected %s", #o, o, #t)
+
 #define CCS_CHECK_PTR(p) CCS_REFUTE_MSG(!(p), CCS_INVALID_VALUE, "NULL pointer supplied '%s'", #p);
 
 #define CCS_CHECK_ARY(c, a) CCS_REFUTE_MSG((c > 0) && !(a), CCS_INVALID_VALUE, "Invalid array '%s' == %p of size '%s' == %zu supplied", #a, a, #c, c)
