@@ -261,17 +261,17 @@ ccs_create_roulette_distribution(size_t              num_areas,
  *                              newly created distribution
  * @return #CCS_SUCCESS on success
  * @return #CCS_INVALID_VALUE if \p distribution_ret is NULL; or if
- *                             num_distributions is 0; or if distributions is
- *                             NULL; or if \p weights is NULL; or if the sum of
- *                             the weight is 0; or if the weights could not be
- *                             normalized
+ *                            num_distributions is 0; or if distributions is
+ *                            NULL; or if \p weights is NULL; or if the sum of
+ *                            the weight is 0; or if the weights could not be
+ *                            normalized
  * @return #CCS_INVALID_DISTRIBUTION if the distributions have different
- *                                    dimensions; or if distributions do not all
- *                                    have the same data types
+ *                                   dimensions; or if distributions do not all
+ *                                   have the same data types
  * @return #CCS_INVALID_OBJECT if at least one of the distributions is not a
- *                              valid CCS distributions
+ *                             valid CCS distributions
  * @return #CCS_OUT_OF_MEMORY if there was not enough memory to allocate the
- *                             new distribution
+ *                            new distribution
  */
 extern ccs_error_t
 ccs_create_mixture_distribution(size_t              num_distributions,
@@ -467,18 +467,38 @@ ccs_roulette_distribution_get_num_areas(ccs_distribution_t  distribution,
  *                           be NULL
  * @return #CCS_SUCCESS on success
  * @return #CCS_INVALID_VALUE if \p areas is NULL and num_areas is greater than
- *                             0; or if \p areas is NULL and num_areas_ret is
- *                             NULL
+ *                            0; or if \p areas is NULL and num_areas_ret is
+ *                            NULL
  * @return #CCS_INVALID_OBJECT if \p distribution is not a valid CCS
- *                              distribution
+ *                             distribution
  * @return #CCS_INVALID_DISTRIBUTION if \p distribution is not a roulette
- *                                    distribution
+ *                                   distribution
  */
 extern ccs_error_t
 ccs_roulette_distribution_get_areas(ccs_distribution_t  distribution,
                                     size_t              num_areas,
                                     ccs_float_t        *areas,
                                     size_t             *num_areas_ret);
+
+/**
+ * Set the areas of a roulette distribution.
+ * @param[in,out] distribution
+ * @param[in] num_areas the number of areas
+ * @param[in] areas an array of \p num_areas positive floating point values
+ *                  representing the probability of a given area to be sampled.
+ * @return #CCS_SUCCESS on success
+ * @return #CCS_INVALID_VALUE if \p areas is NULL; or if \p num_areas is different
+ *                            from the number of areas of the roulette
+ *                            distribution; or if the sum of the areas is 0; or
+ *                            if the areas could not be normalized
+ * @return #CCS_INVALID_OBJECT if \p distribution is not a valid CCS distribution
+ * @return #CCS_INVALID_DISTRIBUTION if \p distribution is not a roulette
+ *                                   distribution
+ */
+extern ccs_error_t
+ccs_roulette_distribution_set_areas(ccs_distribution_t  distribution,
+                                    size_t              num_areas,
+                                    ccs_float_t        *areas);
 
 /**
  * Get the number of distributions contained in a mixture distribution.
