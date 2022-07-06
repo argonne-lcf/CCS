@@ -42,10 +42,47 @@ ccs_tree_set_child(
 		size_t     index,
 		ccs_tree_t child) {
 	CCS_CHECK_OBJ(tree, CCS_TREE);
-	CCS_CHECK_OBJ(child, CCS_TREE);
-	CCS_REFUTE(index >= ((_ccs_tree_common_data_t *)(tree->data))->arity, CCS_OUT_OF_BOUNDS);
-	_ccs_tree_ops_t *ops = _ccs_tree_get_ops(tree);
-	CCS_VALIDATE(ops->set_child(tree, index, child));
+	_ccs_tree_common_data_t *tree_data =
+		(_ccs_tree_common_data_t *)tree->data;
+	CCS_CHECK_TREE(child, tree_data->type);
+
+	CCS_REFUTE(index >= tree_data->arity, CCS_OUT_OF_BOUNDS);
+	CCS_REFUTE(tree_data->children[index], CCS_INVALID_VALUE);
+	_ccs_tree_common_data_t *child_data =
+		(_ccs_tree_common_data_t *)child->data;
+	CCS_REFUTE(child_data->parent || child_data->index, CCS_INVALID_TREE);
+	ccs_float_t weight = child_data->sum_weights * child_data->bias;
+	CCS_VALIDATE(ccs_retain_object(child));
+
+	size_t indx = index;
+	child_data->parent = tree;
+	child_data->index = indx;
+	tree_data->children[indx] = child;
+	if (weight == tree_data->weights[indx])
+		return CCS_SUCCESS;
+
+	/* Update all parent distributions of child */
+	do {
+		tree_data->weights[indx] = weight;
+		size_t n = tree_data->arity + 1;
+		ccs_float_t sum_weights = 0.0;
+		for (size_t i = 0; i < n; i++)
+			sum_weights += tree_data->weights[i];
+		tree_data->sum_weights = sum_weights;
+		/* Should not fail, so no error management, would require removing the child
+		   and updating all distributions until the one that failed.
+
+		   Possible optimization could be defering distribution weight update */
+		if (sum_weights > 0)
+			CCS_VALIDATE(ccs_roulette_distribution_set_areas(
+				tree_data->distribution, n, tree_data->weights));
+		if (tree_data->parent) {
+			weight = sum_weights * tree_data->bias;
+			indx = tree_data->index;
+			tree_data = (_ccs_tree_common_data_t *)tree_data->parent->data;
+		} else
+			tree_data = NULL;
+	} while (tree_data);
 	return CCS_SUCCESS;
 }
 
@@ -56,9 +93,34 @@ ccs_tree_get_child(
 		ccs_tree_t *child_ret) {
 	CCS_CHECK_OBJ(tree, CCS_TREE);
 	CCS_CHECK_PTR(child_ret);
-	CCS_REFUTE(index >= ((_ccs_tree_common_data_t *)(tree->data))->arity, CCS_OUT_OF_BOUNDS);
-	_ccs_tree_ops_t *ops = _ccs_tree_get_ops(tree);
-	CCS_VALIDATE(ops->get_child(tree, index, child_ret));
+	_ccs_tree_common_data_t *tree_data =
+		(_ccs_tree_common_data_t *)tree->data;
+	CCS_REFUTE(index >= tree_data->arity, CCS_OUT_OF_BOUNDS);
+	*child_ret = tree_data->children[index];
+	return CCS_SUCCESS;
+}
+
+ccs_error_t
+ccs_tree_get_children(
+		ccs_tree_t  tree,
+		size_t      num_children,
+		ccs_tree_t *children,
+		size_t     *num_children_ret) {
+	CCS_CHECK_OBJ(tree, CCS_TREE);
+	CCS_CHECK_ARY(num_children, children);
+	CCS_REFUTE(!children && !num_children_ret, CCS_INVALID_VALUE);
+	_ccs_tree_common_data_t *data =
+		 (_ccs_tree_common_data_t *)tree->data;
+	size_t arity = data->arity;
+	if (children) {
+		CCS_REFUTE(num_children < arity, CCS_INVALID_VALUE);
+		for (size_t i = 0; i < arity; i++)
+			children[i] = data->children[i];
+		for (size_t i = arity; i < num_children; i++)
+			children[i] = NULL;
+	}
+	if (num_children_ret)
+		*num_children_ret = arity;
 	return CCS_SUCCESS;
 }
 
@@ -137,7 +199,7 @@ _ccs_set_tree_interval(
 	interval->lower.i = 0;
 	interval->upper.i = data->arity;
 	interval->lower_included = CCS_TRUE;
-	interval->upper_included = CCS_FALSE;
+	interval->upper_included = CCS_TRUE;
 }
 
 static inline ccs_error_t
@@ -196,8 +258,10 @@ _ccs_tree_samples(
 		size_t                  *indices) {
 	if (distribution)
 		CCS_VALIDATE(_ccs_tree_validate_distribution(data, distribution));
-	else
+	else {
+		CCS_REFUTE(data->sum_weights == 0.0, CCS_INVALID_DISTRIBUTION);
 		distribution = data->distribution;
+	}
 	gsl_rng *grng;
 	CCS_VALIDATE(ccs_rng_get_gsl_rng(rng, &grng));
 	size_t arity = data->arity;
@@ -206,7 +270,7 @@ _ccs_tree_samples(
 			distribution, rng, num_indices, (ccs_numeric_t *)indices));
 	} else {
 		for (size_t i = 0; i < num_indices; i++)
-			indices[i] =  gsl_rng_uniform_int(grng, (unsigned long int)arity);
+			indices[i] =  gsl_rng_uniform_int(grng, (unsigned long int)(arity + 1));
 	}
 	return CCS_SUCCESS;
 }
