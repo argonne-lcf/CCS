@@ -5,31 +5,11 @@
 extern "C" {
 #endif
 
-enum ccs_tree_type_e {
-	CCS_TREE_TYPE_STATIC,
-	CCS_TREE_TYPE_DYNAMIC,
-	CCS_TREE_TYPE_MAX,
-	CCS_TREE_TYPE_FORCE_32BIT = INT_MAX
-};
-
-typedef enum ccs_tree_type_e ccs_tree_type_t;
-
 extern ccs_error_t
-ccs_create_static_tree(
+ccs_create_tree(
 	size_t       arity,
 	ccs_datum_t  value,
 	ccs_tree_t  *tree_ret);
-
-extern ccs_error_t
-ccs_create_dynamic_tree(
-	size_t       arity,
-	ccs_datum_t  value,
-	ccs_tree_t  *tree_ret);
-
-extern ccs_error_t
-ccs_tree_get_type(
-	ccs_tree_t       tree,
-	ccs_tree_type_t *type_ret);
 
 extern ccs_error_t
 ccs_tree_get_value(
@@ -81,16 +61,29 @@ ccs_tree_get_node_at_position(
 	ccs_tree_t *tree_ret);
 
 extern ccs_error_t
-ccs_tree_get_distribution(
-	ccs_tree_t          tree,
-	ccs_distribution_t *distribution_ret);
+ccs_tree_get_weight(
+	ccs_tree_t   tree,
+	ccs_float_t *weight_ret);
 
+extern ccs_error_t
+ccs_tree_set_weight(
+	ccs_tree_t  tree,
+	ccs_float_t weight);
+
+extern ccs_error_t
+ccs_tree_get_bias(
+	ccs_tree_t   tree,
+	ccs_float_t *bias_ret);
+
+extern ccs_error_t
+ccs_tree_set_bias(
+	ccs_tree_t  tree,
+	ccs_float_t bias);
 
 // index == arity => sample self
 extern ccs_error_t
 ccs_tree_sample(
 	ccs_tree_t          tree,
-	ccs_distribution_t  distribution,
 	ccs_rng_t           rng,
 	size_t             *index_ret);
 
@@ -98,7 +91,6 @@ ccs_tree_sample(
 extern ccs_error_t
 ccs_tree_samples(
 	ccs_tree_t          tree,
-	ccs_distribution_t  distribution,
 	ccs_rng_t           rng,
 	size_t              num_indices,
 	size_t             *indices);
