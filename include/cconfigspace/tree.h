@@ -54,6 +54,13 @@ ccs_tree_get_child(
 	ccs_tree_t *child_ret);
 
 extern ccs_error_t
+ccs_tree_get_children(
+	ccs_tree_t  tree,
+	size_t      num_children,
+	ccs_tree_t *children,
+	size_t     *num_children_ret);
+
+extern ccs_error_t
 ccs_tree_get_parent(
 	ccs_tree_t  tree,
 	ccs_tree_t *parent_ret,
@@ -74,15 +81,12 @@ ccs_tree_get_node_at_position(
 	ccs_tree_t *tree_ret);
 
 extern ccs_error_t
-ccs_tree_set_distribution(
-	ccs_tree_t         tree,
-	ccs_distribution_t distribution);
-
-extern ccs_error_t
 ccs_tree_get_distribution(
 	ccs_tree_t          tree,
 	ccs_distribution_t *distribution_ret);
 
+
+// index == arity => sample self
 extern ccs_error_t
 ccs_tree_sample(
 	ccs_tree_t          tree,
@@ -90,6 +94,7 @@ ccs_tree_sample(
 	ccs_rng_t           rng,
 	size_t             *index_ret);
 
+// index == arity => sample self
 extern ccs_error_t
 ccs_tree_samples(
 	ccs_tree_t          tree,
@@ -97,21 +102,6 @@ ccs_tree_samples(
 	ccs_rng_t           rng,
 	size_t              num_indices,
 	size_t             *indices);
-
-extern ccs_error_t
-ccs_static_tree_get_children(
-	ccs_tree_t  tree,
-	size_t      num_children,
-	ccs_tree_t *children,
-	size_t     *num_children_ret);
-
-extern ccs_error_t
-ccs_dynamic_tree_get_children(
-	ccs_tree_t  tree,
-	size_t      num_children,
-	size_t     *indices,
-	ccs_tree_t *children,
-	size_t     *num_children_ret);
 
 #ifdef __cplusplus
 }
