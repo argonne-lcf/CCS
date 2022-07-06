@@ -37,7 +37,7 @@ _ccs_serialize_bin_ccs_tree_space_static_data(
 	return CCS_SUCCESS;
 }
 
-static inline ccs_error_t 
+static inline ccs_error_t
 _ccs_serialize_bin_size_ccs_tree_space_static(
 		ccs_tree_space_t                 tree_space,
 		size_t                          *cum_size,
@@ -117,7 +117,7 @@ ccs_create_static_tree_space(
 		ccs_tree_t        tree,
 		ccs_tree_space_t *tree_space_ret) {
 	CCS_CHECK_PTR(name);
-	CCS_CHECK_TREE(tree, CCS_TREE_TYPE_STATIC);
+	CCS_CHECK_OBJ(tree, CCS_TREE);
 	CCS_CHECK_PTR(tree_space_ret);
 	ccs_error_t err;
 	uintptr_t mem = (uintptr_t)calloc(1,

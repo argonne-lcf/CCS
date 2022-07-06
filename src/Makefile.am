@@ -80,8 +80,6 @@ libcconfigspace_la_SOURCES = \
 	map_deserialize.h \
 	tree.c \
 	tree_internal.h \
-	tree_static.c \
-	tree_dynamic.c \
 	tree_space.c \
 	tree_space_internal.h \
 	tree_space_static.c
