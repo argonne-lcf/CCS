@@ -247,9 +247,11 @@ _ccs_tree_update_bias(
 		ccs_tree_t  tree,
 		ccs_float_t bias) {
 	_ccs_tree_data_t *tree_data = tree->data;
-	if (bias == tree_data->bias || !tree_data->parent)
+	if (bias == tree_data->bias)
 		return CCS_SUCCESS;
 	tree_data->bias = bias;
+	if (!tree_data->parent)
+		return CCS_SUCCESS;
 	ccs_float_t weight = tree_data->sum_weights * bias;
 	CCS_VALIDATE(_ccs_tree_update_weight(
 		tree_data->parent, tree_data->index, weight));
@@ -372,6 +374,7 @@ ccs_tree_set_bias(
 	ccs_float_t old_bias = tree_data->bias;
 	ccs_error_t err      = CCS_SUCCESS;
 	CCS_VALIDATE_ERR_GOTO(err, _ccs_tree_update_bias(tree, bias), err_distrib);
+	return CCS_SUCCESS;
 err_distrib:
 	_ccs_tree_update_bias(tree, old_bias);
 	return err;
