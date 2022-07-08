@@ -31,12 +31,10 @@ ccs_tree_configuration_get_values(
 	ccs_datum_t              *values,
 	size_t                   *num_values_ret);
 
-//extern ccs_error_t
-//ccs_tree_configuration_get_nodes(
-//	ccs_tree_configuration_t  configuration,
-//	size_t                    num_nodes,
-//	ccs_tree_t               *nodes,
-//	size_t                   *num_nodes_ret);
+extern ccs_error_t
+ccs_tree_configuration_get_node(
+	ccs_tree_configuration_t  configuration,
+	ccs_tree_t               *node_ret);
 
 extern ccs_error_t
 ccs_tree_configuration_hash(

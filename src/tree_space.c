@@ -1,12 +1,13 @@
 #include "cconfigspace_internal.h"
 #include "tree_space_internal.h"
+#include "tree_configuration_internal.h"
 #include "tree_internal.h"
 #include "utarray.h"
 
-//static inline _ccs_tree_space_ops_t *
-//_ccs_tree_space_get_ops(ccs_tree_space_t tree_space) {
-//	return (_ccs_tree_space_ops_t *)tree_space->obj.ops;
-//}
+static inline _ccs_tree_space_ops_t *
+_ccs_tree_space_get_ops(ccs_tree_space_t tree_space) {
+	return (_ccs_tree_space_ops_t *)tree_space->obj.ops;
+}
 
 ccs_error_t
 ccs_tree_space_get_type(
@@ -67,6 +68,64 @@ static UT_icd _size_t_icd = {
 	NULL,
 	NULL
 };
+
+ccs_error_t
+ccs_tree_space_get_node_at_position(
+		ccs_tree_space_t  tree_space,
+		size_t            position_size,
+		size_t           *position,
+		ccs_tree_t       *tree_ret) {
+	CCS_CHECK_OBJ(tree_space, CCS_TREE_SPACE);
+	CCS_CHECK_ARY(position_size, position);
+	CCS_CHECK_PTR(tree_ret);
+	_ccs_tree_space_ops_t *ops =
+		_ccs_tree_space_get_ops(tree_space);
+	CCS_VALIDATE(ops->get_node_at_position(tree_space->data, position_size, position, tree_ret));
+	return CCS_SUCCESS;
+}
+
+ccs_error_t
+ccs_tree_space_get_values_at_position(
+		ccs_tree_space_t  tree_space,
+		size_t            position_size,
+		size_t           *position,
+		size_t            num_values,
+		ccs_datum_t      *values) {
+	CCS_CHECK_OBJ(tree_space, CCS_TREE_SPACE);
+	_ccs_tree_space_ops_t *ops =
+		_ccs_tree_space_get_ops(tree_space);
+	CCS_VALIDATE(ops->get_values_at_position(
+		tree_space->data, position_size, position, num_values, values));
+	return CCS_SUCCESS;
+}
+
+ccs_error_t
+ccs_tree_space_check_position(
+		ccs_tree_space_t  tree_space,
+		size_t            position_size,
+		size_t           *position,
+		ccs_bool_t       *is_valid_ret) {
+	CCS_CHECK_OBJ(tree_space, CCS_TREE_SPACE);
+	_ccs_tree_space_ops_t *ops =
+		_ccs_tree_space_get_ops(tree_space);
+	CCS_VALIDATE(ops->check_position(
+		tree_space->data, position_size, position, is_valid_ret));
+	return CCS_SUCCESS;
+}
+
+ccs_error_t
+ccs_tree_space_check_configuration(
+		ccs_tree_space_t          tree_space,
+		ccs_tree_configuration_t  configuration,
+		ccs_bool_t               *is_valid_ret) {
+	CCS_CHECK_OBJ(tree_space, CCS_TREE_SPACE);
+	CCS_CHECK_OBJ(configuration, CCS_TREE_CONFIGURATION);
+	_ccs_tree_space_ops_t *ops =
+		_ccs_tree_space_get_ops(tree_space);
+	CCS_VALIDATE(ops->check_position(
+		tree_space->data, configuration->data->position_size, configuration->data->position, is_valid_ret));
+	return CCS_SUCCESS;
+}
 
 #undef  utarray_oom
 #define utarray_oom() { \

@@ -105,10 +105,53 @@ _ccs_tree_space_static_serialize(
 	return CCS_SUCCESS;
 }
 
+static ccs_error_t
+_ccs_tree_space_static_get_node_at_position(
+		_ccs_tree_space_data_t *data,
+		size_t                  position_size,
+		size_t                 *position,
+		ccs_tree_t             *tree_ret) {
+	_ccs_tree_space_static_data_t *d =
+		(_ccs_tree_space_static_data_t *)data;
+	CCS_VALIDATE(ccs_tree_get_node_at_position(
+		d->common_data.tree, position_size, position, tree_ret));
+	return CCS_SUCCESS;
+}
+
+static ccs_error_t
+_ccs_tree_space_static_get_values_at_position(
+		_ccs_tree_space_data_t *data,
+		size_t                  position_size,
+		size_t                 *position,
+		size_t                  num_values,
+		ccs_datum_t            *values) {
+	_ccs_tree_space_static_data_t *d =
+		(_ccs_tree_space_static_data_t *)data;
+	CCS_VALIDATE(ccs_tree_get_values_at_position(
+		d->common_data.tree, position_size, position, num_values, values));
+	return CCS_SUCCESS;
+}
+
+static ccs_error_t
+_ccs_tree_space_static_check_position(
+		_ccs_tree_space_data_t *data,
+		size_t                  position_size,
+		size_t                 *position,
+		ccs_bool_t             *is_valid_ret) {
+	_ccs_tree_space_static_data_t *d =
+		(_ccs_tree_space_static_data_t *)data;
+	CCS_VALIDATE(ccs_tree_position_is_valid(
+		d->common_data.tree, position_size, position, is_valid_ret));
+	return CCS_SUCCESS;
+}
+
 static _ccs_tree_space_ops_t _ccs_tree_space_static_ops = {
 	{ &_ccs_tree_space_static_del,
 	  &_ccs_tree_space_static_serialize_size,
-	  &_ccs_tree_space_static_serialize }
+	  &_ccs_tree_space_static_serialize },
+	&_ccs_tree_space_static_get_node_at_position,
+	&_ccs_tree_space_static_get_values_at_position,
+	&_ccs_tree_space_static_check_position
 };
 
 ccs_error_t
