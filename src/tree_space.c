@@ -3,10 +3,10 @@
 #include "tree_internal.h"
 #include "utarray.h"
 
-static inline _ccs_tree_space_ops_t *
-_ccs_tree_space_get_ops(ccs_tree_space_t tree_space) {
-	return (_ccs_tree_space_ops_t *)tree_space->obj.ops;
-}
+//static inline _ccs_tree_space_ops_t *
+//_ccs_tree_space_get_ops(ccs_tree_space_t tree_space) {
+//	return (_ccs_tree_space_ops_t *)tree_space->obj.ops;
+//}
 
 ccs_error_t
 ccs_tree_space_get_type(
