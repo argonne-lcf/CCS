@@ -1,11 +1,6 @@
 #include "cconfigspace_internal.h"
 #include "tree_internal.h"
 
-static inline _ccs_tree_ops_t *
-_ccs_tree_get_ops(ccs_tree_t tree) {
-	return (_ccs_tree_ops_t *)tree->obj.ops;
-}
-
 static ccs_error_t
 _ccs_tree_del(ccs_object_t o) {
 	struct _ccs_tree_data_s *data = ((ccs_tree_t)o)->data;

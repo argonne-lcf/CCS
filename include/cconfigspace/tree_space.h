@@ -85,10 +85,9 @@ ccs_tree_space_sample(
 
 extern ccs_error_t
 ccs_tree_space_samples(
-        ccs_tree_space_t          tree_space,
+	ccs_tree_space_t          tree_space,
 	size_t                    num_configurations,
-        ccs_tree_configuration_t *configurations);
-
+	ccs_tree_configuration_t *configurations);
 
 #ifdef __cplusplus
 }
