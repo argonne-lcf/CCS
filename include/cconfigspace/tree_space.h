@@ -74,9 +74,32 @@ ccs_tree_space_get_tree(
 	ccs_tree_t       *tree_ret);
 
 extern ccs_error_t
+ccs_tree_space_get_node_at_position(
+	ccs_tree_space_t  tree_space,
+	size_t            position_size,
+	size_t           *position,
+	ccs_tree_t       *tree_ret);
+
+extern ccs_error_t
+ccs_tree_space_get_values_at_position(
+	ccs_tree_space_t  tree_space,
+	size_t            position_size,
+	size_t           *position,
+	size_t            num_values,
+	ccs_datum_t      *values);
+
+extern ccs_error_t
+ccs_tree_space_check_position(
+	ccs_tree_space_t  tree_space,
+	size_t            position_size,
+	size_t           *position,
+	ccs_bool_t       *is_valid_ret);
+
+extern ccs_error_t
 ccs_tree_space_check_configuration(
-	ccs_tree_space_t         tree_space,
-	ccs_tree_configuration_t configuration);
+	ccs_tree_space_t          tree_space,
+	ccs_tree_configuration_t  configuration,
+	ccs_bool_t               *is_valid_ret);
 
 extern ccs_error_t
 ccs_tree_space_sample(

@@ -32,7 +32,8 @@ CCONFIGSPACE_TESTS = \
 	test_user_defined_features_tuner \
 	test_map \
 	test_error_stack \
-	test_tree
+	test_tree \
+	test_static_tree_space
 
 # unit tests
 UNIT_TESTS = \

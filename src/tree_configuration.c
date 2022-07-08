@@ -83,17 +83,23 @@ ccs_tree_configuration_get_values(
 		ccs_datum_t              *values,
 		size_t                   *num_values_ret) {
 	CCS_CHECK_OBJ(configuration, CCS_TREE_CONFIGURATION);
-	CCS_CHECK_ARY(num_values, values);
 	CCS_REFUTE(!values && !num_values_ret, CCS_INVALID_VALUE);
 	size_t num = configuration->data->position_size + 1;
-	if (values) {
-		ccs_tree_t tree;
-		CCS_VALIDATE(ccs_tree_space_get_tree(configuration->data->tree_space, &tree));
-		CCS_VALIDATE(ccs_tree_get_values_at_position(
-			tree, configuration->data->position_size, configuration->data->position, num_values, values));
-	}
-	if(num_values_ret)
+	if (values)
+		CCS_VALIDATE(ccs_tree_space_get_values_at_position(
+			configuration->data->tree_space, configuration->data->position_size, configuration->data->position, num_values, values));
+	if (num_values_ret)
 		*num_values_ret = num;
+	return CCS_SUCCESS;
+}
+
+ccs_error_t
+ccs_tree_configuration_get_node(
+		ccs_tree_configuration_t  configuration,
+		ccs_tree_t               *tree_ret) {
+	CCS_CHECK_OBJ(configuration, CCS_TREE_CONFIGURATION);
+	CCS_VALIDATE(ccs_tree_space_get_node_at_position(
+		configuration->data->tree_space, configuration->data->position_size, configuration->data->position, tree_ret));
 	return CCS_SUCCESS;
 }
 

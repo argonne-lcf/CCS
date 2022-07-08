@@ -31,6 +31,7 @@ void test_tree() {
 	size_t      arity, num_children, position_size, position[3], index, samples[NUM_SAMPLES];
 	int         counts[5];
 	ccs_float_t weight, bias, areas[5];
+	ccs_bool_t  is_valid;
 	ccs_error_t err = CCS_SUCCESS;
 
 	// Basic creation
@@ -156,9 +157,17 @@ void test_tree() {
 
 	position[0] = 2;
 	position[1] = 1;
+	err = ccs_tree_position_is_valid(root, 2, position, &is_valid);
+	assert( err == CCS_SUCCESS );
+	assert( is_valid == CCS_TRUE );
 	err = ccs_tree_get_node_at_position(root, 2, position, &node);
 	assert( err == CCS_SUCCESS );
 	assert( grand_child == node );
+
+	position[2] = 3;
+	err = ccs_tree_position_is_valid(root, 3, position, &is_valid);
+	assert( err == CCS_SUCCESS );
+	assert( is_valid == CCS_FALSE );
 
 	err = ccs_tree_get_values_at_position(root, 2, position, 3, values);
 	assert( err == CCS_SUCCESS );
