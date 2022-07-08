@@ -424,6 +424,28 @@ ccs_tree_get_position(
 }
 
 ccs_error_t
+ccs_tree_get_values_at_position(
+	ccs_tree_t   tree,
+	size_t       position_size,
+	size_t      *position,
+	size_t       num_values,
+	ccs_datum_t *values) {
+	CCS_CHECK_OBJ(tree, CCS_TREE);
+	CCS_CHECK_ARY(position_size, position);
+	CCS_CHECK_ARY(num_values, values);
+	CCS_REFUTE(num_values < position_size + 1, CCS_INVALID_VALUE);
+	*values++ = tree->data->value;
+	for (size_t i = 0; i < position_size; i++) {
+		CCS_VALIDATE(ccs_tree_get_child(tree, position[i], &tree));
+		CCS_REFUTE(!tree, CCS_INVALID_TREE);
+		*values++ = tree->data->value;
+	}
+	for (size_t i = position_size; i < num_values; i++)
+		*values++ = ccs_none;
+	return CCS_SUCCESS;
+}
+
+ccs_error_t
 ccs_tree_get_node_at_position(
 		ccs_tree_t  tree,
 		size_t      position_size,
