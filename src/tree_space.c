@@ -1,5 +1,7 @@
 #include "cconfigspace_internal.h"
 #include "tree_space_internal.h"
+#include "tree_internal.h"
+#include "utarray.h"
 
 static inline _ccs_tree_space_ops_t *
 _ccs_tree_space_get_ops(ccs_tree_space_t tree_space) {
@@ -57,4 +59,76 @@ ccs_tree_space_get_tree(
 	CCS_CHECK_PTR(tree_ret);
 	*tree_ret = ((_ccs_tree_space_common_data_t *)(tree_space->data))->tree;
 	return CCS_SUCCESS;
-}   
+}
+
+static UT_icd _size_t_icd = {
+	sizeof(size_t),
+	NULL,
+	NULL,
+	NULL
+};
+
+#undef  utarray_oom
+#define utarray_oom() { \
+	CCS_RAISE_ERR_GOTO(err, CCS_OUT_OF_MEMORY, err_arr, "Out of memory to allocate array"); \
+}
+
+static inline ccs_error_t
+_ccs_tree_space_samples(
+		ccs_tree_space_t          tree_space,
+		size_t                    num_configurations,
+		ccs_tree_configuration_t *configurations) {
+	_ccs_tree_space_common_data_t *data =
+		(_ccs_tree_space_common_data_t *)(tree_space->data);
+	ccs_rng_t rng = data->rng;
+	ccs_error_t err = CCS_SUCCESS;
+	UT_array *arr = NULL;
+	utarray_new(arr, &_size_t_icd);
+	for (size_t i = 0; i < num_configurations; i++) {
+		size_t index;
+		ccs_tree_t tree = data->tree;
+		if (tree) {
+			CCS_REFUTE_ERR_GOTO(err, tree->data->sum_weights == 0.0, CCS_INVALID_DISTRIBUTION, err_arr);
+			CCS_VALIDATE_ERR_GOTO(err, ccs_distribution_samples(tree->data->distribution, rng, 1, (ccs_numeric_t *)&index), err_arr);
+			while (index != tree->data->arity) {
+				utarray_push_back(arr, &index);
+				tree = tree->data->children[index];
+				if (!tree)
+					break;
+				CCS_REFUTE(tree->data->sum_weights == 0.0, CCS_INVALID_DISTRIBUTION);
+				CCS_VALIDATE_ERR_GOTO(err, ccs_distribution_samples(
+					tree->data->distribution, rng, 1, (ccs_numeric_t *)&index), err_arr);
+			}
+		}
+		CCS_VALIDATE_ERR_GOTO(err, ccs_create_tree_configuration(
+			tree_space, utarray_len(arr), (size_t *)utarray_eltptr(arr, 0), configurations + i), err_arr);
+		utarray_clear(arr);
+	}
+err_arr:
+	if (arr)
+		utarray_free(arr);
+	return err;
+}
+
+ccs_error_t
+ccs_tree_space_sample(
+		ccs_tree_space_t          tree_space,
+		ccs_tree_configuration_t *configuration_ret) {
+	CCS_CHECK_OBJ(tree_space, CCS_TREE_SPACE);
+	CCS_CHECK_PTR(configuration_ret);
+	CCS_VALIDATE(_ccs_tree_space_samples(tree_space, 1, configuration_ret));
+	return CCS_SUCCESS;
+}
+
+ccs_error_t
+ccs_tree_space_samples(
+		ccs_tree_space_t          tree_space,
+		size_t                    num_configurations,
+		ccs_tree_configuration_t *configurations) {
+	CCS_CHECK_OBJ(tree_space, CCS_TREE_SPACE);
+	CCS_CHECK_ARY(num_configurations, configurations);
+	if (num_configurations == 0)
+		return CCS_SUCCESS;
+	CCS_VALIDATE(_ccs_tree_space_samples(tree_space, num_configurations, configurations));
+	return CCS_SUCCESS;
+}

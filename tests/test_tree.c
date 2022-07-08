@@ -27,7 +27,7 @@ void check_samples(size_t num_areas, ccs_float_t *areas, int *counts,
 void test_tree() {
 	ccs_tree_t  root, child, grand_child, parent, node, children[4];
 	ccs_rng_t   rng;
-	ccs_datum_t value;
+	ccs_datum_t value, values[3];
 	size_t      arity, num_children, position_size, position[3], index, samples[NUM_SAMPLES];
 	int         counts[5];
 	ccs_float_t weight, bias, areas[5];
@@ -159,6 +159,12 @@ void test_tree() {
 	err = ccs_tree_get_node_at_position(root, 2, position, &node);
 	assert( err == CCS_SUCCESS );
 	assert( grand_child == node );
+
+	err = ccs_tree_get_values_at_position(root, 2, position, 3, values);
+	assert( err == CCS_SUCCESS );
+	assert( !ccs_datum_cmp(values[0], ccs_string("foo")) );
+	assert( !ccs_datum_cmp(values[1], ccs_string("bar")) );
+	assert( !ccs_datum_cmp(values[2], ccs_string("baz")) );
 
 	position[0] = 0;
 	position[1] = 0;
