@@ -83,6 +83,7 @@ libcconfigspace_la_SOURCES = \
 	tree_space.c \
 	tree_space_internal.h \
 	tree_space_static.c \
+	tree_space_dynamic.c \
 	tree_configuration_internal.h \
 	tree_configuration.c
 

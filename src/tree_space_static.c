@@ -107,41 +107,41 @@ _ccs_tree_space_static_serialize(
 
 static ccs_error_t
 _ccs_tree_space_static_get_node_at_position(
-		_ccs_tree_space_data_t *data,
-		size_t                  position_size,
-		const size_t           *position,
-		ccs_tree_t             *tree_ret) {
-	_ccs_tree_space_static_data_t *d =
-		(_ccs_tree_space_static_data_t *)data;
+		ccs_tree_space_t  tree_space,
+		size_t            position_size,
+		const size_t     *position,
+		ccs_tree_t       *tree_ret) {
+	_ccs_tree_space_static_data_t *data =
+		(_ccs_tree_space_static_data_t *)tree_space->data;
 	CCS_VALIDATE(ccs_tree_get_node_at_position(
-		d->common_data.tree, position_size, position, tree_ret));
+		data->common_data.tree, position_size, position, tree_ret));
 	return CCS_SUCCESS;
 }
 
 static ccs_error_t
 _ccs_tree_space_static_get_values_at_position(
-		_ccs_tree_space_data_t *data,
-		size_t                  position_size,
-		const size_t           *position,
-		size_t                  num_values,
-		ccs_datum_t            *values) {
-	_ccs_tree_space_static_data_t *d =
-		(_ccs_tree_space_static_data_t *)data;
+		ccs_tree_space_t  tree_space,
+		size_t            position_size,
+		const size_t     *position,
+		size_t            num_values,
+		ccs_datum_t      *values) {
+	_ccs_tree_space_static_data_t *data =
+		(_ccs_tree_space_static_data_t *)tree_space->data;
 	CCS_VALIDATE(ccs_tree_get_values_at_position(
-		d->common_data.tree, position_size, position, num_values, values));
+		data->common_data.tree, position_size, position, num_values, values));
 	return CCS_SUCCESS;
 }
 
 static ccs_error_t
 _ccs_tree_space_static_check_position(
-		_ccs_tree_space_data_t *data,
-		size_t                  position_size,
-		const size_t           *position,
-		ccs_bool_t             *is_valid_ret) {
-	_ccs_tree_space_static_data_t *d =
-		(_ccs_tree_space_static_data_t *)data;
+		ccs_tree_space_t  tree_space,
+		size_t            position_size,
+		const size_t     *position,
+		ccs_bool_t       *is_valid_ret) {
+	_ccs_tree_space_static_data_t *data =
+		(_ccs_tree_space_static_data_t *)tree_space->data;
 	CCS_VALIDATE(ccs_tree_position_is_valid(
-		d->common_data.tree, position_size, position, is_valid_ret));
+		data->common_data.tree, position_size, position, is_valid_ret));
 	return CCS_SUCCESS;
 }
 
