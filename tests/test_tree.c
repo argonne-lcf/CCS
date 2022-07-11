@@ -28,7 +28,7 @@ void test_tree() {
 	ccs_tree_t  root, child, grand_child, parent, node, children[4];
 	ccs_rng_t   rng;
 	ccs_datum_t value, values[3];
-	size_t      arity, num_children, position_size, position[3], index, samples[NUM_SAMPLES];
+	size_t      arity, num_children, position_size, position[3], index, samples[NUM_SAMPLES], num_values;
 	int         counts[5];
 	ccs_float_t weight, bias, areas[5];
 	ccs_bool_t  is_valid;
@@ -182,6 +182,16 @@ void test_tree() {
 	assert( position_size == 2 );
 	assert( position[0] == 2 );
 	assert( position[1] == 1 );
+
+	values[0] = ccs_none;
+	values[1] = ccs_none;
+	values[2] = ccs_none;
+	err = ccs_tree_get_values(grand_child, 3, values, &num_values);
+	assert( err == CCS_SUCCESS );
+	assert( num_values == 3 );
+	assert( !ccs_datum_cmp(values[0], ccs_string("foo")) );
+	assert( !ccs_datum_cmp(values[1], ccs_string("bar")) );
+	assert( !ccs_datum_cmp(values[2], ccs_string("baz")) );
 
 	// (1 + (1 + (1 + 1) + 1)) / 2
 	areas[2] = 2.5;

@@ -409,16 +409,42 @@ ccs_tree_get_position(
 	if (position_size_ret)
 		*position_size_ret = depth;
 	if (position) {
-		size_t index = tree->data->index;
-		parent = tree->data->parent;
+		for(size_t i = 0; i < depth; i++) {
+			position[depth - i - 1] = tree->data->index;
+			tree = tree->data->parent;
+		}
 		for(size_t i = depth; i < position_size; i++)
 			position[i] = 0;
-		while (parent) {
-			depth--;
-			position[depth] = index;
-			index = parent->data->index;
-			parent = parent->data->parent;
+	}
+	return CCS_SUCCESS;
+}
+
+ccs_error_t
+ccs_tree_get_values(
+		ccs_tree_t   tree,
+		size_t       num_values,
+		ccs_datum_t *values,
+		size_t      *num_values_ret) {
+	CCS_CHECK_OBJ(tree, CCS_TREE);
+	CCS_CHECK_ARY(num_values, values);
+	CCS_REFUTE(!values && !num_values_ret, CCS_INVALID_VALUE);
+	size_t depth = 0;
+	ccs_tree_t parent = tree->data->parent;
+	while (parent) {
+		depth++;
+		parent = parent->data->parent;
+	}
+	if (values)
+		CCS_REFUTE(num_values < depth + 1, CCS_INVALID_VALUE);
+	if (num_values_ret)
+		*num_values_ret = depth + 1;
+	if (values) {
+		for(size_t i = 0; i < depth + 1; i++) {
+			values[depth - i] = tree->data->value;
+			tree = tree->data->parent;
 		}
+		for(size_t i = depth + 1; i < num_values; i++)
+			values[i] = ccs_none;
 	}
 	return CCS_SUCCESS;
 }

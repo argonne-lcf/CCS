@@ -54,6 +54,13 @@ ccs_tree_get_position(
 	size_t     *position_size_ret);
 
 extern ccs_error_t
+ccs_tree_get_values(
+	ccs_tree_t   tree,
+	size_t       num_values,
+	ccs_datum_t *values,
+	size_t      *num_values_ret);
+
+extern ccs_error_t
 ccs_tree_position_is_valid(
 	ccs_tree_t    tree,
 	size_t        position_size,
