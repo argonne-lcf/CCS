@@ -109,7 +109,7 @@ static ccs_error_t
 _ccs_tree_space_static_get_node_at_position(
 		_ccs_tree_space_data_t *data,
 		size_t                  position_size,
-		size_t                 *position,
+		const size_t           *position,
 		ccs_tree_t             *tree_ret) {
 	_ccs_tree_space_static_data_t *d =
 		(_ccs_tree_space_static_data_t *)data;
@@ -122,7 +122,7 @@ static ccs_error_t
 _ccs_tree_space_static_get_values_at_position(
 		_ccs_tree_space_data_t *data,
 		size_t                  position_size,
-		size_t                 *position,
+		const size_t           *position,
 		size_t                  num_values,
 		ccs_datum_t            *values) {
 	_ccs_tree_space_static_data_t *d =
@@ -136,7 +136,7 @@ static ccs_error_t
 _ccs_tree_space_static_check_position(
 		_ccs_tree_space_data_t *data,
 		size_t                  position_size,
-		size_t                 *position,
+		const size_t           *position,
 		ccs_bool_t             *is_valid_ret) {
 	_ccs_tree_space_static_data_t *d =
 		(_ccs_tree_space_static_data_t *)data;

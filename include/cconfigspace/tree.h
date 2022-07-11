@@ -55,25 +55,25 @@ ccs_tree_get_position(
 
 extern ccs_error_t
 ccs_tree_position_is_valid(
-	ccs_tree_t  tree,
-	size_t      position_size,
-	size_t     *position,
-	ccs_bool_t *is_valid_ret);
+	ccs_tree_t    tree,
+	size_t        position_size,
+	const size_t *position,
+	ccs_bool_t   *is_valid_ret);
 
 extern ccs_error_t
 ccs_tree_get_values_at_position(
-	ccs_tree_t   tree,
-	size_t       position_size,
-	size_t      *position,
-	size_t       num_values,
-	ccs_datum_t *values);
+	ccs_tree_t    tree,
+	size_t        position_size,
+	const size_t *position,
+	size_t        num_values,
+	ccs_datum_t  *values);
 
 extern ccs_error_t
 ccs_tree_get_node_at_position(
-	ccs_tree_t  tree,
-	size_t      position_size,
-	size_t     *position,
-	ccs_tree_t *tree_ret);
+	ccs_tree_t    tree,
+	size_t        position_size,
+	const size_t *position,
+	ccs_tree_t   *tree_ret);
 
 extern ccs_error_t
 ccs_tree_get_weight(

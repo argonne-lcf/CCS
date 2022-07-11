@@ -73,7 +73,7 @@ ccs_error_t
 ccs_tree_space_get_node_at_position(
 		ccs_tree_space_t  tree_space,
 		size_t            position_size,
-		size_t           *position,
+		const size_t     *position,
 		ccs_tree_t       *tree_ret) {
 	CCS_CHECK_OBJ(tree_space, CCS_TREE_SPACE);
 	CCS_CHECK_ARY(position_size, position);
@@ -88,7 +88,7 @@ ccs_error_t
 ccs_tree_space_get_values_at_position(
 		ccs_tree_space_t  tree_space,
 		size_t            position_size,
-		size_t           *position,
+		const size_t     *position,
 		size_t            num_values,
 		ccs_datum_t      *values) {
 	CCS_CHECK_OBJ(tree_space, CCS_TREE_SPACE);
@@ -103,7 +103,7 @@ ccs_error_t
 ccs_tree_space_check_position(
 		ccs_tree_space_t  tree_space,
 		size_t            position_size,
-		size_t           *position,
+		const size_t     *position,
 		ccs_bool_t       *is_valid_ret) {
 	CCS_CHECK_OBJ(tree_space, CCS_TREE_SPACE);
 	_ccs_tree_space_ops_t *ops =
