@@ -80,7 +80,7 @@ ccs_tree_space_get_node_at_position(
 	CCS_CHECK_PTR(tree_ret);
 	_ccs_tree_space_ops_t *ops =
 		_ccs_tree_space_get_ops(tree_space);
-	CCS_VALIDATE(ops->get_node_at_position(tree_space->data, position_size, position, tree_ret));
+	CCS_VALIDATE(ops->get_node_at_position(tree_space, position_size, position, tree_ret));
 	return CCS_SUCCESS;
 }
 
@@ -95,7 +95,7 @@ ccs_tree_space_get_values_at_position(
 	_ccs_tree_space_ops_t *ops =
 		_ccs_tree_space_get_ops(tree_space);
 	CCS_VALIDATE(ops->get_values_at_position(
-		tree_space->data, position_size, position, num_values, values));
+		tree_space, position_size, position, num_values, values));
 	return CCS_SUCCESS;
 }
 
@@ -109,7 +109,7 @@ ccs_tree_space_check_position(
 	_ccs_tree_space_ops_t *ops =
 		_ccs_tree_space_get_ops(tree_space);
 	CCS_VALIDATE(ops->check_position(
-		tree_space->data, position_size, position, is_valid_ret));
+		tree_space, position_size, position, is_valid_ret));
 	return CCS_SUCCESS;
 }
 
@@ -123,7 +123,7 @@ ccs_tree_space_check_configuration(
 	_ccs_tree_space_ops_t *ops =
 		_ccs_tree_space_get_ops(tree_space);
 	CCS_VALIDATE(ops->check_position(
-		tree_space->data, configuration->data->position_size, configuration->data->position, is_valid_ret));
+		tree_space, configuration->data->position_size, configuration->data->position, is_valid_ret));
 	return CCS_SUCCESS;
 }
 

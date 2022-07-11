@@ -20,30 +20,29 @@ ccs_create_static_tree_space(
 	ccs_tree_space_t *tree_space_ret);
 
 struct ccs_dynamic_tree_space_vector_s {
-	ccs_error_t (*arity)(
-		ccs_tree_space_t          tree_space,
-		ccs_tree_configuration_t  configuration,
-		size_t                   *arity_ret);
-
-	ccs_error_t (*values)(
-		ccs_tree_space_t          tree_space,
-		ccs_tree_configuration_t  configuration,
-		size_t                    num_values,
-		ccs_datum_t              *values,
-		size_t                   *num_values_ret);
-
 	ccs_error_t (*child)(
-		ccs_tree_space_t          tree_space,
-		ccs_tree_configuration_t  configuration,
-		size_t                    child_index,
-		void                     *user_data,
-		ccs_tree_configuration_t *child_ret);
+		ccs_tree_space_t  tree_space,
+		ccs_tree_t        parent,
+		size_t            child_index,
+		ccs_tree_t       *child_ret);
+
+	ccs_error_t (*serialize_user_state)(
+		ccs_tree_space_t  tree_space,
+		size_t            sate_size,
+		void             *state,
+		size_t           *state_size_ret);
+
+	ccs_error_t (*deserialize_state)(
+		ccs_tree_space_t  tree_space,
+		size_t            state_size,
+		const void       *state);
 };
 typedef struct ccs_dynamic_tree_space_vector_s ccs_dynamic_tree_space_vector_t;
 
 extern ccs_error_t
 ccs_create_dynamic_tree_space(
 	const char                      *name,
+	ccs_tree_t                       tree,
 	ccs_dynamic_tree_space_vector_t *vector,
 	void                            *tree_space_data,
 	ccs_tree_space_t                *tree_space_ret);

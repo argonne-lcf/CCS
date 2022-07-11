@@ -11,25 +11,25 @@ struct _ccs_tree_space_ops_s {
 
 	ccs_error_t
 	(*get_node_at_position)(
-		_ccs_tree_space_data_t *data,
-		size_t                  position_size,
-		const size_t           *position,
-		ccs_tree_t             *tree_ret);
+		ccs_tree_space_t  tree_space,
+		size_t            position_size,
+		const size_t     *position,
+		ccs_tree_t       *tree_ret);
 
 	ccs_error_t
 	(*get_values_at_position)(
-		_ccs_tree_space_data_t *data,
-		size_t                  position_size,
-		const size_t           *position,
-		size_t                  num_values,
-		ccs_datum_t            *values);
+		ccs_tree_space_t  tree_space,
+		size_t            position_size,
+		const size_t     *position,
+		size_t            num_values,
+		ccs_datum_t      *values);
 
 	ccs_error_t
 	(*check_position)(
-		_ccs_tree_space_data_t *data,
-		size_t                  position_size,
-		const size_t           *position,
-		ccs_bool_t             *is_valid_ret);
+		ccs_tree_space_t  tree_space,
+		size_t            position_size,
+		const size_t     *position,
+		ccs_bool_t       *is_valid_ret);
 };
 typedef struct _ccs_tree_space_ops_s _ccs_tree_space_ops_t;
 

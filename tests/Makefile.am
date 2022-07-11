@@ -33,7 +33,8 @@ CCONFIGSPACE_TESTS = \
 	test_map \
 	test_error_stack \
 	test_tree \
-	test_static_tree_space
+	test_static_tree_space \
+	test_dynamic_tree_space
 
 # unit tests
 UNIT_TESTS = \

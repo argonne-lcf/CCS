@@ -500,11 +500,9 @@ ccs_tree_get_node_at_position(
 	CCS_CHECK_OBJ(tree, CCS_TREE);
 	CCS_CHECK_ARY(position_size, position);
 	CCS_CHECK_PTR(tree_ret);
-	while(position_size) {
-		CCS_VALIDATE(ccs_tree_get_child(tree, *position, &tree));
+	for (size_t i = 0; i < position_size; i++) {
+		CCS_VALIDATE(ccs_tree_get_child(tree, position[i], &tree));
 		CCS_REFUTE(!tree, CCS_INVALID_TREE);
-		position_size--;
-		position++;
 	}
 	*tree_ret = tree;
 	return CCS_SUCCESS;
