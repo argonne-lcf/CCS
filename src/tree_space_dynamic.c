@@ -50,7 +50,7 @@ _ccs_serialize_bin_size_ccs_tree_space_dynamic(
 		(_ccs_object_internal_t *)tree_space);
 	CCS_VALIDATE(_ccs_serialize_bin_size_ccs_tree_space_dynamic_data(
 		data, cum_size, opts));
-	size_t state_size;
+	size_t state_size = 0;
 	if (data->vector.serialize_user_state)
 		CCS_VALIDATE(data->vector.serialize_user_state(
 			tree_space, 0, NULL, &state_size));
@@ -71,7 +71,7 @@ _ccs_serialize_bin_ccs_tree_space_dynamic(
 		 (_ccs_object_internal_t *)tree_space, buffer_size, buffer));
 	CCS_VALIDATE(_ccs_serialize_bin_ccs_tree_space_dynamic_data(
 		data, buffer_size, buffer, opts));
-	size_t state_size;
+	size_t state_size = 0;
 	if (data->vector.serialize_user_state)
 		CCS_VALIDATE(data->vector.serialize_user_state(
 			tree_space, 0, NULL, &state_size));
