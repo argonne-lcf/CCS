@@ -24,8 +24,9 @@ _ccs_serialize_bin_size_ccs_tree_data(
 		_ccs_serialize_bin_size_ccs_float(data->weights[data->arity]);
 	for (size_t i = 0; i < data->arity; i++) {
 		_ccs_serialize_bin_size_ccs_bool(data->children[i] != NULL);
-		CCS_VALIDATE(data->children[i]->obj.ops->serialize_size(
-			data->children[i], CCS_SERIALIZE_FORMAT_BINARY, cum_size, opts));
+		if (data->children[i])
+			CCS_VALIDATE(data->children[i]->obj.ops->serialize_size(
+				data->children[i], CCS_SERIALIZE_FORMAT_BINARY, cum_size, opts));
 	}
 	*cum_size += _ccs_serialize_bin_size_ccs_float(data->bias) +
 		_ccs_serialize_bin_size_ccs_datum(data->value);
@@ -45,8 +46,9 @@ _ccs_serialize_bin_ccs_tree_data(
 	for (size_t i = 0; i < data->arity; i++) {
 		CCS_VALIDATE(_ccs_serialize_bin_ccs_bool(
 			data->children[i] != NULL, buffer_size, buffer));
-		CCS_VALIDATE(data->children[i]->obj.ops->serialize(
-			data->children[i], CCS_SERIALIZE_FORMAT_BINARY, buffer_size, buffer, opts));
+		if (data->children[i])
+			CCS_VALIDATE(data->children[i]->obj.ops->serialize(
+				data->children[i], CCS_SERIALIZE_FORMAT_BINARY, buffer_size, buffer, opts));
 	}
 	CCS_VALIDATE(_ccs_serialize_bin_ccs_float(
 		data->bias, buffer_size, buffer));

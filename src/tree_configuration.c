@@ -9,10 +9,98 @@ _ccs_tree_configuration_del(ccs_object_t object) {
 	return CCS_SUCCESS;
 }
 
+
+static inline size_t
+_ccs_serialize_bin_size_ccs_tree_configuration_data(
+		_ccs_tree_configuration_data_t *data) {
+	size_t sz = _ccs_serialize_bin_size_ccs_object(data->tree_space) +
+		_ccs_serialize_bin_size_size(data->position_size);
+	for (size_t i = 0; i < data->position_size; i++)
+		sz += _ccs_serialize_bin_size_size(data->position[i]);
+	return sz;
+}
+
+static inline ccs_error_t
+_ccs_serialize_bin_ccs_tree_configuration_data(
+		_ccs_tree_configuration_data_t  *data,
+		size_t                          *buffer_size,
+		char                           **buffer) {
+	CCS_VALIDATE(_ccs_serialize_bin_ccs_object(
+		data->tree_space, buffer_size, buffer));
+	CCS_VALIDATE(_ccs_serialize_bin_size(
+		data->position_size, buffer_size, buffer));
+	for (size_t i = 0; i < data->position_size; i++)
+		CCS_VALIDATE(_ccs_serialize_bin_size(
+			data->position[i], buffer_size, buffer));
+	return CCS_SUCCESS;
+}
+
+static inline ccs_error_t
+_ccs_serialize_bin_size_ccs_tree_configuration(
+		ccs_tree_configuration_t  tree_configuration,
+		size_t                   *cum_size) {
+	*cum_size += _ccs_serialize_bin_size_ccs_object_internal(
+		(_ccs_object_internal_t *)tree_configuration);
+	*cum_size += _ccs_serialize_bin_size_ccs_tree_configuration_data(
+		tree_configuration->data);
+	return CCS_SUCCESS;
+}
+
+static inline ccs_error_t
+_ccs_serialize_bin_ccs_tree_configuration(
+		ccs_tree_configuration_t   tree_configuration,
+		size_t                    *buffer_size,
+		char                     **buffer) {
+	CCS_VALIDATE(_ccs_serialize_bin_ccs_object_internal(
+		 (_ccs_object_internal_t *)tree_configuration, buffer_size, buffer));
+	CCS_VALIDATE(_ccs_serialize_bin_ccs_tree_configuration_data(
+		tree_configuration->data, buffer_size, buffer));
+	return CCS_SUCCESS;
+}
+
+static ccs_error_t
+_ccs_tree_configuration_serialize_size(
+		ccs_object_t                     object,
+		ccs_serialize_format_t           format,
+		size_t                          *cum_size,
+		_ccs_object_serialize_options_t *opts) {
+	switch(format) {
+	case CCS_SERIALIZE_FORMAT_BINARY:
+		CCS_VALIDATE(_ccs_serialize_bin_size_ccs_tree_configuration(
+			(ccs_tree_configuration_t)object, cum_size));
+		break;
+	default:
+		CCS_RAISE(CCS_INVALID_VALUE, "Unsupported serialization format: %d", format);
+	}
+	CCS_VALIDATE(_ccs_object_serialize_user_data_size(
+		object, format, cum_size, opts));
+	return CCS_SUCCESS;
+}
+
+static ccs_error_t
+_ccs_tree_configuration_serialize(
+		ccs_object_t                      object,
+		ccs_serialize_format_t            format,
+		size_t                           *buffer_size,
+		char                            **buffer,
+		_ccs_object_serialize_options_t  *opts) {
+	switch(format) {
+	case CCS_SERIALIZE_FORMAT_BINARY:
+		CCS_VALIDATE(_ccs_serialize_bin_ccs_tree_configuration(
+		    (ccs_tree_configuration_t)object, buffer_size, buffer));
+		break;
+	default:
+		CCS_RAISE(CCS_INVALID_VALUE, "Unsupported serialization format: %d", format);
+	}
+	CCS_VALIDATE(_ccs_object_serialize_user_data(
+		object, format, buffer_size, buffer, opts));
+	return CCS_SUCCESS;
+}
+
 static _ccs_tree_configuration_ops_t _tree_configuration_ops = {
 	{ &_ccs_tree_configuration_del,
-          NULL,
-          NULL }
+	  &_ccs_tree_configuration_serialize_size,
+	  &_ccs_tree_configuration_serialize }
 };
 
 ccs_error_t
