@@ -34,7 +34,7 @@ _ccs_deserialize_bin_tree_space_static(
 		const char                        **buffer,
 		_ccs_object_deserialize_options_t  *opts) {
 	ccs_error_t res = CCS_SUCCESS;
-	_ccs_tree_space_common_data_t data = {0, NULL, NULL, NULL};
+	_ccs_tree_space_common_data_t data = {CCS_TREE_SPACE_TYPE_STATIC, NULL, NULL, NULL};
 	CCS_VALIDATE_ERR_GOTO(res, _ccs_deserialize_bin_ccs_tree_space_common_data(
 		&data, version, buffer_size, buffer, opts), end);
 	CCS_VALIDATE_ERR_GOTO(res, ccs_create_static_tree_space(
@@ -60,7 +60,7 @@ _ccs_deserialize_bin_tree_space_dynamic(
 		size_t                             *buffer_size,
 		const char                        **buffer,
 		_ccs_object_deserialize_options_t  *opts) {
-	_ccs_tree_space_dynamic_data_mock_t data = {{0, NULL, NULL, NULL}, {0, NULL}};
+	_ccs_tree_space_dynamic_data_mock_t data = {{CCS_TREE_SPACE_TYPE_DYNAMIC, NULL, NULL, NULL}, {0, NULL}};
 	ccs_dynamic_tree_space_vector_t *vector = (ccs_dynamic_tree_space_vector_t *)opts->vector;
 	ccs_error_t res = CCS_SUCCESS;
 	CCS_VALIDATE_ERR_GOTO(res, _ccs_deserialize_bin_ccs_tree_space_common_data(
