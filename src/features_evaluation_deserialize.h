@@ -38,7 +38,6 @@ _ccs_deserialize_bin_features_evaluation(
 		size_t                             *buffer_size,
 		const char                        **buffer,
 		_ccs_object_deserialize_options_t  *opts) {
-	CCS_CHECK_PTR(opts);
 	CCS_CHECK_OBJ(opts->handle_map, CCS_MAP);
 	_ccs_object_deserialize_options_t new_opts = *opts;
 	_ccs_object_internal_t obj;

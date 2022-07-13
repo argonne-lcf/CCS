@@ -113,7 +113,6 @@ _ccs_deserialize_bin_expression_variable(
 		size_t                             *buffer_size,
 		const char                        **buffer,
 		_ccs_object_deserialize_options_t  *opts) {
-	CCS_CHECK_PTR(opts);
 	CCS_CHECK_OBJ(opts->handle_map, CCS_MAP);
 	_ccs_expression_variable_data_mock_t data;
 	CCS_VALIDATE(_ccs_deserialize_bin_ccs_expression_variable_data(
