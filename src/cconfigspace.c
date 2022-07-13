@@ -457,6 +457,7 @@ end:
 #include "tuner_deserialize.h"
 #include "features_tuner_deserialize.h"
 #include "map_deserialize.h"
+#include "tree_deserialize.h"
 
 static inline ccs_error_t
 _ccs_object_deserialize_options(
@@ -581,6 +582,11 @@ _ccs_object_deserialize_with_opts(
 		case CCS_MAP:
 			CCS_VALIDATE(_ccs_map_deserialize(
 				(ccs_map_t *)object_ret,
+				format, version, buffer_size, buffer, opts));
+			break;
+		case CCS_TREE:
+			CCS_VALIDATE(_ccs_tree_deserialize(
+				(ccs_tree_t *)object_ret,
 				format, version, buffer_size, buffer, opts));
 			break;
 		default:
