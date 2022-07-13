@@ -236,10 +236,10 @@ _ccs_serialize_bin_ccs_binding(
 
 static inline ccs_error_t
 _ccs_deserialize_bin_ccs_binding_data(
-		_ccs_binding_data_t                *data,
-		uint32_t                            version,
-		size_t                             *buffer_size,
-		const char                        **buffer) {
+		_ccs_binding_data_t  *data,
+		uint32_t              version,
+		size_t               *buffer_size,
+		const char          **buffer) {
 	(void)version;
 	CCS_VALIDATE(_ccs_deserialize_bin_ccs_object(
 		(ccs_object_t *)&data->context, buffer_size, buffer));
