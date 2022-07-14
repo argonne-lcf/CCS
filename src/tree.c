@@ -488,7 +488,7 @@ ccs_tree_get_values_at_position(
 		CCS_REFUTE(!tree, CCS_INVALID_TREE);
 		*values++ = tree->data->value;
 	}
-	for (size_t i = position_size; i < num_values; i++)
+	for (size_t i = position_size + 1; i < num_values; i++)
 		*values++ = ccs_none;
 	return CCS_SUCCESS;
 }

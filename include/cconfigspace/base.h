@@ -217,10 +217,10 @@ enum ccs_error_e {
 	CCS_SYSTEM_ERROR =            -26,
 	/** External error occured (binding?) */
 	CCS_EXTERNAL_ERROR =          -27,
-	/** Guard */
-	CCS_ERROR_MIN =               -28,
 	/** The provided tree is invalid */
-	CCS_INVALID_TREE =            -29,
+	CCS_INVALID_TREE =            -28,
+	/** Guard */
+	CCS_ERROR_MIN =               -29,
 	/** Try forcing 32 bits value for bindings */
 	CCS_ERROR_FORCE_32BIT = INT32_MAX
 };

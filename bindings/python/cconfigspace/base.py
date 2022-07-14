@@ -39,6 +39,9 @@ ccs_tuner               = ccs_object
 ccs_features_tuner      = ccs_object
 ccs_map                 = ccs_object
 ccs_error_stack         = ccs_object
+ccs_tree                = ccs_object
+ccs_tree_space          = ccs_object
+ccs_tree_configuration  = ccs_object
 
 ccs_false = 0
 ccs_true = 1
@@ -146,7 +149,10 @@ class ccs_object_type(CEnumeration):
     'FEATURES_EVALUATION',
     'FEATURES_TUNER',
     'MAP',
-    'CCS_ERROR_STACK' ]
+    'ERROR_STACK',
+    'TREE',
+    'TREE_SPACE',
+    'TREE_CONFIGURATION' ]
 
 class ccs_error(CEnumeration):
   _members_ = [
@@ -178,7 +184,8 @@ class ccs_error(CEnumeration):
     ('HANDLE_DUPLICATE',       -24),
     ('INVALID_HANDLE',         -25),
     ('SYSTEM_ERROR',           -26),
-    ('EXTERNAL_ERROR',         -27) ]
+    ('EXTERNAL_ERROR',         -27),
+    ('INVALID_TREE',           -28) ]
 
 class ccs_data_type(CEnumeration):
   _members_ = [
@@ -482,7 +489,6 @@ class Object:
     res = ccs_object_set_user_data(self.handle, c_ud)
     Error.check(res)
     _register_user_data(self._handle, ud)
-    return ud
 
   @classmethod
   def _from_handle(cls, h, retain, auto_release):
@@ -490,38 +496,10 @@ class Object:
     res = ccs_object_get_type(h, ct.byref(t))
     Error.check(res)
     v = t.value
-    if v == ccs_object_type.RNG:
-      return Rng.from_handle(h, retain = retain, auto_release = auto_release)
-    elif v == ccs_object_type.DISTRIBUTION:
-      return Distribution.from_handle(h, retain = retain, auto_release = auto_release)
-    elif v == ccs_object_type.HYPERPARAMETER:
-      return Hyperparameter.from_handle(h, retain = retain, auto_release = auto_release)
-    elif v == ccs_object_type.EXPRESSION:
-      return Expression.from_handle(h, retain = retain, auto_release = auto_release)
-    elif v == ccs_object_type.CONFIGURATION_SPACE:
-      return ConfigurationSpace.from_handle(h, retain = retain, auto_release = auto_release)
-    elif v == ccs_object_type.CONFIGURATION:
-      return Configuration.from_handle(h, retain = retain, auto_release = auto_release)
-    elif v == ccs_object_type.FEATURES_SPACE:
-      return FeaturesSpace.from_handle(h, retain = retain, auto_release = auto_release)
-    elif v == ccs_object_type.FEATURES:
-      return Features.from_handle(h, retain = retain, auto_release = auto_release)
-    elif v == ccs_object_type.OBJECTIVE_SPACE:
-      return ObjectiveSpace.from_handle(h, retain = retain, auto_release = auto_release)
-    elif v == ccs_object_type.EVALUATION:
-      return Evaluation.from_handle(h, retain = retain, auto_release = auto_release)
-    elif v == ccs_object_type.FEATURES_EVALUATION:
-      return FeaturesEvaluation.from_handle(h, retain = retain, auto_release = auto_release)
-    elif v == ccs_object_type.TUNER:
-      return Tuner.from_handle(h, retain = retain, auto_release = auto_release)
-    elif v == ccs_object_type.FEATURES_TUNER:
-      return FeaturesTuner.from_handle(h, retain = retain, auto_release = auto_release)
-    elif v == ccs_object_type.MAP:
-      return Map.from_handle(h, retain = retain, auto_release = auto_release)
-    elif v == ccs_object_type.ERROR_STACK:
-      return ErrorStack.from_handle(h, retain = retain, auto_release = auto_release)
-    else:
+    klass = cls.CLASS_MAP[v]
+    if klass is None:
       raise Error(ccs_error(ccs_error.INVALID_OBJECT))
+    return klass.from_handle(h, retain = retain, auto_release = auto_release)
 
   @classmethod
   def from_handle(cls, h):
@@ -771,3 +749,25 @@ from .tuner import Tuner
 from .features_tuner import FeaturesTuner
 from .map import Map
 from .error_stack import ErrorStack, get_thread_error, set_thread_error, clear_thread_error
+from .tree import Tree
+
+setattr(Object, 'CLASS_MAP', {
+  ccs_object_type.RNG: Rng,
+  ccs_object_type.DISTRIBUTION: Distribution,
+  ccs_object_type.HYPERPARAMETER: Hyperparameter,
+  ccs_object_type.EXPRESSION: Expression,
+  ccs_object_type.CONFIGURATION_SPACE: ConfigurationSpace,
+  ccs_object_type.CONFIGURATION: Configuration,
+  ccs_object_type.FEATURES_SPACE: ConfigurationSpace,
+  ccs_object_type.FEATURES: Features,
+  ccs_object_type.OBJECTIVE_SPACE: ObjectiveSpace,
+  ccs_object_type.EVALUATION: Evaluation,
+  ccs_object_type.FEATURES_EVALUATION: FeaturesEvaluation,
+  ccs_object_type.TUNER: Tuner,
+  ccs_object_type.FEATURES_TUNER: FeaturesTuner,
+  ccs_object_type.MAP: Map,
+  ccs_object_type.ERROR_STACK: ErrorStack,
+  ccs_object_type.TREE: Tree
+})
+
+
