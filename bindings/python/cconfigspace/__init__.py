@@ -29,3 +29,4 @@ from .evaluation import *
 from .features_evaluation import *
 from .tuner import *
 from .features_tuner import *
+from .tree import *
