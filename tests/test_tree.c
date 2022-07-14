@@ -215,10 +215,33 @@ void test_tree() {
 	assert( err == CCS_SUCCESS );
 	check_samples(5, areas, counts, NUM_SAMPLES, samples);
 
+	char   *buff;
+	size_t  buff_size;
+
+	err = ccs_object_serialize(root, CCS_SERIALIZE_FORMAT_BINARY, CCS_SERIALIZE_OPERATION_SIZE, &buff_size, CCS_SERIALIZE_OPTION_END);
+	assert( err == CCS_SUCCESS );
+
+	buff = (char *)malloc(buff_size);
+	assert( buff );
+
+	err = ccs_object_serialize(root, CCS_SERIALIZE_FORMAT_BINARY, CCS_SERIALIZE_OPERATION_MEMORY, buff_size, buff, CCS_SERIALIZE_OPTION_END);
+	assert( err == CCS_SUCCESS );
+
+	err = ccs_release_object(root);
+	assert( err == CCS_SUCCESS );
 	err = ccs_release_object(child);
 	assert( err == CCS_SUCCESS );
 	err = ccs_release_object(grand_child);
 	assert( err == CCS_SUCCESS );
+
+	err = ccs_object_deserialize((ccs_object_t*)&root, CCS_SERIALIZE_FORMAT_BINARY, CCS_SERIALIZE_OPERATION_MEMORY, buff_size, buff, CCS_DESERIALIZE_OPTION_END);
+	assert( err == CCS_SUCCESS );
+	free(buff);
+
+	err = ccs_tree_samples(root, rng, NUM_SAMPLES, samples);
+	assert( err == CCS_SUCCESS );
+	check_samples(5, areas, counts, NUM_SAMPLES, samples);
+
 	err = ccs_release_object(root);
 	assert( err == CCS_SUCCESS );
 	err = ccs_release_object(rng);
