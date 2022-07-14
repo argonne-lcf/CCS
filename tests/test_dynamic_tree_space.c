@@ -85,6 +85,18 @@ void test_dynamic_tree_space() {
 	err = ccs_tree_space_samples(tree_space, NUM_SAMPLES, configs);
 	assert( err == CCS_SUCCESS );
 
+	char   *buff;
+	size_t  buff_size;
+
+	err = ccs_object_serialize(tree_space, CCS_SERIALIZE_FORMAT_BINARY, CCS_SERIALIZE_OPERATION_SIZE, &buff_size, CCS_SERIALIZE_OPTION_END);
+	assert( err == CCS_SUCCESS );
+
+	buff = (char *)malloc(buff_size);
+	assert( buff );
+
+	err = ccs_object_serialize(tree_space, CCS_SERIALIZE_FORMAT_BINARY, CCS_SERIALIZE_OPERATION_MEMORY, buff_size, buff, CCS_SERIALIZE_OPTION_END);
+	assert( err == CCS_SUCCESS );
+
 	inv_sum = 0;
 	for (size_t i = 0; i < 5; i++) {
 		depths[i] = 0;
@@ -112,6 +124,38 @@ void test_dynamic_tree_space() {
 	assert( err == CCS_SUCCESS );
 	err = ccs_release_object(root);
 	assert( err == CCS_SUCCESS );
+	err = ccs_release_object(tree_space);
+	assert( err == CCS_SUCCESS );
+
+	err = ccs_object_deserialize((ccs_object_t*)&tree_space, CCS_SERIALIZE_FORMAT_BINARY, CCS_SERIALIZE_OPERATION_MEMORY, buff_size, buff, CCS_DESERIALIZE_OPTION_VECTOR, &vector, CCS_DESERIALIZE_OPTION_END);
+	assert( err == CCS_SUCCESS );
+	free(buff);
+
+	err = ccs_tree_space_samples(tree_space, NUM_SAMPLES, configs);
+	assert( err == CCS_SUCCESS );
+
+	inv_sum = 0;
+	for (size_t i = 0; i < 5; i++) {
+		depths[i] = 0;
+		inv_sum += areas[i];
+	}
+	inv_sum = 1.0/inv_sum;
+	for (size_t i = 0; i < NUM_SAMPLES; i++) {
+		ccs_bool_t is_valid;
+		err = ccs_tree_space_check_configuration(tree_space, configs[i], &is_valid);
+		assert( err == CCS_SUCCESS );
+		assert( is_valid == CCS_TRUE );
+		err = ccs_tree_configuration_get_position(configs[i], 0, NULL, &position_size);
+		assert( err == CCS_SUCCESS );
+		depths[position_size]++;
+		err = ccs_release_object(configs[i]);
+		assert( err == CCS_SUCCESS );
+	}
+	for (size_t i = 0; i < 5; i++) {
+		ccs_float_t target = NUM_SAMPLES * areas[i] * inv_sum;
+		assert( depths[i] >= target * 0.95 && depths[i] <= target * 1.05 );
+	}
+
 	err = ccs_release_object(tree_space);
 	assert( err == CCS_SUCCESS );
 }

@@ -23,7 +23,7 @@ _ccs_serialize_bin_size_ccs_tree_data(
 	*cum_size += _ccs_serialize_bin_size_size(data->arity) +
 		_ccs_serialize_bin_size_ccs_float(data->weights[data->arity]);
 	for (size_t i = 0; i < data->arity; i++) {
-		_ccs_serialize_bin_size_ccs_bool(data->children[i] != NULL);
+		*cum_size += _ccs_serialize_bin_size_ccs_bool(data->children[i] != NULL);
 		if (data->children[i])
 			CCS_VALIDATE(data->children[i]->obj.ops->serialize_size(
 				data->children[i], CCS_SERIALIZE_FORMAT_BINARY, cum_size, opts));
