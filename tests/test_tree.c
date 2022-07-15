@@ -27,8 +27,8 @@ void check_samples(size_t num_areas, ccs_float_t *areas, int *counts,
 void test_tree() {
 	ccs_tree_t  root, child, grand_child, parent, node, children[4];
 	ccs_rng_t   rng;
-	ccs_datum_t value, values[3];
-	size_t      arity, num_children, position_size, position[3], index, samples[NUM_SAMPLES], num_values;
+	ccs_datum_t value, *values;
+	size_t      arity, num_children, position_size, *position, index, samples[NUM_SAMPLES], num_values;
 	int         counts[5];
 	ccs_float_t weight, bias, areas[5];
 	ccs_bool_t  is_valid;
@@ -75,6 +75,7 @@ void test_tree() {
 	assert( err == CCS_SUCCESS );
 	assert( node == root );
 
+	position = (size_t *)malloc(sizeof(size_t));
 	position[0] = 2;
 	err = ccs_tree_get_node_at_position(root, 1, position, &node);
 	assert( err == CCS_INVALID_TREE );
@@ -132,6 +133,7 @@ void test_tree() {
 	err = ccs_tree_get_node_at_position(root, 1, position, &node);
 	assert( err == CCS_SUCCESS );
 	assert( child == node );
+	free(position);
 
 
 	// weight of child subtree is 4.0 for now (1 + 3)
@@ -155,6 +157,7 @@ void test_tree() {
 	err = ccs_tree_set_child(child, 1, grand_child);
 	assert( err == CCS_SUCCESS );
 
+	position = (size_t *)malloc(2*sizeof(size_t));
 	position[0] = 2;
 	position[1] = 1;
 	err = ccs_tree_position_is_valid(root, 2, position, &is_valid);
@@ -163,18 +166,29 @@ void test_tree() {
 	err = ccs_tree_get_node_at_position(root, 2, position, &node);
 	assert( err == CCS_SUCCESS );
 	assert( grand_child == node );
+	free(position);
 
+	position = (size_t *)malloc(3*sizeof(size_t));
+	position[0] = 2;
+	position[1] = 1;
 	position[2] = 3;
 	err = ccs_tree_position_is_valid(root, 3, position, &is_valid);
 	assert( err == CCS_SUCCESS );
 	assert( is_valid == CCS_FALSE );
+	free(position);
 
+	position = (size_t *)malloc(2*sizeof(size_t));
+	position[0] = 2;
+	position[1] = 1;
+	values = (ccs_datum_t *)malloc(sizeof(ccs_datum_t)*3);
 	err = ccs_tree_get_values_at_position(root, 2, position, 3, values);
 	assert( err == CCS_SUCCESS );
 	assert( !ccs_datum_cmp(values[0], ccs_string("foo")) );
 	assert( !ccs_datum_cmp(values[1], ccs_string("bar")) );
 	assert( !ccs_datum_cmp(values[2], ccs_string("baz")) );
+	free(position);
 
+	position = (size_t *)malloc(3*sizeof(size_t));
 	position[0] = 0;
 	position[1] = 0;
 	err = ccs_tree_get_position(grand_child, 3, position, &position_size);
@@ -182,6 +196,7 @@ void test_tree() {
 	assert( position_size == 2 );
 	assert( position[0] == 2 );
 	assert( position[1] == 1 );
+	free(position);
 
 	values[0] = ccs_none;
 	values[1] = ccs_none;
@@ -192,6 +207,7 @@ void test_tree() {
 	assert( !ccs_datum_cmp(values[0], ccs_string("foo")) );
 	assert( !ccs_datum_cmp(values[1], ccs_string("bar")) );
 	assert( !ccs_datum_cmp(values[2], ccs_string("baz")) );
+	free(values);
 
 	// (1 + (1 + (1 + 1) + 1)) / 2
 	areas[2] = 2.5;

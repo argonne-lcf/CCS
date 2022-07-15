@@ -38,8 +38,8 @@ void test_dynamic_tree_space() {
 	ccs_tree_space_t          tree_space;
 	ccs_tree_space_type_t     tree_type;
 	ccs_rng_t                 rng, rng2;
-	size_t                    position_size, position[4], depths[5];
-	ccs_datum_t               value, values[5];
+	size_t                    position_size, *position, depths[5];
+	ccs_datum_t               value, *values;
 	ccs_float_t               areas[5] = {1.0, 4.0, 2.0, 1.0, 0.0};
 	ccs_float_t               inv_sum;
 	const char               *name;
@@ -75,13 +75,16 @@ void test_dynamic_tree_space() {
         err = ccs_tree_space_get_node_at_position(tree_space, 0, NULL, &tree);
 	assert( err == CCS_SUCCESS );
 	assert( tree == root );
+	values = (ccs_datum_t *)malloc(sizeof(ccs_datum_t));
 	err = ccs_tree_space_get_values_at_position(tree_space, 0, NULL, 1, values);
 	assert( err == CCS_SUCCESS );
 	assert( values[0].value.i == 400 + 0 );
+	free(values);
 	err = ccs_tree_space_check_position(tree_space, 0, NULL, &is_valid);
 	assert( err == CCS_SUCCESS );
 	assert( is_valid == CCS_TRUE );
 
+	position = (size_t *)malloc(2*sizeof(size_t));
 	position[0] = 1;
 	position[0] = 4;
 	err = ccs_tree_space_check_position(tree_space, 2, position, &is_valid);
@@ -96,11 +99,14 @@ void test_dynamic_tree_space() {
 	assert( err == CCS_SUCCESS );
 	assert( value.value.i == 200 + 1 );
 
+	values = (ccs_datum_t *)malloc(sizeof(ccs_datum_t)*3);
 	err = ccs_tree_space_get_values_at_position(tree_space, 2, position, 3, values);
 	assert( err == CCS_SUCCESS );
 	assert( values[0].value.i == 400 + 0 );
 	assert( values[1].value.i == 300 + 1 );
 	assert( values[2].value.i == 200 + 1 );
+	free(values);
+	free(position);
 
 	err = ccs_tree_space_sample(tree_space, &config);
 	assert( err == CCS_SUCCESS );
