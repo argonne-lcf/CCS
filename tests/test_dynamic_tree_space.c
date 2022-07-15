@@ -6,7 +6,13 @@
 #define NUM_SAMPLES 20000
 
 static ccs_error_t
-my_tree_child(
+my_tree_del(ccs_tree_space_t  tree_space) {
+	(void)tree_space;
+	return CCS_SUCCESS;
+}
+
+static ccs_error_t
+my_tree_get_child(
 		ccs_tree_space_t  tree_space,
 		ccs_tree_t        parent,
 		size_t            child_index,
@@ -27,6 +33,7 @@ my_tree_child(
 
 void test_dynamic_tree_space() {
 	ccs_error_t               err;
+	ccs_bool_t                is_valid;
 	ccs_tree_t                root, tree;
 	ccs_tree_space_t          tree_space;
 	ccs_tree_space_type_t     tree_type;
@@ -38,7 +45,7 @@ void test_dynamic_tree_space() {
 	const char               *name;
 	ccs_tree_configuration_t  config, configs[NUM_SAMPLES];
 
-	ccs_dynamic_tree_space_vector_t vector = {&my_tree_child, NULL, NULL};
+	ccs_dynamic_tree_space_vector_t vector = {&my_tree_del, &my_tree_get_child, NULL, NULL};
 	err = ccs_create_tree(4, ccs_int(4*100), &root);
 	assert( err == CCS_SUCCESS );
 	err = ccs_create_dynamic_tree_space("space", root, &vector, NULL, &tree_space);
@@ -64,6 +71,22 @@ void test_dynamic_tree_space() {
 	err = ccs_tree_space_get_tree(tree_space, &tree);
 	assert( err == CCS_SUCCESS );
 	assert( tree == root );
+
+        err = ccs_tree_space_get_node_at_position(tree_space, 0, NULL, &tree);
+	assert( err == CCS_SUCCESS );
+	assert( tree == root );
+	err = ccs_tree_space_get_values_at_position(tree_space, 0, NULL, 1, values);
+	assert( err == CCS_SUCCESS );
+	assert( values[0].value.i == 400 + 0 );
+	err = ccs_tree_space_check_position(tree_space, 0, NULL, &is_valid);
+	assert( err == CCS_SUCCESS );
+	assert( is_valid == CCS_TRUE );
+
+	position[0] = 1;
+	position[0] = 4;
+	err = ccs_tree_space_check_position(tree_space, 2, position, &is_valid);
+	assert( err == CCS_SUCCESS );
+	assert( is_valid == CCS_FALSE );
 
 	position[0] = 1;
 	position[1] = 1;
@@ -104,7 +127,6 @@ void test_dynamic_tree_space() {
 	}
 	inv_sum = 1.0/inv_sum;
 	for (size_t i = 0; i < NUM_SAMPLES; i++) {
-		ccs_bool_t is_valid;
 		err = ccs_tree_space_check_configuration(tree_space, configs[i], &is_valid);
 		assert( err == CCS_SUCCESS );
 		assert( is_valid == CCS_TRUE );
@@ -141,7 +163,6 @@ void test_dynamic_tree_space() {
 	}
 	inv_sum = 1.0/inv_sum;
 	for (size_t i = 0; i < NUM_SAMPLES; i++) {
-		ccs_bool_t is_valid;
 		err = ccs_tree_space_check_configuration(tree_space, configs[i], &is_valid);
 		assert( err == CCS_SUCCESS );
 		assert( is_valid == CCS_TRUE );

@@ -9,6 +9,7 @@ ccs_tree_configuration_get_tree_space = _ccs_get_function("ccs_tree_configuratio
 ccs_tree_configuration_get_position = _ccs_get_function("ccs_tree_configuration_get_position", [ccs_tree_configuration, ct.c_size_t, ct.POINTER(ct.c_size_t), ct.POINTER(ct.c_size_t)])
 ccs_tree_configuration_get_values = _ccs_get_function("ccs_tree_configuration_get_values", [ccs_tree_configuration, ct.c_size_t, ct.POINTER(ccs_datum), ct.POINTER(ct.c_size_t)])
 ccs_tree_configuration_get_node = _ccs_get_function("ccs_tree_configuration_get_node", [ccs_tree_configuration, ct.POINTER(ccs_tree)])
+ccs_tree_configuration_check = _ccs_get_function("ccs_tree_configuration_check", [ccs_tree_configuration, ct.POINTER(ccs_bool)])
 ccs_tree_configuration_hash = _ccs_get_function("ccs_tree_configuration_hash", [ccs_tree_configuration, ct.POINTER(ccs_hash)])
 ccs_tree_configuration_cmp = _ccs_get_function("ccs_tree_configuration_cmp", [ccs_tree_configuration, ccs_tree_configuration, ct.POINTER(ct.c_int)])
 
@@ -17,10 +18,10 @@ class TreeConfiguration(Object):
   def __init__(self, handle = None, retain = False, auto_release = True,
                tree_space = None, position = None):
     if handle is None:
-      handle = ccs_tree_configuration(0)
+      handle = ccs_tree_configuration()
       count = len(position)
       v = (ct.c_size_t * count)(*position)
-      res = ccs_create_tree_configuration(tree_space, count, v, ct.byref(handle))
+      res = ccs_create_tree_configuration(tree_space.handle, count, v, ct.byref(handle))
       Error.check(res)
       super().__init__(handle = handle, retain = False)
     else:
@@ -83,6 +84,12 @@ class TreeConfiguration(Object):
     self._node = Tree.from_handle(v)
     return self._node
 
+  def check(self):
+    valid = ccs_bool()
+    res = ccs_tree_configuration_check(self.handle, ct.byref(valid))
+    Error.check(res)
+    return not (valid.value == 0)
+
   @property
   def hash(self):
     if hasattr(self, "_hash"):
@@ -90,50 +97,50 @@ class TreeConfiguration(Object):
     v = ccs_hash()
     res = ccs_tree_configuration_hash(self.handle, ct.byref(v))
     Error.check(res)
-    self._hash = self.value
+    self._hash = v.value
     return self._hash
 
   def __hash__(self):
     return self.hash
 
   def cmp(self, other):
-    v = ccs_int()
+    v = ct.c_int()
     res = ccs_tree_configuration_cmp(self.handle, other.handle, ct.byref(v))
     Error.check(res)
     return v.value
 
   def __lt__(self, other):
-    v = ccs_int()
+    v = ct.c_int()
     res = ccs_tree_configuration_cmp(self.handle, other.handle, ct.byref(v))
     Error.check(res)
     return v.value < 0
 
   def __le__(self, other):
-    v = ccs_int()
+    v = ct.c_int()
     res = ccs_tree_configuration_cmp(self.handle, other.handle, ct.byref(v))
     Error.check(res)
     return v.value <= 0
 
   def __gt__(self, other):
-    v = ccs_int()
+    v = ct.c_int()
     res = ccs_tree_configuration_cmp(self.handle, other.handle, ct.byref(v))
     Error.check(res)
     return v.value > 0
 
   def __ge__(self, other):
-    v = ccs_int()
+    v = ct.c_int()
     res = ccs_tree_configuration_cmp(self.handle, other.handle, ct.byref(v))
     Error.check(res)
     return v.value >= 0
 
   def __eq__(self, other):
-    v = ccs_int()
+    v = ct.c_int()
     res = ccs_tree_configuration_cmp(self.handle, other.handle, ct.byref(v))
     Error.check(res)
     return v.value == 0
 
   def __ne__(self, other):
-    v = ccs_int()
+    v = ct.c_int()
     res = ccs_tree_configuration_cmp(self.handle, other.handle, ct.byref(v))
     Error.check(res)
     return v.value != 0

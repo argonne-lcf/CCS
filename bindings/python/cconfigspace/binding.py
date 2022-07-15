@@ -12,7 +12,7 @@ ccs_binding_set_value_by_name = _ccs_get_function("ccs_binding_set_value_by_name
 ccs_binding_get_value_by_hyperparameter = _ccs_get_function("ccs_binding_get_value_by_hyperparameter", [ccs_binding, ccs_hyperparameter, ct.POINTER(ccs_datum)])
 ccs_binding_set_value_by_hyperparameter = _ccs_get_function("ccs_binding_set_value_by_hyperparameter", [ccs_binding, ccs_hyperparameter, ccs_datum_fix])
 ccs_binding_hash = _ccs_get_function("ccs_binding_hash", [ccs_binding, ct.POINTER(ccs_hash)])
-ccs_binding_cmp = _ccs_get_function("ccs_binding_cmp", [ccs_binding, ccs_binding, ct.POINTER(ccs_int)])
+ccs_binding_cmp = _ccs_get_function("ccs_binding_cmp", [ccs_binding, ccs_binding, ct.POINTER(ct.c_int)])
 
 class Binding(Object):
 
@@ -78,43 +78,43 @@ class Binding(Object):
     Error.check(res)
 
   def cmp(self, other):
-    v = ccs_int()
+    v = ct.c_int()
     res = ccs_binding_cmp(self.handle, other.handle, ct.byref(v))
     Error.check(res)
     return v.value
 
   def __lt__(self, other):
-    v = ccs_int()
+    v = ct.c_int()
     res = ccs_binding_cmp(self.handle, other.handle, ct.byref(v))
     Error.check(res)
     return v.value < 0
 
   def __le__(self, other):
-    v = ccs_int()
+    v = ct.c_int()
     res = ccs_binding_cmp(self.handle, other.handle, ct.byref(v))
     Error.check(res)
     return v.value <= 0
 
   def __gt__(self, other):
-    v = ccs_int()
+    v = ct.c_int()
     res = ccs_binding_cmp(self.handle, other.handle, ct.byref(v))
     Error.check(res)
     return v.value > 0
 
   def __ge__(self, other):
-    v = ccs_int()
+    v = ct.c_int()
     res = ccs_binding_cmp(self.handle, other.handle, ct.byref(v))
     Error.check(res)
     return v.value >= 0
 
   def __eq__(self, other):
-    v = ccs_int()
+    v = ct.c_int()
     res = ccs_binding_cmp(self.handle, other.handle, ct.byref(v))
     Error.check(res)
     return v.value == 0
 
   def __ne__(self, other):
-    v = ccs_int()
+    v = ct.c_int()
     res = ccs_binding_cmp(self.handle, other.handle, ct.byref(v))
     Error.check(res)
     return v.value != 0

@@ -20,7 +20,10 @@ ccs_create_static_tree_space(
 	ccs_tree_space_t *tree_space_ret);
 
 struct ccs_dynamic_tree_space_vector_s {
-	ccs_error_t (*child)(
+	ccs_error_t (*del)(
+		ccs_tree_space_t  tree_space);
+
+	ccs_error_t (*get_child)(
 		ccs_tree_space_t  tree_space,
 		ccs_tree_t        parent,
 		size_t            child_index,
@@ -110,6 +113,11 @@ ccs_tree_space_samples(
 	ccs_tree_space_t          tree_space,
 	size_t                    num_configurations,
 	ccs_tree_configuration_t *configurations);
+
+extern ccs_error_t
+ccs_dynamic_tree_space_get_tree_space_data(
+	ccs_tree_space_t   tree_space,
+	void             **tree_space_data_ret);
 
 #ifdef __cplusplus
 }
