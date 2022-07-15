@@ -37,6 +37,11 @@ ccs_tree_configuration_get_node(
 	ccs_tree_t               *node_ret);
 
 extern ccs_error_t
+ccs_tree_configuration_check(
+	ccs_tree_configuration_t  configuration,
+	ccs_bool_t               *is_valid_ret);
+
+extern ccs_error_t
 ccs_tree_configuration_hash(
 	ccs_tree_configuration_t  configuration,
 	ccs_hash_t               *hash_ret);

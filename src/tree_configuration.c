@@ -191,6 +191,16 @@ ccs_tree_configuration_get_node(
 	return CCS_SUCCESS;
 }
 
+ccs_error_t
+ccs_tree_configuration_check(
+		ccs_tree_configuration_t  configuration,
+		ccs_bool_t               *is_valid_ret) {
+	CCS_CHECK_OBJ(configuration, CCS_TREE_CONFIGURATION);
+	CCS_CHECK_PTR(is_valid_ret);
+	CCS_VALIDATE(ccs_tree_space_check_configuration(configuration->data->tree_space, configuration, is_valid_ret));
+	return CCS_SUCCESS;
+}
+
 #define CCS_CMP(a, b) ((a) < (b) ? -1 : ((a) > (b) ? 1 : 0))
 
 ccs_error_t

@@ -13,9 +13,11 @@ static ccs_error_t
 _ccs_tree_space_dynamic_del(ccs_object_t o) {
 	struct _ccs_tree_space_dynamic_data_s *data =
 		(struct _ccs_tree_space_dynamic_data_s *)(((ccs_tree_space_t)o)->data);
+	ccs_error_t err;
+	err = data->vector.del((ccs_tree_space_t)o);
 	ccs_release_object(data->common_data.rng);
 	ccs_release_object(data->common_data.tree);
-	return CCS_SUCCESS;
+	return err;
 }
 
 static inline ccs_error_t
@@ -154,10 +156,10 @@ _ccs_tree_space_dynamic_get_node_at_position(
 		ccs_tree_t       *tree_ret) {
 	_ccs_tree_space_dynamic_data_t *data =
 		(_ccs_tree_space_dynamic_data_t *)tree_space->data;
-	ccs_tree_t parent = data->common_data.tree;
-	ccs_tree_t child = NULL;
+	ccs_tree_t child = data->common_data.tree;
+	ccs_tree_t parent = child;
 	for (size_t i = 0; i < position_size; i++) {
-		CCS_VALIDATE(_ccs_tree_space_tree_get_child(tree_space, parent, position[i], &child, data->vector.child));
+		CCS_VALIDATE(_ccs_tree_space_tree_get_child(tree_space, parent, position[i], &child, data->vector.get_child));
 		parent = child;
 	}
 	*tree_ret = child;
@@ -180,7 +182,7 @@ _ccs_tree_space_dynamic_get_values_at_position(
 	ccs_tree_t child = NULL;
 	*values++ = parent->data->value;
 	for (size_t i = 0; i < position_size; i++) {
-		CCS_VALIDATE(_ccs_tree_space_tree_get_child(tree_space, parent, position[i], &child, data->vector.child));
+		CCS_VALIDATE(_ccs_tree_space_tree_get_child(tree_space, parent, position[i], &child, data->vector.get_child));
 		*values++ = child->data->value;
 		parent = child;
 	}
@@ -203,9 +205,11 @@ _ccs_tree_space_dynamic_check_position(
 	ccs_tree_t child = NULL;
 	*is_valid_ret = CCS_FALSE;
 	for (size_t i = 0; i < position_size; i++) {
-		if (position[i] >= parent->data->arity)
+		if (position[i] >= parent->data->arity) {
 			*is_valid_ret = CCS_FALSE;
-		CCS_VALIDATE(_ccs_tree_space_tree_get_child(tree_space, parent, position[i], &child, data->vector.child));
+			return CCS_SUCCESS;
+		}
+		CCS_VALIDATE(_ccs_tree_space_tree_get_child(tree_space, parent, position[i], &child, data->vector.get_child));
 		parent = child;
 	}
 	*is_valid_ret = CCS_TRUE;
@@ -231,7 +235,8 @@ ccs_create_dynamic_tree_space(
 	CCS_CHECK_PTR(name);
 	CCS_CHECK_OBJ(tree, CCS_TREE);
 	CCS_CHECK_PTR(vector);
-	CCS_CHECK_PTR(vector->child);
+	CCS_CHECK_PTR(vector->del);
+	CCS_CHECK_PTR(vector->get_child);
 	CCS_CHECK_PTR(tree_space_ret);
 	ccs_error_t err;
 	uintptr_t mem = (uintptr_t)calloc(1,
@@ -269,3 +274,14 @@ errmem:
 	return err;
 }
 
+ccs_error_t
+ccs_dynamic_tree_space_get_tree_space_data(
+		ccs_tree_space_t   tree_space,
+		void             **tree_space_data_ret) {
+	CCS_CHECK_TREE_SPACE(tree_space, CCS_TREE_SPACE_TYPE_DYNAMIC);
+	CCS_CHECK_PTR(tree_space_data_ret);
+	_ccs_tree_space_dynamic_data_t *data =
+		(_ccs_tree_space_dynamic_data_t *)tree_space->data;
+	*tree_space_data_ret = data->tree_space_data;
+	return CCS_SUCCESS;
+}

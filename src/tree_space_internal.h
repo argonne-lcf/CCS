@@ -3,6 +3,11 @@
 #include "tree_internal.h"
 #include "rng_internal.h"
 
+#define CCS_CHECK_TREE_SPACE(o, t) do { \
+	CCS_CHECK_OBJ(o, CCS_TREE_SPACE); \
+	CCS_REFUTE(((_ccs_tree_space_common_data_t*)(o->data))->type != (t), CCS_INVALID_TREE_SPACE); \
+} while (0)
+
 struct _ccs_tree_space_data_s;
 typedef struct _ccs_tree_space_data_s _ccs_tree_space_data_t;
 
