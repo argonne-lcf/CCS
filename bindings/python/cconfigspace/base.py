@@ -185,7 +185,8 @@ class ccs_error(CEnumeration):
     ('INVALID_HANDLE',         -25),
     ('SYSTEM_ERROR',           -26),
     ('EXTERNAL_ERROR',         -27),
-    ('INVALID_TREE',           -28) ]
+    ('INVALID_TREE',           -28),
+    ('INVALID_TREE_SPACE',     -29) ]
 
 class ccs_data_type(CEnumeration):
   _members_ = [
@@ -750,6 +751,8 @@ from .features_tuner import FeaturesTuner
 from .map import Map
 from .error_stack import ErrorStack, get_thread_error, set_thread_error, clear_thread_error
 from .tree import Tree
+from .tree_space import TreeSpace
+from .tree_configuration import TreeConfiguration
 
 setattr(Object, 'CLASS_MAP', {
   ccs_object_type.RNG: Rng,
@@ -767,7 +770,9 @@ setattr(Object, 'CLASS_MAP', {
   ccs_object_type.FEATURES_TUNER: FeaturesTuner,
   ccs_object_type.MAP: Map,
   ccs_object_type.ERROR_STACK: ErrorStack,
-  ccs_object_type.TREE: Tree
+  ccs_object_type.TREE: Tree,
+  ccs_object_type.TREE_SPACE: TreeSpace,
+  ccs_object_type.TREE_CONFIGURATION: TreeConfiguration
 })
 
 

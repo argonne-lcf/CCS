@@ -152,8 +152,6 @@ class Tree(Object):
 
   def get_values_at_position(self, position):
     count = len(position)
-    if count == 0:
-      return [self.value]
     v1 = (ct.c_size_t * count)(*position)
     v2 = (ccs_datum * (count + 1))()
     res = ccs_tree_get_values_at_position(self.handle, count, v1, count + 1, v2)
