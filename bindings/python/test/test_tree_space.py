@@ -72,7 +72,11 @@ class TestTreeSpace(unittest.TestCase):
 
     for i in range(100):
       tc = ts.sample()
-      self.assertTrue( ts.check_configuration(tc) ) 
+      self.assertTrue( ts.check_configuration(tc) )
+
+    buff = ts.serialize()
+    ts2 = ccs.DynamicTreeSpace.deserialize(buffer = buff, delete = delete, get_child = get_child)
+    self.assertEqual( [400, 301, 201], ts2.get_values_at_position([1, 1]) )
 
   def test_tree_configuration(self):
     tree = generate_tree(4, 0)
