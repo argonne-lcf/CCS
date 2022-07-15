@@ -55,7 +55,6 @@ class TestTreeSpace(unittest.TestCase):
       arity = 0 if arity < 0 else arity
       return ccs.Tree(arity = arity, value = (4 - child_depth)*100 + child_index)
 
-    rng = ccs.Rng()
     tree = ccs.Tree(arity = 4, value = 400)
     ts = ccs.DynamicTreeSpace(name = 'space', tree = tree, delete = delete, get_child = get_child)
     self.assertEqual( ccs.TREE_SPACE, ts.object_type )

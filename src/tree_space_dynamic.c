@@ -186,7 +186,7 @@ _ccs_tree_space_dynamic_get_values_at_position(
 		*values++ = child->data->value;
 		parent = child;
 	}
-	for (size_t i = position_size; i < num_values; i++)
+	for (size_t i = position_size + 1; i < num_values; i++)
 		*values++ = ccs_none;
 	return CCS_SUCCESS;
 }
