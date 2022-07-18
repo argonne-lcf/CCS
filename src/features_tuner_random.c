@@ -140,14 +140,14 @@ _ccs_random_features_tuner_serialize(
 }
 
 static ccs_error_t
-_ccs_features_tuner_random_ask(_ccs_features_tuner_data_t *data,
+_ccs_features_tuner_random_ask(ccs_features_tuner_t        tuner,
                                ccs_features_t              features,
                                size_t                      num_configurations,
                                ccs_configuration_t        *configurations,
                                size_t                     *num_configurations_ret) {
 	(void) features;
 	_ccs_random_features_tuner_data_t *d =
-		(_ccs_random_features_tuner_data_t *)data;
+		(_ccs_random_features_tuner_data_t *)tuner->data;
 	if (!configurations) {
 		*num_configurations_ret = 1;
 		return CCS_SUCCESS;
@@ -165,10 +165,11 @@ _ccs_features_tuner_random_ask(_ccs_features_tuner_data_t *data,
 	CCS_RAISE(CCS_OUT_OF_MEMORY, "Not enough memory to allocate new array"); \
 }
 static ccs_error_t
-_ccs_features_tuner_random_tell(_ccs_features_tuner_data_t *data,
+_ccs_features_tuner_random_tell(ccs_features_tuner_t        tuner,
                                 size_t                      num_evaluations,
                                 ccs_features_evaluation_t  *evaluations) {
-	_ccs_random_features_tuner_data_t *d = (_ccs_random_features_tuner_data_t *)data;
+	_ccs_random_features_tuner_data_t *d =
+		(_ccs_random_features_tuner_data_t *)tuner->data;
 	UT_array *history = d->history;
 	ccs_error_t err;
 	for (size_t i = 0; i < num_evaluations; i++) {
@@ -221,12 +222,13 @@ _ccs_features_tuner_random_tell(_ccs_features_tuner_data_t *data,
 
 static ccs_error_t
 _ccs_features_tuner_random_get_optimums(
-		_ccs_features_tuner_data_t *data,
+		ccs_features_tuner_t        tuner,
 		ccs_features_t              features,
 		size_t                      num_evaluations,
 		ccs_features_evaluation_t  *evaluations,
 		size_t                     *num_evaluations_ret) {
-	_ccs_random_features_tuner_data_t *d = (_ccs_random_features_tuner_data_t *)data;
+	_ccs_random_features_tuner_data_t *d =
+		(_ccs_random_features_tuner_data_t *)tuner->data;
 	size_t num_optimums = 0;
 	if (!features) {
 		num_optimums = utarray_len(d->optimums);
@@ -270,12 +272,13 @@ _ccs_features_tuner_random_get_optimums(
 
 static ccs_error_t
 _ccs_features_tuner_random_get_history(
-		_ccs_features_tuner_data_t *data,
+		ccs_features_tuner_t        tuner,
 		ccs_features_t              features,
 		size_t                      num_evaluations,
 		ccs_features_evaluation_t  *evaluations,
 		size_t                     *num_evaluations_ret) {
-	_ccs_random_features_tuner_data_t *d = (_ccs_random_features_tuner_data_t *)data;
+	_ccs_random_features_tuner_data_t *d =
+		(_ccs_random_features_tuner_data_t *)tuner->data;
 	size_t size_history = 0;
 	if (!features) {
 		size_history = utarray_len(d->history);
@@ -318,10 +321,11 @@ _ccs_features_tuner_random_get_history(
 }
 
 static ccs_error_t
-_ccs_features_tuner_random_suggest(_ccs_features_tuner_data_t *data,
+_ccs_features_tuner_random_suggest(ccs_features_tuner_t        tuner,
                                    ccs_features_t              features,
                                    ccs_configuration_t        *configuration) {
-	_ccs_random_features_tuner_data_t *d = (_ccs_random_features_tuner_data_t *)data;
+	_ccs_random_features_tuner_data_t *d =
+		(_ccs_random_features_tuner_data_t *)tuner->data;
 	size_t count = 0;
 	ccs_features_evaluation_t *eval = NULL;
 	ccs_features_t feat;
@@ -351,7 +355,7 @@ _ccs_features_tuner_random_suggest(_ccs_features_tuner_data_t *data,
 		CCS_VALIDATE(ccs_features_evaluation_get_configuration(*eval, configuration));
 		CCS_VALIDATE(ccs_retain_object(*configuration));
 	} else
-		CCS_VALIDATE(_ccs_features_tuner_random_ask(data, features, 1, configuration, NULL));
+		CCS_VALIDATE(_ccs_features_tuner_random_ask(tuner, features, 1, configuration, NULL));
 	return CCS_SUCCESS;
 }
 

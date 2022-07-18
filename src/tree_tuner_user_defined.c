@@ -1,49 +1,49 @@
 #include "cconfigspace_internal.h"
-#include "tuner_internal.h"
-#include "evaluation_internal.h"
+#include "tree_tuner_internal.h"
+#include "tree_evaluation_internal.h"
 #include "string.h"
 
-struct _ccs_user_defined_tuner_data_s {
-	_ccs_tuner_common_data_t          common_data;
-	ccs_user_defined_tuner_vector_t   vector;
-	void                             *tuner_data;
+struct _ccs_user_defined_tree_tuner_data_s {
+	_ccs_tree_tuner_common_data_t         common_data;
+	ccs_user_defined_tree_tuner_vector_t  vector;
+	void                                 *tuner_data;
 };
-typedef struct _ccs_user_defined_tuner_data_s _ccs_user_defined_tuner_data_t;
+typedef struct _ccs_user_defined_tree_tuner_data_s _ccs_user_defined_tree_tuner_data_t;
 
 static ccs_error_t
-_ccs_tuner_user_defined_del(ccs_object_t o) {
-	_ccs_user_defined_tuner_data_t *d =
-		(_ccs_user_defined_tuner_data_t *)((ccs_tuner_t)o)->data;
+_ccs_tree_tuner_user_defined_del(ccs_object_t o) {
+	_ccs_user_defined_tree_tuner_data_t *d =
+		(_ccs_user_defined_tree_tuner_data_t *)((ccs_tree_tuner_t)o)->data;
 	ccs_error_t err;
-	err = d->vector.del((ccs_tuner_t)o);
-	ccs_release_object(d->common_data.configuration_space);
+	err = d->vector.del((ccs_tree_tuner_t)o);
+	ccs_release_object(d->common_data.tree_space);
 	ccs_release_object(d->common_data.objective_space);
 	return err;
 }
 
 static inline ccs_error_t
-_ccs_serialize_bin_size_ccs_user_defined_tuner(
-		ccs_tuner_t                      tuner,
+_ccs_serialize_bin_size_ccs_user_defined_tree_tuner(
+		ccs_tree_tuner_t                 tuner,
 		size_t                          *cum_size,
 		_ccs_object_serialize_options_t *opts) {
 	ccs_error_t res = CCS_SUCCESS;
-	_ccs_user_defined_tuner_data_t *data =
-		(_ccs_user_defined_tuner_data_t *)(tuner->data);
+	_ccs_user_defined_tree_tuner_data_t *data =
+		(_ccs_user_defined_tree_tuner_data_t *)(tuner->data);
 	*cum_size += _ccs_serialize_bin_size_ccs_object_internal(
 		(_ccs_object_internal_t *)tuner);
-	CCS_VALIDATE(_ccs_serialize_bin_size_ccs_tuner_common_data(
+	CCS_VALIDATE(_ccs_serialize_bin_size_ccs_tree_tuner_common_data(
 		&data->common_data, cum_size, opts));
 	size_t history_size = 0;
 	size_t num_optimums = 0;
 	size_t state_size = 0;
-	ccs_evaluation_t *history = NULL;
-	ccs_evaluation_t *optimums = NULL;
+	ccs_tree_evaluation_t *history = NULL;
+	ccs_tree_evaluation_t *optimums = NULL;
 	CCS_VALIDATE(data->vector.get_history(tuner, 0, NULL, &history_size));
 	CCS_VALIDATE(data->vector.get_optimums(tuner, 0, NULL, &num_optimums));
 	*cum_size += _ccs_serialize_bin_size_size(history_size);
 	*cum_size += _ccs_serialize_bin_size_size(num_optimums);
 	if (0 != history_size + num_optimums) {
-		history = (ccs_evaluation_t *)calloc(sizeof(ccs_evaluation_t), history_size + num_optimums);
+		history = (ccs_tree_evaluation_t *)calloc(sizeof(ccs_tree_evaluation_t), history_size + num_optimums);
 		CCS_REFUTE(!history, CCS_OUT_OF_MEMORY);
 		optimums = history + history_size;
 		if (history_size) {
@@ -70,23 +70,23 @@ end:
 }
 
 static inline ccs_error_t
-_ccs_serialize_bin_ccs_user_defined_tuner(
-		ccs_tuner_t                       tuner,
+_ccs_serialize_bin_ccs_user_defined_tree_tuner(
+		ccs_tree_tuner_t                  tuner,
 		size_t                           *buffer_size,
 		char                            **buffer,
 		_ccs_object_serialize_options_t  *opts) {
 	ccs_error_t res = CCS_SUCCESS;
-	_ccs_user_defined_tuner_data_t *data =
-		(_ccs_user_defined_tuner_data_t *)(tuner->data);
+	_ccs_user_defined_tree_tuner_data_t *data =
+		(_ccs_user_defined_tree_tuner_data_t *)(tuner->data);
 	CCS_VALIDATE(_ccs_serialize_bin_ccs_object_internal(
 		(_ccs_object_internal_t *)tuner, buffer_size, buffer));
-	CCS_VALIDATE(_ccs_serialize_bin_ccs_tuner_common_data(
+	CCS_VALIDATE(_ccs_serialize_bin_ccs_tree_tuner_common_data(
 		&data->common_data, buffer_size, buffer, opts));
 	size_t history_size = 0;
 	size_t num_optimums = 0;
 	size_t state_size = 0;
-	ccs_evaluation_t *history = NULL;
-	ccs_evaluation_t *optimums = NULL;
+	ccs_tree_evaluation_t *history = NULL;
+	ccs_tree_evaluation_t *optimums = NULL;
 	CCS_VALIDATE(data->vector.get_history(tuner, 0, NULL, &history_size));
 	CCS_VALIDATE(data->vector.get_optimums(tuner, 0, NULL, &num_optimums));
 	CCS_VALIDATE(_ccs_serialize_bin_size(
@@ -94,7 +94,7 @@ _ccs_serialize_bin_ccs_user_defined_tuner(
 	CCS_VALIDATE(_ccs_serialize_bin_size(
 		num_optimums, buffer_size, buffer));
 	if (0 != history_size + num_optimums) {
-		history = (ccs_evaluation_t *)calloc(sizeof(ccs_evaluation_t), history_size + num_optimums);
+		history = (ccs_tree_evaluation_t *)calloc(sizeof(ccs_tree_evaluation_t), history_size + num_optimums);
 		CCS_REFUTE(!history, CCS_OUT_OF_MEMORY);
 		optimums = history + history_size;
 		if (history_size) {
@@ -129,15 +129,15 @@ end:
 }
 
 static ccs_error_t
-_ccs_tuner_user_defined_serialize_size(
+_ccs_tree_tuner_user_defined_serialize_size(
 		ccs_object_t                     object,
 		ccs_serialize_format_t           format,
 		size_t                          *cum_size,
 		_ccs_object_serialize_options_t *opts) {
 	switch(format) {
 	case CCS_SERIALIZE_FORMAT_BINARY:
-		CCS_VALIDATE(_ccs_serialize_bin_size_ccs_user_defined_tuner(
-			(ccs_tuner_t)object, cum_size, opts));
+		CCS_VALIDATE(_ccs_serialize_bin_size_ccs_user_defined_tree_tuner(
+			(ccs_tree_tuner_t)object, cum_size, opts));
 		break;
 	default:
 		CCS_RAISE(CCS_INVALID_VALUE, "Unsupported serialization format: %d", format);
@@ -148,7 +148,7 @@ _ccs_tuner_user_defined_serialize_size(
 }
 
 static ccs_error_t
-_ccs_tuner_user_defined_serialize(
+_ccs_tree_tuner_user_defined_serialize(
 		ccs_object_t                      object,
 		ccs_serialize_format_t            format,
 		size_t                           *buffer_size,
@@ -156,8 +156,8 @@ _ccs_tuner_user_defined_serialize(
 		_ccs_object_serialize_options_t  *opts) {
 	switch(format) {
 	case CCS_SERIALIZE_FORMAT_BINARY:
-		CCS_VALIDATE(_ccs_serialize_bin_ccs_user_defined_tuner(
-			(ccs_tuner_t)object, buffer_size, buffer, opts));
+		CCS_VALIDATE(_ccs_serialize_bin_ccs_user_defined_tree_tuner(
+			(ccs_tree_tuner_t)object, buffer_size, buffer, opts));
 		break;
 	default:
 		CCS_RAISE(CCS_INVALID_VALUE, "Unsupported serialization format: %d", format);
@@ -168,78 +168,84 @@ _ccs_tuner_user_defined_serialize(
 }
 
 static ccs_error_t
-_ccs_tuner_user_defined_ask(ccs_tuner_t          tuner,
-                            size_t               num_configurations,
-                            ccs_configuration_t *configurations,
-                            size_t              *num_configurations_ret) {
-	_ccs_user_defined_tuner_data_t *d =
-		(_ccs_user_defined_tuner_data_t *)tuner->data;
+_ccs_tree_tuner_user_defined_ask(
+		ccs_tree_tuner_t          tuner,
+		size_t                    num_configurations,
+		ccs_tree_configuration_t *configurations,
+		size_t                   *num_configurations_ret) {
+	_ccs_user_defined_tree_tuner_data_t *d =
+		(_ccs_user_defined_tree_tuner_data_t *)tuner->data;
 	CCS_VALIDATE(d->vector.ask(tuner, num_configurations, configurations, num_configurations_ret));
 	return CCS_SUCCESS;
 }
 
 static ccs_error_t
-_ccs_tuner_user_defined_tell(ccs_tuner_t        tuner,
-                             size_t             num_evaluations,
-                             ccs_evaluation_t  *evaluations) {
-	_ccs_user_defined_tuner_data_t *d =
-		(_ccs_user_defined_tuner_data_t *)tuner->data;
+_ccs_tree_tuner_user_defined_tell(
+		ccs_tree_tuner_t        tuner,
+		size_t                  num_evaluations,
+		ccs_tree_evaluation_t  *evaluations) {
+	_ccs_user_defined_tree_tuner_data_t *d =
+		(_ccs_user_defined_tree_tuner_data_t *)tuner->data;
 	CCS_VALIDATE(d->vector.tell(tuner, num_evaluations, evaluations));
 	return CCS_SUCCESS;
 }
 
 static ccs_error_t
-_ccs_tuner_user_defined_get_optimums(ccs_tuner_t        tuner,
-                                     size_t             num_evaluations,
-                                     ccs_evaluation_t  *evaluations,
-                                     size_t            *num_evaluations_ret) {
-	_ccs_user_defined_tuner_data_t *d =
-		(_ccs_user_defined_tuner_data_t *)tuner->data;
+_ccs_tree_tuner_user_defined_get_optimums(
+		ccs_tree_tuner_t        tuner,
+		size_t                  num_evaluations,
+		ccs_tree_evaluation_t  *evaluations,
+		size_t                 *num_evaluations_ret) {
+	_ccs_user_defined_tree_tuner_data_t *d =
+		(_ccs_user_defined_tree_tuner_data_t *)tuner->data;
 	CCS_VALIDATE(d->vector.get_optimums(tuner, num_evaluations, evaluations, num_evaluations_ret));
 	return CCS_SUCCESS;
 }
 
 static ccs_error_t
-_ccs_tuner_user_defined_get_history(ccs_tuner_t        tuner,
-                                    size_t             num_evaluations,
-                                    ccs_evaluation_t  *evaluations,
-                                    size_t            *num_evaluations_ret) {
-	_ccs_user_defined_tuner_data_t *d =
-		(_ccs_user_defined_tuner_data_t *)tuner->data;
+_ccs_tree_tuner_user_defined_get_history(
+		ccs_tree_tuner_t       tuner,
+		size_t                 num_evaluations,
+		ccs_tree_evaluation_t *evaluations,
+		size_t                *num_evaluations_ret) {
+	_ccs_user_defined_tree_tuner_data_t *d =
+		(_ccs_user_defined_tree_tuner_data_t *)tuner->data;
 	CCS_VALIDATE(d->vector.get_history(tuner, num_evaluations, evaluations, num_evaluations_ret));
 	return CCS_SUCCESS;
 }
 
 static ccs_error_t
-_ccs_tuner_user_defined_suggest(ccs_tuner_t          tuner,
-                                ccs_configuration_t *configuration_ret) {
-	_ccs_user_defined_tuner_data_t *d =
-		(_ccs_user_defined_tuner_data_t *)tuner->data;
+_ccs_tree_tuner_user_defined_suggest(
+		ccs_tree_tuner_t          tuner,
+		ccs_tree_configuration_t *configuration_ret) {
+	_ccs_user_defined_tree_tuner_data_t *d =
+		(_ccs_user_defined_tree_tuner_data_t *)tuner->data;
 	CCS_REFUTE(!d->vector.suggest, CCS_UNSUPPORTED_OPERATION);
 	CCS_VALIDATE(d->vector.suggest(tuner, configuration_ret));
 	return CCS_SUCCESS;
 }
 
-static _ccs_tuner_ops_t _ccs_tuner_user_defined_ops = {
-	{ &_ccs_tuner_user_defined_del,
-	  &_ccs_tuner_user_defined_serialize_size,
-	  &_ccs_tuner_user_defined_serialize },
-	&_ccs_tuner_user_defined_ask,
-	&_ccs_tuner_user_defined_tell,
-	&_ccs_tuner_user_defined_get_optimums,
-	&_ccs_tuner_user_defined_get_history,
-	&_ccs_tuner_user_defined_suggest
+static _ccs_tree_tuner_ops_t _ccs_tree_tuner_user_defined_ops = {
+	{ &_ccs_tree_tuner_user_defined_del,
+	  &_ccs_tree_tuner_user_defined_serialize_size,
+	  &_ccs_tree_tuner_user_defined_serialize },
+	&_ccs_tree_tuner_user_defined_ask,
+	&_ccs_tree_tuner_user_defined_tell,
+	&_ccs_tree_tuner_user_defined_get_optimums,
+	&_ccs_tree_tuner_user_defined_get_history,
+	&_ccs_tree_tuner_user_defined_suggest
 };
 
 ccs_error_t
-ccs_create_user_defined_tuner(const char                      *name,
-                              ccs_configuration_space_t        configuration_space,
-                              ccs_objective_space_t            objective_space,
-                              ccs_user_defined_tuner_vector_t *vector,
-                              void                            *tuner_data,
-                              ccs_tuner_t                     *tuner_ret) {
+ccs_create_user_defined_tree_tuner(
+		const char                           *name,
+		ccs_tree_space_t                      tree_space,
+		ccs_objective_space_t                 objective_space,
+		ccs_user_defined_tree_tuner_vector_t *vector,
+		void                                 *tuner_data,
+		ccs_tree_tuner_t                     *tuner_ret) {
 	CCS_CHECK_PTR(name);
-	CCS_CHECK_OBJ(configuration_space, CCS_CONFIGURATION_SPACE);
+	CCS_CHECK_OBJ(tree_space, CCS_TREE_SPACE);
 	CCS_CHECK_OBJ(objective_space, CCS_OBJECTIVE_SPACE);
 	CCS_CHECK_PTR(tuner_ret);
 	CCS_CHECK_PTR(vector);
@@ -250,25 +256,25 @@ ccs_create_user_defined_tuner(const char                      *name,
 	CCS_CHECK_PTR(vector->get_history);
 
 	uintptr_t mem = (uintptr_t)calloc(1,
-		sizeof(struct _ccs_tuner_s) +
-		sizeof(struct _ccs_user_defined_tuner_data_s) +
+		sizeof(struct _ccs_tree_tuner_s) +
+		sizeof(struct _ccs_user_defined_tree_tuner_data_s) +
 		strlen(name) + 1);
 	CCS_REFUTE(!mem, CCS_OUT_OF_MEMORY);
-	ccs_tuner_t tun;
-	_ccs_user_defined_tuner_data_t * data;
+	ccs_tree_tuner_t tun;
+	_ccs_user_defined_tree_tuner_data_t * data;
 	ccs_error_t err;
-	CCS_VALIDATE_ERR_GOTO(err, ccs_retain_object(configuration_space), errmem);
+	CCS_VALIDATE_ERR_GOTO(err, ccs_retain_object(tree_space), errmem);
 	CCS_VALIDATE_ERR_GOTO(err, ccs_retain_object(objective_space), errcs);
 
-	tun = (ccs_tuner_t)mem;
-	_ccs_object_init(&(tun->obj), CCS_TUNER, (_ccs_object_ops_t *)&_ccs_tuner_user_defined_ops);
-	tun->data = (struct _ccs_tuner_data_s *)(mem + sizeof(struct _ccs_tuner_s));
-	data = (_ccs_user_defined_tuner_data_t *)tun->data;
-	data->common_data.type = CCS_TUNER_USER_DEFINED;
+	tun = (ccs_tree_tuner_t)mem;
+	_ccs_object_init(&(tun->obj), CCS_TREE_TUNER, (_ccs_object_ops_t *)&_ccs_tree_tuner_user_defined_ops);
+	tun->data = (struct _ccs_tree_tuner_data_s *)(mem + sizeof(struct _ccs_tree_tuner_s));
+	data = (_ccs_user_defined_tree_tuner_data_t *)tun->data;
+	data->common_data.type = CCS_TREE_TUNER_USER_DEFINED;
 	data->common_data.name = (const char *)(mem +
-		sizeof(struct _ccs_tuner_s) +
-		sizeof(struct _ccs_user_defined_tuner_data_s));
-	data->common_data.configuration_space = configuration_space;
+		sizeof(struct _ccs_tree_tuner_s) +
+		sizeof(struct _ccs_user_defined_tree_tuner_data_s));
+	data->common_data.tree_space = tree_space;
 	data->common_data.objective_space = objective_space;
 	data->vector = *vector;
 	data->tuner_data = tuner_data;
@@ -276,20 +282,21 @@ ccs_create_user_defined_tuner(const char                      *name,
 	*tuner_ret = tun;
 	return CCS_SUCCESS;
 errcs:
-	ccs_release_object(configuration_space);
+	ccs_release_object(tree_space);
 errmem:
 	free((void *)mem);
 	return err;
 }
 
 ccs_error_t
-ccs_user_defined_tuner_get_tuner_data(ccs_tuner_t   tuner,
-                                      void        **tuner_data_ret) {
+ccs_user_defined_tree_tuner_get_tuner_data(
+		ccs_tree_tuner_t   tuner,
+		void        **tuner_data_ret) {
 	CCS_CHECK_OBJ(tuner, CCS_TUNER);
 	CCS_CHECK_PTR(tuner_data_ret);
-	_ccs_user_defined_tuner_data_t *d =
-		(_ccs_user_defined_tuner_data_t *)tuner->data;
-        CCS_REFUTE(d->common_data.type != CCS_TUNER_USER_DEFINED, CCS_INVALID_TUNER);
+	_ccs_user_defined_tree_tuner_data_t *d =
+		(_ccs_user_defined_tree_tuner_data_t *)tuner->data;
+        CCS_REFUTE(d->common_data.type != CCS_TREE_TUNER_USER_DEFINED, CCS_INVALID_TUNER);
 	*tuner_data_ret = d->tuner_data;
 	return CCS_SUCCESS;
 }

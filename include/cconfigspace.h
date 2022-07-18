@@ -26,6 +26,8 @@
 #include "cconfigspace/tree.h"
 #include "cconfigspace/tree_space.h"
 #include "cconfigspace/tree_configuration.h"
+#include "cconfigspace/tree_evaluation.h"
+#include "cconfigspace/tree_tuner.h"
 
 /**
  * @file cconfigspace.h

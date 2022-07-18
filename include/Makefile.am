@@ -23,5 +23,7 @@ include_ccs_HEADERS = \
 	cconfigspace/map.h \
 	cconfigspace/tree.h \
 	cconfigspace/tree_space.h \
-	cconfigspace/tree_configuration.h
+	cconfigspace/tree_configuration.h \
+	cconfigspace/tree_evaluation.h \
+	cconfigspace/tree_tuner.h
 
