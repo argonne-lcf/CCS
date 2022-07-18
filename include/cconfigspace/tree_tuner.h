@@ -42,8 +42,9 @@ typedef enum ccs_tree_tuner_type_e ccs_tree_tuner_type_t;
  * @return #CCS_INVALID_VALUE if \p type_ret is NULL
  */
 extern ccs_error_t
-ccs_tree_tuner_get_type(ccs_tree_tuner_t       tree,
-                        ccs_tree_tuner_type_t *type_ret);
+ccs_tree_tuner_get_type(
+	ccs_tree_tuner_t       tree,
+	ccs_tree_tuner_type_t *type_ret);
 
 /**
  * Get the name of a tree tuner.
@@ -83,8 +84,9 @@ ccs_tree_tuner_get_tree_space(
  * @return #CCS_INVALID_VALUE if \p objective_space_ret is NULL
  */
 extern ccs_error_t
-ccs_tuner_get_objective_space(ccs_tuner_t            tuner,
-                              ccs_objective_space_t *objective_space_ret);
+ccs_tree_tuner_get_objective_space(
+	ccs_tree_tuner_t       tuner,
+	ccs_objective_space_t *objective_space_ret);
 
 /**
  * Ask a tree tuner for a set of configurations to evaluate. Configuration's
@@ -340,7 +342,7 @@ ccs_create_user_defined_tree_tuner(
  * @return #CCS_INVALID_VALUE if \p tuner_data_ret is NULL
  */
 extern ccs_error_t
-ccs_user_defined_tuner_get_tree_tuner_data(
+ccs_user_defined_tree_tuner_get_tuner_data(
 	ccs_tree_tuner_t   tuner,
 	void             **tuner_data_ret);
 

@@ -291,7 +291,7 @@ errmem:
 ccs_error_t
 ccs_user_defined_tree_tuner_get_tuner_data(
 		ccs_tree_tuner_t   tuner,
-		void        **tuner_data_ret) {
+		void             **tuner_data_ret) {
 	CCS_CHECK_OBJ(tuner, CCS_TREE_TUNER);
 	CCS_CHECK_PTR(tuner_data_ret);
 	_ccs_user_defined_tree_tuner_data_t *d =
