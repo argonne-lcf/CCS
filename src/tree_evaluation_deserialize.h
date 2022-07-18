@@ -1,26 +1,26 @@
-#ifndef _EVALUATION_DESERIALIZE_H
-#define _EVALUATION_DESERIALIZE_H
+#ifndef _TREE_EVALUATION_DESERIALIZE_H
+#define _TREE_EVALUATION_DESERIALIZE_H
 #include "cconfigspace_internal.h"
-#include "evaluation_internal.h"
-#include "configuration_deserialize.h"
+#include "tree_evaluation_internal.h"
+#include "tree_configuration_deserialize.h"
 
-struct _ccs_evaluation_data_mock_s {
-	_ccs_binding_data_t base;
-	ccs_configuration_t configuration;
-	ccs_result_t        error;
+struct _ccs_tree_evaluation_data_mock_s {
+	_ccs_binding_data_t      base;
+	ccs_tree_configuration_t configuration;
+	ccs_result_t             error;
 };
-typedef struct _ccs_evaluation_data_mock_s _ccs_evaluation_data_mock_t;
+typedef struct _ccs_tree_evaluation_data_mock_s _ccs_tree_evaluation_data_mock_t;
 
 static inline ccs_error_t
-_ccs_deserialize_bin_ccs_evaluation_data(
-		_ccs_evaluation_data_mock_t        *data,
+_ccs_deserialize_bin_ccs_tree_evaluation_data(
+		_ccs_tree_evaluation_data_mock_t   *data,
 		uint32_t                            version,
 		size_t                             *buffer_size,
 		const char                        **buffer,
 		_ccs_object_deserialize_options_t  *opts) {
 	CCS_VALIDATE(_ccs_deserialize_bin_ccs_binding_data(
 		&data->base, version, buffer_size, buffer));
-	CCS_VALIDATE(_ccs_configuration_deserialize(
+	CCS_VALIDATE(_ccs_tree_configuration_deserialize(
 		&data->configuration, CCS_SERIALIZE_FORMAT_BINARY, version, buffer_size, buffer, opts));
 	CCS_VALIDATE(_ccs_deserialize_bin_ccs_result(
 		&data->error, buffer_size, buffer));
@@ -28,8 +28,8 @@ _ccs_deserialize_bin_ccs_evaluation_data(
 }
 
 static inline ccs_error_t
-_ccs_deserialize_bin_ccs_evaluation(
-		ccs_evaluation_t                   *evaluation_ret,
+_ccs_deserialize_bin_ccs_tree_evaluation(
+		ccs_tree_evaluation_t              *evaluation_ret,
 		uint32_t                            version,
 		size_t                             *buffer_size,
 		const char                        **buffer,
@@ -43,11 +43,11 @@ _ccs_deserialize_bin_ccs_evaluation(
 	ccs_error_t res = CCS_SUCCESS;
 	CCS_VALIDATE(_ccs_deserialize_bin_ccs_object_internal(
 		&obj, buffer_size, buffer, &handle));
-	CCS_REFUTE(obj.type != CCS_EVALUATION, CCS_INVALID_TYPE);
+	CCS_REFUTE(obj.type != CCS_TREE_EVALUATION, CCS_INVALID_TYPE);
 
 	new_opts.map_values = CCS_FALSE;
-	_ccs_evaluation_data_mock_t data = { {NULL, 0, NULL}, NULL, CCS_SUCCESS};
-	CCS_VALIDATE_ERR_GOTO(res, _ccs_deserialize_bin_ccs_evaluation_data(
+	_ccs_tree_evaluation_data_mock_t data = { {NULL, 0, NULL}, NULL, CCS_SUCCESS};
+	CCS_VALIDATE_ERR_GOTO(res, _ccs_deserialize_bin_ccs_tree_evaluation_data(
 		&data, version, buffer_size, buffer, &new_opts), end);
 
 	CCS_VALIDATE_ERR_GOTO(res, ccs_map_get(
@@ -55,7 +55,7 @@ _ccs_deserialize_bin_ccs_evaluation(
 	CCS_REFUTE_ERR_GOTO(res, d.type != CCS_OBJECT, CCS_INVALID_HANDLE, end);
 	os = (ccs_objective_space_t)(d.value.o);
 
-	CCS_VALIDATE_ERR_GOTO(res, ccs_create_evaluation(
+	CCS_VALIDATE_ERR_GOTO(res, ccs_create_tree_evaluation(
 		os, data.configuration, data.error, data.base.num_values, data.base.values, evaluation_ret), end);
 
 	if (opts->map_values)
@@ -78,8 +78,8 @@ end:
 }
 
 static ccs_error_t
-_ccs_evaluation_deserialize(
-		ccs_evaluation_t                   *evaluation_ret,
+_ccs_tree_evaluation_deserialize(
+		ccs_tree_evaluation_t              *evaluation_ret,
 		ccs_serialize_format_t              format,
 		uint32_t                            version,
 		size_t                             *buffer_size,
@@ -87,7 +87,7 @@ _ccs_evaluation_deserialize(
 		_ccs_object_deserialize_options_t  *opts) {
 	switch(format) {
 	case CCS_SERIALIZE_FORMAT_BINARY:
-		CCS_VALIDATE(_ccs_deserialize_bin_ccs_evaluation(
+		CCS_VALIDATE(_ccs_deserialize_bin_ccs_tree_evaluation(
 			evaluation_ret, version, buffer_size, buffer, opts));
 		break;
 	default:
@@ -98,4 +98,4 @@ _ccs_evaluation_deserialize(
 	return CCS_SUCCESS;
 }
 
-#endif //_EVALUATION_DESERIALIZE_H
+#endif //_TREE_EVALUATION_DESERIALIZE_H

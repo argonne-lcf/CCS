@@ -20,7 +20,6 @@ ccs_objective_space_add_objective = _ccs_get_function("ccs_objective_space_add_o
 ccs_objective_space_add_objectives = _ccs_get_function("ccs_objective_space_add_objectives", [ccs_objective_space, ct.c_size_t, ct.POINTER(ccs_expression), ct.POINTER(ccs_objective_type)])
 ccs_objective_space_get_objective = _ccs_get_function("ccs_objective_space_get_objective", [ccs_objective_space, ct.c_size_t, ct.POINTER(ccs_expression), ct.POINTER(ccs_objective_type)])
 ccs_objective_space_get_objectives = _ccs_get_function("ccs_objective_space_get_objectives", [ccs_objective_space, ct.c_size_t, ct.POINTER(ccs_expression), ct.POINTER(ccs_objective_type), ct.POINTER(ct.c_size_t)])
-ccs_objective_space_check_evaluation = _ccs_get_function("ccs_objective_space_check_evaluation", [ccs_objective_space, ccs_evaluation, ct.POINTER(ccs_bool)])
 ccs_objective_space_check_evaluation_values = _ccs_get_function("ccs_objective_space_check_evaluation_values", [ccs_objective_space, ct.c_size_t, ct.POINTER(ccs_datum), ct.POINTER(ccs_bool)])
 
 class ObjectiveSpace(Context):
@@ -96,12 +95,6 @@ class ObjectiveSpace(Context):
     res = ccs_objective_space_get_objectives(self.handle, sz, v, t, None)
     Error.check(res)
     return [(Expression.from_handle(ccs_expression(v[x])), t[x].value) for x in range(sz)]
-
-  def check(self, evaluation):
-    valid = ccs_bool()
-    res = ccs_objective_space_check_evaluation(self.handle, evaluation.handle, ct.byref(valid))
-    Error.check(res)
-    return False if valid.value == 0 else True
 
   def check_values(self, values):
     count = len(values)

@@ -392,19 +392,6 @@ _check_evaluation(ccs_objective_space_t  objective_space,
 }
 
 ccs_error_t
-ccs_objective_space_check_evaluation(ccs_objective_space_t  objective_space,
-                                     ccs_evaluation_t       evaluation,
-                                     ccs_bool_t            *is_valid_ret) {
-	CCS_CHECK_OBJ(objective_space, CCS_OBJECTIVE_SPACE);
-	CCS_CHECK_OBJ(evaluation, CCS_EVALUATION);
-	CCS_REFUTE(evaluation->data->objective_space != objective_space, CCS_INVALID_EVALUATION);
-	CCS_VALIDATE(_check_evaluation(objective_space,
-		evaluation->data->num_values,
-		evaluation->data->values, is_valid_ret));
-	return CCS_SUCCESS;
-}
-
-ccs_error_t
 ccs_objective_space_check_evaluation_values(ccs_objective_space_t  objective_space,
                                             size_t                 num_values,
                                             ccs_datum_t           *values,

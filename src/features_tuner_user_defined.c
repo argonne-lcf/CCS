@@ -5,7 +5,6 @@
 
 struct _ccs_user_defined_features_tuner_data_s {
 	_ccs_features_tuner_common_data_t         common_data;
-	ccs_features_tuner_t                      selfref;
 	ccs_user_defined_features_tuner_vector_t  vector;
 	void                                     *tuner_data;
 };
@@ -171,61 +170,61 @@ _ccs_features_tuner_user_defined_serialize(
 
 static ccs_error_t
 _ccs_features_tuner_user_defined_ask(
-		_ccs_features_tuner_data_t *data,
-		ccs_features_t              features,
-		size_t                      num_configurations,
-		ccs_configuration_t        *configurations,
-		size_t                     *num_configurations_ret) {
+		ccs_features_tuner_t  tuner,
+		ccs_features_t        features,
+		size_t                num_configurations,
+		ccs_configuration_t  *configurations,
+		size_t               *num_configurations_ret) {
 	_ccs_user_defined_features_tuner_data_t *d =
-		(_ccs_user_defined_features_tuner_data_t *)data;
-	CCS_VALIDATE(d->vector.ask(d->selfref, features, num_configurations, configurations, num_configurations_ret));
+		(_ccs_user_defined_features_tuner_data_t *)tuner->data;
+	CCS_VALIDATE(d->vector.ask(tuner, features, num_configurations, configurations, num_configurations_ret));
 	return CCS_SUCCESS;
 }
 
 static ccs_error_t
-_ccs_features_tuner_user_defined_tell(_ccs_features_tuner_data_t *data,
-                                      size_t                      num_evaluations,
-                                      ccs_features_evaluation_t  *evaluations) {
+_ccs_features_tuner_user_defined_tell(ccs_features_tuner_t       tuner,
+                                      size_t                     num_evaluations,
+                                      ccs_features_evaluation_t *evaluations) {
 	_ccs_user_defined_features_tuner_data_t *d =
-		(_ccs_user_defined_features_tuner_data_t *)data;
-	CCS_VALIDATE(d->vector.tell(d->selfref, num_evaluations, evaluations));
+		(_ccs_user_defined_features_tuner_data_t *)tuner->data;
+	CCS_VALIDATE(d->vector.tell(tuner, num_evaluations, evaluations));
 	return CCS_SUCCESS;
 }
 
 static ccs_error_t
 _ccs_features_tuner_user_defined_get_optimums(
-		_ccs_features_tuner_data_t *data,
-		ccs_features_t              features,
-		size_t                      num_evaluations,
-		ccs_features_evaluation_t  *evaluations,
-		size_t                     *num_evaluations_ret) {
+		ccs_features_tuner_t       tuner,
+		ccs_features_t             features,
+		size_t                     num_evaluations,
+		ccs_features_evaluation_t *evaluations,
+		size_t                    *num_evaluations_ret) {
 	_ccs_user_defined_features_tuner_data_t *d =
-		(_ccs_user_defined_features_tuner_data_t *)data;
-	CCS_VALIDATE(d->vector.get_optimums(d->selfref, features, num_evaluations, evaluations, num_evaluations_ret));
+		(_ccs_user_defined_features_tuner_data_t *)tuner->data;
+	CCS_VALIDATE(d->vector.get_optimums(tuner, features, num_evaluations, evaluations, num_evaluations_ret));
 	return CCS_SUCCESS;
 }
 
 static ccs_error_t
 _ccs_features_tuner_user_defined_get_history(
-		_ccs_features_tuner_data_t *data,
+		ccs_features_tuner_t        tuner,
 		ccs_features_t              features,
 		size_t                      num_evaluations,
-		ccs_features_evaluation_t  *evaluations,
-		size_t                     *num_evaluations_ret) {
+		ccs_features_evaluation_t *evaluations,
+		size_t                    *num_evaluations_ret) {
 	_ccs_user_defined_features_tuner_data_t *d =
-		(_ccs_user_defined_features_tuner_data_t *)data;
-	CCS_VALIDATE(d->vector.get_history(d->selfref, features, num_evaluations, evaluations, num_evaluations_ret));
+		(_ccs_user_defined_features_tuner_data_t *)tuner->data;
+	CCS_VALIDATE(d->vector.get_history(tuner, features, num_evaluations, evaluations, num_evaluations_ret));
 	return CCS_SUCCESS;
 }
 
 static ccs_error_t
-_ccs_features_tuner_user_defined_suggest(_ccs_features_tuner_data_t *data,
+_ccs_features_tuner_user_defined_suggest(ccs_features_tuner_t        tuner,
                                          ccs_features_t              features,
                                          ccs_configuration_t        *configuration_ret) {
 	_ccs_user_defined_features_tuner_data_t *d =
-		(_ccs_user_defined_features_tuner_data_t *)data;
+		(_ccs_user_defined_features_tuner_data_t *)tuner->data;
 	CCS_REFUTE(!d->vector.suggest, CCS_UNSUPPORTED_OPERATION);
-	CCS_VALIDATE(d->vector.suggest(d->selfref, features, configuration_ret));
+	CCS_VALIDATE(d->vector.suggest(tuner, features, configuration_ret));
 	return CCS_SUCCESS;
 }
 
@@ -285,7 +284,6 @@ ccs_create_user_defined_features_tuner(
 	data->common_data.configuration_space = configuration_space;
 	data->common_data.objective_space = objective_space;
 	data->common_data.features_space = features_space;
-        data->selfref = tun;
 	data->vector = *vector;
 	data->tuner_data = tuner_data;
 	strcpy((char*)data->common_data.name, name);

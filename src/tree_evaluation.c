@@ -1,24 +1,24 @@
 #include "cconfigspace_internal.h"
-#include "evaluation_internal.h"
-#include "configuration_internal.h"
+#include "tree_evaluation_internal.h"
+#include "tree_configuration_internal.h"
 #include <string.h>
 
-static inline _ccs_evaluation_ops_t *
-ccs_evaluation_get_ops(ccs_evaluation_t evaluation) {
-	return (_ccs_evaluation_ops_t *)evaluation->obj.ops;
+static inline _ccs_tree_evaluation_ops_t *
+ccs_tree_evaluation_get_ops(ccs_tree_evaluation_t evaluation) {
+	return (_ccs_tree_evaluation_ops_t *)evaluation->obj.ops;
 }
 
 static ccs_error_t
-_ccs_evaluation_del(ccs_object_t object) {
-	ccs_evaluation_t evaluation = (ccs_evaluation_t)object;
+_ccs_tree_evaluation_del(ccs_object_t object) {
+	ccs_tree_evaluation_t evaluation = (ccs_tree_evaluation_t)object;
 	ccs_release_object(evaluation->data->objective_space);
 	ccs_release_object(evaluation->data->configuration);
 	return CCS_SUCCESS;
 }
 
 static inline ccs_error_t
-_ccs_serialize_bin_size_ccs_evaluation_data(
-		_ccs_evaluation_data_t          *data,
+_ccs_serialize_bin_size_ccs_tree_evaluation_data(
+		_ccs_tree_evaluation_data_t          *data,
 		size_t                          *cum_size,
 		_ccs_object_serialize_options_t *opts) {
 	*cum_size += _ccs_serialize_bin_size_ccs_binding_data((_ccs_binding_data_t *)data);
@@ -29,8 +29,8 @@ _ccs_serialize_bin_size_ccs_evaluation_data(
 }
 
 static inline ccs_error_t
-_ccs_serialize_bin_ccs_evaluation_data(
-		_ccs_evaluation_data_t           *data,
+_ccs_serialize_bin_ccs_tree_evaluation_data(
+		_ccs_tree_evaluation_data_t      *data,
 		size_t                           *buffer_size,
 		char                            **buffer,
 		_ccs_object_serialize_options_t  *opts) {
@@ -44,40 +44,40 @@ _ccs_serialize_bin_ccs_evaluation_data(
 }
 
 static inline ccs_error_t
-_ccs_serialize_bin_size_ccs_evaluation(
-		ccs_evaluation_t                 evaluation,
+_ccs_serialize_bin_size_ccs_tree_evaluation(
+		ccs_tree_evaluation_t            evaluation,
 		size_t                          *cum_size,
 		_ccs_object_serialize_options_t *opts) {
 	*cum_size += _ccs_serialize_bin_size_ccs_object_internal(
 		(_ccs_object_internal_t *)evaluation);
-	CCS_VALIDATE(_ccs_serialize_bin_size_ccs_evaluation_data(
+	CCS_VALIDATE(_ccs_serialize_bin_size_ccs_tree_evaluation_data(
 		evaluation->data, cum_size, opts));
 	return CCS_SUCCESS;
 }
 
 static inline ccs_error_t
-_ccs_serialize_bin_ccs_evaluation(
-		ccs_evaluation_t                  evaluation,
+_ccs_serialize_bin_ccs_tree_evaluation(
+		ccs_tree_evaluation_t             evaluation,
 		size_t                           *buffer_size,
 		char                            **buffer,
 		_ccs_object_serialize_options_t  *opts) {
 	CCS_VALIDATE(_ccs_serialize_bin_ccs_object_internal(
 		(_ccs_object_internal_t *)evaluation, buffer_size, buffer));
-	CCS_VALIDATE(_ccs_serialize_bin_ccs_evaluation_data(
+	CCS_VALIDATE(_ccs_serialize_bin_ccs_tree_evaluation_data(
 		evaluation->data, buffer_size, buffer, opts));
 	return CCS_SUCCESS;
 }
 
 static ccs_error_t
-_ccs_evaluation_serialize_size(
+_ccs_tree_evaluation_serialize_size(
 		ccs_object_t                     object,
 		ccs_serialize_format_t           format,
 		size_t                          *cum_size,
 		_ccs_object_serialize_options_t *opts) {
 	switch(format) {
 	case CCS_SERIALIZE_FORMAT_BINARY:
-		CCS_VALIDATE(_ccs_serialize_bin_size_ccs_evaluation(
-			(ccs_evaluation_t)object, cum_size, opts));
+		CCS_VALIDATE(_ccs_serialize_bin_size_ccs_tree_evaluation(
+			(ccs_tree_evaluation_t)object, cum_size, opts));
 		break;
 	default:
 		CCS_RAISE(CCS_INVALID_VALUE, "Unsupported serialization format: %d", format);
@@ -88,7 +88,7 @@ _ccs_evaluation_serialize_size(
 }
 
 static ccs_error_t
-_ccs_evaluation_serialize(
+_ccs_tree_evaluation_serialize(
 		ccs_object_t                      object,
 		ccs_serialize_format_t            format,
 		size_t                           *buffer_size,
@@ -96,8 +96,8 @@ _ccs_evaluation_serialize(
 		_ccs_object_serialize_options_t  *opts) {
 	switch(format) {
 	case CCS_SERIALIZE_FORMAT_BINARY:
-		CCS_VALIDATE(_ccs_serialize_bin_ccs_evaluation(
-			(ccs_evaluation_t)object, buffer_size, buffer, opts));
+		CCS_VALIDATE(_ccs_serialize_bin_ccs_tree_evaluation(
+			(ccs_tree_evaluation_t)object, buffer_size, buffer, opts));
 		break;
 	default:
 		CCS_RAISE(CCS_INVALID_VALUE, "Unsupported serialization format: %d", format);
@@ -108,11 +108,12 @@ _ccs_evaluation_serialize(
 }
 
 static ccs_error_t
-_ccs_evaluation_hash(_ccs_evaluation_data_t  *data,
-                     ccs_hash_t              *hash_ret) {
+_ccs_tree_evaluation_hash(
+		_ccs_tree_evaluation_data_t  *data,
+		ccs_hash_t                   *hash_ret) {
 	ccs_hash_t h, ht;
 	CCS_VALIDATE(_ccs_binding_hash((_ccs_binding_data_t *)data, &h));
-	CCS_VALIDATE(ccs_configuration_hash(data->configuration, &ht));
+	CCS_VALIDATE(ccs_tree_configuration_hash(data->configuration, &ht));
 	h = _hash_combine(h, ht);
 	HASH_JEN(&(data->error), sizeof(data->error), ht);
 	h = _hash_combine(h, ht);
@@ -121,58 +122,60 @@ _ccs_evaluation_hash(_ccs_evaluation_data_t  *data,
 }
 
 static ccs_error_t
-_ccs_evaluation_cmp(_ccs_evaluation_data_t *data,
-                    ccs_evaluation_t        other,
-                    int                    *cmp_ret) {
+_ccs_tree_evaluation_cmp(
+		_ccs_tree_evaluation_data_t *data,
+		ccs_tree_evaluation_t        other,
+		int                         *cmp_ret) {
 	CCS_VALIDATE(_ccs_binding_cmp((_ccs_binding_data_t *)data, (ccs_binding_t)other, cmp_ret));
 	if (*cmp_ret)
 		return CCS_SUCCESS;
-	_ccs_evaluation_data_t *other_data = other->data;
+	_ccs_tree_evaluation_data_t *other_data = other->data;
 	*cmp_ret = data->error < other_data->error ? -1 :
 	           data->error > other_data->error ?  1 : 0;
 	if (*cmp_ret)
 		return CCS_SUCCESS;
-	CCS_VALIDATE(ccs_configuration_cmp(data->configuration, other_data->configuration, cmp_ret));
+	CCS_VALIDATE(ccs_tree_configuration_cmp(data->configuration, other_data->configuration, cmp_ret));
 	return CCS_SUCCESS;
 }
 
-static _ccs_evaluation_ops_t _evaluation_ops =
-    { { &_ccs_evaluation_del,
-        &_ccs_evaluation_serialize_size,
-	&_ccs_evaluation_serialize },
-      &_ccs_evaluation_hash,
-      &_ccs_evaluation_cmp };
+static _ccs_tree_evaluation_ops_t _evaluation_ops =
+    { { &_ccs_tree_evaluation_del,
+        &_ccs_tree_evaluation_serialize_size,
+	&_ccs_tree_evaluation_serialize },
+      &_ccs_tree_evaluation_hash,
+      &_ccs_tree_evaluation_cmp };
 
 ccs_error_t
-ccs_create_evaluation(ccs_objective_space_t  objective_space,
-                      ccs_configuration_t    configuration,
-                      ccs_result_t           error,
-                      size_t                 num_values,
-                      ccs_datum_t           *values,
-                      ccs_evaluation_t      *evaluation_ret) {
+ccs_create_tree_evaluation(
+		ccs_objective_space_t     objective_space,
+		ccs_tree_configuration_t  configuration,
+		ccs_result_t              error,
+		size_t                    num_values,
+		ccs_datum_t              *values,
+		ccs_tree_evaluation_t    *evaluation_ret) {
 	CCS_CHECK_OBJ(objective_space, CCS_OBJECTIVE_SPACE);
-	CCS_CHECK_OBJ(configuration, CCS_CONFIGURATION);
+	CCS_CHECK_OBJ(configuration, CCS_TREE_CONFIGURATION);
 	CCS_CHECK_PTR(evaluation_ret);
 	CCS_CHECK_ARY(num_values, values);
 	ccs_error_t err;
 	size_t num;
 	CCS_VALIDATE(ccs_objective_space_get_num_hyperparameters(objective_space, &num));
 	CCS_REFUTE(values && num != num_values, CCS_INVALID_VALUE);
-	uintptr_t mem = (uintptr_t)calloc(1, sizeof(struct _ccs_evaluation_s) +
-	                                     sizeof(struct _ccs_evaluation_data_s) +
+	uintptr_t mem = (uintptr_t)calloc(1, sizeof(struct _ccs_tree_evaluation_s) +
+	                                     sizeof(struct _ccs_tree_evaluation_data_s) +
 	                                     num * sizeof(ccs_datum_t));
 	CCS_REFUTE(!mem, CCS_OUT_OF_MEMORY);
 	CCS_VALIDATE_ERR_GOTO(err, ccs_retain_object(objective_space), errmem);
 	CCS_VALIDATE_ERR_GOTO(err, ccs_retain_object(configuration), erros);
-	ccs_evaluation_t eval;
-	eval = (ccs_evaluation_t)mem;
-	_ccs_object_init(&(eval->obj), CCS_EVALUATION, (_ccs_object_ops_t*)&_evaluation_ops);
-	eval->data = (struct _ccs_evaluation_data_s*)(mem + sizeof(struct _ccs_evaluation_s));
+	ccs_tree_evaluation_t eval;
+	eval = (ccs_tree_evaluation_t)mem;
+	_ccs_object_init(&(eval->obj), CCS_TREE_EVALUATION, (_ccs_object_ops_t*)&_evaluation_ops);
+	eval->data = (struct _ccs_tree_evaluation_data_s*)(mem + sizeof(struct _ccs_tree_evaluation_s));
 	eval->data->num_values = num;
 	eval->data->objective_space = objective_space;
 	eval->data->configuration = configuration;
 	eval->data->error = error;
-	eval->data->values = (ccs_datum_t *)(mem + sizeof(struct _ccs_evaluation_s) + sizeof(struct _ccs_evaluation_data_s));
+	eval->data->values = (ccs_datum_t *)(mem + sizeof(struct _ccs_tree_evaluation_s) + sizeof(struct _ccs_tree_evaluation_data_s));
 	if (values) {
 		memcpy(eval->data->values, values, num*sizeof(ccs_datum_t));
 		for (size_t i = 0; i < num_values; i++)
@@ -192,85 +195,94 @@ errmem:
 }
 
 ccs_error_t
-ccs_evaluation_get_objective_space(ccs_evaluation_t       evaluation,
-                                   ccs_objective_space_t *objective_space_ret) {
-	CCS_CHECK_OBJ(evaluation, CCS_EVALUATION);
+ccs_tree_evaluation_get_objective_space(
+		ccs_tree_evaluation_t  evaluation,
+		ccs_objective_space_t *objective_space_ret) {
+	CCS_CHECK_OBJ(evaluation, CCS_TREE_EVALUATION);
 	CCS_VALIDATE(_ccs_binding_get_context(
 		(ccs_binding_t)evaluation, (ccs_context_t *)objective_space_ret));
 	return CCS_SUCCESS;
 }
 
 ccs_error_t
-ccs_evaluation_get_configuration(ccs_evaluation_t     evaluation,
-                                 ccs_configuration_t *configuration_ret) {
-	CCS_CHECK_OBJ(evaluation, CCS_EVALUATION);
+ccs_tree_evaluation_get_configuration(
+		ccs_tree_evaluation_t     evaluation,
+		ccs_tree_configuration_t *configuration_ret) {
+	CCS_CHECK_OBJ(evaluation, CCS_TREE_EVALUATION);
 	CCS_CHECK_PTR(configuration_ret);
 	*configuration_ret = evaluation->data->configuration;
 	return CCS_SUCCESS;
 }
 
 ccs_error_t
-ccs_evaluation_get_error(ccs_evaluation_t  evaluation,
-                         ccs_result_t     *error_ret) {
-	CCS_CHECK_OBJ(evaluation, CCS_EVALUATION);
+ccs_tree_evaluation_get_error(
+		ccs_tree_evaluation_t  evaluation,
+		ccs_result_t          *error_ret) {
+	CCS_CHECK_OBJ(evaluation, CCS_TREE_EVALUATION);
 	CCS_CHECK_PTR(error_ret);
 	*error_ret = evaluation->data->error;
 	return CCS_SUCCESS;
 }
 
 ccs_error_t
-ccs_evaluation_set_error(ccs_evaluation_t evaluation,
-                         ccs_result_t     error) {
-	CCS_CHECK_OBJ(evaluation, CCS_EVALUATION);
+ccs_tree_evaluation_set_error(
+		ccs_tree_evaluation_t evaluation,
+		ccs_result_t          error) {
+	CCS_CHECK_OBJ(evaluation, CCS_TREE_EVALUATION);
 	evaluation->data->error = error;
 	return CCS_SUCCESS;
 }
 
 ccs_error_t
-ccs_evaluation_get_value(ccs_evaluation_t  evaluation,
-                         size_t            index,
-                         ccs_datum_t      *value_ret) {
-	CCS_CHECK_OBJ(evaluation, CCS_EVALUATION);
+ccs_tree_evaluation_get_value(
+		ccs_tree_evaluation_t  evaluation,
+		size_t            index,
+		ccs_datum_t      *value_ret) {
+	CCS_CHECK_OBJ(evaluation, CCS_TREE_EVALUATION);
 	CCS_VALIDATE(_ccs_binding_get_value(
 		(ccs_binding_t)evaluation, index, value_ret));
 	return CCS_SUCCESS;
 }
 
 ccs_error_t
-ccs_evaluation_set_value(ccs_evaluation_t evaluation,
-                         size_t           index,
-                         ccs_datum_t      value) {
-	CCS_CHECK_OBJ(evaluation, CCS_EVALUATION);
+ccs_tree_evaluation_set_value(
+		ccs_tree_evaluation_t evaluation,
+		size_t                index,
+		ccs_datum_t           value) {
+	CCS_CHECK_OBJ(evaluation, CCS_TREE_EVALUATION);
 	CCS_VALIDATE(_ccs_binding_set_value(
 		(ccs_binding_t)evaluation, index, value));
 	return CCS_SUCCESS;
 }
 
 ccs_error_t
-ccs_evaluation_get_values(ccs_evaluation_t  evaluation,
-                          size_t            num_values,
-                          ccs_datum_t      *values,
-                          size_t           *num_values_ret) {
-	CCS_CHECK_OBJ(evaluation, CCS_EVALUATION);
+ccs_tree_evaluation_get_values(
+		ccs_tree_evaluation_t  evaluation,
+		size_t                 num_values,
+		ccs_datum_t           *values,
+		size_t                *num_values_ret) {
+	CCS_CHECK_OBJ(evaluation, CCS_TREE_EVALUATION);
 	CCS_VALIDATE(_ccs_binding_get_values(
 		(ccs_binding_t)evaluation, num_values, values, num_values_ret));
 	return CCS_SUCCESS;
 }
 
 ccs_error_t
-ccs_evaluation_get_value_by_name(ccs_evaluation_t  evaluation,
-                                 const char       *name,
-                                 ccs_datum_t      *value_ret) {
-	CCS_CHECK_OBJ(evaluation, CCS_EVALUATION);
+ccs_tree_evaluation_get_value_by_name(
+		ccs_tree_evaluation_t  evaluation,
+		const char            *name,
+		ccs_datum_t           *value_ret) {
+	CCS_CHECK_OBJ(evaluation, CCS_TREE_EVALUATION);
 	CCS_VALIDATE(_ccs_binding_get_value_by_name(
 		(ccs_binding_t)evaluation, name, value_ret));
 	return CCS_SUCCESS;
 }
 
 ccs_error_t
-ccs_evaluation_check(ccs_evaluation_t  evaluation,
-                     ccs_bool_t       *is_valid_ret) {
-	CCS_CHECK_OBJ(evaluation, CCS_EVALUATION);
+ccs_tree_evaluation_check(
+		ccs_tree_evaluation_t  evaluation,
+		ccs_bool_t            *is_valid_ret) {
+	CCS_CHECK_OBJ(evaluation, CCS_TREE_EVALUATION);
 	CCS_VALIDATE(ccs_objective_space_check_evaluation_values(
 		evaluation->data->objective_space,
 		evaluation->data->num_values, evaluation->data->values, is_valid_ret));
@@ -278,10 +290,11 @@ ccs_evaluation_check(ccs_evaluation_t  evaluation,
 }
 
 ccs_error_t
-ccs_evaluation_get_objective_value(ccs_evaluation_t  evaluation,
-                                   size_t            index,
-                                   ccs_datum_t      *value_ret) {
-	CCS_CHECK_OBJ(evaluation, CCS_EVALUATION);
+ccs_tree_evaluation_get_objective_value(
+		ccs_tree_evaluation_t  evaluation,
+		size_t                 index,
+		ccs_datum_t           *value_ret) {
+	CCS_CHECK_OBJ(evaluation, CCS_TREE_EVALUATION);
 	CCS_CHECK_PTR(value_ret);
 	ccs_expression_t     expression;
 	ccs_objective_type_t type;
@@ -294,11 +307,12 @@ ccs_evaluation_get_objective_value(ccs_evaluation_t  evaluation,
 }
 
 ccs_error_t
-ccs_evaluation_get_objective_values(ccs_evaluation_t  evaluation,
-                                    size_t            num_values,
-                                    ccs_datum_t      *values,
-                                    size_t           *num_values_ret) {
-	CCS_CHECK_OBJ(evaluation, CCS_EVALUATION);
+ccs_tree_evaluation_get_objective_values(
+		ccs_tree_evaluation_t  evaluation,
+		size_t                 num_values,
+		ccs_datum_t           *values,
+		size_t                *num_values_ret) {
+	CCS_CHECK_OBJ(evaluation, CCS_TREE_EVALUATION);
 	CCS_CHECK_ARY(num_values, values);
 	CCS_REFUTE(!values && !num_values_ret, CCS_INVALID_VALUE);
 	size_t count;
@@ -325,26 +339,28 @@ ccs_evaluation_get_objective_values(ccs_evaluation_t  evaluation,
 }
 
 ccs_error_t
-ccs_evaluation_hash(ccs_evaluation_t  evaluation,
-                    ccs_hash_t       *hash_ret) {
-	CCS_CHECK_OBJ(evaluation, CCS_EVALUATION);
-	_ccs_evaluation_ops_t *ops = ccs_evaluation_get_ops(evaluation);
+ccs_tree_evaluation_hash(
+		ccs_tree_evaluation_t  evaluation,
+		ccs_hash_t            *hash_ret) {
+	CCS_CHECK_OBJ(evaluation, CCS_TREE_EVALUATION);
+	_ccs_tree_evaluation_ops_t *ops = ccs_tree_evaluation_get_ops(evaluation);
 	CCS_VALIDATE(ops->hash(evaluation->data, hash_ret));
 	return CCS_SUCCESS;
 }
 
 ccs_error_t
-ccs_evaluation_cmp(ccs_evaluation_t  evaluation,
-                   ccs_evaluation_t  other_evaluation,
-                   int              *cmp_ret) {
-	CCS_CHECK_OBJ(evaluation, CCS_EVALUATION);
-	CCS_CHECK_OBJ(other_evaluation, CCS_EVALUATION);
+ccs_tree_evaluation_cmp(
+		ccs_tree_evaluation_t  evaluation,
+		ccs_tree_evaluation_t  other_evaluation,
+		int                   *cmp_ret) {
+	CCS_CHECK_OBJ(evaluation, CCS_TREE_EVALUATION);
+	CCS_CHECK_OBJ(other_evaluation, CCS_TREE_EVALUATION);
 	CCS_CHECK_PTR(cmp_ret);
 	if (evaluation == other_evaluation) {
 		*cmp_ret = 0;
 		return CCS_SUCCESS;
 	}
-	_ccs_evaluation_ops_t *ops = ccs_evaluation_get_ops(evaluation);
+	_ccs_tree_evaluation_ops_t *ops = ccs_tree_evaluation_get_ops(evaluation);
 	CCS_VALIDATE(ops->cmp(evaluation->data, other_evaluation, cmp_ret));
 	return CCS_SUCCESS;
 }
@@ -360,11 +376,12 @@ _numeric_compare(const ccs_datum_t *a, const ccs_datum_t *b) {
 
 //Could be using memoization here.
 ccs_error_t
-ccs_evaluation_compare(ccs_evaluation_t  evaluation,
-                       ccs_evaluation_t  other_evaluation,
-                       ccs_comparison_t  *result_ret) {
-	CCS_CHECK_OBJ(evaluation, CCS_EVALUATION);
-	CCS_CHECK_OBJ(other_evaluation, CCS_EVALUATION);
+ccs_tree_evaluation_compare(
+		ccs_tree_evaluation_t  evaluation,
+		ccs_tree_evaluation_t  other_evaluation,
+		ccs_comparison_t      *result_ret) {
+	CCS_CHECK_OBJ(evaluation, CCS_TREE_EVALUATION);
+	CCS_CHECK_OBJ(other_evaluation, CCS_TREE_EVALUATION);
 	CCS_CHECK_PTR(result_ret);
 	if (evaluation == other_evaluation) {
 		*result_ret = CCS_EQUIVALENT;

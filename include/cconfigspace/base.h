@@ -151,6 +151,14 @@ typedef struct _ccs_tree_space_s          *ccs_tree_space_t;
  * An opaque type defining a CCS tree space configuration.
  */
 typedef struct _ccs_tree_configuration_s  *ccs_tree_configuration_t;
+/**
+ * An opaque type defining a CCS tree evaluation.
+ */
+typedef struct _ccs_tree_evaluation_s     *ccs_tree_evaluation_t;
+/**
+ * An opaque type defining a CCS tree tuner.
+ */
+typedef struct _ccs_tree_tuner_s          *ccs_tree_tuner_t;
 
 /**
  * The different possible return codes of a CCS function.
@@ -259,6 +267,8 @@ enum ccs_object_type_e {
 	CCS_TREE,                /*!< A tree structure */
 	CCS_TREE_SPACE,          /*!< A tree space */
 	CCS_TREE_CONFIGURATION,  /*!< A configuration on a tree space */
+	CCS_TREE_EVALUATION,     /*!< An evaluation of a tree configuration */
+	CCS_TREE_TUNER,          /*!< A tuner */
 	CCS_OBJECT_TYPE_MAX,     /*!< Guard */
 	/** Try forcing 32 bits value for bindings */
 	CCS_OBJECT_TYPE_FORCE_32BIT = INT32_MAX
