@@ -73,9 +73,9 @@ class ErrorStack(Object):
     return [v2[x] for x in range(v1.value)]
 
 def get_thread_error():
-  res = ccs_get_thread_error()
-  if res:
-    return ErrorStack(handle = res)
+  handle = ccs_error_stack(ccs_get_thread_error())
+  if handle:
+    return ErrorStack(handle = handle)
   else:
     return None
 

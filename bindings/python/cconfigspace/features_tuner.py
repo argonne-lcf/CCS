@@ -180,7 +180,7 @@ class ccs_user_defined_features_tuner_vector(ct.Structure):
 ccs_create_user_defined_features_tuner = _ccs_get_function("ccs_create_user_defined_features_tuner", [ct.c_char_p, ccs_configuration_space, ccs_features_space, ccs_objective_space, ct.POINTER(ccs_user_defined_features_tuner_vector), ct.py_object, ct.POINTER(ccs_features_tuner)])
 ccs_user_defined_features_tuner_get_tuner_data = _ccs_get_function("ccs_user_defined_features_tuner_get_tuner_data", [ccs_features_tuner, ct.POINTER(ct.c_void_p)])
 
-def _wrap_user_defined_callbacks(delete, ask, tell, get_optimums, get_history, suggest, serialize, deserialize):
+def _wrap_user_defined_features_tuner_callbacks(delete, ask, tell, get_optimums, get_history, suggest, serialize, deserialize):
   def delete_wrapper(tun):
     try:
       tun = ct.cast(tun, ccs_features_tuner)
@@ -364,7 +364,7 @@ class UserDefinedFeaturesTuner(FeaturesTuner):
        get_history_wrapper_func,
        suggest_wrapper_func,
        serialize_wrapper_func,
-       deserialize_wrapper_func) = _wrap_user_defined_callbacks(delete, ask, tell, get_optimums, get_history, suggest, serialize, deserialize)
+       deserialize_wrapper_func) = _wrap_user_defined_features_tuner_callbacks(delete, ask, tell, get_optimums, get_history, suggest, serialize, deserialize)
       handle = ccs_features_tuner()
       vec = ccs_user_defined_features_tuner_vector()
       vec.delete = delete_wrapper_func
@@ -405,7 +405,7 @@ class UserDefinedFeaturesTuner(FeaturesTuner):
      get_history_wrapper_func,
      suggest_wrapper_func,
      serialize_wrapper_func,
-     deserialize_wrapper_func) = _wrap_user_defined_callbacks(delete, ask, tell, get_optimums, get_history, suggest, serialize, deserialize)
+     deserialize_wrapper_func) = _wrap_user_defined_features_tuner_callbacks(delete, ask, tell, get_optimums, get_history, suggest, serialize, deserialize)
     vector = ccs_user_defined_features_tuner_vector()
     vector.delete = delete_wrapper_func
     vector.ask = ask_wrapper_func

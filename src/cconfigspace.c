@@ -461,6 +461,7 @@ end:
 #include "tree_space_deserialize.h"
 #include "tree_configuration_deserialize.h"
 #include "tree_evaluation_deserialize.h"
+#include "tree_tuner_deserialize.h"
 
 static inline ccs_error_t
 _ccs_object_deserialize_options(
@@ -605,6 +606,11 @@ _ccs_object_deserialize_with_opts(
 		case CCS_TREE_EVALUATION:
 			CCS_VALIDATE(_ccs_tree_evaluation_deserialize(
 				(ccs_tree_evaluation_t *)object_ret,
+				format, version, buffer_size, buffer, opts));
+			break;
+		case CCS_TREE_TUNER:
+			CCS_VALIDATE(_ccs_tree_tuner_deserialize(
+				(ccs_tree_tuner_t *)object_ret,
 				format, version, buffer_size, buffer, opts));
 			break;
 		default:

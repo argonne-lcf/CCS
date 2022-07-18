@@ -42,6 +42,8 @@ ccs_error_stack         = ccs_object
 ccs_tree                = ccs_object
 ccs_tree_space          = ccs_object
 ccs_tree_configuration  = ccs_object
+ccs_tree_evaluation     = ccs_object
+ccs_tree_tuner          = ccs_object
 
 ccs_false = 0
 ccs_true = 1
@@ -152,7 +154,9 @@ class ccs_object_type(CEnumeration):
     'ERROR_STACK',
     'TREE',
     'TREE_SPACE',
-    'TREE_CONFIGURATION' ]
+    'TREE_CONFIGURATION',
+    'TREE_EVALUATION',
+    'TREE_TUNER' ]
 
 class ccs_error(CEnumeration):
   _members_ = [
@@ -753,6 +757,8 @@ from .error_stack import ErrorStack, get_thread_error, set_thread_error, clear_t
 from .tree import Tree
 from .tree_space import TreeSpace
 from .tree_configuration import TreeConfiguration
+from .tree_evaluation import TreeEvaluation
+from .tree_tuner import TreeTuner
 
 setattr(Object, 'CLASS_MAP', {
   ccs_object_type.RNG: Rng,
@@ -772,7 +778,9 @@ setattr(Object, 'CLASS_MAP', {
   ccs_object_type.ERROR_STACK: ErrorStack,
   ccs_object_type.TREE: Tree,
   ccs_object_type.TREE_SPACE: TreeSpace,
-  ccs_object_type.TREE_CONFIGURATION: TreeConfiguration
+  ccs_object_type.TREE_CONFIGURATION: TreeConfiguration,
+  ccs_object_type.TREE_EVALUATION: TreeEvaluation,
+  ccs_object_type.TREE_TUNER: TreeTuner
 })
 
 

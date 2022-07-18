@@ -32,3 +32,5 @@ from .features_tuner import *
 from .tree import *
 from .tree_space import *
 from .tree_configuration import *
+from .tree_evaluation import *
+from .tree_tuner import *
