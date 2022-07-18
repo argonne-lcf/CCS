@@ -1,11 +1,8 @@
 import ctypes as ct
-from .base import Object, Error, CEnumeration, ccs_error, ccs_result, _ccs_get_function, ccs_context, ccs_hyperparameter, ccs_configuration_space, ccs_configuration, ccs_datum, ccs_datum_fix, ccs_objective_space, ccs_evaluation, ccs_bool
-from .context import Context
-from .hyperparameter import Hyperparameter
-from .configuration_space import ConfigurationSpace
+from .base import Object, Error, CEnumeration, ccs_error, ccs_result, _ccs_get_function, ccs_context, ccs_hyperparameter, ccs_configuration, ccs_datum, ccs_datum_fix, ccs_objective_space, ccs_evaluation, ccs_bool
+from .binding import Binding
 from .configuration import Configuration
 from .objective_space import ObjectiveSpace
-from .binding import Binding
 
 class ccs_comparison(CEnumeration):
   _members_ = [
