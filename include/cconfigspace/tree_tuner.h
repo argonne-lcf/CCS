@@ -34,16 +34,16 @@ typedef enum ccs_tree_tuner_type_e ccs_tree_tuner_type_t;
 
 /**
  * Get the type of a tree tuner.
- * @param [in] tree_tuner
+ * @param [in] tuner
  * @param [out] type_ret a pointer to the variable that will contain the
  *                       returned tree tuner type
  * @return #CCS_SUCCESS on success
- * @return #CCS_INVALID_OBJECT if \p tree_tuner is not a valid CCS tree tuner
+ * @return #CCS_INVALID_OBJECT if \p tuner is not a valid CCS tree tuner
  * @return #CCS_INVALID_VALUE if \p type_ret is NULL
  */
 extern ccs_error_t
 ccs_tree_tuner_get_type(
-	ccs_tree_tuner_t       tree,
+	ccs_tree_tuner_t       tuner,
 	ccs_tree_tuner_type_t *type_ret);
 
 /**
@@ -232,7 +232,7 @@ ccs_create_random_tree_tuner(
 	const char            *name,
 	ccs_tree_space_t       tree_space,
 	ccs_objective_space_t  objective_space,
-	ccs_tree_tuner_t      *tree_tuner_ret);
+	ccs_tree_tuner_t      *tuner_ret);
 
 /**
  * A structure that define the callbacks the user must provide to create a user
@@ -333,7 +333,7 @@ ccs_create_user_defined_tree_tuner(
 	ccs_tree_tuner_t                     *tuner_ret);
 
 /**
- * Get the user definedi tree tuner internal data pointer.
+ * Get the user defined tree tuner internal data pointer.
  * @param[in] tuner
  * @param[out] tuner_data_ret
  * @return #CCS_SUCCESS on success

@@ -124,6 +124,7 @@ ccs_tree_space_check_configuration(
 		ccs_bool_t               *is_valid_ret) {
 	CCS_CHECK_OBJ(tree_space, CCS_TREE_SPACE);
 	CCS_CHECK_OBJ(configuration, CCS_TREE_CONFIGURATION);
+	CCS_REFUTE(configuration->data->tree_space != tree_space, CCS_INVALID_CONFIGURATION);
 	CCS_CHECK_PTR(is_valid_ret);
 	_ccs_tree_space_ops_t *ops =
 		_ccs_tree_space_get_ops(tree_space);
