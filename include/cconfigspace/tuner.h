@@ -8,7 +8,7 @@ extern "C" {
 /**
  * @file tuner.h
  * A CCS tuner defines an ask and tell interface to optimize an objective space
- * (see objective_space.h) given a configuration spaces (see
+ * (see objective_space.h) given a configuration space (see
  * configuration_space.h). The tuner will propose configurations (see
  * configuration.h) and the user will return evaluations (see evaluation.h).
  */
@@ -309,8 +309,8 @@ typedef struct ccs_user_defined_tuner_vector_s ccs_user_defined_tuner_vector_t;
  *                              configuration space; or if \p objective_space is
  *                              not a valid CCS objective space
  * @return #CCS_INVALID_VALUE if \p name is NULL; or if \p tuner_ret is NULL;
- *                             or if \p vector is NULL; or if any interface
- *                             pointer except suggest is NULL
+ *                             or if \p vector is NULL; or if any non optional
+ *                             interface pointer is NULL
  * @return #CCS_OUT_OF_MEMORY if there was not enough memory to allocate the
  *                             new tuner instance
  */

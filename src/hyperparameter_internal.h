@@ -3,7 +3,7 @@
 
 #define CCS_CHECK_HYPERPARAMETER(o, t) do { \
 	CCS_CHECK_OBJ(o, CCS_HYPERPARAMETER); \
-	CCS_REFUTE(((_ccs_hyperparameter_common_data_t*)(hyperparameter->data))->type != (t), CCS_INVALID_HYPERPARAMETER); \
+	CCS_REFUTE(((_ccs_hyperparameter_common_data_t*)(o->data))->type != (t), CCS_INVALID_HYPERPARAMETER); \
 } while (0)
 
 struct _ccs_hyperparameter_data_s;

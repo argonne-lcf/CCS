@@ -271,8 +271,9 @@ ccs_error_t
 ccs_evaluation_check(ccs_evaluation_t  evaluation,
                      ccs_bool_t       *is_valid_ret) {
 	CCS_CHECK_OBJ(evaluation, CCS_EVALUATION);
-	CCS_VALIDATE(ccs_objective_space_check_evaluation(
-		evaluation->data->objective_space, evaluation, is_valid_ret));
+	CCS_VALIDATE(ccs_objective_space_check_evaluation_values(
+		evaluation->data->objective_space,
+		evaluation->data->num_values, evaluation->data->values, is_valid_ret));
 	return CCS_SUCCESS;
 }
 

@@ -11,30 +11,30 @@ struct _ccs_tuner_ops_s {
 	_ccs_object_ops_t obj_ops;
 
 	ccs_error_t (*ask)(
-		_ccs_tuner_data_t   *data,
+		ccs_tuner_t          tuner,
 		size_t               num_configurations,
 		ccs_configuration_t *configurations,
 		size_t              *num_configurations_ret);
 
 	ccs_error_t (*tell)(
-		_ccs_tuner_data_t *data,
+		ccs_tuner_t        tuner,
 		size_t             num_evaluations,
 		ccs_evaluation_t  *evaluations);
 
 	ccs_error_t (*get_optimums)(
-		_ccs_tuner_data_t *data,
+		ccs_tuner_t        tuner,
 		size_t             num_evaluations,
 		ccs_evaluation_t  *evaluations,
 		size_t            *num_evaluations_ret);
 
 	ccs_error_t (*get_history)(
-		_ccs_tuner_data_t *data,
+		ccs_tuner_t        tuner,
 		size_t             num_evaluations,
 		ccs_evaluation_t  *evaluations,
 		size_t            *num_evaluations_ret);
 
 	ccs_error_t (*suggest)(
-		_ccs_tuner_data_t   *data,
+		ccs_tuner_t          tuner,
 		ccs_configuration_t *configuration);
 };
 typedef struct _ccs_tuner_ops_s _ccs_tuner_ops_t;

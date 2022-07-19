@@ -2,7 +2,7 @@
 #include "distribution_internal.h"
 
 static inline _ccs_distribution_ops_t *
-ccs_distribution_get_ops(ccs_distribution_t distribution) {
+_ccs_distribution_get_ops(ccs_distribution_t distribution) {
 	return (_ccs_distribution_ops_t *)distribution->obj.ops;
 }
 
@@ -42,7 +42,7 @@ ccs_distribution_get_bounds(ccs_distribution_t  distribution,
                             ccs_interval_t     *interval_ret) {
 	CCS_CHECK_OBJ(distribution, CCS_DISTRIBUTION);
 	CCS_CHECK_PTR(interval_ret);
-	_ccs_distribution_ops_t *ops = ccs_distribution_get_ops(distribution);
+	_ccs_distribution_ops_t *ops = _ccs_distribution_get_ops(distribution);
 	CCS_VALIDATE(ops->get_bounds(distribution->data, interval_ret));
 	return CCS_SUCCESS;
 }
@@ -78,7 +78,7 @@ ccs_distribution_sample(ccs_distribution_t  distribution,
 	CCS_CHECK_OBJ(distribution, CCS_DISTRIBUTION);
 	CCS_CHECK_OBJ(rng, CCS_RNG);
 	CCS_CHECK_PTR(value_ret);
-	_ccs_distribution_ops_t *ops = ccs_distribution_get_ops(distribution);
+	_ccs_distribution_ops_t *ops = _ccs_distribution_get_ops(distribution);
 	CCS_VALIDATE(ops->samples(distribution->data, rng, 1, value_ret));
 	return CCS_SUCCESS;
 }
@@ -93,7 +93,7 @@ ccs_distribution_samples(ccs_distribution_t  distribution,
 	if (!num_values)
 		return CCS_SUCCESS;
 	CCS_CHECK_ARY(num_values, values);
-	_ccs_distribution_ops_t *ops = ccs_distribution_get_ops(distribution);
+	_ccs_distribution_ops_t *ops = _ccs_distribution_get_ops(distribution);
 	CCS_VALIDATE(ops->samples(distribution->data, rng, num_values, values));
 	return CCS_SUCCESS;
 }
@@ -110,7 +110,7 @@ ccs_distribution_strided_samples(ccs_distribution_t  distribution,
 	if (!num_values)
 		return CCS_SUCCESS;
 	CCS_CHECK_ARY(num_values, values);
-	_ccs_distribution_ops_t *ops = ccs_distribution_get_ops(distribution);
+	_ccs_distribution_ops_t *ops = _ccs_distribution_get_ops(distribution);
 	CCS_VALIDATE(ops->strided_samples(distribution->data, rng, num_values, stride, values));
 	return CCS_SUCCESS;
 }
@@ -125,7 +125,7 @@ ccs_distribution_soa_samples(ccs_distribution_t   distribution,
 	if (!num_values)
 		return CCS_SUCCESS;
 	CCS_CHECK_ARY(num_values, values);
-	_ccs_distribution_ops_t *ops = ccs_distribution_get_ops(distribution);
+	_ccs_distribution_ops_t *ops = _ccs_distribution_get_ops(distribution);
 	CCS_VALIDATE(ops->soa_samples(distribution->data, rng, num_values, values));
 	return CCS_SUCCESS;
 }

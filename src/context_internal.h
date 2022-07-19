@@ -184,7 +184,7 @@ _ccs_serialize_bin_size_ccs_context_data(
 		size_t                          *cum_size,
 		_ccs_object_serialize_options_t *opts) {
 	*cum_size += _ccs_serialize_bin_size_string(data->name);
-	*cum_size += _ccs_serialize_bin_size_uint64(
+	*cum_size += _ccs_serialize_bin_size_size(
 		utarray_len(data->hyperparameters));
 	_ccs_hyperparameter_wrapper_t *wrapper = NULL;
 	while ( (wrapper = (_ccs_hyperparameter_wrapper_t *)utarray_next(data->hyperparameters, wrapper)) )
@@ -201,7 +201,7 @@ _ccs_serialize_bin_ccs_context_data(
 		_ccs_object_serialize_options_t  *opts) {
 	CCS_VALIDATE(_ccs_serialize_bin_string(
 		data->name, buffer_size, buffer));
-	CCS_VALIDATE(_ccs_serialize_bin_uint64(
+	CCS_VALIDATE(_ccs_serialize_bin_size(
 		utarray_len(data->hyperparameters), buffer_size, buffer));
 	_ccs_hyperparameter_wrapper_t *wrapper = NULL;
 	while ( (wrapper = (_ccs_hyperparameter_wrapper_t *)utarray_next(data->hyperparameters, wrapper)) )

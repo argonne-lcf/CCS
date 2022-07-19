@@ -21,7 +21,7 @@ static inline size_t
 _ccs_serialize_bin_size_ccs_distribution_roulette_data(
 		_ccs_distribution_roulette_data_t *data) {
 	size_t sz = _ccs_serialize_bin_size_ccs_distribution_common_data(&data->common_data);
-	sz += _ccs_serialize_bin_size_uint64(data->num_areas);
+	sz += _ccs_serialize_bin_size_size(data->num_areas);
 	for (size_t i = 0; i < data->num_areas; i++)
 		sz += _ccs_serialize_bin_size_ccs_float(data->areas[i+1]-data->areas[i]);
 	return sz;
@@ -34,7 +34,7 @@ _ccs_serialize_bin_ccs_distribution_roulette_data(
 		char                              **buffer) {
 	CCS_VALIDATE(_ccs_serialize_bin_ccs_distribution_common_data(
 		&data->common_data, buffer_size, buffer));
-	CCS_VALIDATE(_ccs_serialize_bin_uint64(
+	CCS_VALIDATE(_ccs_serialize_bin_size(
 		data->num_areas, buffer_size, buffer));
 	for (size_t i = 0; i < data->num_areas; i++)
 		CCS_VALIDATE(_ccs_serialize_bin_ccs_float(
@@ -205,7 +205,6 @@ ccs_create_roulette_distribution(size_t              num_areas,
 	CCS_CHECK_ARY(num_areas, areas);
 	CCS_CHECK_PTR(distribution_ret);
 	CCS_REFUTE(!num_areas || num_areas > INT64_MAX, CCS_INVALID_VALUE);
-	ccs_error_t err;
 	ccs_float_t  sum_areas = 0.0;
 
 	for(size_t i = 0; i < num_areas; i++) {
@@ -231,15 +230,13 @@ ccs_create_roulette_distribution(size_t              num_areas,
 
 	distrib_data->areas[0] = 0.0;
 	for(size_t i = 1; i <= num_areas; i++)
-		distrib_data->areas[i] = distrib_data->areas[i-1] + areas[i-1] * sum_areas_inverse;
+		distrib_data->areas[i] = distrib_data->areas[i-1] + areas[i-1];
+	for(size_t i = 1; i <= num_areas; i++)
+		distrib_data->areas[i] *= sum_areas_inverse;
 	distrib_data->areas[num_areas] = 1.0;
-	CCS_REFUTE_ERR_GOTO(err, distrib_data->areas[num_areas] < distrib_data->areas[num_areas-1], CCS_INVALID_VALUE, memory);
 	distrib->data = (_ccs_distribution_data_t *)distrib_data;
 	*distribution_ret = distrib;
 	return CCS_SUCCESS;
-memory:
-	free((void *)mem);
-	return err;
 }
 
 ccs_error_t
@@ -270,5 +267,30 @@ ccs_roulette_distribution_get_areas(ccs_distribution_t  distribution,
 	}
 	if (num_areas_ret)
 		*num_areas_ret = data->num_areas;
+	return CCS_SUCCESS;
+}
+
+ccs_error_t
+ccs_roulette_distribution_set_areas(ccs_distribution_t  distribution,
+                                    size_t              num_areas,
+                                    ccs_float_t        *areas) {
+	CCS_CHECK_DISTRIBUTION(distribution, CCS_ROULETTE);
+	_ccs_distribution_roulette_data_t * distrib_data = (_ccs_distribution_roulette_data_t *)distribution->data;
+	CCS_REFUTE(num_areas != distrib_data->num_areas, CCS_INVALID_VALUE);
+	CCS_CHECK_PTR(areas);
+
+	ccs_float_t sum_areas = 0.0;
+	for(size_t i = 0; i < num_areas; i++) {
+		CCS_REFUTE(areas[i] < 0.0, CCS_INVALID_VALUE);
+		sum_areas += areas[i];
+	}
+	CCS_REFUTE(sum_areas == 0.0, CCS_INVALID_VALUE);
+	ccs_float_t sum_areas_inverse = 1.0/sum_areas;
+	distrib_data->areas[0] = 0.0;
+	for(size_t i = 1; i <= num_areas; i++)
+		distrib_data->areas[i] = distrib_data->areas[i-1] + areas[i-1];
+	for(size_t i = 1; i <= num_areas; i++)
+		distrib_data->areas[i] *= sum_areas_inverse;
+	distrib_data->areas[num_areas] = 1.0;
 	return CCS_SUCCESS;
 }

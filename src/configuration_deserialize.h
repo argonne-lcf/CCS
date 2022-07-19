@@ -10,12 +10,12 @@ _ccs_deserialize_bin_configuration(
 		size_t                             *buffer_size,
 		const char                        **buffer,
 		_ccs_object_deserialize_options_t  *opts) {
-	CCS_CHECK_PTR(opts);
 	CCS_CHECK_OBJ(opts->handle_map, CCS_MAP);
 	_ccs_object_internal_t obj;
 	ccs_object_t handle;
 	ccs_datum_t d;
 	ccs_configuration_space_t cs;
+	ccs_configuration_t configuration;
 	ccs_error_t res = CCS_SUCCESS;
 	CCS_VALIDATE(_ccs_deserialize_bin_ccs_object_internal(
 		&obj, buffer_size, buffer, &handle));
@@ -31,19 +31,19 @@ _ccs_deserialize_bin_configuration(
 	cs = (ccs_configuration_space_t)(d.value.o);
 
 	CCS_VALIDATE_ERR_GOTO(res, ccs_create_configuration(
-		cs, data.num_values, data.values, configuration_ret), end);
+		cs, data.num_values, data.values, &configuration), end);
 
 	if (opts->map_values)
 		CCS_VALIDATE_ERR_GOTO(res,
 			_ccs_object_handle_check_add(
 				opts->handle_map, handle,
-				(ccs_object_t)*configuration_ret),
+				(ccs_object_t)configuration),
 			err_configuration);
+	*configuration_ret = configuration;
 	goto end;
 
 err_configuration:
-	ccs_release_object(*configuration_ret);
-	*configuration_ret = NULL;
+	ccs_release_object(configuration);
 end:
 	if (data.values)
 		free(data.values);

@@ -23,6 +23,11 @@
 #include "cconfigspace/tuner.h"
 #include "cconfigspace/features_tuner.h"
 #include "cconfigspace/map.h"
+#include "cconfigspace/tree.h"
+#include "cconfigspace/tree_space.h"
+#include "cconfigspace/tree_configuration.h"
+#include "cconfigspace/tree_evaluation.h"
+#include "cconfigspace/tree_tuner.h"
 
 /**
  * @file cconfigspace.h

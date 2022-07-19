@@ -39,17 +39,14 @@ _ccs_deserialize_bin_ccs_random_tuner_data(
 		size_t                             *buffer_size,
 		const char                        **buffer,
 		_ccs_object_deserialize_options_t  *opts) {
-	uint64_t num;
 	uintptr_t mem;
 
 	CCS_VALIDATE(_ccs_deserialize_bin_size_ccs_tuner_common_data(
 		&data->common_data, version, buffer_size, buffer, opts));
-	CCS_VALIDATE(_ccs_deserialize_bin_uint64(
-		&num, buffer_size, buffer));
-	data->size_history = num;
-	CCS_VALIDATE(_ccs_deserialize_bin_uint64(
-		&num, buffer_size, buffer));
-	data->size_optimums = num;
+	CCS_VALIDATE(_ccs_deserialize_bin_size(
+		&data->size_history, buffer_size, buffer));
+	CCS_VALIDATE(_ccs_deserialize_bin_size(
+		&data->size_optimums, buffer_size, buffer));
 
 	if (!(data->size_history + data->size_optimums))
 		return CCS_SUCCESS;
@@ -102,7 +99,7 @@ _ccs_deserialize_bin_random_tuner(
 	_ccs_random_tuner_data_clone_t *odata = NULL;
 	ccs_error_t res = CCS_SUCCESS;
 	CCS_VALIDATE_ERR_GOTO(res, _ccs_deserialize_bin_ccs_random_tuner_data(
-		&data, version, buffer_size, buffer, opts), end);
+		&data, version, buffer_size, buffer, opts), evaluations);
 	CCS_VALIDATE_ERR_GOTO(res, ccs_create_random_tuner(
 		data.common_data.name, data.common_data.configuration_space, data.common_data.objective_space,
 		tuner_ret), evaluations);
@@ -116,8 +113,10 @@ tuner:
 	ccs_release_object(*tuner_ret);
 	*tuner_ret = NULL;
 evaluations:
-	for (size_t i = 0; i < data.size_history; i++)
-		ccs_release_object(data.history[i]);
+	if (data.history)
+		for (size_t i = 0; i < data.size_history; i++)
+			if (data.history[i])
+				ccs_release_object(data.history[i]);
 end:
 	if (data.common_data.configuration_space)
 		ccs_release_object(data.common_data.configuration_space);
@@ -164,7 +163,7 @@ _ccs_deserialize_bin_user_defined_tuner(
 		&data, version, buffer_size, buffer, opts), end);
 	CCS_VALIDATE_ERR_GOTO(res, ccs_create_user_defined_tuner(
 		data.base_data.common_data.name, data.base_data.common_data.configuration_space, data.base_data.common_data.objective_space,
-		vector, opts->data, tuner_ret), evaluations);
+		vector, opts->data, tuner_ret), end);
 	if (vector->deserialize_state)
 		CCS_VALIDATE_ERR_GOTO(res, vector->deserialize_state(
 			*tuner_ret, data.base_data.size_history, data.base_data.history, data.base_data.size_optimums, data.base_data.optimums,
@@ -172,20 +171,21 @@ _ccs_deserialize_bin_user_defined_tuner(
 	else
 		CCS_VALIDATE_ERR_GOTO(res, vector->tell(
 			*tuner_ret, data.base_data.size_history, data.base_data.history), tuner);
-	goto evaluations;
+	goto end;
 tuner:
 	ccs_release_object(*tuner_ret);
 	*tuner_ret = NULL;
-evaluations:
-	for (size_t i = 0; i < data.base_data.size_history; i++)
-		ccs_release_object(data.base_data.history[i]);
 end:
 	if (data.base_data.common_data.configuration_space)
 		ccs_release_object(data.base_data.common_data.configuration_space);
 	if (data.base_data.common_data.objective_space)
 		ccs_release_object(data.base_data.common_data.objective_space);
-	if (data.base_data.history)
+	if (data.base_data.history) {
+		for (size_t i = 0; i < data.base_data.size_history; i++)
+			if (data.base_data.history[i])
+				ccs_release_object(data.base_data.history[i]);
 		free(data.base_data.history);
+	}
 	return res;
 }
 

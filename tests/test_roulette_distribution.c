@@ -147,6 +147,26 @@ void test_create_roulette_distribution_errors() {
 
 }
 
+void check_samples(size_t num_areas, ccs_float_t *areas, int *counts,
+                   size_t num_samples, ccs_numeric_t *samples) {
+	ccs_float_t sum = 0.0;
+	ccs_float_t inv_sum = 0.0;
+
+	for(size_t i = 0; i < num_areas; i++)
+		counts[i] = 0;
+	for(size_t i = 0; i < num_areas; i++)
+		sum += areas[i];
+	inv_sum = 1.0 / sum;
+	for(size_t i = 0; i < num_samples; i++) {
+		assert( samples[i].i >=0 && (size_t)samples[i].i < num_areas );
+		counts[samples[i].i]++;
+	}
+	for(size_t i = 0; i < num_areas; i++) {
+		ccs_float_t target = num_samples * areas[i] * inv_sum;
+		assert( counts[i] >= target * 0.95 && counts[i] <= target * 1.05 );
+	}
+}
+
 void test_roulette_distribution() {
 	ccs_distribution_t distrib = NULL;
 	ccs_rng_t          rng = NULL;
@@ -157,10 +177,8 @@ void test_roulette_distribution() {
 	ccs_float_t        areas[NUM_AREAS];
 	int                counts[NUM_AREAS];
 
-	for(size_t i = 0; i < num_areas; i++) {
-		areas[i] = (double)(i+1);
-	        counts[i] = 0;
-	}
+	for(size_t i = 0; i < num_areas; i++)
+		areas[i] = (ccs_float_t)(i+1);
 
 	err = ccs_create_rng(&rng);
 	assert( err == CCS_SUCCESS );
@@ -173,20 +191,17 @@ void test_roulette_distribution() {
 	err = ccs_distribution_samples(distrib, rng, num_samples, samples);
 	assert( err == CCS_SUCCESS );
 
-	ccs_float_t sum = 0.0;
-	ccs_float_t inv_sum = 0.0;
-	for(size_t i = 0; i < num_areas; i++) {
-		sum += areas[i];
-	}
-	inv_sum = 1.0 / sum;
-	for(size_t i = 0; i < num_samples; i++) {
-		assert( samples[i].i >=0 && samples[i].i < 4 );
-		counts[samples[i].i]++;
-	}
-	for(size_t i = 0; i < num_areas; i++) {
-		ccs_float_t target = num_samples * areas[i] * inv_sum;
-		assert( counts[i] >= target * 0.95 && counts[i] <= target * 1.05 );
-	}
+	check_samples(num_areas, areas, counts, num_samples, samples);
+
+	for(size_t i = 0; i < num_areas; i++)
+		areas[i] = (ccs_float_t)1;
+	err = ccs_roulette_distribution_set_areas(distrib, num_areas, areas);
+	assert( err == CCS_SUCCESS );
+
+	err = ccs_distribution_samples(distrib, rng, num_samples, samples);
+	assert( err == CCS_SUCCESS );
+
+	check_samples(num_areas, areas, counts, num_samples, samples);
 
 	err = ccs_release_object(distrib);
 	assert( err == CCS_SUCCESS );
@@ -204,10 +219,8 @@ void test_roulette_distribution_zero() {
 	ccs_float_t        areas[NUM_AREAS];
 	int                counts[NUM_AREAS];
 
-	for(size_t i = 0; i < num_areas; i++) {
-		areas[i] = (double)(i+1);
-	        counts[i] = 0;
-	}
+	for(size_t i = 0; i < num_areas; i++)
+		areas[i] = (ccs_float_t)(i+1);
 	areas[1] = 0.0;
 
 	err = ccs_create_rng(&rng);
@@ -221,20 +234,7 @@ void test_roulette_distribution_zero() {
 	err = ccs_distribution_samples(distrib, rng, num_samples, samples);
 	assert( err == CCS_SUCCESS );
 
-	ccs_float_t sum = 0.0;
-	ccs_float_t inv_sum = 0.0;
-	for(size_t i = 0; i < num_areas; i++) {
-		sum += areas[i];
-	}
-	inv_sum = 1.0 / sum;
-	for(size_t i = 0; i < num_samples; i++) {
-		assert( samples[i].i >=0 && samples[i].i < 4 );
-		counts[samples[i].i]++;
-	}
-	for(size_t i = 0; i < num_areas; i++) {
-		ccs_float_t target = num_samples * areas[i] * inv_sum;
-		assert( counts[i] >= target * 0.95 && counts[i] <= target * 1.05 );
-	}
+	check_samples(num_areas, areas, counts, num_samples, samples);
 
 	err = ccs_release_object(distrib);
 	assert( err == CCS_SUCCESS );
