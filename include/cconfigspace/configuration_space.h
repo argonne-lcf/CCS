@@ -64,7 +64,8 @@ ccs_configuration_space_set_rng(ccs_configuration_space_t configuration_space,
  * @param[out] rng_ret a pointer to the variable that will contain the rng
  * @return #CCS_SUCCESS on success
  * @return #CCS_INVALID_OBJECT if \p configuration_space is not a valid CCS
- *                              configuration space; or \p rng_ret is NULL
+ *                              configuration space
+ * @return #CCS_INVALID_VALUE if \p rng_ret is NULL
  */
 extern ccs_error_t
 ccs_configuration_space_get_rng(ccs_configuration_space_t  configuration_space,
@@ -557,6 +558,7 @@ ccs_configuration_space_get_forbidden_clauses(
  * @return #CCS_INVALID_OBJECT if \p configuration_space is not a valid CCS
  *                              configuration space; or if \p configuration is
  *                              not a valid CCS configuration
+ * @return #CCS_INVALID_VALUE if \p is_valid_ret is NULL
  * @return #CCS_INVALID_CONFIGURATION if \p configuration is not associated to
  *                                     the configuration space
  */

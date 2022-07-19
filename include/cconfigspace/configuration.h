@@ -105,7 +105,7 @@ ccs_configuration_set_value(ccs_configuration_t configuration,
  * @return #CCS_INVALID_OBJECT if \p configuration is not a valid CCS
  *                              configuration
  * @return #CCS_INVALID_VALUE if \p values is NULL and \p num_values is greater
- *                             than 0; or if \p values is NULL and
+ *                             than 0; or if \p values is NULL and \p
  *                             num_values_ret is NULL; or if \p num_values is
  *                             less than the number of values that would be
  *                             returned

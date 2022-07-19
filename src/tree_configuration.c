@@ -107,7 +107,7 @@ ccs_error_t
 ccs_create_tree_configuration(
 		ccs_tree_space_t          tree_space,
 		size_t                    position_size,
-		size_t                   *position,
+		const size_t             *position,
 		ccs_tree_configuration_t *configuration_ret) {
 	CCS_CHECK_OBJ(tree_space, CCS_TREE_SPACE);
 	CCS_CHECK_PTR(configuration_ret);
@@ -197,7 +197,8 @@ ccs_tree_configuration_check(
 		ccs_bool_t               *is_valid_ret) {
 	CCS_CHECK_OBJ(configuration, CCS_TREE_CONFIGURATION);
 	CCS_CHECK_PTR(is_valid_ret);
-	CCS_VALIDATE(ccs_tree_space_check_configuration(configuration->data->tree_space, configuration, is_valid_ret));
+	CCS_VALIDATE(ccs_tree_space_check_position(
+		configuration->data->tree_space, configuration->data->position_size, configuration->data->position, is_valid_ret));
 	return CCS_SUCCESS;
 }
 
