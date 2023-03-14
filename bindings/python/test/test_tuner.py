@@ -7,7 +7,7 @@ sys.path.insert(1, '..')
 import cconfigspace as ccs
 from math import sin
 
-class TestTreeTuner(unittest.TestCase):
+class TestTuner(unittest.TestCase):
   def create_tuning_problem(self):
     cs = ccs.ConfigurationSpace(name = "cspace")
     h1 = ccs.NumericalHyperparameter(lower = -5.0, upper = 5.0)
