@@ -34,7 +34,7 @@ class TreeTuner(Object):
     elif v == ccs_tree_tuner_type.TREE_TUNER_USER_DEFINED:
       return UserDefinedTreeTuner(handle = handle, retain = retain, auto_release = auto_release)
     else:
-      raise Error(ccs_error(ccs_error.INVALID_TUNER))
+      raise Error(ccs_error(ccs_error.INVALID_TREE_TUNER))
 
   @property
   def type(self):

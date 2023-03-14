@@ -6,7 +6,7 @@ module CCS
   ]
   class MemoryPointer
     def read_ccs_tree_tuner_type_t
-      TunerType.from_native(read_int32, nil)
+      TreeTunerType.from_native(read_int32, nil)
     end
   end
 
@@ -22,13 +22,13 @@ module CCS
 
   class TreeTuner < Object
     add_property :type, :ccs_tree_tuner_type_t, :ccs_tree_tuner_get_type, memoize: true
-    add_property :tree_space, :ccs_tree_space_t, :ccs_tree_tuner_get_tree_space, memoize: true
-    add_property :objective_space, :ccs_objective_space_t, :ccs_tree_tuner_get_objective_space, memoize: true
+    add_handle_property :tree_space, :ccs_tree_space_t, :ccs_tree_tuner_get_tree_space, memoize: true
+    add_handle_property :objective_space, :ccs_objective_space_t, :ccs_tree_tuner_get_objective_space, memoize: true
 
     def self.from_handle(handle, retain: true, auto_release: true)
       ptr = MemoryPointer::new(:ccs_tuner_type_t)
       CCS.error_check CCS.ccs_tree_tuner_get_type(handle, ptr)
-      case ptr.read_ccs_tuner_type_t
+      case ptr.read_ccs_tree_tuner_type_t
       when :CCS_TREE_TUNER_RANDOM
 	RandomTreeTuner
       when :CCS_TREE_TUNER_USER_DEFINED
@@ -257,7 +257,7 @@ module CCS
   attach_function :ccs_create_user_defined_tree_tuner, [:string, :ccs_tree_space_t, :ccs_objective_space_t, UserDefinedTreeTunerVector.by_ref, :value, :pointer], :ccs_error_t
   attach_function :ccs_user_defined_tree_tuner_get_tuner_data, [:ccs_tree_tuner_t, :pointer], :ccs_error_t
 
-  class UserDefinedTreeTuner < Tuner
+  class UserDefinedTreeTuner < TreeTuner
     add_property :tuner_data, :value, :ccs_user_defined_tree_tuner_get_tuner_data, memoize: true
 
     def initialize(handle = nil, retain: false, auto_release: true,

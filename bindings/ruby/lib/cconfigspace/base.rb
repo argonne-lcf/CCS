@@ -192,7 +192,8 @@ module CCS
     :CCS_SYSTEM_ERROR,           -26,
     :CCS_EXTERNAL_ERROR,         -27,
     :CCS_INVALID_TREE,           -28,
-    :CCS_INVALID_TREE_SPACE,     -29 ]
+    :CCS_INVALID_TREE_SPACE,     -29,
+    :CCS_INVALID_TREE_TUNER,     -30 ]
 
   class MemoryPointer
     def read_ccs_object_type_t

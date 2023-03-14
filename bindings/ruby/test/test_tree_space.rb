@@ -15,7 +15,7 @@ class CConfigSpaceTestTreeSpace < Minitest::Test
       child = generate_tree(depth - 1, i)
       tree.set_child(i, child)
     }
-    return tree
+    tree
   end
 
   def test_static_tree_space

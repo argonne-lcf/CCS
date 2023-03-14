@@ -229,8 +229,10 @@ enum ccs_error_e {
 	CCS_INVALID_TREE =            -28,
 	/** The provided tree space is invalid */
 	CCS_INVALID_TREE_SPACE =      -29,
+        /** The provided tree tuner is invalid */
+        CCS_INVALID_TREE_TUNER =      -30,
 	/** Guard */
-	CCS_ERROR_MIN =               -30,
+	CCS_ERROR_MIN =               -31,
 	/** Try forcing 32 bits value for bindings */
 	CCS_ERROR_FORCE_32BIT = INT32_MAX
 };

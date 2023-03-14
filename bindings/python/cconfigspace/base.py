@@ -190,7 +190,8 @@ class ccs_error(CEnumeration):
     ('SYSTEM_ERROR',           -26),
     ('EXTERNAL_ERROR',         -27),
     ('INVALID_TREE',           -28),
-    ('INVALID_TREE_SPACE',     -29) ]
+    ('INVALID_TREE_SPACE',     -29),
+    ('INVALID_TREE_TUNER',     -30) ]
 
 class ccs_data_type(CEnumeration):
   _members_ = [
