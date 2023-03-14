@@ -112,7 +112,7 @@ void test() {
 
 	PyObject *pName, *pModule, *pFunc;
 	PyObject *pArgs, *pValue, *pHandle, *pAddr;
-#if PY_VERSION_HEX <= 0x030b0000
+#if PY_VERSION_HEX < 0x030b0000
 	Py_SetProgramName(L"test_python");
 	Py_Initialize();
 #else
