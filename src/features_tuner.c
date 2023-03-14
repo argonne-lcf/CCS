@@ -80,7 +80,7 @@ ccs_features_tuner_ask(ccs_features_tuner_t  tuner,
 	CCS_VALIDATE(ccs_features_space_check_features(d->features_space, features, &valid));
         CCS_REFUTE(!valid, CCS_INVALID_FEATURES);
 	_ccs_features_tuner_ops_t *ops = ccs_features_tuner_get_ops(tuner);
-	CCS_VALIDATE(ops->ask(tuner->data, features, num_configurations, configurations, num_configurations_ret));
+	CCS_VALIDATE(ops->ask(tuner, features, num_configurations, configurations, num_configurations_ret));
 	return CCS_SUCCESS;
 }
 
@@ -91,7 +91,7 @@ ccs_features_tuner_tell(ccs_features_tuner_t       tuner,
 	CCS_CHECK_OBJ(tuner, CCS_FEATURES_TUNER);
 	CCS_CHECK_ARY(num_evaluations, evaluations);
 	_ccs_features_tuner_ops_t *ops = ccs_features_tuner_get_ops(tuner);
-	CCS_VALIDATE(ops->tell(tuner->data, num_evaluations, evaluations));
+	CCS_VALIDATE(ops->tell(tuner, num_evaluations, evaluations));
 	return CCS_SUCCESS;
 }
 
@@ -107,7 +107,7 @@ ccs_features_tuner_get_optimums(ccs_features_tuner_t       tuner,
 	CCS_CHECK_ARY(num_evaluations, evaluations);
 	CCS_REFUTE(!evaluations && !num_evaluations_ret, CCS_INVALID_VALUE);
 	_ccs_features_tuner_ops_t *ops = ccs_features_tuner_get_ops(tuner);
-	CCS_VALIDATE(ops->get_optimums(tuner->data, features, num_evaluations, evaluations, num_evaluations_ret));
+	CCS_VALIDATE(ops->get_optimums(tuner, features, num_evaluations, evaluations, num_evaluations_ret));
 	return CCS_SUCCESS;
 }
 
@@ -123,7 +123,7 @@ ccs_features_tuner_get_history(ccs_features_tuner_t       tuner,
 	CCS_CHECK_ARY(num_evaluations, evaluations);
 	CCS_REFUTE(!evaluations && !num_evaluations_ret, CCS_INVALID_VALUE);
 	_ccs_features_tuner_ops_t *ops = ccs_features_tuner_get_ops(tuner);
-	CCS_VALIDATE(ops->get_history(tuner->data, features, num_evaluations, evaluations, num_evaluations_ret));
+	CCS_VALIDATE(ops->get_history(tuner, features, num_evaluations, evaluations, num_evaluations_ret));
 	return CCS_SUCCESS;
 }
 
@@ -141,7 +141,7 @@ ccs_features_tuner_suggest(ccs_features_tuner_t  tuner,
         ccs_bool_t valid;
 	CCS_VALIDATE(ccs_features_space_check_features(d->features_space, features, &valid));
         CCS_REFUTE(!valid, CCS_INVALID_FEATURES);
-	CCS_VALIDATE(ops->suggest(tuner->data, features, configuration));
+	CCS_VALIDATE(ops->suggest(tuner, features, configuration));
 	return CCS_SUCCESS;
 }
 

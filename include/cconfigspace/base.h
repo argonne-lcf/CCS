@@ -139,6 +139,26 @@ typedef struct _ccs_map_s                 *ccs_map_t;
  * An opaque type defining a CCS error statck.
  */
 typedef struct _ccs_error_stack_s         *ccs_error_stack_t;
+/**
+ * An opaque type defining a CCS tree.
+ */
+typedef struct _ccs_tree_s                *ccs_tree_t;
+/**
+ * An opaque type defining a CCS tree space.
+ */
+typedef struct _ccs_tree_space_s          *ccs_tree_space_t;
+/**
+ * An opaque type defining a CCS tree space configuration.
+ */
+typedef struct _ccs_tree_configuration_s  *ccs_tree_configuration_t;
+/**
+ * An opaque type defining a CCS tree evaluation.
+ */
+typedef struct _ccs_tree_evaluation_s     *ccs_tree_evaluation_t;
+/**
+ * An opaque type defining a CCS tree tuner.
+ */
+typedef struct _ccs_tree_tuner_s          *ccs_tree_tuner_t;
 
 /**
  * The different possible return codes of a CCS function.
@@ -205,8 +225,14 @@ enum ccs_error_e {
 	CCS_SYSTEM_ERROR =            -26,
 	/** External error occured (binding?) */
 	CCS_EXTERNAL_ERROR =          -27,
+	/** The provided tree is invalid */
+	CCS_INVALID_TREE =            -28,
+	/** The provided tree space is invalid */
+	CCS_INVALID_TREE_SPACE =      -29,
+        /** The provided tree tuner is invalid */
+        CCS_INVALID_TREE_TUNER =      -30,
 	/** Guard */
-	CCS_ERROR_MIN =               -28,
+	CCS_ERROR_MIN =               -31,
 	/** Try forcing 32 bits value for bindings */
 	CCS_ERROR_FORCE_32BIT = INT32_MAX
 };
@@ -240,6 +266,11 @@ enum ccs_object_type_e {
 	CCS_FEATURES_TUNER,      /*!< A features aware tuner */
 	CCS_MAP,                 /*!< A key value store */
 	CCS_ERROR_STACK,         /*!< An error stack */
+	CCS_TREE,                /*!< A tree structure */
+	CCS_TREE_SPACE,          /*!< A tree space */
+	CCS_TREE_CONFIGURATION,  /*!< A configuration on a tree space */
+	CCS_TREE_EVALUATION,     /*!< An evaluation of a tree configuration */
+	CCS_TREE_TUNER,          /*!< A tuner */
 	CCS_OBJECT_TYPE_MAX,     /*!< Guard */
 	/** Try forcing 32 bits value for bindings */
 	CCS_OBJECT_TYPE_FORCE_32BIT = INT32_MAX

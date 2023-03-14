@@ -311,6 +311,7 @@ class NormalDistribution(Distribution):
 ccs_create_roulette_distribution = _ccs_get_function("ccs_create_roulette_distribution", [ct.c_size_t, ct.POINTER(ccs_float), ct.POINTER(ccs_distribution)])
 ccs_roulette_distribution_get_num_areas = _ccs_get_function("ccs_roulette_distribution_get_num_areas", [ccs_distribution, ct.POINTER(ct.c_size_t)])
 ccs_roulette_distribution_get_areas = _ccs_get_function("ccs_roulette_distribution_get_areas", [ccs_distribution, ct.c_size_t, ct.POINTER(ccs_float), ct.POINTER(ct.c_size_t)])
+ccs_roulette_distribution_set_areas = _ccs_get_function("ccs_roulette_distribution_set_areas", [ccs_distribution, ct.c_size_t, ct.POINTER(ccs_float)])
 
 class RouletteDistribution(Distribution):
   def __init__(self, handle = None, retain = False, auto_release = True,
@@ -343,13 +344,16 @@ class RouletteDistribution(Distribution):
 
   @property
   def areas(self):
-    if hasattr(self, "_areas"):
-      return self._areas
     v = (ccs_float * self.num_areas)()
     res = ccs_roulette_distribution_get_areas(self.handle, self.num_areas, v, None)
     Error.check(res)
-    self._areas = list(v)
-    return self._areas
+    return list(v)
+
+  @areas.setter
+  def areas(self, areas):
+    v = (ccs_float * len(areas))(*areas)
+    res = ccs_roulette_distribution_set_areas(self.handle, len(areas), v)
+    Error.check(res)
 
 ccs_create_mixture_distribution = _ccs_get_function("ccs_create_mixture_distribution", [ct.c_size_t, ct.POINTER(ccs_distribution), ct.POINTER(ccs_float), ct.POINTER(ccs_distribution)])
 ccs_mixture_distribution_get_num_distributions = _ccs_get_function("ccs_mixture_distribution_get_num_distributions", [ccs_distribution, ct.POINTER(ct.c_size_t)])

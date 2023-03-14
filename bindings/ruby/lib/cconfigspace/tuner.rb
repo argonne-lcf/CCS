@@ -19,7 +19,6 @@ module CCS
   attach_function :ccs_tuner_get_optimums, [:ccs_tuner_t, :size_t, :pointer, :pointer], :ccs_error_t
   attach_function :ccs_tuner_get_history, [:ccs_tuner_t, :size_t, :pointer, :pointer], :ccs_error_t
   attach_function :ccs_tuner_suggest, [:ccs_tuner_t, :pointer], :ccs_error_t
-  attach_function :ccs_create_random_tuner, [:string, :ccs_configuration_space_t, :ccs_objective_space_t, :pointer], :ccs_error_t
 
   class Tuner < Object
     add_property :type, :ccs_tuner_type_t, :ccs_tuner_get_type, memoize: true
@@ -96,6 +95,8 @@ module CCS
     end
 
   end
+
+  attach_function :ccs_create_random_tuner, [:string, :ccs_configuration_space_t, :ccs_objective_space_t, :pointer], :ccs_error_t
 
   class RandomTuner < Tuner
     def initialize(handle = nil, retain: false, auto_release: true,
@@ -255,6 +256,7 @@ module CCS
 
   attach_function :ccs_create_user_defined_tuner, [:string, :ccs_configuration_space_t, :ccs_objective_space_t, UserDefinedTunerVector.by_ref, :value, :pointer], :ccs_error_t
   attach_function :ccs_user_defined_tuner_get_tuner_data, [:ccs_tuner_t, :pointer], :ccs_error_t
+
   class UserDefinedTuner < Tuner
     add_property :tuner_data, :value, :ccs_user_defined_tuner_get_tuner_data, memoize: true
 

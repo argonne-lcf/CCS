@@ -10,7 +10,6 @@ _ccs_deserialize_bin_features(
 		size_t                             *buffer_size,
 		const char                        **buffer,
 		_ccs_object_deserialize_options_t  *opts) {
-	CCS_CHECK_PTR(opts);
 	CCS_CHECK_OBJ(opts->handle_map, CCS_MAP);
 	_ccs_object_internal_t obj;
 	ccs_object_t handle;

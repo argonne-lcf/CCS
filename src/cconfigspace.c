@@ -457,6 +457,11 @@ end:
 #include "tuner_deserialize.h"
 #include "features_tuner_deserialize.h"
 #include "map_deserialize.h"
+#include "tree_deserialize.h"
+#include "tree_space_deserialize.h"
+#include "tree_configuration_deserialize.h"
+#include "tree_evaluation_deserialize.h"
+#include "tree_tuner_deserialize.h"
 
 static inline ccs_error_t
 _ccs_object_deserialize_options(
@@ -581,6 +586,31 @@ _ccs_object_deserialize_with_opts(
 		case CCS_MAP:
 			CCS_VALIDATE(_ccs_map_deserialize(
 				(ccs_map_t *)object_ret,
+				format, version, buffer_size, buffer, opts));
+			break;
+		case CCS_TREE:
+			CCS_VALIDATE(_ccs_tree_deserialize(
+				(ccs_tree_t *)object_ret,
+				format, version, buffer_size, buffer, opts));
+			break;
+		case CCS_TREE_SPACE:
+			CCS_VALIDATE(_ccs_tree_space_deserialize(
+				(ccs_tree_space_t *)object_ret,
+				format, version, buffer_size, buffer, opts));
+			break;
+		case CCS_TREE_CONFIGURATION:
+			CCS_VALIDATE(_ccs_tree_configuration_deserialize(
+				(ccs_tree_configuration_t *)object_ret,
+				format, version, buffer_size, buffer, opts));
+			break;
+		case CCS_TREE_EVALUATION:
+			CCS_VALIDATE(_ccs_tree_evaluation_deserialize(
+				(ccs_tree_evaluation_t *)object_ret,
+				format, version, buffer_size, buffer, opts));
+			break;
+		case CCS_TREE_TUNER:
+			CCS_VALIDATE(_ccs_tree_tuner_deserialize(
+				(ccs_tree_tuner_t *)object_ret,
 				format, version, buffer_size, buffer, opts));
 			break;
 		default:
@@ -856,6 +886,10 @@ ccs_get_error_name(ccs_error_t error, const char **name) {
 	ETOCASE(CCS_HANDLE_DUPLICATE);
 	ETOCASE(CCS_INVALID_HANDLE);
 	ETOCASE(CCS_SYSTEM_ERROR);
+	ETOCASE(CCS_EXTERNAL_ERROR);
+	ETOCASE(CCS_INVALID_TREE);
+	ETOCASE(CCS_INVALID_TREE_SPACE);
+	ETOCASE(CCS_INVALID_TREE_TUNER);
 	default:
 		*name = NULL;
 		CCS_RAISE(CCS_INVALID_VALUE, "Unsupported error code: %d", error);

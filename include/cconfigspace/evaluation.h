@@ -6,11 +6,11 @@ extern "C" {
 #endif
 
 /**
- * @file evaluation.h
- * An evaluation is a binding (see binding.h) over an objective space given a
- * specific configuration (see configuration.h). Successful evaluations over the
- * same objective space are weakly ordered by their objective values. Evaluation
- * that have failed must report an error code.
+ * @file evaluation.h An evaluation is a binding (see binding.h) over an
+ * objective space (see objective_space.h) given a specific configuration (see
+ * configuration.h). Successful evaluations over the same objective space are
+ * weakly ordered by their objective values. Evaluation that have failed must
+ * report an error code.
  */
 
 /**

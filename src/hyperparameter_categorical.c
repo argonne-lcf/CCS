@@ -16,7 +16,7 @@ static inline size_t
 _ccs_serialize_bin_size_ccs_hyperparameter_categorical_data(
 		_ccs_hyperparameter_categorical_data_t *data) {
 	size_t sz = _ccs_serialize_bin_size_ccs_hyperparameter_common_data(&data->common_data);
-	sz += _ccs_serialize_bin_size_uint64(data->num_possible_values);
+	sz += _ccs_serialize_bin_size_size(data->num_possible_values);
 	for (size_t i = 0; i < data->num_possible_values; i++)
 		sz += _ccs_serialize_bin_size_ccs_datum(data->possible_values[i].d);
 	return sz;
@@ -29,7 +29,7 @@ _ccs_serialize_bin_ccs_hyperparameter_categorical_data(
 		char                                   **buffer) {
 	CCS_VALIDATE(_ccs_serialize_bin_ccs_hyperparameter_common_data(
 		&data->common_data, buffer_size, buffer));
-	CCS_VALIDATE(_ccs_serialize_bin_uint64(
+	CCS_VALIDATE(_ccs_serialize_bin_size(
 		data->num_possible_values, buffer_size, buffer));
 	for (size_t i = 0; i < data->num_possible_values; i++)
 		CCS_VALIDATE(_ccs_serialize_bin_ccs_datum(
@@ -251,16 +251,19 @@ _ccs_create_categorical_hyperparameter(ccs_hyperparameter_type_t  type,
 	CCS_CHECK_PTR(hyperparameter_ret);
 	CCS_CHECK_ARY(num_possible_values, possible_values);
 	CCS_REFUTE(!num_possible_values || num_possible_values <= default_value_index, CCS_INVALID_VALUE);
+	CCS_REFUTE(num_possible_values > CCS_INT_MAX, CCS_INVALID_VALUE);
 	if (type == CCS_HYPERPARAMETER_TYPE_DISCRETE)
 		for(size_t i = 0; i < num_possible_values; i++)
 			CCS_REFUTE(possible_values[i].type != CCS_FLOAT && possible_values[i].type != CCS_INTEGER, CCS_INVALID_VALUE);
 	size_t size_strs = 0;
 	if (type != CCS_HYPERPARAMETER_TYPE_DISCRETE)
-		for(size_t i = 0; i < num_possible_values; i++)
+		for(size_t i = 0; i < num_possible_values; i++) {
+			CCS_REFUTE(possible_values[i].type > CCS_STRING, CCS_INVALID_VALUE);
 			if (possible_values[i].type == CCS_STRING) {
 				CCS_REFUTE(!possible_values[i].value.s, CCS_INVALID_VALUE);
 				size_strs += strlen(possible_values[i].value.s) + 1;
 			}
+		}
 
 	uintptr_t mem = (uintptr_t)calloc(1,
 	    sizeof(struct _ccs_hyperparameter_s) +

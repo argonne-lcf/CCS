@@ -164,7 +164,7 @@ class ccs_user_defined_tuner_vector(ct.Structure):
 ccs_create_user_defined_tuner = _ccs_get_function("ccs_create_user_defined_tuner", [ct.c_char_p, ccs_configuration_space, ccs_objective_space, ct.POINTER(ccs_user_defined_tuner_vector), ct.py_object, ct.POINTER(ccs_tuner)])
 ccs_user_defined_tuner_get_tuner_data = _ccs_get_function("ccs_user_defined_tuner_get_tuner_data", [ccs_tuner, ct.POINTER(ct.c_void_p)])
 
-def _wrap_user_defined_callbacks(delete, ask, tell, get_optimums, get_history, suggest, serialize, deserialize):
+def _wrap_user_defined_tuner_callbacks(delete, ask, tell, get_optimums, get_history, suggest, serialize, deserialize):
   def delete_wrapper(tun):
     try:
       tun = ct.cast(tun, ccs_tuner)
@@ -348,7 +348,7 @@ class UserDefinedTuner(Tuner):
        get_history_wrapper_func,
        suggest_wrapper_func,
        serialize_wrapper_func,
-       deserialize_wrapper_func) = _wrap_user_defined_callbacks(delete, ask, tell, get_optimums, get_history, suggest, serialize, deserialize)
+       deserialize_wrapper_func) = _wrap_user_defined_tuner_callbacks(delete, ask, tell, get_optimums, get_history, suggest, serialize, deserialize)
       handle = ccs_tuner()
       vec = ccs_user_defined_tuner_vector()
       vec.delete = delete_wrapper_func
@@ -389,7 +389,7 @@ class UserDefinedTuner(Tuner):
      get_history_wrapper_func,
      suggest_wrapper_func,
      serialize_wrapper_func,
-     deserialize_wrapper_func) = _wrap_user_defined_callbacks(delete, ask, tell, get_optimums, get_history, suggest, serialize, deserialize)
+     deserialize_wrapper_func) = _wrap_user_defined_tuner_callbacks(delete, ask, tell, get_optimums, get_history, suggest, serialize, deserialize)
     vector = ccs_user_defined_tuner_vector()
     vector.delete = delete_wrapper_func
     vector.ask = ask_wrapper_func
@@ -399,7 +399,7 @@ class UserDefinedTuner(Tuner):
     vector.suggest = suggest_wrapper_func
     vector.serialize = serialize_wrapper_func
     vector.deserialize = deserialize_wrapper_func
-    res = super().deserialize(format = format, handle_map = handle_map, vector = vector, data = tuner_data, path = path, buffer = buffer, file_descriptor = file_descriptor, callback = callback, callback_data = callback_data)
+    res = Object.deserialize(format = format, handle_map = handle_map, vector = vector, data = tuner_data, path = path, buffer = buffer, file_descriptor = file_descriptor, callback = callback, callback_data = callback_data)
     _register_vector(res.handle, [delete_wrapper, ask_wrapper, tell_wrapper, get_optimums_wrapper, get_history_wrapper, suggest_wrapper, serialize_wrapper, deserialize_wrapper, delete_wrapper_func, ask_wrapper_func, tell_wrapper_func, get_optimums_wrapper_func, get_history_wrapper_func, suggest_wrapper_func, serialize_wrapper_func, deserialize_wrapper_func, tuner_data])
     return res
 

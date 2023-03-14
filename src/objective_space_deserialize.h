@@ -20,17 +20,14 @@ _ccs_deserialize_bin_ccs_objective_space_data(
 		size_t                             *buffer_size,
 		const char                        **buffer,
 		_ccs_object_deserialize_options_t  *opts) {
-	uint64_t num;
 	uintptr_t mem;
 
 	CCS_VALIDATE(_ccs_deserialize_bin_string(
 		&data->name, buffer_size, buffer));
-	CCS_VALIDATE(_ccs_deserialize_bin_uint64(
-		&num, buffer_size, buffer));
-	data->num_hyperparameters = num;
-	CCS_VALIDATE(_ccs_deserialize_bin_uint64(
-		&num, buffer_size, buffer));
-	data->num_objectives = num;
+	CCS_VALIDATE(_ccs_deserialize_bin_size(
+		&data->num_hyperparameters, buffer_size, buffer));
+	CCS_VALIDATE(_ccs_deserialize_bin_size(
+		&data->num_objectives, buffer_size, buffer));
 
 	if (!(data->num_hyperparameters + data->num_objectives))
 		return CCS_SUCCESS;

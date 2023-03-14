@@ -70,10 +70,12 @@ module CCS
       alias read_size_t read_uint64
       alias write_size_t write_uint64
       alias write_array_of_size_t write_array_of_uint64
+      alias read_array_of_size_t read_array_of_uint64
     else
       alias read_size_t read_uint32
       alias write_size_t write_uint32
       alias write_array_of_size_t write_array_of_uint32
+      alias read_array_of_size_t read_array_of_uint32
     end
   end
 
@@ -106,6 +108,11 @@ module CCS
   typedef :ccs_object_t, :ccs_features_tuner_t
   typedef :ccs_object_t, :ccs_map_t
   typedef :ccs_object_t, :ccs_error_stack_t
+  typedef :ccs_object_t, :ccs_tree_t
+  typedef :ccs_object_t, :ccs_tree_space_t
+  typedef :ccs_object_t, :ccs_tree_configuration_t
+  typedef :ccs_object_t, :ccs_tree_evaluation_t
+  typedef :ccs_object_t, :ccs_tree_tuner_t
   class MemoryPointer
     alias read_ccs_object_t read_pointer
     alias read_ccs_rng_t read_ccs_object_t
@@ -125,6 +132,11 @@ module CCS
     alias read_ccs_features_tuner_t read_ccs_object_t
     alias read_ccs_map_t read_ccs_object_t
     alias read_ccs_error_stack_t read_ccs_object_t
+    alias read_ccs_tree_t read_ccs_object_t
+    alias read_ccs_tree_space_t read_ccs_object_t
+    alias read_ccs_tree_configuration_t read_ccs_object_t
+    alias read_ccs_tree_evaluation_t read_ccs_object_t
+    alias read_ccs_tree_tuner_t read_ccs_object_t
   end
 
   ObjectType = enum FFI::Type::INT32, :ccs_object_type_t, [
@@ -142,7 +154,12 @@ module CCS
     :CCS_FEATURES_EVALUATION,
     :CCS_FEATURES_TUNER,
     :CCS_MAP,
-    :CCS_ERROR_STACK ]
+    :CCS_ERROR_STACK,
+    :CCS_TREE,
+    :CCS_TREE_SPACE,
+    :CCS_TREE_CONFIGURATION,
+    :CCS_TREE_EVALUATION,
+    :CCS_TREE_TUNER ]
 
   Error = enum FFI::Type::INT32, :ccs_error_t, [
     :CCS_AGAIN,                    1,
@@ -173,7 +190,10 @@ module CCS
     :CCS_HANDLE_DUPLICATE,       -24,
     :CCS_INVALID_HANDLE,         -25,
     :CCS_SYSTEM_ERROR,           -26,
-    :CCS_EXTERNAL_ERROR,         -27 ]
+    :CCS_EXTERNAL_ERROR,         -27,
+    :CCS_INVALID_TREE,           -28,
+    :CCS_INVALID_TREE_SPACE,     -29,
+    :CCS_INVALID_TREE_TUNER,     -30 ]
 
   class MemoryPointer
     def read_ccs_object_type_t
@@ -543,6 +563,32 @@ module CCS
   end
 
   class Object
+
+    def self.class_map
+      @class_map ||= {
+        CCS_RNG: CCS::Rng,
+        CCS_DISTRIBUTION: CCS::Distribution,
+        CCS_HYPERPARAMETER: CCS::Hyperparameter,
+        CCS_EXPRESSION: CCS::Expression,
+        CCS_CONFIGURATION_SPACE: CCS::ConfigurationSpace,
+        CCS_CONFIGURATION: CCS::Configuration,
+        CCS_FEATURES_SPACE: CCS::FeaturesSpace,
+        CCS_FEATURES: CCS::Features,
+        CCS_OBJECTIVE_SPACE: CCS::ObjectiveSpace,
+        CCS_EVALUATION: CCS::Evaluation,
+        CCS_FEATURES_EVALUATION: CCS::FeaturesEvaluation,
+        CCS_TUNER: CCS::Tuner,
+        CCS_FEATURES_TUNER: CCS::FeaturesTuner,
+        CCS_MAP: CCS::Map,
+        CCS_ERROR_STACK: CCS::ErrorStack,
+        CCS_TREE: CCS::Tree,
+        CCS_TREE_SPACE: CCS::TreeSpace,
+        CCS_TREE_CONFIGURATION: CCS::TreeConfiguration,
+        CCS_TREE_EVALUATION: CCS::TreeEvaluation,
+        CCS_TREE_TUNER: CCS::TreeTuner
+      }
+    end
+
     class Releaser
       def initialize(handle)
         @handle = handle
@@ -595,38 +641,9 @@ module CCS
     def self._from_handle(handle, retain: true, auto_release: true)
       ptr = MemoryPointer::new(:ccs_object_type_t)
       CCS.error_check CCS.ccs_object_get_type(handle, ptr)
-      case ptr.read_ccs_object_type_t
-      when :CCS_RNG
-        CCS::Rng
-      when :CCS_DISTRIBUTION
-        CCS::Distribution
-      when :CCS_HYPERPARAMETER
-        CCS::Hyperparameter
-      when :CCS_EXPRESSION
-        CCS::Expression
-      when :CCS_CONFIGURATION_SPACE
-        CCS::ConfigurationSpace
-      when :CCS_CONFIGURATION
-        CCS::Configuration
-      when :CCS_FEATURES_SPACE
-	CCS::FeaturesSpace
-      when :CCS_FEATURES
-	CCS::Features
-      when :CCS_OBJECTIVE_SPACE
-        CCS::ObjectiveSpace
-      when :CCS_EVALUATION
-        CCS::Evaluation
-      when :CCS_FEATURES_EVALUATION
-        CCS::FeaturesEvaluation
-      when :CCS_TUNER
-        CCS::Tuner
-      when :CCS_FEATURES_TUNER
-        CCS::FeaturesTuner
-      when :CCS_MAP
-        CCS::Map
-      else
-        raise CCSError, :CCS_INVALID_OBJECT
-      end.from_handle(handle, retain: retain, auto_release: auto_release)
+      klass = class_map[ptr.read_ccs_object_type_t]
+      raise CCSError, :CCS_INVALID_OBJECT unless klass
+      klass.from_handle(handle, retain: retain, auto_release: auto_release)
     end
 
     private_class_method :_from_handle

@@ -77,6 +77,24 @@ libcconfigspace_la_SOURCES = \
 	features_tuner_user_defined.c \
 	map.c \
 	map_internal.h \
-	map_deserialize.h
+	map_deserialize.h \
+	tree.c \
+	tree_internal.h \
+	tree_deserialize.h \
+	tree_space.c \
+	tree_space_internal.h \
+	tree_space_deserialize.h \
+	tree_space_static.c \
+	tree_space_dynamic.c \
+	tree_configuration.c \
+	tree_configuration_internal.h \
+	tree_configuration_deserialize.h \
+	tree_evaluation.c \
+	tree_evaluation_internal.h \
+	tree_evaluation_deserialize.h \
+	tree_tuner.c \
+	tree_tuner_internal.h \
+	tree_tuner_random.c \
+	tree_tuner_user_defined.c
 
 @VALGRIND_CHECK_RULES@

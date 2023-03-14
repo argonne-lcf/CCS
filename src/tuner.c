@@ -55,7 +55,7 @@ ccs_tuner_ask(ccs_tuner_t          tuner,
 	CCS_CHECK_ARY(num_configurations, configurations);
 	CCS_REFUTE(!configurations && !num_configurations_ret, CCS_INVALID_VALUE);
 	_ccs_tuner_ops_t *ops = ccs_tuner_get_ops(tuner);
-	CCS_VALIDATE(ops->ask(tuner->data, num_configurations, configurations, num_configurations_ret));
+	CCS_VALIDATE(ops->ask(tuner, num_configurations, configurations, num_configurations_ret));
 	return CCS_SUCCESS;
 }
 
@@ -68,7 +68,7 @@ ccs_tuner_tell(ccs_tuner_t       tuner,
         /* TODO: check that evaluations have the same objective and
          * configuration sapce than the tuner */
 	_ccs_tuner_ops_t *ops = ccs_tuner_get_ops(tuner);
-	CCS_VALIDATE(ops->tell(tuner->data, num_evaluations, evaluations));
+	CCS_VALIDATE(ops->tell(tuner, num_evaluations, evaluations));
 	return CCS_SUCCESS;
 }
 
@@ -81,7 +81,7 @@ ccs_tuner_get_optimums(ccs_tuner_t       tuner,
 	CCS_CHECK_ARY(num_evaluations, evaluations);
 	CCS_REFUTE(!evaluations && !num_evaluations_ret, CCS_INVALID_VALUE);
 	_ccs_tuner_ops_t *ops = ccs_tuner_get_ops(tuner);
-	CCS_VALIDATE(ops->get_optimums(tuner->data, num_evaluations, evaluations, num_evaluations_ret));
+	CCS_VALIDATE(ops->get_optimums(tuner, num_evaluations, evaluations, num_evaluations_ret));
 	return CCS_SUCCESS;
 }
 
@@ -94,7 +94,7 @@ ccs_tuner_get_history(ccs_tuner_t       tuner,
 	CCS_CHECK_ARY(num_evaluations, evaluations);
 	CCS_REFUTE(!evaluations && !num_evaluations_ret, CCS_INVALID_VALUE);
 	_ccs_tuner_ops_t *ops = ccs_tuner_get_ops(tuner);
-	CCS_VALIDATE(ops->get_history(tuner->data, num_evaluations, evaluations, num_evaluations_ret));
+	CCS_VALIDATE(ops->get_history(tuner, num_evaluations, evaluations, num_evaluations_ret));
 	return CCS_SUCCESS;
 }
 
@@ -105,6 +105,6 @@ ccs_tuner_suggest(ccs_tuner_t          tuner,
 	_ccs_tuner_ops_t *ops = ccs_tuner_get_ops(tuner);
 	CCS_REFUTE(!ops->suggest, CCS_UNSUPPORTED_OPERATION);
 	CCS_CHECK_PTR(configuration);
-	CCS_VALIDATE(ops->suggest(tuner->data, configuration));
+	CCS_VALIDATE(ops->suggest(tuner, configuration));
 	return CCS_SUCCESS;
 }

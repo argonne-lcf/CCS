@@ -45,12 +45,10 @@ _ccs_deserialize_bin_ccs_hyperparameter_categorical_data(
 		const char                                  **buffer) {
 	CCS_VALIDATE(_ccs_deserialize_bin_ccs_hyperparameter_common_data(
 		&data->common_data, buffer_size, buffer));
-	uint64_t num_possible_values;
-	CCS_VALIDATE(_ccs_deserialize_bin_uint64(
-		&num_possible_values, buffer_size, buffer));
-	data->num_possible_values = num_possible_values;
+	CCS_VALIDATE(_ccs_deserialize_bin_size(
+		&data->num_possible_values, buffer_size, buffer));
 	data->possible_values =
-		(ccs_datum_t *)malloc(num_possible_values*sizeof(ccs_datum_t));
+		(ccs_datum_t *)malloc(data->num_possible_values*sizeof(ccs_datum_t));
 	CCS_REFUTE(!data->possible_values, CCS_OUT_OF_MEMORY);
 	for (size_t i = 0; i < data->num_possible_values; i++)
 		CCS_VALIDATE(_ccs_deserialize_bin_ccs_datum(

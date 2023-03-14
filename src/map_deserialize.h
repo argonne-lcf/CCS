@@ -20,13 +20,11 @@ _ccs_deserialize_bin_ccs_map_data(
 		_ccs_map_data_mock_t  *data,
 		size_t                *buffer_size,
 		const char           **buffer) {
-	uint64_t num_pairs;
-	CCS_VALIDATE(_ccs_deserialize_bin_uint64(
-		&num_pairs, buffer_size, buffer));
-	data->num_pairs = num_pairs;
-	data->pairs = (_ccs_map_pair_t *)malloc(num_pairs*sizeof(_ccs_map_pair_t));
+	CCS_VALIDATE(_ccs_deserialize_bin_size(
+		&data->num_pairs, buffer_size, buffer));
+	data->pairs = (_ccs_map_pair_t *)malloc(data->num_pairs*sizeof(_ccs_map_pair_t));
 	CCS_REFUTE(!data->pairs, CCS_OUT_OF_MEMORY);
-	for (size_t i = 0; i < num_pairs; i++) {
+	for (size_t i = 0; i < data->num_pairs; i++) {
 		CCS_VALIDATE(_ccs_deserialize_bin_ccs_datum(
 			&data->pairs[i].key, buffer_size, buffer));
 		CCS_VALIDATE(_ccs_deserialize_bin_ccs_datum(

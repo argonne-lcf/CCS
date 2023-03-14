@@ -28,13 +28,12 @@ _ccs_deserialize_bin_ccs_evaluation_data(
 }
 
 static inline ccs_error_t
-_ccs_deserialize_bin_evaluation(
+_ccs_deserialize_bin_ccs_evaluation(
 		ccs_evaluation_t                   *evaluation_ret,
 		uint32_t                            version,
 		size_t                             *buffer_size,
 		const char                        **buffer,
 		_ccs_object_deserialize_options_t  *opts) {
-	CCS_CHECK_PTR(opts);
 	CCS_CHECK_OBJ(opts->handle_map, CCS_MAP);
 	_ccs_object_deserialize_options_t new_opts = *opts;
 	_ccs_object_internal_t obj;
@@ -88,7 +87,7 @@ _ccs_evaluation_deserialize(
 		_ccs_object_deserialize_options_t  *opts) {
 	switch(format) {
 	case CCS_SERIALIZE_FORMAT_BINARY:
-		CCS_VALIDATE(_ccs_deserialize_bin_evaluation(
+		CCS_VALIDATE(_ccs_deserialize_bin_ccs_evaluation(
 			evaluation_ret, version, buffer_size, buffer, opts));
 		break;
 	default:

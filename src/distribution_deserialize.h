@@ -130,11 +130,9 @@ _ccs_deserialize_bin_ccs_distribution_roulette_data(
 		const char                             **buffer) {
 	CCS_VALIDATE(_ccs_deserialize_bin_ccs_distribution_common_data(
 		&data->common_data, buffer_size, buffer));
-	uint64_t num_areas;
-	CCS_VALIDATE(_ccs_deserialize_bin_uint64(
-		&num_areas, buffer_size, buffer));
-	data->num_areas = num_areas;
-	data->areas = (ccs_float_t *)malloc(num_areas*sizeof(ccs_float_t));
+	CCS_VALIDATE(_ccs_deserialize_bin_size(
+		&data->num_areas, buffer_size, buffer));
+	data->areas = (ccs_float_t *)malloc(data->num_areas*sizeof(ccs_float_t));
 	CCS_REFUTE(!data->areas, CCS_OUT_OF_MEMORY);
 	for (size_t i = 0; i < data->num_areas; i++)
 		CCS_VALIDATE(_ccs_deserialize_bin_ccs_float(
@@ -192,10 +190,8 @@ _ccs_deserialize_bin_ccs_distribution_mixture_data(
 	new_opts.handle_map = NULL;
 	CCS_VALIDATE(_ccs_deserialize_bin_ccs_distribution_common_data(
 		&data->common_data, buffer_size, buffer));
-	uint64_t num_distributions;
-	CCS_VALIDATE(_ccs_deserialize_bin_uint64(
-		&num_distributions, buffer_size, buffer));
-	data->num_distributions = num_distributions;
+	CCS_VALIDATE(_ccs_deserialize_bin_size(
+		&data->num_distributions, buffer_size, buffer));
 	data->distributions = (ccs_distribution_t *)
 		calloc(data->num_distributions, sizeof(ccs_distribution_t));
 	CCS_REFUTE(!data->distributions, CCS_OUT_OF_MEMORY);
@@ -259,10 +255,8 @@ _ccs_deserialize_bin_ccs_distribution_multivariate_data(
 	new_opts.handle_map = NULL;
 	CCS_VALIDATE(_ccs_deserialize_bin_ccs_distribution_common_data(
 		&data->common_data, buffer_size, buffer));
-	uint64_t num_distributions;
-	CCS_VALIDATE(_ccs_deserialize_bin_uint64(
-		&num_distributions, buffer_size, buffer));
-	data->num_distributions = num_distributions;
+	CCS_VALIDATE(_ccs_deserialize_bin_size(
+		&data->num_distributions, buffer_size, buffer));
 	data->distributions = (ccs_distribution_t *)
 		calloc(data->num_distributions, sizeof(ccs_distribution_t));
 	CCS_REFUTE(!data->distributions, CCS_OUT_OF_MEMORY);
