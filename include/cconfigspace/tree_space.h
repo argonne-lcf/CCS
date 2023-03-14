@@ -14,7 +14,7 @@ extern "C" {
  * the tree before evaluating these configuration values or node; in a dynamic
  * tree space, when querying a configuration validity, node or values, a
  * callback will be invoked to define the missing children on the configuration
- * path. Sampling a dynamic tree, by itself, space does not modify the tree.
+ * path. Sampling a dynamic tree space, by itself, does not modify the tree.
  */
 
 /**
