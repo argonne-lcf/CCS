@@ -34,7 +34,9 @@ CCONFIGSPACE_TESTS = \
 	test_error_stack \
 	test_tree \
 	test_static_tree_space \
-	test_dynamic_tree_space
+	test_dynamic_tree_space \
+	test_random_tree_tuner \
+	test_user_defined_tree_tuner
 
 # unit tests
 UNIT_TESTS = \

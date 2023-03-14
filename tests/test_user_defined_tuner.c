@@ -137,7 +137,7 @@ void test() {
 	ccs_objective_space_t     ospace;
 	ccs_expression_t          expression;
 	ccs_tuner_t               tuner, tuner_copy;
-	ccs_error_t              err;
+	ccs_error_t               err;
 	tuner_last_t             *tuner_data;
 	ccs_datum_t               d;
 	char                     *buff;
