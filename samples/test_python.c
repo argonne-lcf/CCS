@@ -112,9 +112,27 @@ void test() {
 
 	PyObject *pName, *pModule, *pFunc;
 	PyObject *pArgs, *pValue, *pHandle, *pAddr;
-
+#if PY_VERSION_HEX < 0x030b0000
 	Py_SetProgramName(L"test_python");
 	Py_Initialize();
+#else
+	PyStatus status;
+	PyConfig config;
+	PyConfig_InitPythonConfig(&config);
+	config.configure_c_stdio = 0;
+	config.install_signal_handlers = 0;
+	config.parse_argv = 0;
+	config.pathconfig_warnings = 0;
+	status = PyConfig_SetString(&config, &config.program_name, L"test_python");
+	if (PyStatus_Exception(status)) {
+		goto exception;
+	}
+	status = Py_InitializeFromConfig(&config);
+	if (PyStatus_Exception(status)) {
+		goto exception;
+	}
+	PyConfig_Clear(&config);
+#endif
 	PyRun_SimpleString("import sys\n"
 	                   "sys.path.insert(1, '.')\n"
 	                   "sys.path.insert(1, '..')\n");
@@ -153,6 +171,12 @@ void test() {
 	err = ccs_release_object(cs);
 	assert( err == CCS_SUCCESS );
 	Py_Finalize();
+	return;
+#if PY_VERSION_HEX >= 0x030b0000
+exception:
+	PyConfig_Clear(&config);
+	Py_ExitStatusException(status);
+#endif
 }
 
 int main() {
