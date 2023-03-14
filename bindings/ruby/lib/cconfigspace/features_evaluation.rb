@@ -48,7 +48,7 @@ module CCS
     end
 
     def num_objective_values
-      @num_values ||= begin
+      @num_objective_values ||= begin
         ptr = MemoryPointer::new(:size_t)
         CCS.error_check CCS.ccs_features_evaluation_get_objective_values(@handle, 0, nil, ptr)
         ptr.read_size_t
@@ -56,7 +56,7 @@ module CCS
     end
 
     def objective_values
-      count = num_values
+      count = num_objective_values
       return [] if count == 0
       values = MemoryPointer::new(:ccs_datum_t, count)
       CCS.error_check CCS.ccs_features_evaluation_get_objective_values(@handle, count, values, nil)

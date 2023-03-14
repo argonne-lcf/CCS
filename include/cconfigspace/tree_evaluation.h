@@ -195,7 +195,7 @@ ccs_tree_evaluation_get_value_by_name(
 extern ccs_error_t
 ccs_tree_evaluation_check(
 	ccs_tree_evaluation_t  evaluation,
-	ccs_bool_t       *is_valid_ret);
+	ccs_bool_t            *is_valid_ret);
 
 /**
  * Get the value of an objective for a valid tree evaluation in the context of its
@@ -214,8 +214,8 @@ ccs_tree_evaluation_check(
 extern ccs_error_t
 ccs_tree_evaluation_get_objective_value(
 	ccs_tree_evaluation_t  evaluation,
-	size_t            index,
-	ccs_datum_t      *value_ret);
+	size_t                 index,
+	ccs_datum_t           *value_ret);
 
 /**
  * Get the values of the objectives for a valid tree evaluation in the context of its
@@ -238,9 +238,9 @@ ccs_tree_evaluation_get_objective_value(
 extern ccs_error_t
 ccs_tree_evaluation_get_objective_values(
 	ccs_tree_evaluation_t  evaluation,
-	size_t            num_values,
-	ccs_datum_t      *values,
-	size_t           *num_values_ret);
+	size_t                 num_values,
+	ccs_datum_t           *values,
+	size_t                *num_values_ret);
 
 /**
  * Compute a hash value for the tree evaluation by hashing together the objective
@@ -256,7 +256,7 @@ ccs_tree_evaluation_get_objective_values(
 extern ccs_error_t
 ccs_tree_evaluation_hash(
 	ccs_tree_evaluation_t  evaluation,
-	ccs_hash_t       *hash_ret);
+	ccs_hash_t            *hash_ret);
 
 /**
  * Define a strict ordering of tree evaluation instances. Objective space,

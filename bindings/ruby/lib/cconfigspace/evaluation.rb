@@ -15,7 +15,6 @@ module CCS
   attach_function :ccs_evaluation_get_configuration, [:ccs_evaluation_t, :pointer], :ccs_error_t
   attach_function :ccs_evaluation_get_error, [:ccs_evaluation_t, :pointer], :ccs_error_t
   attach_function :ccs_evaluation_set_error, [:ccs_evaluation_t, :ccs_result_t], :ccs_error_t
-  attach_function :ccs_evaluation_get_objective_value, [:ccs_evaluation_t, :size_t, :pointer], :ccs_error_t
   attach_function :ccs_evaluation_get_objective_values, [:ccs_evaluation_t, :size_t, :pointer, :pointer], :ccs_error_t
   attach_function :ccs_evaluation_compare, [:ccs_evaluation_t, :ccs_evaluation_t, :pointer], :ccs_error_t
   attach_function :ccs_evaluation_check, [:ccs_evaluation_t, :pointer], :ccs_error_t
@@ -58,7 +57,7 @@ module CCS
     end
 
     def num_objective_values
-      @num_values ||= begin
+      @num_objective_values ||= begin
         ptr = MemoryPointer::new(:size_t)
         CCS.error_check CCS.ccs_evaluation_get_objective_values(@handle, 0, nil, ptr)
         ptr.read_size_t
@@ -66,7 +65,7 @@ module CCS
     end
 
     def objective_values
-      count = num_values
+      count = num_objective_values
       return [] if count == 0
       values = MemoryPointer::new(:ccs_datum_t, count)
       CCS.error_check CCS.ccs_evaluation_get_objective_values(@handle, count, values, nil)

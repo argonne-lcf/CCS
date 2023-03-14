@@ -273,4 +273,17 @@ class DynamicTreeSpace(TreeSpace):
     _register_vector(res.handle, [delete_wrapper, get_child_wrapper, serialize_wrapper, deserialize_wrapper, delete_wrapper_func, get_child_wrapper_func, serialize_wrapper_func, deserialize_wrapper_func, tree_space_data])
     return res
 
+  @property
+  def tree_space_data(self):
+    if hasattr(self, "_tree_space_data"):
+      return self._tree_space_data
+    v = ct.c_void_p()
+    res = ccs_dynamic_tree_space_get_tree_space_data(self.handle, ct.byref(v))
+    Error.check(res)
+    if v:
+      self._tree_space_data = ct.cast(v, ct.py_object).value
+    else:
+      self._tree_space_data = None
+    return self._tuner_data
+
 from .tree_configuration import TreeConfiguration
