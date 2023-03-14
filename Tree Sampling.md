@@ -15,10 +15,11 @@ $\mathcal{O}(n)$
 space and
 $\mathcal{O}(\log n)$
 time, requiring 1 random sample. Gather the nodes in an array and create a roulette distribution with uniform weights
-$\left(\begin{array}[b]{r}w_1 & \dots & w_n \end{array}\right)$
+```math
+\left(\begin{array}[b]{r}w_1 & \dots & w_n \end{array}\right)
+```
 to sample the index space.
 Both operations are $\mathcal{O}(n)$ in time.
-TODO: insert ref.
 
 #### Hierarchical sampling strategy
 
@@ -31,7 +32,9 @@ $i$
 is given by
 $cw_i$
 is the vector:
-$\left(\begin{array}[b]{r}cw_1 & \dots & cw_m & 1 \end{array}\right)$
+```math
+\left(\begin{array}[b]{r}cw_1 & \dots & cw_m & 1 \end{array}\right)
+```
 The overhead of sampling is still
 $\mathcal{O}(n)$
 space, but the time overhead depends on the tree geometry and is
