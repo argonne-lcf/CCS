@@ -17,7 +17,7 @@ typedef struct _ccs_rng_ops_s _ccs_rng_ops_t;
 
 struct _ccs_rng_s {
 	_ccs_object_internal_t obj;
-	_ccs_rng_data_t       *data;
+	_ccs_rng_data_t *data;
 };
 
 #endif //_RNG_INTERNAL_H

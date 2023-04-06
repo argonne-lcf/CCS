@@ -3,9 +3,9 @@
 #include "utarray.h"
 
 struct _ccs_error_stack_data_s {
-	ccs_error_t error;
-	const char *msg;
-	UT_array   *elems;
+	ccs_error_t  error;
+	const char  *msg;
+	UT_array    *elems;
 };
 typedef struct _ccs_error_stack_data_s _ccs_error_stack_data_t;
 

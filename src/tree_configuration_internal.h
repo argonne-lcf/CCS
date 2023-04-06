@@ -15,9 +15,9 @@ struct _ccs_tree_configuration_s {
 };
 
 struct _ccs_tree_configuration_data_s {
-	ccs_tree_space_t tree_space;
-	size_t           position_size;
-	size_t          *position;
+	ccs_tree_space_t  tree_space;
+	size_t            position_size;
+	size_t           *position;
 };
 
 #endif //_TREE_CONFIGURATION_INTERNAL_H
