@@ -40,7 +40,9 @@ typedef struct ccs_interval_s ccs_interval_t;
  * @return #CCS_INVALID_VALUE if \p interval or \p empty_ret are NULL
  */
 extern ccs_error_t
-ccs_interval_empty(ccs_interval_t *interval, ccs_bool_t *empty_ret);
+ccs_interval_empty(
+	ccs_interval_t *interval,
+	ccs_bool_t *empty_ret);
 
 /**
  * Compute the intersection of two intervals.
@@ -55,9 +57,10 @@ ccs_interval_empty(ccs_interval_t *interval, ccs_bool_t *empty_ret);
  *                            over different data types
  */
 extern ccs_error_t
-ccs_interval_intersect(ccs_interval_t *interval1,
-		       ccs_interval_t *interval2,
-                       ccs_interval_t *interval_res);
+ccs_interval_intersect(
+	ccs_interval_t *interval1,
+	ccs_interval_t *interval2,
+	ccs_interval_t *interval_res);
 
 /**
  * Compute the union of two intervals.
@@ -72,9 +75,10 @@ ccs_interval_intersect(ccs_interval_t *interval1,
  *                            over different data types
  */
 extern ccs_error_t
-ccs_interval_union(ccs_interval_t *interval1,
-		   ccs_interval_t *interval2,
-                   ccs_interval_t *interval_res);
+ccs_interval_union(
+	ccs_interval_t *interval1,
+	ccs_interval_t *interval2,
+	ccs_interval_t *interval_res);
 
 /**
  * Test the equality of two intervals.
@@ -89,9 +93,10 @@ ccs_interval_union(ccs_interval_t *interval1,
  *                            over different data types
  */
 extern ccs_error_t
-ccs_interval_equal(ccs_interval_t *interval1,
-                   ccs_interval_t *interval2,
-                   ccs_bool_t     *equal_res);
+ccs_interval_equal(
+	ccs_interval_t *interval1,
+	ccs_interval_t *interval2,
+	ccs_bool_t     *equal_res);
 
 /**
  * Test the inclusion of a numeric value into an interval. The user must pass a
@@ -103,7 +108,9 @@ ccs_interval_equal(ccs_interval_t *interval1,
  *                    interval is NULL
  */
 extern ccs_bool_t
-ccs_interval_include(ccs_interval_t *interval, ccs_numeric_t value);
+ccs_interval_include(
+	ccs_interval_t *interval,
+	ccs_numeric_t value);
 #ifdef __cplusplus
 }
 #endif

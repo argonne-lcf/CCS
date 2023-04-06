@@ -62,8 +62,8 @@ ccs_create_features_evaluation(
  */
 extern ccs_error_t
 ccs_features_evaluation_get_objective_space(
-		ccs_features_evaluation_t  features_evaluation,
-		ccs_objective_space_t     *objective_space_ret);
+	ccs_features_evaluation_t  features_evaluation,
+	ccs_objective_space_t     *objective_space_ret);
 
 /**
  * Get the configuration associated with a features evaluation.
@@ -77,8 +77,8 @@ ccs_features_evaluation_get_objective_space(
  */
 extern ccs_error_t
 ccs_features_evaluation_get_configuration(
-		ccs_features_evaluation_t  features_evaluation,
-		ccs_configuration_t       *configuration_ret);
+	ccs_features_evaluation_t  features_evaluation,
+	ccs_configuration_t       *configuration_ret);
 
 /**
  * Get the features associated with a features evaluation.
@@ -92,8 +92,8 @@ ccs_features_evaluation_get_configuration(
  */
 extern ccs_error_t
 ccs_features_evaluation_get_features(
-		ccs_features_evaluation_t  features_evaluation,
-		ccs_features_t            *features_ret);
+	ccs_features_evaluation_t  features_evaluation,
+	ccs_features_t            *features_ret);
 
 /**
  * Get the error code associated with a features evaluation.
@@ -120,14 +120,15 @@ ccs_features_evaluation_get_error(
  *                              features evaluation
  */
 extern ccs_error_t
-ccs_features_evaluation_set_error(ccs_features_evaluation_t features_evaluation,
-                                  ccs_result_t              error);
+ccs_features_evaluation_set_error(
+	ccs_features_evaluation_t features_evaluation,
+	ccs_result_t              error);
 
 /**
  * Get the value of the parameter at the given index.
  * @param[in] features_evaluation
  * @param[in] index index of the parameter in the associated objective
-                    space
+ *                  space
  * @param[out] value_ret a pointer to the variable that will hold the value
  * @return #CCS_SUCCESS on success
  * @return #CCS_INVALID_OBJECT if \p binding is not a valid CCS features
@@ -159,9 +160,10 @@ ccs_features_evaluation_get_value(
  *                             string
  */
 extern ccs_error_t
-ccs_features_evaluation_set_value(ccs_features_evaluation_t features_evaluation,
-                                  size_t                    index,
-                                  ccs_datum_t               value);
+ccs_features_evaluation_set_value(
+	ccs_features_evaluation_t features_evaluation,
+	size_t                    index,
+	ccs_datum_t               value);
 
 /**
  * Get all the values in a features evaluation.
@@ -223,9 +225,9 @@ ccs_features_evaluation_get_value_by_name(
  */
 extern ccs_error_t
 ccs_features_evaluation_get_objective_value(
-		ccs_features_evaluation_t  features_evaluation,
-		size_t                     index,
-		ccs_datum_t               *value_ret);
+	ccs_features_evaluation_t  features_evaluation,
+	size_t                     index,
+	ccs_datum_t               *value_ret);
 
 /**
  * Get the values of the objectives for a valid features evaluation in the
@@ -248,10 +250,10 @@ ccs_features_evaluation_get_objective_value(
  */
 extern ccs_error_t
 ccs_features_evaluation_get_objective_values(
-		ccs_features_evaluation_t  features_evaluation,
-		size_t                     num_values,
-		ccs_datum_t               *values,
-		size_t                    *num_values_ret);
+	ccs_features_evaluation_t  features_evaluation,
+	size_t                     num_values,
+	ccs_datum_t               *values,
+	size_t                    *num_values_ret);
 
 /**
  * Compute a hash value for a features evaluation by hashing together the
@@ -266,8 +268,9 @@ ccs_features_evaluation_get_objective_values(
  * @return #CCS_INVALID_VALUE if \p hash_ret is NULL
  */
 extern ccs_error_t
-ccs_features_evaluation_hash(ccs_features_evaluation_t  features_evaluation,
-                             ccs_hash_t                *hash_ret);
+ccs_features_evaluation_hash(
+	ccs_features_evaluation_t  features_evaluation,
+	ccs_hash_t                *hash_ret);
 
 /**
  * Define a strict ordering of features evaluation instances. Objective space,
@@ -336,8 +339,9 @@ ccs_features_evaluation_compare(
  *                                  space
  */
 extern ccs_error_t
-ccs_features_evaluation_check(ccs_features_evaluation_t  features_evaluation,
-                              ccs_bool_t                *is_valid_ret);
+ccs_features_evaluation_check(
+	ccs_features_evaluation_t  features_evaluation,
+	ccs_bool_t                *is_valid_ret);
 
 #ifdef __cplusplus
 }

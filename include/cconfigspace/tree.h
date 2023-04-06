@@ -325,9 +325,9 @@ ccs_tree_set_bias(
  */
 extern ccs_error_t
 ccs_tree_sample(
-	ccs_tree_t          tree,
-	ccs_rng_t           rng,
-	size_t             *index_ret);
+	ccs_tree_t  tree,
+	ccs_rng_t   rng,
+	size_t     *index_ret);
 
 /**
  * Sample the child index space of a a tree node.  If the returned index is
@@ -346,10 +346,10 @@ ccs_tree_sample(
  */
 extern ccs_error_t
 ccs_tree_samples(
-	ccs_tree_t          tree,
-	ccs_rng_t           rng,
-	size_t              num_indices,
-	size_t             *indices);
+	ccs_tree_t  tree,
+	ccs_rng_t   rng,
+	size_t      num_indices,
+	size_t     *indices);
 
 #ifdef __cplusplus
 }

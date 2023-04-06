@@ -42,8 +42,9 @@ typedef enum ccs_tuner_type_e ccs_tuner_type_t;
  * @return #CCS_INVALID_VALUE if \p type_ret is NULL
  */
 extern ccs_error_t
-ccs_tuner_get_type(ccs_tuner_t       tuner,
-                   ccs_tuner_type_t *type_ret);
+ccs_tuner_get_type(
+	ccs_tuner_t       tuner,
+	ccs_tuner_type_t *type_ret);
 
 /**
  * Get the name of a tuner.
@@ -55,8 +56,9 @@ ccs_tuner_get_type(ccs_tuner_t       tuner,
  * @return #CCS_INVALID_OBJECT if \p tuner is not a valid CCS tuner
  */
 extern ccs_error_t
-ccs_tuner_get_name(ccs_tuner_t   tuner,
-                   const char  **name_ret);
+ccs_tuner_get_name(
+	ccs_tuner_t   tuner,
+	const char  **name_ret);
 
 /**
  * Get the associated configuration space.
@@ -82,8 +84,9 @@ ccs_tuner_get_configuration_space(
  * @return #CCS_INVALID_VALUE if \p objective_space_ret is NULL
  */
 extern ccs_error_t
-ccs_tuner_get_objective_space(ccs_tuner_t            tuner,
-                              ccs_objective_space_t *objective_space_ret);
+ccs_tuner_get_objective_space(
+	ccs_tuner_t            tuner,
+	ccs_objective_space_t *objective_space_ret);
 
 /**
  * Ask a tuner for a set of configurations to evaluate. Configuration's
@@ -116,10 +119,11 @@ ccs_tuner_get_objective_space(ccs_tuner_t            tuner,
  *                             NULL
  */
 extern ccs_error_t
-ccs_tuner_ask(ccs_tuner_t          tuner,
-              size_t               num_configurations,
-              ccs_configuration_t *configurations,
-              size_t              *num_configurations_ret);
+ccs_tuner_ask(
+	ccs_tuner_t          tuner,
+	size_t               num_configurations,
+	ccs_configuration_t *configurations,
+	size_t              *num_configurations_ret);
 
 /**
  * Give a list of results to a tuner through evaluations.
@@ -139,9 +143,10 @@ ccs_tuner_ask(ccs_tuner_t          tuner,
  *                             internal data structures
  */
 extern ccs_error_t
-ccs_tuner_tell(ccs_tuner_t       tuner,
-               size_t            num_evaluations,
-               ccs_evaluation_t *evaluations);
+ccs_tuner_tell(
+	ccs_tuner_t       tuner,
+	size_t            num_evaluations,
+	ccs_evaluation_t *evaluations);
 
 /**
  * Ask a tuner to suggest a good configuration.
@@ -157,8 +162,9 @@ ccs_tuner_tell(ccs_tuner_t       tuner,
  *                             configurations
  */
 extern ccs_error_t
-ccs_tuner_suggest(ccs_tuner_t          tuner,
-                  ccs_configuration_t *configuration);
+ccs_tuner_suggest(
+	ccs_tuner_t          tuner,
+	ccs_configuration_t *configuration);
 
 /**
  * Ask a tuner for the discovered Pareto front. For single objective objective
@@ -177,10 +183,11 @@ ccs_tuner_suggest(ccs_tuner_t          tuner,
  *                             \p num_evaluations_ret is NULL
  */
 extern ccs_error_t
-ccs_tuner_get_optimums(ccs_tuner_t       tuner,
-                       size_t            num_evaluations,
-                       ccs_evaluation_t *evaluations,
-                       size_t           *num_evaluations_ret);
+ccs_tuner_get_optimums(
+	ccs_tuner_t       tuner,
+	size_t            num_evaluations,
+	ccs_evaluation_t *evaluations,
+	size_t           *num_evaluations_ret);
 
 /**
  * Ask a tuner for the evaluation history.
@@ -198,10 +205,11 @@ ccs_tuner_get_optimums(ccs_tuner_t       tuner,
  *                             \p num_evaluations_ret is NULL
  */
 extern ccs_error_t
-ccs_tuner_get_history(ccs_tuner_t       tuner,
-                      size_t            num_evaluations,
-                      ccs_evaluation_t *evaluations,
-                      size_t           *num_evaluations_ret);
+ccs_tuner_get_history(
+	ccs_tuner_t       tuner,
+	size_t            num_evaluations,
+	ccs_evaluation_t *evaluations,
+	size_t           *num_evaluations_ret);
 
 /**
  * Create a new random tuner. The random tuner should be viewed as a baseline
@@ -220,10 +228,11 @@ ccs_tuner_get_history(ccs_tuner_t       tuner,
  *                             new tuner instance
  */
 extern ccs_error_t
-ccs_create_random_tuner(const char                *name,
-                        ccs_configuration_space_t  configuration_space,
-                        ccs_objective_space_t      objective_space,
-                        ccs_tuner_t               *tuner_ret);
+ccs_create_random_tuner(
+	const char                *name,
+	ccs_configuration_space_t  configuration_space,
+	ccs_objective_space_t      objective_space,
+	ccs_tuner_t               *tuner_ret);
 
 /**
  * A structure that define the callbacks the user must provide to create a user
@@ -269,16 +278,20 @@ struct ccs_user_defined_tuner_vector_s {
 		ccs_tuner_t          tuner,
 		ccs_configuration_t *configuration);
 
-	/** The tuner serialization interface, can be NULL, in which case
-            common tuner data, history and optimums will be serialized */
+	/**
+	 * The tuner serialization interface, can be NULL, in which case
+	 * common tuner data, history and optimums will be serialized
+	 */
 	ccs_error_t (*serialize_user_state)(
 		ccs_tuner_t   tuner,
 		size_t        sate_size,
 		void         *state,
 		size_t       *state_size_ret);
 
-	/** The tuner deserialization interface, can be NULL, in which case,
-            the history will be set through the tell interface */
+	/**
+	 * The tuner deserialization interface, can be NULL, in which case,
+	 * the history will be set through the tell interface
+	 */
 	ccs_error_t (*deserialize_state)(
 		ccs_tuner_t       tuner,
 		size_t            size_history,
@@ -315,12 +328,13 @@ typedef struct ccs_user_defined_tuner_vector_s ccs_user_defined_tuner_vector_t;
  *                             new tuner instance
  */
 extern ccs_error_t
-ccs_create_user_defined_tuner(const char                      *name,
-                              ccs_configuration_space_t        configuration_space,
-                              ccs_objective_space_t            objective_space,
-                              ccs_user_defined_tuner_vector_t *vector,
-                              void                            *tuner_data,
-                              ccs_tuner_t                     *tuner_ret);
+ccs_create_user_defined_tuner(
+	const char                      *name,
+	ccs_configuration_space_t        configuration_space,
+	ccs_objective_space_t            objective_space,
+	ccs_user_defined_tuner_vector_t *vector,
+	void                            *tuner_data,
+	ccs_tuner_t                     *tuner_ret);
 
 /**
  * Get the user defined tuner internal data pointer.
@@ -332,8 +346,9 @@ ccs_create_user_defined_tuner(const char                      *name,
  * @return #CCS_INVALID_VALUE if \p tuner_data_ret is NULL
  */
 extern ccs_error_t
-ccs_user_defined_tuner_get_tuner_data(ccs_tuner_t   tuner,
-                                      void        **tuner_data_ret);
+ccs_user_defined_tuner_get_tuner_data(
+	ccs_tuner_t   tuner,
+	void        **tuner_data_ret);
 
 #ifdef __cplusplus
 }

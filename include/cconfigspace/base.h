@@ -82,7 +82,7 @@ typedef struct _ccs_distribution_s        *ccs_distribution_t;
 /**
  * An opaque type defining a CCS parameter.
  */
-typedef struct _ccs_parameter_s      *ccs_parameter_t;
+typedef struct _ccs_parameter_s           *ccs_parameter_t;
 /**
  * An opaque type defining a CCS expression.
  */
@@ -184,7 +184,7 @@ enum ccs_error_e {
 	/** The provided expression is invalid */
 	CCS_INVALID_EXPRESSION =       -6,
 	/** The provided parameter is invalid */
-	CCS_INVALID_PARAMETER =   -7,
+	CCS_INVALID_PARAMETER =        -7,
 	/** The provided configuration is invalid */
 	CCS_INVALID_CONFIGURATION =    -8,
 	/** The parameter name is invalid */
@@ -229,8 +229,8 @@ enum ccs_error_e {
 	CCS_INVALID_TREE =            -28,
 	/** The provided tree space is invalid */
 	CCS_INVALID_TREE_SPACE =      -29,
-        /** The provided tree tuner is invalid */
-        CCS_INVALID_TREE_TUNER =      -30,
+	/** The provided tree tuner is invalid */
+	CCS_INVALID_TREE_TUNER =      -30,
 	/** Guard */
 	CCS_ERROR_MIN =               -31,
 	/** Try forcing 32 bits value for bindings */
@@ -253,7 +253,7 @@ typedef int32_t ccs_result_t;
 enum ccs_object_type_e {
 	CCS_RNG,                 /*!< A random number generator */
 	CCS_DISTRIBUTION,        /*!< A numerical distribution */
-	CCS_PARAMETER,      /*!< A parameter */
+	CCS_PARAMETER,           /*!< A parameter */
 	CCS_EXPRESSION,          /*!< An arithmetic expression */
 	CCS_CONFIGURATION_SPACE, /*!< A configuration space */
 	CCS_CONFIGURATION,       /*!< A configuration */
@@ -609,7 +609,9 @@ ccs_fini();
  *                             CCS error code
  */
 extern ccs_error_t
-ccs_get_error_name(ccs_error_t error, const char **name);
+ccs_get_error_name(
+	ccs_error_t error,
+	const char **name);
 
 /**
  * Query the library API version.
@@ -625,7 +627,8 @@ ccs_get_version();
  * @return #CCS_INVALID_OBJECT if the object is found to be invalid
  */
 extern ccs_error_t
-ccs_retain_object(ccs_object_t object);
+ccs_retain_object(
+	ccs_object_t object);
 
 /**
  * Release a CCS object, decrementing the internal reference counting.
@@ -637,7 +640,8 @@ ccs_retain_object(ccs_object_t object);
  * @return an error code given by the object destructor
  */
 extern ccs_error_t
-ccs_release_object(ccs_object_t object);
+ccs_release_object(
+	ccs_object_t object);
 
 /**
  * Get a CCS object type.
@@ -649,8 +653,9 @@ ccs_release_object(ccs_object_t object);
  * @return #CCS_INVALID_VALUE if type_ret is NULL
  */
 extern ccs_error_t
-ccs_object_get_type(ccs_object_t       object,
-                    ccs_object_type_t *type_ret);
+ccs_object_get_type(
+	ccs_object_t       object,
+	ccs_object_type_t *type_ret);
 
 /**
  * Get an object internal reference counting.
@@ -662,13 +667,16 @@ ccs_object_get_type(ccs_object_t       object,
  * @return #CCS_INVALID_VALUE if \p refcount_ret is NULL
  */
 extern ccs_error_t
-ccs_object_get_refcount(ccs_object_t  object,
-                        int32_t      *refcount_ret);
+ccs_object_get_refcount(
+	ccs_object_t  object,
+	int32_t      *refcount_ret);
 
 /**
  * The type of CCS object destruction callbacks.
  */
-typedef void (*ccs_object_release_callback_t)(ccs_object_t object, void *user_data);
+typedef void (*ccs_object_release_callback_t)(
+	ccs_object_t object,
+	void *user_data);
 
 /**
  * Attach a destruction callback to a CCS object.
@@ -681,9 +689,10 @@ typedef void (*ccs_object_release_callback_t)(ccs_object_t object, void *user_da
  * @return #CCS_INVALID_VALUE if \p callback is NULL
  */
 extern ccs_error_t
-ccs_object_set_destroy_callback(ccs_object_t                   object,
-                                ccs_object_release_callback_t  callback,
-                                void                          *user_data);
+ccs_object_set_destroy_callback(
+	ccs_object_t                   object,
+	ccs_object_release_callback_t  callback,
+	void                          *user_data);
 
 /**
  * Set the associated `user_data` pointer of a CCS object.
@@ -693,8 +702,9 @@ ccs_object_set_destroy_callback(ccs_object_t                   object,
  * @return #CCS_INVALID_OBJECT if \p object is found to be invalid
  */
 extern ccs_error_t
-ccs_object_set_user_data(ccs_object_t  object,
-                         void         *user_data);
+ccs_object_set_user_data(
+	ccs_object_t  object,
+	void         *user_data);
 
 /**
  * Get the associated `user_data` pointer of a CCS object.
@@ -706,8 +716,9 @@ ccs_object_set_user_data(ccs_object_t  object,
  * @return #CCS_INVALID_VALUE if \p user_data_ret is NULL
  */
 extern ccs_error_t
-ccs_object_get_user_data(ccs_object_t   object,
-                         void         **user_data_ret);
+ccs_object_get_user_data(
+	ccs_object_t   object,
+	void         **user_data_ret);
 
 /**
  * The type of CCS object serialization callbacks.
@@ -751,9 +762,9 @@ typedef ccs_error_t
  */
 extern ccs_error_t
 ccs_object_set_serialize_callback(
-		ccs_object_t                     object,
-		ccs_object_serialize_callback_t  callback,
-		void                            *user_data);
+	ccs_object_t                     object,
+	ccs_object_serialize_callback_t  callback,
+	void                            *user_data);
 
 /**
  * The different serialization formats supported by CCS.
@@ -800,15 +811,15 @@ enum ccs_serialize_option_e {
 	/** Option list terminator */
 	CCS_SERIALIZE_OPTION_END = 0,
 	/** The file descriptor operation is non-blocking. The next parameter is
-         *  a pointer to a void * variable (initialized to NULL) that will hold
-         *  the state of the serialization in order to restart. The function
-         *  performing the operation will return #CCS_AGAIN if the operation has
-         *  not completed. The state is managed internally. */
+	 *  a pointer to a void * variable (initialized to NULL) that will hold
+	 *  the state of the serialization in order to restart. The function
+	 *  performing the operation will return #CCS_AGAIN if the operation has
+	 *  not completed. The state is managed internally. */
 	CCS_SERIALIZE_OPTION_NON_BLOCKING,
 	/** The next parameters are a serialization callback and it's user_data.
-         *  This callback will be called for all objects that have user_data set
-         *  and have not a serialization callback set via
-         *  ccs_object_set_serialize_callback */
+	 *  This callback will be called for all objects that have user_data set
+	 *  and have not a serialization callback set via
+	 *  ccs_object_set_serialize_callback */
 	CCS_SERIALIZE_OPTION_CALLBACK,
 	/** Guard */
 	CCS_SERIALIZE_OPTION_MAX,
@@ -837,21 +848,21 @@ enum ccs_deserialize_option_e {
 	/** Option list terminator */
 	CCS_DESERIALIZE_OPTION_END = 0,
 	/** The next parameter is a ccs_handle_map_t object that must contain
-         *  the mappings required to deserialize an object (usually bindings or
-         *  expressions). I given, will also add a mapping between the object
-         *  original handle and its current handle. */
+	 *  the mappings required to deserialize an object (usually bindings or
+	 *  expressions). I given, will also add a mapping between the object
+	 *  original handle and its current handle. */
 	CCS_DESERIALIZE_OPTION_HANDLE_MAP,
 	/** The next parameter is a pointer to a ccs object vector struct, for
-         *  user defined tuners */
+	 *  user defined tuners */
 	CCS_DESERIALIZE_OPTION_VECTOR,
 	/** The next parameter is a pointer to a ccs object internal data, for
-         *  user defined tuners */
+	 *  user defined tuners */
 	CCS_DESERIALIZE_OPTION_DATA,
 	/** The file descriptor operation is non-blocking. The next parameter is
-         *  a pointer to a void * variable (initialized to NULL) that will hold
-         *  the state of the serialization in order to restart. The function
-         *  performing the operation will return #CCS_AGAIN if the operation has
-         *  not completed. The state is managed internally. */
+	 *  a pointer to a void * variable (initialized to NULL) that will hold
+	 *  the state of the serialization in order to restart. The function
+	 *  performing the operation will return #CCS_AGAIN if the operation has
+	 *  not completed. The state is managed internally. */
 	CCS_DESERIALIZE_OPTION_NON_BLOCKING,
 	/** The next parameters are a deserialization callback and it's user_data.
 	 *  This callback will be called for all objects that had their
@@ -885,10 +896,11 @@ typedef enum ccs_deserialize_option_e ccs_deserialize_option_t;
  *                               for the requested operation
  */
 extern ccs_error_t
-ccs_object_serialize(ccs_object_t              object,
-                     ccs_serialize_format_t    format,
-                     ccs_serialize_operation_t operation,
-                     ...);
+ccs_object_serialize(
+	ccs_object_t              object,
+	ccs_serialize_format_t    format,
+	ccs_serialize_operation_t operation,
+	...);
 
 /**
  * Perform a deserialization operation and returns a new CCS object.
@@ -908,10 +920,11 @@ ccs_object_serialize(ccs_object_t              object,
  *                               for the requested operation
  */
 extern ccs_error_t
-ccs_object_deserialize(ccs_object_t              *object_ret,
-                       ccs_serialize_format_t     format,
-                       ccs_serialize_operation_t  operation,
-                       ...);
+ccs_object_deserialize(
+	ccs_object_t              *object_ret,
+	ccs_serialize_format_t     format,
+	ccs_serialize_operation_t  operation,
+	...);
 
 #ifdef __cplusplus
 }

@@ -55,8 +55,9 @@ ccs_configuration_space_get_name(
  *                              CCS rng
  */
 extern ccs_error_t
-ccs_configuration_space_set_rng(ccs_configuration_space_t configuration_space,
-                                ccs_rng_t                 rng);
+ccs_configuration_space_set_rng(
+	ccs_configuration_space_t configuration_space,
+	ccs_rng_t                 rng);
 
 /**
  * Get the internal rng of the configuration space.
@@ -68,8 +69,9 @@ ccs_configuration_space_set_rng(ccs_configuration_space_t configuration_space,
  * @return #CCS_INVALID_VALUE if \p rng_ret is NULL
  */
 extern ccs_error_t
-ccs_configuration_space_get_rng(ccs_configuration_space_t  configuration_space,
-                                ccs_rng_t                 *rng_ret);
+ccs_configuration_space_get_rng(
+	ccs_configuration_space_t  configuration_space,
+	ccs_rng_t                 *rng_ret);
 
 /**
  * Add a parameter to the configuration space.
@@ -98,7 +100,7 @@ ccs_configuration_space_get_rng(ccs_configuration_space_t  configuration_space,
 extern ccs_error_t
 ccs_configuration_space_add_parameter(
 	ccs_configuration_space_t configuration_space,
-	ccs_parameter_t      parameter,
+	ccs_parameter_t           parameter,
 	ccs_distribution_t        distribution);
 
 /**
@@ -137,7 +139,7 @@ extern ccs_error_t
 ccs_configuration_space_add_parameters(
 	ccs_configuration_space_t  configuration_space,
 	size_t                     num_parameters,
-	ccs_parameter_t      *parameters,
+	ccs_parameter_t           *parameters,
 	ccs_distribution_t        *distributions);
 
 /**
@@ -200,7 +202,7 @@ extern ccs_error_t
 ccs_configuration_space_get_parameter(
 	ccs_configuration_space_t  configuration_space,
 	size_t                     index,
-	ccs_parameter_t      *parameter_ret);
+	ccs_parameter_t           *parameter_ret);
 
 
 /**
@@ -244,7 +246,7 @@ extern ccs_error_t
 ccs_configuration_space_get_parameter_by_name(
 		ccs_configuration_space_t  configuration_space,
 		const char *               name,
-		ccs_parameter_t      *parameter_ret);
+		ccs_parameter_t           *parameter_ret);
 
 /**
  * Get the index of an parameter in the configuration space given its name.
@@ -281,7 +283,7 @@ ccs_configuration_space_get_parameter_index_by_name(
 extern ccs_error_t
 ccs_configuration_space_get_parameter_index(
 		ccs_configuration_space_t  configuration_space,
-		ccs_parameter_t       parameter,
+		ccs_parameter_t            parameter,
 		size_t                    *index_ret);
 
 /**
@@ -308,7 +310,7 @@ extern ccs_error_t
 ccs_configuration_space_get_parameter_indexes(
 		ccs_configuration_space_t  configuration_space,
 		size_t                     num_parameters,
-		ccs_parameter_t      *parameters,
+		ccs_parameter_t           *parameters,
 		size_t                    *indexes);
 
 /**
@@ -338,7 +340,7 @@ extern ccs_error_t
 ccs_configuration_space_get_parameters(
 	ccs_configuration_space_t  configuration_space,
 	size_t                     num_parameters,
-	ccs_parameter_t      *parameters,
+	ccs_parameter_t           *parameters,
 	size_t                    *num_parameters_ret);
 
 /**
@@ -633,8 +635,9 @@ ccs_configuration_space_get_default_configuration(
  *                             new configuration
  */
 extern ccs_error_t
-ccs_configuration_space_sample(ccs_configuration_space_t  configuration_space,
-                               ccs_configuration_t       *configuration_ret);
+ccs_configuration_space_sample(
+	ccs_configuration_space_t  configuration_space,
+	ccs_configuration_t       *configuration_ret);
 
 /**
  * Get a given number of configurations sampled randomly from a configuration
@@ -661,9 +664,10 @@ ccs_configuration_space_sample(ccs_configuration_space_t  configuration_space,
  *                             NULL
  */
 extern ccs_error_t
-ccs_configuration_space_samples(ccs_configuration_space_t  configuration_space,
-                                size_t                     num_configurations,
-                                ccs_configuration_t       *configurations);
+ccs_configuration_space_samples(
+	ccs_configuration_space_t  configuration_space,
+	size_t                     num_configurations,
+	ccs_configuration_t       *configurations);
 
 #ifdef __cplusplus
 }

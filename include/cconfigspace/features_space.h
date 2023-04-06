@@ -23,8 +23,9 @@ extern "C" {
  *                             features space
  */
 extern ccs_error_t
-ccs_create_features_space(const char           *name,
-                          ccs_features_space_t *features_space_ret);
+ccs_create_features_space(
+	const char           *name,
+	ccs_features_space_t *features_space_ret);
 
 /**
  * Get the name of a features space.
@@ -37,8 +38,9 @@ ccs_create_features_space(const char           *name,
  * @return #CCS_INVALID_VALUE if \p name_ret is NULL
  */
 extern ccs_error_t
-ccs_features_space_get_name(ccs_features_space_t   features_space,
-                            const char           **name_ret);
+ccs_features_space_get_name(
+	ccs_features_space_t   features_space,
+	const char           **name_ret);
 
 /**
  * Add a parameter to the features space.
@@ -58,8 +60,9 @@ ccs_features_space_get_name(ccs_features_space_t   features_space,
  *                             structures
  */
 extern ccs_error_t
-ccs_features_space_add_parameter(ccs_features_space_t features_space,
-                                      ccs_parameter_t parameter);
+ccs_features_space_add_parameter(
+	ccs_features_space_t features_space,
+	ccs_parameter_t      parameter);
 
 /**
  * Add parameters to the features space.
@@ -82,9 +85,10 @@ ccs_features_space_add_parameter(ccs_features_space_t features_space,
  *                             structures
  */
 extern ccs_error_t
-ccs_features_space_add_parameters(ccs_features_space_t  features_space,
-                                       size_t                num_parameters,
-                                       ccs_parameter_t *parameters);
+ccs_features_space_add_parameters(
+	ccs_features_space_t  features_space,
+	size_t                num_parameters,
+	ccs_parameter_t      *parameters);
 
 /**
  * Get the number of parameters in a features space.
@@ -98,8 +102,9 @@ ccs_features_space_add_parameters(ccs_features_space_t  features_space,
  * @return #CCS_INVALID_VALUE if \p num_parameters_ret is NULL
  */
 extern ccs_error_t
-ccs_features_space_get_num_parameters(ccs_features_space_t  features_space,
-                                           size_t               *num_parameters_ret);
+ccs_features_space_get_num_parameters(
+	ccs_features_space_t  features_space,
+	size_t               *num_parameters_ret);
 
 /**
  * Get an parameter in a features space given its index.
@@ -115,9 +120,10 @@ ccs_features_space_get_num_parameters(ccs_features_space_t  features_space,
  *                             parameters in the features space
  */
 extern ccs_error_t
-ccs_features_space_get_parameter(ccs_features_space_t  features_space,
-                                      size_t                index,
-                                      ccs_parameter_t *parameter_ret);
+ccs_features_space_get_parameter(
+	ccs_features_space_t  features_space,
+	size_t                index,
+	ccs_parameter_t      *parameter_ret);
 
 /**
  * Get an parameter in a features space given its name.
@@ -134,9 +140,9 @@ ccs_features_space_get_parameter(ccs_features_space_t  features_space,
  */
 extern ccs_error_t
 ccs_features_space_get_parameter_by_name(
-		ccs_features_space_t  features_space,
-		const char *          name,
-		ccs_parameter_t *parameter_ret);
+	ccs_features_space_t  features_space,
+	const char *          name,
+	ccs_parameter_t      *parameter_ret);
 
 /**
  * Get the index of an parameter in the features space given its name.
@@ -153,9 +159,9 @@ ccs_features_space_get_parameter_by_name(
  */
 extern ccs_error_t
 ccs_features_space_get_parameter_index_by_name(
-		ccs_features_space_t  features_space,
-		const char           *name,
-		size_t               *index_ret);
+	ccs_features_space_t  features_space,
+	const char           *name,
+	size_t               *index_ret);
 
 /**
  * Get the index of an parameter in the features space.
@@ -172,9 +178,9 @@ ccs_features_space_get_parameter_index_by_name(
  */
 extern ccs_error_t
 ccs_features_space_get_parameter_index(
-		ccs_features_space_t  features_space,
-		ccs_parameter_t  parameter,
-		size_t               *index_ret);
+	ccs_features_space_t  features_space,
+	ccs_parameter_t       parameter,
+	size_t               *index_ret);
 
 /**
  * Get the indices of a set of parameters in a features space.
@@ -197,10 +203,10 @@ ccs_features_space_get_parameter_index(
  */
 extern ccs_error_t
 ccs_features_space_get_parameter_indexes(
-		ccs_features_space_t  features_space,
-		size_t                num_parameters,
-		ccs_parameter_t *parameters,
-		size_t               *indexes);
+	ccs_features_space_t  features_space,
+	size_t                num_parameters,
+	ccs_parameter_t      *parameters,
+	size_t               *indexes);
 
 /**
  * Get the parameters in the given features space.
@@ -226,10 +232,11 @@ ccs_features_space_get_parameter_indexes(
  *                             parameters that would be returned
  */
 extern ccs_error_t
-ccs_features_space_get_parameters(ccs_features_space_t  features_space,
-                                       size_t                num_parameters,
-                                       ccs_parameter_t *parameters,
-                                       size_t               *num_parameters_ret);
+ccs_features_space_get_parameters(
+	ccs_features_space_t  features_space,
+	size_t                num_parameters,
+	ccs_parameter_t      *parameters,
+	size_t               *num_parameters_ret);
 
 /**
  * Validate that a given value at the given index is valid in a features
@@ -251,10 +258,11 @@ ccs_features_space_get_parameters(ccs_features_space_t  features_space,
  *                             NULL
  */
 extern ccs_error_t
-ccs_features_space_validate_value(ccs_features_space_t  features_space,
-                                  size_t                index,
-                                  ccs_datum_t           value,
-                                  ccs_datum_t          *value_ret);
+ccs_features_space_validate_value(
+	ccs_features_space_t  features_space,
+	size_t                index,
+	ccs_datum_t           value,
+	ccs_datum_t          *value_ret);
 
 /**
  * Check that a features is a valid in a features space.
@@ -276,9 +284,10 @@ ccs_features_space_validate_value(ccs_features_space_t  features_space,
  *                                space
  */
 extern ccs_error_t
-ccs_features_space_check_features(ccs_features_space_t  features_space,
-                                  ccs_features_t        features,
-                                  ccs_bool_t           *is_valid_ret);
+ccs_features_space_check_features(
+	ccs_features_space_t  features_space,
+	ccs_features_t        features,
+	ccs_bool_t           *is_valid_ret);
 
 /**
  * Check that a set of values would create a valid features for a
@@ -301,10 +310,11 @@ ccs_features_space_check_features(ccs_features_space_t  features_space,
  *                                parameters in the features space
  */
 extern ccs_error_t
-ccs_features_space_check_features_values(ccs_features_space_t  features_space,
-                                         size_t                num_values,
-                                         ccs_datum_t          *values,
-                                         ccs_bool_t           *is_valid_ret);
+ccs_features_space_check_features_values(
+	ccs_features_space_t  features_space,
+	size_t                num_values,
+	ccs_datum_t          *values,
+	ccs_bool_t           *is_valid_ret);
 
 #ifdef __cplusplus
 }

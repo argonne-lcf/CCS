@@ -278,16 +278,20 @@ struct ccs_user_defined_tree_tuner_vector_s {
 		ccs_tree_tuner_t          tuner,
 		ccs_tree_configuration_t *configuration);
 
-	/** The tree tuner serialization interface, can be NULL, in which case
-            common tuner data, history and optimums will be serialized */
+	/**
+	 * The tree tuner serialization interface, can be NULL, in which case
+	 * common tuner data, history and optimums will be serialized
+	 */
 	ccs_error_t (*serialize_user_state)(
 		ccs_tree_tuner_t  tuner,
 		size_t            sate_size,
 		void             *state,
 		size_t           *state_size_ret);
 
-	/** The tree tuner deserialization interface, can be NULL, in which case,
-            the history will be set through the tell interface */
+	/**
+	 * The tree tuner deserialization interface, can be NULL, in which case,
+	 * the history will be set through the tell interface
+	 */
 	ccs_error_t (*deserialize_state)(
 		ccs_tree_tuner_t       tuner,
 		size_t                 size_history,

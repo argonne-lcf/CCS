@@ -71,7 +71,7 @@ struct ccs_dynamic_tree_space_vector_s {
 	 * The all back that will be called when querying a missing childre in
 	 * a dynamic tree space.
 	 * @param[in] tree_space the dynamic tree space
-         * @param[in] parent the parent of the node being queried
+	 * @param[in] parent the parent of the node being queried
 	 * @param[in] child_index the index of the child. This value is
 	 *                        guaranteed to be less than the arity of the
 	 *                        parent node.
@@ -79,7 +79,7 @@ struct ccs_dynamic_tree_space_vector_s {
 	 *                       the returned child node
 	 * @return #CCS_SUCCESS on success or an error code describing the
 	 *                      error encountered
-         */
+	 */
 	ccs_error_t (*get_child)(
 		ccs_tree_space_t  tree_space,
 		ccs_tree_t        parent,
@@ -88,8 +88,8 @@ struct ccs_dynamic_tree_space_vector_s {
 
 	/**
 	 * The tree space serialization interface, can be NULL. The tree is
-         * always serialized irrespective of the definition of this callback.
-         */
+	 * always serialized irrespective of the definition of this callback.
+	 */
 	ccs_error_t (*serialize_user_state)(
 		ccs_tree_space_t  tree_space,
 		size_t            sate_size,
@@ -99,7 +99,7 @@ struct ccs_dynamic_tree_space_vector_s {
 	/**
 	 * The tree space deserialization interface, can be NULL. In this case,
 	 * only the tree is deserialized.
-         */
+	 */
 	ccs_error_t (*deserialize_state)(
 		ccs_tree_space_t  tree_space,
 		size_t            state_size,

@@ -32,10 +32,11 @@ extern "C" {
  *                             configuration
  */
 extern ccs_error_t
-ccs_create_configuration(ccs_configuration_space_t configuration_space,
-                         size_t                    num_values,
-                         ccs_datum_t              *values,
-                         ccs_configuration_t      *configuration_ret);
+ccs_create_configuration(
+	ccs_configuration_space_t configuration_space,
+	size_t                    num_values,
+	ccs_datum_t              *values,
+	ccs_configuration_t      *configuration_ret);
 
 /**
  * Get the associated configuration space.
@@ -66,9 +67,10 @@ ccs_configuration_get_configuration_space(
  *                             parameters in the configuration space
  */
 extern ccs_error_t
-ccs_configuration_get_value(ccs_configuration_t  configuration,
-                            size_t               index,
-                            ccs_datum_t         *value_ret);
+ccs_configuration_get_value(
+	ccs_configuration_t  configuration,
+	size_t               index,
+	ccs_datum_t         *value_ret);
 
 /**
  * Set the value of the parameter at the given index. Transient values will
@@ -87,9 +89,10 @@ ccs_configuration_get_value(ccs_configuration_t  configuration,
  *                             string
  */
 extern ccs_error_t
-ccs_configuration_set_value(ccs_configuration_t configuration,
-                            size_t              index,
-                            ccs_datum_t         value);
+ccs_configuration_set_value(
+	ccs_configuration_t configuration,
+	size_t              index,
+	ccs_datum_t         value);
 
 /**
  * Get all the values in the configuration.
@@ -111,10 +114,11 @@ ccs_configuration_set_value(ccs_configuration_t configuration,
  *                             returned
  */
 extern ccs_error_t
-ccs_configuration_get_values(ccs_configuration_t  configuration,
-                             size_t               num_values,
-                             ccs_datum_t         *values,
-                             size_t              *num_values_ret);
+ccs_configuration_get_values(
+	ccs_configuration_t  configuration,
+	size_t               num_values,
+	ccs_datum_t         *values,
+	size_t              *num_values_ret);
 
 /**
  * Get the value of the parameter with the given name.
@@ -129,9 +133,10 @@ ccs_configuration_get_values(ccs_configuration_t  configuration,
  *                            the \p configuration space
  */
 extern ccs_error_t
-ccs_configuration_get_value_by_name(ccs_configuration_t  configuration,
-                                    const char          *name,
-                                    ccs_datum_t         *value_ret);
+ccs_configuration_get_value_by_name(
+	ccs_configuration_t  configuration,
+	const char          *name,
+	ccs_datum_t         *value_ret);
 
 /**
  * Check that the configuration is a valid configuration for the configuration
@@ -151,8 +156,9 @@ ccs_configuration_get_value_by_name(ccs_configuration_t  configuration,
  *                                     for the configuration space
  */
 extern ccs_error_t
-ccs_configuration_check(ccs_configuration_t  configuration,
-                        ccs_bool_t          *is_valid_ret);
+ccs_configuration_check(
+	ccs_configuration_t  configuration,
+	ccs_bool_t          *is_valid_ret);
 
 /**
  * Compute a hash value for the configuration by hashing together the
@@ -167,8 +173,9 @@ ccs_configuration_check(ccs_configuration_t  configuration,
  * @return #CCS_INVALID_VALUE if \p hash_ret is NULL
  */
 extern ccs_error_t
-ccs_configuration_hash(ccs_configuration_t  configuration,
-                       ccs_hash_t          *hash_ret);
+ccs_configuration_hash(
+	ccs_configuration_t  configuration,
+	ccs_hash_t          *hash_ret);
 
 /**
  * Define a strict ordering of configuration instances. Configuration space,
@@ -185,9 +192,10 @@ ccs_configuration_hash(ccs_configuration_t  configuration,
  *                              are not a valid CCS object
  */
 extern ccs_error_t
-ccs_configuration_cmp(ccs_configuration_t  configuration,
-                      ccs_configuration_t  other_configuration,
-                      int                 *cmp_ret);
+ccs_configuration_cmp(
+	ccs_configuration_t  configuration,
+	ccs_configuration_t  other_configuration,
+	int                 *cmp_ret);
 #ifdef __cplusplus
 }
 #endif

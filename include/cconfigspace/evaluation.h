@@ -60,12 +60,13 @@ typedef enum ccs_comparison_e ccs_comparison_t;
  *                             evaluation
  */
 extern ccs_error_t
-ccs_create_evaluation(ccs_objective_space_t  objective_space,
-                      ccs_configuration_t    configuration,
-                      ccs_result_t           error,
-                      size_t                 num_values,
-                      ccs_datum_t           *values,
-                      ccs_evaluation_t      *evaluation_ret);
+ccs_create_evaluation(
+	ccs_objective_space_t  objective_space,
+	ccs_configuration_t    configuration,
+	ccs_result_t           error,
+	size_t                 num_values,
+	ccs_datum_t           *values,
+	ccs_evaluation_t      *evaluation_ret);
 
 /**
  * Get the objective space associated with an evaluation.
@@ -77,8 +78,9 @@ ccs_create_evaluation(ccs_objective_space_t  objective_space,
  * @return #CCS_INVALID_VALUE if \p objective_space_ret is NULL
  */
 extern ccs_error_t
-ccs_evaluation_get_objective_space(ccs_evaluation_t       evaluation,
-                                   ccs_objective_space_t *objective_space_ret);
+ccs_evaluation_get_objective_space(
+	ccs_evaluation_t       evaluation,
+	ccs_objective_space_t *objective_space_ret);
 
 /**
  * Get the configuration associated with an evaluation.
@@ -90,8 +92,9 @@ ccs_evaluation_get_objective_space(ccs_evaluation_t       evaluation,
  * @return #CCS_INVALID_VALUE if \p configuration_ret is NULL
  */
 extern ccs_error_t
-ccs_evaluation_get_configuration(ccs_evaluation_t     evaluation,
-                                 ccs_configuration_t *configuration_ret);
+ccs_evaluation_get_configuration(
+	ccs_evaluation_t     evaluation,
+	ccs_configuration_t *configuration_ret);
 
 /**
  * Get the error code associated with an evaluation.
@@ -103,8 +106,9 @@ ccs_evaluation_get_configuration(ccs_evaluation_t     evaluation,
  * @return #CCS_INVALID_VALUE if \p error_ret is NULL
  */
 extern ccs_error_t
-ccs_evaluation_get_error(ccs_evaluation_t  evaluation,
-                         ccs_result_t     *error_ret);
+ccs_evaluation_get_error(
+	ccs_evaluation_t  evaluation,
+	ccs_result_t     *error_ret);
 
 /**
  * Set the error code associated with an evaluation. A successful
@@ -115,14 +119,15 @@ ccs_evaluation_get_error(ccs_evaluation_t  evaluation,
  * @return #CCS_INVALID_OBJECT if \p evaluation is not a valid CCS evaluation
  */
 extern ccs_error_t
-ccs_evaluation_set_error(ccs_evaluation_t evaluation,
-                         ccs_result_t     error);
+ccs_evaluation_set_error(
+	ccs_evaluation_t evaluation,
+	ccs_result_t     error);
 
 /**
  * Get the value of the parameter at the given index.
  * @param[in] evaluation
  * @param[in] index index of the parameter in the associated objective
-                    space
+ *                  space
  * @param[out] value_ret a pointer to the variable that will hold the value
  * @return #CCS_SUCCESS on success
  * @return #CCS_INVALID_OBJECT if \p binding is not a valid CCS evaluation
@@ -131,9 +136,10 @@ ccs_evaluation_set_error(ccs_evaluation_t evaluation,
  *                             parameters in the objective space
  */
 extern ccs_error_t
-ccs_evaluation_get_value(ccs_evaluation_t  evaluation,
-                         size_t            index,
-                         ccs_datum_t      *value_ret);
+ccs_evaluation_get_value(
+	ccs_evaluation_t  evaluation,
+	size_t            index,
+	ccs_datum_t      *value_ret);
 
 /**
  * Set the value of the parameter at the given index. Transient values will
@@ -151,9 +157,10 @@ ccs_evaluation_get_value(ccs_evaluation_t  evaluation,
  *                             string
  */
 extern ccs_error_t
-ccs_evaluation_set_value(ccs_evaluation_t evaluation,
-                         size_t           index,
-                         ccs_datum_t      value);
+ccs_evaluation_set_value(
+	ccs_evaluation_t evaluation,
+	size_t           index,
+	ccs_datum_t      value);
 
 /**
  * Get all the values in an evaluation.
@@ -173,10 +180,11 @@ ccs_evaluation_set_value(ccs_evaluation_t evaluation,
  *                             than the number of values that would be returned
  */
 extern ccs_error_t
-ccs_evaluation_get_values(ccs_evaluation_t  evaluation,
-                          size_t            num_values,
-                          ccs_datum_t      *values,
-                          size_t           *num_values_ret);
+ccs_evaluation_get_values(
+	ccs_evaluation_t  evaluation,
+	size_t            num_values,
+	ccs_datum_t      *values,
+	size_t           *num_values_ret);
 
 /**
  * Get the value of the parameter with the given name.
@@ -190,9 +198,10 @@ ccs_evaluation_get_values(ccs_evaluation_t  evaluation,
  *                            the \p objective space
  */
 extern ccs_error_t
-ccs_evaluation_get_value_by_name(ccs_evaluation_t  evaluation,
-                                 const char       *name,
-                                 ccs_datum_t      *value_ret);
+ccs_evaluation_get_value_by_name(
+	ccs_evaluation_t  evaluation,
+	const char       *name,
+	ccs_datum_t      *value_ret);
 
 /**
  * Check that an evaluation values are valid in the objective space.
@@ -208,8 +217,9 @@ ccs_evaluation_get_value_by_name(ccs_evaluation_t  evaluation,
  *                                  the context of the objective space
  */
 extern ccs_error_t
-ccs_evaluation_check(ccs_evaluation_t  evaluation,
-                     ccs_bool_t       *is_valid_ret);
+ccs_evaluation_check(
+	ccs_evaluation_t  evaluation,
+	ccs_bool_t       *is_valid_ret);
 
 /**
  * Get the value of an objective for a valid evaluation in the context of its
@@ -226,9 +236,10 @@ ccs_evaluation_check(ccs_evaluation_t  evaluation,
  *                             objective in the objective space
  */
 extern ccs_error_t
-ccs_evaluation_get_objective_value(ccs_evaluation_t  evaluation,
-                                   size_t            index,
-                                   ccs_datum_t      *value_ret);
+ccs_evaluation_get_objective_value(
+	ccs_evaluation_t  evaluation,
+	size_t            index,
+	ccs_datum_t      *value_ret);
 
 /**
  * Get the values of the objectives for a valid evaluation in the context of its
@@ -249,10 +260,11 @@ ccs_evaluation_get_objective_value(ccs_evaluation_t  evaluation,
  *                             of the objectives
  */
 extern ccs_error_t
-ccs_evaluation_get_objective_values(ccs_evaluation_t  evaluation,
-                                    size_t            num_values,
-                                    ccs_datum_t      *values,
-                                    size_t           *num_values_ret);
+ccs_evaluation_get_objective_values(
+	ccs_evaluation_t  evaluation,
+	size_t            num_values,
+	ccs_datum_t      *values,
+	size_t           *num_values_ret);
 
 /**
  * Compute a hash value for the evaluation by hashing together the objective
@@ -266,8 +278,9 @@ ccs_evaluation_get_objective_values(ccs_evaluation_t  evaluation,
  * @return #CCS_INVALID_VALUE if \p hash_ret is NULL
  */
 extern ccs_error_t
-ccs_evaluation_hash(ccs_evaluation_t  evaluation,
-                    ccs_hash_t       *hash_ret);
+ccs_evaluation_hash(
+	ccs_evaluation_t  evaluation,
+	ccs_hash_t       *hash_ret);
 
 /**
  * Define a strict ordering of evaluation instances. Objective space,
@@ -284,9 +297,10 @@ ccs_evaluation_hash(ccs_evaluation_t  evaluation,
  * @return #CCS_INVALID_VALUE if \p cmp_ret is NULL
  */
 extern ccs_error_t
-ccs_evaluation_cmp(ccs_evaluation_t  evaluation,
-                   ccs_evaluation_t  other_evaluation,
-                   int              *cmp_ret);
+ccs_evaluation_cmp(
+	ccs_evaluation_t  evaluation,
+	ccs_evaluation_t  other_evaluation,
+	int              *cmp_ret);
 
 /**
  * Compare two successful evaluations objectives.
@@ -309,9 +323,10 @@ ccs_evaluation_cmp(ccs_evaluation_t  evaluation,
  *                                issue evaluating any of the objectives
  */
 extern ccs_error_t
-ccs_evaluation_compare(ccs_evaluation_t  evaluation,
-                       ccs_evaluation_t  other_evaluation,
-                       ccs_comparison_t *result_ret);
+ccs_evaluation_compare(
+	ccs_evaluation_t  evaluation,
+	ccs_evaluation_t  other_evaluation,
+	ccs_comparison_t *result_ret);
 
 #ifdef __cplusplus
 }

@@ -21,8 +21,9 @@ extern "C" {
  * @return #CCS_INVALID_VALUE if \p context_ret is NULL
  */
 extern ccs_error_t
-ccs_binding_get_context(ccs_binding_t  binding,
-                        ccs_context_t *context_ret);
+ccs_binding_get_context(
+	ccs_binding_t  binding,
+	ccs_context_t *context_ret);
 
 /**
  * Get the value of the parameter at the given index.
@@ -36,9 +37,10 @@ ccs_binding_get_context(ccs_binding_t  binding,
  *                             parameters in the context
  */
 extern ccs_error_t
-ccs_binding_get_value(ccs_binding_t  binding,
-                      size_t         index,
-                      ccs_datum_t   *value_ret);
+ccs_binding_get_value(
+	ccs_binding_t  binding,
+	size_t         index,
+	ccs_datum_t   *value_ret);
 
 /**
  * Set the value of the parameter at the given index. Transient values will
@@ -55,9 +57,10 @@ ccs_binding_get_value(ccs_binding_t  binding,
  *                             string
  */
 extern ccs_error_t
-ccs_binding_set_value(ccs_binding_t binding,
-                      size_t        index,
-                      ccs_datum_t   value);
+ccs_binding_set_value(
+	ccs_binding_t binding,
+	size_t        index,
+	ccs_datum_t   value);
 
 /**
  * Get all the values in the binding.
@@ -78,10 +81,11 @@ ccs_binding_set_value(ccs_binding_t binding,
  *                             returned
  */
 extern ccs_error_t
-ccs_binding_get_values(ccs_binding_t  binding,
-                       size_t         num_values,
-                       ccs_datum_t   *values,
-                       size_t        *num_values_ret);
+ccs_binding_get_values(
+	ccs_binding_t  binding,
+	size_t         num_values,
+	ccs_datum_t   *values,
+	size_t        *num_values_ret);
 
 /**
  * Set all the values in the binding.
@@ -97,9 +101,10 @@ ccs_binding_get_values(ccs_binding_t  binding,
  *                             string
  */
 extern ccs_error_t
-ccs_binding_set_values(ccs_binding_t  binding,
-                       size_t         num_values,
-                       ccs_datum_t   *values);
+ccs_binding_set_values(
+	ccs_binding_t  binding,
+	size_t         num_values,
+	ccs_datum_t   *values);
 
 
 /**
@@ -114,9 +119,10 @@ ccs_binding_set_values(ccs_binding_t  binding,
  *                            the \p binding context
  */
 extern ccs_error_t
-ccs_binding_get_value_by_name(ccs_binding_t  binding,
-                              const char    *name,
-                              ccs_datum_t   *value_ret);
+ccs_binding_get_value_by_name(
+	ccs_binding_t  binding,
+	const char    *name,
+	ccs_datum_t   *value_ret);
 
 /**
  * Set the value of the parameter with the given name.
@@ -129,9 +135,10 @@ ccs_binding_get_value_by_name(ccs_binding_t  binding,
  *                            the \p binding context
  */
 extern ccs_error_t
-ccs_binding_set_value_by_name(ccs_binding_t  binding,
-                              const char    *name,
-                              ccs_datum_t    value);
+ccs_binding_set_value_by_name(
+	ccs_binding_t  binding,
+	const char    *name,
+	ccs_datum_t    value);
 
 /**
  * Get the value of the parameter with the given handle.
@@ -144,9 +151,10 @@ ccs_binding_set_value_by_name(ccs_binding_t  binding,
  *                                      the \p binding context
  */
 extern ccs_error_t
-ccs_binding_get_value_by_parameter(ccs_binding_t         binding,
-                                        ccs_parameter_t  parameter,
-                                        ccs_datum_t          *value_ret);
+ccs_binding_get_value_by_parameter(
+	ccs_binding_t    binding,
+	ccs_parameter_t  parameter,
+	ccs_datum_t     *value_ret);
 
 /**
  * Set the value of the parameter with the given handle.
@@ -159,9 +167,10 @@ ccs_binding_get_value_by_parameter(ccs_binding_t         binding,
  *                                      the \p binding context
  */
 extern ccs_error_t
-ccs_binding_set_value_by_parameter(ccs_binding_t        binding,
-                                        ccs_parameter_t parameter,
-                                        ccs_datum_t          value);
+ccs_binding_set_value_by_parameter(
+	ccs_binding_t        binding,
+	ccs_parameter_t parameter,
+	ccs_datum_t          value);
 
 /**
  * Compute a hash value for the binding by hashing together the context
@@ -174,8 +183,9 @@ ccs_binding_set_value_by_parameter(ccs_binding_t        binding,
  * @return #CCS_INVALID_VALUE if \p hash_ret is NULL
  */
 extern ccs_error_t
-ccs_binding_hash(ccs_binding_t  binding,
-                 ccs_hash_t    *hash_ret);
+ccs_binding_hash(
+	ccs_binding_t  binding,
+	ccs_hash_t    *hash_ret);
 
 /**
  * Define a strict ordering of binding instances. Context, number of values and
@@ -192,9 +202,10 @@ ccs_binding_hash(ccs_binding_t  binding,
  * @return #CCS_INVALID_VALUE if \p cmp_ret is NULL
  */
 extern ccs_error_t
-ccs_binding_cmp(ccs_binding_t  binding,
-                ccs_binding_t  other_binding,
-                int           *cmp_ret);
+ccs_binding_cmp(
+	ccs_binding_t  binding,
+	ccs_binding_t  other_binding,
+	int           *cmp_ret);
 
 #ifdef __cplusplus
 }

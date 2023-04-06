@@ -27,7 +27,8 @@ ccs_get_thread_error();
  *                              error stack
  */
 extern ccs_error_t
-ccs_set_thread_error(ccs_error_stack_t error_stack);
+ccs_set_thread_error(
+	ccs_error_stack_t error_stack);
 
 /**
  * Clears the error stack of the calling thread, releasing the current

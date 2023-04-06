@@ -84,7 +84,7 @@ ccs_tree_evaluation_get_configuration(
 extern ccs_error_t
 ccs_tree_evaluation_get_error(
 	ccs_tree_evaluation_t  evaluation,
-	ccs_result_t     *error_ret);
+	ccs_result_t          *error_ret);
 
 /**
  * Set the error code associated with a tree evaluation. A successful
@@ -97,13 +97,13 @@ ccs_tree_evaluation_get_error(
 extern ccs_error_t
 ccs_tree_evaluation_set_error(
 	ccs_tree_evaluation_t evaluation,
-	ccs_result_t     error);
+	ccs_result_t          error);
 
 /**
  * Get the value of the parameter at the given index.
  * @param[in] evaluation
  * @param[in] index index of the parameter in the associated objective
-                    space
+ *                  space
  * @param[out] value_ret a pointer to the variable that will hold the value
  * @return #CCS_SUCCESS on success
  * @return #CCS_INVALID_OBJECT if \p binding is not a valid CCS tree evaluation
@@ -302,7 +302,7 @@ extern ccs_error_t
 ccs_tree_evaluation_compare(
 	ccs_tree_evaluation_t  evaluation,
 	ccs_tree_evaluation_t  other_evaluation,
-	ccs_comparison_t *result_ret);
+	ccs_comparison_t      *result_ret);
 
 #ifdef __cplusplus
 }

@@ -44,8 +44,9 @@ typedef enum ccs_objective_type_e ccs_objective_type_t;
  *                             objective space
  */
 extern ccs_error_t
-ccs_create_objective_space(const char            *name,
-                           ccs_objective_space_t *objective_space_ret);
+ccs_create_objective_space(
+	const char            *name,
+	ccs_objective_space_t *objective_space_ret);
 
 /**
  * Get the name of a objective space.
@@ -58,8 +59,9 @@ ccs_create_objective_space(const char            *name,
  * @return #CCS_INVALID_VALUE if \p name_ret is NULL
  */
 extern ccs_error_t
-ccs_objective_space_get_name(ccs_objective_space_t   objective_space,
-                             const char            **name_ret);
+ccs_objective_space_get_name(
+	ccs_objective_space_t   objective_space,
+	const char            **name_ret);
 
 /**
  * Add a parameter to the objective space.
@@ -79,8 +81,9 @@ ccs_objective_space_get_name(ccs_objective_space_t   objective_space,
  *                             structures
  */
 extern ccs_error_t
-ccs_objective_space_add_parameter(ccs_objective_space_t objective_space,
-                                       ccs_parameter_t  parameter);
+ccs_objective_space_add_parameter(
+	ccs_objective_space_t objective_space,
+	ccs_parameter_t       parameter);
 
 /**
  * Add parameters to the objective space.
@@ -106,7 +109,7 @@ extern ccs_error_t
 ccs_objective_space_add_parameters(
 	ccs_objective_space_t  objective_space,
 	size_t                 num_parameters,
-	ccs_parameter_t  *parameters);
+	ccs_parameter_t       *parameters);
 
 /**
  * Get the number of parameters in a objective space.
@@ -138,9 +141,10 @@ ccs_objective_space_get_num_parameters(
  *                             parameters in the objective space
  */
 extern ccs_error_t
-ccs_objective_space_get_parameter(ccs_objective_space_t  objective_space,
-                                       size_t                 index,
-                                       ccs_parameter_t  *parameter_ret);
+ccs_objective_space_get_parameter(
+	ccs_objective_space_t  objective_space,
+	size_t                 index,
+	ccs_parameter_t       *parameter_ret);
 
 /**
  * Get an parameter in a objective space given its name.
@@ -158,8 +162,8 @@ ccs_objective_space_get_parameter(ccs_objective_space_t  objective_space,
 extern ccs_error_t
 ccs_objective_space_get_parameter_by_name(
 		ccs_objective_space_t  objective_space,
-		const char *           name,
-		ccs_parameter_t  *parameter_ret);
+		const char            *name,
+		ccs_parameter_t       *parameter_ret);
 
 /**
  * Get the index of an parameter in the objective space given its name.
@@ -196,7 +200,7 @@ ccs_objective_space_get_parameter_index_by_name(
 extern ccs_error_t
 ccs_objective_space_get_parameter_index(
 		ccs_objective_space_t  objective_space,
-		ccs_parameter_t   parameter,
+		ccs_parameter_t        parameter,
 		size_t                *index_ret);
 
 /**
@@ -222,7 +226,7 @@ extern ccs_error_t
 ccs_objective_space_get_parameter_indexes(
 		ccs_objective_space_t  objective_space,
 		size_t                 num_parameters,
-		ccs_parameter_t  *parameters,
+		ccs_parameter_t       *parameters,
 		size_t                *indexes);
 
 /**
@@ -249,10 +253,11 @@ ccs_objective_space_get_parameter_indexes(
  *                             parameters that would be returned
  */
 extern ccs_error_t
-ccs_objective_space_get_parameters(ccs_objective_space_t  objective_space,
-                                        size_t                 num_parameters,
-                                        ccs_parameter_t  *parameters,
-                                        size_t                *num_parameters_ret);
+ccs_objective_space_get_parameters(
+	ccs_objective_space_t  objective_space,
+	size_t                 num_parameters,
+	ccs_parameter_t       *parameters,
+	size_t                *num_parameters_ret);
 
 /**
  * Check that a set of values would create a valid evaluation for an
@@ -275,10 +280,11 @@ ccs_objective_space_get_parameters(ccs_objective_space_t  objective_space,
  *                                  of parameters in the objective space
  */
 extern ccs_error_t
-ccs_objective_space_check_evaluation_values(ccs_objective_space_t  objective_space,
-                                            size_t                 num_values,
-                                            ccs_datum_t           *values,
-                                            ccs_bool_t            *is_valid_ret);
+ccs_objective_space_check_evaluation_values(
+	ccs_objective_space_t  objective_space,
+	size_t                 num_values,
+	ccs_datum_t           *values,
+	ccs_bool_t            *is_valid_ret);
 
 /**
  * Validate that a given value at the given index is valid in a objective
@@ -300,10 +306,11 @@ ccs_objective_space_check_evaluation_values(ccs_objective_space_t  objective_spa
  *                             NULL
  */
 extern ccs_error_t
-ccs_objective_space_validate_value(ccs_objective_space_t  objective_space,
-                                   size_t                 index,
-                                   ccs_datum_t            value,
-                                   ccs_datum_t           *value_ret);
+ccs_objective_space_validate_value(
+	ccs_objective_space_t  objective_space,
+	size_t                 index,
+	ccs_datum_t            value,
+	ccs_datum_t           *value_ret);
 
 /**
  * Add an objective to an objective space.
@@ -322,9 +329,10 @@ ccs_objective_space_validate_value(ccs_objective_space_t  objective_space,
  *                             internal data structures
  */
 extern ccs_error_t
-ccs_objective_space_add_objective(ccs_objective_space_t objective_space,
-                                  ccs_expression_t      expression,
-                                  ccs_objective_type_t  type);
+ccs_objective_space_add_objective(
+	ccs_objective_space_t objective_space,
+	ccs_expression_t      expression,
+	ccs_objective_type_t  type);
 
 /**
  * Add a list of objectives to an objective space.
@@ -347,10 +355,11 @@ ccs_objective_space_add_objective(ccs_objective_space_t objective_space,
  *                             internal data structures
  */
 extern ccs_error_t
-ccs_objective_space_add_objectives(ccs_objective_space_t  objective_space,
-                                   size_t                 num_objectives,
-                                   ccs_expression_t      *expressions,
-                                   ccs_objective_type_t  *types);
+ccs_objective_space_add_objectives(
+	ccs_objective_space_t  objective_space,
+	size_t                 num_objectives,
+	ccs_expression_t      *expressions,
+	ccs_objective_type_t  *types);
 
 /**
  * Get the objective of rank index in a objective space.
@@ -368,10 +377,11 @@ ccs_objective_space_add_objectives(ccs_objective_space_t  objective_space,
  *                             objectives in the objective space
  */
 extern ccs_error_t
-ccs_objective_space_get_objective(ccs_objective_space_t  objective_space,
-                                  size_t                 index,
-                                  ccs_expression_t      *expression_ret,
-                                  ccs_objective_type_t  *type_ret);
+ccs_objective_space_get_objective(
+	ccs_objective_space_t  objective_space,
+	size_t                 index,
+	ccs_expression_t      *expression_ret,
+	ccs_objective_type_t  *type_ret);
 
 /**
  * Get the objectives in a objective space.
@@ -383,7 +393,7 @@ ccs_objective_space_get_objective(ccs_objective_space_t  objective_space,
  *                         returned expressions, or NULL. If the array is too
  *                         big, extra values are set to NULL
  * @param[out] types an array of \p num_objectives types that will contain the
-                     objective types
+ *                   objective types
  * @param[out] num_objectives_ret a pointer to a variable that will contain the
  *                                 number of expressions that are or would be
  *                                 returned. Can be NULL
@@ -398,11 +408,12 @@ ccs_objective_space_get_objective(ccs_objective_space_t  objective_space,
  *                             number of expressions that would be returned
  */
 extern ccs_error_t
-ccs_objective_space_get_objectives(ccs_objective_space_t  objective_space,
-                                   size_t                 num_objectives,
-                                   ccs_expression_t      *expressions,
-                                   ccs_objective_type_t  *types,
-                                   size_t                *num_objectives_ret);
+ccs_objective_space_get_objectives(
+	ccs_objective_space_t  objective_space,
+	size_t                 num_objectives,
+	ccs_expression_t      *expressions,
+	ccs_objective_type_t  *types,
+	size_t                *num_objectives_ret);
 
 #ifdef __cplusplus
 }

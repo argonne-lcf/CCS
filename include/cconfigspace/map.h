@@ -20,7 +20,8 @@ extern "C" {
  *                             new map
  */
 extern ccs_error_t
-ccs_create_map(ccs_map_t *map_ret);
+ccs_create_map(
+	ccs_map_t *map_ret);
 
 /**
  * Associate a key to a value in a map
@@ -35,9 +36,10 @@ ccs_create_map(ccs_map_t *map_ret);
  *                             structures
  */
 extern ccs_error_t
-ccs_map_set(ccs_map_t   map,
-            ccs_datum_t key,
-            ccs_datum_t value);
+ccs_map_set(
+	ccs_map_t   map,
+	ccs_datum_t key,
+	ccs_datum_t value);
 
 /**
  * Check if a key exists in a map
@@ -50,9 +52,10 @@ ccs_map_set(ccs_map_t   map,
  * @return #CCS_INVALID_VALUE if \p exist is NULL
  */
 extern ccs_error_t
-ccs_map_exist(ccs_map_t    map,
-              ccs_datum_t  key,
-              ccs_bool_t  *exist);
+ccs_map_exist(
+	ccs_map_t    map,
+	ccs_datum_t  key,
+	ccs_bool_t  *exist);
 
 /**
  * Get the value associated with a key
@@ -65,9 +68,10 @@ ccs_map_exist(ccs_map_t    map,
  * @return #CCS_INVALID_VALUE if \p value_ret is NUL
  */
 extern ccs_error_t
-ccs_map_get(ccs_map_t    map,
-            ccs_datum_t  key,
-            ccs_datum_t *value_ret);
+ccs_map_get(
+	ccs_map_t    map,
+	ccs_datum_t  key,
+	ccs_datum_t *value_ret);
 
 /**
  * Delete a key in a map
@@ -78,8 +82,9 @@ ccs_map_get(ccs_map_t    map,
  * @return #CCS_INVALID_VALUE if \p key does not exist in \p map
  */
 extern ccs_error_t
-ccs_map_del(ccs_map_t    map,
-            ccs_datum_t  key);
+ccs_map_del(
+	ccs_map_t    map,
+	ccs_datum_t  key);
 
 /**
  * Get the keys contained in a map
@@ -101,10 +106,11 @@ ccs_map_del(ccs_map_t    map,
  *                             number of keys that would be returned
  */
 extern ccs_error_t
-ccs_map_get_keys(ccs_map_t    map,
-                 size_t       num_keys,
-                 ccs_datum_t *keys,
-                 size_t      *num_keys_ret);
+ccs_map_get_keys(
+	ccs_map_t    map,
+	size_t       num_keys,
+	ccs_datum_t *keys,
+	size_t      *num_keys_ret);
 
 /**
  * Get the values contained in a map
@@ -126,10 +132,11 @@ ccs_map_get_keys(ccs_map_t    map,
  *                             number of values that would be returned
  */
 extern ccs_error_t
-ccs_map_get_values(ccs_map_t    map,
-                   size_t       num_values,
-                   ccs_datum_t *values,
-                   size_t      *num_values_ret);
+ccs_map_get_values(
+	ccs_map_t    map,
+	size_t       num_values,
+	ccs_datum_t *values,
+	size_t      *num_values_ret);
 
 /**
  * Get the keys and values contained in a map
@@ -159,11 +166,12 @@ ccs_map_get_values(ccs_map_t    map,
 
  */
 extern ccs_error_t
-ccs_map_get_pairs(ccs_map_t    map,
-                  size_t       num_pairs,
-                  ccs_datum_t *keys,
-                  ccs_datum_t *values,
-                  size_t      *num_pairs_ret);
+ccs_map_get_pairs(
+	ccs_map_t    map,
+	size_t       num_pairs,
+	ccs_datum_t *keys,
+	ccs_datum_t *values,
+	size_t      *num_pairs_ret);
 
 /**
  * Remove all pairs from a map
@@ -172,7 +180,8 @@ ccs_map_get_pairs(ccs_map_t    map,
  * @return #CCS_INVALID_OBJECT if \p map is not a valid CCS map
  */
 extern ccs_error_t
-ccs_map_clear(ccs_map_t map);
+ccs_map_clear(
+	ccs_map_t map);
 
 #ifdef __cplusplus
 }

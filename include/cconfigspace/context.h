@@ -25,8 +25,9 @@ extern "C" {
  * @return #CCS_INVALID_VALUE if \p name_ret is NULL
  */
 extern ccs_error_t
-ccs_context_get_name(ccs_context_t   context,
-                     const char    **name_ret);
+ccs_context_get_name(
+	ccs_context_t   context,
+	const char    **name_ret);
 
 /**
  * Get the index of an parameter in the context.
@@ -41,9 +42,10 @@ ccs_context_get_name(ccs_context_t   context,
  *                                      parameter
  */
 extern ccs_error_t
-ccs_context_get_parameter_index(ccs_context_t         context,
-                                     ccs_parameter_t  parameter,
-                                     size_t               *index_ret);
+ccs_context_get_parameter_index(
+	ccs_context_t    context,
+	ccs_parameter_t  parameter,
+	size_t          *index_ret);
 
 /**
  * Get the number of parameters in the given context.
@@ -56,8 +58,9 @@ ccs_context_get_parameter_index(ccs_context_t         context,
  * @return #CCS_INVALID_VALUE if \p num_parameters_ret is NULL
  */
 extern ccs_error_t
-ccs_context_get_num_parameters(ccs_context_t  context,
-                                    size_t        *num_parameters_ret);
+ccs_context_get_num_parameters(
+	ccs_context_t  context,
+	size_t        *num_parameters_ret);
 
 /**
  * Get an parameter in a context given its index.
@@ -72,9 +75,10 @@ ccs_context_get_num_parameters(ccs_context_t  context,
  *                             parameters in the context
  */
 extern ccs_error_t
-ccs_context_get_parameter(ccs_context_t         context,
-                               size_t                index,
-                               ccs_parameter_t *parameter_ret);
+ccs_context_get_parameter(
+	ccs_context_t    context,
+	size_t           index,
+	ccs_parameter_t *parameter_ret);
 
 /**
  * Get an parameter in a context given its name.
@@ -89,9 +93,10 @@ ccs_context_get_parameter(ccs_context_t         context,
  *                            the \p context
  */
 extern ccs_error_t
-ccs_context_get_parameter_by_name(ccs_context_t         context,
-                                       const char *          name,
-                                       ccs_parameter_t *parameter_ret);
+ccs_context_get_parameter_by_name(
+	ccs_context_t    context,
+	const char      *name,
+	ccs_parameter_t *parameter_ret);
 
 /**
  * Get the index of an parameter in the context given its name.
@@ -106,9 +111,10 @@ ccs_context_get_parameter_by_name(ccs_context_t         context,
  *                            the context
  */
 extern ccs_error_t
-ccs_context_get_parameter_index_by_name(ccs_context_t  context,
-                                             const char    *name,
-                                             size_t        *index_ret);
+ccs_context_get_parameter_index_by_name(
+	ccs_context_t  context,
+	const char    *name,
+	size_t        *index_ret);
 
 /**
  * Get the parameters in the given context.
@@ -133,10 +139,11 @@ ccs_context_get_parameter_index_by_name(ccs_context_t  context,
  *                             parameters that would be returned
  */
 extern ccs_error_t
-ccs_context_get_parameters(ccs_context_t          context,
-                                size_t                 num_parameters,
-                                ccs_parameter_t  *parameters,
-                                size_t                *num_parameters_ret);
+ccs_context_get_parameters(
+	ccs_context_t    context,
+	size_t           num_parameters,
+	ccs_parameter_t *parameters,
+	size_t          *num_parameters_ret);
 
 /**
  * Get the indices of a set of parameters in a context.
@@ -158,10 +165,10 @@ ccs_context_get_parameters(ccs_context_t          context,
  */
 extern ccs_error_t
 ccs_context_get_parameter_indexes(
-		ccs_context_t          context,
-		size_t                 num_parameters,
-		ccs_parameter_t  *parameters,
-		size_t                *indexes);
+	ccs_context_t     context,
+	size_t            num_parameters,
+	ccs_parameter_t  *parameters,
+	size_t           *indexes);
 
 /**
  * Validate that a given value at the given index is valid in the context, and
@@ -182,10 +189,11 @@ ccs_context_get_parameter_indexes(
  *                             NULL
  */
 extern ccs_error_t
-ccs_context_validate_value(ccs_context_t  context,
-                           size_t         index,
-                           ccs_datum_t    value,
-                           ccs_datum_t   *value_ret);
+ccs_context_validate_value(
+	ccs_context_t  context,
+	size_t         index,
+	ccs_datum_t    value,
+	ccs_datum_t   *value_ret);
 
 #ifdef __cplusplus
 }
