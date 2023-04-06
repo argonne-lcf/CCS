@@ -24,7 +24,7 @@ ccs_object = ct.c_void_p
 # Objects
 ccs_rng                 = ccs_object
 ccs_distribution        = ccs_object
-ccs_parameter      = ccs_object
+ccs_parameter           = ccs_object
 ccs_expression          = ccs_object
 ccs_context             = ccs_object
 ccs_configuration_space = ccs_object
@@ -168,7 +168,7 @@ class ccs_error(CEnumeration):
     ('INVALID_SCALE',           -4),
     ('INVALID_DISTRIBUTION',    -5),
     ('INVALID_EXPRESSION',      -6),
-    ('INVALID_PARAMETER',  -7),
+    ('INVALID_PARAMETER',       -7),
     ('INVALID_CONFIGURATION',   -8),
     ('INVALID_NAME',            -9),
     ('INVALID_CONDITION',      -10),
