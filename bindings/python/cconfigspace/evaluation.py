@@ -1,5 +1,5 @@
 import ctypes as ct
-from .base import Object, Error, CEnumeration, ccs_error, ccs_result, _ccs_get_function, ccs_context, ccs_hyperparameter, ccs_configuration, ccs_datum, ccs_datum_fix, ccs_objective_space, ccs_evaluation, ccs_bool
+from .base import Object, Error, CEnumeration, ccs_error, ccs_result, _ccs_get_function, ccs_context, ccs_parameter, ccs_configuration, ccs_datum, ccs_datum_fix, ccs_objective_space, ccs_evaluation, ccs_bool
 from .binding import Binding
 from .configuration import Configuration
 from .objective_space import ObjectiveSpace

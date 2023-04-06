@@ -24,7 +24,7 @@ ccs_object = ct.c_void_p
 # Objects
 ccs_rng                 = ccs_object
 ccs_distribution        = ccs_object
-ccs_hyperparameter      = ccs_object
+ccs_parameter      = ccs_object
 ccs_expression          = ccs_object
 ccs_context             = ccs_object
 ccs_configuration_space = ccs_object
@@ -139,7 +139,7 @@ class ccs_object_type(CEnumeration):
   _members_ = [
     ('RNG', 0),
     'DISTRIBUTION',
-    'HYPERPARAMETER',
+    'PARAMETER',
     'EXPRESSION',
     'CONFIGURATION_SPACE',
     'CONFIGURATION',
@@ -168,7 +168,7 @@ class ccs_error(CEnumeration):
     ('INVALID_SCALE',           -4),
     ('INVALID_DISTRIBUTION',    -5),
     ('INVALID_EXPRESSION',      -6),
-    ('INVALID_HYPERPARAMETER',  -7),
+    ('INVALID_PARAMETER',  -7),
     ('INVALID_CONFIGURATION',   -8),
     ('INVALID_NAME',            -9),
     ('INVALID_CONDITION',      -10),
@@ -742,7 +742,7 @@ def _ccs_get_id():
 
 from .rng import Rng
 from .distribution import Distribution
-from .hyperparameter import Hyperparameter
+from .parameter import Parameter
 from .expression import Expression
 from .configuration_space import ConfigurationSpace
 from .configuration import Configuration
@@ -764,7 +764,7 @@ from .tree_tuner import TreeTuner
 setattr(Object, 'CLASS_MAP', {
   ccs_object_type.RNG: Rng,
   ccs_object_type.DISTRIBUTION: Distribution,
-  ccs_object_type.HYPERPARAMETER: Hyperparameter,
+  ccs_object_type.PARAMETER: Parameter,
   ccs_object_type.EXPRESSION: Expression,
   ccs_object_type.CONFIGURATION_SPACE: ConfigurationSpace,
   ccs_object_type.CONFIGURATION: Configuration,

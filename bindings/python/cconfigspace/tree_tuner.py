@@ -1,7 +1,7 @@
 import ctypes as ct
-from .base import Object, Error, CEnumeration, ccs_error, _ccs_get_function, ccs_context, ccs_hyperparameter, ccs_tree_space, ccs_tree_configuration, ccs_datum, ccs_objective_space, ccs_tree_evaluation, ccs_tree_tuner, ccs_retain_object, _register_vector, _unregister_vector
+from .base import Object, Error, CEnumeration, ccs_error, _ccs_get_function, ccs_context, ccs_parameter, ccs_tree_space, ccs_tree_configuration, ccs_datum, ccs_objective_space, ccs_tree_evaluation, ccs_tree_tuner, ccs_retain_object, _register_vector, _unregister_vector
 from .context import Context
-from .hyperparameter import Hyperparameter
+from .parameter import Parameter
 from .tree_space import TreeSpace
 from .tree_configuration import TreeConfiguration
 from .objective_space import ObjectiveSpace

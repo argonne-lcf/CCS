@@ -12,10 +12,10 @@ _generate_constraints(ccs_configuration_space_t configuration_space);
 static ccs_error_t
 _ccs_configuration_space_del(ccs_object_t object) {
 	ccs_configuration_space_t configuration_space = (ccs_configuration_space_t)object;
-	UT_array *array = configuration_space->data->hyperparameters;
-	_ccs_hyperparameter_wrapper_cs_t *wrapper = NULL;
-	while ( (wrapper = (_ccs_hyperparameter_wrapper_cs_t *)utarray_next(array, wrapper)) ) {
-		ccs_release_object(wrapper->hyperparameter);
+	UT_array *array = configuration_space->data->parameters;
+	_ccs_parameter_wrapper_cs_t *wrapper = NULL;
+	while ( (wrapper = (_ccs_parameter_wrapper_cs_t *)utarray_next(array, wrapper)) ) {
+		ccs_release_object(wrapper->parameter);
 		if (wrapper->condition)
 			ccs_release_object(wrapper->condition);
 		utarray_free(wrapper->parents);
@@ -27,12 +27,12 @@ _ccs_configuration_space_del(ccs_object_t object) {
 		ccs_release_object(*expr);
 	}
 	HASH_CLEAR(hh_name, configuration_space->data->name_hash);
-	_ccs_hyperparameter_index_hash_t *elem, *tmpelem;
+	_ccs_parameter_index_hash_t *elem, *tmpelem;
 	HASH_ITER(hh_handle, configuration_space->data->handle_hash, elem, tmpelem) {
 		HASH_DELETE(hh_handle, configuration_space->data->handle_hash, elem);
 		free(elem);
 	}
-	utarray_free(configuration_space->data->hyperparameters);
+	utarray_free(configuration_space->data->parameters);
 	utarray_free(configuration_space->data->forbidden_clauses);
 	utarray_free(configuration_space->data->sorted_indexes);
 	_ccs_distribution_wrapper_t *dw, *tmp;
@@ -51,18 +51,18 @@ _ccs_serialize_bin_size_ccs_configuration_space_data(
 		size_t                          *cum_size,
 		_ccs_object_serialize_options_t *opts) {
 	size_t condition_count;
-	_ccs_hyperparameter_wrapper_cs_t *wrapper;
+	_ccs_parameter_wrapper_cs_t *wrapper;
 	size_t distribution_count;
 	_ccs_distribution_wrapper_t *dw;
 	ccs_expression_t *expr;
 
 	*cum_size += _ccs_serialize_bin_size_string(data->name);
 	*cum_size += _ccs_serialize_bin_size_size(
-		utarray_len(data->hyperparameters));
+		utarray_len(data->parameters));
 
 	condition_count = 0;
 	wrapper = NULL;
-	while ( (wrapper = (_ccs_hyperparameter_wrapper_cs_t *)utarray_next(data->hyperparameters, wrapper)) )
+	while ( (wrapper = (_ccs_parameter_wrapper_cs_t *)utarray_next(data->parameters, wrapper)) )
 		if (wrapper->condition)
 			condition_count++;
 	*cum_size += _ccs_serialize_bin_size_size(condition_count);
@@ -77,18 +77,18 @@ _ccs_serialize_bin_size_ccs_configuration_space_data(
 	CCS_VALIDATE(data->rng->obj.ops->serialize_size(
 		data->rng, CCS_SERIALIZE_FORMAT_BINARY, cum_size, opts));
 
-	/* hyperparameters */
+	/* parameters */
 	wrapper = NULL;
-	while ( (wrapper = (_ccs_hyperparameter_wrapper_cs_t *)utarray_next(data->hyperparameters, wrapper)) )
-		CCS_VALIDATE(wrapper->hyperparameter->obj.ops->serialize_size(
-			wrapper->hyperparameter, CCS_SERIALIZE_FORMAT_BINARY, cum_size, opts));
+	while ( (wrapper = (_ccs_parameter_wrapper_cs_t *)utarray_next(data->parameters, wrapper)) )
+		CCS_VALIDATE(wrapper->parameter->obj.ops->serialize_size(
+			wrapper->parameter, CCS_SERIALIZE_FORMAT_BINARY, cum_size, opts));
 
 	/* conditions */
 	condition_count = 0;
 	wrapper = NULL;
-	while ( (wrapper = (_ccs_hyperparameter_wrapper_cs_t *)utarray_next(data->hyperparameters, wrapper)) ) {
+	while ( (wrapper = (_ccs_parameter_wrapper_cs_t *)utarray_next(data->parameters, wrapper)) ) {
 		if (wrapper->condition) {
-			/* hyperparam index and condition */
+			/* parameter index and condition */
 			*cum_size += _ccs_serialize_bin_size_size(condition_count);
 			CCS_VALIDATE(wrapper->condition->obj.ops->serialize_size(
 				wrapper->condition, CCS_SERIALIZE_FORMAT_BINARY, cum_size, opts));
@@ -103,7 +103,7 @@ _ccs_serialize_bin_size_ccs_configuration_space_data(
 			dw->distribution, CCS_SERIALIZE_FORMAT_BINARY, cum_size, opts));
 		*cum_size += _ccs_serialize_bin_size_size(dw->dimension);
 		for (size_t i = 0; i < dw->dimension; i++)
-			*cum_size += _ccs_serialize_bin_size_size(dw->hyperparameter_indexes[i]);
+			*cum_size += _ccs_serialize_bin_size_size(dw->parameter_indexes[i]);
 	}
 
 	/* forbidden clauses */
@@ -121,7 +121,7 @@ _ccs_serialize_bin_ccs_configuration_space_data(
 		char                            **buffer,
 		_ccs_object_serialize_options_t  *opts) {
 	size_t condition_count;
-	_ccs_hyperparameter_wrapper_cs_t *wrapper;
+	_ccs_parameter_wrapper_cs_t *wrapper;
 	size_t distribution_count;
 	_ccs_distribution_wrapper_t *dw;
 	ccs_expression_t *expr;
@@ -129,11 +129,11 @@ _ccs_serialize_bin_ccs_configuration_space_data(
 	CCS_VALIDATE(_ccs_serialize_bin_string(
 		data->name, buffer_size, buffer));
 	CCS_VALIDATE(_ccs_serialize_bin_size(
-		utarray_len(data->hyperparameters), buffer_size, buffer));
+		utarray_len(data->parameters), buffer_size, buffer));
 
 	condition_count = 0;
 	wrapper = NULL;
-	while ( (wrapper = (_ccs_hyperparameter_wrapper_cs_t *)utarray_next(data->hyperparameters, wrapper)) )
+	while ( (wrapper = (_ccs_parameter_wrapper_cs_t *)utarray_next(data->parameters, wrapper)) )
 		if (wrapper->condition)
 			condition_count++;
 	CCS_VALIDATE(_ccs_serialize_bin_size(
@@ -150,16 +150,16 @@ _ccs_serialize_bin_ccs_configuration_space_data(
 	CCS_VALIDATE(data->rng->obj.ops->serialize(
 		data->rng, CCS_SERIALIZE_FORMAT_BINARY, buffer_size, buffer, opts));
 
-	/* hyperparameters */
+	/* parameters */
 	wrapper = NULL;
-	while ( (wrapper = (_ccs_hyperparameter_wrapper_cs_t *)utarray_next(data->hyperparameters, wrapper)) )
-		CCS_VALIDATE(wrapper->hyperparameter->obj.ops->serialize(
-			wrapper->hyperparameter, CCS_SERIALIZE_FORMAT_BINARY, buffer_size, buffer, opts));
+	while ( (wrapper = (_ccs_parameter_wrapper_cs_t *)utarray_next(data->parameters, wrapper)) )
+		CCS_VALIDATE(wrapper->parameter->obj.ops->serialize(
+			wrapper->parameter, CCS_SERIALIZE_FORMAT_BINARY, buffer_size, buffer, opts));
 
 	/* conditions */
 	condition_count = 0;
 	wrapper = NULL;
-	while ( (wrapper = (_ccs_hyperparameter_wrapper_cs_t *)utarray_next(data->hyperparameters, wrapper)) ) {
+	while ( (wrapper = (_ccs_parameter_wrapper_cs_t *)utarray_next(data->parameters, wrapper)) ) {
 		if (wrapper->condition) {
 			CCS_VALIDATE(_ccs_serialize_bin_size(
 				condition_count, buffer_size, buffer));
@@ -178,7 +178,7 @@ _ccs_serialize_bin_ccs_configuration_space_data(
 			dw->dimension, buffer_size, buffer));
 		for (size_t i = 0; i < dw->dimension; i++)
 			CCS_VALIDATE(_ccs_serialize_bin_size(
-				dw->hyperparameter_indexes[i], buffer_size, buffer));
+				dw->parameter_indexes[i], buffer_size, buffer));
 	}
 
 	/* forbidden clauses */
@@ -262,8 +262,8 @@ static _ccs_configuration_space_ops_t _configuration_space_ops =
          &_ccs_configuration_space_serialize_size,
          &_ccs_configuration_space_serialize} } };
 
-static const UT_icd _hyperparameter_wrapper_icd = {
-	sizeof(_ccs_hyperparameter_wrapper_cs_t),
+static const UT_icd _parameter_wrapper_icd = {
+	sizeof(_ccs_parameter_wrapper_cs_t),
 	NULL,
 	NULL,
 	NULL,
@@ -313,8 +313,8 @@ ccs_create_configuration_space(const char                *name,
 	  (const char *)(mem + sizeof(struct _ccs_configuration_space_s) +
 	                 sizeof(struct _ccs_configuration_space_data_s));
 	config_space->data->rng = rng;
-	utarray_new(config_space->data->hyperparameters,
-	            &_hyperparameter_wrapper_icd);
+	utarray_new(config_space->data->parameters,
+	            &_parameter_wrapper_icd);
 	utarray_new(config_space->data->forbidden_clauses,
 	            &_forbidden_clauses_icd);
 	utarray_new(config_space->data->sorted_indexes, &_size_t_icd);
@@ -323,8 +323,8 @@ ccs_create_configuration_space(const char                *name,
 	*configuration_space_ret = config_space;
 	return CCS_SUCCESS;
 errarrays:
-	if (config_space->data->hyperparameters)
-		utarray_free(config_space->data->hyperparameters);
+	if (config_space->data->parameters)
+		utarray_free(config_space->data->parameters);
 	if (config_space->data->forbidden_clauses)
 		utarray_free(config_space->data->forbidden_clauses);
 	if (config_space->data->sorted_indexes)
@@ -373,45 +373,45 @@ ccs_configuration_space_get_rng(ccs_configuration_space_t  configuration_space,
 	CCS_RAISE_ERR_GOTO(err, CCS_OUT_OF_MEMORY, errorutarray, "Out of memory to allocate hash"); \
 }
 ccs_error_t
-ccs_configuration_space_add_hyperparameter(ccs_configuration_space_t configuration_space,
-                                           ccs_hyperparameter_t      hyperparameter,
+ccs_configuration_space_add_parameter(ccs_configuration_space_t configuration_space,
+                                           ccs_parameter_t      parameter,
                                            ccs_distribution_t        distribution) {
 	CCS_CHECK_OBJ(configuration_space, CCS_CONFIGURATION_SPACE);
-	CCS_CHECK_OBJ(hyperparameter, CCS_HYPERPARAMETER);
+	CCS_CHECK_OBJ(parameter, CCS_PARAMETER);
 	ccs_error_t err;
-	ccs_hyperparameter_type_t type;
+	ccs_parameter_type_t type;
 
-	CCS_VALIDATE(ccs_hyperparameter_get_type(hyperparameter, &type));
-	CCS_REFUTE(CCS_HYPERPARAMETER_TYPE_STRING == type, CCS_INVALID_HYPERPARAMETER);
+	CCS_VALIDATE(ccs_parameter_get_type(parameter, &type));
+	CCS_REFUTE(CCS_PARAMETER_TYPE_STRING == type, CCS_INVALID_PARAMETER);
 
 	const char *name;
 	size_t sz_name;
-	_ccs_hyperparameter_index_hash_t *hyper_hash;
-	CCS_VALIDATE(ccs_hyperparameter_get_name(hyperparameter, &name));
+	_ccs_parameter_index_hash_t *parameter_hash;
+	CCS_VALIDATE(ccs_parameter_get_name(parameter, &name));
 	sz_name = strlen(name);
 	HASH_FIND(hh_name, configuration_space->data->name_hash,
-	          name, sz_name, hyper_hash);
-	CCS_REFUTE_MSG(hyper_hash, CCS_INVALID_HYPERPARAMETER, "An hyperparameter with name '%s' already exists in the configuration space", name);
-	UT_array *hyperparameters;
+	          name, sz_name, parameter_hash);
+	CCS_REFUTE_MSG(parameter_hash, CCS_INVALID_PARAMETER, "An parameter with name '%s' already exists in the configuration space", name);
+	UT_array *parameters;
 	size_t index;
 	size_t dimension;
-	_ccs_hyperparameter_wrapper_cs_t hyper_wrapper;
+	_ccs_parameter_wrapper_cs_t parameter_wrapper;
 	_ccs_distribution_wrapper_t *distrib_wrapper;
 	uintptr_t pmem;
-	hyper_wrapper.hyperparameter = hyperparameter;
-	CCS_VALIDATE(ccs_retain_object(hyperparameter));
+	parameter_wrapper.parameter = parameter;
+	CCS_VALIDATE(ccs_retain_object(parameter));
 
 	if (distribution) {
 		CCS_VALIDATE_ERR_GOTO(err,
 		  ccs_distribution_get_dimension(distribution, &dimension),
-		  errorhyper);
+		  errorparameter);
 		CCS_REFUTE_ERR_GOTO(err,
-			dimension != 1, CCS_INVALID_DISTRIBUTION, errorhyper);
-		CCS_VALIDATE_ERR_GOTO(err, ccs_retain_object(distribution), errorhyper);
+			dimension != 1, CCS_INVALID_DISTRIBUTION, errorparameter);
+		CCS_VALIDATE_ERR_GOTO(err, ccs_retain_object(distribution), errorparameter);
 	} else {
 		CCS_VALIDATE_ERR_GOTO(err,
-		  ccs_hyperparameter_get_default_distribution(hyperparameter, &distribution),
-		  errorhyper);
+		  ccs_parameter_get_default_distribution(parameter, &distribution),
+		  errorparameter);
 		dimension = 1;
 	}
 	pmem = (uintptr_t)malloc(sizeof(_ccs_distribution_wrapper_t) + sizeof(size_t)*dimension);
@@ -420,50 +420,50 @@ ccs_configuration_space_add_hyperparameter(ccs_configuration_space_t configurati
         distrib_wrapper = (_ccs_distribution_wrapper_t *)pmem;
 	distrib_wrapper->distribution = distribution;
 	distrib_wrapper->dimension = dimension;
-	distrib_wrapper->hyperparameter_indexes = (size_t *)(pmem + sizeof(_ccs_distribution_wrapper_t));
+	distrib_wrapper->parameter_indexes = (size_t *)(pmem + sizeof(_ccs_distribution_wrapper_t));
 
-	hyper_hash = (_ccs_hyperparameter_index_hash_t *)malloc(sizeof(_ccs_hyperparameter_index_hash_t));
+	parameter_hash = (_ccs_parameter_index_hash_t *)malloc(sizeof(_ccs_parameter_index_hash_t));
 	CCS_REFUTE_ERR_GOTO(err,
-		!hyper_hash, CCS_OUT_OF_MEMORY, errordistrib_wrapper);
+		!parameter_hash, CCS_OUT_OF_MEMORY, errordistrib_wrapper);
 
-	hyperparameters = configuration_space->data->hyperparameters;
-	index = utarray_len(hyperparameters);
-	hyper_hash->hyperparameter = hyperparameter;
-	hyper_hash->name = name;
-	hyper_hash->index = index;
-	distrib_wrapper->hyperparameter_indexes[0] = index;
-	hyper_wrapper.distribution_index = 0;
-	hyper_wrapper.distribution = distrib_wrapper;
-	hyper_wrapper.condition = NULL;
-	hyper_wrapper.parents = NULL;
-	hyper_wrapper.children = NULL;
-	utarray_new(hyper_wrapper.parents, &_size_t_icd);
-	utarray_new(hyper_wrapper.children, &_size_t_icd);
+	parameters = configuration_space->data->parameters;
+	index = utarray_len(parameters);
+	parameter_hash->parameter = parameter;
+	parameter_hash->name = name;
+	parameter_hash->index = index;
+	distrib_wrapper->parameter_indexes[0] = index;
+	parameter_wrapper.distribution_index = 0;
+	parameter_wrapper.distribution = distrib_wrapper;
+	parameter_wrapper.condition = NULL;
+	parameter_wrapper.parents = NULL;
+	parameter_wrapper.children = NULL;
+	utarray_new(parameter_wrapper.parents, &_size_t_icd);
+	utarray_new(parameter_wrapper.children, &_size_t_icd);
 
-	utarray_push_back(hyperparameters, &hyper_wrapper);
+	utarray_push_back(parameters, &parameter_wrapper);
 	utarray_push_back(configuration_space->data->sorted_indexes, &index);
 
 	HASH_ADD_KEYPTR( hh_name, configuration_space->data->name_hash,
-	                 hyper_hash->name, sz_name, hyper_hash );
+	                 parameter_hash->name, sz_name, parameter_hash );
 	HASH_ADD( hh_handle, configuration_space->data->handle_hash,
-	          hyperparameter, sizeof(ccs_hyperparameter_t), hyper_hash );
+	          parameter, sizeof(ccs_parameter_t), parameter_hash );
 	DL_APPEND( configuration_space->data->distribution_list, distrib_wrapper );
 
 	return CCS_SUCCESS;
 errorutarray:
-	utarray_pop_back(hyperparameters);
+	utarray_pop_back(parameters);
 errordistrib_wrapper:
-	if (hyper_hash)
-		free(hyper_hash);
-	if (hyper_wrapper.parents)
-		utarray_free(hyper_wrapper.parents);
-	if (hyper_wrapper.children)
-		utarray_free(hyper_wrapper.children);
+	if (parameter_hash)
+		free(parameter_hash);
+	if (parameter_wrapper.parents)
+		utarray_free(parameter_wrapper.parents);
+	if (parameter_wrapper.children)
+		utarray_free(parameter_wrapper.children);
 	free(distrib_wrapper);
 errordistrib:
 	ccs_release_object(distribution);
-errorhyper:
-	ccs_release_object(hyperparameter);
+errorparameter:
+	ccs_release_object(parameter);
 	return err;
 }
 #undef  utarray_oom
@@ -478,33 +478,33 @@ ccs_configuration_space_set_distribution(ccs_configuration_space_t  configuratio
 	CCS_CHECK_PTR(indexes);
 
 	_ccs_distribution_wrapper_t *dwrapper;
-	_ccs_hyperparameter_wrapper_cs_t *hwrapper;
+	_ccs_parameter_wrapper_cs_t *hwrapper;
 	ccs_error_t err;
-	UT_array *hyperparameters = configuration_space->data->hyperparameters;
-	size_t num_hyperparameters = utarray_len(hyperparameters);
+	UT_array *parameters = configuration_space->data->parameters;
+	size_t num_parameters = utarray_len(parameters);
 	size_t dim;
 	CCS_VALIDATE(ccs_distribution_get_dimension(distribution, &dim));
 
 	for (size_t i = 0; i < dim; i++) {
-		CCS_REFUTE(indexes[i] >= num_hyperparameters, CCS_INVALID_VALUE);
+		CCS_REFUTE(indexes[i] >= num_parameters, CCS_INVALID_VALUE);
 		// Check duplicate entries
 		for (size_t j = i + 1;  j < dim; j++)
 			CCS_REFUTE(indexes[i] == indexes[j], CCS_INVALID_VALUE);
 	}
 
 	uintptr_t cur_mem;
-	uintptr_t mem = (uintptr_t)malloc(sizeof(void *)*num_hyperparameters*2 +
-		sizeof(size_t)*num_hyperparameters);
+	uintptr_t mem = (uintptr_t)malloc(sizeof(void *)*num_parameters*2 +
+		sizeof(size_t)*num_parameters);
 	CCS_REFUTE(!mem, CCS_OUT_OF_MEMORY);
 	cur_mem = mem;
 	_ccs_distribution_wrapper_t **p_dwrappers_to_del =
 		 (_ccs_distribution_wrapper_t **)cur_mem;
-	cur_mem += sizeof(_ccs_distribution_wrapper_t *)*num_hyperparameters;
+	cur_mem += sizeof(_ccs_distribution_wrapper_t *)*num_parameters;
 	_ccs_distribution_wrapper_t **p_dwrappers_to_add =
 		 (_ccs_distribution_wrapper_t **)cur_mem;
-	cur_mem += sizeof(_ccs_distribution_wrapper_t *)*num_hyperparameters;
-	size_t *hypers_without_distrib = (size_t *)cur_mem;
-	cur_mem += sizeof(size_t)*num_hyperparameters;
+	cur_mem += sizeof(_ccs_distribution_wrapper_t *)*num_parameters;
+	size_t *parameters_without_distrib = (size_t *)cur_mem;
+	cur_mem += sizeof(size_t)*num_parameters;
 
 	size_t to_add_count = 0;
 	size_t to_del_count = 0;
@@ -512,7 +512,7 @@ ccs_configuration_space_set_distribution(ccs_configuration_space_t  configuratio
 
 	for (size_t i = 0; i < dim; i++) {
 		int add = 1;
-		hwrapper = (_ccs_hyperparameter_wrapper_cs_t *)utarray_eltptr(hyperparameters, indexes[i]);
+		hwrapper = (_ccs_parameter_wrapper_cs_t *)utarray_eltptr(parameters, indexes[i]);
 		for (size_t j = 0; j < to_del_count; j++)
 			if (p_dwrappers_to_del[j] == hwrapper->distribution) {
 				add = 0;
@@ -523,7 +523,7 @@ ccs_configuration_space_set_distribution(ccs_configuration_space_t  configuratio
 	}
 	for (size_t i = 0; i < to_del_count; i++) {
 		for (size_t j = 0; j < p_dwrappers_to_del[i]->dimension; j++) {
-			hypers_without_distrib[without_distrib_count++] = p_dwrappers_to_del[i]->hyperparameter_indexes[j];
+			parameters_without_distrib[without_distrib_count++] = p_dwrappers_to_del[i]->parameter_indexes[j];
 		}
 	}
 
@@ -533,15 +533,15 @@ ccs_configuration_space_set_distribution(ccs_configuration_space_t  configuratio
 	dwrapper = (_ccs_distribution_wrapper_t *)dmem;
 	dwrapper->distribution = distribution;
 	dwrapper->dimension = dim;
-	dwrapper->hyperparameter_indexes = (size_t *)(dmem + sizeof(_ccs_distribution_wrapper_t));
+	dwrapper->parameter_indexes = (size_t *)(dmem + sizeof(_ccs_distribution_wrapper_t));
 	for (size_t i = 0; i < dim; i++) {
-		dwrapper->hyperparameter_indexes[i] = indexes[i];
+		dwrapper->parameter_indexes[i] = indexes[i];
 		size_t indx = 0;
 		for (size_t j = 0; j < without_distrib_count; j++, indx++)
-			if (hypers_without_distrib[j] == indexes[i])
+			if (parameters_without_distrib[j] == indexes[i])
 				break;
 		for (size_t j = indx + 1; j < without_distrib_count; j++)
-			hypers_without_distrib[j-1] = hypers_without_distrib[j];
+			parameters_without_distrib[j-1] = parameters_without_distrib[j];
 		without_distrib_count--;
 	}
 	CCS_VALIDATE_ERR_GOTO(err, ccs_retain_object(distribution), errdmem);
@@ -552,12 +552,12 @@ ccs_configuration_space_set_distribution(ccs_configuration_space_t  configuratio
 		dmem = (uintptr_t)malloc(sizeof(_ccs_distribution_wrapper_t) + sizeof(size_t));
 		CCS_REFUTE_ERR_GOTO(err, !dmem, CCS_OUT_OF_MEMORY, memory);
 		dwrapper = (_ccs_distribution_wrapper_t *)dmem;
-		dwrapper->hyperparameter_indexes = (size_t *)(dmem + sizeof(_ccs_distribution_wrapper_t));
+		dwrapper->parameter_indexes = (size_t *)(dmem + sizeof(_ccs_distribution_wrapper_t));
 		dwrapper->dimension = 1;
-		dwrapper->hyperparameter_indexes[0] = hypers_without_distrib[i];
-		hwrapper = (_ccs_hyperparameter_wrapper_cs_t *)utarray_eltptr(hyperparameters, hypers_without_distrib[i]);
-		CCS_VALIDATE_ERR_GOTO(err, ccs_hyperparameter_get_default_distribution(
-			hwrapper->hyperparameter, &(dwrapper->distribution)), dwrappers);
+		dwrapper->parameter_indexes[0] = parameters_without_distrib[i];
+		hwrapper = (_ccs_parameter_wrapper_cs_t *)utarray_eltptr(parameters, parameters_without_distrib[i]);
+		CCS_VALIDATE_ERR_GOTO(err, ccs_parameter_get_default_distribution(
+			hwrapper->parameter, &(dwrapper->distribution)), dwrappers);
 		p_dwrappers_to_add[to_add_count++] = dwrapper;
 	}
 
@@ -569,7 +569,7 @@ ccs_configuration_space_set_distribution(ccs_configuration_space_t  configuratio
 	for (size_t i = 0; i < to_add_count; i++) {
 		DL_APPEND( configuration_space->data->distribution_list, p_dwrappers_to_add[i]);
 		for (size_t j = 0; j < p_dwrappers_to_add[i]->dimension; j++) {
-			hwrapper = (_ccs_hyperparameter_wrapper_cs_t *)utarray_eltptr(hyperparameters, p_dwrappers_to_add[i]->hyperparameter_indexes[j]);
+			hwrapper = (_ccs_parameter_wrapper_cs_t *)utarray_eltptr(parameters, p_dwrappers_to_add[i]->parameter_indexes[j]);
 			hwrapper->distribution_index = j;
 			hwrapper->distribution = p_dwrappers_to_add[i];
 		}
@@ -591,7 +591,7 @@ memory:
 }
 
 extern ccs_error_t
-ccs_configuration_space_get_hyperparameter_distribution(
+ccs_configuration_space_get_parameter_distribution(
 		ccs_configuration_space_t  configuration_space,
 		size_t                     index,
 		ccs_distribution_t        *distribution_ret,
@@ -600,8 +600,8 @@ ccs_configuration_space_get_hyperparameter_distribution(
 	CCS_CHECK_PTR(distribution_ret);
 	CCS_CHECK_PTR(index_ret);
 
-	_ccs_hyperparameter_wrapper_cs_t *wrapper = (_ccs_hyperparameter_wrapper_cs_t*)
-		utarray_eltptr(configuration_space->data->hyperparameters, (unsigned int)index);
+	_ccs_parameter_wrapper_cs_t *wrapper = (_ccs_parameter_wrapper_cs_t*)
+		utarray_eltptr(configuration_space->data->parameters, (unsigned int)index);
 	CCS_REFUTE(!wrapper, CCS_OUT_OF_BOUNDS);
 	*distribution_ret = wrapper->distribution->distribution;
 	*index_ret = wrapper->distribution_index;
@@ -609,98 +609,98 @@ ccs_configuration_space_get_hyperparameter_distribution(
 }
 
 ccs_error_t
-ccs_configuration_space_add_hyperparameters(ccs_configuration_space_t  configuration_space,
-                                            size_t                     num_hyperparameters,
-                                            ccs_hyperparameter_t      *hyperparameters,
+ccs_configuration_space_add_parameters(ccs_configuration_space_t  configuration_space,
+                                            size_t                     num_parameters,
+                                            ccs_parameter_t      *parameters,
                                             ccs_distribution_t        *distributions) {
 	CCS_CHECK_OBJ(configuration_space, CCS_CONFIGURATION_SPACE);
-	CCS_CHECK_ARY(num_hyperparameters, hyperparameters);
-	for (size_t i = 0; i < num_hyperparameters; i++) {
+	CCS_CHECK_ARY(num_parameters, parameters);
+	for (size_t i = 0; i < num_parameters; i++) {
 		ccs_distribution_t distribution = NULL;
 		if (distributions)
 			distribution = distributions[i];
-		CCS_VALIDATE(ccs_configuration_space_add_hyperparameter(
-		    configuration_space, hyperparameters[i], distribution));
+		CCS_VALIDATE(ccs_configuration_space_add_parameter(
+		    configuration_space, parameters[i], distribution));
 	}
 	return CCS_SUCCESS;
 }
 
 ccs_error_t
-ccs_configuration_space_get_num_hyperparameters(ccs_configuration_space_t  configuration_space,
-                                                size_t                     *num_hyperparameters_ret) {
+ccs_configuration_space_get_num_parameters(ccs_configuration_space_t  configuration_space,
+                                                size_t                     *num_parameters_ret) {
 	CCS_CHECK_OBJ(configuration_space, CCS_CONFIGURATION_SPACE);
-	CCS_VALIDATE(_ccs_context_get_num_hyperparameters(
-		(ccs_context_t)configuration_space, num_hyperparameters_ret));
+	CCS_VALIDATE(_ccs_context_get_num_parameters(
+		(ccs_context_t)configuration_space, num_parameters_ret));
 	return CCS_SUCCESS;
 }
 
 ccs_error_t
-ccs_configuration_space_get_hyperparameter(ccs_configuration_space_t  configuration_space,
+ccs_configuration_space_get_parameter(ccs_configuration_space_t  configuration_space,
                                            size_t                     index,
-                                           ccs_hyperparameter_t      *hyperparameter_ret) {
+                                           ccs_parameter_t      *parameter_ret) {
 	CCS_CHECK_OBJ(configuration_space, CCS_CONFIGURATION_SPACE);
-	CCS_VALIDATE(_ccs_context_get_hyperparameter(
-		(ccs_context_t)configuration_space, index, hyperparameter_ret));
+	CCS_VALIDATE(_ccs_context_get_parameter(
+		(ccs_context_t)configuration_space, index, parameter_ret));
 	return CCS_SUCCESS;
 }
 
 ccs_error_t
-ccs_configuration_space_get_hyperparameter_by_name(
+ccs_configuration_space_get_parameter_by_name(
 		ccs_configuration_space_t  configuration_space,
 		const char *               name,
-		ccs_hyperparameter_t      *hyperparameter_ret) {
+		ccs_parameter_t      *parameter_ret) {
 	CCS_CHECK_OBJ(configuration_space, CCS_CONFIGURATION_SPACE);
-	CCS_VALIDATE(_ccs_context_get_hyperparameter_by_name(
-		(ccs_context_t)configuration_space, name, hyperparameter_ret));
+	CCS_VALIDATE(_ccs_context_get_parameter_by_name(
+		(ccs_context_t)configuration_space, name, parameter_ret));
 	return CCS_SUCCESS;
 }
 
 ccs_error_t
-ccs_configuration_space_get_hyperparameter_index_by_name(
+ccs_configuration_space_get_parameter_index_by_name(
 		ccs_configuration_space_t  configuration_space,
 		const char                *name,
 		size_t                    *index_ret) {
 	CCS_CHECK_OBJ(configuration_space, CCS_CONFIGURATION_SPACE);
-	CCS_VALIDATE(_ccs_context_get_hyperparameter_index_by_name(
+	CCS_VALIDATE(_ccs_context_get_parameter_index_by_name(
 		(ccs_context_t)configuration_space, name, index_ret));
 	return CCS_SUCCESS;
 }
 
 ccs_error_t
-ccs_configuration_space_get_hyperparameter_index(
+ccs_configuration_space_get_parameter_index(
 		ccs_configuration_space_t  configuration_space,
-		ccs_hyperparameter_t       hyperparameter,
+		ccs_parameter_t       parameter,
 		size_t                    *index_ret) {
 	CCS_CHECK_OBJ(configuration_space, CCS_CONFIGURATION_SPACE);
-	CCS_VALIDATE(_ccs_context_get_hyperparameter_index(
+	CCS_VALIDATE(_ccs_context_get_parameter_index(
 		(ccs_context_t)(configuration_space),
-		hyperparameter, index_ret));
+		parameter, index_ret));
 	return CCS_SUCCESS;
 }
 
 ccs_error_t
-ccs_configuration_space_get_hyperparameter_indexes(
+ccs_configuration_space_get_parameter_indexes(
 		ccs_configuration_space_t  configuration_space,
-		size_t                     num_hyperparameters,
-		ccs_hyperparameter_t      *hyperparameters,
+		size_t                     num_parameters,
+		ccs_parameter_t      *parameters,
 		size_t                    *indexes) {
 	CCS_CHECK_OBJ(configuration_space, CCS_CONFIGURATION_SPACE);
-	CCS_VALIDATE(_ccs_context_get_hyperparameter_indexes(
-		(ccs_context_t)configuration_space, num_hyperparameters,
-		 hyperparameters, indexes));
+	CCS_VALIDATE(_ccs_context_get_parameter_indexes(
+		(ccs_context_t)configuration_space, num_parameters,
+		 parameters, indexes));
 	return CCS_SUCCESS;
 }
 
 ccs_error_t
-ccs_configuration_space_get_hyperparameters(
+ccs_configuration_space_get_parameters(
 		ccs_configuration_space_t  configuration_space,
-		size_t                     num_hyperparameters,
-		ccs_hyperparameter_t      *hyperparameters,
-		size_t                    *num_hyperparameters_ret) {
+		size_t                     num_parameters,
+		ccs_parameter_t      *parameters,
+		size_t                    *num_parameters_ret) {
 	CCS_CHECK_OBJ(configuration_space, CCS_CONFIGURATION_SPACE);
-	CCS_VALIDATE(_ccs_context_get_hyperparameters(
-		(ccs_context_t)configuration_space, num_hyperparameters,
-		hyperparameters, num_hyperparameters_ret));
+	CCS_VALIDATE(_ccs_context_get_parameters(
+		(ccs_context_t)configuration_space, num_parameters,
+		parameters, num_parameters_ret));
 	return CCS_SUCCESS;
 }
 
@@ -720,11 +720,11 @@ _set_actives(ccs_configuration_space_t configuration_space,
              ccs_configuration_t       configuration) {
 	size_t *p_index = NULL;
 	UT_array *indexes = configuration_space->data->sorted_indexes;
-	UT_array *array = configuration_space->data->hyperparameters;
+	UT_array *array = configuration_space->data->parameters;
 	ccs_datum_t *values = configuration->data->values;
 	while ( (p_index = (size_t *)utarray_next(indexes, p_index)) ) {
-		_ccs_hyperparameter_wrapper_cs_t *wrapper = NULL;
-		wrapper = (_ccs_hyperparameter_wrapper_cs_t *)utarray_eltptr(array, *p_index);
+		_ccs_parameter_wrapper_cs_t *wrapper = NULL;
+		wrapper = (_ccs_parameter_wrapper_cs_t *)utarray_eltptr(array, *p_index);
 		if (!wrapper->condition)
 			continue;
 		ccs_datum_t result;
@@ -744,12 +744,12 @@ ccs_configuration_space_get_default_configuration(ccs_configuration_space_t  con
 	ccs_error_t err;
 	ccs_configuration_t config;
 	CCS_VALIDATE(ccs_create_configuration(configuration_space, 0, NULL, &config));
-	UT_array *array = configuration_space->data->hyperparameters;
-	_ccs_hyperparameter_wrapper_cs_t *wrapper = NULL;
+	UT_array *array = configuration_space->data->parameters;
+	_ccs_parameter_wrapper_cs_t *wrapper = NULL;
 	ccs_datum_t *values = config->data->values;
-	while ( (wrapper = (_ccs_hyperparameter_wrapper_cs_t *)utarray_next(array, wrapper)) )
-		CCS_VALIDATE_ERR_GOTO(err, ccs_hyperparameter_get_default_value(
-		    wrapper->hyperparameter, values++), errc);
+	while ( (wrapper = (_ccs_parameter_wrapper_cs_t *)utarray_next(array, wrapper)) )
+		CCS_VALIDATE_ERR_GOTO(err, ccs_parameter_get_default_value(
+		    wrapper->parameter, values++), errc);
 	CCS_VALIDATE_ERR_GOTO(err, _set_actives(configuration_space, config), errc);
 	*configuration_ret = config;
 	return CCS_SUCCESS;
@@ -785,13 +785,13 @@ _check_configuration(ccs_configuration_space_t  configuration_space,
                      ccs_datum_t               *values,
                      ccs_bool_t                *is_valid_ret) {
 	UT_array *indexes = configuration_space->data->sorted_indexes;
-	UT_array *array = configuration_space->data->hyperparameters;
+	UT_array *array = configuration_space->data->parameters;
 	CCS_REFUTE(num_values != utarray_len(array), CCS_INVALID_CONFIGURATION);
 	size_t *p_index = NULL;
 	while ( (p_index = (size_t *)utarray_next(indexes, p_index)) ) {
 		ccs_bool_t active = CCS_TRUE;
-		_ccs_hyperparameter_wrapper_cs_t *wrapper = NULL;
-		wrapper = (_ccs_hyperparameter_wrapper_cs_t *)utarray_eltptr(array, *p_index);
+		_ccs_parameter_wrapper_cs_t *wrapper = NULL;
+		wrapper = (_ccs_parameter_wrapper_cs_t *)utarray_eltptr(array, *p_index);
 		if (wrapper->condition) {
 			ccs_datum_t result;
 			CCS_VALIDATE(ccs_expression_eval(
@@ -804,8 +804,8 @@ _check_configuration(ccs_configuration_space_t  configuration_space,
 			return CCS_SUCCESS;
 		}
 		if (active) {
-			CCS_VALIDATE(ccs_hyperparameter_check_value(
-			    wrapper->hyperparameter, values[*p_index], is_valid_ret));
+			CCS_VALIDATE(ccs_parameter_check_value(
+			    wrapper->parameter, values[*p_index], is_valid_ret));
 			if (*is_valid_ret == CCS_FALSE)
 				return CCS_SUCCESS;
 		}
@@ -852,30 +852,30 @@ _sample(ccs_configuration_space_t  configuration_space,
         ccs_bool_t                *found) {
 	ccs_error_t err;
 	ccs_rng_t rng = configuration_space->data->rng;
-	UT_array *array = configuration_space->data->hyperparameters;
+	UT_array *array = configuration_space->data->parameters;
 	_ccs_distribution_wrapper_t *dwrapper = NULL;
-	_ccs_hyperparameter_wrapper_cs_t *hwrapper = NULL;
+	_ccs_parameter_wrapper_cs_t *hwrapper = NULL;
 	ccs_datum_t *values = config->data->values;
 
-	size_t num_hyperparameters = utarray_len(array);
+	size_t num_parameters = utarray_len(array);
 	ccs_datum_t *p_values;
-	ccs_hyperparameter_t *hps;
+	ccs_parameter_t *hps;
 	uintptr_t mem;
-	mem = (uintptr_t) malloc(num_hyperparameters * (sizeof(ccs_datum_t) + sizeof(ccs_hyperparameter_t)));
+	mem = (uintptr_t) malloc(num_parameters * (sizeof(ccs_datum_t) + sizeof(ccs_parameter_t)));
 	CCS_REFUTE(!mem, CCS_OUT_OF_MEMORY);
 
 	p_values = (ccs_datum_t *)mem;
-	hps = (ccs_hyperparameter_t *)(mem + num_hyperparameters*sizeof(ccs_datum_t));
+	hps = (ccs_parameter_t *)(mem + num_parameters*sizeof(ccs_datum_t));
 	DL_FOREACH(configuration_space->data->distribution_list, dwrapper) {
 		for (size_t i = 0; i < dwrapper->dimension; i++) {
-			size_t hindex = dwrapper->hyperparameter_indexes[i];
-			hwrapper = (_ccs_hyperparameter_wrapper_cs_t *)utarray_eltptr(array, hindex);
-			hps[i] = hwrapper->hyperparameter;
+			size_t hindex = dwrapper->parameter_indexes[i];
+			hwrapper = (_ccs_parameter_wrapper_cs_t *)utarray_eltptr(array, hindex);
+			hps[i] = hwrapper->parameter;
 		}
-		CCS_VALIDATE_ERR_GOTO(err, ccs_distribution_hyperparameters_sample(
+		CCS_VALIDATE_ERR_GOTO(err, ccs_distribution_parameters_sample(
 			dwrapper->distribution, rng, hps, p_values), memory);
 		for (size_t i = 0; i < dwrapper->dimension; i++) {
-			size_t hindex = dwrapper->hyperparameter_indexes[i];
+			size_t hindex = dwrapper->parameter_indexes[i];
 			values[hindex] = p_values[i];
 		}
 	}
@@ -891,12 +891,12 @@ memory:
 //        ccs_configuration_t        config,
 //        ccs_bool_t                *found) {
 //	ccs_rng_t rng = configuration_space->data->rng;
-//	UT_array *array = configuration_space->data->hyperparameters;
-//	_ccs_hyperparameter_wrapper_cs_t *wrapper = NULL;
+//	UT_array *array = configuration_space->data->parameters;
+//	_ccs_parameter_wrapper_cs_t *wrapper = NULL;
 //	ccs_datum_t *values = config->data->values;
-//	while ( (wrapper = (_ccs_hyperparameter_wrapper_cs_t *)
+//	while ( (wrapper = (_ccs_parameter_wrapper_cs_t *)
 //	                       utarray_next(array, wrapper)) ) {
-//		CCS_VALIDATE(ccs_hyperparameter_sample(wrapper->hyperparameter,
+//		CCS_VALIDATE(ccs_parameter_sample(wrapper->parameter,
 //		    wrapper->distribution->distribution, rng, values++));
 //	}
 //	CCS_VALIDATE(_set_actives(configuration_space, config));
@@ -963,14 +963,14 @@ errc:
 	ccs_release_object(config);
 	return err;
 }
-//	UT_array *array = configuration_space->data->hyperparameters;
-//	size_t num_hyper = utarray_len(array);
-//	ccs_datum_t *values = (ccs_datum_t *)calloc(1, sizeof(ccs_datum_t)*num_configurations*num_hyper);
+//	UT_array *array = configuration_space->data->parameters;
+//	size_t num_parameter = utarray_len(array);
+//	ccs_datum_t *values = (ccs_datum_t *)calloc(1, sizeof(ccs_datum_t)*num_configurations*num_parameter);
 //	ccs_datum_t *p_values = values;
 //	ccs_rng_t rng = configuration_space->data->rng;
-//	_ccs_hyperparameter_wrapper_cs_t *wrapper = NULL;
-//	while ( (wrapper = (_ccs_hyperparameter_wrapper_cs_t *)utarray_next(array, wrapper)) ) {
-//		err = ccs_hyperparameter_samples(wrapper->hyperparameter,
+//	_ccs_parameter_wrapper_cs_t *wrapper = NULL;
+//	while ( (wrapper = (_ccs_parameter_wrapper_cs_t *)utarray_next(array, wrapper)) ) {
+//		err = ccs_parameter_samples(wrapper->parameter,
 //		                                 wrapper->distribution->distribution,
 //						 rng, num_configurations, p_values);
 //		if (CCS_UNLIKELY(err)) {
@@ -990,7 +990,7 @@ errc:
 //		}
 //	}
 //	for(i = 0; i < num_configurations; i++) {
-//		for(size_t j = 0; j < num_hyper; j++)
+//		for(size_t j = 0; j < num_parameter; j++)
 //			configurations[i]->data->values[j] =
 //				values[j*num_configurations + i];
 //
@@ -1030,12 +1030,12 @@ static void _uniq_size_t_array(UT_array *array) {
 	utarray_resize(array, real_count);
 }
 
-struct _hyper_list_s;
-struct _hyper_list_s {
+struct _parameter_list_s;
+struct _parameter_list_s {
 	size_t in_edges;
 	size_t index;
-	struct _hyper_list_s *next;
-	struct _hyper_list_s *prev;
+	struct _parameter_list_s *next;
+	struct _parameter_list_s *prev;
 };
 
 #undef  utarray_oom
@@ -1046,17 +1046,17 @@ struct _hyper_list_s {
 static ccs_error_t
 _topological_sort(ccs_configuration_space_t configuration_space) {
 	utarray_clear(configuration_space->data->sorted_indexes);
-	UT_array *array = configuration_space->data->hyperparameters;
+	UT_array *array = configuration_space->data->parameters;
 	size_t count = utarray_len(array);
 
-	struct _hyper_list_s *list = (struct _hyper_list_s *)calloc(1,
-		sizeof(struct _hyper_list_s) * count);
+	struct _parameter_list_s *list = (struct _parameter_list_s *)calloc(1,
+		sizeof(struct _parameter_list_s) * count);
 	CCS_REFUTE(!list, CCS_OUT_OF_MEMORY);
-	struct _hyper_list_s *queue = NULL;
+	struct _parameter_list_s *queue = NULL;
 
-	_ccs_hyperparameter_wrapper_cs_t *wrapper = NULL;
+	_ccs_parameter_wrapper_cs_t *wrapper = NULL;
 	size_t index = 0;
-	while ( (wrapper = (_ccs_hyperparameter_wrapper_cs_t *)utarray_next(array, wrapper)) ) {
+	while ( (wrapper = (_ccs_parameter_wrapper_cs_t *)utarray_next(array, wrapper)) ) {
 		size_t in_edges = utarray_len(wrapper->parents);
 		list[index].in_edges = in_edges;
 		list[index].index = index;
@@ -1066,9 +1066,9 @@ _topological_sort(ccs_configuration_space_t configuration_space) {
 	}
 	size_t processed = 0;
 	while(queue) {
-		struct _hyper_list_s *e = queue;
+		struct _parameter_list_s *e = queue;
 		DL_DELETE(queue, queue);
-		wrapper = (_ccs_hyperparameter_wrapper_cs_t *)
+		wrapper = (_ccs_parameter_wrapper_cs_t *)
 			utarray_eltptr(array, e->index);
 		size_t *child = NULL;
 		while ( (child = (size_t *)utarray_next(wrapper->children, child)) ) {
@@ -1091,9 +1091,9 @@ _topological_sort(ccs_configuration_space_t configuration_space) {
 }
 static ccs_error_t
 _recompute_graph(ccs_configuration_space_t configuration_space) {
-	_ccs_hyperparameter_wrapper_cs_t *wrapper = NULL;
-	UT_array *array = configuration_space->data->hyperparameters;
-	while ( (wrapper = (_ccs_hyperparameter_wrapper_cs_t *)utarray_next(array, wrapper)) ) {
+	_ccs_parameter_wrapper_cs_t *wrapper = NULL;
+	UT_array *array = configuration_space->data->parameters;
+	while ( (wrapper = (_ccs_parameter_wrapper_cs_t *)utarray_next(array, wrapper)) ) {
 		utarray_clear(wrapper->parents);
 		utarray_clear(wrapper->children);
 	}
@@ -1101,37 +1101,37 @@ _recompute_graph(ccs_configuration_space_t configuration_space) {
 	intptr_t mem = 0;
 	ccs_error_t err = CCS_SUCCESS;
 	for (size_t index = 0; index < utarray_len(array); index++) {
-		wrapper = (_ccs_hyperparameter_wrapper_cs_t *)utarray_eltptr(array, (unsigned int)index);
+		wrapper = (_ccs_parameter_wrapper_cs_t *)utarray_eltptr(array, (unsigned int)index);
 		if (!wrapper->condition)
 			continue;
 		size_t count;
-		CCS_VALIDATE_ERR_GOTO(err, ccs_expression_get_hyperparameters(wrapper->condition, 0, NULL, &count), errmem);
+		CCS_VALIDATE_ERR_GOTO(err, ccs_expression_get_parameters(wrapper->condition, 0, NULL, &count), errmem);
 		if (count == 0)
 			continue;
-		ccs_hyperparameter_t *parents = NULL;
+		ccs_parameter_t *parents = NULL;
 		size_t               *parents_index = NULL;
-		_ccs_hyperparameter_wrapper_cs_t *parent_wrapper = NULL;
+		_ccs_parameter_wrapper_cs_t *parent_wrapper = NULL;
 		intptr_t oldmem = mem;
 		mem = (intptr_t)realloc((void *)oldmem, count *
-			(sizeof(ccs_hyperparameter_t) + sizeof(size_t)));
+			(sizeof(ccs_parameter_t) + sizeof(size_t)));
 		if (!mem) {
 			mem = oldmem;
 			CCS_RAISE_ERR_GOTO(err, CCS_OUT_OF_MEMORY, errmem, "Not enough memory to reallocate array");
 		}
-		parents = (ccs_hyperparameter_t *)mem;
-		parents_index = (size_t *)(mem + count * sizeof(ccs_hyperparameter_t));
-		CCS_VALIDATE_ERR_GOTO(err, ccs_expression_get_hyperparameters(
+		parents = (ccs_parameter_t *)mem;
+		parents_index = (size_t *)(mem + count * sizeof(ccs_parameter_t));
+		CCS_VALIDATE_ERR_GOTO(err, ccs_expression_get_parameters(
 		    wrapper->condition, count, parents, NULL), errmem);
-		CCS_VALIDATE_ERR_GOTO(err, ccs_configuration_space_get_hyperparameter_indexes(
+		CCS_VALIDATE_ERR_GOTO(err, ccs_configuration_space_get_parameter_indexes(
 		    configuration_space, count, parents, parents_index), errmem);
 		for (size_t i = 0; i < count; i++) {
 			utarray_push_back(wrapper->parents, parents_index + i);
-			parent_wrapper = (_ccs_hyperparameter_wrapper_cs_t *)utarray_eltptr(array, parents_index[i]);
+			parent_wrapper = (_ccs_parameter_wrapper_cs_t *)utarray_eltptr(array, parents_index[i]);
 			utarray_push_back(parent_wrapper->children, &index);
 		}
 	}
 	wrapper = NULL;
-	while ( (wrapper = (_ccs_hyperparameter_wrapper_cs_t *)utarray_next(array, wrapper)) ) {
+	while ( (wrapper = (_ccs_parameter_wrapper_cs_t *)utarray_next(array, wrapper)) ) {
 		_uniq_size_t_array(wrapper->parents);
 		_uniq_size_t_array(wrapper->children);
         }
@@ -1155,15 +1155,15 @@ _generate_constraints(ccs_configuration_space_t configuration_space) {
 
 ccs_error_t
 ccs_configuration_space_set_condition(ccs_configuration_space_t configuration_space,
-                                      size_t                    hyperparameter_index,
+                                      size_t                    parameter_index,
                                       ccs_expression_t          expression) {
 	CCS_CHECK_OBJ(configuration_space, CCS_CONFIGURATION_SPACE);
 	CCS_CHECK_OBJ(expression, CCS_EXPRESSION);
-	_ccs_hyperparameter_wrapper_cs_t *wrapper = (_ccs_hyperparameter_wrapper_cs_t*)
-	    utarray_eltptr(configuration_space->data->hyperparameters,
-	                   (unsigned int)hyperparameter_index);
+	_ccs_parameter_wrapper_cs_t *wrapper = (_ccs_parameter_wrapper_cs_t*)
+	    utarray_eltptr(configuration_space->data->parameters,
+	                   (unsigned int)parameter_index);
 	CCS_REFUTE(!wrapper, CCS_OUT_OF_BOUNDS);
-	CCS_REFUTE(wrapper->condition, CCS_INVALID_HYPERPARAMETER);
+	CCS_REFUTE(wrapper->condition, CCS_INVALID_PARAMETER);
 	ccs_error_t err;
 	CCS_VALIDATE(ccs_retain_object(expression));
 	wrapper->condition = expression;
@@ -1179,13 +1179,13 @@ erre:
 
 ccs_error_t
 ccs_configuration_space_get_condition(ccs_configuration_space_t  configuration_space,
-                                      size_t                     hyperparameter_index,
+                                      size_t                     parameter_index,
                                       ccs_expression_t          *expression_ret) {
 	CCS_CHECK_OBJ(configuration_space, CCS_CONFIGURATION_SPACE);
 	CCS_CHECK_PTR(expression_ret);
-	_ccs_hyperparameter_wrapper_cs_t *wrapper = (_ccs_hyperparameter_wrapper_cs_t*)
-	    utarray_eltptr(configuration_space->data->hyperparameters,
-	                   (unsigned int)hyperparameter_index);
+	_ccs_parameter_wrapper_cs_t *wrapper = (_ccs_parameter_wrapper_cs_t*)
+	    utarray_eltptr(configuration_space->data->parameters,
+	                   (unsigned int)parameter_index);
 	CCS_REFUTE(!wrapper, CCS_OUT_OF_BOUNDS);
 	*expression_ret = wrapper->condition;
 	return CCS_SUCCESS;
@@ -1199,19 +1199,19 @@ ccs_configuration_space_get_conditions(ccs_configuration_space_t  configuration_
 	CCS_CHECK_OBJ(configuration_space, CCS_CONFIGURATION_SPACE);
 	CCS_CHECK_ARY(num_expressions, expressions);
 	CCS_REFUTE(!expressions && !num_expressions_ret, CCS_INVALID_VALUE);
-	UT_array *array = configuration_space->data->hyperparameters;
-	size_t num_hyperparameters = utarray_len(array);
+	UT_array *array = configuration_space->data->parameters;
+	size_t num_parameters = utarray_len(array);
 	if (expressions) {
-		CCS_REFUTE(num_expressions < num_hyperparameters, CCS_INVALID_VALUE);
-		_ccs_hyperparameter_wrapper_cs_t *wrapper = NULL;
+		CCS_REFUTE(num_expressions < num_parameters, CCS_INVALID_VALUE);
+		_ccs_parameter_wrapper_cs_t *wrapper = NULL;
 		size_t index = 0;
-		while ( (wrapper = (_ccs_hyperparameter_wrapper_cs_t *)utarray_next(array, wrapper)) )
+		while ( (wrapper = (_ccs_parameter_wrapper_cs_t *)utarray_next(array, wrapper)) )
 			expressions[index++] = wrapper->condition;
-		for (size_t i = num_hyperparameters; i < num_expressions; i++)
+		for (size_t i = num_parameters; i < num_expressions; i++)
 			expressions[i] = NULL;
 	}
 	if (num_expressions_ret)
-		*num_expressions_ret = num_hyperparameters;
+		*num_expressions_ret = num_parameters;
 	return CCS_SUCCESS;
 }
 

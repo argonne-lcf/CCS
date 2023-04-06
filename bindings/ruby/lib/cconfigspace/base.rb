@@ -93,7 +93,7 @@ module CCS
   typedef :pointer, :ccs_object_t
   typedef :ccs_object_t, :ccs_rng_t
   typedef :ccs_object_t, :ccs_distribution_t
-  typedef :ccs_object_t, :ccs_hyperparameter_t
+  typedef :ccs_object_t, :ccs_parameter_t
   typedef :ccs_object_t, :ccs_expression_t
   typedef :ccs_object_t, :ccs_context_t
   typedef :ccs_object_t, :ccs_configuration_space_t
@@ -117,7 +117,7 @@ module CCS
     alias read_ccs_object_t read_pointer
     alias read_ccs_rng_t read_ccs_object_t
     alias read_ccs_distribution_t read_ccs_object_t
-    alias read_ccs_hyperparameter_t read_ccs_object_t
+    alias read_ccs_parameter_t read_ccs_object_t
     alias read_ccs_expression_t read_ccs_object_t
     alias read_ccs_context_t read_ccs_object_t
     alias read_ccs_configuration_space_t read_ccs_object_t
@@ -142,7 +142,7 @@ module CCS
   ObjectType = enum FFI::Type::INT32, :ccs_object_type_t, [
     :CCS_RNG,
     :CCS_DISTRIBUTION,
-    :CCS_HYPERPARAMETER,
+    :CCS_PARAMETER,
     :CCS_EXPRESSION,
     :CCS_CONFIGURATION_SPACE,
     :CCS_CONFIGURATION,
@@ -170,7 +170,7 @@ module CCS
     :CCS_INVALID_SCALE,           -4,
     :CCS_INVALID_DISTRIBUTION,    -5,
     :CCS_INVALID_EXPRESSION,      -6,
-    :CCS_INVALID_HYPERPARAMETER,  -7,
+    :CCS_INVALID_PARAMETER,  -7,
     :CCS_INVALID_CONFIGURATION,   -8,
     :CCS_INVALID_NAME,            -9,
     :CCS_INVALID_CONDITION,      -10,
@@ -568,7 +568,7 @@ module CCS
       @class_map ||= {
         CCS_RNG: CCS::Rng,
         CCS_DISTRIBUTION: CCS::Distribution,
-        CCS_HYPERPARAMETER: CCS::Hyperparameter,
+        CCS_PARAMETER: CCS::Parameter,
         CCS_EXPRESSION: CCS::Expression,
         CCS_CONFIGURATION_SPACE: CCS::ConfigurationSpace,
         CCS_CONFIGURATION: CCS::Configuration,

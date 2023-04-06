@@ -1,47 +1,47 @@
 #include "cconfigspace_internal.h"
-#include "hyperparameter_internal.h"
+#include "parameter_internal.h"
 #include <string.h>
 
 static ccs_error_t
-_ccs_hyperparameter_numerical_del(ccs_object_t o) {
+_ccs_parameter_numerical_del(ccs_object_t o) {
 	(void)o;
 	return CCS_SUCCESS;
 }
 
 static inline size_t
-_ccs_serialize_bin_size_ccs_hyperparameter_numerical(
-		ccs_hyperparameter_t hyperparameter) {
-	_ccs_hyperparameter_numerical_data_t *data =
-		(_ccs_hyperparameter_numerical_data_t *)(hyperparameter->data);
+_ccs_serialize_bin_size_ccs_parameter_numerical(
+		ccs_parameter_t parameter) {
+	_ccs_parameter_numerical_data_t *data =
+		(_ccs_parameter_numerical_data_t *)(parameter->data);
 	return	_ccs_serialize_bin_size_ccs_object_internal(
-			(_ccs_object_internal_t *)hyperparameter) +
-	        _ccs_serialize_bin_size_ccs_hyperparameter_numerical_data(data);
+			(_ccs_object_internal_t *)parameter) +
+	        _ccs_serialize_bin_size_ccs_parameter_numerical_data(data);
 }
 
 static inline ccs_error_t
-_ccs_serialize_bin_ccs_hyperparameter_numerical(
-		ccs_hyperparameter_t   hyperparameter,
+_ccs_serialize_bin_ccs_parameter_numerical(
+		ccs_parameter_t   parameter,
 		size_t                *buffer_size,
 		char                 **buffer) {
-	_ccs_hyperparameter_numerical_data_t *data =
-		(_ccs_hyperparameter_numerical_data_t *)(hyperparameter->data);
+	_ccs_parameter_numerical_data_t *data =
+		(_ccs_parameter_numerical_data_t *)(parameter->data);
 	CCS_VALIDATE(_ccs_serialize_bin_ccs_object_internal(
-		(_ccs_object_internal_t *)hyperparameter, buffer_size, buffer));
-	CCS_VALIDATE(_ccs_serialize_bin_ccs_hyperparameter_numerical_data(
+		(_ccs_object_internal_t *)parameter, buffer_size, buffer));
+	CCS_VALIDATE(_ccs_serialize_bin_ccs_parameter_numerical_data(
 		data, buffer_size, buffer));
 	return CCS_SUCCESS;
 }
 
 static ccs_error_t
-_ccs_hyperparameter_numerical_serialize_size(
+_ccs_parameter_numerical_serialize_size(
 		ccs_object_t                     object,
 		ccs_serialize_format_t           format,
 		size_t                          *cum_size,
 		_ccs_object_serialize_options_t *opts) {
 	switch(format) {
 	case CCS_SERIALIZE_FORMAT_BINARY:
-		*cum_size += _ccs_serialize_bin_size_ccs_hyperparameter_numerical(
-			(ccs_hyperparameter_t)object);
+		*cum_size += _ccs_serialize_bin_size_ccs_parameter_numerical(
+			(ccs_parameter_t)object);
 		break;
 	default:
 		CCS_RAISE(CCS_INVALID_VALUE, "Unsupported serialization format: %d", format);
@@ -52,7 +52,7 @@ _ccs_hyperparameter_numerical_serialize_size(
 }
 
 static ccs_error_t
-_ccs_hyperparameter_numerical_serialize(
+_ccs_parameter_numerical_serialize(
 		ccs_object_t                      object,
 		ccs_serialize_format_t            format,
 		size_t                           *buffer_size,
@@ -60,8 +60,8 @@ _ccs_hyperparameter_numerical_serialize(
 		_ccs_object_serialize_options_t  *opts) {
 	switch(format) {
 	case CCS_SERIALIZE_FORMAT_BINARY:
-		CCS_VALIDATE(_ccs_serialize_bin_ccs_hyperparameter_numerical(
-		    (ccs_hyperparameter_t)object, buffer_size, buffer));
+		CCS_VALIDATE(_ccs_serialize_bin_ccs_parameter_numerical(
+		    (ccs_parameter_t)object, buffer_size, buffer));
 		break;
 	default:
 		CCS_RAISE(CCS_INVALID_VALUE, "Unsupported serialization format: %d", format);
@@ -72,13 +72,13 @@ _ccs_hyperparameter_numerical_serialize(
 }
 
 static ccs_error_t
-_ccs_hyperparameter_numerical_check_values(_ccs_hyperparameter_data_t *data,
+_ccs_parameter_numerical_check_values(_ccs_parameter_data_t *data,
                                            size_t                num_values,
                                            const ccs_datum_t    *values,
                                            ccs_datum_t          *values_ret,
                                            ccs_bool_t           *results) {
-	_ccs_hyperparameter_numerical_data_t *d =
-	    (_ccs_hyperparameter_numerical_data_t *)data;
+	_ccs_parameter_numerical_data_t *d =
+	    (_ccs_parameter_numerical_data_t *)data;
 	ccs_interval_t *interval = &(d->common_data.interval);
 	ccs_numeric_type_t type = d->common_data.interval.type;
 	if (type == CCS_NUM_FLOAT) {
@@ -108,13 +108,13 @@ _ccs_hyperparameter_numerical_check_values(_ccs_hyperparameter_data_t *data,
 }
 
 static ccs_error_t
-_ccs_hyperparameter_numerical_samples(_ccs_hyperparameter_data_t *data,
+_ccs_parameter_numerical_samples(_ccs_parameter_data_t *data,
                                       ccs_distribution_t          distribution,
                                       ccs_rng_t                   rng,
                                       size_t                      num_values,
                                       ccs_datum_t                *values) {
-	_ccs_hyperparameter_numerical_data_t *d =
-	    (_ccs_hyperparameter_numerical_data_t *)data;
+	_ccs_parameter_numerical_data_t *d =
+	    (_ccs_parameter_numerical_data_t *)data;
 	ccs_numeric_type_t type = d->common_data.interval.type;
 	ccs_interval_t *interval = &(d->common_data.interval);
 	ccs_error_t err;
@@ -185,10 +185,10 @@ errmem:
 }
 
 static ccs_error_t
-_ccs_hyperparameter_numerical_get_default_distribution(
-		_ccs_hyperparameter_data_t *data,
+_ccs_parameter_numerical_get_default_distribution(
+		_ccs_parameter_data_t *data,
 		ccs_distribution_t         *distribution) {
-	_ccs_hyperparameter_numerical_data_t *d = (_ccs_hyperparameter_numerical_data_t *)data;
+	_ccs_parameter_numerical_data_t *d = (_ccs_parameter_numerical_data_t *)data;
 	ccs_interval_t *interval = &(d->common_data.interval);
 	CCS_VALIDATE(ccs_create_uniform_distribution(
 		interval->type, interval->lower, interval->upper,
@@ -197,14 +197,14 @@ _ccs_hyperparameter_numerical_get_default_distribution(
 }
 
 static ccs_error_t
-_ccs_hyperparameter_numerical_convert_samples(
-		_ccs_hyperparameter_data_t *data,
+_ccs_parameter_numerical_convert_samples(
+		_ccs_parameter_data_t *data,
 		ccs_bool_t                  oversampling,
 		size_t                      num_values,
 		const ccs_numeric_t        *values,
 		ccs_datum_t                *results) {
-	_ccs_hyperparameter_numerical_data_t *d =
-	    (_ccs_hyperparameter_numerical_data_t *)data;
+	_ccs_parameter_numerical_data_t *d =
+	    (_ccs_parameter_numerical_data_t *)data;
 	ccs_numeric_type_t type = d->common_data.interval.type;
 	ccs_interval_t *interval = &(d->common_data.interval);
 
@@ -234,30 +234,30 @@ _ccs_hyperparameter_numerical_convert_samples(
 	return CCS_SUCCESS;
 }
 
-static _ccs_hyperparameter_ops_t _ccs_hyperparameter_numerical_ops = {
-	{ &_ccs_hyperparameter_numerical_del,
-	  &_ccs_hyperparameter_numerical_serialize_size,
-	  &_ccs_hyperparameter_numerical_serialize },
-	&_ccs_hyperparameter_numerical_check_values,
-	&_ccs_hyperparameter_numerical_samples,
-	&_ccs_hyperparameter_numerical_get_default_distribution,
-	&_ccs_hyperparameter_numerical_convert_samples
+static _ccs_parameter_ops_t _ccs_parameter_numerical_ops = {
+	{ &_ccs_parameter_numerical_del,
+	  &_ccs_parameter_numerical_serialize_size,
+	  &_ccs_parameter_numerical_serialize },
+	&_ccs_parameter_numerical_check_values,
+	&_ccs_parameter_numerical_samples,
+	&_ccs_parameter_numerical_get_default_distribution,
+	&_ccs_parameter_numerical_convert_samples
 };
 
 ccs_error_t
-ccs_create_numerical_hyperparameter(const char           *name,
+ccs_create_numerical_parameter(const char           *name,
                                     ccs_numeric_type_t    data_type,
                                     ccs_numeric_t         lower,
                                     ccs_numeric_t         upper,
                                     ccs_numeric_t         quantization,
                                     ccs_numeric_t         default_value,
-                                    ccs_hyperparameter_t *hyperparameter_ret) {
+                                    ccs_parameter_t *parameter_ret) {
 	CCS_CHECK_PTR(name);
-	CCS_CHECK_PTR(hyperparameter_ret);
+	CCS_CHECK_PTR(parameter_ret);
 	CCS_REFUTE(data_type != CCS_NUM_FLOAT && data_type != CCS_NUM_INTEGER, CCS_INVALID_TYPE);
 	CCS_REFUTE(data_type == CCS_NUM_INTEGER && (lower.i >= upper.i || quantization.i < 0 || quantization.i > upper.i - lower.i || default_value.i < lower.i || default_value.i >= upper.i), CCS_INVALID_VALUE);
 	CCS_REFUTE(data_type == CCS_NUM_FLOAT && (lower.f >= upper.f || quantization.f < 0.0 || quantization.f > upper.f - lower.f || default_value.f < lower.f || default_value.f >= upper.f), CCS_INVALID_VALUE);
-	uintptr_t mem = (uintptr_t)calloc(1, sizeof(struct _ccs_hyperparameter_s) + sizeof(_ccs_hyperparameter_numerical_data_t) + strlen(name) + 1);
+	uintptr_t mem = (uintptr_t)calloc(1, sizeof(struct _ccs_parameter_s) + sizeof(_ccs_parameter_numerical_data_t) + strlen(name) + 1);
 	CCS_REFUTE(!mem, CCS_OUT_OF_MEMORY);
 
 	ccs_interval_t interval;
@@ -267,37 +267,37 @@ ccs_create_numerical_hyperparameter(const char           *name,
 	interval.lower_included = CCS_TRUE;
 	interval.upper_included = CCS_FALSE;
 
-	ccs_hyperparameter_t hyperparam = (ccs_hyperparameter_t)mem;
-	_ccs_object_init(&(hyperparam->obj), CCS_HYPERPARAMETER, (_ccs_object_ops_t *)&_ccs_hyperparameter_numerical_ops);
-	_ccs_hyperparameter_numerical_data_t *hyperparam_data = (_ccs_hyperparameter_numerical_data_t *)(mem + sizeof(struct _ccs_hyperparameter_s));
-	hyperparam_data->common_data.type = CCS_HYPERPARAMETER_TYPE_NUMERICAL;
-	hyperparam_data->common_data.name = (char *)(mem + sizeof(struct _ccs_hyperparameter_s) + sizeof(_ccs_hyperparameter_numerical_data_t));
-	strcpy((char *)hyperparam_data->common_data.name, name);
+	ccs_parameter_t parameter = (ccs_parameter_t)mem;
+	_ccs_object_init(&(parameter->obj), CCS_PARAMETER, (_ccs_object_ops_t *)&_ccs_parameter_numerical_ops);
+	_ccs_parameter_numerical_data_t *parameter_data = (_ccs_parameter_numerical_data_t *)(mem + sizeof(struct _ccs_parameter_s));
+	parameter_data->common_data.type = CCS_PARAMETER_TYPE_NUMERICAL;
+	parameter_data->common_data.name = (char *)(mem + sizeof(struct _ccs_parameter_s) + sizeof(_ccs_parameter_numerical_data_t));
+	strcpy((char *)parameter_data->common_data.name, name);
 	if (data_type == CCS_NUM_FLOAT) {
-		hyperparam_data->common_data.default_value.type = CCS_FLOAT;
-		hyperparam_data->common_data.default_value.value.f = default_value.f;
+		parameter_data->common_data.default_value.type = CCS_FLOAT;
+		parameter_data->common_data.default_value.value.f = default_value.f;
 	} else {
-		hyperparam_data->common_data.default_value.type = CCS_INTEGER;
-		hyperparam_data->common_data.default_value.value.i = default_value.i;
+		parameter_data->common_data.default_value.type = CCS_INTEGER;
+		parameter_data->common_data.default_value.value.i = default_value.i;
 	}
-	hyperparam_data->common_data.interval = interval;
-	hyperparam_data->quantization = quantization;
-	hyperparam->data = (_ccs_hyperparameter_data_t *)hyperparam_data;
-	*hyperparameter_ret = hyperparam;
+	parameter_data->common_data.interval = interval;
+	parameter_data->quantization = quantization;
+	parameter->data = (_ccs_parameter_data_t *)parameter_data;
+	*parameter_ret = parameter;
 
 	return CCS_SUCCESS;
 }
 
 ccs_error_t
-ccs_numerical_hyperparameter_get_parameters(ccs_hyperparameter_t  hyperparameter,
+ccs_numerical_parameter_get_parameters(ccs_parameter_t  parameter,
                                             ccs_numeric_type_t   *data_type_ret,
                                             ccs_numeric_t        *lower_ret,
                                             ccs_numeric_t        *upper_ret,
                                             ccs_numeric_t        *quantization_ret) {
-	CCS_CHECK_HYPERPARAMETER(hyperparameter, CCS_HYPERPARAMETER_TYPE_NUMERICAL);
+	CCS_CHECK_PARAMETER(parameter, CCS_PARAMETER_TYPE_NUMERICAL);
 	CCS_REFUTE(!data_type_ret && !lower_ret && !upper_ret && !quantization_ret, CCS_INVALID_VALUE);
-	_ccs_hyperparameter_numerical_data_t *d =
-		(_ccs_hyperparameter_numerical_data_t *)hyperparameter->data;
+	_ccs_parameter_numerical_data_t *d =
+		(_ccs_parameter_numerical_data_t *)parameter->data;
         if (data_type_ret)
 		*data_type_ret = d->common_data.interval.type;
         if (lower_ret)

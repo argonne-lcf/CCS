@@ -20,7 +20,7 @@ class TestExpression(unittest.TestCase):
     self.assertEqual( 1.0, nodes[0].value )
     self.assertEqual( 2.0, nodes[1].value )
     self.assertEqual( 3.0, e.eval() )
-    self.assertEqual( [], e.hyperparameters )
+    self.assertEqual( [], e.parameters )
 
   def test_to_s(self):
     e = ccs.Expression(t = ccs.ADD, nodes = [1.0, 2.0])
@@ -35,8 +35,8 @@ class TestExpression(unittest.TestCase):
     self.assertEqual( "none" , str(e) )
 
   def test_variable(self):
-    h = ccs.NumericalHyperparameter()
-    e = ccs.Variable(hyperparameter = h)
+    h = ccs.NumericalParameter()
+    e = ccs.Variable(parameter = h)
     self.assertEqual( h.name , str(e) )
 
   def test_list(self):
@@ -45,7 +45,7 @@ class TestExpression(unittest.TestCase):
     self.assertEqual( "foo", e.eval(0) )
     self.assertEqual( 1, e.eval(1) )
     self.assertEqual( 2.0, e.eval(2) )
-    h = ccs.NumericalHyperparameter(name = "test")
+    h = ccs.NumericalParameter(name = "test")
     e2 = ccs.Expression(t = ccs.IN, nodes = [h, e])
     self.assertEqual( "test # [ 'foo', 1, 2.0 ]", str(e2) )
 

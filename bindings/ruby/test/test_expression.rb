@@ -22,7 +22,7 @@ class CConfigSpaceTestExpression < Minitest::Test
     assert_equal( 1.0, nodes[0].value )
     assert_equal( 2.0, nodes[1].value )
     assert_equal( 3.0, e.eval )
-    assert_equal( [], e.hyperparameters )
+    assert_equal( [], e.parameters )
   end
 
   def test_to_s
@@ -38,8 +38,8 @@ class CConfigSpaceTestExpression < Minitest::Test
   end
 
   def test_variable
-    h = CCS::NumericalHyperparameter::new
-    e = CCS::Variable::new(hyperparameter: h)
+    h = CCS::NumericalParameter::new
+    e = CCS::Variable::new(parameter: h)
     assert_equal( h.name , e.to_s )
   end
 
@@ -49,7 +49,7 @@ class CConfigSpaceTestExpression < Minitest::Test
     assert_equal( "foo", e.eval(0) )
     assert_equal( 1, e.eval(1) )
     assert_equal( 2.0, e.eval(2) )
-    h = CCS::NumericalHyperparameter::new(name: "test")
+    h = CCS::NumericalParameter::new(name: "test")
     e2 = CCS::Expression::new(type: :CCS_IN, nodes: [h, e])
     assert_equal( "test # [ \"foo\", 1, 2.0 ]",  e2.to_s )
   end

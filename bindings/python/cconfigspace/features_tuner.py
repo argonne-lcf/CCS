@@ -1,7 +1,7 @@
 import ctypes as ct
-from .base import Object, Error, CEnumeration, ccs_error, _ccs_get_function, ccs_context, ccs_hyperparameter, ccs_configuration_space, ccs_configuration, ccs_features_space, ccs_features, ccs_datum, ccs_objective_space, ccs_features_evaluation, ccs_features_tuner, ccs_retain_object, _register_vector, _unregister_vector
+from .base import Object, Error, CEnumeration, ccs_error, _ccs_get_function, ccs_context, ccs_parameter, ccs_configuration_space, ccs_configuration, ccs_features_space, ccs_features, ccs_datum, ccs_objective_space, ccs_features_evaluation, ccs_features_tuner, ccs_retain_object, _register_vector, _unregister_vector
 from .context import Context
-from .hyperparameter import Hyperparameter
+from .parameter import Parameter
 from .configuration_space import ConfigurationSpace
 from .configuration import Configuration
 from .features_space import FeaturesSpace

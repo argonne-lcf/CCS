@@ -170,7 +170,7 @@ ccs_create_features_evaluation(ccs_objective_space_t      objective_space,
 	CCS_CHECK_PTR(evaluation_ret);
 	CCS_CHECK_ARY(num_values, values);
 	size_t num;
-	CCS_VALIDATE(ccs_objective_space_get_num_hyperparameters(objective_space, &num));
+	CCS_VALIDATE(ccs_objective_space_get_num_parameters(objective_space, &num));
 	CCS_REFUTE(values && num != num_values, CCS_INVALID_VALUE);
 	uintptr_t mem = (uintptr_t)calloc(1,
 		sizeof(struct _ccs_features_evaluation_s) +

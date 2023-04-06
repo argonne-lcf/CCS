@@ -23,11 +23,11 @@ class CConfigSpaceTestTreeEvaluation < Minitest::Test
     tree = generate_tree(4, 0)
     ts = CCS::StaticTreeSpace.new(name: 'space', tree: tree)
     os = CCS::ObjectiveSpace.new(name: 'ospace')
-    v1 = CCS::NumericalHyperparameter.new
-    v2 = CCS::NumericalHyperparameter.new
-    os.add_hyperparameters([v1, v2])
-    e1 = CCS::Variable.new(hyperparameter: v1)
-    e2 = CCS::Variable.new(hyperparameter: v2)
+    v1 = CCS::NumericalParameter.new
+    v2 = CCS::NumericalParameter.new
+    os.add_parameters([v1, v2])
+    e1 = CCS::Variable.new(parameter: v1)
+    e2 = CCS::Variable.new(parameter: v2)
     os.add_objectives( { e1 => :CCS_MAXIMIZE, e2 => :CCS_MINIMIZE } )
     ev1 = CCS::TreeEvaluation.new(objective_space: os, configuration: ts.sample)
     ev1.set_value(0, 0.5)
@@ -54,11 +54,11 @@ class CConfigSpaceTestTreeEvaluation < Minitest::Test
     tree = generate_tree(4, 0)
     ts = CCS::StaticTreeSpace.new(name: 'space', tree: tree)
     os = CCS::ObjectiveSpace.new(name: 'ospace')
-    v1 = CCS::NumericalHyperparameter.new
-    v2 = CCS::NumericalHyperparameter.new
-    os.add_hyperparameters([v1, v2])
-    e1 = CCS::Variable.new(hyperparameter: v1)
-    e2 = CCS::Variable.new(hyperparameter: v2)
+    v1 = CCS::NumericalParameter.new
+    v2 = CCS::NumericalParameter.new
+    os.add_parameters([v1, v2])
+    e1 = CCS::Variable.new(parameter: v1)
+    e2 = CCS::Variable.new(parameter: v2)
     os.add_objectives( { e1 => :CCS_MAXIMIZE, e2 => :CCS_MINIMIZE } )
     evref = CCS::TreeEvaluation.new(objective_space: os, configuration: ts.sample, values: [0.5, 0.6])
     buff = evref.serialize

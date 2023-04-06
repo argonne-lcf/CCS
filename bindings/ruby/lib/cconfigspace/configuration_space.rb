@@ -2,10 +2,10 @@ module CCS
   attach_function :ccs_create_configuration_space, [:string, :pointer], :ccs_error_t
   attach_function :ccs_configuration_space_set_rng, [:ccs_configuration_space_t, :ccs_rng_t], :ccs_error_t
   attach_function :ccs_configuration_space_get_rng, [:ccs_configuration_space_t, :pointer], :ccs_error_t
-  attach_function :ccs_configuration_space_add_hyperparameter, [:ccs_configuration_space_t, :ccs_hyperparameter_t, :ccs_distribution_t], :ccs_error_t
-  attach_function :ccs_configuration_space_add_hyperparameters, [:ccs_configuration_space_t, :size_t, :pointer, :pointer], :ccs_error_t
+  attach_function :ccs_configuration_space_add_parameter, [:ccs_configuration_space_t, :ccs_parameter_t, :ccs_distribution_t], :ccs_error_t
+  attach_function :ccs_configuration_space_add_parameters, [:ccs_configuration_space_t, :size_t, :pointer, :pointer], :ccs_error_t
   attach_function :ccs_configuration_space_set_distribution, [:ccs_configuration_space_t, :ccs_distribution_t, :pointer], :ccs_error_t
-  attach_function :ccs_configuration_space_get_hyperparameter_distribution, [:ccs_configuration_space_t, :size_t, :pointer, :pointer], :ccs_error_t
+  attach_function :ccs_configuration_space_get_parameter_distribution, [:ccs_configuration_space_t, :size_t, :pointer, :pointer], :ccs_error_t
   attach_function :ccs_configuration_space_set_condition, [:ccs_configuration_space_t, :size_t, :ccs_expression_t], :ccs_error_t
   attach_function :ccs_configuration_space_get_condition, [:ccs_configuration_space_t, :size_t, :pointer], :ccs_error_t
   attach_function :ccs_configuration_space_get_conditions, [:ccs_configuration_space_t, :size_t, :pointer, :pointer], :ccs_error_t
@@ -47,45 +47,45 @@ module CCS
       r
     end
 
-    def add_hyperparameter(hyperparameter, distribution: nil)
-      CCS.error_check CCS.ccs_configuration_space_add_hyperparameter(@handle, hyperparameter, distribution)
+    def add_parameter(parameter, distribution: nil)
+      CCS.error_check CCS.ccs_configuration_space_add_parameter(@handle, parameter, distribution)
       self
     end
 
-    def set_distribution(distribution, hyperparameters )
+    def set_distribution(distribution, parameters )
       count = distribution.dimension
-      raise CCSError, :CCS_INVALID_VALUE if count != hyperparameters.size
-      hyperparameters = hyperparameters.collect { |h|
+      raise CCSError, :CCS_INVALID_VALUE if count != parameters.size
+      parameters = parameters.collect { |h|
         case h
-        when Hyperparameter
-          hyperparameter_index(h)
+        when Parameter
+          parameter_index(h)
         when String, Symbol
-          hyperparameter_index_by_name(hyperparameter)
+          parameter_index_by_name(parameter)
         else
           h
         end
       }
-      p_hypers = MemoryPointer::new(:size_t, count)
-      p_hypers.write_array_of_size_t(hyperparameters)
-      CCS.error_check CCS.ccs_configuration_space_set_distribution(@handle, distribution, p_hypers)
+      p_parameters = MemoryPointer::new(:size_t, count)
+      p_parameters.write_array_of_size_t(parameters)
+      CCS.error_check CCS.ccs_configuration_space_set_distribution(@handle, distribution, p_parameters)
       self
     end
 
-    def get_hyperparameter_distribution(hyperparameter)
-      case hyperparameter
-      when Hyperparameter
-        hyperparameter = hyperparameter_index(hyperparameter);
+    def get_parameter_distribution(parameter)
+      case parameter
+      when Parameter
+        parameter = parameter_index(parameter);
       when String, Symbol
-        hyperparameter = hyperparameter_index_by_name(hyperparameter);
+        parameter = parameter_index_by_name(parameter);
       end
       p_distribution = MemoryPointer::new(:ccs_distribution_t)
       p_indx = MemoryPointer::new(:size_t)
-      CCS.error_check CCS.ccs_configuration_space_get_hyperparameter_distribution(@handle, hyperparameter, p_distribution, p_indx)
+      CCS.error_check CCS.ccs_configuration_space_get_parameter_distribution(@handle, parameter, p_distribution, p_indx)
       [CCS::Distribution.from_handle(p_distribution.read_ccs_distribution_t), p_indx.read_size_t]
     end
 
-    def add_hyperparameters(hyperparameters, distributions: nil)
-      count = hyperparameters.size
+    def add_parameters(parameters, distributions: nil)
+      count = parameters.size
       return self if count == 0
       if distributions
         raise CCSError, :CCS_INVALID_VALUE if count != distributions.size
@@ -94,41 +94,41 @@ module CCS
       else
         p_dists = nil
       end
-      p_hypers = MemoryPointer::new(:ccs_hyperparameter_t, count)
-      p_hypers.write_array_of_pointer(hyperparameters.collect(&:handle))
-      CCS.error_check CCS.ccs_configuration_space_add_hyperparameters(@handle, count, p_hypers, p_dists)
+      p_parameters = MemoryPointer::new(:ccs_parameter_t, count)
+      p_parameters.write_array_of_pointer(parameters.collect(&:handle))
+      CCS.error_check CCS.ccs_configuration_space_add_parameters(@handle, count, p_parameters, p_dists)
       self
     end
 
-    def set_condition(hyperparameter, expression)
+    def set_condition(parameter, expression)
       if expression.kind_of? String
         expression = ExpressionParser::new(self).parse(expression)
       end
-      case hyperparameter
-      when Hyperparameter
-        hyperparameter = hyperparameter_index(hyperparameter);
+      case parameter
+      when Parameter
+        parameter = parameter_index(parameter);
       when String, Symbol
-        hyperparameter = hyperparameter_index_by_name(hyperparameter);
+        parameter = parameter_index_by_name(parameter);
       end
-      CCS.error_check CCS.ccs_configuration_space_set_condition(@handle, hyperparameter, expression)
+      CCS.error_check CCS.ccs_configuration_space_set_condition(@handle, parameter, expression)
       self
     end
 
-    def condition(hyperparameter)
-      case hyperparameter
-      when Hyperparameter
-        hyperparameter = hyperparameter_index(hyperparameter);
+    def condition(parameter)
+      case parameter
+      when Parameter
+        parameter = parameter_index(parameter);
       when String, Symbol
-        hyperparameter = hyperparameter_index_by_name(hyperparameter);
+        parameter = parameter_index_by_name(parameter);
       end
       ptr = MemoryPointer::new(:ccs_expression_t)
-      CCS.error_check CCS.ccs_configuration_space_get_condition(@handle, hyperparameter, ptr)
+      CCS.error_check CCS.ccs_configuration_space_get_condition(@handle, parameter, ptr)
       handle = ptr.read_ccs_expression_t
       handle.null? ? nil : Expression.from_handle(handle)
     end
 
     def conditions
-      count = num_hyperparameters
+      count = num_parameters
       ptr = MemoryPointer::new(:ccs_expression_t, count)
       CCS.error_check CCS.ccs_configuration_space_get_conditions(@handle, count, ptr, nil)
       ptr.read_array_of_pointer(count).collect { |handle|
@@ -136,14 +136,14 @@ module CCS
       }
     end
 
-    def conditional_hyperparameters
-      hps = hyperparameters
+    def conditional_parameters
+      hps = parameters
       conds = conditions
       hps.each_with_index.select { |h, i| conds[i] }.collect { |h, i| h }.to_a
     end
 
-    def unconditional_hyperparameters
-      hps = hyperparameters
+    def unconditional_parameters
+      hps = parameters
       conds = conditions
       hps.each_with_index.select { |h, i| !conds[i] }.collect { |h, i| h }.to_a
     end
@@ -200,7 +200,7 @@ module CCS
 
     def check_values(values)
       count = values.size
-      raise CCSError, :CCS_INVALID_VALUE if count != num_hyperparameters
+      raise CCSError, :CCS_INVALID_VALUE if count != num_parameters
       ss = []
       ptr = MemoryPointer::new(:ccs_datum_t, count)
       values.each_with_index {  |v, i| Datum::new(ptr[i]).set_value(v, string_store: ss) }

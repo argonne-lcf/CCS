@@ -84,15 +84,15 @@ module CCS
   attach_function :ccs_create_unary_expression, [:ccs_expression_type_t, :ccs_datum_t, :pointer], :ccs_error_t
   attach_function :ccs_create_expression, [:ccs_expression_type_t, :size_t, :pointer, :pointer], :ccs_error_t
   attach_function :ccs_create_literal, [:ccs_datum_t, :pointer], :ccs_error_t
-  attach_function :ccs_create_variable, [:ccs_hyperparameter_t, :pointer], :ccs_error_t
+  attach_function :ccs_create_variable, [:ccs_parameter_t, :pointer], :ccs_error_t
   attach_function :ccs_expression_get_type, [:ccs_expression_t, :pointer], :ccs_error_t
   attach_function :ccs_expression_get_num_nodes, [:ccs_expression_t, :pointer], :ccs_error_t
   attach_function :ccs_expression_get_nodes, [:ccs_expression_t, :size_t, :pointer, :pointer], :ccs_error_t
   attach_function :ccs_literal_get_value, [:ccs_expression_t, :pointer], :ccs_error_t
-  attach_function :ccs_variable_get_hyperparameter, [:ccs_expression_t, :pointer], :ccs_error_t
+  attach_function :ccs_variable_get_parameter, [:ccs_expression_t, :pointer], :ccs_error_t
   attach_function :ccs_expression_eval, [:ccs_expression_t, :ccs_context_t, :pointer, :pointer], :ccs_error_t
   attach_function :ccs_expression_list_eval_node, [:ccs_expression_t, :ccs_context_t, :pointer, :size_t, :pointer], :ccs_error_t
-  attach_function :ccs_expression_get_hyperparameters, [:ccs_expression_t, :size_t, :pointer, :pointer], :ccs_error_t
+  attach_function :ccs_expression_get_parameters, [:ccs_expression_t, :size_t, :pointer, :pointer], :ccs_error_t
   attach_function :ccs_expression_check_context, [:ccs_expression_t, :ccs_context_t], :ccs_error_t
 
   class Expression < Object
@@ -149,7 +149,7 @@ module CCS
 
     def eval(context: nil, values: nil)
       if values && context
-        count = context.num_hyperparameters
+        count = context.num_parameters
         raise CCSError, :CCS_INVALID_VALUES if values.size != count
         ss = []
         p_values = MemoryPointer::new(:ccs_datum_t, count)
@@ -163,17 +163,17 @@ module CCS
       Datum::new(ptr).value
     end
 
-    def hyperparameters
-      @hyperparameters ||= begin
+    def parameters
+      @parameters ||= begin
         ptr = MemoryPointer::new(:size_t)
-        CCS.error_check CCS.ccs_expression_get_hyperparameters(@handle, 0, nil, ptr)
+        CCS.error_check CCS.ccs_expression_get_parameters(@handle, 0, nil, ptr)
         count = ptr.read_size_t
         if count == 0
           []
         else
-          ptr = MemoryPointer::new(:ccs_hyperparameter_t, count)
-          CCS.error_check CCS.ccs_expression_get_hyperparameters(@handle, count, ptr, nil)
-          count.times.collect { |i| Hyperparameters.from_handle(ptr[i].read_ccs_hyperparameter_t) }
+          ptr = MemoryPointer::new(:ccs_parameter_t, count)
+          CCS.error_check CCS.ccs_expression_get_parameters(@handle, count, ptr, nil)
+          count.times.collect { |i| Parameters.from_handle(ptr[i].read_ccs_parameter_t) }
         end
       end
     end
@@ -243,24 +243,24 @@ module CCS
 
   class Variable < Expression
     def initialize(handle = nil, retain: false, auto_release: true,
-                   hyperparameter: nil)
+                   parameter: nil)
       if handle
         super(handle, retain: retain)
       else
         ptr = MemoryPointer::new(:ccs_expression_t)
-        CCS.error_check CCS.ccs_create_variable(hyperparameter, ptr)
+        CCS.error_check CCS.ccs_create_variable(parameter, ptr)
         super(ptr.read_ccs_expression_t, retain: false)
       end
     end
 
-    def hyperparameter
-      ptr = MemoryPointer::new(:ccs_hyperparameter_t)
-      CCS.error_check CCS.ccs_variable_get_hyperparameter(@handle, ptr)
-      Hyperparameter.from_handle(ptr.read_ccs_hyperparameter_t)
+    def parameter
+      ptr = MemoryPointer::new(:ccs_parameter_t)
+      CCS.error_check CCS.ccs_variable_get_parameter(@handle, ptr)
+      Parameter.from_handle(ptr.read_ccs_parameter_t)
     end
 
     def to_s
-      hyperparameter.name
+      parameter.name
     end
   end
 
@@ -276,7 +276,7 @@ module CCS
 
     def eval(index, context: nil, values: nil)
       if values && context
-        count = context.num_hyperparameters
+        count = context.num_parameters
         raise CCSError, :CCS_INVALID_VALUES if values.size != count
         ss = []
         p_values = MemoryPointer::new(:ccs_datum_t, count)

@@ -6,48 +6,48 @@
 
 double d = -2.0;
 
-ccs_hyperparameter_t create_dummy_numerical(const char * name) {
-	ccs_hyperparameter_t hyperparameter;
+ccs_parameter_t create_dummy_numerical(const char * name) {
+	ccs_parameter_t parameter;
 	ccs_error_t         err;
-	err = ccs_create_numerical_hyperparameter(name, CCS_NUM_FLOAT,
+	err = ccs_create_numerical_parameter(name, CCS_NUM_FLOAT,
 	                                          CCSF(-5.0), CCSF(5.0),
 	                                          CCSF(0.0), CCSF(d),
-	                                          &hyperparameter);
+	                                          &parameter);
 	d += 1.0;
 	if (d >= 5.0)
 		d = -5.0;
 	assert( err == CCS_SUCCESS );
-	return hyperparameter;
+	return parameter;
 }
 
-ccs_hyperparameter_t create_dummy_categorical(const char * name) {
+ccs_parameter_t create_dummy_categorical(const char * name) {
 	ccs_datum_t          possible_values[4];
-	ccs_hyperparameter_t hyperparameter;
+	ccs_parameter_t parameter;
 	ccs_error_t         err;
 	possible_values[0] = ccs_int(1);
 	possible_values[1] = ccs_float(2.0);
 	possible_values[2] = ccs_string("toto");
 	possible_values[3] = ccs_none;
 
-	err = ccs_create_categorical_hyperparameter(name, 4, possible_values, 0,
-	                                            &hyperparameter);
+	err = ccs_create_categorical_parameter(name, 4, possible_values, 0,
+	                                            &parameter);
 	assert( err == CCS_SUCCESS );
-	return hyperparameter;
+	return parameter;
 }
 
-ccs_hyperparameter_t create_dummy_ordinal(const char * name) {
+ccs_parameter_t create_dummy_ordinal(const char * name) {
 	ccs_datum_t          possible_values[4];
-	ccs_hyperparameter_t hyperparameter;
+	ccs_parameter_t parameter;
 	ccs_error_t         err;
 	possible_values[0] = ccs_int(1);
 	possible_values[1] = ccs_float(2.0);
 	possible_values[2] = ccs_string("toto");
 	possible_values[3] = ccs_none;
 
-	err = ccs_create_ordinal_hyperparameter(name, 4, possible_values, 0,
-	                                        &hyperparameter);
+	err = ccs_create_ordinal_parameter(name, 4, possible_values, 0,
+	                                        &parameter);
 	assert( err == CCS_SUCCESS );
-	return hyperparameter;
+	return parameter;
 }
 
 void test_expression_wrapper(ccs_expression_type_t type,
@@ -129,7 +129,7 @@ void test_equal_literal() {
 
 void test_equal_numerical() {
 	ccs_configuration_space_t configuration_space;
-	ccs_hyperparameter_t      hyperparameters[2];
+	ccs_parameter_t      parameters[2];
 	ccs_datum_t               nodes[2];
 	ccs_datum_t               values[2];
 	ccs_error_t              err;
@@ -138,14 +138,14 @@ void test_equal_numerical() {
 	                                     &configuration_space);
 	assert( err == CCS_SUCCESS );
 	
-	hyperparameters[0] = create_dummy_numerical("param1");
-	hyperparameters[1] = create_dummy_numerical("param2");
+	parameters[0] = create_dummy_numerical("param1");
+	parameters[1] = create_dummy_numerical("param2");
 
-	err = ccs_configuration_space_add_hyperparameters(configuration_space, 2,
-	                                                  hyperparameters, NULL);
+	err = ccs_configuration_space_add_parameters(configuration_space, 2,
+	                                                  parameters, NULL);
 	assert( err == CCS_SUCCESS );
 
-	nodes[0] = ccs_object(hyperparameters[0]);
+	nodes[0] = ccs_object(parameters[0]);
 	nodes[1] = ccs_float(1.0);
 	values[0] = ccs_float(1.0);
 	values[1] = ccs_float(0.0);
@@ -153,7 +153,7 @@ void test_equal_numerical() {
 	values[0] = ccs_float(0.0);
 	test_expression_wrapper(CCS_EQUAL, 2, nodes, configuration_space, values, ccs_bool(CCS_FALSE), CCS_SUCCESS);
 	nodes[0] = ccs_float(1.0);
-	nodes[1] = ccs_object(hyperparameters[1]);
+	nodes[1] = ccs_object(parameters[1]);
 	values[0] = ccs_float(1.0);
 	values[1] = ccs_float(1.0);
 	test_expression_wrapper(CCS_EQUAL, 2, nodes, configuration_space, values, ccs_bool(CCS_TRUE), CCS_SUCCESS);
@@ -165,7 +165,7 @@ void test_equal_numerical() {
 	test_expression_wrapper(CCS_EQUAL, 2, nodes, configuration_space, values, ccs_bool(CCS_TRUE), CCS_INVALID_VALUE);
 
 	for (size_t i = 0; i < 2; i++) {
-		err = ccs_release_object(hyperparameters[i]);
+		err = ccs_release_object(parameters[i]);
 		assert( err == CCS_SUCCESS );
 	}
 	err = ccs_release_object(configuration_space);
@@ -174,7 +174,7 @@ void test_equal_numerical() {
 
 void test_equal_categorical() {
 	ccs_configuration_space_t configuration_space;
-	ccs_hyperparameter_t      hyperparameters[2];
+	ccs_parameter_t      parameters[2];
 	ccs_datum_t               nodes[2];
 	ccs_datum_t               values[2];
 	ccs_error_t              err;
@@ -182,13 +182,13 @@ void test_equal_categorical() {
 	err = ccs_create_configuration_space("my_config_space",
 	                                     &configuration_space);
 	assert( err == CCS_SUCCESS );
-	hyperparameters[0] = create_dummy_categorical("param1");
-	hyperparameters[1] = create_dummy_categorical("param2");
-	err = ccs_configuration_space_add_hyperparameters(configuration_space, 2,
-	                                                  hyperparameters, NULL);
+	parameters[0] = create_dummy_categorical("param1");
+	parameters[1] = create_dummy_categorical("param2");
+	err = ccs_configuration_space_add_parameters(configuration_space, 2,
+	                                                  parameters, NULL);
 	assert( err == CCS_SUCCESS );
 
-	nodes[0] = ccs_object(hyperparameters[0]);
+	nodes[0] = ccs_object(parameters[0]);
 	nodes[1] = ccs_float(2.0);
 	values[0] = ccs_float(2.0);
 	values[1] = ccs_int(1);
@@ -200,7 +200,7 @@ void test_equal_categorical() {
 	test_expression_wrapper(CCS_EQUAL, 2, nodes, configuration_space, values, ccs_bool(CCS_FALSE), CCS_SUCCESS);
 
 	for (size_t i = 0; i < 2; i++) {
-		err = ccs_release_object(hyperparameters[i]);
+		err = ccs_release_object(parameters[i]);
 		assert( err == CCS_SUCCESS );
 	}
 	err = ccs_release_object(configuration_space);
@@ -209,7 +209,7 @@ void test_equal_categorical() {
 
 void test_equal_ordinal() {
 	ccs_configuration_space_t configuration_space;
-	ccs_hyperparameter_t      hyperparameters[2];
+	ccs_parameter_t      parameters[2];
 	ccs_datum_t               nodes[2];
 	ccs_datum_t               values[2];
 	ccs_error_t              err;
@@ -217,13 +217,13 @@ void test_equal_ordinal() {
 	err = ccs_create_configuration_space("my_config_space",
 	                                     &configuration_space);
 	assert( err == CCS_SUCCESS );
-	hyperparameters[0] = create_dummy_ordinal("param1");
-	hyperparameters[1] = create_dummy_ordinal("param2");
-	err = ccs_configuration_space_add_hyperparameters(configuration_space, 2,
-	                                                  hyperparameters, NULL);
+	parameters[0] = create_dummy_ordinal("param1");
+	parameters[1] = create_dummy_ordinal("param2");
+	err = ccs_configuration_space_add_parameters(configuration_space, 2,
+	                                                  parameters, NULL);
 	assert( err == CCS_SUCCESS );
 
-	nodes[0] = ccs_object(hyperparameters[0]);
+	nodes[0] = ccs_object(parameters[0]);
 	nodes[1] = ccs_float(2.0);
 	values[0] = ccs_float(2.0);
 	values[1] = ccs_int(1);
@@ -235,7 +235,7 @@ void test_equal_ordinal() {
 	test_expression_wrapper(CCS_EQUAL, 2, nodes, configuration_space, values, ccs_bool(CCS_FALSE), CCS_SUCCESS);
 
 	for (size_t i = 0; i < 2; i++) {
-		err = ccs_release_object(hyperparameters[i]);
+		err = ccs_release_object(parameters[i]);
 		assert( err == CCS_SUCCESS );
 	}
 	err = ccs_release_object(configuration_space);
@@ -718,61 +718,61 @@ test_compound() {
 	assert( err == CCS_SUCCESS );
 }
 
-void test_get_hyperparameters() {
+void test_get_parameters() {
 	ccs_expression_t     expression1, expression2;
-	ccs_hyperparameter_t hyperparameter1, hyperparameter2;
-	ccs_hyperparameter_t hyperparameters[3];
+	ccs_parameter_t parameter1, parameter2;
+	ccs_parameter_t parameters[3];
 	ccs_error_t         err;
 	size_t               count;
 
-	hyperparameter1 = create_dummy_categorical("param1");
-	hyperparameter2 = create_dummy_numerical("param2");
+	parameter1 = create_dummy_categorical("param1");
+	parameter2 = create_dummy_numerical("param2");
 
-	err = ccs_create_binary_expression(CCS_ADD, ccs_float(3.0), ccs_object(hyperparameter2), &expression1);
+	err = ccs_create_binary_expression(CCS_ADD, ccs_float(3.0), ccs_object(parameter2), &expression1);
 	assert( err == CCS_SUCCESS );
 
-	err = ccs_expression_get_hyperparameters(expression1, 0, NULL, &count);
+	err = ccs_expression_get_parameters(expression1, 0, NULL, &count);
 	assert( err == CCS_SUCCESS );
 	assert( count == 1 );
-	err = ccs_expression_get_hyperparameters(expression1, 3, hyperparameters, &count);
+	err = ccs_expression_get_parameters(expression1, 3, parameters, &count);
 	assert( err == CCS_SUCCESS );
 	assert( count == 1 );
-	assert( hyperparameters[0] == hyperparameter2 );
-	assert( hyperparameters[1] == NULL );
-	assert( hyperparameters[2] == NULL );
+	assert( parameters[0] == parameter2 );
+	assert( parameters[1] == NULL );
+	assert( parameters[2] == NULL );
 
 	err = ccs_create_binary_expression(CCS_EQUAL,
-	    ccs_object(hyperparameter1), ccs_object(expression1), &expression2);
+	    ccs_object(parameter1), ccs_object(expression1), &expression2);
 	assert( err == CCS_SUCCESS );
 
-	err = ccs_expression_get_hyperparameters(expression2, 0, NULL, &count);
+	err = ccs_expression_get_parameters(expression2, 0, NULL, &count);
 	assert( err == CCS_SUCCESS );
 	assert( count == 2 );
-	err = ccs_expression_get_hyperparameters(expression2, 3, hyperparameters, NULL);
+	err = ccs_expression_get_parameters(expression2, 3, parameters, NULL);
 	assert( err == CCS_SUCCESS );
-	assert( hyperparameters[0] != hyperparameters[1] );
-	assert( hyperparameters[0] == hyperparameter1 || hyperparameters[0] == hyperparameter2 );
-	assert( hyperparameters[1] == hyperparameter1 || hyperparameters[1] == hyperparameter2 );
-	assert( hyperparameters[2] == NULL );
+	assert( parameters[0] != parameters[1] );
+	assert( parameters[0] == parameter1 || parameters[0] == parameter2 );
+	assert( parameters[1] == parameter1 || parameters[1] == parameter2 );
+	assert( parameters[2] == NULL );
 
 	err = ccs_release_object(expression2);
 	assert( err == CCS_SUCCESS );
 
 	err = ccs_create_binary_expression(CCS_EQUAL,
-	    ccs_object(hyperparameter2), ccs_object(expression1), &expression2);
+	    ccs_object(parameter2), ccs_object(expression1), &expression2);
 	assert( err == CCS_SUCCESS );
-	err = ccs_expression_get_hyperparameters(expression2, 3, hyperparameters, &count);
+	err = ccs_expression_get_parameters(expression2, 3, parameters, &count);
 	assert( err == CCS_SUCCESS );
 	assert( count == 1 );
-	assert( hyperparameters[0] == hyperparameter2 );
-	assert( hyperparameters[1] == NULL );
-	assert( hyperparameters[2] == NULL );
+	assert( parameters[0] == parameter2 );
+	assert( parameters[1] == NULL );
+	assert( parameters[2] == NULL );
 	err = ccs_expression_check_context(expression2, NULL);
 	assert( err == CCS_INVALID_VALUE );
 
-	err = ccs_release_object(hyperparameter1);
+	err = ccs_release_object(parameter1);
 	assert( err == CCS_SUCCESS );
-	err = ccs_release_object(hyperparameter2);
+	err = ccs_release_object(parameter2);
 	assert( err == CCS_SUCCESS );
 	err = ccs_release_object(expression1);
 	assert( err == CCS_SUCCESS );
@@ -782,26 +782,26 @@ void test_get_hyperparameters() {
 
 void test_check_context() {
 	ccs_expression_t          expression1, expression2;
-	ccs_hyperparameter_t      hyperparameter1, hyperparameter2, hyperparameter3;
+	ccs_parameter_t      parameter1, parameter2, parameter3;
 	ccs_configuration_space_t space;
 	ccs_error_t              err;
 
-	hyperparameter1 = create_dummy_categorical("param1");
-	hyperparameter2 = create_dummy_numerical("param2");
-	hyperparameter3 = create_dummy_ordinal("param3");
+	parameter1 = create_dummy_categorical("param1");
+	parameter2 = create_dummy_numerical("param2");
+	parameter3 = create_dummy_ordinal("param3");
 
 	err = ccs_create_configuration_space("space", &space);
 	assert( err == CCS_SUCCESS );
-	err = ccs_configuration_space_add_hyperparameter(space, hyperparameter1, NULL);
+	err = ccs_configuration_space_add_parameter(space, parameter1, NULL);
 	assert( err == CCS_SUCCESS );
-	err = ccs_configuration_space_add_hyperparameter(space, hyperparameter2, NULL);
+	err = ccs_configuration_space_add_parameter(space, parameter2, NULL);
 	assert( err == CCS_SUCCESS );
 
-	err = ccs_create_binary_expression(CCS_ADD, ccs_float(3.0), ccs_object(hyperparameter2), &expression1);
+	err = ccs_create_binary_expression(CCS_ADD, ccs_float(3.0), ccs_object(parameter2), &expression1);
 	assert( err == CCS_SUCCESS );
 
 	err = ccs_create_binary_expression(CCS_EQUAL,
-	    ccs_object(hyperparameter1), ccs_object(expression1), &expression2);
+	    ccs_object(parameter1), ccs_object(expression1), &expression2);
 	assert( err == CCS_SUCCESS );
 
 	err = ccs_expression_check_context(expression2, NULL);
@@ -813,16 +813,16 @@ void test_check_context() {
 	assert( err == CCS_SUCCESS );
 
 	err = ccs_create_binary_expression(CCS_EQUAL,
-	    ccs_object(hyperparameter3), ccs_object(expression1), &expression2);
+	    ccs_object(parameter3), ccs_object(expression1), &expression2);
 	assert( err == CCS_SUCCESS );
 	err = ccs_expression_check_context(expression2, (ccs_context_t)space);
-	assert( err == CCS_INVALID_HYPERPARAMETER );
+	assert( err == CCS_INVALID_PARAMETER );
 
-	err = ccs_release_object(hyperparameter1);
+	err = ccs_release_object(parameter1);
 	assert( err == CCS_SUCCESS );
-	err = ccs_release_object(hyperparameter2);
+	err = ccs_release_object(parameter2);
 	assert( err == CCS_SUCCESS );
-	err = ccs_release_object(hyperparameter3);
+	err = ccs_release_object(parameter3);
 	assert( err == CCS_SUCCESS );
 	err = ccs_release_object(expression1);
 	assert( err == CCS_SUCCESS );
@@ -878,7 +878,7 @@ void test_deserialize_literal() {
 
 void test_deserialize_variable() {
 	ccs_error_t           err;
-	ccs_hyperparameter_t   hyperparameter;
+	ccs_parameter_t   parameter;
 	ccs_map_t              handle_map;
 	ccs_expression_t       expression;
 	ccs_object_type_t      otype;
@@ -887,9 +887,9 @@ void test_deserialize_variable() {
 	size_t                 buff_size;
 	ccs_datum_t            d;
 
-	hyperparameter = create_dummy_numerical("param");
+	parameter = create_dummy_numerical("param");
 
-	err = ccs_create_variable(hyperparameter, &expression);
+	err = ccs_create_variable(parameter, &expression);
 	assert( err == CCS_SUCCESS );
 
 	err = ccs_object_serialize(expression, CCS_SERIALIZE_FORMAT_BINARY, CCS_SERIALIZE_OPERATION_SIZE, &buff_size, CCS_SERIALIZE_OPTION_END);
@@ -913,12 +913,12 @@ void test_deserialize_variable() {
 	                             CCS_DESERIALIZE_OPTION_HANDLE_MAP, handle_map, CCS_DESERIALIZE_OPTION_END);
 	assert( err == CCS_INVALID_HANDLE );
 
-	d = ccs_object(hyperparameter);
+	d = ccs_object(parameter);
 	d.flags |= CCS_FLAG_ID;
-	err = ccs_map_set(handle_map, d, ccs_object(hyperparameter));
+	err = ccs_map_set(handle_map, d, ccs_object(parameter));
 	assert( err == CCS_SUCCESS );
 
-	err = ccs_release_object(hyperparameter);
+	err = ccs_release_object(parameter);
 	assert( err == CCS_SUCCESS );
 
 	err = ccs_object_deserialize((ccs_object_t*)&expression, CCS_SERIALIZE_FORMAT_BINARY, CCS_SERIALIZE_OPERATION_MEMORY, buff_size, buff,
@@ -933,7 +933,7 @@ void test_deserialize_variable() {
 	assert( err == CCS_SUCCESS );
 	assert( etype == CCS_VARIABLE );
 
-	err = ccs_variable_get_hyperparameter(expression, &hyperparameter);
+	err = ccs_variable_get_parameter(expression, &parameter);
 	assert( err == CCS_SUCCESS );
 
 	err = ccs_release_object(handle_map);
@@ -946,15 +946,15 @@ void test_deserialize_variable() {
 void test_deserialize() {
 	ccs_error_t          err;
 	ccs_expression_t      expression;
-	ccs_hyperparameter_t  hyperparameter;
+	ccs_parameter_t  parameter;
 	ccs_map_t             handle_map;
 	char                 *buff;
 	size_t                buff_size;
 	ccs_datum_t           d;
 
-	hyperparameter = create_dummy_numerical("param");
+	parameter = create_dummy_numerical("param");
 
-	err = ccs_create_binary_expression(CCS_ADD, ccs_float(3.0), ccs_object(hyperparameter), &expression);
+	err = ccs_create_binary_expression(CCS_ADD, ccs_float(3.0), ccs_object(parameter), &expression);
 	assert( err == CCS_SUCCESS );
 
 	err = ccs_object_serialize(expression, CCS_SERIALIZE_FORMAT_BINARY, CCS_SERIALIZE_OPERATION_SIZE, &buff_size, CCS_SERIALIZE_OPTION_END);
@@ -979,12 +979,12 @@ void test_deserialize() {
 	                             CCS_DESERIALIZE_OPTION_HANDLE_MAP, handle_map, CCS_DESERIALIZE_OPTION_END);
 	assert( err == CCS_INVALID_HANDLE );
 
-	d = ccs_object(hyperparameter);
+	d = ccs_object(parameter);
 	d.flags |= CCS_FLAG_ID;
-	err = ccs_map_set(handle_map, d, ccs_object(hyperparameter));
+	err = ccs_map_set(handle_map, d, ccs_object(parameter));
 	assert( err == CCS_SUCCESS );
 
-	err = ccs_release_object(hyperparameter);
+	err = ccs_release_object(parameter);
 	assert( err == CCS_SUCCESS );
 
 	err = ccs_object_deserialize((ccs_object_t*)&expression, CCS_SERIALIZE_FORMAT_BINARY, CCS_SERIALIZE_OPERATION_MEMORY, buff_size, buff,
@@ -1021,7 +1021,7 @@ int main() {
 	test_arithmetic_greater_or_equal();
 	test_compound();
 	test_in();
-	test_get_hyperparameters();
+	test_get_parameters();
 	test_check_context();
 	test_deserialize_literal();
 	test_deserialize_variable();

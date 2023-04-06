@@ -4,20 +4,20 @@
 #include <string.h>
 #include <math.h>
 
-ccs_hyperparameter_t create_numerical(const char * name) {
-	ccs_hyperparameter_t hyperparameter;
+ccs_parameter_t create_numerical(const char * name) {
+	ccs_parameter_t parameter;
 	ccs_error_t         err;
-	err = ccs_create_numerical_hyperparameter(name, CCS_NUM_FLOAT,
+	err = ccs_create_numerical_parameter(name, CCS_NUM_FLOAT,
 	                                          CCSF(-1.0), CCSF(1.0),
 	                                          CCSF(0.0), CCSF(0),
-	                                          &hyperparameter);
+	                                          &parameter);
 	assert( err == CCS_SUCCESS );
-	return hyperparameter;
+	return parameter;
 }
 
 void
 test_simple() {
-	ccs_hyperparameter_t      hyperparameter1, hyperparameter2;
+	ccs_parameter_t      parameter1, parameter2;
 	ccs_configuration_space_t space;
 	ccs_expression_t          expression;
 	ccs_configuration_t       configuration;
@@ -25,16 +25,16 @@ test_simple() {
 	ccs_configuration_t       configurations[100];
 	ccs_error_t              err;
 
-	hyperparameter1 = create_numerical("param1");
-	hyperparameter2 = create_numerical("param2");
+	parameter1 = create_numerical("param1");
+	parameter2 = create_numerical("param2");
 	err = ccs_create_configuration_space("space", &space);
 	assert( err == CCS_SUCCESS );
-	err = ccs_configuration_space_add_hyperparameter(space, hyperparameter1, NULL);
+	err = ccs_configuration_space_add_parameter(space, parameter1, NULL);
 	assert( err == CCS_SUCCESS );
-	err = ccs_configuration_space_add_hyperparameter(space, hyperparameter2, NULL);
+	err = ccs_configuration_space_add_parameter(space, parameter2, NULL);
 	assert( err == CCS_SUCCESS );
 
-	err = ccs_create_binary_expression(CCS_LESS, ccs_object(hyperparameter1),
+	err = ccs_create_binary_expression(CCS_LESS, ccs_object(parameter1),
 	                                   ccs_float(0.0), &expression);
 	assert( err == CCS_SUCCESS );
 
@@ -86,9 +86,9 @@ test_simple() {
 
 	err = ccs_release_object(expression);
 	assert( err == CCS_SUCCESS );
-	err = ccs_release_object(hyperparameter1);
+	err = ccs_release_object(parameter1);
 	assert( err == CCS_SUCCESS );
-	err = ccs_release_object(hyperparameter2);
+	err = ccs_release_object(parameter2);
 	assert( err == CCS_SUCCESS );
 	err = ccs_release_object(space);
 	assert( err == CCS_SUCCESS );
@@ -96,7 +96,7 @@ test_simple() {
 
 void
 test_transitive() {
-	ccs_hyperparameter_t      hyperparameters[3];
+	ccs_parameter_t      parameters[3];
 	ccs_configuration_space_t space;
 	ccs_expression_t          expression;
 	ccs_configuration_t       configuration;
@@ -104,18 +104,18 @@ test_transitive() {
 	ccs_configuration_t       configurations[100];
 	ccs_error_t              err;
 
-	hyperparameters[0] = create_numerical("param1");
-	hyperparameters[1] = create_numerical("param2");
-	hyperparameters[2] = create_numerical("param3");
+	parameters[0] = create_numerical("param1");
+	parameters[1] = create_numerical("param2");
+	parameters[2] = create_numerical("param3");
 
 	err = ccs_create_configuration_space("space", &space);
 	assert( err == CCS_SUCCESS );
 
-	err = ccs_configuration_space_add_hyperparameters(space, 3, hyperparameters,
+	err = ccs_configuration_space_add_parameters(space, 3, parameters,
 	                                                  NULL);
 	assert( err == CCS_SUCCESS );
 
-	err = ccs_create_binary_expression(CCS_LESS, ccs_object(hyperparameters[1]),
+	err = ccs_create_binary_expression(CCS_LESS, ccs_object(parameters[1]),
 	                                   ccs_float(0.0), &expression);
 	assert( err == CCS_SUCCESS );
 	err = ccs_configuration_space_set_condition(space, 2, expression);
@@ -123,7 +123,7 @@ test_transitive() {
 	err = ccs_release_object(expression);
 	assert( err == CCS_SUCCESS );
 
-	err = ccs_create_binary_expression(CCS_LESS, ccs_object(hyperparameters[2]),
+	err = ccs_create_binary_expression(CCS_LESS, ccs_object(parameters[2]),
 	                                   ccs_float(0.0), &expression);
 	assert( err == CCS_SUCCESS );
 	err = ccs_configuration_space_set_condition(space, 0, expression);
@@ -198,7 +198,7 @@ test_transitive() {
 
 
 	for (int i =0; i < 3; i++) {
-		err = ccs_release_object(hyperparameters[i]);
+		err = ccs_release_object(parameters[i]);
 		assert( err == CCS_SUCCESS );
 	}
 	err = ccs_release_object(space);

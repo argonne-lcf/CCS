@@ -7,17 +7,17 @@
 
 struct _ccs_configuration_space_data_mock_s {
 	const char           *name;
-	size_t                num_hyperparameters;
+	size_t                num_parameters;
 	size_t                num_conditions;
 	size_t                num_distributions;
 	size_t                num_forbidden_clauses;
 	ccs_rng_t             rng;
-	ccs_hyperparameter_t *hyperparameters;
-	size_t               *cond_hyperparameter_indices;
+	ccs_parameter_t *parameters;
+	size_t               *cond_parameter_indices;
 	ccs_expression_t     *conditions;
 	ccs_distribution_t   *distributions;
 	size_t               *dimensions;
-	size_t               *distrib_hyperparameter_indices;
+	size_t               *distrib_parameter_indices;
 	ccs_expression_t     *forbidden_clauses;
 };
 typedef struct _ccs_configuration_space_data_mock_s _ccs_configuration_space_data_mock_t;
@@ -34,7 +34,7 @@ _ccs_deserialize_bin_ccs_configuration_space_data(
 	CCS_VALIDATE(_ccs_deserialize_bin_string(
 		&data->name, buffer_size, buffer));
 	CCS_VALIDATE(_ccs_deserialize_bin_size(
-		&data->num_hyperparameters, buffer_size, buffer));
+		&data->num_parameters, buffer_size, buffer));
 	CCS_VALIDATE(_ccs_deserialize_bin_size(
 		&data->num_conditions, buffer_size, buffer));
 	CCS_VALIDATE(_ccs_deserialize_bin_size(
@@ -44,18 +44,18 @@ _ccs_deserialize_bin_ccs_configuration_space_data(
 	CCS_VALIDATE(_ccs_rng_deserialize(
 		&data->rng, CCS_SERIALIZE_FORMAT_BINARY, version, buffer_size, buffer, opts));
 
-	if (!(data->num_hyperparameters + data->num_conditions + data->num_distributions + data->num_forbidden_clauses))
+	if (!(data->num_parameters + data->num_conditions + data->num_distributions + data->num_forbidden_clauses))
 		return CCS_SUCCESS;
 	mem = (uintptr_t)calloc(
-		data->num_hyperparameters * (sizeof(ccs_hyperparameter_t) + sizeof(size_t)) +
+		data->num_parameters * (sizeof(ccs_parameter_t) + sizeof(size_t)) +
 		data->num_conditions * (sizeof(ccs_expression_t) + sizeof(size_t)) +
 		data->num_distributions * (sizeof(ccs_distribution_t) + sizeof(size_t)) +
 		data->num_forbidden_clauses * sizeof(ccs_expression_t), 1);
 	CCS_REFUTE(!mem, CCS_OUT_OF_MEMORY);
 
-	data->hyperparameters = (ccs_hyperparameter_t *)mem;
-	mem += data->num_hyperparameters * sizeof(ccs_hyperparameter_t);
-	data->cond_hyperparameter_indices = (size_t *)mem;
+	data->parameters = (ccs_parameter_t *)mem;
+	mem += data->num_parameters * sizeof(ccs_parameter_t);
+	data->cond_parameter_indices = (size_t *)mem;
 	mem += data->num_conditions * sizeof(size_t);
 	data->conditions = (ccs_expression_t *)mem;
 	mem += data->num_conditions * sizeof(ccs_expression_t);
@@ -63,23 +63,23 @@ _ccs_deserialize_bin_ccs_configuration_space_data(
 	mem += data->num_distributions * sizeof(ccs_distribution_t);
 	data->dimensions = (size_t *)mem;
 	mem += data->num_distributions * sizeof(size_t);
-	data->distrib_hyperparameter_indices = (size_t *)mem;
-	mem += data->num_hyperparameters * sizeof(size_t);
+	data->distrib_parameter_indices = (size_t *)mem;
+	mem += data->num_parameters * sizeof(size_t);
 	data->forbidden_clauses = (ccs_expression_t *)mem;
 
-	for (size_t i = 0; i < data->num_hyperparameters; i++)
-		CCS_VALIDATE(_ccs_hyperparameter_deserialize(
-			data->hyperparameters + i, CCS_SERIALIZE_FORMAT_BINARY, version, buffer_size, buffer, opts));
+	for (size_t i = 0; i < data->num_parameters; i++)
+		CCS_VALIDATE(_ccs_parameter_deserialize(
+			data->parameters + i, CCS_SERIALIZE_FORMAT_BINARY, version, buffer_size, buffer, opts));
 
 	for (size_t i = 0; i < data->num_conditions; i++) {
 		CCS_VALIDATE(_ccs_deserialize_bin_size(
-			data->cond_hyperparameter_indices + i, buffer_size, buffer));
+			data->cond_parameter_indices + i, buffer_size, buffer));
 		CCS_VALIDATE(_ccs_expression_deserialize(
 			data->conditions + i, CCS_SERIALIZE_FORMAT_BINARY, version, buffer_size, buffer, opts));
 	}
 
 	size_t *indices;
-	indices = data->distrib_hyperparameter_indices;
+	indices = data->distrib_parameter_indices;
 	for (size_t i = 0; i < data->num_distributions; i++) {
 		CCS_VALIDATE(_ccs_distribution_deserialize(
 			data->distributions + i, CCS_SERIALIZE_FORMAT_BINARY, version, buffer_size, buffer, opts));
@@ -125,15 +125,15 @@ _ccs_deserialize_bin_configuration_space(
 		data.name, configuration_space_ret), end);
 	CCS_VALIDATE_ERR_GOTO(res, ccs_configuration_space_set_rng(
 		*configuration_space_ret, data.rng), end);
-	CCS_VALIDATE_ERR_GOTO(res, ccs_configuration_space_add_hyperparameters(
-		*configuration_space_ret, data.num_hyperparameters, data.hyperparameters, NULL),
+	CCS_VALIDATE_ERR_GOTO(res, ccs_configuration_space_add_parameters(
+		*configuration_space_ret, data.num_parameters, data.parameters, NULL),
 		err_configuration_space);
 	for (size_t i = 0; i < data.num_conditions; i++)
 		CCS_VALIDATE_ERR_GOTO(res, ccs_configuration_space_set_condition(
-			*configuration_space_ret, data.cond_hyperparameter_indices[i],
+			*configuration_space_ret, data.cond_parameter_indices[i],
 			data.conditions[i]), err_configuration_space);
 	size_t *indices;
-	indices = data.distrib_hyperparameter_indices;
+	indices = data.distrib_parameter_indices;
 	for (size_t i = 0; i < data.num_distributions; i++) {
 		CCS_VALIDATE_ERR_GOTO(res, ccs_configuration_space_set_distribution(
 			*configuration_space_ret, data.distributions[i], indices),
@@ -157,10 +157,10 @@ err_configuration_space:
 end:
 	if (data.rng)
 		ccs_release_object(data.rng);
-	if (data.hyperparameters)
-		for (size_t i = 0; i < data.num_hyperparameters; i++)
-			if(data.hyperparameters[i])
-				ccs_release_object(data.hyperparameters[i]);
+	if (data.parameters)
+		for (size_t i = 0; i < data.num_parameters; i++)
+			if(data.parameters[i])
+				ccs_release_object(data.parameters[i]);
 	if (data.conditions)
 		for (size_t i = 0; i < data.num_conditions; i++)
 			if(data.conditions[i])
@@ -173,8 +173,8 @@ end:
 		for (size_t i = 0; i < data.num_forbidden_clauses; i++)
 			if(data.forbidden_clauses[i])
 				ccs_release_object(data.forbidden_clauses[i]);
-	if (data.hyperparameters)
-		free(data.hyperparameters);
+	if (data.parameters)
+		free(data.parameters);
 	ccs_release_object(new_opts.handle_map);
 	return res;
 }

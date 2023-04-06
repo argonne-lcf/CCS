@@ -30,12 +30,12 @@ libcconfigspace_la_SOURCES = \
 	utarray.h \
 	datum_uthash.h \
 	datum_hash.h \
-	hyperparameter.c \
-	hyperparameter_internal.h \
-	hyperparameter_deserialize.h \
-	hyperparameter_numerical.c \
-	hyperparameter_string.c \
-	hyperparameter_categorical.c \
+	parameter.c \
+	parameter_internal.h \
+	parameter_deserialize.h \
+	parameter_numerical.c \
+	parameter_string.c \
+	parameter_categorical.c \
 	context.c \
 	context_internal.h \
 	context_deserialize.h \

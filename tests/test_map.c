@@ -9,7 +9,7 @@ void test_map() {
 	size_t                d_count;
 	ccs_error_t           err = CCS_SUCCESS;
 	char                 *str1, *str2;
-	ccs_hyperparameter_t  hp;
+	ccs_parameter_t  hp;
 	char                 *buff;
 	size_t                buff_size;
 
@@ -71,7 +71,7 @@ void test_map() {
 	assert( err == CCS_SUCCESS );
 	assert( !ccs_datum_cmp(d_ret, ccs_string("bar")) );
 
-	err = ccs_create_numerical_hyperparameter("my_param", CCS_NUM_FLOAT,
+	err = ccs_create_numerical_parameter("my_param", CCS_NUM_FLOAT,
 	                                          CCSF(-5.0), CCSF(5.0),
 	                                          CCSF(0.0), CCSF(1.0),
 	                                          &hp);

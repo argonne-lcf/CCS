@@ -16,11 +16,11 @@ CCONFIGSPACE_TESTS = \
 	test_roulette_distribution \
 	test_multivariate_distribution \
 	test_mixture_distribution \
-	test_numerical_hyperparameter \
-	test_categorical_hyperparameter \
-	test_ordinal_hyperparameter \
-	test_discrete_hyperparameter \
-	test_string_hyperparameter \
+	test_numerical_parameter \
+	test_categorical_parameter \
+	test_ordinal_parameter \
+	test_discrete_parameter \
+	test_string_parameter \
 	test_configuration_space \
 	test_expression \
 	test_condition \

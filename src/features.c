@@ -85,23 +85,23 @@ ccs_create_features(ccs_features_space_t  features_space,
 	CCS_CHECK_PTR(features_ret);
 	CCS_CHECK_ARY(num_values, values);
 	ccs_error_t err;
-	size_t num_hyperparameters;
-	CCS_VALIDATE(ccs_features_space_get_num_hyperparameters(features_space, &num_hyperparameters));
-	CCS_REFUTE(values && num_hyperparameters != num_values, CCS_INVALID_VALUE);
+	size_t num_parameters;
+	CCS_VALIDATE(ccs_features_space_get_num_parameters(features_space, &num_parameters));
+	CCS_REFUTE(values && num_parameters != num_values, CCS_INVALID_VALUE);
 	uintptr_t mem = (uintptr_t)calloc(1, sizeof(struct _ccs_features_s) +
 	                                     sizeof(struct _ccs_features_data_s) +
-	                                     num_hyperparameters * sizeof(ccs_datum_t));
+	                                     num_parameters * sizeof(ccs_datum_t));
 	CCS_REFUTE(!mem, CCS_OUT_OF_MEMORY);
 	CCS_VALIDATE_ERR_GOTO(err, ccs_retain_object(features_space), errmem);
 	ccs_features_t feat;
 	feat = (ccs_features_t)mem;
 	_ccs_object_init(&(feat->obj), CCS_FEATURES, (_ccs_object_ops_t*)&_features_ops);
 	feat->data = (struct _ccs_features_data_s*)(mem + sizeof(struct _ccs_features_s));
-	feat->data->num_values = num_hyperparameters;
+	feat->data->num_values = num_parameters;
 	feat->data->features_space = features_space;
 	feat->data->values = (ccs_datum_t *)(mem + sizeof(struct _ccs_features_s) + sizeof(struct _ccs_features_data_s));
 	if (values) {
-		memcpy(feat->data->values, values, num_hyperparameters*sizeof(ccs_datum_t));
+		memcpy(feat->data->values, values, num_parameters*sizeof(ccs_datum_t));
 		for (size_t i = 0; i < num_values; i++)
 			if (values[i].flags & CCS_FLAG_TRANSIENT)
 				CCS_VALIDATE_ERR_GOTO(err, ccs_features_space_validate_value(

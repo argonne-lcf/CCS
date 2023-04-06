@@ -24,8 +24,8 @@ _ccs_deserialize_bin_features_space(
 		&data, version, buffer_size, buffer, &new_opts), end);
 	CCS_VALIDATE_ERR_GOTO(res, ccs_create_features_space(
 		data.name, features_space_ret), end);
-	CCS_VALIDATE_ERR_GOTO(res, ccs_features_space_add_hyperparameters(
-		*features_space_ret, data.num_hyperparameters, data.hyperparameters),
+	CCS_VALIDATE_ERR_GOTO(res, ccs_features_space_add_parameters(
+		*features_space_ret, data.num_parameters, data.parameters),
 		err_features_space);
 	if (opts && opts->map_values && opts->handle_map)
 		CCS_VALIDATE_ERR_GOTO(res,
@@ -38,11 +38,11 @@ err_features_space:
 	ccs_release_object(*features_space_ret);
 	*features_space_ret = NULL;
 end:
-	if (data.hyperparameters) {
-		for (size_t i = 0; i < data.num_hyperparameters; i++)
-			if(data.hyperparameters[i])
-				ccs_release_object(data.hyperparameters[i]);
-		free(data.hyperparameters);
+	if (data.parameters) {
+		for (size_t i = 0; i < data.num_parameters; i++)
+			if(data.parameters[i])
+				ccs_release_object(data.parameters[i]);
+		free(data.parameters);
 	}
 	return res;
 }

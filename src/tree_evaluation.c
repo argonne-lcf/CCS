@@ -159,7 +159,7 @@ ccs_create_tree_evaluation(
 	CCS_CHECK_ARY(num_values, values);
 	ccs_error_t err;
 	size_t num;
-	CCS_VALIDATE(ccs_objective_space_get_num_hyperparameters(objective_space, &num));
+	CCS_VALIDATE(ccs_objective_space_get_num_parameters(objective_space, &num));
 	CCS_REFUTE(values && num != num_values, CCS_INVALID_VALUE);
 	uintptr_t mem = (uintptr_t)calloc(1, sizeof(struct _ccs_tree_evaluation_s) +
 	                                     sizeof(struct _ccs_tree_evaluation_data_s) +

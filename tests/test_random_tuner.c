@@ -3,21 +3,21 @@
 #include <cconfigspace.h>
 #include <string.h>
 
-ccs_hyperparameter_t create_numerical(const char * name, double lower, double upper) {
-	ccs_hyperparameter_t hyperparameter;
+ccs_parameter_t create_numerical(const char * name, double lower, double upper) {
+	ccs_parameter_t parameter;
 	ccs_error_t         err;
-	err = ccs_create_numerical_hyperparameter(name, CCS_NUM_FLOAT,
+	err = ccs_create_numerical_parameter(name, CCS_NUM_FLOAT,
 	                                          CCSF(lower), CCSF(upper),
 	                                          CCSF(0.0), CCSF(0),
-	                                          &hyperparameter);
+	                                          &parameter);
 	assert( err == CCS_SUCCESS );
-	return hyperparameter;
+	return parameter;
 }
 
 
 void test() {
-	ccs_hyperparameter_t      hyperparameter1, hyperparameter2;
-	ccs_hyperparameter_t      hyperparameter3;
+	ccs_parameter_t      parameter1, parameter2;
+	ccs_parameter_t      parameter3;
 	ccs_configuration_space_t cspace;
 	ccs_objective_space_t     ospace;
 	ccs_expression_t          expression;
@@ -28,23 +28,23 @@ void test() {
 	size_t                    buff_size;
 	ccs_map_t                 map;
 
-	hyperparameter1 = create_numerical("x", -5.0, 5.0);
-	hyperparameter2 = create_numerical("y", -5.0, 5.0);
+	parameter1 = create_numerical("x", -5.0, 5.0);
+	parameter2 = create_numerical("y", -5.0, 5.0);
 
 	err = ccs_create_configuration_space("2dplane", &cspace);
 	assert( err == CCS_SUCCESS );
-	err = ccs_configuration_space_add_hyperparameter(cspace, hyperparameter1, NULL);
+	err = ccs_configuration_space_add_parameter(cspace, parameter1, NULL);
 	assert( err == CCS_SUCCESS );
-	err = ccs_configuration_space_add_hyperparameter(cspace, hyperparameter2, NULL);
+	err = ccs_configuration_space_add_parameter(cspace, parameter2, NULL);
 	assert( err == CCS_SUCCESS );
 
-	hyperparameter3 = create_numerical("z", -CCS_INFINITY, CCS_INFINITY);
-	err = ccs_create_variable(hyperparameter3, &expression);
+	parameter3 = create_numerical("z", -CCS_INFINITY, CCS_INFINITY);
+	err = ccs_create_variable(parameter3, &expression);
 	assert( err == CCS_SUCCESS );
 
 	err = ccs_create_objective_space("height", &ospace);
 	assert( err == CCS_SUCCESS );
-	err = ccs_objective_space_add_hyperparameter(ospace, hyperparameter3);
+	err = ccs_objective_space_add_parameter(ospace, parameter3);
 	assert( err == CCS_SUCCESS );
 	err = ccs_objective_space_add_objective(ospace, expression, CCS_MINIMIZE);
 	assert( err == CCS_SUCCESS );
@@ -129,11 +129,11 @@ void test() {
 	assert( err == CCS_SUCCESS );
 	err = ccs_release_object(expression);
 	assert( err == CCS_SUCCESS );
-	err = ccs_release_object(hyperparameter1);
+	err = ccs_release_object(parameter1);
 	assert( err == CCS_SUCCESS );
-	err = ccs_release_object(hyperparameter2);
+	err = ccs_release_object(parameter2);
 	assert( err == CCS_SUCCESS );
-	err = ccs_release_object(hyperparameter3);
+	err = ccs_release_object(parameter3);
 	assert( err == CCS_SUCCESS );
 	err = ccs_release_object(cspace);
 	assert( err == CCS_SUCCESS );
@@ -144,8 +144,8 @@ void test() {
 }
 
 void test_evaluation_deserialize() {
-	ccs_hyperparameter_t      hyperparameter1, hyperparameter2;
-	ccs_hyperparameter_t      hyperparameter3;
+	ccs_parameter_t      parameter1, parameter2;
+	ccs_parameter_t      parameter3;
 	ccs_configuration_space_t cspace;
 	ccs_objective_space_t     ospace;
 	ccs_expression_t          expression;
@@ -158,25 +158,25 @@ void test_evaluation_deserialize() {
 	ccs_map_t                 map;
 	int                       cmp;
 
-	hyperparameter1 = create_numerical("x", -5.0, 5.0);
-	hyperparameter2 = create_numerical("y", -5.0, 5.0);
+	parameter1 = create_numerical("x", -5.0, 5.0);
+	parameter2 = create_numerical("y", -5.0, 5.0);
 
 	err = ccs_create_configuration_space("2dplane", &cspace);
 	assert( err == CCS_SUCCESS );
-	err = ccs_configuration_space_add_hyperparameter(cspace, hyperparameter1, NULL);
+	err = ccs_configuration_space_add_parameter(cspace, parameter1, NULL);
 	assert( err == CCS_SUCCESS );
-	err = ccs_configuration_space_add_hyperparameter(cspace, hyperparameter2, NULL);
+	err = ccs_configuration_space_add_parameter(cspace, parameter2, NULL);
 	assert( err == CCS_SUCCESS );
 	err = ccs_configuration_space_sample(cspace, &configuration);
 	assert( err == CCS_SUCCESS );
 
-	hyperparameter3 = create_numerical("z", -CCS_INFINITY, CCS_INFINITY);
-	err = ccs_create_variable(hyperparameter3, &expression);
+	parameter3 = create_numerical("z", -CCS_INFINITY, CCS_INFINITY);
+	err = ccs_create_variable(parameter3, &expression);
 	assert( err == CCS_SUCCESS );
 
 	err = ccs_create_objective_space("height", &ospace);
 	assert( err == CCS_SUCCESS );
-	err = ccs_objective_space_add_hyperparameter(ospace, hyperparameter3);
+	err = ccs_objective_space_add_parameter(ospace, parameter3);
 	assert( err == CCS_SUCCESS );
 	err = ccs_objective_space_add_objective(ospace, expression, CCS_MINIMIZE);
 	assert( err == CCS_SUCCESS );
@@ -232,11 +232,11 @@ void test_evaluation_deserialize() {
 	assert( err == CCS_SUCCESS );
 	err = ccs_release_object(expression);
 	assert( err == CCS_SUCCESS );
-	err = ccs_release_object(hyperparameter1);
+	err = ccs_release_object(parameter1);
 	assert( err == CCS_SUCCESS );
-	err = ccs_release_object(hyperparameter2);
+	err = ccs_release_object(parameter2);
 	assert( err == CCS_SUCCESS );
-	err = ccs_release_object(hyperparameter3);
+	err = ccs_release_object(parameter3);
 	assert( err == CCS_SUCCESS );
 	err = ccs_release_object(cspace);
 	assert( err == CCS_SUCCESS );

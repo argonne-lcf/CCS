@@ -131,21 +131,21 @@ ccs_distribution_soa_samples(ccs_distribution_t   distribution,
 }
 
 ccs_error_t
-ccs_distribution_hyperparameters_samples(ccs_distribution_t    distribution,
+ccs_distribution_parameters_samples(ccs_distribution_t    distribution,
                                          ccs_rng_t             rng,
-                                         ccs_hyperparameter_t *hyperparameters,
+                                         ccs_parameter_t *parameters,
                                          size_t                num_values,
                                          ccs_datum_t          *values) {
 	CCS_CHECK_OBJ(distribution, CCS_DISTRIBUTION);
 	CCS_CHECK_OBJ(rng, CCS_RNG);
 	if (!num_values)
 		return CCS_SUCCESS;
-	CCS_CHECK_ARY(num_values, hyperparameters);
+	CCS_CHECK_ARY(num_values, parameters);
 	CCS_CHECK_ARY(num_values, values);
 	ccs_error_t err = CCS_SUCCESS;
 	size_t dim = ((_ccs_distribution_common_data_t *)(distribution->data))->dimension;
 	if (dim  == 1) {
-		CCS_VALIDATE(ccs_hyperparameter_samples(hyperparameters[0], distribution, rng, num_values, values));
+		CCS_VALIDATE(ccs_parameter_samples(parameters[0], distribution, rng, num_values, values));
 		return CCS_SUCCESS;
 	}
 
@@ -155,7 +155,7 @@ ccs_distribution_hyperparameters_samples(ccs_distribution_t    distribution,
 	ccs_numeric_t **p_vs = (ccs_numeric_t **)alloca(dim*sizeof(ccs_numeric_t *));
 
 	for (size_t i =0; i < dim; i++)
-		CCS_VALIDATE(ccs_hyperparameter_sampling_interval(hyperparameters[i], intervals+i));
+		CCS_VALIDATE(ccs_parameter_sampling_interval(parameters[i], intervals+i));
 	CCS_VALIDATE(ccs_distribution_check_oversampling(distribution, intervals, oversamplings));
 
 	for (size_t i =0; i < dim; i++)
@@ -173,7 +173,7 @@ ccs_distribution_hyperparameters_samples(ccs_distribution_t    distribution,
 
 	for (size_t i = 0; i < dim; i++)
 		CCS_VALIDATE_ERR_GOTO(err,
-		    ccs_hyperparameter_convert_samples(hyperparameters[i], oversamplings[i], num_values, p_vs[i], ds + i*num_values),
+		    ccs_parameter_convert_samples(parameters[i], oversamplings[i], num_values, p_vs[i], ds + i*num_values),
 		    errmem);
 
 	if (!oversampling) {
@@ -212,8 +212,8 @@ ccs_distribution_hyperparameters_samples(ccs_distribution_t    distribution,
 				p_vs[i] =  p_vs[i-1] + buff_len;
 			CCS_VALIDATE_ERR_GOTO(err, ccs_distribution_soa_samples(distribution, rng, buff_len, p_vs), errmem);
 			for (size_t i = 0; i < dim; i++) {
-				CCS_VALIDATE_ERR_GOTO(err, ccs_hyperparameter_convert_samples(
-				    hyperparameters[i], oversamplings[i], buff_len, p_vs[i], ds + i*buff_len), errmem);
+				CCS_VALIDATE_ERR_GOTO(err, ccs_parameter_convert_samples(
+				    parameters[i], oversamplings[i], buff_len, p_vs[i], ds + i*buff_len), errmem);
 			}
 
 			for (size_t j = 0; j < buff_len && found < num_values; j++) {
@@ -238,13 +238,13 @@ errmem:
 }
 
 ccs_error_t
-ccs_distribution_hyperparameters_sample(
+ccs_distribution_parameters_sample(
 		ccs_distribution_t    distribution,
 		ccs_rng_t             rng,
-		ccs_hyperparameter_t *hyperparameters,
+		ccs_parameter_t *parameters,
 		ccs_datum_t          *results) {
-	CCS_VALIDATE(ccs_distribution_hyperparameters_samples(
-		distribution, rng, hyperparameters, 1, results));
+	CCS_VALIDATE(ccs_distribution_parameters_samples(
+		distribution, rng, parameters, 1, results));
 	return CCS_SUCCESS;
 }
 

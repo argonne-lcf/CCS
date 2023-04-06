@@ -3,15 +3,15 @@
 #include <cconfigspace.h>
 #include <string.h>
 
-ccs_hyperparameter_t create_numerical(const char * name, double lower, double upper) {
-	ccs_hyperparameter_t hyperparameter;
+ccs_parameter_t create_numerical(const char * name, double lower, double upper) {
+	ccs_parameter_t parameter;
 	ccs_error_t         err;
-	err = ccs_create_numerical_hyperparameter(name, CCS_NUM_FLOAT,
+	err = ccs_create_numerical_parameter(name, CCS_NUM_FLOAT,
 	                                          CCSF(lower), CCSF(upper),
 	                                          CCSF(0.0), CCSF(0),
-	                                          &hyperparameter);
+	                                          &parameter);
 	assert( err == CCS_SUCCESS );
-	return hyperparameter;
+	return parameter;
 }
 
 void generate_tree(ccs_tree_t *tree, size_t depth, size_t rank) {
@@ -32,7 +32,7 @@ void generate_tree(ccs_tree_t *tree, size_t depth, size_t rank) {
 }
 
 void create_tree_tuning_problem(ccs_tree_space_t *tree_space, ccs_objective_space_t *ospace) {
-	ccs_hyperparameter_t hyperparameter;
+	ccs_parameter_t parameter;
 	ccs_tree_t           root;
 	ccs_expression_t     expression;
 	ccs_error_t          err;
@@ -41,20 +41,20 @@ void create_tree_tuning_problem(ccs_tree_space_t *tree_space, ccs_objective_spac
 	err = ccs_create_static_tree_space("space", root, tree_space);
 	assert( err == CCS_SUCCESS );
 
-	hyperparameter = create_numerical("sum", -CCS_INFINITY, CCS_INFINITY);
-	err = ccs_create_variable(hyperparameter, &expression);
+	parameter = create_numerical("sum", -CCS_INFINITY, CCS_INFINITY);
+	err = ccs_create_variable(parameter, &expression);
 	assert( err == CCS_SUCCESS );
 
 	err = ccs_create_objective_space("ospace", ospace);
 	assert( err == CCS_SUCCESS );
-	err = ccs_objective_space_add_hyperparameter(*ospace, hyperparameter);
+	err = ccs_objective_space_add_parameter(*ospace, parameter);
 	assert( err == CCS_SUCCESS );
 	err = ccs_objective_space_add_objective(*ospace, expression, CCS_MAXIMIZE);
 	assert( err == CCS_SUCCESS );
 
 	err = ccs_release_object(root);
 	assert( err == CCS_SUCCESS );
-	err = ccs_release_object(hyperparameter);
+	err = ccs_release_object(parameter);
 	assert( err == CCS_SUCCESS );
 	err = ccs_release_object(expression);
 	assert( err == CCS_SUCCESS );

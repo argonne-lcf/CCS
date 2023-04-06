@@ -89,7 +89,7 @@ _ccs_deserialize_bin_expression_literal(
 
 struct _ccs_expression_variable_data_mock_s {
 	_ccs_expression_data_mock_t expr;
-	ccs_hyperparameter_t        hyperparameter;
+	ccs_parameter_t        parameter;
 };
 typedef struct _ccs_expression_variable_data_mock_s _ccs_expression_variable_data_mock_t;
 
@@ -102,7 +102,7 @@ _ccs_deserialize_bin_ccs_expression_variable_data(
 	CCS_VALIDATE(_ccs_deserialize_bin_ccs_expression_data(
 		&data->expr, version, buffer_size, buffer, NULL));
 	CCS_VALIDATE(_ccs_deserialize_bin_ccs_object(
-		(ccs_object_t *)&data->hyperparameter, buffer_size, buffer));
+		(ccs_object_t *)&data->parameter, buffer_size, buffer));
 	return CCS_SUCCESS;
 }
 
@@ -118,11 +118,11 @@ _ccs_deserialize_bin_expression_variable(
 	CCS_VALIDATE(_ccs_deserialize_bin_ccs_expression_variable_data(
 		&data, version, buffer_size, buffer));
 	ccs_datum_t d;
-	ccs_hyperparameter_t h;
+	ccs_parameter_t h;
 	CCS_VALIDATE(ccs_map_get(
-		opts->handle_map, ccs_object(data.hyperparameter), &d));
+		opts->handle_map, ccs_object(data.parameter), &d));
 	CCS_REFUTE(d.type != CCS_OBJECT, CCS_INVALID_HANDLE);
-	h = (ccs_hyperparameter_t)(d.value.o);
+	h = (ccs_parameter_t)(d.value.o);
 	CCS_VALIDATE(ccs_create_variable(h, expression_ret));
 	return CCS_SUCCESS;
 }

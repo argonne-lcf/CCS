@@ -8,7 +8,7 @@ extern "C" {
 /**
  * @file binding.h
  * A Binding is set of value in a Context see context.h. Those values can be
- * accessed by using the hyperparameter index in the context.
+ * accessed by using the parameter index in the context.
  */
 
 /**
@@ -25,15 +25,15 @@ ccs_binding_get_context(ccs_binding_t  binding,
                         ccs_context_t *context_ret);
 
 /**
- * Get the value of the hyperparameter at the given index.
+ * Get the value of the parameter at the given index.
  * @param[in] binding
- * @param[in] index index of the hyperparameter in the associated context
+ * @param[in] index index of the parameter in the associated context
  * @param[out] value_ret a pointer to the variable that will hold the value
  * @return #CCS_SUCCESS on success
  * @return #CCS_INVALID_OBJECT if \p binding is not a valid CCS object
  * @return #CCS_INVALID_VALUE if \p value_ret is NULL
  * @return #CCS_OUT_OF_BOUNDS if \p index is greater than the count of
- *                             hyperparameters in the context
+ *                             parameters in the context
  */
 extern ccs_error_t
 ccs_binding_get_value(ccs_binding_t  binding,
@@ -41,16 +41,16 @@ ccs_binding_get_value(ccs_binding_t  binding,
                       ccs_datum_t   *value_ret);
 
 /**
- * Set the value of the hyperparameter at the given index. Transient values will
+ * Set the value of the parameter at the given index. Transient values will
  * be validated and memoized if needed.
  * @param[in,out] binding
- * @param[in] index index of the hyperparameter in the associated context
+ * @param[in] index index of the parameter in the associated context
  * @param[in] value the value
  * @return #CCS_SUCCESS on success
  * @return #CCS_INVALID_OBJECT if \p binding is not a valid CCS object
  * @return #CCS_INVALID_VALUE if \p value_ret is NULL
  * @return #CCS_OUT_OF_BOUNDS if \p index is greater than the count of
- *                             hyperparameters in the context
+ *                             parameters in the context
  * @return #CCS_OUT_OF_MEMORY if there was a lack of memory while memoizing a
  *                             string
  */
@@ -103,14 +103,14 @@ ccs_binding_set_values(ccs_binding_t  binding,
 
 
 /**
- * Get the value of the hyperparameter with the given name.
+ * Get the value of the parameter with the given name.
  * @param[in] binding
- * @param[in] name the name of the hyperparameter whose value to retrieve
+ * @param[in] name the name of the parameter whose value to retrieve
  * @param[out] value_ret a pointer to the variable that will hold the value
  * @return #CCS_SUCCESS on success
  * @return #CCS_INVALID_OBJECT if \p binding is not a valid CCS object
  * @return #CCS_INVALID_VALUE if \p value_ret is NULL
- * @return #CCS_INVALID_NAME if no hyperparameter with such \p name exist in
+ * @return #CCS_INVALID_NAME if no parameter with such \p name exist in
  *                            the \p binding context
  */
 extern ccs_error_t
@@ -119,13 +119,13 @@ ccs_binding_get_value_by_name(ccs_binding_t  binding,
                               ccs_datum_t   *value_ret);
 
 /**
- * Set the value of the hyperparameter with the given name.
+ * Set the value of the parameter with the given name.
  * @param[in,out] binding
- * @param[in] name the name of the hyperparameter whose value to set
+ * @param[in] name the name of the parameter whose value to set
  * @param[in] value the value
  * @return #CCS_SUCCESS on success
  * @return #CCS_INVALID_OBJECT if \p binding is not a valid CCS object
- * @return #CCS_INVALID_NAME if no hyperparameter with such \p name exist in
+ * @return #CCS_INVALID_NAME if no parameter with such \p name exist in
  *                            the \p binding context
  */
 extern ccs_error_t
@@ -134,33 +134,33 @@ ccs_binding_set_value_by_name(ccs_binding_t  binding,
                               ccs_datum_t    value);
 
 /**
- * Get the value of the hyperparameter with the given handle.
+ * Get the value of the parameter with the given handle.
  * @param[in] binding
- * @param[in] hyperparameter hyperparameter whose value to retrieve
+ * @param[in] parameter parameter whose value to retrieve
  * @param[out] value_ret a pointer to the variable that will hold the value
  * @return #CCS_SUCCESS on success
  * @return #CCS_INVALID_OBJECT if \p binding is not a valid CCS object
- * @return #CCS_INVALID_HYPERPARAMETER if \p hyperparameter does not exist in
+ * @return #CCS_INVALID_PARAMETER if \p parameter does not exist in
  *                                      the \p binding context
  */
 extern ccs_error_t
-ccs_binding_get_value_by_hyperparameter(ccs_binding_t         binding,
-                                        ccs_hyperparameter_t  hyperparameter,
+ccs_binding_get_value_by_parameter(ccs_binding_t         binding,
+                                        ccs_parameter_t  parameter,
                                         ccs_datum_t          *value_ret);
 
 /**
- * Set the value of the hyperparameter with the given handle.
+ * Set the value of the parameter with the given handle.
  * @param[in,out] binding
- * @param[in] hyperparameter hyperparameter whose value to set
+ * @param[in] parameter parameter whose value to set
  * @param[in] value the value
  * @return #CCS_SUCCESS on success
  * @return #CCS_INVALID_OBJECT if \p binding is not a valid CCS object
- * @return #CCS_INVALID_HYPERPARAMETER if \p hyperparameter does not exist in
+ * @return #CCS_INVALID_PARAMETER if \p parameter does not exist in
  *                                      the \p binding context
  */
 extern ccs_error_t
-ccs_binding_set_value_by_hyperparameter(ccs_binding_t        binding,
-                                        ccs_hyperparameter_t hyperparameter,
+ccs_binding_set_value_by_parameter(ccs_binding_t        binding,
+                                        ccs_parameter_t parameter,
                                         ccs_datum_t          value);
 
 /**

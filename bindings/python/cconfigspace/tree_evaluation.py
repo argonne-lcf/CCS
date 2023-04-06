@@ -1,5 +1,5 @@
 import ctypes as ct
-from .base import Object, Error, CEnumeration, ccs_error, ccs_result, _ccs_get_function, ccs_context, ccs_hyperparameter, ccs_tree_configuration, ccs_datum, ccs_datum_fix, ccs_objective_space, ccs_tree_evaluation, ccs_bool
+from .base import Object, Error, CEnumeration, ccs_error, ccs_result, _ccs_get_function, ccs_context, ccs_parameter, ccs_tree_configuration, ccs_datum, ccs_datum_fix, ccs_objective_space, ccs_tree_evaluation, ccs_bool
 from .evaluation import ccs_comparison
 from .binding import Binding
 from .tree_configuration import TreeConfiguration

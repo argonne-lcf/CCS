@@ -1,7 +1,7 @@
 import ctypes as ct
 from . import libcconfigspace
-from .base import Object, Error, ccs_error, CEnumeration, _ccs_get_function, ccs_expression, ccs_datum, ccs_datum_fix, ccs_hyperparameter, ccs_context
-from .hyperparameter import Hyperparameter
+from .base import Object, Error, ccs_error, CEnumeration, _ccs_get_function, ccs_expression, ccs_datum, ccs_datum_fix, ccs_parameter, ccs_context
+from .parameter import Parameter
 
 class ccs_expression_type(CEnumeration):
   _members_ = [
@@ -57,15 +57,15 @@ ccs_create_binary_expression = _ccs_get_function("ccs_create_binary_expression",
 ccs_create_unary_expression = _ccs_get_function("ccs_create_unary_expression", [ccs_expression_type, ccs_datum_fix, ct.POINTER(ccs_expression)])
 ccs_create_expression = _ccs_get_function("ccs_create_expression", [ccs_expression_type, ct.c_size_t, ct.POINTER(ccs_datum), ct.POINTER(ccs_expression)])
 ccs_create_literal = _ccs_get_function("ccs_create_literal", [ccs_datum_fix, ct.POINTER(ccs_expression)])
-ccs_create_variable = _ccs_get_function("ccs_create_variable", [ccs_hyperparameter, ct.POINTER(ccs_expression)])
+ccs_create_variable = _ccs_get_function("ccs_create_variable", [ccs_parameter, ct.POINTER(ccs_expression)])
 ccs_expression_get_type = _ccs_get_function("ccs_expression_get_type", [ccs_expression, ct.POINTER(ccs_expression_type)])
 ccs_expression_get_num_nodes = _ccs_get_function("ccs_expression_get_num_nodes", [ccs_expression, ct.POINTER(ct.c_size_t)])
 ccs_expression_get_nodes = _ccs_get_function("ccs_expression_get_nodes", [ccs_expression, ct.c_size_t, ct.POINTER(ccs_expression), ct.POINTER(ct.c_size_t)])
 ccs_literal_get_value = _ccs_get_function("ccs_literal_get_value", [ccs_expression, ct.POINTER(ccs_datum)])
-ccs_variable_get_hyperparameter = _ccs_get_function("ccs_variable_get_hyperparameter", [ccs_expression, ct.POINTER(ccs_hyperparameter)])
+ccs_variable_get_parameter = _ccs_get_function("ccs_variable_get_parameter", [ccs_expression, ct.POINTER(ccs_parameter)])
 ccs_expression_eval = _ccs_get_function("ccs_expression_eval", [ccs_expression, ccs_context, ct.POINTER(ccs_datum), ct.POINTER(ccs_datum)])
 ccs_expression_list_eval_node = _ccs_get_function("ccs_expression_list_eval_node", [ccs_expression, ccs_context, ct.POINTER(ccs_datum), ct.c_size_t, ct.POINTER(ccs_datum)])
-ccs_expression_get_hyperparameters = _ccs_get_function("ccs_expression_get_hyperparameters", [ccs_expression, ct.c_size_t, ct.POINTER(ccs_hyperparameter), ct.POINTER(ct.c_size_t)])
+ccs_expression_get_parameters = _ccs_get_function("ccs_expression_get_parameters", [ccs_expression, ct.c_size_t, ct.POINTER(ccs_parameter), ct.POINTER(ct.c_size_t)])
 ccs_expression_check_context = _ccs_get_function("ccs_expression_check_context", [ccs_expression, ccs_context])
 
 class Expression(Object):
@@ -151,25 +151,25 @@ class Expression(Object):
     return self._nodes
 
   @property
-  def hyperparameters(self):
-    if hasattr(self, "_hyperparameters"):
-      return self._hyperparameters
+  def parameters(self):
+    if hasattr(self, "_parameters"):
+      return self._parameters
     sz = ct.c_size_t()
-    res = ccs_expression_get_hyperparameters(self.handle, 0, None, ct.byref(sz))
+    res = ccs_expression_get_parameters(self.handle, 0, None, ct.byref(sz))
     Error.check(res)
     sz = sz.value
     if sz == 0:
-      self._hyperparameters = []
+      self._parameters = []
       return []
-    v = (ccs_hyperparameter * sz.value)()
-    res = ccs_expression_get_hyperparameters(self.handle, sz, v, None)
+    v = (ccs_parameter * sz.value)()
+    res = ccs_expression_get_parameters(self.handle, sz, v, None)
     Error.check(res)
-    self._hyperparameters = [Hyperparameter.from_handle(ccs_hyperparameter(x)) for x in v]
-    return self._hyperparameters
+    self._parameters = [Parameter.from_handle(ccs_parameter(x)) for x in v]
+    return self._parameters
 
   def eval(self, context = None, values = None):
     if context and values:
-      count = context.num_hyperparameters
+      count = context.num_parameters
       if count != len(values):
         raise Error(ccs_error(ccs_error.INVALID_VALUE))
       v = (ccs_datum * count)()
@@ -243,27 +243,27 @@ class Literal(Expression):
 
 class Variable(Expression):
   def __init__(self, handle = None, retain = False, auto_release = True,
-               hyperparameter = None):
+               parameter = None):
     if handle is None:
       handle = ccs_expression()
-      res = ccs_create_variable(hyperparameter.handle, ct.byref(handle))
+      res = ccs_create_variable(parameter.handle, ct.byref(handle))
       Error.check(res)
       super().__init__(handle = handle, retain = False)
     else:
       super().__init__(handle = handle, retain = retain, auto_release = auto_release)
   
   @property 
-  def hyperparameter(self):
-    if hasattr(self, "_hyperparameter"):
-      return self._hyperparameter
-    v = ccs_hyperparameter()
-    res = ccs_variable_get_hyperparameter(self.handle, ct.byref(v))
+  def parameter(self):
+    if hasattr(self, "_parameter"):
+      return self._parameter
+    v = ccs_parameter()
+    res = ccs_variable_get_parameter(self.handle, ct.byref(v))
     Error.check(res)
-    self._hyperparameter = Hyperparameter.from_handle(v)
-    return self._hyperparameter
+    self._parameter = Parameter.from_handle(v)
+    return self._parameter
   
   def __str__(self):
-    return self.hyperparameter.name
+    return self.parameter.name
 
 
 class List(Expression):
@@ -276,7 +276,7 @@ class List(Expression):
   
   def eval(self, index, context = None, values = None):
     if context and values:
-      count = context.num_hyperparameters
+      count = context.num_parameters
       if count != len(values):
         raise Error(ccs_error(ccs_error.INVALID_VALUE))
       v = (ccs_datum * count)()

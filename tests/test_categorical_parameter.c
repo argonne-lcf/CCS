@@ -11,13 +11,13 @@ void free_data(ccs_object_t o, void *user_data) {
 	free(user_data);
 }
 
-static void compare_hyperparameter(
-		ccs_hyperparameter_t hyperparameter,
+static void compare_parameter(
+		ccs_parameter_t parameter,
 		const size_t         num_possible_values,
 		ccs_datum_t          possible_values[],
 		const size_t         default_value_index) {
 	ccs_error_t               err;
-	ccs_hyperparameter_type_t  type;
+	ccs_parameter_type_t  type;
 	ccs_datum_t                default_value;
 	const char                *name;
 	void *                     user_data;
@@ -26,24 +26,24 @@ static void compare_hyperparameter(
 	ccs_interval_t             interval;
 	ccs_bool_t                 check;
 
-	err = ccs_hyperparameter_get_type(hyperparameter, &type);
+	err = ccs_parameter_get_type(parameter, &type);
 	assert( err == CCS_SUCCESS );
-	assert( type == CCS_HYPERPARAMETER_TYPE_CATEGORICAL );
+	assert( type == CCS_PARAMETER_TYPE_CATEGORICAL );
 
-	err = ccs_hyperparameter_get_default_value(hyperparameter, &default_value);
+	err = ccs_parameter_get_default_value(parameter, &default_value);
 	assert( err == CCS_SUCCESS );
 	assert( default_value.type == CCS_INTEGER );
 	assert( default_value.value.i == possible_values[default_value_index].value.i );
 
-	err = ccs_hyperparameter_get_name(hyperparameter, &name);
+	err = ccs_parameter_get_name(parameter, &name);
 	assert( err == CCS_SUCCESS );
 	assert( strcmp(name, "my_param") == 0 );
 
-	err = ccs_object_get_user_data(hyperparameter, &user_data);
+	err = ccs_object_get_user_data(parameter, &user_data);
 	assert( err == CCS_SUCCESS );
 	assert( !strcmp((char *)user_data, "hello") );
 
-	err = ccs_hyperparameter_get_default_distribution(hyperparameter, &distribution);
+	err = ccs_parameter_get_default_distribution(parameter, &distribution);
 	assert( err == CCS_SUCCESS );
 	assert( distribution );
 
@@ -60,14 +60,14 @@ static void compare_hyperparameter(
 	assert( interval.upper_included == CCS_FALSE );
 
 	for(size_t i = 0; i < num_possible_values; i++) {
-		err = ccs_hyperparameter_check_value(hyperparameter, possible_values[i],
+		err = ccs_parameter_check_value(parameter, possible_values[i],
 		                                     &check);
 		assert( err == CCS_SUCCESS );
 		assert( check == CCS_TRUE );
 	}
 
 	default_value.type = CCS_FLOAT;
-	err = ccs_hyperparameter_check_value(hyperparameter, default_value, &check);
+	err = ccs_parameter_check_value(parameter, default_value, &check);
 	assert( err == CCS_SUCCESS );
 	assert( check == CCS_FALSE );
 
@@ -114,7 +114,7 @@ deserialize_callback(
 }
 
 void test_create() {
-	ccs_hyperparameter_t  hyperparameter;
+	ccs_parameter_t  parameter;
 	ccs_error_t          err;
 	void *                user_data;
 	const size_t          num_possible_values = NUM_POSSIBLE_VALUES;
@@ -130,59 +130,59 @@ void test_create() {
 
 	user_data = (void *)strdup("hello");
 
-	err = ccs_create_categorical_hyperparameter("my_param", num_possible_values,
+	err = ccs_create_categorical_parameter("my_param", num_possible_values,
 	                                            possible_values, default_value_index,
-	                                            &hyperparameter);
+	                                            &parameter);
 	assert( err == CCS_SUCCESS );
 
-	err = ccs_object_set_user_data(hyperparameter, user_data);
+	err = ccs_object_set_user_data(parameter, user_data);
 	assert( err == CCS_SUCCESS );
 
-	err = ccs_object_set_destroy_callback(hyperparameter, &free_data, user_data);
+	err = ccs_object_set_destroy_callback(parameter, &free_data, user_data);
 	assert( err == CCS_SUCCESS );
 
-	err = ccs_object_set_serialize_callback(hyperparameter, serialize_callback, (void*)0xdeadbeef);
+	err = ccs_object_set_serialize_callback(parameter, serialize_callback, (void*)0xdeadbeef);
 	assert( err == CCS_SUCCESS );
 
-	compare_hyperparameter(hyperparameter, num_possible_values, possible_values, default_value_index);
+	compare_parameter(parameter, num_possible_values, possible_values, default_value_index);
 
-	err = ccs_object_serialize(hyperparameter, CCS_SERIALIZE_FORMAT_BINARY, CCS_SERIALIZE_OPERATION_SIZE, &buff_size, CCS_SERIALIZE_OPTION_END);
-	assert( err == CCS_SUCCESS );
-
-	buff = (char *)malloc(buff_size);
-	assert( buff );
-
-	err = ccs_object_serialize(hyperparameter, CCS_SERIALIZE_FORMAT_BINARY, CCS_SERIALIZE_OPERATION_MEMORY, buff_size, buff, CCS_SERIALIZE_OPTION_END);
-	assert( err == CCS_SUCCESS );
-
-	err = ccs_release_object(hyperparameter);
-	assert( err == CCS_SUCCESS );
-
-	err = ccs_object_deserialize((ccs_object_t*)&hyperparameter, CCS_SERIALIZE_FORMAT_BINARY, CCS_SERIALIZE_OPERATION_MEMORY, buff_size, buff, CCS_DESERIALIZE_CALLBACK, &deserialize_callback, (void*)0xbeefdead, CCS_DESERIALIZE_OPTION_END);
-	assert( err == CCS_SUCCESS );
-	free(buff);
-
-	compare_hyperparameter(hyperparameter, num_possible_values, possible_values, default_value_index);
-
-	err = ccs_object_serialize(hyperparameter, CCS_SERIALIZE_FORMAT_BINARY, CCS_SERIALIZE_OPERATION_SIZE, &buff_size, CCS_SERIALIZE_OPTION_CALLBACK, serialize_callback, (void*)0xdeadbeef, CCS_SERIALIZE_OPTION_END);
+	err = ccs_object_serialize(parameter, CCS_SERIALIZE_FORMAT_BINARY, CCS_SERIALIZE_OPERATION_SIZE, &buff_size, CCS_SERIALIZE_OPTION_END);
 	assert( err == CCS_SUCCESS );
 
 	buff = (char *)malloc(buff_size);
 	assert( buff );
 
-	err = ccs_object_serialize(hyperparameter, CCS_SERIALIZE_FORMAT_BINARY, CCS_SERIALIZE_OPERATION_MEMORY, buff_size, buff, CCS_SERIALIZE_OPTION_CALLBACK, serialize_callback, (void*)0xdeadbeef, CCS_SERIALIZE_OPTION_END);
+	err = ccs_object_serialize(parameter, CCS_SERIALIZE_FORMAT_BINARY, CCS_SERIALIZE_OPERATION_MEMORY, buff_size, buff, CCS_SERIALIZE_OPTION_END);
+	assert( err == CCS_SUCCESS );
+
+	err = ccs_release_object(parameter);
+	assert( err == CCS_SUCCESS );
+
+	err = ccs_object_deserialize((ccs_object_t*)&parameter, CCS_SERIALIZE_FORMAT_BINARY, CCS_SERIALIZE_OPERATION_MEMORY, buff_size, buff, CCS_DESERIALIZE_CALLBACK, &deserialize_callback, (void*)0xbeefdead, CCS_DESERIALIZE_OPTION_END);
 	assert( err == CCS_SUCCESS );
 	free(buff);
 
-	compare_hyperparameter(hyperparameter, num_possible_values, possible_values, default_value_index);
+	compare_parameter(parameter, num_possible_values, possible_values, default_value_index);
 
-	err = ccs_release_object(hyperparameter);
+	err = ccs_object_serialize(parameter, CCS_SERIALIZE_FORMAT_BINARY, CCS_SERIALIZE_OPERATION_SIZE, &buff_size, CCS_SERIALIZE_OPTION_CALLBACK, serialize_callback, (void*)0xdeadbeef, CCS_SERIALIZE_OPTION_END);
+	assert( err == CCS_SUCCESS );
+
+	buff = (char *)malloc(buff_size);
+	assert( buff );
+
+	err = ccs_object_serialize(parameter, CCS_SERIALIZE_FORMAT_BINARY, CCS_SERIALIZE_OPERATION_MEMORY, buff_size, buff, CCS_SERIALIZE_OPTION_CALLBACK, serialize_callback, (void*)0xdeadbeef, CCS_SERIALIZE_OPTION_END);
+	assert( err == CCS_SUCCESS );
+	free(buff);
+
+	compare_parameter(parameter, num_possible_values, possible_values, default_value_index);
+
+	err = ccs_release_object(parameter);
 	assert( err == CCS_SUCCESS );
 }
 
 void test_samples() {
 	ccs_rng_t                  rng;
-	ccs_hyperparameter_t       hyperparameter;
+	ccs_parameter_t       parameter;
 	ccs_distribution_t         distribution;
 	const size_t               num_samples = NUM_SAMPLES;
 	ccs_datum_t                samples[NUM_SAMPLES];
@@ -198,16 +198,16 @@ void test_samples() {
 
 	err = ccs_create_rng(&rng);
 	assert( err == CCS_SUCCESS );
-	err = ccs_create_categorical_hyperparameter("my_param", num_possible_values,
+	err = ccs_create_categorical_parameter("my_param", num_possible_values,
 	                                            possible_values, default_value_index,
-	                                            &hyperparameter);
+	                                            &parameter);
 	assert( err == CCS_SUCCESS );
 
-	err = ccs_hyperparameter_get_default_distribution(hyperparameter, &distribution);
+	err = ccs_parameter_get_default_distribution(parameter, &distribution);
 	assert( err == CCS_SUCCESS );
 	assert( distribution );
 
-	err = ccs_hyperparameter_samples(hyperparameter, distribution, rng,
+	err = ccs_parameter_samples(parameter, distribution, rng,
 	                                 num_samples, samples);
 	assert( err == CCS_SUCCESS );
 
@@ -220,7 +220,7 @@ void test_samples() {
 
 	err = ccs_release_object(distribution);
 	assert( err == CCS_SUCCESS );
-	err = ccs_release_object(hyperparameter);
+	err = ccs_release_object(parameter);
 	assert( err == CCS_SUCCESS );
 	err = ccs_release_object(rng);
 	assert( err == CCS_SUCCESS );
@@ -228,7 +228,7 @@ void test_samples() {
 
 void test_oversampling() {
 	ccs_rng_t                  rng;
-	ccs_hyperparameter_t       hyperparameter;
+	ccs_parameter_t       parameter;
 	ccs_distribution_t         distribution;
 	const size_t               num_samples = NUM_SAMPLES;
 	ccs_datum_t                samples[NUM_SAMPLES];
@@ -248,12 +248,12 @@ void test_oversampling() {
 	                                          CCS_LINEAR, 0, &distribution);
 	assert( err == CCS_SUCCESS );
 
-	err = ccs_create_categorical_hyperparameter("my_param", num_possible_values,
+	err = ccs_create_categorical_parameter("my_param", num_possible_values,
 	                                            possible_values, default_value_index,
-	                                            &hyperparameter);
+	                                            &parameter);
 	assert( err == CCS_SUCCESS );
 
-	err = ccs_hyperparameter_samples(hyperparameter, distribution, rng,
+	err = ccs_parameter_samples(parameter, distribution, rng,
 	                                 num_samples, samples);
 	assert( err == CCS_SUCCESS );
 
@@ -266,7 +266,7 @@ void test_oversampling() {
 
 	err = ccs_release_object(distribution);
 	assert( err == CCS_SUCCESS );
-	err = ccs_release_object(hyperparameter);
+	err = ccs_release_object(parameter);
 	assert( err == CCS_SUCCESS );
 	err = ccs_release_object(rng);
 	assert( err == CCS_SUCCESS );

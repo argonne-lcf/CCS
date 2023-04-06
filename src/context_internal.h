@@ -6,7 +6,7 @@
 #endif
 #define HASH_NONFATAL_OOM 1
 #include "uthash.h"
-#include "hyperparameter_internal.h"
+#include "parameter_internal.h"
 
 typedef struct _ccs_context_data_s _ccs_context_data_t;
 
@@ -15,25 +15,25 @@ struct _ccs_context_ops_s {
 };
 typedef struct _ccs_context_ops_s _ccs_context_ops_t;
 
-struct _ccs_hyperparameter_wrapper_s {
-	ccs_hyperparameter_t         hyperparameter;
+struct _ccs_parameter_wrapper_s {
+	ccs_parameter_t         parameter;
 };
-typedef struct _ccs_hyperparameter_wrapper_s _ccs_hyperparameter_wrapper_t;
+typedef struct _ccs_parameter_wrapper_s _ccs_parameter_wrapper_t;
 
-struct _ccs_hyperparameter_index_hash_s {
-	ccs_hyperparameter_t  hyperparameter;
+struct _ccs_parameter_index_hash_s {
+	ccs_parameter_t  parameter;
 	const char           *name;
 	size_t                index;
 	UT_hash_handle        hh_name;
 	UT_hash_handle        hh_handle;
 };
-typedef struct _ccs_hyperparameter_index_hash_s _ccs_hyperparameter_index_hash_t;
+typedef struct _ccs_parameter_index_hash_s _ccs_parameter_index_hash_t;
 
 struct _ccs_context_data_s {
 	const char                       *name;
-	UT_array                         *hyperparameters;
-	_ccs_hyperparameter_index_hash_t *name_hash;
-	_ccs_hyperparameter_index_hash_t *handle_hash;
+	UT_array                         *parameters;
+	_ccs_parameter_index_hash_t *name_hash;
+	_ccs_parameter_index_hash_t *handle_hash;
 };
 
 struct _ccs_context_s {
@@ -42,67 +42,67 @@ struct _ccs_context_s {
 };
 
 static inline ccs_error_t
-_ccs_context_get_hyperparameter_index(
+_ccs_context_get_parameter_index(
 		ccs_context_t         context,
-		ccs_hyperparameter_t  hyperparameter,
+		ccs_parameter_t  parameter,
 		size_t               *index_ret) {
 	CCS_CHECK_PTR(index_ret);
 	_ccs_context_data_t *data = context->data;
-	_ccs_hyperparameter_index_hash_t *wrapper;
-	HASH_FIND(hh_handle, data->handle_hash, &hyperparameter,
-	          sizeof(ccs_hyperparameter_t), wrapper);
-	CCS_REFUTE(!wrapper, CCS_INVALID_HYPERPARAMETER);
+	_ccs_parameter_index_hash_t *wrapper;
+	HASH_FIND(hh_handle, data->handle_hash, &parameter,
+	          sizeof(ccs_parameter_t), wrapper);
+	CCS_REFUTE(!wrapper, CCS_INVALID_PARAMETER);
 	*index_ret = wrapper->index;
 	return CCS_SUCCESS;
 }
 
 static inline ccs_error_t
-_ccs_context_get_num_hyperparameters(
+_ccs_context_get_num_parameters(
 		ccs_context_t  context,
-		size_t        *num_hyperparameters_ret) {
-	CCS_CHECK_PTR(num_hyperparameters_ret);
-	*num_hyperparameters_ret = utarray_len(context->data->hyperparameters);
+		size_t        *num_parameters_ret) {
+	CCS_CHECK_PTR(num_parameters_ret);
+	*num_parameters_ret = utarray_len(context->data->parameters);
 	return CCS_SUCCESS;
 }
 
 static inline ccs_error_t
-_ccs_context_get_hyperparameter(
+_ccs_context_get_parameter(
 		ccs_context_t         context,
 		size_t                index,
-		ccs_hyperparameter_t *hyperparameter_ret) {
-	CCS_CHECK_PTR(hyperparameter_ret);
-	_ccs_hyperparameter_wrapper_t *wrapper = (_ccs_hyperparameter_wrapper_t*)
-	    utarray_eltptr(context->data->hyperparameters, (unsigned int)index);
+		ccs_parameter_t *parameter_ret) {
+	CCS_CHECK_PTR(parameter_ret);
+	_ccs_parameter_wrapper_t *wrapper = (_ccs_parameter_wrapper_t*)
+	    utarray_eltptr(context->data->parameters, (unsigned int)index);
 	CCS_REFUTE(!wrapper, CCS_OUT_OF_BOUNDS);
-	*hyperparameter_ret = wrapper->hyperparameter;
+	*parameter_ret = wrapper->parameter;
 	return CCS_SUCCESS;
 }
 
 static inline ccs_error_t
-_ccs_context_get_hyperparameter_by_name(
+_ccs_context_get_parameter_by_name(
 		ccs_context_t         context,
 		const char *          name,
-		ccs_hyperparameter_t *hyperparameter_ret) {
+		ccs_parameter_t *parameter_ret) {
 	CCS_CHECK_PTR(name);
-	CCS_CHECK_PTR(hyperparameter_ret);
-	_ccs_hyperparameter_index_hash_t *wrapper;
+	CCS_CHECK_PTR(parameter_ret);
+	_ccs_parameter_index_hash_t *wrapper;
 	size_t sz_name;
 	sz_name = strlen(name);
 	HASH_FIND(hh_name, context->data->name_hash,
 	          name, sz_name, wrapper);
 	CCS_REFUTE(!wrapper, CCS_INVALID_NAME);
-	*hyperparameter_ret = wrapper->hyperparameter;
+	*parameter_ret = wrapper->parameter;
 	return CCS_SUCCESS;
 }
 
 static inline ccs_error_t
-_ccs_context_get_hyperparameter_index_by_name(
+_ccs_context_get_parameter_index_by_name(
 		ccs_context_t  context,
 		const char    *name,
 		size_t        *index_ret) {
 	CCS_CHECK_PTR(name);
 	CCS_CHECK_PTR(index_ret);
-	_ccs_hyperparameter_index_hash_t *wrapper;
+	_ccs_parameter_index_hash_t *wrapper;
 	size_t sz_name;
 	sz_name = strlen(name);
 	HASH_FIND(hh_name, context->data->name_hash,
@@ -113,42 +113,42 @@ _ccs_context_get_hyperparameter_index_by_name(
 }
 
 static inline ccs_error_t
-_ccs_context_get_hyperparameters(
+_ccs_context_get_parameters(
 		ccs_context_t          context,
-		size_t                 num_hyperparameters,
-		ccs_hyperparameter_t  *hyperparameters,
-		size_t                *num_hyperparameters_ret) {
-	CCS_CHECK_ARY(num_hyperparameters, hyperparameters);
-	CCS_REFUTE(!num_hyperparameters_ret && !hyperparameters, CCS_INVALID_VALUE);
-	UT_array *array = context->data->hyperparameters;
+		size_t                 num_parameters,
+		ccs_parameter_t  *parameters,
+		size_t                *num_parameters_ret) {
+	CCS_CHECK_ARY(num_parameters, parameters);
+	CCS_REFUTE(!num_parameters_ret && !parameters, CCS_INVALID_VALUE);
+	UT_array *array = context->data->parameters;
 	size_t size = utarray_len(array);
-	if (hyperparameters) {
-		CCS_REFUTE(num_hyperparameters < size, CCS_INVALID_VALUE);
-		_ccs_hyperparameter_wrapper_t *wrapper = NULL;
+	if (parameters) {
+		CCS_REFUTE(num_parameters < size, CCS_INVALID_VALUE);
+		_ccs_parameter_wrapper_t *wrapper = NULL;
 		size_t index = 0;
-		while ( (wrapper = (_ccs_hyperparameter_wrapper_t *)utarray_next(array, wrapper)) )
-			hyperparameters[index++] = wrapper->hyperparameter;
-		for (size_t i = size; i < num_hyperparameters; i++)
-			hyperparameters[i] = NULL;
+		while ( (wrapper = (_ccs_parameter_wrapper_t *)utarray_next(array, wrapper)) )
+			parameters[index++] = wrapper->parameter;
+		for (size_t i = size; i < num_parameters; i++)
+			parameters[i] = NULL;
 	}
-	if (num_hyperparameters_ret)
-		*num_hyperparameters_ret = size;
+	if (num_parameters_ret)
+		*num_parameters_ret = size;
 	return CCS_SUCCESS;
 }
 
 static inline ccs_error_t
-_ccs_context_get_hyperparameter_indexes(
+_ccs_context_get_parameter_indexes(
 		ccs_context_t          context,
-		size_t                 num_hyperparameters,
-		ccs_hyperparameter_t  *hyperparameters,
+		size_t                 num_parameters,
+		ccs_parameter_t  *parameters,
 		size_t                *indexes) {
-	CCS_CHECK_ARY(num_hyperparameters, hyperparameters);
-	CCS_CHECK_ARY(num_hyperparameters, indexes);
-	_ccs_hyperparameter_index_hash_t *wrapper;
-	for(size_t i = 0; i < num_hyperparameters; i++) {
+	CCS_CHECK_ARY(num_parameters, parameters);
+	CCS_CHECK_ARY(num_parameters, indexes);
+	_ccs_parameter_index_hash_t *wrapper;
+	for(size_t i = 0; i < num_parameters; i++) {
 		HASH_FIND(hh_handle, context->data->handle_hash,
-			hyperparameters + i, sizeof(ccs_hyperparameter_t), wrapper);
-		CCS_REFUTE(!wrapper, CCS_INVALID_HYPERPARAMETER);
+			parameters + i, sizeof(ccs_parameter_t), wrapper);
+		CCS_REFUTE(!wrapper, CCS_INVALID_PARAMETER);
 		indexes[i] = wrapper->index;
 	}
 	return CCS_SUCCESS;
@@ -168,11 +168,11 @@ _ccs_context_validate_value(ccs_context_t  context,
                             ccs_datum_t    value,
                             ccs_datum_t   *value_ret) {
 	CCS_CHECK_PTR(value_ret);
-	_ccs_hyperparameter_wrapper_t *wrapper = (_ccs_hyperparameter_wrapper_t*)
-	    utarray_eltptr(context->data->hyperparameters, (unsigned int)index);
+	_ccs_parameter_wrapper_t *wrapper = (_ccs_parameter_wrapper_t*)
+	    utarray_eltptr(context->data->parameters, (unsigned int)index);
 	CCS_REFUTE(!wrapper, CCS_OUT_OF_BOUNDS);
 	ccs_bool_t valid;
-	CCS_VALIDATE(ccs_hyperparameter_validate_value(wrapper->hyperparameter,
+	CCS_VALIDATE(ccs_parameter_validate_value(wrapper->parameter,
 	                                               value, value_ret, &valid));
 	CCS_REFUTE(!valid, CCS_INVALID_VALUE);
 	return CCS_SUCCESS;
@@ -185,11 +185,11 @@ _ccs_serialize_bin_size_ccs_context_data(
 		_ccs_object_serialize_options_t *opts) {
 	*cum_size += _ccs_serialize_bin_size_string(data->name);
 	*cum_size += _ccs_serialize_bin_size_size(
-		utarray_len(data->hyperparameters));
-	_ccs_hyperparameter_wrapper_t *wrapper = NULL;
-	while ( (wrapper = (_ccs_hyperparameter_wrapper_t *)utarray_next(data->hyperparameters, wrapper)) )
-		CCS_VALIDATE(wrapper->hyperparameter->obj.ops->serialize_size(
-			wrapper->hyperparameter, CCS_SERIALIZE_FORMAT_BINARY, cum_size, opts));
+		utarray_len(data->parameters));
+	_ccs_parameter_wrapper_t *wrapper = NULL;
+	while ( (wrapper = (_ccs_parameter_wrapper_t *)utarray_next(data->parameters, wrapper)) )
+		CCS_VALIDATE(wrapper->parameter->obj.ops->serialize_size(
+			wrapper->parameter, CCS_SERIALIZE_FORMAT_BINARY, cum_size, opts));
 	return CCS_SUCCESS;
 }
 
@@ -202,11 +202,11 @@ _ccs_serialize_bin_ccs_context_data(
 	CCS_VALIDATE(_ccs_serialize_bin_string(
 		data->name, buffer_size, buffer));
 	CCS_VALIDATE(_ccs_serialize_bin_size(
-		utarray_len(data->hyperparameters), buffer_size, buffer));
-	_ccs_hyperparameter_wrapper_t *wrapper = NULL;
-	while ( (wrapper = (_ccs_hyperparameter_wrapper_t *)utarray_next(data->hyperparameters, wrapper)) )
-		CCS_VALIDATE(wrapper->hyperparameter->obj.ops->serialize(
-			wrapper->hyperparameter, CCS_SERIALIZE_FORMAT_BINARY, buffer_size, buffer, opts));
+		utarray_len(data->parameters), buffer_size, buffer));
+	_ccs_parameter_wrapper_t *wrapper = NULL;
+	while ( (wrapper = (_ccs_parameter_wrapper_t *)utarray_next(data->parameters, wrapper)) )
+		CCS_VALIDATE(wrapper->parameter->obj.ops->serialize(
+			wrapper->parameter, CCS_SERIALIZE_FORMAT_BINARY, buffer_size, buffer, opts));
 	return CCS_SUCCESS;
 }
 

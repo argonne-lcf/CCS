@@ -1,11 +1,11 @@
 import ctypes as ct
-from .base import Object, Error, CEnumeration, ccs_error, _ccs_get_function, ccs_context, ccs_hyperparameter, ccs_features_space, ccs_features, ccs_datum, ccs_bool
+from .base import Object, Error, CEnumeration, ccs_error, _ccs_get_function, ccs_context, ccs_parameter, ccs_features_space, ccs_features, ccs_datum, ccs_bool
 from .context import Context
-from .hyperparameter import Hyperparameter
+from .parameter import Parameter
 
 ccs_create_features_space = _ccs_get_function("ccs_create_features_space", [ct.c_char_p, ct.POINTER(ccs_features_space)])
-ccs_features_space_add_hyperparameter = _ccs_get_function("ccs_features_space_add_hyperparameter", [ccs_features_space, ccs_hyperparameter])
-ccs_features_space_add_hyperparameters = _ccs_get_function("ccs_features_space_add_hyperparameters", [ccs_features_space, ct.c_size_t, ct.POINTER(ccs_hyperparameter)])
+ccs_features_space_add_parameter = _ccs_get_function("ccs_features_space_add_parameter", [ccs_features_space, ccs_parameter])
+ccs_features_space_add_parameters = _ccs_get_function("ccs_features_space_add_parameters", [ccs_features_space, ct.c_size_t, ct.POINTER(ccs_parameter)])
 ccs_features_space_check_features = _ccs_get_function("ccs_features_space_check_features", [ccs_features_space, ccs_features, ct.POINTER(ccs_bool)])
 ccs_features_space_check_features_values = _ccs_get_function("ccs_features_space_check_features_values", [ccs_features_space, ct.c_size_t, ct.POINTER(ccs_datum), ct.POINTER(ccs_bool)])
 
@@ -24,16 +24,16 @@ class FeaturesSpace(Context):
   def from_handle(cls, handle, retain = True, auto_release = True):
     return cls(handle = handle, retain = retain, auto_release = auto_release)
 
-  def add_hyperparameter(self, hyperparameter):
-    res = ccs_features_space_add_hyperparameter(self.handle, hyperparameter.handle)
+  def add_parameter(self, parameter):
+    res = ccs_features_space_add_parameter(self.handle, parameter.handle)
     Error.check(res)
 
-  def add_hyperparameters(self, hyperparameters, distributions = None):
-    count = len(hyperparameters)
+  def add_parameters(self, parameters, distributions = None):
+    count = len(parameters)
     if count == 0:
       return None
-    hypers = (ccs_hyperparameter * count)(*[x.handle.value for x in hyperparameters])
-    res = ccs_features_space_add_hyperparameters(self.handle, count, hypers)
+    parameters = (ccs_parameter * count)(*[x.handle.value for x in parameters])
+    res = ccs_features_space_add_parameters(self.handle, count, parameters)
     Error.check(res)
 
   def check(self, features):
@@ -44,7 +44,7 @@ class FeaturesSpace(Context):
 
   def check_values(self, values):
     count = len(values)
-    if count != self.num_hyperparameters:
+    if count != self.num_parameters:
       raise Error(ccs_error(ccs_error.INVALID_VALUE))
     v = (ccs_datum * count)()
     ss = []

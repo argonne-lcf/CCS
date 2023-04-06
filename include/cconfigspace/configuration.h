@@ -26,7 +26,7 @@ extern "C" {
  * @return #CCS_INVALID_VALUE if \p configuration_ret is NULL; or if \p
  *                             values is NULL and \p num_values is greater than
  *                             0; or if the number of values provided is not
- *                             equal to the number of hyperparameters in the
+ *                             equal to the number of parameters in the
  *                             configuration space
  * @return #CCS_OUT_OF_MEMORY if there was a lack of memory to allocate the new
  *                             configuration
@@ -53,9 +53,9 @@ ccs_configuration_get_configuration_space(
 	ccs_configuration_space_t *configuration_space_ret);
 
 /**
- * Get the value of the hyperparameter at the given index.
+ * Get the value of the parameter at the given index.
  * @param[in] configuration
- * @param[in] index index of the hyperparameter in the associated configuration
+ * @param[in] index index of the parameter in the associated configuration
  *                  space
  * @param[out] value_ret a pointer to the variable that will hold the value
  * @return #CCS_SUCCESS on success
@@ -63,7 +63,7 @@ ccs_configuration_get_configuration_space(
  *                              configuration
  * @return #CCS_INVALID_VALUE if \p value_ret is NULL
  * @return #CCS_OUT_OF_BOUNDS if \p index is greater than the count of
- *                             hyperparameters in the configuration space
+ *                             parameters in the configuration space
  */
 extern ccs_error_t
 ccs_configuration_get_value(ccs_configuration_t  configuration,
@@ -71,10 +71,10 @@ ccs_configuration_get_value(ccs_configuration_t  configuration,
                             ccs_datum_t         *value_ret);
 
 /**
- * Set the value of the hyperparameter at the given index. Transient values will
+ * Set the value of the parameter at the given index. Transient values will
  * be validated and memoized if needed.
  * @param[in,out] configuration
- * @param[in] index index of the hyperparameter in the associated configuration
+ * @param[in] index index of the parameter in the associated configuration
  *                  space
  * @param[in] value the value
  * @return #CCS_SUCCESS on success
@@ -82,7 +82,7 @@ ccs_configuration_get_value(ccs_configuration_t  configuration,
  *                              configuration
  * @return #CCS_INVALID_VALUE if \p value_ret is NULL
  * @return #CCS_OUT_OF_BOUNDS if \p index is greater than the count of
- *                             hyperparameters in the configuration space
+ *                             parameters in the configuration space
  * @return #CCS_OUT_OF_MEMORY if there was a lack of memory while memoizing a
  *                             string
  */
@@ -117,15 +117,15 @@ ccs_configuration_get_values(ccs_configuration_t  configuration,
                              size_t              *num_values_ret);
 
 /**
- * Get the value of the hyperparameter with the given name.
+ * Get the value of the parameter with the given name.
  * @param[in] configuration
- * @param[in] name the name of the hyperparameter whose value to retrieve
+ * @param[in] name the name of the parameter whose value to retrieve
  * @param[out] value_ret a pointer to the variable that will hold the value
  * @return #CCS_SUCCESS on success
  * @return #CCS_INVALID_OBJECT if \p configuration is not a valid CCS
  *                              configuration
  * @return #CCS_INVALID_VALUE if \p value_ret is NULL
- * @return #CCS_INVALID_NAME if no hyperparameter with such \p name exist in
+ * @return #CCS_INVALID_NAME if no parameter with such \p name exist in
  *                            the \p configuration space
  */
 extern ccs_error_t
@@ -140,9 +140,9 @@ ccs_configuration_get_value_by_name(ccs_configuration_t  configuration,
  * @param[out] is_valid_ret a pointer to a variable that will hold the result
  *                          of the check. Result will be CCS_TRUE if the
  *                          configuration is valid. Result will be CCS_FALSE if
- *                          an active hyperparameter value is not a valid value
- *                          for this hyperparameter; or if an inactive
- *                          hyperparameter value is not inactive; or if a
+ *                          an active parameter value is not a valid value
+ *                          for this parameter; or if an inactive
+ *                          parameter value is not inactive; or if a
  *                          forbidden clause would be evaluating to #ccs_true
  * @return #CCS_SUCCESS on success
  * @return #CCS_INVALID_OBJECT if \p configuration is not a valid CCS

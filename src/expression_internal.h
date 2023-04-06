@@ -34,7 +34,7 @@ typedef struct _ccs_expression_literal_data_s _ccs_expression_literal_data_t;
 
 struct _ccs_expression_variable_data_s {
 	_ccs_expression_data_t expr;
-	ccs_hyperparameter_t   hyperparameter;
+	ccs_parameter_t   parameter;
 };
 typedef struct _ccs_expression_variable_data_s _ccs_expression_variable_data_t;
 #endif //_EXPRESSION_INTERNAL_H

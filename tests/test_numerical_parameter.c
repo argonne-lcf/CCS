@@ -5,9 +5,9 @@
 
 #define NUM_SAMPLES 10000
 
-static void compare_hyperparameter(ccs_hyperparameter_t hyperparameter) {
+static void compare_parameter(ccs_parameter_t parameter) {
 	ccs_error_t               err;
-	ccs_hyperparameter_type_t  type;
+	ccs_parameter_type_t  type;
 	ccs_datum_t                default_value;
 	const char                *name;
 	ccs_distribution_t         distribution;
@@ -15,20 +15,20 @@ static void compare_hyperparameter(ccs_hyperparameter_t hyperparameter) {
 	ccs_interval_t             interval;
 	ccs_bool_t                 check;
 
-	err = ccs_hyperparameter_get_type(hyperparameter, &type);
+	err = ccs_parameter_get_type(parameter, &type);
 	assert( err == CCS_SUCCESS );
-	assert( type == CCS_HYPERPARAMETER_TYPE_NUMERICAL );
+	assert( type == CCS_PARAMETER_TYPE_NUMERICAL );
 
-	err = ccs_hyperparameter_get_default_value(hyperparameter, &default_value);
+	err = ccs_parameter_get_default_value(parameter, &default_value);
 	assert( err == CCS_SUCCESS );
 	assert( default_value.type == CCS_FLOAT );
 	assert( default_value.value.f == 1.0 );
 
-	err = ccs_hyperparameter_get_name(hyperparameter, &name);
+	err = ccs_parameter_get_name(parameter, &name);
 	assert( err == CCS_SUCCESS );
 	assert( strcmp(name, "my_param") == 0 );
 
-	err = ccs_hyperparameter_get_default_distribution(hyperparameter, &distribution);
+	err = ccs_parameter_get_default_distribution(parameter, &distribution);
 	assert( err == CCS_SUCCESS );
 	assert( distribution );
 
@@ -44,11 +44,11 @@ static void compare_hyperparameter(ccs_hyperparameter_t hyperparameter) {
 	assert( interval.upper.f  == 5.0 );
 	assert( interval.upper_included == CCS_FALSE );
 
-	err = ccs_hyperparameter_check_value(hyperparameter, ccs_float(1.0), &check);
+	err = ccs_parameter_check_value(parameter, ccs_float(1.0), &check);
 	assert( err == CCS_SUCCESS );
 	assert( check == CCS_TRUE );
 
-	err = ccs_hyperparameter_check_value(hyperparameter, ccs_float(6.0), &check);
+	err = ccs_parameter_check_value(parameter, ccs_float(6.0), &check);
 	assert( err == CCS_SUCCESS );
 	assert( check == CCS_FALSE );
 
@@ -57,44 +57,44 @@ static void compare_hyperparameter(ccs_hyperparameter_t hyperparameter) {
 }
 
 static void test_create() {
-	ccs_hyperparameter_t       hyperparameter;
+	ccs_parameter_t       parameter;
 	ccs_error_t               err;
 	char                      *buff;
 	size_t                     buff_size;
 
-	err = ccs_create_numerical_hyperparameter("my_param", CCS_NUM_FLOAT,
+	err = ccs_create_numerical_parameter("my_param", CCS_NUM_FLOAT,
 	                                          CCSF(-5.0), CCSF(5.0),
 	                                          CCSF(0.0), CCSF(1.0),
-	                                          &hyperparameter);
+	                                          &parameter);
 	assert( err == CCS_SUCCESS );
 
-	compare_hyperparameter(hyperparameter);
+	compare_parameter(parameter);
 
-	err = ccs_object_serialize(hyperparameter, CCS_SERIALIZE_FORMAT_BINARY, CCS_SERIALIZE_OPERATION_SIZE, &buff_size, CCS_SERIALIZE_OPTION_END);
+	err = ccs_object_serialize(parameter, CCS_SERIALIZE_FORMAT_BINARY, CCS_SERIALIZE_OPERATION_SIZE, &buff_size, CCS_SERIALIZE_OPTION_END);
 	assert( err == CCS_SUCCESS );
 
 	buff = (char *)malloc(buff_size);
 	assert( buff );
 
-	err = ccs_object_serialize(hyperparameter, CCS_SERIALIZE_FORMAT_BINARY, CCS_SERIALIZE_OPERATION_MEMORY, buff_size, buff, CCS_SERIALIZE_OPTION_END);
+	err = ccs_object_serialize(parameter, CCS_SERIALIZE_FORMAT_BINARY, CCS_SERIALIZE_OPERATION_MEMORY, buff_size, buff, CCS_SERIALIZE_OPTION_END);
 	assert( err == CCS_SUCCESS );
 
-	err = ccs_release_object(hyperparameter);
+	err = ccs_release_object(parameter);
 	assert( err == CCS_SUCCESS );
 
-	err = ccs_object_deserialize((ccs_object_t*)&hyperparameter, CCS_SERIALIZE_FORMAT_BINARY, CCS_SERIALIZE_OPERATION_MEMORY, buff_size, buff, CCS_DESERIALIZE_OPTION_END);
+	err = ccs_object_deserialize((ccs_object_t*)&parameter, CCS_SERIALIZE_FORMAT_BINARY, CCS_SERIALIZE_OPERATION_MEMORY, buff_size, buff, CCS_DESERIALIZE_OPTION_END);
 	assert( err == CCS_SUCCESS );
 	free(buff);
 
-	compare_hyperparameter(hyperparameter);
+	compare_parameter(parameter);
 
-	err = ccs_release_object(hyperparameter);
+	err = ccs_release_object(parameter);
 	assert( err == CCS_SUCCESS );
 }
 
 void test_samples() {
 	ccs_rng_t                  rng;
-	ccs_hyperparameter_t       hyperparameter;
+	ccs_parameter_t       parameter;
 	ccs_distribution_t         distribution;
 	const size_t               num_samples = NUM_SAMPLES;
 	ccs_datum_t                samples[NUM_SAMPLES];
@@ -102,17 +102,17 @@ void test_samples() {
 
 	err = ccs_create_rng(&rng);
 	assert( err == CCS_SUCCESS );
-	err = ccs_create_numerical_hyperparameter("my_param", CCS_NUM_FLOAT,
+	err = ccs_create_numerical_parameter("my_param", CCS_NUM_FLOAT,
 	                                          CCSF(-5.0), CCSF(5.0),
 	                                          CCSF(0.0), CCSF(1.0),
-	                                          &hyperparameter);
+	                                          &parameter);
 	assert( err == CCS_SUCCESS );
 
-	err = ccs_hyperparameter_get_default_distribution(hyperparameter, &distribution);
+	err = ccs_parameter_get_default_distribution(parameter, &distribution);
 	assert( err == CCS_SUCCESS );
 	assert( distribution );
 
-	err = ccs_hyperparameter_samples(hyperparameter, distribution, rng,
+	err = ccs_parameter_samples(parameter, distribution, rng,
 	                                 num_samples, samples);
 	assert( err == CCS_SUCCESS );
 
@@ -123,7 +123,7 @@ void test_samples() {
 
 	err = ccs_release_object(distribution);
 	assert( err == CCS_SUCCESS );
-	err = ccs_release_object(hyperparameter);
+	err = ccs_release_object(parameter);
 	assert( err == CCS_SUCCESS );
 	err = ccs_release_object(rng);
 	assert( err == CCS_SUCCESS );
@@ -131,7 +131,7 @@ void test_samples() {
 
 void test_oversampling() {
 	ccs_rng_t                  rng;
-	ccs_hyperparameter_t       hyperparameter;
+	ccs_parameter_t       parameter;
 	ccs_distribution_t         distribution;
 	const size_t               num_samples = NUM_SAMPLES;
 	ccs_datum_t                samples[NUM_SAMPLES];
@@ -144,13 +144,13 @@ void test_oversampling() {
 	                                           &distribution);
 	assert( err == CCS_SUCCESS );
 
-	err = ccs_create_numerical_hyperparameter("my_param", CCS_NUM_FLOAT,
+	err = ccs_create_numerical_parameter("my_param", CCS_NUM_FLOAT,
 	                                          CCSF(-1.0), CCSF(1.0),
 	                                          CCSF(0.0), CCSF(0.0),
-	                                          &hyperparameter);
+	                                          &parameter);
 	assert( err == CCS_SUCCESS );
 
-	err = ccs_hyperparameter_samples(hyperparameter, distribution, rng,
+	err = ccs_parameter_samples(parameter, distribution, rng,
 	                                 num_samples, samples);
 	assert( err == CCS_SUCCESS );
 
@@ -161,7 +161,7 @@ void test_oversampling() {
 
 	err = ccs_release_object(distribution);
 	assert( err == CCS_SUCCESS );
-	err = ccs_release_object(hyperparameter);
+	err = ccs_release_object(parameter);
 	assert( err == CCS_SUCCESS );
 	err = ccs_release_object(rng);
 	assert( err == CCS_SUCCESS );

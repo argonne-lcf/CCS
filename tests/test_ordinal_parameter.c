@@ -6,13 +6,13 @@
 #define NUM_POSSIBLE_VALUES 4
 #define NUM_SAMPLES 10000
 
-static void compare_hyperparameter(
-		ccs_hyperparameter_t hyperparameter,
+static void compare_parameter(
+		ccs_parameter_t parameter,
 		const size_t         num_possible_values,
 		ccs_datum_t          possible_values[],
 		const size_t         default_value_index) {
 	ccs_error_t               err;
-	ccs_hyperparameter_type_t  type;
+	ccs_parameter_type_t  type;
 	ccs_datum_t                default_value;
 	const char                *name;
 	ccs_distribution_t         distribution;
@@ -20,20 +20,20 @@ static void compare_hyperparameter(
 	ccs_interval_t             interval;
 	ccs_bool_t                 check;
 
-	err = ccs_hyperparameter_get_type(hyperparameter, &type);
+	err = ccs_parameter_get_type(parameter, &type);
 	assert( err == CCS_SUCCESS );
-	assert( type == CCS_HYPERPARAMETER_TYPE_ORDINAL );
+	assert( type == CCS_PARAMETER_TYPE_ORDINAL );
 
-	err = ccs_hyperparameter_get_default_value(hyperparameter, &default_value);
+	err = ccs_parameter_get_default_value(parameter, &default_value);
 	assert( err == CCS_SUCCESS );
 	assert( default_value.type == CCS_INTEGER );
 	assert( default_value.value.i == possible_values[default_value_index].value.i );
 
-	err = ccs_hyperparameter_get_name(hyperparameter, &name);
+	err = ccs_parameter_get_name(parameter, &name);
 	assert( err == CCS_SUCCESS );
 	assert( strcmp(name, "my_param") == 0 );
 
-	err = ccs_hyperparameter_get_default_distribution(hyperparameter, &distribution);
+	err = ccs_parameter_get_default_distribution(parameter, &distribution);
 	assert( err == CCS_SUCCESS );
 	assert( distribution );
 
@@ -50,14 +50,14 @@ static void compare_hyperparameter(
 	assert( interval.upper_included == CCS_FALSE );
 
 	for(size_t i = 0; i < num_possible_values; i++) {
-		err = ccs_hyperparameter_check_value(hyperparameter, possible_values[i],
+		err = ccs_parameter_check_value(parameter, possible_values[i],
 		                                     &check);
 		assert( err == CCS_SUCCESS );
 		assert( check == CCS_TRUE );
 	}
 
 	default_value.type = CCS_FLOAT;
-	err = ccs_hyperparameter_check_value(hyperparameter, default_value, &check);
+	err = ccs_parameter_check_value(parameter, default_value, &check);
 	assert( err == CCS_SUCCESS );
 	assert( check == CCS_FALSE );
 
@@ -66,7 +66,7 @@ static void compare_hyperparameter(
 }
 
 void test_create() {
-	ccs_hyperparameter_t  hyperparameter;
+	ccs_parameter_t  parameter;
 	ccs_error_t          err;
 	const size_t          num_possible_values = NUM_POSSIBLE_VALUES;
 	ccs_datum_t           possible_values[NUM_POSSIBLE_VALUES];
@@ -79,37 +79,37 @@ void test_create() {
 		possible_values[i].value.i = (i+1)*2;
 	}
 
-	err = ccs_create_ordinal_hyperparameter("my_param", num_possible_values,
+	err = ccs_create_ordinal_parameter("my_param", num_possible_values,
 	                                        possible_values, default_value_index,
-	                                        &hyperparameter);
+	                                        &parameter);
 	assert( err == CCS_SUCCESS );
 
-	compare_hyperparameter(hyperparameter, num_possible_values, possible_values, default_value_index);
+	compare_parameter(parameter, num_possible_values, possible_values, default_value_index);
 
-	err = ccs_object_serialize(hyperparameter, CCS_SERIALIZE_FORMAT_BINARY, CCS_SERIALIZE_OPERATION_SIZE, &buff_size, CCS_SERIALIZE_OPTION_END);
+	err = ccs_object_serialize(parameter, CCS_SERIALIZE_FORMAT_BINARY, CCS_SERIALIZE_OPERATION_SIZE, &buff_size, CCS_SERIALIZE_OPTION_END);
 	assert( err == CCS_SUCCESS );
 
 	buff = (char *)malloc(buff_size);
 	assert( buff );
 
-	err = ccs_object_serialize(hyperparameter, CCS_SERIALIZE_FORMAT_BINARY, CCS_SERIALIZE_OPERATION_MEMORY, buff_size, buff, CCS_SERIALIZE_OPTION_END);
+	err = ccs_object_serialize(parameter, CCS_SERIALIZE_FORMAT_BINARY, CCS_SERIALIZE_OPERATION_MEMORY, buff_size, buff, CCS_SERIALIZE_OPTION_END);
 	assert( err == CCS_SUCCESS );
 
-	err = ccs_release_object(hyperparameter);
+	err = ccs_release_object(parameter);
 	assert( err == CCS_SUCCESS );
 
-	err = ccs_object_deserialize((ccs_object_t*)&hyperparameter, CCS_SERIALIZE_FORMAT_BINARY, CCS_SERIALIZE_OPERATION_MEMORY, buff_size, buff, CCS_DESERIALIZE_OPTION_END);
+	err = ccs_object_deserialize((ccs_object_t*)&parameter, CCS_SERIALIZE_FORMAT_BINARY, CCS_SERIALIZE_OPERATION_MEMORY, buff_size, buff, CCS_DESERIALIZE_OPTION_END);
 	assert( err == CCS_SUCCESS );
 	free(buff);
 
-	compare_hyperparameter(hyperparameter, num_possible_values, possible_values, default_value_index);
+	compare_parameter(parameter, num_possible_values, possible_values, default_value_index);
 
-	err = ccs_release_object(hyperparameter);
+	err = ccs_release_object(parameter);
 	assert( err == CCS_SUCCESS );
 }
 
 void test_create_error() {
-	ccs_hyperparameter_t       hyperparameter;
+	ccs_parameter_t       parameter;
 	ccs_error_t               err;
 	const size_t               num_possible_values = NUM_POSSIBLE_VALUES;
 	ccs_datum_t                possible_values[NUM_POSSIBLE_VALUES];
@@ -122,15 +122,15 @@ void test_create_error() {
 
 	possible_values[0].value.i = possible_values[num_possible_values-1].value.i;
 
-	err = ccs_create_ordinal_hyperparameter("my_param", num_possible_values,
+	err = ccs_create_ordinal_parameter("my_param", num_possible_values,
 	                                        possible_values, default_value_index,
-	                                        &hyperparameter);
+	                                        &parameter);
 	assert( err == CCS_INVALID_VALUE );
 }
 
 void test_samples() {
 	ccs_rng_t                  rng;
-	ccs_hyperparameter_t       hyperparameter;
+	ccs_parameter_t       parameter;
 	ccs_distribution_t         distribution;
 	const size_t               num_samples = NUM_SAMPLES;
 	ccs_datum_t                samples[NUM_SAMPLES];
@@ -146,16 +146,16 @@ void test_samples() {
 
 	err = ccs_create_rng(&rng);
 	assert( err == CCS_SUCCESS );
-	err = ccs_create_ordinal_hyperparameter("my_param", num_possible_values,
+	err = ccs_create_ordinal_parameter("my_param", num_possible_values,
 	                                        possible_values, default_value_index,
-	                                        &hyperparameter);
+	                                        &parameter);
 	assert( err == CCS_SUCCESS );
 
-	err = ccs_hyperparameter_get_default_distribution(hyperparameter, &distribution);
+	err = ccs_parameter_get_default_distribution(parameter, &distribution);
 	assert( err == CCS_SUCCESS );
 	assert( distribution );
 
-	err = ccs_hyperparameter_samples(hyperparameter, distribution, rng,
+	err = ccs_parameter_samples(parameter, distribution, rng,
 	                                 num_samples, samples);
 	assert( err == CCS_SUCCESS );
 
@@ -168,7 +168,7 @@ void test_samples() {
 
 	err = ccs_release_object(distribution);
 	assert( err == CCS_SUCCESS );
-	err = ccs_release_object(hyperparameter);
+	err = ccs_release_object(parameter);
 	assert( err == CCS_SUCCESS );
 	err = ccs_release_object(rng);
 	assert( err == CCS_SUCCESS );
@@ -176,7 +176,7 @@ void test_samples() {
 
 void test_oversampling() {
 	ccs_rng_t                  rng;
-	ccs_hyperparameter_t       hyperparameter;
+	ccs_parameter_t       parameter;
 	ccs_distribution_t         distribution;
 	const size_t               num_samples = NUM_SAMPLES;
 	ccs_datum_t                samples[NUM_SAMPLES];
@@ -196,12 +196,12 @@ void test_oversampling() {
 	                                          CCS_LINEAR, 0, &distribution);
 	assert( err == CCS_SUCCESS );
 
-	err = ccs_create_ordinal_hyperparameter("my_param", num_possible_values,
+	err = ccs_create_ordinal_parameter("my_param", num_possible_values,
 	                                        possible_values, default_value_index,
-	                                        &hyperparameter);
+	                                        &parameter);
 	assert( err == CCS_SUCCESS );
 
-	err = ccs_hyperparameter_samples(hyperparameter, distribution, rng,
+	err = ccs_parameter_samples(parameter, distribution, rng,
 	                                 num_samples, samples);
 	assert( err == CCS_SUCCESS );
 
@@ -214,14 +214,14 @@ void test_oversampling() {
 
 	err = ccs_release_object(distribution);
 	assert( err == CCS_SUCCESS );
-	err = ccs_release_object(hyperparameter);
+	err = ccs_release_object(parameter);
 	assert( err == CCS_SUCCESS );
 	err = ccs_release_object(rng);
 	assert( err == CCS_SUCCESS );
 }
 
 void test_compare() {
-	ccs_hyperparameter_t       hyperparameter;
+	ccs_parameter_t       parameter;
 	ccs_error_t               err;
 	const size_t               num_possible_values = NUM_POSSIBLE_VALUES;
 	ccs_datum_t                possible_values[NUM_POSSIBLE_VALUES];
@@ -236,43 +236,43 @@ void test_compare() {
 		possible_values[i].type = CCS_INTEGER;
 	}
 
-	err = ccs_create_ordinal_hyperparameter("my_param", num_possible_values,
+	err = ccs_create_ordinal_parameter("my_param", num_possible_values,
 	                                        possible_values, default_value_index,
-	                                        &hyperparameter);
+	                                        &parameter);
 	assert( err == CCS_SUCCESS );
 
-	err = ccs_ordinal_hyperparameter_compare_values(
-		hyperparameter,
+	err = ccs_ordinal_parameter_compare_values(
+		parameter,
 		possible_values[num_possible_values-1],
 		possible_values[0], &comp);
 	assert( err == CCS_SUCCESS );
 	assert( comp == 1 );
 
-	err = ccs_ordinal_hyperparameter_compare_values(
-		hyperparameter, possible_values[0], 
+	err = ccs_ordinal_parameter_compare_values(
+		parameter, possible_values[0], 
 		possible_values[num_possible_values-1],
 		&comp);
 	assert( err == CCS_SUCCESS );
 	assert( comp == -1 );
 
-	err = ccs_ordinal_hyperparameter_compare_values(
-		hyperparameter,
+	err = ccs_ordinal_parameter_compare_values(
+		parameter,
 		possible_values[0], 
 		possible_values[0], &comp);
 	assert( err == CCS_SUCCESS );
 	assert( comp == 0 );
 
-	err = ccs_ordinal_hyperparameter_compare_values(
-		hyperparameter, invalid,
+	err = ccs_ordinal_parameter_compare_values(
+		parameter, invalid,
 		possible_values[0], &comp);
 	assert( err == CCS_INVALID_VALUE );
 
-	err = ccs_release_object(hyperparameter);
+	err = ccs_release_object(parameter);
 	assert( err == CCS_SUCCESS );
 }
 
 void test_compare_float() {
-	ccs_hyperparameter_t       hyperparameter;
+	ccs_parameter_t       parameter;
 	ccs_error_t               err;
 	const size_t               num_possible_values = NUM_POSSIBLE_VALUES;
 	ccs_datum_t                possible_values[NUM_POSSIBLE_VALUES];
@@ -291,43 +291,43 @@ void test_compare_float() {
 	possible_values[3].value.f = 0.0;
 	possible_values[3].type = CCS_FLOAT;
 
-	err = ccs_create_ordinal_hyperparameter("my_param", num_possible_values,
+	err = ccs_create_ordinal_parameter("my_param", num_possible_values,
 	                                        possible_values, default_value_index,
-	                                        &hyperparameter);
+	                                        &parameter);
 	assert( err == CCS_SUCCESS );
 
-	err = ccs_ordinal_hyperparameter_compare_values(
-		hyperparameter,
+	err = ccs_ordinal_parameter_compare_values(
+		parameter,
 		possible_values[num_possible_values-1],
 		possible_values[0], &comp);
 	assert( err == CCS_SUCCESS );
 	assert( comp == 1 );
 
-	err = ccs_ordinal_hyperparameter_compare_values(
-		hyperparameter, possible_values[0], 
+	err = ccs_ordinal_parameter_compare_values(
+		parameter, possible_values[0], 
 		possible_values[num_possible_values-1],
 		&comp);
 	assert( err == CCS_SUCCESS );
 	assert( comp == -1 );
 
-	err = ccs_ordinal_hyperparameter_compare_values(
-		hyperparameter,
+	err = ccs_ordinal_parameter_compare_values(
+		parameter,
 		possible_values[0], 
 		possible_values[0], &comp);
 	assert( err == CCS_SUCCESS );
 	assert( comp == 0 );
 
-	err = ccs_ordinal_hyperparameter_compare_values(
-		hyperparameter, invalid,
+	err = ccs_ordinal_parameter_compare_values(
+		parameter, invalid,
 		possible_values[0], &comp);
 	assert( err == CCS_INVALID_VALUE );
 
-	err = ccs_release_object(hyperparameter);
+	err = ccs_release_object(parameter);
 	assert( err == CCS_SUCCESS );
 }
 
 void test_compare_string() {
-	ccs_hyperparameter_t       hyperparameter;
+	ccs_parameter_t       parameter;
 	ccs_error_t               err;
 	const size_t               num_possible_values = NUM_POSSIBLE_VALUES;
 	ccs_datum_t                possible_values[NUM_POSSIBLE_VALUES];
@@ -346,43 +346,43 @@ void test_compare_string() {
 	possible_values[3].value.s = "baz";
 	possible_values[3].type = CCS_STRING;
 
-	err = ccs_create_ordinal_hyperparameter("my_param", num_possible_values,
+	err = ccs_create_ordinal_parameter("my_param", num_possible_values,
 	                                        possible_values, default_value_index,
-	                                        &hyperparameter);
+	                                        &parameter);
 	assert( err == CCS_SUCCESS );
 
-	err = ccs_ordinal_hyperparameter_compare_values(
-		hyperparameter,
+	err = ccs_ordinal_parameter_compare_values(
+		parameter,
 		possible_values[num_possible_values-1],
 		possible_values[0], &comp);
 	assert( err == CCS_SUCCESS );
 	assert( comp == 1 );
 
-	err = ccs_ordinal_hyperparameter_compare_values(
-		hyperparameter, possible_values[0], 
+	err = ccs_ordinal_parameter_compare_values(
+		parameter, possible_values[0], 
 		possible_values[num_possible_values-1],
 		&comp);
 	assert( err == CCS_SUCCESS );
 	assert( comp == -1 );
 
-	err = ccs_ordinal_hyperparameter_compare_values(
-		hyperparameter,
+	err = ccs_ordinal_parameter_compare_values(
+		parameter,
 		possible_values[0], 
 		possible_values[0], &comp);
 	assert( err == CCS_SUCCESS );
 	assert( comp == 0 );
 
-	err = ccs_ordinal_hyperparameter_compare_values(
-		hyperparameter, invalid,
+	err = ccs_ordinal_parameter_compare_values(
+		parameter, invalid,
 		possible_values[0], &comp);
 	assert( err == CCS_INVALID_VALUE );
 
-	err = ccs_release_object(hyperparameter);
+	err = ccs_release_object(parameter);
 	assert( err == CCS_SUCCESS );
 }
 
 void test_validate() {
-	ccs_hyperparameter_t hyperparameter;
+	ccs_parameter_t parameter;
 	ccs_error_t         err;
 	const size_t         num_possible_values = NUM_POSSIBLE_VALUES;
 	ccs_datum_t          possible_values[NUM_POSSIBLE_VALUES];
@@ -404,12 +404,12 @@ void test_validate() {
 	diff_ptr = ccs_string(strdup(possible_values[0].value.s));
 
 
-	err = ccs_create_ordinal_hyperparameter("my_param", num_possible_values,
+	err = ccs_create_ordinal_parameter("my_param", num_possible_values,
 	                                        possible_values, default_value_index,
-	                                        &hyperparameter);
+	                                        &parameter);
 	assert( err == CCS_SUCCESS );
 
-	err = ccs_hyperparameter_validate_values(hyperparameter, num_possible_values,
+	err = ccs_parameter_validate_values(parameter, num_possible_values,
 	                                         possible_values, validated_values, res);
 	assert( err == CCS_SUCCESS );
 	for (size_t i = 0; i < num_possible_values; i++) {
@@ -417,19 +417,19 @@ void test_validate() {
 		assert( ccs_datum_cmp(possible_values[i], validated_values[i]) == 0 );
 	}
 
-	err = ccs_hyperparameter_validate_value(hyperparameter, invalid, &tmp, &valid);
+	err = ccs_parameter_validate_value(parameter, invalid, &tmp, &valid);
 	assert( err == CCS_SUCCESS );
 	assert( !valid );
 	assert( ccs_datum_cmp(tmp, ccs_inactive) == 0 );
 
-	err = ccs_hyperparameter_validate_value(hyperparameter, diff_ptr, &tmp, &valid);
+	err = ccs_parameter_validate_value(parameter, diff_ptr, &tmp, &valid);
 	assert( err == CCS_SUCCESS );
 	assert( valid );
 	assert( ccs_datum_cmp(tmp, diff_ptr) == 0 );
 	assert( tmp.value.s != diff_ptr.value.s );
 
 	free((void *)diff_ptr.value.s);
-	err = ccs_release_object(hyperparameter);
+	err = ccs_release_object(parameter);
 	assert( err == CCS_SUCCESS );
 }
 

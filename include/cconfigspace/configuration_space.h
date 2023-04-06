@@ -8,9 +8,9 @@ extern "C" {
 /**
  * @file configuration_space.h
  * A configuration space is a context (see context.h) defining a set of
- * hyperparameters. Configuration space also offer as constraints system to
- * describe conditional hyperparameter activation as well as forbidden
- * hyperparameter configurations. Sampling distributions of hyperparameters can
+ * parameters. Configuration space also offer as constraints system to
+ * describe conditional parameter activation as well as forbidden
+ * parameter configurations. Sampling distributions of parameters can
  * be specified.
  */
 
@@ -72,82 +72,82 @@ ccs_configuration_space_get_rng(ccs_configuration_space_t  configuration_space,
                                 ccs_rng_t                 *rng_ret);
 
 /**
- * Add a hyperparameter to the configuration space.
+ * Add a parameter to the configuration space.
  * @param[in,out] configuration_space
- * @param[in] hyperparameter the hyperparameter to add to the configuration
+ * @param[in] parameter the parameter to add to the configuration
  *                           space
  * @param[in] distribution optional, the 1 dimensional distribution to associate
- *                         to the hyperparameter. If NULL is passed, the default
- *                         distribution of the hyperparameter is used.
+ *                         to the parameter. If NULL is passed, the default
+ *                         distribution of the parameter is used.
  * @return #CCS_SUCCESS on success
  * @return #CCS_INVALID_OBJECT if \p configuration_space is not a valid CCS
- *                              configuration space; or \p hyperparameter is not
- *                              a valid CCS hyperparameter; or if distribution
+ *                              configuration space; or \p parameter is not
+ *                              a valid CCS parameter; or if distribution
  *                              is given and distribution is not a valid CCS
  *                              distribution
- * @return #CCS_INVALID_HYPERPARAMETER if \p hyperparameter's type is
- *                                      CCS_HYPERPARAMETER_TYPE_STRING; or if \p
- *                                      hyperparameter is already in the
+ * @return #CCS_INVALID_PARAMETER if \p parameter's type is
+ *                                      CCS_PARAMETER_TYPE_STRING; or if \p
+ *                                      parameter is already in the
  *                                      configuration space
  * @return #CCS_INVALID_DISTRIBUTION if \p distribution has more than one
  *                                    dimension
  * @return #CCS_OUT_OF_MEMORY if a memory could not be allocated to store
- *                             the additional hyperparameter and associated data
+ *                             the additional parameter and associated data
  *                             structures
  */
 extern ccs_error_t
-ccs_configuration_space_add_hyperparameter(
+ccs_configuration_space_add_parameter(
 	ccs_configuration_space_t configuration_space,
-	ccs_hyperparameter_t      hyperparameter,
+	ccs_parameter_t      parameter,
 	ccs_distribution_t        distribution);
 
 /**
- * Add hyperparameters to the configuration space.
+ * Add parameters to the configuration space.
  * @param[in,out] configuration_space
- * @param[in] num_hyperparameters the number of provided hyperparameters
- * @param[in] hyperparameters an array of \p num_hyperparameters hyperparameters
+ * @param[in] num_parameters the number of provided parameters
+ * @param[in] parameters an array of \p num_parameters parameters
  *                            to add to the configuration space
- * @param[in] distributions optional, an array of \p num_hyperparameters
- *                          distributions. If NULL, hyperparameter's default
+ * @param[in] distributions optional, an array of \p num_parameters
+ *                          distributions. If NULL, parameter's default
  *                          distributions are used. If the array is provided
  *                          each distribution is optional, and NULL can be
  *                          provided to use the default distribution for a
- *                          specific hyperparameter
+ *                          specific parameter
  * @return #CCS_SUCCESS on success
  * @return #CCS_INVALID_OBJECT if \p configuration_space is not a valid CCS
- *                              configuration space; or a hyperparameter is not
- *                              a valid CCS hyperparameter; or if a given
+ *                              configuration space; or a parameter is not
+ *                              a valid CCS parameter; or if a given
  *                              distribution is not a valid CCS distribution
- * @return #CCS_INVALID_VALUE if \p hyperparameters is NULL and \p
- *                             num_hyperparameters is greater than 0
- * @return #CCS_INVALID_HYPERPARAMETER if a hyperparameter's type is
- *                                      CCS_HYPERPARAMETER_TYPE_STRING; or if
- *                                      a hyperparameter is already in the
+ * @return #CCS_INVALID_VALUE if \p parameters is NULL and \p
+ *                             num_parameters is greater than 0
+ * @return #CCS_INVALID_PARAMETER if a parameter's type is
+ *                                      CCS_PARAMETER_TYPE_STRING; or if
+ *                                      a parameter is already in the
  *                                      configuration space; or if a
- *                                      hyperparameter with the same name
+ *                                      parameter with the same name
  *                                      already exists in the configuration
  *                                      space
  * @return #CCS_INVALID_DISTRIBUTION if a distribution has more than one
  *                                    dimension
  * @return #CCS_OUT_OF_MEMORY if memory could not be allocated to store
- *                             additional hyperparameters and associated data
+ *                             additional parameters and associated data
  *                             structures
  */
 extern ccs_error_t
-ccs_configuration_space_add_hyperparameters(
+ccs_configuration_space_add_parameters(
 	ccs_configuration_space_t  configuration_space,
-	size_t                     num_hyperparameters,
-	ccs_hyperparameter_t      *hyperparameters,
+	size_t                     num_parameters,
+	ccs_parameter_t      *parameters,
 	ccs_distribution_t        *distributions);
 
 /**
- * Set the distribution of one or more hyperparameters. Existing distributions
- * are discarded, and if a hyperparameter is left without a distribution it's
+ * Set the distribution of one or more parameters. Existing distributions
+ * are discarded, and if a parameter is left without a distribution it's
  * default distribution is used.
  * @param[in,out] configuration_space
- * @param[in] distribution the distribution to associate to the hyperparameters
+ * @param[in] distribution the distribution to associate to the parameters
  *                         at the indices given by \p indices
- * @param[in] indices an array of hyperparameters indices with as many elements
+ * @param[in] indices an array of parameters indices with as many elements
  *                    as the dimension of the distribution
  * @return #CCS_SUCCESS on success
  * @return #CCS_INVALID_OBJECT if \p configuration_space is not a valid CCS
@@ -155,10 +155,10 @@ ccs_configuration_space_add_hyperparameters(
  *                              valid CCS distribution
  * @return #CCS_INVALID_VALUE if \p indices is NULL; or if indices contains
  *                             values greater or equal to the number of
- *                             hyperparameters in the configuration space; or if
+ *                             parameters in the configuration space; or if
  *                             indices contain duplicate values
  * @return #CCS_OUT_OF_MEMORY if a memory could not be allocated to store
- *                             additional hyperparameters and associated data
+ *                             additional parameters and associated data
  *                             structures
  */
 extern ccs_error_t
@@ -168,46 +168,46 @@ ccs_configuration_space_set_distribution(
 	size_t                    *indices);
 
 /**
- * Get the number of hyperparameters in a configuration space.
+ * Get the number of parameters in a configuration space.
  * @param[in] configuration_space
- * @param[out] num_hyperparameters_ret a pointer to the variable that will
- *                                     contain the number of hyperparameters in
+ * @param[out] num_parameters_ret a pointer to the variable that will
+ *                                     contain the number of parameters in
  *                                     the configuration space
  * @return #CCS_SUCCESS on success
  * @return #CCS_INVALID_OBJECT if \p configuration_space is not a valid CCS
  *                              configuration space
- * @return #CCS_INVALID_VALUE if \p num_hyperparameters_ret is NULL
+ * @return #CCS_INVALID_VALUE if \p num_parameters_ret is NULL
  */
 extern ccs_error_t
-ccs_configuration_space_get_num_hyperparameters(
+ccs_configuration_space_get_num_parameters(
 	ccs_configuration_space_t  configuration_space,
-	size_t                     *num_hyperparameters_ret);
+	size_t                     *num_parameters_ret);
 
 /**
- * Get an hyperparameter in a configuration space given its index.
+ * Get an parameter in a configuration space given its index.
  * @param[in] configuration_space
- * @param[in] index the index of the hyperparameter to retrieve
- * @param[out] hyperparameter_ret a pointer to the variable that will contain
- *                                the hyperparameter
+ * @param[in] index the index of the parameter to retrieve
+ * @param[out] parameter_ret a pointer to the variable that will contain
+ *                                the parameter
  * @return #CCS_SUCCESS on success
  * @return #CCS_INVALID_OBJECT if \p configuration_space is not a valid CCS
  *                              configuration space
- * @return #CCS_INVALID_VALUE if \p hyperparameter_ret is NULL
+ * @return #CCS_INVALID_VALUE if \p parameter_ret is NULL
  * @return #CCS_OUT_OF_BOUNDS if \p index is greater than the count of
- *                             hyperparameters in the configuration space
+ *                             parameters in the configuration space
  */
 extern ccs_error_t
-ccs_configuration_space_get_hyperparameter(
+ccs_configuration_space_get_parameter(
 	ccs_configuration_space_t  configuration_space,
 	size_t                     index,
-	ccs_hyperparameter_t      *hyperparameter_ret);
+	ccs_parameter_t      *parameter_ret);
 
 
 /**
- * Get an hyperparameter's distribution in a configuration space given its
+ * Get an parameter's distribution in a configuration space given its
  * index.
  * @param[in] configuration_space
- * @param[in] index the index of the hyperparameter
+ * @param[in] index the index of the parameter
  * @param[out] distribution_ret a pointer to the variable that will contain the
  *                              distribution
  * @param[out] index_ret a pointer to the variable that will contain the index
@@ -218,128 +218,128 @@ ccs_configuration_space_get_hyperparameter(
  * @return #CCS_INVALID_VALUE if \p distribution_ret is NULL; or if \p
  *                             index_ret is NULL
  * @return #CCS_OUT_OF_BOUNDS if \p index is greater than the count of
- *                             hyperparameters in the configuration space
+ *                             parameters in the configuration space
  */
 extern ccs_error_t
-ccs_configuration_space_get_hyperparameter_distribution(
+ccs_configuration_space_get_parameter_distribution(
 	ccs_configuration_space_t  configuration_space,
 	size_t                     index,
 	ccs_distribution_t        *distribution_ret,
 	size_t                    *index_ret);
 
 /**
- * Get an hyperparameter in a configuration space given its name.
+ * Get an parameter in a configuration space given its name.
  * @param[in] configuration_space
- * @param[in] name the name of the hyperparameter to retrieve
- * @param[out] hyperparameter_ret a pointer to the variable that will contain
- *                                the hyperparameter
+ * @param[in] name the name of the parameter to retrieve
+ * @param[out] parameter_ret a pointer to the variable that will contain
+ *                                the parameter
  * @return #CCS_SUCCESS on success
  * @return #CCS_INVALID_OBJECT if \p configuration_space is not a valid CCS
  *                              configuration space
- * @return #CCS_INVALID_VALUE if \p name or \p hyperparameter_ret are NULL
- * @return #CCS_INVALID_NAME if no hyperparameter with such \p name exist in
+ * @return #CCS_INVALID_VALUE if \p name or \p parameter_ret are NULL
+ * @return #CCS_INVALID_NAME if no parameter with such \p name exist in
  *                            the \p configuration space
  */
 extern ccs_error_t
-ccs_configuration_space_get_hyperparameter_by_name(
+ccs_configuration_space_get_parameter_by_name(
 		ccs_configuration_space_t  configuration_space,
 		const char *               name,
-		ccs_hyperparameter_t      *hyperparameter_ret);
+		ccs_parameter_t      *parameter_ret);
 
 /**
- * Get the index of an hyperparameter in the configuration space given its name.
+ * Get the index of an parameter in the configuration space given its name.
  * @param[in] configuration_space
- * @param[in] name the name of the hyperparameter to retrieve the index of
+ * @param[in] name the name of the parameter to retrieve the index of
  * @param[out] index_ret a pointer to the variable that will contain the index
- *                       of hyperparameter in the \p configuration_space
+ *                       of parameter in the \p configuration_space
  * @return #CCS_SUCCESS on success
  * @return #CCS_INVALID_OBJECT if \p configuration_space is not a valid CCS
  *                              configuration space
  * @return #CCS_INVALID_VALUE if \p name or \p index_ret are NULL
- * @return #CCS_INVALID_NAME if no hyperparameter with such \p name exist in
+ * @return #CCS_INVALID_NAME if no parameter with such \p name exist in
  *                            the configuration space
  */
 extern ccs_error_t
-ccs_configuration_space_get_hyperparameter_index_by_name(
+ccs_configuration_space_get_parameter_index_by_name(
 		ccs_configuration_space_t  configuration_space,
 		const char                *name,
 		size_t                    *index_ret);
 
 /**
- * Get the index of an hyperparameter in the configuration space.
+ * Get the index of an parameter in the configuration space.
  * @param[in] configuration_space
- * @param[in] hyperparameter
+ * @param[in] parameter
  * @param[out] index_ret a pointer to the variable which will contain the index
- *                       of the hyperparameter
+ *                       of the parameter
  * @return #CCS_SUCCESS on success
  * @return #CCS_INVALID_OBJECT if \p configuration_space is not a valid CCS
  *                              configuration space
  * @return #CCS_INVALID_VALUE if \p index_ret is NULL
- * @return #CCS_INVALID_HYPERPARAMETER if \p configuration_space does not
- *                                      contain \p hyperparameter
+ * @return #CCS_INVALID_PARAMETER if \p configuration_space does not
+ *                                      contain \p parameter
  */
 extern ccs_error_t
-ccs_configuration_space_get_hyperparameter_index(
+ccs_configuration_space_get_parameter_index(
 		ccs_configuration_space_t  configuration_space,
-		ccs_hyperparameter_t       hyperparameter,
+		ccs_parameter_t       parameter,
 		size_t                    *index_ret);
 
 /**
- * Get the indices of a set of hyperparameters in a configuration space.
+ * Get the indices of a set of parameters in a configuration space.
  * @param[in] configuration_space
- * @param[in] num_hyperparameters the number of hyperparameters to query the
+ * @param[in] num_parameters the number of parameters to query the
  *                                index for
- * @param[in] hyperparameters an array of \p num_hyperparameters hyperparameters
+ * @param[in] parameters an array of \p num_parameters parameters
  *                            to query the index for
- * @param[out] indexes an array of \p num_hyperparameters indices that will
- *                     contain the values of the hyperparamters indices
+ * @param[out] indexes an array of \p num_parameters indices that will
+ *                     contain the values of the parameter indices
  * @return #CCS_SUCCESS on success
  * @return #CCS_INVALID_OBJECT if \p configuration_space is not a valid CCS
  *                              configuration space
- * @return #CCS_INVALID_VALUE if \p hyperparameters is NULL and \p
- *                             num_hyperparameters is greater than 0; or if \p
- *                             indexes is NULL and \p num_hyperparameters is
+ * @return #CCS_INVALID_VALUE if \p parameters is NULL and \p
+ *                             num_parameters is greater than 0; or if \p
+ *                             indexes is NULL and \p num_parameters is
  *                             greater than 0
- * @return #CCS_INVALID_HYPERPARAMETER if at least one of the hyperparameters
+ * @return #CCS_INVALID_PARAMETER if at least one of the parameters
  *                                      is not contained in \p
  *                                      configuration_space
  */
 extern ccs_error_t
-ccs_configuration_space_get_hyperparameter_indexes(
+ccs_configuration_space_get_parameter_indexes(
 		ccs_configuration_space_t  configuration_space,
-		size_t                     num_hyperparameters,
-		ccs_hyperparameter_t      *hyperparameters,
+		size_t                     num_parameters,
+		ccs_parameter_t      *parameters,
 		size_t                    *indexes);
 
 /**
- * Get the hyperparameters in the given configuration space.
+ * Get the parameters in the given configuration space.
  * @param[in] configuration_space
- * @param[in] num_hyperparameters is the number of hyperparameters that can be
- *                                added to \p hyperparameters. If \p
- *                                hyperparameters is not NULL \p
- *                                num_hyperparameters must be greater than 0
- * @param[out] hyperparameters an array of \p num_hyperparameters that will
- *                             contain the returned hyperparameters or NULL. If
+ * @param[in] num_parameters is the number of parameters that can be
+ *                                added to \p parameters. If \p
+ *                                parameters is not NULL \p
+ *                                num_parameters must be greater than 0
+ * @param[out] parameters an array of \p num_parameters that will
+ *                             contain the returned parameters or NULL. If
  *                             the array is too big, extra values are set to NULL
- * @param[out] num_hyperparameters_ret a pointer to a variable that will contain
- *                                     the number of hyperparameters that are or
+ * @param[out] num_parameters_ret a pointer to a variable that will contain
+ *                                     the number of parameters that are or
  *                                     would be returned. Can be NULL
  * @return #CCS_SUCCESS on success
  * @return #CCS_INVALID_OBJECT if \p configuration_space is not a valid CCS
  *                              configuration space
- * @return #CCS_INVALID_VALUE if \p hyperparameters is NULL and \p
- *                             num_hyperparameters is greater than 0; or if \p
- *                             hyperparameters is NULL and
- *                             num_hyperparameters_ret is NULL; or if
- *                             \p num_hyperparameters is less than the number of
- *                             hyperparameters that would be returned
+ * @return #CCS_INVALID_VALUE if \p parameters is NULL and \p
+ *                             num_parameters is greater than 0; or if \p
+ *                             parameters is NULL and
+ *                             num_parameters_ret is NULL; or if
+ *                             \p num_parameters is less than the number of
+ *                             parameters that would be returned
  */
 extern ccs_error_t
-ccs_configuration_space_get_hyperparameters(
+ccs_configuration_space_get_parameters(
 	ccs_configuration_space_t  configuration_space,
-	size_t                     num_hyperparameters,
-	ccs_hyperparameter_t      *hyperparameters,
-	size_t                    *num_hyperparameters_ret);
+	size_t                     num_parameters,
+	ccs_parameter_t      *parameters,
+	size_t                    *num_parameters_ret);
 
 /**
  * Validate that a given value at the given index is valid in a configuration
@@ -354,7 +354,7 @@ ccs_configuration_space_get_hyperparameters(
  * @return #CCS_INVALID_OBJECT if \p configuration_space is not a valid CCS
  *                              configuration space
  * @return #CCS_OUT_OF_BOUNDS if index is greater than the number of
- *                             hyperparameters in \p configuration_space
+ *                             parameters in \p configuration_space
  * @return #CCS_OUT_OF_MEMORY if there was a lack of memory while memoizing a
  *                             string
  * @return #CCS_INVALID_VALUE if the value did not validate or if value_ret is
@@ -368,21 +368,21 @@ ccs_configuration_space_validate_value(
 	ccs_datum_t               *value_ret);
 
 /**
- * Set the active condition of a hyperparameter in a configuration space given
+ * Set the active condition of a parameter in a configuration space given
  * it's index.
  * @param[in, out] configuration_space
- * @param[in] hyperparameter_index the index of the hyperparameter to set the
+ * @param[in] parameter_index the index of the parameter to set the
  *                                 condition
- * @param[in] expression the condition to associate to the hyperparameter
+ * @param[in] expression the condition to associate to the parameter
  * @return #CCS_SUCCESS on success
  * @return #CCS_INVALID_OBJECT if \p configuration_space is not a valid CCS
  *                              configuration space; or if \p expression is not
  *                              a valid CCS expression
  * @return #CCS_OUT_OF_BOUNDS if index is greater than the number of
- *                             hyperparameters in \p configuration_space
- * @return #CCS_INVALID_HYPERPARAMETER if hyperparameter at index is already
+ *                             parameters in \p configuration_space
+ * @return #CCS_INVALID_PARAMETER if parameter at index is already
  *                                      associated with a condition; or if the
- *                                      condition references a hyperparameter
+ *                                      condition references a parameter
  *                                      that is not in the configuration space
  * @return #CCS_OUT_OF_MEMORY if there was not enough memory to process the
  *                             dependency graph
@@ -392,33 +392,33 @@ ccs_configuration_space_validate_value(
 extern ccs_error_t
 ccs_configuration_space_set_condition(
 	ccs_configuration_space_t configuration_space,
-	size_t                    hyperparameter_index,
+	size_t                    parameter_index,
 	ccs_expression_t          expression);
 
 /**
- * Get the active condition of a hyperparameter in a configuration space given
+ * Get the active condition of a parameter in a configuration space given
  * it's index.
  * @param[in] configuration_space
- * @param[in] hyperparameter_index the index of the hyperparameter to get the
+ * @param[in] parameter_index the index of the parameter to get the
  *                                 condition
  * @param[out] expression_ret a pointer to the variable that will contain the
- *                            expression, or NULL if the hyperparameter is not
+ *                            expression, or NULL if the parameter is not
  *                            associated with a condition
  * @return #CCS_SUCCESS on success
  * @return #CCS_INVALID_OBJECT if \p configuration_space is not a valid CCS
  *                              configuration space
  * @return #CCS_OUT_OF_BOUNDS if index is greater than the number of
- *                             hyperparameters in \p configuration_space
+ *                             parameters in \p configuration_space
  * @return #CCS_INVALID_VALUE if \p expression_ret is NULL
  */
 extern ccs_error_t
 ccs_configuration_space_get_condition(
 	ccs_configuration_space_t  configuration_space,
-	size_t                     hyperparameter_index,
+	size_t                     parameter_index,
 	ccs_expression_t          *expression_ret);
 
 /**
- * Get the active conditions of the hyperparameters in a configuration space.
+ * Get the active conditions of the parameters in a configuration space.
  * @param[in] configuration_space
  * @param[in] num_expressions is the number of expressions that can be added to
  *                             \p expressions. If \p expressions is not NULL, \p
@@ -426,8 +426,8 @@ ccs_configuration_space_get_condition(
  * @param[out] expressions an array of \p num_expressions that will contain the
  *                         returned expression, or NULL. If the array is too
  *                         big, extra values are set to NULL. If an
- *                         hyperparameter is not associated to an expression
- *                         NULL will be returned for this hyperparameter.
+ *                         parameter is not associated to an expression
+ *                         NULL will be returned for this parameter.
  * @param[out] num_expressions_ret a pointer to a variable that will contain
  *                                 the number of expression that are or would be
  *                                 returned. Can be NULL
@@ -438,7 +438,7 @@ ccs_configuration_space_get_condition(
  *                             is greater than 0; or if \p expressions is NULL
  *                             and num_expressions_ret is NULL; or if
  *                             num_expressions is is less than the number of
- *                             hyperparameters contained by configuration_space
+ *                             parameters contained by configuration_space
  */
 extern ccs_error_t
 ccs_configuration_space_get_conditions(
@@ -455,8 +455,8 @@ ccs_configuration_space_get_conditions(
  * @return #CCS_INVALID_OBJECT if \p configuration_space is not a valid CCS
  *                              configuration space; or if \p expression is not
  *                              a valid CCS expression
- * @return #CCS_INVALID_HYPERPARAMETER if expression references a
- *                                      hyperparameter that is not in the
+ * @return #CCS_INVALID_PARAMETER if expression references a
+ *                                      parameter that is not in the
  *                                      configuration space
  * @return #CCS_OUT_OF_MEMORY if there was not enough memory to allocate
  *                             internal data structures
@@ -481,8 +481,8 @@ ccs_configuration_space_add_forbidden_clause(
  *                              expression
  * @return #CCS_INVALID_VALUE if \p expressions is NULL and \p num_expressions
  *                             is greater than 0
- * @return #CCS_INVALID_HYPERPARAMETER if an expression references a
- *                                      hyperparameter that is not in the
+ * @return #CCS_INVALID_PARAMETER if an expression references a
+ *                                      parameter that is not in the
  *                                      configuration space
  * @return #CCS_OUT_OF_MEMORY if there was not enough memory to allocate
  *                             internal data structures
@@ -550,9 +550,9 @@ ccs_configuration_space_get_forbidden_clauses(
  * @param[out] is_valid_ret a pointer to a variable that will hold the result
  *                          of the check. Result will be CCS_TRUE if the
  *                          configuration is valid. Result will be CCS_FALSE if
- *                          an active hyperparameter value is not a valid value
- *                          for this hyperparameter; or if an inactive
- *                          hyperparameter value is not inactive; or if a
+ *                          an active parameter value is not a valid value
+ *                          for this parameter; or if an inactive
+ *                          parameter value is not inactive; or if a
  *                          forbidden clause would be evaluating to #ccs_true
  * @return #CCS_SUCCESS on success
  * @return #CCS_INVALID_OBJECT if \p configuration_space is not a valid CCS
@@ -578,9 +578,9 @@ ccs_configuration_space_check_configuration(
  * @param[out] is_valid_ret a pointer to a variable that will hold the result
  *                          of the check. Result will be CCS_TRUE if the
  *                          configuration is valid. Result will be CCS_FALSE if
- *                          an active hyperparameter value is not a valid value
- *                          for this hyperparameter; or if an inactive
- *                          hyperparameter value is not inactive; or if a
+ *                          an active parameter value is not a valid value
+ *                          for this parameter; or if an inactive
+ *                          parameter value is not inactive; or if a
  *                          forbidden clause would be evaluating to #ccs_true
  * @return #CCS_SUCCESS on success
  * @return #CCS_INVALID_OBJECT if \p configuration_space is not a valid CCS
@@ -588,7 +588,7 @@ ccs_configuration_space_check_configuration(
  * @return #CCS_INVALID_VALUE if \p values is NULL and num_values is greater
  *                             than 0
  * @return #CCS_INVALID_CONFIGURATION if \p num_values is not equal to the
- *                                     number of hyperparameters in the
+ *                                     number of parameters in the
  *                                     configuration space
  */
 extern ccs_error_t
@@ -617,8 +617,8 @@ ccs_configuration_space_get_default_configuration(
 
 /**
  * Get a configuration sampled randomly from a configuration space.
- * Hyperparameters that were not specified distributions are sampled according
- * to their default distribution. Hyperparameter that are found to be inactive
+ * Parameters that were not specified distributions are sampled according
+ * to their default distribution. Parameter that are found to be inactive
  * will have the #ccs_inactive value. Returned configuration is valid.
  * @param[in] configuration_space
  * @param[out] configuration_ret a pointer to the variable that will contain the
@@ -638,8 +638,8 @@ ccs_configuration_space_sample(ccs_configuration_space_t  configuration_space,
 
 /**
  * Get a given number of configurations sampled randomly from a configuration
- * space. Hyperparameters that were not specified distributions are sampled
- * according to their default distribution. Hyperparameter that are found to be
+ * space. Parameters that were not specified distributions are sampled
+ * according to their default distribution. Parameter that are found to be
  * inactive will have the #ccs_inactive value. Returned configurations are
  * valid.
  * @param[in] configuration_space

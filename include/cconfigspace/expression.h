@@ -8,8 +8,8 @@ extern "C" {
 /**
  * @file expression.h
  * An expression in CCS is a combination of constants, variables
- * (hyperparameters), and operators. Expressions are usually evaluated in the
- * context of a binding where hyperparameters are associated values. For
+ * (parameters), and operators. Expressions are usually evaluated in the
+ * context of a binding where parameters are associated values. For
  * convinience CCS suggests a grammar that can be used to create an expression
  * parser.
  */
@@ -174,7 +174,7 @@ enum ccs_terminal_type_e {
 	CCS_TERM_FALSE,
 	/** A #CCS_STRING value */
 	CCS_TERM_STRING,
-	/** An identifer (name of a hyperparameter) */
+	/** An identifer (name of a parameter) */
 	CCS_TERM_IDENTIFIER,
 	/** A #CCS_INTEGER value */
 	CCS_TERM_INTEGER,
@@ -236,7 +236,7 @@ extern const char *ccs_terminal_symbols[];
  * @return #CCS_INVALID_VALUE if \p type is not a valid CCS expression type; or
  *                             if \p num_nodes is not compatible with the arity
  *                             of \p type; or if one the nodes given is of type
- *                             #CCS_OBJECT but is neither a #CCS_HYPERPARAMETER
+ *                             #CCS_OBJECT but is neither a #CCS_PARAMETER
  *                             nor a #CCS_EXPRESSION; or if one the nodes given
  *                             node is not a type #CCS_OBJECT, #CCS_NONE,
  *                             #CCS_INTEGER, #CCS_FLOAT, #CCS_BOOLEAN, or
@@ -264,7 +264,7 @@ ccs_create_expression(ccs_expression_type_t  type,
  * @return #CCS_INVALID_VALUE if \p type is not a valid CCS expression type; or
  *                             if \p type arity is not 2; or if \p node_left or
  *                             \p node_right are of type #CCS_OBJECT but are
- *                             neither a #CCS_HYPERPARAMETER nor a
+ *                             neither a #CCS_PARAMETER nor a
  *                             #CCS_EXPRESSION; or if \p node_left or \p
  *                             node_right are not of type #CCS_OBJECT,
  *                             #CCS_NONE, #CCS_INTEGER, #CCS_FLOAT,
@@ -294,7 +294,7 @@ ccs_create_binary_expression(ccs_expression_type_t  type,
  * @return #CCS_INVALID_VALUE if \p type is not a valid CCS expression type; or
  *                             if \p type arity is not 1; or if \p node is of
  *                             type #CCS_OBJECT but is neither a
- *                             #CCS_HYPERPARAMETER nor a #CCS_EXPRESSION; or if
+ *                             #CCS_PARAMETER nor a #CCS_EXPRESSION; or if
  *                             \p node is not of type #CCS_OBJECT, #CCS_NONE,
  *                             #CCS_INTEGER, #CCS_FLOAT, #CCS_BOOLEAN, or
  *                             #CCS_STRING; or if \p expression_ret is NULL
@@ -327,18 +327,18 @@ ccs_create_literal(ccs_datum_t       value,
 
 /**
  * Create a new variable expression.
- * @param[in] hyperparameter hyperparameter to use as a variable
+ * @param[in] parameter parameter to use as a variable
  * @param[out] expression_ret a pointer to the variable that will hold the newly
  *             created expression
  * @return #CCS_SUCCESS on success
  * @return #CCS_INVALID_VALUE if \p expression_ret is NULL
- * @return #CCS_INVALID_OBJECT if \p hyperparameter is not a valid CCS
- *                              hyperparameter
+ * @return #CCS_INVALID_OBJECT if \p parameter is not a valid CCS
+ *                              parameter
  * @return #CCS_OUT_OF_MEMORY if there was a lack of memory to allocate the new
  *                             expression
  */
 extern ccs_error_t
-ccs_create_variable(ccs_hyperparameter_t  hyperparameter,
+ccs_create_variable(ccs_parameter_t  parameter,
                     ccs_expression_t     *expression_ret);
 
 
@@ -405,30 +405,30 @@ ccs_literal_get_value(ccs_expression_t  expression,
                       ccs_datum_t      *value_ret);
 
 /**
- * Get the hyperparameter of a variable expression.
+ * Get the parameter of a variable expression.
  * @param[in] expression
- * @param[out] hyperparameter_ret a pointer to a variable that will contain the
- *                                hyperparameter
+ * @param[out] parameter_ret a pointer to a variable that will contain the
+ *                                parameter
  * @return #CCS_SUCCESS on success
  * @return #CCS_INVALID_OBJECT if \p expression is not a valid CCS expression
  * @return #CCS_INVALID_EXPRESSION if \p expression is not a #CCS_VARIABLE
- * @return #CCS_INVALID_VALUE if \p hyperparameter_ret is NULL
+ * @return #CCS_INVALID_VALUE if \p parameter_ret is NULL
  */
 extern ccs_error_t
-ccs_variable_get_hyperparameter(ccs_expression_t      expression,
-                                ccs_hyperparameter_t *hyperparameter_ret);
+ccs_variable_get_parameter(ccs_expression_t      expression,
+                                ccs_parameter_t *parameter_ret);
 
 /**
  * Get the value of an expression in a given context, provided a list of values
- * for the context hyperparameters.
+ * for the context parameters.
  * @param[in] expression
  * @param[in] context the context to evaluate the expression into. Can be NULL
- * @param[in] values an array of values, one for each hyperparameter in \p
+ * @param[in] values an array of values, one for each parameter in \p
  *                   context. Can be NULL
  * @param[out] result_ret a pointer to a variable that will contain the result
  *                        of the evaluation of the expression. Result can be
  *                        #ccs_inactive when the result depend on an inactive
- *                        hyperparameter
+ *                        parameter
  * @return #CCS_SUCCESS on success
  * @return #CCS_INVALID_OBJECT if \p expression is not a valid CCS variable
  *                              expression; or if \p context is NULL and
@@ -447,16 +447,16 @@ ccs_expression_eval(ccs_expression_t  expression,
 
 /**
  * Evaluate the entry of a list at a given index, in a given context, provided a
- * list of values for the context hyperparameters.
+ * list of values for the context parameters.
  * @param[in] expression
  * @param[in] context the context to evaluate the expression into. Can be NULL
- * @param[in] values an array of values, one for each hyperparameter in \p
+ * @param[in] values an array of values, one for each parameter in \p
  *                   context. Can be NULL
  * @param[in] index index of the child node to evaluate
  * @param[out] result_ret a pointer to a variable that will contain the result
  *                        of the evaluation of the expression. Result can be
  *                        #ccs_inactive when the result depend on an inactive
- *                        hyperparameter
+ *                        parameter
  * @return #CCS_SUCCESS on success
  * @return #CCS_INVALID_OBJECT if \p expression is not a valid CCS expression;
  *                              or if \p context is NULL and \p expression must
@@ -478,31 +478,31 @@ ccs_expression_list_eval_node(ccs_expression_t  expression,
                               ccs_datum_t      *result_ret);
 
 /**
- * Get the hyperparameters used in an expression.
+ * Get the parameters used in an expression.
  * @param[in] expression
- * @param[in] num_hyperparameters the size of the \p hyperparameters array
- * @param[in] hyperparameters an array of size \p num_hyperparameters to hold
+ * @param[in] num_parameters the size of the \p parameters array
+ * @param[in] parameters an array of size \p num_parameters to hold
  *                            the returned values, or NULL. If the array is too
  *                            big, extra values are set to NULL
- * @param[out] num_hyperparameters_ret a pointer to a variable that will contain
- *                                     the number of hyperparameters that are or
+ * @param[out] num_parameters_ret a pointer to a variable that will contain
+ *                                     the number of parameters that are or
  *                                     would be returned. Can be NULL
  * @return #CCS_SUCCESS on success
  * @return #CCS_INVALID_OBJECT if \p expression is not a valid CCS expression
- * @return #CCS_INVALID_VALUE if \p hyperparameters is NULL and \p
- *                              num_hyperparameters is greater than 0; or if \p
- *                              hyperparameters is NULL and \p
- *                              num_hyperparameters_ret is NULL; or if \p
- *                              num_hyperparameters is less than the number of
- *                              hyperparameters that would be returned
+ * @return #CCS_INVALID_VALUE if \p parameters is NULL and \p
+ *                              num_parameters is greater than 0; or if \p
+ *                              parameters is NULL and \p
+ *                              num_parameters_ret is NULL; or if \p
+ *                              num_parameters is less than the number of
+ *                              parameters that would be returned
  * @return #CCS_OUT_OF_MEMORY if there was not enough memory to allocate
  *                             temporary storage
  */
 extern ccs_error_t
-ccs_expression_get_hyperparameters(ccs_expression_t      expression,
-                                   size_t                num_hyperparameters,
-                                   ccs_hyperparameter_t *hyperparameters,
-                                   size_t               *num_hyperparameters_ret);
+ccs_expression_get_parameters(ccs_expression_t      expression,
+                                   size_t                num_parameters,
+                                   ccs_parameter_t *parameters,
+                                   size_t               *num_parameters_ret);
 
 /**
  * Validate that an expression can be evaluated in the given context.
@@ -511,12 +511,12 @@ ccs_expression_get_hyperparameters(ccs_expression_t      expression,
  *            Can be NULL
  * @return #CCS_SUCCESS on success
  * @return #CCS_INVALID_OBJECT if \p expression is not a valid CCS expression;
- *                              or if expression depends on a hyperparameter and
+ *                              or if expression depends on a parameter and
  *                              \p context is not a valid CCS context
- * @return #CCS_INVALID_VALUE if the expression depends on a hyperparameter and
+ * @return #CCS_INVALID_VALUE if the expression depends on a parameter and
  *                             \p context is NULL
- * @return #CCS_INVALID_HYPERPARAMETER if \p context does not contain one of
- *                                      the hyperparameters referenced by the
+ * @return #CCS_INVALID_PARAMETER if \p context does not contain one of
+ *                                      the parameters referenced by the
  *                                      expression
  * @return #CCS_OUT_OF_MEMORY if there was not enough memory to allocate
  *                             temporary storage

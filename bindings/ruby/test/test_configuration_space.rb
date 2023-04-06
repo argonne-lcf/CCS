@@ -12,20 +12,20 @@ class CConfigSpaceTestConfigurationSpace < Minitest::Test
     assert_equal( :CCS_CONFIGURATION_SPACE, cs.object_type )
     assert_equal( "space", cs.name )
     assert( cs.rng.kind_of?(CCS::Rng) )
-    assert_equal( 0, cs.num_hyperparameters )
+    assert_equal( 0, cs.num_parameters )
     assert_equal( [], cs.conditions )
     assert_equal( [], cs.forbidden_clauses )
-    h1 = CCS::NumericalHyperparameter::new
-    h2 = CCS::NumericalHyperparameter::new
-    h3 = CCS::NumericalHyperparameter::new
-    cs.add_hyperparameter(h1)
-    cs.add_hyperparameters([h2, h3])
-    assert_equal( 3, cs.num_hyperparameters )
-    assert_equal( h1, cs.hyperparameter(0) )
-    assert_equal( h2, cs.hyperparameter(1) )
-    assert_equal( h3, cs.hyperparameter(2) )
-    assert_equal( [h1, h2, h3], cs.hyperparameters )
-    assert_equal( h2, cs.hyperparameter_by_name(h2.name) )
+    h1 = CCS::NumericalParameter::new
+    h2 = CCS::NumericalParameter::new
+    h3 = CCS::NumericalParameter::new
+    cs.add_parameter(h1)
+    cs.add_parameters([h2, h3])
+    assert_equal( 3, cs.num_parameters )
+    assert_equal( h1, cs.parameter(0) )
+    assert_equal( h2, cs.parameter(1) )
+    assert_equal( h3, cs.parameter(2) )
+    assert_equal( [h1, h2, h3], cs.parameters )
+    assert_equal( h2, cs.parameter_by_name(h2.name) )
     assert( cs.check(cs.default_configuration) )
     c = cs.sample
     assert( cs.check(c) )
@@ -38,34 +38,34 @@ class CConfigSpaceTestConfigurationSpace < Minitest::Test
 
   def test_set_distribution
     cs = CCS::ConfigurationSpace::new(name: "space")
-    h1 = CCS::NumericalHyperparameter::new
-    h2 = CCS::NumericalHyperparameter::new
-    h3 = CCS::NumericalHyperparameter::new
-    cs.add_hyperparameters([h1, h2, h3])
+    h1 = CCS::NumericalParameter::new
+    h2 = CCS::NumericalParameter::new
+    h3 = CCS::NumericalParameter::new
+    cs.add_parameters([h1, h2, h3])
     distributions = [ CCS::UniformDistribution::float(lower: 0.1, upper: 0.3), CCS::UniformDistribution::float(lower: 0.2, upper: 0.6) ]
     d = CCS::MultivariateDistribution::new(distributions: distributions)
     cs.set_distribution(d, [h1, h2])
-    dist, indx = cs.get_hyperparameter_distribution(h1)
+    dist, indx = cs.get_parameter_distribution(h1)
     assert_equal( d.handle, dist.handle )
     assert_equal( 0, indx )
-    dist, indx = cs.get_hyperparameter_distribution(h2)
+    dist, indx = cs.get_parameter_distribution(h2)
     assert_equal( d.handle, dist.handle )
     assert_equal( 1, indx )
     cs.set_distribution(d, [h3, h1])
-    dist, indx = cs.get_hyperparameter_distribution(h1)
+    dist, indx = cs.get_parameter_distribution(h1)
     assert_equal( d.handle, dist.handle )
     assert_equal( 1, indx )
-    dist, indx = cs.get_hyperparameter_distribution(h3)
+    dist, indx = cs.get_parameter_distribution(h3)
     assert_equal( d.handle, dist.handle )
     assert_equal( 0, indx )
   end
 
   def test_conditions
-    h1 = CCS::NumericalHyperparameter::new(lower: -1.0, upper: 1.0, default: 0.0)
-    h2 = CCS::NumericalHyperparameter::new(lower: -1.0, upper: 1.0)
-    h3 = CCS::NumericalHyperparameter::new(lower: -1.0, upper: 1.0)
+    h1 = CCS::NumericalParameter::new(lower: -1.0, upper: 1.0, default: 0.0)
+    h2 = CCS::NumericalParameter::new(lower: -1.0, upper: 1.0)
+    h3 = CCS::NumericalParameter::new(lower: -1.0, upper: 1.0)
     cs = CCS::ConfigurationSpace::new(name: "space")
-    cs.add_hyperparameters([h1, h2, h3])
+    cs.add_parameters([h1, h2, h3])
     e1 = CCS::Expression::new(type: :CCS_LESS, nodes: [h2, 0.0])
     cs.set_condition(h3, e1)
     e2 = CCS::Expression::new(type: :CCS_LESS, nodes: [h3, 0.0])
@@ -73,17 +73,17 @@ class CConfigSpaceTestConfigurationSpace < Minitest::Test
     e3 = CCS::Expression::new(type: :CCS_LESS, nodes: [h1, 0.0])
     cs.add_forbidden_clause(e3)
     conditions = cs.conditions
-    conditional_hyperparameters = cs.conditional_hyperparameters
-    unconditional_hyperparameters = cs.unconditional_hyperparameters
+    conditional_parameters = cs.conditional_parameters
+    unconditional_parameters = cs.unconditional_parameters
     assert_equal( 3, conditions.length )
     assert_equal( e2.handle, conditions[0].handle )
     assert_nil( conditions[1] )
     assert_equal( e1.handle, conditions[2].handle )
-    assert_equal( 2, conditional_hyperparameters.length )
-    assert_equal( 1, unconditional_hyperparameters.length )
-    assert_equal( h1.handle, conditional_hyperparameters[0].handle )
-    assert_equal( h3.handle, conditional_hyperparameters[1].handle )
-    assert_equal( h2.handle, unconditional_hyperparameters[0].handle )
+    assert_equal( 2, conditional_parameters.length )
+    assert_equal( 1, unconditional_parameters.length )
+    assert_equal( h1.handle, conditional_parameters[0].handle )
+    assert_equal( h3.handle, conditional_parameters[1].handle )
+    assert_equal( h2.handle, unconditional_parameters[0].handle )
     forbidden_clauses = cs.forbidden_clauses
     assert_equal( 1, forbidden_clauses.length )
     assert_equal( e3.handle, forbidden_clauses[0].handle )
@@ -105,7 +105,7 @@ class CConfigSpaceTestConfigurationSpace < Minitest::Test
   end
 
   def test_omp
-    p1 = CCS::CategoricalHyperparameter::new(
+    p1 = CCS::CategoricalParameter::new(
       name: 'p1',
       values: [
         ' ',
@@ -113,47 +113,47 @@ class CConfigSpaceTestConfigurationSpace < Minitest::Test
         '#pragma omp target teams distribute #P2',
         '#pragma omp target teams distribute #P4',
         '#pragma omp #P3'])
-    p2 = CCS::CategoricalHyperparameter::new(
+    p2 = CCS::CategoricalParameter::new(
       name: 'p2',
       values: [
         ' ',
         'parallel for #P3',
         'parallel for #P5',
         'parallel for #P6'])
-    p3 = CCS::CategoricalHyperparameter::new(
+    p3 = CCS::CategoricalParameter::new(
       name: 'p3',
       values: [' ', 'simd'])
-    p4 = CCS::CategoricalHyperparameter::new(
+    p4 = CCS::CategoricalParameter::new(
       name: 'p4',
       values: [
         ' ',
         'dist_schedule(static)',
         'dist_schedule(static, #P8)'])
-    p5 = CCS::CategoricalHyperparameter::new(
+    p5 = CCS::CategoricalParameter::new(
       name: 'p5',
       values: [
         ' ',
         'schedule(#P7,#P8)',
         'schedule(#P7)'])
-    p6 = CCS::CategoricalHyperparameter::new(
+    p6 = CCS::CategoricalParameter::new(
       name: 'p6',
       values: [
         ' ',
         'numthreads(#P9)'])
-    p7 = CCS::CategoricalHyperparameter::new(
+    p7 = CCS::CategoricalParameter::new(
       name: 'p7',
       values: [
         'static',
         'dynamic'])
-    p8 = CCS::OrdinalHyperparameter::new(
+    p8 = CCS::OrdinalParameter::new(
       name: 'p8',
       values: ['1', '8', '16'])
-    p9 = CCS::OrdinalHyperparameter::new(
+    p9 = CCS::OrdinalParameter::new(
       name: 'p9',
       values: ['1', '8', '16'])
 
     cs = CCS::ConfigurationSpace::new(name: "omp")
-    cs.add_hyperparameters([p1, p2, p3, p4, p5, p6, p7, p8, p9])
+    cs.add_parameters([p1, p2, p3, p4, p5, p6, p7, p8, p9])
 
     cond0 = CCS::Expression::new(type: :CCS_EQUAL, nodes: [p1, '#pragma omp #P2'])
     cond1 = CCS::Expression::new(type: :CCS_EQUAL, nodes: [p1, '#pragma omp target teams distribute #P2'])
@@ -208,7 +208,7 @@ class CConfigSpaceTestConfigurationSpace < Minitest::Test
   end
 
   def test_omp_parse
-    p1 = CCS::CategoricalHyperparameter::new(
+    p1 = CCS::CategoricalParameter::new(
       name: 'p1',
       values: [
         ' ',
@@ -216,47 +216,47 @@ class CConfigSpaceTestConfigurationSpace < Minitest::Test
         '#pragma omp target teams distribute #P2',
         '#pragma omp target teams distribute #P4',
         '#pragma omp #P3'])
-    p2 = CCS::CategoricalHyperparameter::new(
+    p2 = CCS::CategoricalParameter::new(
       name: 'p2',
       values: [
         ' ',
         'parallel for #P3',
         'parallel for #P5',
         'parallel for #P6'])
-    p3 = CCS::CategoricalHyperparameter::new(
+    p3 = CCS::CategoricalParameter::new(
       name: 'p3',
       values: [' ', 'simd'])
-    p4 = CCS::CategoricalHyperparameter::new(
+    p4 = CCS::CategoricalParameter::new(
       name: 'p4',
       values: [
         ' ',
         'dist_schedule(static)',
         'dist_schedule(static, #P8)'])
-    p5 = CCS::CategoricalHyperparameter::new(
+    p5 = CCS::CategoricalParameter::new(
       name: 'p5',
       values: [
         ' ',
         'schedule(#P7,#P8)',
         'schedule(#P7)'])
-    p6 = CCS::CategoricalHyperparameter::new(
+    p6 = CCS::CategoricalParameter::new(
       name: 'p6',
       values: [
         ' ',
         'numthreads(#P9)'])
-    p7 = CCS::CategoricalHyperparameter::new(
+    p7 = CCS::CategoricalParameter::new(
       name: 'p7',
       values: [
         'static',
         'dynamic'])
-    p8 = CCS::OrdinalHyperparameter::new(
+    p8 = CCS::OrdinalParameter::new(
       name: 'p8',
       values: ['1', '8', '16'])
-    p9 = CCS::OrdinalHyperparameter::new(
+    p9 = CCS::OrdinalParameter::new(
       name: 'p9',
       values: ['1', '8', '16'])
 
     cs = CCS::ConfigurationSpace::new(name: "omp")
-    cs.add_hyperparameters([p1, p2, p3, p4, p5, p6, p7, p8, p9])
+    cs.add_parameters([p1, p2, p3, p4, p5, p6, p7, p8, p9])
 
     cs.set_condition(p2, "p1 # ['#pragma omp #P2', '#pragma omp target teams distribute #P2']")
     cs.set_condition(p4, "p1 == '#pragma omp target teams distribute #P4'")

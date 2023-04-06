@@ -5,9 +5,9 @@
 
 struct _ccs_objective_space_data_mock_s {
 	const char           *name;
-	size_t                num_hyperparameters;
+	size_t                num_parameters;
 	size_t                num_objectives;
-	ccs_hyperparameter_t *hyperparameters;
+	ccs_parameter_t *parameters;
 	ccs_expression_t     *objectives;
 	ccs_objective_type_t *objective_types;
 };
@@ -25,25 +25,25 @@ _ccs_deserialize_bin_ccs_objective_space_data(
 	CCS_VALIDATE(_ccs_deserialize_bin_string(
 		&data->name, buffer_size, buffer));
 	CCS_VALIDATE(_ccs_deserialize_bin_size(
-		&data->num_hyperparameters, buffer_size, buffer));
+		&data->num_parameters, buffer_size, buffer));
 	CCS_VALIDATE(_ccs_deserialize_bin_size(
 		&data->num_objectives, buffer_size, buffer));
 
-	if (!(data->num_hyperparameters + data->num_objectives))
+	if (!(data->num_parameters + data->num_objectives))
 		return CCS_SUCCESS;
 	mem = (uintptr_t)calloc(
-		data->num_hyperparameters * sizeof(ccs_hyperparameter_t) +
+		data->num_parameters * sizeof(ccs_parameter_t) +
 		data->num_objectives * (sizeof(ccs_expression_t) + sizeof(ccs_objective_type_t)), 1);
 	CCS_REFUTE(!mem, CCS_OUT_OF_MEMORY);
-	data->hyperparameters = (ccs_hyperparameter_t *)mem;
-	mem += data->num_hyperparameters * sizeof(ccs_hyperparameter_t);
+	data->parameters = (ccs_parameter_t *)mem;
+	mem += data->num_parameters * sizeof(ccs_parameter_t);
 	data->objectives = (ccs_expression_t *)mem;
 	mem += data->num_objectives * sizeof(ccs_expression_t);
 	data->objective_types = (ccs_objective_type_t *)mem;
 
-	for (size_t i = 0; i < data->num_hyperparameters; i++)
-		CCS_VALIDATE(_ccs_hyperparameter_deserialize(
-			data->hyperparameters + i, CCS_SERIALIZE_FORMAT_BINARY, version, buffer_size, buffer, opts));
+	for (size_t i = 0; i < data->num_parameters; i++)
+		CCS_VALIDATE(_ccs_parameter_deserialize(
+			data->parameters + i, CCS_SERIALIZE_FORMAT_BINARY, version, buffer_size, buffer, opts));
 
 	for (size_t i = 0; i < data->num_objectives; i++) {
 		CCS_VALIDATE(_ccs_expression_deserialize(
@@ -78,8 +78,8 @@ _ccs_deserialize_bin_objective_space(
 		&data, version, buffer_size, buffer, &new_opts), end);
 	CCS_VALIDATE_ERR_GOTO(res, ccs_create_objective_space(
 		data.name, objective_space_ret), end);
-	CCS_VALIDATE_ERR_GOTO(res, ccs_objective_space_add_hyperparameters(
-		*objective_space_ret, data.num_hyperparameters, data.hyperparameters),
+	CCS_VALIDATE_ERR_GOTO(res, ccs_objective_space_add_parameters(
+		*objective_space_ret, data.num_parameters, data.parameters),
 		err_objective_space);
 	CCS_VALIDATE_ERR_GOTO(res, ccs_objective_space_add_objectives(
 		*objective_space_ret, data.num_objectives, data.objectives, data.objective_types),
@@ -96,16 +96,16 @@ err_objective_space:
 	ccs_release_object(*objective_space_ret);
 	*objective_space_ret = NULL;
 end:
-	if (data.hyperparameters)
-		for (size_t i = 0; i < data.num_hyperparameters; i++)
-			if(data.hyperparameters[i])
-				ccs_release_object(data.hyperparameters[i]);
+	if (data.parameters)
+		for (size_t i = 0; i < data.num_parameters; i++)
+			if(data.parameters[i])
+				ccs_release_object(data.parameters[i]);
 	if (data.objectives)
 		for (size_t i = 0; i < data.num_objectives; i++)
 			if (data.objectives[i])
 				ccs_release_object(data.objectives[i]);
-	if (data.hyperparameters)
-		free(data.hyperparameters);
+	if (data.parameters)
+		free(data.parameters);
 	ccs_release_object(new_opts.handle_map);
 	return res;
 }

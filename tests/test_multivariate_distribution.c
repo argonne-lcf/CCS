@@ -315,10 +315,10 @@ void test_multivariate_distribution_soa_samples() {
 	assert( err == CCS_SUCCESS );
 }
 
-void test_distribution_hyperparameters_sample() {
+void test_distribution_parameters_sample() {
 	const size_t         num_distribs = NUM_DISTRIBS;
 	ccs_distribution_t   distrib = NULL, distribs[NUM_DISTRIBS];
-	ccs_hyperparameter_t params[NUM_DISTRIBS];
+	ccs_parameter_t params[NUM_DISTRIBS];
 	ccs_rng_t            rng = NULL;
 	ccs_error_t         err = CCS_SUCCESS;
 	const size_t         num_samples = NUM_SAMPLES;
@@ -345,13 +345,13 @@ void test_distribution_hyperparameters_sample() {
 		distribs + 1);
 	assert( err == CCS_SUCCESS );
 
-	err = ccs_create_numerical_hyperparameter("param1", CCS_NUM_FLOAT,
+	err = ccs_create_numerical_parameter("param1", CCS_NUM_FLOAT,
 	                                          CCSF(-5.0), CCSF(5.0),
 	                                          CCSF(0.0), CCSF(0.0),
 	                                          params);
 	assert( err == CCS_SUCCESS );
 
-	err = ccs_create_numerical_hyperparameter("param2", CCS_NUM_FLOAT,
+	err = ccs_create_numerical_parameter("param2", CCS_NUM_FLOAT,
 	                                          CCSF(-4.0), CCSF(6.0),
 	                                          CCSF(0.0), CCSF(1.0),
 	                                          params + 1);
@@ -363,7 +363,7 @@ void test_distribution_hyperparameters_sample() {
 		&distrib);
 	assert( err == CCS_SUCCESS );
 
-	err = ccs_distribution_hyperparameters_samples(distrib, rng, params, num_samples, samples);
+	err = ccs_distribution_parameters_samples(distrib, rng, params, num_samples, samples);
 	assert( err == CCS_SUCCESS );
 
 	for (size_t i = 0; i < num_samples; i++) {
@@ -394,10 +394,10 @@ void test_distribution_hyperparameters_sample() {
 	assert( err == CCS_SUCCESS );
 }
 
-void test_distribution_hyperparameters_sample_oversampling() {
+void test_distribution_parameters_sample_oversampling() {
 	const size_t         num_distribs = NUM_DISTRIBS;
 	ccs_distribution_t   distrib = NULL, distribs[NUM_DISTRIBS];
-	ccs_hyperparameter_t params[NUM_DISTRIBS];
+	ccs_parameter_t params[NUM_DISTRIBS];
 	ccs_rng_t            rng = NULL;
 	ccs_error_t         err = CCS_SUCCESS;
 	const size_t         num_samples = NUM_SAMPLES;
@@ -424,13 +424,13 @@ void test_distribution_hyperparameters_sample_oversampling() {
 		distribs + 1);
 	assert( err == CCS_SUCCESS );
 
-	err = ccs_create_numerical_hyperparameter("param1", CCS_NUM_FLOAT,
+	err = ccs_create_numerical_parameter("param1", CCS_NUM_FLOAT,
 	                                          CCSF(-5.0), CCSF(5.0),
 	                                          CCSF(0.0), CCSF(0.0),
 	                                          params);
 	assert( err == CCS_SUCCESS );
 
-	err = ccs_create_numerical_hyperparameter("param2", CCS_NUM_FLOAT,
+	err = ccs_create_numerical_parameter("param2", CCS_NUM_FLOAT,
 	                                          CCSF(-4.0), CCSF(6.0),
 	                                          CCSF(0.0), CCSF(1.0),
 	                                          params + 1);
@@ -442,7 +442,7 @@ void test_distribution_hyperparameters_sample_oversampling() {
 		&distrib);
 	assert( err == CCS_SUCCESS );
 
-	err = ccs_distribution_hyperparameters_samples(distrib, rng, params, num_samples, samples);
+	err = ccs_distribution_parameters_samples(distrib, rng, params, num_samples, samples);
 	assert( err == CCS_SUCCESS );
 
 	for (size_t i = 0; i < num_samples; i++) {
@@ -479,8 +479,8 @@ int main() {
 	test_multivariate_distribution();
 	test_multivariate_distribution_strided_samples();
 	test_multivariate_distribution_soa_samples();
-	test_distribution_hyperparameters_sample();
-	test_distribution_hyperparameters_sample_oversampling();
+	test_distribution_parameters_sample();
+	test_distribution_parameters_sample_oversampling();
 	ccs_clear_thread_error();
 	ccs_fini();
 	return 0;

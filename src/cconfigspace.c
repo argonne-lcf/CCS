@@ -445,7 +445,7 @@ end:
 
 #include "rng_deserialize.h"
 #include "distribution_deserialize.h"
-#include "hyperparameter_deserialize.h"
+#include "parameter_deserialize.h"
 #include "expression_deserialize.h"
 #include "features_space_deserialize.h"
 #include "configuration_space_deserialize.h"
@@ -528,9 +528,9 @@ _ccs_object_deserialize_with_opts(
 				(ccs_distribution_t *)object_ret,
 				format, version, buffer_size, buffer, opts));
 			break;
-		case CCS_HYPERPARAMETER:
-			CCS_VALIDATE(_ccs_hyperparameter_deserialize(
-				(ccs_hyperparameter_t *)object_ret,
+		case CCS_PARAMETER:
+			CCS_VALIDATE(_ccs_parameter_deserialize(
+				(ccs_parameter_t *)object_ret,
 				format, version, buffer_size, buffer, opts));
 			break;
 		case CCS_EXPRESSION:
@@ -866,7 +866,7 @@ ccs_get_error_name(ccs_error_t error, const char **name) {
 	ETOCASE(CCS_INVALID_SCALE);
 	ETOCASE(CCS_INVALID_DISTRIBUTION);
 	ETOCASE(CCS_INVALID_EXPRESSION);
-	ETOCASE(CCS_INVALID_HYPERPARAMETER);
+	ETOCASE(CCS_INVALID_PARAMETER);
 	ETOCASE(CCS_INVALID_CONFIGURATION);
 	ETOCASE(CCS_INVALID_NAME);
 	ETOCASE(CCS_INVALID_CONDITION);

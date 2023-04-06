@@ -105,7 +105,7 @@ _ccs_binding_get_value_by_name(ccs_binding_t  binding,
                                ccs_datum_t   *value_ret) {
 	CCS_CHECK_PTR(name);
 	size_t index;
-	CCS_VALIDATE(ccs_context_get_hyperparameter_index_by_name(
+	CCS_VALIDATE(ccs_context_get_parameter_index_by_name(
 		binding->data->context, name, &index));
 	CCS_VALIDATE(_ccs_binding_get_value(binding, index, value_ret));
 	return CCS_SUCCESS;
@@ -117,30 +117,30 @@ _ccs_binding_set_value_by_name(ccs_binding_t  binding,
                                ccs_datum_t    value) {
 	CCS_CHECK_PTR(name);
 	size_t index;
-	CCS_VALIDATE(ccs_context_get_hyperparameter_index_by_name(
+	CCS_VALIDATE(ccs_context_get_parameter_index_by_name(
 		binding->data->context, name, &index));
 	CCS_VALIDATE(_ccs_binding_set_value(binding, index, value));
 	return CCS_SUCCESS;
 }
 
 static inline ccs_error_t
-_ccs_binding_get_value_by_hyperparameter(ccs_binding_t         binding,
-                                         ccs_hyperparameter_t  hyperparameter,
+_ccs_binding_get_value_by_parameter(ccs_binding_t         binding,
+                                         ccs_parameter_t  parameter,
                                          ccs_datum_t          *value_ret) {
 	size_t index;
-	CCS_VALIDATE(ccs_context_get_hyperparameter_index(
-		binding->data->context, hyperparameter, &index));
+	CCS_VALIDATE(ccs_context_get_parameter_index(
+		binding->data->context, parameter, &index));
 	CCS_VALIDATE(_ccs_binding_get_value(binding, index, value_ret));
 	return CCS_SUCCESS;
 }
 
 static inline ccs_error_t
-_ccs_binding_set_value_by_hyperparameter(ccs_binding_t        binding,
-                                         ccs_hyperparameter_t hyperparameter,
+_ccs_binding_set_value_by_parameter(ccs_binding_t        binding,
+                                         ccs_parameter_t parameter,
                                          ccs_datum_t          value) {
 	size_t index;
-	CCS_VALIDATE(ccs_context_get_hyperparameter_index(
-		binding->data->context, hyperparameter, &index));
+	CCS_VALIDATE(ccs_context_get_parameter_index(
+		binding->data->context, parameter, &index));
 	CCS_VALIDATE(_ccs_binding_set_value(binding, index, value));
 	return CCS_SUCCESS;
 }

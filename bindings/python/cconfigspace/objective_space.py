@@ -1,7 +1,7 @@
 import ctypes as ct
-from .base import Object, Error, CEnumeration, ccs_error, _ccs_get_function, ccs_context, ccs_hyperparameter, ccs_configuration_space, ccs_configuration, ccs_evaluation, ccs_rng, ccs_distribution, ccs_expression, ccs_datum, ccs_objective_space, ccs_bool
+from .base import Object, Error, CEnumeration, ccs_error, _ccs_get_function, ccs_context, ccs_parameter, ccs_configuration_space, ccs_configuration, ccs_evaluation, ccs_rng, ccs_distribution, ccs_expression, ccs_datum, ccs_objective_space, ccs_bool
 from .context import Context
-from .hyperparameter import Hyperparameter
+from .parameter import Parameter
 from .expression import Expression
 from .expression_parser import ccs_parser
 from .configuration_space import ConfigurationSpace
@@ -14,8 +14,8 @@ class ccs_objective_type(CEnumeration):
     'MAXIMIZE' ]
 
 ccs_create_objective_space = _ccs_get_function("ccs_create_objective_space", [ct.c_char_p, ct.POINTER(ccs_objective_space)])
-ccs_objective_space_add_hyperparameter = _ccs_get_function("ccs_objective_space_add_hyperparameter", [ccs_objective_space, ccs_hyperparameter])
-ccs_objective_space_add_hyperparameters = _ccs_get_function("ccs_objective_space_add_hyperparameters", [ccs_objective_space, ct.c_size_t, ct.POINTER(ccs_hyperparameter)])
+ccs_objective_space_add_parameter = _ccs_get_function("ccs_objective_space_add_parameter", [ccs_objective_space, ccs_parameter])
+ccs_objective_space_add_parameters = _ccs_get_function("ccs_objective_space_add_parameters", [ccs_objective_space, ct.c_size_t, ct.POINTER(ccs_parameter)])
 ccs_objective_space_add_objective = _ccs_get_function("ccs_objective_space_add_objective", [ccs_objective_space, ccs_expression, ccs_objective_type])
 ccs_objective_space_add_objectives = _ccs_get_function("ccs_objective_space_add_objectives", [ccs_objective_space, ct.c_size_t, ct.POINTER(ccs_expression), ct.POINTER(ccs_objective_type)])
 ccs_objective_space_get_objective = _ccs_get_function("ccs_objective_space_get_objective", [ccs_objective_space, ct.c_size_t, ct.POINTER(ccs_expression), ct.POINTER(ccs_objective_type)])
@@ -37,16 +37,16 @@ class ObjectiveSpace(Context):
   def from_handle(cls, handle, retain = True, auto_release = True):
     return cls(handle = handle, retain = retain, auto_release = auto_release)
 
-  def add_hyperparameter(self, hyperparameter):
-    res = ccs_objective_space_add_hyperparameter(self.handle, hyperparameter.handle)
+  def add_parameter(self, parameter):
+    res = ccs_objective_space_add_parameter(self.handle, parameter.handle)
     Error.check(res)
 
-  def add_hyperparameters(self, hyperparameters):
-    count = len(hyperparameters)
+  def add_parameters(self, parameters):
+    count = len(parameters)
     if count == 0:
       return None
-    hypers = (ccs_hyperparameter * count)(*[x.handle.value for x in hyperparameters])
-    res = ccs_objective_space_add_hyperparameters(self.handle, count, hypers)
+    parameters = (ccs_parameter * count)(*[x.handle.value for x in parameters])
+    res = ccs_objective_space_add_parameters(self.handle, count, parameters)
     Error.check(res)
 
   def add_objective(self, expression, t = ccs_objective_type.MINIMIZE):
@@ -98,7 +98,7 @@ class ObjectiveSpace(Context):
 
   def check_values(self, values):
     count = len(values)
-    if count != self.num_hyperparameters:
+    if count != self.num_parameters:
       raise Error(ccs_error(ccs_error.INVALID_VALUE))
     v = (ccs_datum * count)()
     ss = []

@@ -9,16 +9,16 @@ class CConfigSpaceTestEvaluation < Minitest::Test
 
   def test_create
     cs = CCS::ConfigurationSpace::new(name: "cspace")
-    h1 = CCS::NumericalHyperparameter::new
-    h2 = CCS::NumericalHyperparameter::new
-    h3 = CCS::NumericalHyperparameter::new
-    cs.add_hyperparameters [h1, h2, h3]
+    h1 = CCS::NumericalParameter::new
+    h2 = CCS::NumericalParameter::new
+    h3 = CCS::NumericalParameter::new
+    cs.add_parameters [h1, h2, h3]
     os = CCS::ObjectiveSpace::new(name: "ospace")
-    v1 = CCS::NumericalHyperparameter::new
-    v2 = CCS::NumericalHyperparameter::new
-    os.add_hyperparameters [v1, v2]
-    e1 = CCS::Variable::new(hyperparameter: v1)
-    e2 = CCS::Variable::new(hyperparameter: v2)
+    v1 = CCS::NumericalParameter::new
+    v2 = CCS::NumericalParameter::new
+    os.add_parameters [v1, v2]
+    e1 = CCS::Variable::new(parameter: v1)
+    e2 = CCS::Variable::new(parameter: v2)
     os.add_objectives( { e1 => :CCS_MAXIMIZE, e2 => :CCS_MINIMIZE } )
     ev1 = CCS::Evaluation::new(objective_space: os, configuration: cs.sample)
     ev1.set_value(0, 0.5)
@@ -48,16 +48,16 @@ class CConfigSpaceTestEvaluation < Minitest::Test
 
   def test_serialize
     cs = CCS::ConfigurationSpace::new(name: "cspace")
-    h1 = CCS::NumericalHyperparameter::new
-    h2 = CCS::NumericalHyperparameter::new
-    h3 = CCS::NumericalHyperparameter::new
-    cs.add_hyperparameters [h1, h2, h3]
+    h1 = CCS::NumericalParameter::new
+    h2 = CCS::NumericalParameter::new
+    h3 = CCS::NumericalParameter::new
+    cs.add_parameters [h1, h2, h3]
     os = CCS::ObjectiveSpace::new(name: "ospace")
-    v1 = CCS::NumericalHyperparameter::new
-    v2 = CCS::NumericalHyperparameter::new
-    os.add_hyperparameters [v1, v2]
-    e1 = CCS::Variable::new(hyperparameter: v1)
-    e2 = CCS::Variable::new(hyperparameter: v2)
+    v1 = CCS::NumericalParameter::new
+    v2 = CCS::NumericalParameter::new
+    os.add_parameters [v1, v2]
+    e1 = CCS::Variable::new(parameter: v1)
+    e2 = CCS::Variable::new(parameter: v2)
     os.add_objectives( { e1 => :CCS_MAXIMIZE, e2 => :CCS_MINIMIZE } )
     evref = CCS::Evaluation::new(objective_space: os, configuration: cs.sample, values: [0.5, 0.6])
     buff = evref.serialize

@@ -103,8 +103,8 @@ extern "C" void kokkosp_end_parallel_reduce(const uint64_t kID) {
   invoke_fence(devID);
 }
 
-static std::map<size_t, ccs_hyperparameter_t> features;
-static std::map<size_t, ccs_hyperparameter_t> hyperparameters;
+static std::map<size_t, ccs_parameter_t> features;
+static std::map<size_t, ccs_parameter_t> parameters;
 static std::map<std::set<size_t>, std::tuple<ccs_features_tuner_t, bool>> tuners;
 
 extern "C" void kokkosp_parse_args(int argc, char **argv) {
@@ -148,9 +148,9 @@ extern "C" void kokkosp_finalize_library() {
   for (auto const& x : features)
     CCS_CHECK(ccs_release_object(x.second));
   features.clear();
-  for (auto const& x : hyperparameters)
+  for (auto const& x : parameters)
     CCS_CHECK(ccs_release_object(x.second));
-  hyperparameters.clear();
+  parameters.clear();
   for (auto const& x : tuners)
     CCS_CHECK(ccs_release_object(std::get<0>(x.second)));
   tuners.clear();
@@ -165,10 +165,10 @@ extern "C" void kokkosp_finalize_library() {
 }
 
 
-static ccs_hyperparameter_t variable_info_to_hyperparameter(
+static ccs_parameter_t variable_info_to_parameter(
     const char *name,
     VariableInfo *info) {
-  ccs_hyperparameter_t ret;
+  ccs_parameter_t ret;
   switch (info->valueQuantity) {
   case CandidateValueType::kokkos_value_set:
     CCS_DEBUG_MSG_ARGS("\tvalue set (%zu)\n", info->candidates.set.size);
@@ -191,16 +191,16 @@ static ccs_hyperparameter_t variable_info_to_hyperparameter(
       }
       switch (info->category) {
       case StatisticalCategory::kokkos_value_categorical:
-        CCS_CHECK(ccs_create_categorical_hyperparameter(
+        CCS_CHECK(ccs_create_categorical_parameter(
           name, info->candidates.set.size, values, 0, &ret));
         break;
       case StatisticalCategory::kokkos_value_ordinal:
-        CCS_CHECK(ccs_create_ordinal_hyperparameter(
+        CCS_CHECK(ccs_create_ordinal_parameter(
           name, info->candidates.set.size, values, 0, &ret));
         break;
       case StatisticalCategory::kokkos_value_interval:
       case StatisticalCategory::kokkos_value_ratio:
-        CCS_CHECK(ccs_create_discrete_hyperparameter(
+        CCS_CHECK(ccs_create_discrete_parameter(
           name, info->candidates.set.size, values, 0, &ret));
         break;
       default:
@@ -236,7 +236,7 @@ static ccs_hyperparameter_t variable_info_to_hyperparameter(
           else // this is dubious/would require verification
             upper = upper + step;
         }
-        CCS_CHECK(ccs_create_numerical_hyperparameter(
+        CCS_CHECK(ccs_create_numerical_parameter(
           name, CCS_NUM_FLOAT, lower, upper, step, lower, &ret));
       }
       break;
@@ -264,7 +264,7 @@ static ccs_hyperparameter_t variable_info_to_hyperparameter(
           else // this is dubious/would require verification
             upper = upper + step;
         }
-        CCS_CHECK(ccs_create_numerical_hyperparameter(
+        CCS_CHECK(ccs_create_numerical_parameter(
           name, CCS_NUM_INTEGER, lower, upper, step, lower, &ret));
       }
       break;
@@ -280,7 +280,7 @@ static ccs_hyperparameter_t variable_info_to_hyperparameter(
         ccs_float_t lower = -CCS_INFINITY;
         ccs_float_t upper = CCS_INFINITY;
         ccs_float_t step = 0.0;
-        CCS_CHECK(ccs_create_numerical_hyperparameter(
+        CCS_CHECK(ccs_create_numerical_parameter(
           name, CCS_NUM_FLOAT, lower, upper, step, lower, &ret));
       }
       break;
@@ -289,12 +289,12 @@ static ccs_hyperparameter_t variable_info_to_hyperparameter(
         ccs_int_t lower = CCS_INT_MIN;
         ccs_int_t upper = CCS_INT_MAX;
         ccs_int_t step = 0;
-        CCS_CHECK(ccs_create_numerical_hyperparameter(
+        CCS_CHECK(ccs_create_numerical_parameter(
           name, CCS_NUM_INTEGER, lower, upper, step, lower, &ret));
       }
       break;
     case ValueType::kokkos_value_string:
-        CCS_CHECK(ccs_create_string_hyperparameter(
+        CCS_CHECK(ccs_create_string_parameter(
           name, &ret));
       break;
     default:
@@ -316,7 +316,7 @@ kokkosp_declare_input_type(const char *name, const size_t id,
 #endif
 
   CCS_DEBUG_MSG_ARGS("Got context variable: %s\n", name);
-  features[id] = variable_info_to_hyperparameter(name, info);
+  features[id] = variable_info_to_parameter(name, info);
   CCS_DEBUG_MSG_ARGS("...mapped to %p\n", (void *)features[id]);
 
 #if CCS_PROFILE
@@ -335,8 +335,8 @@ kokkosp_declare_output_type(const char *name, const size_t id,
 #endif
 
   CCS_DEBUG_MSG_ARGS("Got tuning variable: %s\n", name);
-  hyperparameters[id] = variable_info_to_hyperparameter(name, info);
-  CCS_DEBUG_MSG_ARGS("...mapped to %p\n", (void *)hyperparameters[id]);
+  parameters[id] = variable_info_to_parameter(name, info);
+  CCS_DEBUG_MSG_ARGS("...mapped to %p\n", (void *)parameters[id]);
 
 #if CCS_PROFILE
   clock_gettime(CLOCK_MONOTONIC, &prof_stop);
@@ -433,14 +433,14 @@ extern "C" void kokkosp_request_values(
     ccs_configuration_space_t cs;
     ccs_features_space_t      fs;
     ccs_objective_space_t     os;
-    ccs_hyperparameter_t      htime;
+    ccs_parameter_t      htime;
     ccs_expression_t          expression;
 
     CCS_CHECK(ccs_create_configuration_space(
       ("cs (region: " + std::to_string(regionCounter) + ")").c_str(), &cs));
     for (size_t i = 0; i < numTuningVariables; i++)
-      CCS_CHECK(ccs_configuration_space_add_hyperparameter(cs,
-        hyperparameters[tuningValues[i].type_id], NULL));
+      CCS_CHECK(ccs_configuration_space_add_parameter(cs,
+        parameters[tuningValues[i].type_id], NULL));
 
 #if CCS_DEBUG
     for (size_t i = 0; i < numTuningVariables; i++) {
@@ -452,7 +452,7 @@ extern "C" void kokkosp_request_values(
     CCS_CHECK(ccs_create_features_space(
       ("fs (region: " + std::to_string(regionCounter) + ")").c_str(), &fs));
     for (size_t i = 0; i < numContextVariables; i++)
-      CCS_CHECK(ccs_features_space_add_hyperparameter(fs,
+      CCS_CHECK(ccs_features_space_add_parameter(fs,
         features[contextValues[i].type_id]));
 
     ccs_int_t lower = 0;
@@ -460,10 +460,10 @@ extern "C" void kokkosp_request_values(
     ccs_int_t step  = 0;
     CCS_CHECK(ccs_create_objective_space(
       ("os (region: " + std::to_string(regionCounter) + ")").c_str(), &os));
-    CCS_CHECK(ccs_create_numerical_hyperparameter("time",
+    CCS_CHECK(ccs_create_numerical_parameter("time",
       CCS_NUM_INTEGER, lower, upper, step, lower, &htime));
     CCS_CHECK(ccs_create_variable(htime, &expression));
-    CCS_CHECK(ccs_objective_space_add_hyperparameter(os, htime));
+    CCS_CHECK(ccs_objective_space_add_parameter(os, htime));
     CCS_CHECK(ccs_objective_space_add_objective(os, expression,
       CCS_MINIMIZE));
     CCS_CHECK(ccs_release_object(expression));
@@ -502,7 +502,7 @@ extern "C" void kokkosp_request_values(
     ccs_datum_t *values = new ccs_datum_t[numContextVariables];
     for (size_t i = 0; i < numContextVariables; i++) {
       size_t indx;
-      CCS_CHECK(ccs_features_space_get_hyperparameter_index(features_space,
+      CCS_CHECK(ccs_features_space_get_parameter_index(features_space,
         features[contextValues[i].type_id], &indx));
       extract_value(contextValues + i, values + indx);
     }
@@ -521,8 +521,8 @@ extern "C" void kokkosp_request_values(
     CCS_CHECK(ccs_configuration_get_values(configuration, numTuningVariables, values, NULL));
     for (size_t i = 0; i < numTuningVariables; i++) {
       size_t indx;
-      CCS_CHECK(ccs_configuration_space_get_hyperparameter_index(configuration_space,
-        hyperparameters[tuningValues[i].type_id], &indx));
+      CCS_CHECK(ccs_configuration_space_get_parameter_index(configuration_space,
+        parameters[tuningValues[i].type_id], &indx));
       set_value(tuningValues + i, values + indx);
     }
     delete[] values;

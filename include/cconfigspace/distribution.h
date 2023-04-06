@@ -715,11 +715,11 @@ ccs_distribution_soa_samples(ccs_distribution_t   distribution,
                              size_t               num_samples,
                              ccs_numeric_t      **values);
 /**
- * Get a collection of random hyperparameters' samples by sampling a
+ * Get a collection of random parameters' samples by sampling a
  * distribution.
  * @param[in] distribution
  * @param[in,out] rng the random number generator to use
- * @param[in] hyperparameters an array of hyperparameters. The dimension of the
+ * @param[in] parameters an array of parameters. The dimension of the
  *                            array must be qual to the dimension of the
  *                            distribution
  * @param[in] num_samples the number of samples to get
@@ -730,41 +730,41 @@ ccs_distribution_soa_samples(ccs_distribution_t   distribution,
  *                    contiguous in memory
  * @return #CCS_SUCCESS on success
  * @return #CCS_INVALID_VALUE if \p values is NULL and \p num_samples is
- *                             greater than 0; or if \p hyperparameters is NULL
+ *                             greater than 0; or if \p parameters is NULL
  *                             and \p num_samples is greater than 0
  * @return #CCS_INVALID_OBJECT if \p distribution is not a valid CCS
  *                              distribution; or if \p rng is not a valid CCS
- *                              rng; or if at least one of the hyperparameters
+ *                              rng; or if at least one of the parameters
  *                              provided is NULL
  */
 extern ccs_error_t
-ccs_distribution_hyperparameters_samples(ccs_distribution_t    distribution,
+ccs_distribution_parameters_samples(ccs_distribution_t    distribution,
                                          ccs_rng_t             rng,
-                                         ccs_hyperparameter_t *hyperparameters,
+                                         ccs_parameter_t *parameters,
                                          size_t                num_samples,
                                          ccs_datum_t          *values);
 
 /**
- * Get a random hyperparameters' sample by sampling a distribution.
+ * Get a random parameters' sample by sampling a distribution.
  * @param[in] distribution
  * @param[in,out] rng the random number generator to use
- * @param[in] hyperparameters an array of hyperparameters. The dimension of the
+ * @param[in] parameters an array of parameters. The dimension of the
  *                            array must be qual to the dimension of the
  *                            distribution
  * @param[out] values an array of datum of the same dimension as the
  *             distribution. Will contain the sampled values.
  * @return #CCS_SUCCESS on success
- * @return #CCS_INVALID_VALUE if \p values is NULL; or if \p hyperparameters is
+ * @return #CCS_INVALID_VALUE if \p values is NULL; or if \p parameters is
  *                             NULL
  * @return #CCS_INVALID_OBJECT if \p distribution is not a valid CCS
  *                              distribution; or if \p rng is not a valid CCS
- *                              rng; or if at least one of the hyperparameters
+ *                              rng; or if at least one of the parameters
  *                              provided is NULL
  */
 extern ccs_error_t
-ccs_distribution_hyperparameters_sample(ccs_distribution_t    distribution,
+ccs_distribution_parameters_sample(ccs_distribution_t    distribution,
                                         ccs_rng_t             rng,
-                                        ccs_hyperparameter_t *hyperparameters,
+                                        ccs_parameter_t *parameters,
                                         ccs_datum_t          *values);
 
 #ifdef __cplusplus

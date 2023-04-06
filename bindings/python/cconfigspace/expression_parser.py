@@ -64,7 +64,7 @@ _actions["list_item"] = [
 _actions["none"] = lambda _, value: Literal(value = None)
 _actions["true"] = lambda _, value: Literal(value = True)
 _actions["false"] = lambda _, value: Literal(value = False)
-_actions["identifier"] = lambda p, value: Variable(hyperparameter = p.extra.hyperparameter_by_name(value))
+_actions["identifier"] = lambda p, value: Variable(parameter = p.extra.parameter_by_name(value))
 _actions["string"] = lambda _, value: Literal(value = eval(value))
 _actions["float"] = lambda _, value: Literal(value = float(value))
 _actions["integer"] = lambda _, value: Literal(value = int(value))

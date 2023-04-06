@@ -72,20 +72,20 @@ ccs_binding_set_value_by_name(ccs_binding_t  binding,
 }
 
 ccs_error_t
-ccs_binding_get_value_by_hyperparameter(ccs_binding_t         binding,
-                                        ccs_hyperparameter_t  hyperparameter,
+ccs_binding_get_value_by_parameter(ccs_binding_t         binding,
+                                        ccs_parameter_t  parameter,
                                         ccs_datum_t          *value_ret) {
 	CCS_CHECK_BINDING(binding);
-	CCS_VALIDATE(_ccs_binding_get_value_by_hyperparameter(binding, hyperparameter, value_ret));
+	CCS_VALIDATE(_ccs_binding_get_value_by_parameter(binding, parameter, value_ret));
 	return CCS_SUCCESS;
 }
 
 ccs_error_t
-ccs_binding_set_value_by_hyperparameter(ccs_binding_t        binding,
-                                        ccs_hyperparameter_t hyperparameter,
+ccs_binding_set_value_by_parameter(ccs_binding_t        binding,
+                                        ccs_parameter_t parameter,
                                         ccs_datum_t          value) {
 	CCS_CHECK_BINDING(binding);
-	CCS_VALIDATE(_ccs_binding_set_value_by_hyperparameter(binding, hyperparameter, value));
+	CCS_VALIDATE(_ccs_binding_set_value_by_parameter(binding, parameter, value));
 	return CCS_SUCCESS;
 }
 

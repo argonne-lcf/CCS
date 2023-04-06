@@ -11,21 +11,21 @@ class CConfigSpaceTestObjectiveSpace < Minitest::Test
     os = CCS::ObjectiveSpace::new(name: "space")
     assert_equal( :CCS_OBJECTIVE_SPACE, os.object_type )
     assert_equal( "space", os.name )
-    assert_equal( 0, os.num_hyperparameters )
+    assert_equal( 0, os.num_parameters )
     assert_equal( [], os.objectives )
-    h1 = CCS::NumericalHyperparameter::new
-    h2 = CCS::NumericalHyperparameter::new
-    h3 = CCS::NumericalHyperparameter::new
-    os.add_hyperparameter(h1)
-    os.add_hyperparameters([h2, h3])
-    assert_equal( 3, os.num_hyperparameters )
-    assert_equal( h1, os.hyperparameter(0) )
-    assert_equal( h2, os.hyperparameter(1) )
-    assert_equal( h3, os.hyperparameter(2) )
-    assert_equal( [h1, h2, h3], os.hyperparameters )
-    assert_equal( h2, os.hyperparameter_by_name(h2.name) )
+    h1 = CCS::NumericalParameter::new
+    h2 = CCS::NumericalParameter::new
+    h3 = CCS::NumericalParameter::new
+    os.add_parameter(h1)
+    os.add_parameters([h2, h3])
+    assert_equal( 3, os.num_parameters )
+    assert_equal( h1, os.parameter(0) )
+    assert_equal( h2, os.parameter(1) )
+    assert_equal( h3, os.parameter(2) )
+    assert_equal( [h1, h2, h3], os.parameters )
+    assert_equal( h2, os.parameter_by_name(h2.name) )
     e1 = CCS::Expression::new(type: :CCS_ADD, nodes: [h1, h2])
-    e2 = CCS::Variable::new(hyperparameter: h3)
+    e2 = CCS::Variable::new(parameter: h3)
     os.add_objective(e1)
     assert_equal( 1, os.objectives.size )
     os.add_objectives([e2], types: [:CCS_MAXIMIZE])

@@ -80,9 +80,9 @@ typedef struct _ccs_rng_s                 *ccs_rng_t;
  */
 typedef struct _ccs_distribution_s        *ccs_distribution_t;
 /**
- * An opaque type defining a CCS hyperparameter.
+ * An opaque type defining a CCS parameter.
  */
-typedef struct _ccs_hyperparameter_s      *ccs_hyperparameter_t;
+typedef struct _ccs_parameter_s      *ccs_parameter_t;
 /**
  * An opaque type defining a CCS expression.
  */
@@ -183,11 +183,11 @@ enum ccs_error_e {
 	CCS_INVALID_DISTRIBUTION =     -5,
 	/** The provided expression is invalid */
 	CCS_INVALID_EXPRESSION =       -6,
-	/** The provided hyperparameter is invalid */
-	CCS_INVALID_HYPERPARAMETER =   -7,
+	/** The provided parameter is invalid */
+	CCS_INVALID_PARAMETER =   -7,
 	/** The provided configuration is invalid */
 	CCS_INVALID_CONFIGURATION =    -8,
-	/** The hyperparameter name is invalid */
+	/** The parameter name is invalid */
 	CCS_INVALID_NAME =             -9,
 	/** The condition is invalid (unused) */
 	CCS_INVALID_CONDITION =       -10,
@@ -253,7 +253,7 @@ typedef int32_t ccs_result_t;
 enum ccs_object_type_e {
 	CCS_RNG,                 /*!< A random number generator */
 	CCS_DISTRIBUTION,        /*!< A numerical distribution */
-	CCS_HYPERPARAMETER,      /*!< A hyperparameter */
+	CCS_PARAMETER,      /*!< A parameter */
 	CCS_EXPRESSION,          /*!< An arithmetic expression */
 	CCS_CONFIGURATION_SPACE, /*!< A configuration space */
 	CCS_CONFIGURATION,       /*!< A configuration */

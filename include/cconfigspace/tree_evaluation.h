@@ -31,7 +31,7 @@ extern "C" {
  * @return #CCS_INVALID_VALUE if \p evaluation_ret is NULL; or if \p values is
  *                             NULL and \p num_values is greater than 0; or if
  *                             the number of values provided is not equal to the
- *                             number of hyperparameters in the objective space
+ *                             number of parameters in the objective space
  * @return #CCS_OUT_OF_MEMORY if there was a lack of memory to allocate the new
  *                             evaluation
  */
@@ -100,16 +100,16 @@ ccs_tree_evaluation_set_error(
 	ccs_result_t     error);
 
 /**
- * Get the value of the hyperparameter at the given index.
+ * Get the value of the parameter at the given index.
  * @param[in] evaluation
- * @param[in] index index of the hyperparameter in the associated objective
+ * @param[in] index index of the parameter in the associated objective
                     space
  * @param[out] value_ret a pointer to the variable that will hold the value
  * @return #CCS_SUCCESS on success
  * @return #CCS_INVALID_OBJECT if \p binding is not a valid CCS tree evaluation
  * @return #CCS_INVALID_VALUE if \p value_ret is NULL
  * @return #CCS_OUT_OF_BOUNDS if \p index is greater than the count of
- *                             hyperparameters in the objective space
+ *                             parameters in the objective space
  */
 extern ccs_error_t
 ccs_tree_evaluation_get_value(
@@ -118,17 +118,17 @@ ccs_tree_evaluation_get_value(
 	ccs_datum_t           *value_ret);
 
 /**
- * Set the value of the hyperparameter at the given index. Transient values will
+ * Set the value of the parameter at the given index. Transient values will
  * be validated and memoized if needed.
  * @param[in,out] evaluation
- * @param[in] index index of the hyperparameter in the associated objective
+ * @param[in] index index of the parameter in the associated objective
  *                  space
  * @param[in] value the value
  * @return #CCS_SUCCESS on success
  * @return #CCS_INVALID_OBJECT if \p evaluation is not a valid CCS tree evaluation
  * @return #CCS_INVALID_VALUE if \p value_ret is NULL
  * @return #CCS_OUT_OF_BOUNDS if \p index is greater than the count of
- *                             hyperparameters in the objective space
+ *                             parameters in the objective space
  * @return #CCS_OUT_OF_MEMORY if there was a lack of memory while memoizing a
  *                             string
  */
@@ -163,14 +163,14 @@ ccs_tree_evaluation_get_values(
 	size_t                *num_values_ret);
 
 /**
- * Get the value of the hyperparameter with the given name.
+ * Get the value of the parameter with the given name.
  * @param[in] evaluation
- * @param[in] name the name of the hyperparameter whose value to retrieve
+ * @param[in] name the name of the parameter whose value to retrieve
  * @param[out] value_ret a pointer to the variable that will hold the value
  * @return #CCS_SUCCESS on success
  * @return #CCS_INVALID_OBJECT if \p evaluation is not a valid CCS tree evaluation
  * @return #CCS_INVALID_VALUE if \p value_ret is NULL
- * @return #CCS_INVALID_NAME if no hyperparameter with such \p name exist in
+ * @return #CCS_INVALID_NAME if no parameter with such \p name exist in
  *                            the \p objective space
  */
 extern ccs_error_t
@@ -185,8 +185,8 @@ ccs_tree_evaluation_get_value_by_name(
  * @param[out] is_valid_ret a pointer to a variable that will hold the result
  *                          of the check. Result will be CCS_TRUE if the
  *                          evaluation is valid. Result will be CCS_FALSE if
- *                          an hyperparameter value is not a valid value
- *                          for this hyperparameter
+ *                          an parameter value is not a valid value
+ *                          for this parameter
  * @return #CCS_SUCCESS on success
  * @return #CCS_INVALID_OBJECT if \p evaluation is not a valid CCS tree evaluation
  * @return #CCS_INVALID_EVALUATION if \p evaluation was found to be invalid in
