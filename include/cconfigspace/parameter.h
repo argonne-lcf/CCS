@@ -79,7 +79,7 @@ ccs_create_numerical_parameter(const char           *name,
                                     ccs_parameter_t *parameter_ret);
 
 /**
- * Get the parameters used to create a numerical parameter.
+ * Get the properties used to create a numerical parameter.
  * @param[in] parameter
  * @param[out] data_type_ret a pointer to the variable that will contain the
  *                           data type of the numerical parameter
@@ -99,12 +99,12 @@ ccs_create_numerical_parameter(const char           *name,
  *                             quantization_ret is NULL
  */
 extern ccs_error_t
-ccs_numerical_parameter_get_parameters(
-	ccs_parameter_t  parameter,
-	ccs_numeric_type_t   *data_type_ret,
-	ccs_numeric_t        *lower_ret,
-	ccs_numeric_t        *upper_ret,
-	ccs_numeric_t        *quantization_ret);
+ccs_numerical_parameter_get_properties(
+	ccs_parameter_t     parameter,
+	ccs_numeric_type_t *data_type_ret,
+	ccs_numeric_t      *lower_ret,
+	ccs_numeric_t      *upper_ret,
+	ccs_numeric_t      *quantization_ret);
 
 /**
  * Create a new categorical parameter. Categorical parameters can be

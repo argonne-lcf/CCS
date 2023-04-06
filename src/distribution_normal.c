@@ -484,7 +484,7 @@ ccs_create_normal_distribution(ccs_numeric_type_t  data_type,
 }
 
 extern ccs_error_t
-ccs_normal_distribution_get_parameters(ccs_distribution_t  distribution,
+ccs_normal_distribution_get_properties(ccs_distribution_t  distribution,
                                        ccs_float_t        *mu_ret,
                                        ccs_float_t        *sigma_ret,
                                        ccs_scale_type_t   *scale_type_ret,

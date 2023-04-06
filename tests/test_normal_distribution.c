@@ -41,7 +41,7 @@ static void compare_distribution(
 	assert( interval.upper.f == CCS_INFINITY );
 	assert( interval.upper_included == CCS_FALSE );
 
-	err = ccs_normal_distribution_get_parameters(distrib, &mu, &sigma, &stype, &quantization);
+	err = ccs_normal_distribution_get_properties(distrib, &mu, &sigma, &stype, &quantization);
 	assert( err == CCS_SUCCESS );
 	assert( mu == m );
 	assert( sigma == s );

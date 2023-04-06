@@ -119,7 +119,7 @@ module CCS
   end
 
   attach_function :ccs_create_numerical_parameter, [:string, :ccs_numeric_type_t, :ccs_numeric_t, :ccs_numeric_t, :ccs_numeric_t, :ccs_numeric_t, :pointer], :ccs_error_t
-  attach_function :ccs_numerical_parameter_get_parameters, [:ccs_parameter_t, :pointer, :pointer, :pointer, :pointer], :ccs_error_t
+  attach_function :ccs_numerical_parameter_get_properties, [:ccs_parameter_t, :pointer, :pointer, :pointer, :pointer], :ccs_error_t
   class NumericalParameter < Parameter
     def initialize(handle = nil, retain: false, auto_release: true,
                    name: Parameter.default_name, data_type: :CCS_NUM_FLOAT, lower: 0.0, upper: 1.0, quantization: 0.0, default: lower)
@@ -158,7 +158,7 @@ module CCS
     def data_type
       @data_type ||= begin
         ptr = MemoryPointer::new(:ccs_numeric_type_t)
-        CCS.error_check CCS.ccs_numerical_parameter_get_parameters(@handle, ptr, nil, nil, nil)
+        CCS.error_check CCS.ccs_numerical_parameter_get_properties(@handle, ptr, nil, nil, nil)
         ptr.read_ccs_numeric_type_t
       end
     end
@@ -166,7 +166,7 @@ module CCS
     def lower
       @lower ||= begin
         ptr = MemoryPointer::new(:ccs_numeric_t)
-        CCS.error_check CCS.ccs_numerical_parameter_get_parameters(@handle, nil, ptr, nil, nil)
+        CCS.error_check CCS.ccs_numerical_parameter_get_properties(@handle, nil, ptr, nil, nil)
         if data_type == :CCS_NUM_FLOAT
           ptr.read_ccs_float_t
         else
@@ -178,7 +178,7 @@ module CCS
     def upper
       @upper ||= begin
         ptr = MemoryPointer::new(:ccs_numeric_t)
-        CCS.error_check CCS.ccs_numerical_parameter_get_parameters(@handle, nil, nil, ptr, nil)
+        CCS.error_check CCS.ccs_numerical_parameter_get_properties(@handle, nil, nil, ptr, nil)
         if data_type == :CCS_NUM_FLOAT
           ptr.read_ccs_float_t
         else
@@ -190,7 +190,7 @@ module CCS
     def quantization
       @quantization ||= begin
         ptr = MemoryPointer::new(:ccs_numeric_t)
-        CCS.error_check CCS.ccs_numerical_parameter_get_parameters(@handle, nil, nil, nil, ptr)
+        CCS.error_check CCS.ccs_numerical_parameter_get_properties(@handle, nil, nil, nil, ptr)
         if data_type == :CCS_NUM_FLOAT
           ptr.read_ccs_float_t
         else

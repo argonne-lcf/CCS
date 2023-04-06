@@ -37,7 +37,7 @@ static void compare_distribution(
 	assert( interval.upper.i == u );
 	assert( interval.upper_included == CCS_FALSE );
 
-	err = ccs_uniform_distribution_get_parameters(distrib, &lower, &upper, &stype, &quantization);
+	err = ccs_uniform_distribution_get_properties(distrib, &lower, &upper, &stype, &quantization);
 	assert( err == CCS_SUCCESS );
 	assert( lower.i == l );
 	assert( upper.i == u );

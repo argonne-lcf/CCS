@@ -289,7 +289,7 @@ ccs_create_numerical_parameter(const char           *name,
 }
 
 ccs_error_t
-ccs_numerical_parameter_get_parameters(ccs_parameter_t  parameter,
+ccs_numerical_parameter_get_properties(ccs_parameter_t  parameter,
                                             ccs_numeric_type_t   *data_type_ret,
                                             ccs_numeric_t        *lower_ret,
                                             ccs_numeric_t        *upper_ret,

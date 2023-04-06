@@ -132,7 +132,7 @@ class Parameter(Object):
 
 
 ccs_create_numerical_parameter = _ccs_get_function("ccs_create_numerical_parameter", [ct.c_char_p, ccs_numeric_type, ccs_int, ccs_int, ccs_int, ccs_int, ct.POINTER(ccs_parameter)])
-ccs_numerical_parameter_get_parameters = _ccs_get_function("ccs_numerical_parameter_get_parameters", [ccs_parameter, ct.POINTER(ccs_numeric_type), ct.POINTER(ccs_numeric), ct.POINTER(ccs_numeric), ct.POINTER(ccs_numeric)])
+ccs_numerical_parameter_get_properties = _ccs_get_function("ccs_numerical_parameter_get_properties", [ccs_parameter, ct.POINTER(ccs_numeric_type), ct.POINTER(ccs_numeric), ct.POINTER(ccs_numeric), ct.POINTER(ccs_numeric)])
 
 class NumericalParameter(Parameter):
   def __init__(self, handle = None, retain = False, auto_release = True,
@@ -178,7 +178,7 @@ class NumericalParameter(Parameter):
     if hasattr(self, "_data_type"):
       return self._data_type
     v = ccs_numeric_type(0)
-    res = ccs_numerical_parameter_get_parameters(self.handle, ct.byref(v), None, None, None)
+    res = ccs_numerical_parameter_get_properties(self.handle, ct.byref(v), None, None, None)
     Error.check(res)
     self._data_type = v.value
     return self._data_type
@@ -188,7 +188,7 @@ class NumericalParameter(Parameter):
     if hasattr(self, "_lower"):
       return self._lower
     v = ccs_numeric()
-    res = ccs_numerical_parameter_get_parameters(self.handle, None, ct.byref(v), None, None)
+    res = ccs_numerical_parameter_get_properties(self.handle, None, ct.byref(v), None, None)
     Error.check(res)
     t = self.data_type
     if t == ccs_numeric_type.NUM_INTEGER:
@@ -204,7 +204,7 @@ class NumericalParameter(Parameter):
     if hasattr(self, "_upper"):
       return self._upper
     v = ccs_numeric()
-    res = ccs_numerical_parameter_get_parameters(self.handle, None, None, ct.byref(v), None)
+    res = ccs_numerical_parameter_get_properties(self.handle, None, None, ct.byref(v), None)
     Error.check(res)
     t = self.data_type
     if t == ccs_numeric_type.NUM_INTEGER:
@@ -220,7 +220,7 @@ class NumericalParameter(Parameter):
     if hasattr(self, "_quantization"):
       return self._quantization
     v = ccs_numeric(0)
-    res = ccs_numerical_parameter_get_parameters(self.handle, None, None, None, ct.byref(v))
+    res = ccs_numerical_parameter_get_properties(self.handle, None, None, None, ct.byref(v))
     Error.check(res)
     t = self.data_type
     if t == ccs_numeric_type.NUM_INTEGER:

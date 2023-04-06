@@ -367,7 +367,7 @@ ccs_create_uniform_distribution(ccs_numeric_type_t  data_type,
 }
 
 ccs_error_t
-ccs_uniform_distribution_get_parameters(ccs_distribution_t  distribution,
+ccs_uniform_distribution_get_properties(ccs_distribution_t  distribution,
                                         ccs_numeric_t      *lower_ret,
                                         ccs_numeric_t      *upper_ret,
                                         ccs_scale_type_t   *scale_type_ret,
