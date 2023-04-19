@@ -18,9 +18,9 @@ extern "C" {
  */
 enum ccs_tuner_type_e {
 	/** A random tuner */
-	CCS_TUNER_RANDOM,
+	CCS_TUNER_TYPE_RANDOM,
 	/** A user defined tuner */
-	CCS_TUNER_USER_DEFINED,
+	CCS_TUNER_TYPE_USER_DEFINED,
 	/** Guard */
 	CCS_TUNER_TYPE_MAX,
 	/** Try forcing 32 bits value for bindings */

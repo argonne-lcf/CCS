@@ -29,7 +29,7 @@ class CConfigSpaceTestTuner < Minitest::Test
     t2 = CCS::Object::from_handle(t)
     assert_equal( t.class, t2.class)
     assert_equal( "tuner", t.name )
-    assert_equal( :CCS_TUNER_RANDOM, t.type )
+    assert_equal( :CCS_TUNER_TYPE_RANDOM, t.type )
     func = lambda { |(x, y, z)|
       [(x-2)**2, Math.sin(z+y)]
     }
@@ -116,7 +116,7 @@ class CConfigSpaceTestTuner < Minitest::Test
     t2 = CCS::Object::from_handle(t)
     assert_equal( t.class, t2.class)
     assert_equal( "tuner", t.name )
-    assert_equal( :CCS_TUNER_USER_DEFINED, t.type )
+    assert_equal( :CCS_TUNER_TYPE_USER_DEFINED, t.type )
     func = lambda { |(x, y, z)|
       [(x-2)**2, Math.sin(z+y)]
     }

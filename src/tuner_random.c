@@ -367,7 +367,7 @@ ccs_create_random_tuner(
 	tun->data =
 		(struct _ccs_tuner_data_s *)(mem + sizeof(struct _ccs_tuner_s));
 	data                   = (_ccs_random_tuner_data_t *)tun->data;
-	data->common_data.type = CCS_TUNER_RANDOM;
+	data->common_data.type = CCS_TUNER_TYPE_RANDOM;
 	data->common_data.name =
 		(const char
 			 *)(mem + sizeof(struct _ccs_tuner_s) + sizeof(struct _ccs_random_tuner_data_s));
