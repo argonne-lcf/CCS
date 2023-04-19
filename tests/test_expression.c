@@ -103,55 +103,55 @@ test_equal_literal()
 	nodes[0] = ccs_float(1.0);
 	nodes[1] = ccs_float(1.0);
 	test_expression_wrapper(
-		CCS_EQUAL, 2, nodes, NULL, NULL, ccs_bool(CCS_TRUE),
+		CCS_EXPRESSION_TYPE_EQUAL, 2, nodes, NULL, NULL, ccs_bool(CCS_TRUE),
 		CCS_SUCCESS);
 
 	nodes[0] = ccs_float(0.0);
 	nodes[1] = ccs_float(1.0);
 	test_expression_wrapper(
-		CCS_EQUAL, 2, nodes, NULL, NULL, ccs_bool(CCS_FALSE),
+		CCS_EXPRESSION_TYPE_EQUAL, 2, nodes, NULL, NULL, ccs_bool(CCS_FALSE),
 		CCS_SUCCESS);
 
 	nodes[0] = ccs_int(1);
 	nodes[1] = ccs_float(1.0);
 	test_expression_wrapper(
-		CCS_EQUAL, 2, nodes, NULL, NULL, ccs_bool(CCS_TRUE),
+		CCS_EXPRESSION_TYPE_EQUAL, 2, nodes, NULL, NULL, ccs_bool(CCS_TRUE),
 		CCS_SUCCESS);
 
 	nodes[0] = ccs_float(0.0);
 	nodes[1] = ccs_int(1);
 	test_expression_wrapper(
-		CCS_EQUAL, 2, nodes, NULL, NULL, ccs_bool(CCS_FALSE),
+		CCS_EXPRESSION_TYPE_EQUAL, 2, nodes, NULL, NULL, ccs_bool(CCS_FALSE),
 		CCS_SUCCESS);
 
 	nodes[0] = ccs_none;
 	nodes[1] = ccs_none;
 	test_expression_wrapper(
-		CCS_EQUAL, 2, nodes, NULL, NULL, ccs_bool(CCS_TRUE),
+		CCS_EXPRESSION_TYPE_EQUAL, 2, nodes, NULL, NULL, ccs_bool(CCS_TRUE),
 		CCS_SUCCESS);
 
 	nodes[0] = ccs_none;
 	nodes[1] = ccs_int(1);
 	test_expression_wrapper(
-		CCS_EQUAL, 2, nodes, NULL, NULL, ccs_bool(CCS_FALSE),
+		CCS_EXPRESSION_TYPE_EQUAL, 2, nodes, NULL, NULL, ccs_bool(CCS_FALSE),
 		CCS_INVALID_VALUE);
 
 	nodes[0] = ccs_string("toto");
 	nodes[1] = ccs_string("toto");
 	test_expression_wrapper(
-		CCS_EQUAL, 2, nodes, NULL, NULL, ccs_bool(CCS_TRUE),
+		CCS_EXPRESSION_TYPE_EQUAL, 2, nodes, NULL, NULL, ccs_bool(CCS_TRUE),
 		CCS_SUCCESS);
 
 	nodes[0] = ccs_string("tata");
 	nodes[1] = ccs_string("toto");
 	test_expression_wrapper(
-		CCS_EQUAL, 2, nodes, NULL, NULL, ccs_bool(CCS_FALSE),
+		CCS_EXPRESSION_TYPE_EQUAL, 2, nodes, NULL, NULL, ccs_bool(CCS_FALSE),
 		CCS_SUCCESS);
 
 	nodes[0] = ccs_string("tata");
 	nodes[1] = ccs_int(1);
 	test_expression_wrapper(
-		CCS_EQUAL, 2, nodes, NULL, NULL, ccs_bool(CCS_FALSE),
+		CCS_EXPRESSION_TYPE_EQUAL, 2, nodes, NULL, NULL, ccs_bool(CCS_FALSE),
 		CCS_INVALID_VALUE);
 }
 
@@ -180,30 +180,30 @@ test_equal_numerical()
 	values[0] = ccs_float(1.0);
 	values[1] = ccs_float(0.0);
 	test_expression_wrapper(
-		CCS_EQUAL, 2, nodes, configuration_space, values,
+		CCS_EXPRESSION_TYPE_EQUAL, 2, nodes, configuration_space, values,
 		ccs_bool(CCS_TRUE), CCS_SUCCESS);
 	values[0] = ccs_float(0.0);
 	test_expression_wrapper(
-		CCS_EQUAL, 2, nodes, configuration_space, values,
+		CCS_EXPRESSION_TYPE_EQUAL, 2, nodes, configuration_space, values,
 		ccs_bool(CCS_FALSE), CCS_SUCCESS);
 	nodes[0]  = ccs_float(1.0);
 	nodes[1]  = ccs_object(parameters[1]);
 	values[0] = ccs_float(1.0);
 	values[1] = ccs_float(1.0);
 	test_expression_wrapper(
-		CCS_EQUAL, 2, nodes, configuration_space, values,
+		CCS_EXPRESSION_TYPE_EQUAL, 2, nodes, configuration_space, values,
 		ccs_bool(CCS_TRUE), CCS_SUCCESS);
 	values[1] = ccs_float(0.0);
 	test_expression_wrapper(
-		CCS_EQUAL, 2, nodes, configuration_space, values,
+		CCS_EXPRESSION_TYPE_EQUAL, 2, nodes, configuration_space, values,
 		ccs_bool(CCS_FALSE), CCS_SUCCESS);
 	nodes[0] = ccs_int(0);
 	test_expression_wrapper(
-		CCS_EQUAL, 2, nodes, configuration_space, values,
+		CCS_EXPRESSION_TYPE_EQUAL, 2, nodes, configuration_space, values,
 		ccs_bool(CCS_TRUE), CCS_SUCCESS);
 	nodes[0] = ccs_bool(CCS_FALSE);
 	test_expression_wrapper(
-		CCS_EQUAL, 2, nodes, configuration_space, values,
+		CCS_EXPRESSION_TYPE_EQUAL, 2, nodes, configuration_space, values,
 		ccs_bool(CCS_TRUE), CCS_INVALID_VALUE);
 
 	for (size_t i = 0; i < 2; i++) {
@@ -237,16 +237,16 @@ test_equal_categorical()
 	values[0] = ccs_float(2.0);
 	values[1] = ccs_int(1);
 	test_expression_wrapper(
-		CCS_EQUAL, 2, nodes, configuration_space, values,
+		CCS_EXPRESSION_TYPE_EQUAL, 2, nodes, configuration_space, values,
 		ccs_bool(CCS_TRUE), CCS_SUCCESS);
 	// Values tested must exist in the set
 	nodes[1] = ccs_float(3.0);
 	test_expression_wrapper(
-		CCS_EQUAL, 2, nodes, configuration_space, values,
+		CCS_EXPRESSION_TYPE_EQUAL, 2, nodes, configuration_space, values,
 		ccs_bool(CCS_TRUE), CCS_INVALID_VALUE);
 	nodes[1] = ccs_int(1);
 	test_expression_wrapper(
-		CCS_EQUAL, 2, nodes, configuration_space, values,
+		CCS_EXPRESSION_TYPE_EQUAL, 2, nodes, configuration_space, values,
 		ccs_bool(CCS_FALSE), CCS_SUCCESS);
 
 	for (size_t i = 0; i < 2; i++) {
@@ -280,16 +280,16 @@ test_equal_ordinal()
 	values[0] = ccs_float(2.0);
 	values[1] = ccs_int(1);
 	test_expression_wrapper(
-		CCS_EQUAL, 2, nodes, configuration_space, values,
+		CCS_EXPRESSION_TYPE_EQUAL, 2, nodes, configuration_space, values,
 		ccs_bool(CCS_TRUE), CCS_SUCCESS);
 	// Values tested must exist in the set
 	nodes[1] = ccs_float(3.0);
 	test_expression_wrapper(
-		CCS_EQUAL, 2, nodes, configuration_space, values,
+		CCS_EXPRESSION_TYPE_EQUAL, 2, nodes, configuration_space, values,
 		ccs_bool(CCS_TRUE), CCS_INVALID_VALUE);
 	nodes[1] = ccs_int(1);
 	test_expression_wrapper(
-		CCS_EQUAL, 2, nodes, configuration_space, values,
+		CCS_EXPRESSION_TYPE_EQUAL, 2, nodes, configuration_space, values,
 		ccs_bool(CCS_FALSE), CCS_SUCCESS);
 
 	for (size_t i = 0; i < 2; i++) {
@@ -328,22 +328,22 @@ void
 test_arithmetic_add()
 {
 	test_binary_arithmetic(
-		CCS_ADD, ccs_float(1.0), ccs_float(2.0), ccs_float(1.0 + 2.0),
+		CCS_EXPRESSION_TYPE_ADD, ccs_float(1.0), ccs_float(2.0), ccs_float(1.0 + 2.0),
 		CCS_SUCCESS);
 
 	test_binary_arithmetic(
-		CCS_ADD, ccs_int(1), ccs_float(2.0), ccs_float(1 + 2.0),
+		CCS_EXPRESSION_TYPE_ADD, ccs_int(1), ccs_float(2.0), ccs_float(1 + 2.0),
 		CCS_SUCCESS);
 
 	test_binary_arithmetic(
-		CCS_ADD, ccs_float(1.0), ccs_int(2), ccs_float(1.0 + 2),
+		CCS_EXPRESSION_TYPE_ADD, ccs_float(1.0), ccs_int(2), ccs_float(1.0 + 2),
 		CCS_SUCCESS);
 
 	test_binary_arithmetic(
-		CCS_ADD, ccs_int(1), ccs_int(2), ccs_int(1 + 2), CCS_SUCCESS);
+		CCS_EXPRESSION_TYPE_ADD, ccs_int(1), ccs_int(2), ccs_int(1 + 2), CCS_SUCCESS);
 
 	test_binary_arithmetic(
-		CCS_ADD, ccs_int(1), ccs_bool(CCS_TRUE), ccs_none,
+		CCS_EXPRESSION_TYPE_ADD, ccs_int(1), ccs_bool(CCS_TRUE), ccs_none,
 		CCS_INVALID_VALUE);
 }
 
@@ -351,23 +351,23 @@ void
 test_arithmetic_substract()
 {
 	test_binary_arithmetic(
-		CCS_SUBSTRACT, ccs_float(1.0), ccs_float(2.0),
+		CCS_EXPRESSION_TYPE_SUBSTRACT, ccs_float(1.0), ccs_float(2.0),
 		ccs_float(1.0 - 2.0), CCS_SUCCESS);
 
 	test_binary_arithmetic(
-		CCS_SUBSTRACT, ccs_int(1), ccs_float(2.0), ccs_float(1 - 2.0),
+		CCS_EXPRESSION_TYPE_SUBSTRACT, ccs_int(1), ccs_float(2.0), ccs_float(1 - 2.0),
 		CCS_SUCCESS);
 
 	test_binary_arithmetic(
-		CCS_SUBSTRACT, ccs_float(1.0), ccs_int(2), ccs_float(1.0 - 2),
+		CCS_EXPRESSION_TYPE_SUBSTRACT, ccs_float(1.0), ccs_int(2), ccs_float(1.0 - 2),
 		CCS_SUCCESS);
 
 	test_binary_arithmetic(
-		CCS_SUBSTRACT, ccs_int(1), ccs_int(2), ccs_int(1 - 2),
+		CCS_EXPRESSION_TYPE_SUBSTRACT, ccs_int(1), ccs_int(2), ccs_int(1 - 2),
 		CCS_SUCCESS);
 
 	test_binary_arithmetic(
-		CCS_SUBSTRACT, ccs_int(1), ccs_bool(CCS_TRUE), ccs_none,
+		CCS_EXPRESSION_TYPE_SUBSTRACT, ccs_int(1), ccs_bool(CCS_TRUE), ccs_none,
 		CCS_INVALID_VALUE);
 }
 
@@ -375,23 +375,23 @@ void
 test_arithmetic_multiply()
 {
 	test_binary_arithmetic(
-		CCS_MULTIPLY, ccs_float(3.0), ccs_float(2.0),
+		CCS_EXPRESSION_TYPE_MULTIPLY, ccs_float(3.0), ccs_float(2.0),
 		ccs_float(3.0 * 2.0), CCS_SUCCESS);
 
 	test_binary_arithmetic(
-		CCS_MULTIPLY, ccs_int(3), ccs_float(2.0), ccs_float(3 * 2.0),
+		CCS_EXPRESSION_TYPE_MULTIPLY, ccs_int(3), ccs_float(2.0), ccs_float(3 * 2.0),
 		CCS_SUCCESS);
 
 	test_binary_arithmetic(
-		CCS_MULTIPLY, ccs_float(3.0), ccs_int(2), ccs_float(3.0 * 2),
+		CCS_EXPRESSION_TYPE_MULTIPLY, ccs_float(3.0), ccs_int(2), ccs_float(3.0 * 2),
 		CCS_SUCCESS);
 
 	test_binary_arithmetic(
-		CCS_MULTIPLY, ccs_int(3), ccs_int(2), ccs_int(3 * 2),
+		CCS_EXPRESSION_TYPE_MULTIPLY, ccs_int(3), ccs_int(2), ccs_int(3 * 2),
 		CCS_SUCCESS);
 
 	test_binary_arithmetic(
-		CCS_MULTIPLY, ccs_int(3), ccs_bool(CCS_TRUE), ccs_none,
+		CCS_EXPRESSION_TYPE_MULTIPLY, ccs_int(3), ccs_bool(CCS_TRUE), ccs_none,
 		CCS_INVALID_VALUE);
 }
 
@@ -399,23 +399,23 @@ void
 test_arithmetic_divide()
 {
 	test_binary_arithmetic(
-		CCS_DIVIDE, ccs_float(3.0), ccs_float(2.0),
+		CCS_EXPRESSION_TYPE_DIVIDE, ccs_float(3.0), ccs_float(2.0),
 		ccs_float(3.0 / 2.0), CCS_SUCCESS);
 
 	test_binary_arithmetic(
-		CCS_DIVIDE, ccs_int(3), ccs_float(2.0), ccs_float(3 / 2.0),
+		CCS_EXPRESSION_TYPE_DIVIDE, ccs_int(3), ccs_float(2.0), ccs_float(3 / 2.0),
 		CCS_SUCCESS);
 
 	test_binary_arithmetic(
-		CCS_DIVIDE, ccs_float(3.0), ccs_int(2), ccs_float(3.0 / 2),
+		CCS_EXPRESSION_TYPE_DIVIDE, ccs_float(3.0), ccs_int(2), ccs_float(3.0 / 2),
 		CCS_SUCCESS);
 
 	test_binary_arithmetic(
-		CCS_DIVIDE, ccs_int(3), ccs_int(2), ccs_int(3 / 2),
+		CCS_EXPRESSION_TYPE_DIVIDE, ccs_int(3), ccs_int(2), ccs_int(3 / 2),
 		CCS_SUCCESS);
 
 	test_binary_arithmetic(
-		CCS_DIVIDE, ccs_int(3), ccs_bool(CCS_TRUE), ccs_none,
+		CCS_EXPRESSION_TYPE_DIVIDE, ccs_int(3), ccs_bool(CCS_TRUE), ccs_none,
 		CCS_INVALID_VALUE);
 }
 
@@ -423,23 +423,23 @@ void
 test_arithmetic_modulo()
 {
 	test_binary_arithmetic(
-		CCS_MODULO, ccs_float(3.0), ccs_float(2.0),
+		CCS_EXPRESSION_TYPE_MODULO, ccs_float(3.0), ccs_float(2.0),
 		ccs_float(fmod(3.0, 2.0)), CCS_SUCCESS);
 
 	test_binary_arithmetic(
-		CCS_MODULO, ccs_int(3), ccs_float(2.0), ccs_float(fmod(3, 2.0)),
+		CCS_EXPRESSION_TYPE_MODULO, ccs_int(3), ccs_float(2.0), ccs_float(fmod(3, 2.0)),
 		CCS_SUCCESS);
 
 	test_binary_arithmetic(
-		CCS_MODULO, ccs_float(3.0), ccs_int(2), ccs_float(fmod(3.0, 2)),
+		CCS_EXPRESSION_TYPE_MODULO, ccs_float(3.0), ccs_int(2), ccs_float(fmod(3.0, 2)),
 		CCS_SUCCESS);
 
 	test_binary_arithmetic(
-		CCS_MODULO, ccs_int(3), ccs_int(2), ccs_int(3 % 2),
+		CCS_EXPRESSION_TYPE_MODULO, ccs_int(3), ccs_int(2), ccs_int(3 % 2),
 		CCS_SUCCESS);
 
 	test_binary_arithmetic(
-		CCS_MODULO, ccs_int(3), ccs_bool(CCS_TRUE), ccs_none,
+		CCS_EXPRESSION_TYPE_MODULO, ccs_int(3), ccs_bool(CCS_TRUE), ccs_none,
 		CCS_INVALID_VALUE);
 }
 
@@ -447,64 +447,64 @@ void
 test_arithmetic_positive()
 {
 	test_unary_arithmetic(
-		CCS_POSITIVE, ccs_float(3.0), ccs_float(3.0), CCS_SUCCESS);
+		CCS_EXPRESSION_TYPE_POSITIVE, ccs_float(3.0), ccs_float(3.0), CCS_SUCCESS);
 
 	test_unary_arithmetic(
-		CCS_POSITIVE, ccs_int(3), ccs_int(3), CCS_SUCCESS);
+		CCS_EXPRESSION_TYPE_POSITIVE, ccs_int(3), ccs_int(3), CCS_SUCCESS);
 
 	test_unary_arithmetic(
-		CCS_POSITIVE, ccs_bool(CCS_FALSE), ccs_none, CCS_INVALID_VALUE);
+		CCS_EXPRESSION_TYPE_POSITIVE, ccs_bool(CCS_FALSE), ccs_none, CCS_INVALID_VALUE);
 }
 
 void
 test_arithmetic_negative()
 {
 	test_unary_arithmetic(
-		CCS_NEGATIVE, ccs_float(3.0), ccs_float(-3.0), CCS_SUCCESS);
+		CCS_EXPRESSION_TYPE_NEGATIVE, ccs_float(3.0), ccs_float(-3.0), CCS_SUCCESS);
 
 	test_unary_arithmetic(
-		CCS_NEGATIVE, ccs_int(3), ccs_int(-3), CCS_SUCCESS);
+		CCS_EXPRESSION_TYPE_NEGATIVE, ccs_int(3), ccs_int(-3), CCS_SUCCESS);
 
 	test_unary_arithmetic(
-		CCS_NEGATIVE, ccs_bool(CCS_FALSE), ccs_none, CCS_INVALID_VALUE);
+		CCS_EXPRESSION_TYPE_NEGATIVE, ccs_bool(CCS_FALSE), ccs_none, CCS_INVALID_VALUE);
 }
 
 void
 test_arithmetic_not()
 {
 	test_unary_arithmetic(
-		CCS_NOT, ccs_float(3.0), ccs_none, CCS_INVALID_VALUE);
+		CCS_EXPRESSION_TYPE_NOT, ccs_float(3.0), ccs_none, CCS_INVALID_VALUE);
 
-	test_unary_arithmetic(CCS_NOT, ccs_int(3), ccs_none, CCS_INVALID_VALUE);
-
-	test_unary_arithmetic(
-		CCS_NOT, ccs_bool(CCS_FALSE), ccs_bool(CCS_TRUE), CCS_SUCCESS);
+	test_unary_arithmetic(CCS_EXPRESSION_TYPE_NOT, ccs_int(3), ccs_none, CCS_INVALID_VALUE);
 
 	test_unary_arithmetic(
-		CCS_NOT, ccs_bool(CCS_TRUE), ccs_bool(CCS_FALSE), CCS_SUCCESS);
+		CCS_EXPRESSION_TYPE_NOT, ccs_bool(CCS_FALSE), ccs_bool(CCS_TRUE), CCS_SUCCESS);
+
+	test_unary_arithmetic(
+		CCS_EXPRESSION_TYPE_NOT, ccs_bool(CCS_TRUE), ccs_bool(CCS_FALSE), CCS_SUCCESS);
 }
 
 void
 test_arithmetic_and()
 {
 	test_binary_arithmetic(
-		CCS_AND, ccs_bool(CCS_FALSE), ccs_bool(CCS_FALSE),
+		CCS_EXPRESSION_TYPE_AND, ccs_bool(CCS_FALSE), ccs_bool(CCS_FALSE),
 		ccs_bool(CCS_FALSE), CCS_SUCCESS);
 
 	test_binary_arithmetic(
-		CCS_AND, ccs_bool(CCS_TRUE), ccs_bool(CCS_FALSE),
+		CCS_EXPRESSION_TYPE_AND, ccs_bool(CCS_TRUE), ccs_bool(CCS_FALSE),
 		ccs_bool(CCS_FALSE), CCS_SUCCESS);
 
 	test_binary_arithmetic(
-		CCS_AND, ccs_bool(CCS_FALSE), ccs_bool(CCS_TRUE),
+		CCS_EXPRESSION_TYPE_AND, ccs_bool(CCS_FALSE), ccs_bool(CCS_TRUE),
 		ccs_bool(CCS_FALSE), CCS_SUCCESS);
 
 	test_binary_arithmetic(
-		CCS_AND, ccs_bool(CCS_TRUE), ccs_bool(CCS_TRUE),
+		CCS_EXPRESSION_TYPE_AND, ccs_bool(CCS_TRUE), ccs_bool(CCS_TRUE),
 		ccs_bool(CCS_TRUE), CCS_SUCCESS);
 
 	test_binary_arithmetic(
-		CCS_AND, ccs_int(1), ccs_bool(CCS_TRUE), ccs_none,
+		CCS_EXPRESSION_TYPE_AND, ccs_int(1), ccs_bool(CCS_TRUE), ccs_none,
 		CCS_INVALID_VALUE);
 }
 
@@ -512,23 +512,23 @@ void
 test_arithmetic_or()
 {
 	test_binary_arithmetic(
-		CCS_OR, ccs_bool(CCS_FALSE), ccs_bool(CCS_FALSE),
+		CCS_EXPRESSION_TYPE_OR, ccs_bool(CCS_FALSE), ccs_bool(CCS_FALSE),
 		ccs_bool(CCS_FALSE), CCS_SUCCESS);
 
 	test_binary_arithmetic(
-		CCS_OR, ccs_bool(CCS_TRUE), ccs_bool(CCS_FALSE),
+		CCS_EXPRESSION_TYPE_OR, ccs_bool(CCS_TRUE), ccs_bool(CCS_FALSE),
 		ccs_bool(CCS_TRUE), CCS_SUCCESS);
 
 	test_binary_arithmetic(
-		CCS_OR, ccs_bool(CCS_FALSE), ccs_bool(CCS_TRUE),
+		CCS_EXPRESSION_TYPE_OR, ccs_bool(CCS_FALSE), ccs_bool(CCS_TRUE),
 		ccs_bool(CCS_TRUE), CCS_SUCCESS);
 
 	test_binary_arithmetic(
-		CCS_OR, ccs_bool(CCS_TRUE), ccs_bool(CCS_TRUE),
+		CCS_EXPRESSION_TYPE_OR, ccs_bool(CCS_TRUE), ccs_bool(CCS_TRUE),
 		ccs_bool(CCS_TRUE), CCS_SUCCESS);
 
 	test_binary_arithmetic(
-		CCS_OR, ccs_int(1), ccs_bool(CCS_TRUE), ccs_none,
+		CCS_EXPRESSION_TYPE_OR, ccs_int(1), ccs_bool(CCS_TRUE), ccs_none,
 		CCS_INVALID_VALUE);
 }
 
@@ -536,43 +536,43 @@ void
 test_arithmetic_less()
 {
 	test_binary_arithmetic(
-		CCS_LESS, ccs_float(1.0), ccs_float(2.0), ccs_bool(CCS_TRUE),
+		CCS_EXPRESSION_TYPE_LESS, ccs_float(1.0), ccs_float(2.0), ccs_bool(CCS_TRUE),
 		CCS_SUCCESS);
 
 	test_binary_arithmetic(
-		CCS_LESS, ccs_float(1.0), ccs_float(1.0), ccs_bool(CCS_FALSE),
+		CCS_EXPRESSION_TYPE_LESS, ccs_float(1.0), ccs_float(1.0), ccs_bool(CCS_FALSE),
 		CCS_SUCCESS);
 
 	test_binary_arithmetic(
-		CCS_LESS, ccs_float(2.0), ccs_float(1.0), ccs_bool(CCS_FALSE),
+		CCS_EXPRESSION_TYPE_LESS, ccs_float(2.0), ccs_float(1.0), ccs_bool(CCS_FALSE),
 		CCS_SUCCESS);
 
 	test_binary_arithmetic(
-		CCS_LESS, ccs_int(1), ccs_float(2.0), ccs_bool(CCS_TRUE),
+		CCS_EXPRESSION_TYPE_LESS, ccs_int(1), ccs_float(2.0), ccs_bool(CCS_TRUE),
 		CCS_SUCCESS);
 
 	test_binary_arithmetic(
-		CCS_LESS, ccs_float(2.0), ccs_int(1), ccs_bool(CCS_FALSE),
+		CCS_EXPRESSION_TYPE_LESS, ccs_float(2.0), ccs_int(1), ccs_bool(CCS_FALSE),
 		CCS_SUCCESS);
 
 	test_binary_arithmetic(
-		CCS_LESS, ccs_int(1), ccs_int(1), ccs_bool(CCS_FALSE),
+		CCS_EXPRESSION_TYPE_LESS, ccs_int(1), ccs_int(1), ccs_bool(CCS_FALSE),
 		CCS_SUCCESS);
 
 	test_binary_arithmetic(
-		CCS_LESS, ccs_bool(CCS_TRUE), ccs_int(1), ccs_none,
+		CCS_EXPRESSION_TYPE_LESS, ccs_bool(CCS_TRUE), ccs_int(1), ccs_none,
 		CCS_INVALID_VALUE);
 
 	test_binary_arithmetic(
-		CCS_LESS, ccs_string("bar"), ccs_string("foo"),
+		CCS_EXPRESSION_TYPE_LESS, ccs_string("bar"), ccs_string("foo"),
 		ccs_bool(CCS_TRUE), CCS_SUCCESS);
 
 	test_binary_arithmetic(
-		CCS_LESS, ccs_string("baz"), ccs_string("bar"),
+		CCS_EXPRESSION_TYPE_LESS, ccs_string("baz"), ccs_string("bar"),
 		ccs_bool(CCS_FALSE), CCS_SUCCESS);
 
 	test_binary_arithmetic(
-		CCS_LESS, ccs_string("bar"), ccs_string("bar"),
+		CCS_EXPRESSION_TYPE_LESS, ccs_string("bar"), ccs_string("bar"),
 		ccs_bool(CCS_FALSE), CCS_SUCCESS);
 }
 
@@ -580,43 +580,43 @@ void
 test_arithmetic_greater()
 {
 	test_binary_arithmetic(
-		CCS_GREATER, ccs_float(1.0), ccs_float(2.0),
+		CCS_EXPRESSION_TYPE_GREATER, ccs_float(1.0), ccs_float(2.0),
 		ccs_bool(CCS_FALSE), CCS_SUCCESS);
 
 	test_binary_arithmetic(
-		CCS_GREATER, ccs_float(1.0), ccs_float(1.0),
+		CCS_EXPRESSION_TYPE_GREATER, ccs_float(1.0), ccs_float(1.0),
 		ccs_bool(CCS_FALSE), CCS_SUCCESS);
 
 	test_binary_arithmetic(
-		CCS_GREATER, ccs_float(2.0), ccs_float(1.0), ccs_bool(CCS_TRUE),
+		CCS_EXPRESSION_TYPE_GREATER, ccs_float(2.0), ccs_float(1.0), ccs_bool(CCS_TRUE),
 		CCS_SUCCESS);
 
 	test_binary_arithmetic(
-		CCS_GREATER, ccs_int(1), ccs_float(2.0), ccs_bool(CCS_FALSE),
+		CCS_EXPRESSION_TYPE_GREATER, ccs_int(1), ccs_float(2.0), ccs_bool(CCS_FALSE),
 		CCS_SUCCESS);
 
 	test_binary_arithmetic(
-		CCS_GREATER, ccs_float(2.0), ccs_int(1), ccs_bool(CCS_TRUE),
+		CCS_EXPRESSION_TYPE_GREATER, ccs_float(2.0), ccs_int(1), ccs_bool(CCS_TRUE),
 		CCS_SUCCESS);
 
 	test_binary_arithmetic(
-		CCS_GREATER, ccs_int(1), ccs_int(1), ccs_bool(CCS_FALSE),
+		CCS_EXPRESSION_TYPE_GREATER, ccs_int(1), ccs_int(1), ccs_bool(CCS_FALSE),
 		CCS_SUCCESS);
 
 	test_binary_arithmetic(
-		CCS_GREATER, ccs_bool(CCS_TRUE), ccs_int(1), ccs_none,
+		CCS_EXPRESSION_TYPE_GREATER, ccs_bool(CCS_TRUE), ccs_int(1), ccs_none,
 		CCS_INVALID_VALUE);
 
 	test_binary_arithmetic(
-		CCS_GREATER, ccs_string("bar"), ccs_string("foo"),
+		CCS_EXPRESSION_TYPE_GREATER, ccs_string("bar"), ccs_string("foo"),
 		ccs_bool(CCS_FALSE), CCS_SUCCESS);
 
 	test_binary_arithmetic(
-		CCS_GREATER, ccs_string("baz"), ccs_string("bar"),
+		CCS_EXPRESSION_TYPE_GREATER, ccs_string("baz"), ccs_string("bar"),
 		ccs_bool(CCS_TRUE), CCS_SUCCESS);
 
 	test_binary_arithmetic(
-		CCS_GREATER, ccs_string("bar"), ccs_string("bar"),
+		CCS_EXPRESSION_TYPE_GREATER, ccs_string("bar"), ccs_string("bar"),
 		ccs_bool(CCS_FALSE), CCS_SUCCESS);
 }
 
@@ -624,43 +624,43 @@ void
 test_arithmetic_less_or_equal()
 {
 	test_binary_arithmetic(
-		CCS_LESS_OR_EQUAL, ccs_float(1.0), ccs_float(2.0),
+		CCS_EXPRESSION_TYPE_LESS_OR_EQUAL, ccs_float(1.0), ccs_float(2.0),
 		ccs_bool(CCS_TRUE), CCS_SUCCESS);
 
 	test_binary_arithmetic(
-		CCS_LESS_OR_EQUAL, ccs_float(1.0), ccs_float(1.0),
+		CCS_EXPRESSION_TYPE_LESS_OR_EQUAL, ccs_float(1.0), ccs_float(1.0),
 		ccs_bool(CCS_TRUE), CCS_SUCCESS);
 
 	test_binary_arithmetic(
-		CCS_LESS_OR_EQUAL, ccs_float(2.0), ccs_float(1.0),
+		CCS_EXPRESSION_TYPE_LESS_OR_EQUAL, ccs_float(2.0), ccs_float(1.0),
 		ccs_bool(CCS_FALSE), CCS_SUCCESS);
 
 	test_binary_arithmetic(
-		CCS_LESS_OR_EQUAL, ccs_int(1), ccs_float(2.0),
+		CCS_EXPRESSION_TYPE_LESS_OR_EQUAL, ccs_int(1), ccs_float(2.0),
 		ccs_bool(CCS_TRUE), CCS_SUCCESS);
 
 	test_binary_arithmetic(
-		CCS_LESS_OR_EQUAL, ccs_float(2.0), ccs_int(1),
+		CCS_EXPRESSION_TYPE_LESS_OR_EQUAL, ccs_float(2.0), ccs_int(1),
 		ccs_bool(CCS_FALSE), CCS_SUCCESS);
 
 	test_binary_arithmetic(
-		CCS_LESS_OR_EQUAL, ccs_int(1), ccs_int(1), ccs_bool(CCS_TRUE),
+		CCS_EXPRESSION_TYPE_LESS_OR_EQUAL, ccs_int(1), ccs_int(1), ccs_bool(CCS_TRUE),
 		CCS_SUCCESS);
 
 	test_binary_arithmetic(
-		CCS_LESS_OR_EQUAL, ccs_bool(CCS_TRUE), ccs_int(1), ccs_none,
+		CCS_EXPRESSION_TYPE_LESS_OR_EQUAL, ccs_bool(CCS_TRUE), ccs_int(1), ccs_none,
 		CCS_INVALID_VALUE);
 
 	test_binary_arithmetic(
-		CCS_LESS_OR_EQUAL, ccs_string("bar"), ccs_string("foo"),
+		CCS_EXPRESSION_TYPE_LESS_OR_EQUAL, ccs_string("bar"), ccs_string("foo"),
 		ccs_bool(CCS_TRUE), CCS_SUCCESS);
 
 	test_binary_arithmetic(
-		CCS_LESS_OR_EQUAL, ccs_string("baz"), ccs_string("bar"),
+		CCS_EXPRESSION_TYPE_LESS_OR_EQUAL, ccs_string("baz"), ccs_string("bar"),
 		ccs_bool(CCS_FALSE), CCS_SUCCESS);
 
 	test_binary_arithmetic(
-		CCS_LESS_OR_EQUAL, ccs_string("bar"), ccs_string("bar"),
+		CCS_EXPRESSION_TYPE_LESS_OR_EQUAL, ccs_string("bar"), ccs_string("bar"),
 		ccs_bool(CCS_TRUE), CCS_SUCCESS);
 }
 
@@ -668,43 +668,43 @@ void
 test_arithmetic_greater_or_equal()
 {
 	test_binary_arithmetic(
-		CCS_GREATER_OR_EQUAL, ccs_float(1.0), ccs_float(2.0),
+		CCS_EXPRESSION_TYPE_GREATER_OR_EQUAL, ccs_float(1.0), ccs_float(2.0),
 		ccs_bool(CCS_FALSE), CCS_SUCCESS);
 
 	test_binary_arithmetic(
-		CCS_GREATER_OR_EQUAL, ccs_float(1.0), ccs_float(1.0),
+		CCS_EXPRESSION_TYPE_GREATER_OR_EQUAL, ccs_float(1.0), ccs_float(1.0),
 		ccs_bool(CCS_TRUE), CCS_SUCCESS);
 
 	test_binary_arithmetic(
-		CCS_GREATER_OR_EQUAL, ccs_float(2.0), ccs_float(1.0),
+		CCS_EXPRESSION_TYPE_GREATER_OR_EQUAL, ccs_float(2.0), ccs_float(1.0),
 		ccs_bool(CCS_TRUE), CCS_SUCCESS);
 
 	test_binary_arithmetic(
-		CCS_GREATER_OR_EQUAL, ccs_int(1), ccs_float(2.0),
+		CCS_EXPRESSION_TYPE_GREATER_OR_EQUAL, ccs_int(1), ccs_float(2.0),
 		ccs_bool(CCS_FALSE), CCS_SUCCESS);
 
 	test_binary_arithmetic(
-		CCS_GREATER_OR_EQUAL, ccs_float(2.0), ccs_int(1),
+		CCS_EXPRESSION_TYPE_GREATER_OR_EQUAL, ccs_float(2.0), ccs_int(1),
 		ccs_bool(CCS_TRUE), CCS_SUCCESS);
 
 	test_binary_arithmetic(
-		CCS_GREATER_OR_EQUAL, ccs_int(1), ccs_int(1),
+		CCS_EXPRESSION_TYPE_GREATER_OR_EQUAL, ccs_int(1), ccs_int(1),
 		ccs_bool(CCS_TRUE), CCS_SUCCESS);
 
 	test_binary_arithmetic(
-		CCS_GREATER_OR_EQUAL, ccs_bool(CCS_TRUE), ccs_int(1), ccs_none,
+		CCS_EXPRESSION_TYPE_GREATER_OR_EQUAL, ccs_bool(CCS_TRUE), ccs_int(1), ccs_none,
 		CCS_INVALID_VALUE);
 
 	test_binary_arithmetic(
-		CCS_GREATER_OR_EQUAL, ccs_string("bar"), ccs_string("foo"),
+		CCS_EXPRESSION_TYPE_GREATER_OR_EQUAL, ccs_string("bar"), ccs_string("foo"),
 		ccs_bool(CCS_FALSE), CCS_SUCCESS);
 
 	test_binary_arithmetic(
-		CCS_GREATER_OR_EQUAL, ccs_string("baz"), ccs_string("bar"),
+		CCS_EXPRESSION_TYPE_GREATER_OR_EQUAL, ccs_string("baz"), ccs_string("bar"),
 		ccs_bool(CCS_TRUE), CCS_SUCCESS);
 
 	test_binary_arithmetic(
-		CCS_GREATER_OR_EQUAL, ccs_string("bar"), ccs_string("bar"),
+		CCS_EXPRESSION_TYPE_GREATER_OR_EQUAL, ccs_string("bar"), ccs_string("bar"),
 		ccs_bool(CCS_TRUE), CCS_SUCCESS);
 }
 
@@ -720,47 +720,47 @@ test_in()
 	values[2] = ccs_string("foo");
 	values[3] = ccs_bool(CCS_TRUE);
 
-	err       = ccs_create_expression(CCS_LIST, 4, values, &list);
+	err       = ccs_create_expression(CCS_EXPRESSION_TYPE_LIST, 4, values, &list);
 	assert(err == CCS_SUCCESS);
 
 	test_binary_arithmetic(
-		CCS_IN, ccs_float(3.0), ccs_object(list), ccs_bool(CCS_TRUE),
+		CCS_EXPRESSION_TYPE_IN, ccs_float(3.0), ccs_object(list), ccs_bool(CCS_TRUE),
 		CCS_SUCCESS);
 
 	test_binary_arithmetic(
-		CCS_IN, ccs_int(1), ccs_object(list), ccs_bool(CCS_TRUE),
+		CCS_EXPRESSION_TYPE_IN, ccs_int(1), ccs_object(list), ccs_bool(CCS_TRUE),
 		CCS_SUCCESS);
 
 	test_binary_arithmetic(
-		CCS_IN, ccs_string("foo"), ccs_object(list), ccs_bool(CCS_TRUE),
+		CCS_EXPRESSION_TYPE_IN, ccs_string("foo"), ccs_object(list), ccs_bool(CCS_TRUE),
 		CCS_SUCCESS);
 
 	test_binary_arithmetic(
-		CCS_IN, ccs_bool(CCS_TRUE), ccs_object(list),
+		CCS_EXPRESSION_TYPE_IN, ccs_bool(CCS_TRUE), ccs_object(list),
 		ccs_bool(CCS_TRUE), CCS_SUCCESS);
 
 	test_binary_arithmetic(
-		CCS_IN, ccs_int(3), ccs_object(list), ccs_bool(CCS_TRUE),
+		CCS_EXPRESSION_TYPE_IN, ccs_int(3), ccs_object(list), ccs_bool(CCS_TRUE),
 		CCS_SUCCESS);
 
 	test_binary_arithmetic(
-		CCS_IN, ccs_float(1.0), ccs_object(list), ccs_bool(CCS_TRUE),
+		CCS_EXPRESSION_TYPE_IN, ccs_float(1.0), ccs_object(list), ccs_bool(CCS_TRUE),
 		CCS_SUCCESS);
 
 	test_binary_arithmetic(
-		CCS_IN, ccs_float(2.0), ccs_object(list), ccs_bool(CCS_FALSE),
+		CCS_EXPRESSION_TYPE_IN, ccs_float(2.0), ccs_object(list), ccs_bool(CCS_FALSE),
 		CCS_SUCCESS);
 
 	test_binary_arithmetic(
-		CCS_IN, ccs_int(2), ccs_object(list), ccs_bool(CCS_FALSE),
+		CCS_EXPRESSION_TYPE_IN, ccs_int(2), ccs_object(list), ccs_bool(CCS_FALSE),
 		CCS_SUCCESS);
 
 	test_binary_arithmetic(
-		CCS_IN, ccs_string("bar"), ccs_object(list),
+		CCS_EXPRESSION_TYPE_IN, ccs_string("bar"), ccs_object(list),
 		ccs_bool(CCS_FALSE), CCS_SUCCESS);
 
 	test_binary_arithmetic(
-		CCS_IN, ccs_bool(CCS_FALSE), ccs_object(list),
+		CCS_EXPRESSION_TYPE_IN, ccs_bool(CCS_FALSE), ccs_object(list),
 		ccs_bool(CCS_FALSE), CCS_SUCCESS);
 
 	err = ccs_release_object(list);
@@ -778,28 +778,28 @@ test_compound()
 	ccs_expression_type_t type;
 
 	err = ccs_create_binary_expression(
-		CCS_ADD, ccs_float(3.0), ccs_int(1), &expression1);
+		CCS_EXPRESSION_TYPE_ADD, ccs_float(3.0), ccs_int(1), &expression1);
 	assert(err == CCS_SUCCESS);
 	err = ccs_expression_get_nodes(expression1, 3, nodes, &num_nodes_ret);
 	assert(err == CCS_SUCCESS);
 	assert(num_nodes_ret == 2);
 	err = ccs_expression_get_type(nodes[0], &type);
 	assert(err == CCS_SUCCESS);
-	assert(type == CCS_LITERAL);
+	assert(type == CCS_EXPRESSION_TYPE_LITERAL);
 	err = ccs_literal_get_value(nodes[0], &result);
 	assert(err == CCS_SUCCESS);
 	assert(result.type == CCS_FLOAT);
 	assert(result.value.f == 3.0);
 	err = ccs_expression_get_type(nodes[1], &type);
 	assert(err == CCS_SUCCESS);
-	assert(type == CCS_LITERAL);
+	assert(type == CCS_EXPRESSION_TYPE_LITERAL);
 	err = ccs_literal_get_value(nodes[1], &result);
 	assert(err == CCS_SUCCESS);
 	assert(result.type == CCS_INTEGER);
 	assert(result.value.i == 1);
 
 	err = ccs_create_binary_expression(
-		CCS_MULTIPLY, ccs_float(2.0), ccs_object(expression1),
+		CCS_EXPRESSION_TYPE_MULTIPLY, ccs_float(2.0), ccs_object(expression1),
 		&expression2);
 	assert(err == CCS_SUCCESS);
 	err = ccs_release_object(expression1);
@@ -827,7 +827,7 @@ test_get_parameters()
 	parameter2 = create_dummy_numerical("param2");
 
 	err        = ccs_create_binary_expression(
-                CCS_ADD, ccs_float(3.0), ccs_object(parameter2), &expression1);
+                CCS_EXPRESSION_TYPE_ADD, ccs_float(3.0), ccs_object(parameter2), &expression1);
 	assert(err == CCS_SUCCESS);
 
 	err = ccs_expression_get_parameters(expression1, 0, NULL, &count);
@@ -841,7 +841,7 @@ test_get_parameters()
 	assert(parameters[2] == NULL);
 
 	err = ccs_create_binary_expression(
-		CCS_EQUAL, ccs_object(parameter1), ccs_object(expression1),
+		CCS_EXPRESSION_TYPE_EQUAL, ccs_object(parameter1), ccs_object(expression1),
 		&expression2);
 	assert(err == CCS_SUCCESS);
 
@@ -859,7 +859,7 @@ test_get_parameters()
 	assert(err == CCS_SUCCESS);
 
 	err = ccs_create_binary_expression(
-		CCS_EQUAL, ccs_object(parameter2), ccs_object(expression1),
+		CCS_EXPRESSION_TYPE_EQUAL, ccs_object(parameter2), ccs_object(expression1),
 		&expression2);
 	assert(err == CCS_SUCCESS);
 	err = ccs_expression_get_parameters(expression2, 3, parameters, &count);
@@ -901,11 +901,11 @@ test_check_context()
 	assert(err == CCS_SUCCESS);
 
 	err = ccs_create_binary_expression(
-		CCS_ADD, ccs_float(3.0), ccs_object(parameter2), &expression1);
+		CCS_EXPRESSION_TYPE_ADD, ccs_float(3.0), ccs_object(parameter2), &expression1);
 	assert(err == CCS_SUCCESS);
 
 	err = ccs_create_binary_expression(
-		CCS_EQUAL, ccs_object(parameter1), ccs_object(expression1),
+		CCS_EXPRESSION_TYPE_EQUAL, ccs_object(parameter1), ccs_object(expression1),
 		&expression2);
 	assert(err == CCS_SUCCESS);
 
@@ -918,7 +918,7 @@ test_check_context()
 	assert(err == CCS_SUCCESS);
 
 	err = ccs_create_binary_expression(
-		CCS_EQUAL, ccs_object(parameter3), ccs_object(expression1),
+		CCS_EXPRESSION_TYPE_EQUAL, ccs_object(parameter3), ccs_object(expression1),
 		&expression2);
 	assert(err == CCS_SUCCESS);
 	err = ccs_expression_check_context(expression2, (ccs_context_t)space);
@@ -981,7 +981,7 @@ test_deserialize_literal()
 
 	err = ccs_expression_get_type(expression, &etype);
 	assert(err == CCS_SUCCESS);
-	assert(etype == CCS_LITERAL);
+	assert(etype == CCS_EXPRESSION_TYPE_LITERAL);
 
 	err = ccs_literal_get_value(expression, &d);
 	assert(err == CCS_SUCCESS);
@@ -1065,7 +1065,7 @@ test_deserialize_variable()
 
 	err = ccs_expression_get_type(expression, &etype);
 	assert(err == CCS_SUCCESS);
-	assert(etype == CCS_VARIABLE);
+	assert(etype == CCS_EXPRESSION_TYPE_VARIABLE);
 
 	err = ccs_variable_get_parameter(expression, &parameter);
 	assert(err == CCS_SUCCESS);
@@ -1091,7 +1091,7 @@ test_deserialize()
 	parameter = create_dummy_numerical("param");
 
 	err       = ccs_create_binary_expression(
-                CCS_ADD, ccs_float(3.0), ccs_object(parameter), &expression);
+                CCS_EXPRESSION_TYPE_ADD, ccs_float(3.0), ccs_object(parameter), &expression);
 	assert(err == CCS_SUCCESS);
 
 	err = ccs_object_serialize(

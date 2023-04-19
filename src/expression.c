@@ -216,7 +216,7 @@ _ccs_expr_node_eval(
 	ccs_datum_t          *result,
 	ccs_parameter_type_t *ht)
 {
-	if (ht && n->data->type == CCS_VARIABLE) {
+	if (ht && n->data->type == CCS_EXPRESSION_TYPE_VARIABLE) {
 		_ccs_expression_variable_data_t *d =
 			(_ccs_expression_variable_data_t *)n->data;
 		CCS_VALIDATE(ccs_parameter_get_type(
@@ -699,7 +699,7 @@ _ccs_expr_in_eval(
 {
 	ccs_expression_type_t etype;
 	CCS_VALIDATE(ccs_expression_get_type(data->nodes[1], &etype));
-	CCS_REFUTE(etype != CCS_LIST, CCS_INVALID_VALUE);
+	CCS_REFUTE(etype != CCS_EXPRESSION_TYPE_LIST, CCS_INVALID_VALUE);
 	size_t               num_nodes;
 	ccs_datum_t          left;
 	ccs_bool_t           inactive = CCS_FALSE;
@@ -1272,64 +1272,64 @@ static inline _ccs_expression_ops_t *
 _ccs_expression_ops_broker(ccs_expression_type_t expression_type)
 {
 	switch (expression_type) {
-	case CCS_OR:
+	case CCS_EXPRESSION_TYPE_OR:
 		return &_ccs_expr_or_ops;
 		break;
-	case CCS_AND:
+	case CCS_EXPRESSION_TYPE_AND:
 		return &_ccs_expr_and_ops;
 		break;
-	case CCS_EQUAL:
+	case CCS_EXPRESSION_TYPE_EQUAL:
 		return &_ccs_expr_equal_ops;
 		break;
-	case CCS_NOT_EQUAL:
+	case CCS_EXPRESSION_TYPE_NOT_EQUAL:
 		return &_ccs_expr_not_equal_ops;
 		break;
-	case CCS_LESS:
+	case CCS_EXPRESSION_TYPE_LESS:
 		return &_ccs_expr_less_ops;
 		break;
-	case CCS_GREATER:
+	case CCS_EXPRESSION_TYPE_GREATER:
 		return &_ccs_expr_greater_ops;
 		break;
-	case CCS_LESS_OR_EQUAL:
+	case CCS_EXPRESSION_TYPE_LESS_OR_EQUAL:
 		return &_ccs_expr_less_or_equal_ops;
 		break;
-	case CCS_GREATER_OR_EQUAL:
+	case CCS_EXPRESSION_TYPE_GREATER_OR_EQUAL:
 		return &_ccs_expr_greater_or_equal_ops;
 		break;
-	case CCS_ADD:
+	case CCS_EXPRESSION_TYPE_ADD:
 		return &_ccs_expr_add_ops;
 		break;
-	case CCS_SUBSTRACT:
+	case CCS_EXPRESSION_TYPE_SUBSTRACT:
 		return &_ccs_expr_substract_ops;
 		break;
-	case CCS_MULTIPLY:
+	case CCS_EXPRESSION_TYPE_MULTIPLY:
 		return &_ccs_expr_multiply_ops;
 		break;
-	case CCS_DIVIDE:
+	case CCS_EXPRESSION_TYPE_DIVIDE:
 		return &_ccs_expr_divide_ops;
 		break;
-	case CCS_MODULO:
+	case CCS_EXPRESSION_TYPE_MODULO:
 		return &_ccs_expr_modulo_ops;
 		break;
-	case CCS_POSITIVE:
+	case CCS_EXPRESSION_TYPE_POSITIVE:
 		return &_ccs_expr_positive_ops;
 		break;
-	case CCS_NEGATIVE:
+	case CCS_EXPRESSION_TYPE_NEGATIVE:
 		return &_ccs_expr_negative_ops;
 		break;
-	case CCS_NOT:
+	case CCS_EXPRESSION_TYPE_NOT:
 		return &_ccs_expr_not_ops;
 		break;
-	case CCS_IN:
+	case CCS_EXPRESSION_TYPE_IN:
 		return &_ccs_expr_in_ops;
 		break;
-	case CCS_LIST:
+	case CCS_EXPRESSION_TYPE_LIST:
 		return &_ccs_expr_list_ops;
 		break;
-	case CCS_LITERAL:
+	case CCS_EXPRESSION_TYPE_LITERAL:
 		return &_ccs_expr_literal_ops;
 		break;
-	case CCS_VARIABLE:
+	case CCS_EXPRESSION_TYPE_VARIABLE:
 		return &_ccs_expr_variable_ops;
 		break;
 	default:
@@ -1356,11 +1356,11 @@ ccs_create_literal(ccs_datum_t value, ccs_expression_t *expression_ret)
 	ccs_expression_t expression = (ccs_expression_t)mem;
 	_ccs_object_init(
 		&(expression->obj), CCS_OBJECT_TYPE_EXPRESSION,
-		(_ccs_object_ops_t *)_ccs_expression_ops_broker(CCS_LITERAL));
+		(_ccs_object_ops_t *)_ccs_expression_ops_broker(CCS_EXPRESSION_TYPE_LITERAL));
 	_ccs_expression_literal_data_t *expression_data =
 		(_ccs_expression_literal_data_t
 			 *)(mem + sizeof(struct _ccs_expression_s));
-	expression_data->expr.type      = CCS_LITERAL;
+	expression_data->expr.type      = CCS_EXPRESSION_TYPE_LITERAL;
 	expression_data->expr.num_nodes = 0;
 	expression_data->expr.nodes     = NULL;
 	if (size_str) {
@@ -1392,11 +1392,11 @@ ccs_create_variable(ccs_parameter_t parameter, ccs_expression_t *expression_ret)
 	expression = (ccs_expression_t)mem;
 	_ccs_object_init(
 		&(expression->obj), CCS_OBJECT_TYPE_EXPRESSION,
-		(_ccs_object_ops_t *)_ccs_expression_ops_broker(CCS_VARIABLE));
+		(_ccs_object_ops_t *)_ccs_expression_ops_broker(CCS_EXPRESSION_TYPE_VARIABLE));
 	_ccs_expression_variable_data_t *expression_data;
 	expression_data                 = (_ccs_expression_variable_data_t
                                    *)(mem + sizeof(struct _ccs_expression_s));
-	expression_data->expr.type      = CCS_VARIABLE;
+	expression_data->expr.type      = CCS_EXPRESSION_TYPE_VARIABLE;
 	expression_data->expr.num_nodes = 0;
 	expression_data->expr.nodes     = NULL;
 	expression_data->parameter      = parameter;
@@ -1417,7 +1417,7 @@ ccs_create_expression(
 {
 	CCS_CHECK_ARY(num_nodes, nodes);
 	CCS_CHECK_PTR(expression_ret);
-	CCS_REFUTE(type < CCS_OR || type > CCS_LIST, CCS_INVALID_VALUE);
+	CCS_REFUTE(type < CCS_EXPRESSION_TYPE_OR || type > CCS_EXPRESSION_TYPE_LIST, CCS_INVALID_VALUE);
 	int arity = ccs_expression_arity[type];
 	CCS_REFUTE(arity >= 0 && num_nodes != (size_t)arity, CCS_INVALID_VALUE);
 	ccs_error_t err;
@@ -1579,7 +1579,7 @@ ccs_expression_list_eval_node(
 {
 	CCS_CHECK_OBJ(expression, CCS_OBJECT_TYPE_EXPRESSION);
 	CCS_CHECK_PTR(result);
-	CCS_REFUTE(expression->data->type != CCS_LIST, CCS_INVALID_EXPRESSION);
+	CCS_REFUTE(expression->data->type != CCS_EXPRESSION_TYPE_LIST, CCS_INVALID_EXPRESSION);
 	ccs_datum_t node;
 	CCS_REFUTE(index >= expression->data->num_nodes, CCS_OUT_OF_BOUNDS);
 	CCS_VALIDATE(_ccs_expr_node_eval(
@@ -1605,7 +1605,7 @@ ccs_literal_get_value(ccs_expression_t expression, ccs_datum_t *value_ret)
 	CCS_CHECK_OBJ(expression, CCS_OBJECT_TYPE_EXPRESSION);
 	CCS_CHECK_PTR(value_ret);
 	CCS_REFUTE(
-		expression->data->type != CCS_LITERAL, CCS_INVALID_EXPRESSION);
+		expression->data->type != CCS_EXPRESSION_TYPE_LITERAL, CCS_INVALID_EXPRESSION);
 	_ccs_expression_literal_data_t *d =
 		(_ccs_expression_literal_data_t *)expression->data;
 	*value_ret = d->value;
@@ -1620,7 +1620,7 @@ ccs_variable_get_parameter(
 	CCS_CHECK_OBJ(expression, CCS_OBJECT_TYPE_EXPRESSION);
 	CCS_CHECK_PTR(parameter_ret);
 	CCS_REFUTE(
-		expression->data->type != CCS_VARIABLE, CCS_INVALID_EXPRESSION);
+		expression->data->type != CCS_EXPRESSION_TYPE_VARIABLE, CCS_INVALID_EXPRESSION);
 	_ccs_expression_variable_data_t *d =
 		(_ccs_expression_variable_data_t *)expression->data;
 	*parameter_ret = d->parameter;
@@ -1639,7 +1639,7 @@ static ccs_error_t
 _get_parameters(ccs_expression_t expression, UT_array *array)
 {
 	CCS_CHECK_OBJ(expression, CCS_OBJECT_TYPE_EXPRESSION);
-	if (expression->data->type == CCS_VARIABLE) {
+	if (expression->data->type == CCS_EXPRESSION_TYPE_VARIABLE) {
 		_ccs_expression_variable_data_t *d =
 			(_ccs_expression_variable_data_t *)expression->data;
 		utarray_push_back(array, &(d->parameter));

@@ -30,7 +30,7 @@ module CCS
 
     ExpressionSymbols.reverse_each { |k, v|
       next unless v
-      next if k == :CCS_POSITIVE || k == :CCS_NEGATIVE
+      next if k == :CCS_EXPRESSION_TYPE_POSITIVE || k == :CCS_EXPRESSION_TYPE_NEGATIVE
       associativity = AssociativityMap[ExpressionAssociativity[k]]
       precedence = ExpressionPrecedence[k]
       rule(v) % associativity ^ precedence
@@ -90,7 +90,7 @@ module CCS
           r[:expr, v, :expr].as { |a, _, b| Expression.binary(type: k, left: a, right: b) }
         end
       }
-      r[:expr, "#", :list].as { |v, _, l| Expression.binary(type: :CCS_IN, left: v, right: l) }
+      r[:expr, "#", :list].as { |v, _, l| Expression.binary(type: :CCS_EXPRESSION_TYPE_IN, left: v, right: l) }
       r[:value]
     end
 

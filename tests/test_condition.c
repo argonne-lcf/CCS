@@ -37,7 +37,7 @@ test_simple()
 	assert(err == CCS_SUCCESS);
 
 	err = ccs_create_binary_expression(
-		CCS_LESS, ccs_object(parameter1), ccs_float(0.0), &expression);
+		CCS_EXPRESSION_TYPE_LESS, ccs_object(parameter1), ccs_float(0.0), &expression);
 	assert(err == CCS_SUCCESS);
 
 	err = ccs_configuration_space_set_condition(space, 1, expression);
@@ -123,7 +123,7 @@ test_transitive()
 	assert(err == CCS_SUCCESS);
 
 	err = ccs_create_binary_expression(
-		CCS_LESS, ccs_object(parameters[1]), ccs_float(0.0),
+		CCS_EXPRESSION_TYPE_LESS, ccs_object(parameters[1]), ccs_float(0.0),
 		&expression);
 	assert(err == CCS_SUCCESS);
 	err = ccs_configuration_space_set_condition(space, 2, expression);
@@ -132,7 +132,7 @@ test_transitive()
 	assert(err == CCS_SUCCESS);
 
 	err = ccs_create_binary_expression(
-		CCS_LESS, ccs_object(parameters[2]), ccs_float(0.0),
+		CCS_EXPRESSION_TYPE_LESS, ccs_object(parameters[2]), ccs_float(0.0),
 		&expression);
 	assert(err == CCS_SUCCESS);
 	err = ccs_configuration_space_set_condition(space, 0, expression);

@@ -24,7 +24,7 @@ class CConfigSpaceTestObjectiveSpace < Minitest::Test
     assert_equal( h3, os.parameter(2) )
     assert_equal( [h1, h2, h3], os.parameters )
     assert_equal( h2, os.parameter_by_name(h2.name) )
-    e1 = CCS::Expression::new(type: :CCS_ADD, nodes: [h1, h2])
+    e1 = CCS::Expression::new(type: :CCS_EXPRESSION_TYPE_ADD, nodes: [h1, h2])
     e2 = CCS::Variable::new(parameter: h3)
     os.add_objective(e1)
     assert_equal( 1, os.objectives.size )

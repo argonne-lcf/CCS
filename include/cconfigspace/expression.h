@@ -19,45 +19,45 @@ extern "C" {
  */
 enum ccs_expression_type_e {
 	/** Or boolean operator */
-	CCS_OR = 0,
+	CCS_EXPRESSION_TYPE_OR = 0,
 	/** And boolean operator */
-	CCS_AND,
+	CCS_EXPRESSION_TYPE_AND,
 	/** Equality test operator */
-	CCS_EQUAL,
+	CCS_EXPRESSION_TYPE_EQUAL,
 	/** Inequality test operator */
-	CCS_NOT_EQUAL,
+	CCS_EXPRESSION_TYPE_NOT_EQUAL,
 	/** Lesser than comparison operator */
-	CCS_LESS,
+	CCS_EXPRESSION_TYPE_LESS,
 	/** Greater than comparison operator */
-	CCS_GREATER,
+	CCS_EXPRESSION_TYPE_GREATER,
 	/** Lesser than or equal comparison operator */
-	CCS_LESS_OR_EQUAL,
+	CCS_EXPRESSION_TYPE_LESS_OR_EQUAL,
 	/** Greater than or equal comparison operator */
-	CCS_GREATER_OR_EQUAL,
+	CCS_EXPRESSION_TYPE_GREATER_OR_EQUAL,
 	/** Addition operator */
-	CCS_ADD,
+	CCS_EXPRESSION_TYPE_ADD,
 	/** Substraction operator */
-	CCS_SUBSTRACT,
+	CCS_EXPRESSION_TYPE_SUBSTRACT,
 	/** Multiplication operator */
-	CCS_MULTIPLY,
+	CCS_EXPRESSION_TYPE_MULTIPLY,
 	/** Division operator */
-	CCS_DIVIDE,
+	CCS_EXPRESSION_TYPE_DIVIDE,
 	/** Modulo operator */
-	CCS_MODULO,
+	CCS_EXPRESSION_TYPE_MODULO,
 	/** Unary plus operator */
-	CCS_POSITIVE,
+	CCS_EXPRESSION_TYPE_POSITIVE,
 	/** Unary minus operator */
-	CCS_NEGATIVE,
+	CCS_EXPRESSION_TYPE_NEGATIVE,
 	/** Not boolean operator */
-	CCS_NOT,
+	CCS_EXPRESSION_TYPE_NOT,
 	/** List inclusion test operator */
-	CCS_IN,
+	CCS_EXPRESSION_TYPE_IN,
 	/** List */
-	CCS_LIST,
+	CCS_EXPRESSION_TYPE_LIST,
 	/** Literal constant */
-	CCS_LITERAL,
+	CCS_EXPRESSION_TYPE_LITERAL,
 	/** Variable */
-	CCS_VARIABLE,
+	CCS_EXPRESSION_TYPE_VARIABLE,
 	/** Guard */
 	CCS_EXPRESSION_TYPE_MAX,
 	/** Try forcing 32 bits value for bindings */
@@ -397,7 +397,7 @@ ccs_expression_get_nodes(
  *                       the literal
  * @return #CCS_SUCCESS on success
  * @return #CCS_INVALID_OBJECT if \p expression is not a valid CCS expression
- * @return #CCS_INVALID_EXPRESSION if \p expression is not a #CCS_LITERAL
+ * @return #CCS_INVALID_EXPRESSION if \p expression is not a #CCS_EXPRESSION_TYPE_LITERAL
  * @return #CCS_INVALID_VALUE if \p value_ret is NULL
  */
 extern ccs_error_t
@@ -410,7 +410,7 @@ ccs_literal_get_value(ccs_expression_t expression, ccs_datum_t *value_ret);
  *                                parameter
  * @return #CCS_SUCCESS on success
  * @return #CCS_INVALID_OBJECT if \p expression is not a valid CCS expression
- * @return #CCS_INVALID_EXPRESSION if \p expression is not a #CCS_VARIABLE
+ * @return #CCS_INVALID_EXPRESSION if \p expression is not a #CCS_EXPRESSION_TYPE_VARIABLE
  * @return #CCS_INVALID_VALUE if \p parameter_ret is NULL
  */
 extern ccs_error_t
@@ -462,7 +462,7 @@ ccs_expression_eval(
  * @return #CCS_INVALID_OBJECT if \p expression is not a valid CCS expression;
  *                              or if \p context is NULL and \p expression must
  *                              evaluate a variable
- * @return #CCS_INVALID_EXPRESSION if \p expression is not a #CCS_LIST
+ * @return #CCS_INVALID_EXPRESSION if \p expression is not a #CCS_EXPRESSION_TYPE_LIST
  * @return #CCS_OUT_OF_BOUNDS if \p index is greater than the number of child
  *                             nodes in the list
  * @return #CCS_INVALID_VALUE if \p result_ret is NULL; or if \p values is NULL

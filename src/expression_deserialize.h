@@ -185,18 +185,18 @@ _ccs_deserialize_bin_expression(
 	CCS_VALIDATE(
 		_ccs_peek_bin_ccs_expression_type(&dtype, buffer_size, buffer));
 	switch (dtype) {
-	case CCS_LITERAL:
+	case CCS_EXPRESSION_TYPE_LITERAL:
 		CCS_VALIDATE(_ccs_deserialize_bin_expression_literal(
 			expression_ret, version, buffer_size, buffer));
 		break;
-	case CCS_VARIABLE:
+	case CCS_EXPRESSION_TYPE_VARIABLE:
 		CCS_VALIDATE(_ccs_deserialize_bin_expression_variable(
 			expression_ret, version, buffer_size, buffer,
 			&new_opts));
 		break;
 	default:
 		CCS_REFUTE(
-			dtype < CCS_OR || dtype >= CCS_EXPRESSION_TYPE_MAX,
+			dtype < CCS_EXPRESSION_TYPE_OR || dtype >= CCS_EXPRESSION_TYPE_MAX,
 			CCS_UNSUPPORTED_OPERATION);
 		CCS_VALIDATE(_ccs_deserialize_bin_expression_general(
 			expression_ret, version, buffer_size, buffer,

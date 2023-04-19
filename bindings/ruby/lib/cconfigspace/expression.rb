@@ -1,25 +1,25 @@
 module CCS
   ExpressionType = enum FFI::Type::INT32, :ccs_expression_type_t, [
-    :CCS_OR, 0,
-    :CCS_AND,
-    :CCS_EQUAL,
-    :CCS_NOT_EQUAL,
-    :CCS_LESS,
-    :CCS_GREATER,
-    :CCS_LESS_OR_EQUAL,
-    :CCS_GREATER_OR_EQUAL,
-    :CCS_ADD,
-    :CCS_SUBSTRACT,
-    :CCS_MULTIPLY,
-    :CCS_DIVIDE,
-    :CCS_MODULO,
-    :CCS_POSITIVE,
-    :CCS_NEGATIVE,
-    :CCS_NOT,
-    :CCS_IN,
-    :CCS_LIST,
-    :CCS_LITERAL,
-    :CCS_VARIABLE
+    :CCS_EXPRESSION_TYPE_OR, 0,
+    :CCS_EXPRESSION_TYPE_AND,
+    :CCS_EXPRESSION_TYPE_EQUAL,
+    :CCS_EXPRESSION_TYPE_NOT_EQUAL,
+    :CCS_EXPRESSION_TYPE_LESS,
+    :CCS_EXPRESSION_TYPE_GREATER,
+    :CCS_EXPRESSION_TYPE_LESS_OR_EQUAL,
+    :CCS_EXPRESSION_TYPE_GREATER_OR_EQUAL,
+    :CCS_EXPRESSION_TYPE_ADD,
+    :CCS_EXPRESSION_TYPE_SUBSTRACT,
+    :CCS_EXPRESSION_TYPE_MULTIPLY,
+    :CCS_EXPRESSION_TYPE_DIVIDE,
+    :CCS_EXPRESSION_TYPE_MODULO,
+    :CCS_EXPRESSION_TYPE_POSITIVE,
+    :CCS_EXPRESSION_TYPE_NEGATIVE,
+    :CCS_EXPRESSION_TYPE_NOT,
+    :CCS_EXPRESSION_TYPE_IN,
+    :CCS_EXPRESSION_TYPE_LIST,
+    :CCS_EXPRESSION_TYPE_LITERAL,
+    :CCS_EXPRESSION_TYPE_VARIABLE
   ]
   class MemoryPointer
     def read_ccs_expression_type_t
@@ -117,11 +117,11 @@ module CCS
       ptr = MemoryPointer::new(:ccs_expression_type_t)
       CCS.error_check CCS.ccs_expression_get_type(handle, ptr)
       case ptr.read_ccs_expression_type_t
-      when :CCS_LIST
+      when :CCS_EXPRESSION_TYPE_LIST
         List
-      when :CCS_LITERAL
+      when :CCS_EXPRESSION_TYPE_LITERAL
 	Literal
-      when :CCS_VARIABLE
+      when :CCS_EXPRESSION_TYPE_VARIABLE
         Variable
       else
         Expression
@@ -270,7 +270,7 @@ module CCS
       if handle
         super(handle, retain: retain)
       else
-        super(nil, retain: false, type: :CCS_LIST, nodes: values)
+        super(nil, retain: false, type: :CCS_EXPRESSION_TYPE_LIST, nodes: values)
       end
     end
 
