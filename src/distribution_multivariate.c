@@ -218,7 +218,7 @@ ccs_create_multivariate_distribution(
 		(_ccs_object_ops_t *)&_ccs_distribution_multivariate_ops);
 	distrib_data = (_ccs_distribution_multivariate_data_t *)(cur_mem);
 	cur_mem += sizeof(_ccs_distribution_multivariate_data_t);
-	distrib_data->common_data.type      = CCS_MULTIVARIATE;
+	distrib_data->common_data.type = CCS_DISTRIBUTION_TYPE_MULTIVARIATE;
 	distrib_data->common_data.dimension = dimension;
 	distrib_data->num_distributions     = num_distributions;
 	distrib_data->distributions         = (ccs_distribution_t *)(cur_mem);
@@ -358,7 +358,8 @@ ccs_multivariate_distribution_get_num_distributions(
 	ccs_distribution_t distribution,
 	size_t            *num_distributions_ret)
 {
-	CCS_CHECK_DISTRIBUTION(distribution, CCS_MULTIVARIATE);
+	CCS_CHECK_DISTRIBUTION(
+		distribution, CCS_DISTRIBUTION_TYPE_MULTIVARIATE);
 	CCS_CHECK_PTR(num_distributions_ret);
 	_ccs_distribution_multivariate_data_t *data =
 		(_ccs_distribution_multivariate_data_t *)distribution->data;
@@ -373,7 +374,8 @@ ccs_multivariate_distribution_get_distributions(
 	ccs_distribution_t *distributions,
 	size_t             *num_distributions_ret)
 {
-	CCS_CHECK_DISTRIBUTION(distribution, CCS_MULTIVARIATE);
+	CCS_CHECK_DISTRIBUTION(
+		distribution, CCS_DISTRIBUTION_TYPE_MULTIVARIATE);
 	CCS_CHECK_ARY(num_distributions, distributions);
 	CCS_REFUTE(!distributions && !num_distributions_ret, CCS_INVALID_VALUE);
 	_ccs_distribution_multivariate_data_t *data =

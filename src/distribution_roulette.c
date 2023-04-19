@@ -268,8 +268,8 @@ ccs_create_roulette_distribution(
 	distrib_data->common_data.data_types =
 		(ccs_numeric_type_t
 			 *)(mem + sizeof(struct _ccs_distribution_s) + sizeof(_ccs_distribution_roulette_data_t) + sizeof(ccs_float_t) * (num_areas + 1));
-	distrib_data->common_data.type          = CCS_ROULETTE;
-	distrib_data->common_data.dimension     = 1;
+	distrib_data->common_data.type      = CCS_DISTRIBUTION_TYPE_ROULETTE;
+	distrib_data->common_data.dimension = 1;
 	distrib_data->common_data.data_types[0] = CCS_NUM_INTEGER;
 	distrib_data->num_areas                 = num_areas;
 	distrib_data->areas =
@@ -293,7 +293,7 @@ ccs_roulette_distribution_get_num_areas(
 	ccs_distribution_t distribution,
 	size_t            *num_areas_ret)
 {
-	CCS_CHECK_DISTRIBUTION(distribution, CCS_ROULETTE);
+	CCS_CHECK_DISTRIBUTION(distribution, CCS_DISTRIBUTION_TYPE_ROULETTE);
 	CCS_CHECK_PTR(num_areas_ret);
 	_ccs_distribution_roulette_data_t *data =
 		(_ccs_distribution_roulette_data_t *)distribution->data;
@@ -308,7 +308,7 @@ ccs_roulette_distribution_get_areas(
 	ccs_float_t       *areas,
 	size_t            *num_areas_ret)
 {
-	CCS_CHECK_DISTRIBUTION(distribution, CCS_ROULETTE);
+	CCS_CHECK_DISTRIBUTION(distribution, CCS_DISTRIBUTION_TYPE_ROULETTE);
 	CCS_CHECK_ARY(num_areas, areas);
 	CCS_REFUTE(!areas && !num_areas_ret, CCS_INVALID_VALUE);
 	_ccs_distribution_roulette_data_t *data =
@@ -331,7 +331,7 @@ ccs_roulette_distribution_set_areas(
 	size_t             num_areas,
 	ccs_float_t       *areas)
 {
-	CCS_CHECK_DISTRIBUTION(distribution, CCS_ROULETTE);
+	CCS_CHECK_DISTRIBUTION(distribution, CCS_DISTRIBUTION_TYPE_ROULETTE);
 	_ccs_distribution_roulette_data_t *distrib_data =
 		(_ccs_distribution_roulette_data_t *)distribution->data;
 	CCS_REFUTE(num_areas != distrib_data->num_areas, CCS_INVALID_VALUE);

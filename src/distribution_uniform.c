@@ -418,7 +418,7 @@ ccs_create_uniform_distribution(
 	distrib_data->common_data.data_types =
 		(ccs_numeric_type_t
 			 *)(mem + sizeof(struct _ccs_distribution_s) + sizeof(_ccs_distribution_uniform_data_t));
-	distrib_data->common_data.type          = CCS_UNIFORM;
+	distrib_data->common_data.type          = CCS_DISTRIBUTION_TYPE_UNIFORM;
 	distrib_data->common_data.dimension     = 1;
 	distrib_data->common_data.data_types[0] = data_type;
 	distrib_data->scale_type                = scale_type;
@@ -466,7 +466,7 @@ ccs_uniform_distribution_get_properties(
 	ccs_scale_type_t  *scale_type_ret,
 	ccs_numeric_t     *quantization_ret)
 {
-	CCS_CHECK_DISTRIBUTION(distribution, CCS_UNIFORM);
+	CCS_CHECK_DISTRIBUTION(distribution, CCS_DISTRIBUTION_TYPE_UNIFORM);
 	CCS_REFUTE(
 		!lower_ret && !upper_ret && !scale_type_ret &&
 			!quantization_ret,

@@ -30,7 +30,7 @@ compare_distribution(
 
 	err = ccs_distribution_get_type(distrib, &dtype);
 	assert(err == CCS_SUCCESS);
-	assert(dtype == CCS_MULTIVARIATE);
+	assert(dtype == CCS_DISTRIBUTION_TYPE_MULTIVARIATE);
 
 	err = ccs_distribution_get_data_types(distrib, data_types);
 	assert(err == CCS_SUCCESS);

@@ -565,7 +565,7 @@ ccs_create_normal_distribution(
 	distrib_data->common_data.data_types =
 		(ccs_numeric_type_t
 			 *)(mem + sizeof(struct _ccs_distribution_s) + sizeof(_ccs_distribution_normal_data_t));
-	distrib_data->common_data.type          = CCS_NORMAL;
+	distrib_data->common_data.type          = CCS_DISTRIBUTION_TYPE_NORMAL;
 	distrib_data->common_data.dimension     = 1;
 	distrib_data->common_data.data_types[0] = data_type;
 	distrib_data->scale_type                = scale_type;
@@ -592,7 +592,7 @@ ccs_normal_distribution_get_properties(
 	ccs_scale_type_t  *scale_type_ret,
 	ccs_numeric_t     *quantization_ret)
 {
-	CCS_CHECK_DISTRIBUTION(distribution, CCS_NORMAL);
+	CCS_CHECK_DISTRIBUTION(distribution, CCS_DISTRIBUTION_TYPE_NORMAL);
 	CCS_REFUTE(
 		!mu_ret && !sigma_ret && !scale_type_ret && !quantization_ret,
 		CCS_INVALID_VALUE);

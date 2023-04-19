@@ -1,11 +1,11 @@
 module CCS
 
   DistributionType = enum FFI::Type::INT32, :ccs_distribution_type_t, [
-    :CCS_UNIFORM,
-    :CCS_NORMAL,
-    :CCS_ROULETTE,
-    :CCS_MIXTURE,
-    :CCS_MULTIVARIATE
+    :CCS_DISTRIBUTION_TYPE_UNIFORM,
+    :CCS_DISTRIBUTION_TYPE_NORMAL,
+    :CCS_DISTRIBUTION_TYPE_ROULETTE,
+    :CCS_DISTRIBUTION_TYPE_MIXTURE,
+    :CCS_DISTRIBUTION_TYPE_MULTIVARIATE
   ]
   class MemoryPointer
     def read_ccs_distribution_type_t
@@ -39,15 +39,15 @@ module CCS
       ptr = MemoryPointer::new(:ccs_distribution_type_t)
       CCS.error_check CCS.ccs_distribution_get_type(handle, ptr)
       case ptr.read_ccs_distribution_type_t
-      when :CCS_UNIFORM
+      when :CCS_DISTRIBUTION_TYPE_UNIFORM
         UniformDistribution
-      when :CCS_NORMAL
+      when :CCS_DISTRIBUTION_TYPE_NORMAL
         NormalDistribution
-      when :CCS_ROULETTE
+      when :CCS_DISTRIBUTION_TYPE_ROULETTE
         RouletteDistribution
-      when :CCS_MIXTURE
+      when :CCS_DISTRIBUTION_TYPE_MIXTURE
         MixtureDistribution
-      when :CCS_MULTIVARIATE
+      when :CCS_DISTRIBUTION_TYPE_MULTIVARIATE
         MultivariateDistribution
       else
         raise CCSError, :CCS_INVALID_DISTRIBUTION

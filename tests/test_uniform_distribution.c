@@ -27,7 +27,7 @@ compare_distribution(
 
 	err = ccs_distribution_get_type(distrib, &dtype);
 	assert(err == CCS_SUCCESS);
-	assert(dtype == CCS_UNIFORM);
+	assert(dtype == CCS_DISTRIBUTION_TYPE_UNIFORM);
 
 	err = ccs_distribution_get_data_types(distrib, &data_type);
 	assert(err == CCS_SUCCESS);

@@ -18,15 +18,15 @@ extern "C" {
  */
 enum ccs_distribution_type_e {
 	/** A uniform distribution over floating point or integer values */
-	CCS_UNIFORM,
+	CCS_DISTRIBUTION_TYPE_UNIFORM,
 	/** A normal distribution over floating point or integer values */
-	CCS_NORMAL,
+	CCS_DISTRIBUTION_TYPE_NORMAL,
 	/** A roulette wheel selection distribution */
-	CCS_ROULETTE,
+	CCS_DISTRIBUTION_TYPE_ROULETTE,
 	/** A mixture distribution */
-	CCS_MIXTURE,
+	CCS_DISTRIBUTION_TYPE_MIXTURE,
 	/** A multivariate distribution */
-	CCS_MULTIVARIATE,
+	CCS_DISTRIBUTION_TYPE_MULTIVARIATE,
 	/** Guard */
 	CCS_DISTRIBUTION_TYPE_MAX,
 	/** Try forcing 32 bits value for bindings */

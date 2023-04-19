@@ -334,23 +334,23 @@ _ccs_deserialize_bin_distribution(
 	CCS_VALIDATE(_ccs_peek_bin_ccs_distribution_type(
 		&dtype, buffer_size, buffer));
 	switch (dtype) {
-	case CCS_UNIFORM:
+	case CCS_DISTRIBUTION_TYPE_UNIFORM:
 		CCS_VALIDATE(_ccs_deserialize_bin_distribution_uniform(
 			distribution_ret, version, buffer_size, buffer));
 		break;
-	case CCS_NORMAL:
+	case CCS_DISTRIBUTION_TYPE_NORMAL:
 		CCS_VALIDATE(_ccs_deserialize_bin_distribution_normal(
 			distribution_ret, version, buffer_size, buffer));
 		break;
-	case CCS_ROULETTE:
+	case CCS_DISTRIBUTION_TYPE_ROULETTE:
 		CCS_VALIDATE(_ccs_deserialize_bin_distribution_roulette(
 			distribution_ret, version, buffer_size, buffer));
 		break;
-	case CCS_MIXTURE:
+	case CCS_DISTRIBUTION_TYPE_MIXTURE:
 		CCS_VALIDATE(_ccs_deserialize_bin_distribution_mixture(
 			distribution_ret, version, buffer_size, buffer, opts));
 		break;
-	case CCS_MULTIVARIATE:
+	case CCS_DISTRIBUTION_TYPE_MULTIVARIATE:
 		CCS_VALIDATE(_ccs_deserialize_bin_distribution_multivariate(
 			distribution_ret, version, buffer_size, buffer, opts));
 		break;

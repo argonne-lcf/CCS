@@ -54,7 +54,7 @@ compare_parameter(
 
 	err = ccs_distribution_get_type(distribution, &dist_type);
 	assert(err == CCS_SUCCESS);
-	assert(dist_type == CCS_UNIFORM);
+	assert(dist_type == CCS_DISTRIBUTION_TYPE_UNIFORM);
 
 	err = ccs_distribution_get_bounds(distribution, &interval);
 	assert(err == CCS_SUCCESS);
