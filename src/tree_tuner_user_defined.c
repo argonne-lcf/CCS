@@ -341,7 +341,7 @@ ccs_create_user_defined_tree_tuner(
 	tun->data = (struct _ccs_tree_tuner_data_s
 			     *)(mem + sizeof(struct _ccs_tree_tuner_s));
 	data      = (_ccs_user_defined_tree_tuner_data_t *)tun->data;
-	data->common_data.type = CCS_TREE_TUNER_USER_DEFINED;
+	data->common_data.type = CCS_TREE_TUNER_TYPE_USER_DEFINED;
 	data->common_data.name =
 		(const char
 			 *)(mem + sizeof(struct _ccs_tree_tuner_s) + sizeof(struct _ccs_user_defined_tree_tuner_data_s));
@@ -369,7 +369,7 @@ ccs_user_defined_tree_tuner_get_tuner_data(
 	_ccs_user_defined_tree_tuner_data_t *d =
 		(_ccs_user_defined_tree_tuner_data_t *)tuner->data;
 	CCS_REFUTE(
-		d->common_data.type != CCS_TREE_TUNER_USER_DEFINED,
+		d->common_data.type != CCS_TREE_TUNER_TYPE_USER_DEFINED,
 		CCS_INVALID_TUNER);
 	*tuner_data_ret = d->tuner_data;
 	return CCS_SUCCESS;

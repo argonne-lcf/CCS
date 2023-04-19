@@ -252,14 +252,14 @@ _ccs_deserialize_bin_tree_tuner(
 	ccs_tree_tuner_type_t ttype;
 	CCS_VALIDATE(
 		_ccs_peek_bin_ccs_tree_tuner_type(&ttype, buffer_size, buffer));
-	if (ttype == CCS_TREE_TUNER_USER_DEFINED)
+	if (ttype == CCS_TREE_TUNER_TYPE_USER_DEFINED)
 		CCS_CHECK_PTR(opts->vector);
 
 	new_opts.map_values = CCS_TRUE;
 	CCS_VALIDATE(ccs_create_map(&new_opts.handle_map));
 
 	switch (ttype) {
-	case CCS_TREE_TUNER_RANDOM:
+	case CCS_TREE_TUNER_TYPE_RANDOM:
 		CCS_VALIDATE_ERR_GOTO(
 			res,
 			_ccs_deserialize_bin_random_tree_tuner(
@@ -267,7 +267,7 @@ _ccs_deserialize_bin_tree_tuner(
 				&new_opts),
 			end);
 		break;
-	case CCS_TREE_TUNER_USER_DEFINED:
+	case CCS_TREE_TUNER_TYPE_USER_DEFINED:
 		CCS_VALIDATE_ERR_GOTO(
 			res,
 			_ccs_deserialize_bin_user_defined_tree_tuner(

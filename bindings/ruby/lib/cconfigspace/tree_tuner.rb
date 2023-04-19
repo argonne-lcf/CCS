@@ -1,8 +1,8 @@
 module CCS
 
   TreeTunerType = enum FFI::Type::INT32, :ccs_tree_tuner_type_t, [
-    :CCS_TREE_TUNER_RANDOM,
-    :CCS_TREE_TUNER_USER_DEFINED
+    :CCS_TREE_TUNER_TYPE_RANDOM,
+    :CCS_TREE_TUNER_TYPE_USER_DEFINED
   ]
   class MemoryPointer
     def read_ccs_tree_tuner_type_t
@@ -29,9 +29,9 @@ module CCS
       ptr = MemoryPointer::new(:ccs_tuner_type_t)
       CCS.error_check CCS.ccs_tree_tuner_get_type(handle, ptr)
       case ptr.read_ccs_tree_tuner_type_t
-      when :CCS_TREE_TUNER_RANDOM
+      when :CCS_TREE_TUNER_TYPE_RANDOM
 	RandomTreeTuner
-      when :CCS_TREE_TUNER_USER_DEFINED
+      when :CCS_TREE_TUNER_TYPE_USER_DEFINED
         UserDefinedTreeTuner
       else
         raise CCSError, :CCS_INVALID_TREE_TUNER

@@ -36,7 +36,7 @@ class CConfigSpaceTestTreeTuner < Minitest::Test
     t2 = CCS::Object.from_handle(t)
     assert_equal(t.class, t2.class)
     assert_equal("tuner", t.name)
-    assert_equal(:CCS_TREE_TUNER_RANDOM, t.type)
+    assert_equal(:CCS_TREE_TUNER_TYPE_RANDOM, t.type)
     evals = t.ask(100).map { |c|
       CCS::TreeEvaluation.new(objective_space: os, configuration: c, values: [c.values.reduce(:+)])
     }
@@ -124,7 +124,7 @@ class CConfigSpaceTestTreeTuner < Minitest::Test
     t2 = CCS::Object::from_handle(t)
     assert_equal( t.class, t2.class)
     assert_equal( "tuner", t.name )
-    assert_equal( :CCS_TREE_TUNER_USER_DEFINED, t.type )
+    assert_equal( :CCS_TREE_TUNER_TYPE_USER_DEFINED, t.type )
     evals = t.ask(100).map { |c|
       CCS::TreeEvaluation.new(objective_space: os, configuration: c, values: [c.values.reduce(:+)])
     }
