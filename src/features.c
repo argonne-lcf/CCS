@@ -120,7 +120,7 @@ ccs_create_features(
 		memcpy(feat->data->values, values,
 		       num_parameters * sizeof(ccs_datum_t));
 		for (size_t i = 0; i < num_values; i++)
-			if (values[i].flags & CCS_FLAG_TRANSIENT)
+			if (values[i].flags & CCS_DATUM_FLAG_TRANSIENT)
 				CCS_VALIDATE_ERR_GOTO(
 					err,
 					ccs_features_space_validate_value(

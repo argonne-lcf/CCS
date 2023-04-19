@@ -1384,7 +1384,7 @@ ccs_create_literal(ccs_datum_t value, ccs_expression_t *expression_ret)
 		strcpy(str_pool, value.value.s);
 	} else {
 		expression_data->value       = value;
-		expression_data->value.flags = CCS_FLAG_DEFAULT;
+		expression_data->value.flags = CCS_DATUM_FLAG_DEFAULT;
 	}
 	expression->data = (_ccs_expression_data_t *)expression_data;
 	*expression_ret  = expression;

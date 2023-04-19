@@ -328,7 +328,7 @@ test_evaluation_deserialize()
 	assert(err == CCS_INVALID_HANDLE);
 
 	d = ccs_object(ospace);
-	d.flags |= CCS_FLAG_ID;
+	d.flags |= CCS_DATUM_FLAG_ID;
 	err = ccs_map_set(map, d, ccs_object(ospace));
 	assert(err == CCS_SUCCESS);
 
@@ -340,7 +340,7 @@ test_evaluation_deserialize()
 	assert(err == CCS_INVALID_HANDLE);
 
 	d = ccs_object(fspace);
-	d.flags |= CCS_FLAG_ID;
+	d.flags |= CCS_DATUM_FLAG_ID;
 	err = ccs_map_set(map, d, ccs_object(fspace));
 	assert(err == CCS_SUCCESS);
 
@@ -352,7 +352,7 @@ test_evaluation_deserialize()
 	assert(err == CCS_INVALID_HANDLE);
 
 	d = ccs_object(cspace);
-	d.flags |= CCS_FLAG_ID;
+	d.flags |= CCS_DATUM_FLAG_ID;
 	err = ccs_map_set(map, d, ccs_object(cspace));
 	assert(err == CCS_SUCCESS);
 

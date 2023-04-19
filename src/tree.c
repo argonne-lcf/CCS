@@ -182,7 +182,7 @@ ccs_create_tree(size_t arity, ccs_datum_t value, ccs_tree_t *tree_ret)
 		strcpy(str_pool, value.value.s);
 	} else {
 		data->value       = value;
-		data->value.flags = CCS_FLAG_DEFAULT;
+		data->value.flags = CCS_DATUM_FLAG_DEFAULT;
 	}
 	ccs_error_t err = CCS_SUCCESS;
 	CCS_VALIDATE_ERR_GOTO(

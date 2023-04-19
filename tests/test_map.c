@@ -46,10 +46,10 @@ test_map()
 	strcpy(str2, "bar");
 
 	d1 = ccs_string(str1);
-	d1.flags |= CCS_FLAG_TRANSIENT;
+	d1.flags |= CCS_DATUM_FLAG_TRANSIENT;
 
 	d2 = ccs_string(str2);
-	d2.flags |= CCS_FLAG_TRANSIENT;
+	d2.flags |= CCS_DATUM_FLAG_TRANSIENT;
 
 	err = ccs_map_set(map, d1, ccs_true);
 	assert(err == CCS_SUCCESS);
@@ -87,14 +87,14 @@ test_map()
 	assert(err == CCS_SUCCESS);
 
 	d3       = ccs_object((ccs_object_t)0xdeadbeef);
-	d3.flags = CCS_FLAG_ID;
+	d3.flags = CCS_DATUM_FLAG_ID;
 	err      = ccs_map_set(map, ccs_int(6), d3);
 	assert(err == CCS_SUCCESS);
 
 	err = ccs_map_get(map, ccs_int(6), &d_ret);
 	assert(err == CCS_SUCCESS);
 	assert(d_ret.type == CCS_DATA_TYPE_OBJECT);
-	assert(d_ret.flags & CCS_FLAG_ID);
+	assert(d_ret.flags & CCS_DATUM_FLAG_ID);
 	assert(d_ret.value.o == (ccs_object_t)0xdeadbeef);
 
 	err = ccs_map_del(map, ccs_int(5));

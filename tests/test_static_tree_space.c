@@ -146,7 +146,7 @@ test_static_tree_space()
 	assert(err == CCS_INVALID_HANDLE);
 
 	d = ccs_object(tree_space);
-	d.flags |= CCS_FLAG_ID;
+	d.flags |= CCS_DATUM_FLAG_ID;
 	err = ccs_map_set(map, d, ccs_object(tree_space));
 	assert(err == CCS_SUCCESS);
 

@@ -26,9 +26,9 @@ ccs_create_map(ccs_map_t *map_ret);
  * Associate a key to a value in a map
  * param[in,out] map
  * param[in] key if a transient string it will be memoized, if a CCS object it
- *               will be retained unless #CCS_FLAG_ID is used.
+ *               will be retained unless #CCS_DATUM_FLAG_ID is used.
  * param[in] value if a transient string it will be memoized, if a CCS object
- *                 it will be retained unless #CCS_FLAG_ID is used.
+ *                 it will be retained unless #CCS_DATUM_FLAG_ID is used.
  * @return #CCS_SUCCESS on success
  * @return #CCS_INVALID_OBJECT if \p map is not a valid CCS map
  * @return #CCS_OUT_OF_MEMORY if there was not enough memory to allocate data

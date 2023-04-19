@@ -1060,7 +1060,7 @@ test_deserialize_variable()
 	assert(err == CCS_INVALID_HANDLE);
 
 	d = ccs_object(parameter);
-	d.flags |= CCS_FLAG_ID;
+	d.flags |= CCS_DATUM_FLAG_ID;
 	err = ccs_map_set(handle_map, d, ccs_object(parameter));
 	assert(err == CCS_SUCCESS);
 
@@ -1144,7 +1144,7 @@ test_deserialize()
 	assert(err == CCS_INVALID_HANDLE);
 
 	d = ccs_object(parameter);
-	d.flags |= CCS_FLAG_ID;
+	d.flags |= CCS_DATUM_FLAG_ID;
 	err = ccs_map_set(handle_map, d, ccs_object(parameter));
 	assert(err == CCS_SUCCESS);
 

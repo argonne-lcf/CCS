@@ -962,7 +962,7 @@ _ccs_deserialize_bin_ccs_datum(
 	ccs_data_type_t type;
 	CCS_VALIDATE(
 		_ccs_deserialize_bin_ccs_data_type(&type, buffer_size, buffer));
-	datum->flags = CCS_FLAG_DEFAULT;
+	datum->flags = CCS_DATUM_FLAG_DEFAULT;
 	switch (type) {
 	case CCS_DATA_TYPE_NONE:
 		*datum = ccs_none;
@@ -993,14 +993,14 @@ _ccs_deserialize_bin_ccs_datum(
 		CCS_VALIDATE(
 			_ccs_deserialize_bin_string(&s, buffer_size, buffer));
 		*datum = ccs_string(s);
-		datum->flags |= CCS_FLAG_TRANSIENT;
+		datum->flags |= CCS_DATUM_FLAG_TRANSIENT;
 	} break;
 	case CCS_DATA_TYPE_OBJECT: {
 		ccs_object_t o;
 		CCS_VALIDATE(_ccs_deserialize_bin_ccs_object(
 			&o, buffer_size, buffer));
 		*datum = ccs_object(o);
-		datum->flags |= CCS_FLAG_ID;
+		datum->flags |= CCS_DATUM_FLAG_ID;
 	} break;
 	default:
 		*datum = ccs_none;
@@ -1051,7 +1051,7 @@ _ccs_object_handle_check_add(
 {
 	ccs_bool_t  found;
 	ccs_datum_t d = ccs_object(handle);
-	d.flags |= CCS_FLAG_ID;
+	d.flags |= CCS_DATUM_FLAG_ID;
 	CCS_VALIDATE(ccs_map_exist(map, d, &found));
 	CCS_REFUTE(found, CCS_HANDLE_DUPLICATE);
 	CCS_VALIDATE(ccs_map_set(map, d, ccs_object(obj)));

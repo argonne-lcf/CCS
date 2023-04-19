@@ -369,7 +369,7 @@ _ccs_create_categorical_parameter(
 			str_pool += strlen(possible_values[i].value.s) + 1;
 		} else {
 			pvs[i].d       = possible_values[i];
-			pvs[i].d.flags = CCS_FLAG_DEFAULT;
+			pvs[i].d.flags = CCS_DATUM_FLAG_DEFAULT;
 		}
 		HASH_ADD(
 			hh, parameter_data->hash, d, sizeof(ccs_datum_t),

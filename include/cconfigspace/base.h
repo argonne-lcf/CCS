@@ -307,21 +307,21 @@ typedef enum ccs_data_type_e ccs_data_type_t;
  */
 enum ccs_datum_flag_e {
 	/** Empty default flags */
-	CCS_FLAG_DEFAULT           = 0,
+	CCS_DATUM_FLAG_DEFAULT     = 0,
 	/**
 	 * The value given to CCS is a pointer and is not guaranteed to stay
 	 * allocated
 	 */
-	CCS_FLAG_TRANSIENT         = (1 << 0),
+	CCS_DATUM_FLAG_TRANSIENT   = (1 << 0),
 	/**
 	 * The value returned by CCS is a pointer and is not associated to a
 	 * CCS object and needs to be freed by the user (unused).
 	 */
-	CCS_FLAG_UNPOOLED          = (1 << 1),
+	CCS_DATUM_FLAG_UNPOOLED    = (1 << 1),
 	/**
 	 * The object handle is just an identifier.
 	 */
-	CCS_FLAG_ID                = (1 << 2),
+	CCS_DATUM_FLAG_ID          = (1 << 2),
 	/** Try forcing 32 bits value for bindings */
 	CCS_DATUM_FLAG_FORCE_32BIT = INT32_MAX
 };
@@ -477,7 +477,7 @@ ccs_bool(ccs_bool_t v)
 	ccs_datum_t d;
 	d.type    = CCS_DATA_TYPE_BOOL;
 	d.value.i = v;
-	d.flags   = CCS_FLAG_DEFAULT;
+	d.flags   = CCS_DATUM_FLAG_DEFAULT;
 	return d;
 }
 
@@ -492,7 +492,7 @@ ccs_float(ccs_float_t v)
 	ccs_datum_t d;
 	d.type    = CCS_DATA_TYPE_FLOAT;
 	d.value.f = v;
-	d.flags   = CCS_FLAG_DEFAULT;
+	d.flags   = CCS_DATUM_FLAG_DEFAULT;
 	return d;
 }
 
@@ -507,7 +507,7 @@ ccs_int(ccs_int_t v)
 	ccs_datum_t d;
 	d.type    = CCS_DATA_TYPE_INT;
 	d.value.i = v;
-	d.flags   = CCS_FLAG_DEFAULT;
+	d.flags   = CCS_DATUM_FLAG_DEFAULT;
 	return d;
 }
 
@@ -522,7 +522,7 @@ ccs_object(ccs_object_t v)
 	ccs_datum_t d;
 	d.type    = CCS_DATA_TYPE_OBJECT;
 	d.value.o = v;
-	d.flags   = CCS_FLAG_DEFAULT;
+	d.flags   = CCS_DATUM_FLAG_DEFAULT;
 	return d;
 }
 
@@ -537,7 +537,7 @@ ccs_string(const char *v)
 	ccs_datum_t d;
 	d.type    = CCS_DATA_TYPE_STRING;
 	d.value.s = v;
-	d.flags   = CCS_FLAG_DEFAULT;
+	d.flags   = CCS_DATUM_FLAG_DEFAULT;
 	return d;
 }
 
@@ -611,23 +611,25 @@ extern const ccs_datum_t ccs_false;
  */
 #define CCS_NONE_VAL                                                           \
 	{                                                                      \
-		{0}, CCS_DATA_TYPE_NONE, CCS_FLAG_DEFAULT                      \
+		{0}, CCS_DATA_TYPE_NONE, CCS_DATUM_FLAG_DEFAULT                \
 	}
 /**
  * A macro defining the inactive datum value.
  */
 #define CCS_INACTIVE_VAL                                                       \
 	{                                                                      \
-		{0}, CCS_DATA_TYPE_INACTIVE, CCS_FLAG_DEFAULT                  \
+		{0}, CCS_DATA_TYPE_INACTIVE, CCS_DATUM_FLAG_DEFAULT            \
 	}
 #ifdef __cplusplus
 #define CCS_TRUE_VAL                                                           \
 	{                                                                      \
-		{(ccs_int_t)CCS_TRUE}, CCS_DATA_TYPE_BOOL, CCS_FLAG_DEFAULT    \
+		{(ccs_int_t)CCS_TRUE}, CCS_DATA_TYPE_BOOL,                     \
+			CCS_DATUM_FLAG_DEFAULT                                 \
 	}
 #define CCS_FALSE_VAL                                                          \
 	{                                                                      \
-		{(ccs_int_t)CCS_FALSE}, CCS_DATA_TYPE_BOOL, CCS_FLAG_DEFAULT   \
+		{(ccs_int_t)CCS_FALSE}, CCS_DATA_TYPE_BOOL,                    \
+			CCS_DATUM_FLAG_DEFAULT                                 \
 	}
 #else
 /**
@@ -635,14 +637,14 @@ extern const ccs_datum_t ccs_false;
  */
 #define CCS_TRUE_VAL                                                           \
 	{                                                                      \
-		{.i = CCS_TRUE}, CCS_DATA_TYPE_BOOL, CCS_FLAG_DEFAULT          \
+		{.i = CCS_TRUE}, CCS_DATA_TYPE_BOOL, CCS_DATUM_FLAG_DEFAULT    \
 	}
 /**
  * A macro defining the false boolean datum value.
  */
 #define CCS_FALSE_VAL                                                          \
 	{                                                                      \
-		{.i = CCS_FALSE}, CCS_DATA_TYPE_BOOL, CCS_FLAG_DEFAULT         \
+		{.i = CCS_FALSE}, CCS_DATA_TYPE_BOOL, CCS_DATUM_FLAG_DEFAULT   \
 	}
 #endif
 

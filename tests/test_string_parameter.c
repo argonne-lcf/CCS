@@ -93,7 +93,7 @@ test_string_memoization()
 
 	str       = strdup("my string");
 	din       = ccs_string(str);
-	din.flags = CCS_FLAG_TRANSIENT;
+	din.flags = CCS_DATUM_FLAG_TRANSIENT;
 
 	err       = ccs_parameter_validate_value(parameter, din, &dout, &check);
 	assert(err == CCS_SUCCESS);

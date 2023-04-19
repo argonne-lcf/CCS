@@ -438,7 +438,7 @@ test_configuration_deserialize()
 	assert(err == CCS_INVALID_HANDLE);
 
 	d = ccs_object(configuration_space);
-	d.flags |= CCS_FLAG_ID;
+	d.flags |= CCS_DATUM_FLAG_ID;
 	err = ccs_map_set(map, d, ccs_object(configuration_space));
 	assert(err == CCS_SUCCESS);
 

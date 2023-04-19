@@ -231,7 +231,7 @@ ccs_create_features_evaluation(
 	if (values) {
 		memcpy(eval->data->values, values, num * sizeof(ccs_datum_t));
 		for (size_t i = 0; i < num_values; i++) {
-			if (values[i].flags & CCS_FLAG_TRANSIENT) {
+			if (values[i].flags & CCS_DATUM_FLAG_TRANSIENT) {
 				CCS_VALIDATE_ERR_GOTO(
 					err,
 					ccs_objective_space_validate_value(

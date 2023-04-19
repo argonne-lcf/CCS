@@ -447,7 +447,7 @@ extract_value(
   case ValueType::kokkos_value_string:
 	  CCS_DEBUG_MSG_ARGS("received: %s\n", tuningValue->value.string_value);
 	  *d       = ccs_string(tuningValue->value.string_value);
-	  d->flags = CCS_FLAG_TRANSIENT;
+	  d->flags = CCS_DATUM_FLAG_TRANSIENT;
 	  break;
   default:
 	  assert(false && "Unknown ValueType");

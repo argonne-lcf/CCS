@@ -51,7 +51,7 @@ static inline ccs_error_t
 _ccs_binding_set_value(ccs_binding_t binding, size_t index, ccs_datum_t value)
 {
 	CCS_REFUTE(index >= binding->data->num_values, CCS_OUT_OF_BOUNDS);
-	if (value.flags & CCS_FLAG_TRANSIENT)
+	if (value.flags & CCS_DATUM_FLAG_TRANSIENT)
 		CCS_VALIDATE(ccs_context_validate_value(
 			binding->data->context, index, value, &value));
 	binding->data->values[index] = value;
@@ -94,7 +94,7 @@ _ccs_binding_set_values(
 	if (values) {
 		for (size_t i = 0; i < num_values; i++) {
 			ccs_datum_t value = values[i];
-			if (value.flags & CCS_FLAG_TRANSIENT)
+			if (value.flags & CCS_DATUM_FLAG_TRANSIENT)
 				CCS_VALIDATE(ccs_context_validate_value(
 					binding->data->context, i, value,
 					&value));

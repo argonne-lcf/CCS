@@ -199,7 +199,7 @@ _ccs_parameter_numerical_samples(
 	}
 	for (size_t i = 0; i < num_values; i++) {
 		values[i].type  = (ccs_data_type_t)type;
-		values[i].flags = CCS_FLAG_DEFAULT;
+		values[i].flags = CCS_DATUM_FLAG_DEFAULT;
 	}
 	return CCS_SUCCESS;
 errmem:

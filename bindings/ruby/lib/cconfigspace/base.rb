@@ -214,14 +214,14 @@ module CCS
     :CCS_DATA_TYPE_OBJECT ]
 
   DatumFlag = enum FFI::Type::INT32, :ccs_datum_flag_t, [
-    :CCS_FLAG_DEFAULT, 0,
-    :CCS_FLAG_TRANSIENT, (1 << 0),
-    :CCS_FLAG_UNPOOLED, (1 << 1),
-    :CCS_FLAG_ID, (1 << 2) ]
+    :CCS_DATUM_FLAG_DEFAULT, 0,
+    :CCS_DATUM_FLAG_TRANSIENT, (1 << 0),
+    :CCS_DATUM_FLAG_UNPOOLED, (1 << 1),
+    :CCS_DATUM_FLAG_ID, (1 << 2) ]
 
   DatumFlags = bitmask FFI::Type::UINT32, :ccs_datum_flags_t, [
-    :CCS_FLAG_TRANSIENT,
-    :CCS_FLAG_UNPOOLED ]
+    :CCS_DATUM_FLAG_TRANSIENT,
+    :CCS_DATUM_FLAG_UNPOOLED ]
 
   NumericType = enum FFI::Type::INT32, :ccs_numeric_type_t, [
     :CCS_NUM_INTEGER, DataType.to_native(:CCS_DATA_TYPE_INT, nil),
@@ -363,7 +363,7 @@ module CCS
       when :CCS_DATA_TYPE_INACTIVE
         Inactive
       when :CCS_DATA_TYPE_OBJECT
-        if self[:flags].include?( :CCS_FLAG_ID )
+        if self[:flags].include?( :CCS_DATUM_FLAG_ID )
           Object::new(self[:value][:o], retain: false, auto_release: false)
         else
           Object::from_handle(self[:value][:o])
@@ -410,19 +410,19 @@ module CCS
         end
         self[:type] = :CCS_DATA_TYPE_STRING
         self[:value][:s] = ptr
-        self[:flags] = :CCS_FLAG_TRANSIENT
+        self[:flags] = :CCS_DATUM_FLAG_TRANSIENT
       when Object
         self[:type] = :CCS_DATA_TYPE_OBJECT
         self[:value][:o] = v.handle
         if v.class == Object
-          self[:flags] = :CCS_FLAG_ID
+          self[:flags] = :CCS_DATUM_FLAG_ID
         else
           if object_store
             object_store.push v
           else
             @object = v
           end
-          self[:flags] = :CCS_FLAG_TRANSIENT
+          self[:flags] = :CCS_DATUM_FLAG_TRANSIENT
         end
       else
         raise CCSError, :CCS_INVALID_TYPE
@@ -463,16 +463,16 @@ module CCS
         d.instance_variable_set(:@string, ptr)
         d[:type] = :CCS_DATA_TYPE_STRING
         d[:value][:s] = ptr
-        d[:flags] = :CCS_FLAG_TRANSIENT
+        d[:flags] = :CCS_DATUM_FLAG_TRANSIENT
         d
       when Object
         d = self::new
         d[:type] = :CCS_DATA_TYPE_OBJECT
         d[:value][:o] = v.handle
         if v.class == Object
-          d[:flags] = :CCS_FLAG_ID
+          d[:flags] = :CCS_DATUM_FLAG_ID
         else
-          d[:flags] = :CCS_FLAG_TRANSIENT
+          d[:flags] = :CCS_DATUM_FLAG_TRANSIENT
           d.instance_variable_set(:@object, v)
         end
         d
