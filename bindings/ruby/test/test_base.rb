@@ -39,7 +39,7 @@ class CConfigSpaceTest < Minitest::Test
     d[:value][:o] = rng.handle
     o = d.value
     assert( o.kind_of? CCS::Rng )
-    assert_equal( :CCS_RNG, d.value.object_type )
+    assert_equal( :CCS_OBJECT_TYPE_RNG, d.value.object_type )
   end
 
   def test_from_value

@@ -103,7 +103,7 @@ ccs_create_features_space(
 
 	ccs_features_space_t feat_space = (ccs_features_space_t)mem;
 	_ccs_object_init(
-		&(feat_space->obj), CCS_FEATURES_SPACE,
+		&(feat_space->obj), CCS_OBJECT_TYPE_FEATURES_SPACE,
 		(_ccs_object_ops_t *)&_features_space_ops);
 	feat_space->data =
 		(struct _ccs_features_space_data_s
@@ -127,7 +127,7 @@ ccs_features_space_get_name(
 	ccs_features_space_t features_space,
 	const char         **name_ret)
 {
-	CCS_CHECK_OBJ(features_space, CCS_FEATURES_SPACE);
+	CCS_CHECK_OBJ(features_space, CCS_OBJECT_TYPE_FEATURES_SPACE);
 	CCS_VALIDATE(
 		_ccs_context_get_name((ccs_context_t)features_space, name_ret));
 	return CCS_SUCCESS;
@@ -152,8 +152,8 @@ ccs_features_space_add_parameter(
 	ccs_features_space_t features_space,
 	ccs_parameter_t      parameter)
 {
-	CCS_CHECK_OBJ(features_space, CCS_FEATURES_SPACE);
-	CCS_CHECK_OBJ(parameter, CCS_PARAMETER);
+	CCS_CHECK_OBJ(features_space, CCS_OBJECT_TYPE_FEATURES_SPACE);
+	CCS_CHECK_OBJ(parameter, CCS_OBJECT_TYPE_PARAMETER);
 	ccs_error_t                  err;
 	const char                  *name;
 	size_t                       sz_name;
@@ -208,7 +208,7 @@ ccs_features_space_add_parameters(
 	size_t               num_parameters,
 	ccs_parameter_t     *parameters)
 {
-	CCS_CHECK_OBJ(features_space, CCS_FEATURES_SPACE);
+	CCS_CHECK_OBJ(features_space, CCS_OBJECT_TYPE_FEATURES_SPACE);
 	CCS_CHECK_ARY(num_parameters, parameters);
 	for (size_t i = 0; i < num_parameters; i++)
 		CCS_VALIDATE(ccs_features_space_add_parameter(
@@ -221,7 +221,7 @@ ccs_features_space_get_num_parameters(
 	ccs_features_space_t features_space,
 	size_t              *num_parameters_ret)
 {
-	CCS_CHECK_OBJ(features_space, CCS_FEATURES_SPACE);
+	CCS_CHECK_OBJ(features_space, CCS_OBJECT_TYPE_FEATURES_SPACE);
 	CCS_VALIDATE(_ccs_context_get_num_parameters(
 		(ccs_context_t)features_space, num_parameters_ret));
 	return CCS_SUCCESS;
@@ -233,7 +233,7 @@ ccs_features_space_get_parameter(
 	size_t               index,
 	ccs_parameter_t     *parameter_ret)
 {
-	CCS_CHECK_OBJ(features_space, CCS_FEATURES_SPACE);
+	CCS_CHECK_OBJ(features_space, CCS_OBJECT_TYPE_FEATURES_SPACE);
 	CCS_VALIDATE(_ccs_context_get_parameter(
 		(ccs_context_t)features_space, index, parameter_ret));
 	return CCS_SUCCESS;
@@ -245,7 +245,7 @@ ccs_features_space_get_parameter_by_name(
 	const char          *name,
 	ccs_parameter_t     *parameter_ret)
 {
-	CCS_CHECK_OBJ(features_space, CCS_FEATURES_SPACE);
+	CCS_CHECK_OBJ(features_space, CCS_OBJECT_TYPE_FEATURES_SPACE);
 	CCS_VALIDATE(_ccs_context_get_parameter_by_name(
 		(ccs_context_t)features_space, name, parameter_ret));
 	return CCS_SUCCESS;
@@ -257,7 +257,7 @@ ccs_features_space_get_parameter_index_by_name(
 	const char          *name,
 	size_t              *index_ret)
 {
-	CCS_CHECK_OBJ(features_space, CCS_FEATURES_SPACE);
+	CCS_CHECK_OBJ(features_space, CCS_OBJECT_TYPE_FEATURES_SPACE);
 	CCS_VALIDATE(_ccs_context_get_parameter_index_by_name(
 		(ccs_context_t)features_space, name, index_ret));
 	return CCS_SUCCESS;
@@ -269,8 +269,8 @@ ccs_features_space_get_parameter_index(
 	ccs_parameter_t      parameter,
 	size_t              *index_ret)
 {
-	CCS_CHECK_OBJ(features_space, CCS_FEATURES_SPACE);
-	CCS_CHECK_OBJ(parameter, CCS_PARAMETER);
+	CCS_CHECK_OBJ(features_space, CCS_OBJECT_TYPE_FEATURES_SPACE);
+	CCS_CHECK_OBJ(parameter, CCS_OBJECT_TYPE_PARAMETER);
 	CCS_VALIDATE(_ccs_context_get_parameter_index(
 		(ccs_context_t)(features_space), parameter, index_ret));
 	return CCS_SUCCESS;
@@ -283,7 +283,7 @@ ccs_features_space_get_parameter_indexes(
 	ccs_parameter_t     *parameters,
 	size_t              *indexes)
 {
-	CCS_CHECK_OBJ(features_space, CCS_FEATURES_SPACE);
+	CCS_CHECK_OBJ(features_space, CCS_OBJECT_TYPE_FEATURES_SPACE);
 	CCS_VALIDATE(_ccs_context_get_parameter_indexes(
 		(ccs_context_t)features_space, num_parameters, parameters,
 		indexes));
@@ -297,7 +297,7 @@ ccs_features_space_get_parameters(
 	ccs_parameter_t     *parameters,
 	size_t              *num_parameters_ret)
 {
-	CCS_CHECK_OBJ(features_space, CCS_FEATURES_SPACE);
+	CCS_CHECK_OBJ(features_space, CCS_OBJECT_TYPE_FEATURES_SPACE);
 	CCS_VALIDATE(_ccs_context_get_parameters(
 		(ccs_context_t)features_space, num_parameters, parameters,
 		num_parameters_ret));
@@ -311,7 +311,7 @@ ccs_features_space_validate_value(
 	ccs_datum_t          value,
 	ccs_datum_t         *value_ret)
 {
-	CCS_CHECK_OBJ(features_space, CCS_FEATURES_SPACE);
+	CCS_CHECK_OBJ(features_space, CCS_OBJECT_TYPE_FEATURES_SPACE);
 	CCS_VALIDATE(_ccs_context_validate_value(
 		(ccs_context_t)features_space, index, value, value_ret));
 	return CCS_SUCCESS;
@@ -345,8 +345,8 @@ ccs_features_space_check_features(
 	ccs_features_t       features,
 	ccs_bool_t          *is_valid_ret)
 {
-	CCS_CHECK_OBJ(features_space, CCS_FEATURES_SPACE);
-	CCS_CHECK_OBJ(features, CCS_FEATURES);
+	CCS_CHECK_OBJ(features_space, CCS_OBJECT_TYPE_FEATURES_SPACE);
+	CCS_CHECK_OBJ(features, CCS_OBJECT_TYPE_FEATURES);
 	CCS_REFUTE(
 		features->data->features_space != features_space,
 		CCS_INVALID_FEATURES);
@@ -363,7 +363,7 @@ ccs_features_space_check_features_values(
 	ccs_datum_t         *values,
 	ccs_bool_t          *is_valid_ret)
 {
-	CCS_CHECK_OBJ(features_space, CCS_CONFIGURATION_SPACE);
+	CCS_CHECK_OBJ(features_space, CCS_OBJECT_TYPE_CONFIGURATION_SPACE);
 	CCS_CHECK_ARY(num_values, values);
 	CCS_VALIDATE(_check_features(
 		features_space, num_values, values, is_valid_ret));

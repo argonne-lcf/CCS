@@ -242,7 +242,7 @@ ccs_create_string_parameter(const char *name, ccs_parameter_t *parameter_ret)
 
 	ccs_parameter_t parameter = (ccs_parameter_t)mem;
 	_ccs_object_init(
-		&(parameter->obj), CCS_PARAMETER,
+		&(parameter->obj), CCS_OBJECT_TYPE_PARAMETER,
 		(_ccs_object_ops_t *)&_ccs_parameter_string_ops);
 	_ccs_parameter_string_data_t *parameter_data =
 		(_ccs_parameter_string_data_t

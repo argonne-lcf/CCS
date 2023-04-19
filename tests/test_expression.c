@@ -977,7 +977,7 @@ test_deserialize_literal()
 
 	err = ccs_object_get_type(expression, &otype);
 	assert(err == CCS_SUCCESS);
-	assert(otype == CCS_EXPRESSION);
+	assert(otype == CCS_OBJECT_TYPE_EXPRESSION);
 
 	err = ccs_expression_get_type(expression, &etype);
 	assert(err == CCS_SUCCESS);
@@ -1061,7 +1061,7 @@ test_deserialize_variable()
 
 	err = ccs_object_get_type(expression, &otype);
 	assert(err == CCS_SUCCESS);
-	assert(otype == CCS_EXPRESSION);
+	assert(otype == CCS_OBJECT_TYPE_EXPRESSION);
 
 	err = ccs_expression_get_type(expression, &etype);
 	assert(err == CCS_SUCCESS);

@@ -120,7 +120,7 @@ _ccs_deserialize_bin_expression_variable(
 	const char                       **buffer,
 	_ccs_object_deserialize_options_t *opts)
 {
-	CCS_CHECK_OBJ(opts->handle_map, CCS_MAP);
+	CCS_CHECK_OBJ(opts->handle_map, CCS_OBJECT_TYPE_MAP);
 	_ccs_expression_variable_data_mock_t data;
 	CCS_VALIDATE(_ccs_deserialize_bin_ccs_expression_variable_data(
 		&data, version, buffer_size, buffer));
@@ -179,7 +179,7 @@ _ccs_deserialize_bin_expression(
 	ccs_error_t            res;
 	CCS_VALIDATE(_ccs_deserialize_bin_ccs_object_internal(
 		&obj, buffer_size, buffer, &handle));
-	CCS_REFUTE(obj.type != CCS_EXPRESSION, CCS_INVALID_TYPE);
+	CCS_REFUTE(obj.type != CCS_OBJECT_TYPE_EXPRESSION, CCS_INVALID_TYPE);
 
 	ccs_expression_type_t dtype;
 	CCS_VALIDATE(

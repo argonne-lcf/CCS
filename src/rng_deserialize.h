@@ -19,7 +19,7 @@ _ccs_deserialize_bin_rng(
 	ccs_object_t           handle;
 	CCS_VALIDATE(_ccs_deserialize_bin_ccs_object_internal(
 		&obj, buffer_size, buffer, &handle));
-	CCS_REFUTE(obj.type != CCS_RNG, CCS_INVALID_TYPE);
+	CCS_REFUTE(obj.type != CCS_OBJECT_TYPE_RNG, CCS_INVALID_TYPE);
 
 	const char *name;
 	ccs_bool_t  little_endian;

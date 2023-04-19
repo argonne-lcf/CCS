@@ -7,7 +7,7 @@
 		if (CCS_UNLIKELY(                                              \
 			    !(s) || !((_ccs_object_template_t *)(s))->data ||  \
 			    ((_ccs_object_template_t *)(s))->obj.type !=       \
-				    CCS_ERROR_STACK))                          \
+				    CCS_OBJECT_TYPE_ERROR_STACK))              \
 			return CCS_INVALID_OBJECT;                             \
 	} while (0)
 
@@ -91,7 +91,7 @@ _ccs_create_error_stack(
 		return CCS_OUT_OF_MEMORY;
 	ccs_error_stack_t error_stack = (ccs_error_stack_t)mem;
 	_ccs_object_init(
-		&(error_stack->obj), CCS_ERROR_STACK,
+		&(error_stack->obj), CCS_OBJECT_TYPE_ERROR_STACK,
 		(_ccs_object_ops_t *)&_error_stack_ops);
 	error_stack->data =
 		(struct _ccs_error_stack_data_s

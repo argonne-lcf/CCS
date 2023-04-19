@@ -246,7 +246,7 @@ ccs_create_mixture_distribution(
 	distrib = (ccs_distribution_t)cur_mem;
 	cur_mem += sizeof(struct _ccs_distribution_s);
 	_ccs_object_init(
-		&(distrib->obj), CCS_DISTRIBUTION,
+		&(distrib->obj), CCS_OBJECT_TYPE_DISTRIBUTION,
 		(_ccs_object_ops_t *)&_ccs_distribution_mixture_ops);
 	distrib_data = (_ccs_distribution_mixture_data_t *)(cur_mem);
 	cur_mem += sizeof(_ccs_distribution_mixture_data_t);

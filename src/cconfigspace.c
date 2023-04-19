@@ -536,7 +536,7 @@ _ccs_object_deserialize_options(
 		switch (opt) {
 		case CCS_DESERIALIZE_OPTION_HANDLE_MAP:
 			opts->handle_map = va_arg(args, ccs_map_t);
-			CCS_CHECK_OBJ(opts->handle_map, CCS_MAP);
+			CCS_CHECK_OBJ(opts->handle_map, CCS_OBJECT_TYPE_MAP);
 			break;
 		case CCS_DESERIALIZE_OPTION_VECTOR:
 			opts->vector = va_arg(args, void *);
@@ -585,97 +585,97 @@ _ccs_object_deserialize_with_opts(
 		CCS_VALIDATE(_ccs_peek_bin_ccs_object_type(
 			&otype, buffer_size, buffer));
 		switch (otype) {
-		case CCS_RNG:
+		case CCS_OBJECT_TYPE_RNG:
 			CCS_VALIDATE(_ccs_rng_deserialize(
 				(ccs_rng_t *)object_ret, format, version,
 				buffer_size, buffer, opts));
 			break;
-		case CCS_DISTRIBUTION:
+		case CCS_OBJECT_TYPE_DISTRIBUTION:
 			CCS_VALIDATE(_ccs_distribution_deserialize(
 				(ccs_distribution_t *)object_ret, format,
 				version, buffer_size, buffer, opts));
 			break;
-		case CCS_PARAMETER:
+		case CCS_OBJECT_TYPE_PARAMETER:
 			CCS_VALIDATE(_ccs_parameter_deserialize(
 				(ccs_parameter_t *)object_ret, format, version,
 				buffer_size, buffer, opts));
 			break;
-		case CCS_EXPRESSION:
+		case CCS_OBJECT_TYPE_EXPRESSION:
 			CCS_VALIDATE(_ccs_expression_deserialize(
 				(ccs_expression_t *)object_ret, format, version,
 				buffer_size, buffer, opts));
 			break;
-		case CCS_FEATURES_SPACE:
+		case CCS_OBJECT_TYPE_FEATURES_SPACE:
 			CCS_VALIDATE(_ccs_features_space_deserialize(
 				(ccs_features_space_t *)object_ret, format,
 				version, buffer_size, buffer, opts));
 			break;
-		case CCS_CONFIGURATION_SPACE:
+		case CCS_OBJECT_TYPE_CONFIGURATION_SPACE:
 			CCS_VALIDATE(_ccs_configuration_space_deserialize(
 				(ccs_configuration_space_t *)object_ret, format,
 				version, buffer_size, buffer, opts));
 			break;
-		case CCS_OBJECTIVE_SPACE:
+		case CCS_OBJECT_TYPE_OBJECTIVE_SPACE:
 			CCS_VALIDATE(_ccs_objective_space_deserialize(
 				(ccs_objective_space_t *)object_ret, format,
 				version, buffer_size, buffer, opts));
 			break;
-		case CCS_CONFIGURATION:
+		case CCS_OBJECT_TYPE_CONFIGURATION:
 			CCS_VALIDATE(_ccs_configuration_deserialize(
 				(ccs_configuration_t *)object_ret, format,
 				version, buffer_size, buffer, opts));
 			break;
-		case CCS_EVALUATION:
+		case CCS_OBJECT_TYPE_EVALUATION:
 			CCS_VALIDATE(_ccs_evaluation_deserialize(
 				(ccs_evaluation_t *)object_ret, format, version,
 				buffer_size, buffer, opts));
 			break;
-		case CCS_FEATURES:
+		case CCS_OBJECT_TYPE_FEATURES:
 			CCS_VALIDATE(_ccs_features_deserialize(
 				(ccs_features_t *)object_ret, format, version,
 				buffer_size, buffer, opts));
 			break;
-		case CCS_FEATURES_EVALUATION:
+		case CCS_OBJECT_TYPE_FEATURES_EVALUATION:
 			CCS_VALIDATE(_ccs_features_evaluation_deserialize(
 				(ccs_features_evaluation_t *)object_ret, format,
 				version, buffer_size, buffer, opts));
 			break;
-		case CCS_TUNER:
+		case CCS_OBJECT_TYPE_TUNER:
 			CCS_VALIDATE(_ccs_tuner_deserialize(
 				(ccs_tuner_t *)object_ret, format, version,
 				buffer_size, buffer, opts));
 			break;
-		case CCS_FEATURES_TUNER:
+		case CCS_OBJECT_TYPE_FEATURES_TUNER:
 			CCS_VALIDATE(_ccs_features_tuner_deserialize(
 				(ccs_features_tuner_t *)object_ret, format,
 				version, buffer_size, buffer, opts));
 			break;
-		case CCS_MAP:
+		case CCS_OBJECT_TYPE_MAP:
 			CCS_VALIDATE(_ccs_map_deserialize(
 				(ccs_map_t *)object_ret, format, version,
 				buffer_size, buffer, opts));
 			break;
-		case CCS_TREE:
+		case CCS_OBJECT_TYPE_TREE:
 			CCS_VALIDATE(_ccs_tree_deserialize(
 				(ccs_tree_t *)object_ret, format, version,
 				buffer_size, buffer, opts));
 			break;
-		case CCS_TREE_SPACE:
+		case CCS_OBJECT_TYPE_TREE_SPACE:
 			CCS_VALIDATE(_ccs_tree_space_deserialize(
 				(ccs_tree_space_t *)object_ret, format, version,
 				buffer_size, buffer, opts));
 			break;
-		case CCS_TREE_CONFIGURATION:
+		case CCS_OBJECT_TYPE_TREE_CONFIGURATION:
 			CCS_VALIDATE(_ccs_tree_configuration_deserialize(
 				(ccs_tree_configuration_t *)object_ret, format,
 				version, buffer_size, buffer, opts));
 			break;
-		case CCS_TREE_EVALUATION:
+		case CCS_OBJECT_TYPE_TREE_EVALUATION:
 			CCS_VALIDATE(_ccs_tree_evaluation_deserialize(
 				(ccs_tree_evaluation_t *)object_ret, format,
 				version, buffer_size, buffer, opts));
 			break;
-		case CCS_TREE_TUNER:
+		case CCS_OBJECT_TYPE_TREE_TUNER:
 			CCS_VALIDATE(_ccs_tree_tuner_deserialize(
 				(ccs_tree_tuner_t *)object_ret, format, version,
 				buffer_size, buffer, opts));

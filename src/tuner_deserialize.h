@@ -247,7 +247,7 @@ _ccs_deserialize_bin_tuner(
 	ccs_error_t                       res;
 	CCS_VALIDATE(_ccs_deserialize_bin_ccs_object_internal(
 		&obj, buffer_size, buffer, &handle));
-	CCS_REFUTE(obj.type != CCS_TUNER, CCS_INVALID_TYPE);
+	CCS_REFUTE(obj.type != CCS_OBJECT_TYPE_TUNER, CCS_INVALID_TYPE);
 
 	ccs_tuner_type_t ttype;
 	CCS_VALIDATE(_ccs_peek_bin_ccs_tuner_type(&ttype, buffer_size, buffer));

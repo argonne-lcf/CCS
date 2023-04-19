@@ -166,7 +166,7 @@ _ccs_deserialize_bin_parameter(
 	ccs_error_t            res;
 	CCS_VALIDATE(_ccs_deserialize_bin_ccs_object_internal(
 		&obj, buffer_size, buffer, &handle));
-	CCS_REFUTE(obj.type != CCS_PARAMETER, CCS_INVALID_TYPE);
+	CCS_REFUTE(obj.type != CCS_OBJECT_TYPE_PARAMETER, CCS_INVALID_TYPE);
 
 	ccs_parameter_type_t htype;
 	CCS_VALIDATE(

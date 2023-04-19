@@ -1,5 +1,5 @@
-#ifndef _CCS_DISTRIBUTION
-#define _CCS_DISTRIBUTION
+#ifndef _CCS_DISTRIBUTION_H
+#define _CCS_DISTRIBUTION_H
 
 /**
  * @file distribution.h
@@ -797,4 +797,4 @@ ccs_distribution_parameters_sample(
 }
 #endif
 
-#endif //_CCS_DISTRIBUTION
+#endif //_CCS_DISTRIBUTION_H

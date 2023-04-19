@@ -3,7 +3,7 @@
 
 #define CCS_CHECK_PARAMETER(o, t)                                              \
 	do {                                                                   \
-		CCS_CHECK_OBJ(o, CCS_PARAMETER);                               \
+		CCS_CHECK_OBJ(o, CCS_OBJECT_TYPE_PARAMETER);                   \
 		CCS_REFUTE(                                                    \
 			((_ccs_parameter_common_data_t *)(o->data))->type !=   \
 				(t),                                           \

@@ -260,7 +260,7 @@ ccs_create_roulette_distribution(
 
 	ccs_distribution_t distrib = (ccs_distribution_t)mem;
 	_ccs_object_init(
-		&(distrib->obj), CCS_DISTRIBUTION,
+		&(distrib->obj), CCS_OBJECT_TYPE_DISTRIBUTION,
 		(_ccs_object_ops_t *)&_ccs_distribution_roulette_ops);
 	_ccs_distribution_roulette_data_t *distrib_data =
 		(_ccs_distribution_roulette_data_t

@@ -9,7 +9,7 @@ class CConfigSpaceTestRng < Minitest::Test
 
   def test_create
     rng = CCS::Rng::new
-    assert_equal( :CCS_RNG, rng.object_type )
+    assert_equal( :CCS_OBJECT_TYPE_RNG, rng.object_type )
     assert_equal( 1, rng.refcount )
     rng = nil
     GC.start
@@ -45,7 +45,7 @@ class CConfigSpaceTestRng < Minitest::Test
     rng.seed = 10
     buff = rng.serialize
     rng2 = CCS::deserialize(buffer: buff)
-    assert_equal( :CCS_RNG, rng2.object_type )
+    assert_equal( :CCS_OBJECT_TYPE_RNG, rng2.object_type )
     assert_equal(rng.get, rng2.get)
   end
 

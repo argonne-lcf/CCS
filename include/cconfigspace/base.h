@@ -251,27 +251,27 @@ typedef int32_t          ccs_evaluation_result_t;
  * CCS object types.
  */
 enum ccs_object_type_e {
-	CCS_RNG,                 /*!< A random number generator */
-	CCS_DISTRIBUTION,        /*!< A numerical distribution */
-	CCS_PARAMETER,           /*!< A parameter */
-	CCS_EXPRESSION,          /*!< An arithmetic expression */
-	CCS_CONFIGURATION_SPACE, /*!< A configuration space */
-	CCS_CONFIGURATION,       /*!< A configuration */
-	CCS_OBJECTIVE_SPACE,     /*!< An objective space */
-	CCS_EVALUATION,          /*!< An evaluation of a configuration */
-	CCS_TUNER,               /*!< A tuner */
-	CCS_FEATURES_SPACE,      /*!< A features space */
-	CCS_FEATURES,            /*!< A features */
-	CCS_FEATURES_EVALUATION, /*!< An evaluation of a configuration given specific features */
-	CCS_FEATURES_TUNER,     /*!< A features aware tuner */
-	CCS_MAP,                /*!< A key value store */
-	CCS_ERROR_STACK,        /*!< An error stack */
-	CCS_TREE,               /*!< A tree structure */
-	CCS_TREE_SPACE,         /*!< A tree space */
-	CCS_TREE_CONFIGURATION, /*!< A configuration on a tree space */
-	CCS_TREE_EVALUATION,    /*!< An evaluation of a tree configuration */
-	CCS_TREE_TUNER,         /*!< A tuner */
-	CCS_OBJECT_TYPE_MAX,    /*!< Guard */
+	CCS_OBJECT_TYPE_RNG,                 /*!< A random number generator */
+	CCS_OBJECT_TYPE_DISTRIBUTION,        /*!< A numerical distribution */
+	CCS_OBJECT_TYPE_PARAMETER,           /*!< A parameter */
+	CCS_OBJECT_TYPE_EXPRESSION,          /*!< An arithmetic expression */
+	CCS_OBJECT_TYPE_CONFIGURATION_SPACE, /*!< A configuration space */
+	CCS_OBJECT_TYPE_CONFIGURATION,       /*!< A configuration */
+	CCS_OBJECT_TYPE_OBJECTIVE_SPACE,     /*!< An objective space */
+	CCS_OBJECT_TYPE_EVALUATION,     /*!< An evaluation of a configuration */
+	CCS_OBJECT_TYPE_TUNER,          /*!< A tuner */
+	CCS_OBJECT_TYPE_FEATURES_SPACE, /*!< A features space */
+	CCS_OBJECT_TYPE_FEATURES,       /*!< A features */
+	CCS_OBJECT_TYPE_FEATURES_EVALUATION, /*!< An evaluation of a configuration given specific features */
+	CCS_OBJECT_TYPE_FEATURES_TUNER,     /*!< A features aware tuner */
+	CCS_OBJECT_TYPE_MAP,                /*!< A key value store */
+	CCS_OBJECT_TYPE_ERROR_STACK,        /*!< An error stack */
+	CCS_OBJECT_TYPE_TREE,               /*!< A tree structure */
+	CCS_OBJECT_TYPE_TREE_SPACE,         /*!< A tree space */
+	CCS_OBJECT_TYPE_TREE_CONFIGURATION, /*!< A configuration on a tree space */
+	CCS_OBJECT_TYPE_TREE_EVALUATION, /*!< An evaluation of a tree configuration */
+	CCS_OBJECT_TYPE_TREE_TUNER, /*!< A tree tuner */
+	CCS_OBJECT_TYPE_MAX,        /*!< Guard */
 	/** Try forcing 32 bits value for bindings */
 	CCS_OBJECT_TYPE_FORCE_32BIT = INT32_MAX
 };

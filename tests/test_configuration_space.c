@@ -35,7 +35,7 @@ test_create()
 
 	err = ccs_object_get_type(configuration_space, &type);
 	assert(err == CCS_SUCCESS);
-	assert(type == CCS_CONFIGURATION_SPACE);
+	assert(type == CCS_OBJECT_TYPE_CONFIGURATION_SPACE);
 
 	err = ccs_configuration_space_get_name(configuration_space, &name);
 	assert(err == CCS_SUCCESS);

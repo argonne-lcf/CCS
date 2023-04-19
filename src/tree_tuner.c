@@ -10,7 +10,7 @@ ccs_tree_tuner_get_ops(ccs_tree_tuner_t tuner)
 ccs_error_t
 ccs_tree_tuner_get_type(ccs_tree_tuner_t tuner, ccs_tree_tuner_type_t *type_ret)
 {
-	CCS_CHECK_OBJ(tuner, CCS_TREE_TUNER);
+	CCS_CHECK_OBJ(tuner, CCS_OBJECT_TYPE_TREE_TUNER);
 	CCS_CHECK_PTR(type_ret);
 	_ccs_tree_tuner_common_data_t *d =
 		(_ccs_tree_tuner_common_data_t *)tuner->data;
@@ -21,7 +21,7 @@ ccs_tree_tuner_get_type(ccs_tree_tuner_t tuner, ccs_tree_tuner_type_t *type_ret)
 ccs_error_t
 ccs_tree_tuner_get_name(ccs_tree_tuner_t tuner, const char **name_ret)
 {
-	CCS_CHECK_OBJ(tuner, CCS_TREE_TUNER);
+	CCS_CHECK_OBJ(tuner, CCS_OBJECT_TYPE_TREE_TUNER);
 	CCS_CHECK_PTR(name_ret);
 	_ccs_tree_tuner_common_data_t *d =
 		(_ccs_tree_tuner_common_data_t *)tuner->data;
@@ -34,7 +34,7 @@ ccs_tree_tuner_get_tree_space(
 	ccs_tree_tuner_t  tuner,
 	ccs_tree_space_t *tree_space_ret)
 {
-	CCS_CHECK_OBJ(tuner, CCS_TREE_TUNER);
+	CCS_CHECK_OBJ(tuner, CCS_OBJECT_TYPE_TREE_TUNER);
 	CCS_CHECK_PTR(tree_space_ret);
 	_ccs_tree_tuner_common_data_t *d =
 		(_ccs_tree_tuner_common_data_t *)tuner->data;
@@ -47,7 +47,7 @@ ccs_tree_tuner_get_objective_space(
 	ccs_tree_tuner_t       tuner,
 	ccs_objective_space_t *objective_space_ret)
 {
-	CCS_CHECK_OBJ(tuner, CCS_TREE_TUNER);
+	CCS_CHECK_OBJ(tuner, CCS_OBJECT_TYPE_TREE_TUNER);
 	CCS_CHECK_PTR(objective_space_ret);
 	_ccs_tree_tuner_common_data_t *d =
 		(_ccs_tree_tuner_common_data_t *)tuner->data;
@@ -62,7 +62,7 @@ ccs_tree_tuner_ask(
 	ccs_tree_configuration_t *configurations,
 	size_t                   *num_configurations_ret)
 {
-	CCS_CHECK_OBJ(tuner, CCS_TREE_TUNER);
+	CCS_CHECK_OBJ(tuner, CCS_OBJECT_TYPE_TREE_TUNER);
 	CCS_CHECK_ARY(num_configurations, configurations);
 	CCS_REFUTE(
 		!configurations && !num_configurations_ret, CCS_INVALID_VALUE);
@@ -79,7 +79,7 @@ ccs_tree_tuner_tell(
 	size_t                 num_evaluations,
 	ccs_tree_evaluation_t *evaluations)
 {
-	CCS_CHECK_OBJ(tuner, CCS_TREE_TUNER);
+	CCS_CHECK_OBJ(tuner, CCS_OBJECT_TYPE_TREE_TUNER);
 	CCS_CHECK_ARY(num_evaluations, evaluations);
 	/* TODO: check that evaluations have the same objective and
          * configuration sapce than the tuner */
@@ -95,7 +95,7 @@ ccs_tree_tuner_get_optimums(
 	ccs_tree_evaluation_t *evaluations,
 	size_t                *num_evaluations_ret)
 {
-	CCS_CHECK_OBJ(tuner, CCS_TREE_TUNER);
+	CCS_CHECK_OBJ(tuner, CCS_OBJECT_TYPE_TREE_TUNER);
 	CCS_CHECK_ARY(num_evaluations, evaluations);
 	CCS_REFUTE(!evaluations && !num_evaluations_ret, CCS_INVALID_VALUE);
 	_ccs_tree_tuner_ops_t *ops = ccs_tree_tuner_get_ops(tuner);
@@ -111,7 +111,7 @@ ccs_tree_tuner_get_history(
 	ccs_tree_evaluation_t *evaluations,
 	size_t                *num_evaluations_ret)
 {
-	CCS_CHECK_OBJ(tuner, CCS_TREE_TUNER);
+	CCS_CHECK_OBJ(tuner, CCS_OBJECT_TYPE_TREE_TUNER);
 	CCS_CHECK_ARY(num_evaluations, evaluations);
 	CCS_REFUTE(!evaluations && !num_evaluations_ret, CCS_INVALID_VALUE);
 	_ccs_tree_tuner_ops_t *ops = ccs_tree_tuner_get_ops(tuner);
@@ -125,7 +125,7 @@ ccs_tree_tuner_suggest(
 	ccs_tree_tuner_t          tuner,
 	ccs_tree_configuration_t *configuration)
 {
-	CCS_CHECK_OBJ(tuner, CCS_TREE_TUNER);
+	CCS_CHECK_OBJ(tuner, CCS_OBJECT_TYPE_TREE_TUNER);
 	_ccs_tree_tuner_ops_t *ops = ccs_tree_tuner_get_ops(tuner);
 	CCS_REFUTE(!ops->suggest, CCS_UNSUPPORTED_OPERATION);
 	CCS_CHECK_PTR(configuration);

@@ -328,7 +328,7 @@ _ccs_deserialize_bin_distribution(
 	ccs_error_t            res;
 	CCS_VALIDATE(_ccs_deserialize_bin_ccs_object_internal(
 		&obj, buffer_size, buffer, &handle));
-	CCS_REFUTE(obj.type != CCS_DISTRIBUTION, CCS_INVALID_TYPE);
+	CCS_REFUTE(obj.type != CCS_OBJECT_TYPE_DISTRIBUTION, CCS_INVALID_TYPE);
 
 	ccs_distribution_type_t dtype;
 	CCS_VALIDATE(_ccs_peek_bin_ccs_distribution_type(

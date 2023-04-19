@@ -29,7 +29,7 @@ compare_distribution(
 
 	err                             = ccs_object_get_type(distrib, &otype);
 	assert(err == CCS_SUCCESS);
-	assert(otype == CCS_DISTRIBUTION);
+	assert(otype == CCS_OBJECT_TYPE_DISTRIBUTION);
 
 	err = ccs_distribution_get_type(distrib, &dtype);
 	assert(err == CCS_SUCCESS);

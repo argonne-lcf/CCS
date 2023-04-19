@@ -74,7 +74,8 @@ _ccs_deserialize_bin_objective_space(
 	ccs_error_t                       res = CCS_SUCCESS;
 	CCS_VALIDATE(_ccs_deserialize_bin_ccs_object_internal(
 		&obj, buffer_size, buffer, &handle));
-	CCS_REFUTE(obj.type != CCS_OBJECTIVE_SPACE, CCS_INVALID_TYPE);
+	CCS_REFUTE(
+		obj.type != CCS_OBJECT_TYPE_OBJECTIVE_SPACE, CCS_INVALID_TYPE);
 
 	new_opts.map_values = CCS_TRUE;
 	CCS_VALIDATE(ccs_create_map(&new_opts.handle_map));

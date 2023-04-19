@@ -313,8 +313,8 @@ ccs_create_user_defined_tree_tuner(
 	ccs_tree_tuner_t                     *tuner_ret)
 {
 	CCS_CHECK_PTR(name);
-	CCS_CHECK_OBJ(tree_space, CCS_TREE_SPACE);
-	CCS_CHECK_OBJ(objective_space, CCS_OBJECTIVE_SPACE);
+	CCS_CHECK_OBJ(tree_space, CCS_OBJECT_TYPE_TREE_SPACE);
+	CCS_CHECK_OBJ(objective_space, CCS_OBJECT_TYPE_OBJECTIVE_SPACE);
 	CCS_CHECK_PTR(tuner_ret);
 	CCS_CHECK_PTR(vector);
 	CCS_CHECK_PTR(vector->del);
@@ -336,7 +336,7 @@ ccs_create_user_defined_tree_tuner(
 
 	tun = (ccs_tree_tuner_t)mem;
 	_ccs_object_init(
-		&(tun->obj), CCS_TREE_TUNER,
+		&(tun->obj), CCS_OBJECT_TYPE_TREE_TUNER,
 		(_ccs_object_ops_t *)&_ccs_tree_tuner_user_defined_ops);
 	tun->data = (struct _ccs_tree_tuner_data_s
 			     *)(mem + sizeof(struct _ccs_tree_tuner_s));
@@ -364,7 +364,7 @@ ccs_user_defined_tree_tuner_get_tuner_data(
 	ccs_tree_tuner_t tuner,
 	void           **tuner_data_ret)
 {
-	CCS_CHECK_OBJ(tuner, CCS_TREE_TUNER);
+	CCS_CHECK_OBJ(tuner, CCS_OBJECT_TYPE_TREE_TUNER);
 	CCS_CHECK_PTR(tuner_data_ret);
 	_ccs_user_defined_tree_tuner_data_t *d =
 		(_ccs_user_defined_tree_tuner_data_t *)tuner->data;

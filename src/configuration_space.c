@@ -346,7 +346,7 @@ ccs_create_configuration_space(
 	ccs_configuration_space_t config_space;
 	config_space = (ccs_configuration_space_t)mem;
 	_ccs_object_init(
-		&(config_space->obj), CCS_CONFIGURATION_SPACE,
+		&(config_space->obj), CCS_OBJECT_TYPE_CONFIGURATION_SPACE,
 		(_ccs_object_ops_t *)&_configuration_space_ops);
 	config_space->data =
 		(struct _ccs_configuration_space_data_s
@@ -380,7 +380,7 @@ ccs_configuration_space_get_name(
 	ccs_configuration_space_t configuration_space,
 	const char              **name_ret)
 {
-	CCS_CHECK_OBJ(configuration_space, CCS_CONFIGURATION_SPACE);
+	CCS_CHECK_OBJ(configuration_space, CCS_OBJECT_TYPE_CONFIGURATION_SPACE);
 	CCS_VALIDATE(_ccs_context_get_name(
 		(ccs_context_t)configuration_space, name_ret));
 	return CCS_SUCCESS;
@@ -391,8 +391,8 @@ ccs_configuration_space_set_rng(
 	ccs_configuration_space_t configuration_space,
 	ccs_rng_t                 rng)
 {
-	CCS_CHECK_OBJ(configuration_space, CCS_CONFIGURATION_SPACE);
-	CCS_CHECK_OBJ(rng, CCS_RNG);
+	CCS_CHECK_OBJ(configuration_space, CCS_OBJECT_TYPE_CONFIGURATION_SPACE);
+	CCS_CHECK_OBJ(rng, CCS_OBJECT_TYPE_RNG);
 	CCS_VALIDATE(ccs_retain_object(rng));
 	ccs_rng_t tmp                  = configuration_space->data->rng;
 	configuration_space->data->rng = rng;
@@ -405,7 +405,7 @@ ccs_configuration_space_get_rng(
 	ccs_configuration_space_t configuration_space,
 	ccs_rng_t                *rng_ret)
 {
-	CCS_CHECK_OBJ(configuration_space, CCS_CONFIGURATION_SPACE);
+	CCS_CHECK_OBJ(configuration_space, CCS_OBJECT_TYPE_CONFIGURATION_SPACE);
 	CCS_CHECK_PTR(rng_ret);
 	*rng_ret = configuration_space->data->rng;
 	return CCS_SUCCESS;
@@ -431,8 +431,8 @@ ccs_configuration_space_add_parameter(
 	ccs_parameter_t           parameter,
 	ccs_distribution_t        distribution)
 {
-	CCS_CHECK_OBJ(configuration_space, CCS_CONFIGURATION_SPACE);
-	CCS_CHECK_OBJ(parameter, CCS_PARAMETER);
+	CCS_CHECK_OBJ(configuration_space, CCS_OBJECT_TYPE_CONFIGURATION_SPACE);
+	CCS_CHECK_OBJ(parameter, CCS_OBJECT_TYPE_PARAMETER);
 	ccs_error_t          err;
 	ccs_parameter_type_t type;
 
@@ -545,8 +545,8 @@ ccs_configuration_space_set_distribution(
 	ccs_distribution_t        distribution,
 	size_t                   *indexes)
 {
-	CCS_CHECK_OBJ(configuration_space, CCS_CONFIGURATION_SPACE);
-	CCS_CHECK_OBJ(distribution, CCS_DISTRIBUTION);
+	CCS_CHECK_OBJ(configuration_space, CCS_OBJECT_TYPE_CONFIGURATION_SPACE);
+	CCS_CHECK_OBJ(distribution, CCS_OBJECT_TYPE_DISTRIBUTION);
 	CCS_CHECK_PTR(indexes);
 
 	_ccs_distribution_wrapper_t *dwrapper;
@@ -688,7 +688,7 @@ ccs_configuration_space_get_parameter_distribution(
 	ccs_distribution_t       *distribution_ret,
 	size_t                   *index_ret)
 {
-	CCS_CHECK_OBJ(configuration_space, CCS_CONFIGURATION_SPACE);
+	CCS_CHECK_OBJ(configuration_space, CCS_OBJECT_TYPE_CONFIGURATION_SPACE);
 	CCS_CHECK_PTR(distribution_ret);
 	CCS_CHECK_PTR(index_ret);
 
@@ -709,7 +709,7 @@ ccs_configuration_space_add_parameters(
 	ccs_parameter_t          *parameters,
 	ccs_distribution_t       *distributions)
 {
-	CCS_CHECK_OBJ(configuration_space, CCS_CONFIGURATION_SPACE);
+	CCS_CHECK_OBJ(configuration_space, CCS_OBJECT_TYPE_CONFIGURATION_SPACE);
 	CCS_CHECK_ARY(num_parameters, parameters);
 	for (size_t i = 0; i < num_parameters; i++) {
 		ccs_distribution_t distribution = NULL;
@@ -726,7 +726,7 @@ ccs_configuration_space_get_num_parameters(
 	ccs_configuration_space_t configuration_space,
 	size_t                   *num_parameters_ret)
 {
-	CCS_CHECK_OBJ(configuration_space, CCS_CONFIGURATION_SPACE);
+	CCS_CHECK_OBJ(configuration_space, CCS_OBJECT_TYPE_CONFIGURATION_SPACE);
 	CCS_VALIDATE(_ccs_context_get_num_parameters(
 		(ccs_context_t)configuration_space, num_parameters_ret));
 	return CCS_SUCCESS;
@@ -738,7 +738,7 @@ ccs_configuration_space_get_parameter(
 	size_t                    index,
 	ccs_parameter_t          *parameter_ret)
 {
-	CCS_CHECK_OBJ(configuration_space, CCS_CONFIGURATION_SPACE);
+	CCS_CHECK_OBJ(configuration_space, CCS_OBJECT_TYPE_CONFIGURATION_SPACE);
 	CCS_VALIDATE(_ccs_context_get_parameter(
 		(ccs_context_t)configuration_space, index, parameter_ret));
 	return CCS_SUCCESS;
@@ -750,7 +750,7 @@ ccs_configuration_space_get_parameter_by_name(
 	const char               *name,
 	ccs_parameter_t          *parameter_ret)
 {
-	CCS_CHECK_OBJ(configuration_space, CCS_CONFIGURATION_SPACE);
+	CCS_CHECK_OBJ(configuration_space, CCS_OBJECT_TYPE_CONFIGURATION_SPACE);
 	CCS_VALIDATE(_ccs_context_get_parameter_by_name(
 		(ccs_context_t)configuration_space, name, parameter_ret));
 	return CCS_SUCCESS;
@@ -762,7 +762,7 @@ ccs_configuration_space_get_parameter_index_by_name(
 	const char               *name,
 	size_t                   *index_ret)
 {
-	CCS_CHECK_OBJ(configuration_space, CCS_CONFIGURATION_SPACE);
+	CCS_CHECK_OBJ(configuration_space, CCS_OBJECT_TYPE_CONFIGURATION_SPACE);
 	CCS_VALIDATE(_ccs_context_get_parameter_index_by_name(
 		(ccs_context_t)configuration_space, name, index_ret));
 	return CCS_SUCCESS;
@@ -774,7 +774,7 @@ ccs_configuration_space_get_parameter_index(
 	ccs_parameter_t           parameter,
 	size_t                   *index_ret)
 {
-	CCS_CHECK_OBJ(configuration_space, CCS_CONFIGURATION_SPACE);
+	CCS_CHECK_OBJ(configuration_space, CCS_OBJECT_TYPE_CONFIGURATION_SPACE);
 	CCS_VALIDATE(_ccs_context_get_parameter_index(
 		(ccs_context_t)(configuration_space), parameter, index_ret));
 	return CCS_SUCCESS;
@@ -787,7 +787,7 @@ ccs_configuration_space_get_parameter_indexes(
 	ccs_parameter_t          *parameters,
 	size_t                   *indexes)
 {
-	CCS_CHECK_OBJ(configuration_space, CCS_CONFIGURATION_SPACE);
+	CCS_CHECK_OBJ(configuration_space, CCS_OBJECT_TYPE_CONFIGURATION_SPACE);
 	CCS_VALIDATE(_ccs_context_get_parameter_indexes(
 		(ccs_context_t)configuration_space, num_parameters, parameters,
 		indexes));
@@ -801,7 +801,7 @@ ccs_configuration_space_get_parameters(
 	ccs_parameter_t          *parameters,
 	size_t                   *num_parameters_ret)
 {
-	CCS_CHECK_OBJ(configuration_space, CCS_CONFIGURATION_SPACE);
+	CCS_CHECK_OBJ(configuration_space, CCS_OBJECT_TYPE_CONFIGURATION_SPACE);
 	CCS_VALIDATE(_ccs_context_get_parameters(
 		(ccs_context_t)configuration_space, num_parameters, parameters,
 		num_parameters_ret));
@@ -815,7 +815,7 @@ ccs_configuration_space_validate_value(
 	ccs_datum_t               value,
 	ccs_datum_t              *value_ret)
 {
-	CCS_CHECK_OBJ(configuration_space, CCS_CONFIGURATION_SPACE);
+	CCS_CHECK_OBJ(configuration_space, CCS_OBJECT_TYPE_CONFIGURATION_SPACE);
 	CCS_VALIDATE(_ccs_context_validate_value(
 		(ccs_context_t)configuration_space, index, value, value_ret));
 	return CCS_SUCCESS;
@@ -851,7 +851,7 @@ ccs_configuration_space_get_default_configuration(
 	ccs_configuration_space_t configuration_space,
 	ccs_configuration_t      *configuration_ret)
 {
-	CCS_CHECK_OBJ(configuration_space, CCS_CONFIGURATION_SPACE);
+	CCS_CHECK_OBJ(configuration_space, CCS_OBJECT_TYPE_CONFIGURATION_SPACE);
 	CCS_CHECK_PTR(configuration_ret);
 	ccs_error_t         err;
 	ccs_configuration_t config;
@@ -951,8 +951,8 @@ ccs_configuration_space_check_configuration(
 	ccs_configuration_t       configuration,
 	ccs_bool_t               *is_valid_ret)
 {
-	CCS_CHECK_OBJ(configuration_space, CCS_CONFIGURATION_SPACE);
-	CCS_CHECK_OBJ(configuration, CCS_CONFIGURATION);
+	CCS_CHECK_OBJ(configuration_space, CCS_OBJECT_TYPE_CONFIGURATION_SPACE);
+	CCS_CHECK_OBJ(configuration, CCS_OBJECT_TYPE_CONFIGURATION);
 	CCS_REFUTE(
 		configuration->data->configuration_space != configuration_space,
 		CCS_INVALID_CONFIGURATION);
@@ -971,7 +971,7 @@ ccs_configuration_space_check_configuration_values(
 	ccs_datum_t              *values,
 	ccs_bool_t               *is_valid_ret)
 {
-	CCS_CHECK_OBJ(configuration_space, CCS_CONFIGURATION_SPACE);
+	CCS_CHECK_OBJ(configuration_space, CCS_OBJECT_TYPE_CONFIGURATION_SPACE);
 	CCS_CHECK_ARY(num_values, values);
 	if (!configuration_space->data->graph_ok)
 		CCS_VALIDATE(_generate_constraints(configuration_space));
@@ -1057,7 +1057,7 @@ ccs_configuration_space_sample(
 	ccs_configuration_space_t configuration_space,
 	ccs_configuration_t      *configuration_ret)
 {
-	CCS_CHECK_OBJ(configuration_space, CCS_CONFIGURATION_SPACE);
+	CCS_CHECK_OBJ(configuration_space, CCS_OBJECT_TYPE_CONFIGURATION_SPACE);
 	CCS_CHECK_PTR(configuration_ret);
 	ccs_error_t         err;
 	ccs_configuration_t config;
@@ -1087,7 +1087,7 @@ ccs_configuration_space_samples(
 	size_t                    num_configurations,
 	ccs_configuration_t      *configurations)
 {
-	CCS_CHECK_OBJ(configuration_space, CCS_CONFIGURATION_SPACE);
+	CCS_CHECK_OBJ(configuration_space, CCS_OBJECT_TYPE_CONFIGURATION_SPACE);
 	CCS_CHECK_ARY(num_configurations, configurations);
 	if (!num_configurations)
 		return CCS_SUCCESS;
@@ -1355,8 +1355,8 @@ ccs_configuration_space_set_condition(
 	size_t                    parameter_index,
 	ccs_expression_t          expression)
 {
-	CCS_CHECK_OBJ(configuration_space, CCS_CONFIGURATION_SPACE);
-	CCS_CHECK_OBJ(expression, CCS_EXPRESSION);
+	CCS_CHECK_OBJ(configuration_space, CCS_OBJECT_TYPE_CONFIGURATION_SPACE);
+	CCS_CHECK_OBJ(expression, CCS_OBJECT_TYPE_EXPRESSION);
 	_ccs_parameter_wrapper_cs_t *wrapper =
 		(_ccs_parameter_wrapper_cs_t *)utarray_eltptr(
 			configuration_space->data->parameters,
@@ -1383,7 +1383,7 @@ ccs_configuration_space_get_condition(
 	size_t                    parameter_index,
 	ccs_expression_t         *expression_ret)
 {
-	CCS_CHECK_OBJ(configuration_space, CCS_CONFIGURATION_SPACE);
+	CCS_CHECK_OBJ(configuration_space, CCS_OBJECT_TYPE_CONFIGURATION_SPACE);
 	CCS_CHECK_PTR(expression_ret);
 	_ccs_parameter_wrapper_cs_t *wrapper =
 		(_ccs_parameter_wrapper_cs_t *)utarray_eltptr(
@@ -1401,7 +1401,7 @@ ccs_configuration_space_get_conditions(
 	ccs_expression_t         *expressions,
 	size_t                   *num_expressions_ret)
 {
-	CCS_CHECK_OBJ(configuration_space, CCS_CONFIGURATION_SPACE);
+	CCS_CHECK_OBJ(configuration_space, CCS_OBJECT_TYPE_CONFIGURATION_SPACE);
 	CCS_CHECK_ARY(num_expressions, expressions);
 	CCS_REFUTE(!expressions && !num_expressions_ret, CCS_INVALID_VALUE);
 	UT_array *array          = configuration_space->data->parameters;
@@ -1433,8 +1433,8 @@ ccs_configuration_space_add_forbidden_clause(
 	ccs_configuration_space_t configuration_space,
 	ccs_expression_t          expression)
 {
-	CCS_CHECK_OBJ(configuration_space, CCS_CONFIGURATION_SPACE);
-	CCS_CHECK_OBJ(expression, CCS_EXPRESSION);
+	CCS_CHECK_OBJ(configuration_space, CCS_OBJECT_TYPE_CONFIGURATION_SPACE);
+	CCS_CHECK_OBJ(expression, CCS_OBJECT_TYPE_EXPRESSION);
 	ccs_error_t err = CCS_SUCCESS;
 	CCS_VALIDATE(ccs_expression_check_context(
 		expression, (ccs_context_t)configuration_space));
@@ -1469,7 +1469,7 @@ ccs_configuration_space_add_forbidden_clauses(
 	size_t                    num_expressions,
 	ccs_expression_t         *expressions)
 {
-	CCS_CHECK_OBJ(configuration_space, CCS_CONFIGURATION_SPACE);
+	CCS_CHECK_OBJ(configuration_space, CCS_OBJECT_TYPE_CONFIGURATION_SPACE);
 	CCS_CHECK_ARY(num_expressions, expressions);
 	for (size_t i = 0; i < num_expressions; i++)
 		CCS_VALIDATE(ccs_configuration_space_add_forbidden_clause(
@@ -1483,7 +1483,7 @@ ccs_configuration_space_get_forbidden_clause(
 	size_t                    index,
 	ccs_expression_t         *expression_ret)
 {
-	CCS_CHECK_OBJ(configuration_space, CCS_CONFIGURATION_SPACE);
+	CCS_CHECK_OBJ(configuration_space, CCS_OBJECT_TYPE_CONFIGURATION_SPACE);
 	CCS_CHECK_PTR(expression_ret);
 	ccs_expression_t *p_expr = (ccs_expression_t *)utarray_eltptr(
 		configuration_space->data->forbidden_clauses,
@@ -1500,7 +1500,7 @@ ccs_configuration_space_get_forbidden_clauses(
 	ccs_expression_t         *expressions,
 	size_t                   *num_expressions_ret)
 {
-	CCS_CHECK_OBJ(configuration_space, CCS_CONFIGURATION_SPACE);
+	CCS_CHECK_OBJ(configuration_space, CCS_OBJECT_TYPE_CONFIGURATION_SPACE);
 	CCS_CHECK_ARY(num_expressions, expressions);
 	CCS_REFUTE(!expressions && !num_expressions_ret, CCS_INVALID_VALUE);
 	UT_array *array = configuration_space->data->forbidden_clauses;

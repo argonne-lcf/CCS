@@ -227,7 +227,7 @@ ccs_create_objective_space(
 	ccs_error_t           err;
 	ccs_objective_space_t obj_space = (ccs_objective_space_t)mem;
 	_ccs_object_init(
-		&(obj_space->obj), CCS_OBJECTIVE_SPACE,
+		&(obj_space->obj), CCS_OBJECT_TYPE_OBJECTIVE_SPACE,
 		(_ccs_object_ops_t *)&_objective_space_ops);
 	obj_space->data =
 		(struct _ccs_objective_space_data_s
@@ -254,7 +254,7 @@ ccs_objective_space_get_name(
 	ccs_objective_space_t objective_space,
 	const char          **name_ret)
 {
-	CCS_CHECK_OBJ(objective_space, CCS_OBJECTIVE_SPACE);
+	CCS_CHECK_OBJ(objective_space, CCS_OBJECT_TYPE_OBJECTIVE_SPACE);
 	CCS_VALIDATE(_ccs_context_get_name(
 		(ccs_context_t)objective_space, name_ret));
 	return CCS_SUCCESS;
@@ -279,8 +279,8 @@ ccs_objective_space_add_parameter(
 	ccs_objective_space_t objective_space,
 	ccs_parameter_t       parameter)
 {
-	CCS_CHECK_OBJ(objective_space, CCS_OBJECTIVE_SPACE);
-	CCS_CHECK_OBJ(parameter, CCS_PARAMETER);
+	CCS_CHECK_OBJ(objective_space, CCS_OBJECT_TYPE_OBJECTIVE_SPACE);
+	CCS_CHECK_OBJ(parameter, CCS_OBJECT_TYPE_PARAMETER);
 	ccs_error_t                  err;
 	const char                  *name;
 	size_t                       sz_name;
@@ -336,7 +336,7 @@ ccs_objective_space_add_parameters(
 	size_t                num_parameters,
 	ccs_parameter_t      *parameters)
 {
-	CCS_CHECK_OBJ(objective_space, CCS_OBJECTIVE_SPACE);
+	CCS_CHECK_OBJ(objective_space, CCS_OBJECT_TYPE_OBJECTIVE_SPACE);
 	CCS_CHECK_ARY(num_parameters, parameters);
 	for (size_t i = 0; i < num_parameters; i++)
 		CCS_VALIDATE(ccs_objective_space_add_parameter(
@@ -349,7 +349,7 @@ ccs_objective_space_get_num_parameters(
 	ccs_objective_space_t objective_space,
 	size_t               *num_parameters_ret)
 {
-	CCS_CHECK_OBJ(objective_space, CCS_OBJECTIVE_SPACE);
+	CCS_CHECK_OBJ(objective_space, CCS_OBJECT_TYPE_OBJECTIVE_SPACE);
 	CCS_VALIDATE(_ccs_context_get_num_parameters(
 		(ccs_context_t)objective_space, num_parameters_ret));
 	return CCS_SUCCESS;
@@ -361,7 +361,7 @@ ccs_objective_space_get_parameter(
 	size_t                index,
 	ccs_parameter_t      *parameter_ret)
 {
-	CCS_CHECK_OBJ(objective_space, CCS_OBJECTIVE_SPACE);
+	CCS_CHECK_OBJ(objective_space, CCS_OBJECT_TYPE_OBJECTIVE_SPACE);
 	CCS_VALIDATE(_ccs_context_get_parameter(
 		(ccs_context_t)objective_space, index, parameter_ret));
 	return CCS_SUCCESS;
@@ -373,7 +373,7 @@ ccs_objective_space_get_parameter_by_name(
 	const char           *name,
 	ccs_parameter_t      *parameter_ret)
 {
-	CCS_CHECK_OBJ(objective_space, CCS_OBJECTIVE_SPACE);
+	CCS_CHECK_OBJ(objective_space, CCS_OBJECT_TYPE_OBJECTIVE_SPACE);
 	CCS_VALIDATE(_ccs_context_get_parameter_by_name(
 		(ccs_context_t)objective_space, name, parameter_ret));
 	return CCS_SUCCESS;
@@ -385,7 +385,7 @@ ccs_objective_space_get_parameter_index_by_name(
 	const char           *name,
 	size_t               *index_ret)
 {
-	CCS_CHECK_OBJ(objective_space, CCS_OBJECTIVE_SPACE);
+	CCS_CHECK_OBJ(objective_space, CCS_OBJECT_TYPE_OBJECTIVE_SPACE);
 	CCS_VALIDATE(_ccs_context_get_parameter_index_by_name(
 		(ccs_context_t)objective_space, name, index_ret));
 	return CCS_SUCCESS;
@@ -397,8 +397,8 @@ ccs_objective_space_get_parameter_index(
 	ccs_parameter_t       parameter,
 	size_t               *index_ret)
 {
-	CCS_CHECK_OBJ(objective_space, CCS_OBJECTIVE_SPACE);
-	CCS_CHECK_OBJ(parameter, CCS_PARAMETER);
+	CCS_CHECK_OBJ(objective_space, CCS_OBJECT_TYPE_OBJECTIVE_SPACE);
+	CCS_CHECK_OBJ(parameter, CCS_OBJECT_TYPE_PARAMETER);
 	CCS_VALIDATE(_ccs_context_get_parameter_index(
 		(ccs_context_t)(objective_space), parameter, index_ret));
 	return CCS_SUCCESS;
@@ -411,7 +411,7 @@ ccs_objective_space_get_parameter_indexes(
 	ccs_parameter_t      *parameters,
 	size_t               *indexes)
 {
-	CCS_CHECK_OBJ(objective_space, CCS_OBJECTIVE_SPACE);
+	CCS_CHECK_OBJ(objective_space, CCS_OBJECT_TYPE_OBJECTIVE_SPACE);
 	CCS_VALIDATE(_ccs_context_get_parameter_indexes(
 		(ccs_context_t)objective_space, num_parameters, parameters,
 		indexes));
@@ -425,7 +425,7 @@ ccs_objective_space_get_parameters(
 	ccs_parameter_t      *parameters,
 	size_t               *num_parameters_ret)
 {
-	CCS_CHECK_OBJ(objective_space, CCS_OBJECTIVE_SPACE);
+	CCS_CHECK_OBJ(objective_space, CCS_OBJECT_TYPE_OBJECTIVE_SPACE);
 	CCS_VALIDATE(_ccs_context_get_parameters(
 		(ccs_context_t)objective_space, num_parameters, parameters,
 		num_parameters_ret));
@@ -461,7 +461,7 @@ ccs_objective_space_check_evaluation_values(
 	ccs_datum_t          *values,
 	ccs_bool_t           *is_valid_ret)
 {
-	CCS_CHECK_OBJ(objective_space, CCS_OBJECTIVE_SPACE);
+	CCS_CHECK_OBJ(objective_space, CCS_OBJECT_TYPE_OBJECTIVE_SPACE);
 	CCS_CHECK_ARY(num_values, values);
 	CCS_VALIDATE(_check_evaluation(
 		objective_space, num_values, values, is_valid_ret));
@@ -475,7 +475,7 @@ ccs_objective_space_validate_value(
 	ccs_datum_t           value,
 	ccs_datum_t          *value_ret)
 {
-	CCS_CHECK_OBJ(objective_space, CCS_OBJECTIVE_SPACE);
+	CCS_CHECK_OBJ(objective_space, CCS_OBJECT_TYPE_OBJECTIVE_SPACE);
 	CCS_VALIDATE(_ccs_context_validate_value(
 		(ccs_context_t)objective_space, index, value, value_ret));
 	return CCS_SUCCESS;
@@ -493,7 +493,7 @@ ccs_objective_space_add_objective(
 	ccs_expression_t      expression,
 	ccs_objective_type_t  type)
 {
-	CCS_CHECK_OBJ(objective_space, CCS_OBJECTIVE_SPACE);
+	CCS_CHECK_OBJ(objective_space, CCS_OBJECT_TYPE_OBJECTIVE_SPACE);
 	CCS_VALIDATE(ccs_expression_check_context(
 		expression, (ccs_context_t)objective_space));
 	CCS_VALIDATE(ccs_retain_object(expression));
@@ -511,7 +511,7 @@ ccs_objective_space_add_objectives(
 	ccs_expression_t     *expressions,
 	ccs_objective_type_t *types)
 {
-	CCS_CHECK_OBJ(objective_space, CCS_OBJECTIVE_SPACE);
+	CCS_CHECK_OBJ(objective_space, CCS_OBJECT_TYPE_OBJECTIVE_SPACE);
 	CCS_CHECK_ARY(num_objectives, expressions);
 	CCS_CHECK_ARY(num_objectives, types);
 	for (size_t i = 0; i < num_objectives; i++) {
@@ -536,7 +536,7 @@ ccs_objective_space_get_objective(
 	ccs_expression_t     *expression_ret,
 	ccs_objective_type_t *type_ret)
 {
-	CCS_CHECK_OBJ(objective_space, CCS_OBJECTIVE_SPACE);
+	CCS_CHECK_OBJ(objective_space, CCS_OBJECT_TYPE_OBJECTIVE_SPACE);
 	CCS_CHECK_PTR(expression_ret);
 	CCS_CHECK_PTR(type_ret);
 	_ccs_objective_t *p_obj = (_ccs_objective_t *)utarray_eltptr(
@@ -555,7 +555,7 @@ ccs_objective_space_get_objectives(
 	ccs_objective_type_t *types,
 	size_t               *num_objectives_ret)
 {
-	CCS_CHECK_OBJ(objective_space, CCS_OBJECTIVE_SPACE);
+	CCS_CHECK_OBJ(objective_space, CCS_OBJECT_TYPE_OBJECTIVE_SPACE);
 	CCS_CHECK_ARY(num_objectives, expressions);
 	CCS_CHECK_ARY(num_objectives, types);
 	CCS_REFUTE(!expressions && !num_objectives_ret, CCS_INVALID_VALUE);

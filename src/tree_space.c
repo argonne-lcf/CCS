@@ -15,7 +15,7 @@ ccs_tree_space_get_type(
 	ccs_tree_space_t       tree_space,
 	ccs_tree_space_type_t *type_ret)
 {
-	CCS_CHECK_OBJ(tree_space, CCS_TREE_SPACE);
+	CCS_CHECK_OBJ(tree_space, CCS_OBJECT_TYPE_TREE_SPACE);
 	CCS_CHECK_PTR(type_ret);
 	*type_ret = ((_ccs_tree_space_common_data_t *)(tree_space->data))->type;
 	return CCS_SUCCESS;
@@ -24,7 +24,7 @@ ccs_tree_space_get_type(
 ccs_error_t
 ccs_tree_space_get_name(ccs_tree_space_t tree_space, const char **name_ret)
 {
-	CCS_CHECK_OBJ(tree_space, CCS_TREE_SPACE);
+	CCS_CHECK_OBJ(tree_space, CCS_OBJECT_TYPE_TREE_SPACE);
 	CCS_CHECK_PTR(name_ret);
 	*name_ret = ((_ccs_tree_space_common_data_t *)(tree_space->data))->name;
 	return CCS_SUCCESS;
@@ -33,8 +33,8 @@ ccs_tree_space_get_name(ccs_tree_space_t tree_space, const char **name_ret)
 ccs_error_t
 ccs_tree_space_set_rng(ccs_tree_space_t tree_space, ccs_rng_t rng)
 {
-	CCS_CHECK_OBJ(tree_space, CCS_TREE_SPACE);
-	CCS_CHECK_OBJ(rng, CCS_RNG);
+	CCS_CHECK_OBJ(tree_space, CCS_OBJECT_TYPE_TREE_SPACE);
+	CCS_CHECK_OBJ(rng, CCS_OBJECT_TYPE_RNG);
 	CCS_VALIDATE(ccs_retain_object(rng));
 	ccs_rng_t tmp =
 		((_ccs_tree_space_common_data_t *)(tree_space->data))->rng;
@@ -46,7 +46,7 @@ ccs_tree_space_set_rng(ccs_tree_space_t tree_space, ccs_rng_t rng)
 ccs_error_t
 ccs_tree_space_get_rng(ccs_tree_space_t tree_space, ccs_rng_t *rng_ret)
 {
-	CCS_CHECK_OBJ(tree_space, CCS_TREE_SPACE);
+	CCS_CHECK_OBJ(tree_space, CCS_OBJECT_TYPE_TREE_SPACE);
 	CCS_CHECK_PTR(rng_ret);
 	*rng_ret = ((_ccs_tree_space_common_data_t *)(tree_space->data))->rng;
 	return CCS_SUCCESS;
@@ -55,7 +55,7 @@ ccs_tree_space_get_rng(ccs_tree_space_t tree_space, ccs_rng_t *rng_ret)
 ccs_error_t
 ccs_tree_space_get_tree(ccs_tree_space_t tree_space, ccs_tree_t *tree_ret)
 {
-	CCS_CHECK_OBJ(tree_space, CCS_TREE_SPACE);
+	CCS_CHECK_OBJ(tree_space, CCS_OBJECT_TYPE_TREE_SPACE);
 	CCS_CHECK_PTR(tree_ret);
 	*tree_ret = ((_ccs_tree_space_common_data_t *)(tree_space->data))->tree;
 	return CCS_SUCCESS;
@@ -70,7 +70,7 @@ ccs_tree_space_get_node_at_position(
 	const size_t    *position,
 	ccs_tree_t      *tree_ret)
 {
-	CCS_CHECK_OBJ(tree_space, CCS_TREE_SPACE);
+	CCS_CHECK_OBJ(tree_space, CCS_OBJECT_TYPE_TREE_SPACE);
 	CCS_CHECK_ARY(position_size, position);
 	CCS_CHECK_PTR(tree_ret);
 	_ccs_tree_space_ops_t *ops = _ccs_tree_space_get_ops(tree_space);
@@ -87,7 +87,7 @@ ccs_tree_space_get_values_at_position(
 	size_t           num_values,
 	ccs_datum_t     *values)
 {
-	CCS_CHECK_OBJ(tree_space, CCS_TREE_SPACE);
+	CCS_CHECK_OBJ(tree_space, CCS_OBJECT_TYPE_TREE_SPACE);
 	CCS_CHECK_ARY(position_size, position);
 	CCS_CHECK_ARY(num_values, values);
 	_ccs_tree_space_ops_t *ops = _ccs_tree_space_get_ops(tree_space);
@@ -103,7 +103,7 @@ ccs_tree_space_check_position(
 	const size_t    *position,
 	ccs_bool_t      *is_valid_ret)
 {
-	CCS_CHECK_OBJ(tree_space, CCS_TREE_SPACE);
+	CCS_CHECK_OBJ(tree_space, CCS_OBJECT_TYPE_TREE_SPACE);
 	CCS_CHECK_ARY(position_size, position);
 	CCS_CHECK_PTR(is_valid_ret);
 	_ccs_tree_space_ops_t *ops = _ccs_tree_space_get_ops(tree_space);
@@ -118,8 +118,8 @@ ccs_tree_space_check_configuration(
 	ccs_tree_configuration_t configuration,
 	ccs_bool_t              *is_valid_ret)
 {
-	CCS_CHECK_OBJ(tree_space, CCS_TREE_SPACE);
-	CCS_CHECK_OBJ(configuration, CCS_TREE_CONFIGURATION);
+	CCS_CHECK_OBJ(tree_space, CCS_OBJECT_TYPE_TREE_SPACE);
+	CCS_CHECK_OBJ(configuration, CCS_OBJECT_TYPE_TREE_CONFIGURATION);
 	CCS_REFUTE(
 		configuration->data->tree_space != tree_space,
 		CCS_INVALID_CONFIGURATION);
@@ -200,7 +200,7 @@ ccs_tree_space_sample(
 	ccs_tree_space_t          tree_space,
 	ccs_tree_configuration_t *configuration_ret)
 {
-	CCS_CHECK_OBJ(tree_space, CCS_TREE_SPACE);
+	CCS_CHECK_OBJ(tree_space, CCS_OBJECT_TYPE_TREE_SPACE);
 	CCS_CHECK_PTR(configuration_ret);
 	CCS_VALIDATE(_ccs_tree_space_samples(tree_space, 1, configuration_ret));
 	return CCS_SUCCESS;
@@ -212,7 +212,7 @@ ccs_tree_space_samples(
 	size_t                    num_configurations,
 	ccs_tree_configuration_t *configurations)
 {
-	CCS_CHECK_OBJ(tree_space, CCS_TREE_SPACE);
+	CCS_CHECK_OBJ(tree_space, CCS_OBJECT_TYPE_TREE_SPACE);
 	CCS_CHECK_ARY(num_configurations, configurations);
 	if (num_configurations == 0)
 		return CCS_SUCCESS;

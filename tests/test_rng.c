@@ -29,7 +29,7 @@ test_rng_create_with_type()
 	assert(t == t2[selected]);
 	err = ccs_object_get_type(rng, &otype);
 	assert(err == CCS_SUCCESS);
-	assert(otype == CCS_RNG);
+	assert(otype == CCS_OBJECT_TYPE_RNG);
 	err = ccs_object_get_refcount(rng, &refcount);
 	assert(err == CCS_SUCCESS);
 	assert(refcount == 1);

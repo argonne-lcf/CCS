@@ -247,7 +247,7 @@ _ccs_deserialize_bin_tree_tuner(
 	ccs_error_t                       res;
 	CCS_VALIDATE(_ccs_deserialize_bin_ccs_object_internal(
 		&obj, buffer_size, buffer, &handle));
-	CCS_REFUTE(obj.type != CCS_TREE_TUNER, CCS_INVALID_TYPE);
+	CCS_REFUTE(obj.type != CCS_OBJECT_TYPE_TREE_TUNER, CCS_INVALID_TYPE);
 
 	ccs_tree_tuner_type_t ttype;
 	CCS_VALIDATE(

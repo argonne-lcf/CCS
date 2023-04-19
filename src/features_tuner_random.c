@@ -460,9 +460,9 @@ ccs_create_random_features_tuner(
 	ccs_features_tuner_t     *tuner_ret)
 {
 	CCS_CHECK_PTR(name);
-	CCS_CHECK_OBJ(configuration_space, CCS_CONFIGURATION_SPACE);
-	CCS_CHECK_OBJ(features_space, CCS_FEATURES_SPACE);
-	CCS_CHECK_OBJ(objective_space, CCS_OBJECTIVE_SPACE);
+	CCS_CHECK_OBJ(configuration_space, CCS_OBJECT_TYPE_CONFIGURATION_SPACE);
+	CCS_CHECK_OBJ(features_space, CCS_OBJECT_TYPE_FEATURES_SPACE);
+	CCS_CHECK_OBJ(objective_space, CCS_OBJECT_TYPE_OBJECTIVE_SPACE);
 	CCS_CHECK_PTR(tuner_ret);
 
 	uintptr_t mem = (uintptr_t)calloc(
@@ -481,7 +481,7 @@ ccs_create_random_features_tuner(
 
 	tun = (ccs_features_tuner_t)mem;
 	_ccs_object_init(
-		&(tun->obj), CCS_FEATURES_TUNER,
+		&(tun->obj), CCS_OBJECT_TYPE_FEATURES_TUNER,
 		(_ccs_object_ops_t *)&_ccs_features_tuner_random_ops);
 	tun->data              = (struct _ccs_features_tuner_data_s
                              *)(mem + sizeof(struct _ccs_features_tuner_s));

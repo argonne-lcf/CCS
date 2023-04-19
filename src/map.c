@@ -153,7 +153,8 @@ ccs_create_map(ccs_map_t *map_ret)
 	CCS_REFUTE(!mem, CCS_OUT_OF_MEMORY);
 	ccs_map_t map = (ccs_map_t)mem;
 	_ccs_object_init(
-		&(map->obj), CCS_MAP, (_ccs_object_ops_t *)&_ccs_map_ops);
+		&(map->obj), CCS_OBJECT_TYPE_MAP,
+		(_ccs_object_ops_t *)&_ccs_map_ops);
 	map->data = (_ccs_map_data_t *)(mem + sizeof(struct _ccs_map_s));
 	*map_ret  = map;
 	return CCS_SUCCESS;
@@ -194,7 +195,7 @@ _ccs_map_set_string(ccs_datum_t *d, size_t sz, uintptr_t *mem)
 ccs_error_t
 ccs_map_set(ccs_map_t map, ccs_datum_t key, ccs_datum_t value)
 {
-	CCS_CHECK_OBJ(map, CCS_MAP);
+	CCS_CHECK_OBJ(map, CCS_OBJECT_TYPE_MAP);
 	ccs_error_t       res       = CCS_SUCCESS;
 	_ccs_map_data_t  *d         = map->data;
 	size_t            sz        = sizeof(_ccs_map_datum_t);
@@ -240,7 +241,7 @@ err:
 ccs_error_t
 ccs_map_exist(ccs_map_t map, ccs_datum_t key, ccs_bool_t *exist)
 {
-	CCS_CHECK_OBJ(map, CCS_MAP);
+	CCS_CHECK_OBJ(map, CCS_OBJECT_TYPE_MAP);
 	CCS_CHECK_PTR(exist);
 	_ccs_map_datum_t *entry;
 	HASH_FIND(hh, map->data->map, &key, sizeof(ccs_datum_t), entry);
@@ -251,7 +252,7 @@ ccs_map_exist(ccs_map_t map, ccs_datum_t key, ccs_bool_t *exist)
 ccs_error_t
 ccs_map_get(ccs_map_t map, ccs_datum_t key, ccs_datum_t *value_ret)
 {
-	CCS_CHECK_OBJ(map, CCS_MAP);
+	CCS_CHECK_OBJ(map, CCS_OBJECT_TYPE_MAP);
 	CCS_CHECK_PTR(value_ret);
 	_ccs_map_datum_t *entry;
 	HASH_FIND(hh, map->data->map, &key, sizeof(ccs_datum_t), entry);
@@ -265,7 +266,7 @@ ccs_map_get(ccs_map_t map, ccs_datum_t key, ccs_datum_t *value_ret)
 ccs_error_t
 ccs_map_del(ccs_map_t map, ccs_datum_t key)
 {
-	CCS_CHECK_OBJ(map, CCS_MAP);
+	CCS_CHECK_OBJ(map, CCS_OBJECT_TYPE_MAP);
 	_ccs_map_datum_t *entry;
 	HASH_FIND(hh, map->data->map, &key, sizeof(ccs_datum_t), entry);
 	CCS_REFUTE(!entry, CCS_INVALID_VALUE);
@@ -280,7 +281,7 @@ ccs_map_get_keys(
 	ccs_datum_t *keys,
 	size_t      *num_keys_ret)
 {
-	CCS_CHECK_OBJ(map, CCS_MAP);
+	CCS_CHECK_OBJ(map, CCS_OBJECT_TYPE_MAP);
 	CCS_CHECK_ARY(num_keys, keys);
 	CCS_REFUTE(!keys && !num_keys_ret, CCS_INVALID_VALUE);
 	size_t num_entries = HASH_COUNT(map->data->map);
@@ -305,7 +306,7 @@ ccs_map_get_values(
 	ccs_datum_t *values,
 	size_t      *num_values_ret)
 {
-	CCS_CHECK_OBJ(map, CCS_MAP);
+	CCS_CHECK_OBJ(map, CCS_OBJECT_TYPE_MAP);
 	CCS_CHECK_ARY(num_values, values);
 	CCS_REFUTE(!values && !num_values_ret, CCS_INVALID_VALUE);
 	size_t num_entries = HASH_COUNT(map->data->map);
@@ -331,7 +332,7 @@ ccs_map_get_pairs(
 	ccs_datum_t *values,
 	size_t      *num_pairs_ret)
 {
-	CCS_CHECK_OBJ(map, CCS_MAP);
+	CCS_CHECK_OBJ(map, CCS_OBJECT_TYPE_MAP);
 	CCS_CHECK_ARY(num_pairs, keys);
 	CCS_CHECK_ARY(num_pairs, values);
 	CCS_REFUTE(!keys && !num_pairs_ret, CCS_INVALID_VALUE);
@@ -358,7 +359,7 @@ ccs_map_get_pairs(
 ccs_error_t
 ccs_map_clear(ccs_map_t map)
 {
-	CCS_CHECK_OBJ(map, CCS_MAP);
+	CCS_CHECK_OBJ(map, CCS_OBJECT_TYPE_MAP);
 	_ccs_map_datum_t *current = NULL, *tmp;
 	HASH_ITER(hh, map->data->map, current, tmp)
 	_ccs_map_remove(map->data, current);

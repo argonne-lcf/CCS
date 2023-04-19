@@ -307,8 +307,8 @@ ccs_create_user_defined_tuner(
 	ccs_tuner_t                     *tuner_ret)
 {
 	CCS_CHECK_PTR(name);
-	CCS_CHECK_OBJ(configuration_space, CCS_CONFIGURATION_SPACE);
-	CCS_CHECK_OBJ(objective_space, CCS_OBJECTIVE_SPACE);
+	CCS_CHECK_OBJ(configuration_space, CCS_OBJECT_TYPE_CONFIGURATION_SPACE);
+	CCS_CHECK_OBJ(objective_space, CCS_OBJECT_TYPE_OBJECTIVE_SPACE);
 	CCS_CHECK_PTR(tuner_ret);
 	CCS_CHECK_PTR(vector);
 	CCS_CHECK_PTR(vector->del);
@@ -331,7 +331,7 @@ ccs_create_user_defined_tuner(
 
 	tun = (ccs_tuner_t)mem;
 	_ccs_object_init(
-		&(tun->obj), CCS_TUNER,
+		&(tun->obj), CCS_OBJECT_TYPE_TUNER,
 		(_ccs_object_ops_t *)&_ccs_tuner_user_defined_ops);
 	tun->data =
 		(struct _ccs_tuner_data_s *)(mem + sizeof(struct _ccs_tuner_s));
@@ -357,7 +357,7 @@ errmem:
 ccs_error_t
 ccs_user_defined_tuner_get_tuner_data(ccs_tuner_t tuner, void **tuner_data_ret)
 {
-	CCS_CHECK_OBJ(tuner, CCS_TUNER);
+	CCS_CHECK_OBJ(tuner, CCS_OBJECT_TYPE_TUNER);
 	CCS_CHECK_PTR(tuner_data_ret);
 	_ccs_user_defined_tuner_data_t *d =
 		(_ccs_user_defined_tuner_data_t *)tuner->data;

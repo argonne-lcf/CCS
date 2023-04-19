@@ -115,7 +115,9 @@ ccs_create_rng_with_type(const gsl_rng_type *rng_type, ccs_rng_t *rng_ret)
 		1, sizeof(struct _ccs_rng_s) + sizeof(struct _ccs_rng_data_s));
 	CCS_REFUTE_ERR_GOTO(res, !mem, CCS_OUT_OF_MEMORY, err_rng);
 	rng = (ccs_rng_t)mem;
-	_ccs_object_init(&(rng->obj), CCS_RNG, (_ccs_object_ops_t *)&_rng_ops);
+	_ccs_object_init(
+		&(rng->obj), CCS_OBJECT_TYPE_RNG,
+		(_ccs_object_ops_t *)&_rng_ops);
 	rng->data = (struct _ccs_rng_data_s *)(mem + sizeof(struct _ccs_rng_s));
 	rng->data->rng_type = rng_type;
 	rng->data->rng      = grng;
@@ -135,7 +137,7 @@ ccs_create_rng(ccs_rng_t *rng_ret)
 ccs_error_t
 ccs_rng_get_type(ccs_rng_t rng, const gsl_rng_type **rng_type_ret)
 {
-	CCS_CHECK_OBJ(rng, CCS_RNG);
+	CCS_CHECK_OBJ(rng, CCS_OBJECT_TYPE_RNG);
 	*rng_type_ret = rng->data->rng_type;
 	return CCS_SUCCESS;
 }
@@ -143,7 +145,7 @@ ccs_rng_get_type(ccs_rng_t rng, const gsl_rng_type **rng_type_ret)
 ccs_error_t
 ccs_rng_set_seed(ccs_rng_t rng, unsigned long int seed)
 {
-	CCS_CHECK_OBJ(rng, CCS_RNG);
+	CCS_CHECK_OBJ(rng, CCS_OBJECT_TYPE_RNG);
 	gsl_rng_set(rng->data->rng, seed);
 	return CCS_SUCCESS;
 }
@@ -151,7 +153,7 @@ ccs_rng_set_seed(ccs_rng_t rng, unsigned long int seed)
 ccs_error_t
 ccs_rng_get(ccs_rng_t rng, unsigned long int *value_ret)
 {
-	CCS_CHECK_OBJ(rng, CCS_RNG);
+	CCS_CHECK_OBJ(rng, CCS_OBJECT_TYPE_RNG);
 	CCS_CHECK_PTR(value_ret);
 	*value_ret = gsl_rng_get(rng->data->rng);
 	return CCS_SUCCESS;
@@ -160,7 +162,7 @@ ccs_rng_get(ccs_rng_t rng, unsigned long int *value_ret)
 ccs_error_t
 ccs_rng_uniform(ccs_rng_t rng, ccs_float_t *value_ret)
 {
-	CCS_CHECK_OBJ(rng, CCS_RNG);
+	CCS_CHECK_OBJ(rng, CCS_OBJECT_TYPE_RNG);
 	CCS_CHECK_PTR(value_ret);
 	*value_ret = gsl_rng_uniform(rng->data->rng);
 	return CCS_SUCCESS;
@@ -169,7 +171,7 @@ ccs_rng_uniform(ccs_rng_t rng, ccs_float_t *value_ret)
 ccs_error_t
 ccs_rng_get_gsl_rng(ccs_rng_t rng, gsl_rng **gsl_rng_ret)
 {
-	CCS_CHECK_OBJ(rng, CCS_RNG);
+	CCS_CHECK_OBJ(rng, CCS_OBJECT_TYPE_RNG);
 	CCS_CHECK_PTR(gsl_rng_ret);
 	*gsl_rng_ret = rng->data->rng;
 	return CCS_SUCCESS;
@@ -178,7 +180,7 @@ ccs_rng_get_gsl_rng(ccs_rng_t rng, gsl_rng **gsl_rng_ret)
 ccs_error_t
 ccs_rng_min(ccs_rng_t rng, unsigned long int *value_ret)
 {
-	CCS_CHECK_OBJ(rng, CCS_RNG);
+	CCS_CHECK_OBJ(rng, CCS_OBJECT_TYPE_RNG);
 	CCS_CHECK_PTR(value_ret);
 	*value_ret = gsl_rng_min(rng->data->rng);
 	return CCS_SUCCESS;
@@ -187,7 +189,7 @@ ccs_rng_min(ccs_rng_t rng, unsigned long int *value_ret)
 ccs_error_t
 ccs_rng_max(ccs_rng_t rng, unsigned long int *value_ret)
 {
-	CCS_CHECK_OBJ(rng, CCS_RNG);
+	CCS_CHECK_OBJ(rng, CCS_OBJECT_TYPE_RNG);
 	CCS_CHECK_PTR(value_ret);
 	*value_ret = gsl_rng_max(rng->data->rng);
 	return CCS_SUCCESS;

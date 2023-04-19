@@ -9,7 +9,7 @@ class CConfigSpaceTestConfigurationSpace < Minitest::Test
 
   def test_create
     cs = CCS::ConfigurationSpace::new(name: "space")
-    assert_equal( :CCS_CONFIGURATION_SPACE, cs.object_type )
+    assert_equal( :CCS_OBJECT_TYPE_CONFIGURATION_SPACE, cs.object_type )
     assert_equal( "space", cs.name )
     assert( cs.rng.kind_of?(CCS::Rng) )
     assert_equal( 0, cs.num_parameters )

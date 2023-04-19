@@ -15,7 +15,7 @@ class CConfigSpaceTestParameter < Minitest::Test
   end
 
   def discrete_check(values, h)
-    assert_equal( :CCS_PARAMETER, h.object_type )
+    assert_equal( :CCS_OBJECT_TYPE_PARAMETER, h.object_type )
     assert_equal( :CCS_PARAMETER_TYPE_DISCRETE, h.type )
     assert_match( /param/, h.name )
     assert_nil( h.user_data )
@@ -67,7 +67,7 @@ class CConfigSpaceTestParameter < Minitest::Test
   end
 
   def ordinal_check(values, h)
-    assert_equal( :CCS_PARAMETER, h.object_type )
+    assert_equal( :CCS_OBJECT_TYPE_PARAMETER, h.object_type )
     assert_equal( :CCS_PARAMETER_TYPE_ORDINAL, h.type )
     assert_match( /param/, h.name )
     assert_nil( h.user_data )
@@ -108,7 +108,7 @@ class CConfigSpaceTestParameter < Minitest::Test
   end
 
   def categorical_check(values, h)
-    assert_equal( :CCS_PARAMETER, h.object_type )
+    assert_equal( :CCS_OBJECT_TYPE_PARAMETER, h.object_type )
     assert_equal( :CCS_PARAMETER_TYPE_CATEGORICAL, h.type )
     assert_match( /param/, h.name )
     assert_equal( {'foo': ['bar', 'baz']}, h.user_data )
@@ -151,7 +151,7 @@ class CConfigSpaceTestParameter < Minitest::Test
   end
 
   def numerical_check(h)
-    assert_equal( :CCS_PARAMETER, h.object_type )
+    assert_equal( :CCS_OBJECT_TYPE_PARAMETER, h.object_type )
     assert_equal( :CCS_PARAMETER_TYPE_NUMERICAL, h.type )
     assert_match( /param/, h.name )
     assert_nil( h.user_data )
@@ -183,7 +183,7 @@ class CConfigSpaceTestParameter < Minitest::Test
 
   def test_create_numerical_float
     h = CCS::NumericalParameter::float(lower: 0.0, upper: 1.0)
-    assert_equal( :CCS_PARAMETER, h.object_type )
+    assert_equal( :CCS_OBJECT_TYPE_PARAMETER, h.object_type )
     assert_equal( :CCS_PARAMETER_TYPE_NUMERICAL, h.type )
     assert_match( /param/, h.name )
     assert_nil( h.user_data )

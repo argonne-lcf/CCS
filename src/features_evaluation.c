@@ -192,9 +192,9 @@ ccs_create_features_evaluation(
 	ccs_datum_t               *values,
 	ccs_features_evaluation_t *evaluation_ret)
 {
-	CCS_CHECK_OBJ(objective_space, CCS_OBJECTIVE_SPACE);
-	CCS_CHECK_OBJ(configuration, CCS_CONFIGURATION);
-	CCS_CHECK_OBJ(features, CCS_FEATURES);
+	CCS_CHECK_OBJ(objective_space, CCS_OBJECT_TYPE_OBJECTIVE_SPACE);
+	CCS_CHECK_OBJ(configuration, CCS_OBJECT_TYPE_CONFIGURATION);
+	CCS_CHECK_OBJ(features, CCS_OBJECT_TYPE_FEATURES);
 	CCS_CHECK_PTR(evaluation_ret);
 	CCS_CHECK_ARY(num_values, values);
 	size_t num;
@@ -215,7 +215,7 @@ ccs_create_features_evaluation(
 	ccs_features_evaluation_t eval;
 	eval = (ccs_features_evaluation_t)mem;
 	_ccs_object_init(
-		&(eval->obj), CCS_FEATURES_EVALUATION,
+		&(eval->obj), CCS_OBJECT_TYPE_FEATURES_EVALUATION,
 		(_ccs_object_ops_t *)&_features_evaluation_ops);
 	eval->data =
 		(struct _ccs_features_evaluation_data_s
@@ -259,7 +259,7 @@ ccs_features_evaluation_get_objective_space(
 	ccs_features_evaluation_t evaluation,
 	ccs_objective_space_t    *objective_space_ret)
 {
-	CCS_CHECK_OBJ(evaluation, CCS_FEATURES_EVALUATION);
+	CCS_CHECK_OBJ(evaluation, CCS_OBJECT_TYPE_FEATURES_EVALUATION);
 	CCS_VALIDATE(_ccs_binding_get_context(
 		(ccs_binding_t)evaluation,
 		(ccs_context_t *)objective_space_ret));
@@ -271,7 +271,7 @@ ccs_features_evaluation_get_configuration(
 	ccs_features_evaluation_t evaluation,
 	ccs_configuration_t      *configuration_ret)
 {
-	CCS_CHECK_OBJ(evaluation, CCS_FEATURES_EVALUATION);
+	CCS_CHECK_OBJ(evaluation, CCS_OBJECT_TYPE_FEATURES_EVALUATION);
 	CCS_CHECK_PTR(configuration_ret);
 	*configuration_ret = evaluation->data->configuration;
 	return CCS_SUCCESS;
@@ -282,7 +282,7 @@ ccs_features_evaluation_get_features(
 	ccs_features_evaluation_t evaluation,
 	ccs_features_t           *features_ret)
 {
-	CCS_CHECK_OBJ(evaluation, CCS_FEATURES_EVALUATION);
+	CCS_CHECK_OBJ(evaluation, CCS_OBJECT_TYPE_FEATURES_EVALUATION);
 	CCS_CHECK_PTR(features_ret);
 	*features_ret = evaluation->data->features;
 	return CCS_SUCCESS;
@@ -293,7 +293,7 @@ ccs_features_evaluation_get_result(
 	ccs_features_evaluation_t evaluation,
 	ccs_evaluation_result_t  *result_ret)
 {
-	CCS_CHECK_OBJ(evaluation, CCS_FEATURES_EVALUATION);
+	CCS_CHECK_OBJ(evaluation, CCS_OBJECT_TYPE_FEATURES_EVALUATION);
 	CCS_CHECK_PTR(result_ret);
 	*result_ret = evaluation->data->result;
 	return CCS_SUCCESS;
@@ -304,7 +304,7 @@ ccs_features_evaluation_set_result(
 	ccs_features_evaluation_t evaluation,
 	ccs_evaluation_result_t   result)
 {
-	CCS_CHECK_OBJ(evaluation, CCS_FEATURES_EVALUATION);
+	CCS_CHECK_OBJ(evaluation, CCS_OBJECT_TYPE_FEATURES_EVALUATION);
 	evaluation->data->result = result;
 	return CCS_SUCCESS;
 }
@@ -315,7 +315,7 @@ ccs_features_evaluation_get_value(
 	size_t                    index,
 	ccs_datum_t              *value_ret)
 {
-	CCS_CHECK_OBJ(evaluation, CCS_FEATURES_EVALUATION);
+	CCS_CHECK_OBJ(evaluation, CCS_OBJECT_TYPE_FEATURES_EVALUATION);
 	CCS_VALIDATE(_ccs_binding_get_value(
 		(ccs_binding_t)evaluation, index, value_ret));
 	return CCS_SUCCESS;
@@ -327,7 +327,7 @@ ccs_features_evaluation_set_value(
 	size_t                    index,
 	ccs_datum_t               value)
 {
-	CCS_CHECK_OBJ(evaluation, CCS_FEATURES_EVALUATION);
+	CCS_CHECK_OBJ(evaluation, CCS_OBJECT_TYPE_FEATURES_EVALUATION);
 	CCS_VALIDATE(_ccs_binding_set_value(
 		(ccs_binding_t)evaluation, index, value));
 	return CCS_SUCCESS;
@@ -340,7 +340,7 @@ ccs_features_evaluation_get_values(
 	ccs_datum_t              *values,
 	size_t                   *num_values_ret)
 {
-	CCS_CHECK_OBJ(evaluation, CCS_FEATURES_EVALUATION);
+	CCS_CHECK_OBJ(evaluation, CCS_OBJECT_TYPE_FEATURES_EVALUATION);
 	CCS_VALIDATE(_ccs_binding_get_values(
 		(ccs_binding_t)evaluation, num_values, values, num_values_ret));
 	return CCS_SUCCESS;
@@ -352,7 +352,7 @@ ccs_features_evaluation_get_value_by_name(
 	const char               *name,
 	ccs_datum_t              *value_ret)
 {
-	CCS_CHECK_OBJ(evaluation, CCS_FEATURES_EVALUATION);
+	CCS_CHECK_OBJ(evaluation, CCS_OBJECT_TYPE_FEATURES_EVALUATION);
 	CCS_VALIDATE(_ccs_binding_get_value_by_name(
 		(ccs_binding_t)evaluation, name, value_ret));
 	return CCS_SUCCESS;
@@ -363,7 +363,7 @@ ccs_features_evaluation_check(
 	ccs_features_evaluation_t evaluation,
 	ccs_bool_t               *is_valid_ret)
 {
-	CCS_CHECK_OBJ(evaluation, CCS_FEATURES_EVALUATION);
+	CCS_CHECK_OBJ(evaluation, CCS_OBJECT_TYPE_FEATURES_EVALUATION);
 	CCS_VALIDATE(ccs_objective_space_check_evaluation_values(
 		evaluation->data->objective_space, evaluation->data->num_values,
 		evaluation->data->values, is_valid_ret));
@@ -376,7 +376,7 @@ ccs_features_evaluation_get_objective_value(
 	size_t                    index,
 	ccs_datum_t              *value_ret)
 {
-	CCS_CHECK_OBJ(evaluation, CCS_FEATURES_EVALUATION);
+	CCS_CHECK_OBJ(evaluation, CCS_OBJECT_TYPE_FEATURES_EVALUATION);
 	CCS_CHECK_PTR(value_ret);
 	ccs_expression_t     expression;
 	ccs_objective_type_t type;
@@ -395,7 +395,7 @@ ccs_features_evaluation_get_objective_values(
 	ccs_datum_t              *values,
 	size_t                   *num_values_ret)
 {
-	CCS_CHECK_OBJ(evaluation, CCS_FEATURES_EVALUATION);
+	CCS_CHECK_OBJ(evaluation, CCS_OBJECT_TYPE_FEATURES_EVALUATION);
 	CCS_CHECK_ARY(num_values, values);
 	CCS_REFUTE(!values && !num_values_ret, CCS_INVALID_VALUE);
 	size_t count;
@@ -442,7 +442,7 @@ ccs_features_evaluation_hash(
 	ccs_features_evaluation_t evaluation,
 	ccs_hash_t               *hash_ret)
 {
-	CCS_CHECK_OBJ(evaluation, CCS_FEATURES_EVALUATION);
+	CCS_CHECK_OBJ(evaluation, CCS_OBJECT_TYPE_FEATURES_EVALUATION);
 	_ccs_features_evaluation_ops_t *ops =
 		ccs_features_evaluation_get_ops(evaluation);
 	CCS_VALIDATE(ops->hash(evaluation->data, hash_ret));
@@ -455,8 +455,8 @@ ccs_features_evaluation_cmp(
 	ccs_features_evaluation_t other_evaluation,
 	int                      *cmp_ret)
 {
-	CCS_CHECK_OBJ(evaluation, CCS_FEATURES_EVALUATION);
-	CCS_CHECK_OBJ(other_evaluation, CCS_FEATURES_EVALUATION);
+	CCS_CHECK_OBJ(evaluation, CCS_OBJECT_TYPE_FEATURES_EVALUATION);
+	CCS_CHECK_OBJ(other_evaluation, CCS_OBJECT_TYPE_FEATURES_EVALUATION);
 	CCS_CHECK_PTR(cmp_ret);
 	if (evaluation == other_evaluation) {
 		*cmp_ret = 0;
@@ -475,8 +475,8 @@ ccs_features_evaluation_compare(
 	ccs_features_evaluation_t other_evaluation,
 	ccs_comparison_t         *result_ret)
 {
-	CCS_CHECK_OBJ(evaluation, CCS_FEATURES_EVALUATION);
-	CCS_CHECK_OBJ(other_evaluation, CCS_FEATURES_EVALUATION);
+	CCS_CHECK_OBJ(evaluation, CCS_OBJECT_TYPE_FEATURES_EVALUATION);
+	CCS_CHECK_OBJ(other_evaluation, CCS_OBJECT_TYPE_FEATURES_EVALUATION);
 	CCS_CHECK_PTR(result_ret);
 	if (evaluation == other_evaluation) {
 		*result_ret = CCS_EQUIVALENT;

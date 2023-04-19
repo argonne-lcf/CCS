@@ -37,7 +37,7 @@ _ccs_deserialize_bin_ccs_evaluation(
 	const char                       **buffer,
 	_ccs_object_deserialize_options_t *opts)
 {
-	CCS_CHECK_OBJ(opts->handle_map, CCS_MAP);
+	CCS_CHECK_OBJ(opts->handle_map, CCS_OBJECT_TYPE_MAP);
 	_ccs_object_deserialize_options_t new_opts = *opts;
 	_ccs_object_internal_t            obj;
 	ccs_object_t                      handle;
@@ -46,7 +46,7 @@ _ccs_deserialize_bin_ccs_evaluation(
 	ccs_error_t                       res = CCS_SUCCESS;
 	CCS_VALIDATE(_ccs_deserialize_bin_ccs_object_internal(
 		&obj, buffer_size, buffer, &handle));
-	CCS_REFUTE(obj.type != CCS_EVALUATION, CCS_INVALID_TYPE);
+	CCS_REFUTE(obj.type != CCS_OBJECT_TYPE_EVALUATION, CCS_INVALID_TYPE);
 
 	new_opts.map_values              = CCS_FALSE;
 	_ccs_evaluation_data_mock_t data = {{NULL, 0, NULL}, NULL, CCS_SUCCESS};

@@ -123,7 +123,7 @@ _ccs_deserialize_bin_tree_space(
 	ccs_object_t           handle;
 	CCS_VALIDATE(_ccs_deserialize_bin_ccs_object_internal(
 		&obj, buffer_size, buffer, &handle));
-	CCS_REFUTE(obj.type != CCS_TREE_SPACE, CCS_INVALID_TYPE);
+	CCS_REFUTE(obj.type != CCS_OBJECT_TYPE_TREE_SPACE, CCS_INVALID_TYPE);
 
 	ccs_tree_space_type_t stype;
 	CCS_VALIDATE(

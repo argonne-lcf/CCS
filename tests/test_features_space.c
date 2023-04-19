@@ -34,7 +34,7 @@ test_create()
 
 	err = ccs_object_get_type(features_space, &type);
 	assert(err == CCS_SUCCESS);
-	assert(type == CCS_FEATURES_SPACE);
+	assert(type == CCS_OBJECT_TYPE_FEATURES_SPACE);
 
 	err = ccs_features_space_get_name(features_space, &name);
 	assert(err == CCS_SUCCESS);

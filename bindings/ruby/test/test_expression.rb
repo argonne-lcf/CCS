@@ -9,14 +9,14 @@ class CConfigSpaceTestExpression < Minitest::Test
 
   def test_create
     e = CCS::Expression::new(type: :CCS_ADD, nodes: [1.0, 2.0])
-    assert_equal( :CCS_EXPRESSION, e.object_type )
+    assert_equal( :CCS_OBJECT_TYPE_EXPRESSION, e.object_type )
     assert_equal( :CCS_ADD, e.type )
     assert_equal( 2, e.num_nodes )
     nodes = e.nodes
     assert_equal( 2, nodes.size )
     nodes.each { |n|
       assert( n.kind_of?(CCS::Literal) )
-      assert_equal( :CCS_EXPRESSION, n.object_type )
+      assert_equal( :CCS_OBJECT_TYPE_EXPRESSION, n.object_type )
       assert_equal( :CCS_LITERAL, n.type )
     }
     assert_equal( 1.0, nodes[0].value )

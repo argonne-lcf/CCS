@@ -90,7 +90,7 @@ ccs_create_features(
 	ccs_datum_t         *values,
 	ccs_features_t      *features_ret)
 {
-	CCS_CHECK_OBJ(features_space, CCS_FEATURES_SPACE);
+	CCS_CHECK_OBJ(features_space, CCS_OBJECT_TYPE_FEATURES_SPACE);
 	CCS_CHECK_PTR(features_ret);
 	CCS_CHECK_ARY(num_values, values);
 	ccs_error_t err;
@@ -107,7 +107,7 @@ ccs_create_features(
 	ccs_features_t feat;
 	feat = (ccs_features_t)mem;
 	_ccs_object_init(
-		&(feat->obj), CCS_FEATURES,
+		&(feat->obj), CCS_OBJECT_TYPE_FEATURES,
 		(_ccs_object_ops_t *)&_features_ops);
 	feat->data                 = (struct _ccs_features_data_s
                               *)(mem + sizeof(struct _ccs_features_s));
@@ -142,7 +142,7 @@ ccs_features_get_features_space(
 	ccs_features_t        features,
 	ccs_features_space_t *features_space_ret)
 {
-	CCS_CHECK_OBJ(features, CCS_FEATURES);
+	CCS_CHECK_OBJ(features, CCS_OBJECT_TYPE_FEATURES);
 	CCS_VALIDATE(_ccs_binding_get_context(
 		(ccs_binding_t)features, (ccs_context_t *)features_space_ret));
 	return CCS_SUCCESS;
@@ -154,7 +154,7 @@ ccs_features_get_value(
 	size_t         index,
 	ccs_datum_t   *value_ret)
 {
-	CCS_CHECK_OBJ(features, CCS_FEATURES);
+	CCS_CHECK_OBJ(features, CCS_OBJECT_TYPE_FEATURES);
 	CCS_VALIDATE(_ccs_binding_get_value(
 		(ccs_binding_t)features, index, value_ret));
 	return CCS_SUCCESS;
@@ -163,7 +163,7 @@ ccs_features_get_value(
 ccs_error_t
 ccs_features_set_value(ccs_features_t features, size_t index, ccs_datum_t value)
 {
-	CCS_CHECK_OBJ(features, CCS_FEATURES);
+	CCS_CHECK_OBJ(features, CCS_OBJECT_TYPE_FEATURES);
 	CCS_VALIDATE(
 		_ccs_binding_set_value((ccs_binding_t)features, index, value));
 	return CCS_SUCCESS;
@@ -176,7 +176,7 @@ ccs_features_get_values(
 	ccs_datum_t   *values,
 	size_t        *num_values_ret)
 {
-	CCS_CHECK_OBJ(features, CCS_FEATURES);
+	CCS_CHECK_OBJ(features, CCS_OBJECT_TYPE_FEATURES);
 	CCS_VALIDATE(_ccs_binding_get_values(
 		(ccs_binding_t)features, num_values, values, num_values_ret));
 	return CCS_SUCCESS;
@@ -188,7 +188,7 @@ ccs_features_get_value_by_name(
 	const char    *name,
 	ccs_datum_t   *value_ret)
 {
-	CCS_CHECK_OBJ(features, CCS_FEATURES);
+	CCS_CHECK_OBJ(features, CCS_OBJECT_TYPE_FEATURES);
 	CCS_VALIDATE(_ccs_binding_get_value_by_name(
 		(ccs_binding_t)features, name, value_ret));
 	return CCS_SUCCESS;
@@ -197,7 +197,7 @@ ccs_features_get_value_by_name(
 ccs_error_t
 ccs_features_check(ccs_features_t features, ccs_bool_t *is_valid_ret)
 {
-	CCS_CHECK_OBJ(features, CCS_FEATURES);
+	CCS_CHECK_OBJ(features, CCS_OBJECT_TYPE_FEATURES);
 	CCS_VALIDATE(ccs_features_space_check_features(
 		features->data->features_space, features, is_valid_ret));
 	return CCS_SUCCESS;
@@ -206,7 +206,7 @@ ccs_features_check(ccs_features_t features, ccs_bool_t *is_valid_ret)
 ccs_error_t
 ccs_features_hash(ccs_features_t features, ccs_hash_t *hash_ret)
 {
-	CCS_CHECK_OBJ(features, CCS_FEATURES);
+	CCS_CHECK_OBJ(features, CCS_OBJECT_TYPE_FEATURES);
 	_ccs_features_ops_t *ops = ccs_features_get_ops(features);
 	CCS_VALIDATE(ops->hash(features->data, hash_ret));
 	return CCS_SUCCESS;
@@ -218,8 +218,8 @@ ccs_features_cmp(
 	ccs_features_t other_features,
 	int           *cmp_ret)
 {
-	CCS_CHECK_OBJ(features, CCS_FEATURES);
-	CCS_CHECK_OBJ(other_features, CCS_FEATURES);
+	CCS_CHECK_OBJ(features, CCS_OBJECT_TYPE_FEATURES);
+	CCS_CHECK_OBJ(other_features, CCS_OBJECT_TYPE_FEATURES);
 	_ccs_features_ops_t *ops = ccs_features_get_ops(features);
 	CCS_VALIDATE(ops->cmp(features->data, other_features, cmp_ret));
 	return CCS_SUCCESS;

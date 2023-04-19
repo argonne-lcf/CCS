@@ -22,7 +22,7 @@ class CConfigSpaceTestTreeSpace < Minitest::Test
     rng = CCS::Rng.new
     tree = generate_tree(4, 0)
     ts = CCS::StaticTreeSpace.new(name: 'space', tree: tree)
-    assert_equal( :CCS_TREE_SPACE, ts.object_type )
+    assert_equal( :CCS_OBJECT_TYPE_TREE_SPACE, ts.object_type )
     assert_equal( "space", ts.name )
     assert_instance_of( CCS::Rng, ts.rng )
     assert_equal( :CCS_TREE_SPACE_TYPE_STATIC, ts.type )
@@ -59,7 +59,7 @@ class CConfigSpaceTestTreeSpace < Minitest::Test
 
     tree = CCS::Tree.new(arity: 4, value: 400)
     ts = CCS::DynamicTreeSpace.new(name: 'space', tree: tree, del: del, get_child: get_child)
-    assert_equal( :CCS_TREE_SPACE, ts.object_type )
+    assert_equal( :CCS_OBJECT_TYPE_TREE_SPACE, ts.object_type )
     assert_equal( :CCS_TREE_SPACE_TYPE_DYNAMIC, ts.type )
     assert_equal( tree.handle, ts.tree.handle )
     assert_equal( tree.handle, ts.get_node_at_position([]).handle )

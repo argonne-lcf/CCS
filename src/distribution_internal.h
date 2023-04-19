@@ -3,7 +3,7 @@
 
 #define CCS_CHECK_DISTRIBUTION(o, t)                                            \
 	do {                                                                    \
-		CCS_CHECK_OBJ(o, CCS_DISTRIBUTION);                             \
+		CCS_CHECK_OBJ(o, CCS_OBJECT_TYPE_DISTRIBUTION);                 \
 		CCS_REFUTE(                                                     \
 			((_ccs_distribution_common_data_t *)distribution->data) \
 					->type != (t),                          \

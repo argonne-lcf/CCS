@@ -120,7 +120,7 @@ ccs_create_tree_configuration(
 	const size_t             *position,
 	ccs_tree_configuration_t *configuration_ret)
 {
-	CCS_CHECK_OBJ(tree_space, CCS_TREE_SPACE);
+	CCS_CHECK_OBJ(tree_space, CCS_OBJECT_TYPE_TREE_SPACE);
 	CCS_CHECK_PTR(configuration_ret);
 	CCS_CHECK_ARY(position_size, position);
 	ccs_error_t err;
@@ -133,7 +133,7 @@ ccs_create_tree_configuration(
 	ccs_tree_configuration_t config;
 	config = (ccs_tree_configuration_t)mem;
 	_ccs_object_init(
-		&(config->obj), CCS_TREE_CONFIGURATION,
+		&(config->obj), CCS_OBJECT_TYPE_TREE_CONFIGURATION,
 		(_ccs_object_ops_t *)&_tree_configuration_ops);
 	config->data =
 		(struct _ccs_tree_configuration_data_s
@@ -156,7 +156,7 @@ ccs_tree_configuration_get_tree_space(
 	ccs_tree_configuration_t configuration,
 	ccs_tree_space_t        *tree_space_ret)
 {
-	CCS_CHECK_OBJ(configuration, CCS_TREE_CONFIGURATION);
+	CCS_CHECK_OBJ(configuration, CCS_OBJECT_TYPE_TREE_CONFIGURATION);
 	CCS_CHECK_PTR(tree_space_ret);
 	*tree_space_ret = configuration->data->tree_space;
 	return CCS_SUCCESS;
@@ -169,7 +169,7 @@ ccs_tree_configuration_get_position(
 	size_t                  *position,
 	size_t                  *position_size_ret)
 {
-	CCS_CHECK_OBJ(configuration, CCS_TREE_CONFIGURATION);
+	CCS_CHECK_OBJ(configuration, CCS_OBJECT_TYPE_TREE_CONFIGURATION);
 	CCS_CHECK_ARY(position_size, position);
 	CCS_REFUTE(!position && !position_size_ret, CCS_INVALID_VALUE);
 	size_t size = configuration->data->position_size;
@@ -190,7 +190,7 @@ ccs_tree_configuration_get_values(
 	ccs_datum_t             *values,
 	size_t                  *num_values_ret)
 {
-	CCS_CHECK_OBJ(configuration, CCS_TREE_CONFIGURATION);
+	CCS_CHECK_OBJ(configuration, CCS_OBJECT_TYPE_TREE_CONFIGURATION);
 	CCS_REFUTE(!values && !num_values_ret, CCS_INVALID_VALUE);
 	size_t num = configuration->data->position_size + 1;
 	if (values)
@@ -208,7 +208,7 @@ ccs_tree_configuration_get_node(
 	ccs_tree_configuration_t configuration,
 	ccs_tree_t              *tree_ret)
 {
-	CCS_CHECK_OBJ(configuration, CCS_TREE_CONFIGURATION);
+	CCS_CHECK_OBJ(configuration, CCS_OBJECT_TYPE_TREE_CONFIGURATION);
 	CCS_VALIDATE(ccs_tree_space_get_node_at_position(
 		configuration->data->tree_space,
 		configuration->data->position_size,
@@ -221,7 +221,7 @@ ccs_tree_configuration_check(
 	ccs_tree_configuration_t configuration,
 	ccs_bool_t              *is_valid_ret)
 {
-	CCS_CHECK_OBJ(configuration, CCS_TREE_CONFIGURATION);
+	CCS_CHECK_OBJ(configuration, CCS_OBJECT_TYPE_TREE_CONFIGURATION);
 	CCS_CHECK_PTR(is_valid_ret);
 	CCS_VALIDATE(ccs_tree_space_check_position(
 		configuration->data->tree_space,
@@ -238,8 +238,8 @@ ccs_tree_configuration_cmp(
 	ccs_tree_configuration_t other_configuration,
 	int                     *cmp_ret)
 {
-	CCS_CHECK_OBJ(configuration, CCS_TREE_CONFIGURATION);
-	CCS_CHECK_OBJ(other_configuration, CCS_TREE_CONFIGURATION);
+	CCS_CHECK_OBJ(configuration, CCS_OBJECT_TYPE_TREE_CONFIGURATION);
+	CCS_CHECK_OBJ(other_configuration, CCS_OBJECT_TYPE_TREE_CONFIGURATION);
 	CCS_CHECK_PTR(cmp_ret);
 	if (configuration == other_configuration) {
 		*cmp_ret = 0;
@@ -272,7 +272,7 @@ ccs_tree_configuration_hash(
 	ccs_tree_configuration_t configuration,
 	ccs_hash_t              *hash_ret)
 {
-	CCS_CHECK_OBJ(configuration, CCS_TREE_CONFIGURATION);
+	CCS_CHECK_OBJ(configuration, CCS_OBJECT_TYPE_TREE_CONFIGURATION);
 	CCS_CHECK_PTR(hash_ret);
 	ccs_hash_t h, ht;
 	HASH_JEN(

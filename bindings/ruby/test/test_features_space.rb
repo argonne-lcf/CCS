@@ -9,7 +9,7 @@ class CConfigSpaceTestFeaturesSpace < Minitest::Test
 
   def test_create
     cs = CCS::FeaturesSpace::new(name: "space")
-    assert_equal( :CCS_FEATURES_SPACE, cs.object_type )
+    assert_equal( :CCS_OBJECT_TYPE_FEATURES_SPACE, cs.object_type )
     assert_equal( "space", cs.name )
     assert_equal( 0, cs.num_parameters )
     h1 = CCS::NumericalParameter::new

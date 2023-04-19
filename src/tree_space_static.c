@@ -175,7 +175,7 @@ ccs_create_static_tree_space(
 	ccs_tree_space_t *tree_space_ret)
 {
 	CCS_CHECK_PTR(name);
-	CCS_CHECK_OBJ(tree, CCS_TREE);
+	CCS_CHECK_OBJ(tree, CCS_OBJECT_TYPE_TREE);
 	CCS_CHECK_PTR(tree_space_ret);
 	ccs_error_t err;
 	uintptr_t   mem = (uintptr_t)calloc(
@@ -190,7 +190,7 @@ ccs_create_static_tree_space(
 	ccs_tree_space_t tree_space;
 	tree_space = (ccs_tree_space_t)mem;
 	_ccs_object_init(
-		&(tree_space->obj), CCS_TREE_SPACE,
+		&(tree_space->obj), CCS_OBJECT_TYPE_TREE_SPACE,
 		(_ccs_object_ops_t *)&_ccs_tree_space_static_ops);
 	_ccs_tree_space_static_data_t *data;
 	data                   = (struct _ccs_tree_space_static_data_s

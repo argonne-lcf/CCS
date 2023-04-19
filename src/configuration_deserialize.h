@@ -11,7 +11,7 @@ _ccs_deserialize_bin_configuration(
 	const char                       **buffer,
 	_ccs_object_deserialize_options_t *opts)
 {
-	CCS_CHECK_OBJ(opts->handle_map, CCS_MAP);
+	CCS_CHECK_OBJ(opts->handle_map, CCS_OBJECT_TYPE_MAP);
 	_ccs_object_internal_t    obj;
 	ccs_object_t              handle;
 	ccs_datum_t               d;
@@ -20,7 +20,7 @@ _ccs_deserialize_bin_configuration(
 	ccs_error_t               res = CCS_SUCCESS;
 	CCS_VALIDATE(_ccs_deserialize_bin_ccs_object_internal(
 		&obj, buffer_size, buffer, &handle));
-	CCS_REFUTE(obj.type != CCS_CONFIGURATION, CCS_INVALID_TYPE);
+	CCS_REFUTE(obj.type != CCS_OBJECT_TYPE_CONFIGURATION, CCS_INVALID_TYPE);
 
 	_ccs_binding_data_t data = {NULL, 0, NULL};
 	CCS_VALIDATE_ERR_GOTO(

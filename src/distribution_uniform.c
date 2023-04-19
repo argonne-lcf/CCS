@@ -410,7 +410,7 @@ ccs_create_uniform_distribution(
 	CCS_REFUTE(!mem, CCS_OUT_OF_MEMORY);
 	ccs_distribution_t distrib = (ccs_distribution_t)mem;
 	_ccs_object_init(
-		&(distrib->obj), CCS_DISTRIBUTION,
+		&(distrib->obj), CCS_OBJECT_TYPE_DISTRIBUTION,
 		(_ccs_object_ops_t *)&_ccs_distribution_uniform_ops);
 	_ccs_distribution_uniform_data_t *distrib_data =
 		(_ccs_distribution_uniform_data_t

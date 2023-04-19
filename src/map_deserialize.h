@@ -50,7 +50,7 @@ _ccs_deserialize_bin_map(
 	ccs_object_t           handle;
 	CCS_VALIDATE(_ccs_deserialize_bin_ccs_object_internal(
 		&obj, buffer_size, buffer, &handle));
-	CCS_REFUTE(obj.type != CCS_MAP, CCS_INVALID_TYPE);
+	CCS_REFUTE(obj.type != CCS_OBJECT_TYPE_MAP, CCS_INVALID_TYPE);
 
 	CCS_VALIDATE_ERR_GOTO(
 		res,

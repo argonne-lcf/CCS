@@ -18,7 +18,8 @@ _ccs_deserialize_bin_features_space(
 	ccs_error_t            res = CCS_SUCCESS;
 	CCS_VALIDATE(_ccs_deserialize_bin_ccs_object_internal(
 		&obj, buffer_size, buffer, &handle));
-	CCS_REFUTE(obj.type != CCS_FEATURES_SPACE, CCS_INVALID_TYPE);
+	CCS_REFUTE(
+		obj.type != CCS_OBJECT_TYPE_FEATURES_SPACE, CCS_INVALID_TYPE);
 
 	_ccs_context_data_mock_t data;
 	CCS_VALIDATE_ERR_GOTO(

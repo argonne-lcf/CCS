@@ -9,7 +9,7 @@ class CConfigSpaceTestObjectiveSpace < Minitest::Test
 
   def test_create
     os = CCS::ObjectiveSpace::new(name: "space")
-    assert_equal( :CCS_OBJECTIVE_SPACE, os.object_type )
+    assert_equal( :CCS_OBJECT_TYPE_OBJECTIVE_SPACE, os.object_type )
     assert_equal( "space", os.name )
     assert_equal( 0, os.num_parameters )
     assert_equal( [], os.objectives )

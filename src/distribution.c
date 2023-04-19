@@ -12,7 +12,7 @@ ccs_distribution_get_type(
 	ccs_distribution_t       distribution,
 	ccs_distribution_type_t *type_ret)
 {
-	CCS_CHECK_OBJ(distribution, CCS_DISTRIBUTION);
+	CCS_CHECK_OBJ(distribution, CCS_OBJECT_TYPE_DISTRIBUTION);
 	CCS_CHECK_PTR(type_ret);
 	*type_ret =
 		((_ccs_distribution_common_data_t *)(distribution->data))->type;
@@ -24,7 +24,7 @@ ccs_distribution_get_data_types(
 	ccs_distribution_t  distribution,
 	ccs_numeric_type_t *data_types_ret)
 {
-	CCS_CHECK_OBJ(distribution, CCS_DISTRIBUTION);
+	CCS_CHECK_OBJ(distribution, CCS_OBJECT_TYPE_DISTRIBUTION);
 	CCS_CHECK_PTR(data_types_ret);
 	_ccs_distribution_common_data_t *d =
 		(_ccs_distribution_common_data_t *)(distribution->data);
@@ -38,7 +38,7 @@ ccs_distribution_get_dimension(
 	ccs_distribution_t distribution,
 	size_t            *dimension_ret)
 {
-	CCS_CHECK_OBJ(distribution, CCS_DISTRIBUTION);
+	CCS_CHECK_OBJ(distribution, CCS_OBJECT_TYPE_DISTRIBUTION);
 	CCS_CHECK_PTR(dimension_ret);
 	*dimension_ret =
 		((_ccs_distribution_common_data_t *)(distribution->data))
@@ -51,7 +51,7 @@ ccs_distribution_get_bounds(
 	ccs_distribution_t distribution,
 	ccs_interval_t    *interval_ret)
 {
-	CCS_CHECK_OBJ(distribution, CCS_DISTRIBUTION);
+	CCS_CHECK_OBJ(distribution, CCS_OBJECT_TYPE_DISTRIBUTION);
 	CCS_CHECK_PTR(interval_ret);
 	_ccs_distribution_ops_t *ops = _ccs_distribution_get_ops(distribution);
 	CCS_VALIDATE(ops->get_bounds(distribution->data, interval_ret));
@@ -64,7 +64,7 @@ ccs_distribution_check_oversampling(
 	ccs_interval_t    *intervals,
 	ccs_bool_t        *oversamplings)
 {
-	CCS_CHECK_OBJ(distribution, CCS_DISTRIBUTION);
+	CCS_CHECK_OBJ(distribution, CCS_OBJECT_TYPE_DISTRIBUTION);
 	CCS_CHECK_PTR(intervals);
 	CCS_CHECK_PTR(oversamplings);
 	size_t dim = ((_ccs_distribution_common_data_t *)(distribution->data))
@@ -94,8 +94,8 @@ ccs_distribution_sample(
 	ccs_rng_t          rng,
 	ccs_numeric_t     *value_ret)
 {
-	CCS_CHECK_OBJ(distribution, CCS_DISTRIBUTION);
-	CCS_CHECK_OBJ(rng, CCS_RNG);
+	CCS_CHECK_OBJ(distribution, CCS_OBJECT_TYPE_DISTRIBUTION);
+	CCS_CHECK_OBJ(rng, CCS_OBJECT_TYPE_RNG);
 	CCS_CHECK_PTR(value_ret);
 	_ccs_distribution_ops_t *ops = _ccs_distribution_get_ops(distribution);
 	CCS_VALIDATE(ops->samples(distribution->data, rng, 1, value_ret));
@@ -109,8 +109,8 @@ ccs_distribution_samples(
 	size_t             num_values,
 	ccs_numeric_t     *values)
 {
-	CCS_CHECK_OBJ(distribution, CCS_DISTRIBUTION);
-	CCS_CHECK_OBJ(rng, CCS_RNG);
+	CCS_CHECK_OBJ(distribution, CCS_OBJECT_TYPE_DISTRIBUTION);
+	CCS_CHECK_OBJ(rng, CCS_OBJECT_TYPE_RNG);
 	if (!num_values)
 		return CCS_SUCCESS;
 	CCS_CHECK_ARY(num_values, values);
@@ -127,8 +127,8 @@ ccs_distribution_strided_samples(
 	size_t             stride,
 	ccs_numeric_t     *values)
 {
-	CCS_CHECK_OBJ(distribution, CCS_DISTRIBUTION);
-	CCS_CHECK_OBJ(rng, CCS_RNG);
+	CCS_CHECK_OBJ(distribution, CCS_OBJECT_TYPE_DISTRIBUTION);
+	CCS_CHECK_OBJ(rng, CCS_OBJECT_TYPE_RNG);
 	CCS_REFUTE(
 		stride <
 			((_ccs_distribution_common_data_t *)(distribution->data))
@@ -150,8 +150,8 @@ ccs_distribution_soa_samples(
 	size_t             num_values,
 	ccs_numeric_t    **values)
 {
-	CCS_CHECK_OBJ(distribution, CCS_DISTRIBUTION);
-	CCS_CHECK_OBJ(rng, CCS_RNG);
+	CCS_CHECK_OBJ(distribution, CCS_OBJECT_TYPE_DISTRIBUTION);
+	CCS_CHECK_OBJ(rng, CCS_OBJECT_TYPE_RNG);
 	if (!num_values)
 		return CCS_SUCCESS;
 	CCS_CHECK_ARY(num_values, values);
@@ -169,8 +169,8 @@ ccs_distribution_parameters_samples(
 	size_t             num_values,
 	ccs_datum_t       *values)
 {
-	CCS_CHECK_OBJ(distribution, CCS_DISTRIBUTION);
-	CCS_CHECK_OBJ(rng, CCS_RNG);
+	CCS_CHECK_OBJ(distribution, CCS_OBJECT_TYPE_DISTRIBUTION);
+	CCS_CHECK_OBJ(rng, CCS_OBJECT_TYPE_RNG);
 	if (!num_values)
 		return CCS_SUCCESS;
 	CCS_CHECK_ARY(num_values, parameters);

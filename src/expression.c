@@ -1355,7 +1355,7 @@ ccs_create_literal(ccs_datum_t value, ccs_expression_t *expression_ret)
 	CCS_REFUTE(!mem, CCS_OUT_OF_MEMORY);
 	ccs_expression_t expression = (ccs_expression_t)mem;
 	_ccs_object_init(
-		&(expression->obj), CCS_EXPRESSION,
+		&(expression->obj), CCS_OBJECT_TYPE_EXPRESSION,
 		(_ccs_object_ops_t *)_ccs_expression_ops_broker(CCS_LITERAL));
 	_ccs_expression_literal_data_t *expression_data =
 		(_ccs_expression_literal_data_t
@@ -1380,7 +1380,7 @@ ccs_create_literal(ccs_datum_t value, ccs_expression_t *expression_ret)
 ccs_error_t
 ccs_create_variable(ccs_parameter_t parameter, ccs_expression_t *expression_ret)
 {
-	CCS_CHECK_OBJ(parameter, CCS_PARAMETER);
+	CCS_CHECK_OBJ(parameter, CCS_OBJECT_TYPE_PARAMETER);
 	CCS_CHECK_PTR(expression_ret);
 	ccs_error_t err;
 	uintptr_t   mem = (uintptr_t)calloc(
@@ -1391,7 +1391,7 @@ ccs_create_variable(ccs_parameter_t parameter, ccs_expression_t *expression_ret)
 	ccs_expression_t expression;
 	expression = (ccs_expression_t)mem;
 	_ccs_object_init(
-		&(expression->obj), CCS_EXPRESSION,
+		&(expression->obj), CCS_OBJECT_TYPE_EXPRESSION,
 		(_ccs_object_ops_t *)_ccs_expression_ops_broker(CCS_VARIABLE));
 	_ccs_expression_variable_data_t *expression_data;
 	expression_data                 = (_ccs_expression_variable_data_t
@@ -1427,8 +1427,9 @@ ccs_create_expression(
 			CCS_VALIDATE(ccs_object_get_type(
 				nodes[i].value.o, &object_type));
 			CCS_REFUTE(
-				object_type != CCS_PARAMETER &&
-					object_type != CCS_EXPRESSION,
+				object_type != CCS_OBJECT_TYPE_PARAMETER &&
+					object_type !=
+						CCS_OBJECT_TYPE_EXPRESSION,
 				CCS_INVALID_VALUE);
 		} else
 			CCS_REFUTE(
@@ -1445,7 +1446,7 @@ ccs_create_expression(
 
 	ccs_expression_t expression = (ccs_expression_t)mem;
 	_ccs_object_init(
-		&(expression->obj), CCS_EXPRESSION,
+		&(expression->obj), CCS_OBJECT_TYPE_EXPRESSION,
 		(_ccs_object_ops_t *)_ccs_expression_ops_broker(type));
 	_ccs_expression_data_t *expression_data =
 		(_ccs_expression_data_t
@@ -1461,7 +1462,7 @@ ccs_create_expression(
 			CCS_VALIDATE_ERR_GOTO(
 				err, ccs_object_get_type(nodes[i].value.o, &t),
 				cleanup);
-			if (t == CCS_EXPRESSION) {
+			if (t == CCS_OBJECT_TYPE_EXPRESSION) {
 				CCS_VALIDATE_ERR_GOTO(
 					err,
 					ccs_retain_object(nodes[i].value.o),
@@ -1528,7 +1529,7 @@ ccs_expression_eval(
 	ccs_datum_t     *values,
 	ccs_datum_t     *result_ret)
 {
-	CCS_CHECK_OBJ(expression, CCS_EXPRESSION);
+	CCS_CHECK_OBJ(expression, CCS_OBJECT_TYPE_EXPRESSION);
 	CCS_CHECK_PTR(result_ret);
 	_ccs_expression_ops_t *ops = ccs_expression_get_ops(expression);
 	CCS_VALIDATE(ops->eval(expression->data, context, values, result_ret));
@@ -1538,7 +1539,7 @@ ccs_expression_eval(
 ccs_error_t
 ccs_expression_get_num_nodes(ccs_expression_t expression, size_t *num_nodes_ret)
 {
-	CCS_CHECK_OBJ(expression, CCS_EXPRESSION);
+	CCS_CHECK_OBJ(expression, CCS_OBJECT_TYPE_EXPRESSION);
 	CCS_CHECK_PTR(num_nodes_ret);
 	*num_nodes_ret = expression->data->num_nodes;
 	return CCS_SUCCESS;
@@ -1551,7 +1552,7 @@ ccs_expression_get_nodes(
 	ccs_expression_t *nodes,
 	size_t           *num_nodes_ret)
 {
-	CCS_CHECK_OBJ(expression, CCS_EXPRESSION);
+	CCS_CHECK_OBJ(expression, CCS_OBJECT_TYPE_EXPRESSION);
 	CCS_CHECK_ARY(num_nodes, nodes);
 	CCS_REFUTE(!num_nodes_ret && !nodes, CCS_INVALID_VALUE);
 	size_t count = expression->data->num_nodes;
@@ -1576,7 +1577,7 @@ ccs_expression_list_eval_node(
 	size_t           index,
 	ccs_datum_t     *result)
 {
-	CCS_CHECK_OBJ(expression, CCS_EXPRESSION);
+	CCS_CHECK_OBJ(expression, CCS_OBJECT_TYPE_EXPRESSION);
 	CCS_CHECK_PTR(result);
 	CCS_REFUTE(expression->data->type != CCS_LIST, CCS_INVALID_EXPRESSION);
 	ccs_datum_t node;
@@ -1592,7 +1593,7 @@ ccs_expression_get_type(
 	ccs_expression_t       expression,
 	ccs_expression_type_t *type_ret)
 {
-	CCS_CHECK_OBJ(expression, CCS_EXPRESSION);
+	CCS_CHECK_OBJ(expression, CCS_OBJECT_TYPE_EXPRESSION);
 	CCS_CHECK_PTR(type_ret);
 	*type_ret = expression->data->type;
 	return CCS_SUCCESS;
@@ -1601,7 +1602,7 @@ ccs_expression_get_type(
 ccs_error_t
 ccs_literal_get_value(ccs_expression_t expression, ccs_datum_t *value_ret)
 {
-	CCS_CHECK_OBJ(expression, CCS_EXPRESSION);
+	CCS_CHECK_OBJ(expression, CCS_OBJECT_TYPE_EXPRESSION);
 	CCS_CHECK_PTR(value_ret);
 	CCS_REFUTE(
 		expression->data->type != CCS_LITERAL, CCS_INVALID_EXPRESSION);
@@ -1616,7 +1617,7 @@ ccs_variable_get_parameter(
 	ccs_expression_t expression,
 	ccs_parameter_t *parameter_ret)
 {
-	CCS_CHECK_OBJ(expression, CCS_EXPRESSION);
+	CCS_CHECK_OBJ(expression, CCS_OBJECT_TYPE_EXPRESSION);
 	CCS_CHECK_PTR(parameter_ret);
 	CCS_REFUTE(
 		expression->data->type != CCS_VARIABLE, CCS_INVALID_EXPRESSION);
@@ -1637,7 +1638,7 @@ ccs_variable_get_parameter(
 static ccs_error_t
 _get_parameters(ccs_expression_t expression, UT_array *array)
 {
-	CCS_CHECK_OBJ(expression, CCS_EXPRESSION);
+	CCS_CHECK_OBJ(expression, CCS_OBJECT_TYPE_EXPRESSION);
 	if (expression->data->type == CCS_VARIABLE) {
 		_ccs_expression_variable_data_t *d =
 			(_ccs_expression_variable_data_t *)expression->data;
@@ -1671,7 +1672,7 @@ ccs_expression_get_parameters(
 	ccs_parameter_t *parameters,
 	size_t          *num_parameters_ret)
 {
-	CCS_CHECK_OBJ(expression, CCS_EXPRESSION);
+	CCS_CHECK_OBJ(expression, CCS_OBJECT_TYPE_EXPRESSION);
 	CCS_CHECK_ARY(num_parameters, parameters);
 	CCS_REFUTE(!parameters && !num_parameters_ret, CCS_INVALID_VALUE);
 	ccs_error_t err = CCS_SUCCESS;
@@ -1718,7 +1719,7 @@ errutarray:
 ccs_error_t
 ccs_expression_check_context(ccs_expression_t expression, ccs_context_t context)
 {
-	CCS_CHECK_OBJ(expression, CCS_EXPRESSION);
+	CCS_CHECK_OBJ(expression, CCS_OBJECT_TYPE_EXPRESSION);
 	ccs_error_t err = CCS_SUCCESS;
 	UT_array   *array;
 	utarray_new(array, &_parameter_icd);

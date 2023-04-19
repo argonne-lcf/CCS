@@ -351,8 +351,8 @@ ccs_create_random_tree_tuner(
 	ccs_tree_tuner_t     *tuner_ret)
 {
 	CCS_CHECK_PTR(name);
-	CCS_CHECK_OBJ(tree_space, CCS_TREE_SPACE);
-	CCS_CHECK_OBJ(objective_space, CCS_OBJECTIVE_SPACE);
+	CCS_CHECK_OBJ(tree_space, CCS_OBJECT_TYPE_TREE_SPACE);
+	CCS_CHECK_OBJ(objective_space, CCS_OBJECT_TYPE_OBJECTIVE_SPACE);
 	CCS_CHECK_PTR(tuner_ret);
 
 	uintptr_t mem = (uintptr_t)calloc(
@@ -368,7 +368,7 @@ ccs_create_random_tree_tuner(
 		err, ccs_retain_object(objective_space), errconfigs);
 	tun = (ccs_tree_tuner_t)mem;
 	_ccs_object_init(
-		&(tun->obj), CCS_TREE_TUNER,
+		&(tun->obj), CCS_OBJECT_TYPE_TREE_TUNER,
 		(_ccs_object_ops_t *)&_ccs_tree_tuner_random_ops);
 	tun->data              = (struct _ccs_tree_tuner_data_s
                              *)(mem + sizeof(struct _ccs_tree_tuner_s));

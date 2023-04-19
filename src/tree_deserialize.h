@@ -70,7 +70,7 @@ _ccs_deserialize_bin_tree(
 	ccs_object_t           handle;
 	CCS_VALIDATE(_ccs_deserialize_bin_ccs_object_internal(
 		&obj, buffer_size, buffer, &handle));
-	CCS_REFUTE(obj.type != CCS_TREE, CCS_INVALID_TYPE);
+	CCS_REFUTE(obj.type != CCS_OBJECT_TYPE_TREE, CCS_INVALID_TYPE);
 
 	ccs_tree_t            tree;
 	_ccs_tree_data_mock_t data;

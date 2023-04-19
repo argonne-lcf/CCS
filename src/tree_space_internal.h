@@ -5,7 +5,7 @@
 
 #define CCS_CHECK_TREE_SPACE(o, t)                                             \
 	do {                                                                   \
-		CCS_CHECK_OBJ(o, CCS_TREE_SPACE);                              \
+		CCS_CHECK_OBJ(o, CCS_OBJECT_TYPE_TREE_SPACE);                  \
 		CCS_REFUTE(                                                    \
 			((_ccs_tree_space_common_data_t *)(o->data))->type !=  \
 				(t),                                           \
