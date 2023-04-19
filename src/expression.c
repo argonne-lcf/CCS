@@ -19,15 +19,15 @@ const int ccs_expression_precedence[] = {
 };
 
 const ccs_associativity_type_t ccs_expression_associativity[] = {
-	CCS_LEFT_TO_RIGHT,
-	CCS_LEFT_TO_RIGHT,
-	CCS_LEFT_TO_RIGHT, CCS_LEFT_TO_RIGHT,
-	CCS_LEFT_TO_RIGHT, CCS_LEFT_TO_RIGHT, CCS_LEFT_TO_RIGHT, CCS_LEFT_TO_RIGHT,
-	CCS_LEFT_TO_RIGHT, CCS_LEFT_TO_RIGHT,
-	CCS_LEFT_TO_RIGHT, CCS_LEFT_TO_RIGHT, CCS_LEFT_TO_RIGHT,
-	CCS_RIGHT_TO_LEFT, CCS_RIGHT_TO_LEFT, CCS_RIGHT_TO_LEFT,
-	CCS_LEFT_TO_RIGHT,
-	CCS_LEFT_TO_RIGHT,
+	CCS_ASSOCIATIVITY_TYPE_LEFT_TO_RIGHT,
+	CCS_ASSOCIATIVITY_TYPE_LEFT_TO_RIGHT,
+	CCS_ASSOCIATIVITY_TYPE_LEFT_TO_RIGHT, CCS_ASSOCIATIVITY_TYPE_LEFT_TO_RIGHT,
+	CCS_ASSOCIATIVITY_TYPE_LEFT_TO_RIGHT, CCS_ASSOCIATIVITY_TYPE_LEFT_TO_RIGHT, CCS_ASSOCIATIVITY_TYPE_LEFT_TO_RIGHT, CCS_ASSOCIATIVITY_TYPE_LEFT_TO_RIGHT,
+	CCS_ASSOCIATIVITY_TYPE_LEFT_TO_RIGHT, CCS_ASSOCIATIVITY_TYPE_LEFT_TO_RIGHT,
+	CCS_ASSOCIATIVITY_TYPE_LEFT_TO_RIGHT, CCS_ASSOCIATIVITY_TYPE_LEFT_TO_RIGHT, CCS_ASSOCIATIVITY_TYPE_LEFT_TO_RIGHT,
+	CCS_ASSOCIATIVITY_TYPE_RIGHT_TO_LEFT, CCS_ASSOCIATIVITY_TYPE_RIGHT_TO_LEFT, CCS_ASSOCIATIVITY_TYPE_RIGHT_TO_LEFT,
+	CCS_ASSOCIATIVITY_TYPE_LEFT_TO_RIGHT,
+	CCS_ASSOCIATIVITY_TYPE_LEFT_TO_RIGHT,
 	CCS_ASSOCIATIVITY_TYPE_NONE, CCS_ASSOCIATIVITY_TYPE_NONE
 };
 
@@ -1356,7 +1356,8 @@ ccs_create_literal(ccs_datum_t value, ccs_expression_t *expression_ret)
 	ccs_expression_t expression = (ccs_expression_t)mem;
 	_ccs_object_init(
 		&(expression->obj), CCS_OBJECT_TYPE_EXPRESSION,
-		(_ccs_object_ops_t *)_ccs_expression_ops_broker(CCS_EXPRESSION_TYPE_LITERAL));
+		(_ccs_object_ops_t *)_ccs_expression_ops_broker(
+			CCS_EXPRESSION_TYPE_LITERAL));
 	_ccs_expression_literal_data_t *expression_data =
 		(_ccs_expression_literal_data_t
 			 *)(mem + sizeof(struct _ccs_expression_s));
@@ -1392,7 +1393,8 @@ ccs_create_variable(ccs_parameter_t parameter, ccs_expression_t *expression_ret)
 	expression = (ccs_expression_t)mem;
 	_ccs_object_init(
 		&(expression->obj), CCS_OBJECT_TYPE_EXPRESSION,
-		(_ccs_object_ops_t *)_ccs_expression_ops_broker(CCS_EXPRESSION_TYPE_VARIABLE));
+		(_ccs_object_ops_t *)_ccs_expression_ops_broker(
+			CCS_EXPRESSION_TYPE_VARIABLE));
 	_ccs_expression_variable_data_t *expression_data;
 	expression_data                 = (_ccs_expression_variable_data_t
                                    *)(mem + sizeof(struct _ccs_expression_s));
@@ -1417,7 +1419,10 @@ ccs_create_expression(
 {
 	CCS_CHECK_ARY(num_nodes, nodes);
 	CCS_CHECK_PTR(expression_ret);
-	CCS_REFUTE(type < CCS_EXPRESSION_TYPE_OR || type > CCS_EXPRESSION_TYPE_LIST, CCS_INVALID_VALUE);
+	CCS_REFUTE(
+		type < CCS_EXPRESSION_TYPE_OR ||
+			type > CCS_EXPRESSION_TYPE_LIST,
+		CCS_INVALID_VALUE);
 	int arity = ccs_expression_arity[type];
 	CCS_REFUTE(arity >= 0 && num_nodes != (size_t)arity, CCS_INVALID_VALUE);
 	ccs_error_t err;
@@ -1579,7 +1584,9 @@ ccs_expression_list_eval_node(
 {
 	CCS_CHECK_OBJ(expression, CCS_OBJECT_TYPE_EXPRESSION);
 	CCS_CHECK_PTR(result);
-	CCS_REFUTE(expression->data->type != CCS_EXPRESSION_TYPE_LIST, CCS_INVALID_EXPRESSION);
+	CCS_REFUTE(
+		expression->data->type != CCS_EXPRESSION_TYPE_LIST,
+		CCS_INVALID_EXPRESSION);
 	ccs_datum_t node;
 	CCS_REFUTE(index >= expression->data->num_nodes, CCS_OUT_OF_BOUNDS);
 	CCS_VALIDATE(_ccs_expr_node_eval(
@@ -1605,7 +1612,8 @@ ccs_literal_get_value(ccs_expression_t expression, ccs_datum_t *value_ret)
 	CCS_CHECK_OBJ(expression, CCS_OBJECT_TYPE_EXPRESSION);
 	CCS_CHECK_PTR(value_ret);
 	CCS_REFUTE(
-		expression->data->type != CCS_EXPRESSION_TYPE_LITERAL, CCS_INVALID_EXPRESSION);
+		expression->data->type != CCS_EXPRESSION_TYPE_LITERAL,
+		CCS_INVALID_EXPRESSION);
 	_ccs_expression_literal_data_t *d =
 		(_ccs_expression_literal_data_t *)expression->data;
 	*value_ret = d->value;
@@ -1620,7 +1628,8 @@ ccs_variable_get_parameter(
 	CCS_CHECK_OBJ(expression, CCS_OBJECT_TYPE_EXPRESSION);
 	CCS_CHECK_PTR(parameter_ret);
 	CCS_REFUTE(
-		expression->data->type != CCS_EXPRESSION_TYPE_VARIABLE, CCS_INVALID_EXPRESSION);
+		expression->data->type != CCS_EXPRESSION_TYPE_VARIABLE,
+		CCS_INVALID_EXPRESSION);
 	_ccs_expression_variable_data_t *d =
 		(_ccs_expression_variable_data_t *)expression->data;
 	*parameter_ret = d->parameter;

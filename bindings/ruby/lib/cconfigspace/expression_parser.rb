@@ -13,8 +13,8 @@ silence_warnings {
 undef silence_warnings
 module CCS
   AssociativityMap = {
-    :CCS_LEFT_TO_RIGHT => :left,
-    :CCS_RIGHT_TO_LEFT => :right
+    :CCS_ASSOCIATIVITY_TYPE_LEFT_TO_RIGHT => :left,
+    :CCS_ASSOCIATIVITY_TYPE_RIGHT_TO_LEFT => :right
   }
   class ExpressionParser < Whittle::Parser
     class << self

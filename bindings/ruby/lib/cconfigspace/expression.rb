@@ -28,9 +28,9 @@ module CCS
   end
 
   AssociativityType = enum FFI::Type::INT32, :ccs_associativity_type_t, [
-    :CCS_ASSOCIATIVITY_NONE, 0,
-    :CCS_LEFT_TO_RIGHT,
-    :CCS_RIGHT_TO_LEFT
+    :CCS_ASSOCIATIVITY_TYPE_NONE, 0,
+    :CCS_ASSOCIATIVITY_TYPE_LEFT_TO_RIGHT,
+    :CCS_ASSOCIATIVITY_TYPE_RIGHT_TO_LEFT
   ]
   class MemoryPointer
     def read_ccs_associativity_type_t

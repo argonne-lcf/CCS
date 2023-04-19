@@ -93,9 +93,9 @@ enum ccs_associativity_type_e {
 	/** No associativity */
 	CCS_ASSOCIATIVITY_TYPE_NONE = 0,
 	/** left to right associativity */
-	CCS_LEFT_TO_RIGHT,
+	CCS_ASSOCIATIVITY_TYPE_LEFT_TO_RIGHT,
 	/** right to left associativity */
-	CCS_RIGHT_TO_LEFT,
+	CCS_ASSOCIATIVITY_TYPE_RIGHT_TO_LEFT,
 	/** Guard */
 	CCS_ASSOCIATIVITY_TYPE_MAX,
 	/** Try forcing 32 bits value for bindings */

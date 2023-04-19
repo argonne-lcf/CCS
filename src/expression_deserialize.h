@@ -196,7 +196,8 @@ _ccs_deserialize_bin_expression(
 		break;
 	default:
 		CCS_REFUTE(
-			dtype < CCS_EXPRESSION_TYPE_OR || dtype >= CCS_EXPRESSION_TYPE_MAX,
+			dtype < CCS_EXPRESSION_TYPE_OR ||
+				dtype >= CCS_EXPRESSION_TYPE_MAX,
 			CCS_UNSUPPORTED_OPERATION);
 		CCS_VALIDATE(_ccs_deserialize_bin_expression_general(
 			expression_ret, version, buffer_size, buffer,
