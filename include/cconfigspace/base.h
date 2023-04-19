@@ -245,7 +245,7 @@ typedef enum ccs_error_e ccs_error_t;
 /**
  * The result type used for evaluations.
  */
-typedef int32_t          ccs_result_t;
+typedef int32_t          ccs_evaluation_result_t;
 
 /**
  * CCS object types.

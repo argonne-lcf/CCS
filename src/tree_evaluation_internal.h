@@ -28,7 +28,7 @@ struct _ccs_tree_evaluation_data_s {
 	size_t                   num_values;
 	ccs_datum_t             *values;
 	ccs_tree_configuration_t configuration;
-	ccs_result_t             error;
+	ccs_evaluation_result_t  result;
 };
 
 #endif //_TREE_EVALUATION_INTERNAL_H

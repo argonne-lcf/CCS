@@ -23,11 +23,11 @@ struct _ccs_evaluation_s {
 };
 
 struct _ccs_evaluation_data_s {
-	ccs_objective_space_t objective_space;
-	size_t                num_values;
-	ccs_datum_t          *values;
-	ccs_configuration_t   configuration;
-	ccs_result_t          error;
+	ccs_objective_space_t   objective_space;
+	size_t                  num_values;
+	ccs_datum_t            *values;
+	ccs_configuration_t     configuration;
+	ccs_evaluation_result_t result;
 };
 
 #endif //_EVALUATION_INTERNAL_H

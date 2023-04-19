@@ -6,10 +6,10 @@
 #include "features_deserialize.h"
 
 struct _ccs_features_evaluation_data_mock_s {
-	_ccs_binding_data_t base;
-	ccs_configuration_t configuration;
-	ccs_features_t      features;
-	ccs_result_t        error;
+	_ccs_binding_data_t     base;
+	ccs_configuration_t     configuration;
+	ccs_features_t          features;
+	ccs_evaluation_result_t result;
 };
 typedef struct _ccs_features_evaluation_data_mock_s
 	_ccs_features_evaluation_data_mock_t;
@@ -30,8 +30,8 @@ _ccs_deserialize_bin_ccs_features_evaluation_data(
 	CCS_VALIDATE(_ccs_features_deserialize(
 		&data->features, CCS_SERIALIZE_FORMAT_BINARY, version,
 		buffer_size, buffer, opts));
-	CCS_VALIDATE(_ccs_deserialize_bin_ccs_result(
-		&data->error, buffer_size, buffer));
+	CCS_VALIDATE(_ccs_deserialize_bin_ccs_evaluation_result(
+		&data->result, buffer_size, buffer));
 	return CCS_SUCCESS;
 }
 
@@ -73,7 +73,7 @@ _ccs_deserialize_bin_features_evaluation(
 	CCS_VALIDATE_ERR_GOTO(
 		res,
 		ccs_create_features_evaluation(
-			os, data.configuration, data.features, data.error,
+			os, data.configuration, data.features, data.result,
 			data.base.num_values, data.base.values,
 			features_evaluation_ret),
 		end);

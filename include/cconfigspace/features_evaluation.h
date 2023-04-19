@@ -10,8 +10,8 @@ extern "C" {
  * A features evaluation is a binding (see binding.h) over an objective space
  * given a specific configuration (see configuration.h) and features (see
  * features.h).  Successful evaluations over the same objective space are weakly
- * ordered by their objective values. Evaluation that have failed must report an
- * error code.
+ * ordered by their objective values. Evaluation that have failed must report a
+ * result code different than CCS_SUCCESS.
  */
 
 /**
@@ -21,7 +21,7 @@ extern "C" {
  *                            evaluation
  * @param[in] configuration the configuration to associate with the evaluation
  * @param[in] features the features to associate with the evaluation
- * @param[in] error the error code associated with the evaluation
+ * @param[in] result the result code associated with the evaluation
  * @param[in] num_values the number of provided values to initialize the
  *                       evaluation
  * @param[in] values an optional array of values to initialize the evaluation
@@ -45,7 +45,7 @@ ccs_create_features_evaluation(
 	ccs_objective_space_t      objective_space,
 	ccs_configuration_t        configuration,
 	ccs_features_t             features,
-	ccs_result_t               error,
+	ccs_evaluation_result_t    result,
 	size_t                     num_values,
 	ccs_datum_t               *values,
 	ccs_features_evaluation_t *features_evaluation_ret);
@@ -96,33 +96,33 @@ ccs_features_evaluation_get_features(
 	ccs_features_t           *features_ret);
 
 /**
- * Get the error code associated with a features evaluation.
+ * Get the result code associated with a features evaluation.
  * @param[in] features_evaluation
- * @param[out] error_ret a pointer to the variable that will contain the
- *                       returned error code
+ * @param[out] result_ret a pointer to the variable that will contain the
+ *                        returned result code
  * @return #CCS_SUCCESS on success
  * @return #CCS_INVALID_OBJECT if \p features_evaluation is not a valid CCS
  *                              features evaluation
- * @return #CCS_INVALID_VALUE if \p error_ret is NULL
+ * @return #CCS_INVALID_VALUE if \p result_ret is NULL
  */
 extern ccs_error_t
-ccs_features_evaluation_get_error(
+ccs_features_evaluation_get_result(
 	ccs_features_evaluation_t features_evaluation,
-	ccs_result_t             *error_ret);
+	ccs_evaluation_result_t  *result_ret);
 
 /**
- * Set the error code associated with a features evaluation. A successful
+ * Set the result code associated with a features evaluation. A successful
  * evaluation should have it's error set to #CCS_SUCCESS.
  * @param[in,out] features_evaluation
- * @param[in] error the error code associated withe the features_evaluation
+ * @param[in] result the result code associated withe the features_evaluation
  * @return #CCS_SUCCESS on success
  * @return #CCS_INVALID_OBJECT if \p features_evaluation is not a valid CCS
  *                              features evaluation
  */
 extern ccs_error_t
-ccs_features_evaluation_set_error(
+ccs_features_evaluation_set_result(
 	ccs_features_evaluation_t features_evaluation,
-	ccs_result_t              error);
+	ccs_evaluation_result_t   result);
 
 /**
  * Get the value of the parameter at the given index.
@@ -258,7 +258,7 @@ ccs_features_evaluation_get_objective_values(
 /**
  * Compute a hash value for a features evaluation by hashing together the
  * objective space reference, the configuration, the features, the number of
- * values, the values themselves, and the associated error.
+ * values, the values themselves, and the associated result.
  * @param[in] features_evaluation
  * @param[out] hash_ret the address of the variable that will contain the hash
  *                      value.
@@ -274,7 +274,7 @@ ccs_features_evaluation_hash(
 
 /**
  * Define a strict ordering of features evaluation instances. Objective space,
- * configuration, features, number of values, values, and error codes are
+ * configuration, features, number of values, values, and result codes are
  * compared.
  * @param[in] features_evaluation the first features evaluation
  * @param[in] other_features_evaluation the second features evaluation
@@ -312,7 +312,7 @@ ccs_features_evaluation_cmp(
  *                              features_evaluation and \p
  *                              other_features_evaluation do not share the same
  *                              objective space; or if any of the configuration
- *                              is associated an error code different than
+ *                              is associated a result code different than
  *                              CCS_SUCESS
  * @return #CCS_INVALID_VALUE if \p result_ret is NULL; or if there was an
  *                                issue evaluating any of the objectives

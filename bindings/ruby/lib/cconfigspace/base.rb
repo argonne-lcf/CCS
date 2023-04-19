@@ -26,7 +26,7 @@ module CCS
     alias read_array_of_ccs_int_t  read_array_of_int64
     alias write_array_of_ccs_int_t  write_array_of_int64
     alias read_ccs_bool_t   read_int32
-    alias read_ccs_result_t read_int32
+    alias read_ccs_evaluation_result_t read_int32
     alias read_ccs_hash_t   read_uint32
     if FFI.find_type(:size_t).size == 8
       alias read_size_t read_uint64
@@ -51,7 +51,7 @@ module CCS
   typedef :double, :ccs_float_t
   typedef :int64, :ccs_int_t
   typedef :int32, :ccs_bool_t
-  typedef :int32, :ccs_result_t
+  typedef :int32, :ccs_evaluation_result_t
   typedef :uint32, :ccs_hash_t
 
   class MemoryPointer
@@ -64,7 +64,7 @@ module CCS
     alias read_array_of_ccs_int_t  read_array_of_int64
     alias write_array_of_ccs_int_t  write_array_of_int64
     alias read_ccs_bool_t   read_int32
-    alias read_ccs_result_t read_int32
+    alias read_ccs_evaluation_result_t read_int32
     alias read_ccs_hash_t   read_uint32
     if FFI.find_type(:size_t).size == 8
       alias read_size_t read_uint64

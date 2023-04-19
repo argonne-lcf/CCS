@@ -5,9 +5,9 @@
 #include "configuration_deserialize.h"
 
 struct _ccs_evaluation_data_mock_s {
-	_ccs_binding_data_t base;
-	ccs_configuration_t configuration;
-	ccs_result_t        error;
+	_ccs_binding_data_t     base;
+	ccs_configuration_t     configuration;
+	ccs_evaluation_result_t result;
 };
 typedef struct _ccs_evaluation_data_mock_s _ccs_evaluation_data_mock_t;
 
@@ -24,8 +24,8 @@ _ccs_deserialize_bin_ccs_evaluation_data(
 	CCS_VALIDATE(_ccs_configuration_deserialize(
 		&data->configuration, CCS_SERIALIZE_FORMAT_BINARY, version,
 		buffer_size, buffer, opts));
-	CCS_VALIDATE(_ccs_deserialize_bin_ccs_result(
-		&data->error, buffer_size, buffer));
+	CCS_VALIDATE(_ccs_deserialize_bin_ccs_evaluation_result(
+		&data->result, buffer_size, buffer));
 	return CCS_SUCCESS;
 }
 
@@ -66,7 +66,7 @@ _ccs_deserialize_bin_ccs_evaluation(
 	CCS_VALIDATE_ERR_GOTO(
 		res,
 		ccs_create_evaluation(
-			os, data.configuration, data.error,
+			os, data.configuration, data.result,
 			data.base.num_values, data.base.values, evaluation_ret),
 		end);
 

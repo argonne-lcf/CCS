@@ -14,12 +14,12 @@ class ccs_version(ct.Structure):
     return "{}.{}.{}.{}".format(self.major, self.minor, self.patch, self.revision)
 
 # Base types
-ccs_float  = ct.c_double
-ccs_int    = ct.c_longlong
-ccs_bool   = ct.c_int
-ccs_result = ct.c_int
-ccs_hash   = ct.c_uint
-ccs_object = ct.c_void_p
+ccs_float             = ct.c_double
+ccs_int               = ct.c_longlong
+ccs_bool              = ct.c_int32
+ccs_evaluation_result = ct.c_int32
+ccs_hash              = ct.c_uint32
+ccs_object            = ct.c_void_p
 
 # Objects
 ccs_rng                 = ccs_object

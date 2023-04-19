@@ -197,10 +197,10 @@ _ccs_features_tuner_random_tell(
 	UT_array   *history = d->history;
 	ccs_error_t err;
 	for (size_t i = 0; i < num_evaluations; i++) {
-		ccs_result_t error;
-		CCS_VALIDATE(ccs_features_evaluation_get_error(
-			evaluations[i], &error));
-		if (error == CCS_SUCCESS) {
+		ccs_evaluation_result_t result;
+		CCS_VALIDATE(ccs_features_evaluation_get_result(
+			evaluations[i], &result));
+		if (result == CCS_SUCCESS) {
 			int       discard = 0;
 			UT_array *tmp;
 			ccs_retain_object(evaluations[i]);

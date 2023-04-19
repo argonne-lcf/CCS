@@ -10,7 +10,7 @@ extern "C" {
  * objective space (see objective_space.h) given a specific configuration (see
  * configuration.h). Successful evaluations over the same objective space are
  * weakly ordered by their objective values. Evaluation that have failed must
- * report an error code.
+ * report a result code different than CCS_SUCCESS.
  */
 
 /**
@@ -42,7 +42,7 @@ typedef enum ccs_comparison_e ccs_comparison_t;
  * @param[in] objective_space the objective space to associate with the
  *                            evaluation
  * @param[in] configuration the configuration to associate with the evaluation
- * @param[in] error the error code associated with the evaluation
+ * @param[in] result the result code associated with the evaluation
  * @param[in] num_values the number of provided values to initialize the
  *                       evaluation
  * @param[in] values an optional array of values to initialize the evaluation
@@ -61,12 +61,12 @@ typedef enum ccs_comparison_e ccs_comparison_t;
  */
 extern ccs_error_t
 ccs_create_evaluation(
-	ccs_objective_space_t objective_space,
-	ccs_configuration_t   configuration,
-	ccs_result_t          error,
-	size_t                num_values,
-	ccs_datum_t          *values,
-	ccs_evaluation_t     *evaluation_ret);
+	ccs_objective_space_t   objective_space,
+	ccs_configuration_t     configuration,
+	ccs_evaluation_result_t result,
+	size_t                  num_values,
+	ccs_datum_t            *values,
+	ccs_evaluation_t       *evaluation_ret);
 
 /**
  * Get the objective space associated with an evaluation.
@@ -97,27 +97,31 @@ ccs_evaluation_get_configuration(
 	ccs_configuration_t *configuration_ret);
 
 /**
- * Get the error code associated with an evaluation.
+ * Get the result code associated with an evaluation.
  * @param[in] evaluation
- * @param[out] error_ret a pointer to the variable that will contain the
- *                       returned error code
+ * @param[out] result_ret a pointer to the variable that will contain the
+ *                        returned result code
  * @return #CCS_SUCCESS on success
  * @return #CCS_INVALID_OBJECT if \p evaluation is not a valid CCS evaluation
- * @return #CCS_INVALID_VALUE if \p error_ret is NULL
+ * @return #CCS_INVALID_VALUE if \p result_ret is NULL
  */
 extern ccs_error_t
-ccs_evaluation_get_error(ccs_evaluation_t evaluation, ccs_result_t *error_ret);
+ccs_evaluation_get_result(
+	ccs_evaluation_t         evaluation,
+	ccs_evaluation_result_t *result_ret);
 
 /**
- * Set the error code associated with an evaluation. A successful
+ * Set the result code associated with an evaluation. A successful
  * evaluation should have it's error set to #CCS_SUCCESS.
  * @param[in,out] evaluation
- * @param[in] error the error code associated withe the evaluation
+ * @param[in] result the result code associated withe the evaluation
  * @return #CCS_SUCCESS on success
  * @return #CCS_INVALID_OBJECT if \p evaluation is not a valid CCS evaluation
  */
 extern ccs_error_t
-ccs_evaluation_set_error(ccs_evaluation_t evaluation, ccs_result_t error);
+ccs_evaluation_set_result(
+	ccs_evaluation_t        evaluation,
+	ccs_evaluation_result_t result);
 
 /**
  * Get the value of the parameter at the given index.
@@ -263,7 +267,7 @@ ccs_evaluation_get_objective_values(
 /**
  * Compute a hash value for the evaluation by hashing together the objective
  * space reference, the configuration, the number of values, the values
- * themselves, and the associated error.
+ * themselves, and the associated result.
  * @param[in] evaluation
  * @param[out] hash_ret the address of the variable that will contain the hash
  *                      value.
@@ -276,7 +280,7 @@ ccs_evaluation_hash(ccs_evaluation_t evaluation, ccs_hash_t *hash_ret);
 
 /**
  * Define a strict ordering of evaluation instances. Objective space,
- * configuration, number of values, values, and error codes are compared.
+ * configuration, number of values, values, and result codes are compared.
  * @param[in] evaluation the first evaluation
  * @param[in] other_evaluation the second evaluation
  * @param[out] cmp_ret a pointer to the variable that will contain the result
@@ -309,7 +313,7 @@ ccs_evaluation_cmp(
  *                              valid CCS evaluations; or if \p evaluation and
  *                              \p other_evaluation do not share the same
  *                              objective space; or if any of the configuration
- *                              is associated an error code different than
+ *                              is associated a result code different than
  *                              CCS_SUCESS
  * @return #CCS_INVALID_VALUE if \p result_ret is NULL; or if there was an
  *                                issue evaluating any of the objectives

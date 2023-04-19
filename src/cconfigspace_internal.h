@@ -687,7 +687,7 @@ CCS_CONVERTER(ccs_tuner_type, ccs_tuner_type_t, 32)
 CCS_CONVERTER(ccs_features_tuner_type, ccs_features_tuner_type_t, 32)
 CCS_CONVERTER(ccs_tree_space_type, ccs_tree_space_type_t, 32)
 CCS_CONVERTER(ccs_tree_tuner_type, ccs_tree_tuner_type_t, 32)
-CCS_CONVERTER(ccs_result, ccs_result_t, 32)
+CCS_CONVERTER(ccs_evaluation_result, ccs_evaluation_result_t, 32)
 CCS_CONVERTER(ccs_object, ccs_object_t, 64)
 #else
 CCS_CONVERTER(uint8, uint8_t, 8)
@@ -716,7 +716,10 @@ CCS_CONVERTER_COMPRESSED(ccs_tuner_type, ccs_tuner_type_t, 32)
 CCS_CONVERTER_COMPRESSED(ccs_features_tuner_type, ccs_features_tuner_type_t, 32)
 CCS_CONVERTER_COMPRESSED(ccs_tree_space_type, ccs_tree_space_type_t, 32)
 CCS_CONVERTER_COMPRESSED(ccs_tree_tuner_type, ccs_tree_tuner_type_t, 32)
-CCS_CONVERTER_COMPRESSED_SIGNED(ccs_result, ccs_result_t, 32)
+CCS_CONVERTER_COMPRESSED_SIGNED(
+	ccs_evaluation_result,
+	ccs_evaluation_result_t,
+	32)
 CCS_CONVERTER_COMPRESSED_POINTER(ccs_object, ccs_object_t)
 #endif
 
