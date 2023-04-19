@@ -43,19 +43,19 @@ module CCS
     rule("]")
     rule(",")
 
-    rule(:none => Regexp.new(TerminalRegexp[:CCS_TERM_NONE])).as { |b|
+    rule(:none => Regexp.new(TerminalRegexp[:CCS_TERMINAL_TYPE_NONE])).as { |b|
       Literal::new(value: nil) }
-    rule(:true => Regexp.new(TerminalRegexp[:CCS_TERM_TRUE])).as { |b|
+    rule(:true => Regexp.new(TerminalRegexp[:CCS_TERMINAL_TYPE_TRUE])).as { |b|
       Literal::new(value: true) }
-    rule(:false => Regexp.new(TerminalRegexp[:CCS_TERM_FALSE])).as { |b|
+    rule(:false => Regexp.new(TerminalRegexp[:CCS_TERMINAL_TYPE_FALSE])).as { |b|
       Literal::new(value: false) }
-    rule(:float => Regexp.new(TerminalRegexp[:CCS_TERM_FLOAT])).as {|num|
+    rule(:float => Regexp.new(TerminalRegexp[:CCS_TERMINAL_TYPE_FLOAT])).as {|num|
       Literal::new(value: Float(num)) }
-    rule(:integer => Regexp.new(TerminalRegexp[:CCS_TERM_INTEGER])).as { |num|
+    rule(:integer => Regexp.new(TerminalRegexp[:CCS_TERMINAL_TYPE_INTEGER])).as { |num|
       Literal::new(value: Integer(num)) }
     rule(:identifier => /[:a-zA-Z_][a-zA-Z_0-9]*/).as { |identifier|
       Variable::new(parameter: context.parameter_by_name(identifier)) }
-    rule(:string => Regexp.new(TerminalRegexp[:CCS_TERM_STRING])).as { |str|
+    rule(:string => Regexp.new(TerminalRegexp[:CCS_TERMINAL_TYPE_STRING])).as { |str|
       Literal::new(value: eval(str)) }
 
     rule(:value) do |r|

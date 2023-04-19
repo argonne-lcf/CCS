@@ -167,19 +167,19 @@ extern const int                      ccs_expression_arity[];
  */
 enum ccs_terminal_type_e {
 	/** The #CCS_NONE_VAL value */
-	CCS_TERM_NONE = 0,
+	CCS_TERMINAL_TYPE_NONE = 0,
 	/** The #CCS_TRUE_VAL value */
-	CCS_TERM_TRUE,
+	CCS_TERMINAL_TYPE_TRUE,
 	/** The #CCS_FALSE_VAL value */
-	CCS_TERM_FALSE,
+	CCS_TERMINAL_TYPE_FALSE,
 	/** A #CCS_STRING value */
-	CCS_TERM_STRING,
+	CCS_TERMINAL_TYPE_STRING,
 	/** An identifer (name of a parameter) */
-	CCS_TERM_IDENTIFIER,
+	CCS_TERMINAL_TYPE_IDENTIFIER,
 	/** A #CCS_INTEGER value */
-	CCS_TERM_INTEGER,
+	CCS_TERMINAL_TYPE_INTEGER,
 	/** A #CCS_FLOAT value */
-	CCS_TERM_FLOAT,
+	CCS_TERMINAL_TYPE_FLOAT,
 	/** Guard */
 	CCS_TERMINAL_TYPE_MAX,
 	/** Try forcing 32 bits value for bindings */

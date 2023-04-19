@@ -57,13 +57,13 @@ module CCS
   }.to_h
 
   TerminalType = enum FFI::Type::INT32, :ccs_terminal_type_t, [
-    :CCS_TERM_NONE, 0,
-    :CCS_TERM_TRUE,
-    :CCS_TERM_FALSE,
-    :CCS_TERM_STRING,
-    :CCS_TERM_IDENTIFIER,
-    :CCS_TERM_INTEGER,
-    :CCS_TERM_FLOAT,
+    :CCS_TERMINAL_TYPE_NONE, 0,
+    :CCS_TERMINAL_TYPE_TRUE,
+    :CCS_TERMINAL_TYPE_FALSE,
+    :CCS_TERMINAL_TYPE_STRING,
+    :CCS_TERMINAL_TYPE_IDENTIFIER,
+    :CCS_TERMINAL_TYPE_INTEGER,
+    :CCS_TERMINAL_TYPE_FLOAT,
   ]
 
   attach_variable :terminal_precedence, :ccs_terminal_precedence, FFI::ArrayType::new(find_type(:int), TerminalType.symbol_map.size)
@@ -204,9 +204,9 @@ module CCS
   end
 
   class Literal < Expression
-    NONE_SYMBOL = TerminalSymbols[:CCS_TERM_NONE]
-    TRUE_SYMBOL = TerminalSymbols[:CCS_TERM_TRUE]
-    FALSE_SYMBOL = TerminalSymbols[:CCS_TERM_FALSE]
+    NONE_SYMBOL = TerminalSymbols[:CCS_TERMINAL_TYPE_NONE]
+    TRUE_SYMBOL = TerminalSymbols[:CCS_TERMINAL_TYPE_TRUE]
+    FALSE_SYMBOL = TerminalSymbols[:CCS_TERMINAL_TYPE_FALSE]
 
     def initialize(handle = nil, retain: false, auto_release: true,
                    value: nil)
