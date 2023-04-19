@@ -17,9 +17,9 @@ extern "C" {
  */
 enum ccs_objective_type_e {
 	/** Objective should be minimized */
-	CCS_MINIMIZE,
+	CCS_OBJECTIVE_TYPE_MINIMIZE,
 	/** Objective should be maximized */
-	CCS_MAXIMIZE,
+	CCS_OBJECTIVE_TYPE_MAXIMIZE,
 	/** Guard */
 	CCS_OBJECTIVE_TYPE_MAX,
 	/** Try forcing 32 bits value for bindings */
@@ -315,8 +315,8 @@ ccs_objective_space_validate_value(
  * Add an objective to an objective space.
  * @param[in,out] objective_space
  * @param[in] expression the forbidden clause to dd to the configuration space
- * @param[in] type the type of the objective, either #CCS_MAXIMIZE or
- *                 #CCS_MINIMIZE
+ * @param[in] type the type of the objective, either #CCS_OBJECTIVE_TYPE_MAXIMIZE or
+ *                 #CCS_OBJECTIVE_TYPE_MINIMIZE
  * @return #CCS_SUCCESS on success
  * @return #CCS_INVALID_OBJECT if \p objective_space is not a valid CCS
  *                              objective space; or if \p expression is not

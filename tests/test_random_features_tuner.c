@@ -53,7 +53,7 @@ test()
 	err = ccs_objective_space_add_parameter(ospace, parameter3);
 	assert(err == CCS_SUCCESS);
 	err = ccs_objective_space_add_objective(
-		ospace, expression, CCS_MINIMIZE);
+		ospace, expression, CCS_OBJECTIVE_TYPE_MINIMIZE);
 	assert(err == CCS_SUCCESS);
 
 	err = ccs_create_categorical_parameter(
@@ -295,7 +295,7 @@ test_evaluation_deserialize()
 	err = ccs_objective_space_add_parameter(ospace, parameter3);
 	assert(err == CCS_SUCCESS);
 	err = ccs_objective_space_add_objective(
-		ospace, expression, CCS_MINIMIZE);
+		ospace, expression, CCS_OBJECTIVE_TYPE_MINIMIZE);
 	assert(err == CCS_SUCCESS);
 
 	res = ccs_float(1.5);

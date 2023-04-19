@@ -527,7 +527,7 @@ ccs_features_evaluation_compare(
 		}
 		cmp = _numeric_compare(values, values + 1);
 		if (cmp) {
-			if (type == CCS_MAXIMIZE)
+			if (type == CCS_OBJECTIVE_TYPE_MAXIMIZE)
 				cmp = -cmp;
 			if (*result_ret == CCS_COMPARISON_EQUIVALENT)
 				*result_ret = (ccs_comparison_t)cmp;

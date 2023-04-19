@@ -26,7 +26,7 @@ class CConfigSpaceTestTreeTuner < Minitest::Test
     v1 = CCS::NumericalParameter.new(lower: -Float::INFINITY, upper: Float::INFINITY)
     os.add_parameter(v1)
     e1 = CCS::Variable.new(parameter: v1)
-    os.add_objectives( {e1 => :CCS_MAXIMIZE} )
+    os.add_objectives( {e1 => :CCS_OBJECTIVE_TYPE_MAXIMIZE} )
     [ts, os]
   end
 

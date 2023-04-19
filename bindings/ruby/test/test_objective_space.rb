@@ -28,13 +28,13 @@ class CConfigSpaceTestObjectiveSpace < Minitest::Test
     e2 = CCS::Variable::new(parameter: h3)
     os.add_objective(e1)
     assert_equal( 1, os.objectives.size )
-    os.add_objectives([e2], types: [:CCS_MAXIMIZE])
+    os.add_objectives([e2], types: [:CCS_OBJECTIVE_TYPE_MAXIMIZE])
     assert_equal( 2, os.objectives.size )
     objs = os.objectives
     assert_equal( e1.handle, objs[0][0].handle )
-    assert_equal( :CCS_MINIMIZE, objs[0][1] )
+    assert_equal( :CCS_OBJECTIVE_TYPE_MINIMIZE, objs[0][1] )
     assert_equal( e2.handle, objs[1][0].handle )
-    assert_equal( :CCS_MAXIMIZE, objs[1][1] )
+    assert_equal( :CCS_OBJECTIVE_TYPE_MAXIMIZE, objs[1][1] )
   end
 
 end

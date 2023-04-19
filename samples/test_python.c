@@ -45,7 +45,7 @@ create_problem(ccs_configuration_space_t *cs, ccs_objective_space_t *os)
 	err = ccs_objective_space_add_parameter(ospace, parameter3);
 	assert(err == CCS_SUCCESS);
 	err = ccs_objective_space_add_objective(
-		ospace, expression, CCS_MINIMIZE);
+		ospace, expression, CCS_OBJECTIVE_TYPE_MINIMIZE);
 	assert(err == CCS_SUCCESS);
 
 	err = ccs_release_object(parameter1);

@@ -537,7 +537,7 @@ kokkosp_request_values(
 	  CCS_CHECK(ccs_create_variable(htime, &expression));
 	  CCS_CHECK(ccs_objective_space_add_parameter(os, htime));
 	  CCS_CHECK(ccs_objective_space_add_objective(
-		  os, expression, CCS_MINIMIZE));
+		  os, expression, CCS_OBJECTIVE_TYPE_MINIMIZE));
 	  CCS_CHECK(ccs_release_object(expression));
 	  CCS_CHECK(ccs_release_object(htime));
 

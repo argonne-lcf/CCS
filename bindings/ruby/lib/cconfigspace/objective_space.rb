@@ -1,7 +1,7 @@
 module CCS
   ObjectiveType = enum FFI::Type::INT32, :ccs_objective_type_t, [
-    :CCS_MINIMIZE,
-    :CCS_MAXIMIZE
+    :CCS_OBJECTIVE_TYPE_MINIMIZE,
+    :CCS_OBJECTIVE_TYPE_MAXIMIZE
   ]
   class MemoryPointer
     def read_ccs_objective_type_t
@@ -58,7 +58,7 @@ module CCS
       self
     end
 
-    def add_objective(expression, type: :CCS_MINIMIZE)
+    def add_objective(expression, type: :CCS_OBJECTIVE_TYPE_MINIMIZE)
       if expression.kind_of? String
         expression = ExpressionParser::new(self).parse(expression)
       end
@@ -84,7 +84,7 @@ module CCS
       if types
         raise CCSError, :CCS_INVALID_VALUE if types.size != count
       else
-        types = [:CCS_MINIMIZE] * count
+        types = [:CCS_OBJECTIVE_TYPE_MINIMIZE] * count
       end
       p_types = MemoryPointer::new(:ccs_objective_type_t, count)
       p_types.write_array_of_ccs_objective_type_t(types)

@@ -573,7 +573,7 @@ ccs_objective_space_get_objectives(
 		}
 		for (size_t i = size; i < num_objectives; i++) {
 			expressions[i] = NULL;
-			types[i]       = CCS_MINIMIZE;
+			types[i]       = CCS_OBJECTIVE_TYPE_MINIMIZE;
 		}
 	}
 	if (num_objectives_ret)
