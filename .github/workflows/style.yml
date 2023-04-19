@@ -1,0 +1,15 @@
+name: style-checks
+on: [push, pull_request]
+jobs:
+  clang-format:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v3
+      - run: sudo apt-get update
+      - run: sudo apt-get install -y clang-format-15
+      - name: run git-clang-format
+        run: clang-format-15 --style=file --dry-run --Werror `git ls-files *.c *.cpp *.h  | grep -v -E "Kokkos_Profiling_C_Interface\.h"` > clang-format-diff 2>&1
+        shell: bash
+      - name: output clang format diff
+        if: always()
+        run: cat ./clang-format-diff
