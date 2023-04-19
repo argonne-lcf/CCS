@@ -112,8 +112,8 @@ test_create_normal_distribution_errors()
 
 	// check wrong data_type
 	err                        = ccs_create_normal_distribution(
-                (ccs_numeric_type_t)CCS_STRING, 1.0, 2.0, CCS_SCALE_TYPE_LINEAR,
-                CCSF(0.0), &distrib);
+                (ccs_numeric_type_t)CCS_DATA_TYPE_STRING, 1.0, 2.0,
+                CCS_SCALE_TYPE_LINEAR, CCSF(0.0), &distrib);
 	assert(err == CCS_INVALID_TYPE);
 
 	// check wrong data_type

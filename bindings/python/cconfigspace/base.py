@@ -196,9 +196,9 @@ class ccs_error(CEnumeration):
 class ccs_data_type(CEnumeration):
   _members_ = [
     ('NONE', 0),
-    'INTEGER',
+    'INT',
     'FLOAT',
-    'BOOLEAN',
+    'BOOL',
     'STRING',
     'INACTIVE',
     'OBJECT' ]
@@ -214,7 +214,7 @@ ccs_datum_flags = ct.c_uint
 
 class ccs_numeric_type(CEnumeration):
   _members_ = [
-    ('NUM_INTEGER', ccs_data_type.INTEGER),
+    ('NUM_INTEGER', ccs_data_type.INT),
     ('NUM_FLOAT', ccs_data_type.FLOAT) ]
 
 class ccs_numeric(ct.Union):
@@ -281,11 +281,11 @@ class ccs_datum(ct.Structure):
     t = self.type
     if t == ccs_data_type.NONE:
       return None
-    elif t == ccs_data_type.INTEGER:
+    elif t == ccs_data_type.INT:
       return self._value.i
     elif t == ccs_data_type.FLOAT:
       return self._value.f
-    elif t == ccs_data_type.BOOLEAN:
+    elif t == ccs_data_type.BOOL:
       return False if self._value.i == ccs_false else True
     elif t == ccs_data_type.STRING:
       return self._value.s.decode()
@@ -305,11 +305,11 @@ class ccs_datum(ct.Structure):
       self._value.i = 0
       self.flags = 0
     elif isinstance(v, bool):
-      self.type = ccs_data_type.BOOLEAN
+      self.type = ccs_data_type.BOOL
       self._value.i = 1 if v else 0
       self.flags = 0
     elif isinstance(v, int):
-      self.type = ccs_data_type.INTEGER
+      self.type = ccs_data_type.INT
       self._value.i = v
       self.flags = 0
     elif isinstance(v, float):

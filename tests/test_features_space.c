@@ -344,7 +344,7 @@ test_deserialize()
 
 	err = ccs_map_get(map, ccs_object(features_space_ref), &d);
 	assert(err == CCS_SUCCESS);
-	assert(d.type == CCS_OBJECT);
+	assert(d.type == CCS_DATA_TYPE_OBJECT);
 	assert(d.value.o == features_space);
 
 	err = ccs_release_object(map);

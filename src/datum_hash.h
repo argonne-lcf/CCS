@@ -40,7 +40,7 @@ _datum_cmp(ccs_datum_t *a, ccs_datum_t *b)
 		return 1;
 	} else {
 		switch (a->type) {
-		case CCS_STRING:
+		case CCS_DATA_TYPE_STRING:
 			if (a->value.s == b->value.s)
 				return 0;
 			else if (!a->value.s)
@@ -49,8 +49,8 @@ _datum_cmp(ccs_datum_t *a, ccs_datum_t *b)
 				return 1;
 			else
 				return strcmp(a->value.s, b->value.s);
-		case CCS_NONE:
-		case CCS_INACTIVE:
+		case CCS_DATA_TYPE_NONE:
+		case CCS_DATA_TYPE_INACTIVE:
 			return 0;
 			break;
 		default:
@@ -74,7 +74,7 @@ _hash_datum(ccs_datum_t *d)
 	unsigned h;
 	unsigned h1, h2;
 	switch (d->type) {
-	case CCS_STRING:
+	case CCS_DATA_TYPE_STRING:
 		HASH_JEN(&(d->type), sizeof(d->type), h1);
 		if (d->value.s)
 			HASH_JEN(d->value.s, strlen(d->value.s), h2);
@@ -82,8 +82,8 @@ _hash_datum(ccs_datum_t *d)
 			HASH_JEN(&(d->value), sizeof(d->value), h2);
 		h = _hash_combine(h1, h2);
 		break;
-	case CCS_NONE:
-	case CCS_INACTIVE:
+	case CCS_DATA_TYPE_NONE:
+	case CCS_DATA_TYPE_INACTIVE:
 		HASH_JEN(&(d->type), sizeof(d->type), h);
 		break;
 	default:

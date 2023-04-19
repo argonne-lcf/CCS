@@ -19,7 +19,7 @@ typedef struct _ccs_map_data_s _ccs_map_data_t;
 static inline ccs_error_t
 _ccs_map_check_object_and_release(ccs_datum_t d)
 {
-	if (d.type == CCS_OBJECT && !(d.flags & CCS_FLAG_ID))
+	if (d.type == CCS_DATA_TYPE_OBJECT && !(d.flags & CCS_FLAG_ID))
 		return ccs_release_object(d.value.o);
 	return CCS_SUCCESS;
 }
@@ -171,9 +171,10 @@ ccs_create_map(ccs_map_t *map_ret)
 static inline ccs_error_t
 _ccs_map_check_datum(ccs_datum_t d, size_t *cum_sz, size_t *sz)
 {
-	if (d.type == CCS_STRING && (d.flags & CCS_FLAG_TRANSIENT) && d.value.s)
+	if (d.type == CCS_DATA_TYPE_STRING && (d.flags & CCS_FLAG_TRANSIENT) &&
+	    d.value.s)
 		*cum_sz += *sz = strlen(d.value.s) + 1;
-	else if (d.type == CCS_OBJECT && !(d.flags & CCS_FLAG_ID))
+	else if (d.type == CCS_DATA_TYPE_OBJECT && !(d.flags & CCS_FLAG_ID))
 		CCS_VALIDATE(ccs_retain_object(d.value.o));
 	return CCS_SUCCESS;
 }
@@ -181,7 +182,7 @@ _ccs_map_check_datum(ccs_datum_t d, size_t *cum_sz, size_t *sz)
 static inline void
 _ccs_map_set_string(ccs_datum_t *d, size_t sz, uintptr_t *mem)
 {
-	if (d->type == CCS_STRING) {
+	if (d->type == CCS_DATA_TYPE_STRING) {
 		d->flags = CCS_FLAG_DEFAULT;
 		if (sz) {
 			char *p = (char *)*mem;
@@ -229,10 +230,10 @@ ccs_map_set(ccs_map_t map, ccs_datum_t key, ccs_datum_t value)
 err_mem:
 	free(entry);
 err_o2:
-	if (value.type == CCS_OBJECT && !(value.flags & CCS_FLAG_ID))
+	if (value.type == CCS_DATA_TYPE_OBJECT && !(value.flags & CCS_FLAG_ID))
 		ccs_release_object(value.value.o);
 err_o1:
-	if (key.type == CCS_OBJECT && !(key.flags & CCS_FLAG_ID))
+	if (key.type == CCS_DATA_TYPE_OBJECT && !(key.flags & CCS_FLAG_ID))
 		ccs_release_object(key.value.o);
 err:
 	return res;

@@ -49,7 +49,7 @@ _ccs_deserialize_bin_ccs_expression_data(
 			CCS_VALIDATE(_ccs_expression_deserialize(
 				&expr, CCS_SERIALIZE_FORMAT_BINARY, version,
 				buffer_size, buffer, opts));
-			data->nodes[i].type    = CCS_OBJECT;
+			data->nodes[i].type    = CCS_DATA_TYPE_OBJECT;
 			data->nodes[i].value.o = expr;
 		}
 	}
@@ -128,7 +128,7 @@ _ccs_deserialize_bin_expression_variable(
 	ccs_parameter_t h;
 	CCS_VALIDATE(
 		ccs_map_get(opts->handle_map, ccs_object(data.parameter), &d));
-	CCS_REFUTE(d.type != CCS_OBJECT, CCS_INVALID_HANDLE);
+	CCS_REFUTE(d.type != CCS_DATA_TYPE_OBJECT, CCS_INVALID_HANDLE);
 	h = (ccs_parameter_t)(d.value.o);
 	CCS_VALIDATE(ccs_create_variable(h, expression_ret));
 	return CCS_SUCCESS;
@@ -157,7 +157,7 @@ _ccs_deserialize_bin_expression_general(
 end:
 	if (data.nodes) {
 		for (size_t i = 0; i < data.num_nodes; i++)
-			if (data.nodes[i].type == CCS_OBJECT)
+			if (data.nodes[i].type == CCS_DATA_TYPE_OBJECT)
 				ccs_release_object(data.nodes[i].value.o);
 		free(data.nodes);
 	}

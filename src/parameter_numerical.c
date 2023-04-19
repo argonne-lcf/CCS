@@ -93,14 +93,14 @@ _ccs_parameter_numerical_check_values(
 	ccs_numeric_type_t type     = d->common_data.interval.type;
 	if (type == CCS_NUM_FLOAT) {
 		for (size_t i = 0; i < num_values; i++)
-			if (values[i].type != CCS_FLOAT)
+			if (values[i].type != CCS_DATA_TYPE_FLOAT)
 				results[i] = CCS_FALSE;
 			else
 				results[i] = _ccs_interval_include(
 					interval, CCSF(values[i].value.f));
 	} else {
 		for (size_t i = 0; i < num_values; i++)
-			if (values[i].type != CCS_INTEGER)
+			if (values[i].type != CCS_DATA_TYPE_INT)
 				results[i] = CCS_FALSE;
 			else
 				results[i] = _ccs_interval_include(
@@ -323,11 +323,13 @@ ccs_create_numerical_parameter(
 		(char *)(mem + sizeof(struct _ccs_parameter_s) + sizeof(_ccs_parameter_numerical_data_t));
 	strcpy((char *)parameter_data->common_data.name, name);
 	if (data_type == CCS_NUM_FLOAT) {
-		parameter_data->common_data.default_value.type = CCS_FLOAT;
+		parameter_data->common_data.default_value.type =
+			CCS_DATA_TYPE_FLOAT;
 		parameter_data->common_data.default_value.value.f =
 			default_value.f;
 	} else {
-		parameter_data->common_data.default_value.type = CCS_INTEGER;
+		parameter_data->common_data.default_value.type =
+			CCS_DATA_TYPE_INT;
 		parameter_data->common_data.default_value.value.i =
 			default_value.i;
 	}

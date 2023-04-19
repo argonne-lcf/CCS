@@ -293,16 +293,18 @@ _ccs_create_categorical_parameter(
 	if (type == CCS_PARAMETER_TYPE_DISCRETE)
 		for (size_t i = 0; i < num_possible_values; i++)
 			CCS_REFUTE(
-				possible_values[i].type != CCS_FLOAT &&
-					possible_values[i].type != CCS_INTEGER,
+				possible_values[i].type !=
+						CCS_DATA_TYPE_FLOAT &&
+					possible_values[i].type !=
+						CCS_DATA_TYPE_INT,
 				CCS_INVALID_VALUE);
 	size_t size_strs = 0;
 	if (type != CCS_PARAMETER_TYPE_DISCRETE)
 		for (size_t i = 0; i < num_possible_values; i++) {
 			CCS_REFUTE(
-				possible_values[i].type > CCS_STRING,
+				possible_values[i].type > CCS_DATA_TYPE_STRING,
 				CCS_INVALID_VALUE);
-			if (possible_values[i].type == CCS_STRING) {
+			if (possible_values[i].type == CCS_DATA_TYPE_STRING) {
 				CCS_REFUTE(
 					!possible_values[i].value.s,
 					CCS_INVALID_VALUE);
@@ -361,7 +363,7 @@ _ccs_create_categorical_parameter(
 			CCS_RAISE(
 				CCS_INVALID_VALUE, "Duplicate possible value");
 		}
-		if (possible_values[i].type == CCS_STRING) {
+		if (possible_values[i].type == CCS_DATA_TYPE_STRING) {
 			pvs[i].d = ccs_string(str_pool);
 			strcpy(str_pool, possible_values[i].value.s);
 			str_pool += strlen(possible_values[i].value.s) + 1;

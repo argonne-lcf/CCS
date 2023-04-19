@@ -426,7 +426,7 @@ ccs_features_evaluation_get_objective_values(
 static inline int
 _numeric_compare(const ccs_datum_t *a, const ccs_datum_t *b)
 {
-	if (a->type == CCS_FLOAT) {
+	if (a->type == CCS_DATA_TYPE_FLOAT) {
 		return a->value.f < b->value.f ? -1 :
 		       a->value.f > b->value.f ? 1 :
 						 0;
@@ -519,8 +519,8 @@ ccs_features_evaluation_compare(
 			expression,
 			(ccs_context_t)evaluation->data->objective_space,
 			other_evaluation->data->values, values + 1));
-		if ((values[0].type != CCS_INTEGER &&
-		     values[0].type != CCS_FLOAT) ||
+		if ((values[0].type != CCS_DATA_TYPE_INT &&
+		     values[0].type != CCS_DATA_TYPE_FLOAT) ||
 		    values[0].type != values[1].type) {
 			*result_ret = CCS_COMPARISON_NOT_COMPARABLE;
 			return CCS_SUCCESS;

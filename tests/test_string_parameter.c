@@ -20,7 +20,7 @@ compare_parameter(ccs_parameter_t parameter)
 
 	err = ccs_parameter_get_default_value(parameter, &default_value);
 	assert(err == CCS_SUCCESS);
-	assert(default_value.type == CCS_NONE);
+	assert(default_value.type == CCS_DATA_TYPE_NONE);
 
 	err = ccs_parameter_get_name(parameter, &name);
 	assert(err == CCS_SUCCESS);
@@ -98,7 +98,7 @@ test_string_memoization()
 	err       = ccs_parameter_validate_value(parameter, din, &dout, &check);
 	assert(err == CCS_SUCCESS);
 	assert(check == CCS_TRUE);
-	assert(dout.type == CCS_STRING);
+	assert(dout.type == CCS_DATA_TYPE_STRING);
 	assert(dout.flags == 0);
 	assert(strcmp(dout.value.s, "my string") == 0);
 	err = ccs_parameter_validate_value(parameter, din, &dout2, NULL);
@@ -111,7 +111,7 @@ test_string_memoization()
 	err = ccs_parameter_validate_value(parameter, din, &dout, &check);
 	assert(err == CCS_SUCCESS);
 	assert(check == CCS_TRUE);
-	assert(dout.type == CCS_STRING);
+	assert(dout.type == CCS_DATA_TYPE_STRING);
 	assert(dout.flags == 0);
 	assert(strcmp(dout.value.s, "nope") == 0);
 
@@ -119,7 +119,7 @@ test_string_memoization()
 	err = ccs_parameter_validate_value(parameter, din, &dout, &check);
 	assert(err == CCS_SUCCESS);
 	assert(check == CCS_FALSE);
-	assert(dout.type == CCS_INACTIVE);
+	assert(dout.type == CCS_DATA_TYPE_INACTIVE);
 
 	ccs_release_object(parameter);
 }

@@ -13,7 +13,7 @@ extern "C" {
 
 /**
  * Create a new instance of a configuration on a given configuration space. If
- * no values are provided the values will be initialized to #CCS_NONE.
+ * no values are provided the values will be initialized to #CCS_DATA_TYPE_NONE.
  * @param[in] configuration_space
  * @param[in] num_values the number of provided values to initialize the
  *            configuration
@@ -100,7 +100,7 @@ ccs_configuration_set_value(
  * @param[in] num_values the size of the \p values array
  * @param[out] values an array of size \p num_values to hold the returned
  *                    values, or NULL. If the array is too big, extra values
- *                    are set to #CCS_NONE
+ *                    are set to #CCS_DATA_TYPE_NONE
  * @param[out] num_values_ret a pointer to a variable that will contain the
  *                            number of values that are or would be returned.
  *                            Can be NULL

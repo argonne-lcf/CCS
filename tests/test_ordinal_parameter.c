@@ -28,7 +28,7 @@ compare_parameter(
 
 	err = ccs_parameter_get_default_value(parameter, &default_value);
 	assert(err == CCS_SUCCESS);
-	assert(default_value.type == CCS_INTEGER);
+	assert(default_value.type == CCS_DATA_TYPE_INT);
 	assert(default_value.value.i ==
 	       possible_values[default_value_index].value.i);
 
@@ -59,7 +59,7 @@ compare_parameter(
 		assert(check == CCS_TRUE);
 	}
 
-	default_value.type = CCS_FLOAT;
+	default_value.type = CCS_DATA_TYPE_FLOAT;
 	err = ccs_parameter_check_value(parameter, default_value, &check);
 	assert(err == CCS_SUCCESS);
 	assert(check == CCS_FALSE);
@@ -80,7 +80,7 @@ test_create()
 	size_t          buff_size;
 
 	for (size_t i = 0; i < num_possible_values; i++) {
-		possible_values[i].type    = CCS_INTEGER;
+		possible_values[i].type    = CCS_DATA_TYPE_INT;
 		possible_values[i].value.i = (i + 1) * 2;
 	}
 
@@ -136,7 +136,7 @@ test_create_error()
 	const size_t    default_value_index = 2;
 
 	for (size_t i = 0; i < num_possible_values; i++) {
-		possible_values[i].type    = CCS_INTEGER;
+		possible_values[i].type    = CCS_DATA_TYPE_INT;
 		possible_values[i].value.i = (i + 1) * 2;
 	}
 
@@ -163,7 +163,7 @@ test_samples()
 	const size_t       default_value_index = 2;
 
 	for (size_t i = 0; i < num_possible_values; i++) {
-		possible_values[i].type    = CCS_INTEGER;
+		possible_values[i].type    = CCS_DATA_TYPE_INT;
 		possible_values[i].value.i = (i + 1) * 2;
 	}
 
@@ -183,7 +183,7 @@ test_samples()
 	assert(err == CCS_SUCCESS);
 
 	for (size_t i = 0; i < num_samples; i++) {
-		assert(samples[i].type == CCS_INTEGER);
+		assert(samples[i].type == CCS_DATA_TYPE_INT);
 		assert(samples[i].value.i % 2 == 0);
 		assert(samples[i].value.i >= 2);
 		assert(samples[i].value.i <=
@@ -212,7 +212,7 @@ test_oversampling()
 	const size_t       default_value_index = 2;
 
 	for (size_t i = 0; i < num_possible_values; i++) {
-		possible_values[i].type    = CCS_INTEGER;
+		possible_values[i].type    = CCS_DATA_TYPE_INT;
 		possible_values[i].value.i = (i + 1) * 2;
 	}
 
@@ -233,7 +233,7 @@ test_oversampling()
 	assert(err == CCS_SUCCESS);
 
 	for (size_t i = 0; i < num_samples; i++) {
-		assert(samples[i].type == CCS_INTEGER);
+		assert(samples[i].type == CCS_DATA_TYPE_INT);
 		assert(samples[i].value.i % 2 == 0);
 		assert(samples[i].value.i >= 2);
 		assert(samples[i].value.i <=
@@ -260,10 +260,10 @@ test_compare()
 	ccs_datum_t     invalid;
 
 	invalid.value.i = -1;
-	invalid.type    = CCS_INTEGER;
+	invalid.type    = CCS_DATA_TYPE_INT;
 	for (size_t i = 0; i < num_possible_values; i++) {
 		possible_values[i].value.i = (i + 1) * 2;
-		possible_values[i].type    = CCS_INTEGER;
+		possible_values[i].type    = CCS_DATA_TYPE_INT;
 	}
 
 	err = ccs_create_ordinal_parameter(
@@ -308,15 +308,15 @@ test_compare_float()
 	ccs_datum_t     invalid;
 
 	invalid.value.f            = -0.0;
-	invalid.type               = CCS_FLOAT;
+	invalid.type               = CCS_DATA_TYPE_FLOAT;
 	possible_values[0].value.f = 1.0;
-	possible_values[0].type    = CCS_FLOAT;
+	possible_values[0].type    = CCS_DATA_TYPE_FLOAT;
 	possible_values[1].value.f = -5.0;
-	possible_values[1].type    = CCS_FLOAT;
+	possible_values[1].type    = CCS_DATA_TYPE_FLOAT;
 	possible_values[2].value.i = 5;
-	possible_values[2].type    = CCS_INTEGER;
+	possible_values[2].type    = CCS_DATA_TYPE_INT;
 	possible_values[3].value.f = 0.0;
-	possible_values[3].type    = CCS_FLOAT;
+	possible_values[3].type    = CCS_DATA_TYPE_FLOAT;
 
 	err                        = ccs_create_ordinal_parameter(
                 "my_param", num_possible_values, possible_values,
@@ -360,15 +360,15 @@ test_compare_string()
 	ccs_datum_t     invalid;
 
 	invalid.value.s            = "faraway";
-	invalid.type               = CCS_STRING;
+	invalid.type               = CCS_DATA_TYPE_STRING;
 	possible_values[0].value.s = "foo";
-	possible_values[0].type    = CCS_STRING;
+	possible_values[0].type    = CCS_DATA_TYPE_STRING;
 	possible_values[1].value.s = "bar";
-	possible_values[1].type    = CCS_STRING;
+	possible_values[1].type    = CCS_DATA_TYPE_STRING;
 	possible_values[2].value.i = 5;
-	possible_values[2].type    = CCS_INTEGER;
+	possible_values[2].type    = CCS_DATA_TYPE_INT;
 	possible_values[3].value.s = "baz";
-	possible_values[3].type    = CCS_STRING;
+	possible_values[3].type    = CCS_DATA_TYPE_STRING;
 
 	err                        = ccs_create_ordinal_parameter(
                 "my_param", num_possible_values, possible_values,
@@ -413,15 +413,15 @@ test_validate()
 	ccs_datum_t     invalid, diff_ptr, tmp;
 
 	invalid.value.s            = "faraway";
-	invalid.type               = CCS_STRING;
+	invalid.type               = CCS_DATA_TYPE_STRING;
 	possible_values[0].value.s = "foo";
-	possible_values[0].type    = CCS_STRING;
+	possible_values[0].type    = CCS_DATA_TYPE_STRING;
 	possible_values[1].value.s = "bar";
-	possible_values[1].type    = CCS_STRING;
+	possible_values[1].type    = CCS_DATA_TYPE_STRING;
 	possible_values[2].value.i = 5;
-	possible_values[2].type    = CCS_INTEGER;
+	possible_values[2].type    = CCS_DATA_TYPE_INT;
 	possible_values[3].value.s = "baz";
-	possible_values[3].type    = CCS_STRING;
+	possible_values[3].type    = CCS_DATA_TYPE_STRING;
 	diff_ptr = ccs_string(strdup(possible_values[0].value.s));
 
 	err      = ccs_create_ordinal_parameter(

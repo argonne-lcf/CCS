@@ -81,11 +81,11 @@ test_expression_wrapper(
 	}
 	assert(result.type == eres.type);
 	switch (result.type) {
-	case CCS_INTEGER:
-	case CCS_BOOLEAN:
+	case CCS_DATA_TYPE_INT:
+	case CCS_DATA_TYPE_BOOL:
 		assert(result.value.i == eres.value.i);
 		break;
-	case CCS_FLOAT:
+	case CCS_DATA_TYPE_FLOAT:
 		assert(result.value.f == eres.value.f);
 		break;
 	default:
@@ -801,14 +801,14 @@ test_compound()
 	assert(type == CCS_EXPRESSION_TYPE_LITERAL);
 	err = ccs_literal_get_value(nodes[0], &result);
 	assert(err == CCS_SUCCESS);
-	assert(result.type == CCS_FLOAT);
+	assert(result.type == CCS_DATA_TYPE_FLOAT);
 	assert(result.value.f == 3.0);
 	err = ccs_expression_get_type(nodes[1], &type);
 	assert(err == CCS_SUCCESS);
 	assert(type == CCS_EXPRESSION_TYPE_LITERAL);
 	err = ccs_literal_get_value(nodes[1], &result);
 	assert(err == CCS_SUCCESS);
-	assert(result.type == CCS_INTEGER);
+	assert(result.type == CCS_DATA_TYPE_INT);
 	assert(result.value.i == 1);
 
 	err = ccs_create_binary_expression(
@@ -820,7 +820,7 @@ test_compound()
 
 	err = ccs_expression_eval(expression2, NULL, NULL, &result);
 	assert(err == CCS_SUCCESS);
-	assert(result.type == CCS_FLOAT);
+	assert(result.type == CCS_DATA_TYPE_FLOAT);
 	assert(result.value.f == 8.0);
 
 	err = ccs_release_object(expression2);
@@ -1000,7 +1000,7 @@ test_deserialize_literal()
 
 	err = ccs_literal_get_value(expression, &d);
 	assert(err == CCS_SUCCESS);
-	assert(d.type == CCS_FLOAT);
+	assert(d.type == CCS_DATA_TYPE_FLOAT);
 	assert(d.value.f == 3.0);
 
 	err = ccs_release_object(expression);

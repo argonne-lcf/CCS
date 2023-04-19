@@ -13,7 +13,7 @@ extern "C" {
 
 /**
  * Create a new instance of a features on a given features space. If no values
- * are provided the values will be initialized to #CCS_NONE.
+ * are provided the values will be initialized to #CCS_DATA_TYPE_NONE.
  * @param[in] features_space
  * @param[in] num_values the number of provided values to initialize the
  *                       features instance
@@ -90,7 +90,7 @@ ccs_features_set_value(ccs_features_t features, size_t index, ccs_datum_t value)
  * @param[in] num_values the size of the \p values array
  * @param[out] values an array of size \p num_values to hold the returned
  *                    values, or NULL. If the array is too big, extra values
- *                    are set to #CCS_NONE
+ *                    are set to #CCS_DATA_TYPE_NONE
  * @param[out] num_values_ret a pointer to a variable that will contain the
  *                            number of values that are or would be returned.
  *                            Can be NULL

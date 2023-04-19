@@ -241,7 +241,7 @@ ccs_ordinal_parameter_compare_values(
 /**
  * Create a new discrete parameter. Discrete parameters can be
  * sampled using distributions over integers. Their elements must be of type
- * #CCS_INTEGER or #CCS_FLOAT.
+ * #CCS_DATA_TYPE_INT or #CCS_DATA_TYPE_FLOAT.
  * @param[in] name name of the parameter
  * @param[in] num_possible_values the size of the \p possible_values array
  * @param[in] possible_values an array of \p num_possible_values values that

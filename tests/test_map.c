@@ -93,7 +93,7 @@ test_map()
 
 	err = ccs_map_get(map, ccs_int(6), &d_ret);
 	assert(err == CCS_SUCCESS);
-	assert(d_ret.type == CCS_OBJECT);
+	assert(d_ret.type == CCS_DATA_TYPE_OBJECT);
 	assert(d_ret.flags & CCS_FLAG_ID);
 	assert(d_ret.value.o == (ccs_object_t)0xdeadbeef);
 

@@ -111,7 +111,7 @@ test_create_uniform_distribution_errors()
 
 	// check wrong data_type
 	err                        = ccs_create_uniform_distribution(
-                (ccs_numeric_type_t)CCS_STRING, CCSI(-10), CCSI(11),
+                (ccs_numeric_type_t)CCS_DATA_TYPE_STRING, CCSI(-10), CCSI(11),
                 CCS_SCALE_TYPE_LINEAR, CCSI(0), &distrib);
 	assert(err == CCS_INVALID_TYPE);
 

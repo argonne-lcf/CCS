@@ -172,13 +172,13 @@ enum ccs_terminal_type_e {
 	CCS_TERMINAL_TYPE_TRUE,
 	/** The #CCS_FALSE_VAL value */
 	CCS_TERMINAL_TYPE_FALSE,
-	/** A #CCS_STRING value */
+	/** A #CCS_DATA_TYPE_STRING value */
 	CCS_TERMINAL_TYPE_STRING,
 	/** An identifer (name of a parameter) */
 	CCS_TERMINAL_TYPE_IDENTIFIER,
-	/** A #CCS_INTEGER value */
+	/** A #CCS_DATA_TYPE_INT value */
 	CCS_TERMINAL_TYPE_INTEGER,
-	/** A #CCS_FLOAT value */
+	/** A #CCS_DATA_TYPE_FLOAT value */
 	CCS_TERMINAL_TYPE_FLOAT,
 	/** Guard */
 	CCS_TERMINAL_TYPE_MAX,
@@ -238,9 +238,9 @@ extern const char               *ccs_terminal_symbols[];
  *                             of \p type; or if one the nodes given is of type
  *                             #CCS_OBJECT but is neither a #CCS_PARAMETER
  *                             nor a #CCS_EXPRESSION; or if one the nodes given
- *                             node is not a type #CCS_OBJECT, #CCS_NONE,
- *                             #CCS_INTEGER, #CCS_FLOAT, #CCS_BOOLEAN, or
- *                             #CCS_STRING; or if \p expression_ret is NULL
+ *                             node is not a type #CCS_OBJECT, #CCS_DATA_TYPE_NONE,
+ *                             #CCS_DATA_TYPE_INT, #CCS_DATA_TYPE_FLOAT, #CCS_DATA_TYPE_BOOL, or
+ *                             #CCS_DATA_TYPE_STRING; or if \p expression_ret is NULL
  * @return #CCS_INVALID_OBJECT if one the nodes given is of type #CCS_OBJECT
  *                              but the object is not a valid CCS object
  * @return #CCS_OUT_OF_MEMORY if there was a lack of memory to allocate the new
@@ -268,8 +268,8 @@ ccs_create_expression(
  *                             neither a #CCS_PARAMETER nor a
  *                             #CCS_EXPRESSION; or if \p node_left or \p
  *                             node_right are not of type #CCS_OBJECT,
- *                             #CCS_NONE, #CCS_INTEGER, #CCS_FLOAT,
- *                             #CCS_BOOLEAN, or #CCS_STRING; or if \p
+ *                             #CCS_DATA_TYPE_NONE, #CCS_DATA_TYPE_INT, #CCS_DATA_TYPE_FLOAT,
+ *                             #CCS_DATA_TYPE_BOOL, or #CCS_DATA_TYPE_STRING; or if \p
  *                             expression_ret is NULL
  * @return #CCS_INVALID_OBJECT if \p node_left or \p node_right are of type
  *                              #CCS_OBJECT but the object is not a valid CCS
@@ -296,9 +296,9 @@ ccs_create_binary_expression(
  *                             if \p type arity is not 1; or if \p node is of
  *                             type #CCS_OBJECT but is neither a
  *                             #CCS_PARAMETER nor a #CCS_EXPRESSION; or if
- *                             \p node is not of type #CCS_OBJECT, #CCS_NONE,
- *                             #CCS_INTEGER, #CCS_FLOAT, #CCS_BOOLEAN, or
- *                             #CCS_STRING; or if \p expression_ret is NULL
+ *                             \p node is not of type #CCS_OBJECT, #CCS_DATA_TYPE_NONE,
+ *                             #CCS_DATA_TYPE_INT, #CCS_DATA_TYPE_FLOAT, #CCS_DATA_TYPE_BOOL, or
+ *                             #CCS_DATA_TYPE_STRING; or if \p expression_ret is NULL
  * @return #CCS_INVALID_OBJECT if \p node is of type #CCS_OBJECT but the object
  *                              is not a valid CCS object
  * @return #CCS_OUT_OF_MEMORY if there was a lack of memory to allocate the new
@@ -314,12 +314,12 @@ ccs_create_unary_expression(
  * Create a new literal expression.
  * @param[in] value the value of the literal
  * @param[out] expression_ret a pointer to the variable that will hold the newly
- *             created expression. If value is of type #CCS_STRING, the string
+ *             created expression. If value is of type #CCS_DATA_TYPE_STRING, the string
  *             value is memoized
  * @return #CCS_SUCCESS on success
- * @return #CCS_INVALID_VALUE if \p value is not of type #CCS_NONE,
- *                             #CCS_INTEGER, #CCS_FLOAT, #CCS_BOOLEAN, or
- *                             #CCS_STRING; or if \p expression_ret is NULL
+ * @return #CCS_INVALID_VALUE if \p value is not of type #CCS_DATA_TYPE_NONE,
+ *                             #CCS_DATA_TYPE_INT, #CCS_DATA_TYPE_FLOAT, #CCS_DATA_TYPE_BOOL, or
+ *                             #CCS_DATA_TYPE_STRING; or if \p expression_ret is NULL
  * @return #CCS_OUT_OF_MEMORY if there was a lack of memory to allocate the new
  *                             expression
  */

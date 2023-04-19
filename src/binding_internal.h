@@ -73,7 +73,7 @@ _ccs_binding_get_values(
 		memcpy(values, binding->data->values,
 		       num * sizeof(ccs_datum_t));
 		for (size_t i = num; i < num_values; i++) {
-			values[i].type    = CCS_NONE;
+			values[i].type    = CCS_DATA_TYPE_NONE;
 			values[i].value.i = 0;
 		}
 	}

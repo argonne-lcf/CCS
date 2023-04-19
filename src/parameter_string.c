@@ -132,7 +132,7 @@ _ccs_parameter_string_check_values(
 {
 	_ccs_parameter_string_data_t *d = (_ccs_parameter_string_data_t *)data;
 	for (size_t i = 0; i < num_values; i++)
-		if (values[i].type != CCS_STRING)
+		if (values[i].type != CCS_DATA_TYPE_STRING)
 			results[i] = CCS_FALSE;
 		else
 			results[i] = CCS_TRUE;

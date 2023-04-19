@@ -593,7 +593,7 @@ test_deserialize()
 
 	err = ccs_map_get(map, ccs_object(space_ref), &d);
 	assert(err == CCS_SUCCESS);
-	assert(d.type == CCS_OBJECT);
+	assert(d.type == CCS_DATA_TYPE_OBJECT);
 	assert(d.value.o == space);
 
 	err = ccs_configuration_space_get_parameters(space, 0, NULL, &count);

@@ -52,10 +52,10 @@ test_simple()
 		err = ccs_configuration_get_values(
 			configuration, 2, values, NULL);
 		assert(err == CCS_SUCCESS);
-		assert(values[0].type == CCS_FLOAT);
+		assert(values[0].type == CCS_DATA_TYPE_FLOAT);
 		f = values[0].value.f;
 		assert(f >= 0.0 && f < 1.0);
-		assert(values[1].type == CCS_FLOAT);
+		assert(values[1].type == CCS_DATA_TYPE_FLOAT);
 		f = values[0].value.f;
 		assert(f >= -1.0 && f < 1.0);
 		err = ccs_configuration_space_check_configuration(
@@ -74,10 +74,10 @@ test_simple()
 		err = ccs_configuration_get_values(
 			configurations[i], 2, values, NULL);
 		assert(err == CCS_SUCCESS);
-		assert(values[0].type == CCS_FLOAT);
+		assert(values[0].type == CCS_DATA_TYPE_FLOAT);
 		f = values[0].value.f;
 		assert(f >= 0.0 && f < 1.0);
-		assert(values[1].type == CCS_FLOAT);
+		assert(values[1].type == CCS_DATA_TYPE_FLOAT);
 		f = values[0].value.f;
 		assert(f >= -1.0 && f < 1.0);
 		err = ccs_configuration_space_check_configuration(
@@ -155,22 +155,23 @@ test_combined()
 		err = ccs_configuration_get_values(
 			configuration, 3, values, NULL);
 		assert(err == CCS_SUCCESS);
-		assert(values[1].type == CCS_FLOAT);
+		assert(values[1].type == CCS_DATA_TYPE_FLOAT);
 		f = values[1].value.f;
 		assert(f >= -1.0 && f < 1.0);
 		if (f < 0.0) {
-			assert(values[2].type == CCS_FLOAT);
+			assert(values[2].type == CCS_DATA_TYPE_FLOAT);
 			f = values[2].value.f;
 			assert(f >= -1.0 && f < 1.0);
 			if (f < 0.0) {
-				assert(values[0].type == CCS_FLOAT);
+				assert(values[0].type == CCS_DATA_TYPE_FLOAT);
 				f = values[0].value.f;
 				assert(f >= 0.0 && f < 1.0);
 			} else
-				assert(values[0].type == CCS_INACTIVE);
+				assert(values[0].type ==
+				       CCS_DATA_TYPE_INACTIVE);
 		} else {
-			assert(values[2].type == CCS_INACTIVE);
-			assert(values[0].type == CCS_INACTIVE);
+			assert(values[2].type == CCS_DATA_TYPE_INACTIVE);
+			assert(values[0].type == CCS_DATA_TYPE_INACTIVE);
 		}
 		err = ccs_configuration_space_check_configuration(
 			space, configuration, &check);
@@ -189,22 +190,23 @@ test_combined()
 		err = ccs_configuration_get_values(
 			configurations[i], 3, values, NULL);
 		assert(err == CCS_SUCCESS);
-		assert(values[1].type == CCS_FLOAT);
+		assert(values[1].type == CCS_DATA_TYPE_FLOAT);
 		f = values[1].value.f;
 		assert(f >= -1.0 && f < 1.0);
 		if (f < 0.0) {
-			assert(values[2].type == CCS_FLOAT);
+			assert(values[2].type == CCS_DATA_TYPE_FLOAT);
 			f = values[2].value.f;
 			assert(f >= -1.0 && f < 1.0);
 			if (f < 0.0) {
-				assert(values[0].type == CCS_FLOAT);
+				assert(values[0].type == CCS_DATA_TYPE_FLOAT);
 				f = values[0].value.f;
 				assert(f >= 0.0 && f < 1.0);
 			} else
-				assert(values[0].type == CCS_INACTIVE);
+				assert(values[0].type ==
+				       CCS_DATA_TYPE_INACTIVE);
 		} else {
-			assert(values[2].type == CCS_INACTIVE);
-			assert(values[0].type == CCS_INACTIVE);
+			assert(values[2].type == CCS_DATA_TYPE_INACTIVE);
+			assert(values[0].type == CCS_DATA_TYPE_INACTIVE);
 		}
 		err = ccs_configuration_space_check_configuration(
 			space, configurations[i], &check);

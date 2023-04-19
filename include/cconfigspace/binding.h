@@ -63,7 +63,7 @@ ccs_binding_set_value(ccs_binding_t binding, size_t index, ccs_datum_t value);
  * @param[in] num_values the size of the \p values array
  * @param[out] values an array of size \p num_values to hold the returned values
  *                    or NULL. If the array is too big, extra values are set to
- *                    #CCS_NONE 
+ *                    #CCS_DATA_TYPE_NONE 
  * @param[out] num_values_ret a pointer to a variable that will contain the
  *                            number of values that are or would be returned.
  *                            Can be NULL

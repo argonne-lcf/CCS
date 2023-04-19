@@ -347,10 +347,11 @@ test_distribution_parameters_sample()
 	assert(err == CCS_SUCCESS);
 
 	for (size_t i = 0; i < num_samples; i++) {
-		assert(samples[NUM_DISTRIBS * i].type == CCS_FLOAT);
+		assert(samples[NUM_DISTRIBS * i].type == CCS_DATA_TYPE_FLOAT);
 		assert(samples[NUM_DISTRIBS * i].value.f >= -5.0);
 		assert(samples[NUM_DISTRIBS * i].value.f < 5.0);
-		assert(samples[NUM_DISTRIBS * i + 1].type == CCS_FLOAT);
+		assert(samples[NUM_DISTRIBS * i + 1].type ==
+		       CCS_DATA_TYPE_FLOAT);
 		assert(samples[NUM_DISTRIBS * i + 1].value.f >= -4.0);
 		assert(samples[NUM_DISTRIBS * i + 1].value.f < 6.0);
 	}
@@ -419,10 +420,11 @@ test_distribution_parameters_sample_oversampling()
 	assert(err == CCS_SUCCESS);
 
 	for (size_t i = 0; i < num_samples; i++) {
-		assert(samples[NUM_DISTRIBS * i].type == CCS_FLOAT);
+		assert(samples[NUM_DISTRIBS * i].type == CCS_DATA_TYPE_FLOAT);
 		assert(samples[NUM_DISTRIBS * i].value.f >= -5.0);
 		assert(samples[NUM_DISTRIBS * i].value.f < 5.0);
-		assert(samples[NUM_DISTRIBS * i + 1].type == CCS_FLOAT);
+		assert(samples[NUM_DISTRIBS * i + 1].type ==
+		       CCS_DATA_TYPE_FLOAT);
 		assert(samples[NUM_DISTRIBS * i + 1].value.f >= -4.0);
 		assert(samples[NUM_DISTRIBS * i + 1].value.f < 6.0);
 	}

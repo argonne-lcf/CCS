@@ -889,22 +889,22 @@ _ccs_serialize_bin_size_ccs_datum(ccs_datum_t datum)
 	size_t sz = 0;
 	sz += _ccs_serialize_bin_size_ccs_data_type(datum.type);
 	switch (datum.type) {
-	case CCS_NONE:
-	case CCS_INACTIVE:
+	case CCS_DATA_TYPE_NONE:
+	case CCS_DATA_TYPE_INACTIVE:
 		break;
-	case CCS_INTEGER:
+	case CCS_DATA_TYPE_INT:
 		sz += _ccs_serialize_bin_size_ccs_int(datum.value.i);
 		break;
-	case CCS_FLOAT:
+	case CCS_DATA_TYPE_FLOAT:
 		sz += _ccs_serialize_bin_size_ccs_float(datum.value.f);
 		break;
-	case CCS_BOOLEAN:
+	case CCS_DATA_TYPE_BOOL:
 		sz += _ccs_serialize_bin_size_ccs_bool(datum.value.i);
 		break;
-	case CCS_STRING:
+	case CCS_DATA_TYPE_STRING:
 		sz += _ccs_serialize_bin_size_string(datum.value.s);
 		break;
-	case CCS_OBJECT:
+	case CCS_DATA_TYPE_OBJECT:
 		sz += _ccs_serialize_bin_size_ccs_object(datum.value.o);
 		break;
 	default: /* should be a hard error */
@@ -922,26 +922,26 @@ _ccs_serialize_bin_ccs_datum(
 	CCS_VALIDATE(_ccs_serialize_bin_ccs_data_type(
 		datum.type, buffer_size, buffer));
 	switch (datum.type) {
-	case CCS_NONE:
-	case CCS_INACTIVE:
+	case CCS_DATA_TYPE_NONE:
+	case CCS_DATA_TYPE_INACTIVE:
 		break;
-	case CCS_INTEGER:
+	case CCS_DATA_TYPE_INT:
 		CCS_VALIDATE(_ccs_serialize_bin_ccs_int(
 			datum.value.i, buffer_size, buffer));
 		break;
-	case CCS_FLOAT:
+	case CCS_DATA_TYPE_FLOAT:
 		CCS_VALIDATE(_ccs_serialize_bin_ccs_float(
 			datum.value.f, buffer_size, buffer));
 		break;
-	case CCS_BOOLEAN:
+	case CCS_DATA_TYPE_BOOL:
 		CCS_VALIDATE(_ccs_serialize_bin_ccs_bool(
 			datum.value.i, buffer_size, buffer));
 		break;
-	case CCS_STRING:
+	case CCS_DATA_TYPE_STRING:
 		CCS_VALIDATE(_ccs_serialize_bin_string(
 			datum.value.s, buffer_size, buffer));
 		break;
-	case CCS_OBJECT:
+	case CCS_DATA_TYPE_OBJECT:
 		CCS_VALIDATE(_ccs_serialize_bin_ccs_object(
 			datum.value.o, buffer_size, buffer));
 		break;
@@ -964,38 +964,38 @@ _ccs_deserialize_bin_ccs_datum(
 		_ccs_deserialize_bin_ccs_data_type(&type, buffer_size, buffer));
 	datum->flags = CCS_FLAG_DEFAULT;
 	switch (type) {
-	case CCS_NONE:
+	case CCS_DATA_TYPE_NONE:
 		*datum = ccs_none;
 		break;
-	case CCS_INACTIVE:
+	case CCS_DATA_TYPE_INACTIVE:
 		*datum = ccs_inactive;
 		break;
-	case CCS_INTEGER: {
+	case CCS_DATA_TYPE_INT: {
 		ccs_int_t i;
 		CCS_VALIDATE(
 			_ccs_deserialize_bin_ccs_int(&i, buffer_size, buffer));
 		*datum = ccs_int(i);
 	} break;
-	case CCS_FLOAT: {
+	case CCS_DATA_TYPE_FLOAT: {
 		ccs_float_t f;
 		CCS_VALIDATE(_ccs_deserialize_bin_ccs_float(
 			&f, buffer_size, buffer));
 		*datum = ccs_float(f);
 	} break;
-	case CCS_BOOLEAN: {
+	case CCS_DATA_TYPE_BOOL: {
 		ccs_bool_t b;
 		CCS_VALIDATE(
 			_ccs_deserialize_bin_ccs_bool(&b, buffer_size, buffer));
 		*datum = ccs_bool(b);
 	} break;
-	case CCS_STRING: {
+	case CCS_DATA_TYPE_STRING: {
 		const char *s;
 		CCS_VALIDATE(
 			_ccs_deserialize_bin_string(&s, buffer_size, buffer));
 		*datum = ccs_string(s);
 		datum->flags |= CCS_FLAG_TRANSIENT;
 	} break;
-	case CCS_OBJECT: {
+	case CCS_DATA_TYPE_OBJECT: {
 		ccs_object_t o;
 		CCS_VALIDATE(_ccs_deserialize_bin_ccs_object(
 			&o, buffer_size, buffer));

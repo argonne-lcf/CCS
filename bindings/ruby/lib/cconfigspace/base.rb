@@ -205,13 +205,13 @@ module CCS
   end
 
   DataType = enum FFI::Type::INT32, :ccs_data_type_t, [
-    :CCS_NONE,
-    :CCS_INTEGER,
-    :CCS_FLOAT,
-    :CCS_BOOLEAN,
-    :CCS_STRING,
-    :CCS_INACTIVE,
-    :CCS_OBJECT ]
+    :CCS_DATA_TYPE_NONE,
+    :CCS_DATA_TYPE_INT,
+    :CCS_DATA_TYPE_FLOAT,
+    :CCS_DATA_TYPE_BOOL,
+    :CCS_DATA_TYPE_STRING,
+    :CCS_DATA_TYPE_INACTIVE,
+    :CCS_DATA_TYPE_OBJECT ]
 
   DatumFlag = enum FFI::Type::INT32, :ccs_datum_flag_t, [
     :CCS_FLAG_DEFAULT, 0,
@@ -224,8 +224,8 @@ module CCS
     :CCS_FLAG_UNPOOLED ]
 
   NumericType = enum FFI::Type::INT32, :ccs_numeric_type_t, [
-    :CCS_NUM_INTEGER, DataType.to_native(:CCS_INTEGER, nil),
-    :CCS_NUM_FLOAT, DataType.to_native(:CCS_FLOAT, nil) ]
+    :CCS_NUM_INTEGER, DataType.to_native(:CCS_DATA_TYPE_INT, nil),
+    :CCS_NUM_FLOAT, DataType.to_native(:CCS_DATA_TYPE_FLOAT, nil) ]
 
   class MemoryPointer
     def read_ccs_numeric_type_t
@@ -324,19 +324,19 @@ module CCS
   end
   class Datum
     NONE = self::new
-    NONE[:type] = :CCS_NONE
+    NONE[:type] = :CCS_DATA_TYPE_NONE
     NONE[:value][:i] = 0
     NONE[:flags] = 0
     TRUE = self::new
-    TRUE[:type] = :CCS_BOOLEAN
+    TRUE[:type] = :CCS_DATA_TYPE_BOOL
     TRUE[:value][:i] = CCS::TRUE
     TRUE[:flags] = 0
     FALSE = self::new
-    FALSE[:type] = :CCS_BOOLEAN
+    FALSE[:type] = :CCS_DATA_TYPE_BOOL
     FALSE[:value][:i] = CCS::FALSE
     FALSE[:flags] = 0
     INACTIVE = self::new
-    INACTIVE[:type] = :CCS_INACTIVE
+    INACTIVE[:type] = :CCS_DATA_TYPE_INACTIVE
     INACTIVE[:value][:i] = 0
     INACTIVE[:flags] = 0
 
@@ -350,19 +350,19 @@ module CCS
 
     def value
       case self[:type]
-      when :CCS_NONE
+      when :CCS_DATA_TYPE_NONE
         nil
-      when :CCS_INTEGER
+      when :CCS_DATA_TYPE_INT
         self[:value][:i]
-      when :CCS_FLOAT
+      when :CCS_DATA_TYPE_FLOAT
         self[:value][:f]
-      when :CCS_BOOLEAN
+      when :CCS_DATA_TYPE_BOOL
         self[:value][:i] == CCS::FALSE ? false : true
-      when :CCS_STRING
+      when :CCS_DATA_TYPE_STRING
         self[:value][:s].read_string
-      when :CCS_INACTIVE
+      when :CCS_DATA_TYPE_INACTIVE
         Inactive
-      when :CCS_OBJECT
+      when :CCS_DATA_TYPE_OBJECT
         if self[:flags].include?( :CCS_FLAG_ID )
           Object::new(self[:value][:o], retain: false, auto_release: false)
         else
@@ -378,27 +378,27 @@ module CCS
       @object = nil if defined?(@object) && @object
       case v
       when nil
-        self[:type] = :CCS_NONE
+        self[:type] = :CCS_DATA_TYPE_NONE
         self[:value][:i] = 0
         self[:flags] = 0
       when true
-        self[:type] = :CCS_BOOLEAN
+        self[:type] = :CCS_DATA_TYPE_BOOL
         self[:value][:i] = 1
         self[:flags] = 0
       when false
-        self[:type] = :CCS_BOOLEAN
+        self[:type] = :CCS_DATA_TYPE_BOOL
         self[:value][:i] = 0
         self[:flags] = 0
       when Inactive
-        self[:type] = :CCS_INACTIVE
+        self[:type] = :CCS_DATA_TYPE_INACTIVE
         self[:value][:i] = 0
         self[:flags] = 0
       when Float
-        self[:type] = :CCS_FLOAT
+        self[:type] = :CCS_DATA_TYPE_FLOAT
         self[:value][:f] = v
         self[:flags] = 0
       when Integer
-        self[:type] = :CCS_INTEGER
+        self[:type] = :CCS_DATA_TYPE_INT
         self[:value][:i] = v
         self[:flags] = 0
       when String
@@ -408,11 +408,11 @@ module CCS
         else
           @string = ptr
         end
-        self[:type] = :CCS_STRING
+        self[:type] = :CCS_DATA_TYPE_STRING
         self[:value][:s] = ptr
         self[:flags] = :CCS_FLAG_TRANSIENT
       when Object
-        self[:type] = :CCS_OBJECT
+        self[:type] = :CCS_DATA_TYPE_OBJECT
         self[:value][:o] = v.handle
         if v.class == Object
           self[:flags] = :CCS_FLAG_ID
@@ -447,13 +447,13 @@ module CCS
         INACTIVE
       when Float
         d = self::new
-        d[:type] = :CCS_FLOAT
+        d[:type] = :CCS_DATA_TYPE_FLOAT
         d[:value][:f] = v
         d[:flags] = 0
         d
       when Integer
         d = self::new
-        d[:type] = :CCS_INTEGER
+        d[:type] = :CCS_DATA_TYPE_INT
         d[:value][:i] = v
         d[:flags] = 0
         d
@@ -461,13 +461,13 @@ module CCS
         d = self::new
         ptr = MemoryPointer::from_string(v)
         d.instance_variable_set(:@string, ptr)
-        d[:type] = :CCS_STRING
+        d[:type] = :CCS_DATA_TYPE_STRING
         d[:value][:s] = ptr
         d[:flags] = :CCS_FLAG_TRANSIENT
         d
       when Object
         d = self::new
-        d[:type] = :CCS_OBJECT
+        d[:type] = :CCS_DATA_TYPE_OBJECT
         d[:value][:o] = v.handle
         if v.class == Object
           d[:flags] = :CCS_FLAG_ID

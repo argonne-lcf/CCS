@@ -242,7 +242,7 @@ _ccs_expr_node_eval(
 
 #define RETURN_IF_INACTIVE(node, result)                                       \
 	do {                                                                   \
-		if (node.type == CCS_INACTIVE) {                               \
+		if (node.type == CCS_DATA_TYPE_INACTIVE) {                     \
 			*result = ccs_inactive;                                \
 			return CCS_SUCCESS;                                    \
 		}                                                              \
@@ -264,16 +264,18 @@ _ccs_expr_or_eval(
 	CCS_VALIDATE(_ccs_expr_node_eval(
 		data->nodes[1], context, values, &right, NULL));
 	CCS_REFUTE(
-		left.type != CCS_BOOLEAN && left.type != CCS_INACTIVE,
+		left.type != CCS_DATA_TYPE_BOOL &&
+			left.type != CCS_DATA_TYPE_INACTIVE,
 		CCS_INVALID_VALUE);
 	CCS_REFUTE(
-		right.type != CCS_BOOLEAN && right.type != CCS_INACTIVE,
+		right.type != CCS_DATA_TYPE_BOOL &&
+			right.type != CCS_DATA_TYPE_INACTIVE,
 		CCS_INVALID_VALUE);
-	if (left.type == CCS_BOOLEAN && left.value.i) {
+	if (left.type == CCS_DATA_TYPE_BOOL && left.value.i) {
 		*result = ccs_true;
 		return CCS_SUCCESS;
 	}
-	if (right.type == CCS_BOOLEAN && right.value.i) {
+	if (right.type == CCS_DATA_TYPE_BOOL && right.value.i) {
 		*result = ccs_true;
 		return CCS_SUCCESS;
 	}
@@ -301,7 +303,8 @@ _ccs_expr_and_eval(
 	RETURN_IF_INACTIVE(left, result);
 	RETURN_IF_INACTIVE(right, result);
 	CCS_REFUTE(
-		left.type != CCS_BOOLEAN || right.type != CCS_BOOLEAN,
+		left.type != CCS_DATA_TYPE_BOOL ||
+			right.type != CCS_DATA_TYPE_BOOL,
 		CCS_INVALID_VALUE);
 	*result = ((left.value.i && right.value.i) ? ccs_true : ccs_false);
 	return CCS_SUCCESS;
@@ -330,7 +333,8 @@ static _ccs_expression_ops_t _ccs_expr_and_ops = {
 			t == CCS_PARAMETER_TYPE_NUMERICAL ||                    \
 			t == CCS_PARAMETER_TYPE_DISCRETE)                       \
 			CCS_REFUTE(                                             \
-				v.type != CCS_INTEGER && v.type != CCS_FLOAT,   \
+				v.type != CCS_DATA_TYPE_INT &&                  \
+					v.type != CCS_DATA_TYPE_FLOAT,          \
 				CCS_INVALID_VALUE);                             \
 	} while (0)
 
@@ -351,12 +355,12 @@ _ccs_datum_test_equal_generic(ccs_datum_t *a, ccs_datum_t *b, ccs_bool_t *equal)
 {
 	if (a->type == b->type) {
 		switch (a->type) {
-		case CCS_STRING:
+		case CCS_DATA_TYPE_STRING:
 			*equal = _ccs_string_cmp(a->value.s, b->value.s) == 0 ?
 					 CCS_TRUE :
 					 CCS_FALSE;
 			break;
-		case CCS_NONE:
+		case CCS_DATA_TYPE_NONE:
 			*equal = CCS_TRUE;
 			break;
 		default:
@@ -366,10 +370,13 @@ _ccs_datum_test_equal_generic(ccs_datum_t *a, ccs_datum_t *b, ccs_bool_t *equal)
 					 CCS_FALSE;
 		}
 	} else {
-		if (a->type == CCS_INTEGER && b->type == CCS_FLOAT) {
+		if (a->type == CCS_DATA_TYPE_INT &&
+		    b->type == CCS_DATA_TYPE_FLOAT) {
 			*equal = (a->value.i == b->value.f) ? CCS_TRUE :
 							      CCS_FALSE;
-		} else if (a->type == CCS_FLOAT && b->type == CCS_INTEGER) {
+		} else if (
+			a->type == CCS_DATA_TYPE_FLOAT &&
+			b->type == CCS_DATA_TYPE_INT) {
 			*equal = (a->value.f == b->value.i) ? CCS_TRUE :
 							      CCS_FALSE;
 		} else {
@@ -385,15 +392,15 @@ _ccs_datum_cmp_generic(ccs_datum_t *a, ccs_datum_t *b, ccs_int_t *cmp)
 {
 	if (a->type == b->type) {
 		switch (a->type) {
-		case CCS_STRING:
+		case CCS_DATA_TYPE_STRING:
 			*cmp = _ccs_string_cmp(a->value.s, b->value.s);
 			break;
-		case CCS_INTEGER:
+		case CCS_DATA_TYPE_INT:
 			*cmp = a->value.i < b->value.i ? -1 :
 			       a->value.i > b->value.i ? 1 :
 							 0;
 			break;
-		case CCS_FLOAT:
+		case CCS_DATA_TYPE_FLOAT:
 			*cmp = a->value.f < b->value.f ? -1 :
 			       a->value.f > b->value.f ? 1 :
 							 0;
@@ -404,11 +411,14 @@ _ccs_datum_cmp_generic(ccs_datum_t *a, ccs_datum_t *b, ccs_int_t *cmp)
 				a->type);
 		}
 	} else {
-		if (a->type == CCS_INTEGER && b->type == CCS_FLOAT) {
+		if (a->type == CCS_DATA_TYPE_INT &&
+		    b->type == CCS_DATA_TYPE_FLOAT) {
 			*cmp = a->value.i < b->value.f ? -1 :
 			       a->value.i > b->value.f ? 1 :
 							 0;
-		} else if (a->type == CCS_FLOAT && b->type == CCS_INTEGER) {
+		} else if (
+			a->type == CCS_DATA_TYPE_FLOAT &&
+			b->type == CCS_DATA_TYPE_INT) {
 			*cmp = a->value.f < b->value.i ? -1 :
 			       a->value.f > b->value.i ? 1 :
 							 0;
@@ -711,7 +721,7 @@ _ccs_expr_in_eval(
 		ccs_datum_t right;
 		CCS_VALIDATE(ccs_expression_list_eval_node(
 			data->nodes[1], context, values, i, &right));
-		if (right.type == CCS_INACTIVE)
+		if (right.type == CCS_DATA_TYPE_INACTIVE)
 			inactive = CCS_TRUE;
 		CHECK_PARAMETERS(data->nodes[0], right, htl);
 		ccs_bool_t equal;
@@ -745,19 +755,19 @@ _ccs_expr_add_eval(
 	EVAL_LEFT_RIGHT(data, context, values, left, right, NULL, NULL);
 	RETURN_IF_INACTIVE(left, result);
 	RETURN_IF_INACTIVE(right, result);
-	if (left.type == CCS_INTEGER) {
-		if (right.type == CCS_INTEGER) {
+	if (left.type == CCS_DATA_TYPE_INT) {
+		if (right.type == CCS_DATA_TYPE_INT) {
 			*result = ccs_int(left.value.i + right.value.i);
 			return CCS_SUCCESS;
-		} else if (right.type == CCS_FLOAT) {
+		} else if (right.type == CCS_DATA_TYPE_FLOAT) {
 			*result = ccs_float(left.value.i + right.value.f);
 			return CCS_SUCCESS;
 		}
-	} else if (left.type == CCS_FLOAT) {
-		if (right.type == CCS_INTEGER) {
+	} else if (left.type == CCS_DATA_TYPE_FLOAT) {
+		if (right.type == CCS_DATA_TYPE_INT) {
 			*result = ccs_float(left.value.f + right.value.i);
 			return CCS_SUCCESS;
-		} else if (right.type == CCS_FLOAT) {
+		} else if (right.type == CCS_DATA_TYPE_FLOAT) {
 			*result = ccs_float(left.value.f + right.value.f);
 			return CCS_SUCCESS;
 		}
@@ -782,19 +792,19 @@ _ccs_expr_substract_eval(
 	EVAL_LEFT_RIGHT(data, context, values, left, right, NULL, NULL);
 	RETURN_IF_INACTIVE(left, result);
 	RETURN_IF_INACTIVE(right, result);
-	if (left.type == CCS_INTEGER) {
-		if (right.type == CCS_INTEGER) {
+	if (left.type == CCS_DATA_TYPE_INT) {
+		if (right.type == CCS_DATA_TYPE_INT) {
 			*result = ccs_int(left.value.i - right.value.i);
 			return CCS_SUCCESS;
-		} else if (right.type == CCS_FLOAT) {
+		} else if (right.type == CCS_DATA_TYPE_FLOAT) {
 			*result = ccs_float(left.value.i - right.value.f);
 			return CCS_SUCCESS;
 		}
-	} else if (left.type == CCS_FLOAT) {
-		if (right.type == CCS_INTEGER) {
+	} else if (left.type == CCS_DATA_TYPE_FLOAT) {
+		if (right.type == CCS_DATA_TYPE_INT) {
 			*result = ccs_float(left.value.f - right.value.i);
 			return CCS_SUCCESS;
-		} else if (right.type == CCS_FLOAT) {
+		} else if (right.type == CCS_DATA_TYPE_FLOAT) {
 			*result = ccs_float(left.value.f - right.value.f);
 			return CCS_SUCCESS;
 		}
@@ -819,19 +829,19 @@ _ccs_expr_multiply_eval(
 	EVAL_LEFT_RIGHT(data, context, values, left, right, NULL, NULL);
 	RETURN_IF_INACTIVE(left, result);
 	RETURN_IF_INACTIVE(right, result);
-	if (left.type == CCS_INTEGER) {
-		if (right.type == CCS_INTEGER) {
+	if (left.type == CCS_DATA_TYPE_INT) {
+		if (right.type == CCS_DATA_TYPE_INT) {
 			*result = ccs_int(left.value.i * right.value.i);
 			return CCS_SUCCESS;
-		} else if (right.type == CCS_FLOAT) {
+		} else if (right.type == CCS_DATA_TYPE_FLOAT) {
 			*result = ccs_float(left.value.i * right.value.f);
 			return CCS_SUCCESS;
 		}
-	} else if (left.type == CCS_FLOAT) {
-		if (right.type == CCS_INTEGER) {
+	} else if (left.type == CCS_DATA_TYPE_FLOAT) {
+		if (right.type == CCS_DATA_TYPE_INT) {
 			*result = ccs_float(left.value.f * right.value.i);
 			return CCS_SUCCESS;
-		} else if (right.type == CCS_FLOAT) {
+		} else if (right.type == CCS_DATA_TYPE_FLOAT) {
 			*result = ccs_float(left.value.f * right.value.f);
 			return CCS_SUCCESS;
 		}
@@ -856,22 +866,22 @@ _ccs_expr_divide_eval(
 	EVAL_LEFT_RIGHT(data, context, values, left, right, NULL, NULL);
 	RETURN_IF_INACTIVE(left, result);
 	RETURN_IF_INACTIVE(right, result);
-	if (left.type == CCS_INTEGER) {
-		if (right.type == CCS_INTEGER) {
+	if (left.type == CCS_DATA_TYPE_INT) {
+		if (right.type == CCS_DATA_TYPE_INT) {
 			CCS_REFUTE(right.value.i == 0, CCS_INVALID_VALUE);
 			*result = ccs_int(left.value.i / right.value.i);
 			return CCS_SUCCESS;
-		} else if (right.type == CCS_FLOAT) {
+		} else if (right.type == CCS_DATA_TYPE_FLOAT) {
 			CCS_REFUTE(right.value.f == 0.0, CCS_INVALID_VALUE);
 			*result = ccs_float(left.value.i / right.value.f);
 			return CCS_SUCCESS;
 		}
-	} else if (left.type == CCS_FLOAT) {
-		if (right.type == CCS_INTEGER) {
+	} else if (left.type == CCS_DATA_TYPE_FLOAT) {
+		if (right.type == CCS_DATA_TYPE_INT) {
 			CCS_REFUTE(right.value.i == 0, CCS_INVALID_VALUE);
 			*result = ccs_float(left.value.f / right.value.i);
 			return CCS_SUCCESS;
-		} else if (right.type == CCS_FLOAT) {
+		} else if (right.type == CCS_DATA_TYPE_FLOAT) {
 			CCS_REFUTE(right.value.f == 0.0, CCS_INVALID_VALUE);
 			*result = ccs_float(left.value.f / right.value.f);
 			return CCS_SUCCESS;
@@ -897,22 +907,22 @@ _ccs_expr_modulo_eval(
 	EVAL_LEFT_RIGHT(data, context, values, left, right, NULL, NULL);
 	RETURN_IF_INACTIVE(left, result);
 	RETURN_IF_INACTIVE(right, result);
-	if (left.type == CCS_INTEGER) {
-		if (right.type == CCS_INTEGER) {
+	if (left.type == CCS_DATA_TYPE_INT) {
+		if (right.type == CCS_DATA_TYPE_INT) {
 			CCS_REFUTE(right.value.i == 0, CCS_INVALID_VALUE);
 			*result = ccs_int(left.value.i % right.value.i);
 			return CCS_SUCCESS;
-		} else if (right.type == CCS_FLOAT) {
+		} else if (right.type == CCS_DATA_TYPE_FLOAT) {
 			CCS_REFUTE(right.value.f == 0.0, CCS_INVALID_VALUE);
 			*result = ccs_float(fmod(left.value.i, right.value.f));
 			return CCS_SUCCESS;
 		}
-	} else if (left.type == CCS_FLOAT) {
-		if (right.type == CCS_INTEGER) {
+	} else if (left.type == CCS_DATA_TYPE_FLOAT) {
+		if (right.type == CCS_DATA_TYPE_INT) {
 			CCS_REFUTE(right.value.i == 0, CCS_INVALID_VALUE);
 			*result = ccs_float(fmod(left.value.f, right.value.i));
 			return CCS_SUCCESS;
-		} else if (right.type == CCS_FLOAT) {
+		} else if (right.type == CCS_DATA_TYPE_FLOAT) {
 			CCS_REFUTE(right.value.f == 0.0, CCS_INVALID_VALUE);
 			*result = ccs_float(fmod(left.value.f, right.value.f));
 			return CCS_SUCCESS;
@@ -937,7 +947,8 @@ _ccs_expr_positive_eval(
 	EVAL_NODE(data, context, values, node, NULL);
 	RETURN_IF_INACTIVE(node, result);
 	CCS_REFUTE(
-		node.type != CCS_INTEGER && node.type != CCS_FLOAT,
+		node.type != CCS_DATA_TYPE_INT &&
+			node.type != CCS_DATA_TYPE_FLOAT,
 		CCS_INVALID_VALUE);
 	*result = node;
 	return CCS_SUCCESS;
@@ -959,11 +970,12 @@ _ccs_expr_negative_eval(
 	EVAL_NODE(data, context, values, node, NULL);
 	RETURN_IF_INACTIVE(node, result);
 	CCS_REFUTE(
-		node.type != CCS_INTEGER && node.type != CCS_FLOAT,
+		node.type != CCS_DATA_TYPE_INT &&
+			node.type != CCS_DATA_TYPE_FLOAT,
 		CCS_INVALID_VALUE);
-	if (node.type == CCS_INTEGER) {
+	if (node.type == CCS_DATA_TYPE_INT) {
 		*result = ccs_int(-node.value.i);
-	} else if (node.type == CCS_FLOAT) {
+	} else if (node.type == CCS_DATA_TYPE_FLOAT) {
 		*result = ccs_float(-node.value.f);
 	}
 	return CCS_SUCCESS;
@@ -984,7 +996,7 @@ _ccs_expr_not_eval(
 	ccs_datum_t node;
 	EVAL_NODE(data, context, values, node, NULL);
 	RETURN_IF_INACTIVE(node, result);
-	CCS_REFUTE(node.type != CCS_BOOLEAN, CCS_INVALID_VALUE);
+	CCS_REFUTE(node.type != CCS_DATA_TYPE_BOOL, CCS_INVALID_VALUE);
 	*result = (node.value.i ? ccs_false : ccs_true);
 	return CCS_SUCCESS;
 }
@@ -1341,11 +1353,12 @@ ccs_error_t
 ccs_create_literal(ccs_datum_t value, ccs_expression_t *expression_ret)
 {
 	CCS_REFUTE(
-		value.type < CCS_NONE || value.type > CCS_STRING,
+		value.type < CCS_DATA_TYPE_NONE ||
+			value.type > CCS_DATA_TYPE_STRING,
 		CCS_INVALID_VALUE);
 	CCS_CHECK_PTR(expression_ret);
 	size_t size_str = 0;
-	if (value.type == CCS_STRING && value.value.s) {
+	if (value.type == CCS_DATA_TYPE_STRING && value.value.s) {
 		size_str = strlen(value.value.s) + 1;
 	}
 	uintptr_t mem = (uintptr_t)calloc(
@@ -1427,7 +1440,7 @@ ccs_create_expression(
 	CCS_REFUTE(arity >= 0 && num_nodes != (size_t)arity, CCS_INVALID_VALUE);
 	ccs_error_t err;
 	for (size_t i = 0; i < num_nodes; i++) {
-		if (nodes[i].type == CCS_OBJECT) {
+		if (nodes[i].type == CCS_DATA_TYPE_OBJECT) {
 			ccs_object_type_t object_type;
 			CCS_VALIDATE(ccs_object_get_type(
 				nodes[i].value.o, &object_type));
@@ -1438,8 +1451,8 @@ ccs_create_expression(
 				CCS_INVALID_VALUE);
 		} else
 			CCS_REFUTE(
-				nodes[i].type < CCS_NONE ||
-					nodes[i].type > CCS_STRING,
+				nodes[i].type < CCS_DATA_TYPE_NONE ||
+					nodes[i].type > CCS_DATA_TYPE_STRING,
 				CCS_INVALID_VALUE);
 	}
 
@@ -1462,7 +1475,7 @@ ccs_create_expression(
 		(ccs_expression_t
 			 *)(mem + sizeof(struct _ccs_expression_s) + sizeof(struct _ccs_expression_data_s));
 	for (size_t i = 0; i < num_nodes; i++) {
-		if (nodes[i].type == CCS_OBJECT) {
+		if (nodes[i].type == CCS_DATA_TYPE_OBJECT) {
 			ccs_object_type_t t;
 			CCS_VALIDATE_ERR_GOTO(
 				err, ccs_object_get_type(nodes[i].value.o, &t),

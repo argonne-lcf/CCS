@@ -14,28 +14,28 @@ class CConfigSpaceTest < Minitest::Test
 
   def test_datum_value
     d = CCS::Datum::new
-    d[:type] = :CCS_NONE
+    d[:type] = :CCS_DATA_TYPE_NONE
     assert_nil( d.value )
-    d[:type] = :CCS_INACTIVE
+    d[:type] = :CCS_DATA_TYPE_INACTIVE
     assert_equal( CCS::Inactive, d.value )
-    d[:type] = :CCS_BOOLEAN
+    d[:type] = :CCS_DATA_TYPE_BOOL
     d[:value][:i] = CCS::FALSE
     assert_equal( false, d.value )
-    d[:type] = :CCS_BOOLEAN
+    d[:type] = :CCS_DATA_TYPE_BOOL
     d[:value][:i] = CCS::TRUE
     assert_equal( true, d.value )
-    d[:type] = :CCS_FLOAT
+    d[:type] = :CCS_DATA_TYPE_FLOAT
     d[:value][:f] = 15.0
     assert_equal( 15.0, d.value )
-    d[:type] = :CCS_INTEGER
+    d[:type] = :CCS_DATA_TYPE_INT
     d[:value][:i] = 15
     assert_equal( 15, d.value )
     ptr = CCS::MemoryPointer::from_string("foo")
-    d[:type] = :CCS_STRING
+    d[:type] = :CCS_DATA_TYPE_STRING
     d[:value][:s] = ptr
     assert_equal( "foo", d.value )
     rng = CCS::Rng::new
-    d[:type] = :CCS_OBJECT
+    d[:type] = :CCS_DATA_TYPE_OBJECT
     d[:value][:o] = rng.handle
     o = d.value
     assert( o.kind_of? CCS::Rng )
@@ -44,54 +44,54 @@ class CConfigSpaceTest < Minitest::Test
 
   def test_from_value
     d = CCS::Datum::from_value(nil)
-    assert_equal( :CCS_NONE, d[:type] )
+    assert_equal( :CCS_DATA_TYPE_NONE, d[:type] )
     assert_equal( 0, d[:value][:i] )
     d = CCS::Datum::from_value(CCS::Inactive)
-    assert_equal( :CCS_INACTIVE, d[:type] )
+    assert_equal( :CCS_DATA_TYPE_INACTIVE, d[:type] )
     assert_equal( 0, d[:value][:i] )
     d = CCS::Datum::from_value(false)
-    assert_equal( :CCS_BOOLEAN, d[:type] )
+    assert_equal( :CCS_DATA_TYPE_BOOL, d[:type] )
     assert_equal( CCS::FALSE, d[:value][:i] )
     d = CCS::Datum::from_value(true)
-    assert_equal( :CCS_BOOLEAN, d[:type] )
+    assert_equal( :CCS_DATA_TYPE_BOOL, d[:type] )
     assert_equal( CCS::TRUE, d[:value][:i] )
     d = CCS::Datum::from_value(15)
-    assert_equal( :CCS_INTEGER, d[:type] )
+    assert_equal( :CCS_DATA_TYPE_INT, d[:type] )
     assert_equal( 15, d[:value][:i] )
     d = CCS::Datum::from_value(15.0)
-    assert_equal( :CCS_FLOAT, d[:type] )
+    assert_equal( :CCS_DATA_TYPE_FLOAT, d[:type] )
     assert_equal( 15.0, d[:value][:f] )
     rng = CCS::Rng::new
     d = CCS::Datum::from_value(rng)
-    assert_equal( :CCS_OBJECT, d[:type] )
+    assert_equal( :CCS_DATA_TYPE_OBJECT, d[:type] )
     assert_equal( rng.handle, d[:value][:o] )
   end
 
   def test_value_affect
     d = CCS::Datum::from_value(nil)
-    assert_equal( :CCS_NONE, d[:type] )
+    assert_equal( :CCS_DATA_TYPE_NONE, d[:type] )
     assert_equal( 0, d[:value][:i] )
     d.value = CCS::Inactive
-    assert_equal( :CCS_INACTIVE, d[:type] )
+    assert_equal( :CCS_DATA_TYPE_INACTIVE, d[:type] )
     assert_equal( 0, d[:value][:i] )
     d.value = false
-    assert_equal( :CCS_BOOLEAN, d[:type] )
+    assert_equal( :CCS_DATA_TYPE_BOOL, d[:type] )
     assert_equal( CCS::FALSE, d[:value][:i] )
     d.value = true
-    assert_equal( :CCS_BOOLEAN, d[:type] )
+    assert_equal( :CCS_DATA_TYPE_BOOL, d[:type] )
     assert_equal( CCS::TRUE, d[:value][:i] )
     d.value = 15
-    assert_equal( :CCS_INTEGER, d[:type] )
+    assert_equal( :CCS_DATA_TYPE_INT, d[:type] )
     assert_equal( 15, d[:value][:i] )
     d.value = 15.0
-    assert_equal( :CCS_FLOAT, d[:type] )
+    assert_equal( :CCS_DATA_TYPE_FLOAT, d[:type] )
     assert_equal( 15.0, d[:value][:f] )
     rng = CCS::Rng::new
     d.value = rng
-    assert_equal( :CCS_OBJECT, d[:type] )
+    assert_equal( :CCS_DATA_TYPE_OBJECT, d[:type] )
     assert_equal( rng.handle, d[:value][:o] )
     d.value = nil
-    assert_equal( :CCS_NONE, d[:type] )
+    assert_equal( :CCS_DATA_TYPE_NONE, d[:type] )
     assert_equal( 0, d[:value][:i] )
   end
 

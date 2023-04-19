@@ -227,7 +227,7 @@ ccs_tree_space_get_node_at_position(
  * @param[in] num_values the size of the \p values array
  * @param[out] values an array of size \p num_values to hold the returned
  *                    values, or NULL. If the array is too big, extra values
- *                    are set to #CCS_NONE
+ *                    are set to #CCS_DATA_TYPE_NONE
  * @return #CCS_SUCCESS on success
  * @return #CCS_INVALID_OBJECT if \p tree_space is not a valid CCS tree space
  * @return #CCS_INVALID_TREE if the position does not reference a node in

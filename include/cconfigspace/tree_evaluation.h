@@ -144,7 +144,7 @@ ccs_tree_evaluation_set_value(
  * @param[in] num_values the size of the \p values array
  * @param[out] values an array of size \p num_values to hold the returned values
  *                    or NULL. If the array is too big, extra values are set to
- *                    #CCS_NONE
+ *                    #CCS_DATA_TYPE_NONE
  * @param[out] num_values_ret a pointer to a variable that will contain the
  *                            number of values that are or would be returned.
  *                            Can be NULL
@@ -224,7 +224,7 @@ ccs_tree_evaluation_get_objective_value(
  * @param[in] num_values the number of values that \p values can contain
  * @param[out] values an optional array of values that will contain the returned
  *                    objective values. If values is bigger than the number of
- *                    objectives, extra values will be set to #CCS_NONE
+ *                    objectives, extra values will be set to #CCS_DATA_TYPE_NONE
  * @param[out] num_values_ret an optional pointer to a variable that will
  *                            contain the number of values that are or would be
  *                            returned. Can be NULL

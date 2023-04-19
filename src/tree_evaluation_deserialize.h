@@ -62,7 +62,8 @@ _ccs_deserialize_bin_ccs_tree_evaluation(
 		res,
 		ccs_map_get(opts->handle_map, ccs_object(data.base.context), &d),
 		end);
-	CCS_REFUTE_ERR_GOTO(res, d.type != CCS_OBJECT, CCS_INVALID_HANDLE, end);
+	CCS_REFUTE_ERR_GOTO(
+		res, d.type != CCS_DATA_TYPE_OBJECT, CCS_INVALID_HANDLE, end);
 	os = (ccs_objective_space_t)(d.value.o);
 
 	CCS_VALIDATE_ERR_GOTO(

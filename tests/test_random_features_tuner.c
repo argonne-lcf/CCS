@@ -203,7 +203,7 @@ test()
 
 	err = ccs_map_get(map, ccs_object((ccs_object_t)tuner), &d);
 	assert(err == CCS_SUCCESS);
-	assert(d.type == CCS_OBJECT);
+	assert(d.type == CCS_DATA_TYPE_OBJECT);
 	assert(d.value.o == (ccs_object_t)tuner_copy);
 
 	err = ccs_features_tuner_get_history(tuner_copy, NULL, 0, NULL, &count);

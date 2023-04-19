@@ -76,7 +76,7 @@ _ccs_deserialize_bin_ccs_random_tuner_data(
 		ccs_datum_t d;
 		CCS_VALIDATE(ccs_map_get(
 			opts->handle_map, ccs_object(data->optimums[i]), &d));
-		CCS_REFUTE(d.type != CCS_OBJECT, CCS_INVALID_HANDLE);
+		CCS_REFUTE(d.type != CCS_DATA_TYPE_OBJECT, CCS_INVALID_HANDLE);
 		data->optimums[i] = (ccs_evaluation_t)(d.value.o);
 	}
 	return CCS_SUCCESS;

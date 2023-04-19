@@ -235,7 +235,8 @@ ccs_distribution_parameters_samples(
 		for (size_t j = 0; j < num_values; j++) {
 			int discard = 0;
 			for (size_t i = 0; i < dim; i++) {
-				if (ds[i * num_values + j].type != CCS_INACTIVE)
+				if (ds[i * num_values + j].type !=
+				    CCS_DATA_TYPE_INACTIVE)
 					values[found * dim + i] =
 						ds[i * num_values + j];
 				else {
@@ -290,7 +291,7 @@ ccs_distribution_parameters_samples(
 				int discard = 0;
 				for (size_t i = 0; i < dim; i++) {
 					if (ds[i * buff_len + j].type !=
-					    CCS_INACTIVE)
+					    CCS_DATA_TYPE_INACTIVE)
 						values[found * dim + i] =
 							ds[i * buff_len + j];
 					else {

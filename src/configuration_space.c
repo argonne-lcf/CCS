@@ -840,7 +840,8 @@ _set_actives(
 		CCS_VALIDATE(ccs_expression_eval(
 			wrapper->condition, (ccs_context_t)configuration_space,
 			values, &result));
-		if (!(result.type == CCS_BOOLEAN && result.value.i == CCS_TRUE))
+		if (!(result.type == CCS_DATA_TYPE_BOOL &&
+		      result.value.i == CCS_TRUE))
 			values[*p_index] = ccs_inactive;
 	}
 	return CCS_SUCCESS;
@@ -891,9 +892,10 @@ _test_forbidden(
 		CCS_VALIDATE(ccs_expression_eval(
 			*p_expression, (ccs_context_t)configuration_space,
 			values, &result));
-		if (result.type == CCS_INACTIVE)
+		if (result.type == CCS_DATA_TYPE_INACTIVE)
 			continue;
-		if (result.type == CCS_BOOLEAN && result.value.i == CCS_TRUE)
+		if (result.type == CCS_DATA_TYPE_BOOL &&
+		    result.value.i == CCS_TRUE)
 			return CCS_SUCCESS;
 	}
 	*is_valid = CCS_TRUE;
@@ -922,11 +924,11 @@ _check_configuration(
 				wrapper->condition,
 				(ccs_context_t)configuration_space, values,
 				&result));
-			if (!(result.type == CCS_BOOLEAN &&
+			if (!(result.type == CCS_DATA_TYPE_BOOL &&
 			      result.value.i == CCS_TRUE))
 				active = CCS_FALSE;
 		}
-		if (active != (values[*p_index].type == CCS_INACTIVE ?
+		if (active != (values[*p_index].type == CCS_DATA_TYPE_INACTIVE ?
 				       CCS_FALSE :
 				       CCS_TRUE)) {
 			*is_valid_ret = CCS_FALSE;
@@ -1449,7 +1451,7 @@ ccs_configuration_space_add_forbidden_clause(
 			expression, (ccs_context_t)configuration_space,
 			config->data->values, &d),
 		end);
-	if (d.type == CCS_BOOLEAN && d.value.i == CCS_TRUE)
+	if (d.type == CCS_DATA_TYPE_BOOL && d.value.i == CCS_TRUE)
 		CCS_RAISE_ERR_GOTO(
 			err, CCS_INVALID_CONFIGURATION, end,
 			"Default configuration is invalid");

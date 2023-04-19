@@ -142,10 +142,10 @@ ccs_error_t
 ccs_create_tree(size_t arity, ccs_datum_t value, ccs_tree_t *tree_ret)
 {
 	CCS_CHECK_PTR(tree_ret);
-	CCS_REFUTE(value.type > CCS_STRING, CCS_INVALID_VALUE);
+	CCS_REFUTE(value.type > CCS_DATA_TYPE_STRING, CCS_INVALID_VALUE);
 	CCS_REFUTE(arity > CCS_INT_MAX - 1, CCS_INVALID_VALUE);
 	size_t size_strs = 0;
-	if (value.type == CCS_STRING) {
+	if (value.type == CCS_DATA_TYPE_STRING) {
 		CCS_REFUTE(!value.value.s, CCS_INVALID_VALUE);
 		size_strs += strlen(value.value.s) + 1;
 	}
@@ -175,7 +175,7 @@ ccs_create_tree(size_t arity, ccs_datum_t value, ccs_tree_t *tree_ret)
 	data->children =
 		(ccs_tree_t
 			 *)(mem + sizeof(struct _ccs_tree_s) + sizeof(_ccs_tree_data_t) + (arity + 1) * sizeof(ccs_float_t));
-	if (value.type == CCS_STRING) {
+	if (value.type == CCS_DATA_TYPE_STRING) {
 		char *str_pool =
 			(char *)(mem + sizeof(struct _ccs_tree_s) + sizeof(_ccs_tree_data_t) + (arity + 1) * sizeof(ccs_float_t) + arity * sizeof(ccs_tree_t));
 		data->value = ccs_string(str_pool);

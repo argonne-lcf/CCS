@@ -23,7 +23,7 @@ compare_parameter(ccs_parameter_t parameter)
 
 	err = ccs_parameter_get_default_value(parameter, &default_value);
 	assert(err == CCS_SUCCESS);
-	assert(default_value.type == CCS_FLOAT);
+	assert(default_value.type == CCS_DATA_TYPE_FLOAT);
 	assert(default_value.value.f == 1.0);
 
 	err = ccs_parameter_get_name(parameter, &name);
@@ -130,7 +130,7 @@ test_samples()
 	assert(err == CCS_SUCCESS);
 
 	for (size_t i = 0; i < num_samples; i++) {
-		assert(samples[i].type == CCS_FLOAT);
+		assert(samples[i].type == CCS_DATA_TYPE_FLOAT);
 		assert(samples[i].value.f >= -5.0 && samples[i].value.f < 5.0);
 	}
 
@@ -169,7 +169,7 @@ test_oversampling()
 	assert(err == CCS_SUCCESS);
 
 	for (size_t i = 0; i < num_samples; i++) {
-		assert(samples[i].type == CCS_FLOAT);
+		assert(samples[i].type == CCS_DATA_TYPE_FLOAT);
 		assert(samples[i].value.f >= -1.0 && samples[i].value.f < 1.0);
 	}
 
