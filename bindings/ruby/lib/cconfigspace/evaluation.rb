@@ -1,9 +1,9 @@
 module CCS
   Comparison = enum FFI::Type::INT32, :ccs_comparison_t, [
-    :CCS_BETTER, -1,
-    :CCS_EQUIVALENT, 0,
-    :CCS_WORSE, 1,
-    :CCS_NOT_COMPARABLE, 2
+    :CCS_COMPARISON_BETTER, -1,
+    :CCS_COMPARISON_EQUIVALENT, 0,
+    :CCS_COMPARISON_WORSE, 1,
+    :CCS_COMPARISON_NOT_COMPARABLE, 2
   ]
   class MemoryPointer
     def read_ccs_comparison_t

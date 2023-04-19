@@ -281,8 +281,8 @@ ccs_tree_evaluation_cmp(
  * @param[in] evaluation the first evaluation
  * @param[in] other_evaluation the second evaluation
  * @param[out] result_ret a pointer to the variable that will contain the result
- *                        of the comparison. Will contain #CCS_BETTER,
- *                        #CCS_EQUIVALENT, #CCS_WORSE, or #CCS_NOT_COMPARABLE if
+ *                        of the comparison. Will contain #CCS_COMPARISON_BETTER,
+ *                        #CCS_COMPARISON_EQUIVALENT, #CCS_COMPARISON_WORSE, or #CCS_COMPARISON_NOT_COMPARABLE if
  *                        the first evaluation is found to be respectively
  *                        better, equivalent, worse, or not comparable with the
  *                        second evaluation.

@@ -39,15 +39,15 @@ class CConfigSpaceTestTreeEvaluation < Minitest::Test
     ev2 = CCS::TreeEvaluation.new(objective_space: os, configuration: ts.sample, values: [0.5, 0.6])
     assert_equal( [0.5, 0.6], ev2.values )
     assert_equal( [0.5, 0.6], ev2.objective_values )
-    assert_equal( :CCS_EQUIVALENT, ev1.compare(ev2) )
+    assert_equal( :CCS_COMPARISON_EQUIVALENT, ev1.compare(ev2) )
     ev3 = CCS::TreeEvaluation.new(objective_space: os, configuration: ts.sample, values: [0.6, 0.5])
     assert_equal( [0.6, 0.5], ev3.objective_values )
-    assert_equal( :CCS_WORSE, ev1.compare(ev3) )
-    assert_equal( :CCS_BETTER, ev3.compare(ev1) )
+    assert_equal( :CCS_COMPARISON_WORSE, ev1.compare(ev3) )
+    assert_equal( :CCS_COMPARISON_BETTER, ev3.compare(ev1) )
     ev4 = CCS::TreeEvaluation.new(objective_space: os, configuration: ts.sample, values: [0.6, 0.7])
     assert_equal( [0.6, 0.7], ev4.objective_values )
-    assert_equal( :CCS_NOT_COMPARABLE, ev1.compare(ev4) )
-    assert_equal( :CCS_NOT_COMPARABLE, ev4.compare(ev1) )
+    assert_equal( :CCS_COMPARISON_NOT_COMPARABLE, ev1.compare(ev4) )
+    assert_equal( :CCS_COMPARISON_NOT_COMPARABLE, ev4.compare(ev1) )
   end
 
   def test_serialize

@@ -20,10 +20,10 @@ class TestTuner < CCS::UserDefinedTuner
         @optimums = @optimums.collect { |o|
           unless discard
             case e.compare(o)
-            when :CCS_EQUIVALENT, :CCS_WORSE
+            when :CCS_COMPARISON_EQUIVALENT, :CCS_COMPARISON_WORSE
               discard = true
               o
-            when :CCS_NOT_COMPARABLE
+            when :CCS_COMPARISON_NOT_COMPARABLE
               o
             else
               nil

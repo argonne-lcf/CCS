@@ -479,7 +479,7 @@ ccs_features_evaluation_compare(
 	CCS_CHECK_OBJ(other_evaluation, CCS_OBJECT_TYPE_FEATURES_EVALUATION);
 	CCS_CHECK_PTR(result_ret);
 	if (evaluation == other_evaluation) {
-		*result_ret = CCS_EQUIVALENT;
+		*result_ret = CCS_COMPARISON_EQUIVALENT;
 		return CCS_SUCCESS;
 	}
 	CCS_REFUTE(
@@ -497,11 +497,11 @@ ccs_features_evaluation_compare(
 		evaluation->data->features, other_evaluation->data->features,
 		&eql));
 	if (0 != eql) {
-		*result_ret = CCS_NOT_COMPARABLE;
+		*result_ret = CCS_COMPARISON_NOT_COMPARABLE;
 		return CCS_SUCCESS;
 	}
 
-	*result_ret = CCS_EQUIVALENT;
+	*result_ret = CCS_COMPARISON_EQUIVALENT;
 	for (size_t i = 0; i < count; i++) {
 		ccs_expression_t     expression;
 		ccs_objective_type_t type;
@@ -522,17 +522,17 @@ ccs_features_evaluation_compare(
 		if ((values[0].type != CCS_INTEGER &&
 		     values[0].type != CCS_FLOAT) ||
 		    values[0].type != values[1].type) {
-			*result_ret = CCS_NOT_COMPARABLE;
+			*result_ret = CCS_COMPARISON_NOT_COMPARABLE;
 			return CCS_SUCCESS;
 		}
 		cmp = _numeric_compare(values, values + 1);
 		if (cmp) {
 			if (type == CCS_MAXIMIZE)
 				cmp = -cmp;
-			if (*result_ret == CCS_EQUIVALENT)
+			if (*result_ret == CCS_COMPARISON_EQUIVALENT)
 				*result_ret = (ccs_comparison_t)cmp;
 			else if (*result_ret != cmp) {
-				*result_ret = CCS_NOT_COMPARABLE;
+				*result_ret = CCS_COMPARISON_NOT_COMPARABLE;
 				return CCS_SUCCESS;
 			}
 		}

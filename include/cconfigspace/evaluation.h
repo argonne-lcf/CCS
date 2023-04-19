@@ -18,13 +18,13 @@ extern "C" {
  */
 enum ccs_comparison_e {
 	/** The first configuration is better then the second */
-	CCS_BETTER         = -1,
+	CCS_COMPARISON_BETTER         = -1,
 	/** The two configurations are equivalent */
-	CCS_EQUIVALENT     = 0,
+	CCS_COMPARISON_EQUIVALENT     = 0,
 	/** The first configuration is worse than the second */
-	CCS_WORSE          = 1,
+	CCS_COMPARISON_WORSE          = 1,
 	/** The two configurations cannot be compared */
-	CCS_NOT_COMPARABLE = 2,
+	CCS_COMPARISON_NOT_COMPARABLE = 2,
 	/** Guard */
 	CCS_COMPARISON_MAX,
 	/** Try forcing 32 bits value for bindings */
@@ -303,8 +303,8 @@ ccs_evaluation_cmp(
  * @param[in] evaluation the first evaluation
  * @param[in] other_evaluation the second evaluation
  * @param[out] result_ret a pointer to the variable that will contain the result
- *                        of the comparison. Will contain #CCS_BETTER,
- *                        #CCS_EQUIVALENT, #CCS_WORSE, or #CCS_NOT_COMPARABLE if
+ *                        of the comparison. Will contain #CCS_COMPARISON_BETTER,
+ *                        #CCS_COMPARISON_EQUIVALENT, #CCS_COMPARISON_WORSE, or #CCS_COMPARISON_NOT_COMPARABLE if
  *                        the first evaluation is found to be respectively
  *                        better, equivalent, worse, or not comparable with the
  *                        second evaluation.

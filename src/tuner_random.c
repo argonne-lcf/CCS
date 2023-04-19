@@ -215,16 +215,16 @@ _ccs_tuner_random_tell(
 						discard = 1;
 					else
 						switch (cmp) {
-						case CCS_EQUIVALENT:
-						case CCS_WORSE:
+						case CCS_COMPARISON_EQUIVALENT:
+						case CCS_COMPARISON_WORSE:
 							discard = 1;
 							utarray_push_back(
 								d->optimums,
 								eval);
 							break;
-						case CCS_BETTER:
+						case CCS_COMPARISON_BETTER:
 							break;
-						case CCS_NOT_COMPARABLE:
+						case CCS_COMPARISON_NOT_COMPARABLE:
 						default:
 							utarray_push_back(
 								d->optimums,
