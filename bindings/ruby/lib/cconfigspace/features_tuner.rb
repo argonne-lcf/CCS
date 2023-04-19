@@ -1,8 +1,8 @@
 module CCS
 
   FeaturesTunerType = enum FFI::Type::INT32, :ccs_features_tuner_type_t, [
-    :CCS_FEATURES_TUNER_RANDOM,
-    :CCS_FEATURES_TUNER_USER_DEFINED
+    :CCS_FEATURES_TUNER_TYPE_RANDOM,
+    :CCS_FEATURES_TUNER_TYPE_USER_DEFINED
   ]
   class MemoryPointer
     def read_ccs_features_tuner_type_t
@@ -32,9 +32,9 @@ module CCS
       ptr = MemoryPointer::new(:ccs_features_tuner_type_t)
       CCS.error_check CCS.ccs_features_tuner_get_type(handle, ptr)
       case ptr.read_ccs_features_tuner_type_t
-      when :CCS_FEATURES_TUNER_RANDOM
+      when :CCS_FEATURES_TUNER_TYPE_RANDOM
 	RandomFeaturesTuner
-      when :CCS_FEATURES_TUNER_USER_DEFINED
+      when :CCS_FEATURES_TUNER_TYPE_USER_DEFINED
         UserDefinedFeaturesTuner
       else
         raise CCSError, :CCS_INVALID_TUNER
