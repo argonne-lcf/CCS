@@ -98,13 +98,13 @@ test_create_multivariate_distribution()
 	size_t             buff_size;
 
 	err = ccs_create_uniform_distribution(
-		CCS_NUM_FLOAT, CCSF(-5.0), CCSF(5.0), CCS_LINEAR, CCSF(0.0),
-		distribs);
+		CCS_NUM_FLOAT, CCSF(-5.0), CCSF(5.0), CCS_SCALE_TYPE_LINEAR,
+		CCSF(0.0), distribs);
 	assert(err == CCS_SUCCESS);
 
 	err = ccs_create_uniform_distribution(
-		CCS_NUM_INTEGER, CCSI(-5), CCSI(5), CCS_LINEAR, CCSI(0),
-		distribs + 1);
+		CCS_NUM_INTEGER, CCSI(-5), CCSI(5), CCS_SCALE_TYPE_LINEAR,
+		CCSI(0), distribs + 1);
 	assert(err == CCS_SUCCESS);
 
 	err = ccs_create_multivariate_distribution(
@@ -163,13 +163,13 @@ test_multivariate_distribution()
 	assert(err == CCS_SUCCESS);
 
 	err = ccs_create_uniform_distribution(
-		CCS_NUM_FLOAT, CCSF(-5.0), CCSF(5.0), CCS_LINEAR, CCSF(0.0),
-		distribs);
+		CCS_NUM_FLOAT, CCSF(-5.0), CCSF(5.0), CCS_SCALE_TYPE_LINEAR,
+		CCSF(0.0), distribs);
 	assert(err == CCS_SUCCESS);
 
 	err = ccs_create_uniform_distribution(
-		CCS_NUM_INTEGER, CCSI(-5), CCSI(5), CCS_LINEAR, CCSI(0),
-		distribs + 1);
+		CCS_NUM_INTEGER, CCSI(-5), CCSI(5), CCS_SCALE_TYPE_LINEAR,
+		CCSI(0), distribs + 1);
 	assert(err == CCS_SUCCESS);
 
 	err = ccs_create_multivariate_distribution(
@@ -214,13 +214,13 @@ test_multivariate_distribution_strided_samples()
 	assert(err == CCS_SUCCESS);
 
 	err = ccs_create_uniform_distribution(
-		CCS_NUM_FLOAT, CCSF(-5.0), CCSF(5.0), CCS_LINEAR, CCSF(0.0),
-		distribs);
+		CCS_NUM_FLOAT, CCSF(-5.0), CCSF(5.0), CCS_SCALE_TYPE_LINEAR,
+		CCSF(0.0), distribs);
 	assert(err == CCS_SUCCESS);
 
 	err = ccs_create_uniform_distribution(
-		CCS_NUM_INTEGER, CCSI(-5), CCSI(5), CCS_LINEAR, CCSI(0),
-		distribs + 1);
+		CCS_NUM_INTEGER, CCSI(-5), CCSI(5), CCS_SCALE_TYPE_LINEAR,
+		CCSI(0), distribs + 1);
 	assert(err == CCS_SUCCESS);
 
 	err = ccs_create_multivariate_distribution(
@@ -268,13 +268,13 @@ test_multivariate_distribution_soa_samples()
 	assert(err == CCS_SUCCESS);
 
 	err = ccs_create_uniform_distribution(
-		CCS_NUM_FLOAT, CCSF(-5.0), CCSF(5.0), CCS_LINEAR, CCSF(0.0),
-		distribs);
+		CCS_NUM_FLOAT, CCSF(-5.0), CCSF(5.0), CCS_SCALE_TYPE_LINEAR,
+		CCSF(0.0), distribs);
 	assert(err == CCS_SUCCESS);
 
 	err = ccs_create_uniform_distribution(
-		CCS_NUM_INTEGER, CCSI(-5), CCSI(5), CCS_LINEAR, CCSI(0),
-		distribs + 1);
+		CCS_NUM_INTEGER, CCSI(-5), CCSI(5), CCS_SCALE_TYPE_LINEAR,
+		CCSI(0), distribs + 1);
 	assert(err == CCS_SUCCESS);
 
 	err = ccs_create_multivariate_distribution(
@@ -319,13 +319,13 @@ test_distribution_parameters_sample()
 	assert(err == CCS_SUCCESS);
 
 	err = ccs_create_uniform_distribution(
-		CCS_NUM_FLOAT, CCSF(-4.0), CCSF(4.0), CCS_LINEAR, CCSF(0.0),
-		distribs);
+		CCS_NUM_FLOAT, CCSF(-4.0), CCSF(4.0), CCS_SCALE_TYPE_LINEAR,
+		CCSF(0.0), distribs);
 	assert(err == CCS_SUCCESS);
 
 	err = ccs_create_uniform_distribution(
-		CCS_NUM_FLOAT, CCSF(-3.0), CCSF(5.0), CCS_LINEAR, CCSF(0.0),
-		distribs + 1);
+		CCS_NUM_FLOAT, CCSF(-3.0), CCSF(5.0), CCS_SCALE_TYPE_LINEAR,
+		CCSF(0.0), distribs + 1);
 	assert(err == CCS_SUCCESS);
 
 	err = ccs_create_numerical_parameter(
@@ -391,11 +391,13 @@ test_distribution_parameters_sample_oversampling()
 	assert(err == CCS_SUCCESS);
 
 	err = ccs_create_normal_distribution(
-		CCS_NUM_FLOAT, 0.0, 4.0, CCS_LINEAR, CCSF(0.0), distribs);
+		CCS_NUM_FLOAT, 0.0, 4.0, CCS_SCALE_TYPE_LINEAR, CCSF(0.0),
+		distribs);
 	assert(err == CCS_SUCCESS);
 
 	err = ccs_create_normal_distribution(
-		CCS_NUM_FLOAT, 1.0, 4.0, CCS_LINEAR, CCSF(0.0), distribs + 1);
+		CCS_NUM_FLOAT, 1.0, 4.0, CCS_SCALE_TYPE_LINEAR, CCSF(0.0),
+		distribs + 1);
 	assert(err == CCS_SUCCESS);
 
 	err = ccs_create_numerical_parameter(

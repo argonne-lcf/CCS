@@ -196,7 +196,8 @@ test_oversampling()
 	err = ccs_create_rng(&rng);
 	assert(err == CCS_SUCCESS);
 	err = ccs_create_uniform_int_distribution(
-		0, num_possible_values + 1, CCS_LINEAR, 0, &distribution);
+		0, num_possible_values + 1, CCS_SCALE_TYPE_LINEAR, 0,
+		&distribution);
 	assert(err == CCS_SUCCESS);
 
 	err = ccs_create_discrete_parameter(

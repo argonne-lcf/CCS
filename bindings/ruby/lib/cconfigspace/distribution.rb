@@ -14,8 +14,8 @@ module CCS
   end
 
   ScaleType = enum FFI::Type::INT32, :ccs_scale_type_t, [
-    :CCS_LINEAR,
-    :CCS_LOGARITHMIC
+    :CCS_SCALE_TYPE_LINEAR,
+    :CCS_SCALE_TYPE_LOGARITHMIC
   ]
   class MemoryPointer
     def read_ccs_scale_type_t
@@ -131,7 +131,7 @@ module CCS
 
   class UniformDistribution < Distribution
     def initialize(handle = nil, retain: false, auto_release: true,
-                   data_type: :CCS_NUM_FLOAT, lower: 0.0, upper: 1.0, scale: :CCS_LINEAR, quantization: 0.0)
+                   data_type: :CCS_NUM_FLOAT, lower: 0.0, upper: 1.0, scale: :CCS_SCALE_TYPE_LINEAR, quantization: 0.0)
       if handle
         super(handle, retain: retain)
       else
@@ -145,11 +145,11 @@ module CCS
       end
     end
 
-    def self.int(lower:, upper:, scale: :CCS_LINEAR, quantization: 0)
+    def self.int(lower:, upper:, scale: :CCS_SCALE_TYPE_LINEAR, quantization: 0)
       self.new(nil, data_type: :CCS_NUM_INTEGER, lower: lower, upper: upper, scale: scale, quantization: quantization)
     end
 
-    def self.float(lower:, upper:, scale: :CCS_LINEAR, quantization: 0.0)
+    def self.float(lower:, upper:, scale: :CCS_SCALE_TYPE_LINEAR, quantization: 0.0)
       self.new(nil, data_type: :CCS_NUM_FLOAT, lower: lower, upper: upper, scale: scale, quantization: quantization)
     end
 
@@ -208,7 +208,7 @@ module CCS
   attach_function :ccs_normal_distribution_get_properties, [:ccs_distribution_t, :pointer, :pointer, :pointer, :pointer], :ccs_error_t
   class NormalDistribution < Distribution
     def initialize(handle = nil, retain: false, auto_release: true,
-                   data_type: :CCS_NUM_FLOAT, mu: 0.0, sigma: 1.0, scale: :CCS_LINEAR, quantization: 0.0)
+                   data_type: :CCS_NUM_FLOAT, mu: 0.0, sigma: 1.0, scale: :CCS_SCALE_TYPE_LINEAR, quantization: 0.0)
       if handle
         super(handle, retain: retain)
       else
@@ -222,11 +222,11 @@ module CCS
       end
     end
 
-    def self.int(mu:, sigma:, scale: :CCS_LINEAR, quantization: 0)
+    def self.int(mu:, sigma:, scale: :CCS_SCALE_TYPE_LINEAR, quantization: 0)
       self::new(nil, retain: false, data_type: :CCS_NUM_INTEGER, mu: mu, sigma: sigma, scale: scale, quantization: quantization) 
     end
 
-    def self.float(mu:, sigma:, scale: :CCS_LINEAR, quantization: 0)
+    def self.float(mu:, sigma:, scale: :CCS_SCALE_TYPE_LINEAR, quantization: 0)
       self::new(nil, retain: false, data_type: :CCS_NUM_FLOAT, mu: mu, sigma: sigma, scale: scale, quantization: quantization) 
     end
 

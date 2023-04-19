@@ -231,7 +231,7 @@ _ccs_distribution_uniform_strided_samples(
 			values[i * stride].f = gsl_ran_flat(
 				grng, internal_lower.f, internal_upper.f);
 		}
-		if (scale_type == CCS_LOGARITHMIC) {
+		if (scale_type == CCS_SCALE_TYPE_LOGARITHMIC) {
 			for (i = 0; i < num_values; i++)
 				values[i * stride].f =
 					exp(values[i * stride].f);
@@ -253,7 +253,7 @@ _ccs_distribution_uniform_strided_samples(
 			for (i = 0; i < num_values; i++)
 				values[i * stride].f += lower.f;
 	} else {
-		if (scale_type == CCS_LOGARITHMIC) {
+		if (scale_type == CCS_SCALE_TYPE_LOGARITHMIC) {
 			for (i = 0; i < num_values; i++) {
 				values[i * stride].i = floor(exp(gsl_ran_flat(
 					grng, internal_lower.f,
@@ -311,7 +311,7 @@ _ccs_distribution_uniform_samples(
 			values[i].f = gsl_ran_flat(
 				grng, internal_lower.f, internal_upper.f);
 		}
-		if (scale_type == CCS_LOGARITHMIC) {
+		if (scale_type == CCS_SCALE_TYPE_LOGARITHMIC) {
 			for (i = 0; i < num_values; i++)
 				values[i].f = exp(values[i].f);
 			if (quantize)
@@ -330,7 +330,7 @@ _ccs_distribution_uniform_samples(
 			for (i = 0; i < num_values; i++)
 				values[i].f += lower.f;
 	} else {
-		if (scale_type == CCS_LOGARITHMIC) {
+		if (scale_type == CCS_SCALE_TYPE_LOGARITHMIC) {
 			for (i = 0; i < num_values; i++) {
 				values[i].i = floor(exp(gsl_ran_flat(
 					grng, internal_lower.f,
@@ -387,19 +387,22 @@ ccs_create_uniform_distribution(
 		data_type != CCS_NUM_FLOAT && data_type != CCS_NUM_INTEGER,
 		CCS_INVALID_TYPE);
 	CCS_REFUTE(
-		scale_type != CCS_LINEAR && scale_type != CCS_LOGARITHMIC,
+		scale_type != CCS_SCALE_TYPE_LINEAR &&
+			scale_type != CCS_SCALE_TYPE_LOGARITHMIC,
 		CCS_INVALID_SCALE);
 	CCS_REFUTE(
 		data_type == CCS_NUM_INTEGER &&
 			(lower.i >= upper.i ||
-			 (scale_type == CCS_LOGARITHMIC && lower.i <= 0) ||
+			 (scale_type == CCS_SCALE_TYPE_LOGARITHMIC &&
+			  lower.i <= 0) ||
 			 quantization.i < 0 ||
 			 quantization.i > upper.i - lower.i),
 		CCS_INVALID_VALUE);
 	CCS_REFUTE(
 		data_type == CCS_NUM_FLOAT &&
 			(lower.f >= upper.f ||
-			 (scale_type == CCS_LOGARITHMIC && lower.f <= 0.0) ||
+			 (scale_type == CCS_SCALE_TYPE_LOGARITHMIC &&
+			  lower.f <= 0.0) ||
 			 quantization.f < 0.0 ||
 			 quantization.f > upper.f - lower.f),
 		CCS_INVALID_VALUE);
@@ -429,7 +432,7 @@ ccs_create_uniform_distribution(
 	if (data_type == CCS_NUM_FLOAT) {
 		if (quantization.f != 0.0)
 			distrib_data->quantize = 1;
-		if (scale_type == CCS_LOGARITHMIC) {
+		if (scale_type == CCS_SCALE_TYPE_LOGARITHMIC) {
 			distrib_data->internal_lower.f = log(lower.f);
 			distrib_data->internal_upper.f = log(upper.f);
 		} else {
@@ -442,7 +445,7 @@ ccs_create_uniform_distribution(
 	} else {
 		if (quantization.i != 0)
 			distrib_data->quantize = 1;
-		if (scale_type == CCS_LOGARITHMIC) {
+		if (scale_type == CCS_SCALE_TYPE_LOGARITHMIC) {
 			distrib_data->internal_lower.f = log(lower.i);
 			distrib_data->internal_upper.f = log(upper.i);
 		} else {

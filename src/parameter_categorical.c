@@ -222,8 +222,8 @@ _ccs_parameter_categorical_get_default_distribution(
 		(_ccs_parameter_categorical_data_t *)data;
 	ccs_interval_t *interval = &(d->common_data.interval);
 	CCS_VALIDATE(ccs_create_uniform_distribution(
-		interval->type, interval->lower, interval->upper, CCS_LINEAR,
-		CCSI(0), distribution));
+		interval->type, interval->lower, interval->upper,
+		CCS_SCALE_TYPE_LINEAR, CCSI(0), distribution));
 	return CCS_SUCCESS;
 }
 

@@ -216,8 +216,8 @@ _ccs_parameter_numerical_get_default_distribution(
 		(_ccs_parameter_numerical_data_t *)data;
 	ccs_interval_t *interval = &(d->common_data.interval);
 	CCS_VALIDATE(ccs_create_uniform_distribution(
-		interval->type, interval->lower, interval->upper, CCS_LINEAR,
-		d->quantization, distribution));
+		interval->type, interval->lower, interval->upper,
+		CCS_SCALE_TYPE_LINEAR, d->quantization, distribution));
 	return CCS_SUCCESS;
 }
 

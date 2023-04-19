@@ -186,7 +186,7 @@ _ccs_distribution_normal_get_bounds(
 	ccs_numeric_t            u;
 	ccs_bool_t               ui;
 
-	if (scale_type == CCS_LOGARITHMIC) {
+	if (scale_type == CCS_SCALE_TYPE_LOGARITHMIC) {
 		if (data_type == CCS_NUM_FLOAT) {
 			if (quantize) {
 				l.f = quantization.f;
@@ -249,7 +249,7 @@ _ccs_distribution_normal_samples_float(
 	ccs_float_t           *values)
 {
 	size_t i;
-	if (scale_type == CCS_LOGARITHMIC && quantize) {
+	if (scale_type == CCS_SCALE_TYPE_LOGARITHMIC && quantize) {
 		ccs_float_t lq = log(quantization * 0.5);
 		if (mu - lq >= 0.0)
 			//at least 50% chance to get a valid value
@@ -268,7 +268,7 @@ _ccs_distribution_normal_samples_float(
 	} else
 		for (i = 0; i < num_values; i++)
 			values[i] = gsl_ran_gaussian(grng, sigma) + mu;
-	if (scale_type == CCS_LOGARITHMIC)
+	if (scale_type == CCS_SCALE_TYPE_LOGARITHMIC)
 		for (i = 0; i < num_values; i++)
 			values[i] = exp(values[i]);
 	if (quantize) {
@@ -297,7 +297,7 @@ _ccs_distribution_normal_samples_int(
 		q = quantization * 0.5;
 	else
 		q = 0.5;
-	if (scale_type == CCS_LOGARITHMIC) {
+	if (scale_type == CCS_SCALE_TYPE_LOGARITHMIC) {
 		ccs_float_t lq = log(q);
 		if (mu - lq >= 0.0)
 			for (i = 0; i < num_values; i++)
@@ -384,7 +384,7 @@ _ccs_distribution_normal_strided_samples_float(
 	ccs_float_t           *values)
 {
 	size_t i;
-	if (scale_type == CCS_LOGARITHMIC && quantize) {
+	if (scale_type == CCS_SCALE_TYPE_LOGARITHMIC && quantize) {
 		ccs_float_t lq = log(quantization * 0.5);
 		if (mu - lq >= 0.0)
 			//at least 50% chance to get a valid value
@@ -404,7 +404,7 @@ _ccs_distribution_normal_strided_samples_float(
 	} else
 		for (i = 0; i < num_values; i++)
 			values[i * stride] = gsl_ran_gaussian(grng, sigma) + mu;
-	if (scale_type == CCS_LOGARITHMIC)
+	if (scale_type == CCS_SCALE_TYPE_LOGARITHMIC)
 		for (i = 0; i < num_values; i++)
 			values[i * stride] = exp(values[i * stride]);
 	if (quantize) {
@@ -435,7 +435,7 @@ _ccs_distribution_normal_strided_samples_int(
 		q = quantization * 0.5;
 	else
 		q = 0.5;
-	if (scale_type == CCS_LOGARITHMIC) {
+	if (scale_type == CCS_SCALE_TYPE_LOGARITHMIC) {
 		ccs_float_t lq = log(q);
 		if (mu - lq >= 0.0)
 			for (i = 0; i < num_values; i++)
@@ -542,7 +542,8 @@ ccs_create_normal_distribution(
 		data_type != CCS_NUM_FLOAT && data_type != CCS_NUM_INTEGER,
 		CCS_INVALID_TYPE);
 	CCS_REFUTE(
-		scale_type != CCS_LINEAR && scale_type != CCS_LOGARITHMIC,
+		scale_type != CCS_SCALE_TYPE_LINEAR &&
+			scale_type != CCS_SCALE_TYPE_LOGARITHMIC,
 		CCS_INVALID_SCALE);
 	CCS_REFUTE(
 		data_type == CCS_NUM_INTEGER && quantization.i < 0,

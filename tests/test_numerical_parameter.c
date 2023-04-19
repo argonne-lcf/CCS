@@ -156,7 +156,7 @@ test_oversampling()
 	assert(err == CCS_SUCCESS);
 
 	err = ccs_create_normal_float_distribution(
-		0.0, 1.0, CCS_LINEAR, 0.0, &distribution);
+		0.0, 1.0, CCS_SCALE_TYPE_LINEAR, 0.0, &distribution);
 	assert(err == CCS_SUCCESS);
 
 	err = ccs_create_numerical_parameter(
