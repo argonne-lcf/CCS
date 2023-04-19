@@ -71,13 +71,13 @@ typedef enum ccs_parameter_type_e ccs_parameter_type_t;
  */
 extern ccs_error_t
 ccs_create_numerical_parameter(
-	const char         *name,
-	ccs_numeric_type_t  data_type,
-	ccs_numeric_t       lower,
-	ccs_numeric_t       upper,
-	ccs_numeric_t       quantization,
-	ccs_numeric_t       default_value,
-	ccs_parameter_t    *parameter_ret);
+	const char        *name,
+	ccs_numeric_type_t data_type,
+	ccs_numeric_t      lower,
+	ccs_numeric_t      upper,
+	ccs_numeric_t      quantization,
+	ccs_numeric_t      default_value,
+	ccs_parameter_t   *parameter_ret);
 
 /**
  * Get the properties used to create a numerical parameter.
@@ -156,10 +156,10 @@ ccs_create_categorical_parameter(
  */
 extern ccs_error_t
 ccs_categorical_parameter_get_values(
-	ccs_parameter_t  parameter,
-	size_t           num_possible_values,
-	ccs_datum_t     *possible_values,
-	size_t          *num_possible_values_ret);
+	ccs_parameter_t parameter,
+	size_t          num_possible_values,
+	ccs_datum_t    *possible_values,
+	size_t         *num_possible_values_ret);
 
 /**
  * Create a new ordinal parameter. Ordinal parameters can be
@@ -211,10 +211,10 @@ ccs_create_ordinal_parameter(
  */
 extern ccs_error_t
 ccs_ordinal_parameter_get_values(
-	ccs_parameter_t  parameter,
-	size_t           num_possible_values,
-	ccs_datum_t     *possible_values,
-	size_t          *num_possible_values_ret);
+	ccs_parameter_t parameter,
+	size_t          num_possible_values,
+	ccs_datum_t    *possible_values,
+	size_t         *num_possible_values_ret);
 
 /**
  * Compare two values in the context of an ordinal parameter.
@@ -233,10 +233,10 @@ ccs_ordinal_parameter_get_values(
  */
 extern ccs_error_t
 ccs_ordinal_parameter_compare_values(
-	ccs_parameter_t  parameter,
-	ccs_datum_t      value1,
-	ccs_datum_t      value2,
-	ccs_int_t       *comp_ret);
+	ccs_parameter_t parameter,
+	ccs_datum_t     value1,
+	ccs_datum_t     value2,
+	ccs_int_t      *comp_ret);
 
 /**
  * Create a new discrete parameter. Discrete parameters can be
@@ -288,10 +288,10 @@ ccs_create_discrete_parameter(
  */
 extern ccs_error_t
 ccs_discrete_parameter_get_values(
-	ccs_parameter_t  parameter,
-	size_t           num_possible_values,
-	ccs_datum_t     *possible_values,
-	size_t          *num_possible_values_ret);
+	ccs_parameter_t parameter,
+	size_t          num_possible_values,
+	ccs_datum_t    *possible_values,
+	size_t         *num_possible_values_ret);
 
 /**
  * Create an new parameter representing an undetermined string, to be used
@@ -307,9 +307,7 @@ ccs_discrete_parameter_get_values(
  *                             parameter
  */
 extern ccs_error_t
-ccs_create_string_parameter(
-	const char      *name,
-	ccs_parameter_t *parameter_ret);
+ccs_create_string_parameter(const char *name, ccs_parameter_t *parameter_ret);
 
 /**
  * Get the type of a parameter.
@@ -338,8 +336,8 @@ ccs_parameter_get_type(
  */
 extern ccs_error_t
 ccs_parameter_get_default_value(
-	ccs_parameter_t  parameter,
-	ccs_datum_t     *value_ret);
+	ccs_parameter_t parameter,
+	ccs_datum_t    *value_ret);
 
 /**
  * Get the name of a parameter.
@@ -352,9 +350,7 @@ ccs_parameter_get_default_value(
  *                              parameter
  */
 extern ccs_error_t
-ccs_parameter_get_name(
-	ccs_parameter_t   parameter,
-	const char      **name_ret);
+ccs_parameter_get_name(ccs_parameter_t parameter, const char **name_ret);
 
 /**
  * Get the default distribution of a parameter.
@@ -384,9 +380,9 @@ ccs_parameter_get_default_distribution(
  */
 extern ccs_error_t
 ccs_parameter_check_value(
-	ccs_parameter_t  parameter,
-	ccs_datum_t      value,
-	ccs_bool_t      *result_ret);
+	ccs_parameter_t parameter,
+	ccs_datum_t     value,
+	ccs_bool_t     *result_ret);
 
 /**
  * Check if an array of values are acceptable for a parameter.
@@ -425,10 +421,10 @@ ccs_parameter_check_values(
  */
 extern ccs_error_t
 ccs_parameter_validate_value(
-	ccs_parameter_t  parameter,
-	ccs_datum_t      value,
-	ccs_datum_t     *value_ret,
-	ccs_bool_t      *result_ret);
+	ccs_parameter_t parameter,
+	ccs_datum_t     value,
+	ccs_datum_t    *value_ret,
+	ccs_bool_t     *result_ret);
 
 /**
  * Check if an array of values are acceptable for a parameter and return
@@ -501,10 +497,10 @@ ccs_parameter_convert_samples(
  */
 extern ccs_error_t
 ccs_parameter_sample(
-	ccs_parameter_t     parameter,
-	ccs_distribution_t  distribution,
-	ccs_rng_t           rng,
-	ccs_datum_t        *value_ret);
+	ccs_parameter_t    parameter,
+	ccs_distribution_t distribution,
+	ccs_rng_t          rng,
+	ccs_datum_t       *value_ret);
 
 /**
  * Get samples from the parameter sampled by a given distribution.
@@ -527,11 +523,11 @@ ccs_parameter_sample(
  */
 extern ccs_error_t
 ccs_parameter_samples(
-	ccs_parameter_t     parameter,
-	ccs_distribution_t  distribution,
-	ccs_rng_t           rng,
-	size_t              num_values,
-	ccs_datum_t        *values);
+	ccs_parameter_t    parameter,
+	ccs_distribution_t distribution,
+	ccs_rng_t          rng,
+	size_t             num_values,
+	ccs_datum_t       *values);
 
 /**
  * Get the valid sampling interval of the parameter.
@@ -545,8 +541,8 @@ ccs_parameter_samples(
  */
 extern ccs_error_t
 ccs_parameter_sampling_interval(
-	ccs_parameter_t  parameter,
-	ccs_interval_t  *interval_ret);
+	ccs_parameter_t parameter,
+	ccs_interval_t *interval_ret);
 #ifdef __cplusplus
 }
 #endif

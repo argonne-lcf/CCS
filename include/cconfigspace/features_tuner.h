@@ -60,8 +60,8 @@ ccs_features_tuner_get_type(
  */
 extern ccs_error_t
 ccs_features_tuner_get_name(
-	ccs_features_tuner_t   features_tuner,
-	const char           **name_ret);
+	ccs_features_tuner_t features_tuner,
+	const char         **name_ret);
 
 /**
  * Get the associated configuration space.
@@ -105,8 +105,8 @@ ccs_features_tuner_get_objective_space(
  */
 extern ccs_error_t
 ccs_features_tuner_get_features_space(
-	ccs_features_tuner_t   features_tuner,
-	ccs_features_space_t  *features_space_ret);
+	ccs_features_tuner_t  features_tuner,
+	ccs_features_space_t *features_space_ret);
 
 /**
  * Ask a features tuner for a set of configurations to evaluate given some
@@ -146,11 +146,11 @@ ccs_features_tuner_get_features_space(
  */
 extern ccs_error_t
 ccs_features_tuner_ask(
-	ccs_features_tuner_t  features_tuner,
-	ccs_features_t        features,
-	size_t                num_configurations,
-	ccs_configuration_t  *configurations,
-	size_t               *num_configurations_ret);
+	ccs_features_tuner_t features_tuner,
+	ccs_features_t       features,
+	size_t               num_configurations,
+	ccs_configuration_t *configurations,
+	size_t              *num_configurations_ret);
 
 /**
  * Give a list of results to a features tuner through evaluations.
@@ -196,9 +196,9 @@ ccs_features_tuner_tell(
  */
 extern ccs_error_t
 ccs_features_tuner_suggest(
-	ccs_features_tuner_t  features_tuner,
-	ccs_features_t        features,
-	ccs_configuration_t  *configuration);
+	ccs_features_tuner_t features_tuner,
+	ccs_features_t       features,
+	ccs_configuration_t *configuration);
 
 /**
  * Ask a features tuner for the discovered Pareto front. For single objective objective
@@ -282,11 +282,11 @@ ccs_features_tuner_get_history(
  */
 extern ccs_error_t
 ccs_create_random_features_tuner(
-	const char                *name,
-	ccs_configuration_space_t  configuration_space,
-	ccs_features_space_t       features_space,
-	ccs_objective_space_t      objective_space,
-	ccs_features_tuner_t      *features_tuner_ret);
+	const char               *name,
+	ccs_configuration_space_t configuration_space,
+	ccs_features_space_t      features_space,
+	ccs_objective_space_t     objective_space,
+	ccs_features_tuner_t     *features_tuner_ret);
 
 /**
  * A structure that define the callbacks the user must provide to create a user
@@ -297,16 +297,15 @@ struct ccs_user_defined_features_tuner_vector_s {
 	 * The deletion callback that will be called once the reference count
 	 * of the features tuner reaches 0.
 	 */
-	ccs_error_t (*del)(
-		ccs_features_tuner_t features_tuner);
+	ccs_error_t (*del)(ccs_features_tuner_t features_tuner);
 
 	/** The features tuner ask interface see ccs_features_tuner_ask */
 	ccs_error_t (*ask)(
-		ccs_features_tuner_t  features_tuner,
-		ccs_features_t        features,
-		size_t                num_configurations,
-		ccs_configuration_t  *configurations,
-		size_t               *num_configurations_ret);
+		ccs_features_tuner_t features_tuner,
+		ccs_features_t       features,
+		size_t               num_configurations,
+		ccs_configuration_t *configurations,
+		size_t              *num_configurations_ret);
 
 	/** The features tuner tell interface see ccs_features_tuner_tell */
 	ccs_error_t (*tell)(
@@ -340,19 +339,19 @@ struct ccs_user_defined_features_tuner_vector_s {
 	 * The features tuner suggest interface see ccs_features_tuner_suggest,
 	 * can be NULL */
 	ccs_error_t (*suggest)(
-		ccs_features_tuner_t  features_tuner,
-		ccs_features_t        features,
-		ccs_configuration_t  *configuration);
+		ccs_features_tuner_t features_tuner,
+		ccs_features_t       features,
+		ccs_configuration_t *configuration);
 
 	/** 
 	 * The tuner serialization interface, can be NULL, in which case
 	 * common tuner data, history and optimums will be serialized
 	 */
 	ccs_error_t (*serialize_user_state)(
-		ccs_features_tuner_t  features_tuner,
-		size_t                sate_size,
-		void                 *state,
-		size_t               *state_size_ret);
+		ccs_features_tuner_t features_tuner,
+		size_t               sate_size,
+		void                *state,
+		size_t              *state_size_ret);
 
 	/**
 	 * The features_tuner deserialization interface, can be NULL, in which case,
@@ -419,8 +418,8 @@ ccs_create_user_defined_features_tuner(
  */
 extern ccs_error_t
 ccs_user_defined_features_tuner_get_tuner_data(
-	ccs_features_tuner_t   features_tuner,
-	void                 **tuner_data_ret);
+	ccs_features_tuner_t features_tuner,
+	void               **tuner_data_ret);
 
 #ifdef __cplusplus
 }

@@ -27,10 +27,7 @@ extern "C" {
  *                            tree node.
  */
 extern ccs_error_t
-ccs_create_tree(
-	size_t       arity,
-	ccs_datum_t  value,
-	ccs_tree_t  *tree_ret);
+ccs_create_tree(size_t arity, ccs_datum_t value, ccs_tree_t *tree_ret);
 
 /**
  * Get the value of a tree node.
@@ -42,9 +39,7 @@ ccs_create_tree(
  * @return #CCS_INVALID_VALUE if \p tree_ret is NULL
  */
 extern ccs_error_t
-ccs_tree_get_value(
-	ccs_tree_t   tree,
-	ccs_datum_t *value_ret);
+ccs_tree_get_value(ccs_tree_t tree, ccs_datum_t *value_ret);
 
 /**
  * Get the arity of a tree node.
@@ -56,9 +51,7 @@ ccs_tree_get_value(
  * @return #CCS_INVALID_VALUE if \p arity_ret is NULL
  */
 extern ccs_error_t
-ccs_tree_get_arity(
-	ccs_tree_t  tree,
-	size_t     *arity_ret);
+ccs_tree_get_arity(ccs_tree_t tree, size_t *arity_ret);
 
 /**
  * Set an unset child in a tree node at the given index.
@@ -74,10 +67,7 @@ ccs_tree_get_arity(
  *                           or if child is the root of a tree space
  */
 extern ccs_error_t
-ccs_tree_set_child(
-	ccs_tree_t tree,
-	size_t     index,
-	ccs_tree_t child);
+ccs_tree_set_child(ccs_tree_t tree, size_t index, ccs_tree_t child);
 
 /**
  * Query a tree node for the child at the given index.
@@ -91,10 +81,7 @@ ccs_tree_set_child(
  * @return #CCS_INVALID_VALUE if \p child_ret is NULL
  */
 extern ccs_error_t
-ccs_tree_get_child(
-	ccs_tree_t  tree,
-	size_t      index,
-	ccs_tree_t *child_ret);
+ccs_tree_get_child(ccs_tree_t tree, size_t index, ccs_tree_t *child_ret);
 
 /**
  * Query all the children of a tree node.
@@ -134,10 +121,7 @@ ccs_tree_get_children(
  * @return #CCS_INVALID_VALUE if \p parent_ret is NULL
  */
 extern ccs_error_t
-ccs_tree_get_parent(
-	ccs_tree_t  tree,
-	ccs_tree_t *parent_ret,
-	size_t     *index_ret);
+ccs_tree_get_parent(ccs_tree_t tree, ccs_tree_t *parent_ret, size_t *index_ret);
 
 /**
  * Get the position of a node in it's tree.
@@ -159,10 +143,10 @@ ccs_tree_get_parent(
  */
 extern ccs_error_t
 ccs_tree_get_position(
-	ccs_tree_t  tree,
-	size_t      position_size,
-	size_t     *position,
-	size_t     *position_size_ret);
+	ccs_tree_t tree,
+	size_t     position_size,
+	size_t    *position,
+	size_t    *position_size_ret);
 
 /**
  * Get the values along the path leading to a node in it's tree.
@@ -267,9 +251,7 @@ ccs_tree_get_node_at_position(
  * @return #CCS_INVALID_VALUE if \p weight_ret is NULL
  */
 extern ccs_error_t
-ccs_tree_get_weight(
-	ccs_tree_t   tree,
-	ccs_float_t *weight_ret);
+ccs_tree_get_weight(ccs_tree_t tree, ccs_float_t *weight_ret);
 
 /**
  * Set the weight of a tree node.
@@ -279,9 +261,7 @@ ccs_tree_get_weight(
  * @return #CCS_INVALID_OBJECT if \p tree is not a valid CCS tree
  */
 extern ccs_error_t
-ccs_tree_set_weight(
-	ccs_tree_t  tree,
-	ccs_float_t weight);
+ccs_tree_set_weight(ccs_tree_t tree, ccs_float_t weight);
 
 /**
  * Get the bias of a subtree.
@@ -293,9 +273,7 @@ ccs_tree_set_weight(
  * @return #CCS_INVALID_VALUE if \p bias_ret is NULL
  */
 extern ccs_error_t
-ccs_tree_get_bias(
-	ccs_tree_t   tree,
-	ccs_float_t *bias_ret);
+ccs_tree_get_bias(ccs_tree_t tree, ccs_float_t *bias_ret);
 
 /**
  * Set the bias of a tree node.
@@ -305,9 +283,7 @@ ccs_tree_get_bias(
  * @return #CCS_INVALID_OBJECT if \p tree is not a valid CCS tree
  */
 extern ccs_error_t
-ccs_tree_set_bias(
-	ccs_tree_t  tree,
-	ccs_float_t bias);
+ccs_tree_set_bias(ccs_tree_t tree, ccs_float_t bias);
 
 /**
  * Sample the child index space of a a tree node.  If the returned index is
@@ -324,10 +300,7 @@ ccs_tree_set_bias(
  * @return #CCS_INVALID_DISTRIBUTION if all the weights of \p tree and all it's subtrees are 0
  */
 extern ccs_error_t
-ccs_tree_sample(
-	ccs_tree_t  tree,
-	ccs_rng_t   rng,
-	size_t     *index_ret);
+ccs_tree_sample(ccs_tree_t tree, ccs_rng_t rng, size_t *index_ret);
 
 /**
  * Sample the child index space of a a tree node.  If the returned index is
@@ -346,10 +319,10 @@ ccs_tree_sample(
  */
 extern ccs_error_t
 ccs_tree_samples(
-	ccs_tree_t  tree,
-	ccs_rng_t   rng,
-	size_t      num_indices,
-	size_t     *indices);
+	ccs_tree_t tree,
+	ccs_rng_t  rng,
+	size_t     num_indices,
+	size_t    *indices);
 
 #ifdef __cplusplus
 }

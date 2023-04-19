@@ -25,9 +25,7 @@ extern "C" {
  * @return #CCS_INVALID_VALUE if \p name_ret is NULL
  */
 extern ccs_error_t
-ccs_context_get_name(
-	ccs_context_t   context,
-	const char    **name_ret);
+ccs_context_get_name(ccs_context_t context, const char **name_ret);
 
 /**
  * Get the index of an parameter in the context.
@@ -43,9 +41,9 @@ ccs_context_get_name(
  */
 extern ccs_error_t
 ccs_context_get_parameter_index(
-	ccs_context_t    context,
-	ccs_parameter_t  parameter,
-	size_t          *index_ret);
+	ccs_context_t   context,
+	ccs_parameter_t parameter,
+	size_t         *index_ret);
 
 /**
  * Get the number of parameters in the given context.
@@ -59,8 +57,8 @@ ccs_context_get_parameter_index(
  */
 extern ccs_error_t
 ccs_context_get_num_parameters(
-	ccs_context_t  context,
-	size_t        *num_parameters_ret);
+	ccs_context_t context,
+	size_t       *num_parameters_ret);
 
 /**
  * Get an parameter in a context given its index.
@@ -112,9 +110,9 @@ ccs_context_get_parameter_by_name(
  */
 extern ccs_error_t
 ccs_context_get_parameter_index_by_name(
-	ccs_context_t  context,
-	const char    *name,
-	size_t        *index_ret);
+	ccs_context_t context,
+	const char   *name,
+	size_t       *index_ret);
 
 /**
  * Get the parameters in the given context.
@@ -165,10 +163,10 @@ ccs_context_get_parameters(
  */
 extern ccs_error_t
 ccs_context_get_parameter_indexes(
-	ccs_context_t     context,
-	size_t            num_parameters,
-	ccs_parameter_t  *parameters,
-	size_t           *indexes);
+	ccs_context_t    context,
+	size_t           num_parameters,
+	ccs_parameter_t *parameters,
+	size_t          *indexes);
 
 /**
  * Validate that a given value at the given index is valid in the context, and
@@ -190,10 +188,10 @@ ccs_context_get_parameter_indexes(
  */
 extern ccs_error_t
 ccs_context_validate_value(
-	ccs_context_t  context,
-	size_t         index,
-	ccs_datum_t    value,
-	ccs_datum_t   *value_ret);
+	ccs_context_t context,
+	size_t        index,
+	ccs_datum_t   value,
+	ccs_datum_t  *value_ret);
 
 #ifdef __cplusplus
 }

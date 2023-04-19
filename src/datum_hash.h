@@ -31,13 +31,15 @@
  * }
  */
 
-static inline int _datum_cmp(ccs_datum_t *a, ccs_datum_t *b) {
+static inline int
+_datum_cmp(ccs_datum_t *a, ccs_datum_t *b)
+{
 	if (a->type < b->type) {
 		return -1;
 	} else if (a->type > b->type) {
 		return 1;
 	} else {
-		switch(a->type) {
+		switch (a->type) {
 		case CCS_STRING:
 			if (a->value.s == b->value.s)
 				return 0;
@@ -52,21 +54,26 @@ static inline int _datum_cmp(ccs_datum_t *a, ccs_datum_t *b) {
 			return 0;
 			break;
 		default:
-			return memcmp(&(a->value), &(b->value), sizeof(ccs_value_t));
+			return memcmp(
+				&(a->value), &(b->value), sizeof(ccs_value_t));
 		}
 	}
 }
 
 //from boost
-static inline ccs_hash_t _hash_combine(ccs_hash_t h1, ccs_hash_t h2) {
+static inline ccs_hash_t
+_hash_combine(ccs_hash_t h1, ccs_hash_t h2)
+{
 	h1 ^= h2 + 0x9e3779b9 + (h1 << 6) + (h1 >> 2);
 	return h1;
 }
 
-static inline unsigned _hash_datum(ccs_datum_t *d) {
+static inline unsigned
+_hash_datum(ccs_datum_t *d)
+{
 	unsigned h;
 	unsigned h1, h2;
-	switch(d->type) {
+	switch (d->type) {
 	case CCS_STRING:
 		HASH_JEN(&(d->type), sizeof(d->type), h1);
 		if (d->value.s)
@@ -88,10 +95,9 @@ static inline unsigned _hash_datum(ccs_datum_t *d) {
 }
 
 struct _ccs_hash_datum_s {
-	ccs_datum_t d;
+	ccs_datum_t    d;
 	UT_hash_handle hh;
 };
 typedef struct _ccs_hash_datum_s _ccs_hash_datum_t;
-
 
 #endif //_DATUM_HASH_H

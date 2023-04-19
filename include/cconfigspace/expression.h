@@ -84,7 +84,7 @@ typedef enum ccs_expression_type_e ccs_expression_type_t;
  *
  * Those are similar to C's precedence
  */
-extern const int ccs_expression_precedence[];
+extern const int                   ccs_expression_precedence[];
 
 /**
  * Associativity of CCS operators:
@@ -145,7 +145,7 @@ extern const ccs_associativity_type_t ccs_expression_associativity[];
  *  - LITERAL: NULL
  *  - VARIABLE: NULL
  */
-extern const char *ccs_expression_symbols[];
+extern const char                    *ccs_expression_symbols[];
 
 /**
  * An array of arity of CCS operators
@@ -160,7 +160,7 @@ extern const char *ccs_expression_symbols[];
  *  - -1: LIST
  *  - 0: LITERAL, VARIABLE
  */
-extern const int ccs_expression_arity[];
+extern const int                      ccs_expression_arity[];
 
 /**
  * The different terminal types of ccs expressions.
@@ -197,7 +197,7 @@ typedef enum ccs_terminal_type_e ccs_terminal_type_t;
  *  - 0: STRING, IDENTIFIER, INTEGER, FLOAT
  *  - 1: NONE, TRUE, FALSE
  */
-extern const int ccs_terminal_precedence[];
+extern const int                 ccs_terminal_precedence[];
 
 /**
  * An array of regexp that define terminals:
@@ -210,7 +210,7 @@ extern const int ccs_terminal_precedence[];
  *  - INTEGER: /-?[0-9]+/
  *  - FLOAT: /-?[0-9]+([eE][+-]?[0-9]+|\\.[0-9]+([eE][+-]?[0-9]+)?)/
  */
-extern const char *ccs_terminal_regexp[];
+extern const char               *ccs_terminal_regexp[];
 
 /**
  * An array of symbols (NULL terminated strings) for terminals that define them:
@@ -222,7 +222,7 @@ extern const char *ccs_terminal_regexp[];
  *  - INTEGER: NULL
  *  - FLOAT: NULL
  */
-extern const char *ccs_terminal_symbols[];
+extern const char               *ccs_terminal_symbols[];
 
 /**
  * Create a new expression.
@@ -248,10 +248,10 @@ extern const char *ccs_terminal_symbols[];
  */
 extern ccs_error_t
 ccs_create_expression(
-	ccs_expression_type_t  type,
-	size_t                 num_nodes,
-	ccs_datum_t           *nodes,
-	ccs_expression_t      *expression_ret);
+	ccs_expression_type_t type,
+	size_t                num_nodes,
+	ccs_datum_t          *nodes,
+	ccs_expression_t     *expression_ret);
 
 /**
  * Create a new binary expression. Convenience wrapper around
@@ -279,11 +279,10 @@ ccs_create_expression(
  */
 extern ccs_error_t
 ccs_create_binary_expression(
-	ccs_expression_type_t  type,
-	ccs_datum_t            node_left,
-	ccs_datum_t            node_right,
-	ccs_expression_t      *expression_ret);
-
+	ccs_expression_type_t type,
+	ccs_datum_t           node_left,
+	ccs_datum_t           node_right,
+	ccs_expression_t     *expression_ret);
 
 /**
  * Create a new unary expression. Convenience wrapper around
@@ -307,9 +306,9 @@ ccs_create_binary_expression(
  */
 extern ccs_error_t
 ccs_create_unary_expression(
-	ccs_expression_type_t  type,
-	ccs_datum_t            node,
-	ccs_expression_t      *expression_ret);
+	ccs_expression_type_t type,
+	ccs_datum_t           node,
+	ccs_expression_t     *expression_ret);
 
 /**
  * Create a new literal expression.
@@ -325,9 +324,7 @@ ccs_create_unary_expression(
  *                             expression
  */
 extern ccs_error_t
-ccs_create_literal(
-	ccs_datum_t       value,
-	ccs_expression_t *expression_ret);
+ccs_create_literal(ccs_datum_t value, ccs_expression_t *expression_ret);
 
 /**
  * Create a new variable expression.
@@ -342,10 +339,7 @@ ccs_create_literal(
  *                             expression
  */
 extern ccs_error_t
-ccs_create_variable(
-	ccs_parameter_t   parameter,
-	ccs_expression_t *expression_ret);
-
+ccs_create_variable(ccs_parameter_t parameter, ccs_expression_t *expression_ret);
 
 /**
  * Get the type of an expression.
@@ -371,9 +365,7 @@ ccs_expression_get_type(
  * @return #CCS_INVALID_OBJECT if \p expression is not a valid CCS expression
  */
 extern ccs_error_t
-ccs_expression_get_num_nodes(
-	ccs_expression_t  expression,
-	size_t           *num_nodes_ret);
+ccs_expression_get_num_nodes(ccs_expression_t expression, size_t *num_nodes_ret);
 
 /**
  * Get the child nodes of an expression.
@@ -409,9 +401,7 @@ ccs_expression_get_nodes(
  * @return #CCS_INVALID_VALUE if \p value_ret is NULL
  */
 extern ccs_error_t
-ccs_literal_get_value(
-	ccs_expression_t  expression,
-	ccs_datum_t      *value_ret);
+ccs_literal_get_value(ccs_expression_t expression, ccs_datum_t *value_ret);
 
 /**
  * Get the parameter of a variable expression.
@@ -425,8 +415,8 @@ ccs_literal_get_value(
  */
 extern ccs_error_t
 ccs_variable_get_parameter(
-	ccs_expression_t  expression,
-	ccs_parameter_t  *parameter_ret);
+	ccs_expression_t expression,
+	ccs_parameter_t *parameter_ret);
 
 /**
  * Get the value of an expression in a given context, provided a list of values
@@ -451,10 +441,10 @@ ccs_variable_get_parameter(
  */
 extern ccs_error_t
 ccs_expression_eval(
-	ccs_expression_t  expression,
-	ccs_context_t     context,
-	ccs_datum_t      *values,
-	ccs_datum_t      *result_ret);
+	ccs_expression_t expression,
+	ccs_context_t    context,
+	ccs_datum_t     *values,
+	ccs_datum_t     *result_ret);
 
 /**
  * Evaluate the entry of a list at a given index, in a given context, provided a
@@ -483,11 +473,11 @@ ccs_expression_eval(
  */
 extern ccs_error_t
 ccs_expression_list_eval_node(
-	ccs_expression_t  expression,
-	ccs_context_t     context,
-	ccs_datum_t      *values,
-	size_t            index,
-	ccs_datum_t      *result_ret);
+	ccs_expression_t expression,
+	ccs_context_t    context,
+	ccs_datum_t     *values,
+	size_t           index,
+	ccs_datum_t     *result_ret);
 
 /**
  * Get the parameters used in an expression.
@@ -512,10 +502,10 @@ ccs_expression_list_eval_node(
  */
 extern ccs_error_t
 ccs_expression_get_parameters(
-	ccs_expression_t  expression,
-	size_t            num_parameters,
-	ccs_parameter_t  *parameters,
-	size_t           *num_parameters_ret);
+	ccs_expression_t expression,
+	size_t           num_parameters,
+	ccs_parameter_t *parameters,
+	size_t          *num_parameters_ret);
 
 /**
  * Validate that an expression can be evaluated in the given context.
@@ -535,9 +525,7 @@ ccs_expression_get_parameters(
  *                             temporary storage
  */
 extern ccs_error_t
-ccs_expression_check_context(
-	ccs_expression_t expression,
-	ccs_context_t    context);
+ccs_expression_check_context(ccs_expression_t expression, ccs_context_t context);
 #ifdef __cplusplus
 }
 #endif

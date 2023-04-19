@@ -42,9 +42,7 @@ typedef enum ccs_tree_tuner_type_e ccs_tree_tuner_type_t;
  * @return #CCS_INVALID_VALUE if \p type_ret is NULL
  */
 extern ccs_error_t
-ccs_tree_tuner_get_type(
-	ccs_tree_tuner_t       tuner,
-	ccs_tree_tuner_type_t *type_ret);
+ccs_tree_tuner_get_type(ccs_tree_tuner_t tuner, ccs_tree_tuner_type_t *type_ret);
 
 /**
  * Get the name of a tree tuner.
@@ -56,9 +54,7 @@ ccs_tree_tuner_get_type(
  * @return #CCS_INVALID_VALUE if \p name_ret is NULL
  */
 extern ccs_error_t
-ccs_tree_tuner_get_name(
-	ccs_tree_tuner_t   tuner,
-	const char       **name_ret);
+ccs_tree_tuner_get_name(ccs_tree_tuner_t tuner, const char **name_ret);
 
 /**
  * Get the associated tree space.
@@ -229,10 +225,10 @@ ccs_tree_tuner_get_history(
  */
 extern ccs_error_t
 ccs_create_random_tree_tuner(
-	const char            *name,
-	ccs_tree_space_t       tree_space,
-	ccs_objective_space_t  objective_space,
-	ccs_tree_tuner_t      *tuner_ret);
+	const char           *name,
+	ccs_tree_space_t      tree_space,
+	ccs_objective_space_t objective_space,
+	ccs_tree_tuner_t     *tuner_ret);
 
 /**
  * A structure that define the callbacks the user must provide to create a user
@@ -243,8 +239,7 @@ struct ccs_user_defined_tree_tuner_vector_s {
 	 * The deletion callback that will be called once the reference count
 	 * of the tuner reaches 0.
 	 */
-	ccs_error_t (*del)(
-		ccs_tree_tuner_t tuner);
+	ccs_error_t (*del)(ccs_tree_tuner_t tuner);
 
 	/** The tree tuner ask interface see ccs_tree_tuner_ask */
 	ccs_error_t (*ask)(
@@ -283,10 +278,10 @@ struct ccs_user_defined_tree_tuner_vector_s {
 	 * common tuner data, history and optimums will be serialized
 	 */
 	ccs_error_t (*serialize_user_state)(
-		ccs_tree_tuner_t  tuner,
-		size_t            sate_size,
-		void             *state,
-		size_t           *state_size_ret);
+		ccs_tree_tuner_t tuner,
+		size_t           sate_size,
+		void            *state,
+		size_t          *state_size_ret);
 
 	/**
 	 * The tree tuner deserialization interface, can be NULL, in which case,
@@ -305,7 +300,8 @@ struct ccs_user_defined_tree_tuner_vector_s {
 /**
  * a commodity type to represent a user defined tuner callback vector.
  */
-typedef struct ccs_user_defined_tree_tuner_vector_s ccs_user_defined_tree_tuner_vector_t;
+typedef struct ccs_user_defined_tree_tuner_vector_s
+	ccs_user_defined_tree_tuner_vector_t;
 
 /**
  * Create a new user defined tree tuner.
@@ -347,9 +343,8 @@ ccs_create_user_defined_tree_tuner(
  */
 extern ccs_error_t
 ccs_user_defined_tree_tuner_get_tuner_data(
-	ccs_tree_tuner_t   tuner,
-	void             **tuner_data_ret);
-
+	ccs_tree_tuner_t tuner,
+	void           **tuner_data_ret);
 
 #ifdef __cplusplus
 }

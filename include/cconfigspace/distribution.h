@@ -338,8 +338,8 @@ ccs_distribution_get_type(
  */
 extern ccs_error_t
 ccs_distribution_get_dimension(
-	ccs_distribution_t  distribution,
-	size_t             *dimension_ret);
+	ccs_distribution_t distribution,
+	size_t            *dimension_ret);
 
 /**
  * Get the data types of a distribution.
@@ -354,8 +354,8 @@ ccs_distribution_get_dimension(
  */
 extern ccs_error_t
 ccs_distribution_get_data_types(
-	ccs_distribution_t       distribution,
-	ccs_numeric_type_t      *data_types_ret);
+	ccs_distribution_t  distribution,
+	ccs_numeric_type_t *data_types_ret);
 
 /**
  * Get the bounds of a distribution. Bounds are intervals that should contain
@@ -371,8 +371,8 @@ ccs_distribution_get_data_types(
  */
 extern ccs_error_t
 ccs_distribution_get_bounds(
-	ccs_distribution_t  distribution,
-	ccs_interval_t     *interval_ret);
+	ccs_distribution_t distribution,
+	ccs_interval_t    *interval_ret);
 
 /**
  * Check if a distribution could return values outside of the given intervals.
@@ -391,9 +391,9 @@ ccs_distribution_get_bounds(
  */
 extern ccs_error_t
 ccs_distribution_check_oversampling(
-	ccs_distribution_t  distribution,
-	ccs_interval_t     *intervals,
-	ccs_bool_t         *oversamplings_ret);
+	ccs_distribution_t distribution,
+	ccs_interval_t    *intervals,
+	ccs_bool_t        *oversamplings_ret);
 
 /**
  * Get the properties of a normal distribution.
@@ -418,11 +418,11 @@ ccs_distribution_check_oversampling(
  */
 extern ccs_error_t
 ccs_normal_distribution_get_properties(
-	ccs_distribution_t  distribution,
-	ccs_float_t        *mu_ret,
-	ccs_float_t        *sigma_ret,
-	ccs_scale_type_t   *scale_ret,
-	ccs_numeric_t      *quantization_ret);
+	ccs_distribution_t distribution,
+	ccs_float_t       *mu_ret,
+	ccs_float_t       *sigma_ret,
+	ccs_scale_type_t  *scale_ret,
+	ccs_numeric_t     *quantization_ret);
 
 /**
  * Get the properties of a uniform distribution.
@@ -447,11 +447,11 @@ ccs_normal_distribution_get_properties(
  */
 extern ccs_error_t
 ccs_uniform_distribution_get_properties(
-	ccs_distribution_t  distribution,
-	ccs_numeric_t      *lower_ret,
-	ccs_numeric_t      *upper_ret,
-	ccs_scale_type_t   *scale_ret,
-	ccs_numeric_t      *quantization_ret);
+	ccs_distribution_t distribution,
+	ccs_numeric_t     *lower_ret,
+	ccs_numeric_t     *upper_ret,
+	ccs_scale_type_t  *scale_ret,
+	ccs_numeric_t     *quantization_ret);
 
 /**
  * Get the number areas of a roulette distribution.
@@ -467,8 +467,8 @@ ccs_uniform_distribution_get_properties(
  */
 extern ccs_error_t
 ccs_roulette_distribution_get_num_areas(
-	ccs_distribution_t  distribution,
-	size_t             *num_areas_ret);
+	ccs_distribution_t distribution,
+	size_t            *num_areas_ret);
 
 /**
  * Get the normalized areas of a roulette distribution.
@@ -493,10 +493,10 @@ ccs_roulette_distribution_get_num_areas(
  */
 extern ccs_error_t
 ccs_roulette_distribution_get_areas(
-	ccs_distribution_t  distribution,
-	size_t              num_areas,
-	ccs_float_t        *areas,
-	size_t             *num_areas_ret);
+	ccs_distribution_t distribution,
+	size_t             num_areas,
+	ccs_float_t       *areas,
+	size_t            *num_areas_ret);
 
 /**
  * Set the areas of a roulette distribution.
@@ -515,9 +515,9 @@ ccs_roulette_distribution_get_areas(
  */
 extern ccs_error_t
 ccs_roulette_distribution_set_areas(
-	ccs_distribution_t  distribution,
-	size_t              num_areas,
-	ccs_float_t        *areas);
+	ccs_distribution_t distribution,
+	size_t             num_areas,
+	ccs_float_t       *areas);
 
 /**
  * Get the number of distributions contained in a mixture distribution.
@@ -534,8 +534,8 @@ ccs_roulette_distribution_set_areas(
  */
 extern ccs_error_t
 ccs_mixture_distribution_get_num_distributions(
-	ccs_distribution_t  distribution,
-	size_t             *num_distributions_ret);
+	ccs_distribution_t distribution,
+	size_t            *num_distributions_ret);
 
 /**
  * Get the distributions contained in a mixture distribution.
@@ -589,10 +589,10 @@ ccs_mixture_distribution_get_distributions(
  */
 extern ccs_error_t
 ccs_mixture_distribution_get_weights(
-	ccs_distribution_t  distribution,
-	size_t              num_weights,
-	ccs_float_t        *weights,
-	size_t             *num_weights_ret);
+	ccs_distribution_t distribution,
+	size_t             num_weights,
+	ccs_float_t       *weights,
+	size_t            *num_weights_ret);
 
 /**
  * Get the number of distributions contained in a multivariate distribution.
@@ -609,8 +609,8 @@ ccs_mixture_distribution_get_weights(
  */
 extern ccs_error_t
 ccs_multivariate_distribution_get_num_distributions(
-	ccs_distribution_t  distribution,
-	size_t             *num_distributions_ret);
+	ccs_distribution_t distribution,
+	size_t            *num_distributions_ret);
 
 /**
  * Get the distributions contained in a multivariate distribution.
@@ -657,9 +657,9 @@ ccs_multivariate_distribution_get_distributions(
  */
 extern ccs_error_t
 ccs_distribution_sample(
-	ccs_distribution_t  distribution,
-	ccs_rng_t           rng,
-	ccs_numeric_t      *values);
+	ccs_distribution_t distribution,
+	ccs_rng_t          rng,
+	ccs_numeric_t     *values);
 
 /**
  * Get a collection of random samples from a distribution.
@@ -680,10 +680,10 @@ ccs_distribution_sample(
  */
 extern ccs_error_t
 ccs_distribution_samples(
-	ccs_distribution_t  distribution,
-	ccs_rng_t           rng,
-	size_t              num_samples,
-	ccs_numeric_t      *values);
+	ccs_distribution_t distribution,
+	ccs_rng_t          rng,
+	size_t             num_samples,
+	ccs_numeric_t     *values);
 
 /**
  * Get a collection of random samples from a distribution. Each sample is stride
@@ -710,11 +710,11 @@ ccs_distribution_samples(
  */
 extern ccs_error_t
 ccs_distribution_strided_samples(
-	ccs_distribution_t  distribution,
-	ccs_rng_t           rng,
-	size_t              num_samples,
-	size_t              stride,
-	ccs_numeric_t      *values);
+	ccs_distribution_t distribution,
+	ccs_rng_t          rng,
+	size_t             num_samples,
+	size_t             stride,
+	ccs_numeric_t     *values);
 
 /**
  * Get a collection of random samples from a distribution. Each sample
@@ -734,10 +734,10 @@ ccs_distribution_strided_samples(
  */
 extern ccs_error_t
 ccs_distribution_soa_samples(
-	ccs_distribution_t   distribution,
-	ccs_rng_t            rng,
-	size_t               num_samples,
-	ccs_numeric_t      **values);
+	ccs_distribution_t distribution,
+	ccs_rng_t          rng,
+	size_t             num_samples,
+	ccs_numeric_t    **values);
 /**
  * Get a collection of random parameters' samples by sampling a
  * distribution.
@@ -763,11 +763,11 @@ ccs_distribution_soa_samples(
  */
 extern ccs_error_t
 ccs_distribution_parameters_samples(
-	ccs_distribution_t  distribution,
-	ccs_rng_t           rng,
-	ccs_parameter_t    *parameters,
-	size_t              num_samples,
-	ccs_datum_t        *values);
+	ccs_distribution_t distribution,
+	ccs_rng_t          rng,
+	ccs_parameter_t   *parameters,
+	size_t             num_samples,
+	ccs_datum_t       *values);
 
 /**
  * Get a random parameters' sample by sampling a distribution.
@@ -788,10 +788,10 @@ ccs_distribution_parameters_samples(
  */
 extern ccs_error_t
 ccs_distribution_parameters_sample(
-	ccs_distribution_t  distribution,
-	ccs_rng_t           rng,
-	ccs_parameter_t    *parameters,
-	ccs_datum_t        *values);
+	ccs_distribution_t distribution,
+	ccs_rng_t          rng,
+	ccs_parameter_t   *parameters,
+	ccs_datum_t       *values);
 
 #ifdef __cplusplus
 }

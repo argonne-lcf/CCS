@@ -63,9 +63,9 @@ ccs_features_get_features_space(
  */
 extern ccs_error_t
 ccs_features_get_value(
-	ccs_features_t  features,
-	size_t          index,
-	ccs_datum_t    *value_ret);
+	ccs_features_t features,
+	size_t         index,
+	ccs_datum_t   *value_ret);
 
 /**
  * Set the value of the parameter at the given index. Transient values will
@@ -82,10 +82,7 @@ ccs_features_get_value(
  *                             string
  */
 extern ccs_error_t
-ccs_features_set_value(
-	ccs_features_t features,
-	size_t         index,
-	ccs_datum_t    value);
+ccs_features_set_value(ccs_features_t features, size_t index, ccs_datum_t value);
 
 /**
  * Get all the values in the features.
@@ -107,10 +104,10 @@ ccs_features_set_value(
  */
 extern ccs_error_t
 ccs_features_get_values(
-	ccs_features_t  features,
-	size_t          num_values,
-	ccs_datum_t    *values,
-	size_t         *num_values_ret);
+	ccs_features_t features,
+	size_t         num_values,
+	ccs_datum_t   *values,
+	size_t        *num_values_ret);
 
 /**
  * Get the value of the parameter with the given name.
@@ -125,9 +122,9 @@ ccs_features_get_values(
  */
 extern ccs_error_t
 ccs_features_get_value_by_name(
-	ccs_features_t  features,
-	const char     *name,
-	ccs_datum_t    *value_ret);
+	ccs_features_t features,
+	const char    *name,
+	ccs_datum_t   *value_ret);
 
 /**
  * Check that the features is a valid features for the features space.
@@ -142,9 +139,7 @@ ccs_features_get_value_by_name(
  * @return #CCS_INVALID_CONFIGURATION if \p features is found to be invalid
  */
 extern ccs_error_t
-ccs_features_check(
-	ccs_features_t  features,
-	ccs_bool_t     *is_valid_ret);
+ccs_features_check(ccs_features_t features, ccs_bool_t *is_valid_ret);
 
 /**
  * Compute a hash value for the features by hashing together the features space
@@ -157,9 +152,7 @@ ccs_features_check(
  * @return #CCS_INVALID_VALUE if \p hash_ret is NULL
  */
 extern ccs_error_t
-ccs_features_hash(
-	ccs_features_t  features,
-	ccs_hash_t     *hash_ret);
+ccs_features_hash(ccs_features_t features, ccs_hash_t *hash_ret);
 
 /**
  * Define a strict ordering of features instances. Configuration space, number
@@ -176,9 +169,9 @@ ccs_features_hash(
  */
 extern ccs_error_t
 ccs_features_cmp(
-	ccs_features_t  features,
-	ccs_features_t  other_features,
-	int            *cmp_ret);
+	ccs_features_t features,
+	ccs_features_t other_features,
+	int           *cmp_ret);
 
 #ifdef __cplusplus
 }

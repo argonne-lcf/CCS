@@ -11,7 +11,6 @@ extern "C" {
  * space (see tree_space.h).
  */
 
-
 /**
  * Create a new instance of a tree configuration on a given tree_space.
  * An empty position targets the root of the tree.
@@ -36,7 +35,6 @@ ccs_create_tree_configuration(
 	const size_t             *position,
 	ccs_tree_configuration_t *configuration_ret);
 
-
 /**
  * Get the tree space associated to the configuration.
  * @param[in] configuration
@@ -49,8 +47,8 @@ ccs_create_tree_configuration(
  */
 extern ccs_error_t
 ccs_tree_configuration_get_tree_space(
-	ccs_tree_configuration_t  configuration,
-	ccs_tree_space_t         *tree_space_ret);
+	ccs_tree_configuration_t configuration,
+	ccs_tree_space_t        *tree_space_ret);
 
 /**
  * Get the position of the configuration.
@@ -73,10 +71,10 @@ ccs_tree_configuration_get_tree_space(
  */
 extern ccs_error_t
 ccs_tree_configuration_get_position(
-	ccs_tree_configuration_t  configuration,
-	size_t                    position_size,
-	size_t                   *position,
-	size_t                   *position_size_ret);
+	ccs_tree_configuration_t configuration,
+	size_t                   position_size,
+	size_t                  *position,
+	size_t                  *position_size_ret);
 
 /**
  * Get the values along the path of the configuration.
@@ -101,10 +99,10 @@ ccs_tree_configuration_get_position(
  */
 extern ccs_error_t
 ccs_tree_configuration_get_values(
-	ccs_tree_configuration_t  configuration,
-	size_t                    num_values,
-	ccs_datum_t              *values,
-	size_t                   *num_values_ret);
+	ccs_tree_configuration_t configuration,
+	size_t                   num_values,
+	ccs_datum_t             *values,
+	size_t                  *num_values_ret);
 
 /**
  * Get the node pointed to by the configuration.
@@ -120,8 +118,8 @@ ccs_tree_configuration_get_values(
  */
 extern ccs_error_t
 ccs_tree_configuration_get_node(
-	ccs_tree_configuration_t  configuration,
-	ccs_tree_t               *node_ret);
+	ccs_tree_configuration_t configuration,
+	ccs_tree_t              *node_ret);
 
 /**
  * Verify that the position of the configuration is a valid position in the
@@ -137,8 +135,8 @@ ccs_tree_configuration_get_node(
  */
 extern ccs_error_t
 ccs_tree_configuration_check(
-	ccs_tree_configuration_t  configuration,
-	ccs_bool_t               *is_valid_ret);
+	ccs_tree_configuration_t configuration,
+	ccs_bool_t              *is_valid_ret);
 
 /**
  * Compute a hash value for the configuration by hashing together the
@@ -153,8 +151,8 @@ ccs_tree_configuration_check(
  */
 extern ccs_error_t
 ccs_tree_configuration_hash(
-	ccs_tree_configuration_t  configuration,
-	ccs_hash_t               *hash_ret);
+	ccs_tree_configuration_t configuration,
+	ccs_hash_t              *hash_ret);
 
 /**
  * Define a strict ordering of tree configuration instances. Tree space,
@@ -172,9 +170,9 @@ ccs_tree_configuration_hash(
  */
 extern ccs_error_t
 ccs_tree_configuration_cmp(
-	ccs_tree_configuration_t  configuration,
-	ccs_tree_configuration_t  other_configuration,
-	int                      *cmp_ret);
+	ccs_tree_configuration_t configuration,
+	ccs_tree_configuration_t other_configuration,
+	int                     *cmp_ret);
 
 #ifdef __cplusplus
 }

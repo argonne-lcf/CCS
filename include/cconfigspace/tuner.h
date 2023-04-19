@@ -42,9 +42,7 @@ typedef enum ccs_tuner_type_e ccs_tuner_type_t;
  * @return #CCS_INVALID_VALUE if \p type_ret is NULL
  */
 extern ccs_error_t
-ccs_tuner_get_type(
-	ccs_tuner_t       tuner,
-	ccs_tuner_type_t *type_ret);
+ccs_tuner_get_type(ccs_tuner_t tuner, ccs_tuner_type_t *type_ret);
 
 /**
  * Get the name of a tuner.
@@ -56,9 +54,7 @@ ccs_tuner_get_type(
  * @return #CCS_INVALID_OBJECT if \p tuner is not a valid CCS tuner
  */
 extern ccs_error_t
-ccs_tuner_get_name(
-	ccs_tuner_t   tuner,
-	const char  **name_ret);
+ccs_tuner_get_name(ccs_tuner_t tuner, const char **name_ret);
 
 /**
  * Get the associated configuration space.
@@ -162,9 +158,7 @@ ccs_tuner_tell(
  *                             configurations
  */
 extern ccs_error_t
-ccs_tuner_suggest(
-	ccs_tuner_t          tuner,
-	ccs_configuration_t *configuration);
+ccs_tuner_suggest(ccs_tuner_t tuner, ccs_configuration_t *configuration);
 
 /**
  * Ask a tuner for the discovered Pareto front. For single objective objective
@@ -229,10 +223,10 @@ ccs_tuner_get_history(
  */
 extern ccs_error_t
 ccs_create_random_tuner(
-	const char                *name,
-	ccs_configuration_space_t  configuration_space,
-	ccs_objective_space_t      objective_space,
-	ccs_tuner_t               *tuner_ret);
+	const char               *name,
+	ccs_configuration_space_t configuration_space,
+	ccs_objective_space_t     objective_space,
+	ccs_tuner_t              *tuner_ret);
 
 /**
  * A structure that define the callbacks the user must provide to create a user
@@ -243,8 +237,7 @@ struct ccs_user_defined_tuner_vector_s {
 	 * The deletion callback that will be called once the reference count
 	 * of the tuner reaches 0.
 	 */
-	ccs_error_t (*del)(
-		ccs_tuner_t tuner);
+	ccs_error_t (*del)(ccs_tuner_t tuner);
 
 	/** The tuner ask interface see ccs_tuner_ask */
 	ccs_error_t (*ask)(
@@ -283,10 +276,10 @@ struct ccs_user_defined_tuner_vector_s {
 	 * common tuner data, history and optimums will be serialized
 	 */
 	ccs_error_t (*serialize_user_state)(
-		ccs_tuner_t   tuner,
-		size_t        sate_size,
-		void         *state,
-		size_t       *state_size_ret);
+		ccs_tuner_t tuner,
+		size_t      sate_size,
+		void       *state,
+		size_t     *state_size_ret);
 
 	/**
 	 * The tuner deserialization interface, can be NULL, in which case,
@@ -346,9 +339,7 @@ ccs_create_user_defined_tuner(
  * @return #CCS_INVALID_VALUE if \p tuner_data_ret is NULL
  */
 extern ccs_error_t
-ccs_user_defined_tuner_get_tuner_data(
-	ccs_tuner_t   tuner,
-	void        **tuner_data_ret);
+ccs_user_defined_tuner_get_tuner_data(ccs_tuner_t tuner, void **tuner_data_ret);
 
 #ifdef __cplusplus
 }

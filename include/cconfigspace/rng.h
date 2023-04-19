@@ -24,8 +24,7 @@ extern "C" {
  *                             new random number generator
  */
 extern ccs_error_t
-ccs_create_rng(
-	ccs_rng_t *rng_ret);
+ccs_create_rng(ccs_rng_t *rng_ret);
 
 /**
  * Create a new random number generator using the provided gsl type (see
@@ -40,9 +39,7 @@ ccs_create_rng(
  *                             new random number generator
  */
 extern ccs_error_t
-ccs_create_rng_with_type(
-	const gsl_rng_type *rng_type,
-	ccs_rng_t          *rng_ret);
+ccs_create_rng_with_type(const gsl_rng_type *rng_type, ccs_rng_t *rng_ret);
 
 /**
  * Get the gsl type of a random number generator.
@@ -55,9 +52,7 @@ ccs_create_rng_with_type(
  * @return #CCS_INVALID_VALUE if \p rng_type_ret is NULL
  */
 extern ccs_error_t
-ccs_rng_get_type(
-	ccs_rng_t            rng,
-	const gsl_rng_type **rng_type_ret);
+ccs_rng_get_type(ccs_rng_t rng, const gsl_rng_type **rng_type_ret);
 
 /**
  * Set the seed of a random number generator.
@@ -68,9 +63,7 @@ ccs_rng_get_type(
  *                              generator
  */
 extern ccs_error_t
-ccs_rng_set_seed(
-	ccs_rng_t         rng,
-	unsigned long int seed);
+ccs_rng_set_seed(ccs_rng_t rng, unsigned long int seed);
 
 /**
  * Get a random integer from a random number generator. Integer is contained
@@ -84,9 +77,7 @@ ccs_rng_set_seed(
  * @return #CCS_INVALID_VALUE if \p value_ret is NULL
  */
 extern ccs_error_t
-ccs_rng_get(
-	ccs_rng_t          rng,
-	unsigned long int *value_ret);
+ccs_rng_get(ccs_rng_t rng, unsigned long int *value_ret);
 
 /**
  * Get a random floating point value uniformly sampled in the interval [0.0,
@@ -100,9 +91,7 @@ ccs_rng_get(
  * @return #CCS_INVALID_VALUE if \p value_ret is NULL
  */
 extern ccs_error_t
-ccs_rng_uniform(
-	ccs_rng_t    rng,
-	ccs_float_t *value_ret);
+ccs_rng_uniform(ccs_rng_t rng, ccs_float_t *value_ret);
 
 /**
  * Get the underlying gsl random number generator.
@@ -115,9 +104,7 @@ ccs_rng_uniform(
  * @return #CCS_INVALID_VALUE if \p gsl_rng_ret is NULL
  */
 extern ccs_error_t
-ccs_rng_get_gsl_rng(
-	ccs_rng_t   rng,
-	gsl_rng   **gsl_rng_ret);
+ccs_rng_get_gsl_rng(ccs_rng_t rng, gsl_rng **gsl_rng_ret);
 
 /**
  * Get the minimum value that can be returned by #ccs_rng_get.
@@ -130,9 +117,7 @@ ccs_rng_get_gsl_rng(
  * @return #CCS_INVALID_VALUE if \p value_ret is NULL
  */
 extern ccs_error_t
-ccs_rng_min(
-	ccs_rng_t          rng,
-	unsigned long int *value_ret);
+ccs_rng_min(ccs_rng_t rng, unsigned long int *value_ret);
 
 /**
  * Get the maximum value that can be returned by #ccs_rng_get.
@@ -145,9 +130,7 @@ ccs_rng_min(
  * @return #CCS_INVALID_VALUE if \p value_ret is NULL
  */
 extern ccs_error_t
-ccs_rng_max(
-	ccs_rng_t          rng,
-	unsigned long int *value_ret);
+ccs_rng_max(ccs_rng_t rng, unsigned long int *value_ret);
 
 #ifdef __cplusplus
 }

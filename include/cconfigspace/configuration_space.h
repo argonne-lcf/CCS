@@ -42,8 +42,8 @@ ccs_create_configuration_space(
  */
 extern ccs_error_t
 ccs_configuration_space_get_name(
-	ccs_configuration_space_t   configuration_space,
-	const char                **name_ret);
+	ccs_configuration_space_t configuration_space,
+	const char              **name_ret);
 
 /**
  * Set (replace) the internal rng of the configuration space.
@@ -70,8 +70,8 @@ ccs_configuration_space_set_rng(
  */
 extern ccs_error_t
 ccs_configuration_space_get_rng(
-	ccs_configuration_space_t  configuration_space,
-	ccs_rng_t                 *rng_ret);
+	ccs_configuration_space_t configuration_space,
+	ccs_rng_t                *rng_ret);
 
 /**
  * Add a parameter to the configuration space.
@@ -137,10 +137,10 @@ ccs_configuration_space_add_parameter(
  */
 extern ccs_error_t
 ccs_configuration_space_add_parameters(
-	ccs_configuration_space_t  configuration_space,
-	size_t                     num_parameters,
-	ccs_parameter_t           *parameters,
-	ccs_distribution_t        *distributions);
+	ccs_configuration_space_t configuration_space,
+	size_t                    num_parameters,
+	ccs_parameter_t          *parameters,
+	ccs_distribution_t       *distributions);
 
 /**
  * Set the distribution of one or more parameters. Existing distributions
@@ -165,9 +165,9 @@ ccs_configuration_space_add_parameters(
  */
 extern ccs_error_t
 ccs_configuration_space_set_distribution(
-	ccs_configuration_space_t  configuration_space,
-	ccs_distribution_t         distribution,
-	size_t                    *indices);
+	ccs_configuration_space_t configuration_space,
+	ccs_distribution_t        distribution,
+	size_t                   *indices);
 
 /**
  * Get the number of parameters in a configuration space.
@@ -182,8 +182,8 @@ ccs_configuration_space_set_distribution(
  */
 extern ccs_error_t
 ccs_configuration_space_get_num_parameters(
-	ccs_configuration_space_t  configuration_space,
-	size_t                     *num_parameters_ret);
+	ccs_configuration_space_t configuration_space,
+	size_t                   *num_parameters_ret);
 
 /**
  * Get an parameter in a configuration space given its index.
@@ -200,10 +200,9 @@ ccs_configuration_space_get_num_parameters(
  */
 extern ccs_error_t
 ccs_configuration_space_get_parameter(
-	ccs_configuration_space_t  configuration_space,
-	size_t                     index,
-	ccs_parameter_t           *parameter_ret);
-
+	ccs_configuration_space_t configuration_space,
+	size_t                    index,
+	ccs_parameter_t          *parameter_ret);
 
 /**
  * Get an parameter's distribution in a configuration space given its
@@ -224,10 +223,10 @@ ccs_configuration_space_get_parameter(
  */
 extern ccs_error_t
 ccs_configuration_space_get_parameter_distribution(
-	ccs_configuration_space_t  configuration_space,
-	size_t                     index,
-	ccs_distribution_t        *distribution_ret,
-	size_t                    *index_ret);
+	ccs_configuration_space_t configuration_space,
+	size_t                    index,
+	ccs_distribution_t       *distribution_ret,
+	size_t                   *index_ret);
 
 /**
  * Get an parameter in a configuration space given its name.
@@ -244,9 +243,9 @@ ccs_configuration_space_get_parameter_distribution(
  */
 extern ccs_error_t
 ccs_configuration_space_get_parameter_by_name(
-		ccs_configuration_space_t  configuration_space,
-		const char *               name,
-		ccs_parameter_t           *parameter_ret);
+	ccs_configuration_space_t configuration_space,
+	const char               *name,
+	ccs_parameter_t          *parameter_ret);
 
 /**
  * Get the index of an parameter in the configuration space given its name.
@@ -263,9 +262,9 @@ ccs_configuration_space_get_parameter_by_name(
  */
 extern ccs_error_t
 ccs_configuration_space_get_parameter_index_by_name(
-		ccs_configuration_space_t  configuration_space,
-		const char                *name,
-		size_t                    *index_ret);
+	ccs_configuration_space_t configuration_space,
+	const char               *name,
+	size_t                   *index_ret);
 
 /**
  * Get the index of an parameter in the configuration space.
@@ -282,9 +281,9 @@ ccs_configuration_space_get_parameter_index_by_name(
  */
 extern ccs_error_t
 ccs_configuration_space_get_parameter_index(
-		ccs_configuration_space_t  configuration_space,
-		ccs_parameter_t            parameter,
-		size_t                    *index_ret);
+	ccs_configuration_space_t configuration_space,
+	ccs_parameter_t           parameter,
+	size_t                   *index_ret);
 
 /**
  * Get the indices of a set of parameters in a configuration space.
@@ -308,10 +307,10 @@ ccs_configuration_space_get_parameter_index(
  */
 extern ccs_error_t
 ccs_configuration_space_get_parameter_indexes(
-		ccs_configuration_space_t  configuration_space,
-		size_t                     num_parameters,
-		ccs_parameter_t           *parameters,
-		size_t                    *indexes);
+	ccs_configuration_space_t configuration_space,
+	size_t                    num_parameters,
+	ccs_parameter_t          *parameters,
+	size_t                   *indexes);
 
 /**
  * Get the parameters in the given configuration space.
@@ -338,10 +337,10 @@ ccs_configuration_space_get_parameter_indexes(
  */
 extern ccs_error_t
 ccs_configuration_space_get_parameters(
-	ccs_configuration_space_t  configuration_space,
-	size_t                     num_parameters,
-	ccs_parameter_t           *parameters,
-	size_t                    *num_parameters_ret);
+	ccs_configuration_space_t configuration_space,
+	size_t                    num_parameters,
+	ccs_parameter_t          *parameters,
+	size_t                   *num_parameters_ret);
 
 /**
  * Validate that a given value at the given index is valid in a configuration
@@ -364,10 +363,10 @@ ccs_configuration_space_get_parameters(
  */
 extern ccs_error_t
 ccs_configuration_space_validate_value(
-	ccs_configuration_space_t  configuration_space,
-	size_t                     index,
-	ccs_datum_t                value,
-	ccs_datum_t               *value_ret);
+	ccs_configuration_space_t configuration_space,
+	size_t                    index,
+	ccs_datum_t               value,
+	ccs_datum_t              *value_ret);
 
 /**
  * Set the active condition of a parameter in a configuration space given
@@ -415,9 +414,9 @@ ccs_configuration_space_set_condition(
  */
 extern ccs_error_t
 ccs_configuration_space_get_condition(
-	ccs_configuration_space_t  configuration_space,
-	size_t                     parameter_index,
-	ccs_expression_t          *expression_ret);
+	ccs_configuration_space_t configuration_space,
+	size_t                    parameter_index,
+	ccs_expression_t         *expression_ret);
 
 /**
  * Get the active conditions of the parameters in a configuration space.
@@ -444,10 +443,10 @@ ccs_configuration_space_get_condition(
  */
 extern ccs_error_t
 ccs_configuration_space_get_conditions(
-	ccs_configuration_space_t  configuration_space,
-	size_t                     num_expressions,
-	ccs_expression_t          *expressions,
-	size_t                    *num_expressions_ret);
+	ccs_configuration_space_t configuration_space,
+	size_t                    num_expressions,
+	ccs_expression_t         *expressions,
+	size_t                   *num_expressions_ret);
 
 /**
  * Add a forbidden clause to a configuration space.
@@ -494,9 +493,9 @@ ccs_configuration_space_add_forbidden_clause(
  */
 extern ccs_error_t
 ccs_configuration_space_add_forbidden_clauses(
-	ccs_configuration_space_t  configuration_space,
-	size_t                     num_expressions,
-	ccs_expression_t          *expressions);
+	ccs_configuration_space_t configuration_space,
+	size_t                    num_expressions,
+	ccs_expression_t         *expressions);
 
 /**
  * Get the forbidden clause of rank index in a configuration space.
@@ -513,9 +512,9 @@ ccs_configuration_space_add_forbidden_clauses(
  */
 extern ccs_error_t
 ccs_configuration_space_get_forbidden_clause(
-	ccs_configuration_space_t  configuration_space,
-	size_t                     index,
-	ccs_expression_t          *expression_ret);
+	ccs_configuration_space_t configuration_space,
+	size_t                    index,
+	ccs_expression_t         *expression_ret);
 
 /**
  * Get the forbidden clauses in a configuration space.
@@ -540,10 +539,10 @@ ccs_configuration_space_get_forbidden_clause(
  */
 extern ccs_error_t
 ccs_configuration_space_get_forbidden_clauses(
-	ccs_configuration_space_t  configuration_space,
-	size_t                     num_expressions,
-	ccs_expression_t          *expressions,
-	size_t                    *num_expressions_ret);
+	ccs_configuration_space_t configuration_space,
+	size_t                    num_expressions,
+	ccs_expression_t         *expressions,
+	size_t                   *num_expressions_ret);
 
 /**
  * Check that a configuration is a valid in a configuration space.
@@ -566,9 +565,9 @@ ccs_configuration_space_get_forbidden_clauses(
  */
 extern ccs_error_t
 ccs_configuration_space_check_configuration(
-	ccs_configuration_space_t  configuration_space,
-	ccs_configuration_t        configuration,
-	ccs_bool_t                *is_valid_ret);
+	ccs_configuration_space_t configuration_space,
+	ccs_configuration_t       configuration,
+	ccs_bool_t               *is_valid_ret);
 
 /**
  * Check that a set of values would create a valid configuration for a
@@ -595,10 +594,10 @@ ccs_configuration_space_check_configuration(
  */
 extern ccs_error_t
 ccs_configuration_space_check_configuration_values(
-	ccs_configuration_space_t  configuration_space,
-	size_t                     num_values,
-	ccs_datum_t               *values,
-	ccs_bool_t                *is_valid_ret);
+	ccs_configuration_space_t configuration_space,
+	size_t                    num_values,
+	ccs_datum_t              *values,
+	ccs_bool_t               *is_valid_ret);
 
 /**
  * Get the default configuration of a configuration space
@@ -614,8 +613,8 @@ ccs_configuration_space_check_configuration_values(
  */
 extern ccs_error_t
 ccs_configuration_space_get_default_configuration(
-	ccs_configuration_space_t  configuration_space,
-	ccs_configuration_t       *configuration_ret);
+	ccs_configuration_space_t configuration_space,
+	ccs_configuration_t      *configuration_ret);
 
 /**
  * Get a configuration sampled randomly from a configuration space.
@@ -636,8 +635,8 @@ ccs_configuration_space_get_default_configuration(
  */
 extern ccs_error_t
 ccs_configuration_space_sample(
-	ccs_configuration_space_t  configuration_space,
-	ccs_configuration_t       *configuration_ret);
+	ccs_configuration_space_t configuration_space,
+	ccs_configuration_t      *configuration_ret);
 
 /**
  * Get a given number of configurations sampled randomly from a configuration
@@ -665,9 +664,9 @@ ccs_configuration_space_sample(
  */
 extern ccs_error_t
 ccs_configuration_space_samples(
-	ccs_configuration_space_t  configuration_space,
-	size_t                     num_configurations,
-	ccs_configuration_t       *configurations);
+	ccs_configuration_space_t configuration_space,
+	size_t                    num_configurations,
+	ccs_configuration_t      *configurations);
 
 #ifdef __cplusplus
 }

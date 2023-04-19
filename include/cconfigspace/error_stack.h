@@ -10,7 +10,6 @@
 extern "C" {
 #endif
 
-
 /**
  * Tranfers ownership of thread error stack from CCS to the user.
  * @returns the thread specific error stack or NULL if none exist.
@@ -27,8 +26,7 @@ ccs_get_thread_error();
  *                              error stack
  */
 extern ccs_error_t
-ccs_set_thread_error(
-	ccs_error_stack_t error_stack);
+ccs_set_thread_error(ccs_error_stack_t error_stack);
 
 /**
  * Clears the error stack of the calling thread, releasing the current
@@ -51,7 +49,6 @@ struct ccs_error_stack_elem_s {
  */
 typedef struct ccs_error_stack_elem_s ccs_error_stack_elem_t;
 
-
 /**
  * Creates a new error stack and sets it for the current thread, potentially
  * replacing the previous one.
@@ -63,10 +60,7 @@ typedef struct ccs_error_stack_elem_s ccs_error_stack_elem_t;
  *                             error stack
  */
 extern ccs_error_t
-ccs_create_thread_error(
-	ccs_error_t  error_code,
-	const char  *msg,
-	...);
+ccs_create_thread_error(ccs_error_t error_code, const char *msg, ...);
 
 /**
  * Pushes a stack trace element on the thread error stack. A call to this
@@ -81,10 +75,7 @@ ccs_create_thread_error(
  *                             new stack elements
  */
 extern ccs_error_t
-ccs_thread_error_stack_push(
-	const char        *file,
-	int                line,
-	const char        *func);
+ccs_thread_error_stack_push(const char *file, int line, const char *func);
 
 /**
  * Creates a new error stack object.
@@ -121,10 +112,10 @@ ccs_create_error_stack(
  */
 extern ccs_error_t
 ccs_error_stack_push(
-	ccs_error_stack_t  error_stack,
-	const char        *file,
-	int                line,
-	const char        *func);
+	ccs_error_stack_t error_stack,
+	const char       *file,
+	int               line,
+	const char       *func);
 
 /**
  * Retrieves the message from an error stack.
@@ -137,9 +128,8 @@ ccs_error_stack_push(
  */
 extern ccs_error_t
 ccs_error_stack_get_message(
-	ccs_error_stack_t   error_stack,
-	const char        **message_ret);
-
+	ccs_error_stack_t error_stack,
+	const char      **message_ret);
 
 /**
  * Retrieves the error code from an error stack.
@@ -152,8 +142,8 @@ ccs_error_stack_get_message(
  */
 extern ccs_error_t
 ccs_error_stack_get_code(
-	ccs_error_stack_t  error_stack,
-	ccs_error_t       *error_code_ret);
+	ccs_error_stack_t error_stack,
+	ccs_error_t      *error_code_ret);
 
 /**
  * Retrieves the stack elements from an error stack.

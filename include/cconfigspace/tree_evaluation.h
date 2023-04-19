@@ -37,12 +37,12 @@ extern "C" {
  */
 extern ccs_error_t
 ccs_create_tree_evaluation(
-	ccs_objective_space_t     objective_space,
-	ccs_tree_configuration_t  configuration,
-	ccs_result_t              error,
-	size_t                    num_values,
-	ccs_datum_t              *values,
-	ccs_tree_evaluation_t    *evaluation_ret);
+	ccs_objective_space_t    objective_space,
+	ccs_tree_configuration_t configuration,
+	ccs_result_t             error,
+	size_t                   num_values,
+	ccs_datum_t             *values,
+	ccs_tree_evaluation_t   *evaluation_ret);
 
 /**
  * Get the objective space associated with a tree evaluation.
@@ -83,8 +83,8 @@ ccs_tree_evaluation_get_configuration(
  */
 extern ccs_error_t
 ccs_tree_evaluation_get_error(
-	ccs_tree_evaluation_t  evaluation,
-	ccs_result_t          *error_ret);
+	ccs_tree_evaluation_t evaluation,
+	ccs_result_t         *error_ret);
 
 /**
  * Set the error code associated with a tree evaluation. A successful
@@ -113,9 +113,9 @@ ccs_tree_evaluation_set_error(
  */
 extern ccs_error_t
 ccs_tree_evaluation_get_value(
-	ccs_tree_evaluation_t  evaluation,
-	size_t                 index,
-	ccs_datum_t           *value_ret);
+	ccs_tree_evaluation_t evaluation,
+	size_t                index,
+	ccs_datum_t          *value_ret);
 
 /**
  * Set the value of the parameter at the given index. Transient values will
@@ -157,10 +157,10 @@ ccs_tree_evaluation_set_value(
  */
 extern ccs_error_t
 ccs_tree_evaluation_get_values(
-	ccs_tree_evaluation_t  evaluation,
-	size_t                 num_values,
-	ccs_datum_t           *values,
-	size_t                *num_values_ret);
+	ccs_tree_evaluation_t evaluation,
+	size_t                num_values,
+	ccs_datum_t          *values,
+	size_t               *num_values_ret);
 
 /**
  * Get the value of the parameter with the given name.
@@ -175,9 +175,9 @@ ccs_tree_evaluation_get_values(
  */
 extern ccs_error_t
 ccs_tree_evaluation_get_value_by_name(
-	ccs_tree_evaluation_t  evaluation,
-	const char            *name,
-	ccs_datum_t           *value_ret);
+	ccs_tree_evaluation_t evaluation,
+	const char           *name,
+	ccs_datum_t          *value_ret);
 
 /**
  * Check that an evaluation values are valid in the objective space.
@@ -194,8 +194,8 @@ ccs_tree_evaluation_get_value_by_name(
  */
 extern ccs_error_t
 ccs_tree_evaluation_check(
-	ccs_tree_evaluation_t  evaluation,
-	ccs_bool_t            *is_valid_ret);
+	ccs_tree_evaluation_t evaluation,
+	ccs_bool_t           *is_valid_ret);
 
 /**
  * Get the value of an objective for a valid tree evaluation in the context of its
@@ -213,9 +213,9 @@ ccs_tree_evaluation_check(
  */
 extern ccs_error_t
 ccs_tree_evaluation_get_objective_value(
-	ccs_tree_evaluation_t  evaluation,
-	size_t                 index,
-	ccs_datum_t           *value_ret);
+	ccs_tree_evaluation_t evaluation,
+	size_t                index,
+	ccs_datum_t          *value_ret);
 
 /**
  * Get the values of the objectives for a valid tree evaluation in the context of its
@@ -237,10 +237,10 @@ ccs_tree_evaluation_get_objective_value(
  */
 extern ccs_error_t
 ccs_tree_evaluation_get_objective_values(
-	ccs_tree_evaluation_t  evaluation,
-	size_t                 num_values,
-	ccs_datum_t           *values,
-	size_t                *num_values_ret);
+	ccs_tree_evaluation_t evaluation,
+	size_t                num_values,
+	ccs_datum_t          *values,
+	size_t               *num_values_ret);
 
 /**
  * Compute a hash value for the tree evaluation by hashing together the objective
@@ -254,9 +254,7 @@ ccs_tree_evaluation_get_objective_values(
  * @return #CCS_INVALID_VALUE if \p hash_ret is NULL
  */
 extern ccs_error_t
-ccs_tree_evaluation_hash(
-	ccs_tree_evaluation_t  evaluation,
-	ccs_hash_t            *hash_ret);
+ccs_tree_evaluation_hash(ccs_tree_evaluation_t evaluation, ccs_hash_t *hash_ret);
 
 /**
  * Define a strict ordering of tree evaluation instances. Objective space,
@@ -274,9 +272,9 @@ ccs_tree_evaluation_hash(
  */
 extern ccs_error_t
 ccs_tree_evaluation_cmp(
-	ccs_tree_evaluation_t  evaluation,
-	ccs_tree_evaluation_t  other_evaluation,
-	int                   *cmp_ret);
+	ccs_tree_evaluation_t evaluation,
+	ccs_tree_evaluation_t other_evaluation,
+	int                  *cmp_ret);
 
 /**
  * Compare two successful tree evaluations objectives.
@@ -300,9 +298,9 @@ ccs_tree_evaluation_cmp(
  */
 extern ccs_error_t
 ccs_tree_evaluation_compare(
-	ccs_tree_evaluation_t  evaluation,
-	ccs_tree_evaluation_t  other_evaluation,
-	ccs_comparison_t      *result_ret);
+	ccs_tree_evaluation_t evaluation,
+	ccs_tree_evaluation_t other_evaluation,
+	ccs_comparison_t     *result_ret);
 
 #ifdef __cplusplus
 }

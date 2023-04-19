@@ -17,13 +17,13 @@ struct ccs_interval_s {
 	/** The type of numeric value */
 	ccs_numeric_type_t type;
 	/** The lower bound of the interval */
-	ccs_numeric_t   lower;
+	ccs_numeric_t      lower;
 	/** The upper bound of the interval */
-	ccs_numeric_t   upper;
+	ccs_numeric_t      upper;
 	/** Is the lower bound included in the interval */
-	ccs_bool_t      lower_included;
+	ccs_bool_t         lower_included;
 	/** Is the upper boud included in the interval */
-	ccs_bool_t      upper_included;
+	ccs_bool_t         upper_included;
 };
 
 /**
@@ -40,9 +40,7 @@ typedef struct ccs_interval_s ccs_interval_t;
  * @return #CCS_INVALID_VALUE if \p interval or \p empty_ret are NULL
  */
 extern ccs_error_t
-ccs_interval_empty(
-	ccs_interval_t *interval,
-	ccs_bool_t *empty_ret);
+ccs_interval_empty(ccs_interval_t *interval, ccs_bool_t *empty_ret);
 
 /**
  * Compute the intersection of two intervals.
@@ -108,12 +106,9 @@ ccs_interval_equal(
  *                    interval is NULL
  */
 extern ccs_bool_t
-ccs_interval_include(
-	ccs_interval_t *interval,
-	ccs_numeric_t value);
+ccs_interval_include(ccs_interval_t *interval, ccs_numeric_t value);
 #ifdef __cplusplus
 }
 #endif
 
 #endif //_CCS_INTERVAL_H
-

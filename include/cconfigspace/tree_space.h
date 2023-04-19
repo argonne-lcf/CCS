@@ -36,7 +36,6 @@ enum ccs_tree_space_type_e {
  */
 typedef enum ccs_tree_space_type_e ccs_tree_space_type_t;
 
-
 /**
  * Create a new static tree space.
  * @param[in] name pointer to a string that will be copied internally
@@ -64,8 +63,7 @@ struct ccs_dynamic_tree_space_vector_s {
 	 * The deletion callback that will be called once the reference count
 	 * of the tree space reaches 0.
 	 */
-	ccs_error_t (*del)(
-		ccs_tree_space_t  tree_space);
+	ccs_error_t (*del)(ccs_tree_space_t tree_space);
 
 	/**
 	 * The all back that will be called when querying a missing childre in
@@ -81,29 +79,29 @@ struct ccs_dynamic_tree_space_vector_s {
 	 *                      error encountered
 	 */
 	ccs_error_t (*get_child)(
-		ccs_tree_space_t  tree_space,
-		ccs_tree_t        parent,
-		size_t            child_index,
-		ccs_tree_t       *child_ret);
+		ccs_tree_space_t tree_space,
+		ccs_tree_t       parent,
+		size_t           child_index,
+		ccs_tree_t      *child_ret);
 
 	/**
 	 * The tree space serialization interface, can be NULL. The tree is
 	 * always serialized irrespective of the definition of this callback.
 	 */
 	ccs_error_t (*serialize_user_state)(
-		ccs_tree_space_t  tree_space,
-		size_t            sate_size,
-		void             *state,
-		size_t           *state_size_ret);
+		ccs_tree_space_t tree_space,
+		size_t           sate_size,
+		void            *state,
+		size_t          *state_size_ret);
 
 	/**
 	 * The tree space deserialization interface, can be NULL. In this case,
 	 * only the tree is deserialized.
 	 */
 	ccs_error_t (*deserialize_state)(
-		ccs_tree_space_t  tree_space,
-		size_t            state_size,
-		const void       *state);
+		ccs_tree_space_t tree_space,
+		size_t           state_size,
+		const void      *state);
 };
 
 /**
@@ -160,9 +158,7 @@ ccs_tree_space_get_type(
  * @return #CCS_INVALID_OBJECT if \p tuner is not a valid CCS tree space
  */
 extern ccs_error_t
-ccs_tree_space_get_name(
-	ccs_tree_space_t   tree_space,
-	const char       **name_ret);
+ccs_tree_space_get_name(ccs_tree_space_t tree_space, const char **name_ret);
 
 /**
  * Set (replace) the internal rng of the tree space.
@@ -174,9 +170,7 @@ ccs_tree_space_get_name(
  *                             CCS rng
  */
 extern ccs_error_t
-ccs_tree_space_set_rng(
-	ccs_tree_space_t tree_space,
-	ccs_rng_t        rng);
+ccs_tree_space_set_rng(ccs_tree_space_t tree_space, ccs_rng_t rng);
 
 /**
  * Get the internal rng of the tree space.
@@ -188,9 +182,7 @@ ccs_tree_space_set_rng(
  * @return #CCS_INVALID_VALUE if \p rng_ret is NULL
  */
 extern ccs_error_t
-ccs_tree_space_get_rng(
-	ccs_tree_space_t  tree_space,
-	ccs_rng_t        *rng_ret);
+ccs_tree_space_get_rng(ccs_tree_space_t tree_space, ccs_rng_t *rng_ret);
 
 /**
  * Get the tree of a tree space.
@@ -202,9 +194,7 @@ ccs_tree_space_get_rng(
  * @return #CCS_INVALID_VALUE if \p rng_ret is NULL
  */
 extern ccs_error_t
-ccs_tree_space_get_tree(
-	ccs_tree_space_t  tree_space,
-	ccs_tree_t       *tree_ret);
+ccs_tree_space_get_tree(ccs_tree_space_t tree_space, ccs_tree_t *tree_ret);
 
 /**
  * Get the node at a given position in a tree space.
@@ -223,10 +213,10 @@ ccs_tree_space_get_tree(
  */
 extern ccs_error_t
 ccs_tree_space_get_node_at_position(
-	ccs_tree_space_t  tree_space,
-	size_t            position_size,
-	const size_t     *position,
-	ccs_tree_t       *tree_ret);
+	ccs_tree_space_t tree_space,
+	size_t           position_size,
+	const size_t    *position,
+	ccs_tree_t      *tree_ret);
 
 /**
  * Get the values along the path to a given position in the tree space.
@@ -248,11 +238,11 @@ ccs_tree_space_get_node_at_position(
  */
 extern ccs_error_t
 ccs_tree_space_get_values_at_position(
-	ccs_tree_space_t  tree_space,
-	size_t            position_size,
-	const size_t     *position,
-	size_t            num_values,
-	ccs_datum_t      *values);
+	ccs_tree_space_t tree_space,
+	size_t           position_size,
+	const size_t    *position,
+	size_t           num_values,
+	ccs_datum_t     *values);
 
 /**
  * Check the validity of a given position in a tree space.
@@ -272,10 +262,10 @@ ccs_tree_space_get_values_at_position(
  */
 extern ccs_error_t
 ccs_tree_space_check_position(
-	ccs_tree_space_t  tree_space,
-	size_t            position_size,
-	const size_t     *position,
-	ccs_bool_t       *is_valid_ret);
+	ccs_tree_space_t tree_space,
+	size_t           position_size,
+	const size_t    *position,
+	ccs_bool_t      *is_valid_ret);
 
 /**
  * Check the validity of a given configuration in a tree space.
@@ -292,9 +282,9 @@ ccs_tree_space_check_position(
  */
 extern ccs_error_t
 ccs_tree_space_check_configuration(
-	ccs_tree_space_t          tree_space,
-	ccs_tree_configuration_t  configuration,
-	ccs_bool_t               *is_valid_ret);
+	ccs_tree_space_t         tree_space,
+	ccs_tree_configuration_t configuration,
+	ccs_bool_t              *is_valid_ret);
 
 /**
  * Get a tree configuration sampled randomly from a tree space.  The space is
@@ -347,8 +337,8 @@ ccs_tree_space_samples(
  */
 extern ccs_error_t
 ccs_dynamic_tree_space_get_tree_space_data(
-	ccs_tree_space_t   tree_space,
-	void             **tree_space_data_ret);
+	ccs_tree_space_t tree_space,
+	void           **tree_space_data_ret);
 
 #ifdef __cplusplus
 }
