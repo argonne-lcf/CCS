@@ -203,20 +203,20 @@ class TestDistribution(unittest.TestCase):
   def test_oversampling_uniform_float(self):
     d = ccs.UniformDistribution.float(lower = -1.0, upper = 1.0)
     i = ccs.ccs_interval(t = ccs.ccs_numeric_type.FLOAT, lower = -0.2, upper = 0.2)
-    self.assertTrue( d.oversampling(i) )
+    self.assertTrue( d.is_oversampling(i) )
     i = ccs.ccs_interval(t = ccs.ccs_numeric_type.FLOAT, lower = -0.2, upper = 2.0)
-    self.assertTrue( d.oversampling(i) )
+    self.assertTrue( d.is_oversampling(i) )
     i = ccs.ccs_interval(t = ccs.ccs_numeric_type.FLOAT, lower = -2.0, upper = 2.0)
-    self.assertFalse( d.oversampling(i) )
+    self.assertFalse( d.is_oversampling(i) )
 
   def test_oversampling_uniform_int(self):
     d = ccs.UniformDistribution.int(lower = 0, upper = 100)
     i = ccs.ccs_interval(t = ccs.ccs_numeric_type.INT, lower = 5, upper = 50)
-    self.assertTrue( d.oversampling(i) )
+    self.assertTrue( d.is_oversampling(i) )
     i = ccs.ccs_interval(t = ccs.ccs_numeric_type.INT, lower = 5, upper = 150)
-    self.assertTrue( d.oversampling(i) )
+    self.assertTrue( d.is_oversampling(i) )
     i = ccs.ccs_interval(t = ccs.ccs_numeric_type.INT, lower = -5, upper = 150)
-    self.assertFalse( d.oversampling(i) )
+    self.assertFalse( d.is_oversampling(i) )
 
   def test_sample_uniform(self):
     rng = ccs.Rng()

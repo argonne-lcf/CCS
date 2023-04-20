@@ -85,7 +85,7 @@ class Distribution(Object):
     self._bounds = v
     return v
 
-  def oversampling(self, interval):
+  def is_oversampling(self, interval):
     v = ccs_bool()
     res = ccs_distribution_check_oversampling(self.handle, ct.byref(interval), ct.byref(v))
     Error.check(res)
