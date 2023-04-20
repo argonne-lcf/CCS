@@ -58,6 +58,8 @@ class TestTreeSpace(unittest.TestCase):
     tree = ccs.Tree(arity = 4, value = 400)
     ts = ccs.DynamicTreeSpace(name = 'space', tree = tree, delete = delete, get_child = get_child)
     self.assertEqual( ccs.ccs_object_type.TREE_SPACE, ts.object_type )
+    self.assertEqual( "space", ts.name )
+    self.assertIsInstance( ts.rng, ccs.Rng )
     self.assertEqual( ccs.ccs_tree_space_type.DYNAMIC, ts.type )
     self.assertEqual( tree.handle.value, ts.tree.handle.value )
     self.assertEqual( tree.handle.value, ts.tree.handle.value )
