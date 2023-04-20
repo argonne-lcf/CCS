@@ -343,7 +343,7 @@ typedef uint32_t              ccs_datum_flags_t;
 enum ccs_numeric_type_e {
 	CCS_NUMERIC_TYPE_INT   = CCS_DATA_TYPE_INT,   /*!< A ccs_int_t */
 	CCS_NUMERIC_TYPE_FLOAT = CCS_DATA_TYPE_FLOAT, /*!< A ccs_float_t */
-	CCS_NUMERIC_TYPE_MAX,                             /*!< Guard */
+	CCS_NUMERIC_TYPE_MAX,                         /*!< Guard */
 	/** Try forcing 32 bits value for bindings */
 	CCS_NUMERIC_TYPE_FORCE_32BIT = INT32_MAX
 };
@@ -918,7 +918,7 @@ enum ccs_deserialize_option_e {
 	 *  This callback will be called for all objects that had their
 	 *  user_data serialized. If no such callback is provided the object's
 	 *  user_data value will not be set. */
-	CCS_DESERIALIZE_CALLBACK,
+	CCS_DESERIALIZE_OPTION_CALLBACK,
 	/** Guard */
 	CCS_DESERIALIZE_OPTION_MAX,
 	/** Try forcing 32 bits value for bindings */

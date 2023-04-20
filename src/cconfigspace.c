@@ -554,7 +554,7 @@ _ccs_object_deserialize_options(
 				va_arg(args, _ccs_file_descriptor_state_t **);
 			CCS_CHECK_PTR(opts->ppfd_state);
 			break;
-		case CCS_DESERIALIZE_CALLBACK:
+		case CCS_DESERIALIZE_OPTION_CALLBACK:
 			opts->deserialize_callback =
 				va_arg(args, ccs_object_deserialize_callback_t);
 			CCS_CHECK_PTR(opts->deserialize_callback);
