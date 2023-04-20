@@ -111,7 +111,7 @@ ccs_features_tuner_tell(
 }
 
 ccs_result_t
-ccs_features_tuner_get_optimums(
+ccs_features_tuner_get_optima(
 	ccs_features_tuner_t       tuner,
 	ccs_features_t             features,
 	size_t                     num_evaluations,
@@ -126,7 +126,7 @@ ccs_features_tuner_get_optimums(
 		!evaluations && !num_evaluations_ret,
 		CCS_RESULT_ERROR_INVALID_VALUE);
 	_ccs_features_tuner_ops_t *ops = ccs_features_tuner_get_ops(tuner);
-	CCS_VALIDATE(ops->get_optimums(
+	CCS_VALIDATE(ops->get_optima(
 		tuner, features, num_evaluations, evaluations,
 		num_evaluations_ret));
 	return CCS_RESULT_SUCCESS;

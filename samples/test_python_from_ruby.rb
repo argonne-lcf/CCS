@@ -40,7 +40,7 @@ evals = t.ask(100).collect { |c|
 }
 t.tell evals
 raise "Invalid size" if 200 != t.history_size
-optims = t.optimums
+optims = t.optima
 objs = optims.collect(&:objective_values).sort
 p objs
 objs.collect { |(_, v)| v }.each_cons(2) { |v1, v2| raise "Invalid results" if (v1 <=> v2) <= 0 }

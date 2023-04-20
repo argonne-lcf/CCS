@@ -21,7 +21,7 @@ struct _ccs_tree_tuner_ops_s {
 		size_t                 num_evaluations,
 		ccs_tree_evaluation_t *evaluations);
 
-	ccs_result_t (*get_optimums)(
+	ccs_result_t (*get_optima)(
 		ccs_tree_tuner_t       tree,
 		size_t                 num_evaluations,
 		ccs_tree_evaluation_t *evaluations,

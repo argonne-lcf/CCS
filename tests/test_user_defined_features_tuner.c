@@ -87,7 +87,7 @@ tuner_last_tell(
 }
 
 ccs_result_t
-tuner_last_get_optimums(
+tuner_last_get_optima(
 	ccs_features_tuner_t       tuner,
 	ccs_features_t             features,
 	size_t                     num_evaluations,
@@ -140,7 +140,7 @@ tuner_last_get_history(
 	ccs_features_evaluation_t *evaluations,
 	size_t                    *num_evaluations_ret)
 {
-	return tuner_last_get_optimums(
+	return tuner_last_get_optima(
 		tuner, features, num_evaluations, evaluations,
 		num_evaluations_ret);
 }
@@ -149,7 +149,7 @@ ccs_user_defined_features_tuner_vector_t tuner_last_vector = {
 	&tuner_last_del,
 	&tuner_last_ask,
 	&tuner_last_tell,
-	&tuner_last_get_optimums,
+	&tuner_last_get_optima,
 	&tuner_last_get_history,
 	NULL,
 	NULL,
@@ -278,18 +278,18 @@ test()
 	assert(count == 1);
 
 	ccs_features_evaluation_t evaluation;
-	err = ccs_features_tuner_get_optimums(
+	err = ccs_features_tuner_get_optima(
 		tuner, NULL, 1, &evaluation, &count);
 	assert(err == CCS_RESULT_SUCCESS);
 	assert(count == 1);
 	assert(last_evaluation == evaluation);
 
-	err = ccs_features_tuner_get_optimums(
+	err = ccs_features_tuner_get_optima(
 		tuner, features_on, 1, &evaluation, &count);
 	assert(err == CCS_RESULT_SUCCESS);
 	assert(count == 0);
 
-	err = ccs_features_tuner_get_optimums(
+	err = ccs_features_tuner_get_optima(
 		tuner, features_off, 1, &evaluation, &count);
 	assert(err == CCS_RESULT_SUCCESS);
 	assert(count == 1);
@@ -328,7 +328,7 @@ test()
 	assert(err == CCS_RESULT_SUCCESS);
 	assert(count == 1);
 
-	err = ccs_features_tuner_get_optimums(
+	err = ccs_features_tuner_get_optima(
 		tuner_copy, NULL, 1, &evaluation, &count);
 	assert(err == CCS_RESULT_SUCCESS);
 	assert(count == 1);

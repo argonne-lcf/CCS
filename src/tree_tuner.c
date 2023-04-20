@@ -90,7 +90,7 @@ ccs_tree_tuner_tell(
 }
 
 ccs_result_t
-ccs_tree_tuner_get_optimums(
+ccs_tree_tuner_get_optima(
 	ccs_tree_tuner_t       tuner,
 	size_t                 num_evaluations,
 	ccs_tree_evaluation_t *evaluations,
@@ -102,7 +102,7 @@ ccs_tree_tuner_get_optimums(
 		!evaluations && !num_evaluations_ret,
 		CCS_RESULT_ERROR_INVALID_VALUE);
 	_ccs_tree_tuner_ops_t *ops = ccs_tree_tuner_get_ops(tuner);
-	CCS_VALIDATE(ops->get_optimums(
+	CCS_VALIDATE(ops->get_optima(
 		tuner, num_evaluations, evaluations, num_evaluations_ret));
 	return CCS_RESULT_SUCCESS;
 }

@@ -96,7 +96,7 @@ test()
 
 	ccs_evaluation_t evaluation;
 	ccs_datum_t      res;
-	err = ccs_tuner_get_optimums(tuner, 1, &evaluation, NULL);
+	err = ccs_tuner_get_optima(tuner, 1, &evaluation, NULL);
 	assert(err == CCS_RESULT_SUCCESS);
 	err = ccs_evaluation_get_objective_value(evaluation, 0, &res);
 	assert(res.value.f == min.value.f);
@@ -129,7 +129,7 @@ test()
 	assert(err == CCS_RESULT_SUCCESS);
 	assert(count == 100);
 
-	err = ccs_tuner_get_optimums(tuner_copy, 1, &evaluation, &count);
+	err = ccs_tuner_get_optima(tuner_copy, 1, &evaluation, &count);
 	assert(err == CCS_RESULT_SUCCESS);
 	assert(count == 1);
 

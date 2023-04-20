@@ -173,7 +173,7 @@ ccs_tuner_suggest(ccs_tuner_t tuner, ccs_configuration_t *configuration);
  * num_evaluations_ret is NULL
  */
 extern ccs_result_t
-ccs_tuner_get_optimums(
+ccs_tuner_get_optima(
 	ccs_tuner_t       tuner,
 	size_t            num_evaluations,
 	ccs_evaluation_t *evaluations,
@@ -249,8 +249,8 @@ struct ccs_user_defined_tuner_vector_s {
 		size_t            num_evaluations,
 		ccs_evaluation_t *evaluations);
 
-	/** The tuner get_optimums interface see ccs_tuner_get_optimums */
-	ccs_result_t (*get_optimums)(
+	/** The tuner get_optima interface see ccs_tuner_get_optima */
+	ccs_result_t (*get_optima)(
 		ccs_tuner_t       tuner,
 		size_t            num_evaluations,
 		ccs_evaluation_t *evaluations,
@@ -270,7 +270,7 @@ struct ccs_user_defined_tuner_vector_s {
 
 	/**
 	 * The tuner serialization interface, can be NULL, in which case
-	 * common tuner data, history and optimums will be serialized
+	 * common tuner data, history and optima will be serialized
 	 */
 	ccs_result_t (*serialize_user_state)(
 		ccs_tuner_t tuner,
@@ -286,8 +286,8 @@ struct ccs_user_defined_tuner_vector_s {
 		ccs_tuner_t       tuner,
 		size_t            size_history,
 		ccs_evaluation_t *history,
-		size_t            num_optimums,
-		ccs_evaluation_t *optimums,
+		size_t            num_optima,
+		ccs_evaluation_t *optima,
 		size_t            state_size,
 		const void       *state);
 };

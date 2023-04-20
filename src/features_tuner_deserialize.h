@@ -9,9 +9,9 @@
 struct _ccs_random_features_tuner_data_mock_s {
 	_ccs_features_tuner_common_data_t common_data;
 	size_t                            size_history;
-	size_t                            size_optimums;
+	size_t                            size_optima;
 	ccs_features_evaluation_t        *history;
-	ccs_features_evaluation_t        *optimums;
+	ccs_features_evaluation_t        *optima;
 };
 typedef struct _ccs_random_features_tuner_data_mock_s
 	_ccs_random_features_tuner_data_mock_t;
@@ -55,36 +55,35 @@ _ccs_deserialize_bin_ccs_random_features_tuner_data(
 	CCS_VALIDATE(_ccs_deserialize_bin_size(
 		&data->size_history, buffer_size, buffer));
 	CCS_VALIDATE(_ccs_deserialize_bin_size(
-		&data->size_optimums, buffer_size, buffer));
+		&data->size_optima, buffer_size, buffer));
 
-	if (!(data->size_history + data->size_optimums))
+	if (!(data->size_history + data->size_optima))
 		return CCS_RESULT_SUCCESS;
 	mem = (uintptr_t)calloc(
-		(data->size_history + data->size_optimums),
+		(data->size_history + data->size_optima),
 		sizeof(ccs_features_evaluation_t));
 	CCS_REFUTE(!mem, CCS_RESULT_ERROR_OUT_OF_MEMORY);
 
 	data->history = (ccs_features_evaluation_t *)mem;
 	mem += data->size_history * sizeof(ccs_features_evaluation_t);
-	data->optimums = (ccs_features_evaluation_t *)mem;
+	data->optima = (ccs_features_evaluation_t *)mem;
 
 	for (size_t i = 0; i < data->size_history; i++)
 		CCS_VALIDATE(_ccs_features_evaluation_deserialize(
 			data->history + i, CCS_SERIALIZE_FORMAT_BINARY, version,
 			buffer_size, buffer, opts));
 
-	for (size_t i = 0; i < data->size_optimums; i++)
+	for (size_t i = 0; i < data->size_optima; i++)
 		CCS_VALIDATE(_ccs_deserialize_bin_ccs_object(
-			(ccs_object_t *)data->optimums + i, buffer_size,
-			buffer));
-	for (size_t i = 0; i < data->size_optimums; i++) {
+			(ccs_object_t *)data->optima + i, buffer_size, buffer));
+	for (size_t i = 0; i < data->size_optima; i++) {
 		ccs_datum_t d;
 		CCS_VALIDATE(ccs_map_get(
-			opts->handle_map, ccs_object(data->optimums[i]), &d));
+			opts->handle_map, ccs_object(data->optima[i]), &d));
 		CCS_REFUTE(
 			d.type != CCS_DATA_TYPE_OBJECT,
 			CCS_RESULT_ERROR_INVALID_HANDLE);
-		data->optimums[i] = (ccs_features_evaluation_t)(d.value.o);
+		data->optima[i] = (ccs_features_evaluation_t)(d.value.o);
 	}
 	return CCS_RESULT_SUCCESS;
 }
@@ -92,8 +91,8 @@ _ccs_deserialize_bin_ccs_random_features_tuner_data(
 struct _ccs_random_features_tuner_data_clone_s {
 	_ccs_features_tuner_common_data_t common_data;
 	UT_array                         *history;
-	UT_array                         *optimums;
-	UT_array                         *old_optimums;
+	UT_array                         *optima;
+	UT_array                         *old_optima;
 };
 typedef struct _ccs_random_features_tuner_data_clone_s
 	_ccs_random_features_tuner_data_clone_t;
@@ -139,8 +138,8 @@ _ccs_deserialize_bin_random_features_tuner(
 			 *)((*features_tuner_ret)->data);
 	for (size_t i = 0; i < data.size_history; i++)
 		utarray_push_back(odata->history, data.history + i);
-	for (size_t i = 0; i < data.size_optimums; i++)
-		utarray_push_back(odata->optimums, data.optimums + i);
+	for (size_t i = 0; i < data.size_optima; i++)
+		utarray_push_back(odata->optima, data.optima + i);
 	goto end;
 features_tuner:
 	ccs_release_object(*features_tuner_ret);
@@ -223,8 +222,8 @@ _ccs_deserialize_bin_user_defined_features_tuner(
 				*features_tuner_ret,
 				data.base_data.size_history,
 				data.base_data.history,
-				data.base_data.size_optimums,
-				data.base_data.optimums, data.blob.sz,
+				data.base_data.size_optima,
+				data.base_data.optima, data.blob.sz,
 				data.blob.blob),
 			features_tuner);
 	else

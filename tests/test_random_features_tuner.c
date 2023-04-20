@@ -132,7 +132,7 @@ test()
 	assert(err == CCS_RESULT_SUCCESS);
 	assert(count == 100);
 
-	err = ccs_features_tuner_get_optimums(tuner, NULL, 0, NULL, &count);
+	err = ccs_features_tuner_get_optima(tuner, NULL, 0, NULL, &count);
 	assert(err == CCS_RESULT_SUCCESS);
 	assert(count == 2);
 
@@ -165,13 +165,13 @@ test()
 	}
 
 	ccs_datum_t res;
-	err = ccs_features_tuner_get_optimums(
+	err = ccs_features_tuner_get_optima(
 		tuner, features_on, 1, &evaluation, NULL);
 	assert(err == CCS_RESULT_SUCCESS);
 	err = ccs_features_evaluation_get_objective_value(evaluation, 0, &res);
 	assert(res.value.f == min_on.value.f);
 
-	err = ccs_features_tuner_get_optimums(
+	err = ccs_features_tuner_get_optima(
 		tuner, features_off, 1, &evaluation, NULL);
 	assert(err == CCS_RESULT_SUCCESS);
 	err = ccs_features_evaluation_get_objective_value(evaluation, 0, &res);
@@ -210,8 +210,7 @@ test()
 	assert(err == CCS_RESULT_SUCCESS);
 	assert(count == 100);
 
-	err = ccs_features_tuner_get_optimums(
-		tuner_copy, NULL, 0, NULL, &count);
+	err = ccs_features_tuner_get_optima(tuner_copy, NULL, 0, NULL, &count);
 	assert(err == CCS_RESULT_SUCCESS);
 	assert(count == 2);
 

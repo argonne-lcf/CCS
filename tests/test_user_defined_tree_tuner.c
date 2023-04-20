@@ -137,7 +137,7 @@ tuner_last_tell(
 }
 
 ccs_result_t
-tuner_last_get_optimums(
+tuner_last_get_optima(
 	ccs_tree_tuner_t       tuner,
 	size_t                 num_evaluations,
 	ccs_tree_evaluation_t *evaluations,
@@ -190,7 +190,7 @@ ccs_user_defined_tree_tuner_vector_t tuner_last_vector = {
 	&tuner_last_del,
 	&tuner_last_ask,
 	&tuner_last_tell,
-	&tuner_last_get_optimums,
+	&tuner_last_get_optima,
 	&tuner_last_get_history,
 	NULL,
 	NULL,
@@ -256,7 +256,7 @@ test()
 	assert(count == 1);
 
 	ccs_tree_evaluation_t evaluation;
-	err = ccs_tree_tuner_get_optimums(tuner, 1, &evaluation, NULL);
+	err = ccs_tree_tuner_get_optima(tuner, 1, &evaluation, NULL);
 	assert(err == CCS_RESULT_SUCCESS);
 	assert(last_evaluation == evaluation);
 
@@ -293,7 +293,7 @@ test()
 	assert(err == CCS_RESULT_SUCCESS);
 	assert(count == 1);
 
-	err = ccs_tree_tuner_get_optimums(tuner_copy, 1, &evaluation, &count);
+	err = ccs_tree_tuner_get_optima(tuner_copy, 1, &evaluation, &count);
 	assert(err == CCS_RESULT_SUCCESS);
 	assert(count == 1);
 

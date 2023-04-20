@@ -21,7 +21,7 @@ ccs_features_tuner_get_objective_space = _ccs_get_function("ccs_features_tuner_g
 ccs_features_tuner_get_features_space = _ccs_get_function("ccs_features_tuner_get_features_space", [ccs_features_tuner, ct.POINTER(ccs_features_space)])
 ccs_features_tuner_ask = _ccs_get_function("ccs_features_tuner_ask", [ccs_features_tuner, ccs_features, ct.c_size_t, ct.POINTER(ccs_configuration), ct.POINTER(ct.c_size_t)])
 ccs_features_tuner_tell = _ccs_get_function("ccs_features_tuner_tell", [ccs_features_tuner, ct.c_size_t, ct.POINTER(ccs_features_evaluation)])
-ccs_features_tuner_get_optimums = _ccs_get_function("ccs_features_tuner_get_optimums", [ccs_features_tuner, ccs_features, ct.c_size_t, ct.POINTER(ccs_features_evaluation), ct.POINTER(ct.c_size_t)])
+ccs_features_tuner_get_optima = _ccs_get_function("ccs_features_tuner_get_optima", [ccs_features_tuner, ccs_features, ct.c_size_t, ct.POINTER(ccs_features_evaluation), ct.POINTER(ct.c_size_t)])
 ccs_features_tuner_get_history = _ccs_get_function("ccs_features_tuner_get_history", [ccs_features_tuner, ccs_features, ct.c_size_t, ct.POINTER(ccs_features_evaluation), ct.POINTER(ct.c_size_t)])
 ccs_features_tuner_suggest = _ccs_get_function("ccs_features_tuner_suggest", [ccs_features_tuner, ccs_features, ct.POINTER(ccs_configuration)])
 
@@ -120,20 +120,20 @@ class FeaturesTuner(Object):
     Error.check(res)
     return [FeaturesEvaluation.from_handle(ccs_features_evaluation(x)) for x in v]
 
-  def num_optimums(self, features = None):
+  def num_optima(self, features = None):
     v = ct.c_size_t()
     if features is not None:
       features = features.handle
-    res = ccs_features_tuner_get_optimums(self.handle, features, 0, None, ct.byref(v))
+    res = ccs_features_tuner_get_optima(self.handle, features, 0, None, ct.byref(v))
     Error.check(res)
     return v.value
 
-  def optimums(self, features = None):
-    count = self.num_optimums(features)
+  def optima(self, features = None):
+    count = self.num_optima(features)
     v = (ccs_features_evaluation * count)()
     if features is not None:
       features = features.handle
-    res = ccs_features_tuner_get_optimums(self.handle, features, count, v, None)
+    res = ccs_features_tuner_get_optima(self.handle, features, count, v, None)
     Error.check(res)
     return [FeaturesEvaluation.from_handle(ccs_features_evaluation(x)) for x in v]
 
@@ -160,7 +160,7 @@ class RandomFeaturesTuner(FeaturesTuner):
 ccs_user_defined_features_tuner_del_type = ct.CFUNCTYPE(ccs_result, ccs_features_tuner)
 ccs_user_defined_features_tuner_ask_type = ct.CFUNCTYPE(ccs_result, ccs_features_tuner, ccs_features, ct.c_size_t, ct.POINTER(ccs_configuration), ct.POINTER(ct.c_size_t))
 ccs_user_defined_features_tuner_tell_type = ct.CFUNCTYPE(ccs_result, ccs_features_tuner, ct.c_size_t, ct.POINTER(ccs_features_evaluation))
-ccs_user_defined_features_tuner_get_optimums_type = ct.CFUNCTYPE(ccs_result, ccs_features_tuner, ccs_features, ct.c_size_t, ct.POINTER(ccs_features_evaluation), ct.POINTER(ct.c_size_t))
+ccs_user_defined_features_tuner_get_optima_type = ct.CFUNCTYPE(ccs_result, ccs_features_tuner, ccs_features, ct.c_size_t, ct.POINTER(ccs_features_evaluation), ct.POINTER(ct.c_size_t))
 ccs_user_defined_features_tuner_get_history_type = ct.CFUNCTYPE(ccs_result, ccs_features_tuner, ccs_features, ct.c_size_t, ct.POINTER(ccs_features_evaluation), ct.POINTER(ct.c_size_t))
 ccs_user_defined_features_tuner_suggest_type = ct.CFUNCTYPE(ccs_result, ccs_features_tuner, ccs_features, ct.POINTER(ccs_configuration))
 ccs_user_defined_features_tuner_serialize_type = ct.CFUNCTYPE(ccs_result, ccs_features_tuner, ct.c_size_t, ct.c_void_p, ct.POINTER(ct.c_size_t))
@@ -171,7 +171,7 @@ class ccs_user_defined_features_tuner_vector(ct.Structure):
     ('delete', ccs_user_defined_features_tuner_del_type),
     ('ask', ccs_user_defined_features_tuner_ask_type),
     ('tell', ccs_user_defined_features_tuner_tell_type),
-    ('get_optimums', ccs_user_defined_features_tuner_get_optimums_type),
+    ('get_optima', ccs_user_defined_features_tuner_get_optima_type),
     ('get_history', ccs_user_defined_features_tuner_get_history_type),
     ('suggest', ccs_user_defined_features_tuner_suggest_type),
     ('serialize', ccs_user_defined_features_tuner_serialize_type),
@@ -180,7 +180,7 @@ class ccs_user_defined_features_tuner_vector(ct.Structure):
 ccs_create_user_defined_features_tuner = _ccs_get_function("ccs_create_user_defined_features_tuner", [ct.c_char_p, ccs_configuration_space, ccs_features_space, ccs_objective_space, ct.POINTER(ccs_user_defined_features_tuner_vector), ct.py_object, ct.POINTER(ccs_features_tuner)])
 ccs_user_defined_features_tuner_get_tuner_data = _ccs_get_function("ccs_user_defined_features_tuner_get_tuner_data", [ccs_features_tuner, ct.POINTER(ct.c_void_p)])
 
-def _wrap_user_defined_features_tuner_callbacks(delete, ask, tell, get_optimums, get_history, suggest, serialize, deserialize):
+def _wrap_user_defined_features_tuner_callbacks(delete, ask, tell, get_optima, get_history, suggest, serialize, deserialize):
   def delete_wrapper(tun):
     try:
       tun = ct.cast(tun, ccs_features_tuner)
@@ -226,18 +226,18 @@ def _wrap_user_defined_features_tuner_callbacks(delete, ask, tell, get_optimums,
     except Exception as e:
       return Error.set_error(e)
 
-  def get_optimums_wrapper(tun, features, count, p_evaluations, p_count):
+  def get_optima_wrapper(tun, features, count, p_evaluations, p_count):
     try:
       tun = ct.cast(tun, ccs_features_tuner)
       p_evals = ct.cast(p_evaluations, ct.c_void_p)
       p_c = ct.cast(p_count, ct.c_void_p)
-      optimums = get_optimums(FeaturesTuner.from_handle(tun), Features.from_handle(features) if features else None)
-      count_ret = len(optimums)
+      optima = get_optima(FeaturesTuner.from_handle(tun), Features.from_handle(features) if features else None)
+      count_ret = len(optima)
       if p_evals.value is not None and count < count_ret:
         raise Error(ccs_result(ccs_result.ERROR_INVALID_VALUE))
       if p_evals.value is not None:
         for i in range(count_ret):
-          p_evaluations[i] = optimums[i].handle.value
+          p_evaluations[i] = optima[i].handle.value
         for i in range(count_ret, count):
           p_evaluations[i] = None
       if p_c.value is not None:
@@ -300,25 +300,25 @@ def _wrap_user_defined_features_tuner_callbacks(delete, ask, tell, get_optimums,
     serialize_wrapper = 0
 
   if deserialize is not None:
-    def deserialize_wrapper(tun, size_history, p_history, num_optimums, p_optimums, state_size, p_state):
+    def deserialize_wrapper(tun, size_history, p_history, num_optima, p_optima, state_size, p_state):
       try:
         tun = ct.cast(tun, ccs_features_tuner)
         p_h = ct.cast(p_history, ct.c_void_p)
-        p_o = ct.cast(p_optimums, ct.c_void_p)
+        p_o = ct.cast(p_optima, ct.c_void_p)
         p_s = ct.cast(p_state, ct.c_void_p)
         if p_h.value is None:
           history = []
         else:
           history = [FeaturesEvaluation.from_handle(ccs_features_evaluation(p_h[i])) for i in range(size_history)]
         if p_o.value is None:
-          optimums = []
+          optima = []
         else:
-          optimums = [FeaturesEvaluation.from_handle(ccs_features_evaluation(p_o[i])) for i in range(num_optimums)]
+          optima = [FeaturesEvaluation.from_handle(ccs_features_evaluation(p_o[i])) for i in range(num_optima)]
         if p_s.value is None:
           state = None
         else:
           state = ct.cast(p_s, POINTER(c_byte * state_size))
-        deserialize(FeaturesTuner.from_handle(tun), history, optimums, state)
+        deserialize(FeaturesTuner.from_handle(tun), history, optima, state)
         return ccs_result.SUCCESS
       except Exception as e:
         return Error.set_error(e)
@@ -328,7 +328,7 @@ def _wrap_user_defined_features_tuner_callbacks(delete, ask, tell, get_optimums,
   return (delete_wrapper,
           ask_wrapper,
           tell_wrapper,
-          get_optimums_wrapper,
+          get_optima_wrapper,
           get_history_wrapper,
           suggest_wrapper,
           serialize_wrapper,
@@ -336,7 +336,7 @@ def _wrap_user_defined_features_tuner_callbacks(delete, ask, tell, get_optimums,
           ccs_user_defined_features_tuner_del_type(delete_wrapper),
           ccs_user_defined_features_tuner_ask_type(ask_wrapper),
           ccs_user_defined_features_tuner_tell_type(tell_wrapper),
-          ccs_user_defined_features_tuner_get_optimums_type(get_optimums_wrapper),
+          ccs_user_defined_features_tuner_get_optima_type(get_optima_wrapper),
           ccs_user_defined_features_tuner_get_history_type(get_history_wrapper),
           ccs_user_defined_features_tuner_suggest_type(suggest_wrapper),
           ccs_user_defined_features_tuner_serialize_type(serialize_wrapper),
@@ -345,15 +345,15 @@ def _wrap_user_defined_features_tuner_callbacks(delete, ask, tell, get_optimums,
 
 class UserDefinedFeaturesTuner(FeaturesTuner):
   def __init__(self, handle = None, retain = False, auto_release = True,
-               name = "", configuration_space = None, features_space = None, objective_space = None, delete = None, ask = None, tell = None, get_optimums = None, get_history = None, suggest = None, serialize = None, deserialize = None, tuner_data = None ):
+               name = "", configuration_space = None, features_space = None, objective_space = None, delete = None, ask = None, tell = None, get_optima = None, get_history = None, suggest = None, serialize = None, deserialize = None, tuner_data = None ):
     if handle is None:
-      if ask is None or tell is None or get_optimums is None or get_history is None:
+      if ask is None or tell is None or get_optima is None or get_history is None:
         raise Error(ccs_result(ccs_result.ERROR_INVALID_VALUE))
 
       (delete_wrapper,
        ask_wrapper,
        tell_wrapper,
-       get_optimums_wrapper,
+       get_optima_wrapper,
        get_history_wrapper,
        suggest_wrapper,
        serialize_wrapper,
@@ -361,17 +361,17 @@ class UserDefinedFeaturesTuner(FeaturesTuner):
        delete_wrapper_func,
        ask_wrapper_func,
        tell_wrapper_func,
-       get_optimums_wrapper_func,
+       get_optima_wrapper_func,
        get_history_wrapper_func,
        suggest_wrapper_func,
        serialize_wrapper_func,
-       deserialize_wrapper_func) = _wrap_user_defined_features_tuner_callbacks(delete, ask, tell, get_optimums, get_history, suggest, serialize, deserialize)
+       deserialize_wrapper_func) = _wrap_user_defined_features_tuner_callbacks(delete, ask, tell, get_optima, get_history, suggest, serialize, deserialize)
       handle = ccs_features_tuner()
       vec = ccs_user_defined_features_tuner_vector()
       vec.delete = delete_wrapper_func
       vec.ask = ask_wrapper_func
       vec.tell = tell_wrapper_func
-      vec.get_optimums = get_optimums_wrapper_func
+      vec.get_optima = get_optima_wrapper_func
       vec.get_history = get_history_wrapper_func
       vec.suggest = suggest_wrapper_func
       vec.serialize = serialize_wrapper_func
@@ -383,18 +383,18 @@ class UserDefinedFeaturesTuner(FeaturesTuner):
       res = ccs_create_user_defined_features_tuner(str.encode(name), configuration_space.handle, features_space.handle, objective_space.handle, ct.byref(vec), c_tuner_data, ct.byref(handle))
       Error.check(res)
       super().__init__(handle = handle, retain = False)
-      _register_vector(handle, [delete_wrapper, ask_wrapper, tell_wrapper, get_optimums_wrapper, get_history_wrapper, suggest_wrapper, serialize_wrapper, deserialize_wrapper, delete_wrapper_func, ask_wrapper_func, tell_wrapper_func, get_optimums_wrapper_func, get_history_wrapper_func, suggest_wrapper_func, serialize_wrapper_func, deserialize_wrapper_func, tuner_data])
+      _register_vector(handle, [delete_wrapper, ask_wrapper, tell_wrapper, get_optima_wrapper, get_history_wrapper, suggest_wrapper, serialize_wrapper, deserialize_wrapper, delete_wrapper_func, ask_wrapper_func, tell_wrapper_func, get_optima_wrapper_func, get_history_wrapper_func, suggest_wrapper_func, serialize_wrapper_func, deserialize_wrapper_func, tuner_data])
     else:
       super().__init__(handle = handle, retain = retain, auto_release = auto_release)
 
   @classmethod
-  def deserialize(cls, delete, ask, tell, get_optimums, get_history, suggest = None, serialize = None, deserialize = None, tuner_data = None, format = 'binary', handle_map = None, path = None, buffer = None, file_descriptor = None, callback = None, callback_data = None):
-    if ask is None or tell is None or get_optimums is None or get_history is None:
+  def deserialize(cls, delete, ask, tell, get_optima, get_history, suggest = None, serialize = None, deserialize = None, tuner_data = None, format = 'binary', handle_map = None, path = None, buffer = None, file_descriptor = None, callback = None, callback_data = None):
+    if ask is None or tell is None or get_optima is None or get_history is None:
       raise Error(ccs_result(ccs_result.ERROR_INVALID_VALUE))
     (delete_wrapper,
      ask_wrapper,
      tell_wrapper,
-     get_optimums_wrapper,
+     get_optima_wrapper,
      get_history_wrapper,
      suggest_wrapper,
      serialize_wrapper,
@@ -402,22 +402,22 @@ class UserDefinedFeaturesTuner(FeaturesTuner):
      delete_wrapper_func,
      ask_wrapper_func,
      tell_wrapper_func,
-     get_optimums_wrapper_func,
+     get_optima_wrapper_func,
      get_history_wrapper_func,
      suggest_wrapper_func,
      serialize_wrapper_func,
-     deserialize_wrapper_func) = _wrap_user_defined_features_tuner_callbacks(delete, ask, tell, get_optimums, get_history, suggest, serialize, deserialize)
+     deserialize_wrapper_func) = _wrap_user_defined_features_tuner_callbacks(delete, ask, tell, get_optima, get_history, suggest, serialize, deserialize)
     vector = ccs_user_defined_features_tuner_vector()
     vector.delete = delete_wrapper_func
     vector.ask = ask_wrapper_func
     vector.tell = tell_wrapper_func
-    vector.get_optimums = get_optimums_wrapper_func
+    vector.get_optima = get_optima_wrapper_func
     vector.get_history = get_history_wrapper_func
     vector.suggest = suggest_wrapper_func
     vector.serialize = serialize_wrapper_func
     vector.deserialize = deserialize_wrapper_func
     res = super().deserialize(format = format, handle_map = handle_map, vector = vector, data = tuner_data, path = path, buffer = buffer, file_descriptor = file_descriptor, callback = callback, callback_data = callback_data)
-    _register_vector(res.handle, [delete_wrapper, ask_wrapper, tell_wrapper, get_optimums_wrapper, get_history_wrapper, suggest_wrapper, serialize_wrapper, deserialize_wrapper, delete_wrapper_func, ask_wrapper_func, tell_wrapper_func, get_optimums_wrapper_func, get_history_wrapper_func, suggest_wrapper_func, serialize_wrapper_func, deserialize_wrapper_func, tuner_data])
+    _register_vector(res.handle, [delete_wrapper, ask_wrapper, tell_wrapper, get_optima_wrapper, get_history_wrapper, suggest_wrapper, serialize_wrapper, deserialize_wrapper, delete_wrapper_func, ask_wrapper_func, tell_wrapper_func, get_optima_wrapper_func, get_history_wrapper_func, suggest_wrapper_func, serialize_wrapper_func, deserialize_wrapper_func, tuner_data])
     return res
 
   @property

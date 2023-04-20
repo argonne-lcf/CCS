@@ -57,23 +57,23 @@ class CConfigSpaceTestFeaturesTuner < Minitest::Test
     assert_equal(150, t.history_size(features: features_on))
     assert_equal(50, t.history_size(features: features_off))
     [features_on, features_off].each { |features|
-      objs = t.optimums(features: features).collect(&:objective_values).sort
+      objs = t.optima(features: features).collect(&:objective_values).sort
       objs.collect { |(_, v)| v }.each_cons(2) { |v1, v2| assert( (v1 <=> v2) > 0 ) }
-      assert( t.optimums(features: features).collect(&:configuration).include?(t.suggest(features)))
+      assert( t.optima(features: features).collect(&:configuration).include?(t.suggest(features)))
     }
 
     buff = t.serialize
     t_copy = CCS.deserialize(buffer: buff)
     hist = t_copy.history
     assert_equal(200, hist.size)
-    assert_equal(t.num_optimums, t_copy.num_optimums)
+    assert_equal(t.num_optima, t_copy.num_optima)
   end
 
   class TunerData
-    attr_accessor :history, :optimums
+    attr_accessor :history, :optima
     def initialize
       @history = []
-      @optimums = []
+      @optima = []
     end
   end
 
@@ -91,7 +91,7 @@ class CConfigSpaceTestFeaturesTuner < Minitest::Test
       tuner.tuner_data.history.concat(evaluations)
       evaluations.each { |e|
         discard = false
-        tuner.tuner_data.optimums = tuner.tuner_data.optimums.collect { |o|
+        tuner.tuner_data.optima = tuner.tuner_data.optima.collect { |o|
           unless discard
             case e.compare(o)
             when :CCS_COMPARISON_EQUIVALENT, :CCS_COMPARISON_WORSE
@@ -106,7 +106,7 @@ class CConfigSpaceTestFeaturesTuner < Minitest::Test
             o
           end
         }.compact
-        tuner.tuner_data.optimums.push(e) unless discard
+        tuner.tuner_data.optima.push(e) unless discard
       }
     }
     get_history = lambda { |tuner, features|
@@ -116,15 +116,15 @@ class CConfigSpaceTestFeaturesTuner < Minitest::Test
         tuner.tuner_data.history
       end
     }
-    get_optimums = lambda { |tuner, features|
+    get_optima = lambda { |tuner, features|
       if features
-        tuner.tuner_data.optimums.select { |e| e.features == features }
+        tuner.tuner_data.optima.select { |e| e.features == features }
       else
-        tuner.tuner_data.optimums
+        tuner.tuner_data.optima
       end
     }
     suggest = lambda { |tuner, features|
-      optis = tuner.tuner_data.optimums.select { |e| e.features == features }
+      optis = tuner.tuner_data.optima.select { |e| e.features == features }
       if optis.empty?
         ask.call(tuner, features, 1)
       else
@@ -132,7 +132,7 @@ class CConfigSpaceTestFeaturesTuner < Minitest::Test
       end
     }
     cs, fs, os = create_tuning_problem
-    t = CCS::UserDefinedFeaturesTuner::new(name: "tuner", configuration_space: cs, features_space: fs, objective_space: os, del: del, ask: ask, tell: tell, get_optimums: get_optimums, get_history: get_history, suggest: suggest, tuner_data: TunerData.new)
+    t = CCS::UserDefinedFeaturesTuner::new(name: "tuner", configuration_space: cs, features_space: fs, objective_space: os, del: del, ask: ask, tell: tell, get_optima: get_optima, get_history: get_history, suggest: suggest, tuner_data: TunerData.new)
     t2 = CCS::Object::from_handle(t)
     assert_equal( t.class, t2.class)
     assert_equal( "tuner", t.name )
@@ -160,16 +160,16 @@ class CConfigSpaceTestFeaturesTuner < Minitest::Test
     assert_equal(150, t.history_size(features: features_on))
     assert_equal(50, t.history_size(features: features_off))
     [features_on, features_off].each { |features|
-      objs = t.optimums(features: features).collect(&:objective_values).sort
+      objs = t.optima(features: features).collect(&:objective_values).sort
       objs.collect { |(_, v)| v }.each_cons(2) { |v1, v2| assert( (v1 <=> v2) > 0 ) }
-      assert( t.optimums(features: features).collect(&:configuration).include?(t.suggest(features)))
+      assert( t.optima(features: features).collect(&:configuration).include?(t.suggest(features)))
     }
 
     buff = t.serialize
-    t_copy = CCS::UserDefinedFeaturesTuner::deserialize(buffer: buff, del: del, ask: ask, tell: tell, get_optimums: get_optimums, get_history: get_history, suggest: suggest, tuner_data: TunerData.new)
+    t_copy = CCS::UserDefinedFeaturesTuner::deserialize(buffer: buff, del: del, ask: ask, tell: tell, get_optima: get_optima, get_history: get_history, suggest: suggest, tuner_data: TunerData.new)
     hist = t_copy.history
     assert_equal(200, hist.size)
-    assert_equal(t.num_optimums, t_copy.num_optimums)
+    assert_equal(t.num_optima, t_copy.num_optima)
   end
 end
 

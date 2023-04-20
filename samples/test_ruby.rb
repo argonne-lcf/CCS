@@ -3,7 +3,7 @@ require_relative '../bindings/ruby/lib/cconfigspace'
 class TestTuner < CCS::UserDefinedTuner
   def initialize(cs, os)
     @history = []
-    @optimums = []
+    @optima = []
     del = lambda { |tuner| nil }
     ask = lambda { |tuner, count|
       if count
@@ -17,7 +17,7 @@ class TestTuner < CCS::UserDefinedTuner
       @history += evaluations
       evaluations.each { |e|
         discard = false
-        @optimums = @optimums.collect { |o|
+        @optima = @optima.collect { |o|
           unless discard
             case e.compare(o)
             when :CCS_COMPARISON_EQUIVALENT, :CCS_COMPARISON_WORSE
@@ -32,16 +32,16 @@ class TestTuner < CCS::UserDefinedTuner
             o
           end
         }.compact
-        @optimums.push(e) unless discard
+        @optima.push(e) unless discard
       }
     }
     get_history = lambda { |tuner|
       @history
     }
-    get_optimums = lambda { |tuner|
-      @optimums
+    get_optima = lambda { |tuner|
+      @optima
     }
-    super(name: "tuner", configuration_space: cs, objective_space: os, del: del, ask: ask, tell: tell, get_optimums: get_optimums, get_history: get_history)
+    super(name: "tuner", configuration_space: cs, objective_space: os, del: del, ask: ask, tell: tell, get_optima: get_optima, get_history: get_history)
   end
 end
 

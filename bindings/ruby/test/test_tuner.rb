@@ -44,25 +44,25 @@ class CConfigSpaceTestTuner < Minitest::Test
     }
     t.tell evals
     assert_equal(200, t.history_size)
-    objs = t.optimums.collect(&:objective_values).sort
+    objs = t.optima.collect(&:objective_values).sort
     objs.collect { |(_, v)| v }.each_cons(2) { |v1, v2| assert( (v1 <=> v2) > 0 ) }
-    assert( t.optimums.collect(&:configuration).include?(t.suggest) )
+    assert( t.optima.collect(&:configuration).include?(t.suggest) )
 
     buff = t.serialize
     t_copy = CCS.deserialize(buffer: buff)
     hist = t_copy.history
     assert_equal(200, hist.size)
-    assert_equal(t.num_optimums, t_copy.num_optimums)
-    objs = t_copy.optimums.collect(&:objective_values).sort
+    assert_equal(t.num_optima, t_copy.num_optima)
+    objs = t_copy.optima.collect(&:objective_values).sort
     objs.collect { |(_, v)| v }.each_cons(2) { |v1, v2| assert( (v1 <=> v2) > 0 ) }
-    assert( t_copy.optimums.collect(&:configuration).include?(t_copy.suggest) )
+    assert( t_copy.optima.collect(&:configuration).include?(t_copy.suggest) )
   end
 
   class TunerData
-    attr_accessor :history, :optimums
+    attr_accessor :history, :optima
     def initialize
       @history = []
-      @optimums = []
+      @optima = []
     end
   end
 
@@ -80,7 +80,7 @@ class CConfigSpaceTestTuner < Minitest::Test
       tuner.tuner_data.history.concat(evaluations)
       evaluations.each { |e|
         discard = false
-        tuner.tuner_data.optimums = tuner.tuner_data.optimums.collect { |o|
+        tuner.tuner_data.optima = tuner.tuner_data.optima.collect { |o|
           unless discard
             case e.compare(o)
             when :CCS_COMPARISON_EQUIVALENT, :CCS_COMPARISON_WORSE
@@ -95,24 +95,24 @@ class CConfigSpaceTestTuner < Minitest::Test
             o
           end
         }.compact
-        tuner.tuner_data.optimums.push(e) unless discard
+        tuner.tuner_data.optima.push(e) unless discard
       }
     }
     get_history = lambda { |tuner|
       tuner.tuner_data.history
     }
-    get_optimums = lambda { |tuner|
-      tuner.tuner_data.optimums
+    get_optima = lambda { |tuner|
+      tuner.tuner_data.optima
     }
     suggest = lambda { |tuner|
-      if tuner.tuner_data.optimums.empty?
+      if tuner.tuner_data.optima.empty?
         ask.call(tuner, 1)
       else
-        tuner.tuner_data.optimums.sample.configuration
+        tuner.tuner_data.optima.sample.configuration
       end
     }
     cs, os = create_tuning_problem
-    t = CCS::UserDefinedTuner::new(name: "tuner", configuration_space: cs, objective_space: os, del: del, ask: ask, tell: tell, get_optimums: get_optimums, get_history: get_history, suggest: suggest, tuner_data: TunerData.new)
+    t = CCS::UserDefinedTuner::new(name: "tuner", configuration_space: cs, objective_space: os, del: del, ask: ask, tell: tell, get_optima: get_optima, get_history: get_history, suggest: suggest, tuner_data: TunerData.new)
     t2 = CCS::Object::from_handle(t)
     assert_equal( t.class, t2.class)
     assert_equal( "tuner", t.name )
@@ -131,42 +131,42 @@ class CConfigSpaceTestTuner < Minitest::Test
     }
     t.tell evals
     assert_equal(200, t.history_size)
-    optims = t.optimums
+    optims = t.optima
     objs = optims.collect(&:objective_values).sort
     objs.collect { |(_, v)| v }.each_cons(2) { |v1, v2| assert( (v1 <=> v2) > 0 ) }
-    assert( t.optimums.collect(&:configuration).include?(t.suggest) )
+    assert( t.optima.collect(&:configuration).include?(t.suggest) )
 
     buff = t.serialize
-    t_copy = CCS::UserDefinedTuner::deserialize(buffer: buff, del: del, ask: ask, tell: tell, get_optimums: get_optimums, get_history: get_history, suggest: suggest, tuner_data: TunerData.new)
+    t_copy = CCS::UserDefinedTuner::deserialize(buffer: buff, del: del, ask: ask, tell: tell, get_optima: get_optima, get_history: get_history, suggest: suggest, tuner_data: TunerData.new)
     hist = t_copy.history
     assert_equal(200, hist.size)
-    assert_equal(t.num_optimums, t_copy.num_optimums)
-    objs = t_copy.optimums.collect(&:objective_values).sort
+    assert_equal(t.num_optima, t_copy.num_optima)
+    objs = t_copy.optima.collect(&:objective_values).sort
     objs.collect { |(_, v)| v }.each_cons(2) { |v1, v2| assert( (v1 <=> v2) > 0 ) }
-    assert( t_copy.optimums.collect(&:configuration).include?(t_copy.suggest) )
+    assert( t_copy.optima.collect(&:configuration).include?(t_copy.suggest) )
 
     t.serialize(path: 'tuner.ccs')
-    t_copy = CCS::UserDefinedTuner::deserialize(path: 'tuner.ccs', del: del, ask: ask, tell: tell, get_optimums: get_optimums, get_history: get_history, suggest: suggest, tuner_data: TunerData.new)
+    t_copy = CCS::UserDefinedTuner::deserialize(path: 'tuner.ccs', del: del, ask: ask, tell: tell, get_optima: get_optima, get_history: get_history, suggest: suggest, tuner_data: TunerData.new)
     hist = t_copy.history
     assert_equal(200, hist.size)
-    assert_equal(t.num_optimums, t_copy.num_optimums)
-    objs = t_copy.optimums.collect(&:objective_values).sort
+    assert_equal(t.num_optima, t_copy.num_optima)
+    objs = t_copy.optima.collect(&:objective_values).sort
     objs.collect { |(_, v)| v }.each_cons(2) { |v1, v2| assert( (v1 <=> v2) > 0 ) }
-    assert( t_copy.optimums.collect(&:configuration).include?(t_copy.suggest) )
+    assert( t_copy.optima.collect(&:configuration).include?(t_copy.suggest) )
     File.delete('tuner.ccs')
 
     f = File.open('tuner.ccs', "wb")
     t.serialize(file_descriptor: f.fileno)
     f.close
     f = File.open('tuner.ccs', "rb")
-    t_copy = CCS::UserDefinedTuner::deserialize(file_descriptor: f.fileno, del: del, ask: ask, tell: tell, get_optimums: get_optimums, get_history: get_history, suggest: suggest, tuner_data: TunerData.new)
+    t_copy = CCS::UserDefinedTuner::deserialize(file_descriptor: f.fileno, del: del, ask: ask, tell: tell, get_optima: get_optima, get_history: get_history, suggest: suggest, tuner_data: TunerData.new)
     f.close
     hist = t_copy.history
     assert_equal(200, hist.size)
-    assert_equal(t.num_optimums, t_copy.num_optimums)
-    objs = t_copy.optimums.collect(&:objective_values).sort
+    assert_equal(t.num_optima, t_copy.num_optima)
+    objs = t_copy.optima.collect(&:objective_values).sort
     objs.collect { |(_, v)| v }.each_cons(2) { |v1, v2| assert( (v1 <=> v2) > 0 ) }
-    assert( t_copy.optimums.collect(&:configuration).include?(t_copy.suggest) )
+    assert( t_copy.optima.collect(&:configuration).include?(t_copy.suggest) )
     File.delete('tuner.ccs')
   end
 end

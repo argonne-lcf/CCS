@@ -21,7 +21,7 @@ struct _ccs_tuner_ops_s {
 		size_t            num_evaluations,
 		ccs_evaluation_t *evaluations);
 
-	ccs_result_t (*get_optimums)(
+	ccs_result_t (*get_optima)(
 		ccs_tuner_t       tuner,
 		size_t            num_evaluations,
 		ccs_evaluation_t *evaluations,

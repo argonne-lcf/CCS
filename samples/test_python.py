@@ -9,7 +9,7 @@ from math import sin
 class TestTuner(ccs.UserDefinedTuner):
   def __init__(self, cs, os):
     self.__history = []
-    self.__optimums = []
+    self.__optima = []
 
     def delete(tuner):
       return None
@@ -25,29 +25,29 @@ class TestTuner(ccs.UserDefinedTuner):
       self.__history += evaluations
       for e in evaluations:
         discard = False
-        new_optimums = []
-        for o in self.__optimums:
+        new_optima = []
+        for o in self.__optima:
           if discard:
-            new_optimums.append(o)
+            new_optima.append(o)
           else:
             c = e.compare(o)
             if c == ccs.ccs_comparison.EQUIVALENT or c == ccs.ccs_comparison.WORSE:
               discard = True
-              new_optimums.append(o)
+              new_optima.append(o)
             elif c == ccs.ccs_comparison.NOT_COMPARABLE:
-              new_optimums.append(o)
+              new_optima.append(o)
         if not discard:
-          new_optimums.append(e)
-        self.__optimums = new_optimums
+          new_optima.append(e)
+        self.__optima = new_optima
       return None
 
     def get_history(tuner):
       return self.__history
 
-    def get_optimums(tuner):
-      return self.__optimums
+    def get_optima(tuner):
+      return self.__optima
 
-    super().__init__(name = "tuner", configuration_space = cs, objective_space = os, delete = delete, ask = ask, tell = tell, get_optimums = get_optimums, get_history = get_history)
+    super().__init__(name = "tuner", configuration_space = cs, objective_space = os, delete = delete, ask = ask, tell = tell, get_optima = get_optima, get_history = get_history)
 
 
 def create_test_tuner(cs_ptr, os_ptr):
@@ -91,7 +91,7 @@ class Test(unittest.TestCase):
     t.tell(evals)
     hist = t.history
     self.assertEqual(200, len(hist))
-    optims = t.optimums
+    optims = t.optima
     objs = [x.objective_values for x in optims]
     objs.sort(key = lambda x: x[0])
     # assert pareto front

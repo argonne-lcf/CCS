@@ -23,7 +23,7 @@ struct _ccs_features_tuner_ops_s {
 		size_t                     num_evaluations,
 		ccs_features_evaluation_t *evaluations);
 
-	ccs_result_t (*get_optimums)(
+	ccs_result_t (*get_optima)(
 		ccs_features_tuner_t       tuner,
 		ccs_features_t             features,
 		size_t                     num_evaluations,
