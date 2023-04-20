@@ -56,7 +56,7 @@ PenaltyBreakTemplateDeclaration: 10
 PenaltyExcessCharacter: 100
 PenaltyReturnTypeOnItsOwnLine: 60
 PointerAlignment: Right
-ReflowComments:  false
+ReflowComments:  true
 SortIncludes:    false
 SortUsingDeclarations: true
 SpaceAfterCStyleCast: false
