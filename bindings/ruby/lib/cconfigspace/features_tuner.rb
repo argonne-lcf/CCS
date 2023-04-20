@@ -136,7 +136,7 @@ module CCS
   def self.wrap_user_defined_features_tuner_callbacks(del, ask, tell, get_optimums, get_history, suggest, serialize, deserialize)
     delwrapper = lambda { |tun|
       begin
-        del.call(CCS::Object.from_handle(tun))
+        del.call(CCS::Object.from_handle(tun)) if del
         CCS.unregister_vector(tun)
         CCSError.to_native(:CCS_RESULT_SUCCESS)
       rescue => e
@@ -266,7 +266,7 @@ module CCS
       if handle
         super(handle, retain: retain, auto_release: auto_release)
       else
-	raise CCSError, :CCS_RESULT_ERROR_INVALID_VALUE if del.nil? || ask.nil? || tell.nil? || get_optimums.nil? || get_history.nil?
+	raise CCSError, :CCS_RESULT_ERROR_INVALID_VALUE if ask.nil? || tell.nil? || get_optimums.nil? || get_history.nil?
         delwrapper, askwrapper, tellwrapper, get_optimumswrapper, get_historywrapper, suggestwrapper, serializewrapper, deserializewrapper =
           CCS.wrap_user_defined_features_tuner_callbacks(del, ask, tell, get_optimums, get_history, suggest, serialize, deserialize)
         vector = UserDefinedFeaturesTunerVector::new
@@ -287,7 +287,7 @@ module CCS
     end
 
     def self.deserialize(del: nil, ask: nil, tell: nil, get_optimums: nil, get_history: nil, suggest: nil, serialize: nil, deserialize: nil, tuner_data: nil, format: :binary, handle_map: nil, path: nil, buffer: nil, file_descriptor: nil, callback: nil, callback_data: nil)
-      raise CCSError, :CCS_RESULT_ERROR_INVALID_VALUE if del.nil? || ask.nil? || tell.nil? || get_optimums.nil? || get_history.nil?
+      raise CCSError, :CCS_RESULT_ERROR_INVALID_VALUE if ask.nil? || tell.nil? || get_optimums.nil? || get_history.nil?
       delwrapper, askwrapper, tellwrapper, get_optimumswrapper, get_historywrapper, suggestwrapper, serializewrapper, deserializewrapper =
         CCS.wrap_user_defined_features_tuner_callbacks(del, ask, tell, get_optimums, get_history, suggest, serialize, deserialize)
       vector = UserDefinedFeaturesTunerVector::new

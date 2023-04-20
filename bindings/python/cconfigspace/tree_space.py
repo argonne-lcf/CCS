@@ -156,7 +156,8 @@ def _wrap_user_defined_callbacks(delete, get_child, serialize, deserialize):
   def delete_wrapper(ts):
     try:
       ts = ct.cast(ts, ccs_tree_space)
-      delete(Object.from_handle(ts))
+      if delete is not None:
+        delete(Object.from_handle(ts))
       _unregister_vector(ts)
       return ccs_result.SUCCESS
     except Exception as e:
@@ -223,7 +224,7 @@ class DynamicTreeSpace(TreeSpace):
   def __init__(self, handle = None, retain = False, auto_release = True,
                name = None, tree = None, delete = None, get_child = None, serialize = None, deserialize = None, tree_space_data = None):
     if handle is None:
-      if delete is None or get_child is None:
+      if get_child is None:
         raise Error(ccs_result(ccs_result.ERROR_INVALID_VALUE))
 
       (delete_wrapper,
@@ -253,7 +254,7 @@ class DynamicTreeSpace(TreeSpace):
 
   @classmethod
   def deserialize(cls, delete, get_child, serialize = None, deserialize = None, tree_space_data = None, format = 'binary', handle_map = None, path = None, buffer = None, file_descriptor = None, callback = None, callback_data = None):
-    if delete is None or get_child is None:
+    if get_child is None:
       raise Error(ccs_result(ccs_result.ERROR_INVALID_VALUE))
     (delete_wrapper,
      get_child_wrapper,

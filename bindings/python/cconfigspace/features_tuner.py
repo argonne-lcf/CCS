@@ -184,7 +184,8 @@ def _wrap_user_defined_features_tuner_callbacks(delete, ask, tell, get_optimums,
   def delete_wrapper(tun):
     try:
       tun = ct.cast(tun, ccs_features_tuner)
-      delete(Object.from_handle(tun))
+      if delete is not None:
+        delete(Object.from_handle(tun))
       _unregister_vector(tun)
       return ccs_result.SUCCESS
     except Exception as e:
@@ -346,7 +347,7 @@ class UserDefinedFeaturesTuner(FeaturesTuner):
   def __init__(self, handle = None, retain = False, auto_release = True,
                name = None, configuration_space = None, features_space = None, objective_space = None, delete = None, ask = None, tell = None, get_optimums = None, get_history = None, suggest = None, serialize = None, deserialize = None, tuner_data = None ):
     if handle is None:
-      if delete is None or ask is None or tell is None or get_optimums is None or get_history is None:
+      if ask is None or tell is None or get_optimums is None or get_history is None:
         raise Error(ccs_result(ccs_result.ERROR_INVALID_VALUE))
 
       (delete_wrapper,
@@ -388,7 +389,7 @@ class UserDefinedFeaturesTuner(FeaturesTuner):
 
   @classmethod
   def deserialize(cls, delete, ask, tell, get_optimums, get_history, suggest = None, serialize = None, deserialize = None, tuner_data = None, format = 'binary', handle_map = None, path = None, buffer = None, file_descriptor = None, callback = None, callback_data = None):
-    if delete is None or ask is None or tell is None or get_optimums is None or get_history is None:
+    if ask is None or tell is None or get_optimums is None or get_history is None:
       raise Error(ccs_result(ccs_result.ERROR_INVALID_VALUE))
     (delete_wrapper,
      ask_wrapper,
