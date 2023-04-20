@@ -7,7 +7,7 @@ extern "C" {
 
 /**
  * @file tree_configuration.h
- * A tree configuration is a posiiton on a the tree (see tree.h) of a tree
+ * A tree configuration is a position on the tree (see tree.h) of a tree
  * space (see tree_space.h).
  */
 
@@ -166,7 +166,7 @@ ccs_tree_configuration_hash(
  *                     configuration
  * @return #CCS_RESULT_SUCCESS on success
  * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p configuration or \p other_configuration
- *                              are not a valid CCS tree coonfigurations
+ *                              are not a valid CCS tree configurations
  */
 extern ccs_result_t
 ccs_tree_configuration_cmp(

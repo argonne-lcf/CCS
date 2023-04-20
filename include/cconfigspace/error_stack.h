@@ -11,14 +11,14 @@ extern "C" {
 #endif
 
 /**
- * Tranfers ownership of thread error stack from CCS to the user.
+ * Transfers ownership of thread error stack from CCS to the user.
  * @returns the thread specific error stack or NULL if none exist.
  */
 extern ccs_error_stack_t
 ccs_get_thread_error();
 
 /**
- * Transfers ownership of error stask from the user to CCS.
+ * Transfers ownership of error stack from the user to CCS.
  * If a previous error was owned by the thread it will be released.
  * @param[in] error_stack the error stack to transfer
  * @return #CCS_RESULT_SUCCESS on success

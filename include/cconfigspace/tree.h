@@ -303,7 +303,7 @@ extern ccs_result_t
 ccs_tree_sample(ccs_tree_t tree, ccs_rng_t rng, size_t *index_ret);
 
 /**
- * Sample the child index space of a a tree node.  If the returned index is
+ * Sample the child index space of a tree node.  If the returned index is
  * equal to the arity, the node sampled itself.  Sampling is proportional to
  * each subtree weight and to the tree node own weight.  A subtree weight is
  * computed as the sum of each of it's subtree weights plus it's root node weight,

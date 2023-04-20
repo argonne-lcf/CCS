@@ -378,7 +378,7 @@ typedef struct ccs_user_defined_features_tuner_vector_s
  * @param[in] name the name of the features tuner
  * @param[in] configuration_space the configuration space to explore
  * @param[in] features_space the features space
- * @param[in] objective_space the objective space to potimize
+ * @param[in] objective_space the objective space to optimize
  * @param[in] vector the vector of callbacks implementing the features tuner interface
  * @param[in] tuner_data a pointer to the features tuner internal data
  *                       structures. Can be NULL

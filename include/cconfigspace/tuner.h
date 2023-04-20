@@ -304,7 +304,7 @@ typedef struct ccs_user_defined_tuner_vector_s ccs_user_defined_tuner_vector_t;
  * Create a new user defined tuner.
  * @param[in] name the name of the tuner
  * @param[in] configuration_space the configuration space to explore
- * @param[in] objective_space the objective space to potimize
+ * @param[in] objective_space the objective space to optimize
  * @param[in] vector the vector of callbacks implementing the tuner interface
  * @param[in] tuner_data a pointer to the tuner internal data structures. Can be
  *                       NULL

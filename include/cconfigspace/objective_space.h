@@ -13,7 +13,7 @@ extern "C" {
  */
 
 /**
- * Types of CCS objetives.
+ * Types of a CCS objective.
  */
 enum ccs_objective_type_e {
 	/** Objective should be minimized */

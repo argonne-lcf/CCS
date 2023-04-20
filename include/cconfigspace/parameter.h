@@ -17,7 +17,7 @@ extern "C" {
  */
 enum ccs_parameter_type_e {
 	/**
-	 * A numerical parameter, over intergers or floating point values.
+	 * A numerical parameter, over integers or floating point values.
 	 */
 	CCS_PARAMETER_TYPE_NUMERICAL,
 	/**

@@ -8,7 +8,7 @@ extern "C" {
 /**
  * @file tree_space.h
  * A CCS tree space defines an search space over a tree. Tree spaces can be
- * sampled to abtain tree configurations. Configurations con point to unknown
+ * sampled to obtain tree configurations. Configurations con point to unknown
  * children (if they exist). This is where static tree spaces and dynamic tree
  * spaces differ: in a static tree space, the user is responsible for modifying
  * the tree before evaluating these configuration values or node; in a dynamic
@@ -66,7 +66,7 @@ struct ccs_dynamic_tree_space_vector_s {
 	ccs_result_t (*del)(ccs_tree_space_t tree_space);
 
 	/**
-	 * The all back that will be called when querying a missing childre in
+	 * The all back that will be called when querying a missing children in
 	 * a dynamic tree space.
 	 * @param[in] tree_space the dynamic tree space
 	 * @param[in] parent the parent of the node being queried
@@ -113,7 +113,7 @@ typedef struct ccs_dynamic_tree_space_vector_s ccs_dynamic_tree_space_vector_t;
  * Create a new static tree space.
  * @param[in] name pointer to a string that will be copied internally
  * @param[in] tree the tree defining the tree space
- * @param[in] vector the callback vector implementic the dynamic tree space
+ * @param[in] vector the callback vector implementing the dynamic tree space
  *                   interface
  * @param[in] tree_space_data a pointer to the tree space internal data structures
  *                            can be NULL
@@ -289,7 +289,7 @@ ccs_tree_space_check_configuration(
 /**
  * Get a tree configuration sampled randomly from a tree space.  The space is
  * sampled according to the weight and bias of the individual tree nodes. If
- * those are at their default values, the tree nodes are sampled uniformely.
+ * those are at their default values, the tree nodes are sampled uniformly.
  * @param[in] tree_space
  * @param[out] configuration_ret a pointer to the variable that will contain the
  *                               returned tree configuration

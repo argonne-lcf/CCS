@@ -136,7 +136,7 @@ typedef struct _ccs_features_tuner_s      *ccs_features_tuner_t;
  */
 typedef struct _ccs_map_s                 *ccs_map_t;
 /**
- * An opaque type defining a CCS error statck.
+ * An opaque type defining a CCS error stack.
  */
 typedef struct _ccs_error_stack_s         *ccs_error_stack_t;
 /**
@@ -221,9 +221,9 @@ enum ccs_result_e {
 	CCS_RESULT_ERROR_DUPLICATE_HANDLE       = -24,
 	/** The handle was not found */
 	CCS_RESULT_ERROR_INVALID_HANDLE         = -25,
-	/** A system error occured */
+	/** A system error occurred */
 	CCS_RESULT_ERROR_SYSTEM                 = -26,
-	/** External error occured (binding?) */
+	/** External error occurred (binding?) */
 	CCS_RESULT_ERROR_EXTERNAL               = -27,
 	/** The provided tree is invalid */
 	CCS_RESULT_ERROR_INVALID_TREE           = -28,
@@ -238,7 +238,7 @@ enum ccs_result_e {
 };
 
 /**
- * A commodity type to represent CCS errors and returned by most functione.
+ * A commodity type to represent CCS errors and returned by most functions.
  */
 typedef enum ccs_result_e ccs_result_t;
 
@@ -657,7 +657,7 @@ extern ccs_result_t
 ccs_init();
 
 /**
- * The library deinitialization function. Should be called after all opertaions
+ * The library deinitialization function. Should be called after all operations
  * using the library are performed.
  * @return #CCS_RESULT_SUCCESS
  */
@@ -851,7 +851,7 @@ enum ccs_serialize_operation_e {
 	CCS_SERIALIZE_OPERATION_FORCE_32BIT = INT32_MAX
 };
 /**
- * A commodity type to represent CCS serializaiton operations.
+ * A commodity type to represent CCS serialization operations.
  */
 typedef enum ccs_serialize_operation_e ccs_serialize_operation_t;
 
@@ -883,7 +883,7 @@ enum ccs_serialize_option_e {
 typedef enum ccs_serialize_option_e ccs_serialize_option_t;
 
 /**
- * A commodity type to represent CCS deserializaiton callbacks.
+ * A commodity type to represent CCS deserialization callbacks.
  */
 typedef ccs_result_t (*ccs_object_deserialize_callback_t)(
 	ccs_object_t object,
