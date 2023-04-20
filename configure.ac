@@ -1,5 +1,18 @@
 # see semver.org for version info
-AC_INIT([cconfigspace],m4_normalize(m4_include([VERSION])),[bvideau@anl.gov])
+
+m4_define([VERSION_STRING], m4_esyscmd([build-aux/git-version-gen .tarball-version]))
+m4_define([VERSION_FIELDS], m4_split(VERSION_STRING, [\.]))
+m4_define([VERSION_MAJOR], m4_argn(1, VERSION_FIELDS))
+m4_define([VERSION_MINOR], m4_argn(2, VERSION_FIELDS))
+m4_define([VERSION_PATCH], m4_argn(3, VERSION_FIELDS))
+m4_define([VERSION_REVISION], m4_argn(4, VERSION_FIELDS))
+
+AC_INIT([cconfigspace],[VERSION_STRING],[bvideau@anl.gov])
+
+AC_SUBST([PACKAGE_VERSION_MAJOR],[VERSION_MAJOR])
+AC_SUBST([PACKAGE_VERSION_MINOR],[VERSION_MINOR])
+AC_SUBST([PACKAGE_VERSION_PATCH],[VERSION_PATCH])
+AC_SUBST([PACKAGE_VERSION_REVISION],[VERSION_REVISION])
 
 # are we in the right source dir ?
 AC_CONFIG_SRCDIR([src/cconfigspace.c])
