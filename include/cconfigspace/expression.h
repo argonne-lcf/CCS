@@ -246,7 +246,7 @@ extern const char               *ccs_terminal_symbols[];
  * @return #CCS_OUT_OF_MEMORY if there was a lack of memory to allocate the new
  *                             expression
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_create_expression(
 	ccs_expression_type_t type,
 	size_t                num_nodes,
@@ -277,7 +277,7 @@ ccs_create_expression(
  * @return #CCS_OUT_OF_MEMORY if there was a lack of memory to allocate the new
  *                             expression
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_create_binary_expression(
 	ccs_expression_type_t type,
 	ccs_datum_t           node_left,
@@ -304,7 +304,7 @@ ccs_create_binary_expression(
  * @return #CCS_OUT_OF_MEMORY if there was a lack of memory to allocate the new
  *                             expression
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_create_unary_expression(
 	ccs_expression_type_t type,
 	ccs_datum_t           node,
@@ -323,7 +323,7 @@ ccs_create_unary_expression(
  * @return #CCS_OUT_OF_MEMORY if there was a lack of memory to allocate the new
  *                             expression
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_create_literal(ccs_datum_t value, ccs_expression_t *expression_ret);
 
 /**
@@ -338,7 +338,7 @@ ccs_create_literal(ccs_datum_t value, ccs_expression_t *expression_ret);
  * @return #CCS_OUT_OF_MEMORY if there was a lack of memory to allocate the new
  *                             expression
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_create_variable(ccs_parameter_t parameter, ccs_expression_t *expression_ret);
 
 /**
@@ -350,7 +350,7 @@ ccs_create_variable(ccs_parameter_t parameter, ccs_expression_t *expression_ret)
  * @return #CCS_INVALID_VALUE if \p type_ret is NULL
  * @return #CCS_INVALID_OBJECT if \p expression is not a valid CCS expression
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_expression_get_type(
 	ccs_expression_t       expression,
 	ccs_expression_type_t *type_ret);
@@ -364,7 +364,7 @@ ccs_expression_get_type(
  * @return #CCS_INVALID_VALUE if \p num_nodes_ret is NULL
  * @return #CCS_INVALID_OBJECT if \p expression is not a valid CCS expression
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_expression_get_num_nodes(ccs_expression_t expression, size_t *num_nodes_ret);
 
 /**
@@ -383,7 +383,7 @@ ccs_expression_get_num_nodes(ccs_expression_t expression, size_t *num_nodes_ret)
  *                             is NULL; or if num_values is less than the number
  *                             of values that would be returned
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_expression_get_nodes(
 	ccs_expression_t  expression,
 	size_t            num_nodes,
@@ -400,7 +400,7 @@ ccs_expression_get_nodes(
  * @return #CCS_INVALID_EXPRESSION if \p expression is not a #CCS_EXPRESSION_TYPE_LITERAL
  * @return #CCS_INVALID_VALUE if \p value_ret is NULL
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_literal_get_value(ccs_expression_t expression, ccs_datum_t *value_ret);
 
 /**
@@ -413,7 +413,7 @@ ccs_literal_get_value(ccs_expression_t expression, ccs_datum_t *value_ret);
  * @return #CCS_INVALID_EXPRESSION if \p expression is not a #CCS_EXPRESSION_TYPE_VARIABLE
  * @return #CCS_INVALID_VALUE if \p parameter_ret is NULL
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_variable_get_parameter(
 	ccs_expression_t expression,
 	ccs_parameter_t *parameter_ret);
@@ -439,7 +439,7 @@ ccs_variable_get_parameter(
  *                             have occurred; or if a non boolean value is used
  *                             in a boolean operation
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_expression_eval(
 	ccs_expression_t expression,
 	ccs_context_t    context,
@@ -471,7 +471,7 @@ ccs_expression_eval(
  *                             have occurred; or if a non boolean value is used
  *                             in a boolean operation
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_expression_list_eval_node(
 	ccs_expression_t expression,
 	ccs_context_t    context,
@@ -500,7 +500,7 @@ ccs_expression_list_eval_node(
  * @return #CCS_OUT_OF_MEMORY if there was not enough memory to allocate
  *                             temporary storage
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_expression_get_parameters(
 	ccs_expression_t expression,
 	size_t           num_parameters,
@@ -524,7 +524,7 @@ ccs_expression_get_parameters(
  * @return #CCS_OUT_OF_MEMORY if there was not enough memory to allocate
  *                             temporary storage
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_expression_check_context(ccs_expression_t expression, ccs_context_t context);
 #ifdef __cplusplus
 }

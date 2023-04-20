@@ -69,7 +69,7 @@ typedef enum ccs_parameter_type_e ccs_parameter_type_t;
  * @return #CCS_OUT_OF_MEMORY if there was a lack of memory to allocate the new
  *                             numerical parameter
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_create_numerical_parameter(
 	const char        *name,
 	ccs_numeric_type_t data_type,
@@ -99,7 +99,7 @@ ccs_create_numerical_parameter(
  *                             NULL and \p upper_ret is NULL and \p
  *                             quantization_ret is NULL
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_numerical_parameter_get_properties(
 	ccs_parameter_t     parameter,
 	ccs_numeric_type_t *data_type_ret,
@@ -124,7 +124,7 @@ ccs_numerical_parameter_get_properties(
  * @return #CCS_OUT_OF_MEMORY if there was a lack of memory to allocate the new
  *                             parameter
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_create_categorical_parameter(
 	const char      *name,
 	size_t           num_possible_values,
@@ -154,7 +154,7 @@ ccs_create_categorical_parameter(
  *                             num_possible_values is less than the number of
  *                             values that would be returned
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_categorical_parameter_get_values(
 	ccs_parameter_t parameter,
 	size_t          num_possible_values,
@@ -179,7 +179,7 @@ ccs_categorical_parameter_get_values(
  * @return #CCS_OUT_OF_MEMORY if there was a lack of memory to allocate the new
  *                             parameter
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_create_ordinal_parameter(
 	const char      *name,
 	size_t           num_possible_values,
@@ -209,7 +209,7 @@ ccs_create_ordinal_parameter(
  *                             num_possible_values is less than the number of
  *                             values that would be returned
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_ordinal_parameter_get_values(
 	ccs_parameter_t parameter,
 	size_t          num_possible_values,
@@ -231,7 +231,7 @@ ccs_ordinal_parameter_get_values(
  * @return #CCS_INVALID_VALUE if \p comp_ret is NULL; or if value1 or value2
  *                             are not one of the parameter possible values
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_ordinal_parameter_compare_values(
 	ccs_parameter_t parameter,
 	ccs_datum_t     value1,
@@ -256,7 +256,7 @@ ccs_ordinal_parameter_compare_values(
  * @return #CCS_OUT_OF_MEMORY if there was a lack of memory to allocate the new
  *                             parameter
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_create_discrete_parameter(
 	const char      *name,
 	size_t           num_possible_values,
@@ -286,7 +286,7 @@ ccs_create_discrete_parameter(
  *                             num_possible_values is less than the number of
  *                             values that would be returned
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_discrete_parameter_get_values(
 	ccs_parameter_t parameter,
 	size_t          num_possible_values,
@@ -306,7 +306,7 @@ ccs_discrete_parameter_get_values(
  * @return #CCS_OUT_OF_MEMORY if there was a lack of memory to allocate the new
  *                             parameter
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_create_string_parameter(const char *name, ccs_parameter_t *parameter_ret);
 
 /**
@@ -319,7 +319,7 @@ ccs_create_string_parameter(const char *name, ccs_parameter_t *parameter_ret);
  * @return #CCS_INVALID_OBJECT if \p distribution is not a valid CCS
  *                              parameter
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_parameter_get_type(
 	ccs_parameter_t       parameter,
 	ccs_parameter_type_t *type_ret);
@@ -334,7 +334,7 @@ ccs_parameter_get_type(
  * @return #CCS_INVALID_OBJECT if \p distribution is not a valid CCS
  *                              parameter
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_parameter_get_default_value(
 	ccs_parameter_t parameter,
 	ccs_datum_t    *value_ret);
@@ -349,7 +349,7 @@ ccs_parameter_get_default_value(
  * @return #CCS_INVALID_OBJECT if \p distribution is not a valid CCS
  *                              parameter
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_parameter_get_name(ccs_parameter_t parameter, const char **name_ret);
 
 /**
@@ -362,7 +362,7 @@ ccs_parameter_get_name(ccs_parameter_t parameter, const char **name_ret);
  *                              parameter
  * @return #CCS_INVALID_VALUE if \p distribution_ret is NULL
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_parameter_get_default_distribution(
 	ccs_parameter_t     parameter,
 	ccs_distribution_t *distribution_ret);
@@ -378,7 +378,7 @@ ccs_parameter_get_default_distribution(
  *                              parameter
  * @return #CCS_INVALID_VALUE if \p result_ret is NULL
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_parameter_check_value(
 	ccs_parameter_t parameter,
 	ccs_datum_t     value,
@@ -397,7 +397,7 @@ ccs_parameter_check_value(
  * @return #CCS_INVALID_VALUE if \p values or \p results are NULL and \p
  *                             num_values is greater than 0
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_parameter_check_values(
 	ccs_parameter_t    parameter,
 	size_t             num_values,
@@ -419,7 +419,7 @@ ccs_parameter_check_values(
  *                              parameter
  * @return #CCS_INVALID_VALUE if \p result_ret or \p value_ret is NULL
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_parameter_validate_value(
 	ccs_parameter_t parameter,
 	ccs_datum_t     value,
@@ -443,7 +443,7 @@ ccs_parameter_validate_value(
  * @return #CCS_INVALID_VALUE if \p values or \p results or \p values_ret are
  *                             NULL and \p num_values is greater than 0
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_parameter_validate_values(
 	ccs_parameter_t    parameter,
 	size_t             num_values,
@@ -470,7 +470,7 @@ ccs_parameter_validate_values(
  * @return #CCS_INVALID_VALUE if \p values or \p results are NULL and \p
  *                             num_values is greater than 0
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_parameter_convert_samples(
 	ccs_parameter_t      parameter,
 	ccs_bool_t           oversampling,
@@ -495,7 +495,7 @@ ccs_parameter_convert_samples(
  *                                     because the probability of obtaining a
  *                                     valid sample is too low
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_parameter_sample(
 	ccs_parameter_t    parameter,
 	ccs_distribution_t distribution,
@@ -521,7 +521,7 @@ ccs_parameter_sample(
  *                                     generated, because the probability of
  *                                     obtaining a valid sample is too low
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_parameter_samples(
 	ccs_parameter_t    parameter,
 	ccs_distribution_t distribution,
@@ -539,7 +539,7 @@ ccs_parameter_samples(
  *                              parameter
  * @return #CCS_INVALID_VALUE if \p interval_ret is NULL
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_parameter_sampling_interval(
 	ccs_parameter_t parameter,
 	ccs_interval_t *interval_ret);

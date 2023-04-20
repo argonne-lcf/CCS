@@ -7,7 +7,7 @@ ccs_parameter_t
 create_numerical(const char *name, double lower, double upper)
 {
 	ccs_parameter_t parameter;
-	ccs_error_t     err;
+	ccs_result_t    err;
 	err = ccs_create_numerical_parameter(
 		name, CCS_NUMERIC_TYPE_FLOAT, CCSF(lower), CCSF(upper),
 		CCSF(0.0), CCSF(0), &parameter);
@@ -24,7 +24,7 @@ test()
 	ccs_objective_space_t     ospace;
 	ccs_expression_t          expression;
 	ccs_tuner_t               tuner, tuner_copy;
-	ccs_error_t               err;
+	ccs_result_t              err;
 	ccs_datum_t               d;
 	char                     *buff;
 	size_t                    buff_size;
@@ -167,7 +167,7 @@ test_evaluation_deserialize()
 	ccs_configuration_space_t cspace;
 	ccs_objective_space_t     ospace;
 	ccs_expression_t          expression;
-	ccs_error_t               err;
+	ccs_result_t              err;
 	ccs_configuration_t       configuration;
 	ccs_evaluation_t          evaluation_ref, evaluation;
 	ccs_datum_t               res, d;

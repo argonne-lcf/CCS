@@ -16,7 +16,7 @@ ccs_parameter_t
 create_numerical(const char *name, double lower, double upper)
 {
 	ccs_parameter_t parameter;
-	ccs_error_t     err;
+	ccs_result_t    err;
 	err = ccs_create_numerical_parameter(
 		name, CCS_NUMERIC_TYPE_FLOAT, CCSF(lower), CCSF(upper),
 		CCSF(0.0), CCSF(0), &parameter);
@@ -32,7 +32,7 @@ create_problem(ccs_configuration_space_t *cs, ccs_objective_space_t *os)
 	ccs_configuration_space_t cspace;
 	ccs_objective_space_t     ospace;
 	ccs_expression_t          expression;
-	ccs_error_t               err;
+	ccs_result_t              err;
 
 	parameter1 = create_numerical("x", -5.0, 5.0);
 	parameter2 = create_numerical("y", -5.0, 5.0);
@@ -72,7 +72,7 @@ create_problem(ccs_configuration_space_t *cs, ccs_objective_space_t *os)
 void
 test_tuner(ccs_tuner_t tuner, ccs_objective_space_t ospace)
 {
-	ccs_error_t err;
+	ccs_result_t err;
 
 	for (size_t i = 0; i < 100; i++) {
 		ccs_datum_t         values[2], res;
@@ -126,7 +126,7 @@ test()
 	ccs_tuner_t               t;
 	ccs_configuration_space_t cs;
 	ccs_objective_space_t     os;
-	ccs_error_t               err;
+	ccs_result_t              err;
 	int                       state;
 	VALUE                     ruby_stack_start;
 

@@ -25,7 +25,7 @@ extern "C" {
  * @return #CCS_OUT_OF_MEMORY if there was a lack of memory to allocate the new
  *                             configuration space
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_create_configuration_space(
 	const char                *name,
 	ccs_configuration_space_t *configuration_space_ret);
@@ -40,7 +40,7 @@ ccs_create_configuration_space(
  *                              configuration space
  * @return #CCS_INVALID_VALUE if \p name_ret is NULL
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_configuration_space_get_name(
 	ccs_configuration_space_t configuration_space,
 	const char              **name_ret);
@@ -54,7 +54,7 @@ ccs_configuration_space_get_name(
  *                              configuration space; or \p rng is not a valid
  *                              CCS rng
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_configuration_space_set_rng(
 	ccs_configuration_space_t configuration_space,
 	ccs_rng_t                 rng);
@@ -68,7 +68,7 @@ ccs_configuration_space_set_rng(
  *                              configuration space
  * @return #CCS_INVALID_VALUE if \p rng_ret is NULL
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_configuration_space_get_rng(
 	ccs_configuration_space_t configuration_space,
 	ccs_rng_t                *rng_ret);
@@ -97,7 +97,7 @@ ccs_configuration_space_get_rng(
  *                             the additional parameter and associated data
  *                             structures
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_configuration_space_add_parameter(
 	ccs_configuration_space_t configuration_space,
 	ccs_parameter_t           parameter,
@@ -135,7 +135,7 @@ ccs_configuration_space_add_parameter(
  *                             additional parameters and associated data
  *                             structures
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_configuration_space_add_parameters(
 	ccs_configuration_space_t configuration_space,
 	size_t                    num_parameters,
@@ -163,7 +163,7 @@ ccs_configuration_space_add_parameters(
  *                             additional parameters and associated data
  *                             structures
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_configuration_space_set_distribution(
 	ccs_configuration_space_t configuration_space,
 	ccs_distribution_t        distribution,
@@ -180,7 +180,7 @@ ccs_configuration_space_set_distribution(
  *                              configuration space
  * @return #CCS_INVALID_VALUE if \p num_parameters_ret is NULL
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_configuration_space_get_num_parameters(
 	ccs_configuration_space_t configuration_space,
 	size_t                   *num_parameters_ret);
@@ -198,7 +198,7 @@ ccs_configuration_space_get_num_parameters(
  * @return #CCS_OUT_OF_BOUNDS if \p index is greater than the count of
  *                             parameters in the configuration space
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_configuration_space_get_parameter(
 	ccs_configuration_space_t configuration_space,
 	size_t                    index,
@@ -221,7 +221,7 @@ ccs_configuration_space_get_parameter(
  * @return #CCS_OUT_OF_BOUNDS if \p index is greater than the count of
  *                             parameters in the configuration space
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_configuration_space_get_parameter_distribution(
 	ccs_configuration_space_t configuration_space,
 	size_t                    index,
@@ -241,7 +241,7 @@ ccs_configuration_space_get_parameter_distribution(
  * @return #CCS_INVALID_NAME if no parameter with such \p name exist in
  *                            the \p configuration space
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_configuration_space_get_parameter_by_name(
 	ccs_configuration_space_t configuration_space,
 	const char               *name,
@@ -260,7 +260,7 @@ ccs_configuration_space_get_parameter_by_name(
  * @return #CCS_INVALID_NAME if no parameter with such \p name exist in
  *                            the configuration space
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_configuration_space_get_parameter_index_by_name(
 	ccs_configuration_space_t configuration_space,
 	const char               *name,
@@ -279,7 +279,7 @@ ccs_configuration_space_get_parameter_index_by_name(
  * @return #CCS_INVALID_PARAMETER if \p configuration_space does not
  *                                      contain \p parameter
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_configuration_space_get_parameter_index(
 	ccs_configuration_space_t configuration_space,
 	ccs_parameter_t           parameter,
@@ -305,7 +305,7 @@ ccs_configuration_space_get_parameter_index(
  *                                      is not contained in \p
  *                                      configuration_space
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_configuration_space_get_parameter_indexes(
 	ccs_configuration_space_t configuration_space,
 	size_t                    num_parameters,
@@ -335,7 +335,7 @@ ccs_configuration_space_get_parameter_indexes(
  *                             \p num_parameters is less than the number of
  *                             parameters that would be returned
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_configuration_space_get_parameters(
 	ccs_configuration_space_t configuration_space,
 	size_t                    num_parameters,
@@ -361,7 +361,7 @@ ccs_configuration_space_get_parameters(
  * @return #CCS_INVALID_VALUE if the value did not validate or if value_ret is
  *                             NULL
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_configuration_space_validate_value(
 	ccs_configuration_space_t configuration_space,
 	size_t                    index,
@@ -390,7 +390,7 @@ ccs_configuration_space_validate_value(
  * @return #CCS_INVALID_GRAPH if the addition of the condition would cause the
  *                             dependency graph to become invalid (cyclic)
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_configuration_space_set_condition(
 	ccs_configuration_space_t configuration_space,
 	size_t                    parameter_index,
@@ -412,7 +412,7 @@ ccs_configuration_space_set_condition(
  *                             parameters in \p configuration_space
  * @return #CCS_INVALID_VALUE if \p expression_ret is NULL
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_configuration_space_get_condition(
 	ccs_configuration_space_t configuration_space,
 	size_t                    parameter_index,
@@ -441,7 +441,7 @@ ccs_configuration_space_get_condition(
  *                             num_expressions is is less than the number of
  *                             parameters contained by configuration_space
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_configuration_space_get_conditions(
 	ccs_configuration_space_t configuration_space,
 	size_t                    num_expressions,
@@ -464,7 +464,7 @@ ccs_configuration_space_get_conditions(
  * @return #CCS_INVALID_CONFIGURATION if adding the forbidden clause would
  *                                     render the default configuration invalid
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_configuration_space_add_forbidden_clause(
 	ccs_configuration_space_t configuration_space,
 	ccs_expression_t          expression);
@@ -491,7 +491,7 @@ ccs_configuration_space_add_forbidden_clause(
  *                                     clause would render the default
  *                                     configuration invalid
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_configuration_space_add_forbidden_clauses(
 	ccs_configuration_space_t configuration_space,
 	size_t                    num_expressions,
@@ -510,7 +510,7 @@ ccs_configuration_space_add_forbidden_clauses(
  * @return #CCS_OUT_OF_BOUNDS if \p index is greater than the number of
  *                             forbidden clauses in the configuration space
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_configuration_space_get_forbidden_clause(
 	ccs_configuration_space_t configuration_space,
 	size_t                    index,
@@ -537,7 +537,7 @@ ccs_configuration_space_get_forbidden_clause(
  *                             num_expressions is less than then number of
  *                             expressions that would be returned
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_configuration_space_get_forbidden_clauses(
 	ccs_configuration_space_t configuration_space,
 	size_t                    num_expressions,
@@ -563,7 +563,7 @@ ccs_configuration_space_get_forbidden_clauses(
  * @return #CCS_INVALID_CONFIGURATION if \p configuration is not associated to
  *                                     the configuration space
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_configuration_space_check_configuration(
 	ccs_configuration_space_t configuration_space,
 	ccs_configuration_t       configuration,
@@ -592,7 +592,7 @@ ccs_configuration_space_check_configuration(
  *                                     number of parameters in the
  *                                     configuration space
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_configuration_space_check_configuration_values(
 	ccs_configuration_space_t configuration_space,
 	size_t                    num_values,
@@ -611,7 +611,7 @@ ccs_configuration_space_check_configuration_values(
  * @return #CCS_OUT_OF_MEMORY if there was not enough memory to allocate the
  *                             new configuration
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_configuration_space_get_default_configuration(
 	ccs_configuration_space_t configuration_space,
 	ccs_configuration_t      *configuration_ret);
@@ -633,7 +633,7 @@ ccs_configuration_space_get_default_configuration(
  * @return #CCS_OUT_OF_MEMORY if there was not enough memory to allocate the
  *                             new configuration
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_configuration_space_sample(
 	ccs_configuration_space_t configuration_space,
 	ccs_configuration_t      *configuration_ret);
@@ -662,7 +662,7 @@ ccs_configuration_space_sample(
  *                             allocated will be returned, and the rest will be
  *                             NULL
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_configuration_space_samples(
 	ccs_configuration_space_t configuration_space,
 	size_t                    num_configurations,

@@ -11,13 +11,13 @@ module CCS
     end
   end
 
-  attach_function :ccs_create_evaluation, [:ccs_objective_space_t, :ccs_configuration_t, :ccs_evaluation_result_t, :size_t, :pointer, :pointer], :ccs_error_t
-  attach_function :ccs_evaluation_get_configuration, [:ccs_evaluation_t, :pointer], :ccs_error_t
-  attach_function :ccs_evaluation_get_result, [:ccs_evaluation_t, :pointer], :ccs_error_t
-  attach_function :ccs_evaluation_set_result, [:ccs_evaluation_t, :ccs_evaluation_result_t], :ccs_error_t
-  attach_function :ccs_evaluation_get_objective_values, [:ccs_evaluation_t, :size_t, :pointer, :pointer], :ccs_error_t
-  attach_function :ccs_evaluation_compare, [:ccs_evaluation_t, :ccs_evaluation_t, :pointer], :ccs_error_t
-  attach_function :ccs_evaluation_check, [:ccs_evaluation_t, :pointer], :ccs_error_t
+  attach_function :ccs_create_evaluation, [:ccs_objective_space_t, :ccs_configuration_t, :ccs_evaluation_result_t, :size_t, :pointer, :pointer], :ccs_result_t
+  attach_function :ccs_evaluation_get_configuration, [:ccs_evaluation_t, :pointer], :ccs_result_t
+  attach_function :ccs_evaluation_get_result, [:ccs_evaluation_t, :pointer], :ccs_result_t
+  attach_function :ccs_evaluation_set_result, [:ccs_evaluation_t, :ccs_evaluation_result_t], :ccs_result_t
+  attach_function :ccs_evaluation_get_objective_values, [:ccs_evaluation_t, :size_t, :pointer, :pointer], :ccs_result_t
+  attach_function :ccs_evaluation_compare, [:ccs_evaluation_t, :ccs_evaluation_t, :pointer], :ccs_result_t
+  attach_function :ccs_evaluation_check, [:ccs_evaluation_t, :pointer], :ccs_result_t
 
   class Evaluation < Binding
     alias objective_space context

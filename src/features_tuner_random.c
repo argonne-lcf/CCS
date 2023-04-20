@@ -13,7 +13,7 @@ struct _ccs_random_features_tuner_data_s {
 typedef struct _ccs_random_features_tuner_data_s
 	_ccs_random_features_tuner_data_t;
 
-static ccs_error_t
+static ccs_result_t
 _ccs_features_tuner_random_del(ccs_object_t o)
 {
 	_ccs_random_features_tuner_data_t *d =
@@ -32,7 +32,7 @@ _ccs_features_tuner_random_del(ccs_object_t o)
 	return CCS_SUCCESS;
 }
 
-static inline ccs_error_t
+static inline ccs_result_t
 _ccs_serialize_bin_size_ccs_random_features_tuner_data(
 	_ccs_random_features_tuner_data_t *data,
 	size_t                            *cum_size,
@@ -53,7 +53,7 @@ _ccs_serialize_bin_size_ccs_random_features_tuner_data(
 	return CCS_SUCCESS;
 }
 
-static inline ccs_error_t
+static inline ccs_result_t
 _ccs_serialize_bin_ccs_random_features_tuner_data(
 	_ccs_random_features_tuner_data_t *data,
 	size_t                            *buffer_size,
@@ -79,7 +79,7 @@ _ccs_serialize_bin_ccs_random_features_tuner_data(
 	return CCS_SUCCESS;
 }
 
-static inline ccs_error_t
+static inline ccs_result_t
 _ccs_serialize_bin_size_ccs_random_features_tuner(
 	ccs_features_tuner_t             features_tuner,
 	size_t                          *cum_size,
@@ -94,7 +94,7 @@ _ccs_serialize_bin_size_ccs_random_features_tuner(
 	return CCS_SUCCESS;
 }
 
-static inline ccs_error_t
+static inline ccs_result_t
 _ccs_serialize_bin_ccs_random_features_tuner(
 	ccs_features_tuner_t             features_tuner,
 	size_t                          *buffer_size,
@@ -110,7 +110,7 @@ _ccs_serialize_bin_ccs_random_features_tuner(
 	return CCS_SUCCESS;
 }
 
-static ccs_error_t
+static ccs_result_t
 _ccs_random_features_tuner_serialize_size(
 	ccs_object_t                     object,
 	ccs_serialize_format_t           format,
@@ -132,7 +132,7 @@ _ccs_random_features_tuner_serialize_size(
 	return CCS_SUCCESS;
 }
 
-static ccs_error_t
+static ccs_result_t
 _ccs_random_features_tuner_serialize(
 	ccs_object_t                     object,
 	ccs_serialize_format_t           format,
@@ -156,7 +156,7 @@ _ccs_random_features_tuner_serialize(
 	return CCS_SUCCESS;
 }
 
-static ccs_error_t
+static ccs_result_t
 _ccs_features_tuner_random_ask(
 	ccs_features_tuner_t tuner,
 	ccs_features_t       features,
@@ -186,7 +186,7 @@ _ccs_features_tuner_random_ask(
 			CCS_OUT_OF_MEMORY,                                     \
 			"Not enough memory to allocate new array");            \
 	}
-static ccs_error_t
+static ccs_result_t
 _ccs_features_tuner_random_tell(
 	ccs_features_tuner_t       tuner,
 	size_t                     num_evaluations,
@@ -194,8 +194,8 @@ _ccs_features_tuner_random_tell(
 {
 	_ccs_random_features_tuner_data_t *d =
 		(_ccs_random_features_tuner_data_t *)tuner->data;
-	UT_array   *history = d->history;
-	ccs_error_t err;
+	UT_array    *history = d->history;
+	ccs_result_t err;
 	for (size_t i = 0; i < num_evaluations; i++) {
 		ccs_evaluation_result_t result;
 		CCS_VALIDATE(ccs_features_evaluation_get_result(
@@ -255,7 +255,7 @@ _ccs_features_tuner_random_tell(
 	return CCS_SUCCESS;
 }
 
-static ccs_error_t
+static ccs_result_t
 _ccs_features_tuner_random_get_optimums(
 	ccs_features_tuner_t       tuner,
 	ccs_features_t             features,
@@ -317,7 +317,7 @@ _ccs_features_tuner_random_get_optimums(
 	return CCS_SUCCESS;
 }
 
-static ccs_error_t
+static ccs_result_t
 _ccs_features_tuner_random_get_history(
 	ccs_features_tuner_t       tuner,
 	ccs_features_t             features,
@@ -379,7 +379,7 @@ _ccs_features_tuner_random_get_history(
 	return CCS_SUCCESS;
 }
 
-static ccs_error_t
+static ccs_result_t
 _ccs_features_tuner_random_suggest(
 	ccs_features_tuner_t tuner,
 	ccs_features_t       features,
@@ -451,7 +451,7 @@ static const UT_icd _evaluation_icd = {
 			err, CCS_OUT_OF_MEMORY, arrays,                        \
 			"Not enough memory to allocate array");                \
 	}
-ccs_error_t
+ccs_result_t
 ccs_create_random_features_tuner(
 	const char               *name,
 	ccs_configuration_space_t configuration_space,
@@ -472,7 +472,7 @@ ccs_create_random_features_tuner(
 	CCS_REFUTE(!mem, CCS_OUT_OF_MEMORY);
 	ccs_features_tuner_t               tun;
 	_ccs_random_features_tuner_data_t *data;
-	ccs_error_t                        err;
+	ccs_result_t                       err;
 
 	CCS_VALIDATE_ERR_GOTO(
 		err, ccs_retain_object(configuration_space), errmem);

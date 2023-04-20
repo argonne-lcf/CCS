@@ -80,20 +80,20 @@ module CCS
     [k, terminal_symbols[v]]
   }.to_h
 
-  attach_function :ccs_create_binary_expression, [:ccs_expression_type_t, :ccs_datum_t, :ccs_datum_t, :pointer], :ccs_error_t
-  attach_function :ccs_create_unary_expression, [:ccs_expression_type_t, :ccs_datum_t, :pointer], :ccs_error_t
-  attach_function :ccs_create_expression, [:ccs_expression_type_t, :size_t, :pointer, :pointer], :ccs_error_t
-  attach_function :ccs_create_literal, [:ccs_datum_t, :pointer], :ccs_error_t
-  attach_function :ccs_create_variable, [:ccs_parameter_t, :pointer], :ccs_error_t
-  attach_function :ccs_expression_get_type, [:ccs_expression_t, :pointer], :ccs_error_t
-  attach_function :ccs_expression_get_num_nodes, [:ccs_expression_t, :pointer], :ccs_error_t
-  attach_function :ccs_expression_get_nodes, [:ccs_expression_t, :size_t, :pointer, :pointer], :ccs_error_t
-  attach_function :ccs_literal_get_value, [:ccs_expression_t, :pointer], :ccs_error_t
-  attach_function :ccs_variable_get_parameter, [:ccs_expression_t, :pointer], :ccs_error_t
-  attach_function :ccs_expression_eval, [:ccs_expression_t, :ccs_context_t, :pointer, :pointer], :ccs_error_t
-  attach_function :ccs_expression_list_eval_node, [:ccs_expression_t, :ccs_context_t, :pointer, :size_t, :pointer], :ccs_error_t
-  attach_function :ccs_expression_get_parameters, [:ccs_expression_t, :size_t, :pointer, :pointer], :ccs_error_t
-  attach_function :ccs_expression_check_context, [:ccs_expression_t, :ccs_context_t], :ccs_error_t
+  attach_function :ccs_create_binary_expression, [:ccs_expression_type_t, :ccs_datum_t, :ccs_datum_t, :pointer], :ccs_result_t
+  attach_function :ccs_create_unary_expression, [:ccs_expression_type_t, :ccs_datum_t, :pointer], :ccs_result_t
+  attach_function :ccs_create_expression, [:ccs_expression_type_t, :size_t, :pointer, :pointer], :ccs_result_t
+  attach_function :ccs_create_literal, [:ccs_datum_t, :pointer], :ccs_result_t
+  attach_function :ccs_create_variable, [:ccs_parameter_t, :pointer], :ccs_result_t
+  attach_function :ccs_expression_get_type, [:ccs_expression_t, :pointer], :ccs_result_t
+  attach_function :ccs_expression_get_num_nodes, [:ccs_expression_t, :pointer], :ccs_result_t
+  attach_function :ccs_expression_get_nodes, [:ccs_expression_t, :size_t, :pointer, :pointer], :ccs_result_t
+  attach_function :ccs_literal_get_value, [:ccs_expression_t, :pointer], :ccs_result_t
+  attach_function :ccs_variable_get_parameter, [:ccs_expression_t, :pointer], :ccs_result_t
+  attach_function :ccs_expression_eval, [:ccs_expression_t, :ccs_context_t, :pointer, :pointer], :ccs_result_t
+  attach_function :ccs_expression_list_eval_node, [:ccs_expression_t, :ccs_context_t, :pointer, :size_t, :pointer], :ccs_result_t
+  attach_function :ccs_expression_get_parameters, [:ccs_expression_t, :size_t, :pointer, :pointer], :ccs_result_t
+  attach_function :ccs_expression_check_context, [:ccs_expression_t, :ccs_context_t], :ccs_result_t
 
   class Expression < Object
     add_property :type, :ccs_expression_type_t, :ccs_expression_get_type, memoize: true

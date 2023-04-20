@@ -8,10 +8,10 @@ typedef struct _ccs_tree_evaluation_data_s _ccs_tree_evaluation_data_t;
 struct _ccs_tree_evaluation_ops_s {
 	_ccs_object_ops_t obj_ops;
 
-	ccs_error_t (
+	ccs_result_t (
 		*hash)(_ccs_tree_evaluation_data_t *data, ccs_hash_t *hash_ret);
 
-	ccs_error_t (*cmp)(
+	ccs_result_t (*cmp)(
 		_ccs_tree_evaluation_data_t *data,
 		ccs_tree_evaluation_t        other,
 		int                         *cmp_ret);

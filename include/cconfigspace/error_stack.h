@@ -25,7 +25,7 @@ ccs_get_thread_error();
  * @return #CCS_INVALID_OBJECT if \p error_stack is not a valid CCS
  *                              error stack
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_set_thread_error(ccs_error_stack_t error_stack);
 
 /**
@@ -59,8 +59,8 @@ typedef struct ccs_error_stack_elem_s ccs_error_stack_elem_t;
  * @return #CCS_OUT_OF_MEMORY if there was not enough memory to allocate the
  *                             error stack
  */
-extern ccs_error_t
-ccs_create_thread_error(ccs_error_t error_code, const char *msg, ...);
+extern ccs_result_t
+ccs_create_thread_error(ccs_result_t error_code, const char *msg, ...);
 
 /**
  * Pushes a stack trace element on the thread error stack. A call to this
@@ -74,7 +74,7 @@ ccs_create_thread_error(ccs_error_t error_code, const char *msg, ...);
  * @return #CCS_OUT_OF_MEMORY if there was not enough memory to allocate
  *                             new stack elements
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_thread_error_stack_push(const char *file, int line, const char *func);
 
 /**
@@ -89,10 +89,10 @@ ccs_thread_error_stack_push(const char *file, int line, const char *func);
  * @return #CCS_OUT_OF_MEMORY if there was not enough memory to allocate the
  *                             error stack
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_create_error_stack(
 	ccs_error_stack_t *error_stack_ret,
-	ccs_error_t        error_code,
+	ccs_result_t       error_code,
 	const char        *msg,
 	...);
 
@@ -110,7 +110,7 @@ ccs_create_error_stack(
  * @return #CCS_OUT_OF_MEMORY if there was not enough memory to allocate
  *                             new stack elements
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_error_stack_push(
 	ccs_error_stack_t error_stack,
 	const char       *file,
@@ -126,7 +126,7 @@ ccs_error_stack_push(
  *                              stack
  * @return #CCS_INVALID_VALUE if \p message_ret is NULL
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_error_stack_get_message(
 	ccs_error_stack_t error_stack,
 	const char      **message_ret);
@@ -140,10 +140,10 @@ ccs_error_stack_get_message(
  *                              stack
  * @return #CCS_INVALID_VALUE if \p error_code_ret is NULL
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_error_stack_get_code(
 	ccs_error_stack_t error_stack,
-	ccs_error_t      *error_code_ret);
+	ccs_result_t     *error_code_ret);
 
 /**
  * Retrieves the stack elements from an error stack.
@@ -156,7 +156,7 @@ ccs_error_stack_get_code(
  *                              stack
  * @return #CCS_INVALID_VALUE if \p num_elems_ret is NULL; or if \p elems is NULL
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_error_stack_get_elems(
 	ccs_error_stack_t        error_stack,
 	size_t                  *num_elems_ret,

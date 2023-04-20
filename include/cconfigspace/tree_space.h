@@ -48,7 +48,7 @@ typedef enum ccs_tree_space_type_e ccs_tree_space_type_t;
  * @return #CCS_OUT_OF_MEMORY if there was a lack of memory to allocate the new
  *                            tree space
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_create_static_tree_space(
 	const char       *name,
 	ccs_tree_t        tree,
@@ -63,7 +63,7 @@ struct ccs_dynamic_tree_space_vector_s {
 	 * The deletion callback that will be called once the reference count
 	 * of the tree space reaches 0.
 	 */
-	ccs_error_t (*del)(ccs_tree_space_t tree_space);
+	ccs_result_t (*del)(ccs_tree_space_t tree_space);
 
 	/**
 	 * The all back that will be called when querying a missing childre in
@@ -78,7 +78,7 @@ struct ccs_dynamic_tree_space_vector_s {
 	 * @return #CCS_SUCCESS on success or an error code describing the
 	 *                      error encountered
 	 */
-	ccs_error_t (*get_child)(
+	ccs_result_t (*get_child)(
 		ccs_tree_space_t tree_space,
 		ccs_tree_t       parent,
 		size_t           child_index,
@@ -88,7 +88,7 @@ struct ccs_dynamic_tree_space_vector_s {
 	 * The tree space serialization interface, can be NULL. The tree is
 	 * always serialized irrespective of the definition of this callback.
 	 */
-	ccs_error_t (*serialize_user_state)(
+	ccs_result_t (*serialize_user_state)(
 		ccs_tree_space_t tree_space,
 		size_t           sate_size,
 		void            *state,
@@ -98,7 +98,7 @@ struct ccs_dynamic_tree_space_vector_s {
 	 * The tree space deserialization interface, can be NULL. In this case,
 	 * only the tree is deserialized.
 	 */
-	ccs_error_t (*deserialize_state)(
+	ccs_result_t (*deserialize_state)(
 		ccs_tree_space_t tree_space,
 		size_t           state_size,
 		const void      *state);
@@ -126,7 +126,7 @@ typedef struct ccs_dynamic_tree_space_vector_s ccs_dynamic_tree_space_vector_t;
  * @return #CCS_OUT_OF_MEMORY if there was a lack of memory to allocate the new
  *                            tree space
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_create_dynamic_tree_space(
 	const char                      *name,
 	ccs_tree_t                       tree,
@@ -143,7 +143,7 @@ ccs_create_dynamic_tree_space(
  * @return #CCS_INVALID_OBJECT if \p tree_space is not a valid CCS tree space
  * @return #CCS_INVALID_VALUE if \p type_ret is NULL
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_tree_space_get_type(
 	ccs_tree_space_t       tree_space,
 	ccs_tree_space_type_t *type_ret);
@@ -157,7 +157,7 @@ ccs_tree_space_get_type(
  * @return #CCS_INVALID_VALUE if \p name_ret is NULL
  * @return #CCS_INVALID_OBJECT if \p tuner is not a valid CCS tree space
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_tree_space_get_name(ccs_tree_space_t tree_space, const char **name_ret);
 
 /**
@@ -169,7 +169,7 @@ ccs_tree_space_get_name(ccs_tree_space_t tree_space, const char **name_ret);
  *                             tree space; or \p rng is not a valid
  *                             CCS rng
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_tree_space_set_rng(ccs_tree_space_t tree_space, ccs_rng_t rng);
 
 /**
@@ -181,7 +181,7 @@ ccs_tree_space_set_rng(ccs_tree_space_t tree_space, ccs_rng_t rng);
  *                             tree space
  * @return #CCS_INVALID_VALUE if \p rng_ret is NULL
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_tree_space_get_rng(ccs_tree_space_t tree_space, ccs_rng_t *rng_ret);
 
 /**
@@ -193,7 +193,7 @@ ccs_tree_space_get_rng(ccs_tree_space_t tree_space, ccs_rng_t *rng_ret);
  *                             tree space
  * @return #CCS_INVALID_VALUE if \p rng_ret is NULL
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_tree_space_get_tree(ccs_tree_space_t tree_space, ccs_tree_t *tree_ret);
 
 /**
@@ -211,7 +211,7 @@ ccs_tree_space_get_tree(ccs_tree_space_t tree_space, ccs_tree_t *tree_ret);
  *                           in the tree space, or if this position is
  *                           undefined in a static tree space.
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_tree_space_get_node_at_position(
 	ccs_tree_space_t tree_space,
 	size_t           position_size,
@@ -236,7 +236,7 @@ ccs_tree_space_get_node_at_position(
  *                            than \p position_size + 1; or if \p position is
  *                            NULL and \p position_size is greater than 0
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_tree_space_get_values_at_position(
 	ccs_tree_space_t tree_space,
 	size_t           position_size,
@@ -260,7 +260,7 @@ ccs_tree_space_get_values_at_position(
  *                           in the tree space, or if this position is
  *                           undefined in a static tree space.
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_tree_space_check_position(
 	ccs_tree_space_t tree_space,
 	size_t           position_size,
@@ -280,7 +280,7 @@ ccs_tree_space_check_position(
  * @return #CCS_INVALID_CONFIGURATION if \p configuration is not associated to
  *                                    \p tree_space
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_tree_space_check_configuration(
 	ccs_tree_space_t         tree_space,
 	ccs_tree_configuration_t configuration,
@@ -299,7 +299,7 @@ ccs_tree_space_check_configuration(
  * @return #CCS_OUT_OF_MEMORY if there was not enough memory to allocate the
  *                             new configuration
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_tree_space_sample(
 	ccs_tree_space_t          tree_space,
 	ccs_tree_configuration_t *configuration_ret);
@@ -320,7 +320,7 @@ ccs_tree_space_sample(
  * @return #CCS_OUT_OF_MEMORY if there was not enough memory to allocate the
  *                            new configurations
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_tree_space_samples(
 	ccs_tree_space_t          tree_space,
 	size_t                    num_configurations,
@@ -335,7 +335,7 @@ ccs_tree_space_samples(
  * @return #CCS_INVALID_TREE_SPACE if \p tree space is not a dynamic tree space
  * @return #CCS_INVALID_VALUE if \p tree_space_data_ret is NULL
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_dynamic_tree_space_get_tree_space_data(
 	ccs_tree_space_t tree_space,
 	void           **tree_space_data_ret);

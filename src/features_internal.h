@@ -8,9 +8,9 @@ typedef struct _ccs_features_data_s _ccs_features_data_t;
 struct _ccs_features_ops_s {
 	_ccs_object_ops_t obj_ops;
 
-	ccs_error_t (*hash)(_ccs_features_data_t *data, ccs_hash_t *hash_ret);
+	ccs_result_t (*hash)(_ccs_features_data_t *data, ccs_hash_t *hash_ret);
 
-	ccs_error_t (*cmp)(
+	ccs_result_t (*cmp)(
 		_ccs_features_data_t *data,
 		ccs_features_t        other,
 		int                  *cmp_ret);

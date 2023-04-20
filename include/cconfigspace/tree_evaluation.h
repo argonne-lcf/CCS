@@ -35,7 +35,7 @@ extern "C" {
  * @return #CCS_OUT_OF_MEMORY if there was a lack of memory to allocate the new
  *                             evaluation
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_create_tree_evaluation(
 	ccs_objective_space_t    objective_space,
 	ccs_tree_configuration_t configuration,
@@ -53,7 +53,7 @@ ccs_create_tree_evaluation(
  * @return #CCS_INVALID_OBJECT if \p evaluation is not a valid CCS tree evaluation
  * @return #CCS_INVALID_VALUE if \p objective_space_ret is NULL
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_tree_evaluation_get_objective_space(
 	ccs_tree_evaluation_t  evaluation,
 	ccs_objective_space_t *objective_space_ret);
@@ -67,7 +67,7 @@ ccs_tree_evaluation_get_objective_space(
  * @return #CCS_INVALID_OBJECT if \p evaluation is not a valid CCS tree evaluation
  * @return #CCS_INVALID_VALUE if \p configuration_ret is NULL
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_tree_evaluation_get_configuration(
 	ccs_tree_evaluation_t     evaluation,
 	ccs_tree_configuration_t *configuration_ret);
@@ -81,7 +81,7 @@ ccs_tree_evaluation_get_configuration(
  * @return #CCS_INVALID_OBJECT if \p evaluation is not a valid CCS tree evaluation
  * @return #CCS_INVALID_VALUE if \p result_ret is NULL
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_tree_evaluation_get_result(
 	ccs_tree_evaluation_t    evaluation,
 	ccs_evaluation_result_t *error_ret);
@@ -94,7 +94,7 @@ ccs_tree_evaluation_get_result(
  * @return #CCS_SUCCESS on success
  * @return #CCS_INVALID_OBJECT if \p evaluation is not a valid CCS tree evaluation
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_tree_evaluation_set_result(
 	ccs_tree_evaluation_t   evaluation,
 	ccs_evaluation_result_t result);
@@ -111,7 +111,7 @@ ccs_tree_evaluation_set_result(
  * @return #CCS_OUT_OF_BOUNDS if \p index is greater than the count of
  *                             parameters in the objective space
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_tree_evaluation_get_value(
 	ccs_tree_evaluation_t evaluation,
 	size_t                index,
@@ -132,7 +132,7 @@ ccs_tree_evaluation_get_value(
  * @return #CCS_OUT_OF_MEMORY if there was a lack of memory while memoizing a
  *                             string
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_tree_evaluation_set_value(
 	ccs_tree_evaluation_t evaluation,
 	size_t                index,
@@ -155,7 +155,7 @@ ccs_tree_evaluation_set_value(
  *                             num_values_ret is NULL; or if num_values is less
  *                             than the number of values that would be returned
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_tree_evaluation_get_values(
 	ccs_tree_evaluation_t evaluation,
 	size_t                num_values,
@@ -173,7 +173,7 @@ ccs_tree_evaluation_get_values(
  * @return #CCS_INVALID_NAME if no parameter with such \p name exist in
  *                            the \p objective space
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_tree_evaluation_get_value_by_name(
 	ccs_tree_evaluation_t evaluation,
 	const char           *name,
@@ -192,7 +192,7 @@ ccs_tree_evaluation_get_value_by_name(
  * @return #CCS_INVALID_EVALUATION if \p evaluation was found to be invalid in
  *                                  the context of the objective space
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_tree_evaluation_check(
 	ccs_tree_evaluation_t evaluation,
 	ccs_bool_t           *is_valid_ret);
@@ -211,7 +211,7 @@ ccs_tree_evaluation_check(
  * @return #CCS_OUT_OF_BOUNDS if \p index is greater than the number of
  *                             objective in the objective space
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_tree_evaluation_get_objective_value(
 	ccs_tree_evaluation_t evaluation,
 	size_t                index,
@@ -235,7 +235,7 @@ ccs_tree_evaluation_get_objective_value(
  *                             is NULL; or if there was an issue evaluating any
  *                             of the objectives
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_tree_evaluation_get_objective_values(
 	ccs_tree_evaluation_t evaluation,
 	size_t                num_values,
@@ -253,7 +253,7 @@ ccs_tree_evaluation_get_objective_values(
  * @return #CCS_INVALID_OBJECT if \p evaluation is not a valid CCS tree evaluation
  * @return #CCS_INVALID_VALUE if \p hash_ret is NULL
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_tree_evaluation_hash(ccs_tree_evaluation_t evaluation, ccs_hash_t *hash_ret);
 
 /**
@@ -270,7 +270,7 @@ ccs_tree_evaluation_hash(ccs_tree_evaluation_t evaluation, ccs_hash_t *hash_ret)
  *                              valid CCS tree evaluations
  * @return #CCS_INVALID_VALUE if \p cmp_ret is NULL
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_tree_evaluation_cmp(
 	ccs_tree_evaluation_t evaluation,
 	ccs_tree_evaluation_t other_evaluation,
@@ -296,7 +296,7 @@ ccs_tree_evaluation_cmp(
  * @return #CCS_INVALID_VALUE if \p result_ret is NULL; or if there was an
  *                                issue evaluating any of the objectives
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_tree_evaluation_compare(
 	ccs_tree_evaluation_t evaluation,
 	ccs_tree_evaluation_t other_evaluation,

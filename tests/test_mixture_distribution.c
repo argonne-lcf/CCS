@@ -16,7 +16,7 @@ compare_distribution(
 	ccs_distribution_t distribs[],
 	ccs_float_t        weights[])
 {
-	ccs_error_t             err = CCS_SUCCESS;
+	ccs_result_t            err = CCS_SUCCESS;
 	ccs_distribution_t      distribs_ret[NUM_DISTRIBS];
 	int32_t                 refcount;
 	ccs_object_type_t       otype;
@@ -89,7 +89,7 @@ void
 test_create_mixture_distribution()
 {
 	ccs_distribution_t distrib      = NULL, distribs[NUM_DISTRIBS];
-	ccs_error_t        err          = CCS_SUCCESS;
+	ccs_result_t       err          = CCS_SUCCESS;
 	const size_t       num_distribs = NUM_DISTRIBS;
 	ccs_float_t        weights[NUM_DISTRIBS];
 	char              *buff;
@@ -156,7 +156,7 @@ test_mixture_distribution()
 {
 	ccs_distribution_t distrib      = NULL, distribs[NUM_DISTRIBS];
 	ccs_rng_t          rng          = NULL;
-	ccs_error_t        err          = CCS_SUCCESS;
+	ccs_result_t       err          = CCS_SUCCESS;
 	const size_t       num_distribs = NUM_DISTRIBS;
 	ccs_float_t        weights[NUM_DISTRIBS];
 	const size_t       num_samples = NUM_SAMPLES;
@@ -207,7 +207,7 @@ test_mixture_distribution_strided_samples()
 			   distribs[NUM_DISTRIBS];
 	ccs_distribution_t t_distribs[NUM_DISTRIBS];
 	ccs_rng_t          rng            = NULL;
-	ccs_error_t        err            = CCS_SUCCESS;
+	ccs_result_t       err            = CCS_SUCCESS;
 	const size_t       num_t_distribs = NUM_DISTRIBS;
 	const size_t       num_distribs   = NUM_DISTRIBS;
 	const size_t       num_samples    = NUM_SAMPLES;
@@ -271,7 +271,7 @@ test_mixture_distribution_soa_samples()
 			   distribs[NUM_DISTRIBS];
 	ccs_distribution_t t_distribs[NUM_DISTRIBS];
 	ccs_rng_t          rng            = NULL;
-	ccs_error_t        err            = CCS_SUCCESS;
+	ccs_result_t       err            = CCS_SUCCESS;
 	const size_t       num_t_distribs = NUM_DISTRIBS;
 	const size_t       num_distribs   = NUM_DISTRIBS;
 	const size_t       num_samples    = NUM_SAMPLES;

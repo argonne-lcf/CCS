@@ -1,5 +1,5 @@
 import ctypes as ct
-from .base import Object, Error, CEnumeration, ccs_error, _ccs_get_function, ccs_context, ccs_parameter, ccs_configuration_space, ccs_configuration, ccs_features_space, ccs_features, ccs_datum, ccs_objective_space, ccs_features_evaluation, ccs_features_tuner, ccs_retain_object, _register_vector, _unregister_vector
+from .base import Object, Error, CEnumeration, ccs_result, _ccs_get_function, ccs_context, ccs_parameter, ccs_configuration_space, ccs_configuration, ccs_features_space, ccs_features, ccs_datum, ccs_objective_space, ccs_features_evaluation, ccs_features_tuner, ccs_retain_object, _register_vector, _unregister_vector
 from .context import Context
 from .parameter import Parameter
 from .configuration_space import ConfigurationSpace
@@ -37,7 +37,7 @@ class FeaturesTuner(Object):
     elif v == ccs_features_tuner_type.USER_DEFINED:
       return UserDefinedFeaturesTuner(handle = handle, retain = retain, auto_release = auto_release)
     else:
-      raise Error(ccs_error(ccs_error.INVALID_FEATURES_TUNER))
+      raise Error(ccs_result(ccs_result.INVALID_FEATURES_TUNER))
 
   @property
   def type(self):
@@ -157,14 +157,14 @@ class RandomFeaturesTuner(FeaturesTuner):
       super().__init__(handle = handle, retain = retain, auto_release = auto_release)
 
 
-ccs_user_defined_features_tuner_del_type = ct.CFUNCTYPE(ccs_error, ccs_features_tuner)
-ccs_user_defined_features_tuner_ask_type = ct.CFUNCTYPE(ccs_error, ccs_features_tuner, ccs_features, ct.c_size_t, ct.POINTER(ccs_configuration), ct.POINTER(ct.c_size_t))
-ccs_user_defined_features_tuner_tell_type = ct.CFUNCTYPE(ccs_error, ccs_features_tuner, ct.c_size_t, ct.POINTER(ccs_features_evaluation))
-ccs_user_defined_features_tuner_get_optimums_type = ct.CFUNCTYPE(ccs_error, ccs_features_tuner, ccs_features, ct.c_size_t, ct.POINTER(ccs_features_evaluation), ct.POINTER(ct.c_size_t))
-ccs_user_defined_features_tuner_get_history_type = ct.CFUNCTYPE(ccs_error, ccs_features_tuner, ccs_features, ct.c_size_t, ct.POINTER(ccs_features_evaluation), ct.POINTER(ct.c_size_t))
-ccs_user_defined_features_tuner_suggest_type = ct.CFUNCTYPE(ccs_error, ccs_features_tuner, ccs_features, ct.POINTER(ccs_configuration))
-ccs_user_defined_features_tuner_serialize_type = ct.CFUNCTYPE(ccs_error, ccs_features_tuner, ct.c_size_t, ct.c_void_p, ct.POINTER(ct.c_size_t))
-ccs_user_defined_features_tuner_deserialize_type = ct.CFUNCTYPE(ccs_error, ccs_features_tuner, ct.c_size_t, ct.POINTER(ccs_features_evaluation), ct.c_size_t, ct.POINTER(ccs_features_evaluation), ct.c_size_t, ct.c_void_p)
+ccs_user_defined_features_tuner_del_type = ct.CFUNCTYPE(ccs_result, ccs_features_tuner)
+ccs_user_defined_features_tuner_ask_type = ct.CFUNCTYPE(ccs_result, ccs_features_tuner, ccs_features, ct.c_size_t, ct.POINTER(ccs_configuration), ct.POINTER(ct.c_size_t))
+ccs_user_defined_features_tuner_tell_type = ct.CFUNCTYPE(ccs_result, ccs_features_tuner, ct.c_size_t, ct.POINTER(ccs_features_evaluation))
+ccs_user_defined_features_tuner_get_optimums_type = ct.CFUNCTYPE(ccs_result, ccs_features_tuner, ccs_features, ct.c_size_t, ct.POINTER(ccs_features_evaluation), ct.POINTER(ct.c_size_t))
+ccs_user_defined_features_tuner_get_history_type = ct.CFUNCTYPE(ccs_result, ccs_features_tuner, ccs_features, ct.c_size_t, ct.POINTER(ccs_features_evaluation), ct.POINTER(ct.c_size_t))
+ccs_user_defined_features_tuner_suggest_type = ct.CFUNCTYPE(ccs_result, ccs_features_tuner, ccs_features, ct.POINTER(ccs_configuration))
+ccs_user_defined_features_tuner_serialize_type = ct.CFUNCTYPE(ccs_result, ccs_features_tuner, ct.c_size_t, ct.c_void_p, ct.POINTER(ct.c_size_t))
+ccs_user_defined_features_tuner_deserialize_type = ct.CFUNCTYPE(ccs_result, ccs_features_tuner, ct.c_size_t, ct.POINTER(ccs_features_evaluation), ct.c_size_t, ct.POINTER(ccs_features_evaluation), ct.c_size_t, ct.c_void_p)
 
 class ccs_user_defined_features_tuner_vector(ct.Structure):
   _fields_ = [
@@ -186,7 +186,7 @@ def _wrap_user_defined_features_tuner_callbacks(delete, ask, tell, get_optimums,
       tun = ct.cast(tun, ccs_features_tuner)
       delete(Object.from_handle(tun))
       _unregister_vector(tun)
-      return ccs_error.SUCCESS
+      return ccs_result.SUCCESS
     except Exception as e:
       return Error.set_error(e)
 
@@ -197,7 +197,7 @@ def _wrap_user_defined_features_tuner_callbacks(delete, ask, tell, get_optimums,
       p_c = ct.cast(p_count, ct.c_void_p)
       (configurations, count_ret) = ask(FeaturesTuner.from_handle(tun), Features.from_handle(features), count if p_confs.value else None)
       if p_confs.value is not None and count < count_ret:
-        raise Error(ccs_error(ccs_error.INVALID_VALUE))
+        raise Error(ccs_result(ccs_result.INVALID_VALUE))
       if p_confs.value is not None:
         for i in range(len(configurations)):
           res = ccs_retain_object(configurations[i].handle)
@@ -207,7 +207,7 @@ def _wrap_user_defined_features_tuner_callbacks(delete, ask, tell, get_optimums,
           p_configurations[i] = None
       if p_c.value is not None:
         p_count[0] = count_ret
-      return ccs_error.SUCCESS
+      return ccs_result.SUCCESS
     except Exception as e:
       return Error.set_error(e)
 
@@ -215,13 +215,13 @@ def _wrap_user_defined_features_tuner_callbacks(delete, ask, tell, get_optimums,
     try:
       tun = ct.cast(tun, ccs_features_tuner)
       if count == 0:
-        return ccs_error.SUCCESS
+        return ccs_result.SUCCESS
       p_evals = ct.cast(p_evaluations, ct.c_void_p)
       if p_evals.value is None:
-        raise Error(ccs_error(ccs_error.INVALID_VALUE))
+        raise Error(ccs_result(ccs_result.INVALID_VALUE))
       evals = [FeaturesEvaluation.from_handle(ccs_features_evaluation(p_evaluations[i])) for i in range(count)]
       tell(FeaturesTuner.from_handle(tun), evals)
-      return ccs_error.SUCCESS
+      return ccs_result.SUCCESS
     except Exception as e:
       return Error.set_error(e)
 
@@ -233,7 +233,7 @@ def _wrap_user_defined_features_tuner_callbacks(delete, ask, tell, get_optimums,
       optimums = get_optimums(FeaturesTuner.from_handle(tun), Features.from_handle(features) if features else None)
       count_ret = len(optimums)
       if p_evals.value is not None and count < count_ret:
-        raise Error(ccs_error(ccs_error.INVALID_VALUE))
+        raise Error(ccs_result(ccs_result.INVALID_VALUE))
       if p_evals.value is not None:
         for i in range(count_ret):
           p_evaluations[i] = optimums[i].handle.value
@@ -241,7 +241,7 @@ def _wrap_user_defined_features_tuner_callbacks(delete, ask, tell, get_optimums,
           p_evaluations[i] = None
       if p_c.value is not None:
           p_count[0] = count_ret
-      return ccs_error.SUCCESS
+      return ccs_result.SUCCESS
     except Exception as e:
       return Error.set_error(e)
 
@@ -253,7 +253,7 @@ def _wrap_user_defined_features_tuner_callbacks(delete, ask, tell, get_optimums,
       history = get_history(FeaturesTuner.from_handle(tun), Features.from_handle(features) if features else None)
       count_ret = (len(history) if history else 0)
       if p_evals.value is not None and count < count_ret:
-        raise Error(ccs_error(ccs_error.INVALID_VALUE))
+        raise Error(ccs_result(ccs_result.INVALID_VALUE))
       if p_evals.value is not None:
         for i in range(count_ret):
           p_evaluations[i] = history[i].handle.value
@@ -261,7 +261,7 @@ def _wrap_user_defined_features_tuner_callbacks(delete, ask, tell, get_optimums,
           p_evaluations[i] = None
       if p_c.value is not None:
           p_count[0] = count_ret
-      return ccs_error.SUCCESS
+      return ccs_result.SUCCESS
     except Exception as e:
       return Error.set_error(e)
 
@@ -273,7 +273,7 @@ def _wrap_user_defined_features_tuner_callbacks(delete, ask, tell, get_optimums,
         res = ccs_retain_object(configuration.handle)
         Error.check(res)
         p_configuration[0] = configuration.handle.value
-        return ccs_error.SUCCESS
+        return ccs_result.SUCCESS
       except Exception as e:
         return Error.set_error(e)
   else:
@@ -287,12 +287,12 @@ def _wrap_user_defined_features_tuner_callbacks(delete, ask, tell, get_optimums,
         p_sz = ct.cast(p_state_size, ct.c_void_p)
         state = serialize(FeaturesTuner.from_handle(tun), True if state_size == 0 else False)
         if p_s.value is not None and state_size < ct.sizeof(state):
-          raise Error(ccs_error(ccs_error.INVALID_VALUE))
+          raise Error(ccs_result(ccs_result.INVALID_VALUE))
         if p_s.value is not None:
           ct.memmove(p_s, ct.byref(state), ct.sizeof(state))
         if p_sz.value is not None:
           p_state_size[0] = ct.sizeof(state)
-        return ccs_error.SUCCESS
+        return ccs_result.SUCCESS
       except Exception as e:
         return Error.set_error(e)
   else:
@@ -318,7 +318,7 @@ def _wrap_user_defined_features_tuner_callbacks(delete, ask, tell, get_optimums,
         else:
           state = ct.cast(p_s, POINTER(c_byte * state_size))
         deserialize(FeaturesTuner.from_handle(tun), history, optimums, state)
-        return ccs_error.SUCCESS
+        return ccs_result.SUCCESS
       except Exception as e:
         return Error.set_error(e)
   else:
@@ -347,7 +347,7 @@ class UserDefinedFeaturesTuner(FeaturesTuner):
                name = None, configuration_space = None, features_space = None, objective_space = None, delete = None, ask = None, tell = None, get_optimums = None, get_history = None, suggest = None, serialize = None, deserialize = None, tuner_data = None ):
     if handle is None:
       if delete is None or ask is None or tell is None or get_optimums is None or get_history is None:
-        raise Error(ccs_error(ccs_error.INVALID_VALUE))
+        raise Error(ccs_result(ccs_result.INVALID_VALUE))
 
       (delete_wrapper,
        ask_wrapper,
@@ -389,7 +389,7 @@ class UserDefinedFeaturesTuner(FeaturesTuner):
   @classmethod
   def deserialize(cls, delete, ask, tell, get_optimums, get_history, suggest = None, serialize = None, deserialize = None, tuner_data = None, format = 'binary', handle_map = None, path = None, buffer = None, file_descriptor = None, callback = None, callback_data = None):
     if delete is None or ask is None or tell is None or get_optimums is None or get_history is None:
-      raise Error(ccs_error(ccs_error.INVALID_VALUE))
+      raise Error(ccs_result(ccs_result.INVALID_VALUE))
     (delete_wrapper,
      ask_wrapper,
      tell_wrapper,

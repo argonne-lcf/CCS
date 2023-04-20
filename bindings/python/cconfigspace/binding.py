@@ -1,5 +1,5 @@
 import ctypes as ct
-from .base import Object, Error, ccs_error, _ccs_get_function, ccs_context, ccs_binding, ccs_parameter, ccs_datum, ccs_datum_fix, ccs_hash, ccs_int
+from .base import Object, Error, ccs_result, _ccs_get_function, ccs_context, ccs_binding, ccs_parameter, ccs_datum, ccs_datum_fix, ccs_hash, ccs_int
 from .parameter import Parameter
 
 ccs_binding_get_context = _ccs_get_function("ccs_binding_get_context", [ccs_binding, ct.POINTER(ccs_context)])

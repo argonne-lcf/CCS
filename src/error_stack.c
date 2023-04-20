@@ -35,7 +35,7 @@ ccs_clear_thread_error()
 	_ccs_clear_thread_error();
 }
 
-ccs_error_t
+ccs_result_t
 ccs_set_thread_error(ccs_error_stack_t error_stack)
 {
 	CCS_CHECK_ERROR_STACK(error_stack);
@@ -45,7 +45,7 @@ ccs_set_thread_error(ccs_error_stack_t error_stack)
 	return CCS_SUCCESS;
 }
 
-static ccs_error_t
+static ccs_result_t
 _ccs_error_stack_del(ccs_object_t object)
 {
 	ccs_error_stack_t error_stack = (ccs_error_stack_t)object;
@@ -70,16 +70,16 @@ static const UT_icd _error_stack_elem_icd = {
 		goto arrays;                                                   \
 	}
 
-static inline ccs_error_t
+static inline ccs_result_t
 _ccs_create_error_stack(
 	ccs_error_stack_t *error_stack_ret,
-	ccs_error_t        error_code,
+	ccs_result_t       error_code,
 	const char        *msg,
 	va_list            args)
 {
-	ccs_error_t err;
-	size_t      msg_size = 1;
-	va_list     args_cp;
+	ccs_result_t err;
+	size_t       msg_size = 1;
+	va_list      args_cp;
 	if (msg) {
 		va_copy(args_cp, args);
 		msg_size = vsnprintf(NULL, 0, msg, args) + 1;
@@ -114,26 +114,26 @@ arrays:
 	return err;
 }
 
-ccs_error_t
+ccs_result_t
 ccs_create_error_stack(
 	ccs_error_stack_t *error_stack_ret,
-	ccs_error_t        error_code,
+	ccs_result_t       error_code,
 	const char        *msg,
 	...)
 {
-	ccs_error_t err;
-	va_list     args;
+	ccs_result_t err;
+	va_list      args;
 	va_start(args, msg);
 	err = _ccs_create_error_stack(error_stack_ret, error_code, msg, args);
 	va_end(args);
 	return err;
 }
 
-ccs_error_t
-ccs_create_thread_error(ccs_error_t error_code, const char *msg, ...)
+ccs_result_t
+ccs_create_thread_error(ccs_result_t error_code, const char *msg, ...)
 {
-	ccs_error_t err;
-	va_list     args;
+	ccs_result_t err;
+	va_list      args;
 	_ccs_clear_thread_error();
 	va_start(args, msg);
 	err = _ccs_create_error_stack(&ccs_error_stack, error_code, msg, args);
@@ -146,7 +146,7 @@ ccs_create_thread_error(ccs_error_t error_code, const char *msg, ...)
 	{                                                                      \
 		return CCS_OUT_OF_MEMORY;                                      \
 	}
-static inline ccs_error_t
+static inline ccs_result_t
 _ccs_error_stack_push(
 	ccs_error_stack_t error_stack,
 	const char       *file,
@@ -159,7 +159,7 @@ _ccs_error_stack_push(
 	return CCS_SUCCESS;
 }
 
-ccs_error_t
+ccs_result_t
 ccs_error_stack_push(
 	ccs_error_stack_t error_stack,
 	const char       *file,
@@ -169,13 +169,13 @@ ccs_error_stack_push(
 	return _ccs_error_stack_push(error_stack, file, line, func);
 }
 
-ccs_error_t
+ccs_result_t
 ccs_thread_error_stack_push(const char *file, int line, const char *func)
 {
 	return _ccs_error_stack_push(ccs_error_stack, file, line, func);
 }
 
-ccs_error_t
+ccs_result_t
 ccs_error_stack_get_elems(
 	ccs_error_stack_t        error_stack,
 	size_t                  *num_elems_ret,
@@ -193,7 +193,7 @@ ccs_error_stack_get_elems(
 	return CCS_SUCCESS;
 }
 
-ccs_error_t
+ccs_result_t
 ccs_error_stack_get_message(
 	ccs_error_stack_t error_stack,
 	const char      **message_ret)
@@ -205,10 +205,10 @@ ccs_error_stack_get_message(
 	return CCS_SUCCESS;
 }
 
-ccs_error_t
+ccs_result_t
 ccs_error_stack_get_code(
 	ccs_error_stack_t error_stack,
-	ccs_error_t      *error_code_ret)
+	ccs_result_t     *error_code_ret)
 {
 	CCS_CHECK_ERROR_STACK(error_stack);
 	if (CCS_UNLIKELY(!error_code_ret))

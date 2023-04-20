@@ -23,7 +23,7 @@ extern "C" {
  * @return #CCS_OUT_OF_MEMORY if there was not enough memory to allocate the
  *                             new random number generator
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_create_rng(ccs_rng_t *rng_ret);
 
 /**
@@ -38,7 +38,7 @@ ccs_create_rng(ccs_rng_t *rng_ret);
  * @return #CCS_OUT_OF_MEMORY if there was not enough memory to allocate the
  *                             new random number generator
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_create_rng_with_type(const gsl_rng_type *rng_type, ccs_rng_t *rng_ret);
 
 /**
@@ -51,7 +51,7 @@ ccs_create_rng_with_type(const gsl_rng_type *rng_type, ccs_rng_t *rng_ret);
  *                              generator
  * @return #CCS_INVALID_VALUE if \p rng_type_ret is NULL
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_rng_get_type(ccs_rng_t rng, const gsl_rng_type **rng_type_ret);
 
 /**
@@ -62,7 +62,7 @@ ccs_rng_get_type(ccs_rng_t rng, const gsl_rng_type **rng_type_ret);
  * @return #CCS_INVALID_OBJECT if \p rng is not a valid CCS random number
  *                              generator
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_rng_set_seed(ccs_rng_t rng, unsigned long int seed);
 
 /**
@@ -76,7 +76,7 @@ ccs_rng_set_seed(ccs_rng_t rng, unsigned long int seed);
  *                              generator
  * @return #CCS_INVALID_VALUE if \p value_ret is NULL
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_rng_get(ccs_rng_t rng, unsigned long int *value_ret);
 
 /**
@@ -90,7 +90,7 @@ ccs_rng_get(ccs_rng_t rng, unsigned long int *value_ret);
  *                              generator
  * @return #CCS_INVALID_VALUE if \p value_ret is NULL
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_rng_uniform(ccs_rng_t rng, ccs_float_t *value_ret);
 
 /**
@@ -103,7 +103,7 @@ ccs_rng_uniform(ccs_rng_t rng, ccs_float_t *value_ret);
  *                              generator
  * @return #CCS_INVALID_VALUE if \p gsl_rng_ret is NULL
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_rng_get_gsl_rng(ccs_rng_t rng, gsl_rng **gsl_rng_ret);
 
 /**
@@ -116,7 +116,7 @@ ccs_rng_get_gsl_rng(ccs_rng_t rng, gsl_rng **gsl_rng_ret);
  *                              generator
  * @return #CCS_INVALID_VALUE if \p value_ret is NULL
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_rng_min(ccs_rng_t rng, unsigned long int *value_ret);
 
 /**
@@ -129,7 +129,7 @@ ccs_rng_min(ccs_rng_t rng, unsigned long int *value_ret);
  *                              generator
  * @return #CCS_INVALID_VALUE if \p value_ret is NULL
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_rng_max(ccs_rng_t rng, unsigned long int *value_ret);
 
 #ifdef __cplusplus

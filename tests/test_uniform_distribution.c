@@ -12,7 +12,7 @@ compare_distribution(
 	ccs_int_t          u,
 	ccs_int_t          q)
 {
-	ccs_error_t             err = CCS_SUCCESS;
+	ccs_result_t            err = CCS_SUCCESS;
 	int32_t                 refcount;
 	ccs_object_type_t       otype;
 	ccs_distribution_type_t dtype;
@@ -58,7 +58,7 @@ static void
 test_create_uniform_distribution()
 {
 	ccs_distribution_t distrib = NULL;
-	ccs_error_t        err     = CCS_SUCCESS;
+	ccs_result_t       err     = CCS_SUCCESS;
 	ccs_int_t          l       = -10L;
 	ccs_int_t          u       = 11L;
 	ccs_int_t          q       = 0L;
@@ -107,7 +107,7 @@ static void
 test_create_uniform_distribution_errors()
 {
 	ccs_distribution_t distrib = NULL;
-	ccs_error_t        err     = CCS_SUCCESS;
+	ccs_result_t       err     = CCS_SUCCESS;
 
 	// check wrong data_type
 	err                        = ccs_create_uniform_distribution(
@@ -145,7 +145,7 @@ test_uniform_distribution_int()
 {
 	ccs_distribution_t distrib     = NULL;
 	ccs_rng_t          rng         = NULL;
-	ccs_error_t        err         = CCS_SUCCESS;
+	ccs_result_t       err         = CCS_SUCCESS;
 	const size_t       num_samples = NUM_SAMPLES;
 	ccs_int_t          lower       = -10;
 	ccs_int_t          upper       = 11;
@@ -177,7 +177,7 @@ test_uniform_distribution_int_log()
 {
 	ccs_distribution_t distrib     = NULL;
 	ccs_rng_t          rng         = NULL;
-	ccs_error_t        err         = CCS_SUCCESS;
+	ccs_result_t       err         = CCS_SUCCESS;
 	const size_t       num_samples = NUM_SAMPLES_BIG;
 	ccs_int_t          lower       = 1;
 	ccs_int_t          upper       = 100;
@@ -209,7 +209,7 @@ test_uniform_distribution_int_log_quantize()
 {
 	ccs_distribution_t distrib     = NULL;
 	ccs_rng_t          rng         = NULL;
-	ccs_error_t        err         = CCS_SUCCESS;
+	ccs_result_t       err         = CCS_SUCCESS;
 	const size_t       num_samples = NUM_SAMPLES_BIG;
 	ccs_int_t          lower       = 1;
 	ccs_int_t          upper       = 101;
@@ -243,7 +243,7 @@ test_uniform_distribution_int_quantize()
 {
 	ccs_distribution_t distrib     = NULL;
 	ccs_rng_t          rng         = NULL;
-	ccs_error_t        err         = CCS_SUCCESS;
+	ccs_result_t       err         = CCS_SUCCESS;
 	const size_t       num_samples = NUM_SAMPLES;
 	ccs_int_t          lower       = -10;
 	ccs_int_t          upper       = 12;
@@ -277,7 +277,7 @@ test_uniform_distribution_float()
 {
 	ccs_distribution_t distrib     = NULL;
 	ccs_rng_t          rng         = NULL;
-	ccs_error_t        err         = CCS_SUCCESS;
+	ccs_result_t       err         = CCS_SUCCESS;
 	const size_t       num_samples = NUM_SAMPLES;
 	ccs_float_t        lower       = -10;
 	ccs_float_t        upper       = 11;
@@ -309,7 +309,7 @@ test_uniform_distribution_float_log()
 {
 	ccs_distribution_t distrib     = NULL;
 	ccs_rng_t          rng         = NULL;
-	ccs_error_t        err         = CCS_SUCCESS;
+	ccs_result_t       err         = CCS_SUCCESS;
 	const size_t       num_samples = NUM_SAMPLES_BIG;
 	ccs_float_t        lower       = 1;
 	ccs_float_t        upper       = 100;
@@ -341,7 +341,7 @@ test_uniform_distribution_float_log_quantize()
 {
 	ccs_distribution_t distrib     = NULL;
 	ccs_rng_t          rng         = NULL;
-	ccs_error_t        err         = CCS_SUCCESS;
+	ccs_result_t       err         = CCS_SUCCESS;
 	const size_t       num_samples = NUM_SAMPLES_BIG;
 	ccs_float_t        lower       = 1;
 	ccs_float_t        upper       = 101;
@@ -374,7 +374,7 @@ test_uniform_distribution_float_quantize()
 {
 	ccs_distribution_t distrib     = NULL;
 	ccs_rng_t          rng         = NULL;
-	ccs_error_t        err         = CCS_SUCCESS;
+	ccs_result_t       err         = CCS_SUCCESS;
 	const size_t       num_samples = NUM_SAMPLES;
 	ccs_float_t        lower       = -10;
 	ccs_float_t        upper       = 12;
@@ -408,7 +408,7 @@ test_uniform_distribution_strided_samples()
 	ccs_distribution_t distrib1    = NULL;
 	ccs_distribution_t distrib2    = NULL;
 	ccs_rng_t          rng         = NULL;
-	ccs_error_t        err         = CCS_SUCCESS;
+	ccs_result_t       err         = CCS_SUCCESS;
 	const size_t       num_samples = NUM_SAMPLES;
 	ccs_int_t          lower1      = -10;
 	ccs_int_t          upper1      = 11;
@@ -457,7 +457,7 @@ test_uniform_distribution_soa_samples()
 {
 	ccs_distribution_t distrib     = NULL;
 	ccs_rng_t          rng         = NULL;
-	ccs_error_t        err         = CCS_SUCCESS;
+	ccs_result_t       err         = CCS_SUCCESS;
 	const size_t       num_samples = NUM_SAMPLES;
 	ccs_float_t        lower       = -10;
 	ccs_float_t        upper       = 11;

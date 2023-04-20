@@ -1,23 +1,23 @@
 module CCS
 
-  attach_function :ccs_create_tree, [:size_t, :ccs_datum_t, :pointer], :ccs_error_t
-  attach_function :ccs_tree_get_value, [:ccs_tree_t, :pointer], :ccs_error_t
-  attach_function :ccs_tree_get_arity, [:ccs_tree_t, :pointer], :ccs_error_t
-  attach_function :ccs_tree_set_child, [:ccs_tree_t, :size_t, :ccs_tree_t], :ccs_error_t
-  attach_function :ccs_tree_get_child, [:ccs_tree_t, :size_t, :pointer], :ccs_error_t
-  attach_function :ccs_tree_get_children, [:ccs_tree_t, :size_t, :pointer, :pointer], :ccs_error_t
-  attach_function :ccs_tree_get_parent, [:ccs_tree_t, :pointer, :pointer], :ccs_error_t
-  attach_function :ccs_tree_get_position, [:ccs_tree_t, :size_t, :pointer, :pointer], :ccs_error_t
-  attach_function :ccs_tree_get_values, [:ccs_tree_t, :size_t, :pointer, :pointer], :ccs_error_t
-  attach_function :ccs_tree_position_is_valid, [:ccs_tree_t, :size_t, :pointer, :pointer], :ccs_error_t
-  attach_function :ccs_tree_get_values_at_position, [:ccs_tree_t, :size_t, :pointer, :size_t, :pointer], :ccs_error_t
-  attach_function :ccs_tree_get_node_at_position, [:ccs_tree_t, :size_t, :pointer, :pointer], :ccs_error_t
-  attach_function :ccs_tree_get_weight, [:ccs_tree_t, :pointer], :ccs_error_t
-  attach_function :ccs_tree_set_weight, [:ccs_tree_t, :ccs_float_t], :ccs_error_t
-  attach_function :ccs_tree_get_bias, [:ccs_tree_t, :pointer], :ccs_error_t
-  attach_function :ccs_tree_set_bias, [:ccs_tree_t, :ccs_float_t], :ccs_error_t
-  attach_function :ccs_tree_sample, [:ccs_tree_t, :ccs_rng_t, :pointer], :ccs_error_t
-  attach_function :ccs_tree_samples, [:ccs_tree_t, :ccs_rng_t, :size_t, :pointer], :ccs_error_t
+  attach_function :ccs_create_tree, [:size_t, :ccs_datum_t, :pointer], :ccs_result_t
+  attach_function :ccs_tree_get_value, [:ccs_tree_t, :pointer], :ccs_result_t
+  attach_function :ccs_tree_get_arity, [:ccs_tree_t, :pointer], :ccs_result_t
+  attach_function :ccs_tree_set_child, [:ccs_tree_t, :size_t, :ccs_tree_t], :ccs_result_t
+  attach_function :ccs_tree_get_child, [:ccs_tree_t, :size_t, :pointer], :ccs_result_t
+  attach_function :ccs_tree_get_children, [:ccs_tree_t, :size_t, :pointer, :pointer], :ccs_result_t
+  attach_function :ccs_tree_get_parent, [:ccs_tree_t, :pointer, :pointer], :ccs_result_t
+  attach_function :ccs_tree_get_position, [:ccs_tree_t, :size_t, :pointer, :pointer], :ccs_result_t
+  attach_function :ccs_tree_get_values, [:ccs_tree_t, :size_t, :pointer, :pointer], :ccs_result_t
+  attach_function :ccs_tree_position_is_valid, [:ccs_tree_t, :size_t, :pointer, :pointer], :ccs_result_t
+  attach_function :ccs_tree_get_values_at_position, [:ccs_tree_t, :size_t, :pointer, :size_t, :pointer], :ccs_result_t
+  attach_function :ccs_tree_get_node_at_position, [:ccs_tree_t, :size_t, :pointer, :pointer], :ccs_result_t
+  attach_function :ccs_tree_get_weight, [:ccs_tree_t, :pointer], :ccs_result_t
+  attach_function :ccs_tree_set_weight, [:ccs_tree_t, :ccs_float_t], :ccs_result_t
+  attach_function :ccs_tree_get_bias, [:ccs_tree_t, :pointer], :ccs_result_t
+  attach_function :ccs_tree_set_bias, [:ccs_tree_t, :ccs_float_t], :ccs_result_t
+  attach_function :ccs_tree_sample, [:ccs_tree_t, :ccs_rng_t, :pointer], :ccs_result_t
+  attach_function :ccs_tree_samples, [:ccs_tree_t, :ccs_rng_t, :size_t, :pointer], :ccs_result_t
 
   class Tree < Object
     add_property :arity, :size_t, :ccs_tree_get_arity, memoize: true

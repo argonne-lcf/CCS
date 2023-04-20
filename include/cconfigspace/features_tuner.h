@@ -43,7 +43,7 @@ typedef enum ccs_features_tuner_type_e ccs_features_tuner_type_t;
  *                              tuner
  * @return #CCS_INVALID_VALUE if \p type_ret is NULL
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_features_tuner_get_type(
 	ccs_features_tuner_t       features_tuner,
 	ccs_features_tuner_type_t *type_ret);
@@ -58,7 +58,7 @@ ccs_features_tuner_get_type(
  * @return #CCS_INVALID_OBJECT if \p features_tuner is not a valid CCS features
  *                              tuner
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_features_tuner_get_name(
 	ccs_features_tuner_t features_tuner,
 	const char         **name_ret);
@@ -73,7 +73,7 @@ ccs_features_tuner_get_name(
  *                             tuner
  * @return #CCS_INVALID_VALUE if \p configuration_space_ret is NULL
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_features_tuner_get_configuration_space(
 	ccs_features_tuner_t       features_tuner,
 	ccs_configuration_space_t *configuration_space_ret);
@@ -88,7 +88,7 @@ ccs_features_tuner_get_configuration_space(
  *                             tuner
  * @return #CCS_INVALID_VALUE if \p objective_space_ret is NULL
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_features_tuner_get_objective_space(
 	ccs_features_tuner_t   features_tuner,
 	ccs_objective_space_t *objective_space_ret);
@@ -103,7 +103,7 @@ ccs_features_tuner_get_objective_space(
  *                             tuner
  * @return #CCS_INVALID_VALUE if \p features_space_ret is NULL
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_features_tuner_get_features_space(
 	ccs_features_tuner_t  features_tuner,
 	ccs_features_space_t *features_space_ret);
@@ -144,7 +144,7 @@ ccs_features_tuner_get_features_space(
  *                             allocated will be returned, and the rest will be
  *                             NULL
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_features_tuner_ask(
 	ccs_features_tuner_t features_tuner,
 	ccs_features_t       features,
@@ -170,7 +170,7 @@ ccs_features_tuner_ask(
  * @return #CCS_OUT_OF_MEMORY if there was not enough memory to allocate
  *                            internal data structures.
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_features_tuner_tell(
 	ccs_features_tuner_t       features_tuner,
 	size_t                     num_evaluations,
@@ -194,7 +194,7 @@ ccs_features_tuner_tell(
  * @return #CCS_OUT_OF_MEMORY if there was not enough memory to allocate new
  *                             configurations
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_features_tuner_suggest(
 	ccs_features_tuner_t features_tuner,
 	ccs_features_t       features,
@@ -223,7 +223,7 @@ ccs_features_tuner_suggest(
  *                             greater than 0; or if \p evaluations is NULL and
  *                             \p num_evaluations_ret is NULL
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_features_tuner_get_optimums(
 	ccs_features_tuner_t       features_tuner,
 	ccs_features_t             features,
@@ -253,7 +253,7 @@ ccs_features_tuner_get_optimums(
  *                             greater than 0; or if \p evaluations is NULL and
  *                             \p num_evaluations_ret is NULL
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_features_tuner_get_history(
 	ccs_features_tuner_t       features_tuner,
 	ccs_features_t             features,
@@ -280,7 +280,7 @@ ccs_features_tuner_get_history(
  * @return #CCS_OUT_OF_MEMORY if there was not enough memory to allocate the
  *                             new features tuner instance
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_create_random_features_tuner(
 	const char               *name,
 	ccs_configuration_space_t configuration_space,
@@ -297,10 +297,10 @@ struct ccs_user_defined_features_tuner_vector_s {
 	 * The deletion callback that will be called once the reference count
 	 * of the features tuner reaches 0.
 	 */
-	ccs_error_t (*del)(ccs_features_tuner_t features_tuner);
+	ccs_result_t (*del)(ccs_features_tuner_t features_tuner);
 
 	/** The features tuner ask interface see ccs_features_tuner_ask */
-	ccs_error_t (*ask)(
+	ccs_result_t (*ask)(
 		ccs_features_tuner_t features_tuner,
 		ccs_features_t       features,
 		size_t               num_configurations,
@@ -308,7 +308,7 @@ struct ccs_user_defined_features_tuner_vector_s {
 		size_t              *num_configurations_ret);
 
 	/** The features tuner tell interface see ccs_features_tuner_tell */
-	ccs_error_t (*tell)(
+	ccs_result_t (*tell)(
 		ccs_features_tuner_t       features_tuner,
 		size_t                     num_evaluations,
 		ccs_features_evaluation_t *evaluations);
@@ -317,7 +317,7 @@ struct ccs_user_defined_features_tuner_vector_s {
 	 * The features tuner get_optimums interface see
 	 * ccs_features_tuner_get_optimums
 	 */
-	ccs_error_t (*get_optimums)(
+	ccs_result_t (*get_optimums)(
 		ccs_features_tuner_t       features_tuner,
 		ccs_features_t             features,
 		size_t                     num_evaluations,
@@ -328,7 +328,7 @@ struct ccs_user_defined_features_tuner_vector_s {
 	 * The features tuner get_history interface see
 	 * ccs_features_tuner_get_history
 	 */
-	ccs_error_t (*get_history)(
+	ccs_result_t (*get_history)(
 		ccs_features_tuner_t       features_tuner,
 		ccs_features_t             features,
 		size_t                     num_evaluations,
@@ -338,7 +338,7 @@ struct ccs_user_defined_features_tuner_vector_s {
 	/**
 	 * The features tuner suggest interface see ccs_features_tuner_suggest,
 	 * can be NULL */
-	ccs_error_t (*suggest)(
+	ccs_result_t (*suggest)(
 		ccs_features_tuner_t features_tuner,
 		ccs_features_t       features,
 		ccs_configuration_t *configuration);
@@ -347,7 +347,7 @@ struct ccs_user_defined_features_tuner_vector_s {
 	 * The tuner serialization interface, can be NULL, in which case
 	 * common tuner data, history and optimums will be serialized
 	 */
-	ccs_error_t (*serialize_user_state)(
+	ccs_result_t (*serialize_user_state)(
 		ccs_features_tuner_t features_tuner,
 		size_t               sate_size,
 		void                *state,
@@ -357,7 +357,7 @@ struct ccs_user_defined_features_tuner_vector_s {
 	 * The features_tuner deserialization interface, can be NULL, in which case,
 	 * the history will be set through the tell interface
 	 */
-	ccs_error_t (*deserialize_state)(
+	ccs_result_t (*deserialize_state)(
 		ccs_features_tuner_t       features_tuner,
 		size_t                     size_history,
 		ccs_features_evaluation_t *history,
@@ -395,7 +395,7 @@ typedef struct ccs_user_defined_features_tuner_vector_s
  * @return #CCS_OUT_OF_MEMORY if there was not enough memory to allocate the
  *                             new features tuner instance
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_create_user_defined_features_tuner(
 	const char                               *name,
 	ccs_configuration_space_t                 configuration_space,
@@ -416,7 +416,7 @@ ccs_create_user_defined_features_tuner(
  *                                      features tuner
  * @return #CCS_INVALID_VALUE if \p tuner_data_ret is NULL
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_user_defined_features_tuner_get_tuner_data(
 	ccs_features_tuner_t features_tuner,
 	void               **tuner_data_ret);

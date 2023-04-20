@@ -13,14 +13,14 @@ const ccs_datum_t   ccs_true     = CCS_TRUE_VAL;
 const ccs_datum_t   ccs_false    = CCS_FALSE_VAL;
 const ccs_version_t ccs_version  = {0, 1, 0, 0};
 
-ccs_error_t
+ccs_result_t
 ccs_init()
 {
 	gsl_rng_env_setup();
 	return CCS_SUCCESS;
 }
 
-ccs_error_t
+ccs_result_t
 ccs_fini()
 {
 	return CCS_SUCCESS;
@@ -32,7 +32,7 @@ ccs_get_version()
 	return ccs_version;
 }
 
-ccs_error_t
+ccs_result_t
 ccs_retain_object(ccs_object_t object)
 {
 	_ccs_object_internal_t *obj = (_ccs_object_internal_t *)object;
@@ -41,7 +41,7 @@ ccs_retain_object(ccs_object_t object)
 	return CCS_SUCCESS;
 }
 
-ccs_error_t
+ccs_result_t
 ccs_release_object(ccs_object_t object)
 {
 	_ccs_object_internal_t *obj = (_ccs_object_internal_t *)object;
@@ -62,7 +62,7 @@ ccs_release_object(ccs_object_t object)
 	return CCS_SUCCESS;
 }
 
-ccs_error_t
+ccs_result_t
 ccs_object_get_type(ccs_object_t object, ccs_object_type_t *type_ret)
 {
 	CCS_REFUTE(!object, CCS_INVALID_OBJECT);
@@ -72,7 +72,7 @@ ccs_object_get_type(ccs_object_t object, ccs_object_type_t *type_ret)
 	return CCS_SUCCESS;
 }
 
-ccs_error_t
+ccs_result_t
 ccs_object_get_refcount(ccs_object_t object, int32_t *refcount_ret)
 {
 	CCS_REFUTE(!object, CCS_INVALID_OBJECT);
@@ -85,7 +85,7 @@ ccs_object_get_refcount(ccs_object_t object, int32_t *refcount_ret)
 static const UT_icd _object_callback_icd = {
 	sizeof(_ccs_object_callback_t), NULL, NULL, NULL};
 
-ccs_error_t
+ccs_result_t
 ccs_object_set_destroy_callback(
 	ccs_object_t object,
 	void (*callback)(ccs_object_t object, void *user_data),
@@ -101,7 +101,7 @@ ccs_object_set_destroy_callback(
 	return CCS_SUCCESS;
 }
 
-ccs_error_t
+ccs_result_t
 ccs_object_set_user_data(ccs_object_t object, void *user_data)
 {
 	CCS_REFUTE(!object, CCS_INVALID_OBJECT);
@@ -110,7 +110,7 @@ ccs_object_set_user_data(ccs_object_t object, void *user_data)
 	return CCS_SUCCESS;
 }
 
-ccs_error_t
+ccs_result_t
 ccs_object_get_user_data(ccs_object_t object, void **user_data_ret)
 {
 	CCS_REFUTE(!object, CCS_INVALID_OBJECT);
@@ -120,7 +120,7 @@ ccs_object_get_user_data(ccs_object_t object, void **user_data_ret)
 	return CCS_SUCCESS;
 }
 
-ccs_error_t
+ccs_result_t
 ccs_object_set_serialize_callback(
 	ccs_object_t                    object,
 	ccs_object_serialize_callback_t callback,
@@ -149,7 +149,7 @@ _ccs_serialize_header_size(ccs_serialize_format_t format)
 	}
 }
 
-static ccs_error_t
+static ccs_result_t
 _ccs_serialize_header(
 	ccs_serialize_format_t format,
 	size_t                *buffer_size,
@@ -173,7 +173,7 @@ _ccs_serialize_header(
 	return CCS_SUCCESS;
 }
 
-static ccs_error_t
+static ccs_result_t
 _ccs_deserialize_header(
 	ccs_serialize_format_t format,
 	size_t                *buffer_size,
@@ -205,7 +205,7 @@ _ccs_deserialize_header(
 	return CCS_SUCCESS;
 }
 
-static inline ccs_error_t
+static inline ccs_result_t
 _ccs_object_serialize_options(
 	ccs_serialize_format_t           format,
 	ccs_serialize_operation_t        operation,
@@ -242,7 +242,7 @@ _ccs_object_serialize_options(
 	return CCS_SUCCESS;
 }
 
-static inline ccs_error_t
+static inline ccs_result_t
 _ccs_object_serialize_size_with_opts(
 	ccs_object_t                     object,
 	ccs_serialize_format_t           format,
@@ -256,7 +256,7 @@ _ccs_object_serialize_size_with_opts(
 	return CCS_SUCCESS;
 }
 
-static inline ccs_error_t
+static inline ccs_result_t
 _ccs_object_serialize_size(
 	ccs_object_t           object,
 	ccs_serialize_format_t format,
@@ -273,7 +273,7 @@ _ccs_object_serialize_size(
 	return CCS_SUCCESS;
 }
 
-static inline ccs_error_t
+static inline ccs_result_t
 _ccs_object_serialize_memory_with_opts(
 	ccs_object_t                     object,
 	ccs_serialize_format_t           format,
@@ -292,7 +292,7 @@ _ccs_object_serialize_memory_with_opts(
 	return CCS_SUCCESS;
 }
 
-static inline ccs_error_t
+static inline ccs_result_t
 _ccs_object_serialize_memory(
 	ccs_object_t           object,
 	ccs_serialize_format_t format,
@@ -311,7 +311,7 @@ _ccs_object_serialize_memory(
 	return CCS_SUCCESS;
 }
 
-static inline ccs_error_t
+static inline ccs_result_t
 _ccs_object_serialize_file(
 	ccs_object_t           object,
 	ccs_serialize_format_t format,
@@ -321,7 +321,7 @@ _ccs_object_serialize_file(
 	size_t                          buffer_size = 0;
 	const char                     *path;
 	int                             fd;
-	ccs_error_t                     res;
+	ccs_result_t                    res;
 	_ccs_object_serialize_options_t opts = {NULL, NULL, NULL};
 	path                                 = va_arg(args, const char *);
 	CCS_CHECK_PTR(path);
@@ -374,14 +374,14 @@ err_file_fd:
 	return res;
 }
 
-static inline ccs_error_t
+static inline ccs_result_t
 _ccs_object_serialize_file_descriptor(
 	ccs_object_t           object,
 	ccs_serialize_format_t format,
 	va_list                args)
 {
 	int                             fd;
-	ccs_error_t                     res;
+	ccs_result_t                    res;
 	_ccs_object_serialize_options_t opts   = {NULL, NULL, NULL};
 	_ccs_file_descriptor_state_t    state  = {NULL, 0, NULL, 0, -1, 0};
 	_ccs_file_descriptor_state_t   *pstate = NULL;
@@ -454,7 +454,7 @@ err_fd_buffer:
 	return res;
 }
 
-ccs_error_t
+ccs_result_t
 ccs_object_serialize(
 	ccs_object_t              object,
 	ccs_serialize_format_t    format,
@@ -462,7 +462,7 @@ ccs_object_serialize(
 	...)
 {
 	_ccs_object_internal_t *obj = (_ccs_object_internal_t *)object;
-	ccs_error_t             res;
+	ccs_result_t            res;
 	va_list                 args;
 
 	CCS_REFUTE(!obj || !obj->ops, CCS_INVALID_OBJECT);
@@ -522,7 +522,7 @@ end:
 #include "tree_evaluation_deserialize.h"
 #include "tree_tuner_deserialize.h"
 
-static inline ccs_error_t
+static inline ccs_result_t
 _ccs_object_deserialize_options(
 	ccs_serialize_format_t             format,
 	ccs_serialize_operation_t          operation,
@@ -570,7 +570,7 @@ _ccs_object_deserialize_options(
 	return CCS_SUCCESS;
 }
 
-static inline ccs_error_t
+static inline ccs_result_t
 _ccs_object_deserialize_with_opts(
 	ccs_object_t                      *object_ret,
 	ccs_serialize_format_t             format,
@@ -695,7 +695,7 @@ _ccs_object_deserialize_with_opts(
 	return CCS_SUCCESS;
 }
 
-static inline ccs_error_t
+static inline ccs_result_t
 _ccs_object_deserialize(
 	ccs_object_t             *object_ret,
 	ccs_serialize_format_t    format,
@@ -717,7 +717,7 @@ _ccs_object_deserialize(
 	return CCS_SUCCESS;
 }
 
-static inline ccs_error_t
+static inline ccs_result_t
 _ccs_object_deserialize_memory(
 	ccs_object_t          *object_ret,
 	ccs_serialize_format_t format,
@@ -733,18 +733,18 @@ _ccs_object_deserialize_memory(
 	return CCS_SUCCESS;
 }
 
-static inline ccs_error_t
+static inline ccs_result_t
 _ccs_object_deserialize_file(
 	ccs_object_t          *object_ret,
 	ccs_serialize_format_t format,
 	va_list                args)
 {
-	ccs_error_t res         = CCS_SUCCESS;
-	size_t      buffer_size = 0;
-	const char *buffer      = NULL;
-	int         fd;
-	struct stat stat_buffer;
-	const char *path = va_arg(args, const char *);
+	ccs_result_t res         = CCS_SUCCESS;
+	size_t       buffer_size = 0;
+	const char  *buffer      = NULL;
+	int          fd;
+	struct stat  stat_buffer;
+	const char  *path = va_arg(args, const char *);
 	CCS_CHECK_PTR(path);
 	fd = open(path, O_RDONLY);
 	CCS_REFUTE(fd == -1, CCS_INVALID_FILE_PATH);
@@ -789,7 +789,7 @@ err_file_fd:
 	return res;
 }
 
-static inline ccs_error_t
+static inline ccs_result_t
 _ccs_object_deserialize_file_descriptor_read_loop(
 	_ccs_file_descriptor_state_t *pstate,
 	int                           non_blocking)
@@ -823,13 +823,13 @@ _ccs_object_deserialize_file_descriptor_read_loop(
 			return res;                                            \
 	} while (0)
 
-static inline ccs_error_t
+static inline ccs_result_t
 _ccs_object_deserialize_file_descriptor(
 	ccs_object_t          *object_ret,
 	ccs_serialize_format_t format,
 	va_list                args)
 {
-	ccs_error_t                       res = CCS_SUCCESS;
+	ccs_result_t                      res = CCS_SUCCESS;
 	int                               fd;
 	int                               non_blocking;
 	size_t                            header_size;
@@ -931,15 +931,15 @@ err_fd_buffer:
 	return res;
 }
 
-ccs_error_t
+ccs_result_t
 ccs_object_deserialize(
 	ccs_object_t             *object_ret,
 	ccs_serialize_format_t    format,
 	ccs_serialize_operation_t operation,
 	...)
 {
-	ccs_error_t res;
-	va_list     args;
+	ccs_result_t res;
+	va_list      args;
 
 	CCS_CHECK_PTR(object_ret);
 
@@ -979,10 +979,10 @@ end:
 		*name = #value;                                                \
 		break
 
-ccs_error_t
-ccs_get_error_name(ccs_error_t error, const char **name)
+ccs_result_t
+ccs_get_result_name(ccs_result_t result, const char **name)
 {
-	switch (error) {
+	switch (result) {
 		ETOCASE(CCS_AGAIN);
 		ETOCASE(CCS_SUCCESS);
 		ETOCASE(CCS_INVALID_OBJECT);
@@ -1018,7 +1018,8 @@ ccs_get_error_name(ccs_error_t error, const char **name)
 	default:
 		*name = NULL;
 		CCS_RAISE(
-			CCS_INVALID_VALUE, "Unsupported error code: %d", error);
+			CCS_INVALID_VALUE, "Unsupported result code: %d",
+			result);
 	}
 	return CCS_SUCCESS;
 }

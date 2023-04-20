@@ -10,25 +10,25 @@ struct _ccs_user_defined_tuner_data_s {
 };
 typedef struct _ccs_user_defined_tuner_data_s _ccs_user_defined_tuner_data_t;
 
-static ccs_error_t
+static ccs_result_t
 _ccs_tuner_user_defined_del(ccs_object_t o)
 {
 	_ccs_user_defined_tuner_data_t *d =
 		(_ccs_user_defined_tuner_data_t *)((ccs_tuner_t)o)->data;
-	ccs_error_t err;
+	ccs_result_t err;
 	err = d->vector.del((ccs_tuner_t)o);
 	ccs_release_object(d->common_data.configuration_space);
 	ccs_release_object(d->common_data.objective_space);
 	return err;
 }
 
-static inline ccs_error_t
+static inline ccs_result_t
 _ccs_serialize_bin_size_ccs_user_defined_tuner(
 	ccs_tuner_t                      tuner,
 	size_t                          *cum_size,
 	_ccs_object_serialize_options_t *opts)
 {
-	ccs_error_t                     res = CCS_SUCCESS;
+	ccs_result_t                    res = CCS_SUCCESS;
 	_ccs_user_defined_tuner_data_t *data =
 		(_ccs_user_defined_tuner_data_t *)(tuner->data);
 	*cum_size += _ccs_serialize_bin_size_ccs_object_internal(
@@ -89,14 +89,14 @@ end:
 	return res;
 }
 
-static inline ccs_error_t
+static inline ccs_result_t
 _ccs_serialize_bin_ccs_user_defined_tuner(
 	ccs_tuner_t                      tuner,
 	size_t                          *buffer_size,
 	char                           **buffer,
 	_ccs_object_serialize_options_t *opts)
 {
-	ccs_error_t                     res = CCS_SUCCESS;
+	ccs_result_t                    res = CCS_SUCCESS;
 	_ccs_user_defined_tuner_data_t *data =
 		(_ccs_user_defined_tuner_data_t *)(tuner->data);
 	CCS_VALIDATE(_ccs_serialize_bin_ccs_object_internal(
@@ -176,7 +176,7 @@ end:
 	return res;
 }
 
-static ccs_error_t
+static ccs_result_t
 _ccs_tuner_user_defined_serialize_size(
 	ccs_object_t                     object,
 	ccs_serialize_format_t           format,
@@ -198,7 +198,7 @@ _ccs_tuner_user_defined_serialize_size(
 	return CCS_SUCCESS;
 }
 
-static ccs_error_t
+static ccs_result_t
 _ccs_tuner_user_defined_serialize(
 	ccs_object_t                     object,
 	ccs_serialize_format_t           format,
@@ -221,7 +221,7 @@ _ccs_tuner_user_defined_serialize(
 	return CCS_SUCCESS;
 }
 
-static ccs_error_t
+static ccs_result_t
 _ccs_tuner_user_defined_ask(
 	ccs_tuner_t          tuner,
 	size_t               num_configurations,
@@ -236,7 +236,7 @@ _ccs_tuner_user_defined_ask(
 	return CCS_SUCCESS;
 }
 
-static ccs_error_t
+static ccs_result_t
 _ccs_tuner_user_defined_tell(
 	ccs_tuner_t       tuner,
 	size_t            num_evaluations,
@@ -248,7 +248,7 @@ _ccs_tuner_user_defined_tell(
 	return CCS_SUCCESS;
 }
 
-static ccs_error_t
+static ccs_result_t
 _ccs_tuner_user_defined_get_optimums(
 	ccs_tuner_t       tuner,
 	size_t            num_evaluations,
@@ -262,7 +262,7 @@ _ccs_tuner_user_defined_get_optimums(
 	return CCS_SUCCESS;
 }
 
-static ccs_error_t
+static ccs_result_t
 _ccs_tuner_user_defined_get_history(
 	ccs_tuner_t       tuner,
 	size_t            num_evaluations,
@@ -276,7 +276,7 @@ _ccs_tuner_user_defined_get_history(
 	return CCS_SUCCESS;
 }
 
-static ccs_error_t
+static ccs_result_t
 _ccs_tuner_user_defined_suggest(
 	ccs_tuner_t          tuner,
 	ccs_configuration_t *configuration_ret)
@@ -297,7 +297,7 @@ static _ccs_tuner_ops_t _ccs_tuner_user_defined_ops = {
 	&_ccs_tuner_user_defined_get_history,
 	&_ccs_tuner_user_defined_suggest};
 
-ccs_error_t
+ccs_result_t
 ccs_create_user_defined_tuner(
 	const char                      *name,
 	ccs_configuration_space_t        configuration_space,
@@ -324,7 +324,7 @@ ccs_create_user_defined_tuner(
 	CCS_REFUTE(!mem, CCS_OUT_OF_MEMORY);
 	ccs_tuner_t                     tun;
 	_ccs_user_defined_tuner_data_t *data;
-	ccs_error_t                     err;
+	ccs_result_t                    err;
 	CCS_VALIDATE_ERR_GOTO(
 		err, ccs_retain_object(configuration_space), errmem);
 	CCS_VALIDATE_ERR_GOTO(err, ccs_retain_object(objective_space), errcs);
@@ -354,7 +354,7 @@ errmem:
 	return err;
 }
 
-ccs_error_t
+ccs_result_t
 ccs_user_defined_tuner_get_tuner_data(ccs_tuner_t tuner, void **tuner_data_ret)
 {
 	CCS_CHECK_OBJ(tuner, CCS_OBJECT_TYPE_TUNER);

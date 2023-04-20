@@ -20,7 +20,7 @@ compare_parameter(
 	ccs_datum_t     possible_values[],
 	const size_t    default_value_index)
 {
-	ccs_error_t             err;
+	ccs_result_t            err;
 	ccs_parameter_type_t    type;
 	ccs_datum_t             default_value;
 	const char             *name;
@@ -80,7 +80,7 @@ compare_parameter(
 	assert(err == CCS_SUCCESS);
 }
 
-ccs_error_t
+ccs_result_t
 serialize_callback(
 	ccs_object_t object,
 	size_t       serialize_data_size,
@@ -91,7 +91,7 @@ serialize_callback(
 	void  *user_data;
 	size_t sz;
 	assert(callback_user_data == (void *)0xdeadbeef);
-	ccs_error_t err = ccs_object_get_user_data(object, &user_data);
+	ccs_result_t err = ccs_object_get_user_data(object, &user_data);
 	assert(err == CCS_SUCCESS);
 	assert(user_data);
 	sz = strlen((char *)user_data) + 1;
@@ -103,7 +103,7 @@ serialize_callback(
 	return CCS_SUCCESS;
 }
 
-ccs_error_t
+ccs_result_t
 deserialize_callback(
 	ccs_object_t object,
 	size_t       serialize_data_size,
@@ -112,8 +112,8 @@ deserialize_callback(
 {
 	assert(callback_user_data == (void *)0xbeefdead);
 	assert(strlen((char *)serialize_data) + 1 == serialize_data_size);
-	void       *user_data = (void *)strdup((char *)serialize_data);
-	ccs_error_t err       = ccs_object_set_user_data(object, user_data);
+	void        *user_data = (void *)strdup((char *)serialize_data);
+	ccs_result_t err       = ccs_object_set_user_data(object, user_data);
 	assert(err == CCS_SUCCESS);
 	err = ccs_object_set_destroy_callback(object, &free_data, user_data);
 	assert(err == CCS_SUCCESS);
@@ -124,7 +124,7 @@ void
 test_create()
 {
 	ccs_parameter_t parameter;
-	ccs_error_t     err;
+	ccs_result_t    err;
 	void           *user_data;
 	const size_t    num_possible_values = NUM_POSSIBLE_VALUES;
 	ccs_datum_t     possible_values[NUM_POSSIBLE_VALUES];
@@ -222,7 +222,7 @@ test_samples()
 	ccs_distribution_t distribution;
 	const size_t       num_samples = NUM_SAMPLES;
 	ccs_datum_t        samples[NUM_SAMPLES];
-	ccs_error_t        err;
+	ccs_result_t       err;
 	const size_t       num_possible_values = NUM_POSSIBLE_VALUES;
 	ccs_datum_t        possible_values[NUM_POSSIBLE_VALUES];
 	const size_t       default_value_index = 2;
@@ -271,7 +271,7 @@ test_oversampling()
 	ccs_distribution_t distribution;
 	const size_t       num_samples = NUM_SAMPLES;
 	ccs_datum_t        samples[NUM_SAMPLES];
-	ccs_error_t        err;
+	ccs_result_t       err;
 	const size_t       num_possible_values = NUM_POSSIBLE_VALUES;
 	ccs_datum_t        possible_values[NUM_POSSIBLE_VALUES];
 	const size_t       default_value_index = 2;

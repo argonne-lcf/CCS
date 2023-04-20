@@ -7,7 +7,7 @@ ccs_tree_tuner_get_ops(ccs_tree_tuner_t tuner)
 	return (_ccs_tree_tuner_ops_t *)tuner->obj.ops;
 }
 
-ccs_error_t
+ccs_result_t
 ccs_tree_tuner_get_type(ccs_tree_tuner_t tuner, ccs_tree_tuner_type_t *type_ret)
 {
 	CCS_CHECK_OBJ(tuner, CCS_OBJECT_TYPE_TREE_TUNER);
@@ -18,7 +18,7 @@ ccs_tree_tuner_get_type(ccs_tree_tuner_t tuner, ccs_tree_tuner_type_t *type_ret)
 	return CCS_SUCCESS;
 }
 
-ccs_error_t
+ccs_result_t
 ccs_tree_tuner_get_name(ccs_tree_tuner_t tuner, const char **name_ret)
 {
 	CCS_CHECK_OBJ(tuner, CCS_OBJECT_TYPE_TREE_TUNER);
@@ -29,7 +29,7 @@ ccs_tree_tuner_get_name(ccs_tree_tuner_t tuner, const char **name_ret)
 	return CCS_SUCCESS;
 }
 
-ccs_error_t
+ccs_result_t
 ccs_tree_tuner_get_tree_space(
 	ccs_tree_tuner_t  tuner,
 	ccs_tree_space_t *tree_space_ret)
@@ -42,7 +42,7 @@ ccs_tree_tuner_get_tree_space(
 	return CCS_SUCCESS;
 }
 
-ccs_error_t
+ccs_result_t
 ccs_tree_tuner_get_objective_space(
 	ccs_tree_tuner_t       tuner,
 	ccs_objective_space_t *objective_space_ret)
@@ -55,7 +55,7 @@ ccs_tree_tuner_get_objective_space(
 	return CCS_SUCCESS;
 }
 
-ccs_error_t
+ccs_result_t
 ccs_tree_tuner_ask(
 	ccs_tree_tuner_t          tuner,
 	size_t                    num_configurations,
@@ -73,7 +73,7 @@ ccs_tree_tuner_ask(
 	return CCS_SUCCESS;
 }
 
-ccs_error_t
+ccs_result_t
 ccs_tree_tuner_tell(
 	ccs_tree_tuner_t       tuner,
 	size_t                 num_evaluations,
@@ -88,7 +88,7 @@ ccs_tree_tuner_tell(
 	return CCS_SUCCESS;
 }
 
-ccs_error_t
+ccs_result_t
 ccs_tree_tuner_get_optimums(
 	ccs_tree_tuner_t       tuner,
 	size_t                 num_evaluations,
@@ -104,7 +104,7 @@ ccs_tree_tuner_get_optimums(
 	return CCS_SUCCESS;
 }
 
-ccs_error_t
+ccs_result_t
 ccs_tree_tuner_get_history(
 	ccs_tree_tuner_t       tuner,
 	size_t                 num_evaluations,
@@ -120,7 +120,7 @@ ccs_tree_tuner_get_history(
 	return CCS_SUCCESS;
 }
 
-ccs_error_t
+ccs_result_t
 ccs_tree_tuner_suggest(
 	ccs_tree_tuner_t          tuner,
 	ccs_tree_configuration_t *configuration)

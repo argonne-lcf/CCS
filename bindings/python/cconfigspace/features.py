@@ -1,5 +1,5 @@
 import ctypes as ct
-from .base import Object, Error, ccs_error, _ccs_get_function, ccs_context, ccs_parameter, ccs_features_space, ccs_features, ccs_datum, ccs_hash, ccs_int, ccs_bool
+from .base import Object, Error, ccs_result, _ccs_get_function, ccs_context, ccs_parameter, ccs_features_space, ccs_features, ccs_datum, ccs_hash, ccs_int, ccs_bool
 from .context import Context
 from .parameter import Parameter
 from .features_space import FeaturesSpace

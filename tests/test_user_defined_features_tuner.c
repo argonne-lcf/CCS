@@ -7,7 +7,7 @@ ccs_parameter_t
 create_numerical(const char *name, double lower, double upper)
 {
 	ccs_parameter_t parameter;
-	ccs_error_t     err;
+	ccs_result_t    err;
 	err = ccs_create_numerical_parameter(
 		name, CCS_NUMERIC_TYPE_FLOAT, CCSF(lower), CCSF(upper),
 		CCSF(0.0), CCSF(0), &parameter);
@@ -20,11 +20,11 @@ struct tuner_last_s {
 };
 typedef struct tuner_last_s tuner_last_t;
 
-ccs_error_t
+ccs_result_t
 tuner_last_del(ccs_features_tuner_t tuner)
 {
 	tuner_last_t *tuner_data;
-	ccs_error_t   err;
+	ccs_result_t  err;
 	err = ccs_user_defined_features_tuner_get_tuner_data(
 		tuner, (void **)&tuner_data);
 	if (err)
@@ -35,7 +35,7 @@ tuner_last_del(ccs_features_tuner_t tuner)
 	return CCS_SUCCESS;
 }
 
-ccs_error_t
+ccs_result_t
 tuner_last_ask(
 	ccs_features_tuner_t tuner,
 	ccs_features_t       features,
@@ -48,7 +48,7 @@ tuner_last_ask(
 		*num_configurations_ret = 1;
 		return CCS_SUCCESS;
 	}
-	ccs_error_t               err;
+	ccs_result_t              err;
 	ccs_configuration_space_t configuration_space;
 	err = ccs_features_tuner_get_configuration_space(
 		tuner, &configuration_space);
@@ -63,7 +63,7 @@ tuner_last_ask(
 	return CCS_SUCCESS;
 }
 
-ccs_error_t
+ccs_result_t
 tuner_last_tell(
 	ccs_features_tuner_t       tuner,
 	size_t                     num_evaluations,
@@ -71,7 +71,7 @@ tuner_last_tell(
 {
 	if (!num_evaluations)
 		return CCS_SUCCESS;
-	ccs_error_t   err;
+	ccs_result_t  err;
 	tuner_last_t *tuner_data;
 	err = ccs_user_defined_features_tuner_get_tuner_data(
 		tuner, (void **)&tuner_data);
@@ -86,7 +86,7 @@ tuner_last_tell(
 	return CCS_SUCCESS;
 }
 
-ccs_error_t
+ccs_result_t
 tuner_last_get_optimums(
 	ccs_features_tuner_t       tuner,
 	ccs_features_t             features,
@@ -96,7 +96,7 @@ tuner_last_get_optimums(
 {
 	size_t count = 0;
 	if (evaluations) {
-		ccs_error_t   err;
+		ccs_result_t  err;
 		tuner_last_t *tuner_data;
 		err = ccs_user_defined_features_tuner_get_tuner_data(
 			tuner, (void **)&tuner_data);
@@ -132,7 +132,7 @@ tuner_last_get_optimums(
 	return CCS_SUCCESS;
 }
 
-ccs_error_t
+ccs_result_t
 tuner_last_get_history(
 	ccs_features_tuner_t       tuner,
 	ccs_features_t             features,
@@ -166,7 +166,7 @@ test()
 	ccs_objective_space_t     ospace;
 	ccs_expression_t          expression;
 	ccs_features_tuner_t      tuner, tuner_copy;
-	ccs_error_t               err;
+	ccs_result_t              err;
 	ccs_features_t            features_on, features_off;
 	tuner_last_t             *tuner_data;
 	ccs_datum_t knobs_values[2] = {ccs_string("on"), ccs_string("off")};

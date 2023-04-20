@@ -18,14 +18,14 @@ module CCS
     end
   end
 
-  attach_function :ccs_create_objective_space, [:string, :pointer], :ccs_error_t
-  attach_function :ccs_objective_space_add_parameter, [:ccs_objective_space_t, :ccs_parameter_t], :ccs_error_t
-  attach_function :ccs_objective_space_add_parameters, [:ccs_objective_space_t, :size_t, :pointer], :ccs_error_t
-  attach_function :ccs_objective_space_add_objective, [:ccs_objective_space_t, :ccs_expression_t, :ccs_objective_type_t], :ccs_error_t
-  attach_function :ccs_objective_space_add_objectives, [:ccs_objective_space_t, :size_t, :pointer, :pointer], :ccs_error_t
-  attach_function :ccs_objective_space_get_objective, [:ccs_objective_space_t, :size_t, :pointer, :pointer], :ccs_error_t
-  attach_function :ccs_objective_space_get_objectives, [:ccs_objective_space_t, :size_t, :pointer, :pointer, :pointer], :ccs_error_t
-  attach_function :ccs_objective_space_check_evaluation_values, [:ccs_objective_space_t, :size_t, :pointer, :pointer], :ccs_error_t
+  attach_function :ccs_create_objective_space, [:string, :pointer], :ccs_result_t
+  attach_function :ccs_objective_space_add_parameter, [:ccs_objective_space_t, :ccs_parameter_t], :ccs_result_t
+  attach_function :ccs_objective_space_add_parameters, [:ccs_objective_space_t, :size_t, :pointer], :ccs_result_t
+  attach_function :ccs_objective_space_add_objective, [:ccs_objective_space_t, :ccs_expression_t, :ccs_objective_type_t], :ccs_result_t
+  attach_function :ccs_objective_space_add_objectives, [:ccs_objective_space_t, :size_t, :pointer, :pointer], :ccs_result_t
+  attach_function :ccs_objective_space_get_objective, [:ccs_objective_space_t, :size_t, :pointer, :pointer], :ccs_result_t
+  attach_function :ccs_objective_space_get_objectives, [:ccs_objective_space_t, :size_t, :pointer, :pointer, :pointer], :ccs_result_t
+  attach_function :ccs_objective_space_check_evaluation_values, [:ccs_objective_space_t, :size_t, :pointer, :pointer], :ccs_result_t
 
   class ObjectiveSpace < Context
 

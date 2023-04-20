@@ -5,14 +5,14 @@
 
 #define NUM_SAMPLES 20000
 
-static ccs_error_t
+static ccs_result_t
 my_tree_del(ccs_tree_space_t tree_space)
 {
 	(void)tree_space;
 	return CCS_SUCCESS;
 }
 
-static ccs_error_t
+static ccs_result_t
 my_tree_get_child(
 	ccs_tree_space_t tree_space,
 	ccs_tree_t       parent,
@@ -20,8 +20,8 @@ my_tree_get_child(
 	ccs_tree_t      *child_ret)
 {
 	(void)tree_space;
-	ccs_error_t err;
-	size_t      depth;
+	ccs_result_t err;
+	size_t       depth;
 	err                = ccs_tree_get_position(parent, 0, NULL, &depth);
 	size_t child_depth = depth + 1;
 	assert(err == CCS_SUCCESS);
@@ -38,7 +38,7 @@ my_tree_get_child(
 void
 test_dynamic_tree_space()
 {
-	ccs_error_t                     err;
+	ccs_result_t                    err;
 	ccs_bool_t                      is_valid;
 	ccs_tree_t                      root, tree;
 	ccs_tree_space_t                tree_space;

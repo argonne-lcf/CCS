@@ -1,13 +1,13 @@
 module CCS
 
-  attach_function :ccs_create_tree_configuration, [:ccs_tree_space_t, :size_t, :pointer, :pointer], :ccs_error_t
-  attach_function :ccs_tree_configuration_get_tree_space, [:ccs_tree_configuration_t, :pointer], :ccs_error_t
-  attach_function :ccs_tree_configuration_get_position, [:ccs_tree_configuration_t, :size_t, :pointer, :pointer], :ccs_error_t
-  attach_function :ccs_tree_configuration_get_values, [:ccs_tree_configuration_t, :size_t, :pointer, :pointer], :ccs_error_t
-  attach_function :ccs_tree_configuration_get_node, [:ccs_tree_configuration_t, :pointer], :ccs_error_t
-  attach_function :ccs_tree_configuration_check, [:ccs_tree_configuration_t, :pointer], :ccs_error_t
-  attach_function :ccs_tree_configuration_hash, [:ccs_tree_configuration_t, :pointer], :ccs_error_t
-  attach_function :ccs_tree_configuration_cmp, [:ccs_tree_configuration_t, :ccs_tree_configuration_t, :pointer], :ccs_error_t
+  attach_function :ccs_create_tree_configuration, [:ccs_tree_space_t, :size_t, :pointer, :pointer], :ccs_result_t
+  attach_function :ccs_tree_configuration_get_tree_space, [:ccs_tree_configuration_t, :pointer], :ccs_result_t
+  attach_function :ccs_tree_configuration_get_position, [:ccs_tree_configuration_t, :size_t, :pointer, :pointer], :ccs_result_t
+  attach_function :ccs_tree_configuration_get_values, [:ccs_tree_configuration_t, :size_t, :pointer, :pointer], :ccs_result_t
+  attach_function :ccs_tree_configuration_get_node, [:ccs_tree_configuration_t, :pointer], :ccs_result_t
+  attach_function :ccs_tree_configuration_check, [:ccs_tree_configuration_t, :pointer], :ccs_result_t
+  attach_function :ccs_tree_configuration_hash, [:ccs_tree_configuration_t, :pointer], :ccs_result_t
+  attach_function :ccs_tree_configuration_cmp, [:ccs_tree_configuration_t, :ccs_tree_configuration_t, :pointer], :ccs_result_t
 
   class TreeConfiguration < Object
     include Comparable

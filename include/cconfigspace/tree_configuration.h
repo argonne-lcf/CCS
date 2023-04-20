@@ -28,7 +28,7 @@ extern "C" {
  * @return #CCS_OUT_OF_MEMORY if there was a lack of memory to allocate the new
  *                            tree configuration
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_create_tree_configuration(
 	ccs_tree_space_t          tree_space,
 	size_t                    position_size,
@@ -45,7 +45,7 @@ ccs_create_tree_configuration(
  *                              configuration
  * @return #CCS_INVALID_VALUE if \p configuration_space_ret is NULL
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_tree_configuration_get_tree_space(
 	ccs_tree_configuration_t configuration,
 	ccs_tree_space_t        *tree_space_ret);
@@ -69,7 +69,7 @@ ccs_tree_configuration_get_tree_space(
  *                            is less than the number of values that would be
  *                            returned
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_tree_configuration_get_position(
 	ccs_tree_configuration_t configuration,
 	size_t                   position_size,
@@ -97,7 +97,7 @@ ccs_tree_configuration_get_position(
  *                            less than the number of values that would be
  *                            returned
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_tree_configuration_get_values(
 	ccs_tree_configuration_t configuration,
 	size_t                   num_values,
@@ -116,7 +116,7 @@ ccs_tree_configuration_get_values(
  *                           a node in the tree.
  * @return #CCS_INVALID_VALUE \p node_ret is NULL
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_tree_configuration_get_node(
 	ccs_tree_configuration_t configuration,
 	ccs_tree_t              *node_ret);
@@ -133,7 +133,7 @@ ccs_tree_configuration_get_node(
  * @return #CCS_INVALID_OBJECT if \p configuration is not a valid CCS tree
  *                             configuration
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_tree_configuration_check(
 	ccs_tree_configuration_t configuration,
 	ccs_bool_t              *is_valid_ret);
@@ -149,7 +149,7 @@ ccs_tree_configuration_check(
  *                             tree configuration
  * @return #CCS_INVALID_VALUE if \p hash_ret is NULL
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_tree_configuration_hash(
 	ccs_tree_configuration_t configuration,
 	ccs_hash_t              *hash_ret);
@@ -168,7 +168,7 @@ ccs_tree_configuration_hash(
  * @return #CCS_INVALID_OBJECT if \p configuration or \p other_configuration
  *                              are not a valid CCS tree coonfigurations
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_tree_configuration_cmp(
 	ccs_tree_configuration_t configuration,
 	ccs_tree_configuration_t other_configuration,

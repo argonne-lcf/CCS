@@ -1,6 +1,6 @@
 import ctypes as ct
 from . import libcconfigspace
-from .base import Object, Error, ccs_error, ccs_rng, ccs_tree, ccs_tree_space, ccs_tree_configuration, ccs_datum, ccs_bool, _ccs_get_function, CEnumeration, _register_vector, _unregister_vector, ccs_retain_object
+from .base import Object, Error, ccs_result, ccs_rng, ccs_tree, ccs_tree_space, ccs_tree_configuration, ccs_datum, ccs_bool, _ccs_get_function, CEnumeration, _register_vector, _unregister_vector, ccs_retain_object
 from .rng import Rng
 from .tree import Tree
 
@@ -34,7 +34,7 @@ class TreeSpace(Object):
     elif v == ccs_tree_space_type.DYNAMIC:
       return DynamicTreeSpace(handle = handle, retain = retain, auto_release = auto_release)
     else:
-      raise Error(ccs_error(ccs_error.INVALID_TREE_SPACE))
+      raise Error(ccs_result(ccs_result.INVALID_TREE_SPACE))
 
   @property
   def type(self):
@@ -137,10 +137,10 @@ class StaticTreeSpace(TreeSpace):
     else:
       super().__init__(handle = handle, retain = retain, auto_release = auto_release)
 
-ccs_dynamic_tree_space_del_type = ct.CFUNCTYPE(ccs_error, ccs_tree_space)
-ccs_dynamic_tree_space_get_child_type = ct.CFUNCTYPE(ccs_error, ccs_tree_space, ccs_tree, ct.c_size_t, ct.POINTER(ccs_tree))
-ccs_dynamic_tree_space_serialize_type = ct.CFUNCTYPE(ccs_error, ccs_tree_space, ct.c_size_t, ct.c_void_p, ct.POINTER(ct.c_size_t))
-ccs_dynamic_tree_space_deserialize_type = ct.CFUNCTYPE(ccs_error, ccs_tree_space, ct.c_size_t, ct.c_void_p)
+ccs_dynamic_tree_space_del_type = ct.CFUNCTYPE(ccs_result, ccs_tree_space)
+ccs_dynamic_tree_space_get_child_type = ct.CFUNCTYPE(ccs_result, ccs_tree_space, ccs_tree, ct.c_size_t, ct.POINTER(ccs_tree))
+ccs_dynamic_tree_space_serialize_type = ct.CFUNCTYPE(ccs_result, ccs_tree_space, ct.c_size_t, ct.c_void_p, ct.POINTER(ct.c_size_t))
+ccs_dynamic_tree_space_deserialize_type = ct.CFUNCTYPE(ccs_result, ccs_tree_space, ct.c_size_t, ct.c_void_p)
 
 class ccs_dynamic_tree_space_vector(ct.Structure):
   _fields_ = [
@@ -158,7 +158,7 @@ def _wrap_user_defined_callbacks(delete, get_child, serialize, deserialize):
       ts = ct.cast(ts, ccs_tree_space)
       delete(Object.from_handle(ts))
       _unregister_vector(ts)
-      return ccs_error.SUCCESS
+      return ccs_result.SUCCESS
     except Exception as e:
       return Error.set_error(e)
 
@@ -170,7 +170,7 @@ def _wrap_user_defined_callbacks(delete, get_child, serialize, deserialize):
       res = ccs_retain_object(child.handle)
       Error.check(res)
       p_child[0] = child.handle.value
-      return ccs_error.SUCCESS
+      return ccs_result.SUCCESS
     except Exception as e:
       return Error.set_error(e)
 
@@ -182,12 +182,12 @@ def _wrap_user_defined_callbacks(delete, get_child, serialize, deserialize):
         p_sz = ct.cast(p_state_size, ct.c_void_p)
         state = serialize(TreeSpace.from_handle(ts), True if state_size == 0 else False)
         if p_s.value is not None and state_size < ct.sizeof(state):
-          raise Error(ccs_error(ccs_error.INVALID_VALUE))
+          raise Error(ccs_result(ccs_result.INVALID_VALUE))
         if p_s.value is not None:
           ct.memmove(p_s, ct.byref(state), ct.sizeof(state))
         if p_sz.value is not None:
           p_state_size[0] = ct.sizeof(state)
-        return ccs_error.SUCCESS
+        return ccs_result.SUCCESS
       except Exception as e:
         return Error.set_error(e)
   else:
@@ -203,7 +203,7 @@ def _wrap_user_defined_callbacks(delete, get_child, serialize, deserialize):
         else:
           state = ct.cast(p_s, POINTER(c_byte * state_size))
         deserialize(TreeSpace.from_handle(ts), state)
-        return ccs_error.SUCCESS
+        return ccs_result.SUCCESS
       except Exception as e:
         return Error.set_error(e)
   else:
@@ -224,7 +224,7 @@ class DynamicTreeSpace(TreeSpace):
                name = None, tree = None, delete = None, get_child = None, serialize = None, deserialize = None, tree_space_data = None):
     if handle is None:
       if delete is None or get_child is None:
-        raise Error(ccs_error(ccs_error.INVALID_VALUE))
+        raise Error(ccs_result(ccs_result.INVALID_VALUE))
 
       (delete_wrapper,
        get_child_wrapper,
@@ -254,7 +254,7 @@ class DynamicTreeSpace(TreeSpace):
   @classmethod
   def deserialize(cls, delete, get_child, serialize = None, deserialize = None, tree_space_data = None, format = 'binary', handle_map = None, path = None, buffer = None, file_descriptor = None, callback = None, callback_data = None):
     if delete is None or get_child is None:
-      raise Error(ccs_error(ccs_error.INVALID_VALUE))
+      raise Error(ccs_result(ccs_result.INVALID_VALUE))
     (delete_wrapper,
      get_child_wrapper,
      serialize_wrapper,

@@ -41,7 +41,7 @@ typedef enum ccs_tree_tuner_type_e ccs_tree_tuner_type_t;
  * @return #CCS_INVALID_OBJECT if \p tuner is not a valid CCS tree tuner
  * @return #CCS_INVALID_VALUE if \p type_ret is NULL
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_tree_tuner_get_type(ccs_tree_tuner_t tuner, ccs_tree_tuner_type_t *type_ret);
 
 /**
@@ -53,7 +53,7 @@ ccs_tree_tuner_get_type(ccs_tree_tuner_t tuner, ccs_tree_tuner_type_t *type_ret)
  * @return #CCS_INVALID_OBJECT if \p tuner is not a valid CCS tuner
  * @return #CCS_INVALID_VALUE if \p name_ret is NULL
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_tree_tuner_get_name(ccs_tree_tuner_t tuner, const char **name_ret);
 
 /**
@@ -65,7 +65,7 @@ ccs_tree_tuner_get_name(ccs_tree_tuner_t tuner, const char **name_ret);
  * @return #CCS_INVALID_OBJECT if \p tuner is not a valid CCS tree tuner
  * @return #CCS_INVALID_VALUE if \p tree_space_ret is NULL
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_tree_tuner_get_tree_space(
 	ccs_tree_tuner_t  tuner,
 	ccs_tree_space_t *tree_space_ret);
@@ -79,7 +79,7 @@ ccs_tree_tuner_get_tree_space(
  * @return #CCS_INVALID_OBJECT if \p tuner is not a valid CCS tree tuner
  * @return #CCS_INVALID_VALUE if \p objective_space_ret is NULL
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_tree_tuner_get_objective_space(
 	ccs_tree_tuner_t       tuner,
 	ccs_objective_space_t *objective_space_ret);
@@ -114,7 +114,7 @@ ccs_tree_tuner_get_objective_space(
  *                             allocated will be returned, and the rest will be
  *                             NULL
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_tree_tuner_ask(
 	ccs_tree_tuner_t          tuner,
 	size_t                    num_configurations,
@@ -138,7 +138,7 @@ ccs_tree_tuner_ask(
  * @return #CCS_OUT_OF_MEMORY if there was not enough memory to allocate
  *                             internal data structures
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_tree_tuner_tell(
 	ccs_tree_tuner_t       tuner,
 	size_t                 num_evaluations,
@@ -157,7 +157,7 @@ ccs_tree_tuner_tell(
  * @return #CCS_OUT_OF_MEMORY if there was not enough memory to allocate new
  *                             configurations
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_tree_tuner_suggest(
 	ccs_tree_tuner_t          tuner,
 	ccs_tree_configuration_t *configuration);
@@ -178,7 +178,7 @@ ccs_tree_tuner_suggest(
  *                             greater than 0; or if \p evaluations is NULL and
  *                             \p num_evaluations_ret is NULL
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_tree_tuner_get_optimums(
 	ccs_tree_tuner_t       tuner,
 	size_t                 num_evaluations,
@@ -200,7 +200,7 @@ ccs_tree_tuner_get_optimums(
  *                             greater than 0; or if \p evaluations is NULL and
  *                             \p num_evaluations_ret is NULL
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_tree_tuner_get_history(
 	ccs_tree_tuner_t       tuner,
 	size_t                 num_evaluations,
@@ -223,7 +223,7 @@ ccs_tree_tuner_get_history(
  * @return #CCS_OUT_OF_MEMORY if there was not enough memory to allocate the
  *                             new tree tuner instance
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_create_random_tree_tuner(
 	const char           *name,
 	ccs_tree_space_t      tree_space,
@@ -239,37 +239,37 @@ struct ccs_user_defined_tree_tuner_vector_s {
 	 * The deletion callback that will be called once the reference count
 	 * of the tuner reaches 0.
 	 */
-	ccs_error_t (*del)(ccs_tree_tuner_t tuner);
+	ccs_result_t (*del)(ccs_tree_tuner_t tuner);
 
 	/** The tree tuner ask interface see ccs_tree_tuner_ask */
-	ccs_error_t (*ask)(
+	ccs_result_t (*ask)(
 		ccs_tree_tuner_t          tuner,
 		size_t                    num_configurations,
 		ccs_tree_configuration_t *configurations,
 		size_t                   *num_configurations_ret);
 
 	/** The tree tuner tell interface see ccs_tree_tuner_tell */
-	ccs_error_t (*tell)(
+	ccs_result_t (*tell)(
 		ccs_tree_tuner_t       tuner,
 		size_t                 num_evaluations,
 		ccs_tree_evaluation_t *evaluations);
 
 	/** The tree tuner get_optimums interface see ccs_tree_tuner_get_optimums */
-	ccs_error_t (*get_optimums)(
+	ccs_result_t (*get_optimums)(
 		ccs_tree_tuner_t       tuner,
 		size_t                 num_evaluations,
 		ccs_tree_evaluation_t *evaluations,
 		size_t                *num_evaluations_ret);
 
 	/** The tree tuner get_history interface see ccs_tree_tuner_get_history */
-	ccs_error_t (*get_history)(
+	ccs_result_t (*get_history)(
 		ccs_tree_tuner_t       tuner,
 		size_t                 num_evaluations,
 		ccs_tree_evaluation_t *evaluations,
 		size_t                *num_evaluations_ret);
 
 	/** The tree tuner suggest interface see ccs_tree_tuner_suggest, can be NULL */
-	ccs_error_t (*suggest)(
+	ccs_result_t (*suggest)(
 		ccs_tree_tuner_t          tuner,
 		ccs_tree_configuration_t *configuration);
 
@@ -277,7 +277,7 @@ struct ccs_user_defined_tree_tuner_vector_s {
 	 * The tree tuner serialization interface, can be NULL, in which case
 	 * common tuner data, history and optimums will be serialized
 	 */
-	ccs_error_t (*serialize_user_state)(
+	ccs_result_t (*serialize_user_state)(
 		ccs_tree_tuner_t tuner,
 		size_t           sate_size,
 		void            *state,
@@ -287,7 +287,7 @@ struct ccs_user_defined_tree_tuner_vector_s {
 	 * The tree tuner deserialization interface, can be NULL, in which case,
 	 * the history will be set through the tell interface
 	 */
-	ccs_error_t (*deserialize_state)(
+	ccs_result_t (*deserialize_state)(
 		ccs_tree_tuner_t       tuner,
 		size_t                 size_history,
 		ccs_tree_evaluation_t *history,
@@ -323,7 +323,7 @@ typedef struct ccs_user_defined_tree_tuner_vector_s
  * @return #CCS_OUT_OF_MEMORY if there was not enough memory to allocate the
  *                             newi tree tuner instance
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_create_user_defined_tree_tuner(
 	const char                           *name,
 	ccs_tree_space_t                      tree_space,
@@ -341,7 +341,7 @@ ccs_create_user_defined_tree_tuner(
  * @return #CCS_INVALID_TUNER if \p tuner is not a user defined tree tuner
  * @return #CCS_INVALID_VALUE if \p tuner_data_ret is NULL
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_user_defined_tree_tuner_get_tuner_data(
 	ccs_tree_tuner_t tuner,
 	void           **tuner_data_ret);

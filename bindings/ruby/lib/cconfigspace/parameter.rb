@@ -20,16 +20,16 @@ module CCS
     end
   end
 
-  attach_function :ccs_parameter_get_type, [:ccs_parameter_t, :pointer], :ccs_error_t
-  attach_function :ccs_parameter_get_default_value, [:ccs_parameter_t, :pointer], :ccs_error_t
-  attach_function :ccs_parameter_get_name, [:ccs_parameter_t, :pointer], :ccs_error_t
-  attach_function :ccs_parameter_get_default_distribution, [:ccs_parameter_t, :pointer], :ccs_error_t
-  attach_function :ccs_parameter_check_value, [:ccs_parameter_t, :ccs_datum_t, :pointer], :ccs_error_t
-  attach_function :ccs_parameter_check_values, [:ccs_parameter_t, :size_t, :pointer, :pointer], :ccs_error_t
-  attach_function :ccs_parameter_validate_value, [:ccs_parameter_t, :ccs_datum_t, :pointer, :pointer], :ccs_error_t
-  attach_function :ccs_parameter_validate_values, [:ccs_parameter_t, :size_t, :pointer, :pointer, :pointer], :ccs_error_t
-  attach_function :ccs_parameter_sample, [:ccs_parameter_t, :ccs_distribution_t, :ccs_rng_t, :pointer], :ccs_error_t
-  attach_function :ccs_parameter_samples, [:ccs_parameter_t, :ccs_distribution_t, :ccs_rng_t, :size_t, :pointer], :ccs_error_t
+  attach_function :ccs_parameter_get_type, [:ccs_parameter_t, :pointer], :ccs_result_t
+  attach_function :ccs_parameter_get_default_value, [:ccs_parameter_t, :pointer], :ccs_result_t
+  attach_function :ccs_parameter_get_name, [:ccs_parameter_t, :pointer], :ccs_result_t
+  attach_function :ccs_parameter_get_default_distribution, [:ccs_parameter_t, :pointer], :ccs_result_t
+  attach_function :ccs_parameter_check_value, [:ccs_parameter_t, :ccs_datum_t, :pointer], :ccs_result_t
+  attach_function :ccs_parameter_check_values, [:ccs_parameter_t, :size_t, :pointer, :pointer], :ccs_result_t
+  attach_function :ccs_parameter_validate_value, [:ccs_parameter_t, :ccs_datum_t, :pointer, :pointer], :ccs_result_t
+  attach_function :ccs_parameter_validate_values, [:ccs_parameter_t, :size_t, :pointer, :pointer, :pointer], :ccs_result_t
+  attach_function :ccs_parameter_sample, [:ccs_parameter_t, :ccs_distribution_t, :ccs_rng_t, :pointer], :ccs_result_t
+  attach_function :ccs_parameter_samples, [:ccs_parameter_t, :ccs_distribution_t, :ccs_rng_t, :size_t, :pointer], :ccs_result_t
 
   class Parameter < Object
     add_property :type, :ccs_parameter_type_t, :ccs_parameter_get_type, memoize:true
@@ -118,8 +118,8 @@ module CCS
     end
   end
 
-  attach_function :ccs_create_numerical_parameter, [:string, :ccs_numeric_type_t, :ccs_numeric_t, :ccs_numeric_t, :ccs_numeric_t, :ccs_numeric_t, :pointer], :ccs_error_t
-  attach_function :ccs_numerical_parameter_get_properties, [:ccs_parameter_t, :pointer, :pointer, :pointer, :pointer], :ccs_error_t
+  attach_function :ccs_create_numerical_parameter, [:string, :ccs_numeric_type_t, :ccs_numeric_t, :ccs_numeric_t, :ccs_numeric_t, :ccs_numeric_t, :pointer], :ccs_result_t
+  attach_function :ccs_numerical_parameter_get_properties, [:ccs_parameter_t, :pointer, :pointer, :pointer, :pointer], :ccs_result_t
   class NumericalParameter < Parameter
     def initialize(handle = nil, retain: false, auto_release: true,
                    name: Parameter.default_name, data_type: :CCS_NUMERIC_TYPE_FLOAT, lower: 0.0, upper: 1.0, quantization: 0.0, default: lower)
@@ -200,8 +200,8 @@ module CCS
     end
   end
 
-  attach_function :ccs_create_categorical_parameter, [:string, :size_t, :pointer, :size_t, :pointer],  :ccs_error_t
-  attach_function :ccs_categorical_parameter_get_values, [:ccs_parameter_t, :size_t, :pointer, :pointer], :ccs_error_t
+  attach_function :ccs_create_categorical_parameter, [:string, :size_t, :pointer, :size_t, :pointer],  :ccs_result_t
+  attach_function :ccs_categorical_parameter_get_values, [:ccs_parameter_t, :size_t, :pointer, :pointer], :ccs_result_t
   class CategoricalParameter < Parameter
     def initialize(handle = nil, retain: false, auto_release: true,
                    name: Parameter.default_name, values: [], default_index: 0)
@@ -232,9 +232,9 @@ module CCS
     end
   end
 
-  attach_function :ccs_create_ordinal_parameter, [:string, :size_t, :pointer, :size_t, :pointer],  :ccs_error_t
-  attach_function :ccs_ordinal_parameter_compare_values, [:ccs_parameter_t, :ccs_datum_t, :ccs_datum_t, :pointer], :ccs_error_t
-  attach_function :ccs_ordinal_parameter_get_values, [:ccs_parameter_t, :size_t, :pointer, :pointer], :ccs_error_t
+  attach_function :ccs_create_ordinal_parameter, [:string, :size_t, :pointer, :size_t, :pointer],  :ccs_result_t
+  attach_function :ccs_ordinal_parameter_compare_values, [:ccs_parameter_t, :ccs_datum_t, :ccs_datum_t, :pointer], :ccs_result_t
+  attach_function :ccs_ordinal_parameter_get_values, [:ccs_parameter_t, :size_t, :pointer, :pointer], :ccs_result_t
   class OrdinalParameter < Parameter
     def initialize(handle = nil, retain: false, auto_release: true,
                    name: Parameter.default_name, values: [], default_index: 0)
@@ -273,8 +273,8 @@ module CCS
     end
   end
 
-  attach_function :ccs_create_discrete_parameter, [:string, :size_t, :pointer, :size_t, :pointer],  :ccs_error_t
-  attach_function :ccs_discrete_parameter_get_values, [:ccs_parameter_t, :size_t, :pointer, :pointer], :ccs_error_t
+  attach_function :ccs_create_discrete_parameter, [:string, :size_t, :pointer, :size_t, :pointer],  :ccs_result_t
+  attach_function :ccs_discrete_parameter_get_values, [:ccs_parameter_t, :size_t, :pointer, :pointer], :ccs_result_t
   class DiscreteParameter < Parameter
     def initialize(handle = nil, retain: false, auto_release: true,
                    name: Parameter.default_name, values: [], default_index: 0)
@@ -305,7 +305,7 @@ module CCS
     end
   end
 
-  attach_function :ccs_create_string_parameter, [:string, :pointer],  :ccs_error_t
+  attach_function :ccs_create_string_parameter, [:string, :pointer],  :ccs_result_t
   class StringParameter < Parameter
     def initialize(handle = nil, retain: false, auto_release: true,
                    name: Parameter.default_name)

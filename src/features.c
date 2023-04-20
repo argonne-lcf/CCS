@@ -9,7 +9,7 @@ ccs_features_get_ops(ccs_features_t features)
 	return (_ccs_features_ops_t *)features->obj.ops;
 }
 
-static ccs_error_t
+static ccs_result_t
 _ccs_features_del(ccs_object_t object)
 {
 	ccs_features_t features = (ccs_features_t)object;
@@ -17,7 +17,7 @@ _ccs_features_del(ccs_object_t object)
 	return CCS_SUCCESS;
 }
 
-static ccs_error_t
+static ccs_result_t
 _ccs_features_serialize_size(
 	ccs_object_t                     object,
 	ccs_serialize_format_t           format,
@@ -39,7 +39,7 @@ _ccs_features_serialize_size(
 	return CCS_SUCCESS;
 }
 
-static ccs_error_t
+static ccs_result_t
 _ccs_features_serialize(
 	ccs_object_t                     object,
 	ccs_serialize_format_t           format,
@@ -62,14 +62,14 @@ _ccs_features_serialize(
 	return CCS_SUCCESS;
 }
 
-static ccs_error_t
+static ccs_result_t
 _ccs_features_hash(_ccs_features_data_t *data, ccs_hash_t *hash_ret)
 {
 	CCS_VALIDATE(_ccs_binding_hash((_ccs_binding_data_t *)data, hash_ret));
 	return CCS_SUCCESS;
 }
 
-static ccs_error_t
+static ccs_result_t
 _ccs_features_cmp(_ccs_features_data_t *data, ccs_features_t other, int *cmp_ret)
 {
 	CCS_VALIDATE(_ccs_binding_cmp(
@@ -83,7 +83,7 @@ static _ccs_features_ops_t _features_ops = {
 	&_ccs_features_hash,
 	&_ccs_features_cmp};
 
-ccs_error_t
+ccs_result_t
 ccs_create_features(
 	ccs_features_space_t features_space,
 	size_t               num_values,
@@ -93,8 +93,8 @@ ccs_create_features(
 	CCS_CHECK_OBJ(features_space, CCS_OBJECT_TYPE_FEATURES_SPACE);
 	CCS_CHECK_PTR(features_ret);
 	CCS_CHECK_ARY(num_values, values);
-	ccs_error_t err;
-	size_t      num_parameters;
+	ccs_result_t err;
+	size_t       num_parameters;
 	CCS_VALIDATE(ccs_features_space_get_num_parameters(
 		features_space, &num_parameters));
 	CCS_REFUTE(values && num_parameters != num_values, CCS_INVALID_VALUE);
@@ -137,7 +137,7 @@ errmem:
 	return err;
 }
 
-ccs_error_t
+ccs_result_t
 ccs_features_get_features_space(
 	ccs_features_t        features,
 	ccs_features_space_t *features_space_ret)
@@ -148,7 +148,7 @@ ccs_features_get_features_space(
 	return CCS_SUCCESS;
 }
 
-ccs_error_t
+ccs_result_t
 ccs_features_get_value(
 	ccs_features_t features,
 	size_t         index,
@@ -160,7 +160,7 @@ ccs_features_get_value(
 	return CCS_SUCCESS;
 }
 
-ccs_error_t
+ccs_result_t
 ccs_features_set_value(ccs_features_t features, size_t index, ccs_datum_t value)
 {
 	CCS_CHECK_OBJ(features, CCS_OBJECT_TYPE_FEATURES);
@@ -169,7 +169,7 @@ ccs_features_set_value(ccs_features_t features, size_t index, ccs_datum_t value)
 	return CCS_SUCCESS;
 }
 
-ccs_error_t
+ccs_result_t
 ccs_features_get_values(
 	ccs_features_t features,
 	size_t         num_values,
@@ -182,7 +182,7 @@ ccs_features_get_values(
 	return CCS_SUCCESS;
 }
 
-ccs_error_t
+ccs_result_t
 ccs_features_get_value_by_name(
 	ccs_features_t features,
 	const char    *name,
@@ -194,7 +194,7 @@ ccs_features_get_value_by_name(
 	return CCS_SUCCESS;
 }
 
-ccs_error_t
+ccs_result_t
 ccs_features_check(ccs_features_t features, ccs_bool_t *is_valid_ret)
 {
 	CCS_CHECK_OBJ(features, CCS_OBJECT_TYPE_FEATURES);
@@ -203,7 +203,7 @@ ccs_features_check(ccs_features_t features, ccs_bool_t *is_valid_ret)
 	return CCS_SUCCESS;
 }
 
-ccs_error_t
+ccs_result_t
 ccs_features_hash(ccs_features_t features, ccs_hash_t *hash_ret)
 {
 	CCS_CHECK_OBJ(features, CCS_OBJECT_TYPE_FEATURES);
@@ -212,7 +212,7 @@ ccs_features_hash(ccs_features_t features, ccs_hash_t *hash_ret)
 	return CCS_SUCCESS;
 }
 
-ccs_error_t
+ccs_result_t
 ccs_features_cmp(
 	ccs_features_t features,
 	ccs_features_t other_features,

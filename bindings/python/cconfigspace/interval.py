@@ -1,6 +1,6 @@
 import ctypes as ct
 from . import libcconfigspace
-from .base import Error, ccs_error, ccs_numeric_type, ccs_numeric, ccs_float, ccs_int, ccs_bool, ccs_false, ccs_true, _ccs_get_function
+from .base import Error, ccs_result, ccs_numeric_type, ccs_numeric, ccs_float, ccs_int, ccs_bool, ccs_false, ccs_true, _ccs_get_function
 
 class ccs_interval(ct.Structure):
   _fields_ = [('_type', ccs_numeric_type),
@@ -17,7 +17,7 @@ class ccs_interval(ct.Structure):
       self._lower.f = lower
       self._upper.f = upper
     else:
-      raise Error(ccs_error(ccs_error.INVALID_VALUE))
+      raise Error(ccs_result(ccs_result.INVALID_VALUE))
     self._type.value = t
     if lower_included:
       self._lower_included = ccs_true
@@ -44,7 +44,7 @@ class ccs_interval(ct.Structure):
     elif t == ccs_numeric_type.FLOAT:
       return self._lower.f
     else:
-      raise Error(ccs_error(ccs_error.INVALID_VALUE))
+      raise Error(ccs_result(ccs_result.INVALID_VALUE))
 
   @lower.setter
   def lower(self, value):
@@ -54,7 +54,7 @@ class ccs_interval(ct.Structure):
     elif t == ccs_numeric_type.FLOAT:
       self._lower.f = value
     else:
-      raise Error(ccs_error(ccs_error.INVALID_VALUE))
+      raise Error(ccs_result(ccs_result.INVALID_VALUE))
 
   @property
   def upper(self):
@@ -64,7 +64,7 @@ class ccs_interval(ct.Structure):
     elif t == ccs_numeric_type.FLOAT:
       return self._upper.f
     else:
-      raise Error(ccs_error(ccs_error.INVALID_VALUE))
+      raise Error(ccs_result(ccs_result.INVALID_VALUE))
 
   @upper.setter
   def upper(self, value):
@@ -74,7 +74,7 @@ class ccs_interval(ct.Structure):
     elif t == ccs_numeric_type.FLOAT:
       self._upper.f = value
     else:
-      raise Error(ccs_error(ccs_error.INVALID_VALUE))
+      raise Error(ccs_result(ccs_result.INVALID_VALUE))
 
   @property
   def lower_included(self):

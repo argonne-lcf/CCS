@@ -39,13 +39,13 @@ test_tree()
 	ccs_datum_t value, *values;
 	size_t      arity, num_children, position_size, *position, index,
 		samples[NUM_SAMPLES], num_values;
-	int         counts[5];
-	ccs_float_t weight, bias, areas[5];
-	ccs_bool_t  is_valid;
-	ccs_error_t err = CCS_SUCCESS;
+	int          counts[5];
+	ccs_float_t  weight, bias, areas[5];
+	ccs_bool_t   is_valid;
+	ccs_result_t err = CCS_SUCCESS;
 
 	// Basic creation
-	err             = ccs_create_tree(4, ccs_string("foo"), &root);
+	err              = ccs_create_tree(4, ccs_string("foo"), &root);
 	assert(err == CCS_SUCCESS);
 
 	// Basic queries

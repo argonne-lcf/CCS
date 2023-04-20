@@ -7,7 +7,7 @@ ccs_parameter_t
 create_numerical(const char *name, double lower, double upper)
 {
 	ccs_parameter_t parameter;
-	ccs_error_t     err;
+	ccs_result_t    err;
 	err = ccs_create_numerical_parameter(
 		name, CCS_NUMERIC_TYPE_FLOAT, CCSF(lower), CCSF(upper),
 		CCSF(0.0), CCSF(0), &parameter);
@@ -18,9 +18,9 @@ create_numerical(const char *name, double lower, double upper)
 void
 generate_tree(ccs_tree_t *tree, size_t depth, size_t rank)
 {
-	ccs_error_t err;
-	ssize_t     ar    = depth - rank;
-	size_t      arity = (size_t)(ar < 0 ? 0 : ar);
+	ccs_result_t err;
+	ssize_t      ar    = depth - rank;
+	size_t       arity = (size_t)(ar < 0 ? 0 : ar);
 
 	err = ccs_create_tree(arity, ccs_int(depth * 100 + rank), tree);
 	assert(err == CCS_SUCCESS);
@@ -42,7 +42,7 @@ create_tree_tuning_problem(
 	ccs_parameter_t  parameter;
 	ccs_tree_t       root;
 	ccs_expression_t expression;
-	ccs_error_t      err;
+	ccs_result_t     err;
 
 	generate_tree(&root, 5, 0);
 	err = ccs_create_static_tree_space("space", root, tree_space);
@@ -74,7 +74,7 @@ test()
 	ccs_tree_space_t      tree_space;
 	ccs_objective_space_t ospace;
 	ccs_tree_tuner_t      tuner, tuner_copy;
-	ccs_error_t           err;
+	ccs_result_t          err;
 	ccs_datum_t           d;
 	char                 *buff;
 	size_t                buff_size;
@@ -195,7 +195,7 @@ test_tree_evaluation_deserialize()
 	ccs_tree_configuration_t configuration;
 	ccs_tree_evaluation_t    evaluation_ref, evaluation;
 	ccs_datum_t              res, d;
-	ccs_error_t              err;
+	ccs_result_t             err;
 	char                    *buff;
 	size_t                   buff_size;
 	ccs_map_t                map;

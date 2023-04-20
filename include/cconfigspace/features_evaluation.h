@@ -40,7 +40,7 @@ extern "C" {
  * @return #CCS_OUT_OF_MEMORY if there was a lack of memory to allocate the new
  *                             evaluation
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_create_features_evaluation(
 	ccs_objective_space_t      objective_space,
 	ccs_configuration_t        configuration,
@@ -60,7 +60,7 @@ ccs_create_features_evaluation(
  *                              features_evaluation
  * @return #CCS_INVALID_VALUE if \p objective_space_ret is NULL
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_features_evaluation_get_objective_space(
 	ccs_features_evaluation_t features_evaluation,
 	ccs_objective_space_t    *objective_space_ret);
@@ -75,7 +75,7 @@ ccs_features_evaluation_get_objective_space(
  *                              features_evaluation
  * @return #CCS_INVALID_VALUE if \p configuration_ret is NULL
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_features_evaluation_get_configuration(
 	ccs_features_evaluation_t features_evaluation,
 	ccs_configuration_t      *configuration_ret);
@@ -90,7 +90,7 @@ ccs_features_evaluation_get_configuration(
  *                              features_evaluation
  * @return #CCS_INVALID_VALUE if \p features_ret is NULL
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_features_evaluation_get_features(
 	ccs_features_evaluation_t features_evaluation,
 	ccs_features_t           *features_ret);
@@ -105,7 +105,7 @@ ccs_features_evaluation_get_features(
  *                              features evaluation
  * @return #CCS_INVALID_VALUE if \p result_ret is NULL
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_features_evaluation_get_result(
 	ccs_features_evaluation_t features_evaluation,
 	ccs_evaluation_result_t  *result_ret);
@@ -119,7 +119,7 @@ ccs_features_evaluation_get_result(
  * @return #CCS_INVALID_OBJECT if \p features_evaluation is not a valid CCS
  *                              features evaluation
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_features_evaluation_set_result(
 	ccs_features_evaluation_t features_evaluation,
 	ccs_evaluation_result_t   result);
@@ -137,7 +137,7 @@ ccs_features_evaluation_set_result(
  * @return #CCS_OUT_OF_BOUNDS if \p index is greater than the count of
  *                             parameters in the objective space
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_features_evaluation_get_value(
 	ccs_features_evaluation_t features_evaluation,
 	size_t                    index,
@@ -159,7 +159,7 @@ ccs_features_evaluation_get_value(
  * @return #CCS_OUT_OF_MEMORY if there was a lack of memory while memoizing a
  *                             string
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_features_evaluation_set_value(
 	ccs_features_evaluation_t features_evaluation,
 	size_t                    index,
@@ -183,7 +183,7 @@ ccs_features_evaluation_set_value(
  *                             num_values_ret is NULL; or if num_values is less
  *                             than the number of values that would be returned
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_features_evaluation_get_values(
 	ccs_features_evaluation_t features_evaluation,
 	size_t                    num_values,
@@ -202,7 +202,7 @@ ccs_features_evaluation_get_values(
  * @return #CCS_INVALID_NAME if no parameter with such \p name exist in
  *                            the \p objective space
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_features_evaluation_get_value_by_name(
 	ccs_features_evaluation_t features_evaluation,
 	const char               *name,
@@ -223,7 +223,7 @@ ccs_features_evaluation_get_value_by_name(
  * @return #CCS_OUT_OF_BOUNDS if \p index is greater than the number of
  *                             objective in the objective space
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_features_evaluation_get_objective_value(
 	ccs_features_evaluation_t features_evaluation,
 	size_t                    index,
@@ -248,7 +248,7 @@ ccs_features_evaluation_get_objective_value(
  *                             is NULL; or if there was an issue evaluating any
  *                             of the objectives
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_features_evaluation_get_objective_values(
 	ccs_features_evaluation_t features_evaluation,
 	size_t                    num_values,
@@ -267,7 +267,7 @@ ccs_features_evaluation_get_objective_values(
  *                              features evaluation
  * @return #CCS_INVALID_VALUE if \p hash_ret is NULL
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_features_evaluation_hash(
 	ccs_features_evaluation_t features_evaluation,
 	ccs_hash_t               *hash_ret);
@@ -289,7 +289,7 @@ ccs_features_evaluation_hash(
  *                              features evaluations
  * @return #CCS_INVALID_VALUE if \p cmp_ret is NULL
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_features_evaluation_cmp(
 	ccs_features_evaluation_t features_evaluation,
 	ccs_features_evaluation_t other_features_evaluation,
@@ -317,7 +317,7 @@ ccs_features_evaluation_cmp(
  * @return #CCS_INVALID_VALUE if \p result_ret is NULL; or if there was an
  *                                issue evaluating any of the objectives
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_features_evaluation_compare(
 	ccs_features_evaluation_t features_evaluation,
 	ccs_features_evaluation_t other_features_evaluation,
@@ -338,7 +338,7 @@ ccs_features_evaluation_compare(
  *                                  invalid in the context of the objective
  *                                  space
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_features_evaluation_check(
 	ccs_features_evaluation_t features_evaluation,
 	ccs_bool_t               *is_valid_ret);

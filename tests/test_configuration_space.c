@@ -9,7 +9,7 @@ ccs_parameter_t
 create_dummy_parameter(const char *name)
 {
 	ccs_parameter_t parameter;
-	ccs_error_t     err;
+	ccs_result_t    err;
 	err = ccs_create_numerical_parameter(
 		name, CCS_NUMERIC_TYPE_FLOAT, CCSF(-5.0), CCSF(5.0), CCSF(0.0),
 		CCSF(d), &parameter);
@@ -24,7 +24,7 @@ void
 test_create()
 {
 	ccs_configuration_space_t configuration_space;
-	ccs_error_t               err;
+	ccs_result_t              err;
 	ccs_object_type_t         type;
 	const char               *name;
 	size_t                    sz;
@@ -58,7 +58,7 @@ check_configuration(
 {
 	ccs_parameter_t     parameter;
 	ccs_configuration_t configuration;
-	ccs_error_t         err;
+	ccs_result_t        err;
 	size_t              sz_ret;
 	size_t              index;
 	ccs_parameter_t    *parameters_ret =
@@ -124,7 +124,7 @@ test_add()
 {
 	ccs_parameter_t           parameters[3];
 	ccs_configuration_space_t configuration_space;
-	ccs_error_t               err;
+	ccs_result_t              err;
 
 	err = ccs_create_configuration_space(
 		"my_config_space", &configuration_space);
@@ -164,7 +164,7 @@ test_add_list()
 {
 	ccs_parameter_t           parameters[3];
 	ccs_configuration_space_t configuration_space;
-	ccs_error_t               err;
+	ccs_result_t              err;
 
 	err = ccs_create_configuration_space(
 		"my_config_space", &configuration_space);
@@ -195,7 +195,7 @@ test_sample()
 	ccs_configuration_t       configuration;
 	ccs_configuration_t       configurations[100];
 	ccs_configuration_space_t configuration_space;
-	ccs_error_t               err;
+	ccs_result_t              err;
 	ccs_bool_t                check;
 
 	err = ccs_create_configuration_space(
@@ -255,7 +255,7 @@ test_set_distribution()
 	size_t                    dindex_ret;
 	ccs_configuration_t       configurations[100];
 	ccs_configuration_space_t configuration_space;
-	ccs_error_t               err;
+	ccs_result_t              err;
 	ccs_bool_t                check;
 
 	err = ccs_create_configuration_space(
@@ -379,7 +379,7 @@ ccs_parameter_t
 create_numerical(const char *name)
 {
 	ccs_parameter_t parameter;
-	ccs_error_t     err;
+	ccs_result_t    err;
 	err = ccs_create_numerical_parameter(
 		name, CCS_NUMERIC_TYPE_FLOAT, CCSF(-5.0), CCSF(5.0), CCSF(0.0),
 		CCSF(0.0), &parameter);
@@ -397,7 +397,7 @@ test_configuration_deserialize()
 	size_t                    buff_size;
 	ccs_map_t                 map;
 	ccs_datum_t               d;
-	ccs_error_t               err;
+	ccs_result_t              err;
 	int                       cmp;
 
 	err = ccs_create_configuration_space(
@@ -484,7 +484,7 @@ test_deserialize()
 	size_t                    count;
 	ccs_map_t                 map;
 	ccs_datum_t               d;
-	ccs_error_t               err;
+	ccs_result_t              err;
 
 	err = ccs_create_configuration_space("my_config_space", &space);
 	assert(err == CCS_SUCCESS);

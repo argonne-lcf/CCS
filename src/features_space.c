@@ -3,7 +3,7 @@
 #include "features_internal.h"
 #include "utlist.h"
 
-static ccs_error_t
+static ccs_result_t
 _ccs_features_space_del(ccs_object_t object)
 {
 	ccs_features_space_t      features_space = (ccs_features_space_t)object;
@@ -24,7 +24,7 @@ _ccs_features_space_del(ccs_object_t object)
 	return CCS_SUCCESS;
 }
 
-static ccs_error_t
+static ccs_result_t
 _ccs_features_space_serialize_size(
 	ccs_object_t                     object,
 	ccs_serialize_format_t           format,
@@ -46,7 +46,7 @@ _ccs_features_space_serialize_size(
 	return CCS_SUCCESS;
 }
 
-static ccs_error_t
+static ccs_result_t
 _ccs_features_space_serialize(
 	ccs_object_t                     object,
 	ccs_serialize_format_t           format,
@@ -87,12 +87,12 @@ static const UT_icd _parameter_wrapper_icd = {
 			err, CCS_OUT_OF_MEMORY, arrays,                        \
 			"Not enough memory to allocate array");                \
 	}
-ccs_error_t
+ccs_result_t
 ccs_create_features_space(
 	const char           *name,
 	ccs_features_space_t *features_space_ret)
 {
-	ccs_error_t err;
+	ccs_result_t err;
 	CCS_CHECK_PTR(name);
 	CCS_CHECK_PTR(features_space_ret);
 	uintptr_t mem = (uintptr_t)calloc(
@@ -122,7 +122,7 @@ arrays:
 	return err;
 }
 
-ccs_error_t
+ccs_result_t
 ccs_features_space_get_name(
 	ccs_features_space_t features_space,
 	const char         **name_ret)
@@ -147,14 +147,14 @@ ccs_features_space_get_name(
 			err, CCS_OUT_OF_MEMORY, errorutarray,                  \
 			"Not enough memory to allocate hash");                 \
 	}
-ccs_error_t
+ccs_result_t
 ccs_features_space_add_parameter(
 	ccs_features_space_t features_space,
 	ccs_parameter_t      parameter)
 {
 	CCS_CHECK_OBJ(features_space, CCS_OBJECT_TYPE_FEATURES_SPACE);
 	CCS_CHECK_OBJ(parameter, CCS_OBJECT_TYPE_PARAMETER);
-	ccs_error_t                  err;
+	ccs_result_t                 err;
 	const char                  *name;
 	size_t                       sz_name;
 	_ccs_parameter_index_hash_t *parameter_hash;
@@ -202,7 +202,7 @@ errorparameter:
 #undef utarray_oom
 #define utarray_oom() exit(-1)
 
-ccs_error_t
+ccs_result_t
 ccs_features_space_add_parameters(
 	ccs_features_space_t features_space,
 	size_t               num_parameters,
@@ -216,7 +216,7 @@ ccs_features_space_add_parameters(
 	return CCS_SUCCESS;
 }
 
-ccs_error_t
+ccs_result_t
 ccs_features_space_get_num_parameters(
 	ccs_features_space_t features_space,
 	size_t              *num_parameters_ret)
@@ -227,7 +227,7 @@ ccs_features_space_get_num_parameters(
 	return CCS_SUCCESS;
 }
 
-ccs_error_t
+ccs_result_t
 ccs_features_space_get_parameter(
 	ccs_features_space_t features_space,
 	size_t               index,
@@ -239,7 +239,7 @@ ccs_features_space_get_parameter(
 	return CCS_SUCCESS;
 }
 
-ccs_error_t
+ccs_result_t
 ccs_features_space_get_parameter_by_name(
 	ccs_features_space_t features_space,
 	const char          *name,
@@ -251,7 +251,7 @@ ccs_features_space_get_parameter_by_name(
 	return CCS_SUCCESS;
 }
 
-ccs_error_t
+ccs_result_t
 ccs_features_space_get_parameter_index_by_name(
 	ccs_features_space_t features_space,
 	const char          *name,
@@ -263,7 +263,7 @@ ccs_features_space_get_parameter_index_by_name(
 	return CCS_SUCCESS;
 }
 
-ccs_error_t
+ccs_result_t
 ccs_features_space_get_parameter_index(
 	ccs_features_space_t features_space,
 	ccs_parameter_t      parameter,
@@ -276,7 +276,7 @@ ccs_features_space_get_parameter_index(
 	return CCS_SUCCESS;
 }
 
-ccs_error_t
+ccs_result_t
 ccs_features_space_get_parameter_indexes(
 	ccs_features_space_t features_space,
 	size_t               num_parameters,
@@ -290,7 +290,7 @@ ccs_features_space_get_parameter_indexes(
 	return CCS_SUCCESS;
 }
 
-ccs_error_t
+ccs_result_t
 ccs_features_space_get_parameters(
 	ccs_features_space_t features_space,
 	size_t               num_parameters,
@@ -304,7 +304,7 @@ ccs_features_space_get_parameters(
 	return CCS_SUCCESS;
 }
 
-ccs_error_t
+ccs_result_t
 ccs_features_space_validate_value(
 	ccs_features_space_t features_space,
 	size_t               index,
@@ -317,7 +317,7 @@ ccs_features_space_validate_value(
 	return CCS_SUCCESS;
 }
 
-static inline ccs_error_t
+static inline ccs_result_t
 _check_features(
 	ccs_features_space_t features_space,
 	size_t               num_values,
@@ -339,7 +339,7 @@ _check_features(
 	return CCS_SUCCESS;
 }
 
-ccs_error_t
+ccs_result_t
 ccs_features_space_check_features(
 	ccs_features_space_t features_space,
 	ccs_features_t       features,
@@ -356,7 +356,7 @@ ccs_features_space_check_features(
 	return CCS_SUCCESS;
 }
 
-ccs_error_t
+ccs_result_t
 ccs_features_space_check_features_values(
 	ccs_features_space_t features_space,
 	size_t               num_values,

@@ -3,7 +3,7 @@
 #include "evaluation_internal.h"
 #include "expression_internal.h"
 
-static ccs_error_t
+static ccs_result_t
 _ccs_objective_space_del(ccs_object_t object)
 {
 	ccs_objective_space_t objective_space = (ccs_objective_space_t)object;
@@ -31,7 +31,7 @@ _ccs_objective_space_del(ccs_object_t object)
 	return CCS_SUCCESS;
 }
 
-static inline ccs_error_t
+static inline ccs_result_t
 _ccs_serialize_bin_size_ccs_objective_space_data(
 	_ccs_objective_space_data_t     *data,
 	size_t                          *cum_size,
@@ -68,7 +68,7 @@ _ccs_serialize_bin_size_ccs_objective_space_data(
 	return CCS_SUCCESS;
 }
 
-static inline ccs_error_t
+static inline ccs_result_t
 _ccs_serialize_bin_ccs_objective_space_data(
 	_ccs_objective_space_data_t     *data,
 	size_t                          *buffer_size,
@@ -107,7 +107,7 @@ _ccs_serialize_bin_ccs_objective_space_data(
 	return CCS_SUCCESS;
 }
 
-static inline ccs_error_t
+static inline ccs_result_t
 _ccs_serialize_bin_size_ccs_objective_space(
 	ccs_objective_space_t            objective_space,
 	size_t                          *cum_size,
@@ -122,7 +122,7 @@ _ccs_serialize_bin_size_ccs_objective_space(
 	return CCS_SUCCESS;
 }
 
-static inline ccs_error_t
+static inline ccs_result_t
 _ccs_serialize_bin_ccs_objective_space(
 	ccs_objective_space_t            objective_space,
 	size_t                          *buffer_size,
@@ -139,7 +139,7 @@ _ccs_serialize_bin_ccs_objective_space(
 	return CCS_SUCCESS;
 }
 
-static ccs_error_t
+static ccs_result_t
 _ccs_objective_space_serialize_size(
 	ccs_object_t                     object,
 	ccs_serialize_format_t           format,
@@ -161,7 +161,7 @@ _ccs_objective_space_serialize_size(
 	return CCS_SUCCESS;
 }
 
-static ccs_error_t
+static ccs_result_t
 _ccs_objective_space_serialize(
 	ccs_object_t                     object,
 	ccs_serialize_format_t           format,
@@ -211,7 +211,7 @@ static const UT_icd _objectives_icd = {
 			"Not enough memory to allocate array");                \
 	}
 
-ccs_error_t
+ccs_result_t
 ccs_create_objective_space(
 	const char            *name,
 	ccs_objective_space_t *objective_space_ret)
@@ -224,7 +224,7 @@ ccs_create_objective_space(
 			   sizeof(struct _ccs_objective_space_data_s) +
 			   strlen(name) + 1);
 	CCS_REFUTE(!mem, CCS_OUT_OF_MEMORY);
-	ccs_error_t           err;
+	ccs_result_t          err;
 	ccs_objective_space_t obj_space = (ccs_objective_space_t)mem;
 	_ccs_object_init(
 		&(obj_space->obj), CCS_OBJECT_TYPE_OBJECTIVE_SPACE,
@@ -249,7 +249,7 @@ arrays:
 	return err;
 }
 
-ccs_error_t
+ccs_result_t
 ccs_objective_space_get_name(
 	ccs_objective_space_t objective_space,
 	const char          **name_ret)
@@ -274,14 +274,14 @@ ccs_objective_space_get_name(
 			err, CCS_OUT_OF_MEMORY, errorutarray,                  \
 			"Not enough memory to allocate hash");                 \
 	}
-ccs_error_t
+ccs_result_t
 ccs_objective_space_add_parameter(
 	ccs_objective_space_t objective_space,
 	ccs_parameter_t       parameter)
 {
 	CCS_CHECK_OBJ(objective_space, CCS_OBJECT_TYPE_OBJECTIVE_SPACE);
 	CCS_CHECK_OBJ(parameter, CCS_OBJECT_TYPE_PARAMETER);
-	ccs_error_t                  err;
+	ccs_result_t                 err;
 	const char                  *name;
 	size_t                       sz_name;
 	_ccs_parameter_index_hash_t *parameter_hash;
@@ -330,7 +330,7 @@ errorparameter:
 #undef utarray_oom
 #define utarray_oom() exit(-1)
 
-ccs_error_t
+ccs_result_t
 ccs_objective_space_add_parameters(
 	ccs_objective_space_t objective_space,
 	size_t                num_parameters,
@@ -344,7 +344,7 @@ ccs_objective_space_add_parameters(
 	return CCS_SUCCESS;
 }
 
-ccs_error_t
+ccs_result_t
 ccs_objective_space_get_num_parameters(
 	ccs_objective_space_t objective_space,
 	size_t               *num_parameters_ret)
@@ -355,7 +355,7 @@ ccs_objective_space_get_num_parameters(
 	return CCS_SUCCESS;
 }
 
-ccs_error_t
+ccs_result_t
 ccs_objective_space_get_parameter(
 	ccs_objective_space_t objective_space,
 	size_t                index,
@@ -367,7 +367,7 @@ ccs_objective_space_get_parameter(
 	return CCS_SUCCESS;
 }
 
-ccs_error_t
+ccs_result_t
 ccs_objective_space_get_parameter_by_name(
 	ccs_objective_space_t objective_space,
 	const char           *name,
@@ -379,7 +379,7 @@ ccs_objective_space_get_parameter_by_name(
 	return CCS_SUCCESS;
 }
 
-ccs_error_t
+ccs_result_t
 ccs_objective_space_get_parameter_index_by_name(
 	ccs_objective_space_t objective_space,
 	const char           *name,
@@ -391,7 +391,7 @@ ccs_objective_space_get_parameter_index_by_name(
 	return CCS_SUCCESS;
 }
 
-ccs_error_t
+ccs_result_t
 ccs_objective_space_get_parameter_index(
 	ccs_objective_space_t objective_space,
 	ccs_parameter_t       parameter,
@@ -404,7 +404,7 @@ ccs_objective_space_get_parameter_index(
 	return CCS_SUCCESS;
 }
 
-ccs_error_t
+ccs_result_t
 ccs_objective_space_get_parameter_indexes(
 	ccs_objective_space_t objective_space,
 	size_t                num_parameters,
@@ -418,7 +418,7 @@ ccs_objective_space_get_parameter_indexes(
 	return CCS_SUCCESS;
 }
 
-ccs_error_t
+ccs_result_t
 ccs_objective_space_get_parameters(
 	ccs_objective_space_t objective_space,
 	size_t                num_parameters,
@@ -432,7 +432,7 @@ ccs_objective_space_get_parameters(
 	return CCS_SUCCESS;
 }
 
-static inline ccs_error_t
+static inline ccs_result_t
 _check_evaluation(
 	ccs_objective_space_t objective_space,
 	size_t                num_values,
@@ -454,7 +454,7 @@ _check_evaluation(
 	return CCS_SUCCESS;
 }
 
-ccs_error_t
+ccs_result_t
 ccs_objective_space_check_evaluation_values(
 	ccs_objective_space_t objective_space,
 	size_t                num_values,
@@ -468,7 +468,7 @@ ccs_objective_space_check_evaluation_values(
 	return CCS_SUCCESS;
 }
 
-ccs_error_t
+ccs_result_t
 ccs_objective_space_validate_value(
 	ccs_objective_space_t objective_space,
 	size_t                index,
@@ -487,7 +487,7 @@ ccs_objective_space_validate_value(
 		CCS_RAISE(                                                     \
 			CCS_OUT_OF_MEMORY, "Out of memory to allocate array"); \
 	}
-ccs_error_t
+ccs_result_t
 ccs_objective_space_add_objective(
 	ccs_objective_space_t objective_space,
 	ccs_expression_t      expression,
@@ -504,7 +504,7 @@ ccs_objective_space_add_objective(
 	return CCS_SUCCESS;
 }
 
-ccs_error_t
+ccs_result_t
 ccs_objective_space_add_objectives(
 	ccs_objective_space_t objective_space,
 	size_t                num_objectives,
@@ -529,7 +529,7 @@ ccs_objective_space_add_objectives(
 #undef utarray_oom
 #define utarray_oom() exit(-1)
 
-ccs_error_t
+ccs_result_t
 ccs_objective_space_get_objective(
 	ccs_objective_space_t objective_space,
 	size_t                index,
@@ -547,7 +547,7 @@ ccs_objective_space_get_objective(
 	return CCS_SUCCESS;
 }
 
-ccs_error_t
+ccs_result_t
 ccs_objective_space_get_objectives(
 	ccs_objective_space_t objective_space,
 	size_t                num_objectives,

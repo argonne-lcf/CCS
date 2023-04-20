@@ -1,5 +1,5 @@
 import ctypes as ct
-from .base import Object, Error, CEnumeration, ccs_error, ccs_evaluation_result, _ccs_get_function, ccs_context, ccs_parameter, ccs_tree_configuration, ccs_datum, ccs_datum_fix, ccs_objective_space, ccs_tree_evaluation, ccs_bool
+from .base import Object, Error, CEnumeration, ccs_result, ccs_evaluation_result, _ccs_get_function, ccs_context, ccs_parameter, ccs_tree_configuration, ccs_datum, ccs_datum_fix, ccs_objective_space, ccs_tree_evaluation, ccs_bool
 from .evaluation import ccs_comparison
 from .binding import Binding
 from .tree_configuration import TreeConfiguration
@@ -17,7 +17,7 @@ ccs_tree_evaluation_check = _ccs_get_function("ccs_tree_evaluation_check", [ccs_
 
 class TreeEvaluation(Binding):
   def __init__(self, handle = None, retain = False, auto_release = True,
-               objective_space = None, configuration = None, result = ccs_error.SUCCESS, values = None):
+               objective_space = None, configuration = None, result = ccs_result.SUCCESS, values = None):
     if handle is None:
       count = 0
       if values:

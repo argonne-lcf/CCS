@@ -1,6 +1,6 @@
 import ctypes as ct
 from . import libcconfigspace
-from .base import Object, Error, ccs_error, CEnumeration, _ccs_get_function, ccs_expression, ccs_datum, ccs_datum_fix, ccs_parameter, ccs_context
+from .base import Object, Error, ccs_result, CEnumeration, _ccs_get_function, ccs_expression, ccs_datum, ccs_datum_fix, ccs_parameter, ccs_context
 from .parameter import Parameter
 
 class ccs_expression_type(CEnumeration):
@@ -171,7 +171,7 @@ class Expression(Object):
     if context and values:
       count = context.num_parameters
       if count != len(values):
-        raise Error(ccs_error(ccs_error.INVALID_VALUE))
+        raise Error(ccs_result(ccs_result.INVALID_VALUE))
       v = (ccs_datum * count)()
       ss = []
       for i in range(count):
@@ -179,7 +179,7 @@ class Expression(Object):
       values = v
       context = context.handle
     elif context or values:
-      raise Error(ccs_error(ccs_error.INVALID_VALUE))
+      raise Error(ccs_result(ccs_result.INVALID_VALUE))
     v = ccs_datum()
     res = ccs_expression_eval(self.handle, context, values, ct.byref(v))
     Error.check(res)
@@ -278,7 +278,7 @@ class List(Expression):
     if context and values:
       count = context.num_parameters
       if count != len(values):
-        raise Error(ccs_error(ccs_error.INVALID_VALUE))
+        raise Error(ccs_result(ccs_result.INVALID_VALUE))
       v = (ccs_datum * count)()
       ss = []
       for i in range(count):
@@ -286,7 +286,7 @@ class List(Expression):
       values = v
       context = context.handle
     elif context or values:
-      raise Error(ccs_error(ccs_error.INVALID_VALUE))
+      raise Error(ccs_result(ccs_result.INVALID_VALUE))
     v = ccs_datum()
     res = ccs_expression_list_eval_node(self.handle, context, values, index, ct.byref(v))
     Error.check(res)

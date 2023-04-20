@@ -6,7 +6,7 @@
 static void
 compare_parameter(ccs_parameter_t parameter)
 {
-	ccs_error_t          err;
+	ccs_result_t         err;
 	ccs_parameter_type_t type;
 	ccs_datum_t          default_value;
 	const char          *name;
@@ -40,7 +40,7 @@ void
 test_create()
 {
 	ccs_parameter_t parameter;
-	ccs_error_t     err;
+	ccs_result_t    err;
 	char           *buff;
 	size_t          buff_size;
 
@@ -83,7 +83,7 @@ void
 test_string_memoization()
 {
 	ccs_parameter_t parameter;
-	ccs_error_t     err;
+	ccs_result_t    err;
 	ccs_datum_t     din, dout, dout2;
 	ccs_bool_t      check;
 	char           *str;

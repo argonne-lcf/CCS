@@ -10,7 +10,7 @@ ccs_parameter_t
 create_dummy_numerical(const char *name)
 {
 	ccs_parameter_t parameter;
-	ccs_error_t     err;
+	ccs_result_t    err;
 	err = ccs_create_numerical_parameter(
 		name, CCS_NUMERIC_TYPE_FLOAT, CCSF(-5.0), CCSF(5.0), CCSF(0.0),
 		CCSF(d), &parameter);
@@ -26,7 +26,7 @@ create_dummy_categorical(const char *name)
 {
 	ccs_datum_t     possible_values[4];
 	ccs_parameter_t parameter;
-	ccs_error_t     err;
+	ccs_result_t    err;
 	possible_values[0] = ccs_int(1);
 	possible_values[1] = ccs_float(2.0);
 	possible_values[2] = ccs_string("toto");
@@ -43,7 +43,7 @@ create_dummy_ordinal(const char *name)
 {
 	ccs_datum_t     possible_values[4];
 	ccs_parameter_t parameter;
-	ccs_error_t     err;
+	ccs_result_t    err;
 	possible_values[0] = ccs_int(1);
 	possible_values[1] = ccs_float(2.0);
 	possible_values[2] = ccs_string("toto");
@@ -63,9 +63,9 @@ test_expression_wrapper(
 	ccs_configuration_space_t context,
 	ccs_datum_t              *inputs,
 	ccs_datum_t               eres,
-	ccs_error_t               eerr)
+	ccs_result_t              eerr)
 {
-	ccs_error_t      err;
+	ccs_result_t     err;
 	ccs_expression_t expression;
 	ccs_datum_t      result;
 
@@ -162,7 +162,7 @@ test_equal_numerical()
 	ccs_parameter_t           parameters[2];
 	ccs_datum_t               nodes[2];
 	ccs_datum_t               values[2];
-	ccs_error_t               err;
+	ccs_result_t              err;
 
 	err = ccs_create_configuration_space(
 		"my_config_space", &configuration_space);
@@ -221,7 +221,7 @@ test_equal_categorical()
 	ccs_parameter_t           parameters[2];
 	ccs_datum_t               nodes[2];
 	ccs_datum_t               values[2];
-	ccs_error_t               err;
+	ccs_result_t              err;
 
 	err = ccs_create_configuration_space(
 		"my_config_space", &configuration_space);
@@ -264,7 +264,7 @@ test_equal_ordinal()
 	ccs_parameter_t           parameters[2];
 	ccs_datum_t               nodes[2];
 	ccs_datum_t               values[2];
-	ccs_error_t               err;
+	ccs_result_t              err;
 
 	err = ccs_create_configuration_space(
 		"my_config_space", &configuration_space);
@@ -306,7 +306,7 @@ test_binary_arithmetic(
 	ccs_datum_t           a,
 	ccs_datum_t           b,
 	ccs_datum_t           eres,
-	ccs_error_t           eerr)
+	ccs_result_t          eerr)
 {
 	ccs_datum_t nodes[2];
 	nodes[0] = a;
@@ -319,7 +319,7 @@ test_unary_arithmetic(
 	ccs_expression_type_t t,
 	ccs_datum_t           a,
 	ccs_datum_t           eres,
-	ccs_error_t           eerr)
+	ccs_result_t          eerr)
 {
 	test_expression_wrapper(t, 1, &a, NULL, NULL, eres, eerr);
 }
@@ -725,7 +725,7 @@ test_in()
 {
 	ccs_expression_t list;
 	ccs_datum_t      values[4];
-	ccs_error_t      err;
+	ccs_result_t     err;
 
 	values[0] = ccs_float(3.0);
 	values[1] = ccs_int(1);
@@ -784,7 +784,7 @@ test_compound()
 {
 	ccs_expression_t      expression1, expression2;
 	ccs_datum_t           result;
-	ccs_error_t           err;
+	ccs_result_t          err;
 	ccs_expression_t      nodes[3];
 	size_t                num_nodes_ret;
 	ccs_expression_type_t type;
@@ -833,7 +833,7 @@ test_get_parameters()
 	ccs_expression_t expression1, expression2;
 	ccs_parameter_t  parameter1, parameter2;
 	ccs_parameter_t  parameters[3];
-	ccs_error_t      err;
+	ccs_result_t     err;
 	size_t           count;
 
 	parameter1 = create_dummy_categorical("param1");
@@ -901,7 +901,7 @@ test_check_context()
 	ccs_expression_t          expression1, expression2;
 	ccs_parameter_t           parameter1, parameter2, parameter3;
 	ccs_configuration_space_t space;
-	ccs_error_t               err;
+	ccs_result_t              err;
 
 	parameter1 = create_dummy_categorical("param1");
 	parameter2 = create_dummy_numerical("param2");
@@ -956,7 +956,7 @@ test_check_context()
 void
 test_deserialize_literal()
 {
-	ccs_error_t           err;
+	ccs_result_t          err;
 	ccs_expression_t      expression;
 	ccs_object_type_t     otype;
 	ccs_expression_type_t etype;
@@ -1011,7 +1011,7 @@ test_deserialize_literal()
 void
 test_deserialize_variable()
 {
-	ccs_error_t           err;
+	ccs_result_t          err;
 	ccs_parameter_t       parameter;
 	ccs_map_t             handle_map;
 	ccs_expression_t      expression;
@@ -1095,7 +1095,7 @@ test_deserialize_variable()
 void
 test_deserialize()
 {
-	ccs_error_t      err;
+	ccs_result_t     err;
 	ccs_expression_t expression;
 	ccs_parameter_t  parameter;
 	ccs_map_t        handle_map;

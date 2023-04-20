@@ -10,7 +10,7 @@ _ccs_tree_space_get_ops(ccs_tree_space_t tree_space)
 	return (_ccs_tree_space_ops_t *)tree_space->obj.ops;
 }
 
-ccs_error_t
+ccs_result_t
 ccs_tree_space_get_type(
 	ccs_tree_space_t       tree_space,
 	ccs_tree_space_type_t *type_ret)
@@ -21,7 +21,7 @@ ccs_tree_space_get_type(
 	return CCS_SUCCESS;
 }
 
-ccs_error_t
+ccs_result_t
 ccs_tree_space_get_name(ccs_tree_space_t tree_space, const char **name_ret)
 {
 	CCS_CHECK_OBJ(tree_space, CCS_OBJECT_TYPE_TREE_SPACE);
@@ -30,7 +30,7 @@ ccs_tree_space_get_name(ccs_tree_space_t tree_space, const char **name_ret)
 	return CCS_SUCCESS;
 }
 
-ccs_error_t
+ccs_result_t
 ccs_tree_space_set_rng(ccs_tree_space_t tree_space, ccs_rng_t rng)
 {
 	CCS_CHECK_OBJ(tree_space, CCS_OBJECT_TYPE_TREE_SPACE);
@@ -43,7 +43,7 @@ ccs_tree_space_set_rng(ccs_tree_space_t tree_space, ccs_rng_t rng)
 	return CCS_SUCCESS;
 }
 
-ccs_error_t
+ccs_result_t
 ccs_tree_space_get_rng(ccs_tree_space_t tree_space, ccs_rng_t *rng_ret)
 {
 	CCS_CHECK_OBJ(tree_space, CCS_OBJECT_TYPE_TREE_SPACE);
@@ -52,7 +52,7 @@ ccs_tree_space_get_rng(ccs_tree_space_t tree_space, ccs_rng_t *rng_ret)
 	return CCS_SUCCESS;
 }
 
-ccs_error_t
+ccs_result_t
 ccs_tree_space_get_tree(ccs_tree_space_t tree_space, ccs_tree_t *tree_ret)
 {
 	CCS_CHECK_OBJ(tree_space, CCS_OBJECT_TYPE_TREE_SPACE);
@@ -63,7 +63,7 @@ ccs_tree_space_get_tree(ccs_tree_space_t tree_space, ccs_tree_t *tree_ret)
 
 static UT_icd _size_t_icd = {sizeof(size_t), NULL, NULL, NULL};
 
-ccs_error_t
+ccs_result_t
 ccs_tree_space_get_node_at_position(
 	ccs_tree_space_t tree_space,
 	size_t           position_size,
@@ -79,7 +79,7 @@ ccs_tree_space_get_node_at_position(
 	return CCS_SUCCESS;
 }
 
-ccs_error_t
+ccs_result_t
 ccs_tree_space_get_values_at_position(
 	ccs_tree_space_t tree_space,
 	size_t           position_size,
@@ -96,7 +96,7 @@ ccs_tree_space_get_values_at_position(
 	return CCS_SUCCESS;
 }
 
-ccs_error_t
+ccs_result_t
 ccs_tree_space_check_position(
 	ccs_tree_space_t tree_space,
 	size_t           position_size,
@@ -112,7 +112,7 @@ ccs_tree_space_check_position(
 	return CCS_SUCCESS;
 }
 
-ccs_error_t
+ccs_result_t
 ccs_tree_space_check_configuration(
 	ccs_tree_space_t         tree_space,
 	ccs_tree_configuration_t configuration,
@@ -139,7 +139,7 @@ ccs_tree_space_check_configuration(
 			"Out of memory to allocate array");                    \
 	}
 
-static inline ccs_error_t
+static inline ccs_result_t
 _ccs_tree_space_samples(
 	ccs_tree_space_t          tree_space,
 	size_t                    num_configurations,
@@ -147,9 +147,9 @@ _ccs_tree_space_samples(
 {
 	_ccs_tree_space_common_data_t *data =
 		(_ccs_tree_space_common_data_t *)(tree_space->data);
-	ccs_rng_t   rng = data->rng;
-	ccs_error_t err = CCS_SUCCESS;
-	UT_array   *arr = NULL;
+	ccs_rng_t    rng = data->rng;
+	ccs_result_t err = CCS_SUCCESS;
+	UT_array    *arr = NULL;
 	utarray_new(arr, &_size_t_icd);
 	for (size_t i = 0; i < num_configurations; i++) {
 		size_t     index;
@@ -195,7 +195,7 @@ err_arr:
 	return err;
 }
 
-ccs_error_t
+ccs_result_t
 ccs_tree_space_sample(
 	ccs_tree_space_t          tree_space,
 	ccs_tree_configuration_t *configuration_ret)
@@ -206,7 +206,7 @@ ccs_tree_space_sample(
 	return CCS_SUCCESS;
 }
 
-ccs_error_t
+ccs_result_t
 ccs_tree_space_samples(
 	ccs_tree_space_t          tree_space,
 	size_t                    num_configurations,

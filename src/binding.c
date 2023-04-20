@@ -12,7 +12,7 @@ ccs_binding_get_ops(ccs_binding_t binding)
 	return (_ccs_binding_ops_t *)binding->obj.ops;
 }
 
-ccs_error_t
+ccs_result_t
 ccs_binding_get_context(ccs_binding_t binding, ccs_context_t *context_ret)
 {
 	CCS_CHECK_BINDING(binding);
@@ -20,7 +20,7 @@ ccs_binding_get_context(ccs_binding_t binding, ccs_context_t *context_ret)
 	return CCS_SUCCESS;
 }
 
-ccs_error_t
+ccs_result_t
 ccs_binding_get_value(
 	ccs_binding_t binding,
 	size_t        index,
@@ -31,7 +31,7 @@ ccs_binding_get_value(
 	return CCS_SUCCESS;
 }
 
-ccs_error_t
+ccs_result_t
 ccs_binding_set_value(ccs_binding_t binding, size_t index, ccs_datum_t value)
 {
 	CCS_CHECK_BINDING(binding);
@@ -39,7 +39,7 @@ ccs_binding_set_value(ccs_binding_t binding, size_t index, ccs_datum_t value)
 	return CCS_SUCCESS;
 }
 
-ccs_error_t
+ccs_result_t
 ccs_binding_get_values(
 	ccs_binding_t binding,
 	size_t        num_values,
@@ -52,7 +52,7 @@ ccs_binding_get_values(
 	return CCS_SUCCESS;
 }
 
-ccs_error_t
+ccs_result_t
 ccs_binding_set_values(
 	ccs_binding_t binding,
 	size_t        num_values,
@@ -63,7 +63,7 @@ ccs_binding_set_values(
 	return CCS_SUCCESS;
 }
 
-ccs_error_t
+ccs_result_t
 ccs_binding_get_value_by_name(
 	ccs_binding_t binding,
 	const char   *name,
@@ -74,7 +74,7 @@ ccs_binding_get_value_by_name(
 	return CCS_SUCCESS;
 }
 
-ccs_error_t
+ccs_result_t
 ccs_binding_set_value_by_name(
 	ccs_binding_t binding,
 	const char   *name,
@@ -85,7 +85,7 @@ ccs_binding_set_value_by_name(
 	return CCS_SUCCESS;
 }
 
-ccs_error_t
+ccs_result_t
 ccs_binding_get_value_by_parameter(
 	ccs_binding_t   binding,
 	ccs_parameter_t parameter,
@@ -97,7 +97,7 @@ ccs_binding_get_value_by_parameter(
 	return CCS_SUCCESS;
 }
 
-ccs_error_t
+ccs_result_t
 ccs_binding_set_value_by_parameter(
 	ccs_binding_t   binding,
 	ccs_parameter_t parameter,
@@ -109,7 +109,7 @@ ccs_binding_set_value_by_parameter(
 	return CCS_SUCCESS;
 }
 
-ccs_error_t
+ccs_result_t
 ccs_binding_hash(ccs_binding_t binding, ccs_hash_t *hash_ret)
 {
 	CCS_CHECK_BINDING(binding);
@@ -118,7 +118,7 @@ ccs_binding_hash(ccs_binding_t binding, ccs_hash_t *hash_ret)
 	return CCS_SUCCESS;
 }
 
-ccs_error_t
+ccs_result_t
 ccs_binding_cmp(ccs_binding_t binding, ccs_binding_t other_binding, int *cmp_ret)
 {
 	CCS_CHECK_BINDING(binding);

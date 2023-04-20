@@ -23,13 +23,13 @@ module CCS
     end
   end
 
-  attach_function :ccs_distribution_get_type, [:ccs_distribution_t, :pointer], :ccs_error_t
-  attach_function :ccs_distribution_get_data_types, [:ccs_distribution_t, :pointer], :ccs_error_t
-  attach_function :ccs_distribution_get_dimension, [:ccs_distribution_t, :pointer], :ccs_error_t
-  attach_function :ccs_distribution_get_bounds, [:ccs_distribution_t, :pointer], :ccs_error_t
-  attach_function :ccs_distribution_check_oversampling, [:ccs_distribution_t, Interval.by_ref, :pointer], :ccs_error_t
-  attach_function :ccs_distribution_sample, [:ccs_distribution_t, :ccs_rng_t, :pointer], :ccs_error_t
-  attach_function :ccs_distribution_samples, [:ccs_distribution_t, :ccs_rng_t, :size_t, :pointer], :ccs_error_t
+  attach_function :ccs_distribution_get_type, [:ccs_distribution_t, :pointer], :ccs_result_t
+  attach_function :ccs_distribution_get_data_types, [:ccs_distribution_t, :pointer], :ccs_result_t
+  attach_function :ccs_distribution_get_dimension, [:ccs_distribution_t, :pointer], :ccs_result_t
+  attach_function :ccs_distribution_get_bounds, [:ccs_distribution_t, :pointer], :ccs_result_t
+  attach_function :ccs_distribution_check_oversampling, [:ccs_distribution_t, Interval.by_ref, :pointer], :ccs_result_t
+  attach_function :ccs_distribution_sample, [:ccs_distribution_t, :ccs_rng_t, :pointer], :ccs_result_t
+  attach_function :ccs_distribution_samples, [:ccs_distribution_t, :ccs_rng_t, :size_t, :pointer], :ccs_result_t
 
   class Distribution < Object
     add_property :type, :ccs_distribution_type_t, :ccs_distribution_get_type, memoize: true
@@ -124,10 +124,10 @@ module CCS
 
   end
 
-  attach_function :ccs_create_uniform_distribution, [:ccs_numeric_type_t, :ccs_numeric_t, :ccs_numeric_t, :ccs_scale_type_t, :ccs_numeric_t, :pointer], :ccs_error_t
-  attach_function :ccs_create_uniform_int_distribution, [:ccs_int_t, :ccs_int_t, :ccs_scale_type_t, :ccs_int_t, :pointer], :ccs_error_t
-  attach_function :ccs_create_uniform_float_distribution, [:ccs_float_t, :ccs_float_t, :ccs_scale_type_t, :ccs_float_t, :pointer], :ccs_error_t
-  attach_function :ccs_uniform_distribution_get_properties, [:ccs_distribution_t, :pointer, :pointer, :pointer, :pointer], :ccs_error_t
+  attach_function :ccs_create_uniform_distribution, [:ccs_numeric_type_t, :ccs_numeric_t, :ccs_numeric_t, :ccs_scale_type_t, :ccs_numeric_t, :pointer], :ccs_result_t
+  attach_function :ccs_create_uniform_int_distribution, [:ccs_int_t, :ccs_int_t, :ccs_scale_type_t, :ccs_int_t, :pointer], :ccs_result_t
+  attach_function :ccs_create_uniform_float_distribution, [:ccs_float_t, :ccs_float_t, :ccs_scale_type_t, :ccs_float_t, :pointer], :ccs_result_t
+  attach_function :ccs_uniform_distribution_get_properties, [:ccs_distribution_t, :pointer, :pointer, :pointer, :pointer], :ccs_result_t
 
   class UniformDistribution < Distribution
     def initialize(handle = nil, retain: false, auto_release: true,
@@ -202,10 +202,10 @@ module CCS
     end
   end
 
-  attach_function :ccs_create_normal_distribution, [:ccs_numeric_type_t, :ccs_float_t, :ccs_float_t, :ccs_scale_type_t, :ccs_numeric_t, :pointer], :ccs_error_t
-  attach_function :ccs_create_normal_int_distribution, [:ccs_float_t, :ccs_float_t, :ccs_scale_type_t, :ccs_int_t, :pointer], :ccs_error_t
-  attach_function :ccs_create_normal_float_distribution, [:ccs_float_t, :ccs_float_t, :ccs_scale_type_t, :ccs_float_t, :pointer], :ccs_error_t
-  attach_function :ccs_normal_distribution_get_properties, [:ccs_distribution_t, :pointer, :pointer, :pointer, :pointer], :ccs_error_t
+  attach_function :ccs_create_normal_distribution, [:ccs_numeric_type_t, :ccs_float_t, :ccs_float_t, :ccs_scale_type_t, :ccs_numeric_t, :pointer], :ccs_result_t
+  attach_function :ccs_create_normal_int_distribution, [:ccs_float_t, :ccs_float_t, :ccs_scale_type_t, :ccs_int_t, :pointer], :ccs_result_t
+  attach_function :ccs_create_normal_float_distribution, [:ccs_float_t, :ccs_float_t, :ccs_scale_type_t, :ccs_float_t, :pointer], :ccs_result_t
+  attach_function :ccs_normal_distribution_get_properties, [:ccs_distribution_t, :pointer, :pointer, :pointer, :pointer], :ccs_result_t
   class NormalDistribution < Distribution
     def initialize(handle = nil, retain: false, auto_release: true,
                    data_type: :CCS_NUMERIC_TYPE_FLOAT, mu: 0.0, sigma: 1.0, scale: :CCS_SCALE_TYPE_LINEAR, quantization: 0.0)
@@ -271,10 +271,10 @@ module CCS
     end
   end
 
-  attach_function :ccs_create_roulette_distribution, [:size_t, :pointer, :pointer], :ccs_error_t
-  attach_function :ccs_roulette_distribution_get_num_areas, [:ccs_distribution_t, :pointer], :ccs_error_t
-  attach_function :ccs_roulette_distribution_get_areas, [:ccs_distribution_t, :size_t, :pointer, :pointer], :ccs_error_t
-  attach_function :ccs_roulette_distribution_set_areas, [:ccs_distribution_t, :size_t, :pointer], :ccs_error_t
+  attach_function :ccs_create_roulette_distribution, [:size_t, :pointer, :pointer], :ccs_result_t
+  attach_function :ccs_roulette_distribution_get_num_areas, [:ccs_distribution_t, :pointer], :ccs_result_t
+  attach_function :ccs_roulette_distribution_get_areas, [:ccs_distribution_t, :size_t, :pointer, :pointer], :ccs_result_t
+  attach_function :ccs_roulette_distribution_set_areas, [:ccs_distribution_t, :size_t, :pointer], :ccs_result_t
   class RouletteDistribution < Distribution
     add_property :num_areas, :size_t, :ccs_roulette_distribution_get_num_areas, memoize: true
     def initialize(handle = nil, retain: false, auto_release: true,
@@ -309,10 +309,10 @@ module CCS
     end
   end
 
-  attach_function :ccs_create_mixture_distribution, [:size_t, :pointer, :pointer, :pointer], :ccs_error_t
-  attach_function :ccs_mixture_distribution_get_num_distributions, [:ccs_distribution_t, :pointer], :ccs_error_t
-  attach_function :ccs_mixture_distribution_get_distributions, [:ccs_distribution_t, :size_t, :pointer, :pointer], :ccs_error_t
-  attach_function :ccs_mixture_distribution_get_weights, [:ccs_distribution_t, :size_t, :pointer, :pointer], :ccs_error_t
+  attach_function :ccs_create_mixture_distribution, [:size_t, :pointer, :pointer, :pointer], :ccs_result_t
+  attach_function :ccs_mixture_distribution_get_num_distributions, [:ccs_distribution_t, :pointer], :ccs_result_t
+  attach_function :ccs_mixture_distribution_get_distributions, [:ccs_distribution_t, :size_t, :pointer, :pointer], :ccs_result_t
+  attach_function :ccs_mixture_distribution_get_weights, [:ccs_distribution_t, :size_t, :pointer, :pointer], :ccs_result_t
   class MixtureDistribution < Distribution
     add_property :num_distributions, :size_t, :ccs_mixture_distribution_get_num_distributions, memoize: true
     def initialize(handle = nil, retain: false, auto_release: true,
@@ -354,9 +354,9 @@ module CCS
     end
   end
 
-  attach_function :ccs_create_multivariate_distribution, [:size_t, :pointer, :pointer], :ccs_error_t
-  attach_function :ccs_multivariate_distribution_get_num_distributions, [:ccs_distribution_t, :pointer], :ccs_error_t
-  attach_function :ccs_multivariate_distribution_get_distributions, [:ccs_distribution_t, :size_t, :pointer, :pointer], :ccs_error_t
+  attach_function :ccs_create_multivariate_distribution, [:size_t, :pointer, :pointer], :ccs_result_t
+  attach_function :ccs_multivariate_distribution_get_num_distributions, [:ccs_distribution_t, :pointer], :ccs_result_t
+  attach_function :ccs_multivariate_distribution_get_distributions, [:ccs_distribution_t, :size_t, :pointer, :pointer], :ccs_result_t
   class MultivariateDistribution < Distribution
     add_property :num_distributions, :size_t, :ccs_multivariate_distribution_get_num_distributions, memoize: true
     def initialize(handle = nil, retain: false, auto_release: true,

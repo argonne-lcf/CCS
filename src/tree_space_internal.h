@@ -18,20 +18,20 @@ typedef struct _ccs_tree_space_data_s _ccs_tree_space_data_t;
 struct _ccs_tree_space_ops_s {
 	_ccs_object_ops_t obj_ops;
 
-	ccs_error_t (*get_node_at_position)(
+	ccs_result_t (*get_node_at_position)(
 		ccs_tree_space_t tree_space,
 		size_t           position_size,
 		const size_t    *position,
 		ccs_tree_t      *tree_ret);
 
-	ccs_error_t (*get_values_at_position)(
+	ccs_result_t (*get_values_at_position)(
 		ccs_tree_space_t tree_space,
 		size_t           position_size,
 		const size_t    *position,
 		size_t           num_values,
 		ccs_datum_t     *values);
 
-	ccs_error_t (*check_position)(
+	ccs_result_t (*check_position)(
 		ccs_tree_space_t tree_space,
 		size_t           position_size,
 		const size_t    *position,
@@ -52,7 +52,7 @@ struct _ccs_tree_space_common_data_s {
 };
 typedef struct _ccs_tree_space_common_data_s _ccs_tree_space_common_data_t;
 
-static inline ccs_error_t
+static inline ccs_result_t
 _ccs_serialize_bin_size_ccs_tree_space_common_data(
 	_ccs_tree_space_common_data_t   *data,
 	size_t                          *cum_size,
@@ -67,7 +67,7 @@ _ccs_serialize_bin_size_ccs_tree_space_common_data(
 	return CCS_SUCCESS;
 }
 
-static inline ccs_error_t
+static inline ccs_result_t
 _ccs_serialize_bin_ccs_tree_space_common_data(
 	_ccs_tree_space_common_data_t   *data,
 	size_t                          *buffer_size,

@@ -1,5 +1,5 @@
 import ctypes as ct
-from .base import Object, Error, CEnumeration, ccs_error, _ccs_get_function, ccs_context, ccs_parameter, ccs_features_space, ccs_features, ccs_datum, ccs_bool
+from .base import Object, Error, CEnumeration, ccs_result, _ccs_get_function, ccs_context, ccs_parameter, ccs_features_space, ccs_features, ccs_datum, ccs_bool
 from .context import Context
 from .parameter import Parameter
 
@@ -45,7 +45,7 @@ class FeaturesSpace(Context):
   def check_values(self, values):
     count = len(values)
     if count != self.num_parameters:
-      raise Error(ccs_error(ccs_error.INVALID_VALUE))
+      raise Error(ccs_result(ccs_result.INVALID_VALUE))
     v = (ccs_datum * count)()
     ss = []
     for i in range(count):

@@ -2,7 +2,7 @@
 #include "parameter_internal.h"
 #include <string.h>
 
-static ccs_error_t
+static ccs_result_t
 _ccs_parameter_numerical_del(ccs_object_t o)
 {
 	(void)o;
@@ -19,7 +19,7 @@ _ccs_serialize_bin_size_ccs_parameter_numerical(ccs_parameter_t parameter)
 	       _ccs_serialize_bin_size_ccs_parameter_numerical_data(data);
 }
 
-static inline ccs_error_t
+static inline ccs_result_t
 _ccs_serialize_bin_ccs_parameter_numerical(
 	ccs_parameter_t parameter,
 	size_t         *buffer_size,
@@ -34,7 +34,7 @@ _ccs_serialize_bin_ccs_parameter_numerical(
 	return CCS_SUCCESS;
 }
 
-static ccs_error_t
+static ccs_result_t
 _ccs_parameter_numerical_serialize_size(
 	ccs_object_t                     object,
 	ccs_serialize_format_t           format,
@@ -56,7 +56,7 @@ _ccs_parameter_numerical_serialize_size(
 	return CCS_SUCCESS;
 }
 
-static ccs_error_t
+static ccs_result_t
 _ccs_parameter_numerical_serialize(
 	ccs_object_t                     object,
 	ccs_serialize_format_t           format,
@@ -79,7 +79,7 @@ _ccs_parameter_numerical_serialize(
 	return CCS_SUCCESS;
 }
 
-static ccs_error_t
+static ccs_result_t
 _ccs_parameter_numerical_check_values(
 	_ccs_parameter_data_t *data,
 	size_t                 num_values,
@@ -118,7 +118,7 @@ _ccs_parameter_numerical_check_values(
 	return CCS_SUCCESS;
 }
 
-static ccs_error_t
+static ccs_result_t
 _ccs_parameter_numerical_samples(
 	_ccs_parameter_data_t *data,
 	ccs_distribution_t     distribution,
@@ -130,7 +130,7 @@ _ccs_parameter_numerical_samples(
 		(_ccs_parameter_numerical_data_t *)data;
 	ccs_numeric_type_t type     = d->common_data.interval.type;
 	ccs_interval_t    *interval = &(d->common_data.interval);
-	ccs_error_t        err;
+	ccs_result_t       err;
 	ccs_numeric_t     *vs = (ccs_numeric_t *)values + num_values;
 	ccs_bool_t         oversampling;
 
@@ -207,7 +207,7 @@ errmem:
 	return err;
 }
 
-static ccs_error_t
+static ccs_result_t
 _ccs_parameter_numerical_get_default_distribution(
 	_ccs_parameter_data_t *data,
 	ccs_distribution_t    *distribution)
@@ -221,7 +221,7 @@ _ccs_parameter_numerical_get_default_distribution(
 	return CCS_SUCCESS;
 }
 
-static ccs_error_t
+static ccs_result_t
 _ccs_parameter_numerical_convert_samples(
 	_ccs_parameter_data_t *data,
 	ccs_bool_t             oversampling,
@@ -269,7 +269,7 @@ static _ccs_parameter_ops_t _ccs_parameter_numerical_ops = {
 	&_ccs_parameter_numerical_get_default_distribution,
 	&_ccs_parameter_numerical_convert_samples};
 
-ccs_error_t
+ccs_result_t
 ccs_create_numerical_parameter(
 	const char        *name,
 	ccs_numeric_type_t data_type,
@@ -342,7 +342,7 @@ ccs_create_numerical_parameter(
 	return CCS_SUCCESS;
 }
 
-ccs_error_t
+ccs_result_t
 ccs_numerical_parameter_get_properties(
 	ccs_parameter_t     parameter,
 	ccs_numeric_type_t *data_type_ret,

@@ -12,7 +12,7 @@ struct _ccs_distribution_roulette_data_s {
 typedef struct _ccs_distribution_roulette_data_s
 	_ccs_distribution_roulette_data_t;
 
-static ccs_error_t
+static ccs_result_t
 _ccs_distribution_roulette_del(ccs_object_t o)
 {
 	(void)o;
@@ -32,7 +32,7 @@ _ccs_serialize_bin_size_ccs_distribution_roulette_data(
 	return sz;
 }
 
-static inline ccs_error_t
+static inline ccs_result_t
 _ccs_serialize_bin_ccs_distribution_roulette_data(
 	_ccs_distribution_roulette_data_t *data,
 	size_t                            *buffer_size,
@@ -60,7 +60,7 @@ _ccs_serialize_bin_size_ccs_distribution_roulette(
 	       _ccs_serialize_bin_size_ccs_distribution_roulette_data(data);
 }
 
-static inline ccs_error_t
+static inline ccs_result_t
 _ccs_serialize_bin_ccs_distribution_roulette(
 	ccs_distribution_t distribution,
 	size_t            *buffer_size,
@@ -75,7 +75,7 @@ _ccs_serialize_bin_ccs_distribution_roulette(
 	return CCS_SUCCESS;
 }
 
-static ccs_error_t
+static ccs_result_t
 _ccs_distribution_roulette_serialize_size(
 	ccs_object_t                     object,
 	ccs_serialize_format_t           format,
@@ -97,7 +97,7 @@ _ccs_distribution_roulette_serialize_size(
 	return CCS_SUCCESS;
 }
 
-static ccs_error_t
+static ccs_result_t
 _ccs_distribution_roulette_serialize(
 	ccs_object_t                     object,
 	ccs_serialize_format_t           format,
@@ -120,19 +120,19 @@ _ccs_distribution_roulette_serialize(
 	return CCS_SUCCESS;
 }
 
-static ccs_error_t
+static ccs_result_t
 _ccs_distribution_roulette_get_bounds(
 	_ccs_distribution_data_t *data,
 	ccs_interval_t           *interval_ret);
 
-static ccs_error_t
+static ccs_result_t
 _ccs_distribution_roulette_samples(
 	_ccs_distribution_data_t *data,
 	ccs_rng_t                 rng,
 	size_t                    num_values,
 	ccs_numeric_t            *values);
 
-static ccs_error_t
+static ccs_result_t
 _ccs_distribution_roulette_strided_samples(
 	_ccs_distribution_data_t *data,
 	ccs_rng_t                 rng,
@@ -140,7 +140,7 @@ _ccs_distribution_roulette_strided_samples(
 	size_t                    stride,
 	ccs_numeric_t            *values);
 
-static ccs_error_t
+static ccs_result_t
 _ccs_distribution_roulette_soa_samples(
 	_ccs_distribution_data_t *data,
 	ccs_rng_t                 rng,
@@ -156,7 +156,7 @@ static _ccs_distribution_ops_t _ccs_distribution_roulette_ops = {
 	&_ccs_distribution_roulette_strided_samples,
 	&_ccs_distribution_roulette_soa_samples};
 
-static ccs_error_t
+static ccs_result_t
 _ccs_distribution_roulette_get_bounds(
 	_ccs_distribution_data_t *data,
 	ccs_interval_t           *interval_ret)
@@ -172,7 +172,7 @@ _ccs_distribution_roulette_get_bounds(
 	return CCS_SUCCESS;
 }
 
-static ccs_error_t
+static ccs_result_t
 _ccs_distribution_roulette_samples(
 	_ccs_distribution_data_t *data,
 	ccs_rng_t                 rng,
@@ -194,7 +194,7 @@ _ccs_distribution_roulette_samples(
 	return CCS_SUCCESS;
 }
 
-static ccs_error_t
+static ccs_result_t
 _ccs_distribution_roulette_strided_samples(
 	_ccs_distribution_data_t *data,
 	ccs_rng_t                 rng,
@@ -217,7 +217,7 @@ _ccs_distribution_roulette_strided_samples(
 	return CCS_SUCCESS;
 }
 
-static ccs_error_t
+static ccs_result_t
 _ccs_distribution_roulette_soa_samples(
 	_ccs_distribution_data_t *data,
 	ccs_rng_t                 rng,
@@ -230,7 +230,7 @@ _ccs_distribution_roulette_soa_samples(
 	return CCS_SUCCESS;
 }
 
-ccs_error_t
+ccs_result_t
 ccs_create_roulette_distribution(
 	size_t              num_areas,
 	ccs_float_t        *areas,
@@ -288,7 +288,7 @@ ccs_create_roulette_distribution(
 	return CCS_SUCCESS;
 }
 
-ccs_error_t
+ccs_result_t
 ccs_roulette_distribution_get_num_areas(
 	ccs_distribution_t distribution,
 	size_t            *num_areas_ret)
@@ -301,7 +301,7 @@ ccs_roulette_distribution_get_num_areas(
 	return CCS_SUCCESS;
 }
 
-ccs_error_t
+ccs_result_t
 ccs_roulette_distribution_get_areas(
 	ccs_distribution_t distribution,
 	size_t             num_areas,
@@ -325,7 +325,7 @@ ccs_roulette_distribution_get_areas(
 	return CCS_SUCCESS;
 }
 
-ccs_error_t
+ccs_result_t
 ccs_roulette_distribution_set_areas(
 	ccs_distribution_t distribution,
 	size_t             num_areas,

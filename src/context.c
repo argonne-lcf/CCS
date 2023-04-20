@@ -6,7 +6,7 @@
 		CCS_UNLIKELY(!(c) || !(c)->data), CCS_INVALID_OBJECT,          \
 		"Invalid CCS context '%s' == %p supplied", #c, c)
 
-ccs_error_t
+ccs_result_t
 ccs_context_get_parameter_index(
 	ccs_context_t   context,
 	ccs_parameter_t parameter,
@@ -18,7 +18,7 @@ ccs_context_get_parameter_index(
 	return CCS_SUCCESS;
 }
 
-ccs_error_t
+ccs_result_t
 ccs_context_get_num_parameters(ccs_context_t context, size_t *num_parameters_ret)
 {
 	CCS_CHECK_CONTEXT(context);
@@ -27,7 +27,7 @@ ccs_context_get_num_parameters(ccs_context_t context, size_t *num_parameters_ret
 	return CCS_SUCCESS;
 }
 
-ccs_error_t
+ccs_result_t
 ccs_context_get_parameter(
 	ccs_context_t    context,
 	size_t           index,
@@ -38,7 +38,7 @@ ccs_context_get_parameter(
 	return CCS_SUCCESS;
 }
 
-ccs_error_t
+ccs_result_t
 ccs_context_get_parameter_by_name(
 	ccs_context_t    context,
 	const char      *name,
@@ -50,7 +50,7 @@ ccs_context_get_parameter_by_name(
 	return CCS_SUCCESS;
 }
 
-ccs_error_t
+ccs_result_t
 ccs_context_get_parameter_index_by_name(
 	ccs_context_t context,
 	const char   *name,
@@ -62,7 +62,7 @@ ccs_context_get_parameter_index_by_name(
 	return CCS_SUCCESS;
 }
 
-ccs_error_t
+ccs_result_t
 ccs_context_get_parameters(
 	ccs_context_t    context,
 	size_t           num_parameters,
@@ -75,7 +75,7 @@ ccs_context_get_parameters(
 	return CCS_SUCCESS;
 }
 
-ccs_error_t
+ccs_result_t
 ccs_context_get_parameter_indexes(
 	ccs_context_t    context,
 	size_t           num_parameters,
@@ -88,7 +88,7 @@ ccs_context_get_parameter_indexes(
 	return CCS_SUCCESS;
 }
 
-ccs_error_t
+ccs_result_t
 ccs_context_validate_value(
 	ccs_context_t context,
 	size_t        index,
@@ -101,7 +101,7 @@ ccs_context_validate_value(
 	return CCS_SUCCESS;
 }
 
-ccs_error_t
+ccs_result_t
 ccs_context_get_name(ccs_context_t context, const char **name_ret)
 {
 	CCS_CHECK_CONTEXT(context);

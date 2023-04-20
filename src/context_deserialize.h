@@ -10,7 +10,7 @@ struct _ccs_context_data_mock_s {
 };
 typedef struct _ccs_context_data_mock_s _ccs_context_data_mock_t;
 
-static inline ccs_error_t
+static inline ccs_result_t
 _ccs_deserialize_bin_ccs_context_data(
 	_ccs_context_data_mock_t          *data,
 	uint32_t                           version,

@@ -2,7 +2,7 @@
 #define _FEATURES_SPACE_DESERIALIZE_H
 #include "context_deserialize.h"
 
-static inline ccs_error_t
+static inline ccs_result_t
 _ccs_deserialize_bin_features_space(
 	ccs_features_space_t              *features_space_ret,
 	uint32_t                           version,
@@ -15,7 +15,7 @@ _ccs_deserialize_bin_features_space(
 	new_opts.handle_map                        = NULL;
 	_ccs_object_internal_t obj;
 	ccs_object_t           handle;
-	ccs_error_t            res = CCS_SUCCESS;
+	ccs_result_t           res = CCS_SUCCESS;
 	CCS_VALIDATE(_ccs_deserialize_bin_ccs_object_internal(
 		&obj, buffer_size, buffer, &handle));
 	CCS_REFUTE(
@@ -57,7 +57,7 @@ end:
 	return res;
 }
 
-static ccs_error_t
+static ccs_result_t
 _ccs_features_space_deserialize(
 	ccs_features_space_t              *features_space_ret,
 	ccs_serialize_format_t             format,

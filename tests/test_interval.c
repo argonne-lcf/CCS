@@ -6,7 +6,7 @@ test_empty_float()
 {
 	ccs_interval_t interval;
 	ccs_bool_t     empty;
-	ccs_error_t    err;
+	ccs_result_t   err;
 
 	interval.type           = CCS_NUMERIC_TYPE_FLOAT;
 	interval.lower.f        = -3.0;
@@ -49,7 +49,7 @@ test_empty_int()
 {
 	ccs_interval_t interval;
 	ccs_bool_t     empty;
-	ccs_error_t    err;
+	ccs_result_t   err;
 
 	interval.type           = CCS_NUMERIC_TYPE_INT;
 	interval.lower.i        = -3;
@@ -92,7 +92,7 @@ test_intersect_float()
 {
 	ccs_interval_t interval1, interval2, intersection;
 	ccs_bool_t     empty;
-	ccs_error_t    err;
+	ccs_result_t   err;
 
 	interval1.type           = CCS_NUMERIC_TYPE_FLOAT;
 	interval1.lower.f        = -3.0;
@@ -123,7 +123,7 @@ test_intersect_int()
 {
 	ccs_interval_t interval1, interval2, intersection;
 	ccs_bool_t     empty;
-	ccs_error_t    err;
+	ccs_result_t   err;
 
 	interval1.type           = CCS_NUMERIC_TYPE_INT;
 	interval1.lower.i        = -3;
@@ -154,7 +154,7 @@ test_union_float()
 {
 	ccs_interval_t interval1, interval2, u;
 	ccs_bool_t     empty;
-	ccs_error_t    err;
+	ccs_result_t   err;
 
 	interval1.type           = CCS_NUMERIC_TYPE_FLOAT;
 	interval1.lower.f        = -3.0;
@@ -185,7 +185,7 @@ test_union_int()
 {
 	ccs_interval_t interval1, interval2, u;
 	ccs_bool_t     empty;
-	ccs_error_t    err;
+	ccs_result_t   err;
 
 	interval1.type           = CCS_NUMERIC_TYPE_INT;
 	interval1.lower.i        = -3;
@@ -216,7 +216,7 @@ test_equal_float()
 {
 	ccs_interval_t interval1, interval2;
 	ccs_bool_t     equal;
-	ccs_error_t    err;
+	ccs_result_t   err;
 
 	interval1.type           = CCS_NUMERIC_TYPE_FLOAT;
 	interval1.lower.f        = -3.0;
@@ -251,7 +251,7 @@ test_equal_int()
 {
 	ccs_interval_t interval1, interval2;
 	ccs_bool_t     equal;
-	ccs_error_t    err;
+	ccs_result_t   err;
 
 	interval1.type           = CCS_NUMERIC_TYPE_INT;
 	interval1.lower.i        = -3;

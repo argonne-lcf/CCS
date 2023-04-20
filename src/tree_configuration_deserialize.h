@@ -3,7 +3,7 @@
 #include "cconfigspace_internal.h"
 #include "tree_configuration_internal.h"
 
-static inline ccs_error_t
+static inline ccs_result_t
 _ccs_deserialize_bin_tree_configuration_data(
 	_ccs_tree_configuration_data_t *data,
 	uint32_t                        version,
@@ -26,7 +26,7 @@ _ccs_deserialize_bin_tree_configuration_data(
 	return CCS_SUCCESS;
 }
 
-static inline ccs_error_t
+static inline ccs_result_t
 _ccs_deserialize_bin_tree_configuration(
 	ccs_tree_configuration_t          *configuration_ret,
 	uint32_t                           version,
@@ -46,7 +46,7 @@ _ccs_deserialize_bin_tree_configuration(
 		obj.type != CCS_OBJECT_TYPE_TREE_CONFIGURATION,
 		CCS_INVALID_TYPE);
 	_ccs_tree_configuration_data_t data = {NULL, 0, NULL};
-	ccs_error_t                    res  = CCS_SUCCESS;
+	ccs_result_t                   res  = CCS_SUCCESS;
 	CCS_VALIDATE_ERR_GOTO(
 		res,
 		_ccs_deserialize_bin_tree_configuration_data(
@@ -86,7 +86,7 @@ end:
 	return res;
 }
 
-static ccs_error_t
+static ccs_result_t
 _ccs_tree_configuration_deserialize(
 	ccs_tree_configuration_t          *configuration_ret,
 	ccs_serialize_format_t             format,

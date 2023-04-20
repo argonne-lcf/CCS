@@ -1,5 +1,5 @@
 import ctypes as ct
-from .base import Object, Error, CEnumeration, ccs_error, _ccs_get_function, ccs_context, ccs_parameter, ccs_configuration_space, ccs_configuration, ccs_evaluation, ccs_rng, ccs_distribution, ccs_expression, ccs_datum, ccs_objective_space, ccs_bool
+from .base import Object, Error, CEnumeration, ccs_result, _ccs_get_function, ccs_context, ccs_parameter, ccs_configuration_space, ccs_configuration, ccs_evaluation, ccs_rng, ccs_distribution, ccs_expression, ccs_datum, ccs_objective_space, ccs_bool
 from .context import Context
 from .parameter import Parameter
 from .expression import Expression
@@ -65,7 +65,7 @@ class ObjectiveSpace(Context):
       return None
     if types:
       if len(types) != sz:
-        raise Error(ccs_error(ccs_error.INVALID_VALUE))
+        raise Error(ccs_result(ccs_result.INVALID_VALUE))
       types = (ccs_objective_type * sz)(*types)
     else:
       types = (ccs_objective_type * sz)(*([ccs_objective_type.MINIMIZE] * sz))
@@ -99,7 +99,7 @@ class ObjectiveSpace(Context):
   def check_values(self, values):
     count = len(values)
     if count != self.num_parameters:
-      raise Error(ccs_error(ccs_error.INVALID_VALUE))
+      raise Error(ccs_result(ccs_result.INVALID_VALUE))
     v = (ccs_datum * count)()
     ss = []
     for i in range(count):

@@ -1,5 +1,5 @@
 import ctypes as ct
-from .base import Object, Error, ccs_retain_object, ccs_error, ccs_error_stack, _ccs_get_function, _register_string
+from .base import Object, Error, ccs_retain_object, ccs_result, ccs_error_stack, _ccs_get_function, _register_string
 
 class ccs_error_stack_elem(ct.Structure):
   _fields_ = [('file', ct.c_char_p),
@@ -9,10 +9,10 @@ class ccs_error_stack_elem(ct.Structure):
 ccs_get_thread_error = _ccs_get_function("ccs_get_thread_error", [], ccs_error_stack)
 ccs_set_thread_error = _ccs_get_function("ccs_set_thread_error", [ccs_error_stack])
 ccs_clear_thread_error = _ccs_get_function("ccs_clear_thread_error", [], None)
-ccs_create_error_stack = _ccs_get_function("ccs_create_error_stack", [ct.POINTER(ccs_error_stack), ccs_error, ct.c_char_p])
+ccs_create_error_stack = _ccs_get_function("ccs_create_error_stack", [ct.POINTER(ccs_error_stack), ccs_result, ct.c_char_p])
 ccs_error_stack_push = _ccs_get_function("ccs_error_stack_push", [ccs_error_stack, ct.c_char_p, ct.c_int, ct.c_char_p])
 ccs_error_stack_get_message = _ccs_get_function("ccs_error_stack_get_message", [ccs_error_stack, ct.POINTER(ct.c_char_p)])
-ccs_error_stack_get_code = _ccs_get_function("ccs_error_stack_get_code", [ccs_error_stack, ct.POINTER(ccs_error)])
+ccs_error_stack_get_code = _ccs_get_function("ccs_error_stack_get_code", [ccs_error_stack, ct.POINTER(ccs_result)])
 ccs_error_stack_get_elems = _ccs_get_function("ccs_error_stack_get_elems", [ccs_error_stack, ct.POINTER(ct.c_size_t), ct.POINTER(ct.POINTER(ccs_error_stack_elem))])
 
 class ErrorStack(Object):
@@ -49,7 +49,7 @@ class ErrorStack(Object):
   def code(self):
     if hasattr(self, "_code"):
       return self._code
-    v = ccs_error(0)
+    v = ccs_result(0)
     res = ccs_error_stack_get_code(self.handle, ct.byref(v))
     Error.check(res)
     self._code = v

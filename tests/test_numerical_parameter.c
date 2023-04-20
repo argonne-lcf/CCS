@@ -8,7 +8,7 @@
 static void
 compare_parameter(ccs_parameter_t parameter)
 {
-	ccs_error_t             err;
+	ccs_result_t            err;
 	ccs_parameter_type_t    type;
 	ccs_datum_t             default_value;
 	const char             *name;
@@ -62,7 +62,7 @@ static void
 test_create()
 {
 	ccs_parameter_t parameter;
-	ccs_error_t     err;
+	ccs_result_t    err;
 	char           *buff;
 	size_t          buff_size;
 
@@ -112,7 +112,7 @@ test_samples()
 	ccs_distribution_t distribution;
 	const size_t       num_samples = NUM_SAMPLES;
 	ccs_datum_t        samples[NUM_SAMPLES];
-	ccs_error_t        err;
+	ccs_result_t       err;
 
 	err = ccs_create_rng(&rng);
 	assert(err == CCS_SUCCESS);
@@ -150,7 +150,7 @@ test_oversampling()
 	ccs_distribution_t distribution;
 	const size_t       num_samples = NUM_SAMPLES;
 	ccs_datum_t        samples[NUM_SAMPLES];
-	ccs_error_t        err;
+	ccs_result_t       err;
 
 	err = ccs_create_rng(&rng);
 	assert(err == CCS_SUCCESS);

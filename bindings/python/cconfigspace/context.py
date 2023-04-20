@@ -1,5 +1,5 @@
 import ctypes as ct
-from .base import Object, Error, ccs_error, _ccs_get_function, ccs_context, ccs_parameter, ccs_datum, ccs_datum_fix
+from .base import Object, Error, ccs_result, _ccs_get_function, ccs_context, ccs_parameter, ccs_datum, ccs_datum_fix
 from .parameter import Parameter
 
 ccs_context_get_name = _ccs_get_function("ccs_context_get_name", [ccs_context, ct.POINTER(ct.c_char_p)])

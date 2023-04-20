@@ -22,7 +22,7 @@ extern "C" {
  * @return #CCS_OUT_OF_MEMORY if there was a lack of memory to allocate the new
  *                             features space
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_create_features_space(
 	const char           *name,
 	ccs_features_space_t *features_space_ret);
@@ -37,7 +37,7 @@ ccs_create_features_space(
  *                              space
  * @return #CCS_INVALID_VALUE if \p name_ret is NULL
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_features_space_get_name(
 	ccs_features_space_t features_space,
 	const char         **name_ret);
@@ -59,7 +59,7 @@ ccs_features_space_get_name(
  *                             the additional parameter and associated data
  *                             structures
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_features_space_add_parameter(
 	ccs_features_space_t features_space,
 	ccs_parameter_t      parameter);
@@ -84,7 +84,7 @@ ccs_features_space_add_parameter(
  *                             additional parameters and associated data
  *                             structures
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_features_space_add_parameters(
 	ccs_features_space_t features_space,
 	size_t               num_parameters,
@@ -101,7 +101,7 @@ ccs_features_space_add_parameters(
  *                              space
  * @return #CCS_INVALID_VALUE if \p num_parameters_ret is NULL
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_features_space_get_num_parameters(
 	ccs_features_space_t features_space,
 	size_t              *num_parameters_ret);
@@ -119,7 +119,7 @@ ccs_features_space_get_num_parameters(
  * @return #CCS_OUT_OF_BOUNDS if \p index is greater than the count of
  *                             parameters in the features space
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_features_space_get_parameter(
 	ccs_features_space_t features_space,
 	size_t               index,
@@ -138,7 +138,7 @@ ccs_features_space_get_parameter(
  * @return #CCS_INVALID_NAME if no parameter with such \p name exist in
  *                            the \p features space
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_features_space_get_parameter_by_name(
 	ccs_features_space_t features_space,
 	const char          *name,
@@ -157,7 +157,7 @@ ccs_features_space_get_parameter_by_name(
  * @return #CCS_INVALID_NAME if no parameter with such \p name exist in
  *                            the features space
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_features_space_get_parameter_index_by_name(
 	ccs_features_space_t features_space,
 	const char          *name,
@@ -176,7 +176,7 @@ ccs_features_space_get_parameter_index_by_name(
  * @return #CCS_INVALID_PARAMETER if \p features_space does not
  *                                      contain \p parameter
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_features_space_get_parameter_index(
 	ccs_features_space_t features_space,
 	ccs_parameter_t      parameter,
@@ -201,7 +201,7 @@ ccs_features_space_get_parameter_index(
  * @return #CCS_INVALID_PARAMETER if at least one of the parameters
  *                                      is not contained in \p features_space
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_features_space_get_parameter_indexes(
 	ccs_features_space_t features_space,
 	size_t               num_parameters,
@@ -231,7 +231,7 @@ ccs_features_space_get_parameter_indexes(
  *                             num_parameters is less than the number of
  *                             parameters that would be returned
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_features_space_get_parameters(
 	ccs_features_space_t features_space,
 	size_t               num_parameters,
@@ -257,7 +257,7 @@ ccs_features_space_get_parameters(
  * @return #CCS_INVALID_VALUE if the value did not validate or if value_ret is
  *                             NULL
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_features_space_validate_value(
 	ccs_features_space_t features_space,
 	size_t               index,
@@ -283,7 +283,7 @@ ccs_features_space_validate_value(
  *                                number of parameters in the features
  *                                space
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_features_space_check_features(
 	ccs_features_space_t features_space,
 	ccs_features_t       features,
@@ -309,7 +309,7 @@ ccs_features_space_check_features(
  * @return #CCS_INVALID_FEATURES if \p num_values is not equal to the number of
  *                                parameters in the features space
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_features_space_check_features_values(
 	ccs_features_space_t features_space,
 	size_t               num_values,

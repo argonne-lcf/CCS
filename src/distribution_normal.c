@@ -14,7 +14,7 @@ struct _ccs_distribution_normal_data_s {
 };
 typedef struct _ccs_distribution_normal_data_s _ccs_distribution_normal_data_t;
 
-static ccs_error_t
+static ccs_result_t
 _ccs_distribution_normal_del(ccs_object_t o)
 {
 	(void)o;
@@ -38,7 +38,7 @@ _ccs_serialize_bin_size_ccs_distribution_normal_data(
 			_ccs_serialize_bin_size_ccs_int(data->quantization.i));
 }
 
-static inline ccs_error_t
+static inline ccs_result_t
 _ccs_serialize_bin_ccs_distribution_normal_data(
 	_ccs_distribution_normal_data_t *data,
 	size_t                          *buffer_size,
@@ -74,7 +74,7 @@ _ccs_serialize_bin_size_ccs_distribution_normal(ccs_distribution_t distribution)
 	       _ccs_serialize_bin_size_ccs_distribution_normal_data(data);
 }
 
-static inline ccs_error_t
+static inline ccs_result_t
 _ccs_serialize_bin_ccs_distribution_normal(
 	ccs_distribution_t distribution,
 	size_t            *buffer_size,
@@ -89,7 +89,7 @@ _ccs_serialize_bin_ccs_distribution_normal(
 	return CCS_SUCCESS;
 }
 
-static ccs_error_t
+static ccs_result_t
 _ccs_distribution_normal_serialize_size(
 	ccs_object_t                     object,
 	ccs_serialize_format_t           format,
@@ -111,7 +111,7 @@ _ccs_distribution_normal_serialize_size(
 	return CCS_SUCCESS;
 }
 
-static ccs_error_t
+static ccs_result_t
 _ccs_distribution_normal_serialize(
 	ccs_object_t                     object,
 	ccs_serialize_format_t           format,
@@ -134,19 +134,19 @@ _ccs_distribution_normal_serialize(
 	return CCS_SUCCESS;
 }
 
-static ccs_error_t
+static ccs_result_t
 _ccs_distribution_normal_get_bounds(
 	_ccs_distribution_data_t *data,
 	ccs_interval_t           *interval_ret);
 
-static ccs_error_t
+static ccs_result_t
 _ccs_distribution_normal_samples(
 	_ccs_distribution_data_t *data,
 	ccs_rng_t                 rng,
 	size_t                    num_values,
 	ccs_numeric_t            *values);
 
-static ccs_error_t
+static ccs_result_t
 _ccs_distribution_normal_strided_samples(
 	_ccs_distribution_data_t *data,
 	ccs_rng_t                 rng,
@@ -154,7 +154,7 @@ _ccs_distribution_normal_strided_samples(
 	size_t                    stride,
 	ccs_numeric_t            *values);
 
-static ccs_error_t
+static ccs_result_t
 _ccs_distribution_normal_soa_samples(
 	_ccs_distribution_data_t *data,
 	ccs_rng_t                 rng,
@@ -170,7 +170,7 @@ static _ccs_distribution_ops_t _ccs_distribution_normal_ops = {
 	&_ccs_distribution_normal_strided_samples,
 	&_ccs_distribution_normal_soa_samples};
 
-static ccs_error_t
+static ccs_result_t
 _ccs_distribution_normal_get_bounds(
 	_ccs_distribution_data_t *data,
 	ccs_interval_t           *interval_ret)
@@ -237,7 +237,7 @@ _ccs_distribution_normal_get_bounds(
 	return CCS_SUCCESS;
 }
 
-static inline ccs_error_t
+static inline ccs_result_t
 _ccs_distribution_normal_samples_float(
 	gsl_rng               *grng,
 	const ccs_scale_type_t scale_type,
@@ -280,7 +280,7 @@ _ccs_distribution_normal_samples_float(
 	return CCS_SUCCESS;
 }
 
-static inline ccs_error_t
+static inline ccs_result_t
 _ccs_distribution_normal_samples_int(
 	gsl_rng               *grng,
 	const ccs_scale_type_t scale_type,
@@ -343,7 +343,7 @@ _ccs_distribution_normal_samples_int(
 	return CCS_SUCCESS;
 }
 
-static ccs_error_t
+static ccs_result_t
 _ccs_distribution_normal_samples(
 	_ccs_distribution_data_t *data,
 	ccs_rng_t                 rng,
@@ -371,7 +371,7 @@ _ccs_distribution_normal_samples(
 	return CCS_SUCCESS;
 }
 
-static inline ccs_error_t
+static inline ccs_result_t
 _ccs_distribution_normal_strided_samples_float(
 	gsl_rng               *grng,
 	const ccs_scale_type_t scale_type,
@@ -417,7 +417,7 @@ _ccs_distribution_normal_strided_samples_float(
 	return CCS_SUCCESS;
 }
 
-static inline ccs_error_t
+static inline ccs_result_t
 _ccs_distribution_normal_strided_samples_int(
 	gsl_rng               *grng,
 	const ccs_scale_type_t scale_type,
@@ -486,7 +486,7 @@ _ccs_distribution_normal_strided_samples_int(
 	return CCS_SUCCESS;
 }
 
-static ccs_error_t
+static ccs_result_t
 _ccs_distribution_normal_strided_samples(
 	_ccs_distribution_data_t *data,
 	ccs_rng_t                 rng,
@@ -515,7 +515,7 @@ _ccs_distribution_normal_strided_samples(
 	return CCS_SUCCESS;
 }
 
-static ccs_error_t
+static ccs_result_t
 _ccs_distribution_normal_soa_samples(
 	_ccs_distribution_data_t *data,
 	ccs_rng_t                 rng,
@@ -528,7 +528,7 @@ _ccs_distribution_normal_soa_samples(
 	return CCS_SUCCESS;
 }
 
-extern ccs_error_t
+extern ccs_result_t
 ccs_create_normal_distribution(
 	ccs_numeric_type_t  data_type,
 	ccs_float_t         mu,
@@ -586,7 +586,7 @@ ccs_create_normal_distribution(
 	return CCS_SUCCESS;
 }
 
-extern ccs_error_t
+extern ccs_result_t
 ccs_normal_distribution_get_properties(
 	ccs_distribution_t distribution,
 	ccs_float_t       *mu_ret,

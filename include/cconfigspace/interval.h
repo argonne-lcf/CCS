@@ -39,7 +39,7 @@ typedef struct ccs_interval_s ccs_interval_t;
  * @return #CCS_SUCCESS on success
  * @return #CCS_INVALID_VALUE if \p interval or \p empty_ret are NULL
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_interval_empty(ccs_interval_t *interval, ccs_bool_t *empty_ret);
 
 /**
@@ -54,7 +54,7 @@ ccs_interval_empty(ccs_interval_t *interval, ccs_bool_t *empty_ret);
  * @return #CCS_INVALID_TYPE if \p interval1 and \p interval2 are intervals
  *                            over different data types
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_interval_intersect(
 	ccs_interval_t *interval1,
 	ccs_interval_t *interval2,
@@ -72,7 +72,7 @@ ccs_interval_intersect(
  * @return #CCS_INVALID_TYPE if \p interval1 and \p interval2 are intervals
  *                            over different data types
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_interval_union(
 	ccs_interval_t *interval1,
 	ccs_interval_t *interval2,
@@ -90,7 +90,7 @@ ccs_interval_union(
  * @return #CCS_INVALID_TYPE if \p interval1 and \p interval2 are intervals
  *                            over different data types
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_interval_equal(
 	ccs_interval_t *interval1,
 	ccs_interval_t *interval2,

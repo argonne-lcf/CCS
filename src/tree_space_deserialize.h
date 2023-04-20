@@ -5,7 +5,7 @@
 #include "rng_deserialize.h"
 #include "tree_deserialize.h"
 
-static inline ccs_error_t
+static inline ccs_result_t
 _ccs_deserialize_bin_ccs_tree_space_common_data(
 	_ccs_tree_space_common_data_t     *data,
 	uint32_t                           version,
@@ -28,7 +28,7 @@ _ccs_deserialize_bin_ccs_tree_space_common_data(
 	return CCS_SUCCESS;
 }
 
-static inline ccs_error_t
+static inline ccs_result_t
 _ccs_deserialize_bin_tree_space_static(
 	ccs_tree_space_t                  *tree_space_ret,
 	uint32_t                           version,
@@ -36,7 +36,7 @@ _ccs_deserialize_bin_tree_space_static(
 	const char                       **buffer,
 	_ccs_object_deserialize_options_t *opts)
 {
-	ccs_error_t                   res  = CCS_SUCCESS;
+	ccs_result_t                  res  = CCS_SUCCESS;
 	_ccs_tree_space_common_data_t data = {
 		CCS_TREE_SPACE_TYPE_STATIC, NULL, NULL, NULL};
 	CCS_VALIDATE_ERR_GOTO(
@@ -64,7 +64,7 @@ struct _ccs_tree_space_dynamic_data_mock_s {
 typedef struct _ccs_tree_space_dynamic_data_mock_s
 	_ccs_tree_space_dynamic_data_mock_t;
 
-static inline ccs_error_t
+static inline ccs_result_t
 _ccs_deserialize_bin_tree_space_dynamic(
 	ccs_tree_space_t                  *tree_space_ret,
 	uint32_t                           version,
@@ -76,7 +76,7 @@ _ccs_deserialize_bin_tree_space_dynamic(
 		{CCS_TREE_SPACE_TYPE_DYNAMIC, NULL, NULL, NULL}, {0, NULL}};
 	ccs_dynamic_tree_space_vector_t *vector =
 		(ccs_dynamic_tree_space_vector_t *)opts->vector;
-	ccs_error_t res = CCS_SUCCESS;
+	ccs_result_t res = CCS_SUCCESS;
 	CCS_VALIDATE_ERR_GOTO(
 		res,
 		_ccs_deserialize_bin_ccs_tree_space_common_data(
@@ -110,7 +110,7 @@ end:
 	return res;
 }
 
-static inline ccs_error_t
+static inline ccs_result_t
 _ccs_deserialize_bin_tree_space(
 	ccs_tree_space_t                  *tree_space_ret,
 	uint32_t                           version,
@@ -118,7 +118,7 @@ _ccs_deserialize_bin_tree_space(
 	const char                       **buffer,
 	_ccs_object_deserialize_options_t *opts)
 {
-	ccs_error_t            res = CCS_SUCCESS;
+	ccs_result_t           res = CCS_SUCCESS;
 	_ccs_object_internal_t obj;
 	ccs_object_t           handle;
 	CCS_VALIDATE(_ccs_deserialize_bin_ccs_object_internal(
@@ -155,7 +155,7 @@ err_tree_space:
 	return res;
 }
 
-static ccs_error_t
+static ccs_result_t
 _ccs_tree_space_deserialize(
 	ccs_tree_space_t                  *tree_space_ret,
 	ccs_serialize_format_t             format,

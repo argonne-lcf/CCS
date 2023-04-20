@@ -7,8 +7,8 @@ void
 test_error_stack()
 {
 	ccs_error_stack_t       s1, s2;
-	ccs_error_t             res;
-	ccs_error_t             err;
+	ccs_result_t            res;
+	ccs_result_t            err;
 	const char             *msg, *file, *func;
 	int                     line;
 	size_t                  num_elem;

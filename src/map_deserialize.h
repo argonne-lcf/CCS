@@ -15,7 +15,7 @@ struct _ccs_map_data_mock_s {
 };
 typedef struct _ccs_map_data_mock_s _ccs_map_data_mock_t;
 
-static inline ccs_error_t
+static inline ccs_result_t
 _ccs_deserialize_bin_ccs_map_data(
 	_ccs_map_data_mock_t *data,
 	size_t               *buffer_size,
@@ -35,7 +35,7 @@ _ccs_deserialize_bin_ccs_map_data(
 	return CCS_SUCCESS;
 }
 
-static inline ccs_error_t
+static inline ccs_result_t
 _ccs_deserialize_bin_map(
 	ccs_map_t                         *map_ret,
 	uint32_t                           version,
@@ -44,7 +44,7 @@ _ccs_deserialize_bin_map(
 	_ccs_object_deserialize_options_t *opts)
 {
 	(void)version;
-	ccs_error_t            res = CCS_SUCCESS;
+	ccs_result_t           res = CCS_SUCCESS;
 	_ccs_object_internal_t obj;
 	_ccs_map_data_mock_t   data = {0, NULL};
 	ccs_object_t           handle;
@@ -81,7 +81,7 @@ end:
 	return res;
 }
 
-static ccs_error_t
+static ccs_result_t
 _ccs_map_deserialize(
 	ccs_map_t                         *map_ret,
 	ccs_serialize_format_t             format,

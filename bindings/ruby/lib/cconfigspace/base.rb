@@ -161,7 +161,7 @@ module CCS
     :CCS_OBJECT_TYPE_TREE_EVALUATION,
     :CCS_OBJECT_TYPE_TREE_TUNER ]
 
-  Error = enum FFI::Type::INT32, :ccs_error_t, [
+  Error = enum FFI::Type::INT32, :ccs_result_t, [
     :CCS_AGAIN,                    1,
     :CCS_SUCCESS,                  0,
     :CCS_INVALID_OBJECT,          -1,
@@ -199,7 +199,7 @@ module CCS
     def read_ccs_object_type_t
       ObjectType.from_native(read_int32, nil)
     end
-    def read_ccs_error_t
+    def read_ccs_result_t
       Error.from_native(read_int32, nil)
     end
   end
@@ -483,23 +483,23 @@ module CCS
   end
   typedef Datum.by_value, :ccs_datum_t
 
-  attach_function :ccs_init, [], :ccs_error_t
-  attach_function :ccs_fini, [], :ccs_error_t
-  attach_function :ccs_get_error_name, [:ccs_error_t, :pointer], :ccs_error_t
+  attach_function :ccs_init, [], :ccs_result_t
+  attach_function :ccs_fini, [], :ccs_result_t
+  attach_function :ccs_get_result_name, [:ccs_result_t, :pointer], :ccs_result_t
   attach_function :ccs_get_version, [], :ccs_version_t
-  attach_function :ccs_retain_object, [:ccs_object_t], :ccs_error_t
-  attach_function :ccs_release_object, [:ccs_object_t], :ccs_error_t
-  attach_function :ccs_object_get_type, [:ccs_object_t, :pointer], :ccs_error_t
-  attach_function :ccs_object_get_refcount, [:ccs_object_t, :pointer], :ccs_error_t
+  attach_function :ccs_retain_object, [:ccs_object_t], :ccs_result_t
+  attach_function :ccs_release_object, [:ccs_object_t], :ccs_result_t
+  attach_function :ccs_object_get_type, [:ccs_object_t, :pointer], :ccs_result_t
+  attach_function :ccs_object_get_refcount, [:ccs_object_t, :pointer], :ccs_result_t
   callback :ccs_object_release_callback, [:ccs_object_t, :pointer], :void
-  attach_function :ccs_object_set_destroy_callback, [:ccs_object_t, :ccs_object_release_callback, :pointer], :ccs_error_t
-  attach_function :ccs_object_set_user_data, [:ccs_object_t, :value], :ccs_error_t
-  attach_function :ccs_object_get_user_data, [:ccs_object_t, :pointer], :ccs_error_t
-  callback :ccs_object_serialize_callback, [:ccs_object_t, :size_t, :pointer, :pointer, :value], :ccs_error_t
-  attach_function :ccs_object_set_serialize_callback, [:ccs_object_t, :ccs_object_serialize_callback, :value], :ccs_error_t
-  callback :ccs_object_deserialize_callback, [:ccs_object_t, :size_t, :pointer, :value], :ccs_error_t
-  attach_function :ccs_object_serialize, [:ccs_object_t, :ccs_serialize_format_t, :ccs_serialize_operation_t, :varargs], :ccs_error_t
-  attach_function :ccs_object_deserialize, [:ccs_object_t, :ccs_serialize_format_t, :ccs_serialize_operation_t, :varargs], :ccs_error_t
+  attach_function :ccs_object_set_destroy_callback, [:ccs_object_t, :ccs_object_release_callback, :pointer], :ccs_result_t
+  attach_function :ccs_object_set_user_data, [:ccs_object_t, :value], :ccs_result_t
+  attach_function :ccs_object_get_user_data, [:ccs_object_t, :pointer], :ccs_result_t
+  callback :ccs_object_serialize_callback, [:ccs_object_t, :size_t, :pointer, :pointer, :value], :ccs_result_t
+  attach_function :ccs_object_set_serialize_callback, [:ccs_object_t, :ccs_object_serialize_callback, :value], :ccs_result_t
+  callback :ccs_object_deserialize_callback, [:ccs_object_t, :size_t, :pointer, :value], :ccs_result_t
+  attach_function :ccs_object_serialize, [:ccs_object_t, :ccs_serialize_format_t, :ccs_serialize_operation_t, :varargs], :ccs_result_t
+  attach_function :ccs_object_deserialize, [:ccs_object_t, :ccs_serialize_format_t, :ccs_serialize_operation_t, :varargs], :ccs_result_t
 
   class << self
     alias version ccs_get_version

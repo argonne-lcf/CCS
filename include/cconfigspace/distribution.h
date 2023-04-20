@@ -80,7 +80,7 @@ typedef enum ccs_scale_type_e ccs_scale_type_t;
  * @return #CCS_OUT_OF_MEMORY if there was not enough memory to allocate the
  *                             new distribution
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_create_normal_distribution(
 	ccs_numeric_type_t  data_type,
 	ccs_float_t         mu,
@@ -106,7 +106,7 @@ ccs_create_normal_distribution(
  * @return #CCS_OUT_OF_MEMORY if there was not enough memory to allocate the
  *                             new distribution
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_create_normal_int_distribution(
 	ccs_float_t         mu,
 	ccs_float_t         sigma,
@@ -131,7 +131,7 @@ ccs_create_normal_int_distribution(
  * @return #CCS_OUT_OF_MEMORY if there was not enough memory to allocate the
  *                             new distribution
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_create_normal_float_distribution(
 	ccs_float_t         mu,
 	ccs_float_t         sigma,
@@ -169,7 +169,7 @@ ccs_create_normal_float_distribution(
  * @return #CCS_OUT_OF_MEMORY if there was not enough memory to allocate the
  *                             new distribution
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_create_uniform_distribution(
 	ccs_numeric_type_t  data_type,
 	ccs_numeric_t       lower,
@@ -198,7 +198,7 @@ ccs_create_uniform_distribution(
  * @return #CCS_OUT_OF_MEMORY if there was not enough memory to allocate the
  *                             new distribution
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_create_uniform_int_distribution(
 	ccs_int_t           lower,
 	ccs_int_t           upper,
@@ -226,7 +226,7 @@ ccs_create_uniform_int_distribution(
  * @return #CCS_OUT_OF_MEMORY if there was not enough memory to allocate the
  *                             new distribution
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_create_uniform_float_distribution(
 	ccs_float_t         lower,
 	ccs_float_t         upper,
@@ -249,7 +249,7 @@ ccs_create_uniform_float_distribution(
  * @return #CCS_OUT_OF_MEMORY if there was not enough memory to allocate the
  *                             new distribution
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_create_roulette_distribution(
 	size_t              num_areas,
 	ccs_float_t        *areas,
@@ -280,7 +280,7 @@ ccs_create_roulette_distribution(
  * @return #CCS_OUT_OF_MEMORY if there was not enough memory to allocate the
  *                            new distribution
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_create_mixture_distribution(
 	size_t              num_distributions,
 	ccs_distribution_t *distributions,
@@ -305,7 +305,7 @@ ccs_create_mixture_distribution(
  * @return #CCS_OUT_OF_MEMORY if there was not enough memory to allocate the
  *                             new distribution
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_create_multivariate_distribution(
 	size_t              num_distributions,
 	ccs_distribution_t *distributions,
@@ -321,7 +321,7 @@ ccs_create_multivariate_distribution(
  * @return #CCS_INVALID_OBJECT if \p distribution is not a valid CCS
  *                              distribution
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_distribution_get_type(
 	ccs_distribution_t       distribution,
 	ccs_distribution_type_t *type_ret);
@@ -336,7 +336,7 @@ ccs_distribution_get_type(
  * @return #CCS_INVALID_OBJECT if \p distribution is not a valid CCS
  *                              distribution
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_distribution_get_dimension(
 	ccs_distribution_t distribution,
 	size_t            *dimension_ret);
@@ -352,7 +352,7 @@ ccs_distribution_get_dimension(
  * @return #CCS_INVALID_OBJECT if \p distribution is not a valid CCS
  *                              distribution
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_distribution_get_data_types(
 	ccs_distribution_t  distribution,
 	ccs_numeric_type_t *data_types_ret);
@@ -369,7 +369,7 @@ ccs_distribution_get_data_types(
  * @return #CCS_INVALID_OBJECT if \p distribution is not a valid CCS
  *                              distribution
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_distribution_get_bounds(
 	ccs_distribution_t distribution,
 	ccs_interval_t    *interval_ret);
@@ -389,7 +389,7 @@ ccs_distribution_get_bounds(
  * @return #CCS_INVALID_OBJECT if \p distribution is not a valid CCS
  *                              distribution
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_distribution_check_oversampling(
 	ccs_distribution_t distribution,
 	ccs_interval_t    *intervals,
@@ -416,7 +416,7 @@ ccs_distribution_check_oversampling(
  * @return #CCS_INVALID_DISTRIBUTION if \p distribution is not a normal
  *                                    distribution
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_normal_distribution_get_properties(
 	ccs_distribution_t distribution,
 	ccs_float_t       *mu_ret,
@@ -445,7 +445,7 @@ ccs_normal_distribution_get_properties(
  * @return #CCS_INVALID_DISTRIBUTION if \p distribution is not a uniform
  *                                    distribution
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_uniform_distribution_get_properties(
 	ccs_distribution_t distribution,
 	ccs_numeric_t     *lower_ret,
@@ -465,7 +465,7 @@ ccs_uniform_distribution_get_properties(
  * @return #CCS_INVALID_DISTRIBUTION if \p distribution is not a roulette
  *                                    distribution
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_roulette_distribution_get_num_areas(
 	ccs_distribution_t distribution,
 	size_t            *num_areas_ret);
@@ -491,7 +491,7 @@ ccs_roulette_distribution_get_num_areas(
  * @return #CCS_INVALID_DISTRIBUTION if \p distribution is not a roulette
  *                                   distribution
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_roulette_distribution_get_areas(
 	ccs_distribution_t distribution,
 	size_t             num_areas,
@@ -513,7 +513,7 @@ ccs_roulette_distribution_get_areas(
  * @return #CCS_INVALID_DISTRIBUTION if \p distribution is not a roulette
  *                                   distribution
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_roulette_distribution_set_areas(
 	ccs_distribution_t distribution,
 	size_t             num_areas,
@@ -532,7 +532,7 @@ ccs_roulette_distribution_set_areas(
  * @return #CCS_INVALID_DISTRIBUTION if \p distribution is not a mixture
  *                                    distribution
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_mixture_distribution_get_num_distributions(
 	ccs_distribution_t distribution,
 	size_t            *num_distributions_ret);
@@ -559,7 +559,7 @@ ccs_mixture_distribution_get_num_distributions(
  * @return #CCS_INVALID_DISTRIBUTION if \p distribution is not a mixture
  *                                    distribution
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_mixture_distribution_get_distributions(
 	ccs_distribution_t  distribution,
 	size_t              num_distributions,
@@ -587,7 +587,7 @@ ccs_mixture_distribution_get_distributions(
  * @return #CCS_INVALID_DISTRIBUTION if \p distribution is not a mixture
  *                                    distribution
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_mixture_distribution_get_weights(
 	ccs_distribution_t distribution,
 	size_t             num_weights,
@@ -607,7 +607,7 @@ ccs_mixture_distribution_get_weights(
  * @return #CCS_INVALID_DISTRIBUTION if \p distribution is not a multivariate
  *                                    distribution
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_multivariate_distribution_get_num_distributions(
 	ccs_distribution_t distribution,
 	size_t            *num_distributions_ret);
@@ -634,7 +634,7 @@ ccs_multivariate_distribution_get_num_distributions(
  * @return #CCS_INVALID_DISTRIBUTION if \p distribution is not a multivariate
  *                                    distribution
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_multivariate_distribution_get_distributions(
 	ccs_distribution_t  distribution,
 	size_t              num_distributions,
@@ -655,7 +655,7 @@ ccs_multivariate_distribution_get_distributions(
  *                              distribution; or if \p rng is not a valid CCS
  *                              rng
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_distribution_sample(
 	ccs_distribution_t distribution,
 	ccs_rng_t          rng,
@@ -678,7 +678,7 @@ ccs_distribution_sample(
  *                              distribution; or if \p rng is not a valid CCS
  *                              rng
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_distribution_samples(
 	ccs_distribution_t distribution,
 	ccs_rng_t          rng,
@@ -708,7 +708,7 @@ ccs_distribution_samples(
  *                              distribution; or if \p rng is not a valid CCS
  *                              rng
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_distribution_strided_samples(
 	ccs_distribution_t distribution,
 	ccs_rng_t          rng,
@@ -732,7 +732,7 @@ ccs_distribution_strided_samples(
  *                              distribution; or if \p rng is not a valid CCS
  *                              rng
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_distribution_soa_samples(
 	ccs_distribution_t distribution,
 	ccs_rng_t          rng,
@@ -761,7 +761,7 @@ ccs_distribution_soa_samples(
  *                              rng; or if at least one of the parameters
  *                              provided is NULL
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_distribution_parameters_samples(
 	ccs_distribution_t distribution,
 	ccs_rng_t          rng,
@@ -786,7 +786,7 @@ ccs_distribution_parameters_samples(
  *                              rng; or if at least one of the parameters
  *                              provided is NULL
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_distribution_parameters_sample(
 	ccs_distribution_t distribution,
 	ccs_rng_t          rng,

@@ -19,7 +19,7 @@ extern "C" {
  * @return #CCS_OUT_OF_MEMORY if there was not enough memory to allocate the
  *                             new map
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_create_map(ccs_map_t *map_ret);
 
 /**
@@ -34,7 +34,7 @@ ccs_create_map(ccs_map_t *map_ret);
  * @return #CCS_OUT_OF_MEMORY if there was not enough memory to allocate data
  *                             structures
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_map_set(ccs_map_t map, ccs_datum_t key, ccs_datum_t value);
 
 /**
@@ -47,7 +47,7 @@ ccs_map_set(ccs_map_t map, ccs_datum_t key, ccs_datum_t value);
  * @return #CCS_INVALID_OBJECT if \p map is not a valid CCS map
  * @return #CCS_INVALID_VALUE if \p exist is NULL
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_map_exist(ccs_map_t map, ccs_datum_t key, ccs_bool_t *exist);
 
 /**
@@ -60,7 +60,7 @@ ccs_map_exist(ccs_map_t map, ccs_datum_t key, ccs_bool_t *exist);
  * @return #CCS_INVALID_OBJECT if \p map is not a valid CCS map
  * @return #CCS_INVALID_VALUE if \p value_ret is NUL
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_map_get(ccs_map_t map, ccs_datum_t key, ccs_datum_t *value_ret);
 
 /**
@@ -71,7 +71,7 @@ ccs_map_get(ccs_map_t map, ccs_datum_t key, ccs_datum_t *value_ret);
  * @return #CCS_INVALID_OBJECT if \p map is not a valid CCS map
  * @return #CCS_INVALID_VALUE if \p key does not exist in \p map
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_map_del(ccs_map_t map, ccs_datum_t key);
 
 /**
@@ -93,7 +93,7 @@ ccs_map_del(ccs_map_t map, ccs_datum_t key);
  *                             is NULL; or if \p num_keys is less than the
  *                             number of keys that would be returned
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_map_get_keys(
 	ccs_map_t    map,
 	size_t       num_keys,
@@ -119,7 +119,7 @@ ccs_map_get_keys(
  *                             is NULL; or if \p num_values is less than the
  *                             number of values that would be returned
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_map_get_values(
 	ccs_map_t    map,
 	size_t       num_values,
@@ -153,7 +153,7 @@ ccs_map_get_values(
  *                             of values that would be returned
 
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_map_get_pairs(
 	ccs_map_t    map,
 	size_t       num_pairs,
@@ -167,7 +167,7 @@ ccs_map_get_pairs(
  * @return #CCS_SUCCESS on success
  * @return #CCS_INVALID_OBJECT if \p map is not a valid CCS map
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_map_clear(ccs_map_t map);
 
 #ifdef __cplusplus

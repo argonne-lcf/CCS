@@ -9,7 +9,7 @@ void
 print_ccs_error_stack()
 {
 	ccs_error_stack_t       err;
-	ccs_error_t             code;
+	ccs_result_t            code;
 	const char             *msg;
 	size_t                  stack_depth;
 	ccs_error_stack_elem_t *stack_elems;
@@ -18,7 +18,7 @@ print_ccs_error_stack()
 	if (!err)
 		return;
 	ccs_error_stack_get_code(err, &code);
-	ccs_get_error_name(code, &msg);
+	ccs_get_result_name(code, &msg);
 	fprintf(stderr, "CCS Error: %s (%d): ", msg, code);
 	ccs_error_stack_get_message(err, &msg);
 	fprintf(stderr, "%s\n", msg);
@@ -33,9 +33,9 @@ print_ccs_error_stack()
 void
 generate_tree(ccs_tree_t *tree, size_t depth, size_t rank)
 {
-	ccs_error_t err;
-	ssize_t     ar    = depth - rank;
-	size_t      arity = (size_t)(ar < 0 ? 0 : ar);
+	ccs_result_t err;
+	ssize_t      ar    = depth - rank;
+	size_t       arity = (size_t)(ar < 0 ? 0 : ar);
 
 	err = ccs_create_tree(arity, ccs_int(depth * 100 + rank), tree);
 	assert(err == CCS_SUCCESS);
@@ -52,7 +52,7 @@ generate_tree(ccs_tree_t *tree, size_t depth, size_t rank)
 void
 test_static_tree_space()
 {
-	ccs_error_t              err;
+	ccs_result_t             err;
 	ccs_tree_t               root, tree;
 	ccs_tree_space_t         tree_space;
 	ccs_tree_space_type_t    tree_type;

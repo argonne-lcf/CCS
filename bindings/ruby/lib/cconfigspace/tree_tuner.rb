@@ -10,15 +10,15 @@ module CCS
     end
   end
 
-  attach_function :ccs_tree_tuner_get_type, [:ccs_tree_tuner_t, :pointer], :ccs_error_t
-  attach_function :ccs_tree_tuner_get_name, [:ccs_tree_tuner_t, :pointer], :ccs_error_t
-  attach_function :ccs_tree_tuner_get_tree_space, [:ccs_tree_tuner_t, :pointer], :ccs_error_t
-  attach_function :ccs_tree_tuner_get_objective_space, [:ccs_tree_tuner_t, :pointer], :ccs_error_t
-  attach_function :ccs_tree_tuner_ask, [:ccs_tree_tuner_t, :size_t, :pointer, :pointer], :ccs_error_t
-  attach_function :ccs_tree_tuner_tell, [:ccs_tree_tuner_t, :size_t, :pointer], :ccs_error_t
-  attach_function :ccs_tree_tuner_get_optimums, [:ccs_tree_tuner_t, :size_t, :pointer, :pointer], :ccs_error_t
-  attach_function :ccs_tree_tuner_get_history, [:ccs_tree_tuner_t, :size_t, :pointer, :pointer], :ccs_error_t
-  attach_function :ccs_tree_tuner_suggest, [:ccs_tree_tuner_t, :pointer], :ccs_error_t
+  attach_function :ccs_tree_tuner_get_type, [:ccs_tree_tuner_t, :pointer], :ccs_result_t
+  attach_function :ccs_tree_tuner_get_name, [:ccs_tree_tuner_t, :pointer], :ccs_result_t
+  attach_function :ccs_tree_tuner_get_tree_space, [:ccs_tree_tuner_t, :pointer], :ccs_result_t
+  attach_function :ccs_tree_tuner_get_objective_space, [:ccs_tree_tuner_t, :pointer], :ccs_result_t
+  attach_function :ccs_tree_tuner_ask, [:ccs_tree_tuner_t, :size_t, :pointer, :pointer], :ccs_result_t
+  attach_function :ccs_tree_tuner_tell, [:ccs_tree_tuner_t, :size_t, :pointer], :ccs_result_t
+  attach_function :ccs_tree_tuner_get_optimums, [:ccs_tree_tuner_t, :size_t, :pointer, :pointer], :ccs_result_t
+  attach_function :ccs_tree_tuner_get_history, [:ccs_tree_tuner_t, :size_t, :pointer, :pointer], :ccs_result_t
+  attach_function :ccs_tree_tuner_suggest, [:ccs_tree_tuner_t, :pointer], :ccs_result_t
 
   class TreeTuner < Object
     add_property :type, :ccs_tree_tuner_type_t, :ccs_tree_tuner_get_type, memoize: true
@@ -96,7 +96,7 @@ module CCS
 
   end
 
-  attach_function :ccs_create_random_tree_tuner, [:string, :ccs_tree_space_t, :ccs_objective_space_t, :pointer], :ccs_error_t
+  attach_function :ccs_create_random_tree_tuner, [:string, :ccs_tree_space_t, :ccs_objective_space_t, :pointer], :ccs_result_t
 
   class RandomTreeTuner < TreeTuner
     def initialize(handle = nil, retain: false, auto_release: true,
@@ -111,14 +111,14 @@ module CCS
     end
   end
 
-  callback :ccs_user_defined_tree_tuner_del, [:ccs_tree_tuner_t], :ccs_error_t
-  callback :ccs_user_defined_tree_tuner_ask, [:ccs_tree_tuner_t, :size_t, :pointer, :pointer], :ccs_error_t
-  callback :ccs_user_defined_tree_tuner_tell, [:ccs_tree_tuner_t, :size_t, :pointer], :ccs_error_t
-  callback :ccs_user_defined_tree_tuner_get_optimums, [:ccs_tree_tuner_t, :size_t, :pointer, :pointer], :ccs_error_t
-  callback :ccs_user_defined_tree_tuner_get_history, [:ccs_tree_tuner_t, :size_t, :pointer, :pointer], :ccs_error_t
-  callback :ccs_user_defined_tree_tuner_suggest, [:ccs_tree_tuner_t, :pointer], :ccs_error_t
-  callback :ccs_user_defined_tree_tuner_serialize, [:ccs_tree_tuner_t, :size_t, :pointer, :pointer], :ccs_error_t
-  callback :ccs_user_defined_tree_tuner_deserialize, [:ccs_tree_tuner_t, :size_t, :pointer, :size_t, :pointer, :size_t, :pointer], :ccs_error_t
+  callback :ccs_user_defined_tree_tuner_del, [:ccs_tree_tuner_t], :ccs_result_t
+  callback :ccs_user_defined_tree_tuner_ask, [:ccs_tree_tuner_t, :size_t, :pointer, :pointer], :ccs_result_t
+  callback :ccs_user_defined_tree_tuner_tell, [:ccs_tree_tuner_t, :size_t, :pointer], :ccs_result_t
+  callback :ccs_user_defined_tree_tuner_get_optimums, [:ccs_tree_tuner_t, :size_t, :pointer, :pointer], :ccs_result_t
+  callback :ccs_user_defined_tree_tuner_get_history, [:ccs_tree_tuner_t, :size_t, :pointer, :pointer], :ccs_result_t
+  callback :ccs_user_defined_tree_tuner_suggest, [:ccs_tree_tuner_t, :pointer], :ccs_result_t
+  callback :ccs_user_defined_tree_tuner_serialize, [:ccs_tree_tuner_t, :size_t, :pointer, :pointer], :ccs_result_t
+  callback :ccs_user_defined_tree_tuner_deserialize, [:ccs_tree_tuner_t, :size_t, :pointer, :size_t, :pointer, :size_t, :pointer], :ccs_result_t
 
   class UserDefinedTreeTunerVector < FFI::Struct
     layout :del, :ccs_user_defined_tree_tuner_del,
@@ -254,8 +254,8 @@ module CCS
     return [delwrapper, askwrapper, tellwrapper, get_optimumswrapper, get_historywrapper, suggestwrapper, serializewrapper, deserializewrapper]
   end
 
-  attach_function :ccs_create_user_defined_tree_tuner, [:string, :ccs_tree_space_t, :ccs_objective_space_t, UserDefinedTreeTunerVector.by_ref, :value, :pointer], :ccs_error_t
-  attach_function :ccs_user_defined_tree_tuner_get_tuner_data, [:ccs_tree_tuner_t, :pointer], :ccs_error_t
+  attach_function :ccs_create_user_defined_tree_tuner, [:string, :ccs_tree_space_t, :ccs_objective_space_t, UserDefinedTreeTunerVector.by_ref, :value, :pointer], :ccs_result_t
+  attach_function :ccs_user_defined_tree_tuner_get_tuner_data, [:ccs_tree_tuner_t, :pointer], :ccs_result_t
 
   class UserDefinedTreeTuner < TreeTuner
     add_property :tuner_data, :value, :ccs_user_defined_tree_tuner_get_tuner_data, memoize: true

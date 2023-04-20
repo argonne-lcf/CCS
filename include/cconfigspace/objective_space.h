@@ -42,7 +42,7 @@ typedef enum ccs_objective_type_e ccs_objective_type_t;
  * @return #CCS_OUT_OF_MEMORY if there was a lack of memory to allocate the new
  *                             objective space
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_create_objective_space(
 	const char            *name,
 	ccs_objective_space_t *objective_space_ret);
@@ -57,7 +57,7 @@ ccs_create_objective_space(
  *                              objective space
  * @return #CCS_INVALID_VALUE if \p name_ret is NULL
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_objective_space_get_name(
 	ccs_objective_space_t objective_space,
 	const char          **name_ret);
@@ -79,7 +79,7 @@ ccs_objective_space_get_name(
  *                             the additional parameter and associated data
  *                             structures
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_objective_space_add_parameter(
 	ccs_objective_space_t objective_space,
 	ccs_parameter_t       parameter);
@@ -104,7 +104,7 @@ ccs_objective_space_add_parameter(
  *                             additional parameters and associated data
  *                             structures
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_objective_space_add_parameters(
 	ccs_objective_space_t objective_space,
 	size_t                num_parameters,
@@ -121,7 +121,7 @@ ccs_objective_space_add_parameters(
  *                              objective space
  * @return #CCS_INVALID_VALUE if \p num_parameters_ret is NULL
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_objective_space_get_num_parameters(
 	ccs_objective_space_t objective_space,
 	size_t               *num_parameters_ret);
@@ -139,7 +139,7 @@ ccs_objective_space_get_num_parameters(
  * @return #CCS_OUT_OF_BOUNDS if \p index is greater than the count of
  *                             parameters in the objective space
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_objective_space_get_parameter(
 	ccs_objective_space_t objective_space,
 	size_t                index,
@@ -158,7 +158,7 @@ ccs_objective_space_get_parameter(
  * @return #CCS_INVALID_NAME if no parameter with such \p name exist in
  *                            the \p objective space
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_objective_space_get_parameter_by_name(
 	ccs_objective_space_t objective_space,
 	const char           *name,
@@ -177,7 +177,7 @@ ccs_objective_space_get_parameter_by_name(
  * @return #CCS_INVALID_NAME if no parameter with such \p name exist in
  *                            the objective space
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_objective_space_get_parameter_index_by_name(
 	ccs_objective_space_t objective_space,
 	const char           *name,
@@ -196,7 +196,7 @@ ccs_objective_space_get_parameter_index_by_name(
  * @return #CCS_INVALID_PARAMETER if \p objective_space does not
  *                                      contain \p parameter
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_objective_space_get_parameter_index(
 	ccs_objective_space_t objective_space,
 	ccs_parameter_t       parameter,
@@ -221,7 +221,7 @@ ccs_objective_space_get_parameter_index(
  * @return #CCS_INVALID_PARAMETER if at least one of the parameters
  *                                      is not contained in \p objective_space
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_objective_space_get_parameter_indexes(
 	ccs_objective_space_t objective_space,
 	size_t                num_parameters,
@@ -251,7 +251,7 @@ ccs_objective_space_get_parameter_indexes(
  *                             num_parameters is less than the number of
  *                             parameters that would be returned
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_objective_space_get_parameters(
 	ccs_objective_space_t objective_space,
 	size_t                num_parameters,
@@ -278,7 +278,7 @@ ccs_objective_space_get_parameters(
  * @return #CCS_INVALID_EVALUATION if \p num_values is not equal to the number
  *                                  of parameters in the objective space
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_objective_space_check_evaluation_values(
 	ccs_objective_space_t objective_space,
 	size_t                num_values,
@@ -304,7 +304,7 @@ ccs_objective_space_check_evaluation_values(
  * @return #CCS_INVALID_VALUE if the value did not validate or if value_ret is
  *                             NULL
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_objective_space_validate_value(
 	ccs_objective_space_t objective_space,
 	size_t                index,
@@ -327,7 +327,7 @@ ccs_objective_space_validate_value(
  * @return #CCS_OUT_OF_MEMORY if there was not enough memory to allocate
  *                             internal data structures
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_objective_space_add_objective(
 	ccs_objective_space_t objective_space,
 	ccs_expression_t      expression,
@@ -353,7 +353,7 @@ ccs_objective_space_add_objective(
  * @return #CCS_OUT_OF_MEMORY if there was not enough memory to allocate
  *                             internal data structures
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_objective_space_add_objectives(
 	ccs_objective_space_t objective_space,
 	size_t                num_objectives,
@@ -375,7 +375,7 @@ ccs_objective_space_add_objectives(
  * @return #CCS_OUT_OF_BOUNDS if \p index is greater than the number of
  *                             objectives in the objective space
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_objective_space_get_objective(
 	ccs_objective_space_t objective_space,
 	size_t                index,
@@ -406,7 +406,7 @@ ccs_objective_space_get_objective(
  *                             NULL; or if \p num_objectives is less than then
  *                             number of expressions that would be returned
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_objective_space_get_objectives(
 	ccs_objective_space_t objective_space,
 	size_t                num_objectives,

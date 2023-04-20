@@ -1,12 +1,12 @@
 module CCS
-  attach_function :ccs_create_map, [:pointer], :ccs_error_t
-  attach_function :ccs_map_set, [:ccs_map_t, :ccs_datum_t, :ccs_datum_t], :ccs_error_t
-  attach_function :ccs_map_exist, [:ccs_map_t, :ccs_datum_t, :pointer], :ccs_error_t
-  attach_function :ccs_map_get, [:ccs_map_t, :ccs_datum_t, :pointer], :ccs_error_t
-  attach_function :ccs_map_del, [:ccs_map_t, :ccs_datum_t], :ccs_error_t
-  attach_function :ccs_map_get_keys, [:ccs_map_t, :size_t, :pointer, :pointer], :ccs_error_t
-  attach_function :ccs_map_get_values, [:ccs_map_t, :size_t, :pointer, :pointer], :ccs_error_t
-  attach_function :ccs_map_get_pairs, [:ccs_map_t, :size_t, :pointer, :pointer, :pointer], :ccs_error_t
+  attach_function :ccs_create_map, [:pointer], :ccs_result_t
+  attach_function :ccs_map_set, [:ccs_map_t, :ccs_datum_t, :ccs_datum_t], :ccs_result_t
+  attach_function :ccs_map_exist, [:ccs_map_t, :ccs_datum_t, :pointer], :ccs_result_t
+  attach_function :ccs_map_get, [:ccs_map_t, :ccs_datum_t, :pointer], :ccs_result_t
+  attach_function :ccs_map_del, [:ccs_map_t, :ccs_datum_t], :ccs_result_t
+  attach_function :ccs_map_get_keys, [:ccs_map_t, :size_t, :pointer, :pointer], :ccs_result_t
+  attach_function :ccs_map_get_values, [:ccs_map_t, :size_t, :pointer, :pointer], :ccs_result_t
+  attach_function :ccs_map_get_pairs, [:ccs_map_t, :size_t, :pointer, :pointer, :pointer], :ccs_result_t
 
   class Map < Object
     def initialize(handle = nil, retain: false, auto_release: true)

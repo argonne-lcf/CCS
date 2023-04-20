@@ -20,7 +20,7 @@ extern "C" {
  * @return #CCS_INVALID_OBJECT if \p binding is not a valid CCS object
  * @return #CCS_INVALID_VALUE if \p context_ret is NULL
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_binding_get_context(ccs_binding_t binding, ccs_context_t *context_ret);
 
 /**
@@ -34,7 +34,7 @@ ccs_binding_get_context(ccs_binding_t binding, ccs_context_t *context_ret);
  * @return #CCS_OUT_OF_BOUNDS if \p index is greater than the count of
  *                             parameters in the context
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_binding_get_value(
 	ccs_binding_t binding,
 	size_t        index,
@@ -54,7 +54,7 @@ ccs_binding_get_value(
  * @return #CCS_OUT_OF_MEMORY if there was a lack of memory while memoizing a
  *                             string
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_binding_set_value(ccs_binding_t binding, size_t index, ccs_datum_t value);
 
 /**
@@ -75,7 +75,7 @@ ccs_binding_set_value(ccs_binding_t binding, size_t index, ccs_datum_t value);
  *                             less than the number of values that would be
  *                             returned
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_binding_get_values(
 	ccs_binding_t binding,
 	size_t        num_values,
@@ -95,7 +95,7 @@ ccs_binding_get_values(
  * @return #CCS_OUT_OF_MEMORY if there was a lack of memory while memoizing a
  *                             string
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_binding_set_values(
 	ccs_binding_t binding,
 	size_t        num_values,
@@ -112,7 +112,7 @@ ccs_binding_set_values(
  * @return #CCS_INVALID_NAME if no parameter with such \p name exist in
  *                            the \p binding context
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_binding_get_value_by_name(
 	ccs_binding_t binding,
 	const char   *name,
@@ -128,7 +128,7 @@ ccs_binding_get_value_by_name(
  * @return #CCS_INVALID_NAME if no parameter with such \p name exist in
  *                            the \p binding context
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_binding_set_value_by_name(
 	ccs_binding_t binding,
 	const char   *name,
@@ -144,7 +144,7 @@ ccs_binding_set_value_by_name(
  * @return #CCS_INVALID_PARAMETER if \p parameter does not exist in
  *                                      the \p binding context
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_binding_get_value_by_parameter(
 	ccs_binding_t   binding,
 	ccs_parameter_t parameter,
@@ -160,7 +160,7 @@ ccs_binding_get_value_by_parameter(
  * @return #CCS_INVALID_PARAMETER if \p parameter does not exist in
  *                                      the \p binding context
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_binding_set_value_by_parameter(
 	ccs_binding_t   binding,
 	ccs_parameter_t parameter,
@@ -176,7 +176,7 @@ ccs_binding_set_value_by_parameter(
  * @return #CCS_INVALID_OBJECT if \p binding is not a valid CCS object
  * @return #CCS_INVALID_VALUE if \p hash_ret is NULL
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_binding_hash(ccs_binding_t binding, ccs_hash_t *hash_ret);
 
 /**
@@ -193,7 +193,7 @@ ccs_binding_hash(ccs_binding_t binding, ccs_hash_t *hash_ret);
  *                              CCS objects
  * @return #CCS_INVALID_VALUE if \p cmp_ret is NULL
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_binding_cmp(
 	ccs_binding_t binding,
 	ccs_binding_t other_binding,

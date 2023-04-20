@@ -15,7 +15,7 @@ struct _ccs_random_tree_tuner_data_mock_s {
 typedef struct _ccs_random_tree_tuner_data_mock_s
 	_ccs_random_tree_tuner_data_mock_t;
 
-static inline ccs_error_t
+static inline ccs_result_t
 _ccs_deserialize_bin_size_ccs_tree_tuner_common_data(
 	_ccs_tree_tuner_common_data_t     *data,
 	uint32_t                           version,
@@ -36,7 +36,7 @@ _ccs_deserialize_bin_size_ccs_tree_tuner_common_data(
 	return CCS_SUCCESS;
 }
 
-static inline ccs_error_t
+static inline ccs_result_t
 _ccs_deserialize_bin_ccs_random_tree_tuner_data(
 	_ccs_random_tree_tuner_data_mock_t *data,
 	uint32_t                            version,
@@ -100,7 +100,7 @@ typedef struct _ccs_random_tree_tuner_data_clone_s
 			"Out of memory to allocate array");                    \
 	}
 
-static inline ccs_error_t
+static inline ccs_result_t
 _ccs_deserialize_bin_random_tree_tuner(
 	ccs_tree_tuner_t                  *tuner_ret,
 	uint32_t                           version,
@@ -111,7 +111,7 @@ _ccs_deserialize_bin_random_tree_tuner(
 	_ccs_random_tree_tuner_data_mock_t data = {
 		{(ccs_tree_tuner_type_t)0, NULL, NULL, NULL}, 0, 0, NULL, NULL};
 	_ccs_random_tree_tuner_data_clone_t *odata = NULL;
-	ccs_error_t                          res   = CCS_SUCCESS;
+	ccs_result_t                         res   = CCS_SUCCESS;
 	CCS_VALIDATE_ERR_GOTO(
 		res,
 		_ccs_deserialize_bin_ccs_random_tree_tuner_data(
@@ -156,7 +156,7 @@ struct _ccs_user_defined_tree_tuner_data_mock_s {
 typedef struct _ccs_user_defined_tree_tuner_data_mock_s
 	_ccs_user_defined_tree_tuner_data_mock_t;
 
-static inline ccs_error_t
+static inline ccs_result_t
 _ccs_deserialize_bin_ccs_user_defined_tree_tuner_data(
 	_ccs_user_defined_tree_tuner_data_mock_t *data,
 	uint32_t                                  version,
@@ -171,7 +171,7 @@ _ccs_deserialize_bin_ccs_user_defined_tree_tuner_data(
 	return CCS_SUCCESS;
 }
 
-static inline ccs_error_t
+static inline ccs_result_t
 _ccs_deserialize_bin_user_defined_tree_tuner(
 	ccs_tree_tuner_t                  *tuner_ret,
 	uint32_t                           version,
@@ -184,7 +184,7 @@ _ccs_deserialize_bin_user_defined_tree_tuner(
 		{0, NULL}};
 	ccs_user_defined_tree_tuner_vector_t *vector =
 		(ccs_user_defined_tree_tuner_vector_t *)opts->vector;
-	ccs_error_t res = CCS_SUCCESS;
+	ccs_result_t res = CCS_SUCCESS;
 	CCS_VALIDATE_ERR_GOTO(
 		res,
 		_ccs_deserialize_bin_ccs_user_defined_tree_tuner_data(
@@ -233,7 +233,7 @@ end:
 	return res;
 }
 
-static inline ccs_error_t
+static inline ccs_result_t
 _ccs_deserialize_bin_tree_tuner(
 	ccs_tree_tuner_t                  *tuner_ret,
 	uint32_t                           version,
@@ -244,7 +244,7 @@ _ccs_deserialize_bin_tree_tuner(
 	_ccs_object_deserialize_options_t new_opts = *opts;
 	_ccs_object_internal_t            obj;
 	ccs_object_t                      handle;
-	ccs_error_t                       res;
+	ccs_result_t                      res;
 	CCS_VALIDATE(_ccs_deserialize_bin_ccs_object_internal(
 		&obj, buffer_size, buffer, &handle));
 	CCS_REFUTE(obj.type != CCS_OBJECT_TYPE_TREE_TUNER, CCS_INVALID_TYPE);
@@ -296,7 +296,7 @@ end:
 	return res;
 }
 
-static ccs_error_t
+static ccs_result_t
 _ccs_tree_tuner_deserialize(
 	ccs_tree_tuner_t                  *tuner_ret,
 	ccs_serialize_format_t             format,

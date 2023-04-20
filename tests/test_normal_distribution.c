@@ -15,7 +15,7 @@ compare_distribution(
 	ccs_float_t        s,
 	ccs_numeric_t      q)
 {
-	ccs_error_t             err = CCS_SUCCESS;
+	ccs_result_t            err = CCS_SUCCESS;
 	int32_t                 refcount;
 	ccs_object_type_t       otype;
 	ccs_distribution_type_t dtype;
@@ -62,7 +62,7 @@ static void
 test_create_normal_distribution()
 {
 	ccs_distribution_t distrib = NULL;
-	ccs_error_t        err     = CCS_SUCCESS;
+	ccs_result_t       err     = CCS_SUCCESS;
 	char              *buff;
 	size_t             buff_size;
 
@@ -108,7 +108,7 @@ static void
 test_create_normal_distribution_errors()
 {
 	ccs_distribution_t distrib = NULL;
-	ccs_error_t        err     = CCS_SUCCESS;
+	ccs_result_t       err     = CCS_SUCCESS;
 
 	// check wrong data_type
 	err                        = ccs_create_normal_distribution(
@@ -156,7 +156,7 @@ test_normal_distribution_int()
 {
 	ccs_distribution_t distrib     = NULL;
 	ccs_rng_t          rng         = NULL;
-	ccs_error_t        err         = CCS_SUCCESS;
+	ccs_result_t       err         = CCS_SUCCESS;
 	const size_t       num_samples = NUM_SAMPLES;
 	const ccs_float_t  mu          = 1;
 	const ccs_float_t  sigma       = 2;
@@ -201,7 +201,7 @@ test_normal_distribution_float()
 {
 	ccs_distribution_t distrib     = NULL;
 	ccs_rng_t          rng         = NULL;
-	ccs_error_t        err         = CCS_SUCCESS;
+	ccs_result_t       err         = CCS_SUCCESS;
 	const size_t       num_samples = NUM_SAMPLES;
 	const ccs_float_t  mu          = 1;
 	const ccs_float_t  sigma       = 2;
@@ -245,7 +245,7 @@ test_normal_distribution_int_log()
 {
 	ccs_distribution_t distrib     = NULL;
 	ccs_rng_t          rng         = NULL;
-	ccs_error_t        err         = CCS_SUCCESS;
+	ccs_result_t       err         = CCS_SUCCESS;
 	const size_t       num_samples = NUM_SAMPLES;
 	const ccs_float_t  mu          = 1;
 	const ccs_float_t  sigma       = 2;
@@ -301,7 +301,7 @@ test_normal_distribution_float_log()
 {
 	ccs_distribution_t distrib     = NULL;
 	ccs_rng_t          rng         = NULL;
-	ccs_error_t        err         = CCS_SUCCESS;
+	ccs_result_t       err         = CCS_SUCCESS;
 	const size_t       num_samples = NUM_SAMPLES;
 	const ccs_float_t  mu          = 1;
 	const ccs_float_t  sigma       = 2;
@@ -346,7 +346,7 @@ test_normal_distribution_int_quantize()
 {
 	ccs_distribution_t distrib     = NULL;
 	ccs_rng_t          rng         = NULL;
-	ccs_error_t        err         = CCS_SUCCESS;
+	ccs_result_t       err         = CCS_SUCCESS;
 	const size_t       num_samples = NUM_SAMPLES;
 	const ccs_float_t  mu          = 1;
 	const ccs_float_t  sigma       = 2;
@@ -392,7 +392,7 @@ test_normal_distribution_float_quantize()
 {
 	ccs_distribution_t distrib     = NULL;
 	ccs_rng_t          rng         = NULL;
-	ccs_error_t        err         = CCS_SUCCESS;
+	ccs_result_t       err         = CCS_SUCCESS;
 	const size_t       num_samples = NUM_SAMPLES;
 	const ccs_float_t  mu          = 1;
 	const ccs_float_t  sigma       = 2;
@@ -436,7 +436,7 @@ test_normal_distribution_int_log_quantize()
 {
 	ccs_distribution_t distrib     = NULL;
 	ccs_rng_t          rng         = NULL;
-	ccs_error_t        err         = CCS_SUCCESS;
+	ccs_result_t       err         = CCS_SUCCESS;
 	const size_t       num_samples = NUM_SAMPLES;
 	const ccs_float_t  mu          = 3;
 	const ccs_float_t  sigma       = 2;
@@ -493,7 +493,7 @@ test_normal_distribution_float_log_quantize()
 {
 	ccs_distribution_t distrib      = NULL;
 	ccs_rng_t          rng          = NULL;
-	ccs_error_t        err          = CCS_SUCCESS;
+	ccs_result_t       err          = CCS_SUCCESS;
 	const size_t       num_samples  = NUM_SAMPLES;
 	const ccs_float_t  mu           = 3;
 	const ccs_float_t  sigma        = 2;
@@ -550,7 +550,7 @@ test_normal_distribution_strided_samples()
 	ccs_distribution_t distrib1    = NULL;
 	ccs_distribution_t distrib2    = NULL;
 	ccs_rng_t          rng         = NULL;
-	ccs_error_t        err         = CCS_SUCCESS;
+	ccs_result_t       err         = CCS_SUCCESS;
 	const size_t       num_samples = NUM_SAMPLES;
 	const ccs_float_t  mu1         = 1;
 	const ccs_float_t  sigma1      = 2;
@@ -605,7 +605,7 @@ test_normal_distribution_soa_samples()
 {
 	ccs_distribution_t distrib     = NULL;
 	ccs_rng_t          rng         = NULL;
-	ccs_error_t        err         = CCS_SUCCESS;
+	ccs_result_t       err         = CCS_SUCCESS;
 	const size_t       num_samples = NUM_SAMPLES;
 	const ccs_float_t  mu          = 1;
 	const ccs_float_t  sigma       = 2;

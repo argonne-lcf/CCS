@@ -3,7 +3,7 @@
 #include "cconfigspace_internal.h"
 #include "parameter_internal.h"
 
-static inline ccs_error_t
+static inline ccs_result_t
 _ccs_deserialize_bin_parameter_numerical(
 	ccs_parameter_t *parameter_ret,
 	uint32_t         version,
@@ -40,7 +40,7 @@ struct _ccs_parameter_categorical_data_mock_s {
 typedef struct _ccs_parameter_categorical_data_mock_s
 	_ccs_parameter_categorical_data_mock_t;
 
-static inline ccs_error_t
+static inline ccs_result_t
 _ccs_deserialize_bin_ccs_parameter_categorical_data(
 	_ccs_parameter_categorical_data_mock_t *data,
 	size_t                                 *buffer_size,
@@ -59,7 +59,7 @@ _ccs_deserialize_bin_ccs_parameter_categorical_data(
 	return CCS_SUCCESS;
 }
 
-static inline ccs_error_t
+static inline ccs_result_t
 _ccs_deserialize_bin_parameter_categorical(
 	ccs_parameter_t *parameter_ret,
 	uint32_t         version,
@@ -67,7 +67,7 @@ _ccs_deserialize_bin_parameter_categorical(
 	const char     **buffer)
 {
 	(void)version;
-	ccs_error_t                            res   = CCS_SUCCESS;
+	ccs_result_t                           res   = CCS_SUCCESS;
 	int                                    found = 0;
 	_ccs_parameter_categorical_data_mock_t data;
 	data.possible_values = NULL;
@@ -127,7 +127,7 @@ end:
 
 typedef _ccs_parameter_common_data_t _ccs_parameter_string_data_mock_t;
 
-static inline ccs_error_t
+static inline ccs_result_t
 _ccs_deserialize_bin_ccs_parameter_string_data(
 	_ccs_parameter_string_data_mock_t *data,
 	size_t                            *buffer_size,
@@ -138,7 +138,7 @@ _ccs_deserialize_bin_ccs_parameter_string_data(
 	return CCS_SUCCESS;
 }
 
-static inline ccs_error_t
+static inline ccs_result_t
 _ccs_deserialize_bin_parameter_string(
 	ccs_parameter_t *parameter_ret,
 	uint32_t         version,
@@ -153,7 +153,7 @@ _ccs_deserialize_bin_parameter_string(
 	return CCS_SUCCESS;
 }
 
-static inline ccs_error_t
+static inline ccs_result_t
 _ccs_deserialize_bin_parameter(
 	ccs_parameter_t                   *parameter_ret,
 	uint32_t                           version,
@@ -163,7 +163,7 @@ _ccs_deserialize_bin_parameter(
 {
 	_ccs_object_internal_t obj;
 	ccs_object_t           handle;
-	ccs_error_t            res;
+	ccs_result_t           res;
 	CCS_VALIDATE(_ccs_deserialize_bin_ccs_object_internal(
 		&obj, buffer_size, buffer, &handle));
 	CCS_REFUTE(obj.type != CCS_OBJECT_TYPE_PARAMETER, CCS_INVALID_TYPE);
@@ -205,7 +205,7 @@ err_parameter:
 	return res;
 }
 
-static ccs_error_t
+static ccs_result_t
 _ccs_parameter_deserialize(
 	ccs_parameter_t                   *parameter_ret,
 	ccs_serialize_format_t             format,

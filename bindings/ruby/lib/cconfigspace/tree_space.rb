@@ -10,17 +10,17 @@ module CCS
     end
   end
 
-  attach_function :ccs_tree_space_get_type, [:ccs_tree_space_t, :pointer], :ccs_error_t
-  attach_function :ccs_tree_space_get_name, [:ccs_tree_space_t, :pointer], :ccs_error_t
-  attach_function :ccs_tree_space_set_rng, [:ccs_tree_space_t, :ccs_rng_t], :ccs_error_t
-  attach_function :ccs_tree_space_get_rng, [:ccs_tree_space_t, :pointer], :ccs_error_t
-  attach_function :ccs_tree_space_get_tree, [:ccs_tree_space_t, :pointer], :ccs_error_t
-  attach_function :ccs_tree_space_get_node_at_position, [:ccs_tree_space_t, :size_t, :pointer, :pointer], :ccs_error_t
-  attach_function :ccs_tree_space_get_values_at_position, [:ccs_tree_space_t, :size_t, :pointer, :size_t, :pointer], :ccs_error_t
-  attach_function :ccs_tree_space_check_position, [:ccs_tree_space_t, :size_t, :pointer, :pointer], :ccs_error_t
-  attach_function :ccs_tree_space_check_configuration, [:ccs_tree_space_t, :ccs_tree_configuration_t, :pointer], :ccs_error_t
-  attach_function :ccs_tree_space_sample, [:ccs_tree_space_t, :pointer], :ccs_error_t
-  attach_function :ccs_tree_space_samples, [:ccs_tree_space_t, :size_t, :pointer], :ccs_error_t
+  attach_function :ccs_tree_space_get_type, [:ccs_tree_space_t, :pointer], :ccs_result_t
+  attach_function :ccs_tree_space_get_name, [:ccs_tree_space_t, :pointer], :ccs_result_t
+  attach_function :ccs_tree_space_set_rng, [:ccs_tree_space_t, :ccs_rng_t], :ccs_result_t
+  attach_function :ccs_tree_space_get_rng, [:ccs_tree_space_t, :pointer], :ccs_result_t
+  attach_function :ccs_tree_space_get_tree, [:ccs_tree_space_t, :pointer], :ccs_result_t
+  attach_function :ccs_tree_space_get_node_at_position, [:ccs_tree_space_t, :size_t, :pointer, :pointer], :ccs_result_t
+  attach_function :ccs_tree_space_get_values_at_position, [:ccs_tree_space_t, :size_t, :pointer, :size_t, :pointer], :ccs_result_t
+  attach_function :ccs_tree_space_check_position, [:ccs_tree_space_t, :size_t, :pointer, :pointer], :ccs_result_t
+  attach_function :ccs_tree_space_check_configuration, [:ccs_tree_space_t, :ccs_tree_configuration_t, :pointer], :ccs_result_t
+  attach_function :ccs_tree_space_sample, [:ccs_tree_space_t, :pointer], :ccs_result_t
+  attach_function :ccs_tree_space_samples, [:ccs_tree_space_t, :size_t, :pointer], :ccs_result_t
 
   class TreeSpace < Object
     add_property :type, :ccs_tree_space_type_t, :ccs_tree_space_get_type, memoize: true
@@ -102,7 +102,7 @@ module CCS
 
   end
 
-  attach_function :ccs_create_static_tree_space, [:string, :ccs_tree_t, :pointer], :ccs_error_t
+  attach_function :ccs_create_static_tree_space, [:string, :ccs_tree_t, :pointer], :ccs_result_t
 
   class StaticTreeSpace < TreeSpace
 
@@ -119,10 +119,10 @@ module CCS
 
   end
 
-  callback :ccs_dynamic_tree_space_del, [:ccs_tree_space_t], :ccs_error_t
-  callback :ccs_dynamic_tree_space_get_child, [:ccs_tree_space_t, :ccs_tree_t, :size_t, :pointer], :ccs_error_t
-  callback :ccs_dynamic_tree_space_serialize, [:ccs_tree_space_t, :size_t, :pointer, :pointer], :ccs_error_t
-  callback :ccs_dynamic_tree_space_deserialize, [:ccs_tree_space_t, :size_t, :pointer], :ccs_error_t
+  callback :ccs_dynamic_tree_space_del, [:ccs_tree_space_t], :ccs_result_t
+  callback :ccs_dynamic_tree_space_get_child, [:ccs_tree_space_t, :ccs_tree_t, :size_t, :pointer], :ccs_result_t
+  callback :ccs_dynamic_tree_space_serialize, [:ccs_tree_space_t, :size_t, :pointer, :pointer], :ccs_result_t
+  callback :ccs_dynamic_tree_space_deserialize, [:ccs_tree_space_t, :size_t, :pointer], :ccs_result_t
 
   class DynamicTreeSpaceVector < FFI::Struct
     layout :del, :ccs_dynamic_tree_space_del,
@@ -185,8 +185,8 @@ module CCS
     return [delwrapper, get_childwrapper, serializewrapper, deserializewrapper]
   end
 
-  attach_function :ccs_create_dynamic_tree_space, [:string, :ccs_tree_t, DynamicTreeSpaceVector.by_ref, :value, :pointer], :ccs_error_t
-  attach_function :ccs_dynamic_tree_space_get_tree_space_data, [:ccs_tree_space_t, :pointer], :ccs_error_t
+  attach_function :ccs_create_dynamic_tree_space, [:string, :ccs_tree_t, DynamicTreeSpaceVector.by_ref, :value, :pointer], :ccs_result_t
+  attach_function :ccs_dynamic_tree_space_get_tree_space_data, [:ccs_tree_space_t, :pointer], :ccs_result_t
 
   class DynamicTreeSpace < TreeSpace
     add_property :tree_space_data, :value, :ccs_dynamic_tree_space_get_tree_space_data, memoize: true

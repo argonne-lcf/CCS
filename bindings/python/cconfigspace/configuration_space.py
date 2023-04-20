@@ -1,5 +1,5 @@
 import ctypes as ct
-from .base import Object, Error, ccs_error, _ccs_get_function, ccs_context, ccs_parameter, ccs_configuration_space, ccs_configuration, ccs_rng, ccs_distribution, ccs_expression, ccs_datum, ccs_bool
+from .base import Object, Error, ccs_result, _ccs_get_function, ccs_context, ccs_parameter, ccs_configuration_space, ccs_configuration, ccs_rng, ccs_distribution, ccs_expression, ccs_datum, ccs_bool
 from .context import Context
 from .distribution import Distribution
 from .parameter import Parameter
@@ -67,7 +67,7 @@ class ConfigurationSpace(Context):
       return None
     if distributions:
       if count != len(distributions):
-        raise Error(ccs_error(ccs_error.INVALID_VALUE))
+        raise Error(ccs_result(ccs_result.INVALID_VALUE))
       distribs = (ccs_distribution * count)(*[x.handle.value if x else x for x in distributions])
     else:
       distribs = None
@@ -78,7 +78,7 @@ class ConfigurationSpace(Context):
   def set_distribution(self, distribution, parameters):
     count = distribution.dimension
     if count != len(parameters):
-        raise Error(ccs_error(ccs_error.INVALID_VALUE))
+        raise Error(ccs_result(ccs_result.INVALID_VALUE))
     hyps = []
     for h in parameters:
       if isinstance(h, Parameter):
@@ -198,7 +198,7 @@ class ConfigurationSpace(Context):
   def check_values(self, values):
     count = len(values)
     if count != self.num_parameters:
-      raise Error(ccs_error(ccs_error.INVALID_VALUE))
+      raise Error(ccs_result(ccs_result.INVALID_VALUE))
     v = (ccs_datum * count)()
     ss = []
     for i in range(count):

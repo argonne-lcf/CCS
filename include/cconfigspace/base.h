@@ -164,7 +164,7 @@ typedef struct _ccs_tree_tuner_s          *ccs_tree_tuner_t;
  * The different possible return codes of a CCS function.
  * Error codes are returned negated.
  */
-enum ccs_error_e {
+enum ccs_result_e {
 	/** Guard */
 	CCS_ERROR_MAX              = 2,
 	/** Try again */
@@ -240,12 +240,12 @@ enum ccs_error_e {
 /**
  * A commodity type to represent CCS errors and returned by most functione.
  */
-typedef enum ccs_error_e ccs_error_t;
+typedef enum ccs_result_e ccs_result_t;
 
 /**
  * The result type used for evaluations.
  */
-typedef int32_t          ccs_evaluation_result_t;
+typedef int32_t           ccs_evaluation_result_t;
 
 /**
  * CCS object types.
@@ -653,7 +653,7 @@ extern const ccs_datum_t ccs_false;
  * using the library are performed.
  * @return #CCS_SUCCESS
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_init();
 
 /**
@@ -661,20 +661,20 @@ ccs_init();
  * using the library are performed.
  * @return #CCS_SUCCESS
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_fini();
 
 /**
- * Return the string corresponding to the provided CCS error.
- * @param[in] error the CCS error
+ * Return the string corresponding to the provided CCS result.
+ * @param[in] result the CCS result
  * @param[out] name a pointer to a variable that will contain the string
- *             representation of the error name.
+ *             representation of the result name.
  * @return #CCS_SUCCESS on success
  * @return #CCS_INVALID_VALUE if \p name is NULL or if \p error is not a valid
- *                             CCS error code
+ *                             CCS result code
  */
-extern ccs_error_t
-ccs_get_error_name(ccs_error_t error, const char **name);
+extern ccs_result_t
+ccs_get_result_name(ccs_result_t result, const char **name);
 
 /**
  * Query the library API version.
@@ -689,7 +689,7 @@ ccs_get_version();
  * @return #CCS_SUCCESS on success
  * @return #CCS_INVALID_OBJECT if the object is found to be invalid
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_retain_object(ccs_object_t object);
 
 /**
@@ -701,7 +701,7 @@ ccs_retain_object(ccs_object_t object);
  * @return #CCS_INVALID_OBJECT if the object is found to be invalid
  * @return an error code given by the object destructor
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_release_object(ccs_object_t object);
 
 /**
@@ -713,7 +713,7 @@ ccs_release_object(ccs_object_t object);
  * @return #CCS_INVALID_OBJECT if the object is found to be invalid
  * @return #CCS_INVALID_VALUE if type_ret is NULL
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_object_get_type(ccs_object_t object, ccs_object_type_t *type_ret);
 
 /**
@@ -725,7 +725,7 @@ ccs_object_get_type(ccs_object_t object, ccs_object_type_t *type_ret);
  * @return #CCS_INVALID_OBJECT if \p object is found to be invalid
  * @return #CCS_INVALID_VALUE if \p refcount_ret is NULL
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_object_get_refcount(ccs_object_t object, int32_t *refcount_ret);
 
 /**
@@ -744,7 +744,7 @@ typedef void (
  * @return #CCS_INVALID_OBJECT if \p object is found to be invalid
  * @return #CCS_INVALID_VALUE if \p callback is NULL
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_object_set_destroy_callback(
 	ccs_object_t                  object,
 	ccs_object_release_callback_t callback,
@@ -757,7 +757,7 @@ ccs_object_set_destroy_callback(
  * @return #CCS_SUCCESS on success
  * @return #CCS_INVALID_OBJECT if \p object is found to be invalid
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_object_set_user_data(ccs_object_t object, void *user_data);
 
 /**
@@ -769,7 +769,7 @@ ccs_object_set_user_data(ccs_object_t object, void *user_data);
  * @return #CCS_INVALID_OBJECT if \p object is found to be invalid
  * @return #CCS_INVALID_VALUE if \p user_data_ret is NULL
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_object_get_user_data(ccs_object_t object, void **user_data_ret);
 
 /**
@@ -791,7 +791,7 @@ ccs_object_get_user_data(ccs_object_t object, void **user_data_ret);
  * @return #CCS_SUCCESS on success
  * @return an error code on error
  */
-typedef ccs_error_t (*ccs_object_serialize_callback_t)(
+typedef ccs_result_t (*ccs_object_serialize_callback_t)(
 	ccs_object_t object,
 	size_t       serialize_data_size,
 	void        *serialize_data,
@@ -811,7 +811,7 @@ typedef ccs_error_t (*ccs_object_serialize_callback_t)(
  * @return #CCS_INVALID_OBJECT if \p object is found to be invalid
  * @return #CCS_INVALID_VALUE if \p callback is NULL
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_object_set_serialize_callback(
 	ccs_object_t                    object,
 	ccs_object_serialize_callback_t callback,
@@ -885,7 +885,7 @@ typedef enum ccs_serialize_option_e ccs_serialize_option_t;
 /**
  * A commodity type to represent CCS deserializaiton callbacks.
  */
-typedef ccs_error_t (*ccs_object_deserialize_callback_t)(
+typedef ccs_result_t (*ccs_object_deserialize_callback_t)(
 	ccs_object_t object,
 	size_t       serialize_data_size,
 	const char  *serialize_data,
@@ -945,7 +945,7 @@ typedef enum ccs_deserialize_option_e ccs_deserialize_option_t;
  * @return #CCS_NOT_ENOUGH_DATA in case where the provided buffer is too small
  *                               for the requested operation
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_object_serialize(
 	ccs_object_t              object,
 	ccs_serialize_format_t    format,
@@ -969,7 +969,7 @@ ccs_object_serialize(
  * @return #CCS_NOT_ENOUGH_DATA in case where the provided buffer is too small
  *                               for the requested operation
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_object_deserialize(
 	ccs_object_t             *object_ret,
 	ccs_serialize_format_t    format,

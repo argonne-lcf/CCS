@@ -10,15 +10,15 @@ module CCS
     end
   end
 
-  attach_function :ccs_tuner_get_type, [:ccs_tuner_t, :pointer], :ccs_error_t
-  attach_function :ccs_tuner_get_name, [:ccs_tuner_t, :pointer], :ccs_error_t
-  attach_function :ccs_tuner_get_configuration_space, [:ccs_tuner_t, :pointer], :ccs_error_t
-  attach_function :ccs_tuner_get_objective_space, [:ccs_tuner_t, :pointer], :ccs_error_t
-  attach_function :ccs_tuner_ask, [:ccs_tuner_t, :size_t, :pointer, :pointer], :ccs_error_t
-  attach_function :ccs_tuner_tell, [:ccs_tuner_t, :size_t, :pointer], :ccs_error_t
-  attach_function :ccs_tuner_get_optimums, [:ccs_tuner_t, :size_t, :pointer, :pointer], :ccs_error_t
-  attach_function :ccs_tuner_get_history, [:ccs_tuner_t, :size_t, :pointer, :pointer], :ccs_error_t
-  attach_function :ccs_tuner_suggest, [:ccs_tuner_t, :pointer], :ccs_error_t
+  attach_function :ccs_tuner_get_type, [:ccs_tuner_t, :pointer], :ccs_result_t
+  attach_function :ccs_tuner_get_name, [:ccs_tuner_t, :pointer], :ccs_result_t
+  attach_function :ccs_tuner_get_configuration_space, [:ccs_tuner_t, :pointer], :ccs_result_t
+  attach_function :ccs_tuner_get_objective_space, [:ccs_tuner_t, :pointer], :ccs_result_t
+  attach_function :ccs_tuner_ask, [:ccs_tuner_t, :size_t, :pointer, :pointer], :ccs_result_t
+  attach_function :ccs_tuner_tell, [:ccs_tuner_t, :size_t, :pointer], :ccs_result_t
+  attach_function :ccs_tuner_get_optimums, [:ccs_tuner_t, :size_t, :pointer, :pointer], :ccs_result_t
+  attach_function :ccs_tuner_get_history, [:ccs_tuner_t, :size_t, :pointer, :pointer], :ccs_result_t
+  attach_function :ccs_tuner_suggest, [:ccs_tuner_t, :pointer], :ccs_result_t
 
   class Tuner < Object
     add_property :type, :ccs_tuner_type_t, :ccs_tuner_get_type, memoize: true
@@ -96,7 +96,7 @@ module CCS
 
   end
 
-  attach_function :ccs_create_random_tuner, [:string, :ccs_configuration_space_t, :ccs_objective_space_t, :pointer], :ccs_error_t
+  attach_function :ccs_create_random_tuner, [:string, :ccs_configuration_space_t, :ccs_objective_space_t, :pointer], :ccs_result_t
 
   class RandomTuner < Tuner
     def initialize(handle = nil, retain: false, auto_release: true,
@@ -111,14 +111,14 @@ module CCS
     end
   end
 
-  callback :ccs_user_defined_tuner_del, [:ccs_tuner_t], :ccs_error_t
-  callback :ccs_user_defined_tuner_ask, [:ccs_tuner_t, :size_t, :pointer, :pointer], :ccs_error_t
-  callback :ccs_user_defined_tuner_tell, [:ccs_tuner_t, :size_t, :pointer], :ccs_error_t
-  callback :ccs_user_defined_tuner_get_optimums, [:ccs_tuner_t, :size_t, :pointer, :pointer], :ccs_error_t
-  callback :ccs_user_defined_tuner_get_history, [:ccs_tuner_t, :size_t, :pointer, :pointer], :ccs_error_t
-  callback :ccs_user_defined_tuner_suggest, [:ccs_tuner_t, :pointer], :ccs_error_t
-  callback :ccs_user_defined_tuner_serialize, [:ccs_tuner_t, :size_t, :pointer, :pointer], :ccs_error_t
-  callback :ccs_user_defined_tuner_deserialize, [:ccs_tuner_t, :size_t, :pointer, :size_t, :pointer, :size_t, :pointer], :ccs_error_t
+  callback :ccs_user_defined_tuner_del, [:ccs_tuner_t], :ccs_result_t
+  callback :ccs_user_defined_tuner_ask, [:ccs_tuner_t, :size_t, :pointer, :pointer], :ccs_result_t
+  callback :ccs_user_defined_tuner_tell, [:ccs_tuner_t, :size_t, :pointer], :ccs_result_t
+  callback :ccs_user_defined_tuner_get_optimums, [:ccs_tuner_t, :size_t, :pointer, :pointer], :ccs_result_t
+  callback :ccs_user_defined_tuner_get_history, [:ccs_tuner_t, :size_t, :pointer, :pointer], :ccs_result_t
+  callback :ccs_user_defined_tuner_suggest, [:ccs_tuner_t, :pointer], :ccs_result_t
+  callback :ccs_user_defined_tuner_serialize, [:ccs_tuner_t, :size_t, :pointer, :pointer], :ccs_result_t
+  callback :ccs_user_defined_tuner_deserialize, [:ccs_tuner_t, :size_t, :pointer, :size_t, :pointer, :size_t, :pointer], :ccs_result_t
 
   class UserDefinedTunerVector < FFI::Struct
     layout :del, :ccs_user_defined_tuner_del,
@@ -254,8 +254,8 @@ module CCS
     return [delwrapper, askwrapper, tellwrapper, get_optimumswrapper, get_historywrapper, suggestwrapper, serializewrapper, deserializewrapper]
   end
 
-  attach_function :ccs_create_user_defined_tuner, [:string, :ccs_configuration_space_t, :ccs_objective_space_t, UserDefinedTunerVector.by_ref, :value, :pointer], :ccs_error_t
-  attach_function :ccs_user_defined_tuner_get_tuner_data, [:ccs_tuner_t, :pointer], :ccs_error_t
+  attach_function :ccs_create_user_defined_tuner, [:string, :ccs_configuration_space_t, :ccs_objective_space_t, UserDefinedTunerVector.by_ref, :value, :pointer], :ccs_result_t
+  attach_function :ccs_user_defined_tuner_get_tuner_data, [:ccs_tuner_t, :pointer], :ccs_result_t
 
   class UserDefinedTuner < Tuner
     add_property :tuner_data, :value, :ccs_user_defined_tuner_get_tuner_data, memoize: true

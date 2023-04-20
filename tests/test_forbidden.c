@@ -8,7 +8,7 @@ ccs_parameter_t
 create_numerical(const char *name)
 {
 	ccs_parameter_t parameter;
-	ccs_error_t     err;
+	ccs_result_t    err;
 	err = ccs_create_numerical_parameter(
 		name, CCS_NUMERIC_TYPE_FLOAT, CCSF(-1.0), CCSF(1.0), CCSF(0.0),
 		CCSF(0), &parameter);
@@ -25,7 +25,7 @@ test_simple()
 	ccs_configuration_t       configuration;
 	ccs_datum_t               values[2];
 	ccs_configuration_t       configurations[100];
-	ccs_error_t               err;
+	ccs_result_t              err;
 
 	parameter1 = create_numerical("param1");
 	parameter2 = create_numerical("param2");
@@ -107,7 +107,7 @@ test_combined()
 	ccs_configuration_t       configuration;
 	ccs_datum_t               values[3];
 	ccs_configuration_t       configurations[100];
-	ccs_error_t               err;
+	ccs_result_t              err;
 
 	parameters[0] = create_numerical("param1");
 	parameters[1] = create_numerical("param2");

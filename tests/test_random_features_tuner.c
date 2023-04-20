@@ -7,7 +7,7 @@ ccs_parameter_t
 create_numerical(const char *name, double lower, double upper)
 {
 	ccs_parameter_t parameter;
-	ccs_error_t     err;
+	ccs_result_t    err;
 	err = ccs_create_numerical_parameter(
 		name, CCS_NUMERIC_TYPE_FLOAT, CCSF(lower), CCSF(upper),
 		CCSF(0.0), CCSF(0), &parameter);
@@ -26,7 +26,7 @@ test()
 	ccs_objective_space_t     ospace;
 	ccs_expression_t          expression;
 	ccs_features_tuner_t      tuner, tuner_copy;
-	ccs_error_t               err;
+	ccs_result_t              err;
 	ccs_features_t            features_on, features_off;
 	ccs_datum_t knobs_values[2] = {ccs_string("on"), ccs_string("off")};
 	ccs_datum_t d;
@@ -254,7 +254,7 @@ test_evaluation_deserialize()
 	ccs_features_space_t      fspace;
 	ccs_objective_space_t     ospace;
 	ccs_expression_t          expression;
-	ccs_error_t               err;
+	ccs_result_t              err;
 	ccs_configuration_t       configuration;
 	ccs_features_t            features_on;
 	ccs_datum_t knobs_values[2] = {ccs_string("on"), ccs_string("off")};

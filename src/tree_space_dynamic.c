@@ -9,20 +9,20 @@ struct _ccs_tree_space_dynamic_data_s {
 };
 typedef struct _ccs_tree_space_dynamic_data_s _ccs_tree_space_dynamic_data_t;
 
-static ccs_error_t
+static ccs_result_t
 _ccs_tree_space_dynamic_del(ccs_object_t o)
 {
 	struct _ccs_tree_space_dynamic_data_s *data =
 		(struct _ccs_tree_space_dynamic_data_s *)(((ccs_tree_space_t)o)
 								  ->data);
-	ccs_error_t err;
+	ccs_result_t err;
 	err = data->vector.del((ccs_tree_space_t)o);
 	ccs_release_object(data->common_data.rng);
 	ccs_release_object(data->common_data.tree);
 	return err;
 }
 
-static inline ccs_error_t
+static inline ccs_result_t
 _ccs_serialize_bin_size_ccs_tree_space_dynamic_data(
 	_ccs_tree_space_dynamic_data_t  *data,
 	size_t                          *cum_size,
@@ -33,7 +33,7 @@ _ccs_serialize_bin_size_ccs_tree_space_dynamic_data(
 	return CCS_SUCCESS;
 }
 
-static inline ccs_error_t
+static inline ccs_result_t
 _ccs_serialize_bin_ccs_tree_space_dynamic_data(
 	_ccs_tree_space_dynamic_data_t  *data,
 	size_t                          *buffer_size,
@@ -45,7 +45,7 @@ _ccs_serialize_bin_ccs_tree_space_dynamic_data(
 	return CCS_SUCCESS;
 }
 
-static inline ccs_error_t
+static inline ccs_result_t
 _ccs_serialize_bin_size_ccs_tree_space_dynamic(
 	ccs_tree_space_t                 tree_space,
 	size_t                          *cum_size,
@@ -66,7 +66,7 @@ _ccs_serialize_bin_size_ccs_tree_space_dynamic(
 	return CCS_SUCCESS;
 }
 
-static inline ccs_error_t
+static inline ccs_result_t
 _ccs_serialize_bin_ccs_tree_space_dynamic(
 	ccs_tree_space_t                 tree_space,
 	size_t                          *buffer_size,
@@ -94,7 +94,7 @@ _ccs_serialize_bin_ccs_tree_space_dynamic(
 	return CCS_SUCCESS;
 }
 
-static ccs_error_t
+static ccs_result_t
 _ccs_tree_space_dynamic_serialize_size(
 	ccs_object_t                     object,
 	ccs_serialize_format_t           format,
@@ -116,7 +116,7 @@ _ccs_tree_space_dynamic_serialize_size(
 	return CCS_SUCCESS;
 }
 
-static ccs_error_t
+static ccs_result_t
 _ccs_tree_space_dynamic_serialize(
 	ccs_object_t                     object,
 	ccs_serialize_format_t           format,
@@ -139,13 +139,13 @@ _ccs_tree_space_dynamic_serialize(
 	return CCS_SUCCESS;
 }
 
-static inline ccs_error_t
+static inline ccs_result_t
 _ccs_tree_space_tree_get_child(
 	ccs_tree_space_t tree_space,
 	ccs_tree_t       parent,
 	size_t           index,
 	ccs_tree_t      *child,
-	ccs_error_t (*child_cb)(
+	ccs_result_t (*child_cb)(
 		ccs_tree_space_t tree_space,
 		ccs_tree_t       parent,
 		size_t           child_index,
@@ -160,7 +160,7 @@ _ccs_tree_space_tree_get_child(
 	return CCS_SUCCESS;
 }
 
-static ccs_error_t
+static ccs_result_t
 _ccs_tree_space_dynamic_get_node_at_position(
 	ccs_tree_space_t tree_space,
 	size_t           position_size,
@@ -181,7 +181,7 @@ _ccs_tree_space_dynamic_get_node_at_position(
 	return CCS_SUCCESS;
 }
 
-static ccs_error_t
+static ccs_result_t
 _ccs_tree_space_dynamic_get_values_at_position(
 	ccs_tree_space_t tree_space,
 	size_t           position_size,
@@ -209,7 +209,7 @@ _ccs_tree_space_dynamic_get_values_at_position(
 	return CCS_SUCCESS;
 }
 
-static ccs_error_t
+static ccs_result_t
 _ccs_tree_space_dynamic_check_position(
 	ccs_tree_space_t tree_space,
 	size_t           position_size,
@@ -244,7 +244,7 @@ static _ccs_tree_space_ops_t _ccs_tree_space_dynamic_ops = {
 	&_ccs_tree_space_dynamic_get_values_at_position,
 	&_ccs_tree_space_dynamic_check_position};
 
-ccs_error_t
+ccs_result_t
 ccs_create_dynamic_tree_space(
 	const char                      *name,
 	ccs_tree_t                       tree,
@@ -258,8 +258,8 @@ ccs_create_dynamic_tree_space(
 	CCS_CHECK_PTR(vector->del);
 	CCS_CHECK_PTR(vector->get_child);
 	CCS_CHECK_PTR(tree_space_ret);
-	ccs_error_t err;
-	uintptr_t   mem = (uintptr_t)calloc(
+	ccs_result_t err;
+	uintptr_t    mem = (uintptr_t)calloc(
                 1, sizeof(struct _ccs_tree_space_s) +
                            sizeof(struct _ccs_tree_space_dynamic_data_s) +
                            strlen(name) + 1);
@@ -295,7 +295,7 @@ errmem:
 	return err;
 }
 
-ccs_error_t
+ccs_result_t
 ccs_dynamic_tree_space_get_tree_space_data(
 	ccs_tree_space_t tree_space,
 	void           **tree_space_data_ret)

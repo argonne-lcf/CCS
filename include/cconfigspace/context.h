@@ -24,7 +24,7 @@ extern "C" {
  * @return #CCS_INVALID_OBJECT if \p context is not a valid CCS object
  * @return #CCS_INVALID_VALUE if \p name_ret is NULL
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_context_get_name(ccs_context_t context, const char **name_ret);
 
 /**
@@ -39,7 +39,7 @@ ccs_context_get_name(ccs_context_t context, const char **name_ret);
  * @return #CCS_INVALID_PARAMETER if \p context does not contain \p
  *                                      parameter
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_context_get_parameter_index(
 	ccs_context_t   context,
 	ccs_parameter_t parameter,
@@ -55,7 +55,7 @@ ccs_context_get_parameter_index(
  * @return #CCS_INVALID_OBJECT if \p context is not a valid CCS object
  * @return #CCS_INVALID_VALUE if \p num_parameters_ret is NULL
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_context_get_num_parameters(
 	ccs_context_t context,
 	size_t       *num_parameters_ret);
@@ -72,7 +72,7 @@ ccs_context_get_num_parameters(
  * @return #CCS_OUT_OF_BOUNDS if \p index is greater than the count of
  *                             parameters in the context
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_context_get_parameter(
 	ccs_context_t    context,
 	size_t           index,
@@ -90,7 +90,7 @@ ccs_context_get_parameter(
  * @return #CCS_INVALID_NAME if no parameter with such \p name exist in
  *                            the \p context
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_context_get_parameter_by_name(
 	ccs_context_t    context,
 	const char      *name,
@@ -108,7 +108,7 @@ ccs_context_get_parameter_by_name(
  * @return #CCS_INVALID_NAME if no parameter with such \p name exist in
  *                            the context
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_context_get_parameter_index_by_name(
 	ccs_context_t context,
 	const char   *name,
@@ -136,7 +136,7 @@ ccs_context_get_parameter_index_by_name(
  *                             \p num_parameters is less than the number of
  *                             parameters that would be returned
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_context_get_parameters(
 	ccs_context_t    context,
 	size_t           num_parameters,
@@ -161,7 +161,7 @@ ccs_context_get_parameters(
  * @return #CCS_INVALID_PARAMETER if at least one of the parameters
  *                                      is not contained in \p context
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_context_get_parameter_indexes(
 	ccs_context_t    context,
 	size_t           num_parameters,
@@ -186,7 +186,7 @@ ccs_context_get_parameter_indexes(
  * @return #CCS_INVALID_VALUE if the value did not validate or if value_ret is
  *                             NULL
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_context_validate_value(
 	ccs_context_t context,
 	size_t        index,

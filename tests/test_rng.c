@@ -10,7 +10,7 @@ test_rng_create_with_type()
 	size_t               type_count = 0;
 	int32_t              selected, refcount;
 	ccs_rng_t            rng = NULL;
-	ccs_error_t          err = CCS_SUCCESS;
+	ccs_result_t         err = CCS_SUCCESS;
 	ccs_object_type_t    otype;
 
 	t1 = t2 = gsl_rng_types_setup();
@@ -41,7 +41,7 @@ static void
 test_rng_create()
 {
 	ccs_rng_t           rng = NULL, rng2 = NULL;
-	ccs_error_t         err = CCS_SUCCESS;
+	ccs_result_t        err = CCS_SUCCESS;
 	const gsl_rng_type *t, *t2;
 	char               *buff;
 	size_t              buff_size;
@@ -100,7 +100,7 @@ static void
 test_rng_min_max()
 {
 	ccs_rng_t         rng  = NULL;
-	ccs_error_t       err  = CCS_SUCCESS;
+	ccs_result_t      err  = CCS_SUCCESS;
 	unsigned long int imin = 0;
 	unsigned long int imax = 0;
 	err                    = ccs_create_rng(&rng);
@@ -126,7 +126,7 @@ static void
 test_rng_get()
 {
 	ccs_rng_t         rng  = NULL;
-	ccs_error_t       err  = CCS_SUCCESS;
+	ccs_result_t      err  = CCS_SUCCESS;
 	unsigned long int i    = 0;
 	unsigned long int imin = 0;
 	unsigned long int imax = 0;
@@ -150,11 +150,11 @@ test_rng_get()
 static void
 test_rng_uniform()
 {
-	ccs_rng_t   rng = NULL;
-	ccs_error_t err = CCS_SUCCESS;
-	double      d   = -1.0;
+	ccs_rng_t    rng = NULL;
+	ccs_result_t err = CCS_SUCCESS;
+	double       d   = -1.0;
 
-	err             = ccs_create_rng(&rng);
+	err              = ccs_create_rng(&rng);
 	assert(err == CCS_SUCCESS);
 	for (int j = 0; j < 100; j++) {
 		err = ccs_rng_uniform(rng, &d);

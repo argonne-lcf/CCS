@@ -1,7 +1,7 @@
 #include "cconfigspace_internal.h"
 #include "tree_internal.h"
 
-static ccs_error_t
+static ccs_result_t
 _ccs_tree_del(ccs_object_t o)
 {
 	struct _ccs_tree_data_s *data = ((ccs_tree_t)o)->data;
@@ -16,7 +16,7 @@ _ccs_tree_del(ccs_object_t o)
 	return CCS_SUCCESS;
 }
 
-static inline ccs_error_t
+static inline ccs_result_t
 _ccs_serialize_bin_size_ccs_tree_data(
 	_ccs_tree_data_t                *data,
 	size_t                          *cum_size,
@@ -38,7 +38,7 @@ _ccs_serialize_bin_size_ccs_tree_data(
 	return CCS_SUCCESS;
 }
 
-static inline ccs_error_t
+static inline ccs_result_t
 _ccs_serialize_bin_ccs_tree_data(
 	_ccs_tree_data_t                *data,
 	size_t                          *buffer_size,
@@ -63,7 +63,7 @@ _ccs_serialize_bin_ccs_tree_data(
 	return CCS_SUCCESS;
 }
 
-static inline ccs_error_t
+static inline ccs_result_t
 _ccs_serialize_bin_size_ccs_tree(
 	ccs_tree_t                       tree,
 	size_t                          *cum_size,
@@ -76,7 +76,7 @@ _ccs_serialize_bin_size_ccs_tree(
 	return CCS_SUCCESS;
 }
 
-static inline ccs_error_t
+static inline ccs_result_t
 _ccs_serialize_bin_ccs_tree(
 	ccs_tree_t                       tree,
 	size_t                          *buffer_size,
@@ -90,7 +90,7 @@ _ccs_serialize_bin_ccs_tree(
 	return CCS_SUCCESS;
 }
 
-static ccs_error_t
+static ccs_result_t
 _ccs_tree_serialize_size(
 	ccs_object_t                     object,
 	ccs_serialize_format_t           format,
@@ -112,7 +112,7 @@ _ccs_tree_serialize_size(
 	return CCS_SUCCESS;
 }
 
-static ccs_error_t
+static ccs_result_t
 _ccs_tree_serialize(
 	ccs_object_t                     object,
 	ccs_serialize_format_t           format,
@@ -138,7 +138,7 @@ _ccs_tree_serialize(
 static _ccs_tree_ops_t _ccs_tree_ops = {
 	{&_ccs_tree_del, &_ccs_tree_serialize_size, &_ccs_tree_serialize}};
 
-ccs_error_t
+ccs_result_t
 ccs_create_tree(size_t arity, ccs_datum_t value, ccs_tree_t *tree_ret)
 {
 	CCS_CHECK_PTR(tree_ret);
@@ -184,7 +184,7 @@ ccs_create_tree(size_t arity, ccs_datum_t value, ccs_tree_t *tree_ret)
 		data->value       = value;
 		data->value.flags = CCS_DATUM_FLAG_DEFAULT;
 	}
-	ccs_error_t err = CCS_SUCCESS;
+	ccs_result_t err = CCS_SUCCESS;
 	CCS_VALIDATE_ERR_GOTO(
 		err,
 		ccs_create_roulette_distribution(
@@ -198,7 +198,7 @@ err_mem:
 	return err;
 }
 
-ccs_error_t
+ccs_result_t
 ccs_tree_get_value(ccs_tree_t tree, ccs_datum_t *value_ret)
 {
 	CCS_CHECK_OBJ(tree, CCS_OBJECT_TYPE_TREE);
@@ -207,7 +207,7 @@ ccs_tree_get_value(ccs_tree_t tree, ccs_datum_t *value_ret)
 	return CCS_SUCCESS;
 }
 
-ccs_error_t
+ccs_result_t
 ccs_tree_get_arity(ccs_tree_t tree, size_t *arity_ret)
 {
 	CCS_CHECK_OBJ(tree, CCS_OBJECT_TYPE_TREE);
@@ -216,7 +216,7 @@ ccs_tree_get_arity(ccs_tree_t tree, size_t *arity_ret)
 	return CCS_SUCCESS;
 }
 
-static inline ccs_error_t
+static inline ccs_result_t
 _ccs_tree_update_weight(ccs_tree_t tree, size_t index, ccs_float_t weight)
 {
 	_ccs_tree_data_t *tree_data = tree->data;
@@ -244,7 +244,7 @@ _ccs_tree_update_weight(ccs_tree_t tree, size_t index, ccs_float_t weight)
 	return CCS_SUCCESS;
 }
 
-static inline ccs_error_t
+static inline ccs_result_t
 _ccs_tree_update_bias(ccs_tree_t tree, ccs_float_t bias)
 {
 	_ccs_tree_data_t *tree_data = tree->data;
@@ -259,7 +259,7 @@ _ccs_tree_update_bias(ccs_tree_t tree, ccs_float_t bias)
 	return CCS_SUCCESS;
 }
 
-ccs_error_t
+ccs_result_t
 ccs_tree_set_child(ccs_tree_t tree, size_t index, ccs_tree_t child)
 {
 	CCS_CHECK_OBJ(tree, CCS_OBJECT_TYPE_TREE);
@@ -276,8 +276,8 @@ ccs_tree_set_child(ccs_tree_t tree, size_t index, ccs_tree_t child)
 	child_data->index          = index;
 	tree_data->children[index] = child;
 
-	ccs_error_t err;
-	ccs_float_t weight = child_data->sum_weights * child_data->bias;
+	ccs_result_t err;
+	ccs_float_t  weight = child_data->sum_weights * child_data->bias;
 	CCS_VALIDATE_ERR_GOTO(
 		err, _ccs_tree_update_weight(tree, index, weight), err_distrib);
 	return CCS_SUCCESS;
@@ -290,7 +290,7 @@ err_distrib:
 	return err;
 }
 
-ccs_error_t
+ccs_result_t
 ccs_tree_get_child(ccs_tree_t tree, size_t index, ccs_tree_t *child_ret)
 {
 	CCS_CHECK_OBJ(tree, CCS_OBJECT_TYPE_TREE);
@@ -301,7 +301,7 @@ ccs_tree_get_child(ccs_tree_t tree, size_t index, ccs_tree_t *child_ret)
 	return CCS_SUCCESS;
 }
 
-ccs_error_t
+ccs_result_t
 ccs_tree_get_children(
 	ccs_tree_t  tree,
 	size_t      num_children,
@@ -325,7 +325,7 @@ ccs_tree_get_children(
 	return CCS_SUCCESS;
 }
 
-ccs_error_t
+ccs_result_t
 ccs_tree_get_weight(ccs_tree_t tree, ccs_float_t *weight_ret)
 {
 	CCS_CHECK_OBJ(tree, CCS_OBJECT_TYPE_TREE);
@@ -335,7 +335,7 @@ ccs_tree_get_weight(ccs_tree_t tree, ccs_float_t *weight_ret)
 	return CCS_SUCCESS;
 }
 
-ccs_error_t
+ccs_result_t
 ccs_tree_set_weight(ccs_tree_t tree, ccs_float_t weight)
 {
 	CCS_CHECK_OBJ(tree, CCS_OBJECT_TYPE_TREE);
@@ -343,7 +343,7 @@ ccs_tree_set_weight(ccs_tree_t tree, ccs_float_t weight)
 	_ccs_tree_data_t *tree_data  = tree->data;
 	size_t            index      = tree_data->arity;
 	ccs_float_t       old_weight = tree_data->weights[index];
-	ccs_error_t       err        = CCS_SUCCESS;
+	ccs_result_t      err        = CCS_SUCCESS;
 	CCS_VALIDATE_ERR_GOTO(
 		err, _ccs_tree_update_weight(tree, index, weight), err_distrib);
 	return CCS_SUCCESS;
@@ -352,7 +352,7 @@ err_distrib:
 	return err;
 }
 
-ccs_error_t
+ccs_result_t
 ccs_tree_get_bias(ccs_tree_t tree, ccs_float_t *bias_ret)
 {
 	CCS_CHECK_OBJ(tree, CCS_OBJECT_TYPE_TREE);
@@ -361,14 +361,14 @@ ccs_tree_get_bias(ccs_tree_t tree, ccs_float_t *bias_ret)
 	return CCS_SUCCESS;
 }
 
-ccs_error_t
+ccs_result_t
 ccs_tree_set_bias(ccs_tree_t tree, ccs_float_t bias)
 {
 	CCS_CHECK_OBJ(tree, CCS_OBJECT_TYPE_TREE);
 	CCS_REFUTE(bias < 0.0, CCS_INVALID_VALUE);
 	_ccs_tree_data_t *tree_data = tree->data;
 	ccs_float_t       old_bias  = tree_data->bias;
-	ccs_error_t       err       = CCS_SUCCESS;
+	ccs_result_t      err       = CCS_SUCCESS;
 	CCS_VALIDATE_ERR_GOTO(
 		err, _ccs_tree_update_bias(tree, bias), err_distrib);
 	return CCS_SUCCESS;
@@ -377,7 +377,7 @@ err_distrib:
 	return err;
 }
 
-ccs_error_t
+ccs_result_t
 ccs_tree_get_parent(ccs_tree_t tree, ccs_tree_t *parent_ret, size_t *index_ret)
 {
 	CCS_CHECK_OBJ(tree, CCS_OBJECT_TYPE_TREE);
@@ -389,7 +389,7 @@ ccs_tree_get_parent(ccs_tree_t tree, ccs_tree_t *parent_ret, size_t *index_ret)
 	return CCS_SUCCESS;
 }
 
-ccs_error_t
+ccs_result_t
 ccs_tree_get_position(
 	ccs_tree_t tree,
 	size_t     position_size,
@@ -420,7 +420,7 @@ ccs_tree_get_position(
 	return CCS_SUCCESS;
 }
 
-ccs_error_t
+ccs_result_t
 ccs_tree_get_values(
 	ccs_tree_t   tree,
 	size_t       num_values,
@@ -451,7 +451,7 @@ ccs_tree_get_values(
 	return CCS_SUCCESS;
 }
 
-ccs_error_t
+ccs_result_t
 ccs_tree_position_is_valid(
 	ccs_tree_t    tree,
 	size_t        position_size,
@@ -472,7 +472,7 @@ ccs_tree_position_is_valid(
 	return CCS_SUCCESS;
 }
 
-ccs_error_t
+ccs_result_t
 ccs_tree_get_values_at_position(
 	ccs_tree_t    tree,
 	size_t        position_size,
@@ -495,7 +495,7 @@ ccs_tree_get_values_at_position(
 	return CCS_SUCCESS;
 }
 
-ccs_error_t
+ccs_result_t
 ccs_tree_get_node_at_position(
 	ccs_tree_t    tree,
 	size_t        position_size,
@@ -513,7 +513,7 @@ ccs_tree_get_node_at_position(
 	return CCS_SUCCESS;
 }
 
-static inline ccs_error_t
+static inline ccs_result_t
 _ccs_tree_samples(
 	_ccs_tree_data_t *data,
 	ccs_rng_t         rng,
@@ -527,7 +527,7 @@ _ccs_tree_samples(
 	return CCS_SUCCESS;
 }
 
-ccs_error_t
+ccs_result_t
 ccs_tree_sample(ccs_tree_t tree, ccs_rng_t rng, size_t *index_ret)
 {
 	CCS_CHECK_OBJ(tree, CCS_OBJECT_TYPE_TREE);
@@ -538,7 +538,7 @@ ccs_tree_sample(ccs_tree_t tree, ccs_rng_t rng, size_t *index_ret)
 	return CCS_SUCCESS;
 }
 
-ccs_error_t
+ccs_result_t
 ccs_tree_samples(
 	ccs_tree_t tree,
 	ccs_rng_t  rng,

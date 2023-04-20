@@ -23,7 +23,7 @@ struct _ccs_configuration_space_data_mock_s {
 typedef struct _ccs_configuration_space_data_mock_s
 	_ccs_configuration_space_data_mock_t;
 
-static inline ccs_error_t
+static inline ccs_result_t
 _ccs_deserialize_bin_ccs_configuration_space_data(
 	_ccs_configuration_space_data_mock_t *data,
 	uint32_t                              version,
@@ -113,7 +113,7 @@ _ccs_deserialize_bin_ccs_configuration_space_data(
 	return CCS_SUCCESS;
 }
 
-static inline ccs_error_t
+static inline ccs_result_t
 _ccs_deserialize_bin_configuration_space(
 	ccs_configuration_space_t         *configuration_space_ret,
 	uint32_t                           version,
@@ -124,7 +124,7 @@ _ccs_deserialize_bin_configuration_space(
 	_ccs_object_deserialize_options_t new_opts = *opts;
 	_ccs_object_internal_t            obj;
 	ccs_object_t                      handle;
-	ccs_error_t                       res = CCS_SUCCESS;
+	ccs_result_t                      res = CCS_SUCCESS;
 	CCS_VALIDATE(_ccs_deserialize_bin_ccs_object_internal(
 		&obj, buffer_size, buffer, &handle));
 	CCS_REFUTE(
@@ -221,7 +221,7 @@ end:
 	return res;
 }
 
-static ccs_error_t
+static ccs_result_t
 _ccs_configuration_space_deserialize(
 	ccs_configuration_space_t         *configuration_space_ret,
 	ccs_serialize_format_t             format,

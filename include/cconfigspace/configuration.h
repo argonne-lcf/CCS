@@ -31,7 +31,7 @@ extern "C" {
  * @return #CCS_OUT_OF_MEMORY if there was a lack of memory to allocate the new
  *                             configuration
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_create_configuration(
 	ccs_configuration_space_t configuration_space,
 	size_t                    num_values,
@@ -48,7 +48,7 @@ ccs_create_configuration(
  *                              configuration
  * @return #CCS_INVALID_VALUE if \p configuration_space_ret is NULL
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_configuration_get_configuration_space(
 	ccs_configuration_t        configuration,
 	ccs_configuration_space_t *configuration_space_ret);
@@ -66,7 +66,7 @@ ccs_configuration_get_configuration_space(
  * @return #CCS_OUT_OF_BOUNDS if \p index is greater than the count of
  *                             parameters in the configuration space
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_configuration_get_value(
 	ccs_configuration_t configuration,
 	size_t              index,
@@ -88,7 +88,7 @@ ccs_configuration_get_value(
  * @return #CCS_OUT_OF_MEMORY if there was a lack of memory while memoizing a
  *                             string
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_configuration_set_value(
 	ccs_configuration_t configuration,
 	size_t              index,
@@ -113,7 +113,7 @@ ccs_configuration_set_value(
  *                             less than the number of values that would be
  *                             returned
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_configuration_get_values(
 	ccs_configuration_t configuration,
 	size_t              num_values,
@@ -132,7 +132,7 @@ ccs_configuration_get_values(
  * @return #CCS_INVALID_NAME if no parameter with such \p name exist in
  *                            the \p configuration space
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_configuration_get_value_by_name(
 	ccs_configuration_t configuration,
 	const char         *name,
@@ -155,7 +155,7 @@ ccs_configuration_get_value_by_name(
  * @return #CCS_INVALID_CONFIGURATION if \p configuration has become invalid
  *                                     for the configuration space
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_configuration_check(
 	ccs_configuration_t configuration,
 	ccs_bool_t         *is_valid_ret);
@@ -172,7 +172,7 @@ ccs_configuration_check(
  *                              configuration
  * @return #CCS_INVALID_VALUE if \p hash_ret is NULL
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_configuration_hash(ccs_configuration_t configuration, ccs_hash_t *hash_ret);
 
 /**
@@ -189,7 +189,7 @@ ccs_configuration_hash(ccs_configuration_t configuration, ccs_hash_t *hash_ret);
  * @return #CCS_INVALID_OBJECT if \p configuration or \p other_configuration
  *                              are not a valid CCS object
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_configuration_cmp(
 	ccs_configuration_t configuration,
 	ccs_configuration_t other_configuration,

@@ -13,7 +13,7 @@ compare_parameter(
 	ccs_datum_t     possible_values[],
 	const size_t    default_value_index)
 {
-	ccs_error_t             err;
+	ccs_result_t            err;
 	ccs_parameter_type_t    type;
 	ccs_datum_t             default_value;
 	const char             *name;
@@ -72,7 +72,7 @@ void
 test_create()
 {
 	ccs_parameter_t parameter;
-	ccs_error_t     err;
+	ccs_result_t    err;
 	const size_t    num_possible_values = NUM_POSSIBLE_VALUES;
 	ccs_datum_t     possible_values[NUM_POSSIBLE_VALUES];
 	const size_t    default_value_index = 2;
@@ -134,7 +134,7 @@ test_samples()
 	ccs_distribution_t distribution;
 	const size_t       num_samples = NUM_SAMPLES;
 	ccs_datum_t        samples[NUM_SAMPLES];
-	ccs_error_t        err;
+	ccs_result_t       err;
 	const size_t       num_possible_values = NUM_POSSIBLE_VALUES;
 	ccs_datum_t        possible_values[NUM_POSSIBLE_VALUES];
 	const size_t       default_value_index = 2;
@@ -183,7 +183,7 @@ test_oversampling()
 	ccs_distribution_t distribution;
 	const size_t       num_samples = NUM_SAMPLES;
 	ccs_datum_t        samples[NUM_SAMPLES];
-	ccs_error_t        err;
+	ccs_result_t       err;
 	const size_t       num_possible_values = NUM_POSSIBLE_VALUES;
 	ccs_datum_t        possible_values[NUM_POSSIBLE_VALUES];
 	const size_t       default_value_index = 2;

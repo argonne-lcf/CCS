@@ -18,7 +18,7 @@ _ccs_serialize_bin_size_ccs_parameter_string_data(
 		&data->common_data);
 }
 
-static inline ccs_error_t
+static inline ccs_result_t
 _ccs_serialize_bin_ccs_parameter_string_data(
 	_ccs_parameter_string_data_t *data,
 	size_t                       *buffer_size,
@@ -29,7 +29,7 @@ _ccs_serialize_bin_ccs_parameter_string_data(
 	return CCS_SUCCESS;
 }
 
-static ccs_error_t
+static ccs_result_t
 _ccs_parameter_string_del(ccs_object_t o)
 {
 	ccs_parameter_t               d = (ccs_parameter_t)o;
@@ -54,7 +54,7 @@ _ccs_serialize_bin_size_ccs_parameter_string(ccs_parameter_t parameter)
 	       _ccs_serialize_bin_size_ccs_parameter_string_data(data);
 }
 
-static inline ccs_error_t
+static inline ccs_result_t
 _ccs_serialize_bin_ccs_parameter_string(
 	ccs_parameter_t parameter,
 	size_t         *buffer_size,
@@ -69,7 +69,7 @@ _ccs_serialize_bin_ccs_parameter_string(
 	return CCS_SUCCESS;
 }
 
-static ccs_error_t
+static ccs_result_t
 _ccs_parameter_string_serialize_size(
 	ccs_object_t                     object,
 	ccs_serialize_format_t           format,
@@ -91,7 +91,7 @@ _ccs_parameter_string_serialize_size(
 	return CCS_SUCCESS;
 }
 
-static ccs_error_t
+static ccs_result_t
 _ccs_parameter_string_serialize(
 	ccs_object_t                     object,
 	ccs_serialize_format_t           format,
@@ -122,7 +122,7 @@ _ccs_parameter_string_serialize(
 			"Not enough memory to allocate array");                \
 	}
 
-static ccs_error_t
+static ccs_result_t
 _ccs_parameter_string_check_values(
 	_ccs_parameter_data_t *data,
 	size_t                 num_values,
@@ -173,7 +173,7 @@ _ccs_parameter_string_check_values(
 	return CCS_SUCCESS;
 }
 
-static ccs_error_t
+static ccs_result_t
 _ccs_parameter_string_samples(
 	_ccs_parameter_data_t *data,
 	ccs_distribution_t     distribution,
@@ -191,7 +191,7 @@ _ccs_parameter_string_samples(
 		"String parameters cannot be sampled");
 }
 
-static ccs_error_t
+static ccs_result_t
 _ccs_parameter_string_get_default_distribution(
 	_ccs_parameter_data_t *data,
 	ccs_distribution_t    *distribution)
@@ -203,7 +203,7 @@ _ccs_parameter_string_get_default_distribution(
 		"String parameters don't have default distributions");
 }
 
-static ccs_error_t
+static ccs_result_t
 _ccs_parameter_string_convert_samples(
 	_ccs_parameter_data_t *data,
 	ccs_bool_t             oversampling,
@@ -229,7 +229,7 @@ static _ccs_parameter_ops_t _ccs_parameter_string_ops = {
 	&_ccs_parameter_string_get_default_distribution,
 	&_ccs_parameter_string_convert_samples};
 
-extern ccs_error_t
+extern ccs_result_t
 ccs_create_string_parameter(const char *name, ccs_parameter_t *parameter_ret)
 {
 	CCS_CHECK_PTR(name);

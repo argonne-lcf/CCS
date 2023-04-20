@@ -9,7 +9,7 @@ ccs_parameter_t
 create_dummy_parameter(const char *name)
 {
 	ccs_parameter_t parameter;
-	ccs_error_t     err;
+	ccs_result_t    err;
 	err = ccs_create_numerical_parameter(
 		name, CCS_NUMERIC_TYPE_FLOAT, CCSF(-5.0), CCSF(5.0), CCSF(0.0),
 		CCSF(d), &parameter);
@@ -24,7 +24,7 @@ void
 test_create()
 {
 	ccs_features_space_t features_space;
-	ccs_error_t          err;
+	ccs_result_t         err;
 	ccs_object_type_t    type;
 	const char          *name;
 	size_t               sz;
@@ -55,7 +55,7 @@ check_features(
 	ccs_parameter_t     *parameters)
 {
 	ccs_parameter_t  parameter;
-	ccs_error_t      err;
+	ccs_result_t     err;
 	size_t           sz_ret;
 	size_t           index;
 	ccs_parameter_t *parameters_ret =
@@ -101,7 +101,7 @@ test_add()
 {
 	ccs_parameter_t      parameters[3];
 	ccs_features_space_t features_space;
-	ccs_error_t          err;
+	ccs_result_t         err;
 
 	err = ccs_create_features_space("my_features_space", &features_space);
 	assert(err == CCS_SUCCESS);
@@ -136,7 +136,7 @@ test_add_list()
 {
 	ccs_parameter_t      parameters[3];
 	ccs_features_space_t features_space;
-	ccs_error_t          err;
+	ccs_result_t         err;
 
 	err = ccs_create_features_space("my_config_space", &features_space);
 	assert(err == CCS_SUCCESS);
@@ -167,7 +167,7 @@ test_features()
                 ccs_float(-1.0), ccs_float(0.0), ccs_float(1.0)};
 	ccs_datum_t    values_ret[3];
 	ccs_features_t features1, features2;
-	ccs_error_t    err;
+	ccs_result_t   err;
 	ccs_datum_t    datum;
 	size_t         num_values_ret;
 	int            cmp;
@@ -264,7 +264,7 @@ test_deserialize()
 	ccs_parameter_t      parameters[3], parameters_new[3];
 	ccs_features_space_t features_space, features_space_ref;
 	ccs_map_t            map;
-	ccs_error_t          err;
+	ccs_result_t         err;
 	char                *buff;
 	size_t               buff_size;
 	ccs_datum_t          d;
@@ -362,12 +362,12 @@ test_features_deserialize()
 	ccs_features_t       features, features_ref;
 	ccs_datum_t          values[3] = {
                 ccs_float(-1.0), ccs_float(0.0), ccs_float(1.0)};
-	char       *buff;
-	size_t      buff_size;
-	ccs_map_t   map;
-	ccs_datum_t d;
-	ccs_error_t err;
-	int         cmp;
+	char        *buff;
+	size_t       buff_size;
+	ccs_map_t    map;
+	ccs_datum_t  d;
+	ccs_result_t err;
+	int          cmp;
 
 	err = ccs_create_features_space("my_config_space", &features_space);
 	assert(err == CCS_SUCCESS);

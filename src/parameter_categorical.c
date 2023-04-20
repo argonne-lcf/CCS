@@ -26,7 +26,7 @@ _ccs_serialize_bin_size_ccs_parameter_categorical_data(
 	return sz;
 }
 
-static inline ccs_error_t
+static inline ccs_result_t
 _ccs_serialize_bin_ccs_parameter_categorical_data(
 	_ccs_parameter_categorical_data_t *data,
 	size_t                            *buffer_size,
@@ -42,7 +42,7 @@ _ccs_serialize_bin_ccs_parameter_categorical_data(
 	return CCS_SUCCESS;
 }
 
-static ccs_error_t
+static ccs_result_t
 _ccs_parameter_categorical_del(ccs_object_t o)
 {
 	ccs_parameter_t                    d = (ccs_parameter_t)o;
@@ -62,7 +62,7 @@ _ccs_serialize_bin_size_ccs_parameter_categorical(ccs_parameter_t parameter)
 	       _ccs_serialize_bin_size_ccs_parameter_categorical_data(data);
 }
 
-static inline ccs_error_t
+static inline ccs_result_t
 _ccs_serialize_bin_ccs_parameter_categorical(
 	ccs_parameter_t parameter,
 	size_t         *buffer_size,
@@ -77,7 +77,7 @@ _ccs_serialize_bin_ccs_parameter_categorical(
 	return CCS_SUCCESS;
 }
 
-static ccs_error_t
+static ccs_result_t
 _ccs_parameter_categorical_serialize_size(
 	ccs_object_t                     object,
 	ccs_serialize_format_t           format,
@@ -99,7 +99,7 @@ _ccs_parameter_categorical_serialize_size(
 	return CCS_SUCCESS;
 }
 
-static ccs_error_t
+static ccs_result_t
 _ccs_parameter_categorical_serialize(
 	ccs_object_t                     object,
 	ccs_serialize_format_t           format,
@@ -122,7 +122,7 @@ _ccs_parameter_categorical_serialize(
 	return CCS_SUCCESS;
 }
 
-static ccs_error_t
+static ccs_result_t
 _ccs_parameter_categorical_check_values(
 	_ccs_parameter_data_t *data,
 	size_t                 num_values,
@@ -149,7 +149,7 @@ _ccs_parameter_categorical_check_values(
 	return CCS_SUCCESS;
 }
 
-static ccs_error_t
+static ccs_result_t
 _ccs_parameter_categorical_samples(
 	_ccs_parameter_data_t *data,
 	ccs_distribution_t     distribution,
@@ -159,9 +159,9 @@ _ccs_parameter_categorical_samples(
 {
 	_ccs_parameter_categorical_data_t *d =
 		(_ccs_parameter_categorical_data_t *)data;
-	ccs_error_t err;
-	ccs_int_t  *vs = (ccs_int_t *)values + num_values;
-	ccs_bool_t  oversampling;
+	ccs_result_t err;
+	ccs_int_t   *vs = (ccs_int_t *)values + num_values;
+	ccs_bool_t   oversampling;
 	CCS_VALIDATE(ccs_distribution_check_oversampling(
 		distribution, &(d->common_data.interval), &oversampling));
 	CCS_VALIDATE(ccs_distribution_samples(
@@ -213,7 +213,7 @@ errmem:
 	return err;
 }
 
-static ccs_error_t
+static ccs_result_t
 _ccs_parameter_categorical_get_default_distribution(
 	_ccs_parameter_data_t *data,
 	ccs_distribution_t    *distribution)
@@ -227,7 +227,7 @@ _ccs_parameter_categorical_get_default_distribution(
 	return CCS_SUCCESS;
 }
 
-static ccs_error_t
+static ccs_result_t
 _ccs_parameter_categorical_convert_samples(
 	_ccs_parameter_data_t *data,
 	ccs_bool_t             oversampling,
@@ -273,7 +273,7 @@ static _ccs_parameter_ops_t _ccs_parameter_categorical_ops = {
 			"Not enough memory to allocate hash");                 \
 	}
 
-static inline ccs_error_t
+static inline ccs_result_t
 _ccs_create_categorical_parameter(
 	ccs_parameter_type_t type,
 	const char          *name,
@@ -381,7 +381,7 @@ _ccs_create_categorical_parameter(
 	return CCS_SUCCESS;
 }
 
-static inline ccs_error_t
+static inline ccs_result_t
 _ccs_categorical_parameter_get_values(
 	ccs_parameter_t parameter,
 	size_t          num_possible_values,
@@ -409,7 +409,7 @@ _ccs_categorical_parameter_get_values(
 	return CCS_SUCCESS;
 }
 
-ccs_error_t
+ccs_result_t
 ccs_create_categorical_parameter(
 	const char      *name,
 	size_t           num_possible_values,
@@ -423,7 +423,7 @@ ccs_create_categorical_parameter(
 	return CCS_SUCCESS;
 }
 
-ccs_error_t
+ccs_result_t
 ccs_categorical_parameter_get_values(
 	ccs_parameter_t parameter,
 	size_t          num_possible_values,
@@ -437,7 +437,7 @@ ccs_categorical_parameter_get_values(
 	return CCS_SUCCESS;
 }
 
-ccs_error_t
+ccs_result_t
 ccs_ordinal_parameter_compare_values(
 	ccs_parameter_t parameter,
 	ccs_datum_t     value1,
@@ -461,7 +461,7 @@ ccs_ordinal_parameter_compare_values(
 	return CCS_SUCCESS;
 }
 
-ccs_error_t
+ccs_result_t
 ccs_create_ordinal_parameter(
 	const char      *name,
 	size_t           num_possible_values,
@@ -475,7 +475,7 @@ ccs_create_ordinal_parameter(
 	return CCS_SUCCESS;
 }
 
-ccs_error_t
+ccs_result_t
 ccs_ordinal_parameter_get_values(
 	ccs_parameter_t parameter,
 	size_t          num_possible_values,
@@ -489,7 +489,7 @@ ccs_ordinal_parameter_get_values(
 	return CCS_SUCCESS;
 }
 
-ccs_error_t
+ccs_result_t
 ccs_create_discrete_parameter(
 	const char      *name,
 	size_t           num_possible_values,
@@ -503,7 +503,7 @@ ccs_create_discrete_parameter(
 	return CCS_SUCCESS;
 }
 
-ccs_error_t
+ccs_result_t
 ccs_discrete_parameter_get_values(
 	ccs_parameter_t parameter,
 	size_t          num_possible_values,

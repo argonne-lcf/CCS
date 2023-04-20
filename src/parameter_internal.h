@@ -16,25 +16,25 @@ typedef struct _ccs_parameter_data_s _ccs_parameter_data_t;
 struct _ccs_parameter_ops_s {
 	_ccs_object_ops_t obj_ops;
 
-	ccs_error_t (*check_values)(
+	ccs_result_t (*check_values)(
 		_ccs_parameter_data_t *data,
 		size_t                 num_values,
 		const ccs_datum_t     *values,
 		ccs_datum_t           *values_ret,
 		ccs_bool_t            *results);
 
-	ccs_error_t (*samples)(
+	ccs_result_t (*samples)(
 		_ccs_parameter_data_t *data,
 		ccs_distribution_t     distribution,
 		ccs_rng_t              rng,
 		size_t                 num_values,
 		ccs_datum_t           *values);
 
-	ccs_error_t (*get_default_distribution)(
+	ccs_result_t (*get_default_distribution)(
 		_ccs_parameter_data_t *data,
 		ccs_distribution_t    *distribution);
 
-	ccs_error_t (*convert_samples)(
+	ccs_result_t (*convert_samples)(
 		_ccs_parameter_data_t *data,
 		ccs_bool_t             oversampling,
 		size_t                 num_values,
@@ -67,7 +67,7 @@ _ccs_serialize_bin_size_ccs_parameter_common_data(
 	       _ccs_serialize_bin_size_ccs_interval(&data->interval);
 }
 
-static inline ccs_error_t
+static inline ccs_result_t
 _ccs_serialize_bin_ccs_parameter_common_data(
 	_ccs_parameter_common_data_t *data,
 	size_t                       *buffer_size,
@@ -84,7 +84,7 @@ _ccs_serialize_bin_ccs_parameter_common_data(
 	return CCS_SUCCESS;
 }
 
-static inline ccs_error_t
+static inline ccs_result_t
 _ccs_deserialize_bin_ccs_parameter_common_data(
 	_ccs_parameter_common_data_t *data,
 	size_t                       *buffer_size,
@@ -119,7 +119,7 @@ _ccs_serialize_bin_size_ccs_parameter_numerical_data(
 			_ccs_serialize_bin_size_ccs_int(data->quantization.i));
 }
 
-static inline ccs_error_t
+static inline ccs_result_t
 _ccs_serialize_bin_ccs_parameter_numerical_data(
 	_ccs_parameter_numerical_data_t *data,
 	size_t                          *buffer_size,
@@ -136,7 +136,7 @@ _ccs_serialize_bin_ccs_parameter_numerical_data(
 	return CCS_SUCCESS;
 }
 
-static inline ccs_error_t
+static inline ccs_result_t
 _ccs_deserialize_bin_ccs_parameter_numerical_data(
 	_ccs_parameter_numerical_data_t *data,
 	size_t                          *buffer_size,

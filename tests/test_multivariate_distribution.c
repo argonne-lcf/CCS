@@ -15,7 +15,7 @@ compare_distribution(
 	size_t             num_distribs,
 	ccs_distribution_t distribs[])
 {
-	ccs_error_t             err = CCS_SUCCESS;
+	ccs_result_t            err = CCS_SUCCESS;
 	ccs_distribution_t      distribs_ret[NUM_DISTRIBS];
 	int32_t                 refcount;
 	ccs_object_type_t       otype;
@@ -93,7 +93,7 @@ test_create_multivariate_distribution()
 	const size_t       num_distribs = NUM_DISTRIBS;
 	ccs_distribution_t distrib      = NULL;
 	ccs_distribution_t distribs[NUM_DISTRIBS];
-	ccs_error_t        err = CCS_SUCCESS;
+	ccs_result_t       err = CCS_SUCCESS;
 	char              *buff;
 	size_t             buff_size;
 
@@ -154,7 +154,7 @@ test_multivariate_distribution()
 {
 	ccs_distribution_t distrib      = NULL, distribs[NUM_DISTRIBS];
 	ccs_rng_t          rng          = NULL;
-	ccs_error_t        err          = CCS_SUCCESS;
+	ccs_result_t       err          = CCS_SUCCESS;
 	const size_t       num_distribs = NUM_DISTRIBS;
 	const size_t       num_samples  = NUM_SAMPLES;
 	ccs_numeric_t      samples[NUM_SAMPLES * NUM_DISTRIBS];
@@ -205,7 +205,7 @@ test_multivariate_distribution_strided_samples()
 {
 	ccs_distribution_t distrib      = NULL, distribs[NUM_DISTRIBS];
 	ccs_rng_t          rng          = NULL;
-	ccs_error_t        err          = CCS_SUCCESS;
+	ccs_result_t       err          = CCS_SUCCESS;
 	const size_t       num_distribs = NUM_DISTRIBS;
 	const size_t       num_samples  = NUM_SAMPLES;
 	ccs_numeric_t      samples[NUM_SAMPLES * (NUM_DISTRIBS + 1)];
@@ -257,7 +257,7 @@ test_multivariate_distribution_soa_samples()
 {
 	ccs_distribution_t distrib      = NULL, distribs[NUM_DISTRIBS];
 	ccs_rng_t          rng          = NULL;
-	ccs_error_t        err          = CCS_SUCCESS;
+	ccs_result_t       err          = CCS_SUCCESS;
 	const size_t       num_distribs = NUM_DISTRIBS;
 	const size_t       num_samples  = NUM_SAMPLES;
 	ccs_numeric_t      samples1[NUM_SAMPLES];
@@ -311,7 +311,7 @@ test_distribution_parameters_sample()
 	ccs_distribution_t distrib      = NULL, distribs[NUM_DISTRIBS];
 	ccs_parameter_t    params[NUM_DISTRIBS];
 	ccs_rng_t          rng         = NULL;
-	ccs_error_t        err         = CCS_SUCCESS;
+	ccs_result_t       err         = CCS_SUCCESS;
 	const size_t       num_samples = NUM_SAMPLES;
 	ccs_datum_t        samples[NUM_SAMPLES * NUM_DISTRIBS];
 
@@ -384,7 +384,7 @@ test_distribution_parameters_sample_oversampling()
 	ccs_distribution_t distrib      = NULL, distribs[NUM_DISTRIBS];
 	ccs_parameter_t    params[NUM_DISTRIBS];
 	ccs_rng_t          rng         = NULL;
-	ccs_error_t        err         = CCS_SUCCESS;
+	ccs_result_t       err         = CCS_SUCCESS;
 	const size_t       num_samples = NUM_SAMPLES;
 	ccs_datum_t        samples[NUM_SAMPLES * NUM_DISTRIBS];
 
