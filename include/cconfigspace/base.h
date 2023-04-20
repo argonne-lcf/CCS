@@ -251,27 +251,48 @@ typedef int32_t           ccs_evaluation_result_t;
  * CCS object types.
  */
 enum ccs_object_type_e {
-	CCS_OBJECT_TYPE_RNG,                 /*!< A random number generator */
-	CCS_OBJECT_TYPE_DISTRIBUTION,        /*!< A numerical distribution */
-	CCS_OBJECT_TYPE_PARAMETER,           /*!< A parameter */
-	CCS_OBJECT_TYPE_EXPRESSION,          /*!< An arithmetic expression */
-	CCS_OBJECT_TYPE_CONFIGURATION_SPACE, /*!< A configuration space */
-	CCS_OBJECT_TYPE_CONFIGURATION,       /*!< A configuration */
-	CCS_OBJECT_TYPE_OBJECTIVE_SPACE,     /*!< An objective space */
-	CCS_OBJECT_TYPE_EVALUATION,     /*!< An evaluation of a configuration */
-	CCS_OBJECT_TYPE_TUNER,          /*!< A tuner */
-	CCS_OBJECT_TYPE_FEATURES_SPACE, /*!< A features space */
-	CCS_OBJECT_TYPE_FEATURES,       /*!< A features */
-	CCS_OBJECT_TYPE_FEATURES_EVALUATION, /*!< An evaluation of a configuration given specific features */
-	CCS_OBJECT_TYPE_FEATURES_TUNER,     /*!< A features aware tuner */
-	CCS_OBJECT_TYPE_MAP,                /*!< A key value store */
-	CCS_OBJECT_TYPE_ERROR_STACK,        /*!< An error stack */
-	CCS_OBJECT_TYPE_TREE,               /*!< A tree structure */
-	CCS_OBJECT_TYPE_TREE_SPACE,         /*!< A tree space */
-	CCS_OBJECT_TYPE_TREE_CONFIGURATION, /*!< A configuration on a tree space */
-	CCS_OBJECT_TYPE_TREE_EVALUATION, /*!< An evaluation of a tree configuration */
-	CCS_OBJECT_TYPE_TREE_TUNER, /*!< A tree tuner */
-	CCS_OBJECT_TYPE_MAX,        /*!< Guard */
+	/** A random number generator */
+	CCS_OBJECT_TYPE_RNG,
+	/** A numerical distribution */
+	CCS_OBJECT_TYPE_DISTRIBUTION,
+	/** A parameter */
+	CCS_OBJECT_TYPE_PARAMETER,
+	/** An arithmetic expression */
+	CCS_OBJECT_TYPE_EXPRESSION,
+	/** A configuration space */
+	CCS_OBJECT_TYPE_CONFIGURATION_SPACE,
+	/** A configuration */
+	CCS_OBJECT_TYPE_CONFIGURATION,
+	/** An objective space */
+	CCS_OBJECT_TYPE_OBJECTIVE_SPACE,
+	/** An evaluation of a configuration */
+	CCS_OBJECT_TYPE_EVALUATION,
+	/** A tuner */
+	CCS_OBJECT_TYPE_TUNER,
+	/** A features space */
+	CCS_OBJECT_TYPE_FEATURES_SPACE,
+	/** A set of features */
+	CCS_OBJECT_TYPE_FEATURES,
+	/** An evaluation of a configuration given specific features */
+	CCS_OBJECT_TYPE_FEATURES_EVALUATION,
+	/** A features aware tuner */
+	CCS_OBJECT_TYPE_FEATURES_TUNER,
+	/** A key value store */
+	CCS_OBJECT_TYPE_MAP,
+	/** An error stack */
+	CCS_OBJECT_TYPE_ERROR_STACK,
+	/** A tree structure */
+	CCS_OBJECT_TYPE_TREE,
+	/** A tree space */
+	CCS_OBJECT_TYPE_TREE_SPACE,
+	/** A configuration on a tree space */
+	CCS_OBJECT_TYPE_TREE_CONFIGURATION,
+	/** An evaluation of a tree configuration */
+	CCS_OBJECT_TYPE_TREE_EVALUATION,
+	/** A tree tuner */
+	CCS_OBJECT_TYPE_TREE_TUNER,
+	/** Guard */
+	CCS_OBJECT_TYPE_MAX,
 	/** Try forcing 32 bits value for bindings */
 	CCS_OBJECT_TYPE_FORCE_32BIT = INT32_MAX
 };
@@ -285,14 +306,22 @@ typedef enum ccs_object_type_e ccs_object_type_t;
  * CCS supported data types.
  */
 enum ccs_data_type_e {
-	CCS_DATA_TYPE_NONE,     /*!< An empty value */
-	CCS_DATA_TYPE_INT,      /*!< A ccs_int_t */
-	CCS_DATA_TYPE_FLOAT,    /*!< A ccs_float_t */
-	CCS_DATA_TYPE_BOOL,     /*!< A ccs_bool_t */
-	CCS_DATA_TYPE_STRING,   /*!< A pointer to a NULL terminated string */
-	CCS_DATA_TYPE_INACTIVE, /*!< An inactive value */
-	CCS_DATA_TYPE_OBJECT,   /*!< A CCS object */
-	CCS_DATA_TYPE_MAX,      /*!< Guard */
+	/** An empty value */
+	CCS_DATA_TYPE_NONE,
+	/** A ccs_int_t */
+	CCS_DATA_TYPE_INT,
+	/** ccs_float_t */
+	CCS_DATA_TYPE_FLOAT,
+	/** ccs_bool_t */
+	CCS_DATA_TYPE_BOOL,
+	/** A pointer to a NULL terminated string */
+	CCS_DATA_TYPE_STRING,
+	/** An inactive value */
+	CCS_DATA_TYPE_INACTIVE,
+	/** A CCS object */
+	CCS_DATA_TYPE_OBJECT,
+	/** Guard */
+	CCS_DATA_TYPE_MAX,
 	/** Try forcing 32 bits value for bindings */
 	CCS_DATA_TYPE_FORCE_32BIT = INT32_MAX
 };
@@ -341,9 +370,12 @@ typedef uint32_t              ccs_datum_flags_t;
  * The subset of CCS data types that represent numerical data.
  */
 enum ccs_numeric_type_e {
-	CCS_NUMERIC_TYPE_INT   = CCS_DATA_TYPE_INT,   /*!< A ccs_int_t */
-	CCS_NUMERIC_TYPE_FLOAT = CCS_DATA_TYPE_FLOAT, /*!< A ccs_float_t */
-	CCS_NUMERIC_TYPE_MAX,                         /*!< Guard */
+	/** A ccs_int_t */
+	CCS_NUMERIC_TYPE_INT   = CCS_DATA_TYPE_INT,
+	/** A ccs_float_t */
+	CCS_NUMERIC_TYPE_FLOAT = CCS_DATA_TYPE_FLOAT,
+	/** Guard */
+	CCS_NUMERIC_TYPE_MAX,
 	/** Try forcing 32 bits value for bindings */
 	CCS_NUMERIC_TYPE_FORCE_32BIT = INT32_MAX
 };
@@ -362,8 +394,10 @@ typedef void                   *ccs_object_t;
  * A union that can contain either a ccs_int_t or a ccs_float_t.
  */
 union ccs_numeric_u {
-	ccs_float_t f; /*!< The floating point value of the union */
-	ccs_int_t   i; /*!< The integer value of the union */
+	/** The floating point value of the union */
+	ccs_float_t f;
+	/** The integer value of the union */
+	ccs_int_t   i;
 #ifdef __cplusplus
 	ccs_numeric_u()
 		: i(0L)
@@ -411,10 +445,14 @@ typedef union ccs_numeric_u ccs_numeric_t;
  * A union that represent a CCS datum value.
  */
 union ccs_value_u {
-	ccs_float_t  f; /*!< The floating point value of the union */
-	ccs_int_t    i; /*!< The integer value of the union */
-	const char  *s; /*!< The string value of the union */
-	ccs_object_t o; /*!< The CCS object value of the union */
+	/** The floating point value of the union */
+	ccs_float_t  f;
+	/**  The integer value of the union */
+	ccs_int_t    i;
+	/** The string value of the union */
+	const char  *s;
+	/** The CCS object value of the union */
+	ccs_object_t o;
 #ifdef __cplusplus
 	ccs_value_u()
 		: i(0L)
@@ -456,9 +494,12 @@ typedef union ccs_value_u ccs_value_t;
  * A Structure containing a CCS datum.
  */
 struct ccs_datum_s {
-	ccs_value_t       value; /*!< The value of the datum */
-	ccs_data_type_t   type;  /*!< The type of the datum */
-	ccs_datum_flags_t flags; /*!< The flags attached to the datum */
+	/** The value of the datum */
+	ccs_value_t       value;
+	/** The type of the datum */
+	ccs_data_type_t   type;
+	/** The flags attached to the datum */
+	ccs_datum_flags_t flags;
 };
 
 /**

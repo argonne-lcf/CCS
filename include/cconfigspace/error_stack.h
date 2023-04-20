@@ -39,9 +39,12 @@ ccs_clear_thread_error();
  * An element of stack.
  */
 struct ccs_error_stack_elem_s {
-	const char *file; /*!< The file name */
-	int         line; /*!< The line number */
-	const char *func; /*!< The function name */
+	/** The file name */
+	const char *file;
+	/** The line number */
+	int         line;
+	/** The function name */
+	const char *func;
 };
 
 /**
