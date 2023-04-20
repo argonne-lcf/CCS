@@ -31,10 +31,10 @@ class TestTuner(ccs.UserDefinedTuner):
             new_optima.append(o)
           else:
             c = e.compare(o)
-            if c == ccs.ccs_comparison.EQUIVALENT or c == ccs.ccs_comparison.WORSE:
+            if c == ccs.Comparison.EQUIVALENT or c == ccs.Comparison.WORSE:
               discard = True
               new_optima.append(o)
-            elif c == ccs.ccs_comparison.NOT_COMPARABLE:
+            elif c == ccs.Comparison.NOT_COMPARABLE:
               new_optima.append(o)
         if not discard:
           new_optima.append(e)
@@ -79,7 +79,7 @@ class Test(unittest.TestCase):
     (cs, os) = create_tuning_problem()
     t = TestTuner(cs, os)
     self.assertEqual("tuner", t.name)
-    self.assertEqual(ccs.ccs_tuner_type.USER_DEFINED, t.type)
+    self.assertEqual(ccs.TunerType.USER_DEFINED, t.type)
     self.assertEqual(cs.handle.value, t.configuration_space.handle.value)
     self.assertEqual(os.handle.value, t.objective_space.handle.value)
     func = lambda x, y, z: [(x-2)*(x-2), sin(z+y)]

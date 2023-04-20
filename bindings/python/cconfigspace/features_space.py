@@ -1,5 +1,5 @@
 import ctypes as ct
-from .base import Object, Error, CEnumeration, ccs_result, _ccs_get_function, ccs_context, ccs_parameter, ccs_features_space, ccs_features, ccs_datum, ccs_bool
+from .base import Object, Error, CEnumeration, Result, _ccs_get_function, ccs_context, ccs_parameter, ccs_features_space, ccs_features, Datum, ccs_bool
 from .context import Context
 from .parameter import Parameter
 
@@ -7,7 +7,7 @@ ccs_create_features_space = _ccs_get_function("ccs_create_features_space", [ct.c
 ccs_features_space_add_parameter = _ccs_get_function("ccs_features_space_add_parameter", [ccs_features_space, ccs_parameter])
 ccs_features_space_add_parameters = _ccs_get_function("ccs_features_space_add_parameters", [ccs_features_space, ct.c_size_t, ct.POINTER(ccs_parameter)])
 ccs_features_space_check_features = _ccs_get_function("ccs_features_space_check_features", [ccs_features_space, ccs_features, ct.POINTER(ccs_bool)])
-ccs_features_space_check_features_values = _ccs_get_function("ccs_features_space_check_features_values", [ccs_features_space, ct.c_size_t, ct.POINTER(ccs_datum), ct.POINTER(ccs_bool)])
+ccs_features_space_check_features_values = _ccs_get_function("ccs_features_space_check_features_values", [ccs_features_space, ct.c_size_t, ct.POINTER(Datum), ct.POINTER(ccs_bool)])
 
 class FeaturesSpace(Context):
   def __init__(self, handle = None, retain = False, auto_release = True,
@@ -45,8 +45,8 @@ class FeaturesSpace(Context):
   def check_values(self, values):
     count = len(values)
     if count != self.num_parameters:
-      raise Error(ccs_result(ccs_result.ERROR_INVALID_VALUE))
-    v = (ccs_datum * count)()
+      raise Error(Result(Result.ERROR_INVALID_VALUE))
+    v = (Datum * count)()
     ss = []
     for i in range(count):
       v[i].set_value(values[i], string_store = ss)

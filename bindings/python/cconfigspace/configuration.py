@@ -1,11 +1,11 @@
 import ctypes as ct
-from .base import Object, Error, ccs_result, _ccs_get_function, ccs_context, ccs_parameter, ccs_configuration_space, ccs_configuration, ccs_distribution, ccs_expression, ccs_datum, ccs_hash, ccs_int, ccs_bool
+from .base import Object, Error, Result, _ccs_get_function, ccs_context, ccs_parameter, ccs_configuration_space, ccs_configuration, ccs_distribution, ccs_expression, Datum, ccs_hash, ccs_int, ccs_bool
 from .context import Context
 from .parameter import Parameter
 from .configuration_space import ConfigurationSpace
 from .binding import Binding
 
-ccs_create_configuration = _ccs_get_function("ccs_create_configuration", [ccs_configuration_space, ct.c_size_t, ct.POINTER(ccs_datum), ct.POINTER(ccs_configuration)])
+ccs_create_configuration = _ccs_get_function("ccs_create_configuration", [ccs_configuration_space, ct.c_size_t, ct.POINTER(Datum), ct.POINTER(ccs_configuration)])
 ccs_configuration_get_configuration_space = _ccs_get_function("ccs_configuration_get_configuration_space", [ccs_configuration, ct.POINTER(ccs_configuration_space)])
 ccs_configuration_check = _ccs_get_function("ccs_configuration_check", [ccs_configuration, ct.POINTER(ccs_bool)])
 
@@ -16,7 +16,7 @@ class Configuration(Binding):
       count = 0
       if values:
         count = len(values)
-        vals = (ccs_datum * count)()
+        vals = (Datum * count)()
         ss = []
         for i in range(count):
           vals[i].set_value(values[i], string_store = ss)

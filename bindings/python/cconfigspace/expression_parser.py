@@ -1,19 +1,19 @@
 from parglare import Parser, Grammar
-from .expression import Expression, Literal, Variable, List, ccs_expression_type, ccs_associativity_type, ccs_expression_precedence, ccs_expression_associativity, ccs_expression_symbols, ccs_expression_arity, ccs_terminal_type, ccs_terminal_precedence, ccs_terminal_regexp
+from .expression import Expression, Literal, Variable, List, ExpressionType, AssociativityType, ccs_expression_precedence, ccs_expression_associativity, ccs_expression_symbols, ccs_expression_arity, TerminalType, ccs_terminal_precedence, ccs_terminal_regexp
 
 _associativity_map = {
-  ccs_associativity_type.LEFT_TO_RIGHT: "left",
-  ccs_associativity_type.RIGHT_TO_LEFT: "right"
+  AssociativityType.LEFT_TO_RIGHT: "left",
+  AssociativityType.RIGHT_TO_LEFT: "right"
 }
 ccs_grammar = "expr: '(' expr ')'\n"
 
-for i in range(ccs_expression_type.OR, ccs_expression_type.IN):
+for i in range(ExpressionType.OR, ExpressionType.IN):
   if ccs_expression_arity[i] == 1:
     ccs_grammar += "    | '{}' expr {{{}, {}}}\n".format(ccs_expression_symbols[i], _associativity_map[ccs_expression_associativity[i].value], ccs_expression_precedence[i])
   else:
     ccs_grammar += "    | expr '{}' expr {{{}, {}}}\n".format(ccs_expression_symbols[i], _associativity_map[ccs_expression_associativity[i].value], ccs_expression_precedence[i])
 
-ccs_grammar += "    | expr '{}' list {{{}, {}}}".format(ccs_expression_symbols[ccs_expression_type.IN], _associativity_map[ccs_expression_associativity[ccs_expression_type.IN].value], ccs_expression_precedence[ccs_expression_type.IN])
+ccs_grammar += "    | expr '{}' list {{{}, {}}}".format(ccs_expression_symbols[ExpressionType.IN], _associativity_map[ccs_expression_associativity[ExpressionType.IN].value], ccs_expression_precedence[ExpressionType.IN])
 ccs_grammar += r"""
     | value;
 list: '[' list_item ']'
@@ -36,17 +36,17 @@ identifier: /%s/ {%d};
 string: /%s/ {%d};
 integer: /%s/ {%d};
 float: /%s/ {%d};
-""" % (ccs_terminal_regexp[ccs_terminal_type.NONE], ccs_terminal_precedence[ccs_terminal_type.NONE],
-       ccs_terminal_regexp[ccs_terminal_type.TRUE], ccs_terminal_precedence[ccs_terminal_type.TRUE],
-       ccs_terminal_regexp[ccs_terminal_type.FALSE], ccs_terminal_precedence[ccs_terminal_type.FALSE],
-       ccs_terminal_regexp[ccs_terminal_type.IDENTIFIER], ccs_terminal_precedence[ccs_terminal_type.IDENTIFIER],
-       ccs_terminal_regexp[ccs_terminal_type.STRING], ccs_terminal_precedence[ccs_terminal_type.STRING],
-       ccs_terminal_regexp[ccs_terminal_type.INTEGER], ccs_terminal_precedence[ccs_terminal_type.INTEGER],
-       ccs_terminal_regexp[ccs_terminal_type.FLOAT], ccs_terminal_precedence[ccs_terminal_type.FLOAT])
+""" % (ccs_terminal_regexp[TerminalType.NONE], ccs_terminal_precedence[TerminalType.NONE],
+       ccs_terminal_regexp[TerminalType.TRUE], ccs_terminal_precedence[TerminalType.TRUE],
+       ccs_terminal_regexp[TerminalType.FALSE], ccs_terminal_precedence[TerminalType.FALSE],
+       ccs_terminal_regexp[TerminalType.IDENTIFIER], ccs_terminal_precedence[TerminalType.IDENTIFIER],
+       ccs_terminal_regexp[TerminalType.STRING], ccs_terminal_precedence[TerminalType.STRING],
+       ccs_terminal_regexp[TerminalType.INTEGER], ccs_terminal_precedence[TerminalType.INTEGER],
+       ccs_terminal_regexp[TerminalType.FLOAT], ccs_terminal_precedence[TerminalType.FLOAT])
 
 _actions = {}
 _expr_actions = [ lambda _, n: n[1] ]
-for i in range(ccs_expression_type.OR, ccs_expression_type.LIST):
+for i in range(ExpressionType.OR, ExpressionType.LIST):
   if ccs_expression_arity[i] == 1:
     _expr_actions.append((lambda s: lambda _, n: Expression.unary(t = s, node = n[1]))(i))
   else:
@@ -71,5 +71,5 @@ _actions["integer"] = lambda _, value: Literal(value = int(value))
 
 _g = Grammar.from_string(ccs_grammar)
 
-ccs_parser = Parser(_g, actions=_actions)
+parser = Parser(_g, actions=_actions)
 

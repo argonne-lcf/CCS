@@ -1,9 +1,9 @@
 import ctypes as ct
 from . import libcconfigspace
-from .base import Object, Error, ccs_result, CEnumeration, _ccs_get_function, ccs_expression, ccs_datum, ccs_datum_fix, ccs_parameter, ccs_context
+from .base import Object, Error, Result, CEnumeration, _ccs_get_function, ccs_expression, Datum, DatumFix, ccs_parameter, ccs_context
 from .parameter import Parameter
 
-class ccs_expression_type(CEnumeration):
+class ExpressionType(CEnumeration):
   _members_ = [
     ('OR', 0),
     'AND',
@@ -26,19 +26,19 @@ class ccs_expression_type(CEnumeration):
     'LITERAL',
     'VARIABLE' ]
 
-class ccs_associativity_type(CEnumeration):
+class AssociativityType(CEnumeration):
   _members_ = [
     ('ASSOCIATIVITY_NONE', 0),
     'LEFT_TO_RIGHT',
     'RIGHT_TO_LEFT' ]
 
-_sz_expr = len(ccs_expression_type._members_)
+_sz_expr = len(ExpressionType._members_)
 ccs_expression_precedence = (ct.c_int * _sz_expr).in_dll(libcconfigspace, "ccs_expression_precedence")
-ccs_expression_associativity = (ccs_associativity_type * _sz_expr).in_dll(libcconfigspace, "ccs_expression_associativity")
+ccs_expression_associativity = (AssociativityType * _sz_expr).in_dll(libcconfigspace, "ccs_expression_associativity")
 ccs_expression_symbols = [x.decode() if x else x for x in (ct.c_char_p * _sz_expr).in_dll(libcconfigspace, "ccs_expression_symbols")]
 ccs_expression_arity = (ct.c_int * _sz_expr).in_dll(libcconfigspace, "ccs_expression_arity")
 
-class ccs_terminal_type(CEnumeration):
+class TerminalType(CEnumeration):
   _members_ = [
     ('NONE', 0),
     'TRUE',
@@ -48,23 +48,23 @@ class ccs_terminal_type(CEnumeration):
     'INTEGER',
     'FLOAT' ]
 
-_sz_term = len(ccs_terminal_type._members_)
+_sz_term = len(TerminalType._members_)
 ccs_terminal_precedence = (ct.c_int * _sz_term).in_dll(libcconfigspace, "ccs_terminal_precedence")
 ccs_terminal_regexp = [x.decode() if x else x for x in (ct.c_char_p * _sz_term).in_dll(libcconfigspace, "ccs_terminal_regexp")]
 ccs_terminal_symbols = [x.decode() if x else x for x in (ct.c_char_p * _sz_term).in_dll(libcconfigspace, "ccs_terminal_symbols")]
 
-ccs_create_binary_expression = _ccs_get_function("ccs_create_binary_expression", [ccs_expression_type, ccs_datum_fix, ccs_datum_fix, ct.POINTER(ccs_expression)])
-ccs_create_unary_expression = _ccs_get_function("ccs_create_unary_expression", [ccs_expression_type, ccs_datum_fix, ct.POINTER(ccs_expression)])
-ccs_create_expression = _ccs_get_function("ccs_create_expression", [ccs_expression_type, ct.c_size_t, ct.POINTER(ccs_datum), ct.POINTER(ccs_expression)])
-ccs_create_literal = _ccs_get_function("ccs_create_literal", [ccs_datum_fix, ct.POINTER(ccs_expression)])
+ccs_create_binary_expression = _ccs_get_function("ccs_create_binary_expression", [ExpressionType, DatumFix, DatumFix, ct.POINTER(ccs_expression)])
+ccs_create_unary_expression = _ccs_get_function("ccs_create_unary_expression", [ExpressionType, DatumFix, ct.POINTER(ccs_expression)])
+ccs_create_expression = _ccs_get_function("ccs_create_expression", [ExpressionType, ct.c_size_t, ct.POINTER(Datum), ct.POINTER(ccs_expression)])
+ccs_create_literal = _ccs_get_function("ccs_create_literal", [DatumFix, ct.POINTER(ccs_expression)])
 ccs_create_variable = _ccs_get_function("ccs_create_variable", [ccs_parameter, ct.POINTER(ccs_expression)])
-ccs_expression_get_type = _ccs_get_function("ccs_expression_get_type", [ccs_expression, ct.POINTER(ccs_expression_type)])
+ccs_expression_get_type = _ccs_get_function("ccs_expression_get_type", [ccs_expression, ct.POINTER(ExpressionType)])
 ccs_expression_get_num_nodes = _ccs_get_function("ccs_expression_get_num_nodes", [ccs_expression, ct.POINTER(ct.c_size_t)])
 ccs_expression_get_nodes = _ccs_get_function("ccs_expression_get_nodes", [ccs_expression, ct.c_size_t, ct.POINTER(ccs_expression), ct.POINTER(ct.c_size_t)])
-ccs_literal_get_value = _ccs_get_function("ccs_literal_get_value", [ccs_expression, ct.POINTER(ccs_datum)])
+ccs_literal_get_value = _ccs_get_function("ccs_literal_get_value", [ccs_expression, ct.POINTER(Datum)])
 ccs_variable_get_parameter = _ccs_get_function("ccs_variable_get_parameter", [ccs_expression, ct.POINTER(ccs_parameter)])
-ccs_expression_eval = _ccs_get_function("ccs_expression_eval", [ccs_expression, ccs_context, ct.POINTER(ccs_datum), ct.POINTER(ccs_datum)])
-ccs_expression_list_eval_node = _ccs_get_function("ccs_expression_list_eval_node", [ccs_expression, ccs_context, ct.POINTER(ccs_datum), ct.c_size_t, ct.POINTER(ccs_datum)])
+ccs_expression_eval = _ccs_get_function("ccs_expression_eval", [ccs_expression, ccs_context, ct.POINTER(Datum), ct.POINTER(Datum)])
+ccs_expression_list_eval_node = _ccs_get_function("ccs_expression_list_eval_node", [ccs_expression, ccs_context, ct.POINTER(Datum), ct.c_size_t, ct.POINTER(Datum)])
 ccs_expression_get_parameters = _ccs_get_function("ccs_expression_get_parameters", [ccs_expression, ct.c_size_t, ct.POINTER(ccs_parameter), ct.POINTER(ct.c_size_t)])
 ccs_expression_check_context = _ccs_get_function("ccs_expression_check_context", [ccs_expression, ccs_context])
 
@@ -74,7 +74,7 @@ class Expression(Object):
     if handle is None:
       sz = len(nodes)
       handle = ccs_expression()
-      v = (ccs_datum*sz)()
+      v = (Datum*sz)()
       ss = []
       for i in range(sz):
         v[i].set_value(nodes[i], string_store = ss)
@@ -86,25 +86,25 @@ class Expression(Object):
 
   @classmethod
   def from_handle(cls, handle, retain = True, auto_release = True):
-    v = ccs_expression_type(0)
+    v = ExpressionType(0)
     res = ccs_expression_get_type(handle, ct.byref(v))
     Error.check(res)
     v = v.value
-    if v == ccs_expression_type.LIST:
+    if v == ExpressionType.LIST:
       return List(handle = handle, retain = retain, auto_release = auto_release)
-    elif v == ccs_expression_type.LITERAL:
+    elif v == ExpressionType.LITERAL:
       return Literal(handle = handle, retain = retain, auto_release = auto_release)
-    elif v == ccs_expression_type.VARIABLE:
+    elif v == ExpressionType.VARIABLE:
       return Variable(handle = handle, retain = retain, auto_release = auto_release)
     else:
       return cls(handle = handle, retain = retain, auto_release = auto_release)
 
   @classmethod
   def binary(cls, t, left, right):
-    pvleft = ccs_datum(left)
-    pvright = ccs_datum(right)
-    vleft = ccs_datum_fix(pvleft)
-    vright = ccs_datum_fix(pvright)
+    pvleft = Datum(left)
+    pvright = Datum(right)
+    vleft = DatumFix(pvleft)
+    vright = DatumFix(pvright)
     handle = ccs_expression()
     res = ccs_create_binary_expression(t, vleft, vright, ct.byref(handle))
     Error.check(res)
@@ -112,8 +112,8 @@ class Expression(Object):
 
   @classmethod
   def unary(cls, t, node):
-    pvnode = ccs_datum(node)
-    vnode = ccs_datum_fix(pvnode)
+    pvnode = Datum(node)
+    vnode = DatumFix(pvnode)
     handle = ccs_expression()
     res = ccs_create_unary_expression(t, vnode, ct.byref(handle))
     Error.check(res)
@@ -123,7 +123,7 @@ class Expression(Object):
   def type(self):
     if hasattr(self, "_type"):
       return self._type
-    v = ccs_expression_type(0)
+    v = ExpressionType(0)
     res = ccs_expression_get_type(self.handle, ct.byref(v))
     Error.check(res)
     self._type = v.value
@@ -171,16 +171,16 @@ class Expression(Object):
     if context and values:
       count = context.num_parameters
       if count != len(values):
-        raise Error(ccs_result(ccs_result.ERROR_INVALID_VALUE))
-      v = (ccs_datum * count)()
+        raise Error(Result(Result.ERROR_INVALID_VALUE))
+      v = (Datum * count)()
       ss = []
       for i in range(count):
         v[i].set_value(values[i], string_store = ss)
       values = v
       context = context.handle
     elif context or values:
-      raise Error(ccs_result(ccs_result.ERROR_INVALID_VALUE))
-    v = ccs_datum()
+      raise Error(Result(Result.ERROR_INVALID_VALUE))
+    v = Datum()
     res = ccs_expression_eval(self.handle, context, values, ct.byref(v))
     Error.check(res)
     return v.value
@@ -201,16 +201,16 @@ class Expression(Object):
 
 
 class Literal(Expression):
-  none_symbol = ccs_terminal_symbols[ccs_terminal_type.NONE]
-  true_aymbol = ccs_terminal_symbols[ccs_terminal_type.TRUE]
-  false_symbol = ccs_terminal_symbols[ccs_terminal_type.FALSE]
+  none_symbol = ccs_terminal_symbols[TerminalType.NONE]
+  true_aymbol = ccs_terminal_symbols[TerminalType.TRUE]
+  false_symbol = ccs_terminal_symbols[TerminalType.FALSE]
 
   def __init__(self, handle = None, retain = False, auto_release = True,
                value = None):
     if handle is None:
       handle = ccs_expression()
-      pv = ccs_datum(value)
-      v = ccs_datum_fix(pv)
+      pv = Datum(value)
+      v = DatumFix(pv)
       res = ccs_create_literal(v, ct.byref(handle))
       Error.check(res)
       super().__init__(handle = handle, retain = False)
@@ -221,7 +221,7 @@ class Literal(Expression):
   def value(self):
     if hasattr(self, "_value"):
       return self._value
-    v = ccs_datum()
+    v = Datum()
     res = ccs_literal_get_value(self.handle, ct.byref(v))
     Error.check(res)
     self._value = v.value
@@ -270,7 +270,7 @@ class List(Expression):
   def __init__(self, handle = None, retain = False, auto_release = True,
                values = []):
     if handle is None:
-      super().__init__(t = ccs_expression_type.LIST, nodes = values)
+      super().__init__(t = ExpressionType.LIST, nodes = values)
     else:
       super().__init__(handle = handle, retain = retain, auto_release = auto_release)
   
@@ -278,16 +278,16 @@ class List(Expression):
     if context and values:
       count = context.num_parameters
       if count != len(values):
-        raise Error(ccs_result(ccs_result.ERROR_INVALID_VALUE))
-      v = (ccs_datum * count)()
+        raise Error(Result(Result.ERROR_INVALID_VALUE))
+      v = (Datum * count)()
       ss = []
       for i in range(count):
         v[i].set_value(values[i], string_store = ss)
       values = v
       context = context.handle
     elif context or values:
-      raise Error(ccs_result(ccs_result.ERROR_INVALID_VALUE))
-    v = ccs_datum()
+      raise Error(Result(Result.ERROR_INVALID_VALUE))
+    v = Datum()
     res = ccs_expression_list_eval_node(self.handle, context, values, index, ct.byref(v))
     Error.check(res)
     return v.value

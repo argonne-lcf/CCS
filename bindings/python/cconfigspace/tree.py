@@ -1,18 +1,18 @@
 import ctypes as ct
 from . import libcconfigspace
-from .base import Object, Error, ccs_rng, ccs_tree, ccs_datum, ccs_datum_fix, ccs_bool, ccs_float, _ccs_get_function
+from .base import Object, Error, ccs_rng, ccs_tree, Datum, DatumFix, ccs_bool, ccs_float, _ccs_get_function
 
-ccs_create_tree = _ccs_get_function("ccs_create_tree", [ ct.c_size_t, ccs_datum_fix, ct.POINTER(ccs_tree)])
-ccs_tree_get_value = _ccs_get_function("ccs_tree_get_value", [ccs_tree, ct.POINTER(ccs_datum)])
+ccs_create_tree = _ccs_get_function("ccs_create_tree", [ ct.c_size_t, DatumFix, ct.POINTER(ccs_tree)])
+ccs_tree_get_value = _ccs_get_function("ccs_tree_get_value", [ccs_tree, ct.POINTER(Datum)])
 ccs_tree_get_arity = _ccs_get_function("ccs_tree_get_arity", [ccs_tree, ct.POINTER(ct.c_size_t)])
 ccs_tree_set_child = _ccs_get_function("ccs_tree_set_child", [ccs_tree, ct.c_size_t, ccs_tree])
 ccs_tree_get_child = _ccs_get_function("ccs_tree_get_child", [ccs_tree, ct.c_size_t, ct.POINTER(ccs_tree)])
 ccs_tree_get_children = _ccs_get_function("ccs_tree_get_children", [ccs_tree, ct.c_size_t, ct.POINTER(ccs_tree), ct.POINTER(ct.c_size_t)])
 ccs_tree_get_parent = _ccs_get_function("ccs_tree_get_parent", [ccs_tree, ct.POINTER(ccs_tree), ct.POINTER(ct.c_size_t)])
 ccs_tree_get_position = _ccs_get_function("ccs_tree_get_position", [ccs_tree, ct.c_size_t, ct.POINTER(ct.c_size_t), ct.POINTER(ct.c_size_t)])
-ccs_tree_get_values = _ccs_get_function("ccs_tree_get_values", [ccs_tree, ct.c_size_t, ct.POINTER(ccs_datum), ct.POINTER(ct.c_size_t)])
+ccs_tree_get_values = _ccs_get_function("ccs_tree_get_values", [ccs_tree, ct.c_size_t, ct.POINTER(Datum), ct.POINTER(ct.c_size_t)])
 ccs_tree_position_is_valid = _ccs_get_function("ccs_tree_position_is_valid", [ccs_tree, ct.c_size_t, ct.POINTER(ct.c_size_t), ct.POINTER(ccs_bool)])
-ccs_tree_get_values_at_position = _ccs_get_function("ccs_tree_get_values_at_position", [ccs_tree, ct.c_size_t, ct.POINTER(ct.c_size_t), ct.c_size_t, ct.POINTER(ccs_datum)])
+ccs_tree_get_values_at_position = _ccs_get_function("ccs_tree_get_values_at_position", [ccs_tree, ct.c_size_t, ct.POINTER(ct.c_size_t), ct.c_size_t, ct.POINTER(Datum)])
 ccs_tree_get_node_at_position = _ccs_get_function("ccs_tree_get_node_at_position", [ccs_tree, ct.c_size_t, ct.POINTER(ct.c_size_t), ct.POINTER(ccs_tree)])
 ccs_tree_get_weight = _ccs_get_function("ccs_tree_get_weight", [ccs_tree, ct.POINTER(ccs_float)])
 ccs_tree_set_weight = _ccs_get_function("ccs_tree_set_weight", [ccs_tree, ccs_float])
@@ -27,8 +27,8 @@ class Tree(Object):
                value = None, arity = None):
     if handle is None:
       handle = ccs_tree(0)
-      pv = ccs_datum(value)
-      v = ccs_datum_fix(pv)
+      pv = Datum(value)
+      v = DatumFix(pv)
       res = ccs_create_tree(arity, v, ct.byref(handle))
       Error.check(res)
       super().__init__(handle = handle, retain = False)
@@ -43,7 +43,7 @@ class Tree(Object):
   def value(self):
     if hasattr(self, "_value"):
       return self._value
-    v = ccs_datum()
+    v = Datum()
     res = ccs_tree_get_value(self.handle, ct.byref(v))
     Error.check(res)
     self._value = v.value
@@ -137,7 +137,7 @@ class Tree(Object):
   @property
   def values(self):
     count = self.depth + 1
-    v = (ccs_datum * count)()
+    v = (Datum * count)()
     res = ccs_tree_get_values(self.handle, count, v, None)
     Error.check(res)
     return [x.value for x in v]
@@ -153,7 +153,7 @@ class Tree(Object):
   def get_values_at_position(self, position):
     count = len(position)
     v1 = (ct.c_size_t * count)(*position)
-    v2 = (ccs_datum * (count + 1))()
+    v2 = (Datum * (count + 1))()
     res = ccs_tree_get_values_at_position(self.handle, count, v1, count + 1, v2)
     Error.check(res)
     return [x.value for x in v2]

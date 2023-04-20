@@ -28,7 +28,7 @@ class TestTuner(unittest.TestCase):
     t = ccs.RandomTuner(name = "tuner", configuration_space = cs, objective_space = os)
     t2 = ccs.Object.from_handle(t.handle)
     self.assertEqual("tuner", t.name)
-    self.assertEqual(ccs.ccs_tuner_type.RANDOM, t.type)
+    self.assertEqual(ccs.TunerType.RANDOM, t.type)
     func = lambda x, y, z: [(x-2)*(x-2), sin(z+y)]
     evals = [ccs.Evaluation(objective_space = os, configuration = c, values = func(*(c.values))) for c in t.ask(100)]
     t.tell(evals)
@@ -82,10 +82,10 @@ class TestTuner(unittest.TestCase):
             new_optima.append(o)
           else:
             c = e.compare(o)
-            if c == ccs.ccs_comparison.EQUIVALENT or c == ccs.ccs_comparison.WORSE:
+            if c == ccs.Comparison.EQUIVALENT or c == ccs.Comparison.WORSE:
               discard = True
               new_optima.append(o)
-            elif c == ccs.ccs_comparison.NOT_COMPARABLE:
+            elif c == ccs.Comparison.NOT_COMPARABLE:
               new_optima.append(o)
         if not discard:
           new_optima.append(e)
@@ -108,7 +108,7 @@ class TestTuner(unittest.TestCase):
     t = ccs.UserDefinedTuner(name = "tuner", configuration_space = cs, objective_space = os, delete = delete, ask = ask, tell = tell, get_optima = get_optima, get_history = get_history, suggest = suggest, tuner_data = TunerData())
     t2 = ccs.Object.from_handle(t.handle)
     self.assertEqual("tuner", t.name)
-    self.assertEqual(ccs.ccs_tuner_type.USER_DEFINED, t.type)
+    self.assertEqual(ccs.TunerType.USER_DEFINED, t.type)
     self.assertEqual(cs.handle.value, t.configuration_space.handle.value)
     self.assertEqual(os.handle.value, t.objective_space.handle.value)
     func = lambda x, y, z: [(x-2)*(x-2), sin(z+y)]

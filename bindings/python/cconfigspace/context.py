@@ -1,5 +1,5 @@
 import ctypes as ct
-from .base import Object, Error, ccs_result, _ccs_get_function, ccs_context, ccs_parameter, ccs_datum, ccs_datum_fix
+from .base import Object, Error, Result, _ccs_get_function, ccs_context, ccs_parameter, Datum, DatumFix
 from .parameter import Parameter
 
 ccs_context_get_name = _ccs_get_function("ccs_context_get_name", [ccs_context, ct.POINTER(ct.c_char_p)])
@@ -10,7 +10,7 @@ ccs_context_get_parameter_index_by_name = _ccs_get_function("ccs_context_get_par
 ccs_context_get_parameter_index = _ccs_get_function("ccs_context_get_parameter_index", [ccs_context, ccs_parameter, ct.POINTER(ct.c_size_t)])
 ccs_context_get_parameter_indexes = _ccs_get_function("ccs_context_get_parameter_indexes", [ccs_context, ct.c_size_t, ct.POINTER(ccs_parameter), ct.POINTER(ct.c_size_t)])
 ccs_context_get_parameters = _ccs_get_function("ccs_context_get_parameters", [ccs_context, ct.c_size_t, ct.POINTER(ccs_parameter), ct.POINTER(ct.c_size_t)])
-ccs_context_validate_value = _ccs_get_function("ccs_context_validate_value", [ccs_context, ct.c_size_t, ccs_datum_fix, ct.POINTER(ccs_datum)])
+ccs_context_validate_value = _ccs_get_function("ccs_context_validate_value", [ccs_context, ct.c_size_t, DatumFix, ct.POINTER(Datum)])
 
 class Context(Object):
 
@@ -70,9 +70,9 @@ class Context(Object):
       parameter = parameter_index(parameter)
     elif isinstance(parameter, str):
       parameter = parameter_index_by_name(parameter)
-    pv = ccs_datum(value)
-    v = ccs_datum_fix(pv)
-    vo = ccs_datum()
+    pv = Datum(value)
+    v = DatumFix(pv)
+    vo = Datum()
     res = ccs_context_validate_value(self.handle, parameter, v, ct.byref(vo))
     Error.check(res)
     return vo.value

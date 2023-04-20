@@ -1,16 +1,16 @@
 import ctypes as ct
-from .base import Object, Error, ccs_result, _ccs_get_function, ccs_context, ccs_binding, ccs_parameter, ccs_datum, ccs_datum_fix, ccs_hash, ccs_int
+from .base import Object, Error, Result, _ccs_get_function, ccs_context, ccs_binding, ccs_parameter, Datum, DatumFix, ccs_hash, ccs_int
 from .parameter import Parameter
 
 ccs_binding_get_context = _ccs_get_function("ccs_binding_get_context", [ccs_binding, ct.POINTER(ccs_context)])
-ccs_binding_get_value = _ccs_get_function("ccs_binding_get_value", [ccs_binding, ct.c_size_t, ct.POINTER(ccs_datum)])
-ccs_binding_set_value = _ccs_get_function("ccs_binding_set_value", [ccs_binding, ct.c_size_t, ccs_datum_fix])
-ccs_binding_get_values = _ccs_get_function("ccs_binding_get_values", [ccs_binding, ct.c_size_t, ct.POINTER(ccs_datum), ct.POINTER(ct.c_size_t)])
-ccs_binding_set_values = _ccs_get_function("ccs_binding_set_values", [ccs_binding, ct.c_size_t, ct.POINTER(ccs_datum)])
-ccs_binding_get_value_by_name = _ccs_get_function("ccs_binding_get_value_by_name", [ccs_binding, ct.c_char_p, ct.POINTER(ccs_datum)])
-ccs_binding_set_value_by_name = _ccs_get_function("ccs_binding_set_value_by_name", [ccs_binding, ct.c_char_p, ccs_datum_fix])
-ccs_binding_get_value_by_parameter = _ccs_get_function("ccs_binding_get_value_by_parameter", [ccs_binding, ccs_parameter, ct.POINTER(ccs_datum)])
-ccs_binding_set_value_by_parameter = _ccs_get_function("ccs_binding_set_value_by_parameter", [ccs_binding, ccs_parameter, ccs_datum_fix])
+ccs_binding_get_value = _ccs_get_function("ccs_binding_get_value", [ccs_binding, ct.c_size_t, ct.POINTER(Datum)])
+ccs_binding_set_value = _ccs_get_function("ccs_binding_set_value", [ccs_binding, ct.c_size_t, DatumFix])
+ccs_binding_get_values = _ccs_get_function("ccs_binding_get_values", [ccs_binding, ct.c_size_t, ct.POINTER(Datum), ct.POINTER(ct.c_size_t)])
+ccs_binding_set_values = _ccs_get_function("ccs_binding_set_values", [ccs_binding, ct.c_size_t, ct.POINTER(Datum)])
+ccs_binding_get_value_by_name = _ccs_get_function("ccs_binding_get_value_by_name", [ccs_binding, ct.c_char_p, ct.POINTER(Datum)])
+ccs_binding_set_value_by_name = _ccs_get_function("ccs_binding_set_value_by_name", [ccs_binding, ct.c_char_p, DatumFix])
+ccs_binding_get_value_by_parameter = _ccs_get_function("ccs_binding_get_value_by_parameter", [ccs_binding, ccs_parameter, ct.POINTER(Datum)])
+ccs_binding_set_value_by_parameter = _ccs_get_function("ccs_binding_set_value_by_parameter", [ccs_binding, ccs_parameter, DatumFix])
 ccs_binding_hash = _ccs_get_function("ccs_binding_hash", [ccs_binding, ct.POINTER(ccs_hash)])
 ccs_binding_cmp = _ccs_get_function("ccs_binding_cmp", [ccs_binding, ccs_binding, ct.POINTER(ct.c_int)])
 
@@ -37,8 +37,8 @@ class Binding(Object):
     return self._num_values
 
   def set_value(self, parameter, value):
-    pv = ccs_datum(value)
-    v = ccs_datum_fix(pv)
+    pv = Datum(value)
+    v = DatumFix(pv)
     if isinstance(parameter, Parameter):
       res = ccs_binding_set_value_by_parameter(self.handle, parameter.handle, v)
     elif isinstance(parameter, str):
@@ -48,7 +48,7 @@ class Binding(Object):
     Error.check(res)
 
   def value(self, parameter):
-    v = ccs_datum()
+    v = Datum()
     if isinstance(parameter, Parameter):
       res = ccs_binding_get_value_by_parameter(self.handle, parameter.handle, ct.byref(v))
     elif isinstance(parameter, str):
@@ -63,14 +63,14 @@ class Binding(Object):
     sz = self.num_values
     if sz == 0:
       return []
-    v = (ccs_datum * sz)()
+    v = (Datum * sz)()
     res = ccs_binding_get_values(self.handle, sz, v, None)
     Error.check(res)
     return [x.value for x in v]
 
   def set_values(self, values):
     sz = len(values)
-    v = (ccs_datum*sz)()
+    v = (Datum*sz)()
     ss = []
     for i in range(sz):
       v[i].set_value(values[i], string_store = ss)

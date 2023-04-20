@@ -1,14 +1,14 @@
 import ctypes as ct
-from .base import Object, Error, CEnumeration, ccs_result, _ccs_get_function, ccs_context, ccs_parameter, ccs_configuration_space, ccs_configuration, ccs_evaluation, ccs_rng, ccs_distribution, ccs_expression, ccs_datum, ccs_objective_space, ccs_bool
+from .base import Object, Error, CEnumeration, Result, _ccs_get_function, ccs_context, ccs_parameter, ccs_configuration_space, ccs_configuration, ccs_evaluation, ccs_rng, ccs_distribution, ccs_expression, Datum, ccs_objective_space, ccs_bool
 from .context import Context
 from .parameter import Parameter
 from .expression import Expression
-from .expression_parser import ccs_parser
+from .expression_parser import parser
 from .configuration_space import ConfigurationSpace
 from .configuration import Configuration
 from parglare.parser import Context as PContext
 
-class ccs_objective_type(CEnumeration):
+class ObjectiveType(CEnumeration):
   _members_ = [
     ('MINIMIZE', 0),
     'MAXIMIZE' ]
@@ -16,11 +16,11 @@ class ccs_objective_type(CEnumeration):
 ccs_create_objective_space = _ccs_get_function("ccs_create_objective_space", [ct.c_char_p, ct.POINTER(ccs_objective_space)])
 ccs_objective_space_add_parameter = _ccs_get_function("ccs_objective_space_add_parameter", [ccs_objective_space, ccs_parameter])
 ccs_objective_space_add_parameters = _ccs_get_function("ccs_objective_space_add_parameters", [ccs_objective_space, ct.c_size_t, ct.POINTER(ccs_parameter)])
-ccs_objective_space_add_objective = _ccs_get_function("ccs_objective_space_add_objective", [ccs_objective_space, ccs_expression, ccs_objective_type])
-ccs_objective_space_add_objectives = _ccs_get_function("ccs_objective_space_add_objectives", [ccs_objective_space, ct.c_size_t, ct.POINTER(ccs_expression), ct.POINTER(ccs_objective_type)])
-ccs_objective_space_get_objective = _ccs_get_function("ccs_objective_space_get_objective", [ccs_objective_space, ct.c_size_t, ct.POINTER(ccs_expression), ct.POINTER(ccs_objective_type)])
-ccs_objective_space_get_objectives = _ccs_get_function("ccs_objective_space_get_objectives", [ccs_objective_space, ct.c_size_t, ct.POINTER(ccs_expression), ct.POINTER(ccs_objective_type), ct.POINTER(ct.c_size_t)])
-ccs_objective_space_check_evaluation_values = _ccs_get_function("ccs_objective_space_check_evaluation_values", [ccs_objective_space, ct.c_size_t, ct.POINTER(ccs_datum), ct.POINTER(ccs_bool)])
+ccs_objective_space_add_objective = _ccs_get_function("ccs_objective_space_add_objective", [ccs_objective_space, ccs_expression, ObjectiveType])
+ccs_objective_space_add_objectives = _ccs_get_function("ccs_objective_space_add_objectives", [ccs_objective_space, ct.c_size_t, ct.POINTER(ccs_expression), ct.POINTER(ObjectiveType)])
+ccs_objective_space_get_objective = _ccs_get_function("ccs_objective_space_get_objective", [ccs_objective_space, ct.c_size_t, ct.POINTER(ccs_expression), ct.POINTER(ObjectiveType)])
+ccs_objective_space_get_objectives = _ccs_get_function("ccs_objective_space_get_objectives", [ccs_objective_space, ct.c_size_t, ct.POINTER(ccs_expression), ct.POINTER(ObjectiveType), ct.POINTER(ct.c_size_t)])
+ccs_objective_space_check_evaluation_values = _ccs_get_function("ccs_objective_space_check_evaluation_values", [ccs_objective_space, ct.c_size_t, ct.POINTER(Datum), ct.POINTER(ccs_bool)])
 
 class ObjectiveSpace(Context):
   def __init__(self, handle = None, retain = False, auto_release = True,
@@ -49,9 +49,9 @@ class ObjectiveSpace(Context):
     res = ccs_objective_space_add_parameters(self.handle, count, parameters)
     Error.check(res)
 
-  def add_objective(self, expression, t = ccs_objective_type.MINIMIZE):
+  def add_objective(self, expression, t = ObjectiveType.MINIMIZE):
     if isinstance(expression, str):
-      expression = ccs_parser.parse(expression, context = PContext(extra=self))
+      expression = parser.parse(expression, context = PContext(extra=self))
     res = ccs_objective_space_add_objective(self.handle, expression.handle, t)
     Error.check(res)
 
@@ -59,23 +59,23 @@ class ObjectiveSpace(Context):
     if isinstance(expressions, dict):
       types = expressions.values()
       expressions = expressions.keys()
-    expressions = [ ccs_parser.parse(expression, context = PContext(extra=self)) if isinstance(expression, str) else expression for expression in expressions ]
+    expressions = [ parser.parse(expression, context = PContext(extra=self)) if isinstance(expression, str) else expression for expression in expressions ]
     sz = len(expressions)
     if sz == 0:
       return None
     if types:
       if len(types) != sz:
-        raise Error(ccs_result(ccs_result.ERROR_INVALID_VALUE))
-      types = (ccs_objective_type * sz)(*types)
+        raise Error(Result(Result.ERROR_INVALID_VALUE))
+      types = (ObjectiveType * sz)(*types)
     else:
-      types = (ccs_objective_type * sz)(*([ccs_objective_type.MINIMIZE] * sz))
+      types = (ObjectiveType * sz)(*([ObjectiveType.MINIMIZE] * sz))
     v = (ccs_expression * sz)(*[x.handle.value for x in expressions])
     res = ccs_objective_space_add_objectives(self.handle, sz, v, types)
     Error.check(res)
 
   def get_objective(self, index):
     v = ccs_expression()
-    t = ccs_objective_type()
+    t = ObjectiveType()
     res = ccs_objective_space_get_objective(self.handle, index, ct.byref(v), ct.byref(t))
     Error.check(res)
     return (Expression.from_handle(v), t.value)
@@ -91,7 +91,7 @@ class ObjectiveSpace(Context):
   def objectives(self):
     sz = self.num_objective
     v = (ccs_expression * sz)()
-    t = (ccs_objective_type * sz)()
+    t = (ObjectiveType * sz)()
     res = ccs_objective_space_get_objectives(self.handle, sz, v, t, None)
     Error.check(res)
     return [(Expression.from_handle(ccs_expression(v[x])), t[x].value) for x in range(sz)]
@@ -99,8 +99,8 @@ class ObjectiveSpace(Context):
   def check_values(self, values):
     count = len(values)
     if count != self.num_parameters:
-      raise Error(ccs_result(ccs_result.ERROR_INVALID_VALUE))
-    v = (ccs_datum * count)()
+      raise Error(Result(Result.ERROR_INVALID_VALUE))
+    v = (Datum * count)()
     ss = []
     for i in range(count):
       v[i].set_value(values[i], string_store = ss)

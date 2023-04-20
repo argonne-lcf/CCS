@@ -1,10 +1,10 @@
 import ctypes as ct
-from .base import Object, Error, ccs_result, _ccs_get_function, ccs_context, ccs_parameter, ccs_configuration_space, ccs_configuration, ccs_rng, ccs_distribution, ccs_expression, ccs_datum, ccs_bool
+from .base import Object, Error, Result, _ccs_get_function, ccs_context, ccs_parameter, ccs_configuration_space, ccs_configuration, ccs_rng, ccs_distribution, ccs_expression, Datum, ccs_bool
 from .context import Context
 from .distribution import Distribution
 from .parameter import Parameter
 from .expression import Expression
-from .expression_parser import ccs_parser
+from .expression_parser import parser
 from .rng import Rng
 from parglare.parser import Context as PContext
 
@@ -23,7 +23,7 @@ ccs_configuration_space_add_forbidden_clauses = _ccs_get_function("ccs_configura
 ccs_configuration_space_get_forbidden_clause = _ccs_get_function("ccs_configuration_space_get_forbidden_clause", [ccs_configuration_space, ct.c_size_t, ct.POINTER(ccs_expression)])
 ccs_configuration_space_get_forbidden_clauses = _ccs_get_function("ccs_configuration_space_get_forbidden_clauses", [ccs_configuration_space, ct.c_size_t, ct.POINTER(ccs_expression), ct.POINTER(ct.c_size_t)])
 ccs_configuration_space_check_configuration = _ccs_get_function("ccs_configuration_space_check_configuration", [ccs_configuration_space, ccs_configuration, ct.POINTER(ccs_bool)])
-ccs_configuration_space_check_configuration_values = _ccs_get_function("ccs_configuration_space_check_configuration_values", [ccs_configuration_space, ct.c_size_t, ct.POINTER(ccs_datum), ct.POINTER(ccs_bool)])
+ccs_configuration_space_check_configuration_values = _ccs_get_function("ccs_configuration_space_check_configuration_values", [ccs_configuration_space, ct.c_size_t, ct.POINTER(Datum), ct.POINTER(ccs_bool)])
 ccs_configuration_space_get_default_configuration = _ccs_get_function("ccs_configuration_space_get_default_configuration", [ccs_configuration_space, ct.POINTER(ccs_configuration)])
 ccs_configuration_space_sample = _ccs_get_function("ccs_configuration_space_sample", [ccs_configuration_space, ct.POINTER(ccs_configuration)])
 ccs_configuration_space_samples = _ccs_get_function("ccs_configuration_space_samples", [ccs_configuration_space, ct.c_size_t, ct.POINTER(ccs_configuration)])
@@ -67,7 +67,7 @@ class ConfigurationSpace(Context):
       return None
     if distributions:
       if count != len(distributions):
-        raise Error(ccs_result(ccs_result.ERROR_INVALID_VALUE))
+        raise Error(Result(Result.ERROR_INVALID_VALUE))
       distribs = (ccs_distribution * count)(*[x.handle.value if x else x for x in distributions])
     else:
       distribs = None
@@ -78,7 +78,7 @@ class ConfigurationSpace(Context):
   def set_distribution(self, distribution, parameters):
     count = distribution.dimension
     if count != len(parameters):
-        raise Error(ccs_result(ccs_result.ERROR_INVALID_VALUE))
+        raise Error(Result(Result.ERROR_INVALID_VALUE))
     hyps = []
     for h in parameters:
       if isinstance(h, Parameter):
@@ -104,7 +104,7 @@ class ConfigurationSpace(Context):
 
   def set_condition(self, parameter, expression):
     if isinstance(expression, str):
-      expression = ccs_parser.parse(expression, context = PContext(extra=self))
+      expression = parser.parse(expression, context = PContext(extra=self))
     if isinstance(parameter, Parameter):
       parameter = self.parameter_index(parameter)
     elif isinstance(parameter, str):
@@ -153,7 +153,7 @@ class ConfigurationSpace(Context):
 
   def add_forbidden_clause(self, expression):
     if isinstance(expression, str):
-      expression = ccs_parser.parse(expression, context = PContext(extra=self))
+      expression = parser.parse(expression, context = PContext(extra=self))
     res = ccs_configuration_space_add_forbidden_clause(self.handle, expression.handle)
     Error.check(res)
 
@@ -161,7 +161,7 @@ class ConfigurationSpace(Context):
     sz = len(expressions)
     if sz == 0:
       return None
-    expressions = [ ccs_parser.parse(expression, context = PContext(extra=self)) if isinstance(expression, str) else expression for expression in expressions ]
+    expressions = [ parser.parse(expression, context = PContext(extra=self)) if isinstance(expression, str) else expression for expression in expressions ]
     v = (ccs_expression * sz)(*[x.handle.value for x in expressions])
     res = ccs_configuration_space_add_forbidden_clauses(self.handle, sz, v)
     Error.check(res)
@@ -198,8 +198,8 @@ class ConfigurationSpace(Context):
   def check_values(self, values):
     count = len(values)
     if count != self.num_parameters:
-      raise Error(ccs_result(ccs_result.ERROR_INVALID_VALUE))
-    v = (ccs_datum * count)()
+      raise Error(Result(Result.ERROR_INVALID_VALUE))
+    v = (Datum * count)()
     ss = []
     for i in range(count):
       v[i].set_value(values[i], string_store = ss)

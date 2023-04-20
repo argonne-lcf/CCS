@@ -29,7 +29,7 @@ class TestTreeTuner(unittest.TestCase):
     v1 = ccs.NumericalParameter(lower = float('-inf'), upper = float('inf'))
     os.add_parameter(v1)
     e1 = ccs.Variable(parameter = v1)
-    os.add_objectives( {e1: ccs.ccs_objective_type.MAXIMIZE} )
+    os.add_objectives( {e1: ccs.ObjectiveType.MAXIMIZE} )
     return (ts, os)
 
   def test_create_random(self):
@@ -37,7 +37,7 @@ class TestTreeTuner(unittest.TestCase):
     t = ccs.RandomTreeTuner(name = "tuner", tree_space = ts, objective_space = os)
     t2 = ccs.Object.from_handle(t.handle)
     self.assertEqual("tuner", t.name)
-    self.assertEqual(ccs.ccs_tree_tuner_type.RANDOM, t.type)
+    self.assertEqual(ccs.TreeTunerType.RANDOM, t.type)
     evals = [ccs.TreeEvaluation(objective_space = os, configuration = c, values = [reduce(c.values)]) for c in t.ask(100)]
     t.tell(evals)
     hist = t.history
@@ -87,10 +87,10 @@ class TestTreeTuner(unittest.TestCase):
             new_optima.append(o)
           else:
             c = e.compare(o)
-            if c == ccs.ccs_comparison.EQUIVALENT or c == ccs.ccs_comparison.WORSE:
+            if c == ccs.Comparison.EQUIVALENT or c == ccs.Comparison.WORSE:
               discard = True
               new_optima.append(o)
-            elif c == ccs.ccs_comparison.NOT_COMPARABLE:
+            elif c == ccs.Comparison.NOT_COMPARABLE:
               new_optima.append(o)
         if not discard:
           new_optima.append(e)
@@ -113,7 +113,7 @@ class TestTreeTuner(unittest.TestCase):
     t = ccs.UserDefinedTreeTuner(name = "tuner", tree_space = ts, objective_space = os, delete = delete, ask = ask, tell = tell, get_optima = get_optima, get_history = get_history, suggest = suggest, tuner_data = TunerData())
     t2 = ccs.Object.from_handle(t.handle)
     self.assertEqual("tuner", t.name)
-    self.assertEqual(ccs.ccs_tree_tuner_type.USER_DEFINED, t.type)
+    self.assertEqual(ccs.TreeTunerType.USER_DEFINED, t.type)
     evals = [ccs.TreeEvaluation(objective_space = os, configuration = c, values = [reduce(c.values)]) for c in t.ask(100)]
     t.tell(evals)
     hist = t.history

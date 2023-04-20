@@ -1,9 +1,9 @@
 import ctypes as ct
 from . import libcconfigspace
-from .base import Object, Error, ccs_result, ccs_int, ccs_float, ccs_bool, ccs_rng, ccs_distribution, ccs_numeric_type, ccs_numeric, CEnumeration, _ccs_get_function, ccs_false, ccs_true
-from .interval import ccs_interval
+from .base import Object, Error, Result, ccs_int, ccs_float, ccs_bool, ccs_rng, ccs_distribution, NumericType, Numeric, CEnumeration, _ccs_get_function, ccs_false, ccs_true
+from .interval import Interval
 
-class ccs_distribution_type(CEnumeration):
+class DistributionType(CEnumeration):
   _members_ = [
     ('UNIFORM', 0),
     'NORMAL',
@@ -11,45 +11,45 @@ class ccs_distribution_type(CEnumeration):
     'MIXTURE',
     'MULTIVARIATE' ]
 
-class ccs_scale_type(CEnumeration):
+class ScaleType(CEnumeration):
   _members_ = [
     ('LINEAR', 0),
     'LOGARITHMIC' ]
 
-ccs_distribution_get_type = _ccs_get_function("ccs_distribution_get_type", [ccs_distribution, ct.POINTER(ccs_distribution_type)])
-ccs_distribution_get_data_types = _ccs_get_function("ccs_distribution_get_data_types", [ccs_distribution, ct.POINTER(ccs_numeric_type)])
+ccs_distribution_get_type = _ccs_get_function("ccs_distribution_get_type", [ccs_distribution, ct.POINTER(DistributionType)])
+ccs_distribution_get_data_types = _ccs_get_function("ccs_distribution_get_data_types", [ccs_distribution, ct.POINTER(NumericType)])
 ccs_distribution_get_dimension = _ccs_get_function("ccs_distribution_get_dimension", [ccs_distribution, ct.POINTER(ct.c_size_t)])
-ccs_distribution_get_bounds = _ccs_get_function("ccs_distribution_get_bounds", [ccs_distribution, ct.POINTER(ccs_interval)])
-ccs_distribution_check_oversampling = _ccs_get_function("ccs_distribution_check_oversampling", [ccs_distribution, ct.POINTER(ccs_interval), ct.POINTER(ccs_bool)])
-ccs_distribution_sample = _ccs_get_function("ccs_distribution_sample", [ccs_distribution, ccs_rng, ct.POINTER(ccs_numeric)])
-ccs_distribution_samples = _ccs_get_function("ccs_distribution_samples", [ccs_distribution, ccs_rng, ct.c_size_t, ct.POINTER(ccs_numeric)])
+ccs_distribution_get_bounds = _ccs_get_function("ccs_distribution_get_bounds", [ccs_distribution, ct.POINTER(Interval)])
+ccs_distribution_check_oversampling = _ccs_get_function("ccs_distribution_check_oversampling", [ccs_distribution, ct.POINTER(Interval), ct.POINTER(ccs_bool)])
+ccs_distribution_sample = _ccs_get_function("ccs_distribution_sample", [ccs_distribution, ccs_rng, ct.POINTER(Numeric)])
+ccs_distribution_samples = _ccs_get_function("ccs_distribution_samples", [ccs_distribution, ccs_rng, ct.c_size_t, ct.POINTER(Numeric)])
 
 class Distribution(Object):
 
   @classmethod
   def from_handle(cls, handle, retain = True, auto_release = True):
-    v = ccs_distribution_type(0)
+    v = DistributionType(0)
     res = ccs_distribution_get_type(handle, ct.byref(v))
     Error.check(res)
     v = v.value
-    if v == ccs_distribution_type.UNIFORM:
+    if v == DistributionType.UNIFORM:
       return UniformDistribution(handle = handle, retain = retain, auto_release = auto_release)
-    elif v == ccs_distribution_type.NORMAL:
+    elif v == DistributionType.NORMAL:
       return NormalDistribution(handle = handle, retain = retain, auto_release = auto_release)
-    elif v == ccs_distribution_type.ROULETTE:
+    elif v == DistributionType.ROULETTE:
       return RouletteDistribution(handle = handle, retain = retain, auto_release = auto_release)
-    elif v == ccs_distribution_type.MIXTURE:
+    elif v == DistributionType.MIXTURE:
       return MixtureDistribution(handle = handle, retain = retain, auto_release = auto_release)
-    elif v == ccs_distribution_type.MULTIVARIATE:
+    elif v == DistributionType.MULTIVARIATE:
       return MultivariateDistribution(handle = handle, retain = retain, auto_release = auto_release)
     else:
-      raise Error(ccs_result(ccs_result.ERROR_INVALID_DISTRIBUTION))
+      raise Error(Result(Result.ERROR_INVALID_DISTRIBUTION))
 
   @property
   def type(self):
     if hasattr(self, "_type"):
       return self._type
-    v = ccs_distribution_type(0)
+    v = DistributionType(0)
     res = ccs_distribution_get_type(self.handle, ct.byref(v))
     Error.check(res)
     self._type = v.value
@@ -59,7 +59,7 @@ class Distribution(Object):
   def data_types(self):
     if hasattr(self, "_data_types"):
       return self._data_types
-    v = (ccs_numeric_type*self.dimension)()
+    v = (NumericType*self.dimension)()
     res = ccs_distribution_get_data_types(self.handle, v)
     Error.check(res)
     self._data_types = [t.value for t in v]
@@ -79,7 +79,7 @@ class Distribution(Object):
   def bounds(self):
     if hasattr(self, "_bounds"):
       return self._bounds
-    v = ccs_interval()
+    v = Interval()
     res = ccs_distribution_get_bounds(self.handle, ct.byref(v))
     Error.check(res)
     self._bounds = v
@@ -93,19 +93,19 @@ class Distribution(Object):
 
   def sample(self, rng):
     dim = self.dimension
-    v = (ccs_numeric*dim)()
+    v = (Numeric*dim)()
     res = ccs_distribution_sample(self.handle, rng.handle, v)
     Error.check(res)
     if dim == 1:
       t = self.data_types[0]
-      if t == ccs_numeric_type.INT:
+      if t == NumericType.INT:
         return v[0].i
-      elif t == ccs_numeric_type.FLOAT:
+      elif t == NumericType.FLOAT:
         return v[0].f
       else:
-        raise Error(ccs_result(ccs_result.ERROR_INVALID_VALUE))
+        raise Error(Result(Result.ERROR_INVALID_VALUE))
     else:
-      return [ v[i].i if self.data_types[i] == ccs_numeric_type.INT else v[i].f for i in range(dim) ]
+      return [ v[i].i if self.data_types[i] == NumericType.INT else v[i].f for i in range(dim) ]
 
   def samples(self, rng, count):
     if count == 0:
@@ -113,49 +113,49 @@ class Distribution(Object):
     dim = self.dimension
     if dim == 1:
       t = self.data_types[0]
-      if t == ccs_numeric_type.INT:
+      if t == NumericType.INT:
         v = (ccs_int * (count * dim))()
-      elif t == ccs_numeric_type.FLOAT:
+      elif t == NumericType.FLOAT:
         v = (ccs_float * (count * dim))()
       else:
-        raise Error(ccs_result(ccs_result.ERROR_INVALID_VALUE))
-      res = ccs_distribution_samples(self.handle, rng.handle, count, ct.cast(v, ct.POINTER(ccs_numeric)))
+        raise Error(Result(Result.ERROR_INVALID_VALUE))
+      res = ccs_distribution_samples(self.handle, rng.handle, count, ct.cast(v, ct.POINTER(Numeric)))
       Error.check(res)
       return list(v)
     else:
-      v = (ccs_numeric*dim*count)()
+      v = (Numeric*dim*count)()
       res = ccs_distribution_samples(self.handle, rng.handle, count, v)
       Error.check(res)
-      return [ [v[j][i].i if self.data_types[i] == ccs_numeric_type.INT else v[j][i].f for i in range(dim) ] for j in range(count) ]
+      return [ [v[j][i].i if self.data_types[i] == NumericType.INT else v[j][i].f for i in range(dim) ] for j in range(count) ]
 
-ccs_create_uniform_distribution = _ccs_get_function("ccs_create_uniform_distribution", [ccs_numeric_type, ccs_int, ccs_int, ccs_scale_type, ccs_int, ct.POINTER(ccs_distribution)])
-ccs_create_uniform_int_distribution = _ccs_get_function("ccs_create_uniform_int_distribution", [ccs_int, ccs_int, ccs_scale_type, ccs_int, ct.POINTER(ccs_distribution)])
-ccs_create_uniform_float_distribution = _ccs_get_function("ccs_create_uniform_float_distribution", [ccs_float, ccs_float, ccs_scale_type, ccs_float, ct.POINTER(ccs_distribution)])
-ccs_uniform_distribution_get_properties = _ccs_get_function("ccs_uniform_distribution_get_properties", [ccs_distribution, ct.POINTER(ccs_numeric), ct.POINTER(ccs_numeric), ct.POINTER(ccs_scale_type), ct.POINTER(ccs_numeric)])
+ccs_create_uniform_distribution = _ccs_get_function("ccs_create_uniform_distribution", [NumericType, ccs_int, ccs_int, ScaleType, ccs_int, ct.POINTER(ccs_distribution)])
+ccs_create_uniform_int_distribution = _ccs_get_function("ccs_create_uniform_int_distribution", [ccs_int, ccs_int, ScaleType, ccs_int, ct.POINTER(ccs_distribution)])
+ccs_create_uniform_float_distribution = _ccs_get_function("ccs_create_uniform_float_distribution", [ccs_float, ccs_float, ScaleType, ccs_float, ct.POINTER(ccs_distribution)])
+ccs_uniform_distribution_get_properties = _ccs_get_function("ccs_uniform_distribution_get_properties", [ccs_distribution, ct.POINTER(Numeric), ct.POINTER(Numeric), ct.POINTER(ScaleType), ct.POINTER(Numeric)])
 
 class UniformDistribution(Distribution):
   def __init__(self, handle = None, retain = False, auto_release = True,
-               data_type = ccs_numeric_type.FLOAT, lower = 0.0, upper = 1.0, scale = ccs_scale_type.LINEAR, quantization = 0.0):
+               data_type = NumericType.FLOAT, lower = 0.0, upper = 1.0, scale = ScaleType.LINEAR, quantization = 0.0):
     if handle is None:
       handle = ccs_distribution(0)
-      if data_type == ccs_numeric_type.FLOAT:
+      if data_type == NumericType.FLOAT:
         res = ccs_create_uniform_float_distribution(lower, upper, scale, quantization, ct.byref(handle))
-      elif data_type == ccs_numeric_type.INT:
+      elif data_type == NumericType.INT:
         res = ccs_create_uniform_int_distribution(lower, upper, scale, quantization, ct.byref(handle))
       else:
-        raise Error(ccs_result(ccs_result.ERROR_INVALID_VALUE))
+        raise Error(Result(Result.ERROR_INVALID_VALUE))
       Error.check(res)
       super().__init__(handle = handle, retain = False)
     else:
       super().__init__(handle = handle, retain = retain, auto_release = auto_release)
 
   @classmethod
-  def int(cls, lower, upper, scale = ccs_scale_type.LINEAR, quantization = 0):
-    return cls(data_type = ccs_numeric_type.INT, lower = lower, upper = upper, scale = scale, quantization = quantization)
+  def int(cls, lower, upper, scale = ScaleType.LINEAR, quantization = 0):
+    return cls(data_type = NumericType.INT, lower = lower, upper = upper, scale = scale, quantization = quantization)
 
   @classmethod
-  def float(cls, lower, upper, scale = ccs_scale_type.LINEAR, quantization = 0.0):
-    return cls(data_type = ccs_numeric_type.FLOAT, lower = lower, upper = upper, scale = scale, quantization = quantization)
+  def float(cls, lower, upper, scale = ScaleType.LINEAR, quantization = 0.0):
+    return cls(data_type = NumericType.FLOAT, lower = lower, upper = upper, scale = scale, quantization = quantization)
 
   @property
   def data_type(self):
@@ -168,39 +168,39 @@ class UniformDistribution(Distribution):
   def lower(self):
     if hasattr(self, "_lower"):
       return self._lower
-    v = ccs_numeric()
+    v = Numeric()
     res = ccs_uniform_distribution_get_properties(self.handle, ct.byref(v), None, None, None)
     Error.check(res)
     t = self.data_type
-    if t == ccs_numeric_type.INT:
+    if t == NumericType.INT:
       self._lower = v.i
-    elif t == ccs_numeric_type.FLOAT:
+    elif t == NumericType.FLOAT:
       self._lower = v.f
     else:
-      raise Error(ccs_result(ccs_result.ERROR_INVALID_VALUE))
+      raise Error(Result(Result.ERROR_INVALID_VALUE))
     return self._lower
 
   @property
   def upper(self):
     if hasattr(self, "_upper"):
       return self._upper
-    v = ccs_numeric()
+    v = Numeric()
     res = ccs_uniform_distribution_get_properties(self.handle, None, ct.byref(v), None, None)
     Error.check(res)
     t = self.data_type
-    if t == ccs_numeric_type.INT:
+    if t == NumericType.INT:
       self._upper = v.i
-    elif t == ccs_numeric_type.FLOAT:
+    elif t == NumericType.FLOAT:
       self._upper = v.f
     else:
-      raise Error(ccs_result(ccs_result.ERROR_INVALID_VALUE))
+      raise Error(Result(Result.ERROR_INVALID_VALUE))
     return self._upper
 
   @property
   def scale_type(self):
     if hasattr(self, "_scale_type"):
       return self._scale_type
-    v = ccs_scale_type(0)
+    v = ScaleType(0)
     res = ccs_uniform_distribution_get_properties(self.handle, None, None, ct.byref(v), None)
     Error.check(res)
     self._scale_type = v.value
@@ -212,46 +212,46 @@ class UniformDistribution(Distribution):
   def quantization(self):
     if hasattr(self, "_quantization"):
       return self._quantization
-    v = ccs_numeric(0)
+    v = Numeric(0)
     res = ccs_uniform_distribution_get_properties(self.handle, None, None, None, ct.byref(v))
     Error.check(res)
     t = self.data_type
-    if t == ccs_numeric_type.INT:
+    if t == NumericType.INT:
       self._quantization = v.i
-    elif t == ccs_numeric_type.FLOAT:
+    elif t == NumericType.FLOAT:
       self._quantization = v.f
     else:
-      raise Error(ccs_result(ccs_result.ERROR_INVALID_VALUE))
+      raise Error(Result(Result.ERROR_INVALID_VALUE))
     return self._quantization
 
-ccs_create_normal_distribution = _ccs_get_function("ccs_create_normal_distribution", [ccs_numeric_type, ccs_float, ccs_float, ccs_scale_type, ccs_int, ct.POINTER(ccs_distribution)])
-ccs_create_normal_int_distribution = _ccs_get_function("ccs_create_normal_int_distribution", [ccs_float, ccs_float, ccs_scale_type, ccs_int, ct.POINTER(ccs_distribution)])
-ccs_create_normal_float_distribution = _ccs_get_function("ccs_create_normal_float_distribution", [ccs_float, ccs_float, ccs_scale_type, ccs_float, ct.POINTER(ccs_distribution)])
-ccs_normal_distribution_get_properties = _ccs_get_function("ccs_normal_distribution_get_properties", [ccs_distribution, ct.POINTER(ccs_float), ct.POINTER(ccs_float), ct.POINTER(ccs_scale_type), ct.POINTER(ccs_numeric)])
+ccs_create_normal_distribution = _ccs_get_function("ccs_create_normal_distribution", [NumericType, ccs_float, ccs_float, ScaleType, ccs_int, ct.POINTER(ccs_distribution)])
+ccs_create_normal_int_distribution = _ccs_get_function("ccs_create_normal_int_distribution", [ccs_float, ccs_float, ScaleType, ccs_int, ct.POINTER(ccs_distribution)])
+ccs_create_normal_float_distribution = _ccs_get_function("ccs_create_normal_float_distribution", [ccs_float, ccs_float, ScaleType, ccs_float, ct.POINTER(ccs_distribution)])
+ccs_normal_distribution_get_properties = _ccs_get_function("ccs_normal_distribution_get_properties", [ccs_distribution, ct.POINTER(ccs_float), ct.POINTER(ccs_float), ct.POINTER(ScaleType), ct.POINTER(Numeric)])
 
 class NormalDistribution(Distribution):
   def __init__(self, handle = None, retain = False, auto_release = True,
-               data_type = ccs_numeric_type.FLOAT, mu = 0.0, sigma = 1.0, scale = ccs_scale_type.LINEAR, quantization = 0.0):
+               data_type = NumericType.FLOAT, mu = 0.0, sigma = 1.0, scale = ScaleType.LINEAR, quantization = 0.0):
     if handle is None:
       handle = ccs_distribution(0)
-      if data_type == ccs_numeric_type.FLOAT:
+      if data_type == NumericType.FLOAT:
         res = ccs_create_normal_float_distribution(mu, sigma, scale, quantization, ct.byref(handle))
-      elif data_type == ccs_numeric_type.INT:
+      elif data_type == NumericType.INT:
         res = ccs_create_normal_int_distribution(mu, sigma, scale, quantization, ct.byref(handle))
       else:
-        raise Error(ccs_result(ccs_result.ERROR_INVALID_VALUE))
+        raise Error(Result(Result.ERROR_INVALID_VALUE))
       Error.check(res)
       super().__init__(handle = handle, retain = False)
     else:
       super().__init__(handle = handle, retain = retain, auto_release = auto_release)
 
   @classmethod
-  def int(cls, mu, sigma, scale = ccs_scale_type.LINEAR, quantization = 0):
-    return cls(data_type = ccs_numeric_type.INT, mu = mu, sigma = sigma, scale = scale, quantization = quantization)
+  def int(cls, mu, sigma, scale = ScaleType.LINEAR, quantization = 0):
+    return cls(data_type = NumericType.INT, mu = mu, sigma = sigma, scale = scale, quantization = quantization)
 
   @classmethod
-  def float(cls, mu, sigma, scale = ccs_scale_type.LINEAR, quantization = 0.0):
-    return cls(data_type = ccs_numeric_type.FLOAT, mu = mu, sigma = sigma, scale = scale, quantization = quantization)
+  def float(cls, mu, sigma, scale = ScaleType.LINEAR, quantization = 0.0):
+    return cls(data_type = NumericType.FLOAT, mu = mu, sigma = sigma, scale = scale, quantization = quantization)
 
   @property
   def data_type(self):
@@ -284,7 +284,7 @@ class NormalDistribution(Distribution):
   def scale_type(self):
     if hasattr(self, "_scale_type"):
       return self._scale_type
-    v = ccs_scale_type(0)
+    v = ScaleType(0)
     res = ccs_normal_distribution_get_properties(self.handle, None, None, ct.byref(v), None)
     Error.check(res)
     self._scale_type = v.value
@@ -296,16 +296,16 @@ class NormalDistribution(Distribution):
   def quantization(self):
     if hasattr(self, "_quantization"):
       return self._quantization
-    v = ccs_numeric(0)
+    v = Numeric(0)
     res = ccs_normal_distribution_get_properties(self.handle, None, None, None, ct.byref(v))
     Error.check(res)
     t = self.data_type
-    if t == ccs_numeric_type.INT:
+    if t == NumericType.INT:
       self._quantization = v.i
-    elif t == ccs_numeric_type.FLOAT:
+    elif t == NumericType.FLOAT:
       self._quantization = v.f
     else:
-      raise Error(ccs_result(ccs_result.ERROR_INVALID_VALUE))
+      raise Error(Result(Result.ERROR_INVALID_VALUE))
     return self._quantization
 
 ccs_create_roulette_distribution = _ccs_get_function("ccs_create_roulette_distribution", [ct.c_size_t, ct.POINTER(ccs_float), ct.POINTER(ccs_distribution)])

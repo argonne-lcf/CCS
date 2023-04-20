@@ -47,5 +47,5 @@ class TestTree(unittest.TestCase):
 
     buff = root.serialize()
     tree = ccs.Object.deserialize(buffer = buff)
-    self.assertEqual( tree.object_type, ccs.ccs_object_type.TREE )
+    self.assertEqual( tree.object_type, ccs.ObjectType.TREE )
     self.assertEqual( ["foo", "bar"], tree.get_values_at_position([2]) )

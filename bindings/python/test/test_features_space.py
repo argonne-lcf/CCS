@@ -9,7 +9,7 @@ class TestFeaturesSpace(unittest.TestCase):
 
   def test_create(self):
     cs = ccs.FeaturesSpace(name = "space")
-    self.assertEqual( ccs.ccs_object_type.FEATURES_SPACE, cs.object_type )
+    self.assertEqual( ccs.ObjectType.FEATURES_SPACE, cs.object_type )
     self.assertEqual( "space", cs.name )
     self.assertEqual( 0, cs.num_parameters )
     h1 = ccs.NumericalParameter()

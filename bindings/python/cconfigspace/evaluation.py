@@ -1,34 +1,34 @@
 import ctypes as ct
-from .base import Object, Error, CEnumeration, ccs_result, ccs_evaluation_result, _ccs_get_function, ccs_context, ccs_parameter, ccs_configuration, ccs_datum, ccs_datum_fix, ccs_objective_space, ccs_evaluation, ccs_bool
+from .base import Object, Error, CEnumeration, Result, ccs_evaluation_result, _ccs_get_function, ccs_context, ccs_parameter, ccs_configuration, Datum, DatumFix, ccs_objective_space, ccs_evaluation, ccs_bool
 from .binding import Binding
 from .configuration import Configuration
 from .objective_space import ObjectiveSpace
 
-class ccs_comparison(CEnumeration):
+class Comparison(CEnumeration):
   _members_ = [
     ('BETTER', -1),
     ('EQUIVALENT', 0),
     ('WORSE', 1),
     ('NOT_COMPARABLE', 2) ]
 
-ccs_create_evaluation = _ccs_get_function("ccs_create_evaluation", [ccs_objective_space, ccs_configuration, ccs_evaluation_result, ct.c_size_t, ct.POINTER(ccs_datum), ct.POINTER(ccs_evaluation)])
+ccs_create_evaluation = _ccs_get_function("ccs_create_evaluation", [ccs_objective_space, ccs_configuration, ccs_evaluation_result, ct.c_size_t, ct.POINTER(Datum), ct.POINTER(ccs_evaluation)])
 ccs_evaluation_get_objective_space = _ccs_get_function("ccs_evaluation_get_objective_space", [ccs_evaluation, ct.POINTER(ccs_objective_space)])
 ccs_evaluation_get_configuration = _ccs_get_function("ccs_evaluation_get_configuration", [ccs_evaluation, ct.POINTER(ccs_configuration)])
 ccs_evaluation_get_result = _ccs_get_function("ccs_evaluation_get_result", [ccs_evaluation, ct.POINTER(ccs_evaluation_result)])
 ccs_evaluation_set_result = _ccs_get_function("ccs_evaluation_set_result", [ccs_evaluation, ccs_evaluation_result])
-ccs_evaluation_get_objective_value = _ccs_get_function("ccs_evaluation_get_objective_value", [ccs_evaluation, ct.c_size_t, ct.POINTER(ccs_datum)])
-ccs_evaluation_get_objective_values = _ccs_get_function("ccs_evaluation_get_objective_values", [ccs_evaluation, ct.c_size_t, ct.POINTER(ccs_datum), ct.POINTER(ct.c_size_t)])
-ccs_evaluation_compare = _ccs_get_function("ccs_evaluation_compare", [ccs_evaluation, ccs_evaluation, ct.POINTER(ccs_comparison)])
+ccs_evaluation_get_objective_value = _ccs_get_function("ccs_evaluation_get_objective_value", [ccs_evaluation, ct.c_size_t, ct.POINTER(Datum)])
+ccs_evaluation_get_objective_values = _ccs_get_function("ccs_evaluation_get_objective_values", [ccs_evaluation, ct.c_size_t, ct.POINTER(Datum), ct.POINTER(ct.c_size_t)])
+ccs_evaluation_compare = _ccs_get_function("ccs_evaluation_compare", [ccs_evaluation, ccs_evaluation, ct.POINTER(Comparison)])
 ccs_evaluation_check = _ccs_get_function("ccs_evaluation_check", [ccs_evaluation, ct.POINTER(ccs_bool)])
 
 class Evaluation(Binding):
   def __init__(self, handle = None, retain = False, auto_release = True,
-               objective_space = None, configuration = None, result = ccs_result.SUCCESS, values = None):
+               objective_space = None, configuration = None, result = Result.SUCCESS, values = None):
     if handle is None:
       count = 0
       if values:
         count = len(values)
-        vals = (ccs_datum * count)()
+        vals = (Datum * count)()
         ss = []
         for i in range(count):
           vals[i].set_value(values[i], string_store = ss)
@@ -92,13 +92,13 @@ class Evaluation(Binding):
     sz = self.num_objective_values
     if sz == 0:
       return []
-    v = (ccs_datum * sz)()
+    v = (Datum * sz)()
     res = ccs_evaluation_get_objective_values(self.handle, sz, v, None)
     Error.check(res)
     return [x.value for x in v]
 
   def compare(self, other):
-    v = ccs_comparison(0)
+    v = Comparison(0)
     res = ccs_evaluation_compare(self.handle, other.handle, ct.byref(v))
     Error.check(res)
     return v.value
