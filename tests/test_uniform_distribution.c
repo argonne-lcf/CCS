@@ -31,11 +31,11 @@ compare_distribution(
 
 	err = ccs_distribution_get_data_types(distrib, &data_type);
 	assert(err == CCS_SUCCESS);
-	assert(data_type == CCS_NUM_INTEGER);
+	assert(data_type == CCS_NUMERIC_TYPE_INT);
 
 	err = ccs_distribution_get_bounds(distrib, &interval);
 	assert(err == CCS_SUCCESS);
-	assert(interval.type == CCS_NUM_INTEGER);
+	assert(interval.type == CCS_NUMERIC_TYPE_INT);
 	assert(interval.lower.i == l);
 	assert(interval.lower_included == CCS_TRUE);
 	assert(interval.upper.i == u);
@@ -66,7 +66,7 @@ test_create_uniform_distribution()
 	size_t             buff_size;
 
 	err = ccs_create_uniform_distribution(
-		CCS_NUM_INTEGER, CCSI(l), CCSI(u), CCS_SCALE_TYPE_LINEAR,
+		CCS_NUMERIC_TYPE_INT, CCSI(l), CCSI(u), CCS_SCALE_TYPE_LINEAR,
 		CCSI(q), &distrib);
 	assert(err == CCS_SUCCESS);
 
@@ -117,26 +117,26 @@ test_create_uniform_distribution_errors()
 
 	// check wrong data_type
 	err = ccs_create_uniform_distribution(
-		CCS_NUM_INTEGER, CCSI(-10), CCSI(11), (ccs_scale_type_t)3,
+		CCS_NUMERIC_TYPE_INT, CCSI(-10), CCSI(11), (ccs_scale_type_t)3,
 		CCSI(0), &distrib);
 	assert(err == CCS_INVALID_SCALE);
 
 	// check wrong bounds
 	err = ccs_create_uniform_distribution(
-		CCS_NUM_INTEGER, CCSI(10), CCSI(-11), CCS_SCALE_TYPE_LINEAR,
-		CCSI(0), &distrib);
+		CCS_NUMERIC_TYPE_INT, CCSI(10), CCSI(-11),
+		CCS_SCALE_TYPE_LINEAR, CCSI(0), &distrib);
 	assert(err == CCS_INVALID_VALUE);
 
 	// check wrong quantization
 	err = ccs_create_uniform_distribution(
-		CCS_NUM_INTEGER, CCSI(-10), CCSI(11), CCS_SCALE_TYPE_LINEAR,
-		CCSI(-1), &distrib);
+		CCS_NUMERIC_TYPE_INT, CCSI(-10), CCSI(11),
+		CCS_SCALE_TYPE_LINEAR, CCSI(-1), &distrib);
 	assert(err == CCS_INVALID_VALUE);
 
 	// check wrong pointer
 	err = ccs_create_uniform_distribution(
-		CCS_NUM_INTEGER, CCSI(10), CCSI(-11), CCS_SCALE_TYPE_LINEAR,
-		CCSI(0), NULL);
+		CCS_NUMERIC_TYPE_INT, CCSI(10), CCSI(-11),
+		CCS_SCALE_TYPE_LINEAR, CCSI(0), NULL);
 	assert(err == CCS_INVALID_VALUE);
 }
 
@@ -154,7 +154,7 @@ test_uniform_distribution_int()
 	err = ccs_create_rng(&rng);
 	assert(err == CCS_SUCCESS);
 	err = ccs_create_uniform_distribution(
-		CCS_NUM_INTEGER, CCSI(lower), CCSI(upper),
+		CCS_NUMERIC_TYPE_INT, CCSI(lower), CCSI(upper),
 		CCS_SCALE_TYPE_LINEAR, CCSI(0), &distrib);
 	assert(err == CCS_SUCCESS);
 
@@ -186,7 +186,7 @@ test_uniform_distribution_int_log()
 	err = ccs_create_rng(&rng);
 	assert(err == CCS_SUCCESS);
 	err = ccs_create_uniform_distribution(
-		CCS_NUM_INTEGER, CCSI(lower), CCSI(upper),
+		CCS_NUMERIC_TYPE_INT, CCSI(lower), CCSI(upper),
 		CCS_SCALE_TYPE_LOGARITHMIC, CCSI(0), &distrib);
 	assert(err == CCS_SUCCESS);
 
@@ -219,7 +219,7 @@ test_uniform_distribution_int_log_quantize()
 	err = ccs_create_rng(&rng);
 	assert(err == CCS_SUCCESS);
 	err = ccs_create_uniform_distribution(
-		CCS_NUM_INTEGER, CCSI(lower), CCSI(upper),
+		CCS_NUMERIC_TYPE_INT, CCSI(lower), CCSI(upper),
 		CCS_SCALE_TYPE_LOGARITHMIC, CCSI(quantize), &distrib);
 	assert(err == CCS_SUCCESS);
 
@@ -253,7 +253,7 @@ test_uniform_distribution_int_quantize()
 	err = ccs_create_rng(&rng);
 	assert(err == CCS_SUCCESS);
 	err = ccs_create_uniform_distribution(
-		CCS_NUM_INTEGER, CCSI(lower), CCSI(upper),
+		CCS_NUMERIC_TYPE_INT, CCSI(lower), CCSI(upper),
 		CCS_SCALE_TYPE_LINEAR, CCSI(quantize), &distrib);
 	assert(err == CCS_SUCCESS);
 
@@ -286,8 +286,8 @@ test_uniform_distribution_float()
 	err = ccs_create_rng(&rng);
 	assert(err == CCS_SUCCESS);
 	err = ccs_create_uniform_distribution(
-		CCS_NUM_FLOAT, CCSF(lower), CCSF(upper), CCS_SCALE_TYPE_LINEAR,
-		CCSF(0.0), &distrib);
+		CCS_NUMERIC_TYPE_FLOAT, CCSF(lower), CCSF(upper),
+		CCS_SCALE_TYPE_LINEAR, CCSF(0.0), &distrib);
 	assert(err == CCS_SUCCESS);
 
 	err = ccs_distribution_samples(distrib, rng, num_samples, samples);
@@ -318,7 +318,7 @@ test_uniform_distribution_float_log()
 	err = ccs_create_rng(&rng);
 	assert(err == CCS_SUCCESS);
 	err = ccs_create_uniform_distribution(
-		CCS_NUM_FLOAT, CCSF(lower), CCSF(upper),
+		CCS_NUMERIC_TYPE_FLOAT, CCSF(lower), CCSF(upper),
 		CCS_SCALE_TYPE_LOGARITHMIC, CCSF(0.0), &distrib);
 	assert(err == CCS_SUCCESS);
 
@@ -351,7 +351,7 @@ test_uniform_distribution_float_log_quantize()
 	err = ccs_create_rng(&rng);
 	assert(err == CCS_SUCCESS);
 	err = ccs_create_uniform_distribution(
-		CCS_NUM_FLOAT, CCSF(lower), CCSF(upper),
+		CCS_NUMERIC_TYPE_FLOAT, CCSF(lower), CCSF(upper),
 		CCS_SCALE_TYPE_LOGARITHMIC, CCSF(quantize), &distrib);
 	assert(err == CCS_SUCCESS);
 
@@ -384,8 +384,8 @@ test_uniform_distribution_float_quantize()
 	err = ccs_create_rng(&rng);
 	assert(err == CCS_SUCCESS);
 	err = ccs_create_uniform_distribution(
-		CCS_NUM_FLOAT, CCSF(lower), CCSF(upper), CCS_SCALE_TYPE_LINEAR,
-		CCSF(quantize), &distrib);
+		CCS_NUMERIC_TYPE_FLOAT, CCSF(lower), CCSF(upper),
+		CCS_SCALE_TYPE_LINEAR, CCSF(quantize), &distrib);
 	assert(err == CCS_SUCCESS);
 
 	err = ccs_distribution_samples(distrib, rng, num_samples, samples);
@@ -419,12 +419,12 @@ test_uniform_distribution_strided_samples()
 	err = ccs_create_rng(&rng);
 	assert(err == CCS_SUCCESS);
 	err = ccs_create_uniform_distribution(
-		CCS_NUM_INTEGER, CCSI(lower1), CCSI(upper1),
+		CCS_NUMERIC_TYPE_INT, CCSI(lower1), CCSI(upper1),
 		CCS_SCALE_TYPE_LINEAR, CCSI(0), &distrib1);
 	assert(err == CCS_SUCCESS);
 
 	err = ccs_create_uniform_distribution(
-		CCS_NUM_INTEGER, CCSI(lower2), CCSI(upper2),
+		CCS_NUMERIC_TYPE_INT, CCSI(lower2), CCSI(upper2),
 		CCS_SCALE_TYPE_LINEAR, CCSI(0), &distrib2);
 	assert(err == CCS_SUCCESS);
 
@@ -467,8 +467,8 @@ test_uniform_distribution_soa_samples()
 	err = ccs_create_rng(&rng);
 	assert(err == CCS_SUCCESS);
 	err = ccs_create_uniform_distribution(
-		CCS_NUM_FLOAT, CCSF(lower), CCSF(upper), CCS_SCALE_TYPE_LINEAR,
-		CCSF(0.0), &distrib);
+		CCS_NUMERIC_TYPE_FLOAT, CCSF(lower), CCSF(upper),
+		CCS_SCALE_TYPE_LINEAR, CCSF(0.0), &distrib);
 	assert(err == CCS_SUCCESS);
 
 	p_samples = &(samples[0]);

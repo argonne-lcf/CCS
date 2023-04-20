@@ -58,7 +58,7 @@ compare_parameter(
 
 	err = ccs_distribution_get_bounds(distribution, &interval);
 	assert(err == CCS_SUCCESS);
-	assert(interval.type == CCS_NUM_INTEGER);
+	assert(interval.type == CCS_NUMERIC_TYPE_INT);
 	assert(interval.lower.i == 0);
 	assert(interval.lower_included == CCS_TRUE);
 	assert(interval.upper.i == 4);

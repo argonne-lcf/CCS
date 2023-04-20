@@ -33,7 +33,7 @@ _ccs_serialize_bin_size_ccs_distribution_uniform_data(
 	       _ccs_serialize_bin_size_ccs_numeric_type(
 		       data->common_data.data_types[0]) +
 	       _ccs_serialize_bin_size_ccs_scale_type(data->scale_type) +
-	       (data->common_data.data_types[0] == CCS_NUM_FLOAT ?
+	       (data->common_data.data_types[0] == CCS_NUMERIC_TYPE_FLOAT ?
 			_ccs_serialize_bin_size_ccs_float(data->lower.f) +
 				_ccs_serialize_bin_size_ccs_float(
 					data->upper.f) +
@@ -57,7 +57,7 @@ _ccs_serialize_bin_ccs_distribution_uniform_data(
 		data->common_data.data_types[0], buffer_size, buffer));
 	CCS_VALIDATE(_ccs_serialize_bin_ccs_scale_type(
 		data->scale_type, buffer_size, buffer));
-	if (data->common_data.data_types[0] == CCS_NUM_FLOAT) {
+	if (data->common_data.data_types[0] == CCS_NUMERIC_TYPE_FLOAT) {
 		CCS_VALIDATE(_ccs_serialize_bin_ccs_float(
 			data->lower.f, buffer_size, buffer));
 		CCS_VALIDATE(_ccs_serialize_bin_ccs_float(
@@ -226,7 +226,7 @@ _ccs_distribution_uniform_strided_samples(
 	gsl_rng                 *grng;
 	CCS_VALIDATE(ccs_rng_get_gsl_rng(rng, &grng));
 
-	if (data_type == CCS_NUM_FLOAT) {
+	if (data_type == CCS_NUMERIC_TYPE_FLOAT) {
 		for (i = 0; i < num_values; i++) {
 			values[i * stride].f = gsl_ran_flat(
 				grng, internal_lower.f, internal_upper.f);
@@ -306,7 +306,7 @@ _ccs_distribution_uniform_samples(
 	gsl_rng                 *grng;
 	CCS_VALIDATE(ccs_rng_get_gsl_rng(rng, &grng));
 
-	if (data_type == CCS_NUM_FLOAT) {
+	if (data_type == CCS_NUMERIC_TYPE_FLOAT) {
 		for (i = 0; i < num_values; i++) {
 			values[i].f = gsl_ran_flat(
 				grng, internal_lower.f, internal_upper.f);
@@ -384,14 +384,15 @@ ccs_create_uniform_distribution(
 {
 	CCS_CHECK_PTR(distribution_ret);
 	CCS_REFUTE(
-		data_type != CCS_NUM_FLOAT && data_type != CCS_NUM_INTEGER,
+		data_type != CCS_NUMERIC_TYPE_FLOAT &&
+			data_type != CCS_NUMERIC_TYPE_INT,
 		CCS_INVALID_TYPE);
 	CCS_REFUTE(
 		scale_type != CCS_SCALE_TYPE_LINEAR &&
 			scale_type != CCS_SCALE_TYPE_LOGARITHMIC,
 		CCS_INVALID_SCALE);
 	CCS_REFUTE(
-		data_type == CCS_NUM_INTEGER &&
+		data_type == CCS_NUMERIC_TYPE_INT &&
 			(lower.i >= upper.i ||
 			 (scale_type == CCS_SCALE_TYPE_LOGARITHMIC &&
 			  lower.i <= 0) ||
@@ -399,7 +400,7 @@ ccs_create_uniform_distribution(
 			 quantization.i > upper.i - lower.i),
 		CCS_INVALID_VALUE);
 	CCS_REFUTE(
-		data_type == CCS_NUM_FLOAT &&
+		data_type == CCS_NUMERIC_TYPE_FLOAT &&
 			(lower.f >= upper.f ||
 			 (scale_type == CCS_SCALE_TYPE_LOGARITHMIC &&
 			  lower.f <= 0.0) ||
@@ -429,7 +430,7 @@ ccs_create_uniform_distribution(
 	distrib_data->lower                     = lower;
 	distrib_data->upper                     = upper;
 
-	if (data_type == CCS_NUM_FLOAT) {
+	if (data_type == CCS_NUMERIC_TYPE_FLOAT) {
 		if (quantization.f != 0.0)
 			distrib_data->quantize = 1;
 		if (scale_type == CCS_SCALE_TYPE_LOGARITHMIC) {

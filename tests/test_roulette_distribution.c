@@ -35,11 +35,11 @@ compare_distribution(
 
 	err = ccs_distribution_get_data_types(distrib, &data_type);
 	assert(err == CCS_SUCCESS);
-	assert(data_type == CCS_NUM_INTEGER);
+	assert(data_type == CCS_NUMERIC_TYPE_INT);
 
 	err = ccs_distribution_get_bounds(distrib, &interval);
 	assert(err == CCS_SUCCESS);
-	assert(interval.type == CCS_NUM_INTEGER);
+	assert(interval.type == CCS_NUMERIC_TYPE_INT);
 	assert(interval.lower.i == 0);
 	assert(interval.lower_included == CCS_TRUE);
 	assert(interval.upper.i == 4);

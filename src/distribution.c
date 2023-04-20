@@ -331,7 +331,7 @@ ccs_create_normal_float_distribution(
 	ccs_distribution_t *distribution_ret)
 {
 	CCS_VALIDATE(ccs_create_normal_distribution(
-		CCS_NUM_FLOAT, mu, sigma, scale, CCSF(quantization),
+		CCS_NUMERIC_TYPE_FLOAT, mu, sigma, scale, CCSF(quantization),
 		distribution_ret));
 	return CCS_SUCCESS;
 }
@@ -345,7 +345,7 @@ ccs_create_normal_int_distribution(
 	ccs_distribution_t *distribution_ret)
 {
 	CCS_VALIDATE(ccs_create_normal_distribution(
-		CCS_NUM_INTEGER, mu, sigma, scale, CCSI(quantization),
+		CCS_NUMERIC_TYPE_INT, mu, sigma, scale, CCSI(quantization),
 		distribution_ret));
 	return CCS_SUCCESS;
 }
@@ -359,7 +359,7 @@ ccs_create_uniform_float_distribution(
 	ccs_distribution_t *distribution_ret)
 {
 	CCS_VALIDATE(ccs_create_uniform_distribution(
-		CCS_NUM_FLOAT, CCSF(lower), CCSF(upper), scale,
+		CCS_NUMERIC_TYPE_FLOAT, CCSF(lower), CCSF(upper), scale,
 		CCSF(quantization), distribution_ret));
 	return CCS_SUCCESS;
 }
@@ -373,7 +373,7 @@ ccs_create_uniform_int_distribution(
 	ccs_distribution_t *distribution_ret)
 {
 	CCS_VALIDATE(ccs_create_uniform_distribution(
-		CCS_NUM_INTEGER, CCSI(lower), CCSI(upper), scale,
+		CCS_NUMERIC_TYPE_INT, CCSI(lower), CCSI(upper), scale,
 		CCSI(quantization), distribution_ret));
 	return CCS_SUCCESS;
 }

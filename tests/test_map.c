@@ -74,8 +74,8 @@ test_map()
 	assert(!ccs_datum_cmp(d_ret, ccs_string("bar")));
 
 	err = ccs_create_numerical_parameter(
-		"my_param", CCS_NUM_FLOAT, CCSF(-5.0), CCSF(5.0), CCSF(0.0),
-		CCSF(1.0), &hp);
+		"my_param", CCS_NUMERIC_TYPE_FLOAT, CCSF(-5.0), CCSF(5.0),
+		CCSF(0.0), CCSF(1.0), &hp);
 	assert(err == CCS_SUCCESS);
 
 	err = ccs_map_set(map, ccs_object(hp), ccs_inactive);

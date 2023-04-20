@@ -91,7 +91,7 @@ _ccs_parameter_numerical_check_values(
 		(_ccs_parameter_numerical_data_t *)data;
 	ccs_interval_t    *interval = &(d->common_data.interval);
 	ccs_numeric_type_t type     = d->common_data.interval.type;
-	if (type == CCS_NUM_FLOAT) {
+	if (type == CCS_NUMERIC_TYPE_FLOAT) {
 		for (size_t i = 0; i < num_values; i++)
 			if (values[i].type != CCS_DATA_TYPE_FLOAT)
 				results[i] = CCS_FALSE;
@@ -139,7 +139,7 @@ _ccs_parameter_numerical_samples(
 	CCS_VALIDATE(
 		ccs_distribution_samples(distribution, rng, num_values, vs));
 	if (!oversampling) {
-		if (type == CCS_NUM_FLOAT) {
+		if (type == CCS_NUMERIC_TYPE_FLOAT) {
 			for (size_t i = 0; i < num_values; i++)
 				values[i].value.f = vs[i].f;
 		} else {
@@ -148,7 +148,7 @@ _ccs_parameter_numerical_samples(
 		}
 	} else {
 		size_t found = 0;
-		if (type == CCS_NUM_FLOAT) {
+		if (type == CCS_NUMERIC_TYPE_FLOAT) {
 			for (size_t i = 0; i < num_values; i++)
 				if (_ccs_interval_include(interval, vs[i]))
 					values[found++].value.f = vs[i].f;
@@ -177,7 +177,7 @@ _ccs_parameter_numerical_samples(
 				ccs_distribution_samples(
 					distribution, rng, buff_sz, vs),
 				errmem);
-			if (type == CCS_NUM_FLOAT) {
+			if (type == CCS_NUMERIC_TYPE_FLOAT) {
 				for (size_t i = 0;
 				     i < buff_sz && found < num_values; i++)
 					if (_ccs_interval_include(
@@ -235,7 +235,7 @@ _ccs_parameter_numerical_convert_samples(
 	ccs_interval_t    *interval = &(d->common_data.interval);
 
 	if (!oversampling) {
-		if (type == CCS_NUM_FLOAT) {
+		if (type == CCS_NUMERIC_TYPE_FLOAT) {
 			for (size_t i = 0; i < num_values; i++)
 				results[i] = ccs_float(values[i].f);
 		} else {
@@ -243,7 +243,7 @@ _ccs_parameter_numerical_convert_samples(
 				results[i] = ccs_int(values[i].i);
 		}
 	} else {
-		if (type == CCS_NUM_FLOAT) {
+		if (type == CCS_NUMERIC_TYPE_FLOAT) {
 			for (size_t i = 0; i < num_values; i++)
 				if (_ccs_interval_include(interval, values[i]))
 					results[i] = ccs_float(values[i].f);
@@ -282,17 +282,18 @@ ccs_create_numerical_parameter(
 	CCS_CHECK_PTR(name);
 	CCS_CHECK_PTR(parameter_ret);
 	CCS_REFUTE(
-		data_type != CCS_NUM_FLOAT && data_type != CCS_NUM_INTEGER,
+		data_type != CCS_NUMERIC_TYPE_FLOAT &&
+			data_type != CCS_NUMERIC_TYPE_INT,
 		CCS_INVALID_TYPE);
 	CCS_REFUTE(
-		data_type == CCS_NUM_INTEGER &&
+		data_type == CCS_NUMERIC_TYPE_INT &&
 			(lower.i >= upper.i || quantization.i < 0 ||
 			 quantization.i > upper.i - lower.i ||
 			 default_value.i < lower.i ||
 			 default_value.i >= upper.i),
 		CCS_INVALID_VALUE);
 	CCS_REFUTE(
-		data_type == CCS_NUM_FLOAT &&
+		data_type == CCS_NUMERIC_TYPE_FLOAT &&
 			(lower.f >= upper.f || quantization.f < 0.0 ||
 			 quantization.f > upper.f - lower.f ||
 			 default_value.f < lower.f ||
@@ -322,7 +323,7 @@ ccs_create_numerical_parameter(
 	parameter_data->common_data.name =
 		(char *)(mem + sizeof(struct _ccs_parameter_s) + sizeof(_ccs_parameter_numerical_data_t));
 	strcpy((char *)parameter_data->common_data.name, name);
-	if (data_type == CCS_NUM_FLOAT) {
+	if (data_type == CCS_NUMERIC_TYPE_FLOAT) {
 		parameter_data->common_data.default_value.type =
 			CCS_DATA_TYPE_FLOAT;
 		parameter_data->common_data.default_value.value.f =

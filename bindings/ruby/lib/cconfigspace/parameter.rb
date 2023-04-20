@@ -122,18 +122,18 @@ module CCS
   attach_function :ccs_numerical_parameter_get_properties, [:ccs_parameter_t, :pointer, :pointer, :pointer, :pointer], :ccs_error_t
   class NumericalParameter < Parameter
     def initialize(handle = nil, retain: false, auto_release: true,
-                   name: Parameter.default_name, data_type: :CCS_NUM_FLOAT, lower: 0.0, upper: 1.0, quantization: 0.0, default: lower)
+                   name: Parameter.default_name, data_type: :CCS_NUMERIC_TYPE_FLOAT, lower: 0.0, upper: 1.0, quantization: 0.0, default: lower)
       if (handle)
         super(handle, retain: retain, auto_release: auto_release)
       else
         ptr = MemoryPointer::new(:ccs_parameter_t)
         case data_type
-        when :CCS_NUM_FLOAT
+        when :CCS_NUMERIC_TYPE_FLOAT
           lower = Numeric::from_value(lower.to_f)
           upper = Numeric::from_value(upper.to_f)
           quantization = Numeric::from_value(quantization.to_f)
           default = Numeric::from_value(default.to_f)
-        when :CCS_NUM_INTEGER
+        when :CCS_NUMERIC_TYPE_INT
           lower = Numeric::from_value(lower.to_i)
           upper = Numeric::from_value(upper.to_i)
           quantization = Numeric::from_value(quantization.to_i)
@@ -148,11 +148,11 @@ module CCS
     end
 
     def self.int(name: default_name, lower:, upper:, quantization: 0, default: lower)
-      self.new(nil, name: name, data_type: :CCS_NUM_INTEGER, lower: lower, upper: upper, quantization: quantization, default: default)
+      self.new(nil, name: name, data_type: :CCS_NUMERIC_TYPE_INT, lower: lower, upper: upper, quantization: quantization, default: default)
     end
  
     def self.float(name: default_name, lower:, upper:, quantization: 0.0, default: lower)
-      self.new(nil, name: name, data_type: :CCS_NUM_FLOAT, lower: lower, upper: upper, quantization: quantization, default: default)
+      self.new(nil, name: name, data_type: :CCS_NUMERIC_TYPE_FLOAT, lower: lower, upper: upper, quantization: quantization, default: default)
     end
 
     def data_type
@@ -167,7 +167,7 @@ module CCS
       @lower ||= begin
         ptr = MemoryPointer::new(:ccs_numeric_t)
         CCS.error_check CCS.ccs_numerical_parameter_get_properties(@handle, nil, ptr, nil, nil)
-        if data_type == :CCS_NUM_FLOAT
+        if data_type == :CCS_NUMERIC_TYPE_FLOAT
           ptr.read_ccs_float_t
         else
           ptr.read_ccs_int_t
@@ -179,7 +179,7 @@ module CCS
       @upper ||= begin
         ptr = MemoryPointer::new(:ccs_numeric_t)
         CCS.error_check CCS.ccs_numerical_parameter_get_properties(@handle, nil, nil, ptr, nil)
-        if data_type == :CCS_NUM_FLOAT
+        if data_type == :CCS_NUMERIC_TYPE_FLOAT
           ptr.read_ccs_float_t
         else
           ptr.read_ccs_int_t
@@ -191,7 +191,7 @@ module CCS
       @quantization ||= begin
         ptr = MemoryPointer::new(:ccs_numeric_t)
         CCS.error_check CCS.ccs_numerical_parameter_get_properties(@handle, nil, nil, nil, ptr)
-        if data_type == :CCS_NUM_FLOAT
+        if data_type == :CCS_NUMERIC_TYPE_FLOAT
           ptr.read_ccs_float_t
         else
           ptr.read_ccs_int_t

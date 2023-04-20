@@ -35,11 +35,11 @@ compare_distribution(
 
 	err = ccs_distribution_get_data_types(distrib, &data_type);
 	assert(err == CCS_SUCCESS);
-	assert(data_type == CCS_NUM_FLOAT);
+	assert(data_type == CCS_NUMERIC_TYPE_FLOAT);
 
 	err = ccs_distribution_get_bounds(distrib, &interval);
 	assert(err == CCS_SUCCESS);
-	assert(interval.type == CCS_NUM_FLOAT);
+	assert(interval.type == CCS_NUMERIC_TYPE_FLOAT);
 	assert(interval.lower.f == -CCS_INFINITY);
 	assert(interval.lower_included == CCS_FALSE);
 	assert(interval.upper.f == CCS_INFINITY);
@@ -67,8 +67,8 @@ test_create_normal_distribution()
 	size_t             buff_size;
 
 	err = ccs_create_normal_distribution(
-		CCS_NUM_FLOAT, 1.0, 2.0, CCS_SCALE_TYPE_LINEAR, CCSF(0.0),
-		&distrib);
+		CCS_NUMERIC_TYPE_FLOAT, 1.0, 2.0, CCS_SCALE_TYPE_LINEAR,
+		CCSF(0.0), &distrib);
 	assert(err == CCS_SUCCESS);
 
 	compare_distribution(distrib, 1.0, 2.0, CCSF(0.0));
@@ -118,20 +118,20 @@ test_create_normal_distribution_errors()
 
 	// check wrong data_type
 	err = ccs_create_normal_distribution(
-		CCS_NUM_FLOAT, 1.0, 2.0, (ccs_scale_type_t)0xdeadbeef,
+		CCS_NUMERIC_TYPE_FLOAT, 1.0, 2.0, (ccs_scale_type_t)0xdeadbeef,
 		CCSF(0.0), &distrib);
 	assert(err == CCS_INVALID_SCALE);
 
 	// check wrong quantization
 	err = ccs_create_normal_distribution(
-		CCS_NUM_FLOAT, 1.0, 2.0, CCS_SCALE_TYPE_LINEAR, CCSF(-1.0),
-		&distrib);
+		CCS_NUMERIC_TYPE_FLOAT, 1.0, 2.0, CCS_SCALE_TYPE_LINEAR,
+		CCSF(-1.0), &distrib);
 	assert(err == CCS_INVALID_VALUE);
 
 	// check wrong pointer
 	err = ccs_create_normal_distribution(
-		CCS_NUM_FLOAT, 1.0, 2.0, CCS_SCALE_TYPE_LINEAR, CCSF(0.0),
-		NULL);
+		CCS_NUMERIC_TYPE_FLOAT, 1.0, 2.0, CCS_SCALE_TYPE_LINEAR,
+		CCSF(0.0), NULL);
 	assert(err == CCS_INVALID_VALUE);
 }
 
@@ -167,13 +167,13 @@ test_normal_distribution_int()
 	err = ccs_create_rng(&rng);
 	assert(err == CCS_SUCCESS);
 	err = ccs_create_normal_distribution(
-		CCS_NUM_INTEGER, mu, sigma, CCS_SCALE_TYPE_LINEAR, CCSI(0),
+		CCS_NUMERIC_TYPE_INT, mu, sigma, CCS_SCALE_TYPE_LINEAR, CCSI(0),
 		&distrib);
 	assert(err == CCS_SUCCESS);
 
 	err = ccs_distribution_get_bounds(distrib, &interval);
 	assert(err == CCS_SUCCESS);
-	assert(interval.type == CCS_NUM_INTEGER);
+	assert(interval.type == CCS_NUMERIC_TYPE_INT);
 	assert(interval.lower.i == CCS_INT_MIN);
 	assert(interval.lower_included == CCS_TRUE);
 	assert(interval.upper.i == CCS_INT_MAX);
@@ -212,13 +212,13 @@ test_normal_distribution_float()
 	err = ccs_create_rng(&rng);
 	assert(err == CCS_SUCCESS);
 	err = ccs_create_normal_distribution(
-		CCS_NUM_FLOAT, mu, sigma, CCS_SCALE_TYPE_LINEAR, CCSF(0.0),
-		&distrib);
+		CCS_NUMERIC_TYPE_FLOAT, mu, sigma, CCS_SCALE_TYPE_LINEAR,
+		CCSF(0.0), &distrib);
 	assert(err == CCS_SUCCESS);
 
 	err = ccs_distribution_get_bounds(distrib, &interval);
 	assert(err == CCS_SUCCESS);
-	assert(interval.type == CCS_NUM_FLOAT);
+	assert(interval.type == CCS_NUMERIC_TYPE_FLOAT);
 	assert(interval.lower.f == -CCS_INFINITY);
 	assert(interval.lower_included == CCS_FALSE);
 	assert(interval.upper.f == CCS_INFINITY);
@@ -257,13 +257,13 @@ test_normal_distribution_int_log()
 	err = ccs_create_rng(&rng);
 	assert(err == CCS_SUCCESS);
 	err = ccs_create_normal_distribution(
-		CCS_NUM_INTEGER, mu, sigma, CCS_SCALE_TYPE_LOGARITHMIC, CCSI(0),
-		&distrib);
+		CCS_NUMERIC_TYPE_INT, mu, sigma, CCS_SCALE_TYPE_LOGARITHMIC,
+		CCSI(0), &distrib);
 	assert(err == CCS_SUCCESS);
 
 	err = ccs_distribution_get_bounds(distrib, &interval);
 	assert(err == CCS_SUCCESS);
-	assert(interval.type == CCS_NUM_INTEGER);
+	assert(interval.type == CCS_NUMERIC_TYPE_INT);
 	assert(interval.lower.i == 1);
 	assert(interval.lower_included == CCS_TRUE);
 	assert(interval.upper.i == CCS_INT_MAX);
@@ -312,13 +312,13 @@ test_normal_distribution_float_log()
 	err = ccs_create_rng(&rng);
 	assert(err == CCS_SUCCESS);
 	err = ccs_create_normal_distribution(
-		CCS_NUM_FLOAT, mu, sigma, CCS_SCALE_TYPE_LOGARITHMIC, CCSF(0.0),
-		&distrib);
+		CCS_NUMERIC_TYPE_FLOAT, mu, sigma, CCS_SCALE_TYPE_LOGARITHMIC,
+		CCSF(0.0), &distrib);
 	assert(err == CCS_SUCCESS);
 
 	err = ccs_distribution_get_bounds(distrib, &interval);
 	assert(err == CCS_SUCCESS);
-	assert(interval.type == CCS_NUM_FLOAT);
+	assert(interval.type == CCS_NUMERIC_TYPE_FLOAT);
 	assert(interval.lower.f == 0.0);
 	assert(interval.lower_included == CCS_FALSE);
 	assert(interval.upper.f == CCS_INFINITY);
@@ -358,13 +358,13 @@ test_normal_distribution_int_quantize()
 	err = ccs_create_rng(&rng);
 	assert(err == CCS_SUCCESS);
 	err = ccs_create_normal_distribution(
-		CCS_NUM_INTEGER, mu, sigma, CCS_SCALE_TYPE_LINEAR, CCSI(q),
+		CCS_NUMERIC_TYPE_INT, mu, sigma, CCS_SCALE_TYPE_LINEAR, CCSI(q),
 		&distrib);
 	assert(err == CCS_SUCCESS);
 
 	err = ccs_distribution_get_bounds(distrib, &interval);
 	assert(err == CCS_SUCCESS);
-	assert(interval.type == CCS_NUM_INTEGER);
+	assert(interval.type == CCS_NUMERIC_TYPE_INT);
 	assert(interval.lower.i == (CCS_INT_MIN / q) * q);
 	assert(interval.lower_included == CCS_TRUE);
 	assert(interval.upper.i == (CCS_INT_MAX / q) * q);
@@ -403,13 +403,13 @@ test_normal_distribution_float_quantize()
 	err = ccs_create_rng(&rng);
 	assert(err == CCS_SUCCESS);
 	err = ccs_create_normal_distribution(
-		CCS_NUM_FLOAT, mu, sigma, CCS_SCALE_TYPE_LINEAR, CCSF(0.2),
-		&distrib);
+		CCS_NUMERIC_TYPE_FLOAT, mu, sigma, CCS_SCALE_TYPE_LINEAR,
+		CCSF(0.2), &distrib);
 	assert(err == CCS_SUCCESS);
 
 	err = ccs_distribution_get_bounds(distrib, &interval);
 	assert(err == CCS_SUCCESS);
-	assert(interval.type == CCS_NUM_FLOAT);
+	assert(interval.type == CCS_NUMERIC_TYPE_FLOAT);
 	assert(interval.lower.f == -CCS_INFINITY);
 	assert(interval.lower_included == CCS_FALSE);
 	assert(interval.upper.f == CCS_INFINITY);
@@ -449,13 +449,13 @@ test_normal_distribution_int_log_quantize()
 	err = ccs_create_rng(&rng);
 	assert(err == CCS_SUCCESS);
 	err = ccs_create_normal_distribution(
-		CCS_NUM_INTEGER, mu, sigma, CCS_SCALE_TYPE_LOGARITHMIC,
+		CCS_NUMERIC_TYPE_INT, mu, sigma, CCS_SCALE_TYPE_LOGARITHMIC,
 		CCSI(quantize), &distrib);
 	assert(err == CCS_SUCCESS);
 
 	err = ccs_distribution_get_bounds(distrib, &interval);
 	assert(err == CCS_SUCCESS);
-	assert(interval.type == CCS_NUM_INTEGER);
+	assert(interval.type == CCS_NUMERIC_TYPE_INT);
 	assert(interval.lower.i == quantize);
 	assert(interval.lower_included == CCS_TRUE);
 	assert(interval.upper.i == (CCS_INT_MAX / quantize) * quantize);
@@ -506,13 +506,13 @@ test_normal_distribution_float_log_quantize()
 	err = ccs_create_rng(&rng);
 	assert(err == CCS_SUCCESS);
 	err = ccs_create_normal_distribution(
-		CCS_NUM_FLOAT, mu, sigma, CCS_SCALE_TYPE_LOGARITHMIC,
+		CCS_NUMERIC_TYPE_FLOAT, mu, sigma, CCS_SCALE_TYPE_LOGARITHMIC,
 		CCSF(quantization), &distrib);
 	assert(err == CCS_SUCCESS);
 
 	err = ccs_distribution_get_bounds(distrib, &interval);
 	assert(err == CCS_SUCCESS);
-	assert(interval.type == CCS_NUM_FLOAT);
+	assert(interval.type == CCS_NUMERIC_TYPE_FLOAT);
 	assert(interval.lower.f == quantization);
 	assert(interval.lower_included == CCS_TRUE);
 	assert(interval.upper.f == CCS_INFINITY);
@@ -562,13 +562,13 @@ test_normal_distribution_strided_samples()
 	err = ccs_create_rng(&rng);
 	assert(err == CCS_SUCCESS);
 	err = ccs_create_normal_distribution(
-		CCS_NUM_FLOAT, mu1, sigma1, CCS_SCALE_TYPE_LINEAR, CCSF(0.0),
-		&distrib1);
+		CCS_NUMERIC_TYPE_FLOAT, mu1, sigma1, CCS_SCALE_TYPE_LINEAR,
+		CCSF(0.0), &distrib1);
 	assert(err == CCS_SUCCESS);
 
 	err = ccs_create_normal_distribution(
-		CCS_NUM_FLOAT, mu2, sigma2, CCS_SCALE_TYPE_LINEAR, CCSF(0.0),
-		&distrib2);
+		CCS_NUMERIC_TYPE_FLOAT, mu2, sigma2, CCS_SCALE_TYPE_LINEAR,
+		CCSF(0.0), &distrib2);
 	assert(err == CCS_SUCCESS);
 
 	err = ccs_distribution_strided_samples(
@@ -617,13 +617,13 @@ test_normal_distribution_soa_samples()
 	err = ccs_create_rng(&rng);
 	assert(err == CCS_SUCCESS);
 	err = ccs_create_normal_distribution(
-		CCS_NUM_FLOAT, mu, sigma, CCS_SCALE_TYPE_LINEAR, CCSF(0.0),
-		&distrib);
+		CCS_NUMERIC_TYPE_FLOAT, mu, sigma, CCS_SCALE_TYPE_LINEAR,
+		CCSF(0.0), &distrib);
 	assert(err == CCS_SUCCESS);
 
 	err = ccs_distribution_get_bounds(distrib, &interval);
 	assert(err == CCS_SUCCESS);
-	assert(interval.type == CCS_NUM_FLOAT);
+	assert(interval.type == CCS_NUMERIC_TYPE_FLOAT);
 	assert(interval.lower.f == -CCS_INFINITY);
 	assert(interval.lower_included == CCS_FALSE);
 	assert(interval.upper.f == CCS_INFINITY);

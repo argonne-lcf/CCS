@@ -284,8 +284,8 @@ variable_info_to_parameter(const char *name, VariableInfo *info)
 					  upper = upper + step;
 			  }
 			  CCS_CHECK(ccs_create_numerical_parameter(
-				  name, CCS_NUM_FLOAT, lower, upper, step,
-				  lower, &ret));
+				  name, CCS_NUMERIC_TYPE_FLOAT, lower, upper,
+				  step, lower, &ret));
 		  }
 		  break;
 	  case ValueType::kokkos_value_int64:
@@ -318,8 +318,8 @@ variable_info_to_parameter(const char *name, VariableInfo *info)
 					  upper = upper + step;
 			  }
 			  CCS_CHECK(ccs_create_numerical_parameter(
-				  name, CCS_NUM_INTEGER, lower, upper, step,
-				  lower, &ret));
+				  name, CCS_NUMERIC_TYPE_INT, lower, upper,
+				  step, lower, &ret));
 		  }
 		  break;
 	  default:
@@ -334,15 +334,15 @@ variable_info_to_parameter(const char *name, VariableInfo *info)
 		  ccs_float_t upper = CCS_INFINITY;
 		  ccs_float_t step  = 0.0;
 		  CCS_CHECK(ccs_create_numerical_parameter(
-			  name, CCS_NUM_FLOAT, lower, upper, step, lower,
-			  &ret));
+			  name, CCS_NUMERIC_TYPE_FLOAT, lower, upper, step,
+			  lower, &ret));
 	  } break;
 	  case ValueType::kokkos_value_int64: {
 		  ccs_int_t lower = CCS_INT_MIN;
 		  ccs_int_t upper = CCS_INT_MAX;
 		  ccs_int_t step  = 0;
 		  CCS_CHECK(ccs_create_numerical_parameter(
-			  name, CCS_NUM_INTEGER, lower, upper, step, lower,
+			  name, CCS_NUMERIC_TYPE_INT, lower, upper, step, lower,
 			  &ret));
 	  } break;
 	  case ValueType::kokkos_value_string:
@@ -533,7 +533,8 @@ kokkosp_request_values(
 		  ("os (region: " + std::to_string(regionCounter) + ")").c_str(),
 		  &os));
 	  CCS_CHECK(ccs_create_numerical_parameter(
-		  "time", CCS_NUM_INTEGER, lower, upper, step, lower, &htime));
+		  "time", CCS_NUMERIC_TYPE_INT, lower, upper, step, lower,
+		  &htime));
 	  CCS_CHECK(ccs_create_variable(htime, &expression));
 	  CCS_CHECK(ccs_objective_space_add_parameter(os, htime));
 	  CCS_CHECK(ccs_objective_space_add_objective(

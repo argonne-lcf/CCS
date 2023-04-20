@@ -164,7 +164,7 @@ _ccs_distribution_roulette_get_bounds(
 	_ccs_distribution_roulette_data_t *d =
 		(_ccs_distribution_roulette_data_t *)data;
 
-	interval_ret->type           = CCS_NUM_INTEGER;
+	interval_ret->type           = CCS_NUMERIC_TYPE_INT;
 	interval_ret->lower          = CCSI(INT64_C(0));
 	interval_ret->upper          = CCSI((ccs_int_t)(d->num_areas));
 	interval_ret->lower_included = CCS_TRUE;
@@ -270,7 +270,7 @@ ccs_create_roulette_distribution(
 			 *)(mem + sizeof(struct _ccs_distribution_s) + sizeof(_ccs_distribution_roulette_data_t) + sizeof(ccs_float_t) * (num_areas + 1));
 	distrib_data->common_data.type      = CCS_DISTRIBUTION_TYPE_ROULETTE;
 	distrib_data->common_data.dimension = 1;
-	distrib_data->common_data.data_types[0] = CCS_NUM_INTEGER;
+	distrib_data->common_data.data_types[0] = CCS_NUMERIC_TYPE_INT;
 	distrib_data->num_areas                 = num_areas;
 	distrib_data->areas =
 		(ccs_float_t

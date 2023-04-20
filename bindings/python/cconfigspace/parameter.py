@@ -136,7 +136,7 @@ ccs_numerical_parameter_get_properties = _ccs_get_function("ccs_numerical_parame
 
 class NumericalParameter(Parameter):
   def __init__(self, handle = None, retain = False, auto_release = True,
-               name = None, data_type = ccs_numeric_type.NUM_FLOAT, lower = 0.0, upper = 1.0, quantization = 0.0, default = None):
+               name = None, data_type = ccs_numeric_type.FLOAT, lower = 0.0, upper = 1.0, quantization = 0.0, default = None):
     if handle is None:
       if name is None:
         name = NumericalParameter.default_name()
@@ -146,12 +146,12 @@ class NumericalParameter(Parameter):
       u = ccs_numeric()
       q = ccs_numeric()
       d = ccs_numeric()
-      if data_type == ccs_numeric_type.NUM_FLOAT:
+      if data_type == ccs_numeric_type.FLOAT:
         l.f = lower
         u.f = upper
         q.f = quantization
         d.f = default
-      elif data_type == ccs_numeric_type.NUM_INTEGER:
+      elif data_type == ccs_numeric_type.INT:
         l.i = lower
         u.i = upper
         q.i = quantization
@@ -167,11 +167,11 @@ class NumericalParameter(Parameter):
 
   @classmethod
   def int(cls, lower, upper, name = None, quantization = 0, default = None):
-    return cls(handle = None, name = name, data_type =  ccs_numeric_type.NUM_INTEGER, lower = lower, upper = upper, quantization = quantization, default = default)
+    return cls(handle = None, name = name, data_type =  ccs_numeric_type.INT, lower = lower, upper = upper, quantization = quantization, default = default)
   
   @classmethod
   def float(cls, lower, upper, name = None, quantization = 0.0, default = None):
-    return cls(handle = None, name = name, data_type =  ccs_numeric_type.NUM_FLOAT, lower = lower, upper = upper, quantization = quantization, default = default)
+    return cls(handle = None, name = name, data_type =  ccs_numeric_type.FLOAT, lower = lower, upper = upper, quantization = quantization, default = default)
 
   @property
   def data_type(self):
@@ -191,9 +191,9 @@ class NumericalParameter(Parameter):
     res = ccs_numerical_parameter_get_properties(self.handle, None, ct.byref(v), None, None)
     Error.check(res)
     t = self.data_type
-    if t == ccs_numeric_type.NUM_INTEGER:
+    if t == ccs_numeric_type.INT:
       self._lower = v.i
-    elif t == ccs_numeric_type.NUM_FLOAT:
+    elif t == ccs_numeric_type.FLOAT:
       self._lower = v.f
     else:
       raise Error(ccs_error(ccs_error.INVALID_VALUE))
@@ -207,9 +207,9 @@ class NumericalParameter(Parameter):
     res = ccs_numerical_parameter_get_properties(self.handle, None, None, ct.byref(v), None)
     Error.check(res)
     t = self.data_type
-    if t == ccs_numeric_type.NUM_INTEGER:
+    if t == ccs_numeric_type.INT:
       self._upper = v.i
-    elif t == ccs_numeric_type.NUM_FLOAT:
+    elif t == ccs_numeric_type.FLOAT:
       self._upper = v.f
     else:
       raise Error(ccs_error(ccs_error.INVALID_VALUE))
@@ -223,9 +223,9 @@ class NumericalParameter(Parameter):
     res = ccs_numerical_parameter_get_properties(self.handle, None, None, None, ct.byref(v))
     Error.check(res)
     t = self.data_type
-    if t == ccs_numeric_type.NUM_INTEGER:
+    if t == ccs_numeric_type.INT:
       self._quantization = v.i
-    elif t == ccs_numeric_type.NUM_FLOAT:
+    elif t == ccs_numeric_type.FLOAT:
       self._quantization = v.f
     else:
       raise Error(ccs_error(ccs_error.INVALID_VALUE))

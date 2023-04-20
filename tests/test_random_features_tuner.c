@@ -9,8 +9,8 @@ create_numerical(const char *name, double lower, double upper)
 	ccs_parameter_t parameter;
 	ccs_error_t     err;
 	err = ccs_create_numerical_parameter(
-		name, CCS_NUM_FLOAT, CCSF(lower), CCSF(upper), CCSF(0.0),
-		CCSF(0), &parameter);
+		name, CCS_NUMERIC_TYPE_FLOAT, CCSF(lower), CCSF(upper),
+		CCSF(0.0), CCSF(0), &parameter);
 	assert(err == CCS_SUCCESS);
 	return parameter;
 }

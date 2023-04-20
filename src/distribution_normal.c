@@ -32,7 +32,7 @@ _ccs_serialize_bin_size_ccs_distribution_normal_data(
 	       _ccs_serialize_bin_size_ccs_scale_type(data->scale_type) +
 	       _ccs_serialize_bin_size_ccs_float(data->mu) +
 	       _ccs_serialize_bin_size_ccs_float(data->sigma) +
-	       (data->common_data.data_types[0] == CCS_NUM_FLOAT ?
+	       (data->common_data.data_types[0] == CCS_NUMERIC_TYPE_FLOAT ?
 			_ccs_serialize_bin_size_ccs_float(
 				data->quantization.f) :
 			_ccs_serialize_bin_size_ccs_int(data->quantization.i));
@@ -54,7 +54,7 @@ _ccs_serialize_bin_ccs_distribution_normal_data(
 		_ccs_serialize_bin_ccs_float(data->mu, buffer_size, buffer));
 	CCS_VALIDATE(
 		_ccs_serialize_bin_ccs_float(data->sigma, buffer_size, buffer));
-	if (data->common_data.data_types[0] == CCS_NUM_FLOAT) {
+	if (data->common_data.data_types[0] == CCS_NUMERIC_TYPE_FLOAT) {
 		CCS_VALIDATE(_ccs_serialize_bin_ccs_float(
 			data->quantization.f, buffer_size, buffer));
 	} else {
@@ -187,7 +187,7 @@ _ccs_distribution_normal_get_bounds(
 	ccs_bool_t               ui;
 
 	if (scale_type == CCS_SCALE_TYPE_LOGARITHMIC) {
-		if (data_type == CCS_NUM_FLOAT) {
+		if (data_type == CCS_NUMERIC_TYPE_FLOAT) {
 			if (quantize) {
 				l.f = quantization.f;
 				li  = CCS_TRUE;
@@ -210,7 +210,7 @@ _ccs_distribution_normal_get_bounds(
 			ui = CCS_TRUE;
 		}
 	} else {
-		if (data_type == CCS_NUM_FLOAT) {
+		if (data_type == CCS_NUMERIC_TYPE_FLOAT) {
 			l.f = -CCS_INFINITY;
 			li  = CCS_FALSE;
 			u.f = CCS_INFINITY;
@@ -360,7 +360,7 @@ _ccs_distribution_normal_samples(
 	const int                quantize     = d->quantize;
 	gsl_rng                 *grng;
 	CCS_VALIDATE(ccs_rng_get_gsl_rng(rng, &grng));
-	if (data_type == CCS_NUM_FLOAT)
+	if (data_type == CCS_NUMERIC_TYPE_FLOAT)
 		CCS_VALIDATE(_ccs_distribution_normal_samples_float(
 			grng, scale_type, quantization.f, mu, sigma, quantize,
 			num_values, (ccs_float_t *)values));
@@ -504,7 +504,7 @@ _ccs_distribution_normal_strided_samples(
 	const int                quantize     = d->quantize;
 	gsl_rng                 *grng;
 	CCS_VALIDATE(ccs_rng_get_gsl_rng(rng, &grng));
-	if (data_type == CCS_NUM_FLOAT)
+	if (data_type == CCS_NUMERIC_TYPE_FLOAT)
 		CCS_VALIDATE(_ccs_distribution_normal_strided_samples_float(
 			grng, scale_type, quantization.f, mu, sigma, quantize,
 			num_values, stride, (ccs_float_t *)values));
@@ -539,17 +539,18 @@ ccs_create_normal_distribution(
 {
 	CCS_CHECK_PTR(distribution_ret);
 	CCS_REFUTE(
-		data_type != CCS_NUM_FLOAT && data_type != CCS_NUM_INTEGER,
+		data_type != CCS_NUMERIC_TYPE_FLOAT &&
+			data_type != CCS_NUMERIC_TYPE_INT,
 		CCS_INVALID_TYPE);
 	CCS_REFUTE(
 		scale_type != CCS_SCALE_TYPE_LINEAR &&
 			scale_type != CCS_SCALE_TYPE_LOGARITHMIC,
 		CCS_INVALID_SCALE);
 	CCS_REFUTE(
-		data_type == CCS_NUM_INTEGER && quantization.i < 0,
+		data_type == CCS_NUMERIC_TYPE_INT && quantization.i < 0,
 		CCS_INVALID_VALUE);
 	CCS_REFUTE(
-		data_type == CCS_NUM_FLOAT && quantization.f < 0.0,
+		data_type == CCS_NUMERIC_TYPE_FLOAT && quantization.f < 0.0,
 		CCS_INVALID_VALUE);
 	uintptr_t mem = (uintptr_t)calloc(
 		1, sizeof(struct _ccs_distribution_s) +
@@ -573,7 +574,7 @@ ccs_create_normal_distribution(
 	distrib_data->quantization              = quantization;
 	distrib_data->mu                        = mu;
 	distrib_data->sigma                     = sigma;
-	if (data_type == CCS_NUM_FLOAT) {
+	if (data_type == CCS_NUMERIC_TYPE_FLOAT) {
 		if (quantization.f != 0.0)
 			distrib_data->quantize = 1;
 	} else {

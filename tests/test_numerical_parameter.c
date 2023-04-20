@@ -40,7 +40,7 @@ compare_parameter(ccs_parameter_t parameter)
 
 	err = ccs_distribution_get_bounds(distribution, &interval);
 	assert(err == CCS_SUCCESS);
-	assert(interval.type == CCS_NUM_FLOAT);
+	assert(interval.type == CCS_NUMERIC_TYPE_FLOAT);
 	assert(interval.lower.f == -5.0);
 	assert(interval.lower_included == CCS_TRUE);
 	assert(interval.upper.f == 5.0);
@@ -67,8 +67,8 @@ test_create()
 	size_t          buff_size;
 
 	err = ccs_create_numerical_parameter(
-		"my_param", CCS_NUM_FLOAT, CCSF(-5.0), CCSF(5.0), CCSF(0.0),
-		CCSF(1.0), &parameter);
+		"my_param", CCS_NUMERIC_TYPE_FLOAT, CCSF(-5.0), CCSF(5.0),
+		CCSF(0.0), CCSF(1.0), &parameter);
 	assert(err == CCS_SUCCESS);
 
 	compare_parameter(parameter);
@@ -117,8 +117,8 @@ test_samples()
 	err = ccs_create_rng(&rng);
 	assert(err == CCS_SUCCESS);
 	err = ccs_create_numerical_parameter(
-		"my_param", CCS_NUM_FLOAT, CCSF(-5.0), CCSF(5.0), CCSF(0.0),
-		CCSF(1.0), &parameter);
+		"my_param", CCS_NUMERIC_TYPE_FLOAT, CCSF(-5.0), CCSF(5.0),
+		CCSF(0.0), CCSF(1.0), &parameter);
 	assert(err == CCS_SUCCESS);
 
 	err = ccs_parameter_get_default_distribution(parameter, &distribution);
@@ -160,8 +160,8 @@ test_oversampling()
 	assert(err == CCS_SUCCESS);
 
 	err = ccs_create_numerical_parameter(
-		"my_param", CCS_NUM_FLOAT, CCSF(-1.0), CCSF(1.0), CCSF(0.0),
-		CCSF(0.0), &parameter);
+		"my_param", CCS_NUMERIC_TYPE_FLOAT, CCSF(-1.0), CCSF(1.0),
+		CCSF(0.0), CCSF(0.0), &parameter);
 	assert(err == CCS_SUCCESS);
 
 	err = ccs_parameter_samples(

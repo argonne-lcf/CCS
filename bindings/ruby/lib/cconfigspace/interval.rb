@@ -7,20 +7,20 @@ module CCS
            :upper_included, :ccs_bool_t
 
     def initialize(*args, type:, lower: nil, upper: nil, lower_included: true, upper_included: false)
-      unless [:CCS_NUM_FLOAT, :CCS_NUM_INTEGER].include?(type)
+      unless [:CCS_NUMERIC_TYPE_FLOAT, :CCS_NUMERIC_TYPE_INT].include?(type)
         raise CCSError, :CCS_INVALID_TYPE
       end
       super(*args)
       self[:type] = type
       if lower
-        if type == :CCS_NUM_FLOAT
+        if type == :CCS_NUMERIC_TYPE_FLOAT
           self[:lower][:f] = lower
         else
           self[:lower][:i] = lower
         end
       end
       if upper
-        if type == :CCS_NUM_FLOAT
+        if type == :CCS_NUMERIC_TYPE_FLOAT
           self[:upper][:f] = upper
         else
           self[:upper][:i] = upper
@@ -36,9 +36,9 @@ module CCS
 
     def lower
       case self[:type]
-      when :CCS_NUM_FLOAT
+      when :CCS_NUMERIC_TYPE_FLOAT
         self[:lower][:f]
-      when :CCS_NUM_INTEGER
+      when :CCS_NUMERIC_TYPE_INT
         self[:lower][:i]
       else
         raise CCSError, :CCS_INVALID_TYPE
@@ -47,9 +47,9 @@ module CCS
 
     def lower=(v)
       case self[:type]
-      when :CCS_NUM_FLOAT
+      when :CCS_NUMERIC_TYPE_FLOAT
         self[:lower][:f] = v
-      when :CCS_NUM_INTEGER
+      when :CCS_NUMERIC_TYPE_INT
         self[:lower][:i] = v
       else
         raise CCSError, :CCS_INVALID_TYPE
@@ -58,9 +58,9 @@ module CCS
 
     def upper
       case self[:type]
-      when :CCS_NUM_FLOAT
+      when :CCS_NUMERIC_TYPE_FLOAT
         self[:upper][:f]
-      when :CCS_NUM_INTEGER
+      when :CCS_NUMERIC_TYPE_INT
         self[:upper][:i]
       else
         raise CCSError, :CCS_INVALID_TYPE
@@ -69,9 +69,9 @@ module CCS
 
     def upper=(v)
       case self[:type]
-      when :CCS_NUM_FLOAT
+      when :CCS_NUMERIC_TYPE_FLOAT
         self[:upper][:f] = v
-      when :CCS_NUM_INTEGER
+      when :CCS_NUMERIC_TYPE_INT
         self[:upper][:i] = v
       else
         raise CCSError, :CCS_INVALID_TYPE
@@ -101,7 +101,7 @@ module CCS
     end
 
     def intersect(other)
-      intersection = Interval::new(type: :CCS_NUM_FLOAT)
+      intersection = Interval::new(type: :CCS_NUMERIC_TYPE_FLOAT)
       CCS.error_check CCS.ccs_interval_intersect(self, other, intersection)
       return intersection
     end
@@ -115,9 +115,9 @@ module CCS
     def include?(v)
       n = Numeric::new
       case self[:type]
-      when :CCS_NUM_FLOAT
+      when :CCS_NUMERIC_TYPE_FLOAT
         n[:f] = v
-      when :CCS_NUM_INTEGER
+      when :CCS_NUMERIC_TYPE_INT
         n[:i] = v
       else
         raise CCSError, :CCS_INVALID_TYPE

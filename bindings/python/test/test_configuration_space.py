@@ -9,7 +9,7 @@ class TestConfigurationSpace(unittest.TestCase):
 
   def test_create(self):
     cs = ccs.ConfigurationSpace(name = "space")
-    self.assertEqual( ccs.CONFIGURATION_SPACE, cs.object_type )
+    self.assertEqual( ccs.ccs_object_type.CONFIGURATION_SPACE, cs.object_type )
     self.assertEqual( "space", cs.name )
     self.assertIsInstance( cs.rng, ccs.Rng )
     self.assertEqual( 0, cs.num_parameters )
@@ -65,11 +65,11 @@ class TestConfigurationSpace(unittest.TestCase):
     h3 = ccs.NumericalParameter(lower = -1.0, upper = 1.0)
     cs = ccs.ConfigurationSpace(name = "space")
     cs.add_parameters([h1, h2, h3])
-    e1 = ccs.Expression(t = ccs.LESS, nodes = [h2, 0.0])
+    e1 = ccs.Expression(t = ccs.ccs_expression_type.LESS, nodes = [h2, 0.0])
     cs.set_condition(h3, e1)
-    e2 = ccs.Expression(t = ccs.LESS, nodes = [h3, 0.0])
+    e2 = ccs.Expression(t = ccs.ccs_expression_type.LESS, nodes = [h3, 0.0])
     cs.set_condition(h1, e2)
-    e3 = ccs.Expression(t = ccs.LESS, nodes = [h1, 0.0])
+    e3 = ccs.Expression(t = ccs.ccs_expression_type.LESS, nodes = [h1, 0.0])
     cs.add_forbidden_clause(e3)
     conditions = cs.conditions
     conditional_parameters = cs.conditional_parameters
@@ -145,38 +145,38 @@ class TestConfigurationSpace(unittest.TestCase):
     cs = ccs.ConfigurationSpace(name = "omp")
     cs.add_parameters([p1, p2, p3, p4, p5, p6, p7, p8, p9])
 
-    cond0 = ccs.Expression(t = ccs.EQUAL, nodes = [p1, '#pragma omp #P2'])
-    cond1 = ccs.Expression(t = ccs.EQUAL, nodes = [p1, '#pragma omp target teams distribute #P2'])
-    cond2 = ccs.Expression(t = ccs.EQUAL, nodes = [p1, '#pragma omp target teams distribute #P4'])
-    cond3 = ccs.Expression(t = ccs.EQUAL, nodes = [p1, '#pragma omp #P3'])
+    cond0 = ccs.Expression(t = ccs.ccs_expression_type.EQUAL, nodes = [p1, '#pragma omp #P2'])
+    cond1 = ccs.Expression(t = ccs.ccs_expression_type.EQUAL, nodes = [p1, '#pragma omp target teams distribute #P2'])
+    cond2 = ccs.Expression(t = ccs.ccs_expression_type.EQUAL, nodes = [p1, '#pragma omp target teams distribute #P4'])
+    cond3 = ccs.Expression(t = ccs.ccs_expression_type.EQUAL, nodes = [p1, '#pragma omp #P3'])
 
-    cond4 = ccs.Expression(t = ccs.EQUAL, nodes = [p2, 'parallel for #P3'])
-    cond5 = ccs.Expression(t = ccs.EQUAL, nodes = [p2, 'parallel for #P5'])
-    cond6 = ccs.Expression(t = ccs.EQUAL, nodes = [p2, 'parallel for #P6'])
+    cond4 = ccs.Expression(t = ccs.ccs_expression_type.EQUAL, nodes = [p2, 'parallel for #P3'])
+    cond5 = ccs.Expression(t = ccs.ccs_expression_type.EQUAL, nodes = [p2, 'parallel for #P5'])
+    cond6 = ccs.Expression(t = ccs.ccs_expression_type.EQUAL, nodes = [p2, 'parallel for #P6'])
 
-    cond7 = ccs.Expression(t = ccs.EQUAL, nodes = [p4, 'dist_schedule(static, #P8)'])
+    cond7 = ccs.Expression(t = ccs.ccs_expression_type.EQUAL, nodes = [p4, 'dist_schedule(static, #P8)'])
 
-    cond8 = ccs.Expression(t = ccs.EQUAL, nodes = [p5, 'schedule(#P7)'])
-    cond9 = ccs.Expression(t = ccs.EQUAL, nodes = [p5, 'schedule(#P7,#P8)'])
+    cond8 = ccs.Expression(t = ccs.ccs_expression_type.EQUAL, nodes = [p5, 'schedule(#P7)'])
+    cond9 = ccs.Expression(t = ccs.ccs_expression_type.EQUAL, nodes = [p5, 'schedule(#P7,#P8)'])
 
-    cond10 = ccs.Expression(t = ccs.EQUAL, nodes = [p6, 'numthreads(#P9)'])
+    cond10 = ccs.Expression(t = ccs.ccs_expression_type.EQUAL, nodes = [p6, 'numthreads(#P9)'])
 
-    cs.set_condition(p2, ccs.Expression(t = ccs.OR, nodes = [cond0, cond1]))
+    cs.set_condition(p2, ccs.Expression(t = ccs.ccs_expression_type.OR, nodes = [cond0, cond1]))
     cs.set_condition(p4, cond2)
-    cs.set_condition(p3, ccs.Expression(t = ccs.OR, nodes = [cond3, cond4]))
+    cs.set_condition(p3, ccs.Expression(t = ccs.ccs_expression_type.OR, nodes = [cond3, cond4]))
     cs.set_condition(p5, cond5)
     cs.set_condition(p6, cond6)
-    cs.set_condition(p7, ccs.Expression(t = ccs.OR, nodes = [cond8, cond9]))
-    cs.set_condition(p8, ccs.Expression(t = ccs.OR, nodes = [cond7, cond9]))
+    cs.set_condition(p7, ccs.Expression(t = ccs.ccs_expression_type.OR, nodes = [cond8, cond9]))
+    cs.set_condition(p8, ccs.Expression(t = ccs.ccs_expression_type.OR, nodes = [cond7, cond9]))
     cs.set_condition(p9, cond10)
 
-    forbiddena = ccs.Expression(t = ccs.EQUAL, nodes = [p1, '#pragma omp #P2'])
-    forbiddenb = ccs.Expression(t = ccs.EQUAL, nodes = [p2, ' '])
-    forbidden0 = ccs.Expression(t = ccs.AND, nodes = [forbiddena, forbiddenb])
+    forbiddena = ccs.Expression(t = ccs.ccs_expression_type.EQUAL, nodes = [p1, '#pragma omp #P2'])
+    forbiddenb = ccs.Expression(t = ccs.ccs_expression_type.EQUAL, nodes = [p2, ' '])
+    forbidden0 = ccs.Expression(t = ccs.ccs_expression_type.AND, nodes = [forbiddena, forbiddenb])
 
-    forbiddenc = ccs.Expression(t = ccs.EQUAL, nodes = [p1, '#pragma omp #P3'])
-    forbiddend = ccs.Expression(t = ccs.EQUAL, nodes = [p3, ' '])
-    forbidden1 = ccs.Expression(t = ccs.AND, nodes = [forbiddenc, forbiddend])
+    forbiddenc = ccs.Expression(t = ccs.ccs_expression_type.EQUAL, nodes = [p1, '#pragma omp #P3'])
+    forbiddend = ccs.Expression(t = ccs.ccs_expression_type.EQUAL, nodes = [p3, ' '])
+    forbidden1 = ccs.Expression(t = ccs.ccs_expression_type.AND, nodes = [forbiddenc, forbiddend])
     cs.add_forbidden_clauses([forbidden0, forbidden1])
 
     all_params = [ "p{}".format(i) for i in range(1,10) ]

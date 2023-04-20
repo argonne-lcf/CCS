@@ -7,7 +7,7 @@ ccs_interval_empty(ccs_interval_t *interval, ccs_bool_t *empty_ret)
 	// Empty ranges
 	// [l,u] when l> u; ]l,u] when l>=u
 	// [l,u[ when l>=u; ]l,u[ when l>=u
-	if (interval->type == CCS_NUM_INTEGER) {
+	if (interval->type == CCS_NUMERIC_TYPE_INT) {
 		if (interval->upper_included && interval->lower_included ?
 			    interval->lower.i > interval->upper.i :
 			    interval->lower.i >= interval->upper.i) {
@@ -71,8 +71,8 @@ ccs_interval_intersect(
 	CCS_REFUTE(
 		!interval1 || !interval2 || !interval_res, CCS_INVALID_VALUE);
 	CCS_REFUTE(interval1->type != interval2->type, CCS_INVALID_TYPE);
-	if (interval1->type == CCS_NUM_FLOAT) {
-		interval_res->type = CCS_NUM_FLOAT;
+	if (interval1->type == CCS_NUMERIC_TYPE_FLOAT) {
+		interval_res->type = CCS_NUMERIC_TYPE_FLOAT;
 		MERGE_MAX(
 			interval1->lower.f, interval1->lower_included,
 			interval2->lower.f, interval2->lower_included,
@@ -82,7 +82,7 @@ ccs_interval_intersect(
 			interval2->upper.f, interval2->upper_included,
 			interval_res->upper.f, interval_res->upper_included);
 	} else {
-		interval_res->type = CCS_NUM_INTEGER;
+		interval_res->type = CCS_NUMERIC_TYPE_INT;
 		MERGE_MAX(
 			interval1->lower.i, interval1->lower_included,
 			interval2->lower.i, interval2->lower_included,
@@ -104,8 +104,8 @@ ccs_interval_union(
 	CCS_REFUTE(
 		!interval1 || !interval2 || !interval_res, CCS_INVALID_VALUE);
 	CCS_REFUTE(interval1->type != interval2->type, CCS_INVALID_TYPE);
-	if (interval1->type == CCS_NUM_FLOAT) {
-		interval_res->type = CCS_NUM_FLOAT;
+	if (interval1->type == CCS_NUMERIC_TYPE_FLOAT) {
+		interval_res->type = CCS_NUMERIC_TYPE_FLOAT;
 		MERGE_MIN(
 			interval1->lower.f, interval1->lower_included,
 			interval2->lower.f, interval2->lower_included,
@@ -115,7 +115,7 @@ ccs_interval_union(
 			interval2->upper.f, interval2->upper_included,
 			interval_res->upper.f, interval_res->upper_included);
 	} else {
-		interval_res->type = CCS_NUM_INTEGER;
+		interval_res->type = CCS_NUMERIC_TYPE_INT;
 		MERGE_MIN(
 			interval1->lower.i, interval1->lower_included,
 			interval2->lower.i, interval2->lower_included,
@@ -136,7 +136,7 @@ ccs_interval_equal(
 {
 	CCS_REFUTE(!interval1 || !interval2 || !equal_res, CCS_INVALID_VALUE);
 	CCS_REFUTE(interval1->type != interval2->type, CCS_INVALID_TYPE);
-	if (interval1->type == CCS_NUM_FLOAT) {
+	if (interval1->type == CCS_NUMERIC_TYPE_FLOAT) {
 		*equal_res =
 			(interval1->lower.f == interval2->lower.f &&
 			 interval1->upper.f == interval2->upper.f &&

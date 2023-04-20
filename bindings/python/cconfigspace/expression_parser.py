@@ -36,13 +36,13 @@ identifier: /%s/ {%d};
 string: /%s/ {%d};
 integer: /%s/ {%d};
 float: /%s/ {%d};
-""" % (ccs_terminal_regexp[ccs_terminal_type.TERM_NONE], ccs_terminal_precedence[ccs_terminal_type.TERM_NONE],
-       ccs_terminal_regexp[ccs_terminal_type.TERM_TRUE], ccs_terminal_precedence[ccs_terminal_type.TERM_TRUE],
-       ccs_terminal_regexp[ccs_terminal_type.TERM_FALSE], ccs_terminal_precedence[ccs_terminal_type.TERM_FALSE],
-       ccs_terminal_regexp[ccs_terminal_type.TERM_IDENTIFIER], ccs_terminal_precedence[ccs_terminal_type.TERM_IDENTIFIER],
-       ccs_terminal_regexp[ccs_terminal_type.TERM_STRING], ccs_terminal_precedence[ccs_terminal_type.TERM_STRING],
-       ccs_terminal_regexp[ccs_terminal_type.TERM_INTEGER], ccs_terminal_precedence[ccs_terminal_type.TERM_INTEGER],
-       ccs_terminal_regexp[ccs_terminal_type.TERM_FLOAT], ccs_terminal_precedence[ccs_terminal_type.TERM_FLOAT])
+""" % (ccs_terminal_regexp[ccs_terminal_type.NONE], ccs_terminal_precedence[ccs_terminal_type.NONE],
+       ccs_terminal_regexp[ccs_terminal_type.TRUE], ccs_terminal_precedence[ccs_terminal_type.TRUE],
+       ccs_terminal_regexp[ccs_terminal_type.FALSE], ccs_terminal_precedence[ccs_terminal_type.FALSE],
+       ccs_terminal_regexp[ccs_terminal_type.IDENTIFIER], ccs_terminal_precedence[ccs_terminal_type.IDENTIFIER],
+       ccs_terminal_regexp[ccs_terminal_type.STRING], ccs_terminal_precedence[ccs_terminal_type.STRING],
+       ccs_terminal_regexp[ccs_terminal_type.INTEGER], ccs_terminal_precedence[ccs_terminal_type.INTEGER],
+       ccs_terminal_regexp[ccs_terminal_type.FLOAT], ccs_terminal_precedence[ccs_terminal_type.FLOAT])
 
 _actions = {}
 _expr_actions = [ lambda _, n: n[1] ]

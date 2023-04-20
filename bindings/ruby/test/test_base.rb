@@ -97,12 +97,12 @@ class CConfigSpaceTest < Minitest::Test
 
   def test_numeric
     n = CCS::Numeric::from_value(1)
-    assert_equal( 1, n.value(:CCS_NUM_INTEGER) )
+    assert_equal( 1, n.value(:CCS_NUMERIC_TYPE_INT) )
     n.value = 2
-    assert_equal( 2, n.value(:CCS_NUM_INTEGER) )
+    assert_equal( 2, n.value(:CCS_NUMERIC_TYPE_INT) )
     n.value = 1.0
-    assert_equal( 1.0, n.value(:CCS_NUM_FLOAT) )
+    assert_equal( 1.0, n.value(:CCS_NUMERIC_TYPE_FLOAT) )
     n = CCS::Numeric::from_value(2.0)
-    assert_equal( 2.0, n.value(:CCS_NUM_FLOAT) )
+    assert_equal( 2.0, n.value(:CCS_NUMERIC_TYPE_FLOAT) )
   end
 end

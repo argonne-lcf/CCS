@@ -22,17 +22,17 @@ class TestObjectiveSpace(unittest.TestCase):
     self.assertEqual( h3, os.parameter(2) )
     self.assertEqual( [h1, h2, h3], os.parameters )
     self.assertEqual( h2, os.parameter_by_name(h2.name) )
-    e1 = ccs.Expression(t = ccs.ADD, nodes = [h1, h2])
+    e1 = ccs.Expression(t = ccs.ccs_expression_type.ADD, nodes = [h1, h2])
     e2 = ccs.Variable(parameter = h3)
     os.add_objective(e1)
     self.assertEqual( 1, len(os.objectives) )
-    os.add_objectives([e2], types = [ccs.MAXIMIZE])
+    os.add_objectives([e2], types = [ccs.ccs_objective_type.MAXIMIZE])
     self.assertEqual( 2, len(os.objectives) )
     objs = os.objectives
     self.assertEqual( e1.handle.value, objs[0][0].handle.value )
-    self.assertEqual( ccs.MINIMIZE, objs[0][1] )
+    self.assertEqual( ccs.ccs_objective_type.MINIMIZE, objs[0][1] )
     self.assertEqual( e2.handle.value, objs[1][0].handle.value )
-    self.assertEqual( ccs.MAXIMIZE, objs[1][1] )
+    self.assertEqual( ccs.ccs_objective_type.MAXIMIZE, objs[1][1] )
  
 
 if __name__ == '__main__':

@@ -9,8 +9,8 @@ from .evaluation import Evaluation
 
 class ccs_tuner_type(CEnumeration):
   _members_ = [
-    ('TUNER_RANDOM',0),
-    'TUNER_USER_DEFINED' ]
+    ('RANDOM',0),
+    'USER_DEFINED' ]
 
 ccs_tuner_get_type = _ccs_get_function("ccs_tuner_get_type", [ccs_tuner, ct.POINTER(ccs_tuner_type)])
 ccs_tuner_get_name = _ccs_get_function("ccs_tuner_get_name", [ccs_tuner, ct.POINTER(ct.c_char_p)])
@@ -29,9 +29,9 @@ class Tuner(Object):
     res = ccs_tuner_get_type(handle, ct.byref(v))
     Error.check(res)
     v = v.value
-    if v == ccs_tuner_type.TUNER_RANDOM:
+    if v == ccs_tuner_type.RANDOM:
       return RandomTuner(handle = handle, retain = retain, auto_release = auto_release)
-    elif v == ccs_tuner_type.TUNER_USER_DEFINED:
+    elif v == ccs_tuner_type.USER_DEFINED:
       return UserDefinedTuner(handle = handle, retain = retain, auto_release = auto_release)
     else:
       raise Error(ccs_error(ccs_error.INVALID_TUNER))

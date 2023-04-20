@@ -251,7 +251,7 @@ ccs_create_string_parameter(const char *name, ccs_parameter_t *parameter_ret)
 	parameter_data->common_data.name =
 		(char *)(mem + sizeof(struct _ccs_parameter_s) + sizeof(_ccs_parameter_string_data_t));
 	strcpy((char *)parameter_data->common_data.name, name);
-	parameter_data->common_data.interval.type = CCS_NUM_INTEGER;
+	parameter_data->common_data.interval.type = CCS_NUMERIC_TYPE_INT;
 	parameter_data->stored_values             = NULL;
 	parameter->data = (_ccs_parameter_data_t *)parameter_data;
 	*parameter_ret  = parameter;

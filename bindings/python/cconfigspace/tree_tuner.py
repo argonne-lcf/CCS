@@ -9,8 +9,8 @@ from .tree_evaluation import TreeEvaluation
 
 class ccs_tree_tuner_type(CEnumeration):
   _members_ = [
-    ('TREE_TUNER_RANDOM',0),
-    'TREE_TUNER_USER_DEFINED' ]
+    ('RANDOM',0),
+    'USER_DEFINED' ]
 
 ccs_tree_tuner_get_type = _ccs_get_function("ccs_tree_tuner_get_type", [ccs_tree_tuner, ct.POINTER(ccs_tree_tuner_type)])
 ccs_tree_tuner_get_name = _ccs_get_function("ccs_tree_tuner_get_name", [ccs_tree_tuner, ct.POINTER(ct.c_char_p)])
@@ -29,9 +29,9 @@ class TreeTuner(Object):
     res = ccs_tree_tuner_get_type(handle, ct.byref(v))
     Error.check(res)
     v = v.value
-    if v == ccs_tree_tuner_type.TREE_TUNER_RANDOM:
+    if v == ccs_tree_tuner_type.RANDOM:
       return RandomTreeTuner(handle = handle, retain = retain, auto_release = auto_release)
-    elif v == ccs_tree_tuner_type.TREE_TUNER_USER_DEFINED:
+    elif v == ccs_tree_tuner_type.USER_DEFINED:
       return UserDefinedTreeTuner(handle = handle, retain = retain, auto_release = auto_release)
     else:
       raise Error(ccs_error(ccs_error.INVALID_TREE_TUNER))

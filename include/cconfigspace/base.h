@@ -341,11 +341,11 @@ typedef uint32_t              ccs_datum_flags_t;
  * The subset of CCS data types that represent numerical data.
  */
 enum ccs_numeric_type_e {
-	CCS_NUM_INTEGER = CCS_DATA_TYPE_INT,   /*!< A ccs_int_t */
-	CCS_NUM_FLOAT   = CCS_DATA_TYPE_FLOAT, /*!< A ccs_float_t */
-	CCS_NUM_TYPE_MAX,                      /*!< Guard */
+	CCS_NUMERIC_TYPE_INT   = CCS_DATA_TYPE_INT,   /*!< A ccs_int_t */
+	CCS_NUMERIC_TYPE_FLOAT = CCS_DATA_TYPE_FLOAT, /*!< A ccs_float_t */
+	CCS_NUMERIC_TYPE_MAX,                             /*!< Guard */
 	/** Try forcing 32 bits value for bindings */
-	CCS_NUM_TYPE_FORCE_32BIT = INT32_MAX
+	CCS_NUMERIC_TYPE_FORCE_32BIT = INT32_MAX
 };
 
 /**

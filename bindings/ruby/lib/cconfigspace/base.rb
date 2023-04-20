@@ -224,8 +224,8 @@ module CCS
     :CCS_DATUM_FLAG_UNPOOLED ]
 
   NumericType = enum FFI::Type::INT32, :ccs_numeric_type_t, [
-    :CCS_NUM_INTEGER, DataType.to_native(:CCS_DATA_TYPE_INT, nil),
-    :CCS_NUM_FLOAT, DataType.to_native(:CCS_DATA_TYPE_FLOAT, nil) ]
+    :CCS_NUMERIC_TYPE_INT, DataType.to_native(:CCS_DATA_TYPE_INT, nil),
+    :CCS_NUMERIC_TYPE_FLOAT, DataType.to_native(:CCS_DATA_TYPE_FLOAT, nil) ]
 
   class MemoryPointer
     def read_ccs_numeric_type_t
@@ -260,9 +260,9 @@ module CCS
            :i, :ccs_int_t
     def value(type)
       case type
-      when :CCS_NUM_FLOAT
+      when :CCS_NUMERIC_TYPE_FLOAT
         self[:f]
-      when :CCS_NUM_INTEGER
+      when :CCS_NUMERIC_TYPE_INT
         self[:i]
       else
         raise CCSError, :CCS_INVALID_TYPE

@@ -40,13 +40,13 @@ ccs_expression_arity = (ct.c_int * _sz_expr).in_dll(libcconfigspace, "ccs_expres
 
 class ccs_terminal_type(CEnumeration):
   _members_ = [
-    ('TERM_NONE', 0),
-    'TERM_TRUE',
-    'TERM_FALSE',
-    'TERM_STRING',
-    'TERM_IDENTIFIER',
-    'TERM_INTEGER',
-    'TERM_FLOAT' ]
+    ('NONE', 0),
+    'TRUE',
+    'FALSE',
+    'STRING',
+    'IDENTIFIER',
+    'INTEGER',
+    'FLOAT' ]
 
 _sz_term = len(ccs_terminal_type._members_)
 ccs_terminal_precedence = (ct.c_int * _sz_term).in_dll(libcconfigspace, "ccs_terminal_precedence")
@@ -201,9 +201,9 @@ class Expression(Object):
 
 
 class Literal(Expression):
-  none_symbol = ccs_terminal_symbols[ccs_terminal_type.TERM_NONE]
-  true_aymbol = ccs_terminal_symbols[ccs_terminal_type.TERM_TRUE]
-  false_symbol = ccs_terminal_symbols[ccs_terminal_type.TERM_FALSE]
+  none_symbol = ccs_terminal_symbols[ccs_terminal_type.NONE]
+  true_aymbol = ccs_terminal_symbols[ccs_terminal_type.TRUE]
+  false_symbol = ccs_terminal_symbols[ccs_terminal_type.FALSE]
 
   def __init__(self, handle = None, retain = False, auto_release = True,
                value = None):

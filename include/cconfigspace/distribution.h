@@ -60,21 +60,21 @@ typedef enum ccs_scale_type_e ccs_scale_type_t;
 /**
  * Create a new normal distribution of the specified data type. Normal
  * distributions are unidimensional.
- * @param[in] data_type can be either #CCS_NUM_INTEGER or #CCS_NUM_FLOAT
+ * @param[in] data_type can be either #CCS_NUMERIC_TYPE_INT or #CCS_NUMERIC_TYPE_FLOAT
  * @param[in] mu mean of the distribution
  * @param[in] sigma standard deviation of the distribution
  * @param[in] scale an be either #CCS_SCALE_TYPE_LINEAR or #CCS_SCALE_TYPE_LOGARITHMIC
  * @param[in] quantization quantization of the results, 0 means no quantization.
  *                         Must be a ccs_int_t if \p data_type is
- *                         #CCS_NUM_INTEGER or a ccs_float_t if \p data_type is
- *                         #CCS_NUM_FLOAT
+ *                         #CCS_NUMERIC_TYPE_INT or a ccs_float_t if \p data_type is
+ *                         #CCS_NUMERIC_TYPE_FLOAT
  * @param[out] distribution_ret a pointer to the variable that will contain the
  *                              newly created distribution
  * @return #CCS_SUCCESS on success
  * @return #CCS_INVALID_VALUE if \p distribution_ret is NULL; or if \p
  *                             quantization is less than 0
- * @return #CCS_INVALID_TYPE if \p data_type is neither #CCS_NUM_INTEGER nor
- *                            #CCS_NUM_FLOAT
+ * @return #CCS_INVALID_TYPE if \p data_type is neither #CCS_NUMERIC_TYPE_INT nor
+ *                            #CCS_NUMERIC_TYPE_FLOAT
  * @return #CCS_INVALID_SCALE if \p scale is neither #CCS_SCALE_TYPE_LINEAR nor
  *                             #CCS_SCALE_TYPE_LOGARITHMIC
  * @return #CCS_OUT_OF_MEMORY if there was not enough memory to allocate the
@@ -142,18 +142,18 @@ ccs_create_normal_float_distribution(
 /**
  * Create a new uniform distribution of the specified data type. Uniform
  * distributions are unidimensional.
- * @param[in] data_type can be either #CCS_NUM_INTEGER or #CCS_NUM_FLOAT
+ * @param[in] data_type can be either #CCS_NUMERIC_TYPE_INT or #CCS_NUMERIC_TYPE_FLOAT
  * @param[in] lower the lower bound of the distribution, included. Must be a
- *                  ccs_int_t if \p data_type is #CCS_NUM_INTEGER or a
- *                  ccs_float_t if \p data_type is #CCS_NUM_FLOAT
+ *                  ccs_int_t if \p data_type is #CCS_NUMERIC_TYPE_INT or a
+ *                  ccs_float_t if \p data_type is #CCS_NUMERIC_TYPE_FLOAT
  * @param[in] upper the upper bound of the distribution, excluded. Must be a
- *                  ccs_int_t if \p data_type is #CCS_NUM_INTEGER or a
- *                  ccs_float_t if \p data_type is #CCS_NUM_FLOAT
+ *                  ccs_int_t if \p data_type is #CCS_NUMERIC_TYPE_INT or a
+ *                  ccs_float_t if \p data_type is #CCS_NUMERIC_TYPE_FLOAT
  * @param[in] scale an be either #CCS_SCALE_TYPE_LINEAR or #CCS_SCALE_TYPE_LOGARITHMIC
  * @param[in] quantization quantization of the results, 0 means no quantization.
  *                         Must be a ccs_int_t if \p data_type is
- *                         #CCS_NUM_INTEGER or a ccs_float_t if \p data_type is
- *                         #CCS_NUM_FLOAT
+ *                         #CCS_NUMERIC_TYPE_INT or a ccs_float_t if \p data_type is
+ *                         #CCS_NUMERIC_TYPE_FLOAT
  * @param[out] distribution_ret a pointer to the variable that will contain the
  *                              newly created distribution
  * @return #CCS_SUCCESS on success
@@ -162,8 +162,8 @@ ccs_create_normal_float_distribution(
  *                             defined by \p lower and \p upper is empty or
  *                             smaller than the quantization; or if \p scale is
  *                             #CCS_SCALE_TYPE_LOGARITHMIC \p lower is less or equal to 0
- * @return #CCS_INVALID_TYPE if \p data_type is neither #CCS_NUM_INTEGER nor
- *                            #CCS_NUM_FLOAT
+ * @return #CCS_INVALID_TYPE if \p data_type is neither #CCS_NUMERIC_TYPE_INT nor
+ *                            #CCS_NUMERIC_TYPE_FLOAT
  * @return #CCS_INVALID_SCALE if \p scale is neither #CCS_SCALE_TYPE_LINEAR nor
  *                             #CCS_SCALE_TYPE_LOGARITHMIC
  * @return #CCS_OUT_OF_MEMORY if there was not enough memory to allocate the

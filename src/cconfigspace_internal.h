@@ -8,7 +8,7 @@
 static inline ccs_bool_t
 _ccs_interval_include(ccs_interval_t *interval, ccs_numeric_t value)
 {
-	if (interval->type == CCS_NUM_FLOAT) {
+	if (interval->type == CCS_NUMERIC_TYPE_FLOAT) {
 		return (interval->lower_included ?
 				interval->lower.f <= value.f :
 				interval->lower.f < value.f) &&
@@ -820,7 +820,7 @@ static inline size_t
 _ccs_serialize_bin_size_ccs_interval(const ccs_interval_t *interval)
 {
 	return _ccs_serialize_bin_size_ccs_numeric_type(interval->type) +
-	       (interval->type == CCS_NUM_FLOAT ?
+	       (interval->type == CCS_NUMERIC_TYPE_FLOAT ?
 			_ccs_serialize_bin_size_ccs_float(interval->lower.f) +
 				_ccs_serialize_bin_size_ccs_float(
 					interval->upper.f) :
@@ -839,7 +839,7 @@ _ccs_serialize_bin_ccs_interval(
 {
 	CCS_VALIDATE(_ccs_serialize_bin_ccs_numeric_type(
 		interval->type, buffer_size, buffer));
-	if (interval->type == CCS_NUM_FLOAT) {
+	if (interval->type == CCS_NUMERIC_TYPE_FLOAT) {
 		CCS_VALIDATE(_ccs_serialize_bin_ccs_float(
 			interval->lower.f, buffer_size, buffer));
 		CCS_VALIDATE(_ccs_serialize_bin_ccs_float(
@@ -865,7 +865,7 @@ _ccs_deserialize_bin_ccs_interval(
 {
 	CCS_VALIDATE(_ccs_deserialize_bin_ccs_numeric_type(
 		&interval->type, buffer_size, buffer));
-	if (interval->type == CCS_NUM_FLOAT) {
+	if (interval->type == CCS_NUMERIC_TYPE_FLOAT) {
 		CCS_VALIDATE(_ccs_deserialize_bin_ccs_float(
 			&interval->lower.f, buffer_size, buffer));
 		CCS_VALIDATE(_ccs_deserialize_bin_ccs_float(

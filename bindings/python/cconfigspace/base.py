@@ -97,8 +97,6 @@ class CEnumerationType(type(ct.c_int)):
         if name.startswith("ccs_"):
           cls_name = cls_name[4:]
         globals()[cls_name + "_" + key] = value
-      else:
-        globals()[key] = value
     return cls
 
   def __contains__(self, value):
@@ -214,8 +212,8 @@ ccs_datum_flags = ct.c_uint
 
 class ccs_numeric_type(CEnumeration):
   _members_ = [
-    ('NUM_INTEGER', ccs_data_type.INT),
-    ('NUM_FLOAT', ccs_data_type.FLOAT) ]
+    ('INT', ccs_data_type.INT),
+    ('FLOAT', ccs_data_type.FLOAT) ]
 
 class ccs_numeric(ct.Union):
   _fields_ = [('f', ccs_float),
@@ -226,9 +224,9 @@ class ccs_numeric(ct.Union):
     self.set_value(v)
 
   def get_value(self, t):
-    if t == ccs_numeric_type.NUM_INTEGER:
+    if t == ccs_numeric_type.INT:
       return self.i
-    elif t == ccs_numeric_type.NUM_FLOAT:
+    elif t == ccs_numeric_type.FLOAT:
       return self.f
     else:
       raise Error(ccs_error(ccs_error.INVALID_VALUE))

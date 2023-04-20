@@ -9,11 +9,11 @@ class ccs_interval(ct.Structure):
               ('_lower_included', ccs_bool),
               ('_upper_included', ccs_bool)]
 
-  def __init__(self, t = ccs_numeric_type.NUM_FLOAT, lower = 0.0, upper = 1.0, lower_included = True, upper_included = False):
-    if t == ccs_numeric_type.NUM_INTEGER:
+  def __init__(self, t = ccs_numeric_type.FLOAT, lower = 0.0, upper = 1.0, lower_included = True, upper_included = False):
+    if t == ccs_numeric_type.INT:
       self._lower.i = lower
       self._upper.i = upper
-    elif t == ccs_numeric_type.NUM_FLOAT:
+    elif t == ccs_numeric_type.FLOAT:
       self._lower.f = lower
       self._upper.f = upper
     else:
@@ -39,9 +39,9 @@ class ccs_interval(ct.Structure):
   @property
   def lower(self):
     t = self.type
-    if t == ccs_numeric_type.NUM_INTEGER:
+    if t == ccs_numeric_type.INT:
       return self._lower.i
-    elif t == ccs_numeric_type.NUM_FLOAT:
+    elif t == ccs_numeric_type.FLOAT:
       return self._lower.f
     else:
       raise Error(ccs_error(ccs_error.INVALID_VALUE))
@@ -49,9 +49,9 @@ class ccs_interval(ct.Structure):
   @lower.setter
   def lower(self, value):
     t = self.type
-    if t == ccs_numeric_type.NUM_INTEGER:
+    if t == ccs_numeric_type.INT:
       self._lower.i = value
-    elif t == ccs_numeric_type.NUM_FLOAT:
+    elif t == ccs_numeric_type.FLOAT:
       self._lower.f = value
     else:
       raise Error(ccs_error(ccs_error.INVALID_VALUE))
@@ -59,9 +59,9 @@ class ccs_interval(ct.Structure):
   @property
   def upper(self):
     t = self.type
-    if t == ccs_numeric_type.NUM_INTEGER:
+    if t == ccs_numeric_type.INT:
       return self._upper.i
-    elif t == ccs_numeric_type.NUM_FLOAT:
+    elif t == ccs_numeric_type.FLOAT:
       return self._upper.f
     else:
       raise Error(ccs_error(ccs_error.INVALID_VALUE))
@@ -69,9 +69,9 @@ class ccs_interval(ct.Structure):
   @upper.setter
   def upper(self, value):
     t = self.type
-    if t == ccs_numeric_type.NUM_INTEGER:
+    if t == ccs_numeric_type.INT:
       self._upper.i = value
-    elif t == ccs_numeric_type.NUM_FLOAT:
+    elif t == ccs_numeric_type.FLOAT:
       self._upper.f = value
     else:
       raise Error(ccs_error(ccs_error.INVALID_VALUE))
@@ -121,9 +121,9 @@ class ccs_interval(ct.Structure):
   def include(self, value):
     v = ccs_numeric()
     t = self.type
-    if t == ccs_numeric_type.NUM_INTEGER:
+    if t == ccs_numeric_type.INT:
       v.i = value
-    elif t == ccs_numeric_type.NUM_FLOAT:
+    elif t == ccs_numeric_type.FLOAT:
       v.f = value
     res = ccs_interval_include(ct.byref(self), v.i)
     return False if res == ccs_false else True

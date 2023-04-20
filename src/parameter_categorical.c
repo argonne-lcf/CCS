@@ -321,7 +321,7 @@ _ccs_create_categorical_parameter(
 	CCS_REFUTE(!mem, CCS_OUT_OF_MEMORY);
 
 	ccs_interval_t interval;
-	interval.type             = CCS_NUM_INTEGER;
+	interval.type             = CCS_NUMERIC_TYPE_INT;
 	interval.lower.i          = 0;
 	interval.upper.i          = (ccs_int_t)num_possible_values;
 	interval.lower_included   = CCS_TRUE;

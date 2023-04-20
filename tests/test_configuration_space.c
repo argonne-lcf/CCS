@@ -11,8 +11,8 @@ create_dummy_parameter(const char *name)
 	ccs_parameter_t parameter;
 	ccs_error_t     err;
 	err = ccs_create_numerical_parameter(
-		name, CCS_NUM_FLOAT, CCSF(-5.0), CCSF(5.0), CCSF(0.0), CCSF(d),
-		&parameter);
+		name, CCS_NUMERIC_TYPE_FLOAT, CCSF(-5.0), CCSF(5.0), CCSF(0.0),
+		CCSF(d), &parameter);
 	d += 1.0;
 	if (d >= 5.0)
 		d = -5.0;
@@ -206,8 +206,8 @@ test_sample()
 	parameters[1] = create_dummy_parameter("param2");
 	parameters[2] = create_dummy_parameter("param3");
 	err           = ccs_create_numerical_parameter(
-                "param4", CCS_NUM_INTEGER, CCSI(-5), CCSI(5), CCSI(0), CCSI(0),
-                parameters + 3);
+                "param4", CCS_NUMERIC_TYPE_INT, CCSI(-5), CCSI(5), CCSI(0),
+                CCSI(0), parameters + 3);
 	assert(err == CCS_SUCCESS);
 
 	err = ccs_configuration_space_add_parameters(
@@ -273,13 +273,13 @@ test_set_distribution()
 	check_configuration(configuration_space, 3, parameters);
 
 	err = ccs_create_uniform_distribution(
-		CCS_NUM_FLOAT, CCSF(-4.0), CCSF(4.0), CCS_SCALE_TYPE_LINEAR,
-		CCSF(0.0), distribs);
+		CCS_NUMERIC_TYPE_FLOAT, CCSF(-4.0), CCSF(4.0),
+		CCS_SCALE_TYPE_LINEAR, CCSF(0.0), distribs);
 	assert(err == CCS_SUCCESS);
 
 	err = ccs_create_uniform_distribution(
-		CCS_NUM_FLOAT, CCSF(-3.0), CCSF(3.0), CCS_SCALE_TYPE_LINEAR,
-		CCSF(0.0), distribs + 1);
+		CCS_NUMERIC_TYPE_FLOAT, CCSF(-3.0), CCSF(3.0),
+		CCS_SCALE_TYPE_LINEAR, CCSF(0.0), distribs + 1);
 	assert(err == CCS_SUCCESS);
 
 	err = ccs_create_multivariate_distribution(2, distribs, &distrib);
@@ -381,7 +381,7 @@ create_numerical(const char *name)
 	ccs_parameter_t parameter;
 	ccs_error_t     err;
 	err = ccs_create_numerical_parameter(
-		name, CCS_NUM_FLOAT, CCSF(-5.0), CCSF(5.0), CCSF(0.0),
+		name, CCS_NUMERIC_TYPE_FLOAT, CCSF(-5.0), CCSF(5.0), CCSF(0.0),
 		CCSF(0.0), &parameter);
 	assert(err == CCS_SUCCESS);
 	return parameter;
@@ -498,13 +498,13 @@ test_deserialize()
 	assert(err == CCS_SUCCESS);
 
 	err = ccs_create_uniform_distribution(
-		CCS_NUM_FLOAT, CCSF(-4.0), CCSF(4.0), CCS_SCALE_TYPE_LINEAR,
-		CCSF(0.0), distribs);
+		CCS_NUMERIC_TYPE_FLOAT, CCSF(-4.0), CCSF(4.0),
+		CCS_SCALE_TYPE_LINEAR, CCSF(0.0), distribs);
 	assert(err == CCS_SUCCESS);
 
 	err = ccs_create_uniform_distribution(
-		CCS_NUM_FLOAT, CCSF(-3.0), CCSF(3.0), CCS_SCALE_TYPE_LINEAR,
-		CCSF(0.0), distribs + 1);
+		CCS_NUMERIC_TYPE_FLOAT, CCSF(-3.0), CCSF(3.0),
+		CCS_SCALE_TYPE_LINEAR, CCSF(0.0), distribs + 1);
 	assert(err == CCS_SUCCESS);
 
 	err = ccs_create_multivariate_distribution(2, distribs, &distrib);

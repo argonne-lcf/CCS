@@ -12,8 +12,8 @@ create_dummy_numerical(const char *name)
 	ccs_parameter_t parameter;
 	ccs_error_t     err;
 	err = ccs_create_numerical_parameter(
-		name, CCS_NUM_FLOAT, CCSF(-5.0), CCSF(5.0), CCSF(0.0), CCSF(d),
-		&parameter);
+		name, CCS_NUMERIC_TYPE_FLOAT, CCSF(-5.0), CCSF(5.0), CCSF(0.0),
+		CCSF(d), &parameter);
 	d += 1.0;
 	if (d >= 5.0)
 		d = -5.0;

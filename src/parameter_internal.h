@@ -113,7 +113,7 @@ _ccs_serialize_bin_size_ccs_parameter_numerical_data(
 {
 	return _ccs_serialize_bin_size_ccs_parameter_common_data(
 		       &data->common_data) +
-	       (data->common_data.interval.type == CCS_NUM_FLOAT ?
+	       (data->common_data.interval.type == CCS_NUMERIC_TYPE_FLOAT ?
 			_ccs_serialize_bin_size_ccs_float(
 				data->quantization.f) :
 			_ccs_serialize_bin_size_ccs_int(data->quantization.i));
@@ -127,7 +127,7 @@ _ccs_serialize_bin_ccs_parameter_numerical_data(
 {
 	CCS_VALIDATE(_ccs_serialize_bin_ccs_parameter_common_data(
 		&data->common_data, buffer_size, buffer));
-	if (data->common_data.interval.type == CCS_NUM_FLOAT)
+	if (data->common_data.interval.type == CCS_NUMERIC_TYPE_FLOAT)
 		CCS_VALIDATE(_ccs_serialize_bin_ccs_float(
 			data->quantization.f, buffer_size, buffer));
 	else
@@ -144,7 +144,7 @@ _ccs_deserialize_bin_ccs_parameter_numerical_data(
 {
 	CCS_VALIDATE(_ccs_deserialize_bin_ccs_parameter_common_data(
 		&data->common_data, buffer_size, buffer));
-	if (data->common_data.interval.type == CCS_NUM_FLOAT)
+	if (data->common_data.interval.type == CCS_NUMERIC_TYPE_FLOAT)
 		CCS_VALIDATE(_ccs_deserialize_bin_ccs_float(
 			&data->quantization.f, buffer_size, buffer));
 	else

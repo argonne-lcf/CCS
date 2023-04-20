@@ -26,7 +26,7 @@ _ccs_deserialize_bin_ccs_distribution_uniform_data(
 		&data->data_type, buffer_size, buffer));
 	CCS_VALIDATE(_ccs_deserialize_bin_ccs_scale_type(
 		&data->scale_type, buffer_size, buffer));
-	if (data->data_type == CCS_NUM_FLOAT) {
+	if (data->data_type == CCS_NUMERIC_TYPE_FLOAT) {
 		CCS_VALIDATE(_ccs_deserialize_bin_ccs_float(
 			&data->lower.f, buffer_size, buffer));
 		CCS_VALIDATE(_ccs_deserialize_bin_ccs_float(
@@ -88,7 +88,7 @@ _ccs_deserialize_bin_ccs_distribution_normal_data(
 		_ccs_deserialize_bin_ccs_float(&data->mu, buffer_size, buffer));
 	CCS_VALIDATE(_ccs_deserialize_bin_ccs_float(
 		&data->sigma, buffer_size, buffer));
-	if (data->data_type == CCS_NUM_FLOAT)
+	if (data->data_type == CCS_NUMERIC_TYPE_FLOAT)
 		CCS_VALIDATE(_ccs_deserialize_bin_ccs_float(
 			&data->quantization.f, buffer_size, buffer));
 	else

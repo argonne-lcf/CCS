@@ -11,8 +11,8 @@ from .features_evaluation import FeaturesEvaluation
 
 class ccs_features_tuner_type(CEnumeration):
   _members_ = [
-    ('FEATURES_TUNER_RANDOM',0),
-    'FEATURES_TUNER_USER_DEFINED' ]
+    ('RANDOM',0),
+    'USER_DEFINED' ]
 
 ccs_features_tuner_get_type = _ccs_get_function("ccs_features_tuner_get_type", [ccs_features_tuner, ct.POINTER(ccs_features_tuner_type)])
 ccs_features_tuner_get_name = _ccs_get_function("ccs_features_tuner_get_name", [ccs_features_tuner, ct.POINTER(ct.c_char_p)])
@@ -32,9 +32,9 @@ class FeaturesTuner(Object):
     res = ccs_features_tuner_get_type(handle, ct.byref(v))
     Error.check(res)
     v = v.value
-    if v == ccs_features_tuner_type.FEATURES_TUNER_RANDOM:
+    if v == ccs_features_tuner_type.RANDOM:
       return RandomFeaturesTuner(handle = handle, retain = retain, auto_release = auto_release)
-    elif v == ccs_features_tuner_type.FEATURES_TUNER_USER_DEFINED:
+    elif v == ccs_features_tuner_type.USER_DEFINED:
       return UserDefinedFeaturesTuner(handle = handle, retain = retain, auto_release = auto_release)
     else:
       raise Error(ccs_error(ccs_error.INVALID_FEATURES_TUNER))

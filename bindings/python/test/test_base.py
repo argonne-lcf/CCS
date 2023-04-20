@@ -43,9 +43,9 @@ class TestBase(unittest.TestCase):
   def test_numeric(self):
     n = ccs.ccs_numeric()
     n.set_value(2)
-    self.assertEqual( 2, n.get_value(ccs.ccs_numeric_type.NUM_INTEGER))
+    self.assertEqual( 2, n.get_value(ccs.ccs_numeric_type.INT))
     n.set_value(1.5)
-    self.assertEqual( 1.5, n.get_value(ccs.ccs_numeric_type.NUM_FLOAT))
+    self.assertEqual( 1.5, n.get_value(ccs.ccs_numeric_type.FLOAT))
 
 if __name__ == '__main__':
     unittest.main()

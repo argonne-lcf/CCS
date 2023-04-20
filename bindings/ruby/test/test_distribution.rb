@@ -18,7 +18,7 @@ class CConfigSpaceTestDistribution < Minitest::Test
     sum = areas.reduce(:+)
     assert_equal( :CCS_OBJECT_TYPE_DISTRIBUTION, d.object_type )
     assert_equal( :CCS_DISTRIBUTION_TYPE_ROULETTE, d.type )
-    assert_equal( :CCS_NUM_INTEGER, d.data_type )
+    assert_equal( :CCS_NUMERIC_TYPE_INT, d.data_type )
     assert_equal( 1, d.dimension )
     assert_equal( 4, d.num_areas )
     assert( d.areas.reduce(:+) > 0.999 )
@@ -27,7 +27,7 @@ class CConfigSpaceTestDistribution < Minitest::Test
       assert( a < areas[i] * 1.001 / sum && a > areas[i] * 0.999 / sum )
     }
     i = d.bounds
-    assert_equal( :CCS_NUM_INTEGER, i.type)
+    assert_equal( :CCS_NUMERIC_TYPE_INT, i.type)
     assert_equal( 0, i.lower)
     assert_equal( 4, i.upper)
     assert( i.lower_included? )
@@ -57,13 +57,13 @@ class CConfigSpaceTestDistribution < Minitest::Test
   def normal_check(d)
     assert( d.object_type == :CCS_OBJECT_TYPE_DISTRIBUTION )
     assert( d.type == :CCS_DISTRIBUTION_TYPE_NORMAL )
-    assert( d.data_type == :CCS_NUM_FLOAT )
+    assert( d.data_type == :CCS_NUMERIC_TYPE_FLOAT )
     assert( d.scale == :CCS_SCALE_TYPE_LINEAR )
     assert( d.dimension == 1 )
     assert( d.mu == 0.0 )
     assert( d.sigma == 1.0 )
     i = d.bounds
-    assert_equal( :CCS_NUM_FLOAT, i.type )
+    assert_equal( :CCS_NUMERIC_TYPE_FLOAT, i.type )
     assert_equal( -Float::INFINITY, i.lower )
     assert_equal( Float::INFINITY, i.upper )
     refute( i.lower_included? )
@@ -86,7 +86,7 @@ class CConfigSpaceTestDistribution < Minitest::Test
     d = CCS::NormalDistribution::int(mu: 2.0, sigma: 5.0)
     assert( d.object_type == :CCS_OBJECT_TYPE_DISTRIBUTION )
     assert( d.type == :CCS_DISTRIBUTION_TYPE_NORMAL )
-    assert( d.data_type == :CCS_NUM_INTEGER )
+    assert( d.data_type == :CCS_NUMERIC_TYPE_INT )
     assert( d.scale == :CCS_SCALE_TYPE_LINEAR )
     assert( d.dimension == 1 )
     assert( d.mu == 2.0 )
@@ -97,7 +97,7 @@ class CConfigSpaceTestDistribution < Minitest::Test
     d = CCS::NormalDistribution::float(mu: 2.0, sigma: 5.0)
     assert( d.object_type == :CCS_OBJECT_TYPE_DISTRIBUTION )
     assert( d.type == :CCS_DISTRIBUTION_TYPE_NORMAL )
-    assert( d.data_type == :CCS_NUM_FLOAT )
+    assert( d.data_type == :CCS_NUMERIC_TYPE_FLOAT )
     assert( d.scale == :CCS_SCALE_TYPE_LINEAR )
     assert( d.dimension == 1 )
     assert( d.mu == 2.0 )
@@ -126,11 +126,11 @@ class CConfigSpaceTestDistribution < Minitest::Test
   def uniform_check(d)
     assert( d.object_type == :CCS_OBJECT_TYPE_DISTRIBUTION )
     assert( d.type == :CCS_DISTRIBUTION_TYPE_UNIFORM )
-    assert( d.data_type == :CCS_NUM_FLOAT )
+    assert( d.data_type == :CCS_NUMERIC_TYPE_FLOAT )
     assert( d.scale == :CCS_SCALE_TYPE_LINEAR )
     assert( d.dimension == 1 )
     i = d.bounds
-    assert_equal( :CCS_NUM_FLOAT, i.type )
+    assert_equal( :CCS_NUMERIC_TYPE_FLOAT, i.type )
     assert_equal( 0.0, i.lower )
     assert_equal( 1.0, i.upper )
     assert( i.lower_included? )
@@ -153,11 +153,11 @@ class CConfigSpaceTestDistribution < Minitest::Test
     d = CCS::UniformDistribution::float(lower: -1.0, upper: 1.0)
     assert( d.object_type == :CCS_OBJECT_TYPE_DISTRIBUTION )
     assert( d.type == :CCS_DISTRIBUTION_TYPE_UNIFORM )
-    assert( d.data_type == :CCS_NUM_FLOAT )
+    assert( d.data_type == :CCS_NUMERIC_TYPE_FLOAT )
     assert( d.scale == :CCS_SCALE_TYPE_LINEAR )
     assert( d.dimension == 1 )
     i = d.bounds
-    assert_equal( :CCS_NUM_FLOAT, i.type)
+    assert_equal( :CCS_NUMERIC_TYPE_FLOAT, i.type)
     assert_equal( -1.0, i.lower)
     assert_equal(  1.0, i.upper)
     assert_equal( -1.0, d.lower)
@@ -170,11 +170,11 @@ class CConfigSpaceTestDistribution < Minitest::Test
     d = CCS::UniformDistribution::int(lower: 0, upper: 100)
     assert( d.object_type == :CCS_OBJECT_TYPE_DISTRIBUTION )
     assert( d.type == :CCS_DISTRIBUTION_TYPE_UNIFORM )
-    assert( d.data_type == :CCS_NUM_INTEGER )
+    assert( d.data_type == :CCS_NUMERIC_TYPE_INT )
     assert( d.scale == :CCS_SCALE_TYPE_LINEAR )
     assert( d.dimension == 1 )
     i = d.bounds
-    assert_equal( :CCS_NUM_INTEGER, i.type)
+    assert_equal( :CCS_NUMERIC_TYPE_INT, i.type)
     assert_equal(   0, i.lower)
     assert_equal( 100, i.upper)
     assert_equal(   0, d.lower)
@@ -185,21 +185,21 @@ class CConfigSpaceTestDistribution < Minitest::Test
 
   def test_oversampling_uniform_float
     d = CCS::UniformDistribution::float(lower: -1.0, upper: 1.0)
-    i = CCS::Interval::new(type: :CCS_NUM_FLOAT, lower: -0.2, upper: 0.2)
+    i = CCS::Interval::new(type: :CCS_NUMERIC_TYPE_FLOAT, lower: -0.2, upper: 0.2)
     assert(d.oversampling?(i))
-    i = CCS::Interval::new(type: :CCS_NUM_FLOAT, lower: -0.2, upper: 2.0)
+    i = CCS::Interval::new(type: :CCS_NUMERIC_TYPE_FLOAT, lower: -0.2, upper: 2.0)
     assert(d.oversampling?(i))
-    i = CCS::Interval::new(type: :CCS_NUM_FLOAT, lower: -2, upper: 2.0)
+    i = CCS::Interval::new(type: :CCS_NUMERIC_TYPE_FLOAT, lower: -2, upper: 2.0)
     refute(d.oversampling?(i))
   end
 
   def test_oversampling_uniform_int
     d = CCS::UniformDistribution::int(lower: 0, upper: 100)
-    i = CCS::Interval::new(type: :CCS_NUM_INTEGER, lower: 5, upper: 50)
+    i = CCS::Interval::new(type: :CCS_NUMERIC_TYPE_INT, lower: 5, upper: 50)
     assert(d.oversampling?(i))
-    i = CCS::Interval::new(type: :CCS_NUM_INTEGER, lower: 5, upper: 150)
+    i = CCS::Interval::new(type: :CCS_NUMERIC_TYPE_INT, lower: 5, upper: 150)
     assert(d.oversampling?(i))
-    i = CCS::Interval::new(type: :CCS_NUM_INTEGER, lower: -5, upper: 150)
+    i = CCS::Interval::new(type: :CCS_NUMERIC_TYPE_INT, lower: -5, upper: 150)
     refute(d.oversampling?(i))
   end
 
@@ -221,7 +221,7 @@ class CConfigSpaceTestDistribution < Minitest::Test
     d = CCS::MixtureDistribution::new(distributions: distributions)
     assert( d.object_type == :CCS_OBJECT_TYPE_DISTRIBUTION )
     assert( d.type == :CCS_DISTRIBUTION_TYPE_MIXTURE )
-    assert( d.data_types == [:CCS_NUM_FLOAT] )
+    assert( d.data_types == [:CCS_NUMERIC_TYPE_FLOAT] )
     assert( d.weights == [0.5, 0.5] )
     assert( d.distributions.collect(&:handle) == distributions.collect(&:handle) )
     d2 = CCS::Object::from_handle(d)
@@ -235,7 +235,7 @@ class CConfigSpaceTestDistribution < Minitest::Test
     d = CCS::deserialize(buffer: buff)
     assert( d.object_type == :CCS_OBJECT_TYPE_DISTRIBUTION )
     assert( d.type == :CCS_DISTRIBUTION_TYPE_MIXTURE )
-    assert( d.data_types == [:CCS_NUM_FLOAT] )
+    assert( d.data_types == [:CCS_NUMERIC_TYPE_FLOAT] )
     assert( d.weights == [0.5, 0.5] )
     distributions.each_with_index { |d2ref, i|
       d2 = d.distributions[i]
@@ -250,7 +250,7 @@ class CConfigSpaceTestDistribution < Minitest::Test
     d = CCS::MultivariateDistribution::new(distributions: distributions)
     assert( d.object_type == :CCS_OBJECT_TYPE_DISTRIBUTION )
     assert( d.type == :CCS_DISTRIBUTION_TYPE_MULTIVARIATE )
-    assert( d.data_types == [:CCS_NUM_FLOAT, :CCS_NUM_INTEGER] )
+    assert( d.data_types == [:CCS_NUMERIC_TYPE_FLOAT, :CCS_NUMERIC_TYPE_INT] )
     assert( d.distributions.collect(&:handle) == distributions.collect(&:handle) )
     d2 = CCS::Object::from_handle(d)
     assert_equal( d.class, d2.class )
@@ -263,7 +263,7 @@ class CConfigSpaceTestDistribution < Minitest::Test
     d = CCS::deserialize(buffer: buff)
     assert( d.object_type == :CCS_OBJECT_TYPE_DISTRIBUTION )
     assert( d.type == :CCS_DISTRIBUTION_TYPE_MULTIVARIATE )
-    assert( d.data_types == [:CCS_NUM_FLOAT, :CCS_NUM_INTEGER] )
+    assert( d.data_types == [:CCS_NUMERIC_TYPE_FLOAT, :CCS_NUMERIC_TYPE_INT] )
     distributions.each_with_index { |d2ref, i|
       d2 = d.distributions[i]
       assert_equal( d2ref.class, d2.class )
@@ -278,7 +278,7 @@ class CConfigSpaceTestDistribution < Minitest::Test
     d2 = CCS::MixtureDistribution::new(distributions: [d, d])
     assert( d2.object_type == :CCS_OBJECT_TYPE_DISTRIBUTION )
     assert( d2.type == :CCS_DISTRIBUTION_TYPE_MIXTURE )
-    assert( d2.data_types == [:CCS_NUM_FLOAT, :CCS_NUM_INTEGER] )
+    assert( d2.data_types == [:CCS_NUMERIC_TYPE_FLOAT, :CCS_NUMERIC_TYPE_INT] )
     assert( d2.weights == [0.5, 0.5] )
   end
 end

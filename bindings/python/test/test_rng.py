@@ -10,7 +10,7 @@ class TestRng(unittest.TestCase):
 
   def test_create(self):
     rng = ccs.Rng()
-    self.assertEqual( ccs.RNG, rng.object_type )
+    self.assertEqual( ccs.ccs_object_type.RNG, rng.object_type )
     self.assertEqual( 1, rng.refcount )
     rng = None
 
@@ -41,7 +41,7 @@ class TestRng(unittest.TestCase):
     rng.seed = 10
     buff = rng.serialize()
     rng2 = ccs.Object.deserialize(buffer = buff)
-    self.assertEqual( ccs.RNG, rng2.object_type )
+    self.assertEqual( ccs.ccs_object_type.RNG, rng2.object_type )
     v1 = rng.get()
     v2 = rng2.get()
     self.assertEqual(v1, v2)

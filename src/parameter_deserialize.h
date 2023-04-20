@@ -16,16 +16,16 @@ _ccs_deserialize_bin_parameter_numerical(
 		&data, buffer_size, buffer));
 	CCS_VALIDATE(ccs_create_numerical_parameter(
 		data.common_data.name, data.common_data.interval.type,
-		(data.common_data.interval.type == CCS_NUM_FLOAT ?
+		(data.common_data.interval.type == CCS_NUMERIC_TYPE_FLOAT ?
 			 CCSF(data.common_data.interval.lower.f) :
 			 CCSI(data.common_data.interval.lower.i)),
-		(data.common_data.interval.type == CCS_NUM_FLOAT ?
+		(data.common_data.interval.type == CCS_NUMERIC_TYPE_FLOAT ?
 			 CCSF(data.common_data.interval.upper.f) :
 			 CCSI(data.common_data.interval.upper.i)),
-		(data.common_data.interval.type == CCS_NUM_FLOAT ?
+		(data.common_data.interval.type == CCS_NUMERIC_TYPE_FLOAT ?
 			 CCSF(data.quantization.f) :
 			 CCSI(data.quantization.i)),
-		(data.common_data.interval.type == CCS_NUM_FLOAT ?
+		(data.common_data.interval.type == CCS_NUMERIC_TYPE_FLOAT ?
 			 CCSF(data.common_data.default_value.value.f) :
 			 CCSI(data.common_data.default_value.value.i)),
 		parameter_ret));

@@ -64,8 +64,8 @@ typedef enum ccs_parameter_type_e ccs_parameter_type_t;
  *                             is NULL; or if quantization is less than 0; or if
  *                             default value is not a valid value for the
  *                             parameter
- * @return #CCS_INVALID_TYPE if data_type is neither #CCS_NUM_FLOAT or
- *                            #CCS_NUM_INTEGER
+ * @return #CCS_INVALID_TYPE if data_type is neither #CCS_NUMERIC_TYPE_FLOAT or
+ *                            #CCS_NUMERIC_TYPE_INT
  * @return #CCS_OUT_OF_MEMORY if there was a lack of memory to allocate the new
  *                             numerical parameter
  */
