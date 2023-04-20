@@ -107,7 +107,7 @@ module CCS
   class StaticTreeSpace < TreeSpace
 
     def initialize(handle = nil, retain: false, auto_release: true,
-                   name: nil, tree: nil)
+                   name: "", tree: nil)
       if handle
         super(handle, retain: retain, auto_release: auto_release)
       else
@@ -192,7 +192,7 @@ module CCS
     add_property :tree_space_data, :value, :ccs_dynamic_tree_space_get_tree_space_data, memoize: true
 
     def initialize(handle = nil, retain: false, auto_release: true,
-                   name: nil, tree: nil, del: nil, get_child: nil, serialize: nil, deserialize: nil, tree_space_data: nil)
+                   name: "", tree: nil, del: nil, get_child: nil, serialize: nil, deserialize: nil, tree_space_data: nil)
       if handle
         super(handle, retain: retain, auto_release: auto_release)
       else

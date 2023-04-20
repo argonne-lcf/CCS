@@ -100,7 +100,7 @@ module CCS
 
   class RandomTreeTuner < TreeTuner
     def initialize(handle = nil, retain: false, auto_release: true,
-                   name: nil, tree_space: nil, objective_space: nil)
+                   name: "", tree_space: nil, objective_space: nil)
       if handle
         super(handle, retain: retain, auto_release: auto_release)
       else
@@ -261,7 +261,7 @@ module CCS
     add_property :tuner_data, :value, :ccs_user_defined_tree_tuner_get_tuner_data, memoize: true
 
     def initialize(handle = nil, retain: false, auto_release: true,
-                   name: nil, tree_space: nil, objective_space: nil,
+                   name: "", tree_space: nil, objective_space: nil,
                    del: nil, ask: nil, tell: nil, get_optimums: nil, get_history: nil, suggest: nil, serialize: nil, deserialize: nil, tuner_data: nil)
       if handle
         super(handle, retain: retain, auto_release: auto_release)

@@ -147,7 +147,7 @@ ccs_create_random_features_tuner = _ccs_get_function("ccs_create_random_features
 
 class RandomFeaturesTuner(FeaturesTuner):
   def __init__(self, handle = None, retain = False, auto_release = True,
-               name = None, configuration_space = None, features_space = None, objective_space = None):
+               name = "", configuration_space = None, features_space = None, objective_space = None):
     if handle is None:
       handle = ccs_features_tuner()
       res = ccs_create_random_features_tuner(str.encode(name), configuration_space.handle, features_space.handle, objective_space.handle, ct.byref(handle))
@@ -345,7 +345,7 @@ def _wrap_user_defined_features_tuner_callbacks(delete, ask, tell, get_optimums,
 
 class UserDefinedFeaturesTuner(FeaturesTuner):
   def __init__(self, handle = None, retain = False, auto_release = True,
-               name = None, configuration_space = None, features_space = None, objective_space = None, delete = None, ask = None, tell = None, get_optimums = None, get_history = None, suggest = None, serialize = None, deserialize = None, tuner_data = None ):
+               name = "", configuration_space = None, features_space = None, objective_space = None, delete = None, ask = None, tell = None, get_optimums = None, get_history = None, suggest = None, serialize = None, deserialize = None, tuner_data = None ):
     if handle is None:
       if ask is None or tell is None or get_optimums is None or get_history is None:
         raise Error(ccs_result(ccs_result.ERROR_INVALID_VALUE))

@@ -128,7 +128,7 @@ ccs_create_static_tree_space = _ccs_get_function("ccs_create_static_tree_space",
 class StaticTreeSpace(TreeSpace):
 
   def __init__(self, handle = None, retain = False, auto_release = True,
-               name = None, tree = None):
+               name = "", tree = None):
     if handle is None:
       handle = ccs_tree_space()
       res = ccs_create_static_tree_space(str.encode(name), tree.handle, ct.byref(handle))
@@ -222,7 +222,7 @@ def _wrap_user_defined_callbacks(delete, get_child, serialize, deserialize):
 class DynamicTreeSpace(TreeSpace):
 
   def __init__(self, handle = None, retain = False, auto_release = True,
-               name = None, tree = None, delete = None, get_child = None, serialize = None, deserialize = None, tree_space_data = None):
+               name = "", tree = None, delete = None, get_child = None, serialize = None, deserialize = None, tree_space_data = None):
     if handle is None:
       if get_child is None:
         raise Error(ccs_result(ccs_result.ERROR_INVALID_VALUE))

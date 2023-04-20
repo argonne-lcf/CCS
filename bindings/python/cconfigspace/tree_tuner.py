@@ -131,7 +131,7 @@ ccs_create_random_tree_tuner = _ccs_get_function("ccs_create_random_tree_tuner",
 
 class RandomTreeTuner(TreeTuner):
   def __init__(self, handle = None, retain = False, auto_release = True,
-               name = None, tree_space = None, objective_space = None):
+               name = "", tree_space = None, objective_space = None):
     if handle is None:
       handle = ccs_tree_tuner()
       res = ccs_create_random_tree_tuner(str.encode(name), tree_space.handle, objective_space.handle, ct.byref(handle))
@@ -329,7 +329,7 @@ def _wrap_user_defined_tree_tuner_callbacks(delete, ask, tell, get_optimums, get
 
 class UserDefinedTreeTuner(TreeTuner):
   def __init__(self, handle = None, retain = False, auto_release = True,
-               name = None, tree_space = None, objective_space = None, delete = None, ask = None, tell = None, get_optimums = None, get_history = None, suggest = None, serialize = None, deserialize = None, tuner_data = None ):
+               name = "", tree_space = None, objective_space = None, delete = None, ask = None, tell = None, get_optimums = None, get_history = None, suggest = None, serialize = None, deserialize = None, tuner_data = None ):
     if handle is None:
       if ask is None or tell is None or get_optimums is None or get_history is None:
         raise Error(ccs_result(ccs_result.ERROR_INVALID_VALUE))
