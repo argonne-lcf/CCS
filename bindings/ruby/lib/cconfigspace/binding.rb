@@ -29,7 +29,7 @@ module CCS
       when Integer
         CCS.error_check CCS.ccs_binding_set_value(@handle, parameter, d)
       else
-        raise CCSError, :CCS_INVALID_VALUE
+        raise CCSError, :CCS_RESULT_ERROR_INVALID_VALUE
       end
       self
     end
@@ -47,7 +47,7 @@ module CCS
       when Integer
         CCS.error_check CCS.ccs_binding_get_value(@handle, parameter, ptr)
       else
-        raise CCSError, :CCS_INVALID_VALUE
+        raise CCSError, :CCS_RESULT_ERROR_INVALID_VALUE
       end
       Datum::new(ptr).value
     end
@@ -62,7 +62,7 @@ module CCS
 
     def set_values(values)
       count = values.size
-      raise CCSError, :CCS_INVALID_VALUE if count == 0
+      raise CCSError, :CCS_RESULT_ERROR_INVALID_VALUE if count == 0
       ss = []
       vals = MemoryPointer::new(:ccs_datum_t, count)
       values.each_with_index{ |v, i| Datum::new(vals[i]).set_value(v, string_store: ss) }

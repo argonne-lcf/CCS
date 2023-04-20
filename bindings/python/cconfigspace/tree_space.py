@@ -34,7 +34,7 @@ class TreeSpace(Object):
     elif v == ccs_tree_space_type.DYNAMIC:
       return DynamicTreeSpace(handle = handle, retain = retain, auto_release = auto_release)
     else:
-      raise Error(ccs_result(ccs_result.INVALID_TREE_SPACE))
+      raise Error(ccs_result(ccs_result.ERROR_INVALID_TREE_SPACE))
 
   @property
   def type(self):
@@ -182,7 +182,7 @@ def _wrap_user_defined_callbacks(delete, get_child, serialize, deserialize):
         p_sz = ct.cast(p_state_size, ct.c_void_p)
         state = serialize(TreeSpace.from_handle(ts), True if state_size == 0 else False)
         if p_s.value is not None and state_size < ct.sizeof(state):
-          raise Error(ccs_result(ccs_result.INVALID_VALUE))
+          raise Error(ccs_result(ccs_result.ERROR_INVALID_VALUE))
         if p_s.value is not None:
           ct.memmove(p_s, ct.byref(state), ct.sizeof(state))
         if p_sz.value is not None:
@@ -224,7 +224,7 @@ class DynamicTreeSpace(TreeSpace):
                name = None, tree = None, delete = None, get_child = None, serialize = None, deserialize = None, tree_space_data = None):
     if handle is None:
       if delete is None or get_child is None:
-        raise Error(ccs_result(ccs_result.INVALID_VALUE))
+        raise Error(ccs_result(ccs_result.ERROR_INVALID_VALUE))
 
       (delete_wrapper,
        get_child_wrapper,
@@ -254,7 +254,7 @@ class DynamicTreeSpace(TreeSpace):
   @classmethod
   def deserialize(cls, delete, get_child, serialize = None, deserialize = None, tree_space_data = None, format = 'binary', handle_map = None, path = None, buffer = None, file_descriptor = None, callback = None, callback_data = None):
     if delete is None or get_child is None:
-      raise Error(ccs_result(ccs_result.INVALID_VALUE))
+      raise Error(ccs_result(ccs_result.ERROR_INVALID_VALUE))
     (delete_wrapper,
      get_child_wrapper,
      serialize_wrapper,

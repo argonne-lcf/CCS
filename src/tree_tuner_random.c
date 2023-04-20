@@ -25,7 +25,7 @@ _ccs_tree_tuner_random_del(ccs_object_t o)
 	utarray_free(d->history);
 	utarray_free(d->optimums);
 	utarray_free(d->old_optimums);
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 static inline ccs_result_t
@@ -45,7 +45,7 @@ _ccs_serialize_bin_size_ccs_random_tree_tuner_data(
 	e = NULL;
 	while ((e = (ccs_tree_evaluation_t *)utarray_next(data->optimums, e)))
 		*cum_size += _ccs_serialize_bin_size_ccs_object(*e);
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 static inline ccs_result_t
@@ -70,7 +70,7 @@ _ccs_serialize_bin_ccs_random_tree_tuner_data(
 	while ((e = (ccs_tree_evaluation_t *)utarray_next(data->optimums, e)))
 		CCS_VALIDATE(
 			_ccs_serialize_bin_ccs_object(*e, buffer_size, buffer));
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 static inline ccs_result_t
@@ -85,7 +85,7 @@ _ccs_serialize_bin_size_ccs_random_tree_tuner(
 		(_ccs_object_internal_t *)tuner);
 	CCS_VALIDATE(_ccs_serialize_bin_size_ccs_random_tree_tuner_data(
 		data, cum_size, opts));
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 static inline ccs_result_t
@@ -101,7 +101,7 @@ _ccs_serialize_bin_ccs_random_tree_tuner(
 		(_ccs_object_internal_t *)tuner, buffer_size, buffer));
 	CCS_VALIDATE(_ccs_serialize_bin_ccs_random_tree_tuner_data(
 		data, buffer_size, buffer, opts));
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 static ccs_result_t
@@ -118,12 +118,12 @@ _ccs_tree_tuner_random_serialize_size(
 		break;
 	default:
 		CCS_RAISE(
-			CCS_INVALID_VALUE,
+			CCS_RESULT_ERROR_INVALID_VALUE,
 			"Unsupported serialization format: %d", format);
 	}
 	CCS_VALIDATE(_ccs_object_serialize_user_data_size(
 		object, format, cum_size, opts));
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 static ccs_result_t
@@ -141,12 +141,12 @@ _ccs_tree_tuner_random_serialize(
 		break;
 	default:
 		CCS_RAISE(
-			CCS_INVALID_VALUE,
+			CCS_RESULT_ERROR_INVALID_VALUE,
 			"Unsupported serialization format: %d", format);
 	}
 	CCS_VALIDATE(_ccs_object_serialize_user_data(
 		object, format, buffer_size, buffer, opts));
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 static ccs_result_t
@@ -160,20 +160,21 @@ _ccs_tree_tuner_random_ask(
 		(_ccs_random_tree_tuner_data_t *)tuner->data;
 	if (!configurations) {
 		*num_configurations_ret = 1;
-		return CCS_SUCCESS;
+		return CCS_RESULT_SUCCESS;
 	}
 	CCS_VALIDATE(ccs_tree_space_samples(
 		d->common_data.tree_space, num_configurations, configurations));
 	if (num_configurations_ret)
 		*num_configurations_ret = num_configurations;
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 #undef utarray_oom
 #define utarray_oom()                                                          \
 	{                                                                      \
 		ccs_release_object(evaluations[i]);                            \
 		CCS_RAISE(                                                     \
-			CCS_OUT_OF_MEMORY, "Out of memory to allocate array"); \
+			CCS_RESULT_ERROR_OUT_OF_MEMORY,                        \
+			"Out of memory to allocate array");                    \
 	}
 static ccs_result_t
 _ccs_tree_tuner_random_tell(
@@ -204,7 +205,8 @@ _ccs_tree_tuner_random_tell(
 	{                                                                      \
 		d->optimums = d->old_optimums;                                 \
 		CCS_RAISE(                                                     \
-			CCS_OUT_OF_MEMORY, "Out of memory to allocate array"); \
+			CCS_RESULT_ERROR_OUT_OF_MEMORY,                        \
+			"Out of memory to allocate array");                    \
 	}
 			while ((eval = (ccs_tree_evaluation_t *)utarray_next(
 					d->old_optimums, eval))) {
@@ -240,7 +242,7 @@ _ccs_tree_tuner_random_tell(
 				utarray_push_back(d->optimums, evaluations + i);
 		}
 	}
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 static ccs_result_t
@@ -254,7 +256,9 @@ _ccs_tree_tuner_random_get_optimums(
 		(_ccs_random_tree_tuner_data_t *)tuner->data;
 	size_t count = utarray_len(d->optimums);
 	if (evaluations) {
-		CCS_REFUTE(num_evaluations < count, CCS_INVALID_VALUE);
+		CCS_REFUTE(
+			num_evaluations < count,
+			CCS_RESULT_ERROR_INVALID_VALUE);
 		ccs_tree_evaluation_t *eval  = NULL;
 		size_t                 index = 0;
 		while ((eval = (ccs_tree_evaluation_t *)utarray_next(
@@ -265,7 +269,7 @@ _ccs_tree_tuner_random_get_optimums(
 	}
 	if (num_evaluations_ret)
 		*num_evaluations_ret = count;
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 static ccs_result_t
@@ -279,7 +283,9 @@ _ccs_tree_tuner_random_get_history(
 		(_ccs_random_tree_tuner_data_t *)tuner->data;
 	size_t count = utarray_len(d->history);
 	if (evaluations) {
-		CCS_REFUTE(num_evaluations < count, CCS_INVALID_VALUE);
+		CCS_REFUTE(
+			num_evaluations < count,
+			CCS_RESULT_ERROR_INVALID_VALUE);
 		ccs_tree_evaluation_t *eval  = NULL;
 		size_t                 index = 0;
 		while ((eval = (ccs_tree_evaluation_t *)utarray_next(
@@ -290,7 +296,7 @@ _ccs_tree_tuner_random_get_history(
 	}
 	if (num_evaluations_ret)
 		*num_evaluations_ret = count;
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 static ccs_result_t
@@ -317,7 +323,7 @@ _ccs_tree_tuner_random_suggest(
 	} else
 		CCS_VALIDATE(_ccs_tree_tuner_random_ask(
 			tuner, 1, configuration, NULL));
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 static _ccs_tree_tuner_ops_t _ccs_tree_tuner_random_ops = {
@@ -340,7 +346,7 @@ static const UT_icd _evaluation_icd = {
 #define utarray_oom()                                                          \
 	{                                                                      \
 		CCS_RAISE_ERR_GOTO(                                            \
-			err, CCS_OUT_OF_MEMORY, arrays,                        \
+			err, CCS_RESULT_ERROR_OUT_OF_MEMORY, arrays,           \
 			"Out of memory to allocate array");                    \
 	}
 ccs_result_t
@@ -359,7 +365,7 @@ ccs_create_random_tree_tuner(
 		1, sizeof(struct _ccs_tree_tuner_s) +
 			   sizeof(struct _ccs_random_tree_tuner_data_s) +
 			   strlen(name) + 1);
-	CCS_REFUTE(!mem, CCS_OUT_OF_MEMORY);
+	CCS_REFUTE(!mem, CCS_RESULT_ERROR_OUT_OF_MEMORY);
 	ccs_tree_tuner_t               tun;
 	_ccs_random_tree_tuner_data_t *data;
 	ccs_result_t                   err;
@@ -384,7 +390,7 @@ ccs_create_random_tree_tuner(
 	utarray_new(data->old_optimums, &_evaluation_icd);
 	strcpy((char *)data->common_data.name, name);
 	*tuner_ret = tun;
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 
 arrays:
 	if (data->history)

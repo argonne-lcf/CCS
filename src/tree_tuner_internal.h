@@ -65,7 +65,7 @@ _ccs_serialize_bin_size_ccs_tree_tuner_common_data(
 	CCS_VALIDATE(data->objective_space->obj.ops->serialize_size(
 		data->objective_space, CCS_SERIALIZE_FORMAT_BINARY, cum_size,
 		opts));
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 static inline ccs_result_t
@@ -85,7 +85,7 @@ _ccs_serialize_bin_ccs_tree_tuner_common_data(
 	CCS_VALIDATE(data->objective_space->obj.ops->serialize(
 		data->objective_space, CCS_SERIALIZE_FORMAT_BINARY, buffer_size,
 		buffer, opts));
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 #endif //_TREE_TUNER_INTERNAL_H

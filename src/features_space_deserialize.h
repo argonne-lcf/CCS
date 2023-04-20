@@ -15,11 +15,12 @@ _ccs_deserialize_bin_features_space(
 	new_opts.handle_map                        = NULL;
 	_ccs_object_internal_t obj;
 	ccs_object_t           handle;
-	ccs_result_t           res = CCS_SUCCESS;
+	ccs_result_t           res = CCS_RESULT_SUCCESS;
 	CCS_VALIDATE(_ccs_deserialize_bin_ccs_object_internal(
 		&obj, buffer_size, buffer, &handle));
 	CCS_REFUTE(
-		obj.type != CCS_OBJECT_TYPE_FEATURES_SPACE, CCS_INVALID_TYPE);
+		obj.type != CCS_OBJECT_TYPE_FEATURES_SPACE,
+		CCS_RESULT_ERROR_INVALID_TYPE);
 
 	_ccs_context_data_mock_t data;
 	CCS_VALIDATE_ERR_GOTO(
@@ -74,13 +75,13 @@ _ccs_features_space_deserialize(
 		break;
 	default:
 		CCS_RAISE(
-			CCS_INVALID_VALUE,
+			CCS_RESULT_ERROR_INVALID_VALUE,
 			"Unsupported serialization format: %d", format);
 	}
 	CCS_VALIDATE(_ccs_object_deserialize_user_data(
 		(ccs_object_t)*features_space_ret, format, version, buffer_size,
 		buffer, opts));
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 #endif //_FEATURES_SPACE_DESERIALIZE_H

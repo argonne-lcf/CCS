@@ -39,7 +39,7 @@ _ccs_serialize_bin_ccs_parameter_categorical_data(
 	for (size_t i = 0; i < data->num_possible_values; i++)
 		CCS_VALIDATE(_ccs_serialize_bin_ccs_datum(
 			data->possible_values[i].d, buffer_size, buffer));
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 static ccs_result_t
@@ -49,7 +49,7 @@ _ccs_parameter_categorical_del(ccs_object_t o)
 	_ccs_parameter_categorical_data_t *data =
 		(_ccs_parameter_categorical_data_t *)(d->data);
 	HASH_CLEAR(hh, data->hash);
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 static inline size_t
@@ -74,7 +74,7 @@ _ccs_serialize_bin_ccs_parameter_categorical(
 		(_ccs_object_internal_t *)parameter, buffer_size, buffer));
 	CCS_VALIDATE(_ccs_serialize_bin_ccs_parameter_categorical_data(
 		data, buffer_size, buffer));
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 static ccs_result_t
@@ -91,12 +91,12 @@ _ccs_parameter_categorical_serialize_size(
 		break;
 	default:
 		CCS_RAISE(
-			CCS_INVALID_VALUE,
+			CCS_RESULT_ERROR_INVALID_VALUE,
 			"Unsupported serialization format: %d", format);
 	}
 	CCS_VALIDATE(_ccs_object_serialize_user_data_size(
 		object, format, cum_size, opts));
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 static ccs_result_t
@@ -114,12 +114,12 @@ _ccs_parameter_categorical_serialize(
 		break;
 	default:
 		CCS_RAISE(
-			CCS_INVALID_VALUE,
+			CCS_RESULT_ERROR_INVALID_VALUE,
 			"Unsupported serialization format: %d", format);
 	}
 	CCS_VALIDATE(_ccs_object_serialize_user_data(
 		object, format, buffer_size, buffer, opts));
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 static ccs_result_t
@@ -146,7 +146,7 @@ _ccs_parameter_categorical_check_values(
 			}
 		}
 	}
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 static ccs_result_t
@@ -178,7 +178,9 @@ _ccs_parameter_categorical_samples(
 		vs           = NULL;
 		size_t coeff = 2;
 		while (found < num_values) {
-			CCS_REFUTE(coeff > 32, CCS_SAMPLING_UNSUCCESSFUL);
+			CCS_REFUTE(
+				coeff > 32,
+				CCS_RESULT_ERROR_SAMPLING_UNSUCCESSFUL);
 			size_t     buff_sz = (num_values - found) * coeff;
 			ccs_int_t *oldvs   = vs;
 			vs                 = (ccs_int_t *)realloc(
@@ -187,7 +189,7 @@ _ccs_parameter_categorical_samples(
 				if (oldvs)
 					free(oldvs);
 				CCS_RAISE(
-					CCS_OUT_OF_MEMORY,
+					CCS_RESULT_ERROR_OUT_OF_MEMORY,
 					"Could not reallocate array");
 			}
 			CCS_VALIDATE_ERR_GOTO(
@@ -207,7 +209,7 @@ _ccs_parameter_categorical_samples(
 		if (vs)
 			free(vs);
 	}
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 errmem:
 	free(vs);
 	return err;
@@ -224,7 +226,7 @@ _ccs_parameter_categorical_get_default_distribution(
 	CCS_VALIDATE(ccs_create_uniform_distribution(
 		interval->type, interval->lower, interval->upper,
 		CCS_SCALE_TYPE_LINEAR, CCSI(0), distribution));
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 static ccs_result_t
@@ -251,7 +253,7 @@ _ccs_parameter_categorical_convert_samples(
 				results[i] = ccs_inactive;
 		}
 	}
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 static _ccs_parameter_ops_t _ccs_parameter_categorical_ops = {
@@ -269,7 +271,7 @@ static _ccs_parameter_ops_t _ccs_parameter_categorical_ops = {
 		HASH_CLEAR(hh, parameter_data->hash);                          \
 		free((void *)mem);                                             \
 		CCS_RAISE(                                                     \
-			CCS_OUT_OF_MEMORY,                                     \
+			CCS_RESULT_ERROR_OUT_OF_MEMORY,                        \
 			"Not enough memory to allocate hash");                 \
 	}
 
@@ -288,8 +290,10 @@ _ccs_create_categorical_parameter(
 	CCS_REFUTE(
 		!num_possible_values ||
 			num_possible_values <= default_value_index,
-		CCS_INVALID_VALUE);
-	CCS_REFUTE(num_possible_values > CCS_INT_MAX, CCS_INVALID_VALUE);
+		CCS_RESULT_ERROR_INVALID_VALUE);
+	CCS_REFUTE(
+		num_possible_values > CCS_INT_MAX,
+		CCS_RESULT_ERROR_INVALID_VALUE);
 	if (type == CCS_PARAMETER_TYPE_DISCRETE)
 		for (size_t i = 0; i < num_possible_values; i++)
 			CCS_REFUTE(
@@ -297,17 +301,17 @@ _ccs_create_categorical_parameter(
 						CCS_DATA_TYPE_FLOAT &&
 					possible_values[i].type !=
 						CCS_DATA_TYPE_INT,
-				CCS_INVALID_VALUE);
+				CCS_RESULT_ERROR_INVALID_VALUE);
 	size_t size_strs = 0;
 	if (type != CCS_PARAMETER_TYPE_DISCRETE)
 		for (size_t i = 0; i < num_possible_values; i++) {
 			CCS_REFUTE(
 				possible_values[i].type > CCS_DATA_TYPE_STRING,
-				CCS_INVALID_VALUE);
+				CCS_RESULT_ERROR_INVALID_VALUE);
 			if (possible_values[i].type == CCS_DATA_TYPE_STRING) {
 				CCS_REFUTE(
 					!possible_values[i].value.s,
-					CCS_INVALID_VALUE);
+					CCS_RESULT_ERROR_INVALID_VALUE);
 				size_strs +=
 					strlen(possible_values[i].value.s) + 1;
 			}
@@ -318,7 +322,7 @@ _ccs_create_categorical_parameter(
 			   sizeof(_ccs_parameter_categorical_data_t) +
 			   sizeof(_ccs_hash_datum_t) * num_possible_values +
 			   strlen(name) + 1 + size_strs);
-	CCS_REFUTE(!mem, CCS_OUT_OF_MEMORY);
+	CCS_REFUTE(!mem, CCS_RESULT_ERROR_OUT_OF_MEMORY);
 
 	ccs_interval_t interval;
 	interval.type             = CCS_NUMERIC_TYPE_INT;
@@ -361,7 +365,8 @@ _ccs_create_categorical_parameter(
 			}
 			free((void *)mem);
 			CCS_RAISE(
-				CCS_INVALID_VALUE, "Duplicate possible value");
+				CCS_RESULT_ERROR_INVALID_VALUE,
+				"Duplicate possible value");
 		}
 		if (possible_values[i].type == CCS_DATA_TYPE_STRING) {
 			pvs[i].d = ccs_string(str_pool);
@@ -378,7 +383,7 @@ _ccs_create_categorical_parameter(
 	parameter_data->common_data.default_value = pvs[default_value_index].d;
 	parameter->data = (_ccs_parameter_data_t *)parameter_data;
 	*parameter_ret  = parameter;
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 static inline ccs_result_t
@@ -391,13 +396,13 @@ _ccs_categorical_parameter_get_values(
 	CCS_CHECK_ARY(num_possible_values, possible_values);
 	CCS_REFUTE(
 		!possible_values && !num_possible_values_ret,
-		CCS_INVALID_VALUE);
+		CCS_RESULT_ERROR_INVALID_VALUE);
 	_ccs_parameter_categorical_data_t *d =
 		(_ccs_parameter_categorical_data_t *)parameter->data;
 	if (possible_values) {
 		CCS_REFUTE(
 			num_possible_values < d->num_possible_values,
-			CCS_INVALID_VALUE);
+			CCS_RESULT_ERROR_INVALID_VALUE);
 		for (size_t i = 0; i < d->num_possible_values; i++)
 			possible_values[i] = d->possible_values[i].d;
 		for (size_t i = num_possible_values; i < d->num_possible_values;
@@ -406,7 +411,7 @@ _ccs_categorical_parameter_get_values(
 	}
 	if (num_possible_values_ret)
 		*num_possible_values_ret = d->num_possible_values;
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 ccs_result_t
@@ -420,7 +425,7 @@ ccs_create_categorical_parameter(
 	CCS_VALIDATE(_ccs_create_categorical_parameter(
 		CCS_PARAMETER_TYPE_CATEGORICAL, name, num_possible_values,
 		possible_values, default_value_index, parameter_ret));
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 ccs_result_t
@@ -434,7 +439,7 @@ ccs_categorical_parameter_get_values(
 	CCS_VALIDATE(_ccs_categorical_parameter_get_values(
 		parameter, num_possible_values, possible_values,
 		num_possible_values_ret));
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 ccs_result_t
@@ -451,14 +456,14 @@ ccs_ordinal_parameter_compare_values(
 	_ccs_hash_datum_t *p1, *p2;
 	HASH_FIND(hh, d->hash, &value1, sizeof(ccs_datum_t), p1);
 	HASH_FIND(hh, d->hash, &value2, sizeof(ccs_datum_t), p2);
-	CCS_REFUTE(!p1 || !p2, CCS_INVALID_VALUE);
+	CCS_REFUTE(!p1 || !p2, CCS_RESULT_ERROR_INVALID_VALUE);
 	if (p1 < p2)
 		*comp_ret = -1;
 	else if (p1 > p2)
 		*comp_ret = 1;
 	else
 		*comp_ret = 0;
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 ccs_result_t
@@ -472,7 +477,7 @@ ccs_create_ordinal_parameter(
 	CCS_VALIDATE(_ccs_create_categorical_parameter(
 		CCS_PARAMETER_TYPE_ORDINAL, name, num_possible_values,
 		possible_values, default_value_index, parameter_ret));
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 ccs_result_t
@@ -486,7 +491,7 @@ ccs_ordinal_parameter_get_values(
 	CCS_VALIDATE(_ccs_categorical_parameter_get_values(
 		parameter, num_possible_values, possible_values,
 		num_possible_values_ret));
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 ccs_result_t
@@ -500,7 +505,7 @@ ccs_create_discrete_parameter(
 	CCS_VALIDATE(_ccs_create_categorical_parameter(
 		CCS_PARAMETER_TYPE_DISCRETE, name, num_possible_values,
 		possible_values, default_value_index, parameter_ret));
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 ccs_result_t
@@ -514,5 +519,5 @@ ccs_discrete_parameter_get_values(
 	CCS_VALIDATE(_ccs_categorical_parameter_get_values(
 		parameter, num_possible_values, possible_values,
 		num_possible_values_ret));
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }

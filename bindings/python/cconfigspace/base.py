@@ -158,38 +158,38 @@ class ccs_object_type(CEnumeration):
 
 class ccs_result(CEnumeration):
   _members_ = [
-    ('AGAIN',                    1),
-    ('SUCCESS',                  0),
-    ('INVALID_OBJECT',          -1),
-    ('INVALID_VALUE',           -2),
-    ('INVALID_TYPE',            -3),
-    ('INVALID_SCALE',           -4),
-    ('INVALID_DISTRIBUTION',    -5),
-    ('INVALID_EXPRESSION',      -6),
-    ('INVALID_PARAMETER',       -7),
-    ('INVALID_CONFIGURATION',   -8),
-    ('INVALID_NAME',            -9),
-    ('INVALID_CONDITION',      -10),
-    ('INVALID_TUNER',          -11),
-    ('INVALID_GRAPH',          -12),
-    ('TYPE_NOT_COMPARABLE',    -13),
-    ('INVALID_BOUNDS',         -14),
-    ('OUT_OF_BOUNDS',          -15),
-    ('SAMPLING_UNSUCCESSFUL',  -16),
-    ('OUT_OF_MEMORY',          -17),
-    ('UNSUPPORTED_OPERATION',  -18),
-    ('INVALID_EVALUATION',     -19),
-    ('INVALID_FEATURES',       -20),
-    ('INVALID_FEATURES_TUNER', -21),
-    ('INVALID_FILE_PATH',      -22),
-    ('NOT_ENOUGH_DATA',        -23),
-    ('HANDLE_DUPLICATE',       -24),
-    ('INVALID_HANDLE',         -25),
-    ('SYSTEM_ERROR',           -26),
-    ('EXTERNAL_ERROR',         -27),
-    ('INVALID_TREE',           -28),
-    ('INVALID_TREE_SPACE',     -29),
-    ('INVALID_TREE_TUNER',     -30) ]
+    ('AGAIN',                          1),
+    ('SUCCESS',                        0),
+    ('ERROR_INVALID_OBJECT',          -1),
+    ('ERROR_INVALID_VALUE',           -2),
+    ('ERROR_INVALID_TYPE',            -3),
+    ('ERROR_INVALID_SCALE',           -4),
+    ('ERROR_INVALID_DISTRIBUTION',    -5),
+    ('ERROR_INVALID_EXPRESSION',      -6),
+    ('ERROR_INVALID_PARAMETER',       -7),
+    ('ERROR_INVALID_CONFIGURATION',   -8),
+    ('ERROR_INVALID_NAME',            -9),
+    ('ERROR_INVALID_CONDITION',      -10),
+    ('ERROR_INVALID_TUNER',          -11),
+    ('ERROR_INVALID_GRAPH',          -12),
+    ('ERROR_TYPE_NOT_COMPARABLE',    -13),
+    ('ERROR_INVALID_BOUNDS',         -14),
+    ('ERROR_OUT_OF_BOUNDS',          -15),
+    ('ERROR_SAMPLING_UNSUCCESSFUL',  -16),
+    ('ERROR_OUT_OF_MEMORY',          -17),
+    ('ERROR_UNSUPPORTED_OPERATION',  -18),
+    ('ERROR_INVALID_EVALUATION',     -19),
+    ('ERROR_INVALID_FEATURES',       -20),
+    ('ERROR_INVALID_FEATURES_TUNER', -21),
+    ('ERROR_INVALID_FILE_PATH',      -22),
+    ('ERROR_NOT_ENOUGH_DATA',        -23),
+    ('ERROR_DUPLICATE_HANDLE',       -24),
+    ('ERROR_INVALID_HANDLE',         -25),
+    ('ERROR_SYSTEM',                 -26),
+    ('ERROR_EXTERNAL',               -27),
+    ('ERROR_INVALID_TREE',           -28),
+    ('ERROR_INVALID_TREE_SPACE',     -29),
+    ('ERROR_INVALID_TREE_TUNER',     -30) ]
 
 class ccs_data_type(CEnumeration):
   _members_ = [
@@ -229,7 +229,7 @@ class ccs_numeric(ct.Union):
     elif t == ccs_numeric_type.FLOAT:
       return self.f
     else:
-      raise Error(ccs_result(ccs_result.INVALID_VALUE))
+      raise Error(ccs_result(ccs_result.ERROR_INVALID_VALUE))
 
   def set_value(self, v):
     if isinstance(v, int):
@@ -237,7 +237,7 @@ class ccs_numeric(ct.Union):
     elif isinstance(v, float):
       self.f = v
     else:
-      raise Error(ccs_result(ccs_result.INVALID_VALUE))
+      raise Error(ccs_result(ccs_result.ERROR_INVALID_VALUE))
 
 class ccs_value(ct.Union):
   _fields_ = [('f', ccs_float),
@@ -295,7 +295,7 @@ class ccs_datum(ct.Structure):
       else:
         return Object.from_handle(ct.c_void_p(self._value.o))
     else:
-      raise Error(ccs_result(ccs_result.INVALID_VALUE))
+      raise Error(ccs_result(ccs_result.ERROR_INVALID_VALUE))
 
   def set_value(self, v, string_store = None, object_store = None):
     if v is None:
@@ -336,7 +336,7 @@ class ccs_datum(ct.Structure):
         self._object = v
         self.flags = ccs_datum_flag.TRANSIENT
     else:
-      raise Error(ccs_result(ccs_result.INVALID_VALUE))
+      raise Error(ccs_result(ccs_result.ERROR_INVALID_VALUE))
 
   @value.setter
   def value(self, v):
@@ -370,7 +370,7 @@ class Error(Exception):
       else:
         stack = ErrorStack(error = exc._code)
     else:
-      stack = ErrorStack(error = ccs_result.EXTERNAL_ERROR, message = str(exc))
+      stack = ErrorStack(error = ccs_result.ERROR_EXTERNAL, message = str(exc))
     for s in traceback.extract_tb(sys.exc_info()[2]):
       stack.push(s.filename, s.lineno, s.name)
     set_thread_error(stack)
@@ -440,7 +440,7 @@ class Object:
 
   def __init__(self, handle, retain = False, auto_release = True):
     if handle is None:
-      raise Error(ccs_result(ccs_result.INVALID_OBJECT))
+      raise Error(ccs_result(ccs_result.ERROR_INVALID_OBJECT))
     self._handle = handle
     self.auto_release = auto_release
     if retain:
@@ -502,7 +502,7 @@ class Object:
     v = t.value
     klass = cls.CLASS_MAP[v]
     if klass is None:
-      raise Error(ccs_result(ccs_result.INVALID_OBJECT))
+      raise Error(ccs_result(ccs_result.ERROR_INVALID_OBJECT))
     return klass.from_handle(h, retain = retain, auto_release = auto_release)
 
   @classmethod
@@ -524,9 +524,9 @@ class Object:
 
   def serialize(self, format = 'binary', path = None, file_descriptor = None, callback = None, callback_data = None):
     if format != 'binary':
-      raise Error(ccs_result(ccs_result.INVALID_VALUE))
+      raise Error(ccs_result(ccs_result.ERROR_INVALID_VALUE))
     if path and file_descriptor:
-      raise Error(ccs_result(ccs_result.INVALID_VALUE))
+      raise Error(ccs_result(ccs_result.ERROR_INVALID_VALUE))
     options = [ccs_serialize_option.END]
     if callback:
       cb_wrapper = _get_serialize_callback_wrapper(callback)
@@ -557,7 +557,7 @@ class Object:
   @classmethod
   def deserialize(cls, format = 'binary', handle_map = None, vector = None, data = None, path = None, buffer = None, file_descriptor = None, callback = None, callback_data = None):
     if format != 'binary':
-      raise Error(ccs_result(ccs_result.INVALID_VALUE))
+      raise Error(ccs_result(ccs_result.ERROR_INVALID_VALUE))
     mode_count = 0;
     if path:
       mode_count += 1
@@ -566,7 +566,7 @@ class Object:
     if file_descriptor:
       mode_count += 1
     if not mode_count == 1:
-      raise Error(ccs_result(ccs_result.INVALID_VALUE))
+      raise Error(ccs_result(ccs_result.ERROR_INVALID_VALUE))
     o = ccs_object(0)
     options = [ccs_deserialize_option.END]
     if handle_map:
@@ -592,7 +592,7 @@ class Object:
       fd = ct.c_int(file_descriptor)
       res = ccs_object_deserialize(ct.byref(o), ccs_serialize_format.BINARY, ccs_serialize_operation.FILE_DESCRIPTOR, fd, *options)
     else:
-      raise Error(ccs_result(ccs_result.INVALID_VALUE))
+      raise Error(ccs_result(ccs_result.ERROR_INVALID_VALUE))
     Error.check(res)
     return cls._from_handle(o, False, True)
 
@@ -610,7 +610,7 @@ def _get_serialize_callback_wrapper(callback):
         cb_data = None
       serialized = callback(Object.from_handle(ccs_object(obj)), cb_data, True if serialize_data_size == 0 else False)
       if p_sd and serialize_data_size < ct.sizeof(serialized):
-        raise Error(ccs_result(ccs_result.INVALID_VALUE))
+        raise Error(ccs_result(ccs_result.ERROR_INVALID_VALUE))
       if p_sd:
         ct.memmove(p_sd, ct.byref(serialized), ct.sizeof(serialized))
       if p_sdsz:
@@ -660,7 +660,7 @@ _default_user_data_deserializer = _json_user_data_deserializer_func
 def _register_vector(handle, vector_data):
   value = handle.value
   if value in _data_store:
-    raise Error(ccs_result(ccs_result.INVALID_VALUE))
+    raise Error(ccs_result(ccs_result.ERROR_INVALID_VALUE))
   _data_store[value] = dict.fromkeys(['callbacks', 'user_data', 'serialize_calback', 'strings'])
   _data_store[value]['callbacks'] = vector_data
   _data_store[value]['strings'] = []
@@ -711,7 +711,7 @@ def deserialize(format = 'binary', handle_map = None, path = None, buffer = None
 
 def _set_destroy_callback(handle, callback, user_data = None):
   if callback is None:
-    raise Error(ccs_result(ccs_result.INVALID_VALUE))
+    raise Error(ccs_result(ccs_result.ERROR_INVALID_VALUE))
   def cb_wrapper(obj, data):
     callback(Object.from_handle(obj), data)
   cb_wrapper_func = ccs_object_destroy_callback_type(cb_wrapper)

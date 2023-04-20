@@ -77,7 +77,7 @@ _ccs_serialize_bin_size_ccs_features_tuner_common_data(
 	CCS_VALIDATE(data->features_space->obj.ops->serialize_size(
 		data->features_space, CCS_SERIALIZE_FORMAT_BINARY, cum_size,
 		opts));
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 static inline ccs_result_t
@@ -100,7 +100,7 @@ _ccs_serialize_bin_ccs_features_tuner_common_data(
 	CCS_VALIDATE(data->features_space->obj.ops->serialize(
 		data->features_space, CCS_SERIALIZE_FORMAT_BINARY, buffer_size,
 		buffer, opts));
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 #endif //_FEATURES_TUNER_INTERNAL_H

@@ -3,7 +3,7 @@
 ccs_result_t
 ccs_interval_empty(ccs_interval_t *interval, ccs_bool_t *empty_ret)
 {
-	CCS_REFUTE(!interval || !empty_ret, CCS_INVALID_VALUE);
+	CCS_REFUTE(!interval || !empty_ret, CCS_RESULT_ERROR_INVALID_VALUE);
 	// Empty ranges
 	// [l,u] when l> u; ]l,u] when l>=u
 	// [l,u[ when l>=u; ]l,u[ when l>=u
@@ -22,7 +22,7 @@ ccs_interval_empty(ccs_interval_t *interval, ccs_bool_t *empty_ret)
 		} else
 			*empty_ret = CCS_FALSE;
 	}
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 #define MERGE_MAX(l1, li1, l2, li2, l, li)                                     \
 	{                                                                      \
@@ -69,8 +69,11 @@ ccs_interval_intersect(
 	ccs_interval_t *interval_res)
 {
 	CCS_REFUTE(
-		!interval1 || !interval2 || !interval_res, CCS_INVALID_VALUE);
-	CCS_REFUTE(interval1->type != interval2->type, CCS_INVALID_TYPE);
+		!interval1 || !interval2 || !interval_res,
+		CCS_RESULT_ERROR_INVALID_VALUE);
+	CCS_REFUTE(
+		interval1->type != interval2->type,
+		CCS_RESULT_ERROR_INVALID_TYPE);
 	if (interval1->type == CCS_NUMERIC_TYPE_FLOAT) {
 		interval_res->type = CCS_NUMERIC_TYPE_FLOAT;
 		MERGE_MAX(
@@ -92,7 +95,7 @@ ccs_interval_intersect(
 			interval2->upper.i, interval2->upper_included,
 			interval_res->upper.i, interval_res->upper_included);
 	}
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 ccs_result_t
@@ -102,8 +105,11 @@ ccs_interval_union(
 	ccs_interval_t *interval_res)
 {
 	CCS_REFUTE(
-		!interval1 || !interval2 || !interval_res, CCS_INVALID_VALUE);
-	CCS_REFUTE(interval1->type != interval2->type, CCS_INVALID_TYPE);
+		!interval1 || !interval2 || !interval_res,
+		CCS_RESULT_ERROR_INVALID_VALUE);
+	CCS_REFUTE(
+		interval1->type != interval2->type,
+		CCS_RESULT_ERROR_INVALID_TYPE);
 	if (interval1->type == CCS_NUMERIC_TYPE_FLOAT) {
 		interval_res->type = CCS_NUMERIC_TYPE_FLOAT;
 		MERGE_MIN(
@@ -125,7 +131,7 @@ ccs_interval_union(
 			interval2->upper.i, interval2->upper_included,
 			interval_res->upper.i, interval_res->upper_included);
 	}
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 ccs_result_t
@@ -134,8 +140,12 @@ ccs_interval_equal(
 	ccs_interval_t *interval2,
 	ccs_bool_t     *equal_res)
 {
-	CCS_REFUTE(!interval1 || !interval2 || !equal_res, CCS_INVALID_VALUE);
-	CCS_REFUTE(interval1->type != interval2->type, CCS_INVALID_TYPE);
+	CCS_REFUTE(
+		!interval1 || !interval2 || !equal_res,
+		CCS_RESULT_ERROR_INVALID_VALUE);
+	CCS_REFUTE(
+		interval1->type != interval2->type,
+		CCS_RESULT_ERROR_INVALID_TYPE);
 	if (interval1->type == CCS_NUMERIC_TYPE_FLOAT) {
 		*equal_res =
 			(interval1->lower.f == interval2->lower.f &&
@@ -156,7 +166,7 @@ ccs_interval_equal(
 							 interval2->upper.i - 1;
 		*equal_res = (l1 == l2 && u1 == u2);
 	}
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 ccs_bool_t

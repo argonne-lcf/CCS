@@ -25,14 +25,14 @@ _ccs_deserialize_bin_ccs_map_data(
 		&data->num_pairs, buffer_size, buffer));
 	data->pairs = (_ccs_map_pair_t *)malloc(
 		data->num_pairs * sizeof(_ccs_map_pair_t));
-	CCS_REFUTE(!data->pairs, CCS_OUT_OF_MEMORY);
+	CCS_REFUTE(!data->pairs, CCS_RESULT_ERROR_OUT_OF_MEMORY);
 	for (size_t i = 0; i < data->num_pairs; i++) {
 		CCS_VALIDATE(_ccs_deserialize_bin_ccs_datum(
 			&data->pairs[i].key, buffer_size, buffer));
 		CCS_VALIDATE(_ccs_deserialize_bin_ccs_datum(
 			&data->pairs[i].value, buffer_size, buffer));
 	}
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 static inline ccs_result_t
@@ -44,13 +44,14 @@ _ccs_deserialize_bin_map(
 	_ccs_object_deserialize_options_t *opts)
 {
 	(void)version;
-	ccs_result_t           res = CCS_SUCCESS;
+	ccs_result_t           res = CCS_RESULT_SUCCESS;
 	_ccs_object_internal_t obj;
 	_ccs_map_data_mock_t   data = {0, NULL};
 	ccs_object_t           handle;
 	CCS_VALIDATE(_ccs_deserialize_bin_ccs_object_internal(
 		&obj, buffer_size, buffer, &handle));
-	CCS_REFUTE(obj.type != CCS_OBJECT_TYPE_MAP, CCS_INVALID_TYPE);
+	CCS_REFUTE(
+		obj.type != CCS_OBJECT_TYPE_MAP, CCS_RESULT_ERROR_INVALID_TYPE);
 
 	CCS_VALIDATE_ERR_GOTO(
 		res,
@@ -97,13 +98,13 @@ _ccs_map_deserialize(
 		break;
 	default:
 		CCS_RAISE(
-			CCS_INVALID_VALUE,
+			CCS_RESULT_ERROR_INVALID_VALUE,
 			"Unsupported serialization format: %d", format);
 	}
 	CCS_VALIDATE(_ccs_object_deserialize_user_data(
 		(ccs_object_t)*map_ret, format, version, buffer_size, buffer,
 		opts));
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 #endif //_MAP_DESERIALIZE_H

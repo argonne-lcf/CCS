@@ -49,7 +49,7 @@ _ccs_deserialize_bin_ccs_configuration_space_data(
 
 	if (!(data->num_parameters + data->num_conditions +
 	      data->num_distributions + data->num_forbidden_clauses))
-		return CCS_SUCCESS;
+		return CCS_RESULT_SUCCESS;
 	mem = (uintptr_t)calloc(
 		data->num_parameters *
 				(sizeof(ccs_parameter_t) + sizeof(size_t)) +
@@ -59,7 +59,7 @@ _ccs_deserialize_bin_ccs_configuration_space_data(
 				(sizeof(ccs_distribution_t) + sizeof(size_t)) +
 			data->num_forbidden_clauses * sizeof(ccs_expression_t),
 		1);
-	CCS_REFUTE(!mem, CCS_OUT_OF_MEMORY);
+	CCS_REFUTE(!mem, CCS_RESULT_ERROR_OUT_OF_MEMORY);
 
 	data->parameters = (ccs_parameter_t *)mem;
 	mem += data->num_parameters * sizeof(ccs_parameter_t);
@@ -110,7 +110,7 @@ _ccs_deserialize_bin_ccs_configuration_space_data(
 			buffer, opts));
 	}
 
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 static inline ccs_result_t
@@ -124,12 +124,12 @@ _ccs_deserialize_bin_configuration_space(
 	_ccs_object_deserialize_options_t new_opts = *opts;
 	_ccs_object_internal_t            obj;
 	ccs_object_t                      handle;
-	ccs_result_t                      res = CCS_SUCCESS;
+	ccs_result_t                      res = CCS_RESULT_SUCCESS;
 	CCS_VALIDATE(_ccs_deserialize_bin_ccs_object_internal(
 		&obj, buffer_size, buffer, &handle));
 	CCS_REFUTE(
 		obj.type != CCS_OBJECT_TYPE_CONFIGURATION_SPACE,
-		CCS_INVALID_TYPE);
+		CCS_RESULT_ERROR_INVALID_TYPE);
 
 	new_opts.map_values = CCS_TRUE;
 	CCS_VALIDATE(ccs_create_map(&new_opts.handle_map));
@@ -238,13 +238,13 @@ _ccs_configuration_space_deserialize(
 		break;
 	default:
 		CCS_RAISE(
-			CCS_INVALID_VALUE,
+			CCS_RESULT_ERROR_INVALID_VALUE,
 			"Unsupported serialization format: %d", format);
 	}
 	CCS_VALIDATE(_ccs_object_deserialize_user_data(
 		(ccs_object_t)*configuration_space_ret, format, version,
 		buffer_size, buffer, opts));
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 #endif //_CONFIGURATION_SPACE_DESERIALIZE_H

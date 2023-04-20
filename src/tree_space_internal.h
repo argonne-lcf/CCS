@@ -9,7 +9,7 @@
 		CCS_REFUTE(                                                    \
 			((_ccs_tree_space_common_data_t *)(o->data))->type !=  \
 				(t),                                           \
-			CCS_INVALID_TREE_SPACE);                               \
+			CCS_RESULT_ERROR_INVALID_TREE_SPACE);                  \
 	} while (0)
 
 struct _ccs_tree_space_data_s;
@@ -64,7 +64,7 @@ _ccs_serialize_bin_size_ccs_tree_space_common_data(
 		data->rng, CCS_SERIALIZE_FORMAT_BINARY, cum_size, opts));
 	CCS_VALIDATE(data->tree->obj.ops->serialize_size(
 		data->tree, CCS_SERIALIZE_FORMAT_BINARY, cum_size, opts));
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 static inline ccs_result_t
@@ -84,7 +84,7 @@ _ccs_serialize_bin_ccs_tree_space_common_data(
 	CCS_VALIDATE(data->tree->obj.ops->serialize(
 		data->tree, CCS_SERIALIZE_FORMAT_BINARY, buffer_size, buffer,
 		opts));
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 #endif //_TREE_SPACE_INTERNAL_H

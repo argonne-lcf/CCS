@@ -65,7 +65,7 @@ class ObjectiveSpace(Context):
       return None
     if types:
       if len(types) != sz:
-        raise Error(ccs_result(ccs_result.INVALID_VALUE))
+        raise Error(ccs_result(ccs_result.ERROR_INVALID_VALUE))
       types = (ccs_objective_type * sz)(*types)
     else:
       types = (ccs_objective_type * sz)(*([ccs_objective_type.MINIMIZE] * sz))
@@ -99,7 +99,7 @@ class ObjectiveSpace(Context):
   def check_values(self, values):
     count = len(values)
     if count != self.num_parameters:
-      raise Error(ccs_result(ccs_result.INVALID_VALUE))
+      raise Error(ccs_result(ccs_result.ERROR_INVALID_VALUE))
     v = (ccs_datum * count)()
     ss = []
     for i in range(count):

@@ -42,7 +42,7 @@ class Parameter(Object):
     elif v == ccs_parameter_type.STRING:
       return StringParameter(handle = handle, retain = retain, auto_release = auto_release)
     else:
-      raise Error(ccs_result(ccs_result.INVALID_PARAMETER))
+      raise Error(ccs_result(ccs_result.ERROR_INVALID_PARAMETER))
 
   @classmethod
   def default_name(cls):
@@ -157,7 +157,7 @@ class NumericalParameter(Parameter):
         q.i = quantization
         d.i = default
       else:
-        raise Error(ccs_result(ccs_result.INVALID_VALUE))
+        raise Error(ccs_result(ccs_result.ERROR_INVALID_VALUE))
       handle = ccs_parameter()
       res = ccs_create_numerical_parameter(str.encode(name), data_type, l.i, u.i, q.i, d.i, ct.byref(handle))
       Error.check(res)
@@ -196,7 +196,7 @@ class NumericalParameter(Parameter):
     elif t == ccs_numeric_type.FLOAT:
       self._lower = v.f
     else:
-      raise Error(ccs_result(ccs_result.INVALID_VALUE))
+      raise Error(ccs_result(ccs_result.ERROR_INVALID_VALUE))
     return self._lower
 
   @property
@@ -212,7 +212,7 @@ class NumericalParameter(Parameter):
     elif t == ccs_numeric_type.FLOAT:
       self._upper = v.f
     else:
-      raise Error(ccs_result(ccs_result.INVALID_VALUE))
+      raise Error(ccs_result(ccs_result.ERROR_INVALID_VALUE))
     return self._upper
 
   @property
@@ -228,7 +228,7 @@ class NumericalParameter(Parameter):
     elif t == ccs_numeric_type.FLOAT:
       self._quantization = v.f
     else:
-      raise Error(ccs_result(ccs_result.INVALID_VALUE))
+      raise Error(ccs_result(ccs_result.ERROR_INVALID_VALUE))
     return self._quantization
 
 ccs_create_categorical_parameter = _ccs_get_function("ccs_create_categorical_parameter", [ct.c_char_p, ct.c_size_t, ct.POINTER(ccs_datum), ct.c_size_t, ct.POINTER(ccs_parameter)])

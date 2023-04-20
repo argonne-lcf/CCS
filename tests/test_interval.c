@@ -15,32 +15,32 @@ test_empty_float()
 	interval.upper_included = CCS_TRUE;
 
 	err                     = ccs_interval_empty(&interval, &empty);
-	assert(err == CCS_SUCCESS);
+	assert(err == CCS_RESULT_SUCCESS);
 	assert(!empty);
 
 	interval.upper.f = -5.0;
 	err              = ccs_interval_empty(&interval, &empty);
-	assert(err == CCS_SUCCESS);
+	assert(err == CCS_RESULT_SUCCESS);
 	assert(empty);
 
 	interval.upper.f = -3.0;
 	err              = ccs_interval_empty(&interval, &empty);
-	assert(err == CCS_SUCCESS);
+	assert(err == CCS_RESULT_SUCCESS);
 	assert(!empty);
 
 	interval.lower_included = CCS_FALSE;
 	err                     = ccs_interval_empty(&interval, &empty);
-	assert(err == CCS_SUCCESS);
+	assert(err == CCS_RESULT_SUCCESS);
 	assert(empty);
 
 	interval.upper_included = CCS_FALSE;
 	err                     = ccs_interval_empty(&interval, &empty);
-	assert(err == CCS_SUCCESS);
+	assert(err == CCS_RESULT_SUCCESS);
 	assert(empty);
 
 	interval.lower_included = CCS_TRUE;
 	err                     = ccs_interval_empty(&interval, &empty);
-	assert(err == CCS_SUCCESS);
+	assert(err == CCS_RESULT_SUCCESS);
 	assert(empty);
 }
 
@@ -58,32 +58,32 @@ test_empty_int()
 	interval.upper_included = CCS_TRUE;
 
 	err                     = ccs_interval_empty(&interval, &empty);
-	assert(err == CCS_SUCCESS);
+	assert(err == CCS_RESULT_SUCCESS);
 	assert(!empty);
 
 	interval.upper.i = -5;
 	err              = ccs_interval_empty(&interval, &empty);
-	assert(err == CCS_SUCCESS);
+	assert(err == CCS_RESULT_SUCCESS);
 	assert(empty);
 
 	interval.upper.i = -3;
 	err              = ccs_interval_empty(&interval, &empty);
-	assert(err == CCS_SUCCESS);
+	assert(err == CCS_RESULT_SUCCESS);
 	assert(!empty);
 
 	interval.lower_included = CCS_FALSE;
 	err                     = ccs_interval_empty(&interval, &empty);
-	assert(err == CCS_SUCCESS);
+	assert(err == CCS_RESULT_SUCCESS);
 	assert(empty);
 
 	interval.upper_included = CCS_FALSE;
 	err                     = ccs_interval_empty(&interval, &empty);
-	assert(err == CCS_SUCCESS);
+	assert(err == CCS_RESULT_SUCCESS);
 	assert(empty);
 
 	interval.lower_included = CCS_TRUE;
 	err                     = ccs_interval_empty(&interval, &empty);
-	assert(err == CCS_SUCCESS);
+	assert(err == CCS_RESULT_SUCCESS);
 	assert(empty);
 }
 
@@ -107,9 +107,9 @@ test_intersect_float()
 	interval2.upper_included = CCS_TRUE;
 
 	err = ccs_interval_intersect(&interval1, &interval2, &intersection);
-	assert(err == CCS_SUCCESS);
+	assert(err == CCS_RESULT_SUCCESS);
 	err = ccs_interval_empty(&intersection, &empty);
-	assert(err == CCS_SUCCESS);
+	assert(err == CCS_RESULT_SUCCESS);
 	assert(!empty);
 	assert(intersection.type == CCS_NUMERIC_TYPE_FLOAT);
 	assert(intersection.lower.f == 2.0);
@@ -138,9 +138,9 @@ test_intersect_int()
 	interval2.upper_included = CCS_TRUE;
 
 	err = ccs_interval_intersect(&interval1, &interval2, &intersection);
-	assert(err == CCS_SUCCESS);
+	assert(err == CCS_RESULT_SUCCESS);
 	err = ccs_interval_empty(&intersection, &empty);
-	assert(err == CCS_SUCCESS);
+	assert(err == CCS_RESULT_SUCCESS);
 	assert(!empty);
 	assert(intersection.type == CCS_NUMERIC_TYPE_INT);
 	assert(intersection.lower.i == 2);
@@ -169,9 +169,9 @@ test_union_float()
 	interval2.upper_included = CCS_TRUE;
 
 	err = ccs_interval_union(&interval1, &interval2, &u);
-	assert(err == CCS_SUCCESS);
+	assert(err == CCS_RESULT_SUCCESS);
 	err = ccs_interval_empty(&u, &empty);
-	assert(err == CCS_SUCCESS);
+	assert(err == CCS_RESULT_SUCCESS);
 	assert(!empty);
 	assert(u.type == CCS_NUMERIC_TYPE_FLOAT);
 	assert(u.lower.f == -3.0);
@@ -200,9 +200,9 @@ test_union_int()
 	interval2.upper_included = CCS_TRUE;
 
 	err = ccs_interval_union(&interval1, &interval2, &u);
-	assert(err == CCS_SUCCESS);
+	assert(err == CCS_RESULT_SUCCESS);
 	err = ccs_interval_empty(&u, &empty);
-	assert(err == CCS_SUCCESS);
+	assert(err == CCS_RESULT_SUCCESS);
 	assert(!empty);
 	assert(u.type == CCS_NUMERIC_TYPE_INT);
 	assert(u.lower.i == -3);
@@ -231,18 +231,18 @@ test_equal_float()
 	interval2.upper_included = CCS_TRUE;
 
 	err = ccs_interval_equal(&interval1, &interval2, &equal);
-	assert(err == CCS_SUCCESS);
+	assert(err == CCS_RESULT_SUCCESS);
 	assert(!equal);
 
 	interval2.lower.f = -3.0;
 	interval2.upper.f = 5.0;
 	err               = ccs_interval_equal(&interval1, &interval2, &equal);
-	assert(err == CCS_SUCCESS);
+	assert(err == CCS_RESULT_SUCCESS);
 	assert(!equal);
 
 	interval2.upper_included = CCS_FALSE;
 	err = ccs_interval_equal(&interval1, &interval2, &equal);
-	assert(err == CCS_SUCCESS);
+	assert(err == CCS_RESULT_SUCCESS);
 	assert(equal);
 }
 
@@ -266,24 +266,24 @@ test_equal_int()
 	interval2.upper_included = CCS_TRUE;
 
 	err = ccs_interval_equal(&interval1, &interval2, &equal);
-	assert(err == CCS_SUCCESS);
+	assert(err == CCS_RESULT_SUCCESS);
 	assert(!equal);
 
 	interval2.lower.i = -3;
 	interval2.upper.i = 4;
 	err               = ccs_interval_equal(&interval1, &interval2, &equal);
-	assert(err == CCS_SUCCESS);
+	assert(err == CCS_RESULT_SUCCESS);
 	assert(equal);
 
 	interval2.upper.i        = 4;
 	interval2.upper_included = CCS_FALSE;
 	err = ccs_interval_equal(&interval1, &interval2, &equal);
-	assert(err == CCS_SUCCESS);
+	assert(err == CCS_RESULT_SUCCESS);
 	assert(!equal);
 
 	interval2.upper.i = 5;
 	err               = ccs_interval_equal(&interval1, &interval2, &equal);
-	assert(err == CCS_SUCCESS);
+	assert(err == CCS_RESULT_SUCCESS);
 	assert(equal);
 }
 

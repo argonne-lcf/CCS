@@ -29,7 +29,7 @@ _ccs_deserialize_bin_parameter_numerical(
 			 CCSF(data.common_data.default_value.value.f) :
 			 CCSI(data.common_data.default_value.value.i)),
 		parameter_ret));
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 struct _ccs_parameter_categorical_data_mock_s {
@@ -52,11 +52,11 @@ _ccs_deserialize_bin_ccs_parameter_categorical_data(
 		&data->num_possible_values, buffer_size, buffer));
 	data->possible_values = (ccs_datum_t *)malloc(
 		data->num_possible_values * sizeof(ccs_datum_t));
-	CCS_REFUTE(!data->possible_values, CCS_OUT_OF_MEMORY);
+	CCS_REFUTE(!data->possible_values, CCS_RESULT_ERROR_OUT_OF_MEMORY);
 	for (size_t i = 0; i < data->num_possible_values; i++)
 		CCS_VALIDATE(_ccs_deserialize_bin_ccs_datum(
 			data->possible_values + i, buffer_size, buffer));
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 static inline ccs_result_t
@@ -67,7 +67,7 @@ _ccs_deserialize_bin_parameter_categorical(
 	const char     **buffer)
 {
 	(void)version;
-	ccs_result_t                           res   = CCS_SUCCESS;
+	ccs_result_t                           res   = CCS_RESULT_SUCCESS;
 	int                                    found = 0;
 	_ccs_parameter_categorical_data_mock_t data;
 	data.possible_values = NULL;
@@ -84,7 +84,7 @@ _ccs_deserialize_bin_parameter_categorical(
 			found               = 1;
 			default_value_index = i;
 		}
-	CCS_REFUTE_ERR_GOTO(res, !found, CCS_INVALID_VALUE, end);
+	CCS_REFUTE_ERR_GOTO(res, !found, CCS_RESULT_ERROR_INVALID_VALUE, end);
 
 	switch (data.common_data.type) {
 	case CCS_PARAMETER_TYPE_CATEGORICAL:
@@ -116,7 +116,7 @@ _ccs_deserialize_bin_parameter_categorical(
 		break;
 	default:
 		CCS_RAISE_ERR_GOTO(
-			res, CCS_INVALID_TYPE, end,
+			res, CCS_RESULT_ERROR_INVALID_TYPE, end,
 			"Unsupport parameter type: %d", data.common_data.type);
 	}
 end:
@@ -135,7 +135,7 @@ _ccs_deserialize_bin_ccs_parameter_string_data(
 {
 	CCS_VALIDATE(_ccs_deserialize_bin_ccs_parameter_common_data(
 		data, buffer_size, buffer));
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 static inline ccs_result_t
@@ -150,7 +150,7 @@ _ccs_deserialize_bin_parameter_string(
 	CCS_VALIDATE(_ccs_deserialize_bin_ccs_parameter_string_data(
 		&data, buffer_size, buffer));
 	CCS_VALIDATE(ccs_create_string_parameter(data.name, parameter_ret));
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 static inline ccs_result_t
@@ -166,7 +166,9 @@ _ccs_deserialize_bin_parameter(
 	ccs_result_t           res;
 	CCS_VALIDATE(_ccs_deserialize_bin_ccs_object_internal(
 		&obj, buffer_size, buffer, &handle));
-	CCS_REFUTE(obj.type != CCS_OBJECT_TYPE_PARAMETER, CCS_INVALID_TYPE);
+	CCS_REFUTE(
+		obj.type != CCS_OBJECT_TYPE_PARAMETER,
+		CCS_RESULT_ERROR_INVALID_TYPE);
 
 	ccs_parameter_type_t htype;
 	CCS_VALIDATE(
@@ -188,8 +190,8 @@ _ccs_deserialize_bin_parameter(
 		break;
 	default:
 		CCS_RAISE(
-			CCS_INVALID_TYPE, "Unsupport parameter type: %d",
-			htype);
+			CCS_RESULT_ERROR_INVALID_TYPE,
+			"Unsupport parameter type: %d", htype);
 	}
 	if (opts->handle_map)
 		CCS_VALIDATE_ERR_GOTO(
@@ -199,7 +201,7 @@ _ccs_deserialize_bin_parameter(
 				(ccs_object_t)*parameter_ret),
 			err_parameter);
 
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 err_parameter:
 	ccs_release_object(*parameter_ret);
 	return res;
@@ -221,13 +223,13 @@ _ccs_parameter_deserialize(
 		break;
 	default:
 		CCS_RAISE(
-			CCS_INVALID_VALUE,
+			CCS_RESULT_ERROR_INVALID_VALUE,
 			"Unsupported serialization format: %d", format);
 	}
 	CCS_VALIDATE(_ccs_object_deserialize_user_data(
 		(ccs_object_t)*parameter_ret, format, version, buffer_size,
 		buffer, opts));
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 #endif //_PARAMETER_DESERIALIZE_H

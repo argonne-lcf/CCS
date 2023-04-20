@@ -24,7 +24,7 @@ _ccs_distribution_multivariate_del(ccs_object_t o)
 	for (size_t i = 0; i < data->num_distributions; i++) {
 		ccs_release_object(data->distributions[i]);
 	}
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 static inline ccs_result_t
@@ -40,7 +40,7 @@ _ccs_serialize_bin_size_ccs_distribution_multivariate_data(
 		CCS_VALIDATE(data->distributions[i]->obj.ops->serialize_size(
 			data->distributions[i], CCS_SERIALIZE_FORMAT_BINARY,
 			cum_size, opts));
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 static inline ccs_result_t
@@ -58,7 +58,7 @@ _ccs_serialize_bin_ccs_distribution_multivariate_data(
 		CCS_VALIDATE(data->distributions[i]->obj.ops->serialize(
 			data->distributions[i], CCS_SERIALIZE_FORMAT_BINARY,
 			buffer_size, buffer, opts));
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 static inline ccs_result_t
@@ -73,7 +73,7 @@ _ccs_serialize_bin_size_ccs_distribution_multivariate(
 		(_ccs_object_internal_t *)distribution);
 	CCS_VALIDATE(_ccs_serialize_bin_size_ccs_distribution_multivariate_data(
 		data, cum_size, opts));
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 static inline ccs_result_t
@@ -89,7 +89,7 @@ _ccs_serialize_bin_ccs_distribution_multivariate(
 		(_ccs_object_internal_t *)distribution, buffer_size, buffer));
 	CCS_VALIDATE(_ccs_serialize_bin_ccs_distribution_multivariate_data(
 		data, buffer_size, buffer, opts));
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 static ccs_result_t
@@ -107,12 +107,12 @@ _ccs_distribution_multivariate_serialize_size(
 		break;
 	default:
 		CCS_RAISE(
-			CCS_INVALID_VALUE,
+			CCS_RESULT_ERROR_INVALID_VALUE,
 			"Unsupported serialization format: %d", format);
 	}
 	CCS_VALIDATE(_ccs_object_serialize_user_data_size(
 		object, format, cum_size, opts));
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 static ccs_result_t
@@ -130,12 +130,12 @@ _ccs_distribution_multivariate_serialize(
 		break;
 	default:
 		CCS_RAISE(
-			CCS_INVALID_VALUE,
+			CCS_RESULT_ERROR_INVALID_VALUE,
 			"Unsupported serialization format: %d", format);
 	}
 	CCS_VALIDATE(_ccs_object_serialize_user_data(
 		object, format, buffer_size, buffer, opts));
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 static ccs_result_t
@@ -184,7 +184,7 @@ ccs_create_multivariate_distribution(
 	CCS_CHECK_PTR(distribution_ret);
 	CCS_REFUTE(
 		!num_distributions || num_distributions > INT64_MAX,
-		CCS_INVALID_VALUE);
+		CCS_RESULT_ERROR_INVALID_VALUE);
 
 	ccs_result_t                           err;
 	size_t                                 i         = 0;
@@ -208,7 +208,7 @@ ccs_create_multivariate_distribution(
 			   sizeof(ccs_interval_t) * dimension +
 			   sizeof(ccs_numeric_type_t) * dimension);
 
-	CCS_REFUTE(!mem, CCS_OUT_OF_MEMORY);
+	CCS_REFUTE(!mem, CCS_RESULT_ERROR_OUT_OF_MEMORY);
 	cur_mem = mem;
 
 	distrib = (ccs_distribution_t)cur_mem;
@@ -262,7 +262,7 @@ ccs_create_multivariate_distribution(
 	distrib->data     = (_ccs_distribution_data_t *)distrib_data;
 	*distribution_ret = distrib;
 
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 distrib:
 	for (i = 0; i < num_distributions; i++) {
 		if (distrib_data->distributions[i])
@@ -282,7 +282,7 @@ _ccs_distribution_multivariate_get_bounds(
 		(_ccs_distribution_multivariate_data_t *)data;
 	memcpy(interval_ret, d->bounds,
 	       d->common_data.dimension * sizeof(ccs_interval_t));
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 static inline _ccs_distribution_ops_t *
@@ -309,7 +309,7 @@ _ccs_distribution_multivariate_samples(
 					     d->common_data.dimension, values));
 		values += d->dimensions[i];
 	}
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 static ccs_result_t
@@ -330,7 +330,7 @@ _ccs_distribution_multivariate_strided_samples(
 					     num_values, stride, values));
 		values += d->dimensions[i];
 	}
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 static ccs_result_t
@@ -350,7 +350,7 @@ _ccs_distribution_multivariate_soa_samples(
 					     num_values, values));
 		values += d->dimensions[i];
 	}
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 ccs_result_t
@@ -364,7 +364,7 @@ ccs_multivariate_distribution_get_num_distributions(
 	_ccs_distribution_multivariate_data_t *data =
 		(_ccs_distribution_multivariate_data_t *)distribution->data;
 	*num_distributions_ret = data->num_distributions;
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 ccs_result_t
@@ -377,13 +377,15 @@ ccs_multivariate_distribution_get_distributions(
 	CCS_CHECK_DISTRIBUTION(
 		distribution, CCS_DISTRIBUTION_TYPE_MULTIVARIATE);
 	CCS_CHECK_ARY(num_distributions, distributions);
-	CCS_REFUTE(!distributions && !num_distributions_ret, CCS_INVALID_VALUE);
+	CCS_REFUTE(
+		!distributions && !num_distributions_ret,
+		CCS_RESULT_ERROR_INVALID_VALUE);
 	_ccs_distribution_multivariate_data_t *data =
 		(_ccs_distribution_multivariate_data_t *)distribution->data;
 	if (distributions) {
 		CCS_REFUTE(
 			num_distributions < data->num_distributions,
-			CCS_INVALID_VALUE);
+			CCS_RESULT_ERROR_INVALID_VALUE);
 		for (size_t i = 0; i < data->num_distributions; i++)
 			distributions[i] = data->distributions[i];
 		for (size_t i = data->num_distributions; i < num_distributions;
@@ -392,5 +394,5 @@ ccs_multivariate_distribution_get_distributions(
 	}
 	if (num_distributions_ret)
 		*num_distributions_ret = data->num_distributions;
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }

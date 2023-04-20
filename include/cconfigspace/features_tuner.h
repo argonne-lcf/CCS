@@ -38,10 +38,10 @@ typedef enum ccs_features_tuner_type_e ccs_features_tuner_type_t;
  * @param [in] features_tuner
  * @param [out] type_ret a pointer to the variable that will contain the
  *                       returned features tuner type
- * @return #CCS_SUCCESS on success
- * @return #CCS_INVALID_OBJECT if \p features_tuner is not a valid CCS features
+ * @return #CCS_RESULT_SUCCESS on success
+ * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p features_tuner is not a valid CCS features
  *                              tuner
- * @return #CCS_INVALID_VALUE if \p type_ret is NULL
+ * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p type_ret is NULL
  */
 extern ccs_result_t
 ccs_features_tuner_get_type(
@@ -53,9 +53,9 @@ ccs_features_tuner_get_type(
  * @param[in] features_tuner
  * @param[out] name_ret a pointer to the variable that will contain a pointer to
  *                      the name of the features tuner
- * @return #CCS_SUCCESS on success
- * @return #CCS_INVALID_VALUE if \p name_ret is NULL
- * @return #CCS_INVALID_OBJECT if \p features_tuner is not a valid CCS features
+ * @return #CCS_RESULT_SUCCESS on success
+ * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p name_ret is NULL
+ * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p features_tuner is not a valid CCS features
  *                              tuner
  */
 extern ccs_result_t
@@ -68,10 +68,10 @@ ccs_features_tuner_get_name(
  * @param[in] features_tuner
  * @param[out] configuration_space_ret a pointer to the variable that will
  *                                     contain the configuration space
- * @return #CCS_SUCCESS on success
- * @return #CCS_INVALID_OBJECT if \p features_tuner is not a valid CCS features
+ * @return #CCS_RESULT_SUCCESS on success
+ * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p features_tuner is not a valid CCS features
  *                             tuner
- * @return #CCS_INVALID_VALUE if \p configuration_space_ret is NULL
+ * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p configuration_space_ret is NULL
  */
 extern ccs_result_t
 ccs_features_tuner_get_configuration_space(
@@ -83,10 +83,10 @@ ccs_features_tuner_get_configuration_space(
  * @param[in] features_tuner
  * @param[out] objective_space_ret a pointer to the variable that will
  *                                     contain the objective space
- * @return #CCS_SUCCESS on success
- * @return #CCS_INVALID_OBJECT if \p features_tuner is not a valid CCS features
+ * @return #CCS_RESULT_SUCCESS on success
+ * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p features_tuner is not a valid CCS features
  *                             tuner
- * @return #CCS_INVALID_VALUE if \p objective_space_ret is NULL
+ * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p objective_space_ret is NULL
  */
 extern ccs_result_t
 ccs_features_tuner_get_objective_space(
@@ -98,10 +98,10 @@ ccs_features_tuner_get_objective_space(
  * @param[in] features_tuner
  * @param[out] features_space_ret a pointer to the variable that will
  *                                     contain the features space
- * @return #CCS_SUCCESS on success
- * @return #CCS_INVALID_OBJECT if \p features_tuner is not a valid CCS features
+ * @return #CCS_RESULT_SUCCESS on success
+ * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p features_tuner is not a valid CCS features
  *                             tuner
- * @return #CCS_INVALID_VALUE if \p features_space_ret is NULL
+ * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p features_space_ret is NULL
  */
 extern ccs_result_t
 ccs_features_tuner_get_features_space(
@@ -125,21 +125,21 @@ ccs_features_tuner_get_features_space(
  *                                    are returned, or, if \p configurations is
  *                                    NULL, a suggestion for the number of
  *                                    configuration to ask for
- * @return #CCS_SUCCESS on success
- * @return #CCS_INVALID_OBJECT if \p features_tuner is not a valid CCS features
+ * @return #CCS_RESULT_SUCCESS on success
+ * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p features_tuner is not a valid CCS features
  *                              tuner; or if \p features is not a valid CCS
  *                              features
- * @return #CCS_INVALID_FEATURES if \p features is not a valid CCS features for
+ * @return #CCS_RESULT_ERROR_INVALID_FEATURES if \p features is not a valid CCS features for
  *                                the tuner features space
- * @return #CCS_INVALID_VALUE if \p configurations is NULL and \p
+ * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p configurations is NULL and \p
  *                             num_configurations is greater than 0; or if \p
  *                             configurations and \p num_configurations_ret are
  *                             both NULL
- * @return #CCS_SAMPLING_UNSUCCESSFUL if no or not enough valid configurations
+ * @return #CCS_RESULT_ERROR_SAMPLING_UNSUCCESSFUL if no or not enough valid configurations
  *                                     could be sampled. Configurations that
  *                                     could be sampled will be returned
  *                                     contiguously, and the rest will be NULL
- * @return #CCS_OUT_OF_MEMORY if there was not enough memory to allocate new
+ * @return #CCS_RESULT_ERROR_OUT_OF_MEMORY if there was not enough memory to allocate new
  *                             configurations. Configurations that could be
  *                             allocated will be returned, and the rest will be
  *                             NULL
@@ -158,16 +158,16 @@ ccs_features_tuner_ask(
  * @param[in] num_evaluations the size of the \p evaluations array
  * @param[in] evaluations an array of \p num_evaluations to provide to the
  *                        features tuner
- * @return #CCS_SUCCESS on success
- * @return #CCS_INVALID_OBJECT if \p features_tuner is not a valid CCS features
+ * @return #CCS_RESULT_SUCCESS on success
+ * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p features_tuner is not a valid CCS features
  *                              tuner; or if one of the evaluations is not a
  *                              valid CCS features evaluation
- * @return #CCS_INVALID_VALUE if \p evaluations is NULL and \p num_evaluations
+ * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p evaluations is NULL and \p num_evaluations
  *                             is greater than 0
- * @return #CCS_INVALID_EVALUATION if an evaluation is not a valid features
+ * @return #CCS_RESULT_ERROR_INVALID_EVALUATION if an evaluation is not a valid features
  *                                  evaluation for the problem the features
  *                                  tuner is optimizing
- * @return #CCS_OUT_OF_MEMORY if there was not enough memory to allocate
+ * @return #CCS_RESULT_ERROR_OUT_OF_MEMORY if there was not enough memory to allocate
  *                            internal data structures.
  */
 extern ccs_result_t
@@ -182,16 +182,16 @@ ccs_features_tuner_tell(
  * @param[in] features the specific features to suggest a configuration for
  * @param[out] configuration a pointer to the variable that will contain the
  *                           suggested configuration
- * @return #CCS_SUCCESS on success
- * @return #CCS_INVALID_OBJECT if \p features_tuner is not a valid CCS features
+ * @return #CCS_RESULT_SUCCESS on success
+ * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p features_tuner is not a valid CCS features
  *                              tuner; or if \p features is not a valid CCS
  *                              features
- * @return #CCS_INVALID_FEATURES if \p features is not a valid CCS features for
+ * @return #CCS_RESULT_ERROR_INVALID_FEATURES if \p features is not a valid CCS features for
  *                                the tuner features space
- * @return #CCS_INVALID_VALUE if \p configuration is NULL
- * @return #CCS_UNSUPPORTED_OPERATION if the features tuner does not support
+ * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p configuration is NULL
+ * @return #CCS_RESULT_ERROR_UNSUPPORTED_OPERATION if the features tuner does not support
  *                                     the suggest interface
- * @return #CCS_OUT_OF_MEMORY if there was not enough memory to allocate new
+ * @return #CCS_RESULT_ERROR_OUT_OF_MEMORY if there was not enough memory to allocate new
  *                             configurations
  */
 extern ccs_result_t
@@ -213,13 +213,13 @@ ccs_features_tuner_suggest(
  * @param[out] num_evaluations_ret a pointer to the variable that will contain
  *                                 the number of evaluations that are or would
  *                                 be returned
- * @return #CCS_SUCCESS on success
- * @return #CCS_INVALID_OBJECT if \p features_tuner is not a valid CCS features
+ * @return #CCS_RESULT_SUCCESS on success
+ * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p features_tuner is not a valid CCS features
  *                              tuner; or if \p features is not NULL and \p
  *                              features is not a valid CCS features
- * @return #CCS_INVALID_FEATURES if \p features is not a valid CCS features for
+ * @return #CCS_RESULT_ERROR_INVALID_FEATURES if \p features is not a valid CCS features for
  *                                the features tuner features space
- * @return #CCS_INVALID_VALUE if \p evaluations is NULL and num_evaluations is
+ * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p evaluations is NULL and num_evaluations is
  *                             greater than 0; or if \p evaluations is NULL and
  *                             \p num_evaluations_ret is NULL
  */
@@ -243,13 +243,13 @@ ccs_features_tuner_get_optimums(
  * @param[out] num_evaluations_ret a pointer to the variable that will contain
  *                                 the number of evaluations that are or would
  *                                 be returned
- * @return #CCS_SUCCESS on success
- * @return #CCS_INVALID_OBJECT if \p features_tuner is not a valid CCS features
+ * @return #CCS_RESULT_SUCCESS on success
+ * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p features_tuner is not a valid CCS features
  *                              tuner or if \p features is not NULL and \p
  *                              features is not a valid CCS features
- * @return #CCS_INVALID_FEATURES if \p features is not a valid CCS features for
+ * @return #CCS_RESULT_ERROR_INVALID_FEATURES if \p features is not a valid CCS features for
  *                                the features tuner features space
- * @return #CCS_INVALID_VALUE if \p evaluations is NULL and num_evaluations is
+ * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p evaluations is NULL and num_evaluations is
  *                             greater than 0; or if \p evaluations is NULL and
  *                             \p num_evaluations_ret is NULL
  */
@@ -271,13 +271,13 @@ ccs_features_tuner_get_history(
  * @param[in] objective_space the objective space to potimize
  * @param[out] features_tuner_ret a pointer to the variable that will contain
  *                                the newly created features tuner
- * @return #CCS_SUCCESS on success
- * @return #CCS_INVALID_OBJECT if \p configuration_space is not a valid CCS
+ * @return #CCS_RESULT_SUCCESS on success
+ * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p configuration_space is not a valid CCS
  *                              configuration space; or if \p objective_space is
  *                              not a valid CCS objective space; or if \p
  *                              features_space is not a valid CCS features space
- * @return #CCS_INVALID_VALUE if \p name is NULL; or if \p features tuner_ret is NULL
- * @return #CCS_OUT_OF_MEMORY if there was not enough memory to allocate the
+ * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p name is NULL; or if \p features tuner_ret is NULL
+ * @return #CCS_RESULT_ERROR_OUT_OF_MEMORY if there was not enough memory to allocate the
  *                             new features tuner instance
  */
 extern ccs_result_t
@@ -384,15 +384,15 @@ typedef struct ccs_user_defined_features_tuner_vector_s
  *                       structures. Can be NULL
  * @param[out] features_tuner_ret a pointer to the variable that will contain
  *                                the newly created features tuner
- * @return #CCS_SUCCESS on success
- * @return #CCS_INVALID_OBJECT if \p configuration_space is not a valid CCS
+ * @return #CCS_RESULT_SUCCESS on success
+ * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p configuration_space is not a valid CCS
  *                              configuration space; or if \p objective_space is
  *                              not a valid CCS objective space; or if \p
  *                              features_space is not a valid CCS features space
- * @return #CCS_INVALID_VALUE if \p name is NULL; or if \p features_tuner_ret
+ * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p name is NULL; or if \p features_tuner_ret
  *                             is NULL; or if \p vector is NULL; or if any
  *                             interface pointer except suggest is NULL
- * @return #CCS_OUT_OF_MEMORY if there was not enough memory to allocate the
+ * @return #CCS_RESULT_ERROR_OUT_OF_MEMORY if there was not enough memory to allocate the
  *                             new features tuner instance
  */
 extern ccs_result_t
@@ -409,12 +409,12 @@ ccs_create_user_defined_features_tuner(
  * Get the user defined features tuner internal data pointer.
  * @param[in] features_tuner
  * @param[out] tuner_data_ret
- * @return #CCS_SUCCESS on success
- * @return #CCS_INVALID_OBJECT if \p features_tuner is not a valid CCS features
+ * @return #CCS_RESULT_SUCCESS on success
+ * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p features_tuner is not a valid CCS features
  *                              tuner
- * @return #CCS_INVALID_FEATURES_TUNER if \p tuner is not a user defined
+ * @return #CCS_RESULT_ERROR_INVALID_FEATURES_TUNER if \p tuner is not a user defined
  *                                      features tuner
- * @return #CCS_INVALID_VALUE if \p tuner_data_ret is NULL
+ * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p tuner_data_ret is NULL
  */
 extern ccs_result_t
 ccs_user_defined_features_tuner_get_tuner_data(

@@ -7,7 +7,7 @@
 		CCS_REFUTE(                                                    \
 			((_ccs_parameter_common_data_t *)(o->data))->type !=   \
 				(t),                                           \
-			CCS_INVALID_PARAMETER);                                \
+			CCS_RESULT_ERROR_INVALID_PARAMETER);                   \
 	} while (0)
 
 struct _ccs_parameter_data_s;
@@ -81,7 +81,7 @@ _ccs_serialize_bin_ccs_parameter_common_data(
 		data->default_value, buffer_size, buffer));
 	CCS_VALIDATE(_ccs_serialize_bin_ccs_interval(
 		&data->interval, buffer_size, buffer));
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 static inline ccs_result_t
@@ -98,7 +98,7 @@ _ccs_deserialize_bin_ccs_parameter_common_data(
 		&data->default_value, buffer_size, buffer));
 	CCS_VALIDATE(_ccs_deserialize_bin_ccs_interval(
 		&data->interval, buffer_size, buffer));
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 struct _ccs_parameter_numerical_data_s {
@@ -133,7 +133,7 @@ _ccs_serialize_bin_ccs_parameter_numerical_data(
 	else
 		CCS_VALIDATE(_ccs_serialize_bin_ccs_int(
 			data->quantization.i, buffer_size, buffer));
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 static inline ccs_result_t
@@ -150,7 +150,7 @@ _ccs_deserialize_bin_ccs_parameter_numerical_data(
 	else
 		CCS_VALIDATE(_ccs_deserialize_bin_ccs_int(
 			&data->quantization.i, buffer_size, buffer));
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 #endif //_PARAMETER_INTERNAL_H

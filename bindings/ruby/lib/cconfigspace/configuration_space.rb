@@ -54,7 +54,7 @@ module CCS
 
     def set_distribution(distribution, parameters )
       count = distribution.dimension
-      raise CCSError, :CCS_INVALID_VALUE if count != parameters.size
+      raise CCSError, :CCS_RESULT_ERROR_INVALID_VALUE if count != parameters.size
       parameters = parameters.collect { |h|
         case h
         when Parameter
@@ -88,7 +88,7 @@ module CCS
       count = parameters.size
       return self if count == 0
       if distributions
-        raise CCSError, :CCS_INVALID_VALUE if count != distributions.size
+        raise CCSError, :CCS_RESULT_ERROR_INVALID_VALUE if count != distributions.size
         p_dists = MemoryPointer::new(:ccs_distribution_t, count)
         p_dists.write_array_of_pointer(distributions.collect(&:handle))
       else
@@ -200,7 +200,7 @@ module CCS
 
     def check_values(values)
       count = values.size
-      raise CCSError, :CCS_INVALID_VALUE if count != num_parameters
+      raise CCSError, :CCS_RESULT_ERROR_INVALID_VALUE if count != num_parameters
       ss = []
       ptr = MemoryPointer::new(:ccs_datum_t, count)
       values.each_with_index {  |v, i| Datum::new(ptr[i]).set_value(v, string_store: ss) }

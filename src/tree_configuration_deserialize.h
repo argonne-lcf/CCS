@@ -18,12 +18,12 @@ _ccs_deserialize_bin_tree_configuration_data(
 	if (data->position_size) {
 		data->position =
 			(size_t *)malloc(data->position_size * sizeof(size_t));
-		CCS_REFUTE(!data->position, CCS_OUT_OF_MEMORY);
+		CCS_REFUTE(!data->position, CCS_RESULT_ERROR_OUT_OF_MEMORY);
 		for (size_t i = 0; i < data->position_size; i++)
 			CCS_VALIDATE(_ccs_deserialize_bin_size(
 				data->position + i, buffer_size, buffer));
 	}
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 static inline ccs_result_t
@@ -44,9 +44,9 @@ _ccs_deserialize_bin_tree_configuration(
 		&obj, buffer_size, buffer, &handle));
 	CCS_REFUTE(
 		obj.type != CCS_OBJECT_TYPE_TREE_CONFIGURATION,
-		CCS_INVALID_TYPE);
+		CCS_RESULT_ERROR_INVALID_TYPE);
 	_ccs_tree_configuration_data_t data = {NULL, 0, NULL};
-	ccs_result_t                   res  = CCS_SUCCESS;
+	ccs_result_t                   res  = CCS_RESULT_SUCCESS;
 	CCS_VALIDATE_ERR_GOTO(
 		res,
 		_ccs_deserialize_bin_tree_configuration_data(
@@ -58,7 +58,8 @@ _ccs_deserialize_bin_tree_configuration(
 		ccs_map_get(opts->handle_map, ccs_object(data.tree_space), &d),
 		end);
 	CCS_REFUTE_ERR_GOTO(
-		res, d.type != CCS_DATA_TYPE_OBJECT, CCS_INVALID_HANDLE, end);
+		res, d.type != CCS_DATA_TYPE_OBJECT,
+		CCS_RESULT_ERROR_INVALID_HANDLE, end);
 	tree_space = (ccs_tree_space_t)(d.value.o);
 
 	CCS_VALIDATE_ERR_GOTO(
@@ -102,13 +103,13 @@ _ccs_tree_configuration_deserialize(
 		break;
 	default:
 		CCS_RAISE(
-			CCS_INVALID_VALUE,
+			CCS_RESULT_ERROR_INVALID_VALUE,
 			"Unsupported serialization format: %d", format);
 	}
 	CCS_VALIDATE(_ccs_object_deserialize_user_data(
 		(ccs_object_t)*configuration_ret, format, version, buffer_size,
 		buffer, opts));
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 #endif //_TREE_CONFIGURATION_DESERIALIZE_H

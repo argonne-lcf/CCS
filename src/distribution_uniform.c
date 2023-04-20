@@ -21,7 +21,7 @@ static ccs_result_t
 _ccs_distribution_uniform_del(ccs_object_t o)
 {
 	(void)o;
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 static inline size_t
@@ -72,7 +72,7 @@ _ccs_serialize_bin_ccs_distribution_uniform_data(
 		CCS_VALIDATE(_ccs_serialize_bin_ccs_int(
 			data->quantization.i, buffer_size, buffer));
 	}
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 static inline size_t
@@ -97,7 +97,7 @@ _ccs_serialize_bin_ccs_distribution_uniform(
 		(_ccs_object_internal_t *)distribution, buffer_size, buffer));
 	CCS_VALIDATE(_ccs_serialize_bin_ccs_distribution_uniform_data(
 		data, buffer_size, buffer));
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 static ccs_result_t
@@ -114,12 +114,12 @@ _ccs_distribution_uniform_serialize_size(
 		break;
 	default:
 		CCS_RAISE(
-			CCS_INVALID_VALUE,
+			CCS_RESULT_ERROR_INVALID_VALUE,
 			"Unsupported serialization format: %d", format);
 	}
 	CCS_VALIDATE(_ccs_object_serialize_user_data_size(
 		object, format, cum_size, opts));
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 static ccs_result_t
@@ -137,12 +137,12 @@ _ccs_distribution_uniform_serialize(
 		break;
 	default:
 		CCS_RAISE(
-			CCS_INVALID_VALUE,
+			CCS_RESULT_ERROR_INVALID_VALUE,
 			"Unsupported serialization format: %d", format);
 	}
 	CCS_VALIDATE(_ccs_object_serialize_user_data(
 		object, format, buffer_size, buffer, opts));
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 static ccs_result_t
@@ -202,7 +202,7 @@ _ccs_distribution_uniform_get_bounds(
 	interval_ret->upper          = u;
 	interval_ret->lower_included = li;
 	interval_ret->upper_included = ui;
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 static ccs_result_t
@@ -283,7 +283,7 @@ _ccs_distribution_uniform_strided_samples(
 					values[i * stride].i += lower.i;
 		}
 	}
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 static ccs_result_t
@@ -357,7 +357,7 @@ _ccs_distribution_uniform_samples(
 					values[i].i += lower.i;
 		}
 	}
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 static ccs_result_t
@@ -370,7 +370,7 @@ _ccs_distribution_uniform_soa_samples(
 	if (*values)
 		CCS_VALIDATE(_ccs_distribution_uniform_samples(
 			data, rng, num_values, *values));
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 ccs_result_t
@@ -386,11 +386,11 @@ ccs_create_uniform_distribution(
 	CCS_REFUTE(
 		data_type != CCS_NUMERIC_TYPE_FLOAT &&
 			data_type != CCS_NUMERIC_TYPE_INT,
-		CCS_INVALID_TYPE);
+		CCS_RESULT_ERROR_INVALID_TYPE);
 	CCS_REFUTE(
 		scale_type != CCS_SCALE_TYPE_LINEAR &&
 			scale_type != CCS_SCALE_TYPE_LOGARITHMIC,
-		CCS_INVALID_SCALE);
+		CCS_RESULT_ERROR_INVALID_SCALE);
 	CCS_REFUTE(
 		data_type == CCS_NUMERIC_TYPE_INT &&
 			(lower.i >= upper.i ||
@@ -398,7 +398,7 @@ ccs_create_uniform_distribution(
 			  lower.i <= 0) ||
 			 quantization.i < 0 ||
 			 quantization.i > upper.i - lower.i),
-		CCS_INVALID_VALUE);
+		CCS_RESULT_ERROR_INVALID_VALUE);
 	CCS_REFUTE(
 		data_type == CCS_NUMERIC_TYPE_FLOAT &&
 			(lower.f >= upper.f ||
@@ -406,12 +406,12 @@ ccs_create_uniform_distribution(
 			  lower.f <= 0.0) ||
 			 quantization.f < 0.0 ||
 			 quantization.f > upper.f - lower.f),
-		CCS_INVALID_VALUE);
+		CCS_RESULT_ERROR_INVALID_VALUE);
 	uintptr_t mem = (uintptr_t)calloc(
 		1, sizeof(struct _ccs_distribution_s) +
 			   sizeof(_ccs_distribution_uniform_data_t) +
 			   sizeof(ccs_numeric_type_t));
-	CCS_REFUTE(!mem, CCS_OUT_OF_MEMORY);
+	CCS_REFUTE(!mem, CCS_RESULT_ERROR_OUT_OF_MEMORY);
 	ccs_distribution_t distrib = (ccs_distribution_t)mem;
 	_ccs_object_init(
 		&(distrib->obj), CCS_OBJECT_TYPE_DISTRIBUTION,
@@ -459,7 +459,7 @@ ccs_create_uniform_distribution(
 	}
 	distrib->data     = (_ccs_distribution_data_t *)distrib_data;
 	*distribution_ret = distrib;
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 ccs_result_t
@@ -474,7 +474,7 @@ ccs_uniform_distribution_get_properties(
 	CCS_REFUTE(
 		!lower_ret && !upper_ret && !scale_type_ret &&
 			!quantization_ret,
-		CCS_INVALID_VALUE);
+		CCS_RESULT_ERROR_INVALID_VALUE);
 	_ccs_distribution_uniform_data_t *data =
 		(_ccs_distribution_uniform_data_t *)distribution->data;
 
@@ -486,5 +486,5 @@ ccs_uniform_distribution_get_properties(
 		*scale_type_ret = data->scale_type;
 	if (quantization_ret)
 		*quantization_ret = data->quantization;
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }

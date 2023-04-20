@@ -26,7 +26,7 @@ _ccs_serialize_bin_ccs_parameter_string_data(
 {
 	CCS_VALIDATE(_ccs_serialize_bin_ccs_parameter_common_data(
 		&data->common_data, buffer_size, buffer));
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 static ccs_result_t
@@ -41,7 +41,7 @@ _ccs_parameter_string_del(ccs_object_t o)
 		HASH_DEL(data->stored_values, current);
 		free(current);
 	}
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 static inline size_t
@@ -66,7 +66,7 @@ _ccs_serialize_bin_ccs_parameter_string(
 		(_ccs_object_internal_t *)parameter, buffer_size, buffer));
 	CCS_VALIDATE(_ccs_serialize_bin_ccs_parameter_string_data(
 		data, buffer_size, buffer));
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 static ccs_result_t
@@ -83,12 +83,12 @@ _ccs_parameter_string_serialize_size(
 		break;
 	default:
 		CCS_RAISE(
-			CCS_INVALID_VALUE,
+			CCS_RESULT_ERROR_INVALID_VALUE,
 			"Unsupported serialization format: %d", format);
 	}
 	CCS_VALIDATE(_ccs_object_serialize_user_data_size(
 		object, format, cum_size, opts));
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 static ccs_result_t
@@ -106,19 +106,19 @@ _ccs_parameter_string_serialize(
 		break;
 	default:
 		CCS_RAISE(
-			CCS_INVALID_VALUE,
+			CCS_RESULT_ERROR_INVALID_VALUE,
 			"Unsupported serialization format: %d", format);
 	}
 	CCS_VALIDATE(_ccs_object_serialize_user_data(
 		object, format, buffer_size, buffer, opts));
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 #undef uthash_nonfatal_oom
 #define uthash_nonfatal_oom(elt)                                               \
 	{                                                                      \
 		CCS_RAISE(                                                     \
-			CCS_OUT_OF_MEMORY,                                     \
+			CCS_RESULT_ERROR_OUT_OF_MEMORY,                        \
 			"Not enough memory to allocate array");                \
 	}
 
@@ -153,7 +153,9 @@ _ccs_parameter_string_check_values(
 					p = (_ccs_hash_datum_t *)malloc(
 						sizeof(_ccs_hash_datum_t) +
 						sz_str);
-					CCS_REFUTE(!p, CCS_OUT_OF_MEMORY);
+					CCS_REFUTE(
+						!p,
+						CCS_RESULT_ERROR_OUT_OF_MEMORY);
 					if (sz_str) {
 						strcpy((char *)((intptr_t)p + sizeof(_ccs_hash_datum_t)),
 						       values[i].value.s);
@@ -170,7 +172,7 @@ _ccs_parameter_string_check_values(
 				values_ret[i] = ccs_inactive;
 			}
 	}
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 static ccs_result_t
@@ -187,7 +189,7 @@ _ccs_parameter_string_samples(
 	(void)num_values;
 	(void)values;
 	CCS_RAISE(
-		CCS_UNSUPPORTED_OPERATION,
+		CCS_RESULT_ERROR_UNSUPPORTED_OPERATION,
 		"String parameters cannot be sampled");
 }
 
@@ -199,7 +201,7 @@ _ccs_parameter_string_get_default_distribution(
 	(void)data;
 	(void)distribution;
 	CCS_RAISE(
-		CCS_UNSUPPORTED_OPERATION,
+		CCS_RESULT_ERROR_UNSUPPORTED_OPERATION,
 		"String parameters don't have default distributions");
 }
 
@@ -217,7 +219,7 @@ _ccs_parameter_string_convert_samples(
 	(void)values;
 	(void)results;
 	CCS_RAISE(
-		CCS_UNSUPPORTED_OPERATION,
+		CCS_RESULT_ERROR_UNSUPPORTED_OPERATION,
 		"String parameters cannot convert samples");
 }
 
@@ -238,7 +240,7 @@ ccs_create_string_parameter(const char *name, ccs_parameter_t *parameter_ret)
 		1, sizeof(struct _ccs_parameter_s) +
 			   sizeof(_ccs_parameter_string_data_t) + strlen(name) +
 			   1);
-	CCS_REFUTE(!mem, CCS_OUT_OF_MEMORY);
+	CCS_REFUTE(!mem, CCS_RESULT_ERROR_OUT_OF_MEMORY);
 
 	ccs_parameter_t parameter = (ccs_parameter_t)mem;
 	_ccs_object_init(
@@ -256,5 +258,5 @@ ccs_create_string_parameter(const char *name, ccs_parameter_t *parameter_ret)
 	parameter->data = (_ccs_parameter_data_t *)parameter_data;
 	*parameter_ret  = parameter;
 
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }

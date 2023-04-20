@@ -20,12 +20,12 @@ extern "C" {
  *                     can be NULL if \p position_size is 0
  * @param[out] configuration_ret a pointer to the variable that will hold the
  *                               newly created tree configuration
- * @return #CCS_SUCCESS on success
- * @return #CCS_INVALID_OBJECT if \p tree space is not a valid CCS tree space
- * @return #CCS_INVALID_VALUE if \p configuration_ret is NULL; or if \p
+ * @return #CCS_RESULT_SUCCESS on success
+ * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p tree space is not a valid CCS tree space
+ * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p configuration_ret is NULL; or if \p
  *                            position is NULL and \p position_size is greater
  *                            than 0
- * @return #CCS_OUT_OF_MEMORY if there was a lack of memory to allocate the new
+ * @return #CCS_RESULT_ERROR_OUT_OF_MEMORY if there was a lack of memory to allocate the new
  *                            tree configuration
  */
 extern ccs_result_t
@@ -40,10 +40,10 @@ ccs_create_tree_configuration(
  * @param[in] configuration
  * @param[out] tree_space_ret a pointer to the variable that will contain the
  *                            tree space
- * @return #CCS_SUCCESS on success
- * @return #CCS_INVALID_OBJECT if \p configuration is not a valid CCS
+ * @return #CCS_RESULT_SUCCESS on success
+ * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p configuration is not a valid CCS
  *                              configuration
- * @return #CCS_INVALID_VALUE if \p configuration_space_ret is NULL
+ * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p configuration_space_ret is NULL
  */
 extern ccs_result_t
 ccs_tree_configuration_get_tree_space(
@@ -60,10 +60,10 @@ ccs_tree_configuration_get_tree_space(
  * @param[out] position_size_ret a pointer to a variable that will contain the
  *                               number of values that are or would be returned.
  *                               Can be NULL
- * @return #CCS_SUCCESS on success
- * @return #CCS_INVALID_OBJECT if \p configuration is not a valid CCS tree
+ * @return #CCS_RESULT_SUCCESS on success
+ * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p configuration is not a valid CCS tree
  *                             configuration
- * @return #CCS_INVALID_VALUE if \p position is NULL and \p position_size is
+ * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p position is NULL and \p position_size is
  *                            greater than 0; or if \p position is NULL and \p
  *                            position_size_ret is NULL; or if \p position_size
  *                            is less than the number of values that would be
@@ -86,12 +86,12 @@ ccs_tree_configuration_get_position(
  * @param[out] num_values_ret a pointer to a variable that will contain the
  *                            number of values that are or would be returned.
  *                            Can be NULL
- * @return #CCS_SUCCESS on success
- * @return #CCS_INVALID_OBJECT if \p configuration is not a valid CCS tree
+ * @return #CCS_RESULT_SUCCESS on success
+ * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p configuration is not a valid CCS tree
  *                             configuration
- * @return #CCS_INVALID_TREE if the configuration's position does not reference
+ * @return #CCS_RESULT_ERROR_INVALID_TREE if the configuration's position does not reference
  *                           a node in the tree.
- * @return #CCS_INVALID_VALUE if \p values is NULL and \p num_values is greater
+ * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p values is NULL and \p num_values is greater
  *                            than 0; or if \p values is NULL and \p
  *                            num_values_ret is NULL; or if \p num_values is
  *                            less than the number of values that would be
@@ -109,12 +109,12 @@ ccs_tree_configuration_get_values(
  * @param[in] configuration
  * @param[out] node_ret a pointer to a variable that will contain the node to
  *                      be returned
- * @return #CCS_SUCCESS on success
- * @return #CCS_INVALID_OBJECT if \p configuration is not a valid CCS tree
+ * @return #CCS_RESULT_SUCCESS on success
+ * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p configuration is not a valid CCS tree
  *                             configuration
- * @return #CCS_INVALID_TREE if the configuration's position does not reference
+ * @return #CCS_RESULT_ERROR_INVALID_TREE if the configuration's position does not reference
  *                           a node in the tree.
- * @return #CCS_INVALID_VALUE \p node_ret is NULL
+ * @return #CCS_RESULT_ERROR_INVALID_VALUE \p node_ret is NULL
  */
 extern ccs_result_t
 ccs_tree_configuration_get_node(
@@ -129,8 +129,8 @@ ccs_tree_configuration_get_node(
  *                          of the check. Result will be CCS_TRUE if the
  *                          configuration is valid. Result will be CCS_FALSE if
  *                          the position does not reference a node of the tree.
- * @return #CCS_SUCCESS on success
- * @return #CCS_INVALID_OBJECT if \p configuration is not a valid CCS tree
+ * @return #CCS_RESULT_SUCCESS on success
+ * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p configuration is not a valid CCS tree
  *                             configuration
  */
 extern ccs_result_t
@@ -144,10 +144,10 @@ ccs_tree_configuration_check(
  * @param[in] configuration
  * @param[out] hash_ret the address of the variable that will contain the hash
  *                      value
- * @return #CCS_SUCCESS on success
- * @return #CCS_INVALID_OBJECT if \p configuration is not a valid CCS
+ * @return #CCS_RESULT_SUCCESS on success
+ * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p configuration is not a valid CCS
  *                             tree configuration
- * @return #CCS_INVALID_VALUE if \p hash_ret is NULL
+ * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p hash_ret is NULL
  */
 extern ccs_result_t
 ccs_tree_configuration_hash(
@@ -164,8 +164,8 @@ ccs_tree_configuration_hash(
  *                     if the first configuration is found to be respectively
  *                     lesser than, equal, or greater then the second
  *                     configuration
- * @return #CCS_SUCCESS on success
- * @return #CCS_INVALID_OBJECT if \p configuration or \p other_configuration
+ * @return #CCS_RESULT_SUCCESS on success
+ * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p configuration or \p other_configuration
  *                              are not a valid CCS tree coonfigurations
  */
 extern ccs_result_t

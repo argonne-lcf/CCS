@@ -36,10 +36,10 @@ typedef enum ccs_objective_type_e ccs_objective_type_t;
  * @param[in] name pointer to a string that will be copied internally
  * @param[out] objective_space_ret a pointer to the variable that will hold
  *                                     the newly created objective space
- * @return #CCS_SUCCESS on success
- * @return #CCS_INVALID_VALUE if \p name is NULL; or if \p
+ * @return #CCS_RESULT_SUCCESS on success
+ * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p name is NULL; or if \p
  *                             objective_space_ret is NULL
- * @return #CCS_OUT_OF_MEMORY if there was a lack of memory to allocate the new
+ * @return #CCS_RESULT_ERROR_OUT_OF_MEMORY if there was a lack of memory to allocate the new
  *                             objective space
  */
 extern ccs_result_t
@@ -52,10 +52,10 @@ ccs_create_objective_space(
  * @param[in] objective_space
  * @param[out] name_ret a pointer to a `char *` variable which will contain a
  *                      pointer to the objective space name.
- * @return #CCS_SUCCESS on success
- * @return #CCS_INVALID_OBJECT if \p objective space is not a valid CCS
+ * @return #CCS_RESULT_SUCCESS on success
+ * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p objective space is not a valid CCS
  *                              objective space
- * @return #CCS_INVALID_VALUE if \p name_ret is NULL
+ * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p name_ret is NULL
  */
 extern ccs_result_t
 ccs_objective_space_get_name(
@@ -67,15 +67,15 @@ ccs_objective_space_get_name(
  * @param[in,out] objective_space
  * @param[in] parameter the parameter to add to the objective
  *                           space
- * @return #CCS_SUCCESS on success
- * @return #CCS_INVALID_OBJECT if \p objective_space is not a valid CCS
+ * @return #CCS_RESULT_SUCCESS on success
+ * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p objective_space is not a valid CCS
  *                              objective space; or \p parameter is not a
  *                              valid CCS parameter
- * @return #CCS_INVALID_PARAMETER if \p parameter is already in the
+ * @return #CCS_RESULT_ERROR_INVALID_PARAMETER if \p parameter is already in the
  *                                      objective space; or if a parameter
  *                                      with the same name already exists in the
  *                                      objective space
- * @return #CCS_OUT_OF_MEMORY if a memory could not be allocated to store
+ * @return #CCS_RESULT_ERROR_OUT_OF_MEMORY if a memory could not be allocated to store
  *                             the additional parameter and associated data
  *                             structures
  */
@@ -90,17 +90,17 @@ ccs_objective_space_add_parameter(
  * @param[in] num_parameters the number of provided parameters
  * @param[in] parameters an array of \p num_parameters parameters
  *                            to add to the objective space
- * @return #CCS_SUCCESS on success
- * @return #CCS_INVALID_OBJECT if \p objective_space is not a valid CCS
+ * @return #CCS_RESULT_SUCCESS on success
+ * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p objective_space is not a valid CCS
  *                              objective space; or a parameter is not a
  *                              valid CCS parameter
- * @return #CCS_INVALID_VALUE if \p parameters is NULL and \p
+ * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p parameters is NULL and \p
  *                             num_parameters is greater than 0
- * @return #CCS_INVALID_PARAMETER if a parameter is already in the
+ * @return #CCS_RESULT_ERROR_INVALID_PARAMETER if a parameter is already in the
  *                                      objective space; or if a parameter
  *                                      with the same name already exists in the
  *                                      objective space
- * @return #CCS_OUT_OF_MEMORY if memory could not be allocated to store
+ * @return #CCS_RESULT_ERROR_OUT_OF_MEMORY if memory could not be allocated to store
  *                             additional parameters and associated data
  *                             structures
  */
@@ -116,10 +116,10 @@ ccs_objective_space_add_parameters(
  * @param[out] num_parameters_ret a pointer to the variable that will
  *                                     contain the number of parameters in
  *                                     the objective space
- * @return #CCS_SUCCESS on success
- * @return #CCS_INVALID_OBJECT if \p objective_space is not a valid CCS
+ * @return #CCS_RESULT_SUCCESS on success
+ * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p objective_space is not a valid CCS
  *                              objective space
- * @return #CCS_INVALID_VALUE if \p num_parameters_ret is NULL
+ * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p num_parameters_ret is NULL
  */
 extern ccs_result_t
 ccs_objective_space_get_num_parameters(
@@ -132,11 +132,11 @@ ccs_objective_space_get_num_parameters(
  * @param[in] index the index of the parameter to retrieve
  * @param[out] parameter_ret a pointer to the variable that will contain
  *                                the parameter
- * @return #CCS_SUCCESS on success
- * @return #CCS_INVALID_OBJECT if \p objective_space is not a valid CCS
+ * @return #CCS_RESULT_SUCCESS on success
+ * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p objective_space is not a valid CCS
  *                              objective space
- * @return #CCS_INVALID_VALUE if \p parameter_ret is NULL
- * @return #CCS_OUT_OF_BOUNDS if \p index is greater than the count of
+ * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p parameter_ret is NULL
+ * @return #CCS_RESULT_ERROR_OUT_OF_BOUNDS if \p index is greater than the count of
  *                             parameters in the objective space
  */
 extern ccs_result_t
@@ -151,11 +151,11 @@ ccs_objective_space_get_parameter(
  * @param[in] name the name of the parameter to retrieve
  * @param[out] parameter_ret a pointer to the variable that will contain
  *                                the parameter
- * @return #CCS_SUCCESS on success
- * @return #CCS_INVALID_OBJECT if \p objective_space is not a valid CCS
+ * @return #CCS_RESULT_SUCCESS on success
+ * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p objective_space is not a valid CCS
  *                              objective space
- * @return #CCS_INVALID_VALUE if \p name or \p parameter_ret are NULL
- * @return #CCS_INVALID_NAME if no parameter with such \p name exist in
+ * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p name or \p parameter_ret are NULL
+ * @return #CCS_RESULT_ERROR_INVALID_NAME if no parameter with such \p name exist in
  *                            the \p objective space
  */
 extern ccs_result_t
@@ -170,11 +170,11 @@ ccs_objective_space_get_parameter_by_name(
  * @param[in] name the name of the parameter to retrieve the index of
  * @param[out] index_ret a pointer to the variable that will contain the index
  *                       of parameter in the \p objective_space
- * @return #CCS_SUCCESS on success
- * @return #CCS_INVALID_OBJECT if \p objective_space is not a valid CCS
+ * @return #CCS_RESULT_SUCCESS on success
+ * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p objective_space is not a valid CCS
  *                              objective space
- * @return #CCS_INVALID_VALUE if \p name or \p index_ret are NULL
- * @return #CCS_INVALID_NAME if no parameter with such \p name exist in
+ * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p name or \p index_ret are NULL
+ * @return #CCS_RESULT_ERROR_INVALID_NAME if no parameter with such \p name exist in
  *                            the objective space
  */
 extern ccs_result_t
@@ -189,11 +189,11 @@ ccs_objective_space_get_parameter_index_by_name(
  * @param[in] parameter
  * @param[out] index_ret a pointer to the variable which will contain the index
  *                       of the parameter
- * @return #CCS_SUCCESS on success
- * @return #CCS_INVALID_OBJECT if \p objective_space is not a valid CCS
+ * @return #CCS_RESULT_SUCCESS on success
+ * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p objective_space is not a valid CCS
  *                              objective space
- * @return #CCS_INVALID_VALUE if \p index_ret is NULL
- * @return #CCS_INVALID_PARAMETER if \p objective_space does not
+ * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p index_ret is NULL
+ * @return #CCS_RESULT_ERROR_INVALID_PARAMETER if \p objective_space does not
  *                                      contain \p parameter
  */
 extern ccs_result_t
@@ -211,14 +211,14 @@ ccs_objective_space_get_parameter_index(
  *                            to query the index for
  * @param[out] indexes an array of \p num_parameters indices that will
  *                     contain the values of the parameter indices
- * @return #CCS_SUCCESS on success
- * @return #CCS_INVALID_OBJECT if \p objective_space is not a valid CCS
+ * @return #CCS_RESULT_SUCCESS on success
+ * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p objective_space is not a valid CCS
  *                              objective space
- * @return #CCS_INVALID_VALUE if \p parameters is NULL and \p
+ * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p parameters is NULL and \p
  *                             num_parameters is greater than 0; or if \p
  *                             indexes is NULL and \p num_parameters is
  *                             greater than 0
- * @return #CCS_INVALID_PARAMETER if at least one of the parameters
+ * @return #CCS_RESULT_ERROR_INVALID_PARAMETER if at least one of the parameters
  *                                      is not contained in \p objective_space
  */
 extern ccs_result_t
@@ -241,10 +241,10 @@ ccs_objective_space_get_parameter_indexes(
  * @param[out] num_parameters_ret a pointer to a variable that will contain
  *                                     the number of parameters that are or
  *                                     would be returned. Can be NULL
- * @return #CCS_SUCCESS on success
- * @return #CCS_INVALID_OBJECT if \p objective_space is not a valid CCS
+ * @return #CCS_RESULT_SUCCESS on success
+ * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p objective_space is not a valid CCS
  *                              objective space
- * @return #CCS_INVALID_VALUE if \p parameters is NULL and \p
+ * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p parameters is NULL and \p
  *                             num_parameters is greater than 0; or if \p
  *                             parameters is NULL and
  *                             num_parameters_ret is NULL; or if \p
@@ -270,12 +270,12 @@ ccs_objective_space_get_parameters(
  *                          evaluation is valid. Result will be CCS_FALSE if
  *                          an parameter value is not a valid value
  *                          for this parameter;
- * @return #CCS_SUCCESS on success
- * @return #CCS_INVALID_OBJECT if \p objective_space is not a valid CCS
+ * @return #CCS_RESULT_SUCCESS on success
+ * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p objective_space is not a valid CCS
  *                              objective space
- * @return #CCS_INVALID_VALUE if \p values is NULL and num_values is greater
+ * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p values is NULL and num_values is greater
  *                             than 0
- * @return #CCS_INVALID_EVALUATION if \p num_values is not equal to the number
+ * @return #CCS_RESULT_ERROR_INVALID_EVALUATION if \p num_values is not equal to the number
  *                                  of parameters in the objective space
  */
 extern ccs_result_t
@@ -294,14 +294,14 @@ ccs_objective_space_check_evaluation_values(
  * @param[out] value_ret a pointer that will contain the validated value. If \p
  *                       value is a string \p value_ret will contain a non
  *                       transient string.
- * @return #CCS_SUCCESS on success
- * @return #CCS_INVALID_OBJECT if \p objective_space is not a valid CCS
+ * @return #CCS_RESULT_SUCCESS on success
+ * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p objective_space is not a valid CCS
  *                              objective space
- * @return #CCS_OUT_OF_BOUNDS if index is greater than the number of
+ * @return #CCS_RESULT_ERROR_OUT_OF_BOUNDS if index is greater than the number of
  *                             parameters in \p objective_space
- * @return #CCS_OUT_OF_MEMORY if there was a lack of memory while memoizing a
+ * @return #CCS_RESULT_ERROR_OUT_OF_MEMORY if there was a lack of memory while memoizing a
  *                             string
- * @return #CCS_INVALID_VALUE if the value did not validate or if value_ret is
+ * @return #CCS_RESULT_ERROR_INVALID_VALUE if the value did not validate or if value_ret is
  *                             NULL
  */
 extern ccs_result_t
@@ -317,14 +317,14 @@ ccs_objective_space_validate_value(
  * @param[in] expression the forbidden clause to dd to the configuration space
  * @param[in] type the type of the objective, either #CCS_OBJECTIVE_TYPE_MAXIMIZE or
  *                 #CCS_OBJECTIVE_TYPE_MINIMIZE
- * @return #CCS_SUCCESS on success
- * @return #CCS_INVALID_OBJECT if \p objective_space is not a valid CCS
+ * @return #CCS_RESULT_SUCCESS on success
+ * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p objective_space is not a valid CCS
  *                              objective space; or if \p expression is not
  *                              a valid CCS expression
- * @return #CCS_INVALID_PARAMETER if expression references a
+ * @return #CCS_RESULT_ERROR_INVALID_PARAMETER if expression references a
  *                                      parameter that is not in the
  *                                      objective space
- * @return #CCS_OUT_OF_MEMORY if there was not enough memory to allocate
+ * @return #CCS_RESULT_ERROR_OUT_OF_MEMORY if there was not enough memory to allocate
  *                             internal data structures
  */
 extern ccs_result_t
@@ -340,17 +340,17 @@ ccs_objective_space_add_objective(
  * @param[in] expressions an array o \p num_objectives expressions to add as
  *                        objectives to the objective space
  * @param[in] types an array o \p num_objectives types of objectives
- * @return #CCS_SUCCESS on success
- * @return #CCS_INVALID_OBJECT if \p objective_space is not a valid CCS
+ * @return #CCS_RESULT_SUCCESS on success
+ * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p objective_space is not a valid CCS
  *                              objective space; or if at least one of the
  *                              provided expressions is not a valid CCS
  *                              expression
- * @return #CCS_INVALID_VALUE if \p expressions is NULL and \p num_objectives
+ * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p expressions is NULL and \p num_objectives
  *                             is greater than 0
- * @return #CCS_INVALID_PARAMETER if an expression references a
+ * @return #CCS_RESULT_ERROR_INVALID_PARAMETER if an expression references a
  *                                      parameter that is not in the
  *                                      objective space
- * @return #CCS_OUT_OF_MEMORY if there was not enough memory to allocate
+ * @return #CCS_RESULT_ERROR_OUT_OF_MEMORY if there was not enough memory to allocate
  *                             internal data structures
  */
 extern ccs_result_t
@@ -368,11 +368,11 @@ ccs_objective_space_add_objectives(
  *                            returned expression
  * @param[out] type_ret a pointer to the variable that will contain the returned
  *                      objective type
- * @return #CCS_SUCCESS on success
- * @return #CCS_INVALID_OBJECT if \p objective_space is not a valid CCS
+ * @return #CCS_RESULT_SUCCESS on success
+ * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p objective_space is not a valid CCS
  *                              objective space
- * @return #CCS_INVALID_VALUE if \p expression_ret or \p type_ret are NULL
- * @return #CCS_OUT_OF_BOUNDS if \p index is greater than the number of
+ * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p expression_ret or \p type_ret are NULL
+ * @return #CCS_RESULT_ERROR_OUT_OF_BOUNDS if \p index is greater than the number of
  *                             objectives in the objective space
  */
 extern ccs_result_t
@@ -396,10 +396,10 @@ ccs_objective_space_get_objective(
  * @param[out] num_objectives_ret a pointer to a variable that will contain the
  *                                 number of expressions that are or would be
  *                                 returned. Can be NULL
- * @return #CCS_SUCCESS on success
- * @return #CCS_INVALID_OBJECT if \p objective_space is not a valid CCS
+ * @return #CCS_RESULT_SUCCESS on success
+ * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p objective_space is not a valid CCS
  *                              objective space
- * @return #CCS_INVALID_VALUE if \p expressions is NULL and \p num_objectives
+ * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p expressions is NULL and \p num_objectives
  *                             is greater than 0; if \p types is NULL and \p
  *                             num_objectives is greater than 0; or if or if \p
  *                             expressions is NULL and \p num_objectives_ret is

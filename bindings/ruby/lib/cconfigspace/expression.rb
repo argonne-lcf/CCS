@@ -150,13 +150,13 @@ module CCS
     def eval(context: nil, values: nil)
       if values && context
         count = context.num_parameters
-        raise CCSError, :CCS_INVALID_VALUES if values.size != count
+        raise CCSError, :CCS_RESULT_ERROR_INVALID_VALUES if values.size != count
         ss = []
         p_values = MemoryPointer::new(:ccs_datum_t, count)
         values.each_with_index{ |v, i| Datum::new(p_values[i]).set_value(v, string_store: ss) }
         values = p_values
       elsif values || context
-        raise CCSError, :CCS_INVALID_VALUES
+        raise CCSError, :CCS_RESULT_ERROR_INVALID_VALUES
       end
       ptr = MemoryPointer::new(:ccs_datum_t)
       CCS.error_check CCS.ccs_expression_eval(@handle, context, values, ptr)
@@ -277,13 +277,13 @@ module CCS
     def eval(index, context: nil, values: nil)
       if values && context
         count = context.num_parameters
-        raise CCSError, :CCS_INVALID_VALUES if values.size != count
+        raise CCSError, :CCS_RESULT_ERROR_INVALID_VALUES if values.size != count
         ss = []
         p_values = MemoryPointer::new(:ccs_datum_t, count)
         values.each_with_index{ |v, i| Datum::new(p_values[i]).set_value(v, string_store: ss) }
         values = p_values
       elsif values || context
-        raise CCSError, :CCS_INVALID_VALUES
+        raise CCSError, :CCS_RESULT_ERROR_INVALID_VALUES
       end
       ptr = MemoryPointer::new(:ccs_datum_t)
       CCS.error_check CCS.ccs_expression_list_eval_node(@handle, context, values, index, ptr)

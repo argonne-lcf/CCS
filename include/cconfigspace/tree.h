@@ -22,8 +22,8 @@ extern "C" {
  * @param[in] value the value associated with the node
  * @param[out] tree_ret a pointer to the variable that will hold
  *                      the newly created tree node.
- * @return #CCS_SUCCESS on success
- * @return #CCS_OUT_OF_MEMORY if there was a lack of memory to allocate the new
+ * @return #CCS_RESULT_SUCCESS on success
+ * @return #CCS_RESULT_ERROR_OUT_OF_MEMORY if there was a lack of memory to allocate the new
  *                            tree node.
  */
 extern ccs_result_t
@@ -34,9 +34,9 @@ ccs_create_tree(size_t arity, ccs_datum_t value, ccs_tree_t *tree_ret);
  * @param[in] tree
  * @param[out] value_ret a pointer to the variable that will contain
  *                       the value associated with the node.
- * @return #CCS_SUCCESS on success
- * @return #CCS_INVALID_OBJECT if \p tree is not a valid CCS tree
- * @return #CCS_INVALID_VALUE if \p tree_ret is NULL
+ * @return #CCS_RESULT_SUCCESS on success
+ * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p tree is not a valid CCS tree
+ * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p tree_ret is NULL
  */
 extern ccs_result_t
 ccs_tree_get_value(ccs_tree_t tree, ccs_datum_t *value_ret);
@@ -46,9 +46,9 @@ ccs_tree_get_value(ccs_tree_t tree, ccs_datum_t *value_ret);
  * @param[in] tree
  * @param[out] arity_ret a pointer to the variable that will contain
  *                       the arity of the node.
- * @return #CCS_SUCCESS on success
- * @return #CCS_INVALID_OBJECT if \p tree is not a valid CCS tree
- * @return #CCS_INVALID_VALUE if \p arity_ret is NULL
+ * @return #CCS_RESULT_SUCCESS on success
+ * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p tree is not a valid CCS tree
+ * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p arity_ret is NULL
  */
 extern ccs_result_t
 ccs_tree_get_arity(ccs_tree_t tree, size_t *arity_ret);
@@ -58,12 +58,12 @@ ccs_tree_get_arity(ccs_tree_t tree, size_t *arity_ret);
  * @param[in] tree
  * @param[in] index
  * @param[in] child
- * @return #CCS_SUCCESS on success
- * @return #CCS_INVALID_OBJECT if \p tree is not a valid CCS tree; or if
+ * @return #CCS_RESULT_SUCCESS on success
+ * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p tree is not a valid CCS tree; or if
  *                             \p child is not a valid CCS tree
- * @return #CCS_OUT_OF_BOUNDS if \p index is greater than \p tree arity
- * @return #CCS_INVALID_VALUE if \p tree already has a child at \p index
- * @return #CCS_INVALID_TREE if \p child is already a child of another node;
+ * @return #CCS_RESULT_ERROR_OUT_OF_BOUNDS if \p index is greater than \p tree arity
+ * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p tree already has a child at \p index
+ * @return #CCS_RESULT_ERROR_INVALID_TREE if \p child is already a child of another node;
  *                           or if child is the root of a tree space
  */
 extern ccs_result_t
@@ -75,10 +75,10 @@ ccs_tree_set_child(ccs_tree_t tree, size_t index, ccs_tree_t child);
  * @param[in] index
  * @param[in] child_ret a pointer to the variable that will hold the
  *                      returned child or NULL if the child was undefined
- * @return #CCS_SUCCESS on success
- * @return #CCS_INVALID_OBJECT if \p tree is not a valid CCS tree
- * @return #CCS_OUT_OF_BOUNDS if \p index is greater than \p tree arity
- * @return #CCS_INVALID_VALUE if \p child_ret is NULL
+ * @return #CCS_RESULT_SUCCESS on success
+ * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p tree is not a valid CCS tree
+ * @return #CCS_RESULT_ERROR_OUT_OF_BOUNDS if \p index is greater than \p tree arity
+ * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p child_ret is NULL
  */
 extern ccs_result_t
 ccs_tree_get_child(ccs_tree_t tree, size_t index, ccs_tree_t *child_ret);
@@ -94,9 +94,9 @@ ccs_tree_get_child(ccs_tree_t tree, size_t index, ccs_tree_t *child_ret);
  * @param[out] num_children_ret a pointer to a variable that will contain the
  *                               number of children that are or would be returned.
  *                               Can be NULL
- * @return #CCS_SUCCESS on success
- * @return #CCS_INVALID_OBJECT if \p tree is not a valid CCS tree
- * @return #CCS_INVALID_VALUE if \p children is NULL and \p num_children is
+ * @return #CCS_RESULT_SUCCESS on success
+ * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p tree is not a valid CCS tree
+ * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p children is NULL and \p num_children is
  *                            greater than 0; or if \p children is NULL and \p
  *                            num_children_ret is NULL; or if \p children is
  *                            not NULL and \p num_children is less than the
@@ -116,9 +116,9 @@ ccs_tree_get_children(
  *                        parent node or NULL if the node has no parent.
  * @param[out] index_ret a pointer to a variable that will contain the index of
  *                        the node in the parent if it has a parent. Can be NULL
- * @return #CCS_SUCCESS on success
- * @return #CCS_INVALID_OBJECT if \p tree is not a valid CCS tree
- * @return #CCS_INVALID_VALUE if \p parent_ret is NULL
+ * @return #CCS_RESULT_SUCCESS on success
+ * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p tree is not a valid CCS tree
+ * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p parent_ret is NULL
  */
 extern ccs_result_t
 ccs_tree_get_parent(ccs_tree_t tree, ccs_tree_t *parent_ret, size_t *index_ret);
@@ -133,9 +133,9 @@ ccs_tree_get_parent(ccs_tree_t tree, ccs_tree_t *parent_ret, size_t *index_ret);
  * @param[out] position_size_ret a pointer to a variable that will contain the
  *                               number of values that are or would be returned.
  *                               Can be NULL
- * @return #CCS_SUCCESS on success
- * @return #CCS_INVALID_OBJECT if \p tree is not a valid CCS tree
- * @return #CCS_INVALID_VALUE if \p position is NULL and \p position_size is
+ * @return #CCS_RESULT_SUCCESS on success
+ * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p tree is not a valid CCS tree
+ * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p position is NULL and \p position_size is
  *                            greater than 0; or if \p position is NULL and \p
  *                            position_size_ret is NULL; or if \p position_size
  *                            is less than the number of values that would be
@@ -158,9 +158,9 @@ ccs_tree_get_position(
  * @param[out] num_values_ret a pointer to a variable that will contain the
  *                            number of values that are or would be returned.
  *                            Can be NULL
- * @return #CCS_SUCCESS on success
- * @return #CCS_INVALID_OBJECT if \p tree is not a valid CCS tree
- * @return #CCS_INVALID_VALUE if \p values is NULL and \p num_values is greater
+ * @return #CCS_RESULT_SUCCESS on success
+ * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p tree is not a valid CCS tree
+ * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p values is NULL and \p num_values is greater
  *                            than 0; or if \p values is NULL and \p
  *                            num_values_ret is NULL; or if \p num_values is
  *                            less than the number of values that would be
@@ -182,9 +182,9 @@ ccs_tree_get_values(
  *                          of the check. Result will be CCS_TRUE if the
  *                          configuration is valid. Result will be CCS_FALSE if
  *                          the position does not reference a node of the tree.
- * @return #CCS_SUCCESS on success
- * @return #CCS_INVALID_OBJECT if \p tree is not a valid CCS tree
- * @return #CCS_INVALID_VALUE if \p is_valid_ret is NULL; or if \p position is
+ * @return #CCS_RESULT_SUCCESS on success
+ * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p tree is not a valid CCS tree
+ * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p is_valid_ret is NULL; or if \p position is
  *                            NULL and \p position_size is greater than 0
  */
 extern ccs_result_t
@@ -204,10 +204,10 @@ ccs_tree_position_is_valid(
  * @param[out] values an array of size \p num_values to hold the returned
  *                    values, or NULL. If the array is too big, extra values
  *                    are set to #CCS_DATA_TYPE_NONE
- * @return #CCS_SUCCESS on success
- * @return #CCS_INVALID_OBJECT if \p tree is not a valid CCS tree
- * @return #CCS_INVALID_TREE if the position does not reference node in the tree.
- * @return #CCS_INVALID_VALUE if \p values is NULL; if \p num_values is less
+ * @return #CCS_RESULT_SUCCESS on success
+ * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p tree is not a valid CCS tree
+ * @return #CCS_RESULT_ERROR_INVALID_TREE if the position does not reference node in the tree.
+ * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p values is NULL; if \p num_values is less
  *                            than \p position_size + 1; or if \p position is
  *                            NULL and \p position_size is greater than 0
  */
@@ -226,11 +226,11 @@ ccs_tree_get_values_at_position(
  * @param[in] position an array of indexes defining a location in the tree
  *                     space. can be NULL if \p position_size is 0
  * @param[out] tree_ret a pointer to the variable that will contain the node
- * @return #CCS_SUCCESS on success
- * @return #CCS_INVALID_OBJECT if \p tree is not a valid CCS tree
- * @return #CCS_INVALID_VALUE if \p tree_ret is NULL; or if \p position is
+ * @return #CCS_RESULT_SUCCESS on success
+ * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p tree is not a valid CCS tree
+ * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p tree_ret is NULL; or if \p position is
  *                            NULL and \p position_size is greater than 0
- * @return #CCS_INVALID_TREE if the position does not define a valid position
+ * @return #CCS_RESULT_ERROR_INVALID_TREE if the position does not define a valid position
  *                           in the tree space, or if this position is
  *                           undefined in a static tree space.
  */
@@ -246,9 +246,9 @@ ccs_tree_get_node_at_position(
  * @param[in] tree
  * @param[out] weight_ret a pointer to the variable that will contain the
  *                        returned weight
- * @return #CCS_SUCCESS on success
- * @return #CCS_INVALID_OBJECT if \p tree is not a valid CCS tree
- * @return #CCS_INVALID_VALUE if \p weight_ret is NULL
+ * @return #CCS_RESULT_SUCCESS on success
+ * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p tree is not a valid CCS tree
+ * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p weight_ret is NULL
  */
 extern ccs_result_t
 ccs_tree_get_weight(ccs_tree_t tree, ccs_float_t *weight_ret);
@@ -257,8 +257,8 @@ ccs_tree_get_weight(ccs_tree_t tree, ccs_float_t *weight_ret);
  * Set the weight of a tree node.
  * @param[in,out] tree
  * @param[in] weight
- * @return #CCS_SUCCESS on success
- * @return #CCS_INVALID_OBJECT if \p tree is not a valid CCS tree
+ * @return #CCS_RESULT_SUCCESS on success
+ * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p tree is not a valid CCS tree
  */
 extern ccs_result_t
 ccs_tree_set_weight(ccs_tree_t tree, ccs_float_t weight);
@@ -268,9 +268,9 @@ ccs_tree_set_weight(ccs_tree_t tree, ccs_float_t weight);
  * @param[in] tree
  * @param[out] bias_ret a pointer to the variable that will contain the
  *                        returned bias
- * @return #CCS_SUCCESS on success
- * @return #CCS_INVALID_OBJECT if \p tree is not a valid CCS tree
- * @return #CCS_INVALID_VALUE if \p bias_ret is NULL
+ * @return #CCS_RESULT_SUCCESS on success
+ * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p tree is not a valid CCS tree
+ * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p bias_ret is NULL
  */
 extern ccs_result_t
 ccs_tree_get_bias(ccs_tree_t tree, ccs_float_t *bias_ret);
@@ -279,8 +279,8 @@ ccs_tree_get_bias(ccs_tree_t tree, ccs_float_t *bias_ret);
  * Set the bias of a tree node.
  * @param[in,out] tree
  * @param[in] bias
- * @return #CCS_SUCCESS on success
- * @return #CCS_INVALID_OBJECT if \p tree is not a valid CCS tree
+ * @return #CCS_RESULT_SUCCESS on success
+ * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p tree is not a valid CCS tree
  */
 extern ccs_result_t
 ccs_tree_set_bias(ccs_tree_t tree, ccs_float_t bias);
@@ -294,10 +294,10 @@ ccs_tree_set_bias(ccs_tree_t tree, ccs_float_t bias);
  * @param[in] tree
  * @param[in] rng the rng to use while sampling
  * @param[out] index_ret a pointer to the variable that will contain the returned index
- * @return #CCS_SUCCESS on success
- * @return #CCS_INVALID_OBJECT if \p tree is not a valid CCS tree
- * @return #CCS_INVALID_VALUE if \p index_ret is NULL
- * @return #CCS_INVALID_DISTRIBUTION if all the weights of \p tree and all it's subtrees are 0
+ * @return #CCS_RESULT_SUCCESS on success
+ * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p tree is not a valid CCS tree
+ * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p index_ret is NULL
+ * @return #CCS_RESULT_ERROR_INVALID_DISTRIBUTION if all the weights of \p tree and all it's subtrees are 0
  */
 extern ccs_result_t
 ccs_tree_sample(ccs_tree_t tree, ccs_rng_t rng, size_t *index_ret);
@@ -312,10 +312,10 @@ ccs_tree_sample(ccs_tree_t tree, ccs_rng_t rng, size_t *index_ret);
  * @param[in] rng the rng to use while sampling
  * @param[in] num_indices
  * @param[out] indices an array of \p num_indices which will hold the returned values
- * @return #CCS_SUCCESS on success
- * @return #CCS_INVALID_OBJECT if \p tree is not a valid CCS tree
- * @return #CCS_INVALID_VALUE if \p indices is NULL and \p num_indices is greater than 0
- * @return #CCS_INVALID_DISTRIBUTION if all the weights of \p tree and all it's subtrees are 0
+ * @return #CCS_RESULT_SUCCESS on success
+ * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p tree is not a valid CCS tree
+ * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p indices is NULL and \p num_indices is greater than 0
+ * @return #CCS_RESULT_ERROR_INVALID_DISTRIBUTION if all the weights of \p tree and all it's subtrees are 0
  */
 extern ccs_result_t
 ccs_tree_samples(

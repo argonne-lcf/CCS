@@ -17,13 +17,13 @@ ccs_result_t
 ccs_init()
 {
 	gsl_rng_env_setup();
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 ccs_result_t
 ccs_fini()
 {
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 ccs_version_t
@@ -36,16 +36,16 @@ ccs_result_t
 ccs_retain_object(ccs_object_t object)
 {
 	_ccs_object_internal_t *obj = (_ccs_object_internal_t *)object;
-	CCS_REFUTE(!obj || obj->refcount <= 0, CCS_INVALID_OBJECT);
+	CCS_REFUTE(!obj || obj->refcount <= 0, CCS_RESULT_ERROR_INVALID_OBJECT);
 	obj->refcount += 1;
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 ccs_result_t
 ccs_release_object(ccs_object_t object)
 {
 	_ccs_object_internal_t *obj = (_ccs_object_internal_t *)object;
-	CCS_REFUTE(!obj || obj->refcount <= 0, CCS_INVALID_OBJECT);
+	CCS_REFUTE(!obj || obj->refcount <= 0, CCS_RESULT_ERROR_INVALID_OBJECT);
 	obj->refcount -= 1;
 	if (obj->refcount == 0) {
 		if (obj->callbacks) {
@@ -59,27 +59,27 @@ ccs_release_object(ccs_object_t object)
 		CCS_VALIDATE(obj->ops->del(object));
 		free(object);
 	}
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 ccs_result_t
 ccs_object_get_type(ccs_object_t object, ccs_object_type_t *type_ret)
 {
-	CCS_REFUTE(!object, CCS_INVALID_OBJECT);
+	CCS_REFUTE(!object, CCS_RESULT_ERROR_INVALID_OBJECT);
 	CCS_CHECK_PTR(type_ret);
 	_ccs_object_internal_t *obj = (_ccs_object_internal_t *)object;
 	*type_ret                   = obj->type;
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 ccs_result_t
 ccs_object_get_refcount(ccs_object_t object, int32_t *refcount_ret)
 {
-	CCS_REFUTE(!object, CCS_INVALID_OBJECT);
+	CCS_REFUTE(!object, CCS_RESULT_ERROR_INVALID_OBJECT);
 	CCS_CHECK_PTR(refcount_ret);
 	_ccs_object_internal_t *obj = (_ccs_object_internal_t *)object;
 	*refcount_ret               = obj->refcount;
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 static const UT_icd _object_callback_icd = {
@@ -91,33 +91,33 @@ ccs_object_set_destroy_callback(
 	void (*callback)(ccs_object_t object, void *user_data),
 	void *user_data)
 {
-	CCS_REFUTE(!object, CCS_INVALID_OBJECT);
+	CCS_REFUTE(!object, CCS_RESULT_ERROR_INVALID_OBJECT);
 	CCS_CHECK_PTR(callback);
 	_ccs_object_internal_t *obj = (_ccs_object_internal_t *)object;
 	if (!obj->callbacks)
 		utarray_new(obj->callbacks, &_object_callback_icd);
 	_ccs_object_callback_t cb = {callback, user_data};
 	utarray_push_back(obj->callbacks, &cb);
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 ccs_result_t
 ccs_object_set_user_data(ccs_object_t object, void *user_data)
 {
-	CCS_REFUTE(!object, CCS_INVALID_OBJECT);
+	CCS_REFUTE(!object, CCS_RESULT_ERROR_INVALID_OBJECT);
 	_ccs_object_internal_t *obj = (_ccs_object_internal_t *)object;
 	obj->user_data              = user_data;
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 ccs_result_t
 ccs_object_get_user_data(ccs_object_t object, void **user_data_ret)
 {
-	CCS_REFUTE(!object, CCS_INVALID_OBJECT);
+	CCS_REFUTE(!object, CCS_RESULT_ERROR_INVALID_OBJECT);
 	CCS_CHECK_PTR(user_data_ret);
 	_ccs_object_internal_t *obj = (_ccs_object_internal_t *)object;
 	*user_data_ret              = obj->user_data;
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 ccs_result_t
@@ -126,11 +126,11 @@ ccs_object_set_serialize_callback(
 	ccs_object_serialize_callback_t callback,
 	void                           *user_data)
 {
-	CCS_REFUTE(!object, CCS_INVALID_OBJECT);
+	CCS_REFUTE(!object, CCS_RESULT_ERROR_INVALID_OBJECT);
 	_ccs_object_internal_t *obj = (_ccs_object_internal_t *)object;
 	obj->serialize_callback     = callback;
 	obj->serialize_user_data    = user_data;
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 static size_t
@@ -167,10 +167,10 @@ _ccs_serialize_header(
 	} break;
 	default:
 		CCS_RAISE(
-			CCS_INVALID_VALUE,
+			CCS_RESULT_ERROR_INVALID_VALUE,
 			"Unsupported serialization format: %d", format);
 	}
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 static ccs_result_t
@@ -187,7 +187,9 @@ _ccs_deserialize_header(
 		uint64_t sz;
 		CCS_VALIDATE(_ccs_deserialize_bin_magic_tag(
 			tag, buffer_size, buffer));
-		CCS_REFUTE(memcmp(tag, _ccs_magic_tag, 4), CCS_INVALID_VALUE);
+		CCS_REFUTE(
+			memcmp(tag, _ccs_magic_tag, 4),
+			CCS_RESULT_ERROR_INVALID_VALUE);
 		CCS_VALIDATE(_ccs_deserialize_bin_uncompressed_uint64(
 			&sz, buffer_size, buffer));
 		*size = sz;
@@ -195,14 +197,14 @@ _ccs_deserialize_header(
 			version, buffer_size, buffer));
 		CCS_REFUTE(
 			*version > CCS_SERIALIZATION_API_VERSION,
-			CCS_INVALID_VALUE);
+			CCS_RESULT_ERROR_INVALID_VALUE);
 	} break;
 	default:
 		CCS_RAISE(
-			CCS_INVALID_VALUE,
+			CCS_RESULT_ERROR_INVALID_VALUE,
 			"Unsupported serialization format: %d", format);
 	}
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 static inline ccs_result_t
@@ -221,7 +223,7 @@ _ccs_object_serialize_options(
 			CCS_REFUTE(
 				operation !=
 					CCS_SERIALIZE_OPERATION_FILE_DESCRIPTOR,
-				CCS_INVALID_VALUE);
+				CCS_RESULT_ERROR_INVALID_VALUE);
 			opts->ppfd_state =
 				va_arg(args, _ccs_file_descriptor_state_t **);
 			CCS_CHECK_PTR(opts->ppfd_state);
@@ -234,12 +236,12 @@ _ccs_object_serialize_options(
 			break;
 		default:
 			CCS_RAISE(
-				CCS_INVALID_VALUE,
+				CCS_RESULT_ERROR_INVALID_VALUE,
 				"Unsupported serialization option: %d", opt);
 		}
 		opt = (ccs_serialize_option_t)va_arg(args, int32_t);
 	}
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 static inline ccs_result_t
@@ -253,7 +255,7 @@ _ccs_object_serialize_size_with_opts(
 	*buffer_size                = _ccs_serialize_header_size(format);
 	CCS_VALIDATE(
 		obj->ops->serialize_size(object, format, buffer_size, opts));
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 static inline ccs_result_t
@@ -270,7 +272,7 @@ _ccs_object_serialize_size(
 	CCS_CHECK_PTR(p_buffer_size);
 	CCS_VALIDATE(_ccs_object_serialize_size_with_opts(
 		object, format, p_buffer_size, &opts));
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 static inline ccs_result_t
@@ -289,7 +291,7 @@ _ccs_object_serialize_memory_with_opts(
 		object, format, &buffer_size, &buffer, opts));
 	CCS_VALIDATE(_ccs_serialize_header(
 		format, &total_size, &buffer_start, total_size - buffer_size));
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 static inline ccs_result_t
@@ -308,7 +310,7 @@ _ccs_object_serialize_memory(
 		format, CCS_SERIALIZE_OPERATION_MEMORY, args, &opts));
 	CCS_VALIDATE(_ccs_object_serialize_memory_with_opts(
 		object, format, buffer_size, buffer, &opts));
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 static inline ccs_result_t
@@ -330,7 +332,7 @@ _ccs_object_serialize_file(
 	fd =
 		open(path, O_CREAT | O_TRUNC | O_RDWR,
 		     S_IRUSR | S_IWUSR | S_IWGRP | S_IRGRP | S_IROTH); // 664
-	CCS_REFUTE(fd == -1, CCS_INVALID_FILE_PATH);
+	CCS_REFUTE(fd == -1, CCS_RESULT_ERROR_INVALID_FILE_PATH);
 	CCS_VALIDATE_ERR_GOTO(
 		res,
 		_ccs_object_serialize_size_with_opts(
@@ -342,22 +344,22 @@ _ccs_object_serialize_file(
 		switch (errno) {
 		case ENOMEM:
 			CCS_RAISE_ERR_GOTO(
-				res, CCS_OUT_OF_MEMORY, err_file_fd,
-				"mmap failed: out of memory");
+				res, CCS_RESULT_ERROR_OUT_OF_MEMORY,
+				err_file_fd, "mmap failed: out of memory");
 			break;
 		case EACCES:
 			CCS_RAISE_ERR_GOTO(
-				res, CCS_INVALID_FILE_PATH, err_file_fd,
-				"mmap failed: invalid file");
+				res, CCS_RESULT_ERROR_INVALID_FILE_PATH,
+				err_file_fd, "mmap failed: invalid file");
 			break;
 		default:
 			CCS_RAISE_ERR_GOTO(
-				res, CCS_SYSTEM_ERROR, err_file_fd,
+				res, CCS_RESULT_ERROR_SYSTEM, err_file_fd,
 				"mmap failed: unexpected system error");
 		}
 	}
 	CCS_REFUTE_ERR_GOTO(
-		res, ftruncate(fd, buffer_size) == -1, CCS_SYSTEM_ERROR,
+		res, ftruncate(fd, buffer_size) == -1, CCS_RESULT_ERROR_SYSTEM,
 		err_file_map);
 	CCS_VALIDATE_ERR_GOTO(
 		res,
@@ -366,7 +368,7 @@ _ccs_object_serialize_file(
 		err_file_map);
 	CCS_REFUTE_ERR_GOTO(
 		res, msync(buffer, buffer_size, MS_SYNC) == -1,
-		CCS_SYSTEM_ERROR, err_file_map);
+		CCS_RESULT_ERROR_SYSTEM, err_file_map);
 err_file_map:
 	munmap(buffer, buffer_size);
 err_file_fd:
@@ -395,7 +397,7 @@ _ccs_object_serialize_file_descriptor(
 			/* check coherency */
 			CCS_REFUTE(
 				(*(opts.ppfd_state))->fd != fd,
-				CCS_INVALID_VALUE);
+				CCS_RESULT_ERROR_INVALID_VALUE);
 			pstate = *(opts.ppfd_state);
 		}
 	} else
@@ -410,7 +412,7 @@ _ccs_object_serialize_file_descriptor(
 			char *mem = (char *)malloc(
 				sizeof(_ccs_file_descriptor_state_t) +
 				object_size);
-			CCS_REFUTE(!mem, CCS_OUT_OF_MEMORY);
+			CCS_REFUTE(!mem, CCS_RESULT_ERROR_OUT_OF_MEMORY);
 			*(opts.ppfd_state) = pstate =
 				(_ccs_file_descriptor_state_t *)mem;
 			pstate->base_size =
@@ -420,7 +422,8 @@ _ccs_object_serialize_file_descriptor(
 				mem + sizeof(_ccs_file_descriptor_state_t);
 		} else {
 			pstate->base = (char *)malloc(object_size);
-			CCS_REFUTE(!pstate->base, CCS_OUT_OF_MEMORY);
+			CCS_REFUTE(
+				!pstate->base, CCS_RESULT_ERROR_OUT_OF_MEMORY);
 			pstate->base_size = object_size;
 			pstate->buffer    = pstate->base;
 		}
@@ -439,9 +442,9 @@ _ccs_object_serialize_file_descriptor(
 		if (count == -1) {
 			CCS_REFUTE_ERR_GOTO(
 				res, errno != EAGAIN && errno != EINTR,
-				CCS_SYSTEM_ERROR, err_fd_buffer);
+				CCS_RESULT_ERROR_SYSTEM, err_fd_buffer);
 			if (errno == EAGAIN && opts.ppfd_state)
-				return CCS_AGAIN;
+				return CCS_RESULT_AGAIN;
 		} else {
 			pstate->buffer_size -= count;
 			pstate->buffer += count;
@@ -465,8 +468,9 @@ ccs_object_serialize(
 	ccs_result_t            res;
 	va_list                 args;
 
-	CCS_REFUTE(!obj || !obj->ops, CCS_INVALID_OBJECT);
-	CCS_REFUTE(!obj->ops->serialize, CCS_UNSUPPORTED_OPERATION);
+	CCS_REFUTE(!obj || !obj->ops, CCS_RESULT_ERROR_INVALID_OBJECT);
+	CCS_REFUTE(
+		!obj->ops->serialize, CCS_RESULT_ERROR_UNSUPPORTED_OPERATION);
 
 	va_start(args, operation);
 	switch (operation) {
@@ -494,7 +498,7 @@ ccs_object_serialize(
 		break;
 	default:
 		CCS_RAISE_ERR_GOTO(
-			res, CCS_INVALID_VALUE, end,
+			res, CCS_RESULT_ERROR_INVALID_VALUE, end,
 			"Unsupported serialize operation: %d", operation);
 	}
 end:
@@ -549,7 +553,7 @@ _ccs_object_deserialize_options(
 			CCS_REFUTE(
 				operation !=
 					CCS_SERIALIZE_OPERATION_FILE_DESCRIPTOR,
-				CCS_INVALID_VALUE);
+				CCS_RESULT_ERROR_INVALID_VALUE);
 			opts->ppfd_state =
 				va_arg(args, _ccs_file_descriptor_state_t **);
 			CCS_CHECK_PTR(opts->ppfd_state);
@@ -562,12 +566,12 @@ _ccs_object_deserialize_options(
 			break;
 		default:
 			CCS_RAISE(
-				CCS_INVALID_VALUE,
+				CCS_RESULT_ERROR_INVALID_VALUE,
 				"Unsupported deserialization option: %d", opt);
 		}
 		opt = (ccs_deserialize_option_t)va_arg(args, int32_t);
 	}
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 static inline ccs_result_t
@@ -682,17 +686,17 @@ _ccs_object_deserialize_with_opts(
 			break;
 		default:
 			CCS_RAISE(
-				CCS_UNSUPPORTED_OPERATION,
+				CCS_RESULT_ERROR_UNSUPPORTED_OPERATION,
 				"Unsupported object type: %d", otype);
 		}
 		break;
 	}
 	default:
 		CCS_RAISE(
-			CCS_INVALID_VALUE,
+			CCS_RESULT_ERROR_INVALID_VALUE,
 			"Unsupported serialization format: %d", format);
 	}
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 static inline ccs_result_t
@@ -714,7 +718,7 @@ _ccs_object_deserialize(
 		format, buffer_size, buffer, &size, &version));
 	CCS_VALIDATE(_ccs_object_deserialize_with_opts(
 		object_ret, format, version, buffer_size, buffer, &opts));
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 static inline ccs_result_t
@@ -730,7 +734,7 @@ _ccs_object_deserialize_memory(
 	CCS_VALIDATE(_ccs_object_deserialize(
 		object_ret, format, CCS_SERIALIZE_OPERATION_MEMORY,
 		&buffer_size, &buffer, args));
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 static inline ccs_result_t
@@ -739,7 +743,7 @@ _ccs_object_deserialize_file(
 	ccs_serialize_format_t format,
 	va_list                args)
 {
-	ccs_result_t res         = CCS_SUCCESS;
+	ccs_result_t res         = CCS_RESULT_SUCCESS;
 	size_t       buffer_size = 0;
 	const char  *buffer      = NULL;
 	int          fd;
@@ -747,9 +751,9 @@ _ccs_object_deserialize_file(
 	const char  *path = va_arg(args, const char *);
 	CCS_CHECK_PTR(path);
 	fd = open(path, O_RDONLY);
-	CCS_REFUTE(fd == -1, CCS_INVALID_FILE_PATH);
+	CCS_REFUTE(fd == -1, CCS_RESULT_ERROR_INVALID_FILE_PATH);
 	CCS_REFUTE_ERR_GOTO(
-		res, fstat(fd, &stat_buffer) == -1, CCS_SYSTEM_ERROR,
+		res, fstat(fd, &stat_buffer) == -1, CCS_RESULT_ERROR_SYSTEM,
 		err_file_fd);
 	buffer_size = stat_buffer.st_size;
 	buffer      = (const char *)mmap(
@@ -758,17 +762,17 @@ _ccs_object_deserialize_file(
 		switch (errno) {
 		case ENOMEM:
 			CCS_RAISE_ERR_GOTO(
-				res, CCS_OUT_OF_MEMORY, err_file_fd,
-				"mmap failed: out of memory");
+				res, CCS_RESULT_ERROR_OUT_OF_MEMORY,
+				err_file_fd, "mmap failed: out of memory");
 			break;
 		case EACCES:
 			CCS_RAISE_ERR_GOTO(
-				res, CCS_INVALID_FILE_PATH, err_file_fd,
-				"mmap failed: invalid file");
+				res, CCS_RESULT_ERROR_INVALID_FILE_PATH,
+				err_file_fd, "mmap failed: invalid file");
 			break;
 		default:
 			CCS_RAISE_ERR_GOTO(
-				res, CCS_SYSTEM_ERROR, err_file_fd,
+				res, CCS_RESULT_ERROR_SYSTEM, err_file_fd,
 				"mmap failed: unexpected system error");
 		}
 	}
@@ -800,16 +804,16 @@ _ccs_object_deserialize_file_descriptor_read_loop(
 		if (count == -1) {
 			CCS_REFUTE(
 				errno != EAGAIN && errno != EINTR,
-				CCS_SYSTEM_ERROR);
+				CCS_RESULT_ERROR_SYSTEM);
 			/* if non blocking and try again */
 			if (errno == EAGAIN && non_blocking)
-				return CCS_AGAIN;
+				return CCS_RESULT_AGAIN;
 		} else {
 			pstate->buffer_size -= count;
 			pstate->buffer += count;
 		}
 	} while (pstate->buffer_size);
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 #define FD_READ_LOOP(pstate, non_blocking)                                     \
@@ -819,7 +823,7 @@ _ccs_object_deserialize_file_descriptor_read_loop(
 			_ccs_object_deserialize_file_descriptor_read_loop(     \
 				pstate, non_blocking),                         \
 			err_fd_buffer);                                        \
-		if (res == CCS_AGAIN)                                          \
+		if (res == CCS_RESULT_AGAIN)                                   \
 			return res;                                            \
 	} while (0)
 
@@ -829,7 +833,7 @@ _ccs_object_deserialize_file_descriptor(
 	ccs_serialize_format_t format,
 	va_list                args)
 {
-	ccs_result_t                      res = CCS_SUCCESS;
+	ccs_result_t                      res = CCS_RESULT_SUCCESS;
 	int                               fd;
 	int                               non_blocking;
 	size_t                            header_size;
@@ -850,7 +854,7 @@ _ccs_object_deserialize_file_descriptor(
 			/* check coherency */
 			CCS_REFUTE(
 				(*(opts.ppfd_state))->fd != fd,
-				CCS_INVALID_VALUE);
+				CCS_RESULT_ERROR_INVALID_VALUE);
 			pstate = *(opts.ppfd_state);
 		}
 	} else
@@ -861,7 +865,7 @@ _ccs_object_deserialize_file_descriptor(
 		if (non_blocking)
 			offset += sizeof(_ccs_file_descriptor_state_t);
 		char *mem = (char *)malloc(offset + header_size);
-		CCS_REFUTE(!mem, CCS_OUT_OF_MEMORY);
+		CCS_REFUTE(!mem, CCS_RESULT_ERROR_OUT_OF_MEMORY);
 		if (non_blocking) {
 			*(opts.ppfd_state) = pstate =
 				(_ccs_file_descriptor_state_t *)mem;
@@ -899,7 +903,8 @@ _ccs_object_deserialize_file_descriptor(
 			pstate->base_size = object_size;
 		new_buffer = (char *)realloc(pstate->base, pstate->base_size);
 		CCS_REFUTE_ERR_GOTO(
-			res, !new_buffer, CCS_OUT_OF_MEMORY, err_fd_buffer);
+			res, !new_buffer, CCS_RESULT_ERROR_OUT_OF_MEMORY,
+			err_fd_buffer);
 		pstate->base = new_buffer;
 		/* seek to after the header */
 		offset       = header_size;
@@ -966,7 +971,7 @@ ccs_object_deserialize(
 		break;
 	default:
 		CCS_RAISE_ERR_GOTO(
-			res, CCS_INVALID_VALUE, end,
+			res, CCS_RESULT_ERROR_INVALID_VALUE, end,
 			"Unsupported deserialize operation: %d", operation);
 	}
 end:
@@ -983,43 +988,43 @@ ccs_result_t
 ccs_get_result_name(ccs_result_t result, const char **name)
 {
 	switch (result) {
-		ETOCASE(CCS_AGAIN);
-		ETOCASE(CCS_SUCCESS);
-		ETOCASE(CCS_INVALID_OBJECT);
-		ETOCASE(CCS_INVALID_VALUE);
-		ETOCASE(CCS_INVALID_TYPE);
-		ETOCASE(CCS_INVALID_SCALE);
-		ETOCASE(CCS_INVALID_DISTRIBUTION);
-		ETOCASE(CCS_INVALID_EXPRESSION);
-		ETOCASE(CCS_INVALID_PARAMETER);
-		ETOCASE(CCS_INVALID_CONFIGURATION);
-		ETOCASE(CCS_INVALID_NAME);
-		ETOCASE(CCS_INVALID_CONDITION);
-		ETOCASE(CCS_INVALID_TUNER);
-		ETOCASE(CCS_INVALID_GRAPH);
-		ETOCASE(CCS_TYPE_NOT_COMPARABLE);
-		ETOCASE(CCS_INVALID_BOUNDS);
-		ETOCASE(CCS_OUT_OF_BOUNDS);
-		ETOCASE(CCS_SAMPLING_UNSUCCESSFUL);
-		ETOCASE(CCS_OUT_OF_MEMORY);
-		ETOCASE(CCS_UNSUPPORTED_OPERATION);
-		ETOCASE(CCS_INVALID_EVALUATION);
-		ETOCASE(CCS_INVALID_FEATURES);
-		ETOCASE(CCS_INVALID_FEATURES_TUNER);
-		ETOCASE(CCS_INVALID_FILE_PATH);
-		ETOCASE(CCS_NOT_ENOUGH_DATA);
-		ETOCASE(CCS_HANDLE_DUPLICATE);
-		ETOCASE(CCS_INVALID_HANDLE);
-		ETOCASE(CCS_SYSTEM_ERROR);
-		ETOCASE(CCS_EXTERNAL_ERROR);
-		ETOCASE(CCS_INVALID_TREE);
-		ETOCASE(CCS_INVALID_TREE_SPACE);
-		ETOCASE(CCS_INVALID_TREE_TUNER);
+		ETOCASE(CCS_RESULT_AGAIN);
+		ETOCASE(CCS_RESULT_SUCCESS);
+		ETOCASE(CCS_RESULT_ERROR_INVALID_OBJECT);
+		ETOCASE(CCS_RESULT_ERROR_INVALID_VALUE);
+		ETOCASE(CCS_RESULT_ERROR_INVALID_TYPE);
+		ETOCASE(CCS_RESULT_ERROR_INVALID_SCALE);
+		ETOCASE(CCS_RESULT_ERROR_INVALID_DISTRIBUTION);
+		ETOCASE(CCS_RESULT_ERROR_INVALID_EXPRESSION);
+		ETOCASE(CCS_RESULT_ERROR_INVALID_PARAMETER);
+		ETOCASE(CCS_RESULT_ERROR_INVALID_CONFIGURATION);
+		ETOCASE(CCS_RESULT_ERROR_INVALID_NAME);
+		ETOCASE(CCS_RESULT_ERROR_INVALID_CONDITION);
+		ETOCASE(CCS_RESULT_ERROR_INVALID_TUNER);
+		ETOCASE(CCS_RESULT_ERROR_INVALID_GRAPH);
+		ETOCASE(CCS_RESULT_ERROR_TYPE_NOT_COMPARABLE);
+		ETOCASE(CCS_RESULT_ERROR_INVALID_BOUNDS);
+		ETOCASE(CCS_RESULT_ERROR_OUT_OF_BOUNDS);
+		ETOCASE(CCS_RESULT_ERROR_SAMPLING_UNSUCCESSFUL);
+		ETOCASE(CCS_RESULT_ERROR_OUT_OF_MEMORY);
+		ETOCASE(CCS_RESULT_ERROR_UNSUPPORTED_OPERATION);
+		ETOCASE(CCS_RESULT_ERROR_INVALID_EVALUATION);
+		ETOCASE(CCS_RESULT_ERROR_INVALID_FEATURES);
+		ETOCASE(CCS_RESULT_ERROR_INVALID_FEATURES_TUNER);
+		ETOCASE(CCS_RESULT_ERROR_INVALID_FILE_PATH);
+		ETOCASE(CCS_RESULT_ERROR_NOT_ENOUGH_DATA);
+		ETOCASE(CCS_RESULT_ERROR_DUPLICATE_HANDLE);
+		ETOCASE(CCS_RESULT_ERROR_INVALID_HANDLE);
+		ETOCASE(CCS_RESULT_ERROR_SYSTEM);
+		ETOCASE(CCS_RESULT_ERROR_EXTERNAL);
+		ETOCASE(CCS_RESULT_ERROR_INVALID_TREE);
+		ETOCASE(CCS_RESULT_ERROR_INVALID_TREE_SPACE);
+		ETOCASE(CCS_RESULT_ERROR_INVALID_TREE_TUNER);
 	default:
 		*name = NULL;
 		CCS_RAISE(
-			CCS_INVALID_VALUE, "Unsupported result code: %d",
-			result);
+			CCS_RESULT_ERROR_INVALID_VALUE,
+			"Unsupported result code: %d", result);
 	}
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }

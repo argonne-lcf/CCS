@@ -34,7 +34,7 @@ class TreeTuner(Object):
     elif v == ccs_tree_tuner_type.USER_DEFINED:
       return UserDefinedTreeTuner(handle = handle, retain = retain, auto_release = auto_release)
     else:
-      raise Error(ccs_result(ccs_result.INVALID_TREE_TUNER))
+      raise Error(ccs_result(ccs_result.ERROR_INVALID_TREE_TUNER))
 
   @property
   def type(self):
@@ -181,7 +181,7 @@ def _wrap_user_defined_tree_tuner_callbacks(delete, ask, tell, get_optimums, get
       p_c = ct.cast(p_count, ct.c_void_p)
       (configurations, count_ret) = ask(TreeTuner.from_handle(tun), count if p_confs.value else None)
       if p_confs.value is not None and count < count_ret:
-        raise Error(ccs_result(ccs_result.INVALID_VALUE))
+        raise Error(ccs_result(ccs_result.ERROR_INVALID_VALUE))
       if p_confs.value is not None:
         for i in range(len(configurations)):
           res = ccs_retain_object(configurations[i].handle)
@@ -202,7 +202,7 @@ def _wrap_user_defined_tree_tuner_callbacks(delete, ask, tell, get_optimums, get
         return ccs_result.SUCCESS
       p_evals = ct.cast(p_evaluations, ct.c_void_p)
       if p_evals.value is None:
-        raise Error(ccs_result(ccs_result.INVALID_VALUE))
+        raise Error(ccs_result(ccs_result.ERROR_INVALID_VALUE))
       evals = [TreeEvaluation.from_handle(ccs_tree_evaluation(p_evaluations[i])) for i in range(count)]
       tell(TreeTuner.from_handle(tun), evals)
       return ccs_result.SUCCESS
@@ -217,7 +217,7 @@ def _wrap_user_defined_tree_tuner_callbacks(delete, ask, tell, get_optimums, get
       optimums = get_optimums(TreeTuner.from_handle(tun))
       count_ret = len(optimums)
       if p_evals.value is not None and count < count_ret:
-        raise Error(ccs_result(ccs_result.INVALID_VALUE))
+        raise Error(ccs_result(ccs_result.ERROR_INVALID_VALUE))
       if p_evals.value is not None:
         for i in range(count_ret):
           p_evaluations[i] = optimums[i].handle.value
@@ -237,7 +237,7 @@ def _wrap_user_defined_tree_tuner_callbacks(delete, ask, tell, get_optimums, get
       history = get_history(TreeTuner.from_handle(tun))
       count_ret = len(history)
       if p_evals.value is not None and count < count_ret:
-        raise Error(ccs_result(ccs_result.INVALID_VALUE))
+        raise Error(ccs_result(ccs_result.ERROR_INVALID_VALUE))
       if p_evals.value is not None:
         for i in range(count_ret):
           p_evaluations[i] = history[i].handle.value
@@ -271,7 +271,7 @@ def _wrap_user_defined_tree_tuner_callbacks(delete, ask, tell, get_optimums, get
         p_sz = ct.cast(p_state_size, ct.c_void_p)
         state = serialize(TreeTuner.from_handle(tun), True if state_size == 0 else False)
         if p_s.value is not None and state_size < ct.sizeof(state):
-          raise Error(ccs_result(ccs_result.INVALID_VALUE))
+          raise Error(ccs_result(ccs_result.ERROR_INVALID_VALUE))
         if p_s.value is not None:
           ct.memmove(p_s, ct.byref(state), ct.sizeof(state))
         if p_sz.value is not None:
@@ -331,7 +331,7 @@ class UserDefinedTreeTuner(TreeTuner):
                name = None, tree_space = None, objective_space = None, delete = None, ask = None, tell = None, get_optimums = None, get_history = None, suggest = None, serialize = None, deserialize = None, tuner_data = None ):
     if handle is None:
       if delete is None or ask is None or tell is None or get_optimums is None or get_history is None:
-        raise Error(ccs_result(ccs_result.INVALID_VALUE))
+        raise Error(ccs_result(ccs_result.ERROR_INVALID_VALUE))
 
       (delete_wrapper,
        ask_wrapper,
@@ -373,7 +373,7 @@ class UserDefinedTreeTuner(TreeTuner):
   @classmethod
   def deserialize(cls, delete, ask, tell, get_optimums, get_history, suggest = None, serialize = None, deserialize = None, tuner_data = None, format = 'binary', handle_map = None, path = None, buffer = None, file_descriptor = None, callback = None, callback_data = None):
     if delete is None or ask is None or tell is None or get_optimums is None or get_history is None:
-      raise Error(ccs_result(ccs_result.INVALID_VALUE))
+      raise Error(ccs_result(ccs_result.ERROR_INVALID_VALUE))
     (delete_wrapper,
      ask_wrapper,
      tell_wrapper,

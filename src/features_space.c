@@ -21,7 +21,7 @@ _ccs_features_space_del(ccs_object_t object)
 		free(elem);
 	}
 	utarray_free(features_space->data->parameters);
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 static ccs_result_t
@@ -38,12 +38,12 @@ _ccs_features_space_serialize_size(
 		break;
 	default:
 		CCS_RAISE(
-			CCS_INVALID_VALUE,
+			CCS_RESULT_ERROR_INVALID_VALUE,
 			"Unsupported serialization format: %d", format);
 	}
 	CCS_VALIDATE(_ccs_object_serialize_user_data_size(
 		object, format, cum_size, opts));
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 static ccs_result_t
@@ -61,12 +61,12 @@ _ccs_features_space_serialize(
 		break;
 	default:
 		CCS_RAISE(
-			CCS_INVALID_VALUE,
+			CCS_RESULT_ERROR_INVALID_VALUE,
 			"Unsupported serialization format: %d", format);
 	}
 	CCS_VALIDATE(_ccs_object_serialize_user_data(
 		object, format, buffer_size, buffer, opts));
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 static _ccs_features_space_ops_t _features_space_ops = {
@@ -84,7 +84,7 @@ static const UT_icd _parameter_wrapper_icd = {
 #define utarray_oom()                                                          \
 	{                                                                      \
 		CCS_RAISE_ERR_GOTO(                                            \
-			err, CCS_OUT_OF_MEMORY, arrays,                        \
+			err, CCS_RESULT_ERROR_OUT_OF_MEMORY, arrays,           \
 			"Not enough memory to allocate array");                \
 	}
 ccs_result_t
@@ -99,7 +99,7 @@ ccs_create_features_space(
 		1, sizeof(struct _ccs_features_space_s) +
 			   sizeof(struct _ccs_features_space_data_s) +
 			   strlen(name) + 1);
-	CCS_REFUTE(!mem, CCS_OUT_OF_MEMORY);
+	CCS_REFUTE(!mem, CCS_RESULT_ERROR_OUT_OF_MEMORY);
 
 	ccs_features_space_t feat_space = (ccs_features_space_t)mem;
 	_ccs_object_init(
@@ -114,7 +114,7 @@ ccs_create_features_space(
 	utarray_new(feat_space->data->parameters, &_parameter_wrapper_icd);
 	strcpy((char *)(feat_space->data->name), name);
 	*features_space_ret = feat_space;
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 arrays:
 	if (feat_space->data->parameters)
 		utarray_free(feat_space->data->parameters);
@@ -130,21 +130,21 @@ ccs_features_space_get_name(
 	CCS_CHECK_OBJ(features_space, CCS_OBJECT_TYPE_FEATURES_SPACE);
 	CCS_VALIDATE(
 		_ccs_context_get_name((ccs_context_t)features_space, name_ret));
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 #undef utarray_oom
 #define utarray_oom()                                                          \
 	{                                                                      \
 		CCS_RAISE_ERR_GOTO(                                            \
-			err, CCS_OUT_OF_MEMORY, errormem,                      \
+			err, CCS_RESULT_ERROR_OUT_OF_MEMORY, errormem,         \
 			"Not enough memory to allocate array");                \
 	}
 #undef uthash_nonfatal_oom
 #define uthash_nonfatal_oom(elt)                                               \
 	{                                                                      \
 		CCS_RAISE_ERR_GOTO(                                            \
-			err, CCS_OUT_OF_MEMORY, errorutarray,                  \
+			err, CCS_RESULT_ERROR_OUT_OF_MEMORY, errorutarray,     \
 			"Not enough memory to allocate hash");                 \
 	}
 ccs_result_t
@@ -164,7 +164,7 @@ ccs_features_space_add_parameter(
 		hh_name, features_space->data->name_hash, name, sz_name,
 		parameter_hash);
 	CCS_REFUTE_MSG(
-		parameter_hash, CCS_INVALID_PARAMETER,
+		parameter_hash, CCS_RESULT_ERROR_INVALID_PARAMETER,
 		"An parameter with name '%s' already exists in the feature space",
 		name);
 	UT_array *parameters;
@@ -176,7 +176,8 @@ ccs_features_space_add_parameter(
 	parameter_hash              = (_ccs_parameter_index_hash_t *)malloc(
                 sizeof(_ccs_parameter_index_hash_t));
 	CCS_REFUTE_ERR_GOTO(
-		err, !parameter_hash, CCS_OUT_OF_MEMORY, errorparameter);
+		err, !parameter_hash, CCS_RESULT_ERROR_OUT_OF_MEMORY,
+		errorparameter);
 	parameter_hash->parameter = parameter;
 	parameter_hash->name      = name;
 	parameter_hash->index     = utarray_len(parameters);
@@ -190,7 +191,7 @@ ccs_features_space_add_parameter(
 		hh_handle, features_space->data->handle_hash, parameter,
 		sizeof(ccs_parameter_t), parameter_hash);
 
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 errorutarray:
 	utarray_pop_back(parameters);
 errormem:
@@ -213,7 +214,7 @@ ccs_features_space_add_parameters(
 	for (size_t i = 0; i < num_parameters; i++)
 		CCS_VALIDATE(ccs_features_space_add_parameter(
 			features_space, parameters[i]));
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 ccs_result_t
@@ -224,7 +225,7 @@ ccs_features_space_get_num_parameters(
 	CCS_CHECK_OBJ(features_space, CCS_OBJECT_TYPE_FEATURES_SPACE);
 	CCS_VALIDATE(_ccs_context_get_num_parameters(
 		(ccs_context_t)features_space, num_parameters_ret));
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 ccs_result_t
@@ -236,7 +237,7 @@ ccs_features_space_get_parameter(
 	CCS_CHECK_OBJ(features_space, CCS_OBJECT_TYPE_FEATURES_SPACE);
 	CCS_VALIDATE(_ccs_context_get_parameter(
 		(ccs_context_t)features_space, index, parameter_ret));
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 ccs_result_t
@@ -248,7 +249,7 @@ ccs_features_space_get_parameter_by_name(
 	CCS_CHECK_OBJ(features_space, CCS_OBJECT_TYPE_FEATURES_SPACE);
 	CCS_VALIDATE(_ccs_context_get_parameter_by_name(
 		(ccs_context_t)features_space, name, parameter_ret));
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 ccs_result_t
@@ -260,7 +261,7 @@ ccs_features_space_get_parameter_index_by_name(
 	CCS_CHECK_OBJ(features_space, CCS_OBJECT_TYPE_FEATURES_SPACE);
 	CCS_VALIDATE(_ccs_context_get_parameter_index_by_name(
 		(ccs_context_t)features_space, name, index_ret));
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 ccs_result_t
@@ -273,7 +274,7 @@ ccs_features_space_get_parameter_index(
 	CCS_CHECK_OBJ(parameter, CCS_OBJECT_TYPE_PARAMETER);
 	CCS_VALIDATE(_ccs_context_get_parameter_index(
 		(ccs_context_t)(features_space), parameter, index_ret));
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 ccs_result_t
@@ -287,7 +288,7 @@ ccs_features_space_get_parameter_indexes(
 	CCS_VALIDATE(_ccs_context_get_parameter_indexes(
 		(ccs_context_t)features_space, num_parameters, parameters,
 		indexes));
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 ccs_result_t
@@ -301,7 +302,7 @@ ccs_features_space_get_parameters(
 	CCS_VALIDATE(_ccs_context_get_parameters(
 		(ccs_context_t)features_space, num_parameters, parameters,
 		num_parameters_ret));
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 ccs_result_t
@@ -314,7 +315,7 @@ ccs_features_space_validate_value(
 	CCS_CHECK_OBJ(features_space, CCS_OBJECT_TYPE_FEATURES_SPACE);
 	CCS_VALIDATE(_ccs_context_validate_value(
 		(ccs_context_t)features_space, index, value, value_ret));
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 static inline ccs_result_t
@@ -326,7 +327,9 @@ _check_features(
 {
 	UT_array *array          = features_space->data->parameters;
 	size_t    num_parameters = utarray_len(array);
-	CCS_REFUTE(num_values != num_parameters, CCS_INVALID_FEATURES);
+	CCS_REFUTE(
+		num_values != num_parameters,
+		CCS_RESULT_ERROR_INVALID_FEATURES);
 	*is_valid_ret = CCS_TRUE;
 	for (size_t i = 0; i < num_values; i++) {
 		_ccs_parameter_wrapper_t *wrapper =
@@ -334,9 +337,9 @@ _check_features(
 		CCS_VALIDATE(ccs_parameter_check_value(
 			wrapper->parameter, values[i], is_valid_ret));
 		if (*is_valid_ret == CCS_FALSE)
-			return CCS_SUCCESS;
+			return CCS_RESULT_SUCCESS;
 	}
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 ccs_result_t
@@ -349,11 +352,11 @@ ccs_features_space_check_features(
 	CCS_CHECK_OBJ(features, CCS_OBJECT_TYPE_FEATURES);
 	CCS_REFUTE(
 		features->data->features_space != features_space,
-		CCS_INVALID_FEATURES);
+		CCS_RESULT_ERROR_INVALID_FEATURES);
 	CCS_VALIDATE(_check_features(
 		features_space, features->data->num_values,
 		features->data->values, is_valid_ret));
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 ccs_result_t
@@ -367,5 +370,5 @@ ccs_features_space_check_features_values(
 	CCS_CHECK_ARY(num_values, values);
 	CCS_VALIDATE(_check_features(
 		features_space, num_values, values, is_valid_ret));
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }

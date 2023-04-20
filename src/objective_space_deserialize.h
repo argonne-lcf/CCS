@@ -31,13 +31,13 @@ _ccs_deserialize_bin_ccs_objective_space_data(
 		&data->num_objectives, buffer_size, buffer));
 
 	if (!(data->num_parameters + data->num_objectives))
-		return CCS_SUCCESS;
+		return CCS_RESULT_SUCCESS;
 	mem = (uintptr_t)calloc(
 		data->num_parameters * sizeof(ccs_parameter_t) +
 			data->num_objectives * (sizeof(ccs_expression_t) +
 						sizeof(ccs_objective_type_t)),
 		1);
-	CCS_REFUTE(!mem, CCS_OUT_OF_MEMORY);
+	CCS_REFUTE(!mem, CCS_RESULT_ERROR_OUT_OF_MEMORY);
 	data->parameters = (ccs_parameter_t *)mem;
 	mem += data->num_parameters * sizeof(ccs_parameter_t);
 	data->objectives = (ccs_expression_t *)mem;
@@ -57,7 +57,7 @@ _ccs_deserialize_bin_ccs_objective_space_data(
 			data->objective_types + i, buffer_size, buffer));
 	}
 
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 static inline ccs_result_t
@@ -71,11 +71,12 @@ _ccs_deserialize_bin_objective_space(
 	_ccs_object_deserialize_options_t new_opts = *opts;
 	_ccs_object_internal_t            obj;
 	ccs_object_t                      handle;
-	ccs_result_t                      res = CCS_SUCCESS;
+	ccs_result_t                      res = CCS_RESULT_SUCCESS;
 	CCS_VALIDATE(_ccs_deserialize_bin_ccs_object_internal(
 		&obj, buffer_size, buffer, &handle));
 	CCS_REFUTE(
-		obj.type != CCS_OBJECT_TYPE_OBJECTIVE_SPACE, CCS_INVALID_TYPE);
+		obj.type != CCS_OBJECT_TYPE_OBJECTIVE_SPACE,
+		CCS_RESULT_ERROR_INVALID_TYPE);
 
 	new_opts.map_values = CCS_TRUE;
 	CCS_VALIDATE(ccs_create_map(&new_opts.handle_map));
@@ -145,13 +146,13 @@ _ccs_objective_space_deserialize(
 		break;
 	default:
 		CCS_RAISE(
-			CCS_INVALID_VALUE,
+			CCS_RESULT_ERROR_INVALID_VALUE,
 			"Unsupported serialization format: %d", format);
 	}
 	CCS_VALIDATE(_ccs_object_deserialize_user_data(
 		(ccs_object_t)*objective_space_ret, format, version,
 		buffer_size, buffer, opts));
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 #endif //_OBJECTIVE_SPACE_DESERIALIZE_H

@@ -13,7 +13,7 @@
 
 #define CCS_CHECK(expr)                                                        \
 	do {                                                                   \
-		assert(CCS_SUCCESS == (expr));                                 \
+		assert(CCS_RESULT_SUCCESS == (expr));                          \
 	} while (0)
 
 #ifndef CCS_DEBUG
@@ -674,7 +674,7 @@ kokkosp_end_context(size_t contextId)
 	  CCS_CHECK(ccs_features_tuner_get_objective_space(
 		  tuner, &objective_space));
 	  CCS_CHECK(ccs_create_features_evaluation(
-		  objective_space, configuration, feat, CCS_SUCCESS, 1,
+		  objective_space, configuration, feat, CCS_RESULT_SUCCESS, 1,
 		  &elapsed, &evaluation));
 
 	  CCS_CHECK(ccs_features_tuner_tell(tuner, 1, &evaluation));

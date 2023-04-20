@@ -6,7 +6,7 @@ static ccs_result_t
 _ccs_parameter_numerical_del(ccs_object_t o)
 {
 	(void)o;
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 static inline size_t
@@ -31,7 +31,7 @@ _ccs_serialize_bin_ccs_parameter_numerical(
 		(_ccs_object_internal_t *)parameter, buffer_size, buffer));
 	CCS_VALIDATE(_ccs_serialize_bin_ccs_parameter_numerical_data(
 		data, buffer_size, buffer));
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 static ccs_result_t
@@ -48,12 +48,12 @@ _ccs_parameter_numerical_serialize_size(
 		break;
 	default:
 		CCS_RAISE(
-			CCS_INVALID_VALUE,
+			CCS_RESULT_ERROR_INVALID_VALUE,
 			"Unsupported serialization format: %d", format);
 	}
 	CCS_VALIDATE(_ccs_object_serialize_user_data_size(
 		object, format, cum_size, opts));
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 static ccs_result_t
@@ -71,12 +71,12 @@ _ccs_parameter_numerical_serialize(
 		break;
 	default:
 		CCS_RAISE(
-			CCS_INVALID_VALUE,
+			CCS_RESULT_ERROR_INVALID_VALUE,
 			"Unsupported serialization format: %d", format);
 	}
 	CCS_VALIDATE(_ccs_object_serialize_user_data(
 		object, format, buffer_size, buffer, opts));
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 static ccs_result_t
@@ -115,7 +115,7 @@ _ccs_parameter_numerical_check_values(
 			}
 		}
 	}
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 static ccs_result_t
@@ -160,7 +160,9 @@ _ccs_parameter_numerical_samples(
 		vs           = NULL;
 		size_t coeff = 2;
 		while (found < num_values) {
-			CCS_REFUTE(coeff > 32, CCS_SAMPLING_UNSUCCESSFUL);
+			CCS_REFUTE(
+				coeff > 32,
+				CCS_RESULT_ERROR_SAMPLING_UNSUCCESSFUL);
 			size_t         buff_sz = (num_values - found) * coeff;
 			ccs_numeric_t *oldvs   = vs;
 			vs                     = (ccs_numeric_t *)realloc(
@@ -169,7 +171,7 @@ _ccs_parameter_numerical_samples(
 				if (oldvs)
 					free(oldvs);
 				CCS_RAISE(
-					CCS_OUT_OF_MEMORY,
+					CCS_RESULT_ERROR_OUT_OF_MEMORY,
 					"Not enough memory to reallocate buffer");
 			}
 			CCS_VALIDATE_ERR_GOTO(
@@ -201,7 +203,7 @@ _ccs_parameter_numerical_samples(
 		values[i].type  = (ccs_data_type_t)type;
 		values[i].flags = CCS_DATUM_FLAG_DEFAULT;
 	}
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 errmem:
 	free(vs);
 	return err;
@@ -218,7 +220,7 @@ _ccs_parameter_numerical_get_default_distribution(
 	CCS_VALIDATE(ccs_create_uniform_distribution(
 		interval->type, interval->lower, interval->upper,
 		CCS_SCALE_TYPE_LINEAR, d->quantization, distribution));
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 static ccs_result_t
@@ -257,7 +259,7 @@ _ccs_parameter_numerical_convert_samples(
 					results[i] = ccs_inactive;
 		}
 	}
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 static _ccs_parameter_ops_t _ccs_parameter_numerical_ops = {
@@ -284,26 +286,26 @@ ccs_create_numerical_parameter(
 	CCS_REFUTE(
 		data_type != CCS_NUMERIC_TYPE_FLOAT &&
 			data_type != CCS_NUMERIC_TYPE_INT,
-		CCS_INVALID_TYPE);
+		CCS_RESULT_ERROR_INVALID_TYPE);
 	CCS_REFUTE(
 		data_type == CCS_NUMERIC_TYPE_INT &&
 			(lower.i >= upper.i || quantization.i < 0 ||
 			 quantization.i > upper.i - lower.i ||
 			 default_value.i < lower.i ||
 			 default_value.i >= upper.i),
-		CCS_INVALID_VALUE);
+		CCS_RESULT_ERROR_INVALID_VALUE);
 	CCS_REFUTE(
 		data_type == CCS_NUMERIC_TYPE_FLOAT &&
 			(lower.f >= upper.f || quantization.f < 0.0 ||
 			 quantization.f > upper.f - lower.f ||
 			 default_value.f < lower.f ||
 			 default_value.f >= upper.f),
-		CCS_INVALID_VALUE);
+		CCS_RESULT_ERROR_INVALID_VALUE);
 	uintptr_t mem = (uintptr_t)calloc(
 		1, sizeof(struct _ccs_parameter_s) +
 			   sizeof(_ccs_parameter_numerical_data_t) +
 			   strlen(name) + 1);
-	CCS_REFUTE(!mem, CCS_OUT_OF_MEMORY);
+	CCS_REFUTE(!mem, CCS_RESULT_ERROR_OUT_OF_MEMORY);
 
 	ccs_interval_t interval;
 	interval.type             = data_type;
@@ -339,7 +341,7 @@ ccs_create_numerical_parameter(
 	parameter->data = (_ccs_parameter_data_t *)parameter_data;
 	*parameter_ret  = parameter;
 
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 ccs_result_t
@@ -353,7 +355,7 @@ ccs_numerical_parameter_get_properties(
 	CCS_CHECK_PARAMETER(parameter, CCS_PARAMETER_TYPE_NUMERICAL);
 	CCS_REFUTE(
 		!data_type_ret && !lower_ret && !upper_ret && !quantization_ret,
-		CCS_INVALID_VALUE);
+		CCS_RESULT_ERROR_INVALID_VALUE);
 	_ccs_parameter_numerical_data_t *d =
 		(_ccs_parameter_numerical_data_t *)parameter->data;
 	if (data_type_ret)
@@ -364,5 +366,5 @@ ccs_numerical_parameter_get_properties(
 		*upper_ret = d->common_data.interval.upper;
 	if (quantization_ret)
 		*quantization_ret = d->quantization;
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }

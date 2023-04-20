@@ -45,7 +45,7 @@ class FeaturesSpace(Context):
   def check_values(self, values):
     count = len(values)
     if count != self.num_parameters:
-      raise Error(ccs_result(ccs_result.INVALID_VALUE))
+      raise Error(ccs_result(ccs_result.ERROR_INVALID_VALUE))
     v = (ccs_datum * count)()
     ss = []
     for i in range(count):

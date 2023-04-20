@@ -50,7 +50,7 @@ module CCS
       when :CCS_DISTRIBUTION_TYPE_MULTIVARIATE
         MultivariateDistribution
       else
-        raise CCSError, :CCS_INVALID_DISTRIBUTION
+        raise CCSError, :CCS_RESULT_ERROR_INVALID_DISTRIBUTION
       end.new(handle, retain: retain, auto_release: auto_release)
     end
 
@@ -323,7 +323,7 @@ module CCS
         ptr = MemoryPointer::new(:ccs_distribution_t)
         p_distributions = MemoryPointer::new(:ccs_distribution_t, distributions.length)
         if weights
-          raise CCSError, :CCS_INVALID_VALUE if distributions.length != weights.length
+          raise CCSError, :CCS_RESULT_ERROR_INVALID_VALUE if distributions.length != weights.length
         else
           weights = [1.0]*distributions.length
         end

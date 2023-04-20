@@ -27,14 +27,14 @@ _ccs_deserialize_bin_ccs_context_data(
 	if (data->num_parameters) {
 		data->parameters = (ccs_parameter_t *)calloc(
 			data->num_parameters, sizeof(ccs_parameter_t));
-		CCS_REFUTE(!data->parameters, CCS_OUT_OF_MEMORY);
+		CCS_REFUTE(!data->parameters, CCS_RESULT_ERROR_OUT_OF_MEMORY);
 		for (size_t i = 0; i < data->num_parameters; i++)
 			CCS_VALIDATE(_ccs_parameter_deserialize(
 				data->parameters + i,
 				CCS_SERIALIZE_FORMAT_BINARY, version,
 				buffer_size, buffer, opts));
 	}
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 #endif //_CONTEXT_DESERIALIZE_H

@@ -8,7 +8,7 @@
 			    !(s) || !((_ccs_object_template_t *)(s))->data ||  \
 			    ((_ccs_object_template_t *)(s))->obj.type !=       \
 				    CCS_OBJECT_TYPE_ERROR_STACK))              \
-			return CCS_INVALID_OBJECT;                             \
+			return CCS_RESULT_ERROR_INVALID_OBJECT;                \
 	} while (0)
 
 static __thread ccs_error_stack_t ccs_error_stack = NULL;
@@ -42,7 +42,7 @@ ccs_set_thread_error(ccs_error_stack_t error_stack)
 	if (ccs_error_stack)
 		ccs_release_object(ccs_error_stack);
 	ccs_error_stack = error_stack;
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 static ccs_result_t
@@ -50,7 +50,7 @@ _ccs_error_stack_del(ccs_object_t object)
 {
 	ccs_error_stack_t error_stack = (ccs_error_stack_t)object;
 	utarray_free(error_stack->data->elems);
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 static struct _ccs_error_stack_ops_s _error_stack_ops = {
@@ -66,7 +66,7 @@ static const UT_icd _error_stack_elem_icd = {
 #undef utarray_oom
 #define utarray_oom()                                                          \
 	{                                                                      \
-		err = CCS_OUT_OF_MEMORY;                                       \
+		err = CCS_RESULT_ERROR_OUT_OF_MEMORY;                          \
 		goto arrays;                                                   \
 	}
 
@@ -88,7 +88,7 @@ _ccs_create_error_stack(
 		1, sizeof(struct _ccs_error_stack_s) +
 			   sizeof(struct _ccs_error_stack_data_s) + msg_size);
 	if (!mem)
-		return CCS_OUT_OF_MEMORY;
+		return CCS_RESULT_ERROR_OUT_OF_MEMORY;
 	ccs_error_stack_t error_stack = (ccs_error_stack_t)mem;
 	_ccs_object_init(
 		&(error_stack->obj), CCS_OBJECT_TYPE_ERROR_STACK,
@@ -108,7 +108,7 @@ _ccs_create_error_stack(
 		va_end(args_cp);
 	}
 	*error_stack_ret = error_stack;
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 arrays:
 	free((void *)mem);
 	return err;
@@ -144,7 +144,7 @@ ccs_create_thread_error(ccs_result_t error_code, const char *msg, ...)
 #undef utarray_oom
 #define utarray_oom()                                                          \
 	{                                                                      \
-		return CCS_OUT_OF_MEMORY;                                      \
+		return CCS_RESULT_ERROR_OUT_OF_MEMORY;                         \
 	}
 static inline ccs_result_t
 _ccs_error_stack_push(
@@ -156,7 +156,7 @@ _ccs_error_stack_push(
 	CCS_CHECK_ERROR_STACK(error_stack);
 	ccs_error_stack_elem_t elem = {file, line, func};
 	utarray_push_back(error_stack->data->elems, &elem);
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 ccs_result_t
@@ -183,14 +183,14 @@ ccs_error_stack_get_elems(
 {
 	CCS_CHECK_ERROR_STACK(error_stack);
 	if (CCS_UNLIKELY(!num_elems_ret || !elems))
-		return CCS_INVALID_VALUE;
+		return CCS_RESULT_ERROR_INVALID_VALUE;
 	*num_elems_ret = utarray_len(error_stack->data->elems);
 	if (*num_elems_ret)
 		*elems = (ccs_error_stack_elem_t *)utarray_eltptr(
 			error_stack->data->elems, 0);
 	else
 		*elems = NULL;
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 ccs_result_t
@@ -200,9 +200,9 @@ ccs_error_stack_get_message(
 {
 	CCS_CHECK_ERROR_STACK(error_stack);
 	if (CCS_UNLIKELY(!message_ret))
-		return CCS_INVALID_VALUE;
+		return CCS_RESULT_ERROR_INVALID_VALUE;
 	*message_ret = error_stack->data->msg;
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 ccs_result_t
@@ -212,7 +212,7 @@ ccs_error_stack_get_code(
 {
 	CCS_CHECK_ERROR_STACK(error_stack);
 	if (CCS_UNLIKELY(!error_code_ret))
-		return CCS_INVALID_VALUE;
+		return CCS_RESULT_ERROR_INVALID_VALUE;
 	*error_code_ret = error_stack->data->error;
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }

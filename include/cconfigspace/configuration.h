@@ -20,15 +20,15 @@ extern "C" {
  * @param[in] values an optional array of values to initialize the configuration
  * @param[out] configuration_ret a pointer to the variable that will hold the
  *             newly created configuration
- * @return #CCS_SUCCESS on success
- * @return #CCS_INVALID_OBJECT if \p configuration_space is not a valid CCS
+ * @return #CCS_RESULT_SUCCESS on success
+ * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p configuration_space is not a valid CCS
  *                              configuration space
- * @return #CCS_INVALID_VALUE if \p configuration_ret is NULL; or if \p
+ * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p configuration_ret is NULL; or if \p
  *                             values is NULL and \p num_values is greater than
  *                             0; or if the number of values provided is not
  *                             equal to the number of parameters in the
  *                             configuration space
- * @return #CCS_OUT_OF_MEMORY if there was a lack of memory to allocate the new
+ * @return #CCS_RESULT_ERROR_OUT_OF_MEMORY if there was a lack of memory to allocate the new
  *                             configuration
  */
 extern ccs_result_t
@@ -43,10 +43,10 @@ ccs_create_configuration(
  * @param[in] configuration
  * @param[out] configuration_space_ret a pointer to the variable that will
  *                                     contain the configuration space
- * @return #CCS_SUCCESS on success
- * @return #CCS_INVALID_OBJECT if \p configuration is not a valid CCS
+ * @return #CCS_RESULT_SUCCESS on success
+ * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p configuration is not a valid CCS
  *                              configuration
- * @return #CCS_INVALID_VALUE if \p configuration_space_ret is NULL
+ * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p configuration_space_ret is NULL
  */
 extern ccs_result_t
 ccs_configuration_get_configuration_space(
@@ -59,11 +59,11 @@ ccs_configuration_get_configuration_space(
  * @param[in] index index of the parameter in the associated configuration
  *                  space
  * @param[out] value_ret a pointer to the variable that will hold the value
- * @return #CCS_SUCCESS on success
- * @return #CCS_INVALID_OBJECT if \p configuration is not a valid CCS
+ * @return #CCS_RESULT_SUCCESS on success
+ * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p configuration is not a valid CCS
  *                              configuration
- * @return #CCS_INVALID_VALUE if \p value_ret is NULL
- * @return #CCS_OUT_OF_BOUNDS if \p index is greater than the count of
+ * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p value_ret is NULL
+ * @return #CCS_RESULT_ERROR_OUT_OF_BOUNDS if \p index is greater than the count of
  *                             parameters in the configuration space
  */
 extern ccs_result_t
@@ -79,13 +79,13 @@ ccs_configuration_get_value(
  * @param[in] index index of the parameter in the associated configuration
  *                  space
  * @param[in] value the value
- * @return #CCS_SUCCESS on success
- * @return #CCS_INVALID_OBJECT if \p configuration is not a valid CCS
+ * @return #CCS_RESULT_SUCCESS on success
+ * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p configuration is not a valid CCS
  *                              configuration
- * @return #CCS_INVALID_VALUE if \p value_ret is NULL
- * @return #CCS_OUT_OF_BOUNDS if \p index is greater than the count of
+ * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p value_ret is NULL
+ * @return #CCS_RESULT_ERROR_OUT_OF_BOUNDS if \p index is greater than the count of
  *                             parameters in the configuration space
- * @return #CCS_OUT_OF_MEMORY if there was a lack of memory while memoizing a
+ * @return #CCS_RESULT_ERROR_OUT_OF_MEMORY if there was a lack of memory while memoizing a
  *                             string
  */
 extern ccs_result_t
@@ -104,10 +104,10 @@ ccs_configuration_set_value(
  * @param[out] num_values_ret a pointer to a variable that will contain the
  *                            number of values that are or would be returned.
  *                            Can be NULL
- * @return #CCS_SUCCESS on success
- * @return #CCS_INVALID_OBJECT if \p configuration is not a valid CCS
+ * @return #CCS_RESULT_SUCCESS on success
+ * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p configuration is not a valid CCS
  *                              configuration
- * @return #CCS_INVALID_VALUE if \p values is NULL and \p num_values is greater
+ * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p values is NULL and \p num_values is greater
  *                             than 0; or if \p values is NULL and \p
  *                             num_values_ret is NULL; or if \p num_values is
  *                             less than the number of values that would be
@@ -125,11 +125,11 @@ ccs_configuration_get_values(
  * @param[in] configuration
  * @param[in] name the name of the parameter whose value to retrieve
  * @param[out] value_ret a pointer to the variable that will hold the value
- * @return #CCS_SUCCESS on success
- * @return #CCS_INVALID_OBJECT if \p configuration is not a valid CCS
+ * @return #CCS_RESULT_SUCCESS on success
+ * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p configuration is not a valid CCS
  *                              configuration
- * @return #CCS_INVALID_VALUE if \p value_ret is NULL
- * @return #CCS_INVALID_NAME if no parameter with such \p name exist in
+ * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p value_ret is NULL
+ * @return #CCS_RESULT_ERROR_INVALID_NAME if no parameter with such \p name exist in
  *                            the \p configuration space
  */
 extern ccs_result_t
@@ -149,10 +149,10 @@ ccs_configuration_get_value_by_name(
  *                          for this parameter; or if an inactive
  *                          parameter value is not inactive; or if a
  *                          forbidden clause would be evaluating to #ccs_true
- * @return #CCS_SUCCESS on success
- * @return #CCS_INVALID_OBJECT if \p configuration is not a valid CCS
+ * @return #CCS_RESULT_SUCCESS on success
+ * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p configuration is not a valid CCS
  *                              configuration
- * @return #CCS_INVALID_CONFIGURATION if \p configuration has become invalid
+ * @return #CCS_RESULT_ERROR_INVALID_CONFIGURATION if \p configuration has become invalid
  *                                     for the configuration space
  */
 extern ccs_result_t
@@ -167,10 +167,10 @@ ccs_configuration_check(
  * @param[in] configuration
  * @param[out] hash_ret the address of the variable that will contain the hash
  *                      value
- * @return #CCS_SUCCESS on success
- * @return #CCS_INVALID_OBJECT if \p configuration is not a valid CCS
+ * @return #CCS_RESULT_SUCCESS on success
+ * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p configuration is not a valid CCS
  *                              configuration
- * @return #CCS_INVALID_VALUE if \p hash_ret is NULL
+ * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p hash_ret is NULL
  */
 extern ccs_result_t
 ccs_configuration_hash(ccs_configuration_t configuration, ccs_hash_t *hash_ret);
@@ -185,8 +185,8 @@ ccs_configuration_hash(ccs_configuration_t configuration, ccs_hash_t *hash_ret);
  *                     if the first configuration is found to be respectively
  *                     lesser than, equal, or greater then the second
  *                     configuration
- * @return #CCS_SUCCESS on success
- * @return #CCS_INVALID_OBJECT if \p configuration or \p other_configuration
+ * @return #CCS_RESULT_SUCCESS on success
+ * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p configuration or \p other_configuration
  *                              are not a valid CCS object
  */
 extern ccs_result_t

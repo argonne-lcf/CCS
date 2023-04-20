@@ -3,7 +3,8 @@
 
 #define CCS_CHECK_CONTEXT(c)                                                   \
 	CCS_REFUTE_MSG(                                                        \
-		CCS_UNLIKELY(!(c) || !(c)->data), CCS_INVALID_OBJECT,          \
+		CCS_UNLIKELY(!(c) || !(c)->data),                              \
+		CCS_RESULT_ERROR_INVALID_OBJECT,                               \
 		"Invalid CCS context '%s' == %p supplied", #c, c)
 
 ccs_result_t
@@ -15,7 +16,7 @@ ccs_context_get_parameter_index(
 	CCS_CHECK_CONTEXT(context);
 	CCS_VALIDATE(_ccs_context_get_parameter_index(
 		context, parameter, index_ret));
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 ccs_result_t
@@ -24,7 +25,7 @@ ccs_context_get_num_parameters(ccs_context_t context, size_t *num_parameters_ret
 	CCS_CHECK_CONTEXT(context);
 	CCS_VALIDATE(
 		_ccs_context_get_num_parameters(context, num_parameters_ret));
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 ccs_result_t
@@ -35,7 +36,7 @@ ccs_context_get_parameter(
 {
 	CCS_CHECK_CONTEXT(context);
 	CCS_VALIDATE(_ccs_context_get_parameter(context, index, parameter_ret));
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 ccs_result_t
@@ -47,7 +48,7 @@ ccs_context_get_parameter_by_name(
 	CCS_CHECK_CONTEXT(context);
 	CCS_VALIDATE(_ccs_context_get_parameter_by_name(
 		context, name, parameter_ret));
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 ccs_result_t
@@ -59,7 +60,7 @@ ccs_context_get_parameter_index_by_name(
 	CCS_CHECK_CONTEXT(context);
 	CCS_VALIDATE(_ccs_context_get_parameter_index_by_name(
 		context, name, index_ret));
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 ccs_result_t
@@ -72,7 +73,7 @@ ccs_context_get_parameters(
 	CCS_CHECK_CONTEXT(context);
 	CCS_VALIDATE(_ccs_context_get_parameters(
 		context, num_parameters, parameters, num_parameters_ret));
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 ccs_result_t
@@ -85,7 +86,7 @@ ccs_context_get_parameter_indexes(
 	CCS_CHECK_CONTEXT(context);
 	CCS_VALIDATE(_ccs_context_get_parameter_indexes(
 		context, num_parameters, parameters, indexes));
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 ccs_result_t
@@ -98,7 +99,7 @@ ccs_context_validate_value(
 	CCS_CHECK_CONTEXT(context);
 	CCS_VALIDATE(
 		_ccs_context_validate_value(context, index, value, value_ret));
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 ccs_result_t
@@ -106,5 +107,5 @@ ccs_context_get_name(ccs_context_t context, const char **name_ret)
 {
 	CCS_CHECK_CONTEXT(context);
 	CCS_VALIDATE(_ccs_context_get_name(context, name_ret));
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }

@@ -53,9 +53,9 @@ _ccs_context_get_parameter_index(
 	HASH_FIND(
 		hh_handle, data->handle_hash, &parameter,
 		sizeof(ccs_parameter_t), wrapper);
-	CCS_REFUTE(!wrapper, CCS_INVALID_PARAMETER);
+	CCS_REFUTE(!wrapper, CCS_RESULT_ERROR_INVALID_PARAMETER);
 	*index_ret = wrapper->index;
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 static inline ccs_result_t
@@ -65,7 +65,7 @@ _ccs_context_get_num_parameters(
 {
 	CCS_CHECK_PTR(num_parameters_ret);
 	*num_parameters_ret = utarray_len(context->data->parameters);
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 static inline ccs_result_t
@@ -78,9 +78,9 @@ _ccs_context_get_parameter(
 	_ccs_parameter_wrapper_t *wrapper =
 		(_ccs_parameter_wrapper_t *)utarray_eltptr(
 			context->data->parameters, (unsigned int)index);
-	CCS_REFUTE(!wrapper, CCS_OUT_OF_BOUNDS);
+	CCS_REFUTE(!wrapper, CCS_RESULT_ERROR_OUT_OF_BOUNDS);
 	*parameter_ret = wrapper->parameter;
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 static inline ccs_result_t
@@ -95,9 +95,9 @@ _ccs_context_get_parameter_by_name(
 	size_t                       sz_name;
 	sz_name = strlen(name);
 	HASH_FIND(hh_name, context->data->name_hash, name, sz_name, wrapper);
-	CCS_REFUTE(!wrapper, CCS_INVALID_NAME);
+	CCS_REFUTE(!wrapper, CCS_RESULT_ERROR_INVALID_NAME);
 	*parameter_ret = wrapper->parameter;
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 static inline ccs_result_t
@@ -112,9 +112,9 @@ _ccs_context_get_parameter_index_by_name(
 	size_t                       sz_name;
 	sz_name = strlen(name);
 	HASH_FIND(hh_name, context->data->name_hash, name, sz_name, wrapper);
-	CCS_REFUTE(!wrapper, CCS_INVALID_NAME);
+	CCS_REFUTE(!wrapper, CCS_RESULT_ERROR_INVALID_NAME);
 	*index_ret = wrapper->index;
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 static inline ccs_result_t
@@ -125,11 +125,14 @@ _ccs_context_get_parameters(
 	size_t          *num_parameters_ret)
 {
 	CCS_CHECK_ARY(num_parameters, parameters);
-	CCS_REFUTE(!num_parameters_ret && !parameters, CCS_INVALID_VALUE);
+	CCS_REFUTE(
+		!num_parameters_ret && !parameters,
+		CCS_RESULT_ERROR_INVALID_VALUE);
 	UT_array *array = context->data->parameters;
 	size_t    size  = utarray_len(array);
 	if (parameters) {
-		CCS_REFUTE(num_parameters < size, CCS_INVALID_VALUE);
+		CCS_REFUTE(
+			num_parameters < size, CCS_RESULT_ERROR_INVALID_VALUE);
 		_ccs_parameter_wrapper_t *wrapper = NULL;
 		size_t                    index   = 0;
 		while ((wrapper = (_ccs_parameter_wrapper_t *)utarray_next(
@@ -140,7 +143,7 @@ _ccs_context_get_parameters(
 	}
 	if (num_parameters_ret)
 		*num_parameters_ret = size;
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 static inline ccs_result_t
@@ -157,10 +160,10 @@ _ccs_context_get_parameter_indexes(
 		HASH_FIND(
 			hh_handle, context->data->handle_hash, parameters + i,
 			sizeof(ccs_parameter_t), wrapper);
-		CCS_REFUTE(!wrapper, CCS_INVALID_PARAMETER);
+		CCS_REFUTE(!wrapper, CCS_RESULT_ERROR_INVALID_PARAMETER);
 		indexes[i] = wrapper->index;
 	}
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 static inline ccs_result_t
@@ -168,7 +171,7 @@ _ccs_context_get_name(ccs_context_t context, const char **name_ret)
 {
 	CCS_CHECK_PTR(name_ret);
 	*name_ret = context->data->name;
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 static inline ccs_result_t
@@ -182,12 +185,12 @@ _ccs_context_validate_value(
 	_ccs_parameter_wrapper_t *wrapper =
 		(_ccs_parameter_wrapper_t *)utarray_eltptr(
 			context->data->parameters, (unsigned int)index);
-	CCS_REFUTE(!wrapper, CCS_OUT_OF_BOUNDS);
+	CCS_REFUTE(!wrapper, CCS_RESULT_ERROR_OUT_OF_BOUNDS);
 	ccs_bool_t valid;
 	CCS_VALIDATE(ccs_parameter_validate_value(
 		wrapper->parameter, value, value_ret, &valid));
-	CCS_REFUTE(!valid, CCS_INVALID_VALUE);
-	return CCS_SUCCESS;
+	CCS_REFUTE(!valid, CCS_RESULT_ERROR_INVALID_VALUE);
+	return CCS_RESULT_SUCCESS;
 }
 
 static inline ccs_result_t
@@ -205,7 +208,7 @@ _ccs_serialize_bin_size_ccs_context_data(
 		CCS_VALIDATE(wrapper->parameter->obj.ops->serialize_size(
 			wrapper->parameter, CCS_SERIALIZE_FORMAT_BINARY,
 			cum_size, opts));
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 static inline ccs_result_t
@@ -225,7 +228,7 @@ _ccs_serialize_bin_ccs_context_data(
 		CCS_VALIDATE(wrapper->parameter->obj.ops->serialize(
 			wrapper->parameter, CCS_SERIALIZE_FORMAT_BINARY,
 			buffer_size, buffer, opts));
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 static inline ccs_result_t
@@ -238,7 +241,7 @@ _ccs_serialize_bin_size_ccs_context(
 		(_ccs_object_internal_t *)context);
 	CCS_VALIDATE(_ccs_serialize_bin_size_ccs_context_data(
 		context->data, cum_size, opts));
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 static inline ccs_result_t
@@ -252,7 +255,7 @@ _ccs_serialize_bin_ccs_context(
 		(_ccs_object_internal_t *)context, buffer_size, buffer));
 	CCS_VALIDATE(_ccs_serialize_bin_ccs_context_data(
 		context->data, buffer_size, buffer, opts));
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 #endif //_CONTEXT_INTERNAL_H

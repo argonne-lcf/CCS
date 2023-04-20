@@ -20,7 +20,7 @@ create_numerical(const char *name, double lower, double upper)
 	err = ccs_create_numerical_parameter(
 		name, CCS_NUMERIC_TYPE_FLOAT, CCSF(lower), CCSF(upper),
 		CCSF(0.0), CCSF(0), &parameter);
-	assert(err == CCS_SUCCESS);
+	assert(err == CCS_RESULT_SUCCESS);
 	return parameter;
 }
 
@@ -38,32 +38,32 @@ create_problem(ccs_configuration_space_t *cs, ccs_objective_space_t *os)
 	parameter2 = create_numerical("y", -5.0, 5.0);
 
 	err        = ccs_create_configuration_space("2dplane", &cspace);
-	assert(err == CCS_SUCCESS);
+	assert(err == CCS_RESULT_SUCCESS);
 	err = ccs_configuration_space_add_parameter(cspace, parameter1, NULL);
-	assert(err == CCS_SUCCESS);
+	assert(err == CCS_RESULT_SUCCESS);
 	err = ccs_configuration_space_add_parameter(cspace, parameter2, NULL);
-	assert(err == CCS_SUCCESS);
+	assert(err == CCS_RESULT_SUCCESS);
 
 	parameter3 = create_numerical("z", -CCS_INFINITY, CCS_INFINITY);
 	err        = ccs_create_variable(parameter3, &expression);
-	assert(err == CCS_SUCCESS);
+	assert(err == CCS_RESULT_SUCCESS);
 
 	err = ccs_create_objective_space("height", &ospace);
-	assert(err == CCS_SUCCESS);
+	assert(err == CCS_RESULT_SUCCESS);
 	err = ccs_objective_space_add_parameter(ospace, parameter3);
-	assert(err == CCS_SUCCESS);
+	assert(err == CCS_RESULT_SUCCESS);
 	err = ccs_objective_space_add_objective(
 		ospace, expression, CCS_OBJECTIVE_TYPE_MINIMIZE);
-	assert(err == CCS_SUCCESS);
+	assert(err == CCS_RESULT_SUCCESS);
 
 	err = ccs_release_object(parameter1);
-	assert(err == CCS_SUCCESS);
+	assert(err == CCS_RESULT_SUCCESS);
 	err = ccs_release_object(parameter2);
-	assert(err == CCS_SUCCESS);
+	assert(err == CCS_RESULT_SUCCESS);
 	err = ccs_release_object(parameter3);
-	assert(err == CCS_SUCCESS);
+	assert(err == CCS_RESULT_SUCCESS);
 	err = ccs_release_object(expression);
-	assert(err == CCS_SUCCESS);
+	assert(err == CCS_RESULT_SUCCESS);
 
 	*cs = cspace;
 	*os = ospace;
@@ -79,35 +79,35 @@ test_tuner(ccs_tuner_t tuner, ccs_objective_space_t ospace)
 		ccs_configuration_t configuration;
 		ccs_evaluation_t    evaluation;
 		err = ccs_tuner_ask(tuner, 1, &configuration, NULL);
-		assert(err == CCS_SUCCESS);
+		assert(err == CCS_RESULT_SUCCESS);
 		err = ccs_configuration_get_values(
 			configuration, 2, values, NULL);
-		assert(err == CCS_SUCCESS);
+		assert(err == CCS_RESULT_SUCCESS);
 		res = ccs_float(
 			(values[0].value.f - 1) * (values[0].value.f - 1) +
 			(values[1].value.f - 2) * (values[1].value.f - 2));
 		ccs_create_evaluation(
-			ospace, configuration, CCS_SUCCESS, 1, &res,
+			ospace, configuration, CCS_RESULT_SUCCESS, 1, &res,
 			&evaluation);
 		err = ccs_tuner_tell(tuner, 1, &evaluation);
-		assert(err == CCS_SUCCESS);
+		assert(err == CCS_RESULT_SUCCESS);
 		err = ccs_release_object(configuration);
-		assert(err == CCS_SUCCESS);
+		assert(err == CCS_RESULT_SUCCESS);
 		err = ccs_release_object(evaluation);
-		assert(err == CCS_SUCCESS);
+		assert(err == CCS_RESULT_SUCCESS);
 	}
 
 	size_t           count;
 	ccs_evaluation_t history[100];
 	ccs_datum_t      min = ccs_float(INFINITY);
 	err = ccs_tuner_get_history(tuner, 100, history, &count);
-	assert(err == CCS_SUCCESS);
+	assert(err == CCS_RESULT_SUCCESS);
 	assert(count == 100);
 
 	for (size_t i = 0; i < 100; i++) {
 		ccs_datum_t res;
 		err = ccs_evaluation_get_objective_value(history[i], 0, &res);
-		assert(err == CCS_SUCCESS);
+		assert(err == CCS_RESULT_SUCCESS);
 		if (res.value.f < min.value.f)
 			min.value.f = res.value.f;
 	}
@@ -115,7 +115,7 @@ test_tuner(ccs_tuner_t tuner, ccs_objective_space_t ospace)
 	ccs_evaluation_t evaluation;
 	ccs_datum_t      res;
 	err = ccs_tuner_get_optimums(tuner, 1, &evaluation, NULL);
-	assert(err == CCS_SUCCESS);
+	assert(err == CCS_RESULT_SUCCESS);
 	err = ccs_evaluation_get_objective_value(evaluation, 0, &res);
 	assert(res.value.f == min.value.f);
 }
@@ -161,11 +161,11 @@ test()
 	ccs_retain_object(t);
 	test_tuner(t, os);
 	err = ccs_release_object(t);
-	assert(err == CCS_SUCCESS);
+	assert(err == CCS_RESULT_SUCCESS);
 	err = ccs_release_object(os);
-	assert(err == CCS_SUCCESS);
+	assert(err == CCS_RESULT_SUCCESS);
 	err = ccs_release_object(cs);
-	assert(err == CCS_SUCCESS);
+	assert(err == CCS_RESULT_SUCCESS);
 	ruby_cleanup(0);
 }
 

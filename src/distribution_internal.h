@@ -7,7 +7,7 @@
 		CCS_REFUTE(                                                     \
 			((_ccs_distribution_common_data_t *)distribution->data) \
 					->type != (t),                          \
-			CCS_INVALID_DISTRIBUTION);                              \
+			CCS_RESULT_ERROR_INVALID_DISTRIBUTION);                 \
 	} while (0)
 
 struct _ccs_distribution_data_s;
@@ -88,7 +88,7 @@ _ccs_serialize_bin_ccs_distribution_common_data(
 {
 	CCS_VALIDATE(_ccs_serialize_bin_ccs_distribution_type(
 		data->type, buffer_size, buffer));
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 static inline ccs_result_t
@@ -99,7 +99,7 @@ _ccs_deserialize_bin_ccs_distribution_common_data(
 {
 	CCS_VALIDATE(_ccs_deserialize_bin_ccs_distribution_type(
 		&data->type, buffer_size, buffer));
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 #endif //_DISTRIBUTION_INTERNAL_H

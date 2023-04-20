@@ -16,7 +16,7 @@ static ccs_result_t
 _ccs_distribution_roulette_del(ccs_object_t o)
 {
 	(void)o;
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 static inline size_t
@@ -46,7 +46,7 @@ _ccs_serialize_bin_ccs_distribution_roulette_data(
 		CCS_VALIDATE(_ccs_serialize_bin_ccs_float(
 			data->areas[i + 1] - data->areas[i], buffer_size,
 			buffer));
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 static inline size_t
@@ -72,7 +72,7 @@ _ccs_serialize_bin_ccs_distribution_roulette(
 		(_ccs_object_internal_t *)distribution, buffer_size, buffer));
 	CCS_VALIDATE(_ccs_serialize_bin_ccs_distribution_roulette_data(
 		data, buffer_size, buffer));
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 static ccs_result_t
@@ -89,12 +89,12 @@ _ccs_distribution_roulette_serialize_size(
 		break;
 	default:
 		CCS_RAISE(
-			CCS_INVALID_VALUE,
+			CCS_RESULT_ERROR_INVALID_VALUE,
 			"Unsupported serialization format: %d", format);
 	}
 	CCS_VALIDATE(_ccs_object_serialize_user_data_size(
 		object, format, cum_size, opts));
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 static ccs_result_t
@@ -112,12 +112,12 @@ _ccs_distribution_roulette_serialize(
 		break;
 	default:
 		CCS_RAISE(
-			CCS_INVALID_VALUE,
+			CCS_RESULT_ERROR_INVALID_VALUE,
 			"Unsupported serialization format: %d", format);
 	}
 	CCS_VALIDATE(_ccs_object_serialize_user_data(
 		object, format, buffer_size, buffer, opts));
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 static ccs_result_t
@@ -169,7 +169,7 @@ _ccs_distribution_roulette_get_bounds(
 	interval_ret->upper          = CCSI((ccs_int_t)(d->num_areas));
 	interval_ret->lower_included = CCS_TRUE;
 	interval_ret->upper_included = CCS_FALSE;
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 static ccs_result_t
@@ -191,7 +191,7 @@ _ccs_distribution_roulette_samples(
 			ccs_dichotomic_search(d->num_areas, d->areas, rnd);
 		values[i].i = index;
 	}
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 static ccs_result_t
@@ -214,7 +214,7 @@ _ccs_distribution_roulette_strided_samples(
 			ccs_dichotomic_search(d->num_areas, d->areas, rnd);
 		values[i * stride].i = index;
 	}
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 static ccs_result_t
@@ -227,7 +227,7 @@ _ccs_distribution_roulette_soa_samples(
 	if (*values)
 		return _ccs_distribution_roulette_samples(
 			data, rng, num_values, *values);
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 ccs_result_t
@@ -238,25 +238,27 @@ ccs_create_roulette_distribution(
 {
 	CCS_CHECK_ARY(num_areas, areas);
 	CCS_CHECK_PTR(distribution_ret);
-	CCS_REFUTE(!num_areas || num_areas > INT64_MAX, CCS_INVALID_VALUE);
+	CCS_REFUTE(
+		!num_areas || num_areas > INT64_MAX,
+		CCS_RESULT_ERROR_INVALID_VALUE);
 	ccs_float_t sum_areas = 0.0;
 
 	for (size_t i = 0; i < num_areas; i++) {
-		CCS_REFUTE(areas[i] < 0.0, CCS_INVALID_VALUE);
+		CCS_REFUTE(areas[i] < 0.0, CCS_RESULT_ERROR_INVALID_VALUE);
 		sum_areas += areas[i];
 	}
-	CCS_REFUTE(sum_areas == 0.0, CCS_INVALID_VALUE);
+	CCS_REFUTE(sum_areas == 0.0, CCS_RESULT_ERROR_INVALID_VALUE);
 	ccs_float_t sum_areas_inverse = 1.0 / sum_areas;
 	CCS_REFUTE(
 		isnan(sum_areas_inverse) || !isfinite(sum_areas_inverse),
-		CCS_INVALID_VALUE);
+		CCS_RESULT_ERROR_INVALID_VALUE);
 
 	uintptr_t mem = (uintptr_t)calloc(
 		1, sizeof(struct _ccs_distribution_s) +
 			   sizeof(_ccs_distribution_roulette_data_t) +
 			   sizeof(ccs_float_t) * (num_areas + 1) +
 			   sizeof(ccs_numeric_type_t));
-	CCS_REFUTE(!mem, CCS_OUT_OF_MEMORY);
+	CCS_REFUTE(!mem, CCS_RESULT_ERROR_OUT_OF_MEMORY);
 
 	ccs_distribution_t distrib = (ccs_distribution_t)mem;
 	_ccs_object_init(
@@ -285,7 +287,7 @@ ccs_create_roulette_distribution(
 	distrib_data->areas[num_areas] = 1.0;
 	distrib->data     = (_ccs_distribution_data_t *)distrib_data;
 	*distribution_ret = distrib;
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 ccs_result_t
@@ -298,7 +300,7 @@ ccs_roulette_distribution_get_num_areas(
 	_ccs_distribution_roulette_data_t *data =
 		(_ccs_distribution_roulette_data_t *)distribution->data;
 	*num_areas_ret = data->num_areas;
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 ccs_result_t
@@ -310,11 +312,13 @@ ccs_roulette_distribution_get_areas(
 {
 	CCS_CHECK_DISTRIBUTION(distribution, CCS_DISTRIBUTION_TYPE_ROULETTE);
 	CCS_CHECK_ARY(num_areas, areas);
-	CCS_REFUTE(!areas && !num_areas_ret, CCS_INVALID_VALUE);
+	CCS_REFUTE(!areas && !num_areas_ret, CCS_RESULT_ERROR_INVALID_VALUE);
 	_ccs_distribution_roulette_data_t *data =
 		(_ccs_distribution_roulette_data_t *)distribution->data;
 	if (areas) {
-		CCS_REFUTE(num_areas < data->num_areas, CCS_INVALID_VALUE);
+		CCS_REFUTE(
+			num_areas < data->num_areas,
+			CCS_RESULT_ERROR_INVALID_VALUE);
 		for (size_t i = 0; i < data->num_areas; i++)
 			areas[i] = data->areas[i + 1] - data->areas[i];
 		for (size_t i = data->num_areas; i < num_areas; i++)
@@ -322,7 +326,7 @@ ccs_roulette_distribution_get_areas(
 	}
 	if (num_areas_ret)
 		*num_areas_ret = data->num_areas;
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 ccs_result_t
@@ -334,15 +338,17 @@ ccs_roulette_distribution_set_areas(
 	CCS_CHECK_DISTRIBUTION(distribution, CCS_DISTRIBUTION_TYPE_ROULETTE);
 	_ccs_distribution_roulette_data_t *distrib_data =
 		(_ccs_distribution_roulette_data_t *)distribution->data;
-	CCS_REFUTE(num_areas != distrib_data->num_areas, CCS_INVALID_VALUE);
+	CCS_REFUTE(
+		num_areas != distrib_data->num_areas,
+		CCS_RESULT_ERROR_INVALID_VALUE);
 	CCS_CHECK_PTR(areas);
 
 	ccs_float_t sum_areas = 0.0;
 	for (size_t i = 0; i < num_areas; i++) {
-		CCS_REFUTE(areas[i] < 0.0, CCS_INVALID_VALUE);
+		CCS_REFUTE(areas[i] < 0.0, CCS_RESULT_ERROR_INVALID_VALUE);
 		sum_areas += areas[i];
 	}
-	CCS_REFUTE(sum_areas == 0.0, CCS_INVALID_VALUE);
+	CCS_REFUTE(sum_areas == 0.0, CCS_RESULT_ERROR_INVALID_VALUE);
 	ccs_float_t sum_areas_inverse = 1.0 / sum_areas;
 	distrib_data->areas[0]        = 0.0;
 	for (size_t i = 1; i <= num_areas; i++)
@@ -351,5 +357,5 @@ ccs_roulette_distribution_set_areas(
 	for (size_t i = 1; i <= num_areas; i++)
 		distrib_data->areas[i] *= sum_areas_inverse;
 	distrib_data->areas[num_areas] = 1.0;
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }

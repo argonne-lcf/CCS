@@ -36,8 +36,8 @@ typedef struct ccs_interval_s ccs_interval_t;
  * @param[in] interval a pointer to the interval to check
  * @param[out] empty_ret a pointer to the variable that will contain the check
  *                       result
- * @return #CCS_SUCCESS on success
- * @return #CCS_INVALID_VALUE if \p interval or \p empty_ret are NULL
+ * @return #CCS_RESULT_SUCCESS on success
+ * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p interval or \p empty_ret are NULL
  */
 extern ccs_result_t
 ccs_interval_empty(ccs_interval_t *interval, ccs_bool_t *empty_ret);
@@ -48,10 +48,10 @@ ccs_interval_empty(ccs_interval_t *interval, ccs_bool_t *empty_ret);
  * @param[in] interval2 a pointer to the second interval
  * @param[out] interval_res a pointer to the variable that will contain the
  *                          intersection of \p interval1 and \p interval2
- * @return #CCS_SUCCESS on success
- * @return #CCS_INVALID_VALUE if \p interval1 or \p interval2 or\p interval_res
+ * @return #CCS_RESULT_SUCCESS on success
+ * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p interval1 or \p interval2 or\p interval_res
  *                             are NULL
- * @return #CCS_INVALID_TYPE if \p interval1 and \p interval2 are intervals
+ * @return #CCS_RESULT_ERROR_INVALID_TYPE if \p interval1 and \p interval2 are intervals
  *                            over different data types
  */
 extern ccs_result_t
@@ -66,10 +66,10 @@ ccs_interval_intersect(
  * @param[in] interval2 a pointer to the second interval
  * @param[out] interval_res a pointer to the variable that will contain the
  *                          union of \p interval1 and \p interval2
- * @return #CCS_SUCCESS on success
- * @return #CCS_INVALID_VALUE if \p interval1 or \p interval2 or \p
+ * @return #CCS_RESULT_SUCCESS on success
+ * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p interval1 or \p interval2 or \p
  *                             interval_res are NULL
- * @return #CCS_INVALID_TYPE if \p interval1 and \p interval2 are intervals
+ * @return #CCS_RESULT_ERROR_INVALID_TYPE if \p interval1 and \p interval2 are intervals
  *                            over different data types
  */
 extern ccs_result_t
@@ -84,10 +84,10 @@ ccs_interval_union(
  * @param[in] interval2 a pointer to the second interval
  * @param[out] equal_res a pointer to the variable that will contain the test
  *                       result
- * @return #CCS_SUCCESS on success
- * @return #CCS_INVALID_VALUE if \p interval1 or \p interval2 or \p equal_res
+ * @return #CCS_RESULT_SUCCESS on success
+ * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p interval1 or \p interval2 or \p equal_res
  *                             are NULL
- * @return #CCS_INVALID_TYPE if \p interval1 and \p interval2 are intervals
+ * @return #CCS_RESULT_ERROR_INVALID_TYPE if \p interval1 and \p interval2 are intervals
  *                            over different data types
  */
 extern ccs_result_t

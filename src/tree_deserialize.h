@@ -38,7 +38,7 @@ _ccs_deserialize_bin_ccs_tree_data(
 	if (data->arity) {
 		data->children =
 			(ccs_tree_t *)calloc(data->arity, sizeof(ccs_tree_t));
-		CCS_REFUTE(!data->children, CCS_OUT_OF_MEMORY);
+		CCS_REFUTE(!data->children, CCS_RESULT_ERROR_OUT_OF_MEMORY);
 		for (size_t i = 0; i < data->arity; i++) {
 			ccs_bool_t present;
 			CCS_VALIDATE(_ccs_deserialize_bin_ccs_bool(
@@ -54,7 +54,7 @@ _ccs_deserialize_bin_ccs_tree_data(
 		&data->bias, buffer_size, buffer));
 	CCS_VALIDATE(_ccs_deserialize_bin_ccs_datum(
 		&data->value, buffer_size, buffer));
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 static inline ccs_result_t
@@ -65,12 +65,14 @@ _ccs_deserialize_bin_tree(
 	const char                       **buffer,
 	_ccs_object_deserialize_options_t *opts)
 {
-	ccs_result_t           res = CCS_SUCCESS;
+	ccs_result_t           res = CCS_RESULT_SUCCESS;
 	_ccs_object_internal_t obj;
 	ccs_object_t           handle;
 	CCS_VALIDATE(_ccs_deserialize_bin_ccs_object_internal(
 		&obj, buffer_size, buffer, &handle));
-	CCS_REFUTE(obj.type != CCS_OBJECT_TYPE_TREE, CCS_INVALID_TYPE);
+	CCS_REFUTE(
+		obj.type != CCS_OBJECT_TYPE_TREE,
+		CCS_RESULT_ERROR_INVALID_TYPE);
 
 	ccs_tree_t            tree;
 	_ccs_tree_data_mock_t data;
@@ -129,13 +131,13 @@ _ccs_tree_deserialize(
 		break;
 	default:
 		CCS_RAISE(
-			CCS_INVALID_VALUE,
+			CCS_RESULT_ERROR_INVALID_VALUE,
 			"Unsupported serialization format: %d", format);
 	}
 	CCS_VALIDATE(_ccs_object_deserialize_user_data(
 		(ccs_object_t)*tree_ret, format, version, buffer_size, buffer,
 		opts));
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 #endif //_TREE_DESERIALIZE_H

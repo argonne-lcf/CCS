@@ -13,7 +13,7 @@ ccs_parameter_get_type(ccs_parameter_t parameter, ccs_parameter_type_t *type_ret
 	CCS_CHECK_OBJ(parameter, CCS_OBJECT_TYPE_PARAMETER);
 	CCS_CHECK_PTR(type_ret);
 	*type_ret = ((_ccs_parameter_common_data_t *)(parameter->data))->type;
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 ccs_result_t
@@ -25,7 +25,7 @@ ccs_parameter_get_default_value(
 	CCS_CHECK_PTR(value_ret);
 	*value_ret = ((_ccs_parameter_common_data_t *)(parameter->data))
 			     ->default_value;
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 ccs_result_t
@@ -34,7 +34,7 @@ ccs_parameter_get_name(ccs_parameter_t parameter, const char **name_ret)
 	CCS_CHECK_OBJ(parameter, CCS_OBJECT_TYPE_PARAMETER);
 	CCS_CHECK_PTR(name_ret);
 	*name_ret = ((_ccs_parameter_common_data_t *)(parameter->data))->name;
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 ccs_result_t
@@ -47,7 +47,7 @@ ccs_parameter_get_default_distribution(
 	_ccs_parameter_ops_t *ops = ccs_parameter_get_ops(parameter);
 	CCS_VALIDATE(ops->get_default_distribution(
 		parameter->data, distribution_ret));
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 ccs_result_t
@@ -61,7 +61,7 @@ ccs_parameter_check_value(
 	_ccs_parameter_ops_t *ops = ccs_parameter_get_ops(parameter);
 	CCS_VALIDATE(ops->check_values(
 		parameter->data, 1, &value, NULL, result_ret));
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 ccs_result_t
@@ -77,7 +77,7 @@ ccs_parameter_check_values(
 	_ccs_parameter_ops_t *ops = ccs_parameter_get_ops(parameter);
 	CCS_VALIDATE(ops->check_values(
 		parameter->data, num_values, values, NULL, results));
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 ccs_result_t
@@ -93,7 +93,7 @@ ccs_parameter_validate_value(
 	_ccs_parameter_ops_t *ops = ccs_parameter_get_ops(parameter);
 	CCS_VALIDATE(ops->check_values(
 		parameter->data, 1, &value, value_ret, result_ret));
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 ccs_result_t
@@ -111,7 +111,7 @@ ccs_parameter_validate_values(
 	_ccs_parameter_ops_t *ops = ccs_parameter_get_ops(parameter);
 	CCS_VALIDATE(ops->check_values(
 		parameter->data, num_values, values, values_ret, results));
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 ccs_result_t
@@ -128,7 +128,7 @@ ccs_parameter_sample(
 	_ccs_parameter_ops_t *ops = ccs_parameter_get_ops(parameter);
 	CCS_VALIDATE(
 		ops->samples(parameter->data, distribution, rng, 1, value_ret));
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 ccs_result_t
@@ -144,11 +144,11 @@ ccs_parameter_samples(
 	CCS_CHECK_OBJ(rng, CCS_OBJECT_TYPE_RNG);
 	CCS_CHECK_ARY(num_values, values);
 	if (!num_values)
-		return CCS_SUCCESS;
+		return CCS_RESULT_SUCCESS;
 	_ccs_parameter_ops_t *ops = ccs_parameter_get_ops(parameter);
 	CCS_VALIDATE(ops->samples(
 		parameter->data, distribution, rng, num_values, values));
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 ccs_result_t
@@ -163,11 +163,11 @@ ccs_parameter_convert_samples(
 	CCS_CHECK_ARY(num_values, values);
 	CCS_CHECK_ARY(num_values, results);
 	if (!num_values)
-		return CCS_SUCCESS;
+		return CCS_RESULT_SUCCESS;
 	_ccs_parameter_ops_t *ops = ccs_parameter_get_ops(parameter);
 	CCS_VALIDATE(ops->convert_samples(
 		parameter->data, oversampling, num_values, values, results));
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 ccs_result_t
@@ -179,5 +179,5 @@ ccs_parameter_sampling_interval(
 	CCS_CHECK_PTR(interval_ret);
 	*interval_ret =
 		((_ccs_parameter_common_data_t *)(parameter->data))->interval;
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }

@@ -88,7 +88,7 @@ _ccs_interval_include(ccs_interval_t *interval, ccs_numeric_t value)
 	CCS_REFUTE_MSG(                                                        \
 		!(o) || !((_ccs_object_template_t *)(o))->data ||              \
 			((_ccs_object_template_t *)(o))->obj.type != (t),      \
-		CCS_INVALID_OBJECT,                                            \
+		CCS_RESULT_ERROR_INVALID_OBJECT,                               \
 		"Invalid CCS object '%s' == %p supplied, expected %s", #o, o,  \
 		#t)
 
@@ -97,17 +97,18 @@ _ccs_interval_include(ccs_interval_t *interval, ccs_numeric_t value)
 		err,                                                           \
 		!(o) || !((_ccs_object_template_t *)(o))->data ||              \
 			((_ccs_object_template_t *)(o))->obj.type != (t),      \
-		CCS_INVALID_OBJECT, label,                                     \
+		CCS_RESULT_ERROR_INVALID_OBJECT, label,                        \
 		"Invalid CCS object '%s' == %p supplied, expected %s", #o, o,  \
 		#t)
 
 #define CCS_CHECK_PTR(p)                                                       \
 	CCS_REFUTE_MSG(                                                        \
-		!(p), CCS_INVALID_VALUE, "NULL pointer supplied '%s'", #p);
+		!(p), CCS_RESULT_ERROR_INVALID_VALUE,                          \
+		"NULL pointer supplied '%s'", #p);
 
 #define CCS_CHECK_ARY(c, a)                                                    \
 	CCS_REFUTE_MSG(                                                        \
-		(c > 0) && !(a), CCS_INVALID_VALUE,                            \
+		(c > 0) && !(a), CCS_RESULT_ERROR_INVALID_VALUE,               \
 		"Invalid array '%s' == %p of size '%s' == %zu supplied", #a,   \
 		a, #c, c)
 
@@ -124,7 +125,7 @@ _ccs_interval_include(ccs_interval_t *interval, ccs_numeric_t value)
 #define CCS_VALIDATE_ERR_GOTO(err, cmd, label)                                 \
 	do {                                                                   \
 		err = (cmd);                                                   \
-		if (CCS_UNLIKELY(err < CCS_SUCCESS)) {                         \
+		if (CCS_UNLIKELY(err < CCS_RESULT_SUCCESS)) {                  \
 			CCS_ADD_STACK_ELEM();                                  \
 			goto label;                                            \
 		}                                                              \
@@ -133,7 +134,7 @@ _ccs_interval_include(ccs_interval_t *interval, ccs_numeric_t value)
 #define CCS_VALIDATE_ERR(err, cmd)                                             \
 	do {                                                                   \
 		err = (cmd);                                                   \
-		if (CCS_UNLIKELY(err < CCS_SUCCESS)) {                         \
+		if (CCS_UNLIKELY(err < CCS_RESULT_SUCCESS)) {                  \
 			CCS_ADD_STACK_ELEM();                                  \
 			return err;                                            \
 		}                                                              \
@@ -165,11 +166,11 @@ static const char _ccs_magic_tag[4] = CCS_MAGIC_TAG;
 static inline ccs_result_t
 _ccs_serialize_bin_magic_tag(const char *tag, size_t *buffer_size, char **buffer)
 {
-	CCS_REFUTE(*buffer_size < 4, CCS_NOT_ENOUGH_DATA);
+	CCS_REFUTE(*buffer_size < 4, CCS_RESULT_ERROR_NOT_ENOUGH_DATA);
 	memcpy(*buffer, tag, 4);
 	*buffer += 4;
 	*buffer_size -= 4;
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 static inline size_t
@@ -184,11 +185,11 @@ _ccs_deserialize_bin_magic_tag(
 	size_t      *buffer_size,
 	const char **buffer)
 {
-	CCS_REFUTE(*buffer_size < 4, CCS_NOT_ENOUGH_DATA);
+	CCS_REFUTE(*buffer_size < 4, CCS_RESULT_ERROR_NOT_ENOUGH_DATA);
 	memcpy(tag, *buffer, 4);
 	*buffer += 4;
 	*buffer_size -= 4;
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 struct _ccs_file_descriptor_state_s {
@@ -461,7 +462,9 @@ ccs_zigzag_decode_int64(uint64_t x)
 		uint8_t    *buff      = (uint8_t *)*buffer;                    \
 		MAPPED_TYPE v         = (MAPPED_TYPE)x;                        \
 		do {                                                           \
-			CCS_REFUTE(buff_size < 1, CCS_NOT_ENOUGH_DATA);        \
+			CCS_REFUTE(                                            \
+				buff_size < 1,                                 \
+				CCS_RESULT_ERROR_NOT_ENOUGH_DATA);             \
 			uint8_t y = v & 0x7f;                                  \
 			v >>= 7;                                               \
 			if (v)                                                 \
@@ -472,7 +475,7 @@ ccs_zigzag_decode_int64(uint64_t x)
 		} while (v);                                                   \
 		*buffer_size = buff_size;                                      \
 		*buffer      = (char *)buff;                                   \
-		return CCS_SUCCESS;                                            \
+		return CCS_RESULT_SUCCESS;                                     \
 	}                                                                      \
 	static inline size_t _ccs_serialize_bin_size_##NAME(TYPE x)            \
 	{                                                                      \
@@ -495,7 +498,9 @@ ccs_zigzag_decode_int64(uint64_t x)
 		MAPPED_TYPE    shift     = 0;                                  \
 		MAPPED_TYPE    y;                                              \
 		do {                                                           \
-			CCS_REFUTE(buff_size < 1, CCS_NOT_ENOUGH_DATA);        \
+			CCS_REFUTE(                                            \
+				buff_size < 1,                                 \
+				CCS_RESULT_ERROR_NOT_ENOUGH_DATA);             \
 			y = *buff;                                             \
 			v |= (y & 0x7f) << shift;                              \
 			buff_size -= 1;                                        \
@@ -505,7 +510,7 @@ ccs_zigzag_decode_int64(uint64_t x)
 		*x           = (TYPE)v;                                        \
 		*buffer_size = buff_size;                                      \
 		*buffer      = (const char *)buff;                             \
-		return CCS_SUCCESS;                                            \
+		return CCS_RESULT_SUCCESS;                                     \
 	}                                                                      \
 	static inline ccs_result_t _ccs_peek_bin_##NAME(                       \
 		TYPE *x, size_t *buffer_size, const char **buffer)             \
@@ -538,7 +543,7 @@ ccs_zigzag_decode_int64(uint64_t x)
 		CCS_VALIDATE(_ccs_deserialize_bin_u##MAPPED_NAME(              \
 			&v, buffer_size, buffer));                             \
 		*x = ccs_zigzag_decode_##MAPPED_NAME(v);                       \
-		return CCS_SUCCESS;                                            \
+		return CCS_RESULT_SUCCESS;                                     \
 	}                                                                      \
 	static inline ccs_result_t _ccs_peek_bin_##NAME(                       \
 		TYPE *x, size_t *buffer_size, const char **buffer)             \
@@ -570,7 +575,7 @@ ccs_zigzag_decode_int64(uint64_t x)
 		CCS_VALIDATE(                                                  \
 			_ccs_deserialize_bin_uint64(&v, buffer_size, buffer)); \
 		*x = (TYPE)(MAPPED_TYPE)v;                                     \
-		return CCS_SUCCESS;                                            \
+		return CCS_RESULT_SUCCESS;                                     \
 	}                                                                      \
 	static inline ccs_result_t _ccs_peek_bin_##NAME(                       \
 		TYPE *x, size_t *buffer_size, const char **buffer)             \
@@ -586,12 +591,12 @@ ccs_zigzag_decode_int64(uint64_t x)
 	{                                                                      \
 		CCS_REFUTE(                                                    \
 			*buffer_size < sizeof(MAPPED_TYPE),                    \
-			CCS_NOT_ENOUGH_DATA);                                  \
+			CCS_RESULT_ERROR_NOT_ENOUGH_DATA);                     \
 		MAPPED_TYPE v = _ccs_pack_##NAME(x);                           \
 		memcpy(*buffer, &v, sizeof(MAPPED_TYPE));                      \
 		*buffer_size -= sizeof(MAPPED_TYPE);                           \
 		*buffer += sizeof(MAPPED_TYPE);                                \
-		return CCS_SUCCESS;                                            \
+		return CCS_RESULT_SUCCESS;                                     \
 	}                                                                      \
 	static inline size_t _ccs_serialize_bin_size_##NAME(TYPE x)            \
 	{                                                                      \
@@ -605,11 +610,11 @@ ccs_zigzag_decode_int64(uint64_t x)
 	{                                                                      \
 		CCS_REFUTE(                                                    \
 			*buffer_size < sizeof(MAPPED_TYPE),                    \
-			CCS_NOT_ENOUGH_DATA);                                  \
+			CCS_RESULT_ERROR_NOT_ENOUGH_DATA);                     \
 		MAPPED_TYPE v;                                                 \
 		memcpy(&v, *buffer, sizeof(MAPPED_TYPE));                      \
 		*x = _ccs_unpack_##NAME(v);                                    \
-		return CCS_SUCCESS;                                            \
+		return CCS_RESULT_SUCCESS;                                     \
 	}                                                                      \
 	static inline ccs_result_t _ccs_deserialize_bin_##NAME(                \
 		TYPE *x, size_t *buffer_size, const char **buffer)             \
@@ -617,7 +622,7 @@ ccs_zigzag_decode_int64(uint64_t x)
 		CCS_VALIDATE(_ccs_peek_bin_##NAME(x, buffer_size, buffer));    \
 		*buffer_size -= sizeof(MAPPED_TYPE);                           \
 		*buffer += sizeof(MAPPED_TYPE);                                \
-		return CCS_SUCCESS;                                            \
+		return CCS_RESULT_SUCCESS;                                     \
 	}
 
 #define CCS_CONVERTER_TYPE(NAME, TYPE, MAPPED_NAME, MAPPED_TYPE)               \
@@ -733,7 +738,7 @@ static inline ccs_result_t
 _ccs_serialize_bin_size(size_t sz, size_t *buffer_size, char **buffer)
 {
 	CCS_VALIDATE(_ccs_serialize_bin_uint64(sz, buffer_size, buffer));
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 static inline ccs_result_t
@@ -742,7 +747,7 @@ _ccs_deserialize_bin_size(size_t *sz, size_t *buffer_size, const char **buffer)
 	uint64_t tmp;
 	CCS_VALIDATE(_ccs_deserialize_bin_uint64(&tmp, buffer_size, buffer));
 	*sz = tmp;
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 static inline size_t
@@ -757,11 +762,11 @@ _ccs_serialize_bin_string(const char *str, size_t *buffer_size, char **buffer)
 {
 	uint64_t sz = strlen(str) + 1;
 	CCS_VALIDATE(_ccs_serialize_bin_size(sz, buffer_size, buffer));
-	CCS_REFUTE(*buffer_size < sz, CCS_NOT_ENOUGH_DATA);
+	CCS_REFUTE(*buffer_size < sz, CCS_RESULT_ERROR_NOT_ENOUGH_DATA);
 	memcpy(*buffer, str, sz);
 	*buffer_size -= sz;
 	*buffer += sz;
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 static inline ccs_result_t
@@ -772,11 +777,11 @@ _ccs_deserialize_bin_string(
 {
 	size_t sz;
 	CCS_VALIDATE(_ccs_deserialize_bin_size(&sz, buffer_size, buffer));
-	CCS_REFUTE(*buffer_size < sz, CCS_NOT_ENOUGH_DATA);
+	CCS_REFUTE(*buffer_size < sz, CCS_RESULT_ERROR_NOT_ENOUGH_DATA);
 	*str = *buffer;
 	*buffer_size -= sz;
 	*buffer += sz;
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 struct _ccs_blob_s {
@@ -795,11 +800,11 @@ static inline ccs_result_t
 _ccs_serialize_bin_ccs_blob(_ccs_blob_t *b, size_t *buffer_size, char **buffer)
 {
 	CCS_VALIDATE(_ccs_serialize_bin_size(b->sz, buffer_size, buffer));
-	CCS_REFUTE(*buffer_size < b->sz, CCS_NOT_ENOUGH_DATA);
+	CCS_REFUTE(*buffer_size < b->sz, CCS_RESULT_ERROR_NOT_ENOUGH_DATA);
 	memcpy(*buffer, b->blob, b->sz);
 	*buffer_size -= b->sz;
 	*buffer += b->sz;
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 static inline ccs_result_t
@@ -809,11 +814,11 @@ _ccs_deserialize_bin_ccs_blob(
 	const char **buffer)
 {
 	CCS_VALIDATE(_ccs_deserialize_bin_size(&b->sz, buffer_size, buffer));
-	CCS_REFUTE(*buffer_size < b->sz, CCS_NOT_ENOUGH_DATA);
+	CCS_REFUTE(*buffer_size < b->sz, CCS_RESULT_ERROR_NOT_ENOUGH_DATA);
 	b->blob = *buffer;
 	*buffer_size -= b->sz;
 	*buffer += b->sz;
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 static inline size_t
@@ -854,7 +859,7 @@ _ccs_serialize_bin_ccs_interval(
 		interval->lower_included, buffer_size, buffer));
 	CCS_VALIDATE(_ccs_serialize_bin_ccs_bool(
 		interval->upper_included, buffer_size, buffer));
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 static inline ccs_result_t
@@ -880,7 +885,7 @@ _ccs_deserialize_bin_ccs_interval(
 		&interval->lower_included, buffer_size, buffer));
 	CCS_VALIDATE(_ccs_deserialize_bin_ccs_bool(
 		&interval->upper_included, buffer_size, buffer));
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 static inline size_t
@@ -947,10 +952,10 @@ _ccs_serialize_bin_ccs_datum(
 		break;
 	default:
 		CCS_RAISE(
-			CCS_INVALID_TYPE, "Unsupported datum type: %d",
-			datum.type);
+			CCS_RESULT_ERROR_INVALID_TYPE,
+			"Unsupported datum type: %d", datum.type);
 	}
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 static inline ccs_result_t
@@ -1004,9 +1009,11 @@ _ccs_deserialize_bin_ccs_datum(
 	} break;
 	default:
 		*datum = ccs_none;
-		CCS_RAISE(CCS_INVALID_TYPE, "Unsupported datum type: %d", type);
+		CCS_RAISE(
+			CCS_RESULT_ERROR_INVALID_TYPE,
+			"Unsupported datum type: %d", type);
 	}
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 static inline size_t
@@ -1026,7 +1033,7 @@ _ccs_serialize_bin_ccs_object_internal(
 		obj->type, buffer_size, buffer));
 	CCS_VALIDATE(_ccs_serialize_bin_ccs_object(
 		(ccs_object_t)obj, buffer_size, buffer));
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 static inline ccs_result_t
@@ -1040,7 +1047,7 @@ _ccs_deserialize_bin_ccs_object_internal(
 		&obj->type, buffer_size, buffer));
 	CCS_VALIDATE(_ccs_deserialize_bin_ccs_object(
 		handle_ret, buffer_size, buffer));
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 static inline ccs_result_t
@@ -1053,9 +1060,9 @@ _ccs_object_handle_check_add(
 	ccs_datum_t d = ccs_object(handle);
 	d.flags |= CCS_DATUM_FLAG_ID;
 	CCS_VALIDATE(ccs_map_exist(map, d, &found));
-	CCS_REFUTE(found, CCS_HANDLE_DUPLICATE);
+	CCS_REFUTE(found, CCS_RESULT_ERROR_DUPLICATE_HANDLE);
 	CCS_VALIDATE(ccs_map_set(map, d, ccs_object(obj)));
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 struct _ccs_object_deserialize_options_s {
@@ -1098,10 +1105,10 @@ _ccs_object_serialize_user_data_size(
 	}
 	default:
 		CCS_RAISE(
-			CCS_INVALID_VALUE,
+			CCS_RESULT_ERROR_INVALID_VALUE,
 			"Unsupported serialization format: %d", format);
 	}
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 static inline ccs_result_t
@@ -1132,7 +1139,7 @@ _ccs_object_serialize_user_data(
 		if (obj->user_data) {
 			CCS_REFUTE(
 				*buffer_size < serialize_data_size,
-				CCS_NOT_ENOUGH_DATA);
+				CCS_RESULT_ERROR_NOT_ENOUGH_DATA);
 			if (obj->serialize_callback)
 				CCS_VALIDATE(obj->serialize_callback(
 					object, serialize_data_size, *buffer,
@@ -1150,10 +1157,10 @@ _ccs_object_serialize_user_data(
 	}
 	default:
 		CCS_RAISE(
-			CCS_INVALID_VALUE,
+			CCS_RESULT_ERROR_INVALID_VALUE,
 			"Unsupported serialization format: %d", format);
 	}
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 static inline ccs_result_t
@@ -1183,10 +1190,10 @@ _ccs_object_deserialize_user_data(
 	}
 	default:
 		CCS_RAISE(
-			CCS_INVALID_VALUE,
+			CCS_RESULT_ERROR_INVALID_VALUE,
 			"Unsupported serialization format: %d", format);
 	}
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 #endif //_CONFIGSPACE_INTERNAL_H

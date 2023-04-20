@@ -53,7 +53,7 @@ module CCS
       when :CCS_PARAMETER_TYPE_STRING
         StringParameter
       else
-        raise CCSError, :CCS_INVALID_PARAMETER
+        raise CCSError, :CCS_RESULT_ERROR_INVALID_PARAMETER
       end.new(handle, retain: retain, auto_release: auto_release)
     end
 
@@ -139,7 +139,7 @@ module CCS
           quantization = Numeric::from_value(quantization.to_i)
           default = Numeric::from_value(default.to_i)
         else
-          raise CCSError, :CCS_INVALID_TYPE
+          raise CCSError, :CCS_RESULT_ERROR_INVALID_TYPE
         end
         name = name.inspect if name.kind_of?(Symbol)
         CCS.error_check CCS.ccs_create_numerical_parameter(name, data_type, lower, upper, quantization, default, ptr)
@@ -209,7 +209,7 @@ module CCS
         super(handle, retain: retain, auto_release: auto_release)
       else
         count = values.size
-        raise CCSError, :CCS_INVALID_VALUE if count == 0
+        raise CCSError, :CCS_RESULT_ERROR_INVALID_VALUE if count == 0
         ss = []
         vals = MemoryPointer::new(:ccs_datum_t, count)
         values.each_with_index{ |v, i| Datum::new(vals[i]).set_value(v, string_store: ss) }
@@ -242,7 +242,7 @@ module CCS
         super(handle, retain: retain, auto_release: auto_release)
       else
         count = values.size
-        raise CCSError, :CCS_INVALID_VALUE if count == 0
+        raise CCSError, :CCS_RESULT_ERROR_INVALID_VALUE if count == 0
         ss = []
         vals = MemoryPointer::new(:ccs_datum_t, count)
         values.each_with_index{ |v, i| Datum::new(vals[i]).set_value(v, string_store: ss) }
@@ -282,7 +282,7 @@ module CCS
         super(handle, retain: retain, auto_release: auto_release)
       else
         count = values.size
-        raise CCSError, :CCS_INVALID_VALUE if count == 0
+        raise CCSError, :CCS_RESULT_ERROR_INVALID_VALUE if count == 0
         ss = []
         vals = MemoryPointer::new(:ccs_datum_t, count)
         values.each_with_index{ |v, i| Datum::new(vals[i]).set_value(v, string_store: ss) }

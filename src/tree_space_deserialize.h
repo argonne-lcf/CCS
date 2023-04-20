@@ -25,7 +25,7 @@ _ccs_deserialize_bin_ccs_tree_space_common_data(
 	CCS_VALIDATE(_ccs_tree_deserialize(
 		&data->tree, CCS_SERIALIZE_FORMAT_BINARY, version, buffer_size,
 		buffer, &new_opts));
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 static inline ccs_result_t
@@ -36,7 +36,7 @@ _ccs_deserialize_bin_tree_space_static(
 	const char                       **buffer,
 	_ccs_object_deserialize_options_t *opts)
 {
-	ccs_result_t                  res  = CCS_SUCCESS;
+	ccs_result_t                  res  = CCS_RESULT_SUCCESS;
 	_ccs_tree_space_common_data_t data = {
 		CCS_TREE_SPACE_TYPE_STATIC, NULL, NULL, NULL};
 	CCS_VALIDATE_ERR_GOTO(
@@ -76,7 +76,7 @@ _ccs_deserialize_bin_tree_space_dynamic(
 		{CCS_TREE_SPACE_TYPE_DYNAMIC, NULL, NULL, NULL}, {0, NULL}};
 	ccs_dynamic_tree_space_vector_t *vector =
 		(ccs_dynamic_tree_space_vector_t *)opts->vector;
-	ccs_result_t res = CCS_SUCCESS;
+	ccs_result_t res = CCS_RESULT_SUCCESS;
 	CCS_VALIDATE_ERR_GOTO(
 		res,
 		_ccs_deserialize_bin_ccs_tree_space_common_data(
@@ -118,12 +118,14 @@ _ccs_deserialize_bin_tree_space(
 	const char                       **buffer,
 	_ccs_object_deserialize_options_t *opts)
 {
-	ccs_result_t           res = CCS_SUCCESS;
+	ccs_result_t           res = CCS_RESULT_SUCCESS;
 	_ccs_object_internal_t obj;
 	ccs_object_t           handle;
 	CCS_VALIDATE(_ccs_deserialize_bin_ccs_object_internal(
 		&obj, buffer_size, buffer, &handle));
-	CCS_REFUTE(obj.type != CCS_OBJECT_TYPE_TREE_SPACE, CCS_INVALID_TYPE);
+	CCS_REFUTE(
+		obj.type != CCS_OBJECT_TYPE_TREE_SPACE,
+		CCS_RESULT_ERROR_INVALID_TYPE);
 
 	ccs_tree_space_type_t stype;
 	CCS_VALIDATE(
@@ -139,7 +141,7 @@ _ccs_deserialize_bin_tree_space(
 		break;
 	default:
 		CCS_RAISE(
-			CCS_UNSUPPORTED_OPERATION,
+			CCS_RESULT_ERROR_UNSUPPORTED_OPERATION,
 			"Unsupported tree space type: %d", stype);
 	}
 	if (opts && opts->handle_map)
@@ -149,7 +151,7 @@ _ccs_deserialize_bin_tree_space(
 				opts->handle_map, handle,
 				(ccs_object_t)*tree_space_ret),
 			err_tree_space);
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 err_tree_space:
 	ccs_release_object(*tree_space_ret);
 	return res;
@@ -171,13 +173,13 @@ _ccs_tree_space_deserialize(
 		break;
 	default:
 		CCS_RAISE(
-			CCS_INVALID_VALUE,
+			CCS_RESULT_ERROR_INVALID_VALUE,
 			"Unsupported serialization format: %d", format);
 	}
 	CCS_VALIDATE(_ccs_object_deserialize_user_data(
 		(ccs_object_t)*tree_space_ret, format, version, buffer_size,
 		buffer, opts));
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 #endif //_TREE_SPACE_DESERIALIZE_H

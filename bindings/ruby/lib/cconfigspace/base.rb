@@ -162,38 +162,38 @@ module CCS
     :CCS_OBJECT_TYPE_TREE_TUNER ]
 
   Error = enum FFI::Type::INT32, :ccs_result_t, [
-    :CCS_AGAIN,                    1,
-    :CCS_SUCCESS,                  0,
-    :CCS_INVALID_OBJECT,          -1,
-    :CCS_INVALID_VALUE,           -2,
-    :CCS_INVALID_TYPE,            -3,
-    :CCS_INVALID_SCALE,           -4,
-    :CCS_INVALID_DISTRIBUTION,    -5,
-    :CCS_INVALID_EXPRESSION,      -6,
-    :CCS_INVALID_PARAMETER,       -7,
-    :CCS_INVALID_CONFIGURATION,   -8,
-    :CCS_INVALID_NAME,            -9,
-    :CCS_INVALID_CONDITION,      -10,
-    :CCS_INVALID_TUNER,          -11,
-    :CCS_INVALID_GRAPH,          -12,
-    :CCS_TYPE_NOT_COMPARABLE,    -13,
-    :CCS_INVALID_BOUNDS,         -14,
-    :CCS_OUT_OF_BOUNDS,          -15,
-    :CCS_SAMPLING_UNSUCCESSFUL,  -16,
-    :CCS_OUT_OF_MEMORY,          -17,
-    :CCS_UNSUPPORTED_OPERATION,  -18,
-    :CCS_INVALID_EVALUATION,     -19,
-    :CCS_INVALID_FEATURES,       -20,
-    :CCS_INVALID_FEATURES_TUNER, -21,
-    :CCS_INVALID_FILE_PATH,      -22,
-    :CCS_NOT_ENOUGH_DATA,        -23,
-    :CCS_HANDLE_DUPLICATE,       -24,
-    :CCS_INVALID_HANDLE,         -25,
-    :CCS_SYSTEM_ERROR,           -26,
-    :CCS_EXTERNAL_ERROR,         -27,
-    :CCS_INVALID_TREE,           -28,
-    :CCS_INVALID_TREE_SPACE,     -29,
-    :CCS_INVALID_TREE_TUNER,     -30 ]
+    :CCS_RESULT_AGAIN,                          1,
+    :CCS_RESULT_SUCCESS,                        0,
+    :CCS_RESULT_ERROR_INVALID_OBJECT,          -1,
+    :CCS_RESULT_ERROR_INVALID_VALUE,           -2,
+    :CCS_RESULT_ERROR_INVALID_TYPE,            -3,
+    :CCS_RESULT_ERROR_INVALID_SCALE,           -4,
+    :CCS_RESULT_ERROR_INVALID_DISTRIBUTION,    -5,
+    :CCS_RESULT_ERROR_INVALID_EXPRESSION,      -6,
+    :CCS_RESULT_ERROR_INVALID_PARAMETER,       -7,
+    :CCS_RESULT_ERROR_INVALID_CONFIGURATION,   -8,
+    :CCS_RESULT_ERROR_INVALID_NAME,            -9,
+    :CCS_RESULT_ERROR_INVALID_CONDITION,      -10,
+    :CCS_RESULT_ERROR_INVALID_TUNER,          -11,
+    :CCS_RESULT_ERROR_INVALID_GRAPH,          -12,
+    :CCS_RESULT_ERROR_TYPE_NOT_COMPARABLE,    -13,
+    :CCS_RESULT_ERROR_INVALID_BOUNDS,         -14,
+    :CCS_RESULT_ERROR_OUT_OF_BOUNDS,          -15,
+    :CCS_RESULT_ERROR_SAMPLING_UNSUCCESSFUL,  -16,
+    :CCS_RESULT_ERROR_OUT_OF_MEMORY,          -17,
+    :CCS_RESULT_ERROR_UNSUPPORTED_OPERATION,  -18,
+    :CCS_RESULT_ERROR_INVALID_EVALUATION,     -19,
+    :CCS_RESULT_ERROR_INVALID_FEATURES,       -20,
+    :CCS_RESULT_ERROR_INVALID_FEATURES_TUNER, -21,
+    :CCS_RESULT_ERROR_INVALID_FILE_PATH,      -22,
+    :CCS_RESULT_ERROR_NOT_ENOUGH_DATA,        -23,
+    :CCS_RESULT_ERROR_DUPLICATE_HANDLE,       -24,
+    :CCS_RESULT_ERROR_INVALID_HANDLE,         -25,
+    :CCS_RESULT_ERROR_SYSTEM,                 -26,
+    :CCS_RESULT_ERROR_EXTERNAL,               -27,
+    :CCS_RESULT_ERROR_INVALID_TREE,           -28,
+    :CCS_RESULT_ERROR_INVALID_TREE_SPACE,     -29,
+    :CCS_RESULT_ERROR_INVALID_TREE_TUNER,     -30 ]
 
   class MemoryPointer
     def read_ccs_object_type_t
@@ -265,7 +265,7 @@ module CCS
       when :CCS_NUMERIC_TYPE_INT
         self[:i]
       else
-        raise CCSError, :CCS_INVALID_TYPE
+        raise CCSError, :CCS_RESULT_ERROR_INVALID_TYPE
       end
     end
 
@@ -280,7 +280,7 @@ module CCS
         n[:i] = v
         n
       else
-        raise CCSError, :CCS_INVALID_TYPE
+        raise CCSError, :CCS_RESULT_ERROR_INVALID_TYPE
       end
     end
 
@@ -291,7 +291,7 @@ module CCS
       when Integer
         self[:i] = v
       else
-        raise CCSError, :CCS_INVALID_TYPE
+        raise CCSError, :CCS_RESULT_ERROR_INVALID_TYPE
       end
     end
   end
@@ -369,7 +369,7 @@ module CCS
           Object::from_handle(self[:value][:o])
         end
       else
-        raise CCSError, :CCS_INVALID_TYPE
+        raise CCSError, :CCS_RESULT_ERROR_INVALID_TYPE
       end
     end
 
@@ -425,7 +425,7 @@ module CCS
           self[:flags] = :CCS_DATUM_FLAG_TRANSIENT
         end
       else
-        raise CCSError, :CCS_INVALID_TYPE
+        raise CCSError, :CCS_RESULT_ERROR_INVALID_TYPE
       end
       self
     end
@@ -477,7 +477,7 @@ module CCS
         end
         d
       else
-        raise CCSError, :CCS_INVALID_TYPE
+        raise CCSError, :CCS_RESULT_ERROR_INVALID_TYPE
       end
     end
   end
@@ -536,7 +536,7 @@ module CCS
   end
 
   def self.error_check(result)
-    if result != :CCS_SUCCESS && result != :CCS_AGAIN
+    if result != :CCS_RESULT_SUCCESS && result != :CCS_RESULT_AGAIN
       raise CCSError, result
     end
   end
@@ -546,7 +546,7 @@ module CCS
       stack = exc.error_stack
       stack = ErrorStack.new(error: exc.code) unless stack
     else
-      stack = ErrorStack.new(error: :CCS_EXTERNAL_ERROR, message: exc.inspect)
+      stack = ErrorStack.new(error: :CCS_RESULT_ERROR_EXTERNAL, message: exc.inspect)
     end
     depth = caller.size - 1
     depth = 1 if depth < 1
@@ -629,7 +629,7 @@ module CCS
 
     def initialize(handle, retain: false, auto_release: true)
       if !handle
-        raise CCSError, :CCS_INVALID_OBJECT
+        raise CCSError, :CCS_RESULT_ERROR_INVALID_OBJECT
       end
       @handle = handle
       if retain
@@ -642,7 +642,7 @@ module CCS
       ptr = MemoryPointer::new(:ccs_object_type_t)
       CCS.error_check CCS.ccs_object_get_type(handle, ptr)
       klass = class_map[ptr.read_ccs_object_type_t]
-      raise CCSError, :CCS_INVALID_OBJECT unless klass
+      raise CCSError, :CCS_RESULT_ERROR_INVALID_OBJECT unless klass
       klass.from_handle(handle, retain: retain, auto_release: auto_release)
     end
 
@@ -670,8 +670,8 @@ module CCS
     end
 
     def serialize(format: :binary, path: nil, file_descriptor: nil, callback: nil, callback_data: nil)
-      raise CCSError, :CCS_INVALID_VALUE if format != :binary
-      raise CCSError, :CCS_INVALID_VALUE if path && file_descriptor
+      raise CCSError, :CCS_RESULT_ERROR_INVALID_VALUE if format != :binary
+      raise CCSError, :CCS_RESULT_ERROR_INVALID_VALUE if path && file_descriptor
       options = []
       if callback
         cb_wrapper = CCS.get_serialize_wrapper(&callback)
@@ -703,13 +703,13 @@ module CCS
     end
 
     def self.deserialize(format: :binary, handle_map: nil, vector: nil, data: nil, path: nil, buffer: nil, file_descriptor: nil, callback: nil, callback_data: nil)
-      raise CCSError, :CCS_INVALID_VALUE if format != :binary
+      raise CCSError, :CCS_RESULT_ERROR_INVALID_VALUE if format != :binary
       format = :CCS_SERIALIZE_FORMAT_BINARY
       mode_count = 0
       mode_count += 1 if path
       mode_count += 1 if buffer
       mode_count += 1 if file_descriptor
-      raise CCSError, :CCS_INVALID_VALUE unless mode_count == 1
+      raise CCSError, :CCS_RESULT_ERROR_INVALID_VALUE unless mode_count == 1
       ptr = MemoryPointer::new(:ccs_object_t)
       options = []
       options.concat [:ccs_deserialize_option_t, :CCS_DESERIALIZE_OPTION_HANDLE_MAP, :ccs_map_t, handle_map.handle] if handle_map
@@ -732,7 +732,7 @@ module CCS
         operation = :CCS_SERIALIZE_OPERATION_FILE_DESCRIPTOR
         varargs = [:int, file_descriptor] + options
       else
-        raise CCSError, :CCS_INVALID_VALUE
+        raise CCSError, :CCS_RESULT_ERROR_INVALID_VALUE
       end
       CCS.error_check CCS.ccs_object_deserialize(ptr, format, operation, *varargs)
       return _from_handle(ptr.read_ccs_object_t, retain: false, auto_release: true)
@@ -758,7 +758,7 @@ module CCS
   # Delete wrappers are responsible for deregistering the object data_store
   def self.register_vector(handle, vector_data)
     value = handle.address
-    raise CCSError, :CCS_INVALID_VALUE if @@data_store.include?(value)
+    raise CCSError, :CCS_RESULT_ERROR_INVALID_VALUE if @@data_store.include?(value)
     @@data_store[value][:callbacks].push vector_data
   end
 
@@ -803,7 +803,7 @@ module CCS
   end
 
   def self.set_destroy_callback(handle, user_data: nil, &block)
-    raise CCSError, :CCS_INVALID_VALUE if !block
+    raise CCSError, :CCS_RESULT_ERROR_INVALID_VALUE if !block
     cb_wrapper = lambda { |object, data|
       block.call(Object.from_handle(object), data)
     }
@@ -815,10 +815,10 @@ module CCS
     lambda { |object, serialize_data_size, serialize_data, serialize_data_size_ret, cb_data|
       begin
         serialized = block.call(Object.from_handle(object), cb_data, serialize_data_size == 0 ? true : false)
-        raise CCSError, :CCS_INVALID_VALUE if !serialize_data.null? && serialize_data_size < serialized.size
+        raise CCSError, :CCS_RESULT_ERROR_INVALID_VALUE if !serialize_data.null? && serialize_data_size < serialized.size
         serialize_data.write_bytes(serialized.read_bytes(serialized.size)) unless serialize_data.null?
         Pointer.new(serialize_data_size_ret).write_size_t(serialized.size) unless serialize_data_size_ret.null?
-        CCSError.to_native(:CCS_SUCCESS)
+        CCSError.to_native(:CCS_RESULT_SUCCESS)
       rescue => e
         CCS.set_error(e)
       end
@@ -830,7 +830,7 @@ module CCS
       begin
         serialized = serialize_data.null? ? nil : serialize_data.slice(0, serialize_data_size)
         block.call(Object.from_handle(obj), serialized, cb_data)
-        CCSError.to_native(:CCS_SUCCESS)
+        CCSError.to_native(:CCS_RESULT_SUCCESS)
       rescue => e
         CCS.set_error(e)
       end

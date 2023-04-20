@@ -30,7 +30,7 @@ _ccs_serialize_bin_size_ccs_tree_space_dynamic_data(
 {
 	CCS_VALIDATE(_ccs_serialize_bin_size_ccs_tree_space_common_data(
 		&data->common_data, cum_size, opts));
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 static inline ccs_result_t
@@ -42,7 +42,7 @@ _ccs_serialize_bin_ccs_tree_space_dynamic_data(
 {
 	CCS_VALIDATE(_ccs_serialize_bin_ccs_tree_space_common_data(
 		&data->common_data, buffer_size, buffer, opts));
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 static inline ccs_result_t
@@ -63,7 +63,7 @@ _ccs_serialize_bin_size_ccs_tree_space_dynamic(
 			tree_space, 0, NULL, &state_size));
 	*cum_size += _ccs_serialize_bin_size_size(state_size);
 	*cum_size += state_size;
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 static inline ccs_result_t
@@ -85,13 +85,15 @@ _ccs_serialize_bin_ccs_tree_space_dynamic(
 			tree_space, 0, NULL, &state_size));
 	CCS_VALIDATE(_ccs_serialize_bin_size(state_size, buffer_size, buffer));
 	if (state_size) {
-		CCS_REFUTE(*buffer_size < state_size, CCS_NOT_ENOUGH_DATA);
+		CCS_REFUTE(
+			*buffer_size < state_size,
+			CCS_RESULT_ERROR_NOT_ENOUGH_DATA);
 		CCS_VALIDATE(data->vector.serialize_user_state(
 			tree_space, state_size, *buffer, NULL));
 		*buffer_size -= state_size;
 		*buffer += state_size;
 	}
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 static ccs_result_t
@@ -108,12 +110,12 @@ _ccs_tree_space_dynamic_serialize_size(
 		break;
 	default:
 		CCS_RAISE(
-			CCS_INVALID_VALUE,
+			CCS_RESULT_ERROR_INVALID_VALUE,
 			"Unsupported serialization format: %d", format);
 	}
 	CCS_VALIDATE(_ccs_object_serialize_user_data_size(
 		object, format, cum_size, opts));
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 static ccs_result_t
@@ -131,12 +133,12 @@ _ccs_tree_space_dynamic_serialize(
 		break;
 	default:
 		CCS_RAISE(
-			CCS_INVALID_VALUE,
+			CCS_RESULT_ERROR_INVALID_VALUE,
 			"Unsupported serialization format: %d", format);
 	}
 	CCS_VALIDATE(_ccs_object_serialize_user_data(
 		object, format, buffer_size, buffer, opts));
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 static inline ccs_result_t
@@ -157,7 +159,7 @@ _ccs_tree_space_tree_get_child(
 		CCS_VALIDATE(ccs_tree_set_child(parent, index, *child));
 		CCS_VALIDATE(ccs_release_object(*child));
 	}
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 static ccs_result_t
@@ -178,7 +180,7 @@ _ccs_tree_space_dynamic_get_node_at_position(
 		parent = child;
 	}
 	*tree_ret = child;
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 static ccs_result_t
@@ -191,7 +193,8 @@ _ccs_tree_space_dynamic_get_values_at_position(
 {
 	CCS_CHECK_ARY(position_size, position);
 	CCS_CHECK_ARY(num_values, values);
-	CCS_REFUTE(num_values < position_size + 1, CCS_INVALID_VALUE);
+	CCS_REFUTE(
+		num_values < position_size + 1, CCS_RESULT_ERROR_INVALID_VALUE);
 	_ccs_tree_space_dynamic_data_t *data =
 		(_ccs_tree_space_dynamic_data_t *)tree_space->data;
 	ccs_tree_t parent = data->common_data.tree;
@@ -206,7 +209,7 @@ _ccs_tree_space_dynamic_get_values_at_position(
 	}
 	for (size_t i = position_size + 1; i < num_values; i++)
 		*values++ = ccs_none;
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 static ccs_result_t
@@ -226,7 +229,7 @@ _ccs_tree_space_dynamic_check_position(
 	for (size_t i = 0; i < position_size; i++) {
 		if (position[i] >= parent->data->arity) {
 			*is_valid_ret = CCS_FALSE;
-			return CCS_SUCCESS;
+			return CCS_RESULT_SUCCESS;
 		}
 		CCS_VALIDATE(_ccs_tree_space_tree_get_child(
 			tree_space, parent, position[i], &child,
@@ -234,7 +237,7 @@ _ccs_tree_space_dynamic_check_position(
 		parent = child;
 	}
 	*is_valid_ret = CCS_TRUE;
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 static _ccs_tree_space_ops_t _ccs_tree_space_dynamic_ops = {
@@ -263,7 +266,7 @@ ccs_create_dynamic_tree_space(
                 1, sizeof(struct _ccs_tree_space_s) +
                            sizeof(struct _ccs_tree_space_dynamic_data_s) +
                            strlen(name) + 1);
-	CCS_REFUTE(!mem, CCS_OUT_OF_MEMORY);
+	CCS_REFUTE(!mem, CCS_RESULT_ERROR_OUT_OF_MEMORY);
 	ccs_rng_t rng;
 	CCS_VALIDATE_ERR_GOTO(err, ccs_create_rng(&rng), errmem);
 	CCS_VALIDATE_ERR_GOTO(err, ccs_retain_object(tree), err_rng);
@@ -287,7 +290,7 @@ ccs_create_dynamic_tree_space(
 	memcpy(&data->vector, vector, sizeof(data->vector));
 	tree_space->data = (_ccs_tree_space_data_t *)data;
 	*tree_space_ret  = tree_space;
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 err_rng:
 	ccs_release_object(rng);
 errmem:
@@ -305,5 +308,5 @@ ccs_dynamic_tree_space_get_tree_space_data(
 	_ccs_tree_space_dynamic_data_t *data =
 		(_ccs_tree_space_dynamic_data_t *)tree_space->data;
 	*tree_space_data_ret = data->tree_space_data;
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }

@@ -16,7 +16,7 @@ ccs_distribution_get_type(
 	CCS_CHECK_PTR(type_ret);
 	*type_ret =
 		((_ccs_distribution_common_data_t *)(distribution->data))->type;
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 ccs_result_t
@@ -30,7 +30,7 @@ ccs_distribution_get_data_types(
 		(_ccs_distribution_common_data_t *)(distribution->data);
 	for (size_t i = 0; i < d->dimension; i++)
 		data_types_ret[i] = d->data_types[i];
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 ccs_result_t
@@ -43,7 +43,7 @@ ccs_distribution_get_dimension(
 	*dimension_ret =
 		((_ccs_distribution_common_data_t *)(distribution->data))
 			->dimension;
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 ccs_result_t
@@ -55,7 +55,7 @@ ccs_distribution_get_bounds(
 	CCS_CHECK_PTR(interval_ret);
 	_ccs_distribution_ops_t *ops = _ccs_distribution_get_ops(distribution);
 	CCS_VALIDATE(ops->get_bounds(distribution->data, interval_ret));
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 ccs_result_t
@@ -85,7 +85,7 @@ ccs_distribution_check_oversampling(
 			d_intervals + i, &intersection, &eql));
 		oversamplings[i] = eql ? CCS_FALSE : CCS_TRUE;
 	}
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 ccs_result_t
@@ -99,7 +99,7 @@ ccs_distribution_sample(
 	CCS_CHECK_PTR(value_ret);
 	_ccs_distribution_ops_t *ops = _ccs_distribution_get_ops(distribution);
 	CCS_VALIDATE(ops->samples(distribution->data, rng, 1, value_ret));
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 ccs_result_t
@@ -112,11 +112,11 @@ ccs_distribution_samples(
 	CCS_CHECK_OBJ(distribution, CCS_OBJECT_TYPE_DISTRIBUTION);
 	CCS_CHECK_OBJ(rng, CCS_OBJECT_TYPE_RNG);
 	if (!num_values)
-		return CCS_SUCCESS;
+		return CCS_RESULT_SUCCESS;
 	CCS_CHECK_ARY(num_values, values);
 	_ccs_distribution_ops_t *ops = _ccs_distribution_get_ops(distribution);
 	CCS_VALIDATE(ops->samples(distribution->data, rng, num_values, values));
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 ccs_result_t
@@ -133,14 +133,14 @@ ccs_distribution_strided_samples(
 		stride <
 			((_ccs_distribution_common_data_t *)(distribution->data))
 				->dimension,
-		CCS_INVALID_VALUE);
+		CCS_RESULT_ERROR_INVALID_VALUE);
 	if (!num_values)
-		return CCS_SUCCESS;
+		return CCS_RESULT_SUCCESS;
 	CCS_CHECK_ARY(num_values, values);
 	_ccs_distribution_ops_t *ops = _ccs_distribution_get_ops(distribution);
 	CCS_VALIDATE(ops->strided_samples(
 		distribution->data, rng, num_values, stride, values));
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 ccs_result_t
@@ -153,12 +153,12 @@ ccs_distribution_soa_samples(
 	CCS_CHECK_OBJ(distribution, CCS_OBJECT_TYPE_DISTRIBUTION);
 	CCS_CHECK_OBJ(rng, CCS_OBJECT_TYPE_RNG);
 	if (!num_values)
-		return CCS_SUCCESS;
+		return CCS_RESULT_SUCCESS;
 	CCS_CHECK_ARY(num_values, values);
 	_ccs_distribution_ops_t *ops = _ccs_distribution_get_ops(distribution);
 	CCS_VALIDATE(
 		ops->soa_samples(distribution->data, rng, num_values, values));
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 ccs_result_t
@@ -172,16 +172,16 @@ ccs_distribution_parameters_samples(
 	CCS_CHECK_OBJ(distribution, CCS_OBJECT_TYPE_DISTRIBUTION);
 	CCS_CHECK_OBJ(rng, CCS_OBJECT_TYPE_RNG);
 	if (!num_values)
-		return CCS_SUCCESS;
+		return CCS_RESULT_SUCCESS;
 	CCS_CHECK_ARY(num_values, parameters);
 	CCS_CHECK_ARY(num_values, values);
-	ccs_result_t err = CCS_SUCCESS;
+	ccs_result_t err = CCS_RESULT_SUCCESS;
 	size_t dim = ((_ccs_distribution_common_data_t *)(distribution->data))
 			     ->dimension;
 	if (dim == 1) {
 		CCS_VALIDATE(ccs_parameter_samples(
 			parameters[0], distribution, rng, num_values, values));
-		return CCS_SUCCESS;
+		return CCS_RESULT_SUCCESS;
 	}
 
 	ccs_bool_t  oversampling = CCS_FALSE;
@@ -206,7 +206,7 @@ ccs_distribution_parameters_samples(
 	uintptr_t mem = (uintptr_t)malloc(
 		num_values * dim *
 		(sizeof(ccs_numeric_t) + sizeof(ccs_datum_t)));
-	CCS_REFUTE(!mem, CCS_OUT_OF_MEMORY);
+	CCS_REFUTE(!mem, CCS_RESULT_ERROR_OUT_OF_MEMORY);
 	ccs_datum_t *ds = (ccs_datum_t *)mem;
 	p_vs[0] =
 		(ccs_numeric_t *)(mem + num_values * dim * sizeof(ccs_datum_t));
@@ -250,8 +250,8 @@ ccs_distribution_parameters_samples(
 		size_t coeff = 2;
 		while (found < num_values) {
 			CCS_REFUTE_ERR_GOTO(
-				err, coeff > 32, CCS_SAMPLING_UNSUCCESSFUL,
-				errmem);
+				err, coeff > 32,
+				CCS_RESULT_ERROR_SAMPLING_UNSUCCESSFUL, errmem);
 			size_t    buff_len = (num_values - found) * coeff;
 			uintptr_t oldmem   = mem;
 			mem                = (uintptr_t)realloc(
@@ -262,7 +262,7 @@ ccs_distribution_parameters_samples(
 				if (oldmem)
 					free((void *)oldmem);
 				CCS_RAISE(
-					CCS_OUT_OF_MEMORY,
+					CCS_RESULT_ERROR_OUT_OF_MEMORY,
 					"Out of memory to reallocate array");
 			}
 			ccs_datum_t *ds = (ccs_datum_t *)mem;
@@ -319,7 +319,7 @@ ccs_distribution_parameters_sample(
 {
 	CCS_VALIDATE(ccs_distribution_parameters_samples(
 		distribution, rng, parameters, 1, results));
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 ccs_result_t
@@ -333,7 +333,7 @@ ccs_create_normal_float_distribution(
 	CCS_VALIDATE(ccs_create_normal_distribution(
 		CCS_NUMERIC_TYPE_FLOAT, mu, sigma, scale, CCSF(quantization),
 		distribution_ret));
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 ccs_result_t
@@ -347,7 +347,7 @@ ccs_create_normal_int_distribution(
 	CCS_VALIDATE(ccs_create_normal_distribution(
 		CCS_NUMERIC_TYPE_INT, mu, sigma, scale, CCSI(quantization),
 		distribution_ret));
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 ccs_result_t
@@ -361,7 +361,7 @@ ccs_create_uniform_float_distribution(
 	CCS_VALIDATE(ccs_create_uniform_distribution(
 		CCS_NUMERIC_TYPE_FLOAT, CCSF(lower), CCSF(upper), scale,
 		CCSF(quantization), distribution_ret));
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 ccs_result_t
@@ -375,5 +375,5 @@ ccs_create_uniform_int_distribution(
 	CCS_VALIDATE(ccs_create_uniform_distribution(
 		CCS_NUMERIC_TYPE_INT, CCSI(lower), CCSI(upper), scale,
 		CCSI(quantization), distribution_ret));
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }

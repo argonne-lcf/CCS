@@ -18,7 +18,7 @@ static ccs_result_t
 _ccs_distribution_normal_del(ccs_object_t o)
 {
 	(void)o;
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 static inline size_t
@@ -61,7 +61,7 @@ _ccs_serialize_bin_ccs_distribution_normal_data(
 		CCS_VALIDATE(_ccs_serialize_bin_ccs_int(
 			data->quantization.i, buffer_size, buffer));
 	}
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 static inline size_t
@@ -86,7 +86,7 @@ _ccs_serialize_bin_ccs_distribution_normal(
 		(_ccs_object_internal_t *)distribution, buffer_size, buffer));
 	CCS_VALIDATE(_ccs_serialize_bin_ccs_distribution_normal_data(
 		data, buffer_size, buffer));
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 static ccs_result_t
@@ -103,12 +103,12 @@ _ccs_distribution_normal_serialize_size(
 		break;
 	default:
 		CCS_RAISE(
-			CCS_INVALID_VALUE,
+			CCS_RESULT_ERROR_INVALID_VALUE,
 			"Unsupported serialization format: %d", format);
 	}
 	CCS_VALIDATE(_ccs_object_serialize_user_data_size(
 		object, format, cum_size, opts));
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 static ccs_result_t
@@ -126,12 +126,12 @@ _ccs_distribution_normal_serialize(
 		break;
 	default:
 		CCS_RAISE(
-			CCS_INVALID_VALUE,
+			CCS_RESULT_ERROR_INVALID_VALUE,
 			"Unsupported serialization format: %d", format);
 	}
 	CCS_VALIDATE(_ccs_object_serialize_user_data(
 		object, format, buffer_size, buffer, opts));
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 static ccs_result_t
@@ -234,7 +234,7 @@ _ccs_distribution_normal_get_bounds(
 	interval_ret->upper          = u;
 	interval_ret->lower_included = li;
 	interval_ret->upper_included = ui;
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 static inline ccs_result_t
@@ -277,7 +277,7 @@ _ccs_distribution_normal_samples_float(
 			values[i] =
 				round(values[i] * rquantization) * quantization;
 	}
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 static inline ccs_result_t
@@ -340,7 +340,7 @@ _ccs_distribution_normal_samples_int(
 	} else
 		for (i = 0; i < num_values; i++)
 			values[i].i = round(values[i].f);
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 static ccs_result_t
@@ -368,7 +368,7 @@ _ccs_distribution_normal_samples(
 		CCS_VALIDATE(_ccs_distribution_normal_samples_int(
 			grng, scale_type, quantization.i, mu, sigma, quantize,
 			num_values, values));
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 static inline ccs_result_t
@@ -414,7 +414,7 @@ _ccs_distribution_normal_strided_samples_float(
 				round(values[i * stride] * rquantization) *
 				quantization;
 	}
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 static inline ccs_result_t
@@ -483,7 +483,7 @@ _ccs_distribution_normal_strided_samples_int(
 	} else
 		for (i = 0; i < num_values; i++)
 			values[i * stride].i = round(values[i * stride].f);
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 static ccs_result_t
@@ -512,7 +512,7 @@ _ccs_distribution_normal_strided_samples(
 		CCS_VALIDATE(_ccs_distribution_normal_strided_samples_int(
 			grng, scale_type, quantization.i, mu, sigma, quantize,
 			num_values, stride, values));
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 static ccs_result_t
@@ -525,7 +525,7 @@ _ccs_distribution_normal_soa_samples(
 	if (*values)
 		CCS_VALIDATE(_ccs_distribution_normal_samples(
 			data, rng, num_values, *values));
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 extern ccs_result_t
@@ -541,22 +541,22 @@ ccs_create_normal_distribution(
 	CCS_REFUTE(
 		data_type != CCS_NUMERIC_TYPE_FLOAT &&
 			data_type != CCS_NUMERIC_TYPE_INT,
-		CCS_INVALID_TYPE);
+		CCS_RESULT_ERROR_INVALID_TYPE);
 	CCS_REFUTE(
 		scale_type != CCS_SCALE_TYPE_LINEAR &&
 			scale_type != CCS_SCALE_TYPE_LOGARITHMIC,
-		CCS_INVALID_SCALE);
+		CCS_RESULT_ERROR_INVALID_SCALE);
 	CCS_REFUTE(
 		data_type == CCS_NUMERIC_TYPE_INT && quantization.i < 0,
-		CCS_INVALID_VALUE);
+		CCS_RESULT_ERROR_INVALID_VALUE);
 	CCS_REFUTE(
 		data_type == CCS_NUMERIC_TYPE_FLOAT && quantization.f < 0.0,
-		CCS_INVALID_VALUE);
+		CCS_RESULT_ERROR_INVALID_VALUE);
 	uintptr_t mem = (uintptr_t)calloc(
 		1, sizeof(struct _ccs_distribution_s) +
 			   sizeof(_ccs_distribution_normal_data_t) +
 			   sizeof(ccs_numeric_type_t));
-	CCS_REFUTE(!mem, CCS_OUT_OF_MEMORY);
+	CCS_REFUTE(!mem, CCS_RESULT_ERROR_OUT_OF_MEMORY);
 	ccs_distribution_t distrib = (ccs_distribution_t)mem;
 	_ccs_object_init(
 		&(distrib->obj), CCS_OBJECT_TYPE_DISTRIBUTION,
@@ -583,7 +583,7 @@ ccs_create_normal_distribution(
 	}
 	distrib->data     = (_ccs_distribution_data_t *)distrib_data;
 	*distribution_ret = distrib;
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 extern ccs_result_t
@@ -597,7 +597,7 @@ ccs_normal_distribution_get_properties(
 	CCS_CHECK_DISTRIBUTION(distribution, CCS_DISTRIBUTION_TYPE_NORMAL);
 	CCS_REFUTE(
 		!mu_ret && !sigma_ret && !scale_type_ret && !quantization_ret,
-		CCS_INVALID_VALUE);
+		CCS_RESULT_ERROR_INVALID_VALUE);
 	_ccs_distribution_normal_data_t *data =
 		(_ccs_distribution_normal_data_t *)distribution->data;
 
@@ -609,5 +609,5 @@ ccs_normal_distribution_get_properties(
 		*scale_type_ret = data->scale_type;
 	if (quantization_ret)
 		*quantization_ret = data->quantization;
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }

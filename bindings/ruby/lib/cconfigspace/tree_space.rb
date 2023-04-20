@@ -36,7 +36,7 @@ module CCS
       when :CCS_TREE_SPACE_TYPE_DYNAMIC
         DynamicTreeSpace
       else
-        raise CCSError, :CCS_INVALID_TREE_SPACE
+        raise CCSError, :CCS_RESULT_ERROR_INVALID_TREE_SPACE
       end.new(handle, retain: retain, auto_release: auto_release)
     end
 
@@ -137,7 +137,7 @@ module CCS
       begin
         del.call(CCS::Object.from_handle(ts))
         CCS.unregister_vector(ts)
-        CCSError.to_native(:CCS_SUCCESS)
+        CCSError.to_native(:CCS_RESULT_SUCCESS)
       rescue => e
         CCS.set_error(e)
       end
@@ -147,7 +147,7 @@ module CCS
         child = get_child.call(TreeSpace.from_handle(ts), Tree.from_handle(parent), index)
         CCS.error_check CCS.ccs_retain_object(child.handle)
         Pointer.new(p_child).write_pointer(child.handle)
-        CCSError.to_native(:CCS_SUCCESS)
+        CCSError.to_native(:CCS_RESULT_SUCCESS)
       rescue => e
         CCS.set_error(e)
       end
@@ -157,10 +157,10 @@ module CCS
         lambda { |ts, state_size, p_state, p_state_size|
           begin
             state = serialize(TreeSpace.from_handle(ts), state_size == 0 ? true : false)
-            raise CCSError, :CCS_INVALID_VALUE if !p_state.null? && state_size < state.size
+            raise CCSError, :CCS_RESULT_ERROR_INVALID_VALUE if !p_state.null? && state_size < state.size
             p_state.write_bytes(state.read_bytes(state.size)) unless p_state.null?
             Pointer.new(p_state_size).write_size_t(state.size) unless p_state_size.null?
-            CCSError.to_native(:CCS_SUCCESS)
+            CCSError.to_native(:CCS_RESULT_SUCCESS)
           rescue => e
             CCS.set_error(e)
           end
@@ -174,7 +174,7 @@ module CCS
           begin
             state = p_state.null? ? nil : p_state.slice(0, state_size)
             deserialize(TreeSpace.from_handle(ts), state)
-            CCSError.to_native(:CCS_SUCCESS)
+            CCSError.to_native(:CCS_RESULT_SUCCESS)
           rescue => e
             CCS.set_error(e)
           end
@@ -196,7 +196,7 @@ module CCS
       if handle
         super(handle, retain: retain, auto_release: auto_release)
       else
-        raise CCSError, :CCS_INVALID_VALUE if del.nil? || get_child.nil?
+        raise CCSError, :CCS_RESULT_ERROR_INVALID_VALUE if del.nil? || get_child.nil?
         delwrapper, get_childwrapper, serializewrapper, deserializewrapper =
           CCS.wrap_dynamic_tree_space_callbacks(del, get_child, serialize, deserialize)
         vector = DynamicTreeSpaceVector::new
@@ -213,7 +213,7 @@ module CCS
     end
 
     def self.deserialize(del: nil, get_child: nil, serialize: nil, deserialize: nil, tree_space_data: nil, format: :binary, handle_map: nil, path: nil, buffer: nil, file_descriptor: nil, callback: nil, callback_data: nil)
-      raise CCSError, :CCS_INVALID_VALUE if del.nil? || get_child.nil?
+      raise CCSError, :CCS_RESULT_ERROR_INVALID_VALUE if del.nil? || get_child.nil?
       delwrapper, get_childwrapper, serializewrapper, deserializewrapper =
         CCS.wrap_dynamic_tree_space_callbacks(del, get_child, serialize, deserialize)
       vector = DynamicTreeSpaceVector::new

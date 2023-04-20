@@ -23,7 +23,7 @@ _ccs_distribution_mixture_del(ccs_object_t o)
 	for (size_t i = 0; i < data->num_distributions; i++) {
 		ccs_release_object(data->distributions[i]);
 	}
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 static inline ccs_result_t
@@ -42,7 +42,7 @@ _ccs_serialize_bin_size_ccs_distribution_mixture_data(
 			data->distributions[i], CCS_SERIALIZE_FORMAT_BINARY,
 			cum_size, opts));
 	}
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 static inline ccs_result_t
@@ -64,7 +64,7 @@ _ccs_serialize_bin_ccs_distribution_mixture_data(
 			data->distributions[i], CCS_SERIALIZE_FORMAT_BINARY,
 			buffer_size, buffer, opts));
 	}
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 static inline ccs_result_t
@@ -79,7 +79,7 @@ _ccs_serialize_bin_size_ccs_distribution_mixture(
 		(_ccs_object_internal_t *)distribution);
 	CCS_VALIDATE(_ccs_serialize_bin_size_ccs_distribution_mixture_data(
 		data, cum_size, opts));
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 static inline ccs_result_t
@@ -95,7 +95,7 @@ _ccs_serialize_bin_ccs_distribution_mixture(
 		(_ccs_object_internal_t *)distribution, buffer_size, buffer));
 	CCS_VALIDATE(_ccs_serialize_bin_ccs_distribution_mixture_data(
 		data, buffer_size, buffer, opts));
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 static ccs_result_t
@@ -112,12 +112,12 @@ _ccs_distribution_mixture_serialize_size(
 		break;
 	default:
 		CCS_RAISE(
-			CCS_INVALID_VALUE,
+			CCS_RESULT_ERROR_INVALID_VALUE,
 			"Unsupported serialization format: %d", format);
 	}
 	CCS_VALIDATE(_ccs_object_serialize_user_data_size(
 		object, format, cum_size, opts));
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 static ccs_result_t
@@ -135,12 +135,12 @@ _ccs_distribution_mixture_serialize(
 		break;
 	default:
 		CCS_RAISE(
-			CCS_INVALID_VALUE,
+			CCS_RESULT_ERROR_INVALID_VALUE,
 			"Unsupported serialization format: %d", format);
 	}
 	CCS_VALIDATE(_ccs_object_serialize_user_data(
 		object, format, buffer_size, buffer, opts));
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 static ccs_result_t
@@ -191,7 +191,7 @@ ccs_create_mixture_distribution(
 	CCS_CHECK_PTR(distribution_ret);
 	CCS_REFUTE(
 		!num_distributions || num_distributions > INT64_MAX,
-		CCS_INVALID_VALUE);
+		CCS_RESULT_ERROR_INVALID_VALUE);
 	ccs_float_t  weights_sum = 0.0;
 
 	size_t       dimension, i, j;
@@ -203,18 +203,19 @@ ccs_create_mixture_distribution(
 		CCS_VALIDATE(ccs_distribution_get_dimension(
 			distributions[i], &other_dimension));
 		CCS_REFUTE(
-			dimension != other_dimension, CCS_INVALID_DISTRIBUTION);
+			dimension != other_dimension,
+			CCS_RESULT_ERROR_INVALID_DISTRIBUTION);
 	}
 
 	for (i = 0; i < num_distributions; i++) {
-		CCS_REFUTE(weights[i] < 0.0, CCS_INVALID_VALUE);
+		CCS_REFUTE(weights[i] < 0.0, CCS_RESULT_ERROR_INVALID_VALUE);
 		weights_sum += weights[i];
 	}
-	CCS_REFUTE(weights_sum == 0.0, CCS_INVALID_VALUE);
+	CCS_REFUTE(weights_sum == 0.0, CCS_RESULT_ERROR_INVALID_VALUE);
 	ccs_float_t weights_sum_inverse = 1.0 / weights_sum;
 	CCS_REFUTE(
 		isnan(weights_sum_inverse) || !isfinite(weights_sum_inverse),
-		CCS_INVALID_VALUE);
+		CCS_RESULT_ERROR_INVALID_VALUE);
 
 	uintptr_t                         mem;
 	uintptr_t                         cur_mem;
@@ -231,13 +232,14 @@ ccs_create_mixture_distribution(
 			   sizeof(ccs_float_t) * (num_distributions + 1) +
 			   sizeof(ccs_numeric_type_t) * dimension);
 
-	CCS_REFUTE(!mem, CCS_OUT_OF_MEMORY);
+	CCS_REFUTE(!mem, CCS_RESULT_ERROR_OUT_OF_MEMORY);
 	cur_mem = mem;
 
 	tmp_mem = (uintptr_t)calloc(
 		1, sizeof(ccs_interval_t) * num_distributions +
 			   sizeof(ccs_numeric_type_t) * dimension);
-	CCS_REFUTE_ERR_GOTO(err, !tmp_mem, CCS_OUT_OF_MEMORY, memory);
+	CCS_REFUTE_ERR_GOTO(
+		err, !tmp_mem, CCS_RESULT_ERROR_OUT_OF_MEMORY, memory);
 	bounds_tmp = (ccs_interval_t *)tmp_mem;
 	data_types_tmp =
 		(ccs_numeric_type_t
@@ -278,7 +280,8 @@ ccs_create_mixture_distribution(
 				err,
 				distrib_data->common_data.data_types[j] !=
 					data_types_tmp[j],
-				CCS_INVALID_DISTRIBUTION, tmpmemory);
+				CCS_RESULT_ERROR_INVALID_DISTRIBUTION,
+				tmpmemory);
 	}
 
 	CCS_VALIDATE_ERR_GOTO(
@@ -310,7 +313,7 @@ ccs_create_mixture_distribution(
 	distrib_data->weights[num_distributions] = 1.0;
 	CCS_REFUTE_ERR_GOTO(
 		err, 1.0 < distrib_data->weights[num_distributions - 1],
-		CCS_INVALID_VALUE, memory);
+		CCS_RESULT_ERROR_INVALID_VALUE, memory);
 	for (i = 0; i < num_distributions; i++) {
 		CCS_VALIDATE_ERR_GOTO(
 			err, ccs_retain_object(distributions[i]), distrib);
@@ -319,7 +322,7 @@ ccs_create_mixture_distribution(
 	distrib->data     = (_ccs_distribution_data_t *)distrib_data;
 	*distribution_ret = distrib;
 	free((void *)tmp_mem);
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 distrib:
 	for (i = 0; i < num_distributions; i++) {
 		if (distrib_data->distributions[i])
@@ -341,7 +344,7 @@ _ccs_distribution_mixture_get_bounds(
 		(_ccs_distribution_mixture_data_t *)data;
 	memcpy(interval_ret, d->bounds,
 	       d->common_data.dimension * sizeof(ccs_interval_t));
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 static inline _ccs_distribution_ops_t *
@@ -373,7 +376,7 @@ _ccs_distribution_mixture_samples(
 					     d->distributions[index]->data, rng,
 					     1, values + i * dim));
 	}
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 static ccs_result_t
@@ -399,7 +402,7 @@ _ccs_distribution_mixture_strided_samples(
 					     d->distributions[index]->data, rng,
 					     1, values + i * stride));
 	}
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 static ccs_result_t
@@ -422,7 +425,7 @@ _ccs_distribution_mixture_soa_samples(
 			break;
 		}
 	if (!needed)
-		return CCS_SUCCESS;
+		return CCS_RESULT_SUCCESS;
 
 	gsl_rng *grng;
 	CCS_VALIDATE(ccs_rng_get_gsl_rng(rng, &grng));
@@ -439,7 +442,7 @@ _ccs_distribution_mixture_soa_samples(
 					     d->distributions[index]->data, rng,
 					     1, p_values));
 	}
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 ccs_result_t
@@ -452,7 +455,7 @@ ccs_mixture_distribution_get_num_distributions(
 	_ccs_distribution_mixture_data_t *data =
 		(_ccs_distribution_mixture_data_t *)distribution->data;
 	*num_distributions_ret = data->num_distributions;
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 ccs_result_t
@@ -464,13 +467,15 @@ ccs_mixture_distribution_get_distributions(
 {
 	CCS_CHECK_DISTRIBUTION(distribution, CCS_DISTRIBUTION_TYPE_MIXTURE);
 	CCS_CHECK_ARY(num_distributions, distributions);
-	CCS_REFUTE(!distributions && !num_distributions_ret, CCS_INVALID_VALUE);
+	CCS_REFUTE(
+		!distributions && !num_distributions_ret,
+		CCS_RESULT_ERROR_INVALID_VALUE);
 	_ccs_distribution_mixture_data_t *data =
 		(_ccs_distribution_mixture_data_t *)distribution->data;
 	if (distributions) {
 		CCS_REFUTE(
 			num_distributions < data->num_distributions,
-			CCS_INVALID_VALUE);
+			CCS_RESULT_ERROR_INVALID_VALUE);
 		for (size_t i = 0; i < data->num_distributions; i++)
 			distributions[i] = data->distributions[i];
 		for (size_t i = data->num_distributions; i < num_distributions;
@@ -479,7 +484,7 @@ ccs_mixture_distribution_get_distributions(
 	}
 	if (num_distributions_ret)
 		*num_distributions_ret = data->num_distributions;
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 ccs_result_t
@@ -491,13 +496,14 @@ ccs_mixture_distribution_get_weights(
 {
 	CCS_CHECK_DISTRIBUTION(distribution, CCS_DISTRIBUTION_TYPE_MIXTURE);
 	CCS_CHECK_ARY(num_weights, weights);
-	CCS_REFUTE(!weights && !num_weights_ret, CCS_INVALID_VALUE);
+	CCS_REFUTE(
+		!weights && !num_weights_ret, CCS_RESULT_ERROR_INVALID_VALUE);
 	_ccs_distribution_mixture_data_t *data =
 		(_ccs_distribution_mixture_data_t *)distribution->data;
 	if (weights) {
 		CCS_REFUTE(
 			num_weights < data->num_distributions,
-			CCS_INVALID_VALUE);
+			CCS_RESULT_ERROR_INVALID_VALUE);
 		for (size_t i = 0; i < data->num_distributions; i++)
 			weights[i] = data->weights[i + 1] - data->weights[i];
 		for (size_t i = data->num_distributions; i < num_weights; i++)
@@ -505,5 +511,5 @@ ccs_mixture_distribution_get_weights(
 	}
 	if (num_weights_ret)
 		*num_weights_ret = data->num_distributions;
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }

@@ -18,7 +18,7 @@ ccs_tree_space_get_type(
 	CCS_CHECK_OBJ(tree_space, CCS_OBJECT_TYPE_TREE_SPACE);
 	CCS_CHECK_PTR(type_ret);
 	*type_ret = ((_ccs_tree_space_common_data_t *)(tree_space->data))->type;
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 ccs_result_t
@@ -27,7 +27,7 @@ ccs_tree_space_get_name(ccs_tree_space_t tree_space, const char **name_ret)
 	CCS_CHECK_OBJ(tree_space, CCS_OBJECT_TYPE_TREE_SPACE);
 	CCS_CHECK_PTR(name_ret);
 	*name_ret = ((_ccs_tree_space_common_data_t *)(tree_space->data))->name;
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 ccs_result_t
@@ -40,7 +40,7 @@ ccs_tree_space_set_rng(ccs_tree_space_t tree_space, ccs_rng_t rng)
 		((_ccs_tree_space_common_data_t *)(tree_space->data))->rng;
 	((_ccs_tree_space_common_data_t *)(tree_space->data))->rng = rng;
 	CCS_VALIDATE(ccs_release_object(tmp));
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 ccs_result_t
@@ -49,7 +49,7 @@ ccs_tree_space_get_rng(ccs_tree_space_t tree_space, ccs_rng_t *rng_ret)
 	CCS_CHECK_OBJ(tree_space, CCS_OBJECT_TYPE_TREE_SPACE);
 	CCS_CHECK_PTR(rng_ret);
 	*rng_ret = ((_ccs_tree_space_common_data_t *)(tree_space->data))->rng;
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 ccs_result_t
@@ -58,7 +58,7 @@ ccs_tree_space_get_tree(ccs_tree_space_t tree_space, ccs_tree_t *tree_ret)
 	CCS_CHECK_OBJ(tree_space, CCS_OBJECT_TYPE_TREE_SPACE);
 	CCS_CHECK_PTR(tree_ret);
 	*tree_ret = ((_ccs_tree_space_common_data_t *)(tree_space->data))->tree;
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 static UT_icd _size_t_icd = {sizeof(size_t), NULL, NULL, NULL};
@@ -76,7 +76,7 @@ ccs_tree_space_get_node_at_position(
 	_ccs_tree_space_ops_t *ops = _ccs_tree_space_get_ops(tree_space);
 	CCS_VALIDATE(ops->get_node_at_position(
 		tree_space, position_size, position, tree_ret));
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 ccs_result_t
@@ -93,7 +93,7 @@ ccs_tree_space_get_values_at_position(
 	_ccs_tree_space_ops_t *ops = _ccs_tree_space_get_ops(tree_space);
 	CCS_VALIDATE(ops->get_values_at_position(
 		tree_space, position_size, position, num_values, values));
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 ccs_result_t
@@ -109,7 +109,7 @@ ccs_tree_space_check_position(
 	_ccs_tree_space_ops_t *ops = _ccs_tree_space_get_ops(tree_space);
 	CCS_VALIDATE(ops->check_position(
 		tree_space, position_size, position, is_valid_ret));
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 ccs_result_t
@@ -122,20 +122,20 @@ ccs_tree_space_check_configuration(
 	CCS_CHECK_OBJ(configuration, CCS_OBJECT_TYPE_TREE_CONFIGURATION);
 	CCS_REFUTE(
 		configuration->data->tree_space != tree_space,
-		CCS_INVALID_CONFIGURATION);
+		CCS_RESULT_ERROR_INVALID_CONFIGURATION);
 	CCS_CHECK_PTR(is_valid_ret);
 	_ccs_tree_space_ops_t *ops = _ccs_tree_space_get_ops(tree_space);
 	CCS_VALIDATE(ops->check_position(
 		tree_space, configuration->data->position_size,
 		configuration->data->position, is_valid_ret));
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 #undef utarray_oom
 #define utarray_oom()                                                          \
 	{                                                                      \
 		CCS_RAISE_ERR_GOTO(                                            \
-			err, CCS_OUT_OF_MEMORY, err_arr,                       \
+			err, CCS_RESULT_ERROR_OUT_OF_MEMORY, err_arr,          \
 			"Out of memory to allocate array");                    \
 	}
 
@@ -148,7 +148,7 @@ _ccs_tree_space_samples(
 	_ccs_tree_space_common_data_t *data =
 		(_ccs_tree_space_common_data_t *)(tree_space->data);
 	ccs_rng_t    rng = data->rng;
-	ccs_result_t err = CCS_SUCCESS;
+	ccs_result_t err = CCS_RESULT_SUCCESS;
 	UT_array    *arr = NULL;
 	utarray_new(arr, &_size_t_icd);
 	for (size_t i = 0; i < num_configurations; i++) {
@@ -157,7 +157,7 @@ _ccs_tree_space_samples(
 		if (tree) {
 			CCS_REFUTE_ERR_GOTO(
 				err, tree->data->sum_weights == 0.0,
-				CCS_INVALID_DISTRIBUTION, err_arr);
+				CCS_RESULT_ERROR_INVALID_DISTRIBUTION, err_arr);
 			CCS_VALIDATE_ERR_GOTO(
 				err,
 				ccs_distribution_samples(
@@ -171,7 +171,7 @@ _ccs_tree_space_samples(
 					break;
 				CCS_REFUTE(
 					tree->data->sum_weights == 0.0,
-					CCS_INVALID_DISTRIBUTION);
+					CCS_RESULT_ERROR_INVALID_DISTRIBUTION);
 				CCS_VALIDATE_ERR_GOTO(
 					err,
 					ccs_distribution_samples(
@@ -203,7 +203,7 @@ ccs_tree_space_sample(
 	CCS_CHECK_OBJ(tree_space, CCS_OBJECT_TYPE_TREE_SPACE);
 	CCS_CHECK_PTR(configuration_ret);
 	CCS_VALIDATE(_ccs_tree_space_samples(tree_space, 1, configuration_ret));
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 ccs_result_t
@@ -215,8 +215,8 @@ ccs_tree_space_samples(
 	CCS_CHECK_OBJ(tree_space, CCS_OBJECT_TYPE_TREE_SPACE);
 	CCS_CHECK_ARY(num_configurations, configurations);
 	if (num_configurations == 0)
-		return CCS_SUCCESS;
+		return CCS_RESULT_SUCCESS;
 	CCS_VALIDATE(_ccs_tree_space_samples(
 		tree_space, num_configurations, configurations));
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }

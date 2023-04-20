@@ -17,10 +17,12 @@ _ccs_deserialize_bin_configuration(
 	ccs_datum_t               d;
 	ccs_configuration_space_t cs;
 	ccs_configuration_t       configuration;
-	ccs_result_t              res = CCS_SUCCESS;
+	ccs_result_t              res = CCS_RESULT_SUCCESS;
 	CCS_VALIDATE(_ccs_deserialize_bin_ccs_object_internal(
 		&obj, buffer_size, buffer, &handle));
-	CCS_REFUTE(obj.type != CCS_OBJECT_TYPE_CONFIGURATION, CCS_INVALID_TYPE);
+	CCS_REFUTE(
+		obj.type != CCS_OBJECT_TYPE_CONFIGURATION,
+		CCS_RESULT_ERROR_INVALID_TYPE);
 
 	_ccs_binding_data_t data = {NULL, 0, NULL};
 	CCS_VALIDATE_ERR_GOTO(
@@ -34,7 +36,8 @@ _ccs_deserialize_bin_configuration(
 		ccs_map_get(opts->handle_map, ccs_object(data.context), &d),
 		end);
 	CCS_REFUTE_ERR_GOTO(
-		res, d.type != CCS_DATA_TYPE_OBJECT, CCS_INVALID_HANDLE, end);
+		res, d.type != CCS_DATA_TYPE_OBJECT,
+		CCS_RESULT_ERROR_INVALID_HANDLE, end);
 	cs = (ccs_configuration_space_t)(d.value.o);
 
 	CCS_VALIDATE_ERR_GOTO(
@@ -77,13 +80,13 @@ _ccs_configuration_deserialize(
 		break;
 	default:
 		CCS_RAISE(
-			CCS_INVALID_VALUE,
+			CCS_RESULT_ERROR_INVALID_VALUE,
 			"Unsupported serialization format: %d", format);
 	}
 	CCS_VALIDATE(_ccs_object_deserialize_user_data(
 		(ccs_object_t)*configuration_ret, format, version, buffer_size,
 		buffer, opts));
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 #endif //_CONFIGURATION_DESERIALIZE_H

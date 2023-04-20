@@ -32,7 +32,7 @@ _ccs_deserialize_bin_size_ccs_tuner_common_data(
 	CCS_VALIDATE(_ccs_objective_space_deserialize(
 		&data->objective_space, CCS_SERIALIZE_FORMAT_BINARY, version,
 		buffer_size, buffer, opts));
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 static inline ccs_result_t
@@ -53,11 +53,11 @@ _ccs_deserialize_bin_ccs_random_tuner_data(
 		&data->size_optimums, buffer_size, buffer));
 
 	if (!(data->size_history + data->size_optimums))
-		return CCS_SUCCESS;
+		return CCS_RESULT_SUCCESS;
 	mem = (uintptr_t)calloc(
 		(data->size_history + data->size_optimums),
 		sizeof(ccs_evaluation_t));
-	CCS_REFUTE(!mem, CCS_OUT_OF_MEMORY);
+	CCS_REFUTE(!mem, CCS_RESULT_ERROR_OUT_OF_MEMORY);
 
 	data->history = (ccs_evaluation_t *)mem;
 	mem += data->size_history * sizeof(ccs_evaluation_t);
@@ -76,10 +76,12 @@ _ccs_deserialize_bin_ccs_random_tuner_data(
 		ccs_datum_t d;
 		CCS_VALIDATE(ccs_map_get(
 			opts->handle_map, ccs_object(data->optimums[i]), &d));
-		CCS_REFUTE(d.type != CCS_DATA_TYPE_OBJECT, CCS_INVALID_HANDLE);
+		CCS_REFUTE(
+			d.type != CCS_DATA_TYPE_OBJECT,
+			CCS_RESULT_ERROR_INVALID_HANDLE);
 		data->optimums[i] = (ccs_evaluation_t)(d.value.o);
 	}
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 struct _ccs_random_tuner_data_clone_s {
@@ -94,7 +96,7 @@ typedef struct _ccs_random_tuner_data_clone_s _ccs_random_tuner_data_clone_t;
 #define utarray_oom()                                                          \
 	{                                                                      \
 		CCS_RAISE_ERR_GOTO(                                            \
-			res, CCS_OUT_OF_MEMORY, tuner,                         \
+			res, CCS_RESULT_ERROR_OUT_OF_MEMORY, tuner,            \
 			"Out of memory to allocate array");                    \
 	}
 
@@ -109,7 +111,7 @@ _ccs_deserialize_bin_random_tuner(
 	_ccs_random_tuner_data_mock_t data = {
 		{(ccs_tuner_type_t)0, NULL, NULL, NULL}, 0, 0, NULL, NULL};
 	_ccs_random_tuner_data_clone_t *odata = NULL;
-	ccs_result_t                    res   = CCS_SUCCESS;
+	ccs_result_t                    res   = CCS_RESULT_SUCCESS;
 	CCS_VALIDATE_ERR_GOTO(
 		res,
 		_ccs_deserialize_bin_ccs_random_tuner_data(
@@ -167,7 +169,7 @@ _ccs_deserialize_bin_ccs_user_defined_tuner_data(
 		&data->base_data, version, buffer_size, buffer, opts));
 	CCS_VALIDATE(_ccs_deserialize_bin_ccs_blob(
 		&data->blob, buffer_size, buffer));
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 static inline ccs_result_t
@@ -183,7 +185,7 @@ _ccs_deserialize_bin_user_defined_tuner(
 		{0, NULL}};
 	ccs_user_defined_tuner_vector_t *vector =
 		(ccs_user_defined_tuner_vector_t *)opts->vector;
-	ccs_result_t res = CCS_SUCCESS;
+	ccs_result_t res = CCS_RESULT_SUCCESS;
 	CCS_VALIDATE_ERR_GOTO(
 		res,
 		_ccs_deserialize_bin_ccs_user_defined_tuner_data(
@@ -247,7 +249,9 @@ _ccs_deserialize_bin_tuner(
 	ccs_result_t                      res;
 	CCS_VALIDATE(_ccs_deserialize_bin_ccs_object_internal(
 		&obj, buffer_size, buffer, &handle));
-	CCS_REFUTE(obj.type != CCS_OBJECT_TYPE_TUNER, CCS_INVALID_TYPE);
+	CCS_REFUTE(
+		obj.type != CCS_OBJECT_TYPE_TUNER,
+		CCS_RESULT_ERROR_INVALID_TYPE);
 
 	ccs_tuner_type_t ttype;
 	CCS_VALIDATE(_ccs_peek_bin_ccs_tuner_type(&ttype, buffer_size, buffer));
@@ -276,7 +280,8 @@ _ccs_deserialize_bin_tuner(
 		break;
 	default:
 		CCS_RAISE(
-			CCS_INVALID_TYPE, "Unsupported tuner type: %d", ttype);
+			CCS_RESULT_ERROR_INVALID_TYPE,
+			"Unsupported tuner type: %d", ttype);
 	}
 	if (opts->handle_map)
 		CCS_VALIDATE_ERR_GOTO(
@@ -286,7 +291,7 @@ _ccs_deserialize_bin_tuner(
 				(ccs_object_t)*tuner_ret),
 			err_tuner);
 
-	res = CCS_SUCCESS;
+	res = CCS_RESULT_SUCCESS;
 	goto end;
 err_tuner:
 	ccs_release_object(*tuner_ret);
@@ -311,13 +316,13 @@ _ccs_tuner_deserialize(
 		break;
 	default:
 		CCS_RAISE(
-			CCS_INVALID_VALUE,
+			CCS_RESULT_ERROR_INVALID_VALUE,
 			"Unsupported serialization format: %d", format);
 	}
 	CCS_VALIDATE(_ccs_object_deserialize_user_data(
 		(ccs_object_t)*tuner_ret, format, version, buffer_size, buffer,
 		opts));
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 #endif //_TUNER_DESERIALIZE_H

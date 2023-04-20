@@ -37,7 +37,7 @@ _ccs_deserialize_bin_ccs_features_tuner_common_data(
 	CCS_VALIDATE(_ccs_features_space_deserialize(
 		&data->features_space, CCS_SERIALIZE_FORMAT_BINARY, version,
 		buffer_size, buffer, opts));
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 static inline ccs_result_t
@@ -58,11 +58,11 @@ _ccs_deserialize_bin_ccs_random_features_tuner_data(
 		&data->size_optimums, buffer_size, buffer));
 
 	if (!(data->size_history + data->size_optimums))
-		return CCS_SUCCESS;
+		return CCS_RESULT_SUCCESS;
 	mem = (uintptr_t)calloc(
 		(data->size_history + data->size_optimums),
 		sizeof(ccs_features_evaluation_t));
-	CCS_REFUTE(!mem, CCS_OUT_OF_MEMORY);
+	CCS_REFUTE(!mem, CCS_RESULT_ERROR_OUT_OF_MEMORY);
 
 	data->history = (ccs_features_evaluation_t *)mem;
 	mem += data->size_history * sizeof(ccs_features_evaluation_t);
@@ -81,10 +81,12 @@ _ccs_deserialize_bin_ccs_random_features_tuner_data(
 		ccs_datum_t d;
 		CCS_VALIDATE(ccs_map_get(
 			opts->handle_map, ccs_object(data->optimums[i]), &d));
-		CCS_REFUTE(d.type != CCS_DATA_TYPE_OBJECT, CCS_INVALID_HANDLE);
+		CCS_REFUTE(
+			d.type != CCS_DATA_TYPE_OBJECT,
+			CCS_RESULT_ERROR_INVALID_HANDLE);
 		data->optimums[i] = (ccs_features_evaluation_t)(d.value.o);
 	}
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 struct _ccs_random_features_tuner_data_clone_s {
@@ -100,7 +102,7 @@ typedef struct _ccs_random_features_tuner_data_clone_s
 #define utarray_oom()                                                          \
 	{                                                                      \
 		CCS_RAISE_ERR_GOTO(                                            \
-			res, CCS_OUT_OF_MEMORY, features_tuner,                \
+			res, CCS_RESULT_ERROR_OUT_OF_MEMORY, features_tuner,   \
 			"Out of memory to allocate array");                    \
 	}
 
@@ -119,7 +121,7 @@ _ccs_deserialize_bin_random_features_tuner(
 		NULL,
 		NULL};
 	_ccs_random_features_tuner_data_clone_t *odata = NULL;
-	ccs_result_t                             res   = CCS_SUCCESS;
+	ccs_result_t                             res   = CCS_RESULT_SUCCESS;
 	CCS_VALIDATE_ERR_GOTO(
 		res,
 		_ccs_deserialize_bin_ccs_random_features_tuner_data(
@@ -179,7 +181,7 @@ _ccs_deserialize_bin_ccs_user_defined_features_tuner_data(
 		&data->base_data, version, buffer_size, buffer, opts));
 	CCS_VALIDATE(_ccs_deserialize_bin_ccs_blob(
 		&data->blob, buffer_size, buffer));
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 static inline ccs_result_t
@@ -199,7 +201,7 @@ _ccs_deserialize_bin_user_defined_features_tuner(
 		{0, NULL}};
 	ccs_user_defined_features_tuner_vector_t *vector =
 		(ccs_user_defined_features_tuner_vector_t *)opts->vector;
-	ccs_result_t res = CCS_SUCCESS;
+	ccs_result_t res = CCS_RESULT_SUCCESS;
 	CCS_VALIDATE_ERR_GOTO(
 		res,
 		_ccs_deserialize_bin_ccs_user_defined_features_tuner_data(
@@ -268,7 +270,8 @@ _ccs_deserialize_bin_features_tuner(
 	CCS_VALIDATE(_ccs_deserialize_bin_ccs_object_internal(
 		&obj, buffer_size, buffer, &handle));
 	CCS_REFUTE(
-		obj.type != CCS_OBJECT_TYPE_FEATURES_TUNER, CCS_INVALID_TYPE);
+		obj.type != CCS_OBJECT_TYPE_FEATURES_TUNER,
+		CCS_RESULT_ERROR_INVALID_TYPE);
 
 	ccs_features_tuner_type_t ttype;
 	CCS_VALIDATE(_ccs_peek_bin_ccs_features_tuner_type(
@@ -298,7 +301,7 @@ _ccs_deserialize_bin_features_tuner(
 		break;
 	default:
 		CCS_RAISE(
-			CCS_UNSUPPORTED_OPERATION,
+			CCS_RESULT_ERROR_UNSUPPORTED_OPERATION,
 			"Unsuported features tuner type: %d", ttype);
 	}
 	if (opts->handle_map)
@@ -309,7 +312,7 @@ _ccs_deserialize_bin_features_tuner(
 				(ccs_object_t)*features_tuner_ret),
 			err_features_tuner);
 
-	res = CCS_SUCCESS;
+	res = CCS_RESULT_SUCCESS;
 	goto end;
 err_features_tuner:
 	ccs_release_object(*features_tuner_ret);
@@ -335,13 +338,13 @@ _ccs_features_tuner_deserialize(
 		break;
 	default:
 		CCS_RAISE(
-			CCS_INVALID_VALUE,
+			CCS_RESULT_ERROR_INVALID_VALUE,
 			"Unsupported serialization format: %d", format);
 	}
 	CCS_VALIDATE(_ccs_object_deserialize_user_data(
 		(ccs_object_t)*features_tuner_ret, format, version, buffer_size,
 		buffer, opts));
-	return CCS_SUCCESS;
+	return CCS_RESULT_SUCCESS;
 }
 
 #endif //_FEATURES_TUNER_DESERIALIZE_H

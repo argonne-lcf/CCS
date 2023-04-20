@@ -82,7 +82,7 @@ module CCS
       count = expressions.length
       return self if count == 0
       if types
-        raise CCSError, :CCS_INVALID_VALUE if types.size != count
+        raise CCSError, :CCS_RESULT_ERROR_INVALID_VALUE if types.size != count
       else
         types = [:CCS_OBJECTIVE_TYPE_MINIMIZE] * count
       end
@@ -120,7 +120,7 @@ module CCS
 
     def check_values(values)
       count = values.size
-      raise CCSError, :CCS_INVALID_VALUE if count != num_parameters
+      raise CCSError, :CCS_RESULT_ERROR_INVALID_VALUE if count != num_parameters
       ss = []
       ptr = MemoryPointer::new(:ccs_datum_t, count)
       values.each_with_index {  |v, i| Datum::new(ptr[i]).set_value(v, string_store: ss) }
