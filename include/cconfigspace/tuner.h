@@ -102,17 +102,14 @@ ccs_tuner_get_objective_space(
  * @return #CCS_RESULT_SUCCESS on success
  * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p tuner is not a valid CCS tuner
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p configurations is NULL and \p
- *                             num_configurations is greater than 0; or if \p
- *                             configurations and \p num_configurations_ret are
- *                             both NULL
- * @return #CCS_RESULT_ERROR_SAMPLING_UNSUCCESSFUL if no or not enough valid configurations
- *                                     could be sampled. Configurations that
- *                                     could be sampled will be returned
- *                                     contiguously, and the rest will be NULL
- * @return #CCS_RESULT_ERROR_OUT_OF_MEMORY if there was not enough memory to allocate new
- *                             configurations. Configurations that could be
- *                             allocated will be returned, and the rest will be
- *                             NULL
+ * num_configurations is greater than 0; or if \p configurations and \p
+ * num_configurations_ret are both NULL
+ * @return #CCS_RESULT_ERROR_SAMPLING_UNSUCCESSFUL if no or not enough valid
+ * configurations could be sampled. Configurations that could be sampled will be
+ * returned contiguously, and the rest will be NULL
+ * @return #CCS_RESULT_ERROR_OUT_OF_MEMORY if there was not enough memory to
+ * allocate new configurations. Configurations that could be allocated will be
+ * returned, and the rest will be NULL
  */
 extern ccs_result_t
 ccs_tuner_ask(
@@ -128,15 +125,14 @@ ccs_tuner_ask(
  * @param[in] evaluations an array of \p num_evaluations to provide to the
  *                        tuner
  * @return #CCS_RESULT_SUCCESS on success
- * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p tuner is not a valid CCS tuner; or if one
- *                              of the evaluations is not a valid CCS
- *                              evaluation
- * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p evaluations is NULL and \p num_evaluations
- *                             is greater than 0
- * @return #CCS_RESULT_ERROR_INVALID_EVALUATION if an evaluation is not a valid evaluation
- *                                  for the problem the tuner is optimizing
- * @return #CCS_RESULT_ERROR_OUT_OF_MEMORY if there was not enough memory to allocate
- *                             internal data structures
+ * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p tuner is not a valid CCS
+ * tuner; or if one of the evaluations is not a valid CCS evaluation
+ * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p evaluations is NULL and \p
+ * num_evaluations is greater than 0
+ * @return #CCS_RESULT_ERROR_INVALID_EVALUATION if an evaluation is not a valid
+ * evaluation for the problem the tuner is optimizing
+ * @return #CCS_RESULT_ERROR_OUT_OF_MEMORY if there was not enough memory to
+ * allocate internal data structures
  */
 extern ccs_result_t
 ccs_tuner_tell(
@@ -152,10 +148,10 @@ ccs_tuner_tell(
  * @return #CCS_RESULT_SUCCESS on success
  * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p tuner is not a valid CCS tuner
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p configuration is NULL
- * @return #CCS_RESULT_ERROR_UNSUPPORTED_OPERATION if the tuner does not support the suggest
- *                                     interface
- * @return #CCS_RESULT_ERROR_OUT_OF_MEMORY if there was not enough memory to allocate new
- *                             configurations
+ * @return #CCS_RESULT_ERROR_UNSUPPORTED_OPERATION if the tuner does not support
+ * the suggest interface
+ * @return #CCS_RESULT_ERROR_OUT_OF_MEMORY if there was not enough memory to
+ * allocate new configurations
  */
 extern ccs_result_t
 ccs_tuner_suggest(ccs_tuner_t tuner, ccs_configuration_t *configuration);
@@ -172,9 +168,9 @@ ccs_tuner_suggest(ccs_tuner_t tuner, ccs_configuration_t *configuration);
  *                                 be returned
  * @return #CCS_RESULT_SUCCESS on success
  * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p tuner is not a valid CCS tuner
- * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p evaluations is NULL and num_evaluations is
- *                             greater than 0; or if \p evaluations is NULL and
- *                             \p num_evaluations_ret is NULL
+ * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p evaluations is NULL and
+ * num_evaluations is greater than 0; or if \p evaluations is NULL and \p
+ * num_evaluations_ret is NULL
  */
 extern ccs_result_t
 ccs_tuner_get_optimums(
@@ -194,9 +190,9 @@ ccs_tuner_get_optimums(
  *                                 be returned
  * @return #CCS_RESULT_SUCCESS on success
  * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p tuner is not a valid CCS tuner
- * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p evaluations is NULL and num_evaluations is
- *                             greater than 0; or if \p evaluations is NULL and
- *                             \p num_evaluations_ret is NULL
+ * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p evaluations is NULL and
+ * num_evaluations is greater than 0; or if \p evaluations is NULL and \p
+ * num_evaluations_ret is NULL
  */
 extern ccs_result_t
 ccs_tuner_get_history(
@@ -214,12 +210,13 @@ ccs_tuner_get_history(
  * @param[out] tuner_ret a pointer to the variable that will contain the newly
  *                       created tuner
  * @return #CCS_RESULT_SUCCESS on success
- * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p configuration_space is not a valid CCS
- *                              configuration space; or if \p objective_space is
- *                              not a valid CCS objective space
- * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p name is NULL; or if \p tuner_ret is NULL
- * @return #CCS_RESULT_ERROR_OUT_OF_MEMORY if there was not enough memory to allocate the
- *                             new tuner instance
+ * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p configuration_space is not a
+ * valid CCS configuration space; or if \p objective_space is not a valid CCS
+ * objective space
+ * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p name is NULL; or if \p
+ * tuner_ret is NULL
+ * @return #CCS_RESULT_ERROR_OUT_OF_MEMORY if there was not enough memory to
+ * allocate the new tuner instance
  */
 extern ccs_result_t
 ccs_create_random_tuner(
@@ -311,14 +308,14 @@ typedef struct ccs_user_defined_tuner_vector_s ccs_user_defined_tuner_vector_t;
  * @param[out] tuner_ret a pointer to the variable that will contain the newly
  *                       created tuner
  * @return #CCS_RESULT_SUCCESS on success
- * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p configuration_space is not a valid CCS
- *                              configuration space; or if \p objective_space is
- *                              not a valid CCS objective space
- * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p name is NULL; or if \p tuner_ret is NULL;
- *                             or if \p vector is NULL; or if any non optional
- *                             interface pointer is NULL
- * @return #CCS_RESULT_ERROR_OUT_OF_MEMORY if there was not enough memory to allocate the
- *                             new tuner instance
+ * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p configuration_space is not a
+ * valid CCS configuration space; or if \p objective_space is not a valid CCS
+ * objective space
+ * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p name is NULL; or if \p
+ * tuner_ret is NULL; or if \p vector is NULL; or if any non optional interface
+ * pointer is NULL
+ * @return #CCS_RESULT_ERROR_OUT_OF_MEMORY if there was not enough memory to
+ * allocate the new tuner instance
  */
 extern ccs_result_t
 ccs_create_user_defined_tuner(
@@ -335,7 +332,8 @@ ccs_create_user_defined_tuner(
  * @param[out] tuner_data_ret
  * @return #CCS_RESULT_SUCCESS on success
  * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p tuner is not a valid CCS tuner
- * @return #CCS_RESULT_ERROR_INVALID_TUNER if \p tuner is not a user defined tuner
+ * @return #CCS_RESULT_ERROR_INVALID_TUNER if \p tuner is not a user defined
+ * tuner
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p tuner_data_ret is NULL
  */
 extern ccs_result_t

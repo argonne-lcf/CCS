@@ -1048,24 +1048,6 @@ memory:
 	return err;
 }
 
-//static ccs_result_t
-//_sample(ccs_configuration_space_t  configuration_space,
-//        ccs_configuration_t        config,
-//        ccs_bool_t                *found) {
-//	ccs_rng_t rng = configuration_space->data->rng;
-//	UT_array *array = configuration_space->data->parameters;
-//	_ccs_parameter_wrapper_cs_t *wrapper = NULL;
-//	ccs_datum_t *values = config->data->values;
-//	while ( (wrapper = (_ccs_parameter_wrapper_cs_t *)
-//	                       utarray_next(array, wrapper)) ) {
-//		CCS_VALIDATE(ccs_parameter_sample(wrapper->parameter,
-//		    wrapper->distribution->distribution, rng, values++));
-//	}
-//	CCS_VALIDATE(_set_actives(configuration_space, config));
-//	CCS_VALIDATE(_test_forbidden(configuration_space, config->data->values, found));
-//	return CCS_RESULT_SUCCESS;
-//}
-
 ccs_result_t
 ccs_configuration_space_sample(
 	ccs_configuration_space_t configuration_space,
@@ -1113,8 +1095,7 @@ ccs_configuration_space_samples(
 	size_t              count   = 0;
 	ccs_bool_t          found;
 	ccs_configuration_t config = NULL;
-	// Naive implementation
-	//See below for more efficient ideas...
+
 	for (size_t i = 0; i < num_configurations; i++)
 		configurations[i] = NULL;
 	while (count < num_configurations &&
@@ -1139,47 +1120,6 @@ errc:
 	ccs_release_object(config);
 	return err;
 }
-//	UT_array *array = configuration_space->data->parameters;
-//	size_t num_parameter = utarray_len(array);
-//	ccs_datum_t *values = (ccs_datum_t *)calloc(1, sizeof(ccs_datum_t)*num_configurations*num_parameter);
-//	ccs_datum_t *p_values = values;
-//	ccs_rng_t rng = configuration_space->data->rng;
-//	_ccs_parameter_wrapper_cs_t *wrapper = NULL;
-//	while ( (wrapper = (_ccs_parameter_wrapper_cs_t *)utarray_next(array, wrapper)) ) {
-//		err = ccs_parameter_samples(wrapper->parameter,
-//		                                 wrapper->distribution->distribution,
-//						 rng, num_configurations, p_values);
-//		if (CCS_UNLIKELY(err)) {
-//			free(values);
-//			return err;
-//		}
-//		p_values += num_configurations;
-//	}
-//	size_t i;
-//	for(i = 0; i < num_configurations; i++) {
-//		err = ccs_create_configuration(configuration_space, 0, NULL, configurations + i);
-//		if (CCS_UNLIKELY(err)) {
-//			free(values);
-//			for(size_t j = 0; j < i; j++)
-//				ccs_release_object(configurations + j);
-//			return err;
-//		}
-//	}
-//	for(i = 0; i < num_configurations; i++) {
-//		for(size_t j = 0; j < num_parameter; j++)
-//			configurations[i]->data->values[j] =
-//				values[j*num_configurations + i];
-//
-//		err = _set_actives(configuration_space, configurations[i]);
-//		if (err) {
-//			free(values);
-//			for(size_t j = 0; j < num_configurations; j++)
-//				ccs_release_object(configurations + j);
-//			return err;
-//		}
-//	}
-//	free(values);
-//	return CCS_RESULT_SUCCESS;
 
 static int
 _size_t_sort(const void *a, const void *b)

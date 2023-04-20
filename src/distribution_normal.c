@@ -252,7 +252,7 @@ _ccs_distribution_normal_samples_float(
 	if (scale_type == CCS_SCALE_TYPE_LOGARITHMIC && quantize) {
 		ccs_float_t lq = log(quantization * 0.5);
 		if (mu - lq >= 0.0)
-			//at least 50% chance to get a valid value
+			// at least 50% chance to get a valid value
 			for (i = 0; i < num_values; i++)
 				do {
 					values[i] =
@@ -260,7 +260,7 @@ _ccs_distribution_normal_samples_float(
 						mu;
 				} while (values[i] < lq);
 		else
-			//use tail distribution
+			// use tail distribution
 			for (i = 0; i < num_values; i++)
 				values[i] = gsl_ran_gaussian_tail(
 						    grng, lq - mu, sigma) +
@@ -387,7 +387,7 @@ _ccs_distribution_normal_strided_samples_float(
 	if (scale_type == CCS_SCALE_TYPE_LOGARITHMIC && quantize) {
 		ccs_float_t lq = log(quantization * 0.5);
 		if (mu - lq >= 0.0)
-			//at least 50% chance to get a valid value
+			// at least 50% chance to get a valid value
 			for (i = 0; i < num_values; i++)
 				do {
 					values[i * stride] =
@@ -395,7 +395,7 @@ _ccs_distribution_normal_strided_samples_float(
 						mu;
 				} while (values[i * stride] < lq);
 		else
-			//use tail distribution
+			// use tail distribution
 			for (i = 0; i < num_values; i++)
 				values[i * stride] =
 					gsl_ran_gaussian_tail(

@@ -37,7 +37,8 @@ typedef struct ccs_interval_s ccs_interval_t;
  * @param[out] empty_ret a pointer to the variable that will contain the check
  *                       result
  * @return #CCS_RESULT_SUCCESS on success
- * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p interval or \p empty_ret are NULL
+ * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p interval or \p empty_ret are
+ * NULL
  */
 extern ccs_result_t
 ccs_interval_empty(ccs_interval_t *interval, ccs_bool_t *empty_ret);
@@ -49,10 +50,10 @@ ccs_interval_empty(ccs_interval_t *interval, ccs_bool_t *empty_ret);
  * @param[out] interval_res a pointer to the variable that will contain the
  *                          intersection of \p interval1 and \p interval2
  * @return #CCS_RESULT_SUCCESS on success
- * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p interval1 or \p interval2 or\p interval_res
- *                             are NULL
- * @return #CCS_RESULT_ERROR_INVALID_TYPE if \p interval1 and \p interval2 are intervals
- *                            over different data types
+ * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p interval1 or \p interval2 or\p
+ * interval_res are NULL
+ * @return #CCS_RESULT_ERROR_INVALID_TYPE if \p interval1 and \p interval2 are
+ * intervals over different data types
  */
 extern ccs_result_t
 ccs_interval_intersect(
@@ -69,8 +70,8 @@ ccs_interval_intersect(
  * @return #CCS_RESULT_SUCCESS on success
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p interval1 or \p interval2 or \p
  *                             interval_res are NULL
- * @return #CCS_RESULT_ERROR_INVALID_TYPE if \p interval1 and \p interval2 are intervals
- *                            over different data types
+ * @return #CCS_RESULT_ERROR_INVALID_TYPE if \p interval1 and \p interval2 are
+ * intervals over different data types
  */
 extern ccs_result_t
 ccs_interval_union(
@@ -85,10 +86,10 @@ ccs_interval_union(
  * @param[out] equal_res a pointer to the variable that will contain the test
  *                       result
  * @return #CCS_RESULT_SUCCESS on success
- * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p interval1 or \p interval2 or \p equal_res
- *                             are NULL
- * @return #CCS_RESULT_ERROR_INVALID_TYPE if \p interval1 and \p interval2 are intervals
- *                            over different data types
+ * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p interval1 or \p interval2 or \p
+ * equal_res are NULL
+ * @return #CCS_RESULT_ERROR_INVALID_TYPE if \p interval1 and \p interval2 are
+ * intervals over different data types
  */
 extern ccs_result_t
 ccs_interval_equal(
@@ -103,7 +104,7 @@ ccs_interval_equal(
  * @param[in] value the value to check for inclusion in the interval
  * @return #CCS_TRUE if the interval include the value
  * @return #CCS_FALSE if the interval does not include the value; or if \p
- *                    interval is NULL
+ * interval is NULL
  */
 extern ccs_bool_t
 ccs_interval_include(ccs_interval_t *interval, ccs_numeric_t value);

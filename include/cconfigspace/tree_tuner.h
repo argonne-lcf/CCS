@@ -38,7 +38,8 @@ typedef enum ccs_tree_tuner_type_e ccs_tree_tuner_type_t;
  * @param [out] type_ret a pointer to the variable that will contain the
  *                       returned tree tuner type
  * @return #CCS_RESULT_SUCCESS on success
- * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p tuner is not a valid CCS tree tuner
+ * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p tuner is not a valid CCS tree
+ * tuner
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p type_ret is NULL
  */
 extern ccs_result_t
@@ -62,7 +63,8 @@ ccs_tree_tuner_get_name(ccs_tree_tuner_t tuner, const char **name_ret);
  * @param[out] tree_space_ret a pointer to the variable that will contain
  *                            the tree space
  * @return #CCS_RESULT_SUCCESS on success
- * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p tuner is not a valid CCS tree tuner
+ * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p tuner is not a valid CCS tree
+ * tuner
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p tree_space_ret is NULL
  */
 extern ccs_result_t
@@ -76,7 +78,8 @@ ccs_tree_tuner_get_tree_space(
  * @param[out] objective_space_ret a pointer to the variable that will
  *                                 contain the objective space
  * @return #CCS_RESULT_SUCCESS on success
- * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p tuner is not a valid CCS tree tuner
+ * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p tuner is not a valid CCS tree
+ * tuner
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p objective_space_ret is NULL
  */
 extern ccs_result_t
@@ -100,19 +103,17 @@ ccs_tree_tuner_get_objective_space(
  *                                    NULL, a suggestion for the number of
  *                                    configuration to ask for
  * @return #CCS_RESULT_SUCCESS on success
- * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p tuner is not a valid CCSi tree tuner
+ * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p tuner is not a valid CCSi tree
+ * tuner
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p configurations is NULL and \p
- *                             num_configurations is greater than 0; or if \p
- *                             configurations and \p num_configurations_ret are
- *                             both NULL
- * @return #CCS_RESULT_ERROR_SAMPLING_UNSUCCESSFUL if no or not enough valid configurations
- *                                     could be sampled. Configurations that
- *                                     could be sampled will be returned
- *                                     contiguously, and the rest will be NULL
- * @return #CCS_RESULT_ERROR_OUT_OF_MEMORY if there was not enough memory to allocate new
- *                             configurations. Configurations that could be
- *                             allocated will be returned, and the rest will be
- *                             NULL
+ * num_configurations is greater than 0; or if \p configurations and \p
+ * num_configurations_ret are both NULL
+ * @return #CCS_RESULT_ERROR_SAMPLING_UNSUCCESSFUL if no or not enough valid
+ * configurations could be sampled. Configurations that could be sampled will be
+ * returned contiguously, and the rest will be NULL
+ * @return #CCS_RESULT_ERROR_OUT_OF_MEMORY if there was not enough memory to
+ * allocate new configurations. Configurations that could be allocated will be
+ * returned, and the rest will be NULL
  */
 extern ccs_result_t
 ccs_tree_tuner_ask(
@@ -128,15 +129,14 @@ ccs_tree_tuner_ask(
  * @param[in] evaluations an array of \p num_evaluations to provide to the
  *                        tuner
  * @return #CCS_RESULT_SUCCESS on success
- * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p tuner is not a valid CCS tree tuner;
- *                             or if one of the evaluations is not a valid CCS
- *                             tree evaluation
- * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p evaluations is NULL and \p num_evaluations
- *                             is greater than 0
- * @return #CCS_RESULT_ERROR_INVALID_EVALUATION if an evaluation is not a valid tree evaluation
- *                                 for the problem the tuner is optimizing
- * @return #CCS_RESULT_ERROR_OUT_OF_MEMORY if there was not enough memory to allocate
- *                             internal data structures
+ * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p tuner is not a valid CCS tree
+ * tuner; or if one of the evaluations is not a valid CCS tree evaluation
+ * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p evaluations is NULL and \p
+ * num_evaluations is greater than 0
+ * @return #CCS_RESULT_ERROR_INVALID_EVALUATION if an evaluation is not a valid
+ * tree evaluation for the problem the tuner is optimizing
+ * @return #CCS_RESULT_ERROR_OUT_OF_MEMORY if there was not enough memory to
+ * allocate internal data structures
  */
 extern ccs_result_t
 ccs_tree_tuner_tell(
@@ -150,12 +150,13 @@ ccs_tree_tuner_tell(
  * @param[out] configuration a pointer to the variable that will contain the
  *                           suggested configuration
  * @return #CCS_RESULT_SUCCESS on success
- * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p tuner is not a valid CCS tree tuner
+ * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p tuner is not a valid CCS tree
+ * tuner
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p configuration is NULL
- * @return #CCS_RESULT_ERROR_UNSUPPORTED_OPERATION if the tuner does not support the suggest
- *                                     interface
- * @return #CCS_RESULT_ERROR_OUT_OF_MEMORY if there was not enough memory to allocate new
- *                             configurations
+ * @return #CCS_RESULT_ERROR_UNSUPPORTED_OPERATION if the tuner does not support
+ * the suggest interface
+ * @return #CCS_RESULT_ERROR_OUT_OF_MEMORY if there was not enough memory to
+ * allocate new configurations
  */
 extern ccs_result_t
 ccs_tree_tuner_suggest(
@@ -173,10 +174,11 @@ ccs_tree_tuner_suggest(
  *                                 the number of evaluations that are or would
  *                                 be returned
  * @return #CCS_RESULT_SUCCESS on success
- * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p tuner is not a valid CCS tree tuner
- * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p evaluations is NULL and num_evaluations is
- *                             greater than 0; or if \p evaluations is NULL and
- *                             \p num_evaluations_ret is NULL
+ * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p tuner is not a valid CCS tree
+ * tuner
+ * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p evaluations is NULL and
+ * num_evaluations is greater than 0; or if \p evaluations is NULL and \p
+ * num_evaluations_ret is NULL
  */
 extern ccs_result_t
 ccs_tree_tuner_get_optimums(
@@ -195,10 +197,11 @@ ccs_tree_tuner_get_optimums(
  *                                 the number of evaluations that are or would
  *                                 be returned
  * @return #CCS_RESULT_SUCCESS on success
- * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p tuner is not a valid CCS tree tuner
- * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p evaluations is NULL and num_evaluations is
- *                             greater than 0; or if \p evaluations is NULL and
- *                             \p num_evaluations_ret is NULL
+ * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p tuner is not a valid CCS tree
+ * tuner
+ * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p evaluations is NULL and
+ * num_evaluations is greater than 0; or if \p evaluations is NULL and \p
+ * num_evaluations_ret is NULL
  */
 extern ccs_result_t
 ccs_tree_tuner_get_history(
@@ -217,11 +220,11 @@ ccs_tree_tuner_get_history(
  *                            newly created tree tuner
  * @return #CCS_RESULT_SUCCESS on success
  * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p tree_space is not a valid CCS
- *                              tree space; or if \p objective_space is
- *                              not a valid CCS objective space
- * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p name is NULL; or if \p tuner_ret is NULL
- * @return #CCS_RESULT_ERROR_OUT_OF_MEMORY if there was not enough memory to allocate the
- *                             new tree tuner instance
+ * tree space; or if \p objective_space is not a valid CCS objective space
+ * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p name is NULL; or if \p
+ * tuner_ret is NULL
+ * @return #CCS_RESULT_ERROR_OUT_OF_MEMORY if there was not enough memory to
+ * allocate the new tree tuner instance
  */
 extern ccs_result_t
 ccs_create_random_tree_tuner(
@@ -254,21 +257,28 @@ struct ccs_user_defined_tree_tuner_vector_s {
 		size_t                 num_evaluations,
 		ccs_tree_evaluation_t *evaluations);
 
-	/** The tree tuner get_optimums interface see ccs_tree_tuner_get_optimums */
+	/**
+	 * The tree tuner get_optimums interface see
+	 * ccs_tree_tuner_get_optimums
+	 */
 	ccs_result_t (*get_optimums)(
 		ccs_tree_tuner_t       tuner,
 		size_t                 num_evaluations,
 		ccs_tree_evaluation_t *evaluations,
 		size_t                *num_evaluations_ret);
 
-	/** The tree tuner get_history interface see ccs_tree_tuner_get_history */
+	/**
+	 * The tree tuner get_history interface see ccs_tree_tuner_get_history
+	 */
 	ccs_result_t (*get_history)(
 		ccs_tree_tuner_t       tuner,
 		size_t                 num_evaluations,
 		ccs_tree_evaluation_t *evaluations,
 		size_t                *num_evaluations_ret);
 
-	/** The tree tuner suggest interface see ccs_tree_tuner_suggest, can be NULL */
+	/** The tree tuner suggest interface see ccs_tree_tuner_suggest, can be
+	 * NULL
+	 */
 	ccs_result_t (*suggest)(
 		ccs_tree_tuner_t          tuner,
 		ccs_tree_configuration_t *configuration);
@@ -317,11 +327,11 @@ typedef struct ccs_user_defined_tree_tuner_vector_s
  * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p tree_space is not a valid CCS
  *                             tree space; or if \p objective_space is
  *                             not a valid CCS objective space
- * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p name is NULL; or if \p tuner_ret is NULL;
- *                             or if \p vector is NULL; or if any interface
- *                             pointer except suggest is NULL
- * @return #CCS_RESULT_ERROR_OUT_OF_MEMORY if there was not enough memory to allocate the
- *                             newi tree tuner instance
+ * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p name is NULL; or if \p
+ * tuner_ret is NULL; or if \p vector is NULL; or if any interface pointer
+ * except suggest is NULL
+ * @return #CCS_RESULT_ERROR_OUT_OF_MEMORY if there was not enough memory to
+ * allocate the newi tree tuner instance
  */
 extern ccs_result_t
 ccs_create_user_defined_tree_tuner(
@@ -337,8 +347,10 @@ ccs_create_user_defined_tree_tuner(
  * @param[in] tuner
  * @param[out] tuner_data_ret
  * @return #CCS_RESULT_SUCCESS on success
- * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p tuner is not a valid CCS tree tuner
- * @return #CCS_RESULT_ERROR_INVALID_TUNER if \p tuner is not a user defined tree tuner
+ * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p tuner is not a valid CCS tree
+ * tuner
+ * @return #CCS_RESULT_ERROR_INVALID_TUNER if \p tuner is not a user defined
+ * tree tuner
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p tuner_data_ret is NULL
  */
 extern ccs_result_t

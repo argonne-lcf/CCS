@@ -6,8 +6,8 @@
 /* BEWARE: ccs_float_t are used as hash keys. In order to recall sucessfully,
  * The *SAME* float must be used.
  * Alternative is o(n) access for floating point values as they would all go
- * in the same bucket. May be the wisest... Switch to find in the possiblie_values list?
- * #define MAXULPDIFF 7 // To define
+ * in the same bucket. May be the wisest... Switch to find in the
+ * possiblie_values list? #define MAXULPDIFF 7 // To define
  * // Could be doing type puning...
  * static inline int _cmp_float(ccs_float_t a, ccs_float_t b) {
  *   int64_t t1, t2, cmp;
@@ -60,7 +60,7 @@ _datum_cmp(ccs_datum_t *a, ccs_datum_t *b)
 	}
 }
 
-//from boost
+// from boost
 static inline ccs_hash_t
 _hash_combine(ccs_hash_t h1, ccs_hash_t h2)
 {

@@ -869,8 +869,8 @@ _ccs_object_deserialize_file_descriptor(
 		if (non_blocking) {
 			*(opts.ppfd_state) = pstate =
 				(_ccs_file_descriptor_state_t *)mem;
-			pstate->base_size =
-				0; /* Use zero as header phase marker */
+			pstate->base_size = 0; /* Use zero as header phase
+						  marker */
 		} else
 			pstate->base_size = header_size;
 		pstate->base        = mem;
@@ -878,7 +878,8 @@ _ccs_object_deserialize_file_descriptor(
 		pstate->buffer_size = header_size;
 		pstate->fd          = fd;
 	}
-	/* if blocking or in first phase non blocking, read header to query total read size */
+	/* if blocking or in first phase non blocking, read header to query
+	 * total read size */
 	if (!non_blocking || !pstate->base_size) {
 		size_t object_size;
 		char  *new_buffer;

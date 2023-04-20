@@ -468,7 +468,7 @@ ccs_features_evaluation_cmp(
 	return CCS_RESULT_SUCCESS;
 }
 
-//Could be using memoization here.
+// Could be using memoization here.
 ccs_result_t
 ccs_features_evaluation_compare(
 	ccs_features_evaluation_t evaluation,

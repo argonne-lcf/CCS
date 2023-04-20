@@ -9,7 +9,8 @@
 #include <ruby.h>
 #undef NDEBUG
 #endif
-// DO NOT MOVE. If assert.h is included before ruby.h asserts will turn to no-op.
+// DO NOT MOVE. If assert.h is included before ruby.h asserts will turn to
+// no-op.
 #include <assert.h>
 
 ccs_parameter_t

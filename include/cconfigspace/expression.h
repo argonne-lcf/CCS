@@ -7,11 +7,10 @@ extern "C" {
 
 /**
  * @file expression.h
- * An expression in CCS is a combination of constants, variables
- * (parameters), and operators. Expressions are usually evaluated in the
- * context of a binding where parameters are associated values. For
- * convinience CCS suggests a grammar that can be used to create an expression
- * parser.
+ * An expression in CCS is a combination of constants, variables (parameters),
+ * and operators. Expressions are usually evaluated in the context of a binding
+ * where parameters are associated values. For convinience CCS suggests a
+ * grammar that can be used to create an expression parser.
  */
 
 /**
@@ -231,20 +230,20 @@ extern const char               *ccs_terminal_symbols[];
  *                      compatible with the arity of the expression
  * @param[in] nodes an array of \p num_nodes expressions
  * @param[out] expression_ret a pointer to the variable that will hold the newly
- *             created expression
+ *                            created expression
  * @return #CCS_RESULT_SUCCESS on success
- * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p type is not a valid CCS expression type; or
- *                             if \p num_nodes is not compatible with the arity
- *                             of \p type; or if one the nodes given is of type
- *                             #CCS_OBJECT but is neither a #CCS_PARAMETER
- *                             nor a #CCS_EXPRESSION; or if one the nodes given
- *                             node is not a type #CCS_OBJECT, #CCS_DATA_TYPE_NONE,
- *                             #CCS_DATA_TYPE_INT, #CCS_DATA_TYPE_FLOAT, #CCS_DATA_TYPE_BOOL, or
- *                             #CCS_DATA_TYPE_STRING; or if \p expression_ret is NULL
- * @return #CCS_RESULT_ERROR_INVALID_OBJECT if one the nodes given is of type #CCS_OBJECT
- *                              but the object is not a valid CCS object
- * @return #CCS_RESULT_ERROR_OUT_OF_MEMORY if there was a lack of memory to allocate the new
- *                             expression
+ * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p type is not a valid CCS
+ * expression type; or if \p num_nodes is not compatible with the arity of \p
+ * type; or if one the nodes given is of type #CCS_DATA_TYPE_OBJECT but is
+ * neither a #CCS_OBJECT_TYPE_PARAMETER nor a #CCS_OBJECT_TYPE_EXPRESSION; or
+ * if one the nodes given node is not a type #CCS_DATA_TYPE_OBJECT,
+ * #CCS_DATA_TYPE_NONE, #CCS_DATA_TYPE_INT, #CCS_DATA_TYPE_FLOAT,
+ * #CCS_DATA_TYPE_BOOL, or #CCS_DATA_TYPE_STRING; or if \p expression_ret is
+ * NULL
+ * @return #CCS_RESULT_ERROR_INVALID_OBJECT if one the nodes given is of type
+ * #CCS_DATA_TYPE_OBJECT but the object is not a valid CCS object
+ * @return #CCS_RESULT_ERROR_OUT_OF_MEMORY if there was a lack of memory to
+ * allocate the new expression
  */
 extern ccs_result_t
 ccs_create_expression(
@@ -262,20 +261,18 @@ ccs_create_expression(
  * @param[out] expression_ret a pointer to the variable that will hold the newly
  *             created expression
  * @return #CCS_RESULT_SUCCESS on success
- * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p type is not a valid CCS expression type; or
- *                             if \p type arity is not 2; or if \p node_left or
- *                             \p node_right are of type #CCS_OBJECT but are
- *                             neither a #CCS_PARAMETER nor a
- *                             #CCS_EXPRESSION; or if \p node_left or \p
- *                             node_right are not of type #CCS_OBJECT,
- *                             #CCS_DATA_TYPE_NONE, #CCS_DATA_TYPE_INT, #CCS_DATA_TYPE_FLOAT,
- *                             #CCS_DATA_TYPE_BOOL, or #CCS_DATA_TYPE_STRING; or if \p
- *                             expression_ret is NULL
- * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p node_left or \p node_right are of type
- *                              #CCS_OBJECT but the object is not a valid CCS
- *                              object
- * @return #CCS_RESULT_ERROR_OUT_OF_MEMORY if there was a lack of memory to allocate the new
- *                             expression
+ * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p type is not a valid CCS
+ * expression type; or if \p type arity is not 2; or if \p node_left or \p
+ * node_right are of type #CCS_DATA_TYPE_OBJECT but are neither a
+ * #CCS_OBJECT_TYPE_PARAMETER nor a #CCS_OBJECT_TYPE_EXPRESSION; or if \p
+ * node_left or \p node_right are not of type #CCS_DATA_TYPE_OBJECT,
+ * #CCS_DATA_TYPE_NONE, #CCS_DATA_TYPE_INT, #CCS_DATA_TYPE_FLOAT,
+ * #CCS_DATA_TYPE_BOOL, or #CCS_DATA_TYPE_STRING; or if \p expression_ret is
+ * NULL
+ * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p node_left or \p node_right are
+ * of type #CCS_DATA_TYPE_OBJECT but the object is not a valid CCS object
+ * @return #CCS_RESULT_ERROR_OUT_OF_MEMORY if there was a lack of memory to
+ * allocate the new expression
  */
 extern ccs_result_t
 ccs_create_binary_expression(
@@ -290,19 +287,19 @@ ccs_create_binary_expression(
  * @param[in] type the type of the expression
  * @param[in] node child node
  * @param[out] expression_ret a pointer to the variable that will hold the newly
- *             created expression
+ *                            created expression
  * @return #CCS_RESULT_SUCCESS on success
- * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p type is not a valid CCS expression type; or
- *                             if \p type arity is not 1; or if \p node is of
- *                             type #CCS_OBJECT but is neither a
- *                             #CCS_PARAMETER nor a #CCS_EXPRESSION; or if
- *                             \p node is not of type #CCS_OBJECT, #CCS_DATA_TYPE_NONE,
- *                             #CCS_DATA_TYPE_INT, #CCS_DATA_TYPE_FLOAT, #CCS_DATA_TYPE_BOOL, or
- *                             #CCS_DATA_TYPE_STRING; or if \p expression_ret is NULL
- * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p node is of type #CCS_OBJECT but the object
- *                              is not a valid CCS object
- * @return #CCS_RESULT_ERROR_OUT_OF_MEMORY if there was a lack of memory to allocate the new
- *                             expression
+ * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p type is not a valid CCS
+ * expression type; or if \p type arity is not 1; or if \p node is of type
+ * #CCS_DATA_TYPE_OBJECT but is neither a #CCS_OBJECT_TYPE_PARAMETER nor a
+ * #CCS_OBJECT_TYPE_EXPRESSION; or if \p node is not of type
+ * #CCS_DATA_TYPE_OBJECT, #CCS_DATA_TYPE_NONE, #CCS_DATA_TYPE_INT,
+ * #CCS_DATA_TYPE_FLOAT, #CCS_DATA_TYPE_BOOL, or #CCS_DATA_TYPE_STRING; or if
+ * \p expression_ret is NULL
+ * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p node is of type
+ * #CCS_DATA_TYPE_OBJECT but the object is not a valid CCS object
+ * @return #CCS_RESULT_ERROR_OUT_OF_MEMORY if there was a lack of memory to
+ * allocate the new expression
  */
 extern ccs_result_t
 ccs_create_unary_expression(
@@ -314,14 +311,15 @@ ccs_create_unary_expression(
  * Create a new literal expression.
  * @param[in] value the value of the literal
  * @param[out] expression_ret a pointer to the variable that will hold the newly
- *             created expression. If value is of type #CCS_DATA_TYPE_STRING, the string
- *             value is memoized
+ *             created expression. If value is of type #CCS_DATA_TYPE_STRING,
+ *             the string value is memoized
  * @return #CCS_RESULT_SUCCESS on success
- * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p value is not of type #CCS_DATA_TYPE_NONE,
- *                             #CCS_DATA_TYPE_INT, #CCS_DATA_TYPE_FLOAT, #CCS_DATA_TYPE_BOOL, or
- *                             #CCS_DATA_TYPE_STRING; or if \p expression_ret is NULL
- * @return #CCS_RESULT_ERROR_OUT_OF_MEMORY if there was a lack of memory to allocate the new
- *                             expression
+ * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p value is not of type
+ * #CCS_DATA_TYPE_NONE, #CCS_DATA_TYPE_INT, #CCS_DATA_TYPE_FLOAT,
+ * #CCS_DATA_TYPE_BOOL, or #CCS_DATA_TYPE_STRING; or if \p expression_ret is
+ * NULL
+ * @return #CCS_RESULT_ERROR_OUT_OF_MEMORY if there was a lack of memory to
+ * allocate the new expression
  */
 extern ccs_result_t
 ccs_create_literal(ccs_datum_t value, ccs_expression_t *expression_ret);
@@ -334,9 +332,9 @@ ccs_create_literal(ccs_datum_t value, ccs_expression_t *expression_ret);
  * @return #CCS_RESULT_SUCCESS on success
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p expression_ret is NULL
  * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p parameter is not a valid CCS
- *                              parameter
- * @return #CCS_RESULT_ERROR_OUT_OF_MEMORY if there was a lack of memory to allocate the new
- *                             expression
+ * parameter
+ * @return #CCS_RESULT_ERROR_OUT_OF_MEMORY if there was a lack of memory to
+ * allocate the new expression
  */
 extern ccs_result_t
 ccs_create_variable(ccs_parameter_t parameter, ccs_expression_t *expression_ret);
@@ -348,7 +346,8 @@ ccs_create_variable(ccs_parameter_t parameter, ccs_expression_t *expression_ret)
  *                      the expression
  * @return #CCS_RESULT_SUCCESS on success
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p type_ret is NULL
- * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p expression is not a valid CCS expression
+ * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p expression is not a valid CCS
+ * expression
  */
 extern ccs_result_t
 ccs_expression_get_type(
@@ -362,7 +361,8 @@ ccs_expression_get_type(
  *                           number of child node of the expression
  * @return #CCS_RESULT_SUCCESS on success
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p num_nodes_ret is NULL
- * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p expression is not a valid CCS expression
+ * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p expression is not a valid CCS
+ * expression
  */
 extern ccs_result_t
 ccs_expression_get_num_nodes(ccs_expression_t expression, size_t *num_nodes_ret);
@@ -377,11 +377,11 @@ ccs_expression_get_num_nodes(ccs_expression_t expression, size_t *num_nodes_ret)
  *                           number of nodes that are or would be returned. Can
  *                           be NULL
  * @return #CCS_RESULT_SUCCESS on success
- * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p expression is not a valid CCS expression
- * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p nodes is NULL and \p num_nodes is greater
- *                             than 0; or if \p nodes is NULL and num_nodes_ret
- *                             is NULL; or if num_values is less than the number
- *                             of values that would be returned
+ * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p expression is not a valid CCS
+ * expression
+ * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p nodes is NULL and \p num_nodes
+ * is greater than 0; or if \p nodes is NULL and num_nodes_ret is NULL; or if
+ * num_values is less than the number of values that would be returned
  */
 extern ccs_result_t
 ccs_expression_get_nodes(
@@ -396,8 +396,10 @@ ccs_expression_get_nodes(
  * @param[out] value_ret a pointer to a variable that will contain the value of
  *                       the literal
  * @return #CCS_RESULT_SUCCESS on success
- * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p expression is not a valid CCS expression
- * @return #CCS_RESULT_ERROR_INVALID_EXPRESSION if \p expression is not a #CCS_EXPRESSION_TYPE_LITERAL
+ * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p expression is not a valid CCS
+ * expression
+ * @return #CCS_RESULT_ERROR_INVALID_EXPRESSION if \p expression is not a
+ * #CCS_EXPRESSION_TYPE_LITERAL
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p value_ret is NULL
  */
 extern ccs_result_t
@@ -407,10 +409,12 @@ ccs_literal_get_value(ccs_expression_t expression, ccs_datum_t *value_ret);
  * Get the parameter of a variable expression.
  * @param[in] expression
  * @param[out] parameter_ret a pointer to a variable that will contain the
- *                                parameter
+ *                           parameter
  * @return #CCS_RESULT_SUCCESS on success
- * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p expression is not a valid CCS expression
- * @return #CCS_RESULT_ERROR_INVALID_EXPRESSION if \p expression is not a #CCS_EXPRESSION_TYPE_VARIABLE
+ * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p expression is not a valid CCS
+ * expression
+ * @return #CCS_RESULT_ERROR_INVALID_EXPRESSION if \p expression is not a
+ * #CCS_EXPRESSION_TYPE_VARIABLE
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p parameter_ret is NULL
  */
 extern ccs_result_t
@@ -430,14 +434,13 @@ ccs_variable_get_parameter(
  *                        #ccs_inactive when the result depend on an inactive
  *                        parameter
  * @return #CCS_RESULT_SUCCESS on success
- * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p expression is not a valid CCS variable
- *                              expression; or if \p context is NULL and
- *                              expression must evaluate a variable
- * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p result_ret is NULL; or if \p values is NULL
- *                             and expression must evaluate a variable; or if an
- *                             illegal arithmetic or comparison operation would
- *                             have occurred; or if a non boolean value is used
- *                             in a boolean operation
+ * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p expression is not a valid CCS
+ * variable expression; or if \p context is NULL and expression must evaluate a
+ * variable
+ * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p result_ret is NULL; or if \p
+ * values is NULL and expression must evaluate a variable; or if an illegal
+ * arithmetic or comparison operation would have occurred; or if a non boolean
+ * value is used in a boolean operation
  */
 extern ccs_result_t
 ccs_expression_eval(
@@ -459,17 +462,17 @@ ccs_expression_eval(
  *                        #ccs_inactive when the result depend on an inactive
  *                        parameter
  * @return #CCS_RESULT_SUCCESS on success
- * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p expression is not a valid CCS expression;
- *                              or if \p context is NULL and \p expression must
- *                              evaluate a variable
- * @return #CCS_RESULT_ERROR_INVALID_EXPRESSION if \p expression is not a #CCS_EXPRESSION_TYPE_LIST
- * @return #CCS_RESULT_ERROR_OUT_OF_BOUNDS if \p index is greater than the number of child
- *                             nodes in the list
- * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p result_ret is NULL; or if \p values is NULL
- *                             and expression must evaluate a variable; or if an
- *                             illegal arithmetic or comparison operation would
- *                             have occurred; or if a non boolean value is used
- *                             in a boolean operation
+ * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p expression is not a valid CCS
+ * expression; or if \p context is NULL and \p expression must evaluate a
+ * variable
+ * @return #CCS_RESULT_ERROR_INVALID_EXPRESSION if \p expression is not a
+ * #CCS_EXPRESSION_TYPE_LIST
+ * @return #CCS_RESULT_ERROR_OUT_OF_BOUNDS if \p index is greater than the
+ * number of child nodes in the list
+ * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p result_ret is NULL; or if \p
+ * values is NULL and expression must evaluate a variable; or if an illegal
+ * arithmetic or comparison operation would have occurred; or if a non boolean
+ * value is used in a boolean operation
  */
 extern ccs_result_t
 ccs_expression_list_eval_node(
@@ -483,22 +486,21 @@ ccs_expression_list_eval_node(
  * Get the parameters used in an expression.
  * @param[in] expression
  * @param[in] num_parameters the size of the \p parameters array
- * @param[in] parameters an array of size \p num_parameters to hold
- *                            the returned values, or NULL. If the array is too
- *                            big, extra values are set to NULL
- * @param[out] num_parameters_ret a pointer to a variable that will contain
- *                                     the number of parameters that are or
- *                                     would be returned. Can be NULL
+ * @param[in] parameters an array of size \p num_parameters to hold the
+ *                       returned values, or NULL. If the array is too big,
+ *                       extra values are set to NULL
+ * @param[out] num_parameters_ret a pointer to a variable that will contain the
+ *                                number of parameters that are or would be
+ *                                returned. Can be NULL
  * @return #CCS_RESULT_SUCCESS on success
- * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p expression is not a valid CCS expression
+ * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p expression is not a valid CCS
+ * expression
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p parameters is NULL and \p
- *                              num_parameters is greater than 0; or if \p
- *                              parameters is NULL and \p
- *                              num_parameters_ret is NULL; or if \p
- *                              num_parameters is less than the number of
- *                              parameters that would be returned
- * @return #CCS_RESULT_ERROR_OUT_OF_MEMORY if there was not enough memory to allocate
- *                             temporary storage
+ * num_parameters is greater than 0; or if \p parameters is NULL and \p
+ * num_parameters_ret is NULL; or if \p num_parameters is less than the number
+ * of parameters that would be returned
+ * @return #CCS_RESULT_ERROR_OUT_OF_MEMORY if there was not enough memory to
+ * allocate temporary storage
  */
 extern ccs_result_t
 ccs_expression_get_parameters(
@@ -513,16 +515,15 @@ ccs_expression_get_parameters(
  * @param[in] context the context to verify the expression can be evaluated in.
  *            Can be NULL
  * @return #CCS_RESULT_SUCCESS on success
- * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p expression is not a valid CCS expression;
- *                              or if expression depends on a parameter and
- *                              \p context is not a valid CCS context
- * @return #CCS_RESULT_ERROR_INVALID_VALUE if the expression depends on a parameter and
- *                             \p context is NULL
- * @return #CCS_RESULT_ERROR_INVALID_PARAMETER if \p context does not contain one of
- *                                      the parameters referenced by the
- *                                      expression
- * @return #CCS_RESULT_ERROR_OUT_OF_MEMORY if there was not enough memory to allocate
- *                             temporary storage
+ * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p expression is not a valid CCS
+ * expression; or if expression depends on a parameter and \p context is not a
+ * valid CCS context
+ * @return #CCS_RESULT_ERROR_INVALID_VALUE if the expression depends on a
+ * parameter and \p context is NULL
+ * @return #CCS_RESULT_ERROR_INVALID_PARAMETER if \p context does not contain
+ * one of the parameters referenced by the expression
+ * @return #CCS_RESULT_ERROR_OUT_OF_MEMORY if there was not enough memory to
+ * allocate temporary storage
  */
 extern ccs_result_t
 ccs_expression_check_context(ccs_expression_t expression, ccs_context_t context);

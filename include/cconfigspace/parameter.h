@@ -57,17 +57,16 @@ typedef enum ccs_parameter_type_e ccs_parameter_type_t;
  * @param[in] upper upper bound (excluded)
  * @param[in] quantization quantization of the values. 0 means no quantization
  * @param[in] default_value default value of the parameter
- * @param[out] parameter_ret a pointer to the variable that will hold the
- *                                newly created numerical parameter
+ * @param[out] parameter_ret a pointer to the variable that will hold the newly
+ *                           created numerical parameter
  * @return #CCS_RESULT_SUCCESS on success
- * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p name is NULL; or if \p parameter_ret
- *                             is NULL; or if quantization is less than 0; or if
- *                             default value is not a valid value for the
- *                             parameter
- * @return #CCS_RESULT_ERROR_INVALID_TYPE if data_type is neither #CCS_NUMERIC_TYPE_FLOAT or
- *                            #CCS_NUMERIC_TYPE_INT
- * @return #CCS_RESULT_ERROR_OUT_OF_MEMORY if there was a lack of memory to allocate the new
- *                             numerical parameter
+ * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p name is NULL; or if \p
+ * parameter_ret is NULL; or if quantization is less than 0; or if default value
+ * is not a valid value for the parameter
+ * @return #CCS_RESULT_ERROR_INVALID_TYPE if data_type is neither
+ * #CCS_NUMERIC_TYPE_FLOAT or #CCS_NUMERIC_TYPE_INT
+ * @return #CCS_RESULT_ERROR_OUT_OF_MEMORY if there was a lack of memory to
+ * allocate the new numerical parameter
  */
 extern ccs_result_t
 ccs_create_numerical_parameter(
@@ -92,12 +91,11 @@ ccs_create_numerical_parameter(
  *                              the numerical parameter
  * @return #CCS_RESULT_SUCCESS on success
  * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p parameter is not a valid CCS
- *                              parameter
+ * parameter
  * @return #CCS_RESULT_ERROR_INVALID_PARAMETER if \p parameter is not a
- *                                      numerical parameter
- * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p data_type_ret is NULL and \p lower_ret is
- *                             NULL and \p upper_ret is NULL and \p
- *                             quantization_ret is NULL
+ * numerical parameter
+ * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p data_type_ret is NULL and \p
+ * lower_ret is NULL and \p upper_ret is NULL and \p quantization_ret is NULL
  */
 extern ccs_result_t
 ccs_numerical_parameter_get_properties(
@@ -116,13 +114,13 @@ ccs_numerical_parameter_get_properties(
  *            represent the possible values that the parameter can take
  * @param[in] default_value_index the index of the default value in the
  *                                \p possible_values array
- * @param[out] parameter_ret a pointer to the variable that will hold the
- *                                newly created categorical parameter
+ * @param[out] parameter_ret a pointer to the variable that will hold the newly
+ *                           created categorical parameter
  * @return #CCS_RESULT_SUCCESS on success
- * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p name is NULL; or if \p parameter_ret
- *                             is NULL
- * @return #CCS_RESULT_ERROR_OUT_OF_MEMORY if there was a lack of memory to allocate the new
- *                             parameter
+ * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p name is NULL; or if \p
+ * parameter_ret is NULL
+ * @return #CCS_RESULT_ERROR_OUT_OF_MEMORY if there was a lack of memory to
+ * allocate the new parameter
  */
 extern ccs_result_t
 ccs_create_categorical_parameter(
@@ -144,15 +142,13 @@ ccs_create_categorical_parameter(
  *                                     returned. Can be NULL
  * @return #CCS_RESULT_SUCCESS on success
  * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p parameter is not a valid CCS
- *                              parameter
+ * parameter
  * @return #CCS_RESULT_ERROR_INVALID_PARAMETER if \p parameter is not a
- *                                      categorical parameter
+ * categorical parameter
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p possible_values is NULL and \p
- *                             num_possible_values is greater than 0; or if \p
- *                             possible_values is NULL and \p
- *                             num_possible_values_ret is NULL; or if
- *                             num_possible_values is less than the number of
- *                             values that would be returned
+ * num_possible_values is greater than 0; or if \p possible_values is NULL and
+ * \p num_possible_values_ret is NULL; or if num_possible_values is less than
+ * the number of values that would be returned
  */
 extern ccs_result_t
 ccs_categorical_parameter_get_values(
@@ -168,16 +164,17 @@ ccs_categorical_parameter_get_values(
  * @param[in] name name of the parameter
  * @param[in] num_possible_values the size of the \p possible_values array
  * @param[in] possible_values an array of \p num_possible_values values that
- *            represent the possible values that the parameter can take
+ *                            represent the possible values that the parameter
+ *                            can take
  * @param[in] default_value_index the index of the default value in the
  *                                \p possible_values array
- * @param[out] parameter_ret a pointer to the variable that will hold the
- *                                newly created ordinal parameter
+ * @param[out] parameter_ret a pointer to the variable that will hold the newly
+ *                           created ordinal parameter
  * @return #CCS_RESULT_SUCCESS on success
- * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p name is NULL; or if \p parameter_ret
- *                             is NULL
- * @return #CCS_RESULT_ERROR_OUT_OF_MEMORY if there was a lack of memory to allocate the new
- *                             parameter
+ * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p name is NULL; or if \p
+ * parameter_ret is NULL
+ * @return #CCS_RESULT_ERROR_OUT_OF_MEMORY if there was a lack of memory to
+ * allocate the new parameter
  */
 extern ccs_result_t
 ccs_create_ordinal_parameter(
@@ -199,15 +196,13 @@ ccs_create_ordinal_parameter(
  *                                     returned. Can be NULL
  * @return #CCS_RESULT_SUCCESS on success
  * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p parameter is not a valid CCS
- *                              parameter
- * @return #CCS_RESULT_ERROR_INVALID_PARAMETER if \p parameter is not an ordinal
- *                                      parameter
+ * parameter
+ * @return #CCS_RESULT_ERROR_INVALID_PARAMETER if \p parameter is not an
+ * ordinal parameter
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p possible_values is NULL and \p
- *                             num_possible_values is greater than 0; or if \p
- *                             possible_values is NULL and \p
- *                             num_possible_values_ret is NULL; or if
- *                             num_possible_values is less than the number of
- *                             values that would be returned
+ * num_possible_values is greater than 0; or if \p possible_values is NULL and
+ * \p num_possible_values_ret is NULL; or if num_possible_values is less than
+ * the number of values that would be returned
  */
 extern ccs_result_t
 ccs_ordinal_parameter_get_values(
@@ -226,10 +221,10 @@ ccs_ordinal_parameter_get_values(
  *                      equal to value2
  * @return #CCS_RESULT_SUCCESS on success
  * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p parameter is not a valid CCS
- * @return #CCS_RESULT_ERROR_INVALID_PARAMETER if \p parameter is not an ordinal
- *                                      parameter
- * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p comp_ret is NULL; or if value1 or value2
- *                             are not one of the parameter possible values
+ * @return #CCS_RESULT_ERROR_INVALID_PARAMETER if \p parameter is not an
+ * ordinal parameter
+ * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p comp_ret is NULL; or if value1
+ * or value2 are not one of the parameter possible values
  */
 extern ccs_result_t
 ccs_ordinal_parameter_compare_values(
@@ -248,13 +243,13 @@ ccs_ordinal_parameter_compare_values(
  *            represent the possible values that the parameter can take.
  * @param[in] default_value_index the index of the default value in the
  *                                \p possible_values array
- * @param[out] parameter_ret a pointer to the variable that will hold the
- *                                newly created discrete parameter
+ * @param[out] parameter_ret a pointer to the variable that will hold the newly
+ *                           created discrete parameter
  * @return #CCS_RESULT_SUCCESS on success
- * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p name is NULL; or if \p parameter_ret
- *                             is NULL
- * @return #CCS_RESULT_ERROR_OUT_OF_MEMORY if there was a lack of memory to allocate the new
- *                             parameter
+ * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p name is NULL; or if \p
+ * parameter_ret is NULL
+ * @return #CCS_RESULT_ERROR_OUT_OF_MEMORY if there was a lack of memory to
+ * allocate the new parameter
  */
 extern ccs_result_t
 ccs_create_discrete_parameter(
@@ -276,15 +271,13 @@ ccs_create_discrete_parameter(
  *                                     returned. Can be NULL
  * @return #CCS_RESULT_SUCCESS on success
  * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p parameter is not a valid CCS
- *                              parameter
- * @return #CCS_RESULT_ERROR_INVALID_PARAMETER if \p parameter is not a discrete
- *                                      parameter
+ * parameter
+ * @return #CCS_RESULT_ERROR_INVALID_PARAMETER if \p parameter is not a
+ * discrete parameter
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p possible_values is NULL and \p
- *                             num_possible_values is greater than 0; or if \p
- *                             possible_values is NULL and \p
- *                             num_possible_values_ret is NULL; or if
- *                             num_possible_values is less than the number of
- *                             values that would be returned
+ * num_possible_values is greater than 0; or if \p possible_values is NULL and
+ * \p num_possible_values_ret is NULL; or if num_possible_values is less than
+ * the number of values that would be returned
  */
 extern ccs_result_t
 ccs_discrete_parameter_get_values(
@@ -298,13 +291,13 @@ ccs_discrete_parameter_get_values(
  * within feature space. Cannot be sampled and thus doesn't have a default
  * value. Checks will always return valid unless the value is not a string.
  * @param[in] name name of the parameter
- * @param[out] parameter_ret a pointer to the variable that will hold the
- *                                newly created string parameter
+ * @param[out] parameter_ret a pointer to the variable that will hold the newly
+ *                           created string parameter
  * @return #CCS_RESULT_SUCCESS on success
- * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p name is NULL; or if \p parameter_ret
- *                             is NULL
- * @return #CCS_RESULT_ERROR_OUT_OF_MEMORY if there was a lack of memory to allocate the new
- *                             parameter
+ * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p name is NULL; or if \p
+ * parameter_ret is NULL
+ * @return #CCS_RESULT_ERROR_OUT_OF_MEMORY if there was a lack of memory to
+ * allocate the new parameter
  */
 extern ccs_result_t
 ccs_create_string_parameter(const char *name, ccs_parameter_t *parameter_ret);
@@ -316,8 +309,8 @@ ccs_create_string_parameter(const char *name, ccs_parameter_t *parameter_ret);
  *                      the parameter
  * @return #CCS_RESULT_SUCCESS on success
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p type_ret is NULL
- * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p distribution is not a valid CCS
- *                              parameter
+ * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p distribution is not a valid
+ * CCS parameter
  */
 extern ccs_result_t
 ccs_parameter_get_type(
@@ -331,8 +324,8 @@ ccs_parameter_get_type(
  *                       value of the parameter
  * @return #CCS_RESULT_SUCCESS on success
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p value_ret is NULL
- * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p distribution is not a valid CCS
- *                              parameter
+ * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p distribution is not a valid
+ * CCS parameter
  */
 extern ccs_result_t
 ccs_parameter_get_default_value(
@@ -346,8 +339,8 @@ ccs_parameter_get_default_value(
  *                      the name of the parameter
  * @return #CCS_RESULT_SUCCESS on success
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p name_ret is NULL
- * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p distribution is not a valid CCS
- *                              parameter
+ * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p distribution is not a valid
+ * CCS parameter
  */
 extern ccs_result_t
 ccs_parameter_get_name(ccs_parameter_t parameter, const char **name_ret);
@@ -359,7 +352,7 @@ ccs_parameter_get_name(ccs_parameter_t parameter, const char **name_ret);
  *                              the returned distribution
  * @return #CCS_RESULT_SUCCESS on success
  * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p parameter is not a valid CCS
- *                              parameter
+ * parameter
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p distribution_ret is NULL
  */
 extern ccs_result_t
@@ -375,7 +368,7 @@ ccs_parameter_get_default_distribution(
  *                        of the check
  * @return #CCS_RESULT_SUCCESS on success
  * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p parameter is not a valid CCS
- *                              parameter
+ * parameter
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p result_ret is NULL
  */
 extern ccs_result_t
@@ -393,9 +386,9 @@ ccs_parameter_check_value(
  *                     contain the results the individual checks
  * @return #CCS_RESULT_SUCCESS on success
  * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p parameter is not a valid CCS
- *                              parameter
- * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p values or \p results are NULL and \p
- *                             num_values is greater than 0
+ * parameter
+ * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p values or \p results are NULL
+ * and \p num_values is greater than 0
  */
 extern ccs_result_t
 ccs_parameter_check_values(
@@ -416,8 +409,9 @@ ccs_parameter_check_values(
  *                        of the check
  * @return #CCS_RESULT_SUCCESS on success
  * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p parameter is not a valid CCS
- *                              parameter
- * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p result_ret or \p value_ret is NULL
+ * parameter
+ * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p result_ret or \p value_ret is
+ * NULL
  */
 extern ccs_result_t
 ccs_parameter_validate_value(
@@ -439,9 +433,9 @@ ccs_parameter_validate_value(
  *                     contain the results the individual checks
  * @return #CCS_RESULT_SUCCESS on success
  * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p parameter is not a valid CCS
- *                              parameter
- * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p values or \p results or \p values_ret are
- *                             NULL and \p num_values is greater than 0
+ * parameter
+ * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p values or \p results or \p
+ * values_ret are NULL and \p num_values is greater than 0
  */
 extern ccs_result_t
 ccs_parameter_validate_values(
@@ -466,9 +460,9 @@ ccs_parameter_validate_values(
  *                     #ccs_inactive
  * @return #CCS_RESULT_SUCCESS on success
  * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p parameter is not a valid CCS
- *                              parameter
- * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p values or \p results are NULL and \p
- *                             num_values is greater than 0
+ * parameter
+ * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p values or \p results are NULL
+ * and \p num_values is greater than 0
  */
 extern ccs_result_t
 ccs_parameter_convert_samples(
@@ -487,13 +481,11 @@ ccs_parameter_convert_samples(
  *                       sampled value
  * @return #CCS_RESULT_SUCCESS on success
  * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p parameter is not a valid CCS
- *                              parameter; or if \p distribution is not a
- *                              valid CCS distribution; or if \p rng is not a
- *                              valid CCS random number generator
+ * parameter; or if \p distribution is not a valid CCS distribution; or if \p
+ * rng is not a valid CCS random number generator
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p value_ret is NULL
- * @return #CCS_RESULT_ERROR_SAMPLING_UNSUCCESSFUL if the sample could not be generated,
- *                                     because the probability of obtaining a
- *                                     valid sample is too low
+ * @return #CCS_RESULT_ERROR_SAMPLING_UNSUCCESSFUL if the sample could not be
+ * generated, because the probability of obtaining a valid sample is too low
  */
 extern ccs_result_t
 ccs_parameter_sample(
@@ -512,14 +504,13 @@ ccs_parameter_sample(
  *                    sampled values
  * @return #CCS_RESULT_SUCCESS on success
  * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p parameter is not a valid CCS
- *                              parameter; or if \p distribution is not a
- *                              valid CCS distribution; or if \p rng is not a
- *                              valid CCS random number generator
- * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p values is NULL and \p num_values is greater
- *                             than 0
- * @return #CCS_RESULT_ERROR_SAMPLING_UNSUCCESSFUL if not enough samples could not be
- *                                     generated, because the probability of
- *                                     obtaining a valid sample is too low
+ * parameter; or if \p distribution is not a valid CCS distribution; or if \p
+ * rng is not a valid CCS random number generator
+ * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p values is NULL and \p
+ * num_values is greater than 0
+ * @return #CCS_RESULT_ERROR_SAMPLING_UNSUCCESSFUL if not enough samples could
+ * not be generated, because the probability of obtaining a valid sample is too
+ * low
  */
 extern ccs_result_t
 ccs_parameter_samples(
@@ -536,7 +527,7 @@ ccs_parameter_samples(
  *                          returned interval
  * @return #CCS_RESULT_SUCCESS on success
  * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p parameter is not a valid CCS
- *                              parameter
+ * parameter
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p interval_ret is NULL
  */
 extern ccs_result_t

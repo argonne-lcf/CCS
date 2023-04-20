@@ -16,8 +16,8 @@ extern "C" {
  *                      map
  * @return #CCS_RESULT_SUCCESS on success
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p rng_ret is NULL
- * @return #CCS_RESULT_ERROR_OUT_OF_MEMORY if there was not enough memory to allocate the
- *                             new map
+ * @return #CCS_RESULT_ERROR_OUT_OF_MEMORY if there was not enough memory to
+ * allocate the new map
  */
 extern ccs_result_t
 ccs_create_map(ccs_map_t *map_ret);
@@ -31,8 +31,8 @@ ccs_create_map(ccs_map_t *map_ret);
  *                 it will be retained unless #CCS_DATUM_FLAG_ID is used.
  * @return #CCS_RESULT_SUCCESS on success
  * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p map is not a valid CCS map
- * @return #CCS_RESULT_ERROR_OUT_OF_MEMORY if there was not enough memory to allocate data
- *                             structures
+ * @return #CCS_RESULT_ERROR_OUT_OF_MEMORY if there was not enough memory to
+ * allocate data structures
  */
 extern ccs_result_t
 ccs_map_set(ccs_map_t map, ccs_datum_t key, ccs_datum_t value);
@@ -88,10 +88,9 @@ ccs_map_del(ccs_map_t map, ccs_datum_t key);
  *                          be NULL
  * @return #CCS_RESULT_SUCCESS on success
  * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p map is not a valid CCS map
- * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p keys is NULL and \p num_keys is greater
- *                             than 0; or if \p keys is NULL and num_keys_ret
- *                             is NULL; or if \p num_keys is less than the
- *                             number of keys that would be returned
+ * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p keys is NULL and \p num_keys is
+ * greater than 0; or if \p keys is NULL and num_keys_ret is NULL; or if \p
+ * num_keys is less than the number of keys that would be returned
  */
 extern ccs_result_t
 ccs_map_get_keys(
@@ -104,8 +103,8 @@ ccs_map_get_keys(
  * Get the values contained in a map
  * @param[in] map
  * @param[in] num_values the number of values that can be added to \p
- *                     values. If \p values is not NULL, num_values must be greater
- *                     than 0
+ *                     values. If \p values is not NULL, num_values must be
+ * greater than 0
  * @param[out] values an array of \p num_values ccs_datum_t that will contain
  *                    the returned values of NULL. If the array is too big,
  *                    extra values will be set to ccs_none
@@ -114,10 +113,10 @@ ccs_map_get_keys(
  *                          be NULL
  * @return #CCS_RESULT_SUCCESS on success
  * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p map is not a valid CCS map
- * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p values is NULL and \p num_values is greater
- *                             than 0; or if \p values is NULL and num_values_ret
- *                             is NULL; or if \p num_values is less than the
- *                             number of values that would be returned
+ * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p values is NULL and \p
+ * num_values is greater than 0; or if \p values is NULL and num_values_ret is
+ * NULL; or if \p num_values is less than the number of values that would be
+ * returned
  */
 extern ccs_result_t
 ccs_map_get_values(
@@ -143,15 +142,12 @@ ccs_map_get_values(
  *                          be NULL
  * @return #CCS_RESULT_SUCCESS on success
  * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p map is not a valid CCS map
- * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p keys is NULL and \p num_pairs is greater
- *                             than 0; or if \p keys is NULL and num_pairs_ret
- *                             is NULL; or if \p num_pairs is less than the
- *                             number of values that would be returned; if \p
- *                             values is NULL and \p num_pairs is greater than
- *                             0; or if \p values is NULL and num_pairs_ret is
- *                             NULL; or if \p num_pairs is less than the number
- *                             of values that would be returned
-
+ * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p keys is NULL and \p num_pairs
+ * is greater than 0; or if \p keys is NULL and num_pairs_ret is NULL; or if \p
+ * num_pairs is less than the number of values that would be returned; if \p
+ * values is NULL and \p num_pairs is greater than 0; or if \p values is NULL
+ * and num_pairs_ret is NULL; or if \p num_pairs is less than the number of
+ * values that would be returned
  */
 extern ccs_result_t
 ccs_map_get_pairs(

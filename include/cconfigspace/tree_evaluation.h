@@ -9,12 +9,13 @@ extern "C" {
  * an objective space (see objective_space.h) given a specific tree
  * configuration (see tree_configuration.h). Successful evaluations over the
  * same objective space are weakly ordered by their objective values.
- * Evaluation that have failed must report a result code different than CCS_RESULT_SUCCESS.
+ * Evaluation that have failed must report a result code different than
+ * CCS_RESULT_SUCCESS.
  */
 
 /**
- * Create a new instance of a tree evaluation on a given objective space for a given
- * tree configuration.
+ * Create a new instance of a tree evaluation on a given objective space for a
+ * given tree configuration.
  * @param[in] objective_space the objective space to associate with the
  *                            evaluation
  * @param[in] configuration the configuration to associate with the evaluation
@@ -25,15 +26,15 @@ extern "C" {
  * @param[out] evaluation_ret a pointer to the variable that will hold the
  *             newly created evaluation
  * @return #CCS_RESULT_SUCCESS on success
- * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p objective_space is not a valid CCS
- *                              objective space; or if \p configuration is not a
- *                              valid CCS tree configuration
- * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p evaluation_ret is NULL; or if \p values is
- *                             NULL and \p num_values is greater than 0; or if
- *                             the number of values provided is not equal to the
- *                             number of parameters in the objective space
- * @return #CCS_RESULT_ERROR_OUT_OF_MEMORY if there was a lack of memory to allocate the new
- *                             evaluation
+ * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p objective_space is not a valid
+ * CCS objective space; or if \p configuration is not a valid CCS tree
+ * configuration
+ * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p evaluation_ret is NULL; or if
+ * \p values is NULL and \p num_values is greater than 0; or if the number of
+ * values provided is not equal to the number of parameters in the objective
+ * space
+ * @return #CCS_RESULT_ERROR_OUT_OF_MEMORY if there was a lack of memory to
+ * allocate the new evaluation
  */
 extern ccs_result_t
 ccs_create_tree_evaluation(
@@ -50,7 +51,8 @@ ccs_create_tree_evaluation(
  * @param[out] objective_space_ret a pointer to the variable that will
  *                                 contain the objective space
  * @return #CCS_RESULT_SUCCESS on success
- * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p evaluation is not a valid CCS tree evaluation
+ * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p evaluation is not a valid CCS
+ * tree evaluation
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p objective_space_ret is NULL
  */
 extern ccs_result_t
@@ -64,7 +66,8 @@ ccs_tree_evaluation_get_objective_space(
  * @param[out] configuration_ret a pointer to the variable that will contain
  *                               the configuration
  * @return #CCS_RESULT_SUCCESS on success
- * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p evaluation is not a valid CCS tree evaluation
+ * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p evaluation is not a valid CCS
+ * tree evaluation
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p configuration_ret is NULL
  */
 extern ccs_result_t
@@ -78,13 +81,14 @@ ccs_tree_evaluation_get_configuration(
  * @param[out] result_ret a pointer to the variable that will contain the
  *                        returned error code
  * @return #CCS_RESULT_SUCCESS on success
- * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p evaluation is not a valid CCS tree evaluation
+ * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p evaluation is not a valid CCS
+ * tree evaluation
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p result_ret is NULL
  */
 extern ccs_result_t
 ccs_tree_evaluation_get_result(
 	ccs_tree_evaluation_t    evaluation,
-	ccs_evaluation_result_t *error_ret);
+	ccs_evaluation_result_t *result_ret);
 
 /**
  * Set the result code associated with a tree evaluation. A successful
@@ -92,7 +96,8 @@ ccs_tree_evaluation_get_result(
  * @param[in,out] evaluation
  * @param[in] result the result code associated withe the evaluation
  * @return #CCS_RESULT_SUCCESS on success
- * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p evaluation is not a valid CCS tree evaluation
+ * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p evaluation is not a valid CCS
+ * tree evaluation
  */
 extern ccs_result_t
 ccs_tree_evaluation_set_result(
@@ -106,10 +111,11 @@ ccs_tree_evaluation_set_result(
  *                  space
  * @param[out] value_ret a pointer to the variable that will hold the value
  * @return #CCS_RESULT_SUCCESS on success
- * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p binding is not a valid CCS tree evaluation
+ * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p binding is not a valid CCS
+ * tree evaluation
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p value_ret is NULL
- * @return #CCS_RESULT_ERROR_OUT_OF_BOUNDS if \p index is greater than the count of
- *                             parameters in the objective space
+ * @return #CCS_RESULT_ERROR_OUT_OF_BOUNDS if \p index is greater than the count
+ * of parameters in the objective space
  */
 extern ccs_result_t
 ccs_tree_evaluation_get_value(
@@ -125,12 +131,13 @@ ccs_tree_evaluation_get_value(
  *                  space
  * @param[in] value the value
  * @return #CCS_RESULT_SUCCESS on success
- * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p evaluation is not a valid CCS tree evaluation
+ * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p evaluation is not a valid CCS
+ * tree evaluation
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p value_ret is NULL
- * @return #CCS_RESULT_ERROR_OUT_OF_BOUNDS if \p index is greater than the count of
- *                             parameters in the objective space
- * @return #CCS_RESULT_ERROR_OUT_OF_MEMORY if there was a lack of memory while memoizing a
- *                             string
+ * @return #CCS_RESULT_ERROR_OUT_OF_BOUNDS if \p index is greater than the count
+ * of parameters in the objective space
+ * @return #CCS_RESULT_ERROR_OUT_OF_MEMORY if there was a lack of memory while
+ * memoizing a string
  */
 extern ccs_result_t
 ccs_tree_evaluation_set_value(
@@ -149,11 +156,12 @@ ccs_tree_evaluation_set_value(
  *                            number of values that are or would be returned.
  *                            Can be NULL
  * @return #CCS_RESULT_SUCCESS on success
- * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p evaluation is not a valid CCS tree evaluation
- * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p values is NULL and \p num_values is greater
- *                             than 0; or if \p values is NULL and
- *                             num_values_ret is NULL; or if num_values is less
- *                             than the number of values that would be returned
+ * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p evaluation is not a valid CCS
+ * tree evaluation
+ * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p values is NULL and \p
+ * num_values is greater than 0; or if \p values is NULL and num_values_ret is
+ * NULL; or if num_values is less than the number of values that would be
+ * returned
  */
 extern ccs_result_t
 ccs_tree_evaluation_get_values(
@@ -168,10 +176,11 @@ ccs_tree_evaluation_get_values(
  * @param[in] name the name of the parameter whose value to retrieve
  * @param[out] value_ret a pointer to the variable that will hold the value
  * @return #CCS_RESULT_SUCCESS on success
- * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p evaluation is not a valid CCS tree evaluation
+ * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p evaluation is not a valid CCS
+ * tree evaluation
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p value_ret is NULL
- * @return #CCS_RESULT_ERROR_INVALID_NAME if no parameter with such \p name exist in
- *                            the \p objective space
+ * @return #CCS_RESULT_ERROR_INVALID_NAME if no parameter with such \p name
+ * exist in the \p objective space
  */
 extern ccs_result_t
 ccs_tree_evaluation_get_value_by_name(
@@ -183,14 +192,15 @@ ccs_tree_evaluation_get_value_by_name(
  * Check that an evaluation values are valid in the objective space.
  * @param[in] evaluation
  * @param[out] is_valid_ret a pointer to a variable that will hold the result
- *                          of the check. Result will be CCS_TRUE if the
- *                          evaluation is valid. Result will be CCS_FALSE if
+ *                          of the check. Result will be #CCS_TRUE if the
+ *                          evaluation is valid. Result will be #CCS_FALSE if
  *                          an parameter value is not a valid value
  *                          for this parameter
  * @return #CCS_RESULT_SUCCESS on success
- * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p evaluation is not a valid CCS tree evaluation
- * @return #CCS_RESULT_ERROR_INVALID_EVALUATION if \p evaluation was found to be invalid in
- *                                  the context of the objective space
+ * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p evaluation is not a valid CCS
+ * tree evaluation
+ * @return #CCS_RESULT_ERROR_INVALID_EVALUATION if \p evaluation was found to be
+ * invalid in the context of the objective space
  */
 extern ccs_result_t
 ccs_tree_evaluation_check(
@@ -198,18 +208,19 @@ ccs_tree_evaluation_check(
 	ccs_bool_t           *is_valid_ret);
 
 /**
- * Get the value of an objective for a valid tree evaluation in the context of its
- * objective space.
+ * Get the value of an objective for a valid tree evaluation in the context of
+ * its objective space.
  * @param[in] evaluation
  * @param[in] index the index of the objective in the objective space
  * @param[out] value_ret a pointer to the variable that will contain the value
  *                       of the objective
  * @return #CCS_RESULT_SUCCESS on success
- * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p evaluation is not a valid CCS tree evaluation
- * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p value_ret is NULL; or if there was an issue
- *                             evaluating the objective
- * @return #CCS_RESULT_ERROR_OUT_OF_BOUNDS if \p index is greater than the number of
- *                             objective in the objective space
+ * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p evaluation is not a valid CCS
+ * tree evaluation
+ * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p value_ret is NULL; or if there
+ * was an issue evaluating the objective
+ * @return #CCS_RESULT_ERROR_OUT_OF_BOUNDS if \p index is greater than the
+ * number of objective in the objective space
  */
 extern ccs_result_t
 ccs_tree_evaluation_get_objective_value(
@@ -218,22 +229,23 @@ ccs_tree_evaluation_get_objective_value(
 	ccs_datum_t          *value_ret);
 
 /**
- * Get the values of the objectives for a valid tree evaluation in the context of its
- * objective space.
+ * Get the values of the objectives for a valid tree evaluation in the context
+ * of its objective space.
  * @param[in] evaluation
  * @param[in] num_values the number of values that \p values can contain
  * @param[out] values an optional array of values that will contain the returned
  *                    objective values. If values is bigger than the number of
- *                    objectives, extra values will be set to #CCS_DATA_TYPE_NONE
+ *                    objectives, extra values will be set to
+ *                    #CCS_DATA_TYPE_NONE
  * @param[out] num_values_ret an optional pointer to a variable that will
  *                            contain the number of values that are or would be
  *                            returned. Can be NULL
  * @return #CCS_RESULT_SUCCESS on success
- * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p evaluation is not a valid CCS tree evaluation
- * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p values is NULL and \p num_values is greater
- *                             than 0; or if values is NULL and num_values_ret
- *                             is NULL; or if there was an issue evaluating any
- *                             of the objectives
+ * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p evaluation is not a valid CCS
+ * tree evaluation
+ * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p values is NULL and \p
+ * num_values is greater than 0; or if values is NULL and num_values_ret is
+ * NULL; or if there was an issue evaluating any of the objectives
  */
 extern ccs_result_t
 ccs_tree_evaluation_get_objective_values(
@@ -243,14 +255,15 @@ ccs_tree_evaluation_get_objective_values(
 	size_t               *num_values_ret);
 
 /**
- * Compute a hash value for the tree evaluation by hashing together the objective
- * space reference, the configuration, the number of values, the values
- * themselves, and the associated result.
+ * Compute a hash value for the tree evaluation by hashing together the
+ * objective space reference, the configuration, the number of values, the
+ * values themselves, and the associated result.
  * @param[in] evaluation
  * @param[out] hash_ret the address of the variable that will contain the hash
  *                      value.
  * @return #CCS_RESULT_SUCCESS on success
- * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p evaluation is not a valid CCS tree evaluation
+ * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p evaluation is not a valid CCS
+ * tree evaluation
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p hash_ret is NULL
  */
 extern ccs_result_t
@@ -266,8 +279,8 @@ ccs_tree_evaluation_hash(ccs_tree_evaluation_t evaluation, ccs_hash_t *hash_ret)
  *                     if the first evaluation is found to be respectively
  *                     lesser than, equal, or greater then the second evaluation
  * @return #CCS_RESULT_SUCCESS on success
- * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p evaluation or \p other_evaluation are not
- *                              valid CCS tree evaluations
+ * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p evaluation or \p
+ * other_evaluation are not valid CCS tree evaluations
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p cmp_ret is NULL
  */
 extern ccs_result_t
@@ -281,20 +294,20 @@ ccs_tree_evaluation_cmp(
  * @param[in] evaluation the first evaluation
  * @param[in] other_evaluation the second evaluation
  * @param[out] result_ret a pointer to the variable that will contain the result
- *                        of the comparison. Will contain #CCS_COMPARISON_BETTER,
- *                        #CCS_COMPARISON_EQUIVALENT, #CCS_COMPARISON_WORSE, or #CCS_COMPARISON_NOT_COMPARABLE if
- *                        the first evaluation is found to be respectively
- *                        better, equivalent, worse, or not comparable with the
- *                        second evaluation.
+ *                        of the comparison. Will contain
+ *                        #CCS_COMPARISON_BETTER, #CCS_COMPARISON_EQUIVALENT,
+ *                        #CCS_COMPARISON_WORSE, or
+ *                        #CCS_COMPARISON_NOT_COMPARABLE if the first
+ *                        evaluation is found to be respectively better,
+ *                        equivalent, worse, or not comparable with the second
+ *                        evaluation.
  * @return #CCS_RESULT_SUCCESS on success
- * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p evaluation or \p other_evaluation are not
- *                              valid CCS tree evaluations; or if \p evaluation
- *                              and \p other_evaluation do not share the same
- *                              objective space; or if any of the configuration
- *                              is associated a result code different than
- *                              CCS_SUCESS
- * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p result_ret is NULL; or if there was an
- *                                issue evaluating any of the objectives
+ * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p evaluation or \p
+ * other_evaluation are not valid CCS tree evaluations; or if \p evaluation and
+ * \p other_evaluation do not share the same objective space; or if any of the
+ * configuration is associated a result code different than CCS_SUCESS
+ * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p result_ret is NULL; or if there
+ * was an issue evaluating any of the objectives
  */
 extern ccs_result_t
 ccs_tree_evaluation_compare(

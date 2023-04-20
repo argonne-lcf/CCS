@@ -44,7 +44,7 @@ static constexpr const double epsilon = 1E-24;
 
 using namespace Kokkos::Tools::Experimental;
 
-//initialize the stack to true, so it should never be empty.
+// initialize the stack to true, so it should never be empty.
 static std::stack<bool, std::vector<bool> > convergence_stack;
 static constexpr const size_t               convergence_cutoff = 500;
 
@@ -52,8 +52,8 @@ static Kokkos::Tools::Experimental::ToolProgrammingInterface helper_functions;
 static void
 invoke_fence(uint32_t devID)
 {
-	if (!convergence_stack
-		     .top()) // if we are in a non converged state, we fence
+	if (!convergence_stack.top()) // if we are in a non converged state, we
+				      // fence
 		helper_functions.fence(devID);
 }
 
@@ -280,7 +280,8 @@ variable_info_to_parameter(const char *name, VariableInfo *info)
 			  if (!info->candidates.range.openUpper) {
 				  if (step == 0.0)
 					  upper = upper + epsilon;
-				  else // this is dubious/would require verification
+				  else // this is dubious/would require
+				       // verification
 					  upper = upper + step;
 			  }
 			  CCS_CHECK(ccs_create_numerical_parameter(
@@ -314,7 +315,8 @@ variable_info_to_parameter(const char *name, VariableInfo *info)
 			  if (!info->candidates.range.openUpper) {
 				  if (step == 0)
 					  upper = upper + epsilon;
-				  else // this is dubious/would require verification
+				  else // this is dubious/would require
+				       // verification
 					  upper = upper + step;
 			  }
 			  CCS_CHECK(ccs_create_numerical_parameter(

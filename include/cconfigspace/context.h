@@ -21,7 +21,8 @@ extern "C" {
  * @param[out] name_ret a pointer to a `char *` variable which will contain a
  *                      pointer to the context name.
  * @return #CCS_RESULT_SUCCESS on success
- * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p context is not a valid CCS object
+ * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p context is not a valid CCS
+ * object
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p name_ret is NULL
  */
 extern ccs_result_t
@@ -34,10 +35,11 @@ ccs_context_get_name(ccs_context_t context, const char **name_ret);
  * @param[out] index_ret a pointer to the variable which will contain the index
  *                       of the parameter
  * @return #CCS_RESULT_SUCCESS on success
- * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p context is not a valid CCS object;
+ * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p context is not a valid CCS
+ * object;
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p index_ret is NULL
- * @return #CCS_RESULT_ERROR_INVALID_PARAMETER if \p context does not contain \p
- *                                      parameter
+ * @return #CCS_RESULT_ERROR_INVALID_PARAMETER if \p context does not contain
+ * \p parameter
  */
 extern ccs_result_t
 ccs_context_get_parameter_index(
@@ -48,11 +50,11 @@ ccs_context_get_parameter_index(
 /**
  * Get the number of parameters in the given context.
  * @param[in] context
- * @param[out] num_parameters_ret a pointer to the variable which will
- *                                     contain the number of parameters in
- *                                     \p context
+ * @param[out] num_parameters_ret a pointer to the variable which will contain
+ *                                the number of parameters in \p context
  * @return #CCS_RESULT_SUCCESS on success
- * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p context is not a valid CCS object
+ * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p context is not a valid CCS
+ * object
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p num_parameters_ret is NULL
  */
 extern ccs_result_t
@@ -64,13 +66,14 @@ ccs_context_get_num_parameters(
  * Get an parameter in a context given its index.
  * @param[in] context
  * @param[in] index the index of the parameter to retrieve
- * @param[out] parameter_ret a pointer to the variable that will contain
- *                                the parameter
+ * @param[out] parameter_ret a pointer to the variable that will contain the
+ *                           parameter
  * @return #CCS_RESULT_SUCCESS on success
- * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p context is not a valid CCS object
+ * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p context is not a valid CCS
+ * object
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p parameter_ret is NULL
- * @return #CCS_RESULT_ERROR_OUT_OF_BOUNDS if \p index is greater than the count of
- *                             parameters in the context
+ * @return #CCS_RESULT_ERROR_OUT_OF_BOUNDS if \p index is greater than the count
+ * of parameters in the context
  */
 extern ccs_result_t
 ccs_context_get_parameter(
@@ -82,13 +85,15 @@ ccs_context_get_parameter(
  * Get an parameter in a context given its name.
  * @param[in] context
  * @param[in] name the name of the parameter to retrieve
- * @param[out] parameter_ret a pointer to the variable that will contain
- *                                the parameter
+ * @param[out] parameter_ret a pointer to the variable that will contain the
+ *                           parameter
  * @return #CCS_RESULT_SUCCESS on success
- * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p context is not a valid CCS object
- * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p name or \p parameter_ret are NULL
- * @return #CCS_RESULT_ERROR_INVALID_NAME if no parameter with such \p name exist in
- *                            the \p context
+ * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p context is not a valid CCS
+ * object
+ * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p name or \p parameter_ret are
+ * NULL
+ * @return #CCS_RESULT_ERROR_INVALID_NAME if no parameter with such \p name
+ * exist in the \p context
  */
 extern ccs_result_t
 ccs_context_get_parameter_by_name(
@@ -103,10 +108,11 @@ ccs_context_get_parameter_by_name(
  * @param[out] index_ret a pointer to the variable that will contain the index
  *                       of parameter in the \p context
  * @return #CCS_RESULT_SUCCESS on success
- * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p context is not a valid CCS object
+ * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p context is not a valid CCS
+ * object
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p name or \p index_ret are NULL
- * @return #CCS_RESULT_ERROR_INVALID_NAME if no parameter with such \p name exist in
- *                            the context
+ * @return #CCS_RESULT_ERROR_INVALID_NAME if no parameter with such \p name
+ * exist in the context
  */
 extern ccs_result_t
 ccs_context_get_parameter_index_by_name(
@@ -117,24 +123,22 @@ ccs_context_get_parameter_index_by_name(
 /**
  * Get the parameters in the given context.
  * @param[in] context
- * @param[in] num_parameters is the number of parameters that can be
- *                                added to \p parameters. If \p
- *                                parameters is not NULL \p
- *                                num_parameters must be greater than 0
- * @param[in] parameters an array of \p num_parameters that will
- *                            contain the returned parameters or NULL. If
- *                            the array is too big, extra values are set to NULL
- * @param[out] num_parameters_ret a pointer to a variable that will contain
- *                                     the number of parameters that are or
- *                                     would be returned. Can be NULL
+ * @param[in] num_parameters is the number of parameters that can be added to
+ *                           \p parameters. If \p parameters is not NULL \p
+ *                           num_parameters must be greater than 0
+ * @param[in] parameters an array of \p num_parameters that will contain the
+ *                       returned parameters or NULL. If the array is too big,
+ *                       extra values are set to NULL
+ * @param[out] num_parameters_ret a pointer to a variable that will contain the
+ *                                number of parameters that are or would be
+ *                                returned. Can be NULL
  * @return #CCS_RESULT_SUCCESS on success
- * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p context is not a valid CCS object
+ * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p context is not a valid CCS
+ * object
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p parameters is NULL and \p
- *                             num_parameters is greater than 0; or if \p
- *                             parameters is NULL and \p
- *                             num_parameters_ret is NULL; or if
- *                             \p num_parameters is less than the number of
- *                             parameters that would be returned
+ * num_parameters is greater than 0; or if \p parameters is NULL and \p
+ * num_parameters_ret is NULL; or if \p num_parameters is less than the number
+ * of parameters that would be returned
  */
 extern ccs_result_t
 ccs_context_get_parameters(
@@ -146,20 +150,19 @@ ccs_context_get_parameters(
 /**
  * Get the indices of a set of parameters in a context.
  * @param[in] context
- * @param[in] num_parameters the number of parameters to query the
- *                                index for
- * @param[in] parameters an array of \p num_parameters parameters
- *                            to query the index for
+ * @param[in] num_parameters the number of parameters to query the index for
+ * @param[in] parameters an array of \p num_parameters parameters to query the
+ *                       index for
  * @param[out] indexes an array of \p num_parameters indices that will
  *                     contain the values of the parameter indices
  * @return #CCS_RESULT_SUCCESS on success
- * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p context is not a valid CCS object
+ * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p context is not a valid CCS
+ * object
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p parameters is NULL and \p
- *                             num_parameters is greater than 0; or if \p
- *                             indexes is NULL and \p num_parameters is
- *                             greater than 0
- * @return #CCS_RESULT_ERROR_INVALID_PARAMETER if at least one of the parameters
- *                                      is not contained in \p context
+ * num_parameters is greater than 0; or if \p indexes is NULL and \p
+ * num_parameters is greater than 0
+ * @return #CCS_RESULT_ERROR_INVALID_PARAMETER if at least one of the
+ * parameters is not contained in \p context
  */
 extern ccs_result_t
 ccs_context_get_parameter_indexes(
@@ -178,13 +181,14 @@ ccs_context_get_parameter_indexes(
  *                       value is a string \p value_ret will contain a non
  *                       transient string.
  * @return #CCS_RESULT_SUCCESS on success
- * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p context is not a valid CCS object
- * @return #CCS_RESULT_ERROR_OUT_OF_BOUNDS if index is greater than the number of
- *                             parameters in \p context
- * @return #CCS_RESULT_ERROR_OUT_OF_MEMORY if there was a lack of memory while memoizing a
- *                             string
- * @return #CCS_RESULT_ERROR_INVALID_VALUE if the value did not validate or if value_ret is
- *                             NULL
+ * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p context is not a valid CCS
+ * object
+ * @return #CCS_RESULT_ERROR_OUT_OF_BOUNDS if index is greater than the number
+ * of parameters in \p context
+ * @return #CCS_RESULT_ERROR_OUT_OF_MEMORY if there was a lack of memory while
+ * memoizing a string
+ * @return #CCS_RESULT_ERROR_INVALID_VALUE if the value did not validate or if
+ * value_ret is NULL
  */
 extern ccs_result_t
 ccs_context_validate_value(

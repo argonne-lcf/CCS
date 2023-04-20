@@ -43,10 +43,10 @@ typedef enum ccs_tree_space_type_e ccs_tree_space_type_t;
  * @param[out] tree_space_ret a pointer to the variable that will hold
  *                            the newly created tree space.
  * @return #CCS_RESULT_SUCCESS on success
- * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p name is NULL; or if \p tree_space_ret
- *                            is NULL
- * @return #CCS_RESULT_ERROR_OUT_OF_MEMORY if there was a lack of memory to allocate the new
- *                            tree space
+ * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p name is NULL; or if \p
+ * tree_space_ret is NULL
+ * @return #CCS_RESULT_ERROR_OUT_OF_MEMORY if there was a lack of memory to
+ * allocate the new tree space
  */
 extern ccs_result_t
 ccs_create_static_tree_space(
@@ -75,8 +75,8 @@ struct ccs_dynamic_tree_space_vector_s {
 	 *                        parent node.
 	 * @param[out] child_ret a pointer to the variable that will contain
 	 *                       the returned child node
-	 * @return #CCS_RESULT_SUCCESS on success or an error code describing the
-	 *                      error encountered
+	 * @return #CCS_RESULT_SUCCESS on success or an error code describing
+	 * the error encountered
 	 */
 	ccs_result_t (*get_child)(
 		ccs_tree_space_t tree_space,
@@ -115,16 +115,15 @@ typedef struct ccs_dynamic_tree_space_vector_s ccs_dynamic_tree_space_vector_t;
  * @param[in] tree the tree defining the tree space
  * @param[in] vector the callback vector implementing the dynamic tree space
  *                   interface
- * @param[in] tree_space_data a pointer to the tree space internal data structures
- *                            can be NULL
+ * @param[in] tree_space_data a pointer to the tree space internal data
+ *                            structures can be NULL
  * @param[out] tree_space_ret a pointer to the variable that will hold
  *                            the newly created tree space.
  * @return #CCS_RESULT_SUCCESS on success
- * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p name is NULL; or if \p tree_space_ret
- *                            is NULL; or if any non optional interface pointer
- *                            is NULL
- * @return #CCS_RESULT_ERROR_OUT_OF_MEMORY if there was a lack of memory to allocate the new
- *                            tree space
+ * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p name is NULL; or if \p
+ * tree_space_ret is NULL; or if any non optional interface pointer is NULL
+ * @return #CCS_RESULT_ERROR_OUT_OF_MEMORY if there was a lack of memory to
+ * allocate the new tree space
  */
 extern ccs_result_t
 ccs_create_dynamic_tree_space(
@@ -140,7 +139,8 @@ ccs_create_dynamic_tree_space(
  * @param [out] type_ret a pointer to the variable that will contain the
  *                       returned tree space type
  * @return #CCS_RESULT_SUCCESS on success
- * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p tree_space is not a valid CCS tree space
+ * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p tree_space is not a valid CCS
+ * tree space
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p type_ret is NULL
  */
 extern ccs_result_t
@@ -155,7 +155,8 @@ ccs_tree_space_get_type(
  *                      the name of the tree space
  * @return #CCS_RESULT_SUCCESS on success
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p name_ret is NULL
- * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p tuner is not a valid CCS tree space
+ * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p tuner is not a valid CCS tree
+ * space
  */
 extern ccs_result_t
 ccs_tree_space_get_name(ccs_tree_space_t tree_space, const char **name_ret);
@@ -166,8 +167,7 @@ ccs_tree_space_get_name(ccs_tree_space_t tree_space, const char **name_ret);
  * @param[in] rng the rng to use in the tree space
  * @return #CCS_RESULT_SUCCESS on success
  * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p tree_space is not a valid CCS
- *                             tree space; or \p rng is not a valid
- *                             CCS rng
+ * tree space; or \p rng is not a valid CCS rng
  */
 extern ccs_result_t
 ccs_tree_space_set_rng(ccs_tree_space_t tree_space, ccs_rng_t rng);
@@ -178,7 +178,7 @@ ccs_tree_space_set_rng(ccs_tree_space_t tree_space, ccs_rng_t rng);
  * @param[out] rng_ret a pointer to the variable that will contain the rng
  * @return #CCS_RESULT_SUCCESS on success
  * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p tree_space is not a valid CCS
- *                             tree space
+ * tree space
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p rng_ret is NULL
  */
 extern ccs_result_t
@@ -190,7 +190,7 @@ ccs_tree_space_get_rng(ccs_tree_space_t tree_space, ccs_rng_t *rng_ret);
  * @param[out] tree_ret a pointer to the variable that will contain the tree
  * @return #CCS_RESULT_SUCCESS on success
  * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p tree_space is not a valid CCS
- *                             tree space
+ * tree space
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p rng_ret is NULL
  */
 extern ccs_result_t
@@ -204,12 +204,13 @@ ccs_tree_space_get_tree(ccs_tree_space_t tree_space, ccs_tree_t *tree_ret);
  *                     space. can be NULL if \p position_size is 0
  * @param[out] tree_ret a pointer to the variable that will contain the node
  * @return #CCS_RESULT_SUCCESS on success
- * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p tree_space is not a valid CCS tree space
- * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p tree_ret is NULL; or if \p position is
- *                            NULL and \p position_size is greater than 0
- * @return #CCS_RESULT_ERROR_INVALID_TREE if the position does not define a valid position
- *                           in the tree space, or if this position is
- *                           undefined in a static tree space.
+ * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p tree_space is not a valid CCS
+ * tree space
+ * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p tree_ret is NULL; or if \p
+ * position is NULL and \p position_size is greater than 0
+ * @return #CCS_RESULT_ERROR_INVALID_TREE if the position does not define a
+ * valid position in the tree space, or if this position is undefined in a
+ * static tree space.
  */
 extern ccs_result_t
 ccs_tree_space_get_node_at_position(
@@ -229,12 +230,13 @@ ccs_tree_space_get_node_at_position(
  *                    values, or NULL. If the array is too big, extra values
  *                    are set to #CCS_DATA_TYPE_NONE
  * @return #CCS_RESULT_SUCCESS on success
- * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p tree_space is not a valid CCS tree space
- * @return #CCS_RESULT_ERROR_INVALID_TREE if the position does not reference a node in
- *                           the tree.
- * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p values is NULL; if \p num_values is less
- *                            than \p position_size + 1; or if \p position is
- *                            NULL and \p position_size is greater than 0
+ * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p tree_space is not a valid CCS
+ * tree space
+ * @return #CCS_RESULT_ERROR_INVALID_TREE if the position does not reference a
+ * node in the tree.
+ * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p values is NULL; if \p
+ * num_values is less than \p position_size + 1; or if \p position is NULL and
+ * \p position_size is greater than 0
  */
 extern ccs_result_t
 ccs_tree_space_get_values_at_position(
@@ -253,12 +255,13 @@ ccs_tree_space_get_values_at_position(
  * @param[out] is_valid_ret a pointer to the variable that will contain the
  *                          result
  * @return #CCS_RESULT_SUCCESS on success
- * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p tree_space is not a valid CCS tree space
- * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p tree_ret is NULL; or if \p position is
- *                            NULL and \p position_size is greater than 0
- * @return #CCS_RESULT_ERROR_INVALID_TREE if the position does not define a valid position
- *                           in the tree space, or if this position is
- *                           undefined in a static tree space.
+ * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p tree_space is not a valid CCS
+ * tree space
+ * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p tree_ret is NULL; or if \p
+ * position is NULL and \p position_size is greater than 0
+ * @return #CCS_RESULT_ERROR_INVALID_TREE if the position does not define a
+ * valid position in the tree space, or if this position is undefined in a
+ * static tree space.
  */
 extern ccs_result_t
 ccs_tree_space_check_position(
@@ -274,11 +277,10 @@ ccs_tree_space_check_position(
  * @param[out] is_valid_ret a pointer to the variable that will contain the
  *                          result
  * @return #CCS_RESULT_SUCCESS on success
- * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p tree_space is not a valid CCS tree space;
- *                             or if \p configuration is not a valid CCS tree
- *                             configuration
- * @return #CCS_RESULT_ERROR_INVALID_CONFIGURATION if \p configuration is not associated to
- *                                    \p tree_space
+ * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p tree_space is not a valid CCS
+ * tree space; or if \p configuration is not a valid CCS tree configuration
+ * @return #CCS_RESULT_ERROR_INVALID_CONFIGURATION if \p configuration is not
+ * associated to \p tree_space
  */
 extern ccs_result_t
 ccs_tree_space_check_configuration(
@@ -294,10 +296,11 @@ ccs_tree_space_check_configuration(
  * @param[out] configuration_ret a pointer to the variable that will contain the
  *                               returned tree configuration
  * @return #CCS_RESULT_SUCCESS on success
- * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p tree space is not a valid CCS tree space
+ * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p tree space is not a valid CCS
+ * tree space
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if configuration_ret is NULL
- * @return #CCS_RESULT_ERROR_OUT_OF_MEMORY if there was not enough memory to allocate the
- *                             new configuration
+ * @return #CCS_RESULT_ERROR_OUT_OF_MEMORY if there was not enough memory to
+ * allocate the new configuration
  */
 extern ccs_result_t
 ccs_tree_space_sample(
@@ -314,11 +317,12 @@ ccs_tree_space_sample(
  * @param[out] configurations an array of \p num_configurations that will
  *                            contain the requested configurations
  * @return #CCS_RESULT_SUCCESS on success
- * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p tree space is not a valid CCS tree space
+ * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p tree space is not a valid CCS
+ * tree space
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p configurations is NULL and \p
- *                            num_configurations is greater than 0
- * @return #CCS_RESULT_ERROR_OUT_OF_MEMORY if there was not enough memory to allocate the
- *                            new configurations
+ * num_configurations is greater than 0
+ * @return #CCS_RESULT_ERROR_OUT_OF_MEMORY if there was not enough memory to
+ * allocate the new configurations
  */
 extern ccs_result_t
 ccs_tree_space_samples(
@@ -331,8 +335,10 @@ ccs_tree_space_samples(
  * @param[in] tree_space
  * @param[out] tree_space_data_ret
  * @return #CCS_RESULT_SUCCESS on success
- * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p tree space is not a valid CCS tree space
- * @return #CCS_RESULT_ERROR_INVALID_TREE_SPACE if \p tree space is not a dynamic tree space
+ * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p tree space is not a valid CCS
+ * tree space
+ * @return #CCS_RESULT_ERROR_INVALID_TREE_SPACE if \p tree space is not a
+ * dynamic tree space
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p tree_space_data_ret is NULL
  */
 extern ccs_result_t

@@ -79,7 +79,7 @@ ccs_tuner_tell(
 	CCS_CHECK_OBJ(tuner, CCS_OBJECT_TYPE_TUNER);
 	CCS_CHECK_ARY(num_evaluations, evaluations);
 	/* TODO: check that evaluations have the same objective and
-         * configuration sapce than the tuner */
+	 * configuration sapce than the tuner */
 	_ccs_tuner_ops_t *ops = ccs_tuner_get_ops(tuner);
 	CCS_VALIDATE(ops->tell(tuner, num_evaluations, evaluations));
 	return CCS_RESULT_SUCCESS;

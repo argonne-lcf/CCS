@@ -21,13 +21,13 @@ extern "C" {
  * @param[out] features_ret a pointer to the variable that will hold the newly
  *                          created features
  * @return #CCS_RESULT_SUCCESS on success
- * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p features is not a valid CCS features space
- * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p features_ret is NULL; or if \p values is
- *                             NULL and \p num_values is greater than 0; or if
- *                             the number of values provided is not to the
- *                             number of parameters in the features space
- * @return #CCS_RESULT_ERROR_OUT_OF_MEMORY if there was a lack of memory to allocate the new
- *                             features
+ * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p features is not a valid CCS
+ * features space
+ * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p features_ret is NULL; or if \p
+ * values is NULL and \p num_values is greater than 0; or if the number of
+ * values provided is not to the number of parameters in the features space
+ * @return #CCS_RESULT_ERROR_OUT_OF_MEMORY if there was a lack of memory to
+ * allocate the new features
  */
 extern ccs_result_t
 ccs_create_features(
@@ -42,7 +42,8 @@ ccs_create_features(
  * @param[out] features_space_ret a pointer to the variable that will
  *                                contain the features space
  * @return #CCS_RESULT_SUCCESS on success
- * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p features is not a valid CCS features
+ * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p features is not a valid CCS
+ * features
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p features_space_ret is NULL
  */
 extern ccs_result_t
@@ -56,10 +57,11 @@ ccs_features_get_features_space(
  * @param[in] index index of the parameter in the associated features space
  * @param[out] value_ret a pointer to the variable that will hold the value
  * @return #CCS_RESULT_SUCCESS on success
- * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p features is not a valid CCS features
+ * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p features is not a valid CCS
+ * features
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p value_ret is NULL
- * @return #CCS_RESULT_ERROR_OUT_OF_BOUNDS if \p index is greater than the count of
- *                             parameters in the features space
+ * @return #CCS_RESULT_ERROR_OUT_OF_BOUNDS if \p index is greater than the count
+ * of parameters in the features space
  */
 extern ccs_result_t
 ccs_features_get_value(
@@ -74,12 +76,13 @@ ccs_features_get_value(
  * @param[in] index index of the parameter in the associated features space
  * @param[in] value the value
  * @return #CCS_RESULT_SUCCESS on success
- * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p features is not a valid CCS features
+ * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p features is not a valid CCS
+ * features
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p value_ret is NULL
- * @return #CCS_RESULT_ERROR_OUT_OF_BOUNDS if \p index is greater than the count of
- *                             parameters in the features space
- * @return #CCS_RESULT_ERROR_OUT_OF_MEMORY if there was a lack of memory while memoizing a
- *                             string
+ * @return #CCS_RESULT_ERROR_OUT_OF_BOUNDS if \p index is greater than the count
+ * of parameters in the features space
+ * @return #CCS_RESULT_ERROR_OUT_OF_MEMORY if there was a lack of memory while
+ * memoizing a string
  */
 extern ccs_result_t
 ccs_features_set_value(ccs_features_t features, size_t index, ccs_datum_t value);
@@ -95,12 +98,12 @@ ccs_features_set_value(ccs_features_t features, size_t index, ccs_datum_t value)
  *                            number of values that are or would be returned.
  *                            Can be NULL
  * @return #CCS_RESULT_SUCCESS on success
- * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p features is not a valid CCS features
- * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p values is NULL and \p num_values is greater
- *                             than 0; or if \p values is NULL and
- *                             num_values_ret is NULL; or if \p num_values is
- *                             less than the number of values that would be
- *                             returned
+ * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p features is not a valid CCS
+ * features
+ * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p values is NULL and \p
+ * num_values is greater than 0; or if \p values is NULL and num_values_ret is
+ * NULL; or if \p num_values is less than the number of values that would be
+ * returned
  */
 extern ccs_result_t
 ccs_features_get_values(
@@ -115,10 +118,11 @@ ccs_features_get_values(
  * @param[in] name the name of the parameter whose value to retrieve
  * @param[out] value_ret a pointer to the variable that will hold the value
  * @return #CCS_RESULT_SUCCESS on success
- * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p features is not a valid CCS features
+ * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p features is not a valid CCS
+ * features
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p value_ret is NULL
- * @return #CCS_RESULT_ERROR_INVALID_NAME if no parameter with such \p name exist in
- *                            the \p features space
+ * @return #CCS_RESULT_ERROR_INVALID_NAME if no parameter with such \p name
+ * exist in the \p features space
  */
 extern ccs_result_t
 ccs_features_get_value_by_name(
@@ -130,13 +134,15 @@ ccs_features_get_value_by_name(
  * Check that the features is a valid features for the features space.
  * @param[in] features
  * @param[out] is_valid_ret a pointer to a variable that will hold the result
- *                          of the check. Result will be CCS_TRUE if the
- *                          features is valid. Result will be CCS_FALSE if
+ *                          of the check. Result will be #CCS_TRUE if the
+ *                          features is valid. Result will be #CCS_FALSE if
  *                          an parameter value is not a valid value
  *                          for this parameter
  * @return #CCS_RESULT_SUCCESS on success
- * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p features is not a valid CCS features
- * @return #CCS_RESULT_ERROR_INVALID_CONFIGURATION if \p features is found to be invalid
+ * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p features is not a valid CCS
+ * features
+ * @return #CCS_RESULT_ERROR_INVALID_CONFIGURATION if \p features is found to be
+ * invalid
  */
 extern ccs_result_t
 ccs_features_check(ccs_features_t features, ccs_bool_t *is_valid_ret);
@@ -148,7 +154,8 @@ ccs_features_check(ccs_features_t features, ccs_bool_t *is_valid_ret);
  * @param[out] hash_ret the address of the variable that will contain the hash
  *                      value
  * @return #CCS_RESULT_SUCCESS on success
- * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p features is not a valid CCS features
+ * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p features is not a valid CCS
+ * features
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p hash_ret is NULL
  */
 extern ccs_result_t
@@ -164,8 +171,8 @@ ccs_features_hash(ccs_features_t features, ccs_hash_t *hash_ret);
  *                     if the first features is found to be respectively lesser
  *                     than, equal, or greater then the second features
  * @return #CCS_RESULT_SUCCESS on success
- * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p features or \p other_features are not a
- *                              valid CCS object
+ * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p features or \p other_features
+ * are not a valid CCS object
  */
 extern ccs_result_t
 ccs_features_cmp(

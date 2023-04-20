@@ -16,14 +16,14 @@ struct _ccs_tree_s {
 };
 
 struct _ccs_tree_data_s {
-	size_t arity;
-	ccs_float_t *
-		weights; // Storage for children sum_weights * children bias and own weight at weights[arity]
-	ccs_tree_t        *children;
-	ccs_float_t        bias;
-	ccs_datum_t        value;
+	size_t       arity;
+	ccs_float_t *weights; // Storage for children sum_weights * children
+			      // bias and own weight at weights[arity]
+	ccs_tree_t  *children;
+	ccs_float_t  bias;
+	ccs_datum_t  value;
 	// Helper values
-	ccs_float_t        sum_weights;
+	ccs_float_t  sum_weights;
 	ccs_distribution_t distribution;
 	ccs_tree_t         parent;
 	size_t index; // if parent == NULL index contains tree_space handle

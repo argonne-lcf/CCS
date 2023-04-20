@@ -709,10 +709,10 @@ ccs_fini();
  * Return the string corresponding to the provided CCS result.
  * @param[in] result the CCS result
  * @param[out] name a pointer to a variable that will contain the string
- *             representation of the result name.
+ *                  representation of the result name.
  * @return #CCS_RESULT_SUCCESS on success
- * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p name is NULL or if \p error is not a valid
- *                             CCS result code
+ * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p name is NULL or if \p error is
+ * not a valid CCS result code
  */
 extern ccs_result_t
 ccs_get_result_name(ccs_result_t result, const char **name);
@@ -902,16 +902,20 @@ typedef enum ccs_serialize_operation_e ccs_serialize_operation_t;
 enum ccs_serialize_option_e {
 	/** Option list terminator */
 	CCS_SERIALIZE_OPTION_END = 0,
-	/** The file descriptor operation is non-blocking. The next parameter is
-	 *  a pointer to a void * variable (initialized to NULL) that will hold
-	 *  the state of the serialization in order to restart. The function
-	 *  performing the operation will return #CCS_RESULT_AGAIN if the operation has
-	 *  not completed. The state is managed internally. */
+	/**
+	 * The file descriptor operation is non-blocking. The next parameter is
+	 * a pointer to a void * variable (initialized to NULL) that will hold
+	 * the state of the serialization in order to restart. The function
+	 * performing the operation will return #CCS_RESULT_AGAIN if the
+	 * operation has not completed. The state is managed internally.
+	 */
 	CCS_SERIALIZE_OPTION_NON_BLOCKING,
-	/** The next parameters are a serialization callback and it's user_data.
-	 *  This callback will be called for all objects that have user_data set
-	 *  and have not a serialization callback set via
-	 *  ccs_object_set_serialize_callback */
+	/**
+	 * The next parameters are a serialization callback and it's user_data.
+	 * This callback will be called for all objects that have user_data set
+	 * and have not a serialization callback set via
+	 * ccs_object_set_serialize_callback
+	 */
 	CCS_SERIALIZE_OPTION_CALLBACK,
 	/** Guard */
 	CCS_SERIALIZE_OPTION_MAX,
@@ -938,27 +942,37 @@ typedef ccs_result_t (*ccs_object_deserialize_callback_t)(
 enum ccs_deserialize_option_e {
 	/** Option list terminator */
 	CCS_DESERIALIZE_OPTION_END = 0,
-	/** The next parameter is a ccs_handle_map_t object that must contain
-	 *  the mappings required to deserialize an object (usually bindings or
-	 *  expressions). I given, will also add a mapping between the object
-	 *  original handle and its current handle. */
+	/**
+	 * The next parameter is a ccs_handle_map_t object that must contain
+	 * the mappings required to deserialize an object (usually bindings or
+	 * expressions). I given, will also add a mapping between the object
+	 * original handle and its current handle.
+	 */
 	CCS_DESERIALIZE_OPTION_HANDLE_MAP,
-	/** The next parameter is a pointer to a ccs object vector struct, for
-	 *  user defined tuners */
+	/**
+	 * The next parameter is a pointer to a ccs object vector struct, for
+	 * user defined tuners
+	 */
 	CCS_DESERIALIZE_OPTION_VECTOR,
-	/** The next parameter is a pointer to a ccs object internal data, for
-	 *  user defined tuners */
+	/**
+	 * The next parameter is a pointer to a ccs object internal data, for
+	 * user defined tuners
+	 */
 	CCS_DESERIALIZE_OPTION_DATA,
-	/** The file descriptor operation is non-blocking. The next parameter is
-	 *  a pointer to a void * variable (initialized to NULL) that will hold
-	 *  the state of the serialization in order to restart. The function
-	 *  performing the operation will return #CCS_RESULT_AGAIN if the operation has
-	 *  not completed. The state is managed internally. */
+	/**
+	 * The file descriptor operation is non-blocking. The next parameter is
+	 * a pointer to a void * variable (initialized to NULL) that will hold
+	 * the state of the serialization in order to restart. The function
+	 * performing the operation will return #CCS_RESULT_AGAIN if the
+	 * operation has not completed. The state is managed internally.
+	 */
 	CCS_DESERIALIZE_OPTION_NON_BLOCKING,
-	/** The next parameters are a deserialization callback and it's user_data.
-	 *  This callback will be called for all objects that had their
-	 *  user_data serialized. If no such callback is provided the object's
-	 *  user_data value will not be set. */
+	/**
+	 * The next parameters are a deserialization callback and it's
+	 * user_data. This callback will be called for all objects that had
+	 * their user_data serialized. If no such callback is provided the
+	 * object's user_data value will not be set.
+	 */
 	CCS_DESERIALIZE_OPTION_CALLBACK,
 	/** Guard */
 	CCS_DESERIALIZE_OPTION_MAX,
@@ -980,11 +994,12 @@ typedef enum ccs_deserialize_option_e ccs_deserialize_option_t;
  *                    terminated list of options
  * @return #CCS_RESULT_SUCCESS on success
  * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p object is found to be invalid
- * @return #CCS_RESULT_ERROR_INVALID_VALUE if parameters and option combination are
- *                             unsupported
- * @return #CCS_RESULT_ERROR_OUT_OF_MEMORY if required memory could not be allocated
- * @return #CCS_RESULT_ERROR_NOT_ENOUGH_DATA in case where the provided buffer is too small
- *                               for the requested operation
+ * @return #CCS_RESULT_ERROR_INVALID_VALUE if parameters and option combination
+ * are unsupported
+ * @return #CCS_RESULT_ERROR_OUT_OF_MEMORY if required memory could not be
+ * allocated
+ * @return #CCS_RESULT_ERROR_NOT_ENOUGH_DATA in case where the provided buffer
+ * is too small for the requested operation
  */
 extern ccs_result_t
 ccs_object_serialize(
@@ -1004,11 +1019,12 @@ ccs_object_serialize(
  *                    terminated list of options
  * @return #CCS_RESULT_SUCCESS on success
  * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p object is found to be invalid
- * @return #CCS_RESULT_ERROR_INVALID_VALUE if parameters and option combination are
- *                             unsupported
- * @return #CCS_RESULT_ERROR_OUT_OF_MEMORY if required memory could not be allocated
- * @return #CCS_RESULT_ERROR_NOT_ENOUGH_DATA in case where the provided buffer is too small
- *                               for the requested operation
+ * @return #CCS_RESULT_ERROR_INVALID_VALUE if parameters and option combination
+ * are unsupported
+ * @return #CCS_RESULT_ERROR_OUT_OF_MEMORY if required memory could not be
+ * allocated
+ * @return #CCS_RESULT_ERROR_NOT_ENOUGH_DATA in case where the provided buffer
+ * is too small for the requested operation
  */
 extern ccs_result_t
 ccs_object_deserialize(

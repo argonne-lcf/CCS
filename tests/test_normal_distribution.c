@@ -523,8 +523,9 @@ test_normal_distribution_float_log_quantize()
 
 	to_log(samples, num_samples);
 	mean  = gsl_stats_mean((double *)samples, 1, num_samples);
-	// cutoff at log(quantization/2.0) to have quantized(exp(v)) >= quantization
-	// see https://en.wikipedia.org/wiki/Truncated_normal_distribution
+	// cutoff at log(quantization/2.0) to have quantized(exp(v)) >=
+	// quantization see
+	// https://en.wikipedia.org/wiki/Truncated_normal_distribution
 	alpha = (log(quantization * 0.5) - mu) / sigma;
 	zee   = (1.0 - gsl_cdf_ugaussian_P(alpha));
 	pdfa  = gsl_ran_ugaussian_pdf(alpha);
