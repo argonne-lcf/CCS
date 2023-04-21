@@ -40,13 +40,13 @@ class TestInterval(unittest.TestCase):
     i3 = i1.intersect(i2)
     self.assertTrue( i3.empty )
 
-  def test_include(self):
+  def test_contains(self):
     i = ccs.Interval(t = ccs.NumericType.FLOAT, lower = -1.0, upper = 1.0)
-    self.assertTrue( i.include(0.0) )
-    self.assertFalse( i.include(2.0) )
+    self.assertTrue( i.contains(0.0) )
+    self.assertFalse( i.contains(2.0) )
     i = ccs.Interval(t = ccs.NumericType.INT, lower = -5, upper = 5)
-    self.assertTrue( i.include(0) )
-    self.assertFalse( i.include(6) )
+    self.assertTrue( i.contains(0) )
+    self.assertFalse( i.contains(6) )
 
 if __name__ == '__main__':
     unittest.main()

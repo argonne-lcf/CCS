@@ -122,11 +122,11 @@ class TestDistribution(unittest.TestCase):
     d = ccs.NormalDistribution()
     i = d.bounds
     v = d.sample(rng)
-    self.assertTrue( i.include(v) )
+    self.assertTrue( i.contains(v) )
     a = d.samples(rng, 100)
     self.assertEqual( 100, len(a) )
     for v in a:
-      self.assertTrue( i.include(v) )
+      self.assertTrue( i.contains(v) )
 
   def test_from_handle_uniform(self):
     d = ccs.UniformDistribution()
@@ -223,11 +223,11 @@ class TestDistribution(unittest.TestCase):
     d = ccs.UniformDistribution()
     i = d.bounds
     v = d.sample(rng)
-    self.assertTrue( i.include(v) )
+    self.assertTrue( i.contains(v) )
     a = d.samples(rng, 100)
     self.assertEqual( 100, len(a) )
     for v in a:
-      self.assertTrue( i.include(v) )
+      self.assertTrue( i.contains(v) )
 
   def test_create_mixture(self):
     distributions = [ ccs.UniformDistribution.float(lower = -5.0, upper = 0.0),

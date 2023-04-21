@@ -125,8 +125,12 @@ class Interval(ct.Structure):
       v.i = value
     elif t == NumericType.FLOAT:
       v.f = value
+    else:
+      raise Error(Result(Result.ERROR_INVALID_VALUE))
     res = ccs_interval_include(ct.byref(self), v.i)
     return False if res == ccs_false else True
+
+  contains = include
 
   def __str__(self):
     s = ""
