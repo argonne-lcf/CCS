@@ -436,6 +436,8 @@ ccs_object_deserialize.restype = Result
 _res = ccs_init()
 Error.check(_res)
 
+version = ccs_get_version()
+
 class Object:
 
   def __init__(self, handle, retain = False, auto_release = True):

@@ -9,7 +9,7 @@ from math import sin
 class TestBase(unittest.TestCase):
 
   def test_version(self):
-    ver = ccs.ccs_get_version()
+    ver = ccs.version
     self.assertIsInstance(ver, ccs.Version)
 
   def test_datum_value(self):
