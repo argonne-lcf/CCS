@@ -73,3 +73,5 @@ _g = Grammar.from_string(ccs_grammar)
 
 parser = Parser(_g, actions=_actions)
 
+def parse(expr):
+  return parser.parse(expr)
