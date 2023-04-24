@@ -184,12 +184,12 @@ ccs_parameter_sampling_interval(
 
 ccs_result_t
 ccs_create_int_numerical_parameter(
-	const char        *name,
-	ccs_int_t          lower,
-	ccs_int_t          upper,
-	ccs_int_t          quantization,
-	ccs_int_t          default_value,
-	ccs_parameter_t   *parameter_ret)
+	const char      *name,
+	ccs_int_t        lower,
+	ccs_int_t        upper,
+	ccs_int_t        quantization,
+	ccs_int_t        default_value,
+	ccs_parameter_t *parameter_ret)
 {
 	CCS_VALIDATE(ccs_create_numerical_parameter(
 		name, CCS_NUMERIC_TYPE_INT, CCSI(lower), CCSI(upper),
@@ -199,12 +199,12 @@ ccs_create_int_numerical_parameter(
 
 ccs_result_t
 ccs_create_float_numerical_parameter(
-	const char        *name,
-	ccs_float_t        lower,
-	ccs_float_t        upper,
-	ccs_float_t        quantization,
-	ccs_float_t        default_value,
-	ccs_parameter_t   *parameter_ret)
+	const char      *name,
+	ccs_float_t      lower,
+	ccs_float_t      upper,
+	ccs_float_t      quantization,
+	ccs_float_t      default_value,
+	ccs_parameter_t *parameter_ret)
 {
 	CCS_VALIDATE(ccs_create_numerical_parameter(
 		name, CCS_NUMERIC_TYPE_FLOAT, CCSF(lower), CCSF(upper),

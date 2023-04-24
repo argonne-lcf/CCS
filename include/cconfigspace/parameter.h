@@ -97,12 +97,12 @@ ccs_create_numerical_parameter(
  */
 extern ccs_result_t
 ccs_create_int_numerical_parameter(
-	const char        *name,
-	ccs_int_t          lower,
-	ccs_int_t          upper,
-	ccs_int_t          quantization,
-	ccs_int_t          default_value,
-	ccs_parameter_t   *parameter_ret);
+	const char      *name,
+	ccs_int_t        lower,
+	ccs_int_t        upper,
+	ccs_int_t        quantization,
+	ccs_int_t        default_value,
+	ccs_parameter_t *parameter_ret);
 
 /**
  * Create a new floating point numerical parameter.
@@ -123,12 +123,12 @@ ccs_create_int_numerical_parameter(
  */
 extern ccs_result_t
 ccs_create_float_numerical_parameter(
-	const char        *name,
-	ccs_float_t        lower,
-	ccs_float_t        upper,
-	ccs_float_t        quantization,
-	ccs_float_t        default_value,
-	ccs_parameter_t   *parameter_ret);
+	const char      *name,
+	ccs_float_t      lower,
+	ccs_float_t      upper,
+	ccs_float_t      quantization,
+	ccs_float_t      default_value,
+	ccs_parameter_t *parameter_ret);
 
 /**
  * Get the properties used to create a numerical parameter.
