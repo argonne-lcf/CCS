@@ -145,7 +145,7 @@ class UniformDistribution(Distribution):
     elif v == NumericType.INT:
       return UniformIntDistribution(handle = handle, retain = retain, auto_release = auto_release)
     else:
-      raise Error(Result(Result.ERROR_INVALID_PARAMETER))
+      raise Error(Result(Result.ERROR_INVALID_DISTRIBUTION))
 
   @property
   def data_type(self):
@@ -263,7 +263,7 @@ class NormalDistribution(Distribution):
     elif v == NumericType.INT:
       return NormalIntDistribution(handle = handle, retain = retain, auto_release = auto_release)
     else:
-      raise Error(Result(Result.ERROR_INVALID_PARAMETER))
+      raise Error(Result(Result.ERROR_INVALID_DISTRIBUTION))
 
   @property
   def data_type(self):
