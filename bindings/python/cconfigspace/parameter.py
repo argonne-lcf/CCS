@@ -211,10 +211,8 @@ Parameter.Numerical = NumericalParameter
 
 class FloatNumericalParameter(NumericalParameter):
   def __init__(self, handle = None, retain = False, auto_release = True,
-               name = None, lower = None, upper = None, quantization = 0.0, default = None):
+               name = None, lower = 0.0, upper = 1.0, quantization = 0.0, default = None):
     if handle is None:
-      if lower is None or upper is None:
-        raise Error(Result(Result.ERROR_INVALID_VALUE))
       if name is None:
         name = FloatNumericalParameter.default_name()
       if default is None:
@@ -238,10 +236,8 @@ NumericalParameter.Float = FloatNumericalParameter
 
 class IntNumericalParameter(NumericalParameter):
   def __init__(self, handle = None, retain = False, auto_release = True,
-               name = None, lower = None, upper = None, quantization = 0, default = None):
+               name = None, lower = 0, upper = 100, quantization = 0, default = None):
     if handle is None:
-      if lower is None or upper is None:
-        raise Error(Result(Result.ERROR_INVALID_VALUE))
       if name is None:
         name = IntNumericalParameter.default_name()
       if default is None:

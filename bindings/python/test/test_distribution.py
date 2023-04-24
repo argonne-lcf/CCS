@@ -129,13 +129,13 @@ class TestDistribution(unittest.TestCase):
       self.assertTrue( i.contains(v) )
 
   def test_from_handle_uniform(self):
-    d = ccs.UniformDistribution.Float(lower = 0.0, upper = 1.0)
+    d = ccs.UniformDistribution.Float()
     d2 = ccs.Object.from_handle(d.handle)
     self.assertEqual( d.__class__, d2.__class__)
     self.assertEqual( d.handle.value, d2.handle.value)
 
   def test_create_uniform(self):
-    d = ccs.UniformDistribution.Float(lower = 0.0, upper = 1.0)
+    d = ccs.UniformDistribution.Float()
     self.assertEqual( ccs.ObjectType.DISTRIBUTION, d.object_type )
     self.assertEqual( ccs.DistributionType.UNIFORM, d.type )
     self.assertEqual( ccs.NumericType.FLOAT, d.data_type )
@@ -151,7 +151,7 @@ class TestDistribution(unittest.TestCase):
     self.assertFalse( i.upper_included )
 
   def test_serialize_uniform(self):
-    dref = ccs.UniformDistribution.Float(lower = 0.0, upper = 1.0)
+    dref = ccs.UniformDistribution.Float()
     buff = dref.serialize()
     d = ccs.Object.deserialize(buffer = buff)
     self.assertEqual( ccs.ObjectType.DISTRIBUTION, d.object_type )
@@ -185,7 +185,7 @@ class TestDistribution(unittest.TestCase):
     self.assertFalse( i.upper_included )
 
   def test_create_uniform_int(self):
-    d = ccs.UniformDistribution.Int(lower = 0, upper = 100)
+    d = ccs.UniformDistribution.Int()
     self.assertEqual( ccs.ObjectType.DISTRIBUTION, d.object_type )
     self.assertEqual( ccs.DistributionType.UNIFORM, d.type )
     self.assertEqual( ccs.NumericType.INT, d.data_type )
@@ -210,7 +210,7 @@ class TestDistribution(unittest.TestCase):
     self.assertFalse( d.is_oversampling(i) )
 
   def test_oversampling_uniform_int(self):
-    d = ccs.UniformDistribution.Int(lower = 0, upper = 100)
+    d = ccs.UniformDistribution.Int()
     i = ccs.Interval(t = ccs.NumericType.INT, lower = 5, upper = 50)
     self.assertTrue( d.is_oversampling(i) )
     i = ccs.Interval(t = ccs.NumericType.INT, lower = 5, upper = 150)
@@ -220,7 +220,7 @@ class TestDistribution(unittest.TestCase):
 
   def test_sample_uniform(self):
     rng = ccs.Rng()
-    d = ccs.UniformDistribution.Float(lower = 0.0, upper = 1.0)
+    d = ccs.UniformDistribution.Float()
     i = d.bounds
     v = d.sample(rng)
     self.assertTrue( i.contains(v) )

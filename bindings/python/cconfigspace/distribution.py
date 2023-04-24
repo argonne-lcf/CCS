@@ -218,10 +218,8 @@ Distribution.Uniform = UniformDistribution
 
 class UniformFloatDistribution(UniformDistribution):
   def __init__(self, handle = None, retain = False, auto_release = True,
-               lower = None, upper = None, scale = ScaleType.LINEAR, quantization = 0.0):
+               lower = 0.0, upper = 1.0, scale = ScaleType.LINEAR, quantization = 0.0):
     if handle is None:
-      if lower is None or upper is None:
-        raise Error(Result(Result.ERROR_INVALID_VALUE))
       handle = ccs_distribution(0)
       res = ccs_create_uniform_float_distribution(lower, upper, scale, quantization, ct.byref(handle))
       Error.check(res)
@@ -233,10 +231,8 @@ UniformDistribution.Float = UniformFloatDistribution
 
 class UniformIntDistribution(UniformDistribution):
   def __init__(self, handle = None, retain = False, auto_release = True,
-               lower = None, upper = None, scale = ScaleType.LINEAR, quantization = 0):
+               lower = 0, upper = 100, scale = ScaleType.LINEAR, quantization = 0):
     if handle is None:
-      if lower is None or upper is None:
-        raise Error(Result(Result.ERROR_INVALID_VALUE))
       handle = ccs_distribution(0)
       res = ccs_create_uniform_int_distribution(lower, upper, scale, quantization, ct.byref(handle))
       Error.check(res)

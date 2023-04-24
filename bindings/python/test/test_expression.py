@@ -35,7 +35,7 @@ class TestExpression(unittest.TestCase):
     self.assertEqual( "none" , str(e) )
 
   def test_variable(self):
-    h = ccs.NumericalParameter.Float(lower = 0.0, upper = 1.0)
+    h = ccs.NumericalParameter.Float()
     e = ccs.Expression.Variable(parameter = h)
     self.assertEqual( h.name , str(e) )
 
@@ -45,7 +45,7 @@ class TestExpression(unittest.TestCase):
     self.assertEqual( "foo", e.eval(0) )
     self.assertEqual( 1, e.eval(1) )
     self.assertEqual( 2.0, e.eval(2) )
-    h = ccs.NumericalParameter.Float(name = "test", lower = 0.0, upper = 1.0)
+    h = ccs.NumericalParameter.Float(name = "test")
     e2 = ccs.Expression.In(left = h, right = e)
     self.assertEqual( "test # [ 'foo', 1, 2.0 ]", str(e2) )
 

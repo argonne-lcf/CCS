@@ -157,13 +157,13 @@ class TestParameter(unittest.TestCase):
       self.assertTrue( v in values )
 
   def test_from_handle_numerical(self):
-    h = ccs.NumericalParameter.Float(lower = 0.0, upper = 1.0)
+    h = ccs.NumericalParameter.Float()
     h2 = ccs.Object.from_handle(h.handle)
     self.assertEqual( h.__class__, h2.__class__ )
     self.assertEqual( h.handle, h2.handle )
 
   def test_numerical(self):
-    h = ccs.NumericalParameter.Float(lower = 0.0, upper = 1.0)
+    h = ccs.NumericalParameter.Float()
     self.assertEqual( ccs.ObjectType.PARAMETER, h.object_type )
     self.assertEqual( ccs.ParameterType.NUMERICAL, h.type )
     self.assertTrue( h.name[:5] == "param" )
@@ -185,7 +185,7 @@ class TestParameter(unittest.TestCase):
       self.assertTrue( v >= 0.0 and v < 1.0 )
 
   def test_serialize_numerical(self):
-    href = ccs.NumericalParameter.Float(lower = 0.0, upper = 1.0)
+    href = ccs.NumericalParameter.Float()
     buff = href.serialize()
     h = ccs.Object.deserialize(buffer = buff)
     self.assertEqual( ccs.ObjectType.PARAMETER, h.object_type )
