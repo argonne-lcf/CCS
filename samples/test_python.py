@@ -68,8 +68,8 @@ def create_tuning_problem():
   v1 = ccs.NumericalParameter.Float(lower = float('-inf'), upper = float('inf'))
   v2 = ccs.NumericalParameter.Float(lower = float('-inf'), upper = float('inf'))
   os.add_parameters([v1, v2])
-  e1 = ccs.Variable(parameter = v1)
-  e2 = ccs.Variable(parameter = v2)
+  e1 = ccs.Expression.Variable(parameter = v1)
+  e2 = ccs.Expression.Variable(parameter = v2)
   os.add_objectives( [e1, e2] )
   return (cs, os)
 

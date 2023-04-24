@@ -69,20 +69,6 @@ ccs_expression_get_parameters = _ccs_get_function("ccs_expression_get_parameters
 ccs_expression_check_context = _ccs_get_function("ccs_expression_check_context", [ccs_expression, ccs_context])
 
 class Expression(Object):
-  def __init__(self, handle = None, retain = False, auto_release = True,
-               t = None, nodes = []):
-    if handle is None:
-      sz = len(nodes)
-      handle = ccs_expression()
-      v = (Datum*sz)()
-      ss = []
-      for i in range(sz):
-        v[i].set_value(nodes[i], string_store = ss)
-      res = ccs_create_expression(t, sz, v, ct.byref(handle))
-      Error.check(res)
-      super().__init__(handle = handle, retain = False)
-    else:
-      super().__init__(handle = handle, retain = retain, auto_release = auto_release)
 
   @classmethod
   def from_handle(cls, handle, retain = True, auto_release = True):
@@ -90,17 +76,12 @@ class Expression(Object):
     res = ccs_expression_get_type(handle, ct.byref(v))
     Error.check(res)
     v = v.value
-    if v == ExpressionType.LIST:
-      return List(handle = handle, retain = retain, auto_release = auto_release)
-    elif v == ExpressionType.LITERAL:
-      return Literal(handle = handle, retain = retain, auto_release = auto_release)
-    elif v == ExpressionType.VARIABLE:
-      return Variable(handle = handle, retain = retain, auto_release = auto_release)
-    else:
-      return cls(handle = handle, retain = retain, auto_release = auto_release)
+    klass = cls.EXPRESSION_MAP[v]
+    if klass is None:
+      raise Error(Result(Result.ERROR_INVALID_EXPRESSION))
+    return klass(handle = handle, retain = retain, auto_release = auto_release)
 
-  @classmethod
-  def binary(cls, t, left, right):
+  def _create_binary(self, t, left, right):
     pvleft = Datum(left)
     pvright = Datum(right)
     vleft = DatumFix(pvleft)
@@ -108,16 +89,15 @@ class Expression(Object):
     handle = ccs_expression()
     res = ccs_create_binary_expression(t, vleft, vright, ct.byref(handle))
     Error.check(res)
-    return cls(handle = handle, retain = False)
+    return handle
 
-  @classmethod
-  def unary(cls, t, node):
+  def _create_unary(self, t, node):
     pvnode = Datum(node)
     vnode = DatumFix(pvnode)
     handle = ccs_expression()
     res = ccs_create_unary_expression(t, vnode, ct.byref(handle))
     Error.check(res)
-    return cls(handle = handle, retain = False)
+    return handle
 
   @property
   def type(self):
@@ -199,8 +179,211 @@ class Expression(Object):
     else:
       return "{} {} {}".format(nds[0], symbol, nds[1])
 
+class ExpressionOr(Expression):
 
-class Literal(Expression):
+  def __init__(self, handle = None, retain = False, auto_release = True,
+               left = None, right = None):
+    if handle is None:
+      handle = self._create_binary(ExpressionType.OR, left, right)
+      super().__init__(handle = handle, retain = False)
+    else:
+      super().__init__(handle = handle, retain = retain, auto_release = auto_release)
+
+Expression.Or = ExpressionOr
+
+class ExpressionAnd(Expression):
+
+  def __init__(self, handle = None, retain = False, auto_release = True,
+               left = None, right = None):
+    if handle is None:
+      handle = self._create_binary(ExpressionType.AND, left, right)
+      super().__init__(handle = handle, retain = False)
+    else:
+      super().__init__(handle = handle, retain = retain, auto_release = auto_release)
+
+Expression.And = ExpressionAnd
+
+class ExpressionEqual(Expression):
+
+  def __init__(self, handle = None, retain = False, auto_release = True,
+               left = None, right = None):
+    if handle is None:
+      handle = self._create_binary(ExpressionType.EQUAL, left, right)
+      super().__init__(handle = handle, retain = False)
+    else:
+      super().__init__(handle = handle, retain = retain, auto_release = auto_release)
+
+Expression.Equal = ExpressionEqual
+
+class ExpressionNotEqual(Expression):
+
+  def __init__(self, handle = None, retain = False, auto_release = True,
+               left = None, right = None):
+    if handle is None:
+      handle = self._create_binary(ExpressionType.NOT_EQUAL, left, right)
+      super().__init__(handle = handle, retain = False)
+    else:
+      super().__init__(handle = handle, retain = retain, auto_release = auto_release)
+
+Expression.NotEqual = ExpressionNotEqual
+
+class ExpressionLess(Expression):
+
+  def __init__(self, handle = None, retain = False, auto_release = True,
+               left = None, right = None):
+    if handle is None:
+      handle = self._create_binary(ExpressionType.LESS, left, right)
+      super().__init__(handle = handle, retain = False)
+    else:
+      super().__init__(handle = handle, retain = retain, auto_release = auto_release)
+
+Expression.Less = ExpressionLess
+
+class ExpressionGreater(Expression):
+
+  def __init__(self, handle = None, retain = False, auto_release = True,
+               left = None, right = None):
+    if handle is None:
+      handle = self._create_binary(ExpressionType.GREATER, left, right)
+      super().__init__(handle = handle, retain = False)
+    else:
+      super().__init__(handle = handle, retain = retain, auto_release = auto_release)
+
+Expression.Greater = ExpressionGreater
+
+class ExpressionLessOrEqual(Expression):
+
+  def __init__(self, handle = None, retain = False, auto_release = True,
+               left = None, right = None):
+    if handle is None:
+      handle = self._create_binary(ExpressionType.LESS_OR_EQUAL, left, right)
+      super().__init__(handle = handle, retain = False)
+    else:
+      super().__init__(handle = handle, retain = retain, auto_release = auto_release)
+
+Expression.LessOrEqual = ExpressionLessOrEqual
+
+class ExpressionGreaterOrEqual(Expression):
+
+  def __init__(self, handle = None, retain = False, auto_release = True,
+               left = None, right = None):
+    if handle is None:
+      handle = self._create_binary(ExpressionType.GREATER_OR_EQUAL, left, right)
+      super().__init__(handle = handle, retain = False)
+    else:
+      super().__init__(handle = handle, retain = retain, auto_release = auto_release)
+
+Expression.GreaterOrEqual = ExpressionGreaterOrEqual
+
+class ExpressionAdd(Expression):
+
+  def __init__(self, handle = None, retain = False, auto_release = True,
+               left = None, right = None):
+    if handle is None:
+      handle = self._create_binary(ExpressionType.ADD, left, right)
+      super().__init__(handle = handle, retain = False)
+    else:
+      super().__init__(handle = handle, retain = retain, auto_release = auto_release)
+
+Expression.Add = ExpressionAdd
+
+class ExpressionSubstract(Expression):
+
+  def __init__(self, handle = None, retain = False, auto_release = True,
+               left = None, right = None):
+    if handle is None:
+      handle = self._create_binary(ExpressionType.SUBSTRACT, left, right)
+      super().__init__(handle = handle, retain = False)
+    else:
+      super().__init__(handle = handle, retain = retain, auto_release = auto_release)
+
+Expression.Substract = ExpressionSubstract
+
+class ExpressionMultiply(Expression):
+
+  def __init__(self, handle = None, retain = False, auto_release = True,
+               left = None, right = None):
+    if handle is None:
+      handle = self._create_binary(ExpressionType.MULTIPLY, left, right)
+      super().__init__(handle = handle, retain = False)
+    else:
+      super().__init__(handle = handle, retain = retain, auto_release = auto_release)
+
+Expression.Multiply = ExpressionMultiply
+
+class ExpressionDivide(Expression):
+
+  def __init__(self, handle = None, retain = False, auto_release = True,
+               left = None, right = None):
+    if handle is None:
+      handle = self._create_binary(ExpressionType.DIVIDE, left, right)
+      super().__init__(handle = handle, retain = False)
+    else:
+      super().__init__(handle = handle, retain = retain, auto_release = auto_release)
+
+Expression.Divide = ExpressionDivide
+
+class ExpressionModulo(Expression):
+
+  def __init__(self, handle = None, retain = False, auto_release = True,
+               left = None, right = None):
+    if handle is None:
+      handle = self._create_binary(ExpressionType.MODULO, left, right)
+      super().__init__(handle = handle, retain = False)
+    else:
+      super().__init__(handle = handle, retain = retain, auto_release = auto_release)
+
+Expression.Modulo = ExpressionModulo
+
+class ExpressionPositive(Expression):
+
+  def __init__(self, handle = None, retain = False, auto_release = True,
+               node = None):
+    if handle is None:
+      handle = self._create_unary(ExpressionType.POSITIVE, node)
+      super().__init__(handle = handle, retain = False)
+    else:
+      super().__init__(handle = handle, retain = retain, auto_release = auto_release)
+
+Expression.Positive = ExpressionPositive
+
+class ExpressionNegative(Expression):
+
+  def __init__(self, handle = None, retain = False, auto_release = True,
+               node = None):
+    if handle is None:
+      handle = self._create_unary(ExpressionType.NEGATIVE, node)
+      super().__init__(handle = handle, retain = False)
+    else:
+      super().__init__(handle = handle, retain = retain, auto_release = auto_release)
+
+Expression.Negative = ExpressionNegative
+
+class ExpressionNot(Expression):
+
+  def __init__(self, handle = None, retain = False, auto_release = True,
+               node = None):
+    if handle is None:
+      handle = self._create_unary(ExpressionType.NOT, node)
+      super().__init__(handle = handle, retain = False)
+    else:
+      super().__init__(handle = handle, retain = retain, auto_release = auto_release)
+
+Expression.Not = ExpressionNot
+
+class ExpressionIn(Expression):
+
+  def __init__(self, handle = None, retain = False, auto_release = True,
+               left = None, right = None):
+    if handle is None:
+      handle = self._create_binary(ExpressionType.IN, left, right)
+      super().__init__(handle = handle, retain = False)
+    else:
+      super().__init__(handle = handle, retain = retain, auto_release = auto_release)
+
+Expression.In = ExpressionIn
+
+class ExpressionLiteral(Expression):
   none_symbol = ccs_terminal_symbols[TerminalType.NONE]
   true_aymbol = ccs_terminal_symbols[TerminalType.TRUE]
   false_symbol = ccs_terminal_symbols[TerminalType.FALSE]
@@ -232,16 +415,17 @@ class Literal(Expression):
     if isinstance(v, str):
       return repr(v)
     elif v is None:
-      return Literal.none_symbol
+      return ExpressionLiteral.none_symbol
     elif v is True:
-      return Literal.true_aymbol
+      return ExpressionLiteral.true_aymbol
     elif v is False:
-      return Literal.false_symbol
+      return ExpressionLiteral.false_symbol
     else:
       return "{}".format(v)
 
+Expression.Literal = ExpressionLiteral
 
-class Variable(Expression):
+class ExpressionVariable(Expression):
   def __init__(self, handle = None, retain = False, auto_release = True,
                parameter = None):
     if handle is None:
@@ -265,12 +449,21 @@ class Variable(Expression):
   def __str__(self):
     return self.parameter.name
 
+Expression.Variable = ExpressionVariable
 
-class List(Expression):
+class ExpressionList(Expression):
   def __init__(self, handle = None, retain = False, auto_release = True,
                values = []):
     if handle is None:
-      super().__init__(t = ExpressionType.LIST, nodes = values)
+      sz = len(values)
+      handle = ccs_expression()
+      v = (Datum*sz)()
+      ss = []
+      for i in range(sz):
+        v[i].set_value(values[i], string_store = ss)
+      res = ccs_create_expression(ExpressionType.LIST, sz, v, ct.byref(handle))
+      Error.check(res)
+      super().__init__(handle = handle, retain = False)
     else:
       super().__init__(handle = handle, retain = retain, auto_release = auto_release)
   
@@ -295,3 +488,27 @@ class List(Expression):
   def __str__(self):
     return "[ {} ]".format(", ".join(map(str, self.nodes)))
 
+Expression.List = ExpressionList
+
+setattr(Expression, 'EXPRESSION_MAP', {
+  ExpressionType.OR: ExpressionOr,
+  ExpressionType.AND: ExpressionAnd,
+  ExpressionType.EQUAL: ExpressionEqual,
+  ExpressionType.NOT_EQUAL: ExpressionNotEqual,
+  ExpressionType.LESS: ExpressionLess,
+  ExpressionType.GREATER: ExpressionGreater,
+  ExpressionType.LESS_OR_EQUAL: ExpressionLessOrEqual,
+  ExpressionType.GREATER_OR_EQUAL: ExpressionGreaterOrEqual,
+  ExpressionType.ADD: ExpressionAdd,
+  ExpressionType.SUBSTRACT: ExpressionSubstract,
+  ExpressionType.MULTIPLY: ExpressionMultiply,
+  ExpressionType.DIVIDE: ExpressionDivide,
+  ExpressionType.MODULO: ExpressionModulo,
+  ExpressionType.POSITIVE: ExpressionPositive,
+  ExpressionType.NEGATIVE: ExpressionNegative,
+  ExpressionType.NOT: ExpressionNot,
+  ExpressionType.IN: ExpressionIn,
+  ExpressionType.LIST: ExpressionList,
+  ExpressionType.LITERAL: ExpressionLiteral,
+  ExpressionType.VARIABLE: ExpressionVariable,
+})

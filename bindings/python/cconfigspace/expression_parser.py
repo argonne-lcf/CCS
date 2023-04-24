@@ -1,5 +1,5 @@
 from parglare import Parser, Grammar
-from .expression import Expression, Literal, Variable, List, ExpressionType, AssociativityType, ccs_expression_precedence, ccs_expression_associativity, ccs_expression_symbols, ccs_expression_arity, TerminalType, ccs_terminal_precedence, ccs_terminal_regexp
+from .expression import Expression, ExpressionType, AssociativityType, ccs_expression_precedence, ccs_expression_associativity, ccs_expression_symbols, ccs_expression_arity, TerminalType, ccs_terminal_precedence, ccs_terminal_regexp
 
 _associativity_map = {
   AssociativityType.LEFT_TO_RIGHT: "left",
@@ -48,26 +48,26 @@ _actions = {}
 _expr_actions = [ lambda _, n: n[1] ]
 for i in range(ExpressionType.OR, ExpressionType.LIST):
   if ccs_expression_arity[i] == 1:
-    _expr_actions.append((lambda s: lambda _, n: Expression.unary(t = s, node = n[1]))(i))
+    _expr_actions.append((lambda s: lambda _, n: Expression.EXPRESSION_MAP[s](node = n[1]))(i))
   else:
-    _expr_actions.append((lambda s: lambda _, n: Expression.binary(t = s, left = n[0], right = n[2]))(i))
+    _expr_actions.append((lambda s: lambda _, n: Expression.EXPRESSION_MAP[s](left = n[0], right = n[2]))(i))
 _expr_actions.append(lambda _, n: n[0])
 _actions["expr"] = _expr_actions
 _actions["list"] = [
-  lambda _, n: List(values = n[1]),
-  lambda _, n: List(values = [])
+  lambda _, n: Expression.List(values = n[1]),
+  lambda _, n: Expression.List(values = [])
 ]
 _actions["list_item"] = [
   lambda _, n: n[0] + [n[2]],
   lambda _, n: [n[0]]
 ]
-_actions["none"] = lambda _, value: Literal(value = None)
-_actions["true"] = lambda _, value: Literal(value = True)
-_actions["false"] = lambda _, value: Literal(value = False)
-_actions["identifier"] = lambda p, value: Variable(parameter = p.extra.parameter_by_name(value))
-_actions["string"] = lambda _, value: Literal(value = eval(value))
-_actions["float"] = lambda _, value: Literal(value = float(value))
-_actions["integer"] = lambda _, value: Literal(value = int(value))
+_actions["none"] = lambda _, value: Expression.Literal(value = None)
+_actions["true"] = lambda _, value: Expression.Literal(value = True)
+_actions["false"] = lambda _, value: Expression.Literal(value = False)
+_actions["identifier"] = lambda p, value: Expression.Variable(parameter = p.extra.parameter_by_name(value))
+_actions["string"] = lambda _, value: Expression.Literal(value = eval(value))
+_actions["float"] = lambda _, value: Expression.Literal(value = float(value))
+_actions["integer"] = lambda _, value: Expression.Literal(value = int(value))
 
 _g = Grammar.from_string(ccs_grammar)
 
