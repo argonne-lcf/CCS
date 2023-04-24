@@ -118,7 +118,8 @@ module CCS
     end
   end
 
-  attach_function :ccs_create_numerical_parameter, [:string, :ccs_numeric_type_t, :ccs_numeric_t, :ccs_numeric_t, :ccs_numeric_t, :ccs_numeric_t, :pointer], :ccs_result_t
+  attach_function :ccs_create_float_numerical_parameter, [:string, :ccs_float_t, :ccs_float_t, :ccs_float_t, :ccs_float_t, :pointer], :ccs_result_t
+  attach_function :ccs_create_int_numerical_parameter, [:string, :ccs_int_t, :ccs_int_t, :ccs_int_t, :ccs_int_t, :pointer], :ccs_result_t
   attach_function :ccs_numerical_parameter_get_properties, [:ccs_parameter_t, :pointer, :pointer, :pointer, :pointer], :ccs_result_t
   class NumericalParameter < Parameter
 
@@ -143,12 +144,8 @@ module CCS
           super(handle, retain: retain, auto_release: auto_release)
         else
           ptr = MemoryPointer::new(:ccs_parameter_t)
-          lower = Numeric::from_value(lower.to_f)
-          upper = Numeric::from_value(upper.to_f)
-          quantization = Numeric::from_value(quantization.to_f)
-          default = Numeric::from_value(default.to_f)
           name = name.inspect if name.kind_of?(Symbol)
-          CCS.error_check CCS.ccs_create_numerical_parameter(name, :CCS_NUMERIC_TYPE_FLOAT, lower, upper, quantization, default, ptr)
+          CCS.error_check CCS.ccs_create_float_numerical_parameter(name, lower, upper, quantization, default, ptr)
           super(ptr.read_pointer, retain: false)
         end
       end
@@ -163,12 +160,8 @@ module CCS
           super(handle, retain: retain, auto_release: auto_release)
         else
           ptr = MemoryPointer::new(:ccs_parameter_t)
-          lower = Numeric::from_value(lower.to_i)
-          upper = Numeric::from_value(upper.to_i)
-          quantization = Numeric::from_value(quantization.to_i)
-          default = Numeric::from_value(default.to_i)
           name = name.inspect if name.kind_of?(Symbol)
-          CCS.error_check CCS.ccs_create_numerical_parameter(name, :CCS_NUMERIC_TYPE_INT, lower, upper, quantization, default, ptr)
+          CCS.error_check CCS.ccs_create_int_numerical_parameter(name, lower, upper, quantization, default, ptr)
           super(ptr.read_pointer, retain: false)
         end
       end

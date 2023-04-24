@@ -1,6 +1,6 @@
 import ctypes as ct
 from . import libcconfigspace
-from .base import Object, Error, Result, CEnumeration, _ccs_get_function, ccs_parameter, Datum, DatumFix, ccs_distribution, ccs_rng, ccs_int, DataType, ccs_bool, NumericType, Numeric, _ccs_get_id
+from .base import Object, Error, Result, CEnumeration, _ccs_get_function, ccs_parameter, Datum, DatumFix, ccs_distribution, ccs_rng, ccs_float, ccs_int, DataType, ccs_bool, NumericType, Numeric, _ccs_get_id
 from .rng import ccs_default_rng
 from .distribution import Distribution
 
@@ -131,7 +131,8 @@ class Parameter(Object):
     return self.__class__ == other.__class__ and self.handle.value == other.handle.value
 
 
-ccs_create_numerical_parameter = _ccs_get_function("ccs_create_numerical_parameter", [ct.c_char_p, NumericType, ccs_int, ccs_int, ccs_int, ccs_int, ct.POINTER(ccs_parameter)])
+ccs_create_float_numerical_parameter = _ccs_get_function("ccs_create_float_numerical_parameter", [ct.c_char_p, ccs_float, ccs_float, ccs_float, ccs_float, ct.POINTER(ccs_parameter)])
+ccs_create_int_numerical_parameter = _ccs_get_function("ccs_create_int_numerical_parameter", [ct.c_char_p, ccs_int, ccs_int, ccs_int, ccs_int, ct.POINTER(ccs_parameter)])
 ccs_numerical_parameter_get_properties = _ccs_get_function("ccs_numerical_parameter_get_properties", [ccs_parameter, ct.POINTER(NumericType), ct.POINTER(Numeric), ct.POINTER(Numeric), ct.POINTER(Numeric)])
 
 class NumericalParameter(Parameter):
@@ -217,16 +218,8 @@ class FloatNumericalParameter(NumericalParameter):
         name = FloatNumericalParameter.default_name()
       if default is None:
         default = lower
-      l = Numeric()
-      u = Numeric()
-      q = Numeric()
-      d = Numeric()
-      l.f = lower
-      u.f = upper
-      q.f = quantization
-      d.f = default
       handle = ccs_parameter()
-      res = ccs_create_numerical_parameter(str.encode(name), NumericType.FLOAT, l.i, u.i, q.i, d.i, ct.byref(handle))
+      res = ccs_create_float_numerical_parameter(str.encode(name), lower, upper, quantization, default, ct.byref(handle))
       Error.check(res)
       super().__init__(handle = handle, retain = False)
     else:
@@ -243,7 +236,7 @@ class IntNumericalParameter(NumericalParameter):
       if default is None:
         default = lower
       handle = ccs_parameter()
-      res = ccs_create_numerical_parameter(str.encode(name), NumericType.INT, lower, upper, quantization, default, ct.byref(handle))
+      res = ccs_create_int_numerical_parameter(str.encode(name), lower, upper, quantization, default, ct.byref(handle))
       Error.check(res)
       super().__init__(handle = handle, retain = False)
     else:

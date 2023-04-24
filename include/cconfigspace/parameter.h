@@ -79,6 +79,58 @@ ccs_create_numerical_parameter(
 	ccs_parameter_t   *parameter_ret);
 
 /**
+ * Create a new integer numerical parameter.
+ * @param[in] name name of the parameter
+ * @param[in] data_type type of numerical data
+ * @param[in] lower lower bound (included)
+ * @param[in] upper upper bound (excluded)
+ * @param[in] quantization quantization of the values. 0 means no quantization
+ * @param[in] default_value default value of the parameter
+ * @param[out] parameter_ret a pointer to the variable that will hold the newly
+ *                           created numerical parameter
+ * @return #CCS_RESULT_SUCCESS on success
+ * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p name is NULL; or if \p
+ * parameter_ret is NULL; or if quantization is less than 0; or if default value
+ * is not a valid value for the parameter
+ * @return #CCS_RESULT_ERROR_OUT_OF_MEMORY if there was a lack of memory to
+ * allocate the new numerical parameter
+ */
+extern ccs_result_t
+ccs_create_int_numerical_parameter(
+	const char        *name,
+	ccs_int_t          lower,
+	ccs_int_t          upper,
+	ccs_int_t          quantization,
+	ccs_int_t          default_value,
+	ccs_parameter_t   *parameter_ret);
+
+/**
+ * Create a new floating point numerical parameter.
+ * @param[in] name name of the parameter
+ * @param[in] data_type type of numerical data
+ * @param[in] lower lower bound (included)
+ * @param[in] upper upper bound (excluded)
+ * @param[in] quantization quantization of the values. 0 means no quantization
+ * @param[in] default_value default value of the parameter
+ * @param[out] parameter_ret a pointer to the variable that will hold the newly
+ *                           created numerical parameter
+ * @return #CCS_RESULT_SUCCESS on success
+ * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p name is NULL; or if \p
+ * parameter_ret is NULL; or if quantization is less than 0; or if default value
+ * is not a valid value for the parameter
+ * @return #CCS_RESULT_ERROR_OUT_OF_MEMORY if there was a lack of memory to
+ * allocate the new numerical parameter
+ */
+extern ccs_result_t
+ccs_create_float_numerical_parameter(
+	const char        *name,
+	ccs_float_t        lower,
+	ccs_float_t        upper,
+	ccs_float_t        quantization,
+	ccs_float_t        default_value,
+	ccs_parameter_t   *parameter_ret);
+
+/**
  * Get the properties used to create a numerical parameter.
  * @param[in] parameter
  * @param[out] data_type_ret a pointer to the variable that will contain the

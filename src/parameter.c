@@ -181,3 +181,33 @@ ccs_parameter_sampling_interval(
 		((_ccs_parameter_common_data_t *)(parameter->data))->interval;
 	return CCS_RESULT_SUCCESS;
 }
+
+ccs_result_t
+ccs_create_int_numerical_parameter(
+	const char        *name,
+	ccs_int_t          lower,
+	ccs_int_t          upper,
+	ccs_int_t          quantization,
+	ccs_int_t          default_value,
+	ccs_parameter_t   *parameter_ret)
+{
+	CCS_VALIDATE(ccs_create_numerical_parameter(
+		name, CCS_NUMERIC_TYPE_INT, CCSI(lower), CCSI(upper),
+		CCSI(quantization), CCSI(default_value), parameter_ret));
+	return CCS_RESULT_SUCCESS;
+}
+
+ccs_result_t
+ccs_create_float_numerical_parameter(
+	const char        *name,
+	ccs_float_t        lower,
+	ccs_float_t        upper,
+	ccs_float_t        quantization,
+	ccs_float_t        default_value,
+	ccs_parameter_t   *parameter_ret)
+{
+	CCS_VALIDATE(ccs_create_numerical_parameter(
+		name, CCS_NUMERIC_TYPE_FLOAT, CCSF(lower), CCSF(upper),
+		CCSF(quantization), CCSF(default_value), parameter_ret));
+	return CCS_RESULT_SUCCESS;
+}
