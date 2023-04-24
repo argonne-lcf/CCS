@@ -8,14 +8,14 @@ class CConfigSpaceTestExpression < Minitest::Test
   end
 
   def test_create
-    e = CCS::Expression::new(type: :CCS_EXPRESSION_TYPE_ADD, nodes: [1.0, 2.0])
+    e = CCS::Expression::Add.new(left: 1.0, right: 2.0)
     assert_equal( :CCS_OBJECT_TYPE_EXPRESSION, e.object_type )
     assert_equal( :CCS_EXPRESSION_TYPE_ADD, e.type )
     assert_equal( 2, e.num_nodes )
     nodes = e.nodes
     assert_equal( 2, nodes.size )
     nodes.each { |n|
-      assert( n.kind_of?(CCS::Literal) )
+      assert( n.kind_of?(CCS::Expression::Literal) )
       assert_equal( :CCS_OBJECT_TYPE_EXPRESSION, n.object_type )
       assert_equal( :CCS_EXPRESSION_TYPE_LITERAL, n.type )
     }
@@ -26,42 +26,42 @@ class CConfigSpaceTestExpression < Minitest::Test
   end
 
   def test_to_s
-    e = CCS::Expression::new(type: :CCS_EXPRESSION_TYPE_ADD, nodes: [1.0, 2.0])
+    e = CCS::Expression::Add.new(left: 1.0, right: 2.0)
     assert_equal( "1.0 + 2.0", e.to_s )
-    e2 = CCS::Expression::new(type: :CCS_EXPRESSION_TYPE_MULTIPLY, nodes: [5.0, e])
+    e2 = CCS::Expression::Multiply.new(left: 5.0, right: e)
     assert_equal( "5.0 * (1.0 + 2.0)", e2.to_s )
   end
 
   def test_literal
-    e = CCS::Literal::new(value: 15)
+    e = CCS::Expression::Literal::new(value: 15)
     assert_equal( "15" , e.to_s )
   end
 
   def test_variable
     h = CCS::NumericalParameter::Float.new
-    e = CCS::Variable::new(parameter: h)
+    e = CCS::Expression::Variable::new(parameter: h)
     assert_equal( h.name , e.to_s )
   end
 
   def test_list
-    e = CCS::List::new(values: ["foo", 1, 2.0])
+    e = CCS::Expression::List::new(values: ["foo", 1, 2.0])
     assert_equal( "[ \"foo\", 1, 2.0 ]", e.to_s )
     assert_equal( "foo", e.eval(0) )
     assert_equal( 1, e.eval(1) )
     assert_equal( 2.0, e.eval(2) )
     h = CCS::NumericalParameter::Float.new(name: "test")
-    e2 = CCS::Expression::new(type: :CCS_EXPRESSION_TYPE_IN, nodes: [h, e])
+    e2 = CCS::Expression::In.new(left: h, right: e)
     assert_equal( "test # [ \"foo\", 1, 2.0 ]",  e2.to_s )
   end
 
   def test_unary
-    e = CCS::Expression::unary(type: :CCS_EXPRESSION_TYPE_NOT, node: true)
+    e = CCS::Expression::Not.new(node: true)
     assert_equal( "!true", e.to_s )
     assert_equal( false, e.eval )
   end
 
   def test_binary
-    e = CCS::Expression::binary(type: :CCS_EXPRESSION_TYPE_OR, left: true, right: false)
+    e = CCS::Expression::Or.new(left: true, right: false)
     assert_equal( "true || false", e.to_s)
     assert_equal( true, e.eval )
   end

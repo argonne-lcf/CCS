@@ -148,7 +148,7 @@ module CCS
       def initialize(handle = nil, retain: false, auto_release: true,
                      lower: 0.0, upper: 1.0, scale: :CCS_SCALE_TYPE_LINEAR, quantization: 0.0)
         if handle
-          super(handle, retain: retain)
+          super(handle, retain: retain, auto_release: auto_release)
         else
           ptr = MemoryPointer::new(:ccs_distribution_t)
           CCS.error_check CCS.ccs_create_uniform_float_distribution(lower, upper, scale, quantization, ptr)
@@ -163,7 +163,7 @@ module CCS
       def initialize(handle = nil, retain: false, auto_release: true,
                      lower: 0, upper: 100, scale: :CCS_SCALE_TYPE_LINEAR, quantization: 0)
         if handle
-          super(handle, retain: retain)
+          super(handle, retain: retain, auto_release: auto_release)
         else
           ptr = MemoryPointer::new(:ccs_distribution_t)
           CCS.error_check CCS.ccs_create_uniform_int_distribution(lower, upper, scale, quantization, ptr)
@@ -248,7 +248,7 @@ module CCS
       def initialize(handle = nil, retain: false, auto_release: true,
                      mu: 0.0, sigma: 1.0, scale: :CCS_SCALE_TYPE_LINEAR, quantization: 0.0)
         if handle
-          super(handle, retain: retain)
+          super(handle, retain: retain, auto_release: auto_release)
         else
           ptr = MemoryPointer::new(:ccs_distribution_t)
           CCS.error_check CCS.ccs_create_normal_float_distribution(mu, sigma, scale, quantization, ptr)
@@ -263,7 +263,7 @@ module CCS
       def initialize(handle = nil, retain: false, auto_release: true,
                      mu: 0.0, sigma: 1.0, scale: :CCS_SCALE_TYPE_LINEAR, quantization: 0)
         if handle
-          super(handle, retain: retain)
+          super(handle, retain: retain, auto_release: auto_release)
         else
           ptr = MemoryPointer::new(:ccs_distribution_t)
           CCS.error_check CCS.ccs_create_normal_int_distribution(mu, sigma, scale, quantization, ptr)
@@ -325,7 +325,7 @@ module CCS
     def initialize(handle = nil, retain: false, auto_release: true,
                    areas: [])
       if handle
-        super(handle, retain: retain)
+        super(handle, retain: retain, auto_release: auto_release)
       else
         ptr = MemoryPointer::new(:ccs_distribution_t)
         p_areas = MemoryPointer::new(:ccs_float_t, areas.size)
@@ -365,7 +365,7 @@ module CCS
     def initialize(handle = nil, retain: false, auto_release: true,
                    distributions: [], weights: nil)
       if handle
-        super(handle, retain: retain)
+        super(handle, retain: retain, auto_release: auto_release)
       else
         ptr = MemoryPointer::new(:ccs_distribution_t)
         p_distributions = MemoryPointer::new(:ccs_distribution_t, distributions.length)
@@ -411,7 +411,7 @@ module CCS
     def initialize(handle = nil, retain: false, auto_release: true,
                    distributions: [])
       if handle
-        super(handle, retain: retain)
+        super(handle, retain: retain, auto_release: auto_release)
       else
         ptr = MemoryPointer::new(:ccs_distribution_t)
         p_distributions = MemoryPointer::new(:ccs_distribution_t, distributions.length)

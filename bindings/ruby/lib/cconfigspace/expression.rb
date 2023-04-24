@@ -98,47 +98,55 @@ module CCS
   class Expression < Object
     add_property :type, :ccs_expression_type_t, :ccs_expression_get_type, memoize: true
     add_property :num_nodes, :size_t, :ccs_expression_get_num_nodes, memoize: true
-    def initialize(handle = nil, retain: false, auto_release: true,
-                   type: nil, nodes: [])
-      if handle
-        super(handle, retain: retain)
-      else
-        count = nodes.size
-        p_nodes = MemoryPointer::new(:ccs_datum_t, count)
-        ss = []
-        ptr = MemoryPointer::new(:ccs_expression_t)
-        nodes.each_with_index { |n, i| Datum::new(p_nodes[i]).set_value(n, string_store: ss) }
-        CCS.error_check CCS.ccs_create_expression(type, count, p_nodes, ptr)
-        super(ptr.read_ccs_expression_t, retain: false)
-      end
+
+    def self.expression_map
+      @expression_map ||= {
+        CCS_EXPRESSION_TYPE_OR: Or,
+        CCS_EXPRESSION_TYPE_AND: And,
+        CCS_EXPRESSION_TYPE_EQUAL: Equal,
+        CCS_EXPRESSION_TYPE_NOT_EQUAL: NotEqual,
+        CCS_EXPRESSION_TYPE_LESS: Less,
+        CCS_EXPRESSION_TYPE_GREATER: Greater,
+        CCS_EXPRESSION_TYPE_LESS_OR_EQUAL: LessOrEqual,
+        CCS_EXPRESSION_TYPE_GREATER_OR_EQUAL: GreaterOrEqual,
+        CCS_EXPRESSION_TYPE_ADD: Add,
+        CCS_EXPRESSION_TYPE_SUBSTRACT: Substract,
+        CCS_EXPRESSION_TYPE_MULTIPLY: Multiply,
+        CCS_EXPRESSION_TYPE_DIVIDE: Divide,
+        CCS_EXPRESSION_TYPE_MODULO: Modulo,
+        CCS_EXPRESSION_TYPE_POSITIVE: Positive,
+        CCS_EXPRESSION_TYPE_NEGATIVE: Negative,
+        CCS_EXPRESSION_TYPE_NOT: Not,
+        CCS_EXPRESSION_TYPE_IN: In,
+        CCS_EXPRESSION_TYPE_LIST: List,
+        CCS_EXPRESSION_TYPE_LITERAL: Literal,
+        CCS_EXPRESSION_TYPE_VARIABLE: Variable
+      }
     end
 
     def self.from_handle(handle, retain: true, auto_release: true)
       ptr = MemoryPointer::new(:ccs_expression_type_t)
       CCS.error_check CCS.ccs_expression_get_type(handle, ptr)
-      case ptr.read_ccs_expression_type_t
-      when :CCS_EXPRESSION_TYPE_LIST
-        List
-      when :CCS_EXPRESSION_TYPE_LITERAL
-	Literal
-      when :CCS_EXPRESSION_TYPE_VARIABLE
-        Variable
-      else
-        Expression
-      end.new(handle, retain: retain, auto_release: auto_release)
+      klass = expression_map[ptr.read_ccs_expression_type_t]
+      raise CCSError, :CCS_RESULT_ERROR_INVALID_EXPRESSION unless klass
+      klass.new(handle, retain: retain, auto_release: auto_release)
     end
 
-    def self.binary(type:, left:, right:)
+    def create_binary(type, left, right)
       ptr = MemoryPointer::new(:ccs_expression_t)
       CCS.error_check CCS.ccs_create_binary_expression(type, Datum.from_value(left), Datum.from_value(right), ptr)
-      self.new(ptr.read_ccs_expression_t, retain: false)
+      return ptr.read_ccs_expression_t
     end
 
-    def self.unary(type:, node:)
+    private :create_binary
+
+    def create_unary(type, node)
       ptr = MemoryPointer::new(:ccs_expression_t)
       CCS.error_check CCS.ccs_create_unary_expression(type, Datum.from_value(node), ptr)
-      self.new(ptr.read_ccs_expression_t, retain: false)
+      return ptr.read_ccs_expression_t
     end
+
+    private :create_unary
 
     def nodes
       count = num_nodes
@@ -203,7 +211,279 @@ module CCS
     end
   end
 
-  class Literal < Expression
+  class ExpressionOr < Expression
+
+    def initialize(handle = nil, retain: false, auto_release: true,
+                   left: nil, right: nil)
+      if handle
+        super(handle, retain: retain, auto_release: auto_release)
+      else
+        handle = create_binary(:CCS_EXPRESSION_TYPE_OR, left, right)
+        super(handle, retain: false)
+      end
+    end
+
+  end
+
+  Expression::Or = ExpressionOr
+
+  class ExpressionAnd < Expression
+
+    def initialize(handle = nil, retain: false, auto_release: true,
+                   left: nil, right: nil)
+      if handle
+        super(handle, retain: retain, auto_release: auto_release)
+      else
+        handle = create_binary(:CCS_EXPRESSION_TYPE_AND, left, right)
+        super(handle, retain: false)
+      end
+    end
+
+  end
+
+  Expression::And = ExpressionAnd
+
+  class ExpressionEqual < Expression
+
+    def initialize(handle = nil, retain: false, auto_release: true,
+                   left: nil, right: nil)
+      if handle
+        super(handle, retain: retain, auto_release: auto_release)
+      else
+        handle = create_binary(:CCS_EXPRESSION_TYPE_EQUAL, left, right)
+        super(handle, retain: false)
+      end
+    end
+
+  end
+
+  Expression::Equal = ExpressionEqual
+
+  class ExpressionNotEqual < Expression
+
+    def initialize(handle = nil, retain: false, auto_release: true,
+                   left: nil, right: nil)
+      if handle
+        super(handle, retain: retain, auto_release: auto_release)
+      else
+        handle = create_binary(:CCS_EXPRESSION_TYPE_NOT_EQUAL, left, right)
+        super(handle, retain: false)
+      end
+    end
+
+  end
+
+  Expression::NotEqual = ExpressionNotEqual
+
+  class ExpressionLess < Expression
+
+    def initialize(handle = nil, retain: false, auto_release: true,
+                   left: nil, right: nil)
+      if handle
+        super(handle, retain: retain, auto_release: auto_release)
+      else
+        handle = create_binary(:CCS_EXPRESSION_TYPE_LESS, left, right)
+        super(handle, retain: false)
+      end
+    end
+
+  end
+
+  Expression::Less = ExpressionLess
+
+  class ExpressionGreater < Expression
+
+    def initialize(handle = nil, retain: false, auto_release: true,
+                   left: nil, right: nil)
+      if handle
+        super(handle, retain: retain, auto_release: auto_release)
+      else
+        handle = create_binary(:CCS_EXPRESSION_TYPE_GREATER, left, right)
+        super(handle, retain: false)
+      end
+    end
+
+  end
+
+  Expression::Greater = ExpressionGreater
+
+  class ExpressionLessOrEqual < Expression
+
+    def initialize(handle = nil, retain: false, auto_release: true,
+                   left: nil, right: nil)
+      if handle
+        super(handle, retain: retain, auto_release: auto_release)
+      else
+        handle = create_binary(:CCS_EXPRESSION_TYPE_LESS_OR_EQUAL, left, right)
+        super(handle, retain: false)
+      end
+    end
+
+  end
+
+  Expression::LessOrEqual = ExpressionLessOrEqual
+
+  class ExpressionGreaterOrEqual < Expression
+
+    def initialize(handle = nil, retain: false, auto_release: true,
+                   left: nil, right: nil)
+      if handle
+        super(handle, retain: retain, auto_release: auto_release)
+      else
+        handle = create_binary(:CCS_EXPRESSION_TYPE_GREATER_OR_EQUAL, left, right)
+        super(handle, retain: false)
+      end
+    end
+
+  end
+
+  Expression::GreaterOrEqual = ExpressionGreaterOrEqual
+
+  class ExpressionAdd < Expression
+
+    def initialize(handle = nil, retain: false, auto_release: true,
+                   left: nil, right: nil)
+      if handle
+        super(handle, retain: retain, auto_release: auto_release)
+      else
+        handle = create_binary(:CCS_EXPRESSION_TYPE_ADD, left, right)
+        super(handle, retain: false)
+      end
+    end
+
+  end
+
+  Expression::Add = ExpressionAdd
+
+  class ExpressionSubstract < Expression
+
+    def initialize(handle = nil, retain: false, auto_release: true,
+                   left: nil, right: nil)
+      if handle
+        super(handle, retain: retain, auto_release: auto_release)
+      else
+        handle = create_binary(:CCS_EXPRESSION_TYPE_SUBSTRACT, left, right)
+        super(handle, retain: false)
+      end
+    end
+
+  end
+
+  Expression::Substract = ExpressionSubstract
+
+  class ExpressionMultiply < Expression
+
+    def initialize(handle = nil, retain: false, auto_release: true,
+                   left: nil, right: nil)
+      if handle
+        super(handle, retain: retain, auto_release: auto_release)
+      else
+        handle = create_binary(:CCS_EXPRESSION_TYPE_MULTIPLY, left, right)
+        super(handle, retain: false)
+      end
+    end
+
+  end
+
+  Expression::Multiply = ExpressionMultiply
+
+  class ExpressionDivide < Expression
+
+    def initialize(handle = nil, retain: false, auto_release: true,
+                   left: nil, right: nil)
+      if handle
+        super(handle, retain: retain, auto_release: auto_release)
+      else
+        handle = create_binary(:CCS_EXPRESSION_TYPE_DIVIDE, left, right)
+        super(handle, retain: false)
+      end
+    end
+
+  end
+
+  Expression::Divide = ExpressionDivide
+
+  class ExpressionModulo < Expression
+
+    def initialize(handle = nil, retain: false, auto_release: true,
+                   left: nil, right: nil)
+      if handle
+        super(handle, retain: retain, auto_release: auto_release)
+      else
+        handle = create_binary(:CCS_EXPRESSION_TYPE_MODULO, left, right)
+        super(handle, retain: false)
+      end
+    end
+
+  end
+
+  Expression::Modulo = ExpressionModulo
+
+  class ExpressionIn < Expression
+
+    def initialize(handle = nil, retain: false, auto_release: true,
+                   left: nil, right: nil)
+      if handle
+        super(handle, retain: retain, auto_release: auto_release)
+      else
+        handle = create_binary(:CCS_EXPRESSION_TYPE_IN, left, right)
+        super(handle, retain: false)
+      end
+    end
+
+  end
+
+  Expression::In = ExpressionIn
+
+  class ExpressionPositive < Expression
+
+    def initialize(handle = nil, retain: false, auto_release: true,
+                   node: nil)
+      if handle
+        super(handle, retain: retain, auto_release: auto_release)
+      else
+        handle = create_unary(:CCS_EXPRESSION_TYPE_POSITIVE, node)
+        super(handle, retain: false)
+      end
+    end
+
+  end
+
+  Expression::Positive = ExpressionPositive
+
+  class ExpressionNegative < Expression
+
+    def initialize(handle = nil, retain: false, auto_release: true,
+                   node: nil)
+      if handle
+        super(handle, retain: retain, auto_release: auto_release)
+      else
+        handle = create_unary(:CCS_EXPRESSION_TYPE_NEGATIVE, node)
+        super(handle, retain: false)
+      end
+    end
+
+  end
+
+  Expression::Negative = ExpressionNegative
+
+  class ExpressionNot < Expression
+
+    def initialize(handle = nil, retain: false, auto_release: true,
+                   node: nil)
+      if handle
+        super(handle, retain: retain, auto_release: auto_release)
+      else
+        handle = create_unary(:CCS_EXPRESSION_TYPE_NOT, node)
+        super(handle, retain: false)
+      end
+    end
+
+  end
+
+  Expression::Not = ExpressionNot
+
+  class ExpressionLiteral < Expression
     NONE_SYMBOL = TerminalSymbols[:CCS_TERMINAL_TYPE_NONE]
     TRUE_SYMBOL = TerminalSymbols[:CCS_TERMINAL_TYPE_TRUE]
     FALSE_SYMBOL = TerminalSymbols[:CCS_TERMINAL_TYPE_FALSE]
@@ -211,7 +491,7 @@ module CCS
     def initialize(handle = nil, retain: false, auto_release: true,
                    value: nil)
       if handle
-        super(handle, retain: retain)
+        super(handle, retain: retain, auto_release: auto_release)
       else
         ptr = MemoryPointer::new(:ccs_expression_t)
         CCS.error_check CCS.ccs_create_literal(Datum::from_value(value), ptr)
@@ -241,11 +521,13 @@ module CCS
     end
   end
 
-  class Variable < Expression
+  Expression::Literal = ExpressionLiteral
+
+  class ExpressionVariable < Expression
     def initialize(handle = nil, retain: false, auto_release: true,
                    parameter: nil)
       if handle
-        super(handle, retain: retain)
+        super(handle, retain: retain, auto_release: auto_release)
       else
         ptr = MemoryPointer::new(:ccs_expression_t)
         CCS.error_check CCS.ccs_create_variable(parameter, ptr)
@@ -264,13 +546,21 @@ module CCS
     end
   end
 
-  class List < Expression
+  Expression::Variable = ExpressionVariable
+
+  class ExpressionList < Expression
     def initialize(handle = nil, retain: false, auto_release: true,
                    values: nil)
       if handle
-        super(handle, retain: retain)
+        super(handle, retain: retain, auto_release: auto_release)
       else
-        super(nil, retain: false, type: :CCS_EXPRESSION_TYPE_LIST, nodes: values)
+        count = values.size
+        p_values = MemoryPointer::new(:ccs_datum_t, count)
+        ss = []
+        ptr = MemoryPointer::new(:ccs_expression_t)
+        values.each_with_index { |n, i| Datum::new(p_values[i]).set_value(n, string_store: ss) }
+        CCS.error_check CCS.ccs_create_expression(:CCS_EXPRESSION_TYPE_LIST, count, p_values, ptr)
+        super(ptr.read_ccs_expression_t, retain: false)
       end
     end
 
@@ -294,4 +584,7 @@ module CCS
       "[ #{nodes.collect(&:to_s).join(", ")} ]"
     end
   end
+
+  Expression::List = ExpressionList
+
 end

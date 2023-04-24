@@ -17,8 +17,8 @@ class CConfigSpaceTestEvaluation < Minitest::Test
     v1 = CCS::NumericalParameter::Float.new
     v2 = CCS::NumericalParameter::Float.new
     os.add_parameters [v1, v2]
-    e1 = CCS::Variable::new(parameter: v1)
-    e2 = CCS::Variable::new(parameter: v2)
+    e1 = CCS::Expression::Variable::new(parameter: v1)
+    e2 = CCS::Expression::Variable::new(parameter: v2)
     os.add_objectives( { e1 => :CCS_OBJECTIVE_TYPE_MAXIMIZE, e2 => :CCS_OBJECTIVE_TYPE_MINIMIZE } )
     ev1 = CCS::Evaluation::new(objective_space: os, configuration: cs.sample)
     ev1.set_value(0, 0.5)
@@ -56,8 +56,8 @@ class CConfigSpaceTestEvaluation < Minitest::Test
     v1 = CCS::NumericalParameter::Float.new
     v2 = CCS::NumericalParameter::Float.new
     os.add_parameters [v1, v2]
-    e1 = CCS::Variable::new(parameter: v1)
-    e2 = CCS::Variable::new(parameter: v2)
+    e1 = CCS::Expression::Variable::new(parameter: v1)
+    e2 = CCS::Expression::Variable::new(parameter: v2)
     os.add_objectives( { e1 => :CCS_OBJECTIVE_TYPE_MAXIMIZE, e2 => :CCS_OBJECTIVE_TYPE_MINIMIZE } )
     evref = CCS::Evaluation::new(objective_space: os, configuration: cs.sample, values: [0.5, 0.6])
     buff = evref.serialize

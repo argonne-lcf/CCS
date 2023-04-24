@@ -17,8 +17,8 @@ class CConfigSpaceTestFeaturesTuner < Minitest::Test
     v1 = CCS::NumericalParameter::Float.new(lower: -Float::INFINITY, upper: Float::INFINITY)
     v2 = CCS::NumericalParameter::Float.new(lower: -Float::INFINITY, upper: Float::INFINITY)
     os.add_parameters [v1, v2]
-    e1 = CCS::Variable::new(parameter: v1)
-    e2 = CCS::Variable::new(parameter: v2)
+    e1 = CCS::Expression::Variable::new(parameter: v1)
+    e2 = CCS::Expression::Variable::new(parameter: v2)
     os.add_objectives( [e1, e2] )
 
     fs = CCS::FeaturesSpace::new(name: "fspace")
