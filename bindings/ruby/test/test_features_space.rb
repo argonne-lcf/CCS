@@ -12,9 +12,9 @@ class CConfigSpaceTestFeaturesSpace < Minitest::Test
     assert_equal( :CCS_OBJECT_TYPE_FEATURES_SPACE, cs.object_type )
     assert_equal( "space", cs.name )
     assert_equal( 0, cs.num_parameters )
-    h1 = CCS::NumericalParameter::new
-    h2 = CCS::NumericalParameter::new
-    h3 = CCS::NumericalParameter::new
+    h1 = CCS::NumericalParameter::Float.new
+    h2 = CCS::NumericalParameter::Float.new
+    h3 = CCS::NumericalParameter::Float.new
     cs.add_parameter(h1)
     cs.add_parameters([h2, h3])
     assert_equal( 3, cs.num_parameters )

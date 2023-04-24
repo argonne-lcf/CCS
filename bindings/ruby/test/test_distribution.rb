@@ -49,7 +49,7 @@ class CConfigSpaceTestDistribution < Minitest::Test
   end
 
   def test_from_handle_normal
-    d = CCS::NormalDistribution::new
+    d = CCS::NormalDistribution::Float.new
     d2 = CCS::Object::from_handle(d)
     assert_equal( d.class, d2.class )
   end
@@ -71,19 +71,19 @@ class CConfigSpaceTestDistribution < Minitest::Test
   end
 
   def test_create_normal
-    d = CCS::NormalDistribution::new
+    d = CCS::NormalDistribution::Float.new
     normal_check(d)
   end
 
   def test_serialize_normal
-    dref = CCS::NormalDistribution::new
+    dref = CCS::NormalDistribution::Float.new
     buff = dref.serialize
     d = CCS::deserialize(buffer: buff)
     normal_check(d)
   end
 
   def test_create_normal_int
-    d = CCS::NormalDistribution::int(mu: 2.0, sigma: 5.0)
+    d = CCS::NormalDistribution::Int.new(mu: 2.0, sigma: 5.0)
     assert( d.object_type == :CCS_OBJECT_TYPE_DISTRIBUTION )
     assert( d.type == :CCS_DISTRIBUTION_TYPE_NORMAL )
     assert( d.data_type == :CCS_NUMERIC_TYPE_INT )
@@ -94,7 +94,7 @@ class CConfigSpaceTestDistribution < Minitest::Test
   end
 
   def test_create_normal_float
-    d = CCS::NormalDistribution::float(mu: 2.0, sigma: 5.0)
+    d = CCS::NormalDistribution::Float.new(mu: 2.0, sigma: 5.0)
     assert( d.object_type == :CCS_OBJECT_TYPE_DISTRIBUTION )
     assert( d.type == :CCS_DISTRIBUTION_TYPE_NORMAL )
     assert( d.data_type == :CCS_NUMERIC_TYPE_FLOAT )
@@ -106,7 +106,7 @@ class CConfigSpaceTestDistribution < Minitest::Test
 
   def test_sample_normal
     rng = CCS::Rng::new
-    d = CCS::NormalDistribution::new
+    d = CCS::NormalDistribution::Float.new
     i = d.bounds
     v = d.sample(rng)
     assert( i.include?(v) )
@@ -118,7 +118,7 @@ class CConfigSpaceTestDistribution < Minitest::Test
   end
 
   def test_from_handle_uniform
-    d = CCS::UniformDistribution::new
+    d = CCS::UniformDistribution::Float.new
     d2 = CCS::Object::from_handle(d)
     assert_equal( d.class, d2.class )
   end
@@ -138,19 +138,19 @@ class CConfigSpaceTestDistribution < Minitest::Test
   end
 
   def test_create_uniform
-    d = CCS::UniformDistribution::new
+    d = CCS::UniformDistribution::Float.new
     uniform_check(d)
   end
 
   def test_serialize_uniform
-    dref = CCS::UniformDistribution::new
+    dref = CCS::UniformDistribution::Float.new
     buff = dref.serialize
     d = CCS::deserialize(buffer: buff)
     uniform_check(d)
   end
 
   def test_create_uniform_float
-    d = CCS::UniformDistribution::float(lower: -1.0, upper: 1.0)
+    d = CCS::UniformDistribution::Float.new(lower: -1.0, upper: 1.0)
     assert( d.object_type == :CCS_OBJECT_TYPE_DISTRIBUTION )
     assert( d.type == :CCS_DISTRIBUTION_TYPE_UNIFORM )
     assert( d.data_type == :CCS_NUMERIC_TYPE_FLOAT )
@@ -167,7 +167,7 @@ class CConfigSpaceTestDistribution < Minitest::Test
   end
 
   def test_create_uniform_int
-    d = CCS::UniformDistribution::int(lower: 0, upper: 100)
+    d = CCS::UniformDistribution::Int.new(lower: 0, upper: 100)
     assert( d.object_type == :CCS_OBJECT_TYPE_DISTRIBUTION )
     assert( d.type == :CCS_DISTRIBUTION_TYPE_UNIFORM )
     assert( d.data_type == :CCS_NUMERIC_TYPE_INT )
@@ -184,7 +184,7 @@ class CConfigSpaceTestDistribution < Minitest::Test
   end
 
   def test_oversampling_uniform_float
-    d = CCS::UniformDistribution::float(lower: -1.0, upper: 1.0)
+    d = CCS::UniformDistribution::Float.new(lower: -1.0, upper: 1.0)
     i = CCS::Interval::new(type: :CCS_NUMERIC_TYPE_FLOAT, lower: -0.2, upper: 0.2)
     assert(d.oversampling?(i))
     i = CCS::Interval::new(type: :CCS_NUMERIC_TYPE_FLOAT, lower: -0.2, upper: 2.0)
@@ -194,7 +194,7 @@ class CConfigSpaceTestDistribution < Minitest::Test
   end
 
   def test_oversampling_uniform_int
-    d = CCS::UniformDistribution::int(lower: 0, upper: 100)
+    d = CCS::UniformDistribution::Int.new(lower: 0, upper: 100)
     i = CCS::Interval::new(type: :CCS_NUMERIC_TYPE_INT, lower: 5, upper: 50)
     assert(d.oversampling?(i))
     i = CCS::Interval::new(type: :CCS_NUMERIC_TYPE_INT, lower: 5, upper: 150)
@@ -205,7 +205,7 @@ class CConfigSpaceTestDistribution < Minitest::Test
 
   def test_sample_uniform
     rng = CCS::Rng::new
-    d = CCS::UniformDistribution::new
+    d = CCS::UniformDistribution::Float.new
     i = d.bounds
     v = d.sample(rng)
     assert( i.include?(v) )
@@ -217,7 +217,7 @@ class CConfigSpaceTestDistribution < Minitest::Test
   end
 
   def test_create_mixture
-    distributions = [ CCS::UniformDistribution::float(lower: -5.0, upper: 0.0), CCS::UniformDistribution::float(lower: 0.0, upper: 2.0) ]
+    distributions = [ CCS::UniformDistribution::Float.new(lower: -5.0, upper: 0.0), CCS::UniformDistribution::Float.new(lower: 0.0, upper: 2.0) ]
     d = CCS::MixtureDistribution::new(distributions: distributions)
     assert( d.object_type == :CCS_OBJECT_TYPE_DISTRIBUTION )
     assert( d.type == :CCS_DISTRIBUTION_TYPE_MIXTURE )
@@ -229,7 +229,7 @@ class CConfigSpaceTestDistribution < Minitest::Test
   end
 
   def test_serialize_mixture
-    distributions = [ CCS::UniformDistribution::float(lower: -5.0, upper: 0.0), CCS::UniformDistribution::float(lower: 0.0, upper: 2.0) ]
+    distributions = [ CCS::UniformDistribution::Float.new(lower: -5.0, upper: 0.0), CCS::UniformDistribution::Float.new(lower: 0.0, upper: 2.0) ]
     dref = CCS::MixtureDistribution::new(distributions: distributions)
     buff = dref.serialize
     d = CCS::deserialize(buffer: buff)
@@ -246,7 +246,7 @@ class CConfigSpaceTestDistribution < Minitest::Test
   end
 
   def test_create_multivariate
-    distributions = [ CCS::UniformDistribution::float(lower: -5.0, upper: 0.0), CCS::UniformDistribution::int(lower: 0, upper: 2) ]
+    distributions = [ CCS::UniformDistribution::Float.new(lower: -5.0, upper: 0.0), CCS::UniformDistribution::Int.new(lower: 0, upper: 2) ]
     d = CCS::MultivariateDistribution::new(distributions: distributions)
     assert( d.object_type == :CCS_OBJECT_TYPE_DISTRIBUTION )
     assert( d.type == :CCS_DISTRIBUTION_TYPE_MULTIVARIATE )
@@ -257,7 +257,7 @@ class CConfigSpaceTestDistribution < Minitest::Test
   end
 
   def test_serialize_multivariate
-    distributions = [ CCS::UniformDistribution::float(lower: -5.0, upper: 0.0), CCS::UniformDistribution::int(lower: 0, upper: 2) ]
+    distributions = [ CCS::UniformDistribution::Float.new(lower: -5.0, upper: 0.0), CCS::UniformDistribution::Int.new(lower: 0, upper: 2) ]
     dref = CCS::MultivariateDistribution::new(distributions: distributions)
     buff = dref.serialize
     d = CCS::deserialize(buffer: buff)
@@ -273,7 +273,7 @@ class CConfigSpaceTestDistribution < Minitest::Test
   end
 
   def test_mixture_multidim
-    distributions = [ CCS::UniformDistribution::float(lower: -5.0, upper: 0.0), CCS::UniformDistribution::int(lower: 0, upper: 2) ]
+    distributions = [ CCS::UniformDistribution::Float.new(lower: -5.0, upper: 0.0), CCS::UniformDistribution::Int.new(lower: 0, upper: 2) ]
     d = CCS::MultivariateDistribution::new(distributions: distributions)
     d2 = CCS::MixtureDistribution::new(distributions: [d, d])
     assert( d2.object_type == :CCS_OBJECT_TYPE_DISTRIBUTION )

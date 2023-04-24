@@ -15,9 +15,9 @@ class CConfigSpaceTestConfigurationSpace < Minitest::Test
     assert_equal( 0, cs.num_parameters )
     assert_equal( [], cs.conditions )
     assert_equal( [], cs.forbidden_clauses )
-    h1 = CCS::NumericalParameter::new
-    h2 = CCS::NumericalParameter::new
-    h3 = CCS::NumericalParameter::new
+    h1 = CCS::NumericalParameter::Float.new
+    h2 = CCS::NumericalParameter::Float.new
+    h3 = CCS::NumericalParameter::Float.new
     cs.add_parameter(h1)
     cs.add_parameters([h2, h3])
     assert_equal( 3, cs.num_parameters )
@@ -38,11 +38,11 @@ class CConfigSpaceTestConfigurationSpace < Minitest::Test
 
   def test_set_distribution
     cs = CCS::ConfigurationSpace::new(name: "space")
-    h1 = CCS::NumericalParameter::new
-    h2 = CCS::NumericalParameter::new
-    h3 = CCS::NumericalParameter::new
+    h1 = CCS::NumericalParameter::Float.new
+    h2 = CCS::NumericalParameter::Float.new
+    h3 = CCS::NumericalParameter::Float.new
     cs.add_parameters([h1, h2, h3])
-    distributions = [ CCS::UniformDistribution::float(lower: 0.1, upper: 0.3), CCS::UniformDistribution::float(lower: 0.2, upper: 0.6) ]
+    distributions = [ CCS::UniformDistribution::Float.new(lower: 0.1, upper: 0.3), CCS::UniformDistribution::Float.new(lower: 0.2, upper: 0.6) ]
     d = CCS::MultivariateDistribution::new(distributions: distributions)
     cs.set_distribution(d, [h1, h2])
     dist, indx = cs.get_parameter_distribution(h1)
@@ -61,9 +61,9 @@ class CConfigSpaceTestConfigurationSpace < Minitest::Test
   end
 
   def test_conditions
-    h1 = CCS::NumericalParameter::new(lower: -1.0, upper: 1.0, default: 0.0)
-    h2 = CCS::NumericalParameter::new(lower: -1.0, upper: 1.0)
-    h3 = CCS::NumericalParameter::new(lower: -1.0, upper: 1.0)
+    h1 = CCS::NumericalParameter::Float.new(lower: -1.0, upper: 1.0, default: 0.0)
+    h2 = CCS::NumericalParameter::Float.new(lower: -1.0, upper: 1.0)
+    h3 = CCS::NumericalParameter::Float.new(lower: -1.0, upper: 1.0)
     cs = CCS::ConfigurationSpace::new(name: "space")
     cs.add_parameters([h1, h2, h3])
     e1 = CCS::Expression::new(type: :CCS_EXPRESSION_TYPE_LESS, nodes: [h2, 0.0])

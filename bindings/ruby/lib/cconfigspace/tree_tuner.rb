@@ -111,6 +111,8 @@ module CCS
     end
   end
 
+  TreeTuner::Random = RandomTreeTuner
+
   callback :ccs_user_defined_tree_tuner_del, [:ccs_tree_tuner_t], :ccs_result_t
   callback :ccs_user_defined_tree_tuner_ask, [:ccs_tree_tuner_t, :size_t, :pointer, :pointer], :ccs_result_t
   callback :ccs_user_defined_tree_tuner_tell, [:ccs_tree_tuner_t, :size_t, :pointer], :ccs_result_t
@@ -305,5 +307,7 @@ module CCS
     end
 
   end
+
+  TreeTuner::UserDefined = UserDefinedTreeTuner
    
 end

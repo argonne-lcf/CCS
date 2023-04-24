@@ -43,7 +43,7 @@ module CCS
       CCS.error_check CCS.ccs_parameter_get_type(handle, ptr)
       case ptr.read_ccs_parameter_type_t
       when :CCS_PARAMETER_TYPE_NUMERICAL
-        NumericalParameter
+        return NumericalParameter.from_handle(handle, retain: retain, auto_release: auto_release)
       when :CCS_PARAMETER_TYPE_CATEGORICAL
         CategoricalParameter
       when :CCS_PARAMETER_TYPE_ORDINAL
@@ -121,38 +121,58 @@ module CCS
   attach_function :ccs_create_numerical_parameter, [:string, :ccs_numeric_type_t, :ccs_numeric_t, :ccs_numeric_t, :ccs_numeric_t, :ccs_numeric_t, :pointer], :ccs_result_t
   attach_function :ccs_numerical_parameter_get_properties, [:ccs_parameter_t, :pointer, :pointer, :pointer, :pointer], :ccs_result_t
   class NumericalParameter < Parameter
-    def initialize(handle = nil, retain: false, auto_release: true,
-                   name: Parameter.default_name, data_type: :CCS_NUMERIC_TYPE_FLOAT, lower: 0.0, upper: 1.0, quantization: 0.0, default: lower)
-      if (handle)
-        super(handle, retain: retain, auto_release: auto_release)
+
+    def self.from_handle(handle, retain: true, auto_release: true)
+      ptr = MemoryPointer::new(:ccs_numeric_type_t)
+      CCS.error_check CCS.ccs_numerical_parameter_get_properties(handle, ptr, nil, nil, nil)
+      case ptr.read_ccs_numeric_type_t
+      when :CCS_NUMERIC_TYPE_FLOAT
+        Float
+      when :CCS_NUMERIC_TYPE_INT
+        Int
       else
-        ptr = MemoryPointer::new(:ccs_parameter_t)
-        case data_type
-        when :CCS_NUMERIC_TYPE_FLOAT
+        raise CCSError, :CCS_RESULT_ERROR_INVALID_PARAMETER
+      end.new(handle, retain: retain, auto_release: auto_release)
+    end
+
+    class Float < NumericalParameter
+
+      def initialize(handle = nil, retain: false, auto_release: true,
+                     name: Parameter.default_name, lower: 0.0, upper: 1.0, quantization: 0.0, default: lower)
+        if (handle)
+          super(handle, retain: retain, auto_release: auto_release)
+        else
+          ptr = MemoryPointer::new(:ccs_parameter_t)
           lower = Numeric::from_value(lower.to_f)
           upper = Numeric::from_value(upper.to_f)
           quantization = Numeric::from_value(quantization.to_f)
           default = Numeric::from_value(default.to_f)
-        when :CCS_NUMERIC_TYPE_INT
+          name = name.inspect if name.kind_of?(Symbol)
+          CCS.error_check CCS.ccs_create_numerical_parameter(name, :CCS_NUMERIC_TYPE_FLOAT, lower, upper, quantization, default, ptr)
+          super(ptr.read_pointer, retain: false)
+        end
+      end
+
+    end
+
+    class Int < NumericalParameter
+
+      def initialize(handle = nil, retain: false, auto_release: true,
+                     name: Parameter.default_name, lower: 0, upper: 100, quantization: 0, default: lower)
+        if (handle)
+          super(handle, retain: retain, auto_release: auto_release)
+        else
+          ptr = MemoryPointer::new(:ccs_parameter_t)
           lower = Numeric::from_value(lower.to_i)
           upper = Numeric::from_value(upper.to_i)
           quantization = Numeric::from_value(quantization.to_i)
           default = Numeric::from_value(default.to_i)
-        else
-          raise CCSError, :CCS_RESULT_ERROR_INVALID_TYPE
+          name = name.inspect if name.kind_of?(Symbol)
+          CCS.error_check CCS.ccs_create_numerical_parameter(name, :CCS_NUMERIC_TYPE_INT, lower, upper, quantization, default, ptr)
+          super(ptr.read_pointer, retain: false)
         end
-        name = name.inspect if name.kind_of?(Symbol)
-        CCS.error_check CCS.ccs_create_numerical_parameter(name, data_type, lower, upper, quantization, default, ptr)
-        super(ptr.read_pointer, retain: false)
       end
-    end
 
-    def self.int(name: default_name, lower:, upper:, quantization: 0, default: lower)
-      self.new(nil, name: name, data_type: :CCS_NUMERIC_TYPE_INT, lower: lower, upper: upper, quantization: quantization, default: default)
-    end
- 
-    def self.float(name: default_name, lower:, upper:, quantization: 0.0, default: lower)
-      self.new(nil, name: name, data_type: :CCS_NUMERIC_TYPE_FLOAT, lower: lower, upper: upper, quantization: quantization, default: default)
     end
 
     def data_type
@@ -200,6 +220,8 @@ module CCS
     end
   end
 
+  Parameter::Numerical = NumericalParameter
+
   attach_function :ccs_create_categorical_parameter, [:string, :size_t, :pointer, :size_t, :pointer],  :ccs_result_t
   attach_function :ccs_categorical_parameter_get_values, [:ccs_parameter_t, :size_t, :pointer, :pointer], :ccs_result_t
   class CategoricalParameter < Parameter
@@ -231,6 +253,8 @@ module CCS
       end
     end
   end
+
+  Parameter::Categorical = CategoricalParameter
 
   attach_function :ccs_create_ordinal_parameter, [:string, :size_t, :pointer, :size_t, :pointer],  :ccs_result_t
   attach_function :ccs_ordinal_parameter_compare_values, [:ccs_parameter_t, :ccs_datum_t, :ccs_datum_t, :pointer], :ccs_result_t
@@ -273,6 +297,8 @@ module CCS
     end
   end
 
+  Parameter::Ordinal = OrdinalParameter
+
   attach_function :ccs_create_discrete_parameter, [:string, :size_t, :pointer, :size_t, :pointer],  :ccs_result_t
   attach_function :ccs_discrete_parameter_get_values, [:ccs_parameter_t, :size_t, :pointer, :pointer], :ccs_result_t
   class DiscreteParameter < Parameter
@@ -305,6 +331,8 @@ module CCS
     end
   end
 
+  Parameter::Discrete = DiscreteParameter
+
   attach_function :ccs_create_string_parameter, [:string, :pointer],  :ccs_result_t
   class StringParameter < Parameter
     def initialize(handle = nil, retain: false, auto_release: true,
@@ -319,5 +347,7 @@ module CCS
       end
     end
   end
+
+  Parameter::String = StringParameter
 
 end

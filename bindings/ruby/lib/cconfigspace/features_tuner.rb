@@ -112,6 +112,8 @@ module CCS
     end
   end
 
+  FeaturesTuner::Random = RandomFeaturesTuner
+
   callback :ccs_user_defined_features_tuner_del, [:ccs_features_tuner_t], :ccs_result_t
   callback :ccs_user_defined_features_tuner_ask, [:ccs_features_tuner_t, :ccs_features_t, :size_t, :pointer, :pointer], :ccs_result_t
   callback :ccs_user_defined_features_tuner_tell, [:ccs_features_tuner_t, :size_t, :pointer], :ccs_result_t
@@ -304,4 +306,7 @@ module CCS
       res
     end
   end
+
+  FeaturesTuner::UserDefined = UserDefinedFeaturesTuner
+
 end

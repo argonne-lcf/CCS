@@ -40,9 +40,9 @@ module CCS
       CCS.error_check CCS.ccs_distribution_get_type(handle, ptr)
       case ptr.read_ccs_distribution_type_t
       when :CCS_DISTRIBUTION_TYPE_UNIFORM
-        UniformDistribution
+        return UniformDistribution.from_handle(handle, retain: retain, auto_release: auto_release)
       when :CCS_DISTRIBUTION_TYPE_NORMAL
-        NormalDistribution
+        return NormalDistribution.from_handle(handle, retain: retain, auto_release: auto_release)
       when :CCS_DISTRIBUTION_TYPE_ROULETTE
         RouletteDistribution
       when :CCS_DISTRIBUTION_TYPE_MIXTURE
@@ -124,33 +124,53 @@ module CCS
 
   end
 
-  attach_function :ccs_create_uniform_distribution, [:ccs_numeric_type_t, :ccs_numeric_t, :ccs_numeric_t, :ccs_scale_type_t, :ccs_numeric_t, :pointer], :ccs_result_t
   attach_function :ccs_create_uniform_int_distribution, [:ccs_int_t, :ccs_int_t, :ccs_scale_type_t, :ccs_int_t, :pointer], :ccs_result_t
   attach_function :ccs_create_uniform_float_distribution, [:ccs_float_t, :ccs_float_t, :ccs_scale_type_t, :ccs_float_t, :pointer], :ccs_result_t
   attach_function :ccs_uniform_distribution_get_properties, [:ccs_distribution_t, :pointer, :pointer, :pointer, :pointer], :ccs_result_t
 
   class UniformDistribution < Distribution
-    def initialize(handle = nil, retain: false, auto_release: true,
-                   data_type: :CCS_NUMERIC_TYPE_FLOAT, lower: 0.0, upper: 1.0, scale: :CCS_SCALE_TYPE_LINEAR, quantization: 0.0)
-      if handle
-        super(handle, retain: retain)
+
+    def self.from_handle(handle, retain: true, auto_release: true)
+      ptr = MemoryPointer::new(:ccs_numeric_type_t)
+      CCS.error_check CCS.ccs_distribution_get_data_types(handle, ptr)
+      case ptr.read_ccs_numeric_type_t
+      when :CCS_NUMERIC_TYPE_FLOAT
+        Float
+      when :CCS_NUMERIC_TYPE_INT
+        Int
       else
-        ptr = MemoryPointer::new(:ccs_distribution_t)
-        if data_type == :CCS_NUMERIC_TYPE_FLOAT
-          CCS.error_check CCS.ccs_create_uniform_float_distribution(lower, upper, scale, quantization, ptr)
+        raise CCSError, :CCS_RESULT_ERROR_INVALID_DISTRIBUTION
+      end.new(handle, retain: retain, auto_release: auto_release)
+    end
+
+    class Float < UniformDistribution
+
+      def initialize(handle = nil, retain: false, auto_release: true,
+                     lower: 0.0, upper: 1.0, scale: :CCS_SCALE_TYPE_LINEAR, quantization: 0.0)
+        if handle
+          super(handle, retain: retain)
         else
-          CCS.error_check CCS.ccs_create_uniform_int_distribution(lower, upper, scale, quantization, ptr)
+          ptr = MemoryPointer::new(:ccs_distribution_t)
+          CCS.error_check CCS.ccs_create_uniform_float_distribution(lower, upper, scale, quantization, ptr)
+          super(ptr.read_pointer, retain: false)
         end
-        super(ptr.read_pointer, retain: false)
       end
+
     end
 
-    def self.int(lower:, upper:, scale: :CCS_SCALE_TYPE_LINEAR, quantization: 0)
-      self.new(nil, data_type: :CCS_NUMERIC_TYPE_INT, lower: lower, upper: upper, scale: scale, quantization: quantization)
-    end
+    class Int < UniformDistribution
 
-    def self.float(lower:, upper:, scale: :CCS_SCALE_TYPE_LINEAR, quantization: 0.0)
-      self.new(nil, data_type: :CCS_NUMERIC_TYPE_FLOAT, lower: lower, upper: upper, scale: scale, quantization: quantization)
+      def initialize(handle = nil, retain: false, auto_release: true,
+                     lower: 0, upper: 100, scale: :CCS_SCALE_TYPE_LINEAR, quantization: 0)
+        if handle
+          super(handle, retain: retain)
+        else
+          ptr = MemoryPointer::new(:ccs_distribution_t)
+          CCS.error_check CCS.ccs_create_uniform_int_distribution(lower, upper, scale, quantization, ptr)
+          super(ptr.read_pointer, retain: false)
+        end
+      end
+
     end
 
     def data_type
@@ -202,32 +222,55 @@ module CCS
     end
   end
 
-  attach_function :ccs_create_normal_distribution, [:ccs_numeric_type_t, :ccs_float_t, :ccs_float_t, :ccs_scale_type_t, :ccs_numeric_t, :pointer], :ccs_result_t
+  Distribution::Uniform = UniformDistribution
+
   attach_function :ccs_create_normal_int_distribution, [:ccs_float_t, :ccs_float_t, :ccs_scale_type_t, :ccs_int_t, :pointer], :ccs_result_t
   attach_function :ccs_create_normal_float_distribution, [:ccs_float_t, :ccs_float_t, :ccs_scale_type_t, :ccs_float_t, :pointer], :ccs_result_t
   attach_function :ccs_normal_distribution_get_properties, [:ccs_distribution_t, :pointer, :pointer, :pointer, :pointer], :ccs_result_t
+
   class NormalDistribution < Distribution
-    def initialize(handle = nil, retain: false, auto_release: true,
-                   data_type: :CCS_NUMERIC_TYPE_FLOAT, mu: 0.0, sigma: 1.0, scale: :CCS_SCALE_TYPE_LINEAR, quantization: 0.0)
-      if handle
-        super(handle, retain: retain)
+
+    def self.from_handle(handle, retain: true, auto_release: true)
+      ptr = MemoryPointer::new(:ccs_numeric_type_t)
+      CCS.error_check CCS.ccs_distribution_get_data_types(handle, ptr)
+      case ptr.read_ccs_numeric_type_t
+      when :CCS_NUMERIC_TYPE_FLOAT
+        Float
+      when :CCS_NUMERIC_TYPE_INT
+        Int
       else
-        ptr = MemoryPointer::new(:ccs_distribution_t)
-        if data_type == :CCS_NUMERIC_TYPE_FLOAT
-          CCS.error_check CCS.ccs_create_normal_float_distribution(mu, sigma, scale, quantization, ptr)
+        raise CCSError, :CCS_RESULT_ERROR_INVALID_DISTRIBUTION
+      end.new(handle, retain: retain, auto_release: auto_release)
+    end
+
+    class Float < NormalDistribution
+
+      def initialize(handle = nil, retain: false, auto_release: true,
+                     mu: 0.0, sigma: 1.0, scale: :CCS_SCALE_TYPE_LINEAR, quantization: 0.0)
+        if handle
+          super(handle, retain: retain)
         else
-          CCS.error_check CCS.ccs_create_normal_int_distribution(mu, sigma, scale, quantization, ptr)
+          ptr = MemoryPointer::new(:ccs_distribution_t)
+          CCS.error_check CCS.ccs_create_normal_float_distribution(mu, sigma, scale, quantization, ptr)
+          super(ptr.read_pointer, retain: false)
         end
-        super(ptr.read_pointer, retain: false)
       end
+
     end
 
-    def self.int(mu:, sigma:, scale: :CCS_SCALE_TYPE_LINEAR, quantization: 0)
-      self::new(nil, retain: false, data_type: :CCS_NUMERIC_TYPE_INT, mu: mu, sigma: sigma, scale: scale, quantization: quantization) 
-    end
+    class Int < NormalDistribution
 
-    def self.float(mu:, sigma:, scale: :CCS_SCALE_TYPE_LINEAR, quantization: 0)
-      self::new(nil, retain: false, data_type: :CCS_NUMERIC_TYPE_FLOAT, mu: mu, sigma: sigma, scale: scale, quantization: quantization) 
+      def initialize(handle = nil, retain: false, auto_release: true,
+                     mu: 0.0, sigma: 1.0, scale: :CCS_SCALE_TYPE_LINEAR, quantization: 0)
+        if handle
+          super(handle, retain: retain)
+        else
+          ptr = MemoryPointer::new(:ccs_distribution_t)
+          CCS.error_check CCS.ccs_create_normal_int_distribution(mu, sigma, scale, quantization, ptr)
+          super(ptr.read_pointer, retain: false)
+        end
+      end
+
     end
 
     def data_type
@@ -271,6 +314,8 @@ module CCS
     end
   end
 
+  Distribution::Normal = NormalDistribution
+
   attach_function :ccs_create_roulette_distribution, [:size_t, :pointer, :pointer], :ccs_result_t
   attach_function :ccs_roulette_distribution_get_num_areas, [:ccs_distribution_t, :pointer], :ccs_result_t
   attach_function :ccs_roulette_distribution_get_areas, [:ccs_distribution_t, :size_t, :pointer, :pointer], :ccs_result_t
@@ -308,6 +353,8 @@ module CCS
       areas
     end
   end
+
+  Distribution::Roulette = RouletteDistribution
 
   attach_function :ccs_create_mixture_distribution, [:size_t, :pointer, :pointer, :pointer], :ccs_result_t
   attach_function :ccs_mixture_distribution_get_num_distributions, [:ccs_distribution_t, :pointer], :ccs_result_t
@@ -354,6 +401,8 @@ module CCS
     end
   end
 
+  Distribution::Mixture = MixtureDistribution
+
   attach_function :ccs_create_multivariate_distribution, [:size_t, :pointer, :pointer], :ccs_result_t
   attach_function :ccs_multivariate_distribution_get_num_distributions, [:ccs_distribution_t, :pointer], :ccs_result_t
   attach_function :ccs_multivariate_distribution_get_distributions, [:ccs_distribution_t, :size_t, :pointer, :pointer], :ccs_result_t
@@ -381,5 +430,7 @@ module CCS
       end
     end
   end
+
+  Distribution::Multivariate = MultivariateDistribution
 
 end

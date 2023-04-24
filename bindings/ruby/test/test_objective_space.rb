@@ -13,9 +13,9 @@ class CConfigSpaceTestObjectiveSpace < Minitest::Test
     assert_equal( "space", os.name )
     assert_equal( 0, os.num_parameters )
     assert_equal( [], os.objectives )
-    h1 = CCS::NumericalParameter::new
-    h2 = CCS::NumericalParameter::new
-    h3 = CCS::NumericalParameter::new
+    h1 = CCS::NumericalParameter::Float.new
+    h2 = CCS::NumericalParameter::Float.new
+    h3 = CCS::NumericalParameter::Float.new
     os.add_parameter(h1)
     os.add_parameters([h2, h3])
     assert_equal( 3, os.num_parameters )

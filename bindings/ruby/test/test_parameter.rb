@@ -145,7 +145,7 @@ class CConfigSpaceTestParameter < Minitest::Test
   end
 
   def test_from_handle_numerical
-    h = CCS::NumericalParameter::new
+    h = CCS::NumericalParameter::Float::new
     h2 = CCS::Object::from_handle(h)
     assert_equal( h.class, h2.class )
   end
@@ -170,19 +170,19 @@ class CConfigSpaceTestParameter < Minitest::Test
   end
 
   def test_create_numerical
-    h = CCS::NumericalParameter::new
+    h = CCS::NumericalParameter::Float::new
     numerical_check(h)
   end
 
   def test_serialize_numerical
-    href = CCS::NumericalParameter::new
+    href = CCS::NumericalParameter::Float::new
     buff = href.serialize
     h = CCS::deserialize(buffer: buff)
     numerical_check(h)
   end
 
   def test_create_numerical_float
-    h = CCS::NumericalParameter::float(lower: 0.0, upper: 1.0)
+    h = CCS::NumericalParameter::Float.new(lower: 0.0, upper: 1.0)
     assert_equal( :CCS_OBJECT_TYPE_PARAMETER, h.object_type )
     assert_equal( :CCS_PARAMETER_TYPE_NUMERICAL, h.type )
     assert_match( /param/, h.name )
@@ -206,7 +206,7 @@ class CConfigSpaceTestParameter < Minitest::Test
   end
 
   def test_create_numerical_int
-    h = CCS::NumericalParameter::int(lower: 0, upper: 100)
+    h = CCS::NumericalParameter::Int.new(lower: 0, upper: 100)
     assert_equal( :CCS_PARAMETER_TYPE_NUMERICAL, h.type )
     assert_match( /param/, h.name )
     assert_nil( h.user_data )

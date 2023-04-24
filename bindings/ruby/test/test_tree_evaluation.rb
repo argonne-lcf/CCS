@@ -23,8 +23,8 @@ class CConfigSpaceTestTreeEvaluation < Minitest::Test
     tree = generate_tree(4, 0)
     ts = CCS::StaticTreeSpace.new(name: 'space', tree: tree)
     os = CCS::ObjectiveSpace.new(name: 'ospace')
-    v1 = CCS::NumericalParameter.new
-    v2 = CCS::NumericalParameter.new
+    v1 = CCS::NumericalParameter::Float.new
+    v2 = CCS::NumericalParameter::Float.new
     os.add_parameters([v1, v2])
     e1 = CCS::Variable.new(parameter: v1)
     e2 = CCS::Variable.new(parameter: v2)
@@ -54,8 +54,8 @@ class CConfigSpaceTestTreeEvaluation < Minitest::Test
     tree = generate_tree(4, 0)
     ts = CCS::StaticTreeSpace.new(name: 'space', tree: tree)
     os = CCS::ObjectiveSpace.new(name: 'ospace')
-    v1 = CCS::NumericalParameter.new
-    v2 = CCS::NumericalParameter.new
+    v1 = CCS::NumericalParameter::Float.new
+    v2 = CCS::NumericalParameter::Float.new
     os.add_parameters([v1, v2])
     e1 = CCS::Variable.new(parameter: v1)
     e2 = CCS::Variable.new(parameter: v2)

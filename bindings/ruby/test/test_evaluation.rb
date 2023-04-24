@@ -9,13 +9,13 @@ class CConfigSpaceTestEvaluation < Minitest::Test
 
   def test_create
     cs = CCS::ConfigurationSpace::new(name: "cspace")
-    h1 = CCS::NumericalParameter::new
-    h2 = CCS::NumericalParameter::new
-    h3 = CCS::NumericalParameter::new
+    h1 = CCS::NumericalParameter::Float.new
+    h2 = CCS::NumericalParameter::Float.new
+    h3 = CCS::NumericalParameter::Float.new
     cs.add_parameters [h1, h2, h3]
     os = CCS::ObjectiveSpace::new(name: "ospace")
-    v1 = CCS::NumericalParameter::new
-    v2 = CCS::NumericalParameter::new
+    v1 = CCS::NumericalParameter::Float.new
+    v2 = CCS::NumericalParameter::Float.new
     os.add_parameters [v1, v2]
     e1 = CCS::Variable::new(parameter: v1)
     e2 = CCS::Variable::new(parameter: v2)
@@ -48,13 +48,13 @@ class CConfigSpaceTestEvaluation < Minitest::Test
 
   def test_serialize
     cs = CCS::ConfigurationSpace::new(name: "cspace")
-    h1 = CCS::NumericalParameter::new
-    h2 = CCS::NumericalParameter::new
-    h3 = CCS::NumericalParameter::new
+    h1 = CCS::NumericalParameter::Float.new
+    h2 = CCS::NumericalParameter::Float.new
+    h3 = CCS::NumericalParameter::Float.new
     cs.add_parameters [h1, h2, h3]
     os = CCS::ObjectiveSpace::new(name: "ospace")
-    v1 = CCS::NumericalParameter::new
-    v2 = CCS::NumericalParameter::new
+    v1 = CCS::NumericalParameter::Float.new
+    v2 = CCS::NumericalParameter::Float.new
     os.add_parameters [v1, v2]
     e1 = CCS::Variable::new(parameter: v1)
     e2 = CCS::Variable::new(parameter: v2)

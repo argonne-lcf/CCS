@@ -38,7 +38,7 @@ class CConfigSpaceTestExpression < Minitest::Test
   end
 
   def test_variable
-    h = CCS::NumericalParameter::new
+    h = CCS::NumericalParameter::Float.new
     e = CCS::Variable::new(parameter: h)
     assert_equal( h.name , e.to_s )
   end
@@ -49,7 +49,7 @@ class CConfigSpaceTestExpression < Minitest::Test
     assert_equal( "foo", e.eval(0) )
     assert_equal( 1, e.eval(1) )
     assert_equal( 2.0, e.eval(2) )
-    h = CCS::NumericalParameter::new(name: "test")
+    h = CCS::NumericalParameter::Float.new(name: "test")
     e2 = CCS::Expression::new(type: :CCS_EXPRESSION_TYPE_IN, nodes: [h, e])
     assert_equal( "test # [ \"foo\", 1, 2.0 ]",  e2.to_s )
   end

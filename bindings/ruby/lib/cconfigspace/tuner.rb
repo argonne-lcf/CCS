@@ -111,6 +111,8 @@ module CCS
     end
   end
 
+  Tuner::Random = RandomTuner
+
   callback :ccs_user_defined_tuner_del, [:ccs_tuner_t], :ccs_result_t
   callback :ccs_user_defined_tuner_ask, [:ccs_tuner_t, :size_t, :pointer, :pointer], :ccs_result_t
   callback :ccs_user_defined_tuner_tell, [:ccs_tuner_t, :size_t, :pointer], :ccs_result_t
@@ -303,5 +305,9 @@ module CCS
       CCS.register_vector(res.handle, [delwrapper, askwrapper, tellwrapper, get_optimawrapper, get_historywrapper, suggestwrapper, serializewrapper, deserializewrapper, tuner_data])
       res
     end
+
   end
+
+  Tuner::UserDefined = UserDefinedTuner
+
 end

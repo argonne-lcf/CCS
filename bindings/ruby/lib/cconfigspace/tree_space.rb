@@ -119,6 +119,8 @@ module CCS
 
   end
 
+  TreeSpace::Static = StaticTreeSpace
+
   callback :ccs_dynamic_tree_space_del, [:ccs_tree_space_t], :ccs_result_t
   callback :ccs_dynamic_tree_space_get_child, [:ccs_tree_space_t, :ccs_tree_t, :size_t, :pointer], :ccs_result_t
   callback :ccs_dynamic_tree_space_serialize, [:ccs_tree_space_t, :size_t, :pointer, :pointer], :ccs_result_t
@@ -227,5 +229,7 @@ module CCS
     end
 
   end
+
+  TreeSpace::Dynamic = DynamicTreeSpace
 
 end
