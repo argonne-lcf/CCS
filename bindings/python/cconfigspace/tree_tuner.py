@@ -140,6 +140,7 @@ class RandomTreeTuner(TreeTuner):
     else:
       super().__init__(handle = handle, retain = retain, auto_release = auto_release)
 
+TreeTuner.Random = RandomTreeTuner
 
 ccs_user_defined_tree_tuner_del_type = ct.CFUNCTYPE(Result, ccs_tree_tuner)
 ccs_user_defined_tree_tuner_ask_type = ct.CFUNCTYPE(Result, ccs_tree_tuner, ct.c_size_t, ct.POINTER(ccs_tree_configuration), ct.POINTER(ct.c_size_t))
@@ -417,4 +418,4 @@ class UserDefinedTreeTuner(TreeTuner):
       self._tuner_data = None
     return self._tuner_data
 
-
+TreeTuner.UserDefined = UserDefinedTreeTuner

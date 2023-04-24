@@ -32,7 +32,7 @@ class Parameter(Object):
     Error.check(res)
     v = v.value
     if v == ParameterType.NUMERICAL:
-      return NumericalParameter(handle = handle, retain = retain, auto_release = auto_release)
+      return NumericalParameter.from_handle(handle, retain = retain, auto_release = auto_release)
     elif v == ParameterType.CATEGORICAL:
       return CategoricalParameter(handle = handle, retain = retain, auto_release = auto_release)
     elif v == ParameterType.ORDINAL:
@@ -135,43 +135,19 @@ ccs_create_numerical_parameter = _ccs_get_function("ccs_create_numerical_paramet
 ccs_numerical_parameter_get_properties = _ccs_get_function("ccs_numerical_parameter_get_properties", [ccs_parameter, ct.POINTER(NumericType), ct.POINTER(Numeric), ct.POINTER(Numeric), ct.POINTER(Numeric)])
 
 class NumericalParameter(Parameter):
-  def __init__(self, handle = None, retain = False, auto_release = True,
-               name = None, data_type = NumericType.FLOAT, lower = 0.0, upper = 1.0, quantization = 0.0, default = None):
-    if handle is None:
-      if name is None:
-        name = NumericalParameter.default_name()
-      if default is None:
-        default = lower
-      l = Numeric()
-      u = Numeric()
-      q = Numeric()
-      d = Numeric()
-      if data_type == NumericType.FLOAT:
-        l.f = lower
-        u.f = upper
-        q.f = quantization
-        d.f = default
-      elif data_type == NumericType.INT:
-        l.i = lower
-        u.i = upper
-        q.i = quantization
-        d.i = default
-      else:
-        raise Error(Result(Result.ERROR_INVALID_VALUE))
-      handle = ccs_parameter()
-      res = ccs_create_numerical_parameter(str.encode(name), data_type, l.i, u.i, q.i, d.i, ct.byref(handle))
-      Error.check(res)
-      super().__init__(handle = handle, retain = False)
-    else:
-      super().__init__(handle = handle, retain = retain, auto_release = auto_release)
 
   @classmethod
-  def int(cls, lower, upper, name = None, quantization = 0, default = None):
-    return cls(handle = None, name = name, data_type =  NumericType.INT, lower = lower, upper = upper, quantization = quantization, default = default)
-  
-  @classmethod
-  def float(cls, lower, upper, name = None, quantization = 0.0, default = None):
-    return cls(handle = None, name = name, data_type =  NumericType.FLOAT, lower = lower, upper = upper, quantization = quantization, default = default)
+  def from_handle(cls, handle, retain = True, auto_release = True):
+    v = NumericType(0)
+    res = ccs_numerical_parameter_get_properties(handle, ct.byref(v), None, None, None)
+    Error.check(res)
+    v = v.value
+    if v == NumericType.FLOAT:
+      return FloatNumericalParameter(handle = handle, retain = retain, auto_release = auto_release)
+    elif v == NumericType.INT:
+      return IntNumericalParameter(handle = handle, retain = retain, auto_release = auto_release)
+    else:
+      raise Error(Result(Result.ERROR_INVALID_PARAMETER))
 
   @property
   def data_type(self):
@@ -231,6 +207,54 @@ class NumericalParameter(Parameter):
       raise Error(Result(Result.ERROR_INVALID_VALUE))
     return self._quantization
 
+Parameter.Numerical = NumericalParameter
+
+class FloatNumericalParameter(NumericalParameter):
+  def __init__(self, handle = None, retain = False, auto_release = True,
+               name = None, lower = None, upper = None, quantization = 0.0, default = None):
+    if handle is None:
+      if lower is None or upper is None:
+        raise Error(Result(Result.ERROR_INVALID_VALUE))
+      if name is None:
+        name = FloatNumericalParameter.default_name()
+      if default is None:
+        default = lower
+      l = Numeric()
+      u = Numeric()
+      q = Numeric()
+      d = Numeric()
+      l.f = lower
+      u.f = upper
+      q.f = quantization
+      d.f = default
+      handle = ccs_parameter()
+      res = ccs_create_numerical_parameter(str.encode(name), NumericType.FLOAT, l.i, u.i, q.i, d.i, ct.byref(handle))
+      Error.check(res)
+      super().__init__(handle = handle, retain = False)
+    else:
+      super().__init__(handle = handle, retain = retain, auto_release = auto_release)
+
+NumericalParameter.Float = FloatNumericalParameter
+
+class IntNumericalParameter(NumericalParameter):
+  def __init__(self, handle = None, retain = False, auto_release = True,
+               name = None, lower = None, upper = None, quantization = 0, default = None):
+    if handle is None:
+      if lower is None or upper is None:
+        raise Error(Result(Result.ERROR_INVALID_VALUE))
+      if name is None:
+        name = IntNumericalParameter.default_name()
+      if default is None:
+        default = lower
+      handle = ccs_parameter()
+      res = ccs_create_numerical_parameter(str.encode(name), NumericType.INT, lower, upper, quantization, default, ct.byref(handle))
+      Error.check(res)
+      super().__init__(handle = handle, retain = False)
+    else:
+      super().__init__(handle = handle, retain = retain, auto_release = auto_release)
+
+NumericalParameter.Int = IntNumericalParameter
+
 ccs_create_categorical_parameter = _ccs_get_function("ccs_create_categorical_parameter", [ct.c_char_p, ct.c_size_t, ct.POINTER(Datum), ct.c_size_t, ct.POINTER(ccs_parameter)])
 ccs_categorical_parameter_get_values = _ccs_get_function("ccs_categorical_parameter_get_values", [ccs_parameter, ct.c_size_t, ct.POINTER(Datum), ct.POINTER(ct.c_size_t)])
 
@@ -261,6 +285,8 @@ class CategoricalParameter(Parameter):
     res = ccs_categorical_parameter_get_values(self.handle, sz, v, None)
     Error.check(res)
     return [x.value for x in v]
+
+Parameter.Categorical = CategoricalParameter
 
 ccs_create_ordinal_parameter = _ccs_get_function("ccs_create_ordinal_parameter", [ct.c_char_p, ct.c_size_t, ct.POINTER(Datum), ct.c_size_t, ct.POINTER(ccs_parameter)])
 ccs_ordinal_parameter_compare_values = _ccs_get_function("ccs_ordinal_parameter_compare_values", [ccs_parameter, DatumFix, DatumFix, ct.POINTER(ccs_int)])
@@ -304,6 +330,8 @@ class OrdinalParameter(Parameter):
     Error.check(res)
     return c.value
 
+Parameter.Ordinal = OrdinalParameter
+
 ccs_create_discrete_parameter = _ccs_get_function("ccs_create_discrete_parameter", [ct.c_char_p, ct.c_size_t, ct.POINTER(Datum), ct.c_size_t, ct.POINTER(ccs_parameter)])
 ccs_discrete_parameter_get_values = _ccs_get_function("ccs_discrete_parameter_get_values", [ccs_parameter, ct.c_size_t, ct.POINTER(Datum), ct.POINTER(ct.c_size_t)])
 
@@ -335,6 +363,8 @@ class DiscreteParameter(Parameter):
     Error.check(res)
     return [x.value for x in v]
 
+Parameter.Discrete = DiscreteParameter
+
 ccs_create_string_parameter = _ccs_get_function("ccs_create_string_parameter", [ct.c_char_p, ct.POINTER(ccs_parameter)])
 
 class StringParameter(Parameter):
@@ -349,3 +379,5 @@ class StringParameter(Parameter):
       super().__init__(handle = handle, retain = False)
     else:
       super().__init__(handle = handle, retain = retain, auto_release = auto_release)
+
+Parameter.String = StringParameter

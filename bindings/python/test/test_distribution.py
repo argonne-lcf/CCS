@@ -58,13 +58,13 @@ class TestDistribution(unittest.TestCase):
 
 
   def test_from_handle_normal(self):
-    d = ccs.NormalDistribution()
+    d = ccs.NormalDistribution.Float()
     d2 = ccs.Object.from_handle(d.handle)
     self.assertEqual( d.__class__, d2.__class__)
     self.assertEqual( d.handle.value, d2.handle.value)
 
   def test_create_normal(self):
-    d = ccs.NormalDistribution()
+    d = ccs.NormalDistribution.Float()
     self.assertEqual( ccs.ObjectType.DISTRIBUTION, d.object_type )
     self.assertEqual( ccs.DistributionType.NORMAL, d.type )
     self.assertEqual( ccs.NumericType.FLOAT, d.data_type )
@@ -80,7 +80,7 @@ class TestDistribution(unittest.TestCase):
     self.assertFalse( i.upper_included )
 
   def test_serialize_normal(self):
-    dref = ccs.NormalDistribution()
+    dref = ccs.NormalDistribution.Float()
     buff = dref.serialize()
     d = ccs.Object.deserialize(buffer = buff)
     self.assertEqual( ccs.ObjectType.DISTRIBUTION, d.object_type )
@@ -98,7 +98,7 @@ class TestDistribution(unittest.TestCase):
     self.assertFalse( i.upper_included )
 
   def test_create_normal_float(self):
-    d = ccs.NormalDistribution.float(mu = 2.0, sigma = 6.0)
+    d = ccs.NormalDistribution.Float(mu = 2.0, sigma = 6.0)
     self.assertEqual( ccs.ObjectType.DISTRIBUTION, d.object_type )
     self.assertEqual( ccs.DistributionType.NORMAL, d.type )
     self.assertEqual( ccs.NumericType.FLOAT, d.data_type )
@@ -108,7 +108,7 @@ class TestDistribution(unittest.TestCase):
     self.assertEqual( 6.0, d.sigma )
 
   def test_create_normal_int(self):
-    d = ccs.NormalDistribution.int(mu = 2.0, sigma = 6.0)
+    d = ccs.NormalDistribution.Int(mu = 2.0, sigma = 6.0)
     self.assertEqual( ccs.ObjectType.DISTRIBUTION, d.object_type )
     self.assertEqual( ccs.DistributionType.NORMAL, d.type )
     self.assertEqual( ccs.NumericType.INT, d.data_type )
@@ -119,7 +119,7 @@ class TestDistribution(unittest.TestCase):
 
   def test_sample_normal(self):
     rng = ccs.Rng()
-    d = ccs.NormalDistribution()
+    d = ccs.NormalDistribution.Float()
     i = d.bounds
     v = d.sample(rng)
     self.assertTrue( i.contains(v) )
@@ -129,13 +129,13 @@ class TestDistribution(unittest.TestCase):
       self.assertTrue( i.contains(v) )
 
   def test_from_handle_uniform(self):
-    d = ccs.UniformDistribution()
+    d = ccs.UniformDistribution.Float(lower = 0.0, upper = 1.0)
     d2 = ccs.Object.from_handle(d.handle)
     self.assertEqual( d.__class__, d2.__class__)
     self.assertEqual( d.handle.value, d2.handle.value)
 
   def test_create_uniform(self):
-    d = ccs.UniformDistribution()
+    d = ccs.UniformDistribution.Float(lower = 0.0, upper = 1.0)
     self.assertEqual( ccs.ObjectType.DISTRIBUTION, d.object_type )
     self.assertEqual( ccs.DistributionType.UNIFORM, d.type )
     self.assertEqual( ccs.NumericType.FLOAT, d.data_type )
@@ -151,7 +151,7 @@ class TestDistribution(unittest.TestCase):
     self.assertFalse( i.upper_included )
 
   def test_serialize_uniform(self):
-    dref = ccs.UniformDistribution()
+    dref = ccs.UniformDistribution.Float(lower = 0.0, upper = 1.0)
     buff = dref.serialize()
     d = ccs.Object.deserialize(buffer = buff)
     self.assertEqual( ccs.ObjectType.DISTRIBUTION, d.object_type )
@@ -169,7 +169,7 @@ class TestDistribution(unittest.TestCase):
     self.assertFalse( i.upper_included )
 
   def test_create_uniform_float(self):
-    d = ccs.UniformDistribution.float(lower = -1.0, upper = 1.0)
+    d = ccs.UniformDistribution.Float(lower = -1.0, upper = 1.0)
     self.assertEqual( ccs.ObjectType.DISTRIBUTION, d.object_type )
     self.assertEqual( ccs.DistributionType.UNIFORM, d.type )
     self.assertEqual( ccs.NumericType.FLOAT, d.data_type )
@@ -185,7 +185,7 @@ class TestDistribution(unittest.TestCase):
     self.assertFalse( i.upper_included )
 
   def test_create_uniform_int(self):
-    d = ccs.UniformDistribution.int(lower = 0, upper = 100)
+    d = ccs.UniformDistribution.Int(lower = 0, upper = 100)
     self.assertEqual( ccs.ObjectType.DISTRIBUTION, d.object_type )
     self.assertEqual( ccs.DistributionType.UNIFORM, d.type )
     self.assertEqual( ccs.NumericType.INT, d.data_type )
@@ -201,7 +201,7 @@ class TestDistribution(unittest.TestCase):
     self.assertFalse( i.upper_included )
 
   def test_oversampling_uniform_float(self):
-    d = ccs.UniformDistribution.float(lower = -1.0, upper = 1.0)
+    d = ccs.UniformDistribution.Float(lower = -1.0, upper = 1.0)
     i = ccs.Interval(t = ccs.NumericType.FLOAT, lower = -0.2, upper = 0.2)
     self.assertTrue( d.is_oversampling(i) )
     i = ccs.Interval(t = ccs.NumericType.FLOAT, lower = -0.2, upper = 2.0)
@@ -210,7 +210,7 @@ class TestDistribution(unittest.TestCase):
     self.assertFalse( d.is_oversampling(i) )
 
   def test_oversampling_uniform_int(self):
-    d = ccs.UniformDistribution.int(lower = 0, upper = 100)
+    d = ccs.UniformDistribution.Int(lower = 0, upper = 100)
     i = ccs.Interval(t = ccs.NumericType.INT, lower = 5, upper = 50)
     self.assertTrue( d.is_oversampling(i) )
     i = ccs.Interval(t = ccs.NumericType.INT, lower = 5, upper = 150)
@@ -220,7 +220,7 @@ class TestDistribution(unittest.TestCase):
 
   def test_sample_uniform(self):
     rng = ccs.Rng()
-    d = ccs.UniformDistribution()
+    d = ccs.UniformDistribution.Float(lower = 0.0, upper = 1.0)
     i = d.bounds
     v = d.sample(rng)
     self.assertTrue( i.contains(v) )
@@ -230,8 +230,8 @@ class TestDistribution(unittest.TestCase):
       self.assertTrue( i.contains(v) )
 
   def test_create_mixture(self):
-    distributions = [ ccs.UniformDistribution.float(lower = -5.0, upper = 0.0),
-                      ccs.UniformDistribution.float(lower =  0.0, upper = 2.0) ]
+    distributions = [ ccs.UniformDistribution.Float(lower = -5.0, upper = 0.0),
+                      ccs.UniformDistribution.Float(lower =  0.0, upper = 2.0) ]
     d = ccs.MixtureDistribution(distributions = distributions)
     self.assertEqual( d.object_type, ccs.ObjectType.DISTRIBUTION )
     self.assertEqual( d.type, ccs.DistributionType.MIXTURE )
@@ -242,8 +242,8 @@ class TestDistribution(unittest.TestCase):
     self.assertEqual( d.__class__, d2.__class__ )
 
   def test_serialize_mixture(self):
-    distributions = [ ccs.UniformDistribution.float(lower = -5.0, upper = 0.0),
-                      ccs.UniformDistribution.float(lower =  0.0, upper = 2.0) ]
+    distributions = [ ccs.UniformDistribution.Float(lower = -5.0, upper = 0.0),
+                      ccs.UniformDistribution.Float(lower =  0.0, upper = 2.0) ]
     dref = ccs.MixtureDistribution(distributions = distributions)
     buff = dref.serialize()
     d = ccs.Object.deserialize(buffer = buff)
@@ -259,8 +259,8 @@ class TestDistribution(unittest.TestCase):
       self.assertEqual( d2ref.upper, d2.upper )
 
   def test_create_multivariate(self):
-    distributions = [ ccs.UniformDistribution.float(lower = -5.0, upper = 0.0),
-                      ccs.UniformDistribution.int(lower =  0, upper = 2) ]
+    distributions = [ ccs.UniformDistribution.Float(lower = -5.0, upper = 0.0),
+                      ccs.UniformDistribution.Int(lower =  0, upper = 2) ]
     d = ccs.MultivariateDistribution(distributions = distributions)
     self.assertEqual( d.object_type, ccs.ObjectType.DISTRIBUTION )
     self.assertEqual( d.type, ccs.DistributionType.MULTIVARIATE )
@@ -270,8 +270,8 @@ class TestDistribution(unittest.TestCase):
     self.assertEqual( d.__class__, d2.__class__ )
 
   def test_serialize_multivariate(self):
-    distributions = [ ccs.UniformDistribution.float(lower = -5.0, upper = 0.0),
-                      ccs.UniformDistribution.int(lower =  0, upper = 2) ]
+    distributions = [ ccs.UniformDistribution.Float(lower = -5.0, upper = 0.0),
+                      ccs.UniformDistribution.Int(lower =  0, upper = 2) ]
     dref = ccs.MultivariateDistribution(distributions = distributions)
     buff = dref.serialize()
     d = ccs.Object.deserialize(buffer = buff)
@@ -286,8 +286,8 @@ class TestDistribution(unittest.TestCase):
       self.assertEqual( d2ref.upper, d2.upper )
 
   def test_mixture_multidim(self):
-    distributions = [ ccs.UniformDistribution.float(lower = -5.0, upper = 0.0),
-                      ccs.UniformDistribution.int(lower =  0, upper = 2) ]
+    distributions = [ ccs.UniformDistribution.Float(lower = -5.0, upper = 0.0),
+                      ccs.UniformDistribution.Int(lower =  0, upper = 2) ]
     d = ccs.MultivariateDistribution(distributions = distributions)
     d2 = ccs.MixtureDistribution(distributions = [d, d])
     self.assertEqual( d2.object_type, ccs.ObjectType.DISTRIBUTION )

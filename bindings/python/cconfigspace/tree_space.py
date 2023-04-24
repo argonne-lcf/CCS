@@ -137,6 +137,8 @@ class StaticTreeSpace(TreeSpace):
     else:
       super().__init__(handle = handle, retain = retain, auto_release = auto_release)
 
+TreeSpace.Static = StaticTreeSpace
+
 ccs_dynamic_tree_space_del_type = ct.CFUNCTYPE(Result, ccs_tree_space)
 ccs_dynamic_tree_space_get_child_type = ct.CFUNCTYPE(Result, ccs_tree_space, ccs_tree, ct.c_size_t, ct.POINTER(ccs_tree))
 ccs_dynamic_tree_space_serialize_type = ct.CFUNCTYPE(Result, ccs_tree_space, ct.c_size_t, ct.c_void_p, ct.POINTER(ct.c_size_t))
@@ -286,5 +288,7 @@ class DynamicTreeSpace(TreeSpace):
     else:
       self._tree_space_data = None
     return self._tuner_data
+
+TreeSpace.Dynamic = DynamicTreeSpace
 
 from .tree_configuration import TreeConfiguration

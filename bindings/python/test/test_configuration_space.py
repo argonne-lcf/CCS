@@ -15,9 +15,9 @@ class TestConfigurationSpace(unittest.TestCase):
     self.assertEqual( 0, cs.num_parameters )
     self.assertEqual( [], cs.conditions )
     self.assertEqual( [], cs.forbidden_clauses )
-    h1 = ccs.NumericalParameter()
-    h2 = ccs.NumericalParameter()
-    h3 = ccs.NumericalParameter()
+    h1 = ccs.NumericalParameter.Float(lower = 0.0, upper = 1.0)
+    h2 = ccs.NumericalParameter.Float(lower = 0.0, upper = 1.0)
+    h3 = ccs.NumericalParameter.Float(lower = 0.0, upper = 1.0)
     cs.add_parameter(h1)
     cs.add_parameters([h2, h3])
     self.assertEqual( 3, cs.num_parameters )
@@ -36,12 +36,12 @@ class TestConfigurationSpace(unittest.TestCase):
 
   def test_set_distribution(self):
     cs = ccs.ConfigurationSpace(name = "space")
-    h1 = ccs.NumericalParameter()
-    h2 = ccs.NumericalParameter()
-    h3 = ccs.NumericalParameter()
+    h1 = ccs.NumericalParameter.Float(lower = 0.0, upper = 1.0)
+    h2 = ccs.NumericalParameter.Float(lower = 0.0, upper = 1.0)
+    h3 = ccs.NumericalParameter.Float(lower = 0.0, upper = 1.0)
     cs.add_parameters([h1, h2, h3])
-    distributions = [ ccs.UniformDistribution.float(lower = 0.1, upper = 0.3),
-                      ccs.UniformDistribution.float(lower = 0.2, upper = 0.6) ]
+    distributions = [ ccs.UniformDistribution.Float(lower = 0.1, upper = 0.3),
+                      ccs.UniformDistribution.Float(lower = 0.2, upper = 0.6) ]
     d = ccs.MultivariateDistribution(distributions = distributions)
     cs.set_distribution(d, [h1, h2])
     (dist, indx) = cs.get_parameter_distribution(h1)
@@ -60,9 +60,9 @@ class TestConfigurationSpace(unittest.TestCase):
 
 
   def test_conditions(self):
-    h1 = ccs.NumericalParameter(lower = -1.0, upper = 1.0, default = 0.0)
-    h2 = ccs.NumericalParameter(lower = -1.0, upper = 1.0)
-    h3 = ccs.NumericalParameter(lower = -1.0, upper = 1.0)
+    h1 = ccs.NumericalParameter.Float(lower = -1.0, upper = 1.0, default = 0.0)
+    h2 = ccs.NumericalParameter.Float(lower = -1.0, upper = 1.0)
+    h3 = ccs.NumericalParameter.Float(lower = -1.0, upper = 1.0)
     cs = ccs.ConfigurationSpace(name = "space")
     cs.add_parameters([h1, h2, h3])
     e1 = ccs.Expression(t = ccs.ExpressionType.LESS, nodes = [h2, 0.0])

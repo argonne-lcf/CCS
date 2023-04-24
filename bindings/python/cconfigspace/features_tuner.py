@@ -156,6 +156,7 @@ class RandomFeaturesTuner(FeaturesTuner):
     else:
       super().__init__(handle = handle, retain = retain, auto_release = auto_release)
 
+FeaturesTuner.Random = RandomFeaturesTuner
 
 ccs_user_defined_features_tuner_del_type = ct.CFUNCTYPE(Result, ccs_features_tuner)
 ccs_user_defined_features_tuner_ask_type = ct.CFUNCTYPE(Result, ccs_features_tuner, ccs_features, ct.c_size_t, ct.POINTER(ccs_configuration), ct.POINTER(ct.c_size_t))
@@ -433,4 +434,4 @@ class UserDefinedFeaturesTuner(FeaturesTuner):
       self._tuner_data = None
     return self._tuner_data
 
-
+FeaturesTuner.UserDefined = UserDefinedFeaturesTuner
