@@ -9,18 +9,18 @@ endif
 
 lib_LTLIBRARIES = libcconfigspace.la
 
-VER = $$(cd $(top_srcdir) 2>/dev/null && git describe --abbrev=7 --dirty --tags | cut -c2- 2>/dev/null)
+GITVER = $$(cd $(top_srcdir) 2>/dev/null && git describe --abbrev=7 --dirty --tags 2>/dev/null | cut -c2- 2>/dev/null)
 OLDVER = $$(cat .version 2>/dev/null)
-VER2 = `if [ -z "$(VER)" ]; then echo "$$(cat $(top_srcdir)/VERSION)-0"; else echo "$(VER)"; fi`
+CURVER = `if [ -z "$(GITVER)" ]; then echo "$$(cat $(top_srcdir)/VERSION)-0"; else echo "$(GITVER)"; fi`
 
 .PHONY: .version
 .version: $(top_srcdir)/VERSION
-	if [ "$(VER2)" = "$(OLDVER)" ]; \
+	@if [ "$(CURVER)" = "$(OLDVER)" ]; \
 	then \
-	  echo "Version up to date"; \
+	  echo "Version up to date: $(CURVER)"; \
 	else \
-	  echo "$(VER2)"; \
-	  echo "$(VER2)"> .version; \
+	  echo "Updating version to: $(CURVER)"; \
+	  echo "$(CURVER)"> .version; \
 	  echo "#ifndef CCS_VERSION_H_" > version.h; \
 	  echo "#define CCS_VERSION_H_" >> version.h; \
 	  echo "#define CCS_VERSION_STRING  \"$(OLDVER)\"" >> version.h; \
