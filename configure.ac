@@ -88,7 +88,7 @@ AC_CONFIG_FILES([Makefile
 		src/Makefile
 		tests/Makefile
 		connectors/Makefile
-		cconfigspace.pc])
+		cconfigspace.pc.subst])
 if test "x$enable_samples" = xyes
 then
   AC_CONFIG_FILES([samples/Makefile])
