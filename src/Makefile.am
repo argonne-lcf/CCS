@@ -9,9 +9,9 @@ endif
 
 lib_LTLIBRARIES = libcconfigspace.la
 
-GITVER = $$(cd $(top_srcdir) 2>/dev/null && git describe --abbrev=7 --dirty --tags 2>/dev/null | cut -c2- 2>/dev/null)
+GITVER = $$(cd $(top_srcdir) 2>/dev/null && sh build-aux/git-version-gen --fallback `cat VERSION` .tarball-version 2>/dev/null)
 OLDVER = $$(cat .version 2>/dev/null)
-CURVER = `if [ -z "$(GITVER)" ]; then echo "$$(cat $(top_srcdir)/VERSION)-0"; else echo "$(GITVER)"; fi`
+CURVER = $$(if [ -z "$(GITVER)" ]; then cat $(top_srcdir)/VERSION | cut -c2- 2>/dev/null; else echo "$(GITVER)"; fi)
 
 .PHONY: .version
 .version: $(top_srcdir)/VERSION
@@ -26,8 +26,8 @@ CURVER = `if [ -z "$(GITVER)" ]; then echo "$$(cat $(top_srcdir)/VERSION)-0"; el
 	  echo "#define CCS_VERSION_STRING  \"$(OLDVER)\"" >> version.h; \
 	  echo "#define CCS_VERSION_MAJOR $$(echo "$(OLDVER)" | cut -d . -f 1)" >> version.h; \
 	  echo "#define CCS_VERSION_MINOR $$(echo "$(OLDVER)" | cut -d . -f 2)" >> version.h; \
-	  echo "#define CCS_VERSION_PATCH $$(echo "$(OLDVER)" | cut -d . -f 3 | cut -d - -f 1 )" >> version.h; \
-	  echo "#define CCS_VERSION_REVISION $$(echo "$(OLDVER)" | cut -d - -f 2 )" >> version.h; \
+	  echo "#define CCS_VERSION_PATCH $$(echo "$(OLDVER)" | cut -d . -f 3)" >> version.h; \
+	  echo "#define CCS_VERSION_REVISION $$(echo "$(OLDVER)" | cut -d . -f 4 | cut -d - -f 1 )" >> version.h; \
 	  echo "#endif" >> version.h; \
 	fi
 
