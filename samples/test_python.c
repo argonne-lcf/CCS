@@ -147,8 +147,8 @@ test()
 	PyConfig_Clear(&config);
 #endif
 	PyRun_SimpleString("import sys\n"
-			   "sys.path.insert(1, '.')\n"
-			   "sys.path.insert(1, '..')\n");
+			   "sys.path.insert(1, './')\n"
+			   "sys.path.insert(1, '" BINDINGS_PATH "')\n");
 	pName   = PyUnicode_DecodeFSDefault("test_python");
 	pModule = PyImport_Import(pName);
 	Py_DECREF(pName);

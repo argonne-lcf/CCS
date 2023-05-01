@@ -304,3 +304,27 @@ jobs:
         env:
           LIBCCONFIGSPACE_SO_: ${{ github.workspace }}/build/src/.libs/libcconfigspace.dylib
         if: ${{ matrix.os == 'macos-latest' }}
+
+  distcheck:
+    needs: pre_job
+    if: ${{ needs.pre_job.outputs.should_skip != 'true' }}
+    name: Distcheck ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+
+    steps:
+      - uses: actions/checkout@v3
+      - run: sudo apt update; sudo apt install -y gcc ruby-dev libgsl-dev python3-dev
+        if: ${{ matrix.os == 'ubuntu-latest' }}
+      - run: brew install gsl automake
+        if: ${{ matrix.os == 'macos-latest' }}
+      - run: gem install --user-install rake ffi ffi-value whittle
+      - run: pip3 install --user parglare==0.12.0
+      - run: ./autogen.sh
+      - run: mkdir -p build
+      - run: ../configure --enable-strict
+        working-directory: build
+      - run: make distcheck
+        working-directory: build

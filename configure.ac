@@ -88,6 +88,9 @@ AC_CONFIG_FILES([Makefile
 		src/Makefile
 		tests/Makefile
 		connectors/Makefile
+		bindings/Makefile
+		bindings/ruby/Makefile
+		bindings/python/Makefile
 		cconfigspace.pc.subst])
 if test "x$enable_samples" = xyes
 then

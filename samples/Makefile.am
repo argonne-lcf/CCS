@@ -10,7 +10,7 @@ endif
 
 test_ruby_LDFLAGS = ../src/libcconfigspace.la $(RUBY_LIBS)
 
-test_python_CFLAGS = -I$(top_srcdir)/include -Wall -Wextra -Wpedantic $(PYTHON_CFLAGS)
+test_python_CFLAGS = -I$(top_srcdir)/include -Wall -Wextra -Wpedantic $(PYTHON_CFLAGS) -DBINDINGS_PATH="\"$(top_srcdir)/bindings/python\""
 
 if STRICT
 test_python_CFLAGS += -Werror
@@ -21,6 +21,9 @@ test_python_LDFLAGS = ../src/libcconfigspace.la $(PYTHON_LIBS)
 CCONFIGSPACE_TESTS = \
 		test_ruby \
 		test_python
+
+clean-local:
+	$(RM) -fr __pycache__
 
 # unit tests
 UNIT_TESTS = \

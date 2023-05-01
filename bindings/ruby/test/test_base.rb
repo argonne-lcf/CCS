@@ -1,6 +1,5 @@
-[ '../lib', 'lib' ].each { |d| $:.unshift(d) if File::directory?(d) }
 require 'minitest/autorun'
-require 'cconfigspace'
+require_relative '../lib/cconfigspace'
 
 class CConfigSpaceTest < Minitest::Test
   def setup

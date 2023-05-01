@@ -1,7 +1,4 @@
 import unittest
-import sys
-sys.path.insert(1, '../bindings/python')
-sys.path.insert(1, '../../bindings/python')
 import cconfigspace as ccs
 import ctypes as ct
 from math import sin

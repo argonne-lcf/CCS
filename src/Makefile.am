@@ -39,7 +39,14 @@ nodist_libcconfigspace_la_SOURCES = \
 	.version \
 	version.h
 
+CLEANFILES = \
+	.version \
+	version.h
+
 libcconfigspace_la_SOURCES = \
+	uthash.h \
+	utarray.h \
+	utlist.h \
 	cconfigspace.c \
 	cconfigspace_internal.h \
 	error_stack.c \
@@ -56,8 +63,6 @@ libcconfigspace_la_SOURCES = \
 	distribution_roulette.c \
 	distribution_mixture.c \
 	distribution_multivariate.c \
-	uthash.h \
-	utarray.h \
 	datum_uthash.h \
 	datum_hash.h \
 	parameter.c \
@@ -124,6 +129,7 @@ libcconfigspace_la_SOURCES = \
 	tree_evaluation_deserialize.h \
 	tree_tuner.c \
 	tree_tuner_internal.h \
+	tree_tuner_deserialize.h \
 	tree_tuner_random.c \
 	tree_tuner_user_defined.c
 

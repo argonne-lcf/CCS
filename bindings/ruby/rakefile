@@ -1,4 +1,6 @@
 require 'rake/testtask'
+base_dir = ENV['SRC_DIR']
+base_dir = './' unless base_dir
 Rake::TestTask.new do |t|
-  t.pattern = "test/test*.rb"
+  t.pattern = "#{base_dir}/test/test*.rb"
 end

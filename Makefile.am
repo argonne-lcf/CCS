@@ -3,6 +3,7 @@ SUBDIRS = src include tests connectors
 if SAMPLES
 SUBDIRS += samples
 endif
+SUBDIRS += bindings
 
 GITVER = $$(cd $(top_srcdir) 2>/dev/null && sh build-aux/git-version-gen --fallback `cat VERSION` .tarball-version 2>/dev/null)
 OLDVER = $$(cat .version 2>/dev/null)
@@ -24,4 +25,8 @@ cconfigspace.pc: cconfigspace.pc.subst .version
 pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = cconfigspace.pc
 
-EXTRA_DIST = autogen.sh cconfigspace.pc README.md
+CLEANFILES = \
+	.version \
+	cconfigspace.pc
+
+EXTRA_DIST = autogen.sh cconfigspace.pc.subst README.md
