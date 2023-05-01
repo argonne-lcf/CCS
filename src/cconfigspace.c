@@ -6,12 +6,15 @@
 #include <fcntl.h>
 #include <errno.h>
 #include <unistd.h>
+#include "version.h"
 
 const ccs_datum_t   ccs_none     = CCS_NONE_VAL;
 const ccs_datum_t   ccs_inactive = CCS_INACTIVE_VAL;
 const ccs_datum_t   ccs_true     = CCS_TRUE_VAL;
 const ccs_datum_t   ccs_false    = CCS_FALSE_VAL;
-const ccs_version_t ccs_version  = {0, 1, 0, 0};
+const ccs_version_t ccs_version  = {
+        CCS_VERSION_REVISION, CCS_VERSION_PATCH, CCS_VERSION_MINOR,
+        CCS_VERSION_MAJOR};
 
 ccs_result_t
 ccs_init()

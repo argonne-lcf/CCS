@@ -9,6 +9,36 @@ endif
 
 lib_LTLIBRARIES = libcconfigspace.la
 
+VER = $$(cd $(top_srcdir) 2>/dev/null && git describe --abbrev=7 --dirty --tags | cut -c2- 2>/dev/null)
+OLDVER = $$(cat version 2>/dev/null)
+VER2 = `if [ -z "$(VER)" ]; then echo "$$(cat $(top_srcdir)/VERSION)-0"; else echo "$(VER)"; fi`
+
+.PHONY: version
+version: $(top_srcdir)/VERSION
+	if [ "$(VER2)" = "$(OLDVER)" ]; \
+	then \
+	  echo "Version up to date"; \
+	else \
+	  echo "$(VER2)"; \
+	  echo "$(VER2)"> version; \
+	  echo "#ifndef CCS_VERSION_H_" > version.h; \
+	  echo "#define CCS_VERSION_H_" >> version.h; \
+	  echo "#define CCS_VERSION_STRING  \"$(OLDVER)\"" >> version.h; \
+	  echo "#define CCS_VERSION_MAJOR $$(echo "$(OLDVER)" | cut -d . -f 1)" >> version.h; \
+	  echo "#define CCS_VERSION_MINOR $$(echo "$(OLDVER)" | cut -d . -f 2)" >> version.h; \
+	  echo "#define CCS_VERSION_PATCH $$(echo "$(OLDVER)" | cut -d . -f 3 | cut -d - -f 1 )" >> version.h; \
+	  echo "#define CCS_VERSION_REVISION $$(echo "$(OLDVER)" | cut -d - -f 2 )" >> version.h; \
+	  echo "#endif" >> version.h; \
+	fi
+
+BUILT_SOURCES = \
+	version \
+	version.h
+
+nodist_libcconfigspace_la_SOURCES = \
+	version \
+	version.h
+
 libcconfigspace_la_SOURCES = \
 	cconfigspace.c \
 	cconfigspace_internal.h \
