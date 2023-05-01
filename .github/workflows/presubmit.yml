@@ -18,7 +18,7 @@ jobs:
   build-and-check:
     needs: pre_job
     if: ${{ needs.pre_job.outputs.should_skip != 'true' }}
-    name: Build and Check ${{ matrix.os }} ${{ matrix.name }}
+    name: Build and Check ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
@@ -76,7 +76,7 @@ jobs:
   build-and-check-cxx:
     needs: pre_job
     if: ${{ needs.pre_job.outputs.should_skip != 'true' }}
-    name: Build and Check C++ ${{ matrix.os }} ${{ matrix.name }}
+    name: Build and Check C++ ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
@@ -132,7 +132,7 @@ jobs:
   build-and-check-clang:
     needs: pre_job
     if: ${{ needs.pre_job.outputs.should_skip != 'true' }}
-    name: Build and Check clang ${{ matrix.os }} ${{ matrix.name }}
+    name: Build and Check clang ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
@@ -188,7 +188,7 @@ jobs:
   build-and-check-valgrind:
     needs: pre_job
     if: ${{ needs.pre_job.outputs.should_skip != 'true' }}
-    name: Build and Check Valgrind ${{ matrix.os }} ${{ matrix.name }}
+    name: Build and Check Valgrind ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
@@ -242,7 +242,7 @@ jobs:
   build-and-check-ruby:
     needs: pre_job
     if: ${{ needs.pre_job.outputs.should_skip != 'true' }}
-    name: Build and Check Ruby ${{ matrix.os }} ${{ matrix.name }}
+    name: Build and Check Ruby ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
@@ -275,7 +275,7 @@ jobs:
   build-and-check-python:
     needs: pre_job
     if: ${{ needs.pre_job.outputs.should_skip != 'true' }}
-    name: Build and Check Python ${{ matrix.os }} ${{ matrix.name }}
+    name: Build and Check Python ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
