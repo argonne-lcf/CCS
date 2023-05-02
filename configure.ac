@@ -1,5 +1,8 @@
 # see semver.org for version info
-AC_INIT([cconfigspace],m4_normalize(m4_include([VERSION])),[bvideau@anl.gov])
+m4_define([fallbackversion], m4_normalize(m4_include([VERSION])))
+AC_INIT([cconfigspace],
+	[m4_esyscmd([build-aux/git-version-gen --fallback fallbackversion .tarball-version])],
+	[bvideau@anl.gov])
 
 # are we in the right source dir ?
 AC_CONFIG_SRCDIR([src/cconfigspace.c])

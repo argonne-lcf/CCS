@@ -29,4 +29,11 @@ CLEANFILES = \
 	.version \
 	cconfigspace.pc
 
-EXTRA_DIST = autogen.sh cconfigspace.pc.subst README.md
+EXTRA_DIST = \
+	autogen.sh \
+	cconfigspace.pc.subst \
+	README.md \
+	build-aux/git-version-gen
+
+dist-hook: .version
+	@echo Creating ditribution .tarball-version; echo v$(CURVER) > $(distdir)/.tarball-version
