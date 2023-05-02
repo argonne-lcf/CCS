@@ -36,9 +36,9 @@ jobs:
       - run: mkdir -p build
       - run: ../configure --enable-strict
         working-directory: build
-      - run: make
+      - run: make -j
         working-directory: build
-      - run: make check
+      - run: make -j check
         working-directory: build
       - uses: actions/upload-artifact@v2
         if: failure()
@@ -92,9 +92,9 @@ jobs:
       - run: mkdir -p build
       - run: ../configure --enable-strict CC=g++
         working-directory: build
-      - run: make
+      - run: make -j
         working-directory: build
-      - run: make check
+      - run: make -j check
         working-directory: build
       - uses: actions/upload-artifact@v2
         if: failure()
@@ -148,9 +148,9 @@ jobs:
       - run: mkdir -p build
       - run: ../configure CC=clang
         working-directory: build
-      - run: make
+      - run: make -j
         working-directory: build
-      - run: make check
+      - run: make -j check
         working-directory: build
       - uses: actions/upload-artifact@v2
         if: failure()
@@ -202,9 +202,9 @@ jobs:
       - run: mkdir -p build
       - run: ../configure --enable-strict
         working-directory: build
-      - run: make
+      - run: make -j
         working-directory: build
-      - run: make check-valgrind
+      - run: make -j check-valgrind
         working-directory: build
       - uses: actions/upload-artifact@v2
         if: failure()
@@ -260,7 +260,7 @@ jobs:
       - run: mkdir -p build
       - run: ../configure --enable-strict
         working-directory: build
-      - run: make distcheck
+      - run: make -j distcheck
         working-directory: build
 
   dist-check:
@@ -300,5 +300,5 @@ jobs:
         run: |
           cd `find . -type d -name "cconfigspace-*"`
           cd build
-          make check
+          make -j check
         working-directory: build

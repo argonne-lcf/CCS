@@ -31,6 +31,8 @@ CURVER = $$(if [ -z "$(GITVER)" ]; then cat $(top_srcdir)/VERSION | cut -c2- 2>/
 	  echo "#endif" >> version.h; \
 	fi
 
+version.h: .version
+
 BUILT_SOURCES = \
 	.version \
 	version.h
