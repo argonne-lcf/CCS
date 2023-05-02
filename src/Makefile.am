@@ -20,7 +20,7 @@ CURVER = $$(if [ -z "$(GITVER)" ]; then cat $(top_srcdir)/VERSION | cut -c2- 2>/
 	  echo "Version up to date: $(CURVER)"; \
 	else \
 	  echo "Updating version to: $(CURVER)"; \
-	  echo "$(CURVER)"> .version; \
+	  echo "$(CURVER)" > .version; \
 	  echo "#ifndef CCS_VERSION_H_" > version.h; \
 	  echo "#define CCS_VERSION_H_" >> version.h; \
 	  echo "#define CCS_VERSION_STRING  \"v$(OLDVER)\"" >> version.h; \
@@ -34,11 +34,9 @@ CURVER = $$(if [ -z "$(GITVER)" ]; then cat $(top_srcdir)/VERSION | cut -c2- 2>/
 version.h: .version
 
 BUILT_SOURCES = \
-	.version \
 	version.h
 
 nodist_libcconfigspace_la_SOURCES = \
-	.version \
 	version.h
 
 CLEANFILES = \
