@@ -84,6 +84,8 @@ AX_VALGRIND_DFLT([drd], [off])
 AX_VALGRIND_DFLT([sgcheck], [off])
 AX_VALGRIND_CHECK
 
+AX_DYNAMIC_VERSION
+
 AC_CONFIG_HEADERS([src/config.h])
 
 AC_CONFIG_FILES([Makefile
