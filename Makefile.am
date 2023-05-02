@@ -17,23 +17,28 @@ CURVER = $$(if [ -z "$(GITVER)" ]; then cat $(top_srcdir)/VERSION | cut -c2- 2>/
 	else \
 	  echo "Updating version to: $(CURVER)"; \
 	  echo "$(CURVER)"> $@; \
+	  touch .version_timestamp; \
 	fi
 
-cconfigspace.pc: cconfigspace.pc.subst .version
-	@echo Processing $@; sed -e "s/==VERSION==/$(CURVER)/" $< > $@
+.version_timestamp: .version
+
+cconfigspace.pc: cconfigspace.pc.subst .version_timestamp
+	@echo Processing $@; sh $(top_srcdir)/build-aux/version_subst $(CURVER) $< $@
 
 pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = cconfigspace.pc
 
 CLEANFILES = \
 	.version \
+	.version_timestamp \
 	cconfigspace.pc
 
 EXTRA_DIST = \
 	autogen.sh \
 	cconfigspace.pc.subst \
 	README.md \
-	build-aux/git-version-gen
+	build-aux/git-version-gen \
+	build-aux/version_subst
 
 dist-hook: .version
 	@echo Creating ditribution .tarball-version; echo v$(CURVER) > $(distdir)/.tarball-version

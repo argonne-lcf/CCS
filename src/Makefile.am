@@ -21,17 +21,16 @@ CURVER = $$(if [ -z "$(GITVER)" ]; then cat $(top_srcdir)/VERSION | cut -c2- 2>/
 	else \
 	  echo "Updating version to: $(CURVER)"; \
 	  echo "$(CURVER)" > .version; \
-	  echo "#ifndef CCS_VERSION_H_" > version.h; \
-	  echo "#define CCS_VERSION_H_" >> version.h; \
-	  echo "#define CCS_VERSION_STRING  \"v$(OLDVER)\"" >> version.h; \
-	  echo "#define CCS_VERSION_MAJOR $$(echo "$(OLDVER)" | cut -d . -f 1)" >> version.h; \
-	  echo "#define CCS_VERSION_MINOR $$(echo "$(OLDVER)" | cut -d . -f 2)" >> version.h; \
-	  echo "#define CCS_VERSION_PATCH $$(echo "$(OLDVER)" | cut -d . -f 3)" >> version.h; \
-	  echo "#define CCS_VERSION_REVISION $$(echo "$(OLDVER)" | cut -d . -f 4 | cut -d - -f 1 )" >> version.h; \
-	  echo "#endif" >> version.h; \
+	  touch .version_timestamp; \
 	fi
 
-version.h: .version
+.version_timestamp: .version
+
+version.h: $(srcdir)/version.h.subst .version_timestamp
+	@echo Processing $@; sh $(top_srcdir)/build-aux/version_subst $(CURVER) $< $@
+
+EXTRA_DIST = \
+	version.h.subst
 
 BUILT_SOURCES = \
 	version.h
@@ -41,6 +40,7 @@ nodist_libcconfigspace_la_SOURCES = \
 
 CLEANFILES = \
 	.version \
+	.version_timestamp \
 	version.h
 
 libcconfigspace_la_SOURCES = \
