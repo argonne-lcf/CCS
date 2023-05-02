@@ -43,7 +43,9 @@ EXTRA_DIST = \
 	test/test_configuration_space.rb \
 	test/test_distribution.rb \
 	test/test_evaluation.rb \
-	rakefile
+	rakefile \
+	cconfigspace.gemspec \
+	LICENSE
 
 if ISMACOS
 LIBEXT = .dylib

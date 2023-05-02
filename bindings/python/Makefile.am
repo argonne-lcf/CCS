@@ -41,7 +41,8 @@ EXTRA_DIST = \
 	test/test_features_tuner.py \
 	test/test_objective_space.py \
 	test/test_configuration_space.py \
-	test/test_features_space.py
+	test/test_features_space.py \
+	setup.py
 
 if ISMACOS
 LIBEXT = .dylib
