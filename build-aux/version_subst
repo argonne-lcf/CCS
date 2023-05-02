@@ -58,8 +58,9 @@ version_patch=`echo "$version" | cut -d . -f 3`
 version_revision=`echo "$version" | cut -d . -f 4 | cut -d - -f 1`
 
 sed -e "s/==VERSION==/$version/" $input > $output
-sed -i -e "s/==VERSION_STRING==/$version_string/" $output
-sed -i -e "s/==VERSION_MAJOR==/$version_major/" $output
-sed -i -e "s/==VERSION_MINOR==/$version_minor/" $output
-sed -i -e "s/==VERSION_PATCH==/$version_patch/" $output
-sed -i -e "s/==VERSION_REVISION==/$version_revision/" $output
+sed -i.bak -e "s/==VERSION_STRING==/$version_string/" $output
+sed -i.bak -e "s/==VERSION_MAJOR==/$version_major/" $output
+sed -i.bak -e "s/==VERSION_MINOR==/$version_minor/" $output
+sed -i.bak -e "s/==VERSION_PATCH==/$version_patch/" $output
+sed -i.bak -e "s/==VERSION_REVISION==/$version_revision/" $output
+rm $output.bak
