@@ -487,6 +487,7 @@ module CCS
   attach_function :ccs_fini, [], :ccs_result_t
   attach_function :ccs_get_result_name, [:ccs_result_t, :pointer], :ccs_result_t
   attach_function :ccs_get_version, [], :ccs_version_t
+  attach_function :ccs_get_version_string, [], :string
   attach_function :ccs_retain_object, [:ccs_object_t], :ccs_result_t
   attach_function :ccs_release_object, [:ccs_object_t], :ccs_result_t
   attach_function :ccs_object_get_type, [:ccs_object_t, :pointer], :ccs_result_t
@@ -503,6 +504,7 @@ module CCS
 
   class << self
     alias version ccs_get_version
+    alias version_string ccs_get_version_string
   end
 
   class CCSError < StandardError

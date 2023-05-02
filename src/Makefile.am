@@ -23,7 +23,7 @@ CURVER = $$(if [ -z "$(GITVER)" ]; then cat $(top_srcdir)/VERSION | cut -c2- 2>/
 	  echo "$(CURVER)"> .version; \
 	  echo "#ifndef CCS_VERSION_H_" > version.h; \
 	  echo "#define CCS_VERSION_H_" >> version.h; \
-	  echo "#define CCS_VERSION_STRING  \"$(OLDVER)\"" >> version.h; \
+	  echo "#define CCS_VERSION_STRING  \"v$(OLDVER)\"" >> version.h; \
 	  echo "#define CCS_VERSION_MAJOR $$(echo "$(OLDVER)" | cut -d . -f 1)" >> version.h; \
 	  echo "#define CCS_VERSION_MINOR $$(echo "$(OLDVER)" | cut -d . -f 2)" >> version.h; \
 	  echo "#define CCS_VERSION_PATCH $$(echo "$(OLDVER)" | cut -d . -f 3)" >> version.h; \

@@ -11,6 +11,10 @@ class CConfigSpaceTest < Minitest::Test
     assert(ver.kind_of?(CCS::Version))
   end
 
+  def test_version_string
+    assert_output(/^v\d+\.\d+\.\d+\.\d+/) { puts CCS.version_string }
+  end
+
   def test_datum_value
     d = CCS::Datum::new
     d[:type] = :CCS_DATA_TYPE_NONE

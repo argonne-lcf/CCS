@@ -725,6 +725,14 @@ extern ccs_version_t
 ccs_get_version();
 
 /**
+ * Query the library version string.
+ * @return the library version string
+ */
+
+extern const char *
+ccs_get_version_string();
+
+/**
  * Retain a CCS object, incrementing the internal reference counting.
  * @param[in,out] object a CCS object
  * @return #CCS_RESULT_SUCCESS on success

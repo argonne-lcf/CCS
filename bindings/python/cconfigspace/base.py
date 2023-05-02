@@ -416,6 +416,7 @@ ccs_init = _ccs_get_function("ccs_init")
 ccs_fini = _ccs_get_function("ccs_fini")
 ccs_get_result_name = _ccs_get_function("ccs_get_result_name", [Result, ct.POINTER(ct.c_char_p)])
 ccs_get_version = _ccs_get_function("ccs_get_version", restype = Version)
+ccs_get_version_string = _ccs_get_function("ccs_get_version_string", restype = ct.c_char_p)
 ccs_retain_object = _ccs_get_function("ccs_retain_object", [ccs_object])
 ccs_release_object = _ccs_get_function("ccs_release_object", [ccs_object])
 ccs_object_get_type = _ccs_get_function("ccs_object_get_type", [ccs_object, ct.POINTER(ObjectType)])
@@ -437,6 +438,8 @@ _res = ccs_init()
 Error.check(_res)
 
 version = ccs_get_version()
+
+version_string = ccs_get_version_string().decode()
 
 class Object:
 

@@ -35,6 +35,12 @@ ccs_get_version()
 	return ccs_version;
 }
 
+const char *
+ccs_get_version_string()
+{
+	return CCS_VERSION_STRING;
+}
+
 ccs_result_t
 ccs_retain_object(ccs_object_t object)
 {

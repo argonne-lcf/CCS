@@ -1,5 +1,6 @@
 import unittest
 import sys
+import re
 sys.path.insert(1, '.')
 sys.path.insert(1, '..')
 import cconfigspace as ccs
@@ -11,6 +12,10 @@ class TestBase(unittest.TestCase):
   def test_version(self):
     ver = ccs.version
     self.assertIsInstance(ver, ccs.Version)
+
+  def test_version_string(self):
+    vstr = ccs.version_string
+    self.assertRegex(vstr, r"^v\d+\.\d+\.\d+\.\d+")
 
   def test_datum_value(self):
     d = ccs.Datum()
