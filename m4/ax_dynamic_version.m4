@@ -1,3 +1,33 @@
+# SYNOPSIS
+#
+#  AX_DYNAMIC_VERSION()
+#
+# DESCRIPTION
+#
+#  AX_DYNAMIC_VERSION will use `git-version-gen` to produce a dynamic version
+#  number that can be used at compile time. It defines DYNAMIC_VERSION_RULES
+#  which should be substituted in your makefile. It will populate a CURVER
+#  variable that will contain the version number (backed by a .version file),
+#  and a timestamp file to use as a dependency in rules, `.version_timestamp`.
+#  It also defaults to using $(top_srcdir)/VERSION as a source for the version
+#  number should `git-version-gen` find neither git or `.tarball-version`, or
+#  fails altogether. The $(top_srcdir)/VERSION must contain a version number
+#  in vX.Y.Z.W format.
+#
+#  Usage example:
+#
+#  configure.ac
+#
+#    AX_DYNAMIC_VERSION
+#
+#  in each Makefile.am requiring the version number:
+#
+#    @DYNAMIC_VERSION_RULES@
+#
+#  This results in a CURVER variable being defined that will contain the version
+#  number when evaluated, and a `.version_timestamp` file that can be used as a
+#  dependency for rules that depend on this version number.
+
 AC_DEFUN([AX_DYNAMIC_VERSION],[
 
 [DYNAMIC_VERSION_RULES='
