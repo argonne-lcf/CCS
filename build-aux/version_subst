@@ -42,7 +42,7 @@ if test "x$version" = x; then
   echo "$0: Missing VERSION mandatory argument." >&2
   echo "$0: Try '--help' for more information." >&2
 else
-  echo "$version" | grep -q '\([0-9]\+\.\)\{3\}[0-9]\+\(-[a-f0-9]\+\)\?';
+  echo "$version" | grep -q '^\([0-9]\+\.\)\{3\}[0-9]\+\(-[a-f0-9]\+\)\?$';
   retval=$?
   if [ $retval -eq 1 ]; then
     echo "$0: Incorrect VERSION format: $version." >&2
