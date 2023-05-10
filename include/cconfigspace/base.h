@@ -52,20 +52,20 @@ extern const ccs_version_t ccs_version;
 /**
  * A macro providing the true value of a ccs_bool_t.
  */
-#define CCS_TRUE ((ccs_bool_t)(1))
+#define CCS_TRUE     ((ccs_bool_t)(1))
 /**
  * A macro providing the false value of a ccs_bool_t.
  */
-#define CCS_FALSE ((ccs_bool_t)(0))
+#define CCS_FALSE    ((ccs_bool_t)(0))
 
 /**
  * A macro defining the maximum value of a ccs_int_t.
  */
-#define CCS_INT_MAX INT64_MAX
+#define CCS_INT_MAX  INT64_MAX
 /**
  * A macro defining the minimum value of a ccs_int_t.
  */
-#define CCS_INT_MIN INT64_MIN
+#define CCS_INT_MIN  INT64_MIN
 /**
  * A macro defining the (positive) infinity value of a ccs_float_t.
  */
@@ -80,9 +80,9 @@ typedef struct _ccs_rng_s                 *ccs_rng_t;
  */
 typedef struct _ccs_distribution_s        *ccs_distribution_t;
 /**
- * An opaque type defining a CCS hyperparameter.
+ * An opaque type defining a CCS parameter.
  */
-typedef struct _ccs_hyperparameter_s      *ccs_hyperparameter_t;
+typedef struct _ccs_parameter_s           *ccs_parameter_t;
 /**
  * An opaque type defining a CCS expression.
  */
@@ -136,7 +136,7 @@ typedef struct _ccs_features_tuner_s      *ccs_features_tuner_t;
  */
 typedef struct _ccs_map_s                 *ccs_map_t;
 /**
- * An opaque type defining a CCS error statck.
+ * An opaque type defining a CCS error stack.
  */
 typedef struct _ccs_error_stack_s         *ccs_error_stack_t;
 /**
@@ -164,114 +164,135 @@ typedef struct _ccs_tree_tuner_s          *ccs_tree_tuner_t;
  * The different possible return codes of a CCS function.
  * Error codes are returned negated.
  */
-enum ccs_error_e {
+enum ccs_result_e {
 	/** Guard */
-	CCS_ERROR_MAX =                 2,
+	CCS_RESULT_MAX                          = 2,
 	/** Try again */
-	CCS_AGAIN =                     1,
+	CCS_RESULT_AGAIN                        = 1,
 	/** Success */
-	CCS_SUCCESS =                   0,
+	CCS_RESULT_SUCCESS                      = 0,
 	/** Not a CCS object or not initialized */
-	CCS_INVALID_OBJECT =           -1,
+	CCS_RESULT_ERROR_INVALID_OBJECT         = -1,
 	/** Parameter has an invalid value */
-	CCS_INVALID_VALUE =            -2,
+	CCS_RESULT_ERROR_INVALID_VALUE          = -2,
 	/** The data type is invalid */
-	CCS_INVALID_TYPE =             -3,
+	CCS_RESULT_ERROR_INVALID_TYPE           = -3,
 	/** The provided scale is invalid */
-	CCS_INVALID_SCALE =            -4,
+	CCS_RESULT_ERROR_INVALID_SCALE          = -4,
 	/** The provided distribution is invalid */
-	CCS_INVALID_DISTRIBUTION =     -5,
+	CCS_RESULT_ERROR_INVALID_DISTRIBUTION   = -5,
 	/** The provided expression is invalid */
-	CCS_INVALID_EXPRESSION =       -6,
-	/** The provided hyperparameter is invalid */
-	CCS_INVALID_HYPERPARAMETER =   -7,
+	CCS_RESULT_ERROR_INVALID_EXPRESSION     = -6,
+	/** The provided parameter is invalid */
+	CCS_RESULT_ERROR_INVALID_PARAMETER      = -7,
 	/** The provided configuration is invalid */
-	CCS_INVALID_CONFIGURATION =    -8,
-	/** The hyperparameter name is invalid */
-	CCS_INVALID_NAME =             -9,
+	CCS_RESULT_ERROR_INVALID_CONFIGURATION  = -8,
+	/** The parameter name is invalid */
+	CCS_RESULT_ERROR_INVALID_NAME           = -9,
 	/** The condition is invalid (unused) */
-	CCS_INVALID_CONDITION =       -10,
+	CCS_RESULT_ERROR_INVALID_CONDITION      = -10,
 	/** The provided tuner is invalid */
-	CCS_INVALID_TUNER =           -11,
+	CCS_RESULT_ERROR_INVALID_TUNER          = -11,
 	/** The constraint graph would be invalid */
-	CCS_INVALID_GRAPH =           -12,
+	CCS_RESULT_ERROR_INVALID_GRAPH          = -12,
 	/** The type is not comparable (unused) */
-	CCS_TYPE_NOT_COMPARABLE =     -13,
+	CCS_RESULT_ERROR_TYPE_NOT_COMPARABLE    = -13,
 	/** The bounds are invalid (unused) */
-	CCS_INVALID_BOUNDS =          -14,
+	CCS_RESULT_ERROR_INVALID_BOUNDS         = -14,
 	/** The index is out of bounds */
-	CCS_OUT_OF_BOUNDS =           -15,
+	CCS_RESULT_ERROR_OUT_OF_BOUNDS          = -15,
 	/** Could not gather enough samples */
-	CCS_SAMPLING_UNSUCCESSFUL =   -16,
+	CCS_RESULT_ERROR_SAMPLING_UNSUCCESSFUL  = -16,
 	/** An allocation failed due to lack of available memory */
-	CCS_OUT_OF_MEMORY =           -17,
+	CCS_RESULT_ERROR_OUT_OF_MEMORY          = -17,
 	/** The object does not support this operation */
-	CCS_UNSUPPORTED_OPERATION =   -18,
+	CCS_RESULT_ERROR_UNSUPPORTED_OPERATION  = -18,
 	/** The provided evaluation is invalid */
-	CCS_INVALID_EVALUATION =      -19,
+	CCS_RESULT_ERROR_INVALID_EVALUATION     = -19,
 	/** The provided features is invalid */
-	CCS_INVALID_FEATURES =        -20,
+	CCS_RESULT_ERROR_INVALID_FEATURES       = -20,
 	/** The provided features tuner is invalid */
-	CCS_INVALID_FEATURES_TUNER =  -21,
+	CCS_RESULT_ERROR_INVALID_FEATURES_TUNER = -21,
 	/** The provided file path is invalid */
-	CCS_INVALID_FILE_PATH =       -22,
+	CCS_RESULT_ERROR_INVALID_FILE_PATH      = -22,
 	/** The provided buffer or file is too short */
-	CCS_NOT_ENOUGH_DATA =         -23,
+	CCS_RESULT_ERROR_NOT_ENOUGH_DATA        = -23,
 	/** The handle was a duplicate */
-	CCS_HANDLE_DUPLICATE =        -24,
+	CCS_RESULT_ERROR_DUPLICATE_HANDLE       = -24,
 	/** The handle was not found */
-	CCS_INVALID_HANDLE =          -25,
-	/** A system error occured */
-	CCS_SYSTEM_ERROR =            -26,
-	/** External error occured (binding?) */
-	CCS_EXTERNAL_ERROR =          -27,
+	CCS_RESULT_ERROR_INVALID_HANDLE         = -25,
+	/** A system error occurred */
+	CCS_RESULT_ERROR_SYSTEM                 = -26,
+	/** External error occurred (binding?) */
+	CCS_RESULT_ERROR_EXTERNAL               = -27,
 	/** The provided tree is invalid */
-	CCS_INVALID_TREE =            -28,
+	CCS_RESULT_ERROR_INVALID_TREE           = -28,
 	/** The provided tree space is invalid */
-	CCS_INVALID_TREE_SPACE =      -29,
-        /** The provided tree tuner is invalid */
-        CCS_INVALID_TREE_TUNER =      -30,
+	CCS_RESULT_ERROR_INVALID_TREE_SPACE     = -29,
+	/** The provided tree tuner is invalid */
+	CCS_RESULT_ERROR_INVALID_TREE_TUNER     = -30,
 	/** Guard */
-	CCS_ERROR_MIN =               -31,
+	CCS_RESULT_MIN                          = -31,
 	/** Try forcing 32 bits value for bindings */
-	CCS_ERROR_FORCE_32BIT = INT32_MAX
+	CCS_RESULT_FORCE_32BIT                  = INT32_MAX
 };
 
 /**
- * A commodity type to represent CCS errors and returned by most functione.
+ * A commodity type to represent CCS errors and returned by most functions.
  */
-typedef enum ccs_error_e ccs_error_t;
+typedef enum ccs_result_e ccs_result_t;
 
 /**
  * The result type used for evaluations.
  */
-typedef int32_t ccs_result_t;
+typedef int32_t           ccs_evaluation_result_t;
 
 /**
  * CCS object types.
  */
 enum ccs_object_type_e {
-	CCS_RNG,                 /*!< A random number generator */
-	CCS_DISTRIBUTION,        /*!< A numerical distribution */
-	CCS_HYPERPARAMETER,      /*!< A hyperparameter */
-	CCS_EXPRESSION,          /*!< An arithmetic expression */
-	CCS_CONFIGURATION_SPACE, /*!< A configuration space */
-	CCS_CONFIGURATION,       /*!< A configuration */
-	CCS_OBJECTIVE_SPACE,     /*!< An objective space */
-	CCS_EVALUATION,          /*!< An evaluation of a configuration */
-	CCS_TUNER,               /*!< A tuner */
-	CCS_FEATURES_SPACE,      /*!< A features space */
-	CCS_FEATURES,            /*!< A features */
-	CCS_FEATURES_EVALUATION, /*!< An evaluation of a configuration given specific features */
-	CCS_FEATURES_TUNER,      /*!< A features aware tuner */
-	CCS_MAP,                 /*!< A key value store */
-	CCS_ERROR_STACK,         /*!< An error stack */
-	CCS_TREE,                /*!< A tree structure */
-	CCS_TREE_SPACE,          /*!< A tree space */
-	CCS_TREE_CONFIGURATION,  /*!< A configuration on a tree space */
-	CCS_TREE_EVALUATION,     /*!< An evaluation of a tree configuration */
-	CCS_TREE_TUNER,          /*!< A tuner */
-	CCS_OBJECT_TYPE_MAX,     /*!< Guard */
+	/** A random number generator */
+	CCS_OBJECT_TYPE_RNG,
+	/** A numerical distribution */
+	CCS_OBJECT_TYPE_DISTRIBUTION,
+	/** A parameter */
+	CCS_OBJECT_TYPE_PARAMETER,
+	/** An arithmetic expression */
+	CCS_OBJECT_TYPE_EXPRESSION,
+	/** A configuration space */
+	CCS_OBJECT_TYPE_CONFIGURATION_SPACE,
+	/** A configuration */
+	CCS_OBJECT_TYPE_CONFIGURATION,
+	/** An objective space */
+	CCS_OBJECT_TYPE_OBJECTIVE_SPACE,
+	/** An evaluation of a configuration */
+	CCS_OBJECT_TYPE_EVALUATION,
+	/** A tuner */
+	CCS_OBJECT_TYPE_TUNER,
+	/** A features space */
+	CCS_OBJECT_TYPE_FEATURES_SPACE,
+	/** A set of features */
+	CCS_OBJECT_TYPE_FEATURES,
+	/** An evaluation of a configuration given specific features */
+	CCS_OBJECT_TYPE_FEATURES_EVALUATION,
+	/** A features aware tuner */
+	CCS_OBJECT_TYPE_FEATURES_TUNER,
+	/** A key value store */
+	CCS_OBJECT_TYPE_MAP,
+	/** An error stack */
+	CCS_OBJECT_TYPE_ERROR_STACK,
+	/** A tree structure */
+	CCS_OBJECT_TYPE_TREE,
+	/** A tree space */
+	CCS_OBJECT_TYPE_TREE_SPACE,
+	/** A configuration on a tree space */
+	CCS_OBJECT_TYPE_TREE_CONFIGURATION,
+	/** An evaluation of a tree configuration */
+	CCS_OBJECT_TYPE_TREE_EVALUATION,
+	/** A tree tuner */
+	CCS_OBJECT_TYPE_TREE_TUNER,
+	/** Guard */
+	CCS_OBJECT_TYPE_MAX,
 	/** Try forcing 32 bits value for bindings */
 	CCS_OBJECT_TYPE_FORCE_32BIT = INT32_MAX
 };
@@ -285,14 +306,22 @@ typedef enum ccs_object_type_e ccs_object_type_t;
  * CCS supported data types.
  */
 enum ccs_data_type_e {
-	CCS_NONE,          /*!< An empty value */
-	CCS_INTEGER,       /*!< A ccs_int_t */
-	CCS_FLOAT,         /*!< A ccs_float_t */
-	CCS_BOOLEAN,       /*!< A ccs_bool_t */
-	CCS_STRING,        /*!< A pointer to a NULL terminated string */
-	CCS_INACTIVE,      /*!< An inactive value */
-	CCS_OBJECT,        /*!< A CCS object */
-	CCS_DATA_TYPE_MAX, /*!< Guard */
+	/** An empty value */
+	CCS_DATA_TYPE_NONE,
+	/** A ccs_int_t */
+	CCS_DATA_TYPE_INT,
+	/** ccs_float_t */
+	CCS_DATA_TYPE_FLOAT,
+	/** ccs_bool_t */
+	CCS_DATA_TYPE_BOOL,
+	/** A pointer to a NULL terminated string */
+	CCS_DATA_TYPE_STRING,
+	/** An inactive value */
+	CCS_DATA_TYPE_INACTIVE,
+	/** A CCS object */
+	CCS_DATA_TYPE_OBJECT,
+	/** Guard */
+	CCS_DATA_TYPE_MAX,
 	/** Try forcing 32 bits value for bindings */
 	CCS_DATA_TYPE_FORCE_32BIT = INT32_MAX
 };
@@ -307,21 +336,21 @@ typedef enum ccs_data_type_e ccs_data_type_t;
  */
 enum ccs_datum_flag_e {
 	/** Empty default flags */
-	CCS_FLAG_DEFAULT = 0,
+	CCS_DATUM_FLAG_DEFAULT     = 0,
 	/**
 	 * The value given to CCS is a pointer and is not guaranteed to stay
 	 * allocated
 	 */
-	CCS_FLAG_TRANSIENT = (1 << 0),
+	CCS_DATUM_FLAG_TRANSIENT   = (1 << 0),
 	/**
 	 * The value returned by CCS is a pointer and is not associated to a
 	 * CCS object and needs to be freed by the user (unused).
 	 */
-	CCS_FLAG_UNPOOLED = (1 << 1),
+	CCS_DATUM_FLAG_UNPOOLED    = (1 << 1),
 	/**
 	 * The object handle is just an identifier.
 	 */
-	CCS_FLAG_ID = (1 << 2),
+	CCS_DATUM_FLAG_ID          = (1 << 2),
 	/** Try forcing 32 bits value for bindings */
 	CCS_DATUM_FLAG_FORCE_32BIT = INT32_MAX
 };
@@ -335,17 +364,20 @@ typedef enum ccs_datum_flag_e ccs_datum_flag_t;
  * A type representing the combination of flags that can be attached to a CCS
  * datum.
  */
-typedef uint32_t ccs_datum_flags_t;
+typedef uint32_t              ccs_datum_flags_t;
 
 /**
  * The subset of CCS data types that represent numerical data.
  */
 enum ccs_numeric_type_e {
-	CCS_NUM_INTEGER = CCS_INTEGER, /*!< A ccs_int_t */
-	CCS_NUM_FLOAT = CCS_FLOAT,     /*!< A ccs_float_t */
-	CCS_NUM_TYPE_MAX,              /*!< Guard */
+	/** A ccs_int_t */
+	CCS_NUMERIC_TYPE_INT   = CCS_DATA_TYPE_INT,
+	/** A ccs_float_t */
+	CCS_NUMERIC_TYPE_FLOAT = CCS_DATA_TYPE_FLOAT,
+	/** Guard */
+	CCS_NUMERIC_TYPE_MAX,
 	/** Try forcing 32 bits value for bindings */
-	CCS_NUM_TYPE_FORCE_32BIT = INT32_MAX
+	CCS_NUMERIC_TYPE_FORCE_32BIT = INT32_MAX
 };
 
 /**
@@ -356,20 +388,37 @@ typedef enum ccs_numeric_type_e ccs_numeric_type_t;
 /**
  * A type representing a generic CCS object.
  */
-typedef void * ccs_object_t;
+typedef void                   *ccs_object_t;
 
 /**
  * A union that can contain either a ccs_int_t or a ccs_float_t.
  */
 union ccs_numeric_u {
-	ccs_float_t   f; /*!< The floating point value of the union */
-	ccs_int_t     i; /*!< The integer value of the union */
+	/** The floating point value of the union */
+	ccs_float_t f;
+	/** The integer value of the union */
+	ccs_int_t   i;
 #ifdef __cplusplus
-	ccs_numeric_u() : i(0L) {}
-	ccs_numeric_u(float v) : f((ccs_float_t)v) {}
-	ccs_numeric_u(int v) : i((ccs_int_t)v) {}
-	ccs_numeric_u(ccs_int_t v) : i(v) {}
-	ccs_numeric_u(ccs_float_t v) : f(v) {}
+	ccs_numeric_u()
+		: i(0L)
+	{
+	}
+	ccs_numeric_u(float v)
+		: f((ccs_float_t)v)
+	{
+	}
+	ccs_numeric_u(int v)
+		: i((ccs_int_t)v)
+	{
+	}
+	ccs_numeric_u(ccs_int_t v)
+		: i(v)
+	{
+	}
+	ccs_numeric_u(ccs_float_t v)
+		: f(v)
+	{
+	}
 #endif
 };
 
@@ -385,29 +434,54 @@ typedef union ccs_numeric_u ccs_numeric_t;
 /**
  * A macro casting a value to a CCS floating point numeric.
  */
-#define CCSF(v) ((ccs_numeric_t){ .f = v })
+#define CCSF(v) ((ccs_numeric_t){.f = v})
 /**
  * A macro casting a value to a CCS integer numeric.
  */
-#define CCSI(v) ((ccs_numeric_t){ .i = v })
+#define CCSI(v) ((ccs_numeric_t){.i = v})
 #endif
 
 /**
  * A union that represent a CCS datum value.
  */
 union ccs_value_u {
-	ccs_float_t   f; /*!< The floating point value of the union */
-	ccs_int_t     i; /*!< The integer value of the union */
-	const char   *s; /*!< The string value of the union */
-	ccs_object_t  o; /*!< The CCS object value of the union */
+	/** The floating point value of the union */
+	ccs_float_t  f;
+	/**  The integer value of the union */
+	ccs_int_t    i;
+	/** The string value of the union */
+	const char  *s;
+	/** The CCS object value of the union */
+	ccs_object_t o;
 #ifdef __cplusplus
-	ccs_value_u() : i(0L) {}
-	ccs_value_u(float v) : f((ccs_float_t)v) {}
-	ccs_value_u(int v) : i((ccs_int_t)v) {}
-	ccs_value_u(ccs_float_t v) : f(v) {}
-	ccs_value_u(ccs_int_t v) : i(v) {}
-	ccs_value_u(char *v) : s(v) {}
-	ccs_value_u(ccs_object_t v) : o(v) {}
+	ccs_value_u()
+		: i(0L)
+	{
+	}
+	ccs_value_u(float v)
+		: f((ccs_float_t)v)
+	{
+	}
+	ccs_value_u(int v)
+		: i((ccs_int_t)v)
+	{
+	}
+	ccs_value_u(ccs_float_t v)
+		: f(v)
+	{
+	}
+	ccs_value_u(ccs_int_t v)
+		: i(v)
+	{
+	}
+	ccs_value_u(char *v)
+		: s(v)
+	{
+	}
+	ccs_value_u(ccs_object_t v)
+		: o(v)
+	{
+	}
 #endif
 };
 
@@ -416,14 +490,16 @@ union ccs_value_u {
  */
 typedef union ccs_value_u ccs_value_t;
 
-
 /**
  * A Structure containing a CCS datum.
  */
 struct ccs_datum_s {
-	ccs_value_t value;       /*!< The value of the datum */
-	ccs_data_type_t type;    /*!< The type of the datum */
-	ccs_datum_flags_t flags; /*!< The flags attached to the datum */
+	/** The value of the datum */
+	ccs_value_t       value;
+	/** The type of the datum */
+	ccs_data_type_t   type;
+	/** The flags attached to the datum */
+	ccs_datum_flags_t flags;
 };
 
 /**
@@ -437,11 +513,12 @@ typedef struct ccs_datum_s ccs_datum_t;
  * @return a CCS datum value
  */
 static inline ccs_datum_t
-ccs_bool(ccs_bool_t v) {
+ccs_bool(ccs_bool_t v)
+{
 	ccs_datum_t d;
-	d.type = CCS_BOOLEAN;
+	d.type    = CCS_DATA_TYPE_BOOL;
 	d.value.i = v;
-	d.flags = CCS_FLAG_DEFAULT;
+	d.flags   = CCS_DATUM_FLAG_DEFAULT;
 	return d;
 }
 
@@ -451,11 +528,12 @@ ccs_bool(ccs_bool_t v) {
  * @return a CCS datum value
  */
 static inline ccs_datum_t
-ccs_float(ccs_float_t v) {
+ccs_float(ccs_float_t v)
+{
 	ccs_datum_t d;
-	d.type = CCS_FLOAT;
+	d.type    = CCS_DATA_TYPE_FLOAT;
 	d.value.f = v;
-	d.flags = CCS_FLAG_DEFAULT;
+	d.flags   = CCS_DATUM_FLAG_DEFAULT;
 	return d;
 }
 
@@ -465,11 +543,12 @@ ccs_float(ccs_float_t v) {
  * @return a CCS datum value
  */
 static inline ccs_datum_t
-ccs_int(ccs_int_t v) {
+ccs_int(ccs_int_t v)
+{
 	ccs_datum_t d;
-	d.type = CCS_INTEGER;
+	d.type    = CCS_DATA_TYPE_INT;
 	d.value.i = v;
-	d.flags = CCS_FLAG_DEFAULT;
+	d.flags   = CCS_DATUM_FLAG_DEFAULT;
 	return d;
 }
 
@@ -479,11 +558,12 @@ ccs_int(ccs_int_t v) {
  * @return a CCS datum value
  */
 static inline ccs_datum_t
-ccs_object(ccs_object_t v) {
+ccs_object(ccs_object_t v)
+{
 	ccs_datum_t d;
-	d.type = CCS_OBJECT;
+	d.type    = CCS_DATA_TYPE_OBJECT;
 	d.value.o = v;
-	d.flags = CCS_FLAG_DEFAULT;
+	d.flags   = CCS_DATUM_FLAG_DEFAULT;
 	return d;
 }
 
@@ -493,11 +573,12 @@ ccs_object(ccs_object_t v) {
  * @return a CCS datum value
  */
 static inline ccs_datum_t
-ccs_string(const char *v) {
+ccs_string(const char *v)
+{
 	ccs_datum_t d;
-	d.type = CCS_STRING;
+	d.type    = CCS_DATA_TYPE_STRING;
 	d.value.s = v;
-	d.flags = CCS_FLAG_DEFAULT;
+	d.flags   = CCS_DATUM_FLAG_DEFAULT;
 	return d;
 }
 
@@ -509,14 +590,16 @@ ccs_string(const char *v) {
  * @return -1, 0, or 1 if the first datum is found to be respectively lesser
  *         than, equal, or greater than the second datum
  */
-static inline int ccs_datum_cmp(ccs_datum_t a, ccs_datum_t b) {
+static inline int
+ccs_datum_cmp(ccs_datum_t a, ccs_datum_t b)
+{
 	if (a.type < b.type) {
 		return -1;
 	} else if (a.type > b.type) {
 		return 1;
 	} else {
-		switch(a.type) {
-		case CCS_STRING:
+		switch (a.type) {
+		case CCS_DATA_TYPE_STRING:
 			if (a.value.s == b.value.s)
 				return 0;
 			else if (!a.value.s)
@@ -526,20 +609,23 @@ static inline int ccs_datum_cmp(ccs_datum_t a, ccs_datum_t b) {
 			else
 				return strcmp(a.value.s, b.value.s);
 			break;
-		case CCS_INTEGER:
+		case CCS_DATA_TYPE_INT:
 			return a.value.i < b.value.i ? -1 :
-				a.value.i > b.value.i ? 1 : 0;
+			       a.value.i > b.value.i ? 1 :
+						       0;
 			break;
-		case CCS_FLOAT:
+		case CCS_DATA_TYPE_FLOAT:
 			return a.value.f < b.value.f ? -1 :
-				a.value.f > b.value.f ? 1 : 0;
+			       a.value.f > b.value.f ? 1 :
+						       0;
 			break;
-		case CCS_NONE:
-		case CCS_INACTIVE:
+		case CCS_DATA_TYPE_NONE:
+		case CCS_DATA_TYPE_INACTIVE:
 			return 0;
 			break;
 		default:
-			return memcmp(&(a.value), &(b.value), sizeof(ccs_value_t));
+			return memcmp(
+				&(a.value), &(b.value), sizeof(ccs_value_t));
 		}
 	}
 }
@@ -564,52 +650,72 @@ extern const ccs_datum_t ccs_false;
 /**
  * A macro defining the none datum value.
  */
-#define CCS_NONE_VAL {{0}, CCS_NONE, CCS_FLAG_DEFAULT}
+#define CCS_NONE_VAL                                                           \
+	{                                                                      \
+		{0}, CCS_DATA_TYPE_NONE, CCS_DATUM_FLAG_DEFAULT                \
+	}
 /**
  * A macro defining the inactive datum value.
  */
-#define CCS_INACTIVE_VAL {{0}, CCS_INACTIVE, CCS_FLAG_DEFAULT}
+#define CCS_INACTIVE_VAL                                                       \
+	{                                                                      \
+		{0}, CCS_DATA_TYPE_INACTIVE, CCS_DATUM_FLAG_DEFAULT            \
+	}
 #ifdef __cplusplus
-#define CCS_TRUE_VAL {{(ccs_int_t)CCS_TRUE}, CCS_BOOLEAN, CCS_FLAG_DEFAULT}
-#define CCS_FALSE_VAL {{(ccs_int_t)CCS_FALSE}, CCS_BOOLEAN, CCS_FLAG_DEFAULT}
+#define CCS_TRUE_VAL                                                           \
+	{                                                                      \
+		{(ccs_int_t)CCS_TRUE}, CCS_DATA_TYPE_BOOL,                     \
+			CCS_DATUM_FLAG_DEFAULT                                 \
+	}
+#define CCS_FALSE_VAL                                                          \
+	{                                                                      \
+		{(ccs_int_t)CCS_FALSE}, CCS_DATA_TYPE_BOOL,                    \
+			CCS_DATUM_FLAG_DEFAULT                                 \
+	}
 #else
 /**
  * A macro defining the true boolean datum value.
  */
-#define CCS_TRUE_VAL {{.i = CCS_TRUE}, CCS_BOOLEAN, CCS_FLAG_DEFAULT}
+#define CCS_TRUE_VAL                                                           \
+	{                                                                      \
+		{.i = CCS_TRUE}, CCS_DATA_TYPE_BOOL, CCS_DATUM_FLAG_DEFAULT    \
+	}
 /**
  * A macro defining the false boolean datum value.
  */
-#define CCS_FALSE_VAL {{.i = CCS_FALSE}, CCS_BOOLEAN, CCS_FLAG_DEFAULT}
+#define CCS_FALSE_VAL                                                          \
+	{                                                                      \
+		{.i = CCS_FALSE}, CCS_DATA_TYPE_BOOL, CCS_DATUM_FLAG_DEFAULT   \
+	}
 #endif
 
 /**
  * The library initialization function. Should be called before any operation
  * using the library are performed.
- * @return #CCS_SUCCESS
+ * @return #CCS_RESULT_SUCCESS
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_init();
 
 /**
- * The library deinitialization function. Should be called after all opertaions
+ * The library deinitialization function. Should be called after all operations
  * using the library are performed.
- * @return #CCS_SUCCESS
+ * @return #CCS_RESULT_SUCCESS
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_fini();
 
 /**
- * Return the string corresponding to the provided CCS error.
- * @param[in] error the CCS error
+ * Return the string corresponding to the provided CCS result.
+ * @param[in] result the CCS result
  * @param[out] name a pointer to a variable that will contain the string
- *             representation of the error name.
- * @return #CCS_SUCCESS on success
- * @return #CCS_INVALID_VALUE if \p name is NULL or if \p error is not a valid
- *                             CCS error code
+ *                  representation of the result name.
+ * @return #CCS_RESULT_SUCCESS on success
+ * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p name is NULL or if \p error is
+ * not a valid CCS result code
  */
-extern ccs_error_t
-ccs_get_error_name(ccs_error_t error, const char **name);
+extern ccs_result_t
+ccs_get_result_name(ccs_result_t result, const char **name);
 
 /**
  * Query the library API version.
@@ -619,12 +725,20 @@ extern ccs_version_t
 ccs_get_version();
 
 /**
+ * Query the library version string.
+ * @return the library version string
+ */
+
+extern const char *
+ccs_get_version_string();
+
+/**
  * Retain a CCS object, incrementing the internal reference counting.
  * @param[in,out] object a CCS object
- * @return #CCS_SUCCESS on success
- * @return #CCS_INVALID_OBJECT if the object is found to be invalid
+ * @return #CCS_RESULT_SUCCESS on success
+ * @return #CCS_RESULT_ERROR_INVALID_OBJECT if the object is found to be invalid
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_retain_object(ccs_object_t object);
 
 /**
@@ -632,11 +746,11 @@ ccs_retain_object(ccs_object_t object);
  * When the internsal reference count reaches zero, the destruction callbacks
  * are called and the object is freed
  * @param[in,out] object a CCS object
- * @return #CCS_SUCCESS on success
- * @return #CCS_INVALID_OBJECT if the object is found to be invalid
+ * @return #CCS_RESULT_SUCCESS on success
+ * @return #CCS_RESULT_ERROR_INVALID_OBJECT if the object is found to be invalid
  * @return an error code given by the object destructor
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_release_object(ccs_object_t object);
 
 /**
@@ -644,31 +758,30 @@ ccs_release_object(ccs_object_t object);
  * @param[in] object a CCS object
  * @param[out] type_ret a pointer to a ccs_object_type_t variable that will
  *                      contain the type
- * @return #CCS_SUCCESS on success
- * @return #CCS_INVALID_OBJECT if the object is found to be invalid
- * @return #CCS_INVALID_VALUE if type_ret is NULL
+ * @return #CCS_RESULT_SUCCESS on success
+ * @return #CCS_RESULT_ERROR_INVALID_OBJECT if the object is found to be invalid
+ * @return #CCS_RESULT_ERROR_INVALID_VALUE if type_ret is NULL
  */
-extern ccs_error_t
-ccs_object_get_type(ccs_object_t       object,
-                    ccs_object_type_t *type_ret);
+extern ccs_result_t
+ccs_object_get_type(ccs_object_t object, ccs_object_type_t *type_ret);
 
 /**
  * Get an object internal reference counting.
  * @param[in] object a CCS object
  * @param[out] refcount_ret a pointer to a int32_t variable that will contain
  *                          the refcount
- * @return #CCS_SUCCESS on success
- * @return #CCS_INVALID_OBJECT if \p object is found to be invalid
- * @return #CCS_INVALID_VALUE if \p refcount_ret is NULL
+ * @return #CCS_RESULT_SUCCESS on success
+ * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p object is found to be invalid
+ * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p refcount_ret is NULL
  */
-extern ccs_error_t
-ccs_object_get_refcount(ccs_object_t  object,
-                        int32_t      *refcount_ret);
+extern ccs_result_t
+ccs_object_get_refcount(ccs_object_t object, int32_t *refcount_ret);
 
 /**
  * The type of CCS object destruction callbacks.
  */
-typedef void (*ccs_object_release_callback_t)(ccs_object_t object, void *user_data);
+typedef void (
+	*ccs_object_release_callback_t)(ccs_object_t object, void *user_data);
 
 /**
  * Attach a destruction callback to a CCS object.
@@ -676,38 +789,37 @@ typedef void (*ccs_object_release_callback_t)(ccs_object_t object, void *user_da
  * @param[in,out] object a CCS object
  * @param[in] callback the destruction callback to attach
  * @param[in] user_data an optional pointer that will be passed to the callback
- * @return #CCS_SUCCESS on success
- * @return #CCS_INVALID_OBJECT if \p object is found to be invalid
- * @return #CCS_INVALID_VALUE if \p callback is NULL
+ * @return #CCS_RESULT_SUCCESS on success
+ * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p object is found to be invalid
+ * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p callback is NULL
  */
-extern ccs_error_t
-ccs_object_set_destroy_callback(ccs_object_t                   object,
-                                ccs_object_release_callback_t  callback,
-                                void                          *user_data);
+extern ccs_result_t
+ccs_object_set_destroy_callback(
+	ccs_object_t                  object,
+	ccs_object_release_callback_t callback,
+	void                         *user_data);
 
 /**
  * Set the associated `user_data` pointer of a CCS object.
  * @param[in] object a CCS object
  * @param[in] user_data a pointer to the user data to attach to this object
- * @return #CCS_SUCCESS on success
- * @return #CCS_INVALID_OBJECT if \p object is found to be invalid
+ * @return #CCS_RESULT_SUCCESS on success
+ * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p object is found to be invalid
  */
-extern ccs_error_t
-ccs_object_set_user_data(ccs_object_t  object,
-                         void         *user_data);
+extern ccs_result_t
+ccs_object_set_user_data(ccs_object_t object, void *user_data);
 
 /**
  * Get the associated `user_data` pointer of a CCS object.
  * @param[in] object a CCS object
  * @param[out] user_data_ret a pointer to a `void *` variable that will contain
  *                           the value of the `user_data`
- * @return #CCS_SUCCESS on success
- * @return #CCS_INVALID_OBJECT if \p object is found to be invalid
- * @return #CCS_INVALID_VALUE if \p user_data_ret is NULL
+ * @return #CCS_RESULT_SUCCESS on success
+ * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p object is found to be invalid
+ * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p user_data_ret is NULL
  */
-extern ccs_error_t
-ccs_object_get_user_data(ccs_object_t   object,
-                         void         **user_data_ret);
+extern ccs_result_t
+ccs_object_get_user_data(ccs_object_t object, void **user_data_ret);
 
 /**
  * The type of CCS object serialization callbacks.
@@ -725,16 +837,15 @@ ccs_object_get_user_data(ccs_object_t   object,
  *                                     serialize the object.
  * @param[in] callback_user_data the pointer provided when the callback
  *                               was attached.
- * @return #CCS_SUCCESS on success
+ * @return #CCS_RESULT_SUCCESS on success
  * @return an error code on error
  */
-typedef ccs_error_t
-(*ccs_object_serialize_callback_t)(
-	ccs_object_t  object,
-	size_t        serialize_data_size,
-	void         *serialize_data,
-	size_t       *serialize_data_size_ret,
-	void         *callback_user_data);
+typedef ccs_result_t (*ccs_object_serialize_callback_t)(
+	ccs_object_t object,
+	size_t       serialize_data_size,
+	void        *serialize_data,
+	size_t      *serialize_data_size_ret,
+	void        *callback_user_data);
 
 /**
  * Set the object serialization callback.
@@ -745,15 +856,15 @@ typedef ccs_error_t
  *                     exists
  * @param[in] user_data an optional pointer that will be passed to the
  *                      callback
- * @return #CCS_SUCCESS on success
- * @return #CCS_INVALID_OBJECT if \p object is found to be invalid
- * @return #CCS_INVALID_VALUE if \p callback is NULL
+ * @return #CCS_RESULT_SUCCESS on success
+ * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p object is found to be invalid
+ * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p callback is NULL
  */
-extern ccs_error_t
+extern ccs_result_t
 ccs_object_set_serialize_callback(
-		ccs_object_t                     object,
-		ccs_object_serialize_callback_t  callback,
-		void                            *user_data);
+	ccs_object_t                    object,
+	ccs_object_serialize_callback_t callback,
+	void                           *user_data);
 
 /**
  * The different serialization formats supported by CCS.
@@ -789,7 +900,7 @@ enum ccs_serialize_operation_e {
 	CCS_SERIALIZE_OPERATION_FORCE_32BIT = INT32_MAX
 };
 /**
- * A commodity type to represent CCS serializaiton operations.
+ * A commodity type to represent CCS serialization operations.
  */
 typedef enum ccs_serialize_operation_e ccs_serialize_operation_t;
 
@@ -799,16 +910,20 @@ typedef enum ccs_serialize_operation_e ccs_serialize_operation_t;
 enum ccs_serialize_option_e {
 	/** Option list terminator */
 	CCS_SERIALIZE_OPTION_END = 0,
-	/** The file descriptor operation is non-blocking. The next parameter is
-         *  a pointer to a void * variable (initialized to NULL) that will hold
-         *  the state of the serialization in order to restart. The function
-         *  performing the operation will return #CCS_AGAIN if the operation has
-         *  not completed. The state is managed internally. */
+	/**
+	 * The file descriptor operation is non-blocking. The next parameter is
+	 * a pointer to a void * variable (initialized to NULL) that will hold
+	 * the state of the serialization in order to restart. The function
+	 * performing the operation will return #CCS_RESULT_AGAIN if the
+	 * operation has not completed. The state is managed internally.
+	 */
 	CCS_SERIALIZE_OPTION_NON_BLOCKING,
-	/** The next parameters are a serialization callback and it's user_data.
-         *  This callback will be called for all objects that have user_data set
-         *  and have not a serialization callback set via
-         *  ccs_object_set_serialize_callback */
+	/**
+	 * The next parameters are a serialization callback and it's user_data.
+	 * This callback will be called for all objects that have user_data set
+	 * and have not a serialization callback set via
+	 * ccs_object_set_serialize_callback
+	 */
 	CCS_SERIALIZE_OPTION_CALLBACK,
 	/** Guard */
 	CCS_SERIALIZE_OPTION_MAX,
@@ -821,14 +936,13 @@ enum ccs_serialize_option_e {
 typedef enum ccs_serialize_option_e ccs_serialize_option_t;
 
 /**
- * A commodity type to represent CCS deserializaiton callbacks.
+ * A commodity type to represent CCS deserialization callbacks.
  */
-typedef ccs_error_t
-(*ccs_object_deserialize_callback_t)(
-	ccs_object_t  object,
-	size_t        serialize_data_size,
-	const char   *serialize_data,
-	void         *callback_user_data);
+typedef ccs_result_t (*ccs_object_deserialize_callback_t)(
+	ccs_object_t object,
+	size_t       serialize_data_size,
+	const char  *serialize_data,
+	void        *callback_user_data);
 
 /**
  * The different deserialization options.
@@ -836,28 +950,38 @@ typedef ccs_error_t
 enum ccs_deserialize_option_e {
 	/** Option list terminator */
 	CCS_DESERIALIZE_OPTION_END = 0,
-	/** The next parameter is a ccs_handle_map_t object that must contain
-         *  the mappings required to deserialize an object (usually bindings or
-         *  expressions). I given, will also add a mapping between the object
-         *  original handle and its current handle. */
+	/**
+	 * The next parameter is a ccs_handle_map_t object that must contain
+	 * the mappings required to deserialize an object (usually bindings or
+	 * expressions). I given, will also add a mapping between the object
+	 * original handle and its current handle.
+	 */
 	CCS_DESERIALIZE_OPTION_HANDLE_MAP,
-	/** The next parameter is a pointer to a ccs object vector struct, for
-         *  user defined tuners */
+	/**
+	 * The next parameter is a pointer to a ccs object vector struct, for
+	 * user defined tuners
+	 */
 	CCS_DESERIALIZE_OPTION_VECTOR,
-	/** The next parameter is a pointer to a ccs object internal data, for
-         *  user defined tuners */
+	/**
+	 * The next parameter is a pointer to a ccs object internal data, for
+	 * user defined tuners
+	 */
 	CCS_DESERIALIZE_OPTION_DATA,
-	/** The file descriptor operation is non-blocking. The next parameter is
-         *  a pointer to a void * variable (initialized to NULL) that will hold
-         *  the state of the serialization in order to restart. The function
-         *  performing the operation will return #CCS_AGAIN if the operation has
-         *  not completed. The state is managed internally. */
+	/**
+	 * The file descriptor operation is non-blocking. The next parameter is
+	 * a pointer to a void * variable (initialized to NULL) that will hold
+	 * the state of the serialization in order to restart. The function
+	 * performing the operation will return #CCS_RESULT_AGAIN if the
+	 * operation has not completed. The state is managed internally.
+	 */
 	CCS_DESERIALIZE_OPTION_NON_BLOCKING,
-	/** The next parameters are a deserialization callback and it's user_data.
-	 *  This callback will be called for all objects that had their
-	 *  user_data serialized. If no such callback is provided the object's
-	 *  user_data value will not be set. */
-	CCS_DESERIALIZE_CALLBACK,
+	/**
+	 * The next parameters are a deserialization callback and it's
+	 * user_data. This callback will be called for all objects that had
+	 * their user_data serialized. If no such callback is provided the
+	 * object's user_data value will not be set.
+	 */
+	CCS_DESERIALIZE_OPTION_CALLBACK,
 	/** Guard */
 	CCS_DESERIALIZE_OPTION_MAX,
 	/** Try forcing 32 bits value for bindings */
@@ -876,19 +1000,21 @@ typedef enum ccs_deserialize_option_e ccs_deserialize_option_t;
  * @param[in,out] ... list of parameters that depend on the selected \p
  *                    operation, followed by a CCS_SERIALIZE_OPTION_END
  *                    terminated list of options
- * @return #CCS_SUCCESS on success
- * @return #CCS_INVALID_OBJECT if \p object is found to be invalid
- * @return #CCS_INVALID_VALUE if parameters and option combination are
- *                             unsupported
- * @return #CCS_OUT_OF_MEMORY if required memory could not be allocated
- * @return #CCS_NOT_ENOUGH_DATA in case where the provided buffer is too small
- *                               for the requested operation
+ * @return #CCS_RESULT_SUCCESS on success
+ * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p object is found to be invalid
+ * @return #CCS_RESULT_ERROR_INVALID_VALUE if parameters and option combination
+ * are unsupported
+ * @return #CCS_RESULT_ERROR_OUT_OF_MEMORY if required memory could not be
+ * allocated
+ * @return #CCS_RESULT_ERROR_NOT_ENOUGH_DATA in case where the provided buffer
+ * is too small for the requested operation
  */
-extern ccs_error_t
-ccs_object_serialize(ccs_object_t              object,
-                     ccs_serialize_format_t    format,
-                     ccs_serialize_operation_t operation,
-                     ...);
+extern ccs_result_t
+ccs_object_serialize(
+	ccs_object_t              object,
+	ccs_serialize_format_t    format,
+	ccs_serialize_operation_t operation,
+	...);
 
 /**
  * Perform a deserialization operation and returns a new CCS object.
@@ -899,19 +1025,21 @@ ccs_object_serialize(ccs_object_t              object,
  * @param[in,out] ... list of parameters that depend on the selected \p
  *                    operation, followed by a CCS_SERIALIZE_OPTION_END
  *                    terminated list of options
- * @return #CCS_SUCCESS on success
- * @return #CCS_INVALID_OBJECT if \p object is found to be invalid
- * @return #CCS_INVALID_VALUE if parameters and option combination are
- *                             unsupported
- * @return #CCS_OUT_OF_MEMORY if required memory could not be allocated
- * @return #CCS_NOT_ENOUGH_DATA in case where the provided buffer is too small
- *                               for the requested operation
+ * @return #CCS_RESULT_SUCCESS on success
+ * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p object is found to be invalid
+ * @return #CCS_RESULT_ERROR_INVALID_VALUE if parameters and option combination
+ * are unsupported
+ * @return #CCS_RESULT_ERROR_OUT_OF_MEMORY if required memory could not be
+ * allocated
+ * @return #CCS_RESULT_ERROR_NOT_ENOUGH_DATA in case where the provided buffer
+ * is too small for the requested operation
  */
-extern ccs_error_t
-ccs_object_deserialize(ccs_object_t              *object_ret,
-                       ccs_serialize_format_t     format,
-                       ccs_serialize_operation_t  operation,
-                       ...);
+extern ccs_result_t
+ccs_object_deserialize(
+	ccs_object_t             *object_ret,
+	ccs_serialize_format_t    format,
+	ccs_serialize_operation_t operation,
+	...);
 
 #ifdef __cplusplus
 }

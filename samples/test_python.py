@@ -1,7 +1,4 @@
 import unittest
-import sys
-sys.path.insert(1, '../bindings/python')
-sys.path.insert(1, '../../bindings/python')
 import cconfigspace as ccs
 import ctypes as ct
 from math import sin
@@ -9,7 +6,7 @@ from math import sin
 class TestTuner(ccs.UserDefinedTuner):
   def __init__(self, cs, os):
     self.__history = []
-    self.__optimums = []
+    self.__optima = []
 
     def delete(tuner):
       return None
@@ -25,29 +22,29 @@ class TestTuner(ccs.UserDefinedTuner):
       self.__history += evaluations
       for e in evaluations:
         discard = False
-        new_optimums = []
-        for o in self.__optimums:
+        new_optima = []
+        for o in self.__optima:
           if discard:
-            new_optimums.append(o)
+            new_optima.append(o)
           else:
             c = e.compare(o)
-            if c == ccs.EQUIVALENT or c == ccs.WORSE:
+            if c == ccs.Comparison.EQUIVALENT or c == ccs.Comparison.WORSE:
               discard = True
-              new_optimums.append(o)
-            elif c == ccs.NOT_COMPARABLE:
-              new_optimums.append(o)
+              new_optima.append(o)
+            elif c == ccs.Comparison.NOT_COMPARABLE:
+              new_optima.append(o)
         if not discard:
-          new_optimums.append(e)
-        self.__optimums = new_optimums
+          new_optima.append(e)
+        self.__optima = new_optima
       return None
 
     def get_history(tuner):
       return self.__history
 
-    def get_optimums(tuner):
-      return self.__optimums
+    def get_optima(tuner):
+      return self.__optima
 
-    super().__init__(name = "tuner", configuration_space = cs, objective_space = os, delete = delete, ask = ask, tell = tell, get_optimums = get_optimums, get_history = get_history)
+    super().__init__(name = "tuner", configuration_space = cs, objective_space = os, delete = delete, ask = ask, tell = tell, get_optima = get_optima, get_history = get_history)
 
 
 def create_test_tuner(cs_ptr, os_ptr):
@@ -60,16 +57,16 @@ def create_test_tuner(cs_ptr, os_ptr):
 
 def create_tuning_problem():
   cs = ccs.ConfigurationSpace(name = "cspace")
-  h1 = ccs.NumericalHyperparameter(lower = -5.0, upper = 5.0)
-  h2 = ccs.NumericalHyperparameter(lower = -5.0, upper = 5.0)
-  h3 = ccs.NumericalHyperparameter(lower = -5.0, upper = 5.0)
-  cs.add_hyperparameters([h1, h2, h3])
+  h1 = ccs.NumericalParameter.Float(lower = -5.0, upper = 5.0)
+  h2 = ccs.NumericalParameter.Float(lower = -5.0, upper = 5.0)
+  h3 = ccs.NumericalParameter.Float(lower = -5.0, upper = 5.0)
+  cs.add_parameters([h1, h2, h3])
   os = ccs.ObjectiveSpace(name = "ospace")
-  v1 = ccs.NumericalHyperparameter(lower = float('-inf'), upper = float('inf'))
-  v2 = ccs.NumericalHyperparameter(lower = float('-inf'), upper = float('inf'))
-  os.add_hyperparameters([v1, v2])
-  e1 = ccs.Variable(hyperparameter = v1)
-  e2 = ccs.Variable(hyperparameter = v2)
+  v1 = ccs.NumericalParameter.Float(lower = float('-inf'), upper = float('inf'))
+  v2 = ccs.NumericalParameter.Float(lower = float('-inf'), upper = float('inf'))
+  os.add_parameters([v1, v2])
+  e1 = ccs.Expression.Variable(parameter = v1)
+  e2 = ccs.Expression.Variable(parameter = v2)
   os.add_objectives( [e1, e2] )
   return (cs, os)
 
@@ -79,7 +76,7 @@ class Test(unittest.TestCase):
     (cs, os) = create_tuning_problem()
     t = TestTuner(cs, os)
     self.assertEqual("tuner", t.name)
-    self.assertEqual(ccs.TUNER_USER_DEFINED, t.type)
+    self.assertEqual(ccs.TunerType.USER_DEFINED, t.type)
     self.assertEqual(cs.handle.value, t.configuration_space.handle.value)
     self.assertEqual(os.handle.value, t.objective_space.handle.value)
     func = lambda x, y, z: [(x-2)*(x-2), sin(z+y)]
@@ -91,7 +88,7 @@ class Test(unittest.TestCase):
     t.tell(evals)
     hist = t.history
     self.assertEqual(200, len(hist))
-    optims = t.optimums
+    optims = t.optima
     objs = [x.objective_values for x in optims]
     objs.sort(key = lambda x: x[0])
     # assert pareto front

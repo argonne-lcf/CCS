@@ -1,7 +1,7 @@
 module CCS
 
-  attach_function :ccs_create_configuration, [:ccs_configuration_space_t, :size_t, :pointer, :pointer], :ccs_error_t
-  attach_function :ccs_configuration_check, [:ccs_configuration_t, :pointer], :ccs_error_t
+  attach_function :ccs_create_configuration, [:ccs_configuration_space_t, :size_t, :pointer, :pointer], :ccs_result_t
+  attach_function :ccs_configuration_check, [:ccs_configuration_t, :pointer], :ccs_result_t
 
   class Configuration < Binding
     alias configuration_space context
@@ -13,7 +13,7 @@ module CCS
       else
         if values
           count = values.size
-          raise CCSError, :CCS_INVALID_VALUE if count == 0
+          raise CCSError, :CCS_RESULT_ERROR_INVALID_VALUE if count == 0
           ss = []
           p_values = MemoryPointer::new(:ccs_datum_t, count)
           values.each_with_index {  |v, i| Datum::new(p_values[i]).set_value(v, string_store: ss) }

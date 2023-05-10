@@ -15,7 +15,7 @@ from .error_stack import *
 from .rng import *
 from .interval import *
 from .distribution import *
-from .hyperparameter import *
+from .parameter import *
 from .expression import *
 from .expression_parser import *
 from .context import *

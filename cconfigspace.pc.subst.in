@@ -5,7 +5,7 @@ includedir=@includedir@
 
 Name: cconfigspace
 Description: cConfigSpace
-Version: 0.0.1
+Version: ==VERSION==
 Requires.private: gsl
 Libs: -L${libdir} -lcconfigspace
 Cflags: -I${includedir}

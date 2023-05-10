@@ -18,14 +18,14 @@ jobs:
   build-and-check:
     needs: pre_job
     if: ${{ needs.pre_job.outputs.should_skip != 'true' }}
-    name: Build and Check ${{ matrix.os }} ${{ matrix.name }}
+    name: Build and Check ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
         os: [ubuntu-latest, macos-latest]
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - run: sudo apt update; sudo apt install -y gcc ruby-dev libgsl-dev python3-dev
         if: ${{ matrix.os == 'ubuntu-latest' }}
       - run: brew install gsl automake
@@ -36,9 +36,9 @@ jobs:
       - run: mkdir -p build
       - run: ../configure --enable-strict
         working-directory: build
-      - run: make
+      - run: make -j
         working-directory: build
-      - run: make check
+      - run: make -j check
         working-directory: build
       - uses: actions/upload-artifact@v2
         if: failure()
@@ -76,14 +76,14 @@ jobs:
   build-and-check-cxx:
     needs: pre_job
     if: ${{ needs.pre_job.outputs.should_skip != 'true' }}
-    name: Build and Check C++ ${{ matrix.os }} ${{ matrix.name }}
+    name: Build and Check C++ ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
         os: [ubuntu-latest]
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - run: sudo apt-get update
       - run: sudo apt-get install -y gcc g++ ruby-dev libgsl-dev python3-dev
       - run: gem install --user-install rake ffi ffi-value whittle
@@ -92,9 +92,9 @@ jobs:
       - run: mkdir -p build
       - run: ../configure --enable-strict CC=g++
         working-directory: build
-      - run: make
+      - run: make -j
         working-directory: build
-      - run: make check
+      - run: make -j check
         working-directory: build
       - uses: actions/upload-artifact@v2
         if: failure()
@@ -132,14 +132,14 @@ jobs:
   build-and-check-clang:
     needs: pre_job
     if: ${{ needs.pre_job.outputs.should_skip != 'true' }}
-    name: Build and Check clang ${{ matrix.os }} ${{ matrix.name }}
+    name: Build and Check clang ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
         os: [ubuntu-latest]
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - run: sudo apt-get update
       - run: sudo apt-get install -y clang ruby-dev libgsl-dev python3-dev
       - run: gem install --user-install rake ffi ffi-value whittle
@@ -148,9 +148,9 @@ jobs:
       - run: mkdir -p build
       - run: ../configure CC=clang
         working-directory: build
-      - run: make
+      - run: make -j
         working-directory: build
-      - run: make check
+      - run: make -j check
         working-directory: build
       - uses: actions/upload-artifact@v2
         if: failure()
@@ -188,23 +188,23 @@ jobs:
   build-and-check-valgrind:
     needs: pre_job
     if: ${{ needs.pre_job.outputs.should_skip != 'true' }}
-    name: Build and Check Valgrind ${{ matrix.os }} ${{ matrix.name }}
+    name: Build and Check Valgrind ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
         os: [ubuntu-latest]
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - run: sudo apt-get update
       - run: sudo apt-get install -y gcc valgrind ruby-dev libgsl-dev python3-dev
       - run: ./autogen.sh
       - run: mkdir -p build
       - run: ../configure --enable-strict
         working-directory: build
-      - run: make
+      - run: make -j
         working-directory: build
-      - run: make check-valgrind
+      - run: make -j check-valgrind
         working-directory: build
       - uses: actions/upload-artifact@v2
         if: failure()
@@ -239,68 +239,66 @@ jobs:
             build/samples/test-suite.log
             build/samples/test_ruby.log
 
-  build-and-check-ruby:
+  distcheck:
     needs: pre_job
     if: ${{ needs.pre_job.outputs.should_skip != 'true' }}
-    name: Build and Check Ruby ${{ matrix.os }} ${{ matrix.name }}
+    name: Distcheck ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
         os: [ubuntu-latest, macos-latest]
 
     steps:
-      - uses: actions/checkout@v2
-      - run: sudo apt-get update; sudo apt-get install -y gcc ruby-dev libgsl-dev python3-dev
+      - uses: actions/checkout@v3
+      - run: sudo apt update; sudo apt install -y gcc ruby-dev libgsl-dev python3-dev
         if: ${{ matrix.os == 'ubuntu-latest' }}
       - run: brew install gsl automake
         if: ${{ matrix.os == 'macos-latest' }}
       - run: gem install --user-install rake ffi ffi-value whittle
-      - run: ./autogen.sh
-      - run: mkdir -p build
-      - run: ../configure --enable-strict
-        working-directory: build
-      - run: make
-        working-directory: build
-      - run: rake test
-        working-directory: bindings/ruby
-        env:
-          LIBCCONFIGSPACE_SO: ${{ github.workspace }}/build/src/.libs/libcconfigspace.so
-        if: ${{ matrix.os == 'ubuntu-latest' }}
-      - run: rake test
-        working-directory: bindings/ruby
-        env:
-          LIBCCONFIGSPACE_SO: ${{ github.workspace }}/build/src/.libs/libcconfigspace.dylib
-        if: ${{ matrix.os == 'macos-latest' }}
-
-  build-and-check-python:
-    needs: pre_job
-    if: ${{ needs.pre_job.outputs.should_skip != 'true' }}
-    name: Build and Check Python ${{ matrix.os }} ${{ matrix.name }}
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [ubuntu-latest, macos-latest]
-
-    steps:
-      - uses: actions/checkout@v2
-      - run: sudo apt-get update; sudo apt-get install -y gcc ruby-dev libgsl-dev python3-dev
-        if: ${{ matrix.os == 'ubuntu-latest' }}
-      - run: brew install gsl automake
-        if: ${{ matrix.os == 'macos-latest' }}
       - run: pip3 install --user parglare==0.12.0
       - run: ./autogen.sh
       - run: mkdir -p build
       - run: ../configure --enable-strict
         working-directory: build
-      - run: make
+      - run: make -j distcheck
         working-directory: build
-      - run: make test
-        working-directory: bindings/python
-        env:
-          LIBCCONFIGSPACE_SO_: ${{ github.workspace }}/build/src/.libs/libcconfigspace.so
+
+  dist-check:
+    needs: pre_job
+    if: ${{ needs.pre_job.outputs.should_skip != 'true' }}
+    name: Dist and Check ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+
+    steps:
+      - uses: actions/checkout@v3
+      - run: sudo apt update; sudo apt install -y gcc ruby-dev libgsl-dev python3-dev
         if: ${{ matrix.os == 'ubuntu-latest' }}
-      - run: make test
-        working-directory: bindings/python
-        env:
-          LIBCCONFIGSPACE_SO_: ${{ github.workspace }}/build/src/.libs/libcconfigspace.dylib
+      - run: brew install gsl automake
         if: ${{ matrix.os == 'macos-latest' }}
+      - run: gem install --user-install rake ffi ffi-value whittle
+      - run: pip3 install --user parglare==0.12.0
+      - run: ./autogen.sh
+      - run: mkdir -p build
+      - run: ../configure --enable-strict
+        working-directory: build
+      - run: make dist
+        working-directory: build
+      - name: extract
+        run: tar -xzvf cconfigspace-*
+        working-directory: build
+      - name: configure
+        run: |
+          cd `find . -type d -name "cconfigspace-*"`
+          mkdir -p build
+          cd build
+          ../configure
+        working-directory: build
+      - name: make check
+        run: |
+          cd `find . -type d -name "cconfigspace-*"`
+          cd build
+          make -j check
+        working-directory: build

@@ -1,7 +1,7 @@
 module CCS
 
-  attach_function :ccs_create_features, [:ccs_features_space_t, :size_t, :pointer, :pointer], :ccs_error_t
-  attach_function :ccs_features_check, [:ccs_features_t, :pointer], :ccs_error_t
+  attach_function :ccs_create_features, [:ccs_features_space_t, :size_t, :pointer, :pointer], :ccs_result_t
+  attach_function :ccs_features_check, [:ccs_features_t, :pointer], :ccs_result_t
 
   class Features < Binding
     alias features_space context
@@ -14,7 +14,7 @@ module CCS
       else
         if values
           count = values.size
-          raise CCSError, :CCS_INVALID_VALUE if count == 0
+          raise CCSError, :CCS_RESULT_ERROR_INVALID_VALUE if count == 0
           ss = []
           p_values = MemoryPointer::new(:ccs_datum_t, count)
           values.each_with_index {  |v, i| Datum::new(p_values[i]).set_value(v, string_store: ss) }

@@ -11,15 +11,15 @@ struct _ccs_features_space_ops_s {
 typedef struct _ccs_features_space_ops_s _ccs_features_space_ops_t;
 
 struct _ccs_features_space_s {
-	_ccs_object_internal_t           obj;
+	_ccs_object_internal_t      obj;
 	_ccs_features_space_data_t *data;
 };
 
 struct _ccs_features_space_data_s {
-	const char                       *name;
-	UT_array                         *hyperparameters;
-	_ccs_hyperparameter_index_hash_t *name_hash;
-	_ccs_hyperparameter_index_hash_t *handle_hash;
+	const char                  *name;
+	UT_array                    *parameters;
+	_ccs_parameter_index_hash_t *name_hash;
+	_ccs_parameter_index_hash_t *handle_hash;
 };
 
 #endif //_FEATURES_SPACE_INTERNAL_H

@@ -1,20 +1,20 @@
 import ctypes as ct
-from .base import Object, Error, ccs_error, _ccs_get_function, ccs_context, ccs_hyperparameter, ccs_configuration_space, ccs_configuration, ccs_rng, ccs_distribution, ccs_expression, ccs_datum, ccs_bool
+from .base import Object, Error, Result, _ccs_get_function, ccs_context, ccs_parameter, ccs_configuration_space, ccs_configuration, ccs_rng, ccs_distribution, ccs_expression, Datum, ccs_bool
 from .context import Context
 from .distribution import Distribution
-from .hyperparameter import Hyperparameter
+from .parameter import Parameter
 from .expression import Expression
-from .expression_parser import ccs_parser
+from .expression_parser import parser
 from .rng import Rng
 from parglare.parser import Context as PContext
 
 ccs_create_configuration_space = _ccs_get_function("ccs_create_configuration_space", [ct.c_char_p, ct.POINTER(ccs_configuration_space)])
 ccs_configuration_space_set_rng = _ccs_get_function("ccs_configuration_space_set_rng", [ccs_configuration_space, ccs_rng])
 ccs_configuration_space_get_rng = _ccs_get_function("ccs_configuration_space_get_rng", [ccs_configuration_space, ct.POINTER(ccs_rng)])
-ccs_configuration_space_add_hyperparameter = _ccs_get_function("ccs_configuration_space_add_hyperparameter", [ccs_configuration_space, ccs_hyperparameter, ccs_distribution])
-ccs_configuration_space_add_hyperparameters = _ccs_get_function("ccs_configuration_space_add_hyperparameters", [ccs_configuration_space, ct.c_size_t, ct.POINTER(ccs_hyperparameter), ct.POINTER(ccs_distribution)])
+ccs_configuration_space_add_parameter = _ccs_get_function("ccs_configuration_space_add_parameter", [ccs_configuration_space, ccs_parameter, ccs_distribution])
+ccs_configuration_space_add_parameters = _ccs_get_function("ccs_configuration_space_add_parameters", [ccs_configuration_space, ct.c_size_t, ct.POINTER(ccs_parameter), ct.POINTER(ccs_distribution)])
 ccs_configuration_space_set_distribution = _ccs_get_function("ccs_configuration_space_set_distribution", [ccs_configuration_space, ccs_distribution, ct.POINTER(ct.c_size_t)])
-ccs_configuration_space_get_hyperparameter_distribution = _ccs_get_function("ccs_configuration_space_get_hyperparameter_distribution", [ccs_configuration_space, ct.c_size_t, ct.POINTER(ccs_distribution), ct.POINTER(ct.c_size_t)])
+ccs_configuration_space_get_parameter_distribution = _ccs_get_function("ccs_configuration_space_get_parameter_distribution", [ccs_configuration_space, ct.c_size_t, ct.POINTER(ccs_distribution), ct.POINTER(ct.c_size_t)])
 ccs_configuration_space_set_condition = _ccs_get_function("ccs_configuration_space_set_condition", [ccs_configuration_space, ct.c_size_t, ccs_expression])
 ccs_configuration_space_get_condition = _ccs_get_function("ccs_configuration_space_get_condition", [ccs_configuration_space, ct.c_size_t, ct.POINTER(ccs_expression)])
 ccs_configuration_space_get_conditions = _ccs_get_function("ccs_configuration_space_get_conditions", [ccs_configuration_space, ct.c_size_t, ct.POINTER(ccs_expression), ct.POINTER(ct.c_size_t)])
@@ -23,7 +23,7 @@ ccs_configuration_space_add_forbidden_clauses = _ccs_get_function("ccs_configura
 ccs_configuration_space_get_forbidden_clause = _ccs_get_function("ccs_configuration_space_get_forbidden_clause", [ccs_configuration_space, ct.c_size_t, ct.POINTER(ccs_expression)])
 ccs_configuration_space_get_forbidden_clauses = _ccs_get_function("ccs_configuration_space_get_forbidden_clauses", [ccs_configuration_space, ct.c_size_t, ct.POINTER(ccs_expression), ct.POINTER(ct.c_size_t)])
 ccs_configuration_space_check_configuration = _ccs_get_function("ccs_configuration_space_check_configuration", [ccs_configuration_space, ccs_configuration, ct.POINTER(ccs_bool)])
-ccs_configuration_space_check_configuration_values = _ccs_get_function("ccs_configuration_space_check_configuration_values", [ccs_configuration_space, ct.c_size_t, ct.POINTER(ccs_datum), ct.POINTER(ccs_bool)])
+ccs_configuration_space_check_configuration_values = _ccs_get_function("ccs_configuration_space_check_configuration_values", [ccs_configuration_space, ct.c_size_t, ct.POINTER(Datum), ct.POINTER(ccs_bool)])
 ccs_configuration_space_get_default_configuration = _ccs_get_function("ccs_configuration_space_get_default_configuration", [ccs_configuration_space, ct.POINTER(ccs_configuration)])
 ccs_configuration_space_sample = _ccs_get_function("ccs_configuration_space_sample", [ccs_configuration_space, ct.POINTER(ccs_configuration)])
 ccs_configuration_space_samples = _ccs_get_function("ccs_configuration_space_samples", [ccs_configuration_space, ct.c_size_t, ct.POINTER(ccs_configuration)])
@@ -55,70 +55,70 @@ class ConfigurationSpace(Context):
     res = ccs_configuration_space_set_rng(self.handle, r.handle)
     Error.check(res)
 
-  def add_hyperparameter(self, hyperparameter, distribution = None):
+  def add_parameter(self, parameter, distribution = None):
     if distribution:
       distribution = distribution.handle
-    res = ccs_configuration_space_add_hyperparameter(self.handle, hyperparameter.handle, distribution)
+    res = ccs_configuration_space_add_parameter(self.handle, parameter.handle, distribution)
     Error.check(res)
 
-  def add_hyperparameters(self, hyperparameters, distributions = None):
-    count = len(hyperparameters)
+  def add_parameters(self, parameters, distributions = None):
+    count = len(parameters)
     if count == 0:
       return None
     if distributions:
       if count != len(distributions):
-        raise Error(ccs_error(ccs_error.INVALID_VALUE))
+        raise Error(Result(Result.ERROR_INVALID_VALUE))
       distribs = (ccs_distribution * count)(*[x.handle.value if x else x for x in distributions])
     else:
       distribs = None
-    hypers = (ccs_hyperparameter * count)(*[x.handle.value for x in hyperparameters])
-    res = ccs_configuration_space_add_hyperparameters(self.handle, count, hypers, distribs)
+    parameters = (ccs_parameter * count)(*[x.handle.value for x in parameters])
+    res = ccs_configuration_space_add_parameters(self.handle, count, parameters, distribs)
     Error.check(res)
 
-  def set_distribution(self, distribution, hyperparameters):
+  def set_distribution(self, distribution, parameters):
     count = distribution.dimension
-    if count != len(hyperparameters):
-        raise Error(ccs_error(ccs_error.INVALID_VALUE))
+    if count != len(parameters):
+        raise Error(Result(Result.ERROR_INVALID_VALUE))
     hyps = []
-    for h in hyperparameters:
-      if isinstance(h, Hyperparameter):
-        hyps.append(self.hyperparameter_index(h))
+    for h in parameters:
+      if isinstance(h, Parameter):
+        hyps.append(self.parameter_index(h))
       elif isinstance(h, str):
-        hyps.append(self.hyperparameter_index_by_name(h))
+        hyps.append(self.parameter_index_by_name(h))
       else:
         hyps.append(h)
     v = (ct.c_size_t * count)(*hyps)
     res = ccs_configuration_space_set_distribution(self.handle, distribution.handle, v)
     Error.check(res)
 
-  def get_hyperparameter_distribution(self, hyperparameter):
-    if isinstance(hyperparameter, Hyperparameter):
-      hyperparameter = self.hyperparameter_index(hyperparameter)
-    elif isinstance(hyperparameter, str):
-      hyperparameter = self.hyperparameter_index_by_name(hyperparameter)
+  def get_parameter_distribution(self, parameter):
+    if isinstance(parameter, Parameter):
+      parameter = self.parameter_index(parameter)
+    elif isinstance(parameter, str):
+      parameter = self.parameter_index_by_name(parameter)
     v1 = ccs_distribution()
     v2 = ct.c_size_t()
-    res = ccs_configuration_space_get_hyperparameter_distribution(self.handle, hyperparameter, ct.byref(v1), ct.byref(v2))
+    res = ccs_configuration_space_get_parameter_distribution(self.handle, parameter, ct.byref(v1), ct.byref(v2))
     Error.check(res)
     return [Distribution.from_handle(v1), v2.value]
 
-  def set_condition(self, hyperparameter, expression):
+  def set_condition(self, parameter, expression):
     if isinstance(expression, str):
-      expression = ccs_parser.parse(expression, context = PContext(extra=self))
-    if isinstance(hyperparameter, Hyperparameter):
-      hyperparameter = self.hyperparameter_index(hyperparameter)
-    elif isinstance(hyperparameter, str):
-      hyperparameter = self.hyperparameter_index_by_name(hyperparameter)
-    res = ccs_configuration_space_set_condition(self.handle, hyperparameter, expression.handle)
+      expression = parser.parse(expression, context = PContext(extra=self))
+    if isinstance(parameter, Parameter):
+      parameter = self.parameter_index(parameter)
+    elif isinstance(parameter, str):
+      parameter = self.parameter_index_by_name(parameter)
+    res = ccs_configuration_space_set_condition(self.handle, parameter, expression.handle)
     Error.check(res)
 
-  def condition(self, hyperparameter):
-    if isinstance(hyperparameter, Hyperparameter):
-      hyperparameter = self.hyperparameter_index(hyperparameter)
-    elif isinstance(hyperparameter, str):
-      hyperparameter = self.hyperparameter_index_by_name(hyperparameter)
+  def condition(self, parameter):
+    if isinstance(parameter, Parameter):
+      parameter = self.parameter_index(parameter)
+    elif isinstance(parameter, str):
+      parameter = self.parameter_index_by_name(parameter)
     v = ccs_expression()
-    res = ccs_configuration_space_get_condition(self.handle, hyperparameter, ct.byref(v)) 
+    res = ccs_configuration_space_get_condition(self.handle, parameter, ct.byref(v)) 
     Error.check(res)
     if v.value is None:
       return None
@@ -127,11 +127,11 @@ class ConfigurationSpace(Context):
 
   @property
   def num_conditions(self):
-    return self.num_hyperparameters
+    return self.num_parameters
 
   @property
   def conditions(self):
-    sz = self.num_hyperparameters
+    sz = self.num_parameters
     if sz == 0:
       return []
     v = (ccs_expression * sz)()
@@ -140,20 +140,20 @@ class ConfigurationSpace(Context):
     return [Expression.from_handle(ccs_expression(x)) if x else None for x in v]    
 
   @property
-  def conditional_hyperparameters(self):
-    hps = self.hyperparameters
+  def conditional_parameters(self):
+    hps = self.parameters
     conds = self.conditions
     return [x for x, y in zip(hps, conds) if y is not None]
 
   @property
-  def unconditional_hyperparameters(self):
-    hps = self.hyperparameters
+  def unconditional_parameters(self):
+    hps = self.parameters
     conds = self.conditions
     return [x for x, y in zip(hps, conds) if y is None]
 
   def add_forbidden_clause(self, expression):
     if isinstance(expression, str):
-      expression = ccs_parser.parse(expression, context = PContext(extra=self))
+      expression = parser.parse(expression, context = PContext(extra=self))
     res = ccs_configuration_space_add_forbidden_clause(self.handle, expression.handle)
     Error.check(res)
 
@@ -161,7 +161,7 @@ class ConfigurationSpace(Context):
     sz = len(expressions)
     if sz == 0:
       return None
-    expressions = [ ccs_parser.parse(expression, context = PContext(extra=self)) if isinstance(expression, str) else expression for expression in expressions ]
+    expressions = [ parser.parse(expression, context = PContext(extra=self)) if isinstance(expression, str) else expression for expression in expressions ]
     v = (ccs_expression * sz)(*[x.handle.value for x in expressions])
     res = ccs_configuration_space_add_forbidden_clauses(self.handle, sz, v)
     Error.check(res)
@@ -197,9 +197,9 @@ class ConfigurationSpace(Context):
 
   def check_values(self, values):
     count = len(values)
-    if count != self.num_hyperparameters:
-      raise Error(ccs_error(ccs_error.INVALID_VALUE))
-    v = (ccs_datum * count)()
+    if count != self.num_parameters:
+      raise Error(Result(Result.ERROR_INVALID_VALUE))
+    v = (Datum * count)()
     ss = []
     for i in range(count):
       v[i].set_value(values[i], string_store = ss)

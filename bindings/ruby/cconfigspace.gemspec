@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
   s.name = 'cconfigspace'
-  s.version = "0.0.1"
+  s.version = "0.0.2"
   s.author = "Brice Videau"
   s.email = "bvideau@anl.gov"
   s.homepage = "https://github.com/argonne-lcf/CCS"

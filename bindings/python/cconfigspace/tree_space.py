@@ -1,21 +1,21 @@
 import ctypes as ct
 from . import libcconfigspace
-from .base import Object, Error, ccs_error, ccs_rng, ccs_tree, ccs_tree_space, ccs_tree_configuration, ccs_datum, ccs_bool, _ccs_get_function, CEnumeration, _register_vector, _unregister_vector, ccs_retain_object
+from .base import Object, Error, Result, ccs_rng, ccs_tree, ccs_tree_space, ccs_tree_configuration, Datum, ccs_bool, _ccs_get_function, CEnumeration, _register_vector, _unregister_vector, ccs_retain_object
 from .rng import Rng
 from .tree import Tree
 
-class ccs_tree_space_type(CEnumeration):
+class TreeSpaceType(CEnumeration):
   _members_ = [
     ('STATIC', 0),
     'DYNAMIC' ]
 
-ccs_tree_space_get_type = _ccs_get_function("ccs_tree_space_get_type", [ccs_tree_space, ct.POINTER(ccs_tree_space_type)])
+ccs_tree_space_get_type = _ccs_get_function("ccs_tree_space_get_type", [ccs_tree_space, ct.POINTER(TreeSpaceType)])
 ccs_tree_space_get_name = _ccs_get_function("ccs_tree_space_get_name", [ccs_tree_space, ct.POINTER(ct.c_char_p)])
 ccs_tree_space_set_rng = _ccs_get_function("ccs_tree_space_set_rng", [ccs_tree_space, ccs_rng])
 ccs_tree_space_get_rng = _ccs_get_function("ccs_tree_space_get_rng", [ccs_tree_space, ct.POINTER(ccs_rng)])
 ccs_tree_space_get_tree = _ccs_get_function("ccs_tree_space_get_tree", [ccs_tree_space, ct.POINTER(ccs_tree)])
 ccs_tree_space_get_node_at_position = _ccs_get_function("ccs_tree_space_get_node_at_position", [ccs_tree_space, ct.c_size_t, ct.POINTER(ct.c_size_t), ct.POINTER(ccs_tree)])
-ccs_tree_space_get_values_at_position = _ccs_get_function("ccs_tree_space_get_values_at_position", [ccs_tree_space, ct.c_size_t, ct.POINTER(ct.c_size_t), ct.c_size_t, ct.POINTER(ccs_datum)])
+ccs_tree_space_get_values_at_position = _ccs_get_function("ccs_tree_space_get_values_at_position", [ccs_tree_space, ct.c_size_t, ct.POINTER(ct.c_size_t), ct.c_size_t, ct.POINTER(Datum)])
 ccs_tree_space_check_position = _ccs_get_function("ccs_tree_space_check_position", [ccs_tree_space, ct.c_size_t, ct.POINTER(ct.c_size_t), ct.POINTER(ccs_bool)])
 ccs_tree_space_check_configuration = _ccs_get_function("ccs_tree_space_check_configuration", [ccs_tree_space, ccs_tree_configuration, ct.POINTER(ccs_bool)])
 ccs_tree_space_sample = _ccs_get_function("ccs_tree_space_sample", [ccs_tree_space, ct.POINTER(ccs_tree_configuration)])
@@ -25,22 +25,22 @@ class TreeSpace(Object):
 
   @classmethod
   def from_handle(cls, handle, retain = True, auto_release = True):
-    v = ccs_tree_space_type(0)
+    v = TreeSpaceType(0)
     res = ccs_tree_space_get_type(handle, ct.byref(v))
     Error.check(res)
     v = v.value
-    if v == ccs_tree_space_type.STATIC:
+    if v == TreeSpaceType.STATIC:
       return StaticTreeSpace(handle = handle, retain = retain, auto_release = auto_release)
-    elif v == ccs_tree_space_type.DYNAMIC:
+    elif v == TreeSpaceType.DYNAMIC:
       return DynamicTreeSpace(handle = handle, retain = retain, auto_release = auto_release)
     else:
-      raise Error(ccs_error(ccs_error.INVALID_TREE_SPACE))
+      raise Error(Result(Result.ERROR_INVALID_TREE_SPACE))
 
   @property
   def type(self):
     if hasattr(self, "_type"):
       return self._type
-    v = ccs_tree_space_type(0)
+    v = TreeSpaceType(0)
     res = ccs_tree_space_get_type(self.handle, ct.byref(v))
     Error.check(res)
     self._type = v.value
@@ -89,7 +89,7 @@ class TreeSpace(Object):
   def get_values_at_position(self, position):
     count = len(position)
     v1 = (ct.c_size_t * count)(*position)
-    v2 = (ccs_datum * (count + 1))()
+    v2 = (Datum * (count + 1))()
     res = ccs_tree_space_get_values_at_position(self.handle, count, v1, count + 1, v2)
     Error.check(res)
     return [x.value for x in v2]
@@ -128,7 +128,7 @@ ccs_create_static_tree_space = _ccs_get_function("ccs_create_static_tree_space",
 class StaticTreeSpace(TreeSpace):
 
   def __init__(self, handle = None, retain = False, auto_release = True,
-               name = None, tree = None):
+               name = "", tree = None):
     if handle is None:
       handle = ccs_tree_space()
       res = ccs_create_static_tree_space(str.encode(name), tree.handle, ct.byref(handle))
@@ -137,28 +137,31 @@ class StaticTreeSpace(TreeSpace):
     else:
       super().__init__(handle = handle, retain = retain, auto_release = auto_release)
 
-ccs_dynamic_tree_space_del_type = ct.CFUNCTYPE(ccs_error, ccs_tree_space)
-ccs_dynamic_tree_space_get_child_type = ct.CFUNCTYPE(ccs_error, ccs_tree_space, ccs_tree, ct.c_size_t, ct.POINTER(ccs_tree))
-ccs_dynamic_tree_space_serialize_type = ct.CFUNCTYPE(ccs_error, ccs_tree_space, ct.c_size_t, ct.c_void_p, ct.POINTER(ct.c_size_t))
-ccs_dynamic_tree_space_deserialize_type = ct.CFUNCTYPE(ccs_error, ccs_tree_space, ct.c_size_t, ct.c_void_p)
+TreeSpace.Static = StaticTreeSpace
 
-class ccs_dynamic_tree_space_vector(ct.Structure):
+ccs_dynamic_tree_space_del_type = ct.CFUNCTYPE(Result, ccs_tree_space)
+ccs_dynamic_tree_space_get_child_type = ct.CFUNCTYPE(Result, ccs_tree_space, ccs_tree, ct.c_size_t, ct.POINTER(ccs_tree))
+ccs_dynamic_tree_space_serialize_type = ct.CFUNCTYPE(Result, ccs_tree_space, ct.c_size_t, ct.c_void_p, ct.POINTER(ct.c_size_t))
+ccs_dynamic_tree_space_deserialize_type = ct.CFUNCTYPE(Result, ccs_tree_space, ct.c_size_t, ct.c_void_p)
+
+class DynamicTreeSpaceVector(ct.Structure):
   _fields_ = [
     ('delete', ccs_dynamic_tree_space_del_type),
     ('get_child', ccs_dynamic_tree_space_get_child_type),
     ('serialize', ccs_dynamic_tree_space_serialize_type),
     ('deserialize', ccs_dynamic_tree_space_deserialize_type) ]
 
-ccs_create_dynamic_tree_space = _ccs_get_function("ccs_create_dynamic_tree_space", [ct.c_char_p, ccs_tree, ct.POINTER(ccs_dynamic_tree_space_vector), ct.py_object, ct.POINTER(ccs_tree_space)])
+ccs_create_dynamic_tree_space = _ccs_get_function("ccs_create_dynamic_tree_space", [ct.c_char_p, ccs_tree, ct.POINTER(DynamicTreeSpaceVector), ct.py_object, ct.POINTER(ccs_tree_space)])
 ccs_dynamic_tree_space_get_tree_space_data = _ccs_get_function("ccs_dynamic_tree_space_get_tree_space_data", [ccs_tree_space, ct.POINTER(ct.c_void_p)])
 
 def _wrap_user_defined_callbacks(delete, get_child, serialize, deserialize):
   def delete_wrapper(ts):
     try:
       ts = ct.cast(ts, ccs_tree_space)
-      delete(Object.from_handle(ts))
+      if delete is not None:
+        delete(Object.from_handle(ts))
       _unregister_vector(ts)
-      return ccs_error.SUCCESS
+      return Result.SUCCESS
     except Exception as e:
       return Error.set_error(e)
 
@@ -170,7 +173,7 @@ def _wrap_user_defined_callbacks(delete, get_child, serialize, deserialize):
       res = ccs_retain_object(child.handle)
       Error.check(res)
       p_child[0] = child.handle.value
-      return ccs_error.SUCCESS
+      return Result.SUCCESS
     except Exception as e:
       return Error.set_error(e)
 
@@ -182,12 +185,12 @@ def _wrap_user_defined_callbacks(delete, get_child, serialize, deserialize):
         p_sz = ct.cast(p_state_size, ct.c_void_p)
         state = serialize(TreeSpace.from_handle(ts), True if state_size == 0 else False)
         if p_s.value is not None and state_size < ct.sizeof(state):
-          raise Error(ccs_error(ccs_error.INVALID_VALUE))
+          raise Error(Result(Result.ERROR_INVALID_VALUE))
         if p_s.value is not None:
           ct.memmove(p_s, ct.byref(state), ct.sizeof(state))
         if p_sz.value is not None:
           p_state_size[0] = ct.sizeof(state)
-        return ccs_error.SUCCESS
+        return Result.SUCCESS
       except Exception as e:
         return Error.set_error(e)
   else:
@@ -203,7 +206,7 @@ def _wrap_user_defined_callbacks(delete, get_child, serialize, deserialize):
         else:
           state = ct.cast(p_s, POINTER(c_byte * state_size))
         deserialize(TreeSpace.from_handle(ts), state)
-        return ccs_error.SUCCESS
+        return Result.SUCCESS
       except Exception as e:
         return Error.set_error(e)
   else:
@@ -221,10 +224,10 @@ def _wrap_user_defined_callbacks(delete, get_child, serialize, deserialize):
 class DynamicTreeSpace(TreeSpace):
 
   def __init__(self, handle = None, retain = False, auto_release = True,
-               name = None, tree = None, delete = None, get_child = None, serialize = None, deserialize = None, tree_space_data = None):
+               name = "", tree = None, delete = None, get_child = None, serialize = None, deserialize = None, tree_space_data = None):
     if handle is None:
-      if delete is None or get_child is None:
-        raise Error(ccs_error(ccs_error.INVALID_VALUE))
+      if get_child is None:
+        raise Error(Result(Result.ERROR_INVALID_VALUE))
 
       (delete_wrapper,
        get_child_wrapper,
@@ -235,7 +238,7 @@ class DynamicTreeSpace(TreeSpace):
        serialize_wrapper_func,
        deserialize_wrapper_func) = _wrap_user_defined_callbacks(delete, get_child, serialize, deserialize)
       handle = ccs_tree_space()
-      vec = ccs_dynamic_tree_space_vector()
+      vec = DynamicTreeSpaceVector()
       vec.delete = delete_wrapper_func
       vec.get_child = get_child_wrapper_func
       vec.serialize = serialize_wrapper_func
@@ -253,8 +256,8 @@ class DynamicTreeSpace(TreeSpace):
 
   @classmethod
   def deserialize(cls, delete, get_child, serialize = None, deserialize = None, tree_space_data = None, format = 'binary', handle_map = None, path = None, buffer = None, file_descriptor = None, callback = None, callback_data = None):
-    if delete is None or get_child is None:
-      raise Error(ccs_error(ccs_error.INVALID_VALUE))
+    if get_child is None:
+      raise Error(Result(Result.ERROR_INVALID_VALUE))
     (delete_wrapper,
      get_child_wrapper,
      serialize_wrapper,
@@ -264,7 +267,7 @@ class DynamicTreeSpace(TreeSpace):
      serialize_wrapper_func,
      deserialize_wrapper_func) = _wrap_user_defined_callbacks(delete, get_child, serialize, deserialize)
     handle = ccs_tree_space()
-    vector = ccs_dynamic_tree_space_vector()
+    vector = DynamicTreeSpaceVector()
     vector.delete = delete_wrapper_func
     vector.get_child = get_child_wrapper_func
     vector.serialize = serialize_wrapper_func
@@ -285,5 +288,7 @@ class DynamicTreeSpace(TreeSpace):
     else:
       self._tree_space_data = None
     return self._tuner_data
+
+TreeSpace.Dynamic = DynamicTreeSpace
 
 from .tree_configuration import TreeConfiguration

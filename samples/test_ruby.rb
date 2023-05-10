@@ -3,7 +3,7 @@ require_relative '../bindings/ruby/lib/cconfigspace'
 class TestTuner < CCS::UserDefinedTuner
   def initialize(cs, os)
     @history = []
-    @optimums = []
+    @optima = []
     del = lambda { |tuner| nil }
     ask = lambda { |tuner, count|
       if count
@@ -17,13 +17,13 @@ class TestTuner < CCS::UserDefinedTuner
       @history += evaluations
       evaluations.each { |e|
         discard = false
-        @optimums = @optimums.collect { |o|
+        @optima = @optima.collect { |o|
           unless discard
             case e.compare(o)
-            when :CCS_EQUIVALENT, :CCS_WORSE
+            when :CCS_COMPARISON_EQUIVALENT, :CCS_COMPARISON_WORSE
               discard = true
               o
-            when :CCS_NOT_COMPARABLE
+            when :CCS_COMPARISON_NOT_COMPARABLE
               o
             else
               nil
@@ -32,16 +32,16 @@ class TestTuner < CCS::UserDefinedTuner
             o
           end
         }.compact
-        @optimums.push(e) unless discard
+        @optima.push(e) unless discard
       }
     }
     get_history = lambda { |tuner|
       @history
     }
-    get_optimums = lambda { |tuner|
-      @optimums
+    get_optima = lambda { |tuner|
+      @optima
     }
-    super(name: "tuner", configuration_space: cs, objective_space: os, del: del, ask: ask, tell: tell, get_optimums: get_optimums, get_history: get_history)
+    super(name: "tuner", configuration_space: cs, objective_space: os, del: del, ask: ask, tell: tell, get_optima: get_optima, get_history: get_history)
   end
 end
 
@@ -54,16 +54,16 @@ end
 
 def create_tuning_problem
   cs = CCS::ConfigurationSpace::new(name: "cspace")
-  h1 = CCS::NumericalHyperparameter::new(lower: -5.0, upper: 5.0)
-  h2 = CCS::NumericalHyperparameter::new(lower: -5.0, upper: 5.0)
-  h3 = CCS::NumericalHyperparameter::new(lower: -5.0, upper: 5.0)
-  cs.add_hyperparameters [h1, h2, h3]
+  h1 = CCS::NumericalParameter::Float.new(lower: -5.0, upper: 5.0)
+  h2 = CCS::NumericalParameter::Float.new(lower: -5.0, upper: 5.0)
+  h3 = CCS::NumericalParameter::Float.new(lower: -5.0, upper: 5.0)
+  cs.add_parameters [h1, h2, h3]
   os = CCS::ObjectiveSpace::new(name: "ospace")
-  v1 = CCS::NumericalHyperparameter::new(lower: -Float::INFINITY, upper: Float::INFINITY)
-  v2 = CCS::NumericalHyperparameter::new(lower: -Float::INFINITY, upper: Float::INFINITY)
-  os.add_hyperparameters [v1, v2]
-  e1 = CCS::Variable::new(hyperparameter: v1)
-  e2 = CCS::Variable::new(hyperparameter: v2)
+  v1 = CCS::NumericalParameter::Float.new(lower: -Float::INFINITY, upper: Float::INFINITY)
+  v2 = CCS::NumericalParameter::Float.new(lower: -Float::INFINITY, upper: Float::INFINITY)
+  os.add_parameters [v1, v2]
+  e1 = CCS::Expression::Variable::new(parameter: v1)
+  e2 = CCS::Expression::Variable::new(parameter: v2)
   os.add_objectives( [e1, e2] )
   [cs, os]
 end

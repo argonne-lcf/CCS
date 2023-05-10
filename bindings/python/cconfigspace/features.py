@@ -1,11 +1,11 @@
 import ctypes as ct
-from .base import Object, Error, ccs_error, _ccs_get_function, ccs_context, ccs_hyperparameter, ccs_features_space, ccs_features, ccs_datum, ccs_hash, ccs_int, ccs_bool
+from .base import Object, Error, Result, _ccs_get_function, ccs_context, ccs_parameter, ccs_features_space, ccs_features, Datum, ccs_hash, ccs_int, ccs_bool
 from .context import Context
-from .hyperparameter import Hyperparameter
+from .parameter import Parameter
 from .features_space import FeaturesSpace
 from .binding import Binding
 
-ccs_create_features = _ccs_get_function("ccs_create_features", [ccs_features_space, ct.c_size_t, ct.POINTER(ccs_datum), ct.POINTER(ccs_features)])
+ccs_create_features = _ccs_get_function("ccs_create_features", [ccs_features_space, ct.c_size_t, ct.POINTER(Datum), ct.POINTER(ccs_features)])
 ccs_features_get_features_space = _ccs_get_function("ccs_features_get_features_space", [ccs_features, ct.POINTER(ccs_features_space)])
 ccs_features_check = _ccs_get_function("ccs_features_check", [ccs_features, ct.POINTER(ccs_bool)])
 
@@ -16,7 +16,7 @@ class Features(Binding):
       count = 0
       if values:
         count = len(values)
-        vals = (ccs_datum * count)()
+        vals = (Datum * count)()
         ss = []
         for i in range(count):
           vals[i].set_value(values[i], string_store = ss)

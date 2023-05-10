@@ -3,7 +3,7 @@
 #include "utarray.h"
 
 struct _ccs_error_stack_data_s {
-	ccs_error_t  error;
+	ccs_result_t error;
 	const char  *msg;
 	UT_array    *elems;
 };

@@ -3,8 +3,25 @@ SUBDIRS = src include tests connectors
 if SAMPLES
 SUBDIRS += samples
 endif
+SUBDIRS += bindings
+
+cconfigspace.pc: cconfigspace.pc.subst .version_timestamp
+	@echo Processing $@; sh $(top_srcdir)/build-aux/version_subst $(CURVER) $< $@
 
 pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = cconfigspace.pc
 
-EXTRA_DIST = autogen.sh cconfigspace.pc README.md
+CLEANFILES = \
+	cconfigspace.pc
+
+EXTRA_DIST = \
+	autogen.sh \
+	cconfigspace.pc.subst \
+	README.md \
+	build-aux/git-version-gen \
+	build-aux/version_subst
+
+dist-hook: .version
+	@echo Creating ditribution .tarball-version; echo v$(CURVER) > $(distdir)/.tarball-version
+
+@DYNAMIC_VERSION_RULES@

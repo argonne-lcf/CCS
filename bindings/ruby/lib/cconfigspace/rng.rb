@@ -1,11 +1,11 @@
 module CCS
 
-  attach_function :ccs_create_rng, [:pointer], :ccs_error_t
-  attach_function :ccs_rng_set_seed, [:ccs_rng_t, :ulong], :ccs_error_t
-  attach_function :ccs_rng_get, [:ccs_rng_t, :pointer], :ccs_error_t
-  attach_function :ccs_rng_min, [:ccs_rng_t, :pointer], :ccs_error_t
-  attach_function :ccs_rng_max, [:ccs_rng_t, :pointer], :ccs_error_t
-  attach_function :ccs_rng_uniform, [:ccs_rng_t, :pointer], :ccs_error_t
+  attach_function :ccs_create_rng, [:pointer], :ccs_result_t
+  attach_function :ccs_rng_set_seed, [:ccs_rng_t, :ulong], :ccs_result_t
+  attach_function :ccs_rng_get, [:ccs_rng_t, :pointer], :ccs_result_t
+  attach_function :ccs_rng_min, [:ccs_rng_t, :pointer], :ccs_result_t
+  attach_function :ccs_rng_max, [:ccs_rng_t, :pointer], :ccs_result_t
+  attach_function :ccs_rng_uniform, [:ccs_rng_t, :pointer], :ccs_result_t
 
   class Rng < Object
     add_property :min, :ulong, :ccs_rng_min, memoize: true

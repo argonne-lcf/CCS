@@ -1,5 +1,8 @@
 # see semver.org for version info
-AC_INIT([cconfigspace],m4_normalize(m4_include([VERSION])),[bvideau@anl.gov])
+m4_define([fallbackversion], m4_normalize(m4_include([VERSION])))
+AC_INIT([cconfigspace],
+	[m4_esyscmd([build-aux/git-version-gen --fallback fallbackversion .tarball-version])],
+	[bvideau@anl.gov])
 
 # are we in the right source dir ?
 AC_CONFIG_SRCDIR([src/cconfigspace.c])
@@ -81,6 +84,8 @@ AX_VALGRIND_DFLT([drd], [off])
 AX_VALGRIND_DFLT([sgcheck], [off])
 AX_VALGRIND_CHECK
 
+AX_DYNAMIC_VERSION
+
 AC_CONFIG_HEADERS([src/config.h])
 
 AC_CONFIG_FILES([Makefile
@@ -88,7 +93,10 @@ AC_CONFIG_FILES([Makefile
 		src/Makefile
 		tests/Makefile
 		connectors/Makefile
-		cconfigspace.pc])
+		bindings/Makefile
+		bindings/ruby/Makefile
+		bindings/python/Makefile
+		cconfigspace.pc.subst])
 if test "x$enable_samples" = xyes
 then
   AC_CONFIG_FILES([samples/Makefile])

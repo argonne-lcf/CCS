@@ -9,7 +9,7 @@
 #include "cconfigspace/interval.h"
 #include "cconfigspace/rng.h"
 #include "cconfigspace/distribution.h"
-#include "cconfigspace/hyperparameter.h"
+#include "cconfigspace/parameter.h"
 #include "cconfigspace/expression.h"
 #include "cconfigspace/context.h"
 #include "cconfigspace/binding.h"

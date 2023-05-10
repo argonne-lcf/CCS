@@ -1,6 +1,5 @@
-[ '../lib', 'lib' ].each { |d| $:.unshift(d) if File::directory?(d) }
 require 'minitest/autorun'
-require 'cconfigspace'
+require_relative '../lib/cconfigspace'
 
 class CConfigSpaceTestTree < Minitest::Test
   def setup
@@ -50,7 +49,7 @@ class CConfigSpaceTestTree < Minitest::Test
 
     buff = root.serialize
     tree = CCS.deserialize(buffer: buff)
-    assert_equal( tree.object_type, :CCS_TREE )
+    assert_equal( tree.object_type, :CCS_OBJECT_TYPE_TREE )
     assert_equal( ["foo", "bar"], tree.get_values_at_position([2]) )
   end
 end

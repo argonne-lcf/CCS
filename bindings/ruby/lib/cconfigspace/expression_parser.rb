@@ -13,8 +13,8 @@ silence_warnings {
 undef silence_warnings
 module CCS
   AssociativityMap = {
-    :CCS_LEFT_TO_RIGHT => :left,
-    :CCS_RIGHT_TO_LEFT => :right
+    :CCS_ASSOCIATIVITY_TYPE_LEFT_TO_RIGHT => :left,
+    :CCS_ASSOCIATIVITY_TYPE_RIGHT_TO_LEFT => :right
   }
   class ExpressionParser < Whittle::Parser
     class << self
@@ -30,7 +30,7 @@ module CCS
 
     ExpressionSymbols.reverse_each { |k, v|
       next unless v
-      next if k == :CCS_POSITIVE || k == :CCS_NEGATIVE
+      next if k == :CCS_EXPRESSION_TYPE_POSITIVE || k == :CCS_EXPRESSION_TYPE_NEGATIVE
       associativity = AssociativityMap[ExpressionAssociativity[k]]
       precedence = ExpressionPrecedence[k]
       rule(v) % associativity ^ precedence
@@ -43,20 +43,20 @@ module CCS
     rule("]")
     rule(",")
 
-    rule(:none => Regexp.new(TerminalRegexp[:CCS_TERM_NONE])).as { |b|
-      Literal::new(value: nil) }
-    rule(:true => Regexp.new(TerminalRegexp[:CCS_TERM_TRUE])).as { |b|
-      Literal::new(value: true) }
-    rule(:false => Regexp.new(TerminalRegexp[:CCS_TERM_FALSE])).as { |b|
-      Literal::new(value: false) }
-    rule(:float => Regexp.new(TerminalRegexp[:CCS_TERM_FLOAT])).as {|num|
-      Literal::new(value: Float(num)) }
-    rule(:integer => Regexp.new(TerminalRegexp[:CCS_TERM_INTEGER])).as { |num|
-      Literal::new(value: Integer(num)) }
+    rule(:none => Regexp.new(TerminalRegexp[:CCS_TERMINAL_TYPE_NONE])).as { |b|
+      Expression::Literal::new(value: nil) }
+    rule(:true => Regexp.new(TerminalRegexp[:CCS_TERMINAL_TYPE_TRUE])).as { |b|
+      Expression::Literal::new(value: true) }
+    rule(:false => Regexp.new(TerminalRegexp[:CCS_TERMINAL_TYPE_FALSE])).as { |b|
+      Expression::Literal::new(value: false) }
+    rule(:float => Regexp.new(TerminalRegexp[:CCS_TERMINAL_TYPE_FLOAT])).as {|num|
+      Expression::Literal::new(value: Float(num)) }
+    rule(:integer => Regexp.new(TerminalRegexp[:CCS_TERMINAL_TYPE_INTEGER])).as { |num|
+      Expression::Literal::new(value: Integer(num)) }
     rule(:identifier => /[:a-zA-Z_][a-zA-Z_0-9]*/).as { |identifier|
-      Variable::new(hyperparameter: context.hyperparameter_by_name(identifier)) }
-    rule(:string => Regexp.new(TerminalRegexp[:CCS_TERM_STRING])).as { |str|
-      Literal::new(value: eval(str)) }
+      Expression::Variable::new(parameter: context.parameter_by_name(identifier)) }
+    rule(:string => Regexp.new(TerminalRegexp[:CCS_TERMINAL_TYPE_STRING])).as { |str|
+      Expression::Literal::new(value: eval(str)) }
 
     rule(:value) do |r|
       r[:none]
@@ -74,8 +74,8 @@ module CCS
     end
 
     rule(:list) do |r|
-      r["[", :list_item, "]"].as { |_, l, _| List::new(values: l) }
-      r["[", "]"].as { |_, _| List::new(values: []) }
+      r["[", :list_item, "]"].as { |_, l, _| Expression::List::new(values: l) }
+      r["[", "]"].as { |_, _| Expression::List::new(values: []) }
     end
 
     rule(:expr) do |r|
@@ -85,12 +85,12 @@ module CCS
         next if v == "#"
         arity = ExpressionArity[k]
         if arity == 1
-          r[v, :expr].as { |_, a| Expression.unary(type: k, node: a) }
+          r[v, :expr].as { |_, a| Expression.expression_map[k].new(node: a) }
         else
-          r[:expr, v, :expr].as { |a, _, b| Expression.binary(type: k, left: a, right: b) }
+          r[:expr, v, :expr].as { |a, _, b| Expression.expression_map[k].new(left: a, right: b) }
         end
       }
-      r[:expr, "#", :list].as { |v, _, l| Expression.binary(type: :CCS_IN, left: v, right: l) }
+      r[:expr, "#", :list].as { |v, _, l| Expression::In.new(left: v, right: l) }
       r[:value]
     end
 

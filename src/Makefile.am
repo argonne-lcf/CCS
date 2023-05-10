@@ -9,7 +9,25 @@ endif
 
 lib_LTLIBRARIES = libcconfigspace.la
 
+version.h: $(srcdir)/version.h.subst .version_timestamp
+	@echo Processing $@; sh $(top_srcdir)/build-aux/version_subst $(CURVER) $< $@
+
+EXTRA_DIST = \
+	version.h.subst
+
+BUILT_SOURCES = \
+	version.h
+
+nodist_libcconfigspace_la_SOURCES = \
+	version.h
+
+CLEANFILES = \
+	version.h
+
 libcconfigspace_la_SOURCES = \
+	uthash.h \
+	utarray.h \
+	utlist.h \
 	cconfigspace.c \
 	cconfigspace_internal.h \
 	error_stack.c \
@@ -26,16 +44,14 @@ libcconfigspace_la_SOURCES = \
 	distribution_roulette.c \
 	distribution_mixture.c \
 	distribution_multivariate.c \
-	uthash.h \
-	utarray.h \
 	datum_uthash.h \
 	datum_hash.h \
-	hyperparameter.c \
-	hyperparameter_internal.h \
-	hyperparameter_deserialize.h \
-	hyperparameter_numerical.c \
-	hyperparameter_string.c \
-	hyperparameter_categorical.c \
+	parameter.c \
+	parameter_internal.h \
+	parameter_deserialize.h \
+	parameter_numerical.c \
+	parameter_string.c \
+	parameter_categorical.c \
 	context.c \
 	context_internal.h \
 	context_deserialize.h \
@@ -94,7 +110,10 @@ libcconfigspace_la_SOURCES = \
 	tree_evaluation_deserialize.h \
 	tree_tuner.c \
 	tree_tuner_internal.h \
+	tree_tuner_deserialize.h \
 	tree_tuner_random.c \
 	tree_tuner_user_defined.c
+
+@DYNAMIC_VERSION_RULES@
 
 @VALGRIND_CHECK_RULES@

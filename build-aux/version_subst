@@ -1,0 +1,76 @@
+#!/bin/sh
+# Substitutes version elements into files
+
+scriptversion=0.0.1
+me=$0
+ver="version-subst $scriptversion"
+
+usage="\
+Usage: $me [OPTIONS] VERSION INPUT OUTPUT
+
+VERSION should be in the form X.Y.Z.W[-HASH]
+
+Options:
+
+   --help             display this help and exit
+   --version          output version information and exit"
+
+while test $# -gt 0; do
+  case $1 in
+    --help) echo "$usage"; exit 0;;
+    --version) echo "$ver"; exit 0;;
+    -*)
+      echo "$0: Unknown option '$1'." >&2
+      echo "$0: Try '--help' for more information." >&2
+      exit 1;;
+    *)
+      if test "x$version" = x; then
+        version="$1"
+      elif test "x$input" = x; then
+        input="$1"
+      elif test "x$output" = x; then
+        output="$1"
+      else
+        echo "$0: extra non-option argument '$1'." >&2
+        exit 1
+      fi;;
+  esac
+  shift
+done
+
+if test "x$version" = x; then
+  echo "$0: Missing VERSION mandatory argument." >&2
+  echo "$0: Try '--help' for more information." >&2
+else
+  echo "$version" | grep -q '^\([0-9]\+\.\)\{3\}[0-9]\+\(-[a-f0-9]\+\)\?$';
+  retval=$?
+  if [ $retval -eq 1 ]; then
+    echo "$0: Incorrect VERSION format: $version." >&2
+    echo "$0: Try '--help' for more information." >&2
+    exit 1
+  fi
+fi
+
+if test "x$input" = x; then
+  echo "$0: Missing INPUT mandatory argument." >&2
+  echo "$0: Try '--help' for more information." >&2
+fi
+
+if test "x$output" = x; then
+  echo "$0: Missing OUTPUT mandatory argument." >&2
+  echo "$0: Try '--help' for more information." >&2
+fi
+
+version_string="v$version"
+version_major=`echo "$version" | cut -d . -f 1`
+version_minor=`echo "$version" | cut -d . -f 2`
+version_patch=`echo "$version" | cut -d . -f 3`
+version_revision=`echo "$version" | cut -d . -f 4 | cut -d - -f 1`
+
+sed -e "s/==VERSION==/$version/" $input > $output
+sed -i.bak -e "s/==VERSION_STRING==/$version_string/" $output
+sed -i.bak -e "s/==VERSION_MAJOR==/$version_major/" $output
+sed -i.bak -e "s/==VERSION_MINOR==/$version_minor/" $output
+sed -i.bak -e "s/==VERSION_PATCH==/$version_patch/" $output
+sed -i.bak -e "s/==VERSION_REVISION==/$version_revision/" $output
+rm $output.bak

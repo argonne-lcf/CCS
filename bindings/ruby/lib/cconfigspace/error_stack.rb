@@ -1,16 +1,16 @@
 module CCS
 
   attach_function :ccs_get_thread_error, [], :ccs_error_stack_t
-  attach_function :ccs_set_thread_error, [:ccs_error_stack_t], :ccs_error_t
+  attach_function :ccs_set_thread_error, [:ccs_error_stack_t], :ccs_result_t
   attach_function :ccs_clear_thread_error, [], :void
-  attach_function :ccs_create_error_stack, [:pointer, :ccs_error_t, :string], :ccs_error_t
-  attach_function :ccs_error_stack_push, [:ccs_error_stack_t, :string, :int, :string], :ccs_error_t
-  attach_function :ccs_error_stack_get_message, [:ccs_error_stack_t, :pointer], :ccs_error_t
-  attach_function :ccs_error_stack_get_code, [:ccs_error_stack_t, :pointer], :ccs_error_t
-  attach_function :ccs_error_stack_get_elems, [:ccs_error_stack_t, :pointer, :pointer], :ccs_error_t
+  attach_function :ccs_create_error_stack, [:pointer, :ccs_result_t, :string], :ccs_result_t
+  attach_function :ccs_error_stack_push, [:ccs_error_stack_t, :string, :int, :string], :ccs_result_t
+  attach_function :ccs_error_stack_get_message, [:ccs_error_stack_t, :pointer], :ccs_result_t
+  attach_function :ccs_error_stack_get_code, [:ccs_error_stack_t, :pointer], :ccs_result_t
+  attach_function :ccs_error_stack_get_elems, [:ccs_error_stack_t, :pointer, :pointer], :ccs_result_t
 
   class ErrorStack < Object
-    add_property :code, :ccs_error_t, :ccs_error_stack_get_code, memoize: true
+    add_property :code, :ccs_result_t, :ccs_error_stack_get_code, memoize: true
 
     class Elem < FFI::Struct
       layout :file, :pointer,

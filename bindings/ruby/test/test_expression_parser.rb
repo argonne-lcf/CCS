@@ -1,6 +1,5 @@
-[ '../lib', 'lib' ].each { |d| $:.unshift(d) if File::directory?(d) }
 require 'minitest/autorun'
-require 'cconfigspace'
+require_relative '../lib/cconfigspace'
 
 class CConfigSpaceTestExpressionParser < Minitest::Test
   def setup
@@ -19,7 +18,7 @@ class CConfigSpaceTestExpressionParser < Minitest::Test
     m = CCS::ExpressionParser.new.method(:parse)
     exp = "(1 + 3) * 2"
     res = m[exp]
-    assert( res.kind_of? CCS::Expression )
+    assert( res.kind_of? CCS::Expression::Multiply )
     assert_equal( exp, res.to_s )
   end
 
@@ -27,11 +26,11 @@ class CConfigSpaceTestExpressionParser < Minitest::Test
     m = CCS::ExpressionParser.new.method(:parse)
     exp = "5 - 2 - 1"
     res = m[exp]
-    assert( res.kind_of? CCS::Expression )
+    assert( res.kind_of? CCS::Expression::Substract )
     assert_equal( 2, res.eval )
     exp = "5 - +(+2 - 1)"
     res = m[exp]
-    assert( res.kind_of? CCS::Expression )
+    assert( res.kind_of? CCS::Expression::Substract )
     assert_equal( 4, res.eval )
   end
 
@@ -39,11 +38,11 @@ class CConfigSpaceTestExpressionParser < Minitest::Test
     m = CCS::ExpressionParser.new.method(:parse)
     exp = "5 # [3.0, 5]"
     res = m[exp]
-    assert( res.kind_of? CCS::Expression )
+    assert( res.kind_of? CCS::Expression::In )
     assert_equal( true, res.eval )
     exp = "5 # [3.0, 4]"
     res = m[exp]
-    assert( res.kind_of? CCS::Expression )
+    assert( res.kind_of? CCS::Expression::In )
     assert_equal( false, res.eval )
   end
 
@@ -51,12 +50,12 @@ class CConfigSpaceTestExpressionParser < Minitest::Test
     m = CCS::ExpressionParser.new.method(:parse)
     exp = "true"
     res = m[exp]
-    assert( res.kind_of? CCS::Literal )
+    assert( res.kind_of? CCS::Expression::Literal )
     assert_equal( true, res.eval )
     assert_equal( "true", res.to_s )
     exp = "false"
     res = m[exp]
-    assert( res.kind_of? CCS::Literal )
+    assert( res.kind_of? CCS::Expression::Literal )
     assert_equal( false, res.eval )
     assert_equal( "false", res.to_s )
   end
@@ -65,7 +64,7 @@ class CConfigSpaceTestExpressionParser < Minitest::Test
     m = CCS::ExpressionParser.new.method(:parse)
     exp = "none"
     res = m[exp]
-    assert( res.kind_of? CCS::Literal )
+    assert( res.kind_of? CCS::Expression::Literal )
     assert_nil( res.eval )
     assert_equal( "none", res.to_s )
   end
