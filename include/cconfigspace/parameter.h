@@ -81,7 +81,6 @@ ccs_create_numerical_parameter(
 /**
  * Create a new integer numerical parameter.
  * @param[in] name name of the parameter
- * @param[in] data_type type of numerical data
  * @param[in] lower lower bound (included)
  * @param[in] upper upper bound (excluded)
  * @param[in] quantization quantization of the values. 0 means no quantization
@@ -107,7 +106,6 @@ ccs_create_int_numerical_parameter(
 /**
  * Create a new floating point numerical parameter.
  * @param[in] name name of the parameter
- * @param[in] data_type type of numerical data
  * @param[in] lower lower bound (included)
  * @param[in] upper upper bound (excluded)
  * @param[in] quantization quantization of the values. 0 means no quantization
