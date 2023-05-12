@@ -96,9 +96,9 @@ static const UT_icd _object_callback_icd = {
 
 ccs_result_t
 ccs_object_set_destroy_callback(
-	ccs_object_t object,
-	void (*callback)(ccs_object_t object, void *user_data),
-	void *user_data)
+	ccs_object_t                  object,
+	ccs_object_destroy_callback_t callback,
+	void                         *user_data)
 {
 	CCS_REFUTE(!object, CCS_RESULT_ERROR_INVALID_OBJECT);
 	CCS_CHECK_PTR(callback);

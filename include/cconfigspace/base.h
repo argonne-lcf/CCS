@@ -781,7 +781,7 @@ ccs_object_get_refcount(ccs_object_t object, int32_t *refcount_ret);
  * The type of CCS object destruction callbacks.
  */
 typedef void (
-	*ccs_object_release_callback_t)(ccs_object_t object, void *user_data);
+	*ccs_object_destroy_callback_t)(ccs_object_t object, void *user_data);
 
 /**
  * Attach a destruction callback to a CCS object.
@@ -796,7 +796,7 @@ typedef void (
 extern ccs_result_t
 ccs_object_set_destroy_callback(
 	ccs_object_t                  object,
-	ccs_object_release_callback_t callback,
+	ccs_object_destroy_callback_t callback,
 	void                         *user_data);
 
 /**

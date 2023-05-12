@@ -229,7 +229,7 @@ struct _ccs_object_ops_s {
 typedef struct _ccs_object_ops_s _ccs_object_ops_t;
 
 struct _ccs_object_callback_s {
-	ccs_object_release_callback_t callback;
+	ccs_object_destroy_callback_t callback;
 	void                         *user_data;
 };
 typedef struct _ccs_object_callback_s _ccs_object_callback_t;
