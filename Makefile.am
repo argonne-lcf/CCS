@@ -6,7 +6,7 @@ endif
 SUBDIRS += bindings
 
 cconfigspace.pc: cconfigspace.pc.subst .version_timestamp
-	@echo Processing $@; sh $(top_srcdir)/build-aux/version_subst $(CURVER) $< $@
+	@echo Processing $@; sh $(top_srcdir)/build-aux/version-subst $(CURVER) $< $@
 
 pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = cconfigspace.pc
@@ -19,7 +19,7 @@ EXTRA_DIST = \
 	cconfigspace.pc.subst \
 	README.md \
 	build-aux/git-version-gen \
-	build-aux/version_subst
+	build-aux/version-subst
 
 dist-hook: .version
 	@echo Creating ditribution .tarball-version; echo v$(CURVER) > $(distdir)/.tarball-version

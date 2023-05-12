@@ -10,7 +10,7 @@ endif
 lib_LTLIBRARIES = libcconfigspace.la
 
 version.h: $(srcdir)/version.h.subst .version_timestamp
-	@echo Processing $@; sh $(top_srcdir)/build-aux/version_subst $(CURVER) $< $@
+	@echo Processing $@; sh $(top_srcdir)/build-aux/version-subst $(CURVER) $< $@
 
 EXTRA_DIST = \
 	version.h.subst
