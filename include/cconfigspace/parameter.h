@@ -513,6 +513,8 @@ ccs_parameter_validate_values(
  * parameter
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p values or \p results are NULL
  * and \p num_values is greater than 0
+ * @return #CCS_RESULT_ERROR_UNSUPPORTED_OPERATION if the \p parameter is of
+ * type #CCS_PARAMETER_TYPE_STRING
  */
 extern ccs_result_t
 ccs_parameter_convert_samples(
@@ -536,6 +538,8 @@ ccs_parameter_convert_samples(
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p value_ret is NULL
  * @return #CCS_RESULT_ERROR_SAMPLING_UNSUCCESSFUL if the sample could not be
  * generated, because the probability of obtaining a valid sample is too low
+ * @return #CCS_RESULT_ERROR_UNSUPPORTED_OPERATION if the \p parameter is of
+ * type #CCS_PARAMETER_TYPE_STRING
  */
 extern ccs_result_t
 ccs_parameter_sample(
@@ -561,6 +565,8 @@ ccs_parameter_sample(
  * @return #CCS_RESULT_ERROR_SAMPLING_UNSUCCESSFUL if not enough samples could
  * not be generated, because the probability of obtaining a valid sample is too
  * low
+ * @return #CCS_RESULT_ERROR_UNSUPPORTED_OPERATION if the \p parameter is of
+ * type #CCS_PARAMETER_TYPE_STRING
  */
 extern ccs_result_t
 ccs_parameter_samples(
