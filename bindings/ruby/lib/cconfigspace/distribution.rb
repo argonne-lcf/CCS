@@ -319,7 +319,6 @@ module CCS
   attach_function :ccs_create_roulette_distribution, [:size_t, :pointer, :pointer], :ccs_result_t
   attach_function :ccs_roulette_distribution_get_num_areas, [:ccs_distribution_t, :pointer], :ccs_result_t
   attach_function :ccs_roulette_distribution_get_areas, [:ccs_distribution_t, :size_t, :pointer, :pointer], :ccs_result_t
-  attach_function :ccs_roulette_distribution_set_areas, [:ccs_distribution_t, :size_t, :pointer], :ccs_result_t
   class RouletteDistribution < Distribution
     add_property :num_areas, :size_t, :ccs_roulette_distribution_get_num_areas, memoize: true
     def initialize(handle = nil, retain: false, auto_release: true,
@@ -344,13 +343,6 @@ module CCS
       ptr = MemoryPointer::new(:ccs_float_t, count)
       CCS.error_check CCS.ccs_roulette_distribution_get_areas(@handle, count, ptr, nil)
       ptr.read_array_of_ccs_float_t(count)
-    end
-
-    def areas=(areas)
-      p_areas = MemoryPointer::new(:ccs_float_t, areas.size)
-      p_areas.write_array_of_ccs_float_t(areas)
-      CCS.error_check CCS.ccs_roulette_distribution_set_areas(@handle, areas.size, p_areas)
-      areas
     end
   end
 

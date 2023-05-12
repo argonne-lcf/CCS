@@ -498,27 +498,6 @@ ccs_roulette_distribution_get_areas(
 	size_t            *num_areas_ret);
 
 /**
- * Set the areas of a roulette distribution.
- * @param[in,out] distribution
- * @param[in] num_areas the number of areas
- * @param[in] areas an array of \p num_areas positive floating point values
- *                  representing the probability of a given area to be sampled.
- * @return #CCS_RESULT_SUCCESS on success
- * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p areas is NULL; or if \p
- * num_areas is different from the number of areas of the roulette distribution;
- * or if the sum of the areas is 0; or if the areas could not be normalized
- * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p distribution is not a valid
- * CCS distribution
- * @return #CCS_RESULT_ERROR_INVALID_DISTRIBUTION if \p distribution is not a
- * roulette distribution
- */
-extern ccs_result_t
-ccs_roulette_distribution_set_areas(
-	ccs_distribution_t distribution,
-	size_t             num_areas,
-	ccs_float_t       *areas);
-
-/**
  * Get the number of distributions contained in a mixture distribution.
  * @param[in] distribution
  * @param[in] num_distributions_ret a pointer to a variable that will contain

@@ -314,25 +314,3 @@ ccs_roulette_distribution_get_areas(
 		*num_areas_ret = data->num_areas;
 	return CCS_RESULT_SUCCESS;
 }
-
-ccs_result_t
-ccs_roulette_distribution_set_areas(
-	ccs_distribution_t distribution,
-	size_t             num_areas,
-	ccs_float_t       *areas)
-{
-	CCS_CHECK_DISTRIBUTION(distribution, CCS_DISTRIBUTION_TYPE_ROULETTE);
-	_ccs_distribution_roulette_data_t *distrib_data =
-		(_ccs_distribution_roulette_data_t *)distribution->data;
-	CCS_REFUTE(
-		num_areas != distrib_data->num_areas,
-		CCS_RESULT_ERROR_INVALID_VALUE);
-	CCS_CHECK_PTR(areas);
-
-	ccs_float_t sum_areas_inverse;
-	CCS_VALIDATE(_ccs_distribution_roulette_validate_areas(
-		num_areas, areas, &sum_areas_inverse));
-	_ccs_distribution_roulette_normalize_areas(
-		num_areas, areas, sum_areas_inverse, distrib_data->areas);
-	return CCS_RESULT_SUCCESS;
-}
