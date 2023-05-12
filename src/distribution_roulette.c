@@ -230,6 +230,41 @@ _ccs_distribution_roulette_soa_samples(
 	return CCS_RESULT_SUCCESS;
 }
 
+static inline ccs_result_t
+_ccs_distribution_roulette_validate_areas(
+	size_t             num_areas,
+	const ccs_float_t *areas,
+	ccs_float_t       *sum_areas_inverse_ret)
+{
+	ccs_float_t sum_areas = 0.0;
+	for (size_t i = 0; i < num_areas; i++) {
+		CCS_REFUTE(areas[i] < 0.0, CCS_RESULT_ERROR_INVALID_VALUE);
+		sum_areas += areas[i];
+	}
+	CCS_REFUTE(sum_areas == 0.0, CCS_RESULT_ERROR_INVALID_VALUE);
+	ccs_float_t sum_areas_inverse = 1.0 / sum_areas;
+	CCS_REFUTE(
+		isnan(sum_areas_inverse) || !isfinite(sum_areas_inverse),
+		CCS_RESULT_ERROR_INVALID_VALUE);
+	*sum_areas_inverse_ret = sum_areas_inverse;
+	return CCS_RESULT_SUCCESS;
+}
+
+static inline void
+_ccs_distribution_roulette_normalize_areas(
+	size_t             num_areas,
+	const ccs_float_t *areas,
+	ccs_float_t        sum_areas_inverse,
+	ccs_float_t       *roulette_areas)
+{
+	roulette_areas[0] = 0.0;
+	for (size_t i = 1; i <= num_areas; i++)
+		roulette_areas[i] = roulette_areas[i - 1] + areas[i - 1];
+	for (size_t i = 1; i <= num_areas; i++)
+		roulette_areas[i] *= sum_areas_inverse;
+	roulette_areas[num_areas] = 1.0;
+}
+
 ccs_result_t
 ccs_create_roulette_distribution(
 	size_t              num_areas,
@@ -241,17 +276,9 @@ ccs_create_roulette_distribution(
 	CCS_REFUTE(
 		!num_areas || num_areas > INT64_MAX,
 		CCS_RESULT_ERROR_INVALID_VALUE);
-	ccs_float_t sum_areas = 0.0;
-
-	for (size_t i = 0; i < num_areas; i++) {
-		CCS_REFUTE(areas[i] < 0.0, CCS_RESULT_ERROR_INVALID_VALUE);
-		sum_areas += areas[i];
-	}
-	CCS_REFUTE(sum_areas == 0.0, CCS_RESULT_ERROR_INVALID_VALUE);
-	ccs_float_t sum_areas_inverse = 1.0 / sum_areas;
-	CCS_REFUTE(
-		isnan(sum_areas_inverse) || !isfinite(sum_areas_inverse),
-		CCS_RESULT_ERROR_INVALID_VALUE);
+	ccs_float_t sum_areas_inverse;
+	CCS_VALIDATE(_ccs_distribution_roulette_validate_areas(
+		num_areas, areas, &sum_areas_inverse));
 
 	uintptr_t mem = (uintptr_t)calloc(
 		1, sizeof(struct _ccs_distribution_s) +
@@ -277,14 +304,8 @@ ccs_create_roulette_distribution(
 	distrib_data->areas =
 		(ccs_float_t
 			 *)(mem + sizeof(struct _ccs_distribution_s) + sizeof(_ccs_distribution_roulette_data_t));
-
-	distrib_data->areas[0] = 0.0;
-	for (size_t i = 1; i <= num_areas; i++)
-		distrib_data->areas[i] =
-			distrib_data->areas[i - 1] + areas[i - 1];
-	for (size_t i = 1; i <= num_areas; i++)
-		distrib_data->areas[i] *= sum_areas_inverse;
-	distrib_data->areas[num_areas] = 1.0;
+	_ccs_distribution_roulette_normalize_areas(
+		num_areas, areas, sum_areas_inverse, distrib_data->areas);
 	distrib->data     = (_ccs_distribution_data_t *)distrib_data;
 	*distribution_ret = distrib;
 	return CCS_RESULT_SUCCESS;
@@ -343,19 +364,10 @@ ccs_roulette_distribution_set_areas(
 		CCS_RESULT_ERROR_INVALID_VALUE);
 	CCS_CHECK_PTR(areas);
 
-	ccs_float_t sum_areas = 0.0;
-	for (size_t i = 0; i < num_areas; i++) {
-		CCS_REFUTE(areas[i] < 0.0, CCS_RESULT_ERROR_INVALID_VALUE);
-		sum_areas += areas[i];
-	}
-	CCS_REFUTE(sum_areas == 0.0, CCS_RESULT_ERROR_INVALID_VALUE);
-	ccs_float_t sum_areas_inverse = 1.0 / sum_areas;
-	distrib_data->areas[0]        = 0.0;
-	for (size_t i = 1; i <= num_areas; i++)
-		distrib_data->areas[i] =
-			distrib_data->areas[i - 1] + areas[i - 1];
-	for (size_t i = 1; i <= num_areas; i++)
-		distrib_data->areas[i] *= sum_areas_inverse;
-	distrib_data->areas[num_areas] = 1.0;
+	ccs_float_t sum_areas_inverse;
+	CCS_VALIDATE(_ccs_distribution_roulette_validate_areas(
+		num_areas, areas, &sum_areas_inverse));
+	_ccs_distribution_roulette_normalize_areas(
+		num_areas, areas, sum_areas_inverse, distrib_data->areas);
 	return CCS_RESULT_SUCCESS;
 }
