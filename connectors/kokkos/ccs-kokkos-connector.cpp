@@ -187,7 +187,6 @@ kokkosp_finalize_library()
   for (auto const &x : tuners)
 	  CCS_CHECK(ccs_release_object(std::get<0>(x.second)));
   tuners.clear();
-  CCS_CHECK(ccs_fini());
 #if CCS_PROFILE
   clock_gettime(CLOCK_MONOTONIC, &prof_stop);
   ccs_time += ((int64_t)(prof_stop.tv_sec) - (int64_t)(prof_start.tv_sec)) *

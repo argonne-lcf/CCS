@@ -284,6 +284,5 @@ main()
 	test();
 	test_tree_evaluation_deserialize();
 	ccs_clear_thread_error();
-	ccs_fini();
 	return 0;
 }

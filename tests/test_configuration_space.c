@@ -648,6 +648,5 @@ main()
 	test_deserialize();
 	test_configuration_deserialize();
 	ccs_clear_thread_error();
-	ccs_fini();
 	return 0;
 }

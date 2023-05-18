@@ -287,6 +287,5 @@ main()
 	ccs_init();
 	test_tree();
 	ccs_clear_thread_error();
-	ccs_fini();
 	return 0;
 }
