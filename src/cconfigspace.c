@@ -16,17 +16,38 @@ const ccs_version_t ccs_version  = {
         CCS_VERSION_REVISION, CCS_VERSION_PATCH, CCS_VERSION_MINOR,
         CCS_VERSION_MAJOR};
 
+static pthread_mutex_t _ccs_mutex    = PTHREAD_MUTEX_INITIALIZER;
+static int32_t         _ccs_refcount = 0;
+
 ccs_result_t
 ccs_init()
 {
-	gsl_rng_env_setup();
-	return CCS_RESULT_SUCCESS;
+	ccs_result_t err = CCS_RESULT_SUCCESS;
+	pthread_mutex_lock(&_ccs_mutex);
+
+	CCS_REFUTE_ERR_GOTO(
+		err, _ccs_refcount < 0 || _ccs_refcount == INT32_MAX,
+		CCS_RESULT_ERROR_INVALID_VALUE, end);
+	if (_ccs_refcount == 0)
+		gsl_rng_env_setup();
+	_ccs_refcount += 1;
+end:
+	pthread_mutex_unlock(&_ccs_mutex);
+	return err;
 }
 
 ccs_result_t
 ccs_fini()
 {
-	return CCS_RESULT_SUCCESS;
+	ccs_result_t err = CCS_RESULT_SUCCESS;
+	pthread_mutex_lock(&_ccs_mutex);
+
+	CCS_REFUTE_ERR_GOTO(
+		err, _ccs_refcount < 1, CCS_RESULT_ERROR_INVALID_VALUE, end);
+	_ccs_refcount -= 1;
+end:
+	pthread_mutex_unlock(&_ccs_mutex);
+	return err;
 }
 
 ccs_version_t

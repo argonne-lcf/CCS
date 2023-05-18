@@ -701,17 +701,25 @@ extern const ccs_datum_t ccs_false;
 #endif
 
 /**
- * The library initialization function. Should be called before any operation
- * using the library are performed.
- * @return #CCS_RESULT_SUCCESS
+ * The library initialization function. The library usage is ref counted, so
+ * this function can be called several times.
+ * @return #CCS_RESULT_SUCCESS on success
+ * @return #CCS_RESULT_ERROR_INVALID_VALUE if the library reference count is
+ * found to be invalid
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_init();
 
 /**
- * The library deinitialization function. Should be called after all operations
- * using the library are performed.
- * @return #CCS_RESULT_SUCCESS
+ * The library deinitialization function. When done using the library, should
+ * be called once for each time #ccs_init was called.
+ * @return #CCS_RESULT_SUCCESS on success
+ * @return #CCS_RESULT_ERROR_INVALID_VALUE if the library reference count is
+ * found to be invalid
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_fini();
