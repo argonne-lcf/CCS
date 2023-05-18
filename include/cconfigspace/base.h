@@ -852,6 +852,8 @@ ccs_object_get_user_data(ccs_object_t object, void **user_data_ret);
  *                               was attached.
  * @return #CCS_RESULT_SUCCESS on success
  * @return an error code on error
+ * @remarks
+ *   This function must be thread-safe for serialization to be thread safe.
  */
 typedef ccs_result_t (*ccs_object_serialize_callback_t)(
 	ccs_object_t object,
@@ -871,7 +873,8 @@ typedef ccs_result_t (*ccs_object_serialize_callback_t)(
  *                      callback
  * @return #CCS_RESULT_SUCCESS on success
  * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p object is found to be invalid
- * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p callback is NULL
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_object_set_serialize_callback(
@@ -949,7 +952,21 @@ enum ccs_serialize_option_e {
 typedef enum ccs_serialize_option_e ccs_serialize_option_t;
 
 /**
- * A commodity type to represent CCS deserialization callbacks.
+ * The type of CCS object deserialization callbacks.
+ * This callback is used to deserialize object information that were created by
+ * the serialization callback.
+ * @param[in, out] object a CCS object
+ * @param[in] serialize_data_size the size of the memory pointed to by
+ *                                \p serialize_data
+ * @param[in] serialize_data a pointer to a memory area of size \p
+ *                            serialize_data_size. Can be NULL when \p
+ *                            serialize_data_size is zero
+ * @param[in] callback_user_data the pointer provided when the callback
+ *                               was attached.
+ * @return #CCS_RESULT_SUCCESS on success
+ * @return an error code on error
+ * @remarks
+ *   This function must be thread-safe for serialization to be thread safe.
  */
 typedef ccs_result_t (*ccs_object_deserialize_callback_t)(
 	ccs_object_t object,
@@ -1021,6 +1038,9 @@ typedef enum ccs_deserialize_option_e ccs_deserialize_option_t;
  * allocated
  * @return #CCS_RESULT_ERROR_NOT_ENOUGH_DATA in case where the provided buffer
  * is too small for the requested operation
+ * @remarks
+ *   This function is thread-safe as long as objects serialization callbacks
+ *   are thread safe.
  */
 extern ccs_result_t
 ccs_object_serialize(
@@ -1046,6 +1066,9 @@ ccs_object_serialize(
  * allocated
  * @return #CCS_RESULT_ERROR_NOT_ENOUGH_DATA in case where the provided buffer
  * is too small for the requested operation
+ * @remarks
+ *   This function is thread-safe as long as object deserialization callbacks
+ *   are thread safe.
  */
 extern ccs_result_t
 ccs_object_deserialize(

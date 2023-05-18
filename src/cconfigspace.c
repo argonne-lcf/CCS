@@ -156,8 +156,10 @@ ccs_object_set_serialize_callback(
 {
 	CCS_CHECK_BASE_OBJ(object);
 	_ccs_object_internal_t *obj = (_ccs_object_internal_t *)object;
+	pthread_mutex_lock(&obj->mutex);
 	obj->serialize_callback     = callback;
 	obj->serialize_user_data    = user_data;
+	pthread_mutex_unlock(&obj->mutex);
 	return CCS_RESULT_SUCCESS;
 }
 
