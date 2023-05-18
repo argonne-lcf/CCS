@@ -42,7 +42,7 @@ _ccs_tree_samples(
 	CCS_VALIDATE(ccs_rng_get_gsl_rng(rng, &grng));
 	for (size_t i = 0; i < num_indices; i++) {
 		ccs_float_t rnd   = gsl_rng_uniform(grng);
-		ccs_int_t   index = ccs_dichotomic_search(
+		ccs_int_t   index = _ccs_dichotomic_search(
                         data->arity + 1, data->areas, rnd);
 		indices[i] = (size_t)index;
 	}

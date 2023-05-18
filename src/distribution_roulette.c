@@ -188,7 +188,7 @@ _ccs_distribution_roulette_samples(
 	for (size_t i = 0; i < num_values; i++) {
 		ccs_float_t rnd = gsl_rng_uniform(grng);
 		ccs_int_t   index =
-			ccs_dichotomic_search(d->num_areas, d->areas, rnd);
+			_ccs_dichotomic_search(d->num_areas, d->areas, rnd);
 		values[i].i = index;
 	}
 	return CCS_RESULT_SUCCESS;
@@ -211,7 +211,7 @@ _ccs_distribution_roulette_strided_samples(
 	for (size_t i = 0; i < num_values; i++) {
 		ccs_float_t rnd = gsl_rng_uniform(grng);
 		ccs_int_t   index =
-			ccs_dichotomic_search(d->num_areas, d->areas, rnd);
+			_ccs_dichotomic_search(d->num_areas, d->areas, rnd);
 		values[i * stride].i = index;
 	}
 	return CCS_RESULT_SUCCESS;

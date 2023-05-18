@@ -54,7 +54,7 @@ struct _ccs_distribution_common_data_s {
 typedef struct _ccs_distribution_common_data_s _ccs_distribution_common_data_t;
 
 static inline ccs_int_t
-ccs_dichotomic_search(ccs_int_t size, ccs_float_t *values, ccs_float_t target)
+_ccs_dichotomic_search(ccs_int_t size, ccs_float_t *values, ccs_float_t target)
 {
 	ccs_int_t upper = size - 1;
 	ccs_int_t lower = 0;
