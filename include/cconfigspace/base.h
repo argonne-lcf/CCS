@@ -7,6 +7,17 @@
 /**
  * @file base.h
  * Base definition of CCS objects and types.
+ * @remarks
+ *   A note on thread safety: many objects in CCS are immutable, so many calls
+ *   to the API are thread safe as long as the thread holds a valid reference
+ *   to a CCS object. One exception are random number generators which have a
+ *   mutable state by design. Some complex CCS objects are not immutable and
+ *   functions modifying their inner state are generally not thread safe. When
+ *   a function on a complex object is marked thread safe, it means thread safe
+ *   as long as no thread unsafe function is used concurrently on the same
+ *   object. CCS has no global state, so not thread safe means a function
+ *   cannot be used simultaneously with other functions modifying or reading
+ *   the same object state.
  */
 
 #ifdef __cplusplus
@@ -725,8 +736,9 @@ ccs_get_version();
 /**
  * Query the library version string.
  * @return the library version string
+ * @remarks
+ *   This function is thread-safe
  */
-
 extern const char *
 ccs_get_version_string();
 

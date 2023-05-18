@@ -28,6 +28,8 @@ extern "C" {
  * values provided is not to the number of parameters in the features space
  * @return #CCS_RESULT_ERROR_OUT_OF_MEMORY if there was a lack of memory to
  * allocate the new features
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_create_features(
@@ -45,6 +47,8 @@ ccs_create_features(
  * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p features is not a valid CCS
  * features
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p features_space_ret is NULL
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_features_get_features_space(
@@ -62,6 +66,8 @@ ccs_features_get_features_space(
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p value_ret is NULL
  * @return #CCS_RESULT_ERROR_OUT_OF_BOUNDS if \p index is greater than the count
  * of parameters in the features space
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_features_get_value(
@@ -83,6 +89,8 @@ ccs_features_get_value(
  * of parameters in the features space
  * @return #CCS_RESULT_ERROR_OUT_OF_MEMORY if there was a lack of memory while
  * memoizing a string
+ * @remarks
+ *   This function is NOT thread-safe
  */
 extern ccs_result_t
 ccs_features_set_value(ccs_features_t features, size_t index, ccs_datum_t value);
@@ -104,6 +112,8 @@ ccs_features_set_value(ccs_features_t features, size_t index, ccs_datum_t value)
  * num_values is greater than 0; or if \p values is NULL and num_values_ret is
  * NULL; or if \p num_values is less than the number of values that would be
  * returned
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_features_get_values(
@@ -123,6 +133,8 @@ ccs_features_get_values(
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p value_ret is NULL
  * @return #CCS_RESULT_ERROR_INVALID_NAME if no parameter with such \p name
  * exist in the \p features space
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_features_get_value_by_name(
@@ -143,6 +155,8 @@ ccs_features_get_value_by_name(
  * features
  * @return #CCS_RESULT_ERROR_INVALID_CONFIGURATION if \p features is found to be
  * invalid
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_features_check(ccs_features_t features, ccs_bool_t *is_valid_ret);
@@ -157,6 +171,8 @@ ccs_features_check(ccs_features_t features, ccs_bool_t *is_valid_ret);
  * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p features is not a valid CCS
  * features
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p hash_ret is NULL
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_features_hash(ccs_features_t features, ccs_hash_t *hash_ret);
@@ -173,6 +189,8 @@ ccs_features_hash(ccs_features_t features, ccs_hash_t *hash_ret);
  * @return #CCS_RESULT_SUCCESS on success
  * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p features or \p other_features
  * are not a valid CCS object
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_features_cmp(

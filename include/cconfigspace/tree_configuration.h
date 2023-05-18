@@ -27,6 +27,8 @@ extern "C" {
  * if \p position is NULL and \p position_size is greater than 0
  * @return #CCS_RESULT_ERROR_OUT_OF_MEMORY if there was a lack of memory to
  * allocate the new tree configuration
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_create_tree_configuration(
@@ -44,6 +46,8 @@ ccs_create_tree_configuration(
  * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p configuration is not a valid
  * CCS configuration
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p configuration_space_ret is NULL
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_tree_configuration_get_tree_space(
@@ -67,6 +71,8 @@ ccs_tree_configuration_get_tree_space(
  * position_size is greater than 0; or if \p position is NULL and \p
  * position_size_ret is NULL; or if \p position_size is less than the number of
  * values that would be returned
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_tree_configuration_get_position(
@@ -94,6 +100,8 @@ ccs_tree_configuration_get_position(
  * num_values is greater than 0; or if \p values is NULL and \p num_values_ret
  * is NULL; or if \p num_values is less than the number of values that would be
  * returned
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_tree_configuration_get_values(
@@ -113,6 +121,8 @@ ccs_tree_configuration_get_values(
  * @return #CCS_RESULT_ERROR_INVALID_TREE if the configuration's position does
  * not reference a node in the tree.
  * @return #CCS_RESULT_ERROR_INVALID_VALUE \p node_ret is NULL
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_tree_configuration_get_node(
@@ -131,6 +141,8 @@ ccs_tree_configuration_get_node(
  * @return #CCS_RESULT_SUCCESS on success
  * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p configuration is not a valid
  * CCS tree configuration
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_tree_configuration_check(
@@ -147,6 +159,8 @@ ccs_tree_configuration_check(
  * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p configuration is not a valid
  * CCS tree configuration
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p hash_ret is NULL
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_tree_configuration_hash(
@@ -166,6 +180,8 @@ ccs_tree_configuration_hash(
  * @return #CCS_RESULT_SUCCESS on success
  * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p configuration or \p
  * other_configuration are not a valid CCS tree configurations
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_tree_configuration_cmp(

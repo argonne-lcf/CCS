@@ -25,6 +25,8 @@ extern "C" {
  * @return #CCS_RESULT_SUCCESS on success
  * @return #CCS_RESULT_ERROR_OUT_OF_MEMORY if there was a lack of memory to
  * allocate the new tree node.
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_create_tree(size_t arity, ccs_datum_t value, ccs_tree_t *tree_ret);
@@ -37,6 +39,8 @@ ccs_create_tree(size_t arity, ccs_datum_t value, ccs_tree_t *tree_ret);
  * @return #CCS_RESULT_SUCCESS on success
  * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p tree is not a valid CCS tree
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p tree_ret is NULL
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_tree_get_value(ccs_tree_t tree, ccs_datum_t *value_ret);
@@ -49,6 +53,8 @@ ccs_tree_get_value(ccs_tree_t tree, ccs_datum_t *value_ret);
  * @return #CCS_RESULT_SUCCESS on success
  * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p tree is not a valid CCS tree
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p arity_ret is NULL
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_tree_get_arity(ccs_tree_t tree, size_t *arity_ret);
@@ -67,6 +73,8 @@ ccs_tree_get_arity(ccs_tree_t tree, size_t *arity_ret);
  * index
  * @return #CCS_RESULT_ERROR_INVALID_TREE if \p child is already a child of
  * another node; or if child is the root of a tree space
+ * @remarks
+ *   This function is NOT thread-safe
  */
 extern ccs_result_t
 ccs_tree_set_child(ccs_tree_t tree, size_t index, ccs_tree_t child);
@@ -82,6 +90,8 @@ ccs_tree_set_child(ccs_tree_t tree, size_t index, ccs_tree_t child);
  * @return #CCS_RESULT_ERROR_OUT_OF_BOUNDS if \p index is greater than \p tree
  * arity
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p child_ret is NULL
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_tree_get_child(ccs_tree_t tree, size_t index, ccs_tree_t *child_ret);
@@ -103,6 +113,8 @@ ccs_tree_get_child(ccs_tree_t tree, size_t index, ccs_tree_t *child_ret);
  * num_children is greater than 0; or if \p children is NULL and \p
  * num_children_ret is NULL; or if \p children is not NULL and \p num_children
  * is less than the arity of \p tree
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_tree_get_children(
@@ -121,6 +133,8 @@ ccs_tree_get_children(
  * @return #CCS_RESULT_SUCCESS on success
  * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p tree is not a valid CCS tree
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p parent_ret is NULL
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_tree_get_parent(ccs_tree_t tree, ccs_tree_t *parent_ret, size_t *index_ret);
@@ -141,6 +155,8 @@ ccs_tree_get_parent(ccs_tree_t tree, ccs_tree_t *parent_ret, size_t *index_ret);
  * position_size is greater than 0; or if \p position is NULL and \p
  * position_size_ret is NULL; or if \p position_size is less than the number of
  * values that would be returned
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_tree_get_position(
@@ -165,6 +181,8 @@ ccs_tree_get_position(
  * num_values is greater than 0; or if \p values is NULL and \p num_values_ret
  * is NULL; or if \p num_values is less than the number of values that would be
  * returned
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_tree_get_values(
@@ -186,6 +204,8 @@ ccs_tree_get_values(
  * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p tree is not a valid CCS tree
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p is_valid_ret is NULL; or if \p
  * position is NULL and \p position_size is greater than 0
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_tree_position_is_valid(
@@ -211,6 +231,8 @@ ccs_tree_position_is_valid(
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p values is NULL; if \p
  * num_values is less than \p position_size + 1; or if \p position is NULL and
  * \p position_size is greater than 0
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_tree_get_values_at_position(
@@ -234,6 +256,8 @@ ccs_tree_get_values_at_position(
  * @return #CCS_RESULT_ERROR_INVALID_TREE if the position does not define a
  * valid position in the tree space, or if this position is undefined in a
  * static tree space.
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_tree_get_node_at_position(
@@ -250,6 +274,8 @@ ccs_tree_get_node_at_position(
  * @return #CCS_RESULT_SUCCESS on success
  * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p tree is not a valid CCS tree
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p weight_ret is NULL
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_tree_get_weight(ccs_tree_t tree, ccs_float_t *weight_ret);
@@ -260,6 +286,8 @@ ccs_tree_get_weight(ccs_tree_t tree, ccs_float_t *weight_ret);
  * @param[in] weight
  * @return #CCS_RESULT_SUCCESS on success
  * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p tree is not a valid CCS tree
+ * @remarks
+ *   This function is NOT thread-safe
  */
 extern ccs_result_t
 ccs_tree_set_weight(ccs_tree_t tree, ccs_float_t weight);
@@ -272,6 +300,8 @@ ccs_tree_set_weight(ccs_tree_t tree, ccs_float_t weight);
  * @return #CCS_RESULT_SUCCESS on success
  * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p tree is not a valid CCS tree
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p bias_ret is NULL
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_tree_get_bias(ccs_tree_t tree, ccs_float_t *bias_ret);
@@ -282,6 +312,8 @@ ccs_tree_get_bias(ccs_tree_t tree, ccs_float_t *bias_ret);
  * @param[in] bias
  * @return #CCS_RESULT_SUCCESS on success
  * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p tree is not a valid CCS tree
+ * @remarks
+ *   This function is NOT thread-safe
  */
 extern ccs_result_t
 ccs_tree_set_bias(ccs_tree_t tree, ccs_float_t bias);
@@ -301,6 +333,8 @@ ccs_tree_set_bias(ccs_tree_t tree, ccs_float_t bias);
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p index_ret is NULL
  * @return #CCS_RESULT_ERROR_INVALID_DISTRIBUTION if all the weights of \p tree
  * and all it's subtrees are 0
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_tree_sample(ccs_tree_t tree, ccs_rng_t rng, size_t *index_ret);
@@ -322,6 +356,8 @@ ccs_tree_sample(ccs_tree_t tree, ccs_rng_t rng, size_t *index_ret);
  * num_indices is greater than 0
  * @return #CCS_RESULT_ERROR_INVALID_DISTRIBUTION if all the weights of \p tree
  * and all it's subtrees are 0
+ * @remarks
+ *   This function is thread-safe if \p rng is only used by one thread at a time
  */
 extern ccs_result_t
 ccs_tree_samples(

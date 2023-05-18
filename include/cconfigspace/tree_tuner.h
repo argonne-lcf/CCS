@@ -41,6 +41,8 @@ typedef enum ccs_tree_tuner_type_e ccs_tree_tuner_type_t;
  * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p tuner is not a valid CCS tree
  * tuner
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p type_ret is NULL
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_tree_tuner_get_type(ccs_tree_tuner_t tuner, ccs_tree_tuner_type_t *type_ret);
@@ -53,6 +55,8 @@ ccs_tree_tuner_get_type(ccs_tree_tuner_t tuner, ccs_tree_tuner_type_t *type_ret)
  * @return #CCS_RESULT_SUCCESS on success
  * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p tuner is not a valid CCS tuner
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p name_ret is NULL
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_tree_tuner_get_name(ccs_tree_tuner_t tuner, const char **name_ret);
@@ -66,6 +70,8 @@ ccs_tree_tuner_get_name(ccs_tree_tuner_t tuner, const char **name_ret);
  * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p tuner is not a valid CCS tree
  * tuner
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p tree_space_ret is NULL
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_tree_tuner_get_tree_space(
@@ -81,6 +87,8 @@ ccs_tree_tuner_get_tree_space(
  * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p tuner is not a valid CCS tree
  * tuner
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p objective_space_ret is NULL
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_tree_tuner_get_objective_space(
@@ -114,6 +122,8 @@ ccs_tree_tuner_get_objective_space(
  * @return #CCS_RESULT_ERROR_OUT_OF_MEMORY if there was not enough memory to
  * allocate new configurations. Configurations that could be allocated will be
  * returned, and the rest will be NULL
+ * @remarks
+ *   This function is NOT thread-safe
  */
 extern ccs_result_t
 ccs_tree_tuner_ask(
@@ -137,6 +147,8 @@ ccs_tree_tuner_ask(
  * tree evaluation for the problem the tuner is optimizing
  * @return #CCS_RESULT_ERROR_OUT_OF_MEMORY if there was not enough memory to
  * allocate internal data structures
+ * @remarks
+ *   This function is NOT thread-safe
  */
 extern ccs_result_t
 ccs_tree_tuner_tell(
@@ -157,6 +169,8 @@ ccs_tree_tuner_tell(
  * the suggest interface
  * @return #CCS_RESULT_ERROR_OUT_OF_MEMORY if there was not enough memory to
  * allocate new configurations
+ * @remarks
+ *   This function is NOT thread-safe
  */
 extern ccs_result_t
 ccs_tree_tuner_suggest(
@@ -179,6 +193,8 @@ ccs_tree_tuner_suggest(
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p evaluations is NULL and
  * num_evaluations is greater than 0; or if \p evaluations is NULL and \p
  * num_evaluations_ret is NULL
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_tree_tuner_get_optima(
@@ -202,6 +218,8 @@ ccs_tree_tuner_get_optima(
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p evaluations is NULL and
  * num_evaluations is greater than 0; or if \p evaluations is NULL and \p
  * num_evaluations_ret is NULL
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_tree_tuner_get_history(
@@ -225,6 +243,8 @@ ccs_tree_tuner_get_history(
  * tuner_ret is NULL
  * @return #CCS_RESULT_ERROR_OUT_OF_MEMORY if there was not enough memory to
  * allocate the new tree tuner instance
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_create_random_tree_tuner(
@@ -331,7 +351,9 @@ typedef struct ccs_user_defined_tree_tuner_vector_s
  * tuner_ret is NULL; or if \p vector is NULL; or if any interface pointer
  * except suggest is NULL
  * @return #CCS_RESULT_ERROR_OUT_OF_MEMORY if there was not enough memory to
- * allocate the newi tree tuner instance
+ * allocate the new tree tuner instance
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_create_user_defined_tree_tuner(
@@ -352,6 +374,8 @@ ccs_create_user_defined_tree_tuner(
  * @return #CCS_RESULT_ERROR_INVALID_TUNER if \p tuner is not a user defined
  * tree tuner
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p tuner_data_ret is NULL
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_user_defined_tree_tuner_get_tuner_data(

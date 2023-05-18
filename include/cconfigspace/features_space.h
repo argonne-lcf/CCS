@@ -21,6 +21,8 @@ extern "C" {
  * features_space_ret is NULL
  * @return #CCS_RESULT_ERROR_OUT_OF_MEMORY if there was a lack of memory to
  * allocate the new features space
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_create_features_space(
@@ -36,6 +38,8 @@ ccs_create_features_space(
  * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p features space is not a valid
  * CCS features space
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p name_ret is NULL
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_features_space_get_name(
@@ -55,6 +59,8 @@ ccs_features_space_get_name(
  * the features space
  * @return #CCS_RESULT_ERROR_OUT_OF_MEMORY if a memory could not be allocated to
  * store the additional parameter and associated data structures
+ * @remarks
+ *   This function is NOT thread-safe
  */
 extern ccs_result_t
 ccs_features_space_add_parameter(
@@ -77,6 +83,8 @@ ccs_features_space_add_parameter(
  * features space
  * @return #CCS_RESULT_ERROR_OUT_OF_MEMORY if memory could not be allocated to
  * store additional parameters and associated data structures
+ * @remarks
+ *   This function is NOT thread-safe
  */
 extern ccs_result_t
 ccs_features_space_add_parameters(
@@ -94,6 +102,8 @@ ccs_features_space_add_parameters(
  * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p features_space is not a valid
  * CCS features space
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p num_parameters_ret is NULL
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_features_space_get_num_parameters(
@@ -112,6 +122,8 @@ ccs_features_space_get_num_parameters(
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p parameter_ret is NULL
  * @return #CCS_RESULT_ERROR_OUT_OF_BOUNDS if \p index is greater than the count
  * of parameters in the features space
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_features_space_get_parameter(
@@ -132,6 +144,8 @@ ccs_features_space_get_parameter(
  * NULL
  * @return #CCS_RESULT_ERROR_INVALID_NAME if no parameter with such \p name
  * exist in the \p features space
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_features_space_get_parameter_by_name(
@@ -151,6 +165,8 @@ ccs_features_space_get_parameter_by_name(
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p name or \p index_ret are NULL
  * @return #CCS_RESULT_ERROR_INVALID_NAME if no parameter with such \p name
  * exist in the features space
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_features_space_get_parameter_index_by_name(
@@ -170,6 +186,8 @@ ccs_features_space_get_parameter_index_by_name(
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p index_ret is NULL
  * @return #CCS_RESULT_ERROR_INVALID_PARAMETER if \p features_space does not
  * contain \p parameter
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_features_space_get_parameter_index(
@@ -193,6 +211,8 @@ ccs_features_space_get_parameter_index(
  * num_parameters is greater than 0
  * @return #CCS_RESULT_ERROR_INVALID_PARAMETER if at least one of the
  * parameters is not contained in \p features_space
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_features_space_get_parameter_indexes(
@@ -220,6 +240,8 @@ ccs_features_space_get_parameter_indexes(
  * num_parameters is greater than 0; or if \p parameters is NULL and
  * num_parameters_ret is NULL; or if \p num_parameters is less than the number
  * of parameters that would be returned
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_features_space_get_parameters(
@@ -246,6 +268,8 @@ ccs_features_space_get_parameters(
  * memoizing a string
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if the value did not validate or if
  * value_ret is NULL
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_features_space_validate_value(
@@ -269,6 +293,8 @@ ccs_features_space_validate_value(
  * @return #CCS_RESULT_ERROR_INVALID_FEATURES if \p features is not associated
  * to the features space; or if the number of values contained in \p features is
  * not equal to the number of parameters in the features space
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_features_space_check_features(
@@ -295,6 +321,8 @@ ccs_features_space_check_features(
  * is greater than 0
  * @return #CCS_RESULT_ERROR_INVALID_FEATURES if \p num_values is not equal to
  * the number of parameters in the features space
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_features_space_check_features_values(

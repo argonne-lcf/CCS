@@ -57,6 +57,8 @@ typedef enum ccs_comparison_e ccs_comparison_t;
  * space
  * @return #CCS_RESULT_ERROR_OUT_OF_MEMORY if there was a lack of memory to
  * allocate the new evaluation
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_create_evaluation(
@@ -76,6 +78,8 @@ ccs_create_evaluation(
  * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p evaluation is not a valid CCS
  * evaluation
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p objective_space_ret is NULL
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_evaluation_get_objective_space(
@@ -91,6 +95,8 @@ ccs_evaluation_get_objective_space(
  * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p evaluation is not a valid CCS
  * evaluation
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p configuration_ret is NULL
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_evaluation_get_configuration(
@@ -106,6 +112,8 @@ ccs_evaluation_get_configuration(
  * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p evaluation is not a valid CCS
  * evaluation
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p result_ret is NULL
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_evaluation_get_result(
@@ -120,6 +128,8 @@ ccs_evaluation_get_result(
  * @return #CCS_RESULT_SUCCESS on success
  * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p evaluation is not a valid CCS
  * evaluation
+ * @remarks
+ *   This function is NOT thread-safe
  */
 extern ccs_result_t
 ccs_evaluation_set_result(
@@ -138,6 +148,8 @@ ccs_evaluation_set_result(
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p value_ret is NULL
  * @return #CCS_RESULT_ERROR_OUT_OF_BOUNDS if \p index is greater than the count
  * of parameters in the objective space
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_evaluation_get_value(
@@ -160,6 +172,8 @@ ccs_evaluation_get_value(
  * of parameters in the objective space
  * @return #CCS_RESULT_ERROR_OUT_OF_MEMORY if there was a lack of memory while
  * memoizing a string
+ * @remarks
+ *   This function is NOT thread-safe
  */
 extern ccs_result_t
 ccs_evaluation_set_value(
@@ -184,6 +198,8 @@ ccs_evaluation_set_value(
  * num_values is greater than 0; or if \p values is NULL and num_values_ret is
  * NULL; or if num_values is less than the number of values that would be
  * returned
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_evaluation_get_values(
@@ -203,6 +219,8 @@ ccs_evaluation_get_values(
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p value_ret is NULL
  * @return #CCS_RESULT_ERROR_INVALID_NAME if no parameter with such \p name
  * exist in the \p objective space
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_evaluation_get_value_by_name(
@@ -223,6 +241,8 @@ ccs_evaluation_get_value_by_name(
  * evaluation
  * @return #CCS_RESULT_ERROR_INVALID_EVALUATION if \p evaluation was found to be
  * invalid in the context of the objective space
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_evaluation_check(ccs_evaluation_t evaluation, ccs_bool_t *is_valid_ret);
@@ -241,6 +261,8 @@ ccs_evaluation_check(ccs_evaluation_t evaluation, ccs_bool_t *is_valid_ret);
  * was an issue evaluating the objective
  * @return #CCS_RESULT_ERROR_OUT_OF_BOUNDS if \p index is greater than the
  * number of objective in the objective space
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_evaluation_get_objective_value(
@@ -266,6 +288,8 @@ ccs_evaluation_get_objective_value(
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p values is NULL and \p
  * num_values is greater than 0; or if values is NULL and num_values_ret is
  * NULL; or if there was an issue evaluating any of the objectives
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_evaluation_get_objective_values(
@@ -285,6 +309,8 @@ ccs_evaluation_get_objective_values(
  * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p evaluation is not a valid CCS
  * evaluation
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p hash_ret is NULL
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_evaluation_hash(ccs_evaluation_t evaluation, ccs_hash_t *hash_ret);
@@ -302,6 +328,8 @@ ccs_evaluation_hash(ccs_evaluation_t evaluation, ccs_hash_t *hash_ret);
  * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p evaluation or \p
  * other_evaluation are not valid CCS evaluations
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p cmp_ret is NULL
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_evaluation_cmp(
@@ -328,6 +356,8 @@ ccs_evaluation_cmp(
  * configuration is associated a result code different than CCS_SUCESS
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p result_ret is NULL; or if there
  * was an issue evaluating any of the objectives
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_evaluation_compare(

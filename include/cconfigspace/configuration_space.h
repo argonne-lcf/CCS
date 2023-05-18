@@ -24,6 +24,8 @@ extern "C" {
  *                             configuration_space_ret is NULL
  * @return #CCS_RESULT_ERROR_OUT_OF_MEMORY if there was a lack of memory to
  * allocate the new configuration space
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_create_configuration_space(
@@ -39,6 +41,8 @@ ccs_create_configuration_space(
  * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p configuration_space is not a
  * valid CCS configuration space
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p name_ret is NULL
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_configuration_space_get_name(
@@ -52,6 +56,8 @@ ccs_configuration_space_get_name(
  * @return #CCS_RESULT_SUCCESS on success
  * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p configuration_space is not a
  * valid CCS configuration space; or \p rng is not a valid CCS rng
+ * @remarks
+ *   This function is NOT thread-safe
  */
 extern ccs_result_t
 ccs_configuration_space_set_rng(
@@ -66,6 +72,8 @@ ccs_configuration_space_set_rng(
  * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p configuration_space is not a
  * valid CCS configuration space
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p rng_ret is NULL
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_configuration_space_get_rng(
@@ -91,6 +99,8 @@ ccs_configuration_space_get_rng(
  * than one dimension
  * @return #CCS_RESULT_ERROR_OUT_OF_MEMORY if a memory could not be allocated to
  * store the additional parameter and associated data structures
+ * @remarks
+ *   This function is NOT thread-safe
  */
 extern ccs_result_t
 ccs_configuration_space_add_parameter(
@@ -124,6 +134,8 @@ ccs_configuration_space_add_parameter(
  * than one dimension
  * @return #CCS_RESULT_ERROR_OUT_OF_MEMORY if memory could not be allocated to
  * store additional parameters and associated data structures
+ * @remarks
+ *   This function is NOT thread-safe
  */
 extern ccs_result_t
 ccs_configuration_space_add_parameters(
@@ -150,6 +162,8 @@ ccs_configuration_space_add_parameters(
  * configuration space; or if indices contain duplicate values
  * @return #CCS_RESULT_ERROR_OUT_OF_MEMORY if a memory could not be allocated to
  * store additional parameters and associated data structures
+ * @remarks
+ *   This function is NOT thread-safe
  */
 extern ccs_result_t
 ccs_configuration_space_set_distribution(
@@ -167,6 +181,8 @@ ccs_configuration_space_set_distribution(
  * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p configuration_space is not a
  * valid CCS configuration space
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p num_parameters_ret is NULL
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_configuration_space_get_num_parameters(
@@ -185,6 +201,8 @@ ccs_configuration_space_get_num_parameters(
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p parameter_ret is NULL
  * @return #CCS_RESULT_ERROR_OUT_OF_BOUNDS if \p index is greater than the count
  * of parameters in the configuration space
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_configuration_space_get_parameter(
@@ -208,6 +226,8 @@ ccs_configuration_space_get_parameter(
  * \p index_ret is NULL
  * @return #CCS_RESULT_ERROR_OUT_OF_BOUNDS if \p index is greater than the count
  * of parameters in the configuration space
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_configuration_space_get_parameter_distribution(
@@ -229,6 +249,8 @@ ccs_configuration_space_get_parameter_distribution(
  * NULL
  * @return #CCS_RESULT_ERROR_INVALID_NAME if no parameter with such \p name
  * exist in the \p configuration space
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_configuration_space_get_parameter_by_name(
@@ -248,6 +270,8 @@ ccs_configuration_space_get_parameter_by_name(
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p name or \p index_ret are NULL
  * @return #CCS_RESULT_ERROR_INVALID_NAME if no parameter with such \p name
  * exist in the configuration space
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_configuration_space_get_parameter_index_by_name(
@@ -267,6 +291,8 @@ ccs_configuration_space_get_parameter_index_by_name(
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p index_ret is NULL
  * @return #CCS_RESULT_ERROR_INVALID_PARAMETER if \p configuration_space does
  * not contain \p parameter
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_configuration_space_get_parameter_index(
@@ -290,6 +316,8 @@ ccs_configuration_space_get_parameter_index(
  * num_parameters is greater than 0
  * @return #CCS_RESULT_ERROR_INVALID_PARAMETER if at least one of the
  * parameters is not contained in \p configuration_space
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_configuration_space_get_parameter_indexes(
@@ -317,6 +345,8 @@ ccs_configuration_space_get_parameter_indexes(
  * num_parameters is greater than 0; or if \p parameters is NULL and
  * num_parameters_ret is NULL; or if \p num_parameters is less than the number
  * of parameters that would be returned
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_configuration_space_get_parameters(
@@ -343,6 +373,8 @@ ccs_configuration_space_get_parameters(
  * memoizing a string
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if the value did not validate or if
  * value_ret is NULL
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_configuration_space_validate_value(
@@ -370,6 +402,8 @@ ccs_configuration_space_validate_value(
  * process the dependency graph
  * @return #CCS_RESULT_ERROR_INVALID_GRAPH if the addition of the condition
  * would cause the dependency graph to become invalid (cyclic)
+ * @remarks
+ *   This function is NOT thread-safe
  */
 extern ccs_result_t
 ccs_configuration_space_set_condition(
@@ -391,6 +425,8 @@ ccs_configuration_space_set_condition(
  * @return #CCS_RESULT_ERROR_OUT_OF_BOUNDS if index is greater than the number
  * of parameters in \p configuration_space
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p expression_ret is NULL
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_configuration_space_get_condition(
@@ -419,6 +455,8 @@ ccs_configuration_space_get_condition(
  * num_expressions is greater than 0; or if \p expressions is NULL and
  * num_expressions_ret is NULL; or if num_expressions is is less than the number
  * of parameters contained by configuration_space
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_configuration_space_get_conditions(
@@ -441,6 +479,8 @@ ccs_configuration_space_get_conditions(
  * allocate internal data structures
  * @return #CCS_RESULT_ERROR_INVALID_CONFIGURATION if adding the forbidden
  * clause would render the default configuration invalid
+ * @remarks
+ *   This function is NOT thread-safe
  */
 extern ccs_result_t
 ccs_configuration_space_add_forbidden_clause(
@@ -465,6 +505,8 @@ ccs_configuration_space_add_forbidden_clause(
  * allocate internal data structures
  * @return #CCS_RESULT_ERROR_INVALID_CONFIGURATION if adding one of the provided
  * forbidden clause would render the default configuration invalid
+ * @remarks
+ *   This function is NOT thread-safe
  */
 extern ccs_result_t
 ccs_configuration_space_add_forbidden_clauses(
@@ -484,6 +526,8 @@ ccs_configuration_space_add_forbidden_clauses(
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p expression_ret is NULL
  * @return #CCS_RESULT_ERROR_OUT_OF_BOUNDS if \p index is greater than the
  * number of forbidden clauses in the configuration space
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_configuration_space_get_forbidden_clause(
@@ -510,6 +554,8 @@ ccs_configuration_space_get_forbidden_clause(
  * num_expressions is greater than 0; or if or if \p expressions is NULL and \p
  * num_expressions_ret is NULL; or if \p num_expressions is less than then
  * number of expressions that would be returned
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_configuration_space_get_forbidden_clauses(
@@ -538,6 +584,8 @@ ccs_configuration_space_get_forbidden_clauses(
  * associated to the configuration space
  * @return #CCS_RESULT_ERROR_INVALID_GRAPH if the graph of constraints could
  * not be previsoulsy generated
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_configuration_space_check_configuration(
@@ -568,6 +616,8 @@ ccs_configuration_space_check_configuration(
  * to the number of parameters in the configuration space
  * @return #CCS_RESULT_ERROR_INVALID_GRAPH if the graph of constraints could
  * not be previsoulsy generated
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_configuration_space_check_configuration_values(
@@ -589,6 +639,8 @@ ccs_configuration_space_check_configuration_values(
  * allocate the new configuration
  * @return #CCS_RESULT_ERROR_INVALID_GRAPH if the graph of constraints could
  * not be previsoulsy generated
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_configuration_space_get_default_configuration(
@@ -613,6 +665,8 @@ ccs_configuration_space_get_default_configuration(
  * allocate the new configuration
  * @return #CCS_RESULT_ERROR_INVALID_GRAPH if the graph of constraints could
  * not be previsoulsy generated
+ * @remarks
+ *   This function is NOT thread-safe
  */
 extern ccs_result_t
 ccs_configuration_space_sample(
@@ -642,6 +696,8 @@ ccs_configuration_space_sample(
  * returned, and the rest will be NULL
  * @return #CCS_RESULT_ERROR_INVALID_GRAPH if the graph of constraints could
  * not be previsoulsy generated
+ * @remarks
+ *   This function is NOT thread-safe
  */
 extern ccs_result_t
 ccs_configuration_space_samples(

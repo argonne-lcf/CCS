@@ -42,6 +42,8 @@ typedef enum ccs_features_tuner_type_e ccs_features_tuner_type_t;
  * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p features_tuner is not a valid
  * CCS features tuner
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p type_ret is NULL
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_features_tuner_get_type(
@@ -57,6 +59,8 @@ ccs_features_tuner_get_type(
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p name_ret is NULL
  * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p features_tuner is not a valid
  * CCS features tuner
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_features_tuner_get_name(
@@ -72,6 +76,8 @@ ccs_features_tuner_get_name(
  * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p features_tuner is not a valid
  * CCS features tuner
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p configuration_space_ret is NULL
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_features_tuner_get_configuration_space(
@@ -87,6 +93,8 @@ ccs_features_tuner_get_configuration_space(
  * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p features_tuner is not a valid
  * CCS features tuner
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p objective_space_ret is NULL
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_features_tuner_get_objective_space(
@@ -102,6 +110,8 @@ ccs_features_tuner_get_objective_space(
  * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p features_tuner is not a valid
  * CCS features tuner
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p features_space_ret is NULL
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_features_tuner_get_features_space(
@@ -139,6 +149,8 @@ ccs_features_tuner_get_features_space(
  * @return #CCS_RESULT_ERROR_OUT_OF_MEMORY if there was not enough memory to
  * allocate new configurations. Configurations that could be allocated will be
  * returned, and the rest will be NULL
+ * @remarks
+ *   This function is NOT thread-safe
  */
 extern ccs_result_t
 ccs_features_tuner_ask(
@@ -164,6 +176,8 @@ ccs_features_tuner_ask(
  * features evaluation for the problem the features tuner is optimizing
  * @return #CCS_RESULT_ERROR_OUT_OF_MEMORY if there was not enough memory to
  * allocate internal data structures.
+ * @remarks
+ *   This function is NOT thread-safe
  */
 extern ccs_result_t
 ccs_features_tuner_tell(
@@ -187,6 +201,8 @@ ccs_features_tuner_tell(
  * not support the suggest interface
  * @return #CCS_RESULT_ERROR_OUT_OF_MEMORY if there was not enough memory to
  * allocate new configurations
+ * @remarks
+ *   This function is NOT thread-safe
  */
 extern ccs_result_t
 ccs_features_tuner_suggest(
@@ -216,6 +232,8 @@ ccs_features_tuner_suggest(
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p evaluations is NULL and
  * num_evaluations is greater than 0; or if \p evaluations is NULL and \p
  * num_evaluations_ret is NULL
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_features_tuner_get_optima(
@@ -246,6 +264,8 @@ ccs_features_tuner_get_optima(
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p evaluations is NULL and
  * num_evaluations is greater than 0; or if \p evaluations is NULL and \p
  * num_evaluations_ret is NULL
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_features_tuner_get_history(
@@ -273,6 +293,8 @@ ccs_features_tuner_get_history(
  * tuner_ret is NULL
  * @return #CCS_RESULT_ERROR_OUT_OF_MEMORY if there was not enough memory to
  * allocate the new features tuner instance
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_create_random_features_tuner(
@@ -388,6 +410,8 @@ typedef struct ccs_user_defined_features_tuner_vector_s
  * pointer except suggest is NULL
  * @return #CCS_RESULT_ERROR_OUT_OF_MEMORY if there was not enough memory to
  * allocate the new features tuner instance
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_create_user_defined_features_tuner(
@@ -409,6 +433,8 @@ ccs_create_user_defined_features_tuner(
  * @return #CCS_RESULT_ERROR_INVALID_FEATURES_TUNER if \p tuner is not a user
  * defined features tuner
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p tuner_data_ret is NULL
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_user_defined_features_tuner_get_tuner_data(

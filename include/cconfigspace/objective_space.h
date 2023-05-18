@@ -41,6 +41,8 @@ typedef enum ccs_objective_type_e ccs_objective_type_t;
  * objective_space_ret is NULL
  * @return #CCS_RESULT_ERROR_OUT_OF_MEMORY if there was a lack of memory to
  * allocate the new objective space
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_create_objective_space(
@@ -56,6 +58,8 @@ ccs_create_objective_space(
  * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p objective space is not a valid
  * CCS objective space
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p name_ret is NULL
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_objective_space_get_name(
@@ -74,6 +78,8 @@ ccs_objective_space_get_name(
  * the objective space
  * @return #CCS_RESULT_ERROR_OUT_OF_MEMORY if a memory could not be allocated to
  * store the additional parameter and associated data structures
+ * @remarks
+ *   This function is NOT thread-safe
  */
 extern ccs_result_t
 ccs_objective_space_add_parameter(
@@ -96,6 +102,8 @@ ccs_objective_space_add_parameter(
  * objective space
  * @return #CCS_RESULT_ERROR_OUT_OF_MEMORY if memory could not be allocated to
  * store additional parameters and associated data structures
+ * @remarks
+ *   This function is NOT thread-safe
  */
 extern ccs_result_t
 ccs_objective_space_add_parameters(
@@ -113,6 +121,8 @@ ccs_objective_space_add_parameters(
  * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p objective_space is not a valid
  * CCS objective space
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p num_parameters_ret is NULL
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_objective_space_get_num_parameters(
@@ -131,6 +141,8 @@ ccs_objective_space_get_num_parameters(
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p parameter_ret is NULL
  * @return #CCS_RESULT_ERROR_OUT_OF_BOUNDS if \p index is greater than the count
  * of parameters in the objective space
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_objective_space_get_parameter(
@@ -151,6 +163,8 @@ ccs_objective_space_get_parameter(
  * NULL
  * @return #CCS_RESULT_ERROR_INVALID_NAME if no parameter with such \p name
  * exist in the \p objective space
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_objective_space_get_parameter_by_name(
@@ -170,6 +184,8 @@ ccs_objective_space_get_parameter_by_name(
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p name or \p index_ret are NULL
  * @return #CCS_RESULT_ERROR_INVALID_NAME if no parameter with such \p name
  * exist in the objective space
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_objective_space_get_parameter_index_by_name(
@@ -189,6 +205,8 @@ ccs_objective_space_get_parameter_index_by_name(
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p index_ret is NULL
  * @return #CCS_RESULT_ERROR_INVALID_PARAMETER if \p objective_space does not
  *                                      contain \p parameter
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_objective_space_get_parameter_index(
@@ -212,6 +230,8 @@ ccs_objective_space_get_parameter_index(
  * num_parameters is greater than 0
  * @return #CCS_RESULT_ERROR_INVALID_PARAMETER if at least one of the
  * parameters is not contained in \p objective_space
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_objective_space_get_parameter_indexes(
@@ -239,6 +259,8 @@ ccs_objective_space_get_parameter_indexes(
  * num_parameters is greater than 0; or if \p parameters is NULL and
  * num_parameters_ret is NULL; or if \p num_parameters is less than the number
  * of parameters that would be returned
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_objective_space_get_parameters(
@@ -266,6 +288,8 @@ ccs_objective_space_get_parameters(
  * is greater than 0
  * @return #CCS_RESULT_ERROR_INVALID_EVALUATION if \p num_values is not equal to
  * the number of parameters in the objective space
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_objective_space_check_evaluation_values(
@@ -292,6 +316,8 @@ ccs_objective_space_check_evaluation_values(
  * memoizing a string
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if the value did not validate or if
  * value_ret is NULL
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_objective_space_validate_value(
@@ -313,6 +339,8 @@ ccs_objective_space_validate_value(
  * parameter that is not in the objective space
  * @return #CCS_RESULT_ERROR_OUT_OF_MEMORY if there was not enough memory to
  * allocate internal data structures
+ * @remarks
+ *   This function is NOT thread-safe
  */
 extern ccs_result_t
 ccs_objective_space_add_objective(
@@ -337,6 +365,8 @@ ccs_objective_space_add_objective(
  * parameter that is not in the objective space
  * @return #CCS_RESULT_ERROR_OUT_OF_MEMORY if there was not enough memory to
  * allocate internal data structures
+ * @remarks
+ *   This function is NOT thread-safe
  */
 extern ccs_result_t
 ccs_objective_space_add_objectives(
@@ -360,6 +390,8 @@ ccs_objective_space_add_objectives(
  * are NULL
  * @return #CCS_RESULT_ERROR_OUT_OF_BOUNDS if \p index is greater than the
  * number of objectives in the objective space
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_objective_space_get_objective(
@@ -390,6 +422,8 @@ ccs_objective_space_get_objective(
  * is greater than 0; or if or if \p expressions is NULL and \p
  * num_objectives_ret is NULL; or if \p num_objectives is less than then number
  * of expressions that would be returned
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_objective_space_get_objectives(
