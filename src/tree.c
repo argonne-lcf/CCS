@@ -12,7 +12,6 @@ _ccs_tree_del(ccs_object_t o)
 			cd->index                   = 0;
 			ccs_release_object(data->children[i]);
 		}
-	ccs_release_object(data->distribution);
 	return CCS_RESULT_SUCCESS;
 }
 
@@ -155,6 +154,7 @@ ccs_create_tree(size_t arity, ccs_datum_t value, ccs_tree_t *tree_ret)
 	uintptr_t mem = (uintptr_t)calloc(
 		1, sizeof(struct _ccs_tree_s) + sizeof(_ccs_tree_data_t) +
 			   (arity + 1) * sizeof(ccs_float_t) +
+			   (arity + 2) * sizeof(ccs_float_t) +
 			   arity * sizeof(ccs_tree_t) + size_strs);
 	CCS_REFUTE(!mem, CCS_RESULT_ERROR_OUT_OF_MEMORY);
 
@@ -170,34 +170,30 @@ ccs_create_tree(size_t arity, ccs_datum_t value, ccs_tree_t *tree_ret)
 			 *)(mem + sizeof(struct _ccs_tree_s) + sizeof(_ccs_tree_data_t));
 	for (size_t j = 0; j < arity + 1; j++)
 		data->weights[j] = 1.0;
-	data->bias         = 1.0;
-	data->sum_weights  = arity + 1;
-	data->parent       = NULL;
-	data->distribution = NULL;
+	data->sum_weights = arity + 1;
+	data->areas =
+		(ccs_float_t
+			 *)(mem + sizeof(struct _ccs_tree_s) + sizeof(_ccs_tree_data_t) + (arity + 1) * sizeof(ccs_float_t));
+	_ccs_distribution_roulette_normalize_areas(
+		arity + 1, data->weights, 1.0 / (data->sum_weights),
+		data->areas);
+	data->bias   = 1.0;
+	data->parent = NULL;
 	data->children =
 		(ccs_tree_t
-			 *)(mem + sizeof(struct _ccs_tree_s) + sizeof(_ccs_tree_data_t) + (arity + 1) * sizeof(ccs_float_t));
+			 *)(mem + sizeof(struct _ccs_tree_s) + sizeof(_ccs_tree_data_t) + (arity + 1) * sizeof(ccs_float_t) + (arity + 2) * sizeof(ccs_float_t));
 	if (value.type == CCS_DATA_TYPE_STRING) {
 		char *str_pool =
-			(char *)(mem + sizeof(struct _ccs_tree_s) + sizeof(_ccs_tree_data_t) + (arity + 1) * sizeof(ccs_float_t) + arity * sizeof(ccs_tree_t));
+			(char *)(mem + sizeof(struct _ccs_tree_s) + sizeof(_ccs_tree_data_t) + (arity + 1) * sizeof(ccs_float_t) + (arity + 2) * sizeof(ccs_float_t) + arity * sizeof(ccs_tree_t));
 		data->value = ccs_string(str_pool);
 		strcpy(str_pool, value.value.s);
 	} else {
 		data->value       = value;
 		data->value.flags = CCS_DATUM_FLAG_DEFAULT;
 	}
-	ccs_result_t err = CCS_RESULT_SUCCESS;
-	CCS_VALIDATE_ERR_GOTO(
-		err,
-		ccs_create_roulette_distribution(
-			arity + 1, data->weights, &data->distribution),
-		err_mem);
 	tree->data = (_ccs_tree_data_t *)data;
 	*tree_ret  = tree;
 	return CCS_RESULT_SUCCESS;
-err_mem:
-	free((void *)mem);
-	return err;
 }
 
 ccs_result_t
@@ -233,9 +229,10 @@ _ccs_tree_update_weight(ccs_tree_t tree, size_t index, ccs_float_t weight)
 			sum_weights += tree_data->weights[i];
 		tree_data->sum_weights = sum_weights;
 		if (sum_weights > 0)
-			CCS_VALIDATE(ccs_roulette_distribution_set_areas(
-				tree_data->distribution, n,
-				tree_data->weights));
+			_ccs_distribution_roulette_normalize_areas(
+				tree_data->arity + 1, tree_data->weights,
+				1.0 / (tree_data->sum_weights),
+				tree_data->areas);
 		if (tree_data->parent) {
 			weight    = sum_weights * tree_data->bias;
 			index     = tree_data->index;
@@ -521,22 +518,6 @@ ccs_tree_get_node_at_position(
 		CCS_REFUTE(!tree, CCS_RESULT_ERROR_INVALID_TREE);
 	}
 	*tree_ret = tree;
-	return CCS_RESULT_SUCCESS;
-}
-
-static inline ccs_result_t
-_ccs_tree_samples(
-	_ccs_tree_data_t *data,
-	ccs_rng_t         rng,
-	size_t            num_indices,
-	size_t           *indices)
-{
-	CCS_REFUTE(
-		data->sum_weights == 0.0,
-		CCS_RESULT_ERROR_INVALID_DISTRIBUTION);
-	CCS_VALIDATE(ccs_distribution_samples(
-		data->distribution, rng, num_indices,
-		(ccs_numeric_t *)indices));
 	return CCS_RESULT_SUCCESS;
 }
 

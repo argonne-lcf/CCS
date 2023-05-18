@@ -196,16 +196,6 @@ test_roulette_distribution()
 
 	check_samples(num_areas, areas, counts, num_samples, samples);
 
-	for (size_t i = 0; i < num_areas; i++)
-		areas[i] = (ccs_float_t)1;
-	err = ccs_roulette_distribution_set_areas(distrib, num_areas, areas);
-	assert(err == CCS_RESULT_SUCCESS);
-
-	err = ccs_distribution_samples(distrib, rng, num_samples, samples);
-	assert(err == CCS_RESULT_SUCCESS);
-
-	check_samples(num_areas, areas, counts, num_samples, samples);
-
 	err = ccs_release_object(distrib);
 	assert(err == CCS_RESULT_SUCCESS);
 	err = ccs_release_object(rng);

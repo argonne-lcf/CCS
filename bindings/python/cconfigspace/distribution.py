@@ -349,7 +349,6 @@ NormalDistribution.Int = NormalIntDistribution
 ccs_create_roulette_distribution = _ccs_get_function("ccs_create_roulette_distribution", [ct.c_size_t, ct.POINTER(ccs_float), ct.POINTER(ccs_distribution)])
 ccs_roulette_distribution_get_num_areas = _ccs_get_function("ccs_roulette_distribution_get_num_areas", [ccs_distribution, ct.POINTER(ct.c_size_t)])
 ccs_roulette_distribution_get_areas = _ccs_get_function("ccs_roulette_distribution_get_areas", [ccs_distribution, ct.c_size_t, ct.POINTER(ccs_float), ct.POINTER(ct.c_size_t)])
-ccs_roulette_distribution_set_areas = _ccs_get_function("ccs_roulette_distribution_set_areas", [ccs_distribution, ct.c_size_t, ct.POINTER(ccs_float)])
 
 class RouletteDistribution(Distribution):
   def __init__(self, handle = None, retain = False, auto_release = True,
@@ -386,12 +385,6 @@ class RouletteDistribution(Distribution):
     res = ccs_roulette_distribution_get_areas(self.handle, self.num_areas, v, None)
     Error.check(res)
     return list(v)
-
-  @areas.setter
-  def areas(self, areas):
-    v = (ccs_float * len(areas))(*areas)
-    res = ccs_roulette_distribution_set_areas(self.handle, len(areas), v)
-    Error.check(res)
 
 Distribution.Roulette = RouletteDistribution
 

@@ -155,28 +155,19 @@ _ccs_tree_space_samples(
 		size_t     index;
 		ccs_tree_t tree = data->tree;
 		if (tree) {
-			CCS_REFUTE_ERR_GOTO(
-				err, tree->data->sum_weights == 0.0,
-				CCS_RESULT_ERROR_INVALID_DISTRIBUTION, err_arr);
 			CCS_VALIDATE_ERR_GOTO(
 				err,
-				ccs_distribution_samples(
-					tree->data->distribution, rng, 1,
-					(ccs_numeric_t *)&index),
+				_ccs_tree_samples(tree->data, rng, 1, &index),
 				err_arr);
 			while (index != tree->data->arity) {
 				utarray_push_back(arr, &index);
 				tree = tree->data->children[index];
 				if (!tree)
 					break;
-				CCS_REFUTE(
-					tree->data->sum_weights == 0.0,
-					CCS_RESULT_ERROR_INVALID_DISTRIBUTION);
 				CCS_VALIDATE_ERR_GOTO(
 					err,
-					ccs_distribution_samples(
-						tree->data->distribution, rng,
-						1, (ccs_numeric_t *)&index),
+					_ccs_tree_samples(
+						tree->data, rng, 1, &index),
 					err_arr);
 			}
 		}

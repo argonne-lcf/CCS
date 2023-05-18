@@ -369,7 +369,7 @@ _ccs_distribution_mixture_samples(
 
 	for (size_t i = 0; i < num_values; i++) {
 		ccs_float_t rnd   = gsl_rng_uniform(grng);
-		ccs_int_t   index = ccs_dichotomic_search(
+		ccs_int_t   index = _ccs_dichotomic_search(
                         d->num_distributions, d->weights, rnd);
 		CCS_VALIDATE(ccs_distribution_get_ops(d->distributions[index])
 				     ->samples(
@@ -395,7 +395,7 @@ _ccs_distribution_mixture_strided_samples(
 
 	for (size_t i = 0; i < num_values; i++) {
 		ccs_float_t rnd   = gsl_rng_uniform(grng);
-		ccs_int_t   index = ccs_dichotomic_search(
+		ccs_int_t   index = _ccs_dichotomic_search(
                         d->num_distributions, d->weights, rnd);
 		CCS_VALIDATE(ccs_distribution_get_ops(d->distributions[index])
 				     ->samples(
@@ -432,7 +432,7 @@ _ccs_distribution_mixture_soa_samples(
 
 	for (size_t i = 0; i < num_values; i++) {
 		ccs_float_t rnd   = gsl_rng_uniform(grng);
-		ccs_int_t   index = ccs_dichotomic_search(
+		ccs_int_t   index = _ccs_dichotomic_search(
                         d->num_distributions, d->weights, rnd);
 		for (size_t j = 0; j < dim; j++)
 			if (values[j])
