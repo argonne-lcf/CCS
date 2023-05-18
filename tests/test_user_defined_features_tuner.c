@@ -373,5 +373,6 @@ main()
 	ccs_init();
 	test();
 	ccs_clear_thread_error();
+	ccs_fini();
 	return 0;
 }

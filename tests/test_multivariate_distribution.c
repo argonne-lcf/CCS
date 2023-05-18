@@ -461,5 +461,6 @@ main()
 	test_distribution_parameters_sample();
 	test_distribution_parameters_sample_oversampling();
 	ccs_clear_thread_error();
+	ccs_fini();
 	return 0;
 }

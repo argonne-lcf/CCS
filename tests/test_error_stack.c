@@ -97,5 +97,6 @@ main()
 {
 	ccs_init();
 	test_error_stack();
+	ccs_fini();
 	return 0;
 }

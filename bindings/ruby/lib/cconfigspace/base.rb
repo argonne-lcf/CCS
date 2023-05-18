@@ -484,6 +484,7 @@ module CCS
   typedef Datum.by_value, :ccs_datum_t
 
   attach_function :ccs_init, [], :ccs_result_t
+  attach_function :ccs_fini, [], :ccs_result_t
   attach_function :ccs_get_result_name, [:ccs_result_t, :pointer], :ccs_result_t
   attach_function :ccs_get_version, [], :ccs_version_t
   attach_function :ccs_get_version_string, [], :string

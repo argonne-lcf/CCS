@@ -413,6 +413,7 @@ def _ccs_get_function(method, argtypes = [], restype = Result):
   return res
 
 ccs_init = _ccs_get_function("ccs_init")
+ccs_fini = _ccs_get_function("ccs_fini")
 ccs_get_result_name = _ccs_get_function("ccs_get_result_name", [Result, ct.POINTER(ct.c_char_p)])
 ccs_get_version = _ccs_get_function("ccs_get_version", restype = Version)
 ccs_get_version_string = _ccs_get_function("ccs_get_version_string", restype = ct.c_char_p)

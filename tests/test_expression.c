@@ -1196,4 +1196,5 @@ main()
 	test_deserialize_variable();
 	test_deserialize();
 	ccs_clear_thread_error();
+	ccs_fini();
 }

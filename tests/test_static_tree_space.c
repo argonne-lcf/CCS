@@ -258,5 +258,6 @@ main()
 	ccs_init();
 	test_static_tree_space();
 	ccs_clear_thread_error();
+	ccs_fini();
 	return 0;
 }

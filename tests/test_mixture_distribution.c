@@ -337,5 +337,6 @@ main()
 	test_mixture_distribution_strided_samples();
 	test_mixture_distribution_soa_samples();
 	ccs_clear_thread_error();
+	ccs_fini();
 	return 0;
 }

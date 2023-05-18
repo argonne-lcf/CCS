@@ -704,11 +704,17 @@ extern const ccs_datum_t ccs_false;
  * The library initialization function. Should be called before any operation
  * using the library are performed.
  * @return #CCS_RESULT_SUCCESS
- * @remarks
- *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_init();
+
+/**
+ * The library deinitialization function. Should be called after all operations
+ * using the library are performed.
+ * @return #CCS_RESULT_SUCCESS
+ */
+extern ccs_result_t
+ccs_fini();
 
 /**
  * Return the string corresponding to the provided CCS result.

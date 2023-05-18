@@ -16,18 +16,16 @@ const ccs_version_t ccs_version  = {
         CCS_VERSION_REVISION, CCS_VERSION_PATCH, CCS_VERSION_MINOR,
         CCS_VERSION_MAJOR};
 
-static pthread_once_t _ccs_initialized = PTHREAD_ONCE_INIT;
-
-static void
-_ccs_init()
-{
-	gsl_rng_env_setup();
-}
-
 ccs_result_t
 ccs_init()
 {
-	pthread_once(&_ccs_initialized, _ccs_init);
+	gsl_rng_env_setup();
+	return CCS_RESULT_SUCCESS;
+}
+
+ccs_result_t
+ccs_fini()
+{
 	return CCS_RESULT_SUCCESS;
 }
 

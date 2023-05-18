@@ -233,5 +233,6 @@ main()
 	test_samples();
 	test_oversampling();
 	ccs_clear_thread_error();
+	ccs_fini();
 	return 0;
 }

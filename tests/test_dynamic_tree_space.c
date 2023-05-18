@@ -220,5 +220,6 @@ main()
 	ccs_init();
 	test_dynamic_tree_space();
 	ccs_clear_thread_error();
+	ccs_fini();
 	return 0;
 }

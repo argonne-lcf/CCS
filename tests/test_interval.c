@@ -338,5 +338,6 @@ main()
 	test_interval_include_float();
 	test_interval_include_int();
 	ccs_clear_thread_error();
+	ccs_fini();
 	return 0;
 }
