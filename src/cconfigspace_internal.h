@@ -48,6 +48,119 @@ _ccs_interval_include(ccs_interval_t *interval, ccs_numeric_t value)
 #define CCS_ATOMIC_STORE(val, set)                                             \
 	__atomic_store_n(&(val), set, __ATOMIC_RELAXED)
 
+#if THREAD_SAFE
+#define CCS_THREAD_SAFE 1
+#else
+#define CCS_THREAD_SAFE 0
+#endif
+
+static inline int _ccs_do_nothing(void) { return 0; }
+
+#if CCS_THREAD_SAFE
+
+#define CCS_MUTEX_LOCK(mut)                                                    \
+	do {                                                                   \
+		pthread_mutex_lock(&(mut));                                    \
+	} while (0)
+
+#define CCS_MUTEX_UNLOCK(mut)                                                  \
+	do {                                                                   \
+		pthread_mutex_unlock(&(mut));                                  \
+	} while (0)
+
+#define CCS_MUTEX_INIT(mut)                                                    \
+	do {                                                                   \
+		pthread_mutex_init(&(mut));                                    \
+	} while (0)
+
+#define CCS_MUTEX_DESTROY(mut)                                                 \
+	do {                                                                   \
+		pthread_mutex_destroy(&(mut));                                 \
+	} while (0)
+
+#define CCS_RWLOCK_RDLOCK(lck)                                                 \
+	do {                                                                   \
+		pthread_rwlock_rdlock(&(lck));                                 \
+	} while (0)
+
+#define CCS_RWLOCK_WRLOCK(lck)                                                 \
+	do {                                                                   \
+		pthread_rwlock_wrlock(&(lck));                                 \
+	} while (0)
+
+#define CCS_RWLOCK_UNLOCK(lck)                                                 \
+	do {                                                                   \
+		pthread_rwlock_unlock(&(lck));                                 \
+	} while (0)
+
+#define CCS_RWLOCK_INIT(lck)                                                   \
+	do {                                                                   \
+		pthread_rwlock_init(&(lck));                                   \
+	} while (0)
+
+#define CCS_RWLOCK_DESTROY(lck)                                                \
+	do {                                                                   \
+		pthread_rwlock_destroy(&(lck));                                \
+	} while (0)
+
+#else
+
+#define CCS_MUTEX_LOCK(mut)                                                    \
+	do {                                                                   \
+		_ccs_do_nothing();                                             \
+	} while (0)
+
+#define CCS_MUTEX_UNLOCK(mut)                                                  \
+	do {                                                                   \
+		_ccs_do_nothing();                                             \
+	} while (0)
+
+#define CCS_MUTEX_INIT(mut)                                                    \
+	do {                                                                   \
+		_ccs_do_nothing();                                             \
+	} while (0)
+
+#define CCS_MUTEX_DESTROY(mut)                                                 \
+	do {                                                                   \
+		_ccs_do_nothing();                                             \
+	} while (0)
+
+#define CCS_RWLOCK_RDLOCK(lck)                                                 \
+	do {                                                                   \
+		_ccs_do_nothing();                                             \
+	} while (0)
+
+#define CCS_RWLOCK_WRLOCK(lck)                                                 \
+	do {                                                                   \
+		_ccs_do_nothing();                                             \
+	} while (0)
+
+#define CCS_RWLOCK_UNLOCK(lck)                                                 \
+	do {                                                                   \
+		_ccs_do_nothing();                                             \
+	} while (0)
+
+#define CCS_RWLOCK_INIT(lck)                                                   \
+	do {                                                                   \
+		_ccs_do_nothing();                                             \
+	} while (0)
+
+#define CCS_RWLOCK_DESTROY(lck)                                                \
+	do {                                                                   \
+		_ccs_do_nothing();                                             \
+	} while (0)
+
+#endif
+
+#define CCS_OBJ_RDLOCK(o)                                                      \
+	CCS_RWLOCK_RDLOCK(((_ccs_object_template_t *)(o))->obj.lock)
+
+#define CCS_OBJ_WRLOCK(o)                                                      \
+	CCS_RWLOCK_WRLOCK(((_ccs_object_template_t *)(o))->obj.lock)
+
+#define CCS_OBJ_UNLOCK(o)                                                      \
+	CCS_RWLOCK_UNLOCK(((_ccs_object_template_t *)(o))->obj.lock)
+
 #if CCS_RICH_ERRORS
 #define CCS_ADD_STACK_ELEM()                                                   \
 	do {                                                                   \
@@ -255,7 +368,10 @@ struct _ccs_object_internal_s {
 	ccs_object_type_t               type;
 	int32_t                         refcount;
 	void                           *user_data;
+#if CCS_THREAD_SAFE
 	pthread_mutex_t                 mutex;
+	pthread_rwlock_t                lock;
+#endif
 	UT_array                       *callbacks;
 	_ccs_object_ops_t              *ops;
 	ccs_object_serialize_callback_t serialize_callback;
@@ -279,7 +395,10 @@ _ccs_object_init(
 	o->type                = t;
 	o->refcount            = 1;
 	o->user_data           = NULL;
+#if CCS_THREAD_SAFE
 	o->mutex               = (pthread_mutex_t)PTHREAD_MUTEX_INITIALIZER;
+        o->lock                = (pthread_rwlock_t)PTHREAD_RWLOCK_INITIALIZER;
+#endif
 	o->callbacks           = NULL;
 	o->ops                 = ops;
 	o->serialize_callback  = NULL;

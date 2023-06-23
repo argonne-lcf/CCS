@@ -16,14 +16,16 @@ const ccs_version_t ccs_version  = {
         CCS_VERSION_REVISION, CCS_VERSION_PATCH, CCS_VERSION_MINOR,
         CCS_VERSION_MAJOR};
 
+#if CCS_THREAD_SAFE
 static pthread_mutex_t _ccs_mutex    = PTHREAD_MUTEX_INITIALIZER;
+#endif
 static int32_t         _ccs_refcount = 0;
 
 ccs_result_t
 ccs_init()
 {
 	ccs_result_t err = CCS_RESULT_SUCCESS;
-	pthread_mutex_lock(&_ccs_mutex);
+	CCS_MUTEX_LOCK(_ccs_mutex);
 
 	CCS_REFUTE_ERR_GOTO(
 		err, _ccs_refcount < 0 || _ccs_refcount == INT32_MAX,
@@ -32,7 +34,7 @@ ccs_init()
 		gsl_rng_env_setup();
 	_ccs_refcount += 1;
 end:
-	pthread_mutex_unlock(&_ccs_mutex);
+	CCS_MUTEX_UNLOCK(_ccs_mutex);
 	return err;
 }
 
@@ -40,13 +42,13 @@ ccs_result_t
 ccs_fini()
 {
 	ccs_result_t err = CCS_RESULT_SUCCESS;
-	pthread_mutex_lock(&_ccs_mutex);
+	CCS_MUTEX_LOCK(_ccs_mutex);
 
 	CCS_REFUTE_ERR_GOTO(
 		err, _ccs_refcount < 1, CCS_RESULT_ERROR_INVALID_VALUE, end);
 	_ccs_refcount -= 1;
 end:
-	pthread_mutex_unlock(&_ccs_mutex);
+	CCS_MUTEX_UNLOCK(_ccs_mutex);
 	return err;
 }
 
@@ -99,7 +101,8 @@ ccs_release_object(ccs_object_t object)
 				cb->callback(object, cb->user_data);
 			}
 			utarray_free(obj->callbacks);
-			pthread_mutex_destroy(&obj->mutex);
+			CCS_MUTEX_DESTROY(obj->mutex);
+			CCS_RWLOCK_DESTROY(obj->lock);
 		}
 		CCS_VALIDATE(obj->ops->del(object));
 		free(object);
@@ -142,9 +145,9 @@ ccs_object_set_destroy_callback(
 	if (!obj->callbacks)
 		utarray_new(obj->callbacks, &_object_callback_icd);
 	_ccs_object_callback_t cb = {callback, user_data};
-	pthread_mutex_lock(&obj->mutex);
+	CCS_MUTEX_LOCK(obj->mutex);
 	utarray_push_back(obj->callbacks, &cb);
-	pthread_mutex_unlock(&obj->mutex);
+	CCS_MUTEX_UNLOCK(obj->mutex);
 	return CCS_RESULT_SUCCESS;
 }
 
@@ -153,7 +156,9 @@ ccs_object_set_user_data(ccs_object_t object, void *user_data)
 {
 	CCS_CHECK_BASE_OBJ(object);
 	_ccs_object_internal_t *obj = (_ccs_object_internal_t *)object;
-	CCS_ATOMIC_STORE(obj->user_data, user_data);
+	CCS_RWLOCK_WRLOCK(obj->lock);
+	obj->user_data = user_data;
+	CCS_RWLOCK_UNLOCK(obj->lock);
 	return CCS_RESULT_SUCCESS;
 }
 
@@ -163,7 +168,9 @@ ccs_object_get_user_data(ccs_object_t object, void **user_data_ret)
 	CCS_CHECK_BASE_OBJ(object);
 	CCS_CHECK_PTR(user_data_ret);
 	_ccs_object_internal_t *obj = (_ccs_object_internal_t *)object;
-	*user_data_ret              = CCS_ATOMIC_LOAD(obj->user_data);
+	CCS_RWLOCK_RDLOCK(obj->lock);
+	*user_data_ret              = obj->user_data;
+	CCS_RWLOCK_UNLOCK(obj->lock);
 	return CCS_RESULT_SUCCESS;
 }
 
@@ -175,10 +182,10 @@ ccs_object_set_serialize_callback(
 {
 	CCS_CHECK_BASE_OBJ(object);
 	_ccs_object_internal_t *obj = (_ccs_object_internal_t *)object;
-	pthread_mutex_lock(&obj->mutex);
+	CCS_RWLOCK_WRLOCK(obj->lock);
 	obj->serialize_callback  = callback;
 	obj->serialize_user_data = user_data;
-	pthread_mutex_unlock(&obj->mutex);
+	CCS_RWLOCK_UNLOCK(obj->lock);
 	return CCS_RESULT_SUCCESS;
 }
 

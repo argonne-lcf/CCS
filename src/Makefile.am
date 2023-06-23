@@ -7,6 +7,10 @@ if STRICT
 AM_CFLAGS += -Werror
 endif
 
+if THREAD_SAFE
+AM_CFLAGS += -DTHREAD_SAFE
+endif
+
 lib_LTLIBRARIES = libcconfigspace.la
 
 version.h: $(srcdir)/version.h.subst .version_timestamp

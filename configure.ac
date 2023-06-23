@@ -41,6 +41,9 @@ AM_CONDITIONAL([ISMACOS], [test "x$macos" = xyes])
 AC_ARG_ENABLE([strict], AS_HELP_STRING([--enable-strict], [Enable -Werror]))
 AM_CONDITIONAL([STRICT], [test "x$enable_strict" = xyes])
 
+AC_ARG_ENABLE([thread-safe], AS_HELP_STRING([--enable-thread-safe], [Build with thread saffety enabled]))
+AM_CONDITIONAL([THREAD_SAFE], [test "x$enable_thread_safe" = xyes])
+
 AC_ARG_ENABLE([kokkos-connector],
                AS_HELP_STRING([--enable-kokkos-connector], [Enable CConfigSpace Kokkos connector]),
                [], [enable_kokkos_connector=yes])
@@ -79,7 +82,6 @@ fi
 PKG_CHECK_MODULES([GSL], [gsl])
 
 #check for valgrind
-AX_VALGRIND_DFLT([helgrind], [off])
 AX_VALGRIND_DFLT([drd], [off])
 AX_VALGRIND_DFLT([sgcheck], [off])
 AX_VALGRIND_CHECK
