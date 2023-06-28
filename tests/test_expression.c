@@ -164,15 +164,11 @@ test_equal_numerical()
 	ccs_datum_t               values[2];
 	ccs_result_t              err;
 
-	err = ccs_create_configuration_space(
-		"my_config_space", &configuration_space);
-	assert(err == CCS_RESULT_SUCCESS);
-
 	parameters[0] = create_dummy_numerical("param1");
 	parameters[1] = create_dummy_numerical("param2");
 
-	err           = ccs_configuration_space_add_parameters(
-                configuration_space, 2, parameters, NULL);
+	err           = ccs_create_configuration_space(
+                "my_config_space", 2, parameters, &configuration_space);
 	assert(err == CCS_RESULT_SUCCESS);
 
 	nodes[0]  = ccs_object(parameters[0]);
@@ -223,13 +219,10 @@ test_equal_categorical()
 	ccs_datum_t               values[2];
 	ccs_result_t              err;
 
-	err = ccs_create_configuration_space(
-		"my_config_space", &configuration_space);
-	assert(err == CCS_RESULT_SUCCESS);
 	parameters[0] = create_dummy_categorical("param1");
 	parameters[1] = create_dummy_categorical("param2");
-	err           = ccs_configuration_space_add_parameters(
-                configuration_space, 2, parameters, NULL);
+	err           = ccs_create_configuration_space(
+                "my_config_space", 2, parameters, &configuration_space);
 	assert(err == CCS_RESULT_SUCCESS);
 
 	nodes[0]  = ccs_object(parameters[0]);
@@ -266,13 +259,10 @@ test_equal_ordinal()
 	ccs_datum_t               values[2];
 	ccs_result_t              err;
 
-	err = ccs_create_configuration_space(
-		"my_config_space", &configuration_space);
-	assert(err == CCS_RESULT_SUCCESS);
 	parameters[0] = create_dummy_ordinal("param1");
 	parameters[1] = create_dummy_ordinal("param2");
-	err           = ccs_configuration_space_add_parameters(
-                configuration_space, 2, parameters, NULL);
+	err           = ccs_create_configuration_space(
+                "my_config_space", 2, parameters, &configuration_space);
 	assert(err == CCS_RESULT_SUCCESS);
 
 	nodes[0]  = ccs_object(parameters[0]);
@@ -900,18 +890,17 @@ test_check_context()
 {
 	ccs_expression_t          expression1, expression2;
 	ccs_parameter_t           parameter1, parameter2, parameter3;
+	ccs_parameter_t           parameters[2];
 	ccs_configuration_space_t space;
 	ccs_result_t              err;
 
-	parameter1 = create_dummy_categorical("param1");
-	parameter2 = create_dummy_numerical("param2");
-	parameter3 = create_dummy_ordinal("param3");
+	parameter1    = create_dummy_categorical("param1");
+	parameter2    = create_dummy_numerical("param2");
+	parameter3    = create_dummy_ordinal("param3");
+	parameters[0] = parameter1;
+	parameters[1] = parameter2;
 
-	err        = ccs_create_configuration_space("space", &space);
-	assert(err == CCS_RESULT_SUCCESS);
-	err = ccs_configuration_space_add_parameter(space, parameter1, NULL);
-	assert(err == CCS_RESULT_SUCCESS);
-	err = ccs_configuration_space_add_parameter(space, parameter2, NULL);
+	err = ccs_create_configuration_space("space", 2, parameters, &space);
 	assert(err == CCS_RESULT_SUCCESS);
 
 	err = ccs_create_binary_expression(

@@ -12,13 +12,18 @@ extern "C" {
  */
 
 /**
- * Create a new empty features space.
+ * Create a new features space.
  * @param[in] name pointer to a string that will be copied internally
  * @param[out] features_space_ret a pointer to the variable that will hold
  *                                     the newly created features space
  * @return #CCS_RESULT_SUCCESS on success
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p name is NULL; or if \p
- * features_space_ret is NULL
+ * features_space_ret is NULL; or if \p parameters is NULL; or if \p
+ * num_parameters is NULL
+ * @return #CCS_RESULT_ERROR_INVALID_OBJECT if a parameter is not a valid CCS
+ * parameter
+ * @return #CCS_RESULT_ERROR_INVALID_PARAMETER if a parameter appears more than
+ * once in \p parameters; or if two or more parameters share the same name
  * @return #CCS_RESULT_ERROR_OUT_OF_MEMORY if there was a lack of memory to
  * allocate the new features space
  * @remarks
@@ -27,6 +32,8 @@ extern "C" {
 extern ccs_result_t
 ccs_create_features_space(
 	const char           *name,
+	size_t                num_parameters,
+	ccs_parameter_t      *parameters,
 	ccs_features_space_t *features_space_ret);
 
 /**
@@ -45,52 +52,6 @@ extern ccs_result_t
 ccs_features_space_get_name(
 	ccs_features_space_t features_space,
 	const char         **name_ret);
-
-/**
- * Add a parameter to the features space.
- * @param[in,out] features_space
- * @param[in] parameter the parameter to add to the features
- *                           space
- * @return #CCS_RESULT_SUCCESS on success
- * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p features_space is not a valid
- * CCS features space; or \p parameter is not a valid CCS parameter
- * @return #CCS_RESULT_ERROR_INVALID_PARAMETER if \p parameter is already in
- * the features space; or if a parameter with the same name already exists in
- * the features space
- * @return #CCS_RESULT_ERROR_OUT_OF_MEMORY if a memory could not be allocated to
- * store the additional parameter and associated data structures
- * @remarks
- *   This function is NOT thread-safe
- */
-extern ccs_result_t
-ccs_features_space_add_parameter(
-	ccs_features_space_t features_space,
-	ccs_parameter_t      parameter);
-
-/**
- * Add parameters to the features space.
- * @param[in,out] features_space
- * @param[in] num_parameters the number of provided parameters
- * @param[in] parameters an array of \p num_parameters parameters
- *                            to add to the features space
- * @return #CCS_RESULT_SUCCESS on success
- * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p features_space is not a valid
- * CCS features space; or a parameter is not a valid CCS parameter
- * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p parameters is NULL and \p
- * num_parameters is greater than 0
- * @return #CCS_RESULT_ERROR_INVALID_PARAMETER if a parameter is already in the
- * features space; or if a parameter with the same name already exists in the
- * features space
- * @return #CCS_RESULT_ERROR_OUT_OF_MEMORY if memory could not be allocated to
- * store additional parameters and associated data structures
- * @remarks
- *   This function is NOT thread-safe
- */
-extern ccs_result_t
-ccs_features_space_add_parameters(
-	ccs_features_space_t features_space,
-	size_t               num_parameters,
-	ccs_parameter_t     *parameters);
 
 /**
  * Get the number of parameters in a features space.

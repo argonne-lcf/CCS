@@ -18,9 +18,7 @@ module CCS
     end
   end
 
-  attach_function :ccs_create_objective_space, [:string, :pointer], :ccs_result_t
-  attach_function :ccs_objective_space_add_parameter, [:ccs_objective_space_t, :ccs_parameter_t], :ccs_result_t
-  attach_function :ccs_objective_space_add_parameters, [:ccs_objective_space_t, :size_t, :pointer], :ccs_result_t
+  attach_function :ccs_create_objective_space, [:string, :size_t, :pointer, :pointer], :ccs_result_t
   attach_function :ccs_objective_space_add_objective, [:ccs_objective_space_t, :ccs_expression_t, :ccs_objective_type_t], :ccs_result_t
   attach_function :ccs_objective_space_add_objectives, [:ccs_objective_space_t, :size_t, :pointer, :pointer], :ccs_result_t
   attach_function :ccs_objective_space_get_objective, [:ccs_objective_space_t, :size_t, :pointer, :pointer], :ccs_result_t
@@ -30,32 +28,21 @@ module CCS
   class ObjectiveSpace < Context
 
     def initialize(handle = nil, retain: false, auto_release: true,
-                   name: "")
+                   name: "", parameters: nil)
       if handle
         super(handle, retain: retain, auto_release: auto_release)
       else
+        count = parameters.size
+        p_parameters = MemoryPointer::new(:ccs_parameter_t, count)
+        p_parameters.write_array_of_pointer(parameters.collect(&:handle))
         ptr = MemoryPointer::new(:ccs_objective_space_t)
-        CCS.error_check CCS.ccs_create_objective_space(name, ptr)
+        CCS.error_check CCS.ccs_create_objective_space(name, count, p_parameters, ptr)
         super(ptr.read_ccs_objective_space_t, retain: false)
       end
     end
 
     def self.from_handle(handle, retain: true, auto_release: true)
       self::new(handle, retain: retain, auto_release: auto_release)
-    end
-
-    def add_parameter(parameter)
-      CCS.error_check CCS.ccs_objective_space_add_parameter(@handle, parameter)
-      self
-    end
-
-    def add_parameters(parameters)
-      count = parameters.size
-      return self if count == 0
-      p_parameters = MemoryPointer::new(:ccs_parameter_t, count)
-      p_parameters.write_array_of_pointer(parameters.collect(&:handle))
-      CCS.error_check CCS.ccs_objective_space_add_parameters(@handle, count, p_parameters)
-      self
     end
 
     def add_objective(expression, type: :CCS_OBJECTIVE_TYPE_MINIMIZE)

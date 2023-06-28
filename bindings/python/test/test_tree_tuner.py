@@ -25,9 +25,8 @@ class TestTreeTuner(unittest.TestCase):
   def create_tuning_problem(self):
     tree = generate_tree(5, 0)
     ts = ccs.StaticTreeSpace(name = 'space', tree = tree)
-    os = ccs.ObjectiveSpace(name = "ospace")
     v1 = ccs.NumericalParameter.Float(lower = float('-inf'), upper = float('inf'))
-    os.add_parameter(v1)
+    os = ccs.ObjectiveSpace(name = "ospace", parameters = [v1])
     e1 = ccs.Expression.Variable(parameter = v1)
     os.add_objectives( {e1: ccs.ObjectiveType.MAXIMIZE} )
     return (ts, os)

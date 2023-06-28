@@ -8,19 +8,16 @@ import cconfigspace as ccs
 class TestConfigurationSpace(unittest.TestCase):
 
   def test_create(self):
-    cs = ccs.ConfigurationSpace(name = "space")
-    self.assertEqual( ccs.ObjectType.CONFIGURATION_SPACE, cs.object_type )
-    self.assertEqual( "space", cs.name )
-    self.assertIsInstance( cs.rng, ccs.Rng )
-    self.assertEqual( 0, cs.num_parameters )
-    self.assertEqual( [], cs.conditions )
-    self.assertEqual( [], cs.forbidden_clauses )
     h1 = ccs.NumericalParameter.Float()
     h2 = ccs.NumericalParameter.Float()
     h3 = ccs.NumericalParameter.Float()
-    cs.add_parameter(h1)
-    cs.add_parameters([h2, h3])
+    cs = ccs.ConfigurationSpace(name = "space", parameters = [h1, h2, h3])
+    self.assertEqual( ccs.ObjectType.CONFIGURATION_SPACE, cs.object_type )
+    self.assertEqual( "space", cs.name )
+    self.assertIsInstance( cs.rng, ccs.Rng )
     self.assertEqual( 3, cs.num_parameters )
+    self.assertEqual( [None, None, None], cs.conditions )
+    self.assertEqual( [], cs.forbidden_clauses )
     self.assertEqual( h1, cs.parameter(0) )
     self.assertEqual( h2, cs.parameter(1) )
     self.assertEqual( h3, cs.parameter(2) )
@@ -35,11 +32,10 @@ class TestConfigurationSpace(unittest.TestCase):
       self.assertTrue( cs.check(c) )
 
   def test_set_distribution(self):
-    cs = ccs.ConfigurationSpace(name = "space")
     h1 = ccs.NumericalParameter.Float()
     h2 = ccs.NumericalParameter.Float()
     h3 = ccs.NumericalParameter.Float()
-    cs.add_parameters([h1, h2, h3])
+    cs = ccs.ConfigurationSpace(name = "space", parameters = [h1, h2, h3])
     distributions = [ ccs.UniformDistribution.Float(lower = 0.1, upper = 0.3),
                       ccs.UniformDistribution.Float(lower = 0.2, upper = 0.6) ]
     d = ccs.MultivariateDistribution(distributions = distributions)
@@ -63,8 +59,7 @@ class TestConfigurationSpace(unittest.TestCase):
     h1 = ccs.NumericalParameter.Float(lower = -1.0, upper = 1.0, default = 0.0)
     h2 = ccs.NumericalParameter.Float(lower = -1.0, upper = 1.0)
     h3 = ccs.NumericalParameter.Float(lower = -1.0, upper = 1.0)
-    cs = ccs.ConfigurationSpace(name = "space")
-    cs.add_parameters([h1, h2, h3])
+    cs = ccs.ConfigurationSpace(name = "space", parameters = [h1, h2, h3])
     e1 = ccs.Expression.Less(left = h2, right = 0.0)
     cs.set_condition(h3, e1)
     e2 = ccs.Expression.Less(left = h3, right = 0.0)
@@ -142,8 +137,7 @@ class TestConfigurationSpace(unittest.TestCase):
       name = 'p9',
       values = ['1', '8', '16'])
 
-    cs = ccs.ConfigurationSpace(name = "omp")
-    cs.add_parameters([p1, p2, p3, p4, p5, p6, p7, p8, p9])
+    cs = ccs.ConfigurationSpace(name = "omp", parameters = [p1, p2, p3, p4, p5, p6, p7, p8, p9])
 
     cond0 = ccs.Expression.Equal(left = p1, right = '#pragma omp #P2')
     cond1 = ccs.Expression.Equal(left = p1, right = '#pragma omp target teams distribute #P2')
@@ -239,8 +233,7 @@ class TestConfigurationSpace(unittest.TestCase):
       name = 'p9',
       values = ['1', '8', '16'])
 
-    cs = ccs.ConfigurationSpace(name = "omp")
-    cs.add_parameters([p1, p2, p3, p4, p5, p6, p7, p8, p9])
+    cs = ccs.ConfigurationSpace(name = "omp", parameters = [p1, p2, p3, p4, p5, p6, p7, p8, p9])
 
     cs.set_condition(p2, "p1 # ['#pragma omp #P2', '#pragma omp target teams distribute #P2']")
     cs.set_condition(p4, "p1 == '#pragma omp target teams distribute #P4'")

@@ -7,16 +7,13 @@ import cconfigspace as ccs
 class TestObjectiveSpace(unittest.TestCase):
 
   def test_create(self):
-    os = ccs.ObjectiveSpace(name = "space")
-    self.assertEqual( "space", os.name )
-    self.assertEqual( 0, os.num_parameters )
-    self.assertEqual( [], os.objectives )
     h1 = ccs.NumericalParameter.Float()
     h2 = ccs.NumericalParameter.Float()
     h3 = ccs.NumericalParameter.Float()
-    os.add_parameter(h1)
-    os.add_parameters([h2, h3])
+    os = ccs.ObjectiveSpace(name = "space", parameters = [h1, h2, h3])
+    self.assertEqual( "space", os.name )
     self.assertEqual( 3, os.num_parameters )
+    self.assertEqual( [], os.objectives )
     self.assertEqual( h1, os.parameter(0) )
     self.assertEqual( h2, os.parameter(1) )
     self.assertEqual( h3, os.parameter(2) )

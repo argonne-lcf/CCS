@@ -21,34 +21,6 @@ create_dummy_parameter(const char *name)
 }
 
 void
-test_create()
-{
-	ccs_features_space_t features_space;
-	ccs_result_t         err;
-	ccs_object_type_t    type;
-	const char          *name;
-	size_t               sz;
-
-	err = ccs_create_features_space("my_features_space", &features_space);
-	assert(err == CCS_RESULT_SUCCESS);
-
-	err = ccs_object_get_type(features_space, &type);
-	assert(err == CCS_RESULT_SUCCESS);
-	assert(type == CCS_OBJECT_TYPE_FEATURES_SPACE);
-
-	err = ccs_features_space_get_name(features_space, &name);
-	assert(err == CCS_RESULT_SUCCESS);
-	assert(strcmp(name, "my_features_space") == 0);
-
-	err = ccs_features_space_get_num_parameters(features_space, &sz);
-	assert(err == CCS_RESULT_SUCCESS);
-	assert(sz == 0);
-
-	err = ccs_release_object(features_space);
-	assert(err == CCS_RESULT_SUCCESS);
-}
-
-void
 check_features(
 	ccs_features_space_t features_space,
 	size_t               sz,
@@ -97,56 +69,45 @@ check_features(
 }
 
 void
-test_add()
+test_create()
 {
 	ccs_parameter_t      parameters[3];
+	ccs_parameter_t      parameter3;
 	ccs_features_space_t features_space;
 	ccs_result_t         err;
-
-	err = ccs_create_features_space("my_features_space", &features_space);
-	assert(err == CCS_RESULT_SUCCESS);
+	ccs_object_type_t    type;
+	const char          *name;
 
 	parameters[0] = create_dummy_parameter("param1");
 	parameters[1] = create_dummy_parameter("param2");
-	parameters[2] = create_dummy_parameter("param3");
+	parameter3    = create_dummy_parameter("param3");
+	parameters[2] = parameters[0];
 
-	err = ccs_features_space_add_parameter(features_space, parameters[0]);
-	assert(err == CCS_RESULT_SUCCESS);
+	err           = ccs_create_features_space(
+                "my_features_space", 3, NULL, &features_space);
+	assert(err == CCS_RESULT_ERROR_INVALID_VALUE);
 
-	err = ccs_features_space_add_parameter(features_space, parameters[0]);
+	err = ccs_create_features_space(
+		"my_features_space", 0, parameters, &features_space);
+	assert(err == CCS_RESULT_ERROR_INVALID_VALUE);
+
+	err = ccs_create_features_space(
+		"my_features_space", 3, parameters, &features_space);
 	assert(err == CCS_RESULT_ERROR_INVALID_PARAMETER);
 
-	err = ccs_features_space_add_parameter(features_space, parameters[1]);
-	assert(err == CCS_RESULT_SUCCESS);
-	err = ccs_features_space_add_parameter(features_space, parameters[2]);
-	assert(err == CCS_RESULT_SUCCESS);
+	parameters[2] = parameter3;
 
-	check_features(features_space, 3, parameters);
-
-	for (size_t i = 0; i < 3; i++) {
-		err = ccs_release_object(parameters[i]);
-		assert(err == CCS_RESULT_SUCCESS);
-	}
-	err = ccs_release_object(features_space);
-	assert(err == CCS_RESULT_SUCCESS);
-}
-
-void
-test_add_list()
-{
-	ccs_parameter_t      parameters[3];
-	ccs_features_space_t features_space;
-	ccs_result_t         err;
-
-	err = ccs_create_features_space("my_config_space", &features_space);
+	err           = ccs_create_features_space(
+                "my_features_space", 3, parameters, &features_space);
 	assert(err == CCS_RESULT_SUCCESS);
 
-	parameters[0] = create_dummy_parameter("param1");
-	parameters[1] = create_dummy_parameter("param2");
-	parameters[2] = create_dummy_parameter("param3");
-
-	err = ccs_features_space_add_parameters(features_space, 3, parameters);
+	err = ccs_object_get_type(features_space, &type);
 	assert(err == CCS_RESULT_SUCCESS);
+	assert(type == CCS_OBJECT_TYPE_FEATURES_SPACE);
+
+	err = ccs_features_space_get_name(features_space, &name);
+	assert(err == CCS_RESULT_SUCCESS);
+	assert(strcmp(name, "my_features_space") == 0);
 
 	check_features(features_space, 3, parameters);
 
@@ -173,14 +134,12 @@ test_features()
 	int            cmp;
 	ccs_bool_t     check;
 
-	err = ccs_create_features_space("my_config_space", &features_space);
-	assert(err == CCS_RESULT_SUCCESS);
-
 	parameters[0] = create_dummy_parameter("param1");
 	parameters[1] = create_dummy_parameter("param2");
 	parameters[2] = create_dummy_parameter("param3");
 
-	err = ccs_features_space_add_parameters(features_space, 3, parameters);
+	err           = ccs_create_features_space(
+                "my_feature_space", 3, parameters, &features_space);
 	assert(err == CCS_RESULT_SUCCESS);
 
 	err = ccs_create_features(features_space, 3, values, &features1);
@@ -269,14 +228,12 @@ test_deserialize()
 	size_t               buff_size;
 	ccs_datum_t          d;
 
-	err = ccs_create_features_space("my_config_space", &features_space);
-	assert(err == CCS_RESULT_SUCCESS);
-
 	parameters[0] = create_dummy_parameter("param1");
 	parameters[1] = create_dummy_parameter("param2");
 	parameters[2] = create_dummy_parameter("param3");
 
-	err = ccs_features_space_add_parameters(features_space, 3, parameters);
+	err           = ccs_create_features_space(
+                "my_config_space", 3, parameters, &features_space);
 	assert(err == CCS_RESULT_SUCCESS);
 
 	check_features(features_space, 3, parameters);
@@ -369,14 +326,14 @@ test_features_deserialize()
 	ccs_result_t err;
 	int          cmp;
 
-	err = ccs_create_features_space("my_config_space", &features_space);
-	assert(err == CCS_RESULT_SUCCESS);
-
 	parameters[0] = create_dummy_parameter("param1");
 	parameters[1] = create_dummy_parameter("param2");
 	parameters[2] = create_dummy_parameter("param3");
-	err = ccs_features_space_add_parameters(features_space, 3, parameters);
+
+	err           = ccs_create_features_space(
+                "my_config_space", 3, parameters, &features_space);
 	assert(err == CCS_RESULT_SUCCESS);
+
 	err = ccs_create_features(features_space, 3, values, &features_ref);
 	assert(err == CCS_RESULT_SUCCESS);
 
@@ -439,8 +396,6 @@ main()
 {
 	ccs_init();
 	test_create();
-	test_add();
-	test_add_list();
 	test_features();
 	test_deserialize();
 	test_features_deserialize();

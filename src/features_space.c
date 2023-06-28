@@ -84,59 +84,6 @@ static const UT_icd _parameter_wrapper_icd = {
 #define utarray_oom()                                                          \
 	{                                                                      \
 		CCS_RAISE_ERR_GOTO(                                            \
-			err, CCS_RESULT_ERROR_OUT_OF_MEMORY, arrays,           \
-			"Not enough memory to allocate array");                \
-	}
-ccs_result_t
-ccs_create_features_space(
-	const char           *name,
-	ccs_features_space_t *features_space_ret)
-{
-	ccs_result_t err;
-	CCS_CHECK_PTR(name);
-	CCS_CHECK_PTR(features_space_ret);
-	uintptr_t mem = (uintptr_t)calloc(
-		1, sizeof(struct _ccs_features_space_s) +
-			   sizeof(struct _ccs_features_space_data_s) +
-			   strlen(name) + 1);
-	CCS_REFUTE(!mem, CCS_RESULT_ERROR_OUT_OF_MEMORY);
-
-	ccs_features_space_t feat_space = (ccs_features_space_t)mem;
-	_ccs_object_init(
-		&(feat_space->obj), CCS_OBJECT_TYPE_FEATURES_SPACE,
-		(_ccs_object_ops_t *)&_features_space_ops);
-	feat_space->data =
-		(struct _ccs_features_space_data_s
-			 *)(mem + sizeof(struct _ccs_features_space_s));
-	feat_space->data->name =
-		(const char
-			 *)(mem + sizeof(struct _ccs_features_space_s) + sizeof(struct _ccs_features_space_data_s));
-	utarray_new(feat_space->data->parameters, &_parameter_wrapper_icd);
-	strcpy((char *)(feat_space->data->name), name);
-	*features_space_ret = feat_space;
-	return CCS_RESULT_SUCCESS;
-arrays:
-	if (feat_space->data->parameters)
-		utarray_free(feat_space->data->parameters);
-	free((void *)mem);
-	return err;
-}
-
-ccs_result_t
-ccs_features_space_get_name(
-	ccs_features_space_t features_space,
-	const char         **name_ret)
-{
-	CCS_CHECK_OBJ(features_space, CCS_OBJECT_TYPE_FEATURES_SPACE);
-	CCS_VALIDATE(
-		_ccs_context_get_name((ccs_context_t)features_space, name_ret));
-	return CCS_RESULT_SUCCESS;
-}
-
-#undef utarray_oom
-#define utarray_oom()                                                          \
-	{                                                                      \
-		CCS_RAISE_ERR_GOTO(                                            \
 			err, CCS_RESULT_ERROR_OUT_OF_MEMORY, errormem,         \
 			"Not enough memory to allocate array");                \
 	}
@@ -147,12 +94,11 @@ ccs_features_space_get_name(
 			err, CCS_RESULT_ERROR_OUT_OF_MEMORY, errorutarray,     \
 			"Not enough memory to allocate hash");                 \
 	}
-ccs_result_t
-ccs_features_space_add_parameter(
+static ccs_result_t
+_ccs_features_space_add_parameter(
 	ccs_features_space_t features_space,
 	ccs_parameter_t      parameter)
 {
-	CCS_CHECK_OBJ(features_space, CCS_OBJECT_TYPE_FEATURES_SPACE);
 	CCS_CHECK_OBJ(parameter, CCS_OBJECT_TYPE_PARAMETER);
 	ccs_result_t                 err;
 	const char                  *name;
@@ -203,17 +149,85 @@ errorparameter:
 #undef utarray_oom
 #define utarray_oom() exit(-1)
 
-ccs_result_t
-ccs_features_space_add_parameters(
+static ccs_result_t
+_ccs_features_space_add_parameters(
 	ccs_features_space_t features_space,
 	size_t               num_parameters,
 	ccs_parameter_t     *parameters)
 {
-	CCS_CHECK_OBJ(features_space, CCS_OBJECT_TYPE_FEATURES_SPACE);
-	CCS_CHECK_ARY(num_parameters, parameters);
 	for (size_t i = 0; i < num_parameters; i++)
-		CCS_VALIDATE(ccs_features_space_add_parameter(
+		CCS_VALIDATE(_ccs_features_space_add_parameter(
 			features_space, parameters[i]));
+	return CCS_RESULT_SUCCESS;
+}
+
+#undef utarray_oom
+#define utarray_oom()                                                          \
+	{                                                                      \
+		CCS_RAISE_ERR_GOTO(                                            \
+			err, CCS_RESULT_ERROR_OUT_OF_MEMORY, arrays,           \
+			"Not enough memory to allocate array");                \
+	}
+
+ccs_result_t
+ccs_create_features_space(
+	const char           *name,
+	size_t                num_parameters,
+	ccs_parameter_t      *parameters,
+	ccs_features_space_t *features_space_ret)
+{
+	ccs_result_t err;
+	CCS_CHECK_PTR(name);
+	CCS_CHECK_PTR(features_space_ret);
+	CCS_REFUTE(!num_parameters, CCS_RESULT_ERROR_INVALID_VALUE);
+	CCS_CHECK_PTR(parameters);
+
+	uintptr_t mem = (uintptr_t)calloc(
+		1, sizeof(struct _ccs_features_space_s) +
+			   sizeof(struct _ccs_features_space_data_s) +
+			   strlen(name) + 1);
+	CCS_REFUTE(!mem, CCS_RESULT_ERROR_OUT_OF_MEMORY);
+
+	ccs_features_space_t feat_space = (ccs_features_space_t)mem;
+	_ccs_object_init(
+		&(feat_space->obj), CCS_OBJECT_TYPE_FEATURES_SPACE,
+		(_ccs_object_ops_t *)&_features_space_ops);
+	feat_space->data =
+		(struct _ccs_features_space_data_s
+			 *)(mem + sizeof(struct _ccs_features_space_s));
+	feat_space->data->name =
+		(const char
+			 *)(mem + sizeof(struct _ccs_features_space_s) + sizeof(struct _ccs_features_space_data_s));
+	utarray_new(feat_space->data->parameters, &_parameter_wrapper_icd);
+	strcpy((char *)(feat_space->data->name), name);
+	*features_space_ret = feat_space;
+	CCS_VALIDATE_ERR_GOTO(
+		err,
+		_ccs_features_space_add_parameters(
+			feat_space, num_parameters, parameters),
+		errparams);
+	return CCS_RESULT_SUCCESS;
+arrays:
+	if (feat_space->data->parameters)
+		utarray_free(feat_space->data->parameters);
+	free((void *)mem);
+	return err;
+errparams:
+	_ccs_features_space_del(feat_space);
+	free((void *)mem);
+	return err;
+}
+#undef utarray_oom
+#define utarray_oom() exit(-1)
+
+ccs_result_t
+ccs_features_space_get_name(
+	ccs_features_space_t features_space,
+	const char         **name_ret)
+{
+	CCS_CHECK_OBJ(features_space, CCS_OBJECT_TYPE_FEATURES_SPACE);
+	CCS_VALIDATE(
+		_ccs_context_get_name((ccs_context_t)features_space, name_ret));
 	return CCS_RESULT_SUCCESS;
 }
 

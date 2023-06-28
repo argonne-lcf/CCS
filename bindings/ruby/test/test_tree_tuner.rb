@@ -21,9 +21,8 @@ class CConfigSpaceTestTreeTuner < Minitest::Test
   def create_tuning_problem
     tree = generate_tree(5, 0)
     ts = CCS::StaticTreeSpace.new(name: 'space', tree: tree)
-    os = CCS::ObjectiveSpace.new(name: 'ospace')
     v1 = CCS::NumericalParameter::Float.new(lower: -Float::INFINITY, upper: Float::INFINITY)
-    os.add_parameter(v1)
+    os = CCS::ObjectiveSpace.new(name: 'ospace', parameters: [v1])
     e1 = CCS::Expression::Variable.new(parameter: v1)
     os.add_objectives( {e1 => :CCS_OBJECTIVE_TYPE_MAXIMIZE} )
     [ts, os]

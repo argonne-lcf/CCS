@@ -32,13 +32,18 @@ enum ccs_objective_type_e {
 typedef enum ccs_objective_type_e ccs_objective_type_t;
 
 /**
- * Create a new empty objective space.
+ * Create a new objective space.
  * @param[in] name pointer to a string that will be copied internally
  * @param[out] objective_space_ret a pointer to the variable that will hold
  *                                 the newly created objective space
  * @return #CCS_RESULT_SUCCESS on success
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p name is NULL; or if \p
- * objective_space_ret is NULL
+ * objective_space_ret is NULL; or if \p parameters is NULL; or if \p
+ * num_parameters is NULL
+ * @return #CCS_RESULT_ERROR_INVALID_OBJECT if a parameter is not a valid CCS
+ * parameter
+ * @return #CCS_RESULT_ERROR_INVALID_PARAMETER if a parameter appears more than
+ * once in \p parameters; or if two or more parameters share the same name
  * @return #CCS_RESULT_ERROR_OUT_OF_MEMORY if there was a lack of memory to
  * allocate the new objective space
  * @remarks
@@ -47,6 +52,8 @@ typedef enum ccs_objective_type_e ccs_objective_type_t;
 extern ccs_result_t
 ccs_create_objective_space(
 	const char            *name,
+	size_t                 num_parameters,
+	ccs_parameter_t       *parameters,
 	ccs_objective_space_t *objective_space_ret);
 
 /**
@@ -65,51 +72,6 @@ extern ccs_result_t
 ccs_objective_space_get_name(
 	ccs_objective_space_t objective_space,
 	const char          **name_ret);
-
-/**
- * Add a parameter to the objective space.
- * @param[in,out] objective_space
- * @param[in] parameter the parameter to add to the objective space
- * @return #CCS_RESULT_SUCCESS on success
- * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p objective_space is not a valid
- * CCS objective space; or \p parameter is not a valid CCS parameter
- * @return #CCS_RESULT_ERROR_INVALID_PARAMETER if \p parameter is already in
- * the objective space; or if a parameter with the same name already exists in
- * the objective space
- * @return #CCS_RESULT_ERROR_OUT_OF_MEMORY if a memory could not be allocated to
- * store the additional parameter and associated data structures
- * @remarks
- *   This function is NOT thread-safe
- */
-extern ccs_result_t
-ccs_objective_space_add_parameter(
-	ccs_objective_space_t objective_space,
-	ccs_parameter_t       parameter);
-
-/**
- * Add parameters to the objective space.
- * @param[in,out] objective_space
- * @param[in] num_parameters the number of provided parameters
- * @param[in] parameters an array of \p num_parameters parameters to add to the
- *                       objective space
- * @return #CCS_RESULT_SUCCESS on success
- * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p objective_space is not a valid
- * CCS objective space; or a parameter is not a valid CCS parameter
- * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p parameters is NULL and \p
- * num_parameters is greater than 0
- * @return #CCS_RESULT_ERROR_INVALID_PARAMETER if a parameter is already in the
- * objective space; or if a parameter with the same name already exists in the
- * objective space
- * @return #CCS_RESULT_ERROR_OUT_OF_MEMORY if memory could not be allocated to
- * store additional parameters and associated data structures
- * @remarks
- *   This function is NOT thread-safe
- */
-extern ccs_result_t
-ccs_objective_space_add_parameters(
-	ccs_objective_space_t objective_space,
-	size_t                num_parameters,
-	ccs_parameter_t      *parameters);
 
 /**
  * Get the number of parameters in a objective space.
@@ -340,7 +302,7 @@ ccs_objective_space_validate_value(
  * @return #CCS_RESULT_ERROR_OUT_OF_MEMORY if there was not enough memory to
  * allocate internal data structures
  * @remarks
- *   This function is NOT thread-safe
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_objective_space_add_objective(
@@ -366,7 +328,7 @@ ccs_objective_space_add_objective(
  * @return #CCS_RESULT_ERROR_OUT_OF_MEMORY if there was not enough memory to
  * allocate internal data structures
  * @remarks
- *   This function is NOT thread-safe
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_objective_space_add_objectives(

@@ -20,6 +20,7 @@ void
 test_simple()
 {
 	ccs_parameter_t           parameter1, parameter2;
+	ccs_parameter_t           parameters[2];
 	ccs_configuration_space_t space;
 	ccs_expression_t          expression;
 	ccs_configuration_t       configuration;
@@ -27,13 +28,9 @@ test_simple()
 	ccs_configuration_t       configurations[100];
 	ccs_result_t              err;
 
-	parameter1 = create_numerical("param1");
-	parameter2 = create_numerical("param2");
-	err        = ccs_create_configuration_space("space", &space);
-	assert(err == CCS_RESULT_SUCCESS);
-	err = ccs_configuration_space_add_parameter(space, parameter1, NULL);
-	assert(err == CCS_RESULT_SUCCESS);
-	err = ccs_configuration_space_add_parameter(space, parameter2, NULL);
+	parameters[0] = parameter1 = create_numerical("param1");
+	parameters[1] = parameter2 = create_numerical("param2");
+	err = ccs_create_configuration_space("space", 2, parameters, &space);
 	assert(err == CCS_RESULT_SUCCESS);
 
 	err = ccs_create_binary_expression(
@@ -113,11 +110,7 @@ test_combined()
 	parameters[1] = create_numerical("param2");
 	parameters[2] = create_numerical("param3");
 
-	err           = ccs_create_configuration_space("space", &space);
-	assert(err == CCS_RESULT_SUCCESS);
-
-	err = ccs_configuration_space_add_parameters(
-		space, 3, parameters, NULL);
+	err = ccs_create_configuration_space("space", 3, parameters, &space);
 	assert(err == CCS_RESULT_SUCCESS);
 
 	err = ccs_create_binary_expression(

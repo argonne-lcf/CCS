@@ -3,18 +3,18 @@ from .base import Object, Error, CEnumeration, Result, _ccs_get_function, ccs_co
 from .context import Context
 from .parameter import Parameter
 
-ccs_create_features_space = _ccs_get_function("ccs_create_features_space", [ct.c_char_p, ct.POINTER(ccs_features_space)])
-ccs_features_space_add_parameter = _ccs_get_function("ccs_features_space_add_parameter", [ccs_features_space, ccs_parameter])
-ccs_features_space_add_parameters = _ccs_get_function("ccs_features_space_add_parameters", [ccs_features_space, ct.c_size_t, ct.POINTER(ccs_parameter)])
+ccs_create_features_space = _ccs_get_function("ccs_create_features_space", [ct.c_char_p, ct.c_size_t, ct.POINTER(ccs_parameter), ct.POINTER(ccs_features_space)])
 ccs_features_space_check_features = _ccs_get_function("ccs_features_space_check_features", [ccs_features_space, ccs_features, ct.POINTER(ccs_bool)])
 ccs_features_space_check_features_values = _ccs_get_function("ccs_features_space_check_features_values", [ccs_features_space, ct.c_size_t, ct.POINTER(Datum), ct.POINTER(ccs_bool)])
 
 class FeaturesSpace(Context):
   def __init__(self, handle = None, retain = False, auto_release = True,
-               name = ""):
+               name = "", parameters = None):
     if handle is None:
+      count = len(parameters)
+      parameters = (ccs_parameter * count)(*[x.handle.value for x in parameters])
       handle = ccs_features_space()
-      res = ccs_create_features_space(str.encode(name), ct.byref(handle))
+      res = ccs_create_features_space(str.encode(name), count, parameters, ct.byref(handle))
       Error.check(res)
       super().__init__(handle = handle, retain = False)
     else:

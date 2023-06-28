@@ -17,9 +17,9 @@ const ccs_version_t ccs_version  = {
         CCS_VERSION_MAJOR};
 
 #if CCS_THREAD_SAFE
-static pthread_mutex_t _ccs_mutex    = PTHREAD_MUTEX_INITIALIZER;
+static pthread_mutex_t _ccs_mutex = PTHREAD_MUTEX_INITIALIZER;
 #endif
-static int32_t         _ccs_refcount = 0;
+static int32_t _ccs_refcount = 0;
 
 ccs_result_t
 ccs_init()
@@ -169,7 +169,7 @@ ccs_object_get_user_data(ccs_object_t object, void **user_data_ret)
 	CCS_CHECK_PTR(user_data_ret);
 	_ccs_object_internal_t *obj = (_ccs_object_internal_t *)object;
 	CCS_RWLOCK_RDLOCK(obj->lock);
-	*user_data_ret              = obj->user_data;
+	*user_data_ret = obj->user_data;
 	CCS_RWLOCK_UNLOCK(obj->lock);
 	return CCS_RESULT_SUCCESS;
 }

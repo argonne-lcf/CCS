@@ -8,7 +8,7 @@ struct _ccs_parameter_string_data_s {
 	_ccs_parameter_common_data_t common_data;
 	_ccs_hash_datum_t           *stored_values;
 #if CCS_THREAD_SAFE
-	pthread_mutex_t              mutex;
+	pthread_mutex_t mutex;
 #endif
 };
 typedef struct _ccs_parameter_string_data_s _ccs_parameter_string_data_t;
@@ -266,8 +266,8 @@ ccs_create_string_parameter(const char *name, ccs_parameter_t *parameter_ret)
 #if CCS_THREAD_SAFE
 	parameter_data->mutex = (pthread_mutex_t)PTHREAD_MUTEX_INITIALIZER;
 #endif
-	parameter->data       = (_ccs_parameter_data_t *)parameter_data;
-	*parameter_ret        = parameter;
+	parameter->data = (_ccs_parameter_data_t *)parameter_data;
+	*parameter_ret  = parameter;
 
 	return CCS_RESULT_SUCCESS;
 }

@@ -1,9 +1,7 @@
 module CCS
-  attach_function :ccs_create_configuration_space, [:string, :pointer], :ccs_result_t
+  attach_function :ccs_create_configuration_space, [:string, :size_t, :pointer, :pointer], :ccs_result_t
   attach_function :ccs_configuration_space_set_rng, [:ccs_configuration_space_t, :ccs_rng_t], :ccs_result_t
   attach_function :ccs_configuration_space_get_rng, [:ccs_configuration_space_t, :pointer], :ccs_result_t
-  attach_function :ccs_configuration_space_add_parameter, [:ccs_configuration_space_t, :ccs_parameter_t, :ccs_distribution_t], :ccs_result_t
-  attach_function :ccs_configuration_space_add_parameters, [:ccs_configuration_space_t, :size_t, :pointer, :pointer], :ccs_result_t
   attach_function :ccs_configuration_space_set_distribution, [:ccs_configuration_space_t, :ccs_distribution_t, :pointer], :ccs_result_t
   attach_function :ccs_configuration_space_get_parameter_distribution, [:ccs_configuration_space_t, :size_t, :pointer, :pointer], :ccs_result_t
   attach_function :ccs_configuration_space_set_condition, [:ccs_configuration_space_t, :size_t, :ccs_expression_t], :ccs_result_t
@@ -22,12 +20,15 @@ module CCS
   class ConfigurationSpace < Context
 
     def initialize(handle = nil, retain: false, auto_release: true,
-                   name: "")
+                   name: "", parameters: nil)
       if handle
         super(handle, retain: retain, auto_release: auto_release)
       else
+        count = parameters.size
+        p_parameters = MemoryPointer::new(:ccs_parameter_t, count)
+        p_parameters.write_array_of_pointer(parameters.collect(&:handle))
         ptr = MemoryPointer::new(:ccs_configuration_space_t)
-        CCS.error_check CCS.ccs_create_configuration_space(name, ptr)
+        CCS.error_check CCS.ccs_create_configuration_space(name, count, p_parameters, ptr)
         super(ptr.read_ccs_configuration_space_t, retain:false)
       end
     end
@@ -47,12 +48,7 @@ module CCS
       r
     end
 
-    def add_parameter(parameter, distribution: nil)
-      CCS.error_check CCS.ccs_configuration_space_add_parameter(@handle, parameter, distribution)
-      self
-    end
-
-    def set_distribution(distribution, parameters )
+    def set_distribution(distribution, parameters)
       count = distribution.dimension
       raise CCSError, :CCS_RESULT_ERROR_INVALID_VALUE if count != parameters.size
       parameters = parameters.collect { |h|
@@ -82,22 +78,6 @@ module CCS
       p_indx = MemoryPointer::new(:size_t)
       CCS.error_check CCS.ccs_configuration_space_get_parameter_distribution(@handle, parameter, p_distribution, p_indx)
       [CCS::Distribution.from_handle(p_distribution.read_ccs_distribution_t), p_indx.read_size_t]
-    end
-
-    def add_parameters(parameters, distributions: nil)
-      count = parameters.size
-      return self if count == 0
-      if distributions
-        raise CCSError, :CCS_RESULT_ERROR_INVALID_VALUE if count != distributions.size
-        p_dists = MemoryPointer::new(:ccs_distribution_t, count)
-        p_dists.write_array_of_pointer(distributions.collect(&:handle))
-      else
-        p_dists = nil
-      end
-      p_parameters = MemoryPointer::new(:ccs_parameter_t, count)
-      p_parameters.write_array_of_pointer(parameters.collect(&:handle))
-      CCS.error_check CCS.ccs_configuration_space_add_parameters(@handle, count, p_parameters, p_dists)
-      self
     end
 
     def set_condition(parameter, expression)

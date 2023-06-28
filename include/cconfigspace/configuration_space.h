@@ -15,13 +15,22 @@ extern "C" {
  */
 
 /**
- * Create a new empty configuration space.
+ * Create a new configuration space.
  * @param[in] name pointer to a string that will be copied internally
+ * @param[in] num_parameters the number of provided parameters
+ * @param[in] parameters an array of \p num_parameters parameters
+ *                       to add to the configuration space
  * @param[out] configuration_space_ret a pointer to the variable that will hold
  *                                     the newly created configuration space
  * @return #CCS_RESULT_SUCCESS on success
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p name is NULL; or if \p
- *                             configuration_space_ret is NULL
+ * configuration_space_ret is NULL; or if \p parameters is NULL; or if \p
+ * num_parameters is NULL
+ * @return #CCS_RESULT_ERROR_INVALID_OBJECT if a parameter is not a valid CCS
+ * parameter
+ * @return #CCS_RESULT_ERROR_INVALID_PARAMETER if a parameter's type is
+ * CCS_PARAMETER_TYPE_STRING; or if a parameter appears more than once in \p
+ * parameters; or if two or more parameters share the same name
  * @return #CCS_RESULT_ERROR_OUT_OF_MEMORY if there was a lack of memory to
  * allocate the new configuration space
  * @remarks
@@ -30,6 +39,8 @@ extern "C" {
 extern ccs_result_t
 ccs_create_configuration_space(
 	const char                *name,
+	size_t                     num_parameters,
+	ccs_parameter_t           *parameters,
 	ccs_configuration_space_t *configuration_space_ret);
 
 /**
@@ -57,7 +68,7 @@ ccs_configuration_space_get_name(
  * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p configuration_space is not a
  * valid CCS configuration space; or \p rng is not a valid CCS rng
  * @remarks
- *   This function is NOT thread-safe
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_configuration_space_set_rng(
@@ -81,70 +92,6 @@ ccs_configuration_space_get_rng(
 	ccs_rng_t                *rng_ret);
 
 /**
- * Add a parameter to the configuration space.
- * @param[in,out] configuration_space
- * @param[in] parameter the parameter to add to the configuration
- *                           space
- * @param[in] distribution optional, the 1 dimensional distribution to associate
- *                         to the parameter. If NULL is passed, the default
- *                         distribution of the parameter is used.
- * @return #CCS_RESULT_SUCCESS on success
- * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p configuration_space is not a
- * valid CCS configuration space; or \p parameter is not a valid CCS parameter;
- * or if distribution is given and distribution is not a valid CCS distribution
- * @return #CCS_RESULT_ERROR_INVALID_PARAMETER if \p parameter's type is
- * CCS_PARAMETER_TYPE_STRING; or if \p parameter is already in the
- * configuration space
- * @return #CCS_RESULT_ERROR_INVALID_DISTRIBUTION if \p distribution has more
- * than one dimension
- * @return #CCS_RESULT_ERROR_OUT_OF_MEMORY if a memory could not be allocated to
- * store the additional parameter and associated data structures
- * @remarks
- *   This function is NOT thread-safe
- */
-extern ccs_result_t
-ccs_configuration_space_add_parameter(
-	ccs_configuration_space_t configuration_space,
-	ccs_parameter_t           parameter,
-	ccs_distribution_t        distribution);
-
-/**
- * Add parameters to the configuration space.
- * @param[in,out] configuration_space
- * @param[in] num_parameters the number of provided parameters
- * @param[in] parameters an array of \p num_parameters parameters
- *                            to add to the configuration space
- * @param[in] distributions optional, an array of \p num_parameters
- *                          distributions. If NULL, parameter's default
- *                          distributions are used. If the array is provided
- *                          each distribution is optional, and NULL can be
- *                          provided to use the default distribution for a
- *                          specific parameter
- * @return #CCS_RESULT_SUCCESS on success
- * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p configuration_space is not a
- * valid CCS configuration space; or a parameter is not a valid CCS parameter;
- * or if a given distribution is not a valid CCS distribution
- * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p parameters is NULL and \p
- * num_parameters is greater than 0
- * @return #CCS_RESULT_ERROR_INVALID_PARAMETER if a parameter's type is
- * CCS_PARAMETER_TYPE_STRING; or if a parameter is already in the configuration
- * space; or if a parameter with the same name already exists in the
- * configuration space
- * @return #CCS_RESULT_ERROR_INVALID_DISTRIBUTION if a distribution has more
- * than one dimension
- * @return #CCS_RESULT_ERROR_OUT_OF_MEMORY if memory could not be allocated to
- * store additional parameters and associated data structures
- * @remarks
- *   This function is NOT thread-safe
- */
-extern ccs_result_t
-ccs_configuration_space_add_parameters(
-	ccs_configuration_space_t configuration_space,
-	size_t                    num_parameters,
-	ccs_parameter_t          *parameters,
-	ccs_distribution_t       *distributions);
-
-/**
  * Set the distribution of one or more parameters. Existing distributions
  * are discarded, and if a parameter is left without a distribution it's
  * default distribution is used.
@@ -163,7 +110,7 @@ ccs_configuration_space_add_parameters(
  * @return #CCS_RESULT_ERROR_OUT_OF_MEMORY if a memory could not be allocated to
  * store additional parameters and associated data structures
  * @remarks
- *   This function is NOT thread-safe
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_configuration_space_set_distribution(
@@ -403,7 +350,7 @@ ccs_configuration_space_validate_value(
  * @return #CCS_RESULT_ERROR_INVALID_GRAPH if the addition of the condition
  * would cause the dependency graph to become invalid (cyclic)
  * @remarks
- *   This function is NOT thread-safe
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_configuration_space_set_condition(
@@ -480,7 +427,7 @@ ccs_configuration_space_get_conditions(
  * @return #CCS_RESULT_ERROR_INVALID_CONFIGURATION if adding the forbidden
  * clause would render the default configuration invalid
  * @remarks
- *   This function is NOT thread-safe
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_configuration_space_add_forbidden_clause(
@@ -506,7 +453,7 @@ ccs_configuration_space_add_forbidden_clause(
  * @return #CCS_RESULT_ERROR_INVALID_CONFIGURATION if adding one of the provided
  * forbidden clause would render the default configuration invalid
  * @remarks
- *   This function is NOT thread-safe
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_configuration_space_add_forbidden_clauses(
@@ -666,7 +613,7 @@ ccs_configuration_space_get_default_configuration(
  * @return #CCS_RESULT_ERROR_INVALID_GRAPH if the graph of constraints could
  * not be previsoulsy generated
  * @remarks
- *   This function is NOT thread-safe
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_configuration_space_sample(
@@ -697,7 +644,7 @@ ccs_configuration_space_sample(
  * @return #CCS_RESULT_ERROR_INVALID_GRAPH if the graph of constraints could
  * not be previsoulsy generated
  * @remarks
- *   This function is NOT thread-safe
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_configuration_space_samples(

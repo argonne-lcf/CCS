@@ -8,11 +8,9 @@ from .expression_parser import parser
 from .rng import Rng
 from parglare.parser import Context as PContext
 
-ccs_create_configuration_space = _ccs_get_function("ccs_create_configuration_space", [ct.c_char_p, ct.POINTER(ccs_configuration_space)])
+ccs_create_configuration_space = _ccs_get_function("ccs_create_configuration_space", [ct.c_char_p, ct.c_size_t, ct.POINTER(ccs_parameter), ct.POINTER(ccs_configuration_space)])
 ccs_configuration_space_set_rng = _ccs_get_function("ccs_configuration_space_set_rng", [ccs_configuration_space, ccs_rng])
 ccs_configuration_space_get_rng = _ccs_get_function("ccs_configuration_space_get_rng", [ccs_configuration_space, ct.POINTER(ccs_rng)])
-ccs_configuration_space_add_parameter = _ccs_get_function("ccs_configuration_space_add_parameter", [ccs_configuration_space, ccs_parameter, ccs_distribution])
-ccs_configuration_space_add_parameters = _ccs_get_function("ccs_configuration_space_add_parameters", [ccs_configuration_space, ct.c_size_t, ct.POINTER(ccs_parameter), ct.POINTER(ccs_distribution)])
 ccs_configuration_space_set_distribution = _ccs_get_function("ccs_configuration_space_set_distribution", [ccs_configuration_space, ccs_distribution, ct.POINTER(ct.c_size_t)])
 ccs_configuration_space_get_parameter_distribution = _ccs_get_function("ccs_configuration_space_get_parameter_distribution", [ccs_configuration_space, ct.c_size_t, ct.POINTER(ccs_distribution), ct.POINTER(ct.c_size_t)])
 ccs_configuration_space_set_condition = _ccs_get_function("ccs_configuration_space_set_condition", [ccs_configuration_space, ct.c_size_t, ccs_expression])
@@ -30,10 +28,12 @@ ccs_configuration_space_samples = _ccs_get_function("ccs_configuration_space_sam
 
 class ConfigurationSpace(Context):
   def __init__(self, handle = None, retain = False, auto_release = True,
-               name = ""):
+               name = "", parameters = None):
     if handle is None:
+      count = len(parameters)
+      parameters = (ccs_parameter * count)(*[x.handle.value for x in parameters])
       handle = ccs_configuration_space()
-      res = ccs_create_configuration_space(str.encode(name), ct.byref(handle))
+      res = ccs_create_configuration_space(str.encode(name), count, parameters, ct.byref(handle))
       Error.check(res)
       super().__init__(handle = handle, retain = False)
     else:
@@ -53,26 +53,6 @@ class ConfigurationSpace(Context):
   @rng.setter
   def rng(self, r):
     res = ccs_configuration_space_set_rng(self.handle, r.handle)
-    Error.check(res)
-
-  def add_parameter(self, parameter, distribution = None):
-    if distribution:
-      distribution = distribution.handle
-    res = ccs_configuration_space_add_parameter(self.handle, parameter.handle, distribution)
-    Error.check(res)
-
-  def add_parameters(self, parameters, distributions = None):
-    count = len(parameters)
-    if count == 0:
-      return None
-    if distributions:
-      if count != len(distributions):
-        raise Error(Result(Result.ERROR_INVALID_VALUE))
-      distribs = (ccs_distribution * count)(*[x.handle.value if x else x for x in distributions])
-    else:
-      distribs = None
-    parameters = (ccs_parameter * count)(*[x.handle.value for x in parameters])
-    res = ccs_configuration_space_add_parameters(self.handle, count, parameters, distribs)
     Error.check(res)
 
   def set_distribution(self, distribution, parameters):

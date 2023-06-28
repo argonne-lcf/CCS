@@ -29,29 +29,24 @@ void
 create_problem(ccs_configuration_space_t *cs, ccs_objective_space_t *os)
 {
 	ccs_parameter_t           parameter1, parameter2;
+	ccs_parameter_t           parameters[2];
 	ccs_parameter_t           parameter3;
 	ccs_configuration_space_t cspace;
 	ccs_objective_space_t     ospace;
 	ccs_expression_t          expression;
 	ccs_result_t              err;
 
-	parameter1 = create_numerical("x", -5.0, 5.0);
-	parameter2 = create_numerical("y", -5.0, 5.0);
+	parameters[0] = parameter1 = create_numerical("x", -5.0, 5.0);
+	parameters[1] = parameter2 = create_numerical("y", -5.0, 5.0);
 
-	err        = ccs_create_configuration_space("2dplane", &cspace);
-	assert(err == CCS_RESULT_SUCCESS);
-	err = ccs_configuration_space_add_parameter(cspace, parameter1, NULL);
-	assert(err == CCS_RESULT_SUCCESS);
-	err = ccs_configuration_space_add_parameter(cspace, parameter2, NULL);
+	err = ccs_create_configuration_space("2dplane", 2, parameters, &cspace);
 	assert(err == CCS_RESULT_SUCCESS);
 
 	parameter3 = create_numerical("z", -CCS_INFINITY, CCS_INFINITY);
 	err        = ccs_create_variable(parameter3, &expression);
 	assert(err == CCS_RESULT_SUCCESS);
 
-	err = ccs_create_objective_space("height", &ospace);
-	assert(err == CCS_RESULT_SUCCESS);
-	err = ccs_objective_space_add_parameter(ospace, parameter3);
+	err = ccs_create_objective_space("height", 1, &parameter3, &ospace);
 	assert(err == CCS_RESULT_SUCCESS);
 	err = ccs_objective_space_add_objective(
 		ospace, expression, CCS_OBJECTIVE_TYPE_MINIMIZE);

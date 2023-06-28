@@ -54,7 +54,11 @@ _ccs_interval_include(ccs_interval_t *interval, ccs_numeric_t value)
 #define CCS_THREAD_SAFE 0
 #endif
 
-static inline int _ccs_do_nothing(void) { return 0; }
+static inline int
+_ccs_do_nothing(void)
+{
+	return 0;
+}
 
 #if CCS_THREAD_SAFE
 
@@ -365,12 +369,12 @@ struct _ccs_object_callback_s {
 typedef struct _ccs_object_callback_s _ccs_object_callback_t;
 
 struct _ccs_object_internal_s {
-	ccs_object_type_t               type;
-	int32_t                         refcount;
-	void                           *user_data;
+	ccs_object_type_t type;
+	int32_t           refcount;
+	void             *user_data;
 #if CCS_THREAD_SAFE
-	pthread_mutex_t                 mutex;
-	pthread_rwlock_t                lock;
+	pthread_mutex_t  mutex;
+	pthread_rwlock_t lock;
 #endif
 	UT_array                       *callbacks;
 	_ccs_object_ops_t              *ops;
@@ -392,12 +396,12 @@ _ccs_object_init(
 	ccs_object_type_t       t,
 	_ccs_object_ops_t      *ops)
 {
-	o->type                = t;
-	o->refcount            = 1;
-	o->user_data           = NULL;
+	o->type      = t;
+	o->refcount  = 1;
+	o->user_data = NULL;
 #if CCS_THREAD_SAFE
-	o->mutex               = (pthread_mutex_t)PTHREAD_MUTEX_INITIALIZER;
-        o->lock                = (pthread_rwlock_t)PTHREAD_RWLOCK_INITIALIZER;
+	o->mutex = (pthread_mutex_t)PTHREAD_MUTEX_INITIALIZER;
+	o->lock  = (pthread_rwlock_t)PTHREAD_RWLOCK_INITIALIZER;
 #endif
 	o->callbacks           = NULL;
 	o->ops                 = ops;

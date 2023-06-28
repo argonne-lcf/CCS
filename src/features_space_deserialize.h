@@ -29,14 +29,11 @@ _ccs_deserialize_bin_features_space(
 			&data, version, buffer_size, buffer, &new_opts),
 		end);
 	CCS_VALIDATE_ERR_GOTO(
-		res, ccs_create_features_space(data.name, features_space_ret),
-		end);
-	CCS_VALIDATE_ERR_GOTO(
 		res,
-		ccs_features_space_add_parameters(
-			*features_space_ret, data.num_parameters,
-			data.parameters),
-		err_features_space);
+		ccs_create_features_space(
+			data.name, data.num_parameters, data.parameters,
+			features_space_ret),
+		end);
 	if (opts && opts->map_values && opts->handle_map)
 		CCS_VALIDATE_ERR_GOTO(
 			res,

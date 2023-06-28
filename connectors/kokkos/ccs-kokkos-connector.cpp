@@ -501,18 +501,21 @@ kokkosp_request_values(
 
   auto tun = tuners.find(regionId);
   if (tun == tuners.end()) {
+	  ccs_parameter_t          *cs_parameters;
 	  ccs_configuration_space_t cs;
 	  ccs_features_space_t      fs;
 	  ccs_objective_space_t     os;
 	  ccs_parameter_t           htime;
 	  ccs_expression_t          expression;
 
+	  cs_parameters = new ccs_parameter_t[numTuningVariables];
+	  for (size_t i = 0; i < numTuningVariables; i++)
+		  cs_parameters[i] = parameters[tuningValues[i].type_id];
+
 	  CCS_CHECK(ccs_create_configuration_space(
 		  ("cs (region: " + std::to_string(regionCounter) + ")").c_str(),
-		  &cs));
-	  for (size_t i = 0; i < numTuningVariables; i++)
-		  CCS_CHECK(ccs_configuration_space_add_parameter(
-			  cs, parameters[tuningValues[i].type_id], NULL));
+		  numTuningVariables, cs_parameters, &cs));
+	  delete[] cs_parameters;
 
 #if CCS_DEBUG
 	  for (size_t i = 0; i < numTuningVariables; i++) {
@@ -521,24 +524,25 @@ kokkosp_request_values(
 	  }
 #endif
 
+	  cs_parameters = new ccs_parameter_t[numContextVariables];
+	  for (size_t i = 0; i < numContextVariables; i++)
+		  cs_parameters[i] = parameters[contextValues[i].type_id];
+
 	  CCS_CHECK(ccs_create_features_space(
 		  ("fs (region: " + std::to_string(regionCounter) + ")").c_str(),
-		  &fs));
-	  for (size_t i = 0; i < numContextVariables; i++)
-		  CCS_CHECK(ccs_features_space_add_parameter(
-			  fs, features[contextValues[i].type_id]));
+		  numContextVariables, cs_parameters, &fs));
+	  delete[] cs_parameters;
 
 	  ccs_int_t lower = 0;
 	  ccs_int_t upper = CCS_INT_MAX;
 	  ccs_int_t step  = 0;
-	  CCS_CHECK(ccs_create_objective_space(
-		  ("os (region: " + std::to_string(regionCounter) + ")").c_str(),
-		  &os));
 	  CCS_CHECK(ccs_create_numerical_parameter(
 		  "time", CCS_NUMERIC_TYPE_INT, lower, upper, step, lower,
 		  &htime));
 	  CCS_CHECK(ccs_create_variable(htime, &expression));
-	  CCS_CHECK(ccs_objective_space_add_parameter(os, htime));
+	  CCS_CHECK(ccs_create_objective_space(
+		  ("os (region: " + std::to_string(regionCounter) + ")").c_str(),
+		  1, &htime, &os));
 	  CCS_CHECK(ccs_objective_space_add_objective(
 		  os, expression, CCS_OBJECTIVE_TYPE_MINIMIZE));
 	  CCS_CHECK(ccs_release_object(expression));

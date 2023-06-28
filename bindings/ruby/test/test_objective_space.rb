@@ -7,17 +7,14 @@ class CConfigSpaceTestObjectiveSpace < Minitest::Test
   end
 
   def test_create
-    os = CCS::ObjectiveSpace::new(name: "space")
-    assert_equal( :CCS_OBJECT_TYPE_OBJECTIVE_SPACE, os.object_type )
-    assert_equal( "space", os.name )
-    assert_equal( 0, os.num_parameters )
-    assert_equal( [], os.objectives )
     h1 = CCS::NumericalParameter::Float.new
     h2 = CCS::NumericalParameter::Float.new
     h3 = CCS::NumericalParameter::Float.new
-    os.add_parameter(h1)
-    os.add_parameters([h2, h3])
+    os = CCS::ObjectiveSpace::new(name: "space", parameters: [h1, h2, h3])
+    assert_equal( :CCS_OBJECT_TYPE_OBJECTIVE_SPACE, os.object_type )
+    assert_equal( "space", os.name )
     assert_equal( 3, os.num_parameters )
+    assert_equal( [], os.objectives )
     assert_equal( h1, os.parameter(0) )
     assert_equal( h2, os.parameter(1) )
     assert_equal( h3, os.parameter(2) )

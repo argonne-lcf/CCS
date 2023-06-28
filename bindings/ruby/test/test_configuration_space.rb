@@ -7,19 +7,16 @@ class CConfigSpaceTestConfigurationSpace < Minitest::Test
   end
 
   def test_create
-    cs = CCS::ConfigurationSpace::new(name: "space")
-    assert_equal( :CCS_OBJECT_TYPE_CONFIGURATION_SPACE, cs.object_type )
-    assert_equal( "space", cs.name )
-    assert( cs.rng.kind_of?(CCS::Rng) )
-    assert_equal( 0, cs.num_parameters )
-    assert_equal( [], cs.conditions )
-    assert_equal( [], cs.forbidden_clauses )
     h1 = CCS::NumericalParameter::Float.new
     h2 = CCS::NumericalParameter::Float.new
     h3 = CCS::NumericalParameter::Float.new
-    cs.add_parameter(h1)
-    cs.add_parameters([h2, h3])
+    cs = CCS::ConfigurationSpace::new(name: "space", parameters: [h1, h2, h3])
+    assert_equal( :CCS_OBJECT_TYPE_CONFIGURATION_SPACE, cs.object_type )
+    assert_equal( "space", cs.name )
+    assert( cs.rng.kind_of?(CCS::Rng) )
     assert_equal( 3, cs.num_parameters )
+    assert_equal( [nil, nil, nil], cs.conditions )
+    assert_equal( [], cs.forbidden_clauses )
     assert_equal( h1, cs.parameter(0) )
     assert_equal( h2, cs.parameter(1) )
     assert_equal( h3, cs.parameter(2) )
@@ -36,11 +33,10 @@ class CConfigSpaceTestConfigurationSpace < Minitest::Test
   end
 
   def test_set_distribution
-    cs = CCS::ConfigurationSpace::new(name: "space")
     h1 = CCS::NumericalParameter::Float.new
     h2 = CCS::NumericalParameter::Float.new
     h3 = CCS::NumericalParameter::Float.new
-    cs.add_parameters([h1, h2, h3])
+    cs = CCS::ConfigurationSpace::new(name: "space", parameters: [h1, h2, h3])
     distributions = [ CCS::UniformDistribution::Float.new(lower: 0.1, upper: 0.3), CCS::UniformDistribution::Float.new(lower: 0.2, upper: 0.6) ]
     d = CCS::MultivariateDistribution::new(distributions: distributions)
     cs.set_distribution(d, [h1, h2])
@@ -63,8 +59,7 @@ class CConfigSpaceTestConfigurationSpace < Minitest::Test
     h1 = CCS::NumericalParameter::Float.new(lower: -1.0, upper: 1.0, default: 0.0)
     h2 = CCS::NumericalParameter::Float.new(lower: -1.0, upper: 1.0)
     h3 = CCS::NumericalParameter::Float.new(lower: -1.0, upper: 1.0)
-    cs = CCS::ConfigurationSpace::new(name: "space")
-    cs.add_parameters([h1, h2, h3])
+    cs = CCS::ConfigurationSpace::new(name: "space", parameters: [h1, h2, h3])
     e1 = CCS::Expression::Less.new(left: h2, right: 0.0)
     cs.set_condition(h3, e1)
     e2 = CCS::Expression::Less.new(left: h3, right: 0.0)
@@ -151,8 +146,7 @@ class CConfigSpaceTestConfigurationSpace < Minitest::Test
       name: 'p9',
       values: ['1', '8', '16'])
 
-    cs = CCS::ConfigurationSpace::new(name: "omp")
-    cs.add_parameters([p1, p2, p3, p4, p5, p6, p7, p8, p9])
+    cs = CCS::ConfigurationSpace::new(name: "omp", parameters: [p1, p2, p3, p4, p5, p6, p7, p8, p9])
 
     cond0 = CCS::Expression::Equal.new(left: p1, right: '#pragma omp #P2')
     cond1 = CCS::Expression::Equal.new(left: p1, right: '#pragma omp target teams distribute #P2')
@@ -254,8 +248,7 @@ class CConfigSpaceTestConfigurationSpace < Minitest::Test
       name: 'p9',
       values: ['1', '8', '16'])
 
-    cs = CCS::ConfigurationSpace::new(name: "omp")
-    cs.add_parameters([p1, p2, p3, p4, p5, p6, p7, p8, p9])
+    cs = CCS::ConfigurationSpace::new(name: "omp", parameters: [p1, p2, p3, p4, p5, p6, p7, p8, p9])
 
     cs.set_condition(p2, "p1 # ['#pragma omp #P2', '#pragma omp target teams distribute #P2']")
     cs.set_condition(p4, "p1 == '#pragma omp target teams distribute #P4'")

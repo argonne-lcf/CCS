@@ -18,10 +18,9 @@ class TestTreeEvaluation(unittest.TestCase):
   def test_create(self):
     tree = generate_tree(4, 0)
     ts = ccs.StaticTreeSpace(name = 'space', tree = tree)
-    os = ccs.ObjectiveSpace(name = "ospace")
     v1 = ccs.NumericalParameter.Float()
     v2 = ccs.NumericalParameter.Float()
-    os.add_parameters([v1, v2])
+    os = ccs.ObjectiveSpace(name = "ospace", parameters = [v1, v2])
     e1 = ccs.Expression.Variable(parameter = v1)
     e2 = ccs.Expression.Variable(parameter = v2)
     os.add_objectives( { e1: ccs.ObjectiveType.MAXIMIZE, e2: ccs.ObjectiveType.MINIMIZE } )
@@ -48,10 +47,9 @@ class TestTreeEvaluation(unittest.TestCase):
   def test_serialize(self):
     tree = generate_tree(4, 0)
     ts = ccs.StaticTreeSpace(name = 'space', tree = tree)
-    os = ccs.ObjectiveSpace(name = "ospace")
     v1 = ccs.NumericalParameter.Float()
     v2 = ccs.NumericalParameter.Float()
-    os.add_parameters([v1, v2])
+    os = ccs.ObjectiveSpace(name = "ospace", parameters = [v1, v2])
     e1 = ccs.Expression.Variable(parameter = v1)
     e2 = ccs.Expression.Variable(parameter = v2)
     os.add_objectives( { e1: ccs.ObjectiveType.MAXIMIZE, e2: ccs.ObjectiveType.MINIMIZE } )

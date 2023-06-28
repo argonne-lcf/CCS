@@ -146,19 +146,14 @@ _ccs_deserialize_bin_configuration_space(
 	CCS_VALIDATE_ERR_GOTO(
 		res,
 		ccs_create_configuration_space(
-			data.name, configuration_space_ret),
+			data.name, data.num_parameters, data.parameters,
+			configuration_space_ret),
 		end);
 	CCS_VALIDATE_ERR_GOTO(
 		res,
 		ccs_configuration_space_set_rng(
 			*configuration_space_ret, data.rng),
 		end);
-	CCS_VALIDATE_ERR_GOTO(
-		res,
-		ccs_configuration_space_add_parameters(
-			*configuration_space_ret, data.num_parameters,
-			data.parameters, NULL),
-		err_configuration_space);
 	for (size_t i = 0; i < data.num_conditions; i++)
 		CCS_VALIDATE_ERR_GOTO(
 			res,

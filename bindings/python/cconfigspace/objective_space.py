@@ -13,9 +13,7 @@ class ObjectiveType(CEnumeration):
     ('MINIMIZE', 0),
     'MAXIMIZE' ]
 
-ccs_create_objective_space = _ccs_get_function("ccs_create_objective_space", [ct.c_char_p, ct.POINTER(ccs_objective_space)])
-ccs_objective_space_add_parameter = _ccs_get_function("ccs_objective_space_add_parameter", [ccs_objective_space, ccs_parameter])
-ccs_objective_space_add_parameters = _ccs_get_function("ccs_objective_space_add_parameters", [ccs_objective_space, ct.c_size_t, ct.POINTER(ccs_parameter)])
+ccs_create_objective_space = _ccs_get_function("ccs_create_objective_space", [ct.c_char_p, ct.c_size_t, ct.POINTER(ccs_parameter), ct.POINTER(ccs_objective_space)])
 ccs_objective_space_add_objective = _ccs_get_function("ccs_objective_space_add_objective", [ccs_objective_space, ccs_expression, ObjectiveType])
 ccs_objective_space_add_objectives = _ccs_get_function("ccs_objective_space_add_objectives", [ccs_objective_space, ct.c_size_t, ct.POINTER(ccs_expression), ct.POINTER(ObjectiveType)])
 ccs_objective_space_get_objective = _ccs_get_function("ccs_objective_space_get_objective", [ccs_objective_space, ct.c_size_t, ct.POINTER(ccs_expression), ct.POINTER(ObjectiveType)])
@@ -24,10 +22,14 @@ ccs_objective_space_check_evaluation_values = _ccs_get_function("ccs_objective_s
 
 class ObjectiveSpace(Context):
   def __init__(self, handle = None, retain = False, auto_release = True,
-               name = ""):
+               name = "", parameters = None):
     if handle is None:
+      count = len(parameters)
+      if count == 0:
+        raise Error(Result(Result.ERROR_INVALID_VALUE))
+      parameters = (ccs_parameter * count)(*[x.handle.value for x in parameters])
       handle = ccs_objective_space()
-      res = ccs_create_objective_space(str.encode(name), ct.byref(handle))
+      res = ccs_create_objective_space(str.encode(name), count, parameters, ct.byref(handle))
       Error.check(res)
       super().__init__(handle = handle, retain = False)
     else:

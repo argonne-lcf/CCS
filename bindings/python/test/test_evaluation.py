@@ -7,15 +7,13 @@ import cconfigspace as ccs
 class TestEvaluation(unittest.TestCase):
 
   def test_create(self):
-    cs = ccs.ConfigurationSpace(name = "cspace")
     h1 = ccs.NumericalParameter.Float()
     h2 = ccs.NumericalParameter.Float()
     h3 = ccs.NumericalParameter.Float()
-    cs.add_parameters([h1, h2, h3])
-    os = ccs.ObjectiveSpace(name = "ospace")
+    cs = ccs.ConfigurationSpace(name = "cspace", parameters = [h1, h2, h3])
     v1 = ccs.NumericalParameter.Float()
     v2 = ccs.NumericalParameter.Float()
-    os.add_parameters([v1, v2])
+    os = ccs.ObjectiveSpace(name = "ospace", parameters = [v1, v2])
     e1 = ccs.Expression.Variable(parameter = v1)
     e2 = ccs.Expression.Variable(parameter = v2)
     os.add_objectives( { e1: ccs.ObjectiveType.MAXIMIZE, e2: ccs.ObjectiveType.MINIMIZE } )
@@ -40,15 +38,13 @@ class TestEvaluation(unittest.TestCase):
     self.assertEqual( ccs.Comparison.NOT_COMPARABLE, ev4.compare(ev1) )
 
   def test_serialize(self):
-    cs = ccs.ConfigurationSpace(name = "cspace")
     h1 = ccs.NumericalParameter.Float()
     h2 = ccs.NumericalParameter.Float()
     h3 = ccs.NumericalParameter.Float()
-    cs.add_parameters([h1, h2, h3])
-    os = ccs.ObjectiveSpace(name = "ospace")
+    cs = ccs.ConfigurationSpace(name = "cspace", parameters = [h1, h2, h3])
     v1 = ccs.NumericalParameter.Float()
     v2 = ccs.NumericalParameter.Float()
-    os.add_parameters([v1, v2])
+    os = ccs.ObjectiveSpace(name = "ospace", parameters = [v1, v2])
     e1 = ccs.Expression.Variable(parameter = v1)
     e2 = ccs.Expression.Variable(parameter = v2)
     os.add_objectives( { e1: ccs.ObjectiveType.MAXIMIZE, e2: ccs.ObjectiveType.MINIMIZE } )

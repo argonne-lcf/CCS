@@ -21,36 +21,6 @@ create_dummy_parameter(const char *name)
 }
 
 void
-test_create()
-{
-	ccs_configuration_space_t configuration_space;
-	ccs_result_t              err;
-	ccs_object_type_t         type;
-	const char               *name;
-	size_t                    sz;
-
-	err = ccs_create_configuration_space(
-		"my_config_space", &configuration_space);
-	assert(err == CCS_RESULT_SUCCESS);
-
-	err = ccs_object_get_type(configuration_space, &type);
-	assert(err == CCS_RESULT_SUCCESS);
-	assert(type == CCS_OBJECT_TYPE_CONFIGURATION_SPACE);
-
-	err = ccs_configuration_space_get_name(configuration_space, &name);
-	assert(err == CCS_RESULT_SUCCESS);
-	assert(strcmp(name, "my_config_space") == 0);
-
-	err = ccs_configuration_space_get_num_parameters(
-		configuration_space, &sz);
-	assert(err == CCS_RESULT_SUCCESS);
-	assert(sz == 0);
-
-	err = ccs_release_object(configuration_space);
-	assert(err == CCS_RESULT_SUCCESS);
-}
-
-void
 check_configuration(
 	ccs_configuration_space_t configuration_space,
 	size_t                    sz,
@@ -120,63 +90,45 @@ check_configuration(
 }
 
 void
-test_add()
+test_create()
 {
 	ccs_parameter_t           parameters[3];
+	ccs_parameter_t           parameter3;
 	ccs_configuration_space_t configuration_space;
 	ccs_result_t              err;
-
-	err = ccs_create_configuration_space(
-		"my_config_space", &configuration_space);
-	assert(err == CCS_RESULT_SUCCESS);
+	ccs_object_type_t         type;
+	const char               *name;
 
 	parameters[0] = create_dummy_parameter("param1");
 	parameters[1] = create_dummy_parameter("param2");
-	parameters[2] = create_dummy_parameter("param3");
+	parameter3    = create_dummy_parameter("param3");
+	parameters[2] = parameters[0];
 
-	err           = ccs_configuration_space_add_parameter(
-                configuration_space, parameters[0], NULL);
-	assert(err == CCS_RESULT_SUCCESS);
+	err           = ccs_create_configuration_space(
+                "my_config_space", 3, NULL, &configuration_space);
+	assert(err == CCS_RESULT_ERROR_INVALID_VALUE);
 
-	err = ccs_configuration_space_add_parameter(
-		configuration_space, parameters[0], NULL);
+	err = ccs_create_configuration_space(
+		"my_config_space", 0, parameters, &configuration_space);
+	assert(err == CCS_RESULT_ERROR_INVALID_VALUE);
+
+	err = ccs_create_configuration_space(
+		"my_config_space", 3, parameters, &configuration_space);
 	assert(err == CCS_RESULT_ERROR_INVALID_PARAMETER);
 
-	err = ccs_configuration_space_add_parameter(
-		configuration_space, parameters[1], NULL);
-	assert(err == CCS_RESULT_SUCCESS);
-	err = ccs_configuration_space_add_parameter(
-		configuration_space, parameters[2], NULL);
-	assert(err == CCS_RESULT_SUCCESS);
+	parameters[2] = parameter3;
 
-	check_configuration(configuration_space, 3, parameters);
-
-	for (size_t i = 0; i < 3; i++) {
-		err = ccs_release_object(parameters[i]);
-		assert(err == CCS_RESULT_SUCCESS);
-	}
-	err = ccs_release_object(configuration_space);
-	assert(err == CCS_RESULT_SUCCESS);
-}
-
-void
-test_add_list()
-{
-	ccs_parameter_t           parameters[3];
-	ccs_configuration_space_t configuration_space;
-	ccs_result_t              err;
-
-	err = ccs_create_configuration_space(
-		"my_config_space", &configuration_space);
+	err           = ccs_create_configuration_space(
+                "my_config_space", 3, parameters, &configuration_space);
 	assert(err == CCS_RESULT_SUCCESS);
 
-	parameters[0] = create_dummy_parameter("param1");
-	parameters[1] = create_dummy_parameter("param2");
-	parameters[2] = create_dummy_parameter("param3");
-
-	err           = ccs_configuration_space_add_parameters(
-                configuration_space, 3, parameters, NULL);
+	err = ccs_object_get_type(configuration_space, &type);
 	assert(err == CCS_RESULT_SUCCESS);
+	assert(type == CCS_OBJECT_TYPE_CONFIGURATION_SPACE);
+
+	err = ccs_configuration_space_get_name(configuration_space, &name);
+	assert(err == CCS_RESULT_SUCCESS);
+	assert(strcmp(name, "my_config_space") == 0);
 
 	check_configuration(configuration_space, 3, parameters);
 
@@ -198,10 +150,6 @@ test_sample()
 	ccs_result_t              err;
 	ccs_bool_t                check;
 
-	err = ccs_create_configuration_space(
-		"my_config_space", &configuration_space);
-	assert(err == CCS_RESULT_SUCCESS);
-
 	parameters[0] = create_dummy_parameter("param1");
 	parameters[1] = create_dummy_parameter("param2");
 	parameters[2] = create_dummy_parameter("param3");
@@ -210,8 +158,8 @@ test_sample()
                 CCSI(0), parameters + 3);
 	assert(err == CCS_RESULT_SUCCESS);
 
-	err = ccs_configuration_space_add_parameters(
-		configuration_space, 4, parameters, NULL);
+	err = ccs_create_configuration_space(
+		"my_config_space", 4, parameters, &configuration_space);
 	assert(err == CCS_RESULT_SUCCESS);
 
 	err = ccs_configuration_space_sample(
@@ -258,16 +206,12 @@ test_set_distribution()
 	ccs_result_t              err;
 	ccs_bool_t                check;
 
-	err = ccs_create_configuration_space(
-		"my_config_space", &configuration_space);
-	assert(err == CCS_RESULT_SUCCESS);
-
 	parameters[0] = create_dummy_parameter("param1");
 	parameters[1] = create_dummy_parameter("param2");
 	parameters[2] = create_dummy_parameter("param3");
 
-	err           = ccs_configuration_space_add_parameters(
-                configuration_space, 3, parameters, NULL);
+	err           = ccs_create_configuration_space(
+                "my_config_space", 3, parameters, &configuration_space);
 	assert(err == CCS_RESULT_SUCCESS);
 
 	check_configuration(configuration_space, 3, parameters);
@@ -400,16 +344,14 @@ test_configuration_deserialize()
 	ccs_result_t              err;
 	int                       cmp;
 
-	err = ccs_create_configuration_space(
-		"my_config_space", &configuration_space);
-	assert(err == CCS_RESULT_SUCCESS);
-
 	parameters[0] = create_numerical("param1");
 	parameters[1] = create_numerical("param2");
 	parameters[2] = create_numerical("param3");
-	err           = ccs_configuration_space_add_parameters(
-                configuration_space, 3, parameters, NULL);
+
+	err           = ccs_create_configuration_space(
+                "my_config_space", 3, parameters, &configuration_space);
 	assert(err == CCS_RESULT_SUCCESS);
+
 	err = ccs_configuration_space_sample(
 		configuration_space, &configuration_ref);
 	assert(err == CCS_RESULT_SUCCESS);
@@ -486,15 +428,12 @@ test_deserialize()
 	ccs_datum_t               d;
 	ccs_result_t              err;
 
-	err = ccs_create_configuration_space("my_config_space", &space);
-	assert(err == CCS_RESULT_SUCCESS);
-
 	parameters[0] = create_numerical("param1");
 	parameters[1] = create_numerical("param2");
 	parameters[2] = create_numerical("param3");
 
-	err           = ccs_configuration_space_add_parameters(
-                space, 3, parameters, NULL);
+	err           = ccs_create_configuration_space(
+                "my_config_space", 3, parameters, &space);
 	assert(err == CCS_RESULT_SUCCESS);
 
 	err = ccs_create_uniform_distribution(
@@ -641,8 +580,6 @@ main()
 {
 	ccs_init();
 	test_create();
-	test_add();
-	test_add_list();
 	test_sample();
 	test_set_distribution();
 	test_deserialize();

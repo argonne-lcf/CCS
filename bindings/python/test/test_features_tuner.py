@@ -8,21 +8,18 @@ from random import choice
 
 class TestFeaturesTuner(unittest.TestCase):
   def create_tuning_problem(self):
-    cs = ccs.ConfigurationSpace(name = "cspace")
     h1 = ccs.NumericalParameter.Float(lower = -5.0, upper = 5.0)
     h2 = ccs.NumericalParameter.Float(lower = -5.0, upper = 5.0)
     h3 = ccs.NumericalParameter.Float(lower = -5.0, upper = 5.0)
-    cs.add_parameters([h1, h2, h3])
-    os = ccs.ObjectiveSpace(name = "ospace")
+    cs = ccs.ConfigurationSpace(name = "cspace", parameters = [h1, h2, h3])
     v1 = ccs.NumericalParameter.Float(lower = float('-inf'), upper = float('inf'))
     v2 = ccs.NumericalParameter.Float(lower = float('-inf'), upper = float('inf'))
-    os.add_parameters([v1, v2])
+    os = ccs.ObjectiveSpace(name = "ospace", parameters = [v1, v2])
     e1 = ccs.Expression.Variable(parameter = v1)
     e2 = ccs.Expression.Variable(parameter = v2)
     os.add_objectives( [e1, e2] )
-    fs = ccs.FeaturesSpace(name = "fspace")
     f1 = ccs.CategoricalParameter(values = [True, False])
-    fs.add_parameter(f1)
+    fs = ccs.FeaturesSpace(name = "fspace", parameters = [f1])
     return (cs, fs, os)
 
   def test_create_random(self):
