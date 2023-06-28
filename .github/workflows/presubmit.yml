@@ -45,33 +45,8 @@ jobs:
         with:
           name: build-and-check
           path: |
-            build/tests/test_mixture_distribution.log
-            build/tests/test_user_defined_tuner.log
-            build/tests/test_random_features_tuner.log
-            build/tests/test_random_tuner.log
-            build/tests/test_categorical_hyperparameter.log
-            build/tests/test_condition.log
-            build/tests/test_configuration_space.log
-            build/tests/test_uniform_distribution.log
-            build/tests/test_features_space.log
-            build/tests/test_roulette_distribution.log
-            build/tests/test_interval.log
-            build/tests/test-suite-memcheck.log
-            build/tests/test_ordinal_hyperparameter.log
-            build/tests/test_forbidden.log
-            build/tests/test_numerical_hyperparameter.log
-            build/tests/test_discrete_hyperparameter.log
-            build/tests/test_normal_distribution.log
-            build/tests/test_tree.log
-            build/tests/test_user_defined_features_tuner.log
-            build/tests/test-suite.log
-            build/tests/test_multivariate_distribution.log
-            build/tests/test_expression.log
-            build/tests/test_rng.log
+            build/**/*.log
             build/config.log
-            build/samples/test_python.log
-            build/samples/test-suite.log
-            build/samples/test_ruby.log
 
   build-and-check-cxx:
     needs: pre_job
@@ -101,33 +76,8 @@ jobs:
         with:
           name: build-and-check
           path: |
-            build/tests/test_mixture_distribution.log
-            build/tests/test_user_defined_tuner.log
-            build/tests/test_random_features_tuner.log
-            build/tests/test_random_tuner.log
-            build/tests/test_categorical_hyperparameter.log
-            build/tests/test_condition.log
-            build/tests/test_configuration_space.log
-            build/tests/test_uniform_distribution.log
-            build/tests/test_features_space.log
-            build/tests/test_roulette_distribution.log
-            build/tests/test_interval.log
-            build/tests/test-suite-memcheck.log
-            build/tests/test_ordinal_hyperparameter.log
-            build/tests/test_forbidden.log
-            build/tests/test_numerical_hyperparameter.log
-            build/tests/test_discrete_hyperparameter.log
-            build/tests/test_normal_distribution.log
-            build/tests/test_tree.log
-            build/tests/test_user_defined_features_tuner.log
-            build/tests/test-suite.log
-            build/tests/test_multivariate_distribution.log
-            build/tests/test_expression.log
-            build/tests/test_rng.log
+            build/**/*.log
             build/config.log
-            build/samples/test_python.log
-            build/samples/test-suite.log
-            build/samples/test_ruby.log
 
   build-and-check-clang:
     needs: pre_job
@@ -157,33 +107,8 @@ jobs:
         with:
           name: build-and-check
           path: |
-            build/tests/test_mixture_distribution.log
-            build/tests/test_user_defined_tuner.log
-            build/tests/test_random_features_tuner.log
-            build/tests/test_random_tuner.log
-            build/tests/test_categorical_hyperparameter.log
-            build/tests/test_condition.log
-            build/tests/test_configuration_space.log
-            build/tests/test_uniform_distribution.log
-            build/tests/test_features_space.log
-            build/tests/test_roulette_distribution.log
-            build/tests/test_interval.log
-            build/tests/test-suite-memcheck.log
-            build/tests/test_ordinal_hyperparameter.log
-            build/tests/test_forbidden.log
-            build/tests/test_numerical_hyperparameter.log
-            build/tests/test_discrete_hyperparameter.log
-            build/tests/test_normal_distribution.log
-            build/tests/test_tree.log
-            build/tests/test_user_defined_features_tuner.log
-            build/tests/test-suite.log
-            build/tests/test_multivariate_distribution.log
-            build/tests/test_expression.log
-            build/tests/test_rng.log
+            build/**/*.log
             build/config.log
-            build/samples/test_python.log
-            build/samples/test-suite.log
-            build/samples/test_ruby.log
 
   build-and-check-valgrind:
     needs: pre_job
@@ -211,33 +136,8 @@ jobs:
         with:
           name: build-and-check-valgrind
           path: |
-            build/tests/test_mixture_distribution.log
-            build/tests/test_user_defined_tuner.log
-            build/tests/test_random_features_tuner.log
-            build/tests/test_random_tuner.log
-            build/tests/test_categorical_hyperparameter.log
-            build/tests/test_condition.log
-            build/tests/test_configuration_space.log
-            build/tests/test_uniform_distribution.log
-            build/tests/test_features_space.log
-            build/tests/test_roulette_distribution.log
-            build/tests/test_interval.log
-            build/tests/test-suite-memcheck.log
-            build/tests/test_ordinal_hyperparameter.log
-            build/tests/test_forbidden.log
-            build/tests/test_numerical_hyperparameter.log
-            build/tests/test_discrete_hyperparameter.log
-            build/tests/test_normal_distribution.log
-            build/tests/test_tree.log
-            build/tests/test_user_defined_features_tuner.log
-            build/tests/test-suite.log
-            build/tests/test_multivariate_distribution.log
-            build/tests/test_expression.log
-            build/tests/test_rng.log
+            build/**/*.log
             build/config.log
-            build/samples/test_python.log
-            build/samples/test-suite.log
-            build/samples/test_ruby.log
 
   distcheck:
     needs: pre_job
