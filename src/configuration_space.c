@@ -902,7 +902,7 @@ ccs_configuration_space_get_default_configuration(
 		CCS_RESULT_ERROR_INVALID_GRAPH);
 	ccs_result_t        err;
 	ccs_configuration_t config;
-	CCS_VALIDATE(ccs_create_configuration(
+	CCS_VALIDATE(_ccs_create_configuration(
 		configuration_space, 0, NULL, &config));
 	UT_array *array = configuration_space->data->parameters;
 	_ccs_parameter_wrapper_cs_t *wrapper = NULL;
@@ -1117,7 +1117,7 @@ ccs_configuration_space_sample(
 		CCS_RESULT_ERROR_INVALID_GRAPH, errgraph);
 	CCS_VALIDATE_ERR_GOTO(
 		err,
-		ccs_create_configuration(configuration_space, 0, NULL, &config),
+		_ccs_create_configuration(configuration_space, 0, NULL, &config),
 		errgraph);
 	do {
 		CCS_VALIDATE_ERR_GOTO(
@@ -1164,7 +1164,7 @@ ccs_configuration_space_samples(
 		if (!config)
 			CCS_VALIDATE_ERR_GOTO(
 				err,
-				ccs_create_configuration(
+				_ccs_create_configuration(
 					configuration_space, 0, NULL, &config),
 				errgraph);
 		CCS_VALIDATE_ERR_GOTO(

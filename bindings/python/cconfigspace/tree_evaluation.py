@@ -9,7 +9,6 @@ ccs_create_tree_evaluation = _ccs_get_function("ccs_create_tree_evaluation", [cc
 ccs_tree_evaluation_get_objective_space = _ccs_get_function("ccs_tree_evaluation_get_objective_space", [ccs_tree_evaluation, ct.POINTER(ccs_objective_space)])
 ccs_tree_evaluation_get_configuration = _ccs_get_function("ccs_tree_evaluation_get_configuration", [ccs_tree_evaluation, ct.POINTER(ccs_tree_configuration)])
 ccs_tree_evaluation_get_result = _ccs_get_function("ccs_tree_evaluation_get_result", [ccs_tree_evaluation, ct.POINTER(ccs_evaluation_result)])
-ccs_tree_evaluation_set_result = _ccs_get_function("ccs_tree_evaluation_set_result", [ccs_tree_evaluation, ccs_evaluation_result])
 ccs_tree_evaluation_get_objective_value = _ccs_get_function("ccs_tree_evaluation_get_objective_value", [ccs_tree_evaluation, ct.c_size_t, ct.POINTER(Datum)])
 ccs_tree_evaluation_get_objective_values = _ccs_get_function("ccs_tree_evaluation_get_objective_values", [ccs_tree_evaluation, ct.c_size_t, ct.POINTER(Datum), ct.POINTER(ct.c_size_t)])
 ccs_tree_evaluation_compare = _ccs_get_function("ccs_tree_evaluation_compare", [ccs_tree_evaluation, ccs_tree_evaluation, ct.POINTER(Comparison)])
@@ -61,15 +60,13 @@ class TreeEvaluation(Binding):
 
   @property
   def result(self):
+    if hasattr(self, "_result"):
+      return self._result
     v = ccs_evaluation_result()
     res = ccs_tree_evaluation_get_result(self.handle, ct.byref(v))
     Error.check(res)
-    return v.value
-
-  @result.setter
-  def result(self, v):
-    res = ccs_tree_evaluation_set_result(self.handle, v)
-    Error.check(res)
+    self._result = v.value
+    return self._result
 
   @property
   def num_objective_values(self):
@@ -83,13 +80,16 @@ class TreeEvaluation(Binding):
 
   @property
   def objective_values(self):
+    if hasattr(self, "_objective_values"):
+      return self._objective_values
     sz = self.num_objective_values
     if sz == 0:
       return []
     v = (Datum * sz)()
     res = ccs_tree_evaluation_get_objective_values(self.handle, sz, v, None)
     Error.check(res)
-    return [x.value for x in v]
+    self._objective_values = tuple(x.value for x in v)
+    return self._objective_values
 
   def compare(self, other):
     v = Comparison(0)

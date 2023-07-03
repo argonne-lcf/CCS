@@ -29,4 +29,11 @@ struct _ccs_configuration_data_s {
 	ccs_datum_t              *values;
 };
 
+ccs_result_t
+_ccs_create_configuration(
+	ccs_configuration_space_t configuration_space,
+	size_t                    num_values,
+	ccs_datum_t              *values,
+	ccs_configuration_t      *configuration_ret);
+
 #endif //_CONFIGURATION_INTERNAL_H

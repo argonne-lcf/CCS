@@ -50,19 +50,6 @@ _ccs_binding_get_value(
 }
 
 static inline ccs_result_t
-_ccs_binding_set_value(ccs_binding_t binding, size_t index, ccs_datum_t value)
-{
-	CCS_REFUTE(
-		index >= binding->data->num_values,
-		CCS_RESULT_ERROR_OUT_OF_BOUNDS);
-	if (value.flags & CCS_DATUM_FLAG_TRANSIENT)
-		CCS_VALIDATE(ccs_context_validate_value(
-			binding->data->context, index, value, &value));
-	binding->data->values[index] = value;
-	return CCS_RESULT_SUCCESS;
-}
-
-static inline ccs_result_t
 _ccs_binding_get_values(
 	ccs_binding_t binding,
 	size_t        num_values,
@@ -87,28 +74,6 @@ _ccs_binding_get_values(
 }
 
 static inline ccs_result_t
-_ccs_binding_set_values(
-	ccs_binding_t binding,
-	size_t        num_values,
-	ccs_datum_t  *values)
-{
-	CCS_CHECK_ARY(num_values, values);
-	size_t num = binding->data->num_values;
-	CCS_REFUTE(num_values != num, CCS_RESULT_ERROR_INVALID_VALUE);
-	if (values) {
-		for (size_t i = 0; i < num_values; i++) {
-			ccs_datum_t value = values[i];
-			if (value.flags & CCS_DATUM_FLAG_TRANSIENT)
-				CCS_VALIDATE(ccs_context_validate_value(
-					binding->data->context, i, value,
-					&value));
-			binding->data->values[i] = value;
-		}
-	}
-	return CCS_RESULT_SUCCESS;
-}
-
-static inline ccs_result_t
 _ccs_binding_get_value_by_name(
 	ccs_binding_t binding,
 	const char   *name,
@@ -123,20 +88,6 @@ _ccs_binding_get_value_by_name(
 }
 
 static inline ccs_result_t
-_ccs_binding_set_value_by_name(
-	ccs_binding_t binding,
-	const char   *name,
-	ccs_datum_t   value)
-{
-	CCS_CHECK_PTR(name);
-	size_t index;
-	CCS_VALIDATE(ccs_context_get_parameter_index_by_name(
-		binding->data->context, name, &index));
-	CCS_VALIDATE(_ccs_binding_set_value(binding, index, value));
-	return CCS_RESULT_SUCCESS;
-}
-
-static inline ccs_result_t
 _ccs_binding_get_value_by_parameter(
 	ccs_binding_t   binding,
 	ccs_parameter_t parameter,
@@ -146,19 +97,6 @@ _ccs_binding_get_value_by_parameter(
 	CCS_VALIDATE(ccs_context_get_parameter_index(
 		binding->data->context, parameter, &index));
 	CCS_VALIDATE(_ccs_binding_get_value(binding, index, value_ret));
-	return CCS_RESULT_SUCCESS;
-}
-
-static inline ccs_result_t
-_ccs_binding_set_value_by_parameter(
-	ccs_binding_t   binding,
-	ccs_parameter_t parameter,
-	ccs_datum_t     value)
-{
-	size_t index;
-	CCS_VALIDATE(ccs_context_get_parameter_index(
-		binding->data->context, parameter, &index));
-	CCS_VALIDATE(_ccs_binding_set_value(binding, index, value));
 	return CCS_RESULT_SUCCESS;
 }
 

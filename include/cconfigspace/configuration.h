@@ -72,28 +72,6 @@ ccs_configuration_get_value(
 	ccs_datum_t        *value_ret);
 
 /**
- * Set the value of the parameter at the given index. Transient values will
- * be validated and memoized if needed.
- * @param[in,out] configuration
- * @param[in] index index of the parameter in the associated configuration
- *                  space
- * @param[in] value the value
- * @return #CCS_RESULT_SUCCESS on success
- * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p configuration is not a valid
- * CCS configuration
- * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p value_ret is NULL
- * @return #CCS_RESULT_ERROR_OUT_OF_BOUNDS if \p index is greater than the count
- * of parameters in the configuration space
- * @return #CCS_RESULT_ERROR_OUT_OF_MEMORY if there was a lack of memory while
- * memoizing a string
- */
-extern ccs_result_t
-ccs_configuration_set_value(
-	ccs_configuration_t configuration,
-	size_t              index,
-	ccs_datum_t         value);
-
-/**
  * Get all the values in the configuration.
  * @param[in] configuration
  * @param[in] num_values the size of the \p values array

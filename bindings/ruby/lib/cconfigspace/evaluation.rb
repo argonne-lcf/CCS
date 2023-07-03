@@ -14,7 +14,6 @@ module CCS
   attach_function :ccs_create_evaluation, [:ccs_objective_space_t, :ccs_configuration_t, :ccs_evaluation_result_t, :size_t, :pointer, :pointer], :ccs_result_t
   attach_function :ccs_evaluation_get_configuration, [:ccs_evaluation_t, :pointer], :ccs_result_t
   attach_function :ccs_evaluation_get_result, [:ccs_evaluation_t, :pointer], :ccs_result_t
-  attach_function :ccs_evaluation_set_result, [:ccs_evaluation_t, :ccs_evaluation_result_t], :ccs_result_t
   attach_function :ccs_evaluation_get_objective_values, [:ccs_evaluation_t, :size_t, :pointer, :pointer], :ccs_result_t
   attach_function :ccs_evaluation_compare, [:ccs_evaluation_t, :ccs_evaluation_t, :pointer], :ccs_result_t
   attach_function :ccs_evaluation_check, [:ccs_evaluation_t, :pointer], :ccs_result_t
@@ -22,7 +21,7 @@ module CCS
   class Evaluation < Binding
     alias objective_space context
     add_handle_property :configuration, :ccs_configuration_t, :ccs_evaluation_get_configuration, memoize: true
-    add_property :result, :ccs_evaluation_result_t, :ccs_evaluation_get_result, memoize: false
+    add_property :result, :ccs_evaluation_result_t, :ccs_evaluation_get_result, memoize: true
 
     def initialize(handle = nil, retain: false, auto_release: true,
                    objective_space: nil, configuration: nil, result: :CCS_RESULT_SUCCESS, values: nil)
@@ -51,11 +50,6 @@ module CCS
       self::new(handle, retain: retain, auto_release: auto_release)
     end
 
-    def result=(res)
-      CCS.error_check CCS.ccs_evaluation_set_result(@handle, res)
-      res
-    end
-
     def num_objective_values
       @num_objective_values ||= begin
         ptr = MemoryPointer::new(:size_t)
@@ -65,11 +59,13 @@ module CCS
     end
 
     def objective_values
-      count = num_objective_values
-      return [] if count == 0
-      values = MemoryPointer::new(:ccs_datum_t, count)
-      CCS.error_check CCS.ccs_evaluation_get_objective_values(@handle, count, values, nil)
-      count.times.collect { |i| Datum::new(values[i]).value }
+      @objective_values ||= begin
+        count = num_objective_values
+        return [] if count == 0
+        values = MemoryPointer::new(:ccs_datum_t, count)
+        CCS.error_check CCS.ccs_evaluation_get_objective_values(@handle, count, values, nil)
+        count.times.collect { |i| Datum::new(values[i]).value }.freeze
+      end
     end
 
     def check

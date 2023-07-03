@@ -84,15 +84,12 @@ static _ccs_configuration_ops_t _configuration_ops = {
 	&_ccs_configuration_cmp};
 
 ccs_result_t
-ccs_create_configuration(
+_ccs_create_configuration(
 	ccs_configuration_space_t configuration_space,
 	size_t                    num_values,
 	ccs_datum_t              *values,
 	ccs_configuration_t      *configuration_ret)
 {
-	CCS_CHECK_OBJ(configuration_space, CCS_OBJECT_TYPE_CONFIGURATION_SPACE);
-	CCS_CHECK_PTR(configuration_ret);
-	CCS_CHECK_ARY(num_values, values);
 	ccs_result_t err;
 	size_t       num_parameters;
 	CCS_VALIDATE(ccs_configuration_space_get_num_parameters(
@@ -140,6 +137,26 @@ errmem:
 }
 
 ccs_result_t
+ccs_create_configuration(
+	ccs_configuration_space_t configuration_space,
+	size_t                    num_values,
+	ccs_datum_t              *values,
+	ccs_configuration_t      *configuration_ret)
+{
+	CCS_CHECK_OBJ(configuration_space, CCS_OBJECT_TYPE_CONFIGURATION_SPACE);
+	CCS_CHECK_PTR(configuration_ret);
+	CCS_CHECK_ARY(num_values, values);
+	size_t num_parameters;
+	CCS_VALIDATE(ccs_configuration_space_get_num_parameters(
+		configuration_space, &num_parameters));
+	CCS_REFUTE(
+		num_parameters != num_values, CCS_RESULT_ERROR_INVALID_VALUE);
+	CCS_VALIDATE(_ccs_create_configuration(
+		configuration_space, num_values, values, configuration_ret));
+	return CCS_RESULT_SUCCESS;
+}
+
+ccs_result_t
 ccs_configuration_get_configuration_space(
 	ccs_configuration_t        configuration,
 	ccs_configuration_space_t *configuration_space_ret)
@@ -160,18 +177,6 @@ ccs_configuration_get_value(
 	CCS_CHECK_OBJ(configuration, CCS_OBJECT_TYPE_CONFIGURATION);
 	CCS_VALIDATE(_ccs_binding_get_value(
 		(ccs_binding_t)configuration, index, value_ret));
-	return CCS_RESULT_SUCCESS;
-}
-
-ccs_result_t
-ccs_configuration_set_value(
-	ccs_configuration_t configuration,
-	size_t              index,
-	ccs_datum_t         value)
-{
-	CCS_CHECK_OBJ(configuration, CCS_OBJECT_TYPE_CONFIGURATION);
-	CCS_VALIDATE(_ccs_binding_set_value(
-		(ccs_binding_t)configuration, index, value));
 	return CCS_RESULT_SUCCESS;
 }
 

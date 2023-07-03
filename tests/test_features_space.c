@@ -185,15 +185,21 @@ test_features()
 	err = ccs_features_cmp(features1, features2, &cmp);
 	assert(err == CCS_RESULT_SUCCESS);
 	assert(0 == cmp);
+	err = ccs_release_object(features2);
+	assert(err == CCS_RESULT_SUCCESS);
 
-	err = ccs_features_set_value(features2, 1, ccs_float(0.5));
+	values[1] = ccs_float(0.5);
+	err       = ccs_create_features(features_space, 3, values, &features2);
 	assert(err == CCS_RESULT_SUCCESS);
 
 	err = ccs_features_cmp(features1, features2, &cmp);
 	assert(err == CCS_RESULT_SUCCESS);
 	assert(0 > cmp);
+	err = ccs_release_object(features2);
+	assert(err == CCS_RESULT_SUCCESS);
 
-	err = ccs_features_set_value(features2, 1, ccs_float(10.0));
+	values[1] = ccs_float(10.0);
+	err       = ccs_create_features(features_space, 3, values, &features2);
 	assert(err == CCS_RESULT_SUCCESS);
 
 	err = ccs_features_check(features2, &check);

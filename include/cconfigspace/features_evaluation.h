@@ -119,22 +119,6 @@ ccs_features_evaluation_get_result(
 	ccs_evaluation_result_t  *result_ret);
 
 /**
- * Set the result code associated with a features evaluation. A successful
- * evaluation should have it's error set to #CCS_RESULT_SUCCESS.
- * @param[in,out] features_evaluation
- * @param[in] result the result code associated withe the features_evaluation
- * @return #CCS_RESULT_SUCCESS on success
- * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p features_evaluation is not a
- * valid CCS features evaluation
- * @remarks
- *   This function is NOT thread-safe
- */
-extern ccs_result_t
-ccs_features_evaluation_set_result(
-	ccs_features_evaluation_t features_evaluation,
-	ccs_evaluation_result_t   result);
-
-/**
  * Get the value of the parameter at the given index.
  * @param[in] features_evaluation
  * @param[in] index index of the parameter in the associated objective
@@ -154,30 +138,6 @@ ccs_features_evaluation_get_value(
 	ccs_features_evaluation_t features_evaluation,
 	size_t                    index,
 	ccs_datum_t              *value_ret);
-
-/**
- * Set the value of the parameter at the given index. Transient values will
- * be validated and memoized if needed.
- * @param[in,out] features_evaluation
- * @param[in] index index of the parameter in the associated objective
- *                  space
- * @param[in] value the value
- * @return #CCS_RESULT_SUCCESS on success
- * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p features_evaluation is not a
- * valid CCS features evaluation
- * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p value_ret is NULL
- * @return #CCS_RESULT_ERROR_OUT_OF_BOUNDS if \p index is greater than the count
- * of parameters in the objective space
- * @return #CCS_RESULT_ERROR_OUT_OF_MEMORY if there was a lack of memory while
- * memoizing a string
- * @remarks
- *   This function is NOT thread-safe
- */
-extern ccs_result_t
-ccs_features_evaluation_set_value(
-	ccs_features_evaluation_t features_evaluation,
-	size_t                    index,
-	ccs_datum_t               value);
 
 /**
  * Get all the values in a features evaluation.

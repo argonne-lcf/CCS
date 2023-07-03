@@ -300,16 +300,6 @@ ccs_features_evaluation_get_result(
 }
 
 ccs_result_t
-ccs_features_evaluation_set_result(
-	ccs_features_evaluation_t evaluation,
-	ccs_evaluation_result_t   result)
-{
-	CCS_CHECK_OBJ(evaluation, CCS_OBJECT_TYPE_FEATURES_EVALUATION);
-	evaluation->data->result = result;
-	return CCS_RESULT_SUCCESS;
-}
-
-ccs_result_t
 ccs_features_evaluation_get_value(
 	ccs_features_evaluation_t evaluation,
 	size_t                    index,
@@ -318,18 +308,6 @@ ccs_features_evaluation_get_value(
 	CCS_CHECK_OBJ(evaluation, CCS_OBJECT_TYPE_FEATURES_EVALUATION);
 	CCS_VALIDATE(_ccs_binding_get_value(
 		(ccs_binding_t)evaluation, index, value_ret));
-	return CCS_RESULT_SUCCESS;
-}
-
-ccs_result_t
-ccs_features_evaluation_set_value(
-	ccs_features_evaluation_t evaluation,
-	size_t                    index,
-	ccs_datum_t               value)
-{
-	CCS_CHECK_OBJ(evaluation, CCS_OBJECT_TYPE_FEATURES_EVALUATION);
-	CCS_VALIDATE(_ccs_binding_set_value(
-		(ccs_binding_t)evaluation, index, value));
 	return CCS_RESULT_SUCCESS;
 }
 

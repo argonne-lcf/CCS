@@ -33,14 +33,6 @@ ccs_binding_get_value(
 }
 
 ccs_result_t
-ccs_binding_set_value(ccs_binding_t binding, size_t index, ccs_datum_t value)
-{
-	CCS_CHECK_BINDING(binding);
-	CCS_VALIDATE(_ccs_binding_set_value(binding, index, value));
-	return CCS_RESULT_SUCCESS;
-}
-
-ccs_result_t
 ccs_binding_get_values(
 	ccs_binding_t binding,
 	size_t        num_values,
@@ -50,17 +42,6 @@ ccs_binding_get_values(
 	CCS_CHECK_BINDING(binding);
 	CCS_VALIDATE(_ccs_binding_get_values(
 		binding, num_values, values, num_values_ret));
-	return CCS_RESULT_SUCCESS;
-}
-
-ccs_result_t
-ccs_binding_set_values(
-	ccs_binding_t binding,
-	size_t        num_values,
-	ccs_datum_t  *values)
-{
-	CCS_CHECK_BINDING(binding);
-	CCS_VALIDATE(_ccs_binding_set_values(binding, num_values, values));
 	return CCS_RESULT_SUCCESS;
 }
 
@@ -76,17 +57,6 @@ ccs_binding_get_value_by_name(
 }
 
 ccs_result_t
-ccs_binding_set_value_by_name(
-	ccs_binding_t binding,
-	const char   *name,
-	ccs_datum_t   value)
-{
-	CCS_CHECK_BINDING(binding);
-	CCS_VALIDATE(_ccs_binding_set_value_by_name(binding, name, value));
-	return CCS_RESULT_SUCCESS;
-}
-
-ccs_result_t
 ccs_binding_get_value_by_parameter(
 	ccs_binding_t   binding,
 	ccs_parameter_t parameter,
@@ -95,18 +65,6 @@ ccs_binding_get_value_by_parameter(
 	CCS_CHECK_BINDING(binding);
 	CCS_VALIDATE(_ccs_binding_get_value_by_parameter(
 		binding, parameter, value_ret));
-	return CCS_RESULT_SUCCESS;
-}
-
-ccs_result_t
-ccs_binding_set_value_by_parameter(
-	ccs_binding_t   binding,
-	ccs_parameter_t parameter,
-	ccs_datum_t     value)
-{
-	CCS_CHECK_BINDING(binding);
-	CCS_VALIDATE(
-		_ccs_binding_set_value_by_parameter(binding, parameter, value));
 	return CCS_RESULT_SUCCESS;
 }
 

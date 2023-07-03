@@ -163,15 +163,6 @@ ccs_features_get_value(
 }
 
 ccs_result_t
-ccs_features_set_value(ccs_features_t features, size_t index, ccs_datum_t value)
-{
-	CCS_CHECK_OBJ(features, CCS_OBJECT_TYPE_FEATURES);
-	CCS_VALIDATE(
-		_ccs_binding_set_value((ccs_binding_t)features, index, value));
-	return CCS_RESULT_SUCCESS;
-}
-
-ccs_result_t
 ccs_features_get_values(
 	ccs_features_t features,
 	size_t         num_values,

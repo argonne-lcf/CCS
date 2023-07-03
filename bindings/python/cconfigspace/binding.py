@@ -4,13 +4,9 @@ from .parameter import Parameter
 
 ccs_binding_get_context = _ccs_get_function("ccs_binding_get_context", [ccs_binding, ct.POINTER(ccs_context)])
 ccs_binding_get_value = _ccs_get_function("ccs_binding_get_value", [ccs_binding, ct.c_size_t, ct.POINTER(Datum)])
-ccs_binding_set_value = _ccs_get_function("ccs_binding_set_value", [ccs_binding, ct.c_size_t, DatumFix])
 ccs_binding_get_values = _ccs_get_function("ccs_binding_get_values", [ccs_binding, ct.c_size_t, ct.POINTER(Datum), ct.POINTER(ct.c_size_t)])
-ccs_binding_set_values = _ccs_get_function("ccs_binding_set_values", [ccs_binding, ct.c_size_t, ct.POINTER(Datum)])
 ccs_binding_get_value_by_name = _ccs_get_function("ccs_binding_get_value_by_name", [ccs_binding, ct.c_char_p, ct.POINTER(Datum)])
-ccs_binding_set_value_by_name = _ccs_get_function("ccs_binding_set_value_by_name", [ccs_binding, ct.c_char_p, DatumFix])
 ccs_binding_get_value_by_parameter = _ccs_get_function("ccs_binding_get_value_by_parameter", [ccs_binding, ccs_parameter, ct.POINTER(Datum)])
-ccs_binding_set_value_by_parameter = _ccs_get_function("ccs_binding_set_value_by_parameter", [ccs_binding, ccs_parameter, DatumFix])
 ccs_binding_hash = _ccs_get_function("ccs_binding_hash", [ccs_binding, ct.POINTER(ccs_hash)])
 ccs_binding_cmp = _ccs_get_function("ccs_binding_cmp", [ccs_binding, ccs_binding, ct.POINTER(ct.c_int)])
 
@@ -36,17 +32,6 @@ class Binding(Object):
     self._num_values = v.value
     return self._num_values
 
-  def set_value(self, parameter, value):
-    pv = Datum(value)
-    v = DatumFix(pv)
-    if isinstance(parameter, Parameter):
-      res = ccs_binding_set_value_by_parameter(self.handle, parameter.handle, v)
-    elif isinstance(parameter, str):
-      res = ccs_binding_set_value_by_name(self.handle, str.encode(parameter), ct.byref(v))
-    else:
-      res = ccs_binding_set_value(self.handle, parameter, v)
-    Error.check(res)
-
   def value(self, parameter):
     v = Datum()
     if isinstance(parameter, Parameter):
@@ -60,22 +45,16 @@ class Binding(Object):
 
   @property
   def values(self):
+    if hasattr(self, "_values"):
+      return self._values
     sz = self.num_values
     if sz == 0:
       return []
     v = (Datum * sz)()
     res = ccs_binding_get_values(self.handle, sz, v, None)
     Error.check(res)
-    return [x.value for x in v]
-
-  def set_values(self, values):
-    sz = len(values)
-    v = (Datum*sz)()
-    ss = []
-    for i in range(sz):
-      v[i].set_value(values[i], string_store = ss)
-    res = ccs_binding_set_values(self.handle, sz, v)
-    Error.check(res)
+    self._values = tuple(x.value for x in v)
+    return self._values
 
   def cmp(self, other):
     v = ct.c_int()
