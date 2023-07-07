@@ -17,7 +17,7 @@ class TestObjectiveSpace(unittest.TestCase):
     self.assertEqual( h1, os.parameter(0) )
     self.assertEqual( h2, os.parameter(1) )
     self.assertEqual( h3, os.parameter(2) )
-    self.assertEqual( [h1, h2, h3], os.parameters )
+    self.assertEqual( (h1, h2, h3), os.parameters )
     self.assertEqual( h2, os.parameter_by_name(h2.name) )
     e1 = ccs.Expression.Add(left = h1, right = h2)
     e2 = ccs.Expression.Variable(parameter = h3)

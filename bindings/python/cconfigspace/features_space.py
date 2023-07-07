@@ -24,18 +24,6 @@ class FeaturesSpace(Context):
   def from_handle(cls, handle, retain = True, auto_release = True):
     return cls(handle = handle, retain = retain, auto_release = auto_release)
 
-  def add_parameter(self, parameter):
-    res = ccs_features_space_add_parameter(self.handle, parameter.handle)
-    Error.check(res)
-
-  def add_parameters(self, parameters, distributions = None):
-    count = len(parameters)
-    if count == 0:
-      return None
-    parameters = (ccs_parameter * count)(*[x.handle.value for x in parameters])
-    res = ccs_features_space_add_parameters(self.handle, count, parameters)
-    Error.check(res)
-
   def check(self, features):
     valid = ccs_bool()
     res = ccs_features_space_check_features(self.handle, features.handle, ct.byref(valid))

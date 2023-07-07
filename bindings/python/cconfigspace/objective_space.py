@@ -39,18 +39,6 @@ class ObjectiveSpace(Context):
   def from_handle(cls, handle, retain = True, auto_release = True):
     return cls(handle = handle, retain = retain, auto_release = auto_release)
 
-  def add_parameter(self, parameter):
-    res = ccs_objective_space_add_parameter(self.handle, parameter.handle)
-    Error.check(res)
-
-  def add_parameters(self, parameters):
-    count = len(parameters)
-    if count == 0:
-      return None
-    parameters = (ccs_parameter * count)(*[x.handle.value for x in parameters])
-    res = ccs_objective_space_add_parameters(self.handle, count, parameters)
-    Error.check(res)
-
   def add_objective(self, expression, t = ObjectiveType.MINIMIZE):
     if isinstance(expression, str):
       expression = parser.parse(expression, context = PContext(extra=self))

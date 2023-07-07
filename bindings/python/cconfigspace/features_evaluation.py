@@ -99,8 +99,6 @@ class FeaturesEvaluation(Binding):
     if hasattr(self, "_objective_values"):
       return self._objective_values
     sz = self.num_objective_values
-    if sz == 0:
-      return []
     v = (Datum * sz)()
     res = ccs_features_evaluation_get_objective_values(self.handle, sz, v, None)
     Error.check(res)

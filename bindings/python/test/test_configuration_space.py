@@ -21,7 +21,7 @@ class TestConfigurationSpace(unittest.TestCase):
     self.assertEqual( h1, cs.parameter(0) )
     self.assertEqual( h2, cs.parameter(1) )
     self.assertEqual( h3, cs.parameter(2) )
-    self.assertEqual( [h1, h2, h3], cs.parameters )
+    self.assertEqual( (h1, h2, h3), cs.parameters )
     self.assertEqual( h2, cs.parameter_by_name(h2.name) )
     self.assertTrue( cs.check(cs.default_configuration) )
     c = cs.sample()

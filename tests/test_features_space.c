@@ -88,10 +88,6 @@ test_create()
 	assert(err == CCS_RESULT_ERROR_INVALID_VALUE);
 
 	err = ccs_create_features_space(
-		"my_features_space", 0, parameters, &features_space);
-	assert(err == CCS_RESULT_ERROR_INVALID_VALUE);
-
-	err = ccs_create_features_space(
 		"my_features_space", 3, parameters, &features_space);
 	assert(err == CCS_RESULT_ERROR_INVALID_PARAMETER);
 

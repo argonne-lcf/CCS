@@ -48,8 +48,6 @@ class Binding(Object):
     if hasattr(self, "_values"):
       return self._values
     sz = self.num_values
-    if sz == 0:
-      return []
     v = (Datum * sz)()
     res = ccs_binding_get_values(self.handle, sz, v, None)
     Error.check(res)

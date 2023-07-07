@@ -50,20 +50,24 @@ class Context(Object):
 
   @property
   def num_parameters(self):
+    if hasattr(self, "_num_parameters"):
+      return self._num_parameters
     v = ct.c_size_t(0)
     res = ccs_context_get_num_parameters(self.handle, ct.byref(v))
     Error.check(res)
-    return v.value
+    self._num_parameters = v.value
+    return self._num_parameters
 
   @property
   def parameters(self):
+    if hasattr(self, "_parameters"):
+      return self._parameters
     count = self.num_parameters
-    if count == 0:
-      return []
     v = (ccs_parameter * count)()
     res = ccs_context_get_parameters(self.handle, count, v, None)
     Error.check(res)
-    return [Parameter.from_handle(ccs_parameter(x)) for x in v]
+    self._parameters = tuple(Parameter.from_handle(ccs_parameter(x)) for x in v)
+    return self._parameters
 
   def validate_value(self, parameter, value):
     if isinstance(parameter, Parameter):

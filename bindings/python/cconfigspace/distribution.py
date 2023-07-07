@@ -435,7 +435,7 @@ class MixtureDistribution(Distribution):
     v = (ccs_distribution * self.num_distributions)()
     res = ccs_mixture_distribution_get_distributions(self.handle, self.num_distributions, v, None)
     Error.check(res)
-    self._distributions = [Distribution.from_handle(ccs_distribution(x)) for x in v]
+    self._distributions = tuple(Distribution.from_handle(ccs_distribution(x)) for x in v)
     return self._distributions
 
 Distribution.Mixture = MixtureDistribution
@@ -473,7 +473,7 @@ class MultivariateDistribution(Distribution):
     v = (ccs_distribution * self.num_distributions)()
     res = ccs_multivariate_distribution_get_distributions(self.handle, self.num_distributions, v, None)
     Error.check(res)
-    self._distributions = [Distribution.from_handle(ccs_distribution(x)) for x in v]
+    self._distributions = tuple(Distribution.from_handle(ccs_distribution(x)) for x in v)
     return self._distributions
 
 Distribution.Multivariate = MultivariateDistribution
