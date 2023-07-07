@@ -33,7 +33,6 @@ module CCS
     def values
       @values ||= begin
         count = num_values
-        return [] if count == 0
         values = MemoryPointer::new(:ccs_datum_t, count)
         CCS.error_check CCS.ccs_binding_get_values(@handle, count, values, nil)
         count.times.collect { |i| Datum::new(values[i]).value }.freeze

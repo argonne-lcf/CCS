@@ -236,7 +236,7 @@ class TestDistribution(unittest.TestCase):
     self.assertEqual( d.object_type, ccs.ObjectType.DISTRIBUTION )
     self.assertEqual( d.type, ccs.DistributionType.MIXTURE )
     self.assertEqual( d.data_types, [ccs.NumericType.FLOAT] )
-    self.assertEqual( d.weights, [0.5, 0.5] )
+    self.assertEqual( d.weights, (0.5, 0.5) )
     self.assertEqual( [x.handle.value for x in d.distributions], [x.handle.value for x in distributions] )
     d2 = ccs.Object.from_handle(d.handle)
     self.assertEqual( d.__class__, d2.__class__ )
@@ -250,7 +250,7 @@ class TestDistribution(unittest.TestCase):
     self.assertEqual( d.object_type, ccs.ObjectType.DISTRIBUTION )
     self.assertEqual( d.type, ccs.DistributionType.MIXTURE )
     self.assertEqual( d.data_types, [ccs.NumericType.FLOAT] )
-    self.assertEqual( d.weights, [0.5, 0.5] )
+    self.assertEqual( d.weights, (0.5, 0.5) )
     for i in [0,1]:
       d2ref = distributions[i]
       d2 = d.distributions[i]
@@ -293,7 +293,7 @@ class TestDistribution(unittest.TestCase):
     self.assertEqual( d2.object_type, ccs.ObjectType.DISTRIBUTION )
     self.assertEqual( d2.type, ccs.DistributionType.MIXTURE )
     self.assertEqual( d2.data_types, [ccs.NumericType.FLOAT, ccs.NumericType.INT] )
-    self.assertEqual( d2.weights, [0.5, 0.5] )
+    self.assertEqual( d2.weights, (0.5, 0.5) )
 
 
 if __name__ == '__main__':

@@ -146,7 +146,6 @@ module CCS
         end
       }
       count = expressions.size
-      return self if count == 0
       ptr = MemoryPointer::new(:ccs_expression_t, count)
       ptr.write_array_of_pointer(expressions.collect(&:handle))
       CCS.error_check CCS.ccs_configuration_space_add_forbidden_clauses(@handle, count, ptr)
@@ -202,7 +201,6 @@ module CCS
     end
 
     def samples(count)
-      return [] if count == 0
       ptr = MemoryPointer::new(:ccs_configuration_t, count)
       CCS.error_check CCS.ccs_configuration_space_samples(@handle, count, ptr)
       count.times.collect { |i| Configuration::new(ptr[i].read_pointer, retain: false) }

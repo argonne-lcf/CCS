@@ -112,8 +112,6 @@ class ConfigurationSpace(Context):
   @property
   def conditions(self):
     sz = self.num_parameters
-    if sz == 0:
-      return []
     v = (ccs_expression * sz)()
     res = ccs_configuration_space_get_conditions(self.handle, sz, v, None)
     Error.check(res)
@@ -162,8 +160,6 @@ class ConfigurationSpace(Context):
   @property
   def forbidden_clauses(self):
     sz = self.num_forbidden_clauses
-    if sz == 0:
-      return []
     v = (ccs_expression * sz)()
     res = ccs_configuration_space_get_forbidden_clauses(self.handle, sz, v, None)
     Error.check(res)
@@ -202,8 +198,6 @@ class ConfigurationSpace(Context):
     return Configuration(handle = v, retain = False)
 
   def samples(self, count):
-    if count == 0:
-      return []
     v = (ccs_configuration * count)()
     res = ccs_configuration_space_samples(self.handle, count, v)
     Error.check(res)

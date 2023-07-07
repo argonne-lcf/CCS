@@ -127,7 +127,7 @@ class Expression(Object):
     v = (ccs_expression * sz)()
     res = ccs_expression_get_nodes(self.handle, sz, v, None)
     Error.check(res)
-    self._nodes = [Expression.from_handle(handle = ccs_expression(x)) for x in v]
+    self._nodes = tuple(Expression.from_handle(handle = ccs_expression(x)) for x in v)
     return self._nodes
 
   @property
@@ -138,13 +138,10 @@ class Expression(Object):
     res = ccs_expression_get_parameters(self.handle, 0, None, ct.byref(sz))
     Error.check(res)
     sz = sz.value
-    if sz == 0:
-      self._parameters = []
-      return []
-    v = (ccs_parameter * sz.value)()
+    v = (ccs_parameter * sz)()
     res = ccs_expression_get_parameters(self.handle, sz, v, None)
     Error.check(res)
-    self._parameters = [Parameter.from_handle(ccs_parameter(x)) for x in v]
+    self._parameters = tuple(Parameter.from_handle(ccs_parameter(x)) for x in v)
     return self._parameters
 
   def eval(self, context = None, values = None):

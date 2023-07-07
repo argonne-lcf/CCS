@@ -381,10 +381,13 @@ class RouletteDistribution(Distribution):
 
   @property
   def areas(self):
+    if hasattr(self, "_areas"):
+      return self._areas
     v = (ccs_float * self.num_areas)()
     res = ccs_roulette_distribution_get_areas(self.handle, self.num_areas, v, None)
     Error.check(res)
-    return list(v)
+    self._areas = list(v)
+    return self._areas
 
 Distribution.Roulette = RouletteDistribution
 
@@ -425,7 +428,7 @@ class MixtureDistribution(Distribution):
     v = (ccs_float * self.num_distributions)()
     res = ccs_mixture_distribution_get_weights(self.handle, self.num_distributions, v, None)
     Error.check(res)
-    self._weights = list(v)
+    self._weights = tuple(v)
     return self._weights
 
   @property

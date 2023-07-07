@@ -52,7 +52,6 @@ module CCS
     def objective_values
       @objective_values ||= begin
         count = num_objective_values
-        return [] if count == 0
         values = MemoryPointer::new(:ccs_datum_t, count)
         CCS.error_check CCS.ccs_features_evaluation_get_objective_values(@handle, count, values, nil)
         count.times.collect { |i| Datum::new(values[i]).value }.freeze

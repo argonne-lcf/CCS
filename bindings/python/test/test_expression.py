@@ -20,7 +20,7 @@ class TestExpression(unittest.TestCase):
     self.assertEqual( 1.0, nodes[0].value )
     self.assertEqual( 2.0, nodes[1].value )
     self.assertEqual( 3.0, e.eval() )
-    self.assertEqual( [], e.parameters )
+    self.assertEqual( (), e.parameters )
 
   def test_to_s(self):
     e = ccs.Expression.Add(left = 1.0, right = 2.0)

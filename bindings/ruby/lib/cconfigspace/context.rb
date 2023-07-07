@@ -10,7 +10,7 @@ module CCS
   attach_function :ccs_context_validate_value, [:ccs_context_t, :size_t, :ccs_datum_t, :pointer], :ccs_result_t
 
   class Context < Object
-    add_property :num_parameters, :size_t, :ccs_context_get_num_parameters, memoize: false
+    add_property :num_parameters, :size_t, :ccs_context_get_num_parameters, memoize: true
 
     def name
       @name ||= begin
@@ -47,11 +47,12 @@ module CCS
     end
 
     def parameters
-      count = num_parameters
-      return [] if count == 0
-      ptr = MemoryPointer::new(:ccs_parameter_t, count)
-      CCS.error_check CCS.ccs_context_get_parameters(@handle, count, ptr, nil)
-      count.times.collect { |i| Parameter.from_handle(ptr[i].read_pointer) }
+      @parameters ||= begin
+        count = num_parameters
+        ptr = MemoryPointer::new(:ccs_parameter_t, count)
+        CCS.error_check CCS.ccs_context_get_parameters(@handle, count, ptr, nil)
+        count.times.collect { |i| Parameter.from_handle(ptr[i].read_pointer) }.freeze
+      end
     end
 
     def validate_value(parameter, value)

@@ -98,7 +98,7 @@ test_empty()
 	ccs_result_t              err;
 
 	err = ccs_create_configuration_space(
-                "my_config_space", 0, NULL, &configuration_space);
+		"my_config_space", 0, NULL, &configuration_space);
 	assert(err == CCS_RESULT_SUCCESS);
 
 	err = ccs_configuration_space_sample(
