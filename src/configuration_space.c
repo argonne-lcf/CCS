@@ -489,8 +489,7 @@ ccs_create_configuration_space(
 {
 	CCS_CHECK_PTR(name);
 	CCS_CHECK_PTR(configuration_space_ret);
-	CCS_REFUTE(!num_parameters, CCS_RESULT_ERROR_INVALID_VALUE);
-	CCS_CHECK_PTR(parameters);
+	CCS_CHECK_ARY(num_parameters, parameters);
 	ccs_result_t err;
 	uintptr_t    mem = (uintptr_t)calloc(
                 1, sizeof(struct _ccs_configuration_space_s) +

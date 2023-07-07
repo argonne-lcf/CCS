@@ -85,8 +85,37 @@ check_configuration(
 		assert(datum.type == hdatum.type);
 		assert(datum.value.f == hdatum.value.f);
 	}
-	ccs_release_object(configuration);
+	err = ccs_release_object(configuration);
+	assert(err == CCS_RESULT_SUCCESS);
 	free(parameters_ret);
+}
+
+void
+test_empty()
+{
+	ccs_configuration_space_t configuration_space;
+	ccs_configuration_t       configuration;
+	ccs_result_t              err;
+
+	err = ccs_create_configuration_space(
+                "my_config_space", 0, NULL, &configuration_space);
+	assert(err == CCS_RESULT_SUCCESS);
+
+	err = ccs_configuration_space_sample(
+		configuration_space, &configuration);
+	assert(err == CCS_RESULT_SUCCESS);
+
+	err = ccs_release_object(configuration);
+	assert(err == CCS_RESULT_SUCCESS);
+
+	err = ccs_configuration_space_get_default_configuration(
+		configuration_space, &configuration);
+	assert(err == CCS_RESULT_SUCCESS);
+
+	err = ccs_release_object(configuration);
+	assert(err == CCS_RESULT_SUCCESS);
+	err = ccs_release_object(configuration_space);
+	assert(err == CCS_RESULT_SUCCESS);
 }
 
 void
@@ -106,10 +135,6 @@ test_create()
 
 	err           = ccs_create_configuration_space(
                 "my_config_space", 3, NULL, &configuration_space);
-	assert(err == CCS_RESULT_ERROR_INVALID_VALUE);
-
-	err = ccs_create_configuration_space(
-		"my_config_space", 0, parameters, &configuration_space);
 	assert(err == CCS_RESULT_ERROR_INVALID_VALUE);
 
 	err = ccs_create_configuration_space(
@@ -580,6 +605,7 @@ main()
 {
 	ccs_init();
 	test_create();
+	test_empty();
 	test_sample();
 	test_set_distribution();
 	test_deserialize();
