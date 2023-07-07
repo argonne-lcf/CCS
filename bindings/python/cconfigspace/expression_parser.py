@@ -64,7 +64,7 @@ _actions["list_item"] = [
 _actions["none"] = lambda _, value: Expression.Literal(value = None)
 _actions["true"] = lambda _, value: Expression.Literal(value = True)
 _actions["false"] = lambda _, value: Expression.Literal(value = False)
-_actions["identifier"] = lambda p, value: Expression.Variable(parameter = p.extra.parameter_by_name(value))
+_actions["identifier"] = lambda p, value: Expression.Variable(parameter = p.extra[value] if isinstance(p.extra, dict) else p.extra.parameter_by_name(value))
 _actions["string"] = lambda _, value: Expression.Literal(value = eval(value))
 _actions["float"] = lambda _, value: Expression.Literal(value = float(value))
 _actions["integer"] = lambda _, value: Expression.Literal(value = int(value))

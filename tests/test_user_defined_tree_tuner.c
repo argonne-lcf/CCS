@@ -39,10 +39,11 @@ create_tree_tuning_problem(
 	ccs_tree_space_t      *tree_space,
 	ccs_objective_space_t *ospace)
 {
-	ccs_parameter_t  parameter;
-	ccs_tree_t       root;
-	ccs_expression_t expression;
-	ccs_result_t     err;
+	ccs_parameter_t      parameter;
+	ccs_tree_t           root;
+	ccs_expression_t     expression;
+	ccs_objective_type_t otype;
+	ccs_result_t         err;
 
 	generate_tree(&root, 5, 0);
 	err = ccs_create_static_tree_space("space", root, tree_space);
@@ -51,11 +52,10 @@ create_tree_tuning_problem(
 	parameter = create_numerical("sum", -CCS_INFINITY, CCS_INFINITY);
 	err       = ccs_create_variable(parameter, &expression);
 	assert(err == CCS_RESULT_SUCCESS);
+	otype = CCS_OBJECTIVE_TYPE_MAXIMIZE;
 
-	err = ccs_create_objective_space("ospace", 1, &parameter, ospace);
-	assert(err == CCS_RESULT_SUCCESS);
-	err = ccs_objective_space_add_objective(
-		*ospace, expression, CCS_OBJECTIVE_TYPE_MAXIMIZE);
+	err   = ccs_create_objective_space(
+                "ospace", 1, &parameter, 1, &expression, &otype, ospace);
 	assert(err == CCS_RESULT_SUCCESS);
 
 	err = ccs_release_object(root);

@@ -62,10 +62,9 @@ def create_tuning_problem():
   cs = ccs.ConfigurationSpace(name = "cspace", parameters = [h1, h2, h3])
   v1 = ccs.NumericalParameter.Float(lower = float('-inf'), upper = float('inf'))
   v2 = ccs.NumericalParameter.Float(lower = float('-inf'), upper = float('inf'))
-  os = ccs.ObjectiveSpace(name = "ospace", parameters = [v1, v2])
   e1 = ccs.Expression.Variable(parameter = v1)
   e2 = ccs.Expression.Variable(parameter = v2)
-  os.add_objectives( [e1, e2] )
+  os = ccs.ObjectiveSpace(name = "ospace", parameters = [v1, v2], objectives = [e1, e2])
   return (cs, os)
 
 

@@ -59,10 +59,9 @@ def create_tuning_problem
   cs = CCS::ConfigurationSpace::new(name: "cspace", parameters: [h1, h2, h3])
   v1 = CCS::NumericalParameter::Float.new(lower: -Float::INFINITY, upper: Float::INFINITY)
   v2 = CCS::NumericalParameter::Float.new(lower: -Float::INFINITY, upper: Float::INFINITY)
-  os = CCS::ObjectiveSpace::new(name: "ospace", parameters: [v1, v2])
   e1 = CCS::Expression::Variable::new(parameter: v1)
   e2 = CCS::Expression::Variable::new(parameter: v2)
-  os.add_objectives( [e1, e2] )
+  os = CCS::ObjectiveSpace::new(name: "ospace", parameters: [v1, v2], objectives: [e1, e2])
   [cs, os]
 end
 

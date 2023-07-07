@@ -25,6 +25,7 @@ create_problem(ccs_configuration_space_t *cs, ccs_objective_space_t *os)
 	ccs_configuration_space_t cspace;
 	ccs_objective_space_t     ospace;
 	ccs_expression_t          expression;
+	ccs_objective_type_t      otype;
 	ccs_result_t              err;
 
 	parameters[0] = parameter1 = create_numerical("x", -5.0, 5.0);
@@ -36,11 +37,10 @@ create_problem(ccs_configuration_space_t *cs, ccs_objective_space_t *os)
 	parameter3 = create_numerical("z", -CCS_INFINITY, CCS_INFINITY);
 	err        = ccs_create_variable(parameter3, &expression);
 	assert(err == CCS_RESULT_SUCCESS);
+	otype = CCS_OBJECTIVE_TYPE_MINIMIZE;
 
-	err = ccs_create_objective_space("height", 1, &parameter3, &ospace);
-	assert(err == CCS_RESULT_SUCCESS);
-	err = ccs_objective_space_add_objective(
-		ospace, expression, CCS_OBJECTIVE_TYPE_MINIMIZE);
+	err   = ccs_create_objective_space(
+                "height", 1, &parameter3, 1, &expression, &otype, &ospace);
 	assert(err == CCS_RESULT_SUCCESS);
 
 	err = ccs_release_object(parameter1);

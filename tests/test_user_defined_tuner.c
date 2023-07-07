@@ -152,6 +152,7 @@ test()
 	ccs_configuration_space_t cspace;
 	ccs_objective_space_t     ospace;
 	ccs_expression_t          expression;
+	ccs_objective_type_t      otype;
 	ccs_tuner_t               tuner, tuner_copy;
 	ccs_result_t              err;
 	tuner_last_t             *tuner_data;
@@ -169,11 +170,10 @@ test()
 	parameter3 = create_numerical("z", -CCS_INFINITY, CCS_INFINITY);
 	err        = ccs_create_variable(parameter3, &expression);
 	assert(err == CCS_RESULT_SUCCESS);
+	otype = CCS_OBJECTIVE_TYPE_MINIMIZE;
 
-	err = ccs_create_objective_space("height", 1, &parameter3, &ospace);
-	assert(err == CCS_RESULT_SUCCESS);
-	err = ccs_objective_space_add_objective(
-		ospace, expression, CCS_OBJECTIVE_TYPE_MINIMIZE);
+	err   = ccs_create_objective_space(
+                "height", 1, &parameter3, 1, &expression, &otype, &ospace);
 	assert(err == CCS_RESULT_SUCCESS);
 
 	tuner_data = (tuner_last_t *)calloc(1, sizeof(tuner_last_t));

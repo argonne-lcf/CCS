@@ -34,16 +34,26 @@ typedef enum ccs_objective_type_e ccs_objective_type_t;
 /**
  * Create a new objective space.
  * @param[in] name pointer to a string that will be copied internally
+ * @param[in] num_parameters the number of provided parameters
+ * @param[in] parameters an array of \p num_parameters parameters
+ *                       to add to the objective space
+ * @param[in] num_objectives the number of provided expressions
+ * @param[in] objectives an array o \p num_objectives expressions to add as
+ *                       objectives to the objective space
+ * @param[in] types an array o \p num_objectives types of objectives
  * @param[out] objective_space_ret a pointer to the variable that will hold
  *                                 the newly created objective space
  * @return #CCS_RESULT_SUCCESS on success
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p name is NULL; or if \p
  * objective_space_ret is NULL; or if \p parameters is NULL; or if \p
- * num_parameters is NULL
+ * num_parameters is NULL; or if \p objectives is NULL and \p
+ * num_objectives is greater than 0; of if \p types is NULL and \p
+ * num_objectives is greater than 0
  * @return #CCS_RESULT_ERROR_INVALID_OBJECT if a parameter is not a valid CCS
- * parameter
+ * parameter; or if an expressions is not a valid CCS expression
  * @return #CCS_RESULT_ERROR_INVALID_PARAMETER if a parameter appears more than
- * once in \p parameters; or if two or more parameters share the same name
+ * once in \p parameters; or if two or more parameters share the same name; or
+ * if an expression references a parameter that is not in \p parameters
  * @return #CCS_RESULT_ERROR_OUT_OF_MEMORY if there was a lack of memory to
  * allocate the new objective space
  * @remarks
@@ -54,6 +64,9 @@ ccs_create_objective_space(
 	const char            *name,
 	size_t                 num_parameters,
 	ccs_parameter_t       *parameters,
+	size_t                 num_objectives,
+	ccs_expression_t      *objectives,
+	ccs_objective_type_t  *types,
 	ccs_objective_space_t *objective_space_ret);
 
 /**
@@ -287,55 +300,6 @@ ccs_objective_space_validate_value(
 	size_t                index,
 	ccs_datum_t           value,
 	ccs_datum_t          *value_ret);
-
-/**
- * Add an objective to an objective space.
- * @param[in,out] objective_space
- * @param[in] expression the forbidden clause to dd to the configuration space
- * @param[in] type the type of the objective, either
- *                 #CCS_OBJECTIVE_TYPE_MAXIMIZE or #CCS_OBJECTIVE_TYPE_MINIMIZE
- * @return #CCS_RESULT_SUCCESS on success
- * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p objective_space is not a valid
- * CCS objective space; or if \p expression is not a valid CCS expression
- * @return #CCS_RESULT_ERROR_INVALID_PARAMETER if expression references a
- * parameter that is not in the objective space
- * @return #CCS_RESULT_ERROR_OUT_OF_MEMORY if there was not enough memory to
- * allocate internal data structures
- * @remarks
- *   This function is thread-safe
- */
-extern ccs_result_t
-ccs_objective_space_add_objective(
-	ccs_objective_space_t objective_space,
-	ccs_expression_t      expression,
-	ccs_objective_type_t  type);
-
-/**
- * Add a list of objectives to an objective space.
- * @param[in,out] objective_space
- * @param[in] num_objectives the number of provided expressions
- * @param[in] expressions an array o \p num_objectives expressions to add as
- *                        objectives to the objective space
- * @param[in] types an array o \p num_objectives types of objectives
- * @return #CCS_RESULT_SUCCESS on success
- * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p objective_space is not a valid
- * CCS objective space; or if at least one of the provided expressions is not a
- * valid CCS expression
- * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p expressions is NULL and \p
- * num_objectives is greater than 0
- * @return #CCS_RESULT_ERROR_INVALID_PARAMETER if an expression references a
- * parameter that is not in the objective space
- * @return #CCS_RESULT_ERROR_OUT_OF_MEMORY if there was not enough memory to
- * allocate internal data structures
- * @remarks
- *   This function is thread-safe
- */
-extern ccs_result_t
-ccs_objective_space_add_objectives(
-	ccs_objective_space_t objective_space,
-	size_t                num_objectives,
-	ccs_expression_t     *expressions,
-	ccs_objective_type_t *types);
 
 /**
  * Get the objective of rank index in a objective space.

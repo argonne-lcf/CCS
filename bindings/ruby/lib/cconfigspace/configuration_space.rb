@@ -137,8 +137,8 @@ module CCS
     end
 
     def add_forbidden_clauses(expressions)
+      p = ExpressionParser::new(self)
       expressions = expressions.collect { |e|
-        p = ExpressionParser::new(self)
         if e.kind_of? String
           e = p.parse(e)
         else

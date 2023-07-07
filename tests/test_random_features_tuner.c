@@ -26,6 +26,7 @@ test()
 	ccs_features_space_t      fspace;
 	ccs_objective_space_t     ospace;
 	ccs_expression_t          expression;
+	ccs_objective_type_t      otype;
 	ccs_features_tuner_t      tuner, tuner_copy;
 	ccs_result_t              err;
 	ccs_features_t            features_on, features_off;
@@ -44,11 +45,10 @@ test()
 	parameter3 = create_numerical("z", -CCS_INFINITY, CCS_INFINITY);
 	err        = ccs_create_variable(parameter3, &expression);
 	assert(err == CCS_RESULT_SUCCESS);
+	otype = CCS_OBJECTIVE_TYPE_MINIMIZE;
 
-	err = ccs_create_objective_space("height", 1, &parameter3, &ospace);
-	assert(err == CCS_RESULT_SUCCESS);
-	err = ccs_objective_space_add_objective(
-		ospace, expression, CCS_OBJECTIVE_TYPE_MINIMIZE);
+	err   = ccs_create_objective_space(
+                "height", 1, &parameter3, 1, &expression, &otype, &ospace);
 	assert(err == CCS_RESULT_SUCCESS);
 
 	err = ccs_create_categorical_parameter(
@@ -247,6 +247,7 @@ test_evaluation_deserialize()
 	ccs_features_space_t      fspace;
 	ccs_objective_space_t     ospace;
 	ccs_expression_t          expression;
+	ccs_objective_type_t      otype;
 	ccs_result_t              err;
 	ccs_configuration_t       configuration;
 	ccs_features_t            features_on;
@@ -269,18 +270,17 @@ test_evaluation_deserialize()
 	parameter3 = create_numerical("z", -CCS_INFINITY, CCS_INFINITY);
 	err        = ccs_create_variable(parameter3, &expression);
 	assert(err == CCS_RESULT_SUCCESS);
+	otype = CCS_OBJECTIVE_TYPE_MINIMIZE;
 
-	err = ccs_create_categorical_parameter(
-		"red knob", 2, knobs_values, 0, &feature);
+	err   = ccs_create_categorical_parameter(
+                "red knob", 2, knobs_values, 0, &feature);
 	assert(err == CCS_RESULT_SUCCESS);
 
 	err = ccs_create_features_space("knobs", 1, &feature, &fspace);
 	assert(err == CCS_RESULT_SUCCESS);
 	err = ccs_create_features(fspace, 1, knobs_values, &features_on);
-	err = ccs_create_objective_space("height", 1, &parameter3, &ospace);
-	assert(err == CCS_RESULT_SUCCESS);
-	err = ccs_objective_space_add_objective(
-		ospace, expression, CCS_OBJECTIVE_TYPE_MINIMIZE);
+	err = ccs_create_objective_space(
+		"height", 1, &parameter3, 1, &expression, &otype, &ospace);
 	assert(err == CCS_RESULT_SUCCESS);
 
 	res = ccs_float(1.5);

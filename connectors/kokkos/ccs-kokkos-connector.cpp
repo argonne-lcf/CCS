@@ -507,6 +507,7 @@ kokkosp_request_values(
 	  ccs_objective_space_t     os;
 	  ccs_parameter_t           htime;
 	  ccs_expression_t          expression;
+	  ccs_objective_type_t      otype;
 
 	  cs_parameters = new ccs_parameter_t[numTuningVariables];
 	  for (size_t i = 0; i < numTuningVariables; i++)
@@ -540,11 +541,10 @@ kokkosp_request_values(
 		  "time", CCS_NUMERIC_TYPE_INT, lower, upper, step, lower,
 		  &htime));
 	  CCS_CHECK(ccs_create_variable(htime, &expression));
+	  otype = CCS_OBJECTIVE_TYPE_MINIMIZE;
 	  CCS_CHECK(ccs_create_objective_space(
 		  ("os (region: " + std::to_string(regionCounter) + ")").c_str(),
-		  1, &htime, &os));
-	  CCS_CHECK(ccs_objective_space_add_objective(
-		  os, expression, CCS_OBJECTIVE_TYPE_MINIMIZE));
+		  1, &htime, 1, &expression, &otype, &os));
 	  CCS_CHECK(ccs_release_object(expression));
 	  CCS_CHECK(ccs_release_object(htime));
 
