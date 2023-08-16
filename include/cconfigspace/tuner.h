@@ -119,7 +119,7 @@ ccs_tuner_get_objective_space(
  * allocate new configurations. Configurations that could be allocated will be
  * returned, and the rest will be NULL
  * @remarks
- *   This function is NOT thread-safe
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_tuner_ask(
@@ -144,7 +144,7 @@ ccs_tuner_ask(
  * @return #CCS_RESULT_ERROR_OUT_OF_MEMORY if there was not enough memory to
  * allocate internal data structures
  * @remarks
- *   This function is NOT thread-safe
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_tuner_tell(
@@ -165,7 +165,7 @@ ccs_tuner_tell(
  * @return #CCS_RESULT_ERROR_OUT_OF_MEMORY if there was not enough memory to
  * allocate new configurations
  * @remarks
- *   This function is NOT thread-safe
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_tuner_suggest(ccs_tuner_t tuner, ccs_configuration_t *configuration);

@@ -90,11 +90,18 @@ ccs_features_tuner_ask(
 	CCS_VALIDATE(ccs_features_space_check_features(
 		d->features_space, features, &valid));
 	CCS_REFUTE(!valid, CCS_RESULT_ERROR_INVALID_FEATURES);
+	ccs_result_t               err = CCS_RESULT_SUCCESS;
 	_ccs_features_tuner_ops_t *ops = ccs_features_tuner_get_ops(tuner);
-	CCS_VALIDATE(ops->ask(
-		tuner, features, num_configurations, configurations,
-		num_configurations_ret));
-	return CCS_RESULT_SUCCESS;
+	CCS_OBJ_RDLOCK(tuner);
+	CCS_VALIDATE_ERR_GOTO(
+		err,
+		ops->ask(
+			tuner, features, num_configurations, configurations,
+			num_configurations_ret),
+		err_tuner_lock);
+err_tuner_lock:
+	CCS_OBJ_UNLOCK(tuner);
+	return err;
 }
 
 ccs_result_t
@@ -105,9 +112,15 @@ ccs_features_tuner_tell(
 {
 	CCS_CHECK_OBJ(tuner, CCS_OBJECT_TYPE_FEATURES_TUNER);
 	CCS_CHECK_ARY(num_evaluations, evaluations);
+	ccs_result_t               err = CCS_RESULT_SUCCESS;
 	_ccs_features_tuner_ops_t *ops = ccs_features_tuner_get_ops(tuner);
-	CCS_VALIDATE(ops->tell(tuner, num_evaluations, evaluations));
-	return CCS_RESULT_SUCCESS;
+	CCS_OBJ_WRLOCK(tuner);
+	CCS_VALIDATE_ERR_GOTO(
+		err, ops->tell(tuner, num_evaluations, evaluations),
+		err_tuner_lock);
+err_tuner_lock:
+	CCS_OBJ_UNLOCK(tuner);
+	return err;
 }
 
 ccs_result_t
@@ -125,11 +138,18 @@ ccs_features_tuner_get_optima(
 	CCS_REFUTE(
 		!evaluations && !num_evaluations_ret,
 		CCS_RESULT_ERROR_INVALID_VALUE);
+	ccs_result_t               err = CCS_RESULT_SUCCESS;
 	_ccs_features_tuner_ops_t *ops = ccs_features_tuner_get_ops(tuner);
-	CCS_VALIDATE(ops->get_optima(
-		tuner, features, num_evaluations, evaluations,
-		num_evaluations_ret));
-	return CCS_RESULT_SUCCESS;
+	CCS_OBJ_RDLOCK(tuner);
+	CCS_VALIDATE_ERR_GOTO(
+		err,
+		ops->get_optima(
+			tuner, features, num_evaluations, evaluations,
+			num_evaluations_ret),
+		err_tuner_lock);
+err_tuner_lock:
+	CCS_OBJ_UNLOCK(tuner);
+	return err;
 }
 
 ccs_result_t
@@ -147,11 +167,18 @@ ccs_features_tuner_get_history(
 	CCS_REFUTE(
 		!evaluations && !num_evaluations_ret,
 		CCS_RESULT_ERROR_INVALID_VALUE);
+	ccs_result_t               err = CCS_RESULT_SUCCESS;
 	_ccs_features_tuner_ops_t *ops = ccs_features_tuner_get_ops(tuner);
-	CCS_VALIDATE(ops->get_history(
-		tuner, features, num_evaluations, evaluations,
-		num_evaluations_ret));
-	return CCS_RESULT_SUCCESS;
+	CCS_OBJ_RDLOCK(tuner);
+	CCS_VALIDATE_ERR_GOTO(
+		err,
+		ops->get_history(
+			tuner, features, num_evaluations, evaluations,
+			num_evaluations_ret),
+		err_tuner_lock);
+err_tuner_lock:
+	CCS_OBJ_UNLOCK(tuner);
+	return err;
 }
 
 ccs_result_t
@@ -171,6 +198,12 @@ ccs_features_tuner_suggest(
 	CCS_VALIDATE(ccs_features_space_check_features(
 		d->features_space, features, &valid));
 	CCS_REFUTE(!valid, CCS_RESULT_ERROR_INVALID_FEATURES);
-	CCS_VALIDATE(ops->suggest(tuner, features, configuration));
-	return CCS_RESULT_SUCCESS;
+	ccs_result_t err = CCS_RESULT_SUCCESS;
+	CCS_OBJ_RDLOCK(tuner);
+	CCS_VALIDATE_ERR_GOTO(
+		err, ops->suggest(tuner, features, configuration),
+		err_tuner_lock);
+err_tuner_lock:
+	CCS_OBJ_UNLOCK(tuner);
+	return err;
 }

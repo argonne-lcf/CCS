@@ -63,11 +63,18 @@ ccs_tuner_ask(
 	CCS_REFUTE(
 		!configurations && !num_configurations_ret,
 		CCS_RESULT_ERROR_INVALID_VALUE);
+	ccs_result_t      err = CCS_RESULT_SUCCESS;
 	_ccs_tuner_ops_t *ops = ccs_tuner_get_ops(tuner);
-	CCS_VALIDATE(ops->ask(
-		tuner, num_configurations, configurations,
-		num_configurations_ret));
-	return CCS_RESULT_SUCCESS;
+	CCS_OBJ_RDLOCK(tuner);
+	CCS_VALIDATE_ERR_GOTO(
+		err,
+		ops->ask(
+			tuner, num_configurations, configurations,
+			num_configurations_ret),
+		err_tuner_lock);
+err_tuner_lock:
+	CCS_OBJ_UNLOCK(tuner);
+	return err;
 }
 
 ccs_result_t
@@ -80,9 +87,15 @@ ccs_tuner_tell(
 	CCS_CHECK_ARY(num_evaluations, evaluations);
 	/* TODO: check that evaluations have the same objective and
 	 * configuration sapce than the tuner */
+	ccs_result_t      err = CCS_RESULT_SUCCESS;
 	_ccs_tuner_ops_t *ops = ccs_tuner_get_ops(tuner);
-	CCS_VALIDATE(ops->tell(tuner, num_evaluations, evaluations));
-	return CCS_RESULT_SUCCESS;
+	CCS_OBJ_WRLOCK(tuner);
+	CCS_VALIDATE_ERR_GOTO(
+		err, ops->tell(tuner, num_evaluations, evaluations),
+		err_tuner_lock);
+err_tuner_lock:
+	CCS_OBJ_UNLOCK(tuner);
+	return err;
 }
 
 ccs_result_t
@@ -97,10 +110,18 @@ ccs_tuner_get_optima(
 	CCS_REFUTE(
 		!evaluations && !num_evaluations_ret,
 		CCS_RESULT_ERROR_INVALID_VALUE);
+	ccs_result_t      err = CCS_RESULT_SUCCESS;
 	_ccs_tuner_ops_t *ops = ccs_tuner_get_ops(tuner);
-	CCS_VALIDATE(ops->get_optima(
-		tuner, num_evaluations, evaluations, num_evaluations_ret));
-	return CCS_RESULT_SUCCESS;
+	CCS_OBJ_RDLOCK(tuner);
+	CCS_VALIDATE_ERR_GOTO(
+		err,
+		ops->get_optima(
+			tuner, num_evaluations, evaluations,
+			num_evaluations_ret),
+		err_tuner_lock);
+err_tuner_lock:
+	CCS_OBJ_UNLOCK(tuner);
+	return err;
 }
 
 ccs_result_t
@@ -115,10 +136,18 @@ ccs_tuner_get_history(
 	CCS_REFUTE(
 		!evaluations && !num_evaluations_ret,
 		CCS_RESULT_ERROR_INVALID_VALUE);
+	ccs_result_t      err = CCS_RESULT_SUCCESS;
 	_ccs_tuner_ops_t *ops = ccs_tuner_get_ops(tuner);
-	CCS_VALIDATE(ops->get_history(
-		tuner, num_evaluations, evaluations, num_evaluations_ret));
-	return CCS_RESULT_SUCCESS;
+	CCS_OBJ_RDLOCK(tuner);
+	CCS_VALIDATE_ERR_GOTO(
+		err,
+		ops->get_history(
+			tuner, num_evaluations, evaluations,
+			num_evaluations_ret),
+		err_tuner_lock);
+err_tuner_lock:
+	CCS_OBJ_UNLOCK(tuner);
+	return err;
 }
 
 ccs_result_t
@@ -128,6 +157,11 @@ ccs_tuner_suggest(ccs_tuner_t tuner, ccs_configuration_t *configuration)
 	_ccs_tuner_ops_t *ops = ccs_tuner_get_ops(tuner);
 	CCS_REFUTE(!ops->suggest, CCS_RESULT_ERROR_UNSUPPORTED_OPERATION);
 	CCS_CHECK_PTR(configuration);
-	CCS_VALIDATE(ops->suggest(tuner, configuration));
-	return CCS_RESULT_SUCCESS;
+	ccs_result_t err = CCS_RESULT_SUCCESS;
+	CCS_OBJ_RDLOCK(tuner);
+	CCS_VALIDATE_ERR_GOTO(
+		err, ops->suggest(tuner, configuration), err_tuner_lock);
+err_tuner_lock:
+	CCS_OBJ_UNLOCK(tuner);
+	return err;
 }
