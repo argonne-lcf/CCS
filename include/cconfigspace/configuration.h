@@ -8,7 +8,8 @@ extern "C" {
 /**
  * @file configuration.h
  * A configuration is a binding (see binding.h) on a configuration space (see
- * configuration_space.h).
+ * configuration_space.h). Configurations are immutable except from a reference
+ * counting and callback management point of view.
  */
 
 /**
@@ -29,6 +30,8 @@ extern "C" {
  * space
  * @return #CCS_RESULT_ERROR_OUT_OF_MEMORY if there was a lack of memory to
  * allocate the new configuration
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_create_configuration(
@@ -46,6 +49,8 @@ ccs_create_configuration(
  * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p configuration is not a valid
  * CCS configuration
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p configuration_space_ret is NULL
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_configuration_get_configuration_space(
@@ -64,6 +69,8 @@ ccs_configuration_get_configuration_space(
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p value_ret is NULL
  * @return #CCS_RESULT_ERROR_OUT_OF_BOUNDS if \p index is greater than the count
  * of parameters in the configuration space
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_configuration_get_value(
@@ -88,6 +95,8 @@ ccs_configuration_get_value(
  * num_values is greater than 0; or if \p values is NULL and \p num_values_ret
  * is NULL; or if \p num_values is less than the number of values that would be
  * returned
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_configuration_get_values(
@@ -107,6 +116,8 @@ ccs_configuration_get_values(
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p value_ret is NULL
  * @return #CCS_RESULT_ERROR_INVALID_NAME if no parameter with such \p name
  * exist in the \p configuration space
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_configuration_get_value_by_name(
@@ -130,6 +141,8 @@ ccs_configuration_get_value_by_name(
  * CCS configuration
  * @return #CCS_RESULT_ERROR_INVALID_CONFIGURATION if \p configuration has
  * become invalid for the configuration space
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_configuration_check(
@@ -147,6 +160,8 @@ ccs_configuration_check(
  * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p configuration is not a valid
  * CCS configuration
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p hash_ret is NULL
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_configuration_hash(ccs_configuration_t configuration, ccs_hash_t *hash_ret);
@@ -164,6 +179,8 @@ ccs_configuration_hash(ccs_configuration_t configuration, ccs_hash_t *hash_ret);
  * @return #CCS_RESULT_SUCCESS on success
  * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p configuration or \p
  * other_configuration are not a valid CCS object
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_configuration_cmp(

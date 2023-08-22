@@ -137,4 +137,10 @@ _ccs_distribution_roulette_normalize_areas(
 	roulette_areas[num_areas] = 1.0;
 }
 
+static inline _ccs_distribution_ops_t *
+_ccs_distribution_get_ops(ccs_distribution_t distribution)
+{
+	return (_ccs_distribution_ops_t *)distribution->obj.ops;
+}
+
 #endif //_DISTRIBUTION_INTERNAL_H

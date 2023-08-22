@@ -4,6 +4,7 @@
 #include <string.h>
 #include "cconfigspace_internal.h"
 #include "distribution_internal.h"
+#include "rng_internal.h"
 
 struct _ccs_distribution_mixture_data_s {
 	_ccs_distribution_common_data_t common_data;
@@ -347,12 +348,6 @@ _ccs_distribution_mixture_get_bounds(
 	return CCS_RESULT_SUCCESS;
 }
 
-static inline _ccs_distribution_ops_t *
-ccs_distribution_get_ops(ccs_distribution_t distribution)
-{
-	return (_ccs_distribution_ops_t *)distribution->obj.ops;
-}
-
 static ccs_result_t
 _ccs_distribution_mixture_samples(
 	_ccs_distribution_data_t *data,
@@ -362,16 +357,14 @@ _ccs_distribution_mixture_samples(
 {
 	_ccs_distribution_mixture_data_t *d =
 		(_ccs_distribution_mixture_data_t *)data;
-	size_t   dim = d->common_data.dimension;
-
-	gsl_rng *grng;
-	CCS_VALIDATE(ccs_rng_get_gsl_rng(rng, &grng));
+	size_t   dim  = d->common_data.dimension;
+	gsl_rng *grng = rng->data->rng;
 
 	for (size_t i = 0; i < num_values; i++) {
 		ccs_float_t rnd   = gsl_rng_uniform(grng);
 		ccs_int_t   index = _ccs_dichotomic_search(
                         d->num_distributions, d->weights, rnd);
-		CCS_VALIDATE(ccs_distribution_get_ops(d->distributions[index])
+		CCS_VALIDATE(_ccs_distribution_get_ops(d->distributions[index])
 				     ->samples(
 					     d->distributions[index]->data, rng,
 					     1, values + i * dim));
@@ -389,15 +382,13 @@ _ccs_distribution_mixture_strided_samples(
 {
 	_ccs_distribution_mixture_data_t *d =
 		(_ccs_distribution_mixture_data_t *)data;
-
-	gsl_rng *grng;
-	CCS_VALIDATE(ccs_rng_get_gsl_rng(rng, &grng));
+	gsl_rng *grng = rng->data->rng;
 
 	for (size_t i = 0; i < num_values; i++) {
 		ccs_float_t rnd   = gsl_rng_uniform(grng);
 		ccs_int_t   index = _ccs_dichotomic_search(
                         d->num_distributions, d->weights, rnd);
-		CCS_VALIDATE(ccs_distribution_get_ops(d->distributions[index])
+		CCS_VALIDATE(_ccs_distribution_get_ops(d->distributions[index])
 				     ->samples(
 					     d->distributions[index]->data, rng,
 					     1, values + i * stride));
@@ -427,8 +418,7 @@ _ccs_distribution_mixture_soa_samples(
 	if (!needed)
 		return CCS_RESULT_SUCCESS;
 
-	gsl_rng *grng;
-	CCS_VALIDATE(ccs_rng_get_gsl_rng(rng, &grng));
+	gsl_rng *grng = rng->data->rng;
 
 	for (size_t i = 0; i < num_values; i++) {
 		ccs_float_t rnd   = gsl_rng_uniform(grng);
@@ -437,7 +427,7 @@ _ccs_distribution_mixture_soa_samples(
 		for (size_t j = 0; j < dim; j++)
 			if (values[j])
 				p_values[j] = values[j] + i;
-		CCS_VALIDATE(ccs_distribution_get_ops(d->distributions[index])
+		CCS_VALIDATE(_ccs_distribution_get_ops(d->distributions[index])
 				     ->soa_samples(
 					     d->distributions[index]->data, rng,
 					     1, p_values));

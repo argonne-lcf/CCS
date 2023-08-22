@@ -678,7 +678,7 @@ ccs_multivariate_distribution_get_distributions(
  * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p distribution is not a valid
  * CCS distribution; or if \p rng is not a valid CCS rng
  * @remarks
- *   This function is thread-safe if \p rng is only used by one thread at a time
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_distribution_sample(
@@ -702,7 +702,7 @@ ccs_distribution_sample(
  * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p distribution is not a valid
  * CCS distribution; or if \p rng is not a valid CCS rng
  * @remarks
- *   This function is thread-safe if \p rng is only used by one thread at a time
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_distribution_samples(
@@ -733,7 +733,7 @@ ccs_distribution_samples(
  * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p distribution is not a valid
  * CCS distribution; or if \p rng is not a valid CCS rng
  * @remarks
- *   This function is thread-safe if \p rng is only used by one thread at a time
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_distribution_strided_samples(
@@ -758,7 +758,7 @@ ccs_distribution_strided_samples(
  * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p distribution is not a valid
  * CCS distribution; or if \p rng is not a valid CCS rng
  * @remarks
- *   This function is thread-safe if \p rng is only used by one thread at a time
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_distribution_soa_samples(
@@ -787,7 +787,7 @@ ccs_distribution_soa_samples(
  * CCS distribution; or if \p rng is not a valid CCS rng; or if at least one of
  * the parameters provided is NULL
  * @remarks
- *   This function is thread-safe if \p rng is only used by one thread at a time
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_distribution_parameters_samples(
@@ -812,7 +812,7 @@ ccs_distribution_parameters_samples(
  * CCS distribution; or if \p rng is not a valid CCS rng; or if at least one of
  * the parameters provided is NULL
  * @remarks
- *   This function is thread-safe if \p rng is only used by one thread at a time
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_distribution_parameters_sample(

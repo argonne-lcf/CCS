@@ -285,12 +285,6 @@ _ccs_distribution_multivariate_get_bounds(
 	return CCS_RESULT_SUCCESS;
 }
 
-static inline _ccs_distribution_ops_t *
-ccs_distribution_get_ops(ccs_distribution_t distribution)
-{
-	return (_ccs_distribution_ops_t *)distribution->obj.ops;
-}
-
 static ccs_result_t
 _ccs_distribution_multivariate_samples(
 	_ccs_distribution_data_t *data,
@@ -302,7 +296,7 @@ _ccs_distribution_multivariate_samples(
 		(_ccs_distribution_multivariate_data_t *)data;
 
 	for (size_t i = 0; i < d->num_distributions; i++) {
-		CCS_VALIDATE(ccs_distribution_get_ops(d->distributions[i])
+		CCS_VALIDATE(_ccs_distribution_get_ops(d->distributions[i])
 				     ->strided_samples(
 					     d->distributions[i]->data, rng,
 					     num_values,
@@ -324,7 +318,7 @@ _ccs_distribution_multivariate_strided_samples(
 		(_ccs_distribution_multivariate_data_t *)data;
 
 	for (size_t i = 0; i < d->num_distributions; i++) {
-		CCS_VALIDATE(ccs_distribution_get_ops(d->distributions[i])
+		CCS_VALIDATE(_ccs_distribution_get_ops(d->distributions[i])
 				     ->strided_samples(
 					     d->distributions[i]->data, rng,
 					     num_values, stride, values));
@@ -344,7 +338,7 @@ _ccs_distribution_multivariate_soa_samples(
 		(_ccs_distribution_multivariate_data_t *)data;
 
 	for (size_t i = 0; i < d->num_distributions; i++) {
-		CCS_VALIDATE(ccs_distribution_get_ops(d->distributions[i])
+		CCS_VALIDATE(_ccs_distribution_get_ops(d->distributions[i])
 				     ->soa_samples(
 					     d->distributions[i]->data, rng,
 					     num_values, values));

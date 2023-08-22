@@ -8,7 +8,8 @@ extern "C" {
 /**
  * @file binding.h
  * A Binding is set of value in a Context see context.h. Those values can be
- * accessed by using the parameter index in the context.
+ * accessed by using the parameter index in the context. Bindings are immutable
+ * except from a reference counting and callback management point of view.
  */
 
 /**
@@ -20,6 +21,8 @@ extern "C" {
  * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p binding is not a valid CCS
  * object
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p context_ret is NULL
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_binding_get_context(ccs_binding_t binding, ccs_context_t *context_ret);
@@ -35,6 +38,8 @@ ccs_binding_get_context(ccs_binding_t binding, ccs_context_t *context_ret);
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p value_ret is NULL
  * @return #CCS_RESULT_ERROR_OUT_OF_BOUNDS if \p index is greater than the count
  * of parameters in the context
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_binding_get_value(
@@ -59,6 +64,8 @@ ccs_binding_get_value(
  * num_values is greater than 0; or if \p values is NULL and \p num_values_ret
  * is NULL; or if \p num_values is less than the number of values that would be
  * returned
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_binding_get_values(
@@ -78,6 +85,8 @@ ccs_binding_get_values(
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p value_ret is NULL
  * @return #CCS_RESULT_ERROR_INVALID_NAME if no parameter with such \p name
  * exist in the \p binding context
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_binding_get_value_by_name(
@@ -95,6 +104,8 @@ ccs_binding_get_value_by_name(
  * object
  * @return #CCS_RESULT_ERROR_INVALID_PARAMETER if \p parameter does not exist in
  * the \p binding context
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_binding_get_value_by_parameter(
@@ -112,6 +123,8 @@ ccs_binding_get_value_by_parameter(
  * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p binding is not a valid CCS
  * object
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p hash_ret is NULL
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_binding_hash(ccs_binding_t binding, ccs_hash_t *hash_ret);
@@ -129,6 +142,8 @@ ccs_binding_hash(ccs_binding_t binding, ccs_hash_t *hash_ret);
  * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p binding or \p other_binding
  * are not valid CCS objects
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p cmp_ret is NULL
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_binding_cmp(

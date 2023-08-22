@@ -36,7 +36,7 @@ ccs_create_map(ccs_map_t *map_ret);
  * @return #CCS_RESULT_ERROR_OUT_OF_MEMORY if there was not enough memory to
  * allocate data structures
  * @remarks
- *   This function is NOT thread-safe
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_map_set(ccs_map_t map, ccs_datum_t key, ccs_datum_t value);
@@ -79,7 +79,7 @@ ccs_map_get(ccs_map_t map, ccs_datum_t key, ccs_datum_t *value_ret);
  * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p map is not a valid CCS map
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p key does not exist in \p map
  * @remarks
- *   This function is NOT thread-safe
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_map_del(ccs_map_t map, ccs_datum_t key);
@@ -179,7 +179,7 @@ ccs_map_get_pairs(
  * @return #CCS_RESULT_SUCCESS on success
  * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p map is not a valid CCS map
  * @remarks
- *   This function is NOT thread-safe
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_map_clear(ccs_map_t map);

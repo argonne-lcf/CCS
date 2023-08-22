@@ -9,7 +9,7 @@ extern "C" {
  * @file context.h
  * A Context is a collection of parameters defining a value space. Each
  * parameter has a specific index that can be used to reference it.
- * The methods defined in this file can be used on objects who re contexts.
+ * The methods defined in this file can be used on objects who are contexts.
  * In practice those are useful for binding to avoid binding the children
  * methods, whereas a C application would rather use the object class specific
  * versions in order to benefit from the added type safety.

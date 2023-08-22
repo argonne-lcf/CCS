@@ -3,6 +3,7 @@
 #include <math.h>
 #include "cconfigspace_internal.h"
 #include "distribution_internal.h"
+#include "rng_internal.h"
 
 struct _ccs_distribution_roulette_data_s {
 	_ccs_distribution_common_data_t common_data;
@@ -182,8 +183,7 @@ _ccs_distribution_roulette_samples(
 	_ccs_distribution_roulette_data_t *d =
 		(_ccs_distribution_roulette_data_t *)data;
 
-	gsl_rng *grng;
-	CCS_VALIDATE(ccs_rng_get_gsl_rng(rng, &grng));
+	gsl_rng *grng = rng->data->rng;
 
 	for (size_t i = 0; i < num_values; i++) {
 		ccs_float_t rnd = gsl_rng_uniform(grng);
@@ -205,8 +205,7 @@ _ccs_distribution_roulette_strided_samples(
 	_ccs_distribution_roulette_data_t *d =
 		(_ccs_distribution_roulette_data_t *)data;
 
-	gsl_rng *grng;
-	CCS_VALIDATE(ccs_rng_get_gsl_rng(rng, &grng));
+	gsl_rng *grng = rng->data->rng;
 
 	for (size_t i = 0; i < num_values; i++) {
 		ccs_float_t rnd = gsl_rng_uniform(grng);

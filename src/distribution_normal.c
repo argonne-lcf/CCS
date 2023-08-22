@@ -3,6 +3,7 @@
 #include <gsl/gsl_randist.h>
 #include "cconfigspace_internal.h"
 #include "distribution_internal.h"
+#include "rng_internal.h"
 
 struct _ccs_distribution_normal_data_s {
 	_ccs_distribution_common_data_t common_data;
@@ -358,8 +359,7 @@ _ccs_distribution_normal_samples(
 	const ccs_float_t        mu           = d->mu;
 	const ccs_float_t        sigma        = d->sigma;
 	const int                quantize     = d->quantize;
-	gsl_rng                 *grng;
-	CCS_VALIDATE(ccs_rng_get_gsl_rng(rng, &grng));
+	gsl_rng                 *grng         = rng->data->rng;
 	if (data_type == CCS_NUMERIC_TYPE_FLOAT)
 		CCS_VALIDATE(_ccs_distribution_normal_samples_float(
 			grng, scale_type, quantization.f, mu, sigma, quantize,
@@ -502,8 +502,7 @@ _ccs_distribution_normal_strided_samples(
 	const ccs_float_t        mu           = d->mu;
 	const ccs_float_t        sigma        = d->sigma;
 	const int                quantize     = d->quantize;
-	gsl_rng                 *grng;
-	CCS_VALIDATE(ccs_rng_get_gsl_rng(rng, &grng));
+	gsl_rng                 *grng         = rng->data->rng;
 	if (data_type == CCS_NUMERIC_TYPE_FLOAT)
 		CCS_VALIDATE(_ccs_distribution_normal_strided_samples_float(
 			grng, scale_type, quantization.f, mu, sigma, quantize,

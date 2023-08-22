@@ -1151,7 +1151,7 @@ ccs_configuration_space_samples(
 	size_t              count   = 0;
 	ccs_bool_t          found;
 	ccs_configuration_t config = NULL;
-	CCS_OBJ_WRLOCK(configuration_space);
+	CCS_OBJ_RDLOCK(configuration_space);
 	CCS_REFUTE_ERR_GOTO(
 		err, !configuration_space->data->graph_ok,
 		CCS_RESULT_ERROR_INVALID_GRAPH, errgraph);
