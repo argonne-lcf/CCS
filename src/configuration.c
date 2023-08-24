@@ -127,12 +127,13 @@ _ccs_create_configuration(
 						configuration_space, i,
 						values[i],
 						config->data->values + i),
-					errmem);
+					errinit);
 	}
 	*configuration_ret = config;
 	return CCS_RESULT_SUCCESS;
-errmem:
+errinit:
 	_ccs_object_deinit(&(config->obj));
+errmem:
 	free((void *)mem);
 	return err;
 }

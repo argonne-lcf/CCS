@@ -103,7 +103,7 @@ ccs_release_object(ccs_object_t object)
 			utarray_free(obj->callbacks);
 		}
 		CCS_VALIDATE(obj->ops->del(object));
-		_ccs_object_deinit(object);
+		_ccs_object_deinit(obj);
 		free(object);
 	}
 	return CCS_RESULT_SUCCESS;
