@@ -319,10 +319,10 @@ _ccs_create_categorical_parameter(
 
 	ccs_result_t err = CCS_RESULT_SUCCESS;
 	uintptr_t    mem = (uintptr_t)calloc(
-		1, sizeof(struct _ccs_parameter_s) +
-			   sizeof(_ccs_parameter_categorical_data_t) +
-			   sizeof(_ccs_hash_datum_t) * num_possible_values +
-			   strlen(name) + 1 + size_strs);
+                1, sizeof(struct _ccs_parameter_s) +
+                           sizeof(_ccs_parameter_categorical_data_t) +
+                           sizeof(_ccs_hash_datum_t) * num_possible_values +
+                           strlen(name) + 1 + size_strs);
 	CCS_REFUTE(!mem, CCS_RESULT_ERROR_OUT_OF_MEMORY);
 
 	ccs_interval_t interval;
@@ -377,7 +377,7 @@ _ccs_create_categorical_parameter(
 			pvs + i);
 	}
 	parameter_data->common_data.default_value = pvs[default_value_index].d;
-	*parameter_ret  = parameter;
+	*parameter_ret                            = parameter;
 	return err;
 errmem:
 	_ccs_parameter_categorical_del(parameter);

@@ -410,7 +410,8 @@ _ccs_object_init(
 }
 
 static inline __attribute__((always_inline)) void
-_ccs_object_deinit(_ccs_object_internal_t *o) {
+_ccs_object_deinit(_ccs_object_internal_t *o)
+{
 	(void)o;
 #if CCS_THREAD_SAFE
 	CCS_RWLOCK_DESTROY(o->lock);
