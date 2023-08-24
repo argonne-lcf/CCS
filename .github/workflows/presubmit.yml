@@ -150,12 +150,18 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-latest]
+        os: [ubuntu-latest, macos-latest]
 
     steps:
       - uses: actions/checkout@v3
       - run: sudo apt-get update
+        if: ${{ matrix.os == 'ubuntu-latest' }}
       - run: sudo apt-get install -y gcc valgrind ruby-dev libgsl-dev python3-dev
+        if: ${{ matrix.os == 'ubuntu-latest' }}
+      - run: brew install gsl automake
+        if: ${{ matrix.os == 'macos-latest' }}
+      - run: brew install --HEAD valgrind
+        if: ${{ matrix.os == 'macos-latest' }}
       - run: ./autogen.sh
       - run: mkdir -p build
       - run: ../configure --enable-strict
@@ -170,6 +176,43 @@ jobs:
         if: failure()
         with:
           name: build-and-check-valgrind
+          path: |
+            build/**/*.log
+            build/config.log
+
+  build-and-check-valgrind-thread-safe:
+    needs: pre_job
+    if: ${{ needs.pre_job.outputs.should_skip != 'true' }}
+    name: Build and Check Thread Safe Valgrind ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+
+    steps:
+      - uses: actions/checkout@v3
+      - run: sudo apt-get update
+        if: ${{ matrix.os == 'ubuntu-latest' }}
+      - run: sudo apt-get install -y gcc valgrind ruby-dev libgsl-dev python3-dev
+        if: ${{ matrix.os == 'ubuntu-latest' }}
+      - run: brew install gsl automake
+        if: ${{ matrix.os == 'macos-latest' }}
+      - run: brew install --HEAD valgrind
+        if: ${{ matrix.os == 'macos-latest' }}
+      - run: ./autogen.sh
+      - run: mkdir -p build
+      - run: ../configure --enable-strict --enable-thread-safe
+        working-directory: build
+      - run: make -j
+        working-directory: build
+      - run: make -j check-valgrind-memcheck
+        working-directory: build
+      - run: make -j check-valgrind-helgrind
+        working-directory: build
+      - uses: actions/upload-artifact@v2
+        if: failure()
+        with:
+          name: build-and-check-valgrind-thread-safe
           path: |
             build/**/*.log
             build/config.log
