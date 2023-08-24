@@ -18,15 +18,20 @@ jobs:
   build-and-check:
     needs: pre_job
     if: ${{ needs.pre_job.outputs.should_skip != 'true' }}
-    name: Build and Check ${{ matrix.os }}
+    name: Build and Check ${{ matrix.os }} ${{ matrix.compiler }}${{ matrix.threadsafe && ' Thread Safe' || '' }}
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
         os: [ubuntu-latest, macos-latest]
+        threadsafe: [true, false]
+        compiler: [gcc, g++, clang]
+        exclude:
+          - os: macos-latest
+            compiler: g++
 
     steps:
       - uses: actions/checkout@v3
-      - run: sudo apt update; sudo apt install -y gcc ruby-dev libgsl-dev python3-dev
+      - run: sudo apt update; sudo apt install -y ${{ matrix.compiler }} ruby-dev libgsl-dev python3-dev valgrind
         if: ${{ matrix.os == 'ubuntu-latest' }}
       - run: brew install gsl automake
         if: ${{ matrix.os == 'macos-latest' }}
@@ -34,185 +39,22 @@ jobs:
       - run: pip3 install --user parglare==0.12.0
       - run: ./autogen.sh
       - run: mkdir -p build
-      - run: ../configure --enable-strict
+      - run: ../configure${{ matrix.compiler != 'clang' && ' --enable-strict' || '' }}${{ matrix.threadsafe && ' --enable-thread-safe' || '' }} CC=${{ matrix.compiler }}
         working-directory: build
       - run: make -j
         working-directory: build
       - run: make -j check
-        working-directory: build
-      - uses: actions/upload-artifact@v2
-        if: failure()
-        with:
-          name: build-and-check
-          path: |
-            build/**/*.log
-            build/config.log
-
-  build-and-check-cxx:
-    needs: pre_job
-    if: ${{ needs.pre_job.outputs.should_skip != 'true' }}
-    name: Build and Check C++ ${{ matrix.os }}
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [ubuntu-latest]
-
-    steps:
-      - uses: actions/checkout@v3
-      - run: sudo apt-get update
-      - run: sudo apt-get install -y gcc g++ ruby-dev libgsl-dev python3-dev
-      - run: gem install --user-install rake ffi ffi-value whittle
-      - run: pip3 install --user parglare==0.12.0
-      - run: ./autogen.sh
-      - run: mkdir -p build
-      - run: ../configure --enable-strict CC=g++
-        working-directory: build
-      - run: make -j
-        working-directory: build
-      - run: make -j check
-        working-directory: build
-      - uses: actions/upload-artifact@v2
-        if: failure()
-        with:
-          name: build-and-check
-          path: |
-            build/**/*.log
-            build/config.log
-
-  build-and-check-thread-safe:
-    needs: pre_job
-    if: ${{ needs.pre_job.outputs.should_skip != 'true' }}
-    name: Build and Check Thread Safe ${{ matrix.os }}
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [ubuntu-latest, macos-latest]
-
-    steps:
-      - uses: actions/checkout@v3
-      - run: sudo apt update; sudo apt install -y gcc ruby-dev libgsl-dev python3-dev
-        if: ${{ matrix.os == 'ubuntu-latest' }}
-      - run: brew install gsl automake
-        if: ${{ matrix.os == 'macos-latest' }}
-      - run: gem install --user-install rake ffi ffi-value whittle
-      - run: pip3 install --user parglare==0.12.0
-      - run: ./autogen.sh
-      - run: mkdir -p build
-      - run: ../configure --enable-strict --enable-thread-safe
-        working-directory: build
-      - run: make -j
-        working-directory: build
-      - run: make -j check
-        working-directory: build
-      - uses: actions/upload-artifact@v2
-        if: failure()
-        with:
-          name: build-and-check
-          path: |
-            build/**/*.log
-            build/config.log
-
-  build-and-check-clang:
-    needs: pre_job
-    if: ${{ needs.pre_job.outputs.should_skip != 'true' }}
-    name: Build and Check clang ${{ matrix.os }}
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [ubuntu-latest]
-
-    steps:
-      - uses: actions/checkout@v3
-      - run: sudo apt-get update
-      - run: sudo apt-get install -y clang ruby-dev libgsl-dev python3-dev
-      - run: gem install --user-install rake ffi ffi-value whittle
-      - run: pip3 install --user parglare==0.12.0
-      - run: ./autogen.sh
-      - run: mkdir -p build
-      - run: ../configure CC=clang
-        working-directory: build
-      - run: make -j
-        working-directory: build
-      - run: make -j check
-        working-directory: build
-      - uses: actions/upload-artifact@v2
-        if: failure()
-        with:
-          name: build-and-check
-          path: |
-            build/**/*.log
-            build/config.log
-
-  build-and-check-valgrind:
-    needs: pre_job
-    if: ${{ needs.pre_job.outputs.should_skip != 'true' }}
-    name: Build and Check Valgrind ${{ matrix.os }}
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [ubuntu-latest]
-
-    steps:
-      - uses: actions/checkout@v3
-      - run: sudo apt-get update
-        if: ${{ matrix.os == 'ubuntu-latest' }}
-      - run: sudo apt-get install -y gcc valgrind ruby-dev libgsl-dev python3-dev
-        if: ${{ matrix.os == 'ubuntu-latest' }}
-      - run: brew install gsl automake
-        if: ${{ matrix.os == 'macos-latest' }}
-      - run: brew install --HEAD valgrind
-        if: ${{ matrix.os == 'macos-latest' }}
-      - run: ./autogen.sh
-      - run: mkdir -p build
-      - run: ../configure --enable-strict
-        working-directory: build
-      - run: make -j
         working-directory: build
       - run: make -j check-valgrind-memcheck
         working-directory: build
+        if: ${{ matrix.os == 'ubuntu-latest' }}
       - run: make -j check-valgrind-helgrind
         working-directory: build
+        if: ${{ matrix.os == 'ubuntu-latest' }}
       - uses: actions/upload-artifact@v2
         if: failure()
         with:
-          name: build-and-check-valgrind
-          path: |
-            build/**/*.log
-            build/config.log
-
-  build-and-check-valgrind-thread-safe:
-    needs: pre_job
-    if: ${{ needs.pre_job.outputs.should_skip != 'true' }}
-    name: Build and Check Thread Safe Valgrind ${{ matrix.os }}
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [ubuntu-latest]
-
-    steps:
-      - uses: actions/checkout@v3
-      - run: sudo apt-get update
-        if: ${{ matrix.os == 'ubuntu-latest' }}
-      - run: sudo apt-get install -y gcc valgrind ruby-dev libgsl-dev python3-dev
-        if: ${{ matrix.os == 'ubuntu-latest' }}
-      - run: brew install gsl automake
-        if: ${{ matrix.os == 'macos-latest' }}
-      - run: brew install --HEAD valgrind
-        if: ${{ matrix.os == 'macos-latest' }}
-      - run: ./autogen.sh
-      - run: mkdir -p build
-      - run: ../configure --enable-strict --enable-thread-safe
-        working-directory: build
-      - run: make -j
-        working-directory: build
-      - run: make -j check-valgrind-memcheck
-        working-directory: build
-      - run: make -j check-valgrind-helgrind
-        working-directory: build
-      - uses: actions/upload-artifact@v2
-        if: failure()
-        with:
-          name: build-and-check-valgrind-thread-safe
+          name: build-and-check
           path: |
             build/**/*.log
             build/config.log
