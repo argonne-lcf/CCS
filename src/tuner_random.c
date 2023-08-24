@@ -393,6 +393,7 @@ arrays:
 		utarray_free(data->optima);
 	if (data->old_optima)
 		utarray_free(data->old_optima);
+	_ccs_object_deinit(&(tun->obj));
 	ccs_release_object(objective_space);
 errconfigs:
 	ccs_release_object(configuration_space);

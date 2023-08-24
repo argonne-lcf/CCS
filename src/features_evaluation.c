@@ -244,6 +244,7 @@ ccs_create_features_evaluation(
 	*evaluation_ret = eval;
 	return CCS_RESULT_SUCCESS;
 errfeat:
+	_ccs_object_deinit(&(eval->obj));
 	ccs_release_object(features);
 errconfig:
 	ccs_release_object(configuration);

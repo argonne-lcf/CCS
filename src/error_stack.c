@@ -110,6 +110,7 @@ _ccs_create_error_stack(
 	*error_stack_ret = error_stack;
 	return CCS_RESULT_SUCCESS;
 arrays:
+	_ccs_object_deinit(&(error_stack->obj));
 	free((void *)mem);
 	return err;
 }

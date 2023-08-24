@@ -132,6 +132,7 @@ _ccs_create_configuration(
 	*configuration_ret = config;
 	return CCS_RESULT_SUCCESS;
 errmem:
+	_ccs_object_deinit(&(config->obj));
 	free((void *)mem);
 	return err;
 }

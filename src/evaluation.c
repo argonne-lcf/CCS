@@ -216,6 +216,7 @@ ccs_create_evaluation(
 	*evaluation_ret = eval;
 	return CCS_RESULT_SUCCESS;
 errc:
+	_ccs_object_deinit(&(eval->obj));
 	ccs_release_object(configuration);
 erros:
 	ccs_release_object(objective_space);

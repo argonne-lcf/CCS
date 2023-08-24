@@ -330,6 +330,7 @@ distrib:
 			ccs_release_object(distributions[i]);
 	}
 tmpmemory:
+	_ccs_object_deinit(&(distrib->obj));
 	free((void *)tmp_mem);
 memory:
 	free((void *)mem);

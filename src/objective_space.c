@@ -376,10 +376,12 @@ arrays:
 		utarray_free(obj_space->data->parameters);
 	if (obj_space->data->objectives)
 		utarray_free(obj_space->data->objectives);
+	_ccs_object_deinit(&(obj_space->obj));
 	free((void *)mem);
 	return err;
 errparams:
 	_ccs_objective_space_del(obj_space);
+	_ccs_object_deinit(&(obj_space->obj));
 	free((void *)mem);
 	return err;
 }

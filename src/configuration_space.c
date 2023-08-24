@@ -532,11 +532,13 @@ errarrays:
 	if (config_space->data->sorted_indexes)
 		utarray_free(config_space->data->sorted_indexes);
 	ccs_release_object(config_space->data->rng);
+	_ccs_object_deinit(&(config_space->obj));
 errmem:
 	free((void *)mem);
 	return err;
 errparams:
 	_ccs_configuration_space_del(config_space);
+	_ccs_object_deinit(&(config_space->obj));
 	free((void *)mem);
 	return err;
 }

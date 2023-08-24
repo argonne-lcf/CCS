@@ -133,6 +133,7 @@ ccs_create_features(
 	*features_ret = feat;
 	return CCS_RESULT_SUCCESS;
 errfs:
+	_ccs_object_deinit(&(feat->obj));
 	ccs_release_object(features_space);
 errmem:
 	free((void *)mem);

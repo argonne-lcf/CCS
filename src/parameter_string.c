@@ -44,7 +44,9 @@ _ccs_parameter_string_del(ccs_object_t o)
 		HASH_DEL(data->stored_values, current);
 		free(current);
 	}
+#if CCS_THREAD_SAFE
 	CCS_MUTEX_DESTROY(data->mutex);
+#endif
 	return CCS_RESULT_SUCCESS;
 }
 
@@ -264,7 +266,7 @@ ccs_create_string_parameter(const char *name, ccs_parameter_t *parameter_ret)
 	parameter_data->common_data.interval.type = CCS_NUMERIC_TYPE_INT;
 	parameter_data->stored_values             = NULL;
 #if CCS_THREAD_SAFE
-	parameter_data->mutex = (pthread_mutex_t)PTHREAD_MUTEX_INITIALIZER;
+	CCS_MUTEX_INIT(parameter_data->mutex);
 #endif
 	parameter->data = (_ccs_parameter_data_t *)parameter_data;
 	*parameter_ret  = parameter;

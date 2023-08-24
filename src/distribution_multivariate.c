@@ -269,6 +269,7 @@ distrib:
 			ccs_release_object(distributions[i]);
 	}
 errmemory:
+	_ccs_object_deinit(&(distrib->obj));
 	free((void *)mem);
 	return err;
 }

@@ -74,7 +74,7 @@ _ccs_do_nothing(void)
 
 #define CCS_MUTEX_INIT(mut)                                                    \
 	do {                                                                   \
-		pthread_mutex_init(&(mut));                                    \
+		pthread_mutex_init(&(mut), NULL);                              \
 	} while (0)
 
 #define CCS_MUTEX_DESTROY(mut)                                                 \
@@ -99,7 +99,7 @@ _ccs_do_nothing(void)
 
 #define CCS_RWLOCK_INIT(lck)                                                   \
 	do {                                                                   \
-		pthread_rwlock_init(&(lck));                                   \
+		pthread_rwlock_init(&(lck), NULL);                             \
 	} while (0)
 
 #define CCS_RWLOCK_DESTROY(lck)                                                \
@@ -400,13 +400,22 @@ _ccs_object_init(
 	o->refcount  = 1;
 	o->user_data = NULL;
 #if CCS_THREAD_SAFE
-	o->mutex = (pthread_mutex_t)PTHREAD_MUTEX_INITIALIZER;
-	o->lock  = (pthread_rwlock_t)PTHREAD_RWLOCK_INITIALIZER;
+	CCS_MUTEX_INIT(o->mutex);
+	CCS_RWLOCK_INIT(o->lock);
 #endif
 	o->callbacks           = NULL;
 	o->ops                 = ops;
 	o->serialize_callback  = NULL;
 	o->serialize_user_data = NULL;
+}
+
+static inline __attribute__((always_inline)) void
+_ccs_object_deinit(_ccs_object_internal_t *o) {
+	(void)o;
+#if CCS_THREAD_SAFE
+	CCS_RWLOCK_DESTROY(o->lock);
+	CCS_MUTEX_DESTROY(o->mutex);
+#endif
 }
 
 static inline int

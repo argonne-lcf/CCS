@@ -209,10 +209,12 @@ ccs_create_features_space(
 arrays:
 	if (feat_space->data->parameters)
 		utarray_free(feat_space->data->parameters);
+	_ccs_object_deinit(&(feat_space->obj));
 	free((void *)mem);
 	return err;
 errparams:
 	_ccs_features_space_del(feat_space);
+	_ccs_object_deinit(&(feat_space->obj));
 	free((void *)mem);
 	return err;
 }

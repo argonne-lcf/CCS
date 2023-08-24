@@ -101,10 +101,9 @@ ccs_release_object(ccs_object_t object)
 				cb->callback(object, cb->user_data);
 			}
 			utarray_free(obj->callbacks);
-			CCS_MUTEX_DESTROY(obj->mutex);
-			CCS_RWLOCK_DESTROY(obj->lock);
 		}
 		CCS_VALIDATE(obj->ops->del(object));
+		_ccs_object_deinit(object);
 		free(object);
 	}
 	return CCS_RESULT_SUCCESS;
@@ -142,10 +141,10 @@ ccs_object_set_destroy_callback(
 	CCS_CHECK_BASE_OBJ(object);
 	CCS_CHECK_PTR(callback);
 	_ccs_object_internal_t *obj = (_ccs_object_internal_t *)object;
+	CCS_MUTEX_LOCK(obj->mutex);
 	if (!obj->callbacks)
 		utarray_new(obj->callbacks, &_object_callback_icd);
 	_ccs_object_callback_t cb = {callback, user_data};
-	CCS_MUTEX_LOCK(obj->mutex);
 	utarray_push_back(obj->callbacks, &cb);
 	CCS_MUTEX_UNLOCK(obj->mutex);
 	return CCS_RESULT_SUCCESS;

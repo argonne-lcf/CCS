@@ -1548,6 +1548,7 @@ cleanup:
 		if (expression_data->nodes[i])
 			ccs_release_object(expression_data->nodes[i]);
 	}
+	_ccs_object_deinit(&(expression->obj));
 	free((void *)mem);
 	return err;
 }
