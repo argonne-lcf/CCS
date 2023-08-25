@@ -16,7 +16,7 @@ create_numerical(const char *name, double lower, double upper)
 }
 
 void
-test()
+test(void)
 {
 	ccs_parameter_t           parameter1, parameter2;
 	ccs_parameter_t           parameters[2];
@@ -155,7 +155,7 @@ test()
 }
 
 void
-test_evaluation_deserialize()
+test_evaluation_deserialize(void)
 {
 	ccs_parameter_t           parameter1, parameter2;
 	ccs_parameter_t           parameters[2];
@@ -271,7 +271,7 @@ test_evaluation_deserialize()
 }
 
 int
-main()
+main(void)
 {
 	ccs_init();
 	test();

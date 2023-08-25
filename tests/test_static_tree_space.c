@@ -6,7 +6,7 @@
 #define NUM_SAMPLES 200000
 
 void
-print_ccs_error_stack()
+print_ccs_error_stack(void)
 {
 	ccs_error_stack_t       err;
 	ccs_result_t            code;
@@ -50,7 +50,7 @@ generate_tree(ccs_tree_t *tree, size_t depth, size_t rank)
 }
 
 void
-test_static_tree_space()
+test_static_tree_space(void)
 {
 	ccs_result_t             err;
 	ccs_tree_t               root, tree;
@@ -253,7 +253,7 @@ test_static_tree_space()
 }
 
 int
-main()
+main(void)
 {
 	ccs_init();
 	test_static_tree_space();

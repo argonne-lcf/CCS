@@ -410,7 +410,7 @@ union ccs_numeric_u {
 	/** The integer value of the union */
 	ccs_int_t   i;
 #ifdef __cplusplus
-	ccs_numeric_u()
+	ccs_numeric_u(void)
 		: i(0L)
 	{
 	}
@@ -465,7 +465,7 @@ union ccs_value_u {
 	/** The CCS object value of the union */
 	ccs_object_t o;
 #ifdef __cplusplus
-	ccs_value_u()
+	ccs_value_u(void)
 		: i(0L)
 	{
 	}
@@ -710,7 +710,7 @@ extern const ccs_datum_t ccs_false;
  *   This function is thread-safe
  */
 extern ccs_result_t
-ccs_init();
+ccs_init(void);
 
 /**
  * The library deinitialization function. When done using the library, should
@@ -722,7 +722,7 @@ ccs_init();
  *   This function is thread-safe
  */
 extern ccs_result_t
-ccs_fini();
+ccs_fini(void);
 
 /**
  * Return the string corresponding to the provided CCS result.
@@ -745,7 +745,7 @@ ccs_get_result_name(ccs_result_t result, const char **name);
  *   This function is thread-safe
  */
 extern ccs_version_t
-ccs_get_version();
+ccs_get_version(void);
 
 /**
  * Query the library version string.
@@ -754,7 +754,7 @@ ccs_get_version();
  *   This function is thread-safe
  */
 extern const char *
-ccs_get_version_string();
+ccs_get_version_string(void);
 
 /**
  * Retain a CCS object, incrementing the internal reference counting.

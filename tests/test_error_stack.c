@@ -4,7 +4,7 @@
 #include <cconfigspace.h>
 
 void
-test_error_stack()
+test_error_stack(void)
 {
 	ccs_error_stack_t       s1, s2;
 	ccs_result_t            res;
@@ -93,7 +93,7 @@ test_error_stack()
 }
 
 int
-main()
+main(void)
 {
 	ccs_init();
 	test_error_stack();

@@ -121,7 +121,7 @@ deserialize_callback(
 }
 
 void
-test_create()
+test_create(void)
 {
 	ccs_parameter_t parameter;
 	ccs_result_t    err;
@@ -215,7 +215,7 @@ test_create()
 }
 
 void
-test_samples()
+test_samples(void)
 {
 	ccs_rng_t          rng;
 	ccs_parameter_t    parameter;
@@ -264,7 +264,7 @@ test_samples()
 }
 
 void
-test_oversampling()
+test_oversampling(void)
 {
 	ccs_rng_t          rng;
 	ccs_parameter_t    parameter;
@@ -314,7 +314,7 @@ test_oversampling()
 }
 
 int
-main()
+main(void)
 {
 	ccs_init();
 	test_create();

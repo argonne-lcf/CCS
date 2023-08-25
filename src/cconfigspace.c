@@ -22,7 +22,7 @@ static pthread_mutex_t _ccs_mutex = PTHREAD_MUTEX_INITIALIZER;
 static int32_t _ccs_refcount = 0;
 
 ccs_result_t
-ccs_init()
+ccs_init(void)
 {
 	ccs_result_t err = CCS_RESULT_SUCCESS;
 	CCS_MUTEX_LOCK(_ccs_mutex);
@@ -39,7 +39,7 @@ end:
 }
 
 ccs_result_t
-ccs_fini()
+ccs_fini(void)
 {
 	ccs_result_t err = CCS_RESULT_SUCCESS;
 	CCS_MUTEX_LOCK(_ccs_mutex);
@@ -53,13 +53,13 @@ end:
 }
 
 ccs_version_t
-ccs_get_version()
+ccs_get_version(void)
 {
 	return ccs_version;
 }
 
 const char *
-ccs_get_version_string()
+ccs_get_version_string(void)
 {
 	return CCS_VERSION_STRING;
 }

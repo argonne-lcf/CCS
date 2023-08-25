@@ -96,7 +96,7 @@ test_expression_wrapper(
 }
 
 void
-test_equal_literal()
+test_equal_literal(void)
 {
 	ccs_datum_t nodes[2];
 
@@ -156,7 +156,7 @@ test_equal_literal()
 }
 
 void
-test_equal_numerical()
+test_equal_numerical(void)
 {
 	ccs_configuration_space_t configuration_space;
 	ccs_parameter_t           parameters[2];
@@ -211,7 +211,7 @@ test_equal_numerical()
 }
 
 void
-test_equal_categorical()
+test_equal_categorical(void)
 {
 	ccs_configuration_space_t configuration_space;
 	ccs_parameter_t           parameters[2];
@@ -251,7 +251,7 @@ test_equal_categorical()
 }
 
 void
-test_equal_ordinal()
+test_equal_ordinal(void)
 {
 	ccs_configuration_space_t configuration_space;
 	ccs_parameter_t           parameters[2];
@@ -315,7 +315,7 @@ test_unary_arithmetic(
 }
 
 void
-test_arithmetic_add()
+test_arithmetic_add(void)
 {
 	test_binary_arithmetic(
 		CCS_EXPRESSION_TYPE_ADD, ccs_float(1.0), ccs_float(2.0),
@@ -339,7 +339,7 @@ test_arithmetic_add()
 }
 
 void
-test_arithmetic_substract()
+test_arithmetic_substract(void)
 {
 	test_binary_arithmetic(
 		CCS_EXPRESSION_TYPE_SUBSTRACT, ccs_float(1.0), ccs_float(2.0),
@@ -363,7 +363,7 @@ test_arithmetic_substract()
 }
 
 void
-test_arithmetic_multiply()
+test_arithmetic_multiply(void)
 {
 	test_binary_arithmetic(
 		CCS_EXPRESSION_TYPE_MULTIPLY, ccs_float(3.0), ccs_float(2.0),
@@ -387,7 +387,7 @@ test_arithmetic_multiply()
 }
 
 void
-test_arithmetic_divide()
+test_arithmetic_divide(void)
 {
 	test_binary_arithmetic(
 		CCS_EXPRESSION_TYPE_DIVIDE, ccs_float(3.0), ccs_float(2.0),
@@ -411,7 +411,7 @@ test_arithmetic_divide()
 }
 
 void
-test_arithmetic_modulo()
+test_arithmetic_modulo(void)
 {
 	test_binary_arithmetic(
 		CCS_EXPRESSION_TYPE_MODULO, ccs_float(3.0), ccs_float(2.0),
@@ -435,7 +435,7 @@ test_arithmetic_modulo()
 }
 
 void
-test_arithmetic_positive()
+test_arithmetic_positive(void)
 {
 	test_unary_arithmetic(
 		CCS_EXPRESSION_TYPE_POSITIVE, ccs_float(3.0), ccs_float(3.0),
@@ -451,7 +451,7 @@ test_arithmetic_positive()
 }
 
 void
-test_arithmetic_negative()
+test_arithmetic_negative(void)
 {
 	test_unary_arithmetic(
 		CCS_EXPRESSION_TYPE_NEGATIVE, ccs_float(3.0), ccs_float(-3.0),
@@ -467,7 +467,7 @@ test_arithmetic_negative()
 }
 
 void
-test_arithmetic_not()
+test_arithmetic_not(void)
 {
 	test_unary_arithmetic(
 		CCS_EXPRESSION_TYPE_NOT, ccs_float(3.0), ccs_none,
@@ -487,7 +487,7 @@ test_arithmetic_not()
 }
 
 void
-test_arithmetic_and()
+test_arithmetic_and(void)
 {
 	test_binary_arithmetic(
 		CCS_EXPRESSION_TYPE_AND, ccs_bool(CCS_FALSE),
@@ -511,7 +511,7 @@ test_arithmetic_and()
 }
 
 void
-test_arithmetic_or()
+test_arithmetic_or(void)
 {
 	test_binary_arithmetic(
 		CCS_EXPRESSION_TYPE_OR, ccs_bool(CCS_FALSE),
@@ -535,7 +535,7 @@ test_arithmetic_or()
 }
 
 void
-test_arithmetic_less()
+test_arithmetic_less(void)
 {
 	test_binary_arithmetic(
 		CCS_EXPRESSION_TYPE_LESS, ccs_float(1.0), ccs_float(2.0),
@@ -579,7 +579,7 @@ test_arithmetic_less()
 }
 
 void
-test_arithmetic_greater()
+test_arithmetic_greater(void)
 {
 	test_binary_arithmetic(
 		CCS_EXPRESSION_TYPE_GREATER, ccs_float(1.0), ccs_float(2.0),
@@ -623,7 +623,7 @@ test_arithmetic_greater()
 }
 
 void
-test_arithmetic_less_or_equal()
+test_arithmetic_less_or_equal(void)
 {
 	test_binary_arithmetic(
 		CCS_EXPRESSION_TYPE_LESS_OR_EQUAL, ccs_float(1.0),
@@ -667,7 +667,7 @@ test_arithmetic_less_or_equal()
 }
 
 void
-test_arithmetic_greater_or_equal()
+test_arithmetic_greater_or_equal(void)
 {
 	test_binary_arithmetic(
 		CCS_EXPRESSION_TYPE_GREATER_OR_EQUAL, ccs_float(1.0),
@@ -711,7 +711,7 @@ test_arithmetic_greater_or_equal()
 }
 
 void
-test_in()
+test_in(void)
 {
 	ccs_expression_t list;
 	ccs_datum_t      values[4];
@@ -770,7 +770,7 @@ test_in()
 }
 
 void
-test_compound()
+test_compound(void)
 {
 	ccs_expression_t      expression1, expression2;
 	ccs_datum_t           result;
@@ -818,7 +818,7 @@ test_compound()
 }
 
 void
-test_get_parameters()
+test_get_parameters(void)
 {
 	ccs_expression_t expression1, expression2;
 	ccs_parameter_t  parameter1, parameter2;
@@ -886,7 +886,7 @@ test_get_parameters()
 }
 
 void
-test_check_context()
+test_check_context(void)
 {
 	ccs_expression_t          expression1, expression2;
 	ccs_parameter_t           parameter1, parameter2, parameter3;
@@ -943,7 +943,7 @@ test_check_context()
 }
 
 void
-test_deserialize_literal()
+test_deserialize_literal(void)
 {
 	ccs_result_t          err;
 	ccs_expression_t      expression;
@@ -998,7 +998,7 @@ test_deserialize_literal()
 }
 
 void
-test_deserialize_variable()
+test_deserialize_variable(void)
 {
 	ccs_result_t          err;
 	ccs_parameter_t       parameter;
@@ -1082,7 +1082,7 @@ test_deserialize_variable()
 }
 
 void
-test_deserialize()
+test_deserialize(void)
 {
 	ccs_result_t     err;
 	ccs_expression_t expression;
@@ -1156,7 +1156,7 @@ test_deserialize()
 }
 
 int
-main()
+main(void)
 {
 	ccs_init();
 	test_equal_literal();

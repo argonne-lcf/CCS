@@ -86,7 +86,7 @@ compare_distribution(
 }
 
 void
-test_create_mixture_distribution()
+test_create_mixture_distribution(void)
 {
 	ccs_distribution_t distrib      = NULL, distribs[NUM_DISTRIBS];
 	ccs_result_t       err          = CCS_RESULT_SUCCESS;
@@ -152,7 +152,7 @@ test_create_mixture_distribution()
 }
 
 void
-test_mixture_distribution()
+test_mixture_distribution(void)
 {
 	ccs_distribution_t distrib      = NULL, distribs[NUM_DISTRIBS];
 	ccs_rng_t          rng          = NULL;
@@ -201,7 +201,7 @@ test_mixture_distribution()
 }
 
 void
-test_mixture_distribution_strided_samples()
+test_mixture_distribution_strided_samples(void)
 {
 	ccs_distribution_t t_distrib = NULL, distrib = NULL,
 			   distribs[NUM_DISTRIBS];
@@ -265,7 +265,7 @@ test_mixture_distribution_strided_samples()
 }
 
 void
-test_mixture_distribution_soa_samples()
+test_mixture_distribution_soa_samples(void)
 {
 	ccs_distribution_t t_distrib = NULL, distrib = NULL,
 			   distribs[NUM_DISTRIBS];
@@ -329,7 +329,7 @@ test_mixture_distribution_soa_samples()
 }
 
 int
-main()
+main(void)
 {
 	ccs_init();
 	test_create_mixture_distribution();

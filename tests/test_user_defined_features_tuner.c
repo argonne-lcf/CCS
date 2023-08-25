@@ -156,7 +156,7 @@ ccs_user_defined_features_tuner_vector_t tuner_last_vector = {
 	NULL};
 
 void
-test()
+test(void)
 {
 	ccs_parameter_t           parameter1, parameter2;
 	ccs_parameter_t           parameters[2];
@@ -361,7 +361,7 @@ test()
 }
 
 int
-main()
+main(void)
 {
 	ccs_init();
 	test();

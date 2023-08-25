@@ -18,7 +18,7 @@ code(void *ptr)
 }
 
 void
-test_parallel_retain_release()
+test_parallel_retain_release(void)
 {
 	ccs_parameter_t parameter;
 	pthread_t       thread1, thread2;
@@ -38,7 +38,7 @@ test_parallel_retain_release()
 }
 
 int
-main()
+main(void)
 {
 	ccs_init();
 	test_parallel_retain_release();

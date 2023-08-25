@@ -91,7 +91,7 @@ check_configuration(
 }
 
 void
-test_empty()
+test_empty(void)
 {
 	ccs_configuration_space_t configuration_space;
 	ccs_configuration_t       configuration;
@@ -119,7 +119,7 @@ test_empty()
 }
 
 void
-test_create()
+test_create(void)
 {
 	ccs_parameter_t           parameters[3];
 	ccs_parameter_t           parameter3;
@@ -166,7 +166,7 @@ test_create()
 }
 
 void
-test_sample()
+test_sample(void)
 {
 	ccs_parameter_t           parameters[4];
 	ccs_configuration_t       configuration;
@@ -218,7 +218,7 @@ test_sample()
 }
 
 void
-test_set_distribution()
+test_set_distribution(void)
 {
 	ccs_parameter_t           parameters[3];
 	ccs_distribution_t        distribs[2];
@@ -357,7 +357,7 @@ create_numerical(const char *name)
 }
 
 void
-test_configuration_deserialize()
+test_configuration_deserialize(void)
 {
 	ccs_parameter_t           parameters[3];
 	ccs_configuration_space_t configuration_space;
@@ -436,7 +436,7 @@ test_configuration_deserialize()
 }
 
 void
-test_deserialize()
+test_deserialize(void)
 {
 	ccs_parameter_t           parameters[3];
 	ccs_configuration_space_t space, space_ref;
@@ -601,7 +601,7 @@ test_deserialize()
 }
 
 int
-main()
+main(void)
 {
 	ccs_init();
 	test_create();

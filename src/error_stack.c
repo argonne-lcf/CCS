@@ -14,7 +14,7 @@
 static __thread ccs_error_stack_t ccs_error_stack = NULL;
 
 ccs_error_stack_t
-ccs_get_thread_error()
+ccs_get_thread_error(void)
 {
 	ccs_error_stack_t tmp = ccs_error_stack;
 	ccs_error_stack       = NULL;
@@ -22,7 +22,7 @@ ccs_get_thread_error()
 }
 
 static inline void
-_ccs_clear_thread_error()
+_ccs_clear_thread_error(void)
 {
 	if (ccs_error_stack)
 		ccs_release_object(ccs_error_stack);
@@ -30,7 +30,7 @@ _ccs_clear_thread_error()
 }
 
 void
-ccs_clear_thread_error()
+ccs_clear_thread_error(void)
 {
 	_ccs_clear_thread_error();
 }

@@ -195,7 +195,7 @@ ccs_user_defined_tree_tuner_vector_t tuner_last_vector = {
 	NULL};
 
 void
-test()
+test(void)
 {
 	ccs_tree_space_t      tree_space;
 	ccs_objective_space_t ospace;
@@ -314,7 +314,7 @@ test()
 }
 
 int
-main()
+main(void)
 {
 	ccs_init();
 	test();

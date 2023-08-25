@@ -17,7 +17,7 @@ create_numerical(const char *name)
 }
 
 void
-test_simple()
+test_simple(void)
 {
 	ccs_parameter_t           parameter1, parameter2;
 	ccs_parameter_t           parameters[2];
@@ -96,7 +96,7 @@ test_simple()
 }
 
 void
-test_combined()
+test_combined(void)
 {
 	ccs_parameter_t           parameters[3];
 	ccs_configuration_space_t space;
@@ -218,7 +218,7 @@ test_combined()
 }
 
 int
-main()
+main(void)
 {
 	ccs_init();
 	test_simple();

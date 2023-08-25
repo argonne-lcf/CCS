@@ -69,7 +69,7 @@ check_features(
 }
 
 void
-test_create()
+test_create(void)
 {
 	ccs_parameter_t      parameters[3];
 	ccs_parameter_t      parameter3;
@@ -116,7 +116,7 @@ test_create()
 }
 
 void
-test_features()
+test_features(void)
 {
 	ccs_parameter_t      parameters[3];
 	ccs_features_space_t features_space, features_space_ret;
@@ -220,7 +220,7 @@ test_features()
 }
 
 void
-test_deserialize()
+test_deserialize(void)
 {
 	ccs_parameter_t      parameters[3], parameters_new[3];
 	ccs_features_space_t features_space, features_space_ref;
@@ -314,7 +314,7 @@ test_deserialize()
 }
 
 void
-test_features_deserialize()
+test_features_deserialize(void)
 {
 	ccs_parameter_t      parameters[3];
 	ccs_features_space_t features_space;
@@ -394,7 +394,7 @@ test_features_deserialize()
 }
 
 int
-main()
+main(void)
 {
 	ccs_init();
 	test_create();

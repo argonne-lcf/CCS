@@ -67,7 +67,7 @@ create_tree_tuning_problem(
 }
 
 void
-test()
+test(void)
 {
 	ccs_tree_space_t      tree_space;
 	ccs_objective_space_t ospace;
@@ -186,7 +186,7 @@ test()
 }
 
 void
-test_tree_evaluation_deserialize()
+test_tree_evaluation_deserialize(void)
 {
 	ccs_tree_space_t         tree_space;
 	ccs_objective_space_t    ospace;
@@ -276,7 +276,7 @@ test_tree_evaluation_deserialize()
 }
 
 int
-main()
+main(void)
 {
 	ccs_init();
 	test();

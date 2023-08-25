@@ -17,7 +17,7 @@ extern "C" {
  *   This function is thread-safe
  */
 extern ccs_error_stack_t
-ccs_get_thread_error();
+ccs_get_thread_error(void);
 
 /**
  * Transfers ownership of error stack from the user to CCS.
@@ -39,7 +39,7 @@ ccs_set_thread_error(ccs_error_stack_t error_stack);
  *   This function is thread-safe
  */
 extern void
-ccs_clear_thread_error();
+ccs_clear_thread_error(void);
 
 /**
  * An element of stack.

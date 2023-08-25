@@ -36,7 +36,7 @@ my_tree_get_child(
 }
 
 void
-test_dynamic_tree_space()
+test_dynamic_tree_space(void)
 {
 	ccs_result_t                    err;
 	ccs_bool_t                      is_valid;
@@ -215,7 +215,7 @@ test_dynamic_tree_space()
 }
 
 int
-main()
+main(void)
 {
 	ccs_init();
 	test_dynamic_tree_space();

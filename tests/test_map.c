@@ -3,7 +3,7 @@
 #include <cconfigspace.h>
 
 void
-test_map()
+test_map(void)
 {
 	ccs_map_t       map, map2;
 	ccs_bool_t      found;
@@ -173,7 +173,7 @@ test_map()
 }
 
 int
-main()
+main(void)
 {
 	ccs_init();
 	test_map();
