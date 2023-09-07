@@ -14,10 +14,11 @@ class TestTuner < CCS::UserDefinedTuner
       end
     }
     tell = lambda { |tuner, evaluations|
-      @history += evaluations
+      history_optima = tuner.tuner_data
+      history_optima[0] += evaluations
       evaluations.each { |e|
         discard = false
-        @optima = @optima.collect { |o|
+        history_optima[1] = history_optima[1].collect { |o|
           unless discard
             case e.compare(o)
             when :CCS_COMPARISON_EQUIVALENT, :CCS_COMPARISON_WORSE
@@ -32,16 +33,16 @@ class TestTuner < CCS::UserDefinedTuner
             o
           end
         }.compact
-        @optima.push(e) unless discard
+        history_optima[1].push(e) unless discard
       }
     }
     get_history = lambda { |tuner|
-      @history
+      tuner.tuner_data[0]
     }
     get_optima = lambda { |tuner|
-      @optima
+      tuner.tuner_data[1]
     }
-    super(name: "tuner", configuration_space: cs, objective_space: os, del: del, ask: ask, tell: tell, get_optima: get_optima, get_history: get_history)
+    super(name: "tuner", configuration_space: cs, objective_space: os, del: del, ask: ask, tell: tell, get_optima: get_optima, get_history: get_history, tuner_data: [[],[]])
   end
 end
 

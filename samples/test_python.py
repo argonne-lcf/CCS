@@ -5,8 +5,7 @@ from math import sin
 
 class TestTuner(ccs.UserDefinedTuner):
   def __init__(self, cs, os):
-    self.__history = []
-    self.__optima = []
+    data = [[], []]
 
     def delete(tuner):
       return None
@@ -19,11 +18,12 @@ class TestTuner(ccs.UserDefinedTuner):
         return (cs.samples(count), count)
 
     def tell(tuner, evaluations):
-      self.__history += evaluations
+      history_optima = tuner.tuner_data
+      history_optima[0] += evaluations
       for e in evaluations:
         discard = False
         new_optima = []
-        for o in self.__optima:
+        for o in history_optima[1]:
           if discard:
             new_optima.append(o)
           else:
@@ -35,16 +35,16 @@ class TestTuner(ccs.UserDefinedTuner):
               new_optima.append(o)
         if not discard:
           new_optima.append(e)
-        self.__optima = new_optima
+        history_optima[1] = new_optima
       return None
 
     def get_history(tuner):
-      return self.__history
+      return tuner.tuner_data[0]
 
     def get_optima(tuner):
-      return self.__optima
+      return tuner.tuner_data[1]
 
-    super().__init__(name = "tuner", configuration_space = cs, objective_space = os, delete = delete, ask = ask, tell = tell, get_optima = get_optima, get_history = get_history)
+    super().__init__(name = "tuner", configuration_space = cs, objective_space = os, delete = delete, ask = ask, tell = tell, get_optima = get_optima, get_history = get_history, tuner_data = data)
 
 
 def create_test_tuner(cs_ptr, os_ptr):
