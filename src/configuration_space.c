@@ -1,5 +1,6 @@
 #include "cconfigspace_internal.h"
 #include "configuration_space_internal.h"
+#include "distribution_space_internal.h"
 #include "configuration_internal.h"
 #include "distribution_internal.h"
 #include "expression_internal.h"
@@ -43,14 +44,12 @@ _ccs_configuration_space_del(ccs_object_t object)
 	utarray_free(configuration_space->data->parameters);
 	utarray_free(configuration_space->data->forbidden_clauses);
 	utarray_free(configuration_space->data->sorted_indexes);
-	_ccs_distribution_wrapper_t *dw, *tmp;
-	DL_FOREACH_SAFE(configuration_space->data->distribution_list, dw, tmp)
-	{
-		DL_DELETE(configuration_space->data->distribution_list, dw);
-		ccs_release_object(dw->distribution);
-		free(dw);
-	}
 	ccs_release_object(configuration_space->data->rng);
+	if (configuration_space->data->default_distribution_space) {
+		_ccs_distribution_space_del_no_release(
+			configuration_space->data->default_distribution_space);
+		free(configuration_space->data->default_distribution_space);
+	}
 	return CCS_RESULT_SUCCESS;
 }
 
@@ -62,8 +61,6 @@ _ccs_serialize_bin_size_ccs_configuration_space_data(
 {
 	size_t                       condition_count;
 	_ccs_parameter_wrapper_cs_t *wrapper;
-	size_t                       distribution_count;
-	_ccs_distribution_wrapper_t *dw;
 	ccs_expression_t            *expr;
 
 	*cum_size += _ccs_serialize_bin_size_string(data->name);
@@ -77,9 +74,6 @@ _ccs_serialize_bin_size_ccs_configuration_space_data(
 		if (wrapper->condition)
 			condition_count++;
 	*cum_size += _ccs_serialize_bin_size_size(condition_count);
-
-	DL_COUNT(data->distribution_list, dw, distribution_count);
-	*cum_size += _ccs_serialize_bin_size_size(distribution_count);
 
 	*cum_size += _ccs_serialize_bin_size_size(
 		utarray_len(data->forbidden_clauses));
@@ -112,19 +106,6 @@ _ccs_serialize_bin_size_ccs_configuration_space_data(
 		condition_count++;
 	}
 
-	/* distributions */
-	dw = NULL;
-	DL_FOREACH(data->distribution_list, dw)
-	{
-		CCS_VALIDATE(dw->distribution->obj.ops->serialize_size(
-			dw->distribution, CCS_SERIALIZE_FORMAT_BINARY, cum_size,
-			opts));
-		*cum_size += _ccs_serialize_bin_size_size(dw->dimension);
-		for (size_t i = 0; i < dw->dimension; i++)
-			*cum_size += _ccs_serialize_bin_size_size(
-				dw->parameter_indexes[i]);
-	}
-
 	/* forbidden clauses */
 	expr = NULL;
 	while ((expr = (ccs_expression_t *)utarray_next(
@@ -143,8 +124,6 @@ _ccs_serialize_bin_ccs_configuration_space_data(
 {
 	size_t                       condition_count;
 	_ccs_parameter_wrapper_cs_t *wrapper;
-	size_t                       distribution_count;
-	_ccs_distribution_wrapper_t *dw;
 	ccs_expression_t            *expr;
 
 	CCS_VALIDATE(
@@ -160,10 +139,6 @@ _ccs_serialize_bin_ccs_configuration_space_data(
 			condition_count++;
 	CCS_VALIDATE(
 		_ccs_serialize_bin_size(condition_count, buffer_size, buffer));
-
-	DL_COUNT(data->distribution_list, dw, distribution_count);
-	CCS_VALIDATE(_ccs_serialize_bin_size(
-		distribution_count, buffer_size, buffer));
 
 	CCS_VALIDATE(_ccs_serialize_bin_size(
 		utarray_len(data->forbidden_clauses), buffer_size, buffer));
@@ -194,20 +169,6 @@ _ccs_serialize_bin_ccs_configuration_space_data(
 				buffer_size, buffer, opts));
 		}
 		condition_count++;
-	}
-
-	/* distributions */
-	dw = NULL;
-	DL_FOREACH(data->distribution_list, dw)
-	{
-		CCS_VALIDATE(dw->distribution->obj.ops->serialize(
-			dw->distribution, CCS_SERIALIZE_FORMAT_BINARY,
-			buffer_size, buffer, opts));
-		CCS_VALIDATE(_ccs_serialize_bin_size(
-			dw->dimension, buffer_size, buffer));
-		for (size_t i = 0; i < dw->dimension; i++)
-			CCS_VALIDATE(_ccs_serialize_bin_size(
-				dw->parameter_indexes[i], buffer_size, buffer));
 	}
 
 	/* forbidden clauses */
@@ -381,49 +342,26 @@ _ccs_configuration_space_add_parameter(
 		parameter_hash, CCS_RESULT_ERROR_INVALID_PARAMETER,
 		"An parameter with name '%s' already exists in the configuration space",
 		name);
-	UT_array                    *parameters;
-	size_t                       index;
-	size_t                       dimension;
-	_ccs_parameter_wrapper_cs_t  parameter_wrapper;
-	_ccs_distribution_wrapper_t *distrib_wrapper;
-	ccs_distribution_t           distribution;
-	uintptr_t                    pmem;
+	UT_array                   *parameters;
+	size_t                      index;
+	_ccs_parameter_wrapper_cs_t parameter_wrapper;
 	parameter_wrapper.parameter = parameter;
 	CCS_VALIDATE(ccs_retain_object(parameter));
-
-	CCS_VALIDATE_ERR_GOTO(
-		err,
-		ccs_parameter_get_default_distribution(parameter, &distribution),
-		errorparameter);
-	dimension = 1;
-	pmem      = (uintptr_t)malloc(
-                sizeof(_ccs_distribution_wrapper_t) +
-                sizeof(size_t) * dimension);
-	CCS_REFUTE_ERR_GOTO(
-		err, !pmem, CCS_RESULT_ERROR_OUT_OF_MEMORY, errordistrib);
-	distrib_wrapper               = (_ccs_distribution_wrapper_t *)pmem;
-	distrib_wrapper->distribution = distribution;
-	distrib_wrapper->dimension    = dimension;
-	distrib_wrapper->parameter_indexes =
-		(size_t *)(pmem + sizeof(_ccs_distribution_wrapper_t));
 
 	parameter_hash = (_ccs_parameter_index_hash_t *)malloc(
 		sizeof(_ccs_parameter_index_hash_t));
 	CCS_REFUTE_ERR_GOTO(
 		err, !parameter_hash, CCS_RESULT_ERROR_OUT_OF_MEMORY,
-		errordistrib_wrapper);
+		errorparameter);
 
-	parameters                = configuration_space->data->parameters;
-	index                     = utarray_len(parameters);
-	parameter_hash->parameter = parameter;
-	parameter_hash->name      = name;
-	parameter_hash->index     = index;
-	distrib_wrapper->parameter_indexes[0] = index;
-	parameter_wrapper.distribution_index  = 0;
-	parameter_wrapper.distribution        = distrib_wrapper;
-	parameter_wrapper.condition           = NULL;
-	parameter_wrapper.parents             = NULL;
-	parameter_wrapper.children            = NULL;
+	parameters                  = configuration_space->data->parameters;
+	index                       = utarray_len(parameters);
+	parameter_hash->parameter   = parameter;
+	parameter_hash->name        = name;
+	parameter_hash->index       = index;
+	parameter_wrapper.condition = NULL;
+	parameter_wrapper.parents   = NULL;
+	parameter_wrapper.children  = NULL;
 	utarray_new(parameter_wrapper.parents, &_size_t_icd);
 	utarray_new(parameter_wrapper.children, &_size_t_icd);
 
@@ -436,8 +374,6 @@ _ccs_configuration_space_add_parameter(
 	HASH_ADD(
 		hh_handle, configuration_space->data->handle_hash, parameter,
 		sizeof(ccs_parameter_t), parameter_hash);
-	DL_APPEND(
-		configuration_space->data->distribution_list, distrib_wrapper);
 
 	return CCS_RESULT_SUCCESS;
 errorutarray:
@@ -449,9 +385,6 @@ errordistrib_wrapper:
 		utarray_free(parameter_wrapper.parents);
 	if (parameter_wrapper.children)
 		utarray_free(parameter_wrapper.children);
-	free(distrib_wrapper);
-errordistrib:
-	ccs_release_object(distribution);
 errorparameter:
 	ccs_release_object(parameter);
 	return err;
@@ -523,6 +456,12 @@ ccs_create_configuration_space(
 		_ccs_configuration_space_add_parameters(
 			config_space, num_parameters, parameters),
 		errparams);
+	CCS_VALIDATE_ERR_GOTO(
+		err,
+		_ccs_create_distribution_space_no_retain(
+			config_space, NULL,
+			&config_space->data->default_distribution_space),
+		errparams);
 	return CCS_RESULT_SUCCESS;
 errarrays:
 	if (config_space->data->parameters)
@@ -583,186 +522,6 @@ ccs_configuration_space_get_rng(
 	*rng_ret = configuration_space->data->rng;
 	CCS_OBJ_UNLOCK(configuration_space);
 	return CCS_RESULT_SUCCESS;
-}
-
-ccs_result_t
-ccs_configuration_space_set_distribution(
-	ccs_configuration_space_t configuration_space,
-	ccs_distribution_t        distribution,
-	size_t                   *indexes)
-{
-	CCS_CHECK_OBJ(configuration_space, CCS_OBJECT_TYPE_CONFIGURATION_SPACE);
-	CCS_CHECK_OBJ(distribution, CCS_OBJECT_TYPE_DISTRIBUTION);
-	CCS_CHECK_PTR(indexes);
-
-	_ccs_distribution_wrapper_t  *dwrapper;
-	_ccs_distribution_wrapper_t **p_dwrappers_to_del;
-	_ccs_distribution_wrapper_t **p_dwrappers_to_add;
-	_ccs_parameter_wrapper_cs_t  *hwrapper;
-	ccs_result_t                  err;
-	size_t                        dim;
-	uintptr_t                     mem;
-	uintptr_t                     dmem;
-	uintptr_t                     cur_mem;
-	size_t                       *parameters_without_distrib;
-	size_t                        to_add_count          = 0;
-	size_t                        to_del_count          = 0;
-	size_t                        without_distrib_count = 0;
-
-	CCS_VALIDATE(ccs_distribution_get_dimension(distribution, &dim));
-	CCS_OBJ_WRLOCK(configuration_space);
-	UT_array *parameters     = configuration_space->data->parameters;
-	size_t    num_parameters = utarray_len(parameters);
-
-	for (size_t i = 0; i < dim; i++) {
-		CCS_REFUTE_ERR_GOTO(
-			err, indexes[i] >= num_parameters,
-			CCS_RESULT_ERROR_INVALID_VALUE, errdistrib);
-		// Check duplicate entries
-		for (size_t j = i + 1; j < dim; j++)
-			CCS_REFUTE_ERR_GOTO(
-				err, indexes[i] == indexes[j],
-				CCS_RESULT_ERROR_INVALID_VALUE, errdistrib);
-	}
-
-	mem = (uintptr_t)malloc(
-		sizeof(void *) * num_parameters * 2 +
-		sizeof(size_t) * num_parameters);
-	CCS_REFUTE_ERR_GOTO(
-		err, !mem, CCS_RESULT_ERROR_OUT_OF_MEMORY, errdistrib);
-	cur_mem            = mem;
-	p_dwrappers_to_del = (_ccs_distribution_wrapper_t **)cur_mem;
-	cur_mem += sizeof(_ccs_distribution_wrapper_t *) * num_parameters;
-	p_dwrappers_to_add = (_ccs_distribution_wrapper_t **)cur_mem;
-	cur_mem += sizeof(_ccs_distribution_wrapper_t *) * num_parameters;
-	parameters_without_distrib = (size_t *)cur_mem;
-	cur_mem += sizeof(size_t) * num_parameters;
-
-	for (size_t i = 0; i < dim; i++) {
-		int add  = 1;
-		hwrapper = (_ccs_parameter_wrapper_cs_t *)utarray_eltptr(
-			parameters, indexes[i]);
-		for (size_t j = 0; j < to_del_count; j++)
-			if (p_dwrappers_to_del[j] == hwrapper->distribution) {
-				add = 0;
-				break;
-			}
-		if (add)
-			p_dwrappers_to_del[to_del_count++] =
-				hwrapper->distribution;
-	}
-	for (size_t i = 0; i < to_del_count; i++) {
-		for (size_t j = 0; j < p_dwrappers_to_del[i]->dimension; j++) {
-			parameters_without_distrib[without_distrib_count++] =
-				p_dwrappers_to_del[i]->parameter_indexes[j];
-		}
-	}
-
-	dmem = (uintptr_t)malloc(
-		sizeof(_ccs_distribution_wrapper_t) + sizeof(size_t) * dim);
-	CCS_REFUTE_ERR_GOTO(err, !dmem, CCS_RESULT_ERROR_OUT_OF_MEMORY, memory);
-
-	dwrapper               = (_ccs_distribution_wrapper_t *)dmem;
-	dwrapper->distribution = distribution;
-	dwrapper->dimension    = dim;
-	dwrapper->parameter_indexes =
-		(size_t *)(dmem + sizeof(_ccs_distribution_wrapper_t));
-	for (size_t i = 0; i < dim; i++) {
-		dwrapper->parameter_indexes[i] = indexes[i];
-		size_t indx                    = 0;
-		for (size_t j = 0; j < without_distrib_count; j++, indx++)
-			if (parameters_without_distrib[j] == indexes[i])
-				break;
-		for (size_t j = indx + 1; j < without_distrib_count; j++)
-			parameters_without_distrib[j - 1] =
-				parameters_without_distrib[j];
-		without_distrib_count--;
-	}
-	CCS_VALIDATE_ERR_GOTO(err, ccs_retain_object(distribution), errdmem);
-
-	p_dwrappers_to_add[0] = dwrapper;
-	to_add_count          = 1;
-	for (size_t i = 0; i < without_distrib_count; i++) {
-		dmem = (uintptr_t)malloc(
-			sizeof(_ccs_distribution_wrapper_t) + sizeof(size_t));
-		CCS_REFUTE_ERR_GOTO(
-			err, !dmem, CCS_RESULT_ERROR_OUT_OF_MEMORY, memory);
-		dwrapper = (_ccs_distribution_wrapper_t *)dmem;
-		dwrapper->parameter_indexes =
-			(size_t *)(dmem + sizeof(_ccs_distribution_wrapper_t));
-		dwrapper->dimension            = 1;
-		dwrapper->parameter_indexes[0] = parameters_without_distrib[i];
-		hwrapper = (_ccs_parameter_wrapper_cs_t *)utarray_eltptr(
-			parameters, parameters_without_distrib[i]);
-		CCS_VALIDATE_ERR_GOTO(
-			err,
-			ccs_parameter_get_default_distribution(
-				hwrapper->parameter, &(dwrapper->distribution)),
-			dwrappers);
-		p_dwrappers_to_add[to_add_count++] = dwrapper;
-	}
-
-	for (size_t i = 0; i < to_del_count; i++) {
-		DL_DELETE(
-			configuration_space->data->distribution_list,
-			p_dwrappers_to_del[i]);
-		ccs_release_object(p_dwrappers_to_del[i]->distribution);
-		free(p_dwrappers_to_del[i]);
-	}
-	for (size_t i = 0; i < to_add_count; i++) {
-		DL_APPEND(
-			configuration_space->data->distribution_list,
-			p_dwrappers_to_add[i]);
-		for (size_t j = 0; j < p_dwrappers_to_add[i]->dimension; j++) {
-			hwrapper = (_ccs_parameter_wrapper_cs_t *)utarray_eltptr(
-				parameters,
-				p_dwrappers_to_add[i]->parameter_indexes[j]);
-			hwrapper->distribution_index = j;
-			hwrapper->distribution       = p_dwrappers_to_add[i];
-		}
-	}
-
-	free((void *)mem);
-	CCS_OBJ_UNLOCK(configuration_space);
-	return CCS_RESULT_SUCCESS;
-dwrappers:
-	for (size_t i = 0; i < to_add_count; i++) {
-		ccs_release_object(p_dwrappers_to_add[i]->distribution);
-		free(p_dwrappers_to_add[i]);
-	}
-errdmem:
-	if (dmem)
-		free((void *)dmem);
-memory:
-	free((void *)mem);
-errdistrib:
-	CCS_OBJ_UNLOCK(configuration_space);
-	return err;
-}
-
-extern ccs_result_t
-ccs_configuration_space_get_parameter_distribution(
-	ccs_configuration_space_t configuration_space,
-	size_t                    index,
-	ccs_distribution_t       *distribution_ret,
-	size_t                   *index_ret)
-{
-	ccs_result_t err = CCS_RESULT_SUCCESS;
-	CCS_CHECK_OBJ(configuration_space, CCS_OBJECT_TYPE_CONFIGURATION_SPACE);
-	CCS_CHECK_PTR(distribution_ret);
-	CCS_CHECK_PTR(index_ret);
-
-	CCS_OBJ_RDLOCK(configuration_space);
-	_ccs_parameter_wrapper_cs_t *wrapper =
-		(_ccs_parameter_wrapper_cs_t *)utarray_eltptr(
-			configuration_space->data->parameters,
-			(unsigned int)index);
-	CCS_REFUTE_ERR_GOTO(err, !wrapper, CCS_RESULT_ERROR_OUT_OF_BOUNDS, end);
-	*distribution_ret = wrapper->distribution->distribution;
-	*index_ret        = wrapper->distribution_index;
-end:
-	CCS_OBJ_UNLOCK(configuration_space);
-	return err;
 }
 
 ccs_result_t
@@ -1049,12 +808,14 @@ end:
 
 static ccs_result_t
 _sample(ccs_configuration_space_t configuration_space,
+	ccs_distribution_space_t  distrib_space,
 	ccs_configuration_t       config,
 	ccs_bool_t               *found)
 {
-	ccs_result_t err;
-	ccs_rng_t    rng   = configuration_space->data->rng;
-	UT_array    *array = configuration_space->data->parameters;
+	ccs_result_t             err;
+	ccs_rng_t                rng   = configuration_space->data->rng;
+	UT_array                *array = configuration_space->data->parameters;
+	ccs_distribution_space_t distribution_space;
 	_ccs_distribution_wrapper_t *dwrapper       = NULL;
 	_ccs_parameter_wrapper_cs_t *hwrapper       = NULL;
 	ccs_datum_t                 *values         = config->data->values;
@@ -1070,7 +831,13 @@ _sample(ccs_configuration_space_t configuration_space,
 
 	p_values = (ccs_datum_t *)mem;
 	hps = (ccs_parameter_t *)(mem + num_parameters * sizeof(ccs_datum_t));
-	DL_FOREACH(configuration_space->data->distribution_list, dwrapper)
+	if (distrib_space) {
+		distribution_space = distrib_space;
+		CCS_OBJ_RDLOCK(distrib_space);
+	} else
+		distribution_space =
+			configuration_space->data->default_distribution_space;
+	DL_FOREACH(distribution_space->data->distribution_list, dwrapper)
 	{
 		for (size_t i = 0; i < dwrapper->dimension; i++) {
 			size_t hindex = dwrapper->parameter_indexes[i];
@@ -1097,6 +864,8 @@ _sample(ccs_configuration_space_t configuration_space,
 			configuration_space, config->data->values, found),
 		memory);
 memory:
+	if (distrib_space)
+		CCS_OBJ_UNLOCK(distrib_space);
 	free((void *)mem);
 	return err;
 }
@@ -1104,9 +873,18 @@ memory:
 ccs_result_t
 ccs_configuration_space_sample(
 	ccs_configuration_space_t configuration_space,
+	ccs_distribution_space_t  distribution_space,
 	ccs_configuration_t      *configuration_ret)
 {
 	CCS_CHECK_OBJ(configuration_space, CCS_OBJECT_TYPE_CONFIGURATION_SPACE);
+	if (distribution_space) {
+		CCS_CHECK_OBJ(
+			distribution_space, CCS_OBJECT_TYPE_DISTRIBUTION_SPACE);
+		CCS_REFUTE(
+			distribution_space->data->configuration_space !=
+				configuration_space,
+			CCS_RESULT_ERROR_INVALID_DISTRIBUTION_SPACE);
+	}
 	CCS_CHECK_PTR(configuration_ret);
 	ccs_result_t        err;
 	ccs_bool_t          found;
@@ -1122,7 +900,9 @@ ccs_configuration_space_sample(
 		errgraph);
 	do {
 		CCS_VALIDATE_ERR_GOTO(
-			err, _sample(configuration_space, config, &found),
+			err,
+			_sample(configuration_space, distribution_space, config,
+				&found),
 			errc);
 		counter++;
 	} while (!found && counter < 100);
@@ -1141,10 +921,19 @@ errgraph:
 ccs_result_t
 ccs_configuration_space_samples(
 	ccs_configuration_space_t configuration_space,
+	ccs_distribution_space_t  distribution_space,
 	size_t                    num_configurations,
 	ccs_configuration_t      *configurations)
 {
 	CCS_CHECK_OBJ(configuration_space, CCS_OBJECT_TYPE_CONFIGURATION_SPACE);
+	if (distribution_space) {
+		CCS_CHECK_OBJ(
+			distribution_space, CCS_OBJECT_TYPE_DISTRIBUTION_SPACE);
+		CCS_REFUTE(
+			distribution_space->data->configuration_space !=
+				configuration_space,
+			CCS_RESULT_ERROR_INVALID_DISTRIBUTION_SPACE);
+	}
 	CCS_CHECK_ARY(num_configurations, configurations);
 	if (!num_configurations)
 		return CCS_RESULT_SUCCESS;
@@ -1169,7 +958,9 @@ ccs_configuration_space_samples(
 					configuration_space, 0, NULL, &config),
 				errgraph);
 		CCS_VALIDATE_ERR_GOTO(
-			err, _sample(configuration_space, config, &found),
+			err,
+			_sample(configuration_space, distribution_space, config,
+				&found),
 			errc);
 		counter++;
 		if (found) {

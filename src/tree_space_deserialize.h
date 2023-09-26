@@ -154,6 +154,7 @@ _ccs_deserialize_bin_tree_space(
 	return CCS_RESULT_SUCCESS;
 err_tree_space:
 	ccs_release_object(*tree_space_ret);
+	*tree_space_ret = NULL;
 	return res;
 }
 

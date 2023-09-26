@@ -102,7 +102,7 @@ test_empty(void)
 	assert(err == CCS_RESULT_SUCCESS);
 
 	err = ccs_configuration_space_sample(
-		configuration_space, &configuration);
+		configuration_space, NULL, &configuration);
 	assert(err == CCS_RESULT_SUCCESS);
 
 	err = ccs_release_object(configuration);
@@ -188,7 +188,7 @@ test_sample(void)
 	assert(err == CCS_RESULT_SUCCESS);
 
 	err = ccs_configuration_space_sample(
-		configuration_space, &configuration);
+		configuration_space, NULL, &configuration);
 	assert(err == CCS_RESULT_SUCCESS);
 
 	err = ccs_configuration_check(configuration, &check);
@@ -196,7 +196,7 @@ test_sample(void)
 	assert(check);
 
 	err = ccs_configuration_space_samples(
-		configuration_space, 100, configurations);
+		configuration_space, NULL, 100, configurations);
 	assert(err == CCS_RESULT_SUCCESS);
 
 	for (size_t i = 0; i < 100; i++) {
@@ -213,133 +213,6 @@ test_sample(void)
 		err = ccs_release_object(parameters[i]);
 		assert(err == CCS_RESULT_SUCCESS);
 	}
-	err = ccs_release_object(configuration_space);
-	assert(err == CCS_RESULT_SUCCESS);
-}
-
-void
-test_set_distribution(void)
-{
-	ccs_parameter_t           parameters[3];
-	ccs_distribution_t        distribs[2];
-	ccs_distribution_t        distrib;
-	ccs_distribution_t        distrib_ret;
-	size_t                    hindexes[2];
-	size_t                    dindex_ret;
-	ccs_configuration_t       configurations[100];
-	ccs_configuration_space_t configuration_space;
-	ccs_result_t              err;
-	ccs_bool_t                check;
-
-	parameters[0] = create_dummy_parameter("param1");
-	parameters[1] = create_dummy_parameter("param2");
-	parameters[2] = create_dummy_parameter("param3");
-
-	err           = ccs_create_configuration_space(
-                "my_config_space", 3, parameters, &configuration_space);
-	assert(err == CCS_RESULT_SUCCESS);
-
-	check_configuration(configuration_space, 3, parameters);
-
-	err = ccs_create_uniform_distribution(
-		CCS_NUMERIC_TYPE_FLOAT, CCSF(-4.0), CCSF(4.0),
-		CCS_SCALE_TYPE_LINEAR, CCSF(0.0), distribs);
-	assert(err == CCS_RESULT_SUCCESS);
-
-	err = ccs_create_uniform_distribution(
-		CCS_NUMERIC_TYPE_FLOAT, CCSF(-3.0), CCSF(3.0),
-		CCS_SCALE_TYPE_LINEAR, CCSF(0.0), distribs + 1);
-	assert(err == CCS_RESULT_SUCCESS);
-
-	err = ccs_create_multivariate_distribution(2, distribs, &distrib);
-	assert(err == CCS_RESULT_SUCCESS);
-
-	hindexes[0] = 0;
-	hindexes[1] = 1;
-	err         = ccs_configuration_space_set_distribution(
-                configuration_space, distrib, hindexes);
-	assert(err == CCS_RESULT_SUCCESS);
-
-	err = ccs_configuration_space_get_parameter_distribution(
-		configuration_space, 0, &distrib_ret, &dindex_ret);
-	assert(err == CCS_RESULT_SUCCESS);
-	assert(distrib_ret == distrib);
-	assert(dindex_ret == 0);
-
-	err = ccs_configuration_space_get_parameter_distribution(
-		configuration_space, 1, &distrib_ret, &dindex_ret);
-	assert(err == CCS_RESULT_SUCCESS);
-	assert(distrib_ret == distrib);
-	assert(dindex_ret == 1);
-
-	err = ccs_configuration_space_samples(
-		configuration_space, 100, configurations);
-	assert(err == CCS_RESULT_SUCCESS);
-
-	for (size_t i = 0; i < 100; i++) {
-		ccs_datum_t values[3];
-		err = ccs_configuration_check(configurations[i], &check);
-		assert(err == CCS_RESULT_SUCCESS);
-		assert(check);
-		err = ccs_configuration_get_values(
-			configurations[i], 3, values, NULL);
-		assert(err == CCS_RESULT_SUCCESS);
-		assert(values[0].value.f >= -4.0);
-		assert(values[0].value.f < 4.0);
-		assert(values[1].value.f >= -3.0);
-		assert(values[1].value.f < 3.0);
-		err = ccs_release_object(configurations[i]);
-		assert(err == CCS_RESULT_SUCCESS);
-	}
-
-	hindexes[0] = 2;
-	hindexes[1] = 0;
-	err         = ccs_configuration_space_set_distribution(
-                configuration_space, distrib, hindexes);
-	assert(err == CCS_RESULT_SUCCESS);
-
-	err = ccs_configuration_space_get_parameter_distribution(
-		configuration_space, 0, &distrib_ret, &dindex_ret);
-	assert(err == CCS_RESULT_SUCCESS);
-	assert(distrib_ret == distrib);
-	assert(dindex_ret == 1);
-
-	err = ccs_configuration_space_get_parameter_distribution(
-		configuration_space, 2, &distrib_ret, &dindex_ret);
-	assert(err == CCS_RESULT_SUCCESS);
-	assert(distrib_ret == distrib);
-	assert(dindex_ret == 0);
-
-	err = ccs_configuration_space_samples(
-		configuration_space, 100, configurations);
-	assert(err == CCS_RESULT_SUCCESS);
-
-	for (size_t i = 0; i < 100; i++) {
-		ccs_datum_t values[3];
-		err = ccs_configuration_check(configurations[i], &check);
-		assert(err == CCS_RESULT_SUCCESS);
-		assert(check);
-		err = ccs_configuration_get_values(
-			configurations[i], 3, values, NULL);
-		assert(err == CCS_RESULT_SUCCESS);
-		assert(values[2].value.f >= -4.0);
-		assert(values[2].value.f < 4.0);
-		assert(values[0].value.f >= -3.0);
-		assert(values[0].value.f < 3.0);
-		err = ccs_release_object(configurations[i]);
-		assert(err == CCS_RESULT_SUCCESS);
-	}
-
-	for (size_t i = 0; i < 2; i++) {
-		err = ccs_release_object(distribs[i]);
-		assert(err == CCS_RESULT_SUCCESS);
-	}
-	for (size_t i = 0; i < 3; i++) {
-		err = ccs_release_object(parameters[i]);
-		assert(err == CCS_RESULT_SUCCESS);
-	}
-	err = ccs_release_object(distrib);
-	assert(err == CCS_RESULT_SUCCESS);
 	err = ccs_release_object(configuration_space);
 	assert(err == CCS_RESULT_SUCCESS);
 }
@@ -378,7 +251,7 @@ test_configuration_deserialize(void)
 	assert(err == CCS_RESULT_SUCCESS);
 
 	err = ccs_configuration_space_sample(
-		configuration_space, &configuration_ref);
+		configuration_space, NULL, &configuration_ref);
 	assert(err == CCS_RESULT_SUCCESS);
 
 	err = ccs_create_map(&map);
@@ -441,11 +314,6 @@ test_deserialize(void)
 	ccs_parameter_t           parameters[3];
 	ccs_configuration_space_t space, space_ref;
 	ccs_expression_t          expression, expressions[3];
-	ccs_distribution_t        distribs[2];
-	ccs_distribution_t        distrib;
-	size_t                    hindexes[2];
-	ccs_distribution_t        distrib_ret, distrib_ref;
-	size_t                    dindex_ret;
 	char                     *buff;
 	size_t                    buff_size;
 	size_t                    count;
@@ -459,25 +327,6 @@ test_deserialize(void)
 
 	err           = ccs_create_configuration_space(
                 "my_config_space", 3, parameters, &space);
-	assert(err == CCS_RESULT_SUCCESS);
-
-	err = ccs_create_uniform_distribution(
-		CCS_NUMERIC_TYPE_FLOAT, CCSF(-4.0), CCSF(4.0),
-		CCS_SCALE_TYPE_LINEAR, CCSF(0.0), distribs);
-	assert(err == CCS_RESULT_SUCCESS);
-
-	err = ccs_create_uniform_distribution(
-		CCS_NUMERIC_TYPE_FLOAT, CCSF(-3.0), CCSF(3.0),
-		CCS_SCALE_TYPE_LINEAR, CCSF(0.0), distribs + 1);
-	assert(err == CCS_RESULT_SUCCESS);
-
-	err = ccs_create_multivariate_distribution(2, distribs, &distrib);
-	assert(err == CCS_RESULT_SUCCESS);
-
-	hindexes[0] = 2;
-	hindexes[1] = 0;
-	err         = ccs_configuration_space_set_distribution(
-                space, distrib, hindexes);
 	assert(err == CCS_RESULT_SUCCESS);
 
 	err = ccs_create_binary_expression(
@@ -507,12 +356,6 @@ test_deserialize(void)
 	err = ccs_release_object(expression);
 	assert(err == CCS_RESULT_SUCCESS);
 
-	for (size_t i = 0; i < 2; i++) {
-		err = ccs_release_object(distribs[i]);
-		assert(err == CCS_RESULT_SUCCESS);
-	}
-	err = ccs_release_object(distrib);
-	assert(err == CCS_RESULT_SUCCESS);
 	for (size_t i = 0; i < 3; i++) {
 		err = ccs_release_object(parameters[i]);
 		assert(err == CCS_RESULT_SUCCESS);
@@ -564,19 +407,6 @@ test_deserialize(void)
 	assert(err == CCS_RESULT_SUCCESS);
 	assert(count == 3);
 
-	err = ccs_configuration_space_get_parameter_distribution(
-		space, 0, &distrib_ret, &dindex_ret);
-	assert(err == CCS_RESULT_SUCCESS);
-	assert(distrib_ret);
-	assert(dindex_ret == 1);
-	distrib_ref = distrib_ret;
-
-	err         = ccs_configuration_space_get_parameter_distribution(
-                space, 2, &distrib_ret, &dindex_ret);
-	assert(err == CCS_RESULT_SUCCESS);
-	assert(distrib_ret == distrib_ref);
-	assert(dindex_ret == 0);
-
 	err = ccs_configuration_space_get_conditions(
 		space, 3, expressions, NULL);
 	assert(err == CCS_RESULT_SUCCESS);
@@ -607,7 +437,6 @@ main(void)
 	test_create();
 	test_empty();
 	test_sample();
-	test_set_distribution();
 	test_deserialize();
 	test_configuration_deserialize();
 	ccs_clear_thread_error();

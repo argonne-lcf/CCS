@@ -13,6 +13,7 @@ EXTRA_DIST = \
 	cconfigspace/__init__.py \
 	cconfigspace/expression.py \
 	cconfigspace/configuration_space.py \
+	cconfigspace/distribution_space.py \
 	cconfigspace/tree_configuration.py \
 	cconfigspace/tree_tuner.py \
 	cconfigspace/features.py \

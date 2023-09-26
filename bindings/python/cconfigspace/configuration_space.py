@@ -1,5 +1,5 @@
 import ctypes as ct
-from .base import Object, Error, Result, _ccs_get_function, ccs_context, ccs_parameter, ccs_configuration_space, ccs_configuration, ccs_rng, ccs_distribution, ccs_expression, Datum, ccs_bool
+from .base import Object, Error, Result, _ccs_get_function, ccs_context, ccs_parameter, ccs_configuration_space, ccs_configuration, ccs_rng, ccs_expression, Datum, ccs_bool, ccs_distribution_space
 from .context import Context
 from .distribution import Distribution
 from .parameter import Parameter
@@ -11,8 +11,6 @@ from parglare.parser import Context as PContext
 ccs_create_configuration_space = _ccs_get_function("ccs_create_configuration_space", [ct.c_char_p, ct.c_size_t, ct.POINTER(ccs_parameter), ct.POINTER(ccs_configuration_space)])
 ccs_configuration_space_set_rng = _ccs_get_function("ccs_configuration_space_set_rng", [ccs_configuration_space, ccs_rng])
 ccs_configuration_space_get_rng = _ccs_get_function("ccs_configuration_space_get_rng", [ccs_configuration_space, ct.POINTER(ccs_rng)])
-ccs_configuration_space_set_distribution = _ccs_get_function("ccs_configuration_space_set_distribution", [ccs_configuration_space, ccs_distribution, ct.POINTER(ct.c_size_t)])
-ccs_configuration_space_get_parameter_distribution = _ccs_get_function("ccs_configuration_space_get_parameter_distribution", [ccs_configuration_space, ct.c_size_t, ct.POINTER(ccs_distribution), ct.POINTER(ct.c_size_t)])
 ccs_configuration_space_set_condition = _ccs_get_function("ccs_configuration_space_set_condition", [ccs_configuration_space, ct.c_size_t, ccs_expression])
 ccs_configuration_space_get_condition = _ccs_get_function("ccs_configuration_space_get_condition", [ccs_configuration_space, ct.c_size_t, ct.POINTER(ccs_expression)])
 ccs_configuration_space_get_conditions = _ccs_get_function("ccs_configuration_space_get_conditions", [ccs_configuration_space, ct.c_size_t, ct.POINTER(ccs_expression), ct.POINTER(ct.c_size_t)])
@@ -23,8 +21,8 @@ ccs_configuration_space_get_forbidden_clauses = _ccs_get_function("ccs_configura
 ccs_configuration_space_check_configuration = _ccs_get_function("ccs_configuration_space_check_configuration", [ccs_configuration_space, ccs_configuration, ct.POINTER(ccs_bool)])
 ccs_configuration_space_check_configuration_values = _ccs_get_function("ccs_configuration_space_check_configuration_values", [ccs_configuration_space, ct.c_size_t, ct.POINTER(Datum), ct.POINTER(ccs_bool)])
 ccs_configuration_space_get_default_configuration = _ccs_get_function("ccs_configuration_space_get_default_configuration", [ccs_configuration_space, ct.POINTER(ccs_configuration)])
-ccs_configuration_space_sample = _ccs_get_function("ccs_configuration_space_sample", [ccs_configuration_space, ct.POINTER(ccs_configuration)])
-ccs_configuration_space_samples = _ccs_get_function("ccs_configuration_space_samples", [ccs_configuration_space, ct.c_size_t, ct.POINTER(ccs_configuration)])
+ccs_configuration_space_sample = _ccs_get_function("ccs_configuration_space_sample", [ccs_configuration_space, ccs_distribution_space, ct.POINTER(ccs_configuration)])
+ccs_configuration_space_samples = _ccs_get_function("ccs_configuration_space_samples", [ccs_configuration_space, ccs_distribution_space, ct.c_size_t, ct.POINTER(ccs_configuration)])
 
 class ConfigurationSpace(Context):
   def __init__(self, handle = None, retain = False, auto_release = True,
@@ -54,33 +52,6 @@ class ConfigurationSpace(Context):
   def rng(self, r):
     res = ccs_configuration_space_set_rng(self.handle, r.handle)
     Error.check(res)
-
-  def set_distribution(self, distribution, parameters):
-    count = distribution.dimension
-    if count != len(parameters):
-        raise Error(Result(Result.ERROR_INVALID_VALUE))
-    hyps = []
-    for h in parameters:
-      if isinstance(h, Parameter):
-        hyps.append(self.parameter_index(h))
-      elif isinstance(h, str):
-        hyps.append(self.parameter_index_by_name(h))
-      else:
-        hyps.append(h)
-    v = (ct.c_size_t * count)(*hyps)
-    res = ccs_configuration_space_set_distribution(self.handle, distribution.handle, v)
-    Error.check(res)
-
-  def get_parameter_distribution(self, parameter):
-    if isinstance(parameter, Parameter):
-      parameter = self.parameter_index(parameter)
-    elif isinstance(parameter, str):
-      parameter = self.parameter_index_by_name(parameter)
-    v1 = ccs_distribution()
-    v2 = ct.c_size_t()
-    res = ccs_configuration_space_get_parameter_distribution(self.handle, parameter, ct.byref(v1), ct.byref(v2))
-    Error.check(res)
-    return [Distribution.from_handle(v1), v2.value]
 
   def set_condition(self, parameter, expression):
     if isinstance(expression, str):
@@ -191,15 +162,15 @@ class ConfigurationSpace(Context):
     Error.check(res)
     return Configuration(handle = v, retain = False)
 
-  def sample(self):
+  def sample(self, distribution_space = None):
     v = ccs_configuration()
-    res = ccs_configuration_space_sample(self.handle, ct.byref(v))
+    res = ccs_configuration_space_sample(self.handle, distribution_space.handle if distribution_space is not None else None, ct.byref(v))
     Error.check(res)
     return Configuration(handle = v, retain = False)
 
-  def samples(self, count):
+  def samples(self, count, distribution_space = None):
     v = (ccs_configuration * count)()
-    res = ccs_configuration_space_samples(self.handle, count, v)
+    res = ccs_configuration_space_samples(self.handle, distribution_space.handle if distribution_space is not None else None, count, v)
     Error.check(res)
     return [Configuration(handle = ccs_configuration(x), retain = False) for x in v]
 

@@ -372,6 +372,7 @@ _ccs_deserialize_bin_distribution(
 	return CCS_RESULT_SUCCESS;
 err_dis:
 	ccs_release_object(*distribution_ret);
+	*distribution_ret = NULL;
 	return res;
 }
 

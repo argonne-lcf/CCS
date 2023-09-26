@@ -44,7 +44,8 @@ test_simple(void)
 	for (int i = 0; i < 100; i++) {
 		ccs_float_t f;
 		ccs_bool_t  check;
-		err = ccs_configuration_space_sample(space, &configuration);
+		err = ccs_configuration_space_sample(
+			space, NULL, &configuration);
 		assert(err == CCS_RESULT_SUCCESS);
 		err = ccs_configuration_get_values(
 			configuration, 2, values, NULL);
@@ -62,7 +63,7 @@ test_simple(void)
 		err = ccs_release_object(configuration);
 		assert(err == CCS_RESULT_SUCCESS);
 	}
-	err = ccs_configuration_space_samples(space, 100, configurations);
+	err = ccs_configuration_space_samples(space, NULL, 100, configurations);
 	assert(err == CCS_RESULT_SUCCESS);
 
 	for (int i = 0; i < 100; i++) {
@@ -143,7 +144,8 @@ test_combined(void)
 	for (int i = 0; i < 100; i++) {
 		ccs_float_t f;
 		ccs_bool_t  check;
-		err = ccs_configuration_space_sample(space, &configuration);
+		err = ccs_configuration_space_sample(
+			space, NULL, &configuration);
 		assert(err == CCS_RESULT_SUCCESS);
 		err = ccs_configuration_get_values(
 			configuration, 3, values, NULL);
@@ -174,7 +176,7 @@ test_combined(void)
 		assert(err == CCS_RESULT_SUCCESS);
 	}
 
-	err = ccs_configuration_space_samples(space, 100, configurations);
+	err = ccs_configuration_space_samples(space, NULL, 100, configurations);
 	assert(err == CCS_RESULT_SUCCESS);
 
 	for (int i = 0; i < 100; i++) {

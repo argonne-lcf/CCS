@@ -315,6 +315,7 @@ _ccs_deserialize_bin_features_tuner(
 	goto end;
 err_features_tuner:
 	ccs_release_object(*features_tuner_ret);
+	*features_tuner_ret = NULL;
 end:
 	ccs_release_object(new_opts.handle_map);
 	return res;

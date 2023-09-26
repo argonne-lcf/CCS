@@ -12,6 +12,7 @@ EXTRA_DIST = \
 	lib/cconfigspace/features_space.rb \
 	lib/cconfigspace/base.rb \
 	lib/cconfigspace/configuration_space.rb \
+	lib/cconfigspace/distribution_space.rb \
 	lib/cconfigspace/configuration.rb \
 	lib/cconfigspace/features.rb \
 	lib/cconfigspace/distribution.rb \

@@ -204,6 +204,7 @@ _ccs_deserialize_bin_parameter(
 	return CCS_RESULT_SUCCESS;
 err_parameter:
 	ccs_release_object(*parameter_ret);
+	*parameter_ret = NULL;
 	return res;
 }
 

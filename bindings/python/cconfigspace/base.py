@@ -27,6 +27,7 @@ ccs_distribution        = ccs_object
 ccs_parameter           = ccs_object
 ccs_expression          = ccs_object
 ccs_context             = ccs_object
+ccs_distribution_space  = ccs_object
 ccs_configuration_space = ccs_object
 ccs_binding             = ccs_object
 ccs_configuration       = ccs_object
@@ -154,42 +155,44 @@ class ObjectType(CEnumeration):
     'TREE_SPACE',
     'TREE_CONFIGURATION',
     'TREE_EVALUATION',
-    'TREE_TUNER' ]
+    'TREE_TUNER',
+    'DISTRIBUTION_SPACE' ]
 
 class Result(CEnumeration):
   _members_ = [
-    ('AGAIN',                          1),
-    ('SUCCESS',                        0),
-    ('ERROR_INVALID_OBJECT',          -1),
-    ('ERROR_INVALID_VALUE',           -2),
-    ('ERROR_INVALID_TYPE',            -3),
-    ('ERROR_INVALID_SCALE',           -4),
-    ('ERROR_INVALID_DISTRIBUTION',    -5),
-    ('ERROR_INVALID_EXPRESSION',      -6),
-    ('ERROR_INVALID_PARAMETER',       -7),
-    ('ERROR_INVALID_CONFIGURATION',   -8),
-    ('ERROR_INVALID_NAME',            -9),
-    ('ERROR_INVALID_CONDITION',      -10),
-    ('ERROR_INVALID_TUNER',          -11),
-    ('ERROR_INVALID_GRAPH',          -12),
-    ('ERROR_TYPE_NOT_COMPARABLE',    -13),
-    ('ERROR_INVALID_BOUNDS',         -14),
-    ('ERROR_OUT_OF_BOUNDS',          -15),
-    ('ERROR_SAMPLING_UNSUCCESSFUL',  -16),
-    ('ERROR_OUT_OF_MEMORY',          -17),
-    ('ERROR_UNSUPPORTED_OPERATION',  -18),
-    ('ERROR_INVALID_EVALUATION',     -19),
-    ('ERROR_INVALID_FEATURES',       -20),
-    ('ERROR_INVALID_FEATURES_TUNER', -21),
-    ('ERROR_INVALID_FILE_PATH',      -22),
-    ('ERROR_NOT_ENOUGH_DATA',        -23),
-    ('ERROR_DUPLICATE_HANDLE',       -24),
-    ('ERROR_INVALID_HANDLE',         -25),
-    ('ERROR_SYSTEM',                 -26),
-    ('ERROR_EXTERNAL',               -27),
-    ('ERROR_INVALID_TREE',           -28),
-    ('ERROR_INVALID_TREE_SPACE',     -29),
-    ('ERROR_INVALID_TREE_TUNER',     -30) ]
+    ('AGAIN',                              1),
+    ('SUCCESS',                            0),
+    ('ERROR_INVALID_OBJECT',              -1),
+    ('ERROR_INVALID_VALUE',               -2),
+    ('ERROR_INVALID_TYPE',                -3),
+    ('ERROR_INVALID_SCALE',               -4),
+    ('ERROR_INVALID_DISTRIBUTION',        -5),
+    ('ERROR_INVALID_EXPRESSION',          -6),
+    ('ERROR_INVALID_PARAMETER',           -7),
+    ('ERROR_INVALID_CONFIGURATION',       -8),
+    ('ERROR_INVALID_NAME',                -9),
+    ('ERROR_INVALID_CONDITION',          -10),
+    ('ERROR_INVALID_TUNER',              -11),
+    ('ERROR_INVALID_GRAPH',              -12),
+    ('ERROR_TYPE_NOT_COMPARABLE',        -13),
+    ('ERROR_INVALID_BOUNDS',             -14),
+    ('ERROR_OUT_OF_BOUNDS',              -15),
+    ('ERROR_SAMPLING_UNSUCCESSFUL',      -16),
+    ('ERROR_OUT_OF_MEMORY',              -17),
+    ('ERROR_UNSUPPORTED_OPERATION',      -18),
+    ('ERROR_INVALID_EVALUATION',         -19),
+    ('ERROR_INVALID_FEATURES',           -20),
+    ('ERROR_INVALID_FEATURES_TUNER',     -21),
+    ('ERROR_INVALID_FILE_PATH',          -22),
+    ('ERROR_NOT_ENOUGH_DATA',            -23),
+    ('ERROR_DUPLICATE_HANDLE',           -24),
+    ('ERROR_INVALID_HANDLE',             -25),
+    ('ERROR_SYSTEM',                     -26),
+    ('ERROR_EXTERNAL',                   -27),
+    ('ERROR_INVALID_TREE',               -28),
+    ('ERROR_INVALID_TREE_SPACE',         -29),
+    ('ERROR_INVALID_TREE_TUNER',         -30),
+    ('ERROR_INVALID_DISTRIBUTION_SPACE', -31) ]
 
 class DataType(CEnumeration):
   _members_ = [
@@ -748,6 +751,7 @@ from .distribution import Distribution
 from .parameter import Parameter
 from .expression import Expression
 from .configuration_space import ConfigurationSpace
+from .distribution_space import DistributionSpace
 from .configuration import Configuration
 from .features_space import FeaturesSpace
 from .features import Features
@@ -784,7 +788,8 @@ setattr(Object, 'CLASS_MAP', {
   ObjectType.TREE_SPACE: TreeSpace,
   ObjectType.TREE_CONFIGURATION: TreeConfiguration,
   ObjectType.TREE_EVALUATION: TreeEvaluation,
-  ObjectType.TREE_TUNER: TreeTuner
+  ObjectType.TREE_TUNER: TreeTuner,
+  ObjectType.DISTRIBUTION_SPACE: DistributionSpace
 })
 
 

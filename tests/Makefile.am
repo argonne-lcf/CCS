@@ -22,6 +22,7 @@ CCONFIGSPACE_TESTS = \
 	test_discrete_parameter \
 	test_string_parameter \
 	test_configuration_space \
+	test_distribution_space \
 	test_expression \
 	test_condition \
 	test_forbidden \

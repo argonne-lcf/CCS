@@ -2,8 +2,6 @@ module CCS
   attach_function :ccs_create_configuration_space, [:string, :size_t, :pointer, :pointer], :ccs_result_t
   attach_function :ccs_configuration_space_set_rng, [:ccs_configuration_space_t, :ccs_rng_t], :ccs_result_t
   attach_function :ccs_configuration_space_get_rng, [:ccs_configuration_space_t, :pointer], :ccs_result_t
-  attach_function :ccs_configuration_space_set_distribution, [:ccs_configuration_space_t, :ccs_distribution_t, :pointer], :ccs_result_t
-  attach_function :ccs_configuration_space_get_parameter_distribution, [:ccs_configuration_space_t, :size_t, :pointer, :pointer], :ccs_result_t
   attach_function :ccs_configuration_space_set_condition, [:ccs_configuration_space_t, :size_t, :ccs_expression_t], :ccs_result_t
   attach_function :ccs_configuration_space_get_condition, [:ccs_configuration_space_t, :size_t, :pointer], :ccs_result_t
   attach_function :ccs_configuration_space_get_conditions, [:ccs_configuration_space_t, :size_t, :pointer, :pointer], :ccs_result_t
@@ -14,8 +12,8 @@ module CCS
   attach_function :ccs_configuration_space_check_configuration, [:ccs_configuration_space_t, :ccs_configuration_t, :pointer], :ccs_result_t
   attach_function :ccs_configuration_space_check_configuration_values, [:ccs_configuration_space_t, :size_t, :pointer, :pointer], :ccs_result_t
   attach_function :ccs_configuration_space_get_default_configuration, [:ccs_configuration_space_t, :pointer], :ccs_result_t
-  attach_function :ccs_configuration_space_sample, [:ccs_configuration_space_t, :pointer], :ccs_result_t
-  attach_function :ccs_configuration_space_samples, [:ccs_configuration_space_t, :size_t, :pointer], :ccs_result_t
+  attach_function :ccs_configuration_space_sample, [:ccs_configuration_space_t, :ccs_distribution_space_t, :pointer], :ccs_result_t
+  attach_function :ccs_configuration_space_samples, [:ccs_configuration_space_t, :ccs_distribution_space_t, :size_t, :pointer], :ccs_result_t
 
   class ConfigurationSpace < Context
 
@@ -46,38 +44,6 @@ module CCS
     def rng=(r)
       CCS.error_check CCS.ccs_configuration_space_set_rng(@handle, r)
       r
-    end
-
-    def set_distribution(distribution, parameters)
-      count = distribution.dimension
-      raise CCSError, :CCS_RESULT_ERROR_INVALID_VALUE if count != parameters.size
-      parameters = parameters.collect { |h|
-        case h
-        when Parameter
-          parameter_index(h)
-        when String, Symbol
-          parameter_index_by_name(parameter)
-        else
-          h
-        end
-      }
-      p_parameters = MemoryPointer::new(:size_t, count)
-      p_parameters.write_array_of_size_t(parameters)
-      CCS.error_check CCS.ccs_configuration_space_set_distribution(@handle, distribution, p_parameters)
-      self
-    end
-
-    def get_parameter_distribution(parameter)
-      case parameter
-      when Parameter
-        parameter = parameter_index(parameter);
-      when String, Symbol
-        parameter = parameter_index_by_name(parameter);
-      end
-      p_distribution = MemoryPointer::new(:ccs_distribution_t)
-      p_indx = MemoryPointer::new(:size_t)
-      CCS.error_check CCS.ccs_configuration_space_get_parameter_distribution(@handle, parameter, p_distribution, p_indx)
-      [CCS::Distribution.from_handle(p_distribution.read_ccs_distribution_t), p_indx.read_size_t]
     end
 
     def set_condition(parameter, expression)
@@ -194,15 +160,15 @@ module CCS
       Configuration::new(ptr.read_ccs_configuration_t, retain: false)
     end
 
-    def sample
+    def sample(distribution_space: nil)
       ptr = MemoryPointer::new(:ccs_configuration_t)
-      CCS.error_check CCS.ccs_configuration_space_sample(@handle, ptr)
+      CCS.error_check CCS.ccs_configuration_space_sample(@handle, distribution_space ? distribution_space.handle : nil, ptr)
       Configuration::new(ptr.read_ccs_configuration_t, retain: false)
     end
 
-    def samples(count)
+    def samples(count, distribution_space: nil)
       ptr = MemoryPointer::new(:ccs_configuration_t, count)
-      CCS.error_check CCS.ccs_configuration_space_samples(@handle, count, ptr)
+      CCS.error_check CCS.ccs_configuration_space_samples(@handle, distribution_space ? distribution_space.handle : nil, count, ptr)
       count.times.collect { |i| Configuration::new(ptr[i].read_pointer, retain: false) }
     end
   end

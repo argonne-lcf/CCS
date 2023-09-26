@@ -96,6 +96,7 @@ module CCS
   typedef :ccs_object_t, :ccs_parameter_t
   typedef :ccs_object_t, :ccs_expression_t
   typedef :ccs_object_t, :ccs_context_t
+  typedef :ccs_object_t, :ccs_distribution_space_t
   typedef :ccs_object_t, :ccs_configuration_space_t
   typedef :ccs_object_t, :ccs_binding_t
   typedef :ccs_object_t, :ccs_configuration_t
@@ -120,6 +121,7 @@ module CCS
     alias read_ccs_parameter_t read_ccs_object_t
     alias read_ccs_expression_t read_ccs_object_t
     alias read_ccs_context_t read_ccs_object_t
+    alias read_ccs_distribution_space_t read_ccs_object_t
     alias read_ccs_configuration_space_t read_ccs_object_t
     alias read_ccs_binding_t read_ccs_object_t
     alias read_ccs_configuration_t read_ccs_object_t
@@ -159,41 +161,43 @@ module CCS
     :CCS_OBJECT_TYPE_TREE_SPACE,
     :CCS_OBJECT_TYPE_TREE_CONFIGURATION,
     :CCS_OBJECT_TYPE_TREE_EVALUATION,
-    :CCS_OBJECT_TYPE_TREE_TUNER ]
+    :CCS_OBJECT_TYPE_TREE_TUNER,
+    :CCS_OBJECT_TYPE_DISTRIBUTION_SPACE ]
 
   Error = enum FFI::Type::INT32, :ccs_result_t, [
-    :CCS_RESULT_AGAIN,                          1,
-    :CCS_RESULT_SUCCESS,                        0,
-    :CCS_RESULT_ERROR_INVALID_OBJECT,          -1,
-    :CCS_RESULT_ERROR_INVALID_VALUE,           -2,
-    :CCS_RESULT_ERROR_INVALID_TYPE,            -3,
-    :CCS_RESULT_ERROR_INVALID_SCALE,           -4,
-    :CCS_RESULT_ERROR_INVALID_DISTRIBUTION,    -5,
-    :CCS_RESULT_ERROR_INVALID_EXPRESSION,      -6,
-    :CCS_RESULT_ERROR_INVALID_PARAMETER,       -7,
-    :CCS_RESULT_ERROR_INVALID_CONFIGURATION,   -8,
-    :CCS_RESULT_ERROR_INVALID_NAME,            -9,
-    :CCS_RESULT_ERROR_INVALID_CONDITION,      -10,
-    :CCS_RESULT_ERROR_INVALID_TUNER,          -11,
-    :CCS_RESULT_ERROR_INVALID_GRAPH,          -12,
-    :CCS_RESULT_ERROR_TYPE_NOT_COMPARABLE,    -13,
-    :CCS_RESULT_ERROR_INVALID_BOUNDS,         -14,
-    :CCS_RESULT_ERROR_OUT_OF_BOUNDS,          -15,
-    :CCS_RESULT_ERROR_SAMPLING_UNSUCCESSFUL,  -16,
-    :CCS_RESULT_ERROR_OUT_OF_MEMORY,          -17,
-    :CCS_RESULT_ERROR_UNSUPPORTED_OPERATION,  -18,
-    :CCS_RESULT_ERROR_INVALID_EVALUATION,     -19,
-    :CCS_RESULT_ERROR_INVALID_FEATURES,       -20,
-    :CCS_RESULT_ERROR_INVALID_FEATURES_TUNER, -21,
-    :CCS_RESULT_ERROR_INVALID_FILE_PATH,      -22,
-    :CCS_RESULT_ERROR_NOT_ENOUGH_DATA,        -23,
-    :CCS_RESULT_ERROR_DUPLICATE_HANDLE,       -24,
-    :CCS_RESULT_ERROR_INVALID_HANDLE,         -25,
-    :CCS_RESULT_ERROR_SYSTEM,                 -26,
-    :CCS_RESULT_ERROR_EXTERNAL,               -27,
-    :CCS_RESULT_ERROR_INVALID_TREE,           -28,
-    :CCS_RESULT_ERROR_INVALID_TREE_SPACE,     -29,
-    :CCS_RESULT_ERROR_INVALID_TREE_TUNER,     -30 ]
+    :CCS_RESULT_AGAIN,                              1,
+    :CCS_RESULT_SUCCESS,                            0,
+    :CCS_RESULT_ERROR_INVALID_OBJECT,              -1,
+    :CCS_RESULT_ERROR_INVALID_VALUE,               -2,
+    :CCS_RESULT_ERROR_INVALID_TYPE,                -3,
+    :CCS_RESULT_ERROR_INVALID_SCALE,               -4,
+    :CCS_RESULT_ERROR_INVALID_DISTRIBUTION,        -5,
+    :CCS_RESULT_ERROR_INVALID_EXPRESSION,          -6,
+    :CCS_RESULT_ERROR_INVALID_PARAMETER,           -7,
+    :CCS_RESULT_ERROR_INVALID_CONFIGURATION,       -8,
+    :CCS_RESULT_ERROR_INVALID_NAME,                -9,
+    :CCS_RESULT_ERROR_INVALID_CONDITION,          -10,
+    :CCS_RESULT_ERROR_INVALID_TUNER,              -11,
+    :CCS_RESULT_ERROR_INVALID_GRAPH,              -12,
+    :CCS_RESULT_ERROR_TYPE_NOT_COMPARABLE,        -13,
+    :CCS_RESULT_ERROR_INVALID_BOUNDS,             -14,
+    :CCS_RESULT_ERROR_OUT_OF_BOUNDS,              -15,
+    :CCS_RESULT_ERROR_SAMPLING_UNSUCCESSFUL,      -16,
+    :CCS_RESULT_ERROR_OUT_OF_MEMORY,              -17,
+    :CCS_RESULT_ERROR_UNSUPPORTED_OPERATION,      -18,
+    :CCS_RESULT_ERROR_INVALID_EVALUATION,         -19,
+    :CCS_RESULT_ERROR_INVALID_FEATURES,           -20,
+    :CCS_RESULT_ERROR_INVALID_FEATURES_TUNER,     -21,
+    :CCS_RESULT_ERROR_INVALID_FILE_PATH,          -22,
+    :CCS_RESULT_ERROR_NOT_ENOUGH_DATA,            -23,
+    :CCS_RESULT_ERROR_DUPLICATE_HANDLE,           -24,
+    :CCS_RESULT_ERROR_INVALID_HANDLE,             -25,
+    :CCS_RESULT_ERROR_SYSTEM,                     -26,
+    :CCS_RESULT_ERROR_EXTERNAL,                   -27,
+    :CCS_RESULT_ERROR_INVALID_TREE,               -28,
+    :CCS_RESULT_ERROR_INVALID_TREE_SPACE,         -29,
+    :CCS_RESULT_ERROR_INVALID_TREE_TUNER,         -30,
+    :CCS_RESULT_ERROR_INVALID_DISTRIBUTION_SPACE, -31 ]
 
   class MemoryPointer
     def read_ccs_object_type_t
@@ -587,7 +591,8 @@ module CCS
         CCS_OBJECT_TYPE_TREE_SPACE: CCS::TreeSpace,
         CCS_OBJECT_TYPE_TREE_CONFIGURATION: CCS::TreeConfiguration,
         CCS_OBJECT_TYPE_TREE_EVALUATION: CCS::TreeEvaluation,
-        CCS_OBJECT_TYPE_TREE_TUNER: CCS::TreeTuner
+        CCS_OBJECT_TYPE_TREE_TUNER: CCS::TreeTuner,
+        CCS_OBJECT_TYPE_DISTRIBUTION_SPACE: CCS::DistributionSpace
       }
     end
 

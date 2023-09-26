@@ -218,6 +218,7 @@ _ccs_deserialize_bin_expression(
 	return CCS_RESULT_SUCCESS;
 err_exp:
 	ccs_release_object(*expression_ret);
+	*expression_ret = NULL;
 	return res;
 }
 

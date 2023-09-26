@@ -37,20 +37,21 @@ class CConfigSpaceTestConfigurationSpace < Minitest::Test
     h2 = CCS::NumericalParameter::Float.new
     h3 = CCS::NumericalParameter::Float.new
     cs = CCS::ConfigurationSpace::new(name: "space", parameters: [h1, h2, h3])
+    ds = CCS::DistributionSpace::new(configuration_space: cs)
     distributions = [ CCS::UniformDistribution::Float.new(lower: 0.1, upper: 0.3), CCS::UniformDistribution::Float.new(lower: 0.2, upper: 0.6) ]
     d = CCS::MultivariateDistribution::new(distributions: distributions)
-    cs.set_distribution(d, [h1, h2])
-    dist, indx = cs.get_parameter_distribution(h1)
+    ds.set_distribution(d, [h1, h2])
+    dist, indx = ds.get_parameter_distribution(h1)
     assert_equal( d.handle, dist.handle )
     assert_equal( 0, indx )
-    dist, indx = cs.get_parameter_distribution(h2)
+    dist, indx = ds.get_parameter_distribution(h2)
     assert_equal( d.handle, dist.handle )
     assert_equal( 1, indx )
-    cs.set_distribution(d, [h3, h1])
-    dist, indx = cs.get_parameter_distribution(h1)
+    ds.set_distribution(d, [h3, h1])
+    dist, indx = ds.get_parameter_distribution(h1)
     assert_equal( d.handle, dist.handle )
     assert_equal( 1, indx )
-    dist, indx = cs.get_parameter_distribution(h3)
+    dist, indx = ds.get_parameter_distribution(h3)
     assert_equal( d.handle, dist.handle )
     assert_equal( 0, indx )
   end

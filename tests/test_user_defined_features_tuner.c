@@ -55,7 +55,7 @@ tuner_last_ask(
 	if (err)
 		return err;
 	err = ccs_configuration_space_samples(
-		configuration_space, num_configurations, configurations);
+		configuration_space, NULL, num_configurations, configurations);
 	if (err)
 		return err;
 	if (num_configurations_ret)

@@ -103,6 +103,10 @@ typedef struct _ccs_expression_s          *ccs_expression_t;
  */
 typedef struct _ccs_context_s             *ccs_context_t;
 /**
+ * An opaque type defining a CCS distribution space.
+ */
+typedef struct _ccs_distribution_space_s  *ccs_distribution_space_t;
+/**
  * An opaque type defining a CCS configuration space.
  */
 typedef struct _ccs_configuration_space_s *ccs_configuration_space_t;
@@ -177,75 +181,77 @@ typedef struct _ccs_tree_tuner_s          *ccs_tree_tuner_t;
  */
 enum ccs_result_e {
 	/** Guard */
-	CCS_RESULT_MAX                          = 2,
+	CCS_RESULT_MAX                              = 2,
 	/** Try again */
-	CCS_RESULT_AGAIN                        = 1,
+	CCS_RESULT_AGAIN                            = 1,
 	/** Success */
-	CCS_RESULT_SUCCESS                      = 0,
+	CCS_RESULT_SUCCESS                          = 0,
 	/** Not a CCS object or not initialized */
-	CCS_RESULT_ERROR_INVALID_OBJECT         = -1,
+	CCS_RESULT_ERROR_INVALID_OBJECT             = -1,
 	/** Parameter has an invalid value */
-	CCS_RESULT_ERROR_INVALID_VALUE          = -2,
+	CCS_RESULT_ERROR_INVALID_VALUE              = -2,
 	/** The data type is invalid */
-	CCS_RESULT_ERROR_INVALID_TYPE           = -3,
+	CCS_RESULT_ERROR_INVALID_TYPE               = -3,
 	/** The provided scale is invalid */
-	CCS_RESULT_ERROR_INVALID_SCALE          = -4,
+	CCS_RESULT_ERROR_INVALID_SCALE              = -4,
 	/** The provided distribution is invalid */
-	CCS_RESULT_ERROR_INVALID_DISTRIBUTION   = -5,
+	CCS_RESULT_ERROR_INVALID_DISTRIBUTION       = -5,
 	/** The provided expression is invalid */
-	CCS_RESULT_ERROR_INVALID_EXPRESSION     = -6,
+	CCS_RESULT_ERROR_INVALID_EXPRESSION         = -6,
 	/** The provided parameter is invalid */
-	CCS_RESULT_ERROR_INVALID_PARAMETER      = -7,
+	CCS_RESULT_ERROR_INVALID_PARAMETER          = -7,
 	/** The provided configuration is invalid */
-	CCS_RESULT_ERROR_INVALID_CONFIGURATION  = -8,
+	CCS_RESULT_ERROR_INVALID_CONFIGURATION      = -8,
 	/** The parameter name is invalid */
-	CCS_RESULT_ERROR_INVALID_NAME           = -9,
+	CCS_RESULT_ERROR_INVALID_NAME               = -9,
 	/** The condition is invalid (unused) */
-	CCS_RESULT_ERROR_INVALID_CONDITION      = -10,
+	CCS_RESULT_ERROR_INVALID_CONDITION          = -10,
 	/** The provided tuner is invalid */
-	CCS_RESULT_ERROR_INVALID_TUNER          = -11,
+	CCS_RESULT_ERROR_INVALID_TUNER              = -11,
 	/** The constraint graph would be invalid */
-	CCS_RESULT_ERROR_INVALID_GRAPH          = -12,
+	CCS_RESULT_ERROR_INVALID_GRAPH              = -12,
 	/** The type is not comparable (unused) */
-	CCS_RESULT_ERROR_TYPE_NOT_COMPARABLE    = -13,
+	CCS_RESULT_ERROR_TYPE_NOT_COMPARABLE        = -13,
 	/** The bounds are invalid (unused) */
-	CCS_RESULT_ERROR_INVALID_BOUNDS         = -14,
+	CCS_RESULT_ERROR_INVALID_BOUNDS             = -14,
 	/** The index is out of bounds */
-	CCS_RESULT_ERROR_OUT_OF_BOUNDS          = -15,
+	CCS_RESULT_ERROR_OUT_OF_BOUNDS              = -15,
 	/** Could not gather enough samples */
-	CCS_RESULT_ERROR_SAMPLING_UNSUCCESSFUL  = -16,
+	CCS_RESULT_ERROR_SAMPLING_UNSUCCESSFUL      = -16,
 	/** An allocation failed due to lack of available memory */
-	CCS_RESULT_ERROR_OUT_OF_MEMORY          = -17,
+	CCS_RESULT_ERROR_OUT_OF_MEMORY              = -17,
 	/** The object does not support this operation */
-	CCS_RESULT_ERROR_UNSUPPORTED_OPERATION  = -18,
+	CCS_RESULT_ERROR_UNSUPPORTED_OPERATION      = -18,
 	/** The provided evaluation is invalid */
-	CCS_RESULT_ERROR_INVALID_EVALUATION     = -19,
+	CCS_RESULT_ERROR_INVALID_EVALUATION         = -19,
 	/** The provided features is invalid */
-	CCS_RESULT_ERROR_INVALID_FEATURES       = -20,
+	CCS_RESULT_ERROR_INVALID_FEATURES           = -20,
 	/** The provided features tuner is invalid */
-	CCS_RESULT_ERROR_INVALID_FEATURES_TUNER = -21,
+	CCS_RESULT_ERROR_INVALID_FEATURES_TUNER     = -21,
 	/** The provided file path is invalid */
-	CCS_RESULT_ERROR_INVALID_FILE_PATH      = -22,
+	CCS_RESULT_ERROR_INVALID_FILE_PATH          = -22,
 	/** The provided buffer or file is too short */
-	CCS_RESULT_ERROR_NOT_ENOUGH_DATA        = -23,
+	CCS_RESULT_ERROR_NOT_ENOUGH_DATA            = -23,
 	/** The handle was a duplicate */
-	CCS_RESULT_ERROR_DUPLICATE_HANDLE       = -24,
+	CCS_RESULT_ERROR_DUPLICATE_HANDLE           = -24,
 	/** The handle was not found */
-	CCS_RESULT_ERROR_INVALID_HANDLE         = -25,
+	CCS_RESULT_ERROR_INVALID_HANDLE             = -25,
 	/** A system error occurred */
-	CCS_RESULT_ERROR_SYSTEM                 = -26,
+	CCS_RESULT_ERROR_SYSTEM                     = -26,
 	/** External error occurred (binding?) */
-	CCS_RESULT_ERROR_EXTERNAL               = -27,
+	CCS_RESULT_ERROR_EXTERNAL                   = -27,
 	/** The provided tree is invalid */
-	CCS_RESULT_ERROR_INVALID_TREE           = -28,
+	CCS_RESULT_ERROR_INVALID_TREE               = -28,
 	/** The provided tree space is invalid */
-	CCS_RESULT_ERROR_INVALID_TREE_SPACE     = -29,
+	CCS_RESULT_ERROR_INVALID_TREE_SPACE         = -29,
 	/** The provided tree tuner is invalid */
-	CCS_RESULT_ERROR_INVALID_TREE_TUNER     = -30,
+	CCS_RESULT_ERROR_INVALID_TREE_TUNER         = -30,
+	/** The provided distribution space is invalid */
+	CCS_RESULT_ERROR_INVALID_DISTRIBUTION_SPACE = -31,
 	/** Guard */
-	CCS_RESULT_MIN                          = -31,
+	CCS_RESULT_MIN                              = -32,
 	/** Try forcing 32 bits value for bindings */
-	CCS_RESULT_FORCE_32BIT                  = INT32_MAX
+	CCS_RESULT_FORCE_32BIT                      = INT32_MAX
 };
 
 /**
@@ -302,6 +308,8 @@ enum ccs_object_type_e {
 	CCS_OBJECT_TYPE_TREE_EVALUATION,
 	/** A tree tuner */
 	CCS_OBJECT_TYPE_TREE_TUNER,
+	/** A distribution space */
+	CCS_OBJECT_TYPE_DISTRIBUTION_SPACE,
 	/** Guard */
 	CCS_OBJECT_TYPE_MAX,
 	/** Try forcing 32 bits value for bindings */

@@ -62,6 +62,9 @@ libcconfigspace_la_SOURCES = \
 	configuration_space.c \
 	configuration_space_internal.h \
 	configuration_space_deserialize.h \
+	distribution_space.c \
+	distribution_space_internal.h \
+        distribution_space_deserialize.h \
 	binding.c \
 	binding_internal.h \
 	configuration.c \

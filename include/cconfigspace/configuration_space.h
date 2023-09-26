@@ -10,8 +10,7 @@ extern "C" {
  * A configuration space is a context (see context.h) defining a set of
  * parameters. Configuration space also offer as constraints system to
  * describe conditional parameter activation as well as forbidden
- * parameter configurations. Sampling distributions of parameters can
- * be specified.
+ * parameter configurations.
  */
 
 /**
@@ -92,33 +91,6 @@ ccs_configuration_space_get_rng(
 	ccs_rng_t                *rng_ret);
 
 /**
- * Set the distribution of one or more parameters. Existing distributions
- * are discarded, and if a parameter is left without a distribution it's
- * default distribution is used.
- * @param[in,out] configuration_space
- * @param[in] distribution the distribution to associate to the parameters
- *                         at the indices given by \p indices
- * @param[in] indices an array of parameters indices with as many elements
- *                    as the dimension of the distribution
- * @return #CCS_RESULT_SUCCESS on success
- * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p configuration_space is not a
- * valid CCS configuration space; or distribution is not a valid CCS
- * distribution
- * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p indices is NULL; or if indices
- * contains values greater or equal to the number of parameters in the
- * configuration space; or if indices contain duplicate values
- * @return #CCS_RESULT_ERROR_OUT_OF_MEMORY if a memory could not be allocated to
- * store additional parameters and associated data structures
- * @remarks
- *   This function is thread-safe
- */
-extern ccs_result_t
-ccs_configuration_space_set_distribution(
-	ccs_configuration_space_t configuration_space,
-	ccs_distribution_t        distribution,
-	size_t                   *indices);
-
-/**
  * Get the number of parameters in a configuration space.
  * @param[in] configuration_space
  * @param[out] num_parameters_ret a pointer to the variable that will contain
@@ -137,7 +109,7 @@ ccs_configuration_space_get_num_parameters(
 	size_t                   *num_parameters_ret);
 
 /**
- * Get an parameter in a configuration space given its index.
+ * Get a parameter in a configuration space given its index.
  * @param[in] configuration_space
  * @param[in] index the index of the parameter to retrieve
  * @param[out] parameter_ret a pointer to the variable that will contain
@@ -158,33 +130,7 @@ ccs_configuration_space_get_parameter(
 	ccs_parameter_t          *parameter_ret);
 
 /**
- * Get an parameter's distribution in a configuration space given its
- * index.
- * @param[in] configuration_space
- * @param[in] index the index of the parameter
- * @param[out] distribution_ret a pointer to the variable that will contain the
- *                              distribution
- * @param[out] index_ret a pointer to the variable that will contain the index
- *                       of the component in the distribution
- * @return #CCS_RESULT_SUCCESS on success
- * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p configuration_space is not a
- * valid CCS configuration space
- * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p distribution_ret is NULL; or if
- * \p index_ret is NULL
- * @return #CCS_RESULT_ERROR_OUT_OF_BOUNDS if \p index is greater than the count
- * of parameters in the configuration space
- * @remarks
- *   This function is thread-safe
- */
-extern ccs_result_t
-ccs_configuration_space_get_parameter_distribution(
-	ccs_configuration_space_t configuration_space,
-	size_t                    index,
-	ccs_distribution_t       *distribution_ret,
-	size_t                   *index_ret);
-
-/**
- * Get an parameter in a configuration space given its name.
+ * Get a parameter in a configuration space given its name.
  * @param[in] configuration_space
  * @param[in] name the name of the parameter to retrieve
  * @param[out] parameter_ret a pointer to the variable that will contain
@@ -206,7 +152,7 @@ ccs_configuration_space_get_parameter_by_name(
 	ccs_parameter_t          *parameter_ret);
 
 /**
- * Get the index of an parameter in the configuration space given its name.
+ * Get the index of a parameter in the configuration space given its name.
  * @param[in] configuration_space
  * @param[in] name the name of the parameter to retrieve the index of
  * @param[out] index_ret a pointer to the variable that will contain the index
@@ -227,7 +173,7 @@ ccs_configuration_space_get_parameter_index_by_name(
 	size_t                   *index_ret);
 
 /**
- * Get the index of an parameter in the configuration space.
+ * Get the index of a parameter in the configuration space.
  * @param[in] configuration_space
  * @param[in] parameter
  * @param[out] index_ret a pointer to the variable which will contain the index
@@ -600,11 +546,13 @@ ccs_configuration_space_get_default_configuration(
  * to their default distribution. Parameter that are found to be inactive
  * will have the #ccs_inactive value. Returned configuration is valid.
  * @param[in] configuration_space
+ * @param[in] distribution_space an optional distribution space to use
  * @param[out] configuration_ret a pointer to the variable that will contain the
  *                               returned configuration
  * @return #CCS_RESULT_SUCCESS on success
  * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p configuration_space is not a
- * valid CCS configuration space
+ * valid CCS configuration space; or if \p distribution_space is not a valid
+ * CCS distribution space
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if configuration_ret is NULL
  * @return #CCS_RESULT_ERROR_SAMPLING_UNSUCCESSFUL if no valid configuration
  * could be sampled
@@ -618,6 +566,7 @@ ccs_configuration_space_get_default_configuration(
 extern ccs_result_t
 ccs_configuration_space_sample(
 	ccs_configuration_space_t configuration_space,
+	ccs_distribution_space_t  distribution_space,
 	ccs_configuration_t      *configuration_ret);
 
 /**
@@ -627,12 +576,14 @@ ccs_configuration_space_sample(
  * inactive will have the #ccs_inactive value. Returned configurations are
  * valid.
  * @param[in] configuration_space
+ * @param[in] distribution_space an optional distribution space to use
  * @param[in] num_configurations the number of requested configurations
  * @param[out] configurations an array of \p num_configurations that will
  *                            contain the requested configurations
  * @return #CCS_RESULT_SUCCESS on success
  * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p configuration_space is not a
- * valid CCS configuration space
+ * valid CCS configuration space; or if \p distribution_space is not a valid
+ * CCS distribution space
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p configurations is NULL and \p
  * num_configurations is greater than 0
  * @return #CCS_RESULT_ERROR_SAMPLING_UNSUCCESSFUL if no or not enough valid
@@ -649,6 +600,7 @@ ccs_configuration_space_sample(
 extern ccs_result_t
 ccs_configuration_space_samples(
 	ccs_configuration_space_t configuration_space,
+	ccs_distribution_space_t  distribution_space,
 	size_t                    num_configurations,
 	ccs_configuration_t      *configurations);
 

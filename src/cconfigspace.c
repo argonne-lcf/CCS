@@ -563,6 +563,7 @@ end:
 #include "expression_deserialize.h"
 #include "features_space_deserialize.h"
 #include "configuration_space_deserialize.h"
+#include "distribution_space_deserialize.h"
 #include "objective_space_deserialize.h"
 #include "configuration_deserialize.h"
 #include "evaluation_deserialize.h"
@@ -734,6 +735,11 @@ _ccs_object_deserialize_with_opts(
 			CCS_VALIDATE(_ccs_tree_tuner_deserialize(
 				(ccs_tree_tuner_t *)object_ret, format, version,
 				buffer_size, buffer, opts));
+			break;
+		case CCS_OBJECT_TYPE_DISTRIBUTION_SPACE:
+			CCS_VALIDATE(_ccs_distribution_space_deserialize(
+				(ccs_distribution_space_t *)object_ret, format,
+				version, buffer_size, buffer, opts));
 			break;
 		default:
 			CCS_RAISE(
@@ -1072,6 +1078,7 @@ ccs_get_result_name(ccs_result_t result, const char **name)
 		ETOCASE(CCS_RESULT_ERROR_INVALID_TREE);
 		ETOCASE(CCS_RESULT_ERROR_INVALID_TREE_SPACE);
 		ETOCASE(CCS_RESULT_ERROR_INVALID_TREE_TUNER);
+		ETOCASE(CCS_RESULT_ERROR_INVALID_DISTRIBUTION_SPACE);
 	default:
 		*name = NULL;
 		CCS_RAISE(

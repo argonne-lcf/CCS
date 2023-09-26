@@ -14,6 +14,7 @@
 #include "cconfigspace/context.h"
 #include "cconfigspace/binding.h"
 #include "cconfigspace/configuration_space.h"
+#include "cconfigspace/distribution_space.h"
 #include "cconfigspace/configuration.h"
 #include "cconfigspace/features_space.h"
 #include "cconfigspace/features.h"
