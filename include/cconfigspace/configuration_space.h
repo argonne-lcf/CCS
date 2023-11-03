@@ -19,6 +19,10 @@ extern "C" {
  * @param[in] num_parameters the number of provided parameters
  * @param[in] parameters an array of \p num_parameters parameters
  *                       to add to the configuration space
+ * @param[in] conditions an optional array of \p num_parameters expressions
+ *                       setting the active condition of respective parameters.
+ *                       a NULL entry in the array means no condition is
+ *                       attached to the corresponding parameter.
  * @param[in] num_forbidden_clauses the number of provided forbidden clauses
  * @param[in] forbidden_clauses an array o \p num_forbidden_clauses expressions
  *                              to add as forbidden clauses to the
@@ -38,6 +42,8 @@ extern "C" {
  * expression references a parameter that is not in the configuration space
  * @return #CCS_RESULT_ERROR_INVALID_CONFIGURATION if adding one of the provided
  * forbidden clause would render the default configuration invalid
+ * @return #CCS_RESULT_ERROR_INVALID_GRAPH if the addition of the conditions
+ * would cause the dependency graph to become invalid (cyclic)
  * @return #CCS_RESULT_ERROR_OUT_OF_MEMORY if there was a lack of memory to
  * allocate the new configuration space
  * @remarks
@@ -48,6 +54,7 @@ ccs_create_configuration_space(
 	const char                *name,
 	size_t                     num_parameters,
 	ccs_parameter_t           *parameters,
+	ccs_expression_t          *conditions,
 	size_t                     num_forbidden_clauses,
 	ccs_expression_t          *forbidden_clauses,
 	ccs_configuration_space_t *configuration_space_ret);
@@ -287,34 +294,6 @@ ccs_configuration_space_validate_value(
 	ccs_datum_t              *value_ret);
 
 /**
- * Set the active condition of a parameter in a configuration space given
- * it's index.
- * @param[in, out] configuration_space
- * @param[in] parameter_index the index of the parameter to set the condition
- * @param[in] expression the condition to associate to the parameter
- * @return #CCS_RESULT_SUCCESS on success
- * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p configuration_space is not a
- * valid CCS configuration space; or if \p expression is not a valid CCS
- * expression
- * @return #CCS_RESULT_ERROR_OUT_OF_BOUNDS if index is greater than the number
- * of parameters in \p configuration_space
- * @return #CCS_RESULT_ERROR_INVALID_PARAMETER if parameter at index is already
- * associated with a condition; or if the condition references a parameter that
- * is not in the configuration space
- * @return #CCS_RESULT_ERROR_OUT_OF_MEMORY if there was not enough memory to
- * process the dependency graph
- * @return #CCS_RESULT_ERROR_INVALID_GRAPH if the addition of the condition
- * would cause the dependency graph to become invalid (cyclic)
- * @remarks
- *   This function is thread-safe
- */
-extern ccs_result_t
-ccs_configuration_space_set_condition(
-	ccs_configuration_space_t configuration_space,
-	size_t                    parameter_index,
-	ccs_expression_t          expression);
-
-/**
  * Get the active condition of a parameter in a configuration space given
  * it's index.
  * @param[in] configuration_space
@@ -436,8 +415,6 @@ ccs_configuration_space_get_forbidden_clauses(
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p is_valid_ret is NULL
  * @return #CCS_RESULT_ERROR_INVALID_CONFIGURATION if \p configuration is not
  * associated to the configuration space
- * @return #CCS_RESULT_ERROR_INVALID_GRAPH if the graph of constraints could
- * not be previsoulsy generated
  * @remarks
  *   This function is thread-safe
  */
@@ -468,8 +445,6 @@ ccs_configuration_space_check_configuration(
  * is greater than 0
  * @return #CCS_RESULT_ERROR_INVALID_CONFIGURATION if \p num_values is not equal
  * to the number of parameters in the configuration space
- * @return #CCS_RESULT_ERROR_INVALID_GRAPH if the graph of constraints could
- * not be previsoulsy generated
  * @remarks
  *   This function is thread-safe
  */
@@ -491,8 +466,6 @@ ccs_configuration_space_check_configuration_values(
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if configuration_ret is NULL
  * @return #CCS_RESULT_ERROR_OUT_OF_MEMORY if there was not enough memory to
  * allocate the new configuration
- * @return #CCS_RESULT_ERROR_INVALID_GRAPH if the graph of constraints could
- * not be previsoulsy generated
  * @remarks
  *   This function is thread-safe
  */
@@ -519,8 +492,6 @@ ccs_configuration_space_get_default_configuration(
  * could be sampled
  * @return #CCS_RESULT_ERROR_OUT_OF_MEMORY if there was not enough memory to
  * allocate the new configuration
- * @return #CCS_RESULT_ERROR_INVALID_GRAPH if the graph of constraints could
- * not be previsoulsy generated
  * @remarks
  *   This function is thread-safe
  */
@@ -553,8 +524,6 @@ ccs_configuration_space_sample(
  * @return #CCS_RESULT_ERROR_OUT_OF_MEMORY if there was not enough memory to
  * allocate new configurations. Configurations that could be allocated will be
  * returned, and the rest will be NULL
- * @return #CCS_RESULT_ERROR_INVALID_GRAPH if the graph of constraints could
- * not be previsoulsy generated
  * @remarks
  *   This function is thread-safe
  */

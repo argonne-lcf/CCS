@@ -12,7 +12,6 @@ struct _ccs_configuration_space_data_mock_s {
 	size_t            num_forbidden_clauses;
 	ccs_rng_t         rng;
 	ccs_parameter_t  *parameters;
-	size_t           *cond_parameter_indices;
 	ccs_expression_t *conditions;
 	ccs_expression_t *forbidden_clauses;
 };
@@ -46,18 +45,15 @@ _ccs_deserialize_bin_ccs_configuration_space_data(
 		return CCS_RESULT_SUCCESS;
 	mem = (uintptr_t)calloc(
 		data->num_parameters * sizeof(ccs_parameter_t) +
-			data->num_conditions *
-				(sizeof(ccs_expression_t) + sizeof(size_t)) +
+			data->num_parameters * sizeof(ccs_expression_t) +
 			data->num_forbidden_clauses * sizeof(ccs_expression_t),
 		1);
 	CCS_REFUTE(!mem, CCS_RESULT_ERROR_OUT_OF_MEMORY);
 
 	data->parameters = (ccs_parameter_t *)mem;
 	mem += data->num_parameters * sizeof(ccs_parameter_t);
-	data->cond_parameter_indices = (size_t *)mem;
-	mem += data->num_conditions * sizeof(size_t);
 	data->conditions = (ccs_expression_t *)mem;
-	mem += data->num_conditions * sizeof(ccs_expression_t);
+	mem += data->num_parameters * sizeof(ccs_expression_t);
 	data->forbidden_clauses = (ccs_expression_t *)mem;
 
 	for (size_t i = 0; i < data->num_parameters; i++)
@@ -66,10 +62,11 @@ _ccs_deserialize_bin_ccs_configuration_space_data(
 			version, buffer_size, buffer, opts));
 
 	for (size_t i = 0; i < data->num_conditions; i++) {
-		CCS_VALIDATE(_ccs_deserialize_bin_size(
-			data->cond_parameter_indices + i, buffer_size, buffer));
+		size_t index;
+		CCS_VALIDATE(
+			_ccs_deserialize_bin_size(&index, buffer_size, buffer));
 		CCS_VALIDATE(_ccs_expression_deserialize(
-			data->conditions + i, CCS_SERIALIZE_FORMAT_BINARY,
+			data->conditions + index, CCS_SERIALIZE_FORMAT_BINARY,
 			version, buffer_size, buffer, opts));
 	}
 
@@ -104,8 +101,8 @@ _ccs_deserialize_bin_configuration_space(
 	new_opts.map_values = CCS_TRUE;
 	CCS_VALIDATE(ccs_create_map(&new_opts.handle_map));
 
-	_ccs_configuration_space_data_mock_t data = {
-		NULL, 0, 0, 0, NULL, NULL, NULL, NULL, NULL};
+	_ccs_configuration_space_data_mock_t data = {NULL, 0,    0,    0,
+						     NULL, NULL, NULL, NULL};
 	CCS_VALIDATE_ERR_GOTO(
 		res,
 		_ccs_deserialize_bin_ccs_configuration_space_data(
@@ -115,22 +112,14 @@ _ccs_deserialize_bin_configuration_space(
 		res,
 		ccs_create_configuration_space(
 			data.name, data.num_parameters, data.parameters,
-			data.num_forbidden_clauses, data.forbidden_clauses,
-			configuration_space_ret),
+			data.conditions, data.num_forbidden_clauses,
+			data.forbidden_clauses, configuration_space_ret),
 		end);
 	CCS_VALIDATE_ERR_GOTO(
 		res,
 		ccs_configuration_space_set_rng(
 			*configuration_space_ret, data.rng),
 		end);
-	for (size_t i = 0; i < data.num_conditions; i++)
-		CCS_VALIDATE_ERR_GOTO(
-			res,
-			ccs_configuration_space_set_condition(
-				*configuration_space_ret,
-				data.cond_parameter_indices[i],
-				data.conditions[i]),
-			err_configuration_space);
 	if (opts && opts->map_values && opts->handle_map)
 		CCS_VALIDATE_ERR_GOTO(
 			res,
@@ -151,7 +140,7 @@ end:
 			if (data.parameters[i])
 				ccs_release_object(data.parameters[i]);
 	if (data.conditions)
-		for (size_t i = 0; i < data.num_conditions; i++)
+		for (size_t i = 0; i < data.num_parameters; i++)
 			if (data.conditions[i])
 				ccs_release_object(data.conditions[i]);
 	if (data.forbidden_clauses)

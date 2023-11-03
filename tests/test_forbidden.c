@@ -35,7 +35,7 @@ test_simple(void)
                 ccs_float(0.0), &expression);
 	assert(err == CCS_RESULT_SUCCESS);
 	err = ccs_create_configuration_space(
-		"space", 2, parameters, 1, &expression, &space);
+		"space", 2, parameters, NULL, 1, &expression, &space);
 	assert(err == CCS_RESULT_SUCCESS);
 
 	for (int i = 0; i < 100; i++) {
@@ -97,6 +97,7 @@ void
 test_combined(void)
 {
 	ccs_parameter_t           parameters[3];
+	ccs_expression_t          conditions[3] = {NULL, NULL, NULL};
 	ccs_configuration_space_t space;
 	ccs_expression_t          expression;
 	ccs_configuration_t       configuration;
@@ -112,28 +113,26 @@ test_combined(void)
                 CCS_EXPRESSION_TYPE_LESS, ccs_object(parameters[0]),
                 ccs_float(0.0), &expression);
 	assert(err == CCS_RESULT_SUCCESS);
-	err = ccs_create_configuration_space(
-		"space", 3, parameters, 1, &expression, &space);
-	assert(err == CCS_RESULT_SUCCESS);
-	err = ccs_release_object(expression);
-	assert(err == CCS_RESULT_SUCCESS);
 
 	err = ccs_create_binary_expression(
 		CCS_EXPRESSION_TYPE_LESS, ccs_object(parameters[1]),
-		ccs_float(0.0), &expression);
-	assert(err == CCS_RESULT_SUCCESS);
-	err = ccs_configuration_space_set_condition(space, 2, expression);
-	assert(err == CCS_RESULT_SUCCESS);
-	err = ccs_release_object(expression);
+		ccs_float(0.0), &conditions[2]);
 	assert(err == CCS_RESULT_SUCCESS);
 
 	err = ccs_create_binary_expression(
 		CCS_EXPRESSION_TYPE_LESS, ccs_object(parameters[2]),
-		ccs_float(0.0), &expression);
+		ccs_float(0.0), &conditions[0]);
 	assert(err == CCS_RESULT_SUCCESS);
-	err = ccs_configuration_space_set_condition(space, 0, expression);
+
+	err = ccs_create_configuration_space(
+		"space", 3, parameters, conditions, 1, &expression, &space);
 	assert(err == CCS_RESULT_SUCCESS);
 	err = ccs_release_object(expression);
+	assert(err == CCS_RESULT_SUCCESS);
+
+	err = ccs_release_object(conditions[2]);
+	assert(err == CCS_RESULT_SUCCESS);
+	err = ccs_release_object(conditions[0]);
 	assert(err == CCS_RESULT_SUCCESS);
 
 	for (int i = 0; i < 100; i++) {

@@ -313,6 +313,200 @@ end:
 	return err;
 }
 
+static int
+_size_t_sort(const void *a, const void *b)
+{
+	const size_t sa = *(const size_t *)a;
+	const size_t sb = *(const size_t *)b;
+	return sa < sb ? -1 : sa > sb ? 1 : 0;
+}
+
+static void
+_uniq_size_t_array(UT_array *array)
+{
+	size_t count = utarray_len(array);
+	if (count == 0)
+		return;
+	utarray_sort(array, &_size_t_sort);
+	size_t  real_count = 0;
+	size_t *p          = (size_t *)utarray_front(array);
+	size_t *p2         = p;
+	real_count++;
+	while ((p = (size_t *)utarray_next(array, p))) {
+		if (*p != *p2) {
+			p2  = (size_t *)utarray_next(array, p2);
+			*p2 = *p;
+			real_count++;
+		}
+	}
+	utarray_resize(array, real_count);
+}
+
+struct _parameter_list_s;
+struct _parameter_list_s {
+	size_t                    in_edges;
+	size_t                    index;
+	struct _parameter_list_s *next;
+	struct _parameter_list_s *prev;
+};
+
+static ccs_result_t
+_topological_sort(ccs_configuration_space_t configuration_space)
+{
+	_ccs_configuration_space_data_t *data = configuration_space->data;
+	size_t                           num_parameters = data->num_parameters;
+	size_t                          *indexes        = data->sorted_indexes;
+	UT_array                       **parents        = data->parents;
+	UT_array                       **children       = data->children;
+
+	for (size_t i = 0; i < num_parameters; i++)
+		indexes[i] = 0;
+
+	struct _parameter_list_s *list = (struct _parameter_list_s *)calloc(
+		num_parameters, sizeof(struct _parameter_list_s));
+	CCS_REFUTE(!list, CCS_RESULT_ERROR_OUT_OF_MEMORY);
+	struct _parameter_list_s *queue = NULL;
+	for (size_t index = 0; index < num_parameters; index++) {
+		size_t in_edges      = utarray_len(parents[index]);
+		list[index].in_edges = in_edges;
+		list[index].index    = index;
+		if (in_edges == 0)
+			DL_APPEND(queue, list + index);
+	}
+	size_t processed = 0;
+	while (queue) {
+		struct _parameter_list_s *e = queue;
+		DL_DELETE(queue, queue);
+		size_t *child = NULL;
+		while ((child = (size_t *)utarray_next(
+				children[e->index], child))) {
+			list[*child].in_edges--;
+			if (list[*child].in_edges == 0) {
+				DL_APPEND(queue, list + *child);
+			}
+		}
+		indexes[processed++] = e->index;
+	};
+	free(list);
+	CCS_REFUTE(processed < num_parameters, CCS_RESULT_ERROR_INVALID_GRAPH);
+	return CCS_RESULT_SUCCESS;
+}
+
+#undef utarray_oom
+#define utarray_oom()                                                          \
+	{                                                                      \
+		CCS_RAISE_ERR_GOTO(                                            \
+			err, CCS_RESULT_ERROR_OUT_OF_MEMORY, errmem,           \
+			"Not enough memory to allocate array");                \
+	}
+static ccs_result_t
+_recompute_graph(ccs_configuration_space_t configuration_space)
+{
+	_ccs_configuration_space_data_t *data = configuration_space->data;
+	size_t                           num_parameters = data->num_parameters;
+	UT_array                       **pparents       = data->parents;
+	UT_array                       **pchildren      = data->children;
+	ccs_expression_t                *conditions     = data->conditions;
+
+	for (size_t index = 0; index < num_parameters; index++) {
+		utarray_clear(pparents[index]);
+		utarray_clear(pchildren[index]);
+	}
+	intptr_t     mem = 0;
+	ccs_result_t err = CCS_RESULT_SUCCESS;
+	for (size_t index = 0; index < num_parameters; index++) {
+		ccs_expression_t condition = conditions[index];
+		if (!condition)
+			continue;
+		size_t count;
+		CCS_VALIDATE_ERR_GOTO(
+			err,
+			ccs_expression_get_parameters(
+				condition, 0, NULL, &count),
+			errmem);
+		if (count == 0)
+			continue;
+		ccs_parameter_t *parents       = NULL;
+		size_t          *parents_index = NULL;
+		intptr_t         oldmem        = mem;
+		mem                            = (intptr_t)realloc(
+                        (void *)oldmem,
+                        count * (sizeof(ccs_parameter_t) + sizeof(size_t)));
+		if (!mem) {
+			mem = oldmem;
+			CCS_RAISE_ERR_GOTO(
+				err, CCS_RESULT_ERROR_OUT_OF_MEMORY, errmem,
+				"Not enough memory to reallocate array");
+		}
+		parents = (ccs_parameter_t *)mem;
+		parents_index =
+			(size_t *)(mem + count * sizeof(ccs_parameter_t));
+		CCS_VALIDATE_ERR_GOTO(
+			err,
+			ccs_expression_get_parameters(
+				condition, count, parents, NULL),
+			errmem);
+		CCS_VALIDATE_ERR_GOTO(
+			err,
+			ccs_configuration_space_get_parameter_indexes(
+				configuration_space, count, parents,
+				parents_index),
+			errmem);
+		for (size_t i = 0; i < count; i++) {
+			utarray_push_back(pparents[index], parents_index + i);
+			utarray_push_back(pchildren[parents_index[i]], &index);
+		}
+	}
+	for (size_t index = 0; index < num_parameters; index++) {
+		_uniq_size_t_array(pparents[index]);
+		_uniq_size_t_array(pchildren[index]);
+	}
+errmem:
+	if (mem)
+		free((void *)mem);
+	return err;
+}
+#undef utarray_oom
+#define utarray_oom()                                                          \
+	{                                                                      \
+		exit(-1);                                                      \
+	}
+
+static ccs_result_t
+_generate_constraints(ccs_configuration_space_t configuration_space)
+{
+	CCS_VALIDATE(_recompute_graph(configuration_space));
+	CCS_VALIDATE(_topological_sort(configuration_space));
+	return CCS_RESULT_SUCCESS;
+}
+
+static inline ccs_result_t
+_ccs_configuration_space_set_condition(
+	ccs_configuration_space_t configuration_space,
+	size_t                    parameter_index,
+	ccs_expression_t          expression)
+{
+	CCS_VALIDATE(ccs_expression_check_context(
+		expression, (ccs_context_t)configuration_space));
+	CCS_VALIDATE(ccs_retain_object(expression));
+	configuration_space->data->conditions[parameter_index] = expression;
+	return CCS_RESULT_SUCCESS;
+}
+
+static ccs_result_t
+_ccs_configuration_space_set_conditions(
+	ccs_configuration_space_t configuration_space,
+	ccs_expression_t         *conditions)
+{
+	for (size_t i = 0; i < configuration_space->data->num_parameters; i++) {
+		if (conditions[i])
+			CCS_VALIDATE(_ccs_configuration_space_set_condition(
+				configuration_space, i, conditions[i]));
+	}
+	CCS_VALIDATE(_generate_constraints(configuration_space));
+	return CCS_RESULT_SUCCESS;
+}
+
 #undef utarray_oom
 #define utarray_oom()                                                          \
 	{                                                                      \
@@ -326,6 +520,7 @@ ccs_create_configuration_space(
 	const char                *name,
 	size_t                     num_parameters,
 	ccs_parameter_t           *parameters,
+	ccs_expression_t          *conditions,
 	size_t                     num_forbidden_clauses,
 	ccs_expression_t          *forbidden_clauses,
 	ccs_configuration_space_t *configuration_space_ret)
@@ -335,6 +530,12 @@ ccs_create_configuration_space(
 	CCS_CHECK_ARY(num_parameters, parameters);
 	for (size_t i = 0; i < num_parameters; i++)
 		CCS_CHECK_OBJ(parameters[i], CCS_OBJECT_TYPE_PARAMETER);
+	if (conditions)
+		for (size_t i = 0; i < num_parameters; i++)
+			if (conditions[i])
+				CCS_CHECK_OBJ(
+					conditions[i],
+					CCS_OBJECT_TYPE_EXPRESSION);
 	CCS_CHECK_ARY(num_forbidden_clauses, forbidden_clauses);
 	for (size_t i = 0; i < num_forbidden_clauses; i++)
 		CCS_CHECK_OBJ(forbidden_clauses[i], CCS_OBJECT_TYPE_EXPRESSION);
@@ -382,7 +583,6 @@ ccs_create_configuration_space(
 	config_space->data->num_parameters        = num_parameters;
 	config_space->data->num_forbidden_clauses = num_forbidden_clauses;
 	config_space->data->rng                   = rng;
-	config_space->data->graph_ok              = CCS_TRUE;
 	strcpy((char *)(config_space->data->name), name);
 	CCS_VALIDATE_ERR_GOTO(
 		err,
@@ -404,6 +604,12 @@ ccs_create_configuration_space(
 		utarray_new(config_space->data->parents[i], &_size_t_icd);
 		utarray_new(config_space->data->children[i], &_size_t_icd);
 	}
+	if (conditions)
+		CCS_VALIDATE_ERR_GOTO(
+			err,
+			_ccs_configuration_space_set_conditions(
+				config_space, conditions),
+			errparams);
 	*configuration_space_ret = config_space;
 	return CCS_RESULT_SUCCESS;
 errparams:
@@ -586,9 +792,6 @@ ccs_configuration_space_get_default_configuration(
 {
 	CCS_CHECK_OBJ(configuration_space, CCS_OBJECT_TYPE_CONFIGURATION_SPACE);
 	CCS_CHECK_PTR(configuration_ret);
-	CCS_REFUTE(
-		!configuration_space->data->graph_ok,
-		CCS_RESULT_ERROR_INVALID_GRAPH);
 	ccs_result_t        err;
 	ccs_configuration_t config;
 	CCS_VALIDATE(_ccs_create_configuration(
@@ -691,20 +894,10 @@ ccs_configuration_space_check_configuration(
 	CCS_REFUTE(
 		configuration->data->configuration_space != configuration_space,
 		CCS_RESULT_ERROR_INVALID_CONFIGURATION);
-	ccs_result_t err = CCS_RESULT_SUCCESS;
-	CCS_OBJ_RDLOCK(configuration_space);
-	CCS_REFUTE_ERR_GOTO(
-		err, !configuration_space->data->graph_ok,
-		CCS_RESULT_ERROR_INVALID_GRAPH, end);
-	CCS_VALIDATE_ERR_GOTO(
-		err,
-		_check_configuration(
-			configuration_space, configuration->data->num_values,
-			configuration->data->values, is_valid_ret),
-		end);
-end:
-	CCS_OBJ_UNLOCK(configuration_space);
-	return err;
+	CCS_VALIDATE(_check_configuration(
+		configuration_space, configuration->data->num_values,
+		configuration->data->values, is_valid_ret));
+	return CCS_RESULT_SUCCESS;
 }
 
 ccs_result_t
@@ -716,19 +909,9 @@ ccs_configuration_space_check_configuration_values(
 {
 	CCS_CHECK_OBJ(configuration_space, CCS_OBJECT_TYPE_CONFIGURATION_SPACE);
 	CCS_CHECK_ARY(num_values, values);
-	ccs_result_t err = CCS_RESULT_SUCCESS;
-	CCS_OBJ_RDLOCK(configuration_space);
-	CCS_REFUTE_ERR_GOTO(
-		err, !configuration_space->data->graph_ok,
-		CCS_RESULT_ERROR_INVALID_GRAPH, end);
-	CCS_VALIDATE_ERR_GOTO(
-		err,
-		_check_configuration(
-			configuration_space, num_values, values, is_valid_ret),
-		end);
-end:
-	CCS_OBJ_UNLOCK(configuration_space);
-	return err;
+	CCS_VALIDATE(_check_configuration(
+		configuration_space, num_values, values, is_valid_ret));
+	return CCS_RESULT_SUCCESS;
 }
 
 static ccs_result_t
@@ -811,14 +994,11 @@ ccs_configuration_space_sample(
 	ccs_bool_t          found;
 	int                 counter = 0;
 	ccs_configuration_t config;
-	CCS_OBJ_WRLOCK(configuration_space);
-	CCS_REFUTE_ERR_GOTO(
-		err, !configuration_space->data->graph_ok,
-		CCS_RESULT_ERROR_INVALID_GRAPH, errgraph);
+	CCS_OBJ_RDLOCK(configuration_space);
 	CCS_VALIDATE_ERR_GOTO(
 		err,
 		_ccs_create_configuration(configuration_space, 0, NULL, &config),
-		errgraph);
+		errlock);
 	do {
 		CCS_VALIDATE_ERR_GOTO(
 			err,
@@ -834,7 +1014,7 @@ ccs_configuration_space_sample(
 	return CCS_RESULT_SUCCESS;
 errc:
 	ccs_release_object(config);
-errgraph:
+errlock:
 	CCS_OBJ_UNLOCK(configuration_space);
 	return err;
 }
@@ -864,9 +1044,6 @@ ccs_configuration_space_samples(
 	ccs_bool_t          found;
 	ccs_configuration_t config = NULL;
 	CCS_OBJ_RDLOCK(configuration_space);
-	CCS_REFUTE_ERR_GOTO(
-		err, !configuration_space->data->graph_ok,
-		CCS_RESULT_ERROR_INVALID_GRAPH, errgraph);
 
 	for (size_t i = 0; i < num_configurations; i++)
 		configurations[i] = NULL;
@@ -877,7 +1054,7 @@ ccs_configuration_space_samples(
 				err,
 				_ccs_create_configuration(
 					configuration_space, 0, NULL, &config),
-				errgraph);
+				errlock);
 		CCS_VALIDATE_ERR_GOTO(
 			err,
 			_sample(configuration_space, distribution_space, config,
@@ -889,224 +1066,14 @@ ccs_configuration_space_samples(
 			config                  = NULL;
 		}
 	}
-	CCS_REFUTE(
-		count < num_configurations,
-		CCS_RESULT_ERROR_SAMPLING_UNSUCCESSFUL);
+	CCS_REFUTE_ERR_GOTO(
+		err, count < num_configurations,
+		CCS_RESULT_ERROR_SAMPLING_UNSUCCESSFUL, errc);
 	CCS_OBJ_UNLOCK(configuration_space);
 	return CCS_RESULT_SUCCESS;
 errc:
 	ccs_release_object(config);
-errgraph:
-	CCS_OBJ_UNLOCK(configuration_space);
-	return err;
-}
-
-static int
-_size_t_sort(const void *a, const void *b)
-{
-	const size_t sa = *(const size_t *)a;
-	const size_t sb = *(const size_t *)b;
-	return sa < sb ? -1 : sa > sb ? 1 : 0;
-}
-
-static void
-_uniq_size_t_array(UT_array *array)
-{
-	size_t count = utarray_len(array);
-	if (count == 0)
-		return;
-	utarray_sort(array, &_size_t_sort);
-	size_t  real_count = 0;
-	size_t *p          = (size_t *)utarray_front(array);
-	size_t *p2         = p;
-	real_count++;
-	while ((p = (size_t *)utarray_next(array, p))) {
-		if (*p != *p2) {
-			p2  = (size_t *)utarray_next(array, p2);
-			*p2 = *p;
-			real_count++;
-		}
-	}
-	utarray_resize(array, real_count);
-}
-
-struct _parameter_list_s;
-struct _parameter_list_s {
-	size_t                    in_edges;
-	size_t                    index;
-	struct _parameter_list_s *next;
-	struct _parameter_list_s *prev;
-};
-
-#undef utarray_oom
-#define utarray_oom()                                                          \
-	{                                                                      \
-		free((void *)list);                                            \
-		CCS_RAISE(                                                     \
-			CCS_RESULT_ERROR_OUT_OF_MEMORY,                        \
-			"Not enough memory to allocate array");                \
-	}
-static ccs_result_t
-_topological_sort(ccs_configuration_space_t configuration_space)
-{
-	_ccs_configuration_space_data_t *data = configuration_space->data;
-	size_t                           num_parameters = data->num_parameters;
-	size_t                          *indexes        = data->sorted_indexes;
-	UT_array                       **parents        = data->parents;
-	UT_array                       **children       = data->children;
-
-	for (size_t i = 0; i < num_parameters; i++)
-		indexes[i] = 0;
-
-	struct _parameter_list_s *list = (struct _parameter_list_s *)calloc(
-		1, sizeof(struct _parameter_list_s) * num_parameters);
-	CCS_REFUTE(!list, CCS_RESULT_ERROR_OUT_OF_MEMORY);
-	struct _parameter_list_s *queue = NULL;
-	for (size_t index = 0; index < num_parameters; index++) {
-		size_t in_edges      = utarray_len(parents[index]);
-		list[index].in_edges = in_edges;
-		list[index].index    = index;
-		if (in_edges == 0)
-			DL_APPEND(queue, list + index);
-	}
-	size_t processed = 0;
-	while (queue) {
-		struct _parameter_list_s *e = queue;
-		DL_DELETE(queue, queue);
-		size_t *child = NULL;
-		while ((child = (size_t *)utarray_next(
-				children[e->index], child))) {
-			list[*child].in_edges--;
-			if (list[*child].in_edges == 0) {
-				DL_APPEND(queue, list + *child);
-			}
-		}
-		indexes[processed++] = e->index;
-	};
-	free(list);
-	CCS_REFUTE(processed < num_parameters, CCS_RESULT_ERROR_INVALID_GRAPH);
-	return CCS_RESULT_SUCCESS;
-}
-
-#undef utarray_oom
-#define utarray_oom()                                                          \
-	{                                                                      \
-		CCS_RAISE_ERR_GOTO(                                            \
-			err, CCS_RESULT_ERROR_OUT_OF_MEMORY, errmem,           \
-			"Not enough memory to allocate array");                \
-	}
-static ccs_result_t
-_recompute_graph(ccs_configuration_space_t configuration_space)
-{
-	_ccs_configuration_space_data_t *data = configuration_space->data;
-	size_t                           num_parameters = data->num_parameters;
-	UT_array                       **pparents       = data->parents;
-	UT_array                       **pchildren      = data->children;
-	ccs_expression_t                *conditions     = data->conditions;
-
-	for (size_t index = 0; index < num_parameters; index++) {
-		utarray_clear(pparents[index]);
-		utarray_clear(pchildren[index]);
-	}
-	intptr_t     mem = 0;
-	ccs_result_t err = CCS_RESULT_SUCCESS;
-	for (size_t index = 0; index < num_parameters; index++) {
-		ccs_expression_t condition = conditions[index];
-		if (!condition)
-			continue;
-		size_t count;
-		CCS_VALIDATE_ERR_GOTO(
-			err,
-			ccs_expression_get_parameters(
-				condition, 0, NULL, &count),
-			errmem);
-		if (count == 0)
-			continue;
-		ccs_parameter_t *parents       = NULL;
-		size_t          *parents_index = NULL;
-		intptr_t         oldmem        = mem;
-		mem                            = (intptr_t)realloc(
-                        (void *)oldmem,
-                        count * (sizeof(ccs_parameter_t) + sizeof(size_t)));
-		if (!mem) {
-			mem = oldmem;
-			CCS_RAISE_ERR_GOTO(
-				err, CCS_RESULT_ERROR_OUT_OF_MEMORY, errmem,
-				"Not enough memory to reallocate array");
-		}
-		parents = (ccs_parameter_t *)mem;
-		parents_index =
-			(size_t *)(mem + count * sizeof(ccs_parameter_t));
-		CCS_VALIDATE_ERR_GOTO(
-			err,
-			ccs_expression_get_parameters(
-				condition, count, parents, NULL),
-			errmem);
-		CCS_VALIDATE_ERR_GOTO(
-			err,
-			ccs_configuration_space_get_parameter_indexes(
-				configuration_space, count, parents,
-				parents_index),
-			errmem);
-		for (size_t i = 0; i < count; i++) {
-			utarray_push_back(pparents[index], parents_index + i);
-			utarray_push_back(pchildren[parents_index[i]], &index);
-		}
-	}
-	for (size_t index = 0; index < num_parameters; index++) {
-		_uniq_size_t_array(pparents[index]);
-		_uniq_size_t_array(pchildren[index]);
-	}
-errmem:
-	if (mem)
-		free((void *)mem);
-	return err;
-}
-#undef utarray_oom
-#define utarray_oom()                                                          \
-	{                                                                      \
-		exit(-1);                                                      \
-	}
-
-static ccs_result_t
-_generate_constraints(ccs_configuration_space_t configuration_space)
-{
-	CCS_VALIDATE(_recompute_graph(configuration_space));
-	CCS_VALIDATE(_topological_sort(configuration_space));
-	configuration_space->data->graph_ok = CCS_TRUE;
-	return CCS_RESULT_SUCCESS;
-}
-
-ccs_result_t
-ccs_configuration_space_set_condition(
-	ccs_configuration_space_t configuration_space,
-	size_t                    parameter_index,
-	ccs_expression_t          expression)
-{
-	CCS_CHECK_OBJ(configuration_space, CCS_OBJECT_TYPE_CONFIGURATION_SPACE);
-	CCS_CHECK_OBJ(expression, CCS_OBJECT_TYPE_EXPRESSION);
-	CCS_REFUTE(
-		parameter_index >= configuration_space->data->num_parameters,
-		CCS_RESULT_ERROR_OUT_OF_BOUNDS);
-	CCS_OBJ_WRLOCK(configuration_space);
-	ccs_result_t      err        = CCS_RESULT_SUCCESS;
-	ccs_expression_t *conditions = configuration_space->data->conditions;
-	CCS_REFUTE_ERR_GOTO(
-		err, conditions[parameter_index],
-		CCS_RESULT_ERROR_INVALID_PARAMETER, errwrapper);
-	CCS_VALIDATE_ERR_GOTO(err, ccs_retain_object(expression), errwrapper);
-	conditions[parameter_index]         = expression;
-	// Recompute the whole graph for now
-	configuration_space->data->graph_ok = CCS_FALSE;
-	CCS_VALIDATE_ERR_GOTO(
-		err, _generate_constraints(configuration_space), erre);
-	CCS_OBJ_UNLOCK(configuration_space);
-	return CCS_RESULT_SUCCESS;
-erre:
-	ccs_release_object(expression);
-	conditions[parameter_index] = NULL;
-	_generate_constraints(configuration_space);
-errwrapper:
+errlock:
 	CCS_OBJ_UNLOCK(configuration_space);
 	return err;
 }
@@ -1122,12 +1089,9 @@ ccs_configuration_space_get_condition(
 	CCS_REFUTE(
 		parameter_index >= configuration_space->data->num_parameters,
 		CCS_RESULT_ERROR_OUT_OF_BOUNDS);
-	ccs_result_t err = CCS_RESULT_SUCCESS;
-	CCS_OBJ_RDLOCK(configuration_space);
 	*expression_ret =
 		configuration_space->data->conditions[parameter_index];
-	CCS_OBJ_UNLOCK(configuration_space);
-	return err;
+	return CCS_RESULT_SUCCESS;
 }
 
 ccs_result_t
@@ -1148,10 +1112,8 @@ ccs_configuration_space_get_conditions(
 		CCS_REFUTE(
 			num_expressions < num_parameters,
 			CCS_RESULT_ERROR_INVALID_VALUE);
-		CCS_OBJ_RDLOCK(configuration_space);
 		for (size_t i = 0; i < num_parameters; i++)
 			expressions[i] = conditions[i];
-		CCS_OBJ_UNLOCK(configuration_space);
 		for (size_t i = num_parameters; i < num_expressions; i++)
 			expressions[i] = NULL;
 	}

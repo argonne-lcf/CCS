@@ -41,7 +41,7 @@ create_problem(ccs_configuration_space_t *cs, ccs_objective_space_t *os)
 	parameters[1] = parameter2 = create_numerical("y", -5.0, 5.0);
 
 	err                        = ccs_create_configuration_space(
-                "2dplane", 2, parameters, 0, NULL, &cspace);
+                "2dplane", 2, parameters, NULL, 0, NULL, &cspace);
 	assert(err == CCS_RESULT_SUCCESS);
 
 	parameter3 = create_numerical("z", -CCS_INFINITY, CCS_INFINITY);
@@ -118,7 +118,7 @@ test_tuner(ccs_tuner_t tuner, ccs_objective_space_t ospace)
 }
 
 void
-test()
+test(void)
 {
 	ccs_tuner_t               t;
 	ccs_configuration_space_t cs;
@@ -167,7 +167,7 @@ test()
 }
 
 int
-main()
+main(void)
 {
 	ccs_init();
 	test();

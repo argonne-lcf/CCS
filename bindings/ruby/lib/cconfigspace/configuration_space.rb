@@ -1,8 +1,7 @@
 module CCS
-  attach_function :ccs_create_configuration_space, [:string, :size_t, :pointer, :size_t, :pointer, :pointer], :ccs_result_t
+  attach_function :ccs_create_configuration_space, [:string, :size_t, :pointer, :pointer, :size_t, :pointer, :pointer], :ccs_result_t
   attach_function :ccs_configuration_space_set_rng, [:ccs_configuration_space_t, :ccs_rng_t], :ccs_result_t
   attach_function :ccs_configuration_space_get_rng, [:ccs_configuration_space_t, :pointer], :ccs_result_t
-  attach_function :ccs_configuration_space_set_condition, [:ccs_configuration_space_t, :size_t, :ccs_expression_t], :ccs_result_t
   attach_function :ccs_configuration_space_get_condition, [:ccs_configuration_space_t, :size_t, :pointer], :ccs_result_t
   attach_function :ccs_configuration_space_get_conditions, [:ccs_configuration_space_t, :size_t, :pointer, :pointer], :ccs_result_t
   attach_function :ccs_configuration_space_get_forbidden_clause, [:ccs_configuration_space_t, :size_t, :pointer], :ccs_result_t
@@ -16,7 +15,7 @@ module CCS
   class ConfigurationSpace < Context
 
     def initialize(handle = nil, retain: false, auto_release: true,
-                   name: "", parameters: nil, forbidden_clauses: nil)
+                   name: "", parameters: nil, conditions: nil, forbidden_clauses: nil)
       if handle
         super(handle, retain: retain, auto_release: auto_release)
       else
@@ -24,18 +23,43 @@ module CCS
         p_parameters = MemoryPointer::new(:ccs_parameter_t, count)
         p_parameters.write_array_of_pointer(parameters.collect(&:handle))
         ptr = MemoryPointer::new(:ccs_configuration_space_t)
+
         if forbidden_clauses
           ctx = parameters.map { |p| [p.name, p] }.to_h
           p = ExpressionParser::new(ctx)
           forbidden_clauses = forbidden_clauses.collect { |e| e.kind_of?(String) ? p.parse(e) : e }
           fccount = forbidden_clauses.size
-          fcptr = MemoryPointer::new(:ccs_expression_t, count)
+          fcptr = MemoryPointer::new(:ccs_expression_t, fccount)
           fcptr.write_array_of_pointer(forbidden_clauses.collect(&:handle))
         else
           fccount = 0
           fcptr = nil
         end
-        CCS.error_check CCS.ccs_create_configuration_space(name, count, p_parameters, fccount, fcptr, ptr)
+
+        if conditions
+          ctx = parameters.map { |p| [p.name, p] }.to_h
+          indexdict = parameters.each_with_index.to_h
+          p = ExpressionParser::new(ctx)
+          conditions = conditions.transform_values { |v| v.kind_of?(String) ? p.parse(v) : v }
+          cond_handles = [0]*count
+          conditions.each do |k, v|
+            index = case k
+              when Parameter
+                indexdict[k]
+              when String, Symbol
+                indexdict[ctx[k]]
+              else
+                k
+              end
+              cond_handles[index] = v.handle
+          end
+          cptr = MemoryPointer::new(:ccs_expression_t, count)
+          cptr.write_array_of_pointer(cond_handles)
+        else
+          cptr = nil
+        end
+
+        CCS.error_check CCS.ccs_create_configuration_space(name, count, p_parameters, cptr, fccount, fcptr, ptr)
         super(ptr.read_ccs_configuration_space_t, retain:false)
       end
     end
@@ -53,20 +77,6 @@ module CCS
     def rng=(r)
       CCS.error_check CCS.ccs_configuration_space_set_rng(@handle, r)
       r
-    end
-
-    def set_condition(parameter, expression)
-      if expression.kind_of? String
-        expression = ExpressionParser::new(self).parse(expression)
-      end
-      case parameter
-      when Parameter
-        parameter = parameter_index(parameter);
-      when String, Symbol
-        parameter = parameter_index_by_name(parameter);
-      end
-      CCS.error_check CCS.ccs_configuration_space_set_condition(@handle, parameter, expression)
-      self
     end
 
     def condition(parameter)
