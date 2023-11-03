@@ -1,12 +1,10 @@
 module CCS
-  attach_function :ccs_create_configuration_space, [:string, :size_t, :pointer, :pointer], :ccs_result_t
+  attach_function :ccs_create_configuration_space, [:string, :size_t, :pointer, :size_t, :pointer, :pointer], :ccs_result_t
   attach_function :ccs_configuration_space_set_rng, [:ccs_configuration_space_t, :ccs_rng_t], :ccs_result_t
   attach_function :ccs_configuration_space_get_rng, [:ccs_configuration_space_t, :pointer], :ccs_result_t
   attach_function :ccs_configuration_space_set_condition, [:ccs_configuration_space_t, :size_t, :ccs_expression_t], :ccs_result_t
   attach_function :ccs_configuration_space_get_condition, [:ccs_configuration_space_t, :size_t, :pointer], :ccs_result_t
   attach_function :ccs_configuration_space_get_conditions, [:ccs_configuration_space_t, :size_t, :pointer, :pointer], :ccs_result_t
-  attach_function :ccs_configuration_space_add_forbidden_clause, [:ccs_configuration_space_t, :ccs_expression_t], :ccs_result_t
-  attach_function :ccs_configuration_space_add_forbidden_clauses, [:ccs_configuration_space_t, :size_t, :ccs_expression_t], :ccs_result_t
   attach_function :ccs_configuration_space_get_forbidden_clause, [:ccs_configuration_space_t, :size_t, :pointer], :ccs_result_t
   attach_function :ccs_configuration_space_get_forbidden_clauses, [:ccs_configuration_space_t, :size_t, :pointer, :pointer], :ccs_result_t
   attach_function :ccs_configuration_space_check_configuration, [:ccs_configuration_space_t, :ccs_configuration_t, :pointer], :ccs_result_t
@@ -18,7 +16,7 @@ module CCS
   class ConfigurationSpace < Context
 
     def initialize(handle = nil, retain: false, auto_release: true,
-                   name: "", parameters: nil)
+                   name: "", parameters: nil, forbidden_clauses: nil)
       if handle
         super(handle, retain: retain, auto_release: auto_release)
       else
@@ -26,7 +24,18 @@ module CCS
         p_parameters = MemoryPointer::new(:ccs_parameter_t, count)
         p_parameters.write_array_of_pointer(parameters.collect(&:handle))
         ptr = MemoryPointer::new(:ccs_configuration_space_t)
-        CCS.error_check CCS.ccs_create_configuration_space(name, count, p_parameters, ptr)
+        if forbidden_clauses
+          ctx = parameters.map { |p| [p.name, p] }.to_h
+          p = ExpressionParser::new(ctx)
+          forbidden_clauses = forbidden_clauses.collect { |e| e.kind_of?(String) ? p.parse(e) : e }
+          fccount = forbidden_clauses.size
+          fcptr = MemoryPointer::new(:ccs_expression_t, count)
+          fcptr.write_array_of_pointer(forbidden_clauses.collect(&:handle))
+        else
+          fccount = 0
+          fcptr = nil
+        end
+        CCS.error_check CCS.ccs_create_configuration_space(name, count, p_parameters, fccount, fcptr, ptr)
         super(ptr.read_ccs_configuration_space_t, retain:false)
       end
     end
@@ -94,30 +103,6 @@ module CCS
       hps.each_with_index.select { |h, i| !conds[i] }.collect { |h, i| h }.to_a
     end
 
-    def add_forbidden_clause(expression)
-      if expression.kind_of? String
-        expression = ExpressionParser::new(self).parse(expression)
-      end
-      CCS.error_check CCS.ccs_configuration_space_add_forbidden_clause(@handle, expression)
-      self
-    end
-
-    def add_forbidden_clauses(expressions)
-      p = ExpressionParser::new(self)
-      expressions = expressions.collect { |e|
-        if e.kind_of? String
-          e = p.parse(e)
-        else
-          e
-        end
-      }
-      count = expressions.size
-      ptr = MemoryPointer::new(:ccs_expression_t, count)
-      ptr.write_array_of_pointer(expressions.collect(&:handle))
-      CCS.error_check CCS.ccs_configuration_space_add_forbidden_clauses(@handle, count, ptr)
-      self
-    end
-
     def forbidden_clause(index)
       ptr = MemoryPointer::new(:ccs_expression_t)
       CCS.error_check CCS.ccs_configuration_space_get_forbidden_clause(@handle, index, ptr)
@@ -125,16 +110,20 @@ module CCS
     end
 
     def num_forbidden_clauses
-      ptr = MemoryPointer::new(:size_t)
-      CCS.error_check CCS.ccs_configuration_space_get_forbidden_clauses(@handle, 0, nil, ptr)
-      ptr.read_size_t
+      @num_forbidden_clauses ||= begin
+        ptr = MemoryPointer::new(:size_t)
+        CCS.error_check CCS.ccs_configuration_space_get_forbidden_clauses(@handle, 0, nil, ptr)
+        ptr.read_size_t
+      end
     end
 
     def forbidden_clauses
-      count = num_forbidden_clauses
-      ptr = MemoryPointer::new(:ccs_expression_t, count)
-      CCS.error_check CCS.ccs_configuration_space_get_forbidden_clauses(@handle, count, ptr, nil)
-      count.times.collect { |i| Expression::from_handle(ptr[i].read_pointer) }
+      @forbidden_clauses ||= begin
+        count = num_forbidden_clauses
+        ptr = MemoryPointer::new(:ccs_expression_t, count)
+        CCS.error_check CCS.ccs_configuration_space_get_forbidden_clauses(@handle, count, ptr, nil)
+        count.times.collect { |i| Expression::from_handle(ptr[i].read_pointer) }.freeze
+      end
     end
 
     def check(configuration)

@@ -17,7 +17,7 @@ class TestConfigurationSpace(unittest.TestCase):
     self.assertIsInstance( cs.rng, ccs.Rng )
     self.assertEqual( 3, cs.num_parameters )
     self.assertEqual( [None, None, None], cs.conditions )
-    self.assertEqual( [], cs.forbidden_clauses )
+    self.assertEqual( (), cs.forbidden_clauses )
     self.assertEqual( h1, cs.parameter(0) )
     self.assertEqual( h2, cs.parameter(1) )
     self.assertEqual( h3, cs.parameter(2) )
@@ -60,13 +60,12 @@ class TestConfigurationSpace(unittest.TestCase):
     h1 = ccs.NumericalParameter.Float(lower = -1.0, upper = 1.0, default = 0.0)
     h2 = ccs.NumericalParameter.Float(lower = -1.0, upper = 1.0)
     h3 = ccs.NumericalParameter.Float(lower = -1.0, upper = 1.0)
-    cs = ccs.ConfigurationSpace(name = "space", parameters = [h1, h2, h3])
+    f1 = ccs.Expression.Less(left = h1, right = 0.0)
+    cs = ccs.ConfigurationSpace(name = "space", parameters = [h1, h2, h3], forbidden_clauses = [f1])
     e1 = ccs.Expression.Less(left = h2, right = 0.0)
     cs.set_condition(h3, e1)
     e2 = ccs.Expression.Less(left = h3, right = 0.0)
     cs.set_condition(h1, e2)
-    e3 = ccs.Expression.Less(left = h1, right = 0.0)
-    cs.add_forbidden_clause(e3)
     conditions = cs.conditions
     conditional_parameters = cs.conditional_parameters
     unconditional_parameters = cs.unconditional_parameters
@@ -81,7 +80,7 @@ class TestConfigurationSpace(unittest.TestCase):
     self.assertEqual( h2.handle.value, unconditional_parameters[0].handle.value )
     forbidden_clauses = cs.forbidden_clauses
     self.assertEqual( 1, len(forbidden_clauses) )
-    self.assertEqual( e3.handle.value, forbidden_clauses[0].handle.value )
+    self.assertEqual( f1.handle.value, forbidden_clauses[0].handle.value )
 
   def extract_active_parameters(self, values):
     res = ['p1']
@@ -138,7 +137,15 @@ class TestConfigurationSpace(unittest.TestCase):
       name = 'p9',
       values = ['1', '8', '16'])
 
-    cs = ccs.ConfigurationSpace(name = "omp", parameters = [p1, p2, p3, p4, p5, p6, p7, p8, p9])
+    forbiddena = ccs.ExpressionEqual(left = p1, right = '#pragma omp #P2')
+    forbiddenb = ccs.ExpressionEqual(left = p2, right = ' ')
+    forbidden0 = ccs.Expression.And(left = forbiddena, right = forbiddenb)
+
+    forbiddenc = ccs.Expression.Equal(left = p1, right = '#pragma omp #P3')
+    forbiddend = ccs.Expression.Equal(left = p3, right = ' ')
+    forbidden1 = ccs.Expression.And(left = forbiddenc, right = forbiddend)
+
+    cs = ccs.ConfigurationSpace(name = "omp", parameters = [p1, p2, p3, p4, p5, p6, p7, p8, p9], forbidden_clauses = [forbidden0, forbidden1])
 
     cond0 = ccs.Expression.Equal(left = p1, right = '#pragma omp #P2')
     cond1 = ccs.Expression.Equal(left = p1, right = '#pragma omp target teams distribute #P2')
@@ -164,15 +171,6 @@ class TestConfigurationSpace(unittest.TestCase):
     cs.set_condition(p7, ccs.Expression.Or(left = cond8, right = cond9))
     cs.set_condition(p8, ccs.Expression.Or(left = cond7, right = cond9))
     cs.set_condition(p9, cond10)
-
-    forbiddena = ccs.ExpressionEqual(left = p1, right = '#pragma omp #P2')
-    forbiddenb = ccs.ExpressionEqual(left = p2, right = ' ')
-    forbidden0 = ccs.Expression.And(left = forbiddena, right = forbiddenb)
-
-    forbiddenc = ccs.Expression.Equal(left = p1, right = '#pragma omp #P3')
-    forbiddend = ccs.Expression.Equal(left = p3, right = ' ')
-    forbidden1 = ccs.Expression.And(left = forbiddenc, right = forbiddend)
-    cs.add_forbidden_clauses([forbidden0, forbidden1])
 
     all_params = [ "p{}".format(i) for i in range(1,10) ]
     for i in range(1000):
@@ -234,7 +232,9 @@ class TestConfigurationSpace(unittest.TestCase):
       name = 'p9',
       values = ['1', '8', '16'])
 
-    cs = ccs.ConfigurationSpace(name = "omp", parameters = [p1, p2, p3, p4, p5, p6, p7, p8, p9])
+    cs = ccs.ConfigurationSpace(name = "omp", parameters = [p1, p2, p3, p4, p5, p6, p7, p8, p9],
+                                forbidden_clauses = ["p1 == '#pragma omp #P2' && p2 == ' '",
+                                                     "p1 == '#pragma omp #P3' && p3 == ' '"])
 
     cs.set_condition(p2, "p1 # ['#pragma omp #P2', '#pragma omp target teams distribute #P2']")
     cs.set_condition(p4, "p1 == '#pragma omp target teams distribute #P4'")
@@ -244,9 +244,6 @@ class TestConfigurationSpace(unittest.TestCase):
     cs.set_condition(p7, "p5 # ['schedule(#P7)', 'schedule(#P7,#P8)']")
     cs.set_condition(p8, "p4 == 'dist_schedule(static, #P8)' || p5 == 'schedule(#P7,#P8)'")
     cs.set_condition(p9, "p6 == 'numthreads(#P9)'")
-
-    cs.add_forbidden_clauses(["p1 == '#pragma omp #P2' && p2 == ' '",
-                              "p1 == '#pragma omp #P3' && p3 == ' '"])
 
     all_params = [ "p{}".format(i) for i in range(1,10) ]
     for i in range(1000):

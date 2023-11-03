@@ -7,27 +7,21 @@ static ccs_result_t
 _ccs_objective_space_del(ccs_object_t object)
 {
 	ccs_objective_space_t objective_space = (ccs_objective_space_t)object;
-	UT_array             *array       = objective_space->data->parameters;
-	_ccs_parameter_wrapper_t *wrapper = NULL;
-	while ((wrapper = (_ccs_parameter_wrapper_t *)utarray_next(
-			array, wrapper))) {
-		ccs_release_object(wrapper->parameter);
-	}
-	array                 = objective_space->data->objectives;
-	_ccs_objective_t *obj = NULL;
-	while ((obj = (_ccs_objective_t *)utarray_next(array, obj))) {
-		ccs_release_object(obj->expression);
-	}
+	size_t           num_parameters = objective_space->data->num_parameters;
+	ccs_parameter_t *parameters     = objective_space->data->parameters;
+	size_t           num_objectives = objective_space->data->num_objectives;
+	_ccs_objective_t *objectives    = objective_space->data->objectives;
+
+	for (size_t i = 0; i < num_parameters; i++)
+		if (parameters[i])
+			ccs_release_object(parameters[i]);
+
+	for (size_t i = 0; i < num_objectives; i++)
+		if (objectives[i].expression)
+			ccs_release_object(objectives[i].expression);
+
 	HASH_CLEAR(hh_name, objective_space->data->name_hash);
-	_ccs_parameter_index_hash_t *elem, *tmpelem;
-	HASH_ITER(hh_handle, objective_space->data->handle_hash, elem, tmpelem)
-	{
-		HASH_DELETE(
-			hh_handle, objective_space->data->handle_hash, elem);
-		free(elem);
-	}
-	utarray_free(objective_space->data->parameters);
-	utarray_free(objective_space->data->objectives);
+	HASH_CLEAR(hh_handle, objective_space->data->handle_hash);
 	return CCS_RESULT_SUCCESS;
 }
 
@@ -37,32 +31,28 @@ _ccs_serialize_bin_size_ccs_objective_space_data(
 	size_t                          *cum_size,
 	_ccs_object_serialize_options_t *opts)
 {
-	_ccs_parameter_wrapper_t *wrapper;
-	_ccs_objective_t         *objective;
+	size_t            num_parameters = data->num_parameters;
+	ccs_parameter_t  *parameters     = data->parameters;
+	size_t            num_objectives = data->num_objectives;
+	_ccs_objective_t *objectives     = data->objectives;
 
 	*cum_size += _ccs_serialize_bin_size_string(data->name);
-	*cum_size +=
-		_ccs_serialize_bin_size_size(utarray_len(data->parameters));
-	*cum_size +=
-		_ccs_serialize_bin_size_size(utarray_len(data->objectives));
+	*cum_size += _ccs_serialize_bin_size_size(num_parameters);
+	*cum_size += _ccs_serialize_bin_size_size(num_objectives);
 
 	/* parameters */
-	wrapper = NULL;
-	while ((wrapper = (_ccs_parameter_wrapper_t *)utarray_next(
-			data->parameters, wrapper)))
-		CCS_VALIDATE(wrapper->parameter->obj.ops->serialize_size(
-			wrapper->parameter, CCS_SERIALIZE_FORMAT_BINARY,
-			cum_size, opts));
+	for (size_t i = 0; i < num_parameters; i++)
+		CCS_VALIDATE(parameters[i]->obj.ops->serialize_size(
+			parameters[i], CCS_SERIALIZE_FORMAT_BINARY, cum_size,
+			opts));
 
 	/* objectives */
-	objective = NULL;
-	while ((objective = (_ccs_objective_t *)utarray_next(
-			data->objectives, objective))) {
-		CCS_VALIDATE(objective->expression->obj.ops->serialize_size(
-			objective->expression, CCS_SERIALIZE_FORMAT_BINARY,
+	for (size_t i = 0; i < num_objectives; i++) {
+		CCS_VALIDATE(objectives[i].expression->obj.ops->serialize_size(
+			objectives[i].expression, CCS_SERIALIZE_FORMAT_BINARY,
 			cum_size, opts));
 		*cum_size += _ccs_serialize_bin_size_ccs_objective_type(
-			objective->type);
+			objectives[i].type);
 	}
 
 	return CCS_RESULT_SUCCESS;
@@ -75,33 +65,31 @@ _ccs_serialize_bin_ccs_objective_space_data(
 	char                           **buffer,
 	_ccs_object_serialize_options_t *opts)
 {
-	_ccs_parameter_wrapper_t *wrapper;
-	_ccs_objective_t         *objective;
+	size_t            num_parameters = data->num_parameters;
+	ccs_parameter_t  *parameters     = data->parameters;
+	size_t            num_objectives = data->num_objectives;
+	_ccs_objective_t *objectives     = data->objectives;
 
 	CCS_VALIDATE(
 		_ccs_serialize_bin_string(data->name, buffer_size, buffer));
-	CCS_VALIDATE(_ccs_serialize_bin_size(
-		utarray_len(data->parameters), buffer_size, buffer));
-	CCS_VALIDATE(_ccs_serialize_bin_size(
-		utarray_len(data->objectives), buffer_size, buffer));
+	CCS_VALIDATE(
+		_ccs_serialize_bin_size(num_parameters, buffer_size, buffer));
+	CCS_VALIDATE(
+		_ccs_serialize_bin_size(num_objectives, buffer_size, buffer));
 
 	/* parameters */
-	wrapper = NULL;
-	while ((wrapper = (_ccs_parameter_wrapper_t *)utarray_next(
-			data->parameters, wrapper)))
-		CCS_VALIDATE(wrapper->parameter->obj.ops->serialize(
-			wrapper->parameter, CCS_SERIALIZE_FORMAT_BINARY,
-			buffer_size, buffer, opts));
+	for (size_t i = 0; i < num_parameters; i++)
+		CCS_VALIDATE(parameters[i]->obj.ops->serialize(
+			parameters[i], CCS_SERIALIZE_FORMAT_BINARY, buffer_size,
+			buffer, opts));
 
 	/* objectives */
-	objective = NULL;
-	while ((objective = (_ccs_objective_t *)utarray_next(
-			data->objectives, objective))) {
-		CCS_VALIDATE(objective->expression->obj.ops->serialize(
-			objective->expression, CCS_SERIALIZE_FORMAT_BINARY,
+	for (size_t i = 0; i < num_objectives; i++) {
+		CCS_VALIDATE(objectives[i].expression->obj.ops->serialize(
+			objectives[i].expression, CCS_SERIALIZE_FORMAT_BINARY,
 			buffer_size, buffer, opts));
 		CCS_VALIDATE(_ccs_serialize_bin_ccs_objective_type(
-			objective->type, buffer_size, buffer));
+			objectives[i].type, buffer_size, buffer));
 	}
 
 	return CCS_RESULT_SUCCESS;
@@ -189,90 +177,6 @@ static _ccs_objective_space_ops_t _objective_space_ops = {
 	{{&_ccs_objective_space_del, &_ccs_objective_space_serialize_size,
 	  &_ccs_objective_space_serialize}}};
 
-static const UT_icd _parameter_wrapper2_icd = {
-	sizeof(_ccs_parameter_wrapper_t),
-	NULL,
-	NULL,
-	NULL,
-};
-
-static const UT_icd _objectives_icd = {
-	sizeof(_ccs_objective_t),
-	NULL,
-	NULL,
-	NULL,
-};
-
-#undef utarray_oom
-#define utarray_oom()                                                          \
-	{                                                                      \
-		CCS_RAISE_ERR_GOTO(                                            \
-			err, CCS_RESULT_ERROR_OUT_OF_MEMORY, errormem,         \
-			"Not enough memory to allocate array");                \
-	}
-#undef uthash_nonfatal_oom
-#define uthash_nonfatal_oom(elt)                                               \
-	{                                                                      \
-		CCS_RAISE_ERR_GOTO(                                            \
-			err, CCS_RESULT_ERROR_OUT_OF_MEMORY, errorutarray,     \
-			"Not enough memory to allocate hash");                 \
-	}
-static ccs_result_t
-_ccs_objective_space_add_parameter(
-	ccs_objective_space_t objective_space,
-	ccs_parameter_t       parameter)
-{
-	CCS_CHECK_OBJ(parameter, CCS_OBJECT_TYPE_PARAMETER);
-	ccs_result_t                 err;
-	const char                  *name;
-	size_t                       sz_name;
-	_ccs_parameter_index_hash_t *parameter_hash;
-	CCS_VALIDATE(ccs_parameter_get_name(parameter, &name));
-	sz_name = strlen(name);
-	HASH_FIND(
-		hh_name, objective_space->data->name_hash, name, sz_name,
-		parameter_hash);
-	CCS_REFUTE_MSG(
-		parameter_hash, CCS_RESULT_ERROR_INVALID_PARAMETER,
-		"An parameter with name '%s' already exists in the objective space",
-		name);
-	UT_array *parameters;
-	CCS_VALIDATE(ccs_retain_object(parameter));
-	_ccs_parameter_wrapper_t parameter_wrapper;
-	parameter_wrapper.parameter = parameter;
-
-	parameters                  = objective_space->data->parameters;
-
-	parameter_hash              = (_ccs_parameter_index_hash_t *)malloc(
-                sizeof(_ccs_parameter_index_hash_t));
-	CCS_REFUTE_ERR_GOTO(
-		err, !parameter_hash, CCS_RESULT_ERROR_OUT_OF_MEMORY,
-		errorparameter);
-	parameter_hash->parameter = parameter;
-	parameter_hash->name      = name;
-	parameter_hash->index     = utarray_len(parameters);
-
-	utarray_push_back(parameters, &parameter_wrapper);
-
-	HASH_ADD_KEYPTR(
-		hh_name, objective_space->data->name_hash, parameter_hash->name,
-		sz_name, parameter_hash);
-	HASH_ADD(
-		hh_handle, objective_space->data->handle_hash, parameter,
-		sizeof(ccs_parameter_t), parameter_hash);
-
-	return CCS_RESULT_SUCCESS;
-errorutarray:
-	utarray_pop_back(parameters);
-errormem:
-	free(parameter_hash);
-errorparameter:
-	ccs_release_object(parameter);
-	return err;
-}
-#undef utarray_oom
-#define utarray_oom() exit(-1)
-
 static ccs_result_t
 _ccs_objective_space_add_parameters(
 	ccs_objective_space_t objective_space,
@@ -280,19 +184,11 @@ _ccs_objective_space_add_parameters(
 	ccs_parameter_t      *parameters)
 {
 	for (size_t i = 0; i < num_parameters; i++)
-		CCS_VALIDATE(_ccs_objective_space_add_parameter(
-			objective_space, parameters[i]));
+		CCS_VALIDATE(_ccs_context_add_parameter(
+			(ccs_context_t)objective_space, parameters[i], i));
 	return CCS_RESULT_SUCCESS;
 }
 
-#undef utarray_oom
-#define utarray_oom()                                                          \
-	{                                                                      \
-		ccs_release_object(expressions[i]);                            \
-		CCS_RAISE(                                                     \
-			CCS_RESULT_ERROR_OUT_OF_MEMORY,                        \
-			"Out of memory to allocate array");                    \
-	}
 ccs_result_t
 _ccs_objective_space_add_objectives(
 	ccs_objective_space_t objective_space,
@@ -300,29 +196,16 @@ _ccs_objective_space_add_objectives(
 	ccs_expression_t     *expressions,
 	ccs_objective_type_t *types)
 {
-	ccs_result_t err = CCS_RESULT_SUCCESS;
+	_ccs_objective_t *objectives = objective_space->data->objectives;
 	for (size_t i = 0; i < num_objectives; i++) {
 		CCS_VALIDATE(ccs_expression_check_context(
 			expressions[i], (ccs_context_t)objective_space));
 		CCS_VALIDATE(ccs_retain_object(expressions[i]));
-		_ccs_objective_t objective;
-		objective.expression = expressions[i];
-		objective.type       = types[i];
-		utarray_push_back(
-			objective_space->data->objectives, &objective);
+		objectives[i].expression = expressions[i];
+		objectives[i].type       = types[i];
 	}
-	return err;
+	return CCS_RESULT_SUCCESS;
 }
-#undef utarray_oom
-#define utarray_oom() exit(-1)
-
-#undef utarray_oom
-#define utarray_oom()                                                          \
-	{                                                                      \
-		CCS_RAISE_ERR_GOTO(                                            \
-			err, CCS_RESULT_ERROR_OUT_OF_MEMORY, arrays,           \
-			"Not enough memory to allocate array");                \
-	}
 
 ccs_result_t
 ccs_create_objective_space(
@@ -341,25 +224,33 @@ ccs_create_objective_space(
 	CCS_CHECK_ARY(num_objectives, types);
 
 	uintptr_t mem = (uintptr_t)calloc(
-		1, sizeof(struct _ccs_objective_space_s) +
-			   sizeof(struct _ccs_objective_space_data_s) +
-			   strlen(name) + 1);
+		1,
+		sizeof(struct _ccs_objective_space_s) +
+			sizeof(struct _ccs_objective_space_data_s) +
+			sizeof(ccs_parameter_t) * num_parameters +
+			sizeof(_ccs_parameter_index_hash_t) * num_parameters +
+			sizeof(_ccs_objective_t) * num_objectives +
+			strlen(name) + 1);
 	CCS_REFUTE(!mem, CCS_RESULT_ERROR_OUT_OF_MEMORY);
+	uintptr_t             mem_orig = mem;
 	ccs_result_t          err;
 	ccs_objective_space_t obj_space = (ccs_objective_space_t)mem;
+	mem += sizeof(struct _ccs_objective_space_s);
 	_ccs_object_init(
 		&(obj_space->obj), CCS_OBJECT_TYPE_OBJECTIVE_SPACE,
 		(_ccs_object_ops_t *)&_objective_space_ops);
-	obj_space->data =
-		(struct _ccs_objective_space_data_s
-			 *)(mem + sizeof(struct _ccs_objective_space_s));
-	obj_space->data->name =
-		(const char
-			 *)(mem + sizeof(struct _ccs_objective_space_s) + sizeof(struct _ccs_objective_space_data_s));
-	utarray_new(obj_space->data->parameters, &_parameter_wrapper2_icd);
-	utarray_new(obj_space->data->objectives, &_objectives_icd);
+	obj_space->data = (struct _ccs_objective_space_data_s *)mem;
+	mem += sizeof(struct _ccs_objective_space_data_s);
+	obj_space->data->parameters = (ccs_parameter_t *)mem;
+	mem += sizeof(ccs_parameter_t) * num_parameters;
+	obj_space->data->hash_elems = (_ccs_parameter_index_hash_t *)mem;
+	mem += sizeof(_ccs_parameter_index_hash_t) * num_parameters;
+	obj_space->data->objectives = (_ccs_objective_t *)mem;
+	mem += sizeof(_ccs_objective_t) * num_objectives;
+	obj_space->data->name           = (const char *)mem;
+	obj_space->data->num_parameters = num_parameters;
+	obj_space->data->num_objectives = num_objectives;
 	strcpy((char *)(obj_space->data->name), name);
-	*objective_space_ret = obj_space;
 	CCS_VALIDATE_ERR_GOTO(
 		err,
 		_ccs_objective_space_add_parameters(
@@ -370,23 +261,14 @@ ccs_create_objective_space(
 		_ccs_objective_space_add_objectives(
 			obj_space, num_objectives, objectives, types),
 		errparams);
+	*objective_space_ret = obj_space;
 	return CCS_RESULT_SUCCESS;
-arrays:
-	if (obj_space->data->parameters)
-		utarray_free(obj_space->data->parameters);
-	if (obj_space->data->objectives)
-		utarray_free(obj_space->data->objectives);
-	_ccs_object_deinit(&(obj_space->obj));
-	free((void *)mem);
-	return err;
 errparams:
 	_ccs_objective_space_del(obj_space);
 	_ccs_object_deinit(&(obj_space->obj));
-	free((void *)mem);
+	free((void *)mem_orig);
 	return err;
 }
-#undef utarray_oom
-#define utarray_oom() exit(-1)
 
 ccs_result_t
 ccs_objective_space_get_name(
@@ -494,17 +376,15 @@ _check_evaluation(
 	ccs_datum_t          *values,
 	ccs_bool_t           *is_valid_ret)
 {
-	UT_array *array          = objective_space->data->parameters;
-	size_t    num_parameters = utarray_len(array);
+	ccs_parameter_t *parameters     = objective_space->data->parameters;
+	size_t           num_parameters = objective_space->data->num_parameters;
 	CCS_REFUTE(
 		num_values != num_parameters,
 		CCS_RESULT_ERROR_INVALID_EVALUATION);
 	*is_valid_ret = CCS_TRUE;
 	for (size_t i = 0; i < num_values; i++) {
-		_ccs_parameter_wrapper_t *wrapper =
-			(_ccs_parameter_wrapper_t *)utarray_eltptr(array, i);
 		CCS_VALIDATE(ccs_parameter_check_value(
-			wrapper->parameter, values[i], is_valid_ret));
+			parameters[i], values[i], is_valid_ret));
 		if (*is_valid_ret == CCS_FALSE)
 			return CCS_RESULT_SUCCESS;
 	}
@@ -548,11 +428,12 @@ ccs_objective_space_get_objective(
 	CCS_CHECK_OBJ(objective_space, CCS_OBJECT_TYPE_OBJECTIVE_SPACE);
 	CCS_CHECK_PTR(expression_ret);
 	CCS_CHECK_PTR(type_ret);
-	_ccs_objective_t *p_obj = (_ccs_objective_t *)utarray_eltptr(
-		objective_space->data->objectives, (unsigned int)index);
-	CCS_REFUTE(!p_obj, CCS_RESULT_ERROR_OUT_OF_BOUNDS);
-	*expression_ret = p_obj->expression;
-	*type_ret       = p_obj->type;
+	CCS_REFUTE(
+		index >= objective_space->data->num_objectives,
+		CCS_RESULT_ERROR_OUT_OF_BOUNDS);
+	_ccs_objective_t *p_obj = objective_space->data->objectives + index;
+	*expression_ret         = p_obj->expression;
+	*type_ret               = p_obj->type;
 	return CCS_RESULT_SUCCESS;
 }
 
@@ -570,18 +451,14 @@ ccs_objective_space_get_objectives(
 	CCS_REFUTE(
 		!expressions && !num_objectives_ret,
 		CCS_RESULT_ERROR_INVALID_VALUE);
-	UT_array *array = objective_space->data->objectives;
-	size_t    size  = utarray_len(array);
+	_ccs_objective_t *objectives = objective_space->data->objectives;
+	size_t            size       = objective_space->data->num_objectives;
 	if (expressions) {
 		CCS_REFUTE(
 			num_objectives < size, CCS_RESULT_ERROR_INVALID_VALUE);
-		_ccs_objective_t *p_obj = NULL;
-		size_t            index = 0;
-		while ((p_obj = (_ccs_objective_t *)utarray_next(
-				array, p_obj))) {
-			expressions[index] = p_obj->expression;
-			types[index]       = p_obj->type;
-			index++;
+		for (size_t i = 0; i < size; i++) {
+			expressions[i] = objectives[i].expression;
+			types[i]       = objectives[i].type;
 		}
 		for (size_t i = size; i < num_objectives; i++) {
 			expressions[i] = NULL;

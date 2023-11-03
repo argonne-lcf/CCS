@@ -60,13 +60,12 @@ class CConfigSpaceTestConfigurationSpace < Minitest::Test
     h1 = CCS::NumericalParameter::Float.new(lower: -1.0, upper: 1.0, default: 0.0)
     h2 = CCS::NumericalParameter::Float.new(lower: -1.0, upper: 1.0)
     h3 = CCS::NumericalParameter::Float.new(lower: -1.0, upper: 1.0)
-    cs = CCS::ConfigurationSpace::new(name: "space", parameters: [h1, h2, h3])
+    f1 = CCS::Expression::Less.new(left: h1, right: 0.0)
+    cs = CCS::ConfigurationSpace::new(name: "space", parameters: [h1, h2, h3], forbidden_clauses: [f1])
     e1 = CCS::Expression::Less.new(left: h2, right: 0.0)
     cs.set_condition(h3, e1)
     e2 = CCS::Expression::Less.new(left: h3, right: 0.0)
     cs.set_condition(h1, e2)
-    e3 = CCS::Expression::Less.new(left: h1, right: 0.0)
-    cs.add_forbidden_clause(e3)
     conditions = cs.conditions
     conditional_parameters = cs.conditional_parameters
     unconditional_parameters = cs.unconditional_parameters
@@ -81,7 +80,7 @@ class CConfigSpaceTestConfigurationSpace < Minitest::Test
     assert_equal( h2.handle, unconditional_parameters[0].handle )
     forbidden_clauses = cs.forbidden_clauses
     assert_equal( 1, forbidden_clauses.length )
-    assert_equal( e3.handle, forbidden_clauses[0].handle )
+    assert_equal( f1.handle, forbidden_clauses[0].handle )
   end
 
   def extract_active_parameters(values)
@@ -147,7 +146,16 @@ class CConfigSpaceTestConfigurationSpace < Minitest::Test
       name: 'p9',
       values: ['1', '8', '16'])
 
-    cs = CCS::ConfigurationSpace::new(name: "omp", parameters: [p1, p2, p3, p4, p5, p6, p7, p8, p9])
+    forbiddena = CCS::Expression::Equal.new(left: p1, right: '#pragma omp #P2')
+    forbiddenb = CCS::Expression::Equal.new(left: p2, right: ' ')
+    forbidden0 = CCS::Expression::And.new(left: forbiddena, right: forbiddenb)
+
+    forbiddenc = CCS::Expression::Equal.new(left: p1, right: '#pragma omp #P3')
+    forbiddend = CCS::Expression::Equal.new(left: p3, right: ' ')
+    forbidden1 = CCS::Expression::And.new(left: forbiddenc, right: forbiddend)
+
+    cs = CCS::ConfigurationSpace::new(name: "omp", parameters: [p1, p2, p3, p4, p5, p6, p7, p8, p9],
+                                      forbidden_clauses: [forbidden0, forbidden1])
 
     cond0 = CCS::Expression::Equal.new(left: p1, right: '#pragma omp #P2')
     cond1 = CCS::Expression::Equal.new(left: p1, right: '#pragma omp target teams distribute #P2')
@@ -174,15 +182,6 @@ class CConfigSpaceTestConfigurationSpace < Minitest::Test
     cond_p8 = CCS::Expression::Or.new(left: cond7, right: cond9)
     cs.set_condition(p8, cond_p8)
     cs.set_condition(p9, cond10)
-
-    forbiddena = CCS::Expression::Equal.new(left: p1, right: '#pragma omp #P2')
-    forbiddenb = CCS::Expression::Equal.new(left: p2, right: ' ')
-    forbidden0 = CCS::Expression::And.new(left: forbiddena, right: forbiddenb)
-
-    forbiddenc = CCS::Expression::Equal.new(left: p1, right: '#pragma omp #P3')
-    forbiddend = CCS::Expression::Equal.new(left: p3, right: ' ')
-    forbidden1 = CCS::Expression::And.new(left: forbiddenc, right: forbiddend)
-    cs.add_forbidden_clauses([forbidden0, forbidden1])
 
     all_params = (1..9).collect { |i| "p#{i}" }
 
@@ -249,7 +248,9 @@ class CConfigSpaceTestConfigurationSpace < Minitest::Test
       name: 'p9',
       values: ['1', '8', '16'])
 
-    cs = CCS::ConfigurationSpace::new(name: "omp", parameters: [p1, p2, p3, p4, p5, p6, p7, p8, p9])
+    cs = CCS::ConfigurationSpace::new(name: "omp", parameters: [p1, p2, p3, p4, p5, p6, p7, p8, p9],
+                                      forbidden_clauses: ["p1 == '#pragma omp #P2' && p2 == ' '",
+                                                          "p1 == '#pragma omp #P3' && p3 == ' '"])
 
     cs.set_condition(p2, "p1 # ['#pragma omp #P2', '#pragma omp target teams distribute #P2']")
     cs.set_condition(p4, "p1 == '#pragma omp target teams distribute #P4'")
@@ -259,9 +260,6 @@ class CConfigSpaceTestConfigurationSpace < Minitest::Test
     cs.set_condition(p7, "p5 # ['schedule(#P7)', 'schedule(#P7,#P8)']")
     cs.set_condition(p8, "p4 == 'dist_schedule(static, #P8)' || p5 == 'schedule(#P7,#P8)'")
     cs.set_condition(p9, "p6 == 'numthreads(#P9)'")
-
-    cs.add_forbidden_clauses(["p1 == '#pragma omp #P2' && p2 == ' '",
-                              "p1 == '#pragma omp #P3' && p3 == ' '"])
 
     all_params = (1..9).collect { |i| "p#{i}" }
 

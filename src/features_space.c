@@ -6,21 +6,16 @@
 static ccs_result_t
 _ccs_features_space_del(ccs_object_t object)
 {
-	ccs_features_space_t      features_space = (ccs_features_space_t)object;
-	UT_array                 *array   = features_space->data->parameters;
-	_ccs_parameter_wrapper_t *wrapper = NULL;
-	while ((wrapper = (_ccs_parameter_wrapper_t *)utarray_next(
-			array, wrapper))) {
-		ccs_release_object(wrapper->parameter);
-	}
+	ccs_features_space_t features_space = (ccs_features_space_t)object;
+	size_t           num_parameters = features_space->data->num_parameters;
+	ccs_parameter_t *parameters     = features_space->data->parameters;
+
+	for (size_t i = 0; i < num_parameters; i++)
+		if (parameters[i])
+			ccs_release_object(parameters[i]);
+
 	HASH_CLEAR(hh_name, features_space->data->name_hash);
-	_ccs_parameter_index_hash_t *elem, *tmpelem;
-	HASH_ITER(hh_handle, features_space->data->handle_hash, elem, tmpelem)
-	{
-		HASH_DELETE(hh_handle, features_space->data->handle_hash, elem);
-		free(elem);
-	}
-	utarray_free(features_space->data->parameters);
+	HASH_CLEAR(hh_handle, features_space->data->handle_hash);
 	return CCS_RESULT_SUCCESS;
 }
 
@@ -73,82 +68,6 @@ static _ccs_features_space_ops_t _features_space_ops = {
 	{{&_ccs_features_space_del, &_ccs_features_space_serialize_size,
 	  &_ccs_features_space_serialize}}};
 
-static const UT_icd _parameter_wrapper_icd = {
-	sizeof(_ccs_parameter_wrapper_t),
-	NULL,
-	NULL,
-	NULL,
-};
-
-#undef utarray_oom
-#define utarray_oom()                                                          \
-	{                                                                      \
-		CCS_RAISE_ERR_GOTO(                                            \
-			err, CCS_RESULT_ERROR_OUT_OF_MEMORY, errormem,         \
-			"Not enough memory to allocate array");                \
-	}
-#undef uthash_nonfatal_oom
-#define uthash_nonfatal_oom(elt)                                               \
-	{                                                                      \
-		CCS_RAISE_ERR_GOTO(                                            \
-			err, CCS_RESULT_ERROR_OUT_OF_MEMORY, errorutarray,     \
-			"Not enough memory to allocate hash");                 \
-	}
-static ccs_result_t
-_ccs_features_space_add_parameter(
-	ccs_features_space_t features_space,
-	ccs_parameter_t      parameter)
-{
-	CCS_CHECK_OBJ(parameter, CCS_OBJECT_TYPE_PARAMETER);
-	ccs_result_t                 err;
-	const char                  *name;
-	size_t                       sz_name;
-	_ccs_parameter_index_hash_t *parameter_hash;
-	CCS_VALIDATE(ccs_parameter_get_name(parameter, &name));
-	sz_name = strlen(name);
-	HASH_FIND(
-		hh_name, features_space->data->name_hash, name, sz_name,
-		parameter_hash);
-	CCS_REFUTE_MSG(
-		parameter_hash, CCS_RESULT_ERROR_INVALID_PARAMETER,
-		"An parameter with name '%s' already exists in the feature space",
-		name);
-	UT_array *parameters;
-	CCS_VALIDATE(ccs_retain_object(parameter));
-	_ccs_parameter_wrapper_t parameter_wrapper;
-	parameter_wrapper.parameter = parameter;
-
-	parameters                  = features_space->data->parameters;
-	parameter_hash              = (_ccs_parameter_index_hash_t *)malloc(
-                sizeof(_ccs_parameter_index_hash_t));
-	CCS_REFUTE_ERR_GOTO(
-		err, !parameter_hash, CCS_RESULT_ERROR_OUT_OF_MEMORY,
-		errorparameter);
-	parameter_hash->parameter = parameter;
-	parameter_hash->name      = name;
-	parameter_hash->index     = utarray_len(parameters);
-
-	utarray_push_back(parameters, &parameter_wrapper);
-
-	HASH_ADD_KEYPTR(
-		hh_name, features_space->data->name_hash, parameter_hash->name,
-		sz_name, parameter_hash);
-	HASH_ADD(
-		hh_handle, features_space->data->handle_hash, parameter,
-		sizeof(ccs_parameter_t), parameter_hash);
-
-	return CCS_RESULT_SUCCESS;
-errorutarray:
-	utarray_pop_back(parameters);
-errormem:
-	free(parameter_hash);
-errorparameter:
-	ccs_release_object(parameter);
-	return err;
-}
-#undef utarray_oom
-#define utarray_oom() exit(-1)
-
 static ccs_result_t
 _ccs_features_space_add_parameters(
 	ccs_features_space_t features_space,
@@ -156,18 +75,10 @@ _ccs_features_space_add_parameters(
 	ccs_parameter_t     *parameters)
 {
 	for (size_t i = 0; i < num_parameters; i++)
-		CCS_VALIDATE(_ccs_features_space_add_parameter(
-			features_space, parameters[i]));
+		CCS_VALIDATE(_ccs_context_add_parameter(
+			(ccs_context_t)features_space, parameters[i], i));
 	return CCS_RESULT_SUCCESS;
 }
-
-#undef utarray_oom
-#define utarray_oom()                                                          \
-	{                                                                      \
-		CCS_RAISE_ERR_GOTO(                                            \
-			err, CCS_RESULT_ERROR_OUT_OF_MEMORY, arrays,           \
-			"Not enough memory to allocate array");                \
-	}
 
 ccs_result_t
 ccs_create_features_space(
@@ -180,46 +91,46 @@ ccs_create_features_space(
 	CCS_CHECK_PTR(name);
 	CCS_CHECK_PTR(features_space_ret);
 	CCS_CHECK_ARY(num_parameters, parameters);
+	for (size_t i = 0; i < num_parameters; i++)
+		CCS_CHECK_OBJ(parameters[i], CCS_OBJECT_TYPE_PARAMETER);
 
 	uintptr_t mem = (uintptr_t)calloc(
-		1, sizeof(struct _ccs_features_space_s) +
-			   sizeof(struct _ccs_features_space_data_s) +
-			   strlen(name) + 1);
+		1,
+		sizeof(struct _ccs_features_space_s) +
+			sizeof(struct _ccs_features_space_data_s) +
+			sizeof(ccs_parameter_t) * num_parameters +
+			sizeof(_ccs_parameter_index_hash_t) * num_parameters +
+			strlen(name) + 1);
 	CCS_REFUTE(!mem, CCS_RESULT_ERROR_OUT_OF_MEMORY);
+	uintptr_t            mem_orig   = mem;
 
 	ccs_features_space_t feat_space = (ccs_features_space_t)mem;
+	mem += sizeof(struct _ccs_features_space_s);
 	_ccs_object_init(
 		&(feat_space->obj), CCS_OBJECT_TYPE_FEATURES_SPACE,
 		(_ccs_object_ops_t *)&_features_space_ops);
-	feat_space->data =
-		(struct _ccs_features_space_data_s
-			 *)(mem + sizeof(struct _ccs_features_space_s));
-	feat_space->data->name =
-		(const char
-			 *)(mem + sizeof(struct _ccs_features_space_s) + sizeof(struct _ccs_features_space_data_s));
-	utarray_new(feat_space->data->parameters, &_parameter_wrapper_icd);
+	feat_space->data = (struct _ccs_features_space_data_s *)mem;
+	mem += sizeof(struct _ccs_features_space_data_s);
+	feat_space->data->parameters = (ccs_parameter_t *)mem;
+	mem += sizeof(ccs_parameter_t) * num_parameters;
+	feat_space->data->hash_elems = (_ccs_parameter_index_hash_t *)mem;
+	mem += sizeof(_ccs_parameter_index_hash_t) * num_parameters;
+	feat_space->data->name           = (const char *)mem;
+	feat_space->data->num_parameters = num_parameters;
 	strcpy((char *)(feat_space->data->name), name);
-	*features_space_ret = feat_space;
 	CCS_VALIDATE_ERR_GOTO(
 		err,
 		_ccs_features_space_add_parameters(
 			feat_space, num_parameters, parameters),
 		errparams);
+	*features_space_ret = feat_space;
 	return CCS_RESULT_SUCCESS;
-arrays:
-	if (feat_space->data->parameters)
-		utarray_free(feat_space->data->parameters);
-	_ccs_object_deinit(&(feat_space->obj));
-	free((void *)mem);
-	return err;
 errparams:
 	_ccs_features_space_del(feat_space);
 	_ccs_object_deinit(&(feat_space->obj));
-	free((void *)mem);
+	free((void *)mem_orig);
 	return err;
 }
-#undef utarray_oom
-#define utarray_oom() exit(-1)
 
 ccs_result_t
 ccs_features_space_get_name(
@@ -340,17 +251,15 @@ _check_features(
 	ccs_datum_t         *values,
 	ccs_bool_t          *is_valid_ret)
 {
-	UT_array *array          = features_space->data->parameters;
-	size_t    num_parameters = utarray_len(array);
+	ccs_parameter_t *parameters     = features_space->data->parameters;
+	size_t           num_parameters = features_space->data->num_parameters;
 	CCS_REFUTE(
 		num_values != num_parameters,
 		CCS_RESULT_ERROR_INVALID_FEATURES);
 	*is_valid_ret = CCS_TRUE;
 	for (size_t i = 0; i < num_values; i++) {
-		_ccs_parameter_wrapper_t *wrapper =
-			(_ccs_parameter_wrapper_t *)utarray_eltptr(array, i);
 		CCS_VALIDATE(ccs_parameter_check_value(
-			wrapper->parameter, values[i], is_valid_ret));
+			parameters[i], values[i], is_valid_ret));
 		if (*is_valid_ret == CCS_FALSE)
 			return CCS_RESULT_SUCCESS;
 	}

@@ -17,7 +17,9 @@ struct _ccs_features_space_s {
 
 struct _ccs_features_space_data_s {
 	const char                  *name;
-	UT_array                    *parameters;
+	size_t                       num_parameters;
+	ccs_parameter_t             *parameters;
+	_ccs_parameter_index_hash_t *hash_elems;
 	_ccs_parameter_index_hash_t *name_hash;
 	_ccs_parameter_index_hash_t *handle_hash;
 };

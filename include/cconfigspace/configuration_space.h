@@ -19,17 +19,25 @@ extern "C" {
  * @param[in] num_parameters the number of provided parameters
  * @param[in] parameters an array of \p num_parameters parameters
  *                       to add to the configuration space
+ * @param[in] num_forbidden_clauses the number of provided forbidden clauses
+ * @param[in] forbidden_clauses an array o \p num_forbidden_clauses expressions
+ *                              to add as forbidden clauses to the
+ *                              configuration space
  * @param[out] configuration_space_ret a pointer to the variable that will hold
  *                                     the newly created configuration space
  * @return #CCS_RESULT_SUCCESS on success
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p name is NULL; or if \p
  * configuration_space_ret is NULL; or if \p parameters is NULL; or if \p
- * num_parameters is NULL
+ * num_parameters is NULL; or if \p forbidden_clauses is NULL and \p
+ * num_forbidden_clauses is greater than 0
  * @return #CCS_RESULT_ERROR_INVALID_OBJECT if a parameter is not a valid CCS
- * parameter
+ * parameter; or if an expression is not a valid CCS expression
  * @return #CCS_RESULT_ERROR_INVALID_PARAMETER if a parameter's type is
  * CCS_PARAMETER_TYPE_STRING; or if a parameter appears more than once in \p
- * parameters; or if two or more parameters share the same name
+ * parameters; or if two or more parameters share the same name; or if an
+ * expression references a parameter that is not in the configuration space
+ * @return #CCS_RESULT_ERROR_INVALID_CONFIGURATION if adding one of the provided
+ * forbidden clause would render the default configuration invalid
  * @return #CCS_RESULT_ERROR_OUT_OF_MEMORY if there was a lack of memory to
  * allocate the new configuration space
  * @remarks
@@ -40,6 +48,8 @@ ccs_create_configuration_space(
 	const char                *name,
 	size_t                     num_parameters,
 	ccs_parameter_t           *parameters,
+	size_t                     num_forbidden_clauses,
+	ccs_expression_t          *forbidden_clauses,
 	ccs_configuration_space_t *configuration_space_ret);
 
 /**
@@ -357,55 +367,6 @@ ccs_configuration_space_get_conditions(
 	size_t                    num_expressions,
 	ccs_expression_t         *expressions,
 	size_t                   *num_expressions_ret);
-
-/**
- * Add a forbidden clause to a configuration space.
- * @param[in,out] configuration_space
- * @param[in] expression the forbidden clause to dd to the configuration space
- * @return #CCS_RESULT_SUCCESS on success
- * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p configuration_space is not a
- * valid CCS configuration space; or if \p expression is not a valid CCS
- * expression
- * @return #CCS_RESULT_ERROR_INVALID_PARAMETER if expression references a
- * parameter that is not in the configuration space
- * @return #CCS_RESULT_ERROR_OUT_OF_MEMORY if there was not enough memory to
- * allocate internal data structures
- * @return #CCS_RESULT_ERROR_INVALID_CONFIGURATION if adding the forbidden
- * clause would render the default configuration invalid
- * @remarks
- *   This function is thread-safe
- */
-extern ccs_result_t
-ccs_configuration_space_add_forbidden_clause(
-	ccs_configuration_space_t configuration_space,
-	ccs_expression_t          expression);
-
-/**
- * Add a list of forbidden clauses to a configuration space.
- * @param[in,out] configuration_space
- * @param[in] num_expressions the number of provided expressions
- * @param[in] expressions an array o \p num_expressions expressions to add as
- *                        forbidden clauses to the configuration space
- * @return #CCS_RESULT_SUCCESS on success
- * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p configuration_space is not a
- * valid CCS configuration space; or if at least one of the provided expressions
- * is not a valid CCS expression
- * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p expressions is NULL and \p
- * num_expressions is greater than 0
- * @return #CCS_RESULT_ERROR_INVALID_PARAMETER if an expression references a
- * parameter that is not in the configuration space
- * @return #CCS_RESULT_ERROR_OUT_OF_MEMORY if there was not enough memory to
- * allocate internal data structures
- * @return #CCS_RESULT_ERROR_INVALID_CONFIGURATION if adding one of the provided
- * forbidden clause would render the default configuration invalid
- * @remarks
- *   This function is thread-safe
- */
-extern ccs_result_t
-ccs_configuration_space_add_forbidden_clauses(
-	ccs_configuration_space_t configuration_space,
-	size_t                    num_expressions,
-	ccs_expression_t         *expressions);
 
 /**
  * Get the forbidden clause of rank index in a configuration space.

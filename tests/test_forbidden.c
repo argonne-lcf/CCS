@@ -30,15 +30,12 @@ test_simple(void)
 
 	parameters[0] = parameter1 = create_numerical("param1");
 	parameters[1] = parameter2 = create_numerical("param2");
-	err = ccs_create_configuration_space("space", 2, parameters, &space);
+	err                        = ccs_create_binary_expression(
+                CCS_EXPRESSION_TYPE_LESS, ccs_object(parameter1),
+                ccs_float(0.0), &expression);
 	assert(err == CCS_RESULT_SUCCESS);
-
-	err = ccs_create_binary_expression(
-		CCS_EXPRESSION_TYPE_LESS, ccs_object(parameter1),
-		ccs_float(0.0), &expression);
-	assert(err == CCS_RESULT_SUCCESS);
-
-	err = ccs_configuration_space_add_forbidden_clause(space, expression);
+	err = ccs_create_configuration_space(
+		"space", 2, parameters, 1, &expression, &space);
 	assert(err == CCS_RESULT_SUCCESS);
 
 	for (int i = 0; i < 100; i++) {
@@ -111,7 +108,14 @@ test_combined(void)
 	parameters[1] = create_numerical("param2");
 	parameters[2] = create_numerical("param3");
 
-	err = ccs_create_configuration_space("space", 3, parameters, &space);
+	err           = ccs_create_binary_expression(
+                CCS_EXPRESSION_TYPE_LESS, ccs_object(parameters[0]),
+                ccs_float(0.0), &expression);
+	assert(err == CCS_RESULT_SUCCESS);
+	err = ccs_create_configuration_space(
+		"space", 3, parameters, 1, &expression, &space);
+	assert(err == CCS_RESULT_SUCCESS);
+	err = ccs_release_object(expression);
 	assert(err == CCS_RESULT_SUCCESS);
 
 	err = ccs_create_binary_expression(
@@ -128,15 +132,6 @@ test_combined(void)
 		ccs_float(0.0), &expression);
 	assert(err == CCS_RESULT_SUCCESS);
 	err = ccs_configuration_space_set_condition(space, 0, expression);
-	assert(err == CCS_RESULT_SUCCESS);
-	err = ccs_release_object(expression);
-	assert(err == CCS_RESULT_SUCCESS);
-
-	err = ccs_create_binary_expression(
-		CCS_EXPRESSION_TYPE_LESS, ccs_object(parameters[0]),
-		ccs_float(0.0), &expression);
-	assert(err == CCS_RESULT_SUCCESS);
-	err = ccs_configuration_space_add_forbidden_clause(space, expression);
 	assert(err == CCS_RESULT_SUCCESS);
 	err = ccs_release_object(expression);
 	assert(err == CCS_RESULT_SUCCESS);

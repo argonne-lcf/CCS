@@ -226,11 +226,10 @@ ccs_distribution_space_set_distribution(
 	_ccs_distribution_wrapper_t   *dwrapper;
 	_ccs_distribution_wrapper_t  **p_dwrappers_to_del;
 	_ccs_distribution_wrapper_t  **p_dwrappers_to_add;
-	_ccs_parameter_wrapper_cs_t   *hwrapper;
 	_ccs_parameter_distribution_t *pdists;
 	_ccs_parameter_distribution_t *pdist;
 	ccs_result_t                   err;
-	UT_array                      *parameters;
+	ccs_parameter_t               *parameters;
 	size_t                         num_parameters;
 	size_t                         dim;
 	uintptr_t                      mem;
@@ -325,13 +324,12 @@ ccs_distribution_space_set_distribution(
 			(size_t *)(dmem + sizeof(_ccs_distribution_wrapper_t));
 		dwrapper->dimension            = 1;
 		dwrapper->parameter_indexes[0] = parameters_without_distrib[i];
-		hwrapper = (_ccs_parameter_wrapper_cs_t *)utarray_eltptr(
-			parameters, parameters_without_distrib[i]);
 
 		CCS_VALIDATE_ERR_GOTO(
 			err,
 			ccs_parameter_get_default_distribution(
-				hwrapper->parameter, &(dwrapper->distribution)),
+				parameters[parameters_without_distrib[i]],
+				&(dwrapper->distribution)),
 			dwrappers);
 		p_dwrappers_to_add[to_add_count++] = dwrapper;
 	}

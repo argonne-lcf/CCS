@@ -115,6 +115,7 @@ _ccs_deserialize_bin_configuration_space(
 		res,
 		ccs_create_configuration_space(
 			data.name, data.num_parameters, data.parameters,
+			data.num_forbidden_clauses, data.forbidden_clauses,
 			configuration_space_ret),
 		end);
 	CCS_VALIDATE_ERR_GOTO(
@@ -130,12 +131,6 @@ _ccs_deserialize_bin_configuration_space(
 				data.cond_parameter_indices[i],
 				data.conditions[i]),
 			err_configuration_space);
-	CCS_VALIDATE_ERR_GOTO(
-		res,
-		ccs_configuration_space_add_forbidden_clauses(
-			*configuration_space_ret, data.num_forbidden_clauses,
-			data.forbidden_clauses),
-		err_configuration_space);
 	if (opts && opts->map_values && opts->handle_map)
 		CCS_VALIDATE_ERR_GOTO(
 			res,

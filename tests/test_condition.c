@@ -30,7 +30,8 @@ test_simple(void)
 
 	parameters[0] = parameter1 = create_numerical("param1");
 	parameters[1] = parameter2 = create_numerical("param2");
-	err = ccs_create_configuration_space("space", 2, parameters, &space);
+	err                        = ccs_create_configuration_space(
+                "space", 2, parameters, 0, NULL, &space);
 	assert(err == CCS_RESULT_SUCCESS);
 
 	err = ccs_create_binary_expression(
@@ -114,7 +115,8 @@ test_transitive(void)
 	parameters[1] = create_numerical("param2");
 	parameters[2] = create_numerical("param3");
 
-	err = ccs_create_configuration_space("space", 3, parameters, &space);
+	err           = ccs_create_configuration_space(
+                "space", 3, parameters, 0, NULL, &space);
 	assert(err == CCS_RESULT_SUCCESS);
 
 	err = ccs_create_binary_expression(

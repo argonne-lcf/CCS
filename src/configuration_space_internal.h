@@ -5,14 +5,6 @@
 struct _ccs_distribution_wrapper_s;
 typedef struct _ccs_distribution_wrapper_s _ccs_distribution_wrapper_t;
 
-struct _ccs_parameter_wrapper_cs_s {
-	ccs_parameter_t  parameter;
-	ccs_expression_t condition;
-	UT_array        *parents;
-	UT_array        *children;
-};
-typedef struct _ccs_parameter_wrapper_cs_s _ccs_parameter_wrapper_cs_t;
-
 struct _ccs_configuration_space_data_s;
 typedef struct _ccs_configuration_space_data_s _ccs_configuration_space_data_t;
 
@@ -28,13 +20,19 @@ struct _ccs_configuration_space_s {
 
 struct _ccs_configuration_space_data_s {
 	const char                  *name;
-	UT_array                    *parameters;
+	size_t                       num_parameters;
+	ccs_parameter_t             *parameters;
+	_ccs_parameter_index_hash_t *hash_elems;
 	_ccs_parameter_index_hash_t *name_hash;
 	_ccs_parameter_index_hash_t *handle_hash;
-	ccs_rng_t                    rng;
-	UT_array                    *forbidden_clauses;
+	ccs_expression_t            *conditions;
+	UT_array                   **parents;
+	UT_array                   **children;
+	size_t                      *sorted_indexes;
+	size_t                       num_forbidden_clauses;
+	ccs_expression_t            *forbidden_clauses;
 	ccs_bool_t                   graph_ok;
-	UT_array                    *sorted_indexes;
+	ccs_rng_t                    rng;
 	ccs_distribution_space_t     default_distribution_space;
 };
 

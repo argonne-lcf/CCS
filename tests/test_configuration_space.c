@@ -98,7 +98,7 @@ test_empty(void)
 	ccs_result_t              err;
 
 	err = ccs_create_configuration_space(
-		"my_config_space", 0, NULL, &configuration_space);
+		"my_config_space", 0, NULL, 0, NULL, &configuration_space);
 	assert(err == CCS_RESULT_SUCCESS);
 
 	err = ccs_configuration_space_sample(
@@ -134,17 +134,19 @@ test_create(void)
 	parameters[2] = parameters[0];
 
 	err           = ccs_create_configuration_space(
-                "my_config_space", 3, NULL, &configuration_space);
+                "my_config_space", 3, NULL, 0, NULL, &configuration_space);
 	assert(err == CCS_RESULT_ERROR_INVALID_VALUE);
 
 	err = ccs_create_configuration_space(
-		"my_config_space", 3, parameters, &configuration_space);
+		"my_config_space", 3, parameters, 0, NULL,
+		&configuration_space);
 	assert(err == CCS_RESULT_ERROR_INVALID_PARAMETER);
 
 	parameters[2] = parameter3;
 
 	err           = ccs_create_configuration_space(
-                "my_config_space", 3, parameters, &configuration_space);
+                "my_config_space", 3, parameters, 0, NULL,
+                &configuration_space);
 	assert(err == CCS_RESULT_SUCCESS);
 
 	err = ccs_object_get_type(configuration_space, &type);
@@ -184,7 +186,8 @@ test_sample(void)
 	assert(err == CCS_RESULT_SUCCESS);
 
 	err = ccs_create_configuration_space(
-		"my_config_space", 4, parameters, &configuration_space);
+		"my_config_space", 4, parameters, 0, NULL,
+		&configuration_space);
 	assert(err == CCS_RESULT_SUCCESS);
 
 	err = ccs_configuration_space_sample(
@@ -247,7 +250,8 @@ test_configuration_deserialize(void)
 	parameters[2] = create_numerical("param3");
 
 	err           = ccs_create_configuration_space(
-                "my_config_space", 3, parameters, &configuration_space);
+                "my_config_space", 3, parameters, 0, NULL,
+                &configuration_space);
 	assert(err == CCS_RESULT_SUCCESS);
 
 	err = ccs_configuration_space_sample(
@@ -325,8 +329,14 @@ test_deserialize(void)
 	parameters[1] = create_numerical("param2");
 	parameters[2] = create_numerical("param3");
 
-	err           = ccs_create_configuration_space(
-                "my_config_space", 3, parameters, &space);
+	err           = ccs_create_binary_expression(
+                CCS_EXPRESSION_TYPE_LESS, ccs_object(parameters[0]),
+                ccs_float(0.0), &expression);
+	assert(err == CCS_RESULT_SUCCESS);
+	err = ccs_create_configuration_space(
+		"my_config_space", 3, parameters, 1, &expression, &space);
+	assert(err == CCS_RESULT_SUCCESS);
+	err = ccs_release_object(expression);
 	assert(err == CCS_RESULT_SUCCESS);
 
 	err = ccs_create_binary_expression(
@@ -343,15 +353,6 @@ test_deserialize(void)
 		ccs_float(0.0), &expression);
 	assert(err == CCS_RESULT_SUCCESS);
 	err = ccs_configuration_space_set_condition(space, 0, expression);
-	assert(err == CCS_RESULT_SUCCESS);
-	err = ccs_release_object(expression);
-	assert(err == CCS_RESULT_SUCCESS);
-
-	err = ccs_create_binary_expression(
-		CCS_EXPRESSION_TYPE_LESS, ccs_object(parameters[0]),
-		ccs_float(0.0), &expression);
-	assert(err == CCS_RESULT_SUCCESS);
-	err = ccs_configuration_space_add_forbidden_clause(space, expression);
 	assert(err == CCS_RESULT_SUCCESS);
 	err = ccs_release_object(expression);
 	assert(err == CCS_RESULT_SUCCESS);

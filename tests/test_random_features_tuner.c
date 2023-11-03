@@ -39,7 +39,8 @@ test(void)
 	parameters[0] = parameter1 = create_numerical("x", -5.0, 5.0);
 	parameters[1] = parameter2 = create_numerical("y", -5.0, 5.0);
 
-	err = ccs_create_configuration_space("2dplane", 2, parameters, &cspace);
+	err                        = ccs_create_configuration_space(
+                "2dplane", 2, parameters, 0, NULL, &cspace);
 	assert(err == CCS_RESULT_SUCCESS);
 
 	parameter3 = create_numerical("z", -CCS_INFINITY, CCS_INFINITY);
@@ -262,7 +263,8 @@ test_evaluation_deserialize(void)
 	parameters[0] = parameter1 = create_numerical("x", -5.0, 5.0);
 	parameters[1] = parameter2 = create_numerical("y", -5.0, 5.0);
 
-	err = ccs_create_configuration_space("2dplane", 2, parameters, &cspace);
+	err                        = ccs_create_configuration_space(
+                "2dplane", 2, parameters, 0, NULL, &cspace);
 	assert(err == CCS_RESULT_SUCCESS);
 	err = ccs_configuration_space_sample(cspace, NULL, &configuration);
 	assert(err == CCS_RESULT_SUCCESS);
