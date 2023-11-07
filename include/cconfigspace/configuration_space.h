@@ -481,12 +481,13 @@ ccs_configuration_space_get_default_configuration(
  * will have the #ccs_inactive value. Returned configuration is valid.
  * @param[in] configuration_space
  * @param[in] distribution_space an optional distribution space to use
+ * @param[in] rng an optional rng to use
  * @param[out] configuration_ret a pointer to the variable that will contain the
  *                               returned configuration
  * @return #CCS_RESULT_SUCCESS on success
  * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p configuration_space is not a
  * valid CCS configuration space; or if \p distribution_space is not a valid
- * CCS distribution space
+ * CCS distribution space; or if \p rng is not a valid CCS rng
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if configuration_ret is NULL
  * @return #CCS_RESULT_ERROR_SAMPLING_UNSUCCESSFUL if no valid configuration
  * could be sampled
@@ -499,6 +500,7 @@ extern ccs_result_t
 ccs_configuration_space_sample(
 	ccs_configuration_space_t configuration_space,
 	ccs_distribution_space_t  distribution_space,
+	ccs_rng_t                 rng,
 	ccs_configuration_t      *configuration_ret);
 
 /**
@@ -509,13 +511,14 @@ ccs_configuration_space_sample(
  * valid.
  * @param[in] configuration_space
  * @param[in] distribution_space an optional distribution space to use
+ * @param[in] rng an optional rng to use
  * @param[in] num_configurations the number of requested configurations
  * @param[out] configurations an array of \p num_configurations that will
  *                            contain the requested configurations
  * @return #CCS_RESULT_SUCCESS on success
  * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p configuration_space is not a
  * valid CCS configuration space; or if \p distribution_space is not a valid
- * CCS distribution space
+ * CCS distribution space; or if \p rng is not a valid CCS rng
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p configurations is NULL and \p
  * num_configurations is greater than 0
  * @return #CCS_RESULT_ERROR_SAMPLING_UNSUCCESSFUL if no or not enough valid
@@ -531,6 +534,7 @@ extern ccs_result_t
 ccs_configuration_space_samples(
 	ccs_configuration_space_t configuration_space,
 	ccs_distribution_space_t  distribution_space,
+	ccs_rng_t                 rng,
 	size_t                    num_configurations,
 	ccs_configuration_t      *configurations);
 

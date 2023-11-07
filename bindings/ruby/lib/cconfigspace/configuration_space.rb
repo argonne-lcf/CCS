@@ -9,8 +9,8 @@ module CCS
   attach_function :ccs_configuration_space_check_configuration, [:ccs_configuration_space_t, :ccs_configuration_t, :pointer], :ccs_result_t
   attach_function :ccs_configuration_space_check_configuration_values, [:ccs_configuration_space_t, :size_t, :pointer, :pointer], :ccs_result_t
   attach_function :ccs_configuration_space_get_default_configuration, [:ccs_configuration_space_t, :pointer], :ccs_result_t
-  attach_function :ccs_configuration_space_sample, [:ccs_configuration_space_t, :ccs_distribution_space_t, :pointer], :ccs_result_t
-  attach_function :ccs_configuration_space_samples, [:ccs_configuration_space_t, :ccs_distribution_space_t, :size_t, :pointer], :ccs_result_t
+  attach_function :ccs_configuration_space_sample, [:ccs_configuration_space_t, :ccs_distribution_space_t, :ccs_rng_t, :pointer], :ccs_result_t
+  attach_function :ccs_configuration_space_samples, [:ccs_configuration_space_t, :ccs_distribution_space_t, :ccs_rng_t, :size_t, :pointer], :ccs_result_t
 
   class ConfigurationSpace < Context
 
@@ -159,15 +159,15 @@ module CCS
       Configuration::new(ptr.read_ccs_configuration_t, retain: false)
     end
 
-    def sample(distribution_space: nil)
+    def sample(distribution_space: nil, rng: nil)
       ptr = MemoryPointer::new(:ccs_configuration_t)
-      CCS.error_check CCS.ccs_configuration_space_sample(@handle, distribution_space ? distribution_space.handle : nil, ptr)
+      CCS.error_check CCS.ccs_configuration_space_sample(@handle, distribution_space ? distribution_space.handle : nil, rng ? rng.handle : nil, ptr)
       Configuration::new(ptr.read_ccs_configuration_t, retain: false)
     end
 
-    def samples(count, distribution_space: nil)
+    def samples(count, distribution_space: nil, rng: nil)
       ptr = MemoryPointer::new(:ccs_configuration_t, count)
-      CCS.error_check CCS.ccs_configuration_space_samples(@handle, distribution_space ? distribution_space.handle : nil, count, ptr)
+      CCS.error_check CCS.ccs_configuration_space_samples(@handle, distribution_space ? distribution_space.handle : nil, rng ? rng.handle : nil, count, ptr)
       count.times.collect { |i| Configuration::new(ptr[i].read_pointer, retain: false) }
     end
   end

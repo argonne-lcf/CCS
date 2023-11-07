@@ -170,8 +170,8 @@ _ccs_features_tuner_random_ask(
 		return CCS_RESULT_SUCCESS;
 	}
 	CCS_VALIDATE(ccs_configuration_space_samples(
-		d->common_data.configuration_space, NULL, num_configurations,
-		configurations));
+		d->common_data.configuration_space, NULL, NULL,
+		num_configurations, configurations));
 	if (num_configurations_ret)
 		*num_configurations_ret = num_configurations;
 	return CCS_RESULT_SUCCESS;

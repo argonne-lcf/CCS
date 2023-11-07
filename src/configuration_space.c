@@ -917,11 +917,11 @@ ccs_configuration_space_check_configuration_values(
 static ccs_result_t
 _sample(ccs_configuration_space_t configuration_space,
 	ccs_distribution_space_t  distribution_space,
+	ccs_rng_t                 rng,
 	ccs_configuration_t       config,
 	ccs_bool_t               *found)
 {
 	ccs_result_t     err        = CCS_RESULT_SUCCESS;
-	ccs_rng_t        rng        = configuration_space->data->rng;
 	ccs_parameter_t *parameters = configuration_space->data->parameters;
 	ccs_datum_t     *values     = config->data->values;
 	size_t       num_parameters = configuration_space->data->num_parameters;
@@ -969,6 +969,7 @@ static inline ccs_result_t
 _ccs_configuration_space_samples(
 	ccs_configuration_space_t configuration_space,
 	ccs_distribution_space_t  distrib_space,
+	ccs_rng_t                 r,
 	size_t                    num_configurations,
 	ccs_configuration_t      *configurations)
 {
@@ -978,13 +979,20 @@ _ccs_configuration_space_samples(
 	ccs_bool_t               found;
 	ccs_configuration_t      config = NULL;
 	ccs_distribution_space_t distribution_space;
+	ccs_rng_t                rng;
+
 	if (distrib_space) {
 		distribution_space = distrib_space;
 		CCS_OBJ_RDLOCK(distrib_space);
 	} else
 		distribution_space =
 			configuration_space->data->default_distribution_space;
-	CCS_OBJ_RDLOCK(configuration_space);
+
+	if (!r) {
+		CCS_OBJ_RDLOCK(configuration_space);
+		rng = configuration_space->data->rng;
+	} else
+		rng = r;
 
 	for (size_t i = 0; i < num_configurations; i++)
 		configurations[i] = NULL;
@@ -998,8 +1006,8 @@ _ccs_configuration_space_samples(
 				end);
 		CCS_VALIDATE_ERR_GOTO(
 			err,
-			_sample(configuration_space, distribution_space, config,
-				&found),
+			_sample(configuration_space, distribution_space, rng,
+				config, &found),
 			errconf);
 		if (found) {
 			configurations[count++] = config;
@@ -1016,9 +1024,10 @@ errconf:
 	if (config)
 		ccs_release_object(config);
 end:
-	CCS_OBJ_UNLOCK(configuration_space);
 	if (distrib_space)
 		CCS_OBJ_UNLOCK(distrib_space);
+	if (!r)
+		CCS_OBJ_UNLOCK(configuration_space);
 	return err;
 }
 
@@ -1026,6 +1035,7 @@ ccs_result_t
 ccs_configuration_space_sample(
 	ccs_configuration_space_t configuration_space,
 	ccs_distribution_space_t  distribution_space,
+	ccs_rng_t                 rng,
 	ccs_configuration_t      *configuration_ret)
 {
 	CCS_CHECK_OBJ(configuration_space, CCS_OBJECT_TYPE_CONFIGURATION_SPACE);
@@ -1037,9 +1047,12 @@ ccs_configuration_space_sample(
 				configuration_space,
 			CCS_RESULT_ERROR_INVALID_DISTRIBUTION_SPACE);
 	}
+	if (rng)
+		CCS_CHECK_OBJ(rng, CCS_OBJECT_TYPE_RNG);
 	CCS_CHECK_PTR(configuration_ret);
 	CCS_VALIDATE(_ccs_configuration_space_samples(
-		configuration_space, distribution_space, 1, configuration_ret));
+		configuration_space, distribution_space, rng, 1,
+		configuration_ret));
 	return CCS_RESULT_SUCCESS;
 }
 
@@ -1047,6 +1060,7 @@ ccs_result_t
 ccs_configuration_space_samples(
 	ccs_configuration_space_t configuration_space,
 	ccs_distribution_space_t  distribution_space,
+	ccs_rng_t                 rng,
 	size_t                    num_configurations,
 	ccs_configuration_t      *configurations)
 {
@@ -1059,12 +1073,14 @@ ccs_configuration_space_samples(
 				configuration_space,
 			CCS_RESULT_ERROR_INVALID_DISTRIBUTION_SPACE);
 	}
+	if (rng)
+		CCS_CHECK_OBJ(rng, CCS_OBJECT_TYPE_RNG);
 	CCS_CHECK_ARY(num_configurations, configurations);
 	if (!num_configurations)
 		return CCS_RESULT_SUCCESS;
 	CCS_VALIDATE(_ccs_configuration_space_samples(
-		configuration_space, distribution_space, num_configurations,
-		configurations));
+		configuration_space, distribution_space, rng,
+		num_configurations, configurations));
 	return CCS_RESULT_SUCCESS;
 }
 

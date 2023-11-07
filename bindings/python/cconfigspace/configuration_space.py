@@ -18,8 +18,8 @@ ccs_configuration_space_get_forbidden_clauses = _ccs_get_function("ccs_configura
 ccs_configuration_space_check_configuration = _ccs_get_function("ccs_configuration_space_check_configuration", [ccs_configuration_space, ccs_configuration, ct.POINTER(ccs_bool)])
 ccs_configuration_space_check_configuration_values = _ccs_get_function("ccs_configuration_space_check_configuration_values", [ccs_configuration_space, ct.c_size_t, ct.POINTER(Datum), ct.POINTER(ccs_bool)])
 ccs_configuration_space_get_default_configuration = _ccs_get_function("ccs_configuration_space_get_default_configuration", [ccs_configuration_space, ct.POINTER(ccs_configuration)])
-ccs_configuration_space_sample = _ccs_get_function("ccs_configuration_space_sample", [ccs_configuration_space, ccs_distribution_space, ct.POINTER(ccs_configuration)])
-ccs_configuration_space_samples = _ccs_get_function("ccs_configuration_space_samples", [ccs_configuration_space, ccs_distribution_space, ct.c_size_t, ct.POINTER(ccs_configuration)])
+ccs_configuration_space_sample = _ccs_get_function("ccs_configuration_space_sample", [ccs_configuration_space, ccs_distribution_space, ccs_rng, ct.POINTER(ccs_configuration)])
+ccs_configuration_space_samples = _ccs_get_function("ccs_configuration_space_samples", [ccs_configuration_space, ccs_distribution_space, ccs_rng, ct.c_size_t, ct.POINTER(ccs_configuration)])
 
 class ConfigurationSpace(Context):
   def __init__(self, handle = None, retain = False, auto_release = True,
@@ -168,15 +168,15 @@ class ConfigurationSpace(Context):
     Error.check(res)
     return Configuration(handle = v, retain = False)
 
-  def sample(self, distribution_space = None):
+  def sample(self, distribution_space = None, rng = None):
     v = ccs_configuration()
-    res = ccs_configuration_space_sample(self.handle, distribution_space.handle if distribution_space is not None else None, ct.byref(v))
+    res = ccs_configuration_space_sample(self.handle, distribution_space.handle if distribution_space is not None else None, rng.handle if rng is not None else None, ct.byref(v))
     Error.check(res)
     return Configuration(handle = v, retain = False)
 
-  def samples(self, count, distribution_space = None):
+  def samples(self, count, distribution_space = None, rng = None):
     v = (ccs_configuration * count)()
-    res = ccs_configuration_space_samples(self.handle, distribution_space.handle if distribution_space is not None else None, count, v)
+    res = ccs_configuration_space_samples(self.handle, distribution_space.handle if distribution_space is not None else None, rng.handle if rng is not None else None, count, v)
     Error.check(res)
     return [Configuration(handle = ccs_configuration(x), retain = False) for x in v]
 

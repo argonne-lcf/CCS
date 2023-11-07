@@ -103,7 +103,7 @@ test_empty(void)
 	assert(err == CCS_RESULT_SUCCESS);
 
 	err = ccs_configuration_space_sample(
-		configuration_space, NULL, &configuration);
+		configuration_space, NULL, NULL, &configuration);
 	assert(err == CCS_RESULT_SUCCESS);
 
 	err = ccs_release_object(configuration);
@@ -193,7 +193,7 @@ test_sample(void)
 	assert(err == CCS_RESULT_SUCCESS);
 
 	err = ccs_configuration_space_sample(
-		configuration_space, NULL, &configuration);
+		configuration_space, NULL, NULL, &configuration);
 	assert(err == CCS_RESULT_SUCCESS);
 
 	err = ccs_configuration_check(configuration, &check);
@@ -201,7 +201,7 @@ test_sample(void)
 	assert(check);
 
 	err = ccs_configuration_space_samples(
-		configuration_space, NULL, 100, configurations);
+		configuration_space, NULL, NULL, 100, configurations);
 	assert(err == CCS_RESULT_SUCCESS);
 
 	for (size_t i = 0; i < 100; i++) {
@@ -257,7 +257,7 @@ test_configuration_deserialize(void)
 	assert(err == CCS_RESULT_SUCCESS);
 
 	err = ccs_configuration_space_sample(
-		configuration_space, NULL, &configuration_ref);
+		configuration_space, NULL, NULL, &configuration_ref);
 	assert(err == CCS_RESULT_SUCCESS);
 
 	err = ccs_create_map(&map);

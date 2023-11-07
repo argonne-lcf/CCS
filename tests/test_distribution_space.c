@@ -216,7 +216,8 @@ test_set_distribution(void)
 	assert(dindex_ret == 1);
 
 	err = ccs_configuration_space_samples(
-		configuration_space, distribution_space, 100, configurations);
+		configuration_space, distribution_space, NULL, 100,
+		configurations);
 	assert(err == CCS_RESULT_SUCCESS);
 
 	for (size_t i = 0; i < 100; i++) {
@@ -254,7 +255,8 @@ test_set_distribution(void)
 	assert(dindex_ret == 0);
 
 	err = ccs_configuration_space_samples(
-		configuration_space, distribution_space, 100, configurations);
+		configuration_space, distribution_space, NULL, 100,
+		configurations);
 	assert(err == CCS_RESULT_SUCCESS);
 
 	for (size_t i = 0; i < 100; i++) {
