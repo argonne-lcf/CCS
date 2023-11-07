@@ -916,7 +916,7 @@ ccs_configuration_space_check_configuration_values(
 
 static ccs_result_t
 _sample(ccs_configuration_space_t configuration_space,
-	ccs_distribution_space_t  distrib_space,
+	ccs_distribution_space_t  distribution_space,
 	ccs_configuration_t       config,
 	ccs_bool_t               *found)
 {
@@ -935,13 +935,6 @@ _sample(ccs_configuration_space_t configuration_space,
 
 	p_values = (ccs_datum_t *)mem;
 	hps = (ccs_parameter_t *)(mem + num_parameters * sizeof(ccs_datum_t));
-	ccs_distribution_space_t distribution_space;
-	if (distrib_space) {
-		distribution_space = distrib_space;
-		CCS_OBJ_RDLOCK(distrib_space);
-	} else
-		distribution_space =
-			configuration_space->data->default_distribution_space;
 
 	_ccs_distribution_wrapper_t *dwrapper = NULL;
 	DL_FOREACH(distribution_space->data->distribution_list, dwrapper)
@@ -968,9 +961,64 @@ _sample(ccs_configuration_space_t configuration_space,
 			configuration_space, config->data->values, found),
 		errmem);
 errmem:
+	free((void *)mem);
+	return err;
+}
+
+static inline ccs_result_t
+_ccs_configuration_space_samples(
+	ccs_configuration_space_t configuration_space,
+	ccs_distribution_space_t  distrib_space,
+	size_t                    num_configurations,
+	ccs_configuration_t      *configurations)
+{
+	ccs_result_t             err     = CCS_RESULT_SUCCESS;
+	size_t                   counter = 0;
+	size_t                   count   = 0;
+	ccs_bool_t               found;
+	ccs_configuration_t      config = NULL;
+	ccs_distribution_space_t distribution_space;
+	if (distrib_space) {
+		distribution_space = distrib_space;
+		CCS_OBJ_RDLOCK(distrib_space);
+	} else
+		distribution_space =
+			configuration_space->data->default_distribution_space;
+	CCS_OBJ_RDLOCK(configuration_space);
+
+	for (size_t i = 0; i < num_configurations; i++)
+		configurations[i] = NULL;
+	while (count < num_configurations &&
+	       counter < 100 * num_configurations) {
+		if (!config)
+			CCS_VALIDATE_ERR_GOTO(
+				err,
+				_ccs_create_configuration(
+					configuration_space, 0, NULL, &config),
+				end);
+		CCS_VALIDATE_ERR_GOTO(
+			err,
+			_sample(configuration_space, distribution_space, config,
+				&found),
+			errconf);
+		if (found) {
+			configurations[count++] = config;
+			config                  = NULL;
+		}
+		counter++;
+	}
+	CCS_REFUTE_ERR_GOTO(
+		err, count < num_configurations,
+		CCS_RESULT_ERROR_SAMPLING_UNSUCCESSFUL, errconf);
+	goto end;
+
+errconf:
+	if (config)
+		ccs_release_object(config);
+end:
+	CCS_OBJ_UNLOCK(configuration_space);
 	if (distrib_space)
 		CCS_OBJ_UNLOCK(distrib_space);
-	free((void *)mem);
 	return err;
 }
 
@@ -990,33 +1038,9 @@ ccs_configuration_space_sample(
 			CCS_RESULT_ERROR_INVALID_DISTRIBUTION_SPACE);
 	}
 	CCS_CHECK_PTR(configuration_ret);
-	ccs_result_t        err;
-	ccs_bool_t          found;
-	int                 counter = 0;
-	ccs_configuration_t config;
-	CCS_OBJ_RDLOCK(configuration_space);
-	CCS_VALIDATE_ERR_GOTO(
-		err,
-		_ccs_create_configuration(configuration_space, 0, NULL, &config),
-		errlock);
-	do {
-		CCS_VALIDATE_ERR_GOTO(
-			err,
-			_sample(configuration_space, distribution_space, config,
-				&found),
-			errc);
-		counter++;
-	} while (!found && counter < 100);
-	CCS_REFUTE_ERR_GOTO(
-		err, !found, CCS_RESULT_ERROR_SAMPLING_UNSUCCESSFUL, errc);
-	*configuration_ret = config;
-	CCS_OBJ_UNLOCK(configuration_space);
+	CCS_VALIDATE(_ccs_configuration_space_samples(
+		configuration_space, distribution_space, 1, configuration_ret));
 	return CCS_RESULT_SUCCESS;
-errc:
-	ccs_release_object(config);
-errlock:
-	CCS_OBJ_UNLOCK(configuration_space);
-	return err;
 }
 
 ccs_result_t
@@ -1038,44 +1062,10 @@ ccs_configuration_space_samples(
 	CCS_CHECK_ARY(num_configurations, configurations);
 	if (!num_configurations)
 		return CCS_RESULT_SUCCESS;
-	ccs_result_t        err;
-	size_t              counter = 0;
-	size_t              count   = 0;
-	ccs_bool_t          found;
-	ccs_configuration_t config = NULL;
-	CCS_OBJ_RDLOCK(configuration_space);
-
-	for (size_t i = 0; i < num_configurations; i++)
-		configurations[i] = NULL;
-	while (count < num_configurations &&
-	       counter < 100 * num_configurations) {
-		if (!config)
-			CCS_VALIDATE_ERR_GOTO(
-				err,
-				_ccs_create_configuration(
-					configuration_space, 0, NULL, &config),
-				errlock);
-		CCS_VALIDATE_ERR_GOTO(
-			err,
-			_sample(configuration_space, distribution_space, config,
-				&found),
-			errc);
-		counter++;
-		if (found) {
-			configurations[count++] = config;
-			config                  = NULL;
-		}
-	}
-	CCS_REFUTE_ERR_GOTO(
-		err, count < num_configurations,
-		CCS_RESULT_ERROR_SAMPLING_UNSUCCESSFUL, errc);
-	CCS_OBJ_UNLOCK(configuration_space);
+	CCS_VALIDATE(_ccs_configuration_space_samples(
+		configuration_space, distribution_space, num_configurations,
+		configurations));
 	return CCS_RESULT_SUCCESS;
-errc:
-	ccs_release_object(config);
-errlock:
-	CCS_OBJ_UNLOCK(configuration_space);
-	return err;
 }
 
 ccs_result_t
