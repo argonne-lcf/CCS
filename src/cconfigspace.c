@@ -155,7 +155,9 @@ ccs_object_set_user_data(ccs_object_t object, void *user_data)
 {
 	CCS_CHECK_BASE_OBJ(object);
 	_ccs_object_internal_t *obj = (_ccs_object_internal_t *)object;
-	CCS_ATOMIC_STORE(obj->user_data, user_data);
+	CCS_RWLOCK_WRLOCK(obj->lock);
+	obj->user_data = user_data;
+	CCS_RWLOCK_UNLOCK(obj->lock);
 	return CCS_RESULT_SUCCESS;
 }
 
@@ -165,7 +167,9 @@ ccs_object_get_user_data(ccs_object_t object, void **user_data_ret)
 	CCS_CHECK_BASE_OBJ(object);
 	CCS_CHECK_PTR(user_data_ret);
 	_ccs_object_internal_t *obj = (_ccs_object_internal_t *)object;
-	*user_data_ret              = CCS_ATOMIC_LOAD(obj->user_data);
+	CCS_RWLOCK_RDLOCK(obj->lock);
+	*user_data_ret = obj->user_data;
+	CCS_RWLOCK_UNLOCK(obj->lock);
 	return CCS_RESULT_SUCCESS;
 }
 
