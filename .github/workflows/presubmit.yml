@@ -18,7 +18,7 @@ jobs:
   build-and-check:
     needs: pre_job
     if: ${{ needs.pre_job.outputs.should_skip != 'true' }}
-    name: Build and Check ${{ matrix.os }} ${{ matrix.compiler }}${{ matrix.threadsafe && ' Thread Safe' || '' }}
+    name: Build and Check ${{ matrix.os }} ${{ matrix.compiler }}${{ matrix.threadsafe && ' ' || ' No Thread Safe' }}
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
@@ -43,7 +43,7 @@ jobs:
       - run: pip3 install --user parglare
       - run: ./autogen.sh
       - run: mkdir -p build
-      - run: ../configure --enable-strict${{ matrix.threadsafe && ' --enable-thread-safe' || '' }} CC=${{ matrix.compiler }}${{ (matrix.compiler == 'clang' && matrix.os == 'ubuntu-latest') && ' CFLAGS="-gdwarf-4 -O2"' || '' }}
+      - run: ../configure --enable-strict${{ matrix.threadsafe && ' --enable-thread-safe' || ' --disable-thread-safe' }} CC=${{ matrix.compiler }}${{ (matrix.compiler == 'clang' && matrix.os == 'ubuntu-latest') && ' CFLAGS="-gdwarf-4 -O2"' || '' }}
         working-directory: build
       - run: make -j
         working-directory: build

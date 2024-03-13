@@ -38,10 +38,13 @@ AX_CXX_COMPILE_STDCXX([14], [noext], [mandatory])
 
 AM_CONDITIONAL([ISMACOS], [test "x$macos" = xyes])
 
-AC_ARG_ENABLE([strict], AS_HELP_STRING([--enable-strict], [Enable -Werror]))
+AC_ARG_ENABLE([strict], AS_HELP_STRING([--enable-strict], [Enable -Werror]),
+              [], [enable_strict=no])
 AM_CONDITIONAL([STRICT], [test "x$enable_strict" = xyes])
 
-AC_ARG_ENABLE([thread-safe], AS_HELP_STRING([--enable-thread-safe], [Build with thread saffety enabled]))
+AC_ARG_ENABLE([thread-safe],
+              AS_HELP_STRING([--enable-thread-safe], [Build with thread saffety enabled]),
+              [], [enable_thread_safe=yes])
 AM_CONDITIONAL([THREAD_SAFE], [test "x$enable_thread_safe" = xyes])
 
 AC_ARG_ENABLE([kokkos-connector],
@@ -110,3 +113,20 @@ fi
 AC_CONFIG_LINKS([samples/test_ruby.rb:samples/test_ruby.rb
                  samples/test_python.py:samples/test_python.py])
 AC_OUTPUT
+
+cat <<EOF
+
+-------------------------------------------------------------------------------
+CCS
+
+Version: $PACKAGE_VERSION
+
+FEATURES:
+---------
+
+Thread safe:      $enable_thread_safe
+Strict:           $enable_strict
+Kokkos connector: $enable_kokkos_connector
+Samples:          $enable_samples
+
+EOF
