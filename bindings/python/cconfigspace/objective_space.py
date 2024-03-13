@@ -6,7 +6,6 @@ from .expression import Expression
 from .expression_parser import parser
 from .configuration_space import ConfigurationSpace
 from .configuration import Configuration
-from parglare.parser import Context as PContext
 
 class ObjectiveType(CEnumeration):
   _members_ = [
@@ -27,7 +26,7 @@ class ObjectiveSpace(Context):
       if isinstance(objectives, dict):
         types = objectives.values()
         objectives = objectives.keys()
-      objectives = [ parser.parse(objective, context = PContext(extra=ctx)) if isinstance(objective, str) else objective for objective in objectives ]
+      objectives = [ parser.parse(objective, extra = ctx) if isinstance(objective, str) else objective for objective in objectives ]
       sz = len(objectives)
       if types:
         if len(types) != sz:

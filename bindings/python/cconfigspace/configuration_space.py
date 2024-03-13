@@ -6,7 +6,6 @@ from .parameter import Parameter
 from .expression import Expression
 from .expression_parser import parser
 from .rng import Rng
-from parglare.parser import Context as PContext
 
 ccs_create_configuration_space = _ccs_get_function("ccs_create_configuration_space", [ct.c_char_p, ct.c_size_t, ct.POINTER(ccs_parameter), ct.POINTER(ccs_expression), ct.c_size_t, ct.POINTER(ccs_expression), ct.POINTER(ccs_configuration_space)])
 ccs_configuration_space_set_rng = _ccs_get_function("ccs_configuration_space_set_rng", [ccs_configuration_space, ccs_rng])
@@ -31,7 +30,7 @@ class ConfigurationSpace(Context):
         numfc = len(forbidden_clauses)
         if numfc > 0:
           ctx = dict(zip([x.name for x in parameters], parameters))
-          forbidden_clauses = [ parser.parse(fc, context = PContext(extra=ctx)) if isinstance(fc, str) else fc for fc in forbidden_clauses ]
+          forbidden_clauses = [ parser.parse(fc, extra = ctx) if isinstance(fc, str) else fc for fc in forbidden_clauses ]
           fcv = (ccs_expression * numfc)(*[x.handle.value for x in forbidden_clauses])
         else:
           fcv = None
@@ -43,7 +42,7 @@ class ConfigurationSpace(Context):
         namedict = dict(zip([x.name for x in parameters], parameters))
         indexdict = dict(reversed(ele) for ele in enumerate(parameters))
         cv = (ccs_expression * count)()
-        conditions = dict( (k, parser.parse(v, context = PContext(extra=namedict)) if isinstance(v, str) else v) for (k, v) in conditions.items() )
+        conditions = dict( (k, parser.parse(v, extra = namedict) if isinstance(v, str) else v) for (k, v) in conditions.items() )
         for (k, v) in conditions.items():
           if isinstance(k, Parameter):
             cv[indexdict[k]] = v.handle.value

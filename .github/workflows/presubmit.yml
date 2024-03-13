@@ -40,7 +40,7 @@ jobs:
           python-version: '3.11'
         if: ${{ matrix.os == 'macos-latest' }}
       - run: gem install --user-install rake ffi ffi-value whittle
-      - run: pip3 install --user parglare==0.12.0
+      - run: pip3 install --user parglare
       - run: ./autogen.sh
       - run: mkdir -p build
       - run: ../configure --enable-strict${{ matrix.threadsafe && ' --enable-thread-safe' || '' }} CC=${{ matrix.compiler }}${{ (matrix.compiler == 'clang' && matrix.os == 'ubuntu-latest') && ' CFLAGS="-gdwarf-4 -O2"' || '' }}
@@ -83,7 +83,7 @@ jobs:
           python-version: '3.11'
         if: ${{ matrix.os == 'macos-latest' }}
       - run: gem install --user-install rake ffi ffi-value whittle
-      - run: pip3 install --user parglare==0.12.0
+      - run: pip3 install --user parglare
       - run: ./autogen.sh
       - run: mkdir -p build
       - run: ../configure --enable-strict
@@ -111,7 +111,7 @@ jobs:
           python-version: '3.11'
         if: ${{ matrix.os == 'macos-latest' }}
       - run: gem install --user-install rake ffi ffi-value whittle
-      - run: pip3 install --user parglare==0.12.0
+      - run: pip3 install --user parglare
       - run: ./autogen.sh
       - run: mkdir -p build
       - run: ../configure --enable-strict
