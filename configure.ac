@@ -1,5 +1,6 @@
 # see semver.org for version info
 m4_define([fallbackversion], m4_normalize(m4_include([VERSION])))
+m4_append([fallbackversion], [.0])
 AC_INIT([cconfigspace],
 	[m4_esyscmd([build-aux/git-version-gen --fallback fallbackversion .tarball-version])],
 	[bvideau@anl.gov])
