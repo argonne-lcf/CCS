@@ -156,7 +156,9 @@ _ccs_error_stack_push(
 {
 	CCS_CHECK_ERROR_STACK(error_stack);
 	ccs_error_stack_elem_t elem = {file, line, func};
+	CCS_OBJ_WRLOCK(error_stack);
 	utarray_push_back(error_stack->data->elems, &elem);
+	CCS_OBJ_UNLOCK(error_stack);
 	return CCS_RESULT_SUCCESS;
 }
 
@@ -178,20 +180,36 @@ ccs_thread_error_stack_push(const char *file, int line, const char *func)
 
 ccs_result_t
 ccs_error_stack_get_elems(
-	ccs_error_stack_t        error_stack,
-	size_t                  *num_elems_ret,
-	ccs_error_stack_elem_t **elems)
+	ccs_error_stack_t       error_stack,
+	size_t                  num_elems,
+	ccs_error_stack_elem_t *elems,
+	size_t                 *num_elems_ret)
 {
+	ccs_result_t res = CCS_RESULT_SUCCESS;
 	CCS_CHECK_ERROR_STACK(error_stack);
-	if (CCS_UNLIKELY(!num_elems_ret || !elems))
+	if (CCS_UNLIKELY(!num_elems_ret && !elems))
 		return CCS_RESULT_ERROR_INVALID_VALUE;
-	*num_elems_ret = utarray_len(error_stack->data->elems);
-	if (*num_elems_ret)
-		*elems = (ccs_error_stack_elem_t *)utarray_eltptr(
-			error_stack->data->elems, 0);
-	else
-		*elems = NULL;
-	return CCS_RESULT_SUCCESS;
+	CCS_OBJ_RDLOCK(error_stack);
+	size_t nume = utarray_len(error_stack->data->elems);
+	if (elems) {
+		if (num_elems < nume) {
+			res = CCS_RESULT_ERROR_INVALID_VALUE;
+			goto end;
+		}
+		for (size_t i = 0; i < nume; i++)
+			elems[i] = *(ccs_error_stack_elem_t *)utarray_eltptr(
+				error_stack->data->elems, i);
+		for (size_t i = nume; i < num_elems; i++) {
+			elems[i].file = NULL;
+			elems[i].line = 0;
+			elems[i].func = NULL;
+		}
+	}
+	if (num_elems_ret)
+		*num_elems_ret = nume;
+end:
+	CCS_OBJ_UNLOCK(error_stack);
+	return res;
 }
 
 ccs_result_t

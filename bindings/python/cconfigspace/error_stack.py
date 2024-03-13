@@ -13,7 +13,7 @@ ccs_create_error_stack = _ccs_get_function("ccs_create_error_stack", [ct.POINTER
 ccs_error_stack_push = _ccs_get_function("ccs_error_stack_push", [ccs_error_stack, ct.c_char_p, ct.c_int, ct.c_char_p])
 ccs_error_stack_get_message = _ccs_get_function("ccs_error_stack_get_message", [ccs_error_stack, ct.POINTER(ct.c_char_p)])
 ccs_error_stack_get_code = _ccs_get_function("ccs_error_stack_get_code", [ccs_error_stack, ct.POINTER(Result)])
-ccs_error_stack_get_elems = _ccs_get_function("ccs_error_stack_get_elems", [ccs_error_stack, ct.POINTER(ct.c_size_t), ct.POINTER(ct.POINTER(ErrorStackElem))])
+ccs_error_stack_get_elems = _ccs_get_function("ccs_error_stack_get_elems", [ccs_error_stack, ct.c_size_t, ct.POINTER(ErrorStackElem), ct.POINTER(ct.c_size_t)])
 
 class ErrorStack(Object):
   def __init__(self, handle = None, retain = False, auto_release = True,
@@ -67,10 +67,13 @@ class ErrorStack(Object):
 
   def elems(self):
     v1 = ct.c_size_t()
-    v2 = ct.POINTER(ErrorStackElem)()
-    res = ccs_error_stack_get_elems(self.handle, ct.byref(v1), ct.byref(v2))
+    res = ccs_error_stack_get_elems(self.handle, 0, None, ct.byref(v1))
     Error.check(res)
-    return [v2[x] for x in range(v1.value)]
+    sz = v1.value
+    v2 = (ErrorStackElem * sz)()
+    res = ccs_error_stack_get_elems(self.handle, sz, v2, None)
+    Error.check(res)
+    return [x for x in v2]
 
 def get_thread_error():
   handle = ccs_error_stack(ccs_get_thread_error())

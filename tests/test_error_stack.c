@@ -6,13 +6,13 @@
 void
 test_error_stack(void)
 {
-	ccs_error_stack_t       s1, s2;
-	ccs_result_t            res;
-	ccs_result_t            err;
-	const char             *msg, *file, *func;
-	int                     line;
-	size_t                  num_elem;
-	ccs_error_stack_elem_t *elems;
+	ccs_error_stack_t      s1, s2;
+	ccs_result_t           res;
+	ccs_result_t           err;
+	const char            *msg, *file, *func;
+	int                    line;
+	size_t                 num_elem;
+	ccs_error_stack_elem_t elems[2];
 
 	s2 = ccs_get_thread_error();
 	assert(NULL == s2);
@@ -33,10 +33,9 @@ test_error_stack(void)
 	assert(CCS_RESULT_SUCCESS == res);
 	assert(!strcmp("An invalid value was specified for param: 5", msg));
 
-	res = ccs_error_stack_get_elems(s1, &num_elem, &elems);
+	res = ccs_error_stack_get_elems(s1, 0, NULL, &num_elem);
 	assert(CCS_RESULT_SUCCESS == res);
 	assert(0 == num_elem);
-	assert(NULL == elems);
 
 	file = __FILE__;
 	line = __LINE__;
@@ -44,10 +43,9 @@ test_error_stack(void)
 	res  = ccs_error_stack_push(s1, file, line, func);
 	assert(CCS_RESULT_SUCCESS == res);
 
-	res = ccs_error_stack_get_elems(s1, &num_elem, &elems);
+	res = ccs_error_stack_get_elems(s1, 2, elems, &num_elem);
 	assert(CCS_RESULT_SUCCESS == res);
 	assert(1 == num_elem);
-	assert(elems);
 	assert(!strcmp(file, elems[0].file));
 	assert(!strcmp(func, elems[0].func));
 	assert(line == elems[0].line);
@@ -58,10 +56,9 @@ test_error_stack(void)
 	res  = ccs_error_stack_push(s1, file, line, func);
 	assert(CCS_RESULT_SUCCESS == res);
 
-	res = ccs_error_stack_get_elems(s1, &num_elem, &elems);
+	res = ccs_error_stack_get_elems(s1, 2, elems, &num_elem);
 	assert(CCS_RESULT_SUCCESS == res);
 	assert(2 == num_elem);
-	assert(elems);
 	assert(!strcmp(file, elems[1].file));
 	assert(!strcmp(func, elems[1].func));
 	assert(line == elems[1].line);
@@ -81,10 +78,9 @@ test_error_stack(void)
 	assert(CCS_RESULT_SUCCESS == res);
 	assert(CCS_RESULT_ERROR_INVALID_OBJECT == err);
 
-	res = ccs_error_stack_get_elems(s2, &num_elem, &elems);
+	res = ccs_error_stack_get_elems(s2, 2, elems, &num_elem);
 	assert(CCS_RESULT_SUCCESS == res);
 	assert(1 == num_elem);
-	assert(elems);
 	assert(!strcmp(file, elems[0].file));
 	assert(!strcmp(func, elems[0].func));
 	assert(line == elems[0].line);
