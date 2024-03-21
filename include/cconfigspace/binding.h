@@ -98,12 +98,15 @@ ccs_binding_get_value_by_name(
  * Get the value of the parameter with the given handle.
  * @param[in] binding
  * @param[in] parameter parameter whose value to retrieve
+ * @param[out] found_ret a pointer to the an optional variable that will
+ *                       hold wether the parameter was found in the \p
+ *                       binding context
  * @param[out] value_ret a pointer to the variable that will hold the value
  * @return #CCS_RESULT_SUCCESS on success
  * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p binding is not a valid CCS
  * object
- * @return #CCS_RESULT_ERROR_INVALID_PARAMETER if \p parameter does not exist in
- * the \p binding context
+ * @return #CCS_RESULT_ERROR_INVALID_PARAMETER if \p found_ret is NULL
+ * and \p parameter does not exist in \p binding context
  * @remarks
  *   This function is thread-safe
  */
@@ -111,6 +114,7 @@ extern ccs_result_t
 ccs_binding_get_value_by_parameter(
 	ccs_binding_t   binding,
 	ccs_parameter_t parameter,
+	ccs_bool_t     *found_ret,
 	ccs_datum_t    *value_ret);
 
 /**

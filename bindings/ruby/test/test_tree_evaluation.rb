@@ -30,7 +30,7 @@ class CConfigSpaceTestTreeEvaluation < Minitest::Test
     assert_equal( [0.5, 0.6], ev1.values )
     assert_equal( [0.5, 0.6], ev1.objective_values )
     assert( ev1.check )
-    assert( os.check_values(ev1.values) )
+    assert( os.check(ev1) )
     ev2 = CCS::TreeEvaluation.new(objective_space: os, configuration: ts.sample, values: [0.5, 0.6])
     assert_equal( [0.5, 0.6], ev2.values )
     assert_equal( [0.5, 0.6], ev2.objective_values )

@@ -1,6 +1,6 @@
 import ctypes as ct
 from . import libcconfigspace
-from .base import Object, Error, Result, CEnumeration, _ccs_get_function, ccs_expression, Datum, DatumFix, ccs_parameter, ccs_context
+from .base import Object, Error, Result, CEnumeration, _ccs_get_function, ccs_expression, Datum, DatumFix, ccs_parameter, ccs_context, ccs_binding
 from .parameter import Parameter
 
 class ExpressionType(CEnumeration):
@@ -63,10 +63,10 @@ ccs_expression_get_num_nodes = _ccs_get_function("ccs_expression_get_num_nodes",
 ccs_expression_get_nodes = _ccs_get_function("ccs_expression_get_nodes", [ccs_expression, ct.c_size_t, ct.POINTER(ccs_expression), ct.POINTER(ct.c_size_t)])
 ccs_literal_get_value = _ccs_get_function("ccs_literal_get_value", [ccs_expression, ct.POINTER(Datum)])
 ccs_variable_get_parameter = _ccs_get_function("ccs_variable_get_parameter", [ccs_expression, ct.POINTER(ccs_parameter)])
-ccs_expression_eval = _ccs_get_function("ccs_expression_eval", [ccs_expression, ccs_context, ct.POINTER(Datum), ct.POINTER(Datum)])
-ccs_expression_list_eval_node = _ccs_get_function("ccs_expression_list_eval_node", [ccs_expression, ccs_context, ct.POINTER(Datum), ct.c_size_t, ct.POINTER(Datum)])
+ccs_expression_eval = _ccs_get_function("ccs_expression_eval", [ccs_expression, ct.c_size_t, ct.POINTER(ccs_binding), ct.POINTER(Datum)])
+ccs_expression_list_eval_node = _ccs_get_function("ccs_expression_list_eval_node", [ccs_expression, ct.c_size_t, ct.POINTER(ccs_binding), ct.c_size_t, ct.POINTER(Datum)])
 ccs_expression_get_parameters = _ccs_get_function("ccs_expression_get_parameters", [ccs_expression, ct.c_size_t, ct.POINTER(ccs_parameter), ct.POINTER(ct.c_size_t)])
-ccs_expression_check_context = _ccs_get_function("ccs_expression_check_context", [ccs_expression, ccs_context])
+ccs_expression_check_context = _ccs_get_function("ccs_expression_check_contexts", [ccs_expression, ct.c_size_t, ct.POINTER(ccs_context)])
 
 class Expression(Object):
 
@@ -144,26 +144,22 @@ class Expression(Object):
     self._parameters = tuple(Parameter.from_handle(ccs_parameter(x)) for x in v)
     return self._parameters
 
-  def eval(self, context = None, values = None):
-    if context and values:
-      count = context.num_parameters
-      if count != len(values):
-        raise Error(Result(Result.ERROR_INVALID_VALUE))
-      v = (Datum * count)()
-      ss = []
-      for i in range(count):
-        v[i].set_value(values[i], string_store = ss)
-      values = v
-      context = context.handle
-    elif context or values:
-      raise Error(Result(Result.ERROR_INVALID_VALUE))
+  def eval(self, bindings = None):
+    if bindings is not None:
+      num_bindings = len(bindings)
+      bindingsv = (ccs_binding * num_bindings)(*[x.handle.value for x in bindings])
+    else:
+      num_bindings = 0
+      bindingsv = None
     v = Datum()
-    res = ccs_expression_eval(self.handle, context, values, ct.byref(v))
+    res = ccs_expression_eval(self.handle, num_bindings, bindingsv, ct.byref(v))
     Error.check(res)
     return v.value
 
-  def check_context(self, context):
-    res = ccs_expression_check_context(self.handle, context.handle)
+  def check_context(self, contexts):
+    num_contexts = len(contexts)
+    contextsv = (ccs_context * num_context)(*[x.handle.value for x in contexts])
+    res = ccs_expression_check_context(self.handle, num_contexts, contextsv)
     Error.check(res)
 
   def __str__(self):
@@ -464,21 +460,15 @@ class ExpressionList(Expression):
     else:
       super().__init__(handle = handle, retain = retain, auto_release = auto_release)
   
-  def eval(self, index, context = None, values = None):
-    if context and values:
-      count = context.num_parameters
-      if count != len(values):
-        raise Error(Result(Result.ERROR_INVALID_VALUE))
-      v = (Datum * count)()
-      ss = []
-      for i in range(count):
-        v[i].set_value(values[i], string_store = ss)
-      values = v
-      context = context.handle
-    elif context or values:
-      raise Error(Result(Result.ERROR_INVALID_VALUE))
+  def eval(self, index, bindings = None):
+    if bindings is not None:
+      num_bindings = len(bindings)
+      bindingsv = (ccs_binding * num_bindings)(*[x.handle.value for x in bindings])
+    else:
+      num_bindings = 0
+      bindingsv = None
     v = Datum()
-    res = ccs_expression_list_eval_node(self.handle, context, values, index, ct.byref(v))
+    res = ccs_expression_list_eval_node(self.handle, num_bindings, bindingsv, index, ct.byref(v))
     Error.check(res)
     return v.value
 

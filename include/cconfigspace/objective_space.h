@@ -172,14 +172,17 @@ ccs_objective_space_get_parameter_index_by_name(
  * Get the index of an parameter in the objective space.
  * @param[in] objective_space
  * @param[in] parameter
+ * @param[out] found_ret a pointer to the an optional variable that will
+ *                       hold wether the parameter was found in the \p
+ *                       objective_space
  * @param[out] index_ret a pointer to the variable which will contain the index
  *                       of the parameter
  * @return #CCS_RESULT_SUCCESS on success
  * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p objective_space is not a valid
  * CCS objective space
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p index_ret is NULL
- * @return #CCS_RESULT_ERROR_INVALID_PARAMETER if \p objective_space does not
- *                                      contain \p parameter
+ * @return #CCS_RESULT_ERROR_INVALID_PARAMETER if \p found_ret is NULL and
+ * \p objective_space does not contain \p parameter
  * @remarks
  *   This function is thread-safe
  */
@@ -187,6 +190,7 @@ extern ccs_result_t
 ccs_objective_space_get_parameter_index(
 	ccs_objective_space_t objective_space,
 	ccs_parameter_t       parameter,
+	ccs_bool_t           *found_ret,
 	size_t               *index_ret);
 
 /**
@@ -195,6 +199,9 @@ ccs_objective_space_get_parameter_index(
  * @param[in] num_parameters the number of parameters to query the index for
  * @param[in] parameters an array of \p num_parameters parameters to query the
  *                       index for
+ * @param[out] found an optional array of \p num_parameters variables that
+ *                   will hold wether the parameter was found in \p
+ *                   objective_space
  * @param[out] indexes an array of \p num_parameters indices that will contain
  *                     the values of the parameter indices
  * @return #CCS_RESULT_SUCCESS on success
@@ -203,8 +210,8 @@ ccs_objective_space_get_parameter_index(
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p parameters is NULL and \p
  * num_parameters is greater than 0; or if \p indexes is NULL and \p
  * num_parameters is greater than 0
- * @return #CCS_RESULT_ERROR_INVALID_PARAMETER if at least one of the
- * parameters is not contained in \p objective_space
+ * @return #CCS_RESULT_ERROR_INVALID_PARAMETER if \p found is NULL and at
+ * least one of the parameters is not contained in \p objective_space
  * @remarks
  *   This function is thread-safe
  */
@@ -213,6 +220,7 @@ ccs_objective_space_get_parameter_indexes(
 	ccs_objective_space_t objective_space,
 	size_t                num_parameters,
 	ccs_parameter_t      *parameters,
+	ccs_bool_t           *found,
 	size_t               *indexes);
 
 /**
@@ -245,32 +253,30 @@ ccs_objective_space_get_parameters(
 	size_t               *num_parameters_ret);
 
 /**
- * Check that a set of values would create a valid evaluation for an
- * objective space.
+ * Check that a evaluation is a valid in a objective space.
  * @param[in] objective_space
- * @param[in] num_values the number of provided values
- * @param[in] values an array of \p num_values values that would become an
- *                   evaluation
+ * @param[in] evaluation
  * @param[out] is_valid_ret a pointer to a variable that will hold the result
  *                          of the check. Result will be #CCS_TRUE if the
- *                          evaluation is valid. Result will be #CCS_FALSE if
- *                          an parameter value is not a valid value
- *                          for this parameter;
+ *                          evaluation is valid. Result will be #CCS_FALSE
+ *                          if an active parameter value is not a valid value
+ *                          for this parameter; or if an inactive parameter
+ *                          value is not inactive; or if a forbidden clause
+ *                          would be evaluating to #ccs_true
  * @return #CCS_RESULT_SUCCESS on success
- * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p objective_space is not a valid
- * CCS objective space
- * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p values is NULL and num_values
- * is greater than 0
- * @return #CCS_RESULT_ERROR_INVALID_EVALUATION if \p num_values is not equal to
- * the number of parameters in the objective space
+ * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p objective_space is not a
+ * valid CCS objective space; or if \p evaluation is not a valid CCS
+ * evaluation
+ * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p is_valid_ret is NULL
+ * @return #CCS_RESULT_ERROR_INVALID_EVALUATION if \p evaluation is not
+ * associated to the objective space
  * @remarks
  *   This function is thread-safe
  */
 extern ccs_result_t
-ccs_objective_space_check_evaluation_values(
+ccs_objective_space_check_evaluation(
 	ccs_objective_space_t objective_space,
-	size_t                num_values,
-	ccs_datum_t          *values,
+	ccs_evaluation_t      evaluation,
 	ccs_bool_t           *is_valid_ret);
 
 /**

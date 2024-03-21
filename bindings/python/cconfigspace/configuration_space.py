@@ -15,7 +15,6 @@ ccs_configuration_space_get_conditions = _ccs_get_function("ccs_configuration_sp
 ccs_configuration_space_get_forbidden_clause = _ccs_get_function("ccs_configuration_space_get_forbidden_clause", [ccs_configuration_space, ct.c_size_t, ct.POINTER(ccs_expression)])
 ccs_configuration_space_get_forbidden_clauses = _ccs_get_function("ccs_configuration_space_get_forbidden_clauses", [ccs_configuration_space, ct.c_size_t, ct.POINTER(ccs_expression), ct.POINTER(ct.c_size_t)])
 ccs_configuration_space_check_configuration = _ccs_get_function("ccs_configuration_space_check_configuration", [ccs_configuration_space, ccs_configuration, ct.POINTER(ccs_bool)])
-ccs_configuration_space_check_configuration_values = _ccs_get_function("ccs_configuration_space_check_configuration_values", [ccs_configuration_space, ct.c_size_t, ct.POINTER(Datum), ct.POINTER(ccs_bool)])
 ccs_configuration_space_get_default_configuration = _ccs_get_function("ccs_configuration_space_get_default_configuration", [ccs_configuration_space, ct.POINTER(ccs_configuration)])
 ccs_configuration_space_sample = _ccs_get_function("ccs_configuration_space_sample", [ccs_configuration_space, ccs_distribution_space, ccs_rng, ct.POINTER(ccs_configuration)])
 ccs_configuration_space_samples = _ccs_get_function("ccs_configuration_space_samples", [ccs_configuration_space, ccs_distribution_space, ccs_rng, ct.c_size_t, ct.POINTER(ccs_configuration)])
@@ -144,19 +143,6 @@ class ConfigurationSpace(Context):
   def check(self, configuration):
     valid = ccs_bool()
     res = ccs_configuration_space_check_configuration(self.handle, configuration.handle, ct.byref(valid))
-    Error.check(res)
-    return False if valid.value == 0 else True
-
-  def check_values(self, values):
-    count = len(values)
-    if count != self.num_parameters:
-      raise Error(Result(Result.ERROR_INVALID_VALUE))
-    v = (Datum * count)()
-    ss = []
-    for i in range(count):
-      v[i].set_value(values[i], string_store = ss)
-    valid = ccs_bool()
-    res = ccs_configuration_space_check_configuration_values(self.handle, count, v, ct.byref(valid))
     Error.check(res)
     return False if valid.value == 0 else True
 

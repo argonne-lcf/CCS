@@ -1,12 +1,12 @@
 import ctypes as ct
-from .base import Object, Error, Result, _ccs_get_function, ccs_context, ccs_binding, ccs_parameter, Datum, DatumFix, ccs_hash, ccs_int
+from .base import Object, Error, Result, _ccs_get_function, ccs_context, ccs_binding, ccs_parameter, Datum, DatumFix, ccs_hash, ccs_int, ccs_bool
 from .parameter import Parameter
 
 ccs_binding_get_context = _ccs_get_function("ccs_binding_get_context", [ccs_binding, ct.POINTER(ccs_context)])
 ccs_binding_get_value = _ccs_get_function("ccs_binding_get_value", [ccs_binding, ct.c_size_t, ct.POINTER(Datum)])
 ccs_binding_get_values = _ccs_get_function("ccs_binding_get_values", [ccs_binding, ct.c_size_t, ct.POINTER(Datum), ct.POINTER(ct.c_size_t)])
 ccs_binding_get_value_by_name = _ccs_get_function("ccs_binding_get_value_by_name", [ccs_binding, ct.c_char_p, ct.POINTER(Datum)])
-ccs_binding_get_value_by_parameter = _ccs_get_function("ccs_binding_get_value_by_parameter", [ccs_binding, ccs_parameter, ct.POINTER(Datum)])
+ccs_binding_get_value_by_parameter = _ccs_get_function("ccs_binding_get_value_by_parameter", [ccs_binding, ccs_parameter, ct.POINTER(ccs_bool), ct.POINTER(Datum)])
 ccs_binding_hash = _ccs_get_function("ccs_binding_hash", [ccs_binding, ct.POINTER(ccs_hash)])
 ccs_binding_cmp = _ccs_get_function("ccs_binding_cmp", [ccs_binding, ccs_binding, ct.POINTER(ct.c_int)])
 
@@ -35,7 +35,7 @@ class Binding(Object):
   def value(self, parameter):
     v = Datum()
     if isinstance(parameter, Parameter):
-      res = ccs_binding_get_value_by_parameter(self.handle, parameter.handle, ct.byref(v))
+      res = ccs_binding_get_value_by_parameter(self.handle, parameter.handle, None, ct.byref(v))
     elif isinstance(parameter, str):
       res = ccs_binding_get_value_by_name(self.handle, str.encode(parameter), ct.byref(v))
     else:

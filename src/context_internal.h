@@ -41,6 +41,7 @@ static inline ccs_result_t
 _ccs_context_get_parameter_index(
 	ccs_context_t   context,
 	ccs_parameter_t parameter,
+	ccs_bool_t     *found_ret,
 	size_t         *index_ret)
 {
 	CCS_CHECK_PTR(index_ret);
@@ -49,8 +50,17 @@ _ccs_context_get_parameter_index(
 	HASH_FIND(
 		hh_handle, data->handle_hash, &parameter,
 		sizeof(ccs_parameter_t), wrapper);
-	CCS_REFUTE(!wrapper, CCS_RESULT_ERROR_INVALID_PARAMETER);
-	*index_ret = wrapper->index;
+	if (!found_ret) {
+		CCS_REFUTE(!wrapper, CCS_RESULT_ERROR_INVALID_PARAMETER);
+		*index_ret = wrapper->index;
+	} else {
+		if (wrapper) {
+			*found_ret = CCS_TRUE;
+			*index_ret = wrapper->index;
+		} else {
+			*found_ret = CCS_FALSE;
+		}
+	}
 	return CCS_RESULT_SUCCESS;
 }
 
@@ -186,17 +196,35 @@ _ccs_context_get_parameter_indexes(
 	ccs_context_t    context,
 	size_t           num_parameters,
 	ccs_parameter_t *parameters,
+	ccs_bool_t      *found,
 	size_t          *indexes)
 {
 	CCS_CHECK_ARY(num_parameters, parameters);
 	CCS_CHECK_ARY(num_parameters, indexes);
 	_ccs_parameter_index_hash_t *wrapper;
-	for (size_t i = 0; i < num_parameters; i++) {
-		HASH_FIND(
-			hh_handle, context->data->handle_hash, parameters + i,
-			sizeof(ccs_parameter_t), wrapper);
-		CCS_REFUTE(!wrapper, CCS_RESULT_ERROR_INVALID_PARAMETER);
-		indexes[i] = wrapper->index;
+	if (found) {
+		for (size_t i = 0; i < num_parameters; i++) {
+			HASH_FIND(
+				hh_handle, context->data->handle_hash,
+				parameters + i, sizeof(ccs_parameter_t),
+				wrapper);
+			if (wrapper) {
+				found[i]   = CCS_TRUE;
+				indexes[i] = wrapper->index;
+			} else {
+				found[i] = CCS_FALSE;
+			}
+		}
+	} else {
+		for (size_t i = 0; i < num_parameters; i++) {
+			HASH_FIND(
+				hh_handle, context->data->handle_hash,
+				parameters + i, sizeof(ccs_parameter_t),
+				wrapper);
+			CCS_REFUTE(
+				!wrapper, CCS_RESULT_ERROR_INVALID_PARAMETER);
+			indexes[i] = wrapper->index;
+		}
 	}
 	return CCS_RESULT_SUCCESS;
 }

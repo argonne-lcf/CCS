@@ -4,8 +4,8 @@ module CCS
   attach_function :ccs_context_get_parameter, [:ccs_context_t, :size_t, :pointer], :ccs_result_t
   attach_function :ccs_context_get_parameter_by_name, [:ccs_context_t, :string, :pointer], :ccs_result_t
   attach_function :ccs_context_get_parameter_index_by_name, [:ccs_context_t, :string, :pointer], :ccs_result_t
-  attach_function :ccs_context_get_parameter_index, [:ccs_context_t, :ccs_parameter_t, :pointer], :ccs_result_t
-  attach_function :ccs_context_get_parameter_indexes, [:ccs_context_t, :size_t, :pointer, :pointer], :ccs_result_t
+  attach_function :ccs_context_get_parameter_index, [:ccs_context_t, :ccs_parameter_t, :pointer, :pointer], :ccs_result_t
+  attach_function :ccs_context_get_parameter_indexes, [:ccs_context_t, :size_t, :pointer, :pointer, :pointer], :ccs_result_t
   attach_function :ccs_context_get_parameters, [:ccs_context_t, :size_t, :pointer, :pointer], :ccs_result_t
   attach_function :ccs_context_validate_value, [:ccs_context_t, :size_t, :ccs_datum_t, :pointer], :ccs_result_t
 
@@ -42,7 +42,7 @@ module CCS
 
     def parameter_index(parameter)
       ptr = MemoryPointer::new(:size_t)
-      CCS.error_check CCS.ccs_context_get_parameter_index(@handle, parameter, ptr)
+      CCS.error_check CCS.ccs_context_get_parameter_index(@handle, parameter, nil, ptr)
       ptr.read_size_t
     end
 

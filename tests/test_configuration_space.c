@@ -47,7 +47,7 @@ check_configuration(
 		assert(err == CCS_RESULT_SUCCESS);
 		assert(parameter == parameters[i]);
 		err = ccs_configuration_space_get_parameter_index(
-			configuration_space, parameter, &index);
+			configuration_space, parameter, NULL, &index);
 		assert(err == CCS_RESULT_SUCCESS);
 		assert(index == i);
 	}

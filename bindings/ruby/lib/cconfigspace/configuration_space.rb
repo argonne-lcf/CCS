@@ -7,7 +7,6 @@ module CCS
   attach_function :ccs_configuration_space_get_forbidden_clause, [:ccs_configuration_space_t, :size_t, :pointer], :ccs_result_t
   attach_function :ccs_configuration_space_get_forbidden_clauses, [:ccs_configuration_space_t, :size_t, :pointer, :pointer], :ccs_result_t
   attach_function :ccs_configuration_space_check_configuration, [:ccs_configuration_space_t, :ccs_configuration_t, :pointer], :ccs_result_t
-  attach_function :ccs_configuration_space_check_configuration_values, [:ccs_configuration_space_t, :size_t, :pointer, :pointer], :ccs_result_t
   attach_function :ccs_configuration_space_get_default_configuration, [:ccs_configuration_space_t, :pointer], :ccs_result_t
   attach_function :ccs_configuration_space_sample, [:ccs_configuration_space_t, :ccs_distribution_space_t, :ccs_rng_t, :pointer], :ccs_result_t
   attach_function :ccs_configuration_space_samples, [:ccs_configuration_space_t, :ccs_distribution_space_t, :ccs_rng_t, :size_t, :pointer], :ccs_result_t
@@ -138,19 +137,8 @@ module CCS
 
     def check(configuration)
       ptr = MemoryPointer::new(:ccs_bool_t)
-      CCS.error_check CCS.ccs_configuration_space_check_configuration(@handle, configuration, ptr)
+      CCS.error_check CCS.ccs_configuration_space_check_configuration(@handle, configuration.handle, ptr)
       return ptr.read_ccs_bool_t == CCS::FALSE ? false : true
-    end
-
-    def check_values(values)
-      count = values.size
-      raise CCSError, :CCS_RESULT_ERROR_INVALID_VALUE if count != num_parameters
-      ss = []
-      ptr = MemoryPointer::new(:ccs_datum_t, count)
-      values.each_with_index {  |v, i| Datum::new(ptr[i]).set_value(v, string_store: ss) }
-      ptr2 = MemoryPointer::new(:ccs_bool_t)
-      CCS.error_check CCS.ccs_configuration_space_check_configuration_values(@handle, count, ptr, ptr2)
-      return ptr2.read_ccs_bool_t == CCS::FALSE ? false : true
     end
 
     def default_configuration

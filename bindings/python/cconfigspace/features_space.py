@@ -5,7 +5,6 @@ from .parameter import Parameter
 
 ccs_create_features_space = _ccs_get_function("ccs_create_features_space", [ct.c_char_p, ct.c_size_t, ct.POINTER(ccs_parameter), ct.POINTER(ccs_features_space)])
 ccs_features_space_check_features = _ccs_get_function("ccs_features_space_check_features", [ccs_features_space, ccs_features, ct.POINTER(ccs_bool)])
-ccs_features_space_check_features_values = _ccs_get_function("ccs_features_space_check_features_values", [ccs_features_space, ct.c_size_t, ct.POINTER(Datum), ct.POINTER(ccs_bool)])
 
 class FeaturesSpace(Context):
   def __init__(self, handle = None, retain = False, auto_release = True,
@@ -30,15 +29,3 @@ class FeaturesSpace(Context):
     Error.check(res)
     return False if valid.value == 0 else True
 
-  def check_values(self, values):
-    count = len(values)
-    if count != self.num_parameters:
-      raise Error(Result(Result.ERROR_INVALID_VALUE))
-    v = (Datum * count)()
-    ss = []
-    for i in range(count):
-      v[i].set_value(values[i], string_store = ss)
-    valid = ccs_bool()
-    res = ccs_features_space_check_features_values(self.handle, count, v, ct.byref(valid))
-    Error.check(res)
-    return False if valid.value == 0 else True

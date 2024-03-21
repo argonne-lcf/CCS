@@ -91,11 +91,14 @@ static inline ccs_result_t
 _ccs_binding_get_value_by_parameter(
 	ccs_binding_t   binding,
 	ccs_parameter_t parameter,
+	ccs_bool_t     *found_ret,
 	ccs_datum_t    *value_ret)
 {
 	size_t index;
 	CCS_VALIDATE(ccs_context_get_parameter_index(
-		binding->data->context, parameter, &index));
+		binding->data->context, parameter, found_ret, &index));
+	if (found_ret && !*found_ret)
+		return CCS_RESULT_SUCCESS;
 	CCS_VALIDATE(_ccs_binding_get_value(binding, index, value_ret));
 	return CCS_RESULT_SUCCESS;
 }

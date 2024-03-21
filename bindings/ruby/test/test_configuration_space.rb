@@ -26,7 +26,6 @@ class CConfigSpaceTestConfigurationSpace < Minitest::Test
     c = cs.sample
     assert( cs.check(c) )
     assert_equal( cs.handle, c.configuration_space.handle )
-    assert( cs.check_values(cs.sample.values) )
     cs.samples(100).each { |c|
       assert( cs.check(c) )
     }

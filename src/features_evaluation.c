@@ -343,9 +343,9 @@ ccs_features_evaluation_check(
 	ccs_bool_t               *is_valid_ret)
 {
 	CCS_CHECK_OBJ(evaluation, CCS_OBJECT_TYPE_FEATURES_EVALUATION);
-	CCS_VALIDATE(ccs_objective_space_check_evaluation_values(
-		evaluation->data->objective_space, evaluation->data->num_values,
-		evaluation->data->values, is_valid_ret));
+	CCS_VALIDATE(ccs_objective_space_check_evaluation(
+		evaluation->data->objective_space, (ccs_evaluation_t)evaluation,
+		is_valid_ret));
 	return CCS_RESULT_SUCCESS;
 }
 
@@ -362,8 +362,7 @@ ccs_features_evaluation_get_objective_value(
 	CCS_VALIDATE(ccs_objective_space_get_objective(
 		evaluation->data->objective_space, index, &expression, &type));
 	CCS_VALIDATE(ccs_expression_eval(
-		expression, (ccs_context_t)evaluation->data->objective_space,
-		evaluation->data->values, value_ret));
+		expression, 1, (ccs_binding_t *)&evaluation, value_ret));
 	return CCS_RESULT_SUCCESS;
 }
 
@@ -390,9 +389,8 @@ ccs_features_evaluation_get_objective_values(
 				evaluation->data->objective_space, i,
 				&expression, &type));
 			CCS_VALIDATE(ccs_expression_eval(
-				expression,
-				(ccs_context_t)evaluation->data->objective_space,
-				evaluation->data->values, values + i));
+				expression, 1, (ccs_binding_t *)&evaluation,
+				values + i));
 		}
 		for (size_t i = count; i < num_values; i++)
 			values[i] = ccs_none;
@@ -491,13 +489,10 @@ ccs_features_evaluation_compare(
 			evaluation->data->objective_space, i, &expression,
 			&type));
 		CCS_VALIDATE(ccs_expression_eval(
-			expression,
-			(ccs_context_t)evaluation->data->objective_space,
-			evaluation->data->values, values));
+			expression, 1, (ccs_binding_t *)&evaluation, values));
 		CCS_VALIDATE(ccs_expression_eval(
-			expression,
-			(ccs_context_t)evaluation->data->objective_space,
-			other_evaluation->data->values, values + 1));
+			expression, 1, (ccs_binding_t *)&other_evaluation,
+			values + 1));
 		if ((values[0].type != CCS_DATA_TYPE_INT &&
 		     values[0].type != CCS_DATA_TYPE_FLOAT) ||
 		    values[0].type != values[1].type) {

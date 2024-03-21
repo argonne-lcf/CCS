@@ -1,5 +1,5 @@
 import ctypes as ct
-from .base import Object, Error, Result, _ccs_get_function, ccs_context, ccs_parameter, Datum, DatumFix
+from .base import Object, Error, Result, _ccs_get_function, ccs_context, ccs_parameter, Datum, DatumFix, ccs_bool
 from .parameter import Parameter
 
 ccs_context_get_name = _ccs_get_function("ccs_context_get_name", [ccs_context, ct.POINTER(ct.c_char_p)])
@@ -7,8 +7,8 @@ ccs_context_get_num_parameters = _ccs_get_function("ccs_context_get_num_paramete
 ccs_context_get_parameter = _ccs_get_function("ccs_context_get_parameter", [ccs_context, ct.c_size_t, ct.POINTER(ccs_parameter)])
 ccs_context_get_parameter_by_name = _ccs_get_function("ccs_context_get_parameter_by_name", [ccs_context, ct.c_char_p, ct.POINTER(ccs_parameter)])
 ccs_context_get_parameter_index_by_name = _ccs_get_function("ccs_context_get_parameter_index_by_name", [ccs_context, ct.c_char_p, ct.POINTER(ct.c_size_t)])
-ccs_context_get_parameter_index = _ccs_get_function("ccs_context_get_parameter_index", [ccs_context, ccs_parameter, ct.POINTER(ct.c_size_t)])
-ccs_context_get_parameter_indexes = _ccs_get_function("ccs_context_get_parameter_indexes", [ccs_context, ct.c_size_t, ct.POINTER(ccs_parameter), ct.POINTER(ct.c_size_t)])
+ccs_context_get_parameter_index = _ccs_get_function("ccs_context_get_parameter_index", [ccs_context, ccs_parameter, ct.POINTER(ccs_bool), ct.POINTER(ct.c_size_t)])
+ccs_context_get_parameter_indexes = _ccs_get_function("ccs_context_get_parameter_indexes", [ccs_context, ct.c_size_t, ct.POINTER(ccs_parameter), ct.POINTER(ccs_bool), ct.POINTER(ct.c_size_t)])
 ccs_context_get_parameters = _ccs_get_function("ccs_context_get_parameters", [ccs_context, ct.c_size_t, ct.POINTER(ccs_parameter), ct.POINTER(ct.c_size_t)])
 ccs_context_validate_value = _ccs_get_function("ccs_context_validate_value", [ccs_context, ct.c_size_t, DatumFix, ct.POINTER(Datum)])
 
@@ -38,7 +38,7 @@ class Context(Object):
 
   def parameter_index(self, parameter):
     v = ct.c_size_t()
-    res = ccs_context_get_parameter_index(self.handle, parameter.handle, ct.byref(v))
+    res = ccs_context_get_parameter_index(self.handle, parameter.handle, None, ct.byref(v))
     Error.check(res)
     return v.value
 

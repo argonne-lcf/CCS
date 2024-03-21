@@ -276,12 +276,11 @@ _ccs_configuration_space_add_forbidden_clause(
 	size_t                    index,
 	ccs_configuration_t       default_config)
 {
-	CCS_VALIDATE(ccs_expression_check_context(
-		expression, (ccs_context_t)configuration_space));
+	CCS_VALIDATE(ccs_expression_check_contexts(
+		expression, 1, (ccs_context_t *)&configuration_space));
 	ccs_datum_t d;
 	CCS_VALIDATE(ccs_expression_eval(
-		expression, (ccs_context_t)configuration_space,
-		default_config->data->values, &d));
+		expression, 1, (ccs_binding_t *)&default_config, &d));
 	CCS_REFUTE_MSG(
 		d.type == CCS_DATA_TYPE_BOOL && d.value.i == CCS_TRUE,
 		CCS_RESULT_ERROR_INVALID_CONFIGURATION,
@@ -449,7 +448,7 @@ _recompute_graph(ccs_configuration_space_t configuration_space)
 		CCS_VALIDATE_ERR_GOTO(
 			err,
 			ccs_configuration_space_get_parameter_indexes(
-				configuration_space, count, parents,
+				configuration_space, count, parents, NULL,
 				parents_index),
 			errmem);
 		for (size_t i = 0; i < count; i++) {
@@ -486,8 +485,8 @@ _ccs_configuration_space_set_condition(
 	size_t                    parameter_index,
 	ccs_expression_t          expression)
 {
-	CCS_VALIDATE(ccs_expression_check_context(
-		expression, (ccs_context_t)configuration_space));
+	CCS_VALIDATE(ccs_expression_check_contexts(
+		expression, 1, (ccs_context_t *)&configuration_space));
 	CCS_VALIDATE(ccs_retain_object(expression));
 	configuration_space->data->conditions[parameter_index] = expression;
 	return CCS_RESULT_SUCCESS;
@@ -713,11 +712,13 @@ ccs_result_t
 ccs_configuration_space_get_parameter_index(
 	ccs_configuration_space_t configuration_space,
 	ccs_parameter_t           parameter,
+	ccs_bool_t               *found_ret,
 	size_t                   *index_ret)
 {
 	CCS_CHECK_OBJ(configuration_space, CCS_OBJECT_TYPE_CONFIGURATION_SPACE);
 	CCS_VALIDATE(_ccs_context_get_parameter_index(
-		(ccs_context_t)(configuration_space), parameter, index_ret));
+		(ccs_context_t)(configuration_space), parameter, found_ret,
+		index_ret));
 	return CCS_RESULT_SUCCESS;
 }
 
@@ -726,12 +727,13 @@ ccs_configuration_space_get_parameter_indexes(
 	ccs_configuration_space_t configuration_space,
 	size_t                    num_parameters,
 	ccs_parameter_t          *parameters,
+	ccs_bool_t               *found,
 	size_t                   *indexes)
 {
 	CCS_CHECK_OBJ(configuration_space, CCS_OBJECT_TYPE_CONFIGURATION_SPACE);
 	CCS_VALIDATE(_ccs_context_get_parameter_indexes(
 		(ccs_context_t)configuration_space, num_parameters, parameters,
-		indexes));
+		found, indexes));
 	return CCS_RESULT_SUCCESS;
 }
 
@@ -770,14 +772,15 @@ _set_actives(
 	size_t           *indexes = configuration_space->data->sorted_indexes;
 	ccs_expression_t *conditions = configuration_space->data->conditions;
 	ccs_datum_t      *values     = configuration->data->values;
+
 	for (size_t i = 0; i < configuration_space->data->num_parameters; i++) {
 		size_t index = indexes[i];
 		if (!conditions[index])
 			continue;
 		ccs_datum_t result;
 		CCS_VALIDATE(ccs_expression_eval(
-			conditions[index], (ccs_context_t)configuration_space,
-			values, &result));
+			conditions[index], 1, (ccs_binding_t *)&configuration,
+			&result));
 		if (!(result.type == CCS_DATA_TYPE_BOOL &&
 		      result.value.i == CCS_TRUE))
 			values[index] = ccs_inactive;
@@ -816,7 +819,7 @@ errc:
 static ccs_result_t
 _test_forbidden(
 	ccs_configuration_space_t configuration_space,
-	ccs_datum_t              *values,
+	ccs_configuration_t       configuration,
 	ccs_bool_t               *is_valid)
 {
 	ccs_expression_t *forbidden_clauses =
@@ -826,8 +829,8 @@ _test_forbidden(
 	     i++) {
 		ccs_datum_t result;
 		CCS_VALIDATE(ccs_expression_eval(
-			forbidden_clauses[i],
-			(ccs_context_t)configuration_space, values, &result));
+			forbidden_clauses[i], 1,
+			(ccs_binding_t *)&configuration, &result));
 		if (result.type == CCS_DATA_TYPE_INACTIVE)
 			continue;
 		if (result.type == CCS_DATA_TYPE_BOOL &&
@@ -841,25 +844,22 @@ _test_forbidden(
 static inline ccs_result_t
 _check_configuration(
 	ccs_configuration_space_t configuration_space,
-	size_t                    num_values,
-	ccs_datum_t              *values,
+	ccs_configuration_t       configuration,
 	ccs_bool_t               *is_valid_ret)
 {
 	size_t           *indexes = configuration_space->data->sorted_indexes;
 	ccs_parameter_t  *parameters = configuration_space->data->parameters;
 	ccs_expression_t *conditions = configuration_space->data->conditions;
-	CCS_REFUTE(
-		num_values != configuration_space->data->num_parameters,
-		CCS_RESULT_ERROR_INVALID_CONFIGURATION);
-	for (size_t i = 0; i < num_values; i++) {
+	ccs_datum_t      *values     = configuration->data->values;
+
+	for (size_t i = 0; i < configuration_space->data->num_parameters; i++) {
 		ccs_bool_t active = CCS_TRUE;
 		size_t     index  = indexes[i];
 		if (conditions[index]) {
 			ccs_datum_t result;
 			CCS_VALIDATE(ccs_expression_eval(
-				conditions[index],
-				(ccs_context_t)configuration_space, values,
-				&result));
+				conditions[index], 1,
+				(ccs_binding_t *)&configuration, &result));
 			if (!(result.type == CCS_DATA_TYPE_BOOL &&
 			      result.value.i == CCS_TRUE))
 				active = CCS_FALSE;
@@ -878,8 +878,8 @@ _check_configuration(
 				return CCS_RESULT_SUCCESS;
 		}
 	}
-	CCS_VALIDATE(
-		_test_forbidden(configuration_space, values, is_valid_ret));
+	CCS_VALIDATE(_test_forbidden(
+		configuration_space, configuration, is_valid_ret));
 	return CCS_RESULT_SUCCESS;
 }
 
@@ -895,22 +895,7 @@ ccs_configuration_space_check_configuration(
 		configuration->data->configuration_space != configuration_space,
 		CCS_RESULT_ERROR_INVALID_CONFIGURATION);
 	CCS_VALIDATE(_check_configuration(
-		configuration_space, configuration->data->num_values,
-		configuration->data->values, is_valid_ret));
-	return CCS_RESULT_SUCCESS;
-}
-
-ccs_result_t
-ccs_configuration_space_check_configuration_values(
-	ccs_configuration_space_t configuration_space,
-	size_t                    num_values,
-	ccs_datum_t              *values,
-	ccs_bool_t               *is_valid_ret)
-{
-	CCS_CHECK_OBJ(configuration_space, CCS_OBJECT_TYPE_CONFIGURATION_SPACE);
-	CCS_CHECK_ARY(num_values, values);
-	CCS_VALIDATE(_check_configuration(
-		configuration_space, num_values, values, is_valid_ret));
+		configuration_space, configuration, is_valid_ret));
 	return CCS_RESULT_SUCCESS;
 }
 
@@ -956,9 +941,7 @@ _sample(ccs_configuration_space_t configuration_space,
 	CCS_VALIDATE_ERR_GOTO(
 		err, _set_actives(configuration_space, config), errmem);
 	CCS_VALIDATE_ERR_GOTO(
-		err,
-		_test_forbidden(
-			configuration_space, config->data->values, found),
+		err, _test_forbidden(configuration_space, config, found),
 		errmem);
 errmem:
 	free((void *)mem);

@@ -29,8 +29,8 @@ struct _ccs_features_evaluation_data_s {
 	size_t                  num_values;
 	ccs_datum_t            *values;
 	ccs_configuration_t     configuration;
-	ccs_features_t          features;
 	ccs_evaluation_result_t result;
+	ccs_features_t          features;
 };
 
 #endif //_FEATURES_EVALUATION_INTERNAL_H

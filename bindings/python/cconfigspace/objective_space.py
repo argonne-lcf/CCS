@@ -15,7 +15,7 @@ class ObjectiveType(CEnumeration):
 ccs_create_objective_space = _ccs_get_function("ccs_create_objective_space", [ct.c_char_p, ct.c_size_t, ct.POINTER(ccs_parameter), ct.c_size_t, ct.POINTER(ccs_expression), ct.POINTER(ObjectiveType), ct.POINTER(ccs_objective_space)])
 ccs_objective_space_get_objective = _ccs_get_function("ccs_objective_space_get_objective", [ccs_objective_space, ct.c_size_t, ct.POINTER(ccs_expression), ct.POINTER(ObjectiveType)])
 ccs_objective_space_get_objectives = _ccs_get_function("ccs_objective_space_get_objectives", [ccs_objective_space, ct.c_size_t, ct.POINTER(ccs_expression), ct.POINTER(ObjectiveType), ct.POINTER(ct.c_size_t)])
-ccs_objective_space_check_evaluation_values = _ccs_get_function("ccs_objective_space_check_evaluation_values", [ccs_objective_space, ct.c_size_t, ct.POINTER(Datum), ct.POINTER(ccs_bool)])
+ccs_objective_space_check_evaluation = _ccs_get_function("ccs_objective_space_check_evaluation", [ccs_objective_space, ccs_evaluation, ct.POINTER(ccs_bool)])
 
 class ObjectiveSpace(Context):
   def __init__(self, handle = None, retain = False, auto_release = True,
@@ -76,16 +76,9 @@ class ObjectiveSpace(Context):
     self._objectives = tuple((Expression.from_handle(ccs_expression(v[x])), t[x].value) for x in range(sz))
     return self._objectives
 
-  def check_values(self, values):
-    count = len(values)
-    if count != self.num_parameters:
-      raise Error(Result(Result.ERROR_INVALID_VALUE))
-    v = (Datum * count)()
-    ss = []
-    for i in range(count):
-      v[i].set_value(values[i], string_store = ss)
+  def check(self, evaluation):
     valid = ccs_bool()
-    res = ccs_objective_space_check_evaluation_values(self.handle, count, v, ct.byref(valid))
+    res = ccs_objective_space_check_evaluation(self.handle, evaluation.handle, ct.byref(valid))
     Error.check(res)
     return False if valid.value == 0 else True
 

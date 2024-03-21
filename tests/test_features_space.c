@@ -44,7 +44,7 @@ check_features(
 		assert(err == CCS_RESULT_SUCCESS);
 		assert(parameter == parameters[i]);
 		err = ccs_features_space_get_parameter_index(
-			features_space, parameter, &index);
+			features_space, parameter, NULL, &index);
 		assert(err == CCS_RESULT_SUCCESS);
 		assert(index == i);
 	}

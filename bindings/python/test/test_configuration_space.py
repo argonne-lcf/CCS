@@ -27,7 +27,6 @@ class TestConfigurationSpace(unittest.TestCase):
     c = cs.sample()
     self.assertTrue( cs.check(c) )
     self.assertEqual( cs.handle.value, c.configuration_space.handle.value )
-    self.assertTrue( cs.check_values(cs.sample().values) )
     for c in cs.samples(100):
       self.assertTrue( cs.check(c) )
 

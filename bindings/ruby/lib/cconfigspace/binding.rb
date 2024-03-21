@@ -3,7 +3,7 @@ module CCS
   attach_function :ccs_binding_get_value, [:ccs_binding_t, :size_t, :pointer], :ccs_result_t
   attach_function :ccs_binding_get_values, [:ccs_binding_t, :size_t, :pointer, :pointer], :ccs_result_t
   attach_function :ccs_binding_get_value_by_name, [:ccs_binding_t, :string, :pointer], :ccs_result_t
-  attach_function :ccs_binding_get_value_by_parameter, [:ccs_binding_t, :ccs_parameter_t, :pointer], :ccs_result_t
+  attach_function :ccs_binding_get_value_by_parameter, [:ccs_binding_t, :ccs_parameter_t, :pointer, :pointer], :ccs_result_t
   attach_function :ccs_binding_hash, [:ccs_binding_t, :pointer], :ccs_result_t
   attach_function :ccs_binding_cmp, [:ccs_binding_t, :ccs_binding_t, :pointer], :ccs_result_t
 
@@ -21,7 +21,7 @@ module CCS
         name = parameter.inspect
         CCS.error_check CCS.ccs_binding_get_value_by_name(@handle, name, ptr)
       when Parameter
-        CCS.error_check CCS.ccs_binding_get_by_parameter(@handle, parameter.handle, ptr)
+        CCS.error_check CCS.ccs_binding_get_value_by_parameter(@handle, parameter.handle, nil, ptr)
       when Integer
         CCS.error_check CCS.ccs_binding_get_value(@handle, parameter, ptr)
       else

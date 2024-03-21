@@ -586,7 +586,7 @@ kokkosp_request_values(
 		  size_t indx;
 		  CCS_CHECK(ccs_features_space_get_parameter_index(
 			  features_space, features[contextValues[i].type_id],
-			  &indx));
+			  NULL, &indx));
 		  extract_value(contextValues + i, values + indx);
 	  }
 	  CCS_CHECK(ccs_create_features(
@@ -610,7 +610,7 @@ kokkosp_request_values(
 		  size_t indx;
 		  CCS_CHECK(ccs_configuration_space_get_parameter_index(
 			  configuration_space,
-			  parameters[tuningValues[i].type_id], &indx));
+			  parameters[tuningValues[i].type_id], NULL, &indx));
 		  set_value(tuningValues + i, values + indx);
 	  }
 	  delete[] values;
