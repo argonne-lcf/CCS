@@ -149,7 +149,10 @@ _ccs_deserialize_bin_parameter_string(
 	_ccs_parameter_string_data_mock_t data;
 	CCS_VALIDATE(_ccs_deserialize_bin_ccs_parameter_string_data(
 		&data, buffer_size, buffer));
-	CCS_VALIDATE(ccs_create_string_parameter(data.name, parameter_ret));
+	CCS_VALIDATE(ccs_create_string_parameter(
+		data.name,
+		data.default_value.type == CCS_DATA_TYPE_STRING ? data.default_value.value.s : NULL,
+		parameter_ret));
 	return CCS_RESULT_SUCCESS;
 }
 

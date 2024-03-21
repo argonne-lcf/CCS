@@ -1,5 +1,5 @@
 module CCS
-  attach_function :ccs_create_configuration_space, [:string, :size_t, :pointer, :pointer, :size_t, :pointer, :pointer], :ccs_result_t
+  attach_function :ccs_create_configuration_space, [:string, :size_t, :pointer, :pointer, :size_t, :pointer, :size_t, :pointer, :pointer], :ccs_result_t
   attach_function :ccs_configuration_space_set_rng, [:ccs_configuration_space_t, :ccs_rng_t], :ccs_result_t
   attach_function :ccs_configuration_space_get_rng, [:ccs_configuration_space_t, :pointer], :ccs_result_t
   attach_function :ccs_configuration_space_get_condition, [:ccs_configuration_space_t, :size_t, :pointer], :ccs_result_t
@@ -11,11 +11,12 @@ module CCS
   attach_function :ccs_configuration_space_get_default_configuration, [:ccs_configuration_space_t, :pointer], :ccs_result_t
   attach_function :ccs_configuration_space_sample, [:ccs_configuration_space_t, :ccs_distribution_space_t, :ccs_rng_t, :pointer], :ccs_result_t
   attach_function :ccs_configuration_space_samples, [:ccs_configuration_space_t, :ccs_distribution_space_t, :ccs_rng_t, :size_t, :pointer], :ccs_result_t
+  attach_function :ccs_configuration_space_get_contexts, [:ccs_configuration_space_t, :size_t, :pointer, :pointer], :ccs_result_t
 
   class ConfigurationSpace < Context
 
     def initialize(handle = nil, retain: false, auto_release: true,
-                   name: "", parameters: nil, conditions: nil, forbidden_clauses: nil)
+                   name: "", parameters: nil, conditions: nil, forbidden_clauses: nil, contexts: nil)
       if handle
         super(handle, retain: retain, auto_release: auto_release)
       else
@@ -24,8 +25,13 @@ module CCS
         p_parameters.write_array_of_pointer(parameters.collect(&:handle))
         ptr = MemoryPointer::new(:ccs_configuration_space_t)
 
+        ctx_params = parameters
+        if contexts
+          ctx_params = contexts.reduce(ctx_params, :+)
+        end
+        ctx = ctx_params.map { |p| [p.name, p] }.to_h
+
         if forbidden_clauses
-          ctx = parameters.map { |p| [p.name, p] }.to_h
           p = ExpressionParser::new(ctx)
           forbidden_clauses = forbidden_clauses.collect { |e| e.kind_of?(String) ? p.parse(e) : e }
           fccount = forbidden_clauses.size
@@ -37,7 +43,6 @@ module CCS
         end
 
         if conditions
-          ctx = parameters.map { |p| [p.name, p] }.to_h
           indexdict = parameters.each_with_index.to_h
           p = ExpressionParser::new(ctx)
           conditions = conditions.transform_values { |v| v.kind_of?(String) ? p.parse(v) : v }
@@ -59,7 +64,15 @@ module CCS
           cptr = nil
         end
 
-        CCS.error_check CCS.ccs_create_configuration_space(name, count, p_parameters, cptr, fccount, fcptr, ptr)
+        ccount = 0
+        p_contexts = nil
+        if contexts
+          ccount = contexts.size
+          p_contexts = MemoryPointer::new(:ccs_context_t, ccount)
+          p_contexts.write_array_of_context_t(contexts)
+        end
+
+        CCS.error_check CCS.ccs_create_configuration_space(name, count, p_parameters, cptr, fccount, fcptr, ccount, p_contexts, ptr)
         super(ptr.read_ccs_configuration_space_t, retain:false)
       end
     end
@@ -133,6 +146,23 @@ module CCS
         ptr = MemoryPointer::new(:ccs_expression_t, count)
         CCS.error_check CCS.ccs_configuration_space_get_forbidden_clauses(@handle, count, ptr, nil)
         count.times.collect { |i| Expression::from_handle(ptr[i].read_pointer) }.freeze
+      end
+    end
+
+    def num_contexts
+      @num_contexts ||= begin
+        ptr = MemoryPointer::new(:size_t)
+        CCS.error_check CCS.ccs_configuration_space_get_contexts(@handle, 0, nil, ptr)
+        ptr.read_size_t
+      end
+    end
+
+    def contexts
+      @contexts ||= begin
+        count  = num_contexts
+        p_ctxs = MemoryPointer::new(:ccs_context_t, count)
+        CCS.error_check CCS.ccs_configuration_space_get_contexts(@handle, count, p_ctxs, nil)
+        p_ctxs.read_array_of_pointer(count).collect { |p| Context.from_handle(p) }.freeze
       end
     end
 

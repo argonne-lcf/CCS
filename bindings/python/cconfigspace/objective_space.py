@@ -12,32 +12,42 @@ class ObjectiveType(CEnumeration):
     ('MINIMIZE', 0),
     'MAXIMIZE' ]
 
-ccs_create_objective_space = _ccs_get_function("ccs_create_objective_space", [ct.c_char_p, ct.c_size_t, ct.POINTER(ccs_parameter), ct.c_size_t, ct.POINTER(ccs_expression), ct.POINTER(ObjectiveType), ct.POINTER(ccs_objective_space)])
+ccs_create_objective_space = _ccs_get_function("ccs_create_objective_space", [ct.c_char_p, ct.c_size_t, ct.POINTER(ccs_parameter), ct.c_size_t, ct.POINTER(ccs_expression), ct.POINTER(ObjectiveType), ct.c_size_t, ct.POINTER(ccs_context), ct.POINTER(ccs_objective_space)])
 ccs_objective_space_get_objective = _ccs_get_function("ccs_objective_space_get_objective", [ccs_objective_space, ct.c_size_t, ct.POINTER(ccs_expression), ct.POINTER(ObjectiveType)])
 ccs_objective_space_get_objectives = _ccs_get_function("ccs_objective_space_get_objectives", [ccs_objective_space, ct.c_size_t, ct.POINTER(ccs_expression), ct.POINTER(ObjectiveType), ct.POINTER(ct.c_size_t)])
 ccs_objective_space_check_evaluation_values = _ccs_get_function("ccs_objective_space_check_evaluation_values", [ccs_objective_space, ct.c_size_t, ct.POINTER(Datum), ct.POINTER(ccs_bool)])
+ccs_objective_space_get_contexts = _ccs_get_function("ccs_objective_space_get_contexts", [ccs_objective_space, ct.c_size_t, ct.POINTER(ccs_context), ct.POINTER(ct.c_size_t)])
 
 class ObjectiveSpace(Context):
   def __init__(self, handle = None, retain = False, auto_release = True,
-               name = "", parameters = [], objectives = [], types = None):
+               name = "", parameters = [], objectives = [], types = None, contexts = None):
     if handle is None:
       count = len(parameters)
-      ctx = dict(zip([x.name for x in parameters], parameters))
+      ctx_params = parameters
+      if contexts is not None:
+        for x in contexts:
+          ctx_params = ctx_params + x.parameters
+
+      ctx = dict(zip([x.name for x in ctx_params], ctx_params))
       if isinstance(objectives, dict):
         types = objectives.values()
         objectives = objectives.keys()
       objectives = [ parser.parse(objective, extra = ctx) if isinstance(objective, str) else objective for objective in objectives ]
       sz = len(objectives)
-      if types:
+      if types is not None:
         if len(types) != sz:
           raise Error(Result(Result.ERROR_INVALID_VALUE))
         types = (ObjectiveType * sz)(*types)
       else:
         types = (ObjectiveType * sz)(*([ObjectiveType.MINIMIZE] * sz))
+      sz_contexts = 0
+      if contexts is not None:
+        sz_contexts = len(contexts)
+        contexts = (ccs_context * sz_contexts)(*[x.handle.value for x in contexts])
       parameters = (ccs_parameter * count)(*[x.handle.value for x in parameters])
       objectives = (ccs_expression * sz)(*[x.handle.value for x in objectives])
       handle = ccs_objective_space()
-      res = ccs_create_objective_space(str.encode(name), count, parameters, sz, objectives, types, ct.byref(handle))
+      res = ccs_create_objective_space(str.encode(name), count, parameters, sz, objectives, types, sz_contexts, contexts, ct.byref(handle))
       Error.check(res)
       super().__init__(handle = handle, retain = False)
     else:
@@ -89,3 +99,23 @@ class ObjectiveSpace(Context):
     Error.check(res)
     return False if valid.value == 0 else True
 
+  @property
+  def num_contexts(self):
+    if hasattr(self, "_num_contexts"):
+      return self._num_contexts
+    v = ct.c_size_t()
+    res = ccs_objective_space_get_contexts(self.handle, 0, None, ct.byref(v))
+    Error.check(res)
+    self._num_contexts = v.value
+    return self._num_contexts
+
+  @property
+  def contexts(self):
+    if hasattr(self, "_contexts"):
+      return self._contexts
+    sz = self.num_contexts
+    v = (ccs_context * sz)()
+    res = ccs_objective_space_get_contexts(self.handle, sz, v, None)
+    Error.check(res)
+    self._contexts = tuple(Context.from_handle(ccs_context(x)) for x in v)
+    return self._contexts

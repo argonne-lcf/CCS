@@ -136,8 +136,7 @@ ccs_context_get_parameter_index_by_name(
  * Get the parameters in the given context.
  * @param[in] context
  * @param[in] num_parameters is the number of parameters that can be added to
- *                           \p parameters. If \p parameters is not NULL \p
- *                           num_parameters must be greater than 0
+ *                           \p parameters
  * @param[in] parameters an array of \p num_parameters that will contain the
  *                       returned parameters or NULL. If the array is too big,
  *                       extra values are set to NULL
@@ -214,6 +213,11 @@ ccs_context_validate_value(
 	size_t        index,
 	ccs_datum_t   value,
 	ccs_datum_t  *value_ret);
+
+extern ccs_result_t
+ccs_context_get_default_binding(
+	ccs_context_t  context,
+	ccs_binding_t *binding_ret);
 
 #ifdef __cplusplus
 }

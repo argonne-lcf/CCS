@@ -11,18 +11,19 @@ _ccs_deserialize_bin_features_space(
 	_ccs_object_deserialize_options_t *opts)
 {
 	_ccs_object_deserialize_options_t new_opts = *opts;
-	new_opts.map_values                        = CCS_FALSE;
-	new_opts.handle_map                        = NULL;
-	_ccs_object_internal_t obj;
-	ccs_object_t           handle;
-	ccs_result_t           res = CCS_RESULT_SUCCESS;
+	_ccs_object_internal_t            obj;
+	ccs_object_t                      handle;
+	ccs_result_t                      res = CCS_RESULT_SUCCESS;
 	CCS_VALIDATE(_ccs_deserialize_bin_ccs_object_internal(
 		&obj, buffer_size, buffer, &handle));
 	CCS_REFUTE(
 		obj.type != CCS_OBJECT_TYPE_FEATURES_SPACE,
 		CCS_RESULT_ERROR_INVALID_TYPE);
 
-	_ccs_context_data_mock_t data;
+	new_opts.map_values = CCS_TRUE;
+	CCS_VALIDATE(ccs_create_map(&new_opts.handle_map));
+
+	_ccs_context_data_mock_t data = {NULL, 0, NULL};
 	CCS_VALIDATE_ERR_GOTO(
 		res,
 		_ccs_deserialize_bin_ccs_context_data(
@@ -34,13 +35,22 @@ _ccs_deserialize_bin_features_space(
 			data.name, data.num_parameters, data.parameters,
 			features_space_ret),
 		end);
-	if (opts && opts->map_values && opts->handle_map)
+	if (opts && opts->map_values && opts->handle_map) {
+		CCS_VALIDATE_ERR_GOTO(
+			res,
+			_ccs_reverse_lookup_handles_and_add(
+				opts->handle_map,
+				new_opts.handle_map,
+				data.num_parameters,
+				(ccs_object_t *)data.parameters),
+			err_features_space);
 		CCS_VALIDATE_ERR_GOTO(
 			res,
 			_ccs_object_handle_check_add(
 				opts->handle_map, handle,
 				(ccs_object_t)*features_space_ret),
 			err_features_space);
+	}
 	goto end;
 err_features_space:
 	ccs_release_object(*features_space_ret);
@@ -52,6 +62,7 @@ end:
 				ccs_release_object(data.parameters[i]);
 		free(data.parameters);
 	}
+	ccs_release_object(new_opts.handle_map);
 	return res;
 }
 

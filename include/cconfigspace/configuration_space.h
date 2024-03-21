@@ -24,22 +24,27 @@ extern "C" {
  *                       a NULL entry in the array means no condition is
  *                       attached to the corresponding parameter.
  * @param[in] num_forbidden_clauses the number of provided forbidden clauses
- * @param[in] forbidden_clauses an array o \p num_forbidden_clauses expressions
+ * @param[in] forbidden_clauses an array of \p num_forbidden_clauses expressions
  *                              to add as forbidden clauses to the
  *                              configuration space
+ * @param[in] num_contexts the number of provided contexts
+ * @param[in] contexts an array of \p num_contexts contexts
  * @param[out] configuration_space_ret a pointer to the variable that will hold
  *                                     the newly created configuration space
  * @return #CCS_RESULT_SUCCESS on success
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p name is NULL; or if \p
  * configuration_space_ret is NULL; or if \p parameters is NULL; or if \p
  * num_parameters is NULL; or if \p forbidden_clauses is NULL and \p
- * num_forbidden_clauses is greater than 0
+ * num_forbidden_clauses is greater than 0; or if \p contexts is NULL and
+ * \p num_contexts is greater than 0
  * @return #CCS_RESULT_ERROR_INVALID_OBJECT if a parameter is not a valid CCS
- * parameter; or if an expression is not a valid CCS expression
+ * parameter; or if an expression is not a valid CCS expression; or if a
+ * context is not a valid CCS context
  * @return #CCS_RESULT_ERROR_INVALID_PARAMETER if a parameter's type is
  * CCS_PARAMETER_TYPE_STRING; or if a parameter appears more than once in \p
  * parameters; or if two or more parameters share the same name; or if an
- * expression references a parameter that is not in the configuration space
+ * expression references a parameter that is not in the configuration
+ * space or in one of the provided contexts
  * @return #CCS_RESULT_ERROR_INVALID_CONFIGURATION if adding one of the provided
  * forbidden clause would render the default configuration invalid
  * @return #CCS_RESULT_ERROR_INVALID_GRAPH if the addition of the conditions
@@ -57,6 +62,8 @@ ccs_create_configuration_space(
 	ccs_expression_t          *conditions,
 	size_t                     num_forbidden_clauses,
 	ccs_expression_t          *forbidden_clauses,
+	size_t                     num_contexts,
+	ccs_context_t             *contexts,
 	ccs_configuration_space_t *configuration_space_ret);
 
 /**
@@ -240,8 +247,7 @@ ccs_configuration_space_get_parameter_indexes(
  * Get the parameters in the given configuration space.
  * @param[in] configuration_space
  * @param[in] num_parameters is the number of parameters that can be added to
- *                           \p parameters. If \p parameters is not NULL \p
- *                           num_parameters must be greater than 0
+ *                           \p parameters
  * @param[out] parameters an array of \p num_parameters that will contain the
  *                        returned parameters or NULL. If the array is too big,
  *                        extra values are set to NULL
@@ -320,8 +326,7 @@ ccs_configuration_space_get_condition(
  * Get the active conditions of the parameters in a configuration space.
  * @param[in] configuration_space
  * @param[in] num_expressions is the number of expressions that can be added to
- *                            \p expressions. If \p expressions is not NULL, \p
- *                            num_expressions must be greater than 0
+ *                            \p expressions
  * @param[out] expressions an array of \p num_expressions that will contain the
  *                         returned expression, or NULL. If the array is too
  *                         big, extra values are set to NULL. If an
@@ -372,8 +377,7 @@ ccs_configuration_space_get_forbidden_clause(
  * Get the forbidden clauses in a configuration space.
  * @param[in] configuration_space
  * @param[in] num_expressions the number of expressions that can be added to \p
- *                            expressions. If \p expressions is not NULL, \p
- *                            num_expressions must be greater than 0
+ *                            expressions
  * @param[out] expressions an array of \p num_expressions that will contain the
  *                         returned expressions, or NULL. If the array is too
  *                         big, extra values are set to NULL
@@ -385,7 +389,7 @@ ccs_configuration_space_get_forbidden_clause(
  * valid CCS configuration space
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p expressions is NULL and \p
  * num_expressions is greater than 0; or if or if \p expressions is NULL and \p
- * num_expressions_ret is NULL; or if \p num_expressions is less than then
+ * num_expressions_ret is NULL; or if \p num_expressions is less than the
  * number of expressions that would be returned
  * @remarks
  *   This function is thread-safe
@@ -396,6 +400,34 @@ ccs_configuration_space_get_forbidden_clauses(
 	size_t                    num_expressions,
 	ccs_expression_t         *expressions,
 	size_t                   *num_expressions_ret);
+
+/**
+ * Get the contexts associated to the configuration space.
+ * @param[in] configuration_space
+ * @param[in] num_contexts the number of contexts that can be added to
+ *                         \p contexts
+ * @param[out] contexts an array of \p num_contexts that will contain the
+ *                      returned expressions, or NULL. If the array is too
+ *                      big, extra values are set to NULL
+ * @param[out] num_contexts_ret a pointer to a variable that will contain the
+ *                              number of expressions that are or would be
+ *                              returned. Can be NULL
+ * @return #CCS_RESULT_SUCCESS on success
+ * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p configuration_space is not a
+ * valid CCS configuration space
+ * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p contexts is NULL and
+ * \p num_contexts is greater than 0; or if or if \p contexts is NULL and
+ * \p num_contexts_ret is NULL; or if \p num_contexts is less than the
+ * number of contexts that would be returned
+ * @remarks
+ *   This function is thread-safe
+ */
+extern ccs_result_t
+ccs_configuration_space_get_contexts(
+	ccs_configuration_space_t configuration_space,
+	size_t                    num_contexts,
+	ccs_context_t            *contexts,
+	size_t                   *num_contexts_ret);
 
 /**
  * Check that a configuration is a valid in a configuration space.
@@ -501,6 +533,8 @@ ccs_configuration_space_sample(
 	ccs_configuration_space_t configuration_space,
 	ccs_distribution_space_t  distribution_space,
 	ccs_rng_t                 rng,
+	size_t                    num_bindings,
+	ccs_binding_t            *bindings,
 	ccs_configuration_t      *configuration_ret);
 
 /**
@@ -535,6 +569,8 @@ ccs_configuration_space_samples(
 	ccs_configuration_space_t configuration_space,
 	ccs_distribution_space_t  distribution_space,
 	ccs_rng_t                 rng,
+	size_t                    num_bindings,
+	ccs_binding_t            *bindings,
 	size_t                    num_configurations,
 	ccs_configuration_t      *configurations);
 

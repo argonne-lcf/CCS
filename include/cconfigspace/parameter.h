@@ -364,6 +364,8 @@ ccs_discrete_parameter_get_values(
  * within feature space. Cannot be sampled and thus doesn't have a default
  * value. Checks will always return valid unless the value is not a string.
  * @param[in] name name of the parameter
+ * @param[in] default_value optional default value. If NULL CCS_NONE_VAL 
+ *                          will be returned when default value is queried
  * @param[out] parameter_ret a pointer to the variable that will hold the newly
  *                           created string parameter
  * @return #CCS_RESULT_SUCCESS on success
@@ -375,7 +377,10 @@ ccs_discrete_parameter_get_values(
  *   This function is thread-safe
  */
 extern ccs_result_t
-ccs_create_string_parameter(const char *name, ccs_parameter_t *parameter_ret);
+ccs_create_string_parameter(
+	const char      *name,
+	const char      *default_value,
+	ccs_parameter_t *parameter_ret);
 
 /**
  * Get the type of a parameter.

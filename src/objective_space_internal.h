@@ -31,6 +31,10 @@ struct _ccs_objective_space_data_s {
 	_ccs_parameter_index_hash_t *handle_hash;
 	size_t                       num_objectives;
 	_ccs_objective_t            *objectives;
+	size_t                       num_contexts;
+	ccs_context_t               *contexts;
+	// for expression validation
+	ccs_context_t               *all_contexts;
 };
 
 #endif //_OBJECTIVE_SPACE_INTERNAL_H

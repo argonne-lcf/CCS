@@ -1,11 +1,11 @@
 #include "cconfigspace_internal.h"
 #include "context_internal.h"
 
-#define CCS_CHECK_CONTEXT(c)                                                   \
-	CCS_REFUTE_MSG(                                                        \
-		CCS_UNLIKELY(!(c) || !(c)->data),                              \
-		CCS_RESULT_ERROR_INVALID_OBJECT,                               \
-		"Invalid CCS context '%s' == %p supplied", #c, c)
+static inline _ccs_context_ops_t *
+ccs_context_get_ops(ccs_context_t context)
+{
+	return (_ccs_context_ops_t *)context->obj.ops;
+}
 
 ccs_result_t
 ccs_context_get_parameter_index(
@@ -103,9 +103,24 @@ ccs_context_validate_value(
 }
 
 ccs_result_t
-ccs_context_get_name(ccs_context_t context, const char **name_ret)
+ccs_context_get_name(
+	ccs_context_t context,
+	const char  **name_ret)
 {
 	CCS_CHECK_CONTEXT(context);
 	CCS_VALIDATE(_ccs_context_get_name(context, name_ret));
+	return CCS_RESULT_SUCCESS;
+}
+
+ccs_result_t
+ccs_context_get_default_binding(
+	ccs_context_t  context,
+	ccs_binding_t *binding_ret)
+{
+	CCS_CHECK_CONTEXT(context);
+	CCS_CHECK_PTR(binding_ret);
+	_ccs_context_ops_t *ops = ccs_context_get_ops(context);
+	CCS_VALIDATE(ops->get_default_binding(
+		context, binding_ret));
 	return CCS_RESULT_SUCCESS;
 }

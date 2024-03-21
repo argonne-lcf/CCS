@@ -64,7 +64,7 @@ ccs_map_exist(ccs_map_t map, ccs_datum_t key, ccs_bool_t *exist);
  *                      value or ccs_none if not found
  * @return #CCS_RESULT_SUCCESS on success
  * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p map is not a valid CCS map
- * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p value_ret is NUL
+ * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p value_ret is NULL
  * @remarks
  *   This function is thread-safe
  */

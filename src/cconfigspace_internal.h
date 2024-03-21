@@ -235,6 +235,30 @@ _ccs_do_nothing(void)
 		"Invalid CCS object '%s' == %p supplied, expected %s", #o, o,  \
 		#t)
 
+#define CCS_CHECK_CONTEXT(c)                                                   \
+	CCS_REFUTE_MSG(                                                        \
+		!(c) || !((_ccs_object_template_t *)(c))->data || (            \
+			((_ccs_object_template_t *)(c))->obj.type !=           \
+				CCS_OBJECT_TYPE_CONFIGURATION_SPACE &&         \
+			((_ccs_object_template_t *)(c))->obj.type !=           \
+				CCS_OBJECT_TYPE_OBJECTIVE_SPACE &&             \
+			((_ccs_object_template_t *)(c))->obj.type !=           \
+				CCS_OBJECT_TYPE_FEATURES_SPACE),               \
+		CCS_RESULT_ERROR_INVALID_OBJECT,                               \
+		"Invalid CCS context '%s' == %p supplied", #c, c)
+
+#define CCS_CHECK_BINDING(b)                                                   \
+	CCS_REFUTE_MSG(                                                        \
+		!(b) || !((_ccs_object_template_t *)(b))->data || (            \
+			((_ccs_object_template_t *)(b))->obj.type !=           \
+				CCS_OBJECT_TYPE_CONFIGURATION &&               \
+			((_ccs_object_template_t *)(b))->obj.type !=           \
+				CCS_OBJECT_TYPE_EVALUATION &&                  \
+			((_ccs_object_template_t *)(b))->obj.type !=           \
+				CCS_OBJECT_TYPE_FEATURES),                     \
+		CCS_RESULT_ERROR_INVALID_OBJECT,                               \
+		"Invalid CCS binding '%s' == %p supplied", #b, b)
+
 #define CCS_CHECK_PTR(p)                                                       \
 	CCS_REFUTE_MSG(                                                        \
 		!(p), CCS_RESULT_ERROR_INVALID_VALUE,                          \
@@ -1203,6 +1227,21 @@ _ccs_deserialize_bin_ccs_object_internal(
 }
 
 static inline ccs_result_t
+_ccs_handle_object_check_add(
+	ccs_map_t    map,
+	ccs_object_t obj,
+	ccs_object_t handle)
+{
+	ccs_bool_t  found;
+	ccs_datum_t d = ccs_object(handle);
+	d.flags |= CCS_DATUM_FLAG_ID;
+	CCS_VALIDATE(ccs_map_exist(map, ccs_object(obj), &found));
+	CCS_REFUTE(found, CCS_RESULT_ERROR_DUPLICATE_HANDLE);
+	CCS_VALIDATE(ccs_map_set(map, ccs_object(obj), d));
+	return CCS_RESULT_SUCCESS;
+}
+
+static inline ccs_result_t
 _ccs_object_handle_check_add(
 	ccs_map_t    map,
 	ccs_object_t handle,
@@ -1215,6 +1254,70 @@ _ccs_object_handle_check_add(
 	CCS_REFUTE(found, CCS_RESULT_ERROR_DUPLICATE_HANDLE);
 	CCS_VALIDATE(ccs_map_set(map, d, ccs_object(obj)));
 	return CCS_RESULT_SUCCESS;
+}
+
+static inline ccs_result_t
+_ccs_reverse_lookup_handles_and_add(
+	ccs_map_t     target_map,
+	ccs_map_t     lookup_map,
+	size_t        num_handles,
+	ccs_object_t *handles)
+{
+	CCS_CHECK_ARY(num_handles, handles);
+	ccs_result_t res         = CCS_RESULT_SUCCESS;
+	ccs_map_t    inverse_map = NULL;
+	size_t       num_pairs   = 0;
+	ccs_datum_t *keys        = NULL;
+	ccs_datum_t *values      = NULL;
+
+	if (!num_handles)
+		return CCS_RESULT_SUCCESS;
+
+	CCS_VALIDATE(ccs_map_get_pairs(
+		lookup_map, 0, NULL, NULL, &num_pairs));
+	keys = (ccs_datum_t *)malloc(sizeof(ccs_datum_t) * num_pairs * 2);
+	CCS_REFUTE(!keys, CCS_RESULT_ERROR_OUT_OF_MEMORY);
+	values = keys + num_pairs;
+	CCS_VALIDATE_ERR_GOTO(
+		res,
+		ccs_map_get_pairs(
+			lookup_map,
+			num_pairs, keys, values, NULL),
+		end);
+	CCS_VALIDATE_ERR_GOTO(
+		res,
+		ccs_create_map(&inverse_map),
+		end);
+	for (size_t i = 0; i < num_pairs; i++) {
+		CCS_VALIDATE_ERR_GOTO(
+			res,
+			_ccs_handle_object_check_add(
+				inverse_map,
+				values[i].value.o,
+				keys[i].value.o),
+			end); 
+	}
+	for (size_t i = 0; i < num_handles; i++) {
+		CCS_VALIDATE_ERR_GOTO(
+			res,
+			ccs_map_get(
+				inverse_map,
+				ccs_object(handles[i]),
+				keys + i),
+			end);
+		CCS_VALIDATE_ERR_GOTO(
+			res,
+			_ccs_object_handle_check_add(
+				target_map,
+				keys[i].value.o,
+				handles[i]),
+			end);
+	}
+end:
+	free(keys);
+	if (inverse_map)
+		ccs_release_object(inverse_map);
+	return res;
 }
 
 struct _ccs_object_deserialize_options_s {

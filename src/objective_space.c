@@ -6,11 +6,15 @@
 static ccs_result_t
 _ccs_objective_space_del(ccs_object_t object)
 {
-	ccs_objective_space_t objective_space = (ccs_objective_space_t)object;
-	size_t           num_parameters = objective_space->data->num_parameters;
-	ccs_parameter_t *parameters     = objective_space->data->parameters;
-	size_t           num_objectives = objective_space->data->num_objectives;
-	_ccs_objective_t *objectives    = objective_space->data->objectives;
+	ccs_objective_space_t objective_space =
+		(ccs_objective_space_t)object;
+	_ccs_objective_space_data_t *data = objective_space->data;
+	size_t            num_parameters = data->num_parameters;
+	ccs_parameter_t  *parameters     = data->parameters;
+	size_t            num_objectives = data->num_objectives;
+	_ccs_objective_t *objectives     = data->objectives;
+	size_t            num_contexts   = data->num_contexts;
+	ccs_context_t    *contexts       = data->contexts;
 
 	for (size_t i = 0; i < num_parameters; i++)
 		if (parameters[i])
@@ -20,8 +24,12 @@ _ccs_objective_space_del(ccs_object_t object)
 		if (objectives[i].expression)
 			ccs_release_object(objectives[i].expression);
 
-	HASH_CLEAR(hh_name, objective_space->data->name_hash);
-	HASH_CLEAR(hh_handle, objective_space->data->handle_hash);
+	for (size_t i = 0; i < num_contexts; i++)
+		if (contexts[i])
+			ccs_release_object(contexts[i]);
+
+	HASH_CLEAR(hh_name, data->name_hash);
+	HASH_CLEAR(hh_handle, data->handle_hash);
 	return CCS_RESULT_SUCCESS;
 }
 
@@ -35,10 +43,13 @@ _ccs_serialize_bin_size_ccs_objective_space_data(
 	ccs_parameter_t  *parameters     = data->parameters;
 	size_t            num_objectives = data->num_objectives;
 	_ccs_objective_t *objectives     = data->objectives;
+	size_t            num_contexts   = data->num_contexts;
+	ccs_context_t    *contexts       = data->contexts;
 
 	*cum_size += _ccs_serialize_bin_size_string(data->name);
 	*cum_size += _ccs_serialize_bin_size_size(num_parameters);
 	*cum_size += _ccs_serialize_bin_size_size(num_objectives);
+	*cum_size += _ccs_serialize_bin_size_size(num_contexts);
 
 	/* parameters */
 	for (size_t i = 0; i < num_parameters; i++)
@@ -55,6 +66,11 @@ _ccs_serialize_bin_size_ccs_objective_space_data(
 			objectives[i].type);
 	}
 
+	/* contexts */
+	for (size_t i = 0; i < num_contexts; i++)
+		*cum_size += _ccs_serialize_bin_size_ccs_object(
+			contexts[i]);
+
 	return CCS_RESULT_SUCCESS;
 }
 
@@ -69,6 +85,8 @@ _ccs_serialize_bin_ccs_objective_space_data(
 	ccs_parameter_t  *parameters     = data->parameters;
 	size_t            num_objectives = data->num_objectives;
 	_ccs_objective_t *objectives     = data->objectives;
+	size_t            num_contexts   = data->num_contexts;
+	ccs_context_t    *contexts       = data->contexts;
 
 	CCS_VALIDATE(
 		_ccs_serialize_bin_string(data->name, buffer_size, buffer));
@@ -76,6 +94,8 @@ _ccs_serialize_bin_ccs_objective_space_data(
 		_ccs_serialize_bin_size(num_parameters, buffer_size, buffer));
 	CCS_VALIDATE(
 		_ccs_serialize_bin_size(num_objectives, buffer_size, buffer));
+	CCS_VALIDATE(
+		_ccs_serialize_bin_size(num_contexts, buffer_size, buffer));
 
 	/* parameters */
 	for (size_t i = 0; i < num_parameters; i++)
@@ -91,6 +111,11 @@ _ccs_serialize_bin_ccs_objective_space_data(
 		CCS_VALIDATE(_ccs_serialize_bin_ccs_objective_type(
 			objectives[i].type, buffer_size, buffer));
 	}
+
+	/* contexts */
+	for (size_t i = 0; i < num_contexts; i++)
+		CCS_VALIDATE(_ccs_serialize_bin_ccs_object(
+			contexts[i], buffer_size, buffer));
 
 	return CCS_RESULT_SUCCESS;
 }
@@ -173,9 +198,23 @@ _ccs_objective_space_serialize(
 	return CCS_RESULT_SUCCESS;
 }
 
+static inline ccs_result_t
+_ccs_objective_space_get_default_binding(
+	ccs_context_t  context,
+	ccs_binding_t *binding_ret)
+{
+	(void)context;
+	(void)binding_ret;
+	CCS_RAISE(
+		CCS_RESULT_ERROR_UNSUPPORTED_OPERATION,
+		"Objective spaces don't have default bindings");
+}
+
 static _ccs_objective_space_ops_t _objective_space_ops = {
-	{{&_ccs_objective_space_del, &_ccs_objective_space_serialize_size,
-	  &_ccs_objective_space_serialize}}};
+	{{&_ccs_objective_space_del,
+	  &_ccs_objective_space_serialize_size,
+	  &_ccs_objective_space_serialize},
+	  &_ccs_objective_space_get_default_binding}};
 
 static ccs_result_t
 _ccs_objective_space_add_parameters(
@@ -198,8 +237,10 @@ _ccs_objective_space_add_objectives(
 {
 	_ccs_objective_t *objectives = objective_space->data->objectives;
 	for (size_t i = 0; i < num_objectives; i++) {
-		CCS_VALIDATE(ccs_expression_check_context(
-			expressions[i], (ccs_context_t)objective_space));
+		CCS_VALIDATE(ccs_expression_check_contexts(
+			expressions[i],
+			objective_space->data->num_contexts + 1,
+			objective_space->data->all_contexts));
 		CCS_VALIDATE(ccs_retain_object(expressions[i]));
 		objectives[i].expression = expressions[i];
 		objectives[i].type       = types[i];
@@ -215,6 +256,8 @@ ccs_create_objective_space(
 	size_t                 num_objectives,
 	ccs_expression_t      *objectives,
 	ccs_objective_type_t  *types,
+	size_t                 num_contexts,
+	ccs_context_t         *contexts,
 	ccs_objective_space_t *objective_space_ret)
 {
 	CCS_CHECK_PTR(name);
@@ -222,6 +265,9 @@ ccs_create_objective_space(
 	CCS_CHECK_ARY(num_parameters, parameters);
 	CCS_CHECK_ARY(num_objectives, objectives);
 	CCS_CHECK_ARY(num_objectives, types);
+	CCS_CHECK_ARY(num_contexts, contexts);
+	for (size_t i = 0; i < num_contexts; i++)
+		CCS_CHECK_CONTEXT(contexts[i]);
 
 	uintptr_t mem = (uintptr_t)calloc(
 		1,
@@ -230,6 +276,8 @@ ccs_create_objective_space(
 			sizeof(ccs_parameter_t) * num_parameters +
 			sizeof(_ccs_parameter_index_hash_t) * num_parameters +
 			sizeof(_ccs_objective_t) * num_objectives +
+			sizeof(ccs_context_t) * num_contexts +
+			sizeof(ccs_context_t) * (1 + num_contexts) +
 			strlen(name) + 1);
 	CCS_REFUTE(!mem, CCS_RESULT_ERROR_OUT_OF_MEMORY);
 	uintptr_t             mem_orig = mem;
@@ -247,10 +295,25 @@ ccs_create_objective_space(
 	mem += sizeof(_ccs_parameter_index_hash_t) * num_parameters;
 	obj_space->data->objectives = (_ccs_objective_t *)mem;
 	mem += sizeof(_ccs_objective_t) * num_objectives;
-	obj_space->data->name           = (const char *)mem;
-	obj_space->data->num_parameters = num_parameters;
-	obj_space->data->num_objectives = num_objectives;
+	obj_space->data->contexts = (ccs_context_t *)mem;
+	mem += sizeof(ccs_context_t) * num_contexts;
+	obj_space->data->all_contexts = (ccs_context_t *)mem;
+	mem += sizeof(ccs_context_t) * (1 + num_contexts);
+	obj_space->data->name            = (const char *)mem;
+	obj_space->data->num_parameters  = num_parameters;
+	obj_space->data->num_objectives  = num_objectives;
+	obj_space->data->num_contexts = num_contexts;
 	strcpy((char *)(obj_space->data->name), name);
+
+	obj_space->data->all_contexts[0] = (ccs_context_t)obj_space;
+	for (size_t i = 0; i < num_contexts; i++) {
+		CCS_VALIDATE_ERR_GOTO(
+			err,
+			ccs_retain_object(contexts[i]),
+			errparams);
+		obj_space->data->contexts[i] = contexts[i];
+		obj_space->data->all_contexts[1 + i] = contexts[i];
+	}
 	CCS_VALIDATE_ERR_GOTO(
 		err,
 		_ccs_objective_space_add_parameters(
@@ -467,5 +530,35 @@ ccs_objective_space_get_objectives(
 	}
 	if (num_objectives_ret)
 		*num_objectives_ret = size;
+	return CCS_RESULT_SUCCESS;
+}
+
+ccs_result_t
+ccs_objective_space_get_contexts(
+	ccs_objective_space_t objective_space,
+	size_t                num_contexts,
+	ccs_context_t        *contexts,
+	size_t               *num_contexts_ret)
+{
+	CCS_CHECK_OBJ(objective_space, CCS_OBJECT_TYPE_OBJECTIVE_SPACE);
+	CCS_CHECK_ARY(num_contexts, contexts);
+	CCS_REFUTE(
+		!contexts && !num_contexts_ret,
+		CCS_RESULT_ERROR_INVALID_VALUE);
+	ccs_context_t *ctxs =
+		objective_space->data->contexts;
+	size_t num_ctxs =
+		objective_space->data->num_contexts;
+	if (contexts) {
+		CCS_REFUTE(
+			num_contexts < num_ctxs,
+			CCS_RESULT_ERROR_INVALID_VALUE);
+		for (size_t i = 0; i < num_ctxs; i++)
+			contexts[i] = ctxs[i];
+		for (size_t i = num_ctxs; i < num_contexts; i++)
+			contexts[i] = NULL;
+	}
+	if (num_contexts_ret)
+		*num_contexts_ret = num_ctxs;
 	return CCS_RESULT_SUCCESS;
 }

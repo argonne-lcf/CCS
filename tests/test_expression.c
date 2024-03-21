@@ -168,7 +168,7 @@ test_equal_numerical(void)
 	parameters[1] = create_dummy_numerical("param2");
 
 	err           = ccs_create_configuration_space(
-                "my_config_space", 2, parameters, NULL, 0, NULL,
+                "my_config_space", 2, parameters, NULL, 0, NULL, 0, NULL,
                 &configuration_space);
 	assert(err == CCS_RESULT_SUCCESS);
 
@@ -223,7 +223,7 @@ test_equal_categorical(void)
 	parameters[0] = create_dummy_categorical("param1");
 	parameters[1] = create_dummy_categorical("param2");
 	err           = ccs_create_configuration_space(
-                "my_config_space", 2, parameters, NULL, 0, NULL,
+                "my_config_space", 2, parameters, NULL, 0, NULL, 0, NULL,
                 &configuration_space);
 	assert(err == CCS_RESULT_SUCCESS);
 
@@ -264,7 +264,7 @@ test_equal_ordinal(void)
 	parameters[0] = create_dummy_ordinal("param1");
 	parameters[1] = create_dummy_ordinal("param2");
 	err           = ccs_create_configuration_space(
-                "my_config_space", 2, parameters, NULL, 0, NULL,
+                "my_config_space", 2, parameters, NULL, 0, NULL, 0, NULL,
                 &configuration_space);
 	assert(err == CCS_RESULT_SUCCESS);
 
@@ -875,7 +875,7 @@ test_get_parameters(void)
 	assert(parameters[0] == parameter2);
 	assert(parameters[1] == NULL);
 	assert(parameters[2] == NULL);
-	err = ccs_expression_check_context(expression2, NULL);
+	err = ccs_expression_check_contexts(expression2, 0, NULL);
 	assert(err == CCS_RESULT_ERROR_INVALID_VALUE);
 
 	err = ccs_release_object(parameter1);
@@ -889,7 +889,7 @@ test_get_parameters(void)
 }
 
 void
-test_check_context(void)
+test_check_contexts(void)
 {
 	ccs_expression_t          expression1, expression2;
 	ccs_parameter_t           parameter1, parameter2, parameter3;
@@ -904,7 +904,7 @@ test_check_context(void)
 	parameters[1] = parameter2;
 
 	err           = ccs_create_configuration_space(
-                "space", 2, parameters, NULL, 0, NULL, &space);
+                "space", 2, parameters, NULL, 0, NULL, 0, NULL, &space);
 	assert(err == CCS_RESULT_SUCCESS);
 
 	err = ccs_create_binary_expression(
@@ -917,9 +917,9 @@ test_check_context(void)
 		ccs_object(expression1), &expression2);
 	assert(err == CCS_RESULT_SUCCESS);
 
-	err = ccs_expression_check_context(expression2, NULL);
+	err = ccs_expression_check_contexts(expression2, 0, NULL);
 	assert(err == CCS_RESULT_ERROR_INVALID_VALUE);
-	err = ccs_expression_check_context(expression2, (ccs_context_t)space);
+	err = ccs_expression_check_contexts(expression2, 1, (ccs_context_t *)&space);
 	assert(err == CCS_RESULT_SUCCESS);
 
 	err = ccs_release_object(expression2);
@@ -929,7 +929,7 @@ test_check_context(void)
 		CCS_EXPRESSION_TYPE_EQUAL, ccs_object(parameter3),
 		ccs_object(expression1), &expression2);
 	assert(err == CCS_RESULT_SUCCESS);
-	err = ccs_expression_check_context(expression2, (ccs_context_t)space);
+	err = ccs_expression_check_contexts(expression2, 1, (ccs_context_t *)&space);
 	assert(err == CCS_RESULT_ERROR_INVALID_PARAMETER);
 
 	err = ccs_release_object(parameter1);
@@ -1184,7 +1184,7 @@ main(void)
 	test_compound();
 	test_in();
 	test_get_parameters();
-	test_check_context();
+	test_check_contexts();
 	test_deserialize_literal();
 	test_deserialize_variable();
 	test_deserialize();

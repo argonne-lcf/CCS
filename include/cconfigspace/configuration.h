@@ -19,6 +19,8 @@ extern "C" {
  * @param[in] num_values the number of provided values to initialize the
  *            configuration
  * @param[in] values an optional array of values to initialize the configuration
+ * @param[in] num_bindings the number of provided bindings
+ * @param[in] bindings an array of \p num_bindings bindings
  * @param[out] configuration_ret a pointer to the variable that will hold the
  *             newly created configuration
  * @return #CCS_RESULT_SUCCESS on success
@@ -27,7 +29,9 @@ extern "C" {
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p configuration_ret is NULL; or
  * if \p values is NULL and \p num_values is greater than 0; or if the number of
  * values provided is not equal to the number of parameters in the configuration
- * space
+ * space; or if \p bindings is NULL and \p num_bindings is greater than 0;
+ * or if the bindings do not correspond to the contexts given at the
+ * \p configuration_space creation
  * @return #CCS_RESULT_ERROR_OUT_OF_MEMORY if there was a lack of memory to
  * allocate the new configuration
  * @remarks
@@ -38,6 +42,8 @@ ccs_create_configuration(
 	ccs_configuration_space_t configuration_space,
 	size_t                    num_values,
 	ccs_datum_t              *values,
+	size_t                    num_bindings,
+        ccs_binding_t            *bindings,
 	ccs_configuration_t      *configuration_ret);
 
 /**

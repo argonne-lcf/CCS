@@ -36,7 +36,7 @@ test(void)
 	parameters[1] = parameter2 = create_numerical("y", -5.0, 5.0);
 
 	err                        = ccs_create_configuration_space(
-                "2dplane", 2, parameters, NULL, 0, NULL, &cspace);
+                "2dplane", 2, parameters, NULL, 0, NULL, 0, NULL, &cspace);
 	assert(err == CCS_RESULT_SUCCESS);
 
 	parameter3 = create_numerical("z", -CCS_INFINITY, CCS_INFINITY);
@@ -45,7 +45,7 @@ test(void)
 	otype = CCS_OBJECTIVE_TYPE_MINIMIZE;
 
 	err   = ccs_create_objective_space(
-                "height", 1, &parameter3, 1, &expression, &otype, &ospace);
+                "height", 1, &parameter3, 1, &expression, &otype, 0, NULL, &ospace);
 	assert(err == CCS_RESULT_SUCCESS);
 
 	err = ccs_create_random_tuner("problem", cspace, ospace, &tuner);
@@ -178,7 +178,7 @@ test_evaluation_deserialize(void)
 	parameters[1] = parameter2 = create_numerical("y", -5.0, 5.0);
 
 	err                        = ccs_create_configuration_space(
-                "2dplane", 2, parameters, NULL, 0, NULL, &cspace);
+                "2dplane", 2, parameters, NULL, 0, NULL, 0, NULL, &cspace);
 	assert(err == CCS_RESULT_SUCCESS);
 	err = ccs_configuration_space_sample(
 		cspace, NULL, NULL, &configuration);
@@ -190,7 +190,7 @@ test_evaluation_deserialize(void)
 	otype = CCS_OBJECTIVE_TYPE_MINIMIZE;
 
 	err   = ccs_create_objective_space(
-                "height", 1, &parameter3, 1, &expression, &otype, &ospace);
+                "height", 1, &parameter3, 1, &expression, &otype, 0, NULL, &ospace);
 	assert(err == CCS_RESULT_SUCCESS);
 
 	res = ccs_float(1.5);

@@ -55,7 +55,7 @@ create_tree_tuning_problem(
 	otype = CCS_OBJECTIVE_TYPE_MAXIMIZE;
 
 	err   = ccs_create_objective_space(
-                "ospace", 1, &parameter, 1, &expression, &otype, ospace);
+                "ospace", 1, &parameter, 1, &expression, &otype, 0, NULL, ospace);
 	assert(err == CCS_RESULT_SUCCESS);
 
 	err = ccs_release_object(root);

@@ -171,6 +171,7 @@ _ccs_features_tuner_random_ask(
 	}
 	CCS_VALIDATE(ccs_configuration_space_samples(
 		d->common_data.configuration_space, NULL, NULL,
+		1, (ccs_binding_t *)&features,
 		num_configurations, configurations));
 	if (num_configurations_ret)
 		*num_configurations_ret = num_configurations;

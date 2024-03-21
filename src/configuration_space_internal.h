@@ -31,6 +31,10 @@ struct _ccs_configuration_space_data_s {
 	size_t                      *sorted_indexes;
 	size_t                       num_forbidden_clauses;
 	ccs_expression_t            *forbidden_clauses;
+	size_t                       num_contexts;
+	ccs_context_t               *contexts;
+	// for expression validation
+	ccs_context_t               *all_contexts;
 	ccs_rng_t                    rng;
 	ccs_distribution_space_t     default_distribution_space;
 };

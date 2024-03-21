@@ -1,12 +1,6 @@
 #include "cconfigspace_internal.h"
 #include "binding_internal.h"
 
-#define CCS_CHECK_BINDING(b)                                                   \
-	CCS_REFUTE_MSG(                                                        \
-		CCS_UNLIKELY(!(b) || !(b)->data),                              \
-		CCS_RESULT_ERROR_INVALID_OBJECT,                               \
-		"Invalid CCS binding '%s' == %p supplied", #b, b)
-
 static inline _ccs_binding_ops_t *
 ccs_binding_get_ops(ccs_binding_t binding)
 {

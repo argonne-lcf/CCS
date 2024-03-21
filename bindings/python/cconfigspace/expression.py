@@ -66,7 +66,7 @@ ccs_variable_get_parameter = _ccs_get_function("ccs_variable_get_parameter", [cc
 ccs_expression_eval = _ccs_get_function("ccs_expression_eval", [ccs_expression, ccs_context, ct.POINTER(Datum), ct.POINTER(Datum)])
 ccs_expression_list_eval_node = _ccs_get_function("ccs_expression_list_eval_node", [ccs_expression, ccs_context, ct.POINTER(Datum), ct.c_size_t, ct.POINTER(Datum)])
 ccs_expression_get_parameters = _ccs_get_function("ccs_expression_get_parameters", [ccs_expression, ct.c_size_t, ct.POINTER(ccs_parameter), ct.POINTER(ct.c_size_t)])
-ccs_expression_check_context = _ccs_get_function("ccs_expression_check_context", [ccs_expression, ccs_context])
+ccs_expression_check_contexts = _ccs_get_function("ccs_expression_check_contexts", [ccs_expression, ct.c_size_t, ct.POINTER(ccs_context)])
 
 class Expression(Object):
 
@@ -162,8 +162,10 @@ class Expression(Object):
     Error.check(res)
     return v.value
 
-  def check_context(self, context):
-    res = ccs_expression_check_context(self.handle, context.handle)
+  def check_contexts(self, contexts):
+    count = len(contexts)
+    contexts = (ccs_context * count)(*[x.handle.value for x in contexts])
+    res = ccs_expression_check_contexts(self.handle, count, contexts)
     Error.check(res)
 
   def __str__(self):

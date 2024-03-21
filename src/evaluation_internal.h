@@ -28,6 +28,8 @@ struct _ccs_evaluation_data_s {
 	ccs_datum_t            *values;
 	ccs_configuration_t     configuration;
 	ccs_evaluation_result_t result;
+	size_t                  num_bindings;
+	ccs_binding_t          *bindings;
 };
 
 #endif //_EVALUATION_INTERNAL_H

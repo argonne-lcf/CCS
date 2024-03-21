@@ -46,6 +46,8 @@ typedef enum ccs_comparison_e ccs_comparison_t;
  * @param[in] num_values the number of provided values to initialize the
  *                       evaluation
  * @param[in] values an optional array of values to initialize the evaluation
+ * @param[in] num_bindings the number of provided bindings
+ * @param[in] bindings an array of \p num_bindings bindings
  * @param[out] evaluation_ret a pointer to the variable that will hold the
  *                            newly created evaluation
  * @return #CCS_RESULT_SUCCESS on success
@@ -54,7 +56,9 @@ typedef enum ccs_comparison_e ccs_comparison_t;
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p evaluation_ret is NULL; or if
  * \p values is NULL and \p num_values is greater than 0; or if the number of
  * values provided is not equal to the number of parameters in the objective
- * space
+ * space; or if \p bindings is NULL and \p num_bindings is greater than 0;
+ * or if the bindings do not correspond to the contexts given at the
+ * \p objective_space creation
  * @return #CCS_RESULT_ERROR_OUT_OF_MEMORY if there was a lack of memory to
  * allocate the new evaluation
  * @remarks
@@ -67,6 +71,8 @@ ccs_create_evaluation(
 	ccs_evaluation_result_t result,
 	size_t                  num_values,
 	ccs_datum_t            *values,
+	size_t                  num_bindings,
+        ccs_binding_t          *bindings,
 	ccs_evaluation_t       *evaluation_ret);
 
 /**

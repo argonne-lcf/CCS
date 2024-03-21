@@ -41,6 +41,8 @@ typedef enum ccs_objective_type_e ccs_objective_type_t;
  * @param[in] objectives an array o \p num_objectives expressions to add as
  *                       objectives to the objective space
  * @param[in] types an array o \p num_objectives types of objectives
+ * @param[in] num_contexts the number of provided contexts
+ * @param[in] contexts an array of \p num_contexts contexts
  * @param[out] objective_space_ret a pointer to the variable that will hold
  *                                 the newly created objective space
  * @return #CCS_RESULT_SUCCESS on success
@@ -48,12 +50,15 @@ typedef enum ccs_objective_type_e ccs_objective_type_t;
  * objective_space_ret is NULL; or if \p parameters is NULL; or if \p
  * num_parameters is NULL; or if \p objectives is NULL and \p
  * num_objectives is greater than 0; of if \p types is NULL and \p
- * num_objectives is greater than 0
+ * num_objectives is greater than 0; or if \p contexts is NULL and
+ * \p num_contexts is greater than 0
  * @return #CCS_RESULT_ERROR_INVALID_OBJECT if a parameter is not a valid CCS
- * parameter; or if an expressions is not a valid CCS expression
+ * parameter; or if an expressions is not a valid CCS expression; or if a
+ * context is not a valid CCS context
  * @return #CCS_RESULT_ERROR_INVALID_PARAMETER if a parameter appears more than
  * once in \p parameters; or if two or more parameters share the same name; or
  * if an expression references a parameter that is not in \p parameters
+ * or in one of the provided contexts
  * @return #CCS_RESULT_ERROR_OUT_OF_MEMORY if there was a lack of memory to
  * allocate the new objective space
  * @remarks
@@ -67,6 +72,8 @@ ccs_create_objective_space(
 	size_t                 num_objectives,
 	ccs_expression_t      *objectives,
 	ccs_objective_type_t  *types,
+	size_t                 num_contexts,
+	ccs_context_t         *contexts,
 	ccs_objective_space_t *objective_space_ret);
 
 /**
@@ -358,6 +365,34 @@ ccs_objective_space_get_objectives(
 	ccs_expression_t     *expressions,
 	ccs_objective_type_t *types,
 	size_t               *num_objectives_ret);
+
+/**
+ * Get the contexts associated to the objective space.
+ * @param[in] objective_space
+ * @param[in] num_contexts the number of contexts that can be added to
+ *                         \p contexts
+ * @param[out] contexts an array of \p num_contexts that will contain the
+ *                      returned expressions, or NULL. If the array is too
+ *                      big, extra values are set to NULL
+ * @param[out] num_contexts_ret a pointer to a variable that will contain the
+ *                              number of expressions that are or would be
+ *                              returned. Can be NULL
+ * @return #CCS_RESULT_SUCCESS on success
+ * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p objective_space is not a
+ * valid CCS objective space
+ * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p contexts is NULL and
+ * \p num_contexts is greater than 0; or if or if \p contexts is NULL and
+ * \p num_contexts_ret is NULL; or if \p num_contexts is less than the
+ * number of contexts that would be returned
+ * @remarks
+ *   This function is thread-safe
+ */
+extern ccs_result_t
+ccs_objective_space_get_contexts(
+	ccs_objective_space_t objective_space,
+	size_t                num_contexts,
+	ccs_context_t        *contexts,
+	size_t               *num_contexts_ret);
 
 #ifdef __cplusplus
 }

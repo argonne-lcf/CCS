@@ -93,7 +93,7 @@ module CCS
   attach_function :ccs_expression_eval, [:ccs_expression_t, :ccs_context_t, :pointer, :pointer], :ccs_result_t
   attach_function :ccs_expression_list_eval_node, [:ccs_expression_t, :ccs_context_t, :pointer, :size_t, :pointer], :ccs_result_t
   attach_function :ccs_expression_get_parameters, [:ccs_expression_t, :size_t, :pointer, :pointer], :ccs_result_t
-  attach_function :ccs_expression_check_context, [:ccs_expression_t, :ccs_context_t], :ccs_result_t
+  attach_function :ccs_expression_check_contexts, [:ccs_expression_t, :size_t, :pointer], :ccs_result_t
 
   class Expression < Object
     add_property :type, :ccs_expression_type_t, :ccs_expression_get_type, memoize: true
@@ -186,8 +186,11 @@ module CCS
       end
     end
 
-    def check_context(context)
-      CCS.error_check CCS.ccs_expression_check_context(@handle, context)
+    def check_contexts(contexts)
+      count = contexts.size
+      p_contexts = MemoryPointer::new(:ccs_context_t, count)
+      p_contexts.write_array_of_pointer(contexts.collect(&:handle))
+      CCS.error_check CCS.ccs_expression_check_contexts(@handle, count, p_contexts)
       self
     end
 

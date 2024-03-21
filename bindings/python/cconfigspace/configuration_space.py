@@ -7,7 +7,7 @@ from .expression import Expression
 from .expression_parser import parser
 from .rng import Rng
 
-ccs_create_configuration_space = _ccs_get_function("ccs_create_configuration_space", [ct.c_char_p, ct.c_size_t, ct.POINTER(ccs_parameter), ct.POINTER(ccs_expression), ct.c_size_t, ct.POINTER(ccs_expression), ct.POINTER(ccs_configuration_space)])
+ccs_create_configuration_space = _ccs_get_function("ccs_create_configuration_space", [ct.c_char_p, ct.c_size_t, ct.POINTER(ccs_parameter), ct.POINTER(ccs_expression), ct.c_size_t, ct.POINTER(ccs_expression), ct.c_size_t, ct.POINTER(ccs_context), ct.POINTER(ccs_configuration_space)])
 ccs_configuration_space_set_rng = _ccs_get_function("ccs_configuration_space_set_rng", [ccs_configuration_space, ccs_rng])
 ccs_configuration_space_get_rng = _ccs_get_function("ccs_configuration_space_get_rng", [ccs_configuration_space, ct.POINTER(ccs_rng)])
 ccs_configuration_space_get_condition = _ccs_get_function("ccs_configuration_space_get_condition", [ccs_configuration_space, ct.c_size_t, ct.POINTER(ccs_expression)])
@@ -19,17 +19,23 @@ ccs_configuration_space_check_configuration_values = _ccs_get_function("ccs_conf
 ccs_configuration_space_get_default_configuration = _ccs_get_function("ccs_configuration_space_get_default_configuration", [ccs_configuration_space, ct.POINTER(ccs_configuration)])
 ccs_configuration_space_sample = _ccs_get_function("ccs_configuration_space_sample", [ccs_configuration_space, ccs_distribution_space, ccs_rng, ct.POINTER(ccs_configuration)])
 ccs_configuration_space_samples = _ccs_get_function("ccs_configuration_space_samples", [ccs_configuration_space, ccs_distribution_space, ccs_rng, ct.c_size_t, ct.POINTER(ccs_configuration)])
+ccs_configuration_space_get_contexts = _ccs_get_function("ccs_configuration_space_get_contexts", [ccs_configuration_space, ct.c_size_t, ct.POINTER(ccs_context), ct.POINTER(ct.c_size_t)])
 
 class ConfigurationSpace(Context):
   def __init__(self, handle = None, retain = False, auto_release = True,
-               name = "", parameters = None, conditions = None, forbidden_clauses = None):
+               name = "", parameters = None, conditions = None, forbidden_clauses = None, contexts = None):
     if handle is None:
       count = len(parameters)
+
+      ctx_params = parameters
+      if contexts is not None:
+        for x in contexts:
+          ctx_params = ctx_params + x.parameters
+      ctx = dict(zip([x.name for x in ctx_params], ctx_params))
 
       if forbidden_clauses is not None:
         numfc = len(forbidden_clauses)
         if numfc > 0:
-          ctx = dict(zip([x.name for x in parameters], parameters))
           forbidden_clauses = [ parser.parse(fc, extra = ctx) if isinstance(fc, str) else fc for fc in forbidden_clauses ]
           fcv = (ccs_expression * numfc)(*[x.handle.value for x in forbidden_clauses])
         else:
@@ -39,10 +45,9 @@ class ConfigurationSpace(Context):
         fcv = None
 
       if conditions is not None:
-        namedict = dict(zip([x.name for x in parameters], parameters))
         indexdict = dict(reversed(ele) for ele in enumerate(parameters))
         cv = (ccs_expression * count)()
-        conditions = dict( (k, parser.parse(v, extra = namedict) if isinstance(v, str) else v) for (k, v) in conditions.items() )
+        conditions = dict( (k, parser.parse(v, extra = ctx) if isinstance(v, str) else v) for (k, v) in conditions.items() )
         for (k, v) in conditions.items():
           if isinstance(k, Parameter):
             cv[indexdict[k]] = v.handle.value
@@ -53,9 +58,15 @@ class ConfigurationSpace(Context):
       else:
         cv = None
 
+      numctx = 0
+      ctxv = None
+      if contexts is not None:
+        numctx = len(contexts)
+        ctxv = (ccs_context * numctx)(*[x.handle.value for x in contexts])
+
       parameters = (ccs_parameter * count)(*[x.handle.value for x in parameters])
       handle = ccs_configuration_space()
-      res = ccs_create_configuration_space(str.encode(name), count, parameters, cv, numfc, fcv, ct.byref(handle))
+      res = ccs_create_configuration_space(str.encode(name), count, parameters, cv, numfc, fcv, numctx, ctxv, ct.byref(handle))
       Error.check(res)
       super().__init__(handle = handle, retain = False)
     else:
@@ -140,6 +151,27 @@ class ConfigurationSpace(Context):
     Error.check(res)
     self._forbidden_clauses = tuple(Expression.from_handle(ccs_expression(x)) for x in v)
     return self._forbidden_clauses
+
+  @property
+  def num_contexts(self):
+    if hasattr(self, "_num_contexts"):
+      return self._num_contexts
+    v = ct.c_size_t()
+    res = ccs_configuration_space_get_contexts(self.handle, 0, None, ct.byref(v))
+    Error.check(res)
+    self._num_contexts = v.value
+    return self._num_contexts
+
+  @property
+  def contexts(self):
+    if hasattr(self, "_contexts"):
+      return self._contexts
+    sz = self.num_contexts
+    v = (ccs_context * sz)()
+    res = ccs_configuration_space_get_contexts(self.handle, sz, v, None)
+    Error.check(res)
+    self._contexts = tuple(Context.from_handle(ccs_context(x)) for x in v)
+    return self._contexts
 
   def check(self, configuration):
     valid = ccs_bool()

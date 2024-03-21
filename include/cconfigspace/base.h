@@ -247,8 +247,10 @@ enum ccs_result_e {
 	CCS_RESULT_ERROR_INVALID_TREE_TUNER         = -30,
 	/** The provided distribution space is invalid */
 	CCS_RESULT_ERROR_INVALID_DISTRIBUTION_SPACE = -31,
+	/** The provided binding is invalid */
+	CCS_RESULT_ERROR_INVALID_BINDING            = -32,
 	/** Guard */
-	CCS_RESULT_MIN                              = -32,
+	CCS_RESULT_MIN                              = -33,
 	/** Try forcing 32 bits value for bindings */
 	CCS_RESULT_FORCE_32BIT                      = INT32_MAX
 };

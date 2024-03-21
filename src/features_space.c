@@ -64,9 +64,37 @@ _ccs_features_space_serialize(
 	return CCS_RESULT_SUCCESS;
 }
 
+static inline ccs_result_t
+_ccs_features_space_get_default_binding(
+	ccs_context_t  context,
+	ccs_binding_t *binding_ret)
+{
+	ccs_features_space_t features_space =
+		(ccs_features_space_t)context;
+	ccs_result_t        err;
+	ccs_features_t features;
+	CCS_VALIDATE(_ccs_create_features(
+		features_space, 0, NULL, &features));
+	ccs_parameter_t *parameters = features_space->data->parameters;
+	ccs_datum_t     *values     = features->data->values;
+	for (size_t i = 0; i < features_space->data->num_parameters; i++)
+		CCS_VALIDATE_ERR_GOTO(
+			err,
+			ccs_parameter_get_default_value(
+				parameters[i], values + i),
+			errc);
+	*binding_ret = (ccs_binding_t)features;
+	return CCS_RESULT_SUCCESS;
+errc:
+	ccs_release_object(features);
+	return err;
+}
+
 static _ccs_features_space_ops_t _features_space_ops = {
-	{{&_ccs_features_space_del, &_ccs_features_space_serialize_size,
-	  &_ccs_features_space_serialize}}};
+	{{&_ccs_features_space_del,
+	  &_ccs_features_space_serialize_size,
+	  &_ccs_features_space_serialize},
+	  &_ccs_features_space_get_default_binding}};
 
 static ccs_result_t
 _ccs_features_space_add_parameters(

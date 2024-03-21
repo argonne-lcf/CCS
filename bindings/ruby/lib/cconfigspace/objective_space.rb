@@ -18,20 +18,25 @@ module CCS
     end
   end
 
-  attach_function :ccs_create_objective_space, [:string, :size_t, :pointer, :size_t, :pointer, :pointer, :pointer], :ccs_result_t
+  attach_function :ccs_create_objective_space, [:string, :size_t, :pointer, :size_t, :pointer, :pointer, :size_t, :pointer, :pointer], :ccs_result_t
   attach_function :ccs_objective_space_get_objective, [:ccs_objective_space_t, :size_t, :pointer, :pointer], :ccs_result_t
   attach_function :ccs_objective_space_get_objectives, [:ccs_objective_space_t, :size_t, :pointer, :pointer, :pointer], :ccs_result_t
   attach_function :ccs_objective_space_check_evaluation_values, [:ccs_objective_space_t, :size_t, :pointer, :pointer], :ccs_result_t
+  attach_function :ccs_objective_space_get_contexts, [:ccs_objective_space_t, :size_t, :pointer, :pointer], :ccs_result_t
 
   class ObjectiveSpace < Context
 
     def initialize(handle = nil, retain: false, auto_release: true,
-                   name: "", parameters: [], objectives: [], types: nil)
+                   name: "", parameters: [], objectives: [], types: nil, contexts: nil)
       if handle
         super(handle, retain: retain, auto_release: auto_release)
       else
         count = parameters.size
-        ctx = parameters.map { |p| [p.name, p] }.to_h
+        ctx_params = parameters
+        if contexts
+          ctx_params = contexts.reduce(ctx_params, :+)
+        end
+        ctx = ctx_params.map { |p| [p.name, p] }.to_h
         if objectives.kind_of? Hash
           types = objectives.values
           objectives = objectives.keys
@@ -50,6 +55,13 @@ module CCS
         else
           types = [:CCS_OBJECTIVE_TYPE_MINIMIZE] * ocount
         end
+        ccount = 0
+        p_contexts = nil
+        if contexts
+          ccount = contexts.size
+          p_contexts = MemoryPointer::new(:ccs_context_t, ccount)
+          p_contexts.write_array_of_context_t(contexts)
+        end
         p_types = MemoryPointer::new(:ccs_objective_type_t, ocount)
         p_types.write_array_of_ccs_objective_type_t(types)
         p_objs = MemoryPointer::new(:ccs_expression_t, ocount)
@@ -57,7 +69,7 @@ module CCS
         p_parameters = MemoryPointer::new(:ccs_parameter_t, count)
         p_parameters.write_array_of_pointer(parameters.collect(&:handle))
         ptr = MemoryPointer::new(:ccs_objective_space_t)
-        CCS.error_check CCS.ccs_create_objective_space(name, count, p_parameters, ocount, p_objs, p_types, ptr)
+        CCS.error_check CCS.ccs_create_objective_space(name, count, p_parameters, ocount, p_objs, p_types, ccount, p_contexts, ptr)
         super(ptr.read_ccs_objective_space_t, retain: false)
       end
     end
@@ -83,13 +95,30 @@ module CCS
 
     def objectives
       @objectives ||= begin
-        count  = num_objectives
+        count   = num_objectives
         p_exprs = MemoryPointer::new(:ccs_expression_t, count)
         p_types = MemoryPointer::new(:ccs_objective_type_t, count)
         CCS.error_check CCS.ccs_objective_space_get_objectives(@handle, count, p_exprs, p_types, nil)
         exprs = p_exprs.read_array_of_pointer(count).collect { |p| Expression.from_handle(p) }
         types = p_types.read_array_of_ccs_objective_type_t(count)
         exprs.zip(types).freeze
+      end
+    end
+
+    def num_contexts
+      @num_contexts ||= begin
+        ptr = MemoryPointer::new(:size_t)
+        CCS.error_check CCS.ccs_objective_space_get_contexts(@handle, 0, nil, ptr)
+        ptr.read_size_t
+      end
+    end
+
+    def contexts
+      @contexts ||= begin
+        count  = num_contexts
+        p_ctxs = MemoryPointer::new(:ccs_context_t, count)
+        CCS.error_check CCS.ccs_objective_space_get_contexts(@handle, count, p_ctxs, nil)
+        p_ctxs.read_array_of_pointer(count).collect { |p| Context.from_handle(p) }.freeze
       end
     end
 

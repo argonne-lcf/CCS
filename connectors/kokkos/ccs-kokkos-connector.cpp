@@ -348,7 +348,7 @@ variable_info_to_parameter(const char *name, VariableInfo *info)
 			  &ret));
 	  } break;
 	  case ValueType::kokkos_value_string:
-		  CCS_CHECK(ccs_create_string_parameter(name, &ret));
+		  CCS_CHECK(ccs_create_string_parameter(name, NULL, &ret));
 		  break;
 	  default:
 		  assert(false && "Unknown ValueType");
@@ -515,7 +515,7 @@ kokkosp_request_values(
 
 	  CCS_CHECK(ccs_create_configuration_space(
 		  ("cs (region: " + std::to_string(regionCounter) + ")").c_str(),
-		  numTuningVariables, cs_parameters, NULL, 0, NULL, &cs));
+		  numTuningVariables, cs_parameters, NULL, 0, NULL, 0, NULL, &cs));
 	  delete[] cs_parameters;
 
 #if CCS_DEBUG
@@ -544,7 +544,7 @@ kokkosp_request_values(
 	  otype = CCS_OBJECTIVE_TYPE_MINIMIZE;
 	  CCS_CHECK(ccs_create_objective_space(
 		  ("os (region: " + std::to_string(regionCounter) + ")").c_str(),
-		  1, &htime, 1, &expression, &otype, &os));
+		  1, &htime, 1, &expression, &otype, 0, NULL, &os));
 	  CCS_CHECK(ccs_release_object(expression));
 	  CCS_CHECK(ccs_release_object(htime));
 

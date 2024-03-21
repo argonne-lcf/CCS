@@ -31,14 +31,18 @@ _ccs_configuration_space_del(ccs_object_t object)
 	for (size_t i = 0; i < data->num_forbidden_clauses; i++)
 		if (data->forbidden_clauses[i])
 			ccs_release_object(data->forbidden_clauses[i]);
+	for (size_t i = 0; i < data->num_contexts; i++)
+		if (data->contexts[i])
+			ccs_release_object(data->contexts[i]);
 
-	HASH_CLEAR(hh_name, configuration_space->data->name_hash);
-	HASH_CLEAR(hh_handle, configuration_space->data->handle_hash);
-	ccs_release_object(configuration_space->data->rng);
-	if (configuration_space->data->default_distribution_space) {
+	HASH_CLEAR(hh_name, data->name_hash);
+	HASH_CLEAR(hh_handle, data->handle_hash);
+	if (data->rng)
+		ccs_release_object(data->rng);
+	if (data->default_distribution_space) {
 		_ccs_distribution_space_del_no_release(
-			configuration_space->data->default_distribution_space);
-		free(configuration_space->data->default_distribution_space);
+			data->default_distribution_space);
+		free(data->default_distribution_space);
 	}
 	return CCS_RESULT_SUCCESS;
 }
@@ -61,6 +65,7 @@ _ccs_serialize_bin_size_ccs_configuration_space_data(
 
 	*cum_size += _ccs_serialize_bin_size_size(condition_count);
 	*cum_size += _ccs_serialize_bin_size_size(data->num_forbidden_clauses);
+	*cum_size += _ccs_serialize_bin_size_size(data->num_contexts);
 
 	/* rng */
 	CCS_VALIDATE(data->rng->obj.ops->serialize_size(
@@ -91,6 +96,11 @@ _ccs_serialize_bin_size_ccs_configuration_space_data(
 				data->forbidden_clauses[i],
 				CCS_SERIALIZE_FORMAT_BINARY, cum_size, opts));
 
+	/* contexts */
+	for (size_t i = 0; i < data->num_contexts; i++)
+		*cum_size += _ccs_serialize_bin_size_ccs_object(
+			data->contexts[i]);
+
 	return CCS_RESULT_SUCCESS;
 }
 
@@ -117,6 +127,9 @@ _ccs_serialize_bin_ccs_configuration_space_data(
 
 	CCS_VALIDATE(_ccs_serialize_bin_size(
 		data->num_forbidden_clauses, buffer_size, buffer));
+
+	CCS_VALIDATE(_ccs_serialize_bin_size(
+		data->num_contexts, buffer_size, buffer));
 
 	/* rng */
 	CCS_VALIDATE(data->rng->obj.ops->serialize(
@@ -145,6 +158,11 @@ _ccs_serialize_bin_ccs_configuration_space_data(
 		CCS_VALIDATE(data->forbidden_clauses[i]->obj.ops->serialize(
 			data->forbidden_clauses[i], CCS_SERIALIZE_FORMAT_BINARY,
 			buffer_size, buffer, opts));
+
+	/* contexts */
+	for (size_t i = 0; i < data->num_contexts; i++)
+		CCS_VALIDATE(_ccs_serialize_bin_ccs_object(
+			data->contexts[i], buffer_size, buffer));
 
 	return CCS_RESULT_SUCCESS;
 }
@@ -248,10 +266,72 @@ end:
 	return err;
 }
 
+static ccs_result_t
+_set_actives(
+	ccs_configuration_space_t configuration_space,
+	ccs_configuration_t       configuration)
+{
+	size_t           *indexes = configuration_space->data->sorted_indexes;
+	ccs_expression_t *conditions = configuration_space->data->conditions;
+	ccs_datum_t      *values     = configuration->data->values;
+	for (size_t i = 0; i < configuration_space->data->num_parameters; i++) {
+		size_t index = indexes[i];
+		if (!conditions[index])
+			continue;
+		ccs_datum_t result;
+		CCS_VALIDATE(ccs_expression_eval(
+			conditions[index], (ccs_context_t)configuration_space,
+			values, &result));
+		if (!(result.type == CCS_DATA_TYPE_BOOL &&
+		      result.value.i == CCS_TRUE))
+			values[index] = ccs_inactive;
+	}
+	return CCS_RESULT_SUCCESS;
+}
+
+static inline ccs_result_t
+_ccs_configuration_space_get_default_binding(
+	ccs_context_t  context,
+	ccs_binding_t *binding_ret)
+{
+	ccs_configuration_space_t configuration_space =
+		(ccs_configuration_space_t)context;
+	ccs_result_t        err          = CCS_RESULT_SUCCESS;
+	ccs_configuration_t config       = NULL;
+	CCS_VALIDATE(_ccs_create_configuration(
+		configuration_space, 0, NULL, 0, NULL, &config));
+	size_t num_contexts   = configuration_space->data->num_contexts;
+	size_t num_parameters = configuration_space->data->num_parameters;
+	ccs_parameter_t *parameters = configuration_space->data->parameters;
+	ccs_context_t   *contexts   = configuration_space->data->contexts;
+	ccs_datum_t     *values     = config->data->values;
+	ccs_binding_t   *bindings   = config->data->bindings;
+	for (size_t i = 0; i < num_parameters; i++)
+		CCS_VALIDATE_ERR_GOTO(
+			err,
+			ccs_parameter_get_default_value(
+				parameters[i], values + i),
+			errc);
+	for (size_t i = 0; i < num_contexts; i++)
+		CCS_VALIDATE_ERR_GOTO(
+			err,
+			ccs_context_get_default_binding(
+				contexts[i], bindings + i),
+			errc);
+	CCS_VALIDATE_ERR_GOTO(
+		err, _set_actives(configuration_space, config), errc);
+	*binding_ret = (ccs_binding_t)config;
+	return CCS_RESULT_SUCCESS;
+errc:
+	ccs_release_object(config);
+	return err;
+}
+
 static _ccs_configuration_space_ops_t _configuration_space_ops = {
 	{{&_ccs_configuration_space_del,
 	  &_ccs_configuration_space_serialize_size,
-	  &_ccs_configuration_space_serialize}}};
+	  &_ccs_configuration_space_serialize},
+	  &_ccs_configuration_space_get_default_binding}};
 
 static UT_icd _size_t_icd = {sizeof(size_t), NULL, NULL, NULL};
 
@@ -276,8 +356,10 @@ _ccs_configuration_space_add_forbidden_clause(
 	size_t                    index,
 	ccs_configuration_t       default_config)
 {
-	CCS_VALIDATE(ccs_expression_check_context(
-		expression, (ccs_context_t)configuration_space));
+	CCS_VALIDATE(ccs_expression_check_contexts(
+		expression,
+		configuration_space->data->num_contexts + 1,
+		configuration_space->data->all_contexts));
 	ccs_datum_t d;
 	CCS_VALIDATE(ccs_expression_eval(
 		expression, (ccs_context_t)configuration_space,
@@ -299,8 +381,9 @@ _ccs_configuration_space_add_forbidden_clauses(
 {
 	ccs_configuration_t default_config;
 	ccs_result_t        err = CCS_RESULT_SUCCESS;
-	CCS_VALIDATE(ccs_configuration_space_get_default_configuration(
-		configuration_space, &default_config));
+	CCS_VALIDATE(_ccs_configuration_space_get_default_binding(
+		(ccs_context_t)configuration_space,
+		(ccs_binding_t *)&default_config));
 	for (size_t i = 0; i < num_expressions; i++)
 		CCS_VALIDATE_ERR_GOTO(
 			err,
@@ -419,6 +502,7 @@ _recompute_graph(ccs_configuration_space_t configuration_space)
 		if (!condition)
 			continue;
 		size_t count;
+		size_t real_count = 0;
 		CCS_VALIDATE_ERR_GOTO(
 			err,
 			ccs_expression_get_parameters(
@@ -446,13 +530,18 @@ _recompute_graph(ccs_configuration_space_t configuration_space)
 			ccs_expression_get_parameters(
 				condition, count, parents, NULL),
 			errmem);
-		CCS_VALIDATE_ERR_GOTO(
-			err,
-			ccs_configuration_space_get_parameter_indexes(
-				configuration_space, count, parents,
-				parents_index),
-			errmem);
-		for (size_t i = 0; i < count; i++) {
+		/* get indices while filtering out parameters from other contexts */
+                for (size_t i = 0, j = 0; i < count; i++) {
+			_ccs_parameter_index_hash_t *wrapper;
+			HASH_FIND(hh_handle, data->handle_hash, parents + i, sizeof(ccs_parameter_t), wrapper);
+                        if (wrapper) {
+				parents[j] = parents[i];
+				parents_index[j] = wrapper->index;
+				j++;
+				real_count++;
+			}
+		}
+		for (size_t i = 0; i < real_count; i++) {
 			utarray_push_back(pparents[index], parents_index + i);
 			utarray_push_back(pchildren[parents_index[i]], &index);
 		}
@@ -486,8 +575,10 @@ _ccs_configuration_space_set_condition(
 	size_t                    parameter_index,
 	ccs_expression_t          expression)
 {
-	CCS_VALIDATE(ccs_expression_check_context(
-		expression, (ccs_context_t)configuration_space));
+	CCS_VALIDATE(ccs_expression_check_contexts(
+		expression,
+		configuration_space->data->num_contexts + 1,
+		configuration_space->data->all_contexts));
 	CCS_VALIDATE(ccs_retain_object(expression));
 	configuration_space->data->conditions[parameter_index] = expression;
 	return CCS_RESULT_SUCCESS;
@@ -523,11 +614,14 @@ ccs_create_configuration_space(
 	ccs_expression_t          *conditions,
 	size_t                     num_forbidden_clauses,
 	ccs_expression_t          *forbidden_clauses,
+	size_t                     num_contexts,
+	ccs_context_t             *contexts,
 	ccs_configuration_space_t *configuration_space_ret)
 {
 	CCS_CHECK_PTR(name);
 	CCS_CHECK_PTR(configuration_space_ret);
 	CCS_CHECK_ARY(num_parameters, parameters);
+	CCS_CHECK_ARY(num_contexts, contexts);
 	for (size_t i = 0; i < num_parameters; i++)
 		CCS_CHECK_OBJ(parameters[i], CCS_OBJECT_TYPE_PARAMETER);
 	if (conditions)
@@ -539,6 +633,8 @@ ccs_create_configuration_space(
 	CCS_CHECK_ARY(num_forbidden_clauses, forbidden_clauses);
 	for (size_t i = 0; i < num_forbidden_clauses; i++)
 		CCS_CHECK_OBJ(forbidden_clauses[i], CCS_OBJECT_TYPE_EXPRESSION);
+	for (size_t i = 0; i < num_contexts; i++)
+		CCS_CHECK_CONTEXT(contexts[i]);
 
 	ccs_result_t err;
 	uintptr_t    mem = (uintptr_t)calloc(
@@ -551,6 +647,8 @@ ccs_create_configuration_space(
                         sizeof(UT_array *) * num_parameters * 2 +
                         sizeof(size_t) * num_parameters +
                         sizeof(ccs_expression_t) * num_forbidden_clauses +
+			sizeof(ccs_context_t) * num_contexts +
+			sizeof(ccs_context_t) * (1 + num_contexts) +
                         strlen(name) + 1);
 	CCS_REFUTE(!mem, CCS_RESULT_ERROR_OUT_OF_MEMORY);
 	uintptr_t mem_orig = mem;
@@ -579,11 +677,27 @@ ccs_create_configuration_space(
 	mem += sizeof(size_t) * num_parameters;
 	config_space->data->forbidden_clauses = (ccs_expression_t *)mem;
 	mem += sizeof(ccs_expression_t) * num_forbidden_clauses;
+	config_space->data->contexts = (ccs_context_t *)mem;
+	mem += sizeof(ccs_context_t) * num_contexts;
+	config_space->data->all_contexts = (ccs_context_t *)mem;
+	mem += sizeof(ccs_context_t) * (1 + num_contexts);
 	config_space->data->name                  = (const char *)mem;
 	config_space->data->num_parameters        = num_parameters;
 	config_space->data->num_forbidden_clauses = num_forbidden_clauses;
+	config_space->data->num_contexts          = num_contexts;
 	config_space->data->rng                   = rng;
 	strcpy((char *)(config_space->data->name), name);
+
+	config_space->data->all_contexts[0] =
+		(ccs_context_t)config_space;
+	for (size_t i = 0; i < num_contexts; i++) {
+		CCS_VALIDATE_ERR_GOTO(
+			err,
+			ccs_retain_object(contexts[i]),
+			errparams);
+		config_space->data->contexts[i] = contexts[i];
+		config_space->data->all_contexts[1 + i] = contexts[i];
+	}
 	CCS_VALIDATE_ERR_GOTO(
 		err,
 		_ccs_configuration_space_add_parameters(
@@ -762,29 +876,6 @@ ccs_configuration_space_validate_value(
 	return CCS_RESULT_SUCCESS;
 }
 
-static ccs_result_t
-_set_actives(
-	ccs_configuration_space_t configuration_space,
-	ccs_configuration_t       configuration)
-{
-	size_t           *indexes = configuration_space->data->sorted_indexes;
-	ccs_expression_t *conditions = configuration_space->data->conditions;
-	ccs_datum_t      *values     = configuration->data->values;
-	for (size_t i = 0; i < configuration_space->data->num_parameters; i++) {
-		size_t index = indexes[i];
-		if (!conditions[index])
-			continue;
-		ccs_datum_t result;
-		CCS_VALIDATE(ccs_expression_eval(
-			conditions[index], (ccs_context_t)configuration_space,
-			values, &result));
-		if (!(result.type == CCS_DATA_TYPE_BOOL &&
-		      result.value.i == CCS_TRUE))
-			values[index] = ccs_inactive;
-	}
-	return CCS_RESULT_SUCCESS;
-}
-
 ccs_result_t
 ccs_configuration_space_get_default_configuration(
 	ccs_configuration_space_t configuration_space,
@@ -792,25 +883,10 @@ ccs_configuration_space_get_default_configuration(
 {
 	CCS_CHECK_OBJ(configuration_space, CCS_OBJECT_TYPE_CONFIGURATION_SPACE);
 	CCS_CHECK_PTR(configuration_ret);
-	ccs_result_t        err;
-	ccs_configuration_t config;
-	CCS_VALIDATE(_ccs_create_configuration(
-		configuration_space, 0, NULL, &config));
-	ccs_parameter_t *parameters = configuration_space->data->parameters;
-	ccs_datum_t     *values     = config->data->values;
-	for (size_t i = 0; i < configuration_space->data->num_parameters; i++)
-		CCS_VALIDATE_ERR_GOTO(
-			err,
-			ccs_parameter_get_default_value(
-				parameters[i], values + i),
-			errc);
-	CCS_VALIDATE_ERR_GOTO(
-		err, _set_actives(configuration_space, config), errc);
-	*configuration_ret = config;
+	CCS_VALIDATE(_ccs_configuration_space_get_default_binding(
+		(ccs_context_t)configuration_space,
+		(ccs_binding_t *)configuration_ret));
 	return CCS_RESULT_SUCCESS;
-errc:
-	ccs_release_object(config);
-	return err;
 }
 
 static ccs_result_t
@@ -970,6 +1046,8 @@ _ccs_configuration_space_samples(
 	ccs_configuration_space_t configuration_space,
 	ccs_distribution_space_t  distrib_space,
 	ccs_rng_t                 r,
+	size_t                    num_bindings,
+	ccs_binding_t            *bindings,
 	size_t                    num_configurations,
 	ccs_configuration_t      *configurations)
 {
@@ -1002,7 +1080,8 @@ _ccs_configuration_space_samples(
 			CCS_VALIDATE_ERR_GOTO(
 				err,
 				_ccs_create_configuration(
-					configuration_space, 0, NULL, &config),
+					configuration_space, 0, NULL,
+					num_bindings, bindings, &config),
 				end);
 		CCS_VALIDATE_ERR_GOTO(
 			err,
@@ -1036,6 +1115,8 @@ ccs_configuration_space_sample(
 	ccs_configuration_space_t configuration_space,
 	ccs_distribution_space_t  distribution_space,
 	ccs_rng_t                 rng,
+	size_t                    num_bindings,
+	ccs_binding_t            *bindings,
 	ccs_configuration_t      *configuration_ret)
 {
 	CCS_CHECK_OBJ(configuration_space, CCS_OBJECT_TYPE_CONFIGURATION_SPACE);
@@ -1049,10 +1130,17 @@ ccs_configuration_space_sample(
 	}
 	if (rng)
 		CCS_CHECK_OBJ(rng, CCS_OBJECT_TYPE_RNG);
+	CCS_REFUTE(
+		num_bindings != configuration_space->data->num_contexts,
+		CCS_RESULT_ERROR_INVALID_VALUE);
+	for (size_t i = 0; i < num_bindings; i++)
+		CCS_REFUTE(
+			bindings[i]->data->context != configuration_space->data->contexts[i],
+			CCS_RESULT_ERROR_INVALID_BINDING);
 	CCS_CHECK_PTR(configuration_ret);
 	CCS_VALIDATE(_ccs_configuration_space_samples(
-		configuration_space, distribution_space, rng, 1,
-		configuration_ret));
+		configuration_space, distribution_space, rng,
+		num_bindings, bindings, 1, configuration_ret));
 	return CCS_RESULT_SUCCESS;
 }
 
@@ -1061,6 +1149,8 @@ ccs_configuration_space_samples(
 	ccs_configuration_space_t configuration_space,
 	ccs_distribution_space_t  distribution_space,
 	ccs_rng_t                 rng,
+	size_t                    num_bindings,
+	ccs_binding_t            *bindings,
 	size_t                    num_configurations,
 	ccs_configuration_t      *configurations)
 {
@@ -1075,12 +1165,19 @@ ccs_configuration_space_samples(
 	}
 	if (rng)
 		CCS_CHECK_OBJ(rng, CCS_OBJECT_TYPE_RNG);
+	CCS_REFUTE(
+		num_bindings != configuration_space->data->num_contexts,
+		CCS_RESULT_ERROR_INVALID_VALUE);
+	for (size_t i = 0; i < num_bindings; i++)
+		CCS_REFUTE(
+			bindings[i]->data->context != configuration_space->data->contexts[i],
+			CCS_RESULT_ERROR_INVALID_BINDING);
 	CCS_CHECK_ARY(num_configurations, configurations);
 	if (!num_configurations)
 		return CCS_RESULT_SUCCESS;
 	CCS_VALIDATE(_ccs_configuration_space_samples(
 		configuration_space, distribution_space, rng,
-		num_configurations, configurations));
+		num_bindings, bindings,	num_configurations, configurations));
 	return CCS_RESULT_SUCCESS;
 }
 
@@ -1170,5 +1267,35 @@ ccs_configuration_space_get_forbidden_clauses(
 	}
 	if (num_expressions_ret)
 		*num_expressions_ret = num_forbidden_clauses;
+	return CCS_RESULT_SUCCESS;
+}
+
+ccs_result_t
+ccs_configuration_space_get_contexts(
+	ccs_configuration_space_t configuration_space,
+	size_t                    num_contexts,
+	ccs_context_t            *contexts,
+	size_t                   *num_contexts_ret)
+{
+	CCS_CHECK_OBJ(configuration_space, CCS_OBJECT_TYPE_CONFIGURATION_SPACE);
+	CCS_CHECK_ARY(num_contexts, contexts);
+	CCS_REFUTE(
+		!contexts && !num_contexts_ret,
+		CCS_RESULT_ERROR_INVALID_VALUE);
+	ccs_context_t *ctxs =
+		configuration_space->data->contexts;
+	size_t num_ctxs =
+		configuration_space->data->num_contexts;
+	if (contexts) {
+		CCS_REFUTE(
+			num_contexts < num_ctxs,
+			CCS_RESULT_ERROR_INVALID_VALUE);
+		for (size_t i = 0; i < num_ctxs; i++)
+			contexts[i] = ctxs[i];
+		for (size_t i = num_ctxs; i < num_contexts; i++)
+			contexts[i] = NULL;
+	}
+	if (num_contexts_ret)
+		*num_contexts_ret = num_ctxs;
 	return CCS_RESULT_SUCCESS;
 }

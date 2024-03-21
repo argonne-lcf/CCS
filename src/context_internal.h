@@ -11,6 +11,10 @@ typedef struct _ccs_context_data_s _ccs_context_data_t;
 
 struct _ccs_context_ops_s {
 	_ccs_object_ops_t obj_ops;
+
+	ccs_result_t (*get_default_binding)(
+		ccs_context_t  context,
+		ccs_binding_t *binding_ret);
 };
 typedef struct _ccs_context_ops_s _ccs_context_ops_t;
 

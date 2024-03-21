@@ -1780,9 +1780,15 @@ errutarray:
 }
 
 ccs_result_t
-ccs_expression_check_context(ccs_expression_t expression, ccs_context_t context)
+ccs_expression_check_contexts(
+	ccs_expression_t expression,
+	size_t           num_contexts,
+	ccs_context_t   *contexts)
 {
 	CCS_CHECK_OBJ(expression, CCS_OBJECT_TYPE_EXPRESSION);
+	CCS_CHECK_ARY(num_contexts, contexts);
+	for (size_t i = 0; i < num_contexts; i++)
+		CCS_CHECK_CONTEXT(contexts[i]);
 	ccs_result_t err = CCS_RESULT_SUCCESS;
 	UT_array    *array;
 	utarray_new(array, &_parameter_icd);
@@ -1791,18 +1797,23 @@ ccs_expression_check_context(ccs_expression_t expression, ccs_context_t context)
 	utarray_sort(array, &_parameter_sort);
 	if (utarray_len(array) > 0) {
 		CCS_REFUTE_ERR_GOTO(
-			err, !context, CCS_RESULT_ERROR_INVALID_VALUE,
+			err, !contexts, CCS_RESULT_ERROR_INVALID_VALUE,
 			errutarray);
 		ccs_parameter_t  previous = NULL;
 		ccs_parameter_t *p_h      = NULL;
 		while ((p_h = (ccs_parameter_t *)utarray_next(array, p_h))) {
 			if (*p_h != previous) {
-				size_t index;
-				CCS_VALIDATE_ERR_GOTO(
-					err,
-					ccs_context_get_parameter_index(
-						context, *p_h, &index),
-					errutarray);
+				int found = 0;
+				for (size_t i = 0; i < num_contexts; i++) {
+					size_t index;
+					err = ccs_context_get_parameter_index(
+						contexts[i], *p_h, &index);
+					if (err == CCS_RESULT_SUCCESS) {
+						found = 1;
+						break;
+					}
+				}
+				CCS_REFUTE_ERR_GOTO(err, !found, CCS_RESULT_ERROR_INVALID_PARAMETER, errutarray);
 				previous = *p_h;
 			}
 		}

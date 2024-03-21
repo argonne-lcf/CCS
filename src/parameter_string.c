@@ -242,14 +242,18 @@ static _ccs_parameter_ops_t _ccs_parameter_string_ops = {
 	&_ccs_parameter_string_convert_samples};
 
 extern ccs_result_t
-ccs_create_string_parameter(const char *name, ccs_parameter_t *parameter_ret)
+ccs_create_string_parameter(
+	const char      *name,
+	const char      *default_value,
+	ccs_parameter_t *parameter_ret)
 {
 	CCS_CHECK_PTR(name);
 	CCS_CHECK_PTR(parameter_ret);
-	uintptr_t mem = (uintptr_t)calloc(
+	ccs_result_t err = CCS_RESULT_SUCCESS;
+	uintptr_t    mem = (uintptr_t)calloc(
 		1, sizeof(struct _ccs_parameter_s) +
-			   sizeof(_ccs_parameter_string_data_t) + strlen(name) +
-			   1);
+			sizeof(_ccs_parameter_string_data_t) +
+			strlen(name) + 1);
 	CCS_REFUTE(!mem, CCS_RESULT_ERROR_OUT_OF_MEMORY);
 
 	ccs_parameter_t parameter = (ccs_parameter_t)mem;
@@ -269,7 +273,29 @@ ccs_create_string_parameter(const char *name, ccs_parameter_t *parameter_ret)
 	CCS_MUTEX_INIT(parameter_data->mutex);
 #endif
 	parameter->data = (_ccs_parameter_data_t *)parameter_data;
+	if (default_value) {
+		ccs_datum_t d = ccs_string(default_value);
+		ccs_bool_t r;
+		CCS_VALIDATE_ERR_GOTO(
+			err,
+			_ccs_parameter_string_check_values(
+				(_ccs_parameter_data_t *)parameter_data,
+				1,
+				&d,
+				&parameter_data->common_data.default_value,
+				&r),
+			errinit);
+		CCS_REFUTE_ERR_GOTO(
+			err,
+			r != CCS_TRUE,
+			CCS_RESULT_ERROR_INVALID_VALUE,
+			errinit);
+	}
 	*parameter_ret  = parameter;
-
 	return CCS_RESULT_SUCCESS;
+errinit:
+	_ccs_parameter_string_del(parameter);
+	_ccs_object_deinit(&(parameter->obj));
+	free((void *)mem);
+	return err;
 }
