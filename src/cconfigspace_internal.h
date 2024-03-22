@@ -247,7 +247,7 @@ _ccs_do_nothing(void)
 		CCS_RESULT_ERROR_INVALID_OBJECT,                               \
 		"Invalid CCS context '%s' == %p supplied", #c, c)
 
-#define CCS_CHECK_EVALUATION(e)                                                \
+#define CCS_CHECK_EVALUATION_BINDING(e)                                        \
 	CCS_REFUTE_MSG(                                                        \
 		!(e) || !((_ccs_object_template_t *)(e))->data ||              \
 			(((_ccs_object_template_t *)(e))->obj.type !=          \

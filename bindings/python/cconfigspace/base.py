@@ -34,6 +34,7 @@ ccs_configuration       = ccs_object
 ccs_features_space      = ccs_object
 ccs_features            = ccs_object
 ccs_objective_space     = ccs_object
+ccs_evaluation_binding  = ccs_object
 ccs_evaluation          = ccs_object
 ccs_features_evaluation = ccs_object
 ccs_tuner               = ccs_object

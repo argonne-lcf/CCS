@@ -121,8 +121,8 @@ test(void)
 
 	for (size_t i = 0; i < 100; i++) {
 		ccs_datum_t res;
-		err = ccs_tree_evaluation_get_objective_value(
-			history[i], 0, &res);
+		err = ccs_evaluation_binding_get_objective_value(
+			(ccs_evaluation_binding_t)history[i], 0, &res);
 		assert(err == CCS_RESULT_SUCCESS);
 		if (res.value.f > max.value.f)
 			max.value.f = res.value.f;
@@ -132,7 +132,8 @@ test(void)
 	ccs_datum_t           res;
 	err = ccs_tree_tuner_get_optima(tuner, 1, &evaluation, NULL);
 	assert(err == CCS_RESULT_SUCCESS);
-	err = ccs_tree_evaluation_get_objective_value(evaluation, 0, &res);
+	err = ccs_evaluation_binding_get_objective_value(
+		(ccs_evaluation_binding_t)evaluation, 0, &res);
 	assert(res.value.f == max.value.f);
 
 	/* Test (de)serialization */

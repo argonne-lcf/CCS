@@ -16,6 +16,11 @@ struct _ccs_features_evaluation_ops_s {
 		ccs_features_evaluation_t features_evaluation,
 		ccs_features_evaluation_t other,
 		int                      *cmp_ret);
+
+	ccs_result_t (*compare)(
+		ccs_features_evaluation_t evaluation,
+		ccs_features_evaluation_t other_evaluation,
+		ccs_comparison_t         *result_ret);
 };
 typedef struct _ccs_features_evaluation_ops_s _ccs_features_evaluation_ops_t;
 

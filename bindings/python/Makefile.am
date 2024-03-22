@@ -25,6 +25,7 @@ EXTRA_DIST = \
 	cconfigspace/features_tuner.py \
 	cconfigspace/tuner.py \
 	cconfigspace/base.py \
+	cconfigspace/evaluation_binding.py \
 	cconfigspace/evaluation.py \
 	test/test_distribution.py \
 	test/test_tree_tuner.py \

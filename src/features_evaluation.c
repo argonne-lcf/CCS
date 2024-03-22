@@ -1,4 +1,5 @@
 #include "cconfigspace_internal.h"
+#include "evaluation_binding_internal.h"
 #include "features_evaluation_internal.h"
 #include "configuration_internal.h"
 #include "features_internal.h"
@@ -175,12 +176,33 @@ _ccs_features_evaluation_cmp(
 	return CCS_RESULT_SUCCESS;
 }
 
+static ccs_result_t
+_ccs_features_evaluation_compare(
+	ccs_features_evaluation_t evaluation,
+	ccs_features_evaluation_t other_evaluation,
+	ccs_comparison_t         *result_ret)
+{
+	int eql;
+	CCS_VALIDATE(ccs_binding_cmp(
+		(ccs_binding_t)evaluation->data->features,
+		(ccs_binding_t)other_evaluation->data->features, &eql));
+	if (0 != eql) {
+		*result_ret = CCS_COMPARISON_NOT_COMPARABLE;
+		return CCS_RESULT_SUCCESS;
+	}
+	CCS_VALIDATE(_ccs_evaluation_binding_compare(
+		(ccs_evaluation_binding_t)evaluation,
+		(ccs_evaluation_binding_t)other_evaluation, result_ret));
+	return CCS_RESULT_SUCCESS;
+}
+
 static _ccs_features_evaluation_ops_t _features_evaluation_ops = {
 	{&_ccs_features_evaluation_del,
 	 &_ccs_features_evaluation_serialize_size,
 	 &_ccs_features_evaluation_serialize},
 	&_ccs_features_evaluation_hash,
-	&_ccs_features_evaluation_cmp};
+	&_ccs_features_evaluation_cmp,
+	&_ccs_features_evaluation_compare};
 
 ccs_result_t
 ccs_create_features_evaluation(
@@ -258,18 +280,6 @@ errmemory:
 }
 
 ccs_result_t
-ccs_features_evaluation_get_objective_space(
-	ccs_features_evaluation_t evaluation,
-	ccs_objective_space_t    *objective_space_ret)
-{
-	CCS_CHECK_OBJ(evaluation, CCS_OBJECT_TYPE_FEATURES_EVALUATION);
-	CCS_VALIDATE(_ccs_binding_get_context(
-		(ccs_binding_t)evaluation,
-		(ccs_context_t *)objective_space_ret));
-	return CCS_RESULT_SUCCESS;
-}
-
-ccs_result_t
 ccs_features_evaluation_get_configuration(
 	ccs_features_evaluation_t evaluation,
 	ccs_configuration_t      *configuration_ret)
@@ -288,162 +298,5 @@ ccs_features_evaluation_get_features(
 	CCS_CHECK_OBJ(evaluation, CCS_OBJECT_TYPE_FEATURES_EVALUATION);
 	CCS_CHECK_PTR(features_ret);
 	*features_ret = evaluation->data->features;
-	return CCS_RESULT_SUCCESS;
-}
-
-ccs_result_t
-ccs_features_evaluation_get_result(
-	ccs_features_evaluation_t evaluation,
-	ccs_evaluation_result_t  *result_ret)
-{
-	CCS_CHECK_OBJ(evaluation, CCS_OBJECT_TYPE_FEATURES_EVALUATION);
-	CCS_CHECK_PTR(result_ret);
-	*result_ret = evaluation->data->result;
-	return CCS_RESULT_SUCCESS;
-}
-
-ccs_result_t
-ccs_features_evaluation_check(
-	ccs_features_evaluation_t evaluation,
-	ccs_bool_t               *is_valid_ret)
-{
-	CCS_CHECK_OBJ(evaluation, CCS_OBJECT_TYPE_FEATURES_EVALUATION);
-	CCS_VALIDATE(ccs_objective_space_check_evaluation(
-		evaluation->data->objective_space, (ccs_evaluation_t)evaluation,
-		is_valid_ret));
-	return CCS_RESULT_SUCCESS;
-}
-
-ccs_result_t
-ccs_features_evaluation_get_objective_value(
-	ccs_features_evaluation_t evaluation,
-	size_t                    index,
-	ccs_datum_t              *value_ret)
-{
-	CCS_CHECK_OBJ(evaluation, CCS_OBJECT_TYPE_FEATURES_EVALUATION);
-	CCS_CHECK_PTR(value_ret);
-	ccs_expression_t     expression;
-	ccs_objective_type_t type;
-	CCS_VALIDATE(ccs_objective_space_get_objective(
-		evaluation->data->objective_space, index, &expression, &type));
-	CCS_VALIDATE(ccs_expression_eval(
-		expression, 1, (ccs_binding_t *)&evaluation, value_ret));
-	return CCS_RESULT_SUCCESS;
-}
-
-ccs_result_t
-ccs_features_evaluation_get_objective_values(
-	ccs_features_evaluation_t evaluation,
-	size_t                    num_values,
-	ccs_datum_t              *values,
-	size_t                   *num_values_ret)
-{
-	CCS_CHECK_OBJ(evaluation, CCS_OBJECT_TYPE_FEATURES_EVALUATION);
-	CCS_CHECK_ARY(num_values, values);
-	CCS_REFUTE(!values && !num_values_ret, CCS_RESULT_ERROR_INVALID_VALUE);
-	size_t count;
-	CCS_VALIDATE(ccs_objective_space_get_objectives(
-		evaluation->data->objective_space, 0, NULL, NULL, &count));
-	if (values) {
-		CCS_REFUTE(count < num_values, CCS_RESULT_ERROR_INVALID_VALUE);
-		for (size_t i = 0; i < count; i++) {
-			ccs_expression_t     expression;
-			ccs_objective_type_t type;
-
-			CCS_VALIDATE(ccs_objective_space_get_objective(
-				evaluation->data->objective_space, i,
-				&expression, &type));
-			CCS_VALIDATE(ccs_expression_eval(
-				expression, 1, (ccs_binding_t *)&evaluation,
-				values + i));
-		}
-		for (size_t i = count; i < num_values; i++)
-			values[i] = ccs_none;
-	}
-	if (num_values_ret)
-		*num_values_ret = count;
-	return CCS_RESULT_SUCCESS;
-}
-
-static inline int
-_numeric_compare(const ccs_datum_t *a, const ccs_datum_t *b)
-{
-	if (a->type == CCS_DATA_TYPE_FLOAT) {
-		return a->value.f < b->value.f ? -1 :
-		       a->value.f > b->value.f ? 1 :
-						 0;
-	} else {
-		return a->value.i < b->value.i ? -1 :
-		       a->value.i > b->value.i ? 1 :
-						 0;
-	}
-}
-
-// Could be using memoization here.
-ccs_result_t
-ccs_features_evaluation_compare(
-	ccs_features_evaluation_t evaluation,
-	ccs_features_evaluation_t other_evaluation,
-	ccs_comparison_t         *result_ret)
-{
-	CCS_CHECK_OBJ(evaluation, CCS_OBJECT_TYPE_FEATURES_EVALUATION);
-	CCS_CHECK_OBJ(other_evaluation, CCS_OBJECT_TYPE_FEATURES_EVALUATION);
-	CCS_CHECK_PTR(result_ret);
-	if (evaluation == other_evaluation) {
-		*result_ret = CCS_COMPARISON_EQUIVALENT;
-		return CCS_RESULT_SUCCESS;
-	}
-	CCS_REFUTE(
-		evaluation->data->result || other_evaluation->data->result,
-		CCS_RESULT_ERROR_INVALID_OBJECT);
-	CCS_REFUTE(
-		evaluation->data->objective_space !=
-			other_evaluation->data->objective_space,
-		CCS_RESULT_ERROR_INVALID_OBJECT);
-	size_t count;
-	int    eql;
-	CCS_VALIDATE(ccs_objective_space_get_objectives(
-		evaluation->data->objective_space, 0, NULL, NULL, &count));
-	CCS_VALIDATE(ccs_binding_cmp(
-		(ccs_binding_t)evaluation->data->features,
-		(ccs_binding_t)other_evaluation->data->features, &eql));
-	if (0 != eql) {
-		*result_ret = CCS_COMPARISON_NOT_COMPARABLE;
-		return CCS_RESULT_SUCCESS;
-	}
-
-	*result_ret = CCS_COMPARISON_EQUIVALENT;
-	for (size_t i = 0; i < count; i++) {
-		ccs_expression_t     expression;
-		ccs_objective_type_t type;
-		ccs_datum_t          values[2];
-		int                  cmp;
-
-		CCS_VALIDATE(ccs_objective_space_get_objective(
-			evaluation->data->objective_space, i, &expression,
-			&type));
-		CCS_VALIDATE(ccs_expression_eval(
-			expression, 1, (ccs_binding_t *)&evaluation, values));
-		CCS_VALIDATE(ccs_expression_eval(
-			expression, 1, (ccs_binding_t *)&other_evaluation,
-			values + 1));
-		if ((values[0].type != CCS_DATA_TYPE_INT &&
-		     values[0].type != CCS_DATA_TYPE_FLOAT) ||
-		    values[0].type != values[1].type) {
-			*result_ret = CCS_COMPARISON_NOT_COMPARABLE;
-			return CCS_RESULT_SUCCESS;
-		}
-		cmp = _numeric_compare(values, values + 1);
-		if (cmp) {
-			if (type == CCS_OBJECTIVE_TYPE_MAXIMIZE)
-				cmp = -cmp;
-			if (*result_ret == CCS_COMPARISON_EQUIVALENT)
-				*result_ret = (ccs_comparison_t)cmp;
-			else if (*result_ret != cmp) {
-				*result_ret = CCS_COMPARISON_NOT_COMPARABLE;
-				return CCS_RESULT_SUCCESS;
-			}
-		}
-	}
 	return CCS_RESULT_SUCCESS;
 }

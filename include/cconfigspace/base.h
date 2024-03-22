@@ -130,6 +130,10 @@ typedef struct _ccs_features_s            *ccs_features_t;
  */
 typedef struct _ccs_objective_space_s     *ccs_objective_space_t;
 /**
+ * An opaque type defining a CCS evaluation binding.
+ */
+typedef struct _ccs_evaluation_binding_s  *ccs_evaluation_binding_t;
+/**
  * An opaque type defining a CCS evaluation.
  */
 typedef struct _ccs_evaluation_s          *ccs_evaluation_t;

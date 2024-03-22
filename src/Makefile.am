@@ -76,6 +76,8 @@ libcconfigspace_la_SOURCES = \
 	objective_space.c \
 	objective_space_internal.h \
 	objective_space_deserialize.h \
+	evaluation_binding.c \
+	evaluation_binding_internal.h \
 	evaluation.c \
 	evaluation_internal.h \
 	evaluation_deserialize.h \

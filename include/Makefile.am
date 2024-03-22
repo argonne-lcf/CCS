@@ -17,6 +17,7 @@ include_ccs_HEADERS = \
 	cconfigspace/configuration.h \
 	cconfigspace/features.h \
 	cconfigspace/objective_space.h \
+	cconfigspace/evaluation_binding.h \
 	cconfigspace/evaluation.h \
 	cconfigspace/features_evaluation.h \
 	cconfigspace/tuner.h \

@@ -4,6 +4,7 @@ EXTRA_DIST = \
 	lib/cconfigspace/features_tuner.rb \
 	lib/cconfigspace/tree_evaluation.rb \
 	lib/cconfigspace/tree.rb \
+	lib/cconfigspace/evaluation_binding.rb \
 	lib/cconfigspace/evaluation.rb \
 	lib/cconfigspace/tuner.rb \
 	lib/cconfigspace/tree_tuner.rb \

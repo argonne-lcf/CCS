@@ -103,6 +103,7 @@ module CCS
   typedef :ccs_object_t, :ccs_features_space_t
   typedef :ccs_object_t, :ccs_features_t
   typedef :ccs_object_t, :ccs_objective_space_t
+  typedef :ccs_object_t, :ccs_evaluation_binding_t
   typedef :ccs_object_t, :ccs_evaluation_t
   typedef :ccs_object_t, :ccs_features_evaluation_t
   typedef :ccs_object_t, :ccs_tuner_t
@@ -128,6 +129,7 @@ module CCS
     alias read_ccs_features_space_t read_ccs_object_t
     alias read_ccs_features_t read_ccs_object_t
     alias read_ccs_objective_space_t read_ccs_object_t
+    alias read_ccs_evaluation_binding_t read_ccs_object_t
     alias read_ccs_evaluation_t read_ccs_object_t
     alias read_ccs_features_evaluation_t read_ccs_object_t
     alias read_ccs_tuner_t read_ccs_object_t

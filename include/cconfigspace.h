@@ -20,6 +20,7 @@
 #include "cconfigspace/features.h"
 #include "cconfigspace/objective_space.h"
 #include "cconfigspace/evaluation.h"
+#include "cconfigspace/evaluation_binding.h"
 #include "cconfigspace/features_evaluation.h"
 #include "cconfigspace/tuner.h"
 #include "cconfigspace/features_tuner.h"

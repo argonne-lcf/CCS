@@ -26,6 +26,7 @@ from .configuration import *
 from .features_space import *
 from .features import *
 from .objective_space import *
+from .evaluation_binding import *
 from .evaluation import *
 from .features_evaluation import *
 from .tuner import *

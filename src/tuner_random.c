@@ -187,8 +187,8 @@ _ccs_tuner_random_tell(
 	ccs_result_t              err;
 	for (size_t i = 0; i < num_evaluations; i++) {
 		ccs_evaluation_result_t result;
-		CCS_VALIDATE(
-			ccs_evaluation_get_result(evaluations[i], &result));
+		CCS_VALIDATE(ccs_evaluation_binding_get_result(
+			(ccs_evaluation_binding_t)evaluations[i], &result));
 		if (!result) {
 			int       discard = 0;
 			UT_array *tmp;
@@ -211,8 +211,11 @@ _ccs_tuner_random_tell(
 					d->old_optima, eval))) {
 				if (!discard) {
 					ccs_comparison_t cmp;
-					err = ccs_evaluation_compare(
-						evaluations[i], *eval, &cmp);
+					err = ccs_evaluation_binding_compare(
+						(ccs_evaluation_binding_t)
+							evaluations[i],
+						(ccs_evaluation_binding_t)*eval,
+						&cmp);
 					if (err)
 						discard = 1;
 					else
