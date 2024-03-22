@@ -78,13 +78,16 @@ ccs_binding_get_values(
  * Get the value of the parameter with the given name.
  * @param[in] binding
  * @param[in] name the name of the parameter whose value to retrieve
+ * @param[out] found_ret a pointer to the an optional variable that will
+ *                       hold wether a parameter named \p name was found in
+ *                       \p binding
  * @param[out] value_ret a pointer to the variable that will hold the value
  * @return #CCS_RESULT_SUCCESS on success
  * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p binding is not a valid CCS
  * object
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p value_ret is NULL
- * @return #CCS_RESULT_ERROR_INVALID_NAME if no parameter with such \p name
- * exist in the \p binding context
+ * @return #CCS_RESULT_ERROR_INVALID_NAME if \p found_ret is NULL  no parameter
+ * with such \p name exist in the \p binding context
  * @remarks
  *   This function is thread-safe
  */
@@ -92,6 +95,7 @@ extern ccs_result_t
 ccs_binding_get_value_by_name(
 	ccs_binding_t binding,
 	const char   *name,
+	ccs_bool_t   *found_ret,
 	ccs_datum_t  *value_ret);
 
 /**
@@ -125,7 +129,7 @@ ccs_binding_get_value_by_parameter(
  *                      value.
  * @return #CCS_RESULT_SUCCESS on success
  * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p binding is not a valid CCS
- * object
+ * binding
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p hash_ret is NULL
  * @remarks
  *   This function is thread-safe
@@ -144,7 +148,8 @@ ccs_binding_hash(ccs_binding_t binding, ccs_hash_t *hash_ret);
  *                     than, equal, or greater then the second binding
  * @return #CCS_RESULT_SUCCESS on success
  * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p binding or \p other_binding
- * are not valid CCS objects
+ * are not valid CCS bindings; or if \p binding and \p other_binding are
+ * bindings of different types
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p cmp_ret is NULL
  * @remarks
  *   This function is thread-safe

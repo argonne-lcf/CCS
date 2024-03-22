@@ -50,11 +50,12 @@ ccs_result_t
 ccs_context_get_parameter_index_by_name(
 	ccs_context_t context,
 	const char   *name,
+	ccs_bool_t   *found_ret,
 	size_t       *index_ret)
 {
 	CCS_CHECK_CONTEXT(context);
 	CCS_VALIDATE(_ccs_context_get_parameter_index_by_name(
-		context, name, index_ret));
+		context, name, found_ret, index_ret));
 	return CCS_RESULT_SUCCESS;
 }
 

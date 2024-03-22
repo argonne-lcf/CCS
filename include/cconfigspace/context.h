@@ -31,31 +31,6 @@ extern ccs_result_t
 ccs_context_get_name(ccs_context_t context, const char **name_ret);
 
 /**
- * Get the index of an parameter in the context.
- * @param[in] context
- * @param[in] parameter
- * @param[out] found_ret a pointer to the an optional variable that will
- *                       hold wether the parameter was found in the \p
- *                       context
- * @param[out] index_ret a pointer to the variable which will contain the index
- *                       of the parameter
- * @return #CCS_RESULT_SUCCESS on success
- * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p context is not a valid CCS
- * object;
- * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p index_ret is NULL
- * @return #CCS_RESULT_ERROR_INVALID_PARAMETER if \p found_ret is NULL and
- * \p context does not contain \p parameter
- * @remarks
- *   This function is thread-safe
- */
-extern ccs_result_t
-ccs_context_get_parameter_index(
-	ccs_context_t   context,
-	ccs_parameter_t parameter,
-	ccs_bool_t     *found_ret,
-	size_t         *index_ret);
-
-/**
  * Get the number of parameters in the given context.
  * @param[in] context
  * @param[out] num_parameters_ret a pointer to the variable which will contain
@@ -94,49 +69,6 @@ ccs_context_get_parameter(
 	ccs_parameter_t *parameter_ret);
 
 /**
- * Get an parameter in a context given its name.
- * @param[in] context
- * @param[in] name the name of the parameter to retrieve
- * @param[out] parameter_ret a pointer to the variable that will contain the
- *                           parameter
- * @return #CCS_RESULT_SUCCESS on success
- * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p context is not a valid CCS
- * object
- * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p name or \p parameter_ret are
- * NULL
- * @return #CCS_RESULT_ERROR_INVALID_NAME if no parameter with such \p name
- * exist in the \p context
- * @remarks
- *   This function is thread-safe
- */
-extern ccs_result_t
-ccs_context_get_parameter_by_name(
-	ccs_context_t    context,
-	const char      *name,
-	ccs_parameter_t *parameter_ret);
-
-/**
- * Get the index of an parameter in the context given its name.
- * @param[in] context
- * @param[in] name the name of the parameter to retrieve the index of
- * @param[out] index_ret a pointer to the variable that will contain the index
- *                       of parameter in the \p context
- * @return #CCS_RESULT_SUCCESS on success
- * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p context is not a valid CCS
- * object
- * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p name or \p index_ret are NULL
- * @return #CCS_RESULT_ERROR_INVALID_NAME if no parameter with such \p name
- * exist in the context
- * @remarks
- *   This function is thread-safe
- */
-extern ccs_result_t
-ccs_context_get_parameter_index_by_name(
-	ccs_context_t context,
-	const char   *name,
-	size_t       *index_ret);
-
-/**
  * Get the parameters in the given context.
  * @param[in] context
  * @param[in] num_parameters is the number of parameters that can be added to
@@ -164,6 +96,77 @@ ccs_context_get_parameters(
 	size_t           num_parameters,
 	ccs_parameter_t *parameters,
 	size_t          *num_parameters_ret);
+
+/**
+ * Get an parameter in a context given its name.
+ * @param[in] context
+ * @param[in] name the name of the parameter to retrieve
+ * @param[out] parameter_ret a pointer to the variable that will contain the
+ *                           parameter, or NULL if the parameter is not found
+ *                           in the context
+ * @return #CCS_RESULT_SUCCESS on success
+ * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p context is not a valid CCS
+ * object
+ * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p name or \p parameter_ret are
+ * NULL
+ * @remarks
+ *   This function is thread-safe
+ */
+extern ccs_result_t
+ccs_context_get_parameter_by_name(
+	ccs_context_t    context,
+	const char      *name,
+	ccs_parameter_t *parameter_ret);
+
+/**
+ * Get the index of an parameter in the context given its name.
+ * @param[in] context
+ * @param[in] name the name of the parameter to retrieve the index of
+ * @param[out] found_ret a pointer to the an optional variable that will
+ *                       hold wether a parameter named \p name was found in
+ *                       \p context
+ * @param[out] index_ret a pointer to the variable that will contain the index
+ *                       of parameter in the \p context
+ * @return #CCS_RESULT_SUCCESS on success
+ * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p context is not a valid CCS
+ * object
+ * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p name or \p index_ret are NULL
+ * @return #CCS_RESULT_ERROR_INVALID_NAME if \p found_ret is NULL and no
+ * parameter with such \p name exist in the context
+ * @remarks
+ *   This function is thread-safe
+ */
+extern ccs_result_t
+ccs_context_get_parameter_index_by_name(
+	ccs_context_t context,
+	const char   *name,
+	ccs_bool_t   *found_ret,
+	size_t       *index_ret);
+
+/**
+ * Get the index of an parameter in the context.
+ * @param[in] context
+ * @param[in] parameter
+ * @param[out] found_ret a pointer to the an optional variable that will
+ *                       hold wether the parameter was found in the \p
+ *                       context
+ * @param[out] index_ret a pointer to the variable which will contain the index
+ *                       of the parameter
+ * @return #CCS_RESULT_SUCCESS on success
+ * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p context is not a valid CCS
+ * object;
+ * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p index_ret is NULL
+ * @return #CCS_RESULT_ERROR_INVALID_PARAMETER if \p found_ret is NULL and
+ * \p context does not contain \p parameter
+ * @remarks
+ *   This function is thread-safe
+ */
+extern ccs_result_t
+ccs_context_get_parameter_index(
+	ccs_context_t   context,
+	ccs_parameter_t parameter,
+	ccs_bool_t     *found_ret,
+	size_t         *index_ret);
 
 /**
  * Get the indices of a set of parameters in a context.

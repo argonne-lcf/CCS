@@ -56,73 +56,6 @@ ccs_features_get_features_space(
 	ccs_features_space_t *features_space_ret);
 
 /**
- * Get the value of the parameter at the given index.
- * @param[in] features
- * @param[in] index index of the parameter in the associated features space
- * @param[out] value_ret a pointer to the variable that will hold the value
- * @return #CCS_RESULT_SUCCESS on success
- * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p features is not a valid CCS
- * features
- * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p value_ret is NULL
- * @return #CCS_RESULT_ERROR_OUT_OF_BOUNDS if \p index is greater than the count
- * of parameters in the features space
- * @remarks
- *   This function is thread-safe
- */
-extern ccs_result_t
-ccs_features_get_value(
-	ccs_features_t features,
-	size_t         index,
-	ccs_datum_t   *value_ret);
-
-/**
- * Get all the values in the features.
- * @param[in] features
- * @param[in] num_values the size of the \p values array
- * @param[out] values an array of size \p num_values to hold the returned
- *                    values, or NULL. If the array is too big, extra values
- *                    are set to #CCS_DATA_TYPE_NONE
- * @param[out] num_values_ret a pointer to a variable that will contain the
- *                            number of values that are or would be returned.
- *                            Can be NULL
- * @return #CCS_RESULT_SUCCESS on success
- * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p features is not a valid CCS
- * features
- * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p values is NULL and \p
- * num_values is greater than 0; or if \p values is NULL and num_values_ret is
- * NULL; or if \p num_values is less than the number of values that would be
- * returned
- * @remarks
- *   This function is thread-safe
- */
-extern ccs_result_t
-ccs_features_get_values(
-	ccs_features_t features,
-	size_t         num_values,
-	ccs_datum_t   *values,
-	size_t        *num_values_ret);
-
-/**
- * Get the value of the parameter with the given name.
- * @param[in] features
- * @param[in] name the name of the parameter whose value to retrieve
- * @param[out] value_ret a pointer to the variable that will hold the value
- * @return #CCS_RESULT_SUCCESS on success
- * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p features is not a valid CCS
- * features
- * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p value_ret is NULL
- * @return #CCS_RESULT_ERROR_INVALID_NAME if no parameter with such \p name
- * exist in the \p features space
- * @remarks
- *   This function is thread-safe
- */
-extern ccs_result_t
-ccs_features_get_value_by_name(
-	ccs_features_t features,
-	const char    *name,
-	ccs_datum_t   *value_ret);
-
-/**
  * Check that the features is a valid features for the features space.
  * @param[in] features
  * @param[out] is_valid_ret a pointer to a variable that will hold the result
@@ -140,43 +73,6 @@ ccs_features_get_value_by_name(
  */
 extern ccs_result_t
 ccs_features_check(ccs_features_t features, ccs_bool_t *is_valid_ret);
-
-/**
- * Compute a hash value for the features by hashing together the features space
- * reference, the number of values, and the values themselves.
- * @param[in] features
- * @param[out] hash_ret the address of the variable that will contain the hash
- *                      value
- * @return #CCS_RESULT_SUCCESS on success
- * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p features is not a valid CCS
- * features
- * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p hash_ret is NULL
- * @remarks
- *   This function is thread-safe
- */
-extern ccs_result_t
-ccs_features_hash(ccs_features_t features, ccs_hash_t *hash_ret);
-
-/**
- * Define a strict ordering of features instances. Configuration space, number
- * of values and values are compared.
- * @param[in] features the first features
- * @param[in] other_features the second features
- * @param[out] cmp_ret the pointer to the variable that will contain the result
- *                     of the comparison. Will contain -1, 0, or 1 depending on
- *                     if the first features is found to be respectively lesser
- *                     than, equal, or greater then the second features
- * @return #CCS_RESULT_SUCCESS on success
- * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p features or \p other_features
- * are not a valid CCS object
- * @remarks
- *   This function is thread-safe
- */
-extern ccs_result_t
-ccs_features_cmp(
-	ccs_features_t features,
-	ccs_features_t other_features,
-	int           *cmp_ret);
 
 #ifdef __cplusplus
 }

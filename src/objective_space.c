@@ -270,108 +270,6 @@ errparams:
 	return err;
 }
 
-ccs_result_t
-ccs_objective_space_get_name(
-	ccs_objective_space_t objective_space,
-	const char          **name_ret)
-{
-	CCS_CHECK_OBJ(objective_space, CCS_OBJECT_TYPE_OBJECTIVE_SPACE);
-	CCS_VALIDATE(_ccs_context_get_name(
-		(ccs_context_t)objective_space, name_ret));
-	return CCS_RESULT_SUCCESS;
-}
-
-ccs_result_t
-ccs_objective_space_get_num_parameters(
-	ccs_objective_space_t objective_space,
-	size_t               *num_parameters_ret)
-{
-	CCS_CHECK_OBJ(objective_space, CCS_OBJECT_TYPE_OBJECTIVE_SPACE);
-	CCS_VALIDATE(_ccs_context_get_num_parameters(
-		(ccs_context_t)objective_space, num_parameters_ret));
-	return CCS_RESULT_SUCCESS;
-}
-
-ccs_result_t
-ccs_objective_space_get_parameter(
-	ccs_objective_space_t objective_space,
-	size_t                index,
-	ccs_parameter_t      *parameter_ret)
-{
-	CCS_CHECK_OBJ(objective_space, CCS_OBJECT_TYPE_OBJECTIVE_SPACE);
-	CCS_VALIDATE(_ccs_context_get_parameter(
-		(ccs_context_t)objective_space, index, parameter_ret));
-	return CCS_RESULT_SUCCESS;
-}
-
-ccs_result_t
-ccs_objective_space_get_parameter_by_name(
-	ccs_objective_space_t objective_space,
-	const char           *name,
-	ccs_parameter_t      *parameter_ret)
-{
-	CCS_CHECK_OBJ(objective_space, CCS_OBJECT_TYPE_OBJECTIVE_SPACE);
-	CCS_VALIDATE(_ccs_context_get_parameter_by_name(
-		(ccs_context_t)objective_space, name, parameter_ret));
-	return CCS_RESULT_SUCCESS;
-}
-
-ccs_result_t
-ccs_objective_space_get_parameter_index_by_name(
-	ccs_objective_space_t objective_space,
-	const char           *name,
-	size_t               *index_ret)
-{
-	CCS_CHECK_OBJ(objective_space, CCS_OBJECT_TYPE_OBJECTIVE_SPACE);
-	CCS_VALIDATE(_ccs_context_get_parameter_index_by_name(
-		(ccs_context_t)objective_space, name, index_ret));
-	return CCS_RESULT_SUCCESS;
-}
-
-ccs_result_t
-ccs_objective_space_get_parameter_index(
-	ccs_objective_space_t objective_space,
-	ccs_parameter_t       parameter,
-	ccs_bool_t           *found_ret,
-	size_t               *index_ret)
-{
-	CCS_CHECK_OBJ(objective_space, CCS_OBJECT_TYPE_OBJECTIVE_SPACE);
-	CCS_CHECK_OBJ(parameter, CCS_OBJECT_TYPE_PARAMETER);
-	CCS_VALIDATE(_ccs_context_get_parameter_index(
-		(ccs_context_t)(objective_space), parameter, found_ret,
-		index_ret));
-	return CCS_RESULT_SUCCESS;
-}
-
-ccs_result_t
-ccs_objective_space_get_parameter_indexes(
-	ccs_objective_space_t objective_space,
-	size_t                num_parameters,
-	ccs_parameter_t      *parameters,
-	ccs_bool_t           *found,
-	size_t               *indexes)
-{
-	CCS_CHECK_OBJ(objective_space, CCS_OBJECT_TYPE_OBJECTIVE_SPACE);
-	CCS_VALIDATE(_ccs_context_get_parameter_indexes(
-		(ccs_context_t)objective_space, num_parameters, parameters,
-		found, indexes));
-	return CCS_RESULT_SUCCESS;
-}
-
-ccs_result_t
-ccs_objective_space_get_parameters(
-	ccs_objective_space_t objective_space,
-	size_t                num_parameters,
-	ccs_parameter_t      *parameters,
-	size_t               *num_parameters_ret)
-{
-	CCS_CHECK_OBJ(objective_space, CCS_OBJECT_TYPE_OBJECTIVE_SPACE);
-	CCS_VALIDATE(_ccs_context_get_parameters(
-		(ccs_context_t)objective_space, num_parameters, parameters,
-		num_parameters_ret));
-	return CCS_RESULT_SUCCESS;
-}
-
 static inline ccs_result_t
 _check_evaluation(
 	ccs_objective_space_t objective_space,
@@ -405,19 +303,6 @@ ccs_objective_space_check_evaluation(
 		CCS_RESULT_ERROR_INVALID_EVALUATION);
 	CCS_VALIDATE(
 		_check_evaluation(objective_space, evaluation, is_valid_ret));
-	return CCS_RESULT_SUCCESS;
-}
-
-ccs_result_t
-ccs_objective_space_validate_value(
-	ccs_objective_space_t objective_space,
-	size_t                index,
-	ccs_datum_t           value,
-	ccs_datum_t          *value_ret)
-{
-	CCS_CHECK_OBJ(objective_space, CCS_OBJECT_TYPE_OBJECTIVE_SPACE);
-	CCS_VALIDATE(_ccs_context_validate_value(
-		(ccs_context_t)objective_space, index, value, value_ret));
 	return CCS_RESULT_SUCCESS;
 }
 

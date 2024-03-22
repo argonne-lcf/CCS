@@ -9,12 +9,12 @@ struct _ccs_configuration_ops_s {
 	_ccs_object_ops_t obj_ops;
 
 	ccs_result_t (
-		*hash)(_ccs_configuration_data_t *data, ccs_hash_t *hash_ret);
+		*hash)(ccs_configuration_t configuration, ccs_hash_t *hash_ret);
 
 	ccs_result_t (*cmp)(
-		_ccs_configuration_data_t *data,
-		ccs_configuration_t        other,
-		int                       *cmp_ret);
+		ccs_configuration_t configuration,
+		ccs_configuration_t other,
+		int                *cmp_ret);
 };
 typedef struct _ccs_configuration_ops_s _ccs_configuration_ops_t;
 

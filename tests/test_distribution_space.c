@@ -36,23 +36,25 @@ check_configuration(
 	const char *name;
 	ccs_bool_t  check;
 
-	err = ccs_configuration_space_get_num_parameters(
-		configuration_space, &sz_ret);
+	err = ccs_context_get_num_parameters(
+		(ccs_context_t)configuration_space, &sz_ret);
 	assert(err == CCS_RESULT_SUCCESS);
 	assert(sz_ret == sz);
 
 	for (size_t i = 0; i < sz; i++) {
-		err = ccs_configuration_space_get_parameter(
-			configuration_space, i, &parameter);
+		err = ccs_context_get_parameter(
+			(ccs_context_t)configuration_space, i, &parameter);
 		assert(err == CCS_RESULT_SUCCESS);
 		assert(parameter == parameters[i]);
-		err = ccs_configuration_space_get_parameter_index(
-			configuration_space, parameter, NULL, &index);
+		err = ccs_context_get_parameter_index(
+			(ccs_context_t)configuration_space, parameter, NULL,
+			&index);
 		assert(err == CCS_RESULT_SUCCESS);
 		assert(index == i);
 	}
-	err = ccs_configuration_space_get_parameters(
-		configuration_space, sz + 1, parameters_ret, &sz_ret);
+	err = ccs_context_get_parameters(
+		(ccs_context_t)configuration_space, sz + 1, parameters_ret,
+		&sz_ret);
 	assert(err == CCS_RESULT_SUCCESS);
 	assert(sz_ret == sz);
 	for (size_t i = 0; i < sz; i++)
@@ -62,8 +64,8 @@ check_configuration(
 	for (size_t i = 0; i < sz; i++) {
 		err = ccs_parameter_get_name(parameters[i], &name);
 		assert(err == CCS_RESULT_SUCCESS);
-		err = ccs_configuration_space_get_parameter_by_name(
-			configuration_space, name, &parameter);
+		err = ccs_context_get_parameter_by_name(
+			(ccs_context_t)configuration_space, name, &parameter);
 		assert(err == CCS_RESULT_SUCCESS);
 		assert(parameter == parameters[i]);
 	}
@@ -78,7 +80,8 @@ check_configuration(
 	for (size_t i = 0; i < sz; i++) {
 		ccs_datum_t datum;
 		ccs_datum_t hdatum;
-		err = ccs_configuration_get_value(configuration, i, &datum);
+		err = ccs_binding_get_value(
+			(ccs_binding_t)configuration, i, &datum);
 		assert(err == CCS_RESULT_SUCCESS);
 		err = ccs_parameter_get_default_value(parameters[i], &hdatum);
 		assert(err == CCS_RESULT_SUCCESS);
@@ -200,8 +203,8 @@ test_set_distribution(void)
 		err = ccs_configuration_check(configurations[i], &check);
 		assert(err == CCS_RESULT_SUCCESS);
 		assert(check);
-		err = ccs_configuration_get_values(
-			configurations[i], 3, values, NULL);
+		err = ccs_binding_get_values(
+			(ccs_binding_t)configurations[i], 3, values, NULL);
 		assert(err == CCS_RESULT_SUCCESS);
 		assert(values[0].value.f >= -4.0);
 		assert(values[0].value.f < 4.0);
@@ -239,8 +242,8 @@ test_set_distribution(void)
 		err = ccs_configuration_check(configurations[i], &check);
 		assert(err == CCS_RESULT_SUCCESS);
 		assert(check);
-		err = ccs_configuration_get_values(
-			configurations[i], 3, values, NULL);
+		err = ccs_binding_get_values(
+			(ccs_binding_t)configurations[i], 3, values, NULL);
 		assert(err == CCS_RESULT_SUCCESS);
 		assert(values[2].value.f >= -4.0);
 		assert(values[2].value.f < 4.0);

@@ -44,8 +44,8 @@ test_simple(void)
 		err = ccs_configuration_space_sample(
 			space, NULL, NULL, &configuration);
 		assert(err == CCS_RESULT_SUCCESS);
-		err = ccs_configuration_get_values(
-			configuration, 2, values, NULL);
+		err = ccs_binding_get_values(
+			(ccs_binding_t)configuration, 2, values, NULL);
 		assert(err == CCS_RESULT_SUCCESS);
 		assert(values[0].type == CCS_DATA_TYPE_FLOAT);
 		f = values[0].value.f;
@@ -67,8 +67,8 @@ test_simple(void)
 	for (int i = 0; i < 100; i++) {
 		ccs_float_t f;
 		ccs_bool_t  check;
-		err = ccs_configuration_get_values(
-			configurations[i], 2, values, NULL);
+		err = ccs_binding_get_values(
+			(ccs_binding_t)configurations[i], 2, values, NULL);
 		assert(err == CCS_RESULT_SUCCESS);
 		assert(values[0].type == CCS_DATA_TYPE_FLOAT);
 		f = values[0].value.f;
@@ -142,8 +142,8 @@ test_combined(void)
 		err = ccs_configuration_space_sample(
 			space, NULL, NULL, &configuration);
 		assert(err == CCS_RESULT_SUCCESS);
-		err = ccs_configuration_get_values(
-			configuration, 3, values, NULL);
+		err = ccs_binding_get_values(
+			(ccs_binding_t)configuration, 3, values, NULL);
 		assert(err == CCS_RESULT_SUCCESS);
 		assert(values[1].type == CCS_DATA_TYPE_FLOAT);
 		f = values[1].value.f;
@@ -178,8 +178,8 @@ test_combined(void)
 	for (int i = 0; i < 100; i++) {
 		ccs_float_t f;
 		ccs_bool_t  check;
-		err = ccs_configuration_get_values(
-			configurations[i], 3, values, NULL);
+		err = ccs_binding_get_values(
+			(ccs_binding_t)configurations[i], 3, values, NULL);
 		assert(err == CCS_RESULT_SUCCESS);
 		assert(values[1].type == CCS_DATA_TYPE_FLOAT);
 		f = values[1].value.f;

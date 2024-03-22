@@ -34,22 +34,23 @@ check_features(
 		(ccs_parameter_t *)malloc(sizeof(ccs_parameter_t) * (sz + 1));
 	const char *name;
 
-	err = ccs_features_space_get_num_parameters(features_space, &sz_ret);
+	err = ccs_context_get_num_parameters(
+		(ccs_context_t)features_space, &sz_ret);
 	assert(err == CCS_RESULT_SUCCESS);
 	assert(sz_ret == sz);
 
 	for (size_t i = 0; i < sz; i++) {
-		err = ccs_features_space_get_parameter(
-			features_space, i, &parameter);
+		err = ccs_context_get_parameter(
+			(ccs_context_t)features_space, i, &parameter);
 		assert(err == CCS_RESULT_SUCCESS);
 		assert(parameter == parameters[i]);
-		err = ccs_features_space_get_parameter_index(
-			features_space, parameter, NULL, &index);
+		err = ccs_context_get_parameter_index(
+			(ccs_context_t)features_space, parameter, NULL, &index);
 		assert(err == CCS_RESULT_SUCCESS);
 		assert(index == i);
 	}
-	err = ccs_features_space_get_parameters(
-		features_space, sz + 1, parameters_ret, &sz_ret);
+	err = ccs_context_get_parameters(
+		(ccs_context_t)features_space, sz + 1, parameters_ret, &sz_ret);
 	assert(err == CCS_RESULT_SUCCESS);
 	assert(sz_ret == sz);
 	for (size_t i = 0; i < sz; i++)
@@ -59,8 +60,8 @@ check_features(
 	for (size_t i = 0; i < sz; i++) {
 		err = ccs_parameter_get_name(parameters[i], &name);
 		assert(err == CCS_RESULT_SUCCESS);
-		err = ccs_features_space_get_parameter_by_name(
-			features_space, name, &parameter);
+		err = ccs_context_get_parameter_by_name(
+			(ccs_context_t)features_space, name, &parameter);
 		assert(err == CCS_RESULT_SUCCESS);
 		assert(parameter == parameters[i]);
 	}
@@ -101,7 +102,7 @@ test_create(void)
 	assert(err == CCS_RESULT_SUCCESS);
 	assert(type == CCS_OBJECT_TYPE_FEATURES_SPACE);
 
-	err = ccs_features_space_get_name(features_space, &name);
+	err = ccs_context_get_name((ccs_context_t)features_space, &name);
 	assert(err == CCS_RESULT_SUCCESS);
 	assert(strcmp(name, "my_features_space") == 0);
 
@@ -146,14 +147,15 @@ test_features(void)
 	assert(features_space == features_space_ret);
 
 	for (size_t i = 0; i < 3; i++) {
-		err = ccs_features_get_value(features1, i, &datum);
+		err = ccs_binding_get_value(
+			(ccs_binding_t)features1, i, &datum);
 		assert(err == CCS_RESULT_SUCCESS);
 		assert(values[i].type == datum.type);
 		assert(values[i].value.f == datum.value.f);
 	}
 
-	err = ccs_features_get_values(
-		features1, 3, values_ret, &num_values_ret);
+	err = ccs_binding_get_values(
+		(ccs_binding_t)features1, 3, values_ret, &num_values_ret);
 	assert(err == CCS_RESULT_SUCCESS);
 	assert(3 == num_values_ret);
 	for (size_t i = 0; i < 3; i++) {
@@ -161,7 +163,8 @@ test_features(void)
 		assert(values[i].value.f == values_ret[i].value.f);
 	}
 
-	err = ccs_features_get_value_by_name(features1, "param2", &datum);
+	err = ccs_binding_get_value_by_name(
+		(ccs_binding_t)features1, "param2", NULL, &datum);
 	assert(err == CCS_RESULT_SUCCESS);
 	assert(values[1].type == datum.type);
 	assert(values[1].value.f == datum.value.f);
@@ -178,7 +181,8 @@ test_features(void)
 	err = ccs_create_features(features_space, 3, values, &features2);
 	assert(err == CCS_RESULT_SUCCESS);
 
-	err = ccs_features_cmp(features1, features2, &cmp);
+	err = ccs_binding_cmp(
+		(ccs_binding_t)features1, (ccs_binding_t)features2, &cmp);
 	assert(err == CCS_RESULT_SUCCESS);
 	assert(0 == cmp);
 	err = ccs_release_object(features2);
@@ -188,7 +192,8 @@ test_features(void)
 	err       = ccs_create_features(features_space, 3, values, &features2);
 	assert(err == CCS_RESULT_SUCCESS);
 
-	err = ccs_features_cmp(features1, features2, &cmp);
+	err = ccs_binding_cmp(
+		(ccs_binding_t)features1, (ccs_binding_t)features2, &cmp);
 	assert(err == CCS_RESULT_SUCCESS);
 	assert(0 > cmp);
 	err = ccs_release_object(features2);
@@ -269,14 +274,14 @@ test_deserialize(void)
 		CCS_DESERIALIZE_OPTION_END);
 	assert(err == CCS_RESULT_SUCCESS);
 
-	err = ccs_features_space_get_parameter_by_name(
-		features_space, "param1", &parameters_new[0]);
+	err = ccs_context_get_parameter_by_name(
+		(ccs_context_t)features_space, "param1", &parameters_new[0]);
 	assert(err == CCS_RESULT_SUCCESS);
-	err = ccs_features_space_get_parameter_by_name(
-		features_space, "param2", &parameters_new[1]);
+	err = ccs_context_get_parameter_by_name(
+		(ccs_context_t)features_space, "param2", &parameters_new[1]);
 	assert(err == CCS_RESULT_SUCCESS);
-	err = ccs_features_space_get_parameter_by_name(
-		features_space, "param3", &parameters_new[2]);
+	err = ccs_context_get_parameter_by_name(
+		(ccs_context_t)features_space, "param3", &parameters_new[2]);
 	assert(err == CCS_RESULT_SUCCESS);
 
 	err = ccs_release_object(features_space);
@@ -291,14 +296,14 @@ test_deserialize(void)
 		CCS_DESERIALIZE_OPTION_END);
 	assert(err == CCS_RESULT_SUCCESS);
 
-	err = ccs_features_space_get_parameter_by_name(
-		features_space, "param1", &parameters_new[0]);
+	err = ccs_context_get_parameter_by_name(
+		(ccs_context_t)features_space, "param1", &parameters_new[0]);
 	assert(err == CCS_RESULT_SUCCESS);
-	err = ccs_features_space_get_parameter_by_name(
-		features_space, "param2", &parameters_new[1]);
+	err = ccs_context_get_parameter_by_name(
+		(ccs_context_t)features_space, "param2", &parameters_new[1]);
 	assert(err == CCS_RESULT_SUCCESS);
-	err = ccs_features_space_get_parameter_by_name(
-		features_space, "param3", &parameters_new[2]);
+	err = ccs_context_get_parameter_by_name(
+		(ccs_context_t)features_space, "param3", &parameters_new[2]);
 	assert(err == CCS_RESULT_SUCCESS);
 
 	err = ccs_map_get(map, ccs_object(features_space_ref), &d);
@@ -374,7 +379,8 @@ test_features_deserialize(void)
 		CCS_DESERIALIZE_OPTION_END);
 	assert(err == CCS_RESULT_SUCCESS);
 
-	err = ccs_features_cmp(features_ref, features, &cmp);
+	err = ccs_binding_cmp(
+		(ccs_binding_t)features_ref, (ccs_binding_t)features, &cmp);
 	assert(err == CCS_RESULT_SUCCESS);
 	assert(!cmp);
 

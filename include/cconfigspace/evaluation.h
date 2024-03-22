@@ -121,74 +121,6 @@ ccs_evaluation_get_result(
 	ccs_evaluation_result_t *result_ret);
 
 /**
- * Get the value of the parameter at the given index.
- * @param[in] evaluation
- * @param[in] index index of the parameter in the associated objective
- *                  space
- * @param[out] value_ret a pointer to the variable that will hold the value
- * @return #CCS_RESULT_SUCCESS on success
- * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p binding is not a valid CCS
- * evaluation
- * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p value_ret is NULL
- * @return #CCS_RESULT_ERROR_OUT_OF_BOUNDS if \p index is greater than the count
- * of parameters in the objective space
- * @remarks
- *   This function is thread-safe
- */
-extern ccs_result_t
-ccs_evaluation_get_value(
-	ccs_evaluation_t evaluation,
-	size_t           index,
-	ccs_datum_t     *value_ret);
-
-/**
- * Get all the values in an evaluation.
- * @param[in] evaluation
- * @param[in] num_values the size of the \p values array
- * @param[out] values an array of size \p num_values to hold the returned values
- *                    or NULL. If the array is too big, extra values are set to
- *                    #CCS_DATA_TYPE_NONE
- * @param[out] num_values_ret a pointer to a variable that will contain the
- *                            number of values that are or would be returned.
- *                            Can be NULL
- * @return #CCS_RESULT_SUCCESS on success
- * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p evaluation is not a valid CCS
- * evaluation
- * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p values is NULL and \p
- * num_values is greater than 0; or if \p values is NULL and num_values_ret is
- * NULL; or if num_values is less than the number of values that would be
- * returned
- * @remarks
- *   This function is thread-safe
- */
-extern ccs_result_t
-ccs_evaluation_get_values(
-	ccs_evaluation_t evaluation,
-	size_t           num_values,
-	ccs_datum_t     *values,
-	size_t          *num_values_ret);
-
-/**
- * Get the value of the parameter with the given name.
- * @param[in] evaluation
- * @param[in] name the name of the parameter whose value to retrieve
- * @param[out] value_ret a pointer to the variable that will hold the value
- * @return #CCS_RESULT_SUCCESS on success
- * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p evaluation is not a valid CCS
- * evaluation
- * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p value_ret is NULL
- * @return #CCS_RESULT_ERROR_INVALID_NAME if no parameter with such \p name
- * exist in the \p objective space
- * @remarks
- *   This function is thread-safe
- */
-extern ccs_result_t
-ccs_evaluation_get_value_by_name(
-	ccs_evaluation_t evaluation,
-	const char      *name,
-	ccs_datum_t     *value_ret);
-
-/**
  * Check that an evaluation values are valid in the objective space.
  * @param[in] evaluation
  * @param[out] is_valid_ret a pointer to a variable that will hold the result
@@ -257,45 +189,6 @@ ccs_evaluation_get_objective_values(
 	size_t           num_values,
 	ccs_datum_t     *values,
 	size_t          *num_values_ret);
-
-/**
- * Compute a hash value for the evaluation by hashing together the objective
- * space reference, the configuration, the number of values, the values
- * themselves, and the associated result.
- * @param[in] evaluation
- * @param[out] hash_ret the address of the variable that will contain the hash
- *                      value.
- * @return #CCS_RESULT_SUCCESS on success
- * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p evaluation is not a valid CCS
- * evaluation
- * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p hash_ret is NULL
- * @remarks
- *   This function is thread-safe
- */
-extern ccs_result_t
-ccs_evaluation_hash(ccs_evaluation_t evaluation, ccs_hash_t *hash_ret);
-
-/**
- * Define a strict ordering of evaluation instances. Objective space,
- * configuration, number of values, values, and result codes are compared.
- * @param[in] evaluation the first evaluation
- * @param[in] other_evaluation the second evaluation
- * @param[out] cmp_ret a pointer to the variable that will contain the result
- *                     of the comparison. Will contain -1, 0, or 1 depending on
- *                     if the first evaluation is found to be respectively
- *                     lesser than, equal, or greater then the second evaluation
- * @return #CCS_RESULT_SUCCESS on success
- * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p evaluation or \p
- * other_evaluation are not valid CCS evaluations
- * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p cmp_ret is NULL
- * @remarks
- *   This function is thread-safe
- */
-extern ccs_result_t
-ccs_evaluation_cmp(
-	ccs_evaluation_t evaluation,
-	ccs_evaluation_t other_evaluation,
-	int             *cmp_ret);
 
 /**
  * Compare two successful evaluations objectives.

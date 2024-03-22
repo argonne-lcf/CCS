@@ -7,12 +7,10 @@ typedef struct _ccs_binding_data_s _ccs_binding_data_t;
 struct _ccs_binding_ops_s {
 	_ccs_object_ops_t obj_ops;
 
-	ccs_result_t (*hash)(_ccs_binding_data_t *data, ccs_hash_t *hash_ret);
+	ccs_result_t (*hash)(ccs_binding_t binding, ccs_hash_t *hash_ret);
 
-	ccs_result_t (*cmp)(
-		_ccs_binding_data_t *data,
-		ccs_binding_t        other,
-		int                 *cmp_ret);
+	ccs_result_t (
+		*cmp)(ccs_binding_t binding, ccs_binding_t other, int *cmp_ret);
 };
 typedef struct _ccs_binding_ops_s _ccs_binding_ops_t;
 
@@ -77,12 +75,15 @@ static inline ccs_result_t
 _ccs_binding_get_value_by_name(
 	ccs_binding_t binding,
 	const char   *name,
+	ccs_bool_t   *found_ret,
 	ccs_datum_t  *value_ret)
 {
 	CCS_CHECK_PTR(name);
 	size_t index;
 	CCS_VALIDATE(ccs_context_get_parameter_index_by_name(
-		binding->data->context, name, &index));
+		binding->data->context, name, found_ret, &index));
+	if (found_ret && !*found_ret)
+		return CCS_RESULT_SUCCESS;
 	CCS_VALIDATE(_ccs_binding_get_value(binding, index, value_ret));
 	return CCS_RESULT_SUCCESS;
 }
@@ -104,10 +105,10 @@ _ccs_binding_get_value_by_parameter(
 }
 
 static inline ccs_result_t
-_ccs_binding_hash(_ccs_binding_data_t *data, ccs_hash_t *hash_ret)
+_ccs_binding_hash(ccs_binding_t binding, ccs_hash_t *hash_ret)
 {
-	CCS_CHECK_PTR(hash_ret);
-	ccs_hash_t h, ht;
+	_ccs_binding_data_t *data = binding->data;
+	ccs_hash_t           h, ht;
 	HASH_JEN(&(data->context), sizeof(data->context), h);
 	HASH_JEN(&(data->num_values), sizeof(data->num_values), ht);
 	h = _hash_combine(h, ht);
@@ -121,11 +122,11 @@ _ccs_binding_hash(_ccs_binding_data_t *data, ccs_hash_t *hash_ret)
 
 static inline ccs_result_t
 _ccs_binding_cmp(
-	_ccs_binding_data_t *data,
-	ccs_binding_t        other_binding,
-	int                 *cmp_ret)
+	ccs_binding_t binding,
+	ccs_binding_t other_binding,
+	int          *cmp_ret)
 {
-	CCS_CHECK_PTR(cmp_ret);
+	_ccs_binding_data_t *data       = binding->data;
 	_ccs_binding_data_t *other_data = other_binding->data;
 	if (data == other_data) {
 		*cmp_ret = 0;

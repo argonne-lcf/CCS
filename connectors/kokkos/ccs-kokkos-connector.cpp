@@ -584,9 +584,9 @@ kokkosp_request_values(
 	  ccs_datum_t *values = new ccs_datum_t[numContextVariables];
 	  for (size_t i = 0; i < numContextVariables; i++) {
 		  size_t indx;
-		  CCS_CHECK(ccs_features_space_get_parameter_index(
-			  features_space, features[contextValues[i].type_id],
-			  NULL, &indx));
+		  CCS_CHECK(ccs_context_get_parameter_index(
+			  (ccs_context_t)features_space,
+			  features[contextValues[i].type_id], NULL, &indx));
 		  extract_value(contextValues + i, values + indx);
 	  }
 	  CCS_CHECK(ccs_create_features(
@@ -604,12 +604,13 @@ kokkosp_request_values(
 	  tuner, &configuration_space));
   {
 	  ccs_datum_t *values = new ccs_datum_t[numTuningVariables];
-	  CCS_CHECK(ccs_configuration_get_values(
-		  configuration, numTuningVariables, values, NULL));
+	  CCS_CHECK(ccs_binding_get_values(
+		  (ccs_binding_t)configuration, numTuningVariables, values,
+		  NULL));
 	  for (size_t i = 0; i < numTuningVariables; i++) {
 		  size_t indx;
-		  CCS_CHECK(ccs_configuration_space_get_parameter_index(
-			  configuration_space,
+		  CCS_CHECK(ccs_context_get_parameter_index(
+			  (ccs_context_t)configuration_space,
 			  parameters[tuningValues[i].type_id], NULL, &indx));
 		  set_value(tuningValues + i, values + indx);
 	  }

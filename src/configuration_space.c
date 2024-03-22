@@ -447,9 +447,9 @@ _recompute_graph(ccs_configuration_space_t configuration_space)
 			errmem);
 		CCS_VALIDATE_ERR_GOTO(
 			err,
-			ccs_configuration_space_get_parameter_indexes(
-				configuration_space, count, parents, NULL,
-				parents_index),
+			ccs_context_get_parameter_indexes(
+				(ccs_context_t)configuration_space, count,
+				parents, NULL, parents_index),
 			errmem);
 		for (size_t i = 0; i < count; i++) {
 			utarray_push_back(pparents[index], parents_index + i);
@@ -622,17 +622,6 @@ errmem:
 #define utarray_oom() exit(-1)
 
 ccs_result_t
-ccs_configuration_space_get_name(
-	ccs_configuration_space_t configuration_space,
-	const char              **name_ret)
-{
-	CCS_CHECK_OBJ(configuration_space, CCS_OBJECT_TYPE_CONFIGURATION_SPACE);
-	CCS_VALIDATE(_ccs_context_get_name(
-		(ccs_context_t)configuration_space, name_ret));
-	return CCS_RESULT_SUCCESS;
-}
-
-ccs_result_t
 ccs_configuration_space_set_rng(
 	ccs_configuration_space_t configuration_space,
 	ccs_rng_t                 rng)
@@ -658,109 +647,6 @@ ccs_configuration_space_get_rng(
 	CCS_OBJ_RDLOCK(configuration_space);
 	*rng_ret = configuration_space->data->rng;
 	CCS_OBJ_UNLOCK(configuration_space);
-	return CCS_RESULT_SUCCESS;
-}
-
-ccs_result_t
-ccs_configuration_space_get_num_parameters(
-	ccs_configuration_space_t configuration_space,
-	size_t                   *num_parameters_ret)
-{
-	CCS_CHECK_OBJ(configuration_space, CCS_OBJECT_TYPE_CONFIGURATION_SPACE);
-	CCS_VALIDATE(_ccs_context_get_num_parameters(
-		(ccs_context_t)configuration_space, num_parameters_ret));
-	return CCS_RESULT_SUCCESS;
-}
-
-ccs_result_t
-ccs_configuration_space_get_parameter(
-	ccs_configuration_space_t configuration_space,
-	size_t                    index,
-	ccs_parameter_t          *parameter_ret)
-{
-	CCS_CHECK_OBJ(configuration_space, CCS_OBJECT_TYPE_CONFIGURATION_SPACE);
-	CCS_VALIDATE(_ccs_context_get_parameter(
-		(ccs_context_t)configuration_space, index, parameter_ret));
-	return CCS_RESULT_SUCCESS;
-}
-
-ccs_result_t
-ccs_configuration_space_get_parameter_by_name(
-	ccs_configuration_space_t configuration_space,
-	const char               *name,
-	ccs_parameter_t          *parameter_ret)
-{
-	CCS_CHECK_OBJ(configuration_space, CCS_OBJECT_TYPE_CONFIGURATION_SPACE);
-	CCS_VALIDATE(_ccs_context_get_parameter_by_name(
-		(ccs_context_t)configuration_space, name, parameter_ret));
-	return CCS_RESULT_SUCCESS;
-}
-
-ccs_result_t
-ccs_configuration_space_get_parameter_index_by_name(
-	ccs_configuration_space_t configuration_space,
-	const char               *name,
-	size_t                   *index_ret)
-{
-	CCS_CHECK_OBJ(configuration_space, CCS_OBJECT_TYPE_CONFIGURATION_SPACE);
-	CCS_VALIDATE(_ccs_context_get_parameter_index_by_name(
-		(ccs_context_t)configuration_space, name, index_ret));
-	return CCS_RESULT_SUCCESS;
-}
-
-ccs_result_t
-ccs_configuration_space_get_parameter_index(
-	ccs_configuration_space_t configuration_space,
-	ccs_parameter_t           parameter,
-	ccs_bool_t               *found_ret,
-	size_t                   *index_ret)
-{
-	CCS_CHECK_OBJ(configuration_space, CCS_OBJECT_TYPE_CONFIGURATION_SPACE);
-	CCS_VALIDATE(_ccs_context_get_parameter_index(
-		(ccs_context_t)(configuration_space), parameter, found_ret,
-		index_ret));
-	return CCS_RESULT_SUCCESS;
-}
-
-ccs_result_t
-ccs_configuration_space_get_parameter_indexes(
-	ccs_configuration_space_t configuration_space,
-	size_t                    num_parameters,
-	ccs_parameter_t          *parameters,
-	ccs_bool_t               *found,
-	size_t                   *indexes)
-{
-	CCS_CHECK_OBJ(configuration_space, CCS_OBJECT_TYPE_CONFIGURATION_SPACE);
-	CCS_VALIDATE(_ccs_context_get_parameter_indexes(
-		(ccs_context_t)configuration_space, num_parameters, parameters,
-		found, indexes));
-	return CCS_RESULT_SUCCESS;
-}
-
-ccs_result_t
-ccs_configuration_space_get_parameters(
-	ccs_configuration_space_t configuration_space,
-	size_t                    num_parameters,
-	ccs_parameter_t          *parameters,
-	size_t                   *num_parameters_ret)
-{
-	CCS_CHECK_OBJ(configuration_space, CCS_OBJECT_TYPE_CONFIGURATION_SPACE);
-	CCS_VALIDATE(_ccs_context_get_parameters(
-		(ccs_context_t)configuration_space, num_parameters, parameters,
-		num_parameters_ret));
-	return CCS_RESULT_SUCCESS;
-}
-
-ccs_result_t
-ccs_configuration_space_validate_value(
-	ccs_configuration_space_t configuration_space,
-	size_t                    index,
-	ccs_datum_t               value,
-	ccs_datum_t              *value_ret)
-{
-	CCS_CHECK_OBJ(configuration_space, CCS_OBJECT_TYPE_CONFIGURATION_SPACE);
-	CCS_VALIDATE(_ccs_context_validate_value(
-		(ccs_context_t)configuration_space, index, value, value_ret));
 	return CCS_RESULT_SUCCESS;
 }
 

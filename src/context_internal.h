@@ -100,8 +100,7 @@ _ccs_context_get_parameter_by_name(
 	size_t                       sz_name;
 	sz_name = strlen(name);
 	HASH_FIND(hh_name, context->data->name_hash, name, sz_name, wrapper);
-	CCS_REFUTE(!wrapper, CCS_RESULT_ERROR_INVALID_NAME);
-	*parameter_ret = wrapper->parameter;
+	*parameter_ret = wrapper ? wrapper->parameter : NULL;
 	return CCS_RESULT_SUCCESS;
 }
 
@@ -109,6 +108,7 @@ static inline ccs_result_t
 _ccs_context_get_parameter_index_by_name(
 	ccs_context_t context,
 	const char   *name,
+	ccs_bool_t   *found_ret,
 	size_t       *index_ret)
 {
 	CCS_CHECK_PTR(name);
@@ -117,8 +117,17 @@ _ccs_context_get_parameter_index_by_name(
 	size_t                       sz_name;
 	sz_name = strlen(name);
 	HASH_FIND(hh_name, context->data->name_hash, name, sz_name, wrapper);
-	CCS_REFUTE(!wrapper, CCS_RESULT_ERROR_INVALID_NAME);
-	*index_ret = wrapper->index;
+	if (!found_ret) {
+		CCS_REFUTE(!wrapper, CCS_RESULT_ERROR_INVALID_NAME);
+		*index_ret = wrapper->index;
+	} else {
+		if (wrapper) {
+			*found_ret = CCS_TRUE;
+			*index_ret = wrapper->index;
+		} else {
+			*found_ret = CCS_FALSE;
+		}
+	}
 	return CCS_RESULT_SUCCESS;
 }
 

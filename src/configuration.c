@@ -1,12 +1,7 @@
 #include "cconfigspace_internal.h"
 #include "configuration_internal.h"
+#include "configuration_space_internal.h"
 #include <string.h>
-
-static inline _ccs_configuration_ops_t *
-ccs_configuration_get_ops(ccs_configuration_t configuration)
-{
-	return (_ccs_configuration_ops_t *)configuration->obj.ops;
-}
 
 static ccs_result_t
 _ccs_configuration_del(ccs_object_t object)
@@ -62,19 +57,19 @@ _ccs_configuration_serialize(
 }
 
 static ccs_result_t
-_ccs_configuration_hash(_ccs_configuration_data_t *data, ccs_hash_t *hash_ret)
+_ccs_configuration_hash(ccs_configuration_t configuration, ccs_hash_t *hash_ret)
 {
-	return _ccs_binding_hash((_ccs_binding_data_t *)data, hash_ret);
+	return _ccs_binding_hash((ccs_binding_t)configuration, hash_ret);
 }
 
 static ccs_result_t
 _ccs_configuration_cmp(
-	_ccs_configuration_data_t *data,
-	ccs_configuration_t        other,
-	int                       *cmp_ret)
+	ccs_configuration_t configuration,
+	ccs_configuration_t other,
+	int                *cmp_ret)
 {
 	return _ccs_binding_cmp(
-		(_ccs_binding_data_t *)data, (ccs_binding_t)other, cmp_ret);
+		(ccs_binding_t)configuration, (ccs_binding_t)other, cmp_ret);
 }
 
 static _ccs_configuration_ops_t _configuration_ops = {
@@ -91,16 +86,11 @@ _ccs_create_configuration(
 	ccs_configuration_t      *configuration_ret)
 {
 	ccs_result_t err;
-	size_t       num_parameters;
-	CCS_VALIDATE(ccs_configuration_space_get_num_parameters(
-		configuration_space, &num_parameters));
-	CCS_REFUTE(
-		values && num_parameters != num_values,
-		CCS_RESULT_ERROR_INVALID_VALUE);
-	uintptr_t mem = (uintptr_t)calloc(
-		1, sizeof(struct _ccs_configuration_s) +
-			   sizeof(struct _ccs_configuration_data_s) +
-			   num_parameters * sizeof(ccs_datum_t));
+	size_t       num_parameters = configuration_space->data->num_parameters;
+	uintptr_t    mem            = (uintptr_t)calloc(
+                1, sizeof(struct _ccs_configuration_s) +
+                           sizeof(struct _ccs_configuration_data_s) +
+                           num_parameters * sizeof(ccs_datum_t));
 	CCS_REFUTE(!mem, CCS_RESULT_ERROR_OUT_OF_MEMORY);
 	CCS_VALIDATE_ERR_GOTO(
 		err, ccs_retain_object(configuration_space), errmem);
@@ -123,9 +113,10 @@ _ccs_create_configuration(
 			if (values[i].flags & CCS_DATUM_FLAG_TRANSIENT)
 				CCS_VALIDATE_ERR_GOTO(
 					err,
-					ccs_configuration_space_validate_value(
-						configuration_space, i,
-						values[i],
+					ccs_context_validate_value(
+						(ccs_context_t)
+							configuration_space,
+						i, values[i],
 						config->data->values + i),
 					errinit);
 	}
@@ -148,9 +139,7 @@ ccs_create_configuration(
 	CCS_CHECK_OBJ(configuration_space, CCS_OBJECT_TYPE_CONFIGURATION_SPACE);
 	CCS_CHECK_PTR(configuration_ret);
 	CCS_CHECK_ARY(num_values, values);
-	size_t num_parameters;
-	CCS_VALIDATE(ccs_configuration_space_get_num_parameters(
-		configuration_space, &num_parameters));
+	size_t num_parameters = configuration_space->data->num_parameters;
 	CCS_REFUTE(
 		num_parameters != num_values, CCS_RESULT_ERROR_INVALID_VALUE);
 	CCS_VALIDATE(_ccs_create_configuration(
@@ -171,44 +160,6 @@ ccs_configuration_get_configuration_space(
 }
 
 ccs_result_t
-ccs_configuration_get_value(
-	ccs_configuration_t configuration,
-	size_t              index,
-	ccs_datum_t        *value_ret)
-{
-	CCS_CHECK_OBJ(configuration, CCS_OBJECT_TYPE_CONFIGURATION);
-	CCS_VALIDATE(_ccs_binding_get_value(
-		(ccs_binding_t)configuration, index, value_ret));
-	return CCS_RESULT_SUCCESS;
-}
-
-ccs_result_t
-ccs_configuration_get_values(
-	ccs_configuration_t configuration,
-	size_t              num_values,
-	ccs_datum_t        *values,
-	size_t             *num_values_ret)
-{
-	CCS_CHECK_OBJ(configuration, CCS_OBJECT_TYPE_CONFIGURATION);
-	CCS_VALIDATE(_ccs_binding_get_values(
-		(ccs_binding_t)configuration, num_values, values,
-		num_values_ret));
-	return CCS_RESULT_SUCCESS;
-}
-
-ccs_result_t
-ccs_configuration_get_value_by_name(
-	ccs_configuration_t configuration,
-	const char         *name,
-	ccs_datum_t        *value_ret)
-{
-	CCS_CHECK_OBJ(configuration, CCS_OBJECT_TYPE_CONFIGURATION);
-	CCS_VALIDATE(_ccs_binding_get_value_by_name(
-		(ccs_binding_t)configuration, name, value_ret));
-	return CCS_RESULT_SUCCESS;
-}
-
-ccs_result_t
 ccs_configuration_check(
 	ccs_configuration_t configuration,
 	ccs_bool_t         *is_valid_ret)
@@ -217,30 +168,5 @@ ccs_configuration_check(
 	CCS_VALIDATE(ccs_configuration_space_check_configuration(
 		configuration->data->configuration_space, configuration,
 		is_valid_ret));
-	return CCS_RESULT_SUCCESS;
-}
-
-ccs_result_t
-ccs_configuration_hash(ccs_configuration_t configuration, ccs_hash_t *hash_ret)
-{
-	CCS_CHECK_OBJ(configuration, CCS_OBJECT_TYPE_CONFIGURATION);
-	_ccs_configuration_ops_t *ops =
-		ccs_configuration_get_ops(configuration);
-	CCS_VALIDATE(ops->hash(configuration->data, hash_ret));
-	return CCS_RESULT_SUCCESS;
-}
-
-ccs_result_t
-ccs_configuration_cmp(
-	ccs_configuration_t configuration,
-	ccs_configuration_t other_configuration,
-	int                *cmp_ret)
-{
-	CCS_CHECK_OBJ(configuration, CCS_OBJECT_TYPE_CONFIGURATION);
-	CCS_CHECK_OBJ(other_configuration, CCS_OBJECT_TYPE_CONFIGURATION);
-	_ccs_configuration_ops_t *ops =
-		ccs_configuration_get_ops(configuration);
-	CCS_VALIDATE(
-		ops->cmp(configuration->data, other_configuration, cmp_ret));
 	return CCS_RESULT_SUCCESS;
 }

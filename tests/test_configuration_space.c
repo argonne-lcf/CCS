@@ -36,23 +36,25 @@ check_configuration(
 	const char *name;
 	ccs_bool_t  check;
 
-	err = ccs_configuration_space_get_num_parameters(
-		configuration_space, &sz_ret);
+	err = ccs_context_get_num_parameters(
+		(ccs_context_t)configuration_space, &sz_ret);
 	assert(err == CCS_RESULT_SUCCESS);
 	assert(sz_ret == sz);
 
 	for (size_t i = 0; i < sz; i++) {
-		err = ccs_configuration_space_get_parameter(
-			configuration_space, i, &parameter);
+		err = ccs_context_get_parameter(
+			(ccs_context_t)configuration_space, i, &parameter);
 		assert(err == CCS_RESULT_SUCCESS);
 		assert(parameter == parameters[i]);
-		err = ccs_configuration_space_get_parameter_index(
-			configuration_space, parameter, NULL, &index);
+		err = ccs_context_get_parameter_index(
+			(ccs_context_t)configuration_space, parameter, NULL,
+			&index);
 		assert(err == CCS_RESULT_SUCCESS);
 		assert(index == i);
 	}
-	err = ccs_configuration_space_get_parameters(
-		configuration_space, sz + 1, parameters_ret, &sz_ret);
+	err = ccs_context_get_parameters(
+		(ccs_context_t)configuration_space, sz + 1, parameters_ret,
+		&sz_ret);
 	assert(err == CCS_RESULT_SUCCESS);
 	assert(sz_ret == sz);
 	for (size_t i = 0; i < sz; i++)
@@ -62,8 +64,8 @@ check_configuration(
 	for (size_t i = 0; i < sz; i++) {
 		err = ccs_parameter_get_name(parameters[i], &name);
 		assert(err == CCS_RESULT_SUCCESS);
-		err = ccs_configuration_space_get_parameter_by_name(
-			configuration_space, name, &parameter);
+		err = ccs_context_get_parameter_by_name(
+			(ccs_context_t)configuration_space, name, &parameter);
 		assert(err == CCS_RESULT_SUCCESS);
 		assert(parameter == parameters[i]);
 	}
@@ -78,7 +80,8 @@ check_configuration(
 	for (size_t i = 0; i < sz; i++) {
 		ccs_datum_t datum;
 		ccs_datum_t hdatum;
-		err = ccs_configuration_get_value(configuration, i, &datum);
+		err = ccs_binding_get_value(
+			(ccs_binding_t)configuration, i, &datum);
 		assert(err == CCS_RESULT_SUCCESS);
 		err = ccs_parameter_get_default_value(parameters[i], &hdatum);
 		assert(err == CCS_RESULT_SUCCESS);
@@ -155,7 +158,7 @@ test_create(void)
 	assert(err == CCS_RESULT_SUCCESS);
 	assert(type == CCS_OBJECT_TYPE_CONFIGURATION_SPACE);
 
-	err = ccs_configuration_space_get_name(configuration_space, &name);
+	err = ccs_context_get_name((ccs_context_t)configuration_space, &name);
 	assert(err == CCS_RESULT_SUCCESS);
 	assert(strcmp(name, "my_config_space") == 0);
 
@@ -295,7 +298,9 @@ test_configuration_deserialize(void)
 		CCS_DESERIALIZE_OPTION_END);
 	assert(err == CCS_RESULT_SUCCESS);
 
-	err = ccs_configuration_cmp(configuration_ref, configuration, &cmp);
+	err = ccs_binding_cmp(
+		(ccs_binding_t)configuration_ref, (ccs_binding_t)configuration,
+		&cmp);
 	assert(err == CCS_RESULT_SUCCESS);
 	assert(!cmp);
 
@@ -407,7 +412,7 @@ test_deserialize(void)
 	assert(d.type == CCS_DATA_TYPE_OBJECT);
 	assert(d.value.o == space);
 
-	err = ccs_configuration_space_get_parameters(space, 0, NULL, &count);
+	err = ccs_context_get_parameters((ccs_context_t)space, 0, NULL, &count);
 	assert(err == CCS_RESULT_SUCCESS);
 	assert(count == 3);
 

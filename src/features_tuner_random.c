@@ -287,7 +287,9 @@ _ccs_features_tuner_random_get_optima(
 				d->optima, eval))) {
 			CCS_VALIDATE(ccs_features_evaluation_get_features(
 				*eval, &feat));
-			CCS_VALIDATE(ccs_features_cmp(features, feat, &cmp));
+			CCS_VALIDATE(ccs_binding_cmp(
+				(ccs_binding_t)features, (ccs_binding_t)feat,
+				&cmp));
 			if (cmp == 0)
 				num_optima += 1;
 		}
@@ -301,8 +303,9 @@ _ccs_features_tuner_random_get_optima(
 				CCS_VALIDATE(
 					ccs_features_evaluation_get_features(
 						*eval, &feat));
-				CCS_VALIDATE(
-					ccs_features_cmp(features, feat, &cmp));
+				CCS_VALIDATE(ccs_binding_cmp(
+					(ccs_binding_t)features,
+					(ccs_binding_t)feat, &cmp));
 				if (cmp == 0)
 					evaluations[index++] = *eval;
 			}
@@ -349,7 +352,9 @@ _ccs_features_tuner_random_get_history(
 				d->history, eval))) {
 			CCS_VALIDATE(ccs_features_evaluation_get_features(
 				*eval, &feat));
-			CCS_VALIDATE(ccs_features_cmp(features, feat, &cmp));
+			CCS_VALIDATE(ccs_binding_cmp(
+				(ccs_binding_t)features, (ccs_binding_t)feat,
+				&cmp));
 			if (cmp == 0)
 				size_history += 1;
 		}
@@ -363,8 +368,9 @@ _ccs_features_tuner_random_get_history(
 				CCS_VALIDATE(
 					ccs_features_evaluation_get_features(
 						*eval, &feat));
-				CCS_VALIDATE(
-					ccs_features_cmp(features, feat, &cmp));
+				CCS_VALIDATE(ccs_binding_cmp(
+					(ccs_binding_t)features,
+					(ccs_binding_t)feat, &cmp));
 				if (cmp == 0)
 					evaluations[index++] = *eval;
 			}
@@ -393,7 +399,8 @@ _ccs_features_tuner_random_suggest(
 			d->optima, eval))) {
 		CCS_VALIDATE(
 			ccs_features_evaluation_get_features(*eval, &feat));
-		CCS_VALIDATE(ccs_features_cmp(features, feat, &cmp));
+		CCS_VALIDATE(ccs_binding_cmp(
+			(ccs_binding_t)features, (ccs_binding_t)feat, &cmp));
 		if (cmp == 0)
 			count += 1;
 	}
@@ -408,7 +415,9 @@ _ccs_features_tuner_random_suggest(
 				d->optima, eval))) {
 			CCS_VALIDATE(ccs_features_evaluation_get_features(
 				*eval, &feat));
-			CCS_VALIDATE(ccs_features_cmp(features, feat, &cmp));
+			CCS_VALIDATE(ccs_binding_cmp(
+				(ccs_binding_t)features, (ccs_binding_t)feat,
+				&cmp));
 			if (cmp == 0) {
 				if (indx == 0)
 					break;
