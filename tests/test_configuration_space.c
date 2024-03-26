@@ -101,7 +101,7 @@ test_empty(void)
 	ccs_result_t              err;
 
 	err = ccs_create_configuration_space(
-		"my_config_space", 0, NULL, NULL, 0, NULL,
+		"my_config_space", 0, NULL, NULL, 0, NULL, NULL,
 		&configuration_space);
 	assert(err == CCS_RESULT_SUCCESS);
 
@@ -138,19 +138,19 @@ test_create(void)
 	parameters[2] = parameters[0];
 
 	err           = ccs_create_configuration_space(
-                "my_config_space", 3, NULL, NULL, 0, NULL,
+                "my_config_space", 3, NULL, NULL, 0, NULL, NULL,
                 &configuration_space);
 	assert(err == CCS_RESULT_ERROR_INVALID_VALUE);
 
 	err = ccs_create_configuration_space(
-		"my_config_space", 3, parameters, NULL, 0, NULL,
+		"my_config_space", 3, parameters, NULL, 0, NULL, NULL,
 		&configuration_space);
 	assert(err == CCS_RESULT_ERROR_INVALID_PARAMETER);
 
 	parameters[2] = parameter3;
 
 	err           = ccs_create_configuration_space(
-                "my_config_space", 3, parameters, NULL, 0, NULL,
+                "my_config_space", 3, parameters, NULL, 0, NULL, NULL,
                 &configuration_space);
 	assert(err == CCS_RESULT_SUCCESS);
 
@@ -191,7 +191,7 @@ test_sample(void)
 	assert(err == CCS_RESULT_SUCCESS);
 
 	err = ccs_create_configuration_space(
-		"my_config_space", 4, parameters, NULL, 0, NULL,
+		"my_config_space", 4, parameters, NULL, 0, NULL, NULL,
 		&configuration_space);
 	assert(err == CCS_RESULT_SUCCESS);
 
@@ -255,7 +255,7 @@ test_configuration_deserialize(void)
 	parameters[2] = create_numerical("param3");
 
 	err           = ccs_create_configuration_space(
-                "my_config_space", 3, parameters, NULL, 0, NULL,
+                "my_config_space", 3, parameters, NULL, 0, NULL, NULL,
                 &configuration_space);
 	assert(err == CCS_RESULT_SUCCESS);
 
@@ -354,7 +354,7 @@ test_deserialize(void)
 
 	err = ccs_create_configuration_space(
 		"my_config_space", 3, parameters, conditions, 1, &expression,
-		&space);
+		NULL, &space);
 	assert(err == CCS_RESULT_SUCCESS);
 	err = ccs_release_object(expression);
 	assert(err == CCS_RESULT_SUCCESS);

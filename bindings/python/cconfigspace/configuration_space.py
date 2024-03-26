@@ -7,8 +7,7 @@ from .expression import Expression
 from .expression_parser import parser
 from .rng import Rng
 
-ccs_create_configuration_space = _ccs_get_function("ccs_create_configuration_space", [ct.c_char_p, ct.c_size_t, ct.POINTER(ccs_parameter), ct.POINTER(ccs_expression), ct.c_size_t, ct.POINTER(ccs_expression), ct.POINTER(ccs_configuration_space)])
-ccs_configuration_space_set_rng = _ccs_get_function("ccs_configuration_space_set_rng", [ccs_configuration_space, ccs_rng])
+ccs_create_configuration_space = _ccs_get_function("ccs_create_configuration_space", [ct.c_char_p, ct.c_size_t, ct.POINTER(ccs_parameter), ct.POINTER(ccs_expression), ct.c_size_t, ct.POINTER(ccs_expression), ccs_rng, ct.POINTER(ccs_configuration_space)])
 ccs_configuration_space_get_rng = _ccs_get_function("ccs_configuration_space_get_rng", [ccs_configuration_space, ct.POINTER(ccs_rng)])
 ccs_configuration_space_get_condition = _ccs_get_function("ccs_configuration_space_get_condition", [ccs_configuration_space, ct.c_size_t, ct.POINTER(ccs_expression)])
 ccs_configuration_space_get_conditions = _ccs_get_function("ccs_configuration_space_get_conditions", [ccs_configuration_space, ct.c_size_t, ct.POINTER(ccs_expression), ct.POINTER(ct.c_size_t)])
@@ -21,7 +20,7 @@ ccs_configuration_space_samples = _ccs_get_function("ccs_configuration_space_sam
 
 class ConfigurationSpace(Context):
   def __init__(self, handle = None, retain = False, auto_release = True,
-               name = "", parameters = None, conditions = None, forbidden_clauses = None):
+               name = "", parameters = None, conditions = None, forbidden_clauses = None, rng = None):
     if handle is None:
       count = len(parameters)
 
@@ -52,9 +51,12 @@ class ConfigurationSpace(Context):
       else:
         cv = None
 
+      if rng is not None:
+        rng = rng.handle
+
       parameters = (ccs_parameter * count)(*[x.handle.value for x in parameters])
       handle = ccs_configuration_space()
-      res = ccs_create_configuration_space(str.encode(name), count, parameters, cv, numfc, fcv, ct.byref(handle))
+      res = ccs_create_configuration_space(str.encode(name), count, parameters, cv, numfc, fcv, rng, ct.byref(handle))
       Error.check(res)
       super().__init__(handle = handle, retain = False)
     else:
@@ -70,11 +72,6 @@ class ConfigurationSpace(Context):
     res = ccs_configuration_space_get_rng(self.handle, ct.byref(v))
     Error.check(res)
     return Rng.from_handle(v)
-
-  @rng.setter
-  def rng(self, r):
-    res = ccs_configuration_space_set_rng(self.handle, r.handle)
-    Error.check(res)
 
   def condition(self, parameter):
     if isinstance(parameter, Parameter):

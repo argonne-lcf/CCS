@@ -35,7 +35,7 @@ test_simple(void)
                 ccs_float(0.0), &expression);
 	assert(err == CCS_RESULT_SUCCESS);
 	err = ccs_create_configuration_space(
-		"space", 2, parameters, NULL, 1, &expression, &space);
+		"space", 2, parameters, NULL, 1, &expression, NULL, &space);
 	assert(err == CCS_RESULT_SUCCESS);
 
 	for (int i = 0; i < 100; i++) {
@@ -126,7 +126,8 @@ test_combined(void)
 	assert(err == CCS_RESULT_SUCCESS);
 
 	err = ccs_create_configuration_space(
-		"space", 3, parameters, conditions, 1, &expression, &space);
+		"space", 3, parameters, conditions, 1, &expression, NULL,
+		&space);
 	assert(err == CCS_RESULT_SUCCESS);
 	err = ccs_release_object(expression);
 	assert(err == CCS_RESULT_SUCCESS);

@@ -188,30 +188,19 @@ _ccs_configuration_space_serialize_size(
 	size_t                          *cum_size,
 	_ccs_object_serialize_options_t *opts)
 {
-	ccs_result_t err = CCS_RESULT_SUCCESS;
-	CCS_OBJ_RDLOCK(object);
 	switch (format) {
 	case CCS_SERIALIZE_FORMAT_BINARY:
-		CCS_VALIDATE_ERR_GOTO(
-			err,
-			_ccs_serialize_bin_size_ccs_configuration_space(
-				(ccs_configuration_space_t)object, cum_size,
-				opts),
-			end);
+		CCS_VALIDATE(_ccs_serialize_bin_size_ccs_configuration_space(
+			(ccs_configuration_space_t)object, cum_size, opts));
 		break;
 	default:
-		CCS_RAISE_ERR_GOTO(
-			err, CCS_RESULT_ERROR_INVALID_VALUE, end,
+		CCS_RAISE(
+			CCS_RESULT_ERROR_INVALID_VALUE,
 			"Unsupported serialization format: %d", format);
 	}
-	CCS_VALIDATE_ERR_GOTO(
-		err,
-		_ccs_object_serialize_user_data_size(
-			object, format, cum_size, opts),
-		end);
-end:
-	CCS_OBJ_UNLOCK(object);
-	return err;
+	CCS_VALIDATE(_ccs_object_serialize_user_data_size(
+		object, format, cum_size, opts));
+	return CCS_RESULT_SUCCESS;
 }
 
 static ccs_result_t
@@ -222,30 +211,20 @@ _ccs_configuration_space_serialize(
 	char                           **buffer,
 	_ccs_object_serialize_options_t *opts)
 {
-	ccs_result_t err = CCS_RESULT_SUCCESS;
-	CCS_OBJ_RDLOCK(object);
 	switch (format) {
 	case CCS_SERIALIZE_FORMAT_BINARY:
-		CCS_VALIDATE_ERR_GOTO(
-			err,
-			_ccs_serialize_bin_ccs_configuration_space(
-				(ccs_configuration_space_t)object, buffer_size,
-				buffer, opts),
-			end);
+		CCS_VALIDATE(_ccs_serialize_bin_ccs_configuration_space(
+			(ccs_configuration_space_t)object, buffer_size, buffer,
+			opts));
 		break;
 	default:
-		CCS_RAISE_ERR_GOTO(
-			err, CCS_RESULT_ERROR_INVALID_VALUE, end,
+		CCS_RAISE(
+			CCS_RESULT_ERROR_INVALID_VALUE,
 			"Unsupported serialization format: %d", format);
 	}
-	CCS_VALIDATE_ERR_GOTO(
-		err,
-		_ccs_object_serialize_user_data(
-			object, format, buffer_size, buffer, opts),
-		end);
-end:
-	CCS_OBJ_UNLOCK(object);
-	return err;
+	CCS_VALIDATE(_ccs_object_serialize_user_data(
+		object, format, buffer_size, buffer, opts));
+	return CCS_RESULT_SUCCESS;
 }
 
 static _ccs_configuration_space_ops_t _configuration_space_ops = {
@@ -522,6 +501,7 @@ ccs_create_configuration_space(
 	ccs_expression_t          *conditions,
 	size_t                     num_forbidden_clauses,
 	ccs_expression_t          *forbidden_clauses,
+	ccs_rng_t                  rng,
 	ccs_configuration_space_t *configuration_space_ret)
 {
 	CCS_CHECK_PTR(name);
@@ -538,6 +518,8 @@ ccs_create_configuration_space(
 	CCS_CHECK_ARY(num_forbidden_clauses, forbidden_clauses);
 	for (size_t i = 0; i < num_forbidden_clauses; i++)
 		CCS_CHECK_OBJ(forbidden_clauses[i], CCS_OBJECT_TYPE_EXPRESSION);
+	if (rng)
+		CCS_CHECK_OBJ(rng, CCS_OBJECT_TYPE_RNG);
 
 	ccs_result_t err;
 	uintptr_t    mem = (uintptr_t)calloc(
@@ -553,8 +535,10 @@ ccs_create_configuration_space(
                         strlen(name) + 1);
 	CCS_REFUTE(!mem, CCS_RESULT_ERROR_OUT_OF_MEMORY);
 	uintptr_t mem_orig = mem;
-	ccs_rng_t rng;
-	CCS_VALIDATE_ERR_GOTO(err, ccs_create_rng(&rng), errmem);
+	if (rng)
+		CCS_VALIDATE_ERR_GOTO(err, ccs_retain_object(rng), errmem);
+	else
+		CCS_VALIDATE_ERR_GOTO(err, ccs_create_rng(&rng), errmem);
 
 	ccs_configuration_space_t config_space;
 	config_space = (ccs_configuration_space_t)mem;
@@ -622,31 +606,13 @@ errmem:
 #define utarray_oom() exit(-1)
 
 ccs_result_t
-ccs_configuration_space_set_rng(
-	ccs_configuration_space_t configuration_space,
-	ccs_rng_t                 rng)
-{
-	CCS_CHECK_OBJ(configuration_space, CCS_OBJECT_TYPE_CONFIGURATION_SPACE);
-	CCS_CHECK_OBJ(rng, CCS_OBJECT_TYPE_RNG);
-	CCS_VALIDATE(ccs_retain_object(rng));
-	CCS_OBJ_WRLOCK(configuration_space);
-	ccs_rng_t tmp                  = configuration_space->data->rng;
-	configuration_space->data->rng = rng;
-	CCS_OBJ_UNLOCK(configuration_space);
-	CCS_VALIDATE(ccs_release_object(tmp));
-	return CCS_RESULT_SUCCESS;
-}
-
-ccs_result_t
 ccs_configuration_space_get_rng(
 	ccs_configuration_space_t configuration_space,
 	ccs_rng_t                *rng_ret)
 {
 	CCS_CHECK_OBJ(configuration_space, CCS_OBJECT_TYPE_CONFIGURATION_SPACE);
 	CCS_CHECK_PTR(rng_ret);
-	CCS_OBJ_RDLOCK(configuration_space);
 	*rng_ret = configuration_space->data->rng;
-	CCS_OBJ_UNLOCK(configuration_space);
 	return CCS_RESULT_SUCCESS;
 }
 
@@ -838,7 +804,7 @@ static inline ccs_result_t
 _ccs_configuration_space_samples(
 	ccs_configuration_space_t configuration_space,
 	ccs_distribution_space_t  distrib_space,
-	ccs_rng_t                 r,
+	ccs_rng_t                 rng,
 	size_t                    num_configurations,
 	ccs_configuration_t      *configurations)
 {
@@ -848,7 +814,6 @@ _ccs_configuration_space_samples(
 	ccs_bool_t               found;
 	ccs_configuration_t      config = NULL;
 	ccs_distribution_space_t distribution_space;
-	ccs_rng_t                rng;
 
 	if (distrib_space) {
 		distribution_space = distrib_space;
@@ -857,11 +822,8 @@ _ccs_configuration_space_samples(
 		distribution_space =
 			configuration_space->data->default_distribution_space;
 
-	if (!r) {
-		CCS_OBJ_RDLOCK(configuration_space);
+	if (!rng)
 		rng = configuration_space->data->rng;
-	} else
-		rng = r;
 
 	for (size_t i = 0; i < num_configurations; i++)
 		configurations[i] = NULL;
@@ -895,8 +857,6 @@ errconf:
 end:
 	if (distrib_space)
 		CCS_OBJ_UNLOCK(distrib_space);
-	if (!r)
-		CCS_OBJ_UNLOCK(configuration_space);
 	return err;
 }
 

@@ -1,6 +1,5 @@
 module CCS
-  attach_function :ccs_create_configuration_space, [:string, :size_t, :pointer, :pointer, :size_t, :pointer, :pointer], :ccs_result_t
-  attach_function :ccs_configuration_space_set_rng, [:ccs_configuration_space_t, :ccs_rng_t], :ccs_result_t
+  attach_function :ccs_create_configuration_space, [:string, :size_t, :pointer, :pointer, :size_t, :pointer, :ccs_rng_t, :pointer], :ccs_result_t
   attach_function :ccs_configuration_space_get_rng, [:ccs_configuration_space_t, :pointer], :ccs_result_t
   attach_function :ccs_configuration_space_get_condition, [:ccs_configuration_space_t, :size_t, :pointer], :ccs_result_t
   attach_function :ccs_configuration_space_get_conditions, [:ccs_configuration_space_t, :size_t, :pointer, :pointer], :ccs_result_t
@@ -14,7 +13,7 @@ module CCS
   class ConfigurationSpace < Context
 
     def initialize(handle = nil, retain: false, auto_release: true,
-                   name: "", parameters: nil, conditions: nil, forbidden_clauses: nil)
+                   name: "", parameters: nil, conditions: nil, forbidden_clauses: nil, rng: nil)
       if handle
         super(handle, retain: retain, auto_release: auto_release)
       else
@@ -58,7 +57,7 @@ module CCS
           cptr = nil
         end
 
-        CCS.error_check CCS.ccs_create_configuration_space(name, count, p_parameters, cptr, fccount, fcptr, ptr)
+        CCS.error_check CCS.ccs_create_configuration_space(name, count, p_parameters, cptr, fccount, fcptr, rng, ptr)
         super(ptr.read_ccs_configuration_space_t, retain:false)
       end
     end
@@ -71,11 +70,6 @@ module CCS
       ptr = MemoryPointer::new(:ccs_rng_t)
       CCS.error_check CCS.ccs_configuration_space_get_rng(@handle, ptr)
       Rng::from_handle(ptr.read_ccs_rng_t)
-    end
-
-    def rng=(r)
-      CCS.error_check CCS.ccs_configuration_space_set_rng(@handle, r)
-      r
     end
 
     def condition(parameter)

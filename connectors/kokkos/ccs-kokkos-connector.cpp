@@ -515,7 +515,7 @@ kokkosp_request_values(
 
 	  CCS_CHECK(ccs_create_configuration_space(
 		  ("cs (region: " + std::to_string(regionCounter) + ")").c_str(),
-		  numTuningVariables, cs_parameters, NULL, 0, NULL, &cs));
+		  numTuningVariables, cs_parameters, NULL, 0, NULL, NULL, &cs));
 	  delete[] cs_parameters;
 
 #if CCS_DEBUG

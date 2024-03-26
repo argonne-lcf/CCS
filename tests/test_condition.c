@@ -36,7 +36,7 @@ test_simple(void)
 	assert(err == CCS_RESULT_SUCCESS);
 
 	err = ccs_create_configuration_space(
-		"space", 2, parameters, conditions, 0, NULL, &space);
+		"space", 2, parameters, conditions, 0, NULL, NULL, &space);
 	assert(err == CCS_RESULT_SUCCESS);
 
 	for (int i = 0; i < 100; i++) {
@@ -123,7 +123,7 @@ test_transitive(void)
 	assert(err == CCS_RESULT_SUCCESS);
 
 	err = ccs_create_configuration_space(
-		"space", 3, parameters, conditions, 0, NULL, &space);
+		"space", 3, parameters, conditions, 0, NULL, NULL, &space);
 	assert(err == CCS_RESULT_SUCCESS);
 
 	err = ccs_release_object(conditions[0]);

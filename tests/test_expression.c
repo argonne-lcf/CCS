@@ -173,7 +173,7 @@ test_equal_numerical(void)
 	parameters[1] = create_dummy_numerical("param2");
 
 	err           = ccs_create_configuration_space(
-                "my_config_space", 2, parameters, NULL, 0, NULL,
+                "my_config_space", 2, parameters, NULL, 0, NULL, NULL,
                 &configuration_space);
 	assert(err == CCS_RESULT_SUCCESS);
 
@@ -264,7 +264,7 @@ test_equal_categorical(void)
 	parameters[0] = create_dummy_categorical("param1");
 	parameters[1] = create_dummy_categorical("param2");
 	err           = ccs_create_configuration_space(
-                "my_config_space", 2, parameters, NULL, 0, NULL,
+                "my_config_space", 2, parameters, NULL, 0, NULL, NULL,
                 &configuration_space);
 	assert(err == CCS_RESULT_SUCCESS);
 
@@ -323,7 +323,7 @@ test_equal_ordinal(void)
 	parameters[0] = create_dummy_ordinal("param1");
 	parameters[1] = create_dummy_ordinal("param2");
 	err           = ccs_create_configuration_space(
-                "my_config_space", 2, parameters, NULL, 0, NULL,
+                "my_config_space", 2, parameters, NULL, 0, NULL, NULL,
                 &configuration_space);
 	assert(err == CCS_RESULT_SUCCESS);
 
@@ -980,7 +980,7 @@ test_check_context(void)
 	parameters[1] = parameter2;
 
 	err           = ccs_create_configuration_space(
-                "space", 2, parameters, NULL, 0, NULL, &space);
+                "space", 2, parameters, NULL, 0, NULL, NULL, &space);
 	assert(err == CCS_RESULT_SUCCESS);
 
 	err = ccs_create_binary_expression(

@@ -27,6 +27,7 @@ extern "C" {
  * @param[in] forbidden_clauses an array o \p num_forbidden_clauses expressions
  *                              to add as forbidden clauses to the
  *                              configuration space
+ * @param[in] rng an optional CCS rng object
  * @param[out] configuration_space_ret a pointer to the variable that will hold
  *                                     the newly created configuration space
  * @return #CCS_RESULT_SUCCESS on success
@@ -35,7 +36,8 @@ extern "C" {
  * num_parameters is NULL; or if \p forbidden_clauses is NULL and \p
  * num_forbidden_clauses is greater than 0
  * @return #CCS_RESULT_ERROR_INVALID_OBJECT if a parameter is not a valid CCS
- * parameter; or if an expression is not a valid CCS expression
+ * parameter; or if an expression is not a valid CCS expression; or if \p
+ * rng is not NULL and is not a valid CCS rng
  * @return #CCS_RESULT_ERROR_INVALID_PARAMETER if a parameter's type is
  * CCS_PARAMETER_TYPE_STRING; or if a parameter appears more than once in \p
  * parameters; or if two or more parameters share the same name; or if an
@@ -57,22 +59,8 @@ ccs_create_configuration_space(
 	ccs_expression_t          *conditions,
 	size_t                     num_forbidden_clauses,
 	ccs_expression_t          *forbidden_clauses,
+	ccs_rng_t                  rng,
 	ccs_configuration_space_t *configuration_space_ret);
-
-/**
- * Set (replace) the internal rng of the configuration space.
- * @param[in,out] configuration_space
- * @param[in] rng the rng to use in the configuration space
- * @return #CCS_RESULT_SUCCESS on success
- * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p configuration_space is not a
- * valid CCS configuration space; or \p rng is not a valid CCS rng
- * @remarks
- *   This function is thread-safe
- */
-extern ccs_result_t
-ccs_configuration_space_set_rng(
-	ccs_configuration_space_t configuration_space,
-	ccs_rng_t                 rng);
 
 /**
  * Get the internal rng of the configuration space.

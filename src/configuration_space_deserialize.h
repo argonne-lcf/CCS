@@ -113,12 +113,8 @@ _ccs_deserialize_bin_configuration_space(
 		ccs_create_configuration_space(
 			data.name, data.num_parameters, data.parameters,
 			data.conditions, data.num_forbidden_clauses,
-			data.forbidden_clauses, configuration_space_ret),
-		end);
-	CCS_VALIDATE_ERR_GOTO(
-		res,
-		ccs_configuration_space_set_rng(
-			*configuration_space_ret, data.rng),
+			data.forbidden_clauses, data.rng,
+			configuration_space_ret),
 		end);
 	if (opts && opts->map_values && opts->handle_map)
 		CCS_VALIDATE_ERR_GOTO(

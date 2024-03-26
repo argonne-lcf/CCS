@@ -107,7 +107,7 @@ test_create(void)
 	parameters[2] = create_dummy_parameter("param3");
 
 	err           = ccs_create_configuration_space(
-                "my_config_space", 3, parameters, NULL, 0, NULL,
+                "my_config_space", 3, parameters, NULL, 0, NULL, NULL,
                 &configuration_space);
 	assert(err == CCS_RESULT_SUCCESS);
 
@@ -154,7 +154,7 @@ test_set_distribution(void)
 	parameters[2] = create_dummy_parameter("param3");
 
 	err           = ccs_create_configuration_space(
-                "my_config_space", 3, parameters, NULL, 0, NULL,
+                "my_config_space", 3, parameters, NULL, 0, NULL, NULL,
                 &configuration_space);
 	assert(err == CCS_RESULT_SUCCESS);
 
@@ -303,7 +303,7 @@ test_deserialize(void)
 	parameters[2] = create_numerical("param3");
 
 	err           = ccs_create_configuration_space(
-                "my_config_space", 3, parameters, NULL, 0, NULL, &space);
+                "my_config_space", 3, parameters, NULL, 0, NULL, NULL, &space);
 	assert(err == CCS_RESULT_SUCCESS);
 
 	err = ccs_create_distribution_space(space, &distrib_space);
