@@ -244,6 +244,8 @@ extern const char               *ccs_terminal_symbols[];
  * #CCS_DATA_TYPE_OBJECT but the object is not a valid CCS object
  * @return #CCS_RESULT_ERROR_OUT_OF_MEMORY if there was a lack of memory to
  * allocate the new expression
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_create_expression(
@@ -273,6 +275,8 @@ ccs_create_expression(
  * of type #CCS_DATA_TYPE_OBJECT but the object is not a valid CCS object
  * @return #CCS_RESULT_ERROR_OUT_OF_MEMORY if there was a lack of memory to
  * allocate the new expression
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_create_binary_expression(
@@ -300,6 +304,8 @@ ccs_create_binary_expression(
  * #CCS_DATA_TYPE_OBJECT but the object is not a valid CCS object
  * @return #CCS_RESULT_ERROR_OUT_OF_MEMORY if there was a lack of memory to
  * allocate the new expression
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_create_unary_expression(
@@ -320,6 +326,8 @@ ccs_create_unary_expression(
  * NULL
  * @return #CCS_RESULT_ERROR_OUT_OF_MEMORY if there was a lack of memory to
  * allocate the new expression
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_create_literal(ccs_datum_t value, ccs_expression_t *expression_ret);
@@ -335,6 +343,8 @@ ccs_create_literal(ccs_datum_t value, ccs_expression_t *expression_ret);
  * parameter
  * @return #CCS_RESULT_ERROR_OUT_OF_MEMORY if there was a lack of memory to
  * allocate the new expression
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_create_variable(ccs_parameter_t parameter, ccs_expression_t *expression_ret);
@@ -348,6 +358,8 @@ ccs_create_variable(ccs_parameter_t parameter, ccs_expression_t *expression_ret)
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p type_ret is NULL
  * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p expression is not a valid CCS
  * expression
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_expression_get_type(
@@ -363,6 +375,8 @@ ccs_expression_get_type(
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p num_nodes_ret is NULL
  * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p expression is not a valid CCS
  * expression
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_expression_get_num_nodes(ccs_expression_t expression, size_t *num_nodes_ret);
@@ -382,6 +396,8 @@ ccs_expression_get_num_nodes(ccs_expression_t expression, size_t *num_nodes_ret)
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p nodes is NULL and \p num_nodes
  * is greater than 0; or if \p nodes is NULL and num_nodes_ret is NULL; or if
  * num_values is less than the number of values that would be returned
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_expression_get_nodes(
@@ -401,6 +417,8 @@ ccs_expression_get_nodes(
  * @return #CCS_RESULT_ERROR_INVALID_EXPRESSION if \p expression is not a
  * #CCS_EXPRESSION_TYPE_LITERAL
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p value_ret is NULL
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_literal_get_value(ccs_expression_t expression, ccs_datum_t *value_ret);
@@ -416,6 +434,8 @@ ccs_literal_get_value(ccs_expression_t expression, ccs_datum_t *value_ret);
  * @return #CCS_RESULT_ERROR_INVALID_EXPRESSION if \p expression is not a
  * #CCS_EXPRESSION_TYPE_VARIABLE
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p parameter_ret is NULL
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_variable_get_parameter(
@@ -423,62 +443,69 @@ ccs_variable_get_parameter(
 	ccs_parameter_t *parameter_ret);
 
 /**
- * Get the value of an expression in a given context, provided a list of values
- * for the context parameters.
+ * Get the value of an expression, in a given list of bindings.
  * @param[in] expression
- * @param[in] context the context to evaluate the expression into. Can be NULL
- * @param[in] values an array of values, one for each parameter in \p
- *                   context. Can be NULL
+ * @param[in] num_bindings the number of bindings in \p bindings
+ * @param[in] bindings an array of \p num_bindings bindings
  * @param[out] result_ret a pointer to a variable that will contain the result
  *                        of the evaluation of the expression. Result can be
  *                        #ccs_inactive when the result depend on an inactive
  *                        parameter
  * @return #CCS_RESULT_SUCCESS on success
- * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p expression is not a valid CCS
- * variable expression; or if \p context is NULL and expression must evaluate a
- * variable
- * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p result_ret is NULL; or if \p
- * values is NULL and expression must evaluate a variable; or if an illegal
- * arithmetic or comparison operation would have occurred; or if a non boolean
- * value is used in a boolean operation
+ * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p expression is not a
+ * valid CCS variable expression; of if one of the provided bindings is
+ * not a valid CCS binding; or if no binding is provided and expression
+ * must evaluate a variable
+ * @return #CCS_RESULT_ERROR_INVALID_PARAMETER if a parameter was not
+ * found in the provided bindings
+ * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p result_ret is NULL; or
+ * if \p num_bindings is greater than 0 and \p bindings is NULL; or if an
+ * illegal arithmetic or comparison operation would have occurred; or if
+ * a non boolean value is used in a boolean operation
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_expression_eval(
 	ccs_expression_t expression,
-	ccs_context_t    context,
-	ccs_datum_t     *values,
+	size_t           num_bindings,
+	ccs_binding_t   *bindings,
 	ccs_datum_t     *result_ret);
 
 /**
  * Evaluate the entry of a list at a given index, in a given context, provided a
  * list of values for the context parameters.
  * @param[in] expression
- * @param[in] context the context to evaluate the expression into. Can be NULL
- * @param[in] values an array of values, one for each parameter in \p
- *                   context. Can be NULL
+ * @param[in] num_bindings the number of bindings in \p bindings
+ * @param[in] bindings an array of \p num_bindings bindings
  * @param[in] index index of the child node to evaluate
  * @param[out] result_ret a pointer to a variable that will contain the result
  *                        of the evaluation of the expression. Result can be
  *                        #ccs_inactive when the result depend on an inactive
  *                        parameter
  * @return #CCS_RESULT_SUCCESS on success
- * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p expression is not a valid CCS
- * expression; or if \p context is NULL and \p expression must evaluate a
- * variable
+ * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p expression is not a
+ * valid CCS variable expression; of if one of the provided bindings is
+ * not a valid CCS binding; or if no binding is provided and expression
+ * must evaluate a variable
  * @return #CCS_RESULT_ERROR_INVALID_EXPRESSION if \p expression is not a
  * #CCS_EXPRESSION_TYPE_LIST
  * @return #CCS_RESULT_ERROR_OUT_OF_BOUNDS if \p index is greater than the
  * number of child nodes in the list
- * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p result_ret is NULL; or if \p
- * values is NULL and expression must evaluate a variable; or if an illegal
- * arithmetic or comparison operation would have occurred; or if a non boolean
- * value is used in a boolean operation
+ * @return #CCS_RESULT_ERROR_INVALID_PARAMETER if a parameter was not
+ * found in the provided bindings
+ * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p result_ret is NULL; or
+ * if \p num_bindings is greater than 0 and \p bindings is NULL; or if an
+ * illegal arithmetic or comparison operation would have occurred; or if
+ * a non boolean value is used in a boolean operation
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_expression_list_eval_node(
 	ccs_expression_t expression,
-	ccs_context_t    context,
-	ccs_datum_t     *values,
+	size_t           num_bindings,
+	ccs_binding_t   *bindings,
 	size_t           index,
 	ccs_datum_t     *result_ret);
 
@@ -501,6 +528,8 @@ ccs_expression_list_eval_node(
  * of parameters that would be returned
  * @return #CCS_RESULT_ERROR_OUT_OF_MEMORY if there was not enough memory to
  * allocate temporary storage
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_expression_get_parameters(
@@ -524,9 +553,14 @@ ccs_expression_get_parameters(
  * one of the parameters referenced by the expression
  * @return #CCS_RESULT_ERROR_OUT_OF_MEMORY if there was not enough memory to
  * allocate temporary storage
+ * @remarks
+ *   This function is thread-safe while threads are only reading context
  */
 extern ccs_result_t
-ccs_expression_check_context(ccs_expression_t expression, ccs_context_t context);
+ccs_expression_check_contexts(
+	ccs_expression_t expression,
+	size_t           num_contexts,
+	ccs_context_t   *contexts);
 #ifdef __cplusplus
 }
 #endif

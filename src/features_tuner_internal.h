@@ -3,7 +3,7 @@
 #include "cconfigspace_internal.h"
 #include "configuration_space_internal.h"
 #include "objective_space_internal.h"
-#include "features_space_internal.h"
+#include "feature_space_internal.h"
 
 struct _ccs_features_tuner_data_s;
 typedef struct _ccs_features_tuner_data_s _ccs_features_tuner_data_t;
@@ -54,7 +54,7 @@ struct _ccs_features_tuner_common_data_s {
 	const char               *name;
 	ccs_configuration_space_t configuration_space;
 	ccs_objective_space_t     objective_space;
-	ccs_features_space_t      features_space;
+	ccs_feature_space_t       feature_space;
 };
 typedef struct _ccs_features_tuner_common_data_s
 	_ccs_features_tuner_common_data_t;
@@ -74,8 +74,8 @@ _ccs_serialize_bin_size_ccs_features_tuner_common_data(
 	CCS_VALIDATE(data->objective_space->obj.ops->serialize_size(
 		data->objective_space, CCS_SERIALIZE_FORMAT_BINARY, cum_size,
 		opts));
-	CCS_VALIDATE(data->features_space->obj.ops->serialize_size(
-		data->features_space, CCS_SERIALIZE_FORMAT_BINARY, cum_size,
+	CCS_VALIDATE(data->feature_space->obj.ops->serialize_size(
+		data->feature_space, CCS_SERIALIZE_FORMAT_BINARY, cum_size,
 		opts));
 	return CCS_RESULT_SUCCESS;
 }
@@ -97,8 +97,8 @@ _ccs_serialize_bin_ccs_features_tuner_common_data(
 	CCS_VALIDATE(data->objective_space->obj.ops->serialize(
 		data->objective_space, CCS_SERIALIZE_FORMAT_BINARY, buffer_size,
 		buffer, opts));
-	CCS_VALIDATE(data->features_space->obj.ops->serialize(
-		data->features_space, CCS_SERIALIZE_FORMAT_BINARY, buffer_size,
+	CCS_VALIDATE(data->feature_space->obj.ops->serialize(
+		data->feature_space, CCS_SERIALIZE_FORMAT_BINARY, buffer_size,
 		buffer, opts));
 	return CCS_RESULT_SUCCESS;
 }

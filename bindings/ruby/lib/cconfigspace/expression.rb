@@ -90,10 +90,10 @@ module CCS
   attach_function :ccs_expression_get_nodes, [:ccs_expression_t, :size_t, :pointer, :pointer], :ccs_result_t
   attach_function :ccs_literal_get_value, [:ccs_expression_t, :pointer], :ccs_result_t
   attach_function :ccs_variable_get_parameter, [:ccs_expression_t, :pointer], :ccs_result_t
-  attach_function :ccs_expression_eval, [:ccs_expression_t, :ccs_context_t, :pointer, :pointer], :ccs_result_t
-  attach_function :ccs_expression_list_eval_node, [:ccs_expression_t, :ccs_context_t, :pointer, :size_t, :pointer], :ccs_result_t
+  attach_function :ccs_expression_eval, [:ccs_expression_t, :size_t, :pointer, :pointer], :ccs_result_t
+  attach_function :ccs_expression_list_eval_node, [:ccs_expression_t, :size_t, :pointer, :size_t, :pointer], :ccs_result_t
   attach_function :ccs_expression_get_parameters, [:ccs_expression_t, :size_t, :pointer, :pointer], :ccs_result_t
-  attach_function :ccs_expression_check_context, [:ccs_expression_t, :ccs_context_t], :ccs_result_t
+  attach_function :ccs_expression_check_contexts, [:ccs_expression_t, :size_t, :pointer], :ccs_result_t
 
   class Expression < Object
     add_property :type, :ccs_expression_type_t, :ccs_expression_get_type, memoize: true
@@ -155,19 +155,16 @@ module CCS
       count.times.collect { |i| Expression.from_handle(ptr[i].read_pointer) }
     end
 
-    def eval(context: nil, values: nil)
-      if values && context
-        count = context.num_parameters
-        raise CCSError, :CCS_RESULT_ERROR_INVALID_VALUES if values.size != count
-        ss = []
-        p_values = MemoryPointer::new(:ccs_datum_t, count)
-        values.each_with_index{ |v, i| Datum::new(p_values[i]).set_value(v, string_store: ss) }
-        values = p_values
-      elsif values || context
-        raise CCSError, :CCS_RESULT_ERROR_INVALID_VALUES
+    def eval(bindings: nil)
+      count = 0
+      p_bindings = nil
+      if bindings
+        count = bindings.size
+        p_bindings = MemoryPointer::new(:ccs_binding_t, count)
+        p_bindings.write_array_of_pointer(bindings.collect(&:handle))
       end
       ptr = MemoryPointer::new(:ccs_datum_t)
-      CCS.error_check CCS.ccs_expression_eval(@handle, context, values, ptr)
+      CCS.error_check CCS.ccs_expression_eval(@handle, count, p_bindings, ptr)
       Datum::new(ptr).value
     end
 
@@ -186,8 +183,11 @@ module CCS
       end
     end
 
-    def check_context(context)
-      CCS.error_check CCS.ccs_expression_check_context(@handle, context)
+    def check_contexts(contexts)
+      count = contexts.size
+      p_contexts = MemoryPointer::new(:ccs_context_t, count)
+      p_contexts.write_array_of_pointer(contexts.collect(&:handle))
+      CCS.error_check CCS.ccs_expression_check_contexts(@handle, count, p_contexts)
       self
     end
 
@@ -564,19 +564,16 @@ module CCS
       end
     end
 
-    def eval(index, context: nil, values: nil)
-      if values && context
-        count = context.num_parameters
-        raise CCSError, :CCS_RESULT_ERROR_INVALID_VALUES if values.size != count
-        ss = []
-        p_values = MemoryPointer::new(:ccs_datum_t, count)
-        values.each_with_index{ |v, i| Datum::new(p_values[i]).set_value(v, string_store: ss) }
-        values = p_values
-      elsif values || context
-        raise CCSError, :CCS_RESULT_ERROR_INVALID_VALUES
+    def eval(index, bindings = nil)
+      count = 0
+      p_bindings = nil
+      if bindings
+        count = bindings.size
+        p_bindings = MemoryPointer::new(:ccs_binding_t, count)
+        p_bindings.write_array_of_pointer(bindings.collect(&:handle))
       end
       ptr = MemoryPointer::new(:ccs_datum_t)
-      CCS.error_check CCS.ccs_expression_list_eval_node(@handle, context, values, index, ptr)
+      CCS.error_check CCS.ccs_expression_list_eval_node(@handle, count, p_bindings, index, ptr)
       Datum::new(ptr).value
     end
 

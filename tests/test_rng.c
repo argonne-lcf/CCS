@@ -4,7 +4,7 @@
 #include <gsl/gsl_rng.h>
 
 static void
-test_rng_create_with_type()
+test_rng_create_with_type(void)
 {
 	const gsl_rng_type **t1, **t2, *t;
 	size_t               type_count = 0;
@@ -38,7 +38,7 @@ test_rng_create_with_type()
 }
 
 static void
-test_rng_create()
+test_rng_create(void)
 {
 	ccs_rng_t           rng = NULL, rng2 = NULL;
 	ccs_result_t        err = CCS_RESULT_SUCCESS;
@@ -97,7 +97,7 @@ test_rng_create()
 }
 
 static void
-test_rng_min_max()
+test_rng_min_max(void)
 {
 	ccs_rng_t         rng  = NULL;
 	ccs_result_t      err  = CCS_RESULT_SUCCESS;
@@ -123,7 +123,7 @@ test_rng_min_max()
 }
 
 static void
-test_rng_get()
+test_rng_get(void)
 {
 	ccs_rng_t         rng  = NULL;
 	ccs_result_t      err  = CCS_RESULT_SUCCESS;
@@ -148,7 +148,7 @@ test_rng_get()
 }
 
 static void
-test_rng_uniform()
+test_rng_uniform(void)
 {
 	ccs_rng_t    rng = NULL;
 	ccs_result_t err = CCS_RESULT_SUCCESS;
@@ -167,7 +167,7 @@ test_rng_uniform()
 }
 
 int
-main()
+main(void)
 {
 	ccs_init();
 	test_rng_create_with_type();

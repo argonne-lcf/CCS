@@ -3,6 +3,7 @@
 #include <gsl/gsl_randist.h>
 #include "cconfigspace_internal.h"
 #include "distribution_internal.h"
+#include "rng_internal.h"
 
 struct _ccs_distribution_uniform_data_s {
 	_ccs_distribution_common_data_t common_data;
@@ -223,8 +224,7 @@ _ccs_distribution_uniform_strided_samples(
 	const ccs_numeric_t      internal_lower = d->internal_lower;
 	const ccs_numeric_t      internal_upper = d->internal_upper;
 	const int                quantize       = d->quantize;
-	gsl_rng                 *grng;
-	CCS_VALIDATE(ccs_rng_get_gsl_rng(rng, &grng));
+	gsl_rng                 *grng           = rng->data->rng;
 
 	if (data_type == CCS_NUMERIC_TYPE_FLOAT) {
 		for (i = 0; i < num_values; i++) {
@@ -303,8 +303,7 @@ _ccs_distribution_uniform_samples(
 	const ccs_numeric_t      internal_lower = d->internal_lower;
 	const ccs_numeric_t      internal_upper = d->internal_upper;
 	const int                quantize       = d->quantize;
-	gsl_rng                 *grng;
-	CCS_VALIDATE(ccs_rng_get_gsl_rng(rng, &grng));
+	gsl_rng                 *grng           = rng->data->rng;
 
 	if (data_type == CCS_NUMERIC_TYPE_FLOAT) {
 		for (i = 0; i < num_values; i++) {

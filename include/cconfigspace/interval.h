@@ -39,6 +39,8 @@ typedef struct ccs_interval_s ccs_interval_t;
  * @return #CCS_RESULT_SUCCESS on success
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p interval or \p empty_ret are
  * NULL
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_interval_empty(ccs_interval_t *interval, ccs_bool_t *empty_ret);
@@ -54,6 +56,8 @@ ccs_interval_empty(ccs_interval_t *interval, ccs_bool_t *empty_ret);
  * interval_res are NULL
  * @return #CCS_RESULT_ERROR_INVALID_TYPE if \p interval1 and \p interval2 are
  * intervals over different data types
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_interval_intersect(
@@ -72,6 +76,8 @@ ccs_interval_intersect(
  *                             interval_res are NULL
  * @return #CCS_RESULT_ERROR_INVALID_TYPE if \p interval1 and \p interval2 are
  * intervals over different data types
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_interval_union(
@@ -90,6 +96,8 @@ ccs_interval_union(
  * equal_res are NULL
  * @return #CCS_RESULT_ERROR_INVALID_TYPE if \p interval1 and \p interval2 are
  * intervals over different data types
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_interval_equal(
@@ -105,6 +113,8 @@ ccs_interval_equal(
  * @return #CCS_TRUE if the interval include the value
  * @return #CCS_FALSE if the interval does not include the value; or if \p
  * interval is NULL
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_bool_t
 ccs_interval_include(ccs_interval_t *interval, ccs_numeric_t value);

@@ -88,20 +88,12 @@ _ccs_deserialize_bin_objective_space(
 			&data, version, buffer_size, buffer, &new_opts),
 		end);
 	CCS_VALIDATE_ERR_GOTO(
-		res, ccs_create_objective_space(data.name, objective_space_ret),
+		res,
+		ccs_create_objective_space(
+			data.name, data.num_parameters, data.parameters,
+			data.num_objectives, data.objectives,
+			data.objective_types, objective_space_ret),
 		end);
-	CCS_VALIDATE_ERR_GOTO(
-		res,
-		ccs_objective_space_add_parameters(
-			*objective_space_ret, data.num_parameters,
-			data.parameters),
-		err_objective_space);
-	CCS_VALIDATE_ERR_GOTO(
-		res,
-		ccs_objective_space_add_objectives(
-			*objective_space_ret, data.num_objectives,
-			data.objectives, data.objective_types),
-		err_objective_space);
 	if (opts && opts->map_values && opts->handle_map)
 		CCS_VALIDATE_ERR_GOTO(
 			res,

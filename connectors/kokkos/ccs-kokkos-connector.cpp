@@ -479,7 +479,7 @@ kokkosp_request_values(
   std::set<size_t>          regionId;
   ccs_features_tuner_t      tuner;
   ccs_features_t            feat;
-  ccs_features_space_t      features_space;
+  ccs_feature_space_t       feature_space;
   ccs_configuration_t       configuration;
   ccs_configuration_space_t configuration_space;
   struct timespec           start;
@@ -501,18 +501,22 @@ kokkosp_request_values(
 
   auto tun = tuners.find(regionId);
   if (tun == tuners.end()) {
+	  ccs_parameter_t          *cs_parameters;
 	  ccs_configuration_space_t cs;
-	  ccs_features_space_t      fs;
+	  ccs_feature_space_t       fs;
 	  ccs_objective_space_t     os;
 	  ccs_parameter_t           htime;
 	  ccs_expression_t          expression;
+	  ccs_objective_type_t      otype;
+
+	  cs_parameters = new ccs_parameter_t[numTuningVariables];
+	  for (size_t i = 0; i < numTuningVariables; i++)
+		  cs_parameters[i] = parameters[tuningValues[i].type_id];
 
 	  CCS_CHECK(ccs_create_configuration_space(
 		  ("cs (region: " + std::to_string(regionCounter) + ")").c_str(),
-		  &cs));
-	  for (size_t i = 0; i < numTuningVariables; i++)
-		  CCS_CHECK(ccs_configuration_space_add_parameter(
-			  cs, parameters[tuningValues[i].type_id], NULL));
+		  numTuningVariables, cs_parameters, NULL, 0, NULL, NULL, &cs));
+	  delete[] cs_parameters;
 
 #if CCS_DEBUG
 	  for (size_t i = 0; i < numTuningVariables; i++) {
@@ -521,26 +525,26 @@ kokkosp_request_values(
 	  }
 #endif
 
-	  CCS_CHECK(ccs_create_features_space(
-		  ("fs (region: " + std::to_string(regionCounter) + ")").c_str(),
-		  &fs));
+	  cs_parameters = new ccs_parameter_t[numContextVariables];
 	  for (size_t i = 0; i < numContextVariables; i++)
-		  CCS_CHECK(ccs_features_space_add_parameter(
-			  fs, features[contextValues[i].type_id]));
+		  cs_parameters[i] = parameters[contextValues[i].type_id];
+
+	  CCS_CHECK(ccs_create_feature_space(
+		  ("fs (region: " + std::to_string(regionCounter) + ")").c_str(),
+		  numContextVariables, cs_parameters, &fs));
+	  delete[] cs_parameters;
 
 	  ccs_int_t lower = 0;
 	  ccs_int_t upper = CCS_INT_MAX;
 	  ccs_int_t step  = 0;
-	  CCS_CHECK(ccs_create_objective_space(
-		  ("os (region: " + std::to_string(regionCounter) + ")").c_str(),
-		  &os));
 	  CCS_CHECK(ccs_create_numerical_parameter(
 		  "time", CCS_NUMERIC_TYPE_INT, lower, upper, step, lower,
 		  &htime));
 	  CCS_CHECK(ccs_create_variable(htime, &expression));
-	  CCS_CHECK(ccs_objective_space_add_parameter(os, htime));
-	  CCS_CHECK(ccs_objective_space_add_objective(
-		  os, expression, CCS_OBJECTIVE_TYPE_MINIMIZE));
+	  otype = CCS_OBJECTIVE_TYPE_MINIMIZE;
+	  CCS_CHECK(ccs_create_objective_space(
+		  ("os (region: " + std::to_string(regionCounter) + ")").c_str(),
+		  1, &htime, 1, &expression, &otype, &os));
 	  CCS_CHECK(ccs_release_object(expression));
 	  CCS_CHECK(ccs_release_object(htime));
 
@@ -575,18 +579,18 @@ kokkosp_request_values(
   else // else propagate unconverged status
 	  convergence_stack.push(false);
 
-  CCS_CHECK(ccs_features_tuner_get_features_space(tuner, &features_space));
+  CCS_CHECK(ccs_features_tuner_get_feature_space(tuner, &feature_space));
   {
 	  ccs_datum_t *values = new ccs_datum_t[numContextVariables];
 	  for (size_t i = 0; i < numContextVariables; i++) {
 		  size_t indx;
-		  CCS_CHECK(ccs_features_space_get_parameter_index(
-			  features_space, features[contextValues[i].type_id],
-			  &indx));
+		  CCS_CHECK(ccs_context_get_parameter_index(
+			  (ccs_context_t)feature_space,
+			  features[contextValues[i].type_id], NULL, &indx));
 		  extract_value(contextValues + i, values + indx);
 	  }
 	  CCS_CHECK(ccs_create_features(
-		  features_space, numContextVariables, values, &feat));
+		  feature_space, numContextVariables, values, &feat));
 	  delete[] values;
   }
 
@@ -600,13 +604,14 @@ kokkosp_request_values(
 	  tuner, &configuration_space));
   {
 	  ccs_datum_t *values = new ccs_datum_t[numTuningVariables];
-	  CCS_CHECK(ccs_configuration_get_values(
-		  configuration, numTuningVariables, values, NULL));
+	  CCS_CHECK(ccs_binding_get_values(
+		  (ccs_binding_t)configuration, numTuningVariables, values,
+		  NULL));
 	  for (size_t i = 0; i < numTuningVariables; i++) {
 		  size_t indx;
-		  CCS_CHECK(ccs_configuration_space_get_parameter_index(
-			  configuration_space,
-			  parameters[tuningValues[i].type_id], &indx));
+		  CCS_CHECK(ccs_context_get_parameter_index(
+			  (ccs_context_t)configuration_space,
+			  parameters[tuningValues[i].type_id], NULL, &indx));
 		  set_value(tuningValues + i, values + indx);
 	  }
 	  delete[] values;

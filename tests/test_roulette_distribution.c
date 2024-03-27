@@ -66,7 +66,7 @@ compare_distribution(
 }
 
 void
-test_create_roulette_distribution()
+test_create_roulette_distribution(void)
 {
 	ccs_distribution_t distrib   = NULL;
 	ccs_result_t       err       = CCS_RESULT_SUCCESS;
@@ -116,7 +116,7 @@ test_create_roulette_distribution()
 }
 
 void
-test_create_roulette_distribution_errors()
+test_create_roulette_distribution_errors(void)
 {
 	ccs_distribution_t distrib   = NULL;
 	ccs_result_t       err       = CCS_RESULT_SUCCESS;
@@ -172,7 +172,7 @@ check_samples(
 }
 
 void
-test_roulette_distribution()
+test_roulette_distribution(void)
 {
 	ccs_distribution_t distrib     = NULL;
 	ccs_rng_t          rng         = NULL;
@@ -203,7 +203,7 @@ test_roulette_distribution()
 }
 
 void
-test_roulette_distribution_zero()
+test_roulette_distribution_zero(void)
 {
 	ccs_distribution_t distrib     = NULL;
 	ccs_rng_t          rng         = NULL;
@@ -235,7 +235,7 @@ test_roulette_distribution_zero()
 }
 
 void
-test_roulette_distribution_strided_samples()
+test_roulette_distribution_strided_samples(void)
 {
 	ccs_distribution_t distrib1    = NULL;
 	ccs_distribution_t distrib2    = NULL;
@@ -313,7 +313,7 @@ test_roulette_distribution_strided_samples()
 }
 
 void
-test_roulette_distribution_soa_samples()
+test_roulette_distribution_soa_samples(void)
 {
 	ccs_distribution_t distrib     = NULL;
 	ccs_rng_t          rng         = NULL;
@@ -363,7 +363,7 @@ test_roulette_distribution_soa_samples()
 }
 
 int
-main()
+main(void)
 {
 	ccs_init();
 	test_create_roulette_distribution();

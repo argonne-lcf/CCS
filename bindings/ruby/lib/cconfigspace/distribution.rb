@@ -339,10 +339,12 @@ module CCS
     end
 
     def areas
-      count = num_areas
-      ptr = MemoryPointer::new(:ccs_float_t, count)
-      CCS.error_check CCS.ccs_roulette_distribution_get_areas(@handle, count, ptr, nil)
-      ptr.read_array_of_ccs_float_t(count)
+      @areas ||= begin
+        count = num_areas
+        ptr = MemoryPointer::new(:ccs_float_t, count)
+        CCS.error_check CCS.ccs_roulette_distribution_get_areas(@handle, count, ptr, nil)
+        ptr.read_array_of_ccs_float_t(count).freeze
+      end
     end
   end
 
@@ -379,7 +381,7 @@ module CCS
         count = num_distributions
         ptr = MemoryPointer::new(:ccs_float_t, count)
         CCS.error_check CCS.ccs_mixture_distribution_get_weights(@handle, count, ptr, nil)
-        ptr.read_array_of_ccs_float_t(count)
+        ptr.read_array_of_ccs_float_t(count).freeze
       end
     end
 
@@ -388,7 +390,7 @@ module CCS
         count = num_distributions
         ptr = MemoryPointer::new(:ccs_distribution_t, count)
         CCS.error_check CCS.ccs_mixture_distribution_get_distributions(@handle, count, ptr, nil)
-        count.times.collect { |i| Distribution.from_handle(ptr[i].read_pointer) }
+        count.times.collect { |i| Distribution.from_handle(ptr[i].read_pointer) }.freeze
       end
     end
   end
@@ -418,7 +420,7 @@ module CCS
         count = num_distributions
         ptr = MemoryPointer::new(:ccs_distribution_t, count)
         CCS.error_check CCS.ccs_multivariate_distribution_get_distributions(@handle, count, ptr, nil)
-        count.times.collect { |i| Distribution.from_handle(ptr[i].read_pointer) }
+        count.times.collect { |i| Distribution.from_handle(ptr[i].read_pointer) }.freeze
       end
     end
   end

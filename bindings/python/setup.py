@@ -1,6 +1,6 @@
 from setuptools import setup, find_packages
 from pkg_resources import require
-require("parglare==0.12.0")
+require("parglare>=0.13.0")
 setup(
     name = "cconfigspace",
     version = "0.0.2",

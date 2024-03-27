@@ -54,7 +54,7 @@ module CCS
     rule(:integer => Regexp.new(TerminalRegexp[:CCS_TERMINAL_TYPE_INTEGER])).as { |num|
       Expression::Literal::new(value: Integer(num)) }
     rule(:identifier => /[:a-zA-Z_][a-zA-Z_0-9]*/).as { |identifier|
-      Expression::Variable::new(parameter: context.parameter_by_name(identifier)) }
+      Expression::Variable::new(parameter: context.kind_of?(Context) ? context.parameter_by_name(identifier) : context[identifier]) }
     rule(:string => Regexp.new(TerminalRegexp[:CCS_TERMINAL_TYPE_STRING])).as { |str|
       Expression::Literal::new(value: eval(str)) }
 

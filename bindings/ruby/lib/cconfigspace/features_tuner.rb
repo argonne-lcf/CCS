@@ -14,18 +14,18 @@ module CCS
   attach_function :ccs_features_tuner_get_name, [:ccs_features_tuner_t, :pointer], :ccs_result_t
   attach_function :ccs_features_tuner_get_configuration_space, [:ccs_features_tuner_t, :pointer], :ccs_result_t
   attach_function :ccs_features_tuner_get_objective_space, [:ccs_features_tuner_t, :pointer], :ccs_result_t
-  attach_function :ccs_features_tuner_get_features_space, [:ccs_features_tuner_t, :pointer], :ccs_result_t
+  attach_function :ccs_features_tuner_get_feature_space, [:ccs_features_tuner_t, :pointer], :ccs_result_t
   attach_function :ccs_features_tuner_ask, [:ccs_features_tuner_t, :ccs_features_t, :size_t, :pointer, :pointer], :ccs_result_t
   attach_function :ccs_features_tuner_tell, [:ccs_features_tuner_t, :size_t, :pointer], :ccs_result_t
   attach_function :ccs_features_tuner_get_optima, [:ccs_features_tuner_t, :ccs_features_t, :size_t, :pointer, :pointer], :ccs_result_t
   attach_function :ccs_features_tuner_get_history, [:ccs_features_tuner_t, :ccs_features_t, :size_t, :pointer, :pointer], :ccs_result_t
   attach_function :ccs_features_tuner_suggest, [:ccs_features_tuner_t, :ccs_features_t, :pointer], :ccs_result_t
-  attach_function :ccs_create_random_features_tuner, [:string, :ccs_configuration_space_t, :ccs_features_space_t, :ccs_objective_space_t, :pointer], :ccs_result_t
+  attach_function :ccs_create_random_features_tuner, [:string, :ccs_configuration_space_t, :ccs_feature_space_t, :ccs_objective_space_t, :pointer], :ccs_result_t
 
   class FeaturesTuner < Object
     add_property :type, :ccs_features_tuner_type_t, :ccs_features_tuner_get_type, memoize: true
     add_handle_property :configuration_space, :ccs_configuration_space_t, :ccs_features_tuner_get_configuration_space, memoize: true
-    add_handle_property :features_space, :ccs_features_space_t, :ccs_features_tuner_get_features_space, memoize: true
+    add_handle_property :feature_space, :ccs_feature_space_t, :ccs_features_tuner_get_feature_space, memoize: true
     add_handle_property :objective_space, :ccs_objective_space_t, :ccs_features_tuner_get_objective_space, memoize: true
 
     def self.from_handle(handle, retain: true, auto_release: true)
@@ -101,12 +101,12 @@ module CCS
 
   class RandomFeaturesTuner < FeaturesTuner
     def initialize(handle = nil, retain: false, auto_release: true,
-                   name: "", configuration_space: nil, features_space: nil, objective_space: nil)
+                   name: "", configuration_space: nil, feature_space: nil, objective_space: nil)
       if handle
         super(handle, retain: retain, auto_release: auto_release)
       else
         ptr = MemoryPointer::new(:ccs_features_tuner_t)
-        CCS.error_check CCS.ccs_create_random_features_tuner(name, configuration_space, features_space, objective_space, ptr)
+        CCS.error_check CCS.ccs_create_random_features_tuner(name, configuration_space, feature_space, objective_space, ptr)
         super(ptr.read_ccs_features_tuner_t, retain: false)
       end
     end
@@ -257,13 +257,13 @@ module CCS
     return [delwrapper, askwrapper, tellwrapper, get_optimawrapper, get_historywrapper, suggestwrapper, serializewrapper, deserializewrapper]
   end
 
-  attach_function :ccs_create_user_defined_features_tuner, [:string, :ccs_configuration_space_t, :ccs_features_space_t, :ccs_objective_space_t, UserDefinedFeaturesTunerVector.by_ref, :value, :pointer], :ccs_result_t
+  attach_function :ccs_create_user_defined_features_tuner, [:string, :ccs_configuration_space_t, :ccs_feature_space_t, :ccs_objective_space_t, UserDefinedFeaturesTunerVector.by_ref, :value, :pointer], :ccs_result_t
   attach_function :ccs_user_defined_features_tuner_get_tuner_data, [:ccs_features_tuner_t, :pointer], :ccs_result_t
   class UserDefinedFeaturesTuner < FeaturesTuner
     add_property :tuner_data, :value, :ccs_user_defined_features_tuner_get_tuner_data, memoize: true
 
     def initialize(handle = nil, retain: false, auto_release: true,
-                   name: "", configuration_space: nil, features_space: nil, objective_space: nil,
+                   name: "", configuration_space: nil, feature_space: nil, objective_space: nil,
                    del: nil, ask: nil, tell: nil, get_optima: nil, get_history: nil, suggest: nil, serialize: nil, deserialize: nil, tuner_data: nil)
       if handle
         super(handle, retain: retain, auto_release: auto_release)
@@ -281,7 +281,7 @@ module CCS
         vector[:serialize] = serializewrapper
         vector[:deserialize] = deserializewrapper
         ptr = MemoryPointer::new(:ccs_features_tuner_t)
-        CCS.error_check CCS.ccs_create_user_defined_features_tuner(name, configuration_space, features_space, objective_space, vector, tuner_data, ptr)
+        CCS.error_check CCS.ccs_create_user_defined_features_tuner(name, configuration_space, feature_space, objective_space, vector, tuner_data, ptr)
         handle = ptr.read_ccs_features_tuner_t
         super(handle, retain: false)
         CCS.register_vector(handle, [delwrapper, askwrapper, tellwrapper, get_optimawrapper, get_historywrapper, suggestwrapper, serializewrapper, deserializewrapper, tuner_data])

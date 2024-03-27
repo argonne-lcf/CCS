@@ -61,18 +61,25 @@ _ccs_rng_serialize_size(
 	size_t                          *cum_size,
 	_ccs_object_serialize_options_t *opts)
 {
+	ccs_result_t err = CCS_RESULT_SUCCESS;
+	CCS_OBJ_RDLOCK(object);
 	switch (format) {
 	case CCS_SERIALIZE_FORMAT_BINARY:
 		*cum_size += _ccs_serialize_bin_size_ccs_rng((ccs_rng_t)object);
 		break;
 	default:
-		CCS_RAISE(
-			CCS_RESULT_ERROR_INVALID_VALUE,
+		CCS_RAISE_ERR_GOTO(
+			err, CCS_RESULT_ERROR_INVALID_VALUE, end,
 			"Unsupported serialization format: %d", format);
 	}
-	CCS_VALIDATE(_ccs_object_serialize_user_data_size(
-		object, format, cum_size, opts));
-	return CCS_RESULT_SUCCESS;
+	CCS_VALIDATE_ERR_GOTO(
+		err,
+		_ccs_object_serialize_user_data_size(
+			object, format, cum_size, opts),
+		end);
+end:
+	CCS_OBJ_UNLOCK(object);
+	return err;
 }
 
 static ccs_result_t
@@ -83,19 +90,29 @@ _ccs_rng_serialize(
 	char                           **buffer,
 	_ccs_object_serialize_options_t *opts)
 {
+	ccs_result_t err = CCS_RESULT_SUCCESS;
+	CCS_OBJ_RDLOCK(object);
 	switch (format) {
 	case CCS_SERIALIZE_FORMAT_BINARY:
-		CCS_VALIDATE(_ccs_serialize_bin_ccs_rng(
-			(ccs_rng_t)object, buffer_size, buffer));
+		CCS_VALIDATE_ERR_GOTO(
+			err,
+			_ccs_serialize_bin_ccs_rng(
+				(ccs_rng_t)object, buffer_size, buffer),
+			end);
 		break;
 	default:
-		CCS_RAISE(
-			CCS_RESULT_ERROR_INVALID_VALUE,
+		CCS_RAISE_ERR_GOTO(
+			err, CCS_RESULT_ERROR_INVALID_VALUE, end,
 			"Unsupported serialization format: %d", format);
 	}
-	CCS_VALIDATE(_ccs_object_serialize_user_data(
-		object, format, buffer_size, buffer, opts));
-	return CCS_RESULT_SUCCESS;
+	CCS_VALIDATE_ERR_GOTO(
+		err,
+		_ccs_object_serialize_user_data(
+			object, format, buffer_size, buffer, opts),
+		end);
+end:
+	CCS_OBJ_UNLOCK(object);
+	return err;
 }
 
 static struct _ccs_rng_ops_s _rng_ops = {
@@ -146,7 +163,9 @@ ccs_result_t
 ccs_rng_set_seed(ccs_rng_t rng, unsigned long int seed)
 {
 	CCS_CHECK_OBJ(rng, CCS_OBJECT_TYPE_RNG);
+	CCS_OBJ_WRLOCK(rng);
 	gsl_rng_set(rng->data->rng, seed);
+	CCS_OBJ_UNLOCK(rng);
 	return CCS_RESULT_SUCCESS;
 }
 
@@ -155,7 +174,9 @@ ccs_rng_get(ccs_rng_t rng, unsigned long int *value_ret)
 {
 	CCS_CHECK_OBJ(rng, CCS_OBJECT_TYPE_RNG);
 	CCS_CHECK_PTR(value_ret);
+	CCS_OBJ_WRLOCK(rng);
 	*value_ret = gsl_rng_get(rng->data->rng);
+	CCS_OBJ_UNLOCK(rng);
 	return CCS_RESULT_SUCCESS;
 }
 
@@ -164,16 +185,9 @@ ccs_rng_uniform(ccs_rng_t rng, ccs_float_t *value_ret)
 {
 	CCS_CHECK_OBJ(rng, CCS_OBJECT_TYPE_RNG);
 	CCS_CHECK_PTR(value_ret);
+	CCS_OBJ_WRLOCK(rng);
 	*value_ret = gsl_rng_uniform(rng->data->rng);
-	return CCS_RESULT_SUCCESS;
-}
-
-ccs_result_t
-ccs_rng_get_gsl_rng(ccs_rng_t rng, gsl_rng **gsl_rng_ret)
-{
-	CCS_CHECK_OBJ(rng, CCS_OBJECT_TYPE_RNG);
-	CCS_CHECK_PTR(gsl_rng_ret);
-	*gsl_rng_ret = rng->data->rng;
+	CCS_OBJ_UNLOCK(rng);
 	return CCS_RESULT_SUCCESS;
 }
 

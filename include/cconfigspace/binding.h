@@ -8,7 +8,8 @@ extern "C" {
 /**
  * @file binding.h
  * A Binding is set of value in a Context see context.h. Those values can be
- * accessed by using the parameter index in the context.
+ * accessed by using the parameter index in the context. Bindings are immutable
+ * except from a reference counting and callback management point of view.
  */
 
 /**
@@ -20,6 +21,8 @@ extern "C" {
  * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p binding is not a valid CCS
  * object
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p context_ret is NULL
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_binding_get_context(ccs_binding_t binding, ccs_context_t *context_ret);
@@ -35,30 +38,14 @@ ccs_binding_get_context(ccs_binding_t binding, ccs_context_t *context_ret);
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p value_ret is NULL
  * @return #CCS_RESULT_ERROR_OUT_OF_BOUNDS if \p index is greater than the count
  * of parameters in the context
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_binding_get_value(
 	ccs_binding_t binding,
 	size_t        index,
 	ccs_datum_t  *value_ret);
-
-/**
- * Set the value of the parameter at the given index. Transient values will
- * be validated and memoized if needed.
- * @param[in,out] binding
- * @param[in] index index of the parameter in the associated context
- * @param[in] value the value
- * @return #CCS_RESULT_SUCCESS on success
- * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p binding is not a valid CCS
- * object
- * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p value_ret is NULL
- * @return #CCS_RESULT_ERROR_OUT_OF_BOUNDS if \p index is greater than the count
- * of parameters in the context
- * @return #CCS_RESULT_ERROR_OUT_OF_MEMORY if there was a lack of memory while
- * memoizing a string
- */
-extern ccs_result_t
-ccs_binding_set_value(ccs_binding_t binding, size_t index, ccs_datum_t value);
 
 /**
  * Get all the values in the binding.
@@ -77,6 +64,8 @@ ccs_binding_set_value(ccs_binding_t binding, size_t index, ccs_datum_t value);
  * num_values is greater than 0; or if \p values is NULL and \p num_values_ret
  * is NULL; or if \p num_values is less than the number of values that would be
  * returned
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_binding_get_values(
@@ -86,93 +75,51 @@ ccs_binding_get_values(
 	size_t       *num_values_ret);
 
 /**
- * Set all the values in the binding.
- * @param[in,out] binding
- * @param[in] num_values the size of the \p values array
- * @param[in] values an array of size \p num_values
- * @return #CCS_RESULT_SUCCESS on success
- * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p binding is not a valid CCS
- * object
- * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p values is NULL and \p
- * num_values is greater than 0; or if \p num_values is not equal to the number
- * of values in the binding
- * @return #CCS_RESULT_ERROR_OUT_OF_MEMORY if there was a lack of memory while
- * memoizing a string
- */
-extern ccs_result_t
-ccs_binding_set_values(
-	ccs_binding_t binding,
-	size_t        num_values,
-	ccs_datum_t  *values);
-
-/**
  * Get the value of the parameter with the given name.
  * @param[in] binding
  * @param[in] name the name of the parameter whose value to retrieve
+ * @param[out] found_ret a pointer to the an optional variable that will
+ *                       hold wether a parameter named \p name was found in
+ *                       \p binding
  * @param[out] value_ret a pointer to the variable that will hold the value
  * @return #CCS_RESULT_SUCCESS on success
  * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p binding is not a valid CCS
  * object
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p value_ret is NULL
- * @return #CCS_RESULT_ERROR_INVALID_NAME if no parameter with such \p name
- * exist in the \p binding context
+ * @return #CCS_RESULT_ERROR_INVALID_NAME if \p found_ret is NULL  no parameter
+ * with such \p name exist in the \p binding context
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_binding_get_value_by_name(
 	ccs_binding_t binding,
 	const char   *name,
+	ccs_bool_t   *found_ret,
 	ccs_datum_t  *value_ret);
-
-/**
- * Set the value of the parameter with the given name.
- * @param[in,out] binding
- * @param[in] name the name of the parameter whose value to set
- * @param[in] value the value
- * @return #CCS_RESULT_SUCCESS on success
- * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p binding is not a valid CCS
- * object
- * @return #CCS_RESULT_ERROR_INVALID_NAME if no parameter with such \p name
- * exist in the \p binding context
- */
-extern ccs_result_t
-ccs_binding_set_value_by_name(
-	ccs_binding_t binding,
-	const char   *name,
-	ccs_datum_t   value);
 
 /**
  * Get the value of the parameter with the given handle.
  * @param[in] binding
  * @param[in] parameter parameter whose value to retrieve
+ * @param[out] found_ret a pointer to the an optional variable that will
+ *                       hold wether the parameter was found in the \p
+ *                       binding context
  * @param[out] value_ret a pointer to the variable that will hold the value
  * @return #CCS_RESULT_SUCCESS on success
  * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p binding is not a valid CCS
  * object
- * @return #CCS_RESULT_ERROR_INVALID_PARAMETER if \p parameter does not exist in
- * the \p binding context
+ * @return #CCS_RESULT_ERROR_INVALID_PARAMETER if \p found_ret is NULL
+ * and \p parameter does not exist in \p binding context
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_binding_get_value_by_parameter(
 	ccs_binding_t   binding,
 	ccs_parameter_t parameter,
+	ccs_bool_t     *found_ret,
 	ccs_datum_t    *value_ret);
-
-/**
- * Set the value of the parameter with the given handle.
- * @param[in,out] binding
- * @param[in] parameter parameter whose value to set
- * @param[in] value the value
- * @return #CCS_RESULT_SUCCESS on success
- * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p binding is not a valid CCS
- * object
- * @return #CCS_RESULT_ERROR_INVALID_PARAMETER if \p parameter does not exist in
- * the \p binding context
- */
-extern ccs_result_t
-ccs_binding_set_value_by_parameter(
-	ccs_binding_t   binding,
-	ccs_parameter_t parameter,
-	ccs_datum_t     value);
 
 /**
  * Compute a hash value for the binding by hashing together the context
@@ -182,8 +129,10 @@ ccs_binding_set_value_by_parameter(
  *                      value.
  * @return #CCS_RESULT_SUCCESS on success
  * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p binding is not a valid CCS
- * object
+ * binding
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p hash_ret is NULL
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_binding_hash(ccs_binding_t binding, ccs_hash_t *hash_ret);
@@ -199,8 +148,11 @@ ccs_binding_hash(ccs_binding_t binding, ccs_hash_t *hash_ret);
  *                     than, equal, or greater then the second binding
  * @return #CCS_RESULT_SUCCESS on success
  * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p binding or \p other_binding
- * are not valid CCS objects
+ * are not valid CCS bindings; or if \p binding and \p other_binding are
+ * bindings of different types
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p cmp_ret is NULL
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_binding_cmp(

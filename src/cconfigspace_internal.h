@@ -3,6 +3,7 @@
 
 #include <cconfigspace.h>
 #include <stdarg.h>
+#include <pthread.h>
 #include "utarray.h"
 
 static inline ccs_bool_t
@@ -35,6 +36,134 @@ _ccs_interval_include(ccs_interval_t *interval, ccs_numeric_t value)
 #define CCS_UNLIKELY(x) __builtin_expect(!!(x), 0)
 
 #define CCS_RICH_ERRORS 1
+
+#define CCS_ATOMIC_FETCH_ADD(val)                                              \
+	__atomic_fetch_add(&(val), 1, __ATOMIC_RELAXED)
+
+#define CCS_ATOMIC_SUB_FETCH(val)                                              \
+	__atomic_sub_fetch(&(val), 1, __ATOMIC_RELAXED)
+
+#define CCS_ATOMIC_LOAD(val) __atomic_load_n(&(val), __ATOMIC_RELAXED)
+
+#define CCS_ATOMIC_STORE(val, set)                                             \
+	__atomic_store_n(&(val), set, __ATOMIC_RELAXED)
+
+#if THREAD_SAFE
+#define CCS_THREAD_SAFE 1
+#else
+#define CCS_THREAD_SAFE 0
+#endif
+
+static inline int
+_ccs_do_nothing(void)
+{
+	return 0;
+}
+
+#if CCS_THREAD_SAFE
+
+#define CCS_MUTEX_LOCK(mut)                                                    \
+	do {                                                                   \
+		pthread_mutex_lock(&(mut));                                    \
+	} while (0)
+
+#define CCS_MUTEX_UNLOCK(mut)                                                  \
+	do {                                                                   \
+		pthread_mutex_unlock(&(mut));                                  \
+	} while (0)
+
+#define CCS_MUTEX_INIT(mut)                                                    \
+	do {                                                                   \
+		pthread_mutex_init(&(mut), NULL);                              \
+	} while (0)
+
+#define CCS_MUTEX_DESTROY(mut)                                                 \
+	do {                                                                   \
+		pthread_mutex_destroy(&(mut));                                 \
+	} while (0)
+
+#define CCS_RWLOCK_RDLOCK(lck)                                                 \
+	do {                                                                   \
+		pthread_rwlock_rdlock(&(lck));                                 \
+	} while (0)
+
+#define CCS_RWLOCK_WRLOCK(lck)                                                 \
+	do {                                                                   \
+		pthread_rwlock_wrlock(&(lck));                                 \
+	} while (0)
+
+#define CCS_RWLOCK_UNLOCK(lck)                                                 \
+	do {                                                                   \
+		pthread_rwlock_unlock(&(lck));                                 \
+	} while (0)
+
+#define CCS_RWLOCK_INIT(lck)                                                   \
+	do {                                                                   \
+		pthread_rwlock_init(&(lck), NULL);                             \
+	} while (0)
+
+#define CCS_RWLOCK_DESTROY(lck)                                                \
+	do {                                                                   \
+		pthread_rwlock_destroy(&(lck));                                \
+	} while (0)
+
+#else
+
+#define CCS_MUTEX_LOCK(mut)                                                    \
+	do {                                                                   \
+		_ccs_do_nothing();                                             \
+	} while (0)
+
+#define CCS_MUTEX_UNLOCK(mut)                                                  \
+	do {                                                                   \
+		_ccs_do_nothing();                                             \
+	} while (0)
+
+#define CCS_MUTEX_INIT(mut)                                                    \
+	do {                                                                   \
+		_ccs_do_nothing();                                             \
+	} while (0)
+
+#define CCS_MUTEX_DESTROY(mut)                                                 \
+	do {                                                                   \
+		_ccs_do_nothing();                                             \
+	} while (0)
+
+#define CCS_RWLOCK_RDLOCK(lck)                                                 \
+	do {                                                                   \
+		_ccs_do_nothing();                                             \
+	} while (0)
+
+#define CCS_RWLOCK_WRLOCK(lck)                                                 \
+	do {                                                                   \
+		_ccs_do_nothing();                                             \
+	} while (0)
+
+#define CCS_RWLOCK_UNLOCK(lck)                                                 \
+	do {                                                                   \
+		_ccs_do_nothing();                                             \
+	} while (0)
+
+#define CCS_RWLOCK_INIT(lck)                                                   \
+	do {                                                                   \
+		_ccs_do_nothing();                                             \
+	} while (0)
+
+#define CCS_RWLOCK_DESTROY(lck)                                                \
+	do {                                                                   \
+		_ccs_do_nothing();                                             \
+	} while (0)
+
+#endif
+
+#define CCS_OBJ_RDLOCK(o)                                                      \
+	CCS_RWLOCK_RDLOCK(((_ccs_object_template_t *)(o))->obj.lock)
+
+#define CCS_OBJ_WRLOCK(o)                                                      \
+	CCS_RWLOCK_WRLOCK(((_ccs_object_template_t *)(o))->obj.lock)
+
+#define CCS_OBJ_UNLOCK(o)                                                      \
+	CCS_RWLOCK_UNLOCK(((_ccs_object_template_t *)(o))->obj.lock)
 
 #if CCS_RICH_ERRORS
 #define CCS_ADD_STACK_ELEM()                                                   \
@@ -84,6 +213,11 @@ _ccs_interval_include(ccs_interval_t *interval, ccs_numeric_t value)
 			CCS_RAISE_ERR_GOTO(err, error, label, __VA_ARGS__);    \
 	} while (0)
 
+#define CCS_CHECK_BASE_OBJ(o)                                                  \
+	CCS_REFUTE_MSG(                                                        \
+		!(o), CCS_RESULT_ERROR_INVALID_OBJECT,                         \
+		"Invalid CCS object '%s' == %p supplied", #o, o)
+
 #define CCS_CHECK_OBJ(o, t)                                                    \
 	CCS_REFUTE_MSG(                                                        \
 		!(o) || !((_ccs_object_template_t *)(o))->data ||              \
@@ -100,6 +234,46 @@ _ccs_interval_include(ccs_interval_t *interval, ccs_numeric_t value)
 		CCS_RESULT_ERROR_INVALID_OBJECT, label,                        \
 		"Invalid CCS object '%s' == %p supplied, expected %s", #o, o,  \
 		#t)
+
+#define CCS_CHECK_CONTEXT(c)                                                   \
+	CCS_REFUTE_MSG(                                                        \
+		!(c) || !((_ccs_object_template_t *)(c))->data ||              \
+			(((_ccs_object_template_t *)(c))->obj.type !=          \
+				 CCS_OBJECT_TYPE_CONFIGURATION_SPACE &&        \
+			 ((_ccs_object_template_t *)(c))->obj.type !=          \
+				 CCS_OBJECT_TYPE_OBJECTIVE_SPACE &&            \
+			 ((_ccs_object_template_t *)(c))->obj.type !=          \
+				 CCS_OBJECT_TYPE_FEATURE_SPACE),               \
+		CCS_RESULT_ERROR_INVALID_OBJECT,                               \
+		"Invalid CCS context '%s' == %p supplied", #c, c)
+
+#define CCS_CHECK_EVALUATION_BINDING(e)                                        \
+	CCS_REFUTE_MSG(                                                        \
+		!(e) || !((_ccs_object_template_t *)(e))->data ||              \
+			(((_ccs_object_template_t *)(e))->obj.type !=          \
+				 CCS_OBJECT_TYPE_EVALUATION &&                 \
+			 ((_ccs_object_template_t *)(e))->obj.type !=          \
+				 CCS_OBJECT_TYPE_FEATURES_EVALUATION &&        \
+			 ((_ccs_object_template_t *)(e))->obj.type !=          \
+				 CCS_OBJECT_TYPE_TREE_EVALUATION),             \
+		CCS_RESULT_ERROR_INVALID_OBJECT,                               \
+		"Invalid CCS evaluation '%s' == %p supplied", #e, e)
+
+#define CCS_CHECK_BINDING(b)                                                   \
+	CCS_REFUTE_MSG(                                                        \
+		!(b) || !((_ccs_object_template_t *)(b))->data ||              \
+			(((_ccs_object_template_t *)(b))->obj.type !=          \
+				 CCS_OBJECT_TYPE_CONFIGURATION &&              \
+			 ((_ccs_object_template_t *)(b))->obj.type !=          \
+				 CCS_OBJECT_TYPE_EVALUATION &&                 \
+			 ((_ccs_object_template_t *)(b))->obj.type !=          \
+				 CCS_OBJECT_TYPE_FEATURES &&                   \
+			 ((_ccs_object_template_t *)(b))->obj.type !=          \
+				 CCS_OBJECT_TYPE_FEATURES_EVALUATION &&        \
+			 ((_ccs_object_template_t *)(b))->obj.type !=          \
+				 CCS_OBJECT_TYPE_TREE_EVALUATION),             \
+		CCS_RESULT_ERROR_INVALID_OBJECT,                               \
+		"Invalid CCS binding '%s' == %p supplied", #b, b)
 
 #define CCS_CHECK_PTR(p)                                                       \
 	CCS_REFUTE_MSG(                                                        \
@@ -235,9 +409,13 @@ struct _ccs_object_callback_s {
 typedef struct _ccs_object_callback_s _ccs_object_callback_t;
 
 struct _ccs_object_internal_s {
-	ccs_object_type_t               type;
-	int32_t                         refcount;
-	void                           *user_data;
+	ccs_object_type_t type;
+	int32_t           refcount;
+	void             *user_data;
+#if CCS_THREAD_SAFE
+	pthread_mutex_t  mutex;
+	pthread_rwlock_t lock;
+#endif
 	UT_array                       *callbacks;
 	_ccs_object_ops_t              *ops;
 	ccs_object_serialize_callback_t serialize_callback;
@@ -258,13 +436,27 @@ _ccs_object_init(
 	ccs_object_type_t       t,
 	_ccs_object_ops_t      *ops)
 {
-	o->type                = t;
-	o->refcount            = 1;
-	o->user_data           = NULL;
+	o->type      = t;
+	o->refcount  = 1;
+	o->user_data = NULL;
+#if CCS_THREAD_SAFE
+	CCS_MUTEX_INIT(o->mutex);
+	CCS_RWLOCK_INIT(o->lock);
+#endif
 	o->callbacks           = NULL;
 	o->ops                 = ops;
 	o->serialize_callback  = NULL;
 	o->serialize_user_data = NULL;
+}
+
+static inline __attribute__((always_inline)) void
+_ccs_object_deinit(_ccs_object_internal_t *o)
+{
+	(void)o;
+#if CCS_THREAD_SAFE
+	CCS_RWLOCK_DESTROY(o->lock);
+	CCS_MUTEX_DESTROY(o->mutex);
+#endif
 }
 
 static inline int

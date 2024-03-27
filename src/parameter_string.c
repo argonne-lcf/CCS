@@ -7,6 +7,9 @@
 struct _ccs_parameter_string_data_s {
 	_ccs_parameter_common_data_t common_data;
 	_ccs_hash_datum_t           *stored_values;
+#if CCS_THREAD_SAFE
+	pthread_mutex_t mutex;
+#endif
 };
 typedef struct _ccs_parameter_string_data_s _ccs_parameter_string_data_t;
 
@@ -41,6 +44,9 @@ _ccs_parameter_string_del(ccs_object_t o)
 		HASH_DEL(data->stored_values, current);
 		free(current);
 	}
+#if CCS_THREAD_SAFE
+	CCS_MUTEX_DESTROY(data->mutex);
+#endif
 	return CCS_RESULT_SUCCESS;
 }
 
@@ -117,9 +123,9 @@ _ccs_parameter_string_serialize(
 #undef uthash_nonfatal_oom
 #define uthash_nonfatal_oom(elt)                                               \
 	{                                                                      \
-		CCS_RAISE(                                                     \
-			CCS_RESULT_ERROR_OUT_OF_MEMORY,                        \
-			"Not enough memory to allocate array");                \
+		CCS_RAISE_ERR_GOTO(                                            \
+			err, CCS_RESULT_ERROR_OUT_OF_MEMORY, errmem,           \
+			"Not enough memory to allocate hash");                 \
 	}
 
 static ccs_result_t
@@ -130,49 +136,53 @@ _ccs_parameter_string_check_values(
 	ccs_datum_t           *values_ret,
 	ccs_bool_t            *results)
 {
+	ccs_result_t                  err = CCS_RESULT_SUCCESS;
 	_ccs_parameter_string_data_t *d = (_ccs_parameter_string_data_t *)data;
 	for (size_t i = 0; i < num_values; i++)
 		if (values[i].type != CCS_DATA_TYPE_STRING)
 			results[i] = CCS_FALSE;
 		else
 			results[i] = CCS_TRUE;
-	if (values_ret) {
-		for (size_t i = 0; i < num_values; i++)
-			if (results[i] == CCS_TRUE) {
-				_ccs_hash_datum_t *p;
-				HASH_FIND(
-					hh, d->stored_values, values + i,
+	if (!values_ret)
+		goto end;
+	CCS_MUTEX_LOCK(d->mutex);
+	for (size_t i = 0; i < num_values; i++) {
+		if (results[i] == CCS_TRUE) {
+			_ccs_hash_datum_t *p;
+			HASH_FIND(
+				hh, d->stored_values, values + i,
+				sizeof(ccs_datum_t), p);
+			if (!p) {
+				size_t sz_str = 0;
+				if (values[i].value.s)
+					sz_str = strlen(values[i].value.s) + 1;
+				p = (_ccs_hash_datum_t *)malloc(
+					sizeof(_ccs_hash_datum_t) + sz_str);
+				CCS_REFUTE_ERR_GOTO(
+					err, !p, CCS_RESULT_ERROR_OUT_OF_MEMORY,
+					errmem);
+				if (sz_str) {
+					strcpy((char *)((intptr_t)p + sizeof(_ccs_hash_datum_t)),
+					       values[i].value.s);
+					p->d = ccs_string((
+						char *)((intptr_t)p + sizeof(_ccs_hash_datum_t)));
+				} else
+					p->d = ccs_string(NULL);
+				HASH_ADD(
+					hh, d->stored_values, d,
 					sizeof(ccs_datum_t), p);
-				if (!p) {
-					size_t sz_str = 0;
-					if (values[i].value.s)
-						sz_str = strlen(values[i]
-									.value
-									.s) +
-							 1;
-					p = (_ccs_hash_datum_t *)malloc(
-						sizeof(_ccs_hash_datum_t) +
-						sz_str);
-					CCS_REFUTE(
-						!p,
-						CCS_RESULT_ERROR_OUT_OF_MEMORY);
-					if (sz_str) {
-						strcpy((char *)((intptr_t)p + sizeof(_ccs_hash_datum_t)),
-						       values[i].value.s);
-						p->d = ccs_string((
-							char *)((intptr_t)p + sizeof(_ccs_hash_datum_t)));
-					} else
-						p->d = ccs_string(NULL);
-					HASH_ADD(
-						hh, d->stored_values, d,
-						sizeof(ccs_datum_t), p);
-				}
-				values_ret[i] = p->d;
-			} else {
-				values_ret[i] = ccs_inactive;
 			}
+			values_ret[i] = p->d;
+		} else {
+			values_ret[i] = ccs_inactive;
+		}
 	}
+	CCS_MUTEX_UNLOCK(d->mutex);
+end:
 	return CCS_RESULT_SUCCESS;
+errmem:
+	CCS_MUTEX_UNLOCK(d->mutex);
+	return err;
 }
 
 static ccs_result_t
@@ -255,6 +265,9 @@ ccs_create_string_parameter(const char *name, ccs_parameter_t *parameter_ret)
 	strcpy((char *)parameter_data->common_data.name, name);
 	parameter_data->common_data.interval.type = CCS_NUMERIC_TYPE_INT;
 	parameter_data->stored_values             = NULL;
+#if CCS_THREAD_SAFE
+	CCS_MUTEX_INIT(parameter_data->mutex);
+#endif
 	parameter->data = (_ccs_parameter_data_t *)parameter_data;
 	*parameter_ret  = parameter;
 

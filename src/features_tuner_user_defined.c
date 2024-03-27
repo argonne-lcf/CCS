@@ -22,7 +22,7 @@ _ccs_features_tuner_user_defined_del(ccs_object_t o)
 	err = d->vector.del((ccs_features_tuner_t)o);
 	ccs_release_object(d->common_data.configuration_space);
 	ccs_release_object(d->common_data.objective_space);
-	ccs_release_object(d->common_data.features_space);
+	ccs_release_object(d->common_data.feature_space);
 	return err;
 }
 
@@ -324,7 +324,7 @@ ccs_result_t
 ccs_create_user_defined_features_tuner(
 	const char                               *name,
 	ccs_configuration_space_t                 configuration_space,
-	ccs_features_space_t                      features_space,
+	ccs_feature_space_t                       feature_space,
 	ccs_objective_space_t                     objective_space,
 	ccs_user_defined_features_tuner_vector_t *vector,
 	void                                     *tuner_data,
@@ -332,7 +332,7 @@ ccs_create_user_defined_features_tuner(
 {
 	CCS_CHECK_PTR(name);
 	CCS_CHECK_OBJ(configuration_space, CCS_OBJECT_TYPE_CONFIGURATION_SPACE);
-	CCS_CHECK_OBJ(features_space, CCS_OBJECT_TYPE_FEATURES_SPACE);
+	CCS_CHECK_OBJ(feature_space, CCS_OBJECT_TYPE_FEATURE_SPACE);
 	CCS_CHECK_OBJ(objective_space, CCS_OBJECT_TYPE_OBJECTIVE_SPACE);
 	CCS_CHECK_PTR(tuner_ret);
 	CCS_CHECK_PTR(vector);
@@ -355,7 +355,7 @@ ccs_create_user_defined_features_tuner(
 	CCS_VALIDATE_ERR_GOTO(
 		err, ccs_retain_object(configuration_space), errmem);
 	CCS_VALIDATE_ERR_GOTO(err, ccs_retain_object(objective_space), errcs);
-	CCS_VALIDATE_ERR_GOTO(err, ccs_retain_object(features_space), erros);
+	CCS_VALIDATE_ERR_GOTO(err, ccs_retain_object(feature_space), erros);
 
 	tun = (ccs_features_tuner_t)mem;
 	_ccs_object_init(
@@ -370,7 +370,7 @@ ccs_create_user_defined_features_tuner(
 			 *)(mem + sizeof(struct _ccs_features_tuner_s) + sizeof(struct _ccs_user_defined_features_tuner_data_s));
 	data->common_data.configuration_space = configuration_space;
 	data->common_data.objective_space     = objective_space;
-	data->common_data.features_space      = features_space;
+	data->common_data.feature_space       = feature_space;
 	data->vector                          = *vector;
 	data->tuner_data                      = tuner_data;
 	strcpy((char *)data->common_data.name, name);

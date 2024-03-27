@@ -1,5 +1,6 @@
 # see semver.org for version info
 m4_define([fallbackversion], m4_normalize(m4_include([VERSION])))
+m4_append([fallbackversion], [.0])
 AC_INIT([cconfigspace],
 	[m4_esyscmd([build-aux/git-version-gen --fallback fallbackversion .tarball-version])],
 	[bvideau@anl.gov])
@@ -30,7 +31,6 @@ LT_INIT
 # check for programs
 AC_LANG([C])
 AC_PROG_CC
-AC_PROG_CC_STDC
 AC_TYPE_SIZE_T
 AC_HEADER_ASSERT
 AC_PROG_CXX
@@ -38,8 +38,14 @@ AX_CXX_COMPILE_STDCXX([14], [noext], [mandatory])
 
 AM_CONDITIONAL([ISMACOS], [test "x$macos" = xyes])
 
-AC_ARG_ENABLE([strict], AS_HELP_STRING([--enable-strict], [Enable -Werror]))
+AC_ARG_ENABLE([strict], AS_HELP_STRING([--enable-strict], [Enable -Werror]),
+              [], [enable_strict=no])
 AM_CONDITIONAL([STRICT], [test "x$enable_strict" = xyes])
+
+AC_ARG_ENABLE([thread-safe],
+              AS_HELP_STRING([--enable-thread-safe], [Build with thread saffety enabled]),
+              [], [enable_thread_safe=yes])
+AM_CONDITIONAL([THREAD_SAFE], [test "x$enable_thread_safe" = xyes])
 
 AC_ARG_ENABLE([kokkos-connector],
                AS_HELP_STRING([--enable-kokkos-connector], [Enable CConfigSpace Kokkos connector]),
@@ -79,7 +85,6 @@ fi
 PKG_CHECK_MODULES([GSL], [gsl])
 
 #check for valgrind
-AX_VALGRIND_DFLT([helgrind], [off])
 AX_VALGRIND_DFLT([drd], [off])
 AX_VALGRIND_DFLT([sgcheck], [off])
 AX_VALGRIND_CHECK
@@ -108,3 +113,20 @@ fi
 AC_CONFIG_LINKS([samples/test_ruby.rb:samples/test_ruby.rb
                  samples/test_python.py:samples/test_python.py])
 AC_OUTPUT
+
+cat <<EOF
+
+-------------------------------------------------------------------------------
+CCS
+
+Version: $PACKAGE_VERSION
+
+FEATURES:
+---------
+
+Thread safe:      $enable_thread_safe
+Strict:           $enable_strict
+Kokkos connector: $enable_kokkos_connector
+Samples:          $enable_samples
+
+EOF

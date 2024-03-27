@@ -295,6 +295,7 @@ _ccs_deserialize_bin_tree_tuner(
 	goto end;
 err_tuner:
 	ccs_release_object(*tuner_ret);
+	*tuner_ret = NULL;
 end:
 	ccs_release_object(new_opts.handle_map);
 	return res;

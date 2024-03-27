@@ -287,7 +287,7 @@ class DynamicTreeSpace(TreeSpace):
       self._tree_space_data = ct.cast(v, ct.py_object).value
     else:
       self._tree_space_data = None
-    return self._tuner_data
+    return self._tree_space_data
 
 TreeSpace.Dynamic = DynamicTreeSpace
 

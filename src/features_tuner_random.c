@@ -21,7 +21,7 @@ _ccs_features_tuner_random_del(ccs_object_t o)
 			->data;
 	ccs_release_object(d->common_data.configuration_space);
 	ccs_release_object(d->common_data.objective_space);
-	ccs_release_object(d->common_data.features_space);
+	ccs_release_object(d->common_data.feature_space);
 	ccs_features_evaluation_t *e = NULL;
 	while ((e = (ccs_features_evaluation_t *)utarray_next(d->history, e))) {
 		ccs_release_object(*e);
@@ -170,8 +170,8 @@ _ccs_features_tuner_random_ask(
 		return CCS_RESULT_SUCCESS;
 	}
 	CCS_VALIDATE(ccs_configuration_space_samples(
-		d->common_data.configuration_space, num_configurations,
-		configurations));
+		d->common_data.configuration_space, NULL, NULL,
+		num_configurations, configurations));
 	if (num_configurations_ret)
 		*num_configurations_ret = num_configurations;
 	return CCS_RESULT_SUCCESS;
@@ -196,8 +196,8 @@ _ccs_features_tuner_random_tell(
 	ccs_result_t err;
 	for (size_t i = 0; i < num_evaluations; i++) {
 		ccs_evaluation_result_t result;
-		CCS_VALIDATE(ccs_features_evaluation_get_result(
-			evaluations[i], &result));
+		CCS_VALIDATE(ccs_evaluation_binding_get_result(
+			(ccs_evaluation_binding_t)evaluations[i], &result));
 		if (result == CCS_RESULT_SUCCESS) {
 			int       discard = 0;
 			UT_array *tmp;
@@ -220,8 +220,11 @@ _ccs_features_tuner_random_tell(
 					utarray_next(d->old_optima, eval))) {
 				if (!discard) {
 					ccs_comparison_t cmp;
-					err = ccs_features_evaluation_compare(
-						evaluations[i], *eval, &cmp);
+					err = ccs_evaluation_binding_compare(
+						(ccs_evaluation_binding_t)
+							evaluations[i],
+						(ccs_evaluation_binding_t)*eval,
+						&cmp);
 					if (err)
 						discard = 1;
 					else
@@ -287,7 +290,9 @@ _ccs_features_tuner_random_get_optima(
 				d->optima, eval))) {
 			CCS_VALIDATE(ccs_features_evaluation_get_features(
 				*eval, &feat));
-			CCS_VALIDATE(ccs_features_cmp(features, feat, &cmp));
+			CCS_VALIDATE(ccs_binding_cmp(
+				(ccs_binding_t)features, (ccs_binding_t)feat,
+				&cmp));
 			if (cmp == 0)
 				num_optima += 1;
 		}
@@ -301,8 +306,9 @@ _ccs_features_tuner_random_get_optima(
 				CCS_VALIDATE(
 					ccs_features_evaluation_get_features(
 						*eval, &feat));
-				CCS_VALIDATE(
-					ccs_features_cmp(features, feat, &cmp));
+				CCS_VALIDATE(ccs_binding_cmp(
+					(ccs_binding_t)features,
+					(ccs_binding_t)feat, &cmp));
 				if (cmp == 0)
 					evaluations[index++] = *eval;
 			}
@@ -349,7 +355,9 @@ _ccs_features_tuner_random_get_history(
 				d->history, eval))) {
 			CCS_VALIDATE(ccs_features_evaluation_get_features(
 				*eval, &feat));
-			CCS_VALIDATE(ccs_features_cmp(features, feat, &cmp));
+			CCS_VALIDATE(ccs_binding_cmp(
+				(ccs_binding_t)features, (ccs_binding_t)feat,
+				&cmp));
 			if (cmp == 0)
 				size_history += 1;
 		}
@@ -363,8 +371,9 @@ _ccs_features_tuner_random_get_history(
 				CCS_VALIDATE(
 					ccs_features_evaluation_get_features(
 						*eval, &feat));
-				CCS_VALIDATE(
-					ccs_features_cmp(features, feat, &cmp));
+				CCS_VALIDATE(ccs_binding_cmp(
+					(ccs_binding_t)features,
+					(ccs_binding_t)feat, &cmp));
 				if (cmp == 0)
 					evaluations[index++] = *eval;
 			}
@@ -393,7 +402,8 @@ _ccs_features_tuner_random_suggest(
 			d->optima, eval))) {
 		CCS_VALIDATE(
 			ccs_features_evaluation_get_features(*eval, &feat));
-		CCS_VALIDATE(ccs_features_cmp(features, feat, &cmp));
+		CCS_VALIDATE(ccs_binding_cmp(
+			(ccs_binding_t)features, (ccs_binding_t)feat, &cmp));
 		if (cmp == 0)
 			count += 1;
 	}
@@ -408,7 +418,9 @@ _ccs_features_tuner_random_suggest(
 				d->optima, eval))) {
 			CCS_VALIDATE(ccs_features_evaluation_get_features(
 				*eval, &feat));
-			CCS_VALIDATE(ccs_features_cmp(features, feat, &cmp));
+			CCS_VALIDATE(ccs_binding_cmp(
+				(ccs_binding_t)features, (ccs_binding_t)feat,
+				&cmp));
 			if (cmp == 0) {
 				if (indx == 0)
 					break;
@@ -453,13 +465,13 @@ ccs_result_t
 ccs_create_random_features_tuner(
 	const char               *name,
 	ccs_configuration_space_t configuration_space,
-	ccs_features_space_t      features_space,
+	ccs_feature_space_t       feature_space,
 	ccs_objective_space_t     objective_space,
 	ccs_features_tuner_t     *tuner_ret)
 {
 	CCS_CHECK_PTR(name);
 	CCS_CHECK_OBJ(configuration_space, CCS_OBJECT_TYPE_CONFIGURATION_SPACE);
-	CCS_CHECK_OBJ(features_space, CCS_OBJECT_TYPE_FEATURES_SPACE);
+	CCS_CHECK_OBJ(feature_space, CCS_OBJECT_TYPE_FEATURE_SPACE);
 	CCS_CHECK_OBJ(objective_space, CCS_OBJECT_TYPE_OBJECTIVE_SPACE);
 	CCS_CHECK_PTR(tuner_ret);
 
@@ -475,7 +487,7 @@ ccs_create_random_features_tuner(
 	CCS_VALIDATE_ERR_GOTO(
 		err, ccs_retain_object(configuration_space), errmem);
 	CCS_VALIDATE_ERR_GOTO(err, ccs_retain_object(objective_space), errcs);
-	CCS_VALIDATE_ERR_GOTO(err, ccs_retain_object(features_space), erros);
+	CCS_VALIDATE_ERR_GOTO(err, ccs_retain_object(feature_space), erros);
 
 	tun = (ccs_features_tuner_t)mem;
 	_ccs_object_init(
@@ -490,7 +502,7 @@ ccs_create_random_features_tuner(
 			 *)(mem + sizeof(struct _ccs_features_tuner_s) + sizeof(struct _ccs_random_features_tuner_data_s));
 	data->common_data.configuration_space = configuration_space;
 	data->common_data.objective_space     = objective_space;
-	data->common_data.features_space      = features_space;
+	data->common_data.feature_space       = feature_space;
 	utarray_new(data->history, &_evaluation_icd);
 	utarray_new(data->optima, &_evaluation_icd);
 	utarray_new(data->old_optima, &_evaluation_icd);
@@ -505,7 +517,8 @@ arrays:
 		utarray_free(data->optima);
 	if (data->old_optima)
 		utarray_free(data->old_optima);
-	ccs_release_object(features_space);
+	_ccs_object_deinit(&(tun->obj));
+	ccs_release_object(feature_space);
 erros:
 	ccs_release_object(objective_space);
 errcs:

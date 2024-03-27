@@ -9,7 +9,8 @@ extern "C" {
  * @file parameter.h
  * Parameters are parameters the when grouped together define a tuning
  * context (see context.h). Most parameters can be sampled according to a
- * distribution's dimension (see distribution.h).
+ * distribution's dimension (see distribution.h). Hyperparamters are immutable,
+ * except from a reference counting and callback management point of view.
  */
 
 /**
@@ -67,6 +68,8 @@ typedef enum ccs_parameter_type_e ccs_parameter_type_t;
  * #CCS_NUMERIC_TYPE_FLOAT or #CCS_NUMERIC_TYPE_INT
  * @return #CCS_RESULT_ERROR_OUT_OF_MEMORY if there was a lack of memory to
  * allocate the new numerical parameter
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_create_numerical_parameter(
@@ -93,6 +96,8 @@ ccs_create_numerical_parameter(
  * is not a valid value for the parameter
  * @return #CCS_RESULT_ERROR_OUT_OF_MEMORY if there was a lack of memory to
  * allocate the new numerical parameter
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_create_int_numerical_parameter(
@@ -118,6 +123,8 @@ ccs_create_int_numerical_parameter(
  * is not a valid value for the parameter
  * @return #CCS_RESULT_ERROR_OUT_OF_MEMORY if there was a lack of memory to
  * allocate the new numerical parameter
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_create_float_numerical_parameter(
@@ -146,6 +153,8 @@ ccs_create_float_numerical_parameter(
  * numerical parameter
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p data_type_ret is NULL and \p
  * lower_ret is NULL and \p upper_ret is NULL and \p quantization_ret is NULL
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_numerical_parameter_get_properties(
@@ -171,6 +180,8 @@ ccs_numerical_parameter_get_properties(
  * parameter_ret is NULL
  * @return #CCS_RESULT_ERROR_OUT_OF_MEMORY if there was a lack of memory to
  * allocate the new parameter
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_create_categorical_parameter(
@@ -199,6 +210,8 @@ ccs_create_categorical_parameter(
  * num_possible_values is greater than 0; or if \p possible_values is NULL and
  * \p num_possible_values_ret is NULL; or if num_possible_values is less than
  * the number of values that would be returned
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_categorical_parameter_get_values(
@@ -225,6 +238,8 @@ ccs_categorical_parameter_get_values(
  * parameter_ret is NULL
  * @return #CCS_RESULT_ERROR_OUT_OF_MEMORY if there was a lack of memory to
  * allocate the new parameter
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_create_ordinal_parameter(
@@ -253,6 +268,8 @@ ccs_create_ordinal_parameter(
  * num_possible_values is greater than 0; or if \p possible_values is NULL and
  * \p num_possible_values_ret is NULL; or if num_possible_values is less than
  * the number of values that would be returned
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_ordinal_parameter_get_values(
@@ -275,6 +292,8 @@ ccs_ordinal_parameter_get_values(
  * ordinal parameter
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p comp_ret is NULL; or if value1
  * or value2 are not one of the parameter possible values
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_ordinal_parameter_compare_values(
@@ -300,6 +319,8 @@ ccs_ordinal_parameter_compare_values(
  * parameter_ret is NULL
  * @return #CCS_RESULT_ERROR_OUT_OF_MEMORY if there was a lack of memory to
  * allocate the new parameter
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_create_discrete_parameter(
@@ -328,6 +349,8 @@ ccs_create_discrete_parameter(
  * num_possible_values is greater than 0; or if \p possible_values is NULL and
  * \p num_possible_values_ret is NULL; or if num_possible_values is less than
  * the number of values that would be returned
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_discrete_parameter_get_values(
@@ -348,6 +371,8 @@ ccs_discrete_parameter_get_values(
  * parameter_ret is NULL
  * @return #CCS_RESULT_ERROR_OUT_OF_MEMORY if there was a lack of memory to
  * allocate the new parameter
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_create_string_parameter(const char *name, ccs_parameter_t *parameter_ret);
@@ -361,6 +386,8 @@ ccs_create_string_parameter(const char *name, ccs_parameter_t *parameter_ret);
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p type_ret is NULL
  * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p distribution is not a valid
  * CCS parameter
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_parameter_get_type(
@@ -376,6 +403,8 @@ ccs_parameter_get_type(
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p value_ret is NULL
  * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p distribution is not a valid
  * CCS parameter
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_parameter_get_default_value(
@@ -391,6 +420,8 @@ ccs_parameter_get_default_value(
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p name_ret is NULL
  * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p distribution is not a valid
  * CCS parameter
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_parameter_get_name(ccs_parameter_t parameter, const char **name_ret);
@@ -404,6 +435,8 @@ ccs_parameter_get_name(ccs_parameter_t parameter, const char **name_ret);
  * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p parameter is not a valid CCS
  * parameter
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p distribution_ret is NULL
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_parameter_get_default_distribution(
@@ -420,6 +453,8 @@ ccs_parameter_get_default_distribution(
  * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p parameter is not a valid CCS
  * parameter
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p result_ret is NULL
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_parameter_check_value(
@@ -439,6 +474,8 @@ ccs_parameter_check_value(
  * parameter
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p values or \p results are NULL
  * and \p num_values is greater than 0
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_parameter_check_values(
@@ -462,6 +499,8 @@ ccs_parameter_check_values(
  * parameter
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p result_ret or \p value_ret is
  * NULL
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_parameter_validate_value(
@@ -486,6 +525,8 @@ ccs_parameter_validate_value(
  * parameter
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p values or \p results or \p
  * values_ret are NULL and \p num_values is greater than 0
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_parameter_validate_values(
@@ -515,6 +556,8 @@ ccs_parameter_validate_values(
  * and \p num_values is greater than 0
  * @return #CCS_RESULT_ERROR_UNSUPPORTED_OPERATION if the \p parameter is of
  * type #CCS_PARAMETER_TYPE_STRING
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_parameter_convert_samples(
@@ -540,6 +583,8 @@ ccs_parameter_convert_samples(
  * generated, because the probability of obtaining a valid sample is too low
  * @return #CCS_RESULT_ERROR_UNSUPPORTED_OPERATION if the \p parameter is of
  * type #CCS_PARAMETER_TYPE_STRING
+ * @remarks
+ *   This function is thread-safe if \p rng is only used by one thread at a time
  */
 extern ccs_result_t
 ccs_parameter_sample(
@@ -567,6 +612,8 @@ ccs_parameter_sample(
  * low
  * @return #CCS_RESULT_ERROR_UNSUPPORTED_OPERATION if the \p parameter is of
  * type #CCS_PARAMETER_TYPE_STRING
+ * @remarks
+ *   This function is thread-safe if \p rng is only used by one thread at a time
  */
 extern ccs_result_t
 ccs_parameter_samples(
@@ -585,6 +632,8 @@ ccs_parameter_samples(
  * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p parameter is not a valid CCS
  * parameter
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p interval_ret is NULL
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_parameter_sampling_interval(

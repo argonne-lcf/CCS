@@ -22,12 +22,13 @@ CCONFIGSPACE_TESTS = \
 	test_discrete_parameter \
 	test_string_parameter \
 	test_configuration_space \
+	test_distribution_space \
 	test_expression \
 	test_condition \
 	test_forbidden \
 	test_random_tuner \
 	test_user_defined_tuner \
-	test_features_space \
+	test_feature_space \
 	test_random_features_tuner \
 	test_user_defined_features_tuner \
 	test_map \
@@ -36,7 +37,10 @@ CCONFIGSPACE_TESTS = \
 	test_static_tree_space \
 	test_dynamic_tree_space \
 	test_random_tree_tuner \
-	test_user_defined_tree_tuner
+	test_user_defined_tree_tuner \
+	test_atomics
+
+test_atomics_LDFLAGS = -lpthread $(AM_LDFLAGS)
 
 # unit tests
 UNIT_TESTS = \

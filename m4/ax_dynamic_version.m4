@@ -31,9 +31,9 @@
 AC_DEFUN([AX_DYNAMIC_VERSION],[
 
 [DYNAMIC_VERSION_RULES='
-GITVER = $$(cd $(top_srcdir) 2>/dev/null && sh build-aux/git-version-gen --fallback `cat VERSION` .tarball-version 2>/dev/null)
+GITVER = $$(cd $(top_srcdir) 2>/dev/null && sh build-aux/git-version-gen --fallback `echo "\`cat VERSION\`.0"` .tarball-version 2>/dev/null)
 OLDVER = $$(cat .version 2>/dev/null)
-CURVER = $$(if [ -z "$(GITVER)" ]; then cat $(top_srcdir)/VERSION | cut -c2- 2>/dev/null; else echo "$(GITVER)"; fi)
+CURVER = $$(if [ -z "$(GITVER)" ]; then echo "`cat $(top_srcdir)/VERSION`.0" | cut -c2- 2>/dev/null; else echo "$(GITVER)"; fi)
 
 .PHONY: .version
 .version: $(top_srcdir)/VERSION

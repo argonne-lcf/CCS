@@ -39,10 +39,11 @@ create_tree_tuning_problem(
 	ccs_tree_space_t      *tree_space,
 	ccs_objective_space_t *ospace)
 {
-	ccs_parameter_t  parameter;
-	ccs_tree_t       root;
-	ccs_expression_t expression;
-	ccs_result_t     err;
+	ccs_parameter_t      parameter;
+	ccs_tree_t           root;
+	ccs_expression_t     expression;
+	ccs_objective_type_t otype;
+	ccs_result_t         err;
 
 	generate_tree(&root, 5, 0);
 	err = ccs_create_static_tree_space("space", root, tree_space);
@@ -51,13 +52,10 @@ create_tree_tuning_problem(
 	parameter = create_numerical("sum", -CCS_INFINITY, CCS_INFINITY);
 	err       = ccs_create_variable(parameter, &expression);
 	assert(err == CCS_RESULT_SUCCESS);
+	otype = CCS_OBJECTIVE_TYPE_MAXIMIZE;
 
-	err = ccs_create_objective_space("ospace", ospace);
-	assert(err == CCS_RESULT_SUCCESS);
-	err = ccs_objective_space_add_parameter(*ospace, parameter);
-	assert(err == CCS_RESULT_SUCCESS);
-	err = ccs_objective_space_add_objective(
-		*ospace, expression, CCS_OBJECTIVE_TYPE_MAXIMIZE);
+	err   = ccs_create_objective_space(
+                "ospace", 1, &parameter, 1, &expression, &otype, ospace);
 	assert(err == CCS_RESULT_SUCCESS);
 
 	err = ccs_release_object(root);
@@ -69,7 +67,7 @@ create_tree_tuning_problem(
 }
 
 void
-test()
+test(void)
 {
 	ccs_tree_space_t      tree_space;
 	ccs_objective_space_t ospace;
@@ -123,8 +121,8 @@ test()
 
 	for (size_t i = 0; i < 100; i++) {
 		ccs_datum_t res;
-		err = ccs_tree_evaluation_get_objective_value(
-			history[i], 0, &res);
+		err = ccs_evaluation_binding_get_objective_value(
+			(ccs_evaluation_binding_t)history[i], 0, &res);
 		assert(err == CCS_RESULT_SUCCESS);
 		if (res.value.f > max.value.f)
 			max.value.f = res.value.f;
@@ -134,7 +132,8 @@ test()
 	ccs_datum_t           res;
 	err = ccs_tree_tuner_get_optima(tuner, 1, &evaluation, NULL);
 	assert(err == CCS_RESULT_SUCCESS);
-	err = ccs_tree_evaluation_get_objective_value(evaluation, 0, &res);
+	err = ccs_evaluation_binding_get_objective_value(
+		(ccs_evaluation_binding_t)evaluation, 0, &res);
 	assert(res.value.f == max.value.f);
 
 	/* Test (de)serialization */
@@ -188,7 +187,7 @@ test()
 }
 
 void
-test_tree_evaluation_deserialize()
+test_tree_evaluation_deserialize(void)
 {
 	ccs_tree_space_t         tree_space;
 	ccs_objective_space_t    ospace;
@@ -258,7 +257,8 @@ test_tree_evaluation_deserialize()
 		CCS_DESERIALIZE_OPTION_END);
 	assert(err == CCS_RESULT_SUCCESS);
 
-	err = ccs_tree_evaluation_cmp(evaluation_ref, evaluation, &cmp);
+	err = ccs_binding_cmp(
+		(ccs_binding_t)evaluation_ref, (ccs_binding_t)evaluation, &cmp);
 	assert(err == CCS_RESULT_SUCCESS);
 	assert(!cmp);
 
@@ -278,7 +278,7 @@ test_tree_evaluation_deserialize()
 }
 
 int
-main()
+main(void)
 {
 	ccs_init();
 	test();

@@ -16,15 +16,17 @@ create_numerical(const char *name, double lower, double upper)
 }
 
 void
-test()
+test(void)
 {
 	ccs_parameter_t           parameter1, parameter2;
+	ccs_parameter_t           parameters[2];
 	ccs_parameter_t           parameter3;
 	ccs_parameter_t           feature;
 	ccs_configuration_space_t cspace;
-	ccs_features_space_t      fspace;
+	ccs_feature_space_t       fspace;
 	ccs_objective_space_t     ospace;
 	ccs_expression_t          expression;
+	ccs_objective_type_t      otype;
 	ccs_features_tuner_t      tuner, tuner_copy;
 	ccs_result_t              err;
 	ccs_features_t            features_on, features_off;
@@ -34,35 +36,27 @@ test()
 	size_t      buff_size;
 	ccs_map_t   map;
 
-	parameter1 = create_numerical("x", -5.0, 5.0);
-	parameter2 = create_numerical("y", -5.0, 5.0);
+	parameters[0] = parameter1 = create_numerical("x", -5.0, 5.0);
+	parameters[1] = parameter2 = create_numerical("y", -5.0, 5.0);
 
-	err        = ccs_create_configuration_space("2dplane", &cspace);
-	assert(err == CCS_RESULT_SUCCESS);
-	err = ccs_configuration_space_add_parameter(cspace, parameter1, NULL);
-	assert(err == CCS_RESULT_SUCCESS);
-	err = ccs_configuration_space_add_parameter(cspace, parameter2, NULL);
+	err                        = ccs_create_configuration_space(
+                "2dplane", 2, parameters, NULL, 0, NULL, NULL, &cspace);
 	assert(err == CCS_RESULT_SUCCESS);
 
 	parameter3 = create_numerical("z", -CCS_INFINITY, CCS_INFINITY);
 	err        = ccs_create_variable(parameter3, &expression);
 	assert(err == CCS_RESULT_SUCCESS);
+	otype = CCS_OBJECTIVE_TYPE_MINIMIZE;
 
-	err = ccs_create_objective_space("height", &ospace);
-	assert(err == CCS_RESULT_SUCCESS);
-	err = ccs_objective_space_add_parameter(ospace, parameter3);
-	assert(err == CCS_RESULT_SUCCESS);
-	err = ccs_objective_space_add_objective(
-		ospace, expression, CCS_OBJECTIVE_TYPE_MINIMIZE);
+	err   = ccs_create_objective_space(
+                "height", 1, &parameter3, 1, &expression, &otype, &ospace);
 	assert(err == CCS_RESULT_SUCCESS);
 
 	err = ccs_create_categorical_parameter(
 		"red knob", 2, knobs_values, 0, &feature);
 	assert(err == CCS_RESULT_SUCCESS);
 
-	err = ccs_create_features_space("knobs", &fspace);
-	assert(err == CCS_RESULT_SUCCESS);
-	err = ccs_features_space_add_parameter(fspace, feature);
+	err = ccs_create_feature_space("knobs", 1, &feature, &fspace);
 	assert(err == CCS_RESULT_SUCCESS);
 	err = ccs_create_features(fspace, 1, knobs_values, &features_on);
 	assert(err == CCS_RESULT_SUCCESS);
@@ -80,8 +74,8 @@ test()
 		err = ccs_features_tuner_ask(
 			tuner, features_on, 1, &configuration, NULL);
 		assert(err == CCS_RESULT_SUCCESS);
-		err = ccs_configuration_get_values(
-			configuration, 2, values, NULL);
+		err = ccs_binding_get_values(
+			(ccs_binding_t)configuration, 2, values, NULL);
 		assert(err == CCS_RESULT_SUCCESS);
 		res = ccs_float(
 			(values[0].value.f - 1) * (values[0].value.f - 1) +
@@ -105,8 +99,8 @@ test()
 		err = ccs_features_tuner_ask(
 			tuner, features_off, 1, &configuration, NULL);
 		assert(err == CCS_RESULT_SUCCESS);
-		err = ccs_configuration_get_values(
-			configuration, 2, values, NULL);
+		err = ccs_binding_get_values(
+			(ccs_binding_t)configuration, 2, values, NULL);
 		assert(err == CCS_RESULT_SUCCESS);
 		res = ccs_float(
 			(values[0].value.f - 1) * (values[0].value.f - 1) +
@@ -143,8 +137,8 @@ test()
 
 	for (size_t i = 0; i < 50; i++) {
 		ccs_datum_t res;
-		err = ccs_features_evaluation_get_objective_value(
-			history[i], 0, &res);
+		err = ccs_evaluation_binding_get_objective_value(
+			(ccs_evaluation_binding_t)history[i], 0, &res);
 		assert(err == CCS_RESULT_SUCCESS);
 		if (res.value.f < min_on.value.f)
 			min_on.value.f = res.value.f;
@@ -157,8 +151,8 @@ test()
 
 	for (size_t i = 0; i < 50; i++) {
 		ccs_datum_t res;
-		err = ccs_features_evaluation_get_objective_value(
-			history[i], 0, &res);
+		err = ccs_evaluation_binding_get_objective_value(
+			(ccs_evaluation_binding_t)history[i], 0, &res);
 		assert(err == CCS_RESULT_SUCCESS);
 		if (res.value.f < min_off.value.f)
 			min_off.value.f = res.value.f;
@@ -168,13 +162,15 @@ test()
 	err = ccs_features_tuner_get_optima(
 		tuner, features_on, 1, &evaluation, NULL);
 	assert(err == CCS_RESULT_SUCCESS);
-	err = ccs_features_evaluation_get_objective_value(evaluation, 0, &res);
+	err = ccs_evaluation_binding_get_objective_value(
+		(ccs_evaluation_binding_t)evaluation, 0, &res);
 	assert(res.value.f == min_on.value.f);
 
 	err = ccs_features_tuner_get_optima(
 		tuner, features_off, 1, &evaluation, NULL);
 	assert(err == CCS_RESULT_SUCCESS);
-	err = ccs_features_evaluation_get_objective_value(evaluation, 0, &res);
+	err = ccs_evaluation_binding_get_objective_value(
+		(ccs_evaluation_binding_t)evaluation, 0, &res);
 	assert(res.value.f == min_off.value.f);
 
 	/* Test (de)serialization */
@@ -244,15 +240,17 @@ test()
 }
 
 void
-test_evaluation_deserialize()
+test_evaluation_deserialize(void)
 {
 	ccs_parameter_t           parameter1, parameter2;
+	ccs_parameter_t           parameters[2];
 	ccs_parameter_t           parameter3;
 	ccs_parameter_t           feature;
 	ccs_configuration_space_t cspace;
-	ccs_features_space_t      fspace;
+	ccs_feature_space_t       fspace;
 	ccs_objective_space_t     ospace;
 	ccs_expression_t          expression;
+	ccs_objective_type_t      otype;
 	ccs_result_t              err;
 	ccs_configuration_t       configuration;
 	ccs_features_t            features_on;
@@ -264,37 +262,30 @@ test_evaluation_deserialize()
 	ccs_map_t                 map;
 	int                       cmp;
 
-	parameter1 = create_numerical("x", -5.0, 5.0);
-	parameter2 = create_numerical("y", -5.0, 5.0);
+	parameters[0] = parameter1 = create_numerical("x", -5.0, 5.0);
+	parameters[1] = parameter2 = create_numerical("y", -5.0, 5.0);
 
-	err        = ccs_create_configuration_space("2dplane", &cspace);
+	err                        = ccs_create_configuration_space(
+                "2dplane", 2, parameters, NULL, 0, NULL, NULL, &cspace);
 	assert(err == CCS_RESULT_SUCCESS);
-	err = ccs_configuration_space_add_parameter(cspace, parameter1, NULL);
-	assert(err == CCS_RESULT_SUCCESS);
-	err = ccs_configuration_space_add_parameter(cspace, parameter2, NULL);
-	assert(err == CCS_RESULT_SUCCESS);
-	err = ccs_configuration_space_sample(cspace, &configuration);
+	err = ccs_configuration_space_sample(
+		cspace, NULL, NULL, &configuration);
 	assert(err == CCS_RESULT_SUCCESS);
 
 	parameter3 = create_numerical("z", -CCS_INFINITY, CCS_INFINITY);
 	err        = ccs_create_variable(parameter3, &expression);
 	assert(err == CCS_RESULT_SUCCESS);
+	otype = CCS_OBJECTIVE_TYPE_MINIMIZE;
 
-	err = ccs_create_categorical_parameter(
-		"red knob", 2, knobs_values, 0, &feature);
+	err   = ccs_create_categorical_parameter(
+                "red knob", 2, knobs_values, 0, &feature);
 	assert(err == CCS_RESULT_SUCCESS);
 
-	err = ccs_create_features_space("knobs", &fspace);
-	assert(err == CCS_RESULT_SUCCESS);
-	err = ccs_features_space_add_parameter(fspace, feature);
+	err = ccs_create_feature_space("knobs", 1, &feature, &fspace);
 	assert(err == CCS_RESULT_SUCCESS);
 	err = ccs_create_features(fspace, 1, knobs_values, &features_on);
-	err = ccs_create_objective_space("height", &ospace);
-	assert(err == CCS_RESULT_SUCCESS);
-	err = ccs_objective_space_add_parameter(ospace, parameter3);
-	assert(err == CCS_RESULT_SUCCESS);
-	err = ccs_objective_space_add_objective(
-		ospace, expression, CCS_OBJECTIVE_TYPE_MINIMIZE);
+	err = ccs_create_objective_space(
+		"height", 1, &parameter3, 1, &expression, &otype, &ospace);
 	assert(err == CCS_RESULT_SUCCESS);
 
 	res = ccs_float(1.5);
@@ -362,7 +353,8 @@ test_evaluation_deserialize()
 		CCS_DESERIALIZE_OPTION_END);
 	assert(err == CCS_RESULT_SUCCESS);
 
-	err = ccs_features_evaluation_cmp(evaluation_ref, evaluation, &cmp);
+	err = ccs_binding_cmp(
+		(ccs_binding_t)evaluation_ref, (ccs_binding_t)evaluation, &cmp);
 	assert(err == CCS_RESULT_SUCCESS);
 	assert(!cmp);
 
@@ -396,7 +388,7 @@ test_evaluation_deserialize()
 }
 
 int
-main()
+main(void)
 {
 	ccs_init();
 	test();

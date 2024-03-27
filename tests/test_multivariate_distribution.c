@@ -88,7 +88,7 @@ compare_distribution(
 }
 
 void
-test_create_multivariate_distribution()
+test_create_multivariate_distribution(void)
 {
 	const size_t       num_distribs = NUM_DISTRIBS;
 	ccs_distribution_t distrib      = NULL;
@@ -150,7 +150,7 @@ test_create_multivariate_distribution()
 }
 
 void
-test_multivariate_distribution()
+test_multivariate_distribution(void)
 {
 	ccs_distribution_t distrib      = NULL, distribs[NUM_DISTRIBS];
 	ccs_rng_t          rng          = NULL;
@@ -201,7 +201,7 @@ test_multivariate_distribution()
 }
 
 void
-test_multivariate_distribution_strided_samples()
+test_multivariate_distribution_strided_samples(void)
 {
 	ccs_distribution_t distrib      = NULL, distribs[NUM_DISTRIBS];
 	ccs_rng_t          rng          = NULL;
@@ -253,7 +253,7 @@ test_multivariate_distribution_strided_samples()
 }
 
 void
-test_multivariate_distribution_soa_samples()
+test_multivariate_distribution_soa_samples(void)
 {
 	ccs_distribution_t distrib      = NULL, distribs[NUM_DISTRIBS];
 	ccs_rng_t          rng          = NULL;
@@ -305,7 +305,7 @@ test_multivariate_distribution_soa_samples()
 }
 
 void
-test_distribution_parameters_sample()
+test_distribution_parameters_sample(void)
 {
 	const size_t       num_distribs = NUM_DISTRIBS;
 	ccs_distribution_t distrib      = NULL, distribs[NUM_DISTRIBS];
@@ -378,7 +378,7 @@ test_distribution_parameters_sample()
 }
 
 void
-test_distribution_parameters_sample_oversampling()
+test_distribution_parameters_sample_oversampling(void)
 {
 	const size_t       num_distribs = NUM_DISTRIBS;
 	ccs_distribution_t distrib      = NULL, distribs[NUM_DISTRIBS];
@@ -451,7 +451,7 @@ test_distribution_parameters_sample_oversampling()
 }
 
 int
-main()
+main(void)
 {
 	ccs_init();
 	test_create_multivariate_distribution();

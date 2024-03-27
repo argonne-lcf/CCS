@@ -2,7 +2,7 @@
 #include <cconfigspace.h>
 
 void
-test_empty_float()
+test_empty_float(void)
 {
 	ccs_interval_t interval;
 	ccs_bool_t     empty;
@@ -45,7 +45,7 @@ test_empty_float()
 }
 
 void
-test_empty_int()
+test_empty_int(void)
 {
 	ccs_interval_t interval;
 	ccs_bool_t     empty;
@@ -88,7 +88,7 @@ test_empty_int()
 }
 
 void
-test_intersect_float()
+test_intersect_float(void)
 {
 	ccs_interval_t interval1, interval2, intersection;
 	ccs_bool_t     empty;
@@ -119,7 +119,7 @@ test_intersect_float()
 }
 
 void
-test_intersect_int()
+test_intersect_int(void)
 {
 	ccs_interval_t interval1, interval2, intersection;
 	ccs_bool_t     empty;
@@ -150,7 +150,7 @@ test_intersect_int()
 }
 
 void
-test_union_float()
+test_union_float(void)
 {
 	ccs_interval_t interval1, interval2, u;
 	ccs_bool_t     empty;
@@ -181,7 +181,7 @@ test_union_float()
 }
 
 void
-test_union_int()
+test_union_int(void)
 {
 	ccs_interval_t interval1, interval2, u;
 	ccs_bool_t     empty;
@@ -212,7 +212,7 @@ test_union_int()
 }
 
 void
-test_equal_float()
+test_equal_float(void)
 {
 	ccs_interval_t interval1, interval2;
 	ccs_bool_t     equal;
@@ -247,7 +247,7 @@ test_equal_float()
 }
 
 void
-test_equal_int()
+test_equal_int(void)
 {
 	ccs_interval_t interval1, interval2;
 	ccs_bool_t     equal;
@@ -288,7 +288,7 @@ test_equal_int()
 }
 
 void
-test_interval_include_float()
+test_interval_include_float(void)
 {
 	ccs_interval_t interval;
 
@@ -306,7 +306,7 @@ test_interval_include_float()
 }
 
 void
-test_interval_include_int()
+test_interval_include_int(void)
 {
 	ccs_interval_t interval;
 
@@ -324,7 +324,7 @@ test_interval_include_int()
 }
 
 int
-main()
+main(void)
 {
 	ccs_init();
 	test_empty_float();

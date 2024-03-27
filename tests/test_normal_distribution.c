@@ -59,7 +59,7 @@ compare_distribution(
 }
 
 static void
-test_create_normal_distribution()
+test_create_normal_distribution(void)
 {
 	ccs_distribution_t distrib = NULL;
 	ccs_result_t       err     = CCS_RESULT_SUCCESS;
@@ -105,7 +105,7 @@ test_create_normal_distribution()
 }
 
 static void
-test_create_normal_distribution_errors()
+test_create_normal_distribution_errors(void)
 {
 	ccs_distribution_t distrib = NULL;
 	ccs_result_t       err     = CCS_RESULT_SUCCESS;
@@ -152,7 +152,7 @@ to_log(ccs_numeric_t *values, size_t length)
 }
 
 static void
-test_normal_distribution_int()
+test_normal_distribution_int(void)
 {
 	ccs_distribution_t distrib     = NULL;
 	ccs_rng_t          rng         = NULL;
@@ -197,7 +197,7 @@ test_normal_distribution_int()
 }
 
 static void
-test_normal_distribution_float()
+test_normal_distribution_float(void)
 {
 	ccs_distribution_t distrib     = NULL;
 	ccs_rng_t          rng         = NULL;
@@ -241,7 +241,7 @@ test_normal_distribution_float()
 }
 
 static void
-test_normal_distribution_int_log()
+test_normal_distribution_int_log(void)
 {
 	ccs_distribution_t distrib     = NULL;
 	ccs_rng_t          rng         = NULL;
@@ -297,7 +297,7 @@ test_normal_distribution_int_log()
 }
 
 static void
-test_normal_distribution_float_log()
+test_normal_distribution_float_log(void)
 {
 	ccs_distribution_t distrib     = NULL;
 	ccs_rng_t          rng         = NULL;
@@ -342,7 +342,7 @@ test_normal_distribution_float_log()
 }
 
 static void
-test_normal_distribution_int_quantize()
+test_normal_distribution_int_quantize(void)
 {
 	ccs_distribution_t distrib     = NULL;
 	ccs_rng_t          rng         = NULL;
@@ -388,7 +388,7 @@ test_normal_distribution_int_quantize()
 }
 
 static void
-test_normal_distribution_float_quantize()
+test_normal_distribution_float_quantize(void)
 {
 	ccs_distribution_t distrib     = NULL;
 	ccs_rng_t          rng         = NULL;
@@ -432,7 +432,7 @@ test_normal_distribution_float_quantize()
 }
 
 static void
-test_normal_distribution_int_log_quantize()
+test_normal_distribution_int_log_quantize(void)
 {
 	ccs_distribution_t distrib     = NULL;
 	ccs_rng_t          rng         = NULL;
@@ -489,7 +489,7 @@ test_normal_distribution_int_log_quantize()
 }
 
 static void
-test_normal_distribution_float_log_quantize()
+test_normal_distribution_float_log_quantize(void)
 {
 	ccs_distribution_t distrib      = NULL;
 	ccs_rng_t          rng          = NULL;
@@ -546,7 +546,7 @@ test_normal_distribution_float_log_quantize()
 }
 
 static void
-test_normal_distribution_strided_samples()
+test_normal_distribution_strided_samples(void)
 {
 	ccs_distribution_t distrib1    = NULL;
 	ccs_distribution_t distrib2    = NULL;
@@ -602,7 +602,7 @@ test_normal_distribution_strided_samples()
 }
 
 static void
-test_normal_distribution_soa_samples()
+test_normal_distribution_soa_samples(void)
 {
 	ccs_distribution_t distrib     = NULL;
 	ccs_rng_t          rng         = NULL;
@@ -649,7 +649,7 @@ test_normal_distribution_soa_samples()
 }
 
 int
-main()
+main(void)
 {
 	ccs_init();
 	test_create_normal_distribution();

@@ -20,11 +20,13 @@ from .expression import *
 from .expression_parser import *
 from .context import *
 from .configuration_space import *
+from .distribution_space import *
 from .binding import *
 from .configuration import *
-from .features_space import *
+from .feature_space import *
 from .features import *
 from .objective_space import *
+from .evaluation_binding import *
 from .evaluation import *
 from .features_evaluation import *
 from .tuner import *

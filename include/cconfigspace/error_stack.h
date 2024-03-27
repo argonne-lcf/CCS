@@ -13,9 +13,11 @@ extern "C" {
 /**
  * Transfers ownership of thread error stack from CCS to the user.
  * @returns the thread specific error stack or NULL if none exist.
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_error_stack_t
-ccs_get_thread_error();
+ccs_get_thread_error(void);
 
 /**
  * Transfers ownership of error stack from the user to CCS.
@@ -24,6 +26,8 @@ ccs_get_thread_error();
  * @return #CCS_RESULT_SUCCESS on success
  * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p error_stack is not a valid
  * CCS error stack
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_set_thread_error(ccs_error_stack_t error_stack);
@@ -31,9 +35,11 @@ ccs_set_thread_error(ccs_error_stack_t error_stack);
 /**
  * Clears the error stack of the calling thread, releasing the current
  * error if it existed.
+ * @remarks
+ *   This function is thread-safe
  */
 extern void
-ccs_clear_thread_error();
+ccs_clear_thread_error(void);
 
 /**
  * An element of stack.
@@ -61,14 +67,14 @@ typedef struct ccs_error_stack_elem_s ccs_error_stack_elem_t;
  * @return #CCS_RESULT_SUCCESS on success
  * @return #CCS_RESULT_ERROR_OUT_OF_MEMORY if there was not enough memory to
  * allocate the error stack
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_create_thread_error(ccs_result_t error_code, const char *msg, ...);
 
 /**
- * Pushes a stack trace element on the thread error stack. A call to this
- * function may invalidate pointers obtained previously by
- * #ccs_error_stack_get_elems for this error stack.
+ * Pushes a stack trace element on the thread error stack.
  * @param[in] file the name of the file
  * @param[in] line the line number
  * @param[in] func the function name
@@ -77,6 +83,8 @@ ccs_create_thread_error(ccs_result_t error_code, const char *msg, ...);
  * error stack
  * @return #CCS_RESULT_ERROR_OUT_OF_MEMORY if there was not enough memory to
  * allocate new stack elements
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_thread_error_stack_push(const char *file, int line, const char *func);
@@ -92,6 +100,8 @@ ccs_thread_error_stack_push(const char *file, int line, const char *func);
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p error_stack_ret is NULL
  * @return #CCS_RESULT_ERROR_OUT_OF_MEMORY if there was not enough memory to
  * allocate the error stack
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_create_error_stack(
@@ -113,6 +123,8 @@ ccs_create_error_stack(
  * error stack
  * @return #CCS_RESULT_ERROR_OUT_OF_MEMORY if there was not enough memory to
  * allocate new stack elements
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_error_stack_push(
@@ -130,6 +142,8 @@ ccs_error_stack_push(
  * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p error_stack is not a valid CCS
  * error stack
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p message_ret is NULL
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_error_stack_get_message(
@@ -145,6 +159,8 @@ ccs_error_stack_get_message(
  * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p error_stack is not a valid CCS
  * error stack
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p error_code_ret is NULL
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_error_stack_get_code(
@@ -154,20 +170,29 @@ ccs_error_stack_get_code(
 /**
  * Retrieves the stack elements from an error stack.
  * @param[in] error_stack
+ * @param[in] num_elems the size of the \p elems array
+ * @param[out] elems an array of size \p num_elems to hold the returned
+ *                   stack elements, or NULL. If the array is too big,
+ *                   extra elements will be zeroed out
  * @param[out] num_elems_ret a pointer to a variable that will contain the
- *                           number of stack elements.
- * @param[out] elems a pointer to a variable that will point to the start of the
- *                   array of `*num_elems_ret` elements.
- * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p error_stack is not a valid CCS
- * error stack
- * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p num_elems_ret is NULL; or if \p
- * elems is NULL
+ *                           number of stack elements that are or would
+ *                           be returned. Can be NULL
+ * @return #CCS_RESULT_SUCCESS on success
+ * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p error_stack is not a
+ * valid CCS error stack
+ * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p elems is NULL and
+ * \p num_elems is greater than 0; or if \p elems is NULL and
+ * \p num_elems_ret is NULL; or if \p num_elems is less than the number
+ * of elements that would be returned
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_error_stack_get_elems(
-	ccs_error_stack_t        error_stack,
-	size_t                  *num_elems_ret,
-	ccs_error_stack_elem_t **elems);
+	ccs_error_stack_t       error_stack,
+	size_t                  num_elems,
+	ccs_error_stack_elem_t *elems,
+	size_t                 *num_elems_ret);
 
 #ifdef __cplusplus
 }

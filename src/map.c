@@ -40,7 +40,9 @@ _ccs_map_del(ccs_object_t o)
 	_ccs_map_data_t  *data    = (_ccs_map_data_t *)(m->data);
 	_ccs_map_datum_t *current = NULL, *tmp;
 	HASH_ITER(hh, data->map, current, tmp)
-	_ccs_map_remove(data, current);
+	{
+		_ccs_map_remove(data, current);
+	}
 	return CCS_RESULT_SUCCESS;
 }
 
@@ -104,18 +106,25 @@ _ccs_map_serialize_size(
 	size_t                          *cum_size,
 	_ccs_object_serialize_options_t *opts)
 {
+	ccs_result_t err = CCS_RESULT_SUCCESS;
+	CCS_OBJ_RDLOCK(object);
 	switch (format) {
 	case CCS_SERIALIZE_FORMAT_BINARY:
 		*cum_size += _ccs_serialize_bin_size_ccs_map((ccs_map_t)object);
 		break;
 	default:
-		CCS_RAISE(
-			CCS_RESULT_ERROR_INVALID_VALUE,
+		CCS_RAISE_ERR_GOTO(
+			err, CCS_RESULT_ERROR_INVALID_VALUE, end,
 			"Unsupported serialization format: %d", format);
 	}
-	CCS_VALIDATE(_ccs_object_serialize_user_data_size(
-		object, format, cum_size, opts));
-	return CCS_RESULT_SUCCESS;
+	CCS_VALIDATE_ERR_GOTO(
+		err,
+		_ccs_object_serialize_user_data_size(
+			object, format, cum_size, opts),
+		end);
+end:
+	CCS_OBJ_UNLOCK(object);
+	return err;
 }
 
 static ccs_result_t
@@ -126,19 +135,29 @@ _ccs_map_serialize(
 	char                           **buffer,
 	_ccs_object_serialize_options_t *opts)
 {
+	ccs_result_t err = CCS_RESULT_SUCCESS;
+	CCS_OBJ_RDLOCK(object);
 	switch (format) {
 	case CCS_SERIALIZE_FORMAT_BINARY:
-		CCS_VALIDATE(_ccs_serialize_bin_ccs_map(
-			(ccs_map_t)object, buffer_size, buffer));
+		CCS_VALIDATE_ERR_GOTO(
+			err,
+			_ccs_serialize_bin_ccs_map(
+				(ccs_map_t)object, buffer_size, buffer),
+			end);
 		break;
 	default:
-		CCS_RAISE(
-			CCS_RESULT_ERROR_INVALID_VALUE,
+		CCS_RAISE_ERR_GOTO(
+			err, CCS_RESULT_ERROR_INVALID_VALUE, end,
 			"Unsupported serialization format: %d", format);
 	}
-	CCS_VALIDATE(_ccs_object_serialize_user_data(
-		object, format, buffer_size, buffer, opts));
-	return CCS_RESULT_SUCCESS;
+	CCS_VALIDATE_ERR_GOTO(
+		err,
+		_ccs_object_serialize_user_data(
+			object, format, buffer_size, buffer, opts),
+		end);
+end:
+	CCS_OBJ_UNLOCK(object);
+	return err;
 }
 
 static _ccs_map_ops_t _ccs_map_ops = {
@@ -205,12 +224,13 @@ ccs_map_set(ccs_map_t map, ccs_datum_t key, ccs_datum_t value)
 	size_t            sz2       = 0;
 	_ccs_map_datum_t *old_entry = NULL;
 	_ccs_map_datum_t *entry     = NULL;
+	CCS_OBJ_WRLOCK(map);
 	HASH_FIND(hh, d->map, &key, sizeof(ccs_datum_t), old_entry);
 	if (old_entry)
 		if (!_datum_cmp(&value, &old_entry->value))
-			return CCS_RESULT_SUCCESS;
+			goto end;
 
-	CCS_VALIDATE_ERR_GOTO(res, _ccs_map_check_datum(key, &sz, &sz1), err);
+	CCS_VALIDATE_ERR_GOTO(res, _ccs_map_check_datum(key, &sz, &sz1), end);
 	CCS_VALIDATE_ERR_GOTO(
 		res, _ccs_map_check_datum(value, &sz, &sz2), err_o1);
 
@@ -226,7 +246,7 @@ ccs_map_set(ccs_map_t map, ccs_datum_t key, ccs_datum_t value)
 	if (old_entry)
 		_ccs_map_remove(d, old_entry);
 	HASH_ADD(hh, d->map, key, sizeof(ccs_datum_t), entry);
-	return CCS_RESULT_SUCCESS;
+	goto end;
 err_mem:
 	free(entry);
 err_o2:
@@ -237,7 +257,8 @@ err_o1:
 	if (key.type == CCS_DATA_TYPE_OBJECT &&
 	    !(key.flags & CCS_DATUM_FLAG_ID))
 		ccs_release_object(key.value.o);
-err:
+end:
+	CCS_OBJ_UNLOCK(map);
 	return res;
 }
 
@@ -247,8 +268,10 @@ ccs_map_exist(ccs_map_t map, ccs_datum_t key, ccs_bool_t *exist)
 	CCS_CHECK_OBJ(map, CCS_OBJECT_TYPE_MAP);
 	CCS_CHECK_PTR(exist);
 	_ccs_map_datum_t *entry;
+	CCS_OBJ_RDLOCK(map);
 	HASH_FIND(hh, map->data->map, &key, sizeof(ccs_datum_t), entry);
 	*exist = (entry != NULL) ? CCS_TRUE : CCS_FALSE;
+	CCS_OBJ_UNLOCK(map);
 	return CCS_RESULT_SUCCESS;
 }
 
@@ -258,11 +281,13 @@ ccs_map_get(ccs_map_t map, ccs_datum_t key, ccs_datum_t *value_ret)
 	CCS_CHECK_OBJ(map, CCS_OBJECT_TYPE_MAP);
 	CCS_CHECK_PTR(value_ret);
 	_ccs_map_datum_t *entry;
+	CCS_OBJ_RDLOCK(map);
 	HASH_FIND(hh, map->data->map, &key, sizeof(ccs_datum_t), entry);
 	if (entry)
 		*value_ret = entry->value;
 	else
 		*value_ret = ccs_none;
+	CCS_OBJ_UNLOCK(map);
 	return CCS_RESULT_SUCCESS;
 }
 
@@ -271,10 +296,14 @@ ccs_map_del(ccs_map_t map, ccs_datum_t key)
 {
 	CCS_CHECK_OBJ(map, CCS_OBJECT_TYPE_MAP);
 	_ccs_map_datum_t *entry;
+	ccs_result_t      err = CCS_RESULT_SUCCESS;
+	CCS_OBJ_WRLOCK(map);
 	HASH_FIND(hh, map->data->map, &key, sizeof(ccs_datum_t), entry);
-	CCS_REFUTE(!entry, CCS_RESULT_ERROR_INVALID_VALUE);
+	CCS_REFUTE_ERR_GOTO(err, !entry, CCS_RESULT_ERROR_INVALID_VALUE, end);
 	_ccs_map_remove(map->data, entry);
-	return CCS_RESULT_SUCCESS;
+end:
+	CCS_OBJ_UNLOCK(map);
+	return err;
 }
 
 ccs_result_t
@@ -287,20 +316,27 @@ ccs_map_get_keys(
 	CCS_CHECK_OBJ(map, CCS_OBJECT_TYPE_MAP);
 	CCS_CHECK_ARY(num_keys, keys);
 	CCS_REFUTE(!keys && !num_keys_ret, CCS_RESULT_ERROR_INVALID_VALUE);
-	size_t num_entries = HASH_COUNT(map->data->map);
+	CCS_OBJ_RDLOCK(map);
+	ccs_result_t err         = CCS_RESULT_SUCCESS;
+	size_t       num_entries = HASH_COUNT(map->data->map);
 	if (keys) {
-		CCS_REFUTE(
-			num_keys < num_entries, CCS_RESULT_ERROR_INVALID_VALUE);
+		CCS_REFUTE_ERR_GOTO(
+			err, num_keys < num_entries,
+			CCS_RESULT_ERROR_INVALID_VALUE, end);
 		_ccs_map_datum_t *current = NULL, *tmp;
 		size_t            i       = 0;
 		HASH_ITER(hh, map->data->map, current, tmp)
-		keys[i++] = current->value;
+		{
+			keys[i++] = current->value;
+		}
 		for (i = num_entries; i < num_keys; i++)
 			keys[i] = ccs_none;
 	}
 	if (num_keys_ret)
 		*num_keys_ret = num_entries;
-	return CCS_RESULT_SUCCESS;
+end:
+	CCS_OBJ_UNLOCK(map);
+	return err;
 }
 
 ccs_result_t
@@ -313,21 +349,27 @@ ccs_map_get_values(
 	CCS_CHECK_OBJ(map, CCS_OBJECT_TYPE_MAP);
 	CCS_CHECK_ARY(num_values, values);
 	CCS_REFUTE(!values && !num_values_ret, CCS_RESULT_ERROR_INVALID_VALUE);
-	size_t num_entries = HASH_COUNT(map->data->map);
+	CCS_OBJ_RDLOCK(map);
+	ccs_result_t err         = CCS_RESULT_SUCCESS;
+	size_t       num_entries = HASH_COUNT(map->data->map);
 	if (values) {
-		CCS_REFUTE(
-			num_values < num_entries,
-			CCS_RESULT_ERROR_INVALID_VALUE);
+		CCS_REFUTE_ERR_GOTO(
+			err, num_values < num_entries,
+			CCS_RESULT_ERROR_INVALID_VALUE, end);
 		_ccs_map_datum_t *current = NULL, *tmp;
 		size_t            i       = 0;
 		HASH_ITER(hh, map->data->map, current, tmp)
-		values[i++] = current->value;
+		{
+			values[i++] = current->value;
+		}
 		for (i = num_entries; i < num_values; i++)
 			values[i] = ccs_none;
 	}
 	if (num_values_ret)
 		*num_values_ret = num_entries;
-	return CCS_RESULT_SUCCESS;
+end:
+	CCS_OBJ_UNLOCK(map);
+	return err;
 }
 
 ccs_result_t
@@ -342,11 +384,13 @@ ccs_map_get_pairs(
 	CCS_CHECK_ARY(num_pairs, keys);
 	CCS_CHECK_ARY(num_pairs, values);
 	CCS_REFUTE(!keys && !num_pairs_ret, CCS_RESULT_ERROR_INVALID_VALUE);
-	size_t num_entries = HASH_COUNT(map->data->map);
+	CCS_OBJ_RDLOCK(map);
+	ccs_result_t err         = CCS_RESULT_SUCCESS;
+	size_t       num_entries = HASH_COUNT(map->data->map);
 	if (keys) {
-		CCS_REFUTE(
-			num_pairs < num_entries,
-			CCS_RESULT_ERROR_INVALID_VALUE);
+		CCS_REFUTE_ERR_GOTO(
+			err, num_pairs < num_entries,
+			CCS_RESULT_ERROR_INVALID_VALUE, end);
 		_ccs_map_datum_t *current = NULL, *tmp;
 		size_t            i       = 0;
 		HASH_ITER(hh, map->data->map, current, tmp)
@@ -361,7 +405,9 @@ ccs_map_get_pairs(
 	}
 	if (num_pairs_ret)
 		*num_pairs_ret = num_entries;
-	return CCS_RESULT_SUCCESS;
+end:
+	CCS_OBJ_UNLOCK(map);
+	return err;
 }
 
 ccs_result_t
@@ -369,7 +415,11 @@ ccs_map_clear(ccs_map_t map)
 {
 	CCS_CHECK_OBJ(map, CCS_OBJECT_TYPE_MAP);
 	_ccs_map_datum_t *current = NULL, *tmp;
+	CCS_OBJ_WRLOCK(map);
 	HASH_ITER(hh, map->data->map, current, tmp)
-	_ccs_map_remove(map->data, current);
+	{
+		_ccs_map_remove(map->data, current);
+	}
+	CCS_OBJ_UNLOCK(map);
 	return CCS_RESULT_SUCCESS;
 }

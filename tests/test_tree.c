@@ -32,7 +32,7 @@ check_samples(
 }
 
 void
-test_tree()
+test_tree(void)
 {
 	ccs_tree_t  root, child, grand_child, parent, node, children[4];
 	ccs_rng_t   rng;
@@ -282,7 +282,7 @@ test_tree()
 }
 
 int
-main()
+main(void)
 {
 	ccs_init();
 	test_tree();

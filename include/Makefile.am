@@ -9,13 +9,15 @@ include_ccs_HEADERS = \
 	cconfigspace/interval.h \
 	cconfigspace/context.h \
 	cconfigspace/configuration_space.h \
-	cconfigspace/features_space.h \
+	cconfigspace/distribution_space.h \
+	cconfigspace/feature_space.h \
 	cconfigspace/parameter.h \
 	cconfigspace/expression.h \
 	cconfigspace/binding.h \
 	cconfigspace/configuration.h \
 	cconfigspace/features.h \
 	cconfigspace/objective_space.h \
+	cconfigspace/evaluation_binding.h \
 	cconfigspace/evaluation.h \
 	cconfigspace/features_evaluation.h \
 	cconfigspace/tuner.h \

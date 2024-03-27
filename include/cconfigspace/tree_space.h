@@ -47,6 +47,8 @@ typedef enum ccs_tree_space_type_e ccs_tree_space_type_t;
  * tree_space_ret is NULL
  * @return #CCS_RESULT_ERROR_OUT_OF_MEMORY if there was a lack of memory to
  * allocate the new tree space
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_create_static_tree_space(
@@ -124,6 +126,8 @@ typedef struct ccs_dynamic_tree_space_vector_s ccs_dynamic_tree_space_vector_t;
  * tree_space_ret is NULL; or if any non optional interface pointer is NULL
  * @return #CCS_RESULT_ERROR_OUT_OF_MEMORY if there was a lack of memory to
  * allocate the new tree space
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_create_dynamic_tree_space(
@@ -142,6 +146,8 @@ ccs_create_dynamic_tree_space(
  * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p tree_space is not a valid CCS
  * tree space
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p type_ret is NULL
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_tree_space_get_type(
@@ -157,6 +163,8 @@ ccs_tree_space_get_type(
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p name_ret is NULL
  * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p tuner is not a valid CCS tree
  * space
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_tree_space_get_name(ccs_tree_space_t tree_space, const char **name_ret);
@@ -168,6 +176,8 @@ ccs_tree_space_get_name(ccs_tree_space_t tree_space, const char **name_ret);
  * @return #CCS_RESULT_SUCCESS on success
  * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p tree_space is not a valid CCS
  * tree space; or \p rng is not a valid CCS rng
+ * @remarks
+ *   This function is NOT thread-safe
  */
 extern ccs_result_t
 ccs_tree_space_set_rng(ccs_tree_space_t tree_space, ccs_rng_t rng);
@@ -180,6 +190,8 @@ ccs_tree_space_set_rng(ccs_tree_space_t tree_space, ccs_rng_t rng);
  * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p tree_space is not a valid CCS
  * tree space
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p rng_ret is NULL
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_tree_space_get_rng(ccs_tree_space_t tree_space, ccs_rng_t *rng_ret);
@@ -192,6 +204,8 @@ ccs_tree_space_get_rng(ccs_tree_space_t tree_space, ccs_rng_t *rng_ret);
  * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p tree_space is not a valid CCS
  * tree space
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p rng_ret is NULL
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_tree_space_get_tree(ccs_tree_space_t tree_space, ccs_tree_t *tree_ret);
@@ -211,6 +225,9 @@ ccs_tree_space_get_tree(ccs_tree_space_t tree_space, ccs_tree_t *tree_ret);
  * @return #CCS_RESULT_ERROR_INVALID_TREE if the position does not define a
  * valid position in the tree space, or if this position is undefined in a
  * static tree space.
+ * @remarks
+ *   This function is NOT thread-safe for dynamic tree spaces as it can
+ *   instanciate new children
  */
 extern ccs_result_t
 ccs_tree_space_get_node_at_position(
@@ -237,6 +254,9 @@ ccs_tree_space_get_node_at_position(
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p values is NULL; if \p
  * num_values is less than \p position_size + 1; or if \p position is NULL and
  * \p position_size is greater than 0
+ * @remarks
+ *   This function is NOT thread-safe for dynamic tree spaces as it can
+ *   instanciate new children
  */
 extern ccs_result_t
 ccs_tree_space_get_values_at_position(
@@ -262,6 +282,9 @@ ccs_tree_space_get_values_at_position(
  * @return #CCS_RESULT_ERROR_INVALID_TREE if the position does not define a
  * valid position in the tree space, or if this position is undefined in a
  * static tree space.
+ * @remarks
+ *   This function is NOT thread-safe for dynamic tree spaces as it can
+ *   instanciate new children
  */
 extern ccs_result_t
 ccs_tree_space_check_position(
@@ -281,6 +304,9 @@ ccs_tree_space_check_position(
  * tree space; or if \p configuration is not a valid CCS tree configuration
  * @return #CCS_RESULT_ERROR_INVALID_CONFIGURATION if \p configuration is not
  * associated to \p tree_space
+ * @remarks
+ *   This function is NOT thread-safe for dynamic tree spaces as it can
+ *   instanciate new children
  */
 extern ccs_result_t
 ccs_tree_space_check_configuration(
@@ -301,6 +327,8 @@ ccs_tree_space_check_configuration(
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if configuration_ret is NULL
  * @return #CCS_RESULT_ERROR_OUT_OF_MEMORY if there was not enough memory to
  * allocate the new configuration
+ * @remarks
+ *   This function is NOT thread-safe
  */
 extern ccs_result_t
 ccs_tree_space_sample(
@@ -323,6 +351,8 @@ ccs_tree_space_sample(
  * num_configurations is greater than 0
  * @return #CCS_RESULT_ERROR_OUT_OF_MEMORY if there was not enough memory to
  * allocate the new configurations
+ * @remarks
+ *   This function is NOT thread-safe
  */
 extern ccs_result_t
 ccs_tree_space_samples(
@@ -340,6 +370,8 @@ ccs_tree_space_samples(
  * @return #CCS_RESULT_ERROR_INVALID_TREE_SPACE if \p tree space is not a
  * dynamic tree space
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p tree_space_data_ret is NULL
+ * @remarks
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_dynamic_tree_space_get_tree_space_data(

@@ -9,8 +9,8 @@ struct _ccs_expression_ops_s {
 
 	ccs_result_t (*eval)(
 		_ccs_expression_data_t *data,
-		ccs_context_t           context,
-		ccs_datum_t            *values,
+		size_t                  num_bindings,
+		ccs_binding_t          *bindings,
 		ccs_datum_t            *result);
 };
 typedef struct _ccs_expression_ops_s _ccs_expression_ops_t;

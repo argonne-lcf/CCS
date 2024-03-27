@@ -162,8 +162,8 @@ _ccs_tuner_random_ask(
 		return CCS_RESULT_SUCCESS;
 	}
 	CCS_VALIDATE(ccs_configuration_space_samples(
-		d->common_data.configuration_space, num_configurations,
-		configurations));
+		d->common_data.configuration_space, NULL, NULL,
+		num_configurations, configurations));
 	if (num_configurations_ret)
 		*num_configurations_ret = num_configurations;
 	return CCS_RESULT_SUCCESS;
@@ -187,8 +187,8 @@ _ccs_tuner_random_tell(
 	ccs_result_t              err;
 	for (size_t i = 0; i < num_evaluations; i++) {
 		ccs_evaluation_result_t result;
-		CCS_VALIDATE(
-			ccs_evaluation_get_result(evaluations[i], &result));
+		CCS_VALIDATE(ccs_evaluation_binding_get_result(
+			(ccs_evaluation_binding_t)evaluations[i], &result));
 		if (!result) {
 			int       discard = 0;
 			UT_array *tmp;
@@ -211,8 +211,11 @@ _ccs_tuner_random_tell(
 					d->old_optima, eval))) {
 				if (!discard) {
 					ccs_comparison_t cmp;
-					err = ccs_evaluation_compare(
-						evaluations[i], *eval, &cmp);
+					err = ccs_evaluation_binding_compare(
+						(ccs_evaluation_binding_t)
+							evaluations[i],
+						(ccs_evaluation_binding_t)*eval,
+						&cmp);
 					if (err)
 						discard = 1;
 					else
@@ -393,6 +396,7 @@ arrays:
 		utarray_free(data->optima);
 	if (data->old_optima)
 		utarray_free(data->old_optima);
+	_ccs_object_deinit(&(tun->obj));
 	ccs_release_object(objective_space);
 errconfigs:
 	ccs_release_object(configuration_space);
