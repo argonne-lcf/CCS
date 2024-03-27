@@ -243,7 +243,7 @@ _ccs_do_nothing(void)
 			 ((_ccs_object_template_t *)(c))->obj.type !=          \
 				 CCS_OBJECT_TYPE_OBJECTIVE_SPACE &&            \
 			 ((_ccs_object_template_t *)(c))->obj.type !=          \
-				 CCS_OBJECT_TYPE_FEATURES_SPACE),              \
+				 CCS_OBJECT_TYPE_FEATURE_SPACE),               \
 		CCS_RESULT_ERROR_INVALID_OBJECT,                               \
 		"Invalid CCS context '%s' == %p supplied", #c, c)
 

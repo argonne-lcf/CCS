@@ -100,7 +100,7 @@ module CCS
   typedef :ccs_object_t, :ccs_configuration_space_t
   typedef :ccs_object_t, :ccs_binding_t
   typedef :ccs_object_t, :ccs_configuration_t
-  typedef :ccs_object_t, :ccs_features_space_t
+  typedef :ccs_object_t, :ccs_feature_space_t
   typedef :ccs_object_t, :ccs_features_t
   typedef :ccs_object_t, :ccs_objective_space_t
   typedef :ccs_object_t, :ccs_evaluation_binding_t
@@ -126,7 +126,7 @@ module CCS
     alias read_ccs_configuration_space_t read_ccs_object_t
     alias read_ccs_binding_t read_ccs_object_t
     alias read_ccs_configuration_t read_ccs_object_t
-    alias read_ccs_features_space_t read_ccs_object_t
+    alias read_ccs_feature_space_t read_ccs_object_t
     alias read_ccs_features_t read_ccs_object_t
     alias read_ccs_objective_space_t read_ccs_object_t
     alias read_ccs_evaluation_binding_t read_ccs_object_t
@@ -153,7 +153,7 @@ module CCS
     :CCS_OBJECT_TYPE_OBJECTIVE_SPACE,
     :CCS_OBJECT_TYPE_EVALUATION,
     :CCS_OBJECT_TYPE_TUNER,
-    :CCS_OBJECT_TYPE_FEATURES_SPACE,
+    :CCS_OBJECT_TYPE_FEATURE_SPACE,
     :CCS_OBJECT_TYPE_FEATURES,
     :CCS_OBJECT_TYPE_FEATURES_EVALUATION,
     :CCS_OBJECT_TYPE_FEATURES_TUNER,
@@ -580,7 +580,7 @@ module CCS
         CCS_OBJECT_TYPE_EXPRESSION: CCS::Expression,
         CCS_OBJECT_TYPE_CONFIGURATION_SPACE: CCS::ConfigurationSpace,
         CCS_OBJECT_TYPE_CONFIGURATION: CCS::Configuration,
-        CCS_OBJECT_TYPE_FEATURES_SPACE: CCS::FeaturesSpace,
+        CCS_OBJECT_TYPE_FEATURE_SPACE: CCS::FeatureSpace,
         CCS_OBJECT_TYPE_FEATURES: CCS::Features,
         CCS_OBJECT_TYPE_OBJECTIVE_SPACE: CCS::ObjectiveSpace,
         CCS_OBJECT_TYPE_EVALUATION: CCS::Evaluation,

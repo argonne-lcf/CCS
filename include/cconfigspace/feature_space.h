@@ -1,44 +1,44 @@
-#ifndef _CCS_FEATURES_SPACE
-#define _CCS_FEATURES_SPACE
+#ifndef _CCS_FEATURE_SPACE
+#define _CCS_FEATURE_SPACE
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 /**
- * @file features_space.h
- * A features space is a context (see context.h) defining a set of
- * parameters.
+ * @file feature_space.h
+ * A feature space is a context (see context.h) defining a set of
+ * features represented using CCS parameters (see parameter.h).
  */
 
 /**
- * Create a new features space.
+ * Create a new feature space.
  * @param[in] name pointer to a string that will be copied internally
- * @param[out] features_space_ret a pointer to the variable that will hold
- *                                     the newly created features space
+ * @param[out] feature_space_ret a pointer to the variable that will hold
+ *                                     the newly created feature space
  * @return #CCS_RESULT_SUCCESS on success
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p name is NULL; or if \p
- * features_space_ret is NULL; or if \p parameters is NULL; or if \p
+ * feature_space_ret is NULL; or if \p parameters is NULL; or if \p
  * num_parameters is NULL
  * @return #CCS_RESULT_ERROR_INVALID_OBJECT if a parameter is not a valid CCS
  * parameter
  * @return #CCS_RESULT_ERROR_INVALID_PARAMETER if a parameter appears more than
  * once in \p parameters; or if two or more parameters share the same name
  * @return #CCS_RESULT_ERROR_OUT_OF_MEMORY if there was a lack of memory to
- * allocate the new features space
+ * allocate the new feature space
  * @remarks
  *   This function is thread-safe
  */
 extern ccs_result_t
-ccs_create_features_space(
-	const char           *name,
-	size_t                num_parameters,
-	ccs_parameter_t      *parameters,
-	ccs_features_space_t *features_space_ret);
+ccs_create_feature_space(
+	const char          *name,
+	size_t               num_parameters,
+	ccs_parameter_t     *parameters,
+	ccs_feature_space_t *feature_space_ret);
 
 /**
- * Check that a features is a valid in a features space.
- * @param[in] features_space
+ * Check that a features is a valid in a feature space.
+ * @param[in] feature_space
  * @param[in] features
  * @param[out] is_valid_ret a pointer to a variable that will hold the result
  *                          of the check. Result will be #CCS_TRUE if the
@@ -46,22 +46,22 @@ ccs_create_features_space(
  *                          an parameter value is not a valid value
  *                          for this parameter;
  * @return #CCS_RESULT_SUCCESS on success
- * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p features_space is not a valid
- * CCS features space; or if \p features is not a valid CCS features
+ * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p feature_space is not a valid
+ * CCS feature space; or if \p features is not a valid CCS features
  * @return #CCS_RESULT_ERROR_INVALID_FEATURES if \p features is not associated
- * to the features space; or if the number of values contained in \p features is
- * not equal to the number of parameters in the features space
+ * to the feature space; or if the number of values contained in \p features is
+ * not equal to the number of parameters in the feature space
  * @remarks
  *   This function is thread-safe
  */
 extern ccs_result_t
-ccs_features_space_check_features(
-	ccs_features_space_t features_space,
-	ccs_features_t       features,
-	ccs_bool_t          *is_valid_ret);
+ccs_feature_space_check_features(
+	ccs_feature_space_t feature_space,
+	ccs_features_t      features,
+	ccs_bool_t         *is_valid_ret);
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif //_CCS_FEATURES_SPACE
+#endif //_CCS_FEATURE_SPACE

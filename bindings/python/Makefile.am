@@ -2,7 +2,7 @@ EXTRA_DIST = \
 	cconfigspace/rng.py \
 	cconfigspace/context.py \
 	cconfigspace/parameter.py \
-	cconfigspace/features_space.py \
+	cconfigspace/feature_space.py \
 	cconfigspace/distribution.py \
 	cconfigspace/map.py \
 	cconfigspace/expression_parser.py \
@@ -43,7 +43,7 @@ EXTRA_DIST = \
 	test/test_features_tuner.py \
 	test/test_objective_space.py \
 	test/test_configuration_space.py \
-	test/test_features_space.py \
+	test/test_feature_space.py \
 	setup.py
 
 if ISMACOS

@@ -18,13 +18,13 @@ class CConfigSpaceTestFeaturesTuner < Minitest::Test
     os = CCS::ObjectiveSpace::new(name: "ospace", parameters: [v1, v2], objectives: [e1, e2])
 
     f1 = CCS::CategoricalParameter::new(values: [true, false])
-    fs = CCS::FeaturesSpace::new(name: "fspace", parameters: [f1])
+    fs = CCS::FeatureSpace::new(name: "fspace", parameters: [f1])
     [cs, fs, os]
   end
 
   def test_create_random
     cs, fs, os = create_tuning_problem
-    t = CCS::RandomFeaturesTuner::new(name: "tuner", configuration_space: cs, features_space: fs, objective_space: os)
+    t = CCS::RandomFeaturesTuner::new(name: "tuner", configuration_space: cs, feature_space: fs, objective_space: os)
     t2 = CCS::Object::from_handle(t)
     assert_equal( t.class, t2.class)
     assert_equal( "tuner", t.name )
@@ -32,8 +32,8 @@ class CConfigSpaceTestFeaturesTuner < Minitest::Test
     func = lambda { |(x, y, z)|
       [(x-2)**2, Math.sin(z+y)]
     }
-    features_on = CCS::Features.new(features_space: fs, values: [true])
-    features_off = CCS::Features.new(features_space: fs, values: [false])
+    features_on = CCS::Features.new(feature_space: fs, values: [true])
+    features_off = CCS::Features.new(feature_space: fs, values: [false])
     evals = t.ask(features_on, 50).collect { |c|
       CCS::FeaturesEvaluation::new(objective_space: os, configuration: c, features: features_on, values: func[c.values])
     }
@@ -127,7 +127,7 @@ class CConfigSpaceTestFeaturesTuner < Minitest::Test
       end
     }
     cs, fs, os = create_tuning_problem
-    t = CCS::UserDefinedFeaturesTuner::new(name: "tuner", configuration_space: cs, features_space: fs, objective_space: os, del: del, ask: ask, tell: tell, get_optima: get_optima, get_history: get_history, suggest: suggest, tuner_data: TunerData.new)
+    t = CCS::UserDefinedFeaturesTuner::new(name: "tuner", configuration_space: cs, feature_space: fs, objective_space: os, del: del, ask: ask, tell: tell, get_optima: get_optima, get_history: get_history, suggest: suggest, tuner_data: TunerData.new)
     t2 = CCS::Object::from_handle(t)
     assert_equal( t.class, t2.class)
     assert_equal( "tuner", t.name )
@@ -135,8 +135,8 @@ class CConfigSpaceTestFeaturesTuner < Minitest::Test
     func = lambda { |(x, y, z)|
       [(x-2)**2, Math.sin(z+y)]
     }
-    features_on = CCS::Features.new(features_space: fs, values: [true])
-    features_off = CCS::Features.new(features_space: fs, values: [false])
+    features_on = CCS::Features.new(feature_space: fs, values: [true])
+    features_off = CCS::Features.new(feature_space: fs, values: [false])
     evals = t.ask(features_on, 50).collect { |c|
       CCS::FeaturesEvaluation::new(objective_space: os, configuration: c, features: features_on, values: func[c.values])
     }

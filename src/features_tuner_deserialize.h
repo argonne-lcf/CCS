@@ -3,7 +3,7 @@
 #include "features_tuner_internal.h"
 #include "configuration_space_deserialize.h"
 #include "objective_space_deserialize.h"
-#include "features_space_deserialize.h"
+#include "feature_space_deserialize.h"
 #include "features_evaluation_deserialize.h"
 
 struct _ccs_random_features_tuner_data_mock_s {
@@ -34,8 +34,8 @@ _ccs_deserialize_bin_ccs_features_tuner_common_data(
 	CCS_VALIDATE(_ccs_objective_space_deserialize(
 		&data->objective_space, CCS_SERIALIZE_FORMAT_BINARY, version,
 		buffer_size, buffer, opts));
-	CCS_VALIDATE(_ccs_features_space_deserialize(
-		&data->features_space, CCS_SERIALIZE_FORMAT_BINARY, version,
+	CCS_VALIDATE(_ccs_feature_space_deserialize(
+		&data->feature_space, CCS_SERIALIZE_FORMAT_BINARY, version,
 		buffer_size, buffer, opts));
 	return CCS_RESULT_SUCCESS;
 }
@@ -131,7 +131,7 @@ _ccs_deserialize_bin_random_features_tuner(
 		ccs_create_random_features_tuner(
 			data.common_data.name,
 			data.common_data.configuration_space,
-			data.common_data.features_space,
+			data.common_data.feature_space,
 			data.common_data.objective_space, features_tuner_ret),
 		features_evaluations);
 	odata = (_ccs_random_features_tuner_data_clone_t
@@ -152,8 +152,8 @@ end:
 		ccs_release_object(data.common_data.configuration_space);
 	if (data.common_data.objective_space)
 		ccs_release_object(data.common_data.objective_space);
-	if (data.common_data.features_space)
-		ccs_release_object(data.common_data.features_space);
+	if (data.common_data.feature_space)
+		ccs_release_object(data.common_data.feature_space);
 	if (data.history)
 		free(data.history);
 	return res;
@@ -211,7 +211,7 @@ _ccs_deserialize_bin_user_defined_features_tuner(
 		ccs_create_user_defined_features_tuner(
 			data.base_data.common_data.name,
 			data.base_data.common_data.configuration_space,
-			data.base_data.common_data.features_space,
+			data.base_data.common_data.feature_space,
 			data.base_data.common_data.objective_space, vector,
 			opts->data, features_tuner_ret),
 		evaluations);
@@ -247,8 +247,8 @@ end:
 			data.base_data.common_data.configuration_space);
 	if (data.base_data.common_data.objective_space)
 		ccs_release_object(data.base_data.common_data.objective_space);
-	if (data.base_data.common_data.features_space)
-		ccs_release_object(data.base_data.common_data.features_space);
+	if (data.base_data.common_data.feature_space)
+		ccs_release_object(data.base_data.common_data.feature_space);
 	if (data.base_data.history)
 		free(data.base_data.history);
 	return res;

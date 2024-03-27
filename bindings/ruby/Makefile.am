@@ -10,7 +10,7 @@ EXTRA_DIST = \
 	lib/cconfigspace/tree_tuner.rb \
 	lib/cconfigspace/binding.rb \
 	lib/cconfigspace/tree_space.rb \
-	lib/cconfigspace/features_space.rb \
+	lib/cconfigspace/feature_space.rb \
 	lib/cconfigspace/base.rb \
 	lib/cconfigspace/configuration_space.rb \
 	lib/cconfigspace/distribution_space.rb \
@@ -28,7 +28,7 @@ EXTRA_DIST = \
 	lib/cconfigspace/error_stack.rb \
 	lib/cconfigspace/tree_configuration.rb \
 	lib/cconfigspace/context.rb \
-	test/test_features_space.rb \
+	test/test_feature_space.rb \
 	test/test_expression.rb \
 	test/test_tree_evaluation.rb \
 	test/test_interval.rb \

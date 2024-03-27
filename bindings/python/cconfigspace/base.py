@@ -31,7 +31,7 @@ ccs_distribution_space  = ccs_object
 ccs_configuration_space = ccs_object
 ccs_binding             = ccs_object
 ccs_configuration       = ccs_object
-ccs_features_space      = ccs_object
+ccs_feature_space       = ccs_object
 ccs_features            = ccs_object
 ccs_objective_space     = ccs_object
 ccs_evaluation_binding  = ccs_object
@@ -146,7 +146,7 @@ class ObjectType(CEnumeration):
     'OBJECTIVE_SPACE',
     'EVALUATION',
     'TUNER',
-    'FEATURES_SPACE',
+    'FEATURE_SPACE',
     'FEATURES',
     'FEATURES_EVALUATION',
     'FEATURES_TUNER',
@@ -754,7 +754,7 @@ from .expression import Expression
 from .configuration_space import ConfigurationSpace
 from .distribution_space import DistributionSpace
 from .configuration import Configuration
-from .features_space import FeaturesSpace
+from .feature_space import FeatureSpace
 from .features import Features
 from .objective_space import ObjectiveSpace
 from .evaluation import Evaluation
@@ -776,7 +776,7 @@ setattr(Object, 'CLASS_MAP', {
   ObjectType.EXPRESSION: Expression,
   ObjectType.CONFIGURATION_SPACE: ConfigurationSpace,
   ObjectType.CONFIGURATION: Configuration,
-  ObjectType.FEATURES_SPACE: ConfigurationSpace,
+  ObjectType.FEATURE_SPACE: FeatureSpace,
   ObjectType.FEATURES: Features,
   ObjectType.OBJECTIVE_SPACE: ObjectiveSpace,
   ObjectType.EVALUATION: Evaluation,

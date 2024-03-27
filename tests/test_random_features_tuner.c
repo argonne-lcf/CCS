@@ -23,7 +23,7 @@ test(void)
 	ccs_parameter_t           parameter3;
 	ccs_parameter_t           feature;
 	ccs_configuration_space_t cspace;
-	ccs_features_space_t      fspace;
+	ccs_feature_space_t       fspace;
 	ccs_objective_space_t     ospace;
 	ccs_expression_t          expression;
 	ccs_objective_type_t      otype;
@@ -56,7 +56,7 @@ test(void)
 		"red knob", 2, knobs_values, 0, &feature);
 	assert(err == CCS_RESULT_SUCCESS);
 
-	err = ccs_create_features_space("knobs", 1, &feature, &fspace);
+	err = ccs_create_feature_space("knobs", 1, &feature, &fspace);
 	assert(err == CCS_RESULT_SUCCESS);
 	err = ccs_create_features(fspace, 1, knobs_values, &features_on);
 	assert(err == CCS_RESULT_SUCCESS);
@@ -247,7 +247,7 @@ test_evaluation_deserialize(void)
 	ccs_parameter_t           parameter3;
 	ccs_parameter_t           feature;
 	ccs_configuration_space_t cspace;
-	ccs_features_space_t      fspace;
+	ccs_feature_space_t       fspace;
 	ccs_objective_space_t     ospace;
 	ccs_expression_t          expression;
 	ccs_objective_type_t      otype;
@@ -281,7 +281,7 @@ test_evaluation_deserialize(void)
                 "red knob", 2, knobs_values, 0, &feature);
 	assert(err == CCS_RESULT_SUCCESS);
 
-	err = ccs_create_features_space("knobs", 1, &feature, &fspace);
+	err = ccs_create_feature_space("knobs", 1, &feature, &fspace);
 	assert(err == CCS_RESULT_SUCCESS);
 	err = ccs_create_features(fspace, 1, knobs_values, &features_on);
 	err = ccs_create_objective_space(

@@ -15,7 +15,7 @@ _ccs_deserialize_bin_features(
 	_ccs_object_internal_t obj;
 	ccs_object_t           handle;
 	ccs_datum_t            d;
-	ccs_features_space_t   cs;
+	ccs_feature_space_t    cs;
 	ccs_result_t           res = CCS_RESULT_SUCCESS;
 	CCS_VALIDATE(_ccs_deserialize_bin_ccs_object_internal(
 		&obj, buffer_size, buffer, &handle));
@@ -37,7 +37,7 @@ _ccs_deserialize_bin_features(
 	CCS_REFUTE_ERR_GOTO(
 		res, d.type != CCS_DATA_TYPE_OBJECT,
 		CCS_RESULT_ERROR_INVALID_HANDLE, end);
-	cs = (ccs_features_space_t)(d.value.o);
+	cs = (ccs_feature_space_t)(d.value.o);
 
 	CCS_VALIDATE_ERR_GOTO(
 		res,

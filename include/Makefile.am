@@ -10,7 +10,7 @@ include_ccs_HEADERS = \
 	cconfigspace/context.h \
 	cconfigspace/configuration_space.h \
 	cconfigspace/distribution_space.h \
-	cconfigspace/features_space.h \
+	cconfigspace/feature_space.h \
 	cconfigspace/parameter.h \
 	cconfigspace/expression.h \
 	cconfigspace/binding.h \

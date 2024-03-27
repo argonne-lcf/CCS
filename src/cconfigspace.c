@@ -565,7 +565,7 @@ end:
 #include "distribution_deserialize.h"
 #include "parameter_deserialize.h"
 #include "expression_deserialize.h"
-#include "features_space_deserialize.h"
+#include "feature_space_deserialize.h"
 #include "configuration_space_deserialize.h"
 #include "distribution_space_deserialize.h"
 #include "objective_space_deserialize.h"
@@ -665,9 +665,9 @@ _ccs_object_deserialize_with_opts(
 				(ccs_expression_t *)object_ret, format, version,
 				buffer_size, buffer, opts));
 			break;
-		case CCS_OBJECT_TYPE_FEATURES_SPACE:
-			CCS_VALIDATE(_ccs_features_space_deserialize(
-				(ccs_features_space_t *)object_ret, format,
+		case CCS_OBJECT_TYPE_FEATURE_SPACE:
+			CCS_VALIDATE(_ccs_feature_space_deserialize(
+				(ccs_feature_space_t *)object_ret, format,
 				version, buffer_size, buffer, opts));
 			break;
 		case CCS_OBJECT_TYPE_CONFIGURATION_SPACE:

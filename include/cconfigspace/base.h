@@ -118,9 +118,9 @@ typedef struct _ccs_binding_s             *ccs_binding_t;
  */
 typedef struct _ccs_configuration_s       *ccs_configuration_t;
 /**
- * An opaque type defining a CCS features space.
+ * An opaque type defining a CCS feature space.
  */
-typedef struct _ccs_features_space_s      *ccs_features_space_t;
+typedef struct _ccs_feature_space_s       *ccs_feature_space_t;
 /**
  * An opaque type defining a CCS features.
  */
@@ -289,8 +289,8 @@ enum ccs_object_type_e {
 	CCS_OBJECT_TYPE_EVALUATION,
 	/** A tuner */
 	CCS_OBJECT_TYPE_TUNER,
-	/** A features space */
-	CCS_OBJECT_TYPE_FEATURES_SPACE,
+	/** A feature space */
+	CCS_OBJECT_TYPE_FEATURE_SPACE,
 	/** A set of features */
 	CCS_OBJECT_TYPE_FEATURES,
 	/** An evaluation of a configuration given specific features */

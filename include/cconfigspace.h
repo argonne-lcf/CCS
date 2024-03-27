@@ -16,7 +16,7 @@
 #include "cconfigspace/configuration_space.h"
 #include "cconfigspace/distribution_space.h"
 #include "cconfigspace/configuration.h"
-#include "cconfigspace/features_space.h"
+#include "cconfigspace/feature_space.h"
 #include "cconfigspace/features.h"
 #include "cconfigspace/objective_space.h"
 #include "cconfigspace/evaluation.h"

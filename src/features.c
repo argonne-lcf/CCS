@@ -1,6 +1,6 @@
 #include "cconfigspace_internal.h"
 #include "features_internal.h"
-#include "features_space_internal.h"
+#include "feature_space_internal.h"
 #include "datum_hash.h"
 #include <string.h>
 
@@ -8,7 +8,7 @@ static ccs_result_t
 _ccs_features_del(ccs_object_t object)
 {
 	ccs_features_t features = (ccs_features_t)object;
-	ccs_release_object(features->data->features_space);
+	ccs_release_object(features->data->feature_space);
 	return CCS_RESULT_SUCCESS;
 }
 
@@ -80,16 +80,16 @@ static _ccs_features_ops_t _features_ops = {
 
 ccs_result_t
 ccs_create_features(
-	ccs_features_space_t features_space,
-	size_t               num_values,
-	ccs_datum_t         *values,
-	ccs_features_t      *features_ret)
+	ccs_feature_space_t feature_space,
+	size_t              num_values,
+	ccs_datum_t        *values,
+	ccs_features_t     *features_ret)
 {
-	CCS_CHECK_OBJ(features_space, CCS_OBJECT_TYPE_FEATURES_SPACE);
+	CCS_CHECK_OBJ(feature_space, CCS_OBJECT_TYPE_FEATURE_SPACE);
 	CCS_CHECK_PTR(features_ret);
 	CCS_CHECK_ARY(num_values, values);
 	ccs_result_t err;
-	size_t       num_parameters = features_space->data->num_parameters;
+	size_t       num_parameters = feature_space->data->num_parameters;
 	CCS_REFUTE(
 		values && num_parameters != num_values,
 		CCS_RESULT_ERROR_INVALID_VALUE);
@@ -98,16 +98,16 @@ ccs_create_features(
 			   sizeof(struct _ccs_features_data_s) +
 			   num_parameters * sizeof(ccs_datum_t));
 	CCS_REFUTE(!mem, CCS_RESULT_ERROR_OUT_OF_MEMORY);
-	CCS_VALIDATE_ERR_GOTO(err, ccs_retain_object(features_space), errmem);
+	CCS_VALIDATE_ERR_GOTO(err, ccs_retain_object(feature_space), errmem);
 	ccs_features_t feat;
 	feat = (ccs_features_t)mem;
 	_ccs_object_init(
 		&(feat->obj), CCS_OBJECT_TYPE_FEATURES,
 		(_ccs_object_ops_t *)&_features_ops);
-	feat->data                 = (struct _ccs_features_data_s
+	feat->data                = (struct _ccs_features_data_s
                               *)(mem + sizeof(struct _ccs_features_s));
-	feat->data->num_values     = num_parameters;
-	feat->data->features_space = features_space;
+	feat->data->num_values    = num_parameters;
+	feat->data->feature_space = feature_space;
 	feat->data->values =
 		(ccs_datum_t
 			 *)(mem + sizeof(struct _ccs_features_s) + sizeof(struct _ccs_features_data_s));
@@ -119,8 +119,8 @@ ccs_create_features(
 				CCS_VALIDATE_ERR_GOTO(
 					err,
 					ccs_context_validate_value(
-						(ccs_context_t)features_space,
-						i, values[i],
+						(ccs_context_t)feature_space, i,
+						values[i],
 						feat->data->values + i),
 					errfs);
 	}
@@ -128,20 +128,20 @@ ccs_create_features(
 	return CCS_RESULT_SUCCESS;
 errfs:
 	_ccs_object_deinit(&(feat->obj));
-	ccs_release_object(features_space);
+	ccs_release_object(feature_space);
 errmem:
 	free((void *)mem);
 	return err;
 }
 
 ccs_result_t
-ccs_features_get_features_space(
-	ccs_features_t        features,
-	ccs_features_space_t *features_space_ret)
+ccs_features_get_feature_space(
+	ccs_features_t       features,
+	ccs_feature_space_t *feature_space_ret)
 {
 	CCS_CHECK_OBJ(features, CCS_OBJECT_TYPE_FEATURES);
 	CCS_VALIDATE(_ccs_binding_get_context(
-		(ccs_binding_t)features, (ccs_context_t *)features_space_ret));
+		(ccs_binding_t)features, (ccs_context_t *)feature_space_ret));
 	return CCS_RESULT_SUCCESS;
 }
 
@@ -149,7 +149,7 @@ ccs_result_t
 ccs_features_check(ccs_features_t features, ccs_bool_t *is_valid_ret)
 {
 	CCS_CHECK_OBJ(features, CCS_OBJECT_TYPE_FEATURES);
-	CCS_VALIDATE(ccs_features_space_check_features(
-		features->data->features_space, features, is_valid_ret));
+	CCS_VALIDATE(ccs_feature_space_check_features(
+		features->data->feature_space, features, is_valid_ret));
 	return CCS_RESULT_SUCCESS;
 }

@@ -23,9 +23,9 @@ struct _ccs_features_s {
 };
 
 struct _ccs_features_data_s {
-	ccs_features_space_t features_space;
-	size_t               num_values;
-	ccs_datum_t         *values;
+	ccs_feature_space_t feature_space;
+	size_t              num_values;
+	ccs_datum_t        *values;
 };
 
 #endif //_FEATURES_INTERNAL_H

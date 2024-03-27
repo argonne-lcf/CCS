@@ -9,7 +9,7 @@ extern "C" {
  * @file features_tuner.h
  * A CCS features tuner defines an ask and tell interface to optimize an
  * objective space (see objective_space.h) given a configuration spaces (see
- * configuration_space.h) and a features space (see features_space.h). The tuner
+ * configuration_space.h) and a feature space (see feature_space.h). The tuner
  * will propose configurations (see configuration.h) and the user will return
  * features evaluations (see features_evaluation.h).
  */
@@ -102,21 +102,21 @@ ccs_features_tuner_get_objective_space(
 	ccs_objective_space_t *objective_space_ret);
 
 /**
- * Get the associated features space.
+ * Get the associated feature space.
  * @param[in] features_tuner
- * @param[out] features_space_ret a pointer to the variable that will
- *                                     contain the features space
+ * @param[out] feature_space_ret a pointer to the variable that will
+ *                                     contain the feature space
  * @return #CCS_RESULT_SUCCESS on success
  * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p features_tuner is not a valid
  * CCS features tuner
- * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p features_space_ret is NULL
+ * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p feature_space_ret is NULL
  * @remarks
  *   This function is thread-safe
  */
 extern ccs_result_t
-ccs_features_tuner_get_features_space(
-	ccs_features_tuner_t  features_tuner,
-	ccs_features_space_t *features_space_ret);
+ccs_features_tuner_get_feature_space(
+	ccs_features_tuner_t features_tuner,
+	ccs_feature_space_t *feature_space_ret);
 
 /**
  * Ask a features tuner for a set of configurations to evaluate given some
@@ -139,7 +139,7 @@ ccs_features_tuner_get_features_space(
  * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p features_tuner is not a valid
  * CCS features tuner; or if \p features is not a valid CCS features
  * @return #CCS_RESULT_ERROR_INVALID_FEATURES if \p features is not a valid CCS
- * features for the tuner features space
+ * features for the tuner feature space
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p configurations is NULL and \p
  * num_configurations is greater than 0; or if \p configurations and \p
  * num_configurations_ret are both NULL
@@ -195,7 +195,7 @@ ccs_features_tuner_tell(
  * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p features_tuner is not a valid
  * CCS features tuner; or if \p features is not a valid CCS features
  * @return #CCS_RESULT_ERROR_INVALID_FEATURES if \p features is not a valid CCS
- * features for the tuner features space
+ * features for the tuner feature space
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p configuration is NULL
  * @return #CCS_RESULT_ERROR_UNSUPPORTED_OPERATION if the features tuner does
  * not support the suggest interface
@@ -228,7 +228,7 @@ ccs_features_tuner_suggest(
  * CCS features tuner; or if \p features is not NULL and \p features is not a
  * valid CCS features
  * @return #CCS_RESULT_ERROR_INVALID_FEATURES if \p features is not a valid CCS
- * features for the features tuner features space
+ * features for the features tuner feature space
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p evaluations is NULL and
  * num_evaluations is greater than 0; or if \p evaluations is NULL and \p
  * num_evaluations_ret is NULL
@@ -260,7 +260,7 @@ ccs_features_tuner_get_optima(
  * CCS features tuner or if \p features is not NULL and \p features is not a
  * valid CCS features
  * @return #CCS_RESULT_ERROR_INVALID_FEATURES if \p features is not a valid CCS
- * features for the features tuner features space
+ * features for the features tuner feature space
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p evaluations is NULL and
  * num_evaluations is greater than 0; or if \p evaluations is NULL and \p
  * num_evaluations_ret is NULL
@@ -281,14 +281,14 @@ ccs_features_tuner_get_history(
  * developing interfaces.
  * @param[in] name the name of the features tuner
  * @param[in] configuration_space the configuration space to explore
- * @param[in] features_space the features space
+ * @param[in] feature_space the feature space
  * @param[in] objective_space the objective space to potimize
  * @param[out] features_tuner_ret a pointer to the variable that will contain
  *                                the newly created features tuner
  * @return #CCS_RESULT_SUCCESS on success
  * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p configuration_space is not a
  * valid CCS configuration space; or if \p objective_space is not a valid CCS
- * objective space; or if \p features_space is not a valid CCS features space
+ * objective space; or if \p feature_space is not a valid CCS feature space
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p name is NULL; or if \p features
  * tuner_ret is NULL
  * @return #CCS_RESULT_ERROR_OUT_OF_MEMORY if there was not enough memory to
@@ -300,7 +300,7 @@ extern ccs_result_t
 ccs_create_random_features_tuner(
 	const char               *name,
 	ccs_configuration_space_t configuration_space,
-	ccs_features_space_t      features_space,
+	ccs_feature_space_t       feature_space,
 	ccs_objective_space_t     objective_space,
 	ccs_features_tuner_t     *features_tuner_ret);
 
@@ -393,7 +393,7 @@ typedef struct ccs_user_defined_features_tuner_vector_s
  * Create a new user defined features tuner.
  * @param[in] name the name of the features tuner
  * @param[in] configuration_space the configuration space to explore
- * @param[in] features_space the features space
+ * @param[in] feature_space the feature space
  * @param[in] objective_space the objective space to optimize
  * @param[in] vector the vector of callbacks implementing the features tuner
  * interface
@@ -404,7 +404,7 @@ typedef struct ccs_user_defined_features_tuner_vector_s
  * @return #CCS_RESULT_SUCCESS on success
  * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p configuration_space is not a
  * valid CCS configuration space; or if \p objective_space is not a valid CCS
- * objective space; or if \p features_space is not a valid CCS features space
+ * objective space; or if \p feature_space is not a valid CCS feature space
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p name is NULL; or if \p
  * features_tuner_ret is NULL; or if \p vector is NULL; or if any interface
  * pointer except suggest is NULL
@@ -417,7 +417,7 @@ extern ccs_result_t
 ccs_create_user_defined_features_tuner(
 	const char                               *name,
 	ccs_configuration_space_t                 configuration_space,
-	ccs_features_space_t                      features_space,
+	ccs_feature_space_t                       feature_space,
 	ccs_objective_space_t                     objective_space,
 	ccs_user_defined_features_tuner_vector_t *vector,
 	void                                     *tuner_data,

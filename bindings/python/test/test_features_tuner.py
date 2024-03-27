@@ -18,18 +18,18 @@ class TestFeaturesTuner(unittest.TestCase):
     e2 = ccs.Expression.Variable(parameter = v2)
     os = ccs.ObjectiveSpace(name = "ospace", parameters = [v1, v2], objectives = [e1, e2])
     f1 = ccs.CategoricalParameter(values = [True, False])
-    fs = ccs.FeaturesSpace(name = "fspace", parameters = [f1])
+    fs = ccs.FeatureSpace(name = "fspace", parameters = [f1])
     return (cs, fs, os)
 
   def test_create_random(self):
     (cs, fs, os) = self.create_tuning_problem()
-    t = ccs.RandomFeaturesTuner(name = "tuner", configuration_space = cs, features_space = fs, objective_space = os)
+    t = ccs.RandomFeaturesTuner(name = "tuner", configuration_space = cs, feature_space = fs, objective_space = os)
     t2 = ccs.Object.from_handle(t.handle)
     self.assertEqual("tuner", t.name)
     self.assertEqual(ccs.FeaturesTunerType.RANDOM, t.type)
     func = lambda x, y, z: [(x-2)*(x-2), sin(z+y)]
-    features_on = ccs.Features(features_space = fs, values = [True])
-    features_off = ccs.Features(features_space = fs, values = [False])
+    features_on = ccs.Features(feature_space = fs, values = [True])
+    features_off = ccs.Features(feature_space = fs, values = [False])
     evals = [ccs.FeaturesEvaluation(objective_space = os, configuration = c, features = features_on, values = func(*(c.values))) for c in t.ask(features_on, 50)]
     t.tell(evals)
     evals = [ccs.FeaturesEvaluation(objective_space = os, configuration = c, features = features_off, values = func(*(c.values))) for c in t.ask(features_off, 50)]
@@ -119,16 +119,16 @@ class TestFeaturesTuner(unittest.TestCase):
         return choice(optis).configuration
 
     (cs, fs, os) = self.create_tuning_problem()
-    t = ccs.UserDefinedFeaturesTuner(name = "tuner", configuration_space = cs, features_space = fs, objective_space = os, delete = delete, ask = ask, tell = tell, get_optima = get_optima, get_history = get_history, suggest = suggest, tuner_data = TunerData())
+    t = ccs.UserDefinedFeaturesTuner(name = "tuner", configuration_space = cs, feature_space = fs, objective_space = os, delete = delete, ask = ask, tell = tell, get_optima = get_optima, get_history = get_history, suggest = suggest, tuner_data = TunerData())
     t2 = ccs.Object.from_handle(t.handle)
     self.assertEqual("tuner", t.name)
     self.assertEqual(ccs.FeaturesTunerType.USER_DEFINED, t.type)
     self.assertEqual(cs.handle.value, t.configuration_space.handle.value)
-    self.assertEqual(fs.handle.value, t.features_space.handle.value)
+    self.assertEqual(fs.handle.value, t.feature_space.handle.value)
     self.assertEqual(os.handle.value, t.objective_space.handle.value)
     func = lambda x, y, z: [(x-2)*(x-2), sin(z+y)]
-    features_on = ccs.Features(features_space = fs, values = [True])
-    features_off = ccs.Features(features_space = fs, values = [False])
+    features_on = ccs.Features(feature_space = fs, values = [True])
+    features_off = ccs.Features(feature_space = fs, values = [False])
     evals = [ccs.FeaturesEvaluation(objective_space = os, configuration = c, features = features_on, values = func(*(c.values))) for c in t.ask(features_on, 50)]
     t.tell(evals)
     evals = [ccs.FeaturesEvaluation(objective_space = os, configuration = c, features = features_off, values = func(*(c.values))) for c in t.ask(features_off, 50)]

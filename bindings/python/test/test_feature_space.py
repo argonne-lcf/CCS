@@ -5,14 +5,14 @@ sys.path.insert(1, '.')
 sys.path.insert(1, '..')
 import cconfigspace as ccs
 
-class TestFeaturesSpace(unittest.TestCase):
+class TestFeatureSpace(unittest.TestCase):
 
   def test_create(self):
     h1 = ccs.NumericalParameter.Float(lower = 0.0, upper = 1.0)
     h2 = ccs.NumericalParameter.Float(lower = 0.0, upper = 1.0)
     h3 = ccs.NumericalParameter.Float(lower = 0.0, upper = 1.0)
-    cs = ccs.FeaturesSpace(name = "space", parameters = [h1, h2, h3])
-    self.assertEqual( ccs.ObjectType.FEATURES_SPACE, cs.object_type )
+    cs = ccs.FeatureSpace(name = "space", parameters = [h1, h2, h3])
+    self.assertEqual( ccs.ObjectType.FEATURE_SPACE, cs.object_type )
     self.assertEqual( "space", cs.name )
     self.assertEqual( 3, cs.num_parameters )
     self.assertEqual( h1, cs.parameter(0) )

@@ -86,9 +86,9 @@ libcconfigspace_la_SOURCES = \
 	tuner_deserialize.h \
 	tuner_random.c \
 	tuner_user_defined.c \
-	features_space.c \
-	features_space_internal.h \
-	features_space_deserialize.h \
+	feature_space.c \
+	feature_space_internal.h \
+	feature_space_deserialize.h \
 	features.c \
 	features_internal.h \
 	features_deserialize.h \
