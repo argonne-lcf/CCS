@@ -2,6 +2,7 @@
 #include <assert.h>
 #include <cconfigspace.h>
 #include <string.h>
+#include "test_utils.h"
 
 double d = -2.0;
 
@@ -225,18 +226,6 @@ test_sample(void)
 	assert(err == CCS_RESULT_SUCCESS);
 }
 
-ccs_parameter_t
-create_numerical(const char *name)
-{
-	ccs_parameter_t parameter;
-	ccs_result_t    err;
-	err = ccs_create_numerical_parameter(
-		name, CCS_NUMERIC_TYPE_FLOAT, CCSF(-5.0), CCSF(5.0), CCSF(0.0),
-		CCSF(0.0), &parameter);
-	assert(err == CCS_RESULT_SUCCESS);
-	return parameter;
-}
-
 void
 test_configuration_deserialize(void)
 {
@@ -250,9 +239,9 @@ test_configuration_deserialize(void)
 	ccs_result_t              err;
 	int                       cmp;
 
-	parameters[0] = create_numerical("param1");
-	parameters[1] = create_numerical("param2");
-	parameters[2] = create_numerical("param3");
+	parameters[0] = create_numerical("param1", -5.0, 5.0);
+	parameters[1] = create_numerical("param2", -5.0, 5.0);
+	parameters[2] = create_numerical("param3", -5.0, 5.0);
 
 	err           = ccs_create_configuration_space(
                 "my_config_space", 3, parameters, NULL, 0, NULL, NULL,
@@ -333,9 +322,9 @@ test_deserialize(void)
 	ccs_datum_t               d;
 	ccs_result_t              err;
 
-	parameters[0] = create_numerical("param1");
-	parameters[1] = create_numerical("param2");
-	parameters[2] = create_numerical("param3");
+	parameters[0] = create_numerical("param1", -5.0, 5.0);
+	parameters[1] = create_numerical("param2", -5.0, 5.0);
+	parameters[2] = create_numerical("param3", -5.0, 5.0);
 
 	err           = ccs_create_binary_expression(
                 CCS_EXPRESSION_TYPE_LESS, ccs_object(parameters[0]),

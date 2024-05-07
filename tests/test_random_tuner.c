@@ -2,29 +2,13 @@
 #include <assert.h>
 #include <cconfigspace.h>
 #include <string.h>
-
-ccs_parameter_t
-create_numerical(const char *name, double lower, double upper)
-{
-	ccs_parameter_t parameter;
-	ccs_result_t    err;
-	err = ccs_create_numerical_parameter(
-		name, CCS_NUMERIC_TYPE_FLOAT, CCSF(lower), CCSF(upper),
-		CCSF(0.0), CCSF(0), &parameter);
-	assert(err == CCS_RESULT_SUCCESS);
-	return parameter;
-}
+#include "test_utils.h"
 
 void
 test(void)
 {
-	ccs_parameter_t           parameter1, parameter2;
-	ccs_parameter_t           parameters[2];
-	ccs_parameter_t           parameter3;
 	ccs_configuration_space_t cspace;
 	ccs_objective_space_t     ospace;
-	ccs_expression_t          expression;
-	ccs_objective_type_t      otype;
 	ccs_tuner_t               tuner, tuner_copy;
 	ccs_result_t              err;
 	ccs_datum_t               d;
@@ -32,23 +16,10 @@ test(void)
 	size_t                    buff_size;
 	ccs_map_t                 map;
 
-	parameters[0] = parameter1 = create_numerical("x", -5.0, 5.0);
-	parameters[1] = parameter2 = create_numerical("y", -5.0, 5.0);
+	cspace = create_2d_plane();
+	ospace = create_height_objective();
 
-	err                        = ccs_create_configuration_space(
-                "2dplane", 2, parameters, NULL, 0, NULL, NULL, &cspace);
-	assert(err == CCS_RESULT_SUCCESS);
-
-	parameter3 = create_numerical("z", -CCS_INFINITY, CCS_INFINITY);
-	err        = ccs_create_variable(parameter3, &expression);
-	assert(err == CCS_RESULT_SUCCESS);
-	otype = CCS_OBJECTIVE_TYPE_MINIMIZE;
-
-	err   = ccs_create_objective_space(
-                "height", 1, &parameter3, 1, &expression, &otype, &ospace);
-	assert(err == CCS_RESULT_SUCCESS);
-
-	err = ccs_create_random_tuner("problem", cspace, ospace, &tuner);
+	err    = ccs_create_random_tuner("problem", cspace, ospace, &tuner);
 	assert(err == CCS_RESULT_SUCCESS);
 
 	for (size_t i = 0; i < 100; i++) {
@@ -141,14 +112,6 @@ test(void)
 	assert(err == CCS_RESULT_SUCCESS);
 	err = ccs_release_object(tuner_copy);
 	assert(err == CCS_RESULT_SUCCESS);
-	err = ccs_release_object(expression);
-	assert(err == CCS_RESULT_SUCCESS);
-	err = ccs_release_object(parameter1);
-	assert(err == CCS_RESULT_SUCCESS);
-	err = ccs_release_object(parameter2);
-	assert(err == CCS_RESULT_SUCCESS);
-	err = ccs_release_object(parameter3);
-	assert(err == CCS_RESULT_SUCCESS);
 	err = ccs_release_object(cspace);
 	assert(err == CCS_RESULT_SUCCESS);
 	err = ccs_release_object(ospace);
@@ -160,13 +123,8 @@ test(void)
 void
 test_evaluation_deserialize(void)
 {
-	ccs_parameter_t           parameter1, parameter2;
-	ccs_parameter_t           parameters[2];
-	ccs_parameter_t           parameter3;
 	ccs_configuration_space_t cspace;
 	ccs_objective_space_t     ospace;
-	ccs_expression_t          expression;
-	ccs_objective_type_t      otype;
 	ccs_result_t              err;
 	ccs_configuration_t       configuration;
 	ccs_evaluation_t          evaluation_ref, evaluation;
@@ -176,23 +134,11 @@ test_evaluation_deserialize(void)
 	ccs_map_t                 map;
 	int                       cmp;
 
-	parameters[0] = parameter1 = create_numerical("x", -5.0, 5.0);
-	parameters[1] = parameter2 = create_numerical("y", -5.0, 5.0);
+	cspace = create_2d_plane();
+	ospace = create_height_objective();
 
-	err                        = ccs_create_configuration_space(
-                "2dplane", 2, parameters, NULL, 0, NULL, NULL, &cspace);
-	assert(err == CCS_RESULT_SUCCESS);
-	err = ccs_configuration_space_sample(
-		cspace, NULL, NULL, &configuration);
-	assert(err == CCS_RESULT_SUCCESS);
-
-	parameter3 = create_numerical("z", -CCS_INFINITY, CCS_INFINITY);
-	err        = ccs_create_variable(parameter3, &expression);
-	assert(err == CCS_RESULT_SUCCESS);
-	otype = CCS_OBJECTIVE_TYPE_MINIMIZE;
-
-	err   = ccs_create_objective_space(
-                "height", 1, &parameter3, 1, &expression, &otype, &ospace);
+	err    = ccs_configuration_space_sample(
+                cspace, NULL, NULL, &configuration);
 	assert(err == CCS_RESULT_SUCCESS);
 
 	res = ccs_float(1.5);
@@ -261,14 +207,6 @@ test_evaluation_deserialize(void)
 	err = ccs_release_object(evaluation);
 	assert(err == CCS_RESULT_SUCCESS);
 	err = ccs_release_object(configuration);
-	assert(err == CCS_RESULT_SUCCESS);
-	err = ccs_release_object(expression);
-	assert(err == CCS_RESULT_SUCCESS);
-	err = ccs_release_object(parameter1);
-	assert(err == CCS_RESULT_SUCCESS);
-	err = ccs_release_object(parameter2);
-	assert(err == CCS_RESULT_SUCCESS);
-	err = ccs_release_object(parameter3);
 	assert(err == CCS_RESULT_SUCCESS);
 	err = ccs_release_object(cspace);
 	assert(err == CCS_RESULT_SUCCESS);

@@ -2,18 +2,7 @@
 #include <assert.h>
 #include <cconfigspace.h>
 #include <string.h>
-
-ccs_parameter_t
-create_numerical(const char *name, double lower, double upper)
-{
-	ccs_parameter_t parameter;
-	ccs_result_t    err;
-	err = ccs_create_numerical_parameter(
-		name, CCS_NUMERIC_TYPE_FLOAT, CCSF(lower), CCSF(upper),
-		CCSF(0.0), CCSF(0), &parameter);
-	assert(err == CCS_RESULT_SUCCESS);
-	return parameter;
-}
+#include "test_utils.h"
 
 void
 generate_tree(ccs_tree_t *tree, size_t depth, size_t rank)

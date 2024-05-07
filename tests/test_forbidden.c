@@ -3,18 +3,7 @@
 #include <cconfigspace.h>
 #include <string.h>
 #include <math.h>
-
-ccs_parameter_t
-create_numerical(const char *name)
-{
-	ccs_parameter_t parameter;
-	ccs_result_t    err;
-	err = ccs_create_numerical_parameter(
-		name, CCS_NUMERIC_TYPE_FLOAT, CCSF(-1.0), CCSF(1.0), CCSF(0.0),
-		CCSF(0), &parameter);
-	assert(err == CCS_RESULT_SUCCESS);
-	return parameter;
-}
+#include "test_utils.h"
 
 void
 test_simple(void)
@@ -28,8 +17,8 @@ test_simple(void)
 	ccs_configuration_t       configurations[100];
 	ccs_result_t              err;
 
-	parameters[0] = parameter1 = create_numerical("param1");
-	parameters[1] = parameter2 = create_numerical("param2");
+	parameters[0] = parameter1 = create_numerical("param1", -1.0, 1.0);
+	parameters[1] = parameter2 = create_numerical("param2", -1.0, 1.0);
 	err                        = ccs_create_binary_expression(
                 CCS_EXPRESSION_TYPE_LESS, ccs_object(parameter1),
                 ccs_float(0.0), &expression);
@@ -106,9 +95,9 @@ test_combined(void)
 	ccs_configuration_t       configurations[100];
 	ccs_result_t              err;
 
-	parameters[0] = create_numerical("param1");
-	parameters[1] = create_numerical("param2");
-	parameters[2] = create_numerical("param3");
+	parameters[0] = create_numerical("param1", -1.0, 1.0);
+	parameters[1] = create_numerical("param2", -1.0, 1.0);
+	parameters[2] = create_numerical("param3", -1.0, 1.0);
 
 	err           = ccs_create_binary_expression(
                 CCS_EXPRESSION_TYPE_LESS, ccs_object(parameters[0]),

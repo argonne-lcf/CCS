@@ -6,35 +6,6 @@
 #define NUM_SAMPLES 200000
 
 void
-print_ccs_error_stack(void)
-{
-	ccs_error_stack_t       err;
-	ccs_result_t            code;
-	const char             *msg;
-	size_t                  stack_depth;
-	ccs_error_stack_elem_t *stack_elems;
-
-	err = ccs_get_thread_error();
-	if (!err)
-		return;
-	ccs_error_stack_get_code(err, &code);
-	ccs_get_result_name(code, &msg);
-	fprintf(stderr, "CCS Error: %s (%d): ", msg, code);
-	ccs_error_stack_get_message(err, &msg);
-	fprintf(stderr, "%s\n", msg);
-	ccs_error_stack_get_elems(err, 0, NULL, &stack_depth);
-	stack_elems = (ccs_error_stack_elem_t *)malloc(
-		stack_depth * sizeof(ccs_error_stack_elem_t));
-	ccs_error_stack_get_elems(err, stack_depth, stack_elems, NULL);
-	for (size_t i = 0; i < stack_depth; i++) {
-		fprintf(stderr, "\t%s:%d:%s\n", stack_elems[i].file,
-			stack_elems[i].line, stack_elems[i].func);
-	}
-	free(stack_elems);
-	ccs_release_object(err);
-}
-
-void
 generate_tree(ccs_tree_t *tree, size_t depth, size_t rank)
 {
 	ccs_result_t err;
