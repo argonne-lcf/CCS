@@ -434,8 +434,10 @@ ccs_object_set_serialize_callback = _ccs_get_function("ccs_object_set_serialize_
 ccs_object_deserialize_callback_type = ct.CFUNCTYPE(Result, ccs_object, ct.c_size_t, ct.c_void_p, ct.c_void_p)
 # Variadic methods
 ccs_object_serialize = getattr(libcconfigspace, "ccs_object_serialize")
+ccs_object_serialize.argtypes = ccs_object, SerializeFormat, SerializeOperation,
 ccs_object_serialize.restype = Result
 ccs_object_deserialize = getattr(libcconfigspace, "ccs_object_deserialize")
+ccs_object_deserialize.argtypes = ct.POINTER(ccs_object), SerializeFormat, SerializeOperation,
 ccs_object_deserialize.restype = Result
 
 _res = ccs_init()

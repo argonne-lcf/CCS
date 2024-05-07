@@ -1,6 +1,6 @@
 AM_COLOR_TESTS = yes
 
-test_ruby_CFLAGS = -I$(top_srcdir)/include -Wall -Wextra $(RUBY_CFLAGS) -Wno-deprecated-declarations
+test_ruby_CFLAGS = -I$(top_srcdir)/include -Wall -Wextra $(GSL_CFLAGS) $(RUBY_CFLAGS) -Wno-deprecated-declarations
 
 if !ISMACOS
 if STRICT
@@ -10,7 +10,7 @@ endif
 
 test_ruby_LDFLAGS = ../src/libcconfigspace.la $(RUBY_LIBS)
 
-test_python_CFLAGS = -I$(top_srcdir)/include -Wall -Wextra -Wpedantic $(PYTHON_CFLAGS) -DBINDINGS_PATH="\"$(top_srcdir)/bindings/python\""
+test_python_CFLAGS = -I$(top_srcdir)/include -Wall -Wextra -Wpedantic $(GSL_CFLAGS) $(PYTHON_CFLAGS) -DBINDINGS_PATH="\"$(top_srcdir)/bindings/python\""
 
 if STRICT
 test_python_CFLAGS += -Werror
