@@ -218,61 +218,55 @@ _ccs_do_nothing(void)
 		!(o), CCS_RESULT_ERROR_INVALID_OBJECT,                         \
 		"Invalid CCS object '%s' == %p supplied", #o, o)
 
+#define CCS_OBJ_IS_VALID(o)   ((o) && ((_ccs_object_template_t *)(o))->data)
+
+#define CCS_OBJ_IS_TYPE(o, t) (((_ccs_object_template_t *)(o))->obj.type == (t))
+
 #define CCS_CHECK_OBJ(o, t)                                                    \
 	CCS_REFUTE_MSG(                                                        \
-		!(o) || !((_ccs_object_template_t *)(o))->data ||              \
-			((_ccs_object_template_t *)(o))->obj.type != (t),      \
+		!CCS_OBJ_IS_VALID(o) || !CCS_OBJ_IS_TYPE(o, t),                \
 		CCS_RESULT_ERROR_INVALID_OBJECT,                               \
 		"Invalid CCS object '%s' == %p supplied, expected %s", #o, o,  \
 		#t)
 
 #define CCS_CHECK_OBJ_ERR_GOTO(err, o, t, label)                               \
 	CCS_REFUTE_MSG_ERR_GOTO(                                               \
-		err,                                                           \
-		!(o) || !((_ccs_object_template_t *)(o))->data ||              \
-			((_ccs_object_template_t *)(o))->obj.type != (t),      \
+		err, !CCS_OBJ_IS_VALID(o) || !CCS_OBJ_IS_TYPE(o, t),           \
 		CCS_RESULT_ERROR_INVALID_OBJECT, label,                        \
 		"Invalid CCS object '%s' == %p supplied, expected %s", #o, o,  \
 		#t)
 
 #define CCS_CHECK_CONTEXT(c)                                                   \
 	CCS_REFUTE_MSG(                                                        \
-		!(c) || !((_ccs_object_template_t *)(c))->data ||              \
-			(((_ccs_object_template_t *)(c))->obj.type !=          \
-				 CCS_OBJECT_TYPE_CONFIGURATION_SPACE &&        \
-			 ((_ccs_object_template_t *)(c))->obj.type !=          \
-				 CCS_OBJECT_TYPE_OBJECTIVE_SPACE &&            \
-			 ((_ccs_object_template_t *)(c))->obj.type !=          \
-				 CCS_OBJECT_TYPE_FEATURE_SPACE),               \
+		!CCS_OBJ_IS_VALID(c) ||                                        \
+			!(CCS_OBJ_IS_TYPE(                                     \
+				  c, CCS_OBJECT_TYPE_CONFIGURATION_SPACE) ||   \
+			  CCS_OBJ_IS_TYPE(                                     \
+				  c, CCS_OBJECT_TYPE_OBJECTIVE_SPACE) ||       \
+			  CCS_OBJ_IS_TYPE(c, CCS_OBJECT_TYPE_FEATURE_SPACE)),  \
 		CCS_RESULT_ERROR_INVALID_OBJECT,                               \
 		"Invalid CCS context '%s' == %p supplied", #c, c)
 
-#define CCS_CHECK_EVALUATION_BINDING(e)                                        \
-	CCS_REFUTE_MSG(                                                        \
-		!(e) || !((_ccs_object_template_t *)(e))->data ||              \
-			(((_ccs_object_template_t *)(e))->obj.type !=          \
-				 CCS_OBJECT_TYPE_EVALUATION &&                 \
-			 ((_ccs_object_template_t *)(e))->obj.type !=          \
-				 CCS_OBJECT_TYPE_FEATURES_EVALUATION &&        \
-			 ((_ccs_object_template_t *)(e))->obj.type !=          \
-				 CCS_OBJECT_TYPE_TREE_EVALUATION),             \
-		CCS_RESULT_ERROR_INVALID_OBJECT,                               \
+#define CCS_CHECK_EVALUATION_BINDING(e)                                         \
+	CCS_REFUTE_MSG(                                                         \
+		!CCS_OBJ_IS_VALID(e) ||                                         \
+			!(CCS_OBJ_IS_TYPE(e, CCS_OBJECT_TYPE_EVALUATION) ||     \
+			  CCS_OBJ_IS_TYPE(                                      \
+				  e, CCS_OBJECT_TYPE_FEATURES_EVALUATION) ||    \
+			  CCS_OBJ_IS_TYPE(e, CCS_OBJECT_TYPE_TREE_EVALUATION)), \
+		CCS_RESULT_ERROR_INVALID_OBJECT,                                \
 		"Invalid CCS evaluation '%s' == %p supplied", #e, e)
 
-#define CCS_CHECK_BINDING(b)                                                   \
-	CCS_REFUTE_MSG(                                                        \
-		!(b) || !((_ccs_object_template_t *)(b))->data ||              \
-			(((_ccs_object_template_t *)(b))->obj.type !=          \
-				 CCS_OBJECT_TYPE_CONFIGURATION &&              \
-			 ((_ccs_object_template_t *)(b))->obj.type !=          \
-				 CCS_OBJECT_TYPE_EVALUATION &&                 \
-			 ((_ccs_object_template_t *)(b))->obj.type !=          \
-				 CCS_OBJECT_TYPE_FEATURES &&                   \
-			 ((_ccs_object_template_t *)(b))->obj.type !=          \
-				 CCS_OBJECT_TYPE_FEATURES_EVALUATION &&        \
-			 ((_ccs_object_template_t *)(b))->obj.type !=          \
-				 CCS_OBJECT_TYPE_TREE_EVALUATION),             \
-		CCS_RESULT_ERROR_INVALID_OBJECT,                               \
+#define CCS_CHECK_BINDING(b)                                                    \
+	CCS_REFUTE_MSG(                                                         \
+		!CCS_OBJ_IS_VALID(b) ||                                         \
+			!(CCS_OBJ_IS_TYPE(b, CCS_OBJECT_TYPE_CONFIGURATION) ||  \
+			  CCS_OBJ_IS_TYPE(b, CCS_OBJECT_TYPE_EVALUATION) ||     \
+			  CCS_OBJ_IS_TYPE(b, CCS_OBJECT_TYPE_FEATURES) ||       \
+			  CCS_OBJ_IS_TYPE(                                      \
+				  b, CCS_OBJECT_TYPE_FEATURES_EVALUATION) ||    \
+			  CCS_OBJ_IS_TYPE(b, CCS_OBJECT_TYPE_TREE_EVALUATION)), \
+		CCS_RESULT_ERROR_INVALID_OBJECT,                                \
 		"Invalid CCS binding '%s' == %p supplied", #b, b)
 
 #define CCS_CHECK_PTR(p)                                                       \
