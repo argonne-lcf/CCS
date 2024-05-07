@@ -1,6 +1,5 @@
 #ifndef _DISTRIBUTION_DESERIALIZE_H
 #define _DISTRIBUTION_DESERIALIZE_H
-#include "cconfigspace_internal.h"
 #include "distribution_internal.h"
 
 struct _ccs_distribution_uniform_data_mock_s {

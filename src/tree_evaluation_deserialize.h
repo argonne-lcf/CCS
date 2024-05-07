@@ -1,8 +1,6 @@
 #ifndef _TREE_EVALUATION_DESERIALIZE_H
 #define _TREE_EVALUATION_DESERIALIZE_H
-#include "cconfigspace_internal.h"
 #include "tree_evaluation_internal.h"
-#include "tree_configuration_deserialize.h"
 
 struct _ccs_tree_evaluation_data_mock_s {
 	_ccs_binding_data_t      base;
@@ -21,9 +19,10 @@ _ccs_deserialize_bin_ccs_tree_evaluation_data(
 {
 	CCS_VALIDATE(_ccs_deserialize_bin_ccs_binding_data(
 		&data->base, version, buffer_size, buffer));
-	CCS_VALIDATE(_ccs_tree_configuration_deserialize(
-		&data->configuration, CCS_SERIALIZE_FORMAT_BINARY, version,
-		buffer_size, buffer, opts));
+	CCS_VALIDATE(_ccs_object_deserialize_with_opts_check(
+		(ccs_object_t *)&data->configuration,
+		CCS_OBJECT_TYPE_TREE_CONFIGURATION, CCS_SERIALIZE_FORMAT_BINARY,
+		version, buffer_size, buffer, opts));
 	CCS_VALIDATE(_ccs_deserialize_bin_ccs_evaluation_result(
 		&data->result, buffer_size, buffer));
 	return CCS_RESULT_SUCCESS;

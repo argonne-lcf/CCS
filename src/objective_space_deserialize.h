@@ -1,7 +1,6 @@
 #ifndef _OBJECTIVE_SPACE_DESERIALIZE_H
 #define _OBJECTIVE_SPACE_DESERIALIZE_H
-#include "context_deserialize.h"
-#include "expression_deserialize.h"
+#include "objective_space_internal.h"
 
 struct _ccs_objective_space_data_mock_s {
 	const char           *name;
@@ -45,13 +44,15 @@ _ccs_deserialize_bin_ccs_objective_space_data(
 	data->objective_types = (ccs_objective_type_t *)mem;
 
 	for (size_t i = 0; i < data->num_parameters; i++)
-		CCS_VALIDATE(_ccs_parameter_deserialize(
-			data->parameters + i, CCS_SERIALIZE_FORMAT_BINARY,
+		CCS_VALIDATE(_ccs_object_deserialize_with_opts_check(
+			(ccs_object_t *)data->parameters + i,
+			CCS_OBJECT_TYPE_PARAMETER, CCS_SERIALIZE_FORMAT_BINARY,
 			version, buffer_size, buffer, opts));
 
 	for (size_t i = 0; i < data->num_objectives; i++) {
-		CCS_VALIDATE(_ccs_expression_deserialize(
-			data->objectives + i, CCS_SERIALIZE_FORMAT_BINARY,
+		CCS_VALIDATE(_ccs_object_deserialize_with_opts_check(
+			(ccs_object_t *)data->objectives + i,
+			CCS_OBJECT_TYPE_EXPRESSION, CCS_SERIALIZE_FORMAT_BINARY,
 			version, buffer_size, buffer, opts));
 		CCS_VALIDATE(_ccs_deserialize_bin_ccs_objective_type(
 			data->objective_types + i, buffer_size, buffer));

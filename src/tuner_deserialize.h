@@ -1,9 +1,6 @@
 #ifndef _TUNER_DESERIALIZE_H
 #define _TUNER_DESERIALIZE_H
 #include "tuner_internal.h"
-#include "configuration_space_deserialize.h"
-#include "objective_space_deserialize.h"
-#include "evaluation_deserialize.h"
 
 struct _ccs_random_tuner_data_mock_s {
 	_ccs_tuner_common_data_t common_data;
@@ -26,12 +23,15 @@ _ccs_deserialize_bin_size_ccs_tuner_common_data(
 		&data->type, buffer_size, buffer));
 	CCS_VALIDATE(
 		_ccs_deserialize_bin_string(&data->name, buffer_size, buffer));
-	CCS_VALIDATE(_ccs_configuration_space_deserialize(
-		&data->configuration_space, CCS_SERIALIZE_FORMAT_BINARY,
+	CCS_VALIDATE(_ccs_object_deserialize_with_opts_check(
+		(ccs_object_t *)&data->configuration_space,
+		CCS_OBJECT_TYPE_CONFIGURATION_SPACE,
+		CCS_SERIALIZE_FORMAT_BINARY, version, buffer_size, buffer,
+		opts));
+	CCS_VALIDATE(_ccs_object_deserialize_with_opts_check(
+		(ccs_object_t *)&data->objective_space,
+		CCS_OBJECT_TYPE_OBJECTIVE_SPACE, CCS_SERIALIZE_FORMAT_BINARY,
 		version, buffer_size, buffer, opts));
-	CCS_VALIDATE(_ccs_objective_space_deserialize(
-		&data->objective_space, CCS_SERIALIZE_FORMAT_BINARY, version,
-		buffer_size, buffer, opts));
 	return CCS_RESULT_SUCCESS;
 }
 
@@ -64,9 +64,10 @@ _ccs_deserialize_bin_ccs_random_tuner_data(
 	data->optima = (ccs_evaluation_t *)mem;
 
 	for (size_t i = 0; i < data->size_history; i++)
-		CCS_VALIDATE(_ccs_evaluation_deserialize(
-			data->history + i, CCS_SERIALIZE_FORMAT_BINARY, version,
-			buffer_size, buffer, opts));
+		CCS_VALIDATE(_ccs_object_deserialize_with_opts_check(
+			(ccs_object_t *)data->history + i,
+			CCS_OBJECT_TYPE_EVALUATION, CCS_SERIALIZE_FORMAT_BINARY,
+			version, buffer_size, buffer, opts));
 
 	for (size_t i = 0; i < data->size_optima; i++)
 		CCS_VALIDATE(_ccs_deserialize_bin_ccs_object(

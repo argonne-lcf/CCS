@@ -1,6 +1,5 @@
 #ifndef _MAP_DESERIALIZE_H
 #define _MAP_DESERIALIZE_H
-#include "cconfigspace_internal.h"
 #include "map_internal.h"
 
 struct _ccs_map_pair_s {

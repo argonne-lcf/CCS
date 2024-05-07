@@ -34,6 +34,7 @@ libcconfigspace_la_SOURCES = \
 	utlist.h \
 	cconfigspace.c \
 	cconfigspace_internal.h \
+	cconfigspace_deserialize.h \
 	error_stack.c \
 	error_stack_internal.h \
 	interval.c \

@@ -36,9 +36,9 @@ _ccs_map_remove(_ccs_map_data_t *data, _ccs_map_datum_t *entry)
 static ccs_result_t
 _ccs_map_del(ccs_object_t o)
 {
-	ccs_map_t         m       = (ccs_map_t)o;
-	_ccs_map_data_t  *data    = (_ccs_map_data_t *)(m->data);
-	_ccs_map_datum_t *current = NULL, *tmp;
+	ccs_map_t         m    = (ccs_map_t)o;
+	_ccs_map_data_t  *data = (_ccs_map_data_t *)(m->data);
+	_ccs_map_datum_t *current, *tmp;
 	HASH_ITER(hh, data->map, current, tmp)
 	{
 		_ccs_map_remove(data, current);
@@ -49,8 +49,8 @@ _ccs_map_del(ccs_object_t o)
 static inline size_t
 _ccs_serialize_bin_size_ccs_map_data(_ccs_map_data_t *data)
 {
-	size_t            sz      = 0;
-	_ccs_map_datum_t *current = NULL, *tmp;
+	size_t            sz = 0;
+	_ccs_map_datum_t *current, *tmp;
 	sz += _ccs_serialize_bin_size_size(HASH_COUNT(data->map));
 	HASH_ITER(hh, data->map, current, tmp)
 	{
@@ -66,7 +66,7 @@ _ccs_serialize_bin_ccs_map_data(
 	size_t          *buffer_size,
 	char           **buffer)
 {
-	_ccs_map_datum_t *current = NULL, *tmp;
+	_ccs_map_datum_t *current, *tmp;
 	CCS_VALIDATE(_ccs_serialize_bin_size(
 		HASH_COUNT(data->map), buffer_size, buffer));
 	HASH_ITER(hh, data->map, current, tmp)
@@ -323,8 +323,8 @@ ccs_map_get_keys(
 		CCS_REFUTE_ERR_GOTO(
 			err, num_keys < num_entries,
 			CCS_RESULT_ERROR_INVALID_VALUE, end);
-		_ccs_map_datum_t *current = NULL, *tmp;
-		size_t            i       = 0;
+		_ccs_map_datum_t *current, *tmp;
+		size_t            i = 0;
 		HASH_ITER(hh, map->data->map, current, tmp)
 		{
 			keys[i++] = current->value;
@@ -356,8 +356,8 @@ ccs_map_get_values(
 		CCS_REFUTE_ERR_GOTO(
 			err, num_values < num_entries,
 			CCS_RESULT_ERROR_INVALID_VALUE, end);
-		_ccs_map_datum_t *current = NULL, *tmp;
-		size_t            i       = 0;
+		_ccs_map_datum_t *current, *tmp;
+		size_t            i = 0;
 		HASH_ITER(hh, map->data->map, current, tmp)
 		{
 			values[i++] = current->value;
@@ -391,8 +391,8 @@ ccs_map_get_pairs(
 		CCS_REFUTE_ERR_GOTO(
 			err, num_pairs < num_entries,
 			CCS_RESULT_ERROR_INVALID_VALUE, end);
-		_ccs_map_datum_t *current = NULL, *tmp;
-		size_t            i       = 0;
+		_ccs_map_datum_t *current, *tmp;
+		size_t            i = 0;
 		HASH_ITER(hh, map->data->map, current, tmp)
 		{
 			keys[i]     = current->key;
@@ -414,7 +414,7 @@ ccs_result_t
 ccs_map_clear(ccs_map_t map)
 {
 	CCS_CHECK_OBJ(map, CCS_OBJECT_TYPE_MAP);
-	_ccs_map_datum_t *current = NULL, *tmp;
+	_ccs_map_datum_t *current, *tmp;
 	CCS_OBJ_WRLOCK(map);
 	HASH_ITER(hh, map->data->map, current, tmp)
 	{

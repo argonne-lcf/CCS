@@ -1,7 +1,5 @@
 #ifndef _CONTEXT_DESERIALIZE_H
 #define _CONTEXT_DESERIALIZE_H
-#include "cconfigspace_internal.h"
-#include "parameter_deserialize.h"
 
 struct _ccs_context_data_mock_s {
 	const char      *name;

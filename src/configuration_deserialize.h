@@ -1,6 +1,5 @@
 #ifndef _CONFIGURATION_DESERIALIZE_H
 #define _CONFIGURATION_DESERIALIZE_H
-#include "cconfigspace_internal.h"
 #include "configuration_internal.h"
 
 static inline ccs_result_t

@@ -1,9 +1,6 @@
 #ifndef _TREE_SPACE_DESERIALIZE_H
 #define _TREE_SPACE_DESERIALIZE_H
-#include "cconfigspace_internal.h"
 #include "tree_space_internal.h"
-#include "rng_deserialize.h"
-#include "tree_deserialize.h"
 
 static inline ccs_result_t
 _ccs_deserialize_bin_ccs_tree_space_common_data(
@@ -19,12 +16,14 @@ _ccs_deserialize_bin_ccs_tree_space_common_data(
 		&data->type, buffer_size, buffer));
 	CCS_VALIDATE(
 		_ccs_deserialize_bin_string(&data->name, buffer_size, buffer));
-	CCS_VALIDATE(_ccs_rng_deserialize(
-		&data->rng, CCS_SERIALIZE_FORMAT_BINARY, version, buffer_size,
-		buffer, &new_opts));
-	CCS_VALIDATE(_ccs_tree_deserialize(
-		&data->tree, CCS_SERIALIZE_FORMAT_BINARY, version, buffer_size,
-		buffer, &new_opts));
+	CCS_VALIDATE(_ccs_object_deserialize_with_opts_check(
+		(ccs_object_t *)&data->rng, CCS_OBJECT_TYPE_RNG,
+		CCS_SERIALIZE_FORMAT_BINARY, version, buffer_size, buffer,
+		&new_opts));
+	CCS_VALIDATE(_ccs_object_deserialize_with_opts_check(
+		(ccs_object_t *)&data->tree, CCS_OBJECT_TYPE_TREE,
+		CCS_SERIALIZE_FORMAT_BINARY, version, buffer_size, buffer,
+		&new_opts));
 	return CCS_RESULT_SUCCESS;
 }
 

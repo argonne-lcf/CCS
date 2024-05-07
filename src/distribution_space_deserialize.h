@@ -1,6 +1,5 @@
 #ifndef _DISTRIBUTION_SPACE_DESERIALIZE_H
 #define _DISTRIBUTION_SPACE_DESERIALIZE_H
-#include "distribution_deserialize.h"
 
 struct _ccs_distribution_space_data_mock_s {
 	ccs_configuration_space_t configuration_space;
@@ -52,9 +51,11 @@ _ccs_deserialize_bin_ccs_distribution_space_data(
 	size_t *indices;
 	indices = data->distrib_parameter_indices;
 	for (size_t i = 0; i < data->num_distributions; i++) {
-		CCS_VALIDATE(_ccs_distribution_deserialize(
-			data->distributions + i, CCS_SERIALIZE_FORMAT_BINARY,
-			version, buffer_size, buffer, opts));
+		CCS_VALIDATE(_ccs_object_deserialize_with_opts_check(
+			(ccs_object_t *)data->distributions + i,
+			CCS_OBJECT_TYPE_DISTRIBUTION,
+			CCS_SERIALIZE_FORMAT_BINARY, version, buffer_size,
+			buffer, opts));
 		CCS_VALIDATE(_ccs_deserialize_bin_size(
 			data->dimensions + i, buffer_size, buffer));
 		for (size_t j = 0; j < data->dimensions[i]; j++) {

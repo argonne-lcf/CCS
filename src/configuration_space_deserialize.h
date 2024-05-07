@@ -1,9 +1,5 @@
 #ifndef _CONFIGURATION_SPACE_DESERIALIZE_H
 #define _CONFIGURATION_SPACE_DESERIALIZE_H
-#include "context_deserialize.h"
-#include "expression_deserialize.h"
-#include "distribution_deserialize.h"
-#include "rng_deserialize.h"
 
 struct _ccs_configuration_space_data_mock_s {
 	const char       *name;
@@ -36,9 +32,10 @@ _ccs_deserialize_bin_ccs_configuration_space_data(
 		&data->num_conditions, buffer_size, buffer));
 	CCS_VALIDATE(_ccs_deserialize_bin_size(
 		&data->num_forbidden_clauses, buffer_size, buffer));
-	CCS_VALIDATE(_ccs_rng_deserialize(
-		&data->rng, CCS_SERIALIZE_FORMAT_BINARY, version, buffer_size,
-		buffer, opts));
+	CCS_VALIDATE(_ccs_object_deserialize_with_opts_check(
+		(ccs_object_t *)&data->rng, CCS_OBJECT_TYPE_RNG,
+		CCS_SERIALIZE_FORMAT_BINARY, version, buffer_size, buffer,
+		opts));
 
 	if (!(data->num_parameters + data->num_conditions +
 	      data->num_forbidden_clauses))
@@ -57,24 +54,26 @@ _ccs_deserialize_bin_ccs_configuration_space_data(
 	data->forbidden_clauses = (ccs_expression_t *)mem;
 
 	for (size_t i = 0; i < data->num_parameters; i++)
-		CCS_VALIDATE(_ccs_parameter_deserialize(
-			data->parameters + i, CCS_SERIALIZE_FORMAT_BINARY,
+		CCS_VALIDATE(_ccs_object_deserialize_with_opts_check(
+			(ccs_object_t *)data->parameters + i,
+			CCS_OBJECT_TYPE_PARAMETER, CCS_SERIALIZE_FORMAT_BINARY,
 			version, buffer_size, buffer, opts));
 
 	for (size_t i = 0; i < data->num_conditions; i++) {
 		size_t index;
 		CCS_VALIDATE(
 			_ccs_deserialize_bin_size(&index, buffer_size, buffer));
-		CCS_VALIDATE(_ccs_expression_deserialize(
-			data->conditions + index, CCS_SERIALIZE_FORMAT_BINARY,
+		CCS_VALIDATE(_ccs_object_deserialize_with_opts_check(
+			(ccs_object_t *)data->conditions + index,
+			CCS_OBJECT_TYPE_EXPRESSION, CCS_SERIALIZE_FORMAT_BINARY,
 			version, buffer_size, buffer, opts));
 	}
 
 	for (size_t i = 0; i < data->num_forbidden_clauses; i++) {
-		CCS_VALIDATE(_ccs_expression_deserialize(
-			data->forbidden_clauses + i,
-			CCS_SERIALIZE_FORMAT_BINARY, version, buffer_size,
-			buffer, opts));
+		CCS_VALIDATE(_ccs_object_deserialize_with_opts_check(
+			(ccs_object_t *)data->forbidden_clauses + i,
+			CCS_OBJECT_TYPE_EXPRESSION, CCS_SERIALIZE_FORMAT_BINARY,
+			version, buffer_size, buffer, opts));
 	}
 
 	return CCS_RESULT_SUCCESS;
