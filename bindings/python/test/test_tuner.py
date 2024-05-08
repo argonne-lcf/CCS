@@ -17,12 +17,12 @@ class TestTuner(unittest.TestCase):
     v2 = ccs.NumericalParameter.Float(lower = float('-inf'), upper = float('inf'))
     e1 = ccs.Expression.Variable(parameter = v1)
     e2 = ccs.Expression.Variable(parameter = v2)
-    os = ccs.ObjectiveSpace(name = "ospace", parameters = [v1, v2], objectives = [e1, e2])
-    return (cs, os)
+    os = ccs.ObjectiveSpace(name = "ospace", search_space = cs, parameters = [v1, v2], objectives = [e1, e2])
+    return os
 
   def test_create_random(self):
-    (cs, os) = self.create_tuning_problem()
-    t = ccs.RandomTuner(name = "tuner", configuration_space = cs, objective_space = os)
+    os = self.create_tuning_problem()
+    t = ccs.RandomTuner(name = "tuner", objective_space = os)
     t2 = ccs.Object.from_handle(t.handle)
     self.assertEqual("tuner", t.name)
     self.assertEqual(ccs.TunerType.RANDOM, t.type)
@@ -101,13 +101,13 @@ class TestTuner(unittest.TestCase):
       else:
         return choice(tuner.tuner_data.optima).configuration
 
-    (cs, os) = self.create_tuning_problem()
-    t = ccs.UserDefinedTuner(name = "tuner", configuration_space = cs, objective_space = os, delete = delete, ask = ask, tell = tell, get_optima = get_optima, get_history = get_history, suggest = suggest, tuner_data = TunerData())
+    os = self.create_tuning_problem()
+    t = ccs.UserDefinedTuner(name = "tuner", objective_space = os, delete = delete, ask = ask, tell = tell, get_optima = get_optima, get_history = get_history, suggest = suggest, tuner_data = TunerData())
     t2 = ccs.Object.from_handle(t.handle)
     self.assertEqual("tuner", t.name)
     self.assertEqual(ccs.TunerType.USER_DEFINED, t.type)
-    self.assertEqual(cs.handle.value, t.configuration_space.handle.value)
     self.assertEqual(os.handle.value, t.objective_space.handle.value)
+    self.assertEqual(os.search_space.handle.value, t.configuration_space.handle.value)
     func = lambda x, y, z: [(x-2)*(x-2), sin(z+y)]
     evals = [ccs.Evaluation(objective_space = os, configuration = c, values = func(*(c.values))) for c in t.ask(100)]
     t.tell(evals)

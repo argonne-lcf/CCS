@@ -280,15 +280,15 @@ ccs_features_tuner_get_history(
  * viewed as a baseline for evaluating features tuners, and as a tool for
  * developing interfaces.
  * @param[in] name the name of the features tuner
- * @param[in] configuration_space the configuration space to explore
  * @param[in] feature_space the feature space
  * @param[in] objective_space the objective space to potimize
  * @param[out] features_tuner_ret a pointer to the variable that will contain
  *                                the newly created features tuner
  * @return #CCS_RESULT_SUCCESS on success
- * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p configuration_space is not a
- * valid CCS configuration space; or if \p objective_space is not a valid CCS
- * objective space; or if \p feature_space is not a valid CCS feature space
+ * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p objective_space is not
+ * a valid CCS objective space; or if \p objective_space search space is
+ * not a valid CCS configuration space; or if \p feature_space is not a
+ * valid CCS feature space
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p name is NULL; or if \p features
  * tuner_ret is NULL
  * @return #CCS_RESULT_ERROR_OUT_OF_MEMORY if there was not enough memory to
@@ -298,11 +298,10 @@ ccs_features_tuner_get_history(
  */
 extern ccs_result_t
 ccs_create_random_features_tuner(
-	const char               *name,
-	ccs_configuration_space_t configuration_space,
-	ccs_feature_space_t       feature_space,
-	ccs_objective_space_t     objective_space,
-	ccs_features_tuner_t     *features_tuner_ret);
+	const char           *name,
+	ccs_feature_space_t   feature_space,
+	ccs_objective_space_t objective_space,
+	ccs_features_tuner_t *features_tuner_ret);
 
 /**
  * A structure that define the callbacks the user must provide to create a user
@@ -392,7 +391,6 @@ typedef struct ccs_user_defined_features_tuner_vector_s
 /**
  * Create a new user defined features tuner.
  * @param[in] name the name of the features tuner
- * @param[in] configuration_space the configuration space to explore
  * @param[in] feature_space the feature space
  * @param[in] objective_space the objective space to optimize
  * @param[in] vector the vector of callbacks implementing the features tuner
@@ -402,9 +400,10 @@ typedef struct ccs_user_defined_features_tuner_vector_s
  * @param[out] features_tuner_ret a pointer to the variable that will contain
  *                                the newly created features tuner
  * @return #CCS_RESULT_SUCCESS on success
- * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p configuration_space is not a
- * valid CCS configuration space; or if \p objective_space is not a valid CCS
- * objective space; or if \p feature_space is not a valid CCS feature space
+ * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p objective_space is not
+ * a valid CCS objective space; or if \p objective_space search space is
+ * not a valid CCS configuration space; or if \p feature_space is not a
+ * valid CCS feature space
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p name is NULL; or if \p
  * features_tuner_ret is NULL; or if \p vector is NULL; or if any interface
  * pointer except suggest is NULL
@@ -416,7 +415,6 @@ typedef struct ccs_user_defined_features_tuner_vector_s
 extern ccs_result_t
 ccs_create_user_defined_features_tuner(
 	const char                               *name,
-	ccs_configuration_space_t                 configuration_space,
 	ccs_feature_space_t                       feature_space,
 	ccs_objective_space_t                     objective_space,
 	ccs_user_defined_features_tuner_vector_t *vector,

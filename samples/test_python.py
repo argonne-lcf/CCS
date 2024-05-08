@@ -4,7 +4,7 @@ import ctypes as ct
 from math import sin
 
 class TestTuner(ccs.UserDefinedTuner):
-  def __init__(self, cs, os):
+  def __init__(self, os):
     data = [[], []]
 
     def delete(tuner):
@@ -44,15 +44,13 @@ class TestTuner(ccs.UserDefinedTuner):
     def get_optima(tuner):
       return tuner.tuner_data[1]
 
-    super().__init__(name = "tuner", configuration_space = cs, objective_space = os, delete = delete, ask = ask, tell = tell, get_optima = get_optima, get_history = get_history, tuner_data = data)
+    super().__init__(name = "tuner", objective_space = os, delete = delete, ask = ask, tell = tell, get_optima = get_optima, get_history = get_history, tuner_data = data)
 
 
-def create_test_tuner(cs_ptr, os_ptr):
-  cs_handle = ccs.ccs_configuration_space(cs_ptr)
+def create_test_tuner(os_ptr):
   os_handle = ccs.ccs_objective_space(os_ptr)
-  cs = ccs.ConfigurationSpace.from_handle(cs_handle)
   os = ccs.ObjectiveSpace.from_handle(os_handle)
-  t = TestTuner(cs, os)
+  t = TestTuner(os)
   return t
 
 def create_tuning_problem():
@@ -64,18 +62,18 @@ def create_tuning_problem():
   v2 = ccs.NumericalParameter.Float(lower = float('-inf'), upper = float('inf'))
   e1 = ccs.Expression.Variable(parameter = v1)
   e2 = ccs.Expression.Variable(parameter = v2)
-  os = ccs.ObjectiveSpace(name = "ospace", parameters = [v1, v2], objectives = [e1, e2])
-  return (cs, os)
+  os = ccs.ObjectiveSpace(name = "ospace", search_space = cs, parameters = [v1, v2], objectives = [e1, e2])
+  return os
 
 
 class Test(unittest.TestCase):
   def test_user_defined(self):
-    (cs, os) = create_tuning_problem()
-    t = TestTuner(cs, os)
+    os = create_tuning_problem()
+    t = TestTuner(os)
     self.assertEqual("tuner", t.name)
     self.assertEqual(ccs.TunerType.USER_DEFINED, t.type)
-    self.assertEqual(cs.handle.value, t.configuration_space.handle.value)
     self.assertEqual(os.handle.value, t.objective_space.handle.value)
+    self.assertEqual(os.search_space.handle.value, t.configuration_space.handle.value)
     func = lambda x, y, z: [(x-2)*(x-2), sin(z+y)]
     evals = [ccs.Evaluation(objective_space = os, configuration = c, values = func(*(c.values))) for c in t.ask(100)]
     t.tell(evals)

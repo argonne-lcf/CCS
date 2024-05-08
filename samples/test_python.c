@@ -17,7 +17,7 @@ create_numerical(const char *name, double lower, double upper)
 }
 
 void
-create_problem(ccs_configuration_space_t *cs, ccs_objective_space_t *os)
+create_problem(ccs_objective_space_t *os)
 {
 	ccs_parameter_t           parameter1, parameter2;
 	ccs_parameter_t           parameters[2];
@@ -41,7 +41,8 @@ create_problem(ccs_configuration_space_t *cs, ccs_objective_space_t *os)
 	otype = CCS_OBJECTIVE_TYPE_MINIMIZE;
 
 	err   = ccs_create_objective_space(
-                "height", 1, &parameter3, 1, &expression, &otype, &ospace);
+                "height", (ccs_search_space_t)cspace, 1, &parameter3, 1,
+                &expression, &otype, &ospace);
 	assert(err == CCS_RESULT_SUCCESS);
 
 	err = ccs_release_object(parameter1);
@@ -52,8 +53,9 @@ create_problem(ccs_configuration_space_t *cs, ccs_objective_space_t *os)
 	assert(err == CCS_RESULT_SUCCESS);
 	err = ccs_release_object(expression);
 	assert(err == CCS_RESULT_SUCCESS);
+	err = ccs_release_object(cspace);
+	assert(err == CCS_RESULT_SUCCESS);
 
-	*cs = cspace;
 	*os = ospace;
 }
 
@@ -113,12 +115,11 @@ test_tuner(ccs_tuner_t tuner, ccs_objective_space_t ospace)
 void
 test(void)
 {
-	ccs_tuner_t               t;
-	ccs_configuration_space_t cs;
-	ccs_objective_space_t     os;
-	ccs_result_t              err;
+	ccs_tuner_t           t;
+	ccs_objective_space_t os;
+	ccs_result_t          err;
 
-	create_problem(&cs, &os);
+	create_problem(&os);
 
 	PyObject *pName, *pModule, *pFunc;
 	PyObject *pArgs, *pValue, *pHandle, *pAddr;
@@ -153,11 +154,9 @@ test(void)
 
 	if (pModule != NULL) {
 		pFunc  = PyObject_GetAttrString(pModule, "create_test_tuner");
-		pArgs  = PyTuple_New(2);
-		pValue = PyLong_FromVoidPtr(cs);
-		PyTuple_SetItem(pArgs, 0, pValue);
+		pArgs  = PyTuple_New(1);
 		pValue = PyLong_FromVoidPtr(os);
-		PyTuple_SetItem(pArgs, 1, pValue);
+		PyTuple_SetItem(pArgs, 0, pValue);
 		pValue = PyObject_CallObject(pFunc, pArgs);
 		Py_DECREF(pArgs);
 		Py_DECREF(pFunc);
@@ -178,8 +177,6 @@ test(void)
 		assert(0);
 	}
 	err = ccs_release_object(os);
-	assert(err == CCS_RESULT_SUCCESS);
-	err = ccs_release_object(cs);
 	assert(err == CCS_RESULT_SUCCESS);
 	Py_Finalize();
 	return;

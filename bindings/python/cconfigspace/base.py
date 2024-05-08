@@ -28,6 +28,7 @@ ccs_parameter           = ccs_object
 ccs_expression          = ccs_object
 ccs_context             = ccs_object
 ccs_distribution_space  = ccs_object
+ccs_search_space        = ccs_object
 ccs_configuration_space = ccs_object
 ccs_binding             = ccs_object
 ccs_configuration       = ccs_object

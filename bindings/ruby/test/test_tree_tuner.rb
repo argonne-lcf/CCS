@@ -23,13 +23,12 @@ class CConfigSpaceTestTreeTuner < Minitest::Test
     ts = CCS::StaticTreeSpace.new(name: 'space', tree: tree)
     v1 = CCS::NumericalParameter::Float.new(lower: -Float::INFINITY, upper: Float::INFINITY)
     e1 = CCS::Expression::Variable.new(parameter: v1)
-    os = CCS::ObjectiveSpace.new(name: 'ospace', parameters: [v1], objectives: {e1 => :CCS_OBJECTIVE_TYPE_MAXIMIZE})
-    [ts, os]
+    os = CCS::ObjectiveSpace.new(name: 'ospace', search_space: ts, parameters: [v1], objectives: {e1 => :CCS_OBJECTIVE_TYPE_MAXIMIZE})
   end
 
   def test_create_random
-    ts, os = create_tuning_problem
-    t = CCS::RandomTreeTuner.new(name: "tuner", tree_space: ts, objective_space: os)
+    os = create_tuning_problem
+    t = CCS::RandomTreeTuner.new(name: "tuner", objective_space: os)
     t2 = CCS::Object.from_handle(t)
     assert_equal(t.class, t2.class)
     assert_equal("tuner", t.name)
@@ -116,8 +115,8 @@ class CConfigSpaceTestTreeTuner < Minitest::Test
         tuner.tuner_data.optima.sample.configuration
       end
     }
-    ts, os = create_tuning_problem
-    t = CCS::UserDefinedTreeTuner.new(name: "tuner", tree_space: ts, objective_space: os, del: del, ask: ask, tell: tell, get_optima: get_optima, get_history: get_history, suggest: suggest, tuner_data: TreeTunerData.new)
+    os = create_tuning_problem
+    t = CCS::UserDefinedTreeTuner.new(name: "tuner", objective_space: os, del: del, ask: ask, tell: tell, get_optima: get_optima, get_history: get_history, suggest: suggest, tuner_data: TreeTunerData.new)
     t2 = CCS::Object::from_handle(t)
     assert_equal( t.class, t2.class)
     assert_equal( "tuner", t.name )

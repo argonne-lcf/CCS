@@ -1,5 +1,5 @@
 import ctypes as ct
-from .base import Object, Error, CEnumeration, Result, _ccs_get_function, ccs_context, ccs_parameter, ccs_configuration_space, ccs_configuration, ccs_evaluation, ccs_rng, ccs_distribution, ccs_expression, Datum, ccs_objective_space, ccs_bool
+from .base import Object, Error, CEnumeration, Result, _ccs_get_function, ccs_context, ccs_parameter, ccs_configuration_space, ccs_configuration, ccs_evaluation, ccs_rng, ccs_distribution, ccs_expression, Datum, ccs_objective_space, ccs_bool, ccs_search_space
 from .context import Context
 from .parameter import Parameter
 from .expression import Expression
@@ -12,14 +12,15 @@ class ObjectiveType(CEnumeration):
     ('MINIMIZE', 0),
     'MAXIMIZE' ]
 
-ccs_create_objective_space = _ccs_get_function("ccs_create_objective_space", [ct.c_char_p, ct.c_size_t, ct.POINTER(ccs_parameter), ct.c_size_t, ct.POINTER(ccs_expression), ct.POINTER(ObjectiveType), ct.POINTER(ccs_objective_space)])
+ccs_create_objective_space = _ccs_get_function("ccs_create_objective_space", [ct.c_char_p, ccs_search_space, ct.c_size_t, ct.POINTER(ccs_parameter), ct.c_size_t, ct.POINTER(ccs_expression), ct.POINTER(ObjectiveType), ct.POINTER(ccs_objective_space)])
+ccs_objective_space_get_search_space = _ccs_get_function("ccs_objective_space_get_search_space", [ccs_objective_space, ct.POINTER(ccs_search_space)])
 ccs_objective_space_get_objective = _ccs_get_function("ccs_objective_space_get_objective", [ccs_objective_space, ct.c_size_t, ct.POINTER(ccs_expression), ct.POINTER(ObjectiveType)])
 ccs_objective_space_get_objectives = _ccs_get_function("ccs_objective_space_get_objectives", [ccs_objective_space, ct.c_size_t, ct.POINTER(ccs_expression), ct.POINTER(ObjectiveType), ct.POINTER(ct.c_size_t)])
 ccs_objective_space_check_evaluation = _ccs_get_function("ccs_objective_space_check_evaluation", [ccs_objective_space, ccs_evaluation, ct.POINTER(ccs_bool)])
 
 class ObjectiveSpace(Context):
   def __init__(self, handle = None, retain = False, auto_release = True,
-               name = "", parameters = [], objectives = [], types = None):
+               name = "", search_space = None, parameters = [], objectives = [], types = None):
     if handle is None:
       count = len(parameters)
       ctx = dict(zip([x.name for x in parameters], parameters))
@@ -37,7 +38,7 @@ class ObjectiveSpace(Context):
       parameters = (ccs_parameter * count)(*[x.handle.value for x in parameters])
       objectives = (ccs_expression * sz)(*[x.handle.value for x in objectives])
       handle = ccs_objective_space()
-      res = ccs_create_objective_space(str.encode(name), count, parameters, sz, objectives, types, ct.byref(handle))
+      res = ccs_create_objective_space(str.encode(name), search_space.handle, count, parameters, sz, objectives, types, ct.byref(handle))
       Error.check(res)
       super().__init__(handle = handle, retain = False)
     else:
@@ -46,6 +47,16 @@ class ObjectiveSpace(Context):
   @classmethod
   def from_handle(cls, handle, retain = True, auto_release = True):
     return cls(handle = handle, retain = retain, auto_release = auto_release)
+
+  @property
+  def search_space(self):
+    if hasattr(self, "_search_space"):
+      return self._search_space
+    s = ccs_search_space()
+    res = ccs_objective_space_get_search_space(self.handle, ct.byref(s))
+    Error.check(res)
+    self._search_space = Object.from_handle(s)
+    return self._search_space
 
   def get_objective(self, index):
     v = ccs_expression()

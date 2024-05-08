@@ -25,11 +25,6 @@ _ccs_deserialize_bin_ccs_features_tuner_common_data(
 	CCS_VALIDATE(
 		_ccs_deserialize_bin_string(&data->name, buffer_size, buffer));
 	CCS_VALIDATE(_ccs_object_deserialize_with_opts_check(
-		(ccs_object_t *)&data->configuration_space,
-		CCS_OBJECT_TYPE_CONFIGURATION_SPACE,
-		CCS_SERIALIZE_FORMAT_BINARY, version, buffer_size, buffer,
-		opts));
-	CCS_VALIDATE(_ccs_object_deserialize_with_opts_check(
 		(ccs_object_t *)&data->objective_space,
 		CCS_OBJECT_TYPE_OBJECTIVE_SPACE, CCS_SERIALIZE_FORMAT_BINARY,
 		version, buffer_size, buffer, opts));
@@ -131,9 +126,7 @@ _ccs_deserialize_bin_random_features_tuner(
 	CCS_VALIDATE_ERR_GOTO(
 		res,
 		ccs_create_random_features_tuner(
-			data.common_data.name,
-			data.common_data.configuration_space,
-			data.common_data.feature_space,
+			data.common_data.name, data.common_data.feature_space,
 			data.common_data.objective_space, features_tuner_ret),
 		features_evaluations);
 	odata = (_ccs_random_features_tuner_data_clone_t
@@ -150,8 +143,6 @@ features_evaluations:
 	for (size_t i = 0; i < data.size_history; i++)
 		ccs_release_object(data.history[i]);
 end:
-	if (data.common_data.configuration_space)
-		ccs_release_object(data.common_data.configuration_space);
 	if (data.common_data.objective_space)
 		ccs_release_object(data.common_data.objective_space);
 	if (data.common_data.feature_space)
@@ -212,7 +203,6 @@ _ccs_deserialize_bin_user_defined_features_tuner(
 		res,
 		ccs_create_user_defined_features_tuner(
 			data.base_data.common_data.name,
-			data.base_data.common_data.configuration_space,
 			data.base_data.common_data.feature_space,
 			data.base_data.common_data.objective_space, vector,
 			opts->data, features_tuner_ret),
@@ -244,9 +234,6 @@ evaluations:
 	for (size_t i = 0; i < data.base_data.size_history; i++)
 		ccs_release_object(data.base_data.history[i]);
 end:
-	if (data.base_data.common_data.configuration_space)
-		ccs_release_object(
-			data.base_data.common_data.configuration_space);
 	if (data.base_data.common_data.objective_space)
 		ccs_release_object(data.base_data.common_data.objective_space);
 	if (data.base_data.common_data.feature_space)

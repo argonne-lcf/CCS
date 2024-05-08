@@ -127,14 +127,14 @@ class Tuner(Object):
     Error.check(res)
     return Configuration(handle = config, retain = False)
 
-ccs_create_random_tuner = _ccs_get_function("ccs_create_random_tuner", [ct.c_char_p, ccs_configuration_space, ccs_objective_space, ct.POINTER(ccs_tuner)])
+ccs_create_random_tuner = _ccs_get_function("ccs_create_random_tuner", [ct.c_char_p, ccs_objective_space, ct.POINTER(ccs_tuner)])
 
 class RandomTuner(Tuner):
   def __init__(self, handle = None, retain = False, auto_release = True,
-               name = "", configuration_space = None, objective_space = None):
+               name = "", objective_space = None):
     if handle is None:
       handle = ccs_tuner()
-      res = ccs_create_random_tuner(str.encode(name), configuration_space.handle, objective_space.handle, ct.byref(handle))
+      res = ccs_create_random_tuner(str.encode(name), objective_space.handle, ct.byref(handle))
       Error.check(res)
       super().__init__(handle = handle, retain = False)
     else:
@@ -162,7 +162,7 @@ class UserDefinedTunerVector(ct.Structure):
     ('serialize', ccs_user_defined_tuner_serialize_type),
     ('deserialize', ccs_user_defined_tuner_deserialize_type) ]
 
-ccs_create_user_defined_tuner = _ccs_get_function("ccs_create_user_defined_tuner", [ct.c_char_p, ccs_configuration_space, ccs_objective_space, ct.POINTER(UserDefinedTunerVector), ct.py_object, ct.POINTER(ccs_tuner)])
+ccs_create_user_defined_tuner = _ccs_get_function("ccs_create_user_defined_tuner", [ct.c_char_p, ccs_objective_space, ct.POINTER(UserDefinedTunerVector), ct.py_object, ct.POINTER(ccs_tuner)])
 ccs_user_defined_tuner_get_tuner_data = _ccs_get_function("ccs_user_defined_tuner_get_tuner_data", [ccs_tuner, ct.POINTER(ct.c_void_p)])
 
 def _wrap_user_defined_tuner_callbacks(delete, ask, tell, get_optima, get_history, suggest, serialize, deserialize):
@@ -330,7 +330,7 @@ def _wrap_user_defined_tuner_callbacks(delete, ask, tell, get_optima, get_histor
 
 class UserDefinedTuner(Tuner):
   def __init__(self, handle = None, retain = False, auto_release = True,
-               name = "", configuration_space = None, objective_space = None, delete = None, ask = None, tell = None, get_optima = None, get_history = None, suggest = None, serialize = None, deserialize = None, tuner_data = None ):
+               name = "", objective_space = None, delete = None, ask = None, tell = None, get_optima = None, get_history = None, suggest = None, serialize = None, deserialize = None, tuner_data = None ):
     if handle is None:
       if ask is None or tell is None or get_optima is None or get_history is None:
         raise Error(Result(Result.ERROR_INVALID_VALUE))
@@ -365,7 +365,7 @@ class UserDefinedTuner(Tuner):
         c_tuner_data = ct.py_object(tuner_data)
       else:
         c_tuner_data = None
-      res = ccs_create_user_defined_tuner(str.encode(name), configuration_space.handle, objective_space.handle, ct.byref(vec), c_tuner_data, ct.byref(handle))
+      res = ccs_create_user_defined_tuner(str.encode(name), objective_space.handle, ct.byref(vec), c_tuner_data, ct.byref(handle))
       Error.check(res)
       super().__init__(handle = handle, retain = False)
       _register_vector(handle, [delete_wrapper, ask_wrapper, tell_wrapper, get_optima_wrapper, get_history_wrapper, suggest_wrapper, serialize_wrapper, deserialize_wrapper, delete_wrapper_func, ask_wrapper_func, tell_wrapper_func, get_optima_wrapper_func, get_history_wrapper_func, suggest_wrapper_func, serialize_wrapper_func, deserialize_wrapper_func, tuner_data])

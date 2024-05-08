@@ -1,4 +1,5 @@
 #include "cconfigspace_internal.h"
+#include "search_space_internal.h"
 #include "objective_space_internal.h"
 #include "evaluation_binding_internal.h"
 #include "expression_internal.h"
@@ -7,11 +8,15 @@ static ccs_result_t
 _ccs_objective_space_del(ccs_object_t object)
 {
 	ccs_objective_space_t objective_space = (ccs_objective_space_t)object;
-	size_t           num_parameters = objective_space->data->num_parameters;
-	ccs_parameter_t *parameters     = objective_space->data->parameters;
-	size_t           num_objectives = objective_space->data->num_objectives;
-	_ccs_objective_t *objectives    = objective_space->data->objectives;
+	_ccs_objective_space_data_t *data     = objective_space->data;
+	ccs_search_space_t           search_space   = data->search_space;
+	size_t                       num_parameters = data->num_parameters;
+	ccs_parameter_t             *parameters     = data->parameters;
+	size_t                       num_objectives = data->num_objectives;
+	_ccs_objective_t            *objectives     = data->objectives;
 
+	if (search_space)
+		ccs_release_object(search_space);
 	for (size_t i = 0; i < num_parameters; i++)
 		if (parameters[i])
 			ccs_release_object(parameters[i]);
@@ -31,12 +36,17 @@ _ccs_serialize_bin_size_ccs_objective_space_data(
 	size_t                          *cum_size,
 	_ccs_object_serialize_options_t *opts)
 {
-	size_t            num_parameters = data->num_parameters;
-	ccs_parameter_t  *parameters     = data->parameters;
-	size_t            num_objectives = data->num_objectives;
-	_ccs_objective_t *objectives     = data->objectives;
+	ccs_search_space_t search_space   = data->search_space;
+	size_t             num_parameters = data->num_parameters;
+	ccs_parameter_t   *parameters     = data->parameters;
+	size_t             num_objectives = data->num_objectives;
+	_ccs_objective_t  *objectives     = data->objectives;
 
 	*cum_size += _ccs_serialize_bin_size_string(data->name);
+
+	CCS_VALIDATE(search_space->obj.ops->serialize_size(
+		search_space, CCS_SERIALIZE_FORMAT_BINARY, cum_size, opts));
+
 	*cum_size += _ccs_serialize_bin_size_size(num_parameters);
 	*cum_size += _ccs_serialize_bin_size_size(num_objectives);
 
@@ -65,13 +75,19 @@ _ccs_serialize_bin_ccs_objective_space_data(
 	char                           **buffer,
 	_ccs_object_serialize_options_t *opts)
 {
-	size_t            num_parameters = data->num_parameters;
-	ccs_parameter_t  *parameters     = data->parameters;
-	size_t            num_objectives = data->num_objectives;
-	_ccs_objective_t *objectives     = data->objectives;
+	ccs_search_space_t search_space   = data->search_space;
+	size_t             num_parameters = data->num_parameters;
+	ccs_parameter_t   *parameters     = data->parameters;
+	size_t             num_objectives = data->num_objectives;
+	_ccs_objective_t  *objectives     = data->objectives;
 
 	CCS_VALIDATE(
 		_ccs_serialize_bin_string(data->name, buffer_size, buffer));
+
+	CCS_VALIDATE(search_space->obj.ops->serialize(
+		search_space, CCS_SERIALIZE_FORMAT_BINARY, buffer_size, buffer,
+		opts));
+
 	CCS_VALIDATE(
 		_ccs_serialize_bin_size(num_parameters, buffer_size, buffer));
 	CCS_VALIDATE(
@@ -210,6 +226,7 @@ _ccs_objective_space_add_objectives(
 ccs_result_t
 ccs_create_objective_space(
 	const char            *name,
+	ccs_search_space_t     search_space,
 	size_t                 num_parameters,
 	ccs_parameter_t       *parameters,
 	size_t                 num_objectives,
@@ -218,6 +235,7 @@ ccs_create_objective_space(
 	ccs_objective_space_t *objective_space_ret)
 {
 	CCS_CHECK_PTR(name);
+	CCS_CHECK_SEARCH_SPACE(search_space);
 	CCS_CHECK_PTR(objective_space_ret);
 	CCS_CHECK_ARY(num_parameters, parameters);
 	CCS_CHECK_ARY(num_objectives, objectives);
@@ -261,13 +279,26 @@ ccs_create_objective_space(
 		_ccs_objective_space_add_objectives(
 			obj_space, num_objectives, objectives, types),
 		errparams);
-	*objective_space_ret = obj_space;
+	CCS_VALIDATE_ERR_GOTO(err, ccs_retain_object(search_space), errparams);
+	obj_space->data->search_space = search_space;
+	*objective_space_ret          = obj_space;
 	return CCS_RESULT_SUCCESS;
 errparams:
 	_ccs_objective_space_del(obj_space);
 	_ccs_object_deinit(&(obj_space->obj));
 	free((void *)mem_orig);
 	return err;
+}
+
+ccs_result_t
+ccs_objective_space_get_search_space(
+	ccs_objective_space_t objective_space,
+	ccs_search_space_t   *search_space_ret)
+{
+	CCS_CHECK_OBJ(objective_space, CCS_OBJECT_TYPE_OBJECTIVE_SPACE);
+	CCS_CHECK_PTR(search_space_ret);
+	*search_space_ret = objective_space->data->search_space;
+	return CCS_RESULT_SUCCESS;
 }
 
 static inline ccs_result_t

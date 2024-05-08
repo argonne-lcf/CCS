@@ -304,15 +304,17 @@ static _ccs_tree_tuner_ops_t _ccs_tree_tuner_user_defined_ops = {
 ccs_result_t
 ccs_create_user_defined_tree_tuner(
 	const char                           *name,
-	ccs_tree_space_t                      tree_space,
 	ccs_objective_space_t                 objective_space,
 	ccs_user_defined_tree_tuner_vector_t *vector,
 	void                                 *tuner_data,
 	ccs_tree_tuner_t                     *tuner_ret)
 {
+	ccs_tree_space_t tree_space;
 	CCS_CHECK_PTR(name);
-	CCS_CHECK_OBJ(tree_space, CCS_OBJECT_TYPE_TREE_SPACE);
 	CCS_CHECK_OBJ(objective_space, CCS_OBJECT_TYPE_OBJECTIVE_SPACE);
+	CCS_VALIDATE(ccs_objective_space_get_search_space(
+		objective_space, (ccs_search_space_t *)&tree_space));
+	CCS_CHECK_OBJ(tree_space, CCS_OBJECT_TYPE_TREE_SPACE);
 	CCS_CHECK_PTR(tuner_ret);
 	CCS_CHECK_PTR(vector);
 	CCS_CHECK_PTR(vector->del);

@@ -220,7 +220,9 @@ _ccs_do_nothing(void)
 
 #define CCS_OBJ_IS_VALID(o)   ((o) && ((_ccs_object_template_t *)(o))->data)
 
-#define CCS_OBJ_IS_TYPE(o, t) (((_ccs_object_template_t *)(o))->obj.type == (t))
+#define CCS_OBJ_TYPE(o)       (((_ccs_object_template_t *)(o))->obj.type)
+
+#define CCS_OBJ_IS_TYPE(o, t) (CCS_OBJ_TYPE(o) == (t))
 
 #define CCS_CHECK_OBJ(o, t)                                                    \
 	CCS_REFUTE_MSG(                                                        \
@@ -268,6 +270,15 @@ _ccs_do_nothing(void)
 			  CCS_OBJ_IS_TYPE(b, CCS_OBJECT_TYPE_TREE_EVALUATION)), \
 		CCS_RESULT_ERROR_INVALID_OBJECT,                                \
 		"Invalid CCS binding '%s' == %p supplied", #b, b)
+
+#define CCS_CHECK_SEARCH_SPACE(s)                                              \
+	CCS_REFUTE_MSG(                                                        \
+		!CCS_OBJ_IS_VALID(s) ||                                        \
+			!(CCS_OBJ_IS_TYPE(s, CCS_OBJECT_TYPE_TREE_SPACE) ||    \
+			  CCS_OBJ_IS_TYPE(                                     \
+				  s, CCS_OBJECT_TYPE_CONFIGURATION_SPACE)),    \
+		CCS_RESULT_ERROR_INVALID_OBJECT,                               \
+		"Invalid CCS search space '%s' == %p supplied", #s, s)
 
 #define CCS_CHECK_PTR(p)                                                       \
 	CCS_REFUTE_MSG(                                                        \
@@ -1233,6 +1244,20 @@ _ccs_deserialize_bin_ccs_object_internal(
 		&obj->type, buffer_size, buffer));
 	CCS_VALIDATE(_ccs_deserialize_bin_ccs_object(
 		handle_ret, buffer_size, buffer));
+	return CCS_RESULT_SUCCESS;
+}
+
+static inline ccs_result_t
+_ccs_peek_bin_ccs_object_internal(
+	_ccs_object_internal_t *obj,
+	size_t                 *buffer_size,
+	const char            **buffer,
+	ccs_object_t           *handle_ret)
+{
+	size_t      buff_size = *buffer_size;
+	const char *buff      = *buffer;
+	CCS_VALIDATE(_ccs_deserialize_bin_ccs_object_internal(
+		obj, &buff_size, &buff, handle_ret));
 	return CCS_RESULT_SUCCESS;
 }
 

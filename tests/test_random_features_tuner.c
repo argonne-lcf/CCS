@@ -19,11 +19,11 @@ test(void)
 	ccs_map_t                 map;
 
 	cspace = create_2d_plane();
-	ospace = create_height_objective();
+	ospace = create_height_objective(cspace);
 	fspace = create_knobs(&features_on, &features_off);
 
 	err    = ccs_create_random_features_tuner(
-                "problem", cspace, fspace, ospace, &tuner);
+                "problem", fspace, ospace, &tuner);
 	assert(err == CCS_RESULT_SUCCESS);
 
 	for (size_t i = 0; i < 50; i++) {
@@ -205,7 +205,7 @@ test_evaluation_deserialize(void)
 	int                       cmp;
 
 	cspace = create_2d_plane();
-	ospace = create_height_objective();
+	ospace = create_height_objective(cspace);
 	fspace = create_knobs(&features_on, NULL);
 
 	err    = ccs_configuration_space_sample(

@@ -11,6 +11,15 @@ _ccs_object_deserialize_with_opts_check(
 	const char                       **buffer,
 	_ccs_object_deserialize_options_t *opts);
 
+static inline ccs_result_t
+_ccs_object_deserialize_with_opts(
+	ccs_object_t                      *object_ret,
+	ccs_serialize_format_t             format,
+	uint32_t                           version,
+	size_t                            *buffer_size,
+	const char                       **buffer,
+	_ccs_object_deserialize_options_t *opts);
+
 #include "rng_deserialize.h"
 #include "distribution_deserialize.h"
 #include "parameter_deserialize.h"

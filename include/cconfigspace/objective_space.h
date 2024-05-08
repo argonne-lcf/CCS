@@ -8,8 +8,9 @@ extern "C" {
 /**
  * @file objective_space.h
  * An objective space is a context (see context.h) defining a set of
- * parameters. Objective space also define a list of expressions (see
- * expression.h) over those parameters called objectives.
+ * result parameters of a search space. Objective spaces also define a
+ * list of expressions (see expression.h) over those parameters called
+ * objectives.
  */
 
 /**
@@ -45,10 +46,10 @@ typedef enum ccs_objective_type_e ccs_objective_type_t;
  *                                 the newly created objective space
  * @return #CCS_RESULT_SUCCESS on success
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p name is NULL; or if \p
- * objective_space_ret is NULL; or if \p parameters is NULL; or if \p
- * num_parameters is NULL; or if \p objectives is NULL and \p
- * num_objectives is greater than 0; of if \p types is NULL and \p
- * num_objectives is greater than 0
+ * search_space is null; or if \p objective_space_ret is NULL; or if \p
+ * parameters is NULL; or if \p num_parameters is NULL; or if \p
+ * objectives is NULL and \p num_objectives is greater than 0; of if \p
+ * types is NULL and \p num_objectives is greater than 0
  * @return #CCS_RESULT_ERROR_INVALID_OBJECT if a parameter is not a valid CCS
  * parameter; or if an expressions is not a valid CCS expression
  * @return #CCS_RESULT_ERROR_INVALID_PARAMETER if a parameter appears more than
@@ -62,6 +63,7 @@ typedef enum ccs_objective_type_e ccs_objective_type_t;
 extern ccs_result_t
 ccs_create_objective_space(
 	const char            *name,
+	ccs_search_space_t     search_space,
 	size_t                 num_parameters,
 	ccs_parameter_t       *parameters,
 	size_t                 num_objectives,
@@ -70,45 +72,35 @@ ccs_create_objective_space(
 	ccs_objective_space_t *objective_space_ret);
 
 /**
- * Check that a evaluation is a valid in a objective space.
+ * Get the search space of an objective space.
  * @param[in] objective_space
- * @param[in] evaluation
- * @param[out] is_valid_ret a pointer to a variable that will hold the result
- *                          of the check. Result will be #CCS_TRUE if the
- *                          evaluation is valid. Result will be #CCS_FALSE
- *                          if an active parameter value is not a valid value
- *                          for this parameter; or if an inactive parameter
- *                          value is not inactive; or if a forbidden clause
- *                          would be evaluating to #ccs_true
+ * @param[out] search_space_ret a pointer to the variable that will
+ *                              contain the returned search space
  * @return #CCS_RESULT_SUCCESS on success
  * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p objective_space is not a
- * valid CCS objective space; or if \p evaluation is not a valid CCS
- * evaluation binding
- * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p is_valid_ret is NULL
- * @return #CCS_RESULT_ERROR_INVALID_EVALUATION_BINDING if \p evaluation
- * is not associated to the objective space
+ * valid CCS objective space
+ * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p search_space_ret is NULL
  * @remarks
  *   This function is thread-safe
  */
 extern ccs_result_t
-ccs_objective_space_check_evaluation(
-	ccs_objective_space_t    objective_space,
-	ccs_evaluation_binding_t evaluation,
-	ccs_bool_t              *is_valid_ret);
+ccs_objective_space_get_search_space(
+	ccs_objective_space_t objective_space,
+	ccs_search_space_t   *search_space_ret);
 
 /**
  * Get the objective of rank index in a objective space.
  * @param[in] objective_space
  * @param[in] index the index of the objective to retrieve
- * @param[out] expression_ret a pointer to the variable that will contain the
- *                            returned expression
- * @param[out] type_ret a pointer to the variable that will contain the returned
- *                      objective type
+ * @param[out] expression_ret a pointer to the variable that will contain
+ *                            the returned expression
+ * @param[out] type_ret a pointer to the variable that will contain the
+ *                      returned objective type
  * @return #CCS_RESULT_SUCCESS on success
- * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p objective_space is not a valid
- * CCS objective space
- * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p expression_ret or \p type_ret
- * are NULL
+ * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p objective_space is not a
+ * valid CCS objective space
+ * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p expression_ret or \p
+ * type_ret are NULL
  * @return #CCS_RESULT_ERROR_OUT_OF_BOUNDS if \p index is greater than the
  * number of objectives in the objective space
  * @remarks
@@ -153,6 +145,33 @@ ccs_objective_space_get_objectives(
 	ccs_expression_t     *expressions,
 	ccs_objective_type_t *types,
 	size_t               *num_objectives_ret);
+
+/**
+ * Check that a evaluation is a valid in a objective space.
+ * @param[in] objective_space
+ * @param[in] evaluation
+ * @param[out] is_valid_ret a pointer to a variable that will hold the result
+ *                          of the check. Result will be #CCS_TRUE if the
+ *                          evaluation is valid. Result will be #CCS_FALSE
+ *                          if an active parameter value is not a valid value
+ *                          for this parameter; or if an inactive parameter
+ *                          value is not inactive; or if a forbidden clause
+ *                          would be evaluating to #ccs_true
+ * @return #CCS_RESULT_SUCCESS on success
+ * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p objective_space is not a
+ * valid CCS objective space; or if \p evaluation is not a valid CCS
+ * evaluation binding
+ * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p is_valid_ret is NULL
+ * @return #CCS_RESULT_ERROR_INVALID_EVALUATION_BINDING if \p evaluation
+ * is not associated to the objective space
+ * @remarks
+ *   This function is thread-safe
+ */
+extern ccs_result_t
+ccs_objective_space_check_evaluation(
+	ccs_objective_space_t    objective_space,
+	ccs_evaluation_binding_t evaluation,
+	ccs_bool_t              *is_valid_ret);
 
 #ifdef __cplusplus
 }

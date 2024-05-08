@@ -60,6 +60,7 @@ libcconfigspace_la_SOURCES = \
 	context.c \
 	context_internal.h \
 	context_deserialize.h \
+	search_space_internal.h \
 	configuration_space.c \
 	configuration_space_internal.h \
 	configuration_space_deserialize.h \

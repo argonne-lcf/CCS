@@ -26,7 +26,7 @@ create_numerical(const char *name, double lower, double upper)
 }
 
 void
-create_problem(ccs_configuration_space_t *cs, ccs_objective_space_t *os)
+create_problem(ccs_objective_space_t *os)
 {
 	ccs_parameter_t           parameter1, parameter2;
 	ccs_parameter_t           parameters[2];
@@ -50,7 +50,8 @@ create_problem(ccs_configuration_space_t *cs, ccs_objective_space_t *os)
 	otype = CCS_OBJECTIVE_TYPE_MINIMIZE;
 
 	err   = ccs_create_objective_space(
-                "height", 1, &parameter3, 1, &expression, &otype, &ospace);
+                "height", (ccs_search_space_t)cspace, 1, &parameter3, 1,
+                &expression, &otype, &ospace);
 	assert(err == CCS_RESULT_SUCCESS);
 
 	err = ccs_release_object(parameter1);
@@ -61,8 +62,9 @@ create_problem(ccs_configuration_space_t *cs, ccs_objective_space_t *os)
 	assert(err == CCS_RESULT_SUCCESS);
 	err = ccs_release_object(expression);
 	assert(err == CCS_RESULT_SUCCESS);
+	err = ccs_release_object(cspace);
+	assert(err == CCS_RESULT_SUCCESS);
 
-	*cs = cspace;
 	*os = ospace;
 }
 
@@ -122,14 +124,13 @@ test_tuner(ccs_tuner_t tuner, ccs_objective_space_t ospace)
 void
 test(void)
 {
-	ccs_tuner_t               t;
-	ccs_configuration_space_t cs;
-	ccs_objective_space_t     os;
-	ccs_result_t              err;
-	int                       state;
-	VALUE                     ruby_stack_start;
+	ccs_tuner_t           t;
+	ccs_objective_space_t os;
+	ccs_result_t          err;
+	int                   state;
+	VALUE                 ruby_stack_start;
 
-	create_problem(&cs, &os);
+	create_problem(&os);
 
 	ruby_init_stack(&ruby_stack_start);
 	ruby_init();
@@ -152,8 +153,8 @@ test(void)
 	}
 	VALUE tuner;
 	tuner = rb_funcall(
-		rb_current_receiver(), rb_intern("create_test_tuner"), 2,
-		ULL2NUM((uintptr_t)cs), ULL2NUM((uintptr_t)os));
+		rb_current_receiver(), rb_intern("create_test_tuner"), 1,
+		ULL2NUM((uintptr_t)os));
 	t = (ccs_tuner_t)NUM2ULL(rb_funcall(
 		rb_funcall(tuner, rb_intern("handle"), 0), rb_intern("to_i"),
 		0));
@@ -162,8 +163,6 @@ test(void)
 	err = ccs_release_object(t);
 	assert(err == CCS_RESULT_SUCCESS);
 	err = ccs_release_object(os);
-	assert(err == CCS_RESULT_SUCCESS);
-	err = ccs_release_object(cs);
 	assert(err == CCS_RESULT_SUCCESS);
 	ruby_cleanup(0);
 }

@@ -7,13 +7,16 @@ import cconfigspace as ccs
 class TestObjectiveSpace(unittest.TestCase):
 
   def test_create(self):
+    h = ccs.NumericalParameter.Float()
+    cs = ccs.ConfigurationSpace(name = "cs", parameters = [h])
     h1 = ccs.NumericalParameter.Float()
     h2 = ccs.NumericalParameter.Float()
     h3 = ccs.NumericalParameter.Float()
     e1 = ccs.Expression.Add(left = h1, right = h2)
     e2 = ccs.Expression.Variable(parameter = h3)
-    os = ccs.ObjectiveSpace(name = "space", parameters = [h1, h2, h3], objectives = [e1, e2], types = [ccs.ObjectiveType.MINIMIZE, ccs.ObjectiveType.MAXIMIZE])
+    os = ccs.ObjectiveSpace(name = "space", search_space = cs, parameters = [h1, h2, h3], objectives = [e1, e2], types = [ccs.ObjectiveType.MINIMIZE, ccs.ObjectiveType.MAXIMIZE])
     self.assertEqual( "space", os.name )
+    self.assertEqual( cs.handle.value, os.search_space.handle.value )
     self.assertEqual( 3, os.num_parameters )
     self.assertEqual( h1, os.parameter(0) )
     self.assertEqual( h2, os.parameter(1) )

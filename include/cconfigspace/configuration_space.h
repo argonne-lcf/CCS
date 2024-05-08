@@ -7,10 +7,10 @@ extern "C" {
 
 /**
  * @file configuration_space.h
- * A configuration space is a context (see context.h) defining a set of
- * parameters. Configuration space also offer as constraints system to
- * describe conditional parameter activation as well as forbidden
- * parameter configurations.
+ * A configuration space is a context (see context.h) defining a search
+ * space on a set of parameters. Configuration space also offer as
+ * constraints system to describe conditional parameter activation as
+ * well as forbidden parameter configurations.
  */
 
 /**

@@ -65,7 +65,7 @@ create_2d_plane(void)
 }
 
 ccs_objective_space_t
-create_height_objective(void)
+create_height_objective(ccs_configuration_space_t cspace)
 {
 	ccs_parameter_t       parameter;
 	ccs_objective_space_t ospace;
@@ -78,7 +78,8 @@ create_height_objective(void)
 	assert(err == CCS_RESULT_SUCCESS);
 	otype = CCS_OBJECTIVE_TYPE_MINIMIZE;
 	err   = ccs_create_objective_space(
-                "height", 1, &parameter, 1, &expression, &otype, &ospace);
+                "height", (ccs_search_space_t)cspace, 1, &parameter, 1,
+                &expression, &otype, &ospace);
 	assert(err == CCS_RESULT_SUCCESS);
 
 	err = ccs_release_object(expression);

@@ -18,15 +18,17 @@ module CCS
     end
   end
 
-  attach_function :ccs_create_objective_space, [:string, :size_t, :pointer, :size_t, :pointer, :pointer, :pointer], :ccs_result_t
+  attach_function :ccs_create_objective_space, [:string, :pointer, :size_t, :pointer, :size_t, :pointer, :pointer, :pointer], :ccs_result_t
+  attach_function :ccs_objective_space_get_search_space, [:ccs_objective_space_t, :pointer], :ccs_result_t
   attach_function :ccs_objective_space_get_objective, [:ccs_objective_space_t, :size_t, :pointer, :pointer], :ccs_result_t
   attach_function :ccs_objective_space_get_objectives, [:ccs_objective_space_t, :size_t, :pointer, :pointer, :pointer], :ccs_result_t
   attach_function :ccs_objective_space_check_evaluation, [:ccs_objective_space_t, :ccs_evaluation_t, :pointer], :ccs_result_t
 
   class ObjectiveSpace < Context
+    add_handle_property :search_space, :ccs_search_space_t, :ccs_objective_space_get_search_space, memoize: true
 
     def initialize(handle = nil, retain: false, auto_release: true,
-                   name: "", parameters: [], objectives: [], types: nil)
+                   name: "", search_space: nil, parameters: [], objectives: [], types: nil)
       if handle
         super(handle, retain: retain, auto_release: auto_release)
       else
@@ -57,7 +59,7 @@ module CCS
         p_parameters = MemoryPointer::new(:ccs_parameter_t, count)
         p_parameters.write_array_of_pointer(parameters.collect(&:handle))
         ptr = MemoryPointer::new(:ccs_objective_space_t)
-        CCS.error_check CCS.ccs_create_objective_space(name, count, p_parameters, ocount, p_objs, p_types, ptr)
+        CCS.error_check CCS.ccs_create_objective_space(name, search_space.handle, count, p_parameters, ocount, p_objs, p_types, ptr)
         super(ptr.read_ccs_objective_space_t, retain: false)
       end
     end

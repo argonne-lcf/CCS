@@ -44,7 +44,9 @@ create_tree_tuning_problem(
 	otype = CCS_OBJECTIVE_TYPE_MAXIMIZE;
 
 	err   = ccs_create_objective_space(
-                "ospace", 1, &parameter, 1, &expression, &otype, ospace);
+                "ospace", (ccs_search_space_t)*tree_space, 1, &parameter, 1,
+                &expression, &otype, ospace);
+	print_ccs_error_stack();
 	assert(err == CCS_RESULT_SUCCESS);
 
 	err = ccs_release_object(root);
@@ -69,8 +71,7 @@ test(void)
 
 	create_tree_tuning_problem(&tree_space, &ospace);
 
-	err = ccs_create_random_tree_tuner(
-		"problem", tree_space, ospace, &tuner);
+	err = ccs_create_random_tree_tuner("problem", ospace, &tuner);
 	assert(err == CCS_RESULT_SUCCESS);
 
 	for (size_t i = 0; i < 100; i++) {

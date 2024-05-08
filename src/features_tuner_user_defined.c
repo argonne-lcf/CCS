@@ -323,17 +323,19 @@ static _ccs_features_tuner_ops_t _ccs_features_tuner_user_defined_ops = {
 ccs_result_t
 ccs_create_user_defined_features_tuner(
 	const char                               *name,
-	ccs_configuration_space_t                 configuration_space,
 	ccs_feature_space_t                       feature_space,
 	ccs_objective_space_t                     objective_space,
 	ccs_user_defined_features_tuner_vector_t *vector,
 	void                                     *tuner_data,
 	ccs_features_tuner_t                     *tuner_ret)
 {
+	ccs_configuration_space_t configuration_space;
 	CCS_CHECK_PTR(name);
-	CCS_CHECK_OBJ(configuration_space, CCS_OBJECT_TYPE_CONFIGURATION_SPACE);
 	CCS_CHECK_OBJ(feature_space, CCS_OBJECT_TYPE_FEATURE_SPACE);
 	CCS_CHECK_OBJ(objective_space, CCS_OBJECT_TYPE_OBJECTIVE_SPACE);
+	CCS_VALIDATE(ccs_objective_space_get_search_space(
+		objective_space, (ccs_search_space_t *)&configuration_space));
+	CCS_CHECK_OBJ(configuration_space, CCS_OBJECT_TYPE_CONFIGURATION_SPACE);
 	CCS_CHECK_PTR(tuner_ret);
 	CCS_CHECK_PTR(vector);
 	CCS_CHECK_PTR(vector->del);

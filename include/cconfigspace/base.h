@@ -106,6 +106,10 @@ typedef struct _ccs_context_s             *ccs_context_t;
  */
 typedef struct _ccs_distribution_space_s  *ccs_distribution_space_t;
 /**
+ * An opaque type defining a CCS search space.
+ */
+typedef struct _ccs_search_space_s        *ccs_search_space_t;
+/**
  * An opaque type defining a CCS configuration space.
  */
 typedef struct _ccs_configuration_space_s *ccs_configuration_space_t;

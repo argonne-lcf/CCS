@@ -4,6 +4,8 @@
 
 struct _ccs_objective_space_data_mock_s {
 	const char           *name;
+	ccs_object_t          search_space_handle;
+	ccs_search_space_t    search_space;
 	size_t                num_parameters;
 	size_t                num_objectives;
 	ccs_parameter_t      *parameters;
@@ -20,10 +22,17 @@ _ccs_deserialize_bin_ccs_objective_space_data(
 	const char                       **buffer,
 	_ccs_object_deserialize_options_t *opts)
 {
-	uintptr_t mem;
+	uintptr_t              mem;
+	_ccs_object_internal_t obj;
 
 	CCS_VALIDATE(
 		_ccs_deserialize_bin_string(&data->name, buffer_size, buffer));
+	CCS_VALIDATE(_ccs_peek_bin_ccs_object_internal(
+		&obj, buffer_size, buffer, &data->search_space_handle));
+	CCS_VALIDATE(_ccs_object_deserialize_with_opts(
+		(ccs_object_t *)&data->search_space,
+		CCS_SERIALIZE_FORMAT_BINARY, version, buffer_size, buffer,
+		opts));
 	CCS_VALIDATE(_ccs_deserialize_bin_size(
 		&data->num_parameters, buffer_size, buffer));
 	CCS_VALIDATE(_ccs_deserialize_bin_size(
@@ -82,7 +91,8 @@ _ccs_deserialize_bin_objective_space(
 	new_opts.map_values = CCS_TRUE;
 	CCS_VALIDATE(ccs_create_map(&new_opts.handle_map));
 
-	_ccs_objective_space_data_mock_t data = {NULL, 0, 0, NULL, NULL, NULL};
+	_ccs_objective_space_data_mock_t data = {NULL, NULL, NULL, 0,
+						 0,    NULL, NULL, NULL};
 	CCS_VALIDATE_ERR_GOTO(
 		res,
 		_ccs_deserialize_bin_ccs_objective_space_data(
@@ -91,23 +101,32 @@ _ccs_deserialize_bin_objective_space(
 	CCS_VALIDATE_ERR_GOTO(
 		res,
 		ccs_create_objective_space(
-			data.name, data.num_parameters, data.parameters,
-			data.num_objectives, data.objectives,
+			data.name, data.search_space, data.num_parameters,
+			data.parameters, data.num_objectives, data.objectives,
 			data.objective_types, objective_space_ret),
 		end);
-	if (opts && opts->map_values && opts->handle_map)
+	if (opts && opts->map_values && opts->handle_map) {
+		CCS_VALIDATE_ERR_GOTO(
+			res,
+			_ccs_object_handle_check_add(
+				opts->handle_map, data.search_space_handle,
+				(ccs_object_t)data.search_space),
+			err_objective_space);
 		CCS_VALIDATE_ERR_GOTO(
 			res,
 			_ccs_object_handle_check_add(
 				opts->handle_map, handle,
 				(ccs_object_t)*objective_space_ret),
 			err_objective_space);
+	}
 	goto end;
 
 err_objective_space:
 	ccs_release_object(*objective_space_ret);
 	*objective_space_ret = NULL;
 end:
+	if (data.search_space)
+		ccs_release_object(data.search_space);
 	if (data.parameters)
 		for (size_t i = 0; i < data.num_parameters; i++)
 			if (data.parameters[i])

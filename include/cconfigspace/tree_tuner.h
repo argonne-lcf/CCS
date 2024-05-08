@@ -232,13 +232,13 @@ ccs_tree_tuner_get_history(
  * Create a new random tree tuner. The random tuner should be viewed as a
  * baseline for evaluating tuners, and as a tool for developing interfaces.
  * @param[in] name the name of the tree tuner
- * @param[in] tree_space the configuration space to explore
  * @param[in] objective_space the objective space to potimize
  * @param[out] tuner_ret a pointer to the variable that will contain the
  *                            newly created tree tuner
  * @return #CCS_RESULT_SUCCESS on success
- * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p tree_space is not a valid CCS
- * tree space; or if \p objective_space is not a valid CCS objective space
+ * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p objective_space is not
+ * a valid CCS objective space; or if \p objective_space search space is
+ * not a valid CCS tree space
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p name is NULL; or if \p
  * tuner_ret is NULL
  * @return #CCS_RESULT_ERROR_OUT_OF_MEMORY if there was not enough memory to
@@ -249,7 +249,6 @@ ccs_tree_tuner_get_history(
 extern ccs_result_t
 ccs_create_random_tree_tuner(
 	const char           *name,
-	ccs_tree_space_t      tree_space,
 	ccs_objective_space_t objective_space,
 	ccs_tree_tuner_t     *tuner_ret);
 
@@ -336,7 +335,6 @@ typedef struct ccs_user_defined_tree_tuner_vector_s
 /**
  * Create a new user defined tree tuner.
  * @param[in] name the name of the tuner
- * @param[in] tree_space the tree space to explore
  * @param[in] objective_space the objective space to optimize
  * @param[in] vector the vector of callbacks implementing the tuner interface
  * @param[in] tuner_data a pointer to the tuner internal data structures. Can be
@@ -344,9 +342,9 @@ typedef struct ccs_user_defined_tree_tuner_vector_s
  * @param[out] tuner_ret a pointer to the variable that will contain the newly
  *                       created tuner
  * @return #CCS_RESULT_SUCCESS on success
- * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p tree_space is not a valid CCS
- *                             tree space; or if \p objective_space is
- *                             not a valid CCS objective space
+ * @return #CCS_RESULT_ERROR_INVALID_OBJECT \p objective_space is not a
+ * valid CCS objective space; or if \p objective_space search space is
+ * not a valid CCS tree space
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p name is NULL; or if \p
  * tuner_ret is NULL; or if \p vector is NULL; or if any interface pointer
  * except suggest is NULL
@@ -358,7 +356,6 @@ typedef struct ccs_user_defined_tree_tuner_vector_s
 extern ccs_result_t
 ccs_create_user_defined_tree_tuner(
 	const char                           *name,
-	ccs_tree_space_t                      tree_space,
 	ccs_objective_space_t                 objective_space,
 	ccs_user_defined_tree_tuner_vector_t *vector,
 	void                                 *tuner_data,

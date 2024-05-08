@@ -15,13 +15,12 @@ class CConfigSpaceTestTuner < Minitest::Test
     v2 = CCS::NumericalParameter::Float.new(lower: -Float::INFINITY, upper: Float::INFINITY)
     e1 = CCS::Expression::Variable::new(parameter: v1)
     e2 = CCS::Expression::Variable::new(parameter: v2)
-    os = CCS::ObjectiveSpace::new(name: "ospace", parameters: [v1, v2], objectives: [e1, e2])
-    [cs, os]
+    os = CCS::ObjectiveSpace::new(name: "ospace", search_space: cs, parameters: [v1, v2], objectives: [e1, e2])
   end
 
   def test_create_random
-    cs, os = create_tuning_problem
-    t = CCS::RandomTuner::new(name: "tuner", configuration_space: cs, objective_space: os)
+    os = create_tuning_problem
+    t = CCS::RandomTuner::new(name: "tuner", objective_space: os)
     t2 = CCS::Object::from_handle(t)
     assert_equal( t.class, t2.class)
     assert_equal( "tuner", t.name )
@@ -107,8 +106,8 @@ class CConfigSpaceTestTuner < Minitest::Test
         tuner.tuner_data.optima.sample.configuration
       end
     }
-    cs, os = create_tuning_problem
-    t = CCS::UserDefinedTuner::new(name: "tuner", configuration_space: cs, objective_space: os, del: del, ask: ask, tell: tell, get_optima: get_optima, get_history: get_history, suggest: suggest, tuner_data: TunerData.new)
+    os = create_tuning_problem
+    t = CCS::UserDefinedTuner::new(name: "tuner", objective_space: os, del: del, ask: ask, tell: tell, get_optima: get_optima, get_history: get_history, suggest: suggest, tuner_data: TunerData.new)
     t2 = CCS::Object::from_handle(t)
     assert_equal( t.class, t2.class)
     assert_equal( "tuner", t.name )

@@ -1,7 +1,7 @@
 require_relative '../bindings/ruby/lib/cconfigspace'
 
 class TestTuner < CCS::UserDefinedTuner
-  def initialize(cs, os)
+  def initialize(os)
     @history = []
     @optima = []
     del = lambda { |tuner| nil }
@@ -42,15 +42,13 @@ class TestTuner < CCS::UserDefinedTuner
     get_optima = lambda { |tuner|
       tuner.tuner_data[1]
     }
-    super(name: "tuner", configuration_space: cs, objective_space: os, del: del, ask: ask, tell: tell, get_optima: get_optima, get_history: get_history, tuner_data: [[],[]])
+    super(name: "tuner", objective_space: os, del: del, ask: ask, tell: tell, get_optima: get_optima, get_history: get_history, tuner_data: [[],[]])
   end
 end
 
-def create_test_tuner(cs_ptr, os_ptr)
-  cs_handle = FFI::Pointer::new(cs_ptr)
+def create_test_tuner(os_ptr)
   os_handle = FFI::Pointer::new(os_ptr)
-  TestTuner::new(CCS::ConfigurationSpace.from_handle(cs_handle),
-                 CCS::ObjectiveSpace.from_handle(os_handle))
+  TestTuner::new(CCS::ObjectiveSpace.from_handle(os_handle))
 end
 
 def create_tuning_problem
@@ -62,8 +60,7 @@ def create_tuning_problem
   v2 = CCS::NumericalParameter::Float.new(lower: -Float::INFINITY, upper: Float::INFINITY)
   e1 = CCS::Expression::Variable::new(parameter: v1)
   e2 = CCS::Expression::Variable::new(parameter: v2)
-  os = CCS::ObjectiveSpace::new(name: "ospace", parameters: [v1, v2], objectives: [e1, e2])
-  [cs, os]
+  os = CCS::ObjectiveSpace::new(name: "ospace", search_space: cs, parameters: [v1, v2], objectives: [e1, e2])
 end
 
 

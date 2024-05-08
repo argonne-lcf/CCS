@@ -27,12 +27,12 @@ class TestTreeTuner(unittest.TestCase):
     ts = ccs.StaticTreeSpace(name = 'space', tree = tree)
     v1 = ccs.NumericalParameter.Float(lower = float('-inf'), upper = float('inf'))
     e1 = ccs.Expression.Variable(parameter = v1)
-    os = ccs.ObjectiveSpace(name = "ospace", parameters = [v1], objectives = {e1: ccs.ObjectiveType.MAXIMIZE})
-    return (ts, os)
+    os = ccs.ObjectiveSpace(name = "ospace", search_space = ts, parameters = [v1], objectives = {e1: ccs.ObjectiveType.MAXIMIZE})
+    return os
 
   def test_create_random(self):
-    (ts, os) = self.create_tuning_problem()
-    t = ccs.RandomTreeTuner(name = "tuner", tree_space = ts, objective_space = os)
+    os = self.create_tuning_problem()
+    t = ccs.RandomTreeTuner(name = "tuner", objective_space = os)
     t2 = ccs.Object.from_handle(t.handle)
     self.assertEqual("tuner", t.name)
     self.assertEqual(ccs.TreeTunerType.RANDOM, t.type)
@@ -107,8 +107,8 @@ class TestTreeTuner(unittest.TestCase):
       else:
         return choice(tuner.tuner_data.optima).configuration
 
-    (ts, os) = self.create_tuning_problem()
-    t = ccs.UserDefinedTreeTuner(name = "tuner", tree_space = ts, objective_space = os, delete = delete, ask = ask, tell = tell, get_optima = get_optima, get_history = get_history, suggest = suggest, tuner_data = TunerData())
+    os = self.create_tuning_problem()
+    t = ccs.UserDefinedTreeTuner(name = "tuner", objective_space = os, delete = delete, ask = ask, tell = tell, get_optima = get_optima, get_history = get_history, suggest = suggest, tuner_data = TunerData())
     t2 = ccs.Object.from_handle(t.handle)
     self.assertEqual("tuner", t.name)
     self.assertEqual(ccs.TreeTunerType.USER_DEFINED, t.type)

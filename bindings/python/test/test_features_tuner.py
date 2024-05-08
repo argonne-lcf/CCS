@@ -16,14 +16,14 @@ class TestFeaturesTuner(unittest.TestCase):
     v2 = ccs.NumericalParameter.Float(lower = float('-inf'), upper = float('inf'))
     e1 = ccs.Expression.Variable(parameter = v1)
     e2 = ccs.Expression.Variable(parameter = v2)
-    os = ccs.ObjectiveSpace(name = "ospace", parameters = [v1, v2], objectives = [e1, e2])
+    os = ccs.ObjectiveSpace(name = "ospace", search_space = cs, parameters = [v1, v2], objectives = [e1, e2])
     f1 = ccs.CategoricalParameter(values = [True, False])
     fs = ccs.FeatureSpace(name = "fspace", parameters = [f1])
-    return (cs, fs, os)
+    return (fs, os)
 
   def test_create_random(self):
-    (cs, fs, os) = self.create_tuning_problem()
-    t = ccs.RandomFeaturesTuner(name = "tuner", configuration_space = cs, feature_space = fs, objective_space = os)
+    (fs, os) = self.create_tuning_problem()
+    t = ccs.RandomFeaturesTuner(name = "tuner", feature_space = fs, objective_space = os)
     t2 = ccs.Object.from_handle(t.handle)
     self.assertEqual("tuner", t.name)
     self.assertEqual(ccs.FeaturesTunerType.RANDOM, t.type)
@@ -118,14 +118,14 @@ class TestFeaturesTuner(unittest.TestCase):
       else:
         return choice(optis).configuration
 
-    (cs, fs, os) = self.create_tuning_problem()
-    t = ccs.UserDefinedFeaturesTuner(name = "tuner", configuration_space = cs, feature_space = fs, objective_space = os, delete = delete, ask = ask, tell = tell, get_optima = get_optima, get_history = get_history, suggest = suggest, tuner_data = TunerData())
+    (fs, os) = self.create_tuning_problem()
+    t = ccs.UserDefinedFeaturesTuner(name = "tuner", feature_space = fs, objective_space = os, delete = delete, ask = ask, tell = tell, get_optima = get_optima, get_history = get_history, suggest = suggest, tuner_data = TunerData())
     t2 = ccs.Object.from_handle(t.handle)
     self.assertEqual("tuner", t.name)
     self.assertEqual(ccs.FeaturesTunerType.USER_DEFINED, t.type)
-    self.assertEqual(cs.handle.value, t.configuration_space.handle.value)
     self.assertEqual(fs.handle.value, t.feature_space.handle.value)
     self.assertEqual(os.handle.value, t.objective_space.handle.value)
+    self.assertEqual(os.search_space.handle.value, t.configuration_space.handle.value)
     func = lambda x, y, z: [(x-2)*(x-2), sin(z+y)]
     features_on = ccs.Features(feature_space = fs, values = [True])
     features_off = ccs.Features(feature_space = fs, values = [False])

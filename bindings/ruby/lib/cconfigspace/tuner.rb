@@ -96,16 +96,16 @@ module CCS
 
   end
 
-  attach_function :ccs_create_random_tuner, [:string, :ccs_configuration_space_t, :ccs_objective_space_t, :pointer], :ccs_result_t
+  attach_function :ccs_create_random_tuner, [:string, :ccs_objective_space_t, :pointer], :ccs_result_t
 
   class RandomTuner < Tuner
     def initialize(handle = nil, retain: false, auto_release: true,
-                   name: "", configuration_space: nil, objective_space: nil)
+                   name: "", objective_space: nil)
       if handle
         super(handle, retain: retain, auto_release: auto_release)
       else
         ptr = MemoryPointer::new(:ccs_tuner_t)
-        CCS.error_check CCS.ccs_create_random_tuner(name, configuration_space, objective_space, ptr)
+        CCS.error_check CCS.ccs_create_random_tuner(name, objective_space, ptr)
         super(ptr.read_ccs_tuner_t, retain: false)
       end
     end
@@ -256,14 +256,14 @@ module CCS
     return [delwrapper, askwrapper, tellwrapper, get_optimawrapper, get_historywrapper, suggestwrapper, serializewrapper, deserializewrapper]
   end
 
-  attach_function :ccs_create_user_defined_tuner, [:string, :ccs_configuration_space_t, :ccs_objective_space_t, UserDefinedTunerVector.by_ref, :value, :pointer], :ccs_result_t
+  attach_function :ccs_create_user_defined_tuner, [:string, :ccs_objective_space_t, UserDefinedTunerVector.by_ref, :value, :pointer], :ccs_result_t
   attach_function :ccs_user_defined_tuner_get_tuner_data, [:ccs_tuner_t, :pointer], :ccs_result_t
 
   class UserDefinedTuner < Tuner
     add_property :tuner_data, :value, :ccs_user_defined_tuner_get_tuner_data, memoize: true
 
     def initialize(handle = nil, retain: false, auto_release: true,
-                   name: "", configuration_space: nil, objective_space: nil,
+                   name: "", objective_space: nil,
                    del: nil, ask: nil, tell: nil, get_optima: nil, get_history: nil, suggest: nil, serialize: nil, deserialize: nil, tuner_data: nil)
       if handle
         super(handle, retain: retain, auto_release: auto_release)
@@ -281,7 +281,7 @@ module CCS
         vector[:serialize] = serializewrapper
         vector[:deserialize] = deserializewrapper
         ptr = MemoryPointer::new(:ccs_tuner_t)
-        CCS.error_check CCS.ccs_create_user_defined_tuner(name, configuration_space, objective_space, vector, tuner_data, ptr)
+        CCS.error_check CCS.ccs_create_user_defined_tuner(name, objective_space, vector, tuner_data, ptr)
         handle = ptr.read_ccs_tuner_t
         super(handle, retain: false)
         CCS.register_vector(handle, [delwrapper, askwrapper, tellwrapper, get_optimawrapper, get_historywrapper, suggestwrapper, serializewrapper, deserializewrapper, tuner_data])

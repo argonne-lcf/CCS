@@ -97,6 +97,7 @@ module CCS
   typedef :ccs_object_t, :ccs_expression_t
   typedef :ccs_object_t, :ccs_context_t
   typedef :ccs_object_t, :ccs_distribution_space_t
+  typedef :ccs_object_t, :ccs_search_space_t
   typedef :ccs_object_t, :ccs_configuration_space_t
   typedef :ccs_object_t, :ccs_binding_t
   typedef :ccs_object_t, :ccs_configuration_t
@@ -123,6 +124,7 @@ module CCS
     alias read_ccs_expression_t read_ccs_object_t
     alias read_ccs_context_t read_ccs_object_t
     alias read_ccs_distribution_space_t read_ccs_object_t
+    alias read_ccs_search_space_t read_ccs_object_t
     alias read_ccs_configuration_space_t read_ccs_object_t
     alias read_ccs_binding_t read_ccs_object_t
     alias read_ccs_configuration_t read_ccs_object_t

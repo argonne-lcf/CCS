@@ -544,7 +544,8 @@ kokkosp_request_values(
 	  otype = CCS_OBJECTIVE_TYPE_MINIMIZE;
 	  CCS_CHECK(ccs_create_objective_space(
 		  ("os (region: " + std::to_string(regionCounter) + ")").c_str(),
-		  1, &htime, 1, &expression, &otype, &os));
+		  (ccs_search_space_t)cs, 1, &htime, 1, &expression, &otype,
+		  &os));
 	  CCS_CHECK(ccs_release_object(expression));
 	  CCS_CHECK(ccs_release_object(htime));
 
@@ -552,7 +553,7 @@ kokkosp_request_values(
 		  ("random tuner (region: " + std::to_string(regionCounter) +
 		   ")")
 			  .c_str(),
-		  cs, fs, os, &tuner));
+		  fs, os, &tuner));
 	  CCS_CHECK(ccs_release_object(cs));
 	  CCS_CHECK(ccs_release_object(fs));
 	  CCS_CHECK(ccs_release_object(os));

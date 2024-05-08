@@ -163,15 +163,15 @@ test(void)
 	ccs_map_t                 map;
 
 	cspace     = create_2d_plane();
-	ospace     = create_height_objective();
+	ospace     = create_height_objective(cspace);
 	fspace     = create_knobs(&features_on, &features_off);
 
 	tuner_data = (tuner_last_t *)calloc(1, sizeof(tuner_last_t));
 	assert(tuner_data);
 
 	err = ccs_create_user_defined_features_tuner(
-		"problem", cspace, fspace, ospace, &tuner_last_vector,
-		tuner_data, &tuner);
+		"problem", fspace, ospace, &tuner_last_vector, tuner_data,
+		&tuner);
 	assert(err == CCS_RESULT_SUCCESS);
 
 	ccs_features_evaluation_t last_evaluation;
