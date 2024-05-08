@@ -6,13 +6,17 @@
 struct _ccs_expression_data_s;
 typedef struct _ccs_expression_data_s _ccs_expression_data_t;
 
+typedef struct _ccs_expr_ctx_s {
+	size_t         num_bindings;
+	ccs_binding_t *bindings;
+} _ccs_expr_ctx_t;
+
 struct _ccs_expression_ops_s {
 	_ccs_object_ops_t obj_ops;
 
 	ccs_result_t (*eval)(
 		_ccs_expression_data_t *data,
-		size_t                  num_bindings,
-		ccs_binding_t          *bindings,
+		_ccs_expr_ctx_t        *expr_ctx,
 		ccs_datum_t            *result);
 };
 typedef struct _ccs_expression_ops_s _ccs_expression_ops_t;

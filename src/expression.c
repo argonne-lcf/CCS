@@ -209,19 +209,17 @@ _ccs_expression_serialize(
 	return CCS_RESULT_SUCCESS;
 }
 
-#define EVAL_EXPR(expression, num_bindings, bindings, result)                  \
+#define EVAL_EXPR(expression, expr_ctx, result)                                \
 	do {                                                                   \
 		_ccs_expression_ops_t *ops =                                   \
 			ccs_expression_get_ops(expression);                    \
-		CCS_VALIDATE(ops->eval(                                        \
-			expression->data, num_bindings, bindings, result));    \
+		CCS_VALIDATE(ops->eval(expression->data, expr_ctx, result));   \
 	} while (0)
 
 static inline ccs_result_t
 _ccs_expr_node_eval(
 	ccs_expression_t      n,
-	size_t                num_bindings,
-	ccs_binding_t        *bindings,
+	_ccs_expr_ctx_t      *expr_ctx,
 	ccs_datum_t          *result,
 	ccs_parameter_type_t *ht)
 {
@@ -230,22 +228,22 @@ _ccs_expr_node_eval(
 			(_ccs_expression_variable_data_t *)n->data;
 		*ht = CCS_PARAM_TYPE((ccs_parameter_t)(d->parameter));
 	}
-	EVAL_EXPR(n, num_bindings, bindings, result);
+	EVAL_EXPR(n, expr_ctx, result);
 	return CCS_RESULT_SUCCESS;
 }
 
-#define EVAL_NODE(data, num_bindings, bindings, node, ht)                      \
+#define EVAL_NODE(data, expr_ctx, node, ht)                                    \
 	do {                                                                   \
 		CCS_VALIDATE(_ccs_expr_node_eval(                              \
-			data->nodes[0], num_bindings, bindings, &node, ht));   \
+			data->nodes[0], expr_ctx, &node, ht));                 \
 	} while (0)
 
-#define EVAL_LEFT_RIGHT(data, num_bindings, bindings, left, right, htl, htr)   \
+#define EVAL_LEFT_RIGHT(data, expr_ctx, left, right, htl, htr)                 \
 	do {                                                                   \
 		CCS_VALIDATE(_ccs_expr_node_eval(                              \
-			data->nodes[0], num_bindings, bindings, &left, htl));  \
+			data->nodes[0], expr_ctx, &left, htl));                \
 		CCS_VALIDATE(_ccs_expr_node_eval(                              \
-			data->nodes[1], num_bindings, bindings, &right, htr)); \
+			data->nodes[1], expr_ctx, &right, htr));               \
 	} while (0)
 
 #define RETURN_IF_INACTIVE(node, result)                                       \
@@ -259,8 +257,7 @@ _ccs_expr_node_eval(
 static ccs_result_t
 _ccs_expr_or_eval(
 	_ccs_expression_data_t *data,
-	size_t                  num_bindings,
-	ccs_binding_t          *bindings,
+	_ccs_expr_ctx_t        *expr_ctx,
 	ccs_datum_t            *result)
 {
 	ccs_datum_t left;
@@ -269,10 +266,10 @@ _ccs_expr_or_eval(
 	// if the other branch is valid.
 	// TODO: use EVAL_LEFT_RIGHT(data, num_bindings, bindings, left, right,
 	// NULL, NULL);
-	CCS_VALIDATE(_ccs_expr_node_eval(
-		data->nodes[0], num_bindings, bindings, &left, NULL));
-	CCS_VALIDATE(_ccs_expr_node_eval(
-		data->nodes[1], num_bindings, bindings, &right, NULL));
+	CCS_VALIDATE(
+		_ccs_expr_node_eval(data->nodes[0], expr_ctx, &left, NULL));
+	CCS_VALIDATE(
+		_ccs_expr_node_eval(data->nodes[1], expr_ctx, &right, NULL));
 	CCS_REFUTE(
 		left.type != CCS_DATA_TYPE_BOOL &&
 			left.type != CCS_DATA_TYPE_INACTIVE,
@@ -303,13 +300,12 @@ static _ccs_expression_ops_t _ccs_expr_or_ops = {
 static ccs_result_t
 _ccs_expr_and_eval(
 	_ccs_expression_data_t *data,
-	size_t                  num_bindings,
-	ccs_binding_t          *bindings,
+	_ccs_expr_ctx_t        *expr_ctx,
 	ccs_datum_t            *result)
 {
 	ccs_datum_t left;
 	ccs_datum_t right;
-	EVAL_LEFT_RIGHT(data, num_bindings, bindings, left, right, NULL, NULL);
+	EVAL_LEFT_RIGHT(data, expr_ctx, left, right, NULL, NULL);
 	RETURN_IF_INACTIVE(left, result);
 	RETURN_IF_INACTIVE(right, result);
 	CCS_REFUTE(
@@ -445,8 +441,7 @@ _ccs_datum_cmp_generic(ccs_datum_t *a, ccs_datum_t *b, ccs_int_t *cmp)
 static ccs_result_t
 _ccs_expr_equal_eval(
 	_ccs_expression_data_t *data,
-	size_t                  num_bindings,
-	ccs_binding_t          *bindings,
+	_ccs_expr_ctx_t        *expr_ctx,
 	ccs_datum_t            *result)
 {
 	ccs_datum_t          left;
@@ -454,7 +449,7 @@ _ccs_expr_equal_eval(
 	ccs_parameter_type_t htl = CCS_PARAMETER_TYPE_MAX;
 	ccs_parameter_type_t htr = CCS_PARAMETER_TYPE_MAX;
 
-	EVAL_LEFT_RIGHT(data, num_bindings, bindings, left, right, &htl, &htr);
+	EVAL_LEFT_RIGHT(data, expr_ctx, left, right, &htl, &htr);
 	RETURN_IF_INACTIVE(left, result);
 	RETURN_IF_INACTIVE(right, result);
 	CHECK_PARAMETERS(data->nodes[0], right, htl);
@@ -480,8 +475,7 @@ static _ccs_expression_ops_t _ccs_expr_equal_ops = {
 static ccs_result_t
 _ccs_expr_not_equal_eval(
 	_ccs_expression_data_t *data,
-	size_t                  num_bindings,
-	ccs_binding_t          *bindings,
+	_ccs_expr_ctx_t        *expr_ctx,
 	ccs_datum_t            *result)
 {
 	ccs_datum_t          left;
@@ -489,7 +483,7 @@ _ccs_expr_not_equal_eval(
 	ccs_parameter_type_t htl = CCS_PARAMETER_TYPE_MAX;
 	ccs_parameter_type_t htr = CCS_PARAMETER_TYPE_MAX;
 
-	EVAL_LEFT_RIGHT(data, num_bindings, bindings, left, right, &htl, &htr);
+	EVAL_LEFT_RIGHT(data, expr_ctx, left, right, &htl, &htr);
 	RETURN_IF_INACTIVE(left, result);
 	RETURN_IF_INACTIVE(right, result);
 	CHECK_PARAMETERS(data->nodes[0], right, htl);
@@ -515,8 +509,7 @@ static _ccs_expression_ops_t _ccs_expr_not_equal_ops = {
 static ccs_result_t
 _ccs_expr_less_eval(
 	_ccs_expression_data_t *data,
-	size_t                  num_bindings,
-	ccs_binding_t          *bindings,
+	_ccs_expr_ctx_t        *expr_ctx,
 	ccs_datum_t            *result)
 {
 	ccs_datum_t          left;
@@ -524,7 +517,7 @@ _ccs_expr_less_eval(
 	ccs_parameter_type_t htl = CCS_PARAMETER_TYPE_MAX;
 	ccs_parameter_type_t htr = CCS_PARAMETER_TYPE_MAX;
 
-	EVAL_LEFT_RIGHT(data, num_bindings, bindings, left, right, &htl, &htr);
+	EVAL_LEFT_RIGHT(data, expr_ctx, left, right, &htl, &htr);
 	CCS_REFUTE(
 		htl == CCS_PARAMETER_TYPE_CATEGORICAL ||
 			htr == CCS_PARAMETER_TYPE_CATEGORICAL,
@@ -565,8 +558,7 @@ static _ccs_expression_ops_t _ccs_expr_less_ops = {
 static ccs_result_t
 _ccs_expr_greater_eval(
 	_ccs_expression_data_t *data,
-	size_t                  num_bindings,
-	ccs_binding_t          *bindings,
+	_ccs_expr_ctx_t        *expr_ctx,
 	ccs_datum_t            *result)
 {
 	ccs_datum_t          left;
@@ -574,7 +566,7 @@ _ccs_expr_greater_eval(
 	ccs_parameter_type_t htl = CCS_PARAMETER_TYPE_MAX;
 	ccs_parameter_type_t htr = CCS_PARAMETER_TYPE_MAX;
 
-	EVAL_LEFT_RIGHT(data, num_bindings, bindings, left, right, &htl, &htr);
+	EVAL_LEFT_RIGHT(data, expr_ctx, left, right, &htl, &htr);
 	CCS_REFUTE(
 		htl == CCS_PARAMETER_TYPE_CATEGORICAL ||
 			htr == CCS_PARAMETER_TYPE_CATEGORICAL,
@@ -615,8 +607,7 @@ static _ccs_expression_ops_t _ccs_expr_greater_ops = {
 static ccs_result_t
 _ccs_expr_less_or_equal_eval(
 	_ccs_expression_data_t *data,
-	size_t                  num_bindings,
-	ccs_binding_t          *bindings,
+	_ccs_expr_ctx_t        *expr_ctx,
 	ccs_datum_t            *result)
 {
 	ccs_datum_t          left;
@@ -624,7 +615,7 @@ _ccs_expr_less_or_equal_eval(
 	ccs_parameter_type_t htl = CCS_PARAMETER_TYPE_MAX;
 	ccs_parameter_type_t htr = CCS_PARAMETER_TYPE_MAX;
 
-	EVAL_LEFT_RIGHT(data, num_bindings, bindings, left, right, &htl, &htr);
+	EVAL_LEFT_RIGHT(data, expr_ctx, left, right, &htl, &htr);
 	CCS_REFUTE(
 		htl == CCS_PARAMETER_TYPE_CATEGORICAL ||
 			htr == CCS_PARAMETER_TYPE_CATEGORICAL,
@@ -665,8 +656,7 @@ static _ccs_expression_ops_t _ccs_expr_less_or_equal_ops = {
 static ccs_result_t
 _ccs_expr_greater_or_equal_eval(
 	_ccs_expression_data_t *data,
-	size_t                  num_bindings,
-	ccs_binding_t          *bindings,
+	_ccs_expr_ctx_t        *expr_ctx,
 	ccs_datum_t            *result)
 {
 	ccs_datum_t          left;
@@ -674,7 +664,7 @@ _ccs_expr_greater_or_equal_eval(
 	ccs_parameter_type_t htl = CCS_PARAMETER_TYPE_MAX;
 	ccs_parameter_type_t htr = CCS_PARAMETER_TYPE_MAX;
 
-	EVAL_LEFT_RIGHT(data, num_bindings, bindings, left, right, &htl, &htr);
+	EVAL_LEFT_RIGHT(data, expr_ctx, left, right, &htl, &htr);
 	CCS_REFUTE(
 		htl == CCS_PARAMETER_TYPE_CATEGORICAL ||
 			htr == CCS_PARAMETER_TYPE_CATEGORICAL,
@@ -712,11 +702,17 @@ static _ccs_expression_ops_t _ccs_expr_greater_or_equal_ops = {
 	 &_ccs_expression_serialize},
 	&_ccs_expr_greater_or_equal_eval};
 
+static inline ccs_result_t
+_ccs_expression_list_eval_node(
+	ccs_expression_t expression,
+	_ccs_expr_ctx_t *expr_ctx,
+	size_t           index,
+	ccs_datum_t     *result);
+
 static ccs_result_t
 _ccs_expr_in_eval(
 	_ccs_expression_data_t *data,
-	size_t                  num_bindings,
-	ccs_binding_t          *bindings,
+	_ccs_expr_ctx_t        *expr_ctx,
 	ccs_datum_t            *result)
 {
 	ccs_expression_type_t etype = CCS_EXPR_TYPE(data->nodes[1]);
@@ -727,13 +723,13 @@ _ccs_expr_in_eval(
 	ccs_datum_t          left;
 	ccs_bool_t           inactive = CCS_FALSE;
 	ccs_parameter_type_t htl      = CCS_PARAMETER_TYPE_MAX;
-	EVAL_NODE(data, num_bindings, bindings, left, &htl);
+	EVAL_NODE(data, expr_ctx, left, &htl);
 	RETURN_IF_INACTIVE(left, result);
 	CCS_VALIDATE(ccs_expression_get_num_nodes(data->nodes[1], &num_nodes));
 	for (size_t i = 0; i < num_nodes; i++) {
 		ccs_datum_t right;
-		CCS_VALIDATE(ccs_expression_list_eval_node(
-			data->nodes[1], num_bindings, bindings, i, &right));
+		CCS_VALIDATE(_ccs_expression_list_eval_node(
+			data->nodes[1], expr_ctx, i, &right));
 		if (right.type == CCS_DATA_TYPE_INACTIVE)
 			inactive = CCS_TRUE;
 		CHECK_PARAMETERS(data->nodes[0], right, htl);
@@ -759,13 +755,12 @@ static _ccs_expression_ops_t _ccs_expr_in_ops = {
 static ccs_result_t
 _ccs_expr_add_eval(
 	_ccs_expression_data_t *data,
-	size_t                  num_bindings,
-	ccs_binding_t          *bindings,
+	_ccs_expr_ctx_t        *expr_ctx,
 	ccs_datum_t            *result)
 {
 	ccs_datum_t left;
 	ccs_datum_t right;
-	EVAL_LEFT_RIGHT(data, num_bindings, bindings, left, right, NULL, NULL);
+	EVAL_LEFT_RIGHT(data, expr_ctx, left, right, NULL, NULL);
 	RETURN_IF_INACTIVE(left, result);
 	RETURN_IF_INACTIVE(right, result);
 	if (left.type == CCS_DATA_TYPE_INT) {
@@ -798,13 +793,12 @@ static _ccs_expression_ops_t _ccs_expr_add_ops = {
 static ccs_result_t
 _ccs_expr_substract_eval(
 	_ccs_expression_data_t *data,
-	size_t                  num_bindings,
-	ccs_binding_t          *bindings,
+	_ccs_expr_ctx_t        *expr_ctx,
 	ccs_datum_t            *result)
 {
 	ccs_datum_t left;
 	ccs_datum_t right;
-	EVAL_LEFT_RIGHT(data, num_bindings, bindings, left, right, NULL, NULL);
+	EVAL_LEFT_RIGHT(data, expr_ctx, left, right, NULL, NULL);
 	RETURN_IF_INACTIVE(left, result);
 	RETURN_IF_INACTIVE(right, result);
 	if (left.type == CCS_DATA_TYPE_INT) {
@@ -837,13 +831,12 @@ static _ccs_expression_ops_t _ccs_expr_substract_ops = {
 static ccs_result_t
 _ccs_expr_multiply_eval(
 	_ccs_expression_data_t *data,
-	size_t                  num_bindings,
-	ccs_binding_t          *bindings,
+	_ccs_expr_ctx_t        *expr_ctx,
 	ccs_datum_t            *result)
 {
 	ccs_datum_t left;
 	ccs_datum_t right;
-	EVAL_LEFT_RIGHT(data, num_bindings, bindings, left, right, NULL, NULL);
+	EVAL_LEFT_RIGHT(data, expr_ctx, left, right, NULL, NULL);
 	RETURN_IF_INACTIVE(left, result);
 	RETURN_IF_INACTIVE(right, result);
 	if (left.type == CCS_DATA_TYPE_INT) {
@@ -876,13 +869,12 @@ static _ccs_expression_ops_t _ccs_expr_multiply_ops = {
 static ccs_result_t
 _ccs_expr_divide_eval(
 	_ccs_expression_data_t *data,
-	size_t                  num_bindings,
-	ccs_binding_t          *bindings,
+	_ccs_expr_ctx_t        *expr_ctx,
 	ccs_datum_t            *result)
 {
 	ccs_datum_t left;
 	ccs_datum_t right;
-	EVAL_LEFT_RIGHT(data, num_bindings, bindings, left, right, NULL, NULL);
+	EVAL_LEFT_RIGHT(data, expr_ctx, left, right, NULL, NULL);
 	RETURN_IF_INACTIVE(left, result);
 	RETURN_IF_INACTIVE(right, result);
 	if (left.type == CCS_DATA_TYPE_INT) {
@@ -927,13 +919,12 @@ static _ccs_expression_ops_t _ccs_expr_divide_ops = {
 static ccs_result_t
 _ccs_expr_modulo_eval(
 	_ccs_expression_data_t *data,
-	size_t                  num_bindings,
-	ccs_binding_t          *bindings,
+	_ccs_expr_ctx_t        *expr_ctx,
 	ccs_datum_t            *result)
 {
 	ccs_datum_t left;
 	ccs_datum_t right;
-	EVAL_LEFT_RIGHT(data, num_bindings, bindings, left, right, NULL, NULL);
+	EVAL_LEFT_RIGHT(data, expr_ctx, left, right, NULL, NULL);
 	RETURN_IF_INACTIVE(left, result);
 	RETURN_IF_INACTIVE(right, result);
 	if (left.type == CCS_DATA_TYPE_INT) {
@@ -978,12 +969,11 @@ static _ccs_expression_ops_t _ccs_expr_modulo_ops = {
 static ccs_result_t
 _ccs_expr_positive_eval(
 	_ccs_expression_data_t *data,
-	size_t                  num_bindings,
-	ccs_binding_t          *bindings,
+	_ccs_expr_ctx_t        *expr_ctx,
 	ccs_datum_t            *result)
 {
 	ccs_datum_t node;
-	EVAL_NODE(data, num_bindings, bindings, node, NULL);
+	EVAL_NODE(data, expr_ctx, node, NULL);
 	RETURN_IF_INACTIVE(node, result);
 	CCS_REFUTE(
 		node.type != CCS_DATA_TYPE_INT &&
@@ -1001,12 +991,11 @@ static _ccs_expression_ops_t _ccs_expr_positive_ops = {
 static ccs_result_t
 _ccs_expr_negative_eval(
 	_ccs_expression_data_t *data,
-	size_t                  num_bindings,
-	ccs_binding_t          *bindings,
+	_ccs_expr_ctx_t        *expr_ctx,
 	ccs_datum_t            *result)
 {
 	ccs_datum_t node;
-	EVAL_NODE(data, num_bindings, bindings, node, NULL);
+	EVAL_NODE(data, expr_ctx, node, NULL);
 	RETURN_IF_INACTIVE(node, result);
 	CCS_REFUTE(
 		node.type != CCS_DATA_TYPE_INT &&
@@ -1028,12 +1017,11 @@ static _ccs_expression_ops_t _ccs_expr_negative_ops = {
 static ccs_result_t
 _ccs_expr_not_eval(
 	_ccs_expression_data_t *data,
-	size_t                  num_bindings,
-	ccs_binding_t          *bindings,
+	_ccs_expr_ctx_t        *expr_ctx,
 	ccs_datum_t            *result)
 {
 	ccs_datum_t node;
-	EVAL_NODE(data, num_bindings, bindings, node, NULL);
+	EVAL_NODE(data, expr_ctx, node, NULL);
 	RETURN_IF_INACTIVE(node, result);
 	CCS_REFUTE(
 		node.type != CCS_DATA_TYPE_BOOL,
@@ -1050,13 +1038,11 @@ static _ccs_expression_ops_t _ccs_expr_not_ops = {
 static ccs_result_t
 _ccs_expr_list_eval(
 	_ccs_expression_data_t *data,
-	size_t                  num_bindings,
-	ccs_binding_t          *bindings,
+	_ccs_expr_ctx_t        *expr_ctx,
 	ccs_datum_t            *result)
 {
 	(void)data;
-	(void)num_bindings;
-	(void)bindings;
+	(void)expr_ctx;
 	(void)result;
 	CCS_RAISE(
 		CCS_RESULT_ERROR_UNSUPPORTED_OPERATION,
@@ -1173,12 +1159,10 @@ _ccs_expression_literal_serialize(
 static ccs_result_t
 _ccs_expr_literal_eval(
 	_ccs_expression_data_t *data,
-	size_t                  num_bindings,
-	ccs_binding_t          *bindings,
+	_ccs_expr_ctx_t        *expr_ctx,
 	ccs_datum_t            *result)
 {
-	(void)num_bindings;
-	(void)bindings;
+	(void)expr_ctx;
 	_ccs_expression_literal_data_t *d =
 		(_ccs_expression_literal_data_t *)data;
 	*result = d->value;
@@ -1304,13 +1288,14 @@ _ccs_expression_variable_serialize(
 static ccs_result_t
 _ccs_expr_variable_eval(
 	_ccs_expression_data_t *data,
-	size_t                  num_bindings,
-	ccs_binding_t          *bindings,
+	_ccs_expr_ctx_t        *expr_ctx,
 	ccs_datum_t            *result)
 {
 	_ccs_expression_variable_data_t *d =
 		(_ccs_expression_variable_data_t *)data;
-	ccs_bool_t found = CCS_FALSE;
+	size_t         num_bindings = expr_ctx->num_bindings;
+	ccs_binding_t *bindings     = expr_ctx->bindings;
+	ccs_bool_t     found        = CCS_FALSE;
 	CCS_REFUTE(!num_bindings, CCS_RESULT_ERROR_INVALID_OBJECT);
 	for (size_t i = 0; i < num_bindings; i++) {
 		CCS_VALIDATE(ccs_binding_get_value_by_parameter(
@@ -1599,7 +1584,8 @@ ccs_expression_eval(
 	for (size_t i = 0; i < num_bindings; i++)
 		CCS_CHECK_BINDING(bindings[i]);
 	CCS_CHECK_PTR(result_ret);
-	EVAL_EXPR(expression, num_bindings, bindings, result_ret);
+	_ccs_expr_ctx_t expr_ctx = {num_bindings, bindings};
+	EVAL_EXPR(expression, &expr_ctx, result_ret);
 	return CCS_RESULT_SUCCESS;
 }
 
@@ -1636,6 +1622,20 @@ ccs_expression_get_nodes(
 	return CCS_RESULT_SUCCESS;
 }
 
+static inline ccs_result_t
+_ccs_expression_list_eval_node(
+	ccs_expression_t expression,
+	_ccs_expr_ctx_t *expr_ctx,
+	size_t           index,
+	ccs_datum_t     *result)
+{
+	ccs_datum_t node;
+	CCS_VALIDATE(_ccs_expr_node_eval(
+		expression->data->nodes[index], expr_ctx, &node, NULL));
+	*result = node;
+	return CCS_RESULT_SUCCESS;
+}
+
 ccs_result_t
 ccs_expression_list_eval_node(
 	ccs_expression_t expression,
@@ -1649,14 +1649,12 @@ ccs_expression_list_eval_node(
 	CCS_REFUTE(
 		expression->data->type != CCS_EXPRESSION_TYPE_LIST,
 		CCS_RESULT_ERROR_INVALID_EXPRESSION);
-	ccs_datum_t node;
 	CCS_REFUTE(
 		index >= expression->data->num_nodes,
 		CCS_RESULT_ERROR_OUT_OF_BOUNDS);
-	CCS_VALIDATE(_ccs_expr_node_eval(
-		expression->data->nodes[index], num_bindings, bindings, &node,
-		NULL));
-	*result = node;
+	_ccs_expr_ctx_t expr_ctx = {num_bindings, bindings};
+	CCS_VALIDATE(_ccs_expression_list_eval_node(
+		expression, &expr_ctx, index, result));
 	return CCS_RESULT_SUCCESS;
 }
 
