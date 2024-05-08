@@ -10,6 +10,8 @@
 			CCS_RESULT_ERROR_INVALID_PARAMETER);                   \
 	} while (0)
 
+#define CCS_PARAM_TYPE(p) (((_ccs_parameter_common_data_t *)((p)->data))->type)
+
 struct _ccs_parameter_data_s;
 typedef struct _ccs_parameter_data_s _ccs_parameter_data_t;
 

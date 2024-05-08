@@ -1,6 +1,8 @@
 #ifndef _EXPRESSION_INTERNAL_H
 #define _EXPRESSION_INTERNAL_H
 
+#define CCS_EXPR_TYPE(e) ((e)->data->type)
+
 struct _ccs_expression_data_s;
 typedef struct _ccs_expression_data_s _ccs_expression_data_t;
 
@@ -37,4 +39,5 @@ struct _ccs_expression_variable_data_s {
 	ccs_parameter_t        parameter;
 };
 typedef struct _ccs_expression_variable_data_s _ccs_expression_variable_data_t;
+
 #endif //_EXPRESSION_INTERNAL_H

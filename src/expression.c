@@ -1,5 +1,6 @@
 #include "cconfigspace_internal.h"
 #include "expression_internal.h"
+#include "parameter_internal.h"
 #include <math.h>
 #include <string.h>
 #include "utarray.h"
@@ -227,8 +228,7 @@ _ccs_expr_node_eval(
 	if (ht && n->data->type == CCS_EXPRESSION_TYPE_VARIABLE) {
 		_ccs_expression_variable_data_t *d =
 			(_ccs_expression_variable_data_t *)n->data;
-		CCS_VALIDATE(ccs_parameter_get_type(
-			(ccs_parameter_t)(d->parameter), ht));
+		*ht = CCS_PARAM_TYPE((ccs_parameter_t)(d->parameter));
 	}
 	EVAL_EXPR(n, num_bindings, bindings, result);
 	return CCS_RESULT_SUCCESS;
@@ -719,8 +719,7 @@ _ccs_expr_in_eval(
 	ccs_binding_t          *bindings,
 	ccs_datum_t            *result)
 {
-	ccs_expression_type_t etype;
-	CCS_VALIDATE(ccs_expression_get_type(data->nodes[1], &etype));
+	ccs_expression_type_t etype = CCS_EXPR_TYPE(data->nodes[1]);
 	CCS_REFUTE(
 		etype != CCS_EXPRESSION_TYPE_LIST,
 		CCS_RESULT_ERROR_INVALID_VALUE);
@@ -1492,9 +1491,8 @@ ccs_create_expression(
 	ccs_result_t err;
 	for (size_t i = 0; i < num_nodes; i++) {
 		if (nodes[i].type == CCS_DATA_TYPE_OBJECT) {
-			ccs_object_type_t object_type;
-			CCS_VALIDATE(ccs_object_get_type(
-				nodes[i].value.o, &object_type));
+			ccs_object_type_t object_type =
+				CCS_OBJ_TYPE(nodes[i].value.o);
 			CCS_REFUTE(
 				object_type != CCS_OBJECT_TYPE_PARAMETER &&
 					object_type !=
@@ -1527,10 +1525,7 @@ ccs_create_expression(
 			 *)(mem + sizeof(struct _ccs_expression_s) + sizeof(struct _ccs_expression_data_s));
 	for (size_t i = 0; i < num_nodes; i++) {
 		if (nodes[i].type == CCS_DATA_TYPE_OBJECT) {
-			ccs_object_type_t t;
-			CCS_VALIDATE_ERR_GOTO(
-				err, ccs_object_get_type(nodes[i].value.o, &t),
-				cleanup);
+			ccs_object_type_t t = CCS_OBJ_TYPE(nodes[i].value.o);
 			if (t == CCS_OBJECT_TYPE_EXPRESSION) {
 				CCS_VALIDATE_ERR_GOTO(
 					err,
