@@ -22,31 +22,29 @@ ccs_hash              = ct.c_uint32
 ccs_object            = ct.c_void_p
 
 # Objects
-ccs_rng                 = ccs_object
-ccs_distribution        = ccs_object
-ccs_parameter           = ccs_object
-ccs_expression          = ccs_object
-ccs_context             = ccs_object
-ccs_distribution_space  = ccs_object
-ccs_search_space        = ccs_object
-ccs_configuration_space = ccs_object
-ccs_binding             = ccs_object
-ccs_configuration       = ccs_object
-ccs_feature_space       = ccs_object
-ccs_features            = ccs_object
-ccs_objective_space     = ccs_object
-ccs_evaluation_binding  = ccs_object
-ccs_evaluation          = ccs_object
-ccs_features_evaluation = ccs_object
-ccs_tuner               = ccs_object
-ccs_features_tuner      = ccs_object
-ccs_map                 = ccs_object
-ccs_error_stack         = ccs_object
-ccs_tree                = ccs_object
-ccs_tree_space          = ccs_object
-ccs_tree_configuration  = ccs_object
-ccs_tree_evaluation     = ccs_object
-ccs_tree_tuner          = ccs_object
+ccs_rng                  = ccs_object
+ccs_distribution         = ccs_object
+ccs_parameter            = ccs_object
+ccs_expression           = ccs_object
+ccs_context              = ccs_object
+ccs_distribution_space   = ccs_object
+ccs_search_space         = ccs_object
+ccs_configuration_space  = ccs_object
+ccs_binding              = ccs_object
+ccs_search_configuration = ccs_object
+ccs_configuration        = ccs_object
+ccs_feature_space        = ccs_object
+ccs_features             = ccs_object
+ccs_objective_space      = ccs_object
+ccs_evaluation           = ccs_object
+ccs_features_evaluation  = ccs_object
+ccs_tuner                = ccs_object
+ccs_features_tuner       = ccs_object
+ccs_map                  = ccs_object
+ccs_error_stack          = ccs_object
+ccs_tree                 = ccs_object
+ccs_tree_space           = ccs_object
+ccs_tree_configuration   = ccs_object
 
 ccs_false = 0
 ccs_true = 1
@@ -156,8 +154,6 @@ class ObjectType(CEnumeration):
     'TREE',
     'TREE_SPACE',
     'TREE_CONFIGURATION',
-    'TREE_EVALUATION',
-    'TREE_TUNER',
     'DISTRIBUTION_SPACE' ]
 
 class Result(CEnumeration):
@@ -193,8 +189,7 @@ class Result(CEnumeration):
     ('ERROR_EXTERNAL',                   -27),
     ('ERROR_INVALID_TREE',               -28),
     ('ERROR_INVALID_TREE_SPACE',         -29),
-    ('ERROR_INVALID_TREE_TUNER',         -30),
-    ('ERROR_INVALID_DISTRIBUTION_SPACE', -31) ]
+    ('ERROR_INVALID_DISTRIBUTION_SPACE', -30) ]
 
 class DataType(CEnumeration):
   _members_ = [
@@ -518,7 +513,7 @@ class Object:
     return klass.from_handle(h, retain = retain, auto_release = auto_release)
 
   @classmethod
-  def from_handle(cls, h):
+  def from_handle(cls, h, retain = True):
     r = ct.c_int(0)
     res = ccs_object_get_refcount(h, ct.byref(r))
     Error.check(res)
@@ -527,7 +522,6 @@ class Object:
       retain = False
       auto_release = False
     else:
-      retain = True
       auto_release = True
     return cls._from_handle(h, retain, auto_release)
 
@@ -755,7 +749,6 @@ from .distribution import Distribution
 from .parameter import Parameter
 from .expression import Expression
 from .configuration_space import ConfigurationSpace
-from .distribution_space import DistributionSpace
 from .configuration import Configuration
 from .feature_space import FeatureSpace
 from .features import Features
@@ -769,8 +762,7 @@ from .error_stack import ErrorStack, get_thread_error, set_thread_error, clear_t
 from .tree import Tree
 from .tree_space import TreeSpace
 from .tree_configuration import TreeConfiguration
-from .tree_evaluation import TreeEvaluation
-from .tree_tuner import TreeTuner
+from .distribution_space import DistributionSpace
 
 setattr(Object, 'CLASS_MAP', {
   ObjectType.RNG: Rng,
@@ -791,8 +783,6 @@ setattr(Object, 'CLASS_MAP', {
   ObjectType.TREE: Tree,
   ObjectType.TREE_SPACE: TreeSpace,
   ObjectType.TREE_CONFIGURATION: TreeConfiguration,
-  ObjectType.TREE_EVALUATION: TreeEvaluation,
-  ObjectType.TREE_TUNER: TreeTuner,
   ObjectType.DISTRIBUTION_SPACE: DistributionSpace
 })
 

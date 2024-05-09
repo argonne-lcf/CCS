@@ -19,12 +19,11 @@ class TestTreeSpace(unittest.TestCase):
   def test_static_tree_space(self):
     rng = ccs.Rng()
     tree = generate_tree(4, 0)
-    ts = ccs.StaticTreeSpace(name = 'space', tree = tree)
+    ts = ccs.StaticTreeSpace(name = 'space', tree = tree, rng = rng)
     self.assertEqual( ccs.ObjectType.TREE_SPACE, ts.object_type )
     self.assertEqual( "space", ts.name )
     self.assertIsInstance( ts.rng, ccs.Rng )
     self.assertEqual( ccs.TreeSpaceType.STATIC, ts.type )
-    ts.rng = rng
     self.assertEqual( rng.handle.value, ts.rng.handle.value )
     self.assertEqual( tree.handle.value, ts.tree.handle.value )
     self.assertEqual( tree.handle.value, ts.get_node_at_position([]).handle.value )

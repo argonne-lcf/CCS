@@ -8,8 +8,7 @@ extern "C" {
 /**
  * @file tuner.h
  * A CCS tuner defines an ask and tell interface to optimize an objective space
- * (see objective_space.h) given a configuration space (see
- * configuration_space.h). The tuner will propose configurations (see
+ * (see objective_space.h). The tuner will propose configurations (see
  * configuration.h) and the user will return evaluations (see evaluation.h).
  */
 
@@ -61,20 +60,20 @@ extern ccs_result_t
 ccs_tuner_get_name(ccs_tuner_t tuner, const char **name_ret);
 
 /**
- * Get the associated configuration space.
+ * Get the associated search space.
  * @param[in] tuner
- * @param[out] configuration_space_ret a pointer to the variable that will
- *                                     contain the configuration space
+ * @param[out] search_space_ret a pointer to the variable that will
+ *                                     contain the search space
  * @return #CCS_RESULT_SUCCESS on success
  * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p tuner is not a valid CCS tuner
- * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p configuration_space_ret is NULL
+ * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p search_space_ret is NULL
  * @remarks
  *   This function is thread-safe
  */
 extern ccs_result_t
-ccs_tuner_get_configuration_space(
-	ccs_tuner_t                tuner,
-	ccs_configuration_space_t *configuration_space_ret);
+ccs_tuner_get_search_space(
+	ccs_tuner_t         tuner,
+	ccs_search_space_t *configuration_space_ret);
 
 /**
  * Get the associated objective space.
@@ -123,10 +122,10 @@ ccs_tuner_get_objective_space(
  */
 extern ccs_result_t
 ccs_tuner_ask(
-	ccs_tuner_t          tuner,
-	size_t               num_configurations,
-	ccs_configuration_t *configurations,
-	size_t              *num_configurations_ret);
+	ccs_tuner_t                 tuner,
+	size_t                      num_configurations,
+	ccs_search_configuration_t *configurations,
+	size_t                     *num_configurations_ret);
 
 /**
  * Give a list of results to a tuner through evaluations.
@@ -168,7 +167,7 @@ ccs_tuner_tell(
  *   This function is thread-safe
  */
 extern ccs_result_t
-ccs_tuner_suggest(ccs_tuner_t tuner, ccs_configuration_t *configuration);
+ccs_tuner_suggest(ccs_tuner_t tuner, ccs_search_configuration_t *configuration);
 
 /**
  * Ask a tuner for the discovered Pareto front. For single objective objective
@@ -228,8 +227,7 @@ ccs_tuner_get_history(
  *                       created tuner
  * @return #CCS_RESULT_SUCCESS on success
  * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p objective_space is not
- * a valid CCS objective space; or if \p objective_space search space is
- * not a valid CCS configuration space
+ * a valid CCS objective space
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p name is NULL; or if \p
  * tuner_ret is NULL
  * @return #CCS_RESULT_ERROR_OUT_OF_MEMORY if there was not enough memory to
@@ -256,10 +254,10 @@ struct ccs_user_defined_tuner_vector_s {
 
 	/** The tuner ask interface see ccs_tuner_ask */
 	ccs_result_t (*ask)(
-		ccs_tuner_t          tuner,
-		size_t               num_configurations,
-		ccs_configuration_t *configurations,
-		size_t              *num_configurations_ret);
+		ccs_tuner_t                 tuner,
+		size_t                      num_configurations,
+		ccs_search_configuration_t *configurations,
+		size_t                     *num_configurations_ret);
 
 	/** The tuner tell interface see ccs_tuner_tell */
 	ccs_result_t (*tell)(
@@ -283,8 +281,8 @@ struct ccs_user_defined_tuner_vector_s {
 
 	/** The tuner suggest interface see ccs_tuner_suggest, can be NULL */
 	ccs_result_t (*suggest)(
-		ccs_tuner_t          tuner,
-		ccs_configuration_t *configuration);
+		ccs_tuner_t                 tuner,
+		ccs_search_configuration_t *configuration);
 
 	/**
 	 * The tuner serialization interface, can be NULL, in which case
@@ -326,8 +324,7 @@ typedef struct ccs_user_defined_tuner_vector_s ccs_user_defined_tuner_vector_t;
  *                       created tuner
  * @return #CCS_RESULT_SUCCESS on success
  * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p objective_space is not
- * a valid CCS objective space; or if \p objective_space search space is
- * not a valid CCS configuration space
+ * a valid CCS objective space
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p name is NULL; or if \p
  * tuner_ret is NULL; or if \p vector is NULL; or if any non optional interface
  * pointer is NULL

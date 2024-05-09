@@ -76,7 +76,7 @@ class CConfigSpaceTestFeaturesTuner < Minitest::Test
     del = lambda { |tuner| nil }
     ask = lambda { |tuner, features, count|
       if count
-        cs = tuner.configuration_space
+        cs = tuner.search_space
         [cs.samples(count), count]
       else
         [nil, 1]

@@ -20,12 +20,11 @@ class CConfigSpaceTestTreeSpace < Minitest::Test
   def test_static_tree_space
     rng = CCS::Rng.new
     tree = generate_tree(4, 0)
-    ts = CCS::StaticTreeSpace.new(name: 'space', tree: tree)
+    ts = CCS::StaticTreeSpace.new(name: 'space', tree: tree, rng: rng)
     assert_equal( :CCS_OBJECT_TYPE_TREE_SPACE, ts.object_type )
     assert_equal( "space", ts.name )
-    assert_instance_of( CCS::Rng, ts.rng )
     assert_equal( :CCS_TREE_SPACE_TYPE_STATIC, ts.type )
-    ts.rng = rng
+    assert_instance_of( CCS::Rng, ts.rng )
     assert_equal( rng.handle, ts.rng.handle )
     assert_equal( tree.handle, ts.tree.handle )
     assert_equal( tree.handle, ts.get_node_at_position([]).handle )

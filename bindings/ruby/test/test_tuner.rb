@@ -15,7 +15,7 @@ class CConfigSpaceTestTuner < Minitest::Test
     v2 = CCS::NumericalParameter::Float.new(lower: -Float::INFINITY, upper: Float::INFINITY)
     e1 = CCS::Expression::Variable::new(parameter: v1)
     e2 = CCS::Expression::Variable::new(parameter: v2)
-    os = CCS::ObjectiveSpace::new(name: "ospace", search_space: cs, parameters: [v1, v2], objectives: [e1, e2])
+    CCS::ObjectiveSpace::new(name: "ospace", search_space: cs, parameters: [v1, v2], objectives: [e1, e2])
   end
 
   def test_create_random
@@ -65,7 +65,7 @@ class CConfigSpaceTestTuner < Minitest::Test
     del = lambda { |tuner| nil }
     ask = lambda { |tuner, count|
       if count
-        cs = tuner.configuration_space
+        cs = tuner.search_space
         [cs.samples(count), count]
       else
         [nil, 1]

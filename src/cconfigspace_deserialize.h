@@ -38,8 +38,6 @@ _ccs_object_deserialize_with_opts(
 #include "tree_deserialize.h"
 #include "tree_space_deserialize.h"
 #include "tree_configuration_deserialize.h"
-#include "tree_evaluation_deserialize.h"
-#include "tree_tuner_deserialize.h"
 
 static inline ccs_result_t
 _ccs_object_deserialize_options(
@@ -183,16 +181,6 @@ _ccs_object_deserialize_with_opts_type(
 	case CCS_OBJECT_TYPE_TREE_CONFIGURATION:
 		CCS_VALIDATE(_ccs_tree_configuration_deserialize(
 			(ccs_tree_configuration_t *)object_ret, format, version,
-			buffer_size, buffer, opts));
-		break;
-	case CCS_OBJECT_TYPE_TREE_EVALUATION:
-		CCS_VALIDATE(_ccs_tree_evaluation_deserialize(
-			(ccs_tree_evaluation_t *)object_ret, format, version,
-			buffer_size, buffer, opts));
-		break;
-	case CCS_OBJECT_TYPE_TREE_TUNER:
-		CCS_VALIDATE(_ccs_tree_tuner_deserialize(
-			(ccs_tree_tuner_t *)object_ret, format, version,
 			buffer_size, buffer, opts));
 		break;
 	case CCS_OBJECT_TYPE_DISTRIBUTION_SPACE:

@@ -76,7 +76,7 @@ class TestFeaturesTuner(unittest.TestCase):
       if count is None:
         return (None, 1)
       else:
-        cs = tuner.configuration_space
+        cs = tuner.search_space
         return (cs.samples(count), count)
 
     def tell(tuner, evaluations):
@@ -125,7 +125,7 @@ class TestFeaturesTuner(unittest.TestCase):
     self.assertEqual(ccs.FeaturesTunerType.USER_DEFINED, t.type)
     self.assertEqual(fs.handle.value, t.feature_space.handle.value)
     self.assertEqual(os.handle.value, t.objective_space.handle.value)
-    self.assertEqual(os.search_space.handle.value, t.configuration_space.handle.value)
+    self.assertEqual(os.search_space.handle.value, t.search_space.handle.value)
     func = lambda x, y, z: [(x-2)*(x-2), sin(z+y)]
     features_on = ccs.Features(feature_space = fs, values = [True])
     features_off = ccs.Features(feature_space = fs, values = [False])

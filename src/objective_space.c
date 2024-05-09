@@ -1,7 +1,7 @@
 #include "cconfigspace_internal.h"
 #include "search_space_internal.h"
 #include "objective_space_internal.h"
-#include "evaluation_binding_internal.h"
+#include "evaluation_internal.h"
 #include "expression_internal.h"
 
 static ccs_result_t
@@ -303,9 +303,9 @@ ccs_objective_space_get_search_space(
 
 static inline ccs_result_t
 _check_evaluation(
-	ccs_objective_space_t    objective_space,
-	ccs_evaluation_binding_t evaluation,
-	ccs_bool_t              *is_valid_ret)
+	ccs_objective_space_t objective_space,
+	ccs_evaluation_t      evaluation,
+	ccs_bool_t           *is_valid_ret)
 {
 	ccs_parameter_t *parameters     = objective_space->data->parameters;
 	size_t           num_parameters = objective_space->data->num_parameters;
@@ -323,12 +323,12 @@ _check_evaluation(
 
 ccs_result_t
 ccs_objective_space_check_evaluation(
-	ccs_objective_space_t    objective_space,
-	ccs_evaluation_binding_t evaluation,
-	ccs_bool_t              *is_valid_ret)
+	ccs_objective_space_t objective_space,
+	ccs_evaluation_t      evaluation,
+	ccs_bool_t           *is_valid_ret)
 {
 	CCS_CHECK_OBJ(objective_space, CCS_OBJECT_TYPE_OBJECTIVE_SPACE);
-	CCS_CHECK_EVALUATION_BINDING(evaluation);
+	CCS_CHECK_EVALUATION(evaluation);
 	CCS_REFUTE(
 		evaluation->data->objective_space != objective_space,
 		CCS_RESULT_ERROR_INVALID_EVALUATION);

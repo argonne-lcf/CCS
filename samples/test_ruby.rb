@@ -7,7 +7,7 @@ class TestTuner < CCS::UserDefinedTuner
     del = lambda { |tuner| nil }
     ask = lambda { |tuner, count|
       if count
-        cs = tuner.configuration_space
+        cs = tuner.search_space
         [cs.samples(count), count]
       else
         [nil, 1]

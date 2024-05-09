@@ -1,5 +1,5 @@
 #include "cconfigspace_internal.h"
-#include "evaluation_binding_internal.h"
+#include "evaluation_internal.h"
 #include "features_evaluation_internal.h"
 #include "configuration_internal.h"
 #include "features_internal.h"
@@ -190,9 +190,9 @@ _ccs_features_evaluation_compare(
 		*result_ret = CCS_COMPARISON_NOT_COMPARABLE;
 		return CCS_RESULT_SUCCESS;
 	}
-	CCS_VALIDATE(_ccs_evaluation_binding_compare(
-		(ccs_evaluation_binding_t)evaluation,
-		(ccs_evaluation_binding_t)other_evaluation, result_ret));
+	CCS_VALIDATE(_ccs_evaluation_compare(
+		(ccs_evaluation_t)evaluation,
+		(ccs_evaluation_t)other_evaluation, result_ret));
 	return CCS_RESULT_SUCCESS;
 }
 
@@ -207,7 +207,7 @@ static _ccs_features_evaluation_ops_t _features_evaluation_ops = {
 ccs_result_t
 ccs_create_features_evaluation(
 	ccs_objective_space_t      objective_space,
-	ccs_configuration_t        configuration,
+	ccs_search_configuration_t configuration,
 	ccs_features_t             features,
 	ccs_evaluation_result_t    result,
 	size_t                     num_values,
@@ -216,6 +216,10 @@ ccs_create_features_evaluation(
 {
 	CCS_CHECK_OBJ(objective_space, CCS_OBJECT_TYPE_OBJECTIVE_SPACE);
 	CCS_CHECK_OBJ(configuration, CCS_OBJECT_TYPE_CONFIGURATION);
+	CCS_REFUTE(
+		objective_space->data->search_space !=
+			configuration->data->space,
+		CCS_RESULT_ERROR_INVALID_CONFIGURATION);
 	CCS_CHECK_OBJ(features, CCS_OBJECT_TYPE_FEATURES);
 	CCS_CHECK_PTR(evaluation_ret);
 	CCS_CHECK_ARY(num_values, values);
@@ -277,17 +281,6 @@ errospace:
 errmemory:
 	free((void *)mem);
 	return err;
-}
-
-ccs_result_t
-ccs_features_evaluation_get_configuration(
-	ccs_features_evaluation_t evaluation,
-	ccs_configuration_t      *configuration_ret)
-{
-	CCS_CHECK_OBJ(evaluation, CCS_OBJECT_TYPE_FEATURES_EVALUATION);
-	CCS_CHECK_PTR(configuration_ret);
-	*configuration_ret = evaluation->data->configuration;
-	return CCS_RESULT_SUCCESS;
 }
 
 ccs_result_t

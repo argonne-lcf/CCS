@@ -251,12 +251,15 @@ ccs_result_t
 ccs_create_dynamic_tree_space(
 	const char                      *name,
 	ccs_tree_t                       tree,
+	ccs_rng_t                        rng,
 	ccs_dynamic_tree_space_vector_t *vector,
 	void                            *tree_space_data,
 	ccs_tree_space_t                *tree_space_ret)
 {
 	CCS_CHECK_PTR(name);
 	CCS_CHECK_OBJ(tree, CCS_OBJECT_TYPE_TREE);
+	if (rng)
+		CCS_CHECK_OBJ(rng, CCS_OBJECT_TYPE_RNG);
 	CCS_CHECK_PTR(vector);
 	CCS_CHECK_PTR(vector->del);
 	CCS_CHECK_PTR(vector->get_child);
@@ -267,8 +270,10 @@ ccs_create_dynamic_tree_space(
                            sizeof(struct _ccs_tree_space_dynamic_data_s) +
                            strlen(name) + 1);
 	CCS_REFUTE(!mem, CCS_RESULT_ERROR_OUT_OF_MEMORY);
-	ccs_rng_t rng;
-	CCS_VALIDATE_ERR_GOTO(err, ccs_create_rng(&rng), errmem);
+	if (!rng)
+		CCS_VALIDATE_ERR_GOTO(err, ccs_create_rng(&rng), errmem);
+	else
+		CCS_VALIDATE_ERR_GOTO(err, ccs_retain_object(rng), errmem);
 	CCS_VALIDATE_ERR_GOTO(err, ccs_retain_object(tree), err_rng);
 
 	ccs_tree_space_t tree_space;

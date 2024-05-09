@@ -26,11 +26,11 @@ tuner_last_del(ccs_features_tuner_t tuner)
 
 ccs_result_t
 tuner_last_ask(
-	ccs_features_tuner_t tuner,
-	ccs_features_t       features,
-	size_t               num_configurations,
-	ccs_configuration_t *configurations,
-	size_t              *num_configurations_ret)
+	ccs_features_tuner_t        tuner,
+	ccs_features_t              features,
+	size_t                      num_configurations,
+	ccs_search_configuration_t *configurations,
+	size_t                     *num_configurations_ret)
 {
 	(void)features;
 	if (!configurations) {
@@ -39,13 +39,13 @@ tuner_last_ask(
 	}
 	ccs_result_t              err;
 	ccs_configuration_space_t configuration_space;
-	err = ccs_features_tuner_get_configuration_space(
-		tuner, &configuration_space);
+	err = ccs_features_tuner_get_search_space(
+		tuner, (ccs_search_space_t *)&configuration_space);
 	if (err)
 		return err;
 	err = ccs_configuration_space_samples(
 		configuration_space, NULL, NULL, num_configurations,
-		configurations);
+		(ccs_configuration_t *)configurations);
 	if (err)
 		return err;
 	if (num_configurations_ret)
@@ -176,9 +176,9 @@ test(void)
 
 	ccs_features_evaluation_t last_evaluation;
 	for (size_t i = 0; i < 50; i++) {
-		ccs_datum_t               values[2], res;
-		ccs_configuration_t       configuration;
-		ccs_features_evaluation_t evaluation;
+		ccs_datum_t                values[2], res;
+		ccs_search_configuration_t configuration;
+		ccs_features_evaluation_t  evaluation;
 		err = ccs_features_tuner_ask(
 			tuner, features_on, 1, &configuration, NULL);
 		assert(err == CCS_RESULT_SUCCESS);
@@ -202,9 +202,9 @@ test(void)
 	}
 
 	for (size_t i = 0; i < 50; i++) {
-		ccs_datum_t               values[2], res;
-		ccs_configuration_t       configuration;
-		ccs_features_evaluation_t evaluation;
+		ccs_datum_t                values[2], res;
+		ccs_search_configuration_t configuration;
+		ccs_features_evaluation_t  evaluation;
 		err = ccs_features_tuner_ask(
 			tuner, features_off, 1, &configuration, NULL);
 		assert(err == CCS_RESULT_SUCCESS);

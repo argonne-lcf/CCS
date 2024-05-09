@@ -30,12 +30,12 @@ struct _ccs_features_evaluation_s {
 };
 
 struct _ccs_features_evaluation_data_s {
-	ccs_objective_space_t   objective_space;
-	size_t                  num_values;
-	ccs_datum_t            *values;
-	ccs_evaluation_result_t result;
-	ccs_configuration_t     configuration;
-	ccs_features_t          features;
+	ccs_objective_space_t      objective_space;
+	size_t                     num_values;
+	ccs_datum_t               *values;
+	ccs_evaluation_result_t    result;
+	ccs_search_configuration_t configuration;
+	ccs_features_t             features;
 };
 
 #endif //_FEATURES_EVALUATION_INTERNAL_H

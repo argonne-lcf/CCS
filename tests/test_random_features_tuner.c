@@ -27,9 +27,9 @@ test(void)
 	assert(err == CCS_RESULT_SUCCESS);
 
 	for (size_t i = 0; i < 50; i++) {
-		ccs_datum_t               values[2], res;
-		ccs_configuration_t       configuration;
-		ccs_features_evaluation_t evaluation;
+		ccs_datum_t                values[2], res;
+		ccs_search_configuration_t configuration;
+		ccs_features_evaluation_t  evaluation;
 		err = ccs_features_tuner_ask(
 			tuner, features_on, 1, &configuration, NULL);
 		assert(err == CCS_RESULT_SUCCESS);
@@ -52,9 +52,9 @@ test(void)
 	}
 
 	for (size_t i = 0; i < 50; i++) {
-		ccs_datum_t               values[2], res;
-		ccs_configuration_t       configuration;
-		ccs_features_evaluation_t evaluation;
+		ccs_datum_t                values[2], res;
+		ccs_search_configuration_t configuration;
+		ccs_features_evaluation_t  evaluation;
 		err = ccs_features_tuner_ask(
 			tuner, features_off, 1, &configuration, NULL);
 		assert(err == CCS_RESULT_SUCCESS);
@@ -96,8 +96,8 @@ test(void)
 
 	for (size_t i = 0; i < 50; i++) {
 		ccs_datum_t res;
-		err = ccs_evaluation_binding_get_objective_value(
-			(ccs_evaluation_binding_t)history[i], 0, &res);
+		err = ccs_evaluation_get_objective_value(
+			(ccs_evaluation_t)history[i], 0, &res);
 		assert(err == CCS_RESULT_SUCCESS);
 		if (res.value.f < min_on.value.f)
 			min_on.value.f = res.value.f;
@@ -110,8 +110,8 @@ test(void)
 
 	for (size_t i = 0; i < 50; i++) {
 		ccs_datum_t res;
-		err = ccs_evaluation_binding_get_objective_value(
-			(ccs_evaluation_binding_t)history[i], 0, &res);
+		err = ccs_evaluation_get_objective_value(
+			(ccs_evaluation_t)history[i], 0, &res);
 		assert(err == CCS_RESULT_SUCCESS);
 		if (res.value.f < min_off.value.f)
 			min_off.value.f = res.value.f;
@@ -121,15 +121,15 @@ test(void)
 	err = ccs_features_tuner_get_optima(
 		tuner, features_on, 1, &evaluation, NULL);
 	assert(err == CCS_RESULT_SUCCESS);
-	err = ccs_evaluation_binding_get_objective_value(
-		(ccs_evaluation_binding_t)evaluation, 0, &res);
+	err = ccs_evaluation_get_objective_value(
+		(ccs_evaluation_t)evaluation, 0, &res);
 	assert(res.value.f == min_on.value.f);
 
 	err = ccs_features_tuner_get_optima(
 		tuner, features_off, 1, &evaluation, NULL);
 	assert(err == CCS_RESULT_SUCCESS);
-	err = ccs_evaluation_binding_get_objective_value(
-		(ccs_evaluation_binding_t)evaluation, 0, &res);
+	err = ccs_evaluation_get_objective_value(
+		(ccs_evaluation_t)evaluation, 0, &res);
 	assert(res.value.f == min_off.value.f);
 
 	/* Test (de)serialization */
@@ -214,8 +214,8 @@ test_evaluation_deserialize(void)
 
 	res = ccs_float(1.5);
 	err = ccs_create_features_evaluation(
-		ospace, configuration, features_on, CCS_RESULT_SUCCESS, 1, &res,
-		&evaluation_ref);
+		ospace, (ccs_search_configuration_t)configuration, features_on,
+		CCS_RESULT_SUCCESS, 1, &res, &evaluation_ref);
 	assert(err == CCS_RESULT_SUCCESS);
 
 	err = ccs_create_map(&map);

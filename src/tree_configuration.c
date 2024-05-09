@@ -109,9 +109,22 @@ _ccs_tree_configuration_serialize(
 	return CCS_RESULT_SUCCESS;
 }
 
+static ccs_result_t
+_ccs_tree_configuration_hash(
+	ccs_tree_configuration_t configuration,
+	ccs_hash_t              *hash_ret);
+
+static ccs_result_t
+_ccs_tree_configuration_cmp(
+	ccs_tree_configuration_t configuration,
+	ccs_tree_configuration_t other_configuration,
+	int                     *cmp_ret);
+
 static _ccs_tree_configuration_ops_t _tree_configuration_ops = {
 	{&_ccs_tree_configuration_del, &_ccs_tree_configuration_serialize_size,
-	 &_ccs_tree_configuration_serialize}};
+	 &_ccs_tree_configuration_serialize},
+	&_ccs_tree_configuration_hash,
+	&_ccs_tree_configuration_cmp};
 
 ccs_result_t
 ccs_create_tree_configuration(
@@ -235,15 +248,12 @@ ccs_tree_configuration_check(
 
 #define CCS_CMP(a, b) ((a) < (b) ? -1 : ((a) > (b) ? 1 : 0))
 
-ccs_result_t
-ccs_tree_configuration_cmp(
+static ccs_result_t
+_ccs_tree_configuration_cmp(
 	ccs_tree_configuration_t configuration,
 	ccs_tree_configuration_t other_configuration,
 	int                     *cmp_ret)
 {
-	CCS_CHECK_OBJ(configuration, CCS_OBJECT_TYPE_TREE_CONFIGURATION);
-	CCS_CHECK_OBJ(other_configuration, CCS_OBJECT_TYPE_TREE_CONFIGURATION);
-	CCS_CHECK_PTR(cmp_ret);
 	if (configuration == other_configuration) {
 		*cmp_ret = 0;
 		return CCS_RESULT_SUCCESS;
@@ -269,14 +279,26 @@ ccs_tree_configuration_cmp(
 	return CCS_RESULT_SUCCESS;
 }
 
-#include "datum_hash.h"
 ccs_result_t
-ccs_tree_configuration_hash(
+ccs_tree_configuration_cmp(
+	ccs_tree_configuration_t configuration,
+	ccs_tree_configuration_t other_configuration,
+	int                     *cmp_ret)
+{
+	CCS_CHECK_OBJ(configuration, CCS_OBJECT_TYPE_TREE_CONFIGURATION);
+	CCS_CHECK_OBJ(other_configuration, CCS_OBJECT_TYPE_TREE_CONFIGURATION);
+	CCS_CHECK_PTR(cmp_ret);
+	CCS_VALIDATE(_ccs_tree_configuration_cmp(
+		configuration, other_configuration, cmp_ret));
+	return CCS_RESULT_SUCCESS;
+}
+
+#include "datum_hash.h"
+static ccs_result_t
+_ccs_tree_configuration_hash(
 	ccs_tree_configuration_t configuration,
 	ccs_hash_t              *hash_ret)
 {
-	CCS_CHECK_OBJ(configuration, CCS_OBJECT_TYPE_TREE_CONFIGURATION);
-	CCS_CHECK_PTR(hash_ret);
 	ccs_hash_t h, ht;
 	HASH_JEN(
 		&(configuration->data->tree_space),
@@ -290,5 +312,16 @@ ccs_tree_configuration_hash(
 		h = _hash_combine(h, ht);
 	}
 	*hash_ret = h;
+	return CCS_RESULT_SUCCESS;
+}
+
+ccs_result_t
+ccs_tree_configuration_hash(
+	ccs_tree_configuration_t configuration,
+	ccs_hash_t              *hash_ret)
+{
+	CCS_CHECK_OBJ(configuration, CCS_OBJECT_TYPE_TREE_CONFIGURATION);
+	CCS_CHECK_PTR(hash_ret);
+	CCS_VALIDATE(_ccs_tree_configuration_hash(configuration, hash_ret));
 	return CCS_RESULT_SUCCESS;
 }

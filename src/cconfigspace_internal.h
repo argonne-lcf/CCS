@@ -249,26 +249,24 @@ _ccs_do_nothing(void)
 		CCS_RESULT_ERROR_INVALID_OBJECT,                               \
 		"Invalid CCS context '%s' == %p supplied", #c, c)
 
-#define CCS_CHECK_EVALUATION_BINDING(e)                                         \
-	CCS_REFUTE_MSG(                                                         \
-		!CCS_OBJ_IS_VALID(e) ||                                         \
-			!(CCS_OBJ_IS_TYPE(e, CCS_OBJECT_TYPE_EVALUATION) ||     \
-			  CCS_OBJ_IS_TYPE(                                      \
-				  e, CCS_OBJECT_TYPE_FEATURES_EVALUATION) ||    \
-			  CCS_OBJ_IS_TYPE(e, CCS_OBJECT_TYPE_TREE_EVALUATION)), \
-		CCS_RESULT_ERROR_INVALID_OBJECT,                                \
+#define CCS_CHECK_EVALUATION(e)                                                \
+	CCS_REFUTE_MSG(                                                        \
+		!CCS_OBJ_IS_VALID(e) ||                                        \
+			!(CCS_OBJ_IS_TYPE(e, CCS_OBJECT_TYPE_EVALUATION) ||    \
+			  CCS_OBJ_IS_TYPE(                                     \
+				  e, CCS_OBJECT_TYPE_FEATURES_EVALUATION)),    \
+		CCS_RESULT_ERROR_INVALID_OBJECT,                               \
 		"Invalid CCS evaluation '%s' == %p supplied", #e, e)
 
-#define CCS_CHECK_BINDING(b)                                                    \
-	CCS_REFUTE_MSG(                                                         \
-		!CCS_OBJ_IS_VALID(b) ||                                         \
-			!(CCS_OBJ_IS_TYPE(b, CCS_OBJECT_TYPE_CONFIGURATION) ||  \
-			  CCS_OBJ_IS_TYPE(b, CCS_OBJECT_TYPE_EVALUATION) ||     \
-			  CCS_OBJ_IS_TYPE(b, CCS_OBJECT_TYPE_FEATURES) ||       \
-			  CCS_OBJ_IS_TYPE(                                      \
-				  b, CCS_OBJECT_TYPE_FEATURES_EVALUATION) ||    \
-			  CCS_OBJ_IS_TYPE(b, CCS_OBJECT_TYPE_TREE_EVALUATION)), \
-		CCS_RESULT_ERROR_INVALID_OBJECT,                                \
+#define CCS_CHECK_BINDING(b)                                                   \
+	CCS_REFUTE_MSG(                                                        \
+		!CCS_OBJ_IS_VALID(b) ||                                        \
+			!(CCS_OBJ_IS_TYPE(b, CCS_OBJECT_TYPE_CONFIGURATION) || \
+			  CCS_OBJ_IS_TYPE(b, CCS_OBJECT_TYPE_EVALUATION) ||    \
+			  CCS_OBJ_IS_TYPE(b, CCS_OBJECT_TYPE_FEATURES) ||      \
+			  CCS_OBJ_IS_TYPE(                                     \
+				  b, CCS_OBJECT_TYPE_FEATURES_EVALUATION)),    \
+		CCS_RESULT_ERROR_INVALID_OBJECT,                               \
 		"Invalid CCS binding '%s' == %p supplied", #b, b)
 
 #define CCS_CHECK_SEARCH_SPACE(s)                                              \
@@ -279,6 +277,15 @@ _ccs_do_nothing(void)
 				  s, CCS_OBJECT_TYPE_CONFIGURATION_SPACE)),    \
 		CCS_RESULT_ERROR_INVALID_OBJECT,                               \
 		"Invalid CCS search space '%s' == %p supplied", #s, s)
+
+#define CCS_CHECK_SEARCH_CONFIGURATION(c)                                      \
+	CCS_REFUTE_MSG(                                                        \
+		!CCS_OBJ_IS_VALID(c) ||                                        \
+			!(CCS_OBJ_IS_TYPE(c, CCS_OBJECT_TYPE_CONFIGURATION) || \
+			  CCS_OBJ_IS_TYPE(                                     \
+				  c, CCS_OBJECT_TYPE_TREE_CONFIGURATION)),     \
+		CCS_RESULT_ERROR_INVALID_OBJECT,                               \
+		"Invalid CCS search configuration '%s' == %p supplied", #c, c)
 
 #define CCS_CHECK_PTR(p)                                                       \
 	CCS_REFUTE_MSG(                                                        \
@@ -888,7 +895,6 @@ CCS_CONVERTER(ccs_objective_type, ccs_objective_type_t, 32)
 CCS_CONVERTER(ccs_tuner_type, ccs_tuner_type_t, 32)
 CCS_CONVERTER(ccs_features_tuner_type, ccs_features_tuner_type_t, 32)
 CCS_CONVERTER(ccs_tree_space_type, ccs_tree_space_type_t, 32)
-CCS_CONVERTER(ccs_tree_tuner_type, ccs_tree_tuner_type_t, 32)
 CCS_CONVERTER(ccs_evaluation_result, ccs_evaluation_result_t, 32)
 CCS_CONVERTER(ccs_object, ccs_object_t, 64)
 #else
@@ -917,7 +923,6 @@ CCS_CONVERTER_COMPRESSED(ccs_objective_type, ccs_objective_type_t, 32)
 CCS_CONVERTER_COMPRESSED(ccs_tuner_type, ccs_tuner_type_t, 32)
 CCS_CONVERTER_COMPRESSED(ccs_features_tuner_type, ccs_features_tuner_type_t, 32)
 CCS_CONVERTER_COMPRESSED(ccs_tree_space_type, ccs_tree_space_type_t, 32)
-CCS_CONVERTER_COMPRESSED(ccs_tree_tuner_type, ccs_tree_tuner_type_t, 32)
 CCS_CONVERTER_COMPRESSED_SIGNED(
 	ccs_evaluation_result,
 	ccs_evaluation_result_t,

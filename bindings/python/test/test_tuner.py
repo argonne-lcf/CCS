@@ -66,7 +66,7 @@ class TestTuner(unittest.TestCase):
       if count is None:
         return (None, 1)
       else:
-        cs = tuner.configuration_space
+        cs = tuner.search_space
         return (cs.samples(count), count)
 
     def tell(tuner, evaluations):
@@ -107,7 +107,7 @@ class TestTuner(unittest.TestCase):
     self.assertEqual("tuner", t.name)
     self.assertEqual(ccs.TunerType.USER_DEFINED, t.type)
     self.assertEqual(os.handle.value, t.objective_space.handle.value)
-    self.assertEqual(os.search_space.handle.value, t.configuration_space.handle.value)
+    self.assertEqual(os.search_space.handle.value, t.search_space.handle.value)
     func = lambda x, y, z: [(x-2)*(x-2), sin(z+y)]
     evals = [ccs.Evaluation(objective_space = os, configuration = c, values = func(*(c.values))) for c in t.ask(100)]
     t.tell(evals)

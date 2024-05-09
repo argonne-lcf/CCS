@@ -1,11 +1,9 @@
 import ctypes as ct
-from .base import Object, Error, CEnumeration, Result, _ccs_get_function, ccs_context, ccs_parameter, ccs_configuration_space, ccs_configuration, ccs_feature_space, ccs_features, Datum, ccs_objective_space, ccs_features_evaluation, ccs_features_tuner, ccs_retain_object, _register_vector, _unregister_vector
+from .base import Object, Error, CEnumeration, Result, _ccs_get_function, ccs_context, ccs_parameter, ccs_search_space, ccs_search_configuration, ccs_feature_space, ccs_features, Datum, ccs_objective_space, ccs_features_evaluation, ccs_features_tuner, ccs_retain_object, _register_vector, _unregister_vector
 from .context import Context
 from .parameter import Parameter
-from .configuration_space import ConfigurationSpace
-from .configuration import Configuration
-from .feature_space import FeatureSpace
 from .features import Features
+from .feature_space import FeatureSpace
 from .objective_space import ObjectiveSpace
 from .features_evaluation import FeaturesEvaluation
 
@@ -16,14 +14,14 @@ class FeaturesTunerType(CEnumeration):
 
 ccs_features_tuner_get_type = _ccs_get_function("ccs_features_tuner_get_type", [ccs_features_tuner, ct.POINTER(FeaturesTunerType)])
 ccs_features_tuner_get_name = _ccs_get_function("ccs_features_tuner_get_name", [ccs_features_tuner, ct.POINTER(ct.c_char_p)])
-ccs_features_tuner_get_configuration_space = _ccs_get_function("ccs_features_tuner_get_configuration_space", [ccs_features_tuner, ct.POINTER(ccs_configuration_space)])
+ccs_features_tuner_get_search_space = _ccs_get_function("ccs_features_tuner_get_search_space", [ccs_features_tuner, ct.POINTER(ccs_search_space)])
 ccs_features_tuner_get_objective_space = _ccs_get_function("ccs_features_tuner_get_objective_space", [ccs_features_tuner, ct.POINTER(ccs_objective_space)])
 ccs_features_tuner_get_feature_space = _ccs_get_function("ccs_features_tuner_get_feature_space", [ccs_features_tuner, ct.POINTER(ccs_feature_space)])
-ccs_features_tuner_ask = _ccs_get_function("ccs_features_tuner_ask", [ccs_features_tuner, ccs_features, ct.c_size_t, ct.POINTER(ccs_configuration), ct.POINTER(ct.c_size_t)])
+ccs_features_tuner_ask = _ccs_get_function("ccs_features_tuner_ask", [ccs_features_tuner, ccs_features, ct.c_size_t, ct.POINTER(ccs_search_configuration), ct.POINTER(ct.c_size_t)])
 ccs_features_tuner_tell = _ccs_get_function("ccs_features_tuner_tell", [ccs_features_tuner, ct.c_size_t, ct.POINTER(ccs_features_evaluation)])
 ccs_features_tuner_get_optima = _ccs_get_function("ccs_features_tuner_get_optima", [ccs_features_tuner, ccs_features, ct.c_size_t, ct.POINTER(ccs_features_evaluation), ct.POINTER(ct.c_size_t)])
 ccs_features_tuner_get_history = _ccs_get_function("ccs_features_tuner_get_history", [ccs_features_tuner, ccs_features, ct.c_size_t, ct.POINTER(ccs_features_evaluation), ct.POINTER(ct.c_size_t)])
-ccs_features_tuner_suggest = _ccs_get_function("ccs_features_tuner_suggest", [ccs_features_tuner, ccs_features, ct.POINTER(ccs_configuration)])
+ccs_features_tuner_suggest = _ccs_get_function("ccs_features_tuner_suggest", [ccs_features_tuner, ccs_features, ct.POINTER(ccs_search_configuration)])
 
 class FeaturesTuner(Object):
   @classmethod
@@ -80,22 +78,22 @@ class FeaturesTuner(Object):
     return self._feature_space
 
   @property
-  def configuration_space(self):
-    if hasattr(self, "_configuration_space"):
-      return self._configuration_space
-    v = ccs_configuration_space()
-    res = ccs_features_tuner_get_configuration_space(self.handle, ct.byref(v))
+  def search_space(self):
+    if hasattr(self, "_search_space"):
+      return self._search_space
+    v = ccs_search_space()
+    res = ccs_features_tuner_get_search_space(self.handle, ct.byref(v))
     Error.check(res)
-    self._configuration_space = ConfigurationSpace.from_handle(v)
-    return self._configuration_space
+    self._search_space = Object.from_handle(v)
+    return self._search_space
 
   def ask(self, features, count = 1):
-    v = (ccs_configuration * count)()
+    v = (ccs_search_configuration * count)()
     c = ct.c_size_t()
     res = ccs_features_tuner_ask(self.handle, features.handle, count, v, ct.byref(c))
     Error.check(res)
     count = c.value
-    return [Configuration(handle = ccs_configuration(v[x]), retain = False) for x in range(count)]
+    return [Object.from_handle(ccs_search_configuration(v[x]), retain = False) for x in range(count)]
 
   def tell(self, evaluations):
     count = len(evaluations)
@@ -138,10 +136,10 @@ class FeaturesTuner(Object):
     return [FeaturesEvaluation.from_handle(ccs_features_evaluation(x)) for x in v]
 
   def suggest(self, features):
-    config = ccs_configuration()
+    config = ccs_search_configuration()
     res = ccs_features_tuner_suggest(self.handle, features.handle, ct.byref(config))
     Error.check(res)
-    return Configuration(handle = config, retain = False)
+    return Object.from_handle(config, retain = False)
 
 ccs_create_random_features_tuner = _ccs_get_function("ccs_create_random_features_tuner", [ct.c_char_p, ccs_feature_space, ccs_objective_space, ct.POINTER(ccs_features_tuner)])
 
@@ -159,11 +157,11 @@ class RandomFeaturesTuner(FeaturesTuner):
 FeaturesTuner.Random = RandomFeaturesTuner
 
 ccs_user_defined_features_tuner_del_type = ct.CFUNCTYPE(Result, ccs_features_tuner)
-ccs_user_defined_features_tuner_ask_type = ct.CFUNCTYPE(Result, ccs_features_tuner, ccs_features, ct.c_size_t, ct.POINTER(ccs_configuration), ct.POINTER(ct.c_size_t))
+ccs_user_defined_features_tuner_ask_type = ct.CFUNCTYPE(Result, ccs_features_tuner, ccs_features, ct.c_size_t, ct.POINTER(ccs_search_configuration), ct.POINTER(ct.c_size_t))
 ccs_user_defined_features_tuner_tell_type = ct.CFUNCTYPE(Result, ccs_features_tuner, ct.c_size_t, ct.POINTER(ccs_features_evaluation))
 ccs_user_defined_features_tuner_get_optima_type = ct.CFUNCTYPE(Result, ccs_features_tuner, ccs_features, ct.c_size_t, ct.POINTER(ccs_features_evaluation), ct.POINTER(ct.c_size_t))
 ccs_user_defined_features_tuner_get_history_type = ct.CFUNCTYPE(Result, ccs_features_tuner, ccs_features, ct.c_size_t, ct.POINTER(ccs_features_evaluation), ct.POINTER(ct.c_size_t))
-ccs_user_defined_features_tuner_suggest_type = ct.CFUNCTYPE(Result, ccs_features_tuner, ccs_features, ct.POINTER(ccs_configuration))
+ccs_user_defined_features_tuner_suggest_type = ct.CFUNCTYPE(Result, ccs_features_tuner, ccs_features, ct.POINTER(ccs_search_configuration))
 ccs_user_defined_features_tuner_serialize_type = ct.CFUNCTYPE(Result, ccs_features_tuner, ct.c_size_t, ct.c_void_p, ct.POINTER(ct.c_size_t))
 ccs_user_defined_features_tuner_deserialize_type = ct.CFUNCTYPE(Result, ccs_features_tuner, ct.c_size_t, ct.POINTER(ccs_features_evaluation), ct.c_size_t, ct.POINTER(ccs_features_evaluation), ct.c_size_t, ct.c_void_p)
 

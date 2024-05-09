@@ -1,14 +1,12 @@
 import ctypes as ct
-from .base import Error, Datum, Result, _ccs_get_function, ccs_configuration, ccs_features, ccs_features_evaluation, ccs_objective_space, ccs_evaluation_result
-from .evaluation_binding import EvaluationBinding
-from .configuration import Configuration
+from .base import Error, Datum, Result, _ccs_get_function, ccs_search_configuration, ccs_features, ccs_features_evaluation, ccs_objective_space, ccs_evaluation_result
+from .evaluation import Evaluation
 from .features import Features
 
-ccs_create_features_evaluation = _ccs_get_function("ccs_create_features_evaluation", [ccs_objective_space, ccs_configuration, ccs_features, ccs_evaluation_result, ct.c_size_t, ct.POINTER(Datum), ct.POINTER(ccs_features_evaluation)])
-ccs_features_evaluation_get_configuration = _ccs_get_function("ccs_features_evaluation_get_configuration", [ccs_features_evaluation, ct.POINTER(ccs_configuration)])
+ccs_create_features_evaluation = _ccs_get_function("ccs_create_features_evaluation", [ccs_objective_space, ccs_search_configuration, ccs_features, ccs_evaluation_result, ct.c_size_t, ct.POINTER(Datum), ct.POINTER(ccs_features_evaluation)])
 ccs_features_evaluation_get_features = _ccs_get_function("ccs_features_evaluation_get_features", [ccs_features_evaluation, ct.POINTER(ccs_features)])
 
-class FeaturesEvaluation(EvaluationBinding):
+class FeaturesEvaluation(Evaluation):
   def __init__(self, handle = None, retain = False, auto_release = True,
                objective_space = None, configuration = None, features = None, result = Result.SUCCESS, values = None):
     if handle is None:
@@ -31,16 +29,6 @@ class FeaturesEvaluation(EvaluationBinding):
   @classmethod
   def from_handle(cls, handle, retain = True, auto_release = True):
     return cls(handle = handle, retain = retain, auto_release = auto_release)
-
-  @property
-  def configuration(self):
-    if hasattr(self, "_configuration"):
-      return self._configuration
-    v = ccs_configuration()
-    res = ccs_features_evaluation_get_configuration(self.handle, ct.byref(v))
-    Error.check(res)
-    self._configuration = Configuration.from_handle(v)
-    return self._configuration
 
   @property
   def features(self):

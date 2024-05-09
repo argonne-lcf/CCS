@@ -15,17 +15,14 @@ EXTRA_DIST = \
 	cconfigspace/configuration_space.py \
 	cconfigspace/distribution_space.py \
 	cconfigspace/tree_configuration.py \
-	cconfigspace/tree_tuner.py \
 	cconfigspace/features.py \
 	cconfigspace/interval.py \
 	cconfigspace/objective_space.py \
 	cconfigspace/features_evaluation.py \
-	cconfigspace/tree_evaluation.py \
 	cconfigspace/binding.py \
 	cconfigspace/features_tuner.py \
 	cconfigspace/tuner.py \
 	cconfigspace/base.py \
-	cconfigspace/evaluation_binding.py \
 	cconfigspace/evaluation.py \
 	test/test_distribution.py \
 	test/test_tree_tuner.py \

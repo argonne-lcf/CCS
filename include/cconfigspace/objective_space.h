@@ -160,18 +160,18 @@ ccs_objective_space_get_objectives(
  * @return #CCS_RESULT_SUCCESS on success
  * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p objective_space is not a
  * valid CCS objective space; or if \p evaluation is not a valid CCS
- * evaluation binding
+ * evaluation
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p is_valid_ret is NULL
- * @return #CCS_RESULT_ERROR_INVALID_EVALUATION_BINDING if \p evaluation
+ * @return #CCS_RESULT_ERROR_INVALID_EVALUATION if \p evaluation
  * is not associated to the objective space
  * @remarks
  *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_objective_space_check_evaluation(
-	ccs_objective_space_t    objective_space,
-	ccs_evaluation_binding_t evaluation,
-	ccs_bool_t              *is_valid_ret);
+	ccs_objective_space_t objective_space,
+	ccs_evaluation_t      evaluation,
+	ccs_bool_t           *is_valid_ret);
 
 #ifdef __cplusplus
 }

@@ -12,7 +12,7 @@ module CCS
 
   attach_function :ccs_tuner_get_type, [:ccs_tuner_t, :pointer], :ccs_result_t
   attach_function :ccs_tuner_get_name, [:ccs_tuner_t, :pointer], :ccs_result_t
-  attach_function :ccs_tuner_get_configuration_space, [:ccs_tuner_t, :pointer], :ccs_result_t
+  attach_function :ccs_tuner_get_search_space, [:ccs_tuner_t, :pointer], :ccs_result_t
   attach_function :ccs_tuner_get_objective_space, [:ccs_tuner_t, :pointer], :ccs_result_t
   attach_function :ccs_tuner_ask, [:ccs_tuner_t, :size_t, :pointer, :pointer], :ccs_result_t
   attach_function :ccs_tuner_tell, [:ccs_tuner_t, :size_t, :pointer], :ccs_result_t
@@ -22,7 +22,7 @@ module CCS
 
   class Tuner < Object
     add_property :type, :ccs_tuner_type_t, :ccs_tuner_get_type, memoize: true
-    add_handle_property :configuration_space, :ccs_configuration_space_t, :ccs_tuner_get_configuration_space, memoize: true
+    add_handle_property :search_space, :ccs_search_space_t, :ccs_tuner_get_search_space, memoize: true
     add_handle_property :objective_space, :ccs_objective_space_t, :ccs_tuner_get_objective_space, memoize: true
 
     def self.from_handle(handle, retain: true, auto_release: true)
@@ -47,11 +47,11 @@ module CCS
     end
 
     def ask(count = 1)
-      p_confs = MemoryPointer::new(:ccs_configuration_t, count)
+      p_confs = MemoryPointer::new(:ccs_search_configuration_t, count)
       p_num = MemoryPointer::new(:size_t)
       CCS.error_check CCS.ccs_tuner_ask(@handle, count, p_confs, p_num)
       count = p_num.read_size_t
-      count.times.collect { |i| Configuration::new(p_confs[i].read_pointer, retain: false) }
+      count.times.collect { |i| Object::from_handle(p_confs[i].read_pointer, retain: false) }
     end
 
     def tell(evaluations)
@@ -89,9 +89,9 @@ module CCS
     end
 
     def suggest
-      p_conf = MemoryPointer::new(:ccs_configuration_t)
+      p_conf = MemoryPointer::new(:ccs_search_configuration_t)
       CCS.error_check CCS.ccs_tuner_suggest(@handle, p_conf)
-      Configuration::new(p_conf.read_pointer, retain: false)
+      Object::from_handle(p_conf.read_pointer, retain: false)
     end
 
   end

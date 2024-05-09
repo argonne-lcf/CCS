@@ -17,7 +17,6 @@ include_ccs_HEADERS = \
 	cconfigspace/configuration.h \
 	cconfigspace/features.h \
 	cconfigspace/objective_space.h \
-	cconfigspace/evaluation_binding.h \
 	cconfigspace/evaluation.h \
 	cconfigspace/features_evaluation.h \
 	cconfigspace/tuner.h \
@@ -25,7 +24,5 @@ include_ccs_HEADERS = \
 	cconfigspace/map.h \
 	cconfigspace/tree.h \
 	cconfigspace/tree_space.h \
-	cconfigspace/tree_configuration.h \
-	cconfigspace/tree_evaluation.h \
-	cconfigspace/tree_tuner.h
+	cconfigspace/tree_configuration.h
 

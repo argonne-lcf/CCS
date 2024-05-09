@@ -46,7 +46,7 @@ _ccs_deserialize_bin_tree_space_static(
 	CCS_VALIDATE_ERR_GOTO(
 		res,
 		ccs_create_static_tree_space(
-			data.name, data.tree, tree_space_ret),
+			data.name, data.tree, data.rng, tree_space_ret),
 		end);
 end:
 	if (data.rng)
@@ -84,13 +84,10 @@ _ccs_deserialize_bin_tree_space_dynamic(
 	CCS_VALIDATE_ERR_GOTO(
 		res,
 		ccs_create_dynamic_tree_space(
-			data.common_data.name, data.common_data.tree, vector,
-			opts->data, tree_space_ret),
+			data.common_data.name, data.common_data.tree,
+			data.common_data.rng, vector, opts->data,
+			tree_space_ret),
 		end);
-	CCS_VALIDATE_ERR_GOTO(
-		res,
-		ccs_tree_space_set_rng(*tree_space_ret, data.common_data.rng),
-		tree_space);
 	if (vector->deserialize_state)
 		CCS_VALIDATE_ERR_GOTO(
 			res,

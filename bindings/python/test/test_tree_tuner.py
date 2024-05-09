@@ -32,14 +32,14 @@ class TestTreeTuner(unittest.TestCase):
 
   def test_create_random(self):
     os = self.create_tuning_problem()
-    t = ccs.RandomTreeTuner(name = "tuner", objective_space = os)
+    t = ccs.RandomTuner(name = "tuner", objective_space = os)
     t2 = ccs.Object.from_handle(t.handle)
     self.assertEqual("tuner", t.name)
-    self.assertEqual(ccs.TreeTunerType.RANDOM, t.type)
-    evals = [ccs.TreeEvaluation(objective_space = os, configuration = c, values = [reduce(c.values)]) for c in t.ask(100)]
+    self.assertEqual(ccs.TunerType.RANDOM, t.type)
+    evals = [ccs.Evaluation(objective_space = os, configuration = c, values = [reduce(c.values)]) for c in t.ask(100)]
     t.tell(evals)
     hist = t.history
-    evals = [ccs.TreeEvaluation(objective_space = os, configuration = c, values = [reduce(c.values)]) for c in t.ask(100)]
+    evals = [ccs.Evaluation(objective_space = os, configuration = c, values = [reduce(c.values)]) for c in t.ask(100)]
     t.tell(evals)
     hist = t.history
     self.assertEqual(200, len(hist))
@@ -72,7 +72,7 @@ class TestTreeTuner(unittest.TestCase):
       if count is None:
         return (None, 1)
       else:
-        ts = tuner.tree_space
+        ts = tuner.search_space
         return (ts.samples(count), count)
 
     def tell(tuner, evaluations):
@@ -108,14 +108,14 @@ class TestTreeTuner(unittest.TestCase):
         return choice(tuner.tuner_data.optima).configuration
 
     os = self.create_tuning_problem()
-    t = ccs.UserDefinedTreeTuner(name = "tuner", objective_space = os, delete = delete, ask = ask, tell = tell, get_optima = get_optima, get_history = get_history, suggest = suggest, tuner_data = TunerData())
+    t = ccs.UserDefinedTuner(name = "tuner", objective_space = os, delete = delete, ask = ask, tell = tell, get_optima = get_optima, get_history = get_history, suggest = suggest, tuner_data = TunerData())
     t2 = ccs.Object.from_handle(t.handle)
     self.assertEqual("tuner", t.name)
-    self.assertEqual(ccs.TreeTunerType.USER_DEFINED, t.type)
-    evals = [ccs.TreeEvaluation(objective_space = os, configuration = c, values = [reduce(c.values)]) for c in t.ask(100)]
+    self.assertEqual(ccs.TunerType.USER_DEFINED, t.type)
+    evals = [ccs.Evaluation(objective_space = os, configuration = c, values = [reduce(c.values)]) for c in t.ask(100)]
     t.tell(evals)
     hist = t.history
-    evals = [ccs.TreeEvaluation(objective_space = os, configuration = c, values = [reduce(c.values)]) for c in t.ask(100)]
+    evals = [ccs.Evaluation(objective_space = os, configuration = c, values = [reduce(c.values)]) for c in t.ask(100)]
     t.tell(evals)
     hist = t.history
     self.assertEqual(200, len(hist))
@@ -125,7 +125,7 @@ class TestTreeTuner(unittest.TestCase):
     self.assertTrue(all(best >= x.objective_values[0] for x in hist))
     self.assertTrue(t.suggest in [x.configuration for x in optims])
     buff = t.serialize()
-    t_copy = ccs.UserDefinedTreeTuner.deserialize(buffer = buff, delete = delete, ask = ask, tell = tell, get_optima = get_optima, get_history = get_history, suggest = suggest, tuner_data = TunerData())
+    t_copy = ccs.UserDefinedTuner.deserialize(buffer = buff, delete = delete, ask = ask, tell = tell, get_optima = get_optima, get_history = get_history, suggest = suggest, tuner_data = TunerData())
     hist = t_copy.history
     self.assertEqual(200, len(hist))
     optims_2 = t_copy.optima

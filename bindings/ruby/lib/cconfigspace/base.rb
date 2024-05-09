@@ -100,11 +100,11 @@ module CCS
   typedef :ccs_object_t, :ccs_search_space_t
   typedef :ccs_object_t, :ccs_configuration_space_t
   typedef :ccs_object_t, :ccs_binding_t
+  typedef :ccs_object_t, :ccs_search_configuration_t
   typedef :ccs_object_t, :ccs_configuration_t
   typedef :ccs_object_t, :ccs_feature_space_t
   typedef :ccs_object_t, :ccs_features_t
   typedef :ccs_object_t, :ccs_objective_space_t
-  typedef :ccs_object_t, :ccs_evaluation_binding_t
   typedef :ccs_object_t, :ccs_evaluation_t
   typedef :ccs_object_t, :ccs_features_evaluation_t
   typedef :ccs_object_t, :ccs_tuner_t
@@ -114,8 +114,6 @@ module CCS
   typedef :ccs_object_t, :ccs_tree_t
   typedef :ccs_object_t, :ccs_tree_space_t
   typedef :ccs_object_t, :ccs_tree_configuration_t
-  typedef :ccs_object_t, :ccs_tree_evaluation_t
-  typedef :ccs_object_t, :ccs_tree_tuner_t
   class MemoryPointer
     alias read_ccs_object_t read_pointer
     alias read_ccs_rng_t read_ccs_object_t
@@ -127,11 +125,11 @@ module CCS
     alias read_ccs_search_space_t read_ccs_object_t
     alias read_ccs_configuration_space_t read_ccs_object_t
     alias read_ccs_binding_t read_ccs_object_t
+    alias read_ccs_search_configuration_t read_ccs_object_t
     alias read_ccs_configuration_t read_ccs_object_t
     alias read_ccs_feature_space_t read_ccs_object_t
     alias read_ccs_features_t read_ccs_object_t
     alias read_ccs_objective_space_t read_ccs_object_t
-    alias read_ccs_evaluation_binding_t read_ccs_object_t
     alias read_ccs_evaluation_t read_ccs_object_t
     alias read_ccs_features_evaluation_t read_ccs_object_t
     alias read_ccs_tuner_t read_ccs_object_t
@@ -141,8 +139,6 @@ module CCS
     alias read_ccs_tree_t read_ccs_object_t
     alias read_ccs_tree_space_t read_ccs_object_t
     alias read_ccs_tree_configuration_t read_ccs_object_t
-    alias read_ccs_tree_evaluation_t read_ccs_object_t
-    alias read_ccs_tree_tuner_t read_ccs_object_t
   end
 
   ObjectType = enum FFI::Type::INT32, :ccs_object_type_t, [
@@ -164,8 +160,6 @@ module CCS
     :CCS_OBJECT_TYPE_TREE,
     :CCS_OBJECT_TYPE_TREE_SPACE,
     :CCS_OBJECT_TYPE_TREE_CONFIGURATION,
-    :CCS_OBJECT_TYPE_TREE_EVALUATION,
-    :CCS_OBJECT_TYPE_TREE_TUNER,
     :CCS_OBJECT_TYPE_DISTRIBUTION_SPACE ]
 
   Error = enum FFI::Type::INT32, :ccs_result_t, [
@@ -200,8 +194,7 @@ module CCS
     :CCS_RESULT_ERROR_EXTERNAL,                   -27,
     :CCS_RESULT_ERROR_INVALID_TREE,               -28,
     :CCS_RESULT_ERROR_INVALID_TREE_SPACE,         -29,
-    :CCS_RESULT_ERROR_INVALID_TREE_TUNER,         -30,
-    :CCS_RESULT_ERROR_INVALID_DISTRIBUTION_SPACE, -31 ]
+    :CCS_RESULT_ERROR_INVALID_DISTRIBUTION_SPACE, -30 ]
 
   class MemoryPointer
     def read_ccs_object_type_t
@@ -594,8 +587,6 @@ module CCS
         CCS_OBJECT_TYPE_TREE: CCS::Tree,
         CCS_OBJECT_TYPE_TREE_SPACE: CCS::TreeSpace,
         CCS_OBJECT_TYPE_TREE_CONFIGURATION: CCS::TreeConfiguration,
-        CCS_OBJECT_TYPE_TREE_EVALUATION: CCS::TreeEvaluation,
-        CCS_OBJECT_TYPE_TREE_TUNER: CCS::TreeTuner,
         CCS_OBJECT_TYPE_DISTRIBUTION_SPACE: CCS::DistributionSpace
       }
     end
@@ -659,11 +650,16 @@ module CCS
 
     private_class_method :_from_handle
 
-    def self.from_handle(handle)
+    def self.from_handle(handle, retain: true)
       ptr2 = MemoryPointer::new(:int32)
       CCS.error_check CCS.ccs_object_get_refcount(handle, ptr2)
-      opts = ptr2.read_int32 == 0 ? {retain: false, auto_release: false} : {}
-      _from_handle(handle, **opts)
+      if ptr2.read_int32 == 0
+        retain = false
+        auto_release = false
+      else
+        auto_release = true
+      end
+      _from_handle(handle, retain: retain, auto_release: auto_release)
     end
 
     def to_ptr

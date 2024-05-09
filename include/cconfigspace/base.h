@@ -84,103 +84,95 @@ extern const ccs_version_t ccs_version;
 /**
  * An opaque type defining a CCS random generator.
  */
-typedef struct _ccs_rng_s                 *ccs_rng_t;
+typedef struct _ccs_rng_s                  *ccs_rng_t;
 /**
  * An opaque type defining a CCS distribution.
  */
-typedef struct _ccs_distribution_s        *ccs_distribution_t;
+typedef struct _ccs_distribution_s         *ccs_distribution_t;
 /**
  * An opaque type defining a CCS parameter.
  */
-typedef struct _ccs_parameter_s           *ccs_parameter_t;
+typedef struct _ccs_parameter_s            *ccs_parameter_t;
 /**
  * An opaque type defining a CCS expression.
  */
-typedef struct _ccs_expression_s          *ccs_expression_t;
+typedef struct _ccs_expression_s           *ccs_expression_t;
 /**
  * An opaque type defining a CCS context.
  */
-typedef struct _ccs_context_s             *ccs_context_t;
+typedef struct _ccs_context_s              *ccs_context_t;
 /**
  * An opaque type defining a CCS distribution space.
  */
-typedef struct _ccs_distribution_space_s  *ccs_distribution_space_t;
+typedef struct _ccs_distribution_space_s   *ccs_distribution_space_t;
 /**
  * An opaque type defining a CCS search space.
  */
-typedef struct _ccs_search_space_s        *ccs_search_space_t;
+typedef struct _ccs_search_space_s         *ccs_search_space_t;
 /**
  * An opaque type defining a CCS configuration space.
  */
-typedef struct _ccs_configuration_space_s *ccs_configuration_space_t;
+typedef struct _ccs_configuration_space_s  *ccs_configuration_space_t;
 /**
  * An opaque type defining a CCS binding.
  */
-typedef struct _ccs_binding_s             *ccs_binding_t;
+typedef struct _ccs_binding_s              *ccs_binding_t;
+/**
+ * An opaque type defining a CCS search space configuration
+ */
+typedef struct _ccs_search_configuration_s *ccs_search_configuration_t;
 /**
  * An opaque type defining a CCS configuration.
  */
-typedef struct _ccs_configuration_s       *ccs_configuration_t;
+typedef struct _ccs_configuration_s        *ccs_configuration_t;
 /**
  * An opaque type defining a CCS feature space.
  */
-typedef struct _ccs_feature_space_s       *ccs_feature_space_t;
+typedef struct _ccs_feature_space_s        *ccs_feature_space_t;
 /**
  * An opaque type defining a CCS features.
  */
-typedef struct _ccs_features_s            *ccs_features_t;
+typedef struct _ccs_features_s             *ccs_features_t;
 /**
  * An opaque type defining a CCS objective space.
  */
-typedef struct _ccs_objective_space_s     *ccs_objective_space_t;
-/**
- * An opaque type defining a CCS evaluation binding.
- */
-typedef struct _ccs_evaluation_binding_s  *ccs_evaluation_binding_t;
+typedef struct _ccs_objective_space_s      *ccs_objective_space_t;
 /**
  * An opaque type defining a CCS evaluation.
  */
-typedef struct _ccs_evaluation_s          *ccs_evaluation_t;
+typedef struct _ccs_evaluation_s           *ccs_evaluation_t;
 /**
  * An opaque type defining a CCS features evaluation.
  */
-typedef struct _ccs_features_evaluation_s *ccs_features_evaluation_t;
+typedef struct _ccs_features_evaluation_s  *ccs_features_evaluation_t;
 /**
  * An opaque type defining a CCS tuner.
  */
-typedef struct _ccs_tuner_s               *ccs_tuner_t;
+typedef struct _ccs_tuner_s                *ccs_tuner_t;
 /**
  * An opaque type defining a CCS features tuner.
  */
-typedef struct _ccs_features_tuner_s      *ccs_features_tuner_t;
+typedef struct _ccs_features_tuner_s       *ccs_features_tuner_t;
 /**
  * An opaque type defining a CCS key-value store.
  */
-typedef struct _ccs_map_s                 *ccs_map_t;
+typedef struct _ccs_map_s                  *ccs_map_t;
 /**
  * An opaque type defining a CCS error stack.
  */
-typedef struct _ccs_error_stack_s         *ccs_error_stack_t;
+typedef struct _ccs_error_stack_s          *ccs_error_stack_t;
 /**
  * An opaque type defining a CCS tree.
  */
-typedef struct _ccs_tree_s                *ccs_tree_t;
+typedef struct _ccs_tree_s                 *ccs_tree_t;
 /**
  * An opaque type defining a CCS tree space.
  */
-typedef struct _ccs_tree_space_s          *ccs_tree_space_t;
+typedef struct _ccs_tree_space_s           *ccs_tree_space_t;
 /**
  * An opaque type defining a CCS tree space configuration.
  */
-typedef struct _ccs_tree_configuration_s  *ccs_tree_configuration_t;
-/**
- * An opaque type defining a CCS tree evaluation.
- */
-typedef struct _ccs_tree_evaluation_s     *ccs_tree_evaluation_t;
-/**
- * An opaque type defining a CCS tree tuner.
- */
-typedef struct _ccs_tree_tuner_s          *ccs_tree_tuner_t;
+typedef struct _ccs_tree_configuration_s   *ccs_tree_configuration_t;
 
 /**
  * The different possible return codes of a CCS function.
@@ -252,11 +244,9 @@ enum ccs_result_e {
 	/** The provided tree space is invalid */
 	CCS_RESULT_ERROR_INVALID_TREE_SPACE         = -29,
 	/** The provided tree tuner is invalid */
-	CCS_RESULT_ERROR_INVALID_TREE_TUNER         = -30,
-	/** The provided distribution space is invalid */
-	CCS_RESULT_ERROR_INVALID_DISTRIBUTION_SPACE = -31,
+	CCS_RESULT_ERROR_INVALID_DISTRIBUTION_SPACE = -30,
 	/** Guard */
-	CCS_RESULT_MIN                              = -32,
+	CCS_RESULT_MIN                              = -31,
 	/** Try forcing 32 bits value for bindings */
 	CCS_RESULT_FORCE_32BIT                      = INT32_MAX
 };
@@ -311,8 +301,6 @@ enum ccs_object_type_e {
 	CCS_OBJECT_TYPE_TREE_SPACE,
 	/** A configuration on a tree space */
 	CCS_OBJECT_TYPE_TREE_CONFIGURATION,
-	/** An evaluation of a tree configuration */
-	CCS_OBJECT_TYPE_TREE_EVALUATION,
 	/** A tree tuner */
 	CCS_OBJECT_TYPE_TREE_TUNER,
 	/** A distribution space */

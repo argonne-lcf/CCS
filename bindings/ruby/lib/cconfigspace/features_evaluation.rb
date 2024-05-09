@@ -1,10 +1,7 @@
 module CCS
   attach_function :ccs_create_features_evaluation, [:ccs_objective_space_t, :ccs_configuration_t, :ccs_features_t, :ccs_evaluation_result_t, :size_t, :pointer, :pointer], :ccs_result_t
-  attach_function :ccs_features_evaluation_get_configuration, [:ccs_features_evaluation_t, :pointer], :ccs_result_t
   attach_function :ccs_features_evaluation_get_features, [:ccs_features_evaluation_t, :pointer], :ccs_result_t
-  class FeaturesEvaluation < EvaluationBinding
-    alias objective_space context
-    add_handle_property :configuration, :ccs_configuration_t, :ccs_features_evaluation_get_configuration, memoize: true
+  class FeaturesEvaluation < Evaluation
     add_handle_property :features, :ccs_features_t, :ccs_features_evaluation_get_features, memoize: true
 
     def initialize(handle = nil, retain: false, auto_release: true,

@@ -133,8 +133,6 @@ evaluations:
 			if (data.history[i])
 				ccs_release_object(data.history[i]);
 end:
-	if (data.common_data.configuration_space)
-		ccs_release_object(data.common_data.configuration_space);
 	if (data.common_data.objective_space)
 		ccs_release_object(data.common_data.objective_space);
 	if (data.history)

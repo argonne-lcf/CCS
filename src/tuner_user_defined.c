@@ -17,7 +17,7 @@ _ccs_tuner_user_defined_del(ccs_object_t o)
 		(_ccs_user_defined_tuner_data_t *)((ccs_tuner_t)o)->data;
 	ccs_result_t err;
 	err = d->vector.del((ccs_tuner_t)o);
-	ccs_release_object(d->common_data.configuration_space);
+	ccs_release_object(d->common_data.search_space);
 	ccs_release_object(d->common_data.objective_space);
 	return err;
 }
@@ -221,10 +221,10 @@ _ccs_tuner_user_defined_serialize(
 
 static ccs_result_t
 _ccs_tuner_user_defined_ask(
-	ccs_tuner_t          tuner,
-	size_t               num_configurations,
-	ccs_configuration_t *configurations,
-	size_t              *num_configurations_ret)
+	ccs_tuner_t                 tuner,
+	size_t                      num_configurations,
+	ccs_search_configuration_t *configurations,
+	size_t                     *num_configurations_ret)
 {
 	_ccs_user_defined_tuner_data_t *d =
 		(_ccs_user_defined_tuner_data_t *)tuner->data;
@@ -276,8 +276,8 @@ _ccs_tuner_user_defined_get_history(
 
 static ccs_result_t
 _ccs_tuner_user_defined_suggest(
-	ccs_tuner_t          tuner,
-	ccs_configuration_t *configuration_ret)
+	ccs_tuner_t                 tuner,
+	ccs_search_configuration_t *configuration_ret)
 {
 	_ccs_user_defined_tuner_data_t *d =
 		(_ccs_user_defined_tuner_data_t *)tuner->data;
@@ -303,12 +303,11 @@ ccs_create_user_defined_tuner(
 	void                            *tuner_data,
 	ccs_tuner_t                     *tuner_ret)
 {
-	ccs_configuration_space_t configuration_space;
+	ccs_search_space_t search_space;
 	CCS_CHECK_PTR(name);
 	CCS_CHECK_OBJ(objective_space, CCS_OBJECT_TYPE_OBJECTIVE_SPACE);
 	CCS_VALIDATE(ccs_objective_space_get_search_space(
-		objective_space, (ccs_search_space_t *)&configuration_space));
-	CCS_CHECK_OBJ(configuration_space, CCS_OBJECT_TYPE_CONFIGURATION_SPACE);
+		objective_space, &search_space));
 	CCS_CHECK_PTR(tuner_ret);
 	CCS_CHECK_PTR(vector);
 	CCS_CHECK_PTR(vector->del);
@@ -325,8 +324,7 @@ ccs_create_user_defined_tuner(
 	ccs_tuner_t                     tun;
 	_ccs_user_defined_tuner_data_t *data;
 	ccs_result_t                    err;
-	CCS_VALIDATE_ERR_GOTO(
-		err, ccs_retain_object(configuration_space), errmem);
+	CCS_VALIDATE_ERR_GOTO(err, ccs_retain_object(search_space), errmem);
 	CCS_VALIDATE_ERR_GOTO(err, ccs_retain_object(objective_space), errcs);
 
 	tun = (ccs_tuner_t)mem;
@@ -340,15 +338,15 @@ ccs_create_user_defined_tuner(
 	data->common_data.name =
 		(const char
 			 *)(mem + sizeof(struct _ccs_tuner_s) + sizeof(struct _ccs_user_defined_tuner_data_s));
-	data->common_data.configuration_space = configuration_space;
-	data->common_data.objective_space     = objective_space;
-	data->vector                          = *vector;
-	data->tuner_data                      = tuner_data;
+	data->common_data.search_space    = search_space;
+	data->common_data.objective_space = objective_space;
+	data->vector                      = *vector;
+	data->tuner_data                  = tuner_data;
 	strcpy((char *)data->common_data.name, name);
 	*tuner_ret = tun;
 	return CCS_RESULT_SUCCESS;
 errcs:
-	ccs_release_object(configuration_space);
+	ccs_release_object(search_space);
 errmem:
 	free((void *)mem);
 	return err;

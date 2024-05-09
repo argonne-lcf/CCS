@@ -32,15 +32,15 @@ ccs_features_tuner_get_name(ccs_features_tuner_t tuner, const char **name_ret)
 }
 
 ccs_result_t
-ccs_features_tuner_get_configuration_space(
-	ccs_features_tuner_t       tuner,
-	ccs_configuration_space_t *configuration_space_ret)
+ccs_features_tuner_get_search_space(
+	ccs_features_tuner_t tuner,
+	ccs_search_space_t  *search_space_ret)
 {
 	CCS_CHECK_OBJ(tuner, CCS_OBJECT_TYPE_FEATURES_TUNER);
-	CCS_CHECK_PTR(configuration_space_ret);
+	CCS_CHECK_PTR(search_space_ret);
 	_ccs_features_tuner_common_data_t *d =
 		(_ccs_features_tuner_common_data_t *)tuner->data;
-	*configuration_space_ret = d->configuration_space;
+	*search_space_ret = d->search_space;
 	return CCS_RESULT_SUCCESS;
 }
 
@@ -72,11 +72,11 @@ ccs_features_tuner_get_feature_space(
 
 ccs_result_t
 ccs_features_tuner_ask(
-	ccs_features_tuner_t tuner,
-	ccs_features_t       features,
-	size_t               num_configurations,
-	ccs_configuration_t *configurations,
-	size_t              *num_configurations_ret)
+	ccs_features_tuner_t        tuner,
+	ccs_features_t              features,
+	size_t                      num_configurations,
+	ccs_search_configuration_t *configurations,
+	size_t                     *num_configurations_ret)
 {
 	CCS_CHECK_OBJ(tuner, CCS_OBJECT_TYPE_FEATURES_TUNER);
 	CCS_CHECK_OBJ(features, CCS_OBJECT_TYPE_FEATURES);
@@ -183,9 +183,9 @@ err_tuner_lock:
 
 ccs_result_t
 ccs_features_tuner_suggest(
-	ccs_features_tuner_t tuner,
-	ccs_features_t       features,
-	ccs_configuration_t *configuration)
+	ccs_features_tuner_t        tuner,
+	ccs_features_t              features,
+	ccs_search_configuration_t *configuration)
 {
 	CCS_CHECK_OBJ(tuner, CCS_OBJECT_TYPE_FEATURES_TUNER);
 	_ccs_features_tuner_ops_t *ops = ccs_features_tuner_get_ops(tuner);

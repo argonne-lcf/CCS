@@ -8,10 +8,10 @@ extern "C" {
 /**
  * @file features_tuner.h
  * A CCS features tuner defines an ask and tell interface to optimize an
- * objective space (see objective_space.h) given a configuration spaces (see
- * configuration_space.h) and a feature space (see feature_space.h). The tuner
- * will propose configurations (see configuration.h) and the user will return
- * features evaluations (see features_evaluation.h).
+ * objective space (see objective_space.h) given a feature space (see
+ * feature_space.h). The tuner will propose configurations (see
+ * configuration.h) and the user will return features evaluations (see
+ * features_evaluation.h).
  */
 
 /**
@@ -68,21 +68,21 @@ ccs_features_tuner_get_name(
 	const char         **name_ret);
 
 /**
- * Get the associated configuration space.
+ * Get the associated search space.
  * @param[in] features_tuner
- * @param[out] configuration_space_ret a pointer to the variable that will
- *                                     contain the configuration space
+ * @param[out] search_space_ret a pointer to the variable that will
+ *                                     contain the search space
  * @return #CCS_RESULT_SUCCESS on success
  * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p features_tuner is not a valid
  * CCS features tuner
- * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p configuration_space_ret is NULL
+ * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p search_space_ret is NULL
  * @remarks
  *   This function is thread-safe
  */
 extern ccs_result_t
-ccs_features_tuner_get_configuration_space(
-	ccs_features_tuner_t       features_tuner,
-	ccs_configuration_space_t *configuration_space_ret);
+ccs_features_tuner_get_search_space(
+	ccs_features_tuner_t features_tuner,
+	ccs_search_space_t  *search_space_ret);
 
 /**
  * Get the associated objective space.
@@ -154,11 +154,11 @@ ccs_features_tuner_get_feature_space(
  */
 extern ccs_result_t
 ccs_features_tuner_ask(
-	ccs_features_tuner_t features_tuner,
-	ccs_features_t       features,
-	size_t               num_configurations,
-	ccs_configuration_t *configurations,
-	size_t              *num_configurations_ret);
+	ccs_features_tuner_t        features_tuner,
+	ccs_features_t              features,
+	size_t                      num_configurations,
+	ccs_search_configuration_t *configurations,
+	size_t                     *num_configurations_ret);
 
 /**
  * Give a list of results to a features tuner through evaluations.
@@ -206,9 +206,9 @@ ccs_features_tuner_tell(
  */
 extern ccs_result_t
 ccs_features_tuner_suggest(
-	ccs_features_tuner_t features_tuner,
-	ccs_features_t       features,
-	ccs_configuration_t *configuration);
+	ccs_features_tuner_t        features_tuner,
+	ccs_features_t              features,
+	ccs_search_configuration_t *configuration);
 
 /**
  * Ask a features tuner for the discovered Pareto front. For single objective
@@ -286,8 +286,7 @@ ccs_features_tuner_get_history(
  *                                the newly created features tuner
  * @return #CCS_RESULT_SUCCESS on success
  * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p objective_space is not
- * a valid CCS objective space; or if \p objective_space search space is
- * not a valid CCS configuration space; or if \p feature_space is not a
+ * a valid CCS objective space; or if \p feature_space is not a
  * valid CCS feature space
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p name is NULL; or if \p features
  * tuner_ret is NULL
@@ -316,11 +315,11 @@ struct ccs_user_defined_features_tuner_vector_s {
 
 	/** The features tuner ask interface see ccs_features_tuner_ask */
 	ccs_result_t (*ask)(
-		ccs_features_tuner_t features_tuner,
-		ccs_features_t       features,
-		size_t               num_configurations,
-		ccs_configuration_t *configurations,
-		size_t              *num_configurations_ret);
+		ccs_features_tuner_t        features_tuner,
+		ccs_features_t              features,
+		size_t                      num_configurations,
+		ccs_search_configuration_t *configurations,
+		size_t                     *num_configurations_ret);
 
 	/** The features tuner tell interface see ccs_features_tuner_tell */
 	ccs_result_t (*tell)(
@@ -354,9 +353,9 @@ struct ccs_user_defined_features_tuner_vector_s {
 	 * The features tuner suggest interface see ccs_features_tuner_suggest,
 	 * can be NULL */
 	ccs_result_t (*suggest)(
-		ccs_features_tuner_t features_tuner,
-		ccs_features_t       features,
-		ccs_configuration_t *configuration);
+		ccs_features_tuner_t        features_tuner,
+		ccs_features_t              features,
+		ccs_search_configuration_t *configuration);
 
 	/**
 	 * The tuner serialization interface, can be NULL, in which case
@@ -401,8 +400,7 @@ typedef struct ccs_user_defined_features_tuner_vector_s
  *                                the newly created features tuner
  * @return #CCS_RESULT_SUCCESS on success
  * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p objective_space is not
- * a valid CCS objective space; or if \p objective_space search space is
- * not a valid CCS configuration space; or if \p feature_space is not a
+ * a valid CCS objective space; or if \p feature_space is not a
  * valid CCS feature space
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p name is NULL; or if \p
  * features_tuner_ret is NULL; or if \p vector is NULL; or if any interface

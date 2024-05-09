@@ -596,13 +596,15 @@ kokkosp_request_values(
   }
 
   if (!converged)
-	  CCS_CHECK(
-		  ccs_features_tuner_ask(tuner, feat, 1, &configuration, NULL));
+	  CCS_CHECK(ccs_features_tuner_ask(
+		  tuner, feat, 1, (ccs_search_configuration_t *)&configuration,
+		  NULL));
   else
-	  CCS_CHECK(ccs_features_tuner_suggest(tuner, feat, &configuration));
+	  CCS_CHECK(ccs_features_tuner_suggest(
+		  tuner, feat, (ccs_search_configuration_t *)&configuration));
 
-  CCS_CHECK(ccs_features_tuner_get_configuration_space(
-	  tuner, &configuration_space));
+  CCS_CHECK(ccs_features_tuner_get_search_space(
+	  tuner, (ccs_search_space_t *)&configuration_space));
   {
 	  ccs_datum_t *values = new ccs_datum_t[numTuningVariables];
 	  CCS_CHECK(ccs_binding_get_values(
@@ -682,8 +684,8 @@ kokkosp_end_context(size_t contextId)
 	  CCS_CHECK(ccs_features_tuner_get_objective_space(
 		  tuner, &objective_space));
 	  CCS_CHECK(ccs_create_features_evaluation(
-		  objective_space, configuration, feat, CCS_RESULT_SUCCESS, 1,
-		  &elapsed, &evaluation));
+		  objective_space, (ccs_search_configuration_t)configuration,
+		  feat, CCS_RESULT_SUCCESS, 1, &elapsed, &evaluation));
 
 	  CCS_CHECK(ccs_features_tuner_tell(tuner, 1, &evaluation));
 	  CCS_CHECK(ccs_release_object(evaluation));

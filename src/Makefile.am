@@ -69,6 +69,7 @@ libcconfigspace_la_SOURCES = \
         distribution_space_deserialize.h \
 	binding.c \
 	binding_internal.h \
+	search_configuration_internal.h \
 	configuration.c \
 	configuration_internal.h \
 	configuration_deserialize.h \
@@ -78,8 +79,6 @@ libcconfigspace_la_SOURCES = \
 	objective_space.c \
 	objective_space_internal.h \
 	objective_space_deserialize.h \
-	evaluation_binding.c \
-	evaluation_binding_internal.h \
 	evaluation.c \
 	evaluation_internal.h \
 	evaluation_deserialize.h \
@@ -115,15 +114,7 @@ libcconfigspace_la_SOURCES = \
 	tree_space_dynamic.c \
 	tree_configuration.c \
 	tree_configuration_internal.h \
-	tree_configuration_deserialize.h \
-	tree_evaluation.c \
-	tree_evaluation_internal.h \
-	tree_evaluation_deserialize.h \
-	tree_tuner.c \
-	tree_tuner_internal.h \
-	tree_tuner_deserialize.h \
-	tree_tuner_random.c \
-	tree_tuner_user_defined.c
+	tree_configuration_deserialize.h
 
 @DYNAMIC_VERSION_RULES@
 
