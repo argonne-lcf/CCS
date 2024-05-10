@@ -19,8 +19,12 @@ _ccs_configuration_space_del(ccs_object_t object)
 	_ccs_configuration_space_data_t *data = configuration_space->data;
 
 	for (size_t i = 0; i < data->num_parameters; i++) {
-		if (data->parameters[i])
+		if (data->parameters[i]) {
+			_ccs_parameter_release_ownership(
+				data->parameters[i],
+				(ccs_context_t)configuration_space);
 			ccs_release_object(data->parameters[i]);
+		}
 		if (data->conditions[i])
 			ccs_release_object(data->conditions[i]);
 		if (data->parents[i])

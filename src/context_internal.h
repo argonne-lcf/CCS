@@ -144,6 +144,7 @@ _ccs_context_add_parameter(
 	ccs_parameter_t parameter,
 	size_t          index)
 {
+	ccs_result_t                 err = CCS_RESULT_SUCCESS;
 	const char                  *name;
 	size_t                       sz_name;
 	_ccs_parameter_index_hash_t *parameter_hash;
@@ -169,8 +170,13 @@ _ccs_context_add_parameter(
 		sz_name, parameter_hash);
 
 	CCS_VALIDATE(ccs_retain_object(parameter));
+	CCS_VALIDATE_ERR_GOTO(
+		err, _ccs_parameter_take_ownership(parameter, context), error);
 	context->data->parameters[index] = parameter;
 	return CCS_RESULT_SUCCESS;
+error:
+	ccs_release_object(parameter);
+	return err;
 }
 #undef uthash_nonfatal_oom
 

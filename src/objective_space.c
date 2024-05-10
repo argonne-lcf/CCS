@@ -18,8 +18,11 @@ _ccs_objective_space_del(ccs_object_t object)
 	if (search_space)
 		ccs_release_object(search_space);
 	for (size_t i = 0; i < num_parameters; i++)
-		if (parameters[i])
+		if (parameters[i]) {
+			_ccs_parameter_release_ownership(
+				parameters[i], (ccs_context_t)objective_space);
 			ccs_release_object(parameters[i]);
+		}
 
 	for (size_t i = 0; i < num_objectives; i++)
 		if (objectives[i].expression)

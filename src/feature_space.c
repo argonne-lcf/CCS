@@ -11,8 +11,11 @@ _ccs_feature_space_del(ccs_object_t object)
 	ccs_parameter_t *parameters       = feature_space->data->parameters;
 
 	for (size_t i = 0; i < num_parameters; i++)
-		if (parameters[i])
+		if (parameters[i]) {
+			_ccs_parameter_release_ownership(
+				parameters[i], (ccs_context_t)feature_space);
 			ccs_release_object(parameters[i]);
+		}
 
 	HASH_CLEAR(hh_name, feature_space->data->name_hash);
 	HASH_CLEAR(hh_handle, feature_space->data->handle_hash);
