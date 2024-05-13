@@ -4,6 +4,7 @@
 
 struct _ccs_objective_space_data_mock_s {
 	const char           *name;
+	ccs_object_t          feature_space_handle;
 	ccs_object_t          search_space_handle;
 	ccs_search_space_t    search_space;
 	size_t                num_parameters;
@@ -22,13 +23,15 @@ _ccs_deserialize_bin_ccs_objective_space_data(
 	const char                       **buffer,
 	_ccs_object_deserialize_options_t *opts)
 {
-	uintptr_t              mem;
-	_ccs_object_internal_t obj;
+	uintptr_t mem;
 
 	CCS_VALIDATE(
 		_ccs_deserialize_bin_string(&data->name, buffer_size, buffer));
-	CCS_VALIDATE(_ccs_peek_bin_ccs_object_internal(
-		&obj, buffer_size, buffer, &data->search_space_handle));
+
+	CCS_VALIDATE(_ccs_deserialize_bin_ccs_object(
+		&data->feature_space_handle, buffer_size, buffer));
+	CCS_VALIDATE(_ccs_deserialize_bin_ccs_object(
+		&data->search_space_handle, buffer_size, buffer));
 	CCS_VALIDATE(_ccs_object_deserialize_with_opts(
 		(ccs_object_t *)&data->search_space,
 		CCS_SERIALIZE_FORMAT_BINARY, version, buffer_size, buffer,
@@ -81,6 +84,7 @@ _ccs_deserialize_bin_objective_space(
 	_ccs_object_deserialize_options_t new_opts = *opts;
 	_ccs_object_internal_t            obj;
 	ccs_object_t                      handle;
+	ccs_datum_t                       datum;
 	ccs_result_t                      res = CCS_RESULT_SUCCESS;
 	CCS_VALIDATE(_ccs_deserialize_bin_ccs_object_internal(
 		&obj, buffer_size, buffer, &handle));
@@ -91,7 +95,7 @@ _ccs_deserialize_bin_objective_space(
 	new_opts.map_values = CCS_TRUE;
 	CCS_VALIDATE(ccs_create_map(&new_opts.handle_map));
 
-	_ccs_objective_space_data_mock_t data = {NULL, NULL, NULL, 0,
+	_ccs_objective_space_data_mock_t data = {NULL, NULL, NULL, NULL, 0,
 						 0,    NULL, NULL, NULL};
 	CCS_VALIDATE_ERR_GOTO(
 		res,
@@ -105,7 +109,31 @@ _ccs_deserialize_bin_objective_space(
 			data.parameters, data.num_objectives, data.objectives,
 			data.objective_types, objective_space_ret),
 		end);
+
 	if (opts && opts->map_values && opts->handle_map) {
+		if (data.feature_space_handle) {
+			CCS_VALIDATE_ERR_GOTO(
+				res,
+				ccs_map_get(
+					new_opts.handle_map,
+					ccs_object(data.feature_space_handle),
+					&datum),
+				err_objective_space);
+			CCS_REFUTE_ERR_GOTO(
+				res,
+				datum.type != CCS_DATA_TYPE_OBJECT ||
+					CCS_OBJ_TYPE(datum.value.o) !=
+						CCS_OBJECT_TYPE_FEATURE_SPACE,
+				CCS_RESULT_ERROR_INVALID_TYPE,
+				err_objective_space);
+			CCS_VALIDATE_ERR_GOTO(
+				res,
+				_ccs_object_handle_check_add(
+					opts->handle_map,
+					data.feature_space_handle,
+					datum.value.o),
+				err_objective_space);
+		}
 		CCS_VALIDATE_ERR_GOTO(
 			res,
 			_ccs_object_handle_check_add(

@@ -2,6 +2,7 @@
 #define _TREE_SPACE_INTERNAL_H
 #include "tree_internal.h"
 #include "rng_internal.h"
+#include "feature_space_internal.h"
 
 #define CCS_CHECK_TREE_SPACE(o, t)                                             \
 	do {                                                                   \
@@ -49,6 +50,7 @@ struct _ccs_tree_space_common_data_s {
 	const char           *name;
 	ccs_rng_t             rng;
 	ccs_tree_t            tree;
+	ccs_feature_space_t   feature_space;
 };
 typedef struct _ccs_tree_space_common_data_s _ccs_tree_space_common_data_t;
 
@@ -64,6 +66,11 @@ _ccs_serialize_bin_size_ccs_tree_space_common_data(
 		data->rng, CCS_SERIALIZE_FORMAT_BINARY, cum_size, opts));
 	CCS_VALIDATE(data->tree->obj.ops->serialize_size(
 		data->tree, CCS_SERIALIZE_FORMAT_BINARY, cum_size, opts));
+	*cum_size += _ccs_serialize_bin_size_ccs_object(data->feature_space);
+	if (data->feature_space)
+		CCS_VALIDATE(data->feature_space->obj.ops->serialize_size(
+			data->feature_space, CCS_SERIALIZE_FORMAT_BINARY,
+			cum_size, opts));
 	return CCS_RESULT_SUCCESS;
 }
 
@@ -84,6 +91,12 @@ _ccs_serialize_bin_ccs_tree_space_common_data(
 	CCS_VALIDATE(data->tree->obj.ops->serialize(
 		data->tree, CCS_SERIALIZE_FORMAT_BINARY, buffer_size, buffer,
 		opts));
+	CCS_VALIDATE(_ccs_serialize_bin_ccs_object(
+		data->feature_space, buffer_size, buffer));
+	if (data->feature_space)
+		CCS_VALIDATE(data->feature_space->obj.ops->serialize(
+			data->feature_space, CCS_SERIALIZE_FORMAT_BINARY,
+			buffer_size, buffer, opts));
 	return CCS_RESULT_SUCCESS;
 }
 

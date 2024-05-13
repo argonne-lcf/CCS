@@ -15,6 +15,9 @@ extern "C" {
  * Create a new instance of a tree configuration on a given tree_space.
  * An empty position targets the root of the tree.
  * @param[in] tree_space
+ * @param[in] features an optional features to use. If NULL and a feature space
+ *                     was provided at \p configuration_space creation, the
+ *                     deafult features of the feature space will be used.
  * @param[in] position_size the number of entries in the \p position array
  * @param[in] position an array of indexes defining a location in the tree.
  *                     can be NULL if \p position_size is 0
@@ -22,7 +25,9 @@ extern "C" {
  *                               newly created tree configuration
  * @return #CCS_RESULT_SUCCESS on success
  * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p tree space is not a valid CCS
- * tree space
+ * tree space; or if \p features is not NULL and is not a valid CCS features
+ * @return #CCS_RESULT_ERROR_INVALID_FEATURES if features feature space is not
+ * the same as the feature space provided at \p tree_space creation.
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p configuration_ret is NULL; or
  * if \p position is NULL and \p position_size is greater than 0
  * @return #CCS_RESULT_ERROR_OUT_OF_MEMORY if there was a lack of memory to
@@ -33,6 +38,7 @@ extern "C" {
 extern ccs_result_t
 ccs_create_tree_configuration(
 	ccs_tree_space_t          tree_space,
+	ccs_features_t            features,
 	size_t                    position_size,
 	const size_t             *position,
 	ccs_tree_configuration_t *configuration_ret);
@@ -53,6 +59,24 @@ extern ccs_result_t
 ccs_tree_configuration_get_tree_space(
 	ccs_tree_configuration_t configuration,
 	ccs_tree_space_t        *tree_space_ret);
+
+/**
+ * Get the associated features.
+ * @param[in] configuration
+ * @param[out] features_ret a pointer to the variable that will contain the
+ *                          returned features or NULL if none is associated
+ *                          to the configuration.
+ * @return #CCS_RESULT_SUCCESS on success
+ * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p configuration is not a valid
+ * CCS tree configuration
+ * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p features_ret is NULL
+ * @remarks
+ *   This function is thread-safe
+ */
+extern ccs_result_t
+ccs_tree_configuration_get_features(
+	ccs_tree_configuration_t configuration,
+	ccs_features_t          *features_ret);
 
 /**
  * Get the position of the configuration.

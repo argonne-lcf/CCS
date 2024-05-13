@@ -14,15 +14,17 @@ module CCS
   attach_function :ccs_tuner_get_name, [:ccs_tuner_t, :pointer], :ccs_result_t
   attach_function :ccs_tuner_get_search_space, [:ccs_tuner_t, :pointer], :ccs_result_t
   attach_function :ccs_tuner_get_objective_space, [:ccs_tuner_t, :pointer], :ccs_result_t
-  attach_function :ccs_tuner_ask, [:ccs_tuner_t, :size_t, :pointer, :pointer], :ccs_result_t
+  attach_function :ccs_tuner_get_feature_space, [:ccs_tuner_t, :pointer], :ccs_result_t
+  attach_function :ccs_tuner_ask, [:ccs_tuner_t, :ccs_features_t, :size_t, :pointer, :pointer], :ccs_result_t
   attach_function :ccs_tuner_tell, [:ccs_tuner_t, :size_t, :pointer], :ccs_result_t
-  attach_function :ccs_tuner_get_optima, [:ccs_tuner_t, :size_t, :pointer, :pointer], :ccs_result_t
-  attach_function :ccs_tuner_get_history, [:ccs_tuner_t, :size_t, :pointer, :pointer], :ccs_result_t
-  attach_function :ccs_tuner_suggest, [:ccs_tuner_t, :pointer], :ccs_result_t
+  attach_function :ccs_tuner_get_optima, [:ccs_tuner_t, :ccs_features_t, :size_t, :pointer, :pointer], :ccs_result_t
+  attach_function :ccs_tuner_get_history, [:ccs_tuner_t, :ccs_features_t, :size_t, :pointer, :pointer], :ccs_result_t
+  attach_function :ccs_tuner_suggest, [:ccs_tuner_t, :ccs_features_t, :pointer], :ccs_result_t
 
   class Tuner < Object
     add_property :type, :ccs_tuner_type_t, :ccs_tuner_get_type, memoize: true
     add_handle_property :search_space, :ccs_search_space_t, :ccs_tuner_get_search_space, memoize: true
+    add_handle_property :feature_space, :ccs_feature_space_t, :ccs_tuner_get_feature_space, memoize: true
     add_handle_property :objective_space, :ccs_objective_space_t, :ccs_tuner_get_objective_space, memoize: true
 
     def self.from_handle(handle, retain: true, auto_release: true)
@@ -46,10 +48,10 @@ module CCS
       end
     end
 
-    def ask(count = 1)
+    def ask(count = 1, features: nil)
       p_confs = MemoryPointer::new(:ccs_search_configuration_t, count)
       p_num = MemoryPointer::new(:size_t)
-      CCS.error_check CCS.ccs_tuner_ask(@handle, count, p_confs, p_num)
+      CCS.error_check CCS.ccs_tuner_ask(@handle, features, count, p_confs, p_num)
       count = p_num.read_size_t
       count.times.collect { |i| Object::from_handle(p_confs[i].read_pointer, retain: false) }
     end
@@ -62,36 +64,36 @@ module CCS
       self
     end
 
-    def history_size
+    def history_size(features: nil)
       p_count = MemoryPointer::new(:size_t)
-      CCS.error_check CCS.ccs_tuner_get_history(@handle, 0, nil, p_count)
+      CCS.error_check CCS.ccs_tuner_get_history(@handle, features, 0, nil, p_count)
       return p_count.read_size_t
     end
 
-    def history
-      count = history_size
+    def history(features: nil)
+      count = history_size(features: features)
       p_evals = MemoryPointer::new(:ccs_evaluation_t, count)
-      CCS.error_check CCS.ccs_tuner_get_history(@handle, count, p_evals, nil)
+      CCS.error_check CCS.ccs_tuner_get_history(@handle, features, count, p_evals, nil)
       count.times.collect { |i| Evaluation::from_handle(p_evals[i].read_pointer) }
     end
 
-    def num_optima
+    def num_optima(features: nil)
       p_count = MemoryPointer::new(:size_t)
-      CCS.error_check CCS.ccs_tuner_get_optima(@handle, 0, nil, p_count)
+      CCS.error_check CCS.ccs_tuner_get_optima(@handle, features, 0, nil, p_count)
       return p_count.read_size_t
     end
 
-    def optima
-      count = num_optima
+    def optima(features: nil)
+      count = num_optima(features: features)
       p_evals = MemoryPointer::new(:ccs_evaluation_t, count)
-      CCS.error_check CCS.ccs_tuner_get_optima(@handle, count, p_evals, nil)
+      CCS.error_check CCS.ccs_tuner_get_optima(@handle, features, count, p_evals, nil)
       count.times.collect { |i| Evaluation::from_handle(p_evals[i].read_pointer) }
     end
 
-    def suggest
+    def suggest(features: nil)
       p_conf = MemoryPointer::new(:ccs_search_configuration_t)
-      CCS.error_check CCS.ccs_tuner_suggest(@handle, p_conf)
-      Object::from_handle(p_conf.read_pointer, retain: false)
+      CCS.error_check CCS.ccs_tuner_suggest(@handle, features, p_conf)
+      Object.from_handle(p_conf.read_pointer, retain: false)
     end
 
   end
@@ -114,11 +116,11 @@ module CCS
   Tuner::Random = RandomTuner
 
   callback :ccs_user_defined_tuner_del, [:ccs_tuner_t], :ccs_result_t
-  callback :ccs_user_defined_tuner_ask, [:ccs_tuner_t, :size_t, :pointer, :pointer], :ccs_result_t
+  callback :ccs_user_defined_tuner_ask, [:ccs_tuner_t, :ccs_features_t, :size_t, :pointer, :pointer], :ccs_result_t
   callback :ccs_user_defined_tuner_tell, [:ccs_tuner_t, :size_t, :pointer], :ccs_result_t
-  callback :ccs_user_defined_tuner_get_optima, [:ccs_tuner_t, :size_t, :pointer, :pointer], :ccs_result_t
-  callback :ccs_user_defined_tuner_get_history, [:ccs_tuner_t, :size_t, :pointer, :pointer], :ccs_result_t
-  callback :ccs_user_defined_tuner_suggest, [:ccs_tuner_t, :pointer], :ccs_result_t
+  callback :ccs_user_defined_tuner_get_optima, [:ccs_tuner_t, :ccs_features_t, :size_t, :pointer, :pointer], :ccs_result_t
+  callback :ccs_user_defined_tuner_get_history, [:ccs_tuner_t, :ccs_features_t, :size_t, :pointer, :pointer], :ccs_result_t
+  callback :ccs_user_defined_tuner_suggest, [:ccs_tuner_t, :ccs_features_t, :pointer], :ccs_result_t
   callback :ccs_user_defined_tuner_serialize, [:ccs_tuner_t, :size_t, :pointer, :pointer], :ccs_result_t
   callback :ccs_user_defined_tuner_deserialize, [:ccs_tuner_t, :size_t, :pointer, :size_t, :pointer, :size_t, :pointer], :ccs_result_t
 
@@ -144,9 +146,9 @@ module CCS
         CCS.set_error(e)
       end
     }
-    askwrapper = lambda { |tun, count, p_configurations, p_count|
+    askwrapper = lambda { |tun, features, count, p_configurations, p_count|
       begin
-        configurations, count_ret = ask.call(Tuner.from_handle(tun), p_configurations.null? ? nil : count)
+        configurations, count_ret = ask.call(Tuner.from_handle(tun), features.null? ? nil : Features.from_handle(features), p_configurations.null? ? nil : count)
         raise CCSError, :CCS_RESULT_ERROR_INVALID_VALUE if !p_configurations.null? && count < count_ret
         if !p_configurations.null?
           configurations.each_with_index { |c, i|
@@ -173,9 +175,9 @@ module CCS
         CCS.set_error(e)
       end
     }
-    get_optimawrapper = lambda { |tun, count, p_evaluations, p_count|
+    get_optimawrapper = lambda { |tun, features, count, p_evaluations, p_count|
       begin
-        optima = get_optima.call(Tuner.from_handle(tun))
+        optima = get_optima.call(Tuner.from_handle(tun), features.null? ? nil : Features.from_handle(features))
         raise CCSError, :CCS_RESULT_ERROR_INVALID_VALUE if !p_evaluations.null? && count < optima.size
         unless p_evaluations.null?
           optima.each_with_index { |o, i|
@@ -189,9 +191,9 @@ module CCS
         CCS.set_error(e)
       end
     }
-    get_historywrapper = lambda { |tun, count, p_evaluations, p_count|
+    get_historywrapper = lambda { |tun, features, count, p_evaluations, p_count|
       begin
-        history = get_history.call(Tuner.from_handle(tun))
+        history = get_history.call(Tuner.from_handle(tun), features.null? ? nil : Features.from_handle(features))
         raise CCSError, :CCS_RESULT_ERROR_INVALID_VALUE if !p_evaluations.null? && count < history.size
         unless p_evaluations.null?
           history.each_with_index { |e, i|
@@ -207,9 +209,9 @@ module CCS
     }
     suggestwrapper =
       if suggest
-        lambda { |tun, p_configuration|
+        lambda { |tun, features, p_configuration|
           begin
-            configuration = suggest.call(Tuner.from_handle(tun))
+            configuration = suggest.call(Tuner.from_handle(tun), features.null? ? nil : Features.from_handle(features))
             err = CCS.ccs_retain_object(configuration.handle)
             CCS.error_check(err)
             p_configuration.write_pointer(configuration.handle)
@@ -258,7 +260,6 @@ module CCS
 
   attach_function :ccs_create_user_defined_tuner, [:string, :ccs_objective_space_t, UserDefinedTunerVector.by_ref, :value, :pointer], :ccs_result_t
   attach_function :ccs_user_defined_tuner_get_tuner_data, [:ccs_tuner_t, :pointer], :ccs_result_t
-
   class UserDefinedTuner < Tuner
     add_property :tuner_data, :value, :ccs_user_defined_tuner_get_tuner_data, memoize: true
 
@@ -305,7 +306,6 @@ module CCS
       CCS.register_vector(res.handle, [delwrapper, askwrapper, tellwrapper, get_optimawrapper, get_historywrapper, suggestwrapper, serializewrapper, deserializewrapper, tuner_data])
       res
     end
-
   end
 
   Tuner::UserDefined = UserDefinedTuner

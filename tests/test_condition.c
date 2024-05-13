@@ -25,14 +25,15 @@ test_simple(void)
 	assert(err == CCS_RESULT_SUCCESS);
 
 	err = ccs_create_configuration_space(
-		"space", 2, parameters, conditions, 0, NULL, NULL, &space);
+		"space", 2, parameters, conditions, 0, NULL, NULL, NULL,
+		&space);
 	assert(err == CCS_RESULT_SUCCESS);
 
 	for (int i = 0; i < 100; i++) {
 		ccs_float_t f;
 		ccs_bool_t  check;
 		err = ccs_configuration_space_sample(
-			space, NULL, NULL, &configuration);
+			space, NULL, NULL, NULL, &configuration);
 		assert(err == CCS_RESULT_SUCCESS);
 		err = ccs_binding_get_values(
 			(ccs_binding_t)configuration, 2, values, NULL);
@@ -53,7 +54,7 @@ test_simple(void)
 	}
 
 	err = ccs_configuration_space_samples(
-		space, NULL, NULL, 100, configurations);
+		space, NULL, NULL, NULL, 100, configurations);
 	assert(err == CCS_RESULT_SUCCESS);
 
 	for (int i = 0; i < 100; i++) {
@@ -112,7 +113,8 @@ test_transitive(void)
 	assert(err == CCS_RESULT_SUCCESS);
 
 	err = ccs_create_configuration_space(
-		"space", 3, parameters, conditions, 0, NULL, NULL, &space);
+		"space", 3, parameters, conditions, 0, NULL, NULL, NULL,
+		&space);
 	assert(err == CCS_RESULT_SUCCESS);
 
 	err = ccs_release_object(conditions[0]);
@@ -124,7 +126,7 @@ test_transitive(void)
 		ccs_float_t f;
 		ccs_bool_t  check;
 		err = ccs_configuration_space_sample(
-			space, NULL, NULL, &configuration);
+			space, NULL, NULL, NULL, &configuration);
 		assert(err == CCS_RESULT_SUCCESS);
 		err = ccs_binding_get_values(
 			(ccs_binding_t)configuration, 3, values, NULL);
@@ -156,7 +158,7 @@ test_transitive(void)
 	}
 
 	err = ccs_configuration_space_samples(
-		space, NULL, NULL, 100, configurations);
+		space, NULL, NULL, NULL, 100, configurations);
 	assert(err == CCS_RESULT_SUCCESS);
 
 	for (int i = 0; i < 100; i++) {

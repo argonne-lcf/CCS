@@ -1,5 +1,5 @@
 import ctypes as ct
-from .base import Object, Error, Result, _ccs_get_function, ccs_context, ccs_parameter, ccs_configuration_space, ccs_configuration, ccs_rng, ccs_expression, Datum, ccs_bool, ccs_distribution_space
+from .base import Object, Error, Result, _ccs_get_function, ccs_context, ccs_parameter, ccs_configuration_space, ccs_configuration, ccs_rng, ccs_feature_space, ccs_expression, Datum, ccs_bool, ccs_distribution_space
 from .context import Context
 from .distribution import Distribution
 from .parameter import Parameter
@@ -7,20 +7,21 @@ from .expression import Expression
 from .expression_parser import parser
 from .rng import Rng
 
-ccs_create_configuration_space = _ccs_get_function("ccs_create_configuration_space", [ct.c_char_p, ct.c_size_t, ct.POINTER(ccs_parameter), ct.POINTER(ccs_expression), ct.c_size_t, ct.POINTER(ccs_expression), ccs_rng, ct.POINTER(ccs_configuration_space)])
+ccs_create_configuration_space = _ccs_get_function("ccs_create_configuration_space", [ct.c_char_p, ct.c_size_t, ct.POINTER(ccs_parameter), ct.POINTER(ccs_expression), ct.c_size_t, ct.POINTER(ccs_expression), ccs_feature_space, ccs_rng, ct.POINTER(ccs_configuration_space)])
 ccs_configuration_space_get_rng = _ccs_get_function("ccs_configuration_space_get_rng", [ccs_configuration_space, ct.POINTER(ccs_rng)])
+ccs_configuration_space_get_feature_space = _ccs_get_function("ccs_configuration_space_get_feature_space", [ccs_configuration_space, ct.POINTER(ccs_feature_space)]) 
 ccs_configuration_space_get_condition = _ccs_get_function("ccs_configuration_space_get_condition", [ccs_configuration_space, ct.c_size_t, ct.POINTER(ccs_expression)])
 ccs_configuration_space_get_conditions = _ccs_get_function("ccs_configuration_space_get_conditions", [ccs_configuration_space, ct.c_size_t, ct.POINTER(ccs_expression), ct.POINTER(ct.c_size_t)])
 ccs_configuration_space_get_forbidden_clause = _ccs_get_function("ccs_configuration_space_get_forbidden_clause", [ccs_configuration_space, ct.c_size_t, ct.POINTER(ccs_expression)])
 ccs_configuration_space_get_forbidden_clauses = _ccs_get_function("ccs_configuration_space_get_forbidden_clauses", [ccs_configuration_space, ct.c_size_t, ct.POINTER(ccs_expression), ct.POINTER(ct.c_size_t)])
 ccs_configuration_space_check_configuration = _ccs_get_function("ccs_configuration_space_check_configuration", [ccs_configuration_space, ccs_configuration, ct.POINTER(ccs_bool)])
-ccs_configuration_space_get_default_configuration = _ccs_get_function("ccs_configuration_space_get_default_configuration", [ccs_configuration_space, ct.POINTER(ccs_configuration)])
-ccs_configuration_space_sample = _ccs_get_function("ccs_configuration_space_sample", [ccs_configuration_space, ccs_distribution_space, ccs_rng, ct.POINTER(ccs_configuration)])
-ccs_configuration_space_samples = _ccs_get_function("ccs_configuration_space_samples", [ccs_configuration_space, ccs_distribution_space, ccs_rng, ct.c_size_t, ct.POINTER(ccs_configuration)])
+ccs_configuration_space_get_default_configuration = _ccs_get_function("ccs_configuration_space_get_default_configuration", [ccs_configuration_space, ccs_feature_space, ct.POINTER(ccs_configuration)])
+ccs_configuration_space_sample = _ccs_get_function("ccs_configuration_space_sample", [ccs_configuration_space, ccs_distribution_space, ccs_feature_space, ccs_rng, ct.POINTER(ccs_configuration)])
+ccs_configuration_space_samples = _ccs_get_function("ccs_configuration_space_samples", [ccs_configuration_space, ccs_distribution_space, ccs_feature_space, ccs_rng, ct.c_size_t, ct.POINTER(ccs_configuration)])
 
 class ConfigurationSpace(Context):
   def __init__(self, handle = None, retain = False, auto_release = True,
-               name = "", parameters = None, conditions = None, forbidden_clauses = None, rng = None):
+               name = "", parameters = None, conditions = None, forbidden_clauses = None, feature_space = None, rng = None):
     if handle is None:
       count = len(parameters)
 
@@ -54,9 +55,12 @@ class ConfigurationSpace(Context):
       if rng is not None:
         rng = rng.handle
 
+      if feature_space is not None:
+        feature_space = feature_space.handle
+
       parameters = (ccs_parameter * count)(*[x.handle.value for x in parameters])
       handle = ccs_configuration_space()
-      res = ccs_create_configuration_space(str.encode(name), count, parameters, cv, numfc, fcv, rng, ct.byref(handle))
+      res = ccs_create_configuration_space(str.encode(name), count, parameters, cv, numfc, fcv, feature_space, rng, ct.byref(handle))
       Error.check(res)
       super().__init__(handle = handle, retain = False)
     else:
@@ -68,10 +72,26 @@ class ConfigurationSpace(Context):
 
   @property
   def rng(self):
+    if hasattr(self, "_rng"):
+      return self._rng
     v = ccs_rng()
     res = ccs_configuration_space_get_rng(self.handle, ct.byref(v))
     Error.check(res)
-    return Rng.from_handle(v)
+    self._rng = Rng.from_handle(v)
+    return self._rng
+
+  @property
+  def feature_space(self):
+    if hasattr(self, "_feature_space"):
+      return self._feature_space
+    v = ccs_feature_space()
+    res = ccs_configuration_space_get_feature_space(self.handle, ct.byref(v))
+    Error.check(res)
+    if bool(v):
+      self._feature_space = Rng.from_handle(v)
+    else:
+      self._feature_space = None
+    return self._feature_space
 
   def condition(self, parameter):
     if isinstance(parameter, Parameter):
@@ -92,23 +112,32 @@ class ConfigurationSpace(Context):
 
   @property
   def conditions(self):
+    if hasattr(self, "_conditions"):
+      return self._conditions
     sz = self.num_parameters
     v = (ccs_expression * sz)()
     res = ccs_configuration_space_get_conditions(self.handle, sz, v, None)
     Error.check(res)
-    return [Expression.from_handle(ccs_expression(x)) if x else None for x in v]    
+    self._conditions = tuple(Expression.from_handle(ccs_expression(x)) if x else None for x in v)
+    return self._conditions
 
   @property
   def conditional_parameters(self):
+    if hasattr(self, "_conditional_parameters"):
+      return self._conditional_parameters
     hps = self.parameters
     conds = self.conditions
-    return [x for x, y in zip(hps, conds) if y is not None]
+    self._conditional_parameters = tuple(x for x, y in zip(hps, conds) if y is not None)
+    return self._conditional_parameters
 
   @property
   def unconditional_parameters(self):
+    if hasattr(self, "_unconditional_parameters"):
+      return self._unconditional_parameters
     hps = self.parameters
     conds = self.conditions
-    return [x for x, y in zip(hps, conds) if y is None]
+    self._unconditional_parameters = tuple(x for x, y in zip(hps, conds) if y is None)
+    return self._unconditional_parameters
 
   def forbidden_clause(self, index):
     v = ccs_expression()
@@ -143,22 +172,35 @@ class ConfigurationSpace(Context):
     Error.check(res)
     return False if valid.value == 0 else True
 
-  @property
-  def default_configuration(self):
+  def default_configuration(self, features = None):
     v = ccs_configuration()
-    res = ccs_configuration_space_get_default_configuration(self.handle, ct.byref(v))
+    if features is not None:
+      features = features.handle
+    res = ccs_configuration_space_get_default_configuration(self.handle, features, ct.byref(v))
     Error.check(res)
     return Configuration(handle = v, retain = False)
 
-  def sample(self, distribution_space = None, rng = None):
+  def sample(self, distribution_space = None, features = None, rng = None):
     v = ccs_configuration()
-    res = ccs_configuration_space_sample(self.handle, distribution_space.handle if distribution_space is not None else None, rng.handle if rng is not None else None, ct.byref(v))
+    if distribution_space is not None:
+      distribution_space = distribution_space.handle
+    if features is not None:
+      features = features.handle
+    if rng is not None:
+      rng = rng.handle
+    res = ccs_configuration_space_sample(self.handle, distribution_space, features, rng, ct.byref(v))
     Error.check(res)
     return Configuration(handle = v, retain = False)
 
-  def samples(self, count, distribution_space = None, rng = None):
+  def samples(self, count, distribution_space = None, features = None, rng = None):
     v = (ccs_configuration * count)()
-    res = ccs_configuration_space_samples(self.handle, distribution_space.handle if distribution_space is not None else None, rng.handle if rng is not None else None, count, v)
+    if distribution_space is not None:
+      distribution_space = distribution_space.handle
+    if features is not None:
+      features = features.handle
+    if rng is not None:
+      rng = rng.handle
+    res = ccs_configuration_space_samples(self.handle, distribution_space, features, rng, count, v)
     Error.check(res)
     return [Configuration(handle = ccs_configuration(x), retain = False) for x in v]
 

@@ -12,16 +12,18 @@ module CCS
   end
 
   attach_function :ccs_create_evaluation, [:ccs_objective_space_t, :ccs_configuration_t, :ccs_evaluation_result_t, :size_t, :pointer, :pointer], :ccs_result_t
+  attach_function :ccs_evaluation_get_configuration, [:ccs_evaluation_t, :pointer], :ccs_result_t
+  attach_function :ccs_evaluation_get_features, [:ccs_evaluation_t, :pointer], :ccs_result_t
   attach_function :ccs_evaluation_get_result, [:ccs_evaluation_t, :pointer], :ccs_result_t
   attach_function :ccs_evaluation_get_objective_values, [:ccs_evaluation_t, :size_t, :pointer, :pointer], :ccs_result_t
   attach_function :ccs_evaluation_compare, [:ccs_evaluation_t, :ccs_evaluation_t, :pointer], :ccs_result_t
   attach_function :ccs_evaluation_check, [:ccs_evaluation_t, :pointer], :ccs_result_t
-  attach_function :ccs_evaluation_get_configuration, [:ccs_evaluation_t, :pointer], :ccs_result_t
 
   class Evaluation < Binding
     alias objective_space context
     add_property :result, :ccs_evaluation_result_t, :ccs_evaluation_get_result, memoize: true
     add_handle_property :configuration, :ccs_configuration_t, :ccs_evaluation_get_configuration, memoize: true
+    add_optional_handle_property :features, :ccs_features_t, :ccs_evaluation_get_features, memoize: true
 
     def initialize(handle = nil, retain: false, auto_release: true,
                    objective_space: nil, configuration: nil, result: :CCS_RESULT_SUCCESS, values: nil)

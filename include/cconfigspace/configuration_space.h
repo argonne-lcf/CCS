@@ -8,9 +8,10 @@ extern "C" {
 /**
  * @file configuration_space.h
  * A configuration space is a context (see context.h) defining a search
- * space on a set of parameters. Configuration space also offer as
- * constraints system to describe conditional parameter activation as
- * well as forbidden parameter configurations.
+ * space on a set of parameters. Optionally configuration space can be
+ * attached a feature space (see feature_space.h). Configuration space
+ * also offer as constraints system to describe conditional parameter
+ * activation as well as forbidden parameter configurations.
  */
 
 /**
@@ -27,6 +28,7 @@ extern "C" {
  * @param[in] forbidden_clauses an array o \p num_forbidden_clauses expressions
  *                              to add as forbidden clauses to the
  *                              configuration space
+ * @param[in] feature_space an optional CCS feature space object
  * @param[in] rng an optional CCS rng object
  * @param[out] configuration_space_ret a pointer to the variable that will hold
  *                                     the newly created configuration space
@@ -36,15 +38,16 @@ extern "C" {
  * num_parameters is NULL; or if \p forbidden_clauses is NULL and \p
  * num_forbidden_clauses is greater than 0
  * @return #CCS_RESULT_ERROR_INVALID_OBJECT if a parameter is not a valid CCS
- * parameter; or if an expression is not a valid CCS expression; or if \p
- * rng is not NULL and is not a valid CCS rng
+ * parameter; or if an expression is not a valid CCS expression; or if \p rng
+ * is not NULL and is not a valid CCS rng; or it \p feature_space is not NULL
+ * and is not a valid CCS feature space
  * @return #CCS_RESULT_ERROR_INVALID_PARAMETER if a parameter's type is
  * CCS_PARAMETER_TYPE_STRING; or if a parameter appears more than once in \p
  * parameters; or if two or more parameters share the same name; or if a
  * paramater is already part of another context; or if an expression references
  * a parameter that is not in the configuration space
- * @return #CCS_RESULT_ERROR_INVALID_CONFIGURATION if adding one of the provided
- * forbidden clause would render the default configuration invalid
+ * @return #CCS_RESULT_ERROR_INVALID_CONFIGURATION if adding one of the
+ * provided forbidden clause would render the default configuration invalid
  * @return #CCS_RESULT_ERROR_INVALID_GRAPH if the addition of the conditions
  * would cause the dependency graph to become invalid (cyclic)
  * @return #CCS_RESULT_ERROR_OUT_OF_MEMORY if there was a lack of memory to
@@ -60,6 +63,7 @@ ccs_create_configuration_space(
 	ccs_expression_t          *conditions,
 	size_t                     num_forbidden_clauses,
 	ccs_expression_t          *forbidden_clauses,
+	ccs_feature_space_t        feature_space,
 	ccs_rng_t                  rng,
 	ccs_configuration_space_t *configuration_space_ret);
 
@@ -78,6 +82,23 @@ extern ccs_result_t
 ccs_configuration_space_get_rng(
 	ccs_configuration_space_t configuration_space,
 	ccs_rng_t                *rng_ret);
+
+/**
+ * Get the feature space of the configuration space.
+ * @param[in] configuration_space
+ * @param[out] feature_space_ret a pointer to the variable that will contain
+ *                               the feature space
+ * @return #CCS_RESULT_SUCCESS on success
+ * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p configuration_space is not a
+ * valid CCS configuration space
+ * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p feature_space_ret is NULL
+ * @remarks
+ *   This function is thread-safe
+ */
+extern ccs_result_t
+ccs_configuration_space_get_feature_space(
+	ccs_configuration_space_t configuration_space,
+	ccs_feature_space_t      *feature_space_ret);
 
 /**
  * Get the active condition of a parameter in a configuration space given
@@ -213,11 +234,18 @@ ccs_configuration_space_check_configuration(
 /**
  * Get the default configuration of a configuration space
  * @param[in] configuration_space
+ * @param[in] features an optional features to use. If NULL and a feature space
+ *                     was provided at \p configuration_space creation, the
+ *                     deafult features of the feature space will be used.
+ * @param[in] rng an optional rng to use
  * @param[out] configuration_ret a pointer to the variable that will contain the
  *                               returned default configuration
  * @return #CCS_RESULT_SUCCESS on success
  * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p configuration_space is not a
- * valid CCS configuration space
+ * valid CCS configuration space; or if \p features is not NULL and is not a
+ * valid CCS features
+ * @return #CCS_RESULT_ERROR_INVALID_FEATURES if features feature space is not
+ * the same as the feature space provided at \p configuration_space creation.
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if configuration_ret is NULL
  * @return #CCS_RESULT_ERROR_OUT_OF_MEMORY if there was not enough memory to
  * allocate the new configuration
@@ -227,6 +255,7 @@ ccs_configuration_space_check_configuration(
 extern ccs_result_t
 ccs_configuration_space_get_default_configuration(
 	ccs_configuration_space_t configuration_space,
+	ccs_features_t            features,
 	ccs_configuration_t      *configuration_ret);
 
 /**
@@ -236,13 +265,19 @@ ccs_configuration_space_get_default_configuration(
  * will have the #ccs_inactive value. Returned configuration is valid.
  * @param[in] configuration_space
  * @param[in] distribution_space an optional distribution space to use
+ * @param[in] features an optional features to use. If NULL and a feature space
+ *                     was provided at \p configuration_space creation, the
+ *                     deafult features of the feature space will be used.
  * @param[in] rng an optional rng to use
  * @param[out] configuration_ret a pointer to the variable that will contain the
  *                               returned configuration
  * @return #CCS_RESULT_SUCCESS on success
  * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p configuration_space is not a
  * valid CCS configuration space; or if \p distribution_space is not a valid
- * CCS distribution space; or if \p rng is not a valid CCS rng
+ * CCS distribution space; or if \p rng is not NULL and is not a valid CCS rng;
+ * or if \p features is not NULL and is not a valid CCS features
+ * @return #CCS_RESULT_ERROR_INVALID_FEATURES if features feature space is not
+ * the same as the feature space provided at \p configuration_space creation.
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if configuration_ret is NULL
  * @return #CCS_RESULT_ERROR_SAMPLING_UNSUCCESSFUL if no valid configuration
  * could be sampled
@@ -255,6 +290,7 @@ extern ccs_result_t
 ccs_configuration_space_sample(
 	ccs_configuration_space_t configuration_space,
 	ccs_distribution_space_t  distribution_space,
+	ccs_features_t            features,
 	ccs_rng_t                 rng,
 	ccs_configuration_t      *configuration_ret);
 
@@ -266,6 +302,8 @@ ccs_configuration_space_sample(
  * valid.
  * @param[in] configuration_space
  * @param[in] distribution_space an optional distribution space to use
+ * @param[in] features an optional features to use. Required if a feature space
+ *                     was provided at \p configuration_space creation.
  * @param[in] rng an optional rng to use
  * @param[in] num_configurations the number of requested configurations
  * @param[out] configurations an array of \p num_configurations that will
@@ -273,7 +311,10 @@ ccs_configuration_space_sample(
  * @return #CCS_RESULT_SUCCESS on success
  * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p configuration_space is not a
  * valid CCS configuration space; or if \p distribution_space is not a valid
- * CCS distribution space; or if \p rng is not a valid CCS rng
+ * CCS distribution space; or if \p rng is not NULL and is not a valid CCS rng;
+ * or if \p features is not NULL and is not a valid CCS features
+ * @return #CCS_RESULT_ERROR_INVALID_FEATURES if features feature space is not
+ * the same as the feature space provided at \p configuration_space creation.
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p configurations is NULL and \p
  * num_configurations is greater than 0
  * @return #CCS_RESULT_ERROR_SAMPLING_UNSUCCESSFUL if no or not enough valid
@@ -289,6 +330,7 @@ extern ccs_result_t
 ccs_configuration_space_samples(
 	ccs_configuration_space_t configuration_space,
 	ccs_distribution_space_t  distribution_space,
+	ccs_features_t            features,
 	ccs_rng_t                 rng,
 	size_t                    num_configurations,
 	ccs_configuration_t      *configurations);

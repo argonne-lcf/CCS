@@ -35,7 +35,8 @@ create_tree_tuning_problem(
 	ccs_result_t         err;
 
 	generate_tree(&root, 5, 0);
-	err = ccs_create_static_tree_space("space", root, NULL, tree_space);
+	err = ccs_create_static_tree_space(
+		"space", root, NULL, NULL, tree_space);
 	assert(err == CCS_RESULT_SUCCESS);
 
 	parameter = create_numerical("sum", -CCS_INFINITY, CCS_INFINITY);
@@ -46,7 +47,6 @@ create_tree_tuning_problem(
 	err   = ccs_create_objective_space(
                 "ospace", (ccs_search_space_t)*tree_space, 1, &parameter, 1,
                 &expression, &otype, ospace);
-	print_ccs_error_stack();
 	assert(err == CCS_RESULT_SUCCESS);
 
 	err = ccs_release_object(root);
@@ -80,7 +80,7 @@ test(void)
 		ccs_search_configuration_t configuration;
 		ccs_evaluation_t           evaluation;
 		ccs_int_t                  v;
-		err = ccs_tuner_ask(tuner, 1, &configuration, NULL);
+		err = ccs_tuner_ask(tuner, NULL, 1, &configuration, NULL);
 		assert(err == CCS_RESULT_SUCCESS);
 		err = ccs_tree_configuration_get_values(
 			(ccs_tree_configuration_t)configuration, 6, values,
@@ -106,7 +106,7 @@ test(void)
 	size_t           count;
 	ccs_evaluation_t history[100];
 	ccs_datum_t      max = ccs_float(-INFINITY);
-	err = ccs_tuner_get_history(tuner, 100, history, &count);
+	err = ccs_tuner_get_history(tuner, NULL, 100, history, &count);
 	assert(err == CCS_RESULT_SUCCESS);
 	assert(count == 100);
 
@@ -120,7 +120,7 @@ test(void)
 
 	ccs_evaluation_t evaluation;
 	ccs_datum_t      res;
-	err = ccs_tuner_get_optima(tuner, 1, &evaluation, NULL);
+	err = ccs_tuner_get_optima(tuner, NULL, 1, &evaluation, NULL);
 	assert(err == CCS_RESULT_SUCCESS);
 	err = ccs_evaluation_get_objective_value(evaluation, 0, &res);
 	assert(res.value.f == max.value.f);
@@ -149,11 +149,11 @@ test(void)
 		CCS_DESERIALIZE_OPTION_END);
 	assert(err == CCS_RESULT_SUCCESS);
 
-	err = ccs_tuner_get_history(tuner_copy, 100, history, &count);
+	err = ccs_tuner_get_history(tuner_copy, NULL, 100, history, &count);
 	assert(err == CCS_RESULT_SUCCESS);
 	assert(count == 100);
 
-	err = ccs_tuner_get_optima(tuner_copy, 1, &evaluation, &count);
+	err = ccs_tuner_get_optima(tuner_copy, NULL, 1, &evaluation, &count);
 	assert(err == CCS_RESULT_SUCCESS);
 	assert(count == 1);
 
@@ -191,7 +191,7 @@ test_tree_evaluation_deserialize(void)
 
 	create_tree_tuning_problem(&tree_space, &ospace);
 
-	err = ccs_tree_space_sample(tree_space, NULL, &configuration);
+	err = ccs_tree_space_sample(tree_space, NULL, NULL, &configuration);
 	assert(err == CCS_RESULT_SUCCESS);
 
 	res = ccs_float(1.5);

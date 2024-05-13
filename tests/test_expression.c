@@ -173,7 +173,7 @@ test_equal_numerical(void)
 	parameters[1] = create_dummy_numerical("param2");
 
 	err           = ccs_create_configuration_space(
-                "my_config_space", 2, parameters, NULL, 0, NULL, NULL,
+                "my_config_space", 2, parameters, NULL, 0, NULL, NULL, NULL,
                 &configuration_space);
 	assert(err == CCS_RESULT_SUCCESS);
 
@@ -182,7 +182,7 @@ test_equal_numerical(void)
 	values[0] = ccs_float(1.0);
 	values[1] = ccs_float(0.0);
 	err       = ccs_create_configuration(
-                configuration_space, 2, values, &configuration);
+                configuration_space, NULL, 2, values, &configuration);
 	assert(err == CCS_RESULT_SUCCESS);
 	test_expression_wrapper(
 		CCS_EXPRESSION_TYPE_EQUAL, 2, nodes, configuration,
@@ -192,7 +192,7 @@ test_equal_numerical(void)
 
 	values[0] = ccs_float(0.0);
 	err       = ccs_create_configuration(
-                configuration_space, 2, values, &configuration);
+                configuration_space, NULL, 2, values, &configuration);
 	assert(err == CCS_RESULT_SUCCESS);
 	test_expression_wrapper(
 		CCS_EXPRESSION_TYPE_EQUAL, 2, nodes, configuration,
@@ -205,7 +205,7 @@ test_equal_numerical(void)
 	values[0] = ccs_float(1.0);
 	values[1] = ccs_float(1.0);
 	err       = ccs_create_configuration(
-                configuration_space, 2, values, &configuration);
+                configuration_space, NULL, 2, values, &configuration);
 	assert(err == CCS_RESULT_SUCCESS);
 	test_expression_wrapper(
 		CCS_EXPRESSION_TYPE_EQUAL, 2, nodes, configuration,
@@ -215,7 +215,7 @@ test_equal_numerical(void)
 
 	values[1] = ccs_float(0.0);
 	err       = ccs_create_configuration(
-                configuration_space, 2, values, &configuration);
+                configuration_space, NULL, 2, values, &configuration);
 	assert(err == CCS_RESULT_SUCCESS);
 	test_expression_wrapper(
 		CCS_EXPRESSION_TYPE_EQUAL, 2, nodes, configuration,
@@ -225,7 +225,7 @@ test_equal_numerical(void)
 
 	nodes[0] = ccs_int(0);
 	err      = ccs_create_configuration(
-                configuration_space, 2, values, &configuration);
+                configuration_space, NULL, 2, values, &configuration);
 	assert(err == CCS_RESULT_SUCCESS);
 	test_expression_wrapper(
 		CCS_EXPRESSION_TYPE_EQUAL, 2, nodes, configuration,
@@ -235,7 +235,7 @@ test_equal_numerical(void)
 
 	nodes[0] = ccs_bool(CCS_FALSE);
 	err      = ccs_create_configuration(
-                configuration_space, 2, values, &configuration);
+                configuration_space, NULL, 2, values, &configuration);
 	assert(err == CCS_RESULT_SUCCESS);
 	test_expression_wrapper(
 		CCS_EXPRESSION_TYPE_EQUAL, 2, nodes, configuration,
@@ -264,7 +264,7 @@ test_equal_categorical(void)
 	parameters[0] = create_dummy_categorical("param1");
 	parameters[1] = create_dummy_categorical("param2");
 	err           = ccs_create_configuration_space(
-                "my_config_space", 2, parameters, NULL, 0, NULL, NULL,
+                "my_config_space", 2, parameters, NULL, 0, NULL, NULL, NULL,
                 &configuration_space);
 	assert(err == CCS_RESULT_SUCCESS);
 
@@ -273,7 +273,7 @@ test_equal_categorical(void)
 	values[0] = ccs_float(2.0);
 	values[1] = ccs_int(1);
 	err       = ccs_create_configuration(
-                configuration_space, 2, values, &configuration);
+                configuration_space, NULL, 2, values, &configuration);
 	assert(err == CCS_RESULT_SUCCESS);
 	test_expression_wrapper(
 		CCS_EXPRESSION_TYPE_EQUAL, 2, nodes, configuration,
@@ -284,7 +284,7 @@ test_equal_categorical(void)
 	// Values tested must exist in the set
 	nodes[1] = ccs_float(3.0);
 	err      = ccs_create_configuration(
-                configuration_space, 2, values, &configuration);
+                configuration_space, NULL, 2, values, &configuration);
 	assert(err == CCS_RESULT_SUCCESS);
 	test_expression_wrapper(
 		CCS_EXPRESSION_TYPE_EQUAL, 2, nodes, configuration,
@@ -294,7 +294,7 @@ test_equal_categorical(void)
 
 	nodes[1] = ccs_int(1);
 	err      = ccs_create_configuration(
-                configuration_space, 2, values, &configuration);
+                configuration_space, NULL, 2, values, &configuration);
 	assert(err == CCS_RESULT_SUCCESS);
 	test_expression_wrapper(
 		CCS_EXPRESSION_TYPE_EQUAL, 2, nodes, configuration,
@@ -323,7 +323,7 @@ test_equal_ordinal(void)
 	parameters[0] = create_dummy_ordinal("param1");
 	parameters[1] = create_dummy_ordinal("param2");
 	err           = ccs_create_configuration_space(
-                "my_config_space", 2, parameters, NULL, 0, NULL, NULL,
+                "my_config_space", 2, parameters, NULL, 0, NULL, NULL, NULL,
                 &configuration_space);
 	assert(err == CCS_RESULT_SUCCESS);
 
@@ -332,7 +332,7 @@ test_equal_ordinal(void)
 	values[0] = ccs_float(2.0);
 	values[1] = ccs_int(1);
 	err       = ccs_create_configuration(
-                configuration_space, 2, values, &configuration);
+                configuration_space, NULL, 2, values, &configuration);
 	assert(err == CCS_RESULT_SUCCESS);
 	test_expression_wrapper(
 		CCS_EXPRESSION_TYPE_EQUAL, 2, nodes, configuration,
@@ -343,7 +343,7 @@ test_equal_ordinal(void)
 	// Values tested must exist in the set
 	nodes[1] = ccs_float(3.0);
 	err      = ccs_create_configuration(
-                configuration_space, 2, values, &configuration);
+                configuration_space, NULL, 2, values, &configuration);
 	assert(err == CCS_RESULT_SUCCESS);
 	test_expression_wrapper(
 		CCS_EXPRESSION_TYPE_EQUAL, 2, nodes, configuration,
@@ -353,7 +353,7 @@ test_equal_ordinal(void)
 
 	nodes[1] = ccs_int(1);
 	err      = ccs_create_configuration(
-                configuration_space, 2, values, &configuration);
+                configuration_space, NULL, 2, values, &configuration);
 	assert(err == CCS_RESULT_SUCCESS);
 	test_expression_wrapper(
 		CCS_EXPRESSION_TYPE_EQUAL, 2, nodes, configuration,
@@ -980,7 +980,7 @@ test_check_context(void)
 	parameters[1] = parameter2;
 
 	err           = ccs_create_configuration_space(
-                "space", 2, parameters, NULL, 0, NULL, NULL, &space);
+                "space", 2, parameters, NULL, 0, NULL, NULL, NULL, &space);
 	assert(err == CCS_RESULT_SUCCESS);
 
 	err = ccs_create_binary_expression(

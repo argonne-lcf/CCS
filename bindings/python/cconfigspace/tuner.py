@@ -1,7 +1,9 @@
 import ctypes as ct
-from .base import Object, Error, CEnumeration, Result, _ccs_get_function, ccs_context, ccs_parameter, ccs_search_space, ccs_search_configuration, Datum, ccs_objective_space, ccs_evaluation, ccs_tuner, ccs_retain_object, _register_vector, _unregister_vector
+from .base import Object, Error, CEnumeration, Result, _ccs_get_function, ccs_context, ccs_parameter, ccs_search_space, ccs_search_configuration, ccs_feature_space, ccs_features, Datum, ccs_objective_space, ccs_evaluation, ccs_tuner, ccs_retain_object, _register_vector, _unregister_vector
 from .context import Context
 from .parameter import Parameter
+from .features import Features
+from .feature_space import FeatureSpace
 from .objective_space import ObjectiveSpace
 from .evaluation import Evaluation
 
@@ -14,11 +16,12 @@ ccs_tuner_get_type = _ccs_get_function("ccs_tuner_get_type", [ccs_tuner, ct.POIN
 ccs_tuner_get_name = _ccs_get_function("ccs_tuner_get_name", [ccs_tuner, ct.POINTER(ct.c_char_p)])
 ccs_tuner_get_search_space = _ccs_get_function("ccs_tuner_get_search_space", [ccs_tuner, ct.POINTER(ccs_search_space)])
 ccs_tuner_get_objective_space = _ccs_get_function("ccs_tuner_get_objective_space", [ccs_tuner, ct.POINTER(ccs_objective_space)])
-ccs_tuner_ask = _ccs_get_function("ccs_tuner_ask", [ccs_tuner, ct.c_size_t, ct.POINTER(ccs_search_configuration), ct.POINTER(ct.c_size_t)])
+ccs_tuner_get_feature_space = _ccs_get_function("ccs_tuner_get_feature_space", [ccs_tuner, ct.POINTER(ccs_feature_space)])
+ccs_tuner_ask = _ccs_get_function("ccs_tuner_ask", [ccs_tuner, ccs_features, ct.c_size_t, ct.POINTER(ccs_search_configuration), ct.POINTER(ct.c_size_t)])
 ccs_tuner_tell = _ccs_get_function("ccs_tuner_tell", [ccs_tuner, ct.c_size_t, ct.POINTER(ccs_evaluation)])
-ccs_tuner_get_optima = _ccs_get_function("ccs_tuner_get_optima", [ccs_tuner, ct.c_size_t, ct.POINTER(ccs_evaluation), ct.POINTER(ct.c_size_t)])
-ccs_tuner_get_history = _ccs_get_function("ccs_tuner_get_history", [ccs_tuner, ct.c_size_t, ct.POINTER(ccs_evaluation), ct.POINTER(ct.c_size_t)])
-ccs_tuner_suggest = _ccs_get_function("ccs_tuner_suggest", [ccs_tuner, ct.POINTER(ccs_search_configuration)])
+ccs_tuner_get_optima = _ccs_get_function("ccs_tuner_get_optima", [ccs_tuner, ccs_features, ct.c_size_t, ct.POINTER(ccs_evaluation), ct.POINTER(ct.c_size_t)])
+ccs_tuner_get_history = _ccs_get_function("ccs_tuner_get_history", [ccs_tuner, ccs_features, ct.c_size_t, ct.POINTER(ccs_evaluation), ct.POINTER(ct.c_size_t)])
+ccs_tuner_suggest = _ccs_get_function("ccs_tuner_suggest", [ccs_tuner, ccs_features, ct.POINTER(ccs_search_configuration)])
 
 class Tuner(Object):
   @classmethod
@@ -65,6 +68,16 @@ class Tuner(Object):
     return self._objective_space
 
   @property
+  def feature_space(self):
+    if hasattr(self, "_feature_space"):
+      return self._feature_space
+    v = ccs_feature_space()
+    res = ccs_tuner_get_feature_space(self.handle, ct.byref(v))
+    Error.check(res)
+    self._feature_space = FeatureSpace.from_handle(v)
+    return self._feature_space
+
+  @property
   def search_space(self):
     if hasattr(self, "_search_space"):
       return self._search_space
@@ -74,10 +87,12 @@ class Tuner(Object):
     self._search_space = Object.from_handle(v)
     return self._search_space
 
-  def ask(self, count = 1):
+  def ask(self, count = 1, features = None):
     v = (ccs_search_configuration * count)()
     c = ct.c_size_t()
-    res = ccs_tuner_ask(self.handle, count, v, ct.byref(c))
+    if features is not None:
+      features = features.handle
+    res = ccs_tuner_ask(self.handle, features, count, v, ct.byref(c))
     Error.check(res)
     count = c.value
     return [Object.from_handle(ccs_search_configuration(v[x]), retain = False) for x in range(count)]
@@ -88,40 +103,45 @@ class Tuner(Object):
     res = ccs_tuner_tell(self.handle, count, v)
     Error.check(res)
 
-  @property
-  def history_size(self):
+  def history_size(self, features = None):
     v = ct.c_size_t()
-    res = ccs_tuner_get_history(self.handle, 0, None, ct.byref(v))
+    if features is not None:
+      features = features.handle
+    res = ccs_tuner_get_history(self.handle, features, 0, None, ct.byref(v))
     Error.check(res)
     return v.value
 
-  @property
-  def history(self):
-    count = self.history_size
+  def history(self, features = None):
+    count = self.history_size(features)
     v = (ccs_evaluation * count)()
-    res = ccs_tuner_get_history(self.handle, count, v, None)
+    if features is not None:
+      features = features.handle
+    res = ccs_tuner_get_history(self.handle, features, count, v, None)
     Error.check(res)
     return [Evaluation.from_handle(ccs_evaluation(x)) for x in v]
 
-  @property
-  def num_optima(self):
+  def num_optima(self, features = None):
     v = ct.c_size_t()
-    res = ccs_tuner_get_optima(self.handle, 0, None, ct.byref(v))
+    if features is not None:
+      features = features.handle
+    res = ccs_tuner_get_optima(self.handle, features, 0, None, ct.byref(v))
     Error.check(res)
     return v.value
 
-  @property
-  def optima(self):
-    count = self.num_optima
+  def optima(self, features = None):
+    count = self.num_optima(features)
     v = (ccs_evaluation * count)()
-    res = ccs_tuner_get_optima(self.handle, count, v, None)
+    if features is not None:
+      features = features.handle
+    res = ccs_tuner_get_optima(self.handle, features, count, v, None)
     Error.check(res)
     return [Evaluation.from_handle(ccs_evaluation(x)) for x in v]
 
-  @property
-  def suggest(self):
+  def suggest(self, features = None):
     config = ccs_search_configuration()
-    res = ccs_tuner_suggest(self.handle, ct.byref(config))
+    if features is not None:
+      features = features.handle
+    res = ccs_tuner_suggest(self.handle, features, ct.byref(config))
     Error.check(res)
     return Object.from_handle(config, retain = False)
 
@@ -141,11 +161,11 @@ class RandomTuner(Tuner):
 Tuner.Random = RandomTuner
 
 ccs_user_defined_tuner_del_type = ct.CFUNCTYPE(Result, ccs_tuner)
-ccs_user_defined_tuner_ask_type = ct.CFUNCTYPE(Result, ccs_tuner, ct.c_size_t, ct.POINTER(ccs_search_configuration), ct.POINTER(ct.c_size_t))
+ccs_user_defined_tuner_ask_type = ct.CFUNCTYPE(Result, ccs_tuner, ccs_features, ct.c_size_t, ct.POINTER(ccs_search_configuration), ct.POINTER(ct.c_size_t))
 ccs_user_defined_tuner_tell_type = ct.CFUNCTYPE(Result, ccs_tuner, ct.c_size_t, ct.POINTER(ccs_evaluation))
-ccs_user_defined_tuner_get_optima_type = ct.CFUNCTYPE(Result, ccs_tuner, ct.c_size_t, ct.POINTER(ccs_evaluation), ct.POINTER(ct.c_size_t))
-ccs_user_defined_tuner_get_history_type = ct.CFUNCTYPE(Result, ccs_tuner, ct.c_size_t, ct.POINTER(ccs_evaluation), ct.POINTER(ct.c_size_t))
-ccs_user_defined_tuner_suggest_type = ct.CFUNCTYPE(Result, ccs_tuner, ct.POINTER(ccs_search_configuration))
+ccs_user_defined_tuner_get_optima_type = ct.CFUNCTYPE(Result, ccs_tuner, ccs_features, ct.c_size_t, ct.POINTER(ccs_evaluation), ct.POINTER(ct.c_size_t))
+ccs_user_defined_tuner_get_history_type = ct.CFUNCTYPE(Result, ccs_tuner, ccs_features, ct.c_size_t, ct.POINTER(ccs_evaluation), ct.POINTER(ct.c_size_t))
+ccs_user_defined_tuner_suggest_type = ct.CFUNCTYPE(Result, ccs_tuner, ccs_features, ct.POINTER(ccs_search_configuration))
 ccs_user_defined_tuner_serialize_type = ct.CFUNCTYPE(Result, ccs_tuner, ct.c_size_t, ct.c_void_p, ct.POINTER(ct.c_size_t))
 ccs_user_defined_tuner_deserialize_type = ct.CFUNCTYPE(Result, ccs_tuner, ct.c_size_t, ct.POINTER(ccs_evaluation), ct.c_size_t, ct.POINTER(ccs_evaluation), ct.c_size_t, ct.c_void_p)
 
@@ -174,12 +194,12 @@ def _wrap_user_defined_tuner_callbacks(delete, ask, tell, get_optima, get_histor
     except Exception as e:
       return Error.set_error(e)
 
-  def ask_wrapper(tun, count, p_configurations, p_count):
+  def ask_wrapper(tun, features, count, p_configurations, p_count):
     try:
       tun = ct.cast(tun, ccs_tuner)
       p_confs = ct.cast(p_configurations, ct.c_void_p)
       p_c = ct.cast(p_count, ct.c_void_p)
-      (configurations, count_ret) = ask(Tuner.from_handle(tun), count if p_confs.value else None)
+      (configurations, count_ret) = ask(Tuner.from_handle(tun), Features.from_handle(features) if features else None, count if p_confs.value else None)
       if p_confs.value is not None and count < count_ret:
         raise Error(Result(Result.ERROR_INVALID_VALUE))
       if p_confs.value is not None:
@@ -209,12 +229,12 @@ def _wrap_user_defined_tuner_callbacks(delete, ask, tell, get_optima, get_histor
     except Exception as e:
       return Error.set_error(e)
 
-  def get_optima_wrapper(tun, count, p_evaluations, p_count):
+  def get_optima_wrapper(tun, features, count, p_evaluations, p_count):
     try:
       tun = ct.cast(tun, ccs_tuner)
       p_evals = ct.cast(p_evaluations, ct.c_void_p)
       p_c = ct.cast(p_count, ct.c_void_p)
-      optima = get_optima(Tuner.from_handle(tun))
+      optima = get_optima(Tuner.from_handle(tun), Features.from_handle(features) if features else None)
       count_ret = len(optima)
       if p_evals.value is not None and count < count_ret:
         raise Error(Result(Result.ERROR_INVALID_VALUE))
@@ -229,13 +249,13 @@ def _wrap_user_defined_tuner_callbacks(delete, ask, tell, get_optima, get_histor
     except Exception as e:
       return Error.set_error(e)
 
-  def get_history_wrapper(tun, count, p_evaluations, p_count):
+  def get_history_wrapper(tun, features, count, p_evaluations, p_count):
     try:
       tun = ct.cast(tun, ccs_tuner)
       p_evals = ct.cast(p_evaluations, ct.c_void_p)
       p_c = ct.cast(p_count, ct.c_void_p)
-      history = get_history(Tuner.from_handle(tun))
-      count_ret = len(history)
+      history = get_history(Tuner.from_handle(tun), Features.from_handle(features) if features else None)
+      count_ret = (len(history) if history else 0)
       if p_evals.value is not None and count < count_ret:
         raise Error(Result(Result.ERROR_INVALID_VALUE))
       if p_evals.value is not None:
@@ -250,10 +270,10 @@ def _wrap_user_defined_tuner_callbacks(delete, ask, tell, get_optima, get_histor
       return Error.set_error(e)
 
   if suggest is not None:
-    def suggest_wrapper(tun, p_configuration):
+    def suggest_wrapper(tun, features, p_configuration):
       try:
         tun = ct.cast(tun, ccs_tuner)
-        configuration = suggest(Tuner.from_handle(tun))
+        configuration = suggest(Tuner.from_handle(tun), Features.from_handle(features) if features else None)
         res = ccs_retain_object(configuration.handle)
         Error.check(res)
         p_configuration[0] = configuration.handle.value
@@ -399,7 +419,7 @@ class UserDefinedTuner(Tuner):
     vector.suggest = suggest_wrapper_func
     vector.serialize = serialize_wrapper_func
     vector.deserialize = deserialize_wrapper_func
-    res = Object.deserialize(format = format, handle_map = handle_map, vector = vector, data = tuner_data, path = path, buffer = buffer, file_descriptor = file_descriptor, callback = callback, callback_data = callback_data)
+    res = super().deserialize(format = format, handle_map = handle_map, vector = vector, data = tuner_data, path = path, buffer = buffer, file_descriptor = file_descriptor, callback = callback, callback_data = callback_data)
     _register_vector(res.handle, [delete_wrapper, ask_wrapper, tell_wrapper, get_optima_wrapper, get_history_wrapper, suggest_wrapper, serialize_wrapper, deserialize_wrapper, delete_wrapper_func, ask_wrapper_func, tell_wrapper_func, get_optima_wrapper_func, get_history_wrapper_func, suggest_wrapper_func, serialize_wrapper_func, deserialize_wrapper_func, tuner_data])
     return res
 

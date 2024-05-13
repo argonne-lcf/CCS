@@ -29,29 +29,29 @@ class TestTuner(unittest.TestCase):
     func = lambda x, y, z: [(x-2)*(x-2), sin(z+y)]
     evals = [ccs.Evaluation(objective_space = os, configuration = c, values = func(*(c.values))) for c in t.ask(100)]
     t.tell(evals)
-    hist = t.history
+    hist = t.history()
     self.assertEqual(100, len(hist))
     evals = [ccs.Evaluation(objective_space = os, configuration = c, values = func(*(c.values))) for c in t.ask(100)]
     t.tell(evals)
-    hist = t.history
+    hist = t.history()
     self.assertEqual(200, len(hist))
-    optims = t.optima
+    optims = t.optima()
     objs = [x.objective_values for x in optims]
     objs.sort(key = lambda x: x[0])
     # assert pareto front
     self.assertTrue(all(objs[i][1] >= objs[i+1][1] for i in range(len(objs)-1)))
-    self.assertTrue(t.suggest in [x.configuration for x in optims])
+    self.assertTrue(t.suggest() in [x.configuration for x in optims])
     # test serialization
     buff = t.serialize()
     t_copy = ccs.deserialize(buffer = buff)
-    hist = t_copy.history
+    hist = t_copy.history()
     self.assertEqual(200, len(hist))
-    optims_2 = t_copy.optima
+    optims_2 = t_copy.optima()
     self.assertEqual(len(optims), len(optims_2))
     objs = [x.objective_values for x in optims_2]
     objs.sort(key = lambda x: x[0])
     self.assertTrue(all(objs[i][1] >= objs[i+1][1] for i in range(len(objs)-1)))
-    self.assertTrue(t_copy.suggest in [x.configuration for x in optims_2])
+    self.assertTrue(t_copy.suggest() in [x.configuration for x in optims_2])
 
   def test_user_defined(self):
     class TunerData:
@@ -62,7 +62,7 @@ class TestTuner(unittest.TestCase):
     def delete(tuner):
       return None
 
-    def ask(tuner, count):
+    def ask(tuner, features, count):
       if count is None:
         return (None, 1)
       else:
@@ -89,13 +89,13 @@ class TestTuner(unittest.TestCase):
         tuner.tuner_data.optima = new_optima
       return None
 
-    def get_history(tuner):
+    def get_history(tuner, features):
       return tuner.tuner_data.history
 
-    def get_optima(tuner):
+    def get_optima(tuner, features):
       return tuner.tuner_data.optima
 
-    def suggest(tuner):
+    def suggest(tuner, features):
       if not tuner.tuner_data.optima:
         return ask(tuner, 1)
       else:
@@ -111,41 +111,41 @@ class TestTuner(unittest.TestCase):
     func = lambda x, y, z: [(x-2)*(x-2), sin(z+y)]
     evals = [ccs.Evaluation(objective_space = os, configuration = c, values = func(*(c.values))) for c in t.ask(100)]
     t.tell(evals)
-    hist = t.history
+    hist = t.history()
     self.assertEqual(100, len(hist))
     evals = [ccs.Evaluation(objective_space = os, configuration = c, values = func(*(c.values))) for c in t.ask(100)]
     t.tell(evals)
-    hist = t.history
+    hist = t.history()
     self.assertEqual(200, len(hist))
-    optims = t.optima
+    optims = t.optima()
     objs = [x.objective_values for x in optims]
     objs.sort(key = lambda x: x[0])
     # assert pareto front
     self.assertTrue(all(objs[i][1] >= objs[i+1][1] for i in range(len(objs)-1)))
-    self.assertTrue(t.suggest in [x.configuration for x in optims])
+    self.assertTrue(t.suggest() in [x.configuration for x in optims])
 
     # test serialization
     buff = t.serialize()
     t_copy = ccs.UserDefinedTuner.deserialize(buffer = buff, delete = delete, ask = ask, tell = tell, get_optima = get_optima, get_history = get_history, suggest = suggest, tuner_data = TunerData())
-    hist = t_copy.history
+    hist = t_copy.history()
     self.assertEqual(200, len(hist))
-    optims_2 = t_copy.optima
+    optims_2 = t_copy.optima()
     self.assertEqual(len(optims), len(optims_2))
     objs = [x.objective_values for x in optims_2]
     objs.sort(key = lambda x: x[0])
     self.assertTrue(all(objs[i][1] >= objs[i+1][1] for i in range(len(objs)-1)))
-    self.assertTrue(t_copy.suggest in [x.configuration for x in optims_2])
+    self.assertTrue(t_copy.suggest() in [x.configuration for x in optims_2])
 
     t.serialize(path = 'tuner.ccs')
     t_copy = ccs.UserDefinedTuner.deserialize(path = 'tuner.ccs', delete = delete, ask = ask, tell = tell, get_optima = get_optima, get_history = get_history, suggest = suggest, tuner_data = TunerData())
-    hist = t_copy.history
+    hist = t_copy.history()
     self.assertEqual(200, len(hist))
-    optims_2 = t_copy.optima
+    optims_2 = t_copy.optima()
     self.assertEqual(len(optims), len(optims_2))
     objs = [x.objective_values for x in optims_2]
     objs.sort(key = lambda x: x[0])
     self.assertTrue(all(objs[i][1] >= objs[i+1][1] for i in range(len(objs)-1)))
-    self.assertTrue(t_copy.suggest in [x.configuration for x in optims_2])
+    self.assertTrue(t_copy.suggest() in [x.configuration for x in optims_2])
     _os.remove('tuner.ccs')
 
     file = open( 'tuner.ccs', "wb")
@@ -154,14 +154,14 @@ class TestTuner(unittest.TestCase):
     file = open( 'tuner.ccs', "rb")
     t_copy = ccs.UserDefinedTuner.deserialize(file_descriptor = file.fileno(), delete = delete, ask = ask, tell = tell, get_optima = get_optima, get_history = get_history, suggest = suggest, tuner_data = TunerData())
     file.close()
-    hist = t_copy.history
+    hist = t_copy.history()
     self.assertEqual(200, len(hist))
-    optims_2 = t_copy.optima
+    optims_2 = t_copy.optima()
     self.assertEqual(len(optims), len(optims_2))
     objs = [x.objective_values for x in optims_2]
     objs.sort(key = lambda x: x[0])
     self.assertTrue(all(objs[i][1] >= objs[i+1][1] for i in range(len(objs)-1)))
-    self.assertTrue(t_copy.suggest in [x.configuration for x in optims_2])
+    self.assertTrue(t_copy.suggest() in [x.configuration for x in optims_2])
     _os.remove('tuner.ccs')
 
 

@@ -72,7 +72,7 @@ check_configuration(
 	}
 
 	err = ccs_configuration_space_get_default_configuration(
-		configuration_space, &configuration);
+		configuration_space, NULL, &configuration);
 	assert(err == CCS_RESULT_SUCCESS);
 
 	err = ccs_configuration_check(configuration, &check);
@@ -108,7 +108,7 @@ test_create(void)
 	parameters[2] = create_dummy_parameter("param3");
 
 	err           = ccs_create_configuration_space(
-                "my_config_space", 3, parameters, NULL, 0, NULL, NULL,
+                "my_config_space", 3, parameters, NULL, 0, NULL, NULL, NULL,
                 &configuration_space);
 	assert(err == CCS_RESULT_SUCCESS);
 
@@ -155,7 +155,7 @@ test_set_distribution(void)
 	parameters[2] = create_dummy_parameter("param3");
 
 	err           = ccs_create_configuration_space(
-                "my_config_space", 3, parameters, NULL, 0, NULL, NULL,
+                "my_config_space", 3, parameters, NULL, 0, NULL, NULL, NULL,
                 &configuration_space);
 	assert(err == CCS_RESULT_SUCCESS);
 
@@ -195,7 +195,7 @@ test_set_distribution(void)
 	assert(dindex_ret == 1);
 
 	err = ccs_configuration_space_samples(
-		configuration_space, distribution_space, NULL, 100,
+		configuration_space, distribution_space, NULL, NULL, 100,
 		configurations);
 	assert(err == CCS_RESULT_SUCCESS);
 
@@ -234,7 +234,7 @@ test_set_distribution(void)
 	assert(dindex_ret == 0);
 
 	err = ccs_configuration_space_samples(
-		configuration_space, distribution_space, NULL, 100,
+		configuration_space, distribution_space, NULL, NULL, 100,
 		configurations);
 	assert(err == CCS_RESULT_SUCCESS);
 
@@ -292,7 +292,8 @@ test_deserialize(void)
 	parameters[2] = create_numerical("param3", -5.0, 5.0);
 
 	err           = ccs_create_configuration_space(
-                "my_config_space", 3, parameters, NULL, 0, NULL, NULL, &space);
+                "my_config_space", 3, parameters, NULL, 0, NULL, NULL, NULL,
+                &space);
 	assert(err == CCS_RESULT_SUCCESS);
 
 	err = ccs_create_distribution_space(space, &distrib_space);

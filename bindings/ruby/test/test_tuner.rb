@@ -63,7 +63,7 @@ class CConfigSpaceTestTuner < Minitest::Test
 
   def test_user_defined
     del = lambda { |tuner| nil }
-    ask = lambda { |tuner, count|
+    ask = lambda { |tuner, _, count|
       if count
         cs = tuner.search_space
         [cs.samples(count), count]
@@ -93,13 +93,13 @@ class CConfigSpaceTestTuner < Minitest::Test
         tuner.tuner_data.optima.push(e) unless discard
       }
     }
-    get_history = lambda { |tuner|
+    get_history = lambda { |tuner, _|
       tuner.tuner_data.history
     }
-    get_optima = lambda { |tuner|
+    get_optima = lambda { |tuner, _|
       tuner.tuner_data.optima
     }
-    suggest = lambda { |tuner|
+    suggest = lambda { |tuner, _|
       if tuner.tuner_data.optima.empty?
         ask.call(tuner, 1)
       else

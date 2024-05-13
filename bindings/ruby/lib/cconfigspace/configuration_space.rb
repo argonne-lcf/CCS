@@ -1,19 +1,22 @@
 module CCS
-  attach_function :ccs_create_configuration_space, [:string, :size_t, :pointer, :pointer, :size_t, :pointer, :ccs_rng_t, :pointer], :ccs_result_t
+  attach_function :ccs_create_configuration_space, [:string, :size_t, :pointer, :pointer, :size_t, :pointer, :ccs_feature_space_t, :ccs_rng_t, :pointer], :ccs_result_t
   attach_function :ccs_configuration_space_get_rng, [:ccs_configuration_space_t, :pointer], :ccs_result_t
+  attach_function :ccs_configuration_space_get_feature_space, [:ccs_configuration_space_t, :pointer], :ccs_result_t
   attach_function :ccs_configuration_space_get_condition, [:ccs_configuration_space_t, :size_t, :pointer], :ccs_result_t
   attach_function :ccs_configuration_space_get_conditions, [:ccs_configuration_space_t, :size_t, :pointer, :pointer], :ccs_result_t
   attach_function :ccs_configuration_space_get_forbidden_clause, [:ccs_configuration_space_t, :size_t, :pointer], :ccs_result_t
   attach_function :ccs_configuration_space_get_forbidden_clauses, [:ccs_configuration_space_t, :size_t, :pointer, :pointer], :ccs_result_t
   attach_function :ccs_configuration_space_check_configuration, [:ccs_configuration_space_t, :ccs_configuration_t, :pointer], :ccs_result_t
-  attach_function :ccs_configuration_space_get_default_configuration, [:ccs_configuration_space_t, :pointer], :ccs_result_t
-  attach_function :ccs_configuration_space_sample, [:ccs_configuration_space_t, :ccs_distribution_space_t, :ccs_rng_t, :pointer], :ccs_result_t
-  attach_function :ccs_configuration_space_samples, [:ccs_configuration_space_t, :ccs_distribution_space_t, :ccs_rng_t, :size_t, :pointer], :ccs_result_t
+  attach_function :ccs_configuration_space_get_default_configuration, [:ccs_configuration_space_t, :ccs_features_t, :pointer], :ccs_result_t
+  attach_function :ccs_configuration_space_sample, [:ccs_configuration_space_t, :ccs_distribution_space_t, :ccs_features_t, :ccs_rng_t, :pointer], :ccs_result_t
+  attach_function :ccs_configuration_space_samples, [:ccs_configuration_space_t, :ccs_distribution_space_t, :ccs_features_t, :ccs_rng_t, :size_t, :pointer], :ccs_result_t
 
   class ConfigurationSpace < Context
+    add_optional_handle_property :feature_space, :ccs_feature_space_t, :ccs_configuration_space_get_feature_space, memoize: true
+    add_handle_property :rng, :ccs_rng_t, :ccs_configuration_space_get_rng, memoize: true
 
     def initialize(handle = nil, retain: false, auto_release: true,
-                   name: "", parameters: nil, conditions: nil, forbidden_clauses: nil, rng: nil)
+                   name: "", parameters: nil, conditions: nil, forbidden_clauses: nil, feature_space: nil, rng: nil)
       if handle
         super(handle, retain: retain, auto_release: auto_release)
       else
@@ -57,19 +60,13 @@ module CCS
           cptr = nil
         end
 
-        CCS.error_check CCS.ccs_create_configuration_space(name, count, p_parameters, cptr, fccount, fcptr, rng, ptr)
+        CCS.error_check CCS.ccs_create_configuration_space(name, count, p_parameters, cptr, fccount, fcptr, feature_space, rng, ptr)
         super(ptr.read_ccs_configuration_space_t, retain:false)
       end
     end
 
     def self.from_handle(handle, retain: true, auto_release: true)
       self.new(handle, retain: retain, auto_release: auto_release)
-    end
-
-    def rng
-      ptr = MemoryPointer::new(:ccs_rng_t)
-      CCS.error_check CCS.ccs_configuration_space_get_rng(@handle, ptr)
-      Rng::from_handle(ptr.read_ccs_rng_t)
     end
 
     def condition(parameter)
@@ -86,24 +83,30 @@ module CCS
     end
 
     def conditions
-      count = num_parameters
-      ptr = MemoryPointer::new(:ccs_expression_t, count)
-      CCS.error_check CCS.ccs_configuration_space_get_conditions(@handle, count, ptr, nil)
-      ptr.read_array_of_pointer(count).collect { |handle|
-        handle.null? ? nil : Expression.from_handle(handle)
-      }
+      @conditions ||= begin
+        count = num_parameters
+        ptr = MemoryPointer::new(:ccs_expression_t, count)
+        CCS.error_check CCS.ccs_configuration_space_get_conditions(@handle, count, ptr, nil)
+        ptr.read_array_of_pointer(count).collect { |handle|
+          handle.null? ? nil : Expression.from_handle(handle)
+        }.freeze
+      end
     end
 
     def conditional_parameters
-      hps = parameters
-      conds = conditions
-      hps.each_with_index.select { |h, i| conds[i] }.collect { |h, i| h }.to_a
+      @conditional_parameters ||= begin
+        hps = parameters
+        conds = conditions
+        hps.each_with_index.select { |h, i| conds[i] }.collect { |h, i| h }.to_a.freeze
+      end
     end
 
     def unconditional_parameters
-      hps = parameters
-      conds = conditions
-      hps.each_with_index.select { |h, i| !conds[i] }.collect { |h, i| h }.to_a
+      @unconditional_parameters ||= begin
+        hps = parameters
+        conds = conditions
+        hps.each_with_index.select { |h, i| !conds[i] }.collect { |h, i| h }.to_a.freeze
+      end
     end
 
     def forbidden_clause(index)
@@ -135,21 +138,21 @@ module CCS
       return ptr.read_ccs_bool_t == CCS::FALSE ? false : true
     end
 
-    def default_configuration
+    def default_configuration(features: nil)
       ptr = MemoryPointer::new(:ccs_configuration_t)
-      CCS.error_check CCS.ccs_configuration_space_get_default_configuration(@handle, ptr)
+      CCS.error_check CCS.ccs_configuration_space_get_default_configuration(@handle, features, ptr)
       Configuration::new(ptr.read_ccs_configuration_t, retain: false)
     end
 
-    def sample(distribution_space: nil, rng: nil)
+    def sample(distribution_space: nil, features: nil, rng: nil)
       ptr = MemoryPointer::new(:ccs_configuration_t)
-      CCS.error_check CCS.ccs_configuration_space_sample(@handle, distribution_space ? distribution_space.handle : nil, rng ? rng.handle : nil, ptr)
+      CCS.error_check CCS.ccs_configuration_space_sample(@handle, distribution_space, features, rng, ptr)
       Configuration::new(ptr.read_ccs_configuration_t, retain: false)
     end
 
-    def samples(count, distribution_space: nil, rng: nil)
+    def samples(count, distribution_space: nil, features: nil, rng: nil)
       ptr = MemoryPointer::new(:ccs_configuration_t, count)
-      CCS.error_check CCS.ccs_configuration_space_samples(@handle, distribution_space ? distribution_space.handle : nil, rng ? rng.handle : nil, count, ptr)
+      CCS.error_check CCS.ccs_configuration_space_samples(@handle, distribution_space, features, rng, count, ptr)
       count.times.collect { |i| Configuration::new(ptr[i].read_pointer, retain: false) }
     end
   end

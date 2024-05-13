@@ -91,6 +91,40 @@ ccs_evaluation_get_objective_space(
 	ccs_objective_space_t *objective_space_ret);
 
 /**
+ * Get the configuration associated with an evaluation.
+ * @param[in] evaluation
+ * @param[out] configuration_ret a pointer to the variable that will contain
+ *                               the configuration
+ * @return #CCS_RESULT_SUCCESS on success
+ * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p evaluation is not a valid CCS
+ * evaluation
+ * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p configuration_ret is NULL
+ * @remarks
+ *   This function is thread-safe
+ */
+extern ccs_result_t
+ccs_evaluation_get_configuration(
+	ccs_evaluation_t            evaluation,
+	ccs_search_configuration_t *configuration_ret);
+
+/**
+ * Get the features associated with an evaluation.
+ * @param[in] evaluation
+ * @param[out] features_ret a pointer to the variable that will contain the
+ *                          features
+ * @return #CCS_RESULT_SUCCESS on success
+ * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p evaluation is not a valid CCS
+ * evaluation
+ * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p features_ret is NULL
+ * @remarks
+ *   This function is thread-safe
+ */
+extern ccs_result_t
+ccs_evaluation_get_features(
+	ccs_evaluation_t evaluation,
+	ccs_features_t  *features_ret);
+
+/**
  * Get the result code associated with an evaluation.
  * @param[in] evaluation
  * @param[out] result_ret a pointer to the variable that will contain the
@@ -205,23 +239,6 @@ ccs_evaluation_compare(
 	ccs_evaluation_t  evaluation,
 	ccs_evaluation_t  other_evaluation,
 	ccs_comparison_t *result_ret);
-
-/**
- * Get the configuration associated with an evaluation.
- * @param[in] evaluation
- * @param[out] configuration_ret a pointer to the variable that will contain
- *                               the configuration
- * @return #CCS_RESULT_SUCCESS on success
- * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p evaluation is not a valid CCS
- * evaluation
- * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p configuration_ret is NULL
- * @remarks
- *   This function is thread-safe
- */
-extern ccs_result_t
-ccs_evaluation_get_configuration(
-	ccs_evaluation_t            evaluation,
-	ccs_search_configuration_t *configuration_ret);
 
 #ifdef __cplusplus
 }

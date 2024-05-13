@@ -13,17 +13,19 @@ module CCS
   attach_function :ccs_tree_space_get_type, [:ccs_tree_space_t, :pointer], :ccs_result_t
   attach_function :ccs_tree_space_get_name, [:ccs_tree_space_t, :pointer], :ccs_result_t
   attach_function :ccs_tree_space_get_rng, [:ccs_tree_space_t, :pointer], :ccs_result_t
+  attach_function :ccs_tree_space_get_feature_space, [:ccs_tree_space_t, :pointer], :ccs_result_t
   attach_function :ccs_tree_space_get_tree, [:ccs_tree_space_t, :pointer], :ccs_result_t
   attach_function :ccs_tree_space_get_node_at_position, [:ccs_tree_space_t, :size_t, :pointer, :pointer], :ccs_result_t
   attach_function :ccs_tree_space_get_values_at_position, [:ccs_tree_space_t, :size_t, :pointer, :size_t, :pointer], :ccs_result_t
   attach_function :ccs_tree_space_check_position, [:ccs_tree_space_t, :size_t, :pointer, :pointer], :ccs_result_t
   attach_function :ccs_tree_space_check_configuration, [:ccs_tree_space_t, :ccs_tree_configuration_t, :pointer], :ccs_result_t
-  attach_function :ccs_tree_space_sample, [:ccs_tree_space_t, :ccs_rng_t, :pointer], :ccs_result_t
-  attach_function :ccs_tree_space_samples, [:ccs_tree_space_t, :ccs_rng_t, :size_t, :pointer], :ccs_result_t
+  attach_function :ccs_tree_space_sample, [:ccs_tree_space_t, :ccs_features_t, :ccs_rng_t, :pointer], :ccs_result_t
+  attach_function :ccs_tree_space_samples, [:ccs_tree_space_t, :ccs_features_t, :ccs_rng_t, :size_t, :pointer], :ccs_result_t
 
   class TreeSpace < Object
     add_property :type, :ccs_tree_space_type_t, :ccs_tree_space_get_type, memoize: true
     add_handle_property :rng, :ccs_rng_t, :ccs_tree_space_get_rng, memoize: true
+    add_optional_handle_property :feature_space, :ccs_feature_space_t, :ccs_tree_space_get_feature_space, memoize: true
     add_handle_property :tree, :ccs_tree_t, :ccs_tree_space_get_tree, memoize: true
 
     def self.from_handle(handle, retain: true, auto_release: true)
@@ -81,32 +83,32 @@ module CCS
       ptr.read_ccs_bool_t == CCS::FALSE ? false : true
     end
 
-    def sample(rng: nil)
+    def sample(features: nil, rng: nil)
       ptr = MemoryPointer::new(:ccs_tree_configuration_t)
-      CCS.error_check CCS.ccs_tree_space_sample(@handle, rng ? rng.handle : nil, ptr)
+      CCS.error_check CCS.ccs_tree_space_sample(@handle, features, rng, ptr)
       TreeConfiguration::new(ptr.read_ccs_tree_configuration_t, retain: false)
     end
 
-    def samples(count, rng: nil)
+    def samples(count, features: nil, rng: nil)
       return [] if count == 0
       ptr = MemoryPointer::new(:ccs_tree_configuration_t, count)
-      CCS.error_check CCS.ccs_tree_space_samples(@handle, rng ? rng.handle : nil, count, ptr)
+      CCS.error_check CCS.ccs_tree_space_samples(@handle, features, rng, count, ptr)
       count.times.collect { |i| TreeConfiguration::new(ptr[i].read_pointer, retain: false) }
     end
 
   end
 
-  attach_function :ccs_create_static_tree_space, [:string, :ccs_tree_t, :ccs_rng_t, :pointer], :ccs_result_t
+  attach_function :ccs_create_static_tree_space, [:string, :ccs_tree_t, :ccs_feature_space_t, :ccs_rng_t, :pointer], :ccs_result_t
 
   class StaticTreeSpace < TreeSpace
 
     def initialize(handle = nil, retain: false, auto_release: true,
-                   name: "", tree: nil, rng: nil)
+                   name: "", tree: nil, feature_space: nil, rng: nil)
       if handle
         super(handle, retain: retain, auto_release: auto_release)
       else
         ptr = MemoryPointer::new(:ccs_tree_space_t)
-        CCS.error_check CCS.ccs_create_static_tree_space(name, tree, rng ? rng.handle : nil, ptr)
+        CCS.error_check CCS.ccs_create_static_tree_space(name, tree, feature_space, rng, ptr)
         super(ptr.read_ccs_tree_space_t, retain: false)
       end
     end
@@ -181,14 +183,15 @@ module CCS
     return [delwrapper, get_childwrapper, serializewrapper, deserializewrapper]
   end
 
-  attach_function :ccs_create_dynamic_tree_space, [:string, :ccs_tree_t, :ccs_rng_t, DynamicTreeSpaceVector.by_ref, :value, :pointer], :ccs_result_t
+  attach_function :ccs_create_dynamic_tree_space, [:string, :ccs_tree_t, :ccs_feature_space_t, :ccs_rng_t, DynamicTreeSpaceVector.by_ref, :value, :pointer], :ccs_result_t
   attach_function :ccs_dynamic_tree_space_get_tree_space_data, [:ccs_tree_space_t, :pointer], :ccs_result_t
 
   class DynamicTreeSpace < TreeSpace
     add_property :tree_space_data, :value, :ccs_dynamic_tree_space_get_tree_space_data, memoize: true
 
     def initialize(handle = nil, retain: false, auto_release: true,
-                   name: "", tree: nil, rng: nil, del: nil, get_child: nil, serialize: nil, deserialize: nil, tree_space_data: nil)
+                   name: "", tree: nil, feature_space: nil, rng: nil,
+                   del: nil, get_child: nil, serialize: nil, deserialize: nil, tree_space_data: nil)
       if handle
         super(handle, retain: retain, auto_release: auto_release)
       else
@@ -201,7 +204,7 @@ module CCS
         vector[:serialize] = serializewrapper
         vector[:deserialize] = deserializewrapper
         ptr = MemoryPointer::new(:ccs_tree_space_t)
-        CCS.error_check CCS.ccs_create_dynamic_tree_space(name, tree, rng ? rng.handle : nil, vector, tree_space_data, ptr)
+        CCS.error_check CCS.ccs_create_dynamic_tree_space(name, tree, feature_space, rng, vector, tree_space_data, ptr)
         h = ptr.read_ccs_tree_space_t
         super(h, retain: false)
         CCS.register_vector(h, [delwrapper, get_childwrapper, serializewrapper, deserializewrapper, tree_space_data])

@@ -32,6 +32,7 @@ struct _ccs_objective_space_data_s {
 	size_t                       num_objectives;
 	_ccs_objective_t            *objectives;
 	ccs_search_space_t           search_space;
+	ccs_feature_space_t          feature_space;
 };
 
 #endif //_OBJECTIVE_SPACE_INTERNAL_H

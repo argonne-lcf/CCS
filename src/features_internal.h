@@ -28,4 +28,11 @@ struct _ccs_features_data_s {
 	ccs_datum_t        *values;
 };
 
+ccs_result_t
+_ccs_create_features(
+	ccs_feature_space_t features_space,
+	size_t              num_values,
+	ccs_datum_t        *values,
+	ccs_features_t     *features_ret);
+
 #endif //_FEATURES_INTERNAL_H

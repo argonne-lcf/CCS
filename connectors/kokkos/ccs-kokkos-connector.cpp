@@ -126,10 +126,9 @@ kokkosp_end_parallel_reduce(const uint64_t kID)
 	invoke_fence(devID);
 }
 
-static std::map<size_t, ccs_parameter_t> features;
-static std::map<size_t, ccs_parameter_t> parameters;
-static std::map<std::set<size_t>, std::tuple<ccs_features_tuner_t, bool> >
-	tuners;
+static std::map<size_t, ccs_parameter_t>                          features;
+static std::map<size_t, ccs_parameter_t>                          parameters;
+static std::map<std::set<size_t>, std::tuple<ccs_tuner_t, bool> > tuners;
 
 extern "C" void
 kokkosp_parse_args(int argc, char **argv)
@@ -458,12 +457,7 @@ extract_value(
 
 static std::map<
 	size_t,
-	std::tuple<
-		struct timespec,
-		ccs_features_tuner_t,
-		ccs_features_t,
-		ccs_configuration_t,
-		bool> >
+	std::tuple<struct timespec, ccs_tuner_t, ccs_configuration_t, bool> >
 	   contexts;
 static int regionCounter = 0;
 
@@ -477,7 +471,7 @@ kokkosp_request_values(
 {
 
   std::set<size_t>          regionId;
-  ccs_features_tuner_t      tuner;
+  ccs_tuner_t               tuner;
   ccs_features_t            feat;
   ccs_feature_space_t       feature_space;
   ccs_configuration_t       configuration;
@@ -509,22 +503,6 @@ kokkosp_request_values(
 	  ccs_expression_t          expression;
 	  ccs_objective_type_t      otype;
 
-	  cs_parameters = new ccs_parameter_t[numTuningVariables];
-	  for (size_t i = 0; i < numTuningVariables; i++)
-		  cs_parameters[i] = parameters[tuningValues[i].type_id];
-
-	  CCS_CHECK(ccs_create_configuration_space(
-		  ("cs (region: " + std::to_string(regionCounter) + ")").c_str(),
-		  numTuningVariables, cs_parameters, NULL, 0, NULL, NULL, &cs));
-	  delete[] cs_parameters;
-
-#if CCS_DEBUG
-	  for (size_t i = 0; i < numTuningVariables; i++) {
-		  ccs_datum_t d;
-		  extract_value(tuningValues + i, &d);
-	  }
-#endif
-
 	  cs_parameters = new ccs_parameter_t[numContextVariables];
 	  for (size_t i = 0; i < numContextVariables; i++)
 		  cs_parameters[i] = parameters[contextValues[i].type_id];
@@ -533,6 +511,23 @@ kokkosp_request_values(
 		  ("fs (region: " + std::to_string(regionCounter) + ")").c_str(),
 		  numContextVariables, cs_parameters, &fs));
 	  delete[] cs_parameters;
+
+	  cs_parameters = new ccs_parameter_t[numTuningVariables];
+	  for (size_t i = 0; i < numTuningVariables; i++)
+		  cs_parameters[i] = parameters[tuningValues[i].type_id];
+
+	  CCS_CHECK(ccs_create_configuration_space(
+		  ("cs (region: " + std::to_string(regionCounter) + ")").c_str(),
+		  numTuningVariables, cs_parameters, NULL, 0, NULL, fs, NULL,
+		  &cs));
+	  delete[] cs_parameters;
+
+#if CCS_DEBUG
+	  for (size_t i = 0; i < numTuningVariables; i++) {
+		  ccs_datum_t d;
+		  extract_value(tuningValues + i, &d);
+	  }
+#endif
 
 	  ccs_int_t lower = 0;
 	  ccs_int_t upper = CCS_INT_MAX;
@@ -549,11 +544,11 @@ kokkosp_request_values(
 	  CCS_CHECK(ccs_release_object(expression));
 	  CCS_CHECK(ccs_release_object(htime));
 
-	  CCS_CHECK(ccs_create_random_features_tuner(
+	  CCS_CHECK(ccs_create_random_tuner(
 		  ("random tuner (region: " + std::to_string(regionCounter) +
 		   ")")
 			  .c_str(),
-		  fs, os, &tuner));
+		  os, &tuner));
 	  CCS_CHECK(ccs_release_object(cs));
 	  CCS_CHECK(ccs_release_object(fs));
 	  CCS_CHECK(ccs_release_object(os));
@@ -569,8 +564,7 @@ kokkosp_request_values(
   // Test convergence using history size, could be done better
   if (!converged) {
 	  size_t history_size;
-	  CCS_CHECK(ccs_features_tuner_get_history(
-		  tuner, NULL, 0, NULL, &history_size));
+	  CCS_CHECK(ccs_tuner_get_history(tuner, NULL, 0, NULL, &history_size));
 	  converged = (history_size >= convergence_cutoff);
 	  if (converged)
 		  tuners[regionId] = std::make_tuple(tuner, converged);
@@ -580,7 +574,7 @@ kokkosp_request_values(
   else // else propagate unconverged status
 	  convergence_stack.push(false);
 
-  CCS_CHECK(ccs_features_tuner_get_feature_space(tuner, &feature_space));
+  CCS_CHECK(ccs_tuner_get_feature_space(tuner, &feature_space));
   {
 	  ccs_datum_t *values = new ccs_datum_t[numContextVariables];
 	  for (size_t i = 0; i < numContextVariables; i++) {
@@ -596,14 +590,14 @@ kokkosp_request_values(
   }
 
   if (!converged)
-	  CCS_CHECK(ccs_features_tuner_ask(
+	  CCS_CHECK(ccs_tuner_ask(
 		  tuner, feat, 1, (ccs_search_configuration_t *)&configuration,
 		  NULL));
   else
-	  CCS_CHECK(ccs_features_tuner_suggest(
+	  CCS_CHECK(ccs_tuner_suggest(
 		  tuner, feat, (ccs_search_configuration_t *)&configuration));
-
-  CCS_CHECK(ccs_features_tuner_get_search_space(
+  CCS_CHECK(ccs_release_object(feat));
+  CCS_CHECK(ccs_tuner_get_search_space(
 	  tuner, (ccs_search_space_t *)&configuration_space));
   {
 	  ccs_datum_t *values = new ccs_datum_t[numTuningVariables];
@@ -628,8 +622,7 @@ kokkosp_request_values(
 #endif
 
   clock_gettime(CLOCK_MONOTONIC, &start);
-  contexts[contextId] =
-	  std::make_tuple(start, tuner, feat, configuration, converged);
+  contexts[contextId] = std::make_tuple(start, tuner, configuration, converged);
 }
 
 extern "C" void
@@ -642,8 +635,7 @@ extern "C" void
 kokkosp_end_context(size_t contextId)
 {
   struct timespec       start, stop;
-  ccs_features_tuner_t  tuner;
-  ccs_features_t        feat;
+  ccs_tuner_t           tuner;
   ccs_configuration_t   configuration;
   ccs_objective_space_t objective_space;
   bool                  converged;
@@ -666,32 +658,29 @@ kokkosp_end_context(size_t contextId)
   auto context  = ctx->second;
   start         = std::get<0>(context);
   tuner         = std::get<1>(context);
-  feat          = std::get<2>(context);
-  configuration = std::get<3>(context);
-  converged     = std::get<4>(context);
+  configuration = std::get<2>(context);
+  converged     = std::get<3>(context);
   contexts.erase(contextId);
 
   if (!converged) { // do not report if not fencing and already converged.
-	  ccs_features_evaluation_t evaluation;
+	  ccs_evaluation_t evaluation;
 	  // elapsed time in nanosecond
-	  ccs_datum_t               elapsed = ccs_int(
+	  ccs_datum_t      elapsed = ccs_int(
                   ((ccs_int_t)(stop.tv_sec) - (ccs_int_t)(start.tv_sec)) *
                           1000000000 +
                   (ccs_int_t)(stop.tv_nsec) - (ccs_int_t)(start.tv_nsec));
 	  CCS_DEBUG_MSG_ARGS(
 		  "elapsed time: %f ms\n", elapsed.value.i / 1000000.0);
 
-	  CCS_CHECK(ccs_features_tuner_get_objective_space(
-		  tuner, &objective_space));
-	  CCS_CHECK(ccs_create_features_evaluation(
+	  CCS_CHECK(ccs_tuner_get_objective_space(tuner, &objective_space));
+	  CCS_CHECK(ccs_create_evaluation(
 		  objective_space, (ccs_search_configuration_t)configuration,
-		  feat, CCS_RESULT_SUCCESS, 1, &elapsed, &evaluation));
+		  CCS_RESULT_SUCCESS, 1, &elapsed, &evaluation));
 
-	  CCS_CHECK(ccs_features_tuner_tell(tuner, 1, &evaluation));
+	  CCS_CHECK(ccs_tuner_tell(tuner, 1, &evaluation));
 	  CCS_CHECK(ccs_release_object(evaluation));
   }
 
-  CCS_CHECK(ccs_release_object(feat));
   CCS_CHECK(ccs_release_object(configuration));
 
 #if CCS_PROFILE

@@ -1,7 +1,6 @@
 EXTRA_DIST = \
 	lib/cconfigspace.rb \
 	lib/cconfigspace \
-	lib/cconfigspace/features_tuner.rb \
 	lib/cconfigspace/tree.rb \
 	lib/cconfigspace/evaluation.rb \
 	lib/cconfigspace/tuner.rb \
@@ -19,7 +18,6 @@ EXTRA_DIST = \
 	lib/cconfigspace/expression.rb \
 	lib/cconfigspace/expression_parser.rb \
 	lib/cconfigspace/objective_space.rb \
-	lib/cconfigspace/features_evaluation.rb \
 	lib/cconfigspace/interval.rb \
 	lib/cconfigspace/parameter.rb \
 	lib/cconfigspace/error_stack.rb \

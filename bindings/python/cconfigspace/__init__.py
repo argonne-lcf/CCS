@@ -27,9 +27,7 @@ from .feature_space import *
 from .features import *
 from .objective_space import *
 from .evaluation import *
-from .features_evaluation import *
 from .tuner import *
-from .features_tuner import *
 from .tree import *
 from .tree_space import *
 from .tree_configuration import *

@@ -41,7 +41,7 @@ create_problem(ccs_objective_space_t *os)
 	parameters[1] = parameter2 = create_numerical("y", -5.0, 5.0);
 
 	err                        = ccs_create_configuration_space(
-                "2dplane", 2, parameters, NULL, 0, NULL, NULL, &cspace);
+                "2dplane", 2, parameters, NULL, 0, NULL, NULL, NULL, &cspace);
 	assert(err == CCS_RESULT_SUCCESS);
 
 	parameter3 = create_numerical("z", -CCS_INFINITY, CCS_INFINITY);
@@ -77,7 +77,7 @@ test_tuner(ccs_tuner_t tuner, ccs_objective_space_t ospace)
 		ccs_datum_t                values[2], res;
 		ccs_search_configuration_t configuration;
 		ccs_evaluation_t           evaluation;
-		err = ccs_tuner_ask(tuner, 1, &configuration, NULL);
+		err = ccs_tuner_ask(tuner, NULL, 1, &configuration, NULL);
 		assert(err == CCS_RESULT_SUCCESS);
 		err = ccs_binding_get_values(
 			(ccs_binding_t)configuration, 2, values, NULL);
@@ -99,7 +99,7 @@ test_tuner(ccs_tuner_t tuner, ccs_objective_space_t ospace)
 	size_t           count;
 	ccs_evaluation_t history[100];
 	ccs_datum_t      min = ccs_float(INFINITY);
-	err = ccs_tuner_get_history(tuner, 100, history, &count);
+	err = ccs_tuner_get_history(tuner, NULL, 100, history, &count);
 	assert(err == CCS_RESULT_SUCCESS);
 	assert(count == 100);
 
@@ -113,7 +113,7 @@ test_tuner(ccs_tuner_t tuner, ccs_objective_space_t ospace)
 
 	ccs_evaluation_t evaluation;
 	ccs_datum_t      res;
-	err = ccs_tuner_get_optima(tuner, 1, &evaluation, NULL);
+	err = ccs_tuner_get_optima(tuner, NULL, 1, &evaluation, NULL);
 	assert(err == CCS_RESULT_SUCCESS);
 	err = ccs_evaluation_get_objective_value(evaluation, 0, &res);
 	assert(res.value.f == min.value.f);

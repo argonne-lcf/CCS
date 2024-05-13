@@ -1,7 +1,8 @@
 import ctypes as ct
-from .base import Object, Error, CEnumeration, Datum, Result, _ccs_get_function, ccs_search_configuration, ccs_evaluation, ccs_objective_space, ccs_evaluation_result, ccs_bool
+from .base import Object, Error, CEnumeration, Datum, Result, _ccs_get_function, ccs_search_configuration, ccs_evaluation, ccs_objective_space, ccs_features, ccs_evaluation_result, ccs_bool
 from .objective_space import ObjectiveSpace
 from .binding import Binding
+from .features import Features
 
 class Comparison(CEnumeration):
   _members_ = [
@@ -12,11 +13,12 @@ class Comparison(CEnumeration):
 
 ccs_create_evaluation = _ccs_get_function("ccs_create_evaluation", [ccs_objective_space, ccs_search_configuration, ccs_evaluation_result, ct.c_size_t, ct.POINTER(Datum), ct.POINTER(ccs_evaluation)])
 ccs_evaluation_get_objective_space = _ccs_get_function("ccs_evaluation_get_objective_space", [ccs_evaluation, ct.POINTER(ccs_objective_space)])
+ccs_evaluation_get_configuration = _ccs_get_function("ccs_evaluation_get_configuration", [ccs_evaluation, ct.POINTER(ccs_search_configuration)])
+ccs_evaluation_get_features = _ccs_get_function("ccs_evaluation_get_features", [ccs_evaluation, ct.POINTER(ccs_features)])
 ccs_evaluation_get_objective_values = _ccs_get_function("ccs_evaluation_get_objective_values", [ccs_evaluation, ct.c_size_t, ct.POINTER(Datum), ct.POINTER(ct.c_size_t)])
 ccs_evaluation_get_result = _ccs_get_function("ccs_evaluation_get_result", [ccs_evaluation, ct.POINTER(ccs_evaluation_result)])
 ccs_evaluation_compare = _ccs_get_function("ccs_evaluation_compare", [ccs_evaluation, ccs_evaluation, ct.POINTER(Comparison)])
 ccs_evaluation_check = _ccs_get_function("ccs_evaluation_check", [ccs_evaluation, ct.POINTER(ccs_bool)])
-ccs_evaluation_get_configuration = _ccs_get_function("ccs_evaluation_get_configuration", [ccs_evaluation, ct.POINTER(ccs_search_configuration)])
 
 class Evaluation(Binding):
   def __init__(self, handle = None, retain = False, auto_release = True,
@@ -51,6 +53,29 @@ class Evaluation(Binding):
     Error.check(res)
     self._objective_space = ObjectiveSpace.from_handle(v)
     return self._objective_space
+
+  @property
+  def configuration(self):
+    if hasattr(self, "_configuration"):
+      return self._configuration
+    v = ccs_search_configuration()
+    res = ccs_evaluation_get_configuration(self.handle, ct.byref(v))
+    Error.check(res)
+    self._configuration = Object.from_handle(v)
+    return self._configuration
+
+  @property
+  def features(self):
+    if hasattr(self, "_features"):
+      return self._features
+    v = ccs_features()
+    res = ccs_evaluation_get_features(self.handle, ct.byref(v))
+    Error.check(res)
+    if bool(v):
+      self._features = Features.from_handle(v)
+    else:
+      self._features = None
+    return self._features
 
   @property
   def result(self):
@@ -95,12 +120,3 @@ class Evaluation(Binding):
     Error.check(res)
     return False if valid.value == 0 else True
 
-  @property
-  def configuration(self):
-    if hasattr(self, "_configuration"):
-      return self._configuration
-    v = ccs_search_configuration()
-    res = ccs_evaluation_get_configuration(self.handle, ct.byref(v))
-    Error.check(res)
-    self._configuration = Object.from_handle(v)
-    return self._configuration

@@ -110,8 +110,6 @@ _ccs_binding_hash(ccs_binding_t binding, ccs_hash_t *hash_ret)
 	_ccs_binding_data_t *data = binding->data;
 	ccs_hash_t           h, ht;
 	HASH_JEN(&(data->context), sizeof(data->context), h);
-	HASH_JEN(&(data->num_values), sizeof(data->num_values), ht);
-	h = _hash_combine(h, ht);
 	for (size_t i = 0; i < data->num_values; i++) {
 		ht = _hash_datum(data->values + i);
 		h  = _hash_combine(h, ht);
@@ -135,11 +133,6 @@ _ccs_binding_cmp(
 	*cmp_ret = data->context < other_data->context ? -1 :
 		   data->context > other_data->context ? 1 :
 							 0;
-	if (*cmp_ret)
-		return CCS_RESULT_SUCCESS;
-	*cmp_ret = data->num_values < other_data->num_values ? -1 :
-		   data->num_values > other_data->num_values ? 1 :
-							       0;
 	if (*cmp_ret)
 		return CCS_RESULT_SUCCESS;
 	for (size_t i = 0; i < data->num_values; i++) {

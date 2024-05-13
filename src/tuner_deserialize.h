@@ -12,7 +12,7 @@ struct _ccs_random_tuner_data_mock_s {
 typedef struct _ccs_random_tuner_data_mock_s _ccs_random_tuner_data_mock_t;
 
 static inline ccs_result_t
-_ccs_deserialize_bin_size_ccs_tuner_common_data(
+_ccs_deserialize_bin_ccs_tuner_common_data(
 	_ccs_tuner_common_data_t          *data,
 	uint32_t                           version,
 	size_t                            *buffer_size,
@@ -40,7 +40,7 @@ _ccs_deserialize_bin_ccs_random_tuner_data(
 {
 	uintptr_t mem;
 
-	CCS_VALIDATE(_ccs_deserialize_bin_size_ccs_tuner_common_data(
+	CCS_VALIDATE(_ccs_deserialize_bin_ccs_tuner_common_data(
 		&data->common_data, version, buffer_size, buffer, opts));
 	CCS_VALIDATE(_ccs_deserialize_bin_size(
 		&data->size_history, buffer_size, buffer));
@@ -104,7 +104,7 @@ _ccs_deserialize_bin_random_tuner(
 	_ccs_object_deserialize_options_t *opts)
 {
 	_ccs_random_tuner_data_mock_t data = {
-		{(ccs_tuner_type_t)0, NULL, NULL, NULL}, 0, 0, NULL, NULL};
+		{(ccs_tuner_type_t)0, NULL, NULL, NULL, NULL}, 0, 0, NULL, NULL};
 	_ccs_random_tuner_data_clone_t *odata = NULL;
 	ccs_result_t                    res   = CCS_RESULT_SUCCESS;
 	CCS_VALIDATE_ERR_GOTO(
@@ -173,7 +173,11 @@ _ccs_deserialize_bin_user_defined_tuner(
 	_ccs_object_deserialize_options_t *opts)
 {
 	_ccs_user_defined_tuner_data_mock_t data = {
-		{{(ccs_tuner_type_t)0, NULL, NULL, NULL}, 0, 0, NULL, NULL},
+		{{(ccs_tuner_type_t)0, NULL, NULL, NULL, NULL},
+		 0,
+		 0,
+		 NULL,
+		 NULL},
 		{0, NULL}};
 	ccs_user_defined_tuner_vector_t *vector =
 		(ccs_user_defined_tuner_vector_t *)opts->vector;

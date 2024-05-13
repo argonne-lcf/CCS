@@ -8,7 +8,8 @@ static ccs_result_t
 _ccs_features_del(ccs_object_t object)
 {
 	ccs_features_t features = (ccs_features_t)object;
-	ccs_release_object(features->data->feature_space);
+	if (features->data->feature_space)
+		ccs_release_object(features->data->feature_space);
 	return CCS_RESULT_SUCCESS;
 }
 
@@ -79,38 +80,33 @@ static _ccs_features_ops_t _features_ops = {
 	&_ccs_features_cmp};
 
 ccs_result_t
-ccs_create_features(
+_ccs_create_features(
 	ccs_feature_space_t feature_space,
 	size_t              num_values,
 	ccs_datum_t        *values,
 	ccs_features_t     *features_ret)
 {
-	CCS_CHECK_OBJ(feature_space, CCS_OBJECT_TYPE_FEATURE_SPACE);
-	CCS_CHECK_PTR(features_ret);
-	CCS_CHECK_ARY(num_values, values);
-	ccs_result_t err;
 	size_t       num_parameters = feature_space->data->num_parameters;
-	CCS_REFUTE(
-		values && num_parameters != num_values,
-		CCS_RESULT_ERROR_INVALID_VALUE);
-	uintptr_t mem = (uintptr_t)calloc(
-		1, sizeof(struct _ccs_features_s) +
-			   sizeof(struct _ccs_features_data_s) +
-			   num_parameters * sizeof(ccs_datum_t));
+	ccs_result_t err            = CCS_RESULT_SUCCESS;
+	uintptr_t    mem            = (uintptr_t)calloc(
+                1, sizeof(struct _ccs_features_s) +
+                           sizeof(struct _ccs_features_data_s) +
+                           num_parameters * sizeof(ccs_datum_t));
 	CCS_REFUTE(!mem, CCS_RESULT_ERROR_OUT_OF_MEMORY);
-	CCS_VALIDATE_ERR_GOTO(err, ccs_retain_object(feature_space), errmem);
+	uintptr_t      mem_orig = mem;
 	ccs_features_t feat;
 	feat = (ccs_features_t)mem;
+	mem += sizeof(struct _ccs_features_s);
 	_ccs_object_init(
 		&(feat->obj), CCS_OBJECT_TYPE_FEATURES,
 		(_ccs_object_ops_t *)&_features_ops);
-	feat->data                = (struct _ccs_features_data_s
-                              *)(mem + sizeof(struct _ccs_features_s));
-	feat->data->num_values    = num_parameters;
+	feat->data = (struct _ccs_features_data_s *)mem;
+	mem += sizeof(struct _ccs_features_data_s);
+	feat->data->num_values = num_parameters;
+	feat->data->values     = (ccs_datum_t *)mem;
+	mem += sizeof(ccs_datum_t) * num_parameters;
+	CCS_VALIDATE_ERR_GOTO(err, ccs_retain_object(feature_space), errinit);
 	feat->data->feature_space = feature_space;
-	feat->data->values =
-		(ccs_datum_t
-			 *)(mem + sizeof(struct _ccs_features_s) + sizeof(struct _ccs_features_data_s));
 	if (values) {
 		memcpy(feat->data->values, values,
 		       num_parameters * sizeof(ccs_datum_t));
@@ -122,16 +118,33 @@ ccs_create_features(
 						(ccs_context_t)feature_space, i,
 						values[i],
 						feat->data->values + i),
-					errfs);
+					errinit);
 	}
 	*features_ret = feat;
 	return CCS_RESULT_SUCCESS;
-errfs:
+errinit:
+	_ccs_features_del(feat);
 	_ccs_object_deinit(&(feat->obj));
-	ccs_release_object(feature_space);
-errmem:
-	free((void *)mem);
+	free((void *)mem_orig);
 	return err;
+}
+
+ccs_result_t
+ccs_create_features(
+	ccs_feature_space_t feature_space,
+	size_t              num_values,
+	ccs_datum_t        *values,
+	ccs_features_t     *features_ret)
+{
+	CCS_CHECK_OBJ(feature_space, CCS_OBJECT_TYPE_FEATURE_SPACE);
+	CCS_CHECK_PTR(features_ret);
+	CCS_CHECK_ARY(num_values, values);
+	size_t num_parameters = feature_space->data->num_parameters;
+	CCS_REFUTE(
+		num_parameters != num_values, CCS_RESULT_ERROR_INVALID_VALUE);
+	CCS_VALIDATE(_ccs_create_features(
+		feature_space, num_values, values, features_ret));
+	return CCS_RESULT_SUCCESS;
 }
 
 ccs_result_t

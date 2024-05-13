@@ -6,37 +6,37 @@ import cconfigspace as ccs
 from math import sin
 from random import choice
 
-class TestFeaturesTuner(unittest.TestCase):
+class TestTuner(unittest.TestCase):
   def create_tuning_problem(self):
+    f1 = ccs.CategoricalParameter(values = [True, False])
+    fs = ccs.FeatureSpace(name = "fspace", parameters = [f1])
     h1 = ccs.NumericalParameter.Float(lower = -5.0, upper = 5.0)
     h2 = ccs.NumericalParameter.Float(lower = -5.0, upper = 5.0)
     h3 = ccs.NumericalParameter.Float(lower = -5.0, upper = 5.0)
-    cs = ccs.ConfigurationSpace(name = "cspace", parameters = [h1, h2, h3])
+    cs = ccs.ConfigurationSpace(name = "cspace", feature_space = fs, parameters = [h1, h2, h3])
     v1 = ccs.NumericalParameter.Float(lower = float('-inf'), upper = float('inf'))
     v2 = ccs.NumericalParameter.Float(lower = float('-inf'), upper = float('inf'))
     e1 = ccs.Expression.Variable(parameter = v1)
     e2 = ccs.Expression.Variable(parameter = v2)
     os = ccs.ObjectiveSpace(name = "ospace", search_space = cs, parameters = [v1, v2], objectives = [e1, e2])
-    f1 = ccs.CategoricalParameter(values = [True, False])
-    fs = ccs.FeatureSpace(name = "fspace", parameters = [f1])
     return (fs, os)
 
   def test_create_random(self):
     (fs, os) = self.create_tuning_problem()
-    t = ccs.RandomFeaturesTuner(name = "tuner", feature_space = fs, objective_space = os)
+    t = ccs.RandomTuner(name = "tuner", objective_space = os)
     t2 = ccs.Object.from_handle(t.handle)
     self.assertEqual("tuner", t.name)
-    self.assertEqual(ccs.FeaturesTunerType.RANDOM, t.type)
+    self.assertEqual(ccs.TunerType.RANDOM, t.type)
     func = lambda x, y, z: [(x-2)*(x-2), sin(z+y)]
     features_on = ccs.Features(feature_space = fs, values = [True])
     features_off = ccs.Features(feature_space = fs, values = [False])
-    evals = [ccs.FeaturesEvaluation(objective_space = os, configuration = c, features = features_on, values = func(*(c.values))) for c in t.ask(features_on, 50)]
+    evals = [ccs.Evaluation(objective_space = os, configuration = c, values = func(*(c.values))) for c in t.ask(50, features = features_on)]
     t.tell(evals)
-    evals = [ccs.FeaturesEvaluation(objective_space = os, configuration = c, features = features_off, values = func(*(c.values))) for c in t.ask(features_off, 50)]
+    evals = [ccs.Evaluation(objective_space = os, configuration = c, values = func(*(c.values))) for c in t.ask(50, features = features_off)]
     t.tell(evals)
     hist = t.history()
     self.assertEqual(100, len(hist))
-    evals = [ccs.FeaturesEvaluation(objective_space = os, configuration = c, features = features_on, values = func(*(c.values))) for c in t.ask(features_on, 100)]
+    evals = [ccs.Evaluation(objective_space = os, configuration = c, values = func(*(c.values))) for c in t.ask(100, features = features_on)]
     t.tell(evals)
     self.assertEqual(200, t.history_size())
     self.assertEqual(150, t.history_size(features = features_on))
@@ -77,7 +77,7 @@ class TestFeaturesTuner(unittest.TestCase):
         return (None, 1)
       else:
         cs = tuner.search_space
-        return (cs.samples(count), count)
+        return (cs.samples(count, features = features), count)
 
     def tell(tuner, evaluations):
       tuner.tuner_data.history += evaluations
@@ -119,23 +119,23 @@ class TestFeaturesTuner(unittest.TestCase):
         return choice(optis).configuration
 
     (fs, os) = self.create_tuning_problem()
-    t = ccs.UserDefinedFeaturesTuner(name = "tuner", feature_space = fs, objective_space = os, delete = delete, ask = ask, tell = tell, get_optima = get_optima, get_history = get_history, suggest = suggest, tuner_data = TunerData())
+    t = ccs.UserDefinedTuner(name = "tuner", objective_space = os, delete = delete, ask = ask, tell = tell, get_optima = get_optima, get_history = get_history, suggest = suggest, tuner_data = TunerData())
     t2 = ccs.Object.from_handle(t.handle)
     self.assertEqual("tuner", t.name)
-    self.assertEqual(ccs.FeaturesTunerType.USER_DEFINED, t.type)
+    self.assertEqual(ccs.TunerType.USER_DEFINED, t.type)
     self.assertEqual(fs.handle.value, t.feature_space.handle.value)
     self.assertEqual(os.handle.value, t.objective_space.handle.value)
     self.assertEqual(os.search_space.handle.value, t.search_space.handle.value)
     func = lambda x, y, z: [(x-2)*(x-2), sin(z+y)]
     features_on = ccs.Features(feature_space = fs, values = [True])
     features_off = ccs.Features(feature_space = fs, values = [False])
-    evals = [ccs.FeaturesEvaluation(objective_space = os, configuration = c, features = features_on, values = func(*(c.values))) for c in t.ask(features_on, 50)]
+    evals = [ccs.Evaluation(objective_space = os, configuration = c, values = func(*(c.values))) for c in t.ask(50, features = features_on)]
     t.tell(evals)
-    evals = [ccs.FeaturesEvaluation(objective_space = os, configuration = c, features = features_off, values = func(*(c.values))) for c in t.ask(features_off, 50)]
+    evals = [ccs.Evaluation(objective_space = os, configuration = c, values = func(*(c.values))) for c in t.ask(50, features = features_off)]
     t.tell(evals)
     hist = t.history()
     self.assertEqual(100, len(hist))
-    evals = [ccs.FeaturesEvaluation(objective_space = os, configuration = c, features = features_on, values = func(*(c.values))) for c in t.ask(features_on, 100)]
+    evals = [ccs.Evaluation(objective_space = os, configuration = c, values = func(*(c.values))) for c in t.ask(100, features = features_on)]
     t.tell(evals)
     self.assertEqual(200, t.history_size())
     self.assertEqual(150, t.history_size(features = features_on))
@@ -155,7 +155,7 @@ class TestFeaturesTuner(unittest.TestCase):
     self.assertTrue(t.suggest(features_off) in [x.configuration for x in optims])
     # test serialization
     buff = t.serialize()
-    t_copy = ccs.UserDefinedFeaturesTuner.deserialize(buffer = buff, delete = delete, ask = ask, tell = tell, get_optima = get_optima, get_history = get_history, suggest = suggest, tuner_data = TunerData())
+    t_copy = ccs.UserDefinedTuner.deserialize(buffer = buff, delete = delete, ask = ask, tell = tell, get_optima = get_optima, get_history = get_history, suggest = suggest, tuner_data = TunerData())
     hist = t_copy.history()
     self.assertEqual(200, len(hist))
     optims_2 = t_copy.optima()

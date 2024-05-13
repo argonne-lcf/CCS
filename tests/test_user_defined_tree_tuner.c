@@ -35,7 +35,8 @@ create_tree_tuning_problem(
 	ccs_result_t         err;
 
 	generate_tree(&root, 5, 0);
-	err = ccs_create_static_tree_space("space", root, NULL, tree_space);
+	err = ccs_create_static_tree_space(
+		"space", root, NULL, NULL, tree_space);
 	assert(err == CCS_RESULT_SUCCESS);
 
 	parameter = create_numerical("sum", -CCS_INFINITY, CCS_INFINITY);
@@ -79,10 +80,12 @@ tuner_last_del(ccs_tuner_t tuner)
 ccs_result_t
 tuner_last_ask(
 	ccs_tuner_t                 tuner,
+	ccs_features_t              features,
 	size_t                      num_configurations,
 	ccs_search_configuration_t *configurations,
 	size_t                     *num_configurations_ret)
 {
+	(void)features;
 	if (!configurations) {
 		*num_configurations_ret = 1;
 		return CCS_RESULT_SUCCESS;
@@ -94,7 +97,7 @@ tuner_last_ask(
 	if (err)
 		return err;
 	err = ccs_tree_space_samples(
-		tree_space, NULL, num_configurations,
+		tree_space, NULL, NULL, num_configurations,
 		(ccs_tree_configuration_t *)configurations);
 	if (err)
 		return err;
@@ -129,10 +132,12 @@ tuner_last_tell(
 ccs_result_t
 tuner_last_get_optima(
 	ccs_tuner_t       tuner,
+	ccs_features_t    features,
 	size_t            num_evaluations,
 	ccs_evaluation_t *evaluations,
 	size_t           *num_evaluations_ret)
 {
+	(void)features;
 	if (evaluations) {
 		if (num_evaluations < 1)
 			return CCS_RESULT_ERROR_INVALID_VALUE;
@@ -154,10 +159,12 @@ tuner_last_get_optima(
 ccs_result_t
 tuner_last_get_history(
 	ccs_tuner_t       tuner,
+	ccs_features_t    features,
 	size_t            num_evaluations,
 	ccs_evaluation_t *evaluations,
 	size_t           *num_evaluations_ret)
 {
+	(void)features;
 	if (evaluations) {
 		if (num_evaluations < 1)
 			return CCS_RESULT_ERROR_INVALID_VALUE;
@@ -215,7 +222,7 @@ test(void)
 		ccs_search_configuration_t configuration;
 		ccs_evaluation_t           evaluation;
 		ccs_int_t                  v;
-		err = ccs_tuner_ask(tuner, 1, &configuration, NULL);
+		err = ccs_tuner_ask(tuner, NULL, 1, &configuration, NULL);
 		assert(err == CCS_RESULT_SUCCESS);
 		err = ccs_tree_configuration_get_values(
 			(ccs_tree_configuration_t)configuration, 6, values,
@@ -241,12 +248,12 @@ test(void)
 
 	size_t           count;
 	ccs_evaluation_t history[100];
-	err = ccs_tuner_get_history(tuner, 100, history, &count);
+	err = ccs_tuner_get_history(tuner, NULL, 100, history, &count);
 	assert(err == CCS_RESULT_SUCCESS);
 	assert(count == 1);
 
 	ccs_evaluation_t evaluation;
-	err = ccs_tuner_get_optima(tuner, 1, &evaluation, NULL);
+	err = ccs_tuner_get_optima(tuner, NULL, 1, &evaluation, NULL);
 	assert(err == CCS_RESULT_SUCCESS);
 	assert(last_evaluation == evaluation);
 
@@ -279,11 +286,11 @@ test(void)
 		CCS_DESERIALIZE_OPTION_END);
 	assert(err == CCS_RESULT_SUCCESS);
 
-	err = ccs_tuner_get_history(tuner_copy, 100, history, &count);
+	err = ccs_tuner_get_history(tuner_copy, NULL, 100, history, &count);
 	assert(err == CCS_RESULT_SUCCESS);
 	assert(count == 1);
 
-	err = ccs_tuner_get_optima(tuner_copy, 1, &evaluation, &count);
+	err = ccs_tuner_get_optima(tuner_copy, NULL, 1, &evaluation, &count);
 	assert(err == CCS_RESULT_SUCCESS);
 	assert(count == 1);
 

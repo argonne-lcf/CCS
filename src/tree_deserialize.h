@@ -31,6 +31,7 @@ _ccs_deserialize_bin_ccs_tree_data(
 {
 	_ccs_object_deserialize_options_t new_opts = *opts;
 	new_opts.handle_map                        = NULL;
+	new_opts.map_values                        = CCS_FALSE;
 	CCS_VALIDATE(
 		_ccs_deserialize_bin_size(&data->arity, buffer_size, buffer));
 	CCS_VALIDATE(_ccs_deserialize_bin_ccs_float(
@@ -94,7 +95,7 @@ _ccs_deserialize_bin_tree(
 				res,
 				ccs_tree_set_child(tree, i, data.children[i]),
 				err_tree);
-	if (opts && opts->handle_map)
+	if (opts && opts->map_values && opts->handle_map)
 		CCS_VALIDATE_ERR_GOTO(
 			res,
 			_ccs_object_handle_check_add(

@@ -31,9 +31,7 @@ _ccs_object_deserialize_with_opts(
 #include "configuration_deserialize.h"
 #include "evaluation_deserialize.h"
 #include "features_deserialize.h"
-#include "features_evaluation_deserialize.h"
 #include "tuner_deserialize.h"
-#include "features_tuner_deserialize.h"
 #include "map_deserialize.h"
 #include "tree_deserialize.h"
 #include "tree_space_deserialize.h"
@@ -148,20 +146,10 @@ _ccs_object_deserialize_with_opts_type(
 			(ccs_features_t *)object_ret, format, version,
 			buffer_size, buffer, opts));
 		break;
-	case CCS_OBJECT_TYPE_FEATURES_EVALUATION:
-		CCS_VALIDATE(_ccs_features_evaluation_deserialize(
-			(ccs_features_evaluation_t *)object_ret, format,
-			version, buffer_size, buffer, opts));
-		break;
 	case CCS_OBJECT_TYPE_TUNER:
 		CCS_VALIDATE(_ccs_tuner_deserialize(
 			(ccs_tuner_t *)object_ret, format, version, buffer_size,
 			buffer, opts));
-		break;
-	case CCS_OBJECT_TYPE_FEATURES_TUNER:
-		CCS_VALIDATE(_ccs_features_tuner_deserialize(
-			(ccs_features_tuner_t *)object_ret, format, version,
-			buffer_size, buffer, opts));
 		break;
 	case CCS_OBJECT_TYPE_MAP:
 		CCS_VALIDATE(_ccs_map_deserialize(

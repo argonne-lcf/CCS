@@ -39,14 +39,17 @@ _ccs_serialize_bin_size_ccs_objective_space_data(
 	size_t                          *cum_size,
 	_ccs_object_serialize_options_t *opts)
 {
-	ccs_search_space_t search_space   = data->search_space;
-	size_t             num_parameters = data->num_parameters;
-	ccs_parameter_t   *parameters     = data->parameters;
-	size_t             num_objectives = data->num_objectives;
-	_ccs_objective_t  *objectives     = data->objectives;
+	ccs_feature_space_t feature_space  = data->feature_space;
+	ccs_search_space_t  search_space   = data->search_space;
+	size_t              num_parameters = data->num_parameters;
+	ccs_parameter_t    *parameters     = data->parameters;
+	size_t              num_objectives = data->num_objectives;
+	_ccs_objective_t   *objectives     = data->objectives;
 
 	*cum_size += _ccs_serialize_bin_size_string(data->name);
 
+	*cum_size += _ccs_serialize_bin_size_ccs_object(feature_space);
+	*cum_size += _ccs_serialize_bin_size_ccs_object(search_space);
 	CCS_VALIDATE(search_space->obj.ops->serialize_size(
 		search_space, CCS_SERIALIZE_FORMAT_BINARY, cum_size, opts));
 
@@ -78,15 +81,20 @@ _ccs_serialize_bin_ccs_objective_space_data(
 	char                           **buffer,
 	_ccs_object_serialize_options_t *opts)
 {
-	ccs_search_space_t search_space   = data->search_space;
-	size_t             num_parameters = data->num_parameters;
-	ccs_parameter_t   *parameters     = data->parameters;
-	size_t             num_objectives = data->num_objectives;
-	_ccs_objective_t  *objectives     = data->objectives;
+	ccs_feature_space_t feature_space  = data->feature_space;
+	ccs_search_space_t  search_space   = data->search_space;
+	size_t              num_parameters = data->num_parameters;
+	ccs_parameter_t    *parameters     = data->parameters;
+	size_t              num_objectives = data->num_objectives;
+	_ccs_objective_t   *objectives     = data->objectives;
 
 	CCS_VALIDATE(
 		_ccs_serialize_bin_string(data->name, buffer_size, buffer));
 
+	CCS_VALIDATE(_ccs_serialize_bin_ccs_object(
+		feature_space, buffer_size, buffer));
+	CCS_VALIDATE(_ccs_serialize_bin_ccs_object(
+		search_space, buffer_size, buffer));
 	CCS_VALIDATE(search_space->obj.ops->serialize(
 		search_space, CCS_SERIALIZE_FORMAT_BINARY, buffer_size, buffer,
 		opts));
@@ -284,7 +292,12 @@ ccs_create_objective_space(
 		errparams);
 	CCS_VALIDATE_ERR_GOTO(err, ccs_retain_object(search_space), errparams);
 	obj_space->data->search_space = search_space;
-	*objective_space_ret          = obj_space;
+	CCS_VALIDATE_ERR_GOTO(
+		err,
+		_ccs_search_space_get_feature_space(
+			search_space, &obj_space->data->feature_space),
+		errparams);
+	*objective_space_ret = obj_space;
 	return CCS_RESULT_SUCCESS;
 errparams:
 	_ccs_objective_space_del(obj_space);
@@ -331,7 +344,7 @@ ccs_objective_space_check_evaluation(
 	ccs_bool_t           *is_valid_ret)
 {
 	CCS_CHECK_OBJ(objective_space, CCS_OBJECT_TYPE_OBJECTIVE_SPACE);
-	CCS_CHECK_EVALUATION(evaluation);
+	CCS_CHECK_OBJ(evaluation, CCS_OBJECT_TYPE_EVALUATION);
 	CCS_REFUTE(
 		evaluation->data->objective_space != objective_space,
 		CCS_RESULT_ERROR_INVALID_EVALUATION);

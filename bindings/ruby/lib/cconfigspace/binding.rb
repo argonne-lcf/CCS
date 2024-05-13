@@ -9,7 +9,7 @@ module CCS
 
   class Binding < Object
     include Comparable
-    add_property :hash, :ccs_hash_t, :ccs_binding_hash, memoize: false
+    add_property :hash, :ccs_hash_t, :ccs_binding_hash, memoize: true
     add_handle_property :context, :ccs_context_t, :ccs_binding_get_context, memoize: true
 
     def value(parameter)

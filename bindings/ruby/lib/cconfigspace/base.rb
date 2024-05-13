@@ -106,9 +106,7 @@ module CCS
   typedef :ccs_object_t, :ccs_features_t
   typedef :ccs_object_t, :ccs_objective_space_t
   typedef :ccs_object_t, :ccs_evaluation_t
-  typedef :ccs_object_t, :ccs_features_evaluation_t
   typedef :ccs_object_t, :ccs_tuner_t
-  typedef :ccs_object_t, :ccs_features_tuner_t
   typedef :ccs_object_t, :ccs_map_t
   typedef :ccs_object_t, :ccs_error_stack_t
   typedef :ccs_object_t, :ccs_tree_t
@@ -131,9 +129,7 @@ module CCS
     alias read_ccs_features_t read_ccs_object_t
     alias read_ccs_objective_space_t read_ccs_object_t
     alias read_ccs_evaluation_t read_ccs_object_t
-    alias read_ccs_features_evaluation_t read_ccs_object_t
     alias read_ccs_tuner_t read_ccs_object_t
-    alias read_ccs_features_tuner_t read_ccs_object_t
     alias read_ccs_map_t read_ccs_object_t
     alias read_ccs_error_stack_t read_ccs_object_t
     alias read_ccs_tree_t read_ccs_object_t
@@ -153,8 +149,6 @@ module CCS
     :CCS_OBJECT_TYPE_TUNER,
     :CCS_OBJECT_TYPE_FEATURE_SPACE,
     :CCS_OBJECT_TYPE_FEATURES,
-    :CCS_OBJECT_TYPE_FEATURES_EVALUATION,
-    :CCS_OBJECT_TYPE_FEATURES_TUNER,
     :CCS_OBJECT_TYPE_MAP,
     :CCS_OBJECT_TYPE_ERROR_STACK,
     :CCS_OBJECT_TYPE_TREE,
@@ -185,16 +179,15 @@ module CCS
     :CCS_RESULT_ERROR_UNSUPPORTED_OPERATION,      -18,
     :CCS_RESULT_ERROR_INVALID_EVALUATION,         -19,
     :CCS_RESULT_ERROR_INVALID_FEATURES,           -20,
-    :CCS_RESULT_ERROR_INVALID_FEATURES_TUNER,     -21,
-    :CCS_RESULT_ERROR_INVALID_FILE_PATH,          -22,
-    :CCS_RESULT_ERROR_NOT_ENOUGH_DATA,            -23,
-    :CCS_RESULT_ERROR_DUPLICATE_HANDLE,           -24,
-    :CCS_RESULT_ERROR_INVALID_HANDLE,             -25,
-    :CCS_RESULT_ERROR_SYSTEM,                     -26,
-    :CCS_RESULT_ERROR_EXTERNAL,                   -27,
-    :CCS_RESULT_ERROR_INVALID_TREE,               -28,
-    :CCS_RESULT_ERROR_INVALID_TREE_SPACE,         -29,
-    :CCS_RESULT_ERROR_INVALID_DISTRIBUTION_SPACE, -30 ]
+    :CCS_RESULT_ERROR_INVALID_FILE_PATH,          -21,
+    :CCS_RESULT_ERROR_NOT_ENOUGH_DATA,            -22,
+    :CCS_RESULT_ERROR_DUPLICATE_HANDLE,           -23,
+    :CCS_RESULT_ERROR_INVALID_HANDLE,             -24,
+    :CCS_RESULT_ERROR_SYSTEM,                     -25,
+    :CCS_RESULT_ERROR_EXTERNAL,                   -26,
+    :CCS_RESULT_ERROR_INVALID_TREE,               -27,
+    :CCS_RESULT_ERROR_INVALID_TREE_SPACE,         -28,
+    :CCS_RESULT_ERROR_INVALID_DISTRIBUTION_SPACE, -29 ]
 
   class MemoryPointer
     def read_ccs_object_type_t
@@ -579,9 +572,7 @@ module CCS
         CCS_OBJECT_TYPE_FEATURES: CCS::Features,
         CCS_OBJECT_TYPE_OBJECTIVE_SPACE: CCS::ObjectiveSpace,
         CCS_OBJECT_TYPE_EVALUATION: CCS::Evaluation,
-        CCS_OBJECT_TYPE_FEATURES_EVALUATION: CCS::FeaturesEvaluation,
         CCS_OBJECT_TYPE_TUNER: CCS::Tuner,
-        CCS_OBJECT_TYPE_FEATURES_TUNER: CCS::FeaturesTuner,
         CCS_OBJECT_TYPE_MAP: CCS::Map,
         CCS_OBJECT_TYPE_ERROR_STACK: CCS::ErrorStack,
         CCS_OBJECT_TYPE_TREE: CCS::Tree,
@@ -617,6 +608,19 @@ module CCS
       src = ""
       src << "def #{name}\n"
       src << "  @#{name} ||= begin\n" if memoize
+      src << "  ptr = MemoryPointer::new(:#{type})\n"
+      src << "  CCS.error_check CCS.#{accessor}(@handle, ptr)\n"
+      src << "  Object::from_handle(ptr.read_#{type})\n"
+      src << "  end\n" if memoize
+      src << "end\n"
+      class_eval src
+    end
+
+    def self.add_optional_handle_property(name, type, accessor, memoize: false)
+      src = ""
+      src << "def #{name}\n"
+      src << "  return @#{name} if instance_variable_defined?(:@#{name})\n" if memoize
+      src << "  @#{name} = begin\n" if memoize
       src << "  ptr = MemoryPointer::new(:#{type})\n"
       src << "  CCS.error_check CCS.#{accessor}(@handle, ptr)\n"
       src << "  Object::from_handle(ptr.read_#{type})\n"

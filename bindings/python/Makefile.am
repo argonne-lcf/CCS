@@ -18,9 +18,7 @@ EXTRA_DIST = \
 	cconfigspace/features.py \
 	cconfigspace/interval.py \
 	cconfigspace/objective_space.py \
-	cconfigspace/features_evaluation.py \
 	cconfigspace/binding.py \
-	cconfigspace/features_tuner.py \
 	cconfigspace/tuner.py \
 	cconfigspace/base.py \
 	cconfigspace/evaluation.py \

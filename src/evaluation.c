@@ -125,6 +125,116 @@ _ccs_evaluation_serialize(
 	return CCS_RESULT_SUCCESS;
 }
 
+static ccs_result_t
+_ccs_evaluation_hash(ccs_evaluation_t evaluation, ccs_hash_t *hash_ret)
+{
+	_ccs_evaluation_data_t *data = evaluation->data;
+	ccs_hash_t              h, ht;
+	CCS_VALIDATE(_ccs_binding_hash((ccs_binding_t)evaluation, &h));
+	CCS_VALIDATE(_ccs_search_configuration_hash(data->configuration, &ht));
+	h = _hash_combine(h, ht);
+	HASH_JEN(&(data->result), sizeof(data->result), ht);
+	h         = _hash_combine(h, ht);
+	*hash_ret = h;
+	return CCS_RESULT_SUCCESS;
+}
+
+static ccs_result_t
+_ccs_evaluation_cmp(
+	ccs_evaluation_t evaluation,
+	ccs_evaluation_t other,
+	int             *cmp_ret)
+{
+	_ccs_evaluation_data_t *data       = evaluation->data;
+	_ccs_evaluation_data_t *other_data = other->data;
+	*cmp_ret = data->result < other_data->result ? -1 :
+		   data->result > other_data->result ? 1 :
+						       0;
+	if (*cmp_ret)
+		return CCS_RESULT_SUCCESS;
+	CCS_VALIDATE(_ccs_search_configuration_cmp(
+		data->configuration, other_data->configuration, cmp_ret));
+	if (*cmp_ret)
+		return CCS_RESULT_SUCCESS;
+	CCS_VALIDATE(_ccs_binding_cmp(
+		(ccs_binding_t)evaluation, (ccs_binding_t)other, cmp_ret));
+	return CCS_RESULT_SUCCESS;
+}
+
+static int
+_numeric_compare(const ccs_datum_t *a, const ccs_datum_t *b)
+{
+	if (a->type == CCS_DATA_TYPE_FLOAT) {
+		return a->value.f < b->value.f ? -1 :
+		       a->value.f > b->value.f ? 1 :
+						 0;
+	} else {
+		return a->value.i < b->value.i ? -1 :
+		       a->value.i > b->value.i ? 1 :
+						 0;
+	}
+}
+
+static ccs_result_t
+_ccs_evaluation_compare(
+	ccs_evaluation_t  evaluation,
+	ccs_evaluation_t  other_evaluation,
+	ccs_comparison_t *result_ret)
+{
+	size_t         count;
+	int            eql;
+	ccs_features_t features, other_features;
+	CCS_VALIDATE(_ccs_search_configuration_get_features(
+		evaluation->data->configuration, &features));
+	CCS_VALIDATE(_ccs_search_configuration_get_features(
+		other_evaluation->data->configuration, &other_features));
+	if (features != other_features) {
+		CCS_VALIDATE(_ccs_binding_cmp(
+			(ccs_binding_t)features, (ccs_binding_t)other_features,
+			&eql));
+		if (0 != eql) {
+			*result_ret = CCS_COMPARISON_NOT_COMPARABLE;
+			return CCS_RESULT_SUCCESS;
+		}
+	}
+	CCS_VALIDATE(ccs_objective_space_get_objectives(
+		evaluation->data->objective_space, 0, NULL, NULL, &count));
+	*result_ret = CCS_COMPARISON_EQUIVALENT;
+	for (size_t i = 0; i < count; i++) {
+		ccs_expression_t     expression;
+		ccs_objective_type_t type;
+		ccs_datum_t          values[2];
+		int                  cmp;
+
+		CCS_VALIDATE(ccs_objective_space_get_objective(
+			evaluation->data->objective_space, i, &expression,
+			&type));
+		CCS_VALIDATE(ccs_expression_eval(
+			expression, 1, (ccs_binding_t *)&evaluation, values));
+		CCS_VALIDATE(ccs_expression_eval(
+			expression, 1, (ccs_binding_t *)&other_evaluation,
+			values + 1));
+		if ((values[0].type != CCS_DATA_TYPE_INT &&
+		     values[0].type != CCS_DATA_TYPE_FLOAT) ||
+		    values[0].type != values[1].type) {
+			*result_ret = CCS_COMPARISON_NOT_COMPARABLE;
+			return CCS_RESULT_SUCCESS;
+		}
+		cmp = _numeric_compare(values, values + 1);
+		if (cmp) {
+			if (type == CCS_OBJECTIVE_TYPE_MAXIMIZE)
+				cmp = -cmp;
+			if (*result_ret == CCS_COMPARISON_EQUIVALENT)
+				*result_ret = (ccs_comparison_t)cmp;
+			else if (*result_ret != cmp) {
+				*result_ret = CCS_COMPARISON_NOT_COMPARABLE;
+				return CCS_RESULT_SUCCESS;
+			}
+		}
+	}
+	return CCS_RESULT_SUCCESS;
+}
+
 static _ccs_evaluation_ops_t _evaluation_ops = {
 	{&_ccs_evaluation_del, &_ccs_evaluation_serialize_size,
 	 &_ccs_evaluation_serialize},
@@ -205,7 +315,7 @@ ccs_evaluation_get_objective_space(
 	ccs_evaluation_t       evaluation,
 	ccs_objective_space_t *objective_space_ret)
 {
-	CCS_CHECK_EVALUATION(evaluation);
+	CCS_CHECK_OBJ(evaluation, CCS_OBJECT_TYPE_EVALUATION);
 	CCS_CHECK_PTR(objective_space_ret);
 	*objective_space_ret = evaluation->data->objective_space;
 	return CCS_RESULT_SUCCESS;
@@ -216,7 +326,7 @@ ccs_evaluation_get_result(
 	ccs_evaluation_t         evaluation,
 	ccs_evaluation_result_t *result_ret)
 {
-	CCS_CHECK_EVALUATION(evaluation);
+	CCS_CHECK_OBJ(evaluation, CCS_OBJECT_TYPE_EVALUATION);
 	CCS_CHECK_PTR(result_ret);
 	*result_ret = evaluation->data->result;
 	return CCS_RESULT_SUCCESS;
@@ -227,16 +337,28 @@ ccs_evaluation_get_configuration(
 	ccs_evaluation_t            evaluation,
 	ccs_search_configuration_t *configuration_ret)
 {
-	CCS_CHECK_EVALUATION(evaluation);
+	CCS_CHECK_OBJ(evaluation, CCS_OBJECT_TYPE_EVALUATION);
 	CCS_CHECK_PTR(configuration_ret);
 	*configuration_ret = evaluation->data->configuration;
 	return CCS_RESULT_SUCCESS;
 }
 
 ccs_result_t
+ccs_evaluation_get_features(
+	ccs_evaluation_t evaluation,
+	ccs_features_t  *features_ret)
+{
+	CCS_CHECK_OBJ(evaluation, CCS_OBJECT_TYPE_EVALUATION);
+	CCS_CHECK_PTR(features_ret);
+	CCS_VALIDATE(_ccs_search_configuration_get_features(
+		evaluation->data->configuration, features_ret));
+	return CCS_RESULT_SUCCESS;
+}
+
+ccs_result_t
 ccs_evaluation_check(ccs_evaluation_t evaluation, ccs_bool_t *is_valid_ret)
 {
-	CCS_CHECK_EVALUATION(evaluation);
+	CCS_CHECK_OBJ(evaluation, CCS_OBJECT_TYPE_EVALUATION);
 	CCS_VALIDATE(ccs_objective_space_check_evaluation(
 		evaluation->data->objective_space, evaluation, is_valid_ret));
 	return CCS_RESULT_SUCCESS;
@@ -248,7 +370,7 @@ ccs_evaluation_get_objective_value(
 	size_t           index,
 	ccs_datum_t     *value_ret)
 {
-	CCS_CHECK_EVALUATION(evaluation);
+	CCS_CHECK_OBJ(evaluation, CCS_OBJECT_TYPE_EVALUATION);
 	CCS_CHECK_PTR(value_ret);
 	ccs_expression_t     expression;
 	ccs_objective_type_t type;
@@ -266,7 +388,7 @@ ccs_evaluation_get_objective_values(
 	ccs_datum_t     *values,
 	size_t          *num_values_ret)
 {
-	CCS_CHECK_EVALUATION(evaluation);
+	CCS_CHECK_OBJ(evaluation, CCS_OBJECT_TYPE_EVALUATION);
 	CCS_CHECK_ARY(num_values, values);
 	CCS_REFUTE(!values && !num_values_ret, CCS_RESULT_ERROR_INVALID_VALUE);
 	size_t count;
@@ -299,8 +421,8 @@ ccs_evaluation_compare(
 	ccs_evaluation_t  other_evaluation,
 	ccs_comparison_t *result_ret)
 {
-	CCS_CHECK_EVALUATION(evaluation);
-	CCS_CHECK_EVALUATION(other_evaluation);
+	CCS_CHECK_OBJ(evaluation, CCS_OBJECT_TYPE_EVALUATION);
+	CCS_CHECK_OBJ(other_evaluation, CCS_OBJECT_TYPE_EVALUATION);
 	CCS_REFUTE(
 		evaluation->obj.type != other_evaluation->obj.type,
 		CCS_RESULT_ERROR_INVALID_OBJECT);

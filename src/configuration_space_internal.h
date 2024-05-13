@@ -32,6 +32,7 @@ struct _ccs_configuration_space_data_s {
 	size_t                       num_forbidden_clauses;
 	ccs_expression_t            *forbidden_clauses;
 	ccs_rng_t                    rng;
+	ccs_feature_space_t          feature_space;
 	ccs_distribution_space_t     default_distribution_space;
 };
 

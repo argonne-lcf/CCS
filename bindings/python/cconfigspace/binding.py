@@ -98,10 +98,13 @@ class Binding(Object):
 
   @property
   def hash(self):
+    if hasattr(self, "_hash"):
+      return self._hash
     v = ccs_hash()
     res = ccs_binding_hash(self.handle, ct.byref(v))
     Error.check(res)
-    return self.value
+    self._hash = v.value
+    return self._hash
 
   def __hash__(self):
     return self.hash

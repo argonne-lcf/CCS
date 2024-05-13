@@ -2,8 +2,11 @@
 #include "configuration_space_internal.h"
 #include "distribution_space_internal.h"
 #include "configuration_internal.h"
+#include "feature_space_internal.h"
+#include "features_internal.h"
 #include "distribution_internal.h"
 #include "expression_internal.h"
+#include "parameter_internal.h"
 #include "rng_internal.h"
 #include "utlist.h"
 #include "utarray.h"
@@ -36,13 +39,16 @@ _ccs_configuration_space_del(ccs_object_t object)
 		if (data->forbidden_clauses[i])
 			ccs_release_object(data->forbidden_clauses[i]);
 
-	HASH_CLEAR(hh_name, configuration_space->data->name_hash);
-	HASH_CLEAR(hh_handle, configuration_space->data->handle_hash);
-	ccs_release_object(configuration_space->data->rng);
-	if (configuration_space->data->default_distribution_space) {
+	HASH_CLEAR(hh_name, data->name_hash);
+	HASH_CLEAR(hh_handle, data->handle_hash);
+	if (data->rng)
+		ccs_release_object(data->rng);
+	if (data->feature_space)
+		ccs_release_object(data->feature_space);
+	if (data->default_distribution_space) {
 		_ccs_distribution_space_del_no_release(
-			configuration_space->data->default_distribution_space);
-		free(configuration_space->data->default_distribution_space);
+			data->default_distribution_space);
+		free(data->default_distribution_space);
 	}
 	return CCS_RESULT_SUCCESS;
 }
@@ -65,6 +71,13 @@ _ccs_serialize_bin_size_ccs_configuration_space_data(
 
 	*cum_size += _ccs_serialize_bin_size_size(condition_count);
 	*cum_size += _ccs_serialize_bin_size_size(data->num_forbidden_clauses);
+
+	/* feature space */
+	*cum_size += _ccs_serialize_bin_size_ccs_object(data->feature_space);
+	if (data->feature_space)
+		CCS_VALIDATE(data->feature_space->obj.ops->serialize_size(
+			data->feature_space, CCS_SERIALIZE_FORMAT_BINARY,
+			cum_size, opts));
 
 	/* rng */
 	CCS_VALIDATE(data->rng->obj.ops->serialize_size(
@@ -121,6 +134,14 @@ _ccs_serialize_bin_ccs_configuration_space_data(
 
 	CCS_VALIDATE(_ccs_serialize_bin_size(
 		data->num_forbidden_clauses, buffer_size, buffer));
+
+	/* feature space */
+	CCS_VALIDATE(_ccs_serialize_bin_ccs_object(
+		data->feature_space, buffer_size, buffer));
+	if (data->feature_space)
+		CCS_VALIDATE(data->feature_space->obj.ops->serialize(
+			data->feature_space, CCS_SERIALIZE_FORMAT_BINARY,
+			buffer_size, buffer, opts));
 
 	/* rng */
 	CCS_VALIDATE(data->rng->obj.ops->serialize(
@@ -282,7 +303,7 @@ _ccs_configuration_space_add_forbidden_clauses(
 	ccs_configuration_t default_config;
 	ccs_result_t        err = CCS_RESULT_SUCCESS;
 	CCS_VALIDATE(ccs_configuration_space_get_default_configuration(
-		configuration_space, &default_config));
+		configuration_space, NULL, &default_config));
 	for (size_t i = 0; i < num_expressions; i++)
 		CCS_VALIDATE_ERR_GOTO(
 			err,
@@ -505,6 +526,7 @@ ccs_create_configuration_space(
 	ccs_expression_t          *conditions,
 	size_t                     num_forbidden_clauses,
 	ccs_expression_t          *forbidden_clauses,
+	ccs_feature_space_t        feature_space,
 	ccs_rng_t                  rng,
 	ccs_configuration_space_t *configuration_space_ret)
 {
@@ -522,6 +544,8 @@ ccs_create_configuration_space(
 	CCS_CHECK_ARY(num_forbidden_clauses, forbidden_clauses);
 	for (size_t i = 0; i < num_forbidden_clauses; i++)
 		CCS_CHECK_OBJ(forbidden_clauses[i], CCS_OBJECT_TYPE_EXPRESSION);
+	if (feature_space)
+		CCS_CHECK_OBJ(feature_space, CCS_OBJECT_TYPE_FEATURE_SPACE);
 	if (rng)
 		CCS_CHECK_OBJ(rng, CCS_OBJECT_TYPE_RNG);
 
@@ -538,11 +562,7 @@ ccs_create_configuration_space(
                         sizeof(ccs_expression_t) * num_forbidden_clauses +
                         strlen(name) + 1);
 	CCS_REFUTE(!mem, CCS_RESULT_ERROR_OUT_OF_MEMORY);
-	uintptr_t mem_orig = mem;
-	if (rng)
-		CCS_VALIDATE_ERR_GOTO(err, ccs_retain_object(rng), errmem);
-	else
-		CCS_VALIDATE_ERR_GOTO(err, ccs_create_rng(&rng), errmem);
+	uintptr_t                 mem_orig = mem;
 
 	ccs_configuration_space_t config_space;
 	config_space = (ccs_configuration_space_t)mem;
@@ -569,7 +589,16 @@ ccs_create_configuration_space(
 	config_space->data->name                  = (const char *)mem;
 	config_space->data->num_parameters        = num_parameters;
 	config_space->data->num_forbidden_clauses = num_forbidden_clauses;
-	config_space->data->rng                   = rng;
+	if (rng)
+		CCS_VALIDATE_ERR_GOTO(err, ccs_retain_object(rng), errparams);
+	else
+		CCS_VALIDATE_ERR_GOTO(err, ccs_create_rng(&rng), errparams);
+	config_space->data->rng = rng;
+	if (feature_space)
+		CCS_VALIDATE_ERR_GOTO(
+			err, ccs_retain_object(feature_space), errparams);
+	config_space->data->feature_space = feature_space;
+
 	strcpy((char *)(config_space->data->name), name);
 	CCS_VALIDATE_ERR_GOTO(
 		err,
@@ -602,7 +631,6 @@ ccs_create_configuration_space(
 errparams:
 	_ccs_configuration_space_del(config_space);
 	_ccs_object_deinit(&(config_space->obj));
-errmem:
 	free((void *)mem_orig);
 	return err;
 }
@@ -617,6 +645,17 @@ ccs_configuration_space_get_rng(
 	CCS_CHECK_OBJ(configuration_space, CCS_OBJECT_TYPE_CONFIGURATION_SPACE);
 	CCS_CHECK_PTR(rng_ret);
 	*rng_ret = configuration_space->data->rng;
+	return CCS_RESULT_SUCCESS;
+}
+
+ccs_result_t
+ccs_configuration_space_get_feature_space(
+	ccs_configuration_space_t configuration_space,
+	ccs_feature_space_t      *feature_space_ret)
+{
+	CCS_CHECK_OBJ(configuration_space, CCS_OBJECT_TYPE_CONFIGURATION_SPACE);
+	CCS_CHECK_PTR(feature_space_ret);
+	*feature_space_ret = configuration_space->data->feature_space;
 	return CCS_RESULT_SUCCESS;
 }
 
@@ -647,14 +686,22 @@ _set_actives(
 ccs_result_t
 ccs_configuration_space_get_default_configuration(
 	ccs_configuration_space_t configuration_space,
+	ccs_features_t            features,
 	ccs_configuration_t      *configuration_ret)
 {
 	CCS_CHECK_OBJ(configuration_space, CCS_OBJECT_TYPE_CONFIGURATION_SPACE);
+	if (features) {
+		CCS_CHECK_OBJ(features, CCS_OBJECT_TYPE_FEATURES);
+		CCS_REFUTE(
+			features->data->feature_space !=
+				configuration_space->data->feature_space,
+			CCS_RESULT_ERROR_INVALID_FEATURES);
+	}
 	CCS_CHECK_PTR(configuration_ret);
 	ccs_result_t        err;
 	ccs_configuration_t config;
 	CCS_VALIDATE(_ccs_create_configuration(
-		configuration_space, 0, NULL, &config));
+		configuration_space, features, 0, NULL, &config));
 	ccs_parameter_t *parameters = configuration_space->data->parameters;
 	ccs_datum_t     *values     = config->data->values;
 	for (size_t i = 0; i < configuration_space->data->num_parameters; i++)
@@ -808,6 +855,7 @@ static inline ccs_result_t
 _ccs_configuration_space_samples(
 	ccs_configuration_space_t configuration_space,
 	ccs_distribution_space_t  distrib_space,
+	ccs_features_t            features,
 	ccs_rng_t                 rng,
 	size_t                    num_configurations,
 	ccs_configuration_t      *configurations)
@@ -837,7 +885,8 @@ _ccs_configuration_space_samples(
 			CCS_VALIDATE_ERR_GOTO(
 				err,
 				_ccs_create_configuration(
-					configuration_space, 0, NULL, &config),
+					configuration_space, features, 0, NULL,
+					&config),
 				end);
 		CCS_VALIDATE_ERR_GOTO(
 			err,
@@ -868,6 +917,7 @@ ccs_result_t
 ccs_configuration_space_sample(
 	ccs_configuration_space_t configuration_space,
 	ccs_distribution_space_t  distribution_space,
+	ccs_features_t            features,
 	ccs_rng_t                 rng,
 	ccs_configuration_t      *configuration_ret)
 {
@@ -880,11 +930,18 @@ ccs_configuration_space_sample(
 				configuration_space,
 			CCS_RESULT_ERROR_INVALID_DISTRIBUTION_SPACE);
 	}
+	if (features) {
+		CCS_CHECK_OBJ(features, CCS_OBJECT_TYPE_FEATURES);
+		CCS_REFUTE(
+			features->data->feature_space !=
+				configuration_space->data->feature_space,
+			CCS_RESULT_ERROR_INVALID_FEATURES);
+	}
 	if (rng)
 		CCS_CHECK_OBJ(rng, CCS_OBJECT_TYPE_RNG);
 	CCS_CHECK_PTR(configuration_ret);
 	CCS_VALIDATE(_ccs_configuration_space_samples(
-		configuration_space, distribution_space, rng, 1,
+		configuration_space, distribution_space, features, rng, 1,
 		configuration_ret));
 	return CCS_RESULT_SUCCESS;
 }
@@ -893,6 +950,7 @@ ccs_result_t
 ccs_configuration_space_samples(
 	ccs_configuration_space_t configuration_space,
 	ccs_distribution_space_t  distribution_space,
+	ccs_features_t            features,
 	ccs_rng_t                 rng,
 	size_t                    num_configurations,
 	ccs_configuration_t      *configurations)
@@ -906,13 +964,20 @@ ccs_configuration_space_samples(
 				configuration_space,
 			CCS_RESULT_ERROR_INVALID_DISTRIBUTION_SPACE);
 	}
+	if (features) {
+		CCS_CHECK_OBJ(features, CCS_OBJECT_TYPE_FEATURES);
+		CCS_REFUTE(
+			features->data->feature_space !=
+				configuration_space->data->feature_space,
+			CCS_RESULT_ERROR_INVALID_FEATURES);
+	}
 	if (rng)
 		CCS_CHECK_OBJ(rng, CCS_OBJECT_TYPE_RNG);
 	CCS_CHECK_ARY(num_configurations, configurations);
 	if (!num_configurations)
 		return CCS_RESULT_SUCCESS;
 	CCS_VALIDATE(_ccs_configuration_space_samples(
-		configuration_space, distribution_space, rng,
+		configuration_space, distribution_space, features, rng,
 		num_configurations, configurations));
 	return CCS_RESULT_SUCCESS;
 }

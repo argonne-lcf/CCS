@@ -93,14 +93,6 @@ libcconfigspace_la_SOURCES = \
 	features.c \
 	features_internal.h \
 	features_deserialize.h \
-	features_evaluation.c \
-	features_evaluation_internal.h \
-	features_evaluation_deserialize.h \
-	features_tuner.c \
-	features_tuner_internal.h \
-	features_tuner_deserialize.h \
-	features_tuner_random.c \
-	features_tuner_user_defined.c \
 	map.c \
 	map_internal.h \
 	map_deserialize.h \

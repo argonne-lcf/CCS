@@ -1,7 +1,8 @@
 module CCS
 
-  attach_function :ccs_create_tree_configuration, [:ccs_tree_space_t, :size_t, :pointer, :pointer], :ccs_result_t
+  attach_function :ccs_create_tree_configuration, [:ccs_tree_space_t, :ccs_features_t, :size_t, :pointer, :pointer], :ccs_result_t
   attach_function :ccs_tree_configuration_get_tree_space, [:ccs_tree_configuration_t, :pointer], :ccs_result_t
+  attach_function :ccs_tree_configuration_get_features, [:ccs_tree_configuration_t, :pointer], :ccs_result_t
   attach_function :ccs_tree_configuration_get_position, [:ccs_tree_configuration_t, :size_t, :pointer, :pointer], :ccs_result_t
   attach_function :ccs_tree_configuration_get_values, [:ccs_tree_configuration_t, :size_t, :pointer, :pointer], :ccs_result_t
   attach_function :ccs_tree_configuration_get_node, [:ccs_tree_configuration_t, :pointer], :ccs_result_t
@@ -14,9 +15,10 @@ module CCS
     add_handle_property :tree_space, :ccs_tree_space_t, :ccs_tree_configuration_get_tree_space, memoize: true
     add_handle_property :node, :ccs_tree_t, :ccs_tree_configuration_get_node, memoize: true
     add_property :hash, :ccs_hash_t, :ccs_tree_configuration_hash, memoize: true
+    add_optional_handle_property :features, :ccs_features_t, :ccs_tree_configuration_get_features, memoize: true
 
     def initialize(handle = nil, retain: false, auto_release: true,
-                   tree_space: nil, position: nil)
+                   tree_space: nil, features: nil, position: nil)
       if (handle)
         super(handle, retain: retain, auto_release: auto_release)
       else
@@ -24,7 +26,7 @@ module CCS
         ptr1 = MemoryPointer::new(:size_t, count)
         ptr1.write_array_of_size_t(position)
         ptr2 = MemoryPointer::new(:ccs_tree_configuration_t)
-        CCS.error_check CCS.ccs_create_tree_configuration(tree_space, count, ptr1, ptr2)
+        CCS.error_check CCS.ccs_create_tree_configuration(tree_space, features, count, ptr1, ptr2)
         super(ptr2.read_ccs_tree_configuration_t, retain: false)
       end
     end

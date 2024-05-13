@@ -8,8 +8,9 @@ extern "C" {
 /**
  * @file tuner.h
  * A CCS tuner defines an ask and tell interface to optimize an objective space
- * (see objective_space.h). The tuner will propose configurations (see
- * configuration.h) and the user will return evaluations (see evaluation.h).
+ * (see objective_space.h). The tuner will propose search configurations (see
+ * search_configuration.h) and the user will return evaluations (see
+ * evaluation.h).
  */
 
 /**
@@ -73,7 +74,7 @@ ccs_tuner_get_name(ccs_tuner_t tuner, const char **name_ret);
 extern ccs_result_t
 ccs_tuner_get_search_space(
 	ccs_tuner_t         tuner,
-	ccs_search_space_t *configuration_space_ret);
+	ccs_search_space_t *search_space_ret);
 
 /**
  * Get the associated objective space.
@@ -92,10 +93,27 @@ ccs_tuner_get_objective_space(
 	ccs_objective_space_t *objective_space_ret);
 
 /**
+ * Get the associated feature space.
+ * @param[in] tuner
+ * @param[out] feature_space_ret a pointer to the variable that will
+ *                                     contain the feature space
+ * @return #CCS_RESULT_SUCCESS on success
+ * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p tuner is not a valid CCS tuner
+ * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p feature_space_ret is NULL
+ * @remarks
+ *   This function is thread-safe
+ */
+extern ccs_result_t
+ccs_tuner_get_feature_space(
+	ccs_tuner_t          tuner,
+	ccs_feature_space_t *feature_space_ret);
+
+/**
  * Ask a tuner for a set of configurations to evaluate. Configuration's
  * ownership is transferred to the user who doesn't need to retain them, but
  * will need to release them once the user is done using them.
  * @param[in,out] tuner
+ * @param[in] features the specific features to ask the configurations for
  * @param[in] num_configurations the number of configurations requested by the
  *                               user
  * @param[out] configurations an array of \p num_configurations configurations
@@ -107,7 +125,10 @@ ccs_tuner_get_objective_space(
  *                                    NULL, a suggestion for the number of
  *                                    configuration to ask for
  * @return #CCS_RESULT_SUCCESS on success
- * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p tuner is not a valid CCS tuner
+ * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p tuner is not a valid
+ * CCS tuner; or if \p features is not a valid CCS features
+ * @return #CCS_RESULT_ERROR_INVALID_FEATURES if \p features is not a valid CCS
+ * features for the tuner feature space
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p configurations is NULL and \p
  * num_configurations is greater than 0; or if \p configurations and \p
  * num_configurations_ret are both NULL
@@ -123,6 +144,7 @@ ccs_tuner_get_objective_space(
 extern ccs_result_t
 ccs_tuner_ask(
 	ccs_tuner_t                 tuner,
+	ccs_features_t              features,
 	size_t                      num_configurations,
 	ccs_search_configuration_t *configurations,
 	size_t                     *num_configurations_ret);
@@ -134,14 +156,15 @@ ccs_tuner_ask(
  * @param[in] evaluations an array of \p num_evaluations to provide to the
  *                        tuner
  * @return #CCS_RESULT_SUCCESS on success
- * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p tuner is not a valid CCS
- * tuner; or if one of the evaluations is not a valid CCS evaluation
+ * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p tuner is not a valid
+ * CCS tuner; or if one of the evaluations is not a valid CCS features
+ * evaluation
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p evaluations is NULL and \p
  * num_evaluations is greater than 0
  * @return #CCS_RESULT_ERROR_INVALID_EVALUATION if an evaluation is not a valid
  * evaluation for the problem the tuner is optimizing
  * @return #CCS_RESULT_ERROR_OUT_OF_MEMORY if there was not enough memory to
- * allocate internal data structures
+ * allocate internal data structures.
  * @remarks
  *   This function is thread-safe
  */
@@ -154,10 +177,14 @@ ccs_tuner_tell(
 /**
  * Ask a tuner to suggest a good configuration.
  * @param[in,out] tuner
+ * @param[in] features the specific features to suggest a configuration for
  * @param[out] configuration a pointer to the variable that will contain the
  *                           suggested configuration
  * @return #CCS_RESULT_SUCCESS on success
- * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p tuner is not a valid CCS tuner
+ * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p tuner is not a valid CCS
+ * tuner; or if \p features is not a valid CCS features
+ * @return #CCS_RESULT_ERROR_INVALID_FEATURES if \p features is not a valid CCS
+ * features for the tuner feature space
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p configuration is NULL
  * @return #CCS_RESULT_ERROR_UNSUPPORTED_OPERATION if the tuner does not support
  * the suggest interface
@@ -167,20 +194,30 @@ ccs_tuner_tell(
  *   This function is thread-safe
  */
 extern ccs_result_t
-ccs_tuner_suggest(ccs_tuner_t tuner, ccs_search_configuration_t *configuration);
+ccs_tuner_suggest(
+	ccs_tuner_t                 tuner,
+	ccs_features_t              features,
+	ccs_search_configuration_t *configuration);
 
 /**
- * Ask a tuner for the discovered Pareto front. For single objective objective
- * spaces this would be the best point found.
+ * Ask a tuner for the discovered Pareto front. For single objective spaces
+ * this would be the best point found.
  * @param[in] tuner
+ * @param[in] features the specific features to get the optimal values for.
+ *                     Optional, can be NULL
  * @param[in] num_evaluations the size of the \p evaluations array
  * @param[out] evaluations an array of \p num_evaluations that will contain the
- *                         optimal evaluations
+ *                         optimal evaluations. If \p features is given, only
+ *                         return optimal evaluations for the given features
  * @param[out] num_evaluations_ret a pointer to the variable that will contain
  *                                 the number of evaluations that are or would
  *                                 be returned
  * @return #CCS_RESULT_SUCCESS on success
- * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p tuner is not a valid CCS tuner
+ * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p tuner is not a valid
+ * CCS tuner; or if \p features is not NULL and \p features is not a
+ * valid CCS features
+ * @return #CCS_RESULT_ERROR_INVALID_FEATURES if \p features is not a valid CCS
+ * features for the tuner feature space
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p evaluations is NULL and
  * num_evaluations is greater than 0; or if \p evaluations is NULL and \p
  * num_evaluations_ret is NULL
@@ -190,6 +227,7 @@ ccs_tuner_suggest(ccs_tuner_t tuner, ccs_search_configuration_t *configuration);
 extern ccs_result_t
 ccs_tuner_get_optima(
 	ccs_tuner_t       tuner,
+	ccs_features_t    features,
 	size_t            num_evaluations,
 	ccs_evaluation_t *evaluations,
 	size_t           *num_evaluations_ret);
@@ -197,14 +235,21 @@ ccs_tuner_get_optima(
 /**
  * Ask a tuner for the evaluation history.
  * @param[in] tuner
+ * @param[in] features the specific features to get the history for. Optional,
+ *                     can be NULL
  * @param[in] num_evaluations the size of the \p evaluations array
  * @param[out] evaluations an array of \p num_evaluations that will contain the
- *                         the history
+ *                         the history. If \p features is given, only
+ *                         return history of evaluations for the given features
  * @param[out] num_evaluations_ret a pointer to the variable that will contain
  *                                 the number of evaluations that are or would
  *                                 be returned
  * @return #CCS_RESULT_SUCCESS on success
- * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p tuner is not a valid CCS tuner
+ * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p tuner is not a valid CCS
+ * tuner; or if \p features is not NULL and \p features is not a valid CCS
+ * features
+ * @return #CCS_RESULT_ERROR_INVALID_FEATURES if \p features is not a valid CCS
+ * features for the tuner feature space
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p evaluations is NULL and
  * num_evaluations is greater than 0; or if \p evaluations is NULL and \p
  * num_evaluations_ret is NULL
@@ -214,6 +259,7 @@ ccs_tuner_get_optima(
 extern ccs_result_t
 ccs_tuner_get_history(
 	ccs_tuner_t       tuner,
+	ccs_features_t    features,
 	size_t            num_evaluations,
 	ccs_evaluation_t *evaluations,
 	size_t           *num_evaluations_ret);
@@ -255,6 +301,7 @@ struct ccs_user_defined_tuner_vector_s {
 	/** The tuner ask interface see ccs_tuner_ask */
 	ccs_result_t (*ask)(
 		ccs_tuner_t                 tuner,
+		ccs_features_t              features,
 		size_t                      num_configurations,
 		ccs_search_configuration_t *configurations,
 		size_t                     *num_configurations_ret);
@@ -268,6 +315,7 @@ struct ccs_user_defined_tuner_vector_s {
 	/** The tuner get_optima interface see ccs_tuner_get_optima */
 	ccs_result_t (*get_optima)(
 		ccs_tuner_t       tuner,
+		ccs_features_t    features,
 		size_t            num_evaluations,
 		ccs_evaluation_t *evaluations,
 		size_t           *num_evaluations_ret);
@@ -275,6 +323,7 @@ struct ccs_user_defined_tuner_vector_s {
 	/** The tuner get_history interface see ccs_tuner_get_history */
 	ccs_result_t (*get_history)(
 		ccs_tuner_t       tuner,
+		ccs_features_t    features,
 		size_t            num_evaluations,
 		ccs_evaluation_t *evaluations,
 		size_t           *num_evaluations_ret);
@@ -282,6 +331,7 @@ struct ccs_user_defined_tuner_vector_s {
 	/** The tuner suggest interface see ccs_tuner_suggest, can be NULL */
 	ccs_result_t (*suggest)(
 		ccs_tuner_t                 tuner,
+		ccs_features_t              features,
 		ccs_search_configuration_t *configuration);
 
 	/**

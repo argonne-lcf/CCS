@@ -7,14 +7,16 @@ extern "C" {
 
 /**
  * @file tree_space.h
- * A CCS tree space defines an search space over a tree. Tree spaces can be
- * sampled to obtain tree configurations. Configurations con point to unknown
- * children (if they exist). This is where static tree spaces and dynamic tree
- * spaces differ: in a static tree space, the user is responsible for modifying
- * the tree before evaluating these configuration values or node; in a dynamic
- * tree space, when querying a configuration validity, node or values, a
- * callback will be invoked to define the missing children on the configuration
- * path. Sampling a dynamic tree space, by itself, does not modify the tree.
+ * A CCS tree space defines an search space over a tree. Optionally
+ * configuration space can be attached a feature space (see feature_space.h).
+ * Tree spaces can be sampled to obtain tree configurations. Configurations con
+ * point to unknown children (if they exist). This is where static tree spaces
+ * and dynamic tree spaces differ: in a static tree space, the user is
+ * responsible for modifying the tree before evaluating these configuration
+ * values or node; in a dynamic tree space, when querying a configuration
+ * validity, node or values, a callback will be invoked to define the missing
+ * children on the configuration path. Sampling a dynamic tree space, by
+ * itself, does not modify the tree.
  */
 
 /**
@@ -40,6 +42,7 @@ typedef enum ccs_tree_space_type_e ccs_tree_space_type_t;
  * Create a new static tree space.
  * @param[in] name pointer to a string that will be copied internally
  * @param[in] tree the tree defining the tree space
+ * @param[in] feature_space an optional CCS feature space object
  * @param[in] rng an optional CCS rng object
  * @param[out] tree_space_ret a pointer to the variable that will hold
  *                            the newly created tree space.
@@ -47,7 +50,8 @@ typedef enum ccs_tree_space_type_e ccs_tree_space_type_t;
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p name is NULL; or if \p
  * tree_space_ret is NULL
  * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p rng is not NULL and is not a
- * valid CCS rng
+ * valid CCS rng; or it \p feature_space is not NULL and is not a valid CCS
+ * feature space
  * @return #CCS_RESULT_ERROR_OUT_OF_MEMORY if there was a lack of memory to
  * allocate the new tree space
  * @remarks
@@ -55,10 +59,11 @@ typedef enum ccs_tree_space_type_e ccs_tree_space_type_t;
  */
 extern ccs_result_t
 ccs_create_static_tree_space(
-	const char       *name,
-	ccs_tree_t        tree,
-	ccs_rng_t         rng,
-	ccs_tree_space_t *tree_space_ret);
+	const char         *name,
+	ccs_tree_t          tree,
+	ccs_feature_space_t feature_space,
+	ccs_rng_t           rng,
+	ccs_tree_space_t   *tree_space_ret);
 
 /**
  * A structure that define the callbacks the user must provide to create a
@@ -119,6 +124,7 @@ typedef struct ccs_dynamic_tree_space_vector_s ccs_dynamic_tree_space_vector_t;
  * Create a new static tree space.
  * @param[in] name pointer to a string that will be copied internally
  * @param[in] tree the tree defining the tree space
+ * @param[in] feature_space an optional CCS feature space object
  * @param[in] rng an optional CCS rng object
  * @param[in] vector the callback vector implementing the dynamic tree space
  *                   interface
@@ -130,7 +136,8 @@ typedef struct ccs_dynamic_tree_space_vector_s ccs_dynamic_tree_space_vector_t;
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p name is NULL; or if \p
  * tree_space_ret is NULL; or if any non optional interface pointer is NULL
  * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p rng is not NULL and is not a
- * valid CCS rng
+ * valid CCS rng; or it \p feature_space is not NULL and is not a valid CCS
+ * feature space
  * @return #CCS_RESULT_ERROR_OUT_OF_MEMORY if there was a lack of memory to
  * allocate the new tree space
  * @remarks
@@ -140,6 +147,7 @@ extern ccs_result_t
 ccs_create_dynamic_tree_space(
 	const char                      *name,
 	ccs_tree_t                       tree,
+	ccs_feature_space_t              feature_space,
 	ccs_rng_t                        rng,
 	ccs_dynamic_tree_space_vector_t *vector,
 	void                            *tree_space_data,
@@ -190,6 +198,23 @@ ccs_tree_space_get_name(ccs_tree_space_t tree_space, const char **name_ret);
  */
 extern ccs_result_t
 ccs_tree_space_get_rng(ccs_tree_space_t tree_space, ccs_rng_t *rng_ret);
+
+/**
+ * Get the feature space of the tree space.
+ * @param[in] tree_space
+ * @param[out] feature_space_ret a pointer to the variable that will contain
+ *                               the feature space
+ * @return #CCS_RESULT_SUCCESS on success
+ * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p tree_space is not a
+ * valid CCS tree space
+ * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p feature_space_ret is NULL
+ * @remarks
+ *   This function is thread-safe
+ */
+extern ccs_result_t
+ccs_tree_space_get_feature_space(
+	ccs_tree_space_t     tree_space,
+	ccs_feature_space_t *feature_space_ret);
 
 /**
  * Get the tree of a tree space.
@@ -314,12 +339,17 @@ ccs_tree_space_check_configuration(
  * sampled according to the weight and bias of the individual tree nodes. If
  * those are at their default values, the tree nodes are sampled uniformly.
  * @param[in] tree_space
+ * @param[in] features an optional features to use. Required if a feature space
+ *                     was provided at \p tree_space creation.
  * @param[in] rng an optional rng to use
  * @param[out] configuration_ret a pointer to the variable that will contain the
  *                               returned tree configuration
  * @return #CCS_RESULT_SUCCESS on success
- * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p tree space is not a valid CCS
- * tree space; or if \p rng is not a valid CCS rng
+ * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p tree_space is not a valid CCS
+ * tree space; or if \p rng is not a valid CCS rng; or if \p features is not
+ * NULL and is not a valid CCS features
+ * @return #CCS_RESULT_ERROR_INVALID_FEATURES if features feature space is not
+ * the same as the feature space provided at \p tree_space creation.
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if configuration_ret is NULL
  * @return #CCS_RESULT_ERROR_OUT_OF_MEMORY if there was not enough memory to
  * allocate the new configuration
@@ -329,6 +359,7 @@ ccs_tree_space_check_configuration(
 extern ccs_result_t
 ccs_tree_space_sample(
 	ccs_tree_space_t          tree_space,
+	ccs_features_t            features,
 	ccs_rng_t                 rng,
 	ccs_tree_configuration_t *configuration_ret);
 
@@ -338,13 +369,18 @@ ccs_tree_space_sample(
  * nodes. If those are at their default values, the tree nodes are sampled
  * uniformely.
  * @param[in] tree_space
+ * @param[in] features an optional features to use. Required if a feature space
+ *                     was provided at \p tree_space creation.
  * @param[in] rng an optional rng to use
  * @param[in] num_configurations the number of requested configurations
  * @param[out] configurations an array of \p num_configurations that will
  *                            contain the requested configurations
  * @return #CCS_RESULT_SUCCESS on success
- * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p tree space is not a valid CCS
- * tree space; or if \p rng is not a valid CCS rng
+ * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p tree_space is not a valid CCS
+ * tree space; or if \p rng is not NULL and is not a valid CCS rng; or if \p
+ * features is not NULL and is not a valid CCS features
+ * @return #CCS_RESULT_ERROR_INVALID_FEATURES if features feature space is not
+ * the same as the feature space provided at \p tree_space creation.
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p configurations is NULL and \p
  * num_configurations is greater than 0
  * @return #CCS_RESULT_ERROR_OUT_OF_MEMORY if there was not enough memory to
@@ -355,6 +391,7 @@ ccs_tree_space_sample(
 extern ccs_result_t
 ccs_tree_space_samples(
 	ccs_tree_space_t          tree_space,
+	ccs_features_t            features,
 	ccs_rng_t                 rng,
 	size_t                    num_configurations,
 	ccs_tree_configuration_t *configurations);
@@ -364,9 +401,9 @@ ccs_tree_space_samples(
  * @param[in] tree_space
  * @param[out] tree_space_data_ret
  * @return #CCS_RESULT_SUCCESS on success
- * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p tree space is not a valid CCS
+ * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p tree_space is not a valid CCS
  * tree space
- * @return #CCS_RESULT_ERROR_INVALID_TREE_SPACE if \p tree space is not a
+ * @return #CCS_RESULT_ERROR_INVALID_TREE_SPACE if \p tree_space is not a
  * dynamic tree space
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p tree_space_data_ret is NULL
  * @remarks

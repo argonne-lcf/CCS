@@ -37,6 +37,11 @@ ccs_create_feature_space(
 	ccs_parameter_t     *parameters,
 	ccs_feature_space_t *feature_space_ret);
 
+extern ccs_result_t
+ccs_feature_space_get_default_features(
+	ccs_feature_space_t feature_space,
+	ccs_features_t     *features_ret);
+
 /**
  * Check that a features is a valid in a feature space.
  * @param[in] feature_space

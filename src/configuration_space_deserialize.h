@@ -2,14 +2,16 @@
 #define _CONFIGURATION_SPACE_DESERIALIZE_H
 
 struct _ccs_configuration_space_data_mock_s {
-	const char       *name;
-	size_t            num_parameters;
-	size_t            num_conditions;
-	size_t            num_forbidden_clauses;
-	ccs_rng_t         rng;
-	ccs_parameter_t  *parameters;
-	ccs_expression_t *conditions;
-	ccs_expression_t *forbidden_clauses;
+	const char         *name;
+	size_t              num_parameters;
+	size_t              num_conditions;
+	size_t              num_forbidden_clauses;
+	ccs_object_t        feature_space_handle;
+	ccs_feature_space_t feature_space;
+	ccs_rng_t           rng;
+	ccs_parameter_t    *parameters;
+	ccs_expression_t   *conditions;
+	ccs_expression_t   *forbidden_clauses;
 };
 typedef struct _ccs_configuration_space_data_mock_s
 	_ccs_configuration_space_data_mock_t;
@@ -32,6 +34,15 @@ _ccs_deserialize_bin_ccs_configuration_space_data(
 		&data->num_conditions, buffer_size, buffer));
 	CCS_VALIDATE(_ccs_deserialize_bin_size(
 		&data->num_forbidden_clauses, buffer_size, buffer));
+	CCS_VALIDATE(_ccs_deserialize_bin_ccs_object(
+		&data->feature_space_handle, buffer_size, buffer));
+	if (data->feature_space_handle) {
+		CCS_VALIDATE(_ccs_object_deserialize_with_opts_check(
+			(ccs_object_t *)&data->feature_space,
+			CCS_OBJECT_TYPE_FEATURE_SPACE,
+			CCS_SERIALIZE_FORMAT_BINARY, version, buffer_size,
+			buffer, opts));
+	}
 	CCS_VALIDATE(_ccs_object_deserialize_with_opts_check(
 		(ccs_object_t *)&data->rng, CCS_OBJECT_TYPE_RNG,
 		CCS_SERIALIZE_FORMAT_BINARY, version, buffer_size, buffer,
@@ -100,8 +111,8 @@ _ccs_deserialize_bin_configuration_space(
 	new_opts.map_values = CCS_TRUE;
 	CCS_VALIDATE(ccs_create_map(&new_opts.handle_map));
 
-	_ccs_configuration_space_data_mock_t data = {NULL, 0,    0,    0,
-						     NULL, NULL, NULL, NULL};
+	_ccs_configuration_space_data_mock_t data = {
+		NULL, 0, 0, 0, NULL, NULL, NULL, NULL, NULL, NULL};
 	CCS_VALIDATE_ERR_GOTO(
 		res,
 		_ccs_deserialize_bin_ccs_configuration_space_data(
@@ -112,22 +123,33 @@ _ccs_deserialize_bin_configuration_space(
 		ccs_create_configuration_space(
 			data.name, data.num_parameters, data.parameters,
 			data.conditions, data.num_forbidden_clauses,
-			data.forbidden_clauses, data.rng,
+			data.forbidden_clauses, data.feature_space, data.rng,
 			configuration_space_ret),
 		end);
-	if (opts && opts->map_values && opts->handle_map)
+	if (opts && opts->map_values && opts->handle_map) {
+		if (data.feature_space_handle)
+			CCS_VALIDATE_ERR_GOTO(
+				res,
+				_ccs_object_handle_check_add(
+					opts->handle_map,
+					data.feature_space_handle,
+					(ccs_object_t)data.feature_space),
+				err_configuration_space);
 		CCS_VALIDATE_ERR_GOTO(
 			res,
 			_ccs_object_handle_check_add(
 				opts->handle_map, handle,
 				(ccs_object_t)*configuration_space_ret),
 			err_configuration_space);
+	}
 	goto end;
 
 err_configuration_space:
 	ccs_release_object(*configuration_space_ret);
 	*configuration_space_ret = NULL;
 end:
+	if (data.feature_space)
+		ccs_release_object(data.feature_space);
 	if (data.rng)
 		ccs_release_object(data.rng);
 	if (data.parameters)

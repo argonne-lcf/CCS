@@ -43,7 +43,7 @@ create_numerical(const char *name, double lower, double upper)
 }
 
 ccs_configuration_space_t
-create_2d_plane(void)
+create_2d_plane(ccs_feature_space_t fspace)
 {
 	ccs_parameter_t           parameters[2];
 	ccs_configuration_space_t cspace;
@@ -53,7 +53,7 @@ create_2d_plane(void)
 	parameters[1] = create_numerical("y", -5.0, 5.0);
 
 	err           = ccs_create_configuration_space(
-                "2dplane", 2, parameters, NULL, 0, NULL, NULL, &cspace);
+                "2dplane", 2, parameters, NULL, 0, NULL, fspace, NULL, &cspace);
 	assert(err == CCS_RESULT_SUCCESS);
 
 	err = ccs_release_object(parameters[0]);

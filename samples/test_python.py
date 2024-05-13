@@ -10,7 +10,7 @@ class TestTuner(ccs.UserDefinedTuner):
     def delete(tuner):
       return None
 
-    def ask(tuner, count):
+    def ask(tuner, features, count):
       if count is None:
         return (None, 1)
       else:
@@ -38,10 +38,10 @@ class TestTuner(ccs.UserDefinedTuner):
         history_optima[1] = new_optima
       return None
 
-    def get_history(tuner):
+    def get_history(tuner, features):
       return tuner.tuner_data[0]
 
-    def get_optima(tuner):
+    def get_optima(tuner, features):
       return tuner.tuner_data[1]
 
     super().__init__(name = "tuner", objective_space = os, delete = delete, ask = ask, tell = tell, get_optima = get_optima, get_history = get_history, tuner_data = data)

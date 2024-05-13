@@ -1,8 +1,11 @@
 module CCS
   attach_function :ccs_create_feature_space, [:string, :size_t, :pointer, :pointer], :ccs_result_t
+  attach_function :ccs_feature_space_get_default_features, [:ccs_feature_space_t, :pointer], :ccs_result_t
   attach_function :ccs_feature_space_check_features, [:ccs_feature_space_t, :ccs_features_t, :pointer], :ccs_result_t
 
   class FeatureSpace < Context
+    add_handle_property :default_features, :ccs_features_t, :ccs_feature_space_get_default_features, memoize: true
+
     def initialize(handle = nil, retain: false, auto_release: true,
                    name: "", parameters: nil)
       if handle

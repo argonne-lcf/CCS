@@ -5,7 +5,7 @@ class TestTuner < CCS::UserDefinedTuner
     @history = []
     @optima = []
     del = lambda { |tuner| nil }
-    ask = lambda { |tuner, count|
+    ask = lambda { |tuner, _, count|
       if count
         cs = tuner.search_space
         [cs.samples(count), count]
@@ -36,10 +36,10 @@ class TestTuner < CCS::UserDefinedTuner
         history_optima[1].push(e) unless discard
       }
     }
-    get_history = lambda { |tuner|
+    get_history = lambda { |tuner, _|
       tuner.tuner_data[0]
     }
-    get_optima = lambda { |tuner|
+    get_optima = lambda { |tuner, _|
       tuner.tuner_data[1]
     }
     super(name: "tuner", objective_space: os, del: del, ask: ask, tell: tell, get_optima: get_optima, get_history: get_history, tuner_data: [[],[]])

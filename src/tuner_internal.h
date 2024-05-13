@@ -12,6 +12,7 @@ struct _ccs_tuner_ops_s {
 
 	ccs_result_t (*ask)(
 		ccs_tuner_t                 tuner,
+		ccs_features_t              features,
 		size_t                      num_configurations,
 		ccs_search_configuration_t *configurations,
 		size_t                     *num_configurations_ret);
@@ -23,18 +24,21 @@ struct _ccs_tuner_ops_s {
 
 	ccs_result_t (*get_optima)(
 		ccs_tuner_t       tuner,
+		ccs_features_t    features,
 		size_t            num_evaluations,
 		ccs_evaluation_t *evaluations,
 		size_t           *num_evaluations_ret);
 
 	ccs_result_t (*get_history)(
 		ccs_tuner_t       tuner,
+		ccs_features_t    features,
 		size_t            num_evaluations,
 		ccs_evaluation_t *evaluations,
 		size_t           *num_evaluations_ret);
 
 	ccs_result_t (*suggest)(
 		ccs_tuner_t                 tuner,
+		ccs_features_t              features,
 		ccs_search_configuration_t *configuration);
 };
 typedef struct _ccs_tuner_ops_s _ccs_tuner_ops_t;
@@ -49,6 +53,7 @@ struct _ccs_tuner_common_data_s {
 	const char           *name;
 	ccs_search_space_t    search_space;
 	ccs_objective_space_t objective_space;
+	ccs_feature_space_t   feature_space;
 };
 typedef struct _ccs_tuner_common_data_s _ccs_tuner_common_data_t;
 

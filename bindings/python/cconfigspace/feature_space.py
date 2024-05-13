@@ -1,9 +1,10 @@
 import ctypes as ct
-from .base import Object, Error, CEnumeration, Result, _ccs_get_function, ccs_context, ccs_parameter, ccs_feature_space, ccs_features, Datum, ccs_bool
+from .base import Object, Error, CEnumeration, Result, _ccs_get_function, ccs_parameter, ccs_feature_space, ccs_features, ccs_bool
 from .context import Context
 from .parameter import Parameter
 
 ccs_create_feature_space = _ccs_get_function("ccs_create_feature_space", [ct.c_char_p, ct.c_size_t, ct.POINTER(ccs_parameter), ct.POINTER(ccs_feature_space)])
+ccs_feature_space_get_default_features = _ccs_get_function("ccs_feature_space_get_default_features", [ccs_feature_space, ct.POINTER(ccs_features)])
 ccs_feature_space_check_features = _ccs_get_function("ccs_feature_space_check_features", [ccs_feature_space, ccs_features, ct.POINTER(ccs_bool)])
 
 class FeatureSpace(Context):
@@ -23,9 +24,20 @@ class FeatureSpace(Context):
   def from_handle(cls, handle, retain = True, auto_release = True):
     return cls(handle = handle, retain = retain, auto_release = auto_release)
 
+  @property
+  def default_features(self):
+    if hasattr(self, "_default_features"):
+      return self._default_features
+    v = ccs_features()
+    res = ccs_feature_space_get_default_features(self.handle, ct.byref(v))
+    Error.check(res)
+    self._default_features = Features.from_handle(v)
+    return self._default_features
+
   def check(self, features):
     valid = ccs_bool()
     res = ccs_feature_space_check_features(self.handle, features.handle, ct.byref(valid))
     Error.check(res)
     return False if valid.value == 0 else True
 
+from .features import Features

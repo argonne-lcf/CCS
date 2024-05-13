@@ -16,7 +16,7 @@ test(void)
 	size_t                    buff_size;
 	ccs_map_t                 map;
 
-	cspace = create_2d_plane();
+	cspace = create_2d_plane(NULL);
 	ospace = create_height_objective(cspace);
 
 	err    = ccs_create_random_tuner("problem", ospace, &tuner);
@@ -26,7 +26,7 @@ test(void)
 		ccs_datum_t                values[2], res;
 		ccs_search_configuration_t configuration;
 		ccs_evaluation_t           evaluation;
-		err = ccs_tuner_ask(tuner, 1, &configuration, NULL);
+		err = ccs_tuner_ask(tuner, NULL, 1, &configuration, NULL);
 		assert(err == CCS_RESULT_SUCCESS);
 		err = ccs_binding_get_values(
 			(ccs_binding_t)configuration, 2, values, NULL);
@@ -49,7 +49,7 @@ test(void)
 	size_t           count;
 	ccs_evaluation_t history[100];
 	ccs_datum_t      min = ccs_float(INFINITY);
-	err = ccs_tuner_get_history(tuner, 100, history, &count);
+	err = ccs_tuner_get_history(tuner, NULL, 100, history, &count);
 	assert(err == CCS_RESULT_SUCCESS);
 	assert(count == 100);
 
@@ -63,7 +63,7 @@ test(void)
 
 	ccs_evaluation_t evaluation;
 	ccs_datum_t      res;
-	err = ccs_tuner_get_optima(tuner, 1, &evaluation, NULL);
+	err = ccs_tuner_get_optima(tuner, NULL, 1, &evaluation, NULL);
 	assert(err == CCS_RESULT_SUCCESS);
 	err = ccs_evaluation_get_objective_value(evaluation, 0, &res);
 	assert(res.value.f == min.value.f);
@@ -92,11 +92,11 @@ test(void)
 		CCS_DESERIALIZE_OPTION_END);
 	assert(err == CCS_RESULT_SUCCESS);
 
-	err = ccs_tuner_get_history(tuner_copy, 100, history, &count);
+	err = ccs_tuner_get_history(tuner_copy, NULL, 100, history, &count);
 	assert(err == CCS_RESULT_SUCCESS);
 	assert(count == 100);
 
-	err = ccs_tuner_get_optima(tuner_copy, 1, &evaluation, &count);
+	err = ccs_tuner_get_optima(tuner_copy, NULL, 1, &evaluation, &count);
 	assert(err == CCS_RESULT_SUCCESS);
 	assert(count == 1);
 
@@ -132,11 +132,12 @@ test_evaluation_deserialize(void)
 	ccs_map_t                  map;
 	int                        cmp;
 
-	cspace = create_2d_plane();
+	cspace = create_2d_plane(NULL);
 	ospace = create_height_objective(cspace);
 
 	err    = ccs_configuration_space_sample(
-                cspace, NULL, NULL, (ccs_configuration_t *)&configuration);
+                cspace, NULL, NULL, NULL,
+                (ccs_configuration_t *)&configuration);
 	assert(err == CCS_RESULT_SUCCESS);
 
 	res = ccs_float(1.5);

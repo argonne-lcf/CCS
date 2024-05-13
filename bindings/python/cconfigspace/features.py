@@ -2,7 +2,6 @@ import ctypes as ct
 from .base import Object, Error, Result, _ccs_get_function, ccs_context, ccs_parameter, ccs_feature_space, ccs_features, Datum, ccs_hash, ccs_int, ccs_bool
 from .context import Context
 from .parameter import Parameter
-from .feature_space import FeatureSpace
 from .binding import Binding
 
 ccs_create_features = _ccs_get_function("ccs_create_features", [ccs_feature_space, ct.c_size_t, ct.POINTER(Datum), ct.POINTER(ccs_features)])
@@ -48,3 +47,5 @@ class Features(Binding):
     res = ccs_features_check(self.handle, ct.byref(valid))
     Error.check(res)
     return False if valid.value == 0 else True
+
+from .feature_space import FeatureSpace

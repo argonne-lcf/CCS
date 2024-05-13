@@ -37,9 +37,7 @@ ccs_feature_space        = ccs_object
 ccs_features             = ccs_object
 ccs_objective_space      = ccs_object
 ccs_evaluation           = ccs_object
-ccs_features_evaluation  = ccs_object
 ccs_tuner                = ccs_object
-ccs_features_tuner       = ccs_object
 ccs_map                  = ccs_object
 ccs_error_stack          = ccs_object
 ccs_tree                 = ccs_object
@@ -147,8 +145,6 @@ class ObjectType(CEnumeration):
     'TUNER',
     'FEATURE_SPACE',
     'FEATURES',
-    'FEATURES_EVALUATION',
-    'FEATURES_TUNER',
     'MAP',
     'ERROR_STACK',
     'TREE',
@@ -180,16 +176,15 @@ class Result(CEnumeration):
     ('ERROR_UNSUPPORTED_OPERATION',      -18),
     ('ERROR_INVALID_EVALUATION',         -19),
     ('ERROR_INVALID_FEATURES',           -20),
-    ('ERROR_INVALID_FEATURES_TUNER',     -21),
-    ('ERROR_INVALID_FILE_PATH',          -22),
-    ('ERROR_NOT_ENOUGH_DATA',            -23),
-    ('ERROR_DUPLICATE_HANDLE',           -24),
-    ('ERROR_INVALID_HANDLE',             -25),
-    ('ERROR_SYSTEM',                     -26),
-    ('ERROR_EXTERNAL',                   -27),
-    ('ERROR_INVALID_TREE',               -28),
-    ('ERROR_INVALID_TREE_SPACE',         -29),
-    ('ERROR_INVALID_DISTRIBUTION_SPACE', -30) ]
+    ('ERROR_INVALID_FILE_PATH',          -21),
+    ('ERROR_NOT_ENOUGH_DATA',            -22),
+    ('ERROR_DUPLICATE_HANDLE',           -23),
+    ('ERROR_INVALID_HANDLE',             -24),
+    ('ERROR_SYSTEM',                     -25),
+    ('ERROR_EXTERNAL',                   -26),
+    ('ERROR_INVALID_TREE',               -27),
+    ('ERROR_INVALID_TREE_SPACE',         -28),
+    ('ERROR_INVALID_DISTRIBUTION_SPACE', -29) ]
 
 class DataType(CEnumeration):
   _members_ = [
@@ -754,9 +749,7 @@ from .feature_space import FeatureSpace
 from .features import Features
 from .objective_space import ObjectiveSpace
 from .evaluation import Evaluation
-from .features_evaluation import FeaturesEvaluation
 from .tuner import Tuner
-from .features_tuner import FeaturesTuner
 from .map import Map
 from .error_stack import ErrorStack, get_thread_error, set_thread_error, clear_thread_error
 from .tree import Tree
@@ -775,9 +768,7 @@ setattr(Object, 'CLASS_MAP', {
   ObjectType.FEATURES: Features,
   ObjectType.OBJECTIVE_SPACE: ObjectiveSpace,
   ObjectType.EVALUATION: Evaluation,
-  ObjectType.FEATURES_EVALUATION: FeaturesEvaluation,
   ObjectType.TUNER: Tuner,
-  ObjectType.FEATURES_TUNER: FeaturesTuner,
   ObjectType.MAP: Map,
   ObjectType.ERROR_STACK: ErrorStack,
   ObjectType.TREE: Tree,

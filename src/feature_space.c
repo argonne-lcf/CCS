@@ -135,6 +135,31 @@ errparams:
 	return err;
 }
 
+ccs_result_t
+ccs_feature_space_get_default_features(
+	ccs_feature_space_t feature_space,
+	ccs_features_t     *features_ret)
+{
+	CCS_CHECK_OBJ(feature_space, CCS_OBJECT_TYPE_FEATURE_SPACE);
+	CCS_CHECK_PTR(features_ret);
+	ccs_result_t   err;
+	ccs_features_t features;
+	CCS_VALIDATE(_ccs_create_features(feature_space, 0, NULL, &features));
+	ccs_parameter_t *parameters = feature_space->data->parameters;
+	ccs_datum_t     *values     = features->data->values;
+	for (size_t i = 0; i < feature_space->data->num_parameters; i++)
+		CCS_VALIDATE_ERR_GOTO(
+			err,
+			ccs_parameter_get_default_value(
+				parameters[i], values + i),
+			errc);
+	*features_ret = features;
+	return CCS_RESULT_SUCCESS;
+errc:
+	ccs_release_object(features);
+	return err;
+}
+
 static inline ccs_result_t
 _check_features(
 	ccs_feature_space_t feature_space,

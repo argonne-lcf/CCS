@@ -44,6 +44,7 @@ _ccs_deserialize_bin_ccs_evaluation(
 	ccs_object_t                      handle;
 	ccs_datum_t                       d;
 	ccs_objective_space_t             os;
+	ccs_evaluation_t                  evaluation;
 	ccs_result_t                      res = CCS_RESULT_SUCCESS;
 	CCS_VALIDATE(_ccs_deserialize_bin_ccs_object_internal(
 		&obj, buffer_size, buffer, &handle));
@@ -73,7 +74,7 @@ _ccs_deserialize_bin_ccs_evaluation(
 		res,
 		ccs_create_evaluation(
 			os, data.configuration, data.result,
-			data.base.num_values, data.base.values, evaluation_ret),
+			data.base.num_values, data.base.values, &evaluation),
 		end);
 
 	if (opts->map_values)
@@ -81,13 +82,13 @@ _ccs_deserialize_bin_ccs_evaluation(
 			res,
 			_ccs_object_handle_check_add(
 				opts->handle_map, handle,
-				(ccs_object_t)*evaluation_ret),
+				(ccs_object_t)evaluation),
 			err_evaluation);
+	*evaluation_ret = evaluation;
 	goto end;
 
 err_evaluation:
-	ccs_release_object(*evaluation_ret);
-	*evaluation_ret = NULL;
+	ccs_release_object(evaluation);
 end:
 	if (data.configuration)
 		ccs_release_object(data.configuration);

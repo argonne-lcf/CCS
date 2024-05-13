@@ -142,17 +142,9 @@ typedef struct _ccs_objective_space_s      *ccs_objective_space_t;
  */
 typedef struct _ccs_evaluation_s           *ccs_evaluation_t;
 /**
- * An opaque type defining a CCS features evaluation.
- */
-typedef struct _ccs_features_evaluation_s  *ccs_features_evaluation_t;
-/**
  * An opaque type defining a CCS tuner.
  */
 typedef struct _ccs_tuner_s                *ccs_tuner_t;
-/**
- * An opaque type defining a CCS features tuner.
- */
-typedef struct _ccs_features_tuner_s       *ccs_features_tuner_t;
 /**
  * An opaque type defining a CCS key-value store.
  */
@@ -225,28 +217,26 @@ enum ccs_result_e {
 	CCS_RESULT_ERROR_INVALID_EVALUATION         = -19,
 	/** The provided features is invalid */
 	CCS_RESULT_ERROR_INVALID_FEATURES           = -20,
-	/** The provided features tuner is invalid */
-	CCS_RESULT_ERROR_INVALID_FEATURES_TUNER     = -21,
 	/** The provided file path is invalid */
-	CCS_RESULT_ERROR_INVALID_FILE_PATH          = -22,
+	CCS_RESULT_ERROR_INVALID_FILE_PATH          = -21,
 	/** The provided buffer or file is too short */
-	CCS_RESULT_ERROR_NOT_ENOUGH_DATA            = -23,
+	CCS_RESULT_ERROR_NOT_ENOUGH_DATA            = -22,
 	/** The handle was a duplicate */
-	CCS_RESULT_ERROR_DUPLICATE_HANDLE           = -24,
+	CCS_RESULT_ERROR_DUPLICATE_HANDLE           = -23,
 	/** The handle was not found */
-	CCS_RESULT_ERROR_INVALID_HANDLE             = -25,
+	CCS_RESULT_ERROR_INVALID_HANDLE             = -24,
 	/** A system error occurred */
-	CCS_RESULT_ERROR_SYSTEM                     = -26,
+	CCS_RESULT_ERROR_SYSTEM                     = -25,
 	/** External error occurred (binding?) */
-	CCS_RESULT_ERROR_EXTERNAL                   = -27,
+	CCS_RESULT_ERROR_EXTERNAL                   = -26,
 	/** The provided tree is invalid */
-	CCS_RESULT_ERROR_INVALID_TREE               = -28,
+	CCS_RESULT_ERROR_INVALID_TREE               = -27,
 	/** The provided tree space is invalid */
-	CCS_RESULT_ERROR_INVALID_TREE_SPACE         = -29,
+	CCS_RESULT_ERROR_INVALID_TREE_SPACE         = -28,
 	/** The provided tree tuner is invalid */
-	CCS_RESULT_ERROR_INVALID_DISTRIBUTION_SPACE = -30,
+	CCS_RESULT_ERROR_INVALID_DISTRIBUTION_SPACE = -29,
 	/** Guard */
-	CCS_RESULT_MIN                              = -31,
+	CCS_RESULT_MIN                              = -30,
 	/** Try forcing 32 bits value for bindings */
 	CCS_RESULT_FORCE_32BIT                      = INT32_MAX
 };
@@ -287,10 +277,6 @@ enum ccs_object_type_e {
 	CCS_OBJECT_TYPE_FEATURE_SPACE,
 	/** A set of features */
 	CCS_OBJECT_TYPE_FEATURES,
-	/** An evaluation of a configuration given specific features */
-	CCS_OBJECT_TYPE_FEATURES_EVALUATION,
-	/** A features aware tuner */
-	CCS_OBJECT_TYPE_FEATURES_TUNER,
 	/** A key value store */
 	CCS_OBJECT_TYPE_MAP,
 	/** An error stack */
@@ -301,8 +287,6 @@ enum ccs_object_type_e {
 	CCS_OBJECT_TYPE_TREE_SPACE,
 	/** A configuration on a tree space */
 	CCS_OBJECT_TYPE_TREE_CONFIGURATION,
-	/** A tree tuner */
-	CCS_OBJECT_TYPE_TREE_TUNER,
 	/** A distribution space */
 	CCS_OBJECT_TYPE_DISTRIBUTION_SPACE,
 	/** Guard */
