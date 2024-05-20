@@ -63,8 +63,6 @@ _ccs_serialize_bin_size_ccs_tree_configuration(
 	size_t                          *cum_size,
 	_ccs_object_serialize_options_t *opts)
 {
-	*cum_size += _ccs_serialize_bin_size_ccs_object_internal(
-		(_ccs_object_internal_t *)tree_configuration);
 	CCS_VALIDATE(_ccs_serialize_bin_size_ccs_tree_configuration_data(
 		tree_configuration->data, cum_size, opts));
 	return CCS_RESULT_SUCCESS;
@@ -77,9 +75,6 @@ _ccs_serialize_bin_ccs_tree_configuration(
 	char                           **buffer,
 	_ccs_object_serialize_options_t *opts)
 {
-	CCS_VALIDATE(_ccs_serialize_bin_ccs_object_internal(
-		(_ccs_object_internal_t *)tree_configuration, buffer_size,
-		buffer));
 	CCS_VALIDATE(_ccs_serialize_bin_ccs_tree_configuration_data(
 		tree_configuration->data, buffer_size, buffer, opts));
 	return CCS_RESULT_SUCCESS;

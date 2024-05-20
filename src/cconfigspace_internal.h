@@ -1213,6 +1213,26 @@ _ccs_serialize_bin_size_ccs_object_internal(_ccs_object_internal_t *obj)
 }
 
 static inline ccs_result_t
+_ccs_serialize_size_ccs_object_internal(
+	_ccs_object_internal_t          *obj,
+	ccs_serialize_format_t           format,
+	size_t                          *cum_size,
+	_ccs_object_serialize_options_t *opts)
+{
+	(void)opts;
+	switch (format) {
+	case CCS_SERIALIZE_FORMAT_BINARY: {
+		*cum_size += _ccs_serialize_bin_size_ccs_object_internal(obj);
+	} break;
+	default:
+		CCS_RAISE(
+			CCS_RESULT_ERROR_INVALID_VALUE,
+			"Unsupported serialization format: %d", format);
+	}
+	return CCS_RESULT_SUCCESS;
+}
+
+static inline ccs_result_t
 _ccs_serialize_bin_ccs_object_internal(
 	_ccs_object_internal_t *obj,
 	size_t                 *buffer_size,
@@ -1222,6 +1242,28 @@ _ccs_serialize_bin_ccs_object_internal(
 		obj->type, buffer_size, buffer));
 	CCS_VALIDATE(_ccs_serialize_bin_ccs_object(
 		(ccs_object_t)obj, buffer_size, buffer));
+	return CCS_RESULT_SUCCESS;
+}
+
+static inline ccs_result_t
+_ccs_serialize_ccs_object_internal(
+	_ccs_object_internal_t          *obj,
+	ccs_serialize_format_t           format,
+	size_t                          *buffer_size,
+	char                           **buffer,
+	_ccs_object_serialize_options_t *opts)
+{
+	(void)opts;
+	switch (format) {
+	case CCS_SERIALIZE_FORMAT_BINARY: {
+		CCS_VALIDATE(_ccs_serialize_bin_ccs_object_internal(
+			obj, buffer_size, buffer));
+	} break;
+	default:
+		CCS_RAISE(
+			CCS_RESULT_ERROR_INVALID_VALUE,
+			"Unsupported serialization format: %d", format);
+	}
 	return CCS_RESULT_SUCCESS;
 }
 
@@ -1253,6 +1295,43 @@ _ccs_peek_bin_ccs_object_internal(
 	return CCS_RESULT_SUCCESS;
 }
 
+struct _ccs_object_deserialize_options_s {
+	ccs_map_t                         handle_map;
+	ccs_bool_t                        map_values;
+	_ccs_file_descriptor_state_t    **ppfd_state;
+	void                             *vector;
+	void                             *data;
+	ccs_object_deserialize_callback_t deserialize_callback;
+	void                             *deserialize_user_data;
+};
+typedef struct _ccs_object_deserialize_options_s
+	_ccs_object_deserialize_options_t;
+
+static inline ccs_result_t
+_ccs_deserialize_ccs_object_internal(
+	_ccs_object_internal_t            *obj,
+	ccs_serialize_format_t             format,
+	uint32_t                           version,
+	size_t                            *buffer_size,
+	const char                       **buffer,
+	_ccs_object_deserialize_options_t *opts,
+	ccs_object_t                      *handle_ret)
+{
+	(void)version;
+	(void)opts;
+	switch (format) {
+	case CCS_SERIALIZE_FORMAT_BINARY: {
+		CCS_VALIDATE(_ccs_deserialize_bin_ccs_object_internal(
+			obj, buffer_size, buffer, handle_ret));
+	} break;
+	default:
+		CCS_RAISE(
+			CCS_RESULT_ERROR_INVALID_VALUE,
+			"Unsupported serialization format: %d", format);
+	}
+	return CCS_RESULT_SUCCESS;
+}
+
 static inline ccs_result_t
 _ccs_object_handle_check_add(
 	ccs_map_t    map,
@@ -1267,18 +1346,6 @@ _ccs_object_handle_check_add(
 	CCS_VALIDATE(ccs_map_set(map, d, ccs_object(obj)));
 	return CCS_RESULT_SUCCESS;
 }
-
-struct _ccs_object_deserialize_options_s {
-	ccs_map_t                         handle_map;
-	ccs_bool_t                        map_values;
-	_ccs_file_descriptor_state_t    **ppfd_state;
-	void                             *vector;
-	void                             *data;
-	ccs_object_deserialize_callback_t deserialize_callback;
-	void                             *deserialize_user_data;
-};
-typedef struct _ccs_object_deserialize_options_s
-	_ccs_object_deserialize_options_t;
 
 static inline ccs_result_t
 _ccs_object_serialize_user_data_size(
@@ -1407,6 +1474,9 @@ _ccs_object_serialize_size_with_opts(
 	_ccs_object_serialize_options_t *opts)
 {
 	_ccs_object_internal_t *obj = (_ccs_object_internal_t *)object;
+
+	CCS_VALIDATE(_ccs_serialize_size_ccs_object_internal(
+		obj, format, cum_size, opts));
 	CCS_VALIDATE(obj->ops->serialize_size(object, format, cum_size, opts));
 	CCS_VALIDATE(_ccs_object_serialize_user_data_size(
 		object, format, cum_size, opts));
@@ -1422,6 +1492,9 @@ _ccs_object_serialize_with_opts(
 	_ccs_object_serialize_options_t *opts)
 {
 	_ccs_object_internal_t *obj = (_ccs_object_internal_t *)object;
+
+	CCS_VALIDATE(_ccs_serialize_ccs_object_internal(
+		obj, format, buffer_size, buffer, opts));
 	CCS_VALIDATE(
 		obj->ops->serialize(object, format, buffer_size, buffer, opts));
 	CCS_VALIDATE(_ccs_object_serialize_user_data(

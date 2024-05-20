@@ -83,17 +83,13 @@ static inline size_t
 _ccs_serialize_bin_size_ccs_map(ccs_map_t map)
 {
 	_ccs_map_data_t *data = (_ccs_map_data_t *)(map->data);
-	return _ccs_serialize_bin_size_ccs_object_internal(
-		       (_ccs_object_internal_t *)map) +
-	       _ccs_serialize_bin_size_ccs_map_data(data);
+	return _ccs_serialize_bin_size_ccs_map_data(data);
 }
 
 static inline ccs_result_t
 _ccs_serialize_bin_ccs_map(ccs_map_t map, size_t *buffer_size, char **buffer)
 {
 	_ccs_map_data_t *data = (_ccs_map_data_t *)(map->data);
-	CCS_VALIDATE(_ccs_serialize_bin_ccs_object_internal(
-		(_ccs_object_internal_t *)map, buffer_size, buffer));
 	CCS_VALIDATE(
 		_ccs_serialize_bin_ccs_map_data(data, buffer_size, buffer));
 	return CCS_RESULT_SUCCESS;

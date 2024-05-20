@@ -57,9 +57,7 @@ _ccs_serialize_bin_size_ccs_parameter_categorical(ccs_parameter_t parameter)
 {
 	_ccs_parameter_categorical_data_t *data =
 		(_ccs_parameter_categorical_data_t *)(parameter->data);
-	return _ccs_serialize_bin_size_ccs_object_internal(
-		       (_ccs_object_internal_t *)parameter) +
-	       _ccs_serialize_bin_size_ccs_parameter_categorical_data(data);
+	return _ccs_serialize_bin_size_ccs_parameter_categorical_data(data);
 }
 
 static inline ccs_result_t
@@ -70,8 +68,6 @@ _ccs_serialize_bin_ccs_parameter_categorical(
 {
 	_ccs_parameter_categorical_data_t *data =
 		(_ccs_parameter_categorical_data_t *)(parameter->data);
-	CCS_VALIDATE(_ccs_serialize_bin_ccs_object_internal(
-		(_ccs_object_internal_t *)parameter, buffer_size, buffer));
 	CCS_VALIDATE(_ccs_serialize_bin_ccs_parameter_categorical_data(
 		data, buffer_size, buffer));
 	return CCS_RESULT_SUCCESS;

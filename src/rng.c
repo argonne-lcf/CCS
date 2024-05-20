@@ -38,17 +38,13 @@ static inline size_t
 _ccs_serialize_bin_size_ccs_rng(ccs_rng_t rng)
 {
 	_ccs_rng_data_t *data = (_ccs_rng_data_t *)(rng->data);
-	return _ccs_serialize_bin_size_ccs_object_internal(
-		       (_ccs_object_internal_t *)rng) +
-	       _ccs_serialize_bin_size_ccs_rng_data(data);
+	return _ccs_serialize_bin_size_ccs_rng_data(data);
 }
 
 static inline ccs_result_t
 _ccs_serialize_bin_ccs_rng(ccs_rng_t rng, size_t *buffer_size, char **buffer)
 {
 	_ccs_rng_data_t *data = (_ccs_rng_data_t *)(rng->data);
-	CCS_VALIDATE(_ccs_serialize_bin_ccs_object_internal(
-		(_ccs_object_internal_t *)rng, buffer_size, buffer));
 	CCS_VALIDATE(
 		_ccs_serialize_bin_ccs_rng_data(data, buffer_size, buffer));
 	return CCS_RESULT_SUCCESS;

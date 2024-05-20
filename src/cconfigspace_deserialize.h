@@ -226,19 +226,13 @@ _ccs_object_deserialize_with_opts(
 	ccs_result_t           err = CCS_RESULT_SUCCESS;
 	ccs_object_t           obj, handle;
 	_ccs_object_internal_t obj_internal;
-	switch (format) {
-	case CCS_SERIALIZE_FORMAT_BINARY: {
-		CCS_VALIDATE(_ccs_deserialize_bin_ccs_object_internal(
-			&obj_internal, buffer_size, buffer, &handle));
-		CCS_VALIDATE(_ccs_object_deserialize_with_opts_type(
-			&obj, obj_internal.type, format, version, buffer_size,
-			buffer, opts));
-	} break;
-	default:
-		CCS_RAISE(
-			CCS_RESULT_ERROR_INVALID_VALUE,
-			"Unsupported serialization format: %d", format);
-	}
+
+	CCS_VALIDATE(_ccs_deserialize_ccs_object_internal(
+		&obj_internal, format, version, buffer_size, buffer, opts,
+		&handle));
+	CCS_VALIDATE(_ccs_object_deserialize_with_opts_type(
+		&obj, obj_internal.type, format, version, buffer_size, buffer,
+		opts));
 	CCS_VALIDATE_ERR_GOTO(
 		err,
 		_ccs_object_deserialize_user_data(

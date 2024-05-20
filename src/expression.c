@@ -141,8 +141,6 @@ _ccs_serialize_bin_size_ccs_expression(
 {
 	_ccs_expression_data_t *data =
 		(_ccs_expression_data_t *)(expression->data);
-	*cum_size += _ccs_serialize_bin_size_ccs_object_internal(
-		(_ccs_object_internal_t *)expression);
 	CCS_VALIDATE(_ccs_serialize_bin_size_ccs_expression_data(
 		data, cum_size, opts));
 	return CCS_RESULT_SUCCESS;
@@ -157,8 +155,6 @@ _ccs_serialize_bin_ccs_expression(
 {
 	_ccs_expression_data_t *data =
 		(_ccs_expression_data_t *)(expression->data);
-	CCS_VALIDATE(_ccs_serialize_bin_ccs_object_internal(
-		(_ccs_object_internal_t *)expression, buffer_size, buffer));
 	CCS_VALIDATE(_ccs_serialize_bin_ccs_expression_data(
 		data, buffer_size, buffer, opts));
 	return CCS_RESULT_SUCCESS;
@@ -1084,8 +1080,6 @@ _ccs_serialize_bin_size_ccs_expression_literal(
 {
 	_ccs_expression_literal_data_t *data =
 		(_ccs_expression_literal_data_t *)(expression->data);
-	*cum_size += _ccs_serialize_bin_size_ccs_object_internal(
-		(_ccs_object_internal_t *)expression);
 	CCS_VALIDATE(_ccs_serialize_bin_size_ccs_expression_literal_data(
 		data, cum_size, opts));
 	return CCS_RESULT_SUCCESS;
@@ -1100,8 +1094,6 @@ _ccs_serialize_bin_ccs_expression_literal(
 {
 	_ccs_expression_literal_data_t *data =
 		(_ccs_expression_literal_data_t *)(expression->data);
-	CCS_VALIDATE(_ccs_serialize_bin_ccs_object_internal(
-		(_ccs_object_internal_t *)expression, buffer_size, buffer));
 	CCS_VALIDATE(_ccs_serialize_bin_ccs_expression_literal_data(
 		data, buffer_size, buffer, opts));
 	return CCS_RESULT_SUCCESS;
@@ -1209,8 +1201,6 @@ _ccs_serialize_bin_size_ccs_expression_variable(
 {
 	_ccs_expression_variable_data_t *data =
 		(_ccs_expression_variable_data_t *)(expression->data);
-	*cum_size += _ccs_serialize_bin_size_ccs_object_internal(
-		(_ccs_object_internal_t *)expression);
 	CCS_VALIDATE(_ccs_serialize_bin_size_ccs_expression_variable_data(
 		data, cum_size, opts));
 	return CCS_RESULT_SUCCESS;
@@ -1225,8 +1215,6 @@ _ccs_serialize_bin_ccs_expression_variable(
 {
 	_ccs_expression_variable_data_t *data =
 		(_ccs_expression_variable_data_t *)(expression->data);
-	CCS_VALIDATE(_ccs_serialize_bin_ccs_object_internal(
-		(_ccs_object_internal_t *)expression, buffer_size, buffer));
 	CCS_VALIDATE(_ccs_serialize_bin_ccs_expression_variable_data(
 		data, buffer_size, buffer, opts));
 	return CCS_RESULT_SUCCESS;

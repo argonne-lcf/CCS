@@ -85,8 +85,6 @@ _ccs_serialize_bin_size_ccs_distribution_space(
 {
 	_ccs_distribution_space_data_t *data =
 		(_ccs_distribution_space_data_t *)(distribution_space->data);
-	*cum_size += _ccs_serialize_bin_size_ccs_object_internal(
-		(_ccs_object_internal_t *)distribution_space);
 	CCS_VALIDATE(_ccs_serialize_bin_size_ccs_distribution_space_data(
 		data, cum_size, opts));
 	return CCS_RESULT_SUCCESS;
@@ -101,9 +99,6 @@ _ccs_serialize_bin_ccs_distribution_space(
 {
 	_ccs_distribution_space_data_t *data =
 		(_ccs_distribution_space_data_t *)(distribution_space->data);
-	CCS_VALIDATE(_ccs_serialize_bin_ccs_object_internal(
-		(_ccs_object_internal_t *)distribution_space, buffer_size,
-		buffer));
 	CCS_VALIDATE(_ccs_serialize_bin_ccs_distribution_space_data(
 		data, buffer_size, buffer, opts));
 	return CCS_RESULT_SUCCESS;

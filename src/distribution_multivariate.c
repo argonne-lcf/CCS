@@ -69,8 +69,6 @@ _ccs_serialize_bin_size_ccs_distribution_multivariate(
 {
 	_ccs_distribution_multivariate_data_t *data =
 		(_ccs_distribution_multivariate_data_t *)(distribution->data);
-	*cum_size += _ccs_serialize_bin_size_ccs_object_internal(
-		(_ccs_object_internal_t *)distribution);
 	CCS_VALIDATE(_ccs_serialize_bin_size_ccs_distribution_multivariate_data(
 		data, cum_size, opts));
 	return CCS_RESULT_SUCCESS;
@@ -85,8 +83,6 @@ _ccs_serialize_bin_ccs_distribution_multivariate(
 {
 	_ccs_distribution_multivariate_data_t *data =
 		(_ccs_distribution_multivariate_data_t *)(distribution->data);
-	CCS_VALIDATE(_ccs_serialize_bin_ccs_object_internal(
-		(_ccs_object_internal_t *)distribution, buffer_size, buffer));
 	CCS_VALIDATE(_ccs_serialize_bin_ccs_distribution_multivariate_data(
 		data, buffer_size, buffer, opts));
 	return CCS_RESULT_SUCCESS;

@@ -179,8 +179,6 @@ _ccs_serialize_bin_size_ccs_configuration_space(
 {
 	_ccs_configuration_space_data_t *data =
 		(_ccs_configuration_space_data_t *)(configuration_space->data);
-	*cum_size += _ccs_serialize_bin_size_ccs_object_internal(
-		(_ccs_object_internal_t *)configuration_space);
 	CCS_VALIDATE(_ccs_serialize_bin_size_ccs_configuration_space_data(
 		data, cum_size, opts));
 	return CCS_RESULT_SUCCESS;
@@ -195,9 +193,6 @@ _ccs_serialize_bin_ccs_configuration_space(
 {
 	_ccs_configuration_space_data_t *data =
 		(_ccs_configuration_space_data_t *)(configuration_space->data);
-	CCS_VALIDATE(_ccs_serialize_bin_ccs_object_internal(
-		(_ccs_object_internal_t *)configuration_space, buffer_size,
-		buffer));
 	CCS_VALIDATE(_ccs_serialize_bin_ccs_configuration_space_data(
 		data, buffer_size, buffer, opts));
 	return CCS_RESULT_SUCCESS;

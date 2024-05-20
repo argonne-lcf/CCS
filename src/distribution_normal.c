@@ -70,9 +70,7 @@ _ccs_serialize_bin_size_ccs_distribution_normal(ccs_distribution_t distribution)
 {
 	_ccs_distribution_normal_data_t *data =
 		(_ccs_distribution_normal_data_t *)(distribution->data);
-	return _ccs_serialize_bin_size_ccs_object_internal(
-		       (_ccs_object_internal_t *)distribution) +
-	       _ccs_serialize_bin_size_ccs_distribution_normal_data(data);
+	return _ccs_serialize_bin_size_ccs_distribution_normal_data(data);
 }
 
 static inline ccs_result_t
@@ -83,8 +81,6 @@ _ccs_serialize_bin_ccs_distribution_normal(
 {
 	_ccs_distribution_normal_data_t *data =
 		(_ccs_distribution_normal_data_t *)(distribution->data);
-	CCS_VALIDATE(_ccs_serialize_bin_ccs_object_internal(
-		(_ccs_object_internal_t *)distribution, buffer_size, buffer));
 	CCS_VALIDATE(_ccs_serialize_bin_ccs_distribution_normal_data(
 		data, buffer_size, buffer));
 	return CCS_RESULT_SUCCESS;

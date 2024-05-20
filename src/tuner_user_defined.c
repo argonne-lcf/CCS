@@ -33,8 +33,6 @@ _ccs_serialize_bin_size_ccs_user_defined_tuner(
 	ccs_result_t                    res = CCS_RESULT_SUCCESS;
 	_ccs_user_defined_tuner_data_t *data =
 		(_ccs_user_defined_tuner_data_t *)(tuner->data);
-	*cum_size += _ccs_serialize_bin_size_ccs_object_internal(
-		(_ccs_object_internal_t *)tuner);
 	CCS_VALIDATE(_ccs_serialize_bin_size_ccs_tuner_common_data(
 		&data->common_data, cum_size, opts));
 	size_t            history_size = 0;
@@ -104,8 +102,6 @@ _ccs_serialize_bin_ccs_user_defined_tuner(
 	ccs_result_t                    res = CCS_RESULT_SUCCESS;
 	_ccs_user_defined_tuner_data_t *data =
 		(_ccs_user_defined_tuner_data_t *)(tuner->data);
-	CCS_VALIDATE(_ccs_serialize_bin_ccs_object_internal(
-		(_ccs_object_internal_t *)tuner, buffer_size, buffer));
 	CCS_VALIDATE(_ccs_serialize_bin_ccs_tuner_common_data(
 		&data->common_data, buffer_size, buffer, opts));
 	size_t            history_size = 0;
