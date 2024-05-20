@@ -159,18 +159,10 @@ _ccs_deserialize_bin_expression(
 	const char                       **buffer,
 	_ccs_object_deserialize_options_t *opts)
 {
+	ccs_expression_type_t             dtype;
 	_ccs_object_deserialize_options_t new_opts = *opts;
-	new_opts.map_values                        = CCS_FALSE;
-	_ccs_object_internal_t obj;
-	ccs_object_t           handle;
-	ccs_result_t           res;
-	CCS_VALIDATE(_ccs_deserialize_bin_ccs_object_internal(
-		&obj, buffer_size, buffer, &handle));
-	CCS_REFUTE(
-		obj.type != CCS_OBJECT_TYPE_EXPRESSION,
-		CCS_RESULT_ERROR_INVALID_TYPE);
 
-	ccs_expression_type_t dtype;
+	new_opts.map_values                        = CCS_FALSE;
 	CCS_VALIDATE(
 		_ccs_peek_bin_ccs_expression_type(&dtype, buffer_size, buffer));
 	switch (dtype) {
@@ -192,19 +184,7 @@ _ccs_deserialize_bin_expression(
 			expression_ret, version, buffer_size, buffer,
 			&new_opts));
 	}
-	if (opts && opts->map_values && opts->handle_map)
-		CCS_VALIDATE_ERR_GOTO(
-			res,
-			_ccs_object_handle_check_add(
-				opts->handle_map, handle,
-				(ccs_object_t)*expression_ret),
-			err_exp);
-
 	return CCS_RESULT_SUCCESS;
-err_exp:
-	ccs_release_object(*expression_ret);
-	*expression_ret = NULL;
-	return res;
 }
 
 static ccs_result_t

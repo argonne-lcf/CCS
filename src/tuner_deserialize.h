@@ -236,16 +236,9 @@ _ccs_deserialize_bin_tuner(
 	_ccs_object_deserialize_options_t *opts)
 {
 	_ccs_object_deserialize_options_t new_opts = *opts;
-	_ccs_object_internal_t            obj;
-	ccs_object_t                      handle;
-	ccs_result_t                      res;
-	CCS_VALIDATE(_ccs_deserialize_bin_ccs_object_internal(
-		&obj, buffer_size, buffer, &handle));
-	CCS_REFUTE(
-		obj.type != CCS_OBJECT_TYPE_TUNER,
-		CCS_RESULT_ERROR_INVALID_TYPE);
+	ccs_result_t                      res      = CCS_RESULT_SUCCESS;
 
-	ccs_tuner_type_t ttype;
+	ccs_tuner_type_t                  ttype;
 	CCS_VALIDATE(_ccs_peek_bin_ccs_tuner_type(&ttype, buffer_size, buffer));
 	if (ttype == CCS_TUNER_TYPE_USER_DEFINED)
 		CCS_CHECK_PTR(opts->vector);
@@ -275,19 +268,7 @@ _ccs_deserialize_bin_tuner(
 			CCS_RESULT_ERROR_INVALID_TYPE,
 			"Unsupported tuner type: %d", ttype);
 	}
-	if (opts->handle_map)
-		CCS_VALIDATE_ERR_GOTO(
-			res,
-			_ccs_object_handle_check_add(
-				opts->handle_map, handle,
-				(ccs_object_t)*tuner_ret),
-			err_tuner);
 
-	res = CCS_RESULT_SUCCESS;
-	goto end;
-err_tuner:
-	ccs_release_object(*tuner_ret);
-	*tuner_ret = NULL;
 end:
 	ccs_release_object(new_opts.handle_map);
 	return res;

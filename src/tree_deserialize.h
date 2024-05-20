@@ -61,14 +61,7 @@ _ccs_deserialize_bin_tree(
 	const char                       **buffer,
 	_ccs_object_deserialize_options_t *opts)
 {
-	ccs_result_t           res = CCS_RESULT_SUCCESS;
-	_ccs_object_internal_t obj;
-	ccs_object_t           handle;
-	CCS_VALIDATE(_ccs_deserialize_bin_ccs_object_internal(
-		&obj, buffer_size, buffer, &handle));
-	CCS_REFUTE(
-		obj.type != CCS_OBJECT_TYPE_TREE,
-		CCS_RESULT_ERROR_INVALID_TYPE);
+	ccs_result_t          res = CCS_RESULT_SUCCESS;
 
 	ccs_tree_t            tree;
 	_ccs_tree_data_mock_t data;
@@ -90,12 +83,6 @@ _ccs_deserialize_bin_tree(
 				res,
 				ccs_tree_set_child(tree, i, data.children[i]),
 				err_tree);
-	if (opts && opts->map_values && opts->handle_map)
-		CCS_VALIDATE_ERR_GOTO(
-			res,
-			_ccs_object_handle_check_add(
-				opts->handle_map, handle, (ccs_object_t)tree),
-			err_tree);
 
 	*tree_ret = tree;
 	goto end;

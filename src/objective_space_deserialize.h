@@ -82,17 +82,10 @@ _ccs_deserialize_bin_objective_space(
 	_ccs_object_deserialize_options_t *opts)
 {
 	_ccs_object_deserialize_options_t new_opts = *opts;
-	_ccs_object_internal_t            obj;
-	ccs_object_t                      handle;
 	ccs_datum_t                       datum;
 	ccs_result_t                      res = CCS_RESULT_SUCCESS;
-	CCS_VALIDATE(_ccs_deserialize_bin_ccs_object_internal(
-		&obj, buffer_size, buffer, &handle));
-	CCS_REFUTE(
-		obj.type != CCS_OBJECT_TYPE_OBJECTIVE_SPACE,
-		CCS_RESULT_ERROR_INVALID_TYPE);
 
-	new_opts.map_values = CCS_TRUE;
+	new_opts.map_values                   = CCS_TRUE;
 	CCS_VALIDATE(ccs_create_map(&new_opts.handle_map));
 
 	_ccs_objective_space_data_mock_t data = {NULL, NULL, NULL, NULL, 0,
@@ -139,12 +132,6 @@ _ccs_deserialize_bin_objective_space(
 			_ccs_object_handle_check_add(
 				opts->handle_map, data.search_space_handle,
 				(ccs_object_t)data.search_space),
-			err_objective_space);
-		CCS_VALIDATE_ERR_GOTO(
-			res,
-			_ccs_object_handle_check_add(
-				opts->handle_map, handle,
-				(ccs_object_t)*objective_space_ret),
 			err_objective_space);
 	}
 	goto end;

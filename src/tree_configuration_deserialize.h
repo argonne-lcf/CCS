@@ -53,17 +53,9 @@ _ccs_deserialize_bin_tree_configuration(
 {
 	CCS_CHECK_OBJ(opts->handle_map, CCS_OBJECT_TYPE_MAP);
 	_ccs_object_deserialize_options_t new_opts = *opts;
-	_ccs_object_internal_t            obj;
-	ccs_object_t                      handle;
 	ccs_datum_t                       d;
 	ccs_tree_space_t                  tree_space;
-	ccs_tree_configuration_t          configuration;
-	ccs_result_t                      res = CCS_RESULT_SUCCESS;
-	CCS_VALIDATE(_ccs_deserialize_bin_ccs_object_internal(
-		&obj, buffer_size, buffer, &handle));
-	CCS_REFUTE(
-		obj.type != CCS_OBJECT_TYPE_TREE_CONFIGURATION,
-		CCS_RESULT_ERROR_INVALID_TYPE);
+	ccs_result_t                      res    = CCS_RESULT_SUCCESS;
 
 	new_opts.map_values                      = CCS_FALSE;
 	_ccs_tree_configuration_data_mock_t data = {
@@ -87,21 +79,9 @@ _ccs_deserialize_bin_tree_configuration(
 		res,
 		ccs_create_tree_configuration(
 			tree_space, data.features, data.position_size,
-			data.position, &configuration),
+			data.position, configuration_ret),
 		end);
 
-	if (opts->map_values)
-		CCS_VALIDATE_ERR_GOTO(
-			res,
-			_ccs_object_handle_check_add(
-				opts->handle_map, handle,
-				(ccs_object_t)configuration),
-			err_configuration);
-	*configuration_ret = configuration;
-	goto end;
-
-err_configuration:
-	ccs_release_object(configuration);
 end:
 	if (data.features)
 		ccs_release_object(data.features);

@@ -132,14 +132,7 @@ _ccs_deserialize_bin_tree_space(
 	const char                       **buffer,
 	_ccs_object_deserialize_options_t *opts)
 {
-	ccs_result_t           res = CCS_RESULT_SUCCESS;
-	_ccs_object_internal_t obj;
-	ccs_object_t           handle;
-	CCS_VALIDATE(_ccs_deserialize_bin_ccs_object_internal(
-		&obj, buffer_size, buffer, &handle));
-	CCS_REFUTE(
-		obj.type != CCS_OBJECT_TYPE_TREE_SPACE,
-		CCS_RESULT_ERROR_INVALID_TYPE);
+	ccs_result_t          res = CCS_RESULT_SUCCESS;
 
 	ccs_tree_space_type_t stype;
 	CCS_VALIDATE(
@@ -164,7 +157,7 @@ _ccs_deserialize_bin_tree_space(
 			CCS_RESULT_ERROR_UNSUPPORTED_OPERATION,
 			"Unsupported tree space type: %d", stype);
 	}
-	if (opts && opts->map_values && opts->handle_map) {
+	if (opts->map_values) {
 		if (data.feature_space_handle)
 			CCS_VALIDATE_ERR_GOTO(
 				res,
@@ -173,12 +166,6 @@ _ccs_deserialize_bin_tree_space(
 					data.feature_space_handle,
 					(ccs_object_t)data.feature_space),
 				err_tree_space);
-		CCS_VALIDATE_ERR_GOTO(
-			res,
-			_ccs_object_handle_check_add(
-				opts->handle_map, handle,
-				(ccs_object_t)*tree_space_ret),
-			err_tree_space);
 	}
 	return CCS_RESULT_SUCCESS;
 err_tree_space:

@@ -40,21 +40,14 @@ _ccs_deserialize_bin_ccs_evaluation(
 {
 	CCS_CHECK_OBJ(opts->handle_map, CCS_OBJECT_TYPE_MAP);
 	_ccs_object_deserialize_options_t new_opts = *opts;
-	_ccs_object_internal_t            obj;
-	ccs_object_t                      handle;
 	ccs_datum_t                       d;
 	ccs_objective_space_t             os;
 	ccs_evaluation_t                  evaluation;
 	ccs_result_t                      res = CCS_RESULT_SUCCESS;
-	CCS_VALIDATE(_ccs_deserialize_bin_ccs_object_internal(
-		&obj, buffer_size, buffer, &handle));
-	CCS_REFUTE(
-		obj.type != CCS_OBJECT_TYPE_EVALUATION,
-		CCS_RESULT_ERROR_INVALID_TYPE);
 
-	new_opts.map_values              = CCS_FALSE;
-	_ccs_evaluation_data_mock_t data = {
-		{NULL, 0, NULL}, NULL, CCS_RESULT_SUCCESS};
+	new_opts.map_values                   = CCS_FALSE;
+	_ccs_evaluation_data_mock_t data      = {
+                {NULL, 0, NULL}, NULL, CCS_RESULT_SUCCESS};
 	CCS_VALIDATE_ERR_GOTO(
 		res,
 		_ccs_deserialize_bin_ccs_evaluation_data(
@@ -77,18 +70,7 @@ _ccs_deserialize_bin_ccs_evaluation(
 			data.base.num_values, data.base.values, &evaluation),
 		end);
 
-	if (opts->map_values)
-		CCS_VALIDATE_ERR_GOTO(
-			res,
-			_ccs_object_handle_check_add(
-				opts->handle_map, handle,
-				(ccs_object_t)evaluation),
-			err_evaluation);
 	*evaluation_ret = evaluation;
-	goto end;
-
-err_evaluation:
-	ccs_release_object(evaluation);
 end:
 	if (data.configuration)
 		ccs_release_object(data.configuration);

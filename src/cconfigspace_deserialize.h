@@ -52,6 +52,7 @@ _ccs_object_deserialize_options(
 		case CCS_DESERIALIZE_OPTION_HANDLE_MAP:
 			opts->handle_map = va_arg(args, ccs_map_t);
 			CCS_CHECK_OBJ(opts->handle_map, CCS_OBJECT_TYPE_MAP);
+			opts->map_values = CCS_TRUE;
 			break;
 		case CCS_DESERIALIZE_OPTION_VECTOR:
 			opts->vector = va_arg(args, void *);
@@ -222,16 +223,16 @@ _ccs_object_deserialize_with_opts(
 	const char                       **buffer,
 	_ccs_object_deserialize_options_t *opts)
 {
-	ccs_result_t err = CCS_RESULT_SUCCESS;
-	ccs_object_t obj;
+	ccs_result_t           err = CCS_RESULT_SUCCESS;
+	ccs_object_t           obj, handle;
+	_ccs_object_internal_t obj_internal;
 	switch (format) {
 	case CCS_SERIALIZE_FORMAT_BINARY: {
-		ccs_object_type_t otype;
-		CCS_VALIDATE(_ccs_peek_bin_ccs_object_type(
-			&otype, buffer_size, buffer));
+		CCS_VALIDATE(_ccs_deserialize_bin_ccs_object_internal(
+			&obj_internal, buffer_size, buffer, &handle));
 		CCS_VALIDATE(_ccs_object_deserialize_with_opts_type(
-			&obj, otype, format, version, buffer_size, buffer,
-			opts));
+			&obj, obj_internal.type, format, version, buffer_size,
+			buffer, opts));
 	} break;
 	default:
 		CCS_RAISE(
@@ -243,6 +244,13 @@ _ccs_object_deserialize_with_opts(
 		_ccs_object_deserialize_user_data(
 			obj, format, version, buffer_size, buffer, opts),
 		errobj);
+	if (opts->map_values)
+		CCS_VALIDATE_ERR_GOTO(
+			err,
+			_ccs_object_handle_check_add(
+				opts->handle_map, handle, obj),
+			errobj);
+
 	*object_ret = obj;
 	return CCS_RESULT_SUCCESS;
 errobj:

@@ -99,16 +99,9 @@ _ccs_deserialize_bin_configuration_space(
 	_ccs_object_deserialize_options_t *opts)
 {
 	_ccs_object_deserialize_options_t new_opts = *opts;
-	_ccs_object_internal_t            obj;
-	ccs_object_t                      handle;
-	ccs_result_t                      res = CCS_RESULT_SUCCESS;
-	CCS_VALIDATE(_ccs_deserialize_bin_ccs_object_internal(
-		&obj, buffer_size, buffer, &handle));
-	CCS_REFUTE(
-		obj.type != CCS_OBJECT_TYPE_CONFIGURATION_SPACE,
-		CCS_RESULT_ERROR_INVALID_TYPE);
+	ccs_result_t                      res      = CCS_RESULT_SUCCESS;
 
-	new_opts.map_values = CCS_TRUE;
+	new_opts.map_values                        = CCS_TRUE;
 	CCS_VALIDATE(ccs_create_map(&new_opts.handle_map));
 
 	_ccs_configuration_space_data_mock_t data = {
@@ -126,7 +119,7 @@ _ccs_deserialize_bin_configuration_space(
 			data.forbidden_clauses, data.feature_space, data.rng,
 			configuration_space_ret),
 		end);
-	if (opts && opts->map_values && opts->handle_map) {
+	if (opts->map_values) {
 		if (data.feature_space_handle)
 			CCS_VALIDATE_ERR_GOTO(
 				res,
@@ -135,12 +128,6 @@ _ccs_deserialize_bin_configuration_space(
 					data.feature_space_handle,
 					(ccs_object_t)data.feature_space),
 				err_configuration_space);
-		CCS_VALIDATE_ERR_GOTO(
-			res,
-			_ccs_object_handle_check_add(
-				opts->handle_map, handle,
-				(ccs_object_t)*configuration_space_ret),
-			err_configuration_space);
 	}
 	goto end;
 

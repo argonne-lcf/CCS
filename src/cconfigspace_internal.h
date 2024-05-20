@@ -1407,8 +1407,7 @@ _ccs_object_serialize_size_with_opts(
 	_ccs_object_serialize_options_t *opts)
 {
 	_ccs_object_internal_t *obj = (_ccs_object_internal_t *)object;
-	CCS_VALIDATE(
-		obj->ops->serialize_size(object, format, cum_size, opts));
+	CCS_VALIDATE(obj->ops->serialize_size(object, format, cum_size, opts));
 	CCS_VALIDATE(_ccs_object_serialize_user_data_size(
 		object, format, cum_size, opts));
 	return CCS_RESULT_SUCCESS;

@@ -2,6 +2,7 @@
 #include <assert.h>
 #include <cconfigspace.h>
 #include <gsl/gsl_rng.h>
+#include "test_utils.h"
 
 static void
 test_rng_create_with_type(void)
@@ -77,6 +78,7 @@ test_rng_create(void)
 		(ccs_object_t *)&rng2, CCS_SERIALIZE_FORMAT_BINARY,
 		CCS_SERIALIZE_OPERATION_MEMORY, buff_size, buff,
 		CCS_DESERIALIZE_OPTION_END);
+	print_ccs_error_stack();
 	assert(err == CCS_RESULT_SUCCESS);
 	free(buff);
 

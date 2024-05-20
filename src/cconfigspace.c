@@ -572,8 +572,8 @@ _ccs_object_deserialize(
 {
 	uint32_t                          version;
 	size_t                            size;
-	_ccs_object_deserialize_options_t opts = {NULL, CCS_TRUE, NULL, NULL,
-						  NULL, NULL,     NULL};
+	_ccs_object_deserialize_options_t opts = {NULL, CCS_FALSE, NULL, NULL,
+						  NULL, NULL,      NULL};
 	CCS_VALIDATE(_ccs_object_deserialize_options(
 		format, operation, args, &opts));
 	CCS_VALIDATE(_ccs_deserialize_header(
@@ -700,8 +700,8 @@ _ccs_object_deserialize_file_descriptor(
 	int                               non_blocking;
 	size_t                            header_size;
 	ssize_t                           offset;
-	_ccs_object_deserialize_options_t opts   = {NULL, CCS_TRUE, NULL, NULL,
-						    NULL, NULL,     NULL};
+	_ccs_object_deserialize_options_t opts   = {NULL, CCS_FALSE, NULL, NULL,
+						    NULL, NULL,      NULL};
 	_ccs_file_descriptor_state_t      state  = {NULL, 0, NULL, 0, -1, 0};
 	_ccs_file_descriptor_state_t     *pstate = NULL;
 	fd                                       = va_arg(args, int);

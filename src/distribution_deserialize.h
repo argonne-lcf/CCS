@@ -317,15 +317,6 @@ _ccs_deserialize_bin_distribution(
 	const char                       **buffer,
 	_ccs_object_deserialize_options_t *opts)
 {
-	_ccs_object_internal_t obj;
-	ccs_object_t           handle;
-	ccs_result_t           res;
-	CCS_VALIDATE(_ccs_deserialize_bin_ccs_object_internal(
-		&obj, buffer_size, buffer, &handle));
-	CCS_REFUTE(
-		obj.type != CCS_OBJECT_TYPE_DISTRIBUTION,
-		CCS_RESULT_ERROR_INVALID_TYPE);
-
 	ccs_distribution_type_t dtype;
 	CCS_VALIDATE(_ccs_peek_bin_ccs_distribution_type(
 		&dtype, buffer_size, buffer));
@@ -355,19 +346,7 @@ _ccs_deserialize_bin_distribution(
 			CCS_RESULT_ERROR_UNSUPPORTED_OPERATION,
 			"Unsupported distribution type: %d", dtype);
 	}
-	if (opts && opts->handle_map)
-		CCS_VALIDATE_ERR_GOTO(
-			res,
-			_ccs_object_handle_check_add(
-				opts->handle_map, handle,
-				(ccs_object_t)*distribution_ret),
-			err_dis);
-
 	return CCS_RESULT_SUCCESS;
-err_dis:
-	ccs_release_object(*distribution_ret);
-	*distribution_ret = NULL;
-	return res;
 }
 
 static ccs_result_t

@@ -161,16 +161,9 @@ _ccs_deserialize_bin_parameter(
 	const char                       **buffer,
 	_ccs_object_deserialize_options_t *opts)
 {
-	_ccs_object_internal_t obj;
-	ccs_object_t           handle;
-	ccs_result_t           res;
-	CCS_VALIDATE(_ccs_deserialize_bin_ccs_object_internal(
-		&obj, buffer_size, buffer, &handle));
-	CCS_REFUTE(
-		obj.type != CCS_OBJECT_TYPE_PARAMETER,
-		CCS_RESULT_ERROR_INVALID_TYPE);
-
 	ccs_parameter_type_t htype;
+
+	(void)opts;
 	CCS_VALIDATE(
 		_ccs_peek_bin_ccs_parameter_type(&htype, buffer_size, buffer));
 	switch (htype) {
@@ -193,19 +186,7 @@ _ccs_deserialize_bin_parameter(
 			CCS_RESULT_ERROR_INVALID_TYPE,
 			"Unsupport parameter type: %d", htype);
 	}
-	if (opts->handle_map)
-		CCS_VALIDATE_ERR_GOTO(
-			res,
-			_ccs_object_handle_check_add(
-				opts->handle_map, handle,
-				(ccs_object_t)*parameter_ret),
-			err_parameter);
-
 	return CCS_RESULT_SUCCESS;
-err_parameter:
-	ccs_release_object(*parameter_ret);
-	*parameter_ret = NULL;
-	return res;
 }
 
 static ccs_result_t
