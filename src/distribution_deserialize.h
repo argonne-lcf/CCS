@@ -167,15 +167,6 @@ end:
 	return res;
 }
 
-static inline ccs_result_t
-_ccs_distribution_deserialize(
-	ccs_distribution_t                *distribution_ret,
-	ccs_serialize_format_t             format,
-	uint32_t                           version,
-	size_t                            *buffer_size,
-	const char                       **buffer,
-	_ccs_object_deserialize_options_t *opts);
-
 struct _ccs_distribution_mixture_data_mock_s {
 	_ccs_distribution_common_data_t common_data;
 	size_t                          num_distributions;
@@ -208,9 +199,11 @@ _ccs_deserialize_bin_ccs_distribution_mixture_data(
 	for (size_t i = 0; i < data->num_distributions; i++) {
 		CCS_VALIDATE(_ccs_deserialize_bin_ccs_float(
 			data->weights + i, buffer_size, buffer));
-		CCS_VALIDATE(_ccs_distribution_deserialize(
-			data->distributions + i, CCS_SERIALIZE_FORMAT_BINARY,
-			version, buffer_size, buffer, &new_opts));
+		CCS_VALIDATE(_ccs_object_deserialize_with_opts_check(
+			(ccs_object_t *)data->distributions + i,
+			CCS_OBJECT_TYPE_DISTRIBUTION,
+			CCS_SERIALIZE_FORMAT_BINARY, version, buffer_size,
+			buffer, &new_opts));
 	}
 	return CCS_RESULT_SUCCESS;
 }
@@ -276,9 +269,11 @@ _ccs_deserialize_bin_ccs_distribution_multivariate_data(
 		data->num_distributions, sizeof(ccs_distribution_t));
 	CCS_REFUTE(!data->distributions, CCS_RESULT_ERROR_OUT_OF_MEMORY);
 	for (size_t i = 0; i < data->num_distributions; i++)
-		CCS_VALIDATE(_ccs_distribution_deserialize(
-			data->distributions + i, CCS_SERIALIZE_FORMAT_BINARY,
-			version, buffer_size, buffer, &new_opts));
+		CCS_VALIDATE(_ccs_object_deserialize_with_opts_check(
+			(ccs_object_t *)data->distributions + i,
+			CCS_OBJECT_TYPE_DISTRIBUTION,
+			CCS_SERIALIZE_FORMAT_BINARY, version, buffer_size,
+			buffer, &new_opts));
 	return CCS_RESULT_SUCCESS;
 }
 
@@ -394,9 +389,6 @@ _ccs_distribution_deserialize(
 			CCS_RESULT_ERROR_INVALID_VALUE,
 			"Unsupported serialization format: %d", format);
 	}
-	CCS_VALIDATE(_ccs_object_deserialize_user_data(
-		(ccs_object_t)*distribution_ret, format, version, buffer_size,
-		buffer, opts));
 	return CCS_RESULT_SUCCESS;
 }
 

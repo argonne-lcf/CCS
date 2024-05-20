@@ -129,9 +129,6 @@ _ccs_tree_configuration_deserialize(
 			CCS_RESULT_ERROR_INVALID_VALUE,
 			"Unsupported serialization format: %d", format);
 	}
-	CCS_VALIDATE(_ccs_object_deserialize_user_data(
-		(ccs_object_t)*configuration_ret, format, version, buffer_size,
-		buffer, opts));
 	return CCS_RESULT_SUCCESS;
 }
 

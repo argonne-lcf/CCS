@@ -13,15 +13,6 @@ struct _ccs_tree_data_mock_s {
 typedef struct _ccs_tree_data_mock_s _ccs_tree_data_mock_t;
 
 static inline ccs_result_t
-_ccs_tree_deserialize(
-	ccs_tree_t                        *tree_ret,
-	ccs_serialize_format_t             format,
-	uint32_t                           version,
-	size_t                            *buffer_size,
-	const char                       **buffer,
-	_ccs_object_deserialize_options_t *opts);
-
-static inline ccs_result_t
 _ccs_deserialize_bin_ccs_tree_data(
 	_ccs_tree_data_mock_t             *data,
 	uint32_t                           version,
@@ -45,10 +36,14 @@ _ccs_deserialize_bin_ccs_tree_data(
 			CCS_VALIDATE(_ccs_deserialize_bin_ccs_bool(
 				&present, buffer_size, buffer));
 			if (present)
-				CCS_VALIDATE(_ccs_tree_deserialize(
-					data->children + i,
-					CCS_SERIALIZE_FORMAT_BINARY, version,
-					buffer_size, buffer, &new_opts));
+				CCS_VALIDATE(
+					_ccs_object_deserialize_with_opts_check(
+						(ccs_object_t *)data->children +
+							i,
+						CCS_OBJECT_TYPE_TREE,
+						CCS_SERIALIZE_FORMAT_BINARY,
+						version, buffer_size, buffer,
+						&new_opts));
 		}
 	}
 	CCS_VALIDATE(_ccs_deserialize_bin_ccs_float(
@@ -135,9 +130,6 @@ _ccs_tree_deserialize(
 			CCS_RESULT_ERROR_INVALID_VALUE,
 			"Unsupported serialization format: %d", format);
 	}
-	CCS_VALIDATE(_ccs_object_deserialize_user_data(
-		(ccs_object_t)*tree_ret, format, version, buffer_size, buffer,
-		opts));
 	return CCS_RESULT_SUCCESS;
 }
 

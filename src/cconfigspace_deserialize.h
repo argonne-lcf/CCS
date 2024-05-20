@@ -201,9 +201,9 @@ _ccs_object_deserialize_with_opts_check(
 			&otype, buffer_size, buffer));
 		CCS_REFUTE(
 			otype != expected_type, CCS_RESULT_ERROR_INVALID_TYPE);
-		CCS_VALIDATE(_ccs_object_deserialize_with_opts_type(
-			object_ret, expected_type, format, version, buffer_size,
-			buffer, opts));
+		CCS_VALIDATE(_ccs_object_deserialize_with_opts(
+			object_ret, format, version, buffer_size, buffer,
+			opts));
 	} break;
 	default:
 		CCS_RAISE(
@@ -222,13 +222,15 @@ _ccs_object_deserialize_with_opts(
 	const char                       **buffer,
 	_ccs_object_deserialize_options_t *opts)
 {
+	ccs_result_t err = CCS_RESULT_SUCCESS;
+	ccs_object_t obj;
 	switch (format) {
 	case CCS_SERIALIZE_FORMAT_BINARY: {
 		ccs_object_type_t otype;
 		CCS_VALIDATE(_ccs_peek_bin_ccs_object_type(
 			&otype, buffer_size, buffer));
 		CCS_VALIDATE(_ccs_object_deserialize_with_opts_type(
-			object_ret, otype, format, version, buffer_size, buffer,
+			&obj, otype, format, version, buffer_size, buffer,
 			opts));
 	} break;
 	default:
@@ -236,7 +238,16 @@ _ccs_object_deserialize_with_opts(
 			CCS_RESULT_ERROR_INVALID_VALUE,
 			"Unsupported serialization format: %d", format);
 	}
+	CCS_VALIDATE_ERR_GOTO(
+		err,
+		_ccs_object_deserialize_user_data(
+			obj, format, version, buffer_size, buffer, opts),
+		errobj);
+	*object_ret = obj;
 	return CCS_RESULT_SUCCESS;
+errobj:
+	ccs_release_object(obj);
+	return err;
 }
 
 #endif //_CCONFIG_SPACE_SPACE_DESERIALIZE_H

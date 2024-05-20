@@ -11,23 +11,6 @@ struct _ccs_expression_data_mock_s {
 typedef struct _ccs_expression_data_mock_s _ccs_expression_data_mock_t;
 
 static inline ccs_result_t
-_ccs_deserialize_bin_expression(
-	ccs_expression_t                  *expression_ret,
-	uint32_t                           version,
-	size_t                            *buffer_size,
-	const char                       **buffer,
-	_ccs_object_deserialize_options_t *opts);
-
-static ccs_result_t
-_ccs_expression_deserialize(
-	ccs_expression_t                  *expression_ret,
-	ccs_serialize_format_t             format,
-	uint32_t                           version,
-	size_t                            *buffer_size,
-	const char                       **buffer,
-	_ccs_object_deserialize_options_t *opts);
-
-static inline ccs_result_t
 _ccs_deserialize_bin_ccs_expression_data(
 	_ccs_expression_data_mock_t       *data,
 	uint32_t                           version,
@@ -46,8 +29,10 @@ _ccs_deserialize_bin_ccs_expression_data(
 		CCS_REFUTE(!data->nodes, CCS_RESULT_ERROR_OUT_OF_MEMORY);
 		for (size_t i = 0; i < data->num_nodes; i++) {
 			ccs_expression_t expr;
-			CCS_VALIDATE(_ccs_expression_deserialize(
-				&expr, CCS_SERIALIZE_FORMAT_BINARY, version,
+			CCS_VALIDATE(_ccs_object_deserialize_with_opts_check(
+				(ccs_object_t *)&expr,
+				CCS_OBJECT_TYPE_EXPRESSION,
+				CCS_SERIALIZE_FORMAT_BINARY, version,
 				buffer_size, buffer, opts));
 			data->nodes[i].type    = CCS_DATA_TYPE_OBJECT;
 			data->nodes[i].value.o = expr;
@@ -241,9 +226,6 @@ _ccs_expression_deserialize(
 			CCS_RESULT_ERROR_INVALID_VALUE,
 			"Unsupported serialization format: %d", format);
 	}
-	CCS_VALIDATE(_ccs_object_deserialize_user_data(
-		(ccs_object_t)*expression_ret, format, version, buffer_size,
-		buffer, opts));
 	return CCS_RESULT_SUCCESS;
 }
 
