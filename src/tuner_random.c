@@ -43,7 +43,7 @@ _ccs_serialize_bin_size_ccs_random_tuner_data(
 	*cum_size += _ccs_serialize_bin_size_size(utarray_len(data->history));
 	*cum_size += _ccs_serialize_bin_size_size(utarray_len(data->optima));
 	while ((e = (ccs_evaluation_t *)utarray_next(data->history, e)))
-		CCS_VALIDATE((*e)->obj.ops->serialize_size(
+		CCS_VALIDATE(_ccs_object_serialize_size_with_opts(
 			*e, CCS_SERIALIZE_FORMAT_BINARY, cum_size, opts));
 	e = NULL;
 	while ((e = (ccs_evaluation_t *)utarray_next(data->optima, e)))
@@ -66,7 +66,7 @@ _ccs_serialize_bin_ccs_random_tuner_data(
 	CCS_VALIDATE(_ccs_serialize_bin_size(
 		utarray_len(data->optima), buffer_size, buffer));
 	while ((e = (ccs_evaluation_t *)utarray_next(data->history, e)))
-		CCS_VALIDATE((*e)->obj.ops->serialize(
+		CCS_VALIDATE(_ccs_object_serialize_with_opts(
 			*e, CCS_SERIALIZE_FORMAT_BINARY, buffer_size, buffer,
 			opts));
 	e = NULL;

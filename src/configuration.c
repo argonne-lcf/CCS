@@ -25,7 +25,7 @@ _ccs_serialize_bin_size_ccs_configuration_data(
 		(_ccs_binding_data_t *)data);
 	*cum_size += _ccs_serialize_bin_size_ccs_bool(data->features != NULL);
 	if (data->features)
-		CCS_VALIDATE(data->features->obj.ops->serialize_size(
+		CCS_VALIDATE(_ccs_object_serialize_size_with_opts(
 			data->features, CCS_SERIALIZE_FORMAT_BINARY, cum_size,
 			opts));
 	return CCS_RESULT_SUCCESS;
@@ -43,7 +43,7 @@ _ccs_serialize_bin_ccs_configuration_data(
 	CCS_VALIDATE(_ccs_serialize_bin_ccs_bool(
 		data->features != NULL, buffer_size, buffer));
 	if (data->features)
-		CCS_VALIDATE(data->features->obj.ops->serialize(
+		CCS_VALIDATE(_ccs_object_serialize_with_opts(
 			data->features, CCS_SERIALIZE_FORMAT_BINARY,
 			buffer_size, buffer, opts));
 	return CCS_RESULT_SUCCESS;

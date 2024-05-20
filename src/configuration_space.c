@@ -75,17 +75,17 @@ _ccs_serialize_bin_size_ccs_configuration_space_data(
 	/* feature space */
 	*cum_size += _ccs_serialize_bin_size_ccs_object(data->feature_space);
 	if (data->feature_space)
-		CCS_VALIDATE(data->feature_space->obj.ops->serialize_size(
+		CCS_VALIDATE(_ccs_object_serialize_size_with_opts(
 			data->feature_space, CCS_SERIALIZE_FORMAT_BINARY,
 			cum_size, opts));
 
 	/* rng */
-	CCS_VALIDATE(data->rng->obj.ops->serialize_size(
+	CCS_VALIDATE(_ccs_object_serialize_size_with_opts(
 		data->rng, CCS_SERIALIZE_FORMAT_BINARY, cum_size, opts));
 
 	/* parameters */
 	for (size_t i = 0; i < data->num_parameters; i++)
-		CCS_VALIDATE(data->parameters[i]->obj.ops->serialize_size(
+		CCS_VALIDATE(_ccs_object_serialize_size_with_opts(
 			data->parameters[i], CCS_SERIALIZE_FORMAT_BINARY,
 			cum_size, opts));
 
@@ -94,19 +94,16 @@ _ccs_serialize_bin_size_ccs_configuration_space_data(
 		if (data->conditions[i]) {
 			/* parameter index and condition */
 			*cum_size += _ccs_serialize_bin_size_size(i);
-			CCS_VALIDATE(
-				data->conditions[i]->obj.ops->serialize_size(
-					data->conditions[i],
-					CCS_SERIALIZE_FORMAT_BINARY, cum_size,
-					opts));
+			CCS_VALIDATE(_ccs_object_serialize_size_with_opts(
+				data->conditions[i],
+				CCS_SERIALIZE_FORMAT_BINARY, cum_size, opts));
 		}
 
 	/* forbidden clauses */
 	for (size_t i = 0; i < data->num_forbidden_clauses; i++)
-		CCS_VALIDATE(
-			data->forbidden_clauses[i]->obj.ops->serialize_size(
-				data->forbidden_clauses[i],
-				CCS_SERIALIZE_FORMAT_BINARY, cum_size, opts));
+		CCS_VALIDATE(_ccs_object_serialize_size_with_opts(
+			data->forbidden_clauses[i], CCS_SERIALIZE_FORMAT_BINARY,
+			cum_size, opts));
 
 	return CCS_RESULT_SUCCESS;
 }
@@ -139,18 +136,18 @@ _ccs_serialize_bin_ccs_configuration_space_data(
 	CCS_VALIDATE(_ccs_serialize_bin_ccs_object(
 		data->feature_space, buffer_size, buffer));
 	if (data->feature_space)
-		CCS_VALIDATE(data->feature_space->obj.ops->serialize(
+		CCS_VALIDATE(_ccs_object_serialize_with_opts(
 			data->feature_space, CCS_SERIALIZE_FORMAT_BINARY,
 			buffer_size, buffer, opts));
 
 	/* rng */
-	CCS_VALIDATE(data->rng->obj.ops->serialize(
+	CCS_VALIDATE(_ccs_object_serialize_with_opts(
 		data->rng, CCS_SERIALIZE_FORMAT_BINARY, buffer_size, buffer,
 		opts));
 
 	/* parameters */
 	for (size_t i = 0; i < data->num_parameters; i++)
-		CCS_VALIDATE(data->parameters[i]->obj.ops->serialize(
+		CCS_VALIDATE(_ccs_object_serialize_with_opts(
 			data->parameters[i], CCS_SERIALIZE_FORMAT_BINARY,
 			buffer_size, buffer, opts));
 
@@ -159,7 +156,7 @@ _ccs_serialize_bin_ccs_configuration_space_data(
 		if (data->conditions[i]) {
 			CCS_VALIDATE(_ccs_serialize_bin_size(
 				i, buffer_size, buffer));
-			CCS_VALIDATE(data->conditions[i]->obj.ops->serialize(
+			CCS_VALIDATE(_ccs_object_serialize_with_opts(
 				data->conditions[i],
 				CCS_SERIALIZE_FORMAT_BINARY, buffer_size,
 				buffer, opts));
@@ -167,7 +164,7 @@ _ccs_serialize_bin_ccs_configuration_space_data(
 
 	/* forbidden clauses */
 	for (size_t i = 0; i < data->num_forbidden_clauses; i++)
-		CCS_VALIDATE(data->forbidden_clauses[i]->obj.ops->serialize(
+		CCS_VALIDATE(_ccs_object_serialize_with_opts(
 			data->forbidden_clauses[i], CCS_SERIALIZE_FORMAT_BINARY,
 			buffer_size, buffer, opts));
 

@@ -50,7 +50,7 @@ _ccs_serialize_bin_size_ccs_objective_space_data(
 
 	*cum_size += _ccs_serialize_bin_size_ccs_object(feature_space);
 	*cum_size += _ccs_serialize_bin_size_ccs_object(search_space);
-	CCS_VALIDATE(search_space->obj.ops->serialize_size(
+	CCS_VALIDATE(_ccs_object_serialize_size_with_opts(
 		search_space, CCS_SERIALIZE_FORMAT_BINARY, cum_size, opts));
 
 	*cum_size += _ccs_serialize_bin_size_size(num_parameters);
@@ -58,13 +58,13 @@ _ccs_serialize_bin_size_ccs_objective_space_data(
 
 	/* parameters */
 	for (size_t i = 0; i < num_parameters; i++)
-		CCS_VALIDATE(parameters[i]->obj.ops->serialize_size(
+		CCS_VALIDATE(_ccs_object_serialize_size_with_opts(
 			parameters[i], CCS_SERIALIZE_FORMAT_BINARY, cum_size,
 			opts));
 
 	/* objectives */
 	for (size_t i = 0; i < num_objectives; i++) {
-		CCS_VALIDATE(objectives[i].expression->obj.ops->serialize_size(
+		CCS_VALIDATE(_ccs_object_serialize_size_with_opts(
 			objectives[i].expression, CCS_SERIALIZE_FORMAT_BINARY,
 			cum_size, opts));
 		*cum_size += _ccs_serialize_bin_size_ccs_objective_type(
@@ -95,7 +95,7 @@ _ccs_serialize_bin_ccs_objective_space_data(
 		feature_space, buffer_size, buffer));
 	CCS_VALIDATE(_ccs_serialize_bin_ccs_object(
 		search_space, buffer_size, buffer));
-	CCS_VALIDATE(search_space->obj.ops->serialize(
+	CCS_VALIDATE(_ccs_object_serialize_with_opts(
 		search_space, CCS_SERIALIZE_FORMAT_BINARY, buffer_size, buffer,
 		opts));
 
@@ -106,13 +106,13 @@ _ccs_serialize_bin_ccs_objective_space_data(
 
 	/* parameters */
 	for (size_t i = 0; i < num_parameters; i++)
-		CCS_VALIDATE(parameters[i]->obj.ops->serialize(
+		CCS_VALIDATE(_ccs_object_serialize_with_opts(
 			parameters[i], CCS_SERIALIZE_FORMAT_BINARY, buffer_size,
 			buffer, opts));
 
 	/* objectives */
 	for (size_t i = 0; i < num_objectives; i++) {
-		CCS_VALIDATE(objectives[i].expression->obj.ops->serialize(
+		CCS_VALIDATE(_ccs_object_serialize_with_opts(
 			objectives[i].expression, CCS_SERIALIZE_FORMAT_BINARY,
 			buffer_size, buffer, opts));
 		CCS_VALIDATE(_ccs_serialize_bin_ccs_objective_type(

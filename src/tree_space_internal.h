@@ -62,13 +62,13 @@ _ccs_serialize_bin_size_ccs_tree_space_common_data(
 {
 	*cum_size += _ccs_serialize_bin_size_ccs_tree_space_type(data->type) +
 		     _ccs_serialize_bin_size_string(data->name);
-	CCS_VALIDATE(data->rng->obj.ops->serialize_size(
+	CCS_VALIDATE(_ccs_object_serialize_size_with_opts(
 		data->rng, CCS_SERIALIZE_FORMAT_BINARY, cum_size, opts));
-	CCS_VALIDATE(data->tree->obj.ops->serialize_size(
+	CCS_VALIDATE(_ccs_object_serialize_size_with_opts(
 		data->tree, CCS_SERIALIZE_FORMAT_BINARY, cum_size, opts));
 	*cum_size += _ccs_serialize_bin_size_ccs_object(data->feature_space);
 	if (data->feature_space)
-		CCS_VALIDATE(data->feature_space->obj.ops->serialize_size(
+		CCS_VALIDATE(_ccs_object_serialize_size_with_opts(
 			data->feature_space, CCS_SERIALIZE_FORMAT_BINARY,
 			cum_size, opts));
 	return CCS_RESULT_SUCCESS;
@@ -85,16 +85,16 @@ _ccs_serialize_bin_ccs_tree_space_common_data(
 		data->type, buffer_size, buffer));
 	CCS_VALIDATE(
 		_ccs_serialize_bin_string(data->name, buffer_size, buffer));
-	CCS_VALIDATE(data->rng->obj.ops->serialize(
+	CCS_VALIDATE(_ccs_object_serialize_with_opts(
 		data->rng, CCS_SERIALIZE_FORMAT_BINARY, buffer_size, buffer,
 		opts));
-	CCS_VALIDATE(data->tree->obj.ops->serialize(
+	CCS_VALIDATE(_ccs_object_serialize_with_opts(
 		data->tree, CCS_SERIALIZE_FORMAT_BINARY, buffer_size, buffer,
 		opts));
 	CCS_VALIDATE(_ccs_serialize_bin_ccs_object(
 		data->feature_space, buffer_size, buffer));
 	if (data->feature_space)
-		CCS_VALIDATE(data->feature_space->obj.ops->serialize(
+		CCS_VALIDATE(_ccs_object_serialize_with_opts(
 			data->feature_space, CCS_SERIALIZE_FORMAT_BINARY,
 			buffer_size, buffer, opts));
 	return CCS_RESULT_SUCCESS;

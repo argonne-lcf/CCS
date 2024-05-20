@@ -1399,4 +1399,31 @@ _ccs_object_deserialize_user_data(
 	return CCS_RESULT_SUCCESS;
 }
 
+static inline ccs_result_t
+_ccs_object_serialize_size_with_opts(
+	ccs_object_t                     object,
+	ccs_serialize_format_t           format,
+	size_t                          *buffer_size,
+	_ccs_object_serialize_options_t *opts)
+{
+	_ccs_object_internal_t *obj = (_ccs_object_internal_t *)object;
+	CCS_VALIDATE(
+		obj->ops->serialize_size(object, format, buffer_size, opts));
+	return CCS_RESULT_SUCCESS;
+}
+
+static inline ccs_result_t
+_ccs_object_serialize_with_opts(
+	ccs_object_t                     object,
+	ccs_serialize_format_t           format,
+	size_t                          *buffer_size,
+	char                           **buffer,
+	_ccs_object_serialize_options_t *opts)
+{
+	_ccs_object_internal_t *obj = (_ccs_object_internal_t *)object;
+	CCS_VALIDATE(
+		obj->ops->serialize(object, format, buffer_size, buffer, opts));
+	return CCS_RESULT_SUCCESS;
+}
+
 #endif //_CONFIGSPACE_INTERNAL_H

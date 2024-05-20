@@ -65,7 +65,7 @@ _ccs_serialize_bin_size_ccs_tuner_common_data(
 {
 	*cum_size += _ccs_serialize_bin_size_ccs_tuner_type(data->type);
 	*cum_size += _ccs_serialize_bin_size_string(data->name);
-	CCS_VALIDATE(data->objective_space->obj.ops->serialize_size(
+	CCS_VALIDATE(_ccs_object_serialize_size_with_opts(
 		data->objective_space, CCS_SERIALIZE_FORMAT_BINARY, cum_size,
 		opts));
 	return CCS_RESULT_SUCCESS;
@@ -82,7 +82,7 @@ _ccs_serialize_bin_ccs_tuner_common_data(
 		data->type, buffer_size, buffer));
 	CCS_VALIDATE(
 		_ccs_serialize_bin_string(data->name, buffer_size, buffer));
-	CCS_VALIDATE(data->objective_space->obj.ops->serialize(
+	CCS_VALIDATE(_ccs_object_serialize_with_opts(
 		data->objective_space, CCS_SERIALIZE_FORMAT_BINARY, buffer_size,
 		buffer, opts));
 	return CCS_RESULT_SUCCESS;

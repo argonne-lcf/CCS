@@ -279,7 +279,7 @@ _ccs_serialize_bin_size_ccs_context_data(
 	*cum_size += _ccs_serialize_bin_size_string(data->name);
 	*cum_size += _ccs_serialize_bin_size_size(data->num_parameters);
 	for (size_t i = 0; i < data->num_parameters; i++)
-		CCS_VALIDATE(data->parameters[i]->obj.ops->serialize_size(
+		CCS_VALIDATE(_ccs_object_serialize_size_with_opts(
 			data->parameters[i], CCS_SERIALIZE_FORMAT_BINARY,
 			cum_size, opts));
 	return CCS_RESULT_SUCCESS;
@@ -297,7 +297,7 @@ _ccs_serialize_bin_ccs_context_data(
 	CCS_VALIDATE(_ccs_serialize_bin_size(
 		data->num_parameters, buffer_size, buffer));
 	for (size_t i = 0; i < data->num_parameters; i++)
-		CCS_VALIDATE(data->parameters[i]->obj.ops->serialize(
+		CCS_VALIDATE(_ccs_object_serialize_with_opts(
 			data->parameters[i], CCS_SERIALIZE_FORMAT_BINARY,
 			buffer_size, buffer, opts));
 	return CCS_RESULT_SUCCESS;

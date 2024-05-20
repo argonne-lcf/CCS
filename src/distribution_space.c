@@ -31,7 +31,7 @@ _ccs_serialize_bin_size_ccs_distribution_space_data(
 	dw = NULL;
 	DL_FOREACH(data->distribution_list, dw)
 	{
-		CCS_VALIDATE(dw->distribution->obj.ops->serialize_size(
+		CCS_VALIDATE(_ccs_object_serialize_size_with_opts(
 			dw->distribution, CCS_SERIALIZE_FORMAT_BINARY, cum_size,
 			opts));
 		*cum_size += _ccs_serialize_bin_size_size(dw->dimension);
@@ -64,7 +64,7 @@ _ccs_serialize_bin_ccs_distribution_space_data(
 	dw = NULL;
 	DL_FOREACH(data->distribution_list, dw)
 	{
-		CCS_VALIDATE(dw->distribution->obj.ops->serialize(
+		CCS_VALIDATE(_ccs_object_serialize_with_opts(
 			dw->distribution, CCS_SERIALIZE_FORMAT_BINARY,
 			buffer_size, buffer, opts));
 		CCS_VALIDATE(_ccs_serialize_bin_size(

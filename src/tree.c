@@ -28,7 +28,7 @@ _ccs_serialize_bin_size_ccs_tree_data(
 		*cum_size += _ccs_serialize_bin_size_ccs_bool(
 			data->children[i] != NULL);
 		if (data->children[i])
-			CCS_VALIDATE(data->children[i]->obj.ops->serialize_size(
+			CCS_VALIDATE(_ccs_object_serialize_size_with_opts(
 				data->children[i], CCS_SERIALIZE_FORMAT_BINARY,
 				cum_size, opts));
 	}
@@ -51,7 +51,7 @@ _ccs_serialize_bin_ccs_tree_data(
 		CCS_VALIDATE(_ccs_serialize_bin_ccs_bool(
 			data->children[i] != NULL, buffer_size, buffer));
 		if (data->children[i])
-			CCS_VALIDATE(data->children[i]->obj.ops->serialize(
+			CCS_VALIDATE(_ccs_object_serialize_with_opts(
 				data->children[i], CCS_SERIALIZE_FORMAT_BINARY,
 				buffer_size, buffer, opts));
 	}

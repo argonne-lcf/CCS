@@ -39,7 +39,7 @@ _ccs_serialize_bin_size_ccs_distribution_mixture_data(
 	for (size_t i = 0; i < data->num_distributions; i++) {
 		*cum_size += _ccs_serialize_bin_size_ccs_float(
 			data->weights[i + 1] - data->weights[i]);
-		CCS_VALIDATE(data->distributions[i]->obj.ops->serialize_size(
+		CCS_VALIDATE(_ccs_object_serialize_size_with_opts(
 			data->distributions[i], CCS_SERIALIZE_FORMAT_BINARY,
 			cum_size, opts));
 	}
@@ -61,7 +61,7 @@ _ccs_serialize_bin_ccs_distribution_mixture_data(
 		CCS_VALIDATE(_ccs_serialize_bin_ccs_float(
 			data->weights[i + 1] - data->weights[i], buffer_size,
 			buffer));
-		CCS_VALIDATE(data->distributions[i]->obj.ops->serialize(
+		CCS_VALIDATE(_ccs_object_serialize_with_opts(
 			data->distributions[i], CCS_SERIALIZE_FORMAT_BINARY,
 			buffer_size, buffer, opts));
 	}

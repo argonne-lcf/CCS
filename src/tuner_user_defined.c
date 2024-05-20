@@ -63,7 +63,7 @@ _ccs_serialize_bin_size_ccs_user_defined_tuner(
 			for (size_t i = 0; i < history_size; i++)
 				CCS_VALIDATE_ERR_GOTO(
 					res,
-					history[i]->obj.ops->serialize_size(
+					_ccs_object_serialize_size_with_opts(
 						history[i],
 						CCS_SERIALIZE_FORMAT_BINARY,
 						cum_size, opts),
@@ -135,7 +135,7 @@ _ccs_serialize_bin_ccs_user_defined_tuner(
 			for (size_t i = 0; i < history_size; i++)
 				CCS_VALIDATE_ERR_GOTO(
 					res,
-					history[i]->obj.ops->serialize(
+					_ccs_object_serialize_with_opts(
 						history[i],
 						CCS_SERIALIZE_FORMAT_BINARY,
 						buffer_size, buffer, opts),
