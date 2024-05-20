@@ -1403,12 +1403,14 @@ static inline ccs_result_t
 _ccs_object_serialize_size_with_opts(
 	ccs_object_t                     object,
 	ccs_serialize_format_t           format,
-	size_t                          *buffer_size,
+	size_t                          *cum_size,
 	_ccs_object_serialize_options_t *opts)
 {
 	_ccs_object_internal_t *obj = (_ccs_object_internal_t *)object;
 	CCS_VALIDATE(
-		obj->ops->serialize_size(object, format, buffer_size, opts));
+		obj->ops->serialize_size(object, format, cum_size, opts));
+	CCS_VALIDATE(_ccs_object_serialize_user_data_size(
+		object, format, cum_size, opts));
 	return CCS_RESULT_SUCCESS;
 }
 
@@ -1423,6 +1425,8 @@ _ccs_object_serialize_with_opts(
 	_ccs_object_internal_t *obj = (_ccs_object_internal_t *)object;
 	CCS_VALIDATE(
 		obj->ops->serialize(object, format, buffer_size, buffer, opts));
+	CCS_VALIDATE(_ccs_object_serialize_user_data(
+		object, format, buffer_size, buffer, opts));
 	return CCS_RESULT_SUCCESS;
 }
 

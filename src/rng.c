@@ -61,6 +61,7 @@ _ccs_rng_serialize_size(
 	size_t                          *cum_size,
 	_ccs_object_serialize_options_t *opts)
 {
+	(void)opts;
 	ccs_result_t err = CCS_RESULT_SUCCESS;
 	CCS_OBJ_RDLOCK(object);
 	switch (format) {
@@ -72,11 +73,6 @@ _ccs_rng_serialize_size(
 			err, CCS_RESULT_ERROR_INVALID_VALUE, end,
 			"Unsupported serialization format: %d", format);
 	}
-	CCS_VALIDATE_ERR_GOTO(
-		err,
-		_ccs_object_serialize_user_data_size(
-			object, format, cum_size, opts),
-		end);
 end:
 	CCS_OBJ_UNLOCK(object);
 	return err;
@@ -90,6 +86,7 @@ _ccs_rng_serialize(
 	char                           **buffer,
 	_ccs_object_serialize_options_t *opts)
 {
+	(void)opts;
 	ccs_result_t err = CCS_RESULT_SUCCESS;
 	CCS_OBJ_RDLOCK(object);
 	switch (format) {
@@ -105,11 +102,6 @@ _ccs_rng_serialize(
 			err, CCS_RESULT_ERROR_INVALID_VALUE, end,
 			"Unsupported serialization format: %d", format);
 	}
-	CCS_VALIDATE_ERR_GOTO(
-		err,
-		_ccs_object_serialize_user_data(
-			object, format, buffer_size, buffer, opts),
-		end);
 end:
 	CCS_OBJ_UNLOCK(object);
 	return err;

@@ -132,11 +132,6 @@ _ccs_distribution_space_serialize_size(
 			err, CCS_RESULT_ERROR_INVALID_VALUE, end,
 			"Unsupported serialization format: %d", format);
 	}
-	CCS_VALIDATE_ERR_GOTO(
-		err,
-		_ccs_object_serialize_user_data_size(
-			object, format, cum_size, opts),
-		end);
 end:
 	CCS_OBJ_UNLOCK(object);
 	return err;
@@ -166,11 +161,6 @@ _ccs_distribution_space_serialize(
 			err, CCS_RESULT_ERROR_INVALID_VALUE, end,
 			"Unsupported serialization format: %d", format);
 	}
-	CCS_VALIDATE_ERR_GOTO(
-		err,
-		_ccs_object_serialize_user_data(
-			object, format, buffer_size, buffer, opts),
-		end);
 end:
 	CCS_OBJ_UNLOCK(object);
 	return err;
