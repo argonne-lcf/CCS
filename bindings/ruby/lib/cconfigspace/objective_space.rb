@@ -33,7 +33,10 @@ module CCS
         super(handle, retain: retain, auto_release: auto_release)
       else
         count = parameters.size
-        ctx = parameters.map { |p| [p.name, p] }.to_h
+        ctx_params = parameters
+        ctx_params += search_space.parameters if search_space.is_a?(ConfigurationSpace)
+        ctx_params += search_space.feature_space.parameters if search_space.feature_space
+        ctx = ctx_params.map { |p| [p.name, p] }.to_h
         if objectives.kind_of? Hash
           types = objectives.values
           objectives = objectives.keys

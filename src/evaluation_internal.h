@@ -34,6 +34,8 @@ struct _ccs_evaluation_data_s {
 	ccs_datum_t               *values;
 	ccs_evaluation_result_t    result;
 	ccs_search_configuration_t configuration;
+	size_t                     num_bindings;
+	ccs_binding_t              bindings[3];
 };
 
 #endif //_EVALUATION_INTERNAL_H

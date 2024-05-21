@@ -5,6 +5,7 @@ from .distribution import Distribution
 from .parameter import Parameter
 from .expression import Expression
 from .expression_parser import parser
+from .feature_space import FeatureSpace
 from .rng import Rng
 
 ccs_create_configuration_space = _ccs_get_function("ccs_create_configuration_space", [ct.c_char_p, ct.c_size_t, ct.POINTER(ccs_parameter), ct.POINTER(ccs_expression), ct.c_size_t, ct.POINTER(ccs_expression), ccs_feature_space, ccs_rng, ct.POINTER(ccs_configuration_space)])
@@ -25,10 +26,14 @@ class ConfigurationSpace(Context):
     if handle is None:
       count = len(parameters)
 
+      ctx_params = parameters
+      if feature_space is not None:
+        ctx_params = ctx_params + list(feature_space.parameters)
+      ctx = dict(zip([x.name for x in ctx_params], ctx_params))
+
       if forbidden_clauses is not None:
         numfc = len(forbidden_clauses)
         if numfc > 0:
-          ctx = dict(zip([x.name for x in parameters], parameters))
           forbidden_clauses = [ parser.parse(fc, extra = ctx) if isinstance(fc, str) else fc for fc in forbidden_clauses ]
           fcv = (ccs_expression * numfc)(*[x.handle.value for x in forbidden_clauses])
         else:
@@ -38,10 +43,9 @@ class ConfigurationSpace(Context):
         fcv = None
 
       if conditions is not None:
-        namedict = dict(zip([x.name for x in parameters], parameters))
         indexdict = dict(reversed(ele) for ele in enumerate(parameters))
         cv = (ccs_expression * count)()
-        conditions = dict( (k, parser.parse(v, extra = namedict) if isinstance(v, str) else v) for (k, v) in conditions.items() )
+        conditions = dict( (k, parser.parse(v, extra = ctx) if isinstance(v, str) else v) for (k, v) in conditions.items() )
         for (k, v) in conditions.items():
           if isinstance(k, Parameter):
             cv[indexdict[k]] = v.handle.value
@@ -88,7 +92,7 @@ class ConfigurationSpace(Context):
     res = ccs_configuration_space_get_feature_space(self.handle, ct.byref(v))
     Error.check(res)
     if bool(v):
-      self._feature_space = Rng.from_handle(v)
+      self._feature_space = FeatureSpace.from_handle(v)
     else:
       self._feature_space = None
     return self._feature_space

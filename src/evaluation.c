@@ -202,10 +202,11 @@ _ccs_evaluation_compare(
 			evaluation->data->objective_space, i, &expression,
 			&type));
 		CCS_VALIDATE(ccs_expression_eval(
-			expression, 1, (ccs_binding_t *)&evaluation, values));
+			expression, evaluation->data->num_bindings,
+			evaluation->data->bindings, values));
 		CCS_VALIDATE(ccs_expression_eval(
-			expression, 1, (ccs_binding_t *)&other_evaluation,
-			values + 1));
+			expression, other_evaluation->data->num_bindings,
+			other_evaluation->data->bindings, values + 1));
 		if ((values[0].type != CCS_DATA_TYPE_INT &&
 		     values[0].type != CCS_DATA_TYPE_FLOAT) ||
 		    values[0].type != values[1].type) {
@@ -290,6 +291,23 @@ ccs_create_evaluation(
 						eval->data->values + i),
 					errc);
 	}
+	eval->data->bindings[0]  = (ccs_binding_t)eval;
+	eval->data->num_bindings = 1;
+	if (configuration->obj.type == CCS_OBJECT_TYPE_CONFIGURATION) {
+		eval->data->bindings[eval->data->num_bindings] =
+			(ccs_binding_t)configuration;
+		eval->data->num_bindings++;
+	}
+	ccs_features_t features;
+	CCS_VALIDATE_ERR_GOTO(
+		err,
+		_ccs_search_configuration_get_features(configuration, &features),
+		errc);
+	if (features) {
+		eval->data->bindings[eval->data->num_bindings] =
+			(ccs_binding_t)features;
+		eval->data->num_bindings++;
+	}
 	*evaluation_ret = eval;
 	return CCS_RESULT_SUCCESS;
 errc:
@@ -369,7 +387,8 @@ ccs_evaluation_get_objective_value(
 	CCS_VALIDATE(ccs_objective_space_get_objective(
 		evaluation->data->objective_space, index, &expression, &type));
 	CCS_VALIDATE(ccs_expression_eval(
-		expression, 1, (ccs_binding_t *)&evaluation, value_ret));
+		expression, evaluation->data->num_bindings,
+		evaluation->data->bindings, value_ret));
 	return CCS_RESULT_SUCCESS;
 }
 
@@ -396,8 +415,8 @@ ccs_evaluation_get_objective_values(
 				evaluation->data->objective_space, i,
 				&expression, &type));
 			CCS_VALIDATE(ccs_expression_eval(
-				expression, 1, (ccs_binding_t *)&evaluation,
-				values + i));
+				expression, evaluation->data->num_bindings,
+				evaluation->data->bindings, values + i));
 		}
 		for (size_t i = count; i < num_values; i++)
 			values[i] = ccs_none;

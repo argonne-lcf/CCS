@@ -55,7 +55,8 @@ typedef enum ccs_objective_type_e ccs_objective_type_t;
  * @return #CCS_RESULT_ERROR_INVALID_PARAMETER if a parameter appears more than
  * once in \p parameters; or if two or more parameters share the same name; or
  * if a paramater is already part of another context; or if an expression
- * references a parameter that is not in \p parameters
+ * references a parameter that is not in \p parameters or in \p search_space or
+ * in \p search_space feature space if it exists
  * @return #CCS_RESULT_ERROR_OUT_OF_MEMORY if there was a lack of memory to
  * allocate the new objective space
  * @remarks

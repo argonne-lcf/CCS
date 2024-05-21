@@ -269,10 +269,12 @@ _ccs_configuration_space_add_forbidden_clause(
 	ccs_configuration_t       default_config)
 {
 	CCS_VALIDATE(ccs_expression_check_contexts(
-		expression, 1, (ccs_context_t *)&configuration_space));
+		expression, configuration_space->data->num_contexts,
+		configuration_space->data->contexts));
 	ccs_datum_t d;
 	CCS_VALIDATE(ccs_expression_eval(
-		expression, 1, (ccs_binding_t *)&default_config, &d));
+		expression, default_config->data->num_bindings,
+		default_config->data->bindings, &d));
 	CCS_REFUTE_MSG(
 		d.type == CCS_DATA_TYPE_BOOL && d.value.i == CCS_TRUE,
 		CCS_RESULT_ERROR_INVALID_CONFIGURATION,
@@ -410,6 +412,7 @@ _recompute_graph(ccs_configuration_space_t configuration_space)
 		if (!condition)
 			continue;
 		size_t count;
+		size_t real_count = 0;
 		CCS_VALIDATE_ERR_GOTO(
 			err,
 			ccs_expression_get_parameters(
@@ -437,13 +440,21 @@ _recompute_graph(ccs_configuration_space_t configuration_space)
 			ccs_expression_get_parameters(
 				condition, count, parents, NULL),
 			errmem);
-		CCS_VALIDATE_ERR_GOTO(
-			err,
-			ccs_context_get_parameter_indexes(
-				(ccs_context_t)configuration_space, count,
-				parents, NULL, parents_index),
-			errmem);
-		for (size_t i = 0; i < count; i++) {
+		/* get indices while filtering out parameters from other
+		 * contexts */
+		for (size_t i = 0, j = 0; i < count; i++) {
+			_ccs_parameter_index_hash_t *wrapper;
+			HASH_FIND(
+				hh_handle, data->handle_hash, parents + i,
+				sizeof(ccs_parameter_t), wrapper);
+			if (wrapper) {
+				parents[j]       = parents[i];
+				parents_index[j] = wrapper->index;
+				j++;
+				real_count++;
+			}
+		}
+		for (size_t i = 0; i < real_count; i++) {
 			utarray_push_back(pparents[index], parents_index + i);
 			utarray_push_back(pchildren[parents_index[i]], &index);
 		}
@@ -478,7 +489,8 @@ _ccs_configuration_space_set_condition(
 	ccs_expression_t          expression)
 {
 	CCS_VALIDATE(ccs_expression_check_contexts(
-		expression, 1, (ccs_context_t *)&configuration_space));
+		expression, configuration_space->data->num_contexts,
+		configuration_space->data->contexts));
 	CCS_VALIDATE(ccs_retain_object(expression));
 	configuration_space->data->conditions[parameter_index] = expression;
 	return CCS_RESULT_SUCCESS;
@@ -581,10 +593,16 @@ ccs_create_configuration_space(
 		CCS_VALIDATE_ERR_GOTO(err, ccs_retain_object(rng), errparams);
 	else
 		CCS_VALIDATE_ERR_GOTO(err, ccs_create_rng(&rng), errparams);
-	config_space->data->rng = rng;
-	if (feature_space)
+	config_space->data->rng          = rng;
+	config_space->data->contexts[0]  = (ccs_context_t)config_space;
+	config_space->data->num_contexts = 1;
+	if (feature_space) {
 		CCS_VALIDATE_ERR_GOTO(
 			err, ccs_retain_object(feature_space), errparams);
+		config_space->data->contexts[config_space->data->num_contexts] =
+			(ccs_context_t)feature_space;
+		config_space->data->num_contexts++;
+	}
 	config_space->data->feature_space = feature_space;
 
 	strcpy((char *)(config_space->data->name), name);
@@ -662,8 +680,8 @@ _set_actives(
 			continue;
 		ccs_datum_t result;
 		CCS_VALIDATE(ccs_expression_eval(
-			conditions[index], 1, (ccs_binding_t *)&configuration,
-			&result));
+			conditions[index], configuration->data->num_bindings,
+			configuration->data->bindings, &result));
 		if (!(result.type == CCS_DATA_TYPE_BOOL &&
 		      result.value.i == CCS_TRUE))
 			values[index] = ccs_inactive;
@@ -720,8 +738,8 @@ _test_forbidden(
 	     i++) {
 		ccs_datum_t result;
 		CCS_VALIDATE(ccs_expression_eval(
-			forbidden_clauses[i], 1,
-			(ccs_binding_t *)&configuration, &result));
+			forbidden_clauses[i], configuration->data->num_bindings,
+			configuration->data->bindings, &result));
 		if (result.type == CCS_DATA_TYPE_INACTIVE)
 			continue;
 		if (result.type == CCS_DATA_TYPE_BOOL &&
@@ -749,8 +767,9 @@ _check_configuration(
 		if (conditions[index]) {
 			ccs_datum_t result;
 			CCS_VALIDATE(ccs_expression_eval(
-				conditions[index], 1,
-				(ccs_binding_t *)&configuration, &result));
+				conditions[index],
+				configuration->data->num_bindings,
+				configuration->data->bindings, &result));
 			if (!(result.type == CCS_DATA_TYPE_BOOL &&
 			      result.value.i == CCS_TRUE))
 				active = CCS_FALSE;

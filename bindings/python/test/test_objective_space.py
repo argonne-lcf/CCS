@@ -30,6 +30,29 @@ class TestObjectiveSpace(unittest.TestCase):
     self.assertEqual( e2.handle.value, objs[1][0].handle.value )
     self.assertEqual( ccs.ObjectiveType.MAXIMIZE, objs[1][1] )
  
+  def test_features(self):
+    f = ccs.NumericalParameter.Float()
+    fs = ccs.FeatureSpace(parameters = [f])
+    p = ccs.NumericalParameter.Float()
+    cs = ccs.ConfigurationSpace(name = "cs", parameters = [p], feature_space = fs)
+    h = ccs.NumericalParameter.Float()
+    e1 = ccs.Expression.Add(left = f, right = p)
+    e2 = ccs.Expression.Variable(parameter = h)
+    os = ccs.ObjectiveSpace(name = "space", search_space = cs, parameters = [h], objectives = [e1, e2], types = [ccs.ObjectiveType.MINIMIZE, ccs.ObjectiveType.MAXIMIZE])
+
+    features = ccs.Features(feature_space = fs, values = [0.5])
+    configuration = ccs.Configuration(configuration_space = cs, values = [0.25], features = features)
+    evaluation = ccs.Evaluation(objective_space = os, values = [-0.25], configuration = configuration)
+    self.assertEqual(tuple([0.25+0.5, -0.25]), evaluation.objective_values)
+    buff = os.serialize()
+    os = ccs.deserialize(buffer = buff)
+    cs = os.search_space
+    fs = cs.feature_space
+    features = ccs.Features(feature_space = fs, values = [0.5])
+    configuration = ccs.Configuration(configuration_space = cs, values = [0.25], features = features)
+    evaluation = ccs.Evaluation(objective_space = os, values = [-0.25], configuration = configuration)
+    self.assertEqual(tuple([0.25+0.5, -0.25]), evaluation.objective_values)
+
 
 if __name__ == '__main__':
     unittest.main()

@@ -23,7 +23,14 @@ class ObjectiveSpace(Context):
                name = "", search_space = None, parameters = [], objectives = [], types = None):
     if handle is None:
       count = len(parameters)
-      ctx = dict(zip([x.name for x in parameters], parameters))
+
+      ctx_params = parameters
+      if isinstance(search_space, ConfigurationSpace):
+        ctx_params = ctx_params + list(search_space.parameters)
+      if search_space.feature_space is not None:
+        ctx_params = ctx_params + list(search_space.feature_space.parameters)
+      ctx = dict(zip([x.name for x in ctx_params], ctx_params))
+
       if isinstance(objectives, dict):
         types = objectives.values()
         objectives = objectives.keys()

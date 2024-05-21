@@ -45,7 +45,7 @@ extern "C" {
  * CCS_PARAMETER_TYPE_STRING; or if a parameter appears more than once in \p
  * parameters; or if two or more parameters share the same name; or if a
  * paramater is already part of another context; or if an expression references
- * a parameter that is not in the configuration space
+ * a parameter that is not in \p parameters or in \p feature_space
  * @return #CCS_RESULT_ERROR_INVALID_CONFIGURATION if adding one of the
  * provided forbidden clause would render the default configuration invalid
  * @return #CCS_RESULT_ERROR_INVALID_GRAPH if the addition of the conditions

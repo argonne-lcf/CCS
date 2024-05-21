@@ -28,6 +28,8 @@ struct _ccs_configuration_data_s {
 	size_t                    num_values;
 	ccs_datum_t              *values;
 	ccs_features_t            features;
+	size_t                    num_bindings;
+	ccs_binding_t             bindings[2];
 };
 
 ccs_result_t

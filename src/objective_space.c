@@ -217,7 +217,8 @@ _ccs_objective_space_add_objectives(
 	_ccs_objective_t *objectives = objective_space->data->objectives;
 	for (size_t i = 0; i < num_objectives; i++) {
 		CCS_VALIDATE(ccs_expression_check_contexts(
-			expressions[i], 1, (ccs_context_t *)&objective_space));
+			expressions[i], objective_space->data->num_contexts,
+			objective_space->data->contexts));
 		CCS_VALIDATE(ccs_retain_object(expressions[i]));
 		objectives[i].expression = expressions[i];
 		objectives[i].type       = types[i];
@@ -276,17 +277,29 @@ ccs_create_objective_space(
 		_ccs_objective_space_add_parameters(
 			obj_space, num_parameters, parameters),
 		errparams);
-	CCS_VALIDATE_ERR_GOTO(
-		err,
-		_ccs_objective_space_add_objectives(
-			obj_space, num_objectives, objectives, types),
-		errparams);
+	obj_space->data->contexts[0]  = (ccs_context_t)obj_space;
+	obj_space->data->num_contexts = 1;
 	CCS_VALIDATE_ERR_GOTO(err, ccs_retain_object(search_space), errparams);
 	obj_space->data->search_space = search_space;
+	if (search_space->obj.type == CCS_OBJECT_TYPE_CONFIGURATION_SPACE) {
+		obj_space->data->contexts[obj_space->data->num_contexts] =
+			(ccs_context_t)search_space;
+		obj_space->data->num_contexts++;
+	}
 	CCS_VALIDATE_ERR_GOTO(
 		err,
 		_ccs_search_space_get_feature_space(
 			search_space, &obj_space->data->feature_space),
+		errparams);
+	if (obj_space->data->feature_space) {
+		obj_space->data->contexts[obj_space->data->num_contexts] =
+			(ccs_context_t)obj_space->data->feature_space;
+		obj_space->data->num_contexts++;
+	}
+	CCS_VALIDATE_ERR_GOTO(
+		err,
+		_ccs_objective_space_add_objectives(
+			obj_space, num_objectives, objectives, types),
 		errparams);
 	*objective_space_ret = obj_space;
 	return CCS_RESULT_SUCCESS;

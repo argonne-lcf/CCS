@@ -623,7 +623,12 @@ module CCS
       src << "  @#{name} = begin\n" if memoize
       src << "  ptr = MemoryPointer::new(:#{type})\n"
       src << "  CCS.error_check CCS.#{accessor}(@handle, ptr)\n"
-      src << "  Object::from_handle(ptr.read_#{type})\n"
+      src << "  h = ptr.read_#{type}\n"
+      src << "  if h.null?\n"
+      src << "    nil\n"
+      src << "  else\n"
+      src << "    Object::from_handle(h)\n"
+      src << "  end\n"
       src << "  end\n" if memoize
       src << "end\n"
       class_eval src

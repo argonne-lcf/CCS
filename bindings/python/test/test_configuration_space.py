@@ -24,6 +24,7 @@ class TestConfigurationSpace(unittest.TestCase):
     self.assertEqual( (h1, h2, h3), cs.parameters )
     self.assertEqual( h2, cs.parameter_by_name(h2.name) )
     self.assertTrue( cs.check(cs.default_configuration()) )
+    self.assertIsNone( cs.feature_space )
     c = cs.sample()
     self.assertTrue( cs.check(c) )
     self.assertEqual( cs.handle.value, c.configuration_space.handle.value )
@@ -78,6 +79,35 @@ class TestConfigurationSpace(unittest.TestCase):
     forbidden_clauses = cs.forbidden_clauses
     self.assertEqual( 1, len(forbidden_clauses) )
     self.assertEqual( f1.handle.value, forbidden_clauses[0].handle.value )
+
+  def test_features(self):
+    fe1 = ccs.CategoricalParameter(values = ["on", "off"])
+    fs = ccs.FeatureSpace(parameters = [fe1])
+    h1 = ccs.NumericalParameter.Float(lower = -1.0, upper = 1.0, default = 0.0)
+    h2 = ccs.NumericalParameter.Float(lower = -1.0, upper = 1.0)
+    h3 = ccs.NumericalParameter.Float(lower = -1.0, upper = 1.0)
+    h4 = ccs.NumericalParameter.Float(lower = -1.0, upper = 1.0)
+    e1 = ccs.Expression.Less(left = h2, right = 0.0)
+    e2 = ccs.Expression.Less(left = h3, right = 0.0)
+    e3 = ccs.Expression.Equal(left = fe1, right = "on")
+    f1 = ccs.Expression.Less(left = h1, right = 0.0)
+    cs = ccs.ConfigurationSpace(name = "space", parameters = [h1, h2, h3, h4], conditions = {h1: e2, h3: e1, h4: e3}, forbidden_clauses = [f1], feature_space = fs)
+    features_on = ccs.Features(feature_space = fs, values = ["on"])
+    features_off = ccs.Features(feature_space = fs, values = ["off"])
+    s = cs.sample(features = features_on)
+    self.assertIsInstance(s.value(3), float)
+    s = cs.sample(features = features_off)
+    self.assertEqual(ccs.inactive, s.value(3))
+
+    buff = cs.serialize()
+    cs_copy = ccs.Object.deserialize(buffer = buff)
+
+    features_on = ccs.Features(feature_space = cs_copy.feature_space, values = ["on"])
+    features_off = ccs.Features(feature_space = cs_copy.feature_space, values = ["off"])
+    s = cs_copy.sample(features = features_on)
+    self.assertIsInstance(s.value(3), float)
+    s = cs_copy.sample(features = features_off)
+    self.assertEqual(ccs.inactive, s.value(3))
 
   def extract_active_parameters(self, values):
     res = ['p1']

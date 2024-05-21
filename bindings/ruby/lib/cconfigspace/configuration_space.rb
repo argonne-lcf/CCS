@@ -25,8 +25,11 @@ module CCS
         p_parameters.write_array_of_pointer(parameters.collect(&:handle))
         ptr = MemoryPointer::new(:ccs_configuration_space_t)
 
+        ctx_params = parameters
+        ctx_params += feature_space.parameters if feature_space
+        ctx = ctx_params.map { |p| [p.name, p] }.to_h
+
         if forbidden_clauses
-          ctx = parameters.map { |p| [p.name, p] }.to_h
           p = ExpressionParser::new(ctx)
           forbidden_clauses = forbidden_clauses.collect { |e| e.kind_of?(String) ? p.parse(e) : e }
           fccount = forbidden_clauses.size
@@ -38,7 +41,6 @@ module CCS
         end
 
         if conditions
-          ctx = parameters.map { |p| [p.name, p] }.to_h
           indexdict = parameters.each_with_index.to_h
           p = ExpressionParser::new(ctx)
           conditions = conditions.transform_values { |v| v.kind_of?(String) ? p.parse(v) : v }

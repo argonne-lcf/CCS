@@ -180,6 +180,8 @@ _ccs_create_configuration(
 	CCS_VALIDATE_ERR_GOTO(
 		err, ccs_retain_object(configuration_space), errinit);
 	config->data->configuration_space = configuration_space;
+	config->data->bindings[0]         = (ccs_binding_t)config;
+	config->data->num_bindings        = 1;
 	if (features)
 		CCS_VALIDATE_ERR_GOTO(
 			err, ccs_retain_object(features), errinit);
@@ -191,6 +193,11 @@ _ccs_create_configuration(
 				&features),
 			errinit);
 	config->data->features = features;
+	if (features) {
+		config->data->bindings[config->data->num_bindings] =
+			(ccs_binding_t)features;
+		config->data->num_bindings++;
+	}
 	if (values) {
 		memcpy(config->data->values, values,
 		       num_parameters * sizeof(ccs_datum_t));

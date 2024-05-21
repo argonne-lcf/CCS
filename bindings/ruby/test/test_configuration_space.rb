@@ -23,6 +23,7 @@ class CConfigSpaceTestConfigurationSpace < Minitest::Test
     assert_equal( [h1, h2, h3], cs.parameters )
     assert_equal( h2, cs.parameter_by_name(h2.name) )
     assert( cs.check(cs.default_configuration) )
+    assert_nil( cs.feature_space )
     c = cs.sample
     assert( cs.check(c) )
     assert_equal( cs.handle, c.configuration_space.handle )
@@ -78,6 +79,37 @@ class CConfigSpaceTestConfigurationSpace < Minitest::Test
     forbidden_clauses = cs.forbidden_clauses
     assert_equal( 1, forbidden_clauses.length )
     assert_equal( f1.handle, forbidden_clauses[0].handle )
+  end
+
+  def test_features
+    fe1 = CCS::CategoricalParameter::new(values: ["on", "off"])
+    fs = CCS::FeatureSpace::new(parameters: [fe1])
+    h1 = CCS::NumericalParameter::Float.new(lower: -1.0, upper: 1.0, default: 0.0)
+    h2 = CCS::NumericalParameter::Float.new(lower: -1.0, upper: 1.0)
+    h3 = CCS::NumericalParameter::Float.new(lower: -1.0, upper: 1.0)
+    h4 = CCS::NumericalParameter::Float.new(lower: -1.0, upper: 1.0)
+    e1 = CCS::Expression::Less.new(left: h2, right: 0.0)
+    e2 = CCS::Expression::Less.new(left: h3, right: 0.0)
+    e3 = CCS::Expression::Equal.new(left: fe1, right: "on")
+    f1 = CCS::Expression::Less.new(left: h1, right: 0.0)
+    cs = CCS::ConfigurationSpace::new(name: "space", parameters: [h1, h2, h3, h4], conditions: {h1 => e2, h3 => e1, h4 => e3}, forbidden_clauses: [f1], feature_space: fs)
+
+    features_on = CCS::Features::new(feature_space: fs, values: ["on"])
+    features_off = CCS::Features::new(feature_space: fs, values: ["off"])
+    s = cs.sample(features: features_on)
+    assert(s.value(3).kind_of?(Float))
+    s = cs.sample(features: features_off)
+    assert_equal(CCS::Inactive, s.value(3))
+
+    buff = cs.serialize
+    cs_copy = CCS::deserialize(buffer: buff)
+
+    features_on = CCS::Features::new(feature_space: cs_copy.feature_space, values: ["on"])
+    features_off = CCS::Features::new(feature_space: cs_copy.feature_space, values: ["off"])
+    s = cs_copy.sample(features: features_on)
+    assert(s.value(3).kind_of?(Float))
+    s = cs_copy.sample(features: features_off)
+    assert_equal(CCS::Inactive, s.value(3))
   end
 
   def extract_active_parameters(values)
