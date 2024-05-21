@@ -541,20 +541,21 @@ ccs_expression_get_parameters(
 /**
  * Validate that an expression can be evaluated in the given context.
  * @param[in] expression
- * @param[in] context the context to verify the expression can be evaluated in.
- *            Can be NULL
+ * @param[in] num_contexts the number of contexts in \p contexts
+ * @param[in] contexts an array of \p num_contexts contexts
  * @return #CCS_RESULT_SUCCESS on success
  * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p expression is not a valid CCS
- * expression; or if expression depends on a parameter and \p context is not a
+ * expression; or if one of the provided ocntexts in \p contexts is not a
  * valid CCS context
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if the expression depends on a
- * parameter and \p context is NULL
- * @return #CCS_RESULT_ERROR_INVALID_PARAMETER if \p context does not contain
- * one of the parameters referenced by the expression
+ * parameter and \p contexts is NULL
+ * @return #CCS_RESULT_ERROR_INVALID_PARAMETER if one of the parameters
+ * referenced by the expression cannot be found in at least one the contexts in
+ * \p contexts
  * @return #CCS_RESULT_ERROR_OUT_OF_MEMORY if there was not enough memory to
  * allocate temporary storage
  * @remarks
- *   This function is thread-safe while threads are only reading context
+ *   This function is thread-safe
  */
 extern ccs_result_t
 ccs_expression_check_contexts(

@@ -237,7 +237,6 @@ ccs_configuration_space_check_configuration(
  * @param[in] features an optional features to use. If NULL and a feature space
  *                     was provided at \p configuration_space creation, the
  *                     deafult features of the feature space will be used.
- * @param[in] rng an optional rng to use
  * @param[out] configuration_ret a pointer to the variable that will contain the
  *                               returned default configuration
  * @return #CCS_RESULT_SUCCESS on success

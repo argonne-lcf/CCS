@@ -227,8 +227,8 @@ ccs_evaluation_check(ccs_evaluation_t evaluation, ccs_bool_t *is_valid_ret);
  * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p evaluation or \p
  * other_evaluation are not valid CCS evaluations; or if \p evaluation and \p
  * other_evaluation do not share the same objective space; or if any of the
- * the evaluation is associated a result code different than #CCS_RESULT_SUCESS;
- * or if both evaluations are not ot the same type
+ * the evaluation is associated a result code different than
+ * #CCS_RESULT_SUCCESS; or if both evaluations are not ot the same type
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p result_ret is NULL; or if there
  * was an issue evaluating any of the objectives
  * @remarks

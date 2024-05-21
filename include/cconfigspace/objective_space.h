@@ -35,6 +35,7 @@ typedef enum ccs_objective_type_e ccs_objective_type_t;
 /**
  * Create a new objective space.
  * @param[in] name pointer to a string that will be copied internally
+ * @param[in] search_space a CCS search space
  * @param[in] num_parameters the number of provided parameters
  * @param[in] parameters an array of \p num_parameters parameters
  *                       to add to the objective space
@@ -50,8 +51,9 @@ typedef enum ccs_objective_type_e ccs_objective_type_t;
  * parameters is NULL; or if \p num_parameters is NULL; or if \p
  * objectives is NULL and \p num_objectives is greater than 0; of if \p
  * types is NULL and \p num_objectives is greater than 0
- * @return #CCS_RESULT_ERROR_INVALID_OBJECT if a parameter is not a valid CCS
- * parameter; or if an expressions is not a valid CCS expression
+ * @return #CCS_RESULT_ERROR_INVALID_OBJECT if search_space is not a valid CCS
+ * search space; or if a parameter is not a valid CCS parameter; or if an
+ * expressions is not a valid CCS expression
  * @return #CCS_RESULT_ERROR_INVALID_PARAMETER if a parameter appears more than
  * once in \p parameters; or if two or more parameters share the same name; or
  * if a paramater is already part of another context; or if an expression

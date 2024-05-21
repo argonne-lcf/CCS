@@ -14,6 +14,9 @@ extern "C" {
 /**
  * Create a new feature space.
  * @param[in] name pointer to a string that will be copied internally
+ * @param[in] num_parameters the number of provided parameters
+ * @param[in] parameters an array of \p num_parameters parameters
+ *                       to add to the feature space
  * @param[out] feature_space_ret a pointer to the variable that will hold
  *                                     the newly created feature space
  * @return #CCS_RESULT_SUCCESS on success
@@ -37,6 +40,18 @@ ccs_create_feature_space(
 	ccs_parameter_t     *parameters,
 	ccs_feature_space_t *feature_space_ret);
 
+/**
+ * Get the default features of a feature space.
+ * @param[in] feature_space
+ * @param[in] features_ret a pointer to a variable that will contain the
+ *                         returned features.
+ * @return #CCS_RESULT_SUCCESS on success
+ * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p feature_space is not a valid
+ * CCS feature space
+ * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p feature_space_ret is NULL
+ * @remarks
+ *   This function is thread-safe
+ */
 extern ccs_result_t
 ccs_feature_space_get_default_features(
 	ccs_feature_space_t feature_space,
