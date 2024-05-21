@@ -101,8 +101,10 @@ _ccs_deserialize_bin_configuration_space(
 	_ccs_object_deserialize_options_t new_opts = *opts;
 	ccs_result_t                      res      = CCS_RESULT_SUCCESS;
 
-	new_opts.map_values                        = CCS_TRUE;
-	CCS_VALIDATE(ccs_create_map(&new_opts.handle_map));
+	if (!opts->map_values) {
+		new_opts.map_values = CCS_TRUE;
+		CCS_VALIDATE(ccs_create_map(&new_opts.handle_map));
+	}
 
 	_ccs_configuration_space_data_mock_t data = {
 		NULL, 0, 0, 0, NULL, NULL, NULL, NULL, NULL, NULL};
@@ -119,21 +121,7 @@ _ccs_deserialize_bin_configuration_space(
 			data.forbidden_clauses, data.feature_space, data.rng,
 			configuration_space_ret),
 		end);
-	if (opts->map_values) {
-		if (data.feature_space_handle)
-			CCS_VALIDATE_ERR_GOTO(
-				res,
-				_ccs_object_handle_check_add(
-					opts->handle_map,
-					data.feature_space_handle,
-					(ccs_object_t)data.feature_space),
-				err_configuration_space);
-	}
-	goto end;
 
-err_configuration_space:
-	ccs_release_object(*configuration_space_ret);
-	*configuration_space_ret = NULL;
 end:
 	if (data.feature_space)
 		ccs_release_object(data.feature_space);
@@ -153,7 +141,8 @@ end:
 				ccs_release_object(data.forbidden_clauses[i]);
 	if (data.parameters)
 		free(data.parameters);
-	ccs_release_object(new_opts.handle_map);
+	if (!opts->map_values)
+		ccs_release_object(new_opts.handle_map);
 	return res;
 }
 

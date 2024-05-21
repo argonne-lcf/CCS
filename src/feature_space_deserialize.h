@@ -10,15 +10,12 @@ _ccs_deserialize_bin_feature_space(
 	const char                       **buffer,
 	_ccs_object_deserialize_options_t *opts)
 {
-	ccs_result_t                      res      = CCS_RESULT_SUCCESS;
-	_ccs_object_deserialize_options_t new_opts = *opts;
-
-	new_opts.map_values                        = CCS_FALSE;
+	ccs_result_t             res = CCS_RESULT_SUCCESS;
 	_ccs_context_data_mock_t data;
 	CCS_VALIDATE_ERR_GOTO(
 		res,
 		_ccs_deserialize_bin_ccs_context_data(
-			&data, version, buffer_size, buffer, &new_opts),
+			&data, version, buffer_size, buffer, opts),
 		end);
 	CCS_VALIDATE_ERR_GOTO(
 		res,

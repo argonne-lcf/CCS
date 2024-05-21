@@ -572,15 +572,28 @@ _ccs_object_deserialize(
 {
 	uint32_t                          version;
 	size_t                            size;
+	ccs_map_checkpoint_t              map_checkpoint;
+	ccs_result_t                      err  = CCS_RESULT_SUCCESS;
 	_ccs_object_deserialize_options_t opts = {NULL, CCS_FALSE, NULL, NULL,
 						  NULL, NULL,      NULL};
 	CCS_VALIDATE(_ccs_object_deserialize_options(
 		format, operation, args, &opts));
 	CCS_VALIDATE(_ccs_deserialize_header(
 		format, buffer_size, buffer, &size, &version));
-	CCS_VALIDATE(_ccs_object_deserialize_with_opts(
-		object_ret, format, version, buffer_size, buffer, &opts));
+	if (opts.map_values)
+		CCS_VALIDATE(_ccs_map_get_checkpoint(
+			opts.handle_map, &map_checkpoint));
+	CCS_VALIDATE_ERR_GOTO(
+		err,
+		_ccs_object_deserialize_with_opts(
+			object_ret, format, version, buffer_size, buffer,
+			&opts),
+		error);
 	return CCS_RESULT_SUCCESS;
+error:
+	if (opts.map_values)
+		_ccs_map_rewind(opts.handle_map, map_checkpoint);
+	return err;
 }
 
 static inline ccs_result_t

@@ -411,3 +411,38 @@ ccs_map_clear(ccs_map_t map)
 	CCS_OBJ_UNLOCK(map);
 	return CCS_RESULT_SUCCESS;
 }
+
+ccs_result_t
+_ccs_map_get_checkpoint(ccs_map_t map, ccs_map_checkpoint_t *checkpoint_ret)
+{
+	CCS_CHECK_OBJ(map, CCS_OBJECT_TYPE_MAP);
+	CCS_OBJ_RDLOCK(map);
+	_ccs_map_datum_t *map_datum = map->data->map;
+	if (map_datum) {
+		map_datum = (_ccs_map_datum_t *)ELMT_FROM_HH(
+			map_datum->hh.tbl, map_datum->hh.tbl->tail);
+	}
+	*checkpoint_ret = (void *)map_datum;
+	CCS_OBJ_UNLOCK(map);
+	return CCS_RESULT_SUCCESS;
+}
+
+ccs_result_t
+_ccs_map_rewind(ccs_map_t map, ccs_map_checkpoint_t checkpoint)
+{
+	CCS_CHECK_OBJ(map, CCS_OBJECT_TYPE_MAP);
+	_ccs_map_datum_t *head = (_ccs_map_datum_t *)checkpoint;
+	_ccs_map_datum_t *current, *tmp;
+	CCS_OBJ_WRLOCK(map);
+	if (head) {
+		head = (_ccs_map_datum_t *)head->hh.next;
+	} else {
+		head = map->data->map;
+	}
+	HASH_ITER(hh, head, current, tmp)
+	{
+		_ccs_map_remove(map->data, current);
+	}
+	CCS_OBJ_UNLOCK(map);
+	return CCS_RESULT_SUCCESS;
+}
