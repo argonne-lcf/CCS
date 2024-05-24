@@ -317,10 +317,10 @@ module CCS
   Distribution::Normal = NormalDistribution
 
   attach_function :ccs_create_roulette_distribution, [:size_t, :pointer, :pointer], :ccs_result_t
-  attach_function :ccs_roulette_distribution_get_num_areas, [:ccs_distribution_t, :pointer], :ccs_result_t
   attach_function :ccs_roulette_distribution_get_areas, [:ccs_distribution_t, :size_t, :pointer, :pointer], :ccs_result_t
   class RouletteDistribution < Distribution
-    add_property :num_areas, :size_t, :ccs_roulette_distribution_get_num_areas, memoize: true
+    add_array_property :areas, :ccs_float_t, :ccs_roulette_distribution_get_areas, memoize: true
+
     def initialize(handle = nil, retain: false, auto_release: true,
                    areas: [])
       if handle
@@ -338,24 +338,17 @@ module CCS
       @data_type ||= data_types.first
     end
 
-    def areas
-      @areas ||= begin
-        count = num_areas
-        ptr = MemoryPointer::new(:ccs_float_t, count)
-        CCS.error_check CCS.ccs_roulette_distribution_get_areas(@handle, count, ptr, nil)
-        ptr.read_array_of_ccs_float_t(count).freeze
-      end
-    end
   end
 
   Distribution::Roulette = RouletteDistribution
 
   attach_function :ccs_create_mixture_distribution, [:size_t, :pointer, :pointer, :pointer], :ccs_result_t
-  attach_function :ccs_mixture_distribution_get_num_distributions, [:ccs_distribution_t, :pointer], :ccs_result_t
   attach_function :ccs_mixture_distribution_get_distributions, [:ccs_distribution_t, :size_t, :pointer, :pointer], :ccs_result_t
   attach_function :ccs_mixture_distribution_get_weights, [:ccs_distribution_t, :size_t, :pointer, :pointer], :ccs_result_t
   class MixtureDistribution < Distribution
-    add_property :num_distributions, :size_t, :ccs_mixture_distribution_get_num_distributions, memoize: true
+    add_handle_array_property :distributions, :ccs_distribution_t, :ccs_mixture_distribution_get_distributions, memoize: true
+    add_array_property :weights, :ccs_float_t, :ccs_mixture_distribution_get_weights, memoize: true
+
     def initialize(handle = nil, retain: false, auto_release: true,
                    distributions: [], weights: nil)
       if handle
@@ -376,32 +369,15 @@ module CCS
       end
     end
 
-    def weights
-      @weights ||= begin
-        count = num_distributions
-        ptr = MemoryPointer::new(:ccs_float_t, count)
-        CCS.error_check CCS.ccs_mixture_distribution_get_weights(@handle, count, ptr, nil)
-        ptr.read_array_of_ccs_float_t(count).freeze
-      end
-    end
-
-    def distributions
-      @distributions ||= begin
-        count = num_distributions
-        ptr = MemoryPointer::new(:ccs_distribution_t, count)
-        CCS.error_check CCS.ccs_mixture_distribution_get_distributions(@handle, count, ptr, nil)
-        count.times.collect { |i| Distribution.from_handle(ptr[i].read_pointer) }.freeze
-      end
-    end
   end
 
   Distribution::Mixture = MixtureDistribution
 
   attach_function :ccs_create_multivariate_distribution, [:size_t, :pointer, :pointer], :ccs_result_t
-  attach_function :ccs_multivariate_distribution_get_num_distributions, [:ccs_distribution_t, :pointer], :ccs_result_t
   attach_function :ccs_multivariate_distribution_get_distributions, [:ccs_distribution_t, :size_t, :pointer, :pointer], :ccs_result_t
   class MultivariateDistribution < Distribution
-    add_property :num_distributions, :size_t, :ccs_multivariate_distribution_get_num_distributions, memoize: true
+    add_handle_array_property :distributions, :ccs_distribution_t, :ccs_multivariate_distribution_get_distributions, memoize: true
+
     def initialize(handle = nil, retain: false, auto_release: true,
                    distributions: [])
       if handle
@@ -415,14 +391,6 @@ module CCS
       end
     end
 
-    def distributions
-      @distributions ||= begin
-        count = num_distributions
-        ptr = MemoryPointer::new(:ccs_distribution_t, count)
-        CCS.error_check CCS.ccs_multivariate_distribution_get_distributions(@handle, count, ptr, nil)
-        count.times.collect { |i| Distribution.from_handle(ptr[i].read_pointer) }.freeze
-      end
-    end
   end
 
   Distribution::Multivariate = MultivariateDistribution

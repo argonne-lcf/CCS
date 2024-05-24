@@ -476,6 +476,15 @@ module CCS
     end
   end
   typedef Datum.by_value, :ccs_datum_t
+  class MemoryPointer
+    def read_ccs_datum_t
+      Datum::new(self).value
+    end
+
+    def read_array_of_ccs_datum_t(length)
+      length.times.collect { |i| Datum::new(self[i]).value }
+    end
+  end
 
   attach_function :ccs_init, [], :ccs_result_t
   attach_function :ccs_fini, [], :ccs_result_t
@@ -610,26 +619,49 @@ module CCS
       src << "  @#{name} ||= begin\n" if memoize
       src << "  ptr = MemoryPointer::new(:#{type})\n"
       src << "  CCS.error_check CCS.#{accessor}(@handle, ptr)\n"
-      src << "  Object::from_handle(ptr.read_#{type})\n"
+      src << "  h = ptr.read_#{type}\n"
+      src << "  h.null? ? nil : Object::from_handle(h)\n"
       src << "  end\n" if memoize
       src << "end\n"
       class_eval src
     end
 
-    def self.add_optional_handle_property(name, type, accessor, memoize: false)
+    def self.add_array_size_property(name, accessor, memoize: false)
       src = ""
       src << "def #{name}\n"
-      src << "  return @#{name} if instance_variable_defined?(:@#{name})\n" if memoize
-      src << "  @#{name} = begin\n" if memoize
-      src << "  ptr = MemoryPointer::new(:#{type})\n"
-      src << "  CCS.error_check CCS.#{accessor}(@handle, ptr)\n"
-      src << "  h = ptr.read_#{type}\n"
-      src << "  if h.null?\n"
-      src << "    nil\n"
-      src << "  else\n"
-      src << "    Object::from_handle(h)\n"
-      src << "  end\n"
+      src << "  @#{name} ||= begin\n" if memoize
+      src << "  ptr = MemoryPointer::new(:size_t)\n"
+      src << "  CCS.error_check CCS.#{accessor}(@handle, 0, nil, ptr)\n"
+      src << "  ptr.read_size_t\n"
       src << "  end\n" if memoize
+      src << "end\n"
+      class_eval src
+    end
+
+    def self.add_array_property(name, type, accessor, memoize: false)
+      add_array_size_property("num_#{name}", accessor, memoize: memoize)
+      src = ""
+      src << "def #{name}\n"
+      src << "  @#{name} ||= begin\n" if memoize
+      src << "  count = num_#{name}\n"
+      src << "  ptr = MemoryPointer::new(:#{type}, count)\n"
+      src << "  CCS.error_check CCS.#{accessor}(@handle, count, ptr, nil)\n"
+      src << "  ptr.read_array_of_#{type}(count)\n"
+      src << "  end.freeze\n" if memoize
+      src << "end\n"
+      class_eval src
+    end
+
+    def self.add_handle_array_property(name, type, accessor, memoize: false)
+      add_array_size_property("num_#{name}", accessor, memoize: memoize)
+      src = ""
+      src << "def #{name}\n"
+      src << "  @#{name} ||= begin\n" if memoize
+      src << "  count = num_#{name}\n"
+      src << "  ptr = MemoryPointer::new(:#{type}, count)\n"
+      src << "  CCS.error_check CCS.#{accessor}(@handle, count, ptr, nil)\n"
+      src << "  ptr.read_array_of_pointer(count).map { |h| h.null? ? nil : Object::from_handle(h) }\n"
+      src << "  end.freeze\n" if memoize
       src << "end\n"
       class_eval src
     end

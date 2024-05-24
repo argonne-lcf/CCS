@@ -83,21 +83,16 @@ module CCS
   attach_function :ccs_create_binary_expression, [:ccs_expression_type_t, :ccs_datum_t, :ccs_datum_t, :pointer], :ccs_result_t
   attach_function :ccs_create_unary_expression, [:ccs_expression_type_t, :ccs_datum_t, :pointer], :ccs_result_t
   attach_function :ccs_create_expression, [:ccs_expression_type_t, :size_t, :pointer, :pointer], :ccs_result_t
-  attach_function :ccs_create_literal, [:ccs_datum_t, :pointer], :ccs_result_t
-  attach_function :ccs_create_variable, [:ccs_parameter_t, :pointer], :ccs_result_t
   attach_function :ccs_expression_get_type, [:ccs_expression_t, :pointer], :ccs_result_t
-  attach_function :ccs_expression_get_num_nodes, [:ccs_expression_t, :pointer], :ccs_result_t
   attach_function :ccs_expression_get_nodes, [:ccs_expression_t, :size_t, :pointer, :pointer], :ccs_result_t
-  attach_function :ccs_literal_get_value, [:ccs_expression_t, :pointer], :ccs_result_t
-  attach_function :ccs_variable_get_parameter, [:ccs_expression_t, :pointer], :ccs_result_t
   attach_function :ccs_expression_eval, [:ccs_expression_t, :size_t, :pointer, :pointer], :ccs_result_t
-  attach_function :ccs_expression_list_eval_node, [:ccs_expression_t, :size_t, :pointer, :size_t, :pointer], :ccs_result_t
   attach_function :ccs_expression_get_parameters, [:ccs_expression_t, :size_t, :pointer, :pointer], :ccs_result_t
   attach_function :ccs_expression_check_contexts, [:ccs_expression_t, :size_t, :pointer], :ccs_result_t
 
   class Expression < Object
     add_property :type, :ccs_expression_type_t, :ccs_expression_get_type, memoize: true
-    add_property :num_nodes, :size_t, :ccs_expression_get_num_nodes, memoize: true
+    add_handle_array_property :nodes, :ccs_expression_t, :ccs_expression_get_nodes, memoize: true
+    add_handle_array_property :parameters, :ccs_parameter_t, :ccs_expression_get_parameters, memoize: true
 
     def self.expression_map
       @expression_map ||= {
@@ -148,13 +143,6 @@ module CCS
 
     private :create_unary
 
-    def nodes
-      count = num_nodes
-      ptr = MemoryPointer::new(:ccs_expression_t, count)
-      CCS.error_check CCS.ccs_expression_get_nodes(@handle, count, ptr, nil)
-      count.times.collect { |i| Expression.from_handle(ptr[i].read_pointer) }
-    end
-
     def eval(bindings: nil)
       count = 0
       p_bindings = nil
@@ -166,21 +154,6 @@ module CCS
       ptr = MemoryPointer::new(:ccs_datum_t)
       CCS.error_check CCS.ccs_expression_eval(@handle, count, p_bindings, ptr)
       Datum::new(ptr).value
-    end
-
-    def parameters
-      @parameters ||= begin
-        ptr = MemoryPointer::new(:size_t)
-        CCS.error_check CCS.ccs_expression_get_parameters(@handle, 0, nil, ptr)
-        count = ptr.read_size_t
-        if count == 0
-          []
-        else
-          ptr = MemoryPointer::new(:ccs_parameter_t, count)
-          CCS.error_check CCS.ccs_expression_get_parameters(@handle, count, ptr, nil)
-          count.times.collect { |i| Parameters.from_handle(ptr[i].read_ccs_parameter_t) }
-        end
-      end
     end
 
     def check_contexts(contexts)
@@ -483,7 +456,11 @@ module CCS
 
   Expression::Not = ExpressionNot
 
+  attach_function :ccs_create_literal, [:ccs_datum_t, :pointer], :ccs_result_t
+  attach_function :ccs_literal_get_value, [:ccs_expression_t, :pointer], :ccs_result_t
   class ExpressionLiteral < Expression
+    add_property :value, :ccs_datum_t, :ccs_literal_get_value, memoize: true
+
     NONE_SYMBOL = TerminalSymbols[:CCS_TERMINAL_TYPE_NONE]
     TRUE_SYMBOL = TerminalSymbols[:CCS_TERMINAL_TYPE_TRUE]
     FALSE_SYMBOL = TerminalSymbols[:CCS_TERMINAL_TYPE_FALSE]
@@ -497,12 +474,6 @@ module CCS
         CCS.error_check CCS.ccs_create_literal(Datum::from_value(value), ptr)
         super(ptr.read_ccs_expression_t, retain: false)
       end
-    end
-
-    def value
-      ptr = MemoryPointer::new(:ccs_datum_t)
-      CCS.error_check CCS.ccs_literal_get_value(@handle, ptr)
-      Datum::new(ptr).value
     end
 
     def to_s
@@ -523,7 +494,11 @@ module CCS
 
   Expression::Literal = ExpressionLiteral
 
+  attach_function :ccs_create_variable, [:ccs_parameter_t, :pointer], :ccs_result_t
+  attach_function :ccs_variable_get_parameter, [:ccs_expression_t, :pointer], :ccs_result_t
   class ExpressionVariable < Expression
+    add_handle_property :parameter, :ccs_parameter_t, :ccs_variable_get_parameter, memoize: true
+
     def initialize(handle = nil, retain: false, auto_release: true,
                    parameter: nil)
       if handle
@@ -535,12 +510,6 @@ module CCS
       end
     end
 
-    def parameter
-      ptr = MemoryPointer::new(:ccs_parameter_t)
-      CCS.error_check CCS.ccs_variable_get_parameter(@handle, ptr)
-      Parameter.from_handle(ptr.read_ccs_parameter_t)
-    end
-
     def to_s
       parameter.name
     end
@@ -548,6 +517,7 @@ module CCS
 
   Expression::Variable = ExpressionVariable
 
+  attach_function :ccs_expression_list_eval_node, [:ccs_expression_t, :size_t, :pointer, :size_t, :pointer], :ccs_result_t
   class ExpressionList < Expression
     def initialize(handle = nil, retain: false, auto_release: true,
                    values: nil)

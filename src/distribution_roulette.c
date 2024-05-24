@@ -270,19 +270,6 @@ ccs_create_roulette_distribution(
 }
 
 ccs_result_t
-ccs_roulette_distribution_get_num_areas(
-	ccs_distribution_t distribution,
-	size_t            *num_areas_ret)
-{
-	CCS_CHECK_DISTRIBUTION(distribution, CCS_DISTRIBUTION_TYPE_ROULETTE);
-	CCS_CHECK_PTR(num_areas_ret);
-	_ccs_distribution_roulette_data_t *data =
-		(_ccs_distribution_roulette_data_t *)distribution->data;
-	*num_areas_ret = data->num_areas;
-	return CCS_RESULT_SUCCESS;
-}
-
-ccs_result_t
 ccs_roulette_distribution_get_areas(
 	ccs_distribution_t distribution,
 	size_t             num_areas,

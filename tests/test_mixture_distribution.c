@@ -47,11 +47,6 @@ compare_distribution(
 	assert(interval.upper.f == 10.0);
 	assert(interval.upper_included == CCS_FALSE);
 
-	err = ccs_mixture_distribution_get_num_distributions(
-		distrib, &num_distribs_ret);
-	assert(err == CCS_RESULT_SUCCESS);
-	assert(num_distribs_ret == num_distribs);
-
 	err = ccs_mixture_distribution_get_distributions(
 		distrib, num_distribs, distribs_ret, &num_distribs_ret);
 	assert(err == CCS_RESULT_SUCCESS);

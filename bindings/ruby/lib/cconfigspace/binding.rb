@@ -11,6 +11,7 @@ module CCS
     include Comparable
     add_property :hash, :ccs_hash_t, :ccs_binding_hash, memoize: true
     add_handle_property :context, :ccs_context_t, :ccs_binding_get_context, memoize: true
+    add_array_property :values, :ccs_datum_t, :ccs_binding_get_values, memoize: true
 
     def value(parameter)
       ptr = MemoryPointer::new(:ccs_datum_t)
@@ -28,23 +29,6 @@ module CCS
         raise CCSError, :CCS_RESULT_ERROR_INVALID_VALUE
       end
       Datum::new(ptr).value
-    end
-
-    def values
-      @values ||= begin
-        count = num_values
-        values = MemoryPointer::new(:ccs_datum_t, count)
-        CCS.error_check CCS.ccs_binding_get_values(@handle, count, values, nil)
-        count.times.collect { |i| Datum::new(values[i]).value }.freeze
-      end
-    end
-
-    def num_values
-      @num_values ||= begin
-        ptr = MemoryPointer::new(:size_t)
-        CCS.error_check CCS.ccs_binding_get_values(@handle, 0, nil, ptr)
-        ptr.read_size_t
-      end
     end
 
     def <=>(other)

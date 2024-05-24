@@ -45,10 +45,6 @@ compare_distribution(
 	assert(interval.upper.i == 4);
 	assert(interval.upper_included == CCS_FALSE);
 
-	err = ccs_roulette_distribution_get_num_areas(distrib, &num_areas_ret);
-	assert(err == CCS_RESULT_SUCCESS);
-	assert(num_areas_ret == num_areas);
-
 	err = ccs_roulette_distribution_get_areas(
 		distrib, num_areas, areas_ret, &num_areas_ret);
 	assert(err == CCS_RESULT_SUCCESS);

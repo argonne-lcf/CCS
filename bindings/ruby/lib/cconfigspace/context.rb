@@ -1,6 +1,5 @@
 module CCS
   attach_function :ccs_context_get_name, [:ccs_context_t, :pointer], :ccs_result_t
-  attach_function :ccs_context_get_num_parameters, [:ccs_context_t, :pointer], :ccs_result_t
   attach_function :ccs_context_get_parameter, [:ccs_context_t, :size_t, :pointer], :ccs_result_t
   attach_function :ccs_context_get_parameter_by_name, [:ccs_context_t, :string, :pointer], :ccs_result_t
   attach_function :ccs_context_get_parameter_index_by_name, [:ccs_context_t, :string, :pointer, :pointer], :ccs_result_t
@@ -10,7 +9,7 @@ module CCS
   attach_function :ccs_context_validate_value, [:ccs_context_t, :size_t, :ccs_datum_t, :pointer], :ccs_result_t
 
   class Context < Object
-    add_property :num_parameters, :size_t, :ccs_context_get_num_parameters, memoize: true
+    add_handle_array_property :parameters, :ccs_parameter_t, :ccs_context_get_parameters, memoize: true
 
     def name
       @name ||= begin
@@ -45,15 +44,6 @@ module CCS
       ptr = MemoryPointer::new(:size_t)
       CCS.error_check CCS.ccs_context_get_parameter_index(@handle, parameter, nil, ptr)
       ptr.read_size_t
-    end
-
-    def parameters
-      @parameters ||= begin
-        count = num_parameters
-        ptr = MemoryPointer::new(:ccs_parameter_t, count)
-        CCS.error_check CCS.ccs_context_get_parameters(@handle, count, ptr, nil)
-        count.times.collect { |i| Parameter.from_handle(ptr[i].read_pointer) }.freeze
-      end
     end
 
     def validate_value(parameter, value)

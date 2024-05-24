@@ -59,7 +59,6 @@ ccs_create_expression = _ccs_get_function("ccs_create_expression", [ExpressionTy
 ccs_create_literal = _ccs_get_function("ccs_create_literal", [DatumFix, ct.POINTER(ccs_expression)])
 ccs_create_variable = _ccs_get_function("ccs_create_variable", [ccs_parameter, ct.POINTER(ccs_expression)])
 ccs_expression_get_type = _ccs_get_function("ccs_expression_get_type", [ccs_expression, ct.POINTER(ExpressionType)])
-ccs_expression_get_num_nodes = _ccs_get_function("ccs_expression_get_num_nodes", [ccs_expression, ct.POINTER(ct.c_size_t)])
 ccs_expression_get_nodes = _ccs_get_function("ccs_expression_get_nodes", [ccs_expression, ct.c_size_t, ct.POINTER(ccs_expression), ct.POINTER(ct.c_size_t)])
 ccs_literal_get_value = _ccs_get_function("ccs_literal_get_value", [ccs_expression, ct.POINTER(Datum)])
 ccs_variable_get_parameter = _ccs_get_function("ccs_variable_get_parameter", [ccs_expression, ct.POINTER(ccs_parameter)])
@@ -114,7 +113,7 @@ class Expression(Object):
     if hasattr(self, "_num_nodes"):
       return self._num_nodes
     v = ct.c_size_t(0)
-    res = ccs_expression_get_num_nodes(self.handle, ct.byref(v))
+    res = ccs_expression_get_nodes(self.handle, 0, None, ct.byref(v))
     Error.check(res)
     self._num_nodes = v.value
     return self._num_nodes

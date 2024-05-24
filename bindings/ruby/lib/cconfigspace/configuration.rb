@@ -6,7 +6,7 @@ module CCS
 
   class Configuration < Binding
     alias configuration_space context
-    add_optional_handle_property :features, :ccs_features_t, :ccs_configuration_get_features, memoize: true
+    add_handle_property :features, :ccs_features_t, :ccs_configuration_get_features, memoize: true
 
     def initialize(handle = nil, retain: false, auto_release: true,
                    configuration_space: nil, features: nil, values: nil)

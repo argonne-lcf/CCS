@@ -717,7 +717,7 @@ _ccs_expr_in_eval(
 	ccs_parameter_type_t htl      = CCS_PARAMETER_TYPE_MAX;
 	EVAL_NODE(data, expr_ctx, left, &htl);
 	RETURN_IF_INACTIVE(left, result);
-	CCS_VALIDATE(ccs_expression_get_num_nodes(data->nodes[1], &num_nodes));
+	num_nodes = data->nodes[1]->data->num_nodes;
 	for (size_t i = 0; i < num_nodes; i++) {
 		ccs_datum_t right;
 		CCS_VALIDATE(_ccs_expression_list_eval_node(
@@ -1562,15 +1562,6 @@ ccs_expression_eval(
 	CCS_CHECK_PTR(result_ret);
 	_ccs_expr_ctx_t expr_ctx = {num_bindings, bindings};
 	EVAL_EXPR(expression, &expr_ctx, result_ret);
-	return CCS_RESULT_SUCCESS;
-}
-
-ccs_result_t
-ccs_expression_get_num_nodes(ccs_expression_t expression, size_t *num_nodes_ret)
-{
-	CCS_CHECK_OBJ(expression, CCS_OBJECT_TYPE_EXPRESSION);
-	CCS_CHECK_PTR(num_nodes_ret);
-	*num_nodes_ret = expression->data->num_nodes;
 	return CCS_RESULT_SUCCESS;
 }
 

@@ -37,8 +37,8 @@ check_configuration(
 	const char *name;
 	ccs_bool_t  check;
 
-	err = ccs_context_get_num_parameters(
-		(ccs_context_t)configuration_space, &sz_ret);
+	err = ccs_context_get_parameters(
+		(ccs_context_t)configuration_space, 0, NULL, &sz_ret);
 	assert(err == CCS_RESULT_SUCCESS);
 	assert(sz_ret == sz);
 

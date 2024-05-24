@@ -25,7 +25,7 @@ module CCS
   class TreeSpace < Object
     add_property :type, :ccs_tree_space_type_t, :ccs_tree_space_get_type, memoize: true
     add_handle_property :rng, :ccs_rng_t, :ccs_tree_space_get_rng, memoize: true
-    add_optional_handle_property :feature_space, :ccs_feature_space_t, :ccs_tree_space_get_feature_space, memoize: true
+    add_handle_property :feature_space, :ccs_feature_space_t, :ccs_tree_space_get_feature_space, memoize: true
     add_handle_property :tree, :ccs_tree_t, :ccs_tree_space_get_tree, memoize: true
 
     def self.from_handle(handle, retain: true, auto_release: true)

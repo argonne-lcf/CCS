@@ -429,19 +429,6 @@ _ccs_distribution_mixture_soa_samples(
 }
 
 ccs_result_t
-ccs_mixture_distribution_get_num_distributions(
-	ccs_distribution_t distribution,
-	size_t            *num_distributions_ret)
-{
-	CCS_CHECK_DISTRIBUTION(distribution, CCS_DISTRIBUTION_TYPE_MIXTURE);
-	CCS_CHECK_PTR(num_distributions_ret);
-	_ccs_distribution_mixture_data_t *data =
-		(_ccs_distribution_mixture_data_t *)distribution->data;
-	*num_distributions_ret = data->num_distributions;
-	return CCS_RESULT_SUCCESS;
-}
-
-ccs_result_t
 ccs_mixture_distribution_get_distributions(
 	ccs_distribution_t  distribution,
 	size_t              num_distributions,

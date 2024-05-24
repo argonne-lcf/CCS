@@ -15,15 +15,6 @@ ccs_context_get_parameter_index(
 }
 
 ccs_result_t
-ccs_context_get_num_parameters(ccs_context_t context, size_t *num_parameters_ret)
-{
-	CCS_CHECK_CONTEXT(context);
-	CCS_VALIDATE(
-		_ccs_context_get_num_parameters(context, num_parameters_ret));
-	return CCS_RESULT_SUCCESS;
-}
-
-ccs_result_t
 ccs_context_get_parameter(
 	ccs_context_t    context,
 	size_t           index,

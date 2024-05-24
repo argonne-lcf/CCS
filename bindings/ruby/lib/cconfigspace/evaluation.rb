@@ -23,7 +23,8 @@ module CCS
     alias objective_space context
     add_property :result, :ccs_evaluation_result_t, :ccs_evaluation_get_result, memoize: true
     add_handle_property :configuration, :ccs_configuration_t, :ccs_evaluation_get_configuration, memoize: true
-    add_optional_handle_property :features, :ccs_features_t, :ccs_evaluation_get_features, memoize: true
+    add_handle_property :features, :ccs_features_t, :ccs_evaluation_get_features, memoize: true
+    add_array_property :objective_values, :ccs_datum_t, :ccs_evaluation_get_objective_values, memoize: true
 
     def initialize(handle = nil, retain: false, auto_release: true,
                    objective_space: nil, configuration: nil, result: :CCS_RESULT_SUCCESS, values: nil)
@@ -50,23 +51,6 @@ module CCS
 
     def self.from_handle(handle, retain: true, auto_release: true)
       self::new(handle, retain: retain, auto_release: auto_release)
-    end
-
-    def num_objective_values
-      @num_objective_values ||= begin
-        ptr = MemoryPointer::new(:size_t)
-        CCS.error_check CCS.ccs_evaluation_get_objective_values(@handle, 0, nil, ptr)
-        ptr.read_size_t
-      end
-    end
-
-    def objective_values
-      @objective_values ||= begin
-        count = num_objective_values
-        values = MemoryPointer::new(:ccs_datum_t, count)
-        CCS.error_check CCS.ccs_evaluation_get_objective_values(@handle, count, values, nil)
-        count.times.collect { |i| Datum::new(values[i]).value }.freeze
-      end
     end
 
     def check

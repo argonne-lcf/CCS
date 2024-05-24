@@ -34,8 +34,8 @@ check_features(
 		(ccs_parameter_t *)malloc(sizeof(ccs_parameter_t) * (sz + 1));
 	const char *name;
 
-	err = ccs_context_get_num_parameters(
-		(ccs_context_t)feature_space, &sz_ret);
+	err = ccs_context_get_parameters(
+		(ccs_context_t)feature_space, 0, NULL, &sz_ret);
 	assert(err == CCS_RESULT_SUCCESS);
 	assert(sz_ret == sz);
 

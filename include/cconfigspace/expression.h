@@ -367,21 +367,6 @@ ccs_expression_get_type(
 	ccs_expression_type_t *type_ret);
 
 /**
- * Get the number of child node of an expression.
- * @param[in] expression
- * @param[out] num_nodes_ret a pointer to the variable that will contain the
- *                           number of child node of the expression
- * @return #CCS_RESULT_SUCCESS on success
- * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p num_nodes_ret is NULL
- * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p expression is not a valid CCS
- * expression
- * @remarks
- *   This function is thread-safe
- */
-extern ccs_result_t
-ccs_expression_get_num_nodes(ccs_expression_t expression, size_t *num_nodes_ret);
-
-/**
  * Get the child nodes of an expression.
  * @param[in] expression
  * @param[in] num_nodes the size of the \p nodes array

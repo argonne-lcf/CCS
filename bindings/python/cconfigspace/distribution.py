@@ -347,7 +347,6 @@ class NormalIntDistribution(NormalDistribution):
 NormalDistribution.Int = NormalIntDistribution
 
 ccs_create_roulette_distribution = _ccs_get_function("ccs_create_roulette_distribution", [ct.c_size_t, ct.POINTER(ccs_float), ct.POINTER(ccs_distribution)])
-ccs_roulette_distribution_get_num_areas = _ccs_get_function("ccs_roulette_distribution_get_num_areas", [ccs_distribution, ct.POINTER(ct.c_size_t)])
 ccs_roulette_distribution_get_areas = _ccs_get_function("ccs_roulette_distribution_get_areas", [ccs_distribution, ct.c_size_t, ct.POINTER(ccs_float), ct.POINTER(ct.c_size_t)])
 
 class RouletteDistribution(Distribution):
@@ -374,7 +373,7 @@ class RouletteDistribution(Distribution):
     if hasattr(self, "_num_areas"):
       return self._num_areas
     v = ct.c_size_t()
-    res = ccs_roulette_distribution_get_num_areas(self.handle, ct.byref(v))
+    res = ccs_roulette_distribution_get_areas(self.handle, 0, None, ct.byref(v))
     Error.check(res)
     self._num_areas = v.value
     return self._num_areas
@@ -392,7 +391,6 @@ class RouletteDistribution(Distribution):
 Distribution.Roulette = RouletteDistribution
 
 ccs_create_mixture_distribution = _ccs_get_function("ccs_create_mixture_distribution", [ct.c_size_t, ct.POINTER(ccs_distribution), ct.POINTER(ccs_float), ct.POINTER(ccs_distribution)])
-ccs_mixture_distribution_get_num_distributions = _ccs_get_function("ccs_mixture_distribution_get_num_distributions", [ccs_distribution, ct.POINTER(ct.c_size_t)])
 ccs_mixture_distribution_get_distributions = _ccs_get_function("ccs_mixture_distribution_get_distributions", [ccs_distribution, ct.c_size_t, ct.POINTER(ccs_distribution), ct.POINTER(ct.c_size_t)])
 ccs_mixture_distribution_get_weights = _ccs_get_function("ccs_mixture_distribution_get_weights", [ccs_distribution, ct.c_size_t, ct.POINTER(ccs_float), ct.POINTER(ct.c_size_t)])
 
@@ -416,7 +414,7 @@ class MixtureDistribution(Distribution):
     if hasattr(self, "_num_distributions"):
       return self._num_distributions
     v = ct.c_size_t()
-    res = ccs_mixture_distribution_get_num_distributions(self.handle, ct.byref(v))
+    res = ccs_mixture_distribution_get_distributions(self.handle, 0, None, ct.byref(v))
     Error.check(res)
     self._num_distributions = v.value
     return self._num_distributions
@@ -444,7 +442,6 @@ class MixtureDistribution(Distribution):
 Distribution.Mixture = MixtureDistribution
 
 ccs_create_multivariate_distribution = _ccs_get_function("ccs_create_multivariate_distribution", [ct.c_size_t, ct.POINTER(ccs_distribution), ct.POINTER(ccs_distribution)])
-ccs_multivariate_distribution_get_num_distributions = _ccs_get_function("ccs_multivariate_distribution_get_num_distributions", [ccs_distribution, ct.POINTER(ct.c_size_t)])
 ccs_multivariate_distribution_get_distributions = _ccs_get_function("ccs_multivariate_distribution_get_distributions", [ccs_distribution, ct.c_size_t, ct.POINTER(ccs_distribution), ct.POINTER(ct.c_size_t)])
 
 class MultivariateDistribution(Distribution):
@@ -464,7 +461,7 @@ class MultivariateDistribution(Distribution):
     if hasattr(self, "_num_distributions"):
       return self._num_distributions
     v = ct.c_size_t()
-    res = ccs_multivariate_distribution_get_num_distributions(self.handle, ct.byref(v))
+    res = ccs_multivariate_distribution_get_distributions(self.handle, 0, None, ct.byref(v))
     Error.check(res)
     self._num_distributions = v.value
     return self._num_distributions

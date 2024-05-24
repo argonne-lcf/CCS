@@ -50,11 +50,6 @@ compare_distribution(
 	assert(intervals[1].upper.i == 5);
 	assert(intervals[1].upper_included == CCS_FALSE);
 
-	err = ccs_multivariate_distribution_get_num_distributions(
-		distrib, &num_distribs_ret);
-	assert(err == CCS_RESULT_SUCCESS);
-	assert(num_distribs_ret == num_distribs);
-
 	err = ccs_multivariate_distribution_get_distributions(
 		distrib, num_distribs, distribs_ret, &num_distribs_ret);
 	assert(err == CCS_RESULT_SUCCESS);

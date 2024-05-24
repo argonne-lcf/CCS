@@ -487,25 +487,6 @@ ccs_uniform_distribution_get_properties(
 	ccs_numeric_t     *quantization_ret);
 
 /**
- * Get the number areas of a roulette distribution.
- * @param[in] distribution
- * @param[out] num_areas_ret a pointer to the variable that will contain the
- *                           number of areas of the distribution
- * @return #CCS_RESULT_SUCCESS on success
- * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p num_areas_ret is NULL
- * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p distribution is not a valid
- * CCS distribution
- * @return #CCS_RESULT_ERROR_INVALID_DISTRIBUTION if \p distribution is not a
- * roulette distribution
- * @remarks
- *   This function is thread-safe
- */
-extern ccs_result_t
-ccs_roulette_distribution_get_num_areas(
-	ccs_distribution_t distribution,
-	size_t            *num_areas_ret);
-
-/**
  * Get the normalized areas of a roulette distribution.
  * @param[in] distribution
  * @param[in] num_areas the number of area that can be contained in \p areas. If
@@ -533,26 +514,6 @@ ccs_roulette_distribution_get_areas(
 	size_t             num_areas,
 	ccs_float_t       *areas,
 	size_t            *num_areas_ret);
-
-/**
- * Get the number of distributions contained in a mixture distribution.
- * @param[in] distribution
- * @param[in] num_distributions_ret a pointer to a variable that will contain
- *                                  the number of distributions contained in the
- *                                  distribution
- * @return #CCS_RESULT_SUCCESS on success
- * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p num_distributions_ret is NULL
- * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p distribution is not a valid
- * CCS distribution
- * @return #CCS_RESULT_ERROR_INVALID_DISTRIBUTION if \p distribution is not a
- * mixture distribution
- * @remarks
- *   This function is thread-safe
- */
-extern ccs_result_t
-ccs_mixture_distribution_get_num_distributions(
-	ccs_distribution_t distribution,
-	size_t            *num_distributions_ret);
 
 /**
  * Get the distributions contained in a mixture distribution.
@@ -613,26 +574,6 @@ ccs_mixture_distribution_get_weights(
 	size_t             num_weights,
 	ccs_float_t       *weights,
 	size_t            *num_weights_ret);
-
-/**
- * Get the number of distributions contained in a multivariate distribution.
- * @param[in] distribution
- * @param[in] num_distributions_ret a pointer to a variable that will contain
- *                                  the number of distributions contained in the
- *                                  distribution
- * @return #CCS_RESULT_SUCCESS on success
- * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p num_distributions_ret is NULL
- * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p distribution is not a valid
- * CCS distribution
- * @return #CCS_RESULT_ERROR_INVALID_DISTRIBUTION if \p distribution is not a
- * multivariate distribution
- * @remarks
- *   This function is thread-safe
- */
-extern ccs_result_t
-ccs_multivariate_distribution_get_num_distributions(
-	ccs_distribution_t distribution,
-	size_t            *num_distributions_ret);
 
 /**
  * Get the distributions contained in a multivariate distribution.

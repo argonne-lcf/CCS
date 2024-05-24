@@ -31,23 +31,6 @@ extern ccs_result_t
 ccs_context_get_name(ccs_context_t context, const char **name_ret);
 
 /**
- * Get the number of parameters in the given context.
- * @param[in] context
- * @param[out] num_parameters_ret a pointer to the variable which will contain
- *                                the number of parameters in \p context
- * @return #CCS_RESULT_SUCCESS on success
- * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p context is not a valid CCS
- * object
- * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p num_parameters_ret is NULL
- * @remarks
- *   This function is thread-safe
- */
-extern ccs_result_t
-ccs_context_get_num_parameters(
-	ccs_context_t context,
-	size_t       *num_parameters_ret);
-
-/**
  * Get an parameter in a context given its index.
  * @param[in] context
  * @param[in] index the index of the parameter to retrieve

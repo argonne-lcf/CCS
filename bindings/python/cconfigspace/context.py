@@ -3,7 +3,6 @@ from .base import Object, Error, Result, _ccs_get_function, ccs_context, ccs_par
 from .parameter import Parameter
 
 ccs_context_get_name = _ccs_get_function("ccs_context_get_name", [ccs_context, ct.POINTER(ct.c_char_p)])
-ccs_context_get_num_parameters = _ccs_get_function("ccs_context_get_num_parameters", [ccs_context, ct.POINTER(ct.c_size_t)])
 ccs_context_get_parameter = _ccs_get_function("ccs_context_get_parameter", [ccs_context, ct.c_size_t, ct.POINTER(ccs_parameter)])
 ccs_context_get_parameter_by_name = _ccs_get_function("ccs_context_get_parameter_by_name", [ccs_context, ct.c_char_p, ct.POINTER(ccs_parameter)])
 ccs_context_get_parameter_index_by_name = _ccs_get_function("ccs_context_get_parameter_index_by_name", [ccs_context, ct.c_char_p, ct.POINTER(ccs_bool), ct.POINTER(ct.c_size_t)])
@@ -56,7 +55,7 @@ class Context(Object):
     if hasattr(self, "_num_parameters"):
       return self._num_parameters
     v = ct.c_size_t(0)
-    res = ccs_context_get_num_parameters(self.handle, ct.byref(v))
+    res = ccs_context_get_parameters(self.handle, 0, None, ct.byref(v))
     Error.check(res)
     self._num_parameters = v.value
     return self._num_parameters

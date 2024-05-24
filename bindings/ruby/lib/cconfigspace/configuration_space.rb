@@ -12,8 +12,10 @@ module CCS
   attach_function :ccs_configuration_space_samples, [:ccs_configuration_space_t, :ccs_distribution_space_t, :ccs_features_t, :ccs_rng_t, :size_t, :pointer], :ccs_result_t
 
   class ConfigurationSpace < Context
-    add_optional_handle_property :feature_space, :ccs_feature_space_t, :ccs_configuration_space_get_feature_space, memoize: true
+    add_handle_property :feature_space, :ccs_feature_space_t, :ccs_configuration_space_get_feature_space, memoize: true
     add_handle_property :rng, :ccs_rng_t, :ccs_configuration_space_get_rng, memoize: true
+    add_handle_array_property :conditions, :ccs_expression_t, :ccs_configuration_space_get_conditions, memoize: true
+    add_handle_array_property :forbidden_clauses, :ccs_expression_t, :ccs_configuration_space_get_forbidden_clauses, memoize: true
 
     def initialize(handle = nil, retain: false, auto_release: true,
                    name: "", parameters: nil, conditions: nil, forbidden_clauses: nil, feature_space: nil, rng: nil)
@@ -84,17 +86,6 @@ module CCS
       handle.null? ? nil : Expression.from_handle(handle)
     end
 
-    def conditions
-      @conditions ||= begin
-        count = num_parameters
-        ptr = MemoryPointer::new(:ccs_expression_t, count)
-        CCS.error_check CCS.ccs_configuration_space_get_conditions(@handle, count, ptr, nil)
-        ptr.read_array_of_pointer(count).collect { |handle|
-          handle.null? ? nil : Expression.from_handle(handle)
-        }.freeze
-      end
-    end
-
     def conditional_parameters
       @conditional_parameters ||= begin
         hps = parameters
@@ -115,23 +106,6 @@ module CCS
       ptr = MemoryPointer::new(:ccs_expression_t)
       CCS.error_check CCS.ccs_configuration_space_get_forbidden_clause(@handle, index, ptr)
       Expression.from_handle(ptr.read_ccs_expression_t)
-    end
-
-    def num_forbidden_clauses
-      @num_forbidden_clauses ||= begin
-        ptr = MemoryPointer::new(:size_t)
-        CCS.error_check CCS.ccs_configuration_space_get_forbidden_clauses(@handle, 0, nil, ptr)
-        ptr.read_size_t
-      end
-    end
-
-    def forbidden_clauses
-      @forbidden_clauses ||= begin
-        count = num_forbidden_clauses
-        ptr = MemoryPointer::new(:ccs_expression_t, count)
-        CCS.error_check CCS.ccs_configuration_space_get_forbidden_clauses(@handle, count, ptr, nil)
-        count.times.collect { |i| Expression::from_handle(ptr[i].read_pointer) }.freeze
-      end
     end
 
     def check(configuration)
