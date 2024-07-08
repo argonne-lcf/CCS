@@ -187,8 +187,12 @@ def _wrap_user_defined_tuner_callbacks(delete, ask, tell, get_optima, get_histor
   def delete_wrapper(tun):
     try:
       tun = ct.cast(tun, ccs_tuner)
+      o = Object.from_handle(tun)
+      tdata = o.tuner_data
       if delete is not None:
-        delete(Object.from_handle(tun))
+        delete(o)
+      if tdata is not None:
+        ct.pythonapi.Py_DecRef(ct.py_object(tdata))
       _unregister_vector(tun)
       return Result.SUCCESS
     except Exception as e:
@@ -353,14 +357,15 @@ class UserDefinedTuner(Tuner):
       if ask is None or tell is None or get_optima is None or get_history is None:
         raise Error(Result(Result.ERROR_INVALID_VALUE))
 
-      (delete_wrapper,
-       ask_wrapper,
-       tell_wrapper,
-       get_optima_wrapper,
-       get_history_wrapper,
-       suggest_wrapper,
-       serialize_wrapper,
-       deserialize_wrapper,
+      wrappers = _wrap_user_defined_tuner_callbacks(delete, ask, tell, get_optima, get_history, suggest, serialize, deserialize)
+      (_,
+       _,
+       _,
+       _,
+       _,
+       _,
+       _,
+       _,
        delete_wrapper_func,
        ask_wrapper_func,
        tell_wrapper_func,
@@ -368,7 +373,7 @@ class UserDefinedTuner(Tuner):
        get_history_wrapper_func,
        suggest_wrapper_func,
        serialize_wrapper_func,
-       deserialize_wrapper_func) = _wrap_user_defined_tuner_callbacks(delete, ask, tell, get_optima, get_history, suggest, serialize, deserialize)
+       deserialize_wrapper_func) = wrappers
       handle = ccs_tuner()
       vec = UserDefinedTunerVector()
       vec.delete = delete_wrapper_func
@@ -386,7 +391,9 @@ class UserDefinedTuner(Tuner):
       res = ccs_create_user_defined_tuner(str.encode(name), objective_space.handle, ct.byref(vec), c_tuner_data, ct.byref(handle))
       Error.check(res)
       super().__init__(handle = handle, retain = False)
-      _register_vector(handle, [delete_wrapper, ask_wrapper, tell_wrapper, get_optima_wrapper, get_history_wrapper, suggest_wrapper, serialize_wrapper, deserialize_wrapper, delete_wrapper_func, ask_wrapper_func, tell_wrapper_func, get_optima_wrapper_func, get_history_wrapper_func, suggest_wrapper_func, serialize_wrapper_func, deserialize_wrapper_func, tuner_data])
+      _register_vector(handle, wrappers)
+      if c_tuner_data is not None:
+        ct.pythonapi.Py_IncRef(c_tuner_data)
     else:
       super().__init__(handle = handle, retain = retain, auto_release = auto_release)
 
@@ -394,14 +401,15 @@ class UserDefinedTuner(Tuner):
   def deserialize(cls, delete, ask, tell, get_optima, get_history, suggest = None, serialize = None, deserialize = None, tuner_data = None, format = 'binary', handle_map = None, path = None, buffer = None, file_descriptor = None, callback = None, callback_data = None):
     if ask is None or tell is None or get_optima is None or get_history is None:
       raise Error(Result(Result.ERROR_INVALID_VALUE))
-    (delete_wrapper,
-     ask_wrapper,
-     tell_wrapper,
-     get_optima_wrapper,
-     get_history_wrapper,
-     suggest_wrapper,
-     serialize_wrapper,
-     deserialize_wrapper,
+    wrappers = _wrap_user_defined_tuner_callbacks(delete, ask, tell, get_optima, get_history, suggest, serialize, deserialize)
+    (_,
+     _,
+     _,
+     _,
+     _,
+     _,
+     _,
+     _,
      delete_wrapper_func,
      ask_wrapper_func,
      tell_wrapper_func,
@@ -409,7 +417,7 @@ class UserDefinedTuner(Tuner):
      get_history_wrapper_func,
      suggest_wrapper_func,
      serialize_wrapper_func,
-     deserialize_wrapper_func) = _wrap_user_defined_tuner_callbacks(delete, ask, tell, get_optima, get_history, suggest, serialize, deserialize)
+     deserialize_wrapper_func) = wrappers
     vector = UserDefinedTunerVector()
     vector.delete = delete_wrapper_func
     vector.ask = ask_wrapper_func
@@ -420,7 +428,9 @@ class UserDefinedTuner(Tuner):
     vector.serialize = serialize_wrapper_func
     vector.deserialize = deserialize_wrapper_func
     res = super().deserialize(format = format, handle_map = handle_map, vector = vector, data = tuner_data, path = path, buffer = buffer, file_descriptor = file_descriptor, callback = callback, callback_data = callback_data)
-    _register_vector(res.handle, [delete_wrapper, ask_wrapper, tell_wrapper, get_optima_wrapper, get_history_wrapper, suggest_wrapper, serialize_wrapper, deserialize_wrapper, delete_wrapper_func, ask_wrapper_func, tell_wrapper_func, get_optima_wrapper_func, get_history_wrapper_func, suggest_wrapper_func, serialize_wrapper_func, deserialize_wrapper_func, tuner_data])
+    _register_vector(res.handle, wrappers)
+    if tuner_data is not None:
+      ct.pythonapi.Py_IncRef(ct.py_object(tuner_data))
     return res
 
   @property

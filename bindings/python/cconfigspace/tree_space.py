@@ -181,8 +181,12 @@ def _wrap_user_defined_callbacks(delete, get_child, serialize, deserialize):
   def delete_wrapper(ts):
     try:
       ts = ct.cast(ts, ccs_tree_space)
+      o = Object.from_handle(ts)
+      tsdata = o.tree_space_data
       if delete is not None:
-        delete(Object.from_handle(ts))
+        delete(o)
+      if tsdata is not None:
+        ct.pythonapi.Py_DecRef(ct.py_object(tsdata))
       _unregister_vector(ts)
       return Result.SUCCESS
     except Exception as e:
@@ -252,14 +256,15 @@ class DynamicTreeSpace(TreeSpace):
       if get_child is None:
         raise Error(Result(Result.ERROR_INVALID_VALUE))
 
-      (delete_wrapper,
-       get_child_wrapper,
-       serialize_wrapper,
-       deserialize_wrapper,
+      wrappers = _wrap_user_defined_callbacks(delete, get_child, serialize, deserialize)
+      (_,
+       _,
+       _,
+       _,
        delete_wrapper_func,
        get_child_wrapper_func,
        serialize_wrapper_func,
-       deserialize_wrapper_func) = _wrap_user_defined_callbacks(delete, get_child, serialize, deserialize)
+       deserialize_wrapper_func) = wrappers
       handle = ccs_tree_space()
       vec = DynamicTreeSpaceVector()
       vec.delete = delete_wrapper_func
@@ -277,7 +282,9 @@ class DynamicTreeSpace(TreeSpace):
       res = ccs_create_dynamic_tree_space(str.encode(name), tree.handle, feature_space, rng, ct.byref(vec), c_tree_space_data, ct.byref(handle))
       Error.check(res)
       super().__init__(handle = handle, retain = False)
-      _register_vector(handle, [delete_wrapper, get_child_wrapper, serialize_wrapper, deserialize_wrapper, delete_wrapper_func, get_child_wrapper_func, serialize_wrapper_func, deserialize_wrapper_func, tree_space_data])
+      _register_vector(handle, wrappers)
+      if c_tree_space_data is not None:
+        ct.pythonapi.Py_IncRef(c_tree_space_data)
     else:
       super().__init__(handle = handle, retain = retain, auto_release = auto_release)
 
@@ -285,22 +292,25 @@ class DynamicTreeSpace(TreeSpace):
   def deserialize(cls, delete, get_child, serialize = None, deserialize = None, tree_space_data = None, format = 'binary', handle_map = None, path = None, buffer = None, file_descriptor = None, callback = None, callback_data = None):
     if get_child is None:
       raise Error(Result(Result.ERROR_INVALID_VALUE))
-    (delete_wrapper,
-     get_child_wrapper,
-     serialize_wrapper,
-     deserialize_wrapper,
+
+    wrappers = _wrap_user_defined_callbacks(delete, get_child, serialize, deserialize)
+    (_,
+     _,
+     _,
+     _,
      delete_wrapper_func,
      get_child_wrapper_func,
      serialize_wrapper_func,
-     deserialize_wrapper_func) = _wrap_user_defined_callbacks(delete, get_child, serialize, deserialize)
-    handle = ccs_tree_space()
+     deserialize_wrapper_func) = wrappers
     vector = DynamicTreeSpaceVector()
     vector.delete = delete_wrapper_func
     vector.get_child = get_child_wrapper_func
     vector.serialize = serialize_wrapper_func
     vector.deserialize = deserialize_wrapper_func
     res = super().deserialize(format = format, handle_map = handle_map, vector = vector, data = tree_space_data, path = path, buffer = buffer, file_descriptor = file_descriptor, callback = callback, callback_data = callback_data)
-    _register_vector(res.handle, [delete_wrapper, get_child_wrapper, serialize_wrapper, deserialize_wrapper, delete_wrapper_func, get_child_wrapper_func, serialize_wrapper_func, deserialize_wrapper_func, tree_space_data])
+    _register_vector(res.handle, wrappers)
+    if tree_space_data is not None:
+      ct.pythonapi.Py_IncRef(ct.py_object(tree_space_data))
     return res
 
   @property

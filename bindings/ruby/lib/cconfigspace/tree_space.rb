@@ -133,7 +133,10 @@ module CCS
   def self.wrap_dynamic_tree_space_callbacks(del, get_child, serialize, deserialize)
     delwrapper = lambda { |ts|
       begin
-        del.call(CCS::Object.from_handle(ts)) if del
+        o = CCS::Object.from_handle(ts)
+        tsdata = o.tree_space_data
+        del.call(o) if del
+        FFI.dec_ref(tsdata) unless tsdata.nil?
         CCS.unregister_vector(ts)
         CCSError.to_native(:CCS_RESULT_SUCCESS)
       rescue => e
@@ -196,8 +199,8 @@ module CCS
         super(handle, retain: retain, auto_release: auto_release)
       else
         raise CCSError, :CCS_RESULT_ERROR_INVALID_VALUE if get_child.nil?
-        delwrapper, get_childwrapper, serializewrapper, deserializewrapper =
-          CCS.wrap_dynamic_tree_space_callbacks(del, get_child, serialize, deserialize)
+        wrappers = CCS.wrap_dynamic_tree_space_callbacks(del, get_child, serialize, deserialize)
+        delwrapper, get_childwrapper, serializewrapper, deserializewrapper = wrappers
         vector = DynamicTreeSpaceVector::new
         vector[:del] = delwrapper
         vector[:get_child] = get_childwrapper
@@ -207,21 +210,23 @@ module CCS
         CCS.error_check CCS.ccs_create_dynamic_tree_space(name, tree, feature_space, rng, vector, tree_space_data, ptr)
         h = ptr.read_ccs_tree_space_t
         super(h, retain: false)
-        CCS.register_vector(h, [delwrapper, get_childwrapper, serializewrapper, deserializewrapper, tree_space_data])
+        CCS.register_vector(h, wrappers)
+        FFI.inc_ref(tree_space_data) unless tree_space_data.nil?
       end
     end
 
     def self.deserialize(del: nil, get_child: nil, serialize: nil, deserialize: nil, tree_space_data: nil, format: :binary, handle_map: nil, path: nil, buffer: nil, file_descriptor: nil, callback: nil, callback_data: nil)
       raise CCSError, :CCS_RESULT_ERROR_INVALID_VALUE if get_child.nil?
-      delwrapper, get_childwrapper, serializewrapper, deserializewrapper =
-        CCS.wrap_dynamic_tree_space_callbacks(del, get_child, serialize, deserialize)
+      wrappers = CCS.wrap_dynamic_tree_space_callbacks(del, get_child, serialize, deserialize)
+      delwrapper, get_childwrapper, serializewrapper, deserializewrapper = wrappers
       vector = DynamicTreeSpaceVector::new
       vector[:del] = delwrapper
       vector[:get_child] = get_childwrapper
       vector[:serialize] = serializewrapper
       vector[:deserialize] = deserializewrapper
       res = super(format: format, handle_map: handle_map, vector: vector.to_ptr, data: tree_space_data, path: path, buffer: buffer, file_descriptor: file_descriptor, callback: callback, callback_data: callback_data)
-      CCS.register_vector(res.handle, [delwrapper, get_childwrapper, serializewrapper, deserializewrapper, tree_space_data])
+      CCS.register_vector(res.handle, wrappers)
+      FFI.inc_ref(tree_space_data) unless tree_space_data.nil?
       res
     end
 
