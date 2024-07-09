@@ -20,7 +20,8 @@ _ccs_tuner_user_defined_del(ccs_object_t o)
 	err = d->vector.del((ccs_tuner_t)o);
 	ccs_release_object(d->common_data.search_space);
 	ccs_release_object(d->common_data.objective_space);
-	ccs_release_object(d->common_data.feature_space);
+	if (d->common_data.feature_space)
+		ccs_release_object(d->common_data.feature_space);
 	return err;
 }
 
