@@ -345,17 +345,19 @@ struct ccs_user_defined_tuner_vector_s {
 		size_t     *state_size_ret);
 
 	/**
-	 * The tuner deserialization interface, can be NULL, in which case,
-	 * the history will be set through the tell interface
+	 * The tuner deserialization interface, can be NULL, in which
+	 * case, the history will be set through the tell interface. Must
+	 * return the tuner data to use at initialization
 	 */
 	ccs_result_t (*deserialize_state)(
-		ccs_tuner_t       tuner,
-		size_t            size_history,
-		ccs_evaluation_t *history,
-		size_t            num_optima,
-		ccs_evaluation_t *optima,
-		size_t            state_size,
-		const void       *state);
+		ccs_objective_space_t objective_space,
+		size_t                size_history,
+		ccs_evaluation_t     *history,
+		size_t                num_optima,
+		ccs_evaluation_t     *optima,
+		size_t                state_size,
+		const void           *state,
+		void                **tuner_data_ret);
 };
 
 /**

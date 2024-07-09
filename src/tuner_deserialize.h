@@ -187,24 +187,30 @@ _ccs_deserialize_bin_user_defined_tuner(
 		_ccs_deserialize_bin_ccs_user_defined_tuner_data(
 			&data, version, buffer_size, buffer, opts),
 		end);
-	CCS_VALIDATE_ERR_GOTO(
-		res,
-		ccs_create_user_defined_tuner(
-			data.base_data.common_data.name,
-			data.base_data.common_data.objective_space, vector,
-			opts->data, tuner_ret),
-		end);
+
+	void *tuner_data;
 	if (vector->deserialize_state)
 		CCS_VALIDATE_ERR_GOTO(
 			res,
 			vector->deserialize_state(
-				*tuner_ret, data.base_data.size_history,
+				data.base_data.common_data.objective_space,
+				data.base_data.size_history,
 				data.base_data.history,
 				data.base_data.size_optima,
 				data.base_data.optima, data.blob.sz,
-				data.blob.blob),
-			tuner);
+				data.blob.blob, &tuner_data),
+			end);
 	else
+		tuner_data = opts->data;
+
+	CCS_VALIDATE_ERR_GOTO(
+		res,
+		ccs_create_user_defined_tuner(
+			data.base_data.common_data.name,
+			data.base_data.common_data.objective_space,
+			vector, tuner_data, tuner_ret),
+		end);
+	if (!vector->deserialize_state)
 		CCS_VALIDATE_ERR_GOTO(
 			res,
 			vector->tell(

@@ -122,7 +122,7 @@ module CCS
   callback :ccs_user_defined_tuner_get_history, [:ccs_tuner_t, :ccs_features_t, :size_t, :pointer, :pointer], :ccs_result_t
   callback :ccs_user_defined_tuner_suggest, [:ccs_tuner_t, :ccs_features_t, :pointer], :ccs_result_t
   callback :ccs_user_defined_tuner_serialize, [:ccs_tuner_t, :size_t, :pointer, :pointer], :ccs_result_t
-  callback :ccs_user_defined_tuner_deserialize, [:ccs_tuner_t, :size_t, :pointer, :size_t, :pointer, :size_t, :pointer], :ccs_result_t
+  callback :ccs_user_defined_tuner_deserialize, [:ccs_objective_space_t, :size_t, :pointer, :size_t, :pointer, :size_t, :pointer, :pointer], :ccs_result_t
 
   class UserDefinedTunerVector < FFI::Struct
     layout :del, :ccs_user_defined_tuner_del,
@@ -244,12 +244,14 @@ module CCS
       end
     deserializewrapper =
       if deserialize
-        lambda { |tun, history_size, p_history, num_optima, p_optima, state_size, p_state|
+        lambda { |o_space, history_size, p_history, num_optima, p_optima, state_size, p_state, p_tuner_data|
           begin
             history = p_history.null? ? [] : history_size.times.collect { |i| Evaluation::from_handle(p_p_history.get_pointer(i*8)) }
             optima = p_optima.null? ? [] : num_optima.times.collect { |i| Evaluation::from_handle(p_optima.get_pointer(i*8)) }
             state = p_state.null? ? nil : p_state.slice(0, state_size)
-            deserialize(Tuner.from_handle(tun), history, optima, state)
+            tuner_data = deserialize(ObjectiveSpace.from_handle(o_space), history, optima, state)
+            p_tuner_data.write_value(tuner_data)
+            FFI.inc_ref(tuner_data)
             CCSError.to_native(:CCS_RESULT_SUCCESS)
           rescue => e
             CCS.set_error(e)

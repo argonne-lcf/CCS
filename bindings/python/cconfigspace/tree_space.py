@@ -3,6 +3,7 @@ from . import libcconfigspace
 from .base import Object, Error, Result, ccs_rng, ccs_tree, ccs_tree_space, ccs_feature_space, ccs_features, ccs_tree_configuration, Datum, ccs_bool, _ccs_get_function, CEnumeration, _register_vector, _unregister_vector, ccs_retain_object
 from .rng import Rng
 from .tree import Tree
+from .feature_space import FeatureSpace
 
 class TreeSpaceType(CEnumeration):
   _members_ = [
@@ -165,7 +166,7 @@ TreeSpace.Static = StaticTreeSpace
 ccs_dynamic_tree_space_del_type = ct.CFUNCTYPE(Result, ccs_tree_space)
 ccs_dynamic_tree_space_get_child_type = ct.CFUNCTYPE(Result, ccs_tree_space, ccs_tree, ct.c_size_t, ct.POINTER(ccs_tree))
 ccs_dynamic_tree_space_serialize_type = ct.CFUNCTYPE(Result, ccs_tree_space, ct.c_size_t, ct.c_void_p, ct.POINTER(ct.c_size_t))
-ccs_dynamic_tree_space_deserialize_type = ct.CFUNCTYPE(Result, ccs_tree_space, ct.c_size_t, ct.c_void_p)
+ccs_dynamic_tree_space_deserialize_type = ct.CFUNCTYPE(Result, ccs_tree, ccs_feature_space, ct.c_size_t, ct.c_void_p, ct.POINTER(ct.c_void_p))
 
 class DynamicTreeSpaceVector(ct.Structure):
   _fields_ = [
@@ -224,15 +225,19 @@ def _wrap_user_defined_callbacks(delete, get_child, serialize, deserialize):
     serialize_wrapper = 0
 
   if deserialize is not None:
-    def deserialize_wrapper(ts, state_size, p_state):
+    def deserialize_wrapper(tree, feature_space, state_size, p_state, p_tree_space_data):
       try:
-        ts = ct.cast(ts, ccs_tree_space)
+        t = ct.cast(tree, ccs_tree)
         p_s = ct.cast(p_state, ct.c_void_p)
+        p_t = ct.cast(p_tree_space_data, ct.c_void_p)
         if p_s.value is None:
           state = None
         else:
           state = ct.cast(p_s, POINTER(c_byte * state_size))
-        deserialize(TreeSpace.from_handle(ts), state)
+        tree_space_data = deserialize(Tree.from_handle(t), FeatureSpace.from_handle(feature_space) if feature_space else None, state)
+        c_tree_space_data = ct.py_object(tree_space_data)
+        p_t[0] = c_tree_space_data
+        ct.pythonapi.Py_IncRef(c_tree_space_data)
         return Result.SUCCESS
       except Exception as e:
         return Error.set_error(e)

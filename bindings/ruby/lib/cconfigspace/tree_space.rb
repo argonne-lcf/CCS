@@ -120,7 +120,7 @@ module CCS
   callback :ccs_dynamic_tree_space_del, [:ccs_tree_space_t], :ccs_result_t
   callback :ccs_dynamic_tree_space_get_child, [:ccs_tree_space_t, :ccs_tree_t, :size_t, :pointer], :ccs_result_t
   callback :ccs_dynamic_tree_space_serialize, [:ccs_tree_space_t, :size_t, :pointer, :pointer], :ccs_result_t
-  callback :ccs_dynamic_tree_space_deserialize, [:ccs_tree_space_t, :size_t, :pointer], :ccs_result_t
+  callback :ccs_dynamic_tree_space_deserialize, [:ccs_tree_t, :ccs_feature_space_t, :size_t, :pointer, :pointer], :ccs_result_t
 
   class DynamicTreeSpaceVector < FFI::Struct
     layout :del, :ccs_dynamic_tree_space_del,
@@ -171,10 +171,12 @@ module CCS
       end
     deserializewrapper =
       if deserialize
-        lambda { |ts, state_size, p_state|
+        lambda { |t, feature_space, state_size, p_state, p_tree_space_data|
           begin
             state = p_state.null? ? nil : p_state.slice(0, state_size)
-            deserialize(TreeSpace.from_handle(ts), state)
+            tree_space_data = deserialize(Tree.from_handle(t), feature_space.null? ? nil : FeatureSpace.from_handle(feature_space), state)
+            p_tree_space_data.write_value(tree_space_data)
+            FFI.inc_ref(tree_space_data)
             CCSError.to_native(:CCS_RESULT_SUCCESS)
           rescue => e
             CCS.set_error(e)

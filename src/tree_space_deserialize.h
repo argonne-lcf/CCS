@@ -98,18 +98,25 @@ _ccs_deserialize_bin_tree_space_dynamic(
 			data, version, buffer_size, buffer, opts),
 		end);
 	CCS_VALIDATE(_ccs_deserialize_bin_ccs_blob(&blob, buffer_size, buffer));
-	CCS_VALIDATE_ERR_GOTO(
-		res,
-		ccs_create_dynamic_tree_space(
-			data->name, data->tree, data->feature_space, data->rng,
-			vector, opts->data, tree_space_ret),
-		end);
+
+	void *tree_space_data;
 	if (vector->deserialize_state)
 		CCS_VALIDATE_ERR_GOTO(
 			res,
 			vector->deserialize_state(
-				*tree_space_ret, blob.sz, blob.blob),
+				data->tree, data->feature_space,
+				blob.sz, blob.blob, &tree_space_data),
 			tree_space);
+	else
+		tree_space_data = opts->data;
+
+	CCS_VALIDATE_ERR_GOTO(
+		res,
+		ccs_create_dynamic_tree_space(
+			data->name, data->tree,
+			data->feature_space, data->rng,
+			vector, tree_space_data, tree_space_ret),
+		end);
 	goto end;
 tree_space:
 	ccs_release_object(*tree_space_ret);

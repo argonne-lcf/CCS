@@ -167,7 +167,7 @@ ccs_user_defined_tuner_get_optima_type = ct.CFUNCTYPE(Result, ccs_tuner, ccs_fea
 ccs_user_defined_tuner_get_history_type = ct.CFUNCTYPE(Result, ccs_tuner, ccs_features, ct.c_size_t, ct.POINTER(ccs_evaluation), ct.POINTER(ct.c_size_t))
 ccs_user_defined_tuner_suggest_type = ct.CFUNCTYPE(Result, ccs_tuner, ccs_features, ct.POINTER(ccs_search_configuration))
 ccs_user_defined_tuner_serialize_type = ct.CFUNCTYPE(Result, ccs_tuner, ct.c_size_t, ct.c_void_p, ct.POINTER(ct.c_size_t))
-ccs_user_defined_tuner_deserialize_type = ct.CFUNCTYPE(Result, ccs_tuner, ct.c_size_t, ct.POINTER(ccs_evaluation), ct.c_size_t, ct.POINTER(ccs_evaluation), ct.c_size_t, ct.c_void_p)
+ccs_user_defined_tuner_deserialize_type = ct.CFUNCTYPE(Result, ccs_objective_space, ct.c_size_t, ct.POINTER(ccs_evaluation), ct.c_size_t, ct.POINTER(ccs_evaluation), ct.c_size_t, ct.c_void_p, ct.POINTER(ct.c_void_p))
 
 class UserDefinedTunerVector(ct.Structure):
   _fields_ = [
@@ -307,12 +307,13 @@ def _wrap_user_defined_tuner_callbacks(delete, ask, tell, get_optima, get_histor
     serialize_wrapper = 0
 
   if deserialize is not None:
-    def deserialize_wrapper(tun, size_history, p_history, num_optima, p_optima, state_size, p_state):
+    def deserialize_wrapper(o_space, size_history, p_history, num_optima, p_optima, state_size, p_state, p_tuner_data):
       try:
-        tun = ct.cast(tun, ccs_tuner)
+        o_space = ct.cast(o_space, ccs_objective_space)
         p_h = ct.cast(p_history, ct.c_void_p)
         p_o = ct.cast(p_optima, ct.c_void_p)
         p_s = ct.cast(p_state, ct.c_void_p)
+        p_t = ct.cast(p_tuner_data, ct.c_void_p)
         if p_h.value is None:
           history = []
         else:
@@ -325,7 +326,10 @@ def _wrap_user_defined_tuner_callbacks(delete, ask, tell, get_optima, get_histor
           state = None
         else:
           state = ct.cast(p_s, POINTER(c_byte * state_size))
-        deserialize(Tuner.from_handle(tun), history, optima, state)
+        tuner_data = deserialize(ObjectiveSpace.from_handle(o_space), history, optima, state)
+        c_tuner_data = ct.py_object(tuner_data)
+        p_t[0] = c_tuner_data
+        ct.pythonapi.Py_IncRef(c_tuner_data)
         return Result.SUCCESS
       except Exception as e:
         return Error.set_error(e)

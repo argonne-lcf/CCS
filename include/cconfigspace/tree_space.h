@@ -107,12 +107,15 @@ struct ccs_dynamic_tree_space_vector_s {
 
 	/**
 	 * The tree space deserialization interface, can be NULL. In this case,
-	 * only the tree is deserialized.
+	 * only the tree is deserialized. Must return the tree space data
+	 * to use at initialization
 	 */
 	ccs_result_t (*deserialize_state)(
-		ccs_tree_space_t tree_space,
-		size_t           state_size,
-		const void      *state);
+		ccs_tree_t          tree,
+		ccs_feature_space_t feature_space,
+		size_t              state_size,
+		const void         *state,
+		void              **tree_space_data_ret);
 };
 
 /**
