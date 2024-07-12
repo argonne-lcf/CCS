@@ -140,6 +140,28 @@ ccs_user_defined_tuner_vector_t tuner_last_vector = {
 	NULL,
 	NULL};
 
+ccs_result_t
+deserialize_vector_callback(
+	ccs_object_type_t type,
+	const char       *name,
+	void             *callback_user_data,
+	void            **vector_ret,
+	void            **data_ret)
+{
+	(void)name;
+	(void)callback_user_data;
+	switch (type) {
+	case CCS_OBJECT_TYPE_TUNER:
+		*vector_ret = (void *)&tuner_last_vector;
+		*data_ret   = calloc(1, sizeof(tuner_last_t));
+		assert(*data_ret);
+		break;
+	default:
+		return CCS_RESULT_ERROR_INVALID_TYPE;
+	}
+	return CCS_RESULT_SUCCESS;
+}
+
 void
 test(void)
 {
@@ -217,15 +239,12 @@ test(void)
 		CCS_SERIALIZE_OPTION_END);
 	assert(err == CCS_RESULT_SUCCESS);
 
-	tuner_data = (tuner_last_t *)calloc(1, sizeof(tuner_last_t));
-	assert(tuner_data);
-
 	err = ccs_object_deserialize(
 		(ccs_object_t *)&tuner_copy, CCS_SERIALIZE_FORMAT_BINARY,
 		CCS_SERIALIZE_OPERATION_MEMORY, buff_size, buff,
 		CCS_DESERIALIZE_OPTION_HANDLE_MAP, map,
-		CCS_DESERIALIZE_OPTION_VECTOR, &tuner_last_vector,
-		CCS_DESERIALIZE_OPTION_DATA, tuner_data,
+		CCS_DESERIALIZE_OPTION_VECTOR_CALLBACK,
+		&deserialize_vector_callback, (void *)NULL,
 		CCS_DESERIALIZE_OPTION_END);
 	assert(err == CCS_RESULT_SUCCESS);
 

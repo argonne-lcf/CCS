@@ -88,39 +88,42 @@ _ccs_deserialize_bin_tree_space_dynamic(
 	_ccs_object_deserialize_options_t  *opts,
 	_ccs_tree_space_common_data_mock_t *data)
 {
-	_ccs_blob_t                      blob = {0, NULL};
-	ccs_dynamic_tree_space_vector_t *vector =
-		(ccs_dynamic_tree_space_vector_t *)opts->vector;
-	ccs_result_t res = CCS_RESULT_SUCCESS;
+	_ccs_blob_t                      blob            = {0, NULL};
+	ccs_dynamic_tree_space_vector_t *vector          = NULL;
+	void                            *tree_space_data = NULL;
+	ccs_result_t                     res             = CCS_RESULT_SUCCESS;
+
 	CCS_VALIDATE_ERR_GOTO(
 		res,
 		_ccs_deserialize_bin_ccs_tree_space_common_data(
 			data, version, buffer_size, buffer, opts),
 		end);
-	CCS_VALIDATE(_ccs_deserialize_bin_ccs_blob(&blob, buffer_size, buffer));
+	CCS_VALIDATE_ERR_GOTO(
+		res, _ccs_deserialize_bin_ccs_blob(&blob, buffer_size, buffer),
+		end);
 
-	void *tree_space_data;
+	CCS_VALIDATE_ERR_GOTO(
+		res,
+		opts->deserialize_vector_callback(
+			CCS_OBJECT_TYPE_TREE_SPACE, data->name,
+			opts->deserialize_vector_user_data, (void **)&vector,
+			&tree_space_data),
+		end);
+
 	if (vector->deserialize_state)
 		CCS_VALIDATE_ERR_GOTO(
 			res,
 			vector->deserialize_state(
-				data->tree, data->feature_space,
-				blob.sz, blob.blob, &tree_space_data),
-			tree_space);
-	else
-		tree_space_data = opts->data;
+				data->tree, data->feature_space, blob.sz,
+				blob.blob, &tree_space_data),
+			end);
 
 	CCS_VALIDATE_ERR_GOTO(
 		res,
 		ccs_create_dynamic_tree_space(
-			data->name, data->tree,
-			data->feature_space, data->rng,
+			data->name, data->tree, data->feature_space, data->rng,
 			vector, tree_space_data, tree_space_ret),
 		end);
-	goto end;
-tree_space:
-	ccs_release_object(*tree_space_ret);
-	*tree_space_ret = NULL;
 end:
 	if (data->feature_space)
 		ccs_release_object(data->feature_space);
@@ -144,6 +147,8 @@ _ccs_deserialize_bin_tree_space(
 	ccs_tree_space_type_t stype;
 	CCS_VALIDATE(
 		_ccs_peek_bin_ccs_tree_space_type(&stype, buffer_size, buffer));
+	if (stype == CCS_TREE_SPACE_TYPE_DYNAMIC)
+		CCS_CHECK_PTR(opts->deserialize_vector_callback);
 
 	_ccs_tree_space_common_data_mock_t data = {
 		CCS_TREE_SPACE_TYPE_STATIC, NULL, NULL, NULL, NULL, NULL};

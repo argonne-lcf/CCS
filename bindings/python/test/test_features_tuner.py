@@ -118,6 +118,9 @@ class TestTuner(unittest.TestCase):
       else:
         return choice(optis).configuration
 
+    def get_vector_data(otype, name, cb_data):
+      return (ccs.UserDefinedTuner.get_vector(delete = delete, ask = ask, tell = tell, get_optima = get_optima, get_history = get_history, suggest = suggest), TunerData())
+
     (fs, os) = self.create_tuning_problem()
     t = ccs.UserDefinedTuner(name = "tuner", objective_space = os, delete = delete, ask = ask, tell = tell, get_optima = get_optima, get_history = get_history, suggest = suggest, tuner_data = TunerData())
     t2 = ccs.Object.from_handle(t.handle)
@@ -155,7 +158,7 @@ class TestTuner(unittest.TestCase):
     self.assertTrue(t.suggest(features_off) in [x.configuration for x in optims])
     # test serialization
     buff = t.serialize()
-    t_copy = ccs.UserDefinedTuner.deserialize(buffer = buff, delete = delete, ask = ask, tell = tell, get_optima = get_optima, get_history = get_history, suggest = suggest, tuner_data = TunerData())
+    t_copy = ccs.deserialize(buffer = buff, vector_callback = get_vector_data)
     hist = t_copy.history()
     self.assertEqual(200, len(hist))
     optims_2 = t_copy.optima()

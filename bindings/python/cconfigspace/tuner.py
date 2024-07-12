@@ -184,197 +184,6 @@ class UserDefinedTunerVector(ct.Structure):
 ccs_create_user_defined_tuner = _ccs_get_function("ccs_create_user_defined_tuner", [ct.c_char_p, ccs_objective_space, ct.POINTER(UserDefinedTunerVector), ct.py_object, ct.POINTER(ccs_tuner)])
 ccs_user_defined_tuner_get_tuner_data = _ccs_get_function("ccs_user_defined_tuner_get_tuner_data", [ccs_tuner, ct.POINTER(ct.c_void_p)])
 
-def _wrap_user_defined_tuner_callbacks(delete, ask, tell, get_optima, get_history, suggest, serialize, deserialize):
-  vec = UserDefinedTunerVector()
-  def delete_wrapper(tun):
-    try:
-      tun = ct.cast(tun, ccs_tuner)
-      o = Object.from_handle(tun)
-      tdata = o.tuner_data
-      if delete is not None:
-        delete(o)
-      if tdata is not None:
-        ct.pythonapi.Py_DecRef(ct.py_object(tdata))
-      ct.pythonapi.Py_DecRef(ct.py_object(vec))
-      return Result.SUCCESS
-    except Exception as e:
-      return Error.set_error(e)
-
-  def ask_wrapper(tun, features, count, p_configurations, p_count):
-    try:
-      tun = ct.cast(tun, ccs_tuner)
-      p_confs = ct.cast(p_configurations, ct.c_void_p)
-      p_c = ct.cast(p_count, ct.c_void_p)
-      (configurations, count_ret) = ask(Tuner.from_handle(tun), Features.from_handle(features) if features else None, count if p_confs.value else None)
-      if p_confs.value is not None and count < count_ret:
-        raise Error(Result(Result.ERROR_INVALID_VALUE))
-      if p_confs.value is not None:
-        for i in range(len(configurations)):
-          res = ccs_retain_object(configurations[i].handle)
-          Error.check(res)
-          p_configurations[i] = configurations[i].handle.value
-        for i in range(len(configurations), count):
-          p_configurations[i] = None
-      if p_c.value is not None:
-        p_count[0] = count_ret
-      return Result.SUCCESS
-    except Exception as e:
-      return Error.set_error(e)
-
-  def tell_wrapper(tun, count, p_evaluations):
-    try:
-      tun = ct.cast(tun, ccs_tuner)
-      if count == 0:
-        return Result.SUCCESS
-      p_evals = ct.cast(p_evaluations, ct.c_void_p)
-      if p_evals.value is None:
-        raise Error(Result(Result.ERROR_INVALID_VALUE))
-      evals = [Evaluation.from_handle(ccs_evaluation(p_evaluations[i])) for i in range(count)]
-      tell(Tuner.from_handle(tun), evals)
-      return Result.SUCCESS
-    except Exception as e:
-      return Error.set_error(e)
-
-  def get_optima_wrapper(tun, features, count, p_evaluations, p_count):
-    try:
-      tun = ct.cast(tun, ccs_tuner)
-      p_evals = ct.cast(p_evaluations, ct.c_void_p)
-      p_c = ct.cast(p_count, ct.c_void_p)
-      optima = get_optima(Tuner.from_handle(tun), Features.from_handle(features) if features else None)
-      count_ret = len(optima)
-      if p_evals.value is not None and count < count_ret:
-        raise Error(Result(Result.ERROR_INVALID_VALUE))
-      if p_evals.value is not None:
-        for i in range(count_ret):
-          p_evaluations[i] = optima[i].handle.value
-        for i in range(count_ret, count):
-          p_evaluations[i] = None
-      if p_c.value is not None:
-          p_count[0] = count_ret
-      return Result.SUCCESS
-    except Exception as e:
-      return Error.set_error(e)
-
-  def get_history_wrapper(tun, features, count, p_evaluations, p_count):
-    try:
-      tun = ct.cast(tun, ccs_tuner)
-      p_evals = ct.cast(p_evaluations, ct.c_void_p)
-      p_c = ct.cast(p_count, ct.c_void_p)
-      history = get_history(Tuner.from_handle(tun), Features.from_handle(features) if features else None)
-      count_ret = (len(history) if history else 0)
-      if p_evals.value is not None and count < count_ret:
-        raise Error(Result(Result.ERROR_INVALID_VALUE))
-      if p_evals.value is not None:
-        for i in range(count_ret):
-          p_evaluations[i] = history[i].handle.value
-        for i in range(count_ret, count):
-          p_evaluations[i] = None
-      if p_c.value is not None:
-          p_count[0] = count_ret
-      return Result.SUCCESS
-    except Exception as e:
-      return Error.set_error(e)
-
-  if suggest is not None:
-    def suggest_wrapper(tun, features, p_configuration):
-      try:
-        tun = ct.cast(tun, ccs_tuner)
-        configuration = suggest(Tuner.from_handle(tun), Features.from_handle(features) if features else None)
-        res = ccs_retain_object(configuration.handle)
-        Error.check(res)
-        p_configuration[0] = configuration.handle.value
-        return Result.SUCCESS
-      except Exception as e:
-        return Error.set_error(e)
-  else:
-    suggest_wrapper = 0
-
-  if serialize is not None:
-    def serialize_wrapper(tun, state_size, p_state, p_state_size):
-      try:
-        tun = ct.cast(tun, ccs_tuner)
-        p_s = ct.cast(p_state, ct.c_void_p)
-        p_sz = ct.cast(p_state_size, ct.c_void_p)
-        state = serialize(Tuner.from_handle(tun), True if state_size == 0 else False)
-        if p_s.value is not None and state_size < ct.sizeof(state):
-          raise Error(Result(Result.ERROR_INVALID_VALUE))
-        if p_s.value is not None:
-          ct.memmove(p_s, ct.byref(state), ct.sizeof(state))
-        if p_sz.value is not None:
-          p_state_size[0] = ct.sizeof(state)
-        return Result.SUCCESS
-      except Exception as e:
-        return Error.set_error(e)
-  else:
-    serialize_wrapper = 0
-
-  if deserialize is not None:
-    def deserialize_wrapper(o_space, size_history, p_history, num_optima, p_optima, state_size, p_state, p_tuner_data):
-      try:
-        o_space = ct.cast(o_space, ccs_objective_space)
-        p_h = ct.cast(p_history, ct.c_void_p)
-        p_o = ct.cast(p_optima, ct.c_void_p)
-        p_s = ct.cast(p_state, ct.c_void_p)
-        p_t = ct.cast(p_tuner_data, ct.c_void_p)
-        if p_h.value is None:
-          history = []
-        else:
-          history = [Evaluation.from_handle(ccs_evaluation(p_h[i])) for i in range(size_history)]
-        if p_o.value is None:
-          optima = []
-        else:
-          optima = [Evaluation.from_handle(ccs_evaluation(p_o[i])) for i in range(num_optima)]
-        if p_s.value is None:
-          state = None
-        else:
-          state = ct.cast(p_s, POINTER(c_byte * state_size))
-        tuner_data = deserialize(ObjectiveSpace.from_handle(o_space), history, optima, state)
-        c_tuner_data = ct.py_object(tuner_data)
-        p_t[0] = c_tuner_data
-        ct.pythonapi.Py_IncRef(c_tuner_data)
-        return Result.SUCCESS
-      except Exception as e:
-        return Error.set_error(e)
-  else:
-    deserialize_wrapper = 0
-
-  delete_wrapper_func      = ccs_user_defined_tuner_del_type(delete_wrapper)
-  ask_wrapper_func         = ccs_user_defined_tuner_ask_type(ask_wrapper)
-  tell_wrapper_func        = ccs_user_defined_tuner_tell_type(tell_wrapper)
-  get_optima_wrapper_func  = ccs_user_defined_tuner_get_optima_type(get_optima_wrapper)
-  get_history_wrapper_func = ccs_user_defined_tuner_get_history_type(get_history_wrapper)
-  suggest_wrapper_func     = ccs_user_defined_tuner_suggest_type(suggest_wrapper)
-  serialize_wrapper_func   = ccs_user_defined_tuner_serialize_type(serialize_wrapper)
-  deserialize_wrapper_func = ccs_user_defined_tuner_deserialize_type(deserialize_wrapper)
-  vec.delete = delete_wrapper_func
-  vec.ask = ask_wrapper_func
-  vec.tell = tell_wrapper_func
-  vec.get_optima = get_optima_wrapper_func
-  vec.get_history = get_history_wrapper_func
-  vec.suggest = suggest_wrapper_func
-  vec.serialize = serialize_wrapper_func
-  vec.deserialize = deserialize_wrapper_func
-
-  setattr(vec, '_wrappers', (
-    delete_wrapper,
-    ask_wrapper,
-    tell_wrapper,
-    get_optima_wrapper,
-    get_history_wrapper,
-    suggest_wrapper,
-    serialize_wrapper,
-    deserialize_wrapper,
-    delete_wrapper_func,
-    ask_wrapper_func,
-    tell_wrapper_func,
-    get_optima_wrapper_func,
-    get_history_wrapper_func,
-    suggest_wrapper_func,
-    serialize_wrapper_func,
-    deserialize_wrapper_func))
-  return vec
-
-
 class UserDefinedTuner(Tuner):
   def __init__(self, handle = None, retain = False, auto_release = True,
                name = "", objective_space = None, delete = None, ask = None, tell = None, get_optima = None, get_history = None, suggest = None, serialize = None, deserialize = None, tuner_data = None ):
@@ -382,7 +191,7 @@ class UserDefinedTuner(Tuner):
       if ask is None or tell is None or get_optima is None or get_history is None:
         raise Error(Result(Result.ERROR_INVALID_VALUE))
 
-      vec = _wrap_user_defined_tuner_callbacks(delete, ask, tell, get_optima, get_history, suggest, serialize, deserialize)
+      vec = self.get_vector(delete, ask, tell, get_optima, get_history, suggest, serialize, deserialize)
       if tuner_data is not None:
         c_tuner_data = ct.py_object(tuner_data)
       else:
@@ -397,17 +206,6 @@ class UserDefinedTuner(Tuner):
     else:
       super().__init__(handle = handle, retain = retain, auto_release = auto_release)
 
-  @classmethod
-  def deserialize(cls, delete, ask, tell, get_optima, get_history, suggest = None, serialize = None, deserialize = None, tuner_data = None, format = 'binary', handle_map = None, path = None, buffer = None, file_descriptor = None, callback = None, callback_data = None):
-    if ask is None or tell is None or get_optima is None or get_history is None:
-      raise Error(Result(Result.ERROR_INVALID_VALUE))
-    vec = _wrap_user_defined_tuner_callbacks(delete, ask, tell, get_optima, get_history, suggest, serialize, deserialize)
-    res = super().deserialize(format = format, handle_map = handle_map, vector = vec, data = tuner_data, path = path, buffer = buffer, file_descriptor = file_descriptor, callback = callback, callback_data = callback_data)
-    ct.pythonapi.Py_IncRef(ct.py_object(vec))
-    if tuner_data is not None:
-      ct.pythonapi.Py_IncRef(ct.py_object(tuner_data))
-    return res
-
   @property
   def tuner_data(self):
     if hasattr(self, "_tuner_data"):
@@ -420,5 +218,196 @@ class UserDefinedTuner(Tuner):
     else:
       self._tuner_data = None
     return self._tuner_data
+
+  @classmethod
+  def get_vector(self, delete = None, ask = None, tell = None, get_optima = None, get_history = None, suggest = None, serialize = None, deserialize = None):
+    vec = UserDefinedTunerVector()
+    def delete_wrapper(tun):
+      try:
+        tun = ct.cast(tun, ccs_tuner)
+        o = Object.from_handle(tun)
+        tdata = o.tuner_data
+        if delete is not None:
+          delete(o)
+        if tdata is not None:
+          ct.pythonapi.Py_DecRef(ct.py_object(tdata))
+        ct.pythonapi.Py_DecRef(ct.py_object(vec))
+        return Result.SUCCESS
+      except Exception as e:
+        return Error.set_error(e)
+
+    def ask_wrapper(tun, features, count, p_configurations, p_count):
+      try:
+        tun = ct.cast(tun, ccs_tuner)
+        p_confs = ct.cast(p_configurations, ct.c_void_p)
+        p_c = ct.cast(p_count, ct.c_void_p)
+        (configurations, count_ret) = ask(Tuner.from_handle(tun), Features.from_handle(features) if features else None, count if p_confs.value else None)
+        if p_confs.value is not None and count < count_ret:
+          raise Error(Result(Result.ERROR_INVALID_VALUE))
+        if p_confs.value is not None:
+          for i in range(len(configurations)):
+            res = ccs_retain_object(configurations[i].handle)
+            Error.check(res)
+            p_configurations[i] = configurations[i].handle.value
+          for i in range(len(configurations), count):
+            p_configurations[i] = None
+        if p_c.value is not None:
+          p_count[0] = count_ret
+        return Result.SUCCESS
+      except Exception as e:
+        return Error.set_error(e)
+
+    def tell_wrapper(tun, count, p_evaluations):
+      try:
+        tun = ct.cast(tun, ccs_tuner)
+        if count == 0:
+          return Result.SUCCESS
+        p_evals = ct.cast(p_evaluations, ct.c_void_p)
+        if p_evals.value is None:
+          raise Error(Result(Result.ERROR_INVALID_VALUE))
+        evals = [Evaluation.from_handle(ccs_evaluation(p_evaluations[i])) for i in range(count)]
+        tell(Tuner.from_handle(tun), evals)
+        return Result.SUCCESS
+      except Exception as e:
+        return Error.set_error(e)
+
+    def get_optima_wrapper(tun, features, count, p_evaluations, p_count):
+      try:
+        tun = ct.cast(tun, ccs_tuner)
+        p_evals = ct.cast(p_evaluations, ct.c_void_p)
+        p_c = ct.cast(p_count, ct.c_void_p)
+        optima = get_optima(Tuner.from_handle(tun), Features.from_handle(features) if features else None)
+        count_ret = len(optima)
+        if p_evals.value is not None and count < count_ret:
+          raise Error(Result(Result.ERROR_INVALID_VALUE))
+        if p_evals.value is not None:
+          for i in range(count_ret):
+            p_evaluations[i] = optima[i].handle.value
+          for i in range(count_ret, count):
+            p_evaluations[i] = None
+        if p_c.value is not None:
+            p_count[0] = count_ret
+        return Result.SUCCESS
+      except Exception as e:
+        return Error.set_error(e)
+
+    def get_history_wrapper(tun, features, count, p_evaluations, p_count):
+      try:
+        tun = ct.cast(tun, ccs_tuner)
+        p_evals = ct.cast(p_evaluations, ct.c_void_p)
+        p_c = ct.cast(p_count, ct.c_void_p)
+        history = get_history(Tuner.from_handle(tun), Features.from_handle(features) if features else None)
+        count_ret = (len(history) if history else 0)
+        if p_evals.value is not None and count < count_ret:
+          raise Error(Result(Result.ERROR_INVALID_VALUE))
+        if p_evals.value is not None:
+          for i in range(count_ret):
+            p_evaluations[i] = history[i].handle.value
+          for i in range(count_ret, count):
+            p_evaluations[i] = None
+        if p_c.value is not None:
+            p_count[0] = count_ret
+        return Result.SUCCESS
+      except Exception as e:
+        return Error.set_error(e)
+
+    if suggest is not None:
+      def suggest_wrapper(tun, features, p_configuration):
+        try:
+          tun = ct.cast(tun, ccs_tuner)
+          configuration = suggest(Tuner.from_handle(tun), Features.from_handle(features) if features else None)
+          res = ccs_retain_object(configuration.handle)
+          Error.check(res)
+          p_configuration[0] = configuration.handle.value
+          return Result.SUCCESS
+        except Exception as e:
+          return Error.set_error(e)
+    else:
+      suggest_wrapper = 0
+
+    if serialize is not None:
+      def serialize_wrapper(tun, state_size, p_state, p_state_size):
+        try:
+          tun = ct.cast(tun, ccs_tuner)
+          p_s = ct.cast(p_state, ct.c_void_p)
+          p_sz = ct.cast(p_state_size, ct.c_void_p)
+          state = serialize(Tuner.from_handle(tun), True if state_size == 0 else False)
+          if p_s.value is not None and state_size < ct.sizeof(state):
+            raise Error(Result(Result.ERROR_INVALID_VALUE))
+          if p_s.value is not None:
+            ct.memmove(p_s, ct.byref(state), ct.sizeof(state))
+          if p_sz.value is not None:
+            p_state_size[0] = ct.sizeof(state)
+          return Result.SUCCESS
+        except Exception as e:
+          return Error.set_error(e)
+    else:
+      serialize_wrapper = 0
+
+    if deserialize is not None:
+      def deserialize_wrapper(o_space, size_history, p_history, num_optima, p_optima, state_size, p_state, p_tuner_data):
+        try:
+          o_space = ct.cast(o_space, ccs_objective_space)
+          p_h = ct.cast(p_history, ct.c_void_p)
+          p_o = ct.cast(p_optima, ct.c_void_p)
+          p_s = ct.cast(p_state, ct.c_void_p)
+          p_t = ct.cast(p_tuner_data, ct.c_void_p)
+          if p_h.value is None:
+            history = []
+          else:
+            history = [Evaluation.from_handle(ccs_evaluation(p_h[i])) for i in range(size_history)]
+          if p_o.value is None:
+            optima = []
+          else:
+            optima = [Evaluation.from_handle(ccs_evaluation(p_o[i])) for i in range(num_optima)]
+          if p_s.value is None:
+            state = None
+          else:
+            state = ct.cast(p_s, POINTER(c_byte * state_size))
+          tuner_data = deserialize(ObjectiveSpace.from_handle(o_space), history, optima, state)
+          c_tuner_data = ct.py_object(tuner_data)
+          p_t[0] = c_tuner_data
+          ct.pythonapi.Py_IncRef(c_tuner_data)
+          return Result.SUCCESS
+        except Exception as e:
+          return Error.set_error(e)
+    else:
+      deserialize_wrapper = 0
+
+    delete_wrapper_func      = ccs_user_defined_tuner_del_type(delete_wrapper)
+    ask_wrapper_func         = ccs_user_defined_tuner_ask_type(ask_wrapper)
+    tell_wrapper_func        = ccs_user_defined_tuner_tell_type(tell_wrapper)
+    get_optima_wrapper_func  = ccs_user_defined_tuner_get_optima_type(get_optima_wrapper)
+    get_history_wrapper_func = ccs_user_defined_tuner_get_history_type(get_history_wrapper)
+    suggest_wrapper_func     = ccs_user_defined_tuner_suggest_type(suggest_wrapper)
+    serialize_wrapper_func   = ccs_user_defined_tuner_serialize_type(serialize_wrapper)
+    deserialize_wrapper_func = ccs_user_defined_tuner_deserialize_type(deserialize_wrapper)
+    vec.delete = delete_wrapper_func
+    vec.ask = ask_wrapper_func
+    vec.tell = tell_wrapper_func
+    vec.get_optima = get_optima_wrapper_func
+    vec.get_history = get_history_wrapper_func
+    vec.suggest = suggest_wrapper_func
+    vec.serialize = serialize_wrapper_func
+    vec.deserialize = deserialize_wrapper_func
+
+    setattr(vec, '_wrappers', (
+      delete_wrapper,
+      ask_wrapper,
+      tell_wrapper,
+      get_optima_wrapper,
+      get_history_wrapper,
+      suggest_wrapper,
+      serialize_wrapper,
+      deserialize_wrapper,
+      delete_wrapper_func,
+      ask_wrapper_func,
+      tell_wrapper_func,
+      get_optima_wrapper_func,
+      get_history_wrapper_func,
+      suggest_wrapper_func,
+      serialize_wrapper_func,
+      deserialize_wrapper_func))
+    return vec
 
 Tuner.UserDefined = UserDefinedTuner

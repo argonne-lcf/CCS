@@ -106,6 +106,13 @@ class CConfigSpaceTestTuner < Minitest::Test
         tuner.tuner_data.optima.sample.configuration
       end
     }
+    get_vector_data = lambda { |otype, name, cb_data|
+      assert_equal(:CCS_OBJECT_TYPE_TUNER, otype)
+      assert_equal("tuner", name)
+      assert_nil(cb_data)
+      [CCS::UserDefinedTuner.get_vector(del: del, ask: ask, tell: tell, get_optima: get_optima, get_history: get_history, suggest: suggest), TunerData.new]
+    }
+
     os = create_tuning_problem
     t = CCS::UserDefinedTuner::new(name: "tuner", objective_space: os, del: del, ask: ask, tell: tell, get_optima: get_optima, get_history: get_history, suggest: suggest, tuner_data: TunerData.new)
     t2 = CCS::Object::from_handle(t)
@@ -132,7 +139,7 @@ class CConfigSpaceTestTuner < Minitest::Test
     assert( t.optima.collect(&:configuration).include?(t.suggest) )
 
     buff = t.serialize
-    t_copy = CCS::UserDefinedTuner::deserialize(buffer: buff, del: del, ask: ask, tell: tell, get_optima: get_optima, get_history: get_history, suggest: suggest, tuner_data: TunerData.new)
+    t_copy = CCS::deserialize(buffer: buff, vector_callback: get_vector_data)
     hist = t_copy.history
     assert_equal(200, hist.size)
     assert_equal(t.num_optima, t_copy.num_optima)
@@ -141,7 +148,7 @@ class CConfigSpaceTestTuner < Minitest::Test
     assert( t_copy.optima.collect(&:configuration).include?(t_copy.suggest) )
 
     t.serialize(path: 'tuner.ccs')
-    t_copy = CCS::UserDefinedTuner::deserialize(path: 'tuner.ccs', del: del, ask: ask, tell: tell, get_optima: get_optima, get_history: get_history, suggest: suggest, tuner_data: TunerData.new)
+    t_copy = CCS::deserialize(path: 'tuner.ccs', vector_callback: get_vector_data)
     hist = t_copy.history
     assert_equal(200, hist.size)
     assert_equal(t.num_optima, t_copy.num_optima)
@@ -154,7 +161,7 @@ class CConfigSpaceTestTuner < Minitest::Test
     t.serialize(file_descriptor: f.fileno)
     f.close
     f = File.open('tuner.ccs', "rb")
-    t_copy = CCS::UserDefinedTuner::deserialize(file_descriptor: f.fileno, del: del, ask: ask, tell: tell, get_optima: get_optima, get_history: get_history, suggest: suggest, tuner_data: TunerData.new)
+    t_copy = CCS::deserialize(file_descriptor: f.fileno, vector_callback: get_vector_data)
     f.close
     hist = t_copy.history
     assert_equal(200, hist.size)

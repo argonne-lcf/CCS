@@ -54,6 +54,9 @@ class TestTreeSpace(unittest.TestCase):
       arity = 0 if arity < 0 else arity
       return ccs.Tree(arity = arity, value = (4 - child_depth)*100 + child_index)
 
+    def get_vector_data(otype, name, cb_data):
+      return (ccs.DynamicTreeSpace.get_vector(delete = delete, get_child = get_child), None)
+
     tree = ccs.Tree(arity = 4, value = 400)
     ts = ccs.DynamicTreeSpace(name = 'space', tree = tree, delete = delete, get_child = get_child)
     self.assertEqual( ccs.ObjectType.TREE_SPACE, ts.object_type )
@@ -75,7 +78,7 @@ class TestTreeSpace(unittest.TestCase):
       self.assertTrue( ts.check_configuration(tc) )
 
     buff = ts.serialize()
-    ts2 = ccs.DynamicTreeSpace.deserialize(buffer = buff, delete = delete, get_child = get_child)
+    ts2 = ccs.deserialize(buffer = buff, vector_callback = get_vector_data)
     self.assertEqual( [400, 301, 201], ts2.get_values_at_position([1, 1]) )
 
   def test_tree_configuration(self):

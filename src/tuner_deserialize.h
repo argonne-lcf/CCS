@@ -179,16 +179,24 @@ _ccs_deserialize_bin_user_defined_tuner(
 		 NULL,
 		 NULL},
 		{0, NULL}};
-	ccs_user_defined_tuner_vector_t *vector =
-		(ccs_user_defined_tuner_vector_t *)opts->vector;
-	ccs_result_t res = CCS_RESULT_SUCCESS;
+	ccs_user_defined_tuner_vector_t *vector     = NULL;
+	void                            *tuner_data = NULL;
+	ccs_result_t                     res        = CCS_RESULT_SUCCESS;
+
 	CCS_VALIDATE_ERR_GOTO(
 		res,
 		_ccs_deserialize_bin_ccs_user_defined_tuner_data(
 			&data, version, buffer_size, buffer, opts),
 		end);
 
-	void *tuner_data;
+	CCS_VALIDATE_ERR_GOTO(
+		res,
+		opts->deserialize_vector_callback(
+			CCS_OBJECT_TYPE_TUNER, data.base_data.common_data.name,
+			opts->deserialize_vector_user_data, (void **)&vector,
+			&tuner_data),
+		end);
+
 	if (vector->deserialize_state)
 		CCS_VALIDATE_ERR_GOTO(
 			res,
@@ -200,15 +208,13 @@ _ccs_deserialize_bin_user_defined_tuner(
 				data.base_data.optima, data.blob.sz,
 				data.blob.blob, &tuner_data),
 			end);
-	else
-		tuner_data = opts->data;
 
 	CCS_VALIDATE_ERR_GOTO(
 		res,
 		ccs_create_user_defined_tuner(
 			data.base_data.common_data.name,
-			data.base_data.common_data.objective_space,
-			vector, tuner_data, tuner_ret),
+			data.base_data.common_data.objective_space, vector,
+			tuner_data, tuner_ret),
 		end);
 	if (!vector->deserialize_state)
 		CCS_VALIDATE_ERR_GOTO(
@@ -247,7 +253,7 @@ _ccs_deserialize_bin_tuner(
 	ccs_tuner_type_t                  ttype;
 	CCS_VALIDATE(_ccs_peek_bin_ccs_tuner_type(&ttype, buffer_size, buffer));
 	if (ttype == CCS_TUNER_TYPE_USER_DEFINED)
-		CCS_CHECK_PTR(opts->vector);
+		CCS_CHECK_PTR(opts->deserialize_vector_callback);
 
 	new_opts.map_values = CCS_TRUE;
 	CCS_VALIDATE(ccs_create_map(&new_opts.handle_map));

@@ -1296,13 +1296,13 @@ _ccs_peek_bin_ccs_object_internal(
 }
 
 struct _ccs_object_deserialize_options_s {
-	ccs_map_t                         handle_map;
-	ccs_bool_t                        map_values;
-	_ccs_file_descriptor_state_t    **ppfd_state;
-	void                             *vector;
-	void                             *data;
-	ccs_object_deserialize_callback_t deserialize_callback;
-	void                             *deserialize_user_data;
+	ccs_map_t                                handle_map;
+	ccs_bool_t                               map_values;
+	_ccs_file_descriptor_state_t           **ppfd_state;
+	ccs_object_deserialize_vector_callback_t deserialize_vector_callback;
+	void                                    *deserialize_vector_user_data;
+	ccs_object_deserialize_data_callback_t   deserialize_data_callback;
+	void                                    *deserialize_data_user_data;
 };
 typedef struct _ccs_object_deserialize_options_s
 	_ccs_object_deserialize_options_t;
@@ -1449,10 +1449,10 @@ _ccs_object_deserialize_user_data(
 		CCS_VALIDATE(_ccs_deserialize_bin_size(
 			&serialize_data_size, buffer_size, buffer));
 		if (serialize_data_size) {
-			if (opts->deserialize_callback)
-				CCS_VALIDATE(opts->deserialize_callback(
+			if (opts->deserialize_data_callback)
+				CCS_VALIDATE(opts->deserialize_data_callback(
 					object, serialize_data_size, *buffer,
-					opts->deserialize_user_data));
+					opts->deserialize_data_user_data));
 			*buffer_size -= serialize_data_size;
 			*buffer += serialize_data_size;
 		}

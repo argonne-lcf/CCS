@@ -965,9 +965,9 @@ enum ccs_serialize_option_e {
 typedef enum ccs_serialize_option_e ccs_serialize_option_t;
 
 /**
- * The type of CCS object deserialization callbacks.
- * This callback is used to deserialize object information that were created by
- * the serialization callback.
+ * The type of CCS object data deserialization callbacks. This callback is
+ * used to deserialize object data information that were created by the
+ * serialization callback.
  * @param[in, out] object a CCS object
  * @param[in] serialize_data_size the size of the memory pointed to by
  *                                \p serialize_data
@@ -981,11 +981,40 @@ typedef enum ccs_serialize_option_e ccs_serialize_option_t;
  * @remarks
  *   This function must be thread-safe for serialization to be thread safe.
  */
-typedef ccs_result_t (*ccs_object_deserialize_callback_t)(
+typedef ccs_result_t (*ccs_object_deserialize_data_callback_t)(
 	ccs_object_t object,
 	size_t       serialize_data_size,
 	const char  *serialize_data,
 	void        *callback_user_data);
+
+/**
+ * The type of CCS user object vector deserialization callbacks.
+ * This callback is used to obtain the vector to use for a user defined object.
+ * @param[in] type the type of CCS object for which the vector is required
+ * @param[in] name the name of the object as it was orignally provided at
+ *                 creation
+ * @param[in] callback_user_data the pointer provided when the callback
+ *                               was attached.
+ * @param[out] vector_ret a pointer that will hold the returned pointer to the
+ *             vector structure
+ * @param[out] data_ret a pointer that will optionally hold the user data value
+ *                                to use when initializing the user object.
+ *                                If the provided vector holds the relevant
+ *                                deserialization callback, this value will be
+ *                                ignored.
+ * @return #CCS_RESULT_SUCCESS on success
+ * @return #CCS_RESULT_ERROR_INVALID_TYPE if the object type is not expected by
+ *                                        the callback
+ * @return #CCS_RESULT_ERROR_INVALID_NAME if the object name is not recognized
+ * @remarks
+ *   This function must be thread-safe for deserialization to be thread safe.
+ */
+typedef ccs_result_t (*ccs_object_deserialize_vector_callback_t)(
+	ccs_object_type_t type,
+	const char       *name,
+	void             *callback_user_data,
+	void            **vector_ret,
+	void            **data_ret);
 
 /**
  * The different deserialization options.
@@ -1001,15 +1030,11 @@ enum ccs_deserialize_option_e {
 	 */
 	CCS_DESERIALIZE_OPTION_HANDLE_MAP,
 	/**
-	 * The next parameter is a pointer to a ccs object vector struct, for
-	 * user defined tuners
+	 * The next parameter is a pointer to a callback of type
+	 * ccs_object_deserialize_vector_callback_t and its user data, that
+	 * will return the ccs object vector struct, for user defined objects
 	 */
-	CCS_DESERIALIZE_OPTION_VECTOR,
-	/**
-	 * The next parameter is a pointer to a ccs object internal data, for
-	 * user defined tuners
-	 */
-	CCS_DESERIALIZE_OPTION_DATA,
+	CCS_DESERIALIZE_OPTION_VECTOR_CALLBACK,
 	/**
 	 * The file descriptor operation is non-blocking. The next parameter is
 	 * a pointer to a void * variable (initialized to NULL) that will hold
@@ -1019,12 +1044,12 @@ enum ccs_deserialize_option_e {
 	 */
 	CCS_DESERIALIZE_OPTION_NON_BLOCKING,
 	/**
-	 * The next parameters are a deserialization callback and it's
+	 * The next parameters are a deserialization callback and its
 	 * user_data. This callback will be called for all objects that had
 	 * their user_data serialized. If no such callback is provided the
 	 * object's user_data value will not be set.
 	 */
-	CCS_DESERIALIZE_OPTION_CALLBACK,
+	CCS_DESERIALIZE_OPTION_DATA_CALLBACK,
 	/** Guard */
 	CCS_DESERIALIZE_OPTION_MAX,
 	/** Try forcing 32 bits value for bindings */

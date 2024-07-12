@@ -395,10 +395,9 @@ class DeserializeOption(CEnumeration):
   _members_ = [
     ('END', 0),
     'HANDLE_MAP',
-    'VECTOR',
-    'DATA',
+    'VECTOR_CALLBACK',
     'NON_BLOCKING',
-    'CALLBACK'
+    'DATA_CALLBACK'
   ]
 
 def _ccs_get_function(method, argtypes = [], restype = Result):
@@ -422,7 +421,8 @@ ccs_object_set_user_data = _ccs_get_function("ccs_object_set_user_data", [ccs_ob
 ccs_object_get_user_data = _ccs_get_function("ccs_object_get_user_data", [ccs_object, ct.POINTER(ct.c_void_p)])
 ccs_object_serialize_callback_type = ct.CFUNCTYPE(Result, ccs_object, ct.c_size_t, ct.c_void_p, ct.POINTER(ct.c_size_t), ct.c_void_p)
 ccs_object_set_serialize_callback = _ccs_get_function("ccs_object_set_serialize_callback", [ccs_object, ccs_object_serialize_callback_type, ct.c_void_p])
-ccs_object_deserialize_callback_type = ct.CFUNCTYPE(Result, ccs_object, ct.c_size_t, ct.c_void_p, ct.c_void_p)
+ccs_object_deserialize_data_callback_type = ct.CFUNCTYPE(Result, ccs_object, ct.c_size_t, ct.c_void_p, ct.c_void_p)
+ccs_object_deserialize_vector_callback_type = ct.CFUNCTYPE(Result, ct.c_int, ct.c_char_p, ct.c_void_p, ct.POINTER(ct.c_void_p), ct.POINTER(ct.py_object))
 # Variadic methods
 ccs_object_serialize = getattr(libcconfigspace, "ccs_object_serialize")
 ccs_object_serialize.argtypes = ccs_object, SerializeFormat, SerializeOperation,
@@ -556,7 +556,7 @@ class Object:
       return v
 
   @classmethod
-  def deserialize(cls, format = 'binary', handle_map = None, vector = None, data = None, path = None, buffer = None, file_descriptor = None, callback = None, callback_data = None):
+  def deserialize(cls, format = 'binary', handle_map = None, vector_callback = None, vector_callback_data = None, path = None, buffer = None, file_descriptor = None, callback = None, callback_data = None):
     if format != 'binary':
       raise Error(Result(Result.ERROR_INVALID_VALUE))
     mode_count = 0;
@@ -572,16 +572,16 @@ class Object:
     options = [DeserializeOption.END]
     if handle_map:
       options = [DeserializeOption.HANDLE_MAP, handle_map.handle] + options
-    if vector:
-      options = [DeserializeOption.VECTOR, ct.byref(vector)] + options
-    if data:
-      options = [DeserializeOption.DATA, ct.py_object(data)] + options
+    if vector_callback:
+      vector_cb_wrapper = _get_deserialize_vector_callback_wrapper(vector_callback)
+      vector_cb_wrapper_func = ccs_object_deserialize_vector_callback_type(vector_cb_wrapper)
+      options = [DeserializeOption.VECTOR_CALLBACK, vector_cb_wrapper_func, ct.py_object(vector_callback_data)] + options
     if callback:
-      cb_wrapper = _get_deserialize_callback_wrapper(callback)
-      cb_wrapper_func = ccs_object_deserialize_callback_type(cb_wrapper)
-      options = [DeserializeOption.CALLBACK, cb_wrapper_func, ct.py_object(callback_data)] + options
+      cb_wrapper = _get_deserialize_data_callback_wrapper(callback)
+      cb_wrapper_func = ccs_object_deserialize_data_callback_type(cb_wrapper)
+      options = [DeserializeOption.DATA_CALLBACK, cb_wrapper_func, ct.py_object(callback_data)] + options
     elif _default_user_data_deserializer:
-      options = [DeserializeOption.CALLBACK, _default_user_data_deserializer, ct.py_object()] + options
+      options = [DeserializeOption.DATA_CALLBACK, _default_user_data_deserializer, ct.py_object()] + options
     if buffer:
       s = ct.c_size_t(ct.sizeof(buffer))
       res = ccs_object_deserialize(ct.byref(o), SerializeFormat.BINARY, SerializeOperation.MEMORY, s, buffer, *options)
@@ -621,8 +621,8 @@ def _get_serialize_callback_wrapper(callback):
       return Error.set_error(e)
   return serialize_callback_wrapper
 
-def _get_deserialize_callback_wrapper(callback):
-  def deserialize_callback_wrapper(obj, serialize_data_size, serialize_data, cb_data):
+def _get_deserialize_data_callback_wrapper(callback):
+  def deserialize_data_callback_wrapper(obj, serialize_data_size, serialize_data, cb_data):
     try:
       p_sd = ct.cast(serialize_data, ct.c_void_p)
       cb_data = ct.cast(cb_data, ct.c_void_p)
@@ -638,7 +638,24 @@ def _get_deserialize_callback_wrapper(callback):
       return Result.SUCCESS
     except Exception as e:
       return Error.set_error(e)
-  return deserialize_callback_wrapper
+  return deserialize_data_callback_wrapper
+
+def _get_deserialize_vector_callback_wrapper(callback):
+  def deserialize_vector_callback_wrapper(obj_type, name, callback_user_data, vector_ret, data_ret):
+    try:
+      cb_data = ct.cast(callback_user_data, ct.py_object).value if callback_user_data else None
+      o_type = ObjectType(obj_type)
+      (vector, data) = callback(o_type, name, cb_data)
+      c_vector = ct.py_object(vector)
+      c_data = ct.py_object(data)
+      vector_ret[0] = ct.cast(ct.byref(vector), ct.c_void_p)
+      data_ret[0] = c_data
+      ct.pythonapi.Py_IncRef(c_vector)
+      ct.pythonapi.Py_IncRef(c_data)
+      return Result.SUCCESS
+    except Exception as e:
+      return Error.set_error(e)
+  return deserialize_vector_callback_wrapper
 
 def _json_user_data_serializer(obj, data, size):
   string = json.dumps(obj.user_data).encode("ascii")
@@ -651,8 +668,8 @@ def _json_user_data_deserializer(obj, serialized, data):
 _json_user_data_serializer_wrap = _get_serialize_callback_wrapper(_json_user_data_serializer)
 _json_user_data_serializer_func = ccs_object_serialize_callback_type(_json_user_data_serializer_wrap)
 
-_json_user_data_deserializer_wrap = _get_deserialize_callback_wrapper(_json_user_data_deserializer)
-_json_user_data_deserializer_func = ccs_object_deserialize_callback_type(_json_user_data_deserializer_wrap)
+_json_user_data_deserializer_wrap = _get_deserialize_data_callback_wrapper(_json_user_data_deserializer)
+_json_user_data_deserializer_func = ccs_object_deserialize_data_callback_type(_json_user_data_deserializer_wrap)
 
 _default_user_data_serializer = _json_user_data_serializer_func
 _default_user_data_deserializer = _json_user_data_deserializer_func
@@ -694,8 +711,8 @@ def _register_serialize_callback(handle, callback_data):
     _register_destroy_callback(handle)
   _data_store[value]['serialize_calback'] = callback_data
 
-def deserialize(format = 'binary', handle_map = None, path = None, buffer = None, callback = None, callback_data = None):
-  return Object.deserialize(format = format, handle_map = handle_map, path = path, buffer = buffer, callback = callback, callback_data = callback_data)
+def deserialize(format = 'binary', handle_map = None, path = None, buffer = None, file_descriptor = None, vector_callback = None, vector_callback_data = None, callback = None, callback_data = None):
+  return Object.deserialize(format = format, handle_map = handle_map, path = path, buffer = buffer, file_descriptor = file_descriptor, vector_callback = vector_callback, vector_callback_data = vector_callback_data, callback = callback, callback_data = callback_data)
 
 def _set_destroy_callback(handle, callback, user_data = None):
   if callback is None:

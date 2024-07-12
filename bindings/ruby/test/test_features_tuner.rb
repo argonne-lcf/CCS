@@ -125,6 +125,13 @@ class CConfigSpaceTestFeaturesTuner < Minitest::Test
         optis.sample.configuration
       end
     }
+    get_vector_data = lambda { |otype, name, cb_data|
+      assert_equal(:CCS_OBJECT_TYPE_TUNER, otype)
+      assert_equal("tuner", name)
+      assert_nil(cb_data)
+      [CCS::UserDefinedTuner.get_vector(del: del, ask: ask, tell: tell, get_optima: get_optima, get_history: get_history, suggest: suggest), TunerData.new]
+    }
+
     fs, os = create_tuning_problem
     t = CCS::UserDefinedTuner::new(name: "tuner", objective_space: os, del: del, ask: ask, tell: tell, get_optima: get_optima, get_history: get_history, suggest: suggest, tuner_data: TunerData.new)
     t2 = CCS::Object::from_handle(t)
@@ -160,7 +167,7 @@ class CConfigSpaceTestFeaturesTuner < Minitest::Test
     }
 
     buff = t.serialize
-    t_copy = CCS::UserDefinedTuner::deserialize(buffer: buff, del: del, ask: ask, tell: tell, get_optima: get_optima, get_history: get_history, suggest: suggest, tuner_data: TunerData.new)
+    t_copy = CCS::deserialize(buffer: buff, vector_callback: get_vector_data)
     hist = t_copy.history
     assert_equal(200, hist.size)
     assert_equal(t.num_optima, t_copy.num_optima)

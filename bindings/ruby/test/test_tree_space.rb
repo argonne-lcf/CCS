@@ -54,6 +54,12 @@ class CConfigSpaceTestTreeSpace < Minitest::Test
       arity = 0 if arity < 0
       CCS::Tree.new(arity: arity, value: (4 - child_depth)*100 + child_index)
     }
+    get_vector_data = lambda { |otype, name, cb_data|
+      assert_equal(:CCS_OBJECT_TYPE_TREE_SPACE, otype)
+      assert_equal('space', name)
+      assert_nil(cb_data)
+      [CCS::DynamicTreeSpace.get_vector(del: del, get_child: get_child), nil]
+    }
 
     tree = CCS::Tree.new(arity: 4, value: 400)
     ts = CCS::DynamicTreeSpace.new(name: 'space', tree: tree, del: del, get_child: get_child)
@@ -74,7 +80,7 @@ class CConfigSpaceTestTreeSpace < Minitest::Test
     }
 
     buff = ts.serialize
-    ts2 = CCS::DynamicTreeSpace.deserialize(buffer: buff, del: del, get_child: get_child)
+    ts2 = CCS::deserialize(buffer: buff, vector_callback: get_vector_data)
     assert_equal( [400, 301, 201], ts2.get_values_at_position([1, 1]) )
   end
 

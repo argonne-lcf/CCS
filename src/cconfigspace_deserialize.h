@@ -54,12 +54,12 @@ _ccs_object_deserialize_options(
 			CCS_CHECK_OBJ(opts->handle_map, CCS_OBJECT_TYPE_MAP);
 			opts->map_values = CCS_TRUE;
 			break;
-		case CCS_DESERIALIZE_OPTION_VECTOR:
-			opts->vector = va_arg(args, void *);
-			CCS_CHECK_PTR(opts->vector);
-			break;
-		case CCS_DESERIALIZE_OPTION_DATA:
-			opts->data = va_arg(args, void *);
+		case CCS_DESERIALIZE_OPTION_VECTOR_CALLBACK:
+			opts->deserialize_vector_callback = va_arg(
+				args, ccs_object_deserialize_vector_callback_t);
+			CCS_CHECK_PTR(opts->deserialize_vector_callback);
+			opts->deserialize_vector_user_data =
+				va_arg(args, void *);
 			break;
 		case CCS_DESERIALIZE_OPTION_NON_BLOCKING:
 			CCS_REFUTE(
@@ -70,11 +70,11 @@ _ccs_object_deserialize_options(
 				va_arg(args, _ccs_file_descriptor_state_t **);
 			CCS_CHECK_PTR(opts->ppfd_state);
 			break;
-		case CCS_DESERIALIZE_OPTION_CALLBACK:
-			opts->deserialize_callback =
-				va_arg(args, ccs_object_deserialize_callback_t);
-			CCS_CHECK_PTR(opts->deserialize_callback);
-			opts->deserialize_user_data = va_arg(args, void *);
+		case CCS_DESERIALIZE_OPTION_DATA_CALLBACK:
+			opts->deserialize_data_callback = va_arg(
+				args, ccs_object_deserialize_data_callback_t);
+			CCS_CHECK_PTR(opts->deserialize_data_callback);
+			opts->deserialize_data_user_data = va_arg(args, void *);
 			break;
 		default:
 			CCS_RAISE(

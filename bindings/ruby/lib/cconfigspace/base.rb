@@ -244,10 +244,9 @@ module CCS
   DeserializeOptions = enum FFI::Type::INT32, :ccs_deserialize_option_t, [
     :CCS_DESERIALIZE_OPTION_END, 0,
     :CCS_DESERIALIZE_OPTION_HANDLE_MAP,
-    :CCS_DESERIALIZE_OPTION_VECTOR,
-    :CCS_DESERIALIZE_OPTION_DATA,
+    :CCS_DESERIALIZE_OPTION_VECTOR_CALLBACK,
     :CCS_DESERIALIZE_OPTION_NON_BLOCKING,
-    :CCS_DESERIALIZE_OPTION_CALLBACK ]
+    :CCS_DESERIALIZE_OPTION_DATA_CALLBACK ]
 
   class Numeric < FFI::Union
     layout :f, :ccs_float_t,
@@ -501,7 +500,8 @@ module CCS
   attach_function :ccs_object_get_user_data, [:ccs_object_t, :pointer], :ccs_result_t
   callback :ccs_object_serialize_callback, [:ccs_object_t, :size_t, :pointer, :pointer, :value], :ccs_result_t
   attach_function :ccs_object_set_serialize_callback, [:ccs_object_t, :ccs_object_serialize_callback, :value], :ccs_result_t
-  callback :ccs_object_deserialize_callback, [:ccs_object_t, :size_t, :pointer, :value], :ccs_result_t
+  callback :ccs_object_deserialize_data_callback, [:ccs_object_t, :size_t, :pointer, :value], :ccs_result_t
+  callback :ccs_object_deserialize_vector_callback, [:ccs_object_type_t, :string, :value, :pointer, :pointer], :ccs_result_t
   attach_function :ccs_object_serialize, [:ccs_object_t, :ccs_serialize_format_t, :ccs_serialize_operation_t, :varargs], :ccs_result_t
   attach_function :ccs_object_deserialize, [:ccs_object_t, :ccs_serialize_format_t, :ccs_serialize_operation_t, :varargs], :ccs_result_t
 
@@ -750,7 +750,7 @@ module CCS
       return result
     end
 
-    def self.deserialize(format: :binary, handle_map: nil, vector: nil, data: nil, path: nil, buffer: nil, file_descriptor: nil, callback: nil, callback_data: nil)
+    def self.deserialize(format: :binary, handle_map: nil, path: nil, buffer: nil, file_descriptor: nil, vector_callback: nil, vector_callback_data: nil, callback: nil, callback_data: nil)
       raise CCSError, :CCS_RESULT_ERROR_INVALID_VALUE if format != :binary
       format = :CCS_SERIALIZE_FORMAT_BINARY
       mode_count = 0
@@ -761,13 +761,15 @@ module CCS
       ptr = MemoryPointer::new(:ccs_object_t)
       options = []
       options.concat [:ccs_deserialize_option_t, :CCS_DESERIALIZE_OPTION_HANDLE_MAP, :ccs_map_t, handle_map.handle] if handle_map
-      options.concat [:ccs_deserialize_option_t, :CCS_DESERIALIZE_OPTION_VECTOR, :pointer, vector] if vector
-      options.concat [:ccs_deserialize_option_t, :CCS_DESERIALIZE_OPTION_DATA, :value, data] if data
+      if vector_callback
+        cb_wrapper = CCS.get_deserialize_vector_callback_wrapper(&vector_callback)
+        options.concat [:ccs_deserialize_option_t, :CCS_DESERIALIZE_OPTION_VECTOR_CALLBACK, :ccs_object_deserialize_vector_callback, cb_wrapper, :value, vector_callback_data]
+      end
       if callback
-        cb_wrapper = CCS.get_deserialize_wrapper(&callback)
-        options.concat [:ccs_deserialize_option_t, :CCS_DESERIALIZE_OPTION_CALLBACK, :ccs_object_deserialize_callback, cb_wrapper, :value, callback_data]
+        cb_wrapper = CCS.get_deserialize_data_callback_wrapper(&callback)
+        options.concat [:ccs_deserialize_option_t, :CCS_DESERIALIZE_OPTION_DATA_CALLBACK, :ccs_object_deserialize_data_callback, cb_wrapper, :value, callback_data]
       elsif CCS.default_user_data_deserializer
-        options.concat [:ccs_deserialize_option_t, :CCS_DESERIALIZE_OPTION_CALLBACK, :ccs_object_deserialize_callback, CCS.default_user_data_deserializer, :value, nil]
+        options.concat [:ccs_deserialize_option_t, :CCS_DESERIALIZE_OPTION_DATA_CALLBACK, :ccs_object_deserialize_data_callback, CCS.default_user_data_deserializer, :value, nil]
       end
       options.concat [:ccs_deserialize_option_t, :CCS_DESERIALIZE_OPTION_END]
       if buffer
@@ -873,7 +875,7 @@ module CCS
     }
   end
 
-  def self.get_deserialize_wrapper(&block)
+  def self.get_deserialize_data_callback_wrapper(&block)
     lambda { |obj, serialize_data_size, serialize_data, cb_data|
       begin
         serialized = serialize_data.null? ? nil : serialize_data.slice(0, serialize_data_size)
@@ -885,11 +887,26 @@ module CCS
     }
   end
 
+  def self.get_deserialize_vector_callback_wrapper(&block)
+    lambda { |obj_type, name, callback_user_data, vector_ret, data_ret|
+      begin
+        vector, data = block.call(obj_type, name, callback_user_data)
+        vector_ret.write_pointer(vector.pointer)
+        data_ret.write_value(data)
+        FFI.inc_ref(vector)
+        FFI.inc_ref(data)
+        CCSError.to_native(:CCS_RESULT_SUCCESS)
+      rescue => e
+        CCS.set_error(e)
+      end
+    }
+  end
+
   @yaml_user_data_serializer = get_serialize_wrapper { |obj, _, size|
     FFI::MemoryPointer.from_string(YAML.dump(obj.user_data))
   }
 
-  @yaml_user_data_deserializer = get_deserialize_wrapper { |obj, serialized, _|
+  @yaml_user_data_deserializer = get_deserialize_data_callback_wrapper { |obj, serialized, _|
     obj.user_data = YAML.load(serialized.read_string)
   }
 
@@ -912,8 +929,8 @@ module CCS
     register_serialize_callback(handle, cb_data)
   end
 
-  def self.deserialize(format: :binary, handle_map: nil, path: nil, buffer: nil, callback: nil, callback_data: nil)
-    return CCS::Object.deserialize(format: format, handle_map: handle_map, path: path, buffer: buffer, callback: callback, callback_data: callback_data)
+  def self.deserialize(format: :binary, handle_map: nil, path: nil, buffer: nil,  file_descriptor: nil, vector_callback: nil, vector_callback_data: nil, callback: nil, callback_data: nil)
+    return CCS::Object.deserialize(format: format, handle_map: handle_map, path: path, buffer: buffer, file_descriptor: file_descriptor, vector_callback: vector_callback, vector_callback_data: vector_callback_data, callback: callback, callback_data: callback_data)
   end
 
 end

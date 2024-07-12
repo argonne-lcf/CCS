@@ -35,24 +35,46 @@ my_tree_get_child(
 	return CCS_RESULT_SUCCESS;
 }
 
+ccs_dynamic_tree_space_vector_t vector = {
+	&my_tree_del, &my_tree_get_child, NULL, NULL};
+
+ccs_result_t
+deserialize_vector_callback(
+	ccs_object_type_t type,
+	const char       *name,
+	void             *callback_user_data,
+	void            **vector_ret,
+	void            **data_ret)
+{
+	(void)name;
+	(void)callback_user_data;
+	switch (type) {
+	case CCS_OBJECT_TYPE_TREE_SPACE:
+		*vector_ret = (void *)&vector;
+		*data_ret   = NULL;
+		break;
+	default:
+		return CCS_RESULT_ERROR_INVALID_TYPE;
+	}
+	return CCS_RESULT_SUCCESS;
+}
+
 void
 test_dynamic_tree_space(void)
 {
-	ccs_result_t                    err;
-	ccs_bool_t                      is_valid;
-	ccs_tree_t                      root, tree;
-	ccs_tree_space_t                tree_space;
-	ccs_tree_space_type_t           tree_type;
-	ccs_rng_t                       rng, rng2;
-	size_t                          position_size, *position, depths[5];
-	ccs_datum_t                     value, *values;
-	ccs_float_t                     areas[5] = {1.0, 4.0, 2.0, 1.0, 0.0};
-	ccs_float_t                     inv_sum;
-	const char                     *name;
-	ccs_tree_configuration_t        config, configs[NUM_SAMPLES];
+	ccs_result_t             err;
+	ccs_bool_t               is_valid;
+	ccs_tree_t               root, tree;
+	ccs_tree_space_t         tree_space;
+	ccs_tree_space_type_t    tree_type;
+	ccs_rng_t                rng, rng2;
+	size_t                   position_size, *position, depths[5];
+	ccs_datum_t              value, *values;
+	ccs_float_t              areas[5] = {1.0, 4.0, 2.0, 1.0, 0.0};
+	ccs_float_t              inv_sum;
+	const char              *name;
+	ccs_tree_configuration_t config, configs[NUM_SAMPLES];
 
-	ccs_dynamic_tree_space_vector_t vector = {
-		&my_tree_del, &my_tree_get_child, NULL, NULL};
 	err = ccs_create_tree(4, ccs_int(4 * 100), &root);
 	assert(err == CCS_RESULT_SUCCESS);
 	err = ccs_create_rng(&rng);
@@ -176,7 +198,8 @@ test_dynamic_tree_space(void)
 	err = ccs_object_deserialize(
 		(ccs_object_t *)&tree_space, CCS_SERIALIZE_FORMAT_BINARY,
 		CCS_SERIALIZE_OPERATION_MEMORY, buff_size, buff,
-		CCS_DESERIALIZE_OPTION_VECTOR, &vector,
+		CCS_DESERIALIZE_OPTION_VECTOR_CALLBACK,
+		&deserialize_vector_callback, (void *)NULL,
 		CCS_DESERIALIZE_OPTION_END);
 	assert(err == CCS_RESULT_SUCCESS);
 	free(buff);

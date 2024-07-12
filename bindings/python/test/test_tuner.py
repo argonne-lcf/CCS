@@ -101,6 +101,9 @@ class TestTuner(unittest.TestCase):
       else:
         return choice(tuner.tuner_data.optima).configuration
 
+    def get_vector_data(otype, name, cb_data):
+      return (ccs.UserDefinedTuner.get_vector(delete = delete, ask = ask, tell = tell, get_optima = get_optima, get_history = get_history, suggest = suggest), TunerData())
+
     os = self.create_tuning_problem()
     t = ccs.UserDefinedTuner(name = "tuner", objective_space = os, delete = delete, ask = ask, tell = tell, get_optima = get_optima, get_history = get_history, suggest = suggest, tuner_data = TunerData())
     t2 = ccs.Object.from_handle(t.handle)
@@ -126,7 +129,7 @@ class TestTuner(unittest.TestCase):
 
     # test serialization
     buff = t.serialize()
-    t_copy = ccs.UserDefinedTuner.deserialize(buffer = buff, delete = delete, ask = ask, tell = tell, get_optima = get_optima, get_history = get_history, suggest = suggest, tuner_data = TunerData())
+    t_copy = ccs.deserialize(buffer = buff, vector_callback = get_vector_data)
     hist = t_copy.history()
     self.assertEqual(200, len(hist))
     optims_2 = t_copy.optima()
@@ -137,7 +140,7 @@ class TestTuner(unittest.TestCase):
     self.assertTrue(t_copy.suggest() in [x.configuration for x in optims_2])
 
     t.serialize(path = 'tuner.ccs')
-    t_copy = ccs.UserDefinedTuner.deserialize(path = 'tuner.ccs', delete = delete, ask = ask, tell = tell, get_optima = get_optima, get_history = get_history, suggest = suggest, tuner_data = TunerData())
+    t_copy = ccs.deserialize(path = 'tuner.ccs', vector_callback = get_vector_data)
     hist = t_copy.history()
     self.assertEqual(200, len(hist))
     optims_2 = t_copy.optima()
@@ -152,7 +155,7 @@ class TestTuner(unittest.TestCase):
     t.serialize(file_descriptor = file.fileno())
     file.close()
     file = open( 'tuner.ccs', "rb")
-    t_copy = ccs.UserDefinedTuner.deserialize(file_descriptor = file.fileno(), delete = delete, ask = ask, tell = tell, get_optima = get_optima, get_history = get_history, suggest = suggest, tuner_data = TunerData())
+    t_copy = ccs.deserialize(file_descriptor = file.fileno(), vector_callback = get_vector_data)
     file.close()
     hist = t_copy.history()
     self.assertEqual(200, len(hist))
