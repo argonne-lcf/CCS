@@ -657,19 +657,6 @@ _json_user_data_deserializer_func = ccs_object_deserialize_callback_type(_json_u
 _default_user_data_serializer = _json_user_data_serializer_func
 _default_user_data_deserializer = _json_user_data_deserializer_func
 
-# Delete wrappers are responsible for deregistering the object data_store
-def _register_vector(handle, vector_data):
-  value = handle.value
-  if value in _data_store:
-    raise Error(Result(Result.ERROR_INVALID_VALUE))
-  _data_store[value] = dict.fromkeys(['callbacks', 'user_data', 'serialize_calback', 'strings'])
-  _data_store[value]['callbacks'] = vector_data
-  _data_store[value]['strings'] = []
-
-def _unregister_vector(handle):
-  value = handle.value
-  del _data_store[value]
-
 # If objects don't have a user-defined del operation, then the first time a
 # data needs to be registered a destruction callback is attached.
 def _register_destroy_callback(handle):
