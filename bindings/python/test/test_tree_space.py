@@ -54,7 +54,7 @@ class TestTreeSpace(unittest.TestCase):
       arity = 0 if arity < 0 else arity
       return ccs.Tree(arity = arity, value = (4 - child_depth)*100 + child_index)
 
-    def get_vector_data(otype, name, cb_data):
+    def get_vector_data(otype, name):
       return (ccs.DynamicTreeSpace.get_vector(delete = delete, get_child = get_child), None)
 
     tree = ccs.Tree(arity = 4, value = 400)

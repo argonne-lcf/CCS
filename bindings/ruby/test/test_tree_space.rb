@@ -54,10 +54,9 @@ class CConfigSpaceTestTreeSpace < Minitest::Test
       arity = 0 if arity < 0
       CCS::Tree.new(arity: arity, value: (4 - child_depth)*100 + child_index)
     }
-    get_vector_data = lambda { |otype, name, cb_data|
+    get_vector_data = lambda { |otype, name|
       assert_equal(:CCS_OBJECT_TYPE_TREE_SPACE, otype)
       assert_equal('space', name)
-      assert_nil(cb_data)
       [CCS::DynamicTreeSpace.get_vector(del: del, get_child: get_child), nil]
     }
 

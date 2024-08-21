@@ -4,7 +4,7 @@ module CCS
     :CCS_TREE_SPACE_TYPE_STATIC,
     :CCS_TREE_SPACE_TYPE_DYNAMIC
   ]
-  class MemoryPointer
+  module MemoryAccessor
     def read_ccs_tree_space_type_t
       TreeSpaceType.from_native(read_int32, nil)
     end
@@ -182,10 +182,11 @@ module CCS
         if serialize
           lambda { |ts, state_size, p_state, p_state_size|
             begin
-              state = serialize(TreeSpace.from_handle(ts), state_size == 0 ? true : false)
-              raise CCSError, :CCS_RESULT_ERROR_INVALID_VALUE if !p_state.null? && state_size < state.size
-              p_state.write_bytes(state.read_bytes(state.size)) unless p_state.null?
-              Pointer.new(p_state_size).write_size_t(state.size) unless p_state_size.null?
+              state = serialize.call(TreeSpace.from_handle(ts))
+              raise CCSError, :CCS_RESULT_ERROR_INVALID_VALUE if !state.kind_of?(String)
+              raise CCSError, :CCS_RESULT_ERROR_INVALID_VALUE if !p_state.null? && state_size < state.bytesize
+              p_state.write_bytes(state, 0, state.bytesize) unless p_state.null?
+              Pointer.new(p_state_size).write_size_t(state.bytesize) unless p_state_size.null?
               CCSError.to_native(:CCS_RESULT_SUCCESS)
             rescue => e
               CCS.set_error(e)
@@ -198,8 +199,8 @@ module CCS
         if deserialize
           lambda { |t, feature_space, state_size, p_state, p_tree_space_data|
             begin
-              state = p_state.null? ? nil : p_state.slice(0, state_size)
-              tree_space_data = deserialize(Tree.from_handle(t), feature_space.null? ? nil : FeatureSpace.from_handle(feature_space), state)
+              state = p_state.null? ? nil : p_state.read_bytes(state_size)
+              tree_space_data = deserialize.call(Tree.from_handle(t), feature_space.null? ? nil : FeatureSpace.from_handle(feature_space), state)
               p_tree_space_data.write_value(tree_space_data)
               FFI.inc_ref(tree_space_data)
               CCSError.to_native(:CCS_RESULT_SUCCESS)

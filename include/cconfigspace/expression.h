@@ -57,6 +57,8 @@ enum ccs_expression_type_e {
 	CCS_EXPRESSION_TYPE_LITERAL,
 	/** Variable */
 	CCS_EXPRESSION_TYPE_VARIABLE,
+	/** User defined */
+	CCS_EXPRESSION_TYPE_USER_DEFINED,
 	/** Guard */
 	CCS_EXPRESSION_TYPE_MAX,
 	/** Try forcing 32 bits value for bindings */
@@ -79,7 +81,7 @@ typedef enum ccs_expression_type_e ccs_expression_type_t;
  *  - 6 : POSITIVE, NEGATIVE, NOT
  *  - 7 : IN
  *  - max - 1: LIST
- *  - max : LITERAL, VARIABLE
+ *  - max : LITERAL, VARIABLE, USER_DEFINED
  *
  * Those are similar to C's precedence
  */
@@ -117,7 +119,7 @@ typedef enum ccs_associativity_type_e ccs_associativity_type_t;
  *  - right: POSITIVE, NEGATIVE, NOT
  *  - left: IN
  *  - left: LIST
- *  - none: LITERAL, VARIABLE
+ *  - none: LITERAL, VARIABLE, USER_DEFINED
  */
 extern const ccs_associativity_type_t ccs_expression_associativity[];
 
@@ -143,6 +145,7 @@ extern const ccs_associativity_type_t ccs_expression_associativity[];
  *  - LIST: NULL
  *  - LITERAL: NULL
  *  - VARIABLE: NULL
+ *  - USER_DEFINED: NULL
  */
 extern const char                    *ccs_expression_symbols[];
 
@@ -158,6 +161,7 @@ extern const char                    *ccs_expression_symbols[];
  *  - 2: IN
  *  - -1: LIST
  *  - 0: LITERAL, VARIABLE
+ *  - -1: USER_DEFINED
  */
 extern const int                      ccs_expression_arity[];
 
@@ -350,6 +354,86 @@ extern ccs_result_t
 ccs_create_variable(ccs_parameter_t parameter, ccs_expression_t *expression_ret);
 
 /**
+ * A structure that define the callbacks the user must provide to create a user
+ * defined expression.
+ */
+struct ccs_user_defined_expression_vector_s {
+	/**
+	 * The deletion callback that will be called once the reference count
+	 * of the expression reaches 0.
+	 */
+	ccs_result_t (*del)(ccs_expression_t expression);
+
+	/**
+	 * The expression evaluation interface.
+	 */
+	ccs_result_t (*eval)(
+		ccs_expression_t expression,
+		size_t           num_values,
+		ccs_datum_t     *values,
+		ccs_datum_t     *value_ret);
+
+	/**
+	 * The expression serialization interface, can be NULL.
+	 */
+	ccs_result_t (*serialize_user_state)(
+		ccs_expression_t expression,
+		size_t           sate_size,
+		void            *state,
+		size_t          *state_size_ret);
+
+	/**
+	 * The expression deserialization interface, can be NULL.
+	 */
+	ccs_result_t (*deserialize_state)(
+		size_t      state_size,
+		const void *state,
+		void      **expression_data_ret);
+};
+
+/**
+ * a commodity type to represent a user defined expression callback vector.
+ */
+typedef struct ccs_user_defined_expression_vector_s
+	ccs_user_defined_expression_vector_t;
+
+/**
+ * Create a new user defined expression.
+ * @param[in] name the name of the expression
+ * @param[in] num_nodes the number of the expression children nodes. Must be
+ *                      compatible with the arity of the expression
+ * @param[in] nodes an array of \p num_nodes expressions
+ * @param[in] vector the vector of callbacks implementing the expression
+ *                   interface
+ * @param[in] expression_data a pointer to the expression internal data
+ *                            structures. Can be NULL
+ * @param[out] expression_ret a pointer to the variable that will hold the newly
+ *                            created expression
+ * @return #CCS_RESULT_SUCCESS on success
+ * @return #CCS_RESULT_ERROR_INVALID_OBJECT if one the nodes given is of type
+ * #CCS_DATA_TYPE_OBJECT but the object is not a valid CCS object
+ * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p name is NULL; or if one the
+ * nodes given is of type #CCS_DATA_TYPE_OBJECT but is neither a
+ * #CCS_OBJECT_TYPE_PARAMETER nor a #CCS_OBJECT_TYPE_EXPRESSION; or if one the
+ * nodes given node is not a type #CCS_DATA_TYPE_OBJECT, #CCS_DATA_TYPE_NONE,
+ * #CCS_DATA_TYPE_INT, #CCS_DATA_TYPE_FLOAT, #CCS_DATA_TYPE_BOOL, or
+ * #CCS_DATA_TYPE_STRING; or if \p expression_ret is NULL; or if \p vector is
+ * NULL; or if any non optional interface pointer is NULL
+ * @return #CCS_RESULT_ERROR_OUT_OF_MEMORY if there was not enough memory to
+ * allocate the new expression instance
+ * @remarks
+ *   This function is thread-safe
+ */
+extern ccs_result_t
+ccs_create_user_defined_expression(
+	const char                           *name,
+	size_t                                num_nodes,
+	ccs_datum_t                          *nodes,
+	ccs_user_defined_expression_vector_t *vector,
+	void                                 *expression_data,
+	ccs_expression_t                     *expression_ret);
+
+/**
  * Get the type of an expression.
  * @param[in] expression
  * @param[out] type_ret a pointer to the variable that will contain the type of
@@ -426,6 +510,43 @@ extern ccs_result_t
 ccs_variable_get_parameter(
 	ccs_expression_t expression,
 	ccs_parameter_t *parameter_ret);
+
+/**
+ * Get the name of a user defined expression.
+ * @param[in] expression
+ * @param[out] name_ret a pointer to the variable that will contain a pointer to
+ *                      the name of the expression
+ * @return #CCS_RESULT_SUCCESS on success
+ * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p name_ret is NULL
+ * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p expression is not a valid CCS
+ * expression
+ * @return #CCS_RESULT_ERROR_INVALID_EXPRESSION if \p expression is not a user
+ * defined expression
+ * @remarks
+ *   This function is thread-safe
+ */
+extern ccs_result_t
+ccs_user_defined_expression_get_name(
+	ccs_expression_t expression,
+	const char     **name_ret);
+
+/**
+ * Get the user defined expression internal data pointer.
+ * @param[in] expression
+ * @param[out] expression_data_ret
+ * @return #CCS_RESULT_SUCCESS on success
+ * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p expression is not a valid CCS
+ * expression
+ * @return #CCS_RESULT_ERROR_INVALID_EXPRESSION if \p expression is not a user
+ * defined expression
+ * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p expression_data_ret is NULL
+ * @remarks
+ *   This function is thread-safe
+ */
+extern ccs_result_t
+ccs_user_defined_expression_get_expression_data(
+	ccs_expression_t expression,
+	void           **expression_data_ret);
 
 /**
  * Get the value of an expression, in a given list of bindings.

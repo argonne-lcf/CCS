@@ -24,7 +24,8 @@ class ExpressionType(CEnumeration):
     'IN',
     'LIST',
     'LITERAL',
-    'VARIABLE' ]
+    'VARIABLE',
+    'USER_DEFINED' ]
 
 class AssociativityType(CEnumeration):
   _members_ = [
@@ -170,6 +171,13 @@ class Expression(Object):
       return "{}{}".format(symbol, nds[0])
     else:
       return "{} {} {}".format(nds[0], symbol, nds[1])
+
+  @classmethod
+  def get_function_vector_data(cls, name, binding = {}):
+    proc = binding[name]
+    def evaluate(expr, *args):
+      return proc(*args)
+    return (Expression.UserDefined.get_vector(evaluate = evaluate), None)
 
 class ExpressionOr(Expression):
 
@@ -476,6 +484,156 @@ class ExpressionList(Expression):
 
 Expression.List = ExpressionList
 
+ccs_user_defined_expression_del_type = ct.CFUNCTYPE(Result, ccs_expression)
+ccs_user_defined_expression_eval_type = ct.CFUNCTYPE(Result, ccs_expression, ct.c_size_t, ct.POINTER(Datum), ct.POINTER(Datum))
+ccs_user_defined_expression_serialize_type = ct.CFUNCTYPE(Result, ccs_expression, ct.c_size_t, ct.c_void_p, ct.POINTER(ct.c_size_t))
+ccs_user_defined_expression_deserialize_type = ct.CFUNCTYPE(Result, ct.c_size_t, ct.c_void_p, ct.POINTER(ct.py_object))
+
+class UserDefinedExpressionVector(ct.Structure):
+  _fields_ = [
+    ('delete', ccs_user_defined_expression_del_type),
+    ('evaluate', ccs_user_defined_expression_eval_type),
+    ('serialize', ccs_user_defined_expression_serialize_type),
+    ('deserialize', ccs_user_defined_expression_deserialize_type) ]
+
+ccs_create_user_defined_expression = _ccs_get_function("ccs_create_user_defined_expression", [ct.c_char_p, ct.c_size_t, ct.POINTER(Datum), ct.POINTER(UserDefinedExpressionVector), ct.py_object, ct.POINTER(ccs_expression)])
+ccs_user_defined_expression_get_name = _ccs_get_function("ccs_user_defined_expression_get_name", [ccs_expression, ct.POINTER(ct.c_char_p)])
+ccs_user_defined_expression_get_expression_data = _ccs_get_function("ccs_user_defined_expression_get_expression_data", [ccs_expression, ct.POINTER(ct.c_void_p)])
+
+class ExpressionUserDefined(Expression):
+  def __init__(self, handle = None, retain = False, auto_release = True,
+               name = "", nodes = [], delete = None, evaluate = None, serialize = None, deserialize = None, expression_data = None):
+    if handle is None:
+      if evaluate is None:
+        raise Error(Result(Result.ERROR_INVALID_VALUE))
+
+      vec = self.get_vector(delete, evaluate, serialize, deserialize)
+      c_expression_data = None
+      if expression_data is not None:
+        c_expression_data = ct.py_object(expression_data)
+      handle = ccs_expression()
+      sz = len(nodes)
+      v = (Datum*sz)()
+      ss = []
+      for i in range(sz):
+        v[i].set_value(nodes[i], string_store = ss)
+      res = ccs_create_user_defined_expression(str.encode(name), sz, v, ct.byref(vec), c_expression_data, ct.byref(handle))
+      Error.check(res)
+      super().__init__(handle = handle, retain = False)
+      ct.pythonapi.Py_IncRef(ct.py_object(vec))
+      if c_expression_data is not None:
+        ct.pythonapi.Py_IncRef(c_expression_data)
+    else:
+      super().__init__(handle = handle, retain = retain, auto_release = auto_release)
+
+  @property
+  def name(self):
+    if hasattr(self, "_name"):
+      return self._name
+    v = ct.c_char_p()
+    res = ccs_user_defined_expression_get_name(self.handle, ct.byref(v))
+    Error.check(res)
+    self._name = v.value.decode()
+    return self._name
+
+  @property
+  def expression_data(self):
+    if hasattr(self, "_expression_data"):
+      return self._expression_data
+    v = ct.c_void_p()
+    res = ccs_user_defined_expression_get_expression_data(self.handle, ct.byref(v))
+    Error.check(res)
+    if v:
+      self._expression_data = ct.cast(v, ct.py_object).value
+    else:
+      self._expression_data = None
+    return self._expression_data
+
+  def __str__(self):
+    return "{}({})".format(self.name, ", ".join(map(str, self.nodes)))
+
+  @classmethod
+  def get_vector(self, delete = None, evaluate = None, serialize = None, deserialize = None):
+    vec = UserDefinedExpressionVector()
+    setattr(vec, '_string_store', list())
+    setattr(vec, '_object_store', list())
+    def delete_wrapper(expr):
+      try:
+        o = Object.from_handle(expr)
+        edata = o.expression_data
+        if delete is not None:
+          delete(o)
+        if edata is not None:
+          ct.pythonapi.Py_DecRef(ct.py_object(edata))
+        ct.pythonapi.Py_DecRef(ct.py_object(vec))
+        return Result.SUCCESS
+      except Exception as e:
+        return Error.set_error(e)
+
+    def evaluate_wrapper(expr, num_values, p_values, p_value_ret):
+      try:
+        if num_values == 0:
+          value_ret = evaluate(Expression.from_handle(expr))
+        else:
+          values = tuple(p_values[i].value for i in range(num_values))
+          value_ret = evaluate(Expression.from_handle(expr), *values)
+        p_value_ret[0].set_value(value_ret, string_store = getattr(vec, '_string_store'), object_store = getattr(vec, '_object_store'))
+        return Result.SUCCESS
+      except Exception as e:
+        return Error.set_error(e)
+
+    if serialize is not None:
+      def serialize_wrapper(expr, state_size, p_state, p_state_size):
+        try:
+          serialized = serialize(Expression.from_handle(expr))
+          state = ct.create_string_buffer(serialized, len(serialized))
+          if p_state and state_size < ct.sizeof(state):
+            raise Error(Result(Result.ERROR_INVALID_VALUE))
+          if p_state:
+            ct.memmove(p_state, ct.byref(state), ct.sizeof(state))
+          if p_state_size:
+            p_state_size[0] = ct.sizeof(state)
+          return Result.SUCCESS
+        except Exception as e:
+          return Error.set_error(e)
+    else:
+      serialize_wrapper = 0
+
+    if deserialize is not None:
+      def deserialize_wrapper(state_size, p_state, p_expression_data):
+        try:
+          expression_data = deserialize(ct.string_at(p_state, state_size))
+          c_expression_data = ct.py_object(expression_data)
+          p_expression_data[0] = c_expression_data
+          ct.pythonapi.Py_IncRef(c_expression_data)
+          return Result.SUCCESS
+        except Exception as e:
+          return Error.set_error(e)
+    else:
+      deserialize_wrapper = 0
+
+    delete_wrapper_func      = ccs_user_defined_expression_del_type(delete_wrapper)
+    evaluate_wrapper_func    = ccs_user_defined_expression_eval_type(evaluate_wrapper)
+    serialize_wrapper_func   = ccs_user_defined_expression_serialize_type(serialize_wrapper)
+    deserialize_wrapper_func = ccs_user_defined_expression_deserialize_type(deserialize_wrapper)
+    vec.delete = delete_wrapper_func
+    vec.evaluate = evaluate_wrapper_func
+    vec.serialize = serialize_wrapper_func
+    vec.deserialize = deserialize_wrapper_func
+
+    setattr(vec, '_wrappers', (
+      delete_wrapper,
+      evaluate_wrapper,
+      serialize_wrapper,
+      deserialize_wrapper,
+      delete_wrapper_func,
+      evaluate_wrapper_func,
+      serialize_wrapper_func,
+      deserialize_wrapper_func))
+    return vec
+
+Expression.UserDefined = ExpressionUserDefined
+
 setattr(Expression, 'EXPRESSION_MAP', {
   ExpressionType.OR: ExpressionOr,
   ExpressionType.AND: ExpressionAnd,
@@ -497,4 +655,5 @@ setattr(Expression, 'EXPRESSION_MAP', {
   ExpressionType.LIST: ExpressionList,
   ExpressionType.LITERAL: ExpressionLiteral,
   ExpressionType.VARIABLE: ExpressionVariable,
+  ExpressionType.USER_DEFINED: ExpressionUserDefined,
 })

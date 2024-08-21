@@ -4,7 +4,7 @@ module CCS
     :CCS_TUNER_TYPE_RANDOM,
     :CCS_TUNER_TYPE_USER_DEFINED
   ]
-  class MemoryPointer
+  module MemoryAccessor
     def read_ccs_tuner_type_t
       TunerType.from_native(read_int32, nil)
     end
@@ -254,10 +254,11 @@ module CCS
         if serialize
           lambda { |tun, state_size, p_state, p_state_size|
             begin
-              state = serialize(Tuner.from_handle(tun), state_size == 0 ? true : false)
-              raise CCSError, :CCS_RESULT_ERROR_INVALID_VALUE if !p_state.null? && state_size < state.size
-              p_state.write_bytes(state.read_bytes(state.size)) unless p_state.null?
-              Pointer.new(p_state_size).write_size_t(state.size) unless p_state_size.null?
+              state = serialize.call(Tuner.from_handle(tun))
+              raise CCSError, :CCS_RESULT_ERROR_INVALID_VALUE if !state.kind_of?(String)
+              raise CCSError, :CCS_RESULT_ERROR_INVALID_VALUE if !p_state.null? && state_size < state.bytesize
+              p_state.write_bytes(state, 0, state.bytesize) unless p_state.null?
+              Pointer.new(p_state_size).write_size_t(state.bytesize) unless p_state_size.null?
               CCSError.to_native(:CCS_RESULT_SUCCESS)
             rescue => e
               CCS.set_error(e)
@@ -272,8 +273,8 @@ module CCS
             begin
               history = p_history.null? ? [] : history_size.times.collect { |i| Evaluation::from_handle(p_p_history.get_pointer(i*8)) }
               optima = p_optima.null? ? [] : num_optima.times.collect { |i| Evaluation::from_handle(p_optima.get_pointer(i*8)) }
-              state = p_state.null? ? nil : p_state.slice(0, state_size)
-              tuner_data = deserialize(ObjectiveSpace.from_handle(o_space), history, optima, state)
+              state = p_state.null? ? nil : p_state.read_bytes(state_size)
+              tuner_data = deserialize.call(ObjectiveSpace.from_handle(o_space), history, optima, state)
               p_tuner_data.write_value(tuner_data)
               FFI.inc_ref(tuner_data)
               CCSError.to_native(:CCS_RESULT_SUCCESS)

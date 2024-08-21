@@ -20,7 +20,7 @@ ccs_objective_space_check_evaluation = _ccs_get_function("ccs_objective_space_ch
 
 class ObjectiveSpace(Context):
   def __init__(self, handle = None, retain = False, auto_release = True,
-               name = "", search_space = None, parameters = [], objectives = [], types = None):
+               name = "", search_space = None, parameters = [], objectives = [], types = None, binding = None):
     if handle is None:
       count = len(parameters)
 
@@ -34,7 +34,8 @@ class ObjectiveSpace(Context):
       if isinstance(objectives, dict):
         types = objectives.values()
         objectives = objectives.keys()
-      objectives = [ parser.parse(objective, extra = ctx) if isinstance(objective, str) else objective for objective in objectives ]
+      extra = (ctx, binding)
+      objectives = [ parser.parse(objective, extra = extra) if isinstance(objective, str) else objective for objective in objectives ]
       sz = len(objectives)
       if types:
         if len(types) != sz:

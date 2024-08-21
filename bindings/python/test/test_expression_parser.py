@@ -57,6 +57,25 @@ class TestExpressionParser(unittest.TestCase):
     self.assertIsNone( res.eval() )
     self.assertEqual( "none", res.__str__() )
 
+  def test_function(self):
+    def func(a, b):
+      return a * b
+    l = locals()
+
+    exp = "func(3, 4)"
+    res = ccs.parse(exp, binding = l)
+    self.assertIsInstance( res, ccs.Expression.UserDefined )
+    self.assertEqual( 12, res.eval() )
+    self.assertEqual( "func(3, 4)", res.__str__() )
+
+    def get_vector_data(otype, name):
+      self.assertEqual( ccs.ObjectType.EXPRESSION, otype )
+      return ccs.Expression.get_function_vector_data(name, binding = l)
+
+    buff = res.serialize()
+    res_copy = ccs.deserialize(buffer = buff, vector_callback = get_vector_data)
+    self.assertEqual( "func(3, 4)", res_copy.__str__() )
+    self.assertEqual( 12, res_copy.eval() )
 
 if __name__ == '__main__':
     unittest.main()

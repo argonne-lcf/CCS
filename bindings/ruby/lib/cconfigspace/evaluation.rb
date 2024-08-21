@@ -5,7 +5,7 @@ module CCS
     :CCS_COMPARISON_WORSE, 1,
     :CCS_COMPARISON_NOT_COMPARABLE, 2
   ]
-  class MemoryPointer
+  module MemoryAccessor
     def read_ccs_comparison_t
       Comparison.from_native(read_int32, nil)
     end

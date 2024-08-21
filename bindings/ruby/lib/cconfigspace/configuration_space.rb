@@ -18,7 +18,7 @@ module CCS
     add_handle_array_property :forbidden_clauses, :ccs_expression_t, :ccs_configuration_space_get_forbidden_clauses, memoize: true
 
     def initialize(handle = nil, retain: false, auto_release: true,
-                   name: "", parameters: nil, conditions: nil, forbidden_clauses: nil, feature_space: nil, rng: nil)
+                   name: "", parameters: nil, conditions: nil, forbidden_clauses: nil, feature_space: nil, rng: nil, binding: nil)
       if handle
         super(handle, retain: retain, auto_release: auto_release)
       else
@@ -32,8 +32,7 @@ module CCS
         ctx = ctx_params.map { |p| [p.name, p] }.to_h
 
         if forbidden_clauses
-          p = ExpressionParser::new(ctx)
-          forbidden_clauses = forbidden_clauses.collect { |e| e.kind_of?(String) ? p.parse(e) : e }
+          forbidden_clauses = forbidden_clauses.collect { |e| e.kind_of?(String) ? CCS.parse(e, context: ctx, binding: binding) : e }
           fccount = forbidden_clauses.size
           fcptr = MemoryPointer::new(:ccs_expression_t, fccount)
           fcptr.write_array_of_pointer(forbidden_clauses.collect(&:handle))
@@ -44,8 +43,7 @@ module CCS
 
         if conditions
           indexdict = parameters.each_with_index.to_h
-          p = ExpressionParser::new(ctx)
-          conditions = conditions.transform_values { |v| v.kind_of?(String) ? p.parse(v) : v }
+          conditions = conditions.transform_values { |v| v.kind_of?(String) ? CCS.parse(v, context: ctx, binding: binding) : v }
           cond_handles = [0]*count
           conditions.each do |k, v|
             index = case k

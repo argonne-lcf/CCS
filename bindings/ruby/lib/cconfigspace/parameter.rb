@@ -14,7 +14,7 @@ module CCS
     :CCS_PARAMETER_TYPE_DISCRETE,
     :CCS_PARAMETER_TYPE_STRING
   ]
-  class MemoryPointer
+  module MemoryAccessor
     def read_ccs_parameter_type_t
       ParameterType.from_native(read_int32, nil)
     end

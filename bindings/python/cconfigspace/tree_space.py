@@ -166,7 +166,7 @@ TreeSpace.Static = StaticTreeSpace
 ccs_dynamic_tree_space_del_type = ct.CFUNCTYPE(Result, ccs_tree_space)
 ccs_dynamic_tree_space_get_child_type = ct.CFUNCTYPE(Result, ccs_tree_space, ccs_tree, ct.c_size_t, ct.POINTER(ccs_tree))
 ccs_dynamic_tree_space_serialize_type = ct.CFUNCTYPE(Result, ccs_tree_space, ct.c_size_t, ct.c_void_p, ct.POINTER(ct.c_size_t))
-ccs_dynamic_tree_space_deserialize_type = ct.CFUNCTYPE(Result, ccs_tree, ccs_feature_space, ct.c_size_t, ct.c_void_p, ct.POINTER(ct.c_void_p))
+ccs_dynamic_tree_space_deserialize_type = ct.CFUNCTYPE(Result, ccs_tree, ccs_feature_space, ct.c_size_t, ct.c_void_p, ct.POINTER(ct.py_object))
 
 class DynamicTreeSpaceVector(ct.Structure):
   _fields_ = [
@@ -252,15 +252,13 @@ class DynamicTreeSpace(TreeSpace):
     if serialize is not None:
       def serialize_wrapper(ts, state_size, p_state, p_state_size):
         try:
-          ts = ct.cast(ts, ccs_tree_space)
-          p_s = ct.cast(p_state, ct.c_void_p)
-          p_sz = ct.cast(p_state_size, ct.c_void_p)
-          state = serialize(TreeSpace.from_handle(ts), True if state_size == 0 else False)
-          if p_s.value is not None and state_size < ct.sizeof(state):
+          serialized = serialize(TreeSpace.from_handle(ts))
+          state = ct.create_string_buffer(serialized, len(serialized))
+          if p_state and state_size < ct.sizeof(state):
             raise Error(Result(Result.ERROR_INVALID_VALUE))
-          if p_s.value is not None:
-            ct.memmove(p_s, ct.byref(state), ct.sizeof(state))
-          if p_sz.value is not None:
+          if p_state:
+            ct.memmove(p_state, ct.byref(state), ct.sizeof(state))
+          if p_state_size:
             p_state_size[0] = ct.sizeof(state)
           return Result.SUCCESS
         except Exception as e:
@@ -271,16 +269,9 @@ class DynamicTreeSpace(TreeSpace):
     if deserialize is not None:
       def deserialize_wrapper(tree, feature_space, state_size, p_state, p_tree_space_data):
         try:
-          t = ct.cast(tree, ccs_tree)
-          p_s = ct.cast(p_state, ct.c_void_p)
-          p_t = ct.cast(p_tree_space_data, ct.c_void_p)
-          if p_s.value is None:
-            state = None
-          else:
-            state = ct.cast(p_s, POINTER(c_byte * state_size))
-          tree_space_data = deserialize(Tree.from_handle(t), FeatureSpace.from_handle(feature_space) if feature_space else None, state)
+          tree_space_data = deserialize(Tree.from_handle(tree), FeatureSpace.from_handle(feature_space) if feature_space else None, ct.string_at(p_state, state_size))
           c_tree_space_data = ct.py_object(tree_space_data)
-          p_t[0] = c_tree_space_data
+          p_tree_space_data[0] = c_tree_space_data
           ct.pythonapi.Py_IncRef(c_tree_space_data)
           return Result.SUCCESS
         except Exception as e:

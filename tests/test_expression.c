@@ -3,6 +3,7 @@
 #include <cconfigspace.h>
 #include <string.h>
 #include <math.h>
+#include <gsl/gsl_rng.h>
 
 double d = -2.0;
 
@@ -1237,6 +1238,161 @@ test_deserialize(void)
 	free(buff);
 }
 
+static ccs_result_t
+my_del(ccs_expression_t expression)
+{
+	ccs_result_t res;
+	void        *data;
+	res = ccs_user_defined_expression_get_expression_data(
+		expression, &data);
+	assert(res == CCS_RESULT_SUCCESS);
+	gsl_rng_free((gsl_rng *)data);
+	return CCS_RESULT_SUCCESS;
+}
+
+static ccs_result_t
+my_eval(ccs_expression_t expression,
+	size_t           num_values,
+	ccs_datum_t     *values,
+	ccs_datum_t     *value_ret)
+{
+	ccs_result_t res;
+	void        *data;
+	assert(num_values == 1);
+	assert(values);
+	assert(value_ret);
+	res = ccs_user_defined_expression_get_expression_data(
+		expression, &data);
+	assert(res == CCS_RESULT_SUCCESS);
+	*value_ret = ccs_int(
+		gsl_rng_uniform_int((gsl_rng *)data, values[0].value.i));
+	return CCS_RESULT_SUCCESS;
+}
+
+static ccs_result_t
+my_serialize_user_state(
+	ccs_expression_t expression,
+	size_t           sate_size,
+	void            *state,
+	size_t          *state_size_ret)
+{
+	ccs_result_t res;
+	void        *data;
+	assert(state || state_size_ret);
+	res = ccs_user_defined_expression_get_expression_data(
+		expression, &data);
+	assert(res == CCS_RESULT_SUCCESS);
+	size_t sz     = gsl_rng_size((gsl_rng *)data);
+	void  *pstate = gsl_rng_state((gsl_rng *)data);
+	if (state_size_ret)
+		*state_size_ret = sz;
+	if (state) {
+		assert(sate_size >= sz);
+		memcpy(state, pstate, sz);
+	}
+	return CCS_RESULT_SUCCESS;
+}
+
+static ccs_result_t
+my_deserialize_state(
+	size_t      state_size,
+	const void *state,
+	void      **expression_data_ret)
+{
+	assert(state);
+	assert(expression_data_ret);
+	gsl_rng *grng = gsl_rng_alloc(gsl_rng_mt19937);
+	assert(grng);
+	memcpy(gsl_rng_state(grng), state, state_size);
+	*expression_data_ret = (void *)grng;
+	return CCS_RESULT_SUCCESS;
+}
+
+static ccs_user_defined_expression_vector_t my_vector = {
+	&my_del, &my_eval, &my_serialize_user_state, &my_deserialize_state};
+
+ccs_result_t
+deserialize_vector_callback(
+	ccs_object_type_t type,
+	const char       *name,
+	void             *callback_user_data,
+	void            **vector_ret,
+	void            **data_ret)
+{
+	assert(callback_user_data == NULL);
+	assert(type == CCS_OBJECT_TYPE_EXPRESSION);
+	assert(!strcmp(name, "my_rand"));
+	assert(data_ret);
+	assert(vector_ret);
+	*vector_ret = (void *)&my_vector;
+	*data_ret   = NULL;
+	return CCS_RESULT_SUCCESS;
+}
+
+void
+test_user_defined(void)
+{
+	ccs_datum_t      limit = ccs_int(10);
+	ccs_datum_t      result, result_copy;
+	ccs_result_t     err;
+	ccs_expression_t expression, expression_copy;
+	gsl_rng         *grng;
+	char            *buff;
+	size_t           buff_size;
+
+	grng = gsl_rng_alloc(gsl_rng_mt19937);
+	assert(grng);
+
+	err = ccs_create_user_defined_expression(
+		"my_rand", 1, &limit, &my_vector, (void *)grng, &expression);
+	assert(err == CCS_RESULT_SUCCESS);
+	for (size_t i = 0; i < 100; i++) {
+		err = ccs_expression_eval(expression, 0, NULL, &result);
+		assert(err == CCS_RESULT_SUCCESS);
+		assert(result.type == CCS_DATA_TYPE_INT);
+		assert(result.value.i >= 0);
+		assert(result.value.i < limit.value.i);
+	}
+
+	err = ccs_object_serialize(
+		expression, CCS_SERIALIZE_FORMAT_BINARY,
+		CCS_SERIALIZE_OPERATION_SIZE, &buff_size,
+		CCS_SERIALIZE_OPTION_END);
+	assert(err == CCS_RESULT_SUCCESS);
+	buff = (char *)malloc(buff_size);
+	assert(buff);
+
+	err = ccs_object_serialize(
+		expression, CCS_SERIALIZE_FORMAT_BINARY,
+		CCS_SERIALIZE_OPERATION_MEMORY, buff_size, buff,
+		CCS_SERIALIZE_OPTION_END);
+	assert(err == CCS_RESULT_SUCCESS);
+
+	err = ccs_object_deserialize(
+		(ccs_object_t *)&expression_copy, CCS_SERIALIZE_FORMAT_BINARY,
+		CCS_SERIALIZE_OPERATION_MEMORY, buff_size, buff,
+		CCS_DESERIALIZE_OPTION_VECTOR_CALLBACK,
+		&deserialize_vector_callback, (void *)NULL,
+		CCS_DESERIALIZE_OPTION_END);
+	assert(err == CCS_RESULT_SUCCESS);
+
+	for (size_t i = 0; i < 100; i++) {
+		err = ccs_expression_eval(expression, 0, NULL, &result);
+		assert(err == CCS_RESULT_SUCCESS);
+		err = ccs_expression_eval(
+			expression_copy, 0, NULL, &result_copy);
+		assert(err == CCS_RESULT_SUCCESS);
+		assert(result.type == result_copy.type);
+		assert(result.value.i == result_copy.value.i);
+	}
+
+	free(buff);
+	err = ccs_release_object(expression_copy);
+	assert(err == CCS_RESULT_SUCCESS);
+	err = ccs_release_object(expression);
+	assert(err == CCS_RESULT_SUCCESS);
+}
+
 int
 main(void)
 {
@@ -1259,6 +1415,7 @@ main(void)
 	test_arithmetic_greater();
 	test_arithmetic_less_or_equal();
 	test_arithmetic_greater_or_equal();
+	test_user_defined();
 	test_compound();
 	test_in();
 	test_get_parameters();

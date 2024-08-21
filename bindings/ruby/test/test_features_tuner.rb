@@ -125,10 +125,9 @@ class CConfigSpaceTestFeaturesTuner < Minitest::Test
         optis.sample.configuration
       end
     }
-    get_vector_data = lambda { |otype, name, cb_data|
+    get_vector_data = lambda { |otype, name|
       assert_equal(:CCS_OBJECT_TYPE_TUNER, otype)
       assert_equal("tuner", name)
-      assert_nil(cb_data)
       [CCS::UserDefinedTuner.get_vector(del: del, ask: ask, tell: tell, get_optima: get_optima, get_history: get_history, suggest: suggest), TunerData.new]
     }
 

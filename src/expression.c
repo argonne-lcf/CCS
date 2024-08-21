@@ -16,7 +16,8 @@ const int ccs_expression_precedence[] = {
 	6, 6, 6,
 	7,
 	8,
-	9, 9
+	9, 9,
+	9
 };
 
 const ccs_associativity_type_t ccs_expression_associativity[] = {
@@ -29,7 +30,8 @@ const ccs_associativity_type_t ccs_expression_associativity[] = {
 	CCS_ASSOCIATIVITY_TYPE_RIGHT_TO_LEFT, CCS_ASSOCIATIVITY_TYPE_RIGHT_TO_LEFT, CCS_ASSOCIATIVITY_TYPE_RIGHT_TO_LEFT,
 	CCS_ASSOCIATIVITY_TYPE_LEFT_TO_RIGHT,
 	CCS_ASSOCIATIVITY_TYPE_LEFT_TO_RIGHT,
-	CCS_ASSOCIATIVITY_TYPE_NONE, CCS_ASSOCIATIVITY_TYPE_NONE
+	CCS_ASSOCIATIVITY_TYPE_NONE, CCS_ASSOCIATIVITY_TYPE_NONE,
+	CCS_ASSOCIATIVITY_TYPE_NONE,
 };
 
 const char *ccs_expression_symbols[] = {
@@ -42,7 +44,8 @@ const char *ccs_expression_symbols[] = {
 	"+", "-", "!",
 	"#",
 	NULL,
-	NULL, NULL
+	NULL, NULL,
+	NULL,
 };
 
 const int ccs_expression_arity[] = {
@@ -55,7 +58,8 @@ const int ccs_expression_arity[] = {
 	1, 1, 1,
 	2,
 	-1,
-	0, 0
+	0, 0,
+	-1
 };
 
 const int ccs_terminal_precedence[] = {
@@ -93,8 +97,8 @@ ccs_expression_get_ops(ccs_expression_t expression)
 static ccs_result_t
 _ccs_expression_del(ccs_object_t o)
 {
-	ccs_expression_t        d    = (ccs_expression_t)o;
-	_ccs_expression_data_t *data = d->data;
+	ccs_expression_t        e    = (ccs_expression_t)o;
+	_ccs_expression_data_t *data = e->data;
 	for (size_t i = 0; i < data->num_nodes; i++)
 		ccs_release_object(data->nodes[i]);
 	return CCS_RESULT_SUCCESS;
@@ -205,7 +209,7 @@ _ccs_expression_serialize(
 	do {                                                                   \
 		_ccs_expression_ops_t *ops =                                   \
 			ccs_expression_get_ops(expression);                    \
-		CCS_VALIDATE(ops->eval(expression->data, expr_ctx, result));   \
+		CCS_VALIDATE(ops->eval(expression, expr_ctx, result));         \
 	} while (0)
 
 static inline ccs_result_t
@@ -248,20 +252,14 @@ _ccs_expr_node_eval(
 
 static ccs_result_t
 _ccs_expr_or_eval(
-	_ccs_expression_data_t *data,
-	_ccs_expr_ctx_t        *expr_ctx,
-	ccs_datum_t            *result)
+	ccs_expression_t e,
+	_ccs_expr_ctx_t *expr_ctx,
+	ccs_datum_t     *result)
 {
-	ccs_datum_t left;
-	ccs_datum_t right;
-	// avoid inactive branch suppressing a parameter parameter
-	// if the other branch is valid.
-	// TODO: use EVAL_LEFT_RIGHT(data, num_bindings, bindings, left, right,
-	// NULL, NULL);
-	CCS_VALIDATE(
-		_ccs_expr_node_eval(data->nodes[0], expr_ctx, &left, NULL));
-	CCS_VALIDATE(
-		_ccs_expr_node_eval(data->nodes[1], expr_ctx, &right, NULL));
+	_ccs_expression_data_t *data = e->data;
+	ccs_datum_t             left, right;
+
+	EVAL_LEFT_RIGHT(data, expr_ctx, left, right, NULL, NULL);
 	CCS_REFUTE(
 		left.type != CCS_DATA_TYPE_BOOL &&
 			left.type != CCS_DATA_TYPE_INACTIVE,
@@ -291,12 +289,13 @@ static _ccs_expression_ops_t _ccs_expr_or_ops = {
 
 static ccs_result_t
 _ccs_expr_and_eval(
-	_ccs_expression_data_t *data,
-	_ccs_expr_ctx_t        *expr_ctx,
-	ccs_datum_t            *result)
+	ccs_expression_t e,
+	_ccs_expr_ctx_t *expr_ctx,
+	ccs_datum_t     *result)
 {
-	ccs_datum_t left;
-	ccs_datum_t right;
+	_ccs_expression_data_t *data = e->data;
+	ccs_datum_t             left, right;
+
 	EVAL_LEFT_RIGHT(data, expr_ctx, left, right, NULL, NULL);
 	RETURN_IF_INACTIVE(left, result);
 	RETURN_IF_INACTIVE(right, result);
@@ -432,14 +431,14 @@ _ccs_datum_cmp_generic(ccs_datum_t *a, ccs_datum_t *b, ccs_int_t *cmp)
 
 static ccs_result_t
 _ccs_expr_equal_eval(
-	_ccs_expression_data_t *data,
-	_ccs_expr_ctx_t        *expr_ctx,
-	ccs_datum_t            *result)
+	ccs_expression_t e,
+	_ccs_expr_ctx_t *expr_ctx,
+	ccs_datum_t     *result)
 {
-	ccs_datum_t          left;
-	ccs_datum_t          right;
-	ccs_parameter_type_t htl = CCS_PARAMETER_TYPE_MAX;
-	ccs_parameter_type_t htr = CCS_PARAMETER_TYPE_MAX;
+	_ccs_expression_data_t *data = e->data;
+	ccs_datum_t             left, right;
+	ccs_parameter_type_t    htl = CCS_PARAMETER_TYPE_MAX;
+	ccs_parameter_type_t    htr = CCS_PARAMETER_TYPE_MAX;
 
 	EVAL_LEFT_RIGHT(data, expr_ctx, left, right, &htl, &htr);
 	RETURN_IF_INACTIVE(left, result);
@@ -466,14 +465,14 @@ static _ccs_expression_ops_t _ccs_expr_equal_ops = {
 
 static ccs_result_t
 _ccs_expr_not_equal_eval(
-	_ccs_expression_data_t *data,
-	_ccs_expr_ctx_t        *expr_ctx,
-	ccs_datum_t            *result)
+	ccs_expression_t e,
+	_ccs_expr_ctx_t *expr_ctx,
+	ccs_datum_t     *result)
 {
-	ccs_datum_t          left;
-	ccs_datum_t          right;
-	ccs_parameter_type_t htl = CCS_PARAMETER_TYPE_MAX;
-	ccs_parameter_type_t htr = CCS_PARAMETER_TYPE_MAX;
+	_ccs_expression_data_t *data = e->data;
+	ccs_datum_t             left, right;
+	ccs_parameter_type_t    htl = CCS_PARAMETER_TYPE_MAX;
+	ccs_parameter_type_t    htr = CCS_PARAMETER_TYPE_MAX;
 
 	EVAL_LEFT_RIGHT(data, expr_ctx, left, right, &htl, &htr);
 	RETURN_IF_INACTIVE(left, result);
@@ -500,14 +499,14 @@ static _ccs_expression_ops_t _ccs_expr_not_equal_ops = {
 
 static ccs_result_t
 _ccs_expr_less_eval(
-	_ccs_expression_data_t *data,
-	_ccs_expr_ctx_t        *expr_ctx,
-	ccs_datum_t            *result)
+	ccs_expression_t e,
+	_ccs_expr_ctx_t *expr_ctx,
+	ccs_datum_t     *result)
 {
-	ccs_datum_t          left;
-	ccs_datum_t          right;
-	ccs_parameter_type_t htl = CCS_PARAMETER_TYPE_MAX;
-	ccs_parameter_type_t htr = CCS_PARAMETER_TYPE_MAX;
+	_ccs_expression_data_t *data = e->data;
+	ccs_datum_t             left, right;
+	ccs_parameter_type_t    htl = CCS_PARAMETER_TYPE_MAX;
+	ccs_parameter_type_t    htr = CCS_PARAMETER_TYPE_MAX;
 
 	EVAL_LEFT_RIGHT(data, expr_ctx, left, right, &htl, &htr);
 	CCS_REFUTE(
@@ -549,14 +548,14 @@ static _ccs_expression_ops_t _ccs_expr_less_ops = {
 
 static ccs_result_t
 _ccs_expr_greater_eval(
-	_ccs_expression_data_t *data,
-	_ccs_expr_ctx_t        *expr_ctx,
-	ccs_datum_t            *result)
+	ccs_expression_t e,
+	_ccs_expr_ctx_t *expr_ctx,
+	ccs_datum_t     *result)
 {
-	ccs_datum_t          left;
-	ccs_datum_t          right;
-	ccs_parameter_type_t htl = CCS_PARAMETER_TYPE_MAX;
-	ccs_parameter_type_t htr = CCS_PARAMETER_TYPE_MAX;
+	_ccs_expression_data_t *data = e->data;
+	ccs_datum_t             left, right;
+	ccs_parameter_type_t    htl = CCS_PARAMETER_TYPE_MAX;
+	ccs_parameter_type_t    htr = CCS_PARAMETER_TYPE_MAX;
 
 	EVAL_LEFT_RIGHT(data, expr_ctx, left, right, &htl, &htr);
 	CCS_REFUTE(
@@ -598,14 +597,14 @@ static _ccs_expression_ops_t _ccs_expr_greater_ops = {
 
 static ccs_result_t
 _ccs_expr_less_or_equal_eval(
-	_ccs_expression_data_t *data,
-	_ccs_expr_ctx_t        *expr_ctx,
-	ccs_datum_t            *result)
+	ccs_expression_t e,
+	_ccs_expr_ctx_t *expr_ctx,
+	ccs_datum_t     *result)
 {
-	ccs_datum_t          left;
-	ccs_datum_t          right;
-	ccs_parameter_type_t htl = CCS_PARAMETER_TYPE_MAX;
-	ccs_parameter_type_t htr = CCS_PARAMETER_TYPE_MAX;
+	_ccs_expression_data_t *data = e->data;
+	ccs_datum_t             left, right;
+	ccs_parameter_type_t    htl = CCS_PARAMETER_TYPE_MAX;
+	ccs_parameter_type_t    htr = CCS_PARAMETER_TYPE_MAX;
 
 	EVAL_LEFT_RIGHT(data, expr_ctx, left, right, &htl, &htr);
 	CCS_REFUTE(
@@ -647,14 +646,14 @@ static _ccs_expression_ops_t _ccs_expr_less_or_equal_ops = {
 
 static ccs_result_t
 _ccs_expr_greater_or_equal_eval(
-	_ccs_expression_data_t *data,
-	_ccs_expr_ctx_t        *expr_ctx,
-	ccs_datum_t            *result)
+	ccs_expression_t e,
+	_ccs_expr_ctx_t *expr_ctx,
+	ccs_datum_t     *result)
 {
-	ccs_datum_t          left;
-	ccs_datum_t          right;
-	ccs_parameter_type_t htl = CCS_PARAMETER_TYPE_MAX;
-	ccs_parameter_type_t htr = CCS_PARAMETER_TYPE_MAX;
+	_ccs_expression_data_t *data = e->data;
+	ccs_datum_t             left, right;
+	ccs_parameter_type_t    htl = CCS_PARAMETER_TYPE_MAX;
+	ccs_parameter_type_t    htr = CCS_PARAMETER_TYPE_MAX;
 
 	EVAL_LEFT_RIGHT(data, expr_ctx, left, right, &htl, &htr);
 	CCS_REFUTE(
@@ -703,11 +702,12 @@ _ccs_expression_list_eval_node(
 
 static ccs_result_t
 _ccs_expr_in_eval(
-	_ccs_expression_data_t *data,
-	_ccs_expr_ctx_t        *expr_ctx,
-	ccs_datum_t            *result)
+	ccs_expression_t e,
+	_ccs_expr_ctx_t *expr_ctx,
+	ccs_datum_t     *result)
 {
-	ccs_expression_type_t etype = CCS_EXPR_TYPE(data->nodes[1]);
+	_ccs_expression_data_t *data  = e->data;
+	ccs_expression_type_t   etype = CCS_EXPR_TYPE(data->nodes[1]);
 	CCS_REFUTE(
 		etype != CCS_EXPRESSION_TYPE_LIST,
 		CCS_RESULT_ERROR_INVALID_VALUE);
@@ -746,12 +746,13 @@ static _ccs_expression_ops_t _ccs_expr_in_ops = {
 
 static ccs_result_t
 _ccs_expr_add_eval(
-	_ccs_expression_data_t *data,
-	_ccs_expr_ctx_t        *expr_ctx,
-	ccs_datum_t            *result)
+	ccs_expression_t e,
+	_ccs_expr_ctx_t *expr_ctx,
+	ccs_datum_t     *result)
 {
-	ccs_datum_t left;
-	ccs_datum_t right;
+	_ccs_expression_data_t *data = e->data;
+	ccs_datum_t             left, right;
+
 	EVAL_LEFT_RIGHT(data, expr_ctx, left, right, NULL, NULL);
 	RETURN_IF_INACTIVE(left, result);
 	RETURN_IF_INACTIVE(right, result);
@@ -784,12 +785,13 @@ static _ccs_expression_ops_t _ccs_expr_add_ops = {
 
 static ccs_result_t
 _ccs_expr_substract_eval(
-	_ccs_expression_data_t *data,
-	_ccs_expr_ctx_t        *expr_ctx,
-	ccs_datum_t            *result)
+	ccs_expression_t e,
+	_ccs_expr_ctx_t *expr_ctx,
+	ccs_datum_t     *result)
 {
-	ccs_datum_t left;
-	ccs_datum_t right;
+	_ccs_expression_data_t *data = e->data;
+	ccs_datum_t             left, right;
+
 	EVAL_LEFT_RIGHT(data, expr_ctx, left, right, NULL, NULL);
 	RETURN_IF_INACTIVE(left, result);
 	RETURN_IF_INACTIVE(right, result);
@@ -822,12 +824,13 @@ static _ccs_expression_ops_t _ccs_expr_substract_ops = {
 
 static ccs_result_t
 _ccs_expr_multiply_eval(
-	_ccs_expression_data_t *data,
-	_ccs_expr_ctx_t        *expr_ctx,
-	ccs_datum_t            *result)
+	ccs_expression_t e,
+	_ccs_expr_ctx_t *expr_ctx,
+	ccs_datum_t     *result)
 {
-	ccs_datum_t left;
-	ccs_datum_t right;
+	_ccs_expression_data_t *data = e->data;
+	ccs_datum_t             left, right;
+
 	EVAL_LEFT_RIGHT(data, expr_ctx, left, right, NULL, NULL);
 	RETURN_IF_INACTIVE(left, result);
 	RETURN_IF_INACTIVE(right, result);
@@ -860,12 +863,13 @@ static _ccs_expression_ops_t _ccs_expr_multiply_ops = {
 
 static ccs_result_t
 _ccs_expr_divide_eval(
-	_ccs_expression_data_t *data,
-	_ccs_expr_ctx_t        *expr_ctx,
-	ccs_datum_t            *result)
+	ccs_expression_t e,
+	_ccs_expr_ctx_t *expr_ctx,
+	ccs_datum_t     *result)
 {
-	ccs_datum_t left;
-	ccs_datum_t right;
+	_ccs_expression_data_t *data = e->data;
+	ccs_datum_t             left, right;
+
 	EVAL_LEFT_RIGHT(data, expr_ctx, left, right, NULL, NULL);
 	RETURN_IF_INACTIVE(left, result);
 	RETURN_IF_INACTIVE(right, result);
@@ -910,12 +914,13 @@ static _ccs_expression_ops_t _ccs_expr_divide_ops = {
 
 static ccs_result_t
 _ccs_expr_modulo_eval(
-	_ccs_expression_data_t *data,
-	_ccs_expr_ctx_t        *expr_ctx,
-	ccs_datum_t            *result)
+	ccs_expression_t e,
+	_ccs_expr_ctx_t *expr_ctx,
+	ccs_datum_t     *result)
 {
-	ccs_datum_t left;
-	ccs_datum_t right;
+	_ccs_expression_data_t *data = e->data;
+	ccs_datum_t             left, right;
+
 	EVAL_LEFT_RIGHT(data, expr_ctx, left, right, NULL, NULL);
 	RETURN_IF_INACTIVE(left, result);
 	RETURN_IF_INACTIVE(right, result);
@@ -960,11 +965,13 @@ static _ccs_expression_ops_t _ccs_expr_modulo_ops = {
 
 static ccs_result_t
 _ccs_expr_positive_eval(
-	_ccs_expression_data_t *data,
-	_ccs_expr_ctx_t        *expr_ctx,
-	ccs_datum_t            *result)
+	ccs_expression_t e,
+	_ccs_expr_ctx_t *expr_ctx,
+	ccs_datum_t     *result)
 {
-	ccs_datum_t node;
+	_ccs_expression_data_t *data = e->data;
+	ccs_datum_t             node;
+
 	EVAL_NODE(data, expr_ctx, node, NULL);
 	RETURN_IF_INACTIVE(node, result);
 	CCS_REFUTE(
@@ -982,11 +989,13 @@ static _ccs_expression_ops_t _ccs_expr_positive_ops = {
 
 static ccs_result_t
 _ccs_expr_negative_eval(
-	_ccs_expression_data_t *data,
-	_ccs_expr_ctx_t        *expr_ctx,
-	ccs_datum_t            *result)
+	ccs_expression_t e,
+	_ccs_expr_ctx_t *expr_ctx,
+	ccs_datum_t     *result)
 {
-	ccs_datum_t node;
+	_ccs_expression_data_t *data = e->data;
+	ccs_datum_t             node;
+
 	EVAL_NODE(data, expr_ctx, node, NULL);
 	RETURN_IF_INACTIVE(node, result);
 	CCS_REFUTE(
@@ -1008,11 +1017,13 @@ static _ccs_expression_ops_t _ccs_expr_negative_ops = {
 
 static ccs_result_t
 _ccs_expr_not_eval(
-	_ccs_expression_data_t *data,
-	_ccs_expr_ctx_t        *expr_ctx,
-	ccs_datum_t            *result)
+	ccs_expression_t e,
+	_ccs_expr_ctx_t *expr_ctx,
+	ccs_datum_t     *result)
 {
-	ccs_datum_t node;
+	_ccs_expression_data_t *data = e->data;
+	ccs_datum_t             node;
+
 	EVAL_NODE(data, expr_ctx, node, NULL);
 	RETURN_IF_INACTIVE(node, result);
 	CCS_REFUTE(
@@ -1029,16 +1040,16 @@ static _ccs_expression_ops_t _ccs_expr_not_ops = {
 
 static ccs_result_t
 _ccs_expr_list_eval(
-	_ccs_expression_data_t *data,
-	_ccs_expr_ctx_t        *expr_ctx,
-	ccs_datum_t            *result)
+	ccs_expression_t e,
+	_ccs_expr_ctx_t *expr_ctx,
+	ccs_datum_t     *result)
 {
-	(void)data;
+	(void)e;
 	(void)expr_ctx;
 	(void)result;
 	CCS_RAISE(
 		CCS_RESULT_ERROR_UNSUPPORTED_OPERATION,
-		"Lists cannot be avaluated");
+		"Lists cannot be evaluated");
 }
 
 static _ccs_expression_ops_t _ccs_expr_list_ops = {
@@ -1142,13 +1153,15 @@ _ccs_expression_literal_serialize(
 
 static ccs_result_t
 _ccs_expr_literal_eval(
-	_ccs_expression_data_t *data,
-	_ccs_expr_ctx_t        *expr_ctx,
-	ccs_datum_t            *result)
+	ccs_expression_t e,
+	_ccs_expr_ctx_t *expr_ctx,
+	ccs_datum_t     *result)
 {
 	(void)expr_ctx;
+	_ccs_expression_data_t         *data = e->data;
 	_ccs_expression_literal_data_t *d =
 		(_ccs_expression_literal_data_t *)data;
+
 	*result = d->value;
 	return CCS_RESULT_SUCCESS;
 }
@@ -1263,15 +1276,17 @@ _ccs_expression_variable_serialize(
 
 static ccs_result_t
 _ccs_expr_variable_eval(
-	_ccs_expression_data_t *data,
-	_ccs_expr_ctx_t        *expr_ctx,
-	ccs_datum_t            *result)
+	ccs_expression_t e,
+	_ccs_expr_ctx_t *expr_ctx,
+	ccs_datum_t     *result)
 {
+	_ccs_expression_data_t          *data = e->data;
 	_ccs_expression_variable_data_t *d =
 		(_ccs_expression_variable_data_t *)data;
 	size_t         num_bindings = expr_ctx->num_bindings;
 	ccs_binding_t *bindings     = expr_ctx->bindings;
 	ccs_bool_t     found        = CCS_FALSE;
+
 	CCS_REFUTE(!num_bindings, CCS_RESULT_ERROR_INVALID_OBJECT);
 	for (size_t i = 0; i < num_bindings; i++) {
 		CCS_VALIDATE(ccs_binding_get_value_by_parameter(
@@ -1288,6 +1303,141 @@ static _ccs_expression_ops_t _ccs_expr_variable_ops = {
 	{&_ccs_expr_variable_del, &_ccs_expression_variable_serialize_size,
 	 &_ccs_expression_variable_serialize},
 	&_ccs_expr_variable_eval};
+
+static ccs_result_t
+_ccs_expr_user_defined_del(ccs_object_t o)
+{
+	_ccs_expression_user_defined_data_t *d =
+		(_ccs_expression_user_defined_data_t *)((ccs_expression_t)o)
+			->data;
+
+	ccs_result_t err;
+	err = d->vector.del((ccs_expression_t)o);
+	for (size_t i = 0; i < d->expr.num_nodes; i++)
+		ccs_release_object(d->expr.nodes[i]);
+	return err;
+}
+
+static inline ccs_result_t
+_ccs_serialize_bin_size_ccs_expression_user_defined(
+	ccs_expression_t                 expression,
+	size_t                          *cum_size,
+	_ccs_object_serialize_options_t *opts)
+{
+	_ccs_expression_user_defined_data_t *data =
+		(_ccs_expression_user_defined_data_t *)(expression->data);
+	CCS_VALIDATE(_ccs_serialize_bin_size_ccs_expression_data(
+		&data->expr, cum_size, opts));
+	*cum_size += _ccs_serialize_bin_size_string(data->name);
+	size_t state_size = 0;
+	if (data->vector.serialize_user_state)
+		CCS_VALIDATE(data->vector.serialize_user_state(
+			expression, 0, NULL, &state_size));
+	*cum_size += _ccs_serialize_bin_size_size(state_size);
+	*cum_size += state_size;
+	return CCS_RESULT_SUCCESS;
+}
+
+static inline ccs_result_t
+_ccs_serialize_bin_ccs_expression_user_defined(
+	ccs_expression_t                 expression,
+	size_t                          *buffer_size,
+	char                           **buffer,
+	_ccs_object_serialize_options_t *opts)
+{
+	_ccs_expression_user_defined_data_t *data =
+		(_ccs_expression_user_defined_data_t *)(expression->data);
+	CCS_VALIDATE(_ccs_serialize_bin_ccs_expression_data(
+		&data->expr, buffer_size, buffer, opts));
+	CCS_VALIDATE(
+		_ccs_serialize_bin_string(data->name, buffer_size, buffer));
+	size_t state_size = 0;
+	if (data->vector.serialize_user_state)
+		CCS_VALIDATE(data->vector.serialize_user_state(
+			expression, 0, NULL, &state_size));
+	CCS_VALIDATE(_ccs_serialize_bin_size(state_size, buffer_size, buffer));
+	if (state_size) {
+		CCS_REFUTE(
+			*buffer_size < state_size,
+			CCS_RESULT_ERROR_NOT_ENOUGH_DATA);
+		CCS_VALIDATE(data->vector.serialize_user_state(
+			expression, state_size, *buffer, NULL));
+		*buffer_size -= state_size;
+		*buffer += state_size;
+	}
+	return CCS_RESULT_SUCCESS;
+}
+
+static ccs_result_t
+_ccs_expression_user_defined_serialize_size(
+	ccs_object_t                     object,
+	ccs_serialize_format_t           format,
+	size_t                          *cum_size,
+	_ccs_object_serialize_options_t *opts)
+{
+	switch (format) {
+	case CCS_SERIALIZE_FORMAT_BINARY:
+		CCS_VALIDATE(
+			_ccs_serialize_bin_size_ccs_expression_user_defined(
+				(ccs_expression_t)object, cum_size, opts));
+		break;
+	default:
+		CCS_RAISE(
+			CCS_RESULT_ERROR_INVALID_VALUE,
+			"Unsupported serialization format: %d", format);
+	}
+	return CCS_RESULT_SUCCESS;
+}
+
+static ccs_result_t
+_ccs_expression_user_defined_serialize(
+	ccs_object_t                     object,
+	ccs_serialize_format_t           format,
+	size_t                          *buffer_size,
+	char                           **buffer,
+	_ccs_object_serialize_options_t *opts)
+{
+	switch (format) {
+	case CCS_SERIALIZE_FORMAT_BINARY:
+		CCS_VALIDATE(_ccs_serialize_bin_ccs_expression_user_defined(
+			(ccs_expression_t)object, buffer_size, buffer, opts));
+		break;
+	default:
+		CCS_RAISE(
+			CCS_RESULT_ERROR_INVALID_VALUE,
+			"Unsupported serialization format: %d", format);
+	}
+	return CCS_RESULT_SUCCESS;
+}
+
+static ccs_result_t
+_ccs_expr_user_defined_eval(
+	ccs_expression_t e,
+	_ccs_expr_ctx_t *expr_ctx,
+	ccs_datum_t     *result)
+{
+	_ccs_expression_data_t              *data = e->data;
+	_ccs_expression_user_defined_data_t *d =
+		(_ccs_expression_user_defined_data_t *)data;
+	ccs_datum_t *values = NULL;
+
+	if (data->num_nodes)
+		values = (ccs_datum_t *)alloca(
+			sizeof(ccs_datum_t) * data->num_nodes);
+	for (size_t i = 0; i < data->num_nodes; i++) {
+		CCS_VALIDATE(_ccs_expr_node_eval(
+			data->nodes[i], expr_ctx, values + i, NULL));
+		RETURN_IF_INACTIVE(values[i], result);
+	}
+	CCS_VALIDATE(d->vector.eval(e, data->num_nodes, values, result));
+	return CCS_RESULT_SUCCESS;
+}
+
+static _ccs_expression_ops_t _ccs_expr_user_defined_ops = {
+	{&_ccs_expr_user_defined_del,
+	 &_ccs_expression_user_defined_serialize_size,
+	 &_ccs_expression_user_defined_serialize},
+	&_ccs_expr_user_defined_eval};
 
 static inline _ccs_expression_ops_t *
 _ccs_expression_ops_broker(ccs_expression_type_t expression_type)
@@ -1352,6 +1502,9 @@ _ccs_expression_ops_broker(ccs_expression_type_t expression_type)
 		break;
 	case CCS_EXPRESSION_TYPE_VARIABLE:
 		return &_ccs_expr_variable_ops;
+		break;
+	case CCS_EXPRESSION_TYPE_USER_DEFINED:
+		return &_ccs_expr_user_defined_ops;
 		break;
 	default:
 		return NULL;
@@ -1432,6 +1585,54 @@ errmem:
 	return err;
 }
 
+static inline ccs_result_t
+_ccs_validate_nodes(size_t num_nodes, ccs_datum_t *nodes)
+{
+	for (size_t i = 0; i < num_nodes; i++) {
+		if (nodes[i].type == CCS_DATA_TYPE_OBJECT) {
+			ccs_object_type_t object_type =
+				CCS_OBJ_TYPE(nodes[i].value.o);
+			CCS_REFUTE(
+				object_type != CCS_OBJECT_TYPE_PARAMETER &&
+					object_type !=
+						CCS_OBJECT_TYPE_EXPRESSION,
+				CCS_RESULT_ERROR_INVALID_VALUE);
+		} else
+			CCS_REFUTE(
+				nodes[i].type < CCS_DATA_TYPE_NONE ||
+					nodes[i].type > CCS_DATA_TYPE_STRING,
+				CCS_RESULT_ERROR_INVALID_VALUE);
+	}
+	return CCS_RESULT_SUCCESS;
+}
+
+static inline ccs_result_t
+_ccs_create_nodes(
+	size_t            num_nodes,
+	ccs_datum_t      *nodes,
+	ccs_expression_t *nodes_ret)
+{
+	for (size_t i = 0; i < num_nodes; i++) {
+		if (nodes[i].type == CCS_DATA_TYPE_OBJECT) {
+			ccs_object_type_t t = CCS_OBJ_TYPE(nodes[i].value.o);
+			if (t == CCS_OBJECT_TYPE_EXPRESSION) {
+				CCS_VALIDATE(
+					ccs_retain_object(nodes[i].value.o));
+				nodes_ret[i] =
+					(ccs_expression_t)nodes[i].value.o;
+			} else {
+				CCS_VALIDATE(ccs_create_variable(
+					(ccs_parameter_t)nodes[i].value.o,
+					nodes_ret + i));
+			}
+		} else {
+			CCS_VALIDATE(
+				ccs_create_literal(nodes[i], nodes_ret + i));
+		}
+	}
+	return CCS_RESULT_SUCCESS;
+}
+
 ccs_result_t
 ccs_create_expression(
 	ccs_expression_type_t type,
@@ -1449,27 +1650,13 @@ ccs_create_expression(
 	CCS_REFUTE(
 		arity >= 0 && num_nodes != (size_t)arity,
 		CCS_RESULT_ERROR_INVALID_VALUE);
-	ccs_result_t err;
-	for (size_t i = 0; i < num_nodes; i++) {
-		if (nodes[i].type == CCS_DATA_TYPE_OBJECT) {
-			ccs_object_type_t object_type =
-				CCS_OBJ_TYPE(nodes[i].value.o);
-			CCS_REFUTE(
-				object_type != CCS_OBJECT_TYPE_PARAMETER &&
-					object_type !=
-						CCS_OBJECT_TYPE_EXPRESSION,
-				CCS_RESULT_ERROR_INVALID_VALUE);
-		} else
-			CCS_REFUTE(
-				nodes[i].type < CCS_DATA_TYPE_NONE ||
-					nodes[i].type > CCS_DATA_TYPE_STRING,
-				CCS_RESULT_ERROR_INVALID_VALUE);
-	}
+	CCS_VALIDATE(_ccs_validate_nodes(num_nodes, nodes));
 
-	uintptr_t mem = (uintptr_t)calloc(
-		1, sizeof(struct _ccs_expression_s) +
-			   sizeof(struct _ccs_expression_data_s) +
-			   num_nodes * sizeof(ccs_expression_t));
+	ccs_result_t err;
+	uintptr_t    mem = (uintptr_t)calloc(
+                1, sizeof(struct _ccs_expression_s) +
+                           sizeof(struct _ccs_expression_data_s) +
+                           num_nodes * sizeof(ccs_expression_t));
 	CCS_REFUTE(!mem, CCS_RESULT_ERROR_OUT_OF_MEMORY);
 
 	ccs_expression_t expression = (ccs_expression_t)mem;
@@ -1484,33 +1671,10 @@ ccs_create_expression(
 	expression_data->nodes =
 		(ccs_expression_t
 			 *)(mem + sizeof(struct _ccs_expression_s) + sizeof(struct _ccs_expression_data_s));
-	for (size_t i = 0; i < num_nodes; i++) {
-		if (nodes[i].type == CCS_DATA_TYPE_OBJECT) {
-			ccs_object_type_t t = CCS_OBJ_TYPE(nodes[i].value.o);
-			if (t == CCS_OBJECT_TYPE_EXPRESSION) {
-				CCS_VALIDATE_ERR_GOTO(
-					err,
-					ccs_retain_object(nodes[i].value.o),
-					cleanup);
-				expression_data->nodes[i] =
-					(ccs_expression_t)nodes[i].value.o;
-			} else {
-				CCS_VALIDATE_ERR_GOTO(
-					err,
-					ccs_create_variable(
-						(ccs_parameter_t)nodes[i]
-							.value.o,
-						expression_data->nodes + i),
-					cleanup);
-			}
-		} else {
-			CCS_VALIDATE_ERR_GOTO(
-				err,
-				ccs_create_literal(
-					nodes[i], expression_data->nodes + i),
-				cleanup);
-		}
-	}
+	CCS_VALIDATE_ERR_GOTO(
+		err,
+		_ccs_create_nodes(num_nodes, nodes, expression_data->nodes),
+		cleanup);
 	expression->data = expression_data;
 	*expression_ret  = expression;
 	return CCS_RESULT_SUCCESS;
@@ -1546,6 +1710,67 @@ ccs_create_unary_expression(
 {
 	CCS_VALIDATE(ccs_create_expression(type, 1, &node, expression_ret));
 	return CCS_RESULT_SUCCESS;
+}
+
+ccs_result_t
+ccs_create_user_defined_expression(
+	const char                           *name,
+	size_t                                num_nodes,
+	ccs_datum_t                          *nodes,
+	ccs_user_defined_expression_vector_t *vector,
+	void                                 *expr_data,
+	ccs_expression_t                     *expression_ret)
+{
+	CCS_CHECK_ARY(num_nodes, nodes);
+	CCS_CHECK_PTR(expression_ret);
+	CCS_CHECK_PTR(vector);
+	CCS_CHECK_PTR(vector->del);
+	CCS_CHECK_PTR(vector->eval);
+	CCS_VALIDATE(_ccs_validate_nodes(num_nodes, nodes));
+
+	ccs_result_t err;
+	uintptr_t    mem = (uintptr_t)calloc(
+                1, sizeof(struct _ccs_expression_s) +
+                           sizeof(struct _ccs_expression_user_defined_data_s) +
+                           num_nodes * sizeof(ccs_expression_t) + strlen(name) +
+                           1);
+	CCS_REFUTE(!mem, CCS_RESULT_ERROR_OUT_OF_MEMORY);
+
+	ccs_expression_t expression;
+	expression = (ccs_expression_t)mem;
+	_ccs_object_init(
+		&(expression->obj), CCS_OBJECT_TYPE_EXPRESSION,
+		(_ccs_object_ops_t *)_ccs_expression_ops_broker(
+			CCS_EXPRESSION_TYPE_USER_DEFINED));
+	_ccs_expression_user_defined_data_t *expression_data;
+	expression_data                 = (_ccs_expression_user_defined_data_t
+                                   *)(mem + sizeof(struct _ccs_expression_s));
+	expression_data->expr.type      = CCS_EXPRESSION_TYPE_USER_DEFINED;
+	expression_data->expr.num_nodes = num_nodes;
+	expression_data->expr.nodes =
+		(ccs_expression_t
+			 *)(mem + sizeof(struct _ccs_expression_s) + sizeof(struct _ccs_expression_user_defined_data_s));
+	expression_data->name =
+		(const char
+			 *)(mem + sizeof(struct _ccs_expression_s) + sizeof(struct _ccs_expression_user_defined_data_s) + sizeof(ccs_expression_t) * num_nodes);
+	expression_data->vector          = *vector;
+	expression_data->expression_data = expr_data;
+	strcpy((char *)expression_data->name, name);
+	CCS_VALIDATE_ERR_GOTO(
+		err,
+		_ccs_create_nodes(num_nodes, nodes, expression_data->expr.nodes),
+		cleanup);
+	expression->data = (_ccs_expression_data_t *)expression_data;
+	*expression_ret  = expression;
+	return CCS_RESULT_SUCCESS;
+cleanup:
+	for (size_t i = 0; i < num_nodes; i++) {
+		if (expression_data->expr.nodes[i])
+			ccs_release_object(expression_data->expr.nodes[i]);
+	}
+	_ccs_object_deinit(&(expression->obj));
+	free((void *)mem);
+	return err;
 }
 
 ccs_result_t
@@ -1663,6 +1888,38 @@ ccs_variable_get_parameter(
 	_ccs_expression_variable_data_t *d =
 		(_ccs_expression_variable_data_t *)expression->data;
 	*parameter_ret = d->parameter;
+	return CCS_RESULT_SUCCESS;
+}
+
+ccs_result_t
+ccs_user_defined_expression_get_expression_data(
+	ccs_expression_t expression,
+	void           **expression_data_ret)
+{
+	CCS_CHECK_OBJ(expression, CCS_OBJECT_TYPE_EXPRESSION);
+	CCS_CHECK_PTR(expression_data_ret);
+	_ccs_expression_user_defined_data_t *d =
+		(_ccs_expression_user_defined_data_t *)expression->data;
+	CCS_REFUTE(
+		d->expr.type != CCS_EXPRESSION_TYPE_USER_DEFINED,
+		CCS_RESULT_ERROR_INVALID_EXPRESSION);
+	*expression_data_ret = d->expression_data;
+	return CCS_RESULT_SUCCESS;
+}
+
+ccs_result_t
+ccs_user_defined_expression_get_name(
+	ccs_expression_t expression,
+	const char     **name_ret)
+{
+	CCS_CHECK_OBJ(expression, CCS_OBJECT_TYPE_EXPRESSION);
+	CCS_CHECK_PTR(name_ret);
+	_ccs_expression_user_defined_data_t *d =
+		(_ccs_expression_user_defined_data_t *)expression->data;
+	CCS_REFUTE(
+		d->expr.type != CCS_EXPRESSION_TYPE_USER_DEFINED,
+		CCS_RESULT_ERROR_INVALID_EXPRESSION);
+	*name_ret = d->name;
 	return CCS_RESULT_SUCCESS;
 }
 

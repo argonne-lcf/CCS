@@ -19,9 +19,10 @@ module CCS
     :CCS_EXPRESSION_TYPE_IN,
     :CCS_EXPRESSION_TYPE_LIST,
     :CCS_EXPRESSION_TYPE_LITERAL,
-    :CCS_EXPRESSION_TYPE_VARIABLE
+    :CCS_EXPRESSION_TYPE_VARIABLE,
+    :CCS_EXPRESSION_TYPE_USER_DEFINED,
   ]
-  class MemoryPointer
+  module MemoryAccessor
     def read_ccs_expression_type_t
       ExpressionType.from_native(read_int32, nil)
     end
@@ -32,7 +33,7 @@ module CCS
     :CCS_ASSOCIATIVITY_TYPE_LEFT_TO_RIGHT,
     :CCS_ASSOCIATIVITY_TYPE_RIGHT_TO_LEFT
   ]
-  class MemoryPointer
+  module MemoryAccessor
     def read_ccs_associativity_type_t
       AssociativityType.from_native(read_int32, nil)
     end
@@ -115,7 +116,8 @@ module CCS
         CCS_EXPRESSION_TYPE_IN: In,
         CCS_EXPRESSION_TYPE_LIST: List,
         CCS_EXPRESSION_TYPE_LITERAL: Literal,
-        CCS_EXPRESSION_TYPE_VARIABLE: Variable
+        CCS_EXPRESSION_TYPE_VARIABLE: Variable,
+        CCS_EXPRESSION_TYPE_USER_DEFINED: UserDefined,
       }
     end
 
@@ -182,6 +184,13 @@ module CCS
         "#{nds[0]} #{symbol} #{nds[1]}"
       end
     end
+
+    def self.get_function_vector_data(name, binding: TOPLEVEL_BINDING)
+      m = binding.receiver.method(name.to_sym)
+      evaluate = lambda { |expr, *args| m.call(*args) }
+      [CCS::Expression::UserDefined.get_vector(eval: evaluate), nil]
+    end
+
   end
 
   class ExpressionOr < Expression
@@ -553,5 +562,131 @@ module CCS
   end
 
   Expression::List = ExpressionList
+
+  callback :ccs_user_defined_expression_del, [:ccs_expression_t], :ccs_result_t
+  callback :ccs_user_defined_expression_eval, [:ccs_expression_t, :size_t, :pointer, :pointer], :ccs_result_t
+  callback :ccs_user_defined_expression_serialize, [:ccs_expression_t, :size_t, :pointer, :pointer], :ccs_result_t
+  callback :ccs_user_defined_expression_deserialize, [:size_t, :pointer, :pointer], :ccs_result_t
+
+  class UserDefinedExpressionVector < FFI::Struct
+    attr_accessor :wrappers
+    attr_accessor :string_store
+    attr_accessor :object_store
+    layout :del, :ccs_user_defined_expression_del,
+           :eval, :ccs_user_defined_expression_eval,
+           :serialize, :ccs_user_defined_expression_serialize,
+           :deserialize, :ccs_user_defined_expression_deserialize
+  end
+  typedef UserDefinedExpressionVector.by_value, :ccs_user_defined_expression_vector_t
+
+  attach_function :ccs_create_user_defined_expression, [:string, :size_t, :pointer, UserDefinedExpressionVector.by_ref, :value, :pointer], :ccs_result_t
+  attach_function :ccs_user_defined_expression_get_expression_data, [:ccs_expression_t, :pointer], :ccs_result_t
+  attach_function :ccs_user_defined_expression_get_name, [:ccs_expression_t, :pointer], :ccs_result_t
+  class ExpressionUserDefined < Expression
+    add_property :expression_data, :value, :ccs_user_defined_expression_get_expression_data, memoize: true
+
+    def initialize(handle = nil, retain: false, auto_release: true,
+                   name: nil, nodes: [], del: nil, eval: nil, serialize: nil, deserialize: nil, expression_data: nil)
+      if handle
+        super(handle, retain: retain, auto_release: auto_release)
+      else
+        raise CCSError, :CCS_RESULT_ERROR_INVALID_VALUE if name.nil? || eval.nil?
+        vector = ExpressionUserDefined.get_vector(del: del, eval: eval, serialize: serialize, deserialize: deserialize)
+        count = nodes.size
+        p_values = MemoryPointer::new(:ccs_datum_t, count)
+        ss = []
+        os = []
+        ptr = MemoryPointer::new(:ccs_expression_t)
+        nodes.each_with_index { |n, i| Datum::new(p_values[i]).set_value(n, string_store: ss, object_store: os) }
+        CCS.error_check CCS.ccs_create_user_defined_expression(name, count, p_values, vector, expression_data, ptr)
+        handle = ptr.read_ccs_expression_t
+        super(handle, retain: false)
+        FFI.inc_ref(vector)
+        FFI.inc_ref(expression_data) unless expression_data.nil?
+      end
+    end
+
+    def name
+      @name ||= begin
+        ptr = MemoryPointer::new(:pointer)
+        CCS.error_check CCS.ccs_user_defined_expression_get_name(@handle, ptr)
+        ptr.read_pointer.read_string
+      end
+    end
+
+    def self.get_vector(del: nil, eval: nil, serialize: nil, deserialize: nil)
+      vector = UserDefinedExpressionVector::new
+      vector.string_store = []
+      vector.object_store = []
+      delwrapper = lambda { |expr|
+        begin
+          o = CCS::Object.from_handle(expr)
+          edata = o.expression_data
+          del.call(o) if del
+          FFI.dec_ref(edata) unless edata.nil?
+          FFI.dec_ref(vector)
+          CCSError.to_native(:CCS_RESULT_SUCCESS)
+        rescue => e
+          CCS.set_error(e)
+        end
+      }
+      evalwrapper = lambda { |expr, num_values, p_values, p_value_ret|
+        begin
+          values = Pointer.new(p_values).read_array_of_ccs_datum_t(num_values)
+          value_ret = eval.call(Expression.from_handle(expr), *values)
+          Datum::new(p_value_ret).set_value(value_ret, string_store: vector.string_store, object_store: vector.object_store)
+          CCSError.to_native(:CCS_RESULT_SUCCESS)
+        rescue => e
+          CCS.set_error(e)
+        end
+      }
+      serializewrapper =
+        if serialize
+          lambda { |tun, state_size, p_state, p_state_size|
+            begin
+              state = serialize.call(Expression.from_handle(tun))
+              raise CCSError, :CCS_RESULT_ERROR_INVALID_VALUE if !state.kind_of?(String)
+              raise CCSError, :CCS_RESULT_ERROR_INVALID_VALUE if !p_state.null? && state_size < state.bytesize
+              p_state.write_bytes(state, 0, state.bytesize) unless p_state.null?
+              Pointer.new(p_state_size).write_size_t(state.bytesize) unless p_state_size.null?
+              CCSError.to_native(:CCS_RESULT_SUCCESS)
+            rescue => e
+              CCS.set_error(e)
+            end
+          }
+        else
+          nil
+        end
+      deserializewrapper =
+        if deserialize
+          lambda { |state_size, p_state, p_expression_data|
+            begin
+              state = p_state.null? ? nil : p_state.read_bytes(state_size)
+              expression_data = deserialize.call(state)
+              p_expression_data.write_value(expression_data)
+              FFI.inc_ref(expression_data)
+              CCSError.to_native(:CCS_RESULT_SUCCESS)
+            rescue => e
+              CCS.set_error(e)
+            end
+          }
+        else
+          nil
+        end
+      vector[:del] = delwrapper
+      vector[:eval] = evalwrapper
+      vector[:serialize] = serializewrapper
+      vector[:deserialize] = deserializewrapper
+      vector.wrappers = [delwrapper, evalwrapper, serializewrapper, deserializewrapper]
+      vector
+    end
+
+    def to_s
+      "#{name}(#{nodes.collect(&:to_s).join(", ")})"
+    end
+
+  end
+
+  Expression::UserDefined = ExpressionUserDefined
 
 end

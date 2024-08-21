@@ -7,7 +7,7 @@ module CCS
     :CCS_DISTRIBUTION_TYPE_MIXTURE,
     :CCS_DISTRIBUTION_TYPE_MULTIVARIATE
   ]
-  class MemoryPointer
+  module MemoryAccessor
     def read_ccs_distribution_type_t
       DistributionType.from_native(read_int32, nil)
     end
@@ -17,7 +17,7 @@ module CCS
     :CCS_SCALE_TYPE_LINEAR,
     :CCS_SCALE_TYPE_LOGARITHMIC
   ]
-  class MemoryPointer
+  module MemoryAccessor
     def read_ccs_scale_type_t
       ScaleType.from_native(read_int32, nil)
     end

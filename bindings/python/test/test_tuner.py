@@ -101,7 +101,7 @@ class TestTuner(unittest.TestCase):
       else:
         return choice(tuner.tuner_data.optima).configuration
 
-    def get_vector_data(otype, name, cb_data):
+    def get_vector_data(otype, name):
       return (ccs.UserDefinedTuner.get_vector(delete = delete, ask = ask, tell = tell, get_optima = get_optima, get_history = get_history, suggest = suggest), TunerData())
 
     os = self.create_tuning_problem()

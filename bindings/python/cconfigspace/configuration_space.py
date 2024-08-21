@@ -22,7 +22,7 @@ ccs_configuration_space_samples = _ccs_get_function("ccs_configuration_space_sam
 
 class ConfigurationSpace(Context):
   def __init__(self, handle = None, retain = False, auto_release = True,
-               name = "", parameters = None, conditions = None, forbidden_clauses = None, feature_space = None, rng = None):
+               name = "", parameters = None, conditions = None, forbidden_clauses = None, feature_space = None, rng = None, binding = None):
     if handle is None:
       count = len(parameters)
 
@@ -30,11 +30,12 @@ class ConfigurationSpace(Context):
       if feature_space is not None:
         ctx_params = ctx_params + list(feature_space.parameters)
       ctx = dict(zip([x.name for x in ctx_params], ctx_params))
+      extra = (ctx, binding)
 
       if forbidden_clauses is not None:
         numfc = len(forbidden_clauses)
         if numfc > 0:
-          forbidden_clauses = [ parser.parse(fc, extra = ctx) if isinstance(fc, str) else fc for fc in forbidden_clauses ]
+          forbidden_clauses = [ parser.parse(fc, extra = extra) if isinstance(fc, str) else fc for fc in forbidden_clauses ]
           fcv = (ccs_expression * numfc)(*[x.handle.value for x in forbidden_clauses])
         else:
           fcv = None
@@ -45,7 +46,7 @@ class ConfigurationSpace(Context):
       if conditions is not None:
         indexdict = dict(reversed(ele) for ele in enumerate(parameters))
         cv = (ccs_expression * count)()
-        conditions = dict( (k, parser.parse(v, extra = ctx) if isinstance(v, str) else v) for (k, v) in conditions.items() )
+        conditions = dict( (k, parser.parse(v, extra = extra) if isinstance(v, str) else v) for (k, v) in conditions.items() )
         for (k, v) in conditions.items():
           if isinstance(k, Parameter):
             cv[indexdict[k]] = v.handle.value

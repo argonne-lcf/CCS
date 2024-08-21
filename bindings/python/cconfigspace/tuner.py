@@ -168,7 +168,7 @@ ccs_user_defined_tuner_get_optima_type = ct.CFUNCTYPE(Result, ccs_tuner, ccs_fea
 ccs_user_defined_tuner_get_history_type = ct.CFUNCTYPE(Result, ccs_tuner, ccs_features, ct.c_size_t, ct.POINTER(ccs_evaluation), ct.POINTER(ct.c_size_t))
 ccs_user_defined_tuner_suggest_type = ct.CFUNCTYPE(Result, ccs_tuner, ccs_features, ct.POINTER(ccs_search_configuration))
 ccs_user_defined_tuner_serialize_type = ct.CFUNCTYPE(Result, ccs_tuner, ct.c_size_t, ct.c_void_p, ct.POINTER(ct.c_size_t))
-ccs_user_defined_tuner_deserialize_type = ct.CFUNCTYPE(Result, ccs_objective_space, ct.c_size_t, ct.POINTER(ccs_evaluation), ct.c_size_t, ct.POINTER(ccs_evaluation), ct.c_size_t, ct.c_void_p, ct.POINTER(ct.c_void_p))
+ccs_user_defined_tuner_deserialize_type = ct.CFUNCTYPE(Result, ccs_objective_space, ct.c_size_t, ct.POINTER(ccs_evaluation), ct.c_size_t, ct.POINTER(ccs_evaluation), ct.c_size_t, ct.c_void_p, ct.POINTER(ct.py_object))
 
 class UserDefinedTunerVector(ct.Structure):
   _fields_ = [
@@ -328,15 +328,13 @@ class UserDefinedTuner(Tuner):
     if serialize is not None:
       def serialize_wrapper(tun, state_size, p_state, p_state_size):
         try:
-          tun = ct.cast(tun, ccs_tuner)
-          p_s = ct.cast(p_state, ct.c_void_p)
-          p_sz = ct.cast(p_state_size, ct.c_void_p)
-          state = serialize(Tuner.from_handle(tun), True if state_size == 0 else False)
-          if p_s.value is not None and state_size < ct.sizeof(state):
+          serialized = serialize(Tuner.from_handle(tun))
+          state = ct.create_string_buffer(serialized, len(serialized))
+          if p_state and state_size < ct.sizeof(state):
             raise Error(Result(Result.ERROR_INVALID_VALUE))
-          if p_s.value is not None:
-            ct.memmove(p_s, ct.byref(state), ct.sizeof(state))
-          if p_sz.value is not None:
+          if p_state:
+            ct.memmove(p_state, ct.byref(state), ct.sizeof(state))
+          if p_state_size:
             p_state_size[0] = ct.sizeof(state)
           return Result.SUCCESS
         except Exception as e:
@@ -347,26 +345,17 @@ class UserDefinedTuner(Tuner):
     if deserialize is not None:
       def deserialize_wrapper(o_space, size_history, p_history, num_optima, p_optima, state_size, p_state, p_tuner_data):
         try:
-          o_space = ct.cast(o_space, ccs_objective_space)
-          p_h = ct.cast(p_history, ct.c_void_p)
-          p_o = ct.cast(p_optima, ct.c_void_p)
-          p_s = ct.cast(p_state, ct.c_void_p)
-          p_t = ct.cast(p_tuner_data, ct.c_void_p)
-          if p_h.value is None:
+          if p_history:
+            history = [Evaluation.from_handle(p_history[i]) for i in range(size_history)]
+          else:
             history = []
+          if p_optima:
+            optima = [Evaluation.from_handle(p_optima[i]) for i in range(num_optima)]
           else:
-            history = [Evaluation.from_handle(ccs_evaluation(p_h[i])) for i in range(size_history)]
-          if p_o.value is None:
             optima = []
-          else:
-            optima = [Evaluation.from_handle(ccs_evaluation(p_o[i])) for i in range(num_optima)]
-          if p_s.value is None:
-            state = None
-          else:
-            state = ct.cast(p_s, POINTER(c_byte * state_size))
-          tuner_data = deserialize(ObjectiveSpace.from_handle(o_space), history, optima, state)
+          tuner_data = deserialize(ObjectiveSpace.from_handle(o_space), history, optima, ct.string_at(p_state, state_size))
           c_tuner_data = ct.py_object(tuner_data)
-          p_t[0] = c_tuner_data
+          p_tuner_data[0] = c_tuner_data
           ct.pythonapi.Py_IncRef(c_tuner_data)
           return Result.SUCCESS
         except Exception as e:

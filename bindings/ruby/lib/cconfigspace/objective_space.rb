@@ -3,7 +3,7 @@ module CCS
     :CCS_OBJECTIVE_TYPE_MINIMIZE,
     :CCS_OBJECTIVE_TYPE_MAXIMIZE
   ]
-  class MemoryPointer
+  module MemoryAccessor
     def read_ccs_objective_type_t
       ObjectiveType.from_native(read_int32, nil)
     end
@@ -28,7 +28,7 @@ module CCS
     add_handle_property :search_space, :ccs_search_space_t, :ccs_objective_space_get_search_space, memoize: true
 
     def initialize(handle = nil, retain: false, auto_release: true,
-                   name: "", search_space: nil, parameters: [], objectives: [], types: nil)
+                   name: "", search_space: nil, parameters: [], objectives: [], types: nil, binding: nil)
       if handle
         super(handle, retain: retain, auto_release: auto_release)
       else
@@ -41,14 +41,7 @@ module CCS
           types = objectives.values
           objectives = objectives.keys
         end
-        p = ExpressionParser::new(ctx)
-        objectives = objectives.collect { |e|
-          if e.kind_of? String
-            e = p.parse(e)
-          else
-            e
-          end
-        }
+        objectives = objectives.collect { |e| e.kind_of?(String) ? e = CCS.parse(e, context: ctx, binding: binding) : e }
         ocount = objectives.length
         if types
           raise CCSError, :CCS_RESULT_ERROR_INVALID_VALUE if types.size != ocount
