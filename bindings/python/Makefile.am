@@ -48,6 +48,6 @@ LIBEXT = .so
 endif
 
 check: FORCE
-	PYTHONPATH=$(srcdir)/ LIBCCONFIGSPACE_SO_=$(top_builddir)/src/.libs/libcconfigspace$(LIBEXT) python3 -m unittest discover -s $(srcdir)/test/
+	PYTHONPATH=$(srcdir)/ LIBCCONFIGSPACE_SO_=$(abs_top_builddir)/src/.libs/libcconfigspace$(LIBEXT) python3 -m unittest discover -s $(srcdir)/test/
 
 FORCE:

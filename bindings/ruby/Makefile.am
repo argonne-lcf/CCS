@@ -51,6 +51,6 @@ LIBEXT = .so
 endif
 
 check: FORCE
-	LIBCCONFIGSPACE_SO=$(top_builddir)/src/.libs/libcconfigspace$(LIBEXT) SRC_DIR=$(srcdir) rake -f $(srcdir)/rakefile test
+	LIBCCONFIGSPACE_SO=$(abs_top_builddir)/src/.libs/libcconfigspace$(LIBEXT) SRC_DIR=$(srcdir) rake -f $(srcdir)/rakefile test
 
 FORCE:
