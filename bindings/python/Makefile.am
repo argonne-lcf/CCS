@@ -39,6 +39,7 @@ EXTRA_DIST = \
 	test/test_objective_space.py \
 	test/test_configuration_space.py \
 	test/test_feature_space.py \
+	test/tuner_server.py \
 	setup.py
 
 if ISMACOS

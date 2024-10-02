@@ -728,8 +728,9 @@ module CCS
         varargs = [:pointer, sz] + options
         CCS.error_check CCS.ccs_object_serialize(@handle, format, operation, *varargs)
         operation = :CCS_SERIALIZE_OPERATION_MEMORY
-        result = MemoryPointer::new(sz.read_size_t)
-        varargs = [:size_t, sz.read_size_t, :pointer, result] + options
+        sz = sz.read_size_t
+        result = String.new("\0", encoding: 'BINARY') * sz
+        varargs = [:size_t, sz, :pointer, result] + options
       end
       CCS.error_check CCS.ccs_object_serialize(@handle, format, operation, *varargs)
       return result

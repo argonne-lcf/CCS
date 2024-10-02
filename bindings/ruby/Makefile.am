@@ -40,6 +40,7 @@ EXTRA_DIST = \
 	test/test_configuration_space.rb \
 	test/test_distribution.rb \
 	test/test_evaluation.rb \
+	test/tuner_server.rb \
 	rakefile \
 	cconfigspace.gemspec \
 	LICENSE

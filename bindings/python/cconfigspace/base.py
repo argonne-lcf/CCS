@@ -551,50 +551,50 @@ class Object:
       s = ct.c_size_t(0)
       res = ccs_object_serialize(self.handle, SerializeFormat.BINARY, SerializeOperation.SIZE, ct.byref(s), *options)
       Error.check(res)
-      v = (ct.c_byte * s.value)()
+      v = ct.create_string_buffer(s.value)
       res = ccs_object_serialize(self.handle, SerializeFormat.BINARY, SerializeOperation.MEMORY, ct.sizeof(v), v, *options)
       Error.check(res)
-      return v
+      return v.raw
 
   @classmethod
   def deserialize(cls, format = 'binary', handle_map = None, map_handles = False, vector_callback = None, path = None, buffer = None, file_descriptor = None, callback = None):
     if format != 'binary':
       raise Error(Result(Result.ERROR_INVALID_VALUE))
     mode_count = 0;
-    if path:
+    if path is not None:
       mode_count += 1
-    if buffer:
+    if buffer is not None:
       mode_count += 1
-    if file_descriptor:
+    if file_descriptor is not None:
       mode_count += 1
     if not mode_count == 1:
       raise Error(Result(Result.ERROR_INVALID_VALUE))
-    if map_handles and not handle_map:
+    if map_handles and handle_map is None:
       raise Error(Result(Result.ERROR_INVALID_VALUE))
     o = ccs_object(0)
     options = [DeserializeOption.END]
     if map_handles:
       options = [DeserializeOption.MAP_HANDLES] + options
-    if handle_map:
+    if handle_map is not None:
       options = [DeserializeOption.HANDLE_MAP, handle_map.handle] + options
-    if vector_callback:
+    if vector_callback is not None:
       vector_cb_wrapper = _get_deserialize_vector_callback_wrapper(vector_callback)
       vector_cb_wrapper_func = ccs_object_deserialize_vector_callback_type(vector_cb_wrapper)
       options = [DeserializeOption.VECTOR_CALLBACK, vector_cb_wrapper_func, ct.py_object()] + options
-    if callback:
+    if callback is not None:
       cb_wrapper = _get_deserialize_data_callback_wrapper(callback)
       cb_wrapper_func = ccs_object_deserialize_data_callback_type(cb_wrapper)
       options = [DeserializeOption.DATA_CALLBACK, cb_wrapper_func, ct.py_object()] + options
-    elif _default_user_data_deserializer:
+    elif _default_user_data_deserializer is not None:
       options = [DeserializeOption.DATA_CALLBACK, _default_user_data_deserializer, ct.py_object()] + options
-    if buffer:
-      s = ct.c_size_t(ct.sizeof(buffer))
-      res = ccs_object_deserialize(ct.byref(o), SerializeFormat.BINARY, SerializeOperation.MEMORY, s, buffer, *options)
-    elif path:
+    if buffer is not None:
+      s = len(buffer)
+      res = ccs_object_deserialize(ct.byref(o), SerializeFormat.BINARY, SerializeOperation.MEMORY, s, ct.create_string_buffer(buffer, s), *options)
+    elif path is not None:
       p = str.encode(path)
       pp = ct.c_char_p(p)
       res = ccs_object_deserialize(ct.byref(o), SerializeFormat.BINARY, SerializeOperation.FILE, pp, *options)
-    elif file_descriptor:
+    elif file_descriptor is not None:
       fd = ct.c_int(file_descriptor)
       res = ccs_object_deserialize(ct.byref(o), SerializeFormat.BINARY, SerializeOperation.FILE_DESCRIPTOR, fd, *options)
     else:

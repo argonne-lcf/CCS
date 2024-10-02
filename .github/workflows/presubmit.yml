@@ -30,16 +30,16 @@ jobs:
             compiler: g++
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - run: sudo apt update; sudo apt install -y ${{ matrix.compiler }} ruby-dev libgsl-dev python3-dev valgrind
         if: ${{ matrix.os == 'ubuntu-latest' }}
       - run: brew install gsl automake libtool
         if: ${{ matrix.os == 'macos-latest' }}
-      - uses: actions/setup-python@v4
+      - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
         if: ${{ matrix.os == 'macos-latest' }}
-      - run: gem install --user-install rake ffi ffi-value whittle
+      - run: gem install --user-install rake ffi ffi-value whittle xmlrpc
       - run: pip3 install --user parglare
       - run: ./autogen.sh
       - run: mkdir -p build
@@ -55,7 +55,7 @@ jobs:
       - run: make -j check-valgrind-helgrind
         working-directory: build
         if: ${{ matrix.os == 'ubuntu-latest' }}
-      - uses: actions/upload-artifact@v2
+      - uses: actions/upload-artifact@v4
         if: failure()
         with:
           name: build-and-check
@@ -78,11 +78,11 @@ jobs:
         if: ${{ matrix.os == 'ubuntu-latest' }}
       - run: brew install gsl automake libtool
         if: ${{ matrix.os == 'macos-latest' }}
-      - uses: actions/setup-python@v4
+      - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
         if: ${{ matrix.os == 'macos-latest' }}
-      - run: gem install --user-install rake ffi ffi-value whittle
+      - run: gem install --user-install rake ffi ffi-value whittle xmlrpc
       - run: pip3 install --user parglare
       - run: ./autogen.sh
       - run: mkdir -p build
@@ -106,11 +106,11 @@ jobs:
         if: ${{ matrix.os == 'ubuntu-latest' }}
       - run: brew install gsl automake libtool
         if: ${{ matrix.os == 'macos-latest' }}
-      - uses: actions/setup-python@v4
+      - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
         if: ${{ matrix.os == 'macos-latest' }}
-      - run: gem install --user-install rake ffi ffi-value whittle
+      - run: gem install --user-install rake ffi ffi-value whittle xmlrpc
       - run: pip3 install --user parglare
       - run: ./autogen.sh
       - run: mkdir -p build

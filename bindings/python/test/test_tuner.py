@@ -1,6 +1,13 @@
 import unittest
 import sys
 import os as _os
+import signal
+import threading
+import subprocess
+import datetime
+import base64
+import xmlrpc.client
+import ctypes as ct
 from random import choice
 sys.path.insert(1, '.')
 sys.path.insert(1, '..')
@@ -167,6 +174,104 @@ class TestTuner(unittest.TestCase):
     self.assertTrue(t_copy.suggest() in [x.configuration for x in optims_2])
     _os.remove('tuner.ccs')
 
+  class ServerThread(threading.Thread):
+    def __init__(self):
+      self.p = None
+      threading.Thread.__init__(self)
+
+    def run(self):
+      subprocess.run(['python3', _os.path.join(_os.path.abspath(_os.path.dirname(__file__)), 'tuner_server.py')], stdout = subprocess.DEVNULL, stderr = subprocess.DEVNULL)
+
+  class TunerProxy:
+    def __init__(self, name = "", objective_space = None):
+      self.server = xmlrpc.client.ServerProxy("http://localhost:8000/")
+      connected = False
+      start = datetime.datetime.now()
+      while not connected:
+        try:
+          connected = self.server.connected()
+        except Exception as err:
+          if datetime.datetime.now() - start > datetime.timedelta(seconds = 10):
+            raise
+      if objective_space is not None:
+        self.objective_space = objective_space
+        buff = objective_space.serialize()
+        self.id, result = self.server.create(name, buff)
+        self.handle_map = ccs.deserialize(buffer = result.data)
+      else:
+        self.id, result = self.server.load(name)
+        self.handle_map = ccs.Map()
+        self.objective_space = ccs.deserialize(buffer = result.data, handle_map = self.handle_map, map_handles = True)
+        rev_map = ccs.Map()
+        for (k, v) in self.handle_map.pairs():
+          if isinstance(v, ccs.Context) or isinstance(v, ccs.TreeSpace):
+            rev_map[ccs.Object(v.handle, retain = False, auto_release = False)] = k
+        self.server.set_handle_map(self.id, rev_map.serialize())
+
+    def ask(self, count = 1):
+      return [ccs.deserialize(buffer = conf_str.data, handle_map = self.handle_map) for conf_str in self.server.ask(self.id, count)]
+
+    def tell(self, evals = []):
+      self.server.tell(self.id, [e.serialize() for e in evals])
+      return self
+
+    def history(self):
+      return [ccs.deserialize(buffer = eval_str.data, handle_map = self.handle_map) for eval_str in self.server.history(self.id)]
+
+    def history_size(self):
+      return self.server.history_size(self.id)
+
+    def optima(self):
+      return [ccs.deserialize(buffer = eval_str.data, handle_map = self.handle_map) for eval_str in self.server.optima(self.id)]
+
+    def num_optima(self):
+      return self.server.num_optima(self.id)
+
+    def suggest(self):
+      return ccs.deserialize(buffer = self.server.suggest(self.id).data, handle_map = self.handle_map)
+
+    def save(self):
+      return self.server.save(self.id)
+
+    def kill(self):
+      return self.server.kill()
+
+  def test_server(self):
+    thr = self.ServerThread()
+    thr.start()
+    try:
+
+      os = self.create_tuning_problem()
+      t = self.TunerProxy(name = 'my_tuner', objective_space = os)
+      func = lambda x, y, z: [(x-2)*(x-2), sin(z+y)]
+      evals = [ccs.Evaluation(objective_space = os, configuration = c, values = func(*(c.values))) for c in t.ask(100)]
+      t.tell(evals)
+      hist = t.history()
+      self.assertEqual(100, len(hist))
+      evals = [ccs.Evaluation(objective_space = os, configuration = c, values = func(*(c.values))) for c in t.ask(100)]
+      t.tell(evals)
+      self.assertEqual(200, t.history_size())
+      optims = t.optima()
+      objs = [x.objective_values for x in optims]
+      objs.sort(key = lambda x: x[0])
+      # assert pareto front
+      self.assertTrue(all(objs[i][1] >= objs[i+1][1] for i in range(len(objs)-1)))
+      self.assertTrue(t.suggest() in [x.configuration for x in optims])
+
+      t.save()
+      t_copy = self.TunerProxy(name = "my_tuner")
+      hist = t_copy.history()
+      self.assertEqual(200, len(hist))
+      optims_2 = t_copy.optima()
+      self.assertEqual(len(optims), len(optims_2))
+      objs = [x.objective_values for x in optims_2]
+      objs.sort(key = lambda x: x[0])
+      self.assertTrue(all(objs[i][1] >= objs[i+1][1] for i in range(len(objs)-1)))
+      self.assertTrue(t_copy.suggest() in [x.configuration for x in optims_2])
+
+    finally:
+      xmlrpc.client.ServerProxy("http://localhost:8000/").kill()
+      thr.join()
 
 if __name__ == '__main__':
     unittest.main()

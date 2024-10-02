@@ -21,6 +21,10 @@ class Map(Object):
     else:
       super().__init__(handle = handle, retain = retain, auto_release = auto_release)
 
+  @classmethod
+  def from_handle(cls, handle, retain = True, auto_release = True):
+    return cls(handle = handle, retain = retain, auto_release = auto_release)
+
   def __len__(self):
     v = ct.c_size_t()
     res = ccs_map_get_keys(self.handle, 0, None, ct.byref(v))
@@ -73,3 +77,12 @@ class Map(Object):
     res = ccs_map_get_values(self.handle, sz, v, None)
     Error.check(res)
     return [x.value for x in v]
+
+  def pairs(self):
+    sz = self.__len__()
+    if sz == 0:
+      return []
+    v = (Datum * sz)()
+    k = (Datum * sz)()
+    res = ccs_map_get_pairs(self.handle, sz, k, v, None)
+    return [(k[i].value, v[i].value) for i in range(sz)]
