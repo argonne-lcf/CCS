@@ -709,7 +709,6 @@ _ccs_object_deserialize_file_descriptor(
 	va_list                args)
 {
 	ccs_result_t                      res = CCS_RESULT_SUCCESS;
-	int                               fd;
 	int                               non_blocking;
 	size_t                            header_size;
 	ssize_t                           offset;
@@ -717,7 +716,7 @@ _ccs_object_deserialize_file_descriptor(
 						    NULL, NULL,      NULL};
 	_ccs_file_descriptor_state_t      state  = {NULL, 0, NULL, 0, -1, 0};
 	_ccs_file_descriptor_state_t     *pstate = NULL;
-	fd                                       = va_arg(args, int);
+	int                               fd     = va_arg(args, int);
 	CCS_VALIDATE(_ccs_object_deserialize_options(
 		format, CCS_SERIALIZE_OPERATION_FILE_DESCRIPTOR, args, &opts));
 	non_blocking = !!(opts.ppfd_state);

@@ -52,6 +52,8 @@ _ccs_object_deserialize_options(
 		case CCS_DESERIALIZE_OPTION_HANDLE_MAP:
 			opts->handle_map = va_arg(args, ccs_map_t);
 			CCS_CHECK_OBJ(opts->handle_map, CCS_OBJECT_TYPE_MAP);
+			break;
+		case CCS_DESERIALIZE_OPTION_MAP_HANDLES:
 			opts->map_values = CCS_TRUE;
 			break;
 		case CCS_DESERIALIZE_OPTION_VECTOR_CALLBACK:
@@ -83,6 +85,9 @@ _ccs_object_deserialize_options(
 		}
 		opt = (ccs_deserialize_option_t)va_arg(args, int32_t);
 	}
+	CCS_REFUTE(
+		opts->map_values && !opts->handle_map,
+		CCS_RESULT_ERROR_INVALID_VALUE);
 	return CCS_RESULT_SUCCESS;
 }
 

@@ -395,6 +395,7 @@ class DeserializeOption(CEnumeration):
   _members_ = [
     ('END', 0),
     'HANDLE_MAP',
+    'MAP_HANDLES',
     'VECTOR_CALLBACK',
     'NON_BLOCKING',
     'DATA_CALLBACK'
@@ -556,7 +557,7 @@ class Object:
       return v
 
   @classmethod
-  def deserialize(cls, format = 'binary', handle_map = None, vector_callback = None, path = None, buffer = None, file_descriptor = None, callback = None):
+  def deserialize(cls, format = 'binary', handle_map = None, map_handles = False, vector_callback = None, path = None, buffer = None, file_descriptor = None, callback = None):
     if format != 'binary':
       raise Error(Result(Result.ERROR_INVALID_VALUE))
     mode_count = 0;
@@ -568,8 +569,12 @@ class Object:
       mode_count += 1
     if not mode_count == 1:
       raise Error(Result(Result.ERROR_INVALID_VALUE))
+    if map_handles and not handle_map:
+      raise Error(Result(Result.ERROR_INVALID_VALUE))
     o = ccs_object(0)
     options = [DeserializeOption.END]
+    if map_handles:
+      options = [DeserializeOption.MAP_HANDLES] + options
     if handle_map:
       options = [DeserializeOption.HANDLE_MAP, handle_map.handle] + options
     if vector_callback:
@@ -692,8 +697,8 @@ def _register_serialize_callback(handle, callback_data):
     _register_destroy_callback(handle)
   _data_store[value]['serialize_calback'] = callback_data
 
-def deserialize(format = 'binary', handle_map = None, path = None, buffer = None, file_descriptor = None, vector_callback = None, vector_callback_data = None, callback = None, callback_data = None):
-  return Object.deserialize(format = format, handle_map = handle_map, path = path, buffer = buffer, file_descriptor = file_descriptor, vector_callback = vector_callback, callback = callback)
+def deserialize(format = 'binary', handle_map = None, map_handles = False, path = None, buffer = None, file_descriptor = None, vector_callback = None, vector_callback_data = None, callback = None, callback_data = None):
+  return Object.deserialize(format = format, handle_map = handle_map, map_handles = map_handles, path = path, buffer = buffer, file_descriptor = file_descriptor, vector_callback = vector_callback, callback = callback)
 
 def _set_destroy_callback(handle, callback):
   if callback is None:

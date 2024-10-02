@@ -1025,10 +1025,16 @@ enum ccs_deserialize_option_e {
 	/**
 	 * The next parameter is a ccs_handle_map_t object that must contain
 	 * the mappings required to deserialize an object (usually bindings or
-	 * expressions). I given, will also add a mapping between the object
-	 * original handle and its current handle.
+	 * expressions).
 	 */
 	CCS_DESERIALIZE_OPTION_HANDLE_MAP,
+	/**
+	 * Secifies that handles have to be mapped. If given,
+	 * #CCS_DESERIALIZE_OPTION_HANDLE_MAP must be set and the given map
+	 * will be updated to contain the mapping between serialized object
+	 * handles and deserialized object handles.
+	 */
+	CCS_DESERIALIZE_OPTION_MAP_HANDLES,
 	/**
 	 * The next parameter is a pointer to a callback of type
 	 * ccs_object_deserialize_vector_callback_t and its user data, that

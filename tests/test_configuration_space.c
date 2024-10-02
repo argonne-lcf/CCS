@@ -393,7 +393,7 @@ test_deserialize(void)
 		(ccs_object_t *)&space, CCS_SERIALIZE_FORMAT_BINARY,
 		CCS_SERIALIZE_OPERATION_MEMORY, buff_size, buff,
 		CCS_DESERIALIZE_OPTION_HANDLE_MAP, map,
-		CCS_DESERIALIZE_OPTION_END);
+		CCS_DESERIALIZE_OPTION_MAP_HANDLES, CCS_DESERIALIZE_OPTION_END);
 	assert(err == CCS_RESULT_SUCCESS);
 
 	err = ccs_map_get(map, ccs_object(space_ref), &d);

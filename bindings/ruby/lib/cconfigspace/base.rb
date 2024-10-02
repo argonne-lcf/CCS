@@ -198,7 +198,8 @@ module CCS
 
   DatumFlags = bitmask FFI::Type::UINT32, :ccs_datum_flags_t, [
     :CCS_DATUM_FLAG_TRANSIENT,
-    :CCS_DATUM_FLAG_UNPOOLED ]
+    :CCS_DATUM_FLAG_UNPOOLED,
+    :CCS_DATUM_FLAG_ID ]
 
   NumericType = enum FFI::Type::INT32, :ccs_numeric_type_t, [
     :CCS_NUMERIC_TYPE_INT, DataType.to_native(:CCS_DATA_TYPE_INT, nil),
@@ -227,6 +228,7 @@ module CCS
   DeserializeOptions = enum FFI::Type::INT32, :ccs_deserialize_option_t, [
     :CCS_DESERIALIZE_OPTION_END, 0,
     :CCS_DESERIALIZE_OPTION_HANDLE_MAP,
+    :CCS_DESERIALIZE_OPTION_MAP_HANDLES,
     :CCS_DESERIALIZE_OPTION_VECTOR_CALLBACK,
     :CCS_DESERIALIZE_OPTION_NON_BLOCKING,
     :CCS_DESERIALIZE_OPTION_DATA_CALLBACK ]
@@ -733,7 +735,7 @@ module CCS
       return result
     end
 
-    def self.deserialize(format: :binary, handle_map: nil, path: nil, buffer: nil, file_descriptor: nil, vector_callback: nil, vector_callback_data: nil, callback: nil)
+    def self.deserialize(format: :binary, handle_map: nil, map_handles: false, path: nil, buffer: nil, file_descriptor: nil, vector_callback: nil, vector_callback_data: nil, callback: nil)
       raise CCSError, :CCS_RESULT_ERROR_INVALID_VALUE if format != :binary
       format = :CCS_SERIALIZE_FORMAT_BINARY
       mode_count = 0
@@ -741,9 +743,11 @@ module CCS
       mode_count += 1 if buffer
       mode_count += 1 if file_descriptor
       raise CCSError, :CCS_RESULT_ERROR_INVALID_VALUE unless mode_count == 1
+      raise CCSError, :CCS_RESULT_ERROR_INVALID_VALUE if map_handles && !handle_map
       ptr = MemoryPointer::new(:ccs_object_t)
       options = []
       options.concat [:ccs_deserialize_option_t, :CCS_DESERIALIZE_OPTION_HANDLE_MAP, :ccs_map_t, handle_map.handle] if handle_map
+      options.concat [:ccs_deserialize_option_t, :CCS_DESERIALIZE_OPTION_MAP_HANDLES] if map_handles
       if vector_callback
         cb_wrapper = CCS.get_deserialize_vector_callback_wrapper(&vector_callback)
         options.concat [:ccs_deserialize_option_t, :CCS_DESERIALIZE_OPTION_VECTOR_CALLBACK, :ccs_object_deserialize_vector_callback, cb_wrapper, :value, vector_callback_data]
@@ -786,7 +790,7 @@ module CCS
 
   end
 
-  @@data_store = Hash.new { |h, k| h[k] = { callbacks: [], user_data: nil, serialize_calback: nil, strings: [] } }
+  @@data_store = Hash.new { |h, k| h[k] = { callbacks: [], user_data: nil, serialize_callback: nil, strings: [] } }
 
   # Delete wrappers are responsible for deregistering the object data_store
   def self.register_vector(handle, vector_data)
@@ -832,7 +836,7 @@ module CCS
   def self.register_serialize_callback(handle, callback_data)
     value = handle.address
     register_destroy_callback(handle) unless @@data_store.include?(value)
-    @@data_store[value][:serialize_calback] = callback_data
+    @@data_store[value][:serialize_callback] = callback_data
   end
 
   def self.set_destroy_callback(handle, &block)
@@ -913,8 +917,8 @@ module CCS
     register_serialize_callback(handle, cb_data)
   end
 
-  def self.deserialize(format: :binary, handle_map: nil, path: nil, buffer: nil,  file_descriptor: nil, vector_callback: nil, callback: nil)
-    return CCS::Object.deserialize(format: format, handle_map: handle_map, path: path, buffer: buffer, file_descriptor: file_descriptor, vector_callback: vector_callback, callback: callback)
+  def self.deserialize(format: :binary, handle_map: nil, map_handles: false, path: nil, buffer: nil,  file_descriptor: nil, vector_callback: nil, callback: nil)
+    return CCS::Object.deserialize(format: format, handle_map: handle_map, map_handles: map_handles, path: path, buffer: buffer, file_descriptor: file_descriptor, vector_callback: vector_callback, callback: callback)
   end
 
 end

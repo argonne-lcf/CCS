@@ -51,7 +51,7 @@ module CCS
 
     def pairs
       sz = size
-      return [] if count == 0
+      return [] if sz == 0
       keys = MemoryPointer::new(:ccs_datum_t, sz)
       values = MemoryPointer::new(:ccs_datum_t, sz)
       CCS.error_check CCS.ccs_map_get_pairs(@handle, sz, keys, values, nil)
