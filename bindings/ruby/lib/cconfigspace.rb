@@ -23,3 +23,5 @@ require_relative 'cconfigspace/tuner'
 require_relative 'cconfigspace/tree'
 require_relative 'cconfigspace/tree_space'
 require_relative 'cconfigspace/tree_configuration'
+
+CCS.init

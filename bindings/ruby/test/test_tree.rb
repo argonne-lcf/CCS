@@ -2,11 +2,6 @@ require 'minitest/autorun'
 require_relative '../lib/cconfigspace'
 
 class CConfigSpaceTestTree < Minitest::Test
-  def setup
-    CCS.init
-  end
-
-
   def test_create
     rng = CCS::Rng.new
     root = CCS::Tree.new(arity: 4, value: "foo")

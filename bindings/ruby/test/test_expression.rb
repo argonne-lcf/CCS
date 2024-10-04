@@ -2,10 +2,6 @@ require 'minitest/autorun'
 require_relative '../lib/cconfigspace'
 
 class CConfigSpaceTestExpression < Minitest::Test
-  def setup
-    CCS.init
-  end
-
   def test_create
     e = CCS::Expression::Add.new(left: 1.0, right: 2.0)
     assert_equal( :CCS_OBJECT_TYPE_EXPRESSION, e.object_type )

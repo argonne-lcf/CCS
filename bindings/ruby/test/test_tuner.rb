@@ -2,10 +2,6 @@ require 'minitest/autorun'
 require_relative '../lib/cconfigspace'
 
 class CConfigSpaceTestTuner < Minitest::Test
-  def setup
-    CCS.init
-  end
-
   def create_tuning_problem
     h1 = CCS::NumericalParameter::Float.new(lower: -5.0, upper: 5.0)
     h2 = CCS::NumericalParameter::Float.new(lower: -5.0, upper: 5.0)

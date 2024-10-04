@@ -2,10 +2,6 @@ require 'minitest/autorun'
 require_relative '../lib/cconfigspace'
 
 class CConfigSpaceTestParameter < Minitest::Test
-  def setup
-    CCS.init
-  end
-
   def test_from_handle_discrete
     values = [0, 1.5, 2, 7.2]
     h = CCS::DiscreteParameter::new(values: values)

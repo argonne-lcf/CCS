@@ -2,10 +2,6 @@ require 'minitest/autorun'
 require_relative '../lib/cconfigspace'
 
 class CConfigSpaceTestFeaturesTuner < Minitest::Test
-  def setup
-    CCS.init
-  end
-
   def create_tuning_problem
     f1 = CCS::CategoricalParameter::new(values: [true, false])
     fs = CCS::FeatureSpace::new(name: "fspace", parameters: [f1])

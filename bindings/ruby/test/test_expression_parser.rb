@@ -2,10 +2,6 @@ require 'minitest/autorun'
 require_relative '../lib/cconfigspace'
 
 class CConfigSpaceTestExpressionParser < Minitest::Test
-  def setup
-    CCS.init
-  end
-
   def test_parse
     exp = "1.0 + 1 == 2 || +1 == 3e0 && \"y\\nes\" == 'no' "
     res = CCS.parse(exp)

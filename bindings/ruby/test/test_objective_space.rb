@@ -2,10 +2,6 @@ require 'minitest/autorun'
 require_relative '../lib/cconfigspace'
 
 class CConfigSpaceTestObjectiveSpace < Minitest::Test
-  def setup
-    CCS.init
-  end
-
   def test_create
     h = CCS::NumericalParameter::Float.new
     cs = CCS::ConfigurationSpace::new(name: "cs", parameters: [h])

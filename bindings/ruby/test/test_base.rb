@@ -2,10 +2,6 @@ require 'minitest/autorun'
 require_relative '../lib/cconfigspace'
 
 class CConfigSpaceTest < Minitest::Test
-  def setup
-    CCS.init
-  end
-
   def test_version
     ver = CCS.version
     assert(ver.kind_of?(CCS::Version))

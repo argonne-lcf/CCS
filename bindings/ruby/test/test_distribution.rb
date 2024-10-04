@@ -2,10 +2,6 @@ require 'minitest/autorun'
 require_relative '../lib/cconfigspace'
 
 class CConfigSpaceTestDistribution < Minitest::Test
-  def setup
-    CCS.init
-  end
-
   def test_from_handle_roulette
     areas = [ 1.0, 2.0, 1.0, 0.5 ]
     d = CCS::RouletteDistribution::new(areas: areas)

@@ -2,8 +2,6 @@ require_relative '../lib/cconfigspace'
 require 'xmlrpc/server'
 require 'base64'
 
-CCS.init
-
 class TunerData
   attr_accessor :history, :optima
   def initialize

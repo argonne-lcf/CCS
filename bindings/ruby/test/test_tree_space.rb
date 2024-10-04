@@ -2,10 +2,6 @@ require 'minitest/autorun'
 require_relative '../lib/cconfigspace'
 
 class CConfigSpaceTestTreeSpace < Minitest::Test
-  def setup
-    CCS.init
-  end
-
   def generate_tree(depth, rank)
     ar = depth - rank
     ar = 0 if ar < 0

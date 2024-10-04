@@ -2,10 +2,6 @@ require 'minitest/autorun'
 require_relative '../lib/cconfigspace'
 
 class CConfigSpaceTestRng < Minitest::Test
-  def setup
-    CCS.init
-  end
-
   def test_create
     rng = CCS::Rng::new
     assert_equal( :CCS_OBJECT_TYPE_RNG, rng.object_type )
