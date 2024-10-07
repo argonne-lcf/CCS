@@ -351,7 +351,7 @@ struct ccs_user_defined_tuner_vector_s {
 	 */
 	ccs_result_t (*deserialize_state)(
 		ccs_objective_space_t objective_space,
-		size_t                size_history,
+		size_t                history_size,
 		ccs_evaluation_t     *history,
 		size_t                num_optima,
 		ccs_evaluation_t     *optima,

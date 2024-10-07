@@ -343,10 +343,10 @@ class UserDefinedTuner(Tuner):
       serialize_wrapper = 0
 
     if deserialize is not None:
-      def deserialize_wrapper(o_space, size_history, p_history, num_optima, p_optima, state_size, p_state, p_tuner_data):
+      def deserialize_wrapper(o_space, history_size, p_history, num_optima, p_optima, state_size, p_state, p_tuner_data):
         try:
           if p_history:
-            history = [Evaluation.from_handle(p_history[i]) for i in range(size_history)]
+            history = [Evaluation.from_handle(p_history[i]) for i in range(history_size)]
           else:
             history = []
           if p_optima:

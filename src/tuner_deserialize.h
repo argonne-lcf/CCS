@@ -4,7 +4,7 @@
 
 struct _ccs_random_tuner_data_mock_s {
 	_ccs_tuner_common_data_t common_data;
-	size_t                   size_history;
+	size_t                   history_size;
 	size_t                   size_optima;
 	ccs_evaluation_t        *history;
 	ccs_evaluation_t        *optima;
@@ -43,22 +43,22 @@ _ccs_deserialize_bin_ccs_random_tuner_data(
 	CCS_VALIDATE(_ccs_deserialize_bin_ccs_tuner_common_data(
 		&data->common_data, version, buffer_size, buffer, opts));
 	CCS_VALIDATE(_ccs_deserialize_bin_size(
-		&data->size_history, buffer_size, buffer));
+		&data->history_size, buffer_size, buffer));
 	CCS_VALIDATE(_ccs_deserialize_bin_size(
 		&data->size_optima, buffer_size, buffer));
 
-	if (!(data->size_history + data->size_optima))
+	if (!(data->history_size + data->size_optima))
 		return CCS_RESULT_SUCCESS;
 	mem = (uintptr_t)calloc(
-		(data->size_history + data->size_optima),
+		(data->history_size + data->size_optima),
 		sizeof(ccs_evaluation_t));
 	CCS_REFUTE(!mem, CCS_RESULT_ERROR_OUT_OF_MEMORY);
 
 	data->history = (ccs_evaluation_t *)mem;
-	mem += data->size_history * sizeof(ccs_evaluation_t);
+	mem += data->history_size * sizeof(ccs_evaluation_t);
 	data->optima = (ccs_evaluation_t *)mem;
 
-	for (size_t i = 0; i < data->size_history; i++)
+	for (size_t i = 0; i < data->history_size; i++)
 		CCS_VALIDATE(_ccs_object_deserialize_with_opts_check(
 			(ccs_object_t *)data->history + i,
 			CCS_OBJECT_TYPE_EVALUATION, CCS_SERIALIZE_FORMAT_BINARY,
@@ -119,7 +119,7 @@ _ccs_deserialize_bin_random_tuner(
 			tuner_ret),
 		evaluations);
 	odata = (_ccs_random_tuner_data_clone_t *)((*tuner_ret)->data);
-	for (size_t i = 0; i < data.size_history; i++)
+	for (size_t i = 0; i < data.history_size; i++)
 		utarray_push_back(odata->history, data.history + i);
 	for (size_t i = 0; i < data.size_optima; i++)
 		utarray_push_back(odata->optima, data.optima + i);
@@ -129,7 +129,7 @@ tuner:
 	*tuner_ret = NULL;
 evaluations:
 	if (data.history)
-		for (size_t i = 0; i < data.size_history; i++)
+		for (size_t i = 0; i < data.history_size; i++)
 			if (data.history[i])
 				ccs_release_object(data.history[i]);
 end:
@@ -202,7 +202,7 @@ _ccs_deserialize_bin_user_defined_tuner(
 			res,
 			vector->deserialize_state(
 				data.base_data.common_data.objective_space,
-				data.base_data.size_history,
+				data.base_data.history_size,
 				data.base_data.history,
 				data.base_data.size_optima,
 				data.base_data.optima, data.blob.sz,
@@ -220,7 +220,7 @@ _ccs_deserialize_bin_user_defined_tuner(
 		CCS_VALIDATE_ERR_GOTO(
 			res,
 			vector->tell(
-				*tuner_ret, data.base_data.size_history,
+				*tuner_ret, data.base_data.history_size,
 				data.base_data.history),
 			tuner);
 	goto end;
@@ -231,7 +231,7 @@ end:
 	if (data.base_data.common_data.objective_space)
 		ccs_release_object(data.base_data.common_data.objective_space);
 	if (data.base_data.history) {
-		for (size_t i = 0; i < data.base_data.size_history; i++)
+		for (size_t i = 0; i < data.base_data.history_size; i++)
 			if (data.base_data.history[i])
 				ccs_release_object(data.base_data.history[i]);
 		free(data.base_data.history);
