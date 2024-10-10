@@ -1,5 +1,6 @@
 #include "cconfigspace_internal.h"
 #include "tuner_internal.h"
+#include "evaluation_internal.h"
 #include "features_internal.h"
 
 static inline _ccs_tuner_ops_t *
@@ -107,6 +108,13 @@ ccs_tuner_tell(
 {
 	CCS_CHECK_OBJ(tuner, CCS_OBJECT_TYPE_TUNER);
 	CCS_CHECK_ARY(num_evaluations, evaluations);
+	_ccs_tuner_common_data_t *d = (_ccs_tuner_common_data_t *)tuner->data;
+	for (size_t i = 0; i < num_evaluations; i++) {
+		CCS_REFUTE(
+			evaluations[i]->data->objective_space !=
+				d->objective_space,
+			CCS_RESULT_ERROR_INVALID_EVALUATION);
+	}
 	ccs_result_t      err = CCS_RESULT_SUCCESS;
 	_ccs_tuner_ops_t *ops = ccs_tuner_get_ops(tuner);
 	CCS_OBJ_WRLOCK(tuner);
