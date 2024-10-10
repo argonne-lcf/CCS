@@ -192,13 +192,13 @@ _ccs_tuner_random_tell(
 	ccs_result_t              err;
 	for (size_t i = 0; i < num_evaluations; i++) {
 		ccs_evaluation_result_t result;
-		CCS_VALIDATE(ccs_evaluation_get_result(
-			(ccs_evaluation_t)evaluations[i], &result));
+		CCS_VALIDATE(
+			ccs_evaluation_get_result(evaluations[i], &result));
+		CCS_VALIDATE(ccs_retain_object(evaluations[i]));
+		utarray_push_back(history, evaluations + i);
 		if (result == CCS_RESULT_SUCCESS) {
 			int       discard = 0;
 			UT_array *tmp;
-			ccs_retain_object(evaluations[i]);
-			utarray_push_back(history, evaluations + i);
 			tmp           = d->old_optima;
 			d->old_optima = d->optima;
 			d->optima     = tmp;
