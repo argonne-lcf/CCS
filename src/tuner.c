@@ -73,19 +73,18 @@ ccs_tuner_ask(
 	size_t                     *num_configurations_ret)
 {
 	CCS_CHECK_OBJ(tuner, CCS_OBJECT_TYPE_TUNER);
-	if (features)
+	if (features) {
+		_ccs_tuner_common_data_t *d =
+			(_ccs_tuner_common_data_t *)tuner->data;
 		CCS_CHECK_OBJ(features, CCS_OBJECT_TYPE_FEATURES);
+		CCS_REFUTE(
+			features->data->feature_space != d->feature_space,
+			CCS_RESULT_ERROR_INVALID_FEATURES);
+	}
 	CCS_CHECK_ARY(num_configurations, configurations);
 	CCS_REFUTE(
 		!configurations && !num_configurations_ret,
 		CCS_RESULT_ERROR_INVALID_VALUE);
-	_ccs_tuner_common_data_t *d = (_ccs_tuner_common_data_t *)tuner->data;
-	if (d->feature_space && features) {
-		ccs_bool_t valid;
-		CCS_VALIDATE(ccs_feature_space_check_features(
-			d->feature_space, features, &valid));
-		CCS_REFUTE(!valid, CCS_RESULT_ERROR_INVALID_FEATURES);
-	}
 	ccs_result_t      err = CCS_RESULT_SUCCESS;
 	_ccs_tuner_ops_t *ops = ccs_tuner_get_ops(tuner);
 	CCS_OBJ_RDLOCK(tuner);
@@ -196,18 +195,17 @@ ccs_tuner_suggest(
 	ccs_search_configuration_t *configuration)
 {
 	CCS_CHECK_OBJ(tuner, CCS_OBJECT_TYPE_TUNER);
+	if (features) {
+		_ccs_tuner_common_data_t *d =
+			(_ccs_tuner_common_data_t *)tuner->data;
+		CCS_CHECK_OBJ(features, CCS_OBJECT_TYPE_FEATURES);
+		CCS_REFUTE(
+			features->data->feature_space != d->feature_space,
+			CCS_RESULT_ERROR_INVALID_FEATURES);
+	}
 	_ccs_tuner_ops_t *ops = ccs_tuner_get_ops(tuner);
 	CCS_REFUTE(!ops->suggest, CCS_RESULT_ERROR_UNSUPPORTED_OPERATION);
-	if (features)
-		CCS_CHECK_OBJ(features, CCS_OBJECT_TYPE_FEATURES);
 	CCS_CHECK_PTR(configuration);
-	_ccs_tuner_common_data_t *d = (_ccs_tuner_common_data_t *)tuner->data;
-	if (d->feature_space) {
-		ccs_bool_t valid;
-		CCS_VALIDATE(ccs_feature_space_check_features(
-			d->feature_space, features, &valid));
-		CCS_REFUTE(!valid, CCS_RESULT_ERROR_INVALID_FEATURES);
-	}
 	ccs_result_t err = CCS_RESULT_SUCCESS;
 	CCS_OBJ_RDLOCK(tuner);
 	CCS_VALIDATE_ERR_GOTO(

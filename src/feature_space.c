@@ -155,37 +155,3 @@ errc:
 	ccs_release_object(features);
 	return err;
 }
-
-static inline ccs_result_t
-_check_features(
-	ccs_feature_space_t feature_space,
-	ccs_features_t      features,
-	ccs_bool_t         *is_valid_ret)
-{
-	ccs_parameter_t *parameters     = feature_space->data->parameters;
-	size_t           num_parameters = feature_space->data->num_parameters;
-	ccs_datum_t     *values         = features->data->values;
-	*is_valid_ret                   = CCS_TRUE;
-	for (size_t i = 0; i < num_parameters; i++) {
-		CCS_VALIDATE(ccs_parameter_check_value(
-			parameters[i], values[i], is_valid_ret));
-		if (*is_valid_ret == CCS_FALSE)
-			return CCS_RESULT_SUCCESS;
-	}
-	return CCS_RESULT_SUCCESS;
-}
-
-ccs_result_t
-ccs_feature_space_check_features(
-	ccs_feature_space_t feature_space,
-	ccs_features_t      features,
-	ccs_bool_t         *is_valid_ret)
-{
-	CCS_CHECK_OBJ(feature_space, CCS_OBJECT_TYPE_FEATURE_SPACE);
-	CCS_CHECK_OBJ(features, CCS_OBJECT_TYPE_FEATURES);
-	CCS_REFUTE(
-		features->data->feature_space != feature_space,
-		CCS_RESULT_ERROR_INVALID_FEATURES);
-	CCS_VALIDATE(_check_features(feature_space, features, is_valid_ret));
-	return CCS_RESULT_SUCCESS;
-}

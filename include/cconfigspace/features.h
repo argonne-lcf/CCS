@@ -55,25 +55,6 @@ ccs_features_get_feature_space(
 	ccs_features_t       features,
 	ccs_feature_space_t *feature_space_ret);
 
-/**
- * Check that the features is a valid features for the feature space.
- * @param[in] features
- * @param[out] is_valid_ret a pointer to a variable that will hold the result
- *                          of the check. Result will be #CCS_TRUE if the
- *                          features is valid. Result will be #CCS_FALSE if
- *                          an parameter value is not a valid value
- *                          for this parameter
- * @return #CCS_RESULT_SUCCESS on success
- * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p features is not a valid CCS
- * features
- * @return #CCS_RESULT_ERROR_INVALID_CONFIGURATION if \p features is found to be
- * invalid
- * @remarks
- *   This function is thread-safe
- */
-extern ccs_result_t
-ccs_features_check(ccs_features_t features, ccs_bool_t *is_valid_ret);
-
 #ifdef __cplusplus
 }
 #endif

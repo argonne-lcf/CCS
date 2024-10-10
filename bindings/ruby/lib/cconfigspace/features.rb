@@ -1,7 +1,6 @@
 module CCS
 
   attach_function :ccs_create_features, [:ccs_feature_space_t, :size_t, :pointer, :pointer], :ccs_result_t
-  attach_function :ccs_features_check, [:ccs_features_t, :pointer], :ccs_result_t
 
   class Features < Binding
     alias feature_space context
@@ -30,12 +29,6 @@ module CCS
 
     def self.from_handle(handle, retain: true, auto_release: true)
       self::new(handle, retain: retain, auto_release: auto_release)
-    end
-
-    def check
-      ptr = MemoryPointer::new(:ccs_bool_t)
-      CCS.error_check CCS.ccs_features_check(@handle, ptr)
-      return ptr.read_ccs_bool_t == CCS::FALSE ? false : true
     end
 
   end

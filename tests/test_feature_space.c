@@ -129,7 +129,6 @@ test_features(void)
 	ccs_datum_t    datum;
 	size_t         num_values_ret;
 	int            cmp;
-	ccs_bool_t     check;
 
 	parameters[0] = create_dummy_parameter("param1");
 	parameters[1] = create_dummy_parameter("param2");
@@ -169,15 +168,6 @@ test_features(void)
 	assert(values[1].type == datum.type);
 	assert(values[1].value.f == datum.value.f);
 
-	err = ccs_features_check(features1, &check);
-	assert(err == CCS_RESULT_SUCCESS);
-	assert(check);
-
-	err = ccs_feature_space_check_features(
-		feature_space, features1, &check);
-	assert(err == CCS_RESULT_SUCCESS);
-	assert(check);
-
 	err = ccs_create_features(feature_space, 3, values, &features2);
 	assert(err == CCS_RESULT_SUCCESS);
 
@@ -201,16 +191,7 @@ test_features(void)
 
 	values[1] = ccs_float(10.0);
 	err       = ccs_create_features(feature_space, 3, values, &features2);
-	assert(err == CCS_RESULT_SUCCESS);
-
-	err = ccs_features_check(features2, &check);
-	assert(err == CCS_RESULT_SUCCESS);
-	assert(!check);
-
-	err = ccs_feature_space_check_features(
-		feature_space, features2, &check);
-	assert(err == CCS_RESULT_SUCCESS);
-	assert(!check);
+	assert(err == CCS_RESULT_ERROR_INVALID_VALUE);
 
 	for (size_t i = 0; i < 3; i++) {
 		err = ccs_release_object(parameters[i]);
@@ -219,8 +200,6 @@ test_features(void)
 	err = ccs_release_object(feature_space);
 	assert(err == CCS_RESULT_SUCCESS);
 	err = ccs_release_object(features1);
-	assert(err == CCS_RESULT_SUCCESS);
-	err = ccs_release_object(features2);
 	assert(err == CCS_RESULT_SUCCESS);
 }
 

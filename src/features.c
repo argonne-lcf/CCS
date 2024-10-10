@@ -109,14 +109,12 @@ _ccs_create_features(
 		memcpy(feat->data->values, values,
 		       num_parameters * sizeof(ccs_datum_t));
 		for (size_t i = 0; i < num_values; i++)
-			if (values[i].flags & CCS_DATUM_FLAG_TRANSIENT)
-				CCS_VALIDATE_ERR_GOTO(
-					err,
-					ccs_context_validate_value(
-						(ccs_context_t)feature_space, i,
-						values[i],
-						feat->data->values + i),
-					errinit);
+			CCS_VALIDATE_ERR_GOTO(
+				err,
+				ccs_context_validate_value(
+					(ccs_context_t)feature_space, i,
+					values[i], feat->data->values + i),
+				errinit);
 	}
 	*features_ret = feat;
 	return CCS_RESULT_SUCCESS;
@@ -153,14 +151,5 @@ ccs_features_get_feature_space(
 	CCS_CHECK_OBJ(features, CCS_OBJECT_TYPE_FEATURES);
 	CCS_VALIDATE(_ccs_binding_get_context(
 		(ccs_binding_t)features, (ccs_context_t *)feature_space_ret));
-	return CCS_RESULT_SUCCESS;
-}
-
-ccs_result_t
-ccs_features_check(ccs_features_t features, ccs_bool_t *is_valid_ret)
-{
-	CCS_CHECK_OBJ(features, CCS_OBJECT_TYPE_FEATURES);
-	CCS_VALIDATE(ccs_feature_space_check_features(
-		features->data->feature_space, features, is_valid_ret));
 	return CCS_RESULT_SUCCESS;
 }

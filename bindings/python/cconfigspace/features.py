@@ -6,7 +6,6 @@ from .binding import Binding
 
 ccs_create_features = _ccs_get_function("ccs_create_features", [ccs_feature_space, ct.c_size_t, ct.POINTER(Datum), ct.POINTER(ccs_features)])
 ccs_features_get_feature_space = _ccs_get_function("ccs_features_get_feature_space", [ccs_features, ct.POINTER(ccs_feature_space)])
-ccs_features_check = _ccs_get_function("ccs_features_check", [ccs_features, ct.POINTER(ccs_bool)])
 
 class Features(Binding):
   def __init__(self, handle = None, retain = False, auto_release = True,
@@ -41,11 +40,5 @@ class Features(Binding):
     Error.check(res)
     self._feature_space = FeatureSpace.from_handle(v)
     return self._feature_space
-
-  def check(self):
-    valid = ccs_bool()
-    res = ccs_features_check(self.handle, ct.byref(valid))
-    Error.check(res)
-    return False if valid.value == 0 else True
 
 from .feature_space import FeatureSpace
