@@ -254,43 +254,44 @@ ccs_create_evaluation(
 	CCS_CHECK_ARY(num_values, values);
 	ccs_result_t err;
 	size_t       num_parameters = objective_space->data->num_parameters;
+	size_t       num_objectives;
+	CCS_VALIDATE(ccs_objective_space_get_objectives(
+		objective_space, 0, NULL, NULL, &num_objectives));
 	CCS_REFUTE(
-		values && num_parameters != num_values,
-		CCS_RESULT_ERROR_INVALID_VALUE);
+		num_parameters != num_values, CCS_RESULT_ERROR_INVALID_VALUE);
 	uintptr_t mem = (uintptr_t)calloc(
 		1, sizeof(struct _ccs_evaluation_s) +
 			   sizeof(struct _ccs_evaluation_data_s) +
-			   num_parameters * sizeof(ccs_datum_t));
+			   num_parameters * sizeof(ccs_datum_t) +
+			   num_objectives * sizeof(ccs_datum_t));
+	uintptr_t cur_mem = mem;
 	CCS_REFUTE(!mem, CCS_RESULT_ERROR_OUT_OF_MEMORY);
 	CCS_VALIDATE_ERR_GOTO(err, ccs_retain_object(objective_space), errmem);
 	CCS_VALIDATE_ERR_GOTO(err, ccs_retain_object(configuration), erros);
 	ccs_evaluation_t eval;
-	eval = (ccs_evaluation_t)mem;
+	eval = (ccs_evaluation_t)cur_mem;
+	cur_mem += sizeof(struct _ccs_evaluation_s);
 	_ccs_object_init(
 		&(eval->obj), CCS_OBJECT_TYPE_EVALUATION,
 		(_ccs_object_ops_t *)&_evaluation_ops);
-	eval->data                  = (struct _ccs_evaluation_data_s
-                              *)(mem + sizeof(struct _ccs_evaluation_s));
+	eval->data = (struct _ccs_evaluation_data_s *)(cur_mem);
+	cur_mem += sizeof(struct _ccs_evaluation_data_s);
 	eval->data->num_values      = num_parameters;
+	eval->data->num_objectives  = num_objectives;
 	eval->data->objective_space = objective_space;
 	eval->data->configuration   = configuration;
 	eval->data->result          = result;
-	eval->data->values =
-		(ccs_datum_t
-			 *)(mem + sizeof(struct _ccs_evaluation_s) + sizeof(struct _ccs_evaluation_data_s));
-	if (values) {
-		memcpy(eval->data->values, values,
-		       num_parameters * sizeof(ccs_datum_t));
-		for (size_t i = 0; i < num_values; i++)
-			if (values[i].flags & CCS_DATUM_FLAG_TRANSIENT)
-				CCS_VALIDATE_ERR_GOTO(
-					err,
-					ccs_context_validate_value(
-						(ccs_context_t)objective_space,
-						i, values[i],
-						eval->data->values + i),
-					errc);
-	}
+	eval->data->values          = (ccs_datum_t *)(cur_mem);
+	cur_mem += num_parameters * sizeof(ccs_datum_t);
+	eval->data->objective_values = (ccs_datum_t *)(cur_mem);
+
+	for (size_t i = 0; i < num_values; i++)
+		CCS_VALIDATE_ERR_GOTO(
+			err,
+			ccs_context_validate_value(
+				(ccs_context_t)objective_space, i, values[i],
+				eval->data->values + i),
+			errc);
 	eval->data->bindings[0]  = (ccs_binding_t)eval;
 	eval->data->num_bindings = 1;
 	if (configuration->obj.type == CCS_OBJECT_TYPE_CONFIGURATION) {
@@ -307,6 +308,26 @@ ccs_create_evaluation(
 		eval->data->bindings[eval->data->num_bindings] =
 			(ccs_binding_t)features;
 		eval->data->num_bindings++;
+	}
+	if (result == CCS_RESULT_SUCCESS) {
+		for (size_t i = 0; i < num_objectives; i++) {
+			ccs_expression_t     expression;
+			ccs_objective_type_t type;
+
+			CCS_VALIDATE_ERR_GOTO(
+				err,
+				ccs_objective_space_get_objective(
+					eval->data->objective_space, i,
+					&expression, &type),
+				errc);
+			CCS_VALIDATE_ERR_GOTO(
+				err,
+				ccs_expression_eval(
+					expression, eval->data->num_bindings,
+					eval->data->bindings,
+					eval->data->objective_values + i),
+				errc);
+		}
 	}
 	*evaluation_ret = eval;
 	return CCS_RESULT_SUCCESS;
@@ -366,15 +387,6 @@ ccs_evaluation_get_features(
 }
 
 ccs_result_t
-ccs_evaluation_check(ccs_evaluation_t evaluation, ccs_bool_t *is_valid_ret)
-{
-	CCS_CHECK_OBJ(evaluation, CCS_OBJECT_TYPE_EVALUATION);
-	CCS_VALIDATE(ccs_objective_space_check_evaluation(
-		evaluation->data->objective_space, evaluation, is_valid_ret));
-	return CCS_RESULT_SUCCESS;
-}
-
-ccs_result_t
 ccs_evaluation_get_objective_value(
 	ccs_evaluation_t evaluation,
 	size_t           index,
@@ -402,22 +414,11 @@ ccs_evaluation_get_objective_values(
 	CCS_CHECK_OBJ(evaluation, CCS_OBJECT_TYPE_EVALUATION);
 	CCS_CHECK_ARY(num_values, values);
 	CCS_REFUTE(!values && !num_values_ret, CCS_RESULT_ERROR_INVALID_VALUE);
-	size_t count;
-	CCS_VALIDATE(ccs_objective_space_get_objectives(
-		evaluation->data->objective_space, 0, NULL, NULL, &count));
+	size_t count = evaluation->data->num_objectives;
 	if (values) {
 		CCS_REFUTE(count < num_values, CCS_RESULT_ERROR_INVALID_VALUE);
-		for (size_t i = 0; i < count; i++) {
-			ccs_expression_t     expression;
-			ccs_objective_type_t type;
-
-			CCS_VALIDATE(ccs_objective_space_get_objective(
-				evaluation->data->objective_space, i,
-				&expression, &type));
-			CCS_VALIDATE(ccs_expression_eval(
-				expression, evaluation->data->num_bindings,
-				evaluation->data->bindings, values + i));
-		}
+		for (size_t i = 0; i < count; i++)
+			values[i] = evaluation->data->objective_values[i];
 		for (size_t i = count; i < num_values; i++)
 			values[i] = ccs_none;
 	}

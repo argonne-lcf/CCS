@@ -16,7 +16,6 @@ ccs_create_objective_space = _ccs_get_function("ccs_create_objective_space", [ct
 ccs_objective_space_get_search_space = _ccs_get_function("ccs_objective_space_get_search_space", [ccs_objective_space, ct.POINTER(ccs_search_space)])
 ccs_objective_space_get_objective = _ccs_get_function("ccs_objective_space_get_objective", [ccs_objective_space, ct.c_size_t, ct.POINTER(ccs_expression), ct.POINTER(ObjectiveType)])
 ccs_objective_space_get_objectives = _ccs_get_function("ccs_objective_space_get_objectives", [ccs_objective_space, ct.c_size_t, ct.POINTER(ccs_expression), ct.POINTER(ObjectiveType), ct.POINTER(ct.c_size_t)])
-ccs_objective_space_check_evaluation = _ccs_get_function("ccs_objective_space_check_evaluation", [ccs_objective_space, ccs_evaluation, ct.POINTER(ccs_bool)])
 
 class ObjectiveSpace(Context):
   def __init__(self, handle = None, retain = False, auto_release = True,
@@ -94,10 +93,3 @@ class ObjectiveSpace(Context):
     Error.check(res)
     self._objectives = tuple((Expression.from_handle(ccs_expression(v[x])), t[x].value) for x in range(sz))
     return self._objectives
-
-  def check(self, evaluation):
-    valid = ccs_bool()
-    res = ccs_objective_space_check_evaluation(self.handle, evaluation.handle, ct.byref(valid))
-    Error.check(res)
-    return False if valid.value == 0 else True
-

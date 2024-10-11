@@ -17,7 +17,6 @@ module CCS
   attach_function :ccs_evaluation_get_result, [:ccs_evaluation_t, :pointer], :ccs_result_t
   attach_function :ccs_evaluation_get_objective_values, [:ccs_evaluation_t, :size_t, :pointer, :pointer], :ccs_result_t
   attach_function :ccs_evaluation_compare, [:ccs_evaluation_t, :ccs_evaluation_t, :pointer], :ccs_result_t
-  attach_function :ccs_evaluation_check, [:ccs_evaluation_t, :pointer], :ccs_result_t
 
   class Evaluation < Binding
     alias objective_space context
@@ -51,12 +50,6 @@ module CCS
 
     def self.from_handle(handle, retain: true, auto_release: true)
       self::new(handle, retain: retain, auto_release: auto_release)
-    end
-
-    def check
-      ptr = MemoryPointer::new(:ccs_bool_t)
-      CCS.error_check CCS.ccs_evaluation_check(@handle, ptr)
-      return ptr.read_ccs_bool_t == CCS::FALSE ? false : true
     end
 
     def compare(other)

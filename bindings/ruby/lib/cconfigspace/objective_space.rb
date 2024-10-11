@@ -22,7 +22,6 @@ module CCS
   attach_function :ccs_objective_space_get_search_space, [:ccs_objective_space_t, :pointer], :ccs_result_t
   attach_function :ccs_objective_space_get_objective, [:ccs_objective_space_t, :size_t, :pointer, :pointer], :ccs_result_t
   attach_function :ccs_objective_space_get_objectives, [:ccs_objective_space_t, :size_t, :pointer, :pointer, :pointer], :ccs_result_t
-  attach_function :ccs_objective_space_check_evaluation, [:ccs_objective_space_t, :ccs_evaluation_t, :pointer], :ccs_result_t
 
   class ObjectiveSpace < Context
     add_handle_property :search_space, :ccs_search_space_t, :ccs_objective_space_get_search_space, memoize: true
@@ -89,12 +88,6 @@ module CCS
         types = p_types.read_array_of_ccs_objective_type_t(count)
         exprs.zip(types).freeze
       end
-    end
-
-    def check(evaluation)
-      ptr2 = MemoryPointer::new(:ccs_bool_t)
-      CCS.error_check CCS.ccs_objective_space_check_evaluation(@handle, evaluation.handle, ptr2)
-      return ptr2.read_ccs_bool_t == CCS::FALSE ? false : true
     end
   end
 end

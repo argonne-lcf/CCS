@@ -321,42 +321,6 @@ ccs_objective_space_get_search_space(
 	return CCS_RESULT_SUCCESS;
 }
 
-static inline ccs_result_t
-_check_evaluation(
-	ccs_objective_space_t objective_space,
-	ccs_evaluation_t      evaluation,
-	ccs_bool_t           *is_valid_ret)
-{
-	ccs_parameter_t *parameters     = objective_space->data->parameters;
-	size_t           num_parameters = objective_space->data->num_parameters;
-	ccs_datum_t     *values         = evaluation->data->values;
-
-	*is_valid_ret                   = CCS_TRUE;
-	for (size_t i = 0; i < num_parameters; i++) {
-		CCS_VALIDATE(ccs_parameter_check_value(
-			parameters[i], values[i], is_valid_ret));
-		if (*is_valid_ret == CCS_FALSE)
-			return CCS_RESULT_SUCCESS;
-	}
-	return CCS_RESULT_SUCCESS;
-}
-
-ccs_result_t
-ccs_objective_space_check_evaluation(
-	ccs_objective_space_t objective_space,
-	ccs_evaluation_t      evaluation,
-	ccs_bool_t           *is_valid_ret)
-{
-	CCS_CHECK_OBJ(objective_space, CCS_OBJECT_TYPE_OBJECTIVE_SPACE);
-	CCS_CHECK_OBJ(evaluation, CCS_OBJECT_TYPE_EVALUATION);
-	CCS_REFUTE(
-		evaluation->data->objective_space != objective_space,
-		CCS_RESULT_ERROR_INVALID_EVALUATION);
-	CCS_VALIDATE(
-		_check_evaluation(objective_space, evaluation, is_valid_ret));
-	return CCS_RESULT_SUCCESS;
-}
-
 ccs_result_t
 ccs_objective_space_get_objective(
 	ccs_objective_space_t objective_space,

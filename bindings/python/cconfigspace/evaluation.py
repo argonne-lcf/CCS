@@ -18,7 +18,6 @@ ccs_evaluation_get_features = _ccs_get_function("ccs_evaluation_get_features", [
 ccs_evaluation_get_objective_values = _ccs_get_function("ccs_evaluation_get_objective_values", [ccs_evaluation, ct.c_size_t, ct.POINTER(Datum), ct.POINTER(ct.c_size_t)])
 ccs_evaluation_get_result = _ccs_get_function("ccs_evaluation_get_result", [ccs_evaluation, ct.POINTER(ccs_evaluation_result)])
 ccs_evaluation_compare = _ccs_get_function("ccs_evaluation_compare", [ccs_evaluation, ccs_evaluation, ct.POINTER(Comparison)])
-ccs_evaluation_check = _ccs_get_function("ccs_evaluation_check", [ccs_evaluation, ct.POINTER(ccs_bool)])
 
 class Evaluation(Binding):
   def __init__(self, handle = None, retain = False, auto_release = True,
@@ -113,10 +112,4 @@ class Evaluation(Binding):
     res = ccs_evaluation_compare(self.handle, other.handle, ct.byref(v))
     Error.check(res)
     return v.value
-
-  def check(self):
-    valid = ccs_bool()
-    res = ccs_evaluation_check(self.handle, ct.byref(valid))
-    Error.check(res)
-    return False if valid.value == 0 else True
 

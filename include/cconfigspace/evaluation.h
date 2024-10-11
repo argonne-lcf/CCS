@@ -193,25 +193,6 @@ ccs_evaluation_get_objective_values(
 	size_t          *num_values_ret);
 
 /**
- * Check that an evaluation values are valid in the objective space.
- * @param[in] evaluation
- * @param[out] is_valid_ret a pointer to a variable that will hold the result
- *                          of the check. Result will be #CCS_TRUE if the
- *                          evaluation is valid. Result will be #CCS_FALSE if
- *                          an parameter value is not a valid value
- *                          for this parameter
- * @return #CCS_RESULT_SUCCESS on success
- * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p evaluation is not a valid CCS
- * evaluation
- * @return #CCS_RESULT_ERROR_INVALID_EVALUATION if \p evaluation was found to be
- * invalid in the context of the objective space
- * @remarks
- *   This function is thread-safe
- */
-extern ccs_result_t
-ccs_evaluation_check(ccs_evaluation_t evaluation, ccs_bool_t *is_valid_ret);
-
-/**
  * Compare two successful evaluations objectives.
  * @param[in] evaluation the first evaluation
  * @param[in] other_evaluation the second evaluation

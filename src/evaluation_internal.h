@@ -32,6 +32,8 @@ struct _ccs_evaluation_data_s {
 	ccs_objective_space_t      objective_space;
 	size_t                     num_values;
 	ccs_datum_t               *values;
+	size_t                     num_objectives;
+	ccs_datum_t               *objective_values;
 	ccs_evaluation_result_t    result;
 	ccs_search_configuration_t configuration;
 	size_t                     num_bindings;

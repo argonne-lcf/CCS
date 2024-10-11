@@ -35,7 +35,7 @@ class TestObjectiveSpace(unittest.TestCase):
     fs = ccs.FeatureSpace(parameters = [f])
     p = ccs.NumericalParameter.Float()
     cs = ccs.ConfigurationSpace(name = "cs", parameters = [p], feature_space = fs)
-    h = ccs.NumericalParameter.Float()
+    h = ccs.NumericalParameter.Float(lower = -1.0, upper = 1.0, default = 0.0)
     e1 = ccs.Expression.Add(left = f, right = p)
     e2 = ccs.Expression.Variable(parameter = h)
     os = ccs.ObjectiveSpace(name = "space", search_space = cs, parameters = [h], objectives = [e1, e2], types = [ccs.ObjectiveType.MINIMIZE, ccs.ObjectiveType.MAXIMIZE])

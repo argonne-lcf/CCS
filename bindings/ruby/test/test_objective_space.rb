@@ -33,7 +33,7 @@ class CConfigSpaceTestObjectiveSpace < Minitest::Test
     fs = CCS::FeatureSpace::new(parameters: [f])
     p = CCS::NumericalParameter::Float.new
     cs = CCS::ConfigurationSpace::new(name: "cs", parameters: [p], feature_space: fs)
-    h = CCS::NumericalParameter::Float.new
+    h = CCS::NumericalParameter::Float.new(lower: -1.0, upper: 1.0, default: 0.0)
     e1 = CCS::Expression::Add.new(left: f, right: p)
     e2 = CCS::Expression::Variable.new(parameter: h)
     os = CCS::ObjectiveSpace::new(name: "space", search_space: cs, parameters: [h], objectives: [e1, e2], types: [:CCS_OBJECTIVE_TYPE_MINIMIZE, :CCS_OBJECTIVE_TYPE_MAXIMIZE])
