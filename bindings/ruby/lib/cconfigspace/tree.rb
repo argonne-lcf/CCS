@@ -9,7 +9,6 @@ module CCS
   attach_function :ccs_tree_get_parent, [:ccs_tree_t, :pointer, :pointer], :ccs_result_t
   attach_function :ccs_tree_get_position, [:ccs_tree_t, :size_t, :pointer, :pointer], :ccs_result_t
   attach_function :ccs_tree_get_values, [:ccs_tree_t, :size_t, :pointer, :pointer], :ccs_result_t
-  attach_function :ccs_tree_position_is_valid, [:ccs_tree_t, :size_t, :pointer, :pointer], :ccs_result_t
   attach_function :ccs_tree_get_values_at_position, [:ccs_tree_t, :size_t, :pointer, :size_t, :pointer], :ccs_result_t
   attach_function :ccs_tree_get_node_at_position, [:ccs_tree_t, :size_t, :pointer, :pointer], :ccs_result_t
   attach_function :ccs_tree_get_weight, [:ccs_tree_t, :pointer], :ccs_result_t
@@ -23,6 +22,10 @@ module CCS
     add_property :arity, :size_t, :ccs_tree_get_arity, memoize: true
     add_property :weight, :ccs_float_t, :ccs_tree_get_weight, memoize: false
     add_property :bias, :ccs_float_t, :ccs_tree_get_bias, memoize: false
+    add_property :value, :ccs_datum_t, :ccs_tree_get_value, memoize: true
+    add_handle_array_property :children, :ccs_tree_t, :ccs_tree_get_children, memoize: false
+    add_array_property :position_items, :size_t, :ccs_tree_get_position, memoize: false
+    add_array_property :values, :ccs_datum_t, :ccs_tree_get_values, memoize: false
 
     def initialize(handle = nil, retain: false, auto_release: true,
                    value: nil, arity: nil)
@@ -37,12 +40,6 @@ module CCS
 
     def self.from_handle(handle, retain: true, auto_release: true)
       self.new(handle, retain: retain, auto_release: auto_release)
-    end
-
-    def value
-      ptr = MemoryPointer::new(:ccs_datum_t)
-      CCS.error_check CCS.ccs_tree_get_value(@handle, ptr)
-      Datum::new(ptr).value
     end
 
     def weight=(weight)
@@ -67,14 +64,6 @@ module CCS
       h.null? ? nil : Tree.from_handle(h)
     end
 
-    def children
-      count = arity
-      return [] if arity == 0
-      ptr = MemoryPointer::new(:ccs_tree_t, count)
-      CCS.error_check CCS.ccs_tree_get_children(@handle, count, ptr, nil)
-      ptr.read_array_of_pointer(count).collect { |h| h.null? ? nil : Tree.from_handle(h) }
-    end
-
     def parent
       ptr = MemoryPointer::new(:ccs_tree_t)
       CCS.error_check CCS.ccs_tree_get_parent(@handle, ptr, nil)
@@ -89,34 +78,8 @@ module CCS
       ptr1.read_ccs_tree_t.null? ? nil : ptr2.read_size_t
     end
 
-    def depth
-      ptr = MemoryPointer::new(:size_t)
-      CCS.error_check CCS.ccs_tree_get_position(@handle, 0, nil, ptr)
-      ptr.read_size_t
-    end
-
-    def position
-      count = depth
-      ptr = MemoryPointer::new(:size_t, count)
-      CCS.error_check CCS.ccs_tree_get_position(@handle, count, ptr, nil)
-      ptr.read_array_of_size_t(count)
-    end
-
-    def values
-      count = depth + 1
-      ptr = MemoryPointer::new(:ccs_datum_t, count)
-      CCS.error_check CCS.ccs_tree_get_values(@handle, count, ptr, nil)
-      count.times.collect { |i| Datum::new(ptr[i]).value }
-    end
-
-    def position_is_valid?(position)
-      count = position.size
-      ptr1 = MemoryPointer::new(:size_t, count)
-      ptr1.write_array_of_size_t(position)
-      ptr2 = MemoryPointer::new(:ccs_bool_t)
-      CCS.error_check CCS.ccs_tree_position_is_valid(@handle, count, ptr1, ptr2)
-      ptr2.read_ccs_bool_t == CCS::FALSE ? false : true
-    end
+    alias depth num_position_items
+    alias position position_items
 
     def get_values_at_position(position)
       count1 = position.size

@@ -10,6 +10,8 @@ module CCS
   class Rng < Object
     add_property :min, :ulong, :ccs_rng_min, memoize: true
     add_property :max, :ulong, :ccs_rng_max, memoize: true
+    add_property :get, :ulong, :ccs_rng_get
+    add_property :uniform, :ccs_float_t, :ccs_rng_uniform
 
     def initialize(handle = nil, retain: false, auto_release: true)
       if handle
@@ -30,17 +32,6 @@ module CCS
       s
     end
 
-    def get
-      ptr = MemoryPointer::new(:ulong)
-      CCS.error_check CCS.ccs_rng_get(@handle, ptr)
-      ptr.read_ulong
-    end
-
-    def uniform
-      ptr = MemoryPointer::new(:ccs_float_t)
-      CCS.error_check CCS.ccs_rng_uniform(@handle, ptr)
-      ptr.read_ccs_float_t
-    end
   end
 
   DefaultRng = Rng::new

@@ -1,5 +1,4 @@
 require 'singleton'
-require 'yaml'
 module CCS
   extend FFI::Library
 
@@ -9,7 +8,59 @@ module CCS
     ffi_lib "cconfigspace"
   end
 
+  module MemoryAccessor
+    def self.included(mod)
+      mod.class_eval {
+        alias read_ccs_float_t  read_double
+        alias get_ccs_float_t   get_double
+        alias read_array_of_ccs_float_t  read_array_of_double
+        alias write_array_of_ccs_float_t  write_array_of_double
+        alias read_ccs_int_t    read_int64
+        alias get_ccs_int_t     get_int64
+        alias read_array_of_ccs_int_t  read_array_of_int64
+        alias write_array_of_ccs_int_t  write_array_of_int64
+        alias read_ccs_bool_t   read_int32
+        alias read_ccs_evaluation_result_t read_int32
+        alias read_ccs_hash_t   read_uint32
+        if FFI.find_type(:size_t).size == 8
+          alias read_size_t read_uint64
+          alias write_size_t write_uint64
+          alias write_array_of_size_t write_array_of_uint64
+          alias read_array_of_size_t read_array_of_uint64
+        else
+          alias read_size_t read_uint32
+          alias write_size_t write_uint32
+          alias write_array_of_size_t write_array_of_uint32
+          alias read_array_of_size_t read_array_of_uint32
+        end
+        alias read_ccs_object_t read_pointer
+        alias read_ccs_rng_t read_ccs_object_t
+        alias read_ccs_distribution_t read_ccs_object_t
+        alias read_ccs_parameter_t read_ccs_object_t
+        alias read_ccs_expression_t read_ccs_object_t
+        alias read_ccs_context_t read_ccs_object_t
+        alias read_ccs_distribution_space_t read_ccs_object_t
+        alias read_ccs_search_space_t read_ccs_object_t
+        alias read_ccs_configuration_space_t read_ccs_object_t
+        alias read_ccs_binding_t read_ccs_object_t
+        alias read_ccs_search_configuration_t read_ccs_object_t
+        alias read_ccs_configuration_t read_ccs_object_t
+        alias read_ccs_feature_space_t read_ccs_object_t
+        alias read_ccs_features_t read_ccs_object_t
+        alias read_ccs_objective_space_t read_ccs_object_t
+        alias read_ccs_evaluation_t read_ccs_object_t
+        alias read_ccs_tuner_t read_ccs_object_t
+        alias read_ccs_map_t read_ccs_object_t
+        alias read_ccs_error_stack_t read_ccs_object_t
+        alias read_ccs_tree_t read_ccs_object_t
+        alias read_ccs_tree_space_t read_ccs_object_t
+        alias read_ccs_tree_configuration_t read_ccs_object_t
+      }
+    end
+  end
+
   class Pointer < FFI::Pointer
+    include MemoryAccessor
     def initialize(*args)
       if args.length == 2 then
         super(CCS::find_type(args[0]), args[1])
@@ -17,29 +68,10 @@ module CCS
         super(*args)
       end
     end
-    alias read_ccs_float_t  read_double
-    alias get_ccs_float_t   get_double
-    alias read_array_of_ccs_float_t  read_array_of_double
-    alias write_array_of_ccs_float_t  write_array_of_double
-    alias read_ccs_int_t    read_int64
-    alias get_ccs_int_t     get_int64
-    alias read_array_of_ccs_int_t  read_array_of_int64
-    alias write_array_of_ccs_int_t  write_array_of_int64
-    alias read_ccs_bool_t   read_int32
-    alias read_ccs_evaluation_result_t read_int32
-    alias read_ccs_hash_t   read_uint32
-    if FFI.find_type(:size_t).size == 8
-      alias read_size_t read_uint64
-      alias write_size_t write_uint64
-      alias write_array_of_size_t write_array_of_uint64
-    else
-      alias read_size_t read_uint32
-      alias write_size_t write_uint32
-      alias write_array_of_size_t write_array_of_uint32
-    end
   end
 
   class MemoryPointer < FFI::MemoryPointer
+    include MemoryAccessor
     def initialize(size, count = 1, clear = true)
       if size.is_a?(Symbol)
         size = CCS::find_type(size)
@@ -53,31 +85,6 @@ module CCS
   typedef :int32, :ccs_bool_t
   typedef :int32, :ccs_evaluation_result_t
   typedef :uint32, :ccs_hash_t
-
-  class MemoryPointer
-    alias read_ccs_float_t  read_double
-    alias get_ccs_float_t   get_double
-    alias read_array_of_ccs_float_t  read_array_of_double
-    alias write_array_of_ccs_float_t  write_array_of_double
-    alias read_ccs_int_t    read_int64
-    alias get_ccs_int_t     get_int64
-    alias read_array_of_ccs_int_t  read_array_of_int64
-    alias write_array_of_ccs_int_t  write_array_of_int64
-    alias read_ccs_bool_t   read_int32
-    alias read_ccs_evaluation_result_t read_int32
-    alias read_ccs_hash_t   read_uint32
-    if FFI.find_type(:size_t).size == 8
-      alias read_size_t read_uint64
-      alias write_size_t write_uint64
-      alias write_array_of_size_t write_array_of_uint64
-      alias read_array_of_size_t read_array_of_uint64
-    else
-      alias read_size_t read_uint32
-      alias write_size_t write_uint32
-      alias write_array_of_size_t write_array_of_uint32
-      alias read_array_of_size_t read_array_of_uint32
-    end
-  end
 
   class Version < FFI::Struct
     layout :revision, :uint16,
@@ -96,48 +103,22 @@ module CCS
   typedef :ccs_object_t, :ccs_parameter_t
   typedef :ccs_object_t, :ccs_expression_t
   typedef :ccs_object_t, :ccs_context_t
+  typedef :ccs_object_t, :ccs_distribution_space_t
+  typedef :ccs_object_t, :ccs_search_space_t
   typedef :ccs_object_t, :ccs_configuration_space_t
   typedef :ccs_object_t, :ccs_binding_t
+  typedef :ccs_object_t, :ccs_search_configuration_t
   typedef :ccs_object_t, :ccs_configuration_t
-  typedef :ccs_object_t, :ccs_features_space_t
+  typedef :ccs_object_t, :ccs_feature_space_t
   typedef :ccs_object_t, :ccs_features_t
   typedef :ccs_object_t, :ccs_objective_space_t
   typedef :ccs_object_t, :ccs_evaluation_t
-  typedef :ccs_object_t, :ccs_features_evaluation_t
   typedef :ccs_object_t, :ccs_tuner_t
-  typedef :ccs_object_t, :ccs_features_tuner_t
   typedef :ccs_object_t, :ccs_map_t
   typedef :ccs_object_t, :ccs_error_stack_t
   typedef :ccs_object_t, :ccs_tree_t
   typedef :ccs_object_t, :ccs_tree_space_t
   typedef :ccs_object_t, :ccs_tree_configuration_t
-  typedef :ccs_object_t, :ccs_tree_evaluation_t
-  typedef :ccs_object_t, :ccs_tree_tuner_t
-  class MemoryPointer
-    alias read_ccs_object_t read_pointer
-    alias read_ccs_rng_t read_ccs_object_t
-    alias read_ccs_distribution_t read_ccs_object_t
-    alias read_ccs_parameter_t read_ccs_object_t
-    alias read_ccs_expression_t read_ccs_object_t
-    alias read_ccs_context_t read_ccs_object_t
-    alias read_ccs_configuration_space_t read_ccs_object_t
-    alias read_ccs_binding_t read_ccs_object_t
-    alias read_ccs_configuration_t read_ccs_object_t
-    alias read_ccs_features_space_t read_ccs_object_t
-    alias read_ccs_features_t read_ccs_object_t
-    alias read_ccs_objective_space_t read_ccs_object_t
-    alias read_ccs_evaluation_t read_ccs_object_t
-    alias read_ccs_features_evaluation_t read_ccs_object_t
-    alias read_ccs_tuner_t read_ccs_object_t
-    alias read_ccs_features_tuner_t read_ccs_object_t
-    alias read_ccs_map_t read_ccs_object_t
-    alias read_ccs_error_stack_t read_ccs_object_t
-    alias read_ccs_tree_t read_ccs_object_t
-    alias read_ccs_tree_space_t read_ccs_object_t
-    alias read_ccs_tree_configuration_t read_ccs_object_t
-    alias read_ccs_tree_evaluation_t read_ccs_object_t
-    alias read_ccs_tree_tuner_t read_ccs_object_t
-  end
 
   ObjectType = enum FFI::Type::INT32, :ccs_object_type_t, [
     :CCS_OBJECT_TYPE_RNG,
@@ -149,53 +130,49 @@ module CCS
     :CCS_OBJECT_TYPE_OBJECTIVE_SPACE,
     :CCS_OBJECT_TYPE_EVALUATION,
     :CCS_OBJECT_TYPE_TUNER,
-    :CCS_OBJECT_TYPE_FEATURES_SPACE,
+    :CCS_OBJECT_TYPE_FEATURE_SPACE,
     :CCS_OBJECT_TYPE_FEATURES,
-    :CCS_OBJECT_TYPE_FEATURES_EVALUATION,
-    :CCS_OBJECT_TYPE_FEATURES_TUNER,
     :CCS_OBJECT_TYPE_MAP,
     :CCS_OBJECT_TYPE_ERROR_STACK,
     :CCS_OBJECT_TYPE_TREE,
     :CCS_OBJECT_TYPE_TREE_SPACE,
     :CCS_OBJECT_TYPE_TREE_CONFIGURATION,
-    :CCS_OBJECT_TYPE_TREE_EVALUATION,
-    :CCS_OBJECT_TYPE_TREE_TUNER ]
+    :CCS_OBJECT_TYPE_DISTRIBUTION_SPACE ]
 
   Error = enum FFI::Type::INT32, :ccs_result_t, [
-    :CCS_RESULT_AGAIN,                          1,
-    :CCS_RESULT_SUCCESS,                        0,
-    :CCS_RESULT_ERROR_INVALID_OBJECT,          -1,
-    :CCS_RESULT_ERROR_INVALID_VALUE,           -2,
-    :CCS_RESULT_ERROR_INVALID_TYPE,            -3,
-    :CCS_RESULT_ERROR_INVALID_SCALE,           -4,
-    :CCS_RESULT_ERROR_INVALID_DISTRIBUTION,    -5,
-    :CCS_RESULT_ERROR_INVALID_EXPRESSION,      -6,
-    :CCS_RESULT_ERROR_INVALID_PARAMETER,       -7,
-    :CCS_RESULT_ERROR_INVALID_CONFIGURATION,   -8,
-    :CCS_RESULT_ERROR_INVALID_NAME,            -9,
-    :CCS_RESULT_ERROR_INVALID_CONDITION,      -10,
-    :CCS_RESULT_ERROR_INVALID_TUNER,          -11,
-    :CCS_RESULT_ERROR_INVALID_GRAPH,          -12,
-    :CCS_RESULT_ERROR_TYPE_NOT_COMPARABLE,    -13,
-    :CCS_RESULT_ERROR_INVALID_BOUNDS,         -14,
-    :CCS_RESULT_ERROR_OUT_OF_BOUNDS,          -15,
-    :CCS_RESULT_ERROR_SAMPLING_UNSUCCESSFUL,  -16,
-    :CCS_RESULT_ERROR_OUT_OF_MEMORY,          -17,
-    :CCS_RESULT_ERROR_UNSUPPORTED_OPERATION,  -18,
-    :CCS_RESULT_ERROR_INVALID_EVALUATION,     -19,
-    :CCS_RESULT_ERROR_INVALID_FEATURES,       -20,
-    :CCS_RESULT_ERROR_INVALID_FEATURES_TUNER, -21,
-    :CCS_RESULT_ERROR_INVALID_FILE_PATH,      -22,
-    :CCS_RESULT_ERROR_NOT_ENOUGH_DATA,        -23,
-    :CCS_RESULT_ERROR_DUPLICATE_HANDLE,       -24,
-    :CCS_RESULT_ERROR_INVALID_HANDLE,         -25,
-    :CCS_RESULT_ERROR_SYSTEM,                 -26,
-    :CCS_RESULT_ERROR_EXTERNAL,               -27,
-    :CCS_RESULT_ERROR_INVALID_TREE,           -28,
-    :CCS_RESULT_ERROR_INVALID_TREE_SPACE,     -29,
-    :CCS_RESULT_ERROR_INVALID_TREE_TUNER,     -30 ]
+    :CCS_RESULT_AGAIN,                              1,
+    :CCS_RESULT_SUCCESS,                            0,
+    :CCS_RESULT_ERROR_INVALID_OBJECT,              -1,
+    :CCS_RESULT_ERROR_INVALID_VALUE,               -2,
+    :CCS_RESULT_ERROR_INVALID_TYPE,                -3,
+    :CCS_RESULT_ERROR_INVALID_SCALE,               -4,
+    :CCS_RESULT_ERROR_INVALID_DISTRIBUTION,        -5,
+    :CCS_RESULT_ERROR_INVALID_EXPRESSION,          -6,
+    :CCS_RESULT_ERROR_INVALID_PARAMETER,           -7,
+    :CCS_RESULT_ERROR_INVALID_CONFIGURATION,       -8,
+    :CCS_RESULT_ERROR_INVALID_NAME,                -9,
+    :CCS_RESULT_ERROR_INVALID_CONDITION,          -10,
+    :CCS_RESULT_ERROR_INVALID_TUNER,              -11,
+    :CCS_RESULT_ERROR_INVALID_GRAPH,              -12,
+    :CCS_RESULT_ERROR_TYPE_NOT_COMPARABLE,        -13,
+    :CCS_RESULT_ERROR_INVALID_BOUNDS,             -14,
+    :CCS_RESULT_ERROR_OUT_OF_BOUNDS,              -15,
+    :CCS_RESULT_ERROR_SAMPLING_UNSUCCESSFUL,      -16,
+    :CCS_RESULT_ERROR_OUT_OF_MEMORY,              -17,
+    :CCS_RESULT_ERROR_UNSUPPORTED_OPERATION,      -18,
+    :CCS_RESULT_ERROR_INVALID_EVALUATION,         -19,
+    :CCS_RESULT_ERROR_INVALID_FEATURES,           -20,
+    :CCS_RESULT_ERROR_INVALID_FILE_PATH,          -21,
+    :CCS_RESULT_ERROR_NOT_ENOUGH_DATA,            -22,
+    :CCS_RESULT_ERROR_DUPLICATE_HANDLE,           -23,
+    :CCS_RESULT_ERROR_INVALID_HANDLE,             -24,
+    :CCS_RESULT_ERROR_SYSTEM,                     -25,
+    :CCS_RESULT_ERROR_EXTERNAL,                   -26,
+    :CCS_RESULT_ERROR_INVALID_TREE,               -27,
+    :CCS_RESULT_ERROR_INVALID_TREE_SPACE,         -28,
+    :CCS_RESULT_ERROR_INVALID_DISTRIBUTION_SPACE, -29 ]
 
-  class MemoryPointer
+  module MemoryAccessor
     def read_ccs_object_type_t
       ObjectType.from_native(read_int32, nil)
     end
@@ -221,13 +198,14 @@ module CCS
 
   DatumFlags = bitmask FFI::Type::UINT32, :ccs_datum_flags_t, [
     :CCS_DATUM_FLAG_TRANSIENT,
-    :CCS_DATUM_FLAG_UNPOOLED ]
+    :CCS_DATUM_FLAG_UNPOOLED,
+    :CCS_DATUM_FLAG_ID ]
 
   NumericType = enum FFI::Type::INT32, :ccs_numeric_type_t, [
     :CCS_NUMERIC_TYPE_INT, DataType.to_native(:CCS_DATA_TYPE_INT, nil),
     :CCS_NUMERIC_TYPE_FLOAT, DataType.to_native(:CCS_DATA_TYPE_FLOAT, nil) ]
 
-  class MemoryPointer
+  module MemoryAccessor
     def read_ccs_numeric_type_t
       NumericType.from_native(read_int32, nil)
     end
@@ -250,10 +228,10 @@ module CCS
   DeserializeOptions = enum FFI::Type::INT32, :ccs_deserialize_option_t, [
     :CCS_DESERIALIZE_OPTION_END, 0,
     :CCS_DESERIALIZE_OPTION_HANDLE_MAP,
-    :CCS_DESERIALIZE_OPTION_VECTOR,
-    :CCS_DESERIALIZE_OPTION_DATA,
+    :CCS_DESERIALIZE_OPTION_MAP_HANDLES,
+    :CCS_DESERIALIZE_OPTION_VECTOR_CALLBACK,
     :CCS_DESERIALIZE_OPTION_NON_BLOCKING,
-    :CCS_DESERIALIZE_OPTION_CALLBACK ]
+    :CCS_DESERIALIZE_OPTION_DATA_CALLBACK ]
 
   class Numeric < FFI::Union
     layout :f, :ccs_float_t,
@@ -482,6 +460,15 @@ module CCS
     end
   end
   typedef Datum.by_value, :ccs_datum_t
+  module MemoryAccessor
+    def read_ccs_datum_t
+      Datum::new(self).value
+    end
+
+    def read_array_of_ccs_datum_t(length)
+      length.times.collect { |i| Datum::new(self + i * Datum.size).value }
+    end
+  end
 
   attach_function :ccs_init, [], :ccs_result_t
   attach_function :ccs_fini, [], :ccs_result_t
@@ -498,7 +485,8 @@ module CCS
   attach_function :ccs_object_get_user_data, [:ccs_object_t, :pointer], :ccs_result_t
   callback :ccs_object_serialize_callback, [:ccs_object_t, :size_t, :pointer, :pointer, :value], :ccs_result_t
   attach_function :ccs_object_set_serialize_callback, [:ccs_object_t, :ccs_object_serialize_callback, :value], :ccs_result_t
-  callback :ccs_object_deserialize_callback, [:ccs_object_t, :size_t, :pointer, :value], :ccs_result_t
+  callback :ccs_object_deserialize_data_callback, [:ccs_object_t, :size_t, :pointer, :value], :ccs_result_t
+  callback :ccs_object_deserialize_vector_callback, [:ccs_object_type_t, :string, :value, :pointer, :pointer], :ccs_result_t
   attach_function :ccs_object_serialize, [:ccs_object_t, :ccs_serialize_format_t, :ccs_serialize_operation_t, :varargs], :ccs_result_t
   attach_function :ccs_object_deserialize, [:ccs_object_t, :ccs_serialize_format_t, :ccs_serialize_operation_t, :varargs], :ccs_result_t
 
@@ -574,20 +562,17 @@ module CCS
         CCS_OBJECT_TYPE_EXPRESSION: CCS::Expression,
         CCS_OBJECT_TYPE_CONFIGURATION_SPACE: CCS::ConfigurationSpace,
         CCS_OBJECT_TYPE_CONFIGURATION: CCS::Configuration,
-        CCS_OBJECT_TYPE_FEATURES_SPACE: CCS::FeaturesSpace,
+        CCS_OBJECT_TYPE_FEATURE_SPACE: CCS::FeatureSpace,
         CCS_OBJECT_TYPE_FEATURES: CCS::Features,
         CCS_OBJECT_TYPE_OBJECTIVE_SPACE: CCS::ObjectiveSpace,
         CCS_OBJECT_TYPE_EVALUATION: CCS::Evaluation,
-        CCS_OBJECT_TYPE_FEATURES_EVALUATION: CCS::FeaturesEvaluation,
         CCS_OBJECT_TYPE_TUNER: CCS::Tuner,
-        CCS_OBJECT_TYPE_FEATURES_TUNER: CCS::FeaturesTuner,
         CCS_OBJECT_TYPE_MAP: CCS::Map,
         CCS_OBJECT_TYPE_ERROR_STACK: CCS::ErrorStack,
         CCS_OBJECT_TYPE_TREE: CCS::Tree,
         CCS_OBJECT_TYPE_TREE_SPACE: CCS::TreeSpace,
         CCS_OBJECT_TYPE_TREE_CONFIGURATION: CCS::TreeConfiguration,
-        CCS_OBJECT_TYPE_TREE_EVALUATION: CCS::TreeEvaluation,
-        CCS_OBJECT_TYPE_TREE_TUNER: CCS::TreeTuner
+        CCS_OBJECT_TYPE_DISTRIBUTION_SPACE: CCS::DistributionSpace
       }
     end
 
@@ -619,8 +604,49 @@ module CCS
       src << "  @#{name} ||= begin\n" if memoize
       src << "  ptr = MemoryPointer::new(:#{type})\n"
       src << "  CCS.error_check CCS.#{accessor}(@handle, ptr)\n"
-      src << "  Object::from_handle(ptr.read_#{type})\n"
+      src << "  h = ptr.read_#{type}\n"
+      src << "  h.null? ? nil : Object::from_handle(h)\n"
       src << "  end\n" if memoize
+      src << "end\n"
+      class_eval src
+    end
+
+    def self.add_array_size_property(name, accessor, memoize: false)
+      src = ""
+      src << "def #{name}\n"
+      src << "  @#{name} ||= begin\n" if memoize
+      src << "  ptr = MemoryPointer::new(:size_t)\n"
+      src << "  CCS.error_check CCS.#{accessor}(@handle, 0, nil, ptr)\n"
+      src << "  ptr.read_size_t\n"
+      src << "  end\n" if memoize
+      src << "end\n"
+      class_eval src
+    end
+
+    def self.add_array_property(name, type, accessor, memoize: false)
+      add_array_size_property("num_#{name}", accessor, memoize: memoize)
+      src = ""
+      src << "def #{name}\n"
+      src << "  @#{name} ||= begin\n" if memoize
+      src << "  count = num_#{name}\n"
+      src << "  ptr = MemoryPointer::new(:#{type}, count)\n"
+      src << "  CCS.error_check CCS.#{accessor}(@handle, count, ptr, nil)\n"
+      src << "  ptr.read_array_of_#{type}(count)\n"
+      src << "  end.freeze\n" if memoize
+      src << "end\n"
+      class_eval src
+    end
+
+    def self.add_handle_array_property(name, type, accessor, memoize: false)
+      add_array_size_property("num_#{name}", accessor, memoize: memoize)
+      src = ""
+      src << "def #{name}\n"
+      src << "  @#{name} ||= begin\n" if memoize
+      src << "  count = num_#{name}\n"
+      src << "  ptr = MemoryPointer::new(:#{type}, count)\n"
+      src << "  CCS.error_check CCS.#{accessor}(@handle, count, ptr, nil)\n"
+      src << "  ptr.read_array_of_pointer(count).map { |h| h.null? ? nil : Object::from_handle(h) }\n"
+      src << "  end.freeze\n" if memoize
       src << "end\n"
       class_eval src
     end
@@ -650,34 +676,39 @@ module CCS
 
     private_class_method :_from_handle
 
-    def self.from_handle(handle)
+    def self.from_handle(handle, retain: true)
       ptr2 = MemoryPointer::new(:int32)
       CCS.error_check CCS.ccs_object_get_refcount(handle, ptr2)
-      opts = ptr2.read_int32 == 0 ? {retain: false, auto_release: false} : {}
-      _from_handle(handle, **opts)
+      if ptr2.read_int32 == 0
+        retain = false
+        auto_release = false
+      else
+        auto_release = true
+      end
+      _from_handle(handle, retain: retain, auto_release: auto_release)
     end
 
     def to_ptr
       @handle
     end
 
-    def set_destroy_callback(user_data: nil, &block)
-      CCS.set_destroy_callback(@handle, user_data: user_data, &block)
+    def set_destroy_callback(&block)
+      CCS.set_destroy_callback(@handle, &block)
       self
     end
 
-    def set_serialize_callback(user_data: nil, &block)
-      CCS.set_serialize_callback(@handle, user_data: user_data, &block)
+    def set_serialize_callback(&block)
+      CCS.set_serialize_callback(@handle, &block)
       self
     end
 
-    def serialize(format: :binary, path: nil, file_descriptor: nil, callback: nil, callback_data: nil)
+    def serialize(format: :binary, path: nil, file_descriptor: nil, callback: nil)
       raise CCSError, :CCS_RESULT_ERROR_INVALID_VALUE if format != :binary
       raise CCSError, :CCS_RESULT_ERROR_INVALID_VALUE if path && file_descriptor
       options = []
       if callback
         cb_wrapper = CCS.get_serialize_wrapper(&callback)
-        options.concat [:ccs_serialize_option_t, :CCS_SERIALIZE_OPTION_CALLBACK, :ccs_object_serialize_callback, cb_wrapper, :value, callback_data]
+        options.concat [:ccs_serialize_option_t, :CCS_SERIALIZE_OPTION_CALLBACK, :ccs_object_serialize_callback, cb_wrapper, :value, nil]
       elsif CCS.default_user_data_serializer
         options.concat [:ccs_serialize_option_t, :CCS_SERIALIZE_OPTION_CALLBACK, :ccs_object_serialize_callback, CCS.default_user_data_serializer, :value, nil]
       end
@@ -697,14 +728,15 @@ module CCS
         varargs = [:pointer, sz] + options
         CCS.error_check CCS.ccs_object_serialize(@handle, format, operation, *varargs)
         operation = :CCS_SERIALIZE_OPERATION_MEMORY
-        result = MemoryPointer::new(sz.read_size_t)
-        varargs = [:size_t, sz.read_size_t, :pointer, result] + options
+        sz = sz.read_size_t
+        result = String.new("\0", encoding: 'BINARY') * sz
+        varargs = [:size_t, sz, :pointer, result] + options
       end
       CCS.error_check CCS.ccs_object_serialize(@handle, format, operation, *varargs)
       return result
     end
 
-    def self.deserialize(format: :binary, handle_map: nil, vector: nil, data: nil, path: nil, buffer: nil, file_descriptor: nil, callback: nil, callback_data: nil)
+    def self.deserialize(format: :binary, handle_map: nil, map_handles: false, path: nil, buffer: nil, file_descriptor: nil, vector_callback: nil, vector_callback_data: nil, callback: nil)
       raise CCSError, :CCS_RESULT_ERROR_INVALID_VALUE if format != :binary
       format = :CCS_SERIALIZE_FORMAT_BINARY
       mode_count = 0
@@ -712,16 +744,20 @@ module CCS
       mode_count += 1 if buffer
       mode_count += 1 if file_descriptor
       raise CCSError, :CCS_RESULT_ERROR_INVALID_VALUE unless mode_count == 1
+      raise CCSError, :CCS_RESULT_ERROR_INVALID_VALUE if map_handles && !handle_map
       ptr = MemoryPointer::new(:ccs_object_t)
       options = []
       options.concat [:ccs_deserialize_option_t, :CCS_DESERIALIZE_OPTION_HANDLE_MAP, :ccs_map_t, handle_map.handle] if handle_map
-      options.concat [:ccs_deserialize_option_t, :CCS_DESERIALIZE_OPTION_VECTOR, :pointer, vector] if vector
-      options.concat [:ccs_deserialize_option_t, :CCS_DESERIALIZE_OPTION_DATA, :value, data] if data
+      options.concat [:ccs_deserialize_option_t, :CCS_DESERIALIZE_OPTION_MAP_HANDLES] if map_handles
+      if vector_callback
+        cb_wrapper = CCS.get_deserialize_vector_callback_wrapper(&vector_callback)
+        options.concat [:ccs_deserialize_option_t, :CCS_DESERIALIZE_OPTION_VECTOR_CALLBACK, :ccs_object_deserialize_vector_callback, cb_wrapper, :value, vector_callback_data]
+      end
       if callback
-        cb_wrapper = CCS.get_deserialize_wrapper(&callback)
-        options.concat [:ccs_deserialize_option_t, :CCS_DESERIALIZE_OPTION_CALLBACK, :ccs_object_deserialize_callback, cb_wrapper, :value, callback_data]
+        cb_wrapper = CCS.get_deserialize_data_callback_wrapper(&callback)
+        options.concat [:ccs_deserialize_option_t, :CCS_DESERIALIZE_OPTION_DATA_CALLBACK, :ccs_object_deserialize_data_callback, cb_wrapper, :value, nil]
       elsif CCS.default_user_data_deserializer
-        options.concat [:ccs_deserialize_option_t, :CCS_DESERIALIZE_OPTION_CALLBACK, :ccs_object_deserialize_callback, CCS.default_user_data_deserializer, :value, nil]
+        options.concat [:ccs_deserialize_option_t, :CCS_DESERIALIZE_OPTION_DATA_CALLBACK, :ccs_object_deserialize_data_callback, CCS.default_user_data_deserializer, :value, nil]
       end
       options.concat [:ccs_deserialize_option_t, :CCS_DESERIALIZE_OPTION_END]
       if buffer
@@ -755,7 +791,7 @@ module CCS
 
   end
 
-  @@data_store = Hash.new { |h, k| h[k] = { callbacks: [], user_data: nil, serialize_calback: nil, strings: [] } }
+  @@data_store = Hash.new { |h, k| h[k] = { callbacks: [], user_data: nil, serialize_callback: nil, strings: [] } }
 
   # Delete wrappers are responsible for deregistering the object data_store
   def self.register_vector(handle, vector_data)
@@ -801,25 +837,26 @@ module CCS
   def self.register_serialize_callback(handle, callback_data)
     value = handle.address
     register_destroy_callback(handle) unless @@data_store.include?(value)
-    @@data_store[value][:serialize_calback] = callback_data
+    @@data_store[value][:serialize_callback] = callback_data
   end
 
-  def self.set_destroy_callback(handle, user_data: nil, &block)
+  def self.set_destroy_callback(handle, &block)
     raise CCSError, :CCS_RESULT_ERROR_INVALID_VALUE if !block
     cb_wrapper = lambda { |object, data|
       block.call(Object.from_handle(object), data)
     }
-    CCS.error_check CCS.ccs_object_set_destroy_callback(handle, cb_wrapper, user_data)
-    register_callback(handle, [cb_wrapper, user_data])
+    CCS.error_check CCS.ccs_object_set_destroy_callback(handle, cb_wrapper, nil)
+    register_callback(handle, [cb_wrapper])
   end
 
   def self.get_serialize_wrapper(&block)
-    lambda { |object, serialize_data_size, serialize_data, serialize_data_size_ret, cb_data|
+    lambda { |obj, serialize_data_size, serialize_data, serialize_data_size_ret, _|
       begin
-        serialized = block.call(Object.from_handle(object), cb_data, serialize_data_size == 0 ? true : false)
-        raise CCSError, :CCS_RESULT_ERROR_INVALID_VALUE if !serialize_data.null? && serialize_data_size < serialized.size
-        serialize_data.write_bytes(serialized.read_bytes(serialized.size)) unless serialize_data.null?
-        Pointer.new(serialize_data_size_ret).write_size_t(serialized.size) unless serialize_data_size_ret.null?
+        serialized = block.call(Object.from_handle(obj).user_data)
+        raise CCSError, :CCS_RESULT_ERROR_INVALID_VALUE if !serialized.kind_of?(String)
+        raise CCSError, :CCS_RESULT_ERROR_INVALID_VALUE if !serialize_data.null? && serialize_data_size < serialized.bytesize
+        serialize_data.write_bytes(serialized, 0, serialized.bytesize) unless serialize_data.null?
+        Pointer.new(serialize_data_size_ret).write_size_t(serialized.bytesize) unless serialize_data_size_ret.null?
         CCSError.to_native(:CCS_RESULT_SUCCESS)
       rescue => e
         CCS.set_error(e)
@@ -827,11 +864,12 @@ module CCS
     }
   end
 
-  def self.get_deserialize_wrapper(&block)
-    lambda { |obj, serialize_data_size, serialize_data, cb_data|
+  def self.get_deserialize_data_callback_wrapper(&block)
+    lambda { |obj, serialize_data_size, serialize_data, _|
       begin
-        serialized = serialize_data.null? ? nil : serialize_data.slice(0, serialize_data_size)
-        block.call(Object.from_handle(obj), serialized, cb_data)
+        serialized = serialize_data.null? ? nil : serialize_data.read_bytes(serialize_data_size)
+        user_data = block.call(serialized)
+        Object.from_handle(obj).user_data = user_data
         CCSError.to_native(:CCS_RESULT_SUCCESS)
       rescue => e
         CCS.set_error(e)
@@ -839,35 +877,49 @@ module CCS
     }
   end
 
-  @yaml_user_data_serializer = get_serialize_wrapper { |obj, _, size|
-    FFI::MemoryPointer.from_string(YAML.dump(obj.user_data))
+  def self.get_deserialize_vector_callback_wrapper(&block)
+    lambda { |obj_type, name, _, vector_ret, data_ret|
+      begin
+        vector, data = block.call(obj_type, name)
+        vector_ret.write_pointer(vector.pointer)
+        data_ret.write_value(data)
+        FFI.inc_ref(vector)
+        FFI.inc_ref(data)
+        CCSError.to_native(:CCS_RESULT_SUCCESS)
+      rescue => e
+        CCS.set_error(e)
+      end
+    }
+  end
+
+  @marshal_user_data_serializer = get_serialize_wrapper { |user_data|
+    Marshal.dump(user_data)
   }
 
-  @yaml_user_data_deserializer = get_deserialize_wrapper { |obj, serialized, _|
-    obj.user_data = YAML.load(serialized.read_string)
+  @marshal_user_data_deserializer = get_deserialize_data_callback_wrapper { |serialized|
+    Marshal.load(serialized)
   }
 
   class << self
      attr_accessor :default_user_data_serializer, :default_user_data_deserializer
   end
-  self.default_user_data_serializer = @yaml_user_data_serializer
-  self.default_user_data_deserializer = @yaml_user_data_deserializer
+  self.default_user_data_serializer = @marshal_user_data_serializer
+  self.default_user_data_deserializer = @marshal_user_data_deserializer
 
-  def self.set_serialize_callback(handle, user_data: nil, &block)
+  def self.set_serialize_callback(handle, &block)
     if block
       cb_wrapper = get_serialize_wrapper(&block)
-      cb_data = [cb_wrapper, user_data]
+      cb_data = [cb_wrapper]
     else
       cb_wrapper = nil
-      user_data = nil
       cb_data = nil
     end
-    CCS.error_check CCS.ccs_object_set_serialize_callback(handle, cb_wrapper, user_data)
+    CCS.error_check CCS.ccs_object_set_serialize_callback(handle, cb_wrapper, nil)
     register_serialize_callback(handle, cb_data)
   end
 
-  def self.deserialize(format: :binary, handle_map: nil, path: nil, buffer: nil, callback: nil, callback_data: nil)
-    return CCS::Object.deserialize(format: format, handle_map: handle_map, path: path, buffer: buffer, callback: callback, callback_data: callback_data)
+  def self.deserialize(format: :binary, handle_map: nil, map_handles: false, path: nil, buffer: nil,  file_descriptor: nil, vector_callback: nil, callback: nil)
+    return CCS::Object.deserialize(format: format, handle_map: handle_map, map_handles: map_handles, path: path, buffer: buffer, file_descriptor: file_descriptor, vector_callback: vector_callback, callback: callback)
   end
 
 end

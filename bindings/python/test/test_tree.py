@@ -32,7 +32,6 @@ class TestTree(unittest.TestCase):
     for i in root.samples(rng, 100):
       self.assertTrue( i is None or (i >= 0 and i < 4) )
 
-    self.assertFalse( root.position_is_valid([2, 1]) )
     child = ccs.Tree(arity = 3, value = "bar" )
     self.assertEqual( "bar", child.value )
     root.set_child(2, child)
@@ -42,7 +41,6 @@ class TestTree(unittest.TestCase):
     self.assertEqual( 1, child.depth )
     self.assertEqual( child.handle.value, root.get_child(2).handle.value )
     self.assertEqual( child.handle.value, root.get_node_at_position([2]).handle.value )
-    self.assertTrue( root.position_is_valid([2, 1]) )
     self.assertEqual( ["foo", "bar"], root.get_values_at_position([2]) )
 
     buff = root.serialize()

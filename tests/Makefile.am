@@ -1,12 +1,18 @@
 AM_COLOR_TESTS = yes
 
-AM_CFLAGS = -I$(top_srcdir)/include -Wall -Wextra -Wpedantic $(GSL_CFLAGS)
+AM_CFLAGS = -I$(top_srcdir)/include -Wall -Wextra -Wpedantic $(GSL_CFLAGS) -I$(srcdir)
 
 if STRICT
 AM_CFLAGS += -Werror
 endif
 
-AM_LDFLAGS = ../src/libcconfigspace.la $(GSL_LIBS)
+noinst_LTLIBRARIES = libccstest.la
+libccstest_la_SOURCES = \
+	test_utils.h \
+	test_utils.c
+libccstest_la_LDFLAGS = ../src/libcconfigspace.la
+
+AM_LDFLAGS = ../src/libcconfigspace.la libccstest.la $(GSL_LIBS)
 
 CCONFIGSPACE_TESTS = \
 	test_rng \
@@ -22,12 +28,13 @@ CCONFIGSPACE_TESTS = \
 	test_discrete_parameter \
 	test_string_parameter \
 	test_configuration_space \
+	test_distribution_space \
 	test_expression \
 	test_condition \
 	test_forbidden \
 	test_random_tuner \
 	test_user_defined_tuner \
-	test_features_space \
+	test_feature_space \
 	test_random_features_tuner \
 	test_user_defined_features_tuner \
 	test_map \
@@ -36,7 +43,10 @@ CCONFIGSPACE_TESTS = \
 	test_static_tree_space \
 	test_dynamic_tree_space \
 	test_random_tree_tuner \
-	test_user_defined_tree_tuner
+	test_user_defined_tree_tuner \
+	test_atomics
+
+test_atomics_LDFLAGS = -lpthread $(AM_LDFLAGS)
 
 # unit tests
 UNIT_TESTS = \

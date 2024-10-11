@@ -1,14 +1,13 @@
 module CCS
 
-  attach_function :ccs_create_features, [:ccs_features_space_t, :size_t, :pointer, :pointer], :ccs_result_t
-  attach_function :ccs_features_check, [:ccs_features_t, :pointer], :ccs_result_t
+  attach_function :ccs_create_features, [:ccs_feature_space_t, :size_t, :pointer, :pointer], :ccs_result_t
 
   class Features < Binding
-    alias features_space context
+    alias feature_space context
     include Comparable
 
     def initialize(handle = nil, retain: false, auto_release: true,
-                   features_space: nil,  values: nil)
+                   feature_space: nil,  values: nil)
       if handle
         super(handle, retain: retain, auto_release: auto_release)
       else
@@ -23,19 +22,13 @@ module CCS
           count = 0
         end
         ptr = MemoryPointer::new(:ccs_features_t)
-        CCS.error_check CCS.ccs_create_features(features_space, count, values, ptr)
+        CCS.error_check CCS.ccs_create_features(feature_space, count, values, ptr)
         super(ptr.read_ccs_features_t, retain: false)
       end
     end
 
     def self.from_handle(handle, retain: true, auto_release: true)
       self::new(handle, retain: retain, auto_release: auto_release)
-    end
-
-    def check
-      ptr = MemoryPointer::new(:ccs_bool_t)
-      CCS.error_check CCS.ccs_features_check(@handle, ptr)
-      return ptr.read_ccs_bool_t == CCS::FALSE ? false : true
     end
 
   end

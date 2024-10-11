@@ -1,6 +1,5 @@
 #ifndef _MAP_DESERIALIZE_H
 #define _MAP_DESERIALIZE_H
-#include "cconfigspace_internal.h"
 #include "map_internal.h"
 
 struct _ccs_map_pair_s {
@@ -44,14 +43,9 @@ _ccs_deserialize_bin_map(
 	_ccs_object_deserialize_options_t *opts)
 {
 	(void)version;
-	ccs_result_t           res = CCS_RESULT_SUCCESS;
-	_ccs_object_internal_t obj;
-	_ccs_map_data_mock_t   data = {0, NULL};
-	ccs_object_t           handle;
-	CCS_VALIDATE(_ccs_deserialize_bin_ccs_object_internal(
-		&obj, buffer_size, buffer, &handle));
-	CCS_REFUTE(
-		obj.type != CCS_OBJECT_TYPE_MAP, CCS_RESULT_ERROR_INVALID_TYPE);
+	(void)opts;
+	ccs_result_t         res  = CCS_RESULT_SUCCESS;
+	_ccs_map_data_mock_t data = {0, NULL};
 
 	CCS_VALIDATE_ERR_GOTO(
 		res,
@@ -64,13 +58,6 @@ _ccs_deserialize_bin_map(
 			ccs_map_set(
 				*map_ret, data.pairs[i].key,
 				data.pairs[i].value),
-			err_map);
-	if (opts->handle_map)
-		CCS_VALIDATE_ERR_GOTO(
-			res,
-			_ccs_object_handle_check_add(
-				opts->handle_map, handle,
-				(ccs_object_t)*map_ret),
 			err_map);
 	goto end;
 err_map:
@@ -101,9 +88,6 @@ _ccs_map_deserialize(
 			CCS_RESULT_ERROR_INVALID_VALUE,
 			"Unsupported serialization format: %d", format);
 	}
-	CCS_VALIDATE(_ccs_object_deserialize_user_data(
-		(ccs_object_t)*map_ret, format, version, buffer_size, buffer,
-		opts));
 	return CCS_RESULT_SUCCESS;
 }
 

@@ -121,7 +121,7 @@ deserialize_callback(
 }
 
 void
-test_create()
+test_create(void)
 {
 	ccs_parameter_t parameter;
 	ccs_result_t    err;
@@ -179,7 +179,7 @@ test_create()
 	err = ccs_object_deserialize(
 		(ccs_object_t *)&parameter, CCS_SERIALIZE_FORMAT_BINARY,
 		CCS_SERIALIZE_OPERATION_MEMORY, buff_size, buff,
-		CCS_DESERIALIZE_OPTION_CALLBACK, &deserialize_callback,
+		CCS_DESERIALIZE_OPTION_DATA_CALLBACK, &deserialize_callback,
 		(void *)0xbeefdead, CCS_DESERIALIZE_OPTION_END);
 	assert(err == CCS_RESULT_SUCCESS);
 	free(buff);
@@ -215,7 +215,7 @@ test_create()
 }
 
 void
-test_samples()
+test_samples(void)
 {
 	ccs_rng_t          rng;
 	ccs_parameter_t    parameter;
@@ -264,7 +264,7 @@ test_samples()
 }
 
 void
-test_oversampling()
+test_oversampling(void)
 {
 	ccs_rng_t          rng;
 	ccs_parameter_t    parameter;
@@ -314,7 +314,7 @@ test_oversampling()
 }
 
 int
-main()
+main(void)
 {
 	ccs_init();
 	test_create();

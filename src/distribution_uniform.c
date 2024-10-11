@@ -3,6 +3,7 @@
 #include <gsl/gsl_randist.h>
 #include "cconfigspace_internal.h"
 #include "distribution_internal.h"
+#include "rng_internal.h"
 
 struct _ccs_distribution_uniform_data_s {
 	_ccs_distribution_common_data_t common_data;
@@ -80,9 +81,7 @@ _ccs_serialize_bin_size_ccs_distribution_uniform(ccs_distribution_t distribution
 {
 	_ccs_distribution_uniform_data_t *data =
 		(_ccs_distribution_uniform_data_t *)(distribution->data);
-	return _ccs_serialize_bin_size_ccs_object_internal(
-		       (_ccs_object_internal_t *)distribution) +
-	       _ccs_serialize_bin_size_ccs_distribution_uniform_data(data);
+	return _ccs_serialize_bin_size_ccs_distribution_uniform_data(data);
 }
 
 static inline ccs_result_t
@@ -93,8 +92,6 @@ _ccs_serialize_bin_ccs_distribution_uniform(
 {
 	_ccs_distribution_uniform_data_t *data =
 		(_ccs_distribution_uniform_data_t *)(distribution->data);
-	CCS_VALIDATE(_ccs_serialize_bin_ccs_object_internal(
-		(_ccs_object_internal_t *)distribution, buffer_size, buffer));
 	CCS_VALIDATE(_ccs_serialize_bin_ccs_distribution_uniform_data(
 		data, buffer_size, buffer));
 	return CCS_RESULT_SUCCESS;
@@ -107,6 +104,7 @@ _ccs_distribution_uniform_serialize_size(
 	size_t                          *cum_size,
 	_ccs_object_serialize_options_t *opts)
 {
+	(void)opts;
 	switch (format) {
 	case CCS_SERIALIZE_FORMAT_BINARY:
 		*cum_size += _ccs_serialize_bin_size_ccs_distribution_uniform(
@@ -117,8 +115,6 @@ _ccs_distribution_uniform_serialize_size(
 			CCS_RESULT_ERROR_INVALID_VALUE,
 			"Unsupported serialization format: %d", format);
 	}
-	CCS_VALIDATE(_ccs_object_serialize_user_data_size(
-		object, format, cum_size, opts));
 	return CCS_RESULT_SUCCESS;
 }
 
@@ -130,6 +126,7 @@ _ccs_distribution_uniform_serialize(
 	char                           **buffer,
 	_ccs_object_serialize_options_t *opts)
 {
+	(void)opts;
 	switch (format) {
 	case CCS_SERIALIZE_FORMAT_BINARY:
 		CCS_VALIDATE(_ccs_serialize_bin_ccs_distribution_uniform(
@@ -140,8 +137,6 @@ _ccs_distribution_uniform_serialize(
 			CCS_RESULT_ERROR_INVALID_VALUE,
 			"Unsupported serialization format: %d", format);
 	}
-	CCS_VALIDATE(_ccs_object_serialize_user_data(
-		object, format, buffer_size, buffer, opts));
 	return CCS_RESULT_SUCCESS;
 }
 
@@ -223,8 +218,7 @@ _ccs_distribution_uniform_strided_samples(
 	const ccs_numeric_t      internal_lower = d->internal_lower;
 	const ccs_numeric_t      internal_upper = d->internal_upper;
 	const int                quantize       = d->quantize;
-	gsl_rng                 *grng;
-	CCS_VALIDATE(ccs_rng_get_gsl_rng(rng, &grng));
+	gsl_rng                 *grng           = rng->data->rng;
 
 	if (data_type == CCS_NUMERIC_TYPE_FLOAT) {
 		for (i = 0; i < num_values; i++) {
@@ -303,8 +297,7 @@ _ccs_distribution_uniform_samples(
 	const ccs_numeric_t      internal_lower = d->internal_lower;
 	const ccs_numeric_t      internal_upper = d->internal_upper;
 	const int                quantize       = d->quantize;
-	gsl_rng                 *grng;
-	CCS_VALIDATE(ccs_rng_get_gsl_rng(rng, &grng));
+	gsl_rng                 *grng           = rng->data->rng;
 
 	if (data_type == CCS_NUMERIC_TYPE_FLOAT) {
 		for (i = 0; i < num_values; i++) {

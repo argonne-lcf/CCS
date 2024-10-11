@@ -11,23 +11,6 @@ struct _ccs_expression_data_mock_s {
 typedef struct _ccs_expression_data_mock_s _ccs_expression_data_mock_t;
 
 static inline ccs_result_t
-_ccs_deserialize_bin_expression(
-	ccs_expression_t                  *expression_ret,
-	uint32_t                           version,
-	size_t                            *buffer_size,
-	const char                       **buffer,
-	_ccs_object_deserialize_options_t *opts);
-
-static ccs_result_t
-_ccs_expression_deserialize(
-	ccs_expression_t                  *expression_ret,
-	ccs_serialize_format_t             format,
-	uint32_t                           version,
-	size_t                            *buffer_size,
-	const char                       **buffer,
-	_ccs_object_deserialize_options_t *opts);
-
-static inline ccs_result_t
 _ccs_deserialize_bin_ccs_expression_data(
 	_ccs_expression_data_mock_t       *data,
 	uint32_t                           version,
@@ -46,8 +29,10 @@ _ccs_deserialize_bin_ccs_expression_data(
 		CCS_REFUTE(!data->nodes, CCS_RESULT_ERROR_OUT_OF_MEMORY);
 		for (size_t i = 0; i < data->num_nodes; i++) {
 			ccs_expression_t expr;
-			CCS_VALIDATE(_ccs_expression_deserialize(
-				&expr, CCS_SERIALIZE_FORMAT_BINARY, version,
+			CCS_VALIDATE(_ccs_object_deserialize_with_opts_check(
+				(ccs_object_t *)&expr,
+				CCS_OBJECT_TYPE_EXPRESSION,
+				CCS_SERIALIZE_FORMAT_BINARY, version,
 				buffer_size, buffer, opts));
 			data->nodes[i].type    = CCS_DATA_TYPE_OBJECT;
 			data->nodes[i].value.o = expr;
@@ -166,6 +151,79 @@ end:
 	return res;
 }
 
+struct _ccs_expression_user_defined_data_mock_s {
+	_ccs_expression_data_mock_t expr;
+	const char                 *name;
+	_ccs_blob_t                 blob;
+};
+typedef struct _ccs_expression_user_defined_data_mock_s
+	_ccs_expression_user_defined_data_mock_t;
+
+static inline ccs_result_t
+_ccs_deserialize_bin_ccs_expression_user_defined_data(
+	_ccs_expression_user_defined_data_mock_t *data,
+	uint32_t                                  version,
+	size_t                                   *buffer_size,
+	const char                              **buffer,
+	_ccs_object_deserialize_options_t        *opts)
+{
+	CCS_VALIDATE(_ccs_deserialize_bin_ccs_expression_data(
+		&data->expr, version, buffer_size, buffer, opts));
+	CCS_VALIDATE(
+		_ccs_deserialize_bin_string(&data->name, buffer_size, buffer));
+	CCS_VALIDATE(_ccs_deserialize_bin_ccs_blob(
+		&data->blob, buffer_size, buffer));
+	return CCS_RESULT_SUCCESS;
+}
+
+static inline ccs_result_t
+_ccs_deserialize_bin_expression_user_defined(
+	ccs_expression_t                  *expression_ret,
+	uint32_t                           version,
+	size_t                            *buffer_size,
+	const char                       **buffer,
+	_ccs_object_deserialize_options_t *opts)
+{
+	_ccs_expression_user_defined_data_mock_t data;
+	ccs_user_defined_expression_vector_t    *vector          = NULL;
+	void                                    *expression_data = NULL;
+	ccs_result_t                             res = CCS_RESULT_SUCCESS;
+
+	CCS_VALIDATE(_ccs_deserialize_bin_ccs_expression_user_defined_data(
+		&data, version, buffer_size, buffer, opts));
+
+	CCS_VALIDATE_ERR_GOTO(
+		res,
+		opts->deserialize_vector_callback(
+			CCS_OBJECT_TYPE_EXPRESSION, data.name,
+			opts->deserialize_vector_user_data, (void **)&vector,
+			&expression_data),
+		end);
+
+	if (vector->deserialize_state)
+		CCS_VALIDATE_ERR_GOTO(
+			res,
+			vector->deserialize_state(
+				data.blob.sz, data.blob.blob, &expression_data),
+			end);
+
+	CCS_VALIDATE_ERR_GOTO(
+		res,
+		ccs_create_user_defined_expression(
+			data.name, data.expr.num_nodes, data.expr.nodes, vector,
+			expression_data, expression_ret),
+		end);
+
+end:
+	if (data.expr.nodes) {
+		for (size_t i = 0; i < data.expr.num_nodes; i++)
+			if (data.expr.nodes[i].type == CCS_DATA_TYPE_OBJECT)
+				ccs_release_object(data.expr.nodes[i].value.o);
+		free(data.expr.nodes);
+	}
+	return res;
+}
+
 static inline ccs_result_t
 _ccs_deserialize_bin_expression(
 	ccs_expression_t                  *expression_ret,
@@ -174,18 +232,10 @@ _ccs_deserialize_bin_expression(
 	const char                       **buffer,
 	_ccs_object_deserialize_options_t *opts)
 {
+	ccs_expression_type_t             dtype;
 	_ccs_object_deserialize_options_t new_opts = *opts;
-	new_opts.map_values                        = CCS_FALSE;
-	_ccs_object_internal_t obj;
-	ccs_object_t           handle;
-	ccs_result_t           res;
-	CCS_VALIDATE(_ccs_deserialize_bin_ccs_object_internal(
-		&obj, buffer_size, buffer, &handle));
-	CCS_REFUTE(
-		obj.type != CCS_OBJECT_TYPE_EXPRESSION,
-		CCS_RESULT_ERROR_INVALID_TYPE);
 
-	ccs_expression_type_t dtype;
+	new_opts.map_values                        = CCS_FALSE;
 	CCS_VALIDATE(
 		_ccs_peek_bin_ccs_expression_type(&dtype, buffer_size, buffer));
 	switch (dtype) {
@@ -198,6 +248,11 @@ _ccs_deserialize_bin_expression(
 			expression_ret, version, buffer_size, buffer,
 			&new_opts));
 		break;
+	case CCS_EXPRESSION_TYPE_USER_DEFINED:
+		CCS_VALIDATE(_ccs_deserialize_bin_expression_user_defined(
+			expression_ret, version, buffer_size, buffer,
+			&new_opts));
+		break;
 	default:
 		CCS_REFUTE(
 			dtype < CCS_EXPRESSION_TYPE_OR ||
@@ -207,18 +262,7 @@ _ccs_deserialize_bin_expression(
 			expression_ret, version, buffer_size, buffer,
 			&new_opts));
 	}
-	if (opts && opts->map_values && opts->handle_map)
-		CCS_VALIDATE_ERR_GOTO(
-			res,
-			_ccs_object_handle_check_add(
-				opts->handle_map, handle,
-				(ccs_object_t)*expression_ret),
-			err_exp);
-
 	return CCS_RESULT_SUCCESS;
-err_exp:
-	ccs_release_object(*expression_ret);
-	return res;
 }
 
 static ccs_result_t
@@ -240,9 +284,6 @@ _ccs_expression_deserialize(
 			CCS_RESULT_ERROR_INVALID_VALUE,
 			"Unsupported serialization format: %d", format);
 	}
-	CCS_VALIDATE(_ccs_object_deserialize_user_data(
-		(ccs_object_t)*expression_ret, format, version, buffer_size,
-		buffer, opts));
 	return CCS_RESULT_SUCCESS;
 }
 

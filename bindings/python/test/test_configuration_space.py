@@ -8,53 +8,47 @@ import cconfigspace as ccs
 class TestConfigurationSpace(unittest.TestCase):
 
   def test_create(self):
-    cs = ccs.ConfigurationSpace(name = "space")
+    h1 = ccs.NumericalParameter.Float()
+    h2 = ccs.NumericalParameter.Float()
+    h3 = ccs.NumericalParameter.Float()
+    cs = ccs.ConfigurationSpace(name = "space", parameters = [h1, h2, h3])
     self.assertEqual( ccs.ObjectType.CONFIGURATION_SPACE, cs.object_type )
     self.assertEqual( "space", cs.name )
     self.assertIsInstance( cs.rng, ccs.Rng )
-    self.assertEqual( 0, cs.num_parameters )
-    self.assertEqual( [], cs.conditions )
-    self.assertEqual( [], cs.forbidden_clauses )
-    h1 = ccs.NumericalParameter.Float()
-    h2 = ccs.NumericalParameter.Float()
-    h3 = ccs.NumericalParameter.Float()
-    cs.add_parameter(h1)
-    cs.add_parameters([h2, h3])
     self.assertEqual( 3, cs.num_parameters )
+    self.assertEqual( (None, None, None), cs.conditions )
+    self.assertEqual( (), cs.forbidden_clauses )
     self.assertEqual( h1, cs.parameter(0) )
     self.assertEqual( h2, cs.parameter(1) )
     self.assertEqual( h3, cs.parameter(2) )
-    self.assertEqual( [h1, h2, h3], cs.parameters )
+    self.assertEqual( (h1, h2, h3), cs.parameters )
     self.assertEqual( h2, cs.parameter_by_name(h2.name) )
-    self.assertTrue( cs.check(cs.default_configuration) )
+    self.assertIsNone( cs.feature_space )
     c = cs.sample()
-    self.assertTrue( cs.check(c) )
     self.assertEqual( cs.handle.value, c.configuration_space.handle.value )
-    self.assertTrue( cs.check_values(cs.sample().values) )
-    for c in cs.samples(100):
-      self.assertTrue( cs.check(c) )
+    cs.samples(100)
 
   def test_set_distribution(self):
-    cs = ccs.ConfigurationSpace(name = "space")
     h1 = ccs.NumericalParameter.Float()
     h2 = ccs.NumericalParameter.Float()
     h3 = ccs.NumericalParameter.Float()
-    cs.add_parameters([h1, h2, h3])
+    cs = ccs.ConfigurationSpace(name = "space", parameters = [h1, h2, h3])
+    ds = ccs.DistributionSpace(configuration_space = cs)
     distributions = [ ccs.UniformDistribution.Float(lower = 0.1, upper = 0.3),
                       ccs.UniformDistribution.Float(lower = 0.2, upper = 0.6) ]
     d = ccs.MultivariateDistribution(distributions = distributions)
-    cs.set_distribution(d, [h1, h2])
-    (dist, indx) = cs.get_parameter_distribution(h1)
+    ds.set_distribution(d, [h1, h2])
+    (dist, indx) = ds.get_parameter_distribution(h1)
     self.assertEqual( d.handle.value, dist.handle.value )
     self.assertEqual( 0, indx )
-    (dist, indx) = cs.get_parameter_distribution(h2)
+    (dist, indx) = ds.get_parameter_distribution(h2)
     self.assertEqual( d.handle.value, dist.handle.value )
     self.assertEqual( 1, indx )
-    cs.set_distribution(d, [h3, h1])
-    (dist, indx) = cs.get_parameter_distribution(h1)
+    ds.set_distribution(d, [h3, h1])
+    (dist, indx) = ds.get_parameter_distribution(h1)
     self.assertEqual( d.handle.value, dist.handle.value )
     self.assertEqual( 1, indx )
-    (dist, indx) = cs.get_parameter_distribution(h3)
+    (dist, indx) = ds.get_parameter_distribution(h3)
     self.assertEqual( d.handle.value, dist.handle.value )
     self.assertEqual( 0, indx )
 
@@ -63,14 +57,10 @@ class TestConfigurationSpace(unittest.TestCase):
     h1 = ccs.NumericalParameter.Float(lower = -1.0, upper = 1.0, default = 0.0)
     h2 = ccs.NumericalParameter.Float(lower = -1.0, upper = 1.0)
     h3 = ccs.NumericalParameter.Float(lower = -1.0, upper = 1.0)
-    cs = ccs.ConfigurationSpace(name = "space")
-    cs.add_parameters([h1, h2, h3])
     e1 = ccs.Expression.Less(left = h2, right = 0.0)
-    cs.set_condition(h3, e1)
     e2 = ccs.Expression.Less(left = h3, right = 0.0)
-    cs.set_condition(h1, e2)
-    e3 = ccs.Expression.Less(left = h1, right = 0.0)
-    cs.add_forbidden_clause(e3)
+    f1 = ccs.Expression.Less(left = h1, right = 0.0)
+    cs = ccs.ConfigurationSpace(name = "space", parameters = [h1, h2, h3], conditions = {h1: e2, h3: e1}, forbidden_clauses = [f1])
     conditions = cs.conditions
     conditional_parameters = cs.conditional_parameters
     unconditional_parameters = cs.unconditional_parameters
@@ -85,13 +75,42 @@ class TestConfigurationSpace(unittest.TestCase):
     self.assertEqual( h2.handle.value, unconditional_parameters[0].handle.value )
     forbidden_clauses = cs.forbidden_clauses
     self.assertEqual( 1, len(forbidden_clauses) )
-    self.assertEqual( e3.handle.value, forbidden_clauses[0].handle.value )
+    self.assertEqual( f1.handle.value, forbidden_clauses[0].handle.value )
+
+  def test_features(self):
+    fe1 = ccs.CategoricalParameter(values = ["on", "off"])
+    fs = ccs.FeatureSpace(parameters = [fe1])
+    h1 = ccs.NumericalParameter.Float(lower = -1.0, upper = 1.0, default = 0.0)
+    h2 = ccs.NumericalParameter.Float(lower = -1.0, upper = 1.0)
+    h3 = ccs.NumericalParameter.Float(lower = -1.0, upper = 1.0)
+    h4 = ccs.NumericalParameter.Float(lower = -1.0, upper = 1.0)
+    e1 = ccs.Expression.Less(left = h2, right = 0.0)
+    e2 = ccs.Expression.Less(left = h3, right = 0.0)
+    e3 = ccs.Expression.Equal(left = fe1, right = "on")
+    f1 = ccs.Expression.Less(left = h1, right = 0.0)
+    cs = ccs.ConfigurationSpace(name = "space", parameters = [h1, h2, h3, h4], conditions = {h1: e2, h3: e1, h4: e3}, forbidden_clauses = [f1], feature_space = fs)
+    features_on = ccs.Features(feature_space = fs, values = ["on"])
+    features_off = ccs.Features(feature_space = fs, values = ["off"])
+    s = cs.sample(features = features_on)
+    self.assertIsInstance(s.value(3), float)
+    s = cs.sample(features = features_off)
+    self.assertEqual(ccs.inactive, s.value(3))
+
+    buff = cs.serialize()
+    cs_copy = ccs.Object.deserialize(buffer = buff)
+
+    features_on = ccs.Features(feature_space = cs_copy.feature_space, values = ["on"])
+    features_off = ccs.Features(feature_space = cs_copy.feature_space, values = ["off"])
+    s = cs_copy.sample(features = features_on)
+    self.assertIsInstance(s.value(3), float)
+    s = cs_copy.sample(features = features_off)
+    self.assertEqual(ccs.inactive, s.value(3))
 
   def extract_active_parameters(self, values):
     res = ['p1']
     for v in values:
       if v != ccs.inactive:
-        res += ["p{}".format(m[1]) for m in re.finditer('#P(\d)', v)]
+        res += ["p{}".format(m[1]) for m in re.finditer('#P(\\d)', v)]
     return res
 
   def test_omp(self):
@@ -142,8 +161,13 @@ class TestConfigurationSpace(unittest.TestCase):
       name = 'p9',
       values = ['1', '8', '16'])
 
-    cs = ccs.ConfigurationSpace(name = "omp")
-    cs.add_parameters([p1, p2, p3, p4, p5, p6, p7, p8, p9])
+    forbiddena = ccs.ExpressionEqual(left = p1, right = '#pragma omp #P2')
+    forbiddenb = ccs.ExpressionEqual(left = p2, right = ' ')
+    forbidden0 = ccs.Expression.And(left = forbiddena, right = forbiddenb)
+
+    forbiddenc = ccs.Expression.Equal(left = p1, right = '#pragma omp #P3')
+    forbiddend = ccs.Expression.Equal(left = p3, right = ' ')
+    forbidden1 = ccs.Expression.And(left = forbiddenc, right = forbiddend)
 
     cond0 = ccs.Expression.Equal(left = p1, right = '#pragma omp #P2')
     cond1 = ccs.Expression.Equal(left = p1, right = '#pragma omp target teams distribute #P2')
@@ -161,28 +185,20 @@ class TestConfigurationSpace(unittest.TestCase):
 
     cond10 = ccs.Expression.Equal(left = p6, right = 'numthreads(#P9)')
 
-    cs.set_condition(p2, ccs.Expression.Or(left = cond0, right = cond1))
-    cs.set_condition(p4, cond2)
-    cs.set_condition(p3, ccs.Expression.Or(left = cond3, right = cond4))
-    cs.set_condition(p5, cond5)
-    cs.set_condition(p6, cond6)
-    cs.set_condition(p7, ccs.Expression.Or(left = cond8, right = cond9))
-    cs.set_condition(p8, ccs.Expression.Or(left = cond7, right = cond9))
-    cs.set_condition(p9, cond10)
-
-    forbiddena = ccs.ExpressionEqual(left = p1, right = '#pragma omp #P2')
-    forbiddenb = ccs.ExpressionEqual(left = p2, right = ' ')
-    forbidden0 = ccs.Expression.And(left = forbiddena, right = forbiddenb)
-
-    forbiddenc = ccs.Expression.Equal(left = p1, right = '#pragma omp #P3')
-    forbiddend = ccs.Expression.Equal(left = p3, right = ' ')
-    forbidden1 = ccs.Expression.And(left = forbiddenc, right = forbiddend)
-    cs.add_forbidden_clauses([forbidden0, forbidden1])
+    cs = ccs.ConfigurationSpace(name = "omp", parameters = [p1, p2, p3, p4, p5, p6, p7, p8, p9],
+                                conditions = {p2: ccs.Expression.Or(left = cond0, right = cond1),
+                                              p4: cond2,
+                                              p3: ccs.Expression.Or(left = cond3, right = cond4),
+                                              p5: cond5,
+                                              p6: cond6,
+                                              p7: ccs.Expression.Or(left = cond8, right = cond9),
+                                              p8: ccs.Expression.Or(left = cond7, right = cond9),
+                                              p9: cond10},
+                                forbidden_clauses = [forbidden0, forbidden1])
 
     all_params = [ "p{}".format(i) for i in range(1,10) ]
     for i in range(1000):
       s = cs.sample()
-      self.assertTrue( s.check() )
       active_params = self.extract_active_parameters(s.values)
       for par in active_params:
         self.assertNotEqual( ccs.inactive, s.value(par) )
@@ -239,25 +255,21 @@ class TestConfigurationSpace(unittest.TestCase):
       name = 'p9',
       values = ['1', '8', '16'])
 
-    cs = ccs.ConfigurationSpace(name = "omp")
-    cs.add_parameters([p1, p2, p3, p4, p5, p6, p7, p8, p9])
-
-    cs.set_condition(p2, "p1 # ['#pragma omp #P2', '#pragma omp target teams distribute #P2']")
-    cs.set_condition(p4, "p1 == '#pragma omp target teams distribute #P4'")
-    cs.set_condition(p3, "p1 == '#pragma omp #P3' || p2 == 'parallel for #P3'")
-    cs.set_condition(p5, "p2 == 'parallel for #P5'")
-    cs.set_condition(p6, "p2 == 'parallel for #P6'")
-    cs.set_condition(p7, "p5 # ['schedule(#P7)', 'schedule(#P7,#P8)']")
-    cs.set_condition(p8, "p4 == 'dist_schedule(static, #P8)' || p5 == 'schedule(#P7,#P8)'")
-    cs.set_condition(p9, "p6 == 'numthreads(#P9)'")
-
-    cs.add_forbidden_clauses(["p1 == '#pragma omp #P2' && p2 == ' '",
-                              "p1 == '#pragma omp #P3' && p3 == ' '"])
+    cs = ccs.ConfigurationSpace(name = "omp", parameters = [p1, p2, p3, p4, p5, p6, p7, p8, p9],
+                                conditions = {p2: "p1 # ['#pragma omp #P2', '#pragma omp target teams distribute #P2']",
+                                              p4: "p1 == '#pragma omp target teams distribute #P4'",
+                                              p3: "p1 == '#pragma omp #P3' || p2 == 'parallel for #P3'",
+                                              p5: "p2 == 'parallel for #P5'",
+                                              p6: "p2 == 'parallel for #P6'",
+                                              p7: "p5 # ['schedule(#P7)', 'schedule(#P7,#P8)']",
+                                              p8: "p4 == 'dist_schedule(static, #P8)' || p5 == 'schedule(#P7,#P8)'",
+                                              p9: "p6 == 'numthreads(#P9)'"},
+                                forbidden_clauses = ["p1 == '#pragma omp #P2' && p2 == ' '",
+                                                     "p1 == '#pragma omp #P3' && p3 == ' '"])
 
     all_params = [ "p{}".format(i) for i in range(1,10) ]
     for i in range(1000):
       s = cs.sample()
-      self.assertTrue( s.check() )
       active_params = self.extract_active_parameters(s.values)
       for par in active_params:
         self.assertNotEqual( ccs.inactive, s.value(par) )
@@ -270,7 +282,6 @@ class TestConfigurationSpace(unittest.TestCase):
     cs_copy = ccs.Object.deserialize(buffer = buff)
     for i in range(1000):
       s = cs_copy.sample()
-      self.assertTrue( s.check() )
       active_params = self.extract_active_parameters(s.values)
       for par in active_params:
         self.assertNotEqual( ccs.inactive, s.value(par) )

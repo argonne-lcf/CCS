@@ -3,6 +3,7 @@
 #include <cconfigspace.h>
 #include <string.h>
 #include <math.h>
+#include <gsl/gsl_rng.h>
 
 double d = -2.0;
 
@@ -57,13 +58,12 @@ create_dummy_ordinal(const char *name)
 
 void
 test_expression_wrapper(
-	ccs_expression_type_t     type,
-	size_t                    count,
-	ccs_datum_t              *nodes,
-	ccs_configuration_space_t context,
-	ccs_datum_t              *inputs,
-	ccs_datum_t               eres,
-	ccs_result_t              eerr)
+	ccs_expression_type_t type,
+	size_t                count,
+	ccs_datum_t          *nodes,
+	ccs_configuration_t   configuration,
+	ccs_datum_t           eres,
+	ccs_result_t          eerr)
 {
 	ccs_result_t     err;
 	ccs_expression_t expression;
@@ -71,8 +71,13 @@ test_expression_wrapper(
 
 	err = ccs_create_expression(type, count, nodes, &expression);
 	assert(err == CCS_RESULT_SUCCESS);
-	err = ccs_expression_eval(
-		expression, (ccs_context_t)context, inputs, &result);
+	if (configuration) {
+		err = ccs_expression_eval(
+			expression, 1, (ccs_binding_t *)&configuration,
+			&result);
+	} else {
+		err = ccs_expression_eval(expression, 0, NULL, &result);
+	}
 	assert(err == eerr);
 	if (eerr != CCS_RESULT_SUCCESS) {
 		err = ccs_release_object(expression);
@@ -96,115 +101,148 @@ test_expression_wrapper(
 }
 
 void
-test_equal_literal()
+test_equal_literal(void)
 {
 	ccs_datum_t nodes[2];
 
 	nodes[0] = ccs_float(1.0);
 	nodes[1] = ccs_float(1.0);
 	test_expression_wrapper(
-		CCS_EXPRESSION_TYPE_EQUAL, 2, nodes, NULL, NULL,
-		ccs_bool(CCS_TRUE), CCS_RESULT_SUCCESS);
+		CCS_EXPRESSION_TYPE_EQUAL, 2, nodes, NULL, ccs_bool(CCS_TRUE),
+		CCS_RESULT_SUCCESS);
 
 	nodes[0] = ccs_float(0.0);
 	nodes[1] = ccs_float(1.0);
 	test_expression_wrapper(
-		CCS_EXPRESSION_TYPE_EQUAL, 2, nodes, NULL, NULL,
-		ccs_bool(CCS_FALSE), CCS_RESULT_SUCCESS);
+		CCS_EXPRESSION_TYPE_EQUAL, 2, nodes, NULL, ccs_bool(CCS_FALSE),
+		CCS_RESULT_SUCCESS);
 
 	nodes[0] = ccs_int(1);
 	nodes[1] = ccs_float(1.0);
 	test_expression_wrapper(
-		CCS_EXPRESSION_TYPE_EQUAL, 2, nodes, NULL, NULL,
-		ccs_bool(CCS_TRUE), CCS_RESULT_SUCCESS);
+		CCS_EXPRESSION_TYPE_EQUAL, 2, nodes, NULL, ccs_bool(CCS_TRUE),
+		CCS_RESULT_SUCCESS);
 
 	nodes[0] = ccs_float(0.0);
 	nodes[1] = ccs_int(1);
 	test_expression_wrapper(
-		CCS_EXPRESSION_TYPE_EQUAL, 2, nodes, NULL, NULL,
-		ccs_bool(CCS_FALSE), CCS_RESULT_SUCCESS);
+		CCS_EXPRESSION_TYPE_EQUAL, 2, nodes, NULL, ccs_bool(CCS_FALSE),
+		CCS_RESULT_SUCCESS);
 
 	nodes[0] = ccs_none;
 	nodes[1] = ccs_none;
 	test_expression_wrapper(
-		CCS_EXPRESSION_TYPE_EQUAL, 2, nodes, NULL, NULL,
-		ccs_bool(CCS_TRUE), CCS_RESULT_SUCCESS);
+		CCS_EXPRESSION_TYPE_EQUAL, 2, nodes, NULL, ccs_bool(CCS_TRUE),
+		CCS_RESULT_SUCCESS);
 
 	nodes[0] = ccs_none;
 	nodes[1] = ccs_int(1);
 	test_expression_wrapper(
-		CCS_EXPRESSION_TYPE_EQUAL, 2, nodes, NULL, NULL,
-		ccs_bool(CCS_FALSE), CCS_RESULT_ERROR_INVALID_VALUE);
+		CCS_EXPRESSION_TYPE_EQUAL, 2, nodes, NULL, ccs_bool(CCS_FALSE),
+		CCS_RESULT_ERROR_INVALID_VALUE);
 
 	nodes[0] = ccs_string("toto");
 	nodes[1] = ccs_string("toto");
 	test_expression_wrapper(
-		CCS_EXPRESSION_TYPE_EQUAL, 2, nodes, NULL, NULL,
-		ccs_bool(CCS_TRUE), CCS_RESULT_SUCCESS);
+		CCS_EXPRESSION_TYPE_EQUAL, 2, nodes, NULL, ccs_bool(CCS_TRUE),
+		CCS_RESULT_SUCCESS);
 
 	nodes[0] = ccs_string("tata");
 	nodes[1] = ccs_string("toto");
 	test_expression_wrapper(
-		CCS_EXPRESSION_TYPE_EQUAL, 2, nodes, NULL, NULL,
-		ccs_bool(CCS_FALSE), CCS_RESULT_SUCCESS);
+		CCS_EXPRESSION_TYPE_EQUAL, 2, nodes, NULL, ccs_bool(CCS_FALSE),
+		CCS_RESULT_SUCCESS);
 
 	nodes[0] = ccs_string("tata");
 	nodes[1] = ccs_int(1);
 	test_expression_wrapper(
-		CCS_EXPRESSION_TYPE_EQUAL, 2, nodes, NULL, NULL,
-		ccs_bool(CCS_FALSE), CCS_RESULT_ERROR_INVALID_VALUE);
+		CCS_EXPRESSION_TYPE_EQUAL, 2, nodes, NULL, ccs_bool(CCS_FALSE),
+		CCS_RESULT_ERROR_INVALID_VALUE);
 }
 
 void
-test_equal_numerical()
+test_equal_numerical(void)
 {
 	ccs_configuration_space_t configuration_space;
+	ccs_configuration_t       configuration;
 	ccs_parameter_t           parameters[2];
 	ccs_datum_t               nodes[2];
 	ccs_datum_t               values[2];
 	ccs_result_t              err;
 
-	err = ccs_create_configuration_space(
-		"my_config_space", &configuration_space);
-	assert(err == CCS_RESULT_SUCCESS);
-
 	parameters[0] = create_dummy_numerical("param1");
 	parameters[1] = create_dummy_numerical("param2");
 
-	err           = ccs_configuration_space_add_parameters(
-                configuration_space, 2, parameters, NULL);
+	err           = ccs_create_configuration_space(
+                "my_config_space", 2, parameters, NULL, 0, NULL, NULL, NULL,
+                &configuration_space);
 	assert(err == CCS_RESULT_SUCCESS);
 
 	nodes[0]  = ccs_object(parameters[0]);
 	nodes[1]  = ccs_float(1.0);
 	values[0] = ccs_float(1.0);
 	values[1] = ccs_float(0.0);
+	err       = ccs_create_configuration(
+                configuration_space, NULL, 2, values, &configuration);
+	assert(err == CCS_RESULT_SUCCESS);
 	test_expression_wrapper(
-		CCS_EXPRESSION_TYPE_EQUAL, 2, nodes, configuration_space,
-		values, ccs_bool(CCS_TRUE), CCS_RESULT_SUCCESS);
+		CCS_EXPRESSION_TYPE_EQUAL, 2, nodes, configuration,
+		ccs_bool(CCS_TRUE), CCS_RESULT_SUCCESS);
+	ccs_release_object(configuration);
+	assert(err == CCS_RESULT_SUCCESS);
+
 	values[0] = ccs_float(0.0);
+	err       = ccs_create_configuration(
+                configuration_space, NULL, 2, values, &configuration);
+	assert(err == CCS_RESULT_SUCCESS);
 	test_expression_wrapper(
-		CCS_EXPRESSION_TYPE_EQUAL, 2, nodes, configuration_space,
-		values, ccs_bool(CCS_FALSE), CCS_RESULT_SUCCESS);
+		CCS_EXPRESSION_TYPE_EQUAL, 2, nodes, configuration,
+		ccs_bool(CCS_FALSE), CCS_RESULT_SUCCESS);
+	ccs_release_object(configuration);
+	assert(err == CCS_RESULT_SUCCESS);
+
 	nodes[0]  = ccs_float(1.0);
 	nodes[1]  = ccs_object(parameters[1]);
 	values[0] = ccs_float(1.0);
 	values[1] = ccs_float(1.0);
+	err       = ccs_create_configuration(
+                configuration_space, NULL, 2, values, &configuration);
+	assert(err == CCS_RESULT_SUCCESS);
 	test_expression_wrapper(
-		CCS_EXPRESSION_TYPE_EQUAL, 2, nodes, configuration_space,
-		values, ccs_bool(CCS_TRUE), CCS_RESULT_SUCCESS);
+		CCS_EXPRESSION_TYPE_EQUAL, 2, nodes, configuration,
+		ccs_bool(CCS_TRUE), CCS_RESULT_SUCCESS);
+	ccs_release_object(configuration);
+	assert(err == CCS_RESULT_SUCCESS);
+
 	values[1] = ccs_float(0.0);
+	err       = ccs_create_configuration(
+                configuration_space, NULL, 2, values, &configuration);
+	assert(err == CCS_RESULT_SUCCESS);
 	test_expression_wrapper(
-		CCS_EXPRESSION_TYPE_EQUAL, 2, nodes, configuration_space,
-		values, ccs_bool(CCS_FALSE), CCS_RESULT_SUCCESS);
+		CCS_EXPRESSION_TYPE_EQUAL, 2, nodes, configuration,
+		ccs_bool(CCS_FALSE), CCS_RESULT_SUCCESS);
+	ccs_release_object(configuration);
+	assert(err == CCS_RESULT_SUCCESS);
+
 	nodes[0] = ccs_int(0);
+	err      = ccs_create_configuration(
+                configuration_space, NULL, 2, values, &configuration);
+	assert(err == CCS_RESULT_SUCCESS);
 	test_expression_wrapper(
-		CCS_EXPRESSION_TYPE_EQUAL, 2, nodes, configuration_space,
-		values, ccs_bool(CCS_TRUE), CCS_RESULT_SUCCESS);
+		CCS_EXPRESSION_TYPE_EQUAL, 2, nodes, configuration,
+		ccs_bool(CCS_TRUE), CCS_RESULT_SUCCESS);
+	ccs_release_object(configuration);
+	assert(err == CCS_RESULT_SUCCESS);
+
 	nodes[0] = ccs_bool(CCS_FALSE);
+	err      = ccs_create_configuration(
+                configuration_space, NULL, 2, values, &configuration);
+	assert(err == CCS_RESULT_SUCCESS);
 	test_expression_wrapper(
-		CCS_EXPRESSION_TYPE_EQUAL, 2, nodes, configuration_space,
-		values, ccs_bool(CCS_TRUE), CCS_RESULT_ERROR_INVALID_VALUE);
+		CCS_EXPRESSION_TYPE_EQUAL, 2, nodes, configuration,
+		ccs_bool(CCS_TRUE), CCS_RESULT_ERROR_INVALID_VALUE);
+	ccs_release_object(configuration);
+	assert(err == CCS_RESULT_SUCCESS);
 
 	for (size_t i = 0; i < 2; i++) {
 		err = ccs_release_object(parameters[i]);
@@ -215,39 +253,55 @@ test_equal_numerical()
 }
 
 void
-test_equal_categorical()
+test_equal_categorical(void)
 {
 	ccs_configuration_space_t configuration_space;
+	ccs_configuration_t       configuration;
 	ccs_parameter_t           parameters[2];
 	ccs_datum_t               nodes[2];
 	ccs_datum_t               values[2];
 	ccs_result_t              err;
 
-	err = ccs_create_configuration_space(
-		"my_config_space", &configuration_space);
-	assert(err == CCS_RESULT_SUCCESS);
 	parameters[0] = create_dummy_categorical("param1");
 	parameters[1] = create_dummy_categorical("param2");
-	err           = ccs_configuration_space_add_parameters(
-                configuration_space, 2, parameters, NULL);
+	err           = ccs_create_configuration_space(
+                "my_config_space", 2, parameters, NULL, 0, NULL, NULL, NULL,
+                &configuration_space);
 	assert(err == CCS_RESULT_SUCCESS);
 
 	nodes[0]  = ccs_object(parameters[0]);
 	nodes[1]  = ccs_float(2.0);
 	values[0] = ccs_float(2.0);
 	values[1] = ccs_int(1);
+	err       = ccs_create_configuration(
+                configuration_space, NULL, 2, values, &configuration);
+	assert(err == CCS_RESULT_SUCCESS);
 	test_expression_wrapper(
-		CCS_EXPRESSION_TYPE_EQUAL, 2, nodes, configuration_space,
-		values, ccs_bool(CCS_TRUE), CCS_RESULT_SUCCESS);
+		CCS_EXPRESSION_TYPE_EQUAL, 2, nodes, configuration,
+		ccs_bool(CCS_TRUE), CCS_RESULT_SUCCESS);
+	ccs_release_object(configuration);
+	assert(err == CCS_RESULT_SUCCESS);
+
 	// Values tested must exist in the set
 	nodes[1] = ccs_float(3.0);
+	err      = ccs_create_configuration(
+                configuration_space, NULL, 2, values, &configuration);
+	assert(err == CCS_RESULT_SUCCESS);
 	test_expression_wrapper(
-		CCS_EXPRESSION_TYPE_EQUAL, 2, nodes, configuration_space,
-		values, ccs_bool(CCS_TRUE), CCS_RESULT_ERROR_INVALID_VALUE);
+		CCS_EXPRESSION_TYPE_EQUAL, 2, nodes, configuration,
+		ccs_bool(CCS_TRUE), CCS_RESULT_ERROR_INVALID_VALUE);
+	ccs_release_object(configuration);
+	assert(err == CCS_RESULT_SUCCESS);
+
 	nodes[1] = ccs_int(1);
+	err      = ccs_create_configuration(
+                configuration_space, NULL, 2, values, &configuration);
+	assert(err == CCS_RESULT_SUCCESS);
 	test_expression_wrapper(
-		CCS_EXPRESSION_TYPE_EQUAL, 2, nodes, configuration_space,
-		values, ccs_bool(CCS_FALSE), CCS_RESULT_SUCCESS);
+		CCS_EXPRESSION_TYPE_EQUAL, 2, nodes, configuration,
+		ccs_bool(CCS_FALSE), CCS_RESULT_SUCCESS);
+	ccs_release_object(configuration);
+	assert(err == CCS_RESULT_SUCCESS);
 
 	for (size_t i = 0; i < 2; i++) {
 		err = ccs_release_object(parameters[i]);
@@ -258,39 +312,55 @@ test_equal_categorical()
 }
 
 void
-test_equal_ordinal()
+test_equal_ordinal(void)
 {
 	ccs_configuration_space_t configuration_space;
+	ccs_configuration_t       configuration;
 	ccs_parameter_t           parameters[2];
 	ccs_datum_t               nodes[2];
 	ccs_datum_t               values[2];
 	ccs_result_t              err;
 
-	err = ccs_create_configuration_space(
-		"my_config_space", &configuration_space);
-	assert(err == CCS_RESULT_SUCCESS);
 	parameters[0] = create_dummy_ordinal("param1");
 	parameters[1] = create_dummy_ordinal("param2");
-	err           = ccs_configuration_space_add_parameters(
-                configuration_space, 2, parameters, NULL);
+	err           = ccs_create_configuration_space(
+                "my_config_space", 2, parameters, NULL, 0, NULL, NULL, NULL,
+                &configuration_space);
 	assert(err == CCS_RESULT_SUCCESS);
 
 	nodes[0]  = ccs_object(parameters[0]);
 	nodes[1]  = ccs_float(2.0);
 	values[0] = ccs_float(2.0);
 	values[1] = ccs_int(1);
+	err       = ccs_create_configuration(
+                configuration_space, NULL, 2, values, &configuration);
+	assert(err == CCS_RESULT_SUCCESS);
 	test_expression_wrapper(
-		CCS_EXPRESSION_TYPE_EQUAL, 2, nodes, configuration_space,
-		values, ccs_bool(CCS_TRUE), CCS_RESULT_SUCCESS);
+		CCS_EXPRESSION_TYPE_EQUAL, 2, nodes, configuration,
+		ccs_bool(CCS_TRUE), CCS_RESULT_SUCCESS);
+	ccs_release_object(configuration);
+	assert(err == CCS_RESULT_SUCCESS);
+
 	// Values tested must exist in the set
 	nodes[1] = ccs_float(3.0);
+	err      = ccs_create_configuration(
+                configuration_space, NULL, 2, values, &configuration);
+	assert(err == CCS_RESULT_SUCCESS);
 	test_expression_wrapper(
-		CCS_EXPRESSION_TYPE_EQUAL, 2, nodes, configuration_space,
-		values, ccs_bool(CCS_TRUE), CCS_RESULT_ERROR_INVALID_VALUE);
+		CCS_EXPRESSION_TYPE_EQUAL, 2, nodes, configuration,
+		ccs_bool(CCS_TRUE), CCS_RESULT_ERROR_INVALID_VALUE);
+	ccs_release_object(configuration);
+	assert(err == CCS_RESULT_SUCCESS);
+
 	nodes[1] = ccs_int(1);
+	err      = ccs_create_configuration(
+                configuration_space, NULL, 2, values, &configuration);
+	assert(err == CCS_RESULT_SUCCESS);
 	test_expression_wrapper(
-		CCS_EXPRESSION_TYPE_EQUAL, 2, nodes, configuration_space,
-		values, ccs_bool(CCS_FALSE), CCS_RESULT_SUCCESS);
+		CCS_EXPRESSION_TYPE_EQUAL, 2, nodes, configuration,
+		ccs_bool(CCS_FALSE), CCS_RESULT_SUCCESS);
+	ccs_release_object(configuration);
+	assert(err == CCS_RESULT_SUCCESS);
 
 	for (size_t i = 0; i < 2; i++) {
 		err = ccs_release_object(parameters[i]);
@@ -311,7 +381,7 @@ test_binary_arithmetic(
 	ccs_datum_t nodes[2];
 	nodes[0] = a;
 	nodes[1] = b;
-	test_expression_wrapper(t, 2, nodes, NULL, NULL, eres, eerr);
+	test_expression_wrapper(t, 2, nodes, NULL, eres, eerr);
 }
 
 void
@@ -321,11 +391,11 @@ test_unary_arithmetic(
 	ccs_datum_t           eres,
 	ccs_result_t          eerr)
 {
-	test_expression_wrapper(t, 1, &a, NULL, NULL, eres, eerr);
+	test_expression_wrapper(t, 1, &a, NULL, eres, eerr);
 }
 
 void
-test_arithmetic_add()
+test_arithmetic_add(void)
 {
 	test_binary_arithmetic(
 		CCS_EXPRESSION_TYPE_ADD, ccs_float(1.0), ccs_float(2.0),
@@ -349,7 +419,7 @@ test_arithmetic_add()
 }
 
 void
-test_arithmetic_substract()
+test_arithmetic_substract(void)
 {
 	test_binary_arithmetic(
 		CCS_EXPRESSION_TYPE_SUBSTRACT, ccs_float(1.0), ccs_float(2.0),
@@ -373,7 +443,7 @@ test_arithmetic_substract()
 }
 
 void
-test_arithmetic_multiply()
+test_arithmetic_multiply(void)
 {
 	test_binary_arithmetic(
 		CCS_EXPRESSION_TYPE_MULTIPLY, ccs_float(3.0), ccs_float(2.0),
@@ -397,7 +467,7 @@ test_arithmetic_multiply()
 }
 
 void
-test_arithmetic_divide()
+test_arithmetic_divide(void)
 {
 	test_binary_arithmetic(
 		CCS_EXPRESSION_TYPE_DIVIDE, ccs_float(3.0), ccs_float(2.0),
@@ -421,7 +491,7 @@ test_arithmetic_divide()
 }
 
 void
-test_arithmetic_modulo()
+test_arithmetic_modulo(void)
 {
 	test_binary_arithmetic(
 		CCS_EXPRESSION_TYPE_MODULO, ccs_float(3.0), ccs_float(2.0),
@@ -445,7 +515,7 @@ test_arithmetic_modulo()
 }
 
 void
-test_arithmetic_positive()
+test_arithmetic_positive(void)
 {
 	test_unary_arithmetic(
 		CCS_EXPRESSION_TYPE_POSITIVE, ccs_float(3.0), ccs_float(3.0),
@@ -461,7 +531,7 @@ test_arithmetic_positive()
 }
 
 void
-test_arithmetic_negative()
+test_arithmetic_negative(void)
 {
 	test_unary_arithmetic(
 		CCS_EXPRESSION_TYPE_NEGATIVE, ccs_float(3.0), ccs_float(-3.0),
@@ -477,7 +547,7 @@ test_arithmetic_negative()
 }
 
 void
-test_arithmetic_not()
+test_arithmetic_not(void)
 {
 	test_unary_arithmetic(
 		CCS_EXPRESSION_TYPE_NOT, ccs_float(3.0), ccs_none,
@@ -497,7 +567,7 @@ test_arithmetic_not()
 }
 
 void
-test_arithmetic_and()
+test_arithmetic_and(void)
 {
 	test_binary_arithmetic(
 		CCS_EXPRESSION_TYPE_AND, ccs_bool(CCS_FALSE),
@@ -521,7 +591,7 @@ test_arithmetic_and()
 }
 
 void
-test_arithmetic_or()
+test_arithmetic_or(void)
 {
 	test_binary_arithmetic(
 		CCS_EXPRESSION_TYPE_OR, ccs_bool(CCS_FALSE),
@@ -545,7 +615,7 @@ test_arithmetic_or()
 }
 
 void
-test_arithmetic_less()
+test_arithmetic_less(void)
 {
 	test_binary_arithmetic(
 		CCS_EXPRESSION_TYPE_LESS, ccs_float(1.0), ccs_float(2.0),
@@ -589,7 +659,7 @@ test_arithmetic_less()
 }
 
 void
-test_arithmetic_greater()
+test_arithmetic_greater(void)
 {
 	test_binary_arithmetic(
 		CCS_EXPRESSION_TYPE_GREATER, ccs_float(1.0), ccs_float(2.0),
@@ -633,7 +703,7 @@ test_arithmetic_greater()
 }
 
 void
-test_arithmetic_less_or_equal()
+test_arithmetic_less_or_equal(void)
 {
 	test_binary_arithmetic(
 		CCS_EXPRESSION_TYPE_LESS_OR_EQUAL, ccs_float(1.0),
@@ -677,7 +747,7 @@ test_arithmetic_less_or_equal()
 }
 
 void
-test_arithmetic_greater_or_equal()
+test_arithmetic_greater_or_equal(void)
 {
 	test_binary_arithmetic(
 		CCS_EXPRESSION_TYPE_GREATER_OR_EQUAL, ccs_float(1.0),
@@ -721,7 +791,7 @@ test_arithmetic_greater_or_equal()
 }
 
 void
-test_in()
+test_in(void)
 {
 	ccs_expression_t list;
 	ccs_datum_t      values[4];
@@ -780,7 +850,7 @@ test_in()
 }
 
 void
-test_compound()
+test_compound(void)
 {
 	ccs_expression_t      expression1, expression2;
 	ccs_datum_t           result;
@@ -818,7 +888,7 @@ test_compound()
 	err = ccs_release_object(expression1);
 	assert(err == CCS_RESULT_SUCCESS);
 
-	err = ccs_expression_eval(expression2, NULL, NULL, &result);
+	err = ccs_expression_eval(expression2, 0, NULL, &result);
 	assert(err == CCS_RESULT_SUCCESS);
 	assert(result.type == CCS_DATA_TYPE_FLOAT);
 	assert(result.value.f == 8.0);
@@ -828,7 +898,7 @@ test_compound()
 }
 
 void
-test_get_parameters()
+test_get_parameters(void)
 {
 	ccs_expression_t expression1, expression2;
 	ccs_parameter_t  parameter1, parameter2;
@@ -882,7 +952,7 @@ test_get_parameters()
 	assert(parameters[0] == parameter2);
 	assert(parameters[1] == NULL);
 	assert(parameters[2] == NULL);
-	err = ccs_expression_check_context(expression2, NULL);
+	err = ccs_expression_check_contexts(expression2, 0, NULL);
 	assert(err == CCS_RESULT_ERROR_INVALID_VALUE);
 
 	err = ccs_release_object(parameter1);
@@ -896,22 +966,22 @@ test_get_parameters()
 }
 
 void
-test_check_context()
+test_check_context(void)
 {
 	ccs_expression_t          expression1, expression2;
 	ccs_parameter_t           parameter1, parameter2, parameter3;
+	ccs_parameter_t           parameters[2];
 	ccs_configuration_space_t space;
 	ccs_result_t              err;
 
-	parameter1 = create_dummy_categorical("param1");
-	parameter2 = create_dummy_numerical("param2");
-	parameter3 = create_dummy_ordinal("param3");
+	parameter1    = create_dummy_categorical("param1");
+	parameter2    = create_dummy_numerical("param2");
+	parameter3    = create_dummy_ordinal("param3");
+	parameters[0] = parameter1;
+	parameters[1] = parameter2;
 
-	err        = ccs_create_configuration_space("space", &space);
-	assert(err == CCS_RESULT_SUCCESS);
-	err = ccs_configuration_space_add_parameter(space, parameter1, NULL);
-	assert(err == CCS_RESULT_SUCCESS);
-	err = ccs_configuration_space_add_parameter(space, parameter2, NULL);
+	err           = ccs_create_configuration_space(
+                "space", 2, parameters, NULL, 0, NULL, NULL, NULL, &space);
 	assert(err == CCS_RESULT_SUCCESS);
 
 	err = ccs_create_binary_expression(
@@ -924,9 +994,10 @@ test_check_context()
 		ccs_object(expression1), &expression2);
 	assert(err == CCS_RESULT_SUCCESS);
 
-	err = ccs_expression_check_context(expression2, NULL);
+	err = ccs_expression_check_contexts(expression2, 0, NULL);
 	assert(err == CCS_RESULT_ERROR_INVALID_VALUE);
-	err = ccs_expression_check_context(expression2, (ccs_context_t)space);
+	err = ccs_expression_check_contexts(
+		expression2, 1, (ccs_context_t *)&space);
 	assert(err == CCS_RESULT_SUCCESS);
 
 	err = ccs_release_object(expression2);
@@ -936,7 +1007,8 @@ test_check_context()
 		CCS_EXPRESSION_TYPE_EQUAL, ccs_object(parameter3),
 		ccs_object(expression1), &expression2);
 	assert(err == CCS_RESULT_SUCCESS);
-	err = ccs_expression_check_context(expression2, (ccs_context_t)space);
+	err = ccs_expression_check_contexts(
+		expression2, 1, (ccs_context_t *)&space);
 	assert(err == CCS_RESULT_ERROR_INVALID_PARAMETER);
 
 	err = ccs_release_object(parameter1);
@@ -954,7 +1026,7 @@ test_check_context()
 }
 
 void
-test_deserialize_literal()
+test_deserialize_literal(void)
 {
 	ccs_result_t          err;
 	ccs_expression_t      expression;
@@ -1009,7 +1081,7 @@ test_deserialize_literal()
 }
 
 void
-test_deserialize_variable()
+test_deserialize_variable(void)
 {
 	ccs_result_t          err;
 	ccs_parameter_t       parameter;
@@ -1093,7 +1165,7 @@ test_deserialize_variable()
 }
 
 void
-test_deserialize()
+test_deserialize(void)
 {
 	ccs_result_t     err;
 	ccs_expression_t expression;
@@ -1166,8 +1238,163 @@ test_deserialize()
 	free(buff);
 }
 
+static ccs_result_t
+my_del(ccs_expression_t expression)
+{
+	ccs_result_t res;
+	void        *data;
+	res = ccs_user_defined_expression_get_expression_data(
+		expression, &data);
+	assert(res == CCS_RESULT_SUCCESS);
+	gsl_rng_free((gsl_rng *)data);
+	return CCS_RESULT_SUCCESS;
+}
+
+static ccs_result_t
+my_eval(ccs_expression_t expression,
+	size_t           num_values,
+	ccs_datum_t     *values,
+	ccs_datum_t     *value_ret)
+{
+	ccs_result_t res;
+	void        *data;
+	assert(num_values == 1);
+	assert(values);
+	assert(value_ret);
+	res = ccs_user_defined_expression_get_expression_data(
+		expression, &data);
+	assert(res == CCS_RESULT_SUCCESS);
+	*value_ret = ccs_int(
+		gsl_rng_uniform_int((gsl_rng *)data, values[0].value.i));
+	return CCS_RESULT_SUCCESS;
+}
+
+static ccs_result_t
+my_serialize_user_state(
+	ccs_expression_t expression,
+	size_t           sate_size,
+	void            *state,
+	size_t          *state_size_ret)
+{
+	ccs_result_t res;
+	void        *data;
+	assert(state || state_size_ret);
+	res = ccs_user_defined_expression_get_expression_data(
+		expression, &data);
+	assert(res == CCS_RESULT_SUCCESS);
+	size_t sz     = gsl_rng_size((gsl_rng *)data);
+	void  *pstate = gsl_rng_state((gsl_rng *)data);
+	if (state_size_ret)
+		*state_size_ret = sz;
+	if (state) {
+		assert(sate_size >= sz);
+		memcpy(state, pstate, sz);
+	}
+	return CCS_RESULT_SUCCESS;
+}
+
+static ccs_result_t
+my_deserialize_state(
+	size_t      state_size,
+	const void *state,
+	void      **expression_data_ret)
+{
+	assert(state);
+	assert(expression_data_ret);
+	gsl_rng *grng = gsl_rng_alloc(gsl_rng_mt19937);
+	assert(grng);
+	memcpy(gsl_rng_state(grng), state, state_size);
+	*expression_data_ret = (void *)grng;
+	return CCS_RESULT_SUCCESS;
+}
+
+static ccs_user_defined_expression_vector_t my_vector = {
+	&my_del, &my_eval, &my_serialize_user_state, &my_deserialize_state};
+
+ccs_result_t
+deserialize_vector_callback(
+	ccs_object_type_t type,
+	const char       *name,
+	void             *callback_user_data,
+	void            **vector_ret,
+	void            **data_ret)
+{
+	assert(callback_user_data == NULL);
+	assert(type == CCS_OBJECT_TYPE_EXPRESSION);
+	assert(!strcmp(name, "my_rand"));
+	assert(data_ret);
+	assert(vector_ret);
+	*vector_ret = (void *)&my_vector;
+	*data_ret   = NULL;
+	return CCS_RESULT_SUCCESS;
+}
+
+void
+test_user_defined(void)
+{
+	ccs_datum_t      limit = ccs_int(10);
+	ccs_datum_t      result, result_copy;
+	ccs_result_t     err;
+	ccs_expression_t expression, expression_copy;
+	gsl_rng         *grng;
+	char            *buff;
+	size_t           buff_size;
+
+	grng = gsl_rng_alloc(gsl_rng_mt19937);
+	assert(grng);
+
+	err = ccs_create_user_defined_expression(
+		"my_rand", 1, &limit, &my_vector, (void *)grng, &expression);
+	assert(err == CCS_RESULT_SUCCESS);
+	for (size_t i = 0; i < 100; i++) {
+		err = ccs_expression_eval(expression, 0, NULL, &result);
+		assert(err == CCS_RESULT_SUCCESS);
+		assert(result.type == CCS_DATA_TYPE_INT);
+		assert(result.value.i >= 0);
+		assert(result.value.i < limit.value.i);
+	}
+
+	err = ccs_object_serialize(
+		expression, CCS_SERIALIZE_FORMAT_BINARY,
+		CCS_SERIALIZE_OPERATION_SIZE, &buff_size,
+		CCS_SERIALIZE_OPTION_END);
+	assert(err == CCS_RESULT_SUCCESS);
+	buff = (char *)malloc(buff_size);
+	assert(buff);
+
+	err = ccs_object_serialize(
+		expression, CCS_SERIALIZE_FORMAT_BINARY,
+		CCS_SERIALIZE_OPERATION_MEMORY, buff_size, buff,
+		CCS_SERIALIZE_OPTION_END);
+	assert(err == CCS_RESULT_SUCCESS);
+
+	err = ccs_object_deserialize(
+		(ccs_object_t *)&expression_copy, CCS_SERIALIZE_FORMAT_BINARY,
+		CCS_SERIALIZE_OPERATION_MEMORY, buff_size, buff,
+		CCS_DESERIALIZE_OPTION_VECTOR_CALLBACK,
+		&deserialize_vector_callback, (void *)NULL,
+		CCS_DESERIALIZE_OPTION_END);
+	assert(err == CCS_RESULT_SUCCESS);
+
+	for (size_t i = 0; i < 100; i++) {
+		err = ccs_expression_eval(expression, 0, NULL, &result);
+		assert(err == CCS_RESULT_SUCCESS);
+		err = ccs_expression_eval(
+			expression_copy, 0, NULL, &result_copy);
+		assert(err == CCS_RESULT_SUCCESS);
+		assert(result.type == result_copy.type);
+		assert(result.value.i == result_copy.value.i);
+	}
+
+	free(buff);
+	err = ccs_release_object(expression_copy);
+	assert(err == CCS_RESULT_SUCCESS);
+	err = ccs_release_object(expression);
+	assert(err == CCS_RESULT_SUCCESS);
+}
+
 int
-main()
+main(void)
 {
 	ccs_init();
 	test_equal_literal();
@@ -1188,6 +1415,7 @@ main()
 	test_arithmetic_greater();
 	test_arithmetic_less_or_equal();
 	test_arithmetic_greater_or_equal();
+	test_user_defined();
 	test_compound();
 	test_in();
 	test_get_parameters();

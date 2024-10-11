@@ -12,16 +12,9 @@ _ccs_deserialize_bin_features(
 	_ccs_object_deserialize_options_t *opts)
 {
 	CCS_CHECK_OBJ(opts->handle_map, CCS_OBJECT_TYPE_MAP);
-	_ccs_object_internal_t obj;
-	ccs_object_t           handle;
-	ccs_datum_t            d;
-	ccs_features_space_t   cs;
-	ccs_result_t           res = CCS_RESULT_SUCCESS;
-	CCS_VALIDATE(_ccs_deserialize_bin_ccs_object_internal(
-		&obj, buffer_size, buffer, &handle));
-	CCS_REFUTE(
-		obj.type != CCS_OBJECT_TYPE_FEATURES,
-		CCS_RESULT_ERROR_INVALID_TYPE);
+	ccs_datum_t         d;
+	ccs_feature_space_t cs;
+	ccs_result_t        res  = CCS_RESULT_SUCCESS;
 
 	_ccs_binding_data_t data = {NULL, 0, NULL};
 	CCS_VALIDATE_ERR_GOTO(
@@ -37,7 +30,7 @@ _ccs_deserialize_bin_features(
 	CCS_REFUTE_ERR_GOTO(
 		res, d.type != CCS_DATA_TYPE_OBJECT,
 		CCS_RESULT_ERROR_INVALID_HANDLE, end);
-	cs = (ccs_features_space_t)(d.value.o);
+	cs = (ccs_feature_space_t)(d.value.o);
 
 	CCS_VALIDATE_ERR_GOTO(
 		res,
@@ -45,18 +38,6 @@ _ccs_deserialize_bin_features(
 			cs, data.num_values, data.values, features_ret),
 		end);
 
-	if (opts->map_values)
-		CCS_VALIDATE_ERR_GOTO(
-			res,
-			_ccs_object_handle_check_add(
-				opts->handle_map, handle,
-				(ccs_object_t)*features_ret),
-			err_features);
-	goto end;
-
-err_features:
-	ccs_release_object(*features_ret);
-	*features_ret = NULL;
 end:
 	if (data.values)
 		free(data.values);
@@ -82,9 +63,6 @@ _ccs_features_deserialize(
 			CCS_RESULT_ERROR_INVALID_VALUE,
 			"Unsupported serialization format: %d", format);
 	}
-	CCS_VALIDATE(_ccs_object_deserialize_user_data(
-		(ccs_object_t)*features_ret, format, version, buffer_size,
-		buffer, opts));
 	return CCS_RESULT_SUCCESS;
 }
 

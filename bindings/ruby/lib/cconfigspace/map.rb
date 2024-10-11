@@ -9,6 +9,9 @@ module CCS
   attach_function :ccs_map_get_pairs, [:ccs_map_t, :size_t, :pointer, :pointer, :pointer], :ccs_result_t
 
   class Map < Object
+    add_array_property :keys, :ccs_datum_t, :ccs_map_get_keys
+    add_array_property :values, :ccs_datum_t, :ccs_map_get_values
+
     def initialize(handle = nil, retain: false, auto_release: true)
       if handle
         super
@@ -23,11 +26,7 @@ module CCS
       self.new(handle, retain: retain, auto_release: auto_release)
     end
 
-    def size
-      ptr = MemoryPointer::new(:size_t)
-      CCS.error_check CCS.ccs_map_get_keys(@handle, 0, nil, ptr)
-      ptr.read_size_t
-    end
+    alias size num_keys
 
     def [](key)
       ptr = MemoryPointer::new(:ccs_datum_t)
@@ -50,25 +49,9 @@ module CCS
       ptr.read_ccs_bool_t == CCS::FALSE ? false : true
     end
 
-    def keys
-      sz = size
-      return [] if count == 0
-      keys = MemoryPointer::new(:ccs_datum_t, sz)
-      CCS.error_check CCS.ccs_map_get_keys(@handle, sz, keys, nil)
-      sz.times.collect { |i| Datum::new(keys[i]).value }
-    end
-
-    def values
-      sz = size
-      return [] if count == 0
-      values = MemoryPointer::new(:ccs_datum_t, sz)
-      CCS.error_check CCS.ccs_map_get_values(@handle, sz, values, nil)
-      sz.times.collect { |i| Datum::new(values[i]).value }
-    end
-
     def pairs
       sz = size
-      return [] if count == 0
+      return [] if sz == 0
       keys = MemoryPointer::new(:ccs_datum_t, sz)
       values = MemoryPointer::new(:ccs_datum_t, sz)
       CCS.error_check CCS.ccs_map_get_pairs(@handle, sz, keys, values, nil)

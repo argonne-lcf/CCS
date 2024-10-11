@@ -1,10 +1,12 @@
 #ifndef _OBJECTIVE_SPACE_DESERIALIZE_H
 #define _OBJECTIVE_SPACE_DESERIALIZE_H
-#include "context_deserialize.h"
-#include "expression_deserialize.h"
+#include "objective_space_internal.h"
 
 struct _ccs_objective_space_data_mock_s {
 	const char           *name;
+	ccs_object_t          feature_space_handle;
+	ccs_object_t          search_space_handle;
+	ccs_search_space_t    search_space;
 	size_t                num_parameters;
 	size_t                num_objectives;
 	ccs_parameter_t      *parameters;
@@ -25,6 +27,15 @@ _ccs_deserialize_bin_ccs_objective_space_data(
 
 	CCS_VALIDATE(
 		_ccs_deserialize_bin_string(&data->name, buffer_size, buffer));
+
+	CCS_VALIDATE(_ccs_deserialize_bin_ccs_object(
+		&data->feature_space_handle, buffer_size, buffer));
+	CCS_VALIDATE(_ccs_deserialize_bin_ccs_object(
+		&data->search_space_handle, buffer_size, buffer));
+	CCS_VALIDATE(_ccs_object_deserialize_with_opts(
+		(ccs_object_t *)&data->search_space,
+		CCS_SERIALIZE_FORMAT_BINARY, version, buffer_size, buffer,
+		opts));
 	CCS_VALIDATE(_ccs_deserialize_bin_size(
 		&data->num_parameters, buffer_size, buffer));
 	CCS_VALIDATE(_ccs_deserialize_bin_size(
@@ -45,13 +56,15 @@ _ccs_deserialize_bin_ccs_objective_space_data(
 	data->objective_types = (ccs_objective_type_t *)mem;
 
 	for (size_t i = 0; i < data->num_parameters; i++)
-		CCS_VALIDATE(_ccs_parameter_deserialize(
-			data->parameters + i, CCS_SERIALIZE_FORMAT_BINARY,
+		CCS_VALIDATE(_ccs_object_deserialize_with_opts_check(
+			(ccs_object_t *)data->parameters + i,
+			CCS_OBJECT_TYPE_PARAMETER, CCS_SERIALIZE_FORMAT_BINARY,
 			version, buffer_size, buffer, opts));
 
 	for (size_t i = 0; i < data->num_objectives; i++) {
-		CCS_VALIDATE(_ccs_expression_deserialize(
-			data->objectives + i, CCS_SERIALIZE_FORMAT_BINARY,
+		CCS_VALIDATE(_ccs_object_deserialize_with_opts_check(
+			(ccs_object_t *)data->objectives + i,
+			CCS_OBJECT_TYPE_EXPRESSION, CCS_SERIALIZE_FORMAT_BINARY,
 			version, buffer_size, buffer, opts));
 		CCS_VALIDATE(_ccs_deserialize_bin_ccs_objective_type(
 			data->objective_types + i, buffer_size, buffer));
@@ -69,52 +82,31 @@ _ccs_deserialize_bin_objective_space(
 	_ccs_object_deserialize_options_t *opts)
 {
 	_ccs_object_deserialize_options_t new_opts = *opts;
-	_ccs_object_internal_t            obj;
-	ccs_object_t                      handle;
-	ccs_result_t                      res = CCS_RESULT_SUCCESS;
-	CCS_VALIDATE(_ccs_deserialize_bin_ccs_object_internal(
-		&obj, buffer_size, buffer, &handle));
-	CCS_REFUTE(
-		obj.type != CCS_OBJECT_TYPE_OBJECTIVE_SPACE,
-		CCS_RESULT_ERROR_INVALID_TYPE);
+	ccs_result_t                      res      = CCS_RESULT_SUCCESS;
 
-	new_opts.map_values = CCS_TRUE;
-	CCS_VALIDATE(ccs_create_map(&new_opts.handle_map));
+	if (!opts->map_values) {
+		new_opts.map_values = CCS_TRUE;
+		CCS_VALIDATE(ccs_create_map(&new_opts.handle_map));
+	}
 
-	_ccs_objective_space_data_mock_t data = {NULL, 0, 0, NULL, NULL, NULL};
+	_ccs_objective_space_data_mock_t data = {NULL, NULL, NULL, NULL, 0,
+						 0,    NULL, NULL, NULL};
 	CCS_VALIDATE_ERR_GOTO(
 		res,
 		_ccs_deserialize_bin_ccs_objective_space_data(
 			&data, version, buffer_size, buffer, &new_opts),
 		end);
 	CCS_VALIDATE_ERR_GOTO(
-		res, ccs_create_objective_space(data.name, objective_space_ret),
+		res,
+		ccs_create_objective_space(
+			data.name, data.search_space, data.num_parameters,
+			data.parameters, data.num_objectives, data.objectives,
+			data.objective_types, objective_space_ret),
 		end);
-	CCS_VALIDATE_ERR_GOTO(
-		res,
-		ccs_objective_space_add_parameters(
-			*objective_space_ret, data.num_parameters,
-			data.parameters),
-		err_objective_space);
-	CCS_VALIDATE_ERR_GOTO(
-		res,
-		ccs_objective_space_add_objectives(
-			*objective_space_ret, data.num_objectives,
-			data.objectives, data.objective_types),
-		err_objective_space);
-	if (opts && opts->map_values && opts->handle_map)
-		CCS_VALIDATE_ERR_GOTO(
-			res,
-			_ccs_object_handle_check_add(
-				opts->handle_map, handle,
-				(ccs_object_t)*objective_space_ret),
-			err_objective_space);
-	goto end;
 
-err_objective_space:
-	ccs_release_object(*objective_space_ret);
-	*objective_space_ret = NULL;
 end:
+	if (data.search_space)
+		ccs_release_object(data.search_space);
 	if (data.parameters)
 		for (size_t i = 0; i < data.num_parameters; i++)
 			if (data.parameters[i])
@@ -125,7 +117,8 @@ end:
 				ccs_release_object(data.objectives[i]);
 	if (data.parameters)
 		free(data.parameters);
-	ccs_release_object(new_opts.handle_map);
+	if (!opts->map_values)
+		ccs_release_object(new_opts.handle_map);
 	return res;
 }
 
@@ -149,9 +142,6 @@ _ccs_objective_space_deserialize(
 			CCS_RESULT_ERROR_INVALID_VALUE,
 			"Unsupported serialization format: %d", format);
 	}
-	CCS_VALIDATE(_ccs_object_deserialize_user_data(
-		(ccs_object_t)*objective_space_ret, format, version,
-		buffer_size, buffer, opts));
 	return CCS_RESULT_SUCCESS;
 }
 

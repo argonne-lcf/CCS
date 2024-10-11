@@ -2,7 +2,7 @@ EXTRA_DIST = \
 	cconfigspace/rng.py \
 	cconfigspace/context.py \
 	cconfigspace/parameter.py \
-	cconfigspace/features_space.py \
+	cconfigspace/feature_space.py \
 	cconfigspace/distribution.py \
 	cconfigspace/map.py \
 	cconfigspace/expression_parser.py \
@@ -13,15 +13,12 @@ EXTRA_DIST = \
 	cconfigspace/__init__.py \
 	cconfigspace/expression.py \
 	cconfigspace/configuration_space.py \
+	cconfigspace/distribution_space.py \
 	cconfigspace/tree_configuration.py \
-	cconfigspace/tree_tuner.py \
 	cconfigspace/features.py \
 	cconfigspace/interval.py \
 	cconfigspace/objective_space.py \
-	cconfigspace/features_evaluation.py \
-	cconfigspace/tree_evaluation.py \
 	cconfigspace/binding.py \
-	cconfigspace/features_tuner.py \
 	cconfigspace/tuner.py \
 	cconfigspace/base.py \
 	cconfigspace/evaluation.py \
@@ -41,7 +38,8 @@ EXTRA_DIST = \
 	test/test_features_tuner.py \
 	test/test_objective_space.py \
 	test/test_configuration_space.py \
-	test/test_features_space.py \
+	test/test_feature_space.py \
+	test/tuner_server.py \
 	setup.py
 
 if ISMACOS
@@ -51,6 +49,6 @@ LIBEXT = .so
 endif
 
 check: FORCE
-	PYTHONPATH=$(srcdir)/ LIBCCONFIGSPACE_SO_=$(top_builddir)/src/.libs/libcconfigspace$(LIBEXT) python3 -m unittest discover -s $(srcdir)/test/
+	PYTHONPATH=$(srcdir)/ LIBCCONFIGSPACE_SO_=$(abs_top_builddir)/src/.libs/libcconfigspace$(LIBEXT) python3 -m unittest discover -s $(srcdir)/test/
 
 FORCE:

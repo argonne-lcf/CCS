@@ -1,12 +1,6 @@
 #include "cconfigspace_internal.h"
 #include "distribution_internal.h"
 
-static inline _ccs_distribution_ops_t *
-_ccs_distribution_get_ops(ccs_distribution_t distribution)
-{
-	return (_ccs_distribution_ops_t *)distribution->obj.ops;
-}
-
 ccs_result_t
 ccs_distribution_get_type(
 	ccs_distribution_t       distribution,
@@ -97,9 +91,14 @@ ccs_distribution_sample(
 	CCS_CHECK_OBJ(distribution, CCS_OBJECT_TYPE_DISTRIBUTION);
 	CCS_CHECK_OBJ(rng, CCS_OBJECT_TYPE_RNG);
 	CCS_CHECK_PTR(value_ret);
+	ccs_result_t             err = CCS_RESULT_SUCCESS;
 	_ccs_distribution_ops_t *ops = _ccs_distribution_get_ops(distribution);
-	CCS_VALIDATE(ops->samples(distribution->data, rng, 1, value_ret));
-	return CCS_RESULT_SUCCESS;
+	CCS_OBJ_WRLOCK(rng);
+	CCS_VALIDATE_ERR_GOTO(
+		err, ops->samples(distribution->data, rng, 1, value_ret), end);
+end:
+	CCS_OBJ_UNLOCK(rng);
+	return err;
 }
 
 ccs_result_t
@@ -114,9 +113,15 @@ ccs_distribution_samples(
 	if (!num_values)
 		return CCS_RESULT_SUCCESS;
 	CCS_CHECK_ARY(num_values, values);
+	ccs_result_t             err = CCS_RESULT_SUCCESS;
 	_ccs_distribution_ops_t *ops = _ccs_distribution_get_ops(distribution);
-	CCS_VALIDATE(ops->samples(distribution->data, rng, num_values, values));
-	return CCS_RESULT_SUCCESS;
+	CCS_OBJ_WRLOCK(rng);
+	CCS_VALIDATE_ERR_GOTO(
+		err, ops->samples(distribution->data, rng, num_values, values),
+		end);
+end:
+	CCS_OBJ_UNLOCK(rng);
+	return err;
 }
 
 ccs_result_t
@@ -137,10 +142,17 @@ ccs_distribution_strided_samples(
 	if (!num_values)
 		return CCS_RESULT_SUCCESS;
 	CCS_CHECK_ARY(num_values, values);
+	ccs_result_t             err = CCS_RESULT_SUCCESS;
 	_ccs_distribution_ops_t *ops = _ccs_distribution_get_ops(distribution);
-	CCS_VALIDATE(ops->strided_samples(
-		distribution->data, rng, num_values, stride, values));
-	return CCS_RESULT_SUCCESS;
+	CCS_OBJ_WRLOCK(rng);
+	CCS_VALIDATE_ERR_GOTO(
+		err,
+		ops->strided_samples(
+			distribution->data, rng, num_values, stride, values),
+		end);
+end:
+	CCS_OBJ_UNLOCK(rng);
+	return err;
 }
 
 ccs_result_t
@@ -155,10 +167,16 @@ ccs_distribution_soa_samples(
 	if (!num_values)
 		return CCS_RESULT_SUCCESS;
 	CCS_CHECK_ARY(num_values, values);
+	ccs_result_t             err = CCS_RESULT_SUCCESS;
 	_ccs_distribution_ops_t *ops = _ccs_distribution_get_ops(distribution);
-	CCS_VALIDATE(
-		ops->soa_samples(distribution->data, rng, num_values, values));
-	return CCS_RESULT_SUCCESS;
+	CCS_OBJ_WRLOCK(rng);
+	CCS_VALIDATE_ERR_GOTO(
+		err,
+		ops->soa_samples(distribution->data, rng, num_values, values),
+		end);
+end:
+	CCS_OBJ_UNLOCK(rng);
+	return err;
 }
 
 ccs_result_t
@@ -212,11 +230,14 @@ ccs_distribution_parameters_samples(
 		(ccs_numeric_t *)(mem + num_values * dim * sizeof(ccs_datum_t));
 	for (size_t i = 1; i < dim; i++)
 		p_vs[i] = p_vs[i - 1] + num_values;
+
+	_ccs_distribution_ops_t *ops = _ccs_distribution_get_ops(distribution);
+	CCS_OBJ_WRLOCK(rng);
 	CCS_VALIDATE_ERR_GOTO(
 		err,
-		ccs_distribution_soa_samples(
-			distribution, rng, num_values, p_vs),
-		errmem);
+		ops->soa_samples(distribution->data, rng, num_values, p_vs),
+		errlock);
+	CCS_OBJ_UNLOCK(rng);
 
 	for (size_t i = 0; i < dim; i++)
 		CCS_VALIDATE_ERR_GOTO(
@@ -271,11 +292,14 @@ ccs_distribution_parameters_samples(
 					 *)(mem + buff_len * dim * sizeof(ccs_datum_t));
 			for (size_t i = 1; i < dim; i++)
 				p_vs[i] = p_vs[i - 1] + buff_len;
+			CCS_OBJ_WRLOCK(rng);
 			CCS_VALIDATE_ERR_GOTO(
 				err,
-				ccs_distribution_soa_samples(
-					distribution, rng, buff_len, p_vs),
-				errmem);
+				ops->soa_samples(
+					distribution->data, rng, buff_len,
+					p_vs),
+				errlock);
+			CCS_OBJ_UNLOCK(rng);
 			for (size_t i = 0; i < dim; i++) {
 				CCS_VALIDATE_ERR_GOTO(
 					err,
@@ -305,6 +329,10 @@ ccs_distribution_parameters_samples(
 			coeff <<= 1;
 		}
 	}
+	free((void *)mem);
+	return err;
+errlock:
+	CCS_OBJ_UNLOCK(rng);
 errmem:
 	free((void *)mem);
 	return err;

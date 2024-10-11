@@ -1,5 +1,7 @@
 import unittest
 import sys
+import random
+import pickle
 sys.path.insert(1, '.')
 sys.path.insert(1, '..')
 import cconfigspace as ccs
@@ -20,7 +22,7 @@ class TestExpression(unittest.TestCase):
     self.assertEqual( 1.0, nodes[0].value )
     self.assertEqual( 2.0, nodes[1].value )
     self.assertEqual( 3.0, e.eval() )
-    self.assertEqual( [], e.parameters )
+    self.assertEqual( (), e.parameters )
 
   def test_to_s(self):
     e = ccs.Expression.Add(left = 1.0, right = 2.0)
@@ -58,6 +60,32 @@ class TestExpression(unittest.TestCase):
     e = ccs.Expression.Or(left = True, right = False)
     self.assertEqual( "true || false", str(e) )
     self.assertTrue( e.eval() )
+
+  def test_user_defined(self):
+    def my_rand(expr, limit):
+      return expr.expression_data.randrange(limit)
+
+    def my_serialize(expr):
+      return pickle.dumps(expr.expression_data)
+
+    def my_deserialize(state):
+      return pickle.loads(state)
+
+    def get_vector_data(otype, name):
+      self.assertEqual( ccs.ObjectType.EXPRESSION, otype )
+      self.assertEqual( "rand", name)
+      return (ccs.Expression.UserDefined.get_vector(evaluate = my_rand, serialize = my_serialize, deserialize = my_deserialize), None)
+
+    limit = 10
+    e = ccs.Expression.UserDefined(name = "rand", nodes = [limit], expression_data = random.Random(), evaluate = my_rand, serialize = my_serialize, deserialize = my_deserialize)
+    self.assertEqual( "rand(10)", str(e) )
+    evals = [ e.eval() for i in range(100) ]
+    self.assertTrue( all(i >= 0 and i < limit for i in evals) )
+
+    buff = e.serialize()
+    e_copy = ccs.deserialize(buffer = buff, vector_callback = get_vector_data)
+
+    self.assertTrue( all(e.eval() == e_copy.eval() for i in range(100)) )
 
 if __name__ == '__main__':
     unittest.main()

@@ -3,6 +3,7 @@
 #include <math.h>
 #include "cconfigspace_internal.h"
 #include "distribution_internal.h"
+#include "rng_internal.h"
 
 struct _ccs_distribution_roulette_data_s {
 	_ccs_distribution_common_data_t common_data;
@@ -55,9 +56,7 @@ _ccs_serialize_bin_size_ccs_distribution_roulette(
 {
 	_ccs_distribution_roulette_data_t *data =
 		(_ccs_distribution_roulette_data_t *)(distribution->data);
-	return _ccs_serialize_bin_size_ccs_object_internal(
-		       (_ccs_object_internal_t *)distribution) +
-	       _ccs_serialize_bin_size_ccs_distribution_roulette_data(data);
+	return _ccs_serialize_bin_size_ccs_distribution_roulette_data(data);
 }
 
 static inline ccs_result_t
@@ -68,8 +67,6 @@ _ccs_serialize_bin_ccs_distribution_roulette(
 {
 	_ccs_distribution_roulette_data_t *data =
 		(_ccs_distribution_roulette_data_t *)(distribution->data);
-	CCS_VALIDATE(_ccs_serialize_bin_ccs_object_internal(
-		(_ccs_object_internal_t *)distribution, buffer_size, buffer));
 	CCS_VALIDATE(_ccs_serialize_bin_ccs_distribution_roulette_data(
 		data, buffer_size, buffer));
 	return CCS_RESULT_SUCCESS;
@@ -82,6 +79,7 @@ _ccs_distribution_roulette_serialize_size(
 	size_t                          *cum_size,
 	_ccs_object_serialize_options_t *opts)
 {
+	(void)opts;
 	switch (format) {
 	case CCS_SERIALIZE_FORMAT_BINARY:
 		*cum_size += _ccs_serialize_bin_size_ccs_distribution_roulette(
@@ -92,8 +90,6 @@ _ccs_distribution_roulette_serialize_size(
 			CCS_RESULT_ERROR_INVALID_VALUE,
 			"Unsupported serialization format: %d", format);
 	}
-	CCS_VALIDATE(_ccs_object_serialize_user_data_size(
-		object, format, cum_size, opts));
 	return CCS_RESULT_SUCCESS;
 }
 
@@ -105,6 +101,7 @@ _ccs_distribution_roulette_serialize(
 	char                           **buffer,
 	_ccs_object_serialize_options_t *opts)
 {
+	(void)opts;
 	switch (format) {
 	case CCS_SERIALIZE_FORMAT_BINARY:
 		CCS_VALIDATE(_ccs_serialize_bin_ccs_distribution_roulette(
@@ -115,8 +112,6 @@ _ccs_distribution_roulette_serialize(
 			CCS_RESULT_ERROR_INVALID_VALUE,
 			"Unsupported serialization format: %d", format);
 	}
-	CCS_VALIDATE(_ccs_object_serialize_user_data(
-		object, format, buffer_size, buffer, opts));
 	return CCS_RESULT_SUCCESS;
 }
 
@@ -182,8 +177,7 @@ _ccs_distribution_roulette_samples(
 	_ccs_distribution_roulette_data_t *d =
 		(_ccs_distribution_roulette_data_t *)data;
 
-	gsl_rng *grng;
-	CCS_VALIDATE(ccs_rng_get_gsl_rng(rng, &grng));
+	gsl_rng *grng = rng->data->rng;
 
 	for (size_t i = 0; i < num_values; i++) {
 		ccs_float_t rnd = gsl_rng_uniform(grng);
@@ -205,8 +199,7 @@ _ccs_distribution_roulette_strided_samples(
 	_ccs_distribution_roulette_data_t *d =
 		(_ccs_distribution_roulette_data_t *)data;
 
-	gsl_rng *grng;
-	CCS_VALIDATE(ccs_rng_get_gsl_rng(rng, &grng));
+	gsl_rng *grng = rng->data->rng;
 
 	for (size_t i = 0; i < num_values; i++) {
 		ccs_float_t rnd = gsl_rng_uniform(grng);
@@ -273,19 +266,6 @@ ccs_create_roulette_distribution(
 		num_areas, areas, sum_areas_inverse, distrib_data->areas);
 	distrib->data     = (_ccs_distribution_data_t *)distrib_data;
 	*distribution_ret = distrib;
-	return CCS_RESULT_SUCCESS;
-}
-
-ccs_result_t
-ccs_roulette_distribution_get_num_areas(
-	ccs_distribution_t distribution,
-	size_t            *num_areas_ret)
-{
-	CCS_CHECK_DISTRIBUTION(distribution, CCS_DISTRIBUTION_TYPE_ROULETTE);
-	CCS_CHECK_PTR(num_areas_ret);
-	_ccs_distribution_roulette_data_t *data =
-		(_ccs_distribution_roulette_data_t *)distribution->data;
-	*num_areas_ret = data->num_areas;
 	return CCS_RESULT_SUCCESS;
 }
 

@@ -2,10 +2,6 @@ require 'minitest/autorun'
 require_relative '../lib/cconfigspace'
 
 class CConfigSpaceTestTreeSpace < Minitest::Test
-  def setup
-    CCS.init
-  end
-
   def generate_tree(depth, rank)
     ar = depth - rank
     ar = 0 if ar < 0
@@ -20,26 +16,19 @@ class CConfigSpaceTestTreeSpace < Minitest::Test
   def test_static_tree_space
     rng = CCS::Rng.new
     tree = generate_tree(4, 0)
-    ts = CCS::StaticTreeSpace.new(name: 'space', tree: tree)
+    ts = CCS::StaticTreeSpace.new(name: 'space', tree: tree, rng: rng)
     assert_equal( :CCS_OBJECT_TYPE_TREE_SPACE, ts.object_type )
     assert_equal( "space", ts.name )
-    assert_instance_of( CCS::Rng, ts.rng )
     assert_equal( :CCS_TREE_SPACE_TYPE_STATIC, ts.type )
-    ts.rng = rng
+    assert_instance_of( CCS::Rng, ts.rng )
     assert_equal( rng.handle, ts.rng.handle )
     assert_equal( tree.handle, ts.tree.handle )
     assert_equal( tree.handle, ts.get_node_at_position([]).handle )
     assert_equal( 201, ts.get_node_at_position([1, 1]).value )
     assert_equal( [400, 301, 201], ts.get_values_at_position([1, 1]) )
-    assert( ts.check_position([1, 1]) )
-    refute( ts.check_position([1, 4]) )
 
-    tc = ts.sample
-    assert( ts.check_configuration(tc) )
-
-    ts.samples(100).each{ |x|
-      assert( ts.check_configuration(x) )
-    }
+    ts.sample
+    ts.samples(100)
 
     buff = ts.serialize
     ts2 = CCS.deserialize(buffer: buff)
@@ -55,6 +44,11 @@ class CConfigSpaceTestTreeSpace < Minitest::Test
       arity = 0 if arity < 0
       CCS::Tree.new(arity: arity, value: (4 - child_depth)*100 + child_index)
     }
+    get_vector_data = lambda { |otype, name|
+      assert_equal(:CCS_OBJECT_TYPE_TREE_SPACE, otype)
+      assert_equal('space', name)
+      [CCS::DynamicTreeSpace.get_vector(del: del, get_child: get_child), nil]
+    }
 
     tree = CCS::Tree.new(arity: 4, value: 400)
     ts = CCS::DynamicTreeSpace.new(name: 'space', tree: tree, del: del, get_child: get_child)
@@ -64,28 +58,18 @@ class CConfigSpaceTestTreeSpace < Minitest::Test
     assert_equal( tree.handle, ts.get_node_at_position([]).handle )
     assert_equal( 201, ts.get_node_at_position([1, 1]).value )
     assert_equal( [400, 301, 201], ts.get_values_at_position([1, 1]) )
-    assert( ts.check_position([1, 1]) )
-    refute( ts.check_position([1, 4]) )
-    tc = ts.sample
-    assert( ts.check_configuration(tc) )
 
-    100.times {
-      tc = ts.sample
-      assert( ts.check_configuration(tc) )
-    }
+    ts.sample
+    ts.samples(100)
 
     buff = ts.serialize
-    ts2 = CCS::DynamicTreeSpace.deserialize(buffer: buff, del: del, get_child: get_child)
+    ts2 = CCS::deserialize(buffer: buff, vector_callback: get_vector_data)
     assert_equal( [400, 301, 201], ts2.get_values_at_position([1, 1]) )
   end
 
   def test_tree_configuration
     tree = generate_tree(4, 0)
     ts = CCS::StaticTreeSpace.new(name: 'space', tree: tree)
-    tc = ts.sample
-    assert( tc.check )
-    ts.samples(100).each { |x| assert( x.check ) }
-
     tc = CCS::TreeConfiguration.new(tree_space: ts, position: [1, 1])
     assert_equal( tc.tree_space.handle, ts.handle )
     assert_equal( 2, tc.position_size )
@@ -93,8 +77,6 @@ class CConfigSpaceTestTreeSpace < Minitest::Test
     assert_equal( [400, 301, 201], tc.values )
     assert_equal( ts.get_node_at_position([1, 1]).handle, tc.node.handle )
     tc2 = CCS::TreeConfiguration.new(tree_space: ts, position: [1, 0])
-    assert( tc.check() )
-    assert( tc2.check() )
     refute_equal( tc.hash, tc2.hash )
     assert( tc < tc2 || tc > tc2 )
   end

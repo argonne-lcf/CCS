@@ -130,6 +130,9 @@ class Parameter(Object):
   def __eq__(self, other):
     return self.__class__ == other.__class__ and self.handle.value == other.handle.value
 
+  def __hash__(self):
+    return hash(self.handle.value)
+
 
 ccs_create_float_numerical_parameter = _ccs_get_function("ccs_create_float_numerical_parameter", [ct.c_char_p, ccs_float, ccs_float, ccs_float, ccs_float, ct.POINTER(ccs_parameter)])
 ccs_create_int_numerical_parameter = _ccs_get_function("ccs_create_int_numerical_parameter", [ct.c_char_p, ccs_int, ccs_int, ccs_int, ccs_int, ct.POINTER(ccs_parameter)])

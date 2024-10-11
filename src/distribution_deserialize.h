@@ -1,6 +1,5 @@
 #ifndef _DISTRIBUTION_DESERIALIZE_H
 #define _DISTRIBUTION_DESERIALIZE_H
-#include "cconfigspace_internal.h"
 #include "distribution_internal.h"
 
 struct _ccs_distribution_uniform_data_mock_s {
@@ -168,15 +167,6 @@ end:
 	return res;
 }
 
-static inline ccs_result_t
-_ccs_distribution_deserialize(
-	ccs_distribution_t                *distribution_ret,
-	ccs_serialize_format_t             format,
-	uint32_t                           version,
-	size_t                            *buffer_size,
-	const char                       **buffer,
-	_ccs_object_deserialize_options_t *opts);
-
 struct _ccs_distribution_mixture_data_mock_s {
 	_ccs_distribution_common_data_t common_data;
 	size_t                          num_distributions;
@@ -209,9 +199,11 @@ _ccs_deserialize_bin_ccs_distribution_mixture_data(
 	for (size_t i = 0; i < data->num_distributions; i++) {
 		CCS_VALIDATE(_ccs_deserialize_bin_ccs_float(
 			data->weights + i, buffer_size, buffer));
-		CCS_VALIDATE(_ccs_distribution_deserialize(
-			data->distributions + i, CCS_SERIALIZE_FORMAT_BINARY,
-			version, buffer_size, buffer, &new_opts));
+		CCS_VALIDATE(_ccs_object_deserialize_with_opts_check(
+			(ccs_object_t *)data->distributions + i,
+			CCS_OBJECT_TYPE_DISTRIBUTION,
+			CCS_SERIALIZE_FORMAT_BINARY, version, buffer_size,
+			buffer, &new_opts));
 	}
 	return CCS_RESULT_SUCCESS;
 }
@@ -277,9 +269,11 @@ _ccs_deserialize_bin_ccs_distribution_multivariate_data(
 		data->num_distributions, sizeof(ccs_distribution_t));
 	CCS_REFUTE(!data->distributions, CCS_RESULT_ERROR_OUT_OF_MEMORY);
 	for (size_t i = 0; i < data->num_distributions; i++)
-		CCS_VALIDATE(_ccs_distribution_deserialize(
-			data->distributions + i, CCS_SERIALIZE_FORMAT_BINARY,
-			version, buffer_size, buffer, &new_opts));
+		CCS_VALIDATE(_ccs_object_deserialize_with_opts_check(
+			(ccs_object_t *)data->distributions + i,
+			CCS_OBJECT_TYPE_DISTRIBUTION,
+			CCS_SERIALIZE_FORMAT_BINARY, version, buffer_size,
+			buffer, &new_opts));
 	return CCS_RESULT_SUCCESS;
 }
 
@@ -323,15 +317,6 @@ _ccs_deserialize_bin_distribution(
 	const char                       **buffer,
 	_ccs_object_deserialize_options_t *opts)
 {
-	_ccs_object_internal_t obj;
-	ccs_object_t           handle;
-	ccs_result_t           res;
-	CCS_VALIDATE(_ccs_deserialize_bin_ccs_object_internal(
-		&obj, buffer_size, buffer, &handle));
-	CCS_REFUTE(
-		obj.type != CCS_OBJECT_TYPE_DISTRIBUTION,
-		CCS_RESULT_ERROR_INVALID_TYPE);
-
 	ccs_distribution_type_t dtype;
 	CCS_VALIDATE(_ccs_peek_bin_ccs_distribution_type(
 		&dtype, buffer_size, buffer));
@@ -361,18 +346,7 @@ _ccs_deserialize_bin_distribution(
 			CCS_RESULT_ERROR_UNSUPPORTED_OPERATION,
 			"Unsupported distribution type: %d", dtype);
 	}
-	if (opts && opts->handle_map)
-		CCS_VALIDATE_ERR_GOTO(
-			res,
-			_ccs_object_handle_check_add(
-				opts->handle_map, handle,
-				(ccs_object_t)*distribution_ret),
-			err_dis);
-
 	return CCS_RESULT_SUCCESS;
-err_dis:
-	ccs_release_object(*distribution_ret);
-	return res;
 }
 
 static ccs_result_t
@@ -394,9 +368,6 @@ _ccs_distribution_deserialize(
 			CCS_RESULT_ERROR_INVALID_VALUE,
 			"Unsupported serialization format: %d", format);
 	}
-	CCS_VALIDATE(_ccs_object_deserialize_user_data(
-		(ccs_object_t)*distribution_ret, format, version, buffer_size,
-		buffer, opts));
 	return CCS_RESULT_SUCCESS;
 }
 

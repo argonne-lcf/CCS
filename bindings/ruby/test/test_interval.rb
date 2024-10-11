@@ -2,10 +2,6 @@ require 'minitest/autorun'
 require_relative '../lib/cconfigspace'
 
 class CConfigSpaceTestInterval < Minitest::Test
-  def setup
-    CCS.init
-  end
-
   def test_new
     i = CCS::Interval::new(type: :CCS_NUMERIC_TYPE_FLOAT, lower: -1.0, upper: 1.0)
     assert_equal( :CCS_NUMERIC_TYPE_FLOAT, i.type)

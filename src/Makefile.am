@@ -7,6 +7,10 @@ if STRICT
 AM_CFLAGS += -Werror
 endif
 
+if THREAD_SAFE
+AM_CFLAGS += -DTHREAD_SAFE
+endif
+
 lib_LTLIBRARIES = libcconfigspace.la
 
 version.h: $(srcdir)/version.h.subst .version_timestamp
@@ -30,6 +34,7 @@ libcconfigspace_la_SOURCES = \
 	utlist.h \
 	cconfigspace.c \
 	cconfigspace_internal.h \
+	cconfigspace_deserialize.h \
 	error_stack.c \
 	error_stack_internal.h \
 	interval.c \
@@ -55,11 +60,16 @@ libcconfigspace_la_SOURCES = \
 	context.c \
 	context_internal.h \
 	context_deserialize.h \
+	search_space_internal.h \
 	configuration_space.c \
 	configuration_space_internal.h \
 	configuration_space_deserialize.h \
+	distribution_space.c \
+	distribution_space_internal.h \
+        distribution_space_deserialize.h \
 	binding.c \
 	binding_internal.h \
+	search_configuration_internal.h \
 	configuration.c \
 	configuration_internal.h \
 	configuration_deserialize.h \
@@ -77,20 +87,12 @@ libcconfigspace_la_SOURCES = \
 	tuner_deserialize.h \
 	tuner_random.c \
 	tuner_user_defined.c \
-	features_space.c \
-	features_space_internal.h \
-	features_space_deserialize.h \
+	feature_space.c \
+	feature_space_internal.h \
+	feature_space_deserialize.h \
 	features.c \
 	features_internal.h \
 	features_deserialize.h \
-	features_evaluation.c \
-	features_evaluation_internal.h \
-	features_evaluation_deserialize.h \
-	features_tuner.c \
-	features_tuner_internal.h \
-	features_tuner_deserialize.h \
-	features_tuner_random.c \
-	features_tuner_user_defined.c \
 	map.c \
 	map_internal.h \
 	map_deserialize.h \
@@ -104,15 +106,7 @@ libcconfigspace_la_SOURCES = \
 	tree_space_dynamic.c \
 	tree_configuration.c \
 	tree_configuration_internal.h \
-	tree_configuration_deserialize.h \
-	tree_evaluation.c \
-	tree_evaluation_internal.h \
-	tree_evaluation_deserialize.h \
-	tree_tuner.c \
-	tree_tuner_internal.h \
-	tree_tuner_deserialize.h \
-	tree_tuner_random.c \
-	tree_tuner_user_defined.c
+	tree_configuration_deserialize.h
 
 @DYNAMIC_VERSION_RULES@
 

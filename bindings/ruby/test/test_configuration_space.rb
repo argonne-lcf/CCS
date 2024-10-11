@@ -2,59 +2,48 @@ require 'minitest/autorun'
 require_relative '../lib/cconfigspace'
 
 class CConfigSpaceTestConfigurationSpace < Minitest::Test
-  def setup
-    CCS.init
-  end
-
   def test_create
-    cs = CCS::ConfigurationSpace::new(name: "space")
-    assert_equal( :CCS_OBJECT_TYPE_CONFIGURATION_SPACE, cs.object_type )
-    assert_equal( "space", cs.name )
-    assert( cs.rng.kind_of?(CCS::Rng) )
-    assert_equal( 0, cs.num_parameters )
-    assert_equal( [], cs.conditions )
-    assert_equal( [], cs.forbidden_clauses )
     h1 = CCS::NumericalParameter::Float.new
     h2 = CCS::NumericalParameter::Float.new
     h3 = CCS::NumericalParameter::Float.new
-    cs.add_parameter(h1)
-    cs.add_parameters([h2, h3])
+    cs = CCS::ConfigurationSpace::new(name: "space", parameters: [h1, h2, h3])
+    assert_equal( :CCS_OBJECT_TYPE_CONFIGURATION_SPACE, cs.object_type )
+    assert_equal( "space", cs.name )
+    assert( cs.rng.kind_of?(CCS::Rng) )
     assert_equal( 3, cs.num_parameters )
+    assert_equal( [nil, nil, nil], cs.conditions )
+    assert_equal( [], cs.forbidden_clauses )
     assert_equal( h1, cs.parameter(0) )
     assert_equal( h2, cs.parameter(1) )
     assert_equal( h3, cs.parameter(2) )
     assert_equal( [h1, h2, h3], cs.parameters )
     assert_equal( h2, cs.parameter_by_name(h2.name) )
-    assert( cs.check(cs.default_configuration) )
+    assert_nil( cs.feature_space )
     c = cs.sample
-    assert( cs.check(c) )
     assert_equal( cs.handle, c.configuration_space.handle )
-    assert( cs.check_values(cs.sample.values) )
-    cs.samples(100).each { |c|
-      assert( cs.check(c) )
-    }
+    cs.samples(100)
   end
 
   def test_set_distribution
-    cs = CCS::ConfigurationSpace::new(name: "space")
     h1 = CCS::NumericalParameter::Float.new
     h2 = CCS::NumericalParameter::Float.new
     h3 = CCS::NumericalParameter::Float.new
-    cs.add_parameters([h1, h2, h3])
+    cs = CCS::ConfigurationSpace::new(name: "space", parameters: [h1, h2, h3])
+    ds = CCS::DistributionSpace::new(configuration_space: cs)
     distributions = [ CCS::UniformDistribution::Float.new(lower: 0.1, upper: 0.3), CCS::UniformDistribution::Float.new(lower: 0.2, upper: 0.6) ]
     d = CCS::MultivariateDistribution::new(distributions: distributions)
-    cs.set_distribution(d, [h1, h2])
-    dist, indx = cs.get_parameter_distribution(h1)
+    ds.set_distribution(d, [h1, h2])
+    dist, indx = ds.get_parameter_distribution(h1)
     assert_equal( d.handle, dist.handle )
     assert_equal( 0, indx )
-    dist, indx = cs.get_parameter_distribution(h2)
+    dist, indx = ds.get_parameter_distribution(h2)
     assert_equal( d.handle, dist.handle )
     assert_equal( 1, indx )
-    cs.set_distribution(d, [h3, h1])
-    dist, indx = cs.get_parameter_distribution(h1)
+    ds.set_distribution(d, [h3, h1])
+    dist, indx = ds.get_parameter_distribution(h1)
     assert_equal( d.handle, dist.handle )
     assert_equal( 1, indx )
-    dist, indx = cs.get_parameter_distribution(h3)
+    dist, indx = ds.get_parameter_distribution(h3)
     assert_equal( d.handle, dist.handle )
     assert_equal( 0, indx )
   end
@@ -63,14 +52,10 @@ class CConfigSpaceTestConfigurationSpace < Minitest::Test
     h1 = CCS::NumericalParameter::Float.new(lower: -1.0, upper: 1.0, default: 0.0)
     h2 = CCS::NumericalParameter::Float.new(lower: -1.0, upper: 1.0)
     h3 = CCS::NumericalParameter::Float.new(lower: -1.0, upper: 1.0)
-    cs = CCS::ConfigurationSpace::new(name: "space")
-    cs.add_parameters([h1, h2, h3])
     e1 = CCS::Expression::Less.new(left: h2, right: 0.0)
-    cs.set_condition(h3, e1)
     e2 = CCS::Expression::Less.new(left: h3, right: 0.0)
-    cs.set_condition(h1, e2)
-    e3 = CCS::Expression::Less.new(left: h1, right: 0.0)
-    cs.add_forbidden_clause(e3)
+    f1 = CCS::Expression::Less.new(left: h1, right: 0.0)
+    cs = CCS::ConfigurationSpace::new(name: "space", parameters: [h1, h2, h3], conditions: {h1 => e2, h3 => e1}, forbidden_clauses: [f1])
     conditions = cs.conditions
     conditional_parameters = cs.conditional_parameters
     unconditional_parameters = cs.unconditional_parameters
@@ -85,7 +70,38 @@ class CConfigSpaceTestConfigurationSpace < Minitest::Test
     assert_equal( h2.handle, unconditional_parameters[0].handle )
     forbidden_clauses = cs.forbidden_clauses
     assert_equal( 1, forbidden_clauses.length )
-    assert_equal( e3.handle, forbidden_clauses[0].handle )
+    assert_equal( f1.handle, forbidden_clauses[0].handle )
+  end
+
+  def test_features
+    fe1 = CCS::CategoricalParameter::new(values: ["on", "off"])
+    fs = CCS::FeatureSpace::new(parameters: [fe1])
+    h1 = CCS::NumericalParameter::Float.new(lower: -1.0, upper: 1.0, default: 0.0)
+    h2 = CCS::NumericalParameter::Float.new(lower: -1.0, upper: 1.0)
+    h3 = CCS::NumericalParameter::Float.new(lower: -1.0, upper: 1.0)
+    h4 = CCS::NumericalParameter::Float.new(lower: -1.0, upper: 1.0)
+    e1 = CCS::Expression::Less.new(left: h2, right: 0.0)
+    e2 = CCS::Expression::Less.new(left: h3, right: 0.0)
+    e3 = CCS::Expression::Equal.new(left: fe1, right: "on")
+    f1 = CCS::Expression::Less.new(left: h1, right: 0.0)
+    cs = CCS::ConfigurationSpace::new(name: "space", parameters: [h1, h2, h3, h4], conditions: {h1 => e2, h3 => e1, h4 => e3}, forbidden_clauses: [f1], feature_space: fs)
+
+    features_on = CCS::Features::new(feature_space: fs, values: ["on"])
+    features_off = CCS::Features::new(feature_space: fs, values: ["off"])
+    s = cs.sample(features: features_on)
+    assert(s.value(3).kind_of?(Float))
+    s = cs.sample(features: features_off)
+    assert_equal(CCS::Inactive, s.value(3))
+
+    buff = cs.serialize
+    cs_copy = CCS::deserialize(buffer: buff)
+
+    features_on = CCS::Features::new(feature_space: cs_copy.feature_space, values: ["on"])
+    features_off = CCS::Features::new(feature_space: cs_copy.feature_space, values: ["off"])
+    s = cs_copy.sample(features: features_on)
+    assert(s.value(3).kind_of?(Float))
+    s = cs_copy.sample(features: features_off)
+    assert_equal(CCS::Inactive, s.value(3))
   end
 
   def extract_active_parameters(values)
@@ -151,8 +167,13 @@ class CConfigSpaceTestConfigurationSpace < Minitest::Test
       name: 'p9',
       values: ['1', '8', '16'])
 
-    cs = CCS::ConfigurationSpace::new(name: "omp")
-    cs.add_parameters([p1, p2, p3, p4, p5, p6, p7, p8, p9])
+    forbiddena = CCS::Expression::Equal.new(left: p1, right: '#pragma omp #P2')
+    forbiddenb = CCS::Expression::Equal.new(left: p2, right: ' ')
+    forbidden0 = CCS::Expression::And.new(left: forbiddena, right: forbiddenb)
+
+    forbiddenc = CCS::Expression::Equal.new(left: p1, right: '#pragma omp #P3')
+    forbiddend = CCS::Expression::Equal.new(left: p3, right: ' ')
+    forbidden1 = CCS::Expression::And.new(left: forbiddenc, right: forbiddend)
 
     cond0 = CCS::Expression::Equal.new(left: p1, right: '#pragma omp #P2')
     cond1 = CCS::Expression::Equal.new(left: p1, right: '#pragma omp target teams distribute #P2')
@@ -170,30 +191,22 @@ class CConfigSpaceTestConfigurationSpace < Minitest::Test
 
     cond10 = CCS::Expression::Equal.new(left: p6, right: 'numthreads(#P9)')
 
-    cs.set_condition(p2, CCS::Expression::Or.new(left: cond0, right: cond1))
-    cs.set_condition(p4, cond2)
-    cs.set_condition(p3, CCS::Expression::Or.new(left: cond3, right: cond4))
-    cs.set_condition(p5, cond5)
-    cs.set_condition(p6, cond6)
-    cs.set_condition(p7, CCS::Expression::Or.new(left: cond8, right: cond9))
-    cond_p8 = CCS::Expression::Or.new(left: cond7, right: cond9)
-    cs.set_condition(p8, cond_p8)
-    cs.set_condition(p9, cond10)
-
-    forbiddena = CCS::Expression::Equal.new(left: p1, right: '#pragma omp #P2')
-    forbiddenb = CCS::Expression::Equal.new(left: p2, right: ' ')
-    forbidden0 = CCS::Expression::And.new(left: forbiddena, right: forbiddenb)
-
-    forbiddenc = CCS::Expression::Equal.new(left: p1, right: '#pragma omp #P3')
-    forbiddend = CCS::Expression::Equal.new(left: p3, right: ' ')
-    forbidden1 = CCS::Expression::And.new(left: forbiddenc, right: forbiddend)
-    cs.add_forbidden_clauses([forbidden0, forbidden1])
+    cs = CCS::ConfigurationSpace::new(name: "omp", parameters: [p1, p2, p3, p4, p5, p6, p7, p8, p9],
+                                      conditions: {
+                                        p2 => CCS::Expression::Or.new(left: cond0, right: cond1),
+                                        p4 => cond2,
+                                        p3 => CCS::Expression::Or.new(left: cond3, right: cond4),
+                                        p5 => cond5,
+                                        p6 => cond6,
+                                        p7 => CCS::Expression::Or.new(left: cond8, right: cond9),
+                                        p8 => CCS::Expression::Or.new(left: cond7, right: cond9),
+                                        p9 => cond10 },
+                                      forbidden_clauses: [forbidden0, forbidden1])
 
     all_params = (1..9).collect { |i| "p#{i}" }
 
     1000.times {
       s = cs.sample
-      assert( s.check )
       active_params = extract_active_parameters(s.values)
       active_params.each { |par|
         refute_equal( CCS::Inactive, s.value(par) )
@@ -254,26 +267,23 @@ class CConfigSpaceTestConfigurationSpace < Minitest::Test
       name: 'p9',
       values: ['1', '8', '16'])
 
-    cs = CCS::ConfigurationSpace::new(name: "omp")
-    cs.add_parameters([p1, p2, p3, p4, p5, p6, p7, p8, p9])
-
-    cs.set_condition(p2, "p1 # ['#pragma omp #P2', '#pragma omp target teams distribute #P2']")
-    cs.set_condition(p4, "p1 == '#pragma omp target teams distribute #P4'")
-    cs.set_condition(p3, "p1 == '#pragma omp #P3' || p2 == 'parallel for #P3'")
-    cs.set_condition(p5, "p2 == 'parallel for #P5'")
-    cs.set_condition(p6, "p2 == 'parallel for #P6'")
-    cs.set_condition(p7, "p5 # ['schedule(#P7)', 'schedule(#P7,#P8)']")
-    cs.set_condition(p8, "p4 == 'dist_schedule(static, #P8)' || p5 == 'schedule(#P7,#P8)'")
-    cs.set_condition(p9, "p6 == 'numthreads(#P9)'")
-
-    cs.add_forbidden_clauses(["p1 == '#pragma omp #P2' && p2 == ' '",
-                              "p1 == '#pragma omp #P3' && p3 == ' '"])
+    cs = CCS::ConfigurationSpace::new(name: "omp", parameters: [p1, p2, p3, p4, p5, p6, p7, p8, p9],
+                                      conditions: {
+                                        p2 => "p1 # ['#pragma omp #P2', '#pragma omp target teams distribute #P2']",
+                                        p4 => "p1 == '#pragma omp target teams distribute #P4'",
+                                        p3 => "p1 == '#pragma omp #P3' || p2 == 'parallel for #P3'",
+                                        p5 => "p2 == 'parallel for #P5'",
+                                        p6 => "p2 == 'parallel for #P6'",
+                                        p7 => "p5 # ['schedule(#P7)', 'schedule(#P7,#P8)']",
+                                        p8 => "p4 == 'dist_schedule(static, #P8)' || p5 == 'schedule(#P7,#P8)'",
+                                        p9 => "p6 == 'numthreads(#P9)'" },
+                                      forbidden_clauses: ["p1 == '#pragma omp #P2' && p2 == ' '",
+                                                          "p1 == '#pragma omp #P3' && p3 == ' '"])
 
     all_params = (1..9).collect { |i| "p#{i}" }
 
     1000.times {
       s = cs.sample
-      assert( s.check )
       active_params = extract_active_parameters(s.values)
       active_params.each { |par|
         refute_equal( CCS::Inactive, s.value(par) )
@@ -289,7 +299,6 @@ class CConfigSpaceTestConfigurationSpace < Minitest::Test
     cs_copy = CCS::deserialize(buffer: buff)
     1000.times {
       s = cs_copy.sample
-      assert( s.check )
       active_params = extract_active_parameters(s.values)
       active_params.each { |par|
         refute_equal( CCS::Inactive, s.value(par) )

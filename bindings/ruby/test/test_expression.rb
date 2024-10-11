@@ -2,10 +2,6 @@ require 'minitest/autorun'
 require_relative '../lib/cconfigspace'
 
 class CConfigSpaceTestExpression < Minitest::Test
-  def setup
-    CCS.init
-  end
-
   def test_create
     e = CCS::Expression::Add.new(left: 1.0, right: 2.0)
     assert_equal( :CCS_OBJECT_TYPE_EXPRESSION, e.object_type )
@@ -63,5 +59,42 @@ class CConfigSpaceTestExpression < Minitest::Test
     e = CCS::Expression::Or.new(left: true, right: false)
     assert_equal( "true || false", e.to_s)
     assert_equal( true, e.eval )
+  end
+
+  def test_user_defined
+    my_rand = lambda { |expr, limit|
+      expr.expression_data.rand(limit)
+    }
+
+    my_serialize = lambda { |expr|
+      Marshal.dump(expr.expression_data)
+    }
+
+    my_deserialize = lambda { |state|
+      Marshal.load(state)
+    }
+
+    get_vector_data = lambda { |otype, name|
+      assert_equal(:CCS_OBJECT_TYPE_EXPRESSION, otype)
+      assert_equal("rand", name)
+      [CCS::Expression::UserDefined.get_vector(eval: my_rand, serialize: my_serialize, deserialize: my_deserialize), nil]
+    }
+
+    limit = 10
+    e = CCS::Expression::UserDefined.new(name: 'rand', nodes: [limit], expression_data: Random.new, eval: my_rand, serialize: my_serialize, deserialize: my_deserialize)
+    assert_equal( "rand(10)", e.to_s )
+
+    100.times {
+      i = e.eval
+      assert(i >= 0 && i < limit)
+    }
+
+    buff = e.serialize
+
+    e_copy = CCS::deserialize(buffer: buff, vector_callback: get_vector_data)
+
+    100.times {
+      assert( e.eval == e_copy.eval )
+    }
   end
 end

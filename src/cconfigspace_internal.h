@@ -3,6 +3,7 @@
 
 #include <cconfigspace.h>
 #include <stdarg.h>
+#include <pthread.h>
 #include "utarray.h"
 
 static inline ccs_bool_t
@@ -35,6 +36,134 @@ _ccs_interval_include(ccs_interval_t *interval, ccs_numeric_t value)
 #define CCS_UNLIKELY(x) __builtin_expect(!!(x), 0)
 
 #define CCS_RICH_ERRORS 1
+
+#define CCS_ATOMIC_FETCH_ADD(val)                                              \
+	__atomic_fetch_add(&(val), 1, __ATOMIC_RELAXED)
+
+#define CCS_ATOMIC_SUB_FETCH(val)                                              \
+	__atomic_sub_fetch(&(val), 1, __ATOMIC_RELAXED)
+
+#define CCS_ATOMIC_LOAD(val) __atomic_load_n(&(val), __ATOMIC_RELAXED)
+
+#define CCS_ATOMIC_STORE(val, set)                                             \
+	__atomic_store_n(&(val), set, __ATOMIC_RELAXED)
+
+#if THREAD_SAFE
+#define CCS_THREAD_SAFE 1
+#else
+#define CCS_THREAD_SAFE 0
+#endif
+
+static inline int
+_ccs_do_nothing(void)
+{
+	return 0;
+}
+
+#if CCS_THREAD_SAFE
+
+#define CCS_MUTEX_LOCK(mut)                                                    \
+	do {                                                                   \
+		pthread_mutex_lock(&(mut));                                    \
+	} while (0)
+
+#define CCS_MUTEX_UNLOCK(mut)                                                  \
+	do {                                                                   \
+		pthread_mutex_unlock(&(mut));                                  \
+	} while (0)
+
+#define CCS_MUTEX_INIT(mut)                                                    \
+	do {                                                                   \
+		pthread_mutex_init(&(mut), NULL);                              \
+	} while (0)
+
+#define CCS_MUTEX_DESTROY(mut)                                                 \
+	do {                                                                   \
+		pthread_mutex_destroy(&(mut));                                 \
+	} while (0)
+
+#define CCS_RWLOCK_RDLOCK(lck)                                                 \
+	do {                                                                   \
+		pthread_rwlock_rdlock(&(lck));                                 \
+	} while (0)
+
+#define CCS_RWLOCK_WRLOCK(lck)                                                 \
+	do {                                                                   \
+		pthread_rwlock_wrlock(&(lck));                                 \
+	} while (0)
+
+#define CCS_RWLOCK_UNLOCK(lck)                                                 \
+	do {                                                                   \
+		pthread_rwlock_unlock(&(lck));                                 \
+	} while (0)
+
+#define CCS_RWLOCK_INIT(lck)                                                   \
+	do {                                                                   \
+		pthread_rwlock_init(&(lck), NULL);                             \
+	} while (0)
+
+#define CCS_RWLOCK_DESTROY(lck)                                                \
+	do {                                                                   \
+		pthread_rwlock_destroy(&(lck));                                \
+	} while (0)
+
+#else
+
+#define CCS_MUTEX_LOCK(mut)                                                    \
+	do {                                                                   \
+		_ccs_do_nothing();                                             \
+	} while (0)
+
+#define CCS_MUTEX_UNLOCK(mut)                                                  \
+	do {                                                                   \
+		_ccs_do_nothing();                                             \
+	} while (0)
+
+#define CCS_MUTEX_INIT(mut)                                                    \
+	do {                                                                   \
+		_ccs_do_nothing();                                             \
+	} while (0)
+
+#define CCS_MUTEX_DESTROY(mut)                                                 \
+	do {                                                                   \
+		_ccs_do_nothing();                                             \
+	} while (0)
+
+#define CCS_RWLOCK_RDLOCK(lck)                                                 \
+	do {                                                                   \
+		_ccs_do_nothing();                                             \
+	} while (0)
+
+#define CCS_RWLOCK_WRLOCK(lck)                                                 \
+	do {                                                                   \
+		_ccs_do_nothing();                                             \
+	} while (0)
+
+#define CCS_RWLOCK_UNLOCK(lck)                                                 \
+	do {                                                                   \
+		_ccs_do_nothing();                                             \
+	} while (0)
+
+#define CCS_RWLOCK_INIT(lck)                                                   \
+	do {                                                                   \
+		_ccs_do_nothing();                                             \
+	} while (0)
+
+#define CCS_RWLOCK_DESTROY(lck)                                                \
+	do {                                                                   \
+		_ccs_do_nothing();                                             \
+	} while (0)
+
+#endif
+
+#define CCS_OBJ_RDLOCK(o)                                                      \
+	CCS_RWLOCK_RDLOCK(((_ccs_object_template_t *)(o))->obj.lock)
+
+#define CCS_OBJ_WRLOCK(o)                                                      \
+	CCS_RWLOCK_WRLOCK(((_ccs_object_template_t *)(o))->obj.lock)
+
+#define CCS_OBJ_UNLOCK(o)                                                      \
+	CCS_RWLOCK_UNLOCK(((_ccs_object_template_t *)(o))->obj.lock)
 
 #if CCS_RICH_ERRORS
 #define CCS_ADD_STACK_ELEM()                                                   \
@@ -84,22 +213,68 @@ _ccs_interval_include(ccs_interval_t *interval, ccs_numeric_t value)
 			CCS_RAISE_ERR_GOTO(err, error, label, __VA_ARGS__);    \
 	} while (0)
 
+#define CCS_CHECK_BASE_OBJ(o)                                                  \
+	CCS_REFUTE_MSG(                                                        \
+		!(o), CCS_RESULT_ERROR_INVALID_OBJECT,                         \
+		"Invalid CCS object '%s' == %p supplied", #o, o)
+
+#define CCS_OBJ_IS_VALID(o)   ((o) && ((_ccs_object_template_t *)(o))->data)
+
+#define CCS_OBJ_TYPE(o)       (((_ccs_object_template_t *)(o))->obj.type)
+
+#define CCS_OBJ_IS_TYPE(o, t) (CCS_OBJ_TYPE(o) == (t))
+
 #define CCS_CHECK_OBJ(o, t)                                                    \
 	CCS_REFUTE_MSG(                                                        \
-		!(o) || !((_ccs_object_template_t *)(o))->data ||              \
-			((_ccs_object_template_t *)(o))->obj.type != (t),      \
+		!CCS_OBJ_IS_VALID(o) || !CCS_OBJ_IS_TYPE(o, t),                \
 		CCS_RESULT_ERROR_INVALID_OBJECT,                               \
 		"Invalid CCS object '%s' == %p supplied, expected %s", #o, o,  \
 		#t)
 
 #define CCS_CHECK_OBJ_ERR_GOTO(err, o, t, label)                               \
 	CCS_REFUTE_MSG_ERR_GOTO(                                               \
-		err,                                                           \
-		!(o) || !((_ccs_object_template_t *)(o))->data ||              \
-			((_ccs_object_template_t *)(o))->obj.type != (t),      \
+		err, !CCS_OBJ_IS_VALID(o) || !CCS_OBJ_IS_TYPE(o, t),           \
 		CCS_RESULT_ERROR_INVALID_OBJECT, label,                        \
 		"Invalid CCS object '%s' == %p supplied, expected %s", #o, o,  \
 		#t)
+
+#define CCS_CHECK_CONTEXT(c)                                                   \
+	CCS_REFUTE_MSG(                                                        \
+		!CCS_OBJ_IS_VALID(c) ||                                        \
+			!(CCS_OBJ_IS_TYPE(                                     \
+				  c, CCS_OBJECT_TYPE_CONFIGURATION_SPACE) ||   \
+			  CCS_OBJ_IS_TYPE(                                     \
+				  c, CCS_OBJECT_TYPE_OBJECTIVE_SPACE) ||       \
+			  CCS_OBJ_IS_TYPE(c, CCS_OBJECT_TYPE_FEATURE_SPACE)),  \
+		CCS_RESULT_ERROR_INVALID_OBJECT,                               \
+		"Invalid CCS context '%s' == %p supplied", #c, c)
+
+#define CCS_CHECK_BINDING(b)                                                   \
+	CCS_REFUTE_MSG(                                                        \
+		!CCS_OBJ_IS_VALID(b) ||                                        \
+			!(CCS_OBJ_IS_TYPE(b, CCS_OBJECT_TYPE_CONFIGURATION) || \
+			  CCS_OBJ_IS_TYPE(b, CCS_OBJECT_TYPE_EVALUATION) ||    \
+			  CCS_OBJ_IS_TYPE(b, CCS_OBJECT_TYPE_FEATURES)),       \
+		CCS_RESULT_ERROR_INVALID_OBJECT,                               \
+		"Invalid CCS binding '%s' == %p supplied", #b, b)
+
+#define CCS_CHECK_SEARCH_SPACE(s)                                              \
+	CCS_REFUTE_MSG(                                                        \
+		!CCS_OBJ_IS_VALID(s) ||                                        \
+			!(CCS_OBJ_IS_TYPE(s, CCS_OBJECT_TYPE_TREE_SPACE) ||    \
+			  CCS_OBJ_IS_TYPE(                                     \
+				  s, CCS_OBJECT_TYPE_CONFIGURATION_SPACE)),    \
+		CCS_RESULT_ERROR_INVALID_OBJECT,                               \
+		"Invalid CCS search space '%s' == %p supplied", #s, s)
+
+#define CCS_CHECK_SEARCH_CONFIGURATION(c)                                      \
+	CCS_REFUTE_MSG(                                                        \
+		!CCS_OBJ_IS_VALID(c) ||                                        \
+			!(CCS_OBJ_IS_TYPE(c, CCS_OBJECT_TYPE_CONFIGURATION) || \
+			  CCS_OBJ_IS_TYPE(                                     \
+				  c, CCS_OBJECT_TYPE_TREE_CONFIGURATION)),     \
+		CCS_RESULT_ERROR_INVALID_OBJECT,                               \
+		"Invalid CCS search configuration '%s' == %p supplied", #c, c)
 
 #define CCS_CHECK_PTR(p)                                                       \
 	CCS_REFUTE_MSG(                                                        \
@@ -235,9 +410,13 @@ struct _ccs_object_callback_s {
 typedef struct _ccs_object_callback_s _ccs_object_callback_t;
 
 struct _ccs_object_internal_s {
-	ccs_object_type_t               type;
-	int32_t                         refcount;
-	void                           *user_data;
+	ccs_object_type_t type;
+	int32_t           refcount;
+	void             *user_data;
+#if CCS_THREAD_SAFE
+	pthread_mutex_t  mutex;
+	pthread_rwlock_t lock;
+#endif
 	UT_array                       *callbacks;
 	_ccs_object_ops_t              *ops;
 	ccs_object_serialize_callback_t serialize_callback;
@@ -258,13 +437,27 @@ _ccs_object_init(
 	ccs_object_type_t       t,
 	_ccs_object_ops_t      *ops)
 {
-	o->type                = t;
-	o->refcount            = 1;
-	o->user_data           = NULL;
+	o->type      = t;
+	o->refcount  = 1;
+	o->user_data = NULL;
+#if CCS_THREAD_SAFE
+	CCS_MUTEX_INIT(o->mutex);
+	CCS_RWLOCK_INIT(o->lock);
+#endif
 	o->callbacks           = NULL;
 	o->ops                 = ops;
 	o->serialize_callback  = NULL;
 	o->serialize_user_data = NULL;
+}
+
+static inline __attribute__((always_inline)) void
+_ccs_object_deinit(_ccs_object_internal_t *o)
+{
+	(void)o;
+#if CCS_THREAD_SAFE
+	CCS_RWLOCK_DESTROY(o->lock);
+	CCS_MUTEX_DESTROY(o->mutex);
+#endif
 }
 
 static inline int
@@ -689,9 +882,7 @@ CCS_CONVERTER(ccs_distribution_type, ccs_distribution_type_t, 32)
 CCS_CONVERTER(ccs_expression_type, ccs_expression_type_t, 32)
 CCS_CONVERTER(ccs_objective_type, ccs_objective_type_t, 32)
 CCS_CONVERTER(ccs_tuner_type, ccs_tuner_type_t, 32)
-CCS_CONVERTER(ccs_features_tuner_type, ccs_features_tuner_type_t, 32)
 CCS_CONVERTER(ccs_tree_space_type, ccs_tree_space_type_t, 32)
-CCS_CONVERTER(ccs_tree_tuner_type, ccs_tree_tuner_type_t, 32)
 CCS_CONVERTER(ccs_evaluation_result, ccs_evaluation_result_t, 32)
 CCS_CONVERTER(ccs_object, ccs_object_t, 64)
 #else
@@ -718,9 +909,7 @@ CCS_CONVERTER_COMPRESSED(ccs_distribution_type, ccs_distribution_type_t, 32)
 CCS_CONVERTER_COMPRESSED(ccs_expression_type, ccs_expression_type_t, 32)
 CCS_CONVERTER_COMPRESSED(ccs_objective_type, ccs_objective_type_t, 32)
 CCS_CONVERTER_COMPRESSED(ccs_tuner_type, ccs_tuner_type_t, 32)
-CCS_CONVERTER_COMPRESSED(ccs_features_tuner_type, ccs_features_tuner_type_t, 32)
 CCS_CONVERTER_COMPRESSED(ccs_tree_space_type, ccs_tree_space_type_t, 32)
-CCS_CONVERTER_COMPRESSED(ccs_tree_tuner_type, ccs_tree_tuner_type_t, 32)
 CCS_CONVERTER_COMPRESSED_SIGNED(
 	ccs_evaluation_result,
 	ccs_evaluation_result_t,
@@ -1024,6 +1213,26 @@ _ccs_serialize_bin_size_ccs_object_internal(_ccs_object_internal_t *obj)
 }
 
 static inline ccs_result_t
+_ccs_serialize_size_ccs_object_internal(
+	_ccs_object_internal_t          *obj,
+	ccs_serialize_format_t           format,
+	size_t                          *cum_size,
+	_ccs_object_serialize_options_t *opts)
+{
+	(void)opts;
+	switch (format) {
+	case CCS_SERIALIZE_FORMAT_BINARY: {
+		*cum_size += _ccs_serialize_bin_size_ccs_object_internal(obj);
+	} break;
+	default:
+		CCS_RAISE(
+			CCS_RESULT_ERROR_INVALID_VALUE,
+			"Unsupported serialization format: %d", format);
+	}
+	return CCS_RESULT_SUCCESS;
+}
+
+static inline ccs_result_t
 _ccs_serialize_bin_ccs_object_internal(
 	_ccs_object_internal_t *obj,
 	size_t                 *buffer_size,
@@ -1033,6 +1242,28 @@ _ccs_serialize_bin_ccs_object_internal(
 		obj->type, buffer_size, buffer));
 	CCS_VALIDATE(_ccs_serialize_bin_ccs_object(
 		(ccs_object_t)obj, buffer_size, buffer));
+	return CCS_RESULT_SUCCESS;
+}
+
+static inline ccs_result_t
+_ccs_serialize_ccs_object_internal(
+	_ccs_object_internal_t          *obj,
+	ccs_serialize_format_t           format,
+	size_t                          *buffer_size,
+	char                           **buffer,
+	_ccs_object_serialize_options_t *opts)
+{
+	(void)opts;
+	switch (format) {
+	case CCS_SERIALIZE_FORMAT_BINARY: {
+		CCS_VALIDATE(_ccs_serialize_bin_ccs_object_internal(
+			obj, buffer_size, buffer));
+	} break;
+	default:
+		CCS_RAISE(
+			CCS_RESULT_ERROR_INVALID_VALUE,
+			"Unsupported serialization format: %d", format);
+	}
 	return CCS_RESULT_SUCCESS;
 }
 
@@ -1051,6 +1282,57 @@ _ccs_deserialize_bin_ccs_object_internal(
 }
 
 static inline ccs_result_t
+_ccs_peek_bin_ccs_object_internal(
+	_ccs_object_internal_t *obj,
+	size_t                 *buffer_size,
+	const char            **buffer,
+	ccs_object_t           *handle_ret)
+{
+	size_t      buff_size = *buffer_size;
+	const char *buff      = *buffer;
+	CCS_VALIDATE(_ccs_deserialize_bin_ccs_object_internal(
+		obj, &buff_size, &buff, handle_ret));
+	return CCS_RESULT_SUCCESS;
+}
+
+struct _ccs_object_deserialize_options_s {
+	ccs_map_t                                handle_map;
+	ccs_bool_t                               map_values;
+	_ccs_file_descriptor_state_t           **ppfd_state;
+	ccs_object_deserialize_vector_callback_t deserialize_vector_callback;
+	void                                    *deserialize_vector_user_data;
+	ccs_object_deserialize_data_callback_t   deserialize_data_callback;
+	void                                    *deserialize_data_user_data;
+};
+typedef struct _ccs_object_deserialize_options_s
+	_ccs_object_deserialize_options_t;
+
+static inline ccs_result_t
+_ccs_deserialize_ccs_object_internal(
+	_ccs_object_internal_t            *obj,
+	ccs_serialize_format_t             format,
+	uint32_t                           version,
+	size_t                            *buffer_size,
+	const char                       **buffer,
+	_ccs_object_deserialize_options_t *opts,
+	ccs_object_t                      *handle_ret)
+{
+	(void)version;
+	(void)opts;
+	switch (format) {
+	case CCS_SERIALIZE_FORMAT_BINARY: {
+		CCS_VALIDATE(_ccs_deserialize_bin_ccs_object_internal(
+			obj, buffer_size, buffer, handle_ret));
+	} break;
+	default:
+		CCS_RAISE(
+			CCS_RESULT_ERROR_INVALID_VALUE,
+			"Unsupported serialization format: %d", format);
+	}
+	return CCS_RESULT_SUCCESS;
+}
+
+static inline ccs_result_t
 _ccs_object_handle_check_add(
 	ccs_map_t    map,
 	ccs_object_t handle,
@@ -1064,18 +1346,6 @@ _ccs_object_handle_check_add(
 	CCS_VALIDATE(ccs_map_set(map, d, ccs_object(obj)));
 	return CCS_RESULT_SUCCESS;
 }
-
-struct _ccs_object_deserialize_options_s {
-	ccs_map_t                         handle_map;
-	ccs_bool_t                        map_values;
-	_ccs_file_descriptor_state_t    **ppfd_state;
-	void                             *vector;
-	void                             *data;
-	ccs_object_deserialize_callback_t deserialize_callback;
-	void                             *deserialize_user_data;
-};
-typedef struct _ccs_object_deserialize_options_s
-	_ccs_object_deserialize_options_t;
 
 static inline ccs_result_t
 _ccs_object_serialize_user_data_size(
@@ -1179,10 +1449,10 @@ _ccs_object_deserialize_user_data(
 		CCS_VALIDATE(_ccs_deserialize_bin_size(
 			&serialize_data_size, buffer_size, buffer));
 		if (serialize_data_size) {
-			if (opts->deserialize_callback)
-				CCS_VALIDATE(opts->deserialize_callback(
+			if (opts->deserialize_data_callback)
+				CCS_VALIDATE(opts->deserialize_data_callback(
 					object, serialize_data_size, *buffer,
-					opts->deserialize_user_data));
+					opts->deserialize_data_user_data));
 			*buffer_size -= serialize_data_size;
 			*buffer += serialize_data_size;
 		}
@@ -1193,6 +1463,42 @@ _ccs_object_deserialize_user_data(
 			CCS_RESULT_ERROR_INVALID_VALUE,
 			"Unsupported serialization format: %d", format);
 	}
+	return CCS_RESULT_SUCCESS;
+}
+
+static inline ccs_result_t
+_ccs_object_serialize_size_with_opts(
+	ccs_object_t                     object,
+	ccs_serialize_format_t           format,
+	size_t                          *cum_size,
+	_ccs_object_serialize_options_t *opts)
+{
+	_ccs_object_internal_t *obj = (_ccs_object_internal_t *)object;
+
+	CCS_VALIDATE(_ccs_serialize_size_ccs_object_internal(
+		obj, format, cum_size, opts));
+	CCS_VALIDATE(obj->ops->serialize_size(object, format, cum_size, opts));
+	CCS_VALIDATE(_ccs_object_serialize_user_data_size(
+		object, format, cum_size, opts));
+	return CCS_RESULT_SUCCESS;
+}
+
+static inline ccs_result_t
+_ccs_object_serialize_with_opts(
+	ccs_object_t                     object,
+	ccs_serialize_format_t           format,
+	size_t                          *buffer_size,
+	char                           **buffer,
+	_ccs_object_serialize_options_t *opts)
+{
+	_ccs_object_internal_t *obj = (_ccs_object_internal_t *)object;
+
+	CCS_VALIDATE(_ccs_serialize_ccs_object_internal(
+		obj, format, buffer_size, buffer, opts));
+	CCS_VALIDATE(
+		obj->ops->serialize(object, format, buffer_size, buffer, opts));
+	CCS_VALIDATE(_ccs_object_serialize_user_data(
+		object, format, buffer_size, buffer, opts));
 	return CCS_RESULT_SUCCESS;
 }
 

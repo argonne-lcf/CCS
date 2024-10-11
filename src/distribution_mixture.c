@@ -4,6 +4,7 @@
 #include <string.h>
 #include "cconfigspace_internal.h"
 #include "distribution_internal.h"
+#include "rng_internal.h"
 
 struct _ccs_distribution_mixture_data_s {
 	_ccs_distribution_common_data_t common_data;
@@ -38,7 +39,7 @@ _ccs_serialize_bin_size_ccs_distribution_mixture_data(
 	for (size_t i = 0; i < data->num_distributions; i++) {
 		*cum_size += _ccs_serialize_bin_size_ccs_float(
 			data->weights[i + 1] - data->weights[i]);
-		CCS_VALIDATE(data->distributions[i]->obj.ops->serialize_size(
+		CCS_VALIDATE(_ccs_object_serialize_size_with_opts(
 			data->distributions[i], CCS_SERIALIZE_FORMAT_BINARY,
 			cum_size, opts));
 	}
@@ -60,7 +61,7 @@ _ccs_serialize_bin_ccs_distribution_mixture_data(
 		CCS_VALIDATE(_ccs_serialize_bin_ccs_float(
 			data->weights[i + 1] - data->weights[i], buffer_size,
 			buffer));
-		CCS_VALIDATE(data->distributions[i]->obj.ops->serialize(
+		CCS_VALIDATE(_ccs_object_serialize_with_opts(
 			data->distributions[i], CCS_SERIALIZE_FORMAT_BINARY,
 			buffer_size, buffer, opts));
 	}
@@ -75,8 +76,6 @@ _ccs_serialize_bin_size_ccs_distribution_mixture(
 {
 	_ccs_distribution_mixture_data_t *data =
 		(_ccs_distribution_mixture_data_t *)(distribution->data);
-	*cum_size += _ccs_serialize_bin_size_ccs_object_internal(
-		(_ccs_object_internal_t *)distribution);
 	CCS_VALIDATE(_ccs_serialize_bin_size_ccs_distribution_mixture_data(
 		data, cum_size, opts));
 	return CCS_RESULT_SUCCESS;
@@ -91,8 +90,6 @@ _ccs_serialize_bin_ccs_distribution_mixture(
 {
 	_ccs_distribution_mixture_data_t *data =
 		(_ccs_distribution_mixture_data_t *)(distribution->data);
-	CCS_VALIDATE(_ccs_serialize_bin_ccs_object_internal(
-		(_ccs_object_internal_t *)distribution, buffer_size, buffer));
 	CCS_VALIDATE(_ccs_serialize_bin_ccs_distribution_mixture_data(
 		data, buffer_size, buffer, opts));
 	return CCS_RESULT_SUCCESS;
@@ -115,8 +112,6 @@ _ccs_distribution_mixture_serialize_size(
 			CCS_RESULT_ERROR_INVALID_VALUE,
 			"Unsupported serialization format: %d", format);
 	}
-	CCS_VALIDATE(_ccs_object_serialize_user_data_size(
-		object, format, cum_size, opts));
 	return CCS_RESULT_SUCCESS;
 }
 
@@ -138,8 +133,6 @@ _ccs_distribution_mixture_serialize(
 			CCS_RESULT_ERROR_INVALID_VALUE,
 			"Unsupported serialization format: %d", format);
 	}
-	CCS_VALIDATE(_ccs_object_serialize_user_data(
-		object, format, buffer_size, buffer, opts));
 	return CCS_RESULT_SUCCESS;
 }
 
@@ -329,6 +322,7 @@ distrib:
 			ccs_release_object(distributions[i]);
 	}
 tmpmemory:
+	_ccs_object_deinit(&(distrib->obj));
 	free((void *)tmp_mem);
 memory:
 	free((void *)mem);
@@ -347,12 +341,6 @@ _ccs_distribution_mixture_get_bounds(
 	return CCS_RESULT_SUCCESS;
 }
 
-static inline _ccs_distribution_ops_t *
-ccs_distribution_get_ops(ccs_distribution_t distribution)
-{
-	return (_ccs_distribution_ops_t *)distribution->obj.ops;
-}
-
 static ccs_result_t
 _ccs_distribution_mixture_samples(
 	_ccs_distribution_data_t *data,
@@ -362,16 +350,14 @@ _ccs_distribution_mixture_samples(
 {
 	_ccs_distribution_mixture_data_t *d =
 		(_ccs_distribution_mixture_data_t *)data;
-	size_t   dim = d->common_data.dimension;
-
-	gsl_rng *grng;
-	CCS_VALIDATE(ccs_rng_get_gsl_rng(rng, &grng));
+	size_t   dim  = d->common_data.dimension;
+	gsl_rng *grng = rng->data->rng;
 
 	for (size_t i = 0; i < num_values; i++) {
 		ccs_float_t rnd   = gsl_rng_uniform(grng);
 		ccs_int_t   index = _ccs_dichotomic_search(
                         d->num_distributions, d->weights, rnd);
-		CCS_VALIDATE(ccs_distribution_get_ops(d->distributions[index])
+		CCS_VALIDATE(_ccs_distribution_get_ops(d->distributions[index])
 				     ->samples(
 					     d->distributions[index]->data, rng,
 					     1, values + i * dim));
@@ -389,15 +375,13 @@ _ccs_distribution_mixture_strided_samples(
 {
 	_ccs_distribution_mixture_data_t *d =
 		(_ccs_distribution_mixture_data_t *)data;
-
-	gsl_rng *grng;
-	CCS_VALIDATE(ccs_rng_get_gsl_rng(rng, &grng));
+	gsl_rng *grng = rng->data->rng;
 
 	for (size_t i = 0; i < num_values; i++) {
 		ccs_float_t rnd   = gsl_rng_uniform(grng);
 		ccs_int_t   index = _ccs_dichotomic_search(
                         d->num_distributions, d->weights, rnd);
-		CCS_VALIDATE(ccs_distribution_get_ops(d->distributions[index])
+		CCS_VALIDATE(_ccs_distribution_get_ops(d->distributions[index])
 				     ->samples(
 					     d->distributions[index]->data, rng,
 					     1, values + i * stride));
@@ -427,8 +411,7 @@ _ccs_distribution_mixture_soa_samples(
 	if (!needed)
 		return CCS_RESULT_SUCCESS;
 
-	gsl_rng *grng;
-	CCS_VALIDATE(ccs_rng_get_gsl_rng(rng, &grng));
+	gsl_rng *grng = rng->data->rng;
 
 	for (size_t i = 0; i < num_values; i++) {
 		ccs_float_t rnd   = gsl_rng_uniform(grng);
@@ -437,24 +420,11 @@ _ccs_distribution_mixture_soa_samples(
 		for (size_t j = 0; j < dim; j++)
 			if (values[j])
 				p_values[j] = values[j] + i;
-		CCS_VALIDATE(ccs_distribution_get_ops(d->distributions[index])
+		CCS_VALIDATE(_ccs_distribution_get_ops(d->distributions[index])
 				     ->soa_samples(
 					     d->distributions[index]->data, rng,
 					     1, p_values));
 	}
-	return CCS_RESULT_SUCCESS;
-}
-
-ccs_result_t
-ccs_mixture_distribution_get_num_distributions(
-	ccs_distribution_t distribution,
-	size_t            *num_distributions_ret)
-{
-	CCS_CHECK_DISTRIBUTION(distribution, CCS_DISTRIBUTION_TYPE_MIXTURE);
-	CCS_CHECK_PTR(num_distributions_ret);
-	_ccs_distribution_mixture_data_t *data =
-		(_ccs_distribution_mixture_data_t *)distribution->data;
-	*num_distributions_ret = data->num_distributions;
 	return CCS_RESULT_SUCCESS;
 }
 

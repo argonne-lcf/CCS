@@ -6,31 +6,6 @@
 #define NUM_SAMPLES 200000
 
 void
-print_ccs_error_stack()
-{
-	ccs_error_stack_t       err;
-	ccs_result_t            code;
-	const char             *msg;
-	size_t                  stack_depth;
-	ccs_error_stack_elem_t *stack_elems;
-
-	err = ccs_get_thread_error();
-	if (!err)
-		return;
-	ccs_error_stack_get_code(err, &code);
-	ccs_get_result_name(code, &msg);
-	fprintf(stderr, "CCS Error: %s (%d): ", msg, code);
-	ccs_error_stack_get_message(err, &msg);
-	fprintf(stderr, "%s\n", msg);
-	ccs_error_stack_get_elems(err, &stack_depth, &stack_elems);
-	for (size_t i = 0; i < stack_depth; i++) {
-		fprintf(stderr, "\t%s:%d:%s\n", stack_elems[i].file,
-			stack_elems[i].line, stack_elems[i].func);
-	}
-	ccs_release_object(err);
-}
-
-void
 generate_tree(ccs_tree_t *tree, size_t depth, size_t rank)
 {
 	ccs_result_t err;
@@ -50,7 +25,7 @@ generate_tree(ccs_tree_t *tree, size_t depth, size_t rank)
 }
 
 void
-test_static_tree_space()
+test_static_tree_space(void)
 {
 	ccs_result_t             err;
 	ccs_tree_t               root, tree;
@@ -65,7 +40,10 @@ test_static_tree_space()
 	ccs_tree_configuration_t config, configs[NUM_SAMPLES];
 
 	generate_tree(&root, 4, 0);
-	err = ccs_create_static_tree_space("space", root, &tree_space);
+	err = ccs_create_rng(&rng);
+	assert(err == CCS_RESULT_SUCCESS);
+	err = ccs_create_static_tree_space(
+		"space", root, NULL, rng, &tree_space);
 	assert(err == CCS_RESULT_SUCCESS);
 
 	err = ccs_tree_space_get_type(tree_space, &tree_type);
@@ -75,11 +53,6 @@ test_static_tree_space()
 	err = ccs_tree_space_get_name(tree_space, &name);
 	assert(err == CCS_RESULT_SUCCESS);
 	assert(!strcmp(name, "space"));
-
-	err = ccs_create_rng(&rng);
-	assert(err == CCS_RESULT_SUCCESS);
-	err = ccs_tree_space_set_rng(tree_space, rng);
-	assert(err == CCS_RESULT_SUCCESS);
 
 	err = ccs_tree_space_get_rng(tree_space, &rng2);
 	assert(err == CCS_RESULT_SUCCESS);
@@ -109,7 +82,7 @@ test_static_tree_space()
 	free(values);
 	free(position);
 
-	err = ccs_tree_space_sample(tree_space, &config);
+	err = ccs_tree_space_sample(tree_space, NULL, NULL, &config);
 	assert(err == CCS_RESULT_SUCCESS);
 
 	ccs_map_t   map;
@@ -161,7 +134,8 @@ test_static_tree_space()
 	err = ccs_release_object(map);
 	assert(err == CCS_RESULT_SUCCESS);
 
-	err = ccs_tree_space_samples(tree_space, NUM_SAMPLES, configs);
+	err = ccs_tree_space_samples(
+		tree_space, NULL, NULL, NUM_SAMPLES, configs);
 	assert(err == CCS_RESULT_SUCCESS);
 
 	inv_sum = 0;
@@ -171,11 +145,6 @@ test_static_tree_space()
 	}
 	inv_sum = 1.0 / inv_sum;
 	for (size_t i = 0; i < NUM_SAMPLES; i++) {
-		ccs_bool_t is_valid;
-		err = ccs_tree_space_check_configuration(
-			tree_space, configs[i], &is_valid);
-		assert(err == CCS_RESULT_SUCCESS);
-		assert(is_valid == CCS_TRUE);
 		err = ccs_tree_configuration_get_position(
 			configs[i], 0, NULL, &position_size);
 		assert(err == CCS_RESULT_SUCCESS);
@@ -214,7 +183,8 @@ test_static_tree_space()
 	assert(err == CCS_RESULT_SUCCESS);
 	free(buff);
 
-	err = ccs_tree_space_samples(tree_space, NUM_SAMPLES, configs);
+	err = ccs_tree_space_samples(
+		tree_space, NULL, NULL, NUM_SAMPLES, configs);
 	assert(err == CCS_RESULT_SUCCESS);
 
 	inv_sum = 0;
@@ -224,11 +194,6 @@ test_static_tree_space()
 	}
 	inv_sum = 1.0 / inv_sum;
 	for (size_t i = 0; i < NUM_SAMPLES; i++) {
-		ccs_bool_t is_valid;
-		err = ccs_tree_space_check_configuration(
-			tree_space, configs[i], &is_valid);
-		assert(err == CCS_RESULT_SUCCESS);
-		assert(is_valid == CCS_TRUE);
 		err = ccs_tree_configuration_get_position(
 			configs[i], 0, NULL, &position_size);
 		assert(err == CCS_RESULT_SUCCESS);
@@ -253,7 +218,7 @@ test_static_tree_space()
 }
 
 int
-main()
+main(void)
 {
 	ccs_init();
 	test_static_tree_space();

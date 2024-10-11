@@ -11,7 +11,6 @@ ccs_tree_get_children = _ccs_get_function("ccs_tree_get_children", [ccs_tree, ct
 ccs_tree_get_parent = _ccs_get_function("ccs_tree_get_parent", [ccs_tree, ct.POINTER(ccs_tree), ct.POINTER(ct.c_size_t)])
 ccs_tree_get_position = _ccs_get_function("ccs_tree_get_position", [ccs_tree, ct.c_size_t, ct.POINTER(ct.c_size_t), ct.POINTER(ct.c_size_t)])
 ccs_tree_get_values = _ccs_get_function("ccs_tree_get_values", [ccs_tree, ct.c_size_t, ct.POINTER(Datum), ct.POINTER(ct.c_size_t)])
-ccs_tree_position_is_valid = _ccs_get_function("ccs_tree_position_is_valid", [ccs_tree, ct.c_size_t, ct.POINTER(ct.c_size_t), ct.POINTER(ccs_bool)])
 ccs_tree_get_values_at_position = _ccs_get_function("ccs_tree_get_values_at_position", [ccs_tree, ct.c_size_t, ct.POINTER(ct.c_size_t), ct.c_size_t, ct.POINTER(Datum)])
 ccs_tree_get_node_at_position = _ccs_get_function("ccs_tree_get_node_at_position", [ccs_tree, ct.c_size_t, ct.POINTER(ct.c_size_t), ct.POINTER(ccs_tree)])
 ccs_tree_get_weight = _ccs_get_function("ccs_tree_get_weight", [ccs_tree, ct.POINTER(ccs_float)])
@@ -141,14 +140,6 @@ class Tree(Object):
     res = ccs_tree_get_values(self.handle, count, v, None)
     Error.check(res)
     return [x.value for x in v]
-
-  def position_is_valid(self, position):
-    count = len(position)
-    v = (ct.c_size_t * count)(*position)
-    b = ccs_bool()
-    res = ccs_tree_position_is_valid(self.handle, count, v, ct.byref(b))
-    Error.check(res)
-    return not (b.value == 0)
 
   def get_values_at_position(self, position):
     count = len(position)

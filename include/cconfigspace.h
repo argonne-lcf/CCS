@@ -14,20 +14,17 @@
 #include "cconfigspace/context.h"
 #include "cconfigspace/binding.h"
 #include "cconfigspace/configuration_space.h"
+#include "cconfigspace/distribution_space.h"
 #include "cconfigspace/configuration.h"
-#include "cconfigspace/features_space.h"
+#include "cconfigspace/feature_space.h"
 #include "cconfigspace/features.h"
 #include "cconfigspace/objective_space.h"
 #include "cconfigspace/evaluation.h"
-#include "cconfigspace/features_evaluation.h"
 #include "cconfigspace/tuner.h"
-#include "cconfigspace/features_tuner.h"
 #include "cconfigspace/map.h"
 #include "cconfigspace/tree.h"
 #include "cconfigspace/tree_space.h"
 #include "cconfigspace/tree_configuration.h"
-#include "cconfigspace/tree_evaluation.h"
-#include "cconfigspace/tree_tuner.h"
 
 /**
  * @file cconfigspace.h

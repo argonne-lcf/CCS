@@ -1,27 +1,30 @@
 import ctypes as ct
 from . import libcconfigspace
-from .base import Object, Error, ccs_tree, ccs_tree_space, ccs_tree_configuration, Datum, ccs_bool, ccs_hash, _ccs_get_function
+from .base import Object, Error, ccs_tree, ccs_tree_space, ccs_tree_configuration, ccs_features, Datum, ccs_bool, ccs_hash, _ccs_get_function
 from .tree import Tree
 from .tree_space import TreeSpace
+from .features import Features
 
-ccs_create_tree_configuration = _ccs_get_function("ccs_create_tree_configuration", [ccs_tree_space, ct.c_size_t, ct.POINTER(ct.c_size_t), ct.POINTER(ccs_tree_configuration)])
+ccs_create_tree_configuration = _ccs_get_function("ccs_create_tree_configuration", [ccs_tree_space, ccs_features, ct.c_size_t, ct.POINTER(ct.c_size_t), ct.POINTER(ccs_tree_configuration)])
 ccs_tree_configuration_get_tree_space = _ccs_get_function("ccs_tree_configuration_get_tree_space", [ccs_tree_configuration, ct.POINTER(ccs_tree_space)])
+ccs_tree_configuration_get_features = _ccs_get_function("ccs_tree_configuration_get_features", [ccs_tree_configuration, ct.POINTER(ccs_features)])
 ccs_tree_configuration_get_position = _ccs_get_function("ccs_tree_configuration_get_position", [ccs_tree_configuration, ct.c_size_t, ct.POINTER(ct.c_size_t), ct.POINTER(ct.c_size_t)])
 ccs_tree_configuration_get_values = _ccs_get_function("ccs_tree_configuration_get_values", [ccs_tree_configuration, ct.c_size_t, ct.POINTER(Datum), ct.POINTER(ct.c_size_t)])
 ccs_tree_configuration_get_node = _ccs_get_function("ccs_tree_configuration_get_node", [ccs_tree_configuration, ct.POINTER(ccs_tree)])
-ccs_tree_configuration_check = _ccs_get_function("ccs_tree_configuration_check", [ccs_tree_configuration, ct.POINTER(ccs_bool)])
 ccs_tree_configuration_hash = _ccs_get_function("ccs_tree_configuration_hash", [ccs_tree_configuration, ct.POINTER(ccs_hash)])
 ccs_tree_configuration_cmp = _ccs_get_function("ccs_tree_configuration_cmp", [ccs_tree_configuration, ccs_tree_configuration, ct.POINTER(ct.c_int)])
 
 class TreeConfiguration(Object):
 
   def __init__(self, handle = None, retain = False, auto_release = True,
-               tree_space = None, position = None):
+               tree_space = None, features = None, position = None):
     if handle is None:
-      handle = ccs_tree_configuration()
       count = len(position)
       v = (ct.c_size_t * count)(*position)
-      res = ccs_create_tree_configuration(tree_space.handle, count, v, ct.byref(handle))
+      if features is not None:
+        features = features.handle
+      handle = ccs_tree_configuration()
+      res = ccs_create_tree_configuration(tree_space.handle, features, count, v, ct.byref(handle))
       Error.check(res)
       super().__init__(handle = handle, retain = False)
     else:
@@ -41,6 +44,19 @@ class TreeConfiguration(Object):
     self._tree_space = TreeSpace.from_handle(v)
     return self._tree_space
 
+
+  @property
+  def features(self):
+    if hasattr(self, "_features"):
+      return self._features
+    v = ccs_features()
+    res = ccs_tree_configuration_get_features(self.handle, ct.byref(v))
+    Error.check(res)
+    if bool(v):
+      self._features = Features.from_handle(v)
+    else:
+      self._features = None
+    return self._features
 
   @property
   def position_size(self):
@@ -83,12 +99,6 @@ class TreeConfiguration(Object):
     Error.check(res)
     self._node = Tree.from_handle(v)
     return self._node
-
-  def check(self):
-    valid = ccs_bool()
-    res = ccs_tree_configuration_check(self.handle, ct.byref(valid))
-    Error.check(res)
-    return not (valid.value == 0)
 
   @property
   def hash(self):

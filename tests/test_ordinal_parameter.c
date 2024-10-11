@@ -69,7 +69,7 @@ compare_parameter(
 }
 
 void
-test_create()
+test_create(void)
 {
 	ccs_parameter_t parameter;
 	ccs_result_t    err;
@@ -127,7 +127,7 @@ test_create()
 }
 
 void
-test_create_error()
+test_create_error(void)
 {
 	ccs_parameter_t parameter;
 	ccs_result_t    err;
@@ -150,7 +150,7 @@ test_create_error()
 }
 
 void
-test_samples()
+test_samples(void)
 {
 	ccs_rng_t          rng;
 	ccs_parameter_t    parameter;
@@ -199,7 +199,7 @@ test_samples()
 }
 
 void
-test_oversampling()
+test_oversampling(void)
 {
 	ccs_rng_t          rng;
 	ccs_parameter_t    parameter;
@@ -249,7 +249,7 @@ test_oversampling()
 }
 
 void
-test_compare()
+test_compare(void)
 {
 	ccs_parameter_t parameter;
 	ccs_result_t    err;
@@ -297,7 +297,7 @@ test_compare()
 }
 
 void
-test_compare_float()
+test_compare_float(void)
 {
 	ccs_parameter_t parameter;
 	ccs_result_t    err;
@@ -349,7 +349,7 @@ test_compare_float()
 }
 
 void
-test_compare_string()
+test_compare_string(void)
 {
 	ccs_parameter_t parameter;
 	ccs_result_t    err;
@@ -401,7 +401,7 @@ test_compare_string()
 }
 
 void
-test_validate()
+test_validate(void)
 {
 	ccs_parameter_t parameter;
 	ccs_result_t    err;
@@ -456,7 +456,7 @@ test_validate()
 }
 
 int
-main()
+main(void)
 {
 	ccs_init();
 	test_create();

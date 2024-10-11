@@ -28,7 +28,7 @@ _ccs_serialize_bin_size_ccs_tree_data(
 		*cum_size += _ccs_serialize_bin_size_ccs_bool(
 			data->children[i] != NULL);
 		if (data->children[i])
-			CCS_VALIDATE(data->children[i]->obj.ops->serialize_size(
+			CCS_VALIDATE(_ccs_object_serialize_size_with_opts(
 				data->children[i], CCS_SERIALIZE_FORMAT_BINARY,
 				cum_size, opts));
 	}
@@ -51,7 +51,7 @@ _ccs_serialize_bin_ccs_tree_data(
 		CCS_VALIDATE(_ccs_serialize_bin_ccs_bool(
 			data->children[i] != NULL, buffer_size, buffer));
 		if (data->children[i])
-			CCS_VALIDATE(data->children[i]->obj.ops->serialize(
+			CCS_VALIDATE(_ccs_object_serialize_with_opts(
 				data->children[i], CCS_SERIALIZE_FORMAT_BINARY,
 				buffer_size, buffer, opts));
 	}
@@ -68,8 +68,6 @@ _ccs_serialize_bin_size_ccs_tree(
 	size_t                          *cum_size,
 	_ccs_object_serialize_options_t *opts)
 {
-	*cum_size += _ccs_serialize_bin_size_ccs_object_internal(
-		(_ccs_object_internal_t *)tree);
 	CCS_VALIDATE(_ccs_serialize_bin_size_ccs_tree_data(
 		tree->data, cum_size, opts));
 	return CCS_RESULT_SUCCESS;
@@ -82,8 +80,6 @@ _ccs_serialize_bin_ccs_tree(
 	char                           **buffer,
 	_ccs_object_serialize_options_t *opts)
 {
-	CCS_VALIDATE(_ccs_serialize_bin_ccs_object_internal(
-		(_ccs_object_internal_t *)tree, buffer_size, buffer));
 	CCS_VALIDATE(_ccs_serialize_bin_ccs_tree_data(
 		tree->data, buffer_size, buffer, opts));
 	return CCS_RESULT_SUCCESS;
@@ -106,8 +102,6 @@ _ccs_tree_serialize_size(
 			CCS_RESULT_ERROR_INVALID_VALUE,
 			"Unsupported serialization format: %d", format);
 	}
-	CCS_VALIDATE(_ccs_object_serialize_user_data_size(
-		object, format, cum_size, opts));
 	return CCS_RESULT_SUCCESS;
 }
 
@@ -129,8 +123,6 @@ _ccs_tree_serialize(
 			CCS_RESULT_ERROR_INVALID_VALUE,
 			"Unsupported serialization format: %d", format);
 	}
-	CCS_VALIDATE(_ccs_object_serialize_user_data(
-		object, format, buffer_size, buffer, opts));
 	return CCS_RESULT_SUCCESS;
 }
 
@@ -455,27 +447,6 @@ ccs_tree_get_values(
 		for (size_t i = depth + 1; i < num_values; i++)
 			values[i] = ccs_none;
 	}
-	return CCS_RESULT_SUCCESS;
-}
-
-ccs_result_t
-ccs_tree_position_is_valid(
-	ccs_tree_t    tree,
-	size_t        position_size,
-	const size_t *position,
-	ccs_bool_t   *is_valid_ret)
-{
-	CCS_CHECK_OBJ(tree, CCS_OBJECT_TYPE_TREE);
-	CCS_CHECK_ARY(position_size, position);
-	CCS_CHECK_PTR(is_valid_ret);
-	for (size_t i = 0; i < position_size; i++) {
-		if (!tree || position[i] >= tree->data->arity) {
-			*is_valid_ret = CCS_FALSE;
-			return CCS_RESULT_SUCCESS;
-		}
-		tree = tree->data->children[position[i]];
-	}
-	*is_valid_ret = CCS_TRUE;
 	return CCS_RESULT_SUCCESS;
 }
 

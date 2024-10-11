@@ -1,9 +1,8 @@
 ACLOCAL_AMFLAGS = -I m4
-SUBDIRS = src include tests connectors
+SUBDIRS = src include tests connectors bindings
 if SAMPLES
 SUBDIRS += samples
 endif
-SUBDIRS += bindings
 
 cconfigspace.pc: cconfigspace.pc.subst .version_timestamp
 	@echo Processing $@; sh $(top_srcdir)/build-aux/version-subst $(CURVER) $< $@

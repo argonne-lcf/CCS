@@ -1,17 +1,15 @@
 EXTRA_DIST = \
 	lib/cconfigspace.rb \
 	lib/cconfigspace \
-	lib/cconfigspace/features_tuner.rb \
-	lib/cconfigspace/tree_evaluation.rb \
 	lib/cconfigspace/tree.rb \
 	lib/cconfigspace/evaluation.rb \
 	lib/cconfigspace/tuner.rb \
-	lib/cconfigspace/tree_tuner.rb \
 	lib/cconfigspace/binding.rb \
 	lib/cconfigspace/tree_space.rb \
-	lib/cconfigspace/features_space.rb \
+	lib/cconfigspace/feature_space.rb \
 	lib/cconfigspace/base.rb \
 	lib/cconfigspace/configuration_space.rb \
+	lib/cconfigspace/distribution_space.rb \
 	lib/cconfigspace/configuration.rb \
 	lib/cconfigspace/features.rb \
 	lib/cconfigspace/distribution.rb \
@@ -20,13 +18,12 @@ EXTRA_DIST = \
 	lib/cconfigspace/expression.rb \
 	lib/cconfigspace/expression_parser.rb \
 	lib/cconfigspace/objective_space.rb \
-	lib/cconfigspace/features_evaluation.rb \
 	lib/cconfigspace/interval.rb \
 	lib/cconfigspace/parameter.rb \
 	lib/cconfigspace/error_stack.rb \
 	lib/cconfigspace/tree_configuration.rb \
 	lib/cconfigspace/context.rb \
-	test/test_features_space.rb \
+	test/test_feature_space.rb \
 	test/test_expression.rb \
 	test/test_tree_evaluation.rb \
 	test/test_interval.rb \
@@ -43,6 +40,7 @@ EXTRA_DIST = \
 	test/test_configuration_space.rb \
 	test/test_distribution.rb \
 	test/test_evaluation.rb \
+	test/tuner_server.rb \
 	rakefile \
 	cconfigspace.gemspec \
 	LICENSE
@@ -54,6 +52,6 @@ LIBEXT = .so
 endif
 
 check: FORCE
-	LIBCCONFIGSPACE_SO=$(top_builddir)/src/.libs/libcconfigspace$(LIBEXT) SRC_DIR=$(srcdir) rake -f $(srcdir)/rakefile test
+	LIBCCONFIGSPACE_SO=$(abs_top_builddir)/src/.libs/libcconfigspace$(LIBEXT) SRC_DIR=$(srcdir) rake -f $(srcdir)/rakefile test
 
 FORCE:

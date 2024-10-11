@@ -1,5 +1,5 @@
 import ctypes as ct
-import json
+import pickle
 import sys
 import traceback
 from . import libcconfigspace
@@ -22,28 +22,27 @@ ccs_hash              = ct.c_uint32
 ccs_object            = ct.c_void_p
 
 # Objects
-ccs_rng                 = ccs_object
-ccs_distribution        = ccs_object
-ccs_parameter           = ccs_object
-ccs_expression          = ccs_object
-ccs_context             = ccs_object
-ccs_configuration_space = ccs_object
-ccs_binding             = ccs_object
-ccs_configuration       = ccs_object
-ccs_features_space      = ccs_object
-ccs_features            = ccs_object
-ccs_objective_space     = ccs_object
-ccs_evaluation          = ccs_object
-ccs_features_evaluation = ccs_object
-ccs_tuner               = ccs_object
-ccs_features_tuner      = ccs_object
-ccs_map                 = ccs_object
-ccs_error_stack         = ccs_object
-ccs_tree                = ccs_object
-ccs_tree_space          = ccs_object
-ccs_tree_configuration  = ccs_object
-ccs_tree_evaluation     = ccs_object
-ccs_tree_tuner          = ccs_object
+ccs_rng                  = ccs_object
+ccs_distribution         = ccs_object
+ccs_parameter            = ccs_object
+ccs_expression           = ccs_object
+ccs_context              = ccs_object
+ccs_distribution_space   = ccs_object
+ccs_search_space         = ccs_object
+ccs_configuration_space  = ccs_object
+ccs_binding              = ccs_object
+ccs_search_configuration = ccs_object
+ccs_configuration        = ccs_object
+ccs_feature_space        = ccs_object
+ccs_features             = ccs_object
+ccs_objective_space      = ccs_object
+ccs_evaluation           = ccs_object
+ccs_tuner                = ccs_object
+ccs_map                  = ccs_object
+ccs_error_stack          = ccs_object
+ccs_tree                 = ccs_object
+ccs_tree_space           = ccs_object
+ccs_tree_configuration   = ccs_object
 
 ccs_false = 0
 ccs_true = 1
@@ -107,8 +106,8 @@ class CEnumerationType(type(ct.c_int)):
 
 class CEnumeration(ct.c_int, metaclass=CEnumerationType):
   _members_ = {}
-  def __init__(self, value):
-    ct.c_int.__init__(self, value)
+  def __init__(*args):
+    ct.c_int.__init__(*args)
 
   @property
   def name(self):
@@ -144,52 +143,48 @@ class ObjectType(CEnumeration):
     'OBJECTIVE_SPACE',
     'EVALUATION',
     'TUNER',
-    'FEATURES_SPACE',
+    'FEATURE_SPACE',
     'FEATURES',
-    'FEATURES_EVALUATION',
-    'FEATURES_TUNER',
     'MAP',
     'ERROR_STACK',
     'TREE',
     'TREE_SPACE',
     'TREE_CONFIGURATION',
-    'TREE_EVALUATION',
-    'TREE_TUNER' ]
+    'DISTRIBUTION_SPACE' ]
 
 class Result(CEnumeration):
   _members_ = [
-    ('AGAIN',                          1),
-    ('SUCCESS',                        0),
-    ('ERROR_INVALID_OBJECT',          -1),
-    ('ERROR_INVALID_VALUE',           -2),
-    ('ERROR_INVALID_TYPE',            -3),
-    ('ERROR_INVALID_SCALE',           -4),
-    ('ERROR_INVALID_DISTRIBUTION',    -5),
-    ('ERROR_INVALID_EXPRESSION',      -6),
-    ('ERROR_INVALID_PARAMETER',       -7),
-    ('ERROR_INVALID_CONFIGURATION',   -8),
-    ('ERROR_INVALID_NAME',            -9),
-    ('ERROR_INVALID_CONDITION',      -10),
-    ('ERROR_INVALID_TUNER',          -11),
-    ('ERROR_INVALID_GRAPH',          -12),
-    ('ERROR_TYPE_NOT_COMPARABLE',    -13),
-    ('ERROR_INVALID_BOUNDS',         -14),
-    ('ERROR_OUT_OF_BOUNDS',          -15),
-    ('ERROR_SAMPLING_UNSUCCESSFUL',  -16),
-    ('ERROR_OUT_OF_MEMORY',          -17),
-    ('ERROR_UNSUPPORTED_OPERATION',  -18),
-    ('ERROR_INVALID_EVALUATION',     -19),
-    ('ERROR_INVALID_FEATURES',       -20),
-    ('ERROR_INVALID_FEATURES_TUNER', -21),
-    ('ERROR_INVALID_FILE_PATH',      -22),
-    ('ERROR_NOT_ENOUGH_DATA',        -23),
-    ('ERROR_DUPLICATE_HANDLE',       -24),
-    ('ERROR_INVALID_HANDLE',         -25),
-    ('ERROR_SYSTEM',                 -26),
-    ('ERROR_EXTERNAL',               -27),
-    ('ERROR_INVALID_TREE',           -28),
-    ('ERROR_INVALID_TREE_SPACE',     -29),
-    ('ERROR_INVALID_TREE_TUNER',     -30) ]
+    ('AGAIN',                              1),
+    ('SUCCESS',                            0),
+    ('ERROR_INVALID_OBJECT',              -1),
+    ('ERROR_INVALID_VALUE',               -2),
+    ('ERROR_INVALID_TYPE',                -3),
+    ('ERROR_INVALID_SCALE',               -4),
+    ('ERROR_INVALID_DISTRIBUTION',        -5),
+    ('ERROR_INVALID_EXPRESSION',          -6),
+    ('ERROR_INVALID_PARAMETER',           -7),
+    ('ERROR_INVALID_CONFIGURATION',       -8),
+    ('ERROR_INVALID_NAME',                -9),
+    ('ERROR_INVALID_CONDITION',          -10),
+    ('ERROR_INVALID_TUNER',              -11),
+    ('ERROR_INVALID_GRAPH',              -12),
+    ('ERROR_TYPE_NOT_COMPARABLE',        -13),
+    ('ERROR_INVALID_BOUNDS',             -14),
+    ('ERROR_OUT_OF_BOUNDS',              -15),
+    ('ERROR_SAMPLING_UNSUCCESSFUL',      -16),
+    ('ERROR_OUT_OF_MEMORY',              -17),
+    ('ERROR_UNSUPPORTED_OPERATION',      -18),
+    ('ERROR_INVALID_EVALUATION',         -19),
+    ('ERROR_INVALID_FEATURES',           -20),
+    ('ERROR_INVALID_FILE_PATH',          -21),
+    ('ERROR_NOT_ENOUGH_DATA',            -22),
+    ('ERROR_DUPLICATE_HANDLE',           -23),
+    ('ERROR_INVALID_HANDLE',             -24),
+    ('ERROR_SYSTEM',                     -25),
+    ('ERROR_EXTERNAL',                   -26),
+    ('ERROR_INVALID_TREE',               -27),
+    ('ERROR_INVALID_TREE_SPACE',         -28),
+    ('ERROR_INVALID_DISTRIBUTION_SPACE', -29) ]
 
 class DataType(CEnumeration):
   _members_ = [
@@ -400,10 +395,10 @@ class DeserializeOption(CEnumeration):
   _members_ = [
     ('END', 0),
     'HANDLE_MAP',
-    'VECTOR',
-    'DATA',
+    'MAP_HANDLES',
+    'VECTOR_CALLBACK',
     'NON_BLOCKING',
-    'CALLBACK'
+    'DATA_CALLBACK'
   ]
 
 def _ccs_get_function(method, argtypes = [], restype = Result):
@@ -427,11 +422,14 @@ ccs_object_set_user_data = _ccs_get_function("ccs_object_set_user_data", [ccs_ob
 ccs_object_get_user_data = _ccs_get_function("ccs_object_get_user_data", [ccs_object, ct.POINTER(ct.c_void_p)])
 ccs_object_serialize_callback_type = ct.CFUNCTYPE(Result, ccs_object, ct.c_size_t, ct.c_void_p, ct.POINTER(ct.c_size_t), ct.c_void_p)
 ccs_object_set_serialize_callback = _ccs_get_function("ccs_object_set_serialize_callback", [ccs_object, ccs_object_serialize_callback_type, ct.c_void_p])
-ccs_object_deserialize_callback_type = ct.CFUNCTYPE(Result, ccs_object, ct.c_size_t, ct.c_void_p, ct.c_void_p)
+ccs_object_deserialize_data_callback_type = ct.CFUNCTYPE(Result, ccs_object, ct.c_size_t, ct.c_void_p, ct.POINTER(ct.py_object))
+ccs_object_deserialize_vector_callback_type = ct.CFUNCTYPE(Result, ObjectType, ct.c_char_p, ct.c_void_p, ct.POINTER(ct.c_void_p), ct.POINTER(ct.py_object))
 # Variadic methods
 ccs_object_serialize = getattr(libcconfigspace, "ccs_object_serialize")
+ccs_object_serialize.argtypes = ccs_object, SerializeFormat, SerializeOperation,
 ccs_object_serialize.restype = Result
 ccs_object_deserialize = getattr(libcconfigspace, "ccs_object_deserialize")
+ccs_object_deserialize.argtypes = ct.POINTER(ccs_object), SerializeFormat, SerializeOperation,
 ccs_object_deserialize.restype = Result
 
 _res = ccs_init()
@@ -511,7 +509,7 @@ class Object:
     return klass.from_handle(h, retain = retain, auto_release = auto_release)
 
   @classmethod
-  def from_handle(cls, h):
+  def from_handle(cls, h, retain = True):
     r = ct.c_int(0)
     res = ccs_object_get_refcount(h, ct.byref(r))
     Error.check(res)
@@ -520,14 +518,13 @@ class Object:
       retain = False
       auto_release = False
     else:
-      retain = True
       auto_release = True
     return cls._from_handle(h, retain, auto_release)
 
-  def set_destroy_callback(self, callback, user_data = None):
-    _set_destroy_callback(self.handle, callback, user_data = user_data)
+  def set_destroy_callback(self, callback):
+    _set_destroy_callback(self.handle, callback)
 
-  def serialize(self, format = 'binary', path = None, file_descriptor = None, callback = None, callback_data = None):
+  def serialize(self, format = 'binary', path = None, file_descriptor = None, callback = None):
     if format != 'binary':
       raise Error(Result(Result.ERROR_INVALID_VALUE))
     if path and file_descriptor:
@@ -536,7 +533,7 @@ class Object:
     if callback:
       cb_wrapper = _get_serialize_callback_wrapper(callback)
       cb_wrapper_func = ccs_object_serialize_callback_type(cb_wrapper)
-      options = [SerializeOption.CALLBACK, cb_wrapper_func, ct.py_object(callback_data)] + options
+      options = [SerializeOption.CALLBACK, cb_wrapper_func, ct.py_object()] + options
     elif _default_user_data_serializer:
       options = [SerializeOption.CALLBACK, _default_user_data_serializer, ct.py_object()] + options
     if path:
@@ -554,46 +551,50 @@ class Object:
       s = ct.c_size_t(0)
       res = ccs_object_serialize(self.handle, SerializeFormat.BINARY, SerializeOperation.SIZE, ct.byref(s), *options)
       Error.check(res)
-      v = (ct.c_byte * s.value)()
+      v = ct.create_string_buffer(s.value)
       res = ccs_object_serialize(self.handle, SerializeFormat.BINARY, SerializeOperation.MEMORY, ct.sizeof(v), v, *options)
       Error.check(res)
-      return v
+      return v.raw
 
   @classmethod
-  def deserialize(cls, format = 'binary', handle_map = None, vector = None, data = None, path = None, buffer = None, file_descriptor = None, callback = None, callback_data = None):
+  def deserialize(cls, format = 'binary', handle_map = None, map_handles = False, vector_callback = None, path = None, buffer = None, file_descriptor = None, callback = None):
     if format != 'binary':
       raise Error(Result(Result.ERROR_INVALID_VALUE))
     mode_count = 0;
-    if path:
+    if path is not None:
       mode_count += 1
-    if buffer:
+    if buffer is not None:
       mode_count += 1
-    if file_descriptor:
+    if file_descriptor is not None:
       mode_count += 1
     if not mode_count == 1:
       raise Error(Result(Result.ERROR_INVALID_VALUE))
+    if map_handles and handle_map is None:
+      raise Error(Result(Result.ERROR_INVALID_VALUE))
     o = ccs_object(0)
     options = [DeserializeOption.END]
-    if handle_map:
+    if map_handles:
+      options = [DeserializeOption.MAP_HANDLES] + options
+    if handle_map is not None:
       options = [DeserializeOption.HANDLE_MAP, handle_map.handle] + options
-    if vector:
-      options = [DeserializeOption.VECTOR, ct.byref(vector)] + options
-    if data:
-      options = [DeserializeOption.DATA, ct.py_object(data)] + options
-    if callback:
-      cb_wrapper = _get_deserialize_callback_wrapper(callback)
-      cb_wrapper_func = ccs_object_deserialize_callback_type(cb_wrapper)
-      options = [DeserializeOption.CALLBACK, cb_wrapper_func, ct.py_object(callback_data)] + options
-    elif _default_user_data_deserializer:
-      options = [DeserializeOption.CALLBACK, _default_user_data_deserializer, ct.py_object()] + options
-    if buffer:
-      s = ct.c_size_t(ct.sizeof(buffer))
-      res = ccs_object_deserialize(ct.byref(o), SerializeFormat.BINARY, SerializeOperation.MEMORY, s, buffer, *options)
-    elif path:
+    if vector_callback is not None:
+      vector_cb_wrapper = _get_deserialize_vector_callback_wrapper(vector_callback)
+      vector_cb_wrapper_func = ccs_object_deserialize_vector_callback_type(vector_cb_wrapper)
+      options = [DeserializeOption.VECTOR_CALLBACK, vector_cb_wrapper_func, ct.py_object()] + options
+    if callback is not None:
+      cb_wrapper = _get_deserialize_data_callback_wrapper(callback)
+      cb_wrapper_func = ccs_object_deserialize_data_callback_type(cb_wrapper)
+      options = [DeserializeOption.DATA_CALLBACK, cb_wrapper_func, ct.py_object()] + options
+    elif _default_user_data_deserializer is not None:
+      options = [DeserializeOption.DATA_CALLBACK, _default_user_data_deserializer, ct.py_object()] + options
+    if buffer is not None:
+      s = len(buffer)
+      res = ccs_object_deserialize(ct.byref(o), SerializeFormat.BINARY, SerializeOperation.MEMORY, s, ct.create_string_buffer(buffer, s), *options)
+    elif path is not None:
       p = str.encode(path)
       pp = ct.c_char_p(p)
       res = ccs_object_deserialize(ct.byref(o), SerializeFormat.BINARY, SerializeOperation.FILE, pp, *options)
-    elif file_descriptor:
+    elif file_descriptor is not None:
       fd = ct.c_int(file_descriptor)
       res = ccs_object_deserialize(ct.byref(o), SerializeFormat.BINARY, SerializeOperation.FILE_DESCRIPTOR, fd, *options)
     else:
@@ -606,73 +607,58 @@ _data_store = {}
 def _get_serialize_callback_wrapper(callback):
   def serialize_callback_wrapper(obj, serialize_data_size, serialize_data, serialize_data_size_ret, cb_data):
     try:
-      p_sd = ct.cast(serialize_data, ct.c_void_p)
-      p_sdsz = ct.cast(serialize_data_size_ret, ct.POINTER(ct.c_size_t))
-      cb_data = ct.cast(cb_data, ct.c_void_p)
-      if cb_data:
-        cb_data = ct.cast(cb_data, ct.py_object).value
-      else:
-        cb_data = None
-      serialized = callback(Object.from_handle(ccs_object(obj)), cb_data, True if serialize_data_size == 0 else False)
-      if p_sd and serialize_data_size < ct.sizeof(serialized):
+      serialized = callback(Object.from_handle(obj).user_data)
+      state = ct.create_string_buffer(serialized, len(serialized))
+      if serialize_data and serialize_data_size < ct.sizeof(state):
         raise Error(Result(Result.ERROR_INVALID_VALUE))
-      if p_sd:
-        ct.memmove(p_sd, ct.byref(serialized), ct.sizeof(serialized))
-      if p_sdsz:
-        p_sdsz[0] = ct.sizeof(serialized)
+      if serialize_data:
+        ct.memmove(serialize_data, ct.byref(state), ct.sizeof(state))
+      if serialize_data_size_ret:
+        serialize_data_size_ret[0] = ct.sizeof(state)
       return Result.SUCCESS
     except Exception as e:
       return Error.set_error(e)
   return serialize_callback_wrapper
 
-def _get_deserialize_callback_wrapper(callback):
-  def deserialize_callback_wrapper(obj, serialize_data_size, serialize_data, cb_data):
+def _get_deserialize_data_callback_wrapper(callback):
+  def deserialize_data_callback_wrapper(obj, serialize_data_size, p_serialize_data, cb_data):
     try:
-      p_sd = ct.cast(serialize_data, ct.c_void_p)
-      cb_data = ct.cast(cb_data, ct.c_void_p)
-      if cb_data:
-        cb_data = ct.cast(cb_data, ct.py_object).value
-      else:
-        cb_data = None
-      if p_sd:
-        serialized = ct.cast(p_sd, ct.POINTER(ct.c_byte * serialize_data_size))
-      else:
-        serialized = None
-      callback(Object.from_handle(ccs_object(obj)), serialized, cb_data)
+      user_data = callback(ct.string_at(p_serialize_data, serialize_data_size))
+      Object.from_handle(ccs_object(obj)).user_data = user_data
       return Result.SUCCESS
     except Exception as e:
       return Error.set_error(e)
-  return deserialize_callback_wrapper
+  return deserialize_data_callback_wrapper
 
-def _json_user_data_serializer(obj, data, size):
-  string = json.dumps(obj.user_data).encode("ascii")
-  return ct.create_string_buffer(string)
+def _get_deserialize_vector_callback_wrapper(callback):
+  def deserialize_vector_callback_wrapper(obj_type, name, callback_user_data, vector_ret, data_ret):
+    try:
+      (vector, data) = callback(obj_type.value, name.decode())
+      c_vector = ct.py_object(vector)
+      c_data = ct.py_object(data)
+      vector_ret[0] = ct.cast(ct.byref(vector), ct.c_void_p)
+      data_ret[0] = c_data
+      ct.pythonapi.Py_IncRef(c_vector)
+      ct.pythonapi.Py_IncRef(c_data)
+      return Result.SUCCESS
+    except Exception as e:
+      return Error.set_error(e)
+  return deserialize_vector_callback_wrapper
 
-def _json_user_data_deserializer(obj, serialized, data):
-  serialized = ct.cast(serialized, ct.c_char_p)
-  obj.user_data = json.loads(serialized.value)
+def _pickle_user_data_serializer(user_data):
+  return pickle.dumps(user_data)
 
-_json_user_data_serializer_wrap = _get_serialize_callback_wrapper(_json_user_data_serializer)
-_json_user_data_serializer_func = ccs_object_serialize_callback_type(_json_user_data_serializer_wrap)
+def _pickle_user_data_deserializer(serialized):
+  return pickle.loads(serialized)
 
-_json_user_data_deserializer_wrap = _get_deserialize_callback_wrapper(_json_user_data_deserializer)
-_json_user_data_deserializer_func = ccs_object_deserialize_callback_type(_json_user_data_deserializer_wrap)
+_pickle_user_data_serializer_wrap = _get_serialize_callback_wrapper(_pickle_user_data_serializer)
+_pickle_user_data_serializer_func = ccs_object_serialize_callback_type(_pickle_user_data_serializer_wrap)
 
-_default_user_data_serializer = _json_user_data_serializer_func
-_default_user_data_deserializer = _json_user_data_deserializer_func
+_pickle_user_data_deserializer_wrap = _get_deserialize_data_callback_wrapper(_pickle_user_data_deserializer)
+_pickle_user_data_deserializer_func = ccs_object_deserialize_data_callback_type(_pickle_user_data_deserializer_wrap)
 
-# Delete wrappers are responsible for deregistering the object data_store
-def _register_vector(handle, vector_data):
-  value = handle.value
-  if value in _data_store:
-    raise Error(Result(Result.ERROR_INVALID_VALUE))
-  _data_store[value] = dict.fromkeys(['callbacks', 'user_data', 'serialize_calback', 'strings'])
-  _data_store[value]['callbacks'] = vector_data
-  _data_store[value]['strings'] = []
-
-def _unregister_vector(handle):
-  value = handle.value
-  del _data_store[value]
+_default_user_data_serializer = _pickle_user_data_serializer_func
+_default_user_data_deserializer = _pickle_user_data_deserializer_func
 
 # If objects don't have a user-defined del operation, then the first time a
 # data needs to be registered a destruction callback is attached.
@@ -711,20 +697,20 @@ def _register_serialize_callback(handle, callback_data):
     _register_destroy_callback(handle)
   _data_store[value]['serialize_calback'] = callback_data
 
-def deserialize(format = 'binary', handle_map = None, path = None, buffer = None, callback = None, callback_data = None):
-  return Object.deserialize(format = format, handle_map = handle_map, path = path, buffer = buffer, callback = callback, callback_data = callback_data)
+def deserialize(format = 'binary', handle_map = None, map_handles = False, path = None, buffer = None, file_descriptor = None, vector_callback = None, vector_callback_data = None, callback = None, callback_data = None):
+  return Object.deserialize(format = format, handle_map = handle_map, map_handles = map_handles, path = path, buffer = buffer, file_descriptor = file_descriptor, vector_callback = vector_callback, callback = callback)
 
-def _set_destroy_callback(handle, callback, user_data = None):
+def _set_destroy_callback(handle, callback):
   if callback is None:
     raise Error(Result(Result.ERROR_INVALID_VALUE))
   def cb_wrapper(obj, data):
     callback(Object.from_handle(obj), data)
   cb_wrapper_func = ccs_object_destroy_callback_type(cb_wrapper)
-  res = ccs_object_set_destroy_callback(handle, cb_wrapper_func, user_data)
+  res = ccs_object_set_destroy_callback(handle, cb_wrapper_func, None)
   Error.check(res)
-  _register_callback(handle, [callback, cb_wrapper, cb_wrapper_func, user_data])
+  _register_callback(handle, [callback, cb_wrapper, cb_wrapper_func])
 
-def _set_serialize_callback(handle, callback, user_data = None):
+def _set_serialize_callback(handle, callback):
   if callback is None:
     res = ccs_object_set_serialize_callback(handle, None, None)
     Error.check(res)
@@ -732,9 +718,9 @@ def _set_serialize_callback(handle, callback, user_data = None):
   else:
     cb_wrapper = _get_serialize_callback_wrapper(callback)
     cb_wrapper_func = ccs_object_serialize_callback_type(cb_wrapper)
-    res = ccs_object_set_serialize_callback(handle, cb_wrapper_func, user_data)
+    res = ccs_object_set_serialize_callback(handle, cb_wrapper_func, None)
     Error.check(res)
-    _register_serialize_callback(handle, [callback, cb_wrapper, cb_wrapper_func, user_data])
+    _register_serialize_callback(handle, [callback, cb_wrapper, cb_wrapper_func])
 
 _ccs_id = 0
 def _ccs_get_id():
@@ -749,20 +735,17 @@ from .parameter import Parameter
 from .expression import Expression
 from .configuration_space import ConfigurationSpace
 from .configuration import Configuration
-from .features_space import FeaturesSpace
+from .feature_space import FeatureSpace
 from .features import Features
 from .objective_space import ObjectiveSpace
 from .evaluation import Evaluation
-from .features_evaluation import FeaturesEvaluation
 from .tuner import Tuner
-from .features_tuner import FeaturesTuner
 from .map import Map
 from .error_stack import ErrorStack, get_thread_error, set_thread_error, clear_thread_error
 from .tree import Tree
 from .tree_space import TreeSpace
 from .tree_configuration import TreeConfiguration
-from .tree_evaluation import TreeEvaluation
-from .tree_tuner import TreeTuner
+from .distribution_space import DistributionSpace
 
 setattr(Object, 'CLASS_MAP', {
   ObjectType.RNG: Rng,
@@ -771,20 +754,17 @@ setattr(Object, 'CLASS_MAP', {
   ObjectType.EXPRESSION: Expression,
   ObjectType.CONFIGURATION_SPACE: ConfigurationSpace,
   ObjectType.CONFIGURATION: Configuration,
-  ObjectType.FEATURES_SPACE: ConfigurationSpace,
+  ObjectType.FEATURE_SPACE: FeatureSpace,
   ObjectType.FEATURES: Features,
   ObjectType.OBJECTIVE_SPACE: ObjectiveSpace,
   ObjectType.EVALUATION: Evaluation,
-  ObjectType.FEATURES_EVALUATION: FeaturesEvaluation,
   ObjectType.TUNER: Tuner,
-  ObjectType.FEATURES_TUNER: FeaturesTuner,
   ObjectType.MAP: Map,
   ObjectType.ERROR_STACK: ErrorStack,
   ObjectType.TREE: Tree,
   ObjectType.TREE_SPACE: TreeSpace,
   ObjectType.TREE_CONFIGURATION: TreeConfiguration,
-  ObjectType.TREE_EVALUATION: TreeEvaluation,
-  ObjectType.TREE_TUNER: TreeTuner
+  ObjectType.DISTRIBUTION_SPACE: DistributionSpace
 })
 
 

@@ -10,6 +10,8 @@
 			CCS_RESULT_ERROR_INVALID_PARAMETER);                   \
 	} while (0)
 
+#define CCS_PARAM_TYPE(p) (((_ccs_parameter_common_data_t *)((p)->data))->type)
+
 struct _ccs_parameter_data_s;
 typedef struct _ccs_parameter_data_s _ccs_parameter_data_t;
 
@@ -50,6 +52,8 @@ struct _ccs_parameter_s {
 
 struct _ccs_parameter_common_data_s {
 	ccs_parameter_type_t type;
+	// a weak erference to a context to prevent multiple inclusion
+	ccs_context_t        ctx;
 	const char          *name;
 	ccs_datum_t          default_value;
 	ccs_interval_t       interval;
@@ -151,6 +155,37 @@ _ccs_deserialize_bin_ccs_parameter_numerical_data(
 		CCS_VALIDATE(_ccs_deserialize_bin_ccs_int(
 			&data->quantization.i, buffer_size, buffer));
 	return CCS_RESULT_SUCCESS;
+}
+
+static inline ccs_result_t
+_ccs_parameter_take_ownership(ccs_parameter_t param, ccs_context_t ctx)
+{
+	ccs_result_t                  err = CCS_RESULT_SUCCESS;
+	_ccs_parameter_common_data_t *data =
+		(_ccs_parameter_common_data_t *)param->data;
+	CCS_OBJ_WRLOCK(param);
+	CCS_REFUTE_ERR_GOTO(
+		err, data->ctx, CCS_RESULT_ERROR_INVALID_PARAMETER, error);
+	data->ctx = ctx;
+error:
+	CCS_OBJ_UNLOCK(param);
+	return err;
+}
+
+static inline ccs_result_t
+_ccs_parameter_release_ownership(ccs_parameter_t param, ccs_context_t ctx)
+{
+	ccs_result_t                  err = CCS_RESULT_SUCCESS;
+	_ccs_parameter_common_data_t *data =
+		(_ccs_parameter_common_data_t *)param->data;
+	CCS_OBJ_WRLOCK(param);
+	CCS_REFUTE_ERR_GOTO(
+		err, data->ctx != ctx, CCS_RESULT_ERROR_INVALID_PARAMETER,
+		error);
+	data->ctx = NULL;
+error:
+	CCS_OBJ_UNLOCK(param);
+	return err;
 }
 
 #endif //_PARAMETER_INTERNAL_H

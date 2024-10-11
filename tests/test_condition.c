@@ -3,54 +3,39 @@
 #include <cconfigspace.h>
 #include <string.h>
 #include <math.h>
-
-ccs_parameter_t
-create_numerical(const char *name)
-{
-	ccs_parameter_t parameter;
-	ccs_result_t    err;
-	err = ccs_create_numerical_parameter(
-		name, CCS_NUMERIC_TYPE_FLOAT, CCSF(-1.0), CCSF(1.0), CCSF(0.0),
-		CCSF(0), &parameter);
-	assert(err == CCS_RESULT_SUCCESS);
-	return parameter;
-}
+#include "test_utils.h"
 
 void
-test_simple()
+test_simple(void)
 {
 	ccs_parameter_t           parameter1, parameter2;
+	ccs_parameter_t           parameters[2];
+	ccs_expression_t          conditions[2] = {NULL, NULL};
 	ccs_configuration_space_t space;
-	ccs_expression_t          expression;
 	ccs_configuration_t       configuration;
 	ccs_datum_t               values[2];
 	ccs_configuration_t       configurations[100];
 	ccs_result_t              err;
 
-	parameter1 = create_numerical("param1");
-	parameter2 = create_numerical("param2");
-	err        = ccs_create_configuration_space("space", &space);
-	assert(err == CCS_RESULT_SUCCESS);
-	err = ccs_configuration_space_add_parameter(space, parameter1, NULL);
-	assert(err == CCS_RESULT_SUCCESS);
-	err = ccs_configuration_space_add_parameter(space, parameter2, NULL);
+	parameters[0] = parameter1 = create_numerical("param1", -1.0, 1.0);
+	parameters[1] = parameter2 = create_numerical("param2", -1.0, 1.0);
+	err                        = ccs_create_binary_expression(
+                CCS_EXPRESSION_TYPE_LESS, ccs_object(parameter1),
+                ccs_float(0.0), &conditions[1]);
 	assert(err == CCS_RESULT_SUCCESS);
 
-	err = ccs_create_binary_expression(
-		CCS_EXPRESSION_TYPE_LESS, ccs_object(parameter1),
-		ccs_float(0.0), &expression);
-	assert(err == CCS_RESULT_SUCCESS);
-
-	err = ccs_configuration_space_set_condition(space, 1, expression);
+	err = ccs_create_configuration_space(
+		"space", 2, parameters, conditions, 0, NULL, NULL, NULL,
+		&space);
 	assert(err == CCS_RESULT_SUCCESS);
 
 	for (int i = 0; i < 100; i++) {
 		ccs_float_t f;
-		ccs_bool_t  check;
-		err = ccs_configuration_space_sample(space, &configuration);
+		err = ccs_configuration_space_sample(
+			space, NULL, NULL, NULL, &configuration);
 		assert(err == CCS_RESULT_SUCCESS);
-		err = ccs_configuration_get_values(
-			configuration, 2, values, NULL);
+		err = ccs_binding_get_values(
+			(ccs_binding_t)configuration, 2, values, NULL);
 		assert(err == CCS_RESULT_SUCCESS);
 		assert(values[0].type == CCS_DATA_TYPE_FLOAT);
 		f = values[0].value.f;
@@ -59,22 +44,18 @@ test_simple()
 			assert(values[1].type == CCS_DATA_TYPE_FLOAT);
 		else
 			assert(values[1].type == CCS_DATA_TYPE_INACTIVE);
-		err = ccs_configuration_space_check_configuration(
-			space, configuration, &check);
-		assert(err == CCS_RESULT_SUCCESS);
-		assert(check);
 		err = ccs_release_object(configuration);
 		assert(err == CCS_RESULT_SUCCESS);
 	}
 
-	err = ccs_configuration_space_samples(space, 100, configurations);
+	err = ccs_configuration_space_samples(
+		space, NULL, NULL, NULL, 100, configurations);
 	assert(err == CCS_RESULT_SUCCESS);
 
 	for (int i = 0; i < 100; i++) {
 		ccs_float_t f;
-		ccs_bool_t  check;
-		err = ccs_configuration_get_values(
-			configurations[i], 2, values, NULL);
+		err = ccs_binding_get_values(
+			(ccs_binding_t)configurations[i], 2, values, NULL);
 		assert(err == CCS_RESULT_SUCCESS);
 		assert(values[0].type == CCS_DATA_TYPE_FLOAT);
 		f = values[0].value.f;
@@ -83,15 +64,11 @@ test_simple()
 			assert(values[1].type == CCS_DATA_TYPE_FLOAT);
 		else
 			assert(values[1].type == CCS_DATA_TYPE_INACTIVE);
-		err = ccs_configuration_space_check_configuration(
-			space, configurations[i], &check);
-		assert(err == CCS_RESULT_SUCCESS);
-		assert(check);
 		err = ccs_release_object(configurations[i]);
 		assert(err == CCS_RESULT_SUCCESS);
 	}
 
-	err = ccs_release_object(expression);
+	err = ccs_release_object(conditions[1]);
 	assert(err == CCS_RESULT_SUCCESS);
 	err = ccs_release_object(parameter1);
 	assert(err == CCS_RESULT_SUCCESS);
@@ -102,52 +79,46 @@ test_simple()
 }
 
 void
-test_transitive()
+test_transitive(void)
 {
 	ccs_parameter_t           parameters[3];
+	ccs_expression_t          conditions[3] = {NULL, NULL, NULL};
 	ccs_configuration_space_t space;
-	ccs_expression_t          expression;
 	ccs_configuration_t       configuration;
 	ccs_datum_t               values[3];
 	ccs_configuration_t       configurations[100];
 	ccs_result_t              err;
 
-	parameters[0] = create_numerical("param1");
-	parameters[1] = create_numerical("param2");
-	parameters[2] = create_numerical("param3");
+	parameters[0] = create_numerical("param1", -1.0, 1.0);
+	parameters[1] = create_numerical("param2", -1.0, 1.0);
+	parameters[2] = create_numerical("param3", -1.0, 1.0);
 
-	err           = ccs_create_configuration_space("space", &space);
+	err           = ccs_create_binary_expression(
+                CCS_EXPRESSION_TYPE_LESS, ccs_object(parameters[1]),
+                ccs_float(0.0), &conditions[2]);
 	assert(err == CCS_RESULT_SUCCESS);
-
-	err = ccs_configuration_space_add_parameters(
-		space, 3, parameters, NULL);
-	assert(err == CCS_RESULT_SUCCESS);
-
-	err = ccs_create_binary_expression(
-		CCS_EXPRESSION_TYPE_LESS, ccs_object(parameters[1]),
-		ccs_float(0.0), &expression);
-	assert(err == CCS_RESULT_SUCCESS);
-	err = ccs_configuration_space_set_condition(space, 2, expression);
-	assert(err == CCS_RESULT_SUCCESS);
-	err = ccs_release_object(expression);
-	assert(err == CCS_RESULT_SUCCESS);
-
 	err = ccs_create_binary_expression(
 		CCS_EXPRESSION_TYPE_LESS, ccs_object(parameters[2]),
-		ccs_float(0.0), &expression);
+		ccs_float(0.0), &conditions[0]);
 	assert(err == CCS_RESULT_SUCCESS);
-	err = ccs_configuration_space_set_condition(space, 0, expression);
+
+	err = ccs_create_configuration_space(
+		"space", 3, parameters, conditions, 0, NULL, NULL, NULL,
+		&space);
 	assert(err == CCS_RESULT_SUCCESS);
-	err = ccs_release_object(expression);
+
+	err = ccs_release_object(conditions[0]);
+	assert(err == CCS_RESULT_SUCCESS);
+	err = ccs_release_object(conditions[2]);
 	assert(err == CCS_RESULT_SUCCESS);
 
 	for (int i = 0; i < 100; i++) {
 		ccs_float_t f;
-		ccs_bool_t  check;
-		err = ccs_configuration_space_sample(space, &configuration);
+		err = ccs_configuration_space_sample(
+			space, NULL, NULL, NULL, &configuration);
 		assert(err == CCS_RESULT_SUCCESS);
-		err = ccs_configuration_get_values(
-			configuration, 3, values, NULL);
+		err = ccs_binding_get_values(
+			(ccs_binding_t)configuration, 3, values, NULL);
 		assert(err == CCS_RESULT_SUCCESS);
 		assert(values[1].type == CCS_DATA_TYPE_FLOAT);
 		f = values[1].value.f;
@@ -167,22 +138,18 @@ test_transitive()
 			assert(values[2].type == CCS_DATA_TYPE_INACTIVE);
 			assert(values[0].type == CCS_DATA_TYPE_INACTIVE);
 		}
-		err = ccs_configuration_space_check_configuration(
-			space, configuration, &check);
-		assert(err == CCS_RESULT_SUCCESS);
-		assert(check);
 		err = ccs_release_object(configuration);
 		assert(err == CCS_RESULT_SUCCESS);
 	}
 
-	err = ccs_configuration_space_samples(space, 100, configurations);
+	err = ccs_configuration_space_samples(
+		space, NULL, NULL, NULL, 100, configurations);
 	assert(err == CCS_RESULT_SUCCESS);
 
 	for (int i = 0; i < 100; i++) {
 		ccs_float_t f;
-		ccs_bool_t  check;
-		err = ccs_configuration_get_values(
-			configurations[i], 3, values, NULL);
+		err = ccs_binding_get_values(
+			(ccs_binding_t)configurations[i], 3, values, NULL);
 		assert(err == CCS_RESULT_SUCCESS);
 		assert(values[1].type == CCS_DATA_TYPE_FLOAT);
 		f = values[1].value.f;
@@ -202,10 +169,6 @@ test_transitive()
 			assert(values[2].type == CCS_DATA_TYPE_INACTIVE);
 			assert(values[0].type == CCS_DATA_TYPE_INACTIVE);
 		}
-		err = ccs_configuration_space_check_configuration(
-			space, configurations[i], &check);
-		assert(err == CCS_RESULT_SUCCESS);
-		assert(check);
 		err = ccs_release_object(configurations[i]);
 		assert(err == CCS_RESULT_SUCCESS);
 	}
@@ -219,7 +182,7 @@ test_transitive()
 }
 
 int
-main()
+main(void)
 {
 	ccs_init();
 	test_simple();

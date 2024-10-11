@@ -1,30 +1,16 @@
 #include "cconfigspace_internal.h"
 #include "context_internal.h"
 
-#define CCS_CHECK_CONTEXT(c)                                                   \
-	CCS_REFUTE_MSG(                                                        \
-		CCS_UNLIKELY(!(c) || !(c)->data),                              \
-		CCS_RESULT_ERROR_INVALID_OBJECT,                               \
-		"Invalid CCS context '%s' == %p supplied", #c, c)
-
 ccs_result_t
 ccs_context_get_parameter_index(
 	ccs_context_t   context,
 	ccs_parameter_t parameter,
+	ccs_bool_t     *found_ret,
 	size_t         *index_ret)
 {
 	CCS_CHECK_CONTEXT(context);
 	CCS_VALIDATE(_ccs_context_get_parameter_index(
-		context, parameter, index_ret));
-	return CCS_RESULT_SUCCESS;
-}
-
-ccs_result_t
-ccs_context_get_num_parameters(ccs_context_t context, size_t *num_parameters_ret)
-{
-	CCS_CHECK_CONTEXT(context);
-	CCS_VALIDATE(
-		_ccs_context_get_num_parameters(context, num_parameters_ret));
+		context, parameter, found_ret, index_ret));
 	return CCS_RESULT_SUCCESS;
 }
 
@@ -55,11 +41,12 @@ ccs_result_t
 ccs_context_get_parameter_index_by_name(
 	ccs_context_t context,
 	const char   *name,
+	ccs_bool_t   *found_ret,
 	size_t       *index_ret)
 {
 	CCS_CHECK_CONTEXT(context);
 	CCS_VALIDATE(_ccs_context_get_parameter_index_by_name(
-		context, name, index_ret));
+		context, name, found_ret, index_ret));
 	return CCS_RESULT_SUCCESS;
 }
 
@@ -81,11 +68,12 @@ ccs_context_get_parameter_indexes(
 	ccs_context_t    context,
 	size_t           num_parameters,
 	ccs_parameter_t *parameters,
+	ccs_bool_t      *found,
 	size_t          *indexes)
 {
 	CCS_CHECK_CONTEXT(context);
 	CCS_VALIDATE(_ccs_context_get_parameter_indexes(
-		context, num_parameters, parameters, indexes));
+		context, num_parameters, parameters, found, indexes));
 	return CCS_RESULT_SUCCESS;
 }
 

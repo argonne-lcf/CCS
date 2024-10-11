@@ -17,35 +17,32 @@ create_numerical(const char *name, double lower, double upper)
 }
 
 void
-create_problem(ccs_configuration_space_t *cs, ccs_objective_space_t *os)
+create_problem(ccs_objective_space_t *os)
 {
 	ccs_parameter_t           parameter1, parameter2;
+	ccs_parameter_t           parameters[2];
 	ccs_parameter_t           parameter3;
 	ccs_configuration_space_t cspace;
 	ccs_objective_space_t     ospace;
 	ccs_expression_t          expression;
+	ccs_objective_type_t      otype;
 	ccs_result_t              err;
 
-	parameter1 = create_numerical("x", -5.0, 5.0);
-	parameter2 = create_numerical("y", -5.0, 5.0);
+	parameters[0] = parameter1 = create_numerical("x", -5.0, 5.0);
+	parameters[1] = parameter2 = create_numerical("y", -5.0, 5.0);
 
-	err        = ccs_create_configuration_space("2dplane", &cspace);
-	assert(err == CCS_RESULT_SUCCESS);
-	err = ccs_configuration_space_add_parameter(cspace, parameter1, NULL);
-	assert(err == CCS_RESULT_SUCCESS);
-	err = ccs_configuration_space_add_parameter(cspace, parameter2, NULL);
+	err                        = ccs_create_configuration_space(
+                "2dplane", 2, parameters, NULL, 0, NULL, NULL, NULL, &cspace);
 	assert(err == CCS_RESULT_SUCCESS);
 
 	parameter3 = create_numerical("z", -CCS_INFINITY, CCS_INFINITY);
 	err        = ccs_create_variable(parameter3, &expression);
 	assert(err == CCS_RESULT_SUCCESS);
+	otype = CCS_OBJECTIVE_TYPE_MINIMIZE;
 
-	err = ccs_create_objective_space("height", &ospace);
-	assert(err == CCS_RESULT_SUCCESS);
-	err = ccs_objective_space_add_parameter(ospace, parameter3);
-	assert(err == CCS_RESULT_SUCCESS);
-	err = ccs_objective_space_add_objective(
-		ospace, expression, CCS_OBJECTIVE_TYPE_MINIMIZE);
+	err   = ccs_create_objective_space(
+                "height", (ccs_search_space_t)cspace, 1, &parameter3, 1,
+                &expression, &otype, &ospace);
 	assert(err == CCS_RESULT_SUCCESS);
 
 	err = ccs_release_object(parameter1);
@@ -56,8 +53,9 @@ create_problem(ccs_configuration_space_t *cs, ccs_objective_space_t *os)
 	assert(err == CCS_RESULT_SUCCESS);
 	err = ccs_release_object(expression);
 	assert(err == CCS_RESULT_SUCCESS);
+	err = ccs_release_object(cspace);
+	assert(err == CCS_RESULT_SUCCESS);
 
-	*cs = cspace;
 	*os = ospace;
 }
 
@@ -67,13 +65,13 @@ test_tuner(ccs_tuner_t tuner, ccs_objective_space_t ospace)
 	ccs_result_t err;
 
 	for (size_t i = 0; i < 100; i++) {
-		ccs_datum_t         values[2], res;
-		ccs_configuration_t configuration;
-		ccs_evaluation_t    evaluation;
-		err = ccs_tuner_ask(tuner, 1, &configuration, NULL);
+		ccs_datum_t                values[2], res;
+		ccs_search_configuration_t configuration;
+		ccs_evaluation_t           evaluation;
+		err = ccs_tuner_ask(tuner, NULL, 1, &configuration, NULL);
 		assert(err == CCS_RESULT_SUCCESS);
-		err = ccs_configuration_get_values(
-			configuration, 2, values, NULL);
+		err = ccs_binding_get_values(
+			(ccs_binding_t)configuration, 2, values, NULL);
 		assert(err == CCS_RESULT_SUCCESS);
 		res = ccs_float(
 			(values[0].value.f - 1) * (values[0].value.f - 1) +
@@ -92,7 +90,7 @@ test_tuner(ccs_tuner_t tuner, ccs_objective_space_t ospace)
 	size_t           count;
 	ccs_evaluation_t history[100];
 	ccs_datum_t      min = ccs_float(INFINITY);
-	err = ccs_tuner_get_history(tuner, 100, history, &count);
+	err = ccs_tuner_get_history(tuner, NULL, 100, history, &count);
 	assert(err == CCS_RESULT_SUCCESS);
 	assert(count == 100);
 
@@ -106,21 +104,20 @@ test_tuner(ccs_tuner_t tuner, ccs_objective_space_t ospace)
 
 	ccs_evaluation_t evaluation;
 	ccs_datum_t      res;
-	err = ccs_tuner_get_optima(tuner, 1, &evaluation, NULL);
+	err = ccs_tuner_get_optima(tuner, NULL, 1, &evaluation, NULL);
 	assert(err == CCS_RESULT_SUCCESS);
 	err = ccs_evaluation_get_objective_value(evaluation, 0, &res);
 	assert(res.value.f == min.value.f);
 }
 
 void
-test()
+test(void)
 {
-	ccs_tuner_t               t;
-	ccs_configuration_space_t cs;
-	ccs_objective_space_t     os;
-	ccs_result_t              err;
+	ccs_tuner_t           t;
+	ccs_objective_space_t os;
+	ccs_result_t          err;
 
-	create_problem(&cs, &os);
+	create_problem(&os);
 
 	PyObject *pName, *pModule, *pFunc;
 	PyObject *pArgs, *pValue, *pHandle, *pAddr;
@@ -155,11 +152,9 @@ test()
 
 	if (pModule != NULL) {
 		pFunc  = PyObject_GetAttrString(pModule, "create_test_tuner");
-		pArgs  = PyTuple_New(2);
-		pValue = PyLong_FromVoidPtr(cs);
-		PyTuple_SetItem(pArgs, 0, pValue);
+		pArgs  = PyTuple_New(1);
 		pValue = PyLong_FromVoidPtr(os);
-		PyTuple_SetItem(pArgs, 1, pValue);
+		PyTuple_SetItem(pArgs, 0, pValue);
 		pValue = PyObject_CallObject(pFunc, pArgs);
 		Py_DECREF(pArgs);
 		Py_DECREF(pFunc);
@@ -181,8 +176,6 @@ test()
 	}
 	err = ccs_release_object(os);
 	assert(err == CCS_RESULT_SUCCESS);
-	err = ccs_release_object(cs);
-	assert(err == CCS_RESULT_SUCCESS);
 	Py_Finalize();
 	return;
 #if PY_VERSION_HEX >= 0x030b0000
@@ -193,7 +186,7 @@ exception:
 }
 
 int
-main()
+main(void)
 {
 	ccs_init();
 	test();

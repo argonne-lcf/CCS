@@ -37,7 +37,7 @@ compare_parameter(ccs_parameter_t parameter)
 }
 
 void
-test_create()
+test_create(void)
 {
 	ccs_parameter_t parameter;
 	ccs_result_t    err;
@@ -80,7 +80,7 @@ test_create()
 }
 
 void
-test_string_memoization()
+test_string_memoization(void)
 {
 	ccs_parameter_t parameter;
 	ccs_result_t    err;
@@ -125,7 +125,7 @@ test_string_memoization()
 }
 
 int
-main()
+main(void)
 {
 	ccs_init();
 	test_create();

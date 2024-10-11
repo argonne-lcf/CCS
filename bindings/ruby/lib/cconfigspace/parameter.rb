@@ -14,7 +14,7 @@ module CCS
     :CCS_PARAMETER_TYPE_DISCRETE,
     :CCS_PARAMETER_TYPE_STRING
   ]
-  class MemoryPointer
+  module MemoryAccessor
     def read_ccs_parameter_type_t
       ParameterType.from_native(read_int32, nil)
     end
@@ -32,7 +32,9 @@ module CCS
   attach_function :ccs_parameter_samples, [:ccs_parameter_t, :ccs_distribution_t, :ccs_rng_t, :size_t, :pointer], :ccs_result_t
 
   class Parameter < Object
-    add_property :type, :ccs_parameter_type_t, :ccs_parameter_get_type, memoize:true
+    add_property :type, :ccs_parameter_type_t, :ccs_parameter_get_type, memoize: true
+    add_property :default_value, :ccs_datum_t, :ccs_parameter_get_default_value, memoize: true
+    add_handle_property :default_distribution, :ccs_distribution_t, :ccs_parameter_get_default_distribution, memoize: true
 
     def self.default_name
       "param%03d" % CCS.get_id
@@ -64,23 +66,6 @@ module CCS
         r = ptr.read_pointer.read_string
         r = r.sub(/^:/, "").to_sym if r.match(/^:/)
         r
-      end
-    end
-
-    def default_value
-      @default_value ||= begin
-        ptr = MemoryPointer::new(:ccs_datum_t)
-        CCS.error_check CCS.ccs_parameter_get_default_value(@handle, ptr)
-        d = Datum::new(ptr)
-        d.value
-      end
-    end
-
-    def default_distribution
-      @default_distribution ||= begin
-        ptr = MemoryPointer::new(:ccs_distribution_t)
-        CCS.error_check CCS.ccs_parameter_get_default_distribution(@handle, ptr)
-        Object::from_handle(ptr.read_pointer)
       end
     end
 
@@ -218,6 +203,8 @@ module CCS
   attach_function :ccs_create_categorical_parameter, [:string, :size_t, :pointer, :size_t, :pointer],  :ccs_result_t
   attach_function :ccs_categorical_parameter_get_values, [:ccs_parameter_t, :size_t, :pointer, :pointer], :ccs_result_t
   class CategoricalParameter < Parameter
+    add_array_property :values, :ccs_datum_t, :ccs_categorical_parameter_get_values, memoize: true
+
     def initialize(handle = nil, retain: false, auto_release: true,
                    name: Parameter.default_name, values: [], default_index: 0)
       if handle
@@ -235,16 +222,6 @@ module CCS
       end
     end
 
-    def values
-      @values ||= begin
-        ptr = MemoryPointer::new(:size_t)
-        CCS.error_check CCS.ccs_categorical_parameter_get_values(@handle, 0, nil, ptr)
-        count = ptr.read_size_t
-        ptr = MemoryPointer::new(:ccs_datum_t, count)
-        CCS.error_check CCS.ccs_categorical_parameter_get_values(@handle, count, ptr, nil)
-        count.times.collect { |i| Datum::new(ptr[i]).value }
-      end
-    end
   end
 
   Parameter::Categorical = CategoricalParameter
@@ -253,6 +230,8 @@ module CCS
   attach_function :ccs_ordinal_parameter_compare_values, [:ccs_parameter_t, :ccs_datum_t, :ccs_datum_t, :pointer], :ccs_result_t
   attach_function :ccs_ordinal_parameter_get_values, [:ccs_parameter_t, :size_t, :pointer, :pointer], :ccs_result_t
   class OrdinalParameter < Parameter
+    add_array_property :values, :ccs_datum_t, :ccs_ordinal_parameter_get_values, memoize: true
+
     def initialize(handle = nil, retain: false, auto_release: true,
                    name: Parameter.default_name, values: [], default_index: 0)
       if handle
@@ -278,16 +257,6 @@ module CCS
       ptr.read_ccs_int_t
     end
 
-    def values
-      @values ||= begin
-        ptr = MemoryPointer::new(:size_t)
-        CCS.error_check CCS.ccs_ordinal_parameter_get_values(@handle, 0, nil, ptr)
-        count = ptr.read_size_t
-        ptr = MemoryPointer::new(:ccs_datum_t, count)
-        CCS.error_check CCS.ccs_ordinal_parameter_get_values(@handle, count, ptr, nil)
-        count.times.collect { |i| Datum::new(ptr[i]).value }
-      end
-    end
   end
 
   Parameter::Ordinal = OrdinalParameter
@@ -295,6 +264,8 @@ module CCS
   attach_function :ccs_create_discrete_parameter, [:string, :size_t, :pointer, :size_t, :pointer],  :ccs_result_t
   attach_function :ccs_discrete_parameter_get_values, [:ccs_parameter_t, :size_t, :pointer, :pointer], :ccs_result_t
   class DiscreteParameter < Parameter
+    add_array_property :values, :ccs_datum_t, :ccs_discrete_parameter_get_values, memoize: true
+
     def initialize(handle = nil, retain: false, auto_release: true,
                    name: Parameter.default_name, values: [], default_index: 0)
       if handle
@@ -312,16 +283,6 @@ module CCS
       end
     end
 
-    def values
-      @values ||= begin
-        ptr = MemoryPointer::new(:size_t)
-        CCS.error_check CCS.ccs_discrete_parameter_get_values(@handle, 0, nil, ptr)
-        count = ptr.read_size_t
-        ptr = MemoryPointer::new(:ccs_datum_t, count)
-        CCS.error_check CCS.ccs_discrete_parameter_get_values(@handle, count, ptr, nil)
-        count.times.collect { |i| Datum::new(ptr[i]).value }
-      end
-    end
   end
 
   Parameter::Discrete = DiscreteParameter

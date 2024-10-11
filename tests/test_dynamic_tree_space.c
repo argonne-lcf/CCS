@@ -35,28 +35,51 @@ my_tree_get_child(
 	return CCS_RESULT_SUCCESS;
 }
 
-void
-test_dynamic_tree_space()
-{
-	ccs_result_t                    err;
-	ccs_bool_t                      is_valid;
-	ccs_tree_t                      root, tree;
-	ccs_tree_space_t                tree_space;
-	ccs_tree_space_type_t           tree_type;
-	ccs_rng_t                       rng, rng2;
-	size_t                          position_size, *position, depths[5];
-	ccs_datum_t                     value, *values;
-	ccs_float_t                     areas[5] = {1.0, 4.0, 2.0, 1.0, 0.0};
-	ccs_float_t                     inv_sum;
-	const char                     *name;
-	ccs_tree_configuration_t        config, configs[NUM_SAMPLES];
+ccs_dynamic_tree_space_vector_t vector = {
+	&my_tree_del, &my_tree_get_child, NULL, NULL};
 
-	ccs_dynamic_tree_space_vector_t vector = {
-		&my_tree_del, &my_tree_get_child, NULL, NULL};
+ccs_result_t
+deserialize_vector_callback(
+	ccs_object_type_t type,
+	const char       *name,
+	void             *callback_user_data,
+	void            **vector_ret,
+	void            **data_ret)
+{
+	(void)name;
+	(void)callback_user_data;
+	switch (type) {
+	case CCS_OBJECT_TYPE_TREE_SPACE:
+		*vector_ret = (void *)&vector;
+		*data_ret   = NULL;
+		break;
+	default:
+		return CCS_RESULT_ERROR_INVALID_TYPE;
+	}
+	return CCS_RESULT_SUCCESS;
+}
+
+void
+test_dynamic_tree_space(void)
+{
+	ccs_result_t             err;
+	ccs_tree_t               root, tree;
+	ccs_tree_space_t         tree_space;
+	ccs_tree_space_type_t    tree_type;
+	ccs_rng_t                rng, rng2;
+	size_t                   position_size, *position, depths[5];
+	ccs_datum_t              value, *values;
+	ccs_float_t              areas[5] = {1.0, 4.0, 2.0, 1.0, 0.0};
+	ccs_float_t              inv_sum;
+	const char              *name;
+	ccs_tree_configuration_t config, configs[NUM_SAMPLES];
+
 	err = ccs_create_tree(4, ccs_int(4 * 100), &root);
 	assert(err == CCS_RESULT_SUCCESS);
+	err = ccs_create_rng(&rng);
+	assert(err == CCS_RESULT_SUCCESS);
 	err = ccs_create_dynamic_tree_space(
-		"space", root, &vector, NULL, &tree_space);
+		"space", root, NULL, rng, &vector, NULL, &tree_space);
 	assert(err == CCS_RESULT_SUCCESS);
 
 	err = ccs_tree_space_get_type(tree_space, &tree_type);
@@ -66,11 +89,6 @@ test_dynamic_tree_space()
 	err = ccs_tree_space_get_name(tree_space, &name);
 	assert(err == CCS_RESULT_SUCCESS);
 	assert(!strcmp(name, "space"));
-
-	err = ccs_create_rng(&rng);
-	assert(err == CCS_RESULT_SUCCESS);
-	err = ccs_tree_space_set_rng(tree_space, rng);
-	assert(err == CCS_RESULT_SUCCESS);
 
 	err = ccs_tree_space_get_rng(tree_space, &rng2);
 	assert(err == CCS_RESULT_SUCCESS);
@@ -89,16 +107,18 @@ test_dynamic_tree_space()
 	assert(err == CCS_RESULT_SUCCESS);
 	assert(values[0].value.i == 400 + 0);
 	free(values);
-	err = ccs_tree_space_check_position(tree_space, 0, NULL, &is_valid);
+
+	err = ccs_create_tree_configuration(tree_space, NULL, 0, NULL, &config);
 	assert(err == CCS_RESULT_SUCCESS);
-	assert(is_valid == CCS_TRUE);
+	ccs_release_object(config);
 
 	position    = (size_t *)malloc(2 * sizeof(size_t));
 	position[0] = 1;
 	position[0] = 4;
-	err = ccs_tree_space_check_position(tree_space, 2, position, &is_valid);
-	assert(err == CCS_RESULT_SUCCESS);
-	assert(is_valid == CCS_FALSE);
+
+	err         = ccs_create_tree_configuration(
+                tree_space, NULL, 2, position, &config);
+	assert(err == CCS_RESULT_ERROR_INVALID_VALUE);
 
 	position[0] = 1;
 	position[1] = 1;
@@ -119,10 +139,7 @@ test_dynamic_tree_space()
 	free(values);
 	free(position);
 
-	err = ccs_tree_space_sample(tree_space, &config);
-	assert(err == CCS_RESULT_SUCCESS);
-
-	err = ccs_tree_space_samples(tree_space, NUM_SAMPLES, configs);
+	err = ccs_tree_space_sample(tree_space, NULL, NULL, &config);
 	assert(err == CCS_RESULT_SUCCESS);
 
 	char  *buff;
@@ -143,6 +160,10 @@ test_dynamic_tree_space()
 		CCS_SERIALIZE_OPTION_END);
 	assert(err == CCS_RESULT_SUCCESS);
 
+	err = ccs_tree_space_samples(
+		tree_space, NULL, NULL, NUM_SAMPLES, configs);
+	assert(err == CCS_RESULT_SUCCESS);
+
 	inv_sum = 0;
 	for (size_t i = 0; i < 5; i++) {
 		depths[i] = 0;
@@ -150,10 +171,6 @@ test_dynamic_tree_space()
 	}
 	inv_sum = 1.0 / inv_sum;
 	for (size_t i = 0; i < NUM_SAMPLES; i++) {
-		err = ccs_tree_space_check_configuration(
-			tree_space, configs[i], &is_valid);
-		assert(err == CCS_RESULT_SUCCESS);
-		assert(is_valid == CCS_TRUE);
 		err = ccs_tree_configuration_get_position(
 			configs[i], 0, NULL, &position_size);
 		assert(err == CCS_RESULT_SUCCESS);
@@ -178,12 +195,14 @@ test_dynamic_tree_space()
 	err = ccs_object_deserialize(
 		(ccs_object_t *)&tree_space, CCS_SERIALIZE_FORMAT_BINARY,
 		CCS_SERIALIZE_OPERATION_MEMORY, buff_size, buff,
-		CCS_DESERIALIZE_OPTION_VECTOR, &vector,
+		CCS_DESERIALIZE_OPTION_VECTOR_CALLBACK,
+		&deserialize_vector_callback, (void *)NULL,
 		CCS_DESERIALIZE_OPTION_END);
 	assert(err == CCS_RESULT_SUCCESS);
 	free(buff);
 
-	err = ccs_tree_space_samples(tree_space, NUM_SAMPLES, configs);
+	err = ccs_tree_space_samples(
+		tree_space, NULL, NULL, NUM_SAMPLES, configs);
 	assert(err == CCS_RESULT_SUCCESS);
 
 	inv_sum = 0;
@@ -193,10 +212,6 @@ test_dynamic_tree_space()
 	}
 	inv_sum = 1.0 / inv_sum;
 	for (size_t i = 0; i < NUM_SAMPLES; i++) {
-		err = ccs_tree_space_check_configuration(
-			tree_space, configs[i], &is_valid);
-		assert(err == CCS_RESULT_SUCCESS);
-		assert(is_valid == CCS_TRUE);
 		err = ccs_tree_configuration_get_position(
 			configs[i], 0, NULL, &position_size);
 		assert(err == CCS_RESULT_SUCCESS);
@@ -215,7 +230,7 @@ test_dynamic_tree_space()
 }
 
 int
-main()
+main(void)
 {
 	ccs_init();
 	test_dynamic_tree_space();

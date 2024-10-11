@@ -2,54 +2,45 @@ require 'minitest/autorun'
 require_relative '../lib/cconfigspace'
 
 class CConfigSpaceTestFeaturesTuner < Minitest::Test
-  def setup
-    CCS.init
-  end
-
   def create_tuning_problem
-    cs = CCS::ConfigurationSpace::new(name: "cspace")
+    f1 = CCS::CategoricalParameter::new(values: [true, false])
+    fs = CCS::FeatureSpace::new(name: "fspace", parameters: [f1])
     h1 = CCS::NumericalParameter::Float.new(lower: -5.0, upper: 5.0)
     h2 = CCS::NumericalParameter::Float.new(lower: -5.0, upper: 5.0)
     h3 = CCS::NumericalParameter::Float.new(lower: -5.0, upper: 5.0)
-    cs.add_parameters [h1, h2, h3]
-    os = CCS::ObjectiveSpace::new(name: "ospace")
+    cs = CCS::ConfigurationSpace::new(name: "cspace", feature_space: fs, parameters: [h1, h2, h3])
     v1 = CCS::NumericalParameter::Float.new(lower: -Float::INFINITY, upper: Float::INFINITY)
     v2 = CCS::NumericalParameter::Float.new(lower: -Float::INFINITY, upper: Float::INFINITY)
-    os.add_parameters [v1, v2]
     e1 = CCS::Expression::Variable::new(parameter: v1)
     e2 = CCS::Expression::Variable::new(parameter: v2)
-    os.add_objectives( [e1, e2] )
-
-    fs = CCS::FeaturesSpace::new(name: "fspace")
-    f1 = CCS::CategoricalParameter::new(values: [true, false])
-    fs.add_parameter f1
-    [cs, fs, os]
+    os = CCS::ObjectiveSpace::new(name: "ospace", search_space: cs, parameters: [v1, v2], objectives: [e1, e2])
+    [fs, os]
   end
 
   def test_create_random
-    cs, fs, os = create_tuning_problem
-    t = CCS::RandomFeaturesTuner::new(name: "tuner", configuration_space: cs, features_space: fs, objective_space: os)
+    fs, os = create_tuning_problem
+    t = CCS::RandomTuner::new(name: "tuner", objective_space: os)
     t2 = CCS::Object::from_handle(t)
     assert_equal( t.class, t2.class)
     assert_equal( "tuner", t.name )
-    assert_equal( :CCS_FEATURES_TUNER_TYPE_RANDOM, t.type )
+    assert_equal( :CCS_TUNER_TYPE_RANDOM, t.type )
     func = lambda { |(x, y, z)|
       [(x-2)**2, Math.sin(z+y)]
     }
-    features_on = CCS::Features.new(features_space: fs, values: [true])
-    features_off = CCS::Features.new(features_space: fs, values: [false])
-    evals = t.ask(features_on, 50).collect { |c|
-      CCS::FeaturesEvaluation::new(objective_space: os, configuration: c, features: features_on, values: func[c.values])
+    features_on = CCS::Features.new(feature_space: fs, values: [true])
+    features_off = CCS::Features.new(feature_space: fs, values: [false])
+    evals = t.ask(50, features: features_on).collect { |c|
+      CCS::Evaluation::new(objective_space: os, configuration: c, values: func[c.values])
     }
     t.tell evals
-    evals = t.ask(features_off, 50).collect { |c|
-      CCS::FeaturesEvaluation::new(objective_space: os, configuration: c, features: features_off, values: func[c.values])
+    evals = t.ask(50, features: features_off).collect { |c|
+      CCS::Evaluation::new(objective_space: os, configuration: c, values: func[c.values])
     }
     t.tell evals
     hist = t.history
     assert_equal(100, hist.size)
-    evals = t.ask(features_on, 100).collect { |c|
-      CCS::FeaturesEvaluation::new(objective_space: os, configuration: c, features: features_on, values: func[c.values])
+    evals = t.ask(100, features: features_on).collect { |c|
+      CCS::Evaluation::new(objective_space: os, configuration: c, values: func[c.values])
     }
     t.tell evals
     assert_equal(200, t.history_size)
@@ -58,7 +49,7 @@ class CConfigSpaceTestFeaturesTuner < Minitest::Test
     [features_on, features_off].each { |features|
       objs = t.optima(features: features).collect(&:objective_values).sort
       objs.collect { |(_, v)| v }.each_cons(2) { |v1, v2| assert( (v1 <=> v2) > 0 ) }
-      assert( t.optima(features: features).collect(&:configuration).include?(t.suggest(features)))
+      assert( t.optima(features: features).collect(&:configuration).include?(t.suggest(features: features)))
     }
 
     buff = t.serialize
@@ -80,8 +71,8 @@ class CConfigSpaceTestFeaturesTuner < Minitest::Test
     del = lambda { |tuner| nil }
     ask = lambda { |tuner, features, count|
       if count
-        cs = tuner.configuration_space
-        [cs.samples(count), count]
+        cs = tuner.search_space
+        [cs.samples(count, features: features), count]
       else
         [nil, 1]
       end
@@ -130,29 +121,35 @@ class CConfigSpaceTestFeaturesTuner < Minitest::Test
         optis.sample.configuration
       end
     }
-    cs, fs, os = create_tuning_problem
-    t = CCS::UserDefinedFeaturesTuner::new(name: "tuner", configuration_space: cs, features_space: fs, objective_space: os, del: del, ask: ask, tell: tell, get_optima: get_optima, get_history: get_history, suggest: suggest, tuner_data: TunerData.new)
+    get_vector_data = lambda { |otype, name|
+      assert_equal(:CCS_OBJECT_TYPE_TUNER, otype)
+      assert_equal("tuner", name)
+      [CCS::UserDefinedTuner.get_vector(del: del, ask: ask, tell: tell, get_optima: get_optima, get_history: get_history, suggest: suggest), TunerData.new]
+    }
+
+    fs, os = create_tuning_problem
+    t = CCS::UserDefinedTuner::new(name: "tuner", objective_space: os, del: del, ask: ask, tell: tell, get_optima: get_optima, get_history: get_history, suggest: suggest, tuner_data: TunerData.new)
     t2 = CCS::Object::from_handle(t)
     assert_equal( t.class, t2.class)
     assert_equal( "tuner", t.name )
-    assert_equal( :CCS_FEATURES_TUNER_TYPE_USER_DEFINED, t.type )
+    assert_equal( :CCS_TUNER_TYPE_USER_DEFINED, t.type )
     func = lambda { |(x, y, z)|
       [(x-2)**2, Math.sin(z+y)]
     }
-    features_on = CCS::Features.new(features_space: fs, values: [true])
-    features_off = CCS::Features.new(features_space: fs, values: [false])
-    evals = t.ask(features_on, 50).collect { |c|
-      CCS::FeaturesEvaluation::new(objective_space: os, configuration: c, features: features_on, values: func[c.values])
+    features_on = CCS::Features.new(feature_space: fs, values: [true])
+    features_off = CCS::Features.new(feature_space: fs, values: [false])
+    evals = t.ask(50, features: features_on).collect { |c|
+      CCS::Evaluation::new(objective_space: os, configuration: c, values: func[c.values])
     }
     t.tell evals
-    evals = t.ask(features_off, 50).collect { |c|
-      CCS::FeaturesEvaluation::new(objective_space: os, configuration: c, features: features_off, values: func[c.values])
+    evals = t.ask(50, features: features_off).collect { |c|
+      CCS::Evaluation::new(objective_space: os, configuration: c, values: func[c.values])
     }
     t.tell evals
     hist = t.history
     assert_equal(100, hist.size)
-    evals = t.ask(features_on, 100).collect { |c|
-      CCS::FeaturesEvaluation::new(objective_space: os, configuration: c, features: features_on, values: func[c.values])
+    evals = t.ask(100, features: features_on).collect { |c|
+      CCS::Evaluation::new(objective_space: os, configuration: c, values: func[c.values])
     }
     t.tell evals
     assert_equal(200, t.history_size)
@@ -161,11 +158,11 @@ class CConfigSpaceTestFeaturesTuner < Minitest::Test
     [features_on, features_off].each { |features|
       objs = t.optima(features: features).collect(&:objective_values).sort
       objs.collect { |(_, v)| v }.each_cons(2) { |v1, v2| assert( (v1 <=> v2) > 0 ) }
-      assert( t.optima(features: features).collect(&:configuration).include?(t.suggest(features)))
+      assert( t.optima(features: features).collect(&:configuration).include?(t.suggest(features: features)))
     }
 
     buff = t.serialize
-    t_copy = CCS::UserDefinedFeaturesTuner::deserialize(buffer: buff, del: del, ask: ask, tell: tell, get_optima: get_optima, get_history: get_history, suggest: suggest, tuner_data: TunerData.new)
+    t_copy = CCS::deserialize(buffer: buff, vector_callback: get_vector_data)
     hist = t_copy.history
     assert_equal(200, hist.size)
     assert_equal(t.num_optima, t_copy.num_optima)

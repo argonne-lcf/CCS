@@ -11,10 +11,11 @@ struct _ccs_tuner_ops_s {
 	_ccs_object_ops_t obj_ops;
 
 	ccs_result_t (*ask)(
-		ccs_tuner_t          tuner,
-		size_t               num_configurations,
-		ccs_configuration_t *configurations,
-		size_t              *num_configurations_ret);
+		ccs_tuner_t                 tuner,
+		ccs_features_t              features,
+		size_t                      num_configurations,
+		ccs_search_configuration_t *configurations,
+		size_t                     *num_configurations_ret);
 
 	ccs_result_t (*tell)(
 		ccs_tuner_t       tuner,
@@ -23,19 +24,22 @@ struct _ccs_tuner_ops_s {
 
 	ccs_result_t (*get_optima)(
 		ccs_tuner_t       tuner,
+		ccs_features_t    features,
 		size_t            num_evaluations,
 		ccs_evaluation_t *evaluations,
 		size_t           *num_evaluations_ret);
 
 	ccs_result_t (*get_history)(
 		ccs_tuner_t       tuner,
+		ccs_features_t    features,
 		size_t            num_evaluations,
 		ccs_evaluation_t *evaluations,
 		size_t           *num_evaluations_ret);
 
 	ccs_result_t (*suggest)(
-		ccs_tuner_t          tuner,
-		ccs_configuration_t *configuration);
+		ccs_tuner_t                 tuner,
+		ccs_features_t              features,
+		ccs_search_configuration_t *configuration);
 };
 typedef struct _ccs_tuner_ops_s _ccs_tuner_ops_t;
 
@@ -45,10 +49,11 @@ struct _ccs_tuner_s {
 };
 
 struct _ccs_tuner_common_data_s {
-	ccs_tuner_type_t          type;
-	const char               *name;
-	ccs_configuration_space_t configuration_space;
-	ccs_objective_space_t     objective_space;
+	ccs_tuner_type_t      type;
+	const char           *name;
+	ccs_search_space_t    search_space;
+	ccs_objective_space_t objective_space;
+	ccs_feature_space_t   feature_space;
 };
 typedef struct _ccs_tuner_common_data_s _ccs_tuner_common_data_t;
 
@@ -60,10 +65,7 @@ _ccs_serialize_bin_size_ccs_tuner_common_data(
 {
 	*cum_size += _ccs_serialize_bin_size_ccs_tuner_type(data->type);
 	*cum_size += _ccs_serialize_bin_size_string(data->name);
-	CCS_VALIDATE(data->configuration_space->obj.ops->serialize_size(
-		data->configuration_space, CCS_SERIALIZE_FORMAT_BINARY,
-		cum_size, opts));
-	CCS_VALIDATE(data->objective_space->obj.ops->serialize_size(
+	CCS_VALIDATE(_ccs_object_serialize_size_with_opts(
 		data->objective_space, CCS_SERIALIZE_FORMAT_BINARY, cum_size,
 		opts));
 	return CCS_RESULT_SUCCESS;
@@ -80,10 +82,7 @@ _ccs_serialize_bin_ccs_tuner_common_data(
 		data->type, buffer_size, buffer));
 	CCS_VALIDATE(
 		_ccs_serialize_bin_string(data->name, buffer_size, buffer));
-	CCS_VALIDATE(data->configuration_space->obj.ops->serialize(
-		data->configuration_space, CCS_SERIALIZE_FORMAT_BINARY,
-		buffer_size, buffer, opts));
-	CCS_VALIDATE(data->objective_space->obj.ops->serialize(
+	CCS_VALIDATE(_ccs_object_serialize_with_opts(
 		data->objective_space, CCS_SERIALIZE_FORMAT_BINARY, buffer_size,
 		buffer, opts));
 	return CCS_RESULT_SUCCESS;

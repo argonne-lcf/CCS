@@ -1,5 +1,7 @@
 #include "cconfigspace_internal.h"
 #include "tree_configuration_internal.h"
+#include "tree_space_internal.h"
+#include "features_internal.h"
 #include <string.h>
 
 static ccs_result_t
@@ -7,26 +9,37 @@ _ccs_tree_configuration_del(ccs_object_t object)
 {
 	ccs_tree_configuration_t tree_configuration =
 		(ccs_tree_configuration_t)object;
-	ccs_release_object(tree_configuration->data->tree_space);
+	if (tree_configuration->data->tree_space)
+		ccs_release_object(tree_configuration->data->tree_space);
+	if (tree_configuration->data->features)
+		ccs_release_object(tree_configuration->data->features);
 	return CCS_RESULT_SUCCESS;
 }
 
-static inline size_t
+static inline ccs_result_t
 _ccs_serialize_bin_size_ccs_tree_configuration_data(
-	_ccs_tree_configuration_data_t *data)
+	_ccs_tree_configuration_data_t  *data,
+	size_t                          *cum_size,
+	_ccs_object_serialize_options_t *opts)
 {
-	size_t sz = _ccs_serialize_bin_size_ccs_object(data->tree_space) +
-		    _ccs_serialize_bin_size_size(data->position_size);
+	*cum_size += _ccs_serialize_bin_size_ccs_object(data->tree_space) +
+		     _ccs_serialize_bin_size_size(data->position_size);
 	for (size_t i = 0; i < data->position_size; i++)
-		sz += _ccs_serialize_bin_size_size(data->position[i]);
-	return sz;
+		*cum_size += _ccs_serialize_bin_size_size(data->position[i]);
+	*cum_size += _ccs_serialize_bin_size_ccs_bool(data->features != NULL);
+	if (data->features)
+		CCS_VALIDATE(_ccs_object_serialize_size_with_opts(
+			data->features, CCS_SERIALIZE_FORMAT_BINARY, cum_size,
+			opts));
+	return CCS_RESULT_SUCCESS;
 }
 
 static inline ccs_result_t
 _ccs_serialize_bin_ccs_tree_configuration_data(
-	_ccs_tree_configuration_data_t *data,
-	size_t                         *buffer_size,
-	char                          **buffer)
+	_ccs_tree_configuration_data_t  *data,
+	size_t                          *buffer_size,
+	char                           **buffer,
+	_ccs_object_serialize_options_t *opts)
 {
 	CCS_VALIDATE(_ccs_serialize_bin_ccs_object(
 		data->tree_space, buffer_size, buffer));
@@ -35,32 +48,35 @@ _ccs_serialize_bin_ccs_tree_configuration_data(
 	for (size_t i = 0; i < data->position_size; i++)
 		CCS_VALIDATE(_ccs_serialize_bin_size(
 			data->position[i], buffer_size, buffer));
+	CCS_VALIDATE(_ccs_serialize_bin_ccs_bool(
+		data->features != NULL, buffer_size, buffer));
+	if (data->features)
+		CCS_VALIDATE(_ccs_object_serialize_with_opts(
+			data->features, CCS_SERIALIZE_FORMAT_BINARY,
+			buffer_size, buffer, opts));
 	return CCS_RESULT_SUCCESS;
 }
 
 static inline ccs_result_t
 _ccs_serialize_bin_size_ccs_tree_configuration(
-	ccs_tree_configuration_t tree_configuration,
-	size_t                  *cum_size)
+	ccs_tree_configuration_t         tree_configuration,
+	size_t                          *cum_size,
+	_ccs_object_serialize_options_t *opts)
 {
-	*cum_size += _ccs_serialize_bin_size_ccs_object_internal(
-		(_ccs_object_internal_t *)tree_configuration);
-	*cum_size += _ccs_serialize_bin_size_ccs_tree_configuration_data(
-		tree_configuration->data);
+	CCS_VALIDATE(_ccs_serialize_bin_size_ccs_tree_configuration_data(
+		tree_configuration->data, cum_size, opts));
 	return CCS_RESULT_SUCCESS;
 }
 
 static inline ccs_result_t
 _ccs_serialize_bin_ccs_tree_configuration(
-	ccs_tree_configuration_t tree_configuration,
-	size_t                  *buffer_size,
-	char                   **buffer)
+	ccs_tree_configuration_t         tree_configuration,
+	size_t                          *buffer_size,
+	char                           **buffer,
+	_ccs_object_serialize_options_t *opts)
 {
-	CCS_VALIDATE(_ccs_serialize_bin_ccs_object_internal(
-		(_ccs_object_internal_t *)tree_configuration, buffer_size,
-		buffer));
 	CCS_VALIDATE(_ccs_serialize_bin_ccs_tree_configuration_data(
-		tree_configuration->data, buffer_size, buffer));
+		tree_configuration->data, buffer_size, buffer, opts));
 	return CCS_RESULT_SUCCESS;
 }
 
@@ -74,15 +90,13 @@ _ccs_tree_configuration_serialize_size(
 	switch (format) {
 	case CCS_SERIALIZE_FORMAT_BINARY:
 		CCS_VALIDATE(_ccs_serialize_bin_size_ccs_tree_configuration(
-			(ccs_tree_configuration_t)object, cum_size));
+			(ccs_tree_configuration_t)object, cum_size, opts));
 		break;
 	default:
 		CCS_RAISE(
 			CCS_RESULT_ERROR_INVALID_VALUE,
 			"Unsupported serialization format: %d", format);
 	}
-	CCS_VALIDATE(_ccs_object_serialize_user_data_size(
-		object, format, cum_size, opts));
 	return CCS_RESULT_SUCCESS;
 }
 
@@ -97,57 +111,100 @@ _ccs_tree_configuration_serialize(
 	switch (format) {
 	case CCS_SERIALIZE_FORMAT_BINARY:
 		CCS_VALIDATE(_ccs_serialize_bin_ccs_tree_configuration(
-			(ccs_tree_configuration_t)object, buffer_size, buffer));
+			(ccs_tree_configuration_t)object, buffer_size, buffer,
+			opts));
 		break;
 	default:
 		CCS_RAISE(
 			CCS_RESULT_ERROR_INVALID_VALUE,
 			"Unsupported serialization format: %d", format);
 	}
-	CCS_VALIDATE(_ccs_object_serialize_user_data(
-		object, format, buffer_size, buffer, opts));
 	return CCS_RESULT_SUCCESS;
 }
 
+static ccs_result_t
+_ccs_tree_configuration_hash(
+	ccs_tree_configuration_t configuration,
+	ccs_hash_t              *hash_ret);
+
+static ccs_result_t
+_ccs_tree_configuration_cmp(
+	ccs_tree_configuration_t configuration,
+	ccs_tree_configuration_t other_configuration,
+	int                     *cmp_ret);
+
 static _ccs_tree_configuration_ops_t _tree_configuration_ops = {
 	{&_ccs_tree_configuration_del, &_ccs_tree_configuration_serialize_size,
-	 &_ccs_tree_configuration_serialize}};
+	 &_ccs_tree_configuration_serialize},
+	&_ccs_tree_configuration_hash,
+	&_ccs_tree_configuration_cmp};
 
 ccs_result_t
 ccs_create_tree_configuration(
 	ccs_tree_space_t          tree_space,
+	ccs_features_t            features,
 	size_t                    position_size,
 	const size_t             *position,
 	ccs_tree_configuration_t *configuration_ret)
 {
 	CCS_CHECK_OBJ(tree_space, CCS_OBJECT_TYPE_TREE_SPACE);
+	_ccs_tree_space_common_data_t *tsdata =
+		(_ccs_tree_space_common_data_t *)tree_space->data;
+	if (features) {
+		CCS_CHECK_OBJ(features, CCS_OBJECT_TYPE_FEATURES);
+		CCS_REFUTE(
+			features->data->feature_space != tsdata->feature_space,
+			CCS_RESULT_ERROR_INVALID_FEATURES);
+	}
 	CCS_CHECK_PTR(configuration_ret);
 	CCS_CHECK_ARY(position_size, position);
 	ccs_result_t err;
+	ccs_bool_t   is_valid;
 	uintptr_t    mem = (uintptr_t)calloc(
                 1, sizeof(struct _ccs_tree_configuration_s) +
                            sizeof(struct _ccs_tree_configuration_data_s) +
                            position_size * sizeof(size_t));
 	CCS_REFUTE(!mem, CCS_RESULT_ERROR_OUT_OF_MEMORY);
-	CCS_VALIDATE_ERR_GOTO(err, ccs_retain_object(tree_space), errmem);
+	uintptr_t                mem_orig = mem;
 	ccs_tree_configuration_t config;
 	config = (ccs_tree_configuration_t)mem;
+	mem += sizeof(struct _ccs_tree_configuration_s);
 	_ccs_object_init(
 		&(config->obj), CCS_OBJECT_TYPE_TREE_CONFIGURATION,
 		(_ccs_object_ops_t *)&_tree_configuration_ops);
-	config->data =
-		(struct _ccs_tree_configuration_data_s
-			 *)(mem + sizeof(struct _ccs_tree_configuration_s));
-	config->data->tree_space    = tree_space;
+	config->data = (struct _ccs_tree_configuration_data_s *)mem;
+	mem += sizeof(struct _ccs_tree_configuration_data_s);
 	config->data->position_size = position_size;
-	config->data->position =
-		(size_t *)(mem + sizeof(struct _ccs_tree_configuration_s) + sizeof(struct _ccs_tree_configuration_data_s));
+	config->data->position      = (size_t *)mem;
+	mem += sizeof(size_t) * position_size;
+	CCS_VALIDATE_ERR_GOTO(err, ccs_retain_object(tree_space), errinit);
+	config->data->tree_space = tree_space;
+	if (features)
+		CCS_VALIDATE_ERR_GOTO(
+			err, ccs_retain_object(features), errinit);
+	else if (tsdata->feature_space)
+		CCS_VALIDATE_ERR_GOTO(
+			err,
+			ccs_feature_space_get_default_features(
+				tsdata->feature_space, &features),
+			errinit);
+	config->data->features = features;
 	memcpy(config->data->position, position,
 	       position_size * sizeof(size_t));
+	CCS_VALIDATE_ERR_GOTO(
+		err,
+		_ccs_tree_space_check_position(
+			tree_space, config->data->position_size,
+			config->data->position, &is_valid),
+		errinit);
+	CCS_REFUTE_ERR_GOTO(
+		err, !is_valid, CCS_RESULT_ERROR_INVALID_VALUE, errinit);
 	*configuration_ret = config;
 	return CCS_RESULT_SUCCESS;
-errmem:
-	free((void *)mem);
+errinit:
+	_ccs_tree_configuration_del(config);
+	_ccs_object_deinit(&(config->obj));
+	free((void *)mem_orig);
 	return err;
 }
 
@@ -159,6 +216,17 @@ ccs_tree_configuration_get_tree_space(
 	CCS_CHECK_OBJ(configuration, CCS_OBJECT_TYPE_TREE_CONFIGURATION);
 	CCS_CHECK_PTR(tree_space_ret);
 	*tree_space_ret = configuration->data->tree_space;
+	return CCS_RESULT_SUCCESS;
+}
+
+ccs_result_t
+ccs_tree_configuration_get_features(
+	ccs_tree_configuration_t configuration,
+	ccs_features_t          *features_ret)
+{
+	CCS_CHECK_OBJ(configuration, CCS_OBJECT_TYPE_TREE_CONFIGURATION);
+	CCS_CHECK_PTR(features_ret);
+	*features_ret = configuration->data->features;
 	return CCS_RESULT_SUCCESS;
 }
 
@@ -219,31 +287,14 @@ ccs_tree_configuration_get_node(
 	return CCS_RESULT_SUCCESS;
 }
 
-ccs_result_t
-ccs_tree_configuration_check(
-	ccs_tree_configuration_t configuration,
-	ccs_bool_t              *is_valid_ret)
-{
-	CCS_CHECK_OBJ(configuration, CCS_OBJECT_TYPE_TREE_CONFIGURATION);
-	CCS_CHECK_PTR(is_valid_ret);
-	CCS_VALIDATE(ccs_tree_space_check_position(
-		configuration->data->tree_space,
-		configuration->data->position_size,
-		configuration->data->position, is_valid_ret));
-	return CCS_RESULT_SUCCESS;
-}
-
 #define CCS_CMP(a, b) ((a) < (b) ? -1 : ((a) > (b) ? 1 : 0))
 
-ccs_result_t
-ccs_tree_configuration_cmp(
+static ccs_result_t
+_ccs_tree_configuration_cmp(
 	ccs_tree_configuration_t configuration,
 	ccs_tree_configuration_t other_configuration,
 	int                     *cmp_ret)
 {
-	CCS_CHECK_OBJ(configuration, CCS_OBJECT_TYPE_TREE_CONFIGURATION);
-	CCS_CHECK_OBJ(other_configuration, CCS_OBJECT_TYPE_TREE_CONFIGURATION);
-	CCS_CHECK_PTR(cmp_ret);
 	if (configuration == other_configuration) {
 		*cmp_ret = 0;
 		return CCS_RESULT_SUCCESS;
@@ -269,14 +320,26 @@ ccs_tree_configuration_cmp(
 	return CCS_RESULT_SUCCESS;
 }
 
-#include "datum_hash.h"
 ccs_result_t
-ccs_tree_configuration_hash(
+ccs_tree_configuration_cmp(
+	ccs_tree_configuration_t configuration,
+	ccs_tree_configuration_t other_configuration,
+	int                     *cmp_ret)
+{
+	CCS_CHECK_OBJ(configuration, CCS_OBJECT_TYPE_TREE_CONFIGURATION);
+	CCS_CHECK_OBJ(other_configuration, CCS_OBJECT_TYPE_TREE_CONFIGURATION);
+	CCS_CHECK_PTR(cmp_ret);
+	CCS_VALIDATE(_ccs_tree_configuration_cmp(
+		configuration, other_configuration, cmp_ret));
+	return CCS_RESULT_SUCCESS;
+}
+
+#include "datum_hash.h"
+static ccs_result_t
+_ccs_tree_configuration_hash(
 	ccs_tree_configuration_t configuration,
 	ccs_hash_t              *hash_ret)
 {
-	CCS_CHECK_OBJ(configuration, CCS_OBJECT_TYPE_TREE_CONFIGURATION);
-	CCS_CHECK_PTR(hash_ret);
 	ccs_hash_t h, ht;
 	HASH_JEN(
 		&(configuration->data->tree_space),
@@ -290,5 +353,16 @@ ccs_tree_configuration_hash(
 		h = _hash_combine(h, ht);
 	}
 	*hash_ret = h;
+	return CCS_RESULT_SUCCESS;
+}
+
+ccs_result_t
+ccs_tree_configuration_hash(
+	ccs_tree_configuration_t configuration,
+	ccs_hash_t              *hash_ret)
+{
+	CCS_CHECK_OBJ(configuration, CCS_OBJECT_TYPE_TREE_CONFIGURATION);
+	CCS_CHECK_PTR(hash_ret);
+	CCS_VALIDATE(_ccs_tree_configuration_hash(configuration, hash_ret));
 	return CCS_RESULT_SUCCESS;
 }

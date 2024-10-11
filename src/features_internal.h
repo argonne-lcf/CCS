@@ -8,12 +8,12 @@ typedef struct _ccs_features_data_s _ccs_features_data_t;
 struct _ccs_features_ops_s {
 	_ccs_object_ops_t obj_ops;
 
-	ccs_result_t (*hash)(_ccs_features_data_t *data, ccs_hash_t *hash_ret);
+	ccs_result_t (*hash)(ccs_features_t features, ccs_hash_t *hash_ret);
 
 	ccs_result_t (*cmp)(
-		_ccs_features_data_t *data,
-		ccs_features_t        other,
-		int                  *cmp_ret);
+		ccs_features_t features,
+		ccs_features_t other,
+		int           *cmp_ret);
 };
 typedef struct _ccs_features_ops_s _ccs_features_ops_t;
 
@@ -23,9 +23,16 @@ struct _ccs_features_s {
 };
 
 struct _ccs_features_data_s {
-	ccs_features_space_t features_space;
-	size_t               num_values;
-	ccs_datum_t         *values;
+	ccs_feature_space_t feature_space;
+	size_t              num_values;
+	ccs_datum_t        *values;
 };
+
+ccs_result_t
+_ccs_create_features(
+	ccs_feature_space_t features_space,
+	size_t              num_values,
+	ccs_datum_t        *values,
+	ccs_features_t     *features_ret);
 
 #endif //_FEATURES_INTERNAL_H

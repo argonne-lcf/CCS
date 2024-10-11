@@ -32,7 +32,7 @@ check_samples(
 }
 
 void
-test_tree()
+test_tree(void)
 {
 	ccs_tree_t  root, child, grand_child, parent, node, children[4];
 	ccs_rng_t   rng;
@@ -41,7 +41,6 @@ test_tree()
 		samples[NUM_SAMPLES], num_values;
 	int          counts[5];
 	ccs_float_t  weight, bias, areas[5];
-	ccs_bool_t   is_valid;
 	ccs_result_t err = CCS_RESULT_SUCCESS;
 
 	// Basic creation
@@ -169,10 +168,7 @@ test_tree()
 	position    = (size_t *)malloc(2 * sizeof(size_t));
 	position[0] = 2;
 	position[1] = 1;
-	err         = ccs_tree_position_is_valid(root, 2, position, &is_valid);
-	assert(err == CCS_RESULT_SUCCESS);
-	assert(is_valid == CCS_TRUE);
-	err = ccs_tree_get_node_at_position(root, 2, position, &node);
+	err         = ccs_tree_get_node_at_position(root, 2, position, &node);
 	assert(err == CCS_RESULT_SUCCESS);
 	assert(grand_child == node);
 	free(position);
@@ -181,9 +177,8 @@ test_tree()
 	position[0] = 2;
 	position[1] = 1;
 	position[2] = 3;
-	err         = ccs_tree_position_is_valid(root, 3, position, &is_valid);
-	assert(err == CCS_RESULT_SUCCESS);
-	assert(is_valid == CCS_FALSE);
+	err         = ccs_tree_get_node_at_position(root, 3, position, &node);
+	assert(err == CCS_RESULT_ERROR_OUT_OF_BOUNDS);
 	free(position);
 
 	position    = (size_t *)malloc(2 * sizeof(size_t));
@@ -282,7 +277,7 @@ test_tree()
 }
 
 int
-main()
+main(void)
 {
 	ccs_init();
 	test_tree();

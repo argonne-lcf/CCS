@@ -2,95 +2,47 @@
 #include <assert.h>
 #include <cconfigspace.h>
 #include <string.h>
-
-ccs_parameter_t
-create_numerical(const char *name, double lower, double upper)
-{
-	ccs_parameter_t parameter;
-	ccs_result_t    err;
-	err = ccs_create_numerical_parameter(
-		name, CCS_NUMERIC_TYPE_FLOAT, CCSF(lower), CCSF(upper),
-		CCSF(0.0), CCSF(0), &parameter);
-	assert(err == CCS_RESULT_SUCCESS);
-	return parameter;
-}
+#include "test_utils.h"
 
 void
-test()
+test(void)
 {
-	ccs_parameter_t           parameter1, parameter2;
-	ccs_parameter_t           parameter3;
-	ccs_parameter_t           feature;
 	ccs_configuration_space_t cspace;
-	ccs_features_space_t      fspace;
+	ccs_feature_space_t       fspace;
 	ccs_objective_space_t     ospace;
-	ccs_expression_t          expression;
-	ccs_features_tuner_t      tuner, tuner_copy;
+	ccs_tuner_t               tuner, tuner_copy;
 	ccs_result_t              err;
 	ccs_features_t            features_on, features_off;
-	ccs_datum_t knobs_values[2] = {ccs_string("on"), ccs_string("off")};
-	ccs_datum_t d;
-	char       *buff;
-	size_t      buff_size;
-	ccs_map_t   map;
+	ccs_datum_t               d;
+	char                     *buff;
+	size_t                    buff_size;
+	ccs_map_t                 map;
 
-	parameter1 = create_numerical("x", -5.0, 5.0);
-	parameter2 = create_numerical("y", -5.0, 5.0);
+	fspace = create_knobs(&features_on, &features_off);
+	cspace = create_2d_plane(fspace);
+	ospace = create_height_objective(cspace);
 
-	err        = ccs_create_configuration_space("2dplane", &cspace);
-	assert(err == CCS_RESULT_SUCCESS);
-	err = ccs_configuration_space_add_parameter(cspace, parameter1, NULL);
-	assert(err == CCS_RESULT_SUCCESS);
-	err = ccs_configuration_space_add_parameter(cspace, parameter2, NULL);
-	assert(err == CCS_RESULT_SUCCESS);
-
-	parameter3 = create_numerical("z", -CCS_INFINITY, CCS_INFINITY);
-	err        = ccs_create_variable(parameter3, &expression);
-	assert(err == CCS_RESULT_SUCCESS);
-
-	err = ccs_create_objective_space("height", &ospace);
-	assert(err == CCS_RESULT_SUCCESS);
-	err = ccs_objective_space_add_parameter(ospace, parameter3);
-	assert(err == CCS_RESULT_SUCCESS);
-	err = ccs_objective_space_add_objective(
-		ospace, expression, CCS_OBJECTIVE_TYPE_MINIMIZE);
-	assert(err == CCS_RESULT_SUCCESS);
-
-	err = ccs_create_categorical_parameter(
-		"red knob", 2, knobs_values, 0, &feature);
-	assert(err == CCS_RESULT_SUCCESS);
-
-	err = ccs_create_features_space("knobs", &fspace);
-	assert(err == CCS_RESULT_SUCCESS);
-	err = ccs_features_space_add_parameter(fspace, feature);
-	assert(err == CCS_RESULT_SUCCESS);
-	err = ccs_create_features(fspace, 1, knobs_values, &features_on);
-	assert(err == CCS_RESULT_SUCCESS);
-	err = ccs_create_features(fspace, 1, knobs_values + 1, &features_off);
-	assert(err == CCS_RESULT_SUCCESS);
-
-	err = ccs_create_random_features_tuner(
-		"problem", cspace, fspace, ospace, &tuner);
+	err    = ccs_create_random_tuner("problem", ospace, &tuner);
 	assert(err == CCS_RESULT_SUCCESS);
 
 	for (size_t i = 0; i < 50; i++) {
-		ccs_datum_t               values[2], res;
-		ccs_configuration_t       configuration;
-		ccs_features_evaluation_t evaluation;
-		err = ccs_features_tuner_ask(
+		ccs_datum_t                values[2], res;
+		ccs_search_configuration_t configuration;
+		ccs_evaluation_t           evaluation;
+		err = ccs_tuner_ask(
 			tuner, features_on, 1, &configuration, NULL);
 		assert(err == CCS_RESULT_SUCCESS);
-		err = ccs_configuration_get_values(
-			configuration, 2, values, NULL);
+		err = ccs_binding_get_values(
+			(ccs_binding_t)configuration, 2, values, NULL);
 		assert(err == CCS_RESULT_SUCCESS);
 		res = ccs_float(
 			(values[0].value.f - 1) * (values[0].value.f - 1) +
 			(values[1].value.f - 2) * (values[1].value.f - 2));
-		err = ccs_create_features_evaluation(
-			ospace, configuration, features_on, CCS_RESULT_SUCCESS,
-			1, &res, &evaluation);
+		err = ccs_create_evaluation(
+			ospace, configuration, CCS_RESULT_SUCCESS, 1, &res,
+			&evaluation);
 		assert(err == CCS_RESULT_SUCCESS);
-		err = ccs_features_tuner_tell(tuner, 1, &evaluation);
+		err = ccs_tuner_tell(tuner, 1, &evaluation);
 		assert(err == CCS_RESULT_SUCCESS);
 		err = ccs_release_object(configuration);
 		assert(err == CCS_RESULT_SUCCESS);
@@ -99,23 +51,23 @@ test()
 	}
 
 	for (size_t i = 0; i < 50; i++) {
-		ccs_datum_t               values[2], res;
-		ccs_configuration_t       configuration;
-		ccs_features_evaluation_t evaluation;
-		err = ccs_features_tuner_ask(
+		ccs_datum_t                values[2], res;
+		ccs_search_configuration_t configuration;
+		ccs_evaluation_t           evaluation;
+		err = ccs_tuner_ask(
 			tuner, features_off, 1, &configuration, NULL);
 		assert(err == CCS_RESULT_SUCCESS);
-		err = ccs_configuration_get_values(
-			configuration, 2, values, NULL);
+		err = ccs_binding_get_values(
+			(ccs_binding_t)configuration, 2, values, NULL);
 		assert(err == CCS_RESULT_SUCCESS);
 		res = ccs_float(
 			(values[0].value.f - 1) * (values[0].value.f - 1) +
 			(values[1].value.f - 2) * (values[1].value.f - 2));
-		err = ccs_create_features_evaluation(
-			ospace, configuration, features_off, CCS_RESULT_SUCCESS,
-			1, &res, &evaluation);
+		err = ccs_create_evaluation(
+			ospace, configuration, CCS_RESULT_SUCCESS, 1, &res,
+			&evaluation);
 		assert(err == CCS_RESULT_SUCCESS);
-		err = ccs_features_tuner_tell(tuner, 1, &evaluation);
+		err = ccs_tuner_tell(tuner, 1, &evaluation);
 		assert(err == CCS_RESULT_SUCCESS);
 		err = ccs_release_object(configuration);
 		assert(err == CCS_RESULT_SUCCESS);
@@ -123,58 +75,56 @@ test()
 		assert(err == CCS_RESULT_SUCCESS);
 	}
 
-	size_t                    count;
-	ccs_features_evaluation_t history[100];
-	ccs_features_evaluation_t evaluation;
-	ccs_datum_t               min_on  = ccs_float(INFINITY);
-	ccs_datum_t               min_off = ccs_float(INFINITY);
-	err = ccs_features_tuner_get_history(tuner, NULL, 0, NULL, &count);
+	size_t           count;
+	ccs_evaluation_t history[100];
+	ccs_evaluation_t evaluation;
+	ccs_datum_t      min_on  = ccs_float(INFINITY);
+	ccs_datum_t      min_off = ccs_float(INFINITY);
+	err = ccs_tuner_get_history(tuner, NULL, 0, NULL, &count);
 	assert(err == CCS_RESULT_SUCCESS);
 	assert(count == 100);
 
-	err = ccs_features_tuner_get_optima(tuner, NULL, 0, NULL, &count);
+	err = ccs_tuner_get_optima(tuner, NULL, 0, NULL, &count);
 	assert(err == CCS_RESULT_SUCCESS);
 	assert(count == 2);
 
-	err = ccs_features_tuner_get_history(
-		tuner, features_on, 50, history, &count);
+	err = ccs_tuner_get_history(tuner, features_on, 50, history, &count);
 	assert(err == CCS_RESULT_SUCCESS);
 	assert(count == 50);
 
 	for (size_t i = 0; i < 50; i++) {
 		ccs_datum_t res;
-		err = ccs_features_evaluation_get_objective_value(
-			history[i], 0, &res);
+		err = ccs_evaluation_get_objective_value(
+			(ccs_evaluation_t)history[i], 0, &res);
 		assert(err == CCS_RESULT_SUCCESS);
 		if (res.value.f < min_on.value.f)
 			min_on.value.f = res.value.f;
 	}
 
-	err = ccs_features_tuner_get_history(
-		tuner, features_off, 50, history, &count);
+	err = ccs_tuner_get_history(tuner, features_off, 50, history, &count);
 	assert(err == CCS_RESULT_SUCCESS);
 	assert(count == 50);
 
 	for (size_t i = 0; i < 50; i++) {
 		ccs_datum_t res;
-		err = ccs_features_evaluation_get_objective_value(
-			history[i], 0, &res);
+		err = ccs_evaluation_get_objective_value(
+			(ccs_evaluation_t)history[i], 0, &res);
 		assert(err == CCS_RESULT_SUCCESS);
 		if (res.value.f < min_off.value.f)
 			min_off.value.f = res.value.f;
 	}
 
 	ccs_datum_t res;
-	err = ccs_features_tuner_get_optima(
-		tuner, features_on, 1, &evaluation, NULL);
+	err = ccs_tuner_get_optima(tuner, features_on, 1, &evaluation, NULL);
 	assert(err == CCS_RESULT_SUCCESS);
-	err = ccs_features_evaluation_get_objective_value(evaluation, 0, &res);
+	err = ccs_evaluation_get_objective_value(
+		(ccs_evaluation_t)evaluation, 0, &res);
 	assert(res.value.f == min_on.value.f);
 
-	err = ccs_features_tuner_get_optima(
-		tuner, features_off, 1, &evaluation, NULL);
+	err = ccs_tuner_get_optima(tuner, features_off, 1, &evaluation, NULL);
 	assert(err == CCS_RESULT_SUCCESS);
-	err = ccs_features_evaluation_get_objective_value(evaluation, 0, &res);
+	err = ccs_evaluation_get_objective_value(
+		(ccs_evaluation_t)evaluation, 0, &res);
 	assert(res.value.f == min_off.value.f);
 
 	/* Test (de)serialization */
@@ -198,7 +148,7 @@ test()
 		(ccs_object_t *)&tuner_copy, CCS_SERIALIZE_FORMAT_BINARY,
 		CCS_SERIALIZE_OPERATION_MEMORY, buff_size, buff,
 		CCS_DESERIALIZE_OPTION_HANDLE_MAP, map,
-		CCS_DESERIALIZE_OPTION_END);
+		CCS_DESERIALIZE_OPTION_MAP_HANDLES, CCS_DESERIALIZE_OPTION_END);
 	assert(err == CCS_RESULT_SUCCESS);
 
 	err = ccs_map_get(map, ccs_object((ccs_object_t)tuner), &d);
@@ -206,11 +156,11 @@ test()
 	assert(d.type == CCS_DATA_TYPE_OBJECT);
 	assert(d.value.o == (ccs_object_t)tuner_copy);
 
-	err = ccs_features_tuner_get_history(tuner_copy, NULL, 0, NULL, &count);
+	err = ccs_tuner_get_history(tuner_copy, NULL, 0, NULL, &count);
 	assert(err == CCS_RESULT_SUCCESS);
 	assert(count == 100);
 
-	err = ccs_features_tuner_get_optima(tuner_copy, NULL, 0, NULL, &count);
+	err = ccs_tuner_get_optima(tuner_copy, NULL, 0, NULL, &count);
 	assert(err == CCS_RESULT_SUCCESS);
 	assert(count == 2);
 
@@ -218,16 +168,6 @@ test()
 	err = ccs_release_object(map);
 	assert(err == CCS_RESULT_SUCCESS);
 	err = ccs_release_object(tuner_copy);
-	assert(err == CCS_RESULT_SUCCESS);
-	err = ccs_release_object(expression);
-	assert(err == CCS_RESULT_SUCCESS);
-	err = ccs_release_object(parameter1);
-	assert(err == CCS_RESULT_SUCCESS);
-	err = ccs_release_object(parameter2);
-	assert(err == CCS_RESULT_SUCCESS);
-	err = ccs_release_object(parameter3);
-	assert(err == CCS_RESULT_SUCCESS);
-	err = ccs_release_object(feature);
 	assert(err == CCS_RESULT_SUCCESS);
 	err = ccs_release_object(features_on);
 	assert(err == CCS_RESULT_SUCCESS);
@@ -244,63 +184,33 @@ test()
 }
 
 void
-test_evaluation_deserialize()
+test_evaluation_deserialize(void)
 {
-	ccs_parameter_t           parameter1, parameter2;
-	ccs_parameter_t           parameter3;
-	ccs_parameter_t           feature;
 	ccs_configuration_space_t cspace;
-	ccs_features_space_t      fspace;
+	ccs_feature_space_t       fspace;
 	ccs_objective_space_t     ospace;
-	ccs_expression_t          expression;
 	ccs_result_t              err;
 	ccs_configuration_t       configuration;
 	ccs_features_t            features_on;
-	ccs_datum_t knobs_values[2] = {ccs_string("on"), ccs_string("off")};
-	ccs_features_evaluation_t evaluation_ref, evaluation;
+	ccs_evaluation_t          evaluation_ref, evaluation;
 	ccs_datum_t               res, d;
 	char                     *buff;
 	size_t                    buff_size;
 	ccs_map_t                 map;
 	int                       cmp;
 
-	parameter1 = create_numerical("x", -5.0, 5.0);
-	parameter2 = create_numerical("y", -5.0, 5.0);
+	fspace = create_knobs(&features_on, NULL);
+	cspace = create_2d_plane(fspace);
+	ospace = create_height_objective(cspace);
 
-	err        = ccs_create_configuration_space("2dplane", &cspace);
-	assert(err == CCS_RESULT_SUCCESS);
-	err = ccs_configuration_space_add_parameter(cspace, parameter1, NULL);
-	assert(err == CCS_RESULT_SUCCESS);
-	err = ccs_configuration_space_add_parameter(cspace, parameter2, NULL);
-	assert(err == CCS_RESULT_SUCCESS);
-	err = ccs_configuration_space_sample(cspace, &configuration);
-	assert(err == CCS_RESULT_SUCCESS);
-
-	parameter3 = create_numerical("z", -CCS_INFINITY, CCS_INFINITY);
-	err        = ccs_create_variable(parameter3, &expression);
-	assert(err == CCS_RESULT_SUCCESS);
-
-	err = ccs_create_categorical_parameter(
-		"red knob", 2, knobs_values, 0, &feature);
-	assert(err == CCS_RESULT_SUCCESS);
-
-	err = ccs_create_features_space("knobs", &fspace);
-	assert(err == CCS_RESULT_SUCCESS);
-	err = ccs_features_space_add_parameter(fspace, feature);
-	assert(err == CCS_RESULT_SUCCESS);
-	err = ccs_create_features(fspace, 1, knobs_values, &features_on);
-	err = ccs_create_objective_space("height", &ospace);
-	assert(err == CCS_RESULT_SUCCESS);
-	err = ccs_objective_space_add_parameter(ospace, parameter3);
-	assert(err == CCS_RESULT_SUCCESS);
-	err = ccs_objective_space_add_objective(
-		ospace, expression, CCS_OBJECTIVE_TYPE_MINIMIZE);
+	err    = ccs_configuration_space_sample(
+                cspace, NULL, features_on, NULL, &configuration);
 	assert(err == CCS_RESULT_SUCCESS);
 
 	res = ccs_float(1.5);
-	err = ccs_create_features_evaluation(
-		ospace, configuration, features_on, CCS_RESULT_SUCCESS, 1, &res,
-		&evaluation_ref);
+	err = ccs_create_evaluation(
+		ospace, (ccs_search_configuration_t)configuration,
+		CCS_RESULT_SUCCESS, 1, &res, &evaluation_ref);
 	assert(err == CCS_RESULT_SUCCESS);
 
 	err = ccs_create_map(&map);
@@ -362,13 +272,12 @@ test_evaluation_deserialize()
 		CCS_DESERIALIZE_OPTION_END);
 	assert(err == CCS_RESULT_SUCCESS);
 
-	err = ccs_features_evaluation_cmp(evaluation_ref, evaluation, &cmp);
+	err = ccs_binding_cmp(
+		(ccs_binding_t)evaluation_ref, (ccs_binding_t)evaluation, &cmp);
 	assert(err == CCS_RESULT_SUCCESS);
 	assert(!cmp);
 
 	free(buff);
-	err = ccs_release_object(feature);
-	assert(err == CCS_RESULT_SUCCESS);
 	err = ccs_release_object(features_on);
 	assert(err == CCS_RESULT_SUCCESS);
 	err = ccs_release_object(map);
@@ -379,14 +288,6 @@ test_evaluation_deserialize()
 	assert(err == CCS_RESULT_SUCCESS);
 	err = ccs_release_object(configuration);
 	assert(err == CCS_RESULT_SUCCESS);
-	err = ccs_release_object(expression);
-	assert(err == CCS_RESULT_SUCCESS);
-	err = ccs_release_object(parameter1);
-	assert(err == CCS_RESULT_SUCCESS);
-	err = ccs_release_object(parameter2);
-	assert(err == CCS_RESULT_SUCCESS);
-	err = ccs_release_object(parameter3);
-	assert(err == CCS_RESULT_SUCCESS);
 	err = ccs_release_object(cspace);
 	assert(err == CCS_RESULT_SUCCESS);
 	err = ccs_release_object(fspace);
@@ -396,7 +297,7 @@ test_evaluation_deserialize()
 }
 
 int
-main()
+main(void)
 {
 	ccs_init();
 	test();

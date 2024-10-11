@@ -14,9 +14,7 @@ _ccs_serialize_bin_size_ccs_parameter_numerical(ccs_parameter_t parameter)
 {
 	_ccs_parameter_numerical_data_t *data =
 		(_ccs_parameter_numerical_data_t *)(parameter->data);
-	return _ccs_serialize_bin_size_ccs_object_internal(
-		       (_ccs_object_internal_t *)parameter) +
-	       _ccs_serialize_bin_size_ccs_parameter_numerical_data(data);
+	return _ccs_serialize_bin_size_ccs_parameter_numerical_data(data);
 }
 
 static inline ccs_result_t
@@ -27,8 +25,6 @@ _ccs_serialize_bin_ccs_parameter_numerical(
 {
 	_ccs_parameter_numerical_data_t *data =
 		(_ccs_parameter_numerical_data_t *)(parameter->data);
-	CCS_VALIDATE(_ccs_serialize_bin_ccs_object_internal(
-		(_ccs_object_internal_t *)parameter, buffer_size, buffer));
 	CCS_VALIDATE(_ccs_serialize_bin_ccs_parameter_numerical_data(
 		data, buffer_size, buffer));
 	return CCS_RESULT_SUCCESS;
@@ -41,6 +37,7 @@ _ccs_parameter_numerical_serialize_size(
 	size_t                          *cum_size,
 	_ccs_object_serialize_options_t *opts)
 {
+	(void)opts;
 	switch (format) {
 	case CCS_SERIALIZE_FORMAT_BINARY:
 		*cum_size += _ccs_serialize_bin_size_ccs_parameter_numerical(
@@ -51,8 +48,6 @@ _ccs_parameter_numerical_serialize_size(
 			CCS_RESULT_ERROR_INVALID_VALUE,
 			"Unsupported serialization format: %d", format);
 	}
-	CCS_VALIDATE(_ccs_object_serialize_user_data_size(
-		object, format, cum_size, opts));
 	return CCS_RESULT_SUCCESS;
 }
 
@@ -64,6 +59,7 @@ _ccs_parameter_numerical_serialize(
 	char                           **buffer,
 	_ccs_object_serialize_options_t *opts)
 {
+	(void)opts;
 	switch (format) {
 	case CCS_SERIALIZE_FORMAT_BINARY:
 		CCS_VALIDATE(_ccs_serialize_bin_ccs_parameter_numerical(
@@ -74,8 +70,6 @@ _ccs_parameter_numerical_serialize(
 			CCS_RESULT_ERROR_INVALID_VALUE,
 			"Unsupported serialization format: %d", format);
 	}
-	CCS_VALIDATE(_ccs_object_serialize_user_data(
-		object, format, buffer_size, buffer, opts));
 	return CCS_RESULT_SUCCESS;
 }
 

@@ -57,9 +57,7 @@ _ccs_serialize_bin_size_ccs_parameter_categorical(ccs_parameter_t parameter)
 {
 	_ccs_parameter_categorical_data_t *data =
 		(_ccs_parameter_categorical_data_t *)(parameter->data);
-	return _ccs_serialize_bin_size_ccs_object_internal(
-		       (_ccs_object_internal_t *)parameter) +
-	       _ccs_serialize_bin_size_ccs_parameter_categorical_data(data);
+	return _ccs_serialize_bin_size_ccs_parameter_categorical_data(data);
 }
 
 static inline ccs_result_t
@@ -70,8 +68,6 @@ _ccs_serialize_bin_ccs_parameter_categorical(
 {
 	_ccs_parameter_categorical_data_t *data =
 		(_ccs_parameter_categorical_data_t *)(parameter->data);
-	CCS_VALIDATE(_ccs_serialize_bin_ccs_object_internal(
-		(_ccs_object_internal_t *)parameter, buffer_size, buffer));
 	CCS_VALIDATE(_ccs_serialize_bin_ccs_parameter_categorical_data(
 		data, buffer_size, buffer));
 	return CCS_RESULT_SUCCESS;
@@ -84,6 +80,7 @@ _ccs_parameter_categorical_serialize_size(
 	size_t                          *cum_size,
 	_ccs_object_serialize_options_t *opts)
 {
+	(void)opts;
 	switch (format) {
 	case CCS_SERIALIZE_FORMAT_BINARY:
 		*cum_size += _ccs_serialize_bin_size_ccs_parameter_categorical(
@@ -94,8 +91,6 @@ _ccs_parameter_categorical_serialize_size(
 			CCS_RESULT_ERROR_INVALID_VALUE,
 			"Unsupported serialization format: %d", format);
 	}
-	CCS_VALIDATE(_ccs_object_serialize_user_data_size(
-		object, format, cum_size, opts));
 	return CCS_RESULT_SUCCESS;
 }
 
@@ -107,6 +102,7 @@ _ccs_parameter_categorical_serialize(
 	char                           **buffer,
 	_ccs_object_serialize_options_t *opts)
 {
+	(void)opts;
 	switch (format) {
 	case CCS_SERIALIZE_FORMAT_BINARY:
 		CCS_VALIDATE(_ccs_serialize_bin_ccs_parameter_categorical(
@@ -117,8 +113,6 @@ _ccs_parameter_categorical_serialize(
 			CCS_RESULT_ERROR_INVALID_VALUE,
 			"Unsupported serialization format: %d", format);
 	}
-	CCS_VALIDATE(_ccs_object_serialize_user_data(
-		object, format, buffer_size, buffer, opts));
 	return CCS_RESULT_SUCCESS;
 }
 
@@ -317,11 +311,12 @@ _ccs_create_categorical_parameter(
 			}
 		}
 
-	uintptr_t mem = (uintptr_t)calloc(
-		1, sizeof(struct _ccs_parameter_s) +
-			   sizeof(_ccs_parameter_categorical_data_t) +
-			   sizeof(_ccs_hash_datum_t) * num_possible_values +
-			   strlen(name) + 1 + size_strs);
+	ccs_result_t err = CCS_RESULT_SUCCESS;
+	uintptr_t    mem = (uintptr_t)calloc(
+                1, sizeof(struct _ccs_parameter_s) +
+                           sizeof(_ccs_parameter_categorical_data_t) +
+                           sizeof(_ccs_hash_datum_t) * num_possible_values +
+                           strlen(name) + 1 + size_strs);
 	CCS_REFUTE(!mem, CCS_RESULT_ERROR_OUT_OF_MEMORY);
 
 	ccs_interval_t interval;
@@ -349,6 +344,7 @@ _ccs_create_categorical_parameter(
 			 *)(mem + sizeof(struct _ccs_parameter_s) + sizeof(_ccs_parameter_categorical_data_t));
 	parameter_data->possible_values = pvs;
 	parameter_data->hash            = NULL;
+	parameter->data = (_ccs_parameter_data_t *)parameter_data;
 
 	char *str_pool =
 		(char *)(parameter_data->common_data.name) + strlen(name) + 1;
@@ -358,14 +354,8 @@ _ccs_create_categorical_parameter(
 			hh, parameter_data->hash, possible_values + i,
 			sizeof(ccs_datum_t), p);
 		if (p) {
-			_ccs_hash_datum_t *tmp;
-			HASH_ITER(hh, parameter_data->hash, p, tmp)
-			{
-				HASH_DELETE(hh, parameter_data->hash, p);
-			}
-			free((void *)mem);
-			CCS_RAISE(
-				CCS_RESULT_ERROR_INVALID_VALUE,
+			CCS_RAISE_ERR_GOTO(
+				err, CCS_RESULT_ERROR_INVALID_VALUE, errmem,
 				"Duplicate possible value");
 		}
 		if (possible_values[i].type == CCS_DATA_TYPE_STRING) {
@@ -381,9 +371,13 @@ _ccs_create_categorical_parameter(
 			pvs + i);
 	}
 	parameter_data->common_data.default_value = pvs[default_value_index].d;
-	parameter->data = (_ccs_parameter_data_t *)parameter_data;
-	*parameter_ret  = parameter;
-	return CCS_RESULT_SUCCESS;
+	*parameter_ret                            = parameter;
+	return err;
+errmem:
+	_ccs_parameter_categorical_del(parameter);
+	_ccs_object_deinit(&(parameter->obj));
+	free((void *)mem);
+	return err;
 }
 
 static inline ccs_result_t

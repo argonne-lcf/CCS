@@ -2,27 +2,13 @@
 #include <assert.h>
 #include <cconfigspace.h>
 #include <string.h>
-
-ccs_parameter_t
-create_numerical(const char *name, double lower, double upper)
-{
-	ccs_parameter_t parameter;
-	ccs_result_t    err;
-	err = ccs_create_numerical_parameter(
-		name, CCS_NUMERIC_TYPE_FLOAT, CCSF(lower), CCSF(upper),
-		CCSF(0.0), CCSF(0), &parameter);
-	assert(err == CCS_RESULT_SUCCESS);
-	return parameter;
-}
+#include "test_utils.h"
 
 void
-test()
+test(void)
 {
-	ccs_parameter_t           parameter1, parameter2;
-	ccs_parameter_t           parameter3;
 	ccs_configuration_space_t cspace;
 	ccs_objective_space_t     ospace;
-	ccs_expression_t          expression;
 	ccs_tuner_t               tuner, tuner_copy;
 	ccs_result_t              err;
 	ccs_datum_t               d;
@@ -30,39 +16,20 @@ test()
 	size_t                    buff_size;
 	ccs_map_t                 map;
 
-	parameter1 = create_numerical("x", -5.0, 5.0);
-	parameter2 = create_numerical("y", -5.0, 5.0);
+	cspace = create_2d_plane(NULL);
+	ospace = create_height_objective(cspace);
 
-	err        = ccs_create_configuration_space("2dplane", &cspace);
-	assert(err == CCS_RESULT_SUCCESS);
-	err = ccs_configuration_space_add_parameter(cspace, parameter1, NULL);
-	assert(err == CCS_RESULT_SUCCESS);
-	err = ccs_configuration_space_add_parameter(cspace, parameter2, NULL);
-	assert(err == CCS_RESULT_SUCCESS);
-
-	parameter3 = create_numerical("z", -CCS_INFINITY, CCS_INFINITY);
-	err        = ccs_create_variable(parameter3, &expression);
-	assert(err == CCS_RESULT_SUCCESS);
-
-	err = ccs_create_objective_space("height", &ospace);
-	assert(err == CCS_RESULT_SUCCESS);
-	err = ccs_objective_space_add_parameter(ospace, parameter3);
-	assert(err == CCS_RESULT_SUCCESS);
-	err = ccs_objective_space_add_objective(
-		ospace, expression, CCS_OBJECTIVE_TYPE_MINIMIZE);
-	assert(err == CCS_RESULT_SUCCESS);
-
-	err = ccs_create_random_tuner("problem", cspace, ospace, &tuner);
+	err    = ccs_create_random_tuner("problem", ospace, &tuner);
 	assert(err == CCS_RESULT_SUCCESS);
 
 	for (size_t i = 0; i < 100; i++) {
-		ccs_datum_t         values[2], res;
-		ccs_configuration_t configuration;
-		ccs_evaluation_t    evaluation;
-		err = ccs_tuner_ask(tuner, 1, &configuration, NULL);
+		ccs_datum_t                values[2], res;
+		ccs_search_configuration_t configuration;
+		ccs_evaluation_t           evaluation;
+		err = ccs_tuner_ask(tuner, NULL, 1, &configuration, NULL);
 		assert(err == CCS_RESULT_SUCCESS);
-		err = ccs_configuration_get_values(
-			configuration, 2, values, NULL);
+		err = ccs_binding_get_values(
+			(ccs_binding_t)configuration, 2, values, NULL);
 		assert(err == CCS_RESULT_SUCCESS);
 		res = ccs_float(
 			(values[0].value.f - 1) * (values[0].value.f - 1) +
@@ -82,7 +49,7 @@ test()
 	size_t           count;
 	ccs_evaluation_t history[100];
 	ccs_datum_t      min = ccs_float(INFINITY);
-	err = ccs_tuner_get_history(tuner, 100, history, &count);
+	err = ccs_tuner_get_history(tuner, NULL, 100, history, &count);
 	assert(err == CCS_RESULT_SUCCESS);
 	assert(count == 100);
 
@@ -96,7 +63,7 @@ test()
 
 	ccs_evaluation_t evaluation;
 	ccs_datum_t      res;
-	err = ccs_tuner_get_optima(tuner, 1, &evaluation, NULL);
+	err = ccs_tuner_get_optima(tuner, NULL, 1, &evaluation, NULL);
 	assert(err == CCS_RESULT_SUCCESS);
 	err = ccs_evaluation_get_objective_value(evaluation, 0, &res);
 	assert(res.value.f == min.value.f);
@@ -122,14 +89,14 @@ test()
 		(ccs_object_t *)&tuner_copy, CCS_SERIALIZE_FORMAT_BINARY,
 		CCS_SERIALIZE_OPERATION_MEMORY, buff_size, buff,
 		CCS_DESERIALIZE_OPTION_HANDLE_MAP, map,
-		CCS_DESERIALIZE_OPTION_END);
+		CCS_DESERIALIZE_OPTION_MAP_HANDLES, CCS_DESERIALIZE_OPTION_END);
 	assert(err == CCS_RESULT_SUCCESS);
 
-	err = ccs_tuner_get_history(tuner_copy, 100, history, &count);
+	err = ccs_tuner_get_history(tuner_copy, NULL, 100, history, &count);
 	assert(err == CCS_RESULT_SUCCESS);
 	assert(count == 100);
 
-	err = ccs_tuner_get_optima(tuner_copy, 1, &evaluation, &count);
+	err = ccs_tuner_get_optima(tuner_copy, NULL, 1, &evaluation, &count);
 	assert(err == CCS_RESULT_SUCCESS);
 	assert(count == 1);
 
@@ -143,14 +110,6 @@ test()
 	assert(err == CCS_RESULT_SUCCESS);
 	err = ccs_release_object(tuner_copy);
 	assert(err == CCS_RESULT_SUCCESS);
-	err = ccs_release_object(expression);
-	assert(err == CCS_RESULT_SUCCESS);
-	err = ccs_release_object(parameter1);
-	assert(err == CCS_RESULT_SUCCESS);
-	err = ccs_release_object(parameter2);
-	assert(err == CCS_RESULT_SUCCESS);
-	err = ccs_release_object(parameter3);
-	assert(err == CCS_RESULT_SUCCESS);
 	err = ccs_release_object(cspace);
 	assert(err == CCS_RESULT_SUCCESS);
 	err = ccs_release_object(ospace);
@@ -160,44 +119,25 @@ test()
 }
 
 void
-test_evaluation_deserialize()
+test_evaluation_deserialize(void)
 {
-	ccs_parameter_t           parameter1, parameter2;
-	ccs_parameter_t           parameter3;
-	ccs_configuration_space_t cspace;
-	ccs_objective_space_t     ospace;
-	ccs_expression_t          expression;
-	ccs_result_t              err;
-	ccs_configuration_t       configuration;
-	ccs_evaluation_t          evaluation_ref, evaluation;
-	ccs_datum_t               res, d;
-	char                     *buff;
-	size_t                    buff_size;
-	ccs_map_t                 map;
-	int                       cmp;
+	ccs_configuration_space_t  cspace;
+	ccs_objective_space_t      ospace;
+	ccs_result_t               err;
+	ccs_search_configuration_t configuration;
+	ccs_evaluation_t           evaluation_ref, evaluation;
+	ccs_datum_t                res, d;
+	char                      *buff;
+	size_t                     buff_size;
+	ccs_map_t                  map;
+	int                        cmp;
 
-	parameter1 = create_numerical("x", -5.0, 5.0);
-	parameter2 = create_numerical("y", -5.0, 5.0);
+	cspace = create_2d_plane(NULL);
+	ospace = create_height_objective(cspace);
 
-	err        = ccs_create_configuration_space("2dplane", &cspace);
-	assert(err == CCS_RESULT_SUCCESS);
-	err = ccs_configuration_space_add_parameter(cspace, parameter1, NULL);
-	assert(err == CCS_RESULT_SUCCESS);
-	err = ccs_configuration_space_add_parameter(cspace, parameter2, NULL);
-	assert(err == CCS_RESULT_SUCCESS);
-	err = ccs_configuration_space_sample(cspace, &configuration);
-	assert(err == CCS_RESULT_SUCCESS);
-
-	parameter3 = create_numerical("z", -CCS_INFINITY, CCS_INFINITY);
-	err        = ccs_create_variable(parameter3, &expression);
-	assert(err == CCS_RESULT_SUCCESS);
-
-	err = ccs_create_objective_space("height", &ospace);
-	assert(err == CCS_RESULT_SUCCESS);
-	err = ccs_objective_space_add_parameter(ospace, parameter3);
-	assert(err == CCS_RESULT_SUCCESS);
-	err = ccs_objective_space_add_objective(
-		ospace, expression, CCS_OBJECTIVE_TYPE_MINIMIZE);
+	err    = ccs_configuration_space_sample(
+                cspace, NULL, NULL, NULL,
+                (ccs_configuration_t *)&configuration);
 	assert(err == CCS_RESULT_SUCCESS);
 
 	res = ccs_float(1.5);
@@ -253,7 +193,8 @@ test_evaluation_deserialize()
 		CCS_DESERIALIZE_OPTION_END);
 	assert(err == CCS_RESULT_SUCCESS);
 
-	err = ccs_evaluation_cmp(evaluation_ref, evaluation, &cmp);
+	err = ccs_binding_cmp(
+		(ccs_binding_t)evaluation_ref, (ccs_binding_t)evaluation, &cmp);
 	assert(err == CCS_RESULT_SUCCESS);
 	assert(!cmp);
 
@@ -266,14 +207,6 @@ test_evaluation_deserialize()
 	assert(err == CCS_RESULT_SUCCESS);
 	err = ccs_release_object(configuration);
 	assert(err == CCS_RESULT_SUCCESS);
-	err = ccs_release_object(expression);
-	assert(err == CCS_RESULT_SUCCESS);
-	err = ccs_release_object(parameter1);
-	assert(err == CCS_RESULT_SUCCESS);
-	err = ccs_release_object(parameter2);
-	assert(err == CCS_RESULT_SUCCESS);
-	err = ccs_release_object(parameter3);
-	assert(err == CCS_RESULT_SUCCESS);
 	err = ccs_release_object(cspace);
 	assert(err == CCS_RESULT_SUCCESS);
 	err = ccs_release_object(ospace);
@@ -281,7 +214,7 @@ test_evaluation_deserialize()
 }
 
 int
-main()
+main(void)
 {
 	ccs_init();
 	test();

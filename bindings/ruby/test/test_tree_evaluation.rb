@@ -2,11 +2,6 @@ require 'minitest/autorun'
 require_relative '../lib/cconfigspace'
 
 class CConfigSpaceTestTreeEvaluation < Minitest::Test
-
-  def setup
-    CCS.init
-  end
-
   def generate_tree(depth, rank)
     ar = depth - rank
     ar = 0 if ar < 0
@@ -21,29 +16,23 @@ class CConfigSpaceTestTreeEvaluation < Minitest::Test
   def test_create
     tree = generate_tree(4, 0)
     ts = CCS::StaticTreeSpace.new(name: 'space', tree: tree)
-    os = CCS::ObjectiveSpace.new(name: 'ospace')
     v1 = CCS::NumericalParameter::Float.new
     v2 = CCS::NumericalParameter::Float.new
-    os.add_parameters([v1, v2])
     e1 = CCS::Expression::Variable.new(parameter: v1)
     e2 = CCS::Expression::Variable.new(parameter: v2)
-    os.add_objectives( { e1 => :CCS_OBJECTIVE_TYPE_MAXIMIZE, e2 => :CCS_OBJECTIVE_TYPE_MINIMIZE } )
-    ev1 = CCS::TreeEvaluation.new(objective_space: os, configuration: ts.sample)
-    ev1.set_value(0, 0.5)
-    ev1.set_value(v2, 0.6)
+    os = CCS::ObjectiveSpace.new(name: 'ospace', search_space: ts, parameters: [v1, v2], objectives: { e1 => :CCS_OBJECTIVE_TYPE_MAXIMIZE, e2 => :CCS_OBJECTIVE_TYPE_MINIMIZE })
+    ev1 = CCS::Evaluation.new(objective_space: os, configuration: ts.sample, values: [0.5, 0.6])
     assert_equal( [0.5, 0.6], ev1.values )
     assert_equal( [0.5, 0.6], ev1.objective_values )
-    assert( ev1.check )
-    assert( os.check_values(ev1.values) )
-    ev2 = CCS::TreeEvaluation.new(objective_space: os, configuration: ts.sample, values: [0.5, 0.6])
+    ev2 = CCS::Evaluation.new(objective_space: os, configuration: ts.sample, values: [0.5, 0.6])
     assert_equal( [0.5, 0.6], ev2.values )
     assert_equal( [0.5, 0.6], ev2.objective_values )
     assert_equal( :CCS_COMPARISON_EQUIVALENT, ev1.compare(ev2) )
-    ev3 = CCS::TreeEvaluation.new(objective_space: os, configuration: ts.sample, values: [0.6, 0.5])
+    ev3 = CCS::Evaluation.new(objective_space: os, configuration: ts.sample, values: [0.6, 0.5])
     assert_equal( [0.6, 0.5], ev3.objective_values )
     assert_equal( :CCS_COMPARISON_WORSE, ev1.compare(ev3) )
     assert_equal( :CCS_COMPARISON_BETTER, ev3.compare(ev1) )
-    ev4 = CCS::TreeEvaluation.new(objective_space: os, configuration: ts.sample, values: [0.6, 0.7])
+    ev4 = CCS::Evaluation.new(objective_space: os, configuration: ts.sample, values: [0.6, 0.7])
     assert_equal( [0.6, 0.7], ev4.objective_values )
     assert_equal( :CCS_COMPARISON_NOT_COMPARABLE, ev1.compare(ev4) )
     assert_equal( :CCS_COMPARISON_NOT_COMPARABLE, ev4.compare(ev1) )
@@ -52,14 +41,12 @@ class CConfigSpaceTestTreeEvaluation < Minitest::Test
   def test_serialize
     tree = generate_tree(4, 0)
     ts = CCS::StaticTreeSpace.new(name: 'space', tree: tree)
-    os = CCS::ObjectiveSpace.new(name: 'ospace')
     v1 = CCS::NumericalParameter::Float.new
     v2 = CCS::NumericalParameter::Float.new
-    os.add_parameters([v1, v2])
     e1 = CCS::Expression::Variable.new(parameter: v1)
     e2 = CCS::Expression::Variable.new(parameter: v2)
-    os.add_objectives( { e1 => :CCS_OBJECTIVE_TYPE_MAXIMIZE, e2 => :CCS_OBJECTIVE_TYPE_MINIMIZE } )
-    evref = CCS::TreeEvaluation.new(objective_space: os, configuration: ts.sample, values: [0.5, 0.6])
+    os = CCS::ObjectiveSpace.new(name: 'ospace', search_space: ts, parameters: [v1, v2], objectives: { e1 => :CCS_OBJECTIVE_TYPE_MAXIMIZE, e2 => :CCS_OBJECTIVE_TYPE_MINIMIZE })
+    evref = CCS::Evaluation.new(objective_space: os, configuration: ts.sample, values: [0.5, 0.6])
     buff = evref.serialize
     handle_map = CCS::Map.new
     handle_map[ts] = ts

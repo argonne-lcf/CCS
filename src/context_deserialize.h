@@ -1,7 +1,5 @@
 #ifndef _CONTEXT_DESERIALIZE_H
 #define _CONTEXT_DESERIALIZE_H
-#include "cconfigspace_internal.h"
-#include "parameter_deserialize.h"
 
 struct _ccs_context_data_mock_s {
 	const char      *name;
@@ -29,8 +27,9 @@ _ccs_deserialize_bin_ccs_context_data(
 			data->num_parameters, sizeof(ccs_parameter_t));
 		CCS_REFUTE(!data->parameters, CCS_RESULT_ERROR_OUT_OF_MEMORY);
 		for (size_t i = 0; i < data->num_parameters; i++)
-			CCS_VALIDATE(_ccs_parameter_deserialize(
-				data->parameters + i,
+			CCS_VALIDATE(_ccs_object_deserialize_with_opts_check(
+				(ccs_object_t *)data->parameters + i,
+				CCS_OBJECT_TYPE_PARAMETER,
 				CCS_SERIALIZE_FORMAT_BINARY, version,
 				buffer_size, buffer, opts));
 	}

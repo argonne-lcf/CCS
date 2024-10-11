@@ -37,7 +37,7 @@ _ccs_serialize_bin_size_ccs_distribution_multivariate_data(
 		&data->common_data);
 	*cum_size += _ccs_serialize_bin_size_size(data->num_distributions);
 	for (size_t i = 0; i < data->num_distributions; i++)
-		CCS_VALIDATE(data->distributions[i]->obj.ops->serialize_size(
+		CCS_VALIDATE(_ccs_object_serialize_size_with_opts(
 			data->distributions[i], CCS_SERIALIZE_FORMAT_BINARY,
 			cum_size, opts));
 	return CCS_RESULT_SUCCESS;
@@ -55,7 +55,7 @@ _ccs_serialize_bin_ccs_distribution_multivariate_data(
 	CCS_VALIDATE(_ccs_serialize_bin_size(
 		data->num_distributions, buffer_size, buffer));
 	for (size_t i = 0; i < data->num_distributions; i++)
-		CCS_VALIDATE(data->distributions[i]->obj.ops->serialize(
+		CCS_VALIDATE(_ccs_object_serialize_with_opts(
 			data->distributions[i], CCS_SERIALIZE_FORMAT_BINARY,
 			buffer_size, buffer, opts));
 	return CCS_RESULT_SUCCESS;
@@ -69,8 +69,6 @@ _ccs_serialize_bin_size_ccs_distribution_multivariate(
 {
 	_ccs_distribution_multivariate_data_t *data =
 		(_ccs_distribution_multivariate_data_t *)(distribution->data);
-	*cum_size += _ccs_serialize_bin_size_ccs_object_internal(
-		(_ccs_object_internal_t *)distribution);
 	CCS_VALIDATE(_ccs_serialize_bin_size_ccs_distribution_multivariate_data(
 		data, cum_size, opts));
 	return CCS_RESULT_SUCCESS;
@@ -85,8 +83,6 @@ _ccs_serialize_bin_ccs_distribution_multivariate(
 {
 	_ccs_distribution_multivariate_data_t *data =
 		(_ccs_distribution_multivariate_data_t *)(distribution->data);
-	CCS_VALIDATE(_ccs_serialize_bin_ccs_object_internal(
-		(_ccs_object_internal_t *)distribution, buffer_size, buffer));
 	CCS_VALIDATE(_ccs_serialize_bin_ccs_distribution_multivariate_data(
 		data, buffer_size, buffer, opts));
 	return CCS_RESULT_SUCCESS;
@@ -110,8 +106,6 @@ _ccs_distribution_multivariate_serialize_size(
 			CCS_RESULT_ERROR_INVALID_VALUE,
 			"Unsupported serialization format: %d", format);
 	}
-	CCS_VALIDATE(_ccs_object_serialize_user_data_size(
-		object, format, cum_size, opts));
 	return CCS_RESULT_SUCCESS;
 }
 
@@ -133,8 +127,6 @@ _ccs_distribution_multivariate_serialize(
 			CCS_RESULT_ERROR_INVALID_VALUE,
 			"Unsupported serialization format: %d", format);
 	}
-	CCS_VALIDATE(_ccs_object_serialize_user_data(
-		object, format, buffer_size, buffer, opts));
 	return CCS_RESULT_SUCCESS;
 }
 
@@ -269,6 +261,7 @@ distrib:
 			ccs_release_object(distributions[i]);
 	}
 errmemory:
+	_ccs_object_deinit(&(distrib->obj));
 	free((void *)mem);
 	return err;
 }
@@ -285,12 +278,6 @@ _ccs_distribution_multivariate_get_bounds(
 	return CCS_RESULT_SUCCESS;
 }
 
-static inline _ccs_distribution_ops_t *
-ccs_distribution_get_ops(ccs_distribution_t distribution)
-{
-	return (_ccs_distribution_ops_t *)distribution->obj.ops;
-}
-
 static ccs_result_t
 _ccs_distribution_multivariate_samples(
 	_ccs_distribution_data_t *data,
@@ -302,7 +289,7 @@ _ccs_distribution_multivariate_samples(
 		(_ccs_distribution_multivariate_data_t *)data;
 
 	for (size_t i = 0; i < d->num_distributions; i++) {
-		CCS_VALIDATE(ccs_distribution_get_ops(d->distributions[i])
+		CCS_VALIDATE(_ccs_distribution_get_ops(d->distributions[i])
 				     ->strided_samples(
 					     d->distributions[i]->data, rng,
 					     num_values,
@@ -324,7 +311,7 @@ _ccs_distribution_multivariate_strided_samples(
 		(_ccs_distribution_multivariate_data_t *)data;
 
 	for (size_t i = 0; i < d->num_distributions; i++) {
-		CCS_VALIDATE(ccs_distribution_get_ops(d->distributions[i])
+		CCS_VALIDATE(_ccs_distribution_get_ops(d->distributions[i])
 				     ->strided_samples(
 					     d->distributions[i]->data, rng,
 					     num_values, stride, values));
@@ -344,26 +331,12 @@ _ccs_distribution_multivariate_soa_samples(
 		(_ccs_distribution_multivariate_data_t *)data;
 
 	for (size_t i = 0; i < d->num_distributions; i++) {
-		CCS_VALIDATE(ccs_distribution_get_ops(d->distributions[i])
+		CCS_VALIDATE(_ccs_distribution_get_ops(d->distributions[i])
 				     ->soa_samples(
 					     d->distributions[i]->data, rng,
 					     num_values, values));
 		values += d->dimensions[i];
 	}
-	return CCS_RESULT_SUCCESS;
-}
-
-ccs_result_t
-ccs_multivariate_distribution_get_num_distributions(
-	ccs_distribution_t distribution,
-	size_t            *num_distributions_ret)
-{
-	CCS_CHECK_DISTRIBUTION(
-		distribution, CCS_DISTRIBUTION_TYPE_MULTIVARIATE);
-	CCS_CHECK_PTR(num_distributions_ret);
-	_ccs_distribution_multivariate_data_t *data =
-		(_ccs_distribution_multivariate_data_t *)distribution->data;
-	*num_distributions_ret = data->num_distributions;
 	return CCS_RESULT_SUCCESS;
 }
 

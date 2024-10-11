@@ -7,7 +7,7 @@ module CCS
   attach_function :ccs_error_stack_push, [:ccs_error_stack_t, :string, :int, :string], :ccs_result_t
   attach_function :ccs_error_stack_get_message, [:ccs_error_stack_t, :pointer], :ccs_result_t
   attach_function :ccs_error_stack_get_code, [:ccs_error_stack_t, :pointer], :ccs_result_t
-  attach_function :ccs_error_stack_get_elems, [:ccs_error_stack_t, :pointer, :pointer], :ccs_result_t
+  attach_function :ccs_error_stack_get_elems, [:ccs_error_stack_t, :size_t, :pointer, :pointer], :ccs_result_t
 
   class ErrorStack < Object
     add_property :code, :ccs_result_t, :ccs_error_stack_get_code, memoize: true
@@ -60,11 +60,11 @@ module CCS
 
     def elems
       ptr1 = MemoryPointer::new(:size_t)
-      ptr2 = MemoryPointer::new(:pointer)
-      CCS.error_check CCS.ccs_error_stack_get_elems(@handle, ptr1, ptr2)
-      count = ptr1.read_size_t
-      ptr = ptr2.read_pointer
-      count.times.collect { |i| Elem.new(ptr + i * Elem.size) }
+      CCS.error_check CCS.ccs_error_stack_get_elems(@handle, 0, nil, ptr1)
+      sz = ptr1.read_size_t
+      ptr2 = MemoryPointer::new(Elem, sz)
+      CCS.error_check CCS.ccs_error_stack_get_elems(@handle, sz, ptr2, nil)
+      sz.times.collect { |i| Elem::new(ptr2[i]) }
     end
  
   end

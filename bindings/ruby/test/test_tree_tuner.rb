@@ -2,11 +2,6 @@ require 'minitest/autorun'
 require_relative '../lib/cconfigspace'
 
 class CConfigSpaceTestTreeTuner < Minitest::Test
-
-  def setup
-    CCS.init
-  end
-
   def generate_tree(depth, rank)
     ar = depth - rank
     ar = 0 if ar < 0
@@ -21,29 +16,26 @@ class CConfigSpaceTestTreeTuner < Minitest::Test
   def create_tuning_problem
     tree = generate_tree(5, 0)
     ts = CCS::StaticTreeSpace.new(name: 'space', tree: tree)
-    os = CCS::ObjectiveSpace.new(name: 'ospace')
     v1 = CCS::NumericalParameter::Float.new(lower: -Float::INFINITY, upper: Float::INFINITY)
-    os.add_parameter(v1)
     e1 = CCS::Expression::Variable.new(parameter: v1)
-    os.add_objectives( {e1 => :CCS_OBJECTIVE_TYPE_MAXIMIZE} )
-    [ts, os]
+    CCS::ObjectiveSpace.new(name: 'ospace', search_space: ts, parameters: [v1], objectives: {e1 => :CCS_OBJECTIVE_TYPE_MAXIMIZE})
   end
 
   def test_create_random
-    ts, os = create_tuning_problem
-    t = CCS::RandomTreeTuner.new(name: "tuner", tree_space: ts, objective_space: os)
+    os = create_tuning_problem
+    t = CCS::RandomTuner.new(name: "tuner", objective_space: os)
     t2 = CCS::Object.from_handle(t)
     assert_equal(t.class, t2.class)
     assert_equal("tuner", t.name)
-    assert_equal(:CCS_TREE_TUNER_TYPE_RANDOM, t.type)
+    assert_equal(:CCS_TUNER_TYPE_RANDOM, t.type)
     evals = t.ask(100).map { |c|
-      CCS::TreeEvaluation.new(objective_space: os, configuration: c, values: [c.values.reduce(:+)])
+      CCS::Evaluation.new(objective_space: os, configuration: c, values: [c.values.reduce(:+)])
     }
     t.tell(evals)
     hist = t.history
     assert_equal(100, hist.size)
     evals = t.ask(100).map { |c|
-      CCS::TreeEvaluation.new(objective_space: os, configuration: c, values: [c.values.reduce(:+)])
+      CCS::Evaluation.new(objective_space: os, configuration: c, values: [c.values.reduce(:+)])
     }
     t.tell(evals)
     hist = t.history
@@ -75,9 +67,9 @@ class CConfigSpaceTestTreeTuner < Minitest::Test
 
   def test_user_defined
     del = lambda { |tuner| nil }
-    ask = lambda { |tuner, count|
+    ask = lambda { |tuner, _, count|
       if count
-        ts = tuner.tree_space
+        ts = tuner.search_space
         [ts.samples(count), count]
       else
         [nil, 1]
@@ -105,33 +97,39 @@ class CConfigSpaceTestTreeTuner < Minitest::Test
         tuner.tuner_data.optima.push(e) unless discard
       }
     }
-    get_history = lambda { |tuner|
+    get_history = lambda { |tuner, _|
       tuner.tuner_data.history
     }
-    get_optima = lambda { |tuner|
+    get_optima = lambda { |tuner, _|
       tuner.tuner_data.optima
     }
-    suggest = lambda { |tuner|
+    suggest = lambda { |tuner, _|
       if tuner.tuner_data.optima.empty?
         ask.call(tuner, 1)
       else
         tuner.tuner_data.optima.sample.configuration
       end
     }
-    ts, os = create_tuning_problem
-    t = CCS::UserDefinedTreeTuner.new(name: "tuner", tree_space: ts, objective_space: os, del: del, ask: ask, tell: tell, get_optima: get_optima, get_history: get_history, suggest: suggest, tuner_data: TreeTunerData.new)
+    get_vector_data = lambda { |otype, name|
+      assert_equal(:CCS_OBJECT_TYPE_TUNER, otype)
+      assert_equal("tuner", name)
+      [CCS::UserDefinedTuner.get_vector(del: del, ask: ask, tell: tell, get_optima: get_optima, get_history: get_history, suggest: suggest), TreeTunerData.new]
+    }
+
+    os = create_tuning_problem
+    t = CCS::UserDefinedTuner.new(name: "tuner", objective_space: os, del: del, ask: ask, tell: tell, get_optima: get_optima, get_history: get_history, suggest: suggest, tuner_data: TreeTunerData.new)
     t2 = CCS::Object::from_handle(t)
     assert_equal( t.class, t2.class)
     assert_equal( "tuner", t.name )
-    assert_equal( :CCS_TREE_TUNER_TYPE_USER_DEFINED, t.type )
+    assert_equal( :CCS_TUNER_TYPE_USER_DEFINED, t.type )
     evals = t.ask(100).map { |c|
-      CCS::TreeEvaluation.new(objective_space: os, configuration: c, values: [c.values.reduce(:+)])
+      CCS::Evaluation.new(objective_space: os, configuration: c, values: [c.values.reduce(:+)])
     }
     t.tell(evals)
     hist = t.history
     assert_equal(100, hist.size)
     evals = t.ask(100).map { |c|
-      CCS::TreeEvaluation.new(objective_space: os, configuration: c, values: [c.values.reduce(:+)])
+      CCS::Evaluation.new(objective_space: os, configuration: c, values: [c.values.reduce(:+)])
     }
     t.tell(evals)
     hist = t.history
@@ -142,7 +140,7 @@ class CConfigSpaceTestTreeTuner < Minitest::Test
     assert_equal(hist.map { |e| e.objective_values.first }.max, best)
     assert(optims.map(&:configuration).include?(t.suggest))
     buff = t.serialize
-    t_copy = CCS::UserDefinedTreeTuner.deserialize(buffer: buff, del: del, ask: ask, tell: tell, get_optima: get_optima, get_history: get_history, suggest: suggest, tuner_data: TreeTunerData.new)
+    t_copy = CCS.deserialize(buffer: buff, vector_callback: get_vector_data)
     hist = t_copy.history
     assert_equal(200, hist.size)
     optims_2 = t_copy.optima

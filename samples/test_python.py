@@ -4,26 +4,26 @@ import ctypes as ct
 from math import sin
 
 class TestTuner(ccs.UserDefinedTuner):
-  def __init__(self, cs, os):
-    self.__history = []
-    self.__optima = []
+  def __init__(self, os):
+    data = [[], []]
 
     def delete(tuner):
       return None
 
-    def ask(tuner, count):
+    def ask(tuner, features, count):
       if count is None:
         return (None, 1)
       else:
-        cs = tuner.configuration_space
+        cs = tuner.search_space
         return (cs.samples(count), count)
 
     def tell(tuner, evaluations):
-      self.__history += evaluations
+      history_optima = tuner.tuner_data
+      history_optima[0] += evaluations
       for e in evaluations:
         discard = False
         new_optima = []
-        for o in self.__optima:
+        for o in history_optima[1]:
           if discard:
             new_optima.append(o)
           else:
@@ -35,50 +35,45 @@ class TestTuner(ccs.UserDefinedTuner):
               new_optima.append(o)
         if not discard:
           new_optima.append(e)
-        self.__optima = new_optima
+        history_optima[1] = new_optima
       return None
 
-    def get_history(tuner):
-      return self.__history
+    def get_history(tuner, features):
+      return tuner.tuner_data[0]
 
-    def get_optima(tuner):
-      return self.__optima
+    def get_optima(tuner, features):
+      return tuner.tuner_data[1]
 
-    super().__init__(name = "tuner", configuration_space = cs, objective_space = os, delete = delete, ask = ask, tell = tell, get_optima = get_optima, get_history = get_history)
+    super().__init__(name = "tuner", objective_space = os, delete = delete, ask = ask, tell = tell, get_optima = get_optima, get_history = get_history, tuner_data = data)
 
 
-def create_test_tuner(cs_ptr, os_ptr):
-  cs_handle = ccs.ccs_configuration_space(cs_ptr)
+def create_test_tuner(os_ptr):
   os_handle = ccs.ccs_objective_space(os_ptr)
-  cs = ccs.ConfigurationSpace.from_handle(cs_handle)
   os = ccs.ObjectiveSpace.from_handle(os_handle)
-  t = TestTuner(cs, os)
+  t = TestTuner(os)
   return t
 
 def create_tuning_problem():
-  cs = ccs.ConfigurationSpace(name = "cspace")
   h1 = ccs.NumericalParameter.Float(lower = -5.0, upper = 5.0)
   h2 = ccs.NumericalParameter.Float(lower = -5.0, upper = 5.0)
   h3 = ccs.NumericalParameter.Float(lower = -5.0, upper = 5.0)
-  cs.add_parameters([h1, h2, h3])
-  os = ccs.ObjectiveSpace(name = "ospace")
+  cs = ccs.ConfigurationSpace(name = "cspace", parameters = [h1, h2, h3])
   v1 = ccs.NumericalParameter.Float(lower = float('-inf'), upper = float('inf'))
   v2 = ccs.NumericalParameter.Float(lower = float('-inf'), upper = float('inf'))
-  os.add_parameters([v1, v2])
   e1 = ccs.Expression.Variable(parameter = v1)
   e2 = ccs.Expression.Variable(parameter = v2)
-  os.add_objectives( [e1, e2] )
-  return (cs, os)
+  os = ccs.ObjectiveSpace(name = "ospace", search_space = cs, parameters = [v1, v2], objectives = [e1, e2])
+  return os
 
 
 class Test(unittest.TestCase):
   def test_user_defined(self):
-    (cs, os) = create_tuning_problem()
-    t = TestTuner(cs, os)
+    os = create_tuning_problem()
+    t = TestTuner(os)
     self.assertEqual("tuner", t.name)
     self.assertEqual(ccs.TunerType.USER_DEFINED, t.type)
-    self.assertEqual(cs.handle.value, t.configuration_space.handle.value)
     self.assertEqual(os.handle.value, t.objective_space.handle.value)
+    self.assertEqual(os.search_space.handle.value, t.search_space.handle.value)
     func = lambda x, y, z: [(x-2)*(x-2), sin(z+y)]
     evals = [ccs.Evaluation(objective_space = os, configuration = c, values = func(*(c.values))) for c in t.ask(100)]
     t.tell(evals)

@@ -1,21 +1,14 @@
 require 'minitest/autorun'
 require_relative '../lib/cconfigspace'
 
-class CConfigSpaceTestFeaturesSpace < Minitest::Test
-  def setup
-    CCS.init
-  end
-
+class CConfigSpaceTestFeatureSpace < Minitest::Test
   def test_create
-    cs = CCS::FeaturesSpace::new(name: "space")
-    assert_equal( :CCS_OBJECT_TYPE_FEATURES_SPACE, cs.object_type )
-    assert_equal( "space", cs.name )
-    assert_equal( 0, cs.num_parameters )
     h1 = CCS::NumericalParameter::Float.new
     h2 = CCS::NumericalParameter::Float.new
     h3 = CCS::NumericalParameter::Float.new
-    cs.add_parameter(h1)
-    cs.add_parameters([h2, h3])
+    cs = CCS::FeatureSpace::new(name: "space", parameters: [h1, h2, h3])
+    assert_equal( :CCS_OBJECT_TYPE_FEATURE_SPACE, cs.object_type )
+    assert_equal( "space", cs.name )
     assert_equal( 3, cs.num_parameters )
     assert_equal( h1, cs.parameter(0) )
     assert_equal( h2, cs.parameter(1) )
