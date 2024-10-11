@@ -63,7 +63,6 @@ void
 test_dynamic_tree_space(void)
 {
 	ccs_result_t             err;
-	ccs_bool_t               is_valid;
 	ccs_tree_t               root, tree;
 	ccs_tree_space_t         tree_space;
 	ccs_tree_space_type_t    tree_type;
@@ -108,16 +107,18 @@ test_dynamic_tree_space(void)
 	assert(err == CCS_RESULT_SUCCESS);
 	assert(values[0].value.i == 400 + 0);
 	free(values);
-	err = ccs_tree_space_check_position(tree_space, 0, NULL, &is_valid);
+
+	err = ccs_create_tree_configuration(tree_space, NULL, 0, NULL, &config);
 	assert(err == CCS_RESULT_SUCCESS);
-	assert(is_valid == CCS_TRUE);
+	ccs_release_object(config);
 
 	position    = (size_t *)malloc(2 * sizeof(size_t));
 	position[0] = 1;
 	position[0] = 4;
-	err = ccs_tree_space_check_position(tree_space, 2, position, &is_valid);
-	assert(err == CCS_RESULT_SUCCESS);
-	assert(is_valid == CCS_FALSE);
+
+	err         = ccs_create_tree_configuration(
+                tree_space, NULL, 2, position, &config);
+	assert(err == CCS_RESULT_ERROR_INVALID_VALUE);
 
 	position[0] = 1;
 	position[1] = 1;
@@ -141,10 +142,6 @@ test_dynamic_tree_space(void)
 	err = ccs_tree_space_sample(tree_space, NULL, NULL, &config);
 	assert(err == CCS_RESULT_SUCCESS);
 
-	err = ccs_tree_space_samples(
-		tree_space, NULL, NULL, NUM_SAMPLES, configs);
-	assert(err == CCS_RESULT_SUCCESS);
-
 	char  *buff;
 	size_t buff_size;
 
@@ -163,6 +160,10 @@ test_dynamic_tree_space(void)
 		CCS_SERIALIZE_OPTION_END);
 	assert(err == CCS_RESULT_SUCCESS);
 
+	err = ccs_tree_space_samples(
+		tree_space, NULL, NULL, NUM_SAMPLES, configs);
+	assert(err == CCS_RESULT_SUCCESS);
+
 	inv_sum = 0;
 	for (size_t i = 0; i < 5; i++) {
 		depths[i] = 0;
@@ -170,10 +171,6 @@ test_dynamic_tree_space(void)
 	}
 	inv_sum = 1.0 / inv_sum;
 	for (size_t i = 0; i < NUM_SAMPLES; i++) {
-		err = ccs_tree_space_check_configuration(
-			tree_space, configs[i], &is_valid);
-		assert(err == CCS_RESULT_SUCCESS);
-		assert(is_valid == CCS_TRUE);
 		err = ccs_tree_configuration_get_position(
 			configs[i], 0, NULL, &position_size);
 		assert(err == CCS_RESULT_SUCCESS);
@@ -215,10 +212,6 @@ test_dynamic_tree_space(void)
 	}
 	inv_sum = 1.0 / inv_sum;
 	for (size_t i = 0; i < NUM_SAMPLES; i++) {
-		err = ccs_tree_space_check_configuration(
-			tree_space, configs[i], &is_valid);
-		assert(err == CCS_RESULT_SUCCESS);
-		assert(is_valid == CCS_TRUE);
 		err = ccs_tree_configuration_get_position(
 			configs[i], 0, NULL, &position_size);
 		assert(err == CCS_RESULT_SUCCESS);

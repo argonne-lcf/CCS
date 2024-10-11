@@ -192,29 +192,6 @@ ccs_tree_get_values(
 	size_t      *num_values_ret);
 
 /**
- * Check if a position can be reached from a tree node.
- * @param[in] tree
- * @param[in] position_size the number of entries in the \p position array
- * @param[in] position an array of indexes defining a location in the tree.
- * @param[out] is_valid_ret a pointer to a variable that will hold the result
- *                          of the check. Result will be CCS_TRUE if the
- *                          configuration is valid. Result will be CCS_FALSE if
- *                          the position does not reference a node of the tree.
- * @return #CCS_RESULT_SUCCESS on success
- * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p tree is not a valid CCS tree
- * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p is_valid_ret is NULL; or if \p
- * position is NULL and \p position_size is greater than 0
- * @remarks
- *   This function is thread-safe
- */
-extern ccs_result_t
-ccs_tree_position_is_valid(
-	ccs_tree_t    tree,
-	size_t        position_size,
-	const size_t *position,
-	ccs_bool_t   *is_valid_ret);
-
-/**
  * Get the values along the path to a given position from a tree node.
  * @param[in] tree
  * @param[in] position_size the number of entries in the \p position array
@@ -226,8 +203,10 @@ ccs_tree_position_is_valid(
  *                    are set to #CCS_DATA_TYPE_NONE
  * @return #CCS_RESULT_SUCCESS on success
  * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p tree is not a valid CCS tree
- * @return #CCS_RESULT_ERROR_INVALID_TREE if the position does not reference
- * node in the tree.
+ * @return #CCS_RESULT_ERROR_OUT_OF_BOUNDS if \p position does not define a
+ * valid position in \p tree
+ * @return #CCS_RESULT_ERROR_INVALID_TREE if one child node described by \p
+ * position is undefined in \p tree
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p values is NULL; if \p
  * num_values is less than \p position_size + 1; or if \p position is NULL and
  * \p position_size is greater than 0
@@ -253,9 +232,10 @@ ccs_tree_get_values_at_position(
  * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p tree is not a valid CCS tree
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p tree_ret is NULL; or if \p
  * position is NULL and \p position_size is greater than 0
- * @return #CCS_RESULT_ERROR_INVALID_TREE if the position does not define a
- * valid position in the tree space, or if this position is undefined in a
- * static tree space.
+ * @return #CCS_RESULT_ERROR_OUT_OF_BOUNDS if \p position does not define a
+ * valid position in \p tree
+ * @return #CCS_RESULT_ERROR_INVALID_TREE if one child node described by \p
+ * position is undefined in \p tree
  * @remarks
  *   This function is thread-safe
  */

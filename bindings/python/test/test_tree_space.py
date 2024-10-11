@@ -29,14 +29,9 @@ class TestTreeSpace(unittest.TestCase):
     self.assertEqual( tree.handle.value, ts.get_node_at_position([]).handle.value )
     self.assertEqual( 201, ts.get_node_at_position([1, 1]).value )
     self.assertEqual( [400, 301, 201], ts.get_values_at_position([1, 1]) )
-    self.assertTrue( ts.check_position([1, 1]) )
-    self.assertFalse( ts.check_position([1, 4]) )
 
-    tc = ts.sample()
-    self.assertTrue( ts.check_configuration(tc) )
-
-    for x in ts.samples(100):
-      self.assertTrue( ts.check_configuration(x) )
+    ts.sample()
+    ts.samples(100)
 
     buff = ts.serialize()
     ts2 = ccs.Object.deserialize(buffer = buff)
@@ -68,14 +63,8 @@ class TestTreeSpace(unittest.TestCase):
     self.assertEqual( tree.handle.value, ts.get_node_at_position([]).handle.value )
     self.assertEqual( 201, ts.get_node_at_position([1, 1]).value )
     self.assertEqual( [400, 301, 201], ts.get_values_at_position([1, 1]) )
-    self.assertTrue( ts.check_position([1, 1]) )
-    self.assertFalse( ts.check_position([1, 4]) )
-    tc = ts.sample()
-    self.assertTrue( ts.check_configuration(tc) )
-
-    for i in range(100):
-      tc = ts.sample()
-      self.assertTrue( ts.check_configuration(tc) )
+    ts.sample()
+    ts.samples(100)
 
     buff = ts.serialize()
     ts2 = ccs.deserialize(buffer = buff, vector_callback = get_vector_data)
@@ -84,11 +73,6 @@ class TestTreeSpace(unittest.TestCase):
   def test_tree_configuration(self):
     tree = generate_tree(4, 0)
     ts = ccs.StaticTreeSpace(name = 'space', tree = tree)
-    tc = ts.sample()
-    self.assertTrue( tc.check() )
-    for x in ts.samples(100):
-      self.assertTrue( x.check() )
-
     tc = ccs.TreeConfiguration(tree_space = ts, position = [1, 1])
     self.assertEqual( tc.tree_space.handle.value, ts.handle.value )
     self.assertEqual( 2, tc.position_size )
@@ -96,7 +80,5 @@ class TestTreeSpace(unittest.TestCase):
     self.assertEqual( [400, 301, 201], tc.values )
     self.assertEqual( ts.get_node_at_position([1, 1]).handle.value, tc.node.handle.value )
     tc2 = ccs.TreeConfiguration(tree_space = ts, position = [1, 0])
-    self.assertTrue( tc.check() )
-    self.assertTrue( tc2.check() )
     self.assertNotEqual( tc.hash, tc2.hash )
     self.assertTrue( tc < tc2 or tc > tc2 )

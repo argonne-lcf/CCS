@@ -29,7 +29,8 @@ extern "C" {
  * @return #CCS_RESULT_ERROR_INVALID_FEATURES if features feature space is not
  * the same as the feature space provided at \p tree_space creation.
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p configuration_ret is NULL; or
- * if \p position is NULL and \p position_size is greater than 0
+ * if \p position is NULL and \p position_size is greater than 0; or if \p
+ * position does not describe a valid position in the tree space
  * @return #CCS_RESULT_ERROR_OUT_OF_MEMORY if there was a lack of memory to
  * allocate the new tree configuration
  * @remarks
@@ -118,8 +119,6 @@ ccs_tree_configuration_get_position(
  * @return #CCS_RESULT_SUCCESS on success
  * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p configuration is not a valid
  * CCS tree configuration
- * @return #CCS_RESULT_ERROR_INVALID_TREE if the configuration's position does
- * not reference a node in the tree.
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p values is NULL and \p
  * num_values is greater than 0; or if \p values is NULL and \p num_values_ret
  * is NULL; or if \p num_values is less than the number of values that would be
@@ -142,8 +141,6 @@ ccs_tree_configuration_get_values(
  * @return #CCS_RESULT_SUCCESS on success
  * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p configuration is not a valid
  * CCS tree configuration
- * @return #CCS_RESULT_ERROR_INVALID_TREE if the configuration's position does
- * not reference a node in the tree.
  * @return #CCS_RESULT_ERROR_INVALID_VALUE \p node_ret is NULL
  * @remarks
  *   This function is thread-safe
@@ -152,26 +149,6 @@ extern ccs_result_t
 ccs_tree_configuration_get_node(
 	ccs_tree_configuration_t configuration,
 	ccs_tree_t              *node_ret);
-
-/**
- * Verify that the position of the configuration is a valid position in the
- * tree space.
- * @param[in] configuration
- * @param[out] is_valid_ret a pointer to a variable that will hold the result
- *                          of the check. Result will be #CCS_TRUE if the
- *                          configuration is valid. Result will be #CCS_FALSE
- *                          if the position does not reference a node of the
- *                          tree.
- * @return #CCS_RESULT_SUCCESS on success
- * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p configuration is not a valid
- * CCS tree configuration
- * @remarks
- *   This function is thread-safe
- */
-extern ccs_result_t
-ccs_tree_configuration_check(
-	ccs_tree_configuration_t configuration,
-	ccs_bool_t              *is_valid_ret);
 
 /**
  * Compute a hash value for the configuration by hashing together the

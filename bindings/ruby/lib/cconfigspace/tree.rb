@@ -9,7 +9,6 @@ module CCS
   attach_function :ccs_tree_get_parent, [:ccs_tree_t, :pointer, :pointer], :ccs_result_t
   attach_function :ccs_tree_get_position, [:ccs_tree_t, :size_t, :pointer, :pointer], :ccs_result_t
   attach_function :ccs_tree_get_values, [:ccs_tree_t, :size_t, :pointer, :pointer], :ccs_result_t
-  attach_function :ccs_tree_position_is_valid, [:ccs_tree_t, :size_t, :pointer, :pointer], :ccs_result_t
   attach_function :ccs_tree_get_values_at_position, [:ccs_tree_t, :size_t, :pointer, :size_t, :pointer], :ccs_result_t
   attach_function :ccs_tree_get_node_at_position, [:ccs_tree_t, :size_t, :pointer, :pointer], :ccs_result_t
   attach_function :ccs_tree_get_weight, [:ccs_tree_t, :pointer], :ccs_result_t
@@ -81,15 +80,6 @@ module CCS
 
     alias depth num_position_items
     alias position position_items
-
-    def position_is_valid?(position)
-      count = position.size
-      ptr1 = MemoryPointer::new(:size_t, count)
-      ptr1.write_array_of_size_t(position)
-      ptr2 = MemoryPointer::new(:ccs_bool_t)
-      CCS.error_check CCS.ccs_tree_position_is_valid(@handle, count, ptr1, ptr2)
-      ptr2.read_ccs_bool_t == CCS::FALSE ? false : true
-    end
 
     def get_values_at_position(position)
       count1 = position.size

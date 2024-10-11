@@ -145,11 +145,6 @@ test_static_tree_space(void)
 	}
 	inv_sum = 1.0 / inv_sum;
 	for (size_t i = 0; i < NUM_SAMPLES; i++) {
-		ccs_bool_t is_valid;
-		err = ccs_tree_space_check_configuration(
-			tree_space, configs[i], &is_valid);
-		assert(err == CCS_RESULT_SUCCESS);
-		assert(is_valid == CCS_TRUE);
 		err = ccs_tree_configuration_get_position(
 			configs[i], 0, NULL, &position_size);
 		assert(err == CCS_RESULT_SUCCESS);
@@ -199,11 +194,6 @@ test_static_tree_space(void)
 	}
 	inv_sum = 1.0 / inv_sum;
 	for (size_t i = 0; i < NUM_SAMPLES; i++) {
-		ccs_bool_t is_valid;
-		err = ccs_tree_space_check_configuration(
-			tree_space, configs[i], &is_valid);
-		assert(err == CCS_RESULT_SUCCESS);
-		assert(is_valid == CCS_TRUE);
 		err = ccs_tree_configuration_get_position(
 			configs[i], 0, NULL, &position_size);
 		assert(err == CCS_RESULT_SUCCESS);

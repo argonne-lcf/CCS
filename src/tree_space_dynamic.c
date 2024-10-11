@@ -216,8 +216,6 @@ _ccs_tree_space_dynamic_check_position(
 	const size_t    *position,
 	ccs_bool_t      *is_valid_ret)
 {
-	CCS_CHECK_ARY(position_size, position);
-	CCS_CHECK_PTR(is_valid_ret);
 	_ccs_tree_space_dynamic_data_t *data =
 		(_ccs_tree_space_dynamic_data_t *)tree_space->data;
 	ccs_tree_t parent = data->common_data.tree;

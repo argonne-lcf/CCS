@@ -17,8 +17,6 @@ ccs_tree_space_get_feature_space = _ccs_get_function("ccs_tree_space_get_feature
 ccs_tree_space_get_tree = _ccs_get_function("ccs_tree_space_get_tree", [ccs_tree_space, ct.POINTER(ccs_tree)])
 ccs_tree_space_get_node_at_position = _ccs_get_function("ccs_tree_space_get_node_at_position", [ccs_tree_space, ct.c_size_t, ct.POINTER(ct.c_size_t), ct.POINTER(ccs_tree)])
 ccs_tree_space_get_values_at_position = _ccs_get_function("ccs_tree_space_get_values_at_position", [ccs_tree_space, ct.c_size_t, ct.POINTER(ct.c_size_t), ct.c_size_t, ct.POINTER(Datum)])
-ccs_tree_space_check_position = _ccs_get_function("ccs_tree_space_check_position", [ccs_tree_space, ct.c_size_t, ct.POINTER(ct.c_size_t), ct.POINTER(ccs_bool)])
-ccs_tree_space_check_configuration = _ccs_get_function("ccs_tree_space_check_configuration", [ccs_tree_space, ccs_tree_configuration, ct.POINTER(ccs_bool)])
 ccs_tree_space_sample = _ccs_get_function("ccs_tree_space_sample", [ccs_tree_space, ccs_features, ccs_rng, ct.POINTER(ccs_tree_configuration)])
 ccs_tree_space_samples = _ccs_get_function("ccs_tree_space_samples", [ccs_tree_space, ccs_features, ccs_rng, ct.c_size_t, ct.POINTER(ccs_tree_configuration)])
 
@@ -105,20 +103,6 @@ class TreeSpace(Object):
     res = ccs_tree_space_get_values_at_position(self.handle, count, v1, count + 1, v2)
     Error.check(res)
     return [x.value for x in v2]
-
-  def check_position(self, position):
-    count = len(position)
-    v = (ct.c_size_t * count)(*position)
-    b = ccs_bool()
-    res = ccs_tree_space_check_position(self.handle, count, v, ct.byref(b))
-    Error.check(res)
-    return not (b.value == 0)
-
-  def check_configuration(self, configuration):
-    b = ccs_bool()
-    res = ccs_tree_space_check_configuration(self.handle, configuration.handle, ct.byref(b))
-    Error.check(res)
-    return not (b.value == 0)
 
   def sample(self, features = None, rng = None):
     if features is not None:

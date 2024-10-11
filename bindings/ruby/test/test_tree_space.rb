@@ -26,15 +26,9 @@ class CConfigSpaceTestTreeSpace < Minitest::Test
     assert_equal( tree.handle, ts.get_node_at_position([]).handle )
     assert_equal( 201, ts.get_node_at_position([1, 1]).value )
     assert_equal( [400, 301, 201], ts.get_values_at_position([1, 1]) )
-    assert( ts.check_position([1, 1]) )
-    refute( ts.check_position([1, 4]) )
 
-    tc = ts.sample
-    assert( ts.check_configuration(tc) )
-
-    ts.samples(100).each{ |x|
-      assert( ts.check_configuration(x) )
-    }
+    ts.sample
+    ts.samples(100)
 
     buff = ts.serialize
     ts2 = CCS.deserialize(buffer: buff)
@@ -64,15 +58,9 @@ class CConfigSpaceTestTreeSpace < Minitest::Test
     assert_equal( tree.handle, ts.get_node_at_position([]).handle )
     assert_equal( 201, ts.get_node_at_position([1, 1]).value )
     assert_equal( [400, 301, 201], ts.get_values_at_position([1, 1]) )
-    assert( ts.check_position([1, 1]) )
-    refute( ts.check_position([1, 4]) )
-    tc = ts.sample
-    assert( ts.check_configuration(tc) )
 
-    100.times {
-      tc = ts.sample
-      assert( ts.check_configuration(tc) )
-    }
+    ts.sample
+    ts.samples(100)
 
     buff = ts.serialize
     ts2 = CCS::deserialize(buffer: buff, vector_callback: get_vector_data)
@@ -82,10 +70,6 @@ class CConfigSpaceTestTreeSpace < Minitest::Test
   def test_tree_configuration
     tree = generate_tree(4, 0)
     ts = CCS::StaticTreeSpace.new(name: 'space', tree: tree)
-    tc = ts.sample
-    assert( tc.check )
-    ts.samples(100).each { |x| assert( x.check ) }
-
     tc = CCS::TreeConfiguration.new(tree_space: ts, position: [1, 1])
     assert_equal( tc.tree_space.handle, ts.handle )
     assert_equal( 2, tc.position_size )
@@ -93,8 +77,6 @@ class CConfigSpaceTestTreeSpace < Minitest::Test
     assert_equal( [400, 301, 201], tc.values )
     assert_equal( ts.get_node_at_position([1, 1]).handle, tc.node.handle )
     tc2 = CCS::TreeConfiguration.new(tree_space: ts, position: [1, 0])
-    assert( tc.check() )
-    assert( tc2.check() )
     refute_equal( tc.hash, tc2.hash )
     assert( tc < tc2 || tc > tc2 )
   end

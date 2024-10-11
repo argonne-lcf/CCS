@@ -17,8 +17,6 @@ module CCS
   attach_function :ccs_tree_space_get_tree, [:ccs_tree_space_t, :pointer], :ccs_result_t
   attach_function :ccs_tree_space_get_node_at_position, [:ccs_tree_space_t, :size_t, :pointer, :pointer], :ccs_result_t
   attach_function :ccs_tree_space_get_values_at_position, [:ccs_tree_space_t, :size_t, :pointer, :size_t, :pointer], :ccs_result_t
-  attach_function :ccs_tree_space_check_position, [:ccs_tree_space_t, :size_t, :pointer, :pointer], :ccs_result_t
-  attach_function :ccs_tree_space_check_configuration, [:ccs_tree_space_t, :ccs_tree_configuration_t, :pointer], :ccs_result_t
   attach_function :ccs_tree_space_sample, [:ccs_tree_space_t, :ccs_features_t, :ccs_rng_t, :pointer], :ccs_result_t
   attach_function :ccs_tree_space_samples, [:ccs_tree_space_t, :ccs_features_t, :ccs_rng_t, :size_t, :pointer], :ccs_result_t
 
@@ -66,21 +64,6 @@ module CCS
       ptr2 = MemoryPointer::new(:ccs_datum_t, count2)
       CCS.error_check CCS.ccs_tree_space_get_values_at_position(@handle, count1, ptr1, count2, ptr2)
       count2.times.collect { |i| Datum::new(ptr2[i]).value }
-    end
-
-    def check_position(position)
-      count = position.size
-      ptr1 = MemoryPointer::new(:size_t, count)
-      ptr1.write_array_of_size_t(position)
-      ptr2 = MemoryPointer::new(:ccs_bool_t)
-      CCS.error_check CCS.ccs_tree_space_check_position(@handle, count, ptr1, ptr2)
-      ptr2.read_ccs_bool_t == CCS::FALSE ? false : true
-    end
-
-    def check_configuration(configuration)
-      ptr = MemoryPointer::new(:ccs_bool_t)
-      CCS.error_check CCS.ccs_tree_space_check_configuration(@handle, configuration, ptr)
-      ptr.read_ccs_bool_t == CCS::FALSE ? false : true
     end
 
     def sample(features: nil, rng: nil)

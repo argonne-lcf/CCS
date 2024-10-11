@@ -11,7 +11,6 @@ ccs_tree_configuration_get_features = _ccs_get_function("ccs_tree_configuration_
 ccs_tree_configuration_get_position = _ccs_get_function("ccs_tree_configuration_get_position", [ccs_tree_configuration, ct.c_size_t, ct.POINTER(ct.c_size_t), ct.POINTER(ct.c_size_t)])
 ccs_tree_configuration_get_values = _ccs_get_function("ccs_tree_configuration_get_values", [ccs_tree_configuration, ct.c_size_t, ct.POINTER(Datum), ct.POINTER(ct.c_size_t)])
 ccs_tree_configuration_get_node = _ccs_get_function("ccs_tree_configuration_get_node", [ccs_tree_configuration, ct.POINTER(ccs_tree)])
-ccs_tree_configuration_check = _ccs_get_function("ccs_tree_configuration_check", [ccs_tree_configuration, ct.POINTER(ccs_bool)])
 ccs_tree_configuration_hash = _ccs_get_function("ccs_tree_configuration_hash", [ccs_tree_configuration, ct.POINTER(ccs_hash)])
 ccs_tree_configuration_cmp = _ccs_get_function("ccs_tree_configuration_cmp", [ccs_tree_configuration, ccs_tree_configuration, ct.POINTER(ct.c_int)])
 
@@ -100,12 +99,6 @@ class TreeConfiguration(Object):
     Error.check(res)
     self._node = Tree.from_handle(v)
     return self._node
-
-  def check(self):
-    valid = ccs_bool()
-    res = ccs_tree_configuration_check(self.handle, ct.byref(valid))
-    Error.check(res)
-    return not (valid.value == 0)
 
   @property
   def hash(self):

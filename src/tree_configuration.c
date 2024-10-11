@@ -159,6 +159,7 @@ ccs_create_tree_configuration(
 	CCS_CHECK_PTR(configuration_ret);
 	CCS_CHECK_ARY(position_size, position);
 	ccs_result_t err;
+	ccs_bool_t   is_valid;
 	uintptr_t    mem = (uintptr_t)calloc(
                 1, sizeof(struct _ccs_tree_configuration_s) +
                            sizeof(struct _ccs_tree_configuration_data_s) +
@@ -190,6 +191,14 @@ ccs_create_tree_configuration(
 	config->data->features = features;
 	memcpy(config->data->position, position,
 	       position_size * sizeof(size_t));
+	CCS_VALIDATE_ERR_GOTO(
+		err,
+		_ccs_tree_space_check_position(
+			tree_space, config->data->position_size,
+			config->data->position, &is_valid),
+		errinit);
+	CCS_REFUTE_ERR_GOTO(
+		err, !is_valid, CCS_RESULT_ERROR_INVALID_VALUE, errinit);
 	*configuration_ret = config;
 	return CCS_RESULT_SUCCESS;
 errinit:
@@ -275,20 +284,6 @@ ccs_tree_configuration_get_node(
 		configuration->data->tree_space,
 		configuration->data->position_size,
 		configuration->data->position, tree_ret));
-	return CCS_RESULT_SUCCESS;
-}
-
-ccs_result_t
-ccs_tree_configuration_check(
-	ccs_tree_configuration_t configuration,
-	ccs_bool_t              *is_valid_ret)
-{
-	CCS_CHECK_OBJ(configuration, CCS_OBJECT_TYPE_TREE_CONFIGURATION);
-	CCS_CHECK_PTR(is_valid_ret);
-	CCS_VALIDATE(ccs_tree_space_check_position(
-		configuration->data->tree_space,
-		configuration->data->position_size,
-		configuration->data->position, is_valid_ret));
 	return CCS_RESULT_SUCCESS;
 }
 

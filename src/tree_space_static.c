@@ -152,8 +152,15 @@ _ccs_tree_space_static_check_position(
 {
 	_ccs_tree_space_static_data_t *data =
 		(_ccs_tree_space_static_data_t *)tree_space->data;
-	CCS_VALIDATE(ccs_tree_position_is_valid(
-		data->common_data.tree, position_size, position, is_valid_ret));
+	ccs_tree_t tree = data->common_data.tree;
+	for (size_t i = 0; i < position_size; i++) {
+		if (!tree || position[i] >= tree->data->arity) {
+			*is_valid_ret = CCS_FALSE;
+			return CCS_RESULT_SUCCESS;
+		}
+		tree = tree->data->children[position[i]];
+	}
+	*is_valid_ret = CCS_TRUE;
 	return CCS_RESULT_SUCCESS;
 }
 

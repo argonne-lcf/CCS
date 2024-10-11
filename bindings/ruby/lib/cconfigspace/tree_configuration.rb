@@ -6,7 +6,6 @@ module CCS
   attach_function :ccs_tree_configuration_get_position, [:ccs_tree_configuration_t, :size_t, :pointer, :pointer], :ccs_result_t
   attach_function :ccs_tree_configuration_get_values, [:ccs_tree_configuration_t, :size_t, :pointer, :pointer], :ccs_result_t
   attach_function :ccs_tree_configuration_get_node, [:ccs_tree_configuration_t, :pointer], :ccs_result_t
-  attach_function :ccs_tree_configuration_check, [:ccs_tree_configuration_t, :pointer], :ccs_result_t
   attach_function :ccs_tree_configuration_hash, [:ccs_tree_configuration_t, :pointer], :ccs_result_t
   attach_function :ccs_tree_configuration_cmp, [:ccs_tree_configuration_t, :ccs_tree_configuration_t, :pointer], :ccs_result_t
 
@@ -39,12 +38,6 @@ module CCS
 
     alias position_size num_position_items
     alias position position_items
-
-    def check
-      ptr = MemoryPointer::new(:ccs_bool_t)
-      CCS.error_check CCS.ccs_tree_configuration_check(@handle, ptr)
-      ptr.read_ccs_bool_t == CCS::FALSE ? false : true
-    end
 
     def <=>(other)
       ptr = MemoryPointer::new(:int)

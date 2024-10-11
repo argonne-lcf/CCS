@@ -245,9 +245,10 @@ ccs_tree_space_get_tree(ccs_tree_space_t tree_space, ccs_tree_t *tree_ret);
  * tree space
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p tree_ret is NULL; or if \p
  * position is NULL and \p position_size is greater than 0
- * @return #CCS_RESULT_ERROR_INVALID_TREE if the position does not define a
- * valid position in the tree space, or if this position is undefined in a
- * static tree space.
+ * @return #CCS_RESULT_ERROR_OUT_OF_BOUNDS if \p position does not define a
+ * valid position in \p tree_space
+ * @return #CCS_RESULT_ERROR_INVALID_TREE if one child node described by \p
+ * position is undefined and \p tree_space is a static tree space
  * @remarks
  *   This function is NOT thread-safe for dynamic tree spaces as it can
  *   instanciate new children
@@ -272,8 +273,10 @@ ccs_tree_space_get_node_at_position(
  * @return #CCS_RESULT_SUCCESS on success
  * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p tree_space is not a valid CCS
  * tree space
- * @return #CCS_RESULT_ERROR_INVALID_TREE if the position does not reference a
- * node in the tree.
+ * @return #CCS_RESULT_ERROR_OUT_OF_BOUNDS if \p position does not define a
+ * valid position in \p tree_space
+ * @return #CCS_RESULT_ERROR_INVALID_TREE if one child node described by \p
+ * position is undefined and \p tree_space is a static tree space
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p values is NULL; if \p
  * num_values is less than \p position_size + 1; or if \p position is NULL and
  * \p position_size is greater than 0
@@ -288,54 +291,6 @@ ccs_tree_space_get_values_at_position(
 	const size_t    *position,
 	size_t           num_values,
 	ccs_datum_t     *values);
-
-/**
- * Check the validity of a given position in a tree space.
- * @param[in] tree_space
- * @param[in] position_size the number of entries in the \p position array
- * @param[in] position an array of indexes defining a location in the tree
- *                     space. can be NULL if \p position_size is 0
- * @param[out] is_valid_ret a pointer to the variable that will contain the
- *                          result
- * @return #CCS_RESULT_SUCCESS on success
- * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p tree_space is not a valid CCS
- * tree space
- * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p tree_ret is NULL; or if \p
- * position is NULL and \p position_size is greater than 0
- * @return #CCS_RESULT_ERROR_INVALID_TREE if the position does not define a
- * valid position in the tree space, or if this position is undefined in a
- * static tree space.
- * @remarks
- *   This function is NOT thread-safe for dynamic tree spaces as it can
- *   instanciate new children
- */
-extern ccs_result_t
-ccs_tree_space_check_position(
-	ccs_tree_space_t tree_space,
-	size_t           position_size,
-	const size_t    *position,
-	ccs_bool_t      *is_valid_ret);
-
-/**
- * Check the validity of a given configuration in a tree space.
- * @param[in] tree_space
- * @param[in] configuration
- * @param[out] is_valid_ret a pointer to the variable that will contain the
- *                          result
- * @return #CCS_RESULT_SUCCESS on success
- * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p tree_space is not a valid CCS
- * tree space; or if \p configuration is not a valid CCS tree configuration
- * @return #CCS_RESULT_ERROR_INVALID_CONFIGURATION if \p configuration is not
- * associated to \p tree_space
- * @remarks
- *   This function is NOT thread-safe for dynamic tree spaces as it can
- *   instanciate new children
- */
-extern ccs_result_t
-ccs_tree_space_check_configuration(
-	ccs_tree_space_t         tree_space,
-	ccs_tree_configuration_t configuration,
-	ccs_bool_t              *is_valid_ret);
 
 /**
  * Get a tree configuration sampled randomly from a tree space.  The space is

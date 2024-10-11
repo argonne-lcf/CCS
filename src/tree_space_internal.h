@@ -100,4 +100,17 @@ _ccs_serialize_bin_ccs_tree_space_common_data(
 	return CCS_RESULT_SUCCESS;
 }
 
+static inline ccs_result_t
+_ccs_tree_space_check_position(
+	ccs_tree_space_t tree_space,
+	size_t           position_size,
+	const size_t    *position,
+	ccs_bool_t      *is_valid_ret)
+{
+	_ccs_tree_space_ops_t *ops =
+		(_ccs_tree_space_ops_t *)tree_space->obj.ops;
+	CCS_VALIDATE(ops->check_position(
+		tree_space, position_size, position, is_valid_ret));
+	return CCS_RESULT_SUCCESS;
+}
 #endif //_TREE_SPACE_INTERNAL_H

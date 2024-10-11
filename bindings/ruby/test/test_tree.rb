@@ -29,7 +29,6 @@ class CConfigSpaceTestTree < Minitest::Test
       assert( i.nil? || (i >= 0 and i < 4) )
     }
 
-    refute( root.position_is_valid?([2, 1]) )
     child = CCS::Tree.new(arity: 3, value: "bar" )
     assert_equal( "bar", child.value )
     root.set_child(2, child)
@@ -39,7 +38,6 @@ class CConfigSpaceTestTree < Minitest::Test
     assert_equal( 1, child.depth )
     assert_equal( child.handle, root.get_child(2).handle )
     assert_equal( child.handle, root.get_node_at_position([2]).handle )
-    assert( root.position_is_valid?([2, 1]) )
     assert_equal( ["foo", "bar"], root.get_values_at_position([2]) )
 
     buff = root.serialize
