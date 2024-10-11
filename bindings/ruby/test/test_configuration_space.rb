@@ -18,14 +18,10 @@ class CConfigSpaceTestConfigurationSpace < Minitest::Test
     assert_equal( h3, cs.parameter(2) )
     assert_equal( [h1, h2, h3], cs.parameters )
     assert_equal( h2, cs.parameter_by_name(h2.name) )
-    assert( cs.check(cs.default_configuration) )
     assert_nil( cs.feature_space )
     c = cs.sample
-    assert( cs.check(c) )
     assert_equal( cs.handle, c.configuration_space.handle )
-    cs.samples(100).each { |c|
-      assert( cs.check(c) )
-    }
+    cs.samples(100)
   end
 
   def test_set_distribution
@@ -211,7 +207,6 @@ class CConfigSpaceTestConfigurationSpace < Minitest::Test
 
     1000.times {
       s = cs.sample
-      assert( s.check )
       active_params = extract_active_parameters(s.values)
       active_params.each { |par|
         refute_equal( CCS::Inactive, s.value(par) )
@@ -289,7 +284,6 @@ class CConfigSpaceTestConfigurationSpace < Minitest::Test
 
     1000.times {
       s = cs.sample
-      assert( s.check )
       active_params = extract_active_parameters(s.values)
       active_params.each { |par|
         refute_equal( CCS::Inactive, s.value(par) )
@@ -305,7 +299,6 @@ class CConfigSpaceTestConfigurationSpace < Minitest::Test
     cs_copy = CCS::deserialize(buffer: buff)
     1000.times {
       s = cs_copy.sample
-      assert( s.check )
       active_params = extract_active_parameters(s.values)
       active_params.each { |par|
         refute_equal( CCS::Inactive, s.value(par) )

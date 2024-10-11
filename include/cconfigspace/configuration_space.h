@@ -205,33 +205,6 @@ ccs_configuration_space_get_forbidden_clauses(
 	size_t                   *num_expressions_ret);
 
 /**
- * Check that a configuration is a valid in a configuration space.
- * @param[in] configuration_space
- * @param[in] configuration
- * @param[out] is_valid_ret a pointer to a variable that will hold the result
- *                          of the check. Result will be #CCS_TRUE if the
- *                          configuration is valid. Result will be #CCS_FALSE
- *                          if an active parameter value is not a valid value
- *                          for this parameter; or if an inactive parameter
- *                          value is not inactive; or if a forbidden clause
- *                          would be evaluating to #ccs_true
- * @return #CCS_RESULT_SUCCESS on success
- * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p configuration_space is not a
- * valid CCS configuration space; or if \p configuration is not a valid CCS
- * configuration
- * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p is_valid_ret is NULL
- * @return #CCS_RESULT_ERROR_INVALID_CONFIGURATION if \p configuration is not
- * associated to the configuration space
- * @remarks
- *   This function is thread-safe
- */
-extern ccs_result_t
-ccs_configuration_space_check_configuration(
-	ccs_configuration_space_t configuration_space,
-	ccs_configuration_t       configuration,
-	ccs_bool_t               *is_valid_ret);
-
-/**
  * Get the default configuration of a configuration space
  * @param[in] configuration_space
  * @param[in] features an optional features to use. If NULL and a feature space

@@ -82,30 +82,6 @@ ccs_configuration_get_features(
 	ccs_configuration_t configuration,
 	ccs_features_t     *features_ret);
 
-/**
- * Check that the configuration is a valid configuration for the configuration
- * space.
- * @param[in] configuration
- * @param[out] is_valid_ret a pointer to a variable that will hold the result
- *                          of the check. Result will be #CCS_TRUE if the
- *                          configuration is valid. Result will be #CCS_FALSE
- *                          if an active parameter value is not a valid value
- *                          for this parameter; or if an inactive parameter
- *                          value is not inactive; or if a forbidden clause
- *                          would be evaluating to #ccs_true
- * @return #CCS_RESULT_SUCCESS on success
- * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p configuration is not a valid
- * CCS configuration
- * @return #CCS_RESULT_ERROR_INVALID_CONFIGURATION if \p configuration has
- * become invalid for the configuration space
- * @remarks
- *   This function is thread-safe
- */
-extern ccs_result_t
-ccs_configuration_check(
-	ccs_configuration_t configuration,
-	ccs_bool_t         *is_valid_ret);
-
 #ifdef __cplusplus
 }
 #endif

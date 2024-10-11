@@ -23,13 +23,10 @@ class TestConfigurationSpace(unittest.TestCase):
     self.assertEqual( h3, cs.parameter(2) )
     self.assertEqual( (h1, h2, h3), cs.parameters )
     self.assertEqual( h2, cs.parameter_by_name(h2.name) )
-    self.assertTrue( cs.check(cs.default_configuration()) )
     self.assertIsNone( cs.feature_space )
     c = cs.sample()
-    self.assertTrue( cs.check(c) )
     self.assertEqual( cs.handle.value, c.configuration_space.handle.value )
-    for c in cs.samples(100):
-      self.assertTrue( cs.check(c) )
+    cs.samples(100)
 
   def test_set_distribution(self):
     h1 = ccs.NumericalParameter.Float()
@@ -113,7 +110,7 @@ class TestConfigurationSpace(unittest.TestCase):
     res = ['p1']
     for v in values:
       if v != ccs.inactive:
-        res += ["p{}".format(m[1]) for m in re.finditer('#P(\d)', v)]
+        res += ["p{}".format(m[1]) for m in re.finditer('#P(\\d)', v)]
     return res
 
   def test_omp(self):
@@ -202,7 +199,6 @@ class TestConfigurationSpace(unittest.TestCase):
     all_params = [ "p{}".format(i) for i in range(1,10) ]
     for i in range(1000):
       s = cs.sample()
-      self.assertTrue( s.check() )
       active_params = self.extract_active_parameters(s.values)
       for par in active_params:
         self.assertNotEqual( ccs.inactive, s.value(par) )
@@ -274,7 +270,6 @@ class TestConfigurationSpace(unittest.TestCase):
     all_params = [ "p{}".format(i) for i in range(1,10) ]
     for i in range(1000):
       s = cs.sample()
-      self.assertTrue( s.check() )
       active_params = self.extract_active_parameters(s.values)
       for par in active_params:
         self.assertNotEqual( ccs.inactive, s.value(par) )
@@ -287,7 +282,6 @@ class TestConfigurationSpace(unittest.TestCase):
     cs_copy = ccs.Object.deserialize(buffer = buff)
     for i in range(1000):
       s = cs_copy.sample()
-      self.assertTrue( s.check() )
       active_params = self.extract_active_parameters(s.values)
       for par in active_params:
         self.assertNotEqual( ccs.inactive, s.value(par) )

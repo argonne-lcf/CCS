@@ -15,7 +15,6 @@ ccs_configuration_space_get_condition = _ccs_get_function("ccs_configuration_spa
 ccs_configuration_space_get_conditions = _ccs_get_function("ccs_configuration_space_get_conditions", [ccs_configuration_space, ct.c_size_t, ct.POINTER(ccs_expression), ct.POINTER(ct.c_size_t)])
 ccs_configuration_space_get_forbidden_clause = _ccs_get_function("ccs_configuration_space_get_forbidden_clause", [ccs_configuration_space, ct.c_size_t, ct.POINTER(ccs_expression)])
 ccs_configuration_space_get_forbidden_clauses = _ccs_get_function("ccs_configuration_space_get_forbidden_clauses", [ccs_configuration_space, ct.c_size_t, ct.POINTER(ccs_expression), ct.POINTER(ct.c_size_t)])
-ccs_configuration_space_check_configuration = _ccs_get_function("ccs_configuration_space_check_configuration", [ccs_configuration_space, ccs_configuration, ct.POINTER(ccs_bool)])
 ccs_configuration_space_get_default_configuration = _ccs_get_function("ccs_configuration_space_get_default_configuration", [ccs_configuration_space, ccs_feature_space, ct.POINTER(ccs_configuration)])
 ccs_configuration_space_sample = _ccs_get_function("ccs_configuration_space_sample", [ccs_configuration_space, ccs_distribution_space, ccs_feature_space, ccs_rng, ct.POINTER(ccs_configuration)])
 ccs_configuration_space_samples = _ccs_get_function("ccs_configuration_space_samples", [ccs_configuration_space, ccs_distribution_space, ccs_feature_space, ccs_rng, ct.c_size_t, ct.POINTER(ccs_configuration)])
@@ -170,12 +169,6 @@ class ConfigurationSpace(Context):
     Error.check(res)
     self._forbidden_clauses = tuple(Expression.from_handle(ccs_expression(x)) for x in v)
     return self._forbidden_clauses
-
-  def check(self, configuration):
-    valid = ccs_bool()
-    res = ccs_configuration_space_check_configuration(self.handle, configuration.handle, ct.byref(valid))
-    Error.check(res)
-    return False if valid.value == 0 else True
 
   def default_configuration(self, features = None):
     v = ccs_configuration()

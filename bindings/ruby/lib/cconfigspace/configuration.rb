@@ -2,7 +2,6 @@ module CCS
 
   attach_function :ccs_create_configuration, [:ccs_configuration_space_t, :ccs_features_t, :size_t, :pointer, :pointer], :ccs_result_t
   attach_function :ccs_configuration_get_features, [:ccs_configuration_t, :pointer], :ccs_result_t
-  attach_function :ccs_configuration_check, [:ccs_configuration_t, :pointer], :ccs_result_t
 
   class Configuration < Binding
     alias configuration_space context
@@ -32,13 +31,5 @@ module CCS
     def self.from_handle(handle, retain: true, auto_release: true)
       self::new(handle, retain: retain, auto_release: auto_release)
     end
-
-    def check
-      ptr = MemoryPointer::new(:ccs_bool_t)
-      CCS.error_check CCS.ccs_configuration_check(@handle, ptr)
-      return ptr.read_ccs_bool_t == CCS::FALSE ? false : true
-    end
-
   end
-
 end

@@ -7,7 +7,6 @@ from .features import Features
 ccs_create_configuration = _ccs_get_function("ccs_create_configuration", [ccs_configuration_space, ccs_features, ct.c_size_t, ct.POINTER(Datum), ct.POINTER(ccs_configuration)])
 ccs_configuration_get_configuration_space = _ccs_get_function("ccs_configuration_get_configuration_space", [ccs_configuration, ct.POINTER(ccs_configuration_space)])
 ccs_configuration_get_features = _ccs_get_function("ccs_configuration_get_features", [ccs_configuration, ct.POINTER(ccs_features)])
-ccs_configuration_check = _ccs_get_function("ccs_configuration_check", [ccs_configuration, ct.POINTER(ccs_bool)])
 
 class Configuration(Binding):
   def __init__(self, handle = None, retain = False, auto_release = True,
@@ -57,9 +56,3 @@ class Configuration(Binding):
     else:
       self._features = None
     return self._features
-
-  def check(self):
-    valid = ccs_bool()
-    res = ccs_configuration_check(self.handle, ct.byref(valid))
-    Error.check(res)
-    return False if valid.value == 0 else True

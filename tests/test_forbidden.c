@@ -30,7 +30,6 @@ test_simple(void)
 
 	for (int i = 0; i < 100; i++) {
 		ccs_float_t f;
-		ccs_bool_t  check;
 		err = ccs_configuration_space_sample(
 			space, NULL, NULL, NULL, &configuration);
 		assert(err == CCS_RESULT_SUCCESS);
@@ -43,10 +42,6 @@ test_simple(void)
 		assert(values[1].type == CCS_DATA_TYPE_FLOAT);
 		f = values[0].value.f;
 		assert(f >= -1.0 && f < 1.0);
-		err = ccs_configuration_space_check_configuration(
-			space, configuration, &check);
-		assert(err == CCS_RESULT_SUCCESS);
-		assert(check);
 		err = ccs_release_object(configuration);
 		assert(err == CCS_RESULT_SUCCESS);
 	}
@@ -56,7 +51,6 @@ test_simple(void)
 
 	for (int i = 0; i < 100; i++) {
 		ccs_float_t f;
-		ccs_bool_t  check;
 		err = ccs_binding_get_values(
 			(ccs_binding_t)configurations[i], 2, values, NULL);
 		assert(err == CCS_RESULT_SUCCESS);
@@ -66,10 +60,6 @@ test_simple(void)
 		assert(values[1].type == CCS_DATA_TYPE_FLOAT);
 		f = values[0].value.f;
 		assert(f >= -1.0 && f < 1.0);
-		err = ccs_configuration_space_check_configuration(
-			space, configurations[i], &check);
-		assert(err == CCS_RESULT_SUCCESS);
-		assert(check);
 		err = ccs_release_object(configurations[i]);
 		assert(err == CCS_RESULT_SUCCESS);
 	}
@@ -129,7 +119,6 @@ test_combined(void)
 
 	for (int i = 0; i < 100; i++) {
 		ccs_float_t f;
-		ccs_bool_t  check;
 		err = ccs_configuration_space_sample(
 			space, NULL, NULL, NULL, &configuration);
 		assert(err == CCS_RESULT_SUCCESS);
@@ -154,10 +143,6 @@ test_combined(void)
 			assert(values[2].type == CCS_DATA_TYPE_INACTIVE);
 			assert(values[0].type == CCS_DATA_TYPE_INACTIVE);
 		}
-		err = ccs_configuration_space_check_configuration(
-			space, configuration, &check);
-		assert(err == CCS_RESULT_SUCCESS);
-		assert(check);
 		err = ccs_release_object(configuration);
 		assert(err == CCS_RESULT_SUCCESS);
 	}
@@ -168,7 +153,6 @@ test_combined(void)
 
 	for (int i = 0; i < 100; i++) {
 		ccs_float_t f;
-		ccs_bool_t  check;
 		err = ccs_binding_get_values(
 			(ccs_binding_t)configurations[i], 3, values, NULL);
 		assert(err == CCS_RESULT_SUCCESS);
@@ -190,10 +174,6 @@ test_combined(void)
 			assert(values[2].type == CCS_DATA_TYPE_INACTIVE);
 			assert(values[0].type == CCS_DATA_TYPE_INACTIVE);
 		}
-		err = ccs_configuration_space_check_configuration(
-			space, configurations[i], &check);
-		assert(err == CCS_RESULT_SUCCESS);
-		assert(check);
 		err = ccs_release_object(configurations[i]);
 		assert(err == CCS_RESULT_SUCCESS);
 	}

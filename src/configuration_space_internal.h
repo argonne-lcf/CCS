@@ -38,4 +38,74 @@ struct _ccs_configuration_space_data_s {
 	ccs_context_t                contexts[2];
 };
 
+#include "configuration_internal.h"
+
+static inline ccs_result_t
+_test_forbidden(
+	ccs_configuration_space_t configuration_space,
+	ccs_configuration_t       configuration,
+	ccs_bool_t               *is_valid)
+{
+	ccs_expression_t *forbidden_clauses =
+		configuration_space->data->forbidden_clauses;
+	*is_valid = CCS_FALSE;
+	for (size_t i = 0; i < configuration_space->data->num_forbidden_clauses;
+	     i++) {
+		ccs_datum_t result;
+		CCS_VALIDATE(ccs_expression_eval(
+			forbidden_clauses[i], configuration->data->num_bindings,
+			configuration->data->bindings, &result));
+		if (result.type == CCS_DATA_TYPE_INACTIVE)
+			continue;
+		if (result.type == CCS_DATA_TYPE_BOOL &&
+		    result.value.i == CCS_TRUE)
+			return CCS_RESULT_SUCCESS;
+	}
+	*is_valid = CCS_TRUE;
+	return CCS_RESULT_SUCCESS;
+}
+
+static inline ccs_result_t
+_check_configuration(
+	ccs_configuration_space_t configuration_space,
+	ccs_configuration_t       configuration,
+	ccs_bool_t               *is_valid_ret)
+{
+	size_t           *indexes = configuration_space->data->sorted_indexes;
+	ccs_parameter_t  *parameters = configuration_space->data->parameters;
+	ccs_expression_t *conditions = configuration_space->data->conditions;
+	ccs_datum_t      *values     = configuration->data->values;
+
+	for (size_t i = 0; i < configuration_space->data->num_parameters; i++) {
+		ccs_bool_t active = CCS_TRUE;
+		size_t     index  = indexes[i];
+		if (conditions[index]) {
+			ccs_datum_t result;
+			CCS_VALIDATE(ccs_expression_eval(
+				conditions[index],
+				configuration->data->num_bindings,
+				configuration->data->bindings, &result));
+			if (!(result.type == CCS_DATA_TYPE_BOOL &&
+			      result.value.i == CCS_TRUE))
+				active = CCS_FALSE;
+		}
+		if (active != (values[index].type == CCS_DATA_TYPE_INACTIVE ?
+				       CCS_FALSE :
+				       CCS_TRUE)) {
+			*is_valid_ret = CCS_FALSE;
+			return CCS_RESULT_SUCCESS;
+		}
+		if (active) {
+			CCS_VALIDATE(ccs_parameter_check_value(
+				parameters[index], values[index],
+				is_valid_ret));
+			if (*is_valid_ret == CCS_FALSE)
+				return CCS_RESULT_SUCCESS;
+		}
+	}
+	CCS_VALIDATE(_test_forbidden(
+		configuration_space, configuration, is_valid_ret));
+	return CCS_RESULT_SUCCESS;
+}
+
 #endif //_CONFIGURATION_SPACE_INTERNAL_H

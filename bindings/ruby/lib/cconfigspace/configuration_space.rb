@@ -6,7 +6,6 @@ module CCS
   attach_function :ccs_configuration_space_get_conditions, [:ccs_configuration_space_t, :size_t, :pointer, :pointer], :ccs_result_t
   attach_function :ccs_configuration_space_get_forbidden_clause, [:ccs_configuration_space_t, :size_t, :pointer], :ccs_result_t
   attach_function :ccs_configuration_space_get_forbidden_clauses, [:ccs_configuration_space_t, :size_t, :pointer, :pointer], :ccs_result_t
-  attach_function :ccs_configuration_space_check_configuration, [:ccs_configuration_space_t, :ccs_configuration_t, :pointer], :ccs_result_t
   attach_function :ccs_configuration_space_get_default_configuration, [:ccs_configuration_space_t, :ccs_features_t, :pointer], :ccs_result_t
   attach_function :ccs_configuration_space_sample, [:ccs_configuration_space_t, :ccs_distribution_space_t, :ccs_features_t, :ccs_rng_t, :pointer], :ccs_result_t
   attach_function :ccs_configuration_space_samples, [:ccs_configuration_space_t, :ccs_distribution_space_t, :ccs_features_t, :ccs_rng_t, :size_t, :pointer], :ccs_result_t
@@ -104,12 +103,6 @@ module CCS
       ptr = MemoryPointer::new(:ccs_expression_t)
       CCS.error_check CCS.ccs_configuration_space_get_forbidden_clause(@handle, index, ptr)
       Expression.from_handle(ptr.read_ccs_expression_t)
-    end
-
-    def check(configuration)
-      ptr = MemoryPointer::new(:ccs_bool_t)
-      CCS.error_check CCS.ccs_configuration_space_check_configuration(@handle, configuration.handle, ptr)
-      return ptr.read_ccs_bool_t == CCS::FALSE ? false : true
     end
 
     def default_configuration(features: nil)

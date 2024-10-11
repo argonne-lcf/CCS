@@ -199,18 +199,22 @@ _ccs_create_configuration(
 		config->data->num_bindings++;
 	}
 	if (values) {
-		memcpy(config->data->values, values,
-		       num_parameters * sizeof(ccs_datum_t));
+		ccs_bool_t is_valid;
 		for (size_t i = 0; i < num_values; i++)
-			if (values[i].flags & CCS_DATUM_FLAG_TRANSIENT)
-				CCS_VALIDATE_ERR_GOTO(
-					err,
-					ccs_context_validate_value(
-						(ccs_context_t)
-							configuration_space,
-						i, values[i],
-						config->data->values + i),
-					errinit);
+			CCS_VALIDATE_ERR_GOTO(
+				err,
+				ccs_context_validate_value(
+					(ccs_context_t)configuration_space, i,
+					values[i], config->data->values + i),
+				errinit);
+		CCS_VALIDATE_ERR_GOTO(
+			err,
+			_check_configuration(
+				configuration_space, config, &is_valid),
+			errinit);
+		CCS_REFUTE_ERR_GOTO(
+			err, !is_valid, CCS_RESULT_ERROR_INVALID_VALUE,
+			errinit);
 	}
 	*configuration_ret = config;
 	return CCS_RESULT_SUCCESS;
@@ -267,17 +271,5 @@ ccs_configuration_get_features(
 	CCS_CHECK_OBJ(configuration, CCS_OBJECT_TYPE_CONFIGURATION);
 	CCS_CHECK_PTR(features_ret);
 	*features_ret = configuration->data->features;
-	return CCS_RESULT_SUCCESS;
-}
-
-ccs_result_t
-ccs_configuration_check(
-	ccs_configuration_t configuration,
-	ccs_bool_t         *is_valid_ret)
-{
-	CCS_CHECK_OBJ(configuration, CCS_OBJECT_TYPE_CONFIGURATION);
-	CCS_VALIDATE(ccs_configuration_space_check_configuration(
-		configuration->data->configuration_space, configuration,
-		is_valid_ret));
 	return CCS_RESULT_SUCCESS;
 }

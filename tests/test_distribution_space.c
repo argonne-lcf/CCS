@@ -35,7 +35,6 @@ check_configuration(
 	ccs_parameter_t    *parameters_ret =
 		(ccs_parameter_t *)malloc(sizeof(ccs_parameter_t) * (sz + 1));
 	const char *name;
-	ccs_bool_t  check;
 
 	err = ccs_context_get_parameters(
 		(ccs_context_t)configuration_space, 0, NULL, &sz_ret);
@@ -75,9 +74,6 @@ check_configuration(
 		configuration_space, NULL, &configuration);
 	assert(err == CCS_RESULT_SUCCESS);
 
-	err = ccs_configuration_check(configuration, &check);
-	assert(err == CCS_RESULT_SUCCESS);
-	assert(check);
 	for (size_t i = 0; i < sz; i++) {
 		ccs_datum_t datum;
 		ccs_datum_t hdatum;
@@ -148,7 +144,6 @@ test_set_distribution(void)
 	ccs_configuration_t       configurations[100];
 	ccs_configuration_space_t configuration_space;
 	ccs_result_t              err;
-	ccs_bool_t                check;
 
 	parameters[0] = create_dummy_parameter("param1");
 	parameters[1] = create_dummy_parameter("param2");
@@ -201,9 +196,6 @@ test_set_distribution(void)
 
 	for (size_t i = 0; i < 100; i++) {
 		ccs_datum_t values[3];
-		err = ccs_configuration_check(configurations[i], &check);
-		assert(err == CCS_RESULT_SUCCESS);
-		assert(check);
 		err = ccs_binding_get_values(
 			(ccs_binding_t)configurations[i], 3, values, NULL);
 		assert(err == CCS_RESULT_SUCCESS);
@@ -240,9 +232,6 @@ test_set_distribution(void)
 
 	for (size_t i = 0; i < 100; i++) {
 		ccs_datum_t values[3];
-		err = ccs_configuration_check(configurations[i], &check);
-		assert(err == CCS_RESULT_SUCCESS);
-		assert(check);
 		err = ccs_binding_get_values(
 			(ccs_binding_t)configurations[i], 3, values, NULL);
 		assert(err == CCS_RESULT_SUCCESS);
