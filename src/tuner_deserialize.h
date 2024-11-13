@@ -50,7 +50,7 @@ _ccs_deserialize_bin_ccs_random_tuner_data(
 	if (!(data->history_size + data->size_optima))
 		return CCS_RESULT_SUCCESS;
 	mem = (uintptr_t)calloc(
-		(data->history_size + data->size_optima),
+		data->history_size + data->size_optima,
 		sizeof(ccs_evaluation_t));
 	CCS_REFUTE(!mem, CCS_RESULT_ERROR_OUT_OF_MEMORY);
 

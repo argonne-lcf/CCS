@@ -52,10 +52,10 @@ _ccs_deserialize_bin_ccs_configuration_space_data(
 	      data->num_forbidden_clauses))
 		return CCS_RESULT_SUCCESS;
 	mem = (uintptr_t)calloc(
+		1,
 		data->num_parameters * sizeof(ccs_parameter_t) +
 			data->num_parameters * sizeof(ccs_expression_t) +
-			data->num_forbidden_clauses * sizeof(ccs_expression_t),
-		1);
+			data->num_forbidden_clauses * sizeof(ccs_expression_t));
 	CCS_REFUTE(!mem, CCS_RESULT_ERROR_OUT_OF_MEMORY);
 
 	data->parameters = (ccs_parameter_t *)mem;

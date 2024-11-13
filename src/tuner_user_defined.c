@@ -49,7 +49,7 @@ _ccs_serialize_bin_size_ccs_user_defined_tuner(
 	*cum_size += _ccs_serialize_bin_size_size(num_optima);
 	if (0 != history_size + num_optima) {
 		history = (ccs_evaluation_t *)calloc(
-			sizeof(ccs_evaluation_t), history_size + num_optima);
+			history_size + num_optima, sizeof(ccs_evaluation_t));
 		CCS_REFUTE(!history, CCS_RESULT_ERROR_OUT_OF_MEMORY);
 		optima = history + history_size;
 		if (history_size) {
@@ -119,7 +119,7 @@ _ccs_serialize_bin_ccs_user_defined_tuner(
 	CCS_VALIDATE(_ccs_serialize_bin_size(num_optima, buffer_size, buffer));
 	if (0 != history_size + num_optima) {
 		history = (ccs_evaluation_t *)calloc(
-			sizeof(ccs_evaluation_t), history_size + num_optima);
+			history_size + num_optima, sizeof(ccs_evaluation_t));
 		CCS_REFUTE(!history, CCS_RESULT_ERROR_OUT_OF_MEMORY);
 		optima = history + history_size;
 		if (history_size) {

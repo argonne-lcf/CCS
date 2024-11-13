@@ -35,10 +35,9 @@ _ccs_deserialize_bin_ccs_distribution_space_data(
 	if (!(data->num_distributions))
 		return CCS_RESULT_SUCCESS;
 	mem = (uintptr_t)calloc(
-		data->num_distributions *
-				(sizeof(ccs_distribution_t) + sizeof(size_t)) +
-			data->num_parameters * sizeof(size_t),
-		1);
+		1, data->num_distributions * (sizeof(ccs_distribution_t) +
+					      sizeof(size_t)) +
+			   data->num_parameters * sizeof(size_t));
 	CCS_REFUTE(!mem, CCS_RESULT_ERROR_OUT_OF_MEMORY);
 
 	data->distributions = (ccs_distribution_t *)mem;
