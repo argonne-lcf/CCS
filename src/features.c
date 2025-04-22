@@ -106,8 +106,6 @@ _ccs_create_features(
 	CCS_VALIDATE_ERR_GOTO(err, ccs_retain_object(feature_space), errinit);
 	feat->data->feature_space = feature_space;
 	if (values) {
-		memcpy(feat->data->values, values,
-		       num_parameters * sizeof(ccs_datum_t));
 		for (size_t i = 0; i < num_values; i++)
 			CCS_VALIDATE_ERR_GOTO(
 				err,
