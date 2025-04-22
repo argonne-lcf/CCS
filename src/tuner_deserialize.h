@@ -79,22 +79,6 @@ _ccs_deserialize_bin_ccs_random_tuner_data(
 	return CCS_RESULT_SUCCESS;
 }
 
-struct _ccs_random_tuner_data_clone_s {
-	_ccs_tuner_common_data_t common_data;
-	UT_array                *history;
-	UT_array                *optima;
-	UT_array                *old_optima;
-};
-typedef struct _ccs_random_tuner_data_clone_s _ccs_random_tuner_data_clone_t;
-
-#undef utarray_oom
-#define utarray_oom()                                                          \
-	{                                                                      \
-		CCS_RAISE_ERR_GOTO(                                            \
-			res, CCS_RESULT_ERROR_OUT_OF_MEMORY, tuner,            \
-			"Out of memory to allocate array");                    \
-	}
-
 static inline ccs_result_t
 _ccs_deserialize_bin_random_tuner(
 	ccs_tuner_t                       *tuner_ret,
@@ -105,8 +89,7 @@ _ccs_deserialize_bin_random_tuner(
 {
 	_ccs_random_tuner_data_mock_t data = {
 		{(ccs_tuner_type_t)0, NULL, NULL, NULL, NULL}, 0, 0, NULL, NULL};
-	_ccs_random_tuner_data_clone_t *odata = NULL;
-	ccs_result_t                    res   = CCS_RESULT_SUCCESS;
+	ccs_result_t res = CCS_RESULT_SUCCESS;
 	CCS_VALIDATE_ERR_GOTO(
 		res,
 		_ccs_deserialize_bin_ccs_random_tuner_data(
@@ -118,12 +101,11 @@ _ccs_deserialize_bin_random_tuner(
 			data.common_data.name, data.common_data.objective_space,
 			tuner_ret),
 		evaluations);
-	odata = (_ccs_random_tuner_data_clone_t *)((*tuner_ret)->data);
-	for (size_t i = 0; i < data.history_size; i++)
-		utarray_push_back(odata->history, data.history + i);
-	for (size_t i = 0; i < data.size_optima; i++)
-		utarray_push_back(odata->optima, data.optima + i);
-	goto end;
+	CCS_VALIDATE_ERR_GOTO(
+		res,
+		ccs_tuner_tell(*tuner_ret, data.history_size, data.history),
+		tuner);
+	goto evaluations;
 tuner:
 	ccs_release_object(*tuner_ret);
 	*tuner_ret = NULL;
@@ -132,7 +114,6 @@ evaluations:
 		for (size_t i = 0; i < data.history_size; i++)
 			if (data.history[i])
 				ccs_release_object(data.history[i]);
-end:
 	if (data.common_data.objective_space)
 		ccs_release_object(data.common_data.objective_space);
 	if (data.history)
