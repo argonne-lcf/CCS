@@ -93,6 +93,8 @@ libcconfigspace_la_SOURCES = \
 	features.c \
 	features_internal.h \
 	features_deserialize.h \
+	features_uthash.h \
+	features_hash.h \
 	map.c \
 	map_internal.h \
 	map_deserialize.h \
