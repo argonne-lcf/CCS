@@ -11,13 +11,52 @@
 #include <stdio.h>
 #include <cstdint>
 
+#ifndef CCS_DEBUG
+#define CCS_DEBUG 0
+#endif
+
+#if CCS_DEBUG
+void
+print_ccs_error_stack(void)
+{
+	ccs_error_stack_t       err;
+	ccs_result_t            code;
+	const char             *msg;
+	size_t                  stack_depth;
+	ccs_error_stack_elem_t *stack_elems;
+
+	err = ccs_get_thread_error();
+	if (!err)
+		return;
+	ccs_error_stack_get_code(err, &code);
+	ccs_get_result_name(code, &msg);
+	fprintf(stderr, "CCS Error: %s (%d): ", msg, code);
+	ccs_error_stack_get_message(err, &msg);
+	fprintf(stderr, "%s\n", msg);
+	ccs_error_stack_get_elems(err, 0, NULL, &stack_depth);
+	stack_elems = (ccs_error_stack_elem_t *)malloc(
+		stack_depth * sizeof(ccs_error_stack_elem_t));
+	ccs_error_stack_get_elems(err, stack_depth, stack_elems, NULL);
+	for (size_t i = 0; i < stack_depth; i++) {
+		fprintf(stderr, "\t%s:%d:%s\n", stack_elems[i].file,
+			stack_elems[i].line, stack_elems[i].func);
+	}
+	free(stack_elems);
+	ccs_release_object(err);
+}
+#define CCS_CHECK(expr)                                                        \
+	do {                                                                   \
+		ccs_result_t code = (expr);                                    \
+		if (CCS_RESULT_SUCCESS != code) {                              \
+			print_ccs_error_stack();                               \
+		}                                                              \
+		assert(CCS_RESULT_SUCCESS == code);                            \
+	} while (0)
+#else
 #define CCS_CHECK(expr)                                                        \
 	do {                                                                   \
 		assert(CCS_RESULT_SUCCESS == (expr));                          \
 	} while (0)
-
-#ifndef CCS_DEBUG
-#define CCS_DEBUG 0
 #endif
 
 #define CCS_DEBUG_MSG(fmt)                                                     \
@@ -370,7 +409,7 @@ kokkosp_declare_input_type(
   clock_gettime(CLOCK_MONOTONIC, &prof_start);
 #endif
 
-  CCS_DEBUG_MSG_ARGS("Got context variable: %s\n", name);
+  CCS_DEBUG_MSG_ARGS("Got context variable: %s, id: %zu\n", name, id);
   features[id] = variable_info_to_parameter(name, info);
   CCS_DEBUG_MSG_ARGS("...mapped to %p\n", (void *)features[id]);
 
@@ -393,7 +432,7 @@ kokkosp_declare_output_type(
   clock_gettime(CLOCK_MONOTONIC, &prof_start);
 #endif
 
-  CCS_DEBUG_MSG_ARGS("Got tuning variable: %s\n", name);
+  CCS_DEBUG_MSG_ARGS("Got tuning variable: %s, id: %zu\n", name, id);
   parameters[id] = variable_info_to_parameter(name, info);
   CCS_DEBUG_MSG_ARGS("...mapped to %p\n", (void *)parameters[id]);
 
@@ -503,18 +542,35 @@ kokkosp_request_values(
 	  ccs_expression_t          expression;
 	  ccs_objective_type_t      otype;
 
+	  CCS_DEBUG_MSG("Creating configuration space\n");
+	  CCS_DEBUG_MSG("Creating feature space\n");
 	  cs_parameters = new ccs_parameter_t[numContextVariables];
-	  for (size_t i = 0; i < numContextVariables; i++)
-		  cs_parameters[i] = parameters[contextValues[i].type_id];
+	  for (size_t i = 0; i < numContextVariables; i++) {
+		  CCS_DEBUG_MSG_ARGS(
+			  "Loooking up context variable: %zu\n",
+			  contextValues[i].type_id);
+		  cs_parameters[i] = features[contextValues[i].type_id];
+		  CCS_DEBUG_MSG_ARGS(
+			  "Found up context variable: %p\n",
+			  (void *)cs_parameters[i]);
+	  }
 
 	  CCS_CHECK(ccs_create_feature_space(
 		  ("fs (region: " + std::to_string(regionCounter) + ")").c_str(),
 		  numContextVariables, cs_parameters, &fs));
 	  delete[] cs_parameters;
 
+	  CCS_DEBUG_MSG("Creating configuration space\n");
 	  cs_parameters = new ccs_parameter_t[numTuningVariables];
-	  for (size_t i = 0; i < numTuningVariables; i++)
+	  for (size_t i = 0; i < numTuningVariables; i++) {
+		  CCS_DEBUG_MSG_ARGS(
+			  "Loooking tuning variable: %zu\n",
+			  tuningValues[i].type_id);
 		  cs_parameters[i] = parameters[tuningValues[i].type_id];
+		  CCS_DEBUG_MSG_ARGS(
+			  "Found up tuning variable: %p\n",
+			  (void *)cs_parameters[i]);
+	  }
 
 	  CCS_CHECK(ccs_create_configuration_space(
 		  ("cs (region: " + std::to_string(regionCounter) + ")").c_str(),
