@@ -19,7 +19,7 @@ INSTALL_BASE_PATH=$HOME/opt
 KOKKOS_INSTALL=$INSTALL_BASE_PATH/kokkos
 git clone git@github.com:kokkos/kokkos.git
 cd kokkos
-git checkout 3.5.00
+git checkout 4.6.00
 mkdir build
 cd build
 cmake .. -DBUILD_SHARED_LIBS=ON -DKokkos_ENABLE_TUNING=ON -DCMAKE_INSTALL_PREFIX=$KOKKOS_INSTALL
@@ -67,8 +67,8 @@ The different benchmarks can be ran from their respective directories:
 cd $WORK_DIR
 cd tuning-playground/build/benchmarks/two_var
 time ./two_var.exe
-export KOKKOS_PROFILE_LIBRARY=$CCS_INSTALL/lib/cconfigspace/ccs-kokkos-connector.so KOKKOS_TUNE_INTERNALS=ON
+export KOKKOS_TOOLS_LIBS=$CCS_INSTALL/lib/cconfigspace/ccs-kokkos-connector.so KOKKOS_TUNE_INTERNALS=ON
 time ./two_var.exe
-unset KOKKOS_PROFILE_LIBRARY KOKKOS_TUNE_INTERNALS
+unset KOKKOS_TOOLS_LIBS KOKKOS_TUNE_INTERNALS
 ```
 The second time should be significantly smaller then the first one. Be aware that `simple_features` without autotuning can take more than an hour to run, while it should take a few minutes to run using CCS random tuner.
