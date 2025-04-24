@@ -1,5 +1,6 @@
 import unittest
 import sys
+import copy
 sys.path.insert(1, '.')
 sys.path.insert(1, '..')
 import cconfigspace as ccs
@@ -140,6 +141,27 @@ class TestParameter(unittest.TestCase):
     href.user_data = {'foo': ['bar', 'baz']}
     buff = href.serialize()
     h = ccs.Object.deserialize(buffer = buff)
+    self.assertEqual( ccs.ObjectType.PARAMETER, h.object_type )
+    self.assertEqual( ccs.ParameterType.CATEGORICAL, h.type )
+    self.assertTrue( h.name[:5] == "param" )
+    self.assertEqual( {'foo': ['bar', 'baz']}, h.user_data )
+    self.assertEqual( "foo", h.default_value )
+    self.assertEqual( ccs.DistributionType.UNIFORM, h.default_distribution.type )
+    self.assertEqual( values, h.values )
+    for v in values:
+      self.assertTrue( h.check_value(v) )
+    self.assertFalse( h.check_value("bar") )
+    v = h.sample()
+    self.assertTrue( v in values )
+    vals = h.samples(100)
+    for v in vals:
+      self.assertTrue( v in values )
+
+  def test_deepcopy_categorical(self):
+    values = ["foo", 2, 3.0]
+    href = ccs.CategoricalParameter(values = values)
+    href.user_data = {'foo': ['bar', 'baz']}
+    h = copy.deepcopy(href)
     self.assertEqual( ccs.ObjectType.PARAMETER, h.object_type )
     self.assertEqual( ccs.ParameterType.CATEGORICAL, h.type )
     self.assertTrue( h.name[:5] == "param" )

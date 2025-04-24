@@ -20,6 +20,7 @@ module CCS
     end
   end
 
+  attach_function :ccs_parameter_copy, [:ccs_parameter_t, :pointer], :ccs_result_t
   attach_function :ccs_parameter_get_type, [:ccs_parameter_t, :pointer], :ccs_result_t
   attach_function :ccs_parameter_get_default_value, [:ccs_parameter_t, :pointer], :ccs_result_t
   attach_function :ccs_parameter_get_name, [:ccs_parameter_t, :pointer], :ccs_result_t
@@ -57,6 +58,14 @@ module CCS
       else
         raise CCSError, :CCS_RESULT_ERROR_INVALID_PARAMETER
       end.new(handle, retain: retain, auto_release: auto_release)
+    end
+
+    def dup
+      ptr = MemoryPointer::new(:ccs_parameter_t)
+      CCS.error_check CCS.ccs_parameter_copy(@handle, ptr)
+      res = self.class.from_handle(ptr.read_pointer, retain: false)
+      res.user_data = user_data
+      res
     end
 
     def name

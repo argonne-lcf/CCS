@@ -8,6 +8,40 @@ ccs_parameter_get_ops(ccs_parameter_t parameter)
 }
 
 ccs_result_t
+ccs_parameter_copy(ccs_parameter_t parameter, ccs_parameter_t *parameter_ret)
+{
+	CCS_CHECK_OBJ(parameter, CCS_OBJECT_TYPE_PARAMETER);
+	CCS_CHECK_PTR(parameter_ret);
+	char        *buff;
+	size_t       buff_size;
+	ccs_result_t err = CCS_RESULT_SUCCESS;
+	CCS_VALIDATE(ccs_object_serialize(
+		parameter, CCS_SERIALIZE_FORMAT_BINARY,
+		CCS_SERIALIZE_OPERATION_SIZE, &buff_size,
+		CCS_SERIALIZE_OPTION_END));
+	buff = (char *)malloc(buff_size);
+	CCS_REFUTE(!buff, CCS_RESULT_ERROR_OUT_OF_MEMORY);
+	CCS_VALIDATE_ERR_GOTO(
+		err,
+		ccs_object_serialize(
+			parameter, CCS_SERIALIZE_FORMAT_BINARY,
+			CCS_SERIALIZE_OPERATION_MEMORY, buff_size, buff,
+			CCS_SERIALIZE_OPTION_END),
+		mem);
+	CCS_VALIDATE_ERR_GOTO(
+		err,
+		ccs_object_deserialize(
+			(ccs_object_t *)parameter_ret,
+			CCS_SERIALIZE_FORMAT_BINARY,
+			CCS_SERIALIZE_OPERATION_MEMORY, buff_size, buff,
+			CCS_DESERIALIZE_OPTION_END),
+		mem);
+mem:
+	free(buff);
+	return err;
+}
+
+ccs_result_t
 ccs_parameter_get_type(ccs_parameter_t parameter, ccs_parameter_type_t *type_ret)
 {
 	CCS_CHECK_OBJ(parameter, CCS_OBJECT_TYPE_PARAMETER);

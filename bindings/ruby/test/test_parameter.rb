@@ -39,6 +39,12 @@ class CConfigSpaceTestParameter < Minitest::Test
     discrete_check(values, h)
   end
 
+  def test_dup_discrete
+    values = [0.2, 1.5, 2, 7.2]
+    href = CCS::DiscreteParameter::new(values: values)
+    discrete_check(values, href.dup)
+  end
+
   def test_ordinal_compare
     values = ["foo", 2, 3.0]
     h = CCS::OrdinalParameter::new(values: values)
@@ -95,6 +101,12 @@ class CConfigSpaceTestParameter < Minitest::Test
     ordinal_check(values, h)
   end
 
+  def test_dup_ordinal
+    values = ["foo", 2, 3.0]
+    href = CCS::OrdinalParameter::new(values: values)
+    ordinal_check(values, href.dup)
+  end
+
   def test_from_handle_categorical
     values = ["foo", 2, 3.0]
     h = CCS::CategoricalParameter::new(values: values)
@@ -139,6 +151,13 @@ class CConfigSpaceTestParameter < Minitest::Test
     categorical_check(values, h)
   end
 
+  def test_dup_categorical
+    values = ["foo", 2, 3.0]
+    href = CCS::CategoricalParameter::new(values: values)
+    href.user_data = {'foo': ['bar', 'baz']}
+    categorical_check(values, href.dup)
+  end
+
   def test_from_handle_numerical
     h = CCS::NumericalParameter::Float::new
     h2 = CCS::Object::from_handle(h)
@@ -174,6 +193,11 @@ class CConfigSpaceTestParameter < Minitest::Test
     buff = href.serialize
     h = CCS::deserialize(buffer: buff)
     numerical_check(h)
+  end
+
+  def test_dup_numerical
+    href = CCS::NumericalParameter::Float::new
+    numerical_check(href.dup)
   end
 
   def test_create_numerical_float
@@ -242,6 +266,11 @@ class CConfigSpaceTestParameter < Minitest::Test
     buff = href.serialize
     h = CCS::deserialize(buffer: buff)
     string_check(h)
+  end
+
+  def test_dup_string
+    href = CCS::StringParameter::new
+    string_check(href.dup)
   end
 
 end

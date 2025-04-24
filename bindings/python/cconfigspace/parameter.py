@@ -14,6 +14,7 @@ class ParameterType(CEnumeration):
     'STRING'
   ]
 
+ccs_parameter_copy = _ccs_get_function("ccs_parameter_copy", [ccs_parameter, ct.POINTER(ccs_parameter)])
 ccs_parameter_get_type = _ccs_get_function("ccs_parameter_get_type", [ccs_parameter, ct.POINTER(ParameterType)])
 ccs_parameter_get_default_value = _ccs_get_function("ccs_parameter_get_default_value", [ccs_parameter, ct.POINTER(Datum)])
 ccs_parameter_get_name = _ccs_get_function("ccs_parameter_get_name", [ccs_parameter, ct.POINTER(ct.c_char_p)])
@@ -47,6 +48,18 @@ class Parameter(Object):
   @classmethod
   def default_name(cls):
     return "param%03d" % _ccs_get_id()
+
+  def __deepcopy__(self, memo):
+    id_self = id(self)        # memoization avoids unnecesary recursion
+    _copy = memo.get(id_self)
+    if _copy is None:
+      handle = ccs_parameter()
+      res = ccs_parameter_copy(self.handle, ct.byref(handle))
+      Error.check(res)
+      _copy = Parameter.from_handle(handle, retain = False)
+      _copy.user_data = self.user_data
+      memo[id_self] = _copy
+    return _copy
 
   @property
   def type(self):

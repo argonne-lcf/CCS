@@ -1103,7 +1103,6 @@ ccs_object_serialize(
  *                    operation, followed by a CCS_SERIALIZE_OPTION_END
  *                    terminated list of options
  * @return #CCS_RESULT_SUCCESS on success
- * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p object is found to be invalid
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if parameters and option combination
  * are unsupported
  * @return #CCS_RESULT_ERROR_OUT_OF_MEMORY if required memory could not be

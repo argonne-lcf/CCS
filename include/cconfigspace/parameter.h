@@ -378,13 +378,30 @@ extern ccs_result_t
 ccs_create_string_parameter(const char *name, ccs_parameter_t *parameter_ret);
 
 /**
+ * Create a copy of a parameter. User data are not copied.
+ * @param[in] parameter
+ * @param[out] parameter_ret a pointer to the variable that will hold the newly
+ *                           created CCS parameter
+ * @return #CCS_RESULT_SUCCESS on success
+ * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p parameter_ret is NULL
+ * @return #CCS_RESULT_ERROR_OUT_OF_MEMORY if there was a lack of memory to
+ * allocate the new parameter
+ * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p parameter is not a valid
+ * CCS parameter
+ * @remarks
+ *   This function is thread-safe
+ */
+extern ccs_result_t
+ccs_parameter_copy(ccs_parameter_t parameter, ccs_parameter_t *parameter_ret);
+
+/**
  * Get the type of a parameter.
  * @param[in] parameter
  * @param[out] type_ret a pointer to the variable that will contain the type of
  *                      the parameter
  * @return #CCS_RESULT_SUCCESS on success
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p type_ret is NULL
- * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p distribution is not a valid
+ * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p parameter is not a valid
  * CCS parameter
  * @remarks
  *   This function is thread-safe
