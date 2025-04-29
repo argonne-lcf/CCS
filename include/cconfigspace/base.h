@@ -628,6 +628,47 @@ ccs_datum_cmp(const ccs_datum_t a, const ccs_datum_t b)
 	}
 }
 
+extern ccs_hash_t
+ccs_datum_hash(const ccs_datum_t a);
+
+#ifdef __cplusplus
+inline bool
+operator==(const ccs_datum_t &lhs, const ccs_datum_t &rhs)
+{
+	return ccs_datum_cmp(lhs, rhs) == 0;
+}
+
+inline bool
+operator!=(const ccs_datum_t &lhs, const ccs_datum_t &rhs)
+{
+	return ccs_datum_cmp(lhs, rhs) != 0;
+}
+
+inline bool
+operator<(const ccs_datum_t &lhs, const ccs_datum_t &rhs)
+{
+	return ccs_datum_cmp(lhs, rhs) < 0;
+}
+
+inline bool
+operator<=(const ccs_datum_t &lhs, const ccs_datum_t &rhs)
+{
+	return ccs_datum_cmp(lhs, rhs) <= 0;
+}
+
+inline bool
+operator>(const ccs_datum_t &lhs, const ccs_datum_t &rhs)
+{
+	return ccs_datum_cmp(lhs, rhs) > 0;
+}
+
+inline bool
+operator>=(const ccs_datum_t &lhs, const ccs_datum_t &rhs)
+{
+	return ccs_datum_cmp(lhs, rhs) >= 0;
+}
+#endif
+
 /**
  * A variable containing an empty datum.
  */

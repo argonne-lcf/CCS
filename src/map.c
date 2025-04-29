@@ -412,6 +412,12 @@ ccs_map_clear(ccs_map_t map)
 	return CCS_RESULT_SUCCESS;
 }
 
+ccs_hash_t
+ccs_datum_hash(const ccs_datum_t datum)
+{
+	return _hash_datum(&datum);
+}
+
 ccs_result_t
 _ccs_map_get_checkpoint(ccs_map_t map, ccs_map_checkpoint_t *checkpoint_ret)
 {
