@@ -8,6 +8,7 @@
 #include <stack>
 #include <vector>
 #include <time.h>
+#include <unordered_map>
 #include <stdio.h>
 #include <cstdint>
 
@@ -165,6 +166,19 @@ kokkosp_end_parallel_reduce(const uint64_t kID)
 	invoke_fence(devID);
 }
 
+struct VectorDatumHasher {
+	int
+	operator()(const std::vector<ccs_datum_t> &V) const
+	{
+		int hash = 0xfeedbeef;
+		for (auto &d : V) {
+			ccs_hash_t h = ccs_datum_hash(d);
+			hash ^= h + 0x9e3779b9 + (hash << 6) + (hash >> 2);
+		}
+		return hash;
+	}
+};
+
 static std::map<size_t, ccs_parameter_t> features;
 static std::map<size_t, ccs_parameter_t> parameters;
 static std::map<
@@ -174,8 +188,12 @@ static std::map<
 		bool,
 		std::map<size_t, size_t> *,
 		std::map<size_t, size_t> *,
-		ccs_datum_t *,
-		ccs_datum_t *> >
+		std::vector<ccs_datum_t> *,
+		std::vector<ccs_datum_t> *,
+		std::unordered_map<
+			std::vector<ccs_datum_t>,
+			ccs_features_t,
+			VectorDatumHasher> *> >
 	tuners;
 
 extern "C" void
@@ -235,8 +253,12 @@ kokkosp_finalize_library()
 		CCS_CHECK(ccs_release_object(std::get<0>(x.second)));
 		delete std::get<2>(x.second);
 		delete std::get<3>(x.second);
-		delete[] std::get<4>(x.second);
-		delete[] std::get<5>(x.second);
+		delete std::get<4>(x.second);
+		delete std::get<5>(x.second);
+		auto features_map = std::get<6>(x.second);
+		for (auto const &features : *features_map)
+			CCS_CHECK(ccs_release_object(features.second));
+		delete features_map;
 	}
 	tuners.clear();
 	CCS_CHECK(ccs_fini());
@@ -566,8 +588,11 @@ create_tuner(
 	ccs_objective_type_t      otype;
 	std::map<size_t, size_t> *context_id_to_index;
 	std::map<size_t, size_t> *tuning_id_to_index;
-	ccs_datum_t              *context_values_buff;
-	ccs_datum_t              *tuning_values_buff;
+	std::vector<ccs_datum_t> *context_values_vec;
+	std::vector<ccs_datum_t> *tuning_values_vec;
+	std::unordered_map<
+		std::vector<ccs_datum_t>, ccs_features_t, VectorDatumHasher>
+		*features_map;
 
 	CCS_DEBUG_MSG("Creating configuration space\n");
 	CCS_DEBUG_MSG("Creating feature space\n");
@@ -643,15 +668,17 @@ create_tuner(
 	CCS_CHECK(ccs_release_object(fs));
 	CCS_CHECK(ccs_release_object(os));
 
-	context_values_buff = new ccs_datum_t[numContextVariables];
-	tuning_values_buff  = new ccs_datum_t[numTuningVariables];
+	context_values_vec = new std::vector<ccs_datum_t>(numContextVariables);
+	tuning_values_vec  = new std::vector<ccs_datum_t>(numTuningVariables);
+	features_map       = new std::unordered_map<
+                std::vector<ccs_datum_t>, ccs_features_t, VectorDatumHasher>;
 	return tuners
 		.insert(std::make_pair(
 			regionId,
 			std::make_tuple(
 				tuner, false, context_id_to_index,
-				tuning_id_to_index, context_values_buff,
-				tuning_values_buff)))
+				tuning_id_to_index, context_values_vec,
+				tuning_values_vec, features_map)))
 		.first;
 }
 
@@ -674,8 +701,13 @@ kokkosp_request_values(
 	bool                      converged;
 	std::map<size_t, size_t> *context_id_to_index;
 	std::map<size_t, size_t> *tuning_id_to_index;
-	ccs_datum_t              *context_values_buff;
-	ccs_datum_t              *tuning_values_buff;
+	std::vector<ccs_datum_t> *context_values_vec;
+	std::vector<ccs_datum_t> *tuning_values_vec;
+	std::unordered_map<
+		std::vector<ccs_datum_t>, ccs_features_t, VectorDatumHasher>
+		    *features_map;
+	ccs_datum_t *context_values_buff;
+	ccs_datum_t *tuning_values_buff;
 
 	CCS_DEBUG_MSG_ARGS(
 		"Querying variables: %zu, numContextVariables: %zu, numTuningVariables: %zu\n",
@@ -702,8 +734,11 @@ kokkosp_request_values(
 	converged           = std::get<1>(tun->second);
 	context_id_to_index = std::get<2>(tun->second);
 	tuning_id_to_index  = std::get<3>(tun->second);
-	context_values_buff = std::get<4>(tun->second);
-	tuning_values_buff  = std::get<5>(tun->second);
+	context_values_vec  = std::get<4>(tun->second);
+	tuning_values_vec   = std::get<5>(tun->second);
+	features_map        = std::get<6>(tun->second);
+	context_values_buff = context_values_vec->data();
+	tuning_values_buff  = tuning_values_vec->data();
 
 	// Test convergence using history size, could be done better
 	if (!converged) {
@@ -714,8 +749,8 @@ kokkosp_request_values(
 		if (converged)
 			tuners[regionId] = std::make_tuple(
 				tuner, converged, context_id_to_index,
-				tuning_id_to_index, context_values_buff,
-				tuning_values_buff);
+				tuning_id_to_index, context_values_vec,
+				tuning_values_vec, features_map);
 	}
 	if (convergence_stack.top()) // if we are in a converged region,
 		convergence_stack.push(converged);
@@ -731,9 +766,15 @@ kokkosp_request_values(
 					(*context_id_to_index)
 						[contextValues[i].type_id]);
 		}
-		CCS_CHECK(ccs_create_features(
-			feature_space, numContextVariables, context_values_buff,
-			&feat));
+
+		auto features = features_map->find(*context_values_vec);
+		if (features == features_map->end()) {
+			CCS_CHECK(ccs_create_features(
+				feature_space, numContextVariables,
+				context_values_buff, &feat));
+			(*features_map)[*context_values_vec] = feat;
+		} else
+			feat = features->second;
 	}
 
 	if (!converged)
@@ -744,7 +785,6 @@ kokkosp_request_values(
 		CCS_CHECK(ccs_tuner_suggest(
 			tuner, feat,
 			(ccs_search_configuration_t *)&configuration));
-	CCS_CHECK(ccs_release_object(feat));
 	CCS_CHECK(ccs_tuner_get_search_space(
 		tuner, (ccs_search_space_t *)&configuration_space));
 	{
