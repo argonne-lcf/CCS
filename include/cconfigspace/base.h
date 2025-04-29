@@ -589,7 +589,7 @@ ccs_string(const char *v)
  *         than, equal, or greater than the second datum
  */
 static inline int
-ccs_datum_cmp(ccs_datum_t a, ccs_datum_t b)
+ccs_datum_cmp(const ccs_datum_t a, const ccs_datum_t b)
 {
 	if (a.type < b.type) {
 		return -1;

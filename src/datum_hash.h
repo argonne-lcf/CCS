@@ -32,7 +32,7 @@
  */
 
 static inline int
-_datum_cmp(ccs_datum_t *a, ccs_datum_t *b)
+_datum_cmp(const ccs_datum_t *a, const ccs_datum_t *b)
 {
 	if (a->type < b->type) {
 		return -1;
@@ -69,7 +69,7 @@ _hash_combine(ccs_hash_t h1, ccs_hash_t h2)
 }
 
 static inline unsigned
-_hash_datum(ccs_datum_t *d)
+_hash_datum(const ccs_datum_t *d)
 {
 	unsigned h;
 	unsigned h1, h2;
