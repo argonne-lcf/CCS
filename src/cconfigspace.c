@@ -406,16 +406,19 @@ _ccs_object_serialize_file(
 		case ENOMEM:
 			CCS_RAISE_ERR_GOTO(
 				res, CCS_RESULT_ERROR_OUT_OF_MEMORY,
-				err_file_truncated, "mmap failed: out of memory");
+				err_file_truncated,
+				"mmap failed: out of memory");
 			break;
 		case EACCES:
 			CCS_RAISE_ERR_GOTO(
 				res, CCS_RESULT_ERROR_INVALID_FILE_PATH,
-				err_file_truncated, "mmap failed: invalid file");
+				err_file_truncated,
+				"mmap failed: invalid file");
 			break;
 		default:
 			CCS_RAISE_ERR_GOTO(
-				res, CCS_RESULT_ERROR_SYSTEM, err_file_truncated,
+				res, CCS_RESULT_ERROR_SYSTEM,
+				err_file_truncated,
 				"mmap failed: unexpected system error");
 		}
 	}
@@ -431,7 +434,9 @@ err_file_map:
 	munmap(buffer, buffer_size);
 err_file_truncated:
 	if (CCS_UNLIKELY(res < CCS_RESULT_SUCCESS))
-		if (ftruncate(fd, 0) == -1) { /* best-effort: ignore failure in error path */ }
+		if (ftruncate(fd, 0) == -1) { /* best-effort: ignore failure in
+						 error path */
+		}
 err_file_fd:
 	close(fd);
 	return res;
