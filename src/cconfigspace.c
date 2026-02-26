@@ -391,6 +391,14 @@ _ccs_object_serialize_file(
 		_ccs_object_header_serialize_size_with_opts(
 			object, format, &buffer_size, &opts),
 		err_file_fd);
+	// ftruncate must come before mmap so the file has the correct size
+	// before mapping. Mapping a 0-byte file causes SIGBUS on access and
+	// mmap failure on stricter POSIX implementations (e.g. macOS).
+	// On any subsequent error, truncate the file back to 0 to avoid
+	// leaving a large incomplete file on disk.
+	CCS_REFUTE_ERR_GOTO(
+		res, ftruncate(fd, buffer_size) == -1, CCS_RESULT_ERROR_SYSTEM,
+		err_file_fd);
 	buffer = (char *)mmap(
 		0, buffer_size, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
 	if (CCS_UNLIKELY(buffer == MAP_FAILED)) {
@@ -398,22 +406,19 @@ _ccs_object_serialize_file(
 		case ENOMEM:
 			CCS_RAISE_ERR_GOTO(
 				res, CCS_RESULT_ERROR_OUT_OF_MEMORY,
-				err_file_fd, "mmap failed: out of memory");
+				err_file_truncated, "mmap failed: out of memory");
 			break;
 		case EACCES:
 			CCS_RAISE_ERR_GOTO(
 				res, CCS_RESULT_ERROR_INVALID_FILE_PATH,
-				err_file_fd, "mmap failed: invalid file");
+				err_file_truncated, "mmap failed: invalid file");
 			break;
 		default:
 			CCS_RAISE_ERR_GOTO(
-				res, CCS_RESULT_ERROR_SYSTEM, err_file_fd,
+				res, CCS_RESULT_ERROR_SYSTEM, err_file_truncated,
 				"mmap failed: unexpected system error");
 		}
 	}
-	CCS_REFUTE_ERR_GOTO(
-		res, ftruncate(fd, buffer_size) == -1, CCS_RESULT_ERROR_SYSTEM,
-		err_file_map);
 	CCS_VALIDATE_ERR_GOTO(
 		res,
 		_ccs_object_serialize_memory_with_opts(
@@ -424,6 +429,9 @@ _ccs_object_serialize_file(
 		CCS_RESULT_ERROR_SYSTEM, err_file_map);
 err_file_map:
 	munmap(buffer, buffer_size);
+err_file_truncated:
+	if (CCS_UNLIKELY(res < CCS_RESULT_SUCCESS))
+		if (ftruncate(fd, 0) == -1) { /* best-effort: ignore failure in error path */ }
 err_file_fd:
 	close(fd);
 	return res;
