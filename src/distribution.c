@@ -282,8 +282,9 @@ ccs_distribution_parameters_samples(
 			if (CCS_UNLIKELY(!mem)) {
 				if (oldmem)
 					free((void *)oldmem);
-				CCS_RAISE(
-					CCS_RESULT_ERROR_OUT_OF_MEMORY,
+				CCS_RAISE_ERR_GOTO(
+					err, CCS_RESULT_ERROR_OUT_OF_MEMORY,
+					errmem,
 					"Out of memory to reallocate array");
 			}
 			ccs_datum_t *ds = (ccs_datum_t *)mem;

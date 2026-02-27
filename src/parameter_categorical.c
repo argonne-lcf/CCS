@@ -182,9 +182,9 @@ _ccs_parameter_categorical_samples(
 			if (CCS_UNLIKELY(!vs)) {
 				if (oldvs)
 					free(oldvs);
-				CCS_RAISE(
-					CCS_RESULT_ERROR_OUT_OF_MEMORY,
-					"Could not reallocate array");
+				CCS_RAISE_ERR_GOTO(
+					err, CCS_RESULT_ERROR_OUT_OF_MEMORY,
+					errmem, "Could not reallocate array");
 			}
 			CCS_VALIDATE_ERR_GOTO(
 				err,
