@@ -74,6 +74,9 @@ _ccs_deserialize_bin_ccs_configuration_space_data(
 		size_t index;
 		CCS_VALIDATE(
 			_ccs_deserialize_bin_size(&index, buffer_size, buffer));
+		CCS_REFUTE(
+			index >= data->num_parameters,
+			CCS_RESULT_ERROR_INVALID_VALUE);
 		CCS_VALIDATE(_ccs_object_deserialize_with_opts_check(
 			(ccs_object_t *)data->conditions + index,
 			CCS_OBJECT_TYPE_EXPRESSION, CCS_SERIALIZE_FORMAT_BINARY,
