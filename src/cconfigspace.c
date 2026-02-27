@@ -431,14 +431,15 @@ _ccs_object_serialize_file(
 		res, msync(buffer, buffer_size, MS_SYNC) == -1,
 		CCS_RESULT_ERROR_SYSTEM, err_file_map);
 err_file_map:
-	munmap(buffer, buffer_size);
+	if (munmap(buffer, buffer_size) == -1) { /* best-effort */
+	}
 err_file_truncated:
 	if (CCS_UNLIKELY(res < CCS_RESULT_SUCCESS))
-		if (ftruncate(fd, 0) == -1) { /* best-effort: ignore failure in
-						 error path */
+		if (ftruncate(fd, 0) == -1) { /* best-effort */
 		}
 err_file_fd:
-	close(fd);
+	if (close(fd) == -1) { /* best-effort */
+	}
 	return res;
 }
 
@@ -675,9 +676,11 @@ _ccs_object_deserialize_file(
 			err_file_map);
 	}
 err_file_map:
-	munmap((void *)buffer, buffer_size);
+	if (munmap((void *)buffer, buffer_size) == -1) { /* best-effort */
+	}
 err_file_fd:
-	close(fd);
+	if (close(fd) == -1) { /* best-effort */
+	}
 	return res;
 }
 
