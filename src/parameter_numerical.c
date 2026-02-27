@@ -164,8 +164,9 @@ _ccs_parameter_numerical_samples(
 			if (CCS_UNLIKELY(!vs)) {
 				if (oldvs)
 					free(oldvs);
-				CCS_RAISE(
-					CCS_RESULT_ERROR_OUT_OF_MEMORY,
+				CCS_RAISE_ERR_GOTO(
+					err, CCS_RESULT_ERROR_OUT_OF_MEMORY,
+					errmem,
 					"Not enough memory to reallocate buffer");
 			}
 			CCS_VALIDATE_ERR_GOTO(
