@@ -172,9 +172,9 @@ _ccs_parameter_categorical_samples(
 		vs           = NULL;
 		size_t coeff = 2;
 		while (found < num_values) {
-			CCS_REFUTE(
-				coeff > 32,
-				CCS_RESULT_ERROR_SAMPLING_UNSUCCESSFUL);
+			CCS_REFUTE_ERR_GOTO(
+				err, coeff > 32,
+				CCS_RESULT_ERROR_SAMPLING_UNSUCCESSFUL, errmem);
 			size_t     buff_sz = (num_values - found) * coeff;
 			ccs_int_t *oldvs   = vs;
 			vs                 = (ccs_int_t *)realloc(
