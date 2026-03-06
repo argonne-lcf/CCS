@@ -15,7 +15,7 @@ extern "C" {
  * @param [out] map_ret a pointer to the variable that will contain the returned
  *                      map
  * @return #CCS_RESULT_SUCCESS on success
- * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p rng_ret is NULL
+ * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p map_ret is NULL
  * @return #CCS_RESULT_ERROR_OUT_OF_MEMORY if there was not enough memory to
  * allocate the new map
  * @remarks
@@ -25,12 +25,12 @@ extern ccs_result_t
 ccs_create_map(ccs_map_t *map_ret);
 
 /**
- * Associate a key to a value in a map
- * param[in,out] map
- * param[in] key if a transient string it will be memoized, if a CCS object it
- *               will be retained unless #CCS_DATUM_FLAG_ID is used.
- * param[in] value if a transient string it will be memoized, if a CCS object
- *                 it will be retained unless #CCS_DATUM_FLAG_ID is used.
+ * Associate a key to a value in a map.
+ * @param[in,out] map
+ * @param[in] key if a transient string it will be memoized, if a CCS object it
+ *                will be retained unless #CCS_DATUM_FLAG_ID is used.
+ * @param[in] value if a transient string it will be memoized, if a CCS object
+ *                  it will be retained unless #CCS_DATUM_FLAG_ID is used.
  * @return #CCS_RESULT_SUCCESS on success
  * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p map is not a valid CCS map
  * @return #CCS_RESULT_ERROR_OUT_OF_MEMORY if there was not enough memory to
@@ -42,11 +42,11 @@ extern ccs_result_t
 ccs_map_set(ccs_map_t map, ccs_datum_t key, ccs_datum_t value);
 
 /**
- * Check if a key exists in a map
- * param[in] map
- * param[in] key
- * param[out] exist a pointer to a variable that will hold the result of the
- *                  search
+ * Check if a key exists in a map.
+ * @param[in] map
+ * @param[in] key
+ * @param[out] exist a pointer to a variable that will hold the result of the
+ *                   search
  * @return #CCS_RESULT_SUCCESS on success
  * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p map is not a valid CCS map
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p exist is NULL
@@ -57,14 +57,14 @@ extern ccs_result_t
 ccs_map_exist(ccs_map_t map, ccs_datum_t key, ccs_bool_t *exist);
 
 /**
- * Get the value associated with a key
- * param[in] map
- * param[in] key
- * param[out] value_ret a pointer to a variable that will hold the returned
- *                      value or ccs_none if not found
+ * Get the value associated with a key.
+ * @param[in] map
+ * @param[in] key
+ * @param[out] value_ret a pointer to a variable that will hold the returned
+ *                       value or ccs_none if not found
  * @return #CCS_RESULT_SUCCESS on success
  * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p map is not a valid CCS map
- * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p value_ret is NUL
+ * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p value_ret is NULL
  * @remarks
  *   This function is thread-safe
  */
@@ -72,9 +72,9 @@ extern ccs_result_t
 ccs_map_get(ccs_map_t map, ccs_datum_t key, ccs_datum_t *value_ret);
 
 /**
- * Delete a key in a map
- * param[in,out] map
- * param[in] key
+ * Delete a key in a map.
+ * @param[in,out] map
+ * @param[in] key
  * @return #CCS_RESULT_SUCCESS on success
  * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p map is not a valid CCS map
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p key does not exist in \p map
