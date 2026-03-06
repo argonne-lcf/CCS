@@ -127,7 +127,7 @@ ccs_create_normal_int_distribution(
  * distributions are unidimensional.
  * @param[in] mu mean of the distribution
  * @param[in] sigma standard deviation of the distribution
- * @param[in] scale an be either #CCS_SCALE_TYPE_LINEAR or
+ * @param[in] scale can be either #CCS_SCALE_TYPE_LINEAR or
  *                  #CCS_SCALE_TYPE_LOGARITHMIC
  * @param[in] quantization quantization of the results, 0 means no quantization.
  * @param[out] distribution_ret a pointer to the variable that will contain the
@@ -161,7 +161,7 @@ ccs_create_normal_float_distribution(
  * @param[in] upper the upper bound of the distribution, excluded. Must be a
  *                  ccs_int_t if \p data_type is #CCS_NUMERIC_TYPE_INT or a
  *                  ccs_float_t if \p data_type is #CCS_NUMERIC_TYPE_FLOAT
- * @param[in] scale an be either #CCS_SCALE_TYPE_LINEAR or
+ * @param[in] scale can be either #CCS_SCALE_TYPE_LINEAR or
  *                  #CCS_SCALE_TYPE_LOGARITHMIC
  * @param[in] quantization quantization of the results, 0 means no quantization.
  *                         Must be a ccs_int_t if \p data_type is
@@ -197,7 +197,7 @@ ccs_create_uniform_distribution(
  * distributions are unidimensional.
  * @param[in] lower the lower bound of the distribution, included.
  * @param[in] upper the upper bound of the distribution, excluded.
- * @param[in] scale an be either #CCS_SCALE_TYPE_LINEAR or
+ * @param[in] scale can be either #CCS_SCALE_TYPE_LINEAR or
  *                  #CCS_SCALE_TYPE_LOGARITHMIC
  * @param[in] quantization quantization of the results, 0 means no quantization.
  * @param[out] distribution_ret a pointer to the variable that will contain the
@@ -227,7 +227,7 @@ ccs_create_uniform_int_distribution(
  * distributions are unidimensional.
  * @param[in] lower the lower bound of the distribution, included.
  * @param[in] upper the upper bound of the distribution, excluded.
- * @param[in] scale an be either #CCS_SCALE_TYPE_LINEAR or
+ * @param[in] scale can be either #CCS_SCALE_TYPE_LINEAR or
  *                  #CCS_SCALE_TYPE_LOGARITHMIC
  * @param[in] quantization quantization of the results, 0 means no quantization.
  * @param[out] distribution_ret a pointer to the variable that will contain the
@@ -713,7 +713,7 @@ ccs_distribution_soa_samples(
  * @param[in] distribution
  * @param[in,out] rng the random number generator to use
  * @param[in] parameters an array of parameters. The dimension of the array
- *                       must be qual to the dimension of the distribution
+ *                       must be equal to the dimension of the distribution
  * @param[in] num_samples the number of samples to get
  * @param[out] values an array of datum values. The dimension of the array
  *                    should be the dimension of the distribution times \p
@@ -743,7 +743,7 @@ ccs_distribution_parameters_samples(
  * @param[in] distribution
  * @param[in,out] rng the random number generator to use
  * @param[in] parameters an array of parameters. The dimension of the array
- *                       must be qual to the dimension of the distribution
+ *                       must be equal to the dimension of the distribution
  * @param[out] values an array of datum of the same dimension as the
  *                    distribution. Will contain the sampled values.
  * @return #CCS_RESULT_SUCCESS on success

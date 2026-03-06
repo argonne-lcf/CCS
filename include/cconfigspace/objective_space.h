@@ -40,9 +40,9 @@ typedef enum ccs_objective_type_e ccs_objective_type_t;
  * @param[in] parameters an array of \p num_parameters parameters
  *                       to add to the objective space
  * @param[in] num_objectives the number of provided expressions
- * @param[in] objectives an array o \p num_objectives expressions to add as
+ * @param[in] objectives an array of \p num_objectives expressions to add as
  *                       objectives to the objective space
- * @param[in] types an array o \p num_objectives types of objectives
+ * @param[in] types an array of \p num_objectives types of objectives
  * @param[out] objective_space_ret a pointer to the variable that will hold
  *                                 the newly created objective space
  * @return #CCS_RESULT_SUCCESS on success
@@ -56,7 +56,7 @@ typedef enum ccs_objective_type_e ccs_objective_type_t;
  * expressions is not a valid CCS expression
  * @return #CCS_RESULT_ERROR_INVALID_PARAMETER if a parameter appears more than
  * once in \p parameters; or if two or more parameters share the same name; or
- * if a paramater is already part of another context; or if an expression
+ * if a parameter is already part of another context; or if an expression
  * references a parameter that is not in \p parameters or in \p search_space or
  * in \p search_space feature space if it exists
  * @return #CCS_RESULT_ERROR_OUT_OF_MEMORY if there was a lack of memory to
@@ -136,7 +136,7 @@ ccs_objective_space_get_objective(
  * CCS objective space
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p expressions is NULL and \p
  * num_objectives is greater than 0; if \p types is NULL and \p num_objectives
- * is greater than 0; or if or if \p expressions is NULL and \p
+ * is greater than 0; or if \p expressions is NULL and \p
  * num_objectives_ret is NULL; or if \p num_objectives is less than then number
  * of expressions that would be returned
  * @remarks

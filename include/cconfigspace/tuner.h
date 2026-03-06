@@ -340,7 +340,7 @@ struct ccs_user_defined_tuner_vector_s {
 	 */
 	ccs_result_t (*serialize_user_state)(
 		ccs_tuner_t tuner,
-		size_t      sate_size,
+		size_t      state_size,
 		void       *state,
 		size_t     *state_size_ret);
 

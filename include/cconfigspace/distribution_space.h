@@ -39,7 +39,7 @@ ccs_create_distribution_space(
  * @return #CCS_RESULT_SUCCESS on success
  * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p distribution_space is not a
  * valid CCS distribution space
- * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p configuration_space_ret is NULL
+ * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p distribution_space_ret is NULL
  * @remarks
  *   This function is thread-safe
  */

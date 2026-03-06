@@ -38,7 +38,7 @@ ccs_create_tree(size_t arity, ccs_datum_t value, ccs_tree_t *tree_ret);
  *                       the value associated with the node.
  * @return #CCS_RESULT_SUCCESS on success
  * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p tree is not a valid CCS tree
- * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p tree_ret is NULL
+ * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p value_ret is NULL
  * @remarks
  *   This function is thread-safe
  */

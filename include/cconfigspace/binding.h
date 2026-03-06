@@ -79,7 +79,7 @@ ccs_binding_get_values(
  * @param[in] binding
  * @param[in] name the name of the parameter whose value to retrieve
  * @param[out] found_ret a pointer to the an optional variable that will
- *                       hold wether a parameter named \p name was found in
+ *                       hold whether a parameter named \p name was found in
  *                       \p binding
  * @param[out] value_ret a pointer to the variable that will hold the value
  * @return #CCS_RESULT_SUCCESS on success
@@ -103,7 +103,7 @@ ccs_binding_get_value_by_name(
  * @param[in] binding
  * @param[in] parameter parameter whose value to retrieve
  * @param[out] found_ret a pointer to the an optional variable that will
- *                       hold wether the parameter was found in the \p
+ *                       hold whether the parameter was found in the \p
  *                       binding context
  * @param[out] value_ret a pointer to the variable that will hold the value
  * @return #CCS_RESULT_SUCCESS on success

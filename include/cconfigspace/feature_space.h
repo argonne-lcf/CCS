@@ -27,7 +27,7 @@ extern "C" {
  * parameter
  * @return #CCS_RESULT_ERROR_INVALID_PARAMETER if a parameter appears more than
  * once in \p parameters; or if two or more parameters share the same name; or
- * if a paramater is already part of another context
+ * if a parameter is already part of another context
  * @return #CCS_RESULT_ERROR_OUT_OF_MEMORY if there was a lack of memory to
  * allocate the new feature space
  * @remarks

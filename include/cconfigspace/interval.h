@@ -22,7 +22,7 @@ struct ccs_interval_s {
 	ccs_numeric_t      upper;
 	/** Is the lower bound included in the interval */
 	ccs_bool_t         lower_included;
-	/** Is the upper boud included in the interval */
+	/** Is the upper bound included in the interval */
 	ccs_bool_t         upper_included;
 };
 
@@ -110,7 +110,7 @@ ccs_interval_equal(
  * numeric of the same type as the interval, else results are undefined.
  * @param[in] interval a pointer to the interval
  * @param[in] value the value to check for inclusion in the interval
- * @return #CCS_TRUE if the interval include the value
+ * @return #CCS_TRUE if the interval includes the value
  * @return #CCS_FALSE if the interval does not include the value; or if \p
  * interval is NULL
  * @remarks

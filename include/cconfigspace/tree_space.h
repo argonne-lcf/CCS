@@ -77,7 +77,7 @@ struct ccs_dynamic_tree_space_vector_s {
 	ccs_result_t (*del)(ccs_tree_space_t tree_space);
 
 	/**
-	 * The all back that will be called when querying a missing children in
+	 * The callback that will be called when querying a missing children in
 	 * a dynamic tree space.
 	 * @param[in] tree_space the dynamic tree space
 	 * @param[in] parent the parent of the node being queried
@@ -101,7 +101,7 @@ struct ccs_dynamic_tree_space_vector_s {
 	 */
 	ccs_result_t (*serialize_user_state)(
 		ccs_tree_space_t tree_space,
-		size_t           sate_size,
+		size_t           state_size,
 		void            *state,
 		size_t          *state_size_ret);
 
@@ -251,7 +251,7 @@ ccs_tree_space_get_tree(ccs_tree_space_t tree_space, ccs_tree_t *tree_ret);
  * position is undefined and \p tree_space is a static tree space
  * @remarks
  *   This function is NOT thread-safe for dynamic tree spaces as it can
- *   instanciate new children
+ *   instantiate new children
  */
 extern ccs_result_t
 ccs_tree_space_get_node_at_position(
@@ -282,7 +282,7 @@ ccs_tree_space_get_node_at_position(
  * \p position_size is greater than 0
  * @remarks
  *   This function is NOT thread-safe for dynamic tree spaces as it can
- *   instanciate new children
+ *   instantiate new children
  */
 extern ccs_result_t
 ccs_tree_space_get_values_at_position(

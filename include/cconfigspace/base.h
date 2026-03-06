@@ -8,7 +8,7 @@
  * @file base.h
  * Base definition of CCS objects and types.
  * @remarks
- *   A note on thread safety: many objects in CCS are aither immutable or their
+ *   A note on thread safety: many objects in CCS are either immutable or their
  *   inner state is protected, so many calls to the API are thread safe as long
  *   as the thread holds a valid reference to a CCS object. Some CCS objects
  *   (tree APIs) are not immutable and functions modifying their inner state
