@@ -63,7 +63,7 @@ make check
 |--------|---------|-------------|
 | `--enable-strict` | no | Enable `-Werror` (treat warnings as errors) |
 | `--enable-thread-safe` | yes | Build with thread safety (reader-writer locks) |
-| `--enable-kokkos-connector` | yes | Build the Kokkos profiling connector |
+| `--enable-kokkos-connector` | yes | Build the Kokkos tuning connector |
 | `--enable-samples` | yes | Build interoperability samples (requires Python 3) |
 
 ### Installation
