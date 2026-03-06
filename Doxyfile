@@ -341,7 +341,7 @@ OPTIMIZE_OUTPUT_SLICE  = NO
 #
 # Note see also the list of default file extension mappings.
 
-EXTENSION_MAPPING      =
+EXTENSION_MAPPING      = no_extension=md
 
 # If the MARKDOWN_SUPPORT tag is enabled then doxygen pre-processes all comments
 # according to the Markdown format, which allows for more readable
@@ -909,7 +909,8 @@ WARN_LOGFILE           =
 INPUT                  = include \
                          include/cconfigspace \
                          README.md \
-                         CONCEPTS.md
+                         CONCEPTS.md \
+                         LICENSE
 
 # This tag can be used to specify the character encoding of the source files
 # that doxygen parses. Internally doxygen uses the UTF-8 encoding. Doxygen uses
