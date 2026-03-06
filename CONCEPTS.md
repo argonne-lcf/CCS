@@ -6,18 +6,18 @@ example see [README.md](README.md).
 
 ## Table of Contents
 
-1. [Overview](#overview)
-2. [Object Model](#object-model)
-3. [Parameters](#parameters)
-4. [Distributions](#distributions)
-5. [Configuration Spaces](#configuration-spaces)
-6. [Objective Spaces](#objective-spaces)
-7. [Tuners and the Ask/Tell Pattern](#tuners-and-the-asktell-pattern)
-8. [Feature Spaces and Contextual Tuning](#feature-spaces-and-contextual-tuning)
-9. [Tree Spaces](#tree-spaces)
-10. [Expressions](#expressions)
-11. [Serialization](#serialization)
-12. [Distribution Spaces](#distribution-spaces)
+1. <a href="#overview">Overview</a>
+2. <a href="#object-model">Object Model</a>
+3. <a href="#parameters">Parameters</a>
+4. <a href="#distributions">Distributions</a>
+5. <a href="#configuration-spaces">Configuration Spaces</a>
+6. <a href="#objective-spaces">Objective Spaces</a>
+7. <a href="#tuners-and-the-asktell-pattern">Tuners and the Ask/Tell Pattern</a>
+8. <a href="#feature-spaces-and-contextual-tuning">Feature Spaces and Contextual Tuning</a>
+9. <a href="#tree-spaces">Tree Spaces</a>
+10. <a href="#expressions">Expressions</a>
+11. <a href="#serialization">Serialization</a>
+12. <a href="#distribution-spaces">Distribution Spaces</a>
 
 ---
 
