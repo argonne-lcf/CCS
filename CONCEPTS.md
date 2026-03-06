@@ -21,7 +21,7 @@ example see [README.md](README.md).
 
 ---
 
-## Overview
+## Overview {#overview}
 
 CCS is a C library for describing autotuning problems and autotuners. It was
 inspired by Python's [ConfigSpace](https://github.com/automl/ConfigSpace) and
@@ -44,7 +44,7 @@ through the same C interface.
 
 ---
 
-## Object Model
+## Object Model {#object-model}
 
 ### Reference Counting
 
@@ -116,7 +116,7 @@ function).
 
 ---
 
-## Parameters
+## Parameters {#parameters}
 
 A **parameter** defines one dimension of a search space. CCS provides five
 parameter types (`ccs_parameter_type_e`):
@@ -168,7 +168,7 @@ All parameter types support:
 
 ---
 
-## Distributions
+## Distributions {#distributions}
 
 A **distribution** governs how parameter values are sampled. CCS provides five
 distribution types (`ccs_distribution_type_e`):
@@ -221,7 +221,7 @@ distribution space (see [Distribution Spaces](#distribution-spaces)).
 
 ---
 
-## Configuration Spaces
+## Configuration Spaces {#configuration-spaces}
 
 A **configuration space** (`ccs_configuration_space_t`) groups parameters into a
 search space and adds optional constraints. Create one with
@@ -271,7 +271,7 @@ that associate each parameter with a concrete value. Use
 
 ---
 
-## Objective Spaces
+## Objective Spaces {#objective-spaces}
 
 An **objective space** (`ccs_objective_space_t`) defines what to optimize.
 Create one with `ccs_create_objective_space()`.
@@ -304,7 +304,7 @@ Evaluations support multi-objective comparison through
 
 ---
 
-## Tuners and the Ask/Tell Pattern
+## Tuners and the Ask/Tell Pattern {#tuners-and-the-asktell-pattern}
 
 A **tuner** (`ccs_tuner_t`) drives the optimization loop. The core workflow:
 
@@ -354,7 +354,7 @@ vector with `ask`, `tell`, `get_optima`, and other operations.
 
 ---
 
-## Feature Spaces and Contextual Tuning
+## Feature Spaces and Contextual Tuning {#feature-spaces-and-contextual-tuning}
 
 A **feature space** (`ccs_feature_space_t`) defines contextual parameters that
 describe the environment in which optimization takes place. Create one with
@@ -388,7 +388,7 @@ hardware, datasets, or other environmental factors.
 
 ---
 
-## Tree Spaces
+## Tree Spaces {#tree-spaces}
 
 A **tree space** (`ccs_tree_space_t`) defines a search space over
 tree-structured decisions, as opposed to the flat parameter vectors of a
@@ -423,7 +423,7 @@ Tree spaces can also have an attached feature space for contextual tree tuning.
 
 ---
 
-## Expressions
+## Expressions {#expressions}
 
 The **expression system** provides an AST (abstract syntax tree) for building
 conditions, forbidden clauses, and objective formulas.
@@ -460,7 +460,7 @@ using `ccs_expression_eval()`.
 
 ---
 
-## Serialization
+## Serialization {#serialization}
 
 CCS supports **binary serialization** (`CCS_SERIALIZE_FORMAT_BINARY`) for all
 object types. This lets you save and restore tuner state, configuration spaces,
@@ -480,7 +480,7 @@ callbacks can be registered with `ccs_object_set_serialize_callback()`.
 
 ---
 
-## Distribution Spaces
+## Distribution Spaces {#distribution-spaces}
 
 A **distribution space** (`ccs_distribution_space_t`) customizes how
 parameters are sampled within a configuration space. Create one with
