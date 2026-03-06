@@ -1,9 +1,8 @@
 # CCS Conceptual Guide
 
 This guide explains the architecture, object model, and workflow of CCS (C
-Configuration Space and Tuning Library). For API details see the
-[Doxygen reference](https://argonne-lcf.github.io/CCS/index.html); for build
-instructions and a quick example see [README.md](README.md).
+Configuration Space and Tuning Library). For build instructions and a quick
+example see [README.md](README.md).
 
 ## Table of Contents
 
@@ -22,6 +21,7 @@ instructions and a quick example see [README.md](README.md).
 
 ---
 
+<a id="overview"></a>
 ## Overview
 
 CCS is a C library for describing autotuning problems and autotuners. It was
@@ -45,6 +45,7 @@ through the same C interface.
 
 ---
 
+<a id="object-model"></a>
 ## Object Model
 
 ### Reference Counting
@@ -117,6 +118,7 @@ function).
 
 ---
 
+<a id="parameters"></a>
 ## Parameters
 
 A **parameter** defines one dimension of a search space. CCS provides five
@@ -169,6 +171,7 @@ All parameter types support:
 
 ---
 
+<a id="distributions"></a>
 ## Distributions
 
 A **distribution** governs how parameter values are sampled. CCS provides five
@@ -222,6 +225,7 @@ distribution space (see [Distribution Spaces](#distribution-spaces)).
 
 ---
 
+<a id="configuration-spaces"></a>
 ## Configuration Spaces
 
 A **configuration space** (`ccs_configuration_space_t`) groups parameters into a
@@ -272,6 +276,7 @@ that associate each parameter with a concrete value. Use
 
 ---
 
+<a id="objective-spaces"></a>
 ## Objective Spaces
 
 An **objective space** (`ccs_objective_space_t`) defines what to optimize.
@@ -305,6 +310,7 @@ Evaluations support multi-objective comparison through
 
 ---
 
+<a id="tuners-and-the-asktell-pattern"></a>
 ## Tuners and the Ask/Tell Pattern
 
 A **tuner** (`ccs_tuner_t`) drives the optimization loop. The core workflow:
@@ -325,11 +331,11 @@ A **tuner** (`ccs_tuner_t`) drives the optimization loop. The core workflow:
 ```
 
 1. **Create** a tuner with an objective space.
-2. **`ccs_tuner_ask()`** — request one or more candidate configurations.
+2. `ccs_tuner_ask()` — request one or more candidate configurations.
 3. **Evaluate** each configuration externally (run your experiment/benchmark).
-4. **`ccs_create_evaluation()`** — wrap the results in an evaluation object.
-5. **`ccs_tuner_tell()`** — report evaluations back to the tuner.
-6. **`ccs_tuner_get_optima()`** — retrieve the best evaluation(s) found so far.
+4. `ccs_create_evaluation()` — wrap the results in an evaluation object.
+5. `ccs_tuner_tell()` — report evaluations back to the tuner.
+6. `ccs_tuner_get_optima()` — retrieve the best evaluation(s) found so far.
 
 Repeat steps 2-6 as many times as needed.
 
@@ -355,6 +361,7 @@ vector with `ask`, `tell`, `get_optima`, and other operations.
 
 ---
 
+<a id="feature-spaces-and-contextual-tuning"></a>
 ## Feature Spaces and Contextual Tuning
 
 A **feature space** (`ccs_feature_space_t`) defines contextual parameters that
@@ -389,6 +396,7 @@ hardware, datasets, or other environmental factors.
 
 ---
 
+<a id="tree-spaces"></a>
 ## Tree Spaces
 
 A **tree space** (`ccs_tree_space_t`) defines a search space over
@@ -424,6 +432,7 @@ Tree spaces can also have an attached feature space for contextual tree tuning.
 
 ---
 
+<a id="expressions"></a>
 ## Expressions
 
 The **expression system** provides an AST (abstract syntax tree) for building
@@ -461,6 +470,7 @@ using `ccs_expression_eval()`.
 
 ---
 
+<a id="serialization"></a>
 ## Serialization
 
 CCS supports **binary serialization** (`CCS_SERIALIZE_FORMAT_BINARY`) for all
@@ -481,6 +491,7 @@ callbacks can be registered with `ccs_object_set_serialize_callback()`.
 
 ---
 
+<a id="distribution-spaces"></a>
 ## Distribution Spaces
 
 A **distribution space** (`ccs_distribution_space_t`) customizes how
