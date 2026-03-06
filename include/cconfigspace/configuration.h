@@ -18,7 +18,7 @@ extern "C" {
  * @param[in] configuration_space
  * @param[in] features an optional features to use. If NULL and a feature space
  *                     was provided at \p configuration_space creation, the
- *                     deafult features of the feature space will be used.
+ *                     default features of the feature space will be used.
  * @param[in] num_values the number of provided values to initialize the
  *            configuration
  * @param[in] values an optional array of values to initialize the configuration
@@ -55,7 +55,7 @@ ccs_create_configuration(
  * @return #CCS_RESULT_SUCCESS on success
  * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p configuration is not a valid
  * CCS configuration
- * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p configuration_space_ret is NULL
+ * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p configuration_ret is NULL
  * @remarks
  *   This function is thread-safe
  */

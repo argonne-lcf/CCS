@@ -17,7 +17,7 @@ extern "C" {
  * @param[in] tree_space
  * @param[in] features an optional features to use. If NULL and a feature space
  *                     was provided at \p configuration_space creation, the
- *                     deafult features of the feature space will be used.
+ *                     default features of the feature space will be used.
  * @param[in] position_size the number of entries in the \p position array
  * @param[in] position an array of indexes defining a location in the tree.
  *                     can be NULL if \p position_size is 0
@@ -52,7 +52,7 @@ ccs_create_tree_configuration(
  * @return #CCS_RESULT_SUCCESS on success
  * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p configuration is not a valid
  * CCS configuration
- * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p configuration_space_ret is NULL
+ * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p tree_space_ret is NULL
  * @remarks
  *   This function is thread-safe
  */
@@ -141,7 +141,7 @@ ccs_tree_configuration_get_values(
  * @return #CCS_RESULT_SUCCESS on success
  * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p configuration is not a valid
  * CCS tree configuration
- * @return #CCS_RESULT_ERROR_INVALID_VALUE \p node_ret is NULL
+ * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p node_ret is NULL
  * @remarks
  *   This function is thread-safe
  */

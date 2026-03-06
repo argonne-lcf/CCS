@@ -25,7 +25,7 @@ extern "C" {
  *                       a NULL entry in the array means no condition is
  *                       attached to the corresponding parameter.
  * @param[in] num_forbidden_clauses the number of provided forbidden clauses
- * @param[in] forbidden_clauses an array o \p num_forbidden_clauses expressions
+ * @param[in] forbidden_clauses an array of \p num_forbidden_clauses expressions
  *                              to add as forbidden clauses to the
  *                              configuration space
  * @param[in] feature_space an optional CCS feature space object
@@ -44,7 +44,7 @@ extern "C" {
  * @return #CCS_RESULT_ERROR_INVALID_PARAMETER if a parameter's type is
  * CCS_PARAMETER_TYPE_STRING; or if a parameter appears more than once in \p
  * parameters; or if two or more parameters share the same name; or if a
- * paramater is already part of another context; or if an expression references
+ * parameter is already part of another context; or if an expression references
  * a parameter that is not in \p parameters or in \p feature_space
  * @return #CCS_RESULT_ERROR_INVALID_CONFIGURATION if adding one of the
  * provided forbidden clause would render the default configuration invalid
@@ -142,7 +142,7 @@ ccs_configuration_space_get_condition(
  * valid CCS configuration space
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p expressions is NULL and \p
  * num_expressions is greater than 0; or if \p expressions is NULL and
- * num_expressions_ret is NULL; or if num_expressions is is less than the number
+ * num_expressions_ret is NULL; or if num_expressions is less than the number
  * of parameters contained by configuration_space
  * @remarks
  *   This function is thread-safe
@@ -191,8 +191,8 @@ ccs_configuration_space_get_forbidden_clause(
  * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p configuration_space is not a
  * valid CCS configuration space
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p expressions is NULL and \p
- * num_expressions is greater than 0; or if or if \p expressions is NULL and \p
- * num_expressions_ret is NULL; or if \p num_expressions is less than then
+ * num_expressions is greater than 0; or if \p expressions is NULL and \p
+ * num_expressions_ret is NULL; or if \p num_expressions is less than the
  * number of expressions that would be returned
  * @remarks
  *   This function is thread-safe
@@ -209,7 +209,7 @@ ccs_configuration_space_get_forbidden_clauses(
  * @param[in] configuration_space
  * @param[in] features an optional features to use. If NULL and a feature space
  *                     was provided at \p configuration_space creation, the
- *                     deafult features of the feature space will be used.
+ *                     default features of the feature space will be used.
  * @param[out] configuration_ret a pointer to the variable that will contain the
  *                               returned default configuration
  * @return #CCS_RESULT_SUCCESS on success
@@ -239,7 +239,7 @@ ccs_configuration_space_get_default_configuration(
  * @param[in] distribution_space an optional distribution space to use
  * @param[in] features an optional features to use. If NULL and a feature space
  *                     was provided at \p configuration_space creation, the
- *                     deafult features of the feature space will be used.
+ *                     default features of the feature space will be used.
  * @param[in] rng an optional rng to use
  * @param[out] configuration_ret a pointer to the variable that will contain the
  *                               returned configuration

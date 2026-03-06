@@ -7,7 +7,7 @@ extern "C" {
 
 /**
  * @file parameter.h
- * Parameters are parameters the when grouped together define a tuning
+ * Parameters, when grouped together, define a tuning
  * context (see context.h). Most parameters can be sampled according to a
  * distribution's dimension (see distribution.h). Hyperparamters are immutable,
  * except from a reference counting and callback management point of view.

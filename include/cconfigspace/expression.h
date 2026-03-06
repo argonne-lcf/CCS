@@ -651,7 +651,7 @@ ccs_expression_get_parameters(
  * @param[in] contexts an array of \p num_contexts contexts
  * @return #CCS_RESULT_SUCCESS on success
  * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p expression is not a valid CCS
- * expression; or if one of the provided ocntexts in \p contexts is not a
+ * expression; or if one of the provided contexts in \p contexts is not a
  * valid CCS context
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if the expression depends on a
  * parameter and \p contexts is NULL

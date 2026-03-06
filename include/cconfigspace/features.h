@@ -25,7 +25,7 @@ extern "C" {
  * feature space
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p features_ret is NULL; or if \p
  * values is NULL and \p num_values is greater than 0; or if the number of
- * values provided is not to the number of parameters in the feature space
+ * values provided is not equal to the number of parameters in the feature space
  * @return #CCS_RESULT_ERROR_OUT_OF_MEMORY if there was a lack of memory to
  * allocate the new features
  * @remarks

@@ -106,7 +106,7 @@ ccs_context_get_parameter_by_name(
  * @param[in] context
  * @param[in] name the name of the parameter to retrieve the index of
  * @param[out] found_ret a pointer to the an optional variable that will
- *                       hold wether a parameter named \p name was found in
+ *                       hold whether a parameter named \p name was found in
  *                       \p context
  * @param[out] index_ret a pointer to the variable that will contain the index
  *                       of parameter in the \p context
@@ -131,7 +131,7 @@ ccs_context_get_parameter_index_by_name(
  * @param[in] context
  * @param[in] parameter
  * @param[out] found_ret a pointer to the an optional variable that will
- *                       hold wether the parameter was found in the \p
+ *                       hold whether the parameter was found in the \p
  *                       context
  * @param[out] index_ret a pointer to the variable which will contain the index
  *                       of the parameter
@@ -158,7 +158,7 @@ ccs_context_get_parameter_index(
  * @param[in] parameters an array of \p num_parameters parameters to query the
  *                       index for
  * @param[out] found an optional array of \p num_parameters variables that
-		     will hold wether the parameter was found in \p context
+		     will hold whether the parameter was found in \p context
  * @param[out] indexes an array of \p num_parameters indices that will
  *                     contain the values of the parameter indices
  * @return #CCS_RESULT_SUCCESS on success
