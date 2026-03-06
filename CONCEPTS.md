@@ -1,9 +1,8 @@
 # CCS Conceptual Guide
 
 This guide explains the architecture, object model, and workflow of CCS (C
-Configuration Space and Tuning Library). For API details see the
-[Doxygen reference](https://argonne-lcf.github.io/CCS/index.html); for build
-instructions and a quick example see [README.md](README.md).
+Configuration Space and Tuning Library). For build instructions and a quick
+example see [README.md](README.md).
 
 ## Table of Contents
 
