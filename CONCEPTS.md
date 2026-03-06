@@ -259,8 +259,9 @@ contextual tuning (see [Feature Spaces](#feature-spaces-and-contextual-tuning)).
 ### Custom RNG
 
 By default, a configuration space uses an internal random number generator for
-sampling. You can supply your own RNG at creation time or retrieve/replace it
-with `ccs_configuration_space_get_rng()`.
+sampling. You can supply your own RNG at creation time or retrieve it with
+`ccs_configuration_space_get_rng()` and adjust the seed with
+`ccs_rng_set_seed()`.
 
 ### Configurations
 
