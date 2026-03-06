@@ -87,7 +87,7 @@ with the ask/tell pattern to minimize a simple function.
 #include <math.h>
 
 int main() {
-    ccs_parameter_t          parameters[2];
+    ccs_parameter_t           parameters[2];
     ccs_configuration_space_t cspace;
     ccs_objective_space_t     ospace;
     ccs_parameter_t           obj_param;
