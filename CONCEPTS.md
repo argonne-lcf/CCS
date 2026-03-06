@@ -324,11 +324,11 @@ A **tuner** (`ccs_tuner_t`) drives the optimization loop. The core workflow:
 ```
 
 1. **Create** a tuner with an objective space.
-2. **`ccs_tuner_ask()`** — request one or more candidate configurations.
+2. `ccs_tuner_ask()` — request one or more candidate configurations.
 3. **Evaluate** each configuration externally (run your experiment/benchmark).
-4. **`ccs_create_evaluation()`** — wrap the results in an evaluation object.
-5. **`ccs_tuner_tell()`** — report evaluations back to the tuner.
-6. **`ccs_tuner_get_optima()`** — retrieve the best evaluation(s) found so far.
+4. `ccs_create_evaluation()` — wrap the results in an evaluation object.
+5. `ccs_tuner_tell()` — report evaluations back to the tuner.
+6. `ccs_tuner_get_optima()` — retrieve the best evaluation(s) found so far.
 
 Repeat steps 2-6 as many times as needed.
 
