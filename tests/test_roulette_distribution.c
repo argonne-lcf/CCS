@@ -100,7 +100,7 @@ test_create_roulette_distribution(void)
 
 	err = ccs_object_deserialize(
 		(ccs_object_t *)&distrib, CCS_SERIALIZE_FORMAT_BINARY,
-		CCS_SERIALIZE_OPERATION_MEMORY, buff_size, buff,
+		CCS_DESERIALIZE_OPERATION_MEMORY, buff_size, buff,
 		CCS_DESERIALIZE_OPTION_END);
 	assert(err == CCS_RESULT_SUCCESS);
 	free(buff);

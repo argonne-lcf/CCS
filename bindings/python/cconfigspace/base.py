@@ -391,6 +391,13 @@ class SerializeOption(CEnumeration):
     'CALLBACK'
   ]
 
+class DeserializeOperation(CEnumeration):
+  _members_ = [
+    ('MEMORY', 0),
+    'FILE',
+    'FILE_DESCRIPTOR'
+  ]
+
 class DeserializeOption(CEnumeration):
   _members_ = [
     ('END', 0),
@@ -429,7 +436,7 @@ ccs_object_serialize = getattr(libcconfigspace, "ccs_object_serialize")
 ccs_object_serialize.argtypes = ccs_object, SerializeFormat, SerializeOperation,
 ccs_object_serialize.restype = Result
 ccs_object_deserialize = getattr(libcconfigspace, "ccs_object_deserialize")
-ccs_object_deserialize.argtypes = ct.POINTER(ccs_object), SerializeFormat, SerializeOperation,
+ccs_object_deserialize.argtypes = ct.POINTER(ccs_object), SerializeFormat, DeserializeOperation,
 ccs_object_deserialize.restype = Result
 
 _res = ccs_init()
@@ -589,14 +596,14 @@ class Object:
       options = [DeserializeOption.DATA_CALLBACK, _default_user_data_deserializer, ct.py_object()] + options
     if buffer is not None:
       s = len(buffer)
-      res = ccs_object_deserialize(ct.byref(o), SerializeFormat.BINARY, SerializeOperation.MEMORY, s, ct.create_string_buffer(buffer, s), *options)
+      res = ccs_object_deserialize(ct.byref(o), SerializeFormat.BINARY, DeserializeOperation.MEMORY, s, ct.create_string_buffer(buffer, s), *options)
     elif path is not None:
       p = str.encode(path)
       pp = ct.c_char_p(p)
-      res = ccs_object_deserialize(ct.byref(o), SerializeFormat.BINARY, SerializeOperation.FILE, pp, *options)
+      res = ccs_object_deserialize(ct.byref(o), SerializeFormat.BINARY, DeserializeOperation.FILE, pp, *options)
     elif file_descriptor is not None:
       fd = ct.c_int(file_descriptor)
-      res = ccs_object_deserialize(ct.byref(o), SerializeFormat.BINARY, SerializeOperation.FILE_DESCRIPTOR, fd, *options)
+      res = ccs_object_deserialize(ct.byref(o), SerializeFormat.BINARY, DeserializeOperation.FILE_DESCRIPTOR, fd, *options)
     else:
       raise Error(Result(Result.ERROR_INVALID_VALUE))
     Error.check(res)

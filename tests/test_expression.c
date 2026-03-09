@@ -1058,7 +1058,7 @@ test_deserialize_literal(void)
 
 	err = ccs_object_deserialize(
 		(ccs_object_t *)&expression, CCS_SERIALIZE_FORMAT_BINARY,
-		CCS_SERIALIZE_OPERATION_MEMORY, buff_size, buff,
+		CCS_DESERIALIZE_OPERATION_MEMORY, buff_size, buff,
 		CCS_DESERIALIZE_OPTION_END);
 	assert(err == CCS_RESULT_SUCCESS);
 
@@ -1117,7 +1117,7 @@ test_deserialize_variable(void)
 
 	err = ccs_object_deserialize(
 		(ccs_object_t *)&expression, CCS_SERIALIZE_FORMAT_BINARY,
-		CCS_SERIALIZE_OPERATION_MEMORY, buff_size, buff,
+		CCS_DESERIALIZE_OPERATION_MEMORY, buff_size, buff,
 		CCS_DESERIALIZE_OPTION_END);
 	assert(err == CCS_RESULT_ERROR_INVALID_OBJECT);
 
@@ -1126,7 +1126,7 @@ test_deserialize_variable(void)
 
 	err = ccs_object_deserialize(
 		(ccs_object_t *)&expression, CCS_SERIALIZE_FORMAT_BINARY,
-		CCS_SERIALIZE_OPERATION_MEMORY, buff_size, buff,
+		CCS_DESERIALIZE_OPERATION_MEMORY, buff_size, buff,
 		CCS_DESERIALIZE_OPTION_HANDLE_MAP, handle_map,
 		CCS_DESERIALIZE_OPTION_END);
 	assert(err == CCS_RESULT_ERROR_INVALID_HANDLE);
@@ -1141,7 +1141,7 @@ test_deserialize_variable(void)
 
 	err = ccs_object_deserialize(
 		(ccs_object_t *)&expression, CCS_SERIALIZE_FORMAT_BINARY,
-		CCS_SERIALIZE_OPERATION_MEMORY, buff_size, buff,
+		CCS_DESERIALIZE_OPERATION_MEMORY, buff_size, buff,
 		CCS_DESERIALIZE_OPTION_HANDLE_MAP, handle_map,
 		CCS_DESERIALIZE_OPTION_END);
 	assert(err == CCS_RESULT_SUCCESS);
@@ -1201,7 +1201,7 @@ test_deserialize(void)
 
 	err = ccs_object_deserialize(
 		(ccs_object_t *)&expression, CCS_SERIALIZE_FORMAT_BINARY,
-		CCS_SERIALIZE_OPERATION_MEMORY, buff_size, buff,
+		CCS_DESERIALIZE_OPERATION_MEMORY, buff_size, buff,
 		CCS_DESERIALIZE_OPTION_END);
 	assert(err == CCS_RESULT_ERROR_INVALID_OBJECT);
 
@@ -1210,7 +1210,7 @@ test_deserialize(void)
 
 	err = ccs_object_deserialize(
 		(ccs_object_t *)&expression, CCS_SERIALIZE_FORMAT_BINARY,
-		CCS_SERIALIZE_OPERATION_MEMORY, buff_size, buff,
+		CCS_DESERIALIZE_OPERATION_MEMORY, buff_size, buff,
 		CCS_DESERIALIZE_OPTION_HANDLE_MAP, handle_map,
 		CCS_DESERIALIZE_OPTION_END);
 	assert(err == CCS_RESULT_ERROR_INVALID_HANDLE);
@@ -1225,7 +1225,7 @@ test_deserialize(void)
 
 	err = ccs_object_deserialize(
 		(ccs_object_t *)&expression, CCS_SERIALIZE_FORMAT_BINARY,
-		CCS_SERIALIZE_OPERATION_MEMORY, buff_size, buff,
+		CCS_DESERIALIZE_OPERATION_MEMORY, buff_size, buff,
 		CCS_DESERIALIZE_OPTION_HANDLE_MAP, handle_map,
 		CCS_DESERIALIZE_OPTION_END);
 	assert(err == CCS_RESULT_SUCCESS);
@@ -1370,7 +1370,7 @@ test_user_defined(void)
 
 	err = ccs_object_deserialize(
 		(ccs_object_t *)&expression_copy, CCS_SERIALIZE_FORMAT_BINARY,
-		CCS_SERIALIZE_OPERATION_MEMORY, buff_size, buff,
+		CCS_DESERIALIZE_OPERATION_MEMORY, buff_size, buff,
 		CCS_DESERIALIZE_OPTION_VECTOR_CALLBACK,
 		&deserialize_vector_callback, (void *)NULL,
 		CCS_DESERIALIZE_OPTION_END);

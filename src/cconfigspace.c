@@ -577,9 +577,9 @@ end:
 
 static inline ccs_result_t
 _ccs_object_deserialize(
-	ccs_object_t             *object_ret,
-	ccs_serialize_format_t    format,
-	ccs_serialize_operation_t operation,
+	ccs_object_t                *object_ret,
+	ccs_serialize_format_t       format,
+	ccs_deserialize_operation_t  operation,
 	size_t                   *buffer_size,
 	const char              **buffer,
 	va_list                   args)
@@ -621,7 +621,7 @@ _ccs_object_deserialize_memory(
 
 	CCS_CHECK_PTR(buffer);
 	CCS_VALIDATE(_ccs_object_deserialize(
-		object_ret, format, CCS_SERIALIZE_OPERATION_MEMORY,
+		object_ret, format, CCS_DESERIALIZE_OPERATION_MEMORY,
 		&buffer_size, &buffer, args));
 	return CCS_RESULT_SUCCESS;
 }
@@ -672,7 +672,7 @@ _ccs_object_deserialize_file(
 			res,
 			_ccs_object_deserialize(
 				object_ret, format,
-				CCS_SERIALIZE_OPERATION_FILE, &bs, &b, args),
+				CCS_DESERIALIZE_OPERATION_FILE, &bs, &b, args),
 			err_file_map);
 	}
 err_file_map:
@@ -734,7 +734,7 @@ _ccs_object_deserialize_file_descriptor(
 	_ccs_file_descriptor_state_t     *pstate = NULL;
 	int                               fd     = va_arg(args, int);
 	CCS_VALIDATE(_ccs_object_deserialize_options(
-		format, CCS_SERIALIZE_OPERATION_FILE_DESCRIPTOR, args, &opts));
+		format, CCS_DESERIALIZE_OPERATION_FILE_DESCRIPTOR, args, &opts));
 	non_blocking = !!(opts.ppfd_state);
 	header_size  = _ccs_serialize_header_size(format);
 	/* non blocking */
@@ -829,9 +829,9 @@ err_fd_buffer:
 
 ccs_result_t
 ccs_object_deserialize(
-	ccs_object_t             *object_ret,
-	ccs_serialize_format_t    format,
-	ccs_serialize_operation_t operation,
+	ccs_object_t                *object_ret,
+	ccs_serialize_format_t       format,
+	ccs_deserialize_operation_t  operation,
 	...)
 {
 	ccs_result_t res;
@@ -841,19 +841,19 @@ ccs_object_deserialize(
 
 	va_start(args, operation);
 	switch (operation) {
-	case CCS_SERIALIZE_OPERATION_MEMORY:
+	case CCS_DESERIALIZE_OPERATION_MEMORY:
 		CCS_VALIDATE_ERR_GOTO(
 			res,
 			_ccs_object_deserialize_memory(object_ret, format, args),
 			end);
 		break;
-	case CCS_SERIALIZE_OPERATION_FILE:
+	case CCS_DESERIALIZE_OPERATION_FILE:
 		CCS_VALIDATE_ERR_GOTO(
 			res,
 			_ccs_object_deserialize_file(object_ret, format, args),
 			end);
 		break;
-	case CCS_SERIALIZE_OPERATION_FILE_DESCRIPTOR:
+	case CCS_DESERIALIZE_OPERATION_FILE_DESCRIPTOR:
 		CCS_VALIDATE_ERR_GOTO(
 			res,
 			_ccs_object_deserialize_file_descriptor(

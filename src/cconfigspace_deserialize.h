@@ -40,7 +40,7 @@ _ccs_object_deserialize_with_opts(
 static inline ccs_result_t
 _ccs_object_deserialize_options(
 	ccs_serialize_format_t             format,
-	ccs_serialize_operation_t          operation,
+	ccs_deserialize_operation_t        operation,
 	va_list                            args,
 	_ccs_object_deserialize_options_t *opts)
 {
@@ -66,7 +66,7 @@ _ccs_object_deserialize_options(
 		case CCS_DESERIALIZE_OPTION_NON_BLOCKING:
 			CCS_REFUTE(
 				operation !=
-					CCS_SERIALIZE_OPERATION_FILE_DESCRIPTOR,
+					CCS_DESERIALIZE_OPERATION_FILE_DESCRIPTOR,
 				CCS_RESULT_ERROR_INVALID_VALUE);
 			opts->ppfd_state =
 				va_arg(args, _ccs_file_descriptor_state_t **);

@@ -194,7 +194,7 @@ test_dynamic_tree_space(void)
 
 	err = ccs_object_deserialize(
 		(ccs_object_t *)&tree_space, CCS_SERIALIZE_FORMAT_BINARY,
-		CCS_SERIALIZE_OPERATION_MEMORY, buff_size, buff,
+		CCS_DESERIALIZE_OPERATION_MEMORY, buff_size, buff,
 		CCS_DESERIALIZE_OPTION_VECTOR_CALLBACK,
 		&deserialize_vector_callback, (void *)NULL,
 		CCS_DESERIALIZE_OPTION_END);
