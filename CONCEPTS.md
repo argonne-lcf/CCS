@@ -103,7 +103,7 @@ Helper constructors make datum creation concise: `ccs_int(42)`,
 `ccs_object(handle)`.
 
 The `CCS_DATA_TYPE_INACTIVE` type is used when a parameter is deactivated by a
-condition (see [Configuration Spaces](#configuration-spaces)).
+condition (see <a href="#configuration-spaces">Configuration Spaces</a>).
 
 ### Error Handling
 
@@ -221,7 +221,7 @@ Distributions provide several sampling layouts:
 
 Each parameter has a default distribution (typically uniform over its range).
 You can override the default by associating a custom distribution through a
-distribution space (see [Distribution Spaces](#distribution-spaces)).
+distribution space (see <a href="#distribution-spaces">Distribution Spaces</a>).
 
 ---
 
@@ -258,7 +258,7 @@ precision.
 ### Feature Space Attachment
 
 A configuration space can optionally reference a feature space, linking it to
-contextual tuning (see [Feature Spaces](#feature-spaces-and-contextual-tuning)).
+contextual tuning (see <a href="#feature-spaces-and-contextual-tuning">Feature Spaces and Contextual Tuning</a>).
 
 ### Custom RNG
 
