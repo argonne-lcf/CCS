@@ -1069,22 +1069,58 @@ typedef enum ccs_deserialize_option_e ccs_deserialize_option_t;
 /**
  * Perform a serialization operation on a CCS object.
  * @param[in] object a CCS object
- * @param[in] format the requested serialization format
+ * @param[in] format the requested serialization format (currently only
+ *                   #CCS_SERIALIZE_FORMAT_BINARY is supported)
  * @param[in] operation the requested serialization operation
- * @param[in,out] ... list of parameters that depend on the selected \p
- *                    operation, followed by a CCS_SERIALIZE_OPTION_END
- *                    terminated list of options
+ * @param[in,out] ... operation-specific parameters followed by a
+ *                    #CCS_SERIALIZE_OPTION_END terminated list of options.
+ *
+ * The variadic parameters depend on the selected \p operation:
+ *
+ * - #CCS_SERIALIZE_OPERATION_SIZE: a \c size_t* that will receive the
+ *   required buffer size.
+ *
+ * - #CCS_SERIALIZE_OPERATION_MEMORY: a \c size_t buffer size followed
+ *   by a \c char* buffer to write the serialized data into.
+ *
+ * - #CCS_SERIALIZE_OPERATION_FILE: a \c const \c char* file path. The
+ *   file is created (or truncated) with permissions 0664.
+ *
+ * - #CCS_SERIALIZE_OPERATION_FILE_DESCRIPTOR: an \c int file descriptor
+ *   open for writing.
+ *
+ * After the operation-specific parameters, pass a list of options
+ * terminated by #CCS_SERIALIZE_OPTION_END:
+ *
+ * - #CCS_SERIALIZE_OPTION_CALLBACK: followed by a
+ *   #ccs_object_serialize_callback_t callback and a \c void* user_data.
+ *   This callback is called for objects that have user_data set and do
+ *   not have a per-object serialization callback registered via
+ *   ccs_object_set_serialize_callback().
+ *
+ * - #CCS_SERIALIZE_OPTION_NON_BLOCKING: (file descriptor operation
+ *   only) followed by a \c void** state pointer (initialized to NULL).
+ *   The function returns #CCS_RESULT_AGAIN if the operation has not
+ *   completed; call again with the same state pointer to continue.
+ *
  * @return #CCS_RESULT_SUCCESS on success
- * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p object is found to be invalid
- * @return #CCS_RESULT_ERROR_INVALID_VALUE if parameters and option combination
- * are unsupported
+ * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p object is found to be
+ * invalid
+ * @return #CCS_RESULT_ERROR_INVALID_VALUE if parameters and option
+ * combination are unsupported
+ * @return #CCS_RESULT_ERROR_INVALID_FILE_PATH if the file path cannot be
+ * opened or memory-mapped
  * @return #CCS_RESULT_ERROR_OUT_OF_MEMORY if required memory could not be
  * allocated
- * @return #CCS_RESULT_ERROR_NOT_ENOUGH_DATA in case where the provided buffer
- * is too small for the requested operation
+ * @return #CCS_RESULT_ERROR_NOT_ENOUGH_DATA if the provided buffer is too
+ * small for the requested operation
+ * @return #CCS_RESULT_ERROR_SYSTEM if a system call fails (e.g. ftruncate,
+ * msync)
+ * @return #CCS_RESULT_AGAIN if the non-blocking file descriptor operation
+ * is incomplete
  * @remarks
- *   This function is thread-safe as long as objects serialization callbacks
- *   are thread safe.
+ *   This function is thread-safe as long as object serialization
+ *   callbacks are thread safe.
  */
 extern ccs_result_t
 ccs_object_serialize(
@@ -1094,24 +1130,74 @@ ccs_object_serialize(
 	...);
 
 /**
- * Perform a deserialization operation and returns a new CCS object.
+ * Perform a deserialization operation and return a new CCS object.
  * @param[out] object_ret a pointer to the variable that will hold the
  *                        newly created CCS object
- * @param[in] format the requested serialization format
- * @param[in] operation the requested serialization operation
- * @param[in,out] ... list of parameters that depend on the selected \p
- *                    operation, followed by a CCS_SERIALIZE_OPTION_END
- *                    terminated list of options
+ * @param[in] format the requested serialization format (currently only
+ *                   #CCS_SERIALIZE_FORMAT_BINARY is supported)
+ * @param[in] operation the requested deserialization operation
+ * @param[in,out] ... operation-specific parameters followed by a
+ *                    #CCS_DESERIALIZE_OPTION_END terminated list of
+ *                    options.
+ *
+ * The variadic parameters depend on the selected \p operation:
+ *
+ * - #CCS_SERIALIZE_OPERATION_MEMORY: a \c size_t buffer size followed
+ *   by a \c const \c char* buffer containing the serialized data.
+ *
+ * - #CCS_SERIALIZE_OPERATION_FILE: a \c const \c char* file path to
+ *   read from.
+ *
+ * - #CCS_SERIALIZE_OPERATION_FILE_DESCRIPTOR: an \c int file descriptor
+ *   open for reading.
+ *
+ * Note: #CCS_SERIALIZE_OPERATION_SIZE is not supported for
+ * deserialization.
+ *
+ * After the operation-specific parameters, pass a list of options
+ * terminated by #CCS_DESERIALIZE_OPTION_END:
+ *
+ * - #CCS_DESERIALIZE_OPTION_HANDLE_MAP: followed by a \c ccs_map_t
+ *   that contains mappings from serialized object handles to live
+ *   objects. Required when deserializing objects that reference other
+ *   objects (e.g. configurations referencing a configuration space).
+ *
+ * - #CCS_DESERIALIZE_OPTION_MAP_HANDLES: no additional parameter.
+ *   Requires #CCS_DESERIALIZE_OPTION_HANDLE_MAP to be set. The handle
+ *   map will be updated with a mapping from the serialized handle to
+ *   the newly created object, enabling subsequent deserializations to
+ *   reference it.
+ *
+ * - #CCS_DESERIALIZE_OPTION_VECTOR_CALLBACK: followed by a
+ *   #ccs_object_deserialize_vector_callback_t callback and a \c void*
+ *   user_data. Required when deserializing user-defined objects (e.g.
+ *   user-defined tuners) to provide the operation vector.
+ *
+ * - #CCS_DESERIALIZE_OPTION_DATA_CALLBACK: followed by a
+ *   #ccs_object_deserialize_data_callback_t callback and a \c void*
+ *   user_data. Called for objects whose user_data was serialized,
+ *   allowing the caller to restore application-specific state.
+ *
+ * - #CCS_DESERIALIZE_OPTION_NON_BLOCKING: (file descriptor operation
+ *   only) followed by a \c void** state pointer (initialized to NULL).
+ *   The function returns #CCS_RESULT_AGAIN if the operation has not
+ *   completed; call again with the same state pointer to continue.
+ *
  * @return #CCS_RESULT_SUCCESS on success
- * @return #CCS_RESULT_ERROR_INVALID_VALUE if parameters and option combination
- * are unsupported
+ * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p object_ret is NULL; or
+ * if parameters and option combination are unsupported
+ * @return #CCS_RESULT_ERROR_INVALID_FILE_PATH if the file path cannot be
+ * opened or memory-mapped
  * @return #CCS_RESULT_ERROR_OUT_OF_MEMORY if required memory could not be
  * allocated
- * @return #CCS_RESULT_ERROR_NOT_ENOUGH_DATA in case where the provided buffer
- * is too small for the requested operation
+ * @return #CCS_RESULT_ERROR_NOT_ENOUGH_DATA if the provided buffer is too
+ * small for the requested operation
+ * @return #CCS_RESULT_ERROR_SYSTEM if a system call fails
+ * @return #CCS_RESULT_AGAIN if the non-blocking file descriptor operation
+ * is incomplete
  * @remarks
- *   This function is thread-safe as long as object deserialization callbacks
- *   are thread safe.
+ *   This function is thread-safe as long as object deserialization
+ *   callbacks are thread safe.
  */
 extern ccs_result_t
 ccs_object_deserialize(
