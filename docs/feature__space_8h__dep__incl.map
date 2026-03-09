@@ -1,0 +1,5 @@
+<map id="include/cconfigspace/feature_space.h" name="include/cconfigspace/feature_space.h">
+<area shape="rect" id="Node000001" title="A feature space is a context (see context.h) defining a set of features represented using CCS paramet..." alt="" coords="11,5,155,45"/>
+<area shape="rect" id="Node000002" href="$cconfigspace_8h.html" title="The C configuration Space and Tuning library (CCS) provides an interface to define tuning problems an..." alt="" coords="5,93,160,119"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="85,59,85,93,80,93,80,59"/>
+</map>

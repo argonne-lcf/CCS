@@ -1,0 +1,5 @@
+<map id="ccs_interval_s" name="ccs_interval_s">
+<area shape="rect" id="Node000001" title="A structure defining an interval over numeric values." alt="" coords="7,108,114,133"/>
+<area shape="rect" id="Node000002" href="$unionccs__numeric__u.html" title="A union that can contain either a ccs_int_t or a ccs_float_t." alt="" coords="5,5,116,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="63,45,63,108,58,108,58,45"/>
+</map>

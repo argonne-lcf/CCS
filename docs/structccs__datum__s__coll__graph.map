@@ -1,0 +1,5 @@
+<map id="ccs_datum_s" name="ccs_datum_s">
+<area shape="rect" id="Node000001" title="A Structure containing a CCS datum." alt="" coords="5,93,105,119"/>
+<area shape="rect" id="Node000002" href="$unionccs__value__u.html" title="A union that represent a CCS datum value." alt="" coords="8,5,103,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="58,45,58,93,53,93,53,45"/>
+</map>

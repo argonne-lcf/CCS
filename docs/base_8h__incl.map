@@ -1,0 +1,9 @@
+<map id="include/cconfigspace/base.h" name="include/cconfigspace/base.h">
+<area shape="rect" id="Node000001" title="Base definition of CCS objects and types." alt="" coords="53,5,197,45"/>
+<area shape="rect" id="Node000002" title=" " alt="" coords="5,93,69,119"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="106,48,63,86,59,82,102,44"/>
+<area shape="rect" id="Node000003" title=" " alt="" coords="94,93,157,119"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="128,46,128,79,123,79,123,46"/>
+<area shape="rect" id="Node000004" title=" " alt="" coords="181,93,246,119"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="148,44,192,82,188,86,145,48"/>
+</map>

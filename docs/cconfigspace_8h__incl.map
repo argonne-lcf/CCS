@@ -1,0 +1,58 @@
+<map id="include/cconfigspace.h" name="include/cconfigspace.h">
+<area shape="rect" id="Node000001" title="The C configuration Space and Tuning library (CCS) provides an interface to define tuning problems an..." alt="" coords="1772,5,1927,31"/>
+<area shape="rect" id="Node000002" title=" " alt="" coords="5,86,75,111"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="1772,23,872,41,375,58,194,69,87,81,78,84,76,79,86,76,193,64,375,53,872,35,1771,18"/>
+<area shape="rect" id="Node000003" title=" " alt="" coords="99,86,165,111"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="1772,22,1447,22,987,29,747,36,523,47,330,62,184,81,172,84,171,79,184,76,329,56,522,41,747,31,987,23,1447,17,1772,16"/>
+<area shape="rect" id="Node000004" title=" " alt="" coords="176,167,240,192"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="1772,22,1406,25,904,33,660,41,450,51,299,64,252,72,230,81,218,96,211,115,208,153,203,153,206,113,213,93,226,77,251,67,298,59,450,46,659,35,904,28,1406,19,1772,17"/>
+<area shape="rect" id="Node000005" href="$base_8h.html" title="Base definition of CCS objects and types." alt="" coords="241,86,383,111"/>
+<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="1772,23,1087,41,687,58,521,69,395,81,369,86,368,80,394,76,520,63,687,53,1087,35,1772,18"/>
+<area shape="rect" id="Node000008" href="$error__stack_8h.html" title="CCS rich error reporting." alt="" coords="407,79,537,119"/>
+<area shape="poly" id="edge8_Node000001_Node000008" title=" " alt="" coords="1772,24,1170,41,818,58,668,69,550,81,550,76,668,64,818,53,1169,36,1772,18"/>
+<area shape="rect" id="Node000009" href="$interval_8h.html" title="Interval define ranges over numeric values." alt="" coords="561,86,717,111"/>
+<area shape="poly" id="edge9_Node000001_Node000009" title=" " alt="" coords="1772,22,1587,25,1328,33,1031,51,879,64,730,81,701,86,701,81,729,76,878,59,1031,46,1328,28,1587,19,1772,17"/>
+<area shape="rect" id="Node000010" href="$rng_8h.html" title="CCS rng define random number generators." alt="" coords="741,86,873,111"/>
+<area shape="poly" id="edge10_Node000001_Node000010" title=" " alt="" coords="1771,22,1610,25,1389,34,1139,52,886,81,863,85,862,80,885,76,1138,47,1389,29,1609,20,1771,17"/>
+<area shape="rect" id="Node000012" href="$distribution_8h.html" title="A Distribution is the probability distribution of a random variable." alt="" coords="897,86,1074,111"/>
+<area shape="poly" id="edge12_Node000001_Node000012" title=" " alt="" coords="1772,25,1471,44,1280,60,1087,81,1055,86,1054,81,1086,76,1279,54,1471,38,1771,20"/>
+<area shape="rect" id="Node000013" href="$parameter_8h.html" title="Parameters, when grouped together, define a tuning context (see context.h)." alt="" coords="1099,86,1269,111"/>
+<area shape="poly" id="edge13_Node000001_Node000013" title=" " alt="" coords="1772,28,1552,49,1283,81,1253,86,1253,81,1282,76,1551,43,1771,23"/>
+<area shape="rect" id="Node000014" href="$expression_8h.html" title="An expression in CCS is a combination of constants, variables (parameters), and operators." alt="" coords="1294,86,1471,111"/>
+<area shape="poly" id="edge14_Node000001_Node000014" title=" " alt="" coords="1777,33,1484,81,1457,86,1456,81,1484,76,1776,28"/>
+<area shape="rect" id="Node000015" href="$context_8h.html" title="A Context is a collection of parameters defining a value space." alt="" coords="1496,86,1653,111"/>
+<area shape="poly" id="edge15_Node000001_Node000015" title=" " alt="" coords="1810,33,1628,85,1627,80,1809,28"/>
+<area shape="rect" id="Node000016" href="$binding_8h.html" title="A Binding is set of value in a Context see context.h." alt="" coords="1677,86,1832,111"/>
+<area shape="poly" id="edge16_Node000001_Node000016" title=" " alt="" coords="1837,33,1781,79,1778,75,1834,29"/>
+<area shape="rect" id="Node000017" href="$configuration__space_8h.html" title="A configuration space is a context (see context.h) defining a search space on a set of parameters." alt="" coords="1857,79,2034,119"/>
+<area shape="poly" id="edge17_Node000001_Node000017" title=" " alt="" coords="1865,29,1913,68,1910,72,1862,33"/>
+<area shape="rect" id="Node000018" href="$distribution__space_8h.html" title="A distribution space is set of sampling distribution over the parameters of a configuration space." alt="" coords="2058,79,2225,119"/>
+<area shape="poly" id="edge18_Node000001_Node000018" title=" " alt="" coords="1892,28,2059,73,2057,78,1891,33"/>
+<area shape="rect" id="Node000019" href="$configuration_8h.html" title="A configuration is a binding (see binding.h) on a configuration space (see configuration_space...." alt="" coords="2249,86,2437,111"/>
+<area shape="poly" id="edge19_Node000001_Node000019" title=" " alt="" coords="1927,28,2238,76,2267,81,2266,86,2237,81,1926,33"/>
+<area shape="rect" id="Node000020" href="$feature__space_8h.html" title="A feature space is a context (see context.h) defining a set of features represented using CCS paramet..." alt="" coords="2461,79,2603,119"/>
+<area shape="poly" id="edge20_Node000001_Node000020" title=" " alt="" coords="1927,21,2157,40,2300,55,2447,76,2447,81,2299,61,2156,45,1927,27"/>
+<area shape="rect" id="Node000021" href="$features_8h.html" title="A features is a binding (see binding.h) over a feature space (see feature_space.h)." alt="" coords="2627,86,2789,111"/>
+<area shape="poly" id="edge21_Node000001_Node000021" title=" " alt="" coords="1927,20,2230,37,2422,53,2616,76,2644,81,2644,86,2616,81,2422,59,2229,42,1927,25"/>
+<area shape="rect" id="Node000022" href="$objective__space_8h.html" title="An objective space is a context (see context.h) defining a set of result parameters of a search space..." alt="" coords="2813,79,2968,119"/>
+<area shape="poly" id="edge22_Node000001_Node000022" title=" " alt="" coords="1927,18,2084,22,2299,32,2546,49,2800,76,2800,81,2546,54,2299,37,2084,27,1927,23"/>
+<area shape="rect" id="Node000023" href="$evaluation_8h.html" title="An evaluation is a binding (see binding.h) over an objective space (see objective_space...." alt="" coords="2992,86,3165,111"/>
+<area shape="poly" id="edge23_Node000001_Node000023" title=" " alt="" coords="1927,17,2113,20,2375,30,2675,47,2980,76,3013,81,3012,86,2980,81,2675,52,2374,35,2113,26,1927,22"/>
+<area shape="rect" id="Node000024" href="$tuner_8h.html" title="A CCS tuner defines an ask and tell interface to optimize an objective space (see objective_space...." alt="" coords="3190,86,3333,111"/>
+<area shape="poly" id="edge24_Node000001_Node000024" title=" " alt="" coords="1927,18,2553,37,2914,54,3064,64,3178,76,3204,80,3203,86,3177,81,3063,70,2913,59,2553,42,1927,24"/>
+<area shape="rect" id="Node000025" href="$map_8h.html" title="CCS map defines a key&#45;value store." alt="" coords="3357,86,3496,111"/>
+<area shape="poly" id="edge25_Node000001_Node000025" title=" " alt="" coords="1927,18,2632,35,3044,52,3216,63,3346,76,3371,80,3370,86,3345,81,3215,68,3044,57,2632,40,1927,23"/>
+<area shape="rect" id="Node000026" href="$tree_8h.html" title="A CCS tree object represents a node in a tree structure." alt="" coords="3520,86,3656,111"/>
+<area shape="poly" id="edge26_Node000001_Node000026" title=" " alt="" coords="1927,17,2250,22,2708,32,3170,50,3363,62,3508,76,3533,80,3532,86,3508,81,3362,67,3169,55,2707,38,2250,27,1927,23"/>
+<area shape="rect" id="Node000027" href="$tree__space_8h.html" title="A CCS tree space defines an search space over a tree." alt="" coords="3680,86,3859,111"/>
+<area shape="poly" id="edge27_Node000001_Node000027" title=" " alt="" coords="1927,18,2781,34,3293,52,3507,63,3668,76,3703,81,3702,86,3668,81,3506,68,3293,57,2781,40,1927,23"/>
+<area shape="rect" id="Node000028" href="$tree__configuration_8h.html" title="A tree configuration is a position on the tree (see tree.h) of a tree space (see tree_space...." alt="" coords="3883,86,4101,111"/>
+<area shape="poly" id="edge28_Node000001_Node000028" title=" " alt="" coords="1927,18,2874,35,3449,53,3689,64,3871,76,3915,81,3914,87,3870,81,3689,69,3449,58,2874,41,1927,23"/>
+<area shape="poly" id="edge5_Node000005_Node000004" title=" " alt="" coords="298,114,236,161,233,156,295,109"/>
+<area shape="rect" id="Node000006" title=" " alt="" coords="270,167,333,192"/>
+<area shape="poly" id="edge6_Node000005_Node000006" title=" " alt="" coords="313,112,307,153,302,152,308,111"/>
+<area shape="rect" id="Node000007" title=" " alt="" coords="357,167,422,192"/>
+<area shape="poly" id="edge7_Node000005_Node000007" title=" " alt="" coords="325,110,370,155,366,159,322,113"/>
+<area shape="rect" id="Node000011" title=" " alt="" coords="759,167,855,192"/>
+<area shape="poly" id="edge11_Node000010_Node000011" title=" " alt="" coords="809,112,809,153,804,153,804,112"/>
+</map>
