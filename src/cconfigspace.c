@@ -577,12 +577,12 @@ end:
 
 static inline ccs_result_t
 _ccs_object_deserialize(
-	ccs_object_t                *object_ret,
-	ccs_serialize_format_t       format,
-	ccs_deserialize_operation_t  operation,
-	size_t                   *buffer_size,
-	const char              **buffer,
-	va_list                   args)
+	ccs_object_t               *object_ret,
+	ccs_serialize_format_t      format,
+	ccs_deserialize_operation_t operation,
+	size_t                     *buffer_size,
+	const char                **buffer,
+	va_list                     args)
 {
 	uint32_t                          version;
 	size_t                            size;
@@ -734,7 +734,8 @@ _ccs_object_deserialize_file_descriptor(
 	_ccs_file_descriptor_state_t     *pstate = NULL;
 	int                               fd     = va_arg(args, int);
 	CCS_VALIDATE(_ccs_object_deserialize_options(
-		format, CCS_DESERIALIZE_OPERATION_FILE_DESCRIPTOR, args, &opts));
+		format, CCS_DESERIALIZE_OPERATION_FILE_DESCRIPTOR, args,
+		&opts));
 	non_blocking = !!(opts.ppfd_state);
 	header_size  = _ccs_serialize_header_size(format);
 	/* non blocking */
@@ -829,9 +830,9 @@ err_fd_buffer:
 
 ccs_result_t
 ccs_object_deserialize(
-	ccs_object_t                *object_ret,
-	ccs_serialize_format_t       format,
-	ccs_deserialize_operation_t  operation,
+	ccs_object_t               *object_ret,
+	ccs_serialize_format_t      format,
+	ccs_deserialize_operation_t operation,
 	...)
 {
 	ccs_result_t res;

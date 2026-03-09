@@ -1218,9 +1218,9 @@ ccs_object_serialize(
  */
 extern ccs_result_t
 ccs_object_deserialize(
-	ccs_object_t                *object_ret,
-	ccs_serialize_format_t       format,
-	ccs_deserialize_operation_t  operation,
+	ccs_object_t               *object_ret,
+	ccs_serialize_format_t      format,
+	ccs_deserialize_operation_t operation,
 	...);
 
 #ifdef __cplusplus
