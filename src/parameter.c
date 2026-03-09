@@ -33,7 +33,7 @@ ccs_parameter_copy(ccs_parameter_t parameter, ccs_parameter_t *parameter_ret)
 		ccs_object_deserialize(
 			(ccs_object_t *)parameter_ret,
 			CCS_SERIALIZE_FORMAT_BINARY,
-			CCS_SERIALIZE_OPERATION_MEMORY, buff_size, buff,
+			CCS_DESERIALIZE_OPERATION_MEMORY, buff_size, buff,
 			CCS_DESERIALIZE_OPTION_END),
 		mem);
 mem:

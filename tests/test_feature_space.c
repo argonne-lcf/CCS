@@ -249,7 +249,7 @@ test_deserialize(void)
 
 	err = ccs_object_deserialize(
 		(ccs_object_t *)&feature_space, CCS_SERIALIZE_FORMAT_BINARY,
-		CCS_SERIALIZE_OPERATION_MEMORY, buff_size, buff,
+		CCS_DESERIALIZE_OPERATION_MEMORY, buff_size, buff,
 		CCS_DESERIALIZE_OPTION_END);
 	assert(err == CCS_RESULT_SUCCESS);
 
@@ -270,7 +270,7 @@ test_deserialize(void)
 	assert(err == CCS_RESULT_SUCCESS);
 	err = ccs_object_deserialize(
 		(ccs_object_t *)&feature_space, CCS_SERIALIZE_FORMAT_BINARY,
-		CCS_SERIALIZE_OPERATION_MEMORY, buff_size, buff,
+		CCS_DESERIALIZE_OPERATION_MEMORY, buff_size, buff,
 		CCS_DESERIALIZE_OPTION_HANDLE_MAP, map,
 		CCS_DESERIALIZE_OPTION_MAP_HANDLES, CCS_DESERIALIZE_OPTION_END);
 	assert(err == CCS_RESULT_SUCCESS);
@@ -341,7 +341,7 @@ test_features_deserialize(void)
 
 	err = ccs_object_deserialize(
 		(ccs_object_t *)&features, CCS_SERIALIZE_FORMAT_BINARY,
-		CCS_SERIALIZE_OPERATION_MEMORY, buff_size, buff,
+		CCS_DESERIALIZE_OPERATION_MEMORY, buff_size, buff,
 		CCS_DESERIALIZE_OPTION_HANDLE_MAP, map,
 		CCS_DESERIALIZE_OPTION_END);
 	assert(err == CCS_RESULT_ERROR_INVALID_HANDLE);
@@ -353,7 +353,7 @@ test_features_deserialize(void)
 
 	err = ccs_object_deserialize(
 		(ccs_object_t *)&features, CCS_SERIALIZE_FORMAT_BINARY,
-		CCS_SERIALIZE_OPERATION_MEMORY, buff_size, buff,
+		CCS_DESERIALIZE_OPERATION_MEMORY, buff_size, buff,
 		CCS_DESERIALIZE_OPTION_HANDLE_MAP, map,
 		CCS_DESERIALIZE_OPTION_END);
 	assert(err == CCS_RESULT_SUCCESS);

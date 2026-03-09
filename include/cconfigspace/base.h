@@ -934,6 +934,26 @@ enum ccs_serialize_operation_e {
 typedef enum ccs_serialize_operation_e ccs_serialize_operation_t;
 
 /**
+ * CCS deserialization operations.
+ */
+enum ccs_deserialize_operation_e {
+	/** Deserialize the object from a user provided memory buffer */
+	CCS_DESERIALIZE_OPERATION_MEMORY,
+	/** Deserialize the object from a file at the given path */
+	CCS_DESERIALIZE_OPERATION_FILE,
+	/** Deserialize the object from the given file descriptor */
+	CCS_DESERIALIZE_OPERATION_FILE_DESCRIPTOR,
+	/** Guard */
+	CCS_DESERIALIZE_OPERATION_MAX,
+	/** Try forcing 32 bits value for bindings */
+	CCS_DESERIALIZE_OPERATION_FORCE_32BIT = INT32_MAX
+};
+/**
+ * A commodity type to represent CCS deserialization operations.
+ */
+typedef enum ccs_deserialize_operation_e ccs_deserialize_operation_t;
+
+/**
  * The different serialization options.
  */
 enum ccs_serialize_option_e {
@@ -1142,17 +1162,14 @@ ccs_object_serialize(
  *
  * The variadic parameters depend on the selected \p operation:
  *
- * - #CCS_SERIALIZE_OPERATION_MEMORY: a \c size_t buffer size followed
+ * - #CCS_DESERIALIZE_OPERATION_MEMORY: a \c size_t buffer size followed
  *   by a \c const \c char* buffer containing the serialized data.
  *
- * - #CCS_SERIALIZE_OPERATION_FILE: a \c const \c char* file path to
+ * - #CCS_DESERIALIZE_OPERATION_FILE: a \c const \c char* file path to
  *   read from.
  *
- * - #CCS_SERIALIZE_OPERATION_FILE_DESCRIPTOR: an \c int file descriptor
+ * - #CCS_DESERIALIZE_OPERATION_FILE_DESCRIPTOR: an \c int file descriptor
  *   open for reading.
- *
- * Note: #CCS_SERIALIZE_OPERATION_SIZE is not supported for
- * deserialization.
  *
  * After the operation-specific parameters, pass a list of options
  * terminated by #CCS_DESERIALIZE_OPTION_END:
@@ -1201,9 +1218,9 @@ ccs_object_serialize(
  */
 extern ccs_result_t
 ccs_object_deserialize(
-	ccs_object_t             *object_ret,
-	ccs_serialize_format_t    format,
-	ccs_serialize_operation_t operation,
+	ccs_object_t               *object_ret,
+	ccs_serialize_format_t      format,
+	ccs_deserialize_operation_t operation,
 	...);
 
 #ifdef __cplusplus

@@ -225,6 +225,11 @@ module CCS
     :CCS_SERIALIZE_OPTION_NON_BLOCKING,
     :CCS_SERIALIZE_OPTION_CALLBACK ]
 
+  DeserializeOperation = enum FFI::Type::INT32, :ccs_deserialize_operation_t, [
+    :CCS_DESERIALIZE_OPERATION_MEMORY,
+    :CCS_DESERIALIZE_OPERATION_FILE,
+    :CCS_DESERIALIZE_OPERATION_FILE_DESCRIPTOR ]
+
   DeserializeOptions = enum FFI::Type::INT32, :ccs_deserialize_option_t, [
     :CCS_DESERIALIZE_OPTION_END, 0,
     :CCS_DESERIALIZE_OPTION_HANDLE_MAP,
@@ -488,7 +493,7 @@ module CCS
   callback :ccs_object_deserialize_data_callback, [:ccs_object_t, :size_t, :pointer, :value], :ccs_result_t
   callback :ccs_object_deserialize_vector_callback, [:ccs_object_type_t, :string, :value, :pointer, :pointer], :ccs_result_t
   attach_function :ccs_object_serialize, [:ccs_object_t, :ccs_serialize_format_t, :ccs_serialize_operation_t, :varargs], :ccs_result_t
-  attach_function :ccs_object_deserialize, [:ccs_object_t, :ccs_serialize_format_t, :ccs_serialize_operation_t, :varargs], :ccs_result_t
+  attach_function :ccs_object_deserialize, [:ccs_object_t, :ccs_serialize_format_t, :ccs_deserialize_operation_t, :varargs], :ccs_result_t
 
   class << self
     alias version ccs_get_version
@@ -761,13 +766,13 @@ module CCS
       end
       options.concat [:ccs_deserialize_option_t, :CCS_DESERIALIZE_OPTION_END]
       if buffer
-        operation = :CCS_SERIALIZE_OPERATION_MEMORY
+        operation = :CCS_DESERIALIZE_OPERATION_MEMORY
         varargs = [:size_t, buffer.size, :pointer, buffer] + options
       elsif path
-        operation = :CCS_SERIALIZE_OPERATION_FILE
+        operation = :CCS_DESERIALIZE_OPERATION_FILE
         varargs = [:string, path] + options
       elsif file_descriptor
-        operation = :CCS_SERIALIZE_OPERATION_FILE_DESCRIPTOR
+        operation = :CCS_DESERIALIZE_OPERATION_FILE_DESCRIPTOR
         varargs = [:int, file_descriptor] + options
       else
         raise CCSError, :CCS_RESULT_ERROR_INVALID_VALUE
