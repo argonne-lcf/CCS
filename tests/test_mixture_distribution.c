@@ -323,6 +323,58 @@ test_mixture_distribution_soa_samples(void)
 	assert(err == CCS_RESULT_SUCCESS);
 }
 
+void
+test_create_mixture_distribution_errors(void)
+{
+	ccs_result_t       err;
+	ccs_distribution_t distrib;
+	ccs_distribution_t distribs[2];
+	ccs_distribution_t mv_distrib;
+	ccs_float_t        weights[2];
+
+	err = ccs_create_uniform_distribution(
+		CCS_NUMERIC_TYPE_FLOAT, CCSF(0.0), CCSF(1.0),
+		CCS_SCALE_TYPE_LINEAR, CCSF(0.0), &distribs[0]);
+	assert(err == CCS_RESULT_SUCCESS);
+	err = ccs_create_uniform_distribution(
+		CCS_NUMERIC_TYPE_FLOAT, CCSF(1.0), CCSF(2.0),
+		CCS_SCALE_TYPE_LINEAR, CCSF(1.0), &distribs[1]);
+	assert(err == CCS_RESULT_SUCCESS);
+
+	/* Negative weight */
+	weights[0] = -1.0;
+	weights[1] = 1.0;
+	err = ccs_create_mixture_distribution(2, distribs, weights, &distrib);
+	assert(err == CCS_RESULT_ERROR_INVALID_VALUE);
+	ccs_clear_thread_error();
+
+	/* Zero-sum weights */
+	weights[0] = 0.0;
+	weights[1] = 0.0;
+	err = ccs_create_mixture_distribution(2, distribs, weights, &distrib);
+	assert(err == CCS_RESULT_ERROR_INVALID_VALUE);
+	ccs_clear_thread_error();
+
+	/* Dimension mismatch: mix a dim=1 and dim=2 distribution */
+	err = ccs_create_multivariate_distribution(2, distribs, &mv_distrib);
+	assert(err == CCS_RESULT_SUCCESS);
+	{
+		ccs_distribution_t mix_distribs[2];
+		mix_distribs[0] = distribs[0]; /* dim=1 */
+		mix_distribs[1] = mv_distrib;  /* dim=2 */
+		weights[0]      = 1.0;
+		weights[1]      = 1.0;
+		err             = ccs_create_mixture_distribution(
+                        2, mix_distribs, weights, &distrib);
+		assert(err == CCS_RESULT_ERROR_INVALID_DISTRIBUTION);
+		ccs_clear_thread_error();
+	}
+
+	ccs_release_object(mv_distrib);
+	ccs_release_object(distribs[1]);
+	ccs_release_object(distribs[0]);
+}
+
 int
 main(void)
 {
@@ -331,6 +383,7 @@ main(void)
 	test_mixture_distribution();
 	test_mixture_distribution_strided_samples();
 	test_mixture_distribution_soa_samples();
+	test_create_mixture_distribution_errors();
 	ccs_clear_thread_error();
 	ccs_fini();
 	return 0;
