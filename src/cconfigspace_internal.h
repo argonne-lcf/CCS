@@ -938,6 +938,7 @@ _ccs_deserialize_bin_size(size_t *sz, size_t *buffer_size, const char **buffer)
 {
 	uint64_t tmp;
 	CCS_VALIDATE(_ccs_deserialize_bin_uint64(&tmp, buffer_size, buffer));
+	CCS_REFUTE(tmp > SIZE_MAX, CCS_RESULT_ERROR_INVALID_VALUE);
 	*sz = tmp;
 	return CCS_RESULT_SUCCESS;
 }
