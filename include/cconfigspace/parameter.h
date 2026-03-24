@@ -42,7 +42,7 @@ enum ccs_parameter_type_e {
 	/** Guard */
 	CCS_PARAMETER_TYPE_MAX,
 	/** Try forcing 32 bits value for bindings */
-	CCS_PARAMETER_TYPE_FORCE_32BIT = INT_MAX
+	CCS_PARAMETER_TYPE_FORCE_32BIT = INT32_MAX
 };
 
 /**
@@ -418,7 +418,7 @@ ccs_parameter_get_type(
  *                       value of the parameter
  * @return #CCS_RESULT_SUCCESS on success
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p value_ret is NULL
- * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p distribution is not a valid
+ * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p parameter is not a valid
  * CCS parameter
  * @remarks
  *   This function is thread-safe
@@ -435,7 +435,7 @@ ccs_parameter_get_default_value(
  *                      the name of the parameter
  * @return #CCS_RESULT_SUCCESS on success
  * @return #CCS_RESULT_ERROR_INVALID_VALUE if \p name_ret is NULL
- * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p distribution is not a valid
+ * @return #CCS_RESULT_ERROR_INVALID_OBJECT if \p parameter is not a valid
  * CCS parameter
  * @remarks
  *   This function is thread-safe
