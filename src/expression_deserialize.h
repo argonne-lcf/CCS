@@ -66,18 +66,11 @@ _ccs_deserialize_bin_ccs_expression_literal_data(
 	size_t                              *buffer_size,
 	const char                         **buffer)
 {
-	ccs_result_t err = CCS_RESULT_SUCCESS;
 	CCS_VALIDATE(_ccs_deserialize_bin_ccs_expression_data(
 		&data->expr, version, buffer_size, buffer, NULL));
-	CCS_VALIDATE_ERR_GOTO(
-		err,
-		_ccs_deserialize_bin_ccs_datum(
-			&data->value, buffer_size, buffer),
-		err_nodes);
+	CCS_VALIDATE(_ccs_deserialize_bin_ccs_datum(
+		&data->value, buffer_size, buffer));
 	return CCS_RESULT_SUCCESS;
-err_nodes:
-	_ccs_expression_data_mock_free(&data->expr);
-	return err;
 }
 
 static inline ccs_result_t
@@ -89,8 +82,11 @@ _ccs_deserialize_bin_expression_literal(
 {
 	ccs_result_t                        err = CCS_RESULT_SUCCESS;
 	_ccs_expression_literal_data_mock_t data;
-	CCS_VALIDATE(_ccs_deserialize_bin_ccs_expression_literal_data(
-		&data, version, buffer_size, buffer));
+	CCS_VALIDATE_ERR_GOTO(
+		err,
+		_ccs_deserialize_bin_ccs_expression_literal_data(
+			&data, version, buffer_size, buffer),
+		end);
 	CCS_VALIDATE_ERR_GOTO(
 		err, ccs_create_literal(data.value, expression_ret), end);
 end:
@@ -112,18 +108,11 @@ _ccs_deserialize_bin_ccs_expression_variable_data(
 	size_t                               *buffer_size,
 	const char                          **buffer)
 {
-	ccs_result_t err = CCS_RESULT_SUCCESS;
 	CCS_VALIDATE(_ccs_deserialize_bin_ccs_expression_data(
 		&data->expr, version, buffer_size, buffer, NULL));
-	CCS_VALIDATE_ERR_GOTO(
-		err,
-		_ccs_deserialize_bin_ccs_object(
-			(ccs_object_t *)&data->parameter, buffer_size, buffer),
-		err_nodes);
+	CCS_VALIDATE(_ccs_deserialize_bin_ccs_object(
+		(ccs_object_t *)&data->parameter, buffer_size, buffer));
 	return CCS_RESULT_SUCCESS;
-err_nodes:
-	_ccs_expression_data_mock_free(&data->expr);
-	return err;
 }
 
 static inline ccs_result_t
@@ -137,8 +126,11 @@ _ccs_deserialize_bin_expression_variable(
 	CCS_CHECK_OBJ(opts->handle_map, CCS_OBJECT_TYPE_MAP);
 	ccs_result_t                         err = CCS_RESULT_SUCCESS;
 	_ccs_expression_variable_data_mock_t data;
-	CCS_VALIDATE(_ccs_deserialize_bin_ccs_expression_variable_data(
-		&data, version, buffer_size, buffer));
+	CCS_VALIDATE_ERR_GOTO(
+		err,
+		_ccs_deserialize_bin_ccs_expression_variable_data(
+			&data, version, buffer_size, buffer),
+		end);
 	ccs_datum_t     d;
 	ccs_parameter_t h;
 	CCS_VALIDATE_ERR_GOTO(
