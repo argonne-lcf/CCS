@@ -132,6 +132,13 @@ ccs_object_get_refcount(ccs_object_t object, int32_t *refcount_ret)
 static const UT_icd _object_callback_icd = {
 	sizeof(_ccs_object_callback_t), NULL, NULL, NULL};
 
+#undef utarray_oom
+#define utarray_oom()                                                          \
+	{                                                                      \
+		CCS_RAISE_ERR_GOTO(                                            \
+			err, CCS_RESULT_ERROR_OUT_OF_MEMORY, end,              \
+			"Not enough memory to allocate array");                \
+	}
 ccs_result_t
 ccs_object_set_destroy_callback(
 	ccs_object_t                  object,
@@ -140,15 +147,19 @@ ccs_object_set_destroy_callback(
 {
 	CCS_CHECK_BASE_OBJ(object);
 	CCS_CHECK_PTR(callback);
+	ccs_result_t            err = CCS_RESULT_SUCCESS;
 	_ccs_object_internal_t *obj = (_ccs_object_internal_t *)object;
+	_ccs_object_callback_t  cb  = {callback, user_data};
 	CCS_MUTEX_LOCK(obj->mutex);
 	if (!obj->callbacks)
 		utarray_new(obj->callbacks, &_object_callback_icd);
-	_ccs_object_callback_t cb = {callback, user_data};
 	utarray_push_back(obj->callbacks, &cb);
+end:
 	CCS_MUTEX_UNLOCK(obj->mutex);
-	return CCS_RESULT_SUCCESS;
+	return err;
 }
+#undef utarray_oom
+#define utarray_oom() exit(-1)
 
 ccs_result_t
 ccs_object_set_user_data(ccs_object_t object, void *user_data)
