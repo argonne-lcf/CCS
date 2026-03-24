@@ -577,7 +577,6 @@ _ccs_tuner_random_suggest(
 				configuration),
 			err_feat);
 	}
-	return CCS_RESULT_SUCCESS;
 err_feat:
 	if (feat)
 		ccs_release_object(feat);
