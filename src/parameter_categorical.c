@@ -399,7 +399,7 @@ _ccs_categorical_parameter_get_values(
 			CCS_RESULT_ERROR_INVALID_VALUE);
 		for (size_t i = 0; i < d->num_possible_values; i++)
 			possible_values[i] = d->possible_values[i].d;
-		for (size_t i = num_possible_values; i < d->num_possible_values;
+		for (size_t i = d->num_possible_values; i < num_possible_values;
 		     i++)
 			possible_values[i] = ccs_none;
 	}
