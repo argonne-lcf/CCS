@@ -233,7 +233,7 @@ enum ccs_result_e {
 	CCS_RESULT_ERROR_INVALID_TREE               = -27,
 	/** The provided tree space is invalid */
 	CCS_RESULT_ERROR_INVALID_TREE_SPACE         = -28,
-	/** The provided tree tuner is invalid */
+	/** The provided distribution space is invalid */
 	CCS_RESULT_ERROR_INVALID_DISTRIBUTION_SPACE = -29,
 	/** Guard */
 	CCS_RESULT_MIN                              = -30,
