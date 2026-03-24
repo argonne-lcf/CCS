@@ -1449,6 +1449,9 @@ _ccs_object_deserialize_user_data(
 		CCS_VALIDATE(_ccs_deserialize_bin_size(
 			&serialize_data_size, buffer_size, buffer));
 		if (serialize_data_size) {
+			CCS_REFUTE(
+				*buffer_size < serialize_data_size,
+				CCS_RESULT_ERROR_NOT_ENOUGH_DATA);
 			if (opts->deserialize_data_callback)
 				CCS_VALIDATE(opts->deserialize_data_callback(
 					object, serialize_data_size, *buffer,
