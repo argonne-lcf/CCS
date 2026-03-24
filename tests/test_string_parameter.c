@@ -153,8 +153,8 @@ test_string_parameter_unsupported_ops(void)
 	ccs_clear_thread_error();
 
 	numeric.f = 0.5;
-	err = ccs_parameter_convert_samples(
-		parameter, CCS_FALSE, 1, &numeric, &value);
+	err       = ccs_parameter_convert_samples(
+                parameter, CCS_FALSE, 1, &numeric, &value);
 	assert(err == CCS_RESULT_ERROR_UNSUPPORTED_OPERATION);
 	ccs_clear_thread_error();
 
