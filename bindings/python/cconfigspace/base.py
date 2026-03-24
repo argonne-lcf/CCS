@@ -676,7 +676,7 @@ def _register_destroy_callback(handle):
   cb_func = ccs_object_destroy_callback_type(cb)
   res = ccs_object_set_destroy_callback(handle, cb_func, None)
   Error.check(res)
-  _data_store[value] = dict.fromkeys(['callbacks', 'user_data', 'serialize_calback', 'strings'])
+  _data_store[value] = dict.fromkeys(['callbacks', 'user_data', 'serialize_callback', 'strings'])
   _data_store[value]['callbacks'] = [ [ cb, cb_func ] ]
   _data_store[value]['strings'] = []
 
@@ -702,7 +702,7 @@ def _register_serialize_callback(handle, callback_data):
   value = handle.value
   if value not in _data_store:
     _register_destroy_callback(handle)
-  _data_store[value]['serialize_calback'] = callback_data
+  _data_store[value]['serialize_callback'] = callback_data
 
 def deserialize(format = 'binary', handle_map = None, map_handles = False, path = None, buffer = None, file_descriptor = None, vector_callback = None, vector_callback_data = None, callback = None, callback_data = None):
   return Object.deserialize(format = format, handle_map = handle_map, map_handles = map_handles, path = path, buffer = buffer, file_descriptor = file_descriptor, vector_callback = vector_callback, callback = callback)
