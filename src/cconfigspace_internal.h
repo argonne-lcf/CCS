@@ -695,6 +695,9 @@ ccs_zigzag_decode_int64(uint64_t x)
 				buff_size < 1,                                 \
 				CCS_RESULT_ERROR_NOT_ENOUGH_DATA);             \
 			y = *buff;                                             \
+			CCS_REFUTE(                                            \
+				shift >= sizeof(MAPPED_TYPE) * 8,              \
+				CCS_RESULT_ERROR_INVALID_VALUE);               \
 			v |= (y & 0x7f) << shift;                              \
 			buff_size -= 1;                                        \
 			buff += 1;                                             \
