@@ -453,7 +453,6 @@ _ccs_expr_equal_eval(
 			CCS_RESULT_ERROR_INVALID_VALUE,
 			"Types %d and %d are not comparable", left.type,
 			right.type);
-	;
 	*result = (equal ? ccs_true : ccs_false);
 	return CCS_RESULT_SUCCESS;
 }
@@ -487,7 +486,6 @@ _ccs_expr_not_equal_eval(
 			CCS_RESULT_ERROR_INVALID_VALUE,
 			"Types %d and %d are not comparable", left.type,
 			right.type);
-	;
 	*result = (equal ? ccs_false : ccs_true);
 	return CCS_RESULT_SUCCESS;
 }
