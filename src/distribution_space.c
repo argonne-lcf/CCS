@@ -243,7 +243,6 @@ _ccs_distribution_space_create_default_wrappers(
 	size_t                       *parameters_without_distrib,
 	size_t                        without_distrib_count,
 	_ccs_distribution_wrapper_t **p_dwrappers,
-	size_t                        start_index,
 	size_t                       *count_ret)
 {
 	size_t       count = 0;
@@ -268,8 +267,8 @@ _ccs_distribution_space_create_default_wrappers(
 				parameters[parameters_without_distrib[i]],
 				&(dwrapper->distribution)),
 			err_dmem);
-		p_dwrappers[start_index + count++] = dwrapper;
-		dmem                               = 0;
+		p_dwrappers[count++] = dwrapper;
+		dmem                 = 0;
 	}
 	*count_ret = count;
 	return CCS_RESULT_SUCCESS;
@@ -277,8 +276,8 @@ err_dmem:
 	free((void *)dmem);
 err_wrappers:
 	for (size_t i = 0; i < count; i++) {
-		ccs_release_object(p_dwrappers[start_index + i]->distribution);
-		free(p_dwrappers[start_index + i]);
+		ccs_release_object(p_dwrappers[i]->distribution);
+		free(p_dwrappers[i]);
 	}
 	return err;
 }
@@ -370,8 +369,8 @@ ccs_distribution_space_set_distribution(
 		err,
 		_ccs_distribution_space_create_default_wrappers(
 			parameters, parameters_without_distrib,
-			without_distrib_count, p_dwrappers_to_add, to_add_count,
-			&default_count),
+			without_distrib_count,
+			p_dwrappers_to_add + to_add_count, &default_count),
 		err_user_wrapper);
 	to_add_count += default_count;
 
