@@ -118,8 +118,11 @@ static ccs_result_t
 _ccs_configuration_hash(ccs_configuration_t configuration, ccs_hash_t *hash_ret)
 {
 	ccs_hash_t h, ht;
-	CCS_VALIDATE(_ccs_binding_hash(
-		(ccs_binding_t)configuration->data->features, &h));
+	if (configuration->data->features)
+		CCS_VALIDATE(_ccs_binding_hash(
+			(ccs_binding_t)configuration->data->features, &h));
+	else
+		h = 0;
 	CCS_VALIDATE(_ccs_binding_hash((ccs_binding_t)configuration, &ht));
 	h         = _hash_combine(h, ht);
 	*hash_ret = h;
@@ -132,7 +135,11 @@ _ccs_configuration_cmp(
 	ccs_configuration_t other,
 	int                *cmp_ret)
 {
-	if (configuration->data->features) {
+	if (configuration->data->features || other->data->features) {
+		if (!configuration->data->features || !other->data->features) {
+			*cmp_ret = configuration->data->features ? 1 : -1;
+			return CCS_RESULT_SUCCESS;
+		}
 		CCS_VALIDATE(_ccs_binding_cmp(
 			(ccs_binding_t)configuration->data->features,
 			(ccs_binding_t)other->data->features, cmp_ret));
