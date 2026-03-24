@@ -416,7 +416,7 @@ ccs_evaluation_get_objective_values(
 	CCS_REFUTE(!values && !num_values_ret, CCS_RESULT_ERROR_INVALID_VALUE);
 	size_t count = evaluation->data->num_objectives;
 	if (values) {
-		CCS_REFUTE(count < num_values, CCS_RESULT_ERROR_INVALID_VALUE);
+		CCS_REFUTE(num_values < count, CCS_RESULT_ERROR_INVALID_VALUE);
 		for (size_t i = 0; i < count; i++)
 			values[i] = evaluation->data->objective_values[i];
 		for (size_t i = count; i < num_values; i++)
