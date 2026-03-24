@@ -62,7 +62,7 @@ enum ccs_expression_type_e {
 	/** Guard */
 	CCS_EXPRESSION_TYPE_MAX,
 	/** Try forcing 32 bits value for bindings */
-	CCS_EXPRESSION_FORCE_32BIT = INT32_MAX
+	CCS_EXPRESSION_TYPE_FORCE_32BIT = INT32_MAX
 };
 
 /**
