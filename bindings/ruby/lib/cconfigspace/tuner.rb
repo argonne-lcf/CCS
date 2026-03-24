@@ -271,7 +271,7 @@ module CCS
         if deserialize
           lambda { |o_space, history_size, p_history, num_optima, p_optima, state_size, p_state, p_tuner_data|
             begin
-              history = p_history.null? ? [] : history_size.times.collect { |i| Evaluation::from_handle(p_p_history.get_pointer(i*8)) }
+              history = p_history.null? ? [] : history_size.times.collect { |i| Evaluation::from_handle(p_history.get_pointer(i*8)) }
               optima = p_optima.null? ? [] : num_optima.times.collect { |i| Evaluation::from_handle(p_optima.get_pointer(i*8)) }
               state = p_state.null? ? nil : p_state.read_bytes(state_size)
               tuner_data = deserialize.call(ObjectiveSpace.from_handle(o_space), history, optima, state)
