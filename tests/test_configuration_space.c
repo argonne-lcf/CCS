@@ -430,9 +430,8 @@ test_deserialize_errors(void)
 	assert(err == CCS_RESULT_SUCCESS);
 
 	err = ccs_object_serialize(
-		rng, CCS_SERIALIZE_FORMAT_BINARY,
-		CCS_SERIALIZE_OPERATION_SIZE, &buff_size,
-		CCS_SERIALIZE_OPTION_END);
+		rng, CCS_SERIALIZE_FORMAT_BINARY, CCS_SERIALIZE_OPERATION_SIZE,
+		&buff_size, CCS_SERIALIZE_OPTION_END);
 	assert(err == CCS_RESULT_SUCCESS);
 
 	buff = (char *)malloc(buff_size);
