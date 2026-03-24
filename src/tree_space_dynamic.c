@@ -150,13 +150,20 @@ _ccs_tree_space_tree_get_child(
 		size_t           child_index,
 		ccs_tree_t      *child_ret))
 {
+	ccs_result_t err = CCS_RESULT_SUCCESS;
 	CCS_VALIDATE(ccs_tree_get_child(parent, index, child));
 	if (!*child) {
 		CCS_VALIDATE(child_cb(tree_space, parent, index, child));
-		CCS_VALIDATE(ccs_tree_set_child(parent, index, *child));
+		CCS_VALIDATE_ERR_GOTO(
+			err, ccs_tree_set_child(parent, index, *child),
+			err_child);
 		CCS_VALIDATE(ccs_release_object(*child));
 	}
 	return CCS_RESULT_SUCCESS;
+err_child:
+	ccs_release_object(*child);
+	*child = NULL;
+	return err;
 }
 
 static ccs_result_t
