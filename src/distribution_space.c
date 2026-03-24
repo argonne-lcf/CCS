@@ -198,6 +198,11 @@ ccs_distribution_space_get_configuration_space(
 	return CCS_RESULT_SUCCESS;
 }
 
+/* Create a wrapper for the user-specified distribution covering the
+ * given parameter indexes.  Each covered index is removed from
+ * parameters_without_distrib so that the caller knows which parameters
+ * still need a default distribution. On success the distribution is
+ * retained; on failure the allocated wrapper is freed. */
 static inline ccs_result_t
 _ccs_distribution_space_create_user_wrapper(
 	ccs_distribution_t            distribution,
@@ -217,6 +222,8 @@ _ccs_distribution_space_create_user_wrapper(
 	dwrapper->dimension    = dim;
 	dwrapper->parameter_indexes =
 		(size_t *)(dmem + sizeof(_ccs_distribution_wrapper_t));
+	/* Record each parameter index and remove it from the
+	 * "without distribution" list. */
 	for (size_t i = 0; i < dim; i++) {
 		dwrapper->parameter_indexes[i] = indexes[i];
 		size_t indx                    = 0;
@@ -237,6 +244,11 @@ err_dmem:
 	return err;
 }
 
+/* Create one wrapper per displaced parameter that no longer has a
+ * distribution, assigning each parameter's default distribution.
+ * p_dwrappers is written starting at index 0; the caller should pass
+ * an offset pointer if earlier entries are already filled.
+ * On failure all wrappers created so far are released and freed. */
 static inline ccs_result_t
 _ccs_distribution_space_create_default_wrappers(
 	ccs_parameter_t              *parameters,
@@ -268,13 +280,18 @@ _ccs_distribution_space_create_default_wrappers(
 				&(dwrapper->distribution)),
 			err_dmem);
 		p_dwrappers[count++] = dwrapper;
+		/* Clear dmem so err_dmem won't double-free on a later
+		 * iteration's failure. */
 		dmem                 = 0;
 	}
 	*count_ret = count;
 	return CCS_RESULT_SUCCESS;
 err_dmem:
+	/* Free the current (unfinished) wrapper whose distribution was
+	 * not yet retained. */
 	free((void *)dmem);
 err_wrappers:
+	/* Release and free all previously completed wrappers. */
 	for (size_t i = 0; i < count; i++) {
 		ccs_release_object(p_dwrappers[i]->distribution);
 		free(p_dwrappers[i]);
@@ -338,6 +355,8 @@ ccs_distribution_space_set_distribution(
 	cur_mem += sizeof(_ccs_distribution_wrapper_t *) * num_parameters;
 	parameters_without_distrib = (size_t *)cur_mem;
 
+	/* Collect the unique wrappers currently covering the target
+	 * parameter indexes — these will be removed. */
 	for (size_t i = 0; i < dim; i++) {
 		int add = 1;
 		pdist   = pdists + indexes[i];
@@ -350,6 +369,8 @@ ccs_distribution_space_set_distribution(
 			p_dwrappers_to_del[to_del_count++] =
 				pdist->distribution;
 	}
+	/* Build the list of all parameters that will lose their
+	 * distribution when the old wrappers are removed. */
 	for (size_t i = 0; i < to_del_count; i++) {
 		for (size_t j = 0; j < p_dwrappers_to_del[i]->dimension; j++) {
 			parameters_without_distrib[without_distrib_count++] =
@@ -357,6 +378,8 @@ ccs_distribution_space_set_distribution(
 		}
 	}
 
+	/* Create the wrapper for the user-supplied distribution.  This
+	 * also removes covered indexes from parameters_without_distrib. */
 	CCS_VALIDATE_ERR_GOTO(
 		err,
 		_ccs_distribution_space_create_user_wrapper(
@@ -365,6 +388,8 @@ ccs_distribution_space_set_distribution(
 		memory);
 	to_add_count = 1;
 
+	/* Create default-distribution wrappers for any parameters that
+	 * are still uncovered after the user wrapper claimed its indexes. */
 	CCS_VALIDATE_ERR_GOTO(
 		err,
 		_ccs_distribution_space_create_default_wrappers(
@@ -374,6 +399,7 @@ ccs_distribution_space_set_distribution(
 		err_user_wrapper);
 	to_add_count += default_count;
 
+	/* Commit: remove old wrappers and insert new ones. */
 	for (size_t i = 0; i < to_del_count; i++) {
 		DL_DELETE(
 			distribution_space->data->distribution_list,
@@ -397,6 +423,7 @@ ccs_distribution_space_set_distribution(
 	CCS_OBJ_UNLOCK(distribution_space);
 	return CCS_RESULT_SUCCESS;
 err_user_wrapper:
+	/* Default wrapper creation failed — clean up the user wrapper. */
 	ccs_release_object(p_dwrappers_to_add[0]->distribution);
 	free(p_dwrappers_to_add[0]);
 memory:
