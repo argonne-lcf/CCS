@@ -152,8 +152,14 @@ _ccs_tree_space_tree_get_child(
 {
 	CCS_VALIDATE(ccs_tree_get_child(parent, index, child));
 	if (!*child) {
+		ccs_result_t err;
 		CCS_VALIDATE(child_cb(tree_space, parent, index, child));
-		CCS_VALIDATE(ccs_tree_set_child(parent, index, *child));
+		err = ccs_tree_set_child(parent, index, *child);
+		if (err) {
+			ccs_release_object(*child);
+			*child = NULL;
+			return err;
+		}
 		CCS_VALIDATE(ccs_release_object(*child));
 	}
 	return CCS_RESULT_SUCCESS;
