@@ -482,6 +482,7 @@ _ccs_object_serialize_file_descriptor(
 			CCS_REFUTE(!mem, CCS_RESULT_ERROR_OUT_OF_MEMORY);
 			*(opts.ppfd_state) = pstate =
 				(_ccs_file_descriptor_state_t *)mem;
+			pstate->base = mem;
 			pstate->base_size =
 				sizeof(_ccs_file_descriptor_state_t) +
 				object_size;
