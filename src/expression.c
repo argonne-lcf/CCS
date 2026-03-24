@@ -1417,13 +1417,20 @@ _ccs_expr_user_defined_eval(
 	_ccs_expression_data_t              *data = e->data;
 	_ccs_expression_user_defined_data_t *d =
 		(_ccs_expression_user_defined_data_t *)data;
-	ccs_datum_t *values = NULL;
-	ccs_result_t err    = CCS_RESULT_SUCCESS;
+	ccs_datum_t  stack_values[16];
+	ccs_datum_t *values  = NULL;
+	ccs_datum_t *to_free = NULL;
+	ccs_result_t err     = CCS_RESULT_SUCCESS;
 
 	if (data->num_nodes) {
-		values = (ccs_datum_t *)malloc(
-			sizeof(ccs_datum_t) * data->num_nodes);
-		CCS_REFUTE(!values, CCS_RESULT_ERROR_OUT_OF_MEMORY);
+		if (data->num_nodes <= 16) {
+			values = stack_values;
+		} else {
+			values = (ccs_datum_t *)malloc(
+				sizeof(ccs_datum_t) * data->num_nodes);
+			CCS_REFUTE(!values, CCS_RESULT_ERROR_OUT_OF_MEMORY);
+			to_free = values;
+		}
 	}
 	for (size_t i = 0; i < data->num_nodes; i++) {
 		CCS_VALIDATE_ERR_GOTO(
@@ -1439,7 +1446,7 @@ _ccs_expr_user_defined_eval(
 	CCS_VALIDATE_ERR_GOTO(
 		err, d->vector.eval(e, data->num_nodes, values, result), end);
 end:
-	free(values);
+	free(to_free);
 	return err;
 }
 
