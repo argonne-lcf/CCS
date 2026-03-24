@@ -416,6 +416,71 @@ test_deserialize(void)
 	free(buff);
 }
 
+void
+test_deserialize_errors(void)
+{
+	ccs_rng_t    rng;
+	ccs_object_t obj;
+	ccs_result_t err;
+	char        *buff;
+	char        *corrupt;
+	size_t       buff_size;
+
+	err = ccs_create_rng(&rng);
+	assert(err == CCS_RESULT_SUCCESS);
+
+	err = ccs_object_serialize(
+		rng, CCS_SERIALIZE_FORMAT_BINARY,
+		CCS_SERIALIZE_OPERATION_SIZE, &buff_size,
+		CCS_SERIALIZE_OPTION_END);
+	assert(err == CCS_RESULT_SUCCESS);
+
+	buff = (char *)malloc(buff_size);
+	assert(buff);
+
+	err = ccs_object_serialize(
+		rng, CCS_SERIALIZE_FORMAT_BINARY,
+		CCS_SERIALIZE_OPERATION_MEMORY, buff_size, buff,
+		CCS_SERIALIZE_OPTION_END);
+	assert(err == CCS_RESULT_SUCCESS);
+
+	/* Truncated buffer — too short for magic tag */
+	err = ccs_object_deserialize(
+		&obj, CCS_SERIALIZE_FORMAT_BINARY,
+		CCS_DESERIALIZE_OPERATION_MEMORY, 2, buff,
+		CCS_DESERIALIZE_OPTION_END);
+	assert(err != CCS_RESULT_SUCCESS);
+	ccs_clear_thread_error();
+
+	/* Wrong magic tag */
+	corrupt = (char *)malloc(buff_size);
+	assert(corrupt);
+	memcpy(corrupt, buff, buff_size);
+	corrupt[0] = 'X';
+	corrupt[1] = 'Y';
+	corrupt[2] = 'Z';
+	err        = ccs_object_deserialize(
+                &obj, CCS_SERIALIZE_FORMAT_BINARY,
+                CCS_DESERIALIZE_OPERATION_MEMORY, buff_size, corrupt,
+                CCS_DESERIALIZE_OPTION_END);
+	assert(err == CCS_RESULT_ERROR_INVALID_VALUE);
+	ccs_clear_thread_error();
+
+	/* Version too high — patch the version byte after magic(4) + size(8) */
+	memcpy(corrupt, buff, buff_size);
+	corrupt[12] = (char)0xFF;
+	err         = ccs_object_deserialize(
+                &obj, CCS_SERIALIZE_FORMAT_BINARY,
+                CCS_DESERIALIZE_OPERATION_MEMORY, buff_size, corrupt,
+                CCS_DESERIALIZE_OPTION_END);
+	assert(err == CCS_RESULT_ERROR_INVALID_VALUE);
+	ccs_clear_thread_error();
+
+	free(corrupt);
+	free(buff);
+	ccs_release_object(rng);
+}
+
 int
 main(void)
 {
@@ -425,6 +490,7 @@ main(void)
 	test_sample();
 	test_deserialize();
 	test_configuration_deserialize();
+	test_deserialize_errors();
 	ccs_clear_thread_error();
 	ccs_fini();
 	return 0;
