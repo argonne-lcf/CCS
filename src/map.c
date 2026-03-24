@@ -315,7 +315,7 @@ ccs_map_get_keys(
 		size_t            i = 0;
 		HASH_ITER(hh, map->data->map, current, tmp)
 		{
-			keys[i++] = current->value;
+			keys[i++] = current->key;
 		}
 		for (i = num_entries; i < num_keys; i++)
 			keys[i] = ccs_none;
