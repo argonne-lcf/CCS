@@ -247,6 +247,7 @@ _ccs_deserialize_header(
 			CCS_RESULT_ERROR_INVALID_VALUE);
 		CCS_VALIDATE(_ccs_deserialize_bin_uncompressed_uint64(
 			&sz, buffer_size, buffer));
+		CCS_REFUTE(sz > SIZE_MAX, CCS_RESULT_ERROR_INVALID_VALUE);
 		*size = sz;
 		CCS_VALIDATE(CCS_SERIALIZATION_API_VERSION_DESERIALIZE_BIN(
 			version, buffer_size, buffer));
