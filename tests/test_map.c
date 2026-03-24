@@ -189,11 +189,52 @@ test_map(void)
 	assert(err == CCS_RESULT_SUCCESS);
 }
 
+void
+test_map_error_paths(void)
+{
+	ccs_map_t    map;
+	ccs_result_t err;
+	ccs_datum_t  keys[2], values[2];
+
+	err = ccs_create_map(&map);
+	assert(err == CCS_RESULT_SUCCESS);
+
+	err = ccs_map_set(map, ccs_int(10), ccs_float(1.0));
+	assert(err == CCS_RESULT_SUCCESS);
+	err = ccs_map_set(map, ccs_int(20), ccs_float(2.0));
+	assert(err == CCS_RESULT_SUCCESS);
+
+	/* Delete a key that does not exist */
+	err = ccs_map_del(map, ccs_int(99));
+	assert(err == CCS_RESULT_ERROR_INVALID_VALUE);
+	ccs_clear_thread_error();
+
+	/* get_keys with undersized buffer (2 entries, buffer for 1) */
+	err = ccs_map_get_keys(map, 1, keys, NULL);
+	assert(err == CCS_RESULT_ERROR_INVALID_VALUE);
+	ccs_clear_thread_error();
+
+	/* get_values with undersized buffer */
+	err = ccs_map_get_values(map, 1, values, NULL);
+	assert(err == CCS_RESULT_ERROR_INVALID_VALUE);
+	ccs_clear_thread_error();
+
+	/* get_pairs with undersized buffer */
+	err = ccs_map_get_pairs(map, 1, keys, values, NULL);
+	assert(err == CCS_RESULT_ERROR_INVALID_VALUE);
+	ccs_clear_thread_error();
+
+	err = ccs_release_object(map);
+	assert(err == CCS_RESULT_SUCCESS);
+}
+
 int
 main(void)
 {
 	ccs_init();
 	test_map();
+	ccs_clear_thread_error();
+	test_map_error_paths();
 	ccs_clear_thread_error();
 	ccs_fini();
 	return 0;
