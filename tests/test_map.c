@@ -119,6 +119,23 @@ test_map(void)
 	err = ccs_map_get_pairs(map, 0, NULL, NULL, &d_count);
 	assert(err == CCS_RESULT_SUCCESS);
 	assert(d_count == 5);
+	{
+		ccs_datum_t *pair_keys =
+			(ccs_datum_t *)calloc(d_count, sizeof(ccs_datum_t));
+		ccs_datum_t *pair_values =
+			(ccs_datum_t *)calloc(d_count, sizeof(ccs_datum_t));
+		assert(pair_keys);
+		assert(pair_values);
+		err = ccs_map_get_pairs(
+			map, d_count, pair_keys, pair_values, NULL);
+		assert(err == CCS_RESULT_SUCCESS);
+		for (size_t i = 0; i < d_count; i++) {
+			assert(!ccs_datum_cmp(keys[i], pair_keys[i]));
+			assert(!ccs_datum_cmp(values[i], pair_values[i]));
+		}
+		free(pair_keys);
+		free(pair_values);
+	}
 	err = ccs_map_get_pairs(map, d_count, keys, values, NULL);
 	assert(err == CCS_RESULT_SUCCESS);
 
