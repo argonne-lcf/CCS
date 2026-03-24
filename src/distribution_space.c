@@ -247,9 +247,10 @@ _ccs_distribution_space_create_default_wrappers(
 	size_t                       *count_ret)
 {
 	size_t       count = 0;
+	uintptr_t    dmem  = 0;
 	ccs_result_t err   = CCS_RESULT_SUCCESS;
 	for (size_t i = 0; i < without_distrib_count; i++) {
-		uintptr_t dmem = (uintptr_t)malloc(
+		dmem = (uintptr_t)malloc(
 			sizeof(_ccs_distribution_wrapper_t) + sizeof(size_t));
 		CCS_REFUTE_ERR_GOTO(
 			err, !dmem, CCS_RESULT_ERROR_OUT_OF_MEMORY,
@@ -268,13 +269,12 @@ _ccs_distribution_space_create_default_wrappers(
 				&(dwrapper->distribution)),
 			err_dmem);
 		p_dwrappers[start_index + count++] = dwrapper;
-		continue;
-	err_dmem:
-		free((void *)dmem);
-		goto err_wrappers;
+		dmem                               = 0;
 	}
 	*count_ret = count;
 	return CCS_RESULT_SUCCESS;
+err_dmem:
+	free((void *)dmem);
 err_wrappers:
 	for (size_t i = 0; i < count; i++) {
 		ccs_release_object(p_dwrappers[start_index + i]->distribution);
