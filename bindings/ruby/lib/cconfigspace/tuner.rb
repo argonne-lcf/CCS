@@ -181,9 +181,9 @@ module CCS
             configurations.each_with_index { |c, i|
               err = CCS.ccs_retain_object(c.handle)
               CCS.error_check(err)
-              p_configurations.put_pointer(i*8, c.handle)
+              p_configurations.put_pointer(i * FFI::Pointer.size, c.handle)
             }
-            (count_ret...count).each { |i| p_configurations[i].put_pointer(i*8, 0) }
+            (count_ret...count).each { |i| p_configurations.put_pointer(i * FFI::Pointer.size, 0) }
           end
           Pointer.new(p_count).write_size_t(count_ret) unless p_count.null?
           CCSError.to_native(:CCS_RESULT_SUCCESS)
@@ -194,7 +194,7 @@ module CCS
       tellwrapper = lambda { |tun, count, p_evaluations|
         begin
           if count > 0
-            evals = count.times.collect { |i| Evaluation::from_handle(p_evaluations.get_pointer(i*8)) }
+            evals = count.times.collect { |i| Evaluation::from_handle(p_evaluations.get_pointer(i * FFI::Pointer.size)) }
             tell.call(Tuner.from_handle(tun), evals)
           end
           CCSError.to_native(:CCS_RESULT_SUCCESS)
@@ -271,8 +271,8 @@ module CCS
         if deserialize
           lambda { |o_space, history_size, p_history, num_optima, p_optima, state_size, p_state, p_tuner_data|
             begin
-              history = p_history.null? ? [] : history_size.times.collect { |i| Evaluation::from_handle(p_history.get_pointer(i*8)) }
-              optima = p_optima.null? ? [] : num_optima.times.collect { |i| Evaluation::from_handle(p_optima.get_pointer(i*8)) }
+              history = p_history.null? ? [] : history_size.times.collect { |i| Evaluation::from_handle(p_history.get_pointer(i * FFI::Pointer.size)) }
+              optima = p_optima.null? ? [] : num_optima.times.collect { |i| Evaluation::from_handle(p_optima.get_pointer(i * FFI::Pointer.size)) }
               state = p_state.null? ? nil : p_state.read_bytes(state_size)
               tuner_data = deserialize.call(ObjectiveSpace.from_handle(o_space), history, optima, state)
               p_tuner_data.write_value(tuner_data)
