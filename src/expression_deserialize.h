@@ -126,13 +126,13 @@ _ccs_deserialize_bin_expression_variable(
 	CCS_CHECK_OBJ(opts->handle_map, CCS_OBJECT_TYPE_MAP);
 	ccs_result_t                         err = CCS_RESULT_SUCCESS;
 	_ccs_expression_variable_data_mock_t data;
+	ccs_datum_t                          d;
+	ccs_parameter_t                      h;
 	CCS_VALIDATE_ERR_GOTO(
 		err,
 		_ccs_deserialize_bin_ccs_expression_variable_data(
 			&data, version, buffer_size, buffer),
 		end);
-	ccs_datum_t     d;
-	ccs_parameter_t h;
 	CCS_VALIDATE_ERR_GOTO(
 		err,
 		ccs_map_get(opts->handle_map, ccs_object(data.parameter), &d),
