@@ -249,6 +249,7 @@ _ccs_deserialize_bin_expression(
 			&new_opts));
 		break;
 	case CCS_EXPRESSION_TYPE_USER_DEFINED:
+		CCS_CHECK_PTR(opts->deserialize_vector_callback);
 		CCS_VALIDATE(_ccs_deserialize_bin_expression_user_defined(
 			expression_ret, version, buffer_size, buffer,
 			&new_opts));
