@@ -1417,14 +1417,14 @@ _ccs_expr_user_defined_eval(
 	_ccs_expression_data_t              *data = e->data;
 	_ccs_expression_user_defined_data_t *d =
 		(_ccs_expression_user_defined_data_t *)data;
-	ccs_datum_t  stack_values[16];
 	ccs_datum_t *values  = NULL;
 	ccs_datum_t *to_free = NULL;
 	ccs_result_t err     = CCS_RESULT_SUCCESS;
 
 	if (data->num_nodes) {
 		if (data->num_nodes <= 16) {
-			values = stack_values;
+			values = (ccs_datum_t *)alloca(
+				sizeof(ccs_datum_t) * data->num_nodes);
 		} else {
 			values = (ccs_datum_t *)malloc(
 				sizeof(ccs_datum_t) * data->num_nodes);
