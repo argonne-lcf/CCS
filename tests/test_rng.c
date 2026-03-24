@@ -193,9 +193,8 @@ test_rng_file_serialize(void)
 
 	/* Serialize to file */
 	err = ccs_object_serialize(
-		rng, CCS_SERIALIZE_FORMAT_BINARY,
-		CCS_SERIALIZE_OPERATION_FILE, tmppath,
-		CCS_SERIALIZE_OPTION_END);
+		rng, CCS_SERIALIZE_FORMAT_BINARY, CCS_SERIALIZE_OPERATION_FILE,
+		tmppath, CCS_SERIALIZE_OPTION_END);
 	assert(err == CCS_RESULT_SUCCESS);
 
 	/* Deserialize from file */
@@ -222,8 +221,7 @@ test_rng_file_serialize(void)
 	err = ccs_object_deserialize(
 		&obj, CCS_SERIALIZE_FORMAT_BINARY,
 		CCS_DESERIALIZE_OPERATION_FILE,
-		"/nonexistent/path/ccs_test.bin",
-		CCS_DESERIALIZE_OPTION_END);
+		"/nonexistent/path/ccs_test.bin", CCS_DESERIALIZE_OPTION_END);
 	assert(err == CCS_RESULT_ERROR_INVALID_FILE_PATH);
 	ccs_clear_thread_error();
 
