@@ -1418,17 +1418,29 @@ _ccs_expr_user_defined_eval(
 	_ccs_expression_user_defined_data_t *d =
 		(_ccs_expression_user_defined_data_t *)data;
 	ccs_datum_t *values = NULL;
+	ccs_result_t err    = CCS_RESULT_SUCCESS;
 
-	if (data->num_nodes)
-		values = (ccs_datum_t *)alloca(
+	if (data->num_nodes) {
+		values = (ccs_datum_t *)malloc(
 			sizeof(ccs_datum_t) * data->num_nodes);
-	for (size_t i = 0; i < data->num_nodes; i++) {
-		CCS_VALIDATE(_ccs_expr_node_eval(
-			data->nodes[i], expr_ctx, values + i, NULL));
-		RETURN_IF_INACTIVE(values[i], result);
+		CCS_REFUTE(!values, CCS_RESULT_ERROR_OUT_OF_MEMORY);
 	}
-	CCS_VALIDATE(d->vector.eval(e, data->num_nodes, values, result));
-	return CCS_RESULT_SUCCESS;
+	for (size_t i = 0; i < data->num_nodes; i++) {
+		CCS_VALIDATE_ERR_GOTO(
+			err,
+			_ccs_expr_node_eval(
+				data->nodes[i], expr_ctx, values + i, NULL),
+			end);
+		if (values[i].type == CCS_DATA_TYPE_INACTIVE) {
+			*result = ccs_inactive;
+			goto end;
+		}
+	}
+	CCS_VALIDATE_ERR_GOTO(
+		err, d->vector.eval(e, data->num_nodes, values, result), end);
+end:
+	free(values);
+	return err;
 }
 
 static _ccs_expression_ops_t _ccs_expr_user_defined_ops = {
