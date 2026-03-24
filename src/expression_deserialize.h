@@ -41,6 +41,17 @@ _ccs_deserialize_bin_ccs_expression_data(
 	return CCS_RESULT_SUCCESS;
 }
 
+static inline void
+_ccs_expression_data_mock_free(_ccs_expression_data_mock_t *data)
+{
+	if (data->nodes) {
+		for (size_t i = 0; i < data->num_nodes; i++)
+			if (data->nodes[i].type == CCS_DATA_TYPE_OBJECT)
+				ccs_release_object(data->nodes[i].value.o);
+		free(data->nodes);
+	}
+}
+
 struct _ccs_expression_literal_data_mock_s {
 	_ccs_expression_data_mock_t expr;
 	ccs_datum_t                 value;
@@ -69,11 +80,18 @@ _ccs_deserialize_bin_expression_literal(
 	size_t           *buffer_size,
 	const char      **buffer)
 {
+	ccs_result_t                        err = CCS_RESULT_SUCCESS;
 	_ccs_expression_literal_data_mock_t data;
-	CCS_VALIDATE(_ccs_deserialize_bin_ccs_expression_literal_data(
-		&data, version, buffer_size, buffer));
-	CCS_VALIDATE(ccs_create_literal(data.value, expression_ret));
-	return CCS_RESULT_SUCCESS;
+	CCS_VALIDATE_ERR_GOTO(
+		err,
+		_ccs_deserialize_bin_ccs_expression_literal_data(
+			&data, version, buffer_size, buffer),
+		end);
+	CCS_VALIDATE_ERR_GOTO(
+		err, ccs_create_literal(data.value, expression_ret), end);
+end:
+	_ccs_expression_data_mock_free(&data.expr);
+	return err;
 }
 
 struct _ccs_expression_variable_data_mock_s {
@@ -106,19 +124,27 @@ _ccs_deserialize_bin_expression_variable(
 	_ccs_object_deserialize_options_t *opts)
 {
 	CCS_CHECK_OBJ(opts->handle_map, CCS_OBJECT_TYPE_MAP);
+	ccs_result_t                         err = CCS_RESULT_SUCCESS;
 	_ccs_expression_variable_data_mock_t data;
-	CCS_VALIDATE(_ccs_deserialize_bin_ccs_expression_variable_data(
-		&data, version, buffer_size, buffer));
-	ccs_datum_t     d;
-	ccs_parameter_t h;
-	CCS_VALIDATE(
-		ccs_map_get(opts->handle_map, ccs_object(data.parameter), &d));
-	CCS_REFUTE(
-		d.type != CCS_DATA_TYPE_OBJECT,
-		CCS_RESULT_ERROR_INVALID_HANDLE);
+	ccs_datum_t                          d;
+	ccs_parameter_t                      h;
+	CCS_VALIDATE_ERR_GOTO(
+		err,
+		_ccs_deserialize_bin_ccs_expression_variable_data(
+			&data, version, buffer_size, buffer),
+		end);
+	CCS_VALIDATE_ERR_GOTO(
+		err,
+		ccs_map_get(opts->handle_map, ccs_object(data.parameter), &d),
+		end);
+	CCS_REFUTE_ERR_GOTO(
+		err, d.type != CCS_DATA_TYPE_OBJECT,
+		CCS_RESULT_ERROR_INVALID_HANDLE, end);
 	h = (ccs_parameter_t)(d.value.o);
-	CCS_VALIDATE(ccs_create_variable(h, expression_ret));
-	return CCS_RESULT_SUCCESS;
+	CCS_VALIDATE_ERR_GOTO(err, ccs_create_variable(h, expression_ret), end);
+end:
+	_ccs_expression_data_mock_free(&data.expr);
+	return err;
 }
 
 static inline ccs_result_t
@@ -142,12 +168,7 @@ _ccs_deserialize_bin_expression_general(
 			data.type, data.num_nodes, data.nodes, expression_ret),
 		end);
 end:
-	if (data.nodes) {
-		for (size_t i = 0; i < data.num_nodes; i++)
-			if (data.nodes[i].type == CCS_DATA_TYPE_OBJECT)
-				ccs_release_object(data.nodes[i].value.o);
-		free(data.nodes);
-	}
+	_ccs_expression_data_mock_free(&data);
 	return res;
 }
 
@@ -215,12 +236,7 @@ _ccs_deserialize_bin_expression_user_defined(
 		end);
 
 end:
-	if (data.expr.nodes) {
-		for (size_t i = 0; i < data.expr.num_nodes; i++)
-			if (data.expr.nodes[i].type == CCS_DATA_TYPE_OBJECT)
-				ccs_release_object(data.expr.nodes[i].value.o);
-		free(data.expr.nodes);
-	}
+	_ccs_expression_data_mock_free(&data.expr);
 	return res;
 }
 
