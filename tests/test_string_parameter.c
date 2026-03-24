@@ -101,7 +101,7 @@ test_string_memoization(void)
 	assert(dout.type == CCS_DATA_TYPE_STRING);
 	assert(dout.flags == 0);
 	assert(strcmp(dout.value.s, "my string") == 0);
-	err = ccs_parameter_validate_value(parameter, din, &dout2, NULL);
+	err = ccs_parameter_validate_value(parameter, din, &dout2, &check);
 	assert(err == CCS_RESULT_SUCCESS);
 	assert(dout2.value.s == dout.value.s);
 
@@ -121,6 +121,45 @@ test_string_memoization(void)
 	assert(check == CCS_FALSE);
 	assert(dout.type == CCS_DATA_TYPE_INACTIVE);
 
+	free(str);
+	ccs_release_object(parameter);
+}
+
+void
+test_string_parameter_unsupported_ops(void)
+{
+	ccs_parameter_t    parameter;
+	ccs_distribution_t distribution;
+	ccs_rng_t          rng;
+	ccs_result_t       err;
+	ccs_datum_t        value;
+	ccs_numeric_t      numeric;
+
+	err = ccs_create_string_parameter("my_param", &parameter);
+	assert(err == CCS_RESULT_SUCCESS);
+	err = ccs_create_uniform_distribution(
+		CCS_NUMERIC_TYPE_FLOAT, CCSF(0.0), CCSF(1.0),
+		CCS_SCALE_TYPE_LINEAR, CCSF(0.0), &distribution);
+	assert(err == CCS_RESULT_SUCCESS);
+	err = ccs_create_rng(&rng);
+	assert(err == CCS_RESULT_SUCCESS);
+
+	err = ccs_parameter_sample(parameter, distribution, rng, &value);
+	assert(err == CCS_RESULT_ERROR_UNSUPPORTED_OPERATION);
+	ccs_clear_thread_error();
+
+	err = ccs_parameter_samples(parameter, distribution, rng, 1, &value);
+	assert(err == CCS_RESULT_ERROR_UNSUPPORTED_OPERATION);
+	ccs_clear_thread_error();
+
+	numeric.f = 0.5;
+	err = ccs_parameter_convert_samples(
+		parameter, CCS_FALSE, 1, &numeric, &value);
+	assert(err == CCS_RESULT_ERROR_UNSUPPORTED_OPERATION);
+	ccs_clear_thread_error();
+
+	ccs_release_object(rng);
+	ccs_release_object(distribution);
 	ccs_release_object(parameter);
 }
 
@@ -129,6 +168,10 @@ main(void)
 {
 	ccs_init();
 	test_create();
+	ccs_clear_thread_error();
+	test_string_memoization();
+	ccs_clear_thread_error();
+	test_string_parameter_unsupported_ops();
 	ccs_clear_thread_error();
 	ccs_fini();
 	return 0;
