@@ -1,5 +1,7 @@
 #include <stdlib.h>
 #include <assert.h>
+#include <string.h>
+#include <unistd.h>
 #include <cconfigspace.h>
 #include <gsl/gsl_rng.h>
 #include "test_utils.h"
@@ -167,6 +169,69 @@ test_rng_uniform(void)
 	assert(err == CCS_RESULT_SUCCESS);
 }
 
+static void
+test_rng_file_serialize(void)
+{
+	ccs_rng_t           rng = NULL, rng2 = NULL;
+	ccs_object_t        obj;
+	ccs_result_t        err;
+	const gsl_rng_type *t, *t2;
+	unsigned long int   i = 0, i2 = 0;
+	char                tmppath[] = "/tmp/ccs_test_XXXXXX";
+	int                 fd;
+
+	err = ccs_create_rng(&rng);
+	assert(err == CCS_RESULT_SUCCESS);
+
+	err = ccs_rng_get(rng, &i);
+	assert(err == CCS_RESULT_SUCCESS);
+
+	/* Create temp file */
+	fd = mkstemp(tmppath);
+	assert(fd != -1);
+	close(fd);
+
+	/* Serialize to file */
+	err = ccs_object_serialize(
+		rng, CCS_SERIALIZE_FORMAT_BINARY,
+		CCS_SERIALIZE_OPERATION_FILE, tmppath,
+		CCS_SERIALIZE_OPTION_END);
+	assert(err == CCS_RESULT_SUCCESS);
+
+	/* Deserialize from file */
+	err = ccs_object_deserialize(
+		(ccs_object_t *)&rng2, CCS_SERIALIZE_FORMAT_BINARY,
+		CCS_DESERIALIZE_OPERATION_FILE, tmppath,
+		CCS_DESERIALIZE_OPTION_END);
+	assert(err == CCS_RESULT_SUCCESS);
+
+	/* Verify roundtrip */
+	err = ccs_rng_get_type(rng, &t);
+	assert(err == CCS_RESULT_SUCCESS);
+	err = ccs_rng_get_type(rng2, &t2);
+	assert(err == CCS_RESULT_SUCCESS);
+	assert(t == t2);
+
+	err = ccs_rng_get(rng, &i);
+	assert(err == CCS_RESULT_SUCCESS);
+	err = ccs_rng_get(rng2, &i2);
+	assert(err == CCS_RESULT_SUCCESS);
+	assert(i == i2);
+
+	/* Bad file path */
+	err = ccs_object_deserialize(
+		&obj, CCS_SERIALIZE_FORMAT_BINARY,
+		CCS_DESERIALIZE_OPERATION_FILE,
+		"/nonexistent/path/ccs_test.bin",
+		CCS_DESERIALIZE_OPTION_END);
+	assert(err == CCS_RESULT_ERROR_INVALID_FILE_PATH);
+	ccs_clear_thread_error();
+
+	unlink(tmppath);
+	ccs_release_object(rng2);
+	ccs_release_object(rng);
+}
+
 int
 main(void)
 {
@@ -176,6 +241,7 @@ main(void)
 	test_rng_min_max();
 	test_rng_get();
 	test_rng_uniform();
+	test_rng_file_serialize();
 	ccs_clear_thread_error();
 	ccs_fini();
 	return 0;
