@@ -344,16 +344,14 @@ test_create_mixture_distribution_errors(void)
 	/* Negative weight */
 	weights[0] = -1.0;
 	weights[1] = 1.0;
-	err        = ccs_create_mixture_distribution(
-                2, distribs, weights, &distrib);
+	err = ccs_create_mixture_distribution(2, distribs, weights, &distrib);
 	assert(err == CCS_RESULT_ERROR_INVALID_VALUE);
 	ccs_clear_thread_error();
 
 	/* Zero-sum weights */
 	weights[0] = 0.0;
 	weights[1] = 0.0;
-	err        = ccs_create_mixture_distribution(
-                2, distribs, weights, &distrib);
+	err = ccs_create_mixture_distribution(2, distribs, weights, &distrib);
 	assert(err == CCS_RESULT_ERROR_INVALID_VALUE);
 	ccs_clear_thread_error();
 
