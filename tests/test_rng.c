@@ -2,6 +2,8 @@
 #include <assert.h>
 #include <string.h>
 #include <unistd.h>
+#include <fcntl.h>
+#include <pthread.h>
 #include <cconfigspace.h>
 #include <gsl/gsl_rng.h>
 #include "test_utils.h"
@@ -282,6 +284,98 @@ test_rng_fd_serialize_blocking(void)
 	ccs_release_object(rng);
 }
 
+struct _nb_write_args {
+	ccs_rng_t rng;
+	int       fd;
+};
+
+static void *
+_nb_write_thread(void *arg)
+{
+	struct _nb_write_args *wa          = (struct _nb_write_args *)arg;
+	void                  *write_state = NULL;
+	ccs_result_t           err;
+	do {
+		err = ccs_object_serialize(
+			wa->rng, CCS_SERIALIZE_FORMAT_BINARY,
+			CCS_SERIALIZE_OPERATION_FILE_DESCRIPTOR, wa->fd,
+			CCS_SERIALIZE_OPTION_NON_BLOCKING, &write_state,
+			CCS_SERIALIZE_OPTION_END);
+	} while (err == CCS_RESULT_AGAIN);
+	assert(err == CCS_RESULT_SUCCESS);
+	assert(write_state == NULL);
+	close(wa->fd);
+	return NULL;
+}
+
+static void
+test_rng_fd_serialize_non_blocking(void)
+{
+	ccs_rng_t             rng = NULL, rng2 = NULL;
+	ccs_result_t          err;
+	const gsl_rng_type   *t, *t2;
+	unsigned long int     i = 0, i2 = 0;
+	int                   pipefd[2];
+	int                   ret;
+	int                   flags;
+	void                 *read_state = NULL;
+	pthread_t             writer;
+	struct _nb_write_args wa;
+
+	err = ccs_create_rng(&rng);
+	assert(err == CCS_RESULT_SUCCESS);
+
+	err = ccs_rng_get(rng, &i);
+	assert(err == CCS_RESULT_SUCCESS);
+
+	ret = pipe(pipefd);
+	assert(ret == 0);
+
+	/* Set both ends to non-blocking */
+	flags = fcntl(pipefd[0], F_GETFL, 0);
+	fcntl(pipefd[0], F_SETFL, flags | O_NONBLOCK);
+	flags = fcntl(pipefd[1], F_GETFL, 0);
+	fcntl(pipefd[1], F_SETFL, flags | O_NONBLOCK);
+
+	/* Write in a separate thread so that if the pipe buffer fills,
+	 * the read thread can drain it. */
+	wa.rng = rng;
+	wa.fd  = pipefd[1];
+	ret    = pthread_create(&writer, NULL, _nb_write_thread, &wa);
+	assert(ret == 0);
+
+	/* Non-blocking deserialize in the main thread */
+	do {
+		err = ccs_object_deserialize(
+			(ccs_object_t *)&rng2, CCS_SERIALIZE_FORMAT_BINARY,
+			CCS_DESERIALIZE_OPERATION_FILE_DESCRIPTOR, pipefd[0],
+			CCS_DESERIALIZE_OPTION_NON_BLOCKING, &read_state,
+			CCS_DESERIALIZE_OPTION_END);
+	} while (err == CCS_RESULT_AGAIN);
+	assert(err == CCS_RESULT_SUCCESS);
+	assert(read_state == NULL);
+	close(pipefd[0]);
+
+	ret = pthread_join(writer, NULL);
+	assert(ret == 0);
+
+	/* Verify roundtrip */
+	err = ccs_rng_get_type(rng, &t);
+	assert(err == CCS_RESULT_SUCCESS);
+	err = ccs_rng_get_type(rng2, &t2);
+	assert(err == CCS_RESULT_SUCCESS);
+	assert(t == t2);
+
+	err = ccs_rng_get(rng, &i);
+	assert(err == CCS_RESULT_SUCCESS);
+	err = ccs_rng_get(rng2, &i2);
+	assert(err == CCS_RESULT_SUCCESS);
+	assert(i == i2);
+
+	ccs_release_object(rng2);
+	ccs_release_object(rng);
+}
+
 int
 main(void)
 {
@@ -293,6 +387,7 @@ main(void)
 	test_rng_uniform();
 	test_rng_file_serialize();
 	test_rng_fd_serialize_blocking();
+	test_rng_fd_serialize_non_blocking();
 	ccs_clear_thread_error();
 	ccs_fini();
 	return 0;

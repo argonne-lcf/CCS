@@ -800,19 +800,31 @@ _ccs_object_deserialize_file_descriptor(
 				&pstate->version),
 			err_fd_buffer);
 		/* reallocate buffer to account for whole size */
-		if (non_blocking)
-			pstate->base_size =
-				sizeof(_ccs_file_descriptor_state_t) +
-				object_size;
-		else
+		if (non_blocking) {
+			size_t new_size = sizeof(_ccs_file_descriptor_state_t) +
+					  object_size;
+			new_buffer = (char *)realloc(pstate->base, new_size);
+			CCS_REFUTE_ERR_GOTO(
+				res, !new_buffer,
+				CCS_RESULT_ERROR_OUT_OF_MEMORY, err_fd_buffer);
+			/* pstate is embedded at the start of the
+			 * allocation — update it after realloc may
+			 * have moved the block. */
+			pstate = (_ccs_file_descriptor_state_t *)new_buffer;
+			*(opts.ppfd_state) = pstate;
+			pstate->base       = new_buffer;
+			pstate->base_size  = new_size;
+		} else {
 			pstate->base_size = object_size;
-		new_buffer = (char *)realloc(pstate->base, pstate->base_size);
-		CCS_REFUTE_ERR_GOTO(
-			res, !new_buffer, CCS_RESULT_ERROR_OUT_OF_MEMORY,
-			err_fd_buffer);
-		pstate->base = new_buffer;
+			new_buffer        = (char *)realloc(
+                                pstate->base, pstate->base_size);
+			CCS_REFUTE_ERR_GOTO(
+				res, !new_buffer,
+				CCS_RESULT_ERROR_OUT_OF_MEMORY, err_fd_buffer);
+			pstate->base = new_buffer;
+		}
 		/* seek to after the header */
-		offset       = header_size;
+		offset = header_size;
 		if (non_blocking)
 			offset += sizeof(_ccs_file_descriptor_state_t);
 		pstate->buffer_size = pstate->base_size - offset;
