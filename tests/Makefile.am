@@ -46,6 +46,7 @@ CCONFIGSPACE_TESTS = \
 	test_user_defined_tree_tuner \
 	test_atomics
 
+test_rng_LDFLAGS = -lpthread $(AM_LDFLAGS)
 test_atomics_LDFLAGS = -lpthread $(AM_LDFLAGS)
 
 # unit tests
