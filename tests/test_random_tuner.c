@@ -213,12 +213,92 @@ test_evaluation_deserialize(void)
 	assert(err == CCS_RESULT_SUCCESS);
 }
 
+void
+test_evaluation_hash_cmp_compare(void)
+{
+	ccs_configuration_space_t  cspace;
+	ccs_objective_space_t      ospace;
+	ccs_tuner_t                tuner;
+	ccs_result_t               err;
+	ccs_search_configuration_t config1, config2;
+	ccs_evaluation_t           eval1, eval2;
+	ccs_datum_t                res1, res2;
+	ccs_hash_t                 hash1, hash2;
+	ccs_comparison_t           comparison;
+	int                        cmp;
+
+	cspace = create_2d_plane(NULL);
+	ospace = create_height_objective(cspace);
+
+	err    = ccs_create_random_tuner("test", ospace, &tuner);
+	assert(err == CCS_RESULT_SUCCESS);
+
+	err = ccs_tuner_ask(tuner, NULL, 1, &config1, NULL);
+	assert(err == CCS_RESULT_SUCCESS);
+	err = ccs_tuner_ask(tuner, NULL, 1, &config2, NULL);
+	assert(err == CCS_RESULT_SUCCESS);
+
+	res1 = ccs_float(1.0);
+	res2 = ccs_float(2.0);
+
+	err  = ccs_create_evaluation(
+                ospace, config1, CCS_RESULT_SUCCESS, 1, &res1, &eval1);
+	assert(err == CCS_RESULT_SUCCESS);
+	err = ccs_create_evaluation(
+		ospace, config2, CCS_RESULT_SUCCESS, 1, &res2, &eval2);
+	assert(err == CCS_RESULT_SUCCESS);
+
+	/* Hash */
+	err = ccs_binding_hash((ccs_binding_t)eval1, &hash1);
+	assert(err == CCS_RESULT_SUCCESS);
+	err = ccs_binding_hash((ccs_binding_t)eval2, &hash2);
+	assert(err == CCS_RESULT_SUCCESS);
+
+	/* Cmp with itself should be 0 */
+	err = ccs_binding_cmp((ccs_binding_t)eval1, (ccs_binding_t)eval1, &cmp);
+	assert(err == CCS_RESULT_SUCCESS);
+	assert(cmp == 0);
+
+	/* Compare evaluations — eval1 (1.0) is better than eval2 (2.0)
+	 * for a minimization objective */
+	err = ccs_evaluation_compare(eval1, eval2, &comparison);
+	assert(err == CCS_RESULT_SUCCESS);
+	assert(comparison == CCS_COMPARISON_BETTER);
+
+	/* get_objective_values with exact count */
+	{
+		ccs_datum_t values[1];
+		err = ccs_evaluation_get_objective_values(
+			eval1, 1, values, NULL);
+		assert(err == CCS_RESULT_SUCCESS);
+		assert(values[0].value.f == 1.0);
+	}
+
+	/* get_objective_values with oversized buffer should succeed */
+	{
+		ccs_datum_t values[2];
+		err = ccs_evaluation_get_objective_values(
+			eval1, 2, values, NULL);
+		assert(err == CCS_RESULT_SUCCESS);
+		assert(values[0].value.f == 1.0);
+	}
+
+	ccs_release_object(eval2);
+	ccs_release_object(eval1);
+	ccs_release_object(config2);
+	ccs_release_object(config1);
+	ccs_release_object(tuner);
+	ccs_release_object(ospace);
+	ccs_release_object(cspace);
+}
+
 int
 main(void)
 {
 	ccs_init();
 	test();
 	test_evaluation_deserialize();
+	test_evaluation_hash_cmp_compare();
 	ccs_clear_thread_error();
 	ccs_fini();
 	return 0;
