@@ -480,6 +480,70 @@ test_deserialize_errors(void)
 	ccs_release_object(rng);
 }
 
+void
+test_configuration_with_features(void)
+{
+	ccs_result_t              err;
+	ccs_parameter_t           parameter;
+	ccs_configuration_space_t cspace;
+	ccs_configuration_t       config1, config2;
+	ccs_feature_space_t       fspace;
+	ccs_features_t            features_on, features_off;
+	ccs_features_t            features_ret;
+	ccs_hash_t                hash1, hash2;
+	int                       cmp;
+
+	parameter = create_numerical("x", -5.0, 5.0);
+
+	fspace    = create_knobs(&features_on, &features_off);
+
+	err       = ccs_create_configuration_space(
+                "space_with_features", 1, &parameter, NULL, 0, NULL, fspace,
+                NULL, &cspace);
+	assert(err == CCS_RESULT_SUCCESS);
+
+	/* Sample a configuration with features */
+	err = ccs_configuration_space_sample(
+		cspace, NULL, features_on, NULL, &config1);
+	assert(err == CCS_RESULT_SUCCESS);
+
+	/* Verify get_features */
+	err = ccs_configuration_get_features(config1, &features_ret);
+	assert(err == CCS_RESULT_SUCCESS);
+	assert(features_ret == features_on);
+
+	/* Sample with different features */
+	err = ccs_configuration_space_sample(
+		cspace, NULL, features_off, NULL, &config2);
+	assert(err == CCS_RESULT_SUCCESS);
+
+	/* Hash should work with features */
+	err = ccs_binding_hash((ccs_binding_t)config1, &hash1);
+	assert(err == CCS_RESULT_SUCCESS);
+	err = ccs_binding_hash((ccs_binding_t)config2, &hash2);
+	assert(err == CCS_RESULT_SUCCESS);
+
+	/* Compare configurations with different features */
+	err = ccs_binding_cmp(
+		(ccs_binding_t)config1, (ccs_binding_t)config2, &cmp);
+	assert(err == CCS_RESULT_SUCCESS);
+	assert(cmp != 0);
+
+	/* Compare configuration with itself */
+	err = ccs_binding_cmp(
+		(ccs_binding_t)config1, (ccs_binding_t)config1, &cmp);
+	assert(err == CCS_RESULT_SUCCESS);
+	assert(cmp == 0);
+
+	ccs_release_object(config2);
+	ccs_release_object(config1);
+	ccs_release_object(cspace);
+	ccs_release_object(features_off);
+	ccs_release_object(features_on);
+	ccs_release_object(fspace);
+	ccs_release_object(parameter);
+}
+
 int
 main(void)
 {
@@ -490,6 +554,7 @@ main(void)
 	test_deserialize();
 	test_configuration_deserialize();
 	test_deserialize_errors();
+	test_configuration_with_features();
 	ccs_clear_thread_error();
 	ccs_fini();
 	return 0;
