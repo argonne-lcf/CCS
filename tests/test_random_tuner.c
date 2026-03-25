@@ -263,9 +263,7 @@ test_evaluation_hash_cmp_compare(void)
 	 * for a minimization objective */
 	err = ccs_evaluation_compare(eval1, eval2, &comparison);
 	assert(err == CCS_RESULT_SUCCESS);
-	assert(comparison == CCS_COMPARISON_BETTER ||
-	       comparison == CCS_COMPARISON_EQUIVALENT ||
-	       comparison == CCS_COMPARISON_WORSE);
+	assert(comparison == CCS_COMPARISON_BETTER);
 
 	/* get_objective_values with exact count */
 	{
