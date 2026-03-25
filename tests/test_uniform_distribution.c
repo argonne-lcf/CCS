@@ -487,6 +487,57 @@ test_uniform_distribution_soa_samples(void)
 	assert(err == CCS_RESULT_SUCCESS);
 }
 
+static void
+test_uniform_distribution_float_strided_samples(void)
+{
+	ccs_distribution_t distrib1    = NULL;
+	ccs_distribution_t distrib2    = NULL;
+	ccs_rng_t          rng         = NULL;
+	ccs_result_t       err         = CCS_RESULT_SUCCESS;
+	const size_t       num_samples = NUM_SAMPLES;
+	ccs_float_t        lower1      = -10.0;
+	ccs_float_t        upper1      = 11.0;
+	ccs_float_t        lower2      = 12.0;
+	ccs_float_t        upper2      = 20.0;
+	ccs_numeric_t      samples[NUM_SAMPLES * 2];
+
+	err = ccs_create_rng(&rng);
+	assert(err == CCS_RESULT_SUCCESS);
+	err = ccs_create_uniform_distribution(
+		CCS_NUMERIC_TYPE_FLOAT, CCSF(lower1), CCSF(upper1),
+		CCS_SCALE_TYPE_LINEAR, CCSF(0.0), &distrib1);
+	assert(err == CCS_RESULT_SUCCESS);
+
+	err = ccs_create_uniform_distribution(
+		CCS_NUMERIC_TYPE_FLOAT, CCSF(lower2), CCSF(upper2),
+		CCS_SCALE_TYPE_LINEAR, CCSF(0.0), &distrib2);
+	assert(err == CCS_RESULT_SUCCESS);
+
+	err = ccs_distribution_strided_samples(
+		distrib1, rng, num_samples, 2, samples);
+	assert(err == CCS_RESULT_SUCCESS);
+	err = ccs_distribution_strided_samples(
+		distrib2, rng, num_samples, 2, &(samples[0]) + 1);
+	assert(err == CCS_RESULT_SUCCESS);
+
+	for (size_t i = 0; i < num_samples; i++) {
+		assert(samples[i * 2].f >= lower1);
+		assert(samples[i * 2].f < upper1);
+	}
+
+	for (size_t i = 0; i < num_samples; i++) {
+		assert(samples[i * 2 + 1].f >= lower2);
+		assert(samples[i * 2 + 1].f < upper2);
+	}
+
+	err = ccs_release_object(distrib1);
+	assert(err == CCS_RESULT_SUCCESS);
+	err = ccs_release_object(distrib2);
+	assert(err == CCS_RESULT_SUCCESS);
+	err = ccs_release_object(rng);
+	assert(err == CCS_RESULT_SUCCESS);
+}
+
 int
 main(void)
 {
@@ -502,6 +553,7 @@ main(void)
 	test_uniform_distribution_float_quantize();
 	test_uniform_distribution_float_log_quantize();
 	test_uniform_distribution_strided_samples();
+	test_uniform_distribution_float_strided_samples();
 	test_uniform_distribution_soa_samples();
 	ccs_clear_thread_error();
 	ccs_fini();
