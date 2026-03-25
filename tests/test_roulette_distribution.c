@@ -358,6 +358,34 @@ test_roulette_distribution_soa_samples(void)
 	assert(err == CCS_RESULT_SUCCESS);
 }
 
+void
+test_roulette_distribution_get_areas_oversized(void)
+{
+	ccs_distribution_t distrib = NULL;
+	ccs_result_t       err;
+	ccs_float_t        areas[] = {1.0, 2.0, 3.0};
+	ccs_float_t        areas_ret[5];
+	size_t             num_areas_ret;
+
+	err = ccs_create_roulette_distribution(3, areas, &distrib);
+	assert(err == CCS_RESULT_SUCCESS);
+
+	/* Oversized buffer — extra slots should be zeroed */
+	err = ccs_roulette_distribution_get_areas(
+		distrib, 5, areas_ret, &num_areas_ret);
+	assert(err == CCS_RESULT_SUCCESS);
+	assert(num_areas_ret == 3);
+	assert(areas_ret[3] == 0.0);
+	assert(areas_ret[4] == 0.0);
+
+	/* Undersized buffer */
+	err = ccs_roulette_distribution_get_areas(distrib, 2, areas_ret, NULL);
+	assert(err == CCS_RESULT_ERROR_INVALID_VALUE);
+	ccs_clear_thread_error();
+
+	ccs_release_object(distrib);
+}
+
 int
 main(void)
 {
@@ -368,6 +396,7 @@ main(void)
 	test_roulette_distribution_zero();
 	test_roulette_distribution_strided_samples();
 	test_roulette_distribution_soa_samples();
+	test_roulette_distribution_get_areas_oversized();
 	ccs_clear_thread_error();
 	ccs_fini();
 	return 0;

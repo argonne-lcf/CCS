@@ -1393,6 +1393,89 @@ test_user_defined(void)
 	assert(err == CCS_RESULT_SUCCESS);
 }
 
+void
+test_less_ordinal(void)
+{
+	ccs_configuration_space_t configuration_space;
+	ccs_configuration_t       configuration;
+	ccs_parameter_t           parameters[2];
+	ccs_datum_t               nodes[2];
+	ccs_datum_t               values[2];
+	ccs_result_t              err;
+
+	/* Ordinal order: int(1) < float(2.0) < "toto" < none */
+	parameters[0] = create_dummy_ordinal("param1");
+	parameters[1] = create_dummy_ordinal("param2");
+	err           = ccs_create_configuration_space(
+                "my_config_space", 2, parameters, NULL, 0, NULL, NULL, NULL,
+                &configuration_space);
+	assert(err == CCS_RESULT_SUCCESS);
+
+	/* param1 (left variable) = int(1), compare with float(2.0)
+	 * ordinal: int(1) < float(2.0), so LESS should be TRUE */
+	nodes[0]  = ccs_object(parameters[0]);
+	nodes[1]  = ccs_float(2.0);
+	values[0] = ccs_int(1);
+	values[1] = ccs_int(1);
+	err       = ccs_create_configuration(
+                configuration_space, NULL, 2, values, &configuration);
+	assert(err == CCS_RESULT_SUCCESS);
+	test_expression_wrapper(
+		CCS_EXPRESSION_TYPE_LESS, 2, nodes, configuration,
+		ccs_bool(CCS_TRUE), CCS_RESULT_SUCCESS);
+	ccs_release_object(configuration);
+
+	/* param1 = float(2.0), compare with int(1)
+	 * ordinal: float(2.0) > int(1), so LESS should be FALSE */
+	values[0] = ccs_float(2.0);
+	err       = ccs_create_configuration(
+                configuration_space, NULL, 2, values, &configuration);
+	assert(err == CCS_RESULT_SUCCESS);
+	test_expression_wrapper(
+		CCS_EXPRESSION_TYPE_LESS, 2, nodes, configuration,
+		ccs_bool(CCS_FALSE), CCS_RESULT_SUCCESS);
+	ccs_release_object(configuration);
+
+	/* GREATER: nodes = [param1, int(1)], param1 = float(2.0)
+	 * ordinal: float(2.0) > int(1) -> TRUE */
+	nodes[1]  = ccs_int(1);
+	values[0] = ccs_float(2.0);
+	err       = ccs_create_configuration(
+                configuration_space, NULL, 2, values, &configuration);
+	assert(err == CCS_RESULT_SUCCESS);
+	test_expression_wrapper(
+		CCS_EXPRESSION_TYPE_GREATER, 2, nodes, configuration,
+		ccs_bool(CCS_TRUE), CCS_RESULT_SUCCESS);
+	ccs_release_object(configuration);
+
+	/* LESS_OR_EQUAL: nodes = [param1, float(2.0)], param1 = float(2.0)
+	 * ordinal: float(2.0) <= float(2.0) -> TRUE */
+	nodes[1]  = ccs_float(2.0);
+	values[0] = ccs_float(2.0);
+	err       = ccs_create_configuration(
+                configuration_space, NULL, 2, values, &configuration);
+	assert(err == CCS_RESULT_SUCCESS);
+	test_expression_wrapper(
+		CCS_EXPRESSION_TYPE_LESS_OR_EQUAL, 2, nodes, configuration,
+		ccs_bool(CCS_TRUE), CCS_RESULT_SUCCESS);
+	ccs_release_object(configuration);
+
+	/* GREATER_OR_EQUAL: nodes = [param1, float(2.0)], param1 = int(1)
+	 * ordinal: int(1) >= float(2.0) -> FALSE */
+	values[0] = ccs_int(1);
+	err       = ccs_create_configuration(
+                configuration_space, NULL, 2, values, &configuration);
+	assert(err == CCS_RESULT_SUCCESS);
+	test_expression_wrapper(
+		CCS_EXPRESSION_TYPE_GREATER_OR_EQUAL, 2, nodes, configuration,
+		ccs_bool(CCS_FALSE), CCS_RESULT_SUCCESS);
+	ccs_release_object(configuration);
+
+	ccs_release_object(configuration_space);
+	ccs_release_object(parameters[0]);
+	ccs_release_object(parameters[1]);
+}
+
 int
 main(void)
 {
@@ -1401,6 +1484,7 @@ main(void)
 	test_equal_numerical();
 	test_equal_categorical();
 	test_equal_ordinal();
+	test_less_ordinal();
 	test_arithmetic_add();
 	test_arithmetic_substract();
 	test_arithmetic_multiply();

@@ -538,6 +538,123 @@ test_uniform_distribution_float_strided_samples(void)
 	assert(err == CCS_RESULT_SUCCESS);
 }
 
+static void
+test_uniform_distribution_int_log_strided_samples(void)
+{
+	ccs_distribution_t distrib     = NULL;
+	ccs_rng_t          rng         = NULL;
+	ccs_result_t       err         = CCS_RESULT_SUCCESS;
+	const size_t       num_samples = NUM_SAMPLES;
+	ccs_numeric_t      samples[NUM_SAMPLES * 2];
+
+	err = ccs_create_rng(&rng);
+	assert(err == CCS_RESULT_SUCCESS);
+	err = ccs_create_uniform_distribution(
+		CCS_NUMERIC_TYPE_INT, CCSI(1), CCSI(100),
+		CCS_SCALE_TYPE_LOGARITHMIC, CCSI(0), &distrib);
+	assert(err == CCS_RESULT_SUCCESS);
+
+	err = ccs_distribution_strided_samples(
+		distrib, rng, num_samples, 2, samples);
+	assert(err == CCS_RESULT_SUCCESS);
+
+	for (size_t i = 0; i < num_samples; i++) {
+		assert(samples[i * 2].i >= 1);
+		assert(samples[i * 2].i < 100);
+	}
+
+	ccs_release_object(distrib);
+	ccs_release_object(rng);
+}
+
+static void
+test_uniform_distribution_float_log_strided_samples(void)
+{
+	ccs_distribution_t distrib     = NULL;
+	ccs_rng_t          rng         = NULL;
+	ccs_result_t       err         = CCS_RESULT_SUCCESS;
+	const size_t       num_samples = NUM_SAMPLES;
+	ccs_numeric_t      samples[NUM_SAMPLES * 2];
+
+	err = ccs_create_rng(&rng);
+	assert(err == CCS_RESULT_SUCCESS);
+	err = ccs_create_uniform_distribution(
+		CCS_NUMERIC_TYPE_FLOAT, CCSF(1.0), CCSF(100.0),
+		CCS_SCALE_TYPE_LOGARITHMIC, CCSF(0.0), &distrib);
+	assert(err == CCS_RESULT_SUCCESS);
+
+	err = ccs_distribution_strided_samples(
+		distrib, rng, num_samples, 2, samples);
+	assert(err == CCS_RESULT_SUCCESS);
+
+	for (size_t i = 0; i < num_samples; i++) {
+		assert(samples[i * 2].f >= 1.0);
+		assert(samples[i * 2].f < 100.0);
+	}
+
+	ccs_release_object(distrib);
+	ccs_release_object(rng);
+}
+
+static void
+test_uniform_distribution_int_quantize_strided_samples(void)
+{
+	ccs_distribution_t distrib     = NULL;
+	ccs_rng_t          rng         = NULL;
+	ccs_result_t       err         = CCS_RESULT_SUCCESS;
+	const size_t       num_samples = NUM_SAMPLES;
+	ccs_numeric_t      samples[NUM_SAMPLES * 2];
+
+	err = ccs_create_rng(&rng);
+	assert(err == CCS_RESULT_SUCCESS);
+	err = ccs_create_uniform_distribution(
+		CCS_NUMERIC_TYPE_INT, CCSI(0), CCSI(100), CCS_SCALE_TYPE_LINEAR,
+		CCSI(5), &distrib);
+	assert(err == CCS_RESULT_SUCCESS);
+
+	err = ccs_distribution_strided_samples(
+		distrib, rng, num_samples, 2, samples);
+	assert(err == CCS_RESULT_SUCCESS);
+
+	for (size_t i = 0; i < num_samples; i++) {
+		assert(samples[i * 2].i >= 0);
+		assert(samples[i * 2].i < 100);
+		assert(samples[i * 2].i % 5 == 0);
+	}
+
+	ccs_release_object(distrib);
+	ccs_release_object(rng);
+}
+
+static void
+test_uniform_distribution_float_quantize_strided_samples(void)
+{
+	ccs_distribution_t distrib     = NULL;
+	ccs_rng_t          rng         = NULL;
+	ccs_result_t       err         = CCS_RESULT_SUCCESS;
+	const size_t       num_samples = NUM_SAMPLES;
+	ccs_numeric_t      samples[NUM_SAMPLES * 2];
+
+	err = ccs_create_rng(&rng);
+	assert(err == CCS_RESULT_SUCCESS);
+	err = ccs_create_uniform_distribution(
+		CCS_NUMERIC_TYPE_FLOAT, CCSF(0.0), CCSF(10.0),
+		CCS_SCALE_TYPE_LINEAR, CCSF(0.5), &distrib);
+	assert(err == CCS_RESULT_SUCCESS);
+
+	err = ccs_distribution_strided_samples(
+		distrib, rng, num_samples, 2, samples);
+	assert(err == CCS_RESULT_SUCCESS);
+
+	for (size_t i = 0; i < num_samples; i++) {
+		assert(samples[i * 2].f >= 0.0);
+		assert(samples[i * 2].f < 10.0);
+	}
+
+	ccs_release_object(distrib);
+	ccs_release_object(rng);
+}
+
 int
 main(void)
 {
@@ -554,6 +671,10 @@ main(void)
 	test_uniform_distribution_float_log_quantize();
 	test_uniform_distribution_strided_samples();
 	test_uniform_distribution_float_strided_samples();
+	test_uniform_distribution_int_log_strided_samples();
+	test_uniform_distribution_float_log_strided_samples();
+	test_uniform_distribution_int_quantize_strided_samples();
+	test_uniform_distribution_float_quantize_strided_samples();
 	test_uniform_distribution_soa_samples();
 	ccs_clear_thread_error();
 	ccs_fini();
