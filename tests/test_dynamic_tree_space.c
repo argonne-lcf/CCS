@@ -2,6 +2,7 @@
 #include <assert.h>
 #include <string.h>
 #include <cconfigspace.h>
+#include "test_utils.h"
 
 #define NUM_SAMPLES 20000
 
@@ -229,11 +230,154 @@ test_dynamic_tree_space(void)
 	assert(err == CCS_RESULT_SUCCESS);
 }
 
+static ccs_result_t
+my_serialize_user_state(
+	ccs_tree_space_t tree_space,
+	size_t           state_size,
+	void            *state,
+	size_t          *state_size_ret)
+{
+	(void)tree_space;
+	const char *msg     = "test_state";
+	size_t      msg_len = strlen(msg) + 1;
+	if (state_size_ret)
+		*state_size_ret = msg_len;
+	if (state && state_size >= msg_len)
+		memcpy(state, msg, msg_len);
+	return CCS_RESULT_SUCCESS;
+}
+
+static ccs_result_t
+my_deserialize_state(
+	ccs_tree_t          tree,
+	ccs_feature_space_t feature_space,
+	size_t              state_size,
+	const void         *state,
+	void              **tree_space_data_ret)
+{
+	(void)tree;
+	(void)feature_space;
+	assert(state_size == strlen("test_state") + 1);
+	assert(strcmp((const char *)state, "test_state") == 0);
+	*tree_space_data_ret = NULL;
+	return CCS_RESULT_SUCCESS;
+}
+
+static ccs_dynamic_tree_space_vector_t vector_with_state = {
+	&my_tree_del, &my_tree_get_child, &my_serialize_user_state,
+	&my_deserialize_state};
+
+static ccs_result_t
+deserialize_vector_callback_with_state(
+	ccs_object_type_t type,
+	const char       *name,
+	void             *callback_user_data,
+	void            **vector_ret,
+	void            **data_ret)
+{
+	(void)name;
+	(void)callback_user_data;
+	switch (type) {
+	case CCS_OBJECT_TYPE_TREE_SPACE:
+		*vector_ret = (void *)&vector_with_state;
+		*data_ret   = NULL;
+		break;
+	default:
+		return CCS_RESULT_ERROR_INVALID_TYPE;
+	}
+	return CCS_RESULT_SUCCESS;
+}
+
+void
+test_dynamic_tree_space_with_feature_space(void)
+{
+	ccs_result_t             err;
+	ccs_tree_t               root;
+	ccs_tree_space_t         tree_space, tree_space2;
+	ccs_feature_space_t      fspace, fspace2;
+	ccs_features_t           features_on;
+	ccs_rng_t                rng;
+	ccs_tree_configuration_t config;
+	void                    *ts_data;
+	char                    *buff;
+	size_t                   buff_size;
+
+	fspace = create_knobs(&features_on, NULL);
+
+	err    = ccs_create_tree(4, ccs_int(400), &root);
+	assert(err == CCS_RESULT_SUCCESS);
+	err = ccs_create_rng(&rng);
+	assert(err == CCS_RESULT_SUCCESS);
+
+	err = ccs_create_dynamic_tree_space(
+		"space_fs", root, fspace, rng, &vector_with_state, NULL,
+		&tree_space);
+	assert(err == CCS_RESULT_SUCCESS);
+
+	/* Verify feature space accessor */
+	err = ccs_tree_space_get_feature_space(tree_space, &fspace2);
+	assert(err == CCS_RESULT_SUCCESS);
+	assert(fspace2 == fspace);
+
+	/* Verify get_tree_space_data */
+	err = ccs_dynamic_tree_space_get_tree_space_data(tree_space, &ts_data);
+	assert(err == CCS_RESULT_SUCCESS);
+	assert(ts_data == NULL);
+
+	/* Sample with features */
+	err = ccs_tree_space_sample(tree_space, features_on, NULL, &config);
+	assert(err == CCS_RESULT_SUCCESS);
+	ccs_release_object(config);
+
+	/* Serialize with user state callbacks */
+	err = ccs_object_serialize(
+		tree_space, CCS_SERIALIZE_FORMAT_BINARY,
+		CCS_SERIALIZE_OPERATION_SIZE, &buff_size,
+		CCS_SERIALIZE_OPTION_END);
+	assert(err == CCS_RESULT_SUCCESS);
+
+	buff = (char *)malloc(buff_size);
+	assert(buff);
+
+	err = ccs_object_serialize(
+		tree_space, CCS_SERIALIZE_FORMAT_BINARY,
+		CCS_SERIALIZE_OPERATION_MEMORY, buff_size, buff,
+		CCS_SERIALIZE_OPTION_END);
+	assert(err == CCS_RESULT_SUCCESS);
+
+	/* Deserialize with vector callback */
+	err = ccs_object_deserialize(
+		(ccs_object_t *)&tree_space2, CCS_SERIALIZE_FORMAT_BINARY,
+		CCS_DESERIALIZE_OPERATION_MEMORY, buff_size, buff,
+		CCS_DESERIALIZE_OPTION_VECTOR_CALLBACK,
+		&deserialize_vector_callback_with_state, (void *)NULL,
+		CCS_DESERIALIZE_OPTION_END);
+	assert(err == CCS_RESULT_SUCCESS);
+	free(buff);
+
+	/* Verify deserialized tree space works */
+	err = ccs_tree_space_get_feature_space(tree_space2, &fspace2);
+	assert(err == CCS_RESULT_SUCCESS);
+	assert(fspace2 != NULL);
+
+	err = ccs_tree_space_sample(tree_space2, NULL, NULL, &config);
+	assert(err == CCS_RESULT_SUCCESS);
+	ccs_release_object(config);
+
+	ccs_release_object(tree_space2);
+	ccs_release_object(tree_space);
+	ccs_release_object(rng);
+	ccs_release_object(root);
+	ccs_release_object(features_on);
+	ccs_release_object(fspace);
+}
+
 int
 main(void)
 {
 	ccs_init();
 	test_dynamic_tree_space();
+	test_dynamic_tree_space_with_feature_space();
 	ccs_clear_thread_error();
 	ccs_fini();
 	return 0;
