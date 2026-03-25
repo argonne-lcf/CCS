@@ -648,6 +648,101 @@ test_normal_distribution_soa_samples(void)
 	assert(err == CCS_RESULT_SUCCESS);
 }
 
+static void
+test_normal_distribution_float_log_quantize_tail(void)
+{
+	ccs_distribution_t distrib      = NULL;
+	ccs_rng_t          rng          = NULL;
+	ccs_result_t       err          = CCS_RESULT_SUCCESS;
+	const size_t       num_samples  = NUM_SAMPLES;
+	const ccs_float_t  mu           = 0.0;
+	const ccs_float_t  sigma        = 1.0;
+	const ccs_float_t  quantization = 4.0;
+	ccs_numeric_t      samples[NUM_SAMPLES];
+	double             mean;
+	double             tmean, alpha, zee, pdfa;
+
+	err = ccs_create_rng(&rng);
+	assert(err == CCS_RESULT_SUCCESS);
+	err = ccs_create_normal_distribution(
+		CCS_NUMERIC_TYPE_FLOAT, mu, sigma, CCS_SCALE_TYPE_LOGARITHMIC,
+		CCSF(quantization), &distrib);
+	assert(err == CCS_RESULT_SUCCESS);
+
+	err = ccs_distribution_samples(distrib, rng, num_samples, samples);
+	assert(err == CCS_RESULT_SUCCESS);
+
+	to_log(samples, num_samples);
+	mean  = gsl_stats_mean((double *)samples, 1, num_samples);
+	/* mu - lq = 0.0 - log(2.0) < 0, so tail distribution is used */
+	alpha = (log(quantization * 0.5) - mu) / sigma;
+	zee   = (1.0 - gsl_cdf_ugaussian_P(alpha));
+	pdfa  = gsl_ran_ugaussian_pdf(alpha);
+	tmean = mu + pdfa * sigma / zee;
+	assert(mean < tmean + 0.5);
+	assert(mean > tmean - 0.5);
+
+	err = ccs_release_object(distrib);
+	assert(err == CCS_RESULT_SUCCESS);
+	err = ccs_release_object(rng);
+	assert(err == CCS_RESULT_SUCCESS);
+}
+
+static void
+test_normal_distribution_int_strided_samples(void)
+{
+	ccs_distribution_t distrib1    = NULL;
+	ccs_distribution_t distrib2    = NULL;
+	ccs_rng_t          rng         = NULL;
+	ccs_result_t       err         = CCS_RESULT_SUCCESS;
+	const size_t       num_samples = NUM_SAMPLES;
+	const ccs_float_t  mu1         = 5;
+	const ccs_float_t  sigma1      = 3;
+	const ccs_float_t  mu2         = -5;
+	const ccs_float_t  sigma2      = 3;
+	ccs_numeric_t      samples[NUM_SAMPLES * 2];
+	ccs_numeric_t      fsamples[NUM_SAMPLES * 2];
+	double             mean;
+
+	err = ccs_create_rng(&rng);
+	assert(err == CCS_RESULT_SUCCESS);
+	err = ccs_create_normal_distribution(
+		CCS_NUMERIC_TYPE_INT, mu1, sigma1, CCS_SCALE_TYPE_LINEAR,
+		CCSI(0), &distrib1);
+	assert(err == CCS_RESULT_SUCCESS);
+
+	err = ccs_create_normal_distribution(
+		CCS_NUMERIC_TYPE_INT, mu2, sigma2, CCS_SCALE_TYPE_LINEAR,
+		CCSI(0), &distrib2);
+	assert(err == CCS_RESULT_SUCCESS);
+
+	err = ccs_distribution_strided_samples(
+		distrib1, rng, num_samples, 2, samples);
+	assert(err == CCS_RESULT_SUCCESS);
+	err = ccs_distribution_strided_samples(
+		distrib2, rng, num_samples, 2, &(samples[0]) + 1);
+	assert(err == CCS_RESULT_SUCCESS);
+
+	/* Convert interleaved int samples to float for gsl_stats */
+	for (size_t i = 0; i < num_samples * 2; i++)
+		fsamples[i].f = (double)samples[i].i;
+
+	mean = gsl_stats_mean((double *)fsamples, 2, num_samples);
+	assert(mean < mu1 + 0.5);
+	assert(mean > mu1 - 0.5);
+
+	mean = gsl_stats_mean((double *)fsamples + 1, 2, num_samples);
+	assert(mean < mu2 + 0.5);
+	assert(mean > mu2 - 0.5);
+
+	err = ccs_release_object(distrib1);
+	assert(err == CCS_RESULT_SUCCESS);
+	err = ccs_release_object(distrib2);
+	assert(err == CCS_RESULT_SUCCESS);
+	err = ccs_release_object(rng);
+	assert(err == CCS_RESULT_SUCCESS);
+}
+
 int
 main(void)
 {
@@ -662,7 +757,9 @@ main(void)
 	test_normal_distribution_float_log();
 	test_normal_distribution_float_quantize();
 	test_normal_distribution_float_log_quantize();
+	test_normal_distribution_float_log_quantize_tail();
 	test_normal_distribution_strided_samples();
+	test_normal_distribution_int_strided_samples();
 	test_normal_distribution_soa_samples();
 	ccs_clear_thread_error();
 	ccs_fini();
