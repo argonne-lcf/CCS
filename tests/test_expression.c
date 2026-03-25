@@ -1427,6 +1427,7 @@ test_less_ordinal(void)
 
 	/* param1 = float(2.0), compare with int(1)
 	 * ordinal: float(2.0) > int(1), so LESS should be FALSE */
+	nodes[1]  = ccs_int(1);
 	values[0] = ccs_float(2.0);
 	err       = ccs_create_configuration(
                 configuration_space, NULL, 2, values, &configuration);
@@ -1438,7 +1439,6 @@ test_less_ordinal(void)
 
 	/* GREATER: nodes = [param1, int(1)], param1 = float(2.0)
 	 * ordinal: float(2.0) > int(1) -> TRUE */
-	nodes[1]  = ccs_int(1);
 	values[0] = ccs_float(2.0);
 	err       = ccs_create_configuration(
                 configuration_space, NULL, 2, values, &configuration);
