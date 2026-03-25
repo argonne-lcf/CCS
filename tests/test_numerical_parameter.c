@@ -181,6 +181,42 @@ test_oversampling(void)
 	assert(err == CCS_RESULT_SUCCESS);
 }
 
+void
+test_oversampling_int(void)
+{
+	ccs_rng_t          rng;
+	ccs_parameter_t    parameter;
+	ccs_distribution_t distribution;
+	const size_t       num_samples = NUM_SAMPLES;
+	ccs_datum_t        samples[NUM_SAMPLES];
+	ccs_result_t       err;
+
+	err = ccs_create_rng(&rng);
+	assert(err == CCS_RESULT_SUCCESS);
+
+	err = ccs_create_normal_int_distribution(
+		0, 5, CCS_SCALE_TYPE_LINEAR, 0, &distribution);
+	assert(err == CCS_RESULT_SUCCESS);
+
+	err = ccs_create_numerical_parameter(
+		"my_param", CCS_NUMERIC_TYPE_INT, CCSI(-3), CCSI(4), CCSI(0),
+		CCSI(0), &parameter);
+	assert(err == CCS_RESULT_SUCCESS);
+
+	err = ccs_parameter_samples(
+		parameter, distribution, rng, num_samples, samples);
+	assert(err == CCS_RESULT_SUCCESS);
+
+	for (size_t i = 0; i < num_samples; i++) {
+		assert(samples[i].type == CCS_DATA_TYPE_INT);
+		assert(samples[i].value.i >= -3 && samples[i].value.i < 4);
+	}
+
+	ccs_release_object(distribution);
+	ccs_release_object(parameter);
+	ccs_release_object(rng);
+}
+
 int
 main(void)
 {
@@ -188,6 +224,7 @@ main(void)
 	test_create();
 	test_samples();
 	test_oversampling();
+	test_oversampling_int();
 	ccs_clear_thread_error();
 	ccs_fini();
 	return 0;

@@ -233,7 +233,7 @@ test_mixture_distribution_strided_samples(void)
 	assert(err == CCS_RESULT_SUCCESS);
 
 	err = ccs_distribution_strided_samples(
-		distrib, rng, num_samples, NUM_DISTRIBS + 1, samples);
+		t_distrib, rng, num_samples, NUM_DISTRIBS + 1, samples);
 	assert(err == CCS_RESULT_SUCCESS);
 
 	for (size_t i = 0; i < num_samples; i++) {
@@ -298,7 +298,8 @@ test_mixture_distribution_soa_samples(void)
                 num_t_distribs, t_distribs, weights, &t_distrib);
 	assert(err == CCS_RESULT_SUCCESS);
 
-	err = ccs_distribution_soa_samples(distrib, rng, num_samples, samples);
+	err = ccs_distribution_soa_samples(
+		t_distrib, rng, num_samples, samples);
 	assert(err == CCS_RESULT_SUCCESS);
 
 	for (size_t i = 0; i < num_samples; i++) {
