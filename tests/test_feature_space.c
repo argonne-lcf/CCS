@@ -2,6 +2,7 @@
 #include <assert.h>
 #include <cconfigspace.h>
 #include <string.h>
+#include "test_utils.h"
 
 double d = -2.0;
 
@@ -378,6 +379,43 @@ test_features_deserialize(void)
 	}
 }
 
+void
+test_binding_extras(void)
+{
+	ccs_result_t        err;
+	ccs_parameter_t     parameter;
+	ccs_feature_space_t fspace;
+	ccs_features_t      features;
+	ccs_datum_t         values[3];
+	ccs_datum_t         value;
+	ccs_bool_t          found;
+
+	parameter = create_numerical("x", -5.0, 5.0);
+	err       = ccs_create_feature_space("fspace", 1, &parameter, &fspace);
+	assert(err == CCS_RESULT_SUCCESS);
+
+	ccs_datum_t fval = ccs_float(1.0);
+	err              = ccs_create_features(fspace, 1, &fval, &features);
+	assert(err == CCS_RESULT_SUCCESS);
+
+	/* get_values with oversized buffer — tail should be zeroed */
+	err = ccs_binding_get_values((ccs_binding_t)features, 3, values, NULL);
+	assert(err == CCS_RESULT_SUCCESS);
+	assert(values[0].value.f == 1.0);
+	assert(values[1].type == CCS_DATA_TYPE_NONE);
+	assert(values[2].type == CCS_DATA_TYPE_NONE);
+
+	/* get_value_by_name with nonexistent name */
+	err = ccs_binding_get_value_by_name(
+		(ccs_binding_t)features, "nonexistent", &found, &value);
+	assert(err == CCS_RESULT_SUCCESS);
+	assert(found == CCS_FALSE);
+
+	ccs_release_object(features);
+	ccs_release_object(fspace);
+	ccs_release_object(parameter);
+}
+
 int
 main(void)
 {
@@ -386,6 +424,7 @@ main(void)
 	test_features();
 	test_deserialize();
 	test_features_deserialize();
+	test_binding_extras();
 	ccs_clear_thread_error();
 	ccs_fini();
 	return 0;
