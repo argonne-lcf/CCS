@@ -958,12 +958,7 @@ _ccs_size_add(size_t a, size_t b, size_t *result)
 }
 
 static inline ccs_bool_t
-_ccs_size_sum2(
-	size_t n1,
-	size_t s1,
-	size_t n2,
-	size_t s2,
-	size_t *result)
+_ccs_size_sum2(size_t n1, size_t s1, size_t n2, size_t s2, size_t *result)
 {
 	size_t p1, p2;
 	if (_ccs_size_mul(n1, s1, &p1))
@@ -975,12 +970,12 @@ _ccs_size_sum2(
 
 static inline ccs_bool_t
 _ccs_size_sum3(
-	size_t n1,
-	size_t s1,
-	size_t n2,
-	size_t s2,
-	size_t n3,
-	size_t s3,
+	size_t  n1,
+	size_t  s1,
+	size_t  n2,
+	size_t  s2,
+	size_t  n3,
+	size_t  s3,
 	size_t *result)
 {
 	size_t p;
