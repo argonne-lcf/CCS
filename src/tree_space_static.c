@@ -187,10 +187,11 @@ ccs_create_static_tree_space(
 		CCS_CHECK_OBJ(rng, CCS_OBJECT_TYPE_RNG);
 	CCS_CHECK_PTR(tree_space_ret);
 	ccs_result_t err;
-	uintptr_t    mem = (uintptr_t)calloc(
+	size_t       name_len = strlen(name) + 1;
+	uintptr_t    mem      = (uintptr_t)calloc(
                 1, sizeof(struct _ccs_tree_space_s) +
                            sizeof(struct _ccs_tree_space_static_data_s) +
-                           strlen(name) + 1);
+                           name_len);
 	CCS_REFUTE(!mem, CCS_RESULT_ERROR_OUT_OF_MEMORY);
 	uintptr_t        mem_orig = mem;
 
@@ -202,7 +203,7 @@ ccs_create_static_tree_space(
 	_ccs_tree_space_static_data_t *data =
 		CCS_ALLOC_CARVE_TYPE(mem, struct _ccs_tree_space_static_data_s);
 	data->common_data.type = CCS_TREE_SPACE_TYPE_STATIC;
-	data->common_data.name = (const char *)mem;
+	data->common_data.name = CCS_ALLOC_CARVE_ARRAY(mem, name_len, char);
 	tree_space->data       = (_ccs_tree_space_data_t *)data;
 	if (!rng)
 		CCS_VALIDATE_ERR_GOTO(err, ccs_create_rng(&rng), errinit);

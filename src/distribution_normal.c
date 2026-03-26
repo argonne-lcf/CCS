@@ -550,7 +550,6 @@ ccs_create_normal_distribution(
 			   sizeof(_ccs_distribution_normal_data_t) +
 			   sizeof(ccs_numeric_type_t));
 	CCS_REFUTE(!mem, CCS_RESULT_ERROR_OUT_OF_MEMORY);
-	uintptr_t          mem_orig = mem;
 	ccs_distribution_t distrib =
 		CCS_ALLOC_CARVE_TYPE(mem, struct _ccs_distribution_s);
 	_ccs_object_init(
@@ -560,7 +559,6 @@ ccs_create_normal_distribution(
 		CCS_ALLOC_CARVE_TYPE(mem, _ccs_distribution_normal_data_t);
 	distrib_data->common_data.data_types =
 		CCS_ALLOC_CARVE_ARRAY(mem, 1, ccs_numeric_type_t);
-	(void)mem_orig;
 	distrib_data->common_data.type          = CCS_DISTRIBUTION_TYPE_NORMAL;
 	distrib_data->common_data.dimension     = 1;
 	distrib_data->common_data.data_types[0] = data_type;

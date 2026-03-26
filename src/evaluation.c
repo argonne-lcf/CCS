@@ -282,7 +282,8 @@ ccs_create_evaluation(
 	eval->data->result          = result;
 	eval->data->values =
 		CCS_ALLOC_CARVE_ARRAY(cur_mem, num_parameters, ccs_datum_t);
-	eval->data->objective_values = (ccs_datum_t *)(cur_mem);
+	eval->data->objective_values =
+		CCS_ALLOC_CARVE_ARRAY(cur_mem, num_objectives, ccs_datum_t);
 
 	for (size_t i = 0; i < num_values; i++)
 		CCS_VALIDATE_ERR_GOTO(

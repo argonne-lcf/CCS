@@ -242,13 +242,12 @@ ccs_create_string_parameter(const char *name, ccs_parameter_t *parameter_ret)
 {
 	CCS_CHECK_PTR(name);
 	CCS_CHECK_PTR(parameter_ret);
-	uintptr_t mem = (uintptr_t)calloc(
-		1, sizeof(struct _ccs_parameter_s) +
-			   sizeof(_ccs_parameter_string_data_t) + strlen(name) +
-			   1);
+	size_t    name_len = strlen(name) + 1;
+	uintptr_t mem      = (uintptr_t)calloc(
+                1, sizeof(struct _ccs_parameter_s) +
+                           sizeof(_ccs_parameter_string_data_t) + name_len);
 	CCS_REFUTE(!mem, CCS_RESULT_ERROR_OUT_OF_MEMORY);
 
-	uintptr_t       mem_orig = mem;
 	ccs_parameter_t parameter =
 		CCS_ALLOC_CARVE_TYPE(mem, struct _ccs_parameter_s);
 	_ccs_object_init(
@@ -257,9 +256,9 @@ ccs_create_string_parameter(const char *name, ccs_parameter_t *parameter_ret)
 	_ccs_parameter_string_data_t *parameter_data =
 		CCS_ALLOC_CARVE_TYPE(mem, _ccs_parameter_string_data_t);
 	parameter_data->common_data.type = CCS_PARAMETER_TYPE_STRING;
-	parameter_data->common_data.name = (const char *)mem;
+	parameter_data->common_data.name =
+		CCS_ALLOC_CARVE_ARRAY(mem, name_len, char);
 	strcpy((char *)parameter_data->common_data.name, name);
-	(void)mem_orig;
 	parameter_data->common_data.interval.type = CCS_NUMERIC_TYPE_INT;
 	parameter_data->stored_values             = NULL;
 #if CCS_THREAD_SAFE

@@ -245,6 +245,7 @@ ccs_create_objective_space(
 	CCS_CHECK_ARY(num_objectives, types);
 
 	size_t _sz;
+	size_t name_len = strlen(name) + 1;
 	CCS_REFUTE(
 		_ccs_size_sum2(
 			num_parameters,
@@ -257,7 +258,7 @@ ccs_create_objective_space(
 			_sz,
 			sizeof(struct _ccs_objective_space_s) +
 				sizeof(struct _ccs_objective_space_data_s) +
-				strlen(name) + 1,
+				name_len,
 			&_sz),
 		CCS_RESULT_ERROR_OUT_OF_MEMORY);
 	uintptr_t mem = (uintptr_t)calloc(1, _sz);
@@ -277,7 +278,7 @@ ccs_create_objective_space(
 		mem, num_parameters, _ccs_parameter_index_hash_t);
 	obj_space->data->objectives =
 		CCS_ALLOC_CARVE_ARRAY(mem, num_objectives, _ccs_objective_t);
-	obj_space->data->name           = (const char *)mem;
+	obj_space->data->name = CCS_ALLOC_CARVE_ARRAY(mem, name_len, char);
 	obj_space->data->num_parameters = num_parameters;
 	obj_space->data->num_objectives = num_objectives;
 	strcpy((char *)(obj_space->data->name), name);

@@ -326,10 +326,11 @@ ccs_create_user_defined_tuner(
 	CCS_CHECK_PTR(vector->get_optima);
 	CCS_CHECK_PTR(vector->get_history);
 
-	uintptr_t mem = (uintptr_t)calloc(
-		1, sizeof(struct _ccs_tuner_s) +
-			   sizeof(struct _ccs_user_defined_tuner_data_s) +
-			   strlen(name) + 1);
+	size_t    name_len = strlen(name) + 1;
+	uintptr_t mem      = (uintptr_t)calloc(
+                1, sizeof(struct _ccs_tuner_s) +
+                           sizeof(struct _ccs_user_defined_tuner_data_s) +
+                           name_len);
 	CCS_REFUTE(!mem, CCS_RESULT_ERROR_OUT_OF_MEMORY);
 	uintptr_t                       mem_orig = mem;
 	ccs_tuner_t                     tun;
@@ -347,16 +348,15 @@ ccs_create_user_defined_tuner(
 		&(tun->obj), CCS_OBJECT_TYPE_TUNER,
 		(_ccs_object_ops_t *)&_ccs_tuner_user_defined_ops);
 	data = CCS_ALLOC_CARVE_TYPE(mem, struct _ccs_user_defined_tuner_data_s);
-	tun->data                         = (struct _ccs_tuner_data_s *)data;
-	data->common_data.type            = CCS_TUNER_TYPE_USER_DEFINED;
-	data->common_data.name            = (const char *)mem;
+	tun->data              = (struct _ccs_tuner_data_s *)data;
+	data->common_data.type = CCS_TUNER_TYPE_USER_DEFINED;
+	data->common_data.name = CCS_ALLOC_CARVE_ARRAY(mem, name_len, char);
 	data->common_data.search_space    = search_space;
 	data->common_data.objective_space = objective_space;
 	data->common_data.feature_space   = feature_space;
 	data->vector                      = *vector;
 	data->tuner_data                  = tuner_data;
 	strcpy((char *)data->common_data.name, name);
-	(void)mem_orig;
 	*tuner_ret = tun;
 	return CCS_RESULT_SUCCESS;
 erros:

@@ -168,7 +168,7 @@ ccs_create_tree(size_t arity, ccs_datum_t value, ccs_tree_t *tree_ret)
 	data->parent   = NULL;
 	data->children = CCS_ALLOC_CARVE_ARRAY(mem, arity, ccs_tree_t);
 	if (value.type == CCS_DATA_TYPE_STRING) {
-		char *str_pool = (char *)mem;
+		char *str_pool = CCS_ALLOC_CARVE_ARRAY(mem, size_strs, char);
 		data->value    = ccs_string(str_pool);
 		strcpy(str_pool, value.value.s);
 	} else {

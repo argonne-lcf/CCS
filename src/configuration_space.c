@@ -560,12 +560,13 @@ ccs_create_configuration_space(
 				sizeof(UT_array *) * 2 + sizeof(size_t),
 			num_forbidden_clauses, sizeof(ccs_expression_t), &_sz),
 		CCS_RESULT_ERROR_OUT_OF_MEMORY);
+	size_t name_len = strlen(name) + 1;
 	CCS_REFUTE(
 		_ccs_size_add(
 			_sz,
 			sizeof(struct _ccs_configuration_space_s) +
 				sizeof(struct _ccs_configuration_space_data_s) +
-				strlen(name) + 1,
+				name_len,
 			&_sz),
 		CCS_RESULT_ERROR_OUT_OF_MEMORY);
 	uintptr_t mem = (uintptr_t)calloc(1, _sz);
@@ -594,7 +595,7 @@ ccs_create_configuration_space(
 		CCS_ALLOC_CARVE_ARRAY(mem, num_parameters, size_t);
 	config_space->data->forbidden_clauses = CCS_ALLOC_CARVE_ARRAY(
 		mem, num_forbidden_clauses, ccs_expression_t);
-	config_space->data->name                  = (const char *)mem;
+	config_space->data->name = CCS_ALLOC_CARVE_ARRAY(mem, name_len, char);
 	config_space->data->num_parameters        = num_parameters;
 	config_space->data->num_forbidden_clauses = num_forbidden_clauses;
 	if (rng)
