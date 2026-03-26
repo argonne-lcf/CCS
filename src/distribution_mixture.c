@@ -219,22 +219,24 @@ ccs_create_mixture_distribution(
 	_ccs_distribution_mixture_data_t *distrib_data;
 	{
 		size_t _sz;
-		CCS_REFUTE(_ccs_size_sum2(
-				   num_distributions,
-				   sizeof(ccs_distribution_t) +
-					   sizeof(ccs_float_t),
-				   dimension,
-				   sizeof(ccs_interval_t) +
-					   sizeof(ccs_numeric_type_t),
-				   &_sz),
-			   CCS_RESULT_ERROR_OUT_OF_MEMORY);
-		CCS_REFUTE(_ccs_size_add(
-				   _sz,
-				   sizeof(struct _ccs_distribution_s) +
-					   sizeof(_ccs_distribution_mixture_data_t) +
-					   sizeof(ccs_float_t),
-				   &_sz),
-			   CCS_RESULT_ERROR_OUT_OF_MEMORY);
+		CCS_REFUTE(
+			_ccs_size_sum2(
+				num_distributions,
+				sizeof(ccs_distribution_t) +
+					sizeof(ccs_float_t),
+				dimension,
+				sizeof(ccs_interval_t) +
+					sizeof(ccs_numeric_type_t),
+				&_sz),
+			CCS_RESULT_ERROR_OUT_OF_MEMORY);
+		CCS_REFUTE(
+			_ccs_size_add(
+				_sz,
+				sizeof(struct _ccs_distribution_s) +
+					sizeof(_ccs_distribution_mixture_data_t) +
+					sizeof(ccs_float_t),
+				&_sz),
+			CCS_RESULT_ERROR_OUT_OF_MEMORY);
 		mem = (uintptr_t)calloc(1, _sz);
 		CCS_REFUTE(!mem, CCS_RESULT_ERROR_OUT_OF_MEMORY);
 	}
@@ -250,13 +252,12 @@ ccs_create_mixture_distribution(
 			CCS_RESULT_ERROR_OUT_OF_MEMORY, memory);
 		tmp_mem = (uintptr_t)calloc(1, _sz);
 		CCS_REFUTE_ERR_GOTO(
-			err, !tmp_mem, CCS_RESULT_ERROR_OUT_OF_MEMORY,
-			memory);
+			err, !tmp_mem, CCS_RESULT_ERROR_OUT_OF_MEMORY, memory);
 	}
 	bounds_tmp = (ccs_interval_t *)tmp_mem;
 	data_types_tmp =
-		(ccs_numeric_type_t
-			 *)(tmp_mem + sizeof(ccs_interval_t) * num_distributions);
+		(ccs_numeric_type_t *)(tmp_mem + sizeof(ccs_interval_t) *
+							 num_distributions);
 
 	distrib = (ccs_distribution_t)cur_mem;
 	cur_mem += sizeof(struct _ccs_distribution_s);
