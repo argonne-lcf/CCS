@@ -5,9 +5,11 @@
 #include <string.h>
 #include "test_utils.h"
 
-#define REPEAT          10000000
+#define REPEAT 10000000
+#ifdef THREAD_SAFE
 #define NUM_THREADS     4
 #define SAMPLES_PER_THR 1000
+#endif
 
 void *
 code(void *ptr)
@@ -40,6 +42,7 @@ test_parallel_retain_release(void)
 	assert(err == CCS_RESULT_SUCCESS);
 }
 
+#ifdef THREAD_SAFE
 struct sample_args {
 	ccs_configuration_space_t cspace;
 	int                       count;
@@ -229,15 +232,18 @@ test_parallel_map(void)
 
 	ccs_release_object(map);
 }
+#endif /* THREAD_SAFE */
 
 int
 main(void)
 {
 	ccs_init();
 	test_parallel_retain_release();
+#ifdef THREAD_SAFE
 	test_parallel_sampling();
 	test_parallel_tuner();
 	test_parallel_map();
+#endif
 	ccs_clear_thread_error();
 	ccs_fini();
 	return 0;
