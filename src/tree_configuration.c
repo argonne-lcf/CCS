@@ -160,10 +160,18 @@ ccs_create_tree_configuration(
 	CCS_CHECK_ARY(position_size, position);
 	ccs_result_t err;
 	ccs_bool_t   is_valid;
-	uintptr_t    mem = (uintptr_t)calloc(
-                1, sizeof(struct _ccs_tree_configuration_s) +
-                           sizeof(struct _ccs_tree_configuration_data_s) +
-                           position_size * sizeof(size_t));
+	size_t       _sz;
+	CCS_REFUTE(
+		_ccs_size_mul(position_size, sizeof(size_t), &_sz),
+		CCS_RESULT_ERROR_OUT_OF_MEMORY);
+	CCS_REFUTE(
+		_ccs_size_add(
+			_sz,
+			sizeof(struct _ccs_tree_configuration_s) +
+				sizeof(struct _ccs_tree_configuration_data_s),
+			&_sz),
+		CCS_RESULT_ERROR_OUT_OF_MEMORY);
+	uintptr_t mem = (uintptr_t)calloc(1, _sz);
 	CCS_REFUTE(!mem, CCS_RESULT_ERROR_OUT_OF_MEMORY);
 	uintptr_t                mem_orig = mem;
 	ccs_tree_configuration_t config;

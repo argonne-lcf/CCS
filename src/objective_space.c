@@ -244,14 +244,23 @@ ccs_create_objective_space(
 	CCS_CHECK_ARY(num_objectives, objectives);
 	CCS_CHECK_ARY(num_objectives, types);
 
-	uintptr_t mem = (uintptr_t)calloc(
-		1,
-		sizeof(struct _ccs_objective_space_s) +
-			sizeof(struct _ccs_objective_space_data_s) +
-			sizeof(ccs_parameter_t) * num_parameters +
-			sizeof(_ccs_parameter_index_hash_t) * num_parameters +
-			sizeof(_ccs_objective_t) * num_objectives +
-			strlen(name) + 1);
+	size_t _sz;
+	CCS_REFUTE(
+		_ccs_size_sum2(
+			num_parameters,
+			sizeof(ccs_parameter_t) +
+				sizeof(_ccs_parameter_index_hash_t),
+			num_objectives, sizeof(_ccs_objective_t), &_sz),
+		CCS_RESULT_ERROR_OUT_OF_MEMORY);
+	CCS_REFUTE(
+		_ccs_size_add(
+			_sz,
+			sizeof(struct _ccs_objective_space_s) +
+				sizeof(struct _ccs_objective_space_data_s) +
+				strlen(name) + 1,
+			&_sz),
+		CCS_RESULT_ERROR_OUT_OF_MEMORY);
+	uintptr_t mem = (uintptr_t)calloc(1, _sz);
 	CCS_REFUTE(!mem, CCS_RESULT_ERROR_OUT_OF_MEMORY);
 	uintptr_t             mem_orig = mem;
 	ccs_result_t          err;
