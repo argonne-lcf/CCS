@@ -943,6 +943,50 @@ _ccs_deserialize_bin_size(size_t *sz, size_t *buffer_size, const char **buffer)
 	return CCS_RESULT_SUCCESS;
 }
 
+/* Checked-overflow size arithmetic for safe allocation.
+ * All return CCS_TRUE on overflow. */
+static inline ccs_bool_t
+_ccs_size_mul(size_t a, size_t b, size_t *result)
+{
+	return __builtin_mul_overflow(a, b, result) ? CCS_TRUE : CCS_FALSE;
+}
+
+static inline ccs_bool_t
+_ccs_size_add(size_t a, size_t b, size_t *result)
+{
+	return __builtin_add_overflow(a, b, result) ? CCS_TRUE : CCS_FALSE;
+}
+
+static inline ccs_bool_t
+_ccs_size_sum2(size_t n1, size_t s1, size_t n2, size_t s2, size_t *result)
+{
+	size_t p1, p2;
+	if (_ccs_size_mul(n1, s1, &p1))
+		return CCS_TRUE;
+	if (_ccs_size_mul(n2, s2, &p2))
+		return CCS_TRUE;
+	return _ccs_size_add(p1, p2, result);
+}
+
+static inline ccs_bool_t
+_ccs_size_sum3(
+	size_t  n1,
+	size_t  s1,
+	size_t  n2,
+	size_t  s2,
+	size_t  n3,
+	size_t  s3,
+	size_t *result)
+{
+	size_t p;
+	if (_ccs_size_sum2(n1, s1, n2, s2, &p))
+		return CCS_TRUE;
+	size_t p3;
+	if (_ccs_size_mul(n3, s3, &p3))
+		return CCS_TRUE;
+	return _ccs_size_add(p, p3, result);
+}
+
 static inline size_t
 _ccs_serialize_bin_size_string(const char *str)
 {

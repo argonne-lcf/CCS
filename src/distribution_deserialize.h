@@ -131,9 +131,15 @@ _ccs_deserialize_bin_ccs_distribution_roulette_data(
 		&data->common_data, buffer_size, buffer));
 	CCS_VALIDATE(_ccs_deserialize_bin_size(
 		&data->num_areas, buffer_size, buffer));
-	data->areas =
-		(ccs_float_t *)malloc(data->num_areas * sizeof(ccs_float_t));
-	CCS_REFUTE(!data->areas, CCS_RESULT_ERROR_OUT_OF_MEMORY);
+	{
+		size_t _sz;
+		CCS_REFUTE(
+			_ccs_size_mul(
+				data->num_areas, sizeof(ccs_float_t), &_sz),
+			CCS_RESULT_ERROR_OUT_OF_MEMORY);
+		data->areas = (ccs_float_t *)malloc(_sz);
+		CCS_REFUTE(!data->areas, CCS_RESULT_ERROR_OUT_OF_MEMORY);
+	}
 	for (size_t i = 0; i < data->num_areas; i++)
 		CCS_VALIDATE(_ccs_deserialize_bin_ccs_float(
 			data->areas + i, buffer_size, buffer));
@@ -193,9 +199,16 @@ _ccs_deserialize_bin_ccs_distribution_mixture_data(
 	data->distributions = (ccs_distribution_t *)calloc(
 		data->num_distributions, sizeof(ccs_distribution_t));
 	CCS_REFUTE(!data->distributions, CCS_RESULT_ERROR_OUT_OF_MEMORY);
-	data->weights = (ccs_float_t *)malloc(
-		sizeof(ccs_float_t) * data->num_distributions);
-	CCS_REFUTE(!data->weights, CCS_RESULT_ERROR_OUT_OF_MEMORY);
+	{
+		size_t _sz;
+		CCS_REFUTE(
+			_ccs_size_mul(
+				data->num_distributions, sizeof(ccs_float_t),
+				&_sz),
+			CCS_RESULT_ERROR_OUT_OF_MEMORY);
+		data->weights = (ccs_float_t *)malloc(_sz);
+		CCS_REFUTE(!data->weights, CCS_RESULT_ERROR_OUT_OF_MEMORY);
+	}
 	for (size_t i = 0; i < data->num_distributions; i++) {
 		CCS_VALIDATE(_ccs_deserialize_bin_ccs_float(
 			data->weights + i, buffer_size, buffer));

@@ -50,9 +50,17 @@ _ccs_deserialize_bin_ccs_parameter_categorical_data(
 		&data->common_data, buffer_size, buffer));
 	CCS_VALIDATE(_ccs_deserialize_bin_size(
 		&data->num_possible_values, buffer_size, buffer));
-	data->possible_values = (ccs_datum_t *)malloc(
-		data->num_possible_values * sizeof(ccs_datum_t));
-	CCS_REFUTE(!data->possible_values, CCS_RESULT_ERROR_OUT_OF_MEMORY);
+	{
+		size_t _sz;
+		CCS_REFUTE(
+			_ccs_size_mul(
+				data->num_possible_values, sizeof(ccs_datum_t),
+				&_sz),
+			CCS_RESULT_ERROR_OUT_OF_MEMORY);
+		data->possible_values = (ccs_datum_t *)malloc(_sz);
+		CCS_REFUTE(
+			!data->possible_values, CCS_RESULT_ERROR_OUT_OF_MEMORY);
+	}
 	for (size_t i = 0; i < data->num_possible_values; i++)
 		CCS_VALIDATE(_ccs_deserialize_bin_ccs_datum(
 			data->possible_values + i, buffer_size, buffer));
