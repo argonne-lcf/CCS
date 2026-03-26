@@ -28,7 +28,7 @@ _ccs_deserialize_bin_ccs_map_data(
 			_ccs_size_mul(
 				data->num_pairs, sizeof(_ccs_map_pair_t), &_sz),
 			CCS_RESULT_ERROR_OUT_OF_MEMORY);
-		data->pairs = (_ccs_map_pair_t *)malloc(_sz);
+		data->pairs = (_ccs_map_pair_t *)calloc(1, _sz);
 		CCS_REFUTE(!data->pairs, CCS_RESULT_ERROR_OUT_OF_MEMORY);
 	}
 	for (size_t i = 0; i < data->num_pairs; i++) {

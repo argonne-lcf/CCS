@@ -137,7 +137,7 @@ _ccs_deserialize_bin_ccs_distribution_roulette_data(
 			_ccs_size_mul(
 				data->num_areas, sizeof(ccs_float_t), &_sz),
 			CCS_RESULT_ERROR_OUT_OF_MEMORY);
-		data->areas = (ccs_float_t *)malloc(_sz);
+		data->areas = (ccs_float_t *)calloc(1, _sz);
 		CCS_REFUTE(!data->areas, CCS_RESULT_ERROR_OUT_OF_MEMORY);
 	}
 	for (size_t i = 0; i < data->num_areas; i++)
@@ -206,7 +206,7 @@ _ccs_deserialize_bin_ccs_distribution_mixture_data(
 				data->num_distributions, sizeof(ccs_float_t),
 				&_sz),
 			CCS_RESULT_ERROR_OUT_OF_MEMORY);
-		data->weights = (ccs_float_t *)malloc(_sz);
+		data->weights = (ccs_float_t *)calloc(1, _sz);
 		CCS_REFUTE(!data->weights, CCS_RESULT_ERROR_OUT_OF_MEMORY);
 	}
 	for (size_t i = 0; i < data->num_distributions; i++) {
