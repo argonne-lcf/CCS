@@ -342,10 +342,16 @@ ccs_distribution_space_set_distribution(
 				CCS_RESULT_ERROR_INVALID_VALUE);
 	}
 
-	mem = (uintptr_t)malloc(
-		sizeof(void *) * num_parameters * 2 +
-		sizeof(size_t) * num_parameters);
-	CCS_REFUTE(!mem, CCS_RESULT_ERROR_OUT_OF_MEMORY);
+	{
+		size_t _sz;
+		CCS_REFUTE(
+			_ccs_size_mul(
+				num_parameters,
+				sizeof(void *) * 2 + sizeof(size_t), &_sz),
+			CCS_RESULT_ERROR_OUT_OF_MEMORY);
+		mem = (uintptr_t)malloc(_sz);
+		CCS_REFUTE(!mem, CCS_RESULT_ERROR_OUT_OF_MEMORY);
+	}
 
 	CCS_OBJ_WRLOCK(distribution_space);
 	cur_mem            = mem;

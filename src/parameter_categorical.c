@@ -175,10 +175,19 @@ _ccs_parameter_categorical_samples(
 			CCS_REFUTE_ERR_GOTO(
 				err, coeff > 32,
 				CCS_RESULT_ERROR_SAMPLING_UNSUCCESSFUL, errmem);
-			size_t     buff_sz = (num_values - found) * coeff;
-			ccs_int_t *oldvs   = vs;
-			vs                 = (ccs_int_t *)realloc(
-                                oldvs, sizeof(ccs_int_t) * buff_sz);
+			size_t buff_sz;
+			CCS_REFUTE_ERR_GOTO(
+				err,
+				_ccs_size_mul(
+					num_values - found, coeff, &buff_sz),
+				CCS_RESULT_ERROR_OUT_OF_MEMORY, errmem);
+			size_t _rsz;
+			CCS_REFUTE_ERR_GOTO(
+				err,
+				_ccs_size_mul(sizeof(ccs_int_t), buff_sz, &_rsz),
+				CCS_RESULT_ERROR_OUT_OF_MEMORY, errmem);
+			ccs_int_t *oldvs = vs;
+			vs               = (ccs_int_t *)realloc(oldvs, _rsz);
 			if (CCS_UNLIKELY(!vs)) {
 				if (oldvs)
 					free(oldvs);

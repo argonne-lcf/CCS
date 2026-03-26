@@ -221,9 +221,15 @@ ccs_distribution_parameters_samples(
 			oversampling = CCS_TRUE;
 			break;
 		}
-	uintptr_t mem = (uintptr_t)malloc(
-		num_values * dim *
-		(sizeof(ccs_numeric_t) + sizeof(ccs_datum_t)));
+	size_t _sz;
+	CCS_REFUTE(
+		_ccs_size_mul(num_values, dim, &_sz),
+		CCS_RESULT_ERROR_OUT_OF_MEMORY);
+	CCS_REFUTE(
+		_ccs_size_mul(
+			_sz, sizeof(ccs_numeric_t) + sizeof(ccs_datum_t), &_sz),
+		CCS_RESULT_ERROR_OUT_OF_MEMORY);
+	uintptr_t mem = (uintptr_t)malloc(_sz);
 	CCS_REFUTE(!mem, CCS_RESULT_ERROR_OUT_OF_MEMORY);
 	ccs_datum_t *ds = (ccs_datum_t *)mem;
 	p_vs[0] =
@@ -273,12 +279,26 @@ ccs_distribution_parameters_samples(
 			CCS_REFUTE_ERR_GOTO(
 				err, coeff > 32,
 				CCS_RESULT_ERROR_SAMPLING_UNSUCCESSFUL, errmem);
-			size_t    buff_len = (num_values - found) * coeff;
-			uintptr_t oldmem   = mem;
-			mem                = (uintptr_t)realloc(
-                                (void *)oldmem, buff_len * dim *
-                                                        (sizeof(ccs_numeric_t) +
-                                                         sizeof(ccs_datum_t)));
+			size_t buff_len;
+			CCS_REFUTE_ERR_GOTO(
+				err,
+				_ccs_size_mul(
+					num_values - found, coeff, &buff_len),
+				CCS_RESULT_ERROR_OUT_OF_MEMORY, errmem);
+			size_t _rsz;
+			CCS_REFUTE_ERR_GOTO(
+				err, _ccs_size_mul(buff_len, dim, &_rsz),
+				CCS_RESULT_ERROR_OUT_OF_MEMORY, errmem);
+			CCS_REFUTE_ERR_GOTO(
+				err,
+				_ccs_size_mul(
+					_rsz,
+					sizeof(ccs_numeric_t) +
+						sizeof(ccs_datum_t),
+					&_rsz),
+				CCS_RESULT_ERROR_OUT_OF_MEMORY, errmem);
+			uintptr_t oldmem = mem;
+			mem = (uintptr_t)realloc((void *)oldmem, _rsz);
 			if (CCS_UNLIKELY(!mem)) {
 				if (oldmem)
 					free((void *)oldmem);
