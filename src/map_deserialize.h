@@ -22,9 +22,15 @@ _ccs_deserialize_bin_ccs_map_data(
 {
 	CCS_VALIDATE(_ccs_deserialize_bin_size(
 		&data->num_pairs, buffer_size, buffer));
-	data->pairs = (_ccs_map_pair_t *)malloc(
-		data->num_pairs * sizeof(_ccs_map_pair_t));
-	CCS_REFUTE(!data->pairs, CCS_RESULT_ERROR_OUT_OF_MEMORY);
+	{
+		size_t _sz;
+		CCS_REFUTE(
+			_ccs_size_mul(
+				data->num_pairs, sizeof(_ccs_map_pair_t), &_sz),
+			CCS_RESULT_ERROR_OUT_OF_MEMORY);
+		data->pairs = (_ccs_map_pair_t *)malloc(_sz);
+		CCS_REFUTE(!data->pairs, CCS_RESULT_ERROR_OUT_OF_MEMORY);
+	}
 	for (size_t i = 0; i < data->num_pairs; i++) {
 		CCS_VALIDATE(_ccs_deserialize_bin_ccs_datum(
 			&data->pairs[i].key, buffer_size, buffer));

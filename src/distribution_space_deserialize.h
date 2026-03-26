@@ -34,11 +34,17 @@ _ccs_deserialize_bin_ccs_distribution_space_data(
 
 	if (!(data->num_distributions))
 		return CCS_RESULT_SUCCESS;
-	mem = (uintptr_t)calloc(
-		1, data->num_distributions * (sizeof(ccs_distribution_t) +
-					      sizeof(size_t)) +
-			   data->num_parameters * sizeof(size_t));
-	CCS_REFUTE(!mem, CCS_RESULT_ERROR_OUT_OF_MEMORY);
+	{
+		size_t _sz;
+		CCS_REFUTE(
+			_ccs_size_sum2(
+				data->num_distributions,
+				sizeof(ccs_distribution_t) + sizeof(size_t),
+				data->num_parameters, sizeof(size_t), &_sz),
+			CCS_RESULT_ERROR_OUT_OF_MEMORY);
+		mem = (uintptr_t)calloc(1, _sz);
+		CCS_REFUTE(!mem, CCS_RESULT_ERROR_OUT_OF_MEMORY);
+	}
 
 	data->distributions = (ccs_distribution_t *)mem;
 	mem += data->num_distributions * sizeof(ccs_distribution_t);

@@ -26,8 +26,11 @@ _ccs_deserialize_bin_tree_configuration_data(
 	CCS_VALIDATE(_ccs_deserialize_bin_size(
 		&data->position_size, buffer_size, buffer));
 	if (data->position_size) {
-		data->position =
-			(size_t *)malloc(data->position_size * sizeof(size_t));
+		size_t _sz;
+		CCS_REFUTE(
+			_ccs_size_mul(data->position_size, sizeof(size_t), &_sz),
+			CCS_RESULT_ERROR_OUT_OF_MEMORY);
+		data->position = (size_t *)malloc(_sz);
 		CCS_REFUTE(!data->position, CCS_RESULT_ERROR_OUT_OF_MEMORY);
 		for (size_t i = 0; i < data->position_size; i++)
 			CCS_VALIDATE(_ccs_deserialize_bin_size(
