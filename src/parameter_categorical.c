@@ -353,13 +353,15 @@ _ccs_create_categorical_parameter(
 			 *)(mem + sizeof(struct _ccs_parameter_s));
 	parameter_data->common_data.type = type;
 	parameter_data->common_data.name =
-		(char *)(mem + sizeof(struct _ccs_parameter_s) + sizeof(_ccs_parameter_categorical_data_t) + sizeof(_ccs_hash_datum_t) * num_possible_values);
+		(char *)(mem + sizeof(struct _ccs_parameter_s) +
+			 sizeof(_ccs_parameter_categorical_data_t) +
+			 sizeof(_ccs_hash_datum_t) * num_possible_values);
 	strcpy((char *)parameter_data->common_data.name, name);
 	parameter_data->common_data.interval = interval;
 	parameter_data->num_possible_values  = num_possible_values;
 	_ccs_hash_datum_t *pvs =
-		(_ccs_hash_datum_t
-			 *)(mem + sizeof(struct _ccs_parameter_s) + sizeof(_ccs_parameter_categorical_data_t));
+		(_ccs_hash_datum_t *)(mem + sizeof(struct _ccs_parameter_s) +
+				      sizeof(_ccs_parameter_categorical_data_t));
 	parameter_data->possible_values = pvs;
 	parameter_data->hash            = NULL;
 	parameter->data = (_ccs_parameter_data_t *)parameter_data;

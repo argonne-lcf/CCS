@@ -254,14 +254,16 @@ ccs_create_roulette_distribution(
 			 *)(mem + sizeof(struct _ccs_distribution_s));
 	distrib_data->common_data.data_types =
 		(ccs_numeric_type_t
-			 *)(mem + sizeof(struct _ccs_distribution_s) + sizeof(_ccs_distribution_roulette_data_t) + sizeof(ccs_float_t) * (num_areas + 1));
+			 *)(mem + sizeof(struct _ccs_distribution_s) +
+			    sizeof(_ccs_distribution_roulette_data_t) +
+			    sizeof(ccs_float_t) * (num_areas + 1));
 	distrib_data->common_data.type      = CCS_DISTRIBUTION_TYPE_ROULETTE;
 	distrib_data->common_data.dimension = 1;
 	distrib_data->common_data.data_types[0] = CCS_NUMERIC_TYPE_INT;
 	distrib_data->num_areas                 = num_areas;
 	distrib_data->areas =
-		(ccs_float_t
-			 *)(mem + sizeof(struct _ccs_distribution_s) + sizeof(_ccs_distribution_roulette_data_t));
+		(ccs_float_t *)(mem + sizeof(struct _ccs_distribution_s) +
+				sizeof(_ccs_distribution_roulette_data_t));
 	_ccs_distribution_roulette_normalize_areas(
 		num_areas, areas, sum_areas_inverse, distrib_data->areas);
 	distrib->data     = (_ccs_distribution_data_t *)distrib_data;

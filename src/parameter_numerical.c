@@ -318,7 +318,8 @@ ccs_create_numerical_parameter(
 			 *)(mem + sizeof(struct _ccs_parameter_s));
 	parameter_data->common_data.type = CCS_PARAMETER_TYPE_NUMERICAL;
 	parameter_data->common_data.name =
-		(char *)(mem + sizeof(struct _ccs_parameter_s) + sizeof(_ccs_parameter_numerical_data_t));
+		(char *)(mem + sizeof(struct _ccs_parameter_s) +
+			 sizeof(_ccs_parameter_numerical_data_t));
 	strcpy((char *)parameter_data->common_data.name, name);
 	if (data_type == CCS_NUMERIC_TYPE_FLOAT) {
 		parameter_data->common_data.default_value.type =

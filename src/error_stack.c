@@ -97,8 +97,8 @@ _ccs_create_error_stack(
 		(struct _ccs_error_stack_data_s
 			 *)(mem + sizeof(struct _ccs_error_stack_s));
 	error_stack->data->msg =
-		(const char
-			 *)(mem + sizeof(struct _ccs_error_stack_s) + sizeof(struct _ccs_error_stack_data_s));
+		(const char *)(mem + sizeof(struct _ccs_error_stack_s) +
+			       sizeof(struct _ccs_error_stack_data_s));
 	utarray_new(error_stack->data->elems, &_error_stack_elem_icd);
 	error_stack->data->error = error_code;
 	if (msg) {

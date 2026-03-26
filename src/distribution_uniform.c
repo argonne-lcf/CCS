@@ -413,8 +413,9 @@ ccs_create_uniform_distribution(
 		(_ccs_distribution_uniform_data_t
 			 *)(mem + sizeof(struct _ccs_distribution_s));
 	distrib_data->common_data.data_types =
-		(ccs_numeric_type_t
-			 *)(mem + sizeof(struct _ccs_distribution_s) + sizeof(_ccs_distribution_uniform_data_t));
+		(ccs_numeric_type_t *)(mem +
+				       sizeof(struct _ccs_distribution_s) +
+				       sizeof(_ccs_distribution_uniform_data_t));
 	distrib_data->common_data.type          = CCS_DISTRIBUTION_TYPE_UNIFORM;
 	distrib_data->common_data.dimension     = 1;
 	distrib_data->common_data.data_types[0] = data_type;

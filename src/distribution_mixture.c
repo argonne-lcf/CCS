@@ -256,8 +256,8 @@ ccs_create_mixture_distribution(
 	}
 	bounds_tmp = (ccs_interval_t *)tmp_mem;
 	data_types_tmp =
-		(ccs_numeric_type_t
-			 *)(tmp_mem + sizeof(ccs_interval_t) * num_distributions);
+		(ccs_numeric_type_t *)(tmp_mem + sizeof(ccs_interval_t) *
+							 num_distributions);
 
 	distrib = (ccs_distribution_t)cur_mem;
 	cur_mem += sizeof(struct _ccs_distribution_s);
