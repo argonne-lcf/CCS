@@ -309,8 +309,9 @@ ccs_distribution_parameters_samples(
 			}
 			ccs_datum_t *ds = (ccs_datum_t *)mem;
 			p_vs[0] =
-				(ccs_numeric_t
-					 *)(mem + buff_len * dim * sizeof(ccs_datum_t));
+				(ccs_numeric_t *)(mem +
+						  buff_len * dim *
+							  sizeof(ccs_datum_t));
 			for (size_t i = 1; i < dim; i++)
 				p_vs[i] = p_vs[i - 1] + buff_len;
 			CCS_OBJ_WRLOCK(rng);

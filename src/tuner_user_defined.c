@@ -350,8 +350,8 @@ ccs_create_user_defined_tuner(
 	data                   = (_ccs_user_defined_tuner_data_t *)tun->data;
 	data->common_data.type = CCS_TUNER_TYPE_USER_DEFINED;
 	data->common_data.name =
-		(const char
-			 *)(mem + sizeof(struct _ccs_tuner_s) + sizeof(struct _ccs_user_defined_tuner_data_s));
+		(const char *)(mem + sizeof(struct _ccs_tuner_s) +
+			       sizeof(struct _ccs_user_defined_tuner_data_s));
 	data->common_data.search_space    = search_space;
 	data->common_data.objective_space = objective_space;
 	data->common_data.feature_space   = feature_space;

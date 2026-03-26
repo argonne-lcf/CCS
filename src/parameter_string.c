@@ -156,10 +156,12 @@ _ccs_parameter_string_check_values(
 					err, !p, CCS_RESULT_ERROR_OUT_OF_MEMORY,
 					errmem);
 				if (sz_str) {
-					strcpy((char *)((intptr_t)p + sizeof(_ccs_hash_datum_t)),
+					strcpy((char *)((intptr_t)p +
+							sizeof(_ccs_hash_datum_t)),
 					       values[i].value.s);
 					p->d = ccs_string((
-						char *)((intptr_t)p + sizeof(_ccs_hash_datum_t)));
+						char *)((intptr_t)p +
+							sizeof(_ccs_hash_datum_t)));
 				} else
 					p->d = ccs_string(NULL);
 				HASH_ADD(
@@ -255,7 +257,8 @@ ccs_create_string_parameter(const char *name, ccs_parameter_t *parameter_ret)
 			 *)(mem + sizeof(struct _ccs_parameter_s));
 	parameter_data->common_data.type = CCS_PARAMETER_TYPE_STRING;
 	parameter_data->common_data.name =
-		(char *)(mem + sizeof(struct _ccs_parameter_s) + sizeof(_ccs_parameter_string_data_t));
+		(char *)(mem + sizeof(struct _ccs_parameter_s) +
+			 sizeof(_ccs_parameter_string_data_t));
 	strcpy((char *)parameter_data->common_data.name, name);
 	parameter_data->common_data.interval.type = CCS_NUMERIC_TYPE_INT;
 	parameter_data->stored_values             = NULL;

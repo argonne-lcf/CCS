@@ -116,7 +116,8 @@ _ccs_create_distribution_space_no_retain(
 	distrib_space->data->num_parameters = num_parameters;
 	distrib_space->data->parameter_distributions =
 		(struct _ccs_parameter_distribution_s
-			 *)(mem + sizeof(struct _ccs_distribution_space_s) + sizeof(struct _ccs_distribution_space_data_s));
+			 *)(mem + sizeof(struct _ccs_distribution_space_s) +
+			    sizeof(struct _ccs_distribution_space_data_s));
 	distrib_space->data->configuration_space = configuration_space;
 	for (size_t i = 0; i < num_parameters; i++) {
 		_ccs_distribution_wrapper_t   *distrib_wrapper;

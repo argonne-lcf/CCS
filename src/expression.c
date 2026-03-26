@@ -1558,7 +1558,8 @@ ccs_create_literal(ccs_datum_t value, ccs_expression_t *expression_ret)
 	expression_data->expr.nodes     = NULL;
 	if (size_str) {
 		char *str_pool =
-			(char *)(mem + sizeof(struct _ccs_expression_s) + sizeof(struct _ccs_expression_literal_data_s));
+			(char *)(mem + sizeof(struct _ccs_expression_s) +
+				 sizeof(struct _ccs_expression_literal_data_s));
 		expression_data->value = ccs_string(str_pool);
 		strcpy(str_pool, value.value.s);
 	} else {
@@ -1689,13 +1690,13 @@ ccs_create_expression(
 		&(expression->obj), CCS_OBJECT_TYPE_EXPRESSION,
 		(_ccs_object_ops_t *)_ccs_expression_ops_broker(type));
 	_ccs_expression_data_t *expression_data =
-		(_ccs_expression_data_t
-			 *)(mem + sizeof(struct _ccs_expression_s));
+		(_ccs_expression_data_t *)(mem +
+					   sizeof(struct _ccs_expression_s));
 	expression_data->type      = type;
 	expression_data->num_nodes = num_nodes;
 	expression_data->nodes =
-		(ccs_expression_t
-			 *)(mem + sizeof(struct _ccs_expression_s) + sizeof(struct _ccs_expression_data_s));
+		(ccs_expression_t *)(mem + sizeof(struct _ccs_expression_s) +
+				     sizeof(struct _ccs_expression_data_s));
 	CCS_VALIDATE_ERR_GOTO(
 		err,
 		_ccs_create_nodes(num_nodes, nodes, expression_data->nodes),
@@ -1782,10 +1783,13 @@ ccs_create_user_defined_expression(
 	expression_data->expr.num_nodes = num_nodes;
 	expression_data->expr.nodes =
 		(ccs_expression_t
-			 *)(mem + sizeof(struct _ccs_expression_s) + sizeof(struct _ccs_expression_user_defined_data_s));
+			 *)(mem + sizeof(struct _ccs_expression_s) +
+			    sizeof(struct _ccs_expression_user_defined_data_s));
 	expression_data->name =
 		(const char
-			 *)(mem + sizeof(struct _ccs_expression_s) + sizeof(struct _ccs_expression_user_defined_data_s) + sizeof(ccs_expression_t) * num_nodes);
+			 *)(mem + sizeof(struct _ccs_expression_s) +
+			    sizeof(struct _ccs_expression_user_defined_data_s) +
+			    sizeof(ccs_expression_t) * num_nodes);
 	expression_data->vector          = *vector;
 	expression_data->expression_data = expr_data;
 	strcpy((char *)expression_data->name, name);
