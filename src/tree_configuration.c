@@ -175,16 +175,15 @@ ccs_create_tree_configuration(
 	CCS_REFUTE(!mem, CCS_RESULT_ERROR_OUT_OF_MEMORY);
 	uintptr_t                mem_orig = mem;
 	ccs_tree_configuration_t config;
-	config = (ccs_tree_configuration_t)mem;
-	mem += sizeof(struct _ccs_tree_configuration_s);
+	config = CCS_ALLOC_CARVE_TYPE(mem, struct _ccs_tree_configuration_s);
 	_ccs_object_init(
 		&(config->obj), CCS_OBJECT_TYPE_TREE_CONFIGURATION,
 		(_ccs_object_ops_t *)&_tree_configuration_ops);
-	config->data = (struct _ccs_tree_configuration_data_s *)mem;
-	mem += sizeof(struct _ccs_tree_configuration_data_s);
+	config->data = CCS_ALLOC_CARVE_TYPE(
+		mem, struct _ccs_tree_configuration_data_s);
 	config->data->position_size = position_size;
-	config->data->position      = (size_t *)mem;
-	mem += sizeof(size_t) * position_size;
+	config->data->position =
+		CCS_ALLOC_CARVE_ARRAY(mem, position_size, size_t);
 	CCS_VALIDATE_ERR_GOTO(err, ccs_retain_object(tree_space), errinit);
 	config->data->tree_space = tree_space;
 	if (features)

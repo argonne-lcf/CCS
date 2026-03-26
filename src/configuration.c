@@ -174,16 +174,15 @@ _ccs_create_configuration(
 	CCS_REFUTE(!mem, CCS_RESULT_ERROR_OUT_OF_MEMORY);
 	uintptr_t           mem_orig = mem;
 	ccs_configuration_t config;
-	config = (ccs_configuration_t)mem;
-	mem += sizeof(struct _ccs_configuration_s);
+	config = CCS_ALLOC_CARVE_TYPE(mem, struct _ccs_configuration_s);
 	_ccs_object_init(
 		&(config->obj), CCS_OBJECT_TYPE_CONFIGURATION,
 		(_ccs_object_ops_t *)&_configuration_ops);
-	config->data = (struct _ccs_configuration_data_s *)mem;
-	mem += sizeof(struct _ccs_configuration_data_s);
+	config->data =
+		CCS_ALLOC_CARVE_TYPE(mem, struct _ccs_configuration_data_s);
 	config->data->num_values = num_parameters;
-	config->data->values     = (ccs_datum_t *)mem;
-	mem += sizeof(ccs_datum_t) * num_parameters;
+	config->data->values =
+		CCS_ALLOC_CARVE_ARRAY(mem, num_parameters, ccs_datum_t);
 	CCS_VALIDATE_ERR_GOTO(
 		err, ccs_retain_object(configuration_space), errinit);
 	config->data->configuration_space = configuration_space;

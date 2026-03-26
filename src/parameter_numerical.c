@@ -303,24 +303,24 @@ ccs_create_numerical_parameter(
 	CCS_REFUTE(!mem, CCS_RESULT_ERROR_OUT_OF_MEMORY);
 
 	ccs_interval_t interval;
-	interval.type             = data_type;
-	interval.lower            = lower;
-	interval.upper            = upper;
-	interval.lower_included   = CCS_TRUE;
-	interval.upper_included   = CCS_FALSE;
+	interval.type            = data_type;
+	interval.lower           = lower;
+	interval.upper           = upper;
+	interval.lower_included  = CCS_TRUE;
+	interval.upper_included  = CCS_FALSE;
 
-	ccs_parameter_t parameter = (ccs_parameter_t)mem;
+	uintptr_t       mem_orig = mem;
+	ccs_parameter_t parameter =
+		CCS_ALLOC_CARVE_TYPE(mem, struct _ccs_parameter_s);
 	_ccs_object_init(
 		&(parameter->obj), CCS_OBJECT_TYPE_PARAMETER,
 		(_ccs_object_ops_t *)&_ccs_parameter_numerical_ops);
 	_ccs_parameter_numerical_data_t *parameter_data =
-		(_ccs_parameter_numerical_data_t
-			 *)(mem + sizeof(struct _ccs_parameter_s));
+		CCS_ALLOC_CARVE_TYPE(mem, _ccs_parameter_numerical_data_t);
 	parameter_data->common_data.type = CCS_PARAMETER_TYPE_NUMERICAL;
-	parameter_data->common_data.name =
-		(char *)(mem + sizeof(struct _ccs_parameter_s) +
-			 sizeof(_ccs_parameter_numerical_data_t));
+	parameter_data->common_data.name = (const char *)mem;
 	strcpy((char *)parameter_data->common_data.name, name);
+	(void)mem_orig;
 	if (data_type == CCS_NUMERIC_TYPE_FLOAT) {
 		parameter_data->common_data.default_value.type =
 			CCS_DATA_TYPE_FLOAT;

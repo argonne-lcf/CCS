@@ -1545,21 +1545,21 @@ ccs_create_literal(ccs_datum_t value, ccs_expression_t *expression_ret)
 			   sizeof(struct _ccs_expression_literal_data_s) +
 			   size_str);
 	CCS_REFUTE(!mem, CCS_RESULT_ERROR_OUT_OF_MEMORY);
-	ccs_expression_t expression = (ccs_expression_t)mem;
+	uintptr_t        mem_orig = mem;
+	ccs_expression_t expression =
+		CCS_ALLOC_CARVE_TYPE(mem, struct _ccs_expression_s);
 	_ccs_object_init(
 		&(expression->obj), CCS_OBJECT_TYPE_EXPRESSION,
 		(_ccs_object_ops_t *)_ccs_expression_ops_broker(
 			CCS_EXPRESSION_TYPE_LITERAL));
-	_ccs_expression_literal_data_t *expression_data =
-		(_ccs_expression_literal_data_t
-			 *)(mem + sizeof(struct _ccs_expression_s));
+	_ccs_expression_literal_data_t *expression_data = CCS_ALLOC_CARVE_TYPE(
+		mem, struct _ccs_expression_literal_data_s);
 	expression_data->expr.type      = CCS_EXPRESSION_TYPE_LITERAL;
 	expression_data->expr.num_nodes = 0;
 	expression_data->expr.nodes     = NULL;
+	(void)mem_orig;
 	if (size_str) {
-		char *str_pool =
-			(char *)(mem + sizeof(struct _ccs_expression_s) +
-				 sizeof(struct _ccs_expression_literal_data_s));
+		char *str_pool         = (char *)mem;
 		expression_data->value = ccs_string(str_pool);
 		strcpy(str_pool, value.value.s);
 	} else {
@@ -1576,21 +1576,23 @@ ccs_create_variable(ccs_parameter_t parameter, ccs_expression_t *expression_ret)
 {
 	CCS_CHECK_OBJ(parameter, CCS_OBJECT_TYPE_PARAMETER);
 	CCS_CHECK_PTR(expression_ret);
-	ccs_result_t err;
-	uintptr_t    mem = (uintptr_t)calloc(
+	ccs_result_t                     err;
+	ccs_expression_t                 expression;
+	_ccs_expression_variable_data_t *expression_data;
+	uintptr_t                        mem = (uintptr_t)calloc(
                 1, sizeof(struct _ccs_expression_s) +
                            sizeof(struct _ccs_expression_variable_data_s));
 	CCS_REFUTE(!mem, CCS_RESULT_ERROR_OUT_OF_MEMORY);
+	uintptr_t mem_orig = mem;
 	CCS_VALIDATE_ERR_GOTO(err, ccs_retain_object(parameter), errmem);
-	ccs_expression_t expression;
-	expression = (ccs_expression_t)mem;
+	expression = CCS_ALLOC_CARVE_TYPE(mem, struct _ccs_expression_s);
 	_ccs_object_init(
 		&(expression->obj), CCS_OBJECT_TYPE_EXPRESSION,
 		(_ccs_object_ops_t *)_ccs_expression_ops_broker(
 			CCS_EXPRESSION_TYPE_VARIABLE));
-	_ccs_expression_variable_data_t *expression_data;
-	expression_data                 = (_ccs_expression_variable_data_t
-                                   *)(mem + sizeof(struct _ccs_expression_s));
+	expression_data = CCS_ALLOC_CARVE_TYPE(
+		mem, struct _ccs_expression_variable_data_s);
+	(void)mem_orig;
 	expression_data->expr.type      = CCS_EXPRESSION_TYPE_VARIABLE;
 	expression_data->expr.num_nodes = 0;
 	expression_data->expr.nodes     = NULL;
@@ -1599,7 +1601,7 @@ ccs_create_variable(ccs_parameter_t parameter, ccs_expression_t *expression_ret)
 	*expression_ret  = expression;
 	return CCS_RESULT_SUCCESS;
 errmem:
-	free((void *)mem);
+	free((void *)mem_orig);
 	return err;
 }
 
@@ -1684,19 +1686,19 @@ ccs_create_expression(
 		CCS_RESULT_ERROR_OUT_OF_MEMORY);
 	uintptr_t mem = (uintptr_t)calloc(1, _sz);
 	CCS_REFUTE(!mem, CCS_RESULT_ERROR_OUT_OF_MEMORY);
-
-	ccs_expression_t expression = (ccs_expression_t)mem;
+	uintptr_t        mem_orig = mem;
+	ccs_expression_t expression =
+		CCS_ALLOC_CARVE_TYPE(mem, struct _ccs_expression_s);
 	_ccs_object_init(
 		&(expression->obj), CCS_OBJECT_TYPE_EXPRESSION,
 		(_ccs_object_ops_t *)_ccs_expression_ops_broker(type));
 	_ccs_expression_data_t *expression_data =
-		(_ccs_expression_data_t *)(mem +
-					   sizeof(struct _ccs_expression_s));
+		CCS_ALLOC_CARVE_TYPE(mem, struct _ccs_expression_data_s);
 	expression_data->type      = type;
 	expression_data->num_nodes = num_nodes;
 	expression_data->nodes =
-		(ccs_expression_t *)(mem + sizeof(struct _ccs_expression_s) +
-				     sizeof(struct _ccs_expression_data_s));
+		CCS_ALLOC_CARVE_ARRAY(mem, num_nodes, ccs_expression_t);
+	(void)mem_orig;
 	CCS_VALIDATE_ERR_GOTO(
 		err,
 		_ccs_create_nodes(num_nodes, nodes, expression_data->nodes),
@@ -1710,7 +1712,7 @@ cleanup:
 			ccs_release_object(expression_data->nodes[i]);
 	}
 	_ccs_object_deinit(&(expression->obj));
-	free((void *)mem);
+	free((void *)mem_orig);
 	return err;
 }
 
@@ -1769,27 +1771,22 @@ ccs_create_user_defined_expression(
 		CCS_RESULT_ERROR_OUT_OF_MEMORY);
 	uintptr_t mem = (uintptr_t)calloc(1, _sz);
 	CCS_REFUTE(!mem, CCS_RESULT_ERROR_OUT_OF_MEMORY);
-
-	ccs_expression_t expression;
-	expression = (ccs_expression_t)mem;
+	uintptr_t        mem_orig = mem;
+	ccs_expression_t expression =
+		CCS_ALLOC_CARVE_TYPE(mem, struct _ccs_expression_s);
 	_ccs_object_init(
 		&(expression->obj), CCS_OBJECT_TYPE_EXPRESSION,
 		(_ccs_object_ops_t *)_ccs_expression_ops_broker(
 			CCS_EXPRESSION_TYPE_USER_DEFINED));
-	_ccs_expression_user_defined_data_t *expression_data;
-	expression_data                 = (_ccs_expression_user_defined_data_t
-                                   *)(mem + sizeof(struct _ccs_expression_s));
+	_ccs_expression_user_defined_data_t *expression_data =
+		CCS_ALLOC_CARVE_TYPE(
+			mem, struct _ccs_expression_user_defined_data_s);
 	expression_data->expr.type      = CCS_EXPRESSION_TYPE_USER_DEFINED;
 	expression_data->expr.num_nodes = num_nodes;
 	expression_data->expr.nodes =
-		(ccs_expression_t
-			 *)(mem + sizeof(struct _ccs_expression_s) +
-			    sizeof(struct _ccs_expression_user_defined_data_s));
-	expression_data->name =
-		(const char
-			 *)(mem + sizeof(struct _ccs_expression_s) +
-			    sizeof(struct _ccs_expression_user_defined_data_s) +
-			    sizeof(ccs_expression_t) * num_nodes);
+		CCS_ALLOC_CARVE_ARRAY(mem, num_nodes, ccs_expression_t);
+	expression_data->name = (const char *)mem;
+	(void)mem_orig;
 	expression_data->vector          = *vector;
 	expression_data->expression_data = expr_data;
 	strcpy((char *)expression_data->name, name);
@@ -1806,7 +1803,7 @@ cleanup:
 			ccs_release_object(expression_data->expr.nodes[i]);
 	}
 	_ccs_object_deinit(&(expression->obj));
-	free((void *)mem);
+	free((void *)mem_orig);
 	return err;
 }
 

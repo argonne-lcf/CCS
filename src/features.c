@@ -93,16 +93,14 @@ _ccs_create_features(
 	CCS_REFUTE(!mem, CCS_RESULT_ERROR_OUT_OF_MEMORY);
 	uintptr_t      mem_orig = mem;
 	ccs_features_t feat;
-	feat = (ccs_features_t)mem;
-	mem += sizeof(struct _ccs_features_s);
+	feat = CCS_ALLOC_CARVE_TYPE(mem, struct _ccs_features_s);
 	_ccs_object_init(
 		&(feat->obj), CCS_OBJECT_TYPE_FEATURES,
 		(_ccs_object_ops_t *)&_features_ops);
-	feat->data = (struct _ccs_features_data_s *)mem;
-	mem += sizeof(struct _ccs_features_data_s);
+	feat->data = CCS_ALLOC_CARVE_TYPE(mem, struct _ccs_features_data_s);
 	feat->data->num_values = num_parameters;
-	feat->data->values     = (ccs_datum_t *)mem;
-	mem += sizeof(ccs_datum_t) * num_parameters;
+	feat->data->values =
+		CCS_ALLOC_CARVE_ARRAY(mem, num_parameters, ccs_datum_t);
 	CCS_VALIDATE_ERR_GOTO(err, ccs_retain_object(feature_space), errinit);
 	feat->data->feature_space = feature_space;
 	if (values) {

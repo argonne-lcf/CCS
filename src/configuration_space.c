@@ -573,27 +573,27 @@ ccs_create_configuration_space(
 	uintptr_t                 mem_orig = mem;
 
 	ccs_configuration_space_t config_space;
-	config_space = (ccs_configuration_space_t)mem;
-	mem += sizeof(struct _ccs_configuration_space_s);
+	config_space =
+		CCS_ALLOC_CARVE_TYPE(mem, struct _ccs_configuration_space_s);
 	_ccs_object_init(
 		&(config_space->obj), CCS_OBJECT_TYPE_CONFIGURATION_SPACE,
 		(_ccs_object_ops_t *)&_configuration_space_ops);
-	config_space->data = (struct _ccs_configuration_space_data_s *)mem;
-	mem += sizeof(struct _ccs_configuration_space_data_s);
-	config_space->data->parameters = (ccs_parameter_t *)mem;
-	mem += sizeof(ccs_parameter_t) * num_parameters;
-	config_space->data->hash_elems = (_ccs_parameter_index_hash_t *)mem;
-	mem += sizeof(_ccs_parameter_index_hash_t) * num_parameters;
-	config_space->data->conditions = (ccs_expression_t *)mem;
-	mem += sizeof(ccs_expression_t) * num_parameters;
-	config_space->data->parents = (UT_array **)mem;
-	mem += sizeof(UT_array *) * num_parameters;
-	config_space->data->children = (UT_array **)mem;
-	mem += sizeof(UT_array *) * num_parameters;
-	config_space->data->sorted_indexes = (size_t *)mem;
-	mem += sizeof(size_t) * num_parameters;
-	config_space->data->forbidden_clauses = (ccs_expression_t *)mem;
-	mem += sizeof(ccs_expression_t) * num_forbidden_clauses;
+	config_space->data = CCS_ALLOC_CARVE_TYPE(
+		mem, struct _ccs_configuration_space_data_s);
+	config_space->data->parameters =
+		CCS_ALLOC_CARVE_ARRAY(mem, num_parameters, ccs_parameter_t);
+	config_space->data->hash_elems = CCS_ALLOC_CARVE_ARRAY(
+		mem, num_parameters, _ccs_parameter_index_hash_t);
+	config_space->data->conditions =
+		CCS_ALLOC_CARVE_ARRAY(mem, num_parameters, ccs_expression_t);
+	config_space->data->parents =
+		CCS_ALLOC_CARVE_ARRAY(mem, num_parameters, UT_array *);
+	config_space->data->children =
+		CCS_ALLOC_CARVE_ARRAY(mem, num_parameters, UT_array *);
+	config_space->data->sorted_indexes =
+		CCS_ALLOC_CARVE_ARRAY(mem, num_parameters, size_t);
+	config_space->data->forbidden_clauses = CCS_ALLOC_CARVE_ARRAY(
+		mem, num_forbidden_clauses, ccs_expression_t);
 	config_space->data->name                  = (const char *)mem;
 	config_space->data->num_parameters        = num_parameters;
 	config_space->data->num_forbidden_clauses = num_forbidden_clauses;
@@ -751,9 +751,10 @@ _sample(ccs_configuration_space_t configuration_space,
 		num_parameters *
 		(sizeof(ccs_datum_t) + sizeof(ccs_parameter_t)));
 	CCS_REFUTE(!mem, CCS_RESULT_ERROR_OUT_OF_MEMORY);
+	uintptr_t mem_orig = mem;
 
-	p_values = (ccs_datum_t *)mem;
-	hps = (ccs_parameter_t *)(mem + num_parameters * sizeof(ccs_datum_t));
+	p_values = CCS_ALLOC_CARVE_ARRAY(mem, num_parameters, ccs_datum_t);
+	hps      = CCS_ALLOC_CARVE_ARRAY(mem, num_parameters, ccs_parameter_t);
 
 	_ccs_distribution_wrapper_t *dwrapper = NULL;
 	DL_FOREACH(distribution_space->data->distribution_list, dwrapper)
@@ -778,7 +779,7 @@ _sample(ccs_configuration_space_t configuration_space,
 		err, _test_forbidden(configuration_space, config, found),
 		errmem);
 errmem:
-	free((void *)mem);
+	free((void *)mem_orig);
 	return err;
 }
 

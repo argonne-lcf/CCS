@@ -203,24 +203,23 @@ ccs_create_multivariate_distribution(
 	CCS_REFUTE(!mem, CCS_RESULT_ERROR_OUT_OF_MEMORY);
 	cur_mem = mem;
 
-	distrib = (ccs_distribution_t)cur_mem;
-	cur_mem += sizeof(struct _ccs_distribution_s);
+	distrib = CCS_ALLOC_CARVE_TYPE(cur_mem, struct _ccs_distribution_s);
 	_ccs_object_init(
 		&(distrib->obj), CCS_OBJECT_TYPE_DISTRIBUTION,
 		(_ccs_object_ops_t *)&_ccs_distribution_multivariate_ops);
-	distrib_data = (_ccs_distribution_multivariate_data_t *)(cur_mem);
-	cur_mem += sizeof(_ccs_distribution_multivariate_data_t);
+	distrib_data = CCS_ALLOC_CARVE_TYPE(
+		cur_mem, _ccs_distribution_multivariate_data_t);
 	distrib_data->common_data.type = CCS_DISTRIBUTION_TYPE_MULTIVARIATE;
 	distrib_data->common_data.dimension = dimension;
 	distrib_data->num_distributions     = num_distributions;
-	distrib_data->distributions         = (ccs_distribution_t *)(cur_mem);
-	cur_mem += sizeof(ccs_distribution_t) * num_distributions;
-	distrib_data->dimensions = (size_t *)(cur_mem);
-	cur_mem += sizeof(size_t) * num_distributions;
-	distrib_data->bounds = (ccs_interval_t *)(cur_mem);
-	cur_mem += sizeof(ccs_interval_t) * dimension;
-	distrib_data->common_data.data_types = (ccs_numeric_type_t *)(cur_mem);
-	cur_mem += sizeof(ccs_numeric_type_t) * dimension;
+	distrib_data->distributions         = CCS_ALLOC_CARVE_ARRAY(
+                cur_mem, num_distributions, ccs_distribution_t);
+	distrib_data->dimensions =
+		CCS_ALLOC_CARVE_ARRAY(cur_mem, num_distributions, size_t);
+	distrib_data->bounds =
+		CCS_ALLOC_CARVE_ARRAY(cur_mem, dimension, ccs_interval_t);
+	distrib_data->common_data.data_types =
+		CCS_ALLOC_CARVE_ARRAY(cur_mem, dimension, ccs_numeric_type_t);
 
 	dimension = 0;
 	for (i = 0; i < num_distributions; i++) {
