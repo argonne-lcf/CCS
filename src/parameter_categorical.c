@@ -305,6 +305,7 @@ _ccs_create_categorical_parameter(
 					possible_values[i].type !=
 						CCS_DATA_TYPE_INT,
 				CCS_RESULT_ERROR_INVALID_VALUE);
+	size_t name_len  = strlen(name) + 1;
 	size_t size_strs = 0;
 	if (type != CCS_PARAMETER_TYPE_DISCRETE)
 		for (size_t i = 0; i < num_possible_values; i++) {
@@ -331,7 +332,7 @@ _ccs_create_categorical_parameter(
 			_sz,
 			sizeof(struct _ccs_parameter_s) +
 				sizeof(_ccs_parameter_categorical_data_t) +
-				strlen(name) + 1 + size_strs,
+				name_len + size_strs,
 			&_sz),
 		CCS_RESULT_ERROR_OUT_OF_MEMORY);
 	ccs_interval_t                     interval;
@@ -361,7 +362,8 @@ _ccs_create_categorical_parameter(
 	pvs = CCS_ALLOC_CARVE_ARRAY(
 		mem, num_possible_values, _ccs_hash_datum_t);
 	parameter_data->common_data.type = type;
-	parameter_data->common_data.name = (const char *)mem;
+	parameter_data->common_data.name =
+		CCS_ALLOC_CARVE_ARRAY(mem, name_len, char);
 	strcpy((char *)parameter_data->common_data.name, name);
 	parameter_data->common_data.interval = interval;
 	parameter_data->num_possible_values  = num_possible_values;
@@ -369,8 +371,7 @@ _ccs_create_categorical_parameter(
 	parameter_data->hash                 = NULL;
 	parameter->data = (_ccs_parameter_data_t *)parameter_data;
 
-	str_pool =
-		(char *)(parameter_data->common_data.name) + strlen(name) + 1;
+	str_pool        = CCS_ALLOC_CARVE_ARRAY(mem, size_strs, char);
 	for (size_t i = 0; i < num_possible_values; i++) {
 		_ccs_hash_datum_t *p = NULL;
 		HASH_FIND(
