@@ -6,6 +6,10 @@ if STRICT
 AM_CFLAGS += -Werror
 endif
 
+if THREAD_SAFE
+AM_CFLAGS += -DTHREAD_SAFE
+endif
+
 noinst_LTLIBRARIES = libccstest.la
 libccstest_la_SOURCES = \
 	test_utils.h \
