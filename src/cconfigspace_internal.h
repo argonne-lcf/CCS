@@ -987,6 +987,17 @@ _ccs_size_sum3(
 	return _ccs_size_add(p, p3, result);
 }
 
+/* Carve out a block of 'size' bytes from a running uintptr_t pointer.
+ * Advances 'mem' past the carved block and returns the pre-advance
+ * address. Save the original mem value for cleanup before using. */
+#define CCS_ALLOC_CARVE(mem, size) ((void *)((mem) += (size), (mem) - (size)))
+
+#define CCS_ALLOC_CARVE_TYPE(mem, type)                                        \
+	((type *)CCS_ALLOC_CARVE(mem, sizeof(type)))
+
+#define CCS_ALLOC_CARVE_ARRAY(mem, count, type)                                \
+	((type *)CCS_ALLOC_CARVE(mem, (count) * sizeof(type)))
+
 static inline size_t
 _ccs_serialize_bin_size_string(const char *str)
 {
