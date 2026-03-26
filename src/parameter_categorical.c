@@ -312,11 +312,20 @@ _ccs_create_categorical_parameter(
 		}
 
 	ccs_result_t err = CCS_RESULT_SUCCESS;
-	uintptr_t    mem = (uintptr_t)calloc(
-                1, sizeof(struct _ccs_parameter_s) +
-                           sizeof(_ccs_parameter_categorical_data_t) +
-                           sizeof(_ccs_hash_datum_t) * num_possible_values +
-                           strlen(name) + 1 + size_strs);
+	size_t       _sz;
+	CCS_REFUTE(
+		_ccs_size_mul(
+			num_possible_values, sizeof(_ccs_hash_datum_t), &_sz),
+		CCS_RESULT_ERROR_OUT_OF_MEMORY);
+	CCS_REFUTE(
+		_ccs_size_add(
+			_sz,
+			sizeof(struct _ccs_parameter_s) +
+				sizeof(_ccs_parameter_categorical_data_t) +
+				strlen(name) + 1 + size_strs,
+			&_sz),
+		CCS_RESULT_ERROR_OUT_OF_MEMORY);
+	uintptr_t mem = (uintptr_t)calloc(1, _sz);
 	CCS_REFUTE(!mem, CCS_RESULT_ERROR_OUT_OF_MEMORY);
 
 	ccs_interval_t interval;

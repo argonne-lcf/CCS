@@ -550,17 +550,25 @@ ccs_create_configuration_space(
 		CCS_CHECK_OBJ(rng, CCS_OBJECT_TYPE_RNG);
 
 	ccs_result_t err;
-	uintptr_t    mem = (uintptr_t)calloc(
-                1,
-                sizeof(struct _ccs_configuration_space_s) +
-                        sizeof(struct _ccs_configuration_space_data_s) +
-                        sizeof(ccs_parameter_t) * num_parameters +
-                        sizeof(_ccs_parameter_index_hash_t) * num_parameters +
-                        sizeof(ccs_expression_t) * num_parameters +
-                        sizeof(UT_array *) * num_parameters * 2 +
-                        sizeof(size_t) * num_parameters +
-                        sizeof(ccs_expression_t) * num_forbidden_clauses +
-                        strlen(name) + 1);
+	size_t       _sz;
+	CCS_REFUTE(
+		_ccs_size_sum2(
+			num_parameters,
+			sizeof(ccs_parameter_t) +
+				sizeof(_ccs_parameter_index_hash_t) +
+				sizeof(ccs_expression_t) +
+				sizeof(UT_array *) * 2 + sizeof(size_t),
+			num_forbidden_clauses, sizeof(ccs_expression_t), &_sz),
+		CCS_RESULT_ERROR_OUT_OF_MEMORY);
+	CCS_REFUTE(
+		_ccs_size_add(
+			_sz,
+			sizeof(struct _ccs_configuration_space_s) +
+				sizeof(struct _ccs_configuration_space_data_s) +
+				strlen(name) + 1,
+			&_sz),
+		CCS_RESULT_ERROR_OUT_OF_MEMORY);
+	uintptr_t mem = (uintptr_t)calloc(1, _sz);
 	CCS_REFUTE(!mem, CCS_RESULT_ERROR_OUT_OF_MEMORY);
 	uintptr_t                 mem_orig = mem;
 
