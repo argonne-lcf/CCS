@@ -158,11 +158,11 @@ ccs_create_map(ccs_map_t *map_ret)
 	uintptr_t mem = (uintptr_t)calloc(
 		1, sizeof(struct _ccs_map_s) + sizeof(_ccs_map_data_t));
 	CCS_REFUTE(!mem, CCS_RESULT_ERROR_OUT_OF_MEMORY);
-	ccs_map_t map = (ccs_map_t)mem;
+	ccs_map_t map = CCS_ALLOC_CARVE_TYPE(mem, struct _ccs_map_s);
 	_ccs_object_init(
 		&(map->obj), CCS_OBJECT_TYPE_MAP,
 		(_ccs_object_ops_t *)&_ccs_map_ops);
-	map->data = (_ccs_map_data_t *)(mem + sizeof(struct _ccs_map_s));
+	map->data = CCS_ALLOC_CARVE_TYPE(mem, _ccs_map_data_t);
 	*map_ret  = map;
 	return CCS_RESULT_SUCCESS;
 }

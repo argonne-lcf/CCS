@@ -119,11 +119,11 @@ ccs_create_rng_with_type(const gsl_rng_type *rng_type, ccs_rng_t *rng_ret)
 	uintptr_t mem = (uintptr_t)calloc(
 		1, sizeof(struct _ccs_rng_s) + sizeof(struct _ccs_rng_data_s));
 	CCS_REFUTE_ERR_GOTO(res, !mem, CCS_RESULT_ERROR_OUT_OF_MEMORY, err_rng);
-	rng = (ccs_rng_t)mem;
+	rng = CCS_ALLOC_CARVE_TYPE(mem, struct _ccs_rng_s);
 	_ccs_object_init(
 		&(rng->obj), CCS_OBJECT_TYPE_RNG,
 		(_ccs_object_ops_t *)&_rng_ops);
-	rng->data = (struct _ccs_rng_data_s *)(mem + sizeof(struct _ccs_rng_s));
+	rng->data           = CCS_ALLOC_CARVE_TYPE(mem, struct _ccs_rng_data_s);
 	rng->data->rng_type = rng_type;
 	rng->data->rng      = grng;
 	*rng_ret            = rng;
