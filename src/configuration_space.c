@@ -551,23 +551,23 @@ ccs_create_configuration_space(
 
 	ccs_result_t err;
 	size_t       _sz;
+	size_t       name_len = strlen(name) + 1;
 	CCS_REFUTE(
-		_ccs_size_sum2(
-			num_parameters,
-			sizeof(ccs_parameter_t) +
-				sizeof(_ccs_parameter_index_hash_t) +
-				sizeof(ccs_expression_t) +
-				sizeof(UT_array *) * 2 + sizeof(size_t),
-			num_forbidden_clauses, sizeof(ccs_expression_t), &_sz),
-		CCS_RESULT_ERROR_OUT_OF_MEMORY);
-	size_t name_len = strlen(name) + 1;
-	CCS_REFUTE(
-		_ccs_size_add(
-			_sz,
-			sizeof(struct _ccs_configuration_space_s) +
-				sizeof(struct _ccs_configuration_space_data_s) +
-				name_len,
-			&_sz),
+		CCS_ALLOC_SIZE(
+			&_sz,
+			CCS_ALLOC_SIZE_TYPE(struct _ccs_configuration_space_s),
+			CCS_ALLOC_SIZE_TYPE(
+				struct _ccs_configuration_space_data_s),
+			CCS_ALLOC_SIZE_ARRAY(num_parameters, ccs_parameter_t),
+			CCS_ALLOC_SIZE_ARRAY(
+				num_parameters, _ccs_parameter_index_hash_t),
+			CCS_ALLOC_SIZE_ARRAY(num_parameters, ccs_expression_t),
+			CCS_ALLOC_SIZE_ARRAY(num_parameters, UT_array *),
+			CCS_ALLOC_SIZE_ARRAY(num_parameters, UT_array *),
+			CCS_ALLOC_SIZE_ARRAY(num_parameters, size_t),
+			CCS_ALLOC_SIZE_ARRAY(
+				num_forbidden_clauses, ccs_expression_t),
+			CCS_ALLOC_SIZE_ARRAY(name_len, char)),
 		CCS_RESULT_ERROR_OUT_OF_MEMORY);
 	uintptr_t mem = (uintptr_t)calloc(1, _sz);
 	CCS_REFUTE(!mem, CCS_RESULT_ERROR_OUT_OF_MEMORY);

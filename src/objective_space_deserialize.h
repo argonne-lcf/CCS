@@ -46,12 +46,15 @@ _ccs_deserialize_bin_ccs_objective_space_data(
 	{
 		size_t _sz;
 		CCS_REFUTE(
-			_ccs_size_sum2(
-				data->num_parameters, sizeof(ccs_parameter_t),
-				data->num_objectives,
-				sizeof(ccs_expression_t) +
-					sizeof(ccs_objective_type_t),
-				&_sz),
+			CCS_ALLOC_SIZE(
+				&_sz,
+				CCS_ALLOC_SIZE_ARRAY(
+					data->num_parameters, ccs_parameter_t),
+				CCS_ALLOC_SIZE_ARRAY(
+					data->num_objectives, ccs_expression_t),
+				CCS_ALLOC_SIZE_ARRAY(
+					data->num_objectives,
+					ccs_objective_type_t)),
 			CCS_RESULT_ERROR_OUT_OF_MEMORY);
 		mem = (uintptr_t)calloc(1, _sz);
 		CCS_REFUTE(!mem, CCS_RESULT_ERROR_OUT_OF_MEMORY);

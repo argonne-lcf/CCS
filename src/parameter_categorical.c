@@ -324,16 +324,13 @@ _ccs_create_categorical_parameter(
 	ccs_result_t err = CCS_RESULT_SUCCESS;
 	size_t       _sz;
 	CCS_REFUTE(
-		_ccs_size_mul(
-			num_possible_values, sizeof(_ccs_hash_datum_t), &_sz),
-		CCS_RESULT_ERROR_OUT_OF_MEMORY);
-	CCS_REFUTE(
-		_ccs_size_add(
-			_sz,
-			sizeof(struct _ccs_parameter_s) +
-				sizeof(_ccs_parameter_categorical_data_t) +
-				name_len + size_strs,
-			&_sz),
+		CCS_ALLOC_SIZE(
+			&_sz, CCS_ALLOC_SIZE_TYPE(struct _ccs_parameter_s),
+			CCS_ALLOC_SIZE_TYPE(_ccs_parameter_categorical_data_t),
+			CCS_ALLOC_SIZE_ARRAY(
+				num_possible_values, _ccs_hash_datum_t),
+			CCS_ALLOC_SIZE_ARRAY(name_len, char),
+			CCS_ALLOC_SIZE_ARRAY(size_strs, char)),
 		CCS_RESULT_ERROR_OUT_OF_MEMORY);
 	ccs_interval_t                     interval;
 	uintptr_t                          mem_orig;
