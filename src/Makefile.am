@@ -1,6 +1,6 @@
-AM_CPPFLAGS = -I$(top_srcdir)/include
+AM_CPPFLAGS = -I$(top_srcdir)/include $(CODE_COVERAGE_CPPFLAGS)
 
-AM_CFLAGS = -Wall -Wextra -Wpedantic $(GSL_CFLAGS)
+AM_CFLAGS = -Wall -Wextra -Wpedantic $(GSL_CFLAGS) $(CODE_COVERAGE_CFLAGS)
 AM_LDFLAGS = $(GSL_LIBS)
 
 if STRICT
@@ -12,6 +12,7 @@ AM_CFLAGS += -DTHREAD_SAFE
 endif
 
 lib_LTLIBRARIES = libcconfigspace.la
+libcconfigspace_la_LIBADD = $(CODE_COVERAGE_LIBS)
 
 version.h: $(srcdir)/version.h.subst .version_timestamp
 	@echo Processing $@; sh $(top_srcdir)/build-aux/version-subst $(CURVER) $< $@
@@ -113,3 +114,7 @@ libcconfigspace_la_SOURCES = \
 @DYNAMIC_VERSION_RULES@
 
 @VALGRIND_CHECK_RULES@
+
+include $(top_srcdir)/aminclude_static.am
+clean-local: code-coverage-clean
+distclean-local: code-coverage-dist-clean

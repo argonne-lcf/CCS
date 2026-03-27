@@ -1,6 +1,7 @@
 AM_COLOR_TESTS = yes
 
-AM_CFLAGS = -I$(top_srcdir)/include -Wall -Wextra -Wpedantic $(GSL_CFLAGS) -I$(srcdir)
+CODE_COVERAGE_CPPFLAGS =
+AM_CFLAGS = -I$(top_srcdir)/include -Wall -Wextra -Wpedantic $(GSL_CFLAGS) -I$(srcdir) $(CODE_COVERAGE_CFLAGS)
 
 if STRICT
 AM_CFLAGS += -Werror
@@ -16,7 +17,7 @@ libccstest_la_SOURCES = \
 	test_utils.c
 libccstest_la_LDFLAGS = ../src/libcconfigspace.la
 
-AM_LDFLAGS = ../src/libcconfigspace.la libccstest.la $(GSL_LIBS)
+AM_LDFLAGS = ../src/libcconfigspace.la libccstest.la $(GSL_LIBS) $(CODE_COVERAGE_LIBS)
 
 CCONFIGSPACE_TESTS = \
 	test_rng \
@@ -64,3 +65,8 @@ TESTS = $(TEST_PROGS)
 
 VALGRIND_memcheck_FLAGS = --leak-check=full --show-leak-kinds=all --errors-for-leak-kinds=all
 @VALGRIND_CHECK_RULES@
+
+CODE_COVERAGE_IGNORE_PATTERN = /usr/* */test_*.c */test_utils.h
+include $(top_srcdir)/aminclude_static.am
+clean-local: code-coverage-clean
+distclean-local: code-coverage-dist-clean
