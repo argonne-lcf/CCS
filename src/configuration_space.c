@@ -747,10 +747,13 @@ _sample(ccs_configuration_space_t configuration_space,
 	size_t       num_parameters = configuration_space->data->num_parameters;
 	ccs_datum_t *p_values;
 	ccs_parameter_t *hps;
-	uintptr_t        mem;
-	mem = (uintptr_t)malloc(
-		num_parameters *
-		(sizeof(ccs_datum_t) + sizeof(ccs_parameter_t)));
+	size_t           _sz;
+	CCS_REFUTE(
+		CCS_ALLOC_SIZE(
+			&_sz, CCS_ALLOC_SIZE_ARRAY(num_parameters, ccs_datum_t),
+			CCS_ALLOC_SIZE_ARRAY(num_parameters, ccs_parameter_t)),
+		CCS_RESULT_ERROR_OUT_OF_MEMORY);
+	uintptr_t mem = (uintptr_t)malloc(_sz);
 	CCS_REFUTE(!mem, CCS_RESULT_ERROR_OUT_OF_MEMORY);
 	uintptr_t mem_orig = mem;
 
