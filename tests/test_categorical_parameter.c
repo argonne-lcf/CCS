@@ -313,6 +313,37 @@ test_oversampling(void)
 	assert(err == CCS_RESULT_SUCCESS);
 }
 
+static void
+test_default_distribution(void)
+{
+	ccs_parameter_t         parameter    = NULL;
+	ccs_distribution_t      distribution = NULL;
+	ccs_result_t            err;
+	ccs_datum_t             possible_values[4];
+	ccs_distribution_type_t dtype;
+
+	for (size_t i = 0; i < 4; i++) {
+		possible_values[i].type    = CCS_DATA_TYPE_INT;
+		possible_values[i].value.i = (ccs_int_t)(i + 1) * 2;
+	}
+
+	err = ccs_create_categorical_parameter(
+		"my_param", 4, possible_values, 0, &parameter);
+	assert(err == CCS_RESULT_SUCCESS);
+
+	err = ccs_parameter_get_default_distribution(parameter, &distribution);
+	assert(err == CCS_RESULT_SUCCESS);
+
+	err = ccs_distribution_get_type(distribution, &dtype);
+	assert(err == CCS_RESULT_SUCCESS);
+	assert(dtype == CCS_DISTRIBUTION_TYPE_UNIFORM);
+
+	err = ccs_release_object(distribution);
+	assert(err == CCS_RESULT_SUCCESS);
+	err = ccs_release_object(parameter);
+	assert(err == CCS_RESULT_SUCCESS);
+}
+
 int
 main(void)
 {
@@ -320,6 +351,7 @@ main(void)
 	test_create();
 	test_samples();
 	test_oversampling();
+	test_default_distribution();
 	ccs_clear_thread_error();
 	ccs_fini();
 	return 0;

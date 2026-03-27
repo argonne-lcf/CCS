@@ -544,6 +544,44 @@ test_configuration_with_features(void)
 	ccs_release_object(parameter);
 }
 
+static int destroy_callback_count = 0;
+static void
+destroy_callback_counter(ccs_object_t object, void *user_data)
+{
+	(void)object;
+	(void)user_data;
+	destroy_callback_count++;
+}
+
+void
+test_multiple_destroy_callbacks(void)
+{
+	ccs_result_t err;
+	ccs_rng_t    rng;
+
+	err = ccs_create_rng(&rng);
+	assert(err == CCS_RESULT_SUCCESS);
+
+	destroy_callback_count = 0;
+
+	err                    = ccs_object_set_destroy_callback(
+                rng, &destroy_callback_counter, NULL);
+	assert(err == CCS_RESULT_SUCCESS);
+
+	err = ccs_object_set_destroy_callback(
+		rng, &destroy_callback_counter, (void *)1);
+	assert(err == CCS_RESULT_SUCCESS);
+
+	err = ccs_object_set_destroy_callback(
+		rng, &destroy_callback_counter, (void *)2);
+	assert(err == CCS_RESULT_SUCCESS);
+
+	err = ccs_release_object(rng);
+	assert(err == CCS_RESULT_SUCCESS);
+
+	assert(destroy_callback_count == 3);
+}
+
 int
 main(void)
 {
@@ -555,6 +593,7 @@ main(void)
 	test_configuration_deserialize();
 	test_deserialize_errors();
 	test_configuration_with_features();
+	test_multiple_destroy_callbacks();
 	ccs_clear_thread_error();
 	ccs_fini();
 	return 0;
