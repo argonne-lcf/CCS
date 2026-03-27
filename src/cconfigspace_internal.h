@@ -989,12 +989,14 @@ _ccs_alloc_size(size_t *result, const _ccs_alloc_entry_t *entries)
 		(size_t)(count), sizeof(type)                                  \
 	}
 
-/* __extension__ suppresses -Wpedantic for compound literals in C++ (GCC/Clang).
- */
+/* __extension__ suppresses -Wpedantic warnings for the statement
+ * expression (GCC/Clang). A stack array avoids compound literal
+ * issues in C++. */
 #define CCS_ALLOC_SIZE(result, ...)                                            \
-	_ccs_alloc_size(                                                       \
-		result, __extension__(const _ccs_alloc_entry_t[]){             \
-				__VA_ARGS__, {0, 0}})
+	__extension__({                                                        \
+		const _ccs_alloc_entry_t _entries[] = {__VA_ARGS__, {0, 0}};   \
+		_ccs_alloc_size(result, _entries);                             \
+	})
 
 /* Carve out a block of 'size' bytes from a running uintptr_t pointer.
  * Advances 'mem' past the carved block and returns the pre-advance
