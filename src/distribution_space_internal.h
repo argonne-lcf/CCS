@@ -66,14 +66,15 @@ _ccs_get_distribution_wrapper(
 	CCS_VALIDATE(ccs_parameter_get_default_distribution(
 		parameter, &distribution));
 
-	size_t _sz;
+	size_t    _sz;
+	uintptr_t dmem;
 	CCS_REFUTE_ERR_GOTO(
 		err,
 		CCS_ALLOC_SIZE(
 			&_sz, CCS_ALLOC_SIZE_TYPE(_ccs_distribution_wrapper_t),
 			CCS_ALLOC_SIZE_ARRAY(1, size_t)),
 		CCS_RESULT_ERROR_OUT_OF_MEMORY, err_distrib);
-	uintptr_t dmem = (uintptr_t)malloc(_sz);
+	dmem = (uintptr_t)malloc(_sz);
 	CCS_REFUTE_ERR_GOTO(
 		err, !dmem, CCS_RESULT_ERROR_OUT_OF_MEMORY, err_distrib);
 	distrib_wrapper =

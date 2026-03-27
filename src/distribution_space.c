@@ -266,7 +266,8 @@ _ccs_distribution_space_create_default_wrappers(
 	_ccs_distribution_wrapper_t *dwrapper = NULL;
 	ccs_result_t                 err      = CCS_RESULT_SUCCESS;
 	for (size_t i = 0; i < without_distrib_count; i++) {
-		size_t _sz;
+		size_t    _sz;
+		uintptr_t dmem;
 		CCS_REFUTE_ERR_GOTO(
 			err,
 			CCS_ALLOC_SIZE(
@@ -274,7 +275,7 @@ _ccs_distribution_space_create_default_wrappers(
 				CCS_ALLOC_SIZE_TYPE(_ccs_distribution_wrapper_t),
 				CCS_ALLOC_SIZE_ARRAY(1, size_t)),
 			CCS_RESULT_ERROR_OUT_OF_MEMORY, err_wrappers);
-		uintptr_t dmem = (uintptr_t)malloc(_sz);
+		dmem = (uintptr_t)malloc(_sz);
 		CCS_REFUTE_ERR_GOTO(
 			err, !dmem, CCS_RESULT_ERROR_OUT_OF_MEMORY,
 			err_wrappers);
