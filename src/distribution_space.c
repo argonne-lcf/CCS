@@ -318,7 +318,7 @@ ccs_distribution_space_set_distribution(
 	size_t                         num_parameters;
 	size_t                         dim;
 	uintptr_t                      mem;
-	uintptr_t                      cur_mem;
+	uintptr_t                      mem_orig;
 	size_t                        *parameters_without_distrib;
 	size_t                         to_add_count          = 0;
 	size_t                         to_del_count          = 0;
@@ -354,12 +354,13 @@ ccs_distribution_space_set_distribution(
 	}
 
 	CCS_OBJ_WRLOCK(distribution_space);
-	cur_mem            = mem;
-	p_dwrappers_to_del = (_ccs_distribution_wrapper_t **)cur_mem;
-	cur_mem += sizeof(_ccs_distribution_wrapper_t *) * num_parameters;
-	p_dwrappers_to_add = (_ccs_distribution_wrapper_t **)cur_mem;
-	cur_mem += sizeof(_ccs_distribution_wrapper_t *) * num_parameters;
-	parameters_without_distrib = (size_t *)cur_mem;
+	mem_orig           = mem;
+	p_dwrappers_to_del = CCS_ALLOC_CARVE_ARRAY(
+		mem, num_parameters, _ccs_distribution_wrapper_t *);
+	p_dwrappers_to_add = CCS_ALLOC_CARVE_ARRAY(
+		mem, num_parameters, _ccs_distribution_wrapper_t *);
+	parameters_without_distrib =
+		CCS_ALLOC_CARVE_ARRAY(mem, num_parameters, size_t);
 
 	/* Collect the unique wrappers currently covering the target
 	 * parameter indexes — these will be removed. */
@@ -425,7 +426,7 @@ ccs_distribution_space_set_distribution(
 		}
 	}
 
-	free((void *)mem);
+	free((void *)mem_orig);
 	CCS_OBJ_UNLOCK(distribution_space);
 	return CCS_RESULT_SUCCESS;
 err_user_wrapper:
@@ -433,7 +434,7 @@ err_user_wrapper:
 	ccs_release_object(p_dwrappers_to_add[0]->distribution);
 	free(p_dwrappers_to_add[0]);
 memory:
-	free((void *)mem);
+	free((void *)mem_orig);
 	CCS_OBJ_UNLOCK(distribution_space);
 	return err;
 }

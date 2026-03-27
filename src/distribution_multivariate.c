@@ -191,8 +191,8 @@ ccs_create_multivariate_distribution(
 		dimension += dim;
 	}
 
-	uintptr_t mem, cur_mem;
-	mem = (uintptr_t)calloc(
+	uintptr_t mem_orig, mem;
+	mem_orig = (uintptr_t)calloc(
 		1, sizeof(struct _ccs_distribution_s) +
 			   sizeof(_ccs_distribution_multivariate_data_t) +
 			   sizeof(ccs_distribution_t) * num_distributions +
@@ -200,26 +200,26 @@ ccs_create_multivariate_distribution(
 			   sizeof(ccs_interval_t) * dimension +
 			   sizeof(ccs_numeric_type_t) * dimension);
 
-	CCS_REFUTE(!mem, CCS_RESULT_ERROR_OUT_OF_MEMORY);
-	cur_mem = mem;
+	CCS_REFUTE(!mem_orig, CCS_RESULT_ERROR_OUT_OF_MEMORY);
+	mem     = mem_orig;
 
-	distrib = CCS_ALLOC_CARVE_TYPE(cur_mem, struct _ccs_distribution_s);
+	distrib = CCS_ALLOC_CARVE_TYPE(mem, struct _ccs_distribution_s);
 	_ccs_object_init(
 		&(distrib->obj), CCS_OBJECT_TYPE_DISTRIBUTION,
 		(_ccs_object_ops_t *)&_ccs_distribution_multivariate_ops);
 	distrib_data = CCS_ALLOC_CARVE_TYPE(
-		cur_mem, _ccs_distribution_multivariate_data_t);
+		mem, _ccs_distribution_multivariate_data_t);
 	distrib_data->common_data.type = CCS_DISTRIBUTION_TYPE_MULTIVARIATE;
 	distrib_data->common_data.dimension = dimension;
 	distrib_data->num_distributions     = num_distributions;
 	distrib_data->distributions         = CCS_ALLOC_CARVE_ARRAY(
-                cur_mem, num_distributions, ccs_distribution_t);
+                mem, num_distributions, ccs_distribution_t);
 	distrib_data->dimensions =
-		CCS_ALLOC_CARVE_ARRAY(cur_mem, num_distributions, size_t);
+		CCS_ALLOC_CARVE_ARRAY(mem, num_distributions, size_t);
 	distrib_data->bounds =
-		CCS_ALLOC_CARVE_ARRAY(cur_mem, dimension, ccs_interval_t);
+		CCS_ALLOC_CARVE_ARRAY(mem, dimension, ccs_interval_t);
 	distrib_data->common_data.data_types =
-		CCS_ALLOC_CARVE_ARRAY(cur_mem, dimension, ccs_numeric_type_t);
+		CCS_ALLOC_CARVE_ARRAY(mem, dimension, ccs_numeric_type_t);
 
 	dimension = 0;
 	for (i = 0; i < num_distributions; i++) {
@@ -261,7 +261,7 @@ distrib:
 	}
 errmemory:
 	_ccs_object_deinit(&(distrib->obj));
-	free((void *)mem);
+	free((void *)mem_orig);
 	return err;
 }
 

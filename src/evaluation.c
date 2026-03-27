@@ -259,31 +259,30 @@ ccs_create_evaluation(
 		objective_space, 0, NULL, NULL, &num_objectives));
 	CCS_REFUTE(
 		num_parameters != num_values, CCS_RESULT_ERROR_INVALID_VALUE);
-	uintptr_t mem = (uintptr_t)calloc(
+	uintptr_t mem_orig = (uintptr_t)calloc(
 		1, sizeof(struct _ccs_evaluation_s) +
 			   sizeof(struct _ccs_evaluation_data_s) +
 			   num_parameters * sizeof(ccs_datum_t) +
 			   num_objectives * sizeof(ccs_datum_t));
-	uintptr_t cur_mem = mem;
-	CCS_REFUTE(!mem, CCS_RESULT_ERROR_OUT_OF_MEMORY);
+	uintptr_t mem = mem_orig;
+	CCS_REFUTE(!mem_orig, CCS_RESULT_ERROR_OUT_OF_MEMORY);
 	CCS_VALIDATE_ERR_GOTO(err, ccs_retain_object(objective_space), errmem);
 	CCS_VALIDATE_ERR_GOTO(err, ccs_retain_object(configuration), erros);
 	ccs_evaluation_t eval;
-	eval = CCS_ALLOC_CARVE_TYPE(cur_mem, struct _ccs_evaluation_s);
+	eval = CCS_ALLOC_CARVE_TYPE(mem, struct _ccs_evaluation_s);
 	_ccs_object_init(
 		&(eval->obj), CCS_OBJECT_TYPE_EVALUATION,
 		(_ccs_object_ops_t *)&_evaluation_ops);
-	eval->data =
-		CCS_ALLOC_CARVE_TYPE(cur_mem, struct _ccs_evaluation_data_s);
+	eval->data = CCS_ALLOC_CARVE_TYPE(mem, struct _ccs_evaluation_data_s);
 	eval->data->num_values      = num_parameters;
 	eval->data->num_objectives  = num_objectives;
 	eval->data->objective_space = objective_space;
 	eval->data->configuration   = configuration;
 	eval->data->result          = result;
 	eval->data->values =
-		CCS_ALLOC_CARVE_ARRAY(cur_mem, num_parameters, ccs_datum_t);
+		CCS_ALLOC_CARVE_ARRAY(mem, num_parameters, ccs_datum_t);
 	eval->data->objective_values =
-		CCS_ALLOC_CARVE_ARRAY(cur_mem, num_objectives, ccs_datum_t);
+		CCS_ALLOC_CARVE_ARRAY(mem, num_objectives, ccs_datum_t);
 
 	for (size_t i = 0; i < num_values; i++)
 		CCS_VALIDATE_ERR_GOTO(
@@ -337,7 +336,7 @@ errc:
 erros:
 	ccs_release_object(objective_space);
 errmem:
-	free((void *)mem);
+	free((void *)mem_orig);
 	return err;
 }
 
