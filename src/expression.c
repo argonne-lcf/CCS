@@ -1672,14 +1672,10 @@ ccs_create_expression(
 	ccs_result_t err;
 	size_t       _sz;
 	CCS_REFUTE(
-		_ccs_size_mul(num_nodes, sizeof(ccs_expression_t), &_sz),
-		CCS_RESULT_ERROR_OUT_OF_MEMORY);
-	CCS_REFUTE(
-		_ccs_size_add(
-			_sz,
-			sizeof(struct _ccs_expression_s) +
-				sizeof(struct _ccs_expression_data_s),
-			&_sz),
+		CCS_ALLOC_SIZE(
+			&_sz, CCS_ALLOC_SIZE_TYPE(struct _ccs_expression_s),
+			CCS_ALLOC_SIZE_TYPE(struct _ccs_expression_data_s),
+			CCS_ALLOC_SIZE_ARRAY(num_nodes, ccs_expression_t)),
 		CCS_RESULT_ERROR_OUT_OF_MEMORY);
 	uintptr_t mem = (uintptr_t)calloc(1, _sz);
 	CCS_REFUTE(!mem, CCS_RESULT_ERROR_OUT_OF_MEMORY);
@@ -1756,15 +1752,12 @@ ccs_create_user_defined_expression(
 	size_t       _sz;
 	size_t       name_len = strlen(name) + 1;
 	CCS_REFUTE(
-		_ccs_size_mul(num_nodes, sizeof(ccs_expression_t), &_sz),
-		CCS_RESULT_ERROR_OUT_OF_MEMORY);
-	CCS_REFUTE(
-		_ccs_size_add(
-			_sz,
-			sizeof(struct _ccs_expression_s) +
-				sizeof(struct _ccs_expression_user_defined_data_s) +
-				name_len,
-			&_sz),
+		CCS_ALLOC_SIZE(
+			&_sz, CCS_ALLOC_SIZE_TYPE(struct _ccs_expression_s),
+			CCS_ALLOC_SIZE_TYPE(
+				struct _ccs_expression_user_defined_data_s),
+			CCS_ALLOC_SIZE_ARRAY(num_nodes, ccs_expression_t),
+			CCS_ALLOC_SIZE_ARRAY(name_len, char)),
 		CCS_RESULT_ERROR_OUT_OF_MEMORY);
 	uintptr_t mem = (uintptr_t)calloc(1, _sz);
 	CCS_REFUTE(!mem, CCS_RESULT_ERROR_OUT_OF_MEMORY);

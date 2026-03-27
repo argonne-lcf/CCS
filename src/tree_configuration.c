@@ -162,14 +162,12 @@ ccs_create_tree_configuration(
 	ccs_bool_t   is_valid;
 	size_t       _sz;
 	CCS_REFUTE(
-		_ccs_size_mul(position_size, sizeof(size_t), &_sz),
-		CCS_RESULT_ERROR_OUT_OF_MEMORY);
-	CCS_REFUTE(
-		_ccs_size_add(
-			_sz,
-			sizeof(struct _ccs_tree_configuration_s) +
-				sizeof(struct _ccs_tree_configuration_data_s),
-			&_sz),
+		CCS_ALLOC_SIZE(
+			&_sz,
+			CCS_ALLOC_SIZE_TYPE(struct _ccs_tree_configuration_s),
+			CCS_ALLOC_SIZE_TYPE(
+				struct _ccs_tree_configuration_data_s),
+			CCS_ALLOC_SIZE_ARRAY(position_size, size_t)),
 		CCS_RESULT_ERROR_OUT_OF_MEMORY);
 	uintptr_t mem = (uintptr_t)calloc(1, _sz);
 	CCS_REFUTE(!mem, CCS_RESULT_ERROR_OUT_OF_MEMORY);

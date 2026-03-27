@@ -957,35 +957,44 @@ _ccs_size_add(size_t a, size_t b, size_t *result)
 	return __builtin_add_overflow(a, b, result) ? CCS_TRUE : CCS_FALSE;
 }
 
-static inline ccs_bool_t
-_ccs_size_sum2(size_t n1, size_t s1, size_t n2, size_t s2, size_t *result)
-{
-	size_t p1, p2;
-	if (_ccs_size_mul(n1, s1, &p1))
-		return CCS_TRUE;
-	if (_ccs_size_mul(n2, s2, &p2))
-		return CCS_TRUE;
-	return _ccs_size_add(p1, p2, result);
-}
+/* Checked allocation size computation. Each entry is a (count, elem_size)
+ * pair. The total is the sum of count*elem_size for all entries.
+ * Returns CCS_TRUE on overflow. */
+typedef struct {
+	size_t count;
+	size_t elem_size;
+} _ccs_alloc_entry_t;
 
 static inline ccs_bool_t
-_ccs_size_sum3(
-	size_t  n1,
-	size_t  s1,
-	size_t  n2,
-	size_t  s2,
-	size_t  n3,
-	size_t  s3,
-	size_t *result)
+_ccs_alloc_size(size_t *result, const _ccs_alloc_entry_t *entries)
 {
-	size_t p;
-	if (_ccs_size_sum2(n1, s1, n2, s2, &p))
-		return CCS_TRUE;
-	size_t p3;
-	if (_ccs_size_mul(n3, s3, &p3))
-		return CCS_TRUE;
-	return _ccs_size_add(p, p3, result);
+	size_t sz = 0;
+	for (const _ccs_alloc_entry_t *e = entries; e->elem_size; e++) {
+		size_t p;
+		if (_ccs_size_mul(e->count, e->elem_size, &p))
+			return CCS_TRUE;
+		if (_ccs_size_add(sz, p, &sz))
+			return CCS_TRUE;
+	}
+	*result = sz;
+	return CCS_FALSE;
 }
+
+#define CCS_ALLOC_SIZE_TYPE(type)                                              \
+	{                                                                      \
+		(size_t)1, sizeof(type)                                        \
+	}
+#define CCS_ALLOC_SIZE_ARRAY(count, type)                                      \
+	{                                                                      \
+		(size_t)(count), sizeof(type)                                  \
+	}
+
+/* __extension__ suppresses -Wpedantic for compound literals in C++ (GCC/Clang).
+ */
+#define CCS_ALLOC_SIZE(result, ...)                                            \
+	_ccs_alloc_size(                                                       \
+		result, __extension__(const _ccs_alloc_entry_t[]){             \
+				__VA_ARGS__, {0, 0}})
 
 /* Carve out a block of 'size' bytes from a running uintptr_t pointer.
  * Advances 'mem' past the carved block and returns the pre-advance
