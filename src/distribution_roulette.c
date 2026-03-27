@@ -238,11 +238,15 @@ ccs_create_roulette_distribution(
 	CCS_VALIDATE(_ccs_distribution_roulette_validate_areas(
 		num_areas, areas, &sum_areas_inverse));
 
-	uintptr_t mem = (uintptr_t)calloc(
-		1, sizeof(struct _ccs_distribution_s) +
-			   sizeof(_ccs_distribution_roulette_data_t) +
-			   sizeof(ccs_float_t) * (num_areas + 1) +
-			   sizeof(ccs_numeric_type_t));
+	size_t _sz;
+	CCS_REFUTE(
+		CCS_ALLOC_SIZE(
+			&_sz, CCS_ALLOC_SIZE_TYPE(struct _ccs_distribution_s),
+			CCS_ALLOC_SIZE_TYPE(_ccs_distribution_roulette_data_t),
+			CCS_ALLOC_SIZE_ARRAY(num_areas + 1, ccs_float_t),
+			CCS_ALLOC_SIZE_ARRAY(1, ccs_numeric_type_t)),
+		CCS_RESULT_ERROR_OUT_OF_MEMORY);
+	uintptr_t mem = (uintptr_t)calloc(1, _sz);
 	CCS_REFUTE(!mem, CCS_RESULT_ERROR_OUT_OF_MEMORY);
 
 	ccs_distribution_t distrib =

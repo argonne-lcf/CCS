@@ -181,6 +181,9 @@ ccs_create_multivariate_distribution(
 	ccs_result_t                           err;
 	size_t                                 i         = 0;
 	size_t                                 dimension = 0;
+	size_t                                 _sz;
+	uintptr_t                              mem_orig;
+	uintptr_t                              mem;
 	ccs_distribution_t                     distrib;
 	_ccs_distribution_multivariate_data_t *distrib_data;
 
@@ -191,15 +194,18 @@ ccs_create_multivariate_distribution(
 		dimension += dim;
 	}
 
-	uintptr_t mem_orig, mem;
-	mem_orig = (uintptr_t)calloc(
-		1, sizeof(struct _ccs_distribution_s) +
-			   sizeof(_ccs_distribution_multivariate_data_t) +
-			   sizeof(ccs_distribution_t) * num_distributions +
-			   sizeof(size_t) * num_distributions +
-			   sizeof(ccs_interval_t) * dimension +
-			   sizeof(ccs_numeric_type_t) * dimension);
-
+	CCS_REFUTE(
+		CCS_ALLOC_SIZE(
+			&_sz, CCS_ALLOC_SIZE_TYPE(struct _ccs_distribution_s),
+			CCS_ALLOC_SIZE_TYPE(
+				_ccs_distribution_multivariate_data_t),
+			CCS_ALLOC_SIZE_ARRAY(
+				num_distributions, ccs_distribution_t),
+			CCS_ALLOC_SIZE_ARRAY(num_distributions, size_t),
+			CCS_ALLOC_SIZE_ARRAY(dimension, ccs_interval_t),
+			CCS_ALLOC_SIZE_ARRAY(dimension, ccs_numeric_type_t)),
+		CCS_RESULT_ERROR_OUT_OF_MEMORY);
+	mem_orig = (uintptr_t)calloc(1, _sz);
 	CCS_REFUTE(!mem_orig, CCS_RESULT_ERROR_OUT_OF_MEMORY);
 	mem     = mem_orig;
 

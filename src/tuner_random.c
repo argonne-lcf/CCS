@@ -608,10 +608,15 @@ ccs_create_random_tuner(
 		search_space, &feature_space));
 	CCS_CHECK_PTR(tuner_ret);
 
-	size_t    name_len = strlen(name) + 1;
-	uintptr_t mem      = (uintptr_t)calloc(
-                1, sizeof(struct _ccs_tuner_s) +
-                           sizeof(struct _ccs_random_tuner_data_s) + name_len);
+	size_t name_len = strlen(name) + 1;
+	size_t _sz;
+	CCS_REFUTE(
+		CCS_ALLOC_SIZE(
+			&_sz, CCS_ALLOC_SIZE_TYPE(struct _ccs_tuner_s),
+			CCS_ALLOC_SIZE_TYPE(struct _ccs_random_tuner_data_s),
+			CCS_ALLOC_SIZE_ARRAY(name_len, char)),
+		CCS_RESULT_ERROR_OUT_OF_MEMORY);
+	uintptr_t mem = (uintptr_t)calloc(1, _sz);
 	CCS_REFUTE(!mem, CCS_RESULT_ERROR_OUT_OF_MEMORY);
 	uintptr_t                 mem_orig = mem;
 	ccs_tuner_t               tun;

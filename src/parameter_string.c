@@ -242,10 +242,15 @@ ccs_create_string_parameter(const char *name, ccs_parameter_t *parameter_ret)
 {
 	CCS_CHECK_PTR(name);
 	CCS_CHECK_PTR(parameter_ret);
-	size_t    name_len = strlen(name) + 1;
-	uintptr_t mem      = (uintptr_t)calloc(
-                1, sizeof(struct _ccs_parameter_s) +
-                           sizeof(_ccs_parameter_string_data_t) + name_len);
+	size_t name_len = strlen(name) + 1;
+	size_t _sz;
+	CCS_REFUTE(
+		CCS_ALLOC_SIZE(
+			&_sz, CCS_ALLOC_SIZE_TYPE(struct _ccs_parameter_s),
+			CCS_ALLOC_SIZE_TYPE(_ccs_parameter_string_data_t),
+			CCS_ALLOC_SIZE_ARRAY(name_len, char)),
+		CCS_RESULT_ERROR_OUT_OF_MEMORY);
+	uintptr_t mem = (uintptr_t)calloc(1, _sz);
 	CCS_REFUTE(!mem, CCS_RESULT_ERROR_OUT_OF_MEMORY);
 
 	ccs_parameter_t parameter =

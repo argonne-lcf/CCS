@@ -25,8 +25,10 @@ _ccs_deserialize_bin_ccs_map_data(
 	{
 		size_t _sz;
 		CCS_REFUTE(
-			_ccs_size_mul(
-				data->num_pairs, sizeof(_ccs_map_pair_t), &_sz),
+			CCS_ALLOC_SIZE(
+				&_sz,
+				CCS_ALLOC_SIZE_ARRAY(
+					data->num_pairs, _ccs_map_pair_t)),
 			CCS_RESULT_ERROR_OUT_OF_MEMORY);
 		data->pairs = (_ccs_map_pair_t *)calloc(1, _sz);
 		CCS_REFUTE(!data->pairs, CCS_RESULT_ERROR_OUT_OF_MEMORY);

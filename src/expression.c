@@ -1540,10 +1540,15 @@ ccs_create_literal(ccs_datum_t value, ccs_expression_t *expression_ret)
 	if (value.type == CCS_DATA_TYPE_STRING && value.value.s) {
 		size_str = strlen(value.value.s) + 1;
 	}
-	uintptr_t mem = (uintptr_t)calloc(
-		1, sizeof(struct _ccs_expression_s) +
-			   sizeof(struct _ccs_expression_literal_data_s) +
-			   size_str);
+	size_t _sz;
+	CCS_REFUTE(
+		CCS_ALLOC_SIZE(
+			&_sz, CCS_ALLOC_SIZE_TYPE(struct _ccs_expression_s),
+			CCS_ALLOC_SIZE_TYPE(
+				struct _ccs_expression_literal_data_s),
+			CCS_ALLOC_SIZE_ARRAY(size_str, char)),
+		CCS_RESULT_ERROR_OUT_OF_MEMORY);
+	uintptr_t mem = (uintptr_t)calloc(1, _sz);
 	CCS_REFUTE(!mem, CCS_RESULT_ERROR_OUT_OF_MEMORY);
 	ccs_expression_t expression =
 		CCS_ALLOC_CARVE_TYPE(mem, struct _ccs_expression_s);
