@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include <assert.h>
+#include <string.h>
 #include <cconfigspace.h>
 
 void
@@ -228,6 +229,38 @@ test_map_error_paths(void)
 	assert(err == CCS_RESULT_SUCCESS);
 }
 
+static void
+test_map_set_duplicate_value(void)
+{
+	ccs_map_t    map = NULL;
+	ccs_result_t err;
+	ccs_datum_t  value;
+	size_t       count;
+
+	err = ccs_create_map(&map);
+	assert(err == CCS_RESULT_SUCCESS);
+
+	err = ccs_map_set(map, ccs_int(1), ccs_string("hello"));
+	assert(err == CCS_RESULT_SUCCESS);
+
+	/* Set same key with same value */
+	err = ccs_map_set(map, ccs_int(1), ccs_string("hello"));
+	assert(err == CCS_RESULT_SUCCESS);
+
+	/* Should still have just 1 entry */
+	err = ccs_map_get_keys(map, 0, NULL, &count);
+	assert(err == CCS_RESULT_SUCCESS);
+	assert(count == 1);
+
+	err = ccs_map_get(map, ccs_int(1), &value);
+	assert(err == CCS_RESULT_SUCCESS);
+	assert(value.type == CCS_DATA_TYPE_STRING);
+	assert(strcmp(value.value.s, "hello") == 0);
+
+	err = ccs_release_object(map);
+	assert(err == CCS_RESULT_SUCCESS);
+}
+
 int
 main(void)
 {
@@ -235,6 +268,8 @@ main(void)
 	test_map();
 	ccs_clear_thread_error();
 	test_map_error_paths();
+	ccs_clear_thread_error();
+	test_map_set_duplicate_value();
 	ccs_clear_thread_error();
 	ccs_fini();
 	return 0;

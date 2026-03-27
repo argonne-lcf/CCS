@@ -1476,6 +1476,151 @@ test_less_ordinal(void)
 	ccs_release_object(parameters[1]);
 }
 
+static void
+test_expression_list_eval(void)
+{
+	ccs_expression_t expr = NULL;
+	ccs_datum_t      nodes[2];
+	ccs_datum_t      result;
+	ccs_result_t     err;
+
+	nodes[0] = ccs_int(1);
+	nodes[1] = ccs_int(2);
+
+	err = ccs_create_expression(CCS_EXPRESSION_TYPE_LIST, 2, nodes, &expr);
+	assert(err == CCS_RESULT_SUCCESS);
+
+	err = ccs_expression_eval(expr, 0, NULL, &result);
+	assert(err == CCS_RESULT_ERROR_UNSUPPORTED_OPERATION);
+
+	err = ccs_release_object(expr);
+	assert(err == CCS_RESULT_SUCCESS);
+}
+
+static void
+test_expression_modulo_float(void)
+{
+	ccs_expression_t expr = NULL;
+	ccs_datum_t      nodes[2];
+	ccs_datum_t      result;
+	ccs_result_t     err;
+
+	/* float % int */
+	nodes[0] = ccs_float(5.5);
+	nodes[1] = ccs_int(2);
+	err      = ccs_create_expression(
+                CCS_EXPRESSION_TYPE_MODULO, 2, nodes, &expr);
+	assert(err == CCS_RESULT_SUCCESS);
+	err = ccs_expression_eval(expr, 0, NULL, &result);
+	assert(err == CCS_RESULT_SUCCESS);
+	assert(result.type == CCS_DATA_TYPE_FLOAT);
+	assert(result.value.f == fmod(5.5, 2));
+	err = ccs_release_object(expr);
+	assert(err == CCS_RESULT_SUCCESS);
+
+	/* float % float */
+	nodes[0] = ccs_float(5.5);
+	nodes[1] = ccs_float(2.5);
+	err      = ccs_create_expression(
+                CCS_EXPRESSION_TYPE_MODULO, 2, nodes, &expr);
+	assert(err == CCS_RESULT_SUCCESS);
+	err = ccs_expression_eval(expr, 0, NULL, &result);
+	assert(err == CCS_RESULT_SUCCESS);
+	assert(result.type == CCS_DATA_TYPE_FLOAT);
+	assert(result.value.f == fmod(5.5, 2.5));
+	err = ccs_release_object(expr);
+	assert(err == CCS_RESULT_SUCCESS);
+
+	/* int % float */
+	nodes[0] = ccs_int(5);
+	nodes[1] = ccs_float(2.5);
+	err      = ccs_create_expression(
+                CCS_EXPRESSION_TYPE_MODULO, 2, nodes, &expr);
+	assert(err == CCS_RESULT_SUCCESS);
+	err = ccs_expression_eval(expr, 0, NULL, &result);
+	assert(err == CCS_RESULT_SUCCESS);
+	assert(result.type == CCS_DATA_TYPE_FLOAT);
+	assert(result.value.f == fmod(5, 2.5));
+	err = ccs_release_object(expr);
+	assert(err == CCS_RESULT_SUCCESS);
+
+	/* division by zero: float % 0.0 */
+	nodes[0] = ccs_float(5.5);
+	nodes[1] = ccs_float(0.0);
+	err      = ccs_create_expression(
+                CCS_EXPRESSION_TYPE_MODULO, 2, nodes, &expr);
+	assert(err == CCS_RESULT_SUCCESS);
+	err = ccs_expression_eval(expr, 0, NULL, &result);
+	assert(err == CCS_RESULT_ERROR_INVALID_VALUE);
+	err = ccs_release_object(expr);
+	assert(err == CCS_RESULT_SUCCESS);
+}
+
+static void
+test_expression_not_type_error(void)
+{
+	ccs_expression_t expr = NULL;
+	ccs_datum_t      node;
+	ccs_datum_t      result;
+	ccs_result_t     err;
+
+	node = ccs_int(42);
+	err  = ccs_create_expression(CCS_EXPRESSION_TYPE_NOT, 1, &node, &expr);
+	assert(err == CCS_RESULT_SUCCESS);
+
+	err = ccs_expression_eval(expr, 0, NULL, &result);
+	assert(err == CCS_RESULT_ERROR_INVALID_VALUE);
+
+	err = ccs_release_object(expr);
+	assert(err == CCS_RESULT_SUCCESS);
+}
+
+static void
+test_expression_comparison_categorical_error(void)
+{
+	ccs_configuration_space_t configuration_space;
+	ccs_configuration_t       configuration;
+	ccs_parameter_t           parameter;
+	ccs_datum_t               nodes[2];
+	ccs_datum_t               values[1];
+	ccs_result_t              err;
+
+	parameter = create_dummy_categorical("cat_cmp");
+
+	err       = ccs_create_configuration_space(
+                "cmp_space", 1, &parameter, NULL, 0, NULL, NULL, NULL,
+                &configuration_space);
+	assert(err == CCS_RESULT_SUCCESS);
+
+	values[0] = ccs_int(1);
+	err       = ccs_create_configuration(
+                configuration_space, NULL, 1, values, &configuration);
+	assert(err == CCS_RESULT_SUCCESS);
+
+	nodes[0] = ccs_object(parameter);
+	nodes[1] = ccs_int(1);
+
+	test_expression_wrapper(
+		CCS_EXPRESSION_TYPE_LESS, 2, nodes, configuration,
+		ccs_bool(CCS_FALSE), CCS_RESULT_ERROR_INVALID_VALUE);
+	test_expression_wrapper(
+		CCS_EXPRESSION_TYPE_GREATER, 2, nodes, configuration,
+		ccs_bool(CCS_FALSE), CCS_RESULT_ERROR_INVALID_VALUE);
+	test_expression_wrapper(
+		CCS_EXPRESSION_TYPE_LESS_OR_EQUAL, 2, nodes, configuration,
+		ccs_bool(CCS_FALSE), CCS_RESULT_ERROR_INVALID_VALUE);
+	test_expression_wrapper(
+		CCS_EXPRESSION_TYPE_GREATER_OR_EQUAL, 2, nodes, configuration,
+		ccs_bool(CCS_FALSE), CCS_RESULT_ERROR_INVALID_VALUE);
+
+	err = ccs_release_object(configuration);
+	assert(err == CCS_RESULT_SUCCESS);
+	err = ccs_release_object(parameter);
+	assert(err == CCS_RESULT_SUCCESS);
+	err = ccs_release_object(configuration_space);
+	assert(err == CCS_RESULT_SUCCESS);
+}
+
 int
 main(void)
 {
@@ -1507,6 +1652,10 @@ main(void)
 	test_deserialize_literal();
 	test_deserialize_variable();
 	test_deserialize();
+	test_expression_list_eval();
+	test_expression_modulo_float();
+	test_expression_not_type_error();
+	test_expression_comparison_categorical_error();
 	ccs_clear_thread_error();
 	ccs_fini();
 }
