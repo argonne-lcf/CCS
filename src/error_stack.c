@@ -89,16 +89,15 @@ _ccs_create_error_stack(
 			   sizeof(struct _ccs_error_stack_data_s) + msg_size);
 	if (!mem)
 		return CCS_RESULT_ERROR_OUT_OF_MEMORY;
-	ccs_error_stack_t error_stack = (ccs_error_stack_t)mem;
+	uintptr_t         mem_orig = mem;
+	ccs_error_stack_t error_stack =
+		CCS_ALLOC_CARVE_TYPE(mem, struct _ccs_error_stack_s);
 	_ccs_object_init(
 		&(error_stack->obj), CCS_OBJECT_TYPE_ERROR_STACK,
 		(_ccs_object_ops_t *)&_error_stack_ops);
 	error_stack->data =
-		(struct _ccs_error_stack_data_s
-			 *)(mem + sizeof(struct _ccs_error_stack_s));
-	error_stack->data->msg =
-		(const char *)(mem + sizeof(struct _ccs_error_stack_s) +
-			       sizeof(struct _ccs_error_stack_data_s));
+		CCS_ALLOC_CARVE_TYPE(mem, struct _ccs_error_stack_data_s);
+	error_stack->data->msg = CCS_ALLOC_CARVE_ARRAY(mem, msg_size, char);
 	utarray_new(error_stack->data->elems, &_error_stack_elem_icd);
 	error_stack->data->error = error_code;
 	if (msg) {
@@ -111,7 +110,7 @@ _ccs_create_error_stack(
 	return CCS_RESULT_SUCCESS;
 arrays:
 	_ccs_object_deinit(&(error_stack->obj));
-	free((void *)mem);
+	free((void *)mem_orig);
 	return err;
 }
 

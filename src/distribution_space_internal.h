@@ -92,32 +92,33 @@ _ccs_create_distribution_space_no_retain(
 {
 	size_t                       num_parameters;
 	_ccs_distribution_wrapper_t *dw, *tmp;
+	ccs_distribution_space_t     distrib_space;
+	uintptr_t                    mem_orig;
+	uintptr_t                    mem;
 	ccs_result_t                 err = CCS_RESULT_SUCCESS;
 	CCS_VALIDATE(_ccs_context_get_num_parameters(
 		(ccs_context_t)configuration_space, &num_parameters));
-	uintptr_t mem = (uintptr_t)calloc(
+	mem = (uintptr_t)calloc(
 		1, sizeof(struct _ccs_distribution_space_s) +
 			   sizeof(struct _ccs_distribution_space_data_s) +
 			   sizeof(struct _ccs_parameter_distribution_s) *
 				   num_parameters);
 	CCS_REFUTE(!mem, CCS_RESULT_ERROR_OUT_OF_MEMORY);
 
-	ccs_distribution_space_t distrib_space;
-	distrib_space = (ccs_distribution_space_t)mem;
+	mem_orig = mem;
+	distrib_space =
+		CCS_ALLOC_CARVE_TYPE(mem, struct _ccs_distribution_space_s);
 	if (ops) {
 		_ccs_object_init(
 			&(distrib_space->obj),
 			CCS_OBJECT_TYPE_DISTRIBUTION_SPACE,
 			(_ccs_object_ops_t *)ops);
 	}
-	distrib_space->data =
-		(struct _ccs_distribution_space_data_s
-			 *)(mem + sizeof(struct _ccs_distribution_space_s));
-	distrib_space->data->num_parameters = num_parameters;
-	distrib_space->data->parameter_distributions =
-		(struct _ccs_parameter_distribution_s
-			 *)(mem + sizeof(struct _ccs_distribution_space_s) +
-			    sizeof(struct _ccs_distribution_space_data_s));
+	distrib_space->data = CCS_ALLOC_CARVE_TYPE(
+		mem, struct _ccs_distribution_space_data_s);
+	distrib_space->data->num_parameters          = num_parameters;
+	distrib_space->data->parameter_distributions = CCS_ALLOC_CARVE_ARRAY(
+		mem, num_parameters, struct _ccs_parameter_distribution_s);
 	distrib_space->data->configuration_space = configuration_space;
 	for (size_t i = 0; i < num_parameters; i++) {
 		_ccs_distribution_wrapper_t   *distrib_wrapper;
@@ -143,7 +144,7 @@ err_dis:
 		ccs_release_object(dw->distribution);
 		free(dw);
 	}
-	free((void *)mem);
+	free((void *)mem_orig);
 	return err;
 }
 

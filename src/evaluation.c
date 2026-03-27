@@ -269,21 +269,21 @@ ccs_create_evaluation(
 	CCS_VALIDATE_ERR_GOTO(err, ccs_retain_object(objective_space), errmem);
 	CCS_VALIDATE_ERR_GOTO(err, ccs_retain_object(configuration), erros);
 	ccs_evaluation_t eval;
-	eval = (ccs_evaluation_t)cur_mem;
-	cur_mem += sizeof(struct _ccs_evaluation_s);
+	eval = CCS_ALLOC_CARVE_TYPE(cur_mem, struct _ccs_evaluation_s);
 	_ccs_object_init(
 		&(eval->obj), CCS_OBJECT_TYPE_EVALUATION,
 		(_ccs_object_ops_t *)&_evaluation_ops);
-	eval->data = (struct _ccs_evaluation_data_s *)(cur_mem);
-	cur_mem += sizeof(struct _ccs_evaluation_data_s);
+	eval->data =
+		CCS_ALLOC_CARVE_TYPE(cur_mem, struct _ccs_evaluation_data_s);
 	eval->data->num_values      = num_parameters;
 	eval->data->num_objectives  = num_objectives;
 	eval->data->objective_space = objective_space;
 	eval->data->configuration   = configuration;
 	eval->data->result          = result;
-	eval->data->values          = (ccs_datum_t *)(cur_mem);
-	cur_mem += num_parameters * sizeof(ccs_datum_t);
-	eval->data->objective_values = (ccs_datum_t *)(cur_mem);
+	eval->data->values =
+		CCS_ALLOC_CARVE_ARRAY(cur_mem, num_parameters, ccs_datum_t);
+	eval->data->objective_values =
+		CCS_ALLOC_CARVE_ARRAY(cur_mem, num_objectives, ccs_datum_t);
 
 	for (size_t i = 0; i < num_values; i++)
 		CCS_VALIDATE_ERR_GOTO(

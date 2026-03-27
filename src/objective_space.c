@@ -245,6 +245,7 @@ ccs_create_objective_space(
 	CCS_CHECK_ARY(num_objectives, types);
 
 	size_t _sz;
+	size_t name_len = strlen(name) + 1;
 	CCS_REFUTE(
 		_ccs_size_sum2(
 			num_parameters,
@@ -257,27 +258,27 @@ ccs_create_objective_space(
 			_sz,
 			sizeof(struct _ccs_objective_space_s) +
 				sizeof(struct _ccs_objective_space_data_s) +
-				strlen(name) + 1,
+				name_len,
 			&_sz),
 		CCS_RESULT_ERROR_OUT_OF_MEMORY);
 	uintptr_t mem = (uintptr_t)calloc(1, _sz);
 	CCS_REFUTE(!mem, CCS_RESULT_ERROR_OUT_OF_MEMORY);
 	uintptr_t             mem_orig = mem;
 	ccs_result_t          err;
-	ccs_objective_space_t obj_space = (ccs_objective_space_t)mem;
-	mem += sizeof(struct _ccs_objective_space_s);
+	ccs_objective_space_t obj_space =
+		CCS_ALLOC_CARVE_TYPE(mem, struct _ccs_objective_space_s);
 	_ccs_object_init(
 		&(obj_space->obj), CCS_OBJECT_TYPE_OBJECTIVE_SPACE,
 		(_ccs_object_ops_t *)&_objective_space_ops);
-	obj_space->data = (struct _ccs_objective_space_data_s *)mem;
-	mem += sizeof(struct _ccs_objective_space_data_s);
-	obj_space->data->parameters = (ccs_parameter_t *)mem;
-	mem += sizeof(ccs_parameter_t) * num_parameters;
-	obj_space->data->hash_elems = (_ccs_parameter_index_hash_t *)mem;
-	mem += sizeof(_ccs_parameter_index_hash_t) * num_parameters;
-	obj_space->data->objectives = (_ccs_objective_t *)mem;
-	mem += sizeof(_ccs_objective_t) * num_objectives;
-	obj_space->data->name           = (const char *)mem;
+	obj_space->data =
+		CCS_ALLOC_CARVE_TYPE(mem, struct _ccs_objective_space_data_s);
+	obj_space->data->parameters =
+		CCS_ALLOC_CARVE_ARRAY(mem, num_parameters, ccs_parameter_t);
+	obj_space->data->hash_elems = CCS_ALLOC_CARVE_ARRAY(
+		mem, num_parameters, _ccs_parameter_index_hash_t);
+	obj_space->data->objectives =
+		CCS_ALLOC_CARVE_ARRAY(mem, num_objectives, _ccs_objective_t);
+	obj_space->data->name = CCS_ALLOC_CARVE_ARRAY(mem, name_len, char);
 	obj_space->data->num_parameters = num_parameters;
 	obj_space->data->num_objectives = num_objectives;
 	strcpy((char *)(obj_space->data->name), name);

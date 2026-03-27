@@ -93,13 +93,14 @@ ccs_create_feature_space(
 	for (size_t i = 0; i < num_parameters; i++)
 		CCS_CHECK_OBJ(parameters[i], CCS_OBJECT_TYPE_PARAMETER);
 
-	uintptr_t mem = (uintptr_t)calloc(
-		1,
-		sizeof(struct _ccs_feature_space_s) +
-			sizeof(struct _ccs_feature_space_data_s) +
-			sizeof(ccs_parameter_t) * num_parameters +
-			sizeof(_ccs_parameter_index_hash_t) * num_parameters +
-			strlen(name) + 1);
+	size_t    name_len = strlen(name) + 1;
+	uintptr_t mem      = (uintptr_t)calloc(
+                1,
+                sizeof(struct _ccs_feature_space_s) +
+                        sizeof(struct _ccs_feature_space_data_s) +
+                        sizeof(ccs_parameter_t) * num_parameters +
+                        sizeof(_ccs_parameter_index_hash_t) * num_parameters +
+                        name_len);
 	CCS_REFUTE(!mem, CCS_RESULT_ERROR_OUT_OF_MEMORY);
 	uintptr_t           mem_orig = mem;
 
@@ -114,7 +115,7 @@ ccs_create_feature_space(
 		CCS_ALLOC_CARVE_ARRAY(mem, num_parameters, ccs_parameter_t);
 	feat_space->data->hash_elems = CCS_ALLOC_CARVE_ARRAY(
 		mem, num_parameters, _ccs_parameter_index_hash_t);
-	feat_space->data->name           = (const char *)mem;
+	feat_space->data->name = CCS_ALLOC_CARVE_ARRAY(mem, name_len, char);
 	feat_space->data->num_parameters = num_parameters;
 	strcpy((char *)(feat_space->data->name), name);
 	CCS_VALIDATE_ERR_GOTO(

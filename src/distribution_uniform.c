@@ -405,17 +405,15 @@ ccs_create_uniform_distribution(
 			   sizeof(_ccs_distribution_uniform_data_t) +
 			   sizeof(ccs_numeric_type_t));
 	CCS_REFUTE(!mem, CCS_RESULT_ERROR_OUT_OF_MEMORY);
-	ccs_distribution_t distrib = (ccs_distribution_t)mem;
+	ccs_distribution_t distrib =
+		CCS_ALLOC_CARVE_TYPE(mem, struct _ccs_distribution_s);
 	_ccs_object_init(
 		&(distrib->obj), CCS_OBJECT_TYPE_DISTRIBUTION,
 		(_ccs_object_ops_t *)&_ccs_distribution_uniform_ops);
 	_ccs_distribution_uniform_data_t *distrib_data =
-		(_ccs_distribution_uniform_data_t
-			 *)(mem + sizeof(struct _ccs_distribution_s));
+		CCS_ALLOC_CARVE_TYPE(mem, _ccs_distribution_uniform_data_t);
 	distrib_data->common_data.data_types =
-		(ccs_numeric_type_t *)(mem +
-				       sizeof(struct _ccs_distribution_s) +
-				       sizeof(_ccs_distribution_uniform_data_t));
+		CCS_ALLOC_CARVE_ARRAY(mem, 1, ccs_numeric_type_t);
 	distrib_data->common_data.type          = CCS_DISTRIBUTION_TYPE_UNIFORM;
 	distrib_data->common_data.dimension     = 1;
 	distrib_data->common_data.data_types[0] = data_type;

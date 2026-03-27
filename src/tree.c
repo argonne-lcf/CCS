@@ -150,36 +150,25 @@ ccs_create_tree(size_t arity, ccs_datum_t value, ccs_tree_t *tree_ret)
 			   arity * sizeof(ccs_tree_t) + size_strs);
 	CCS_REFUTE(!mem, CCS_RESULT_ERROR_OUT_OF_MEMORY);
 
-	ccs_tree_t tree = (ccs_tree_t)mem;
+	ccs_tree_t tree = CCS_ALLOC_CARVE_TYPE(mem, struct _ccs_tree_s);
 	_ccs_object_init(
 		&(tree->obj), CCS_OBJECT_TYPE_TREE,
 		(_ccs_object_ops_t *)&_ccs_tree_ops);
-	_ccs_tree_data_t *data =
-		(_ccs_tree_data_t *)(mem + sizeof(struct _ccs_tree_s));
-	data->arity   = arity;
-	data->weights = (ccs_float_t *)(mem + sizeof(struct _ccs_tree_s) +
-					sizeof(_ccs_tree_data_t));
+	_ccs_tree_data_t *data = CCS_ALLOC_CARVE_TYPE(mem, _ccs_tree_data_t);
+	data->arity            = arity;
+	data->weights = CCS_ALLOC_CARVE_ARRAY(mem, arity + 1, ccs_float_t);
 	for (size_t j = 0; j < arity + 1; j++)
 		data->weights[j] = 1.0;
 	data->sum_weights = arity + 1;
-	data->areas       = (ccs_float_t *)(mem + sizeof(struct _ccs_tree_s) +
-                                      sizeof(_ccs_tree_data_t) +
-                                      (arity + 1) * sizeof(ccs_float_t));
+	data->areas       = CCS_ALLOC_CARVE_ARRAY(mem, arity + 2, ccs_float_t);
 	_ccs_distribution_roulette_normalize_areas(
 		arity + 1, data->weights, 1.0 / (data->sum_weights),
 		data->areas);
 	data->bias     = 1.0;
 	data->parent   = NULL;
-	data->children = (ccs_tree_t *)(mem + sizeof(struct _ccs_tree_s) +
-					sizeof(_ccs_tree_data_t) +
-					(arity + 1) * sizeof(ccs_float_t) +
-					(arity + 2) * sizeof(ccs_float_t));
+	data->children = CCS_ALLOC_CARVE_ARRAY(mem, arity, ccs_tree_t);
 	if (value.type == CCS_DATA_TYPE_STRING) {
-		char *str_pool = (char *)(mem + sizeof(struct _ccs_tree_s) +
-					  sizeof(_ccs_tree_data_t) +
-					  (arity + 1) * sizeof(ccs_float_t) +
-					  (arity + 2) * sizeof(ccs_float_t) +
-					  arity * sizeof(ccs_tree_t));
+		char *str_pool = CCS_ALLOC_CARVE_ARRAY(mem, size_strs, char);
 		data->value    = ccs_string(str_pool);
 		strcpy(str_pool, value.value.s);
 	} else {

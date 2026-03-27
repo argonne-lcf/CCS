@@ -272,7 +272,7 @@ static _ccs_parameter_ops_t _ccs_parameter_categorical_ops = {
 #define uthash_nonfatal_oom(elt)                                               \
 	{                                                                      \
 		HASH_CLEAR(hh, parameter_data->hash);                          \
-		free((void *)mem);                                             \
+		free((void *)mem_orig);                                        \
 		CCS_RAISE(                                                     \
 			CCS_RESULT_ERROR_OUT_OF_MEMORY,                        \
 			"Not enough memory to allocate hash");                 \
@@ -305,6 +305,7 @@ _ccs_create_categorical_parameter(
 					possible_values[i].type !=
 						CCS_DATA_TYPE_INT,
 				CCS_RESULT_ERROR_INVALID_VALUE);
+	size_t name_len  = strlen(name) + 1;
 	size_t size_strs = 0;
 	if (type != CCS_PARAMETER_TYPE_DISCRETE)
 		for (size_t i = 0; i < num_possible_values; i++) {
@@ -331,43 +332,46 @@ _ccs_create_categorical_parameter(
 			_sz,
 			sizeof(struct _ccs_parameter_s) +
 				sizeof(_ccs_parameter_categorical_data_t) +
-				strlen(name) + 1 + size_strs,
+				name_len + size_strs,
 			&_sz),
 		CCS_RESULT_ERROR_OUT_OF_MEMORY);
-	uintptr_t mem = (uintptr_t)calloc(1, _sz);
+	ccs_interval_t                     interval;
+	uintptr_t                          mem_orig;
+	uintptr_t                          mem;
+	ccs_parameter_t                    parameter;
+	_ccs_parameter_categorical_data_t *parameter_data;
+	_ccs_hash_datum_t                 *pvs;
+	char                              *str_pool;
+
+	mem = (uintptr_t)calloc(1, _sz);
 	CCS_REFUTE(!mem, CCS_RESULT_ERROR_OUT_OF_MEMORY);
 
-	ccs_interval_t interval;
-	interval.type             = CCS_NUMERIC_TYPE_INT;
-	interval.lower.i          = 0;
-	interval.upper.i          = (ccs_int_t)num_possible_values;
-	interval.lower_included   = CCS_TRUE;
-	interval.upper_included   = CCS_FALSE;
+	interval.type           = CCS_NUMERIC_TYPE_INT;
+	interval.lower.i        = 0;
+	interval.upper.i        = (ccs_int_t)num_possible_values;
+	interval.lower_included = CCS_TRUE;
+	interval.upper_included = CCS_FALSE;
 
-	ccs_parameter_t parameter = (ccs_parameter_t)mem;
+	mem_orig                = mem;
+	parameter = CCS_ALLOC_CARVE_TYPE(mem, struct _ccs_parameter_s);
 	_ccs_object_init(
 		&(parameter->obj), CCS_OBJECT_TYPE_PARAMETER,
 		(_ccs_object_ops_t *)&_ccs_parameter_categorical_ops);
-	_ccs_parameter_categorical_data_t *parameter_data =
-		(_ccs_parameter_categorical_data_t
-			 *)(mem + sizeof(struct _ccs_parameter_s));
+	parameter_data =
+		CCS_ALLOC_CARVE_TYPE(mem, _ccs_parameter_categorical_data_t);
+	pvs = CCS_ALLOC_CARVE_ARRAY(
+		mem, num_possible_values, _ccs_hash_datum_t);
 	parameter_data->common_data.type = type;
 	parameter_data->common_data.name =
-		(char *)(mem + sizeof(struct _ccs_parameter_s) +
-			 sizeof(_ccs_parameter_categorical_data_t) +
-			 sizeof(_ccs_hash_datum_t) * num_possible_values);
+		CCS_ALLOC_CARVE_ARRAY(mem, name_len, char);
 	strcpy((char *)parameter_data->common_data.name, name);
 	parameter_data->common_data.interval = interval;
 	parameter_data->num_possible_values  = num_possible_values;
-	_ccs_hash_datum_t *pvs =
-		(_ccs_hash_datum_t *)(mem + sizeof(struct _ccs_parameter_s) +
-				      sizeof(_ccs_parameter_categorical_data_t));
-	parameter_data->possible_values = pvs;
-	parameter_data->hash            = NULL;
+	parameter_data->possible_values      = pvs;
+	parameter_data->hash                 = NULL;
 	parameter->data = (_ccs_parameter_data_t *)parameter_data;
 
-	char *str_pool =
-		(char *)(parameter_data->common_data.name) + strlen(name) + 1;
+	str_pool        = CCS_ALLOC_CARVE_ARRAY(mem, size_strs, char);
 	for (size_t i = 0; i < num_possible_values; i++) {
 		_ccs_hash_datum_t *p = NULL;
 		HASH_FIND(
@@ -396,7 +400,7 @@ _ccs_create_categorical_parameter(
 errmem:
 	_ccs_parameter_categorical_del(parameter);
 	_ccs_object_deinit(&(parameter->obj));
-	free((void *)mem);
+	free((void *)mem_orig);
 	return err;
 }
 

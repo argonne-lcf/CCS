@@ -270,24 +270,23 @@ ccs_create_dynamic_tree_space(
 	CCS_CHECK_PTR(vector->get_child);
 	CCS_CHECK_PTR(tree_space_ret);
 	ccs_result_t err;
-	uintptr_t    mem = (uintptr_t)calloc(
+	size_t       name_len = strlen(name) + 1;
+	uintptr_t    mem      = (uintptr_t)calloc(
                 1, sizeof(struct _ccs_tree_space_s) +
                            sizeof(struct _ccs_tree_space_dynamic_data_s) +
-                           strlen(name) + 1);
+                           name_len);
 	CCS_REFUTE(!mem, CCS_RESULT_ERROR_OUT_OF_MEMORY);
 	uintptr_t                       mem_orig = mem;
 
 	ccs_tree_space_t                tree_space;
 	_ccs_tree_space_dynamic_data_t *data;
-	tree_space = (ccs_tree_space_t)mem;
-	mem += sizeof(struct _ccs_tree_space_s);
+	tree_space = CCS_ALLOC_CARVE_TYPE(mem, struct _ccs_tree_space_s);
 	_ccs_object_init(
 		&(tree_space->obj), CCS_OBJECT_TYPE_TREE_SPACE,
 		(_ccs_object_ops_t *)&_ccs_tree_space_dynamic_ops);
-	data = (struct _ccs_tree_space_dynamic_data_s *)mem;
-	mem += sizeof(struct _ccs_tree_space_dynamic_data_s);
+	data = CCS_ALLOC_CARVE_TYPE(mem, struct _ccs_tree_space_dynamic_data_s);
 	data->common_data.type = CCS_TREE_SPACE_TYPE_DYNAMIC;
-	data->common_data.name = (const char *)mem;
+	data->common_data.name = CCS_ALLOC_CARVE_ARRAY(mem, name_len, char);
 	tree_space->data       = (_ccs_tree_space_data_t *)data;
 	if (!rng)
 		CCS_VALIDATE_ERR_GOTO(err, ccs_create_rng(&rng), errinit);

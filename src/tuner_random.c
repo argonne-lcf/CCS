@@ -608,11 +608,12 @@ ccs_create_random_tuner(
 		search_space, &feature_space));
 	CCS_CHECK_PTR(tuner_ret);
 
-	uintptr_t mem = (uintptr_t)calloc(
-		1, sizeof(struct _ccs_tuner_s) +
-			   sizeof(struct _ccs_random_tuner_data_s) +
-			   strlen(name) + 1);
+	size_t    name_len = strlen(name) + 1;
+	uintptr_t mem      = (uintptr_t)calloc(
+                1, sizeof(struct _ccs_tuner_s) +
+                           sizeof(struct _ccs_random_tuner_data_s) + name_len);
 	CCS_REFUTE(!mem, CCS_RESULT_ERROR_OUT_OF_MEMORY);
+	uintptr_t                 mem_orig = mem;
 	ccs_tuner_t               tun;
 	_ccs_random_tuner_data_t *data;
 	ccs_result_t              err;
@@ -623,17 +624,14 @@ ccs_create_random_tuner(
 		CCS_VALIDATE_ERR_GOTO(
 			err, ccs_retain_object(feature_space), erros);
 
-	tun = (ccs_tuner_t)mem;
+	tun = CCS_ALLOC_CARVE_TYPE(mem, struct _ccs_tuner_s);
 	_ccs_object_init(
 		&(tun->obj), CCS_OBJECT_TYPE_TUNER,
 		(_ccs_object_ops_t *)&_ccs_tuner_random_ops);
-	tun->data =
-		(struct _ccs_tuner_data_s *)(mem + sizeof(struct _ccs_tuner_s));
-	data                   = (_ccs_random_tuner_data_t *)tun->data;
+	data      = CCS_ALLOC_CARVE_TYPE(mem, struct _ccs_random_tuner_data_s);
+	tun->data = (struct _ccs_tuner_data_s *)data;
 	data->common_data.type = CCS_TUNER_TYPE_RANDOM;
-	data->common_data.name =
-		(const char *)(mem + sizeof(struct _ccs_tuner_s) +
-			       sizeof(struct _ccs_random_tuner_data_s));
+	data->common_data.name = CCS_ALLOC_CARVE_ARRAY(mem, name_len, char);
 	data->common_data.search_space    = search_space;
 	data->common_data.objective_space = objective_space;
 	data->common_data.feature_space   = feature_space;
@@ -646,6 +644,6 @@ erros:
 errcs:
 	ccs_release_object(search_space);
 errmem:
-	free((void *)mem);
+	free((void *)mem_orig);
 	return err;
 }
