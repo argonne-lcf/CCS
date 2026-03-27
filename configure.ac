@@ -21,7 +21,7 @@ case $host_os in
 esac
 
 # automake should fail on any error
-AM_INIT_AUTOMAKE([-Wall -Werror foreign 1.12])
+AM_INIT_AUTOMAKE([-Wall -Werror -Wno-portability foreign 1.12])
 AM_PROG_AR
 AM_PROG_CC_C_O
 
@@ -89,6 +89,9 @@ AX_VALGRIND_DFLT([drd], [off])
 AX_VALGRIND_DFLT([sgcheck], [off])
 AX_VALGRIND_CHECK
 
+#check for code coverage
+AX_CODE_COVERAGE
+
 AX_DYNAMIC_VERSION
 
 AC_CONFIG_HEADERS([src/config.h])
@@ -126,6 +129,7 @@ FEATURES:
 
 Thread safe:      $enable_thread_safe
 Strict:           $enable_strict
+Code coverage:    $enable_code_coverage
 Kokkos connector: $enable_kokkos_connector
 Samples:          $enable_samples
 

@@ -123,6 +123,14 @@ m4/lt~obsolete.m4
 # (which is called by configure script))
 Makefile
 
+# Code coverage
+*.gcda
+*.gcno
+*.gcov
+*-coverage.info
+*-coverage/
+aminclude_static.am
+
 #Misc
 build*
 src/config.h.in
