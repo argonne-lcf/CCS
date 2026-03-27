@@ -210,8 +210,8 @@ ccs_create_mixture_distribution(
 		isnan(weights_sum_inverse) || !isfinite(weights_sum_inverse),
 		CCS_RESULT_ERROR_INVALID_VALUE);
 
+	uintptr_t                         mem_orig;
 	uintptr_t                         mem;
-	uintptr_t                         cur_mem;
 	uintptr_t                         tmp_mem;
 	ccs_interval_t                   *bounds_tmp;
 	ccs_numeric_type_t               *data_types_tmp;
@@ -237,10 +237,10 @@ ccs_create_mixture_distribution(
 					sizeof(ccs_float_t),
 				&_sz),
 			CCS_RESULT_ERROR_OUT_OF_MEMORY);
-		mem = (uintptr_t)calloc(1, _sz);
-		CCS_REFUTE(!mem, CCS_RESULT_ERROR_OUT_OF_MEMORY);
+		mem_orig = (uintptr_t)calloc(1, _sz);
+		CCS_REFUTE(!mem_orig, CCS_RESULT_ERROR_OUT_OF_MEMORY);
 	}
-	cur_mem = mem;
+	mem = mem_orig;
 
 	{
 		size_t _sz;
@@ -259,23 +259,23 @@ ccs_create_mixture_distribution(
 		(ccs_numeric_type_t *)(tmp_mem + sizeof(ccs_interval_t) *
 							 num_distributions);
 
-	distrib = CCS_ALLOC_CARVE_TYPE(cur_mem, struct _ccs_distribution_s);
+	distrib = CCS_ALLOC_CARVE_TYPE(mem, struct _ccs_distribution_s);
 	_ccs_object_init(
 		&(distrib->obj), CCS_OBJECT_TYPE_DISTRIBUTION,
 		(_ccs_object_ops_t *)&_ccs_distribution_mixture_ops);
 	distrib_data =
-		CCS_ALLOC_CARVE_TYPE(cur_mem, _ccs_distribution_mixture_data_t);
+		CCS_ALLOC_CARVE_TYPE(mem, _ccs_distribution_mixture_data_t);
 	distrib_data->common_data.type      = CCS_DISTRIBUTION_TYPE_MIXTURE;
 	distrib_data->common_data.dimension = dimension;
 	distrib_data->num_distributions     = num_distributions;
 	distrib_data->distributions         = CCS_ALLOC_CARVE_ARRAY(
-                cur_mem, num_distributions, ccs_distribution_t);
+                mem, num_distributions, ccs_distribution_t);
 	distrib_data->bounds =
-		CCS_ALLOC_CARVE_ARRAY(cur_mem, dimension, ccs_interval_t);
-	distrib_data->weights = CCS_ALLOC_CARVE_ARRAY(
-		cur_mem, num_distributions + 1, ccs_float_t);
+		CCS_ALLOC_CARVE_ARRAY(mem, dimension, ccs_interval_t);
+	distrib_data->weights =
+		CCS_ALLOC_CARVE_ARRAY(mem, num_distributions + 1, ccs_float_t);
 	distrib_data->common_data.data_types =
-		CCS_ALLOC_CARVE_ARRAY(cur_mem, dimension, ccs_numeric_type_t);
+		CCS_ALLOC_CARVE_ARRAY(mem, dimension, ccs_numeric_type_t);
 
 	CCS_VALIDATE_ERR_GOTO(
 		err,
@@ -345,7 +345,7 @@ tmpmemory:
 	_ccs_object_deinit(&(distrib->obj));
 	free((void *)tmp_mem);
 memory:
-	free((void *)mem);
+	free((void *)mem_orig);
 	return err;
 }
 
