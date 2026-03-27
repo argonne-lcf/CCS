@@ -212,16 +212,20 @@ _ccs_distribution_space_create_user_wrapper(
 	size_t                       *without_distrib_count,
 	_ccs_distribution_wrapper_t **wrapper_ret)
 {
-	uintptr_t dmem = (uintptr_t)malloc(
-		sizeof(_ccs_distribution_wrapper_t) + sizeof(size_t) * dim);
+	size_t _sz;
+	CCS_REFUTE(
+		CCS_ALLOC_SIZE(
+			&_sz, CCS_ALLOC_SIZE_TYPE(_ccs_distribution_wrapper_t),
+			CCS_ALLOC_SIZE_ARRAY(dim, size_t)),
+		CCS_RESULT_ERROR_OUT_OF_MEMORY);
+	uintptr_t dmem = (uintptr_t)malloc(_sz);
 	CCS_REFUTE(!dmem, CCS_RESULT_ERROR_OUT_OF_MEMORY);
 
 	_ccs_distribution_wrapper_t *dwrapper =
-		(_ccs_distribution_wrapper_t *)dmem;
-	dwrapper->distribution = distribution;
-	dwrapper->dimension    = dim;
-	dwrapper->parameter_indexes =
-		(size_t *)(dmem + sizeof(_ccs_distribution_wrapper_t));
+		CCS_ALLOC_CARVE_TYPE(dmem, _ccs_distribution_wrapper_t);
+	dwrapper->distribution      = distribution;
+	dwrapper->dimension         = dim;
+	dwrapper->parameter_indexes = CCS_ALLOC_CARVE_ARRAY(dmem, dim, size_t);
 	/* Record each parameter index and remove it from the
 	 * "without distribution" list. */
 	for (size_t i = 0; i < dim; i++) {
@@ -236,10 +240,11 @@ _ccs_distribution_space_create_user_wrapper(
 		(*without_distrib_count)--;
 	}
 	ccs_result_t err = CCS_RESULT_SUCCESS;
-	CCS_VALIDATE_ERR_GOTO(err, ccs_retain_object(distribution), err_dmem);
+	CCS_VALIDATE_ERR_GOTO(
+		err, ccs_retain_object(distribution), err_wrapper);
 	*wrapper_ret = dwrapper;
 	return CCS_RESULT_SUCCESS;
-err_dmem:
+err_wrapper:
 	free(dwrapper);
 	return err;
 }
@@ -257,19 +262,27 @@ _ccs_distribution_space_create_default_wrappers(
 	_ccs_distribution_wrapper_t **p_dwrappers,
 	size_t                       *count_ret)
 {
-	size_t       count = 0;
-	uintptr_t    dmem  = 0;
-	ccs_result_t err   = CCS_RESULT_SUCCESS;
+	size_t                       count    = 0;
+	_ccs_distribution_wrapper_t *dwrapper = NULL;
+	ccs_result_t                 err      = CCS_RESULT_SUCCESS;
 	for (size_t i = 0; i < without_distrib_count; i++) {
-		dmem = (uintptr_t)malloc(
-			sizeof(_ccs_distribution_wrapper_t) + sizeof(size_t));
+		size_t    _sz;
+		uintptr_t dmem;
+		CCS_REFUTE_ERR_GOTO(
+			err,
+			CCS_ALLOC_SIZE(
+				&_sz,
+				CCS_ALLOC_SIZE_TYPE(_ccs_distribution_wrapper_t),
+				CCS_ALLOC_SIZE_ARRAY(1, size_t)),
+			CCS_RESULT_ERROR_OUT_OF_MEMORY, err_wrappers);
+		dmem = (uintptr_t)malloc(_sz);
 		CCS_REFUTE_ERR_GOTO(
 			err, !dmem, CCS_RESULT_ERROR_OUT_OF_MEMORY,
 			err_wrappers);
-		_ccs_distribution_wrapper_t *dwrapper =
-			(_ccs_distribution_wrapper_t *)dmem;
+		dwrapper =
+			CCS_ALLOC_CARVE_TYPE(dmem, _ccs_distribution_wrapper_t);
 		dwrapper->parameter_indexes =
-			(size_t *)(dmem + sizeof(_ccs_distribution_wrapper_t));
+			CCS_ALLOC_CARVE_ARRAY(dmem, 1, size_t);
 		dwrapper->dimension            = 1;
 		dwrapper->parameter_indexes[0] = parameters_without_distrib[i];
 
@@ -278,18 +291,18 @@ _ccs_distribution_space_create_default_wrappers(
 			ccs_parameter_get_default_distribution(
 				parameters[parameters_without_distrib[i]],
 				&(dwrapper->distribution)),
-			err_dmem);
+			err_wrapper);
 		p_dwrappers[count++] = dwrapper;
-		/* Clear dmem so err_dmem won't double-free on a later
+		/* Clear dwrapper so err_wrapper won't double-free on a later
 		 * iteration's failure. */
-		dmem                 = 0;
+		dwrapper             = NULL;
 	}
 	*count_ret = count;
 	return CCS_RESULT_SUCCESS;
-err_dmem:
+err_wrapper:
 	/* Free the current (unfinished) wrapper whose distribution was
 	 * not yet retained. */
-	free((void *)dmem);
+	free(dwrapper);
 err_wrappers:
 	/* Release and free all previously completed wrappers. */
 	for (size_t i = 0; i < count; i++) {
@@ -345,9 +358,15 @@ ccs_distribution_space_set_distribution(
 	{
 		size_t _sz;
 		CCS_REFUTE(
-			_ccs_size_mul(
-				num_parameters,
-				sizeof(void *) * 2 + sizeof(size_t), &_sz),
+			CCS_ALLOC_SIZE(
+				&_sz,
+				CCS_ALLOC_SIZE_ARRAY(
+					num_parameters,
+					_ccs_distribution_wrapper_t *),
+				CCS_ALLOC_SIZE_ARRAY(
+					num_parameters,
+					_ccs_distribution_wrapper_t *),
+				CCS_ALLOC_SIZE_ARRAY(num_parameters, size_t)),
 			CCS_RESULT_ERROR_OUT_OF_MEMORY);
 		mem = (uintptr_t)malloc(_sz);
 		CCS_REFUTE(!mem, CCS_RESULT_ERROR_OUT_OF_MEMORY);

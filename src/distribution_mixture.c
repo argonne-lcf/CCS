@@ -213,6 +213,7 @@ ccs_create_mixture_distribution(
 	uintptr_t                         mem_orig;
 	uintptr_t                         mem;
 	uintptr_t                         tmp_mem;
+	uintptr_t                         tmp_mem_orig;
 	ccs_interval_t                   *bounds_tmp;
 	ccs_numeric_type_t               *data_types_tmp;
 	ccs_distribution_t                distrib;
@@ -253,10 +254,11 @@ ccs_create_mixture_distribution(
 		CCS_REFUTE_ERR_GOTO(
 			err, !tmp_mem, CCS_RESULT_ERROR_OUT_OF_MEMORY, memory);
 	}
-	bounds_tmp = (ccs_interval_t *)tmp_mem;
+	tmp_mem_orig = tmp_mem;
+	bounds_tmp   = CCS_ALLOC_CARVE_ARRAY(
+                tmp_mem, num_distributions, ccs_interval_t);
 	data_types_tmp =
-		(ccs_numeric_type_t *)(tmp_mem + sizeof(ccs_interval_t) *
-							 num_distributions);
+		CCS_ALLOC_CARVE_ARRAY(tmp_mem, dimension, ccs_numeric_type_t);
 
 	distrib = CCS_ALLOC_CARVE_TYPE(mem, struct _ccs_distribution_s);
 	_ccs_object_init(
@@ -333,7 +335,7 @@ ccs_create_mixture_distribution(
 	}
 	distrib->data     = (_ccs_distribution_data_t *)distrib_data;
 	*distribution_ret = distrib;
-	free((void *)tmp_mem);
+	free((void *)tmp_mem_orig);
 	return CCS_RESULT_SUCCESS;
 distrib:
 	for (i = 0; i < num_distributions; i++) {
@@ -342,7 +344,7 @@ distrib:
 	}
 tmpmemory:
 	_ccs_object_deinit(&(distrib->obj));
-	free((void *)tmp_mem);
+	free((void *)tmp_mem_orig);
 memory:
 	free((void *)mem_orig);
 	return err;

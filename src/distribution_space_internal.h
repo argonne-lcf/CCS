@@ -66,16 +66,23 @@ _ccs_get_distribution_wrapper(
 	CCS_VALIDATE(ccs_parameter_get_default_distribution(
 		parameter, &distribution));
 
-	uintptr_t dmem = (uintptr_t)malloc(
-		sizeof(_ccs_distribution_wrapper_t) + sizeof(size_t));
-
+	size_t    _sz;
+	uintptr_t dmem;
+	CCS_REFUTE_ERR_GOTO(
+		err,
+		CCS_ALLOC_SIZE(
+			&_sz, CCS_ALLOC_SIZE_TYPE(_ccs_distribution_wrapper_t),
+			CCS_ALLOC_SIZE_ARRAY(1, size_t)),
+		CCS_RESULT_ERROR_OUT_OF_MEMORY, err_distrib);
+	dmem = (uintptr_t)malloc(_sz);
 	CCS_REFUTE_ERR_GOTO(
 		err, !dmem, CCS_RESULT_ERROR_OUT_OF_MEMORY, err_distrib);
-	distrib_wrapper               = (_ccs_distribution_wrapper_t *)dmem;
+	distrib_wrapper =
+		CCS_ALLOC_CARVE_TYPE(dmem, _ccs_distribution_wrapper_t);
 	distrib_wrapper->distribution = distribution;
 	distrib_wrapper->dimension    = 1;
 	distrib_wrapper->parameter_indexes =
-		(size_t *)(dmem + sizeof(_ccs_distribution_wrapper_t));
+		CCS_ALLOC_CARVE_ARRAY(dmem, 1, size_t);
 	distrib_wrapper->parameter_indexes[0] = index;
 	*distrib_wrapper_ret                  = distrib_wrapper;
 	return CCS_RESULT_SUCCESS;
@@ -91,6 +98,7 @@ _ccs_create_distribution_space_no_retain(
 	ccs_distribution_space_t      *distribution_space_ret)
 {
 	size_t                       num_parameters;
+	size_t                       _sz;
 	_ccs_distribution_wrapper_t *dw, *tmp;
 	ccs_distribution_space_t     distrib_space;
 	uintptr_t                    mem_orig;
@@ -98,11 +106,17 @@ _ccs_create_distribution_space_no_retain(
 	ccs_result_t                 err = CCS_RESULT_SUCCESS;
 	CCS_VALIDATE(_ccs_context_get_num_parameters(
 		(ccs_context_t)configuration_space, &num_parameters));
-	mem = (uintptr_t)calloc(
-		1, sizeof(struct _ccs_distribution_space_s) +
-			   sizeof(struct _ccs_distribution_space_data_s) +
-			   sizeof(struct _ccs_parameter_distribution_s) *
-				   num_parameters);
+	CCS_REFUTE(
+		CCS_ALLOC_SIZE(
+			&_sz,
+			CCS_ALLOC_SIZE_TYPE(struct _ccs_distribution_space_s),
+			CCS_ALLOC_SIZE_TYPE(
+				struct _ccs_distribution_space_data_s),
+			CCS_ALLOC_SIZE_ARRAY(
+				num_parameters,
+				struct _ccs_parameter_distribution_s)),
+		CCS_RESULT_ERROR_OUT_OF_MEMORY);
+	mem = (uintptr_t)calloc(1, _sz);
 	CCS_REFUTE(!mem, CCS_RESULT_ERROR_OUT_OF_MEMORY);
 
 	mem_orig = mem;

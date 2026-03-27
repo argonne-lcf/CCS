@@ -224,8 +224,7 @@ ccs_map_set(ccs_map_t map, ccs_datum_t key, ccs_datum_t value)
 
 	mem = (uintptr_t)calloc(1, sz);
 	CCS_REFUTE_ERR_GOTO(res, !mem, CCS_RESULT_ERROR_OUT_OF_MEMORY, err_o2);
-	entry = (_ccs_map_datum_t *)mem;
-	mem += sizeof(_ccs_map_datum_t);
+	entry        = CCS_ALLOC_CARVE_TYPE(mem, _ccs_map_datum_t);
 	entry->key   = key;
 	entry->value = value;
 	_ccs_map_set_string(&entry->key, sz1, &mem);

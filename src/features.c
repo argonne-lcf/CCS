@@ -86,10 +86,14 @@ _ccs_create_features(
 {
 	size_t       num_parameters = feature_space->data->num_parameters;
 	ccs_result_t err            = CCS_RESULT_SUCCESS;
-	uintptr_t    mem            = (uintptr_t)calloc(
-                1, sizeof(struct _ccs_features_s) +
-                           sizeof(struct _ccs_features_data_s) +
-                           num_parameters * sizeof(ccs_datum_t));
+	size_t       _sz;
+	CCS_REFUTE(
+		CCS_ALLOC_SIZE(
+			&_sz, CCS_ALLOC_SIZE_TYPE(struct _ccs_features_s),
+			CCS_ALLOC_SIZE_TYPE(struct _ccs_features_data_s),
+			CCS_ALLOC_SIZE_ARRAY(num_parameters, ccs_datum_t)),
+		CCS_RESULT_ERROR_OUT_OF_MEMORY);
+	uintptr_t mem = (uintptr_t)calloc(1, _sz);
 	CCS_REFUTE(!mem, CCS_RESULT_ERROR_OUT_OF_MEMORY);
 	uintptr_t      mem_orig = mem;
 	ccs_features_t feat;

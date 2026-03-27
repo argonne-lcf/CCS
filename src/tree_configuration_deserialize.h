@@ -28,7 +28,9 @@ _ccs_deserialize_bin_tree_configuration_data(
 	if (data->position_size) {
 		size_t _sz;
 		CCS_REFUTE(
-			_ccs_size_mul(data->position_size, sizeof(size_t), &_sz),
+			CCS_ALLOC_SIZE(
+				&_sz, CCS_ALLOC_SIZE_ARRAY(
+					      data->position_size, size_t)),
 			CCS_RESULT_ERROR_OUT_OF_MEMORY);
 		data->position = (size_t *)calloc(1, _sz);
 		CCS_REFUTE(!data->position, CCS_RESULT_ERROR_OUT_OF_MEMORY);

@@ -143,11 +143,17 @@ ccs_create_tree(size_t arity, ccs_datum_t value, ccs_tree_t *tree_ret)
 		size_strs += strlen(value.value.s) + 1;
 	}
 
-	uintptr_t mem = (uintptr_t)calloc(
-		1, sizeof(struct _ccs_tree_s) + sizeof(_ccs_tree_data_t) +
-			   (arity + 1) * sizeof(ccs_float_t) +
-			   (arity + 2) * sizeof(ccs_float_t) +
-			   arity * sizeof(ccs_tree_t) + size_strs);
+	size_t _sz;
+	CCS_REFUTE(
+		CCS_ALLOC_SIZE(
+			&_sz, CCS_ALLOC_SIZE_TYPE(struct _ccs_tree_s),
+			CCS_ALLOC_SIZE_TYPE(_ccs_tree_data_t),
+			CCS_ALLOC_SIZE_ARRAY(arity + 1, ccs_float_t),
+			CCS_ALLOC_SIZE_ARRAY(arity + 2, ccs_float_t),
+			CCS_ALLOC_SIZE_ARRAY(arity, ccs_tree_t),
+			CCS_ALLOC_SIZE_ARRAY(size_strs, char)),
+		CCS_RESULT_ERROR_OUT_OF_MEMORY);
+	uintptr_t mem = (uintptr_t)calloc(1, _sz);
 	CCS_REFUTE(!mem, CCS_RESULT_ERROR_OUT_OF_MEMORY);
 
 	ccs_tree_t tree = CCS_ALLOC_CARVE_TYPE(mem, struct _ccs_tree_s);

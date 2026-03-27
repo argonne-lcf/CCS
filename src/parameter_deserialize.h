@@ -53,9 +53,10 @@ _ccs_deserialize_bin_ccs_parameter_categorical_data(
 	{
 		size_t _sz;
 		CCS_REFUTE(
-			_ccs_size_mul(
-				data->num_possible_values, sizeof(ccs_datum_t),
-				&_sz),
+			CCS_ALLOC_SIZE(
+				&_sz, CCS_ALLOC_SIZE_ARRAY(
+					      data->num_possible_values,
+					      ccs_datum_t)),
 			CCS_RESULT_ERROR_OUT_OF_MEMORY);
 		data->possible_values = (ccs_datum_t *)calloc(1, _sz);
 		CCS_REFUTE(
