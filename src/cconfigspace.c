@@ -435,19 +435,21 @@ _ccs_object_serialize_file(
 		size_t sz;
 		CCS_VALIDATE(_ccs_object_serialize_json_to_string(
 			object, &str, &sz, &opts));
-		fd = open(path, O_CREAT | O_TRUNC | O_WRONLY,
-			  S_IRUSR | S_IWUSR | S_IWGRP | S_IRGRP | S_IROTH);
+		fd =
+			open(path, O_CREAT | O_TRUNC | O_WRONLY,
+			     S_IRUSR | S_IWUSR | S_IWGRP | S_IRGRP | S_IROTH);
 		if (fd == -1) {
 			free(str);
-			CCS_RAISE(CCS_RESULT_ERROR_INVALID_FILE_PATH,
-			          "Could not open file: %s", path);
+			CCS_RAISE(
+				CCS_RESULT_ERROR_INVALID_FILE_PATH,
+				"Could not open file: %s", path);
 		}
 		ssize_t written = write(fd, str, sz);
 		free(str);
-		if (close(fd) == -1 || written < 0 ||
-		    (size_t)written != sz)
-			CCS_RAISE(CCS_RESULT_ERROR_SYSTEM,
-			          "Failed to write JSON to file");
+		if (close(fd) == -1 || written < 0 || (size_t)written != sz)
+			CCS_RAISE(
+				CCS_RESULT_ERROR_SYSTEM,
+				"Failed to write JSON to file");
 		return CCS_RESULT_SUCCESS;
 	}
 	fd =
@@ -526,9 +528,7 @@ _ccs_object_serialize_file_descriptor(
 	CCS_VALIDATE(_ccs_object_serialize_options(
 		format, CCS_SERIALIZE_OPERATION_FILE_DESCRIPTOR, args, &opts));
 	if (format == CCS_SERIALIZE_FORMAT_JSON) {
-		CCS_REFUTE(
-			opts.ppfd_state,
-			CCS_RESULT_ERROR_INVALID_VALUE);
+		CCS_REFUTE(opts.ppfd_state, CCS_RESULT_ERROR_INVALID_VALUE);
 		char  *str;
 		size_t sz;
 		CCS_VALIDATE(_ccs_object_serialize_json_to_string(
@@ -541,8 +541,9 @@ _ccs_object_serialize_file_descriptor(
 				if (errno == EINTR)
 					continue;
 				free(str);
-				CCS_RAISE(CCS_RESULT_ERROR_SYSTEM,
-				          "Failed to write JSON to fd");
+				CCS_RAISE(
+					CCS_RESULT_ERROR_SYSTEM,
+					"Failed to write JSON to fd");
 			}
 			remaining -= count;
 			ptr += count;
@@ -755,15 +756,15 @@ _ccs_object_deserialize_file(
 		CCS_REFUTE(fd == -1, CCS_RESULT_ERROR_INVALID_FILE_PATH);
 		if (fstat(fd, &stat_buffer) == -1) {
 			close(fd);
-			CCS_RAISE(CCS_RESULT_ERROR_SYSTEM,
-			          "fstat failed");
+			CCS_RAISE(CCS_RESULT_ERROR_SYSTEM, "fstat failed");
 		}
 		buffer_size = stat_buffer.st_size;
 		char *buf   = (char *)malloc(buffer_size);
 		if (!buf) {
 			close(fd);
-			CCS_RAISE(CCS_RESULT_ERROR_OUT_OF_MEMORY,
-			          "malloc failed for JSON file");
+			CCS_RAISE(
+				CCS_RESULT_ERROR_OUT_OF_MEMORY,
+				"malloc failed for JSON file");
 		}
 		size_t remaining = buffer_size;
 		char  *ptr       = buf;
@@ -774,8 +775,8 @@ _ccs_object_deserialize_file(
 					continue;
 				free(buf);
 				close(fd);
-				CCS_RAISE(CCS_RESULT_ERROR_SYSTEM,
-				          "read failed");
+				CCS_RAISE(
+					CCS_RESULT_ERROR_SYSTEM, "read failed");
 			}
 			if (count == 0)
 				break;
@@ -784,8 +785,7 @@ _ccs_object_deserialize_file(
 		}
 		close(fd);
 		res = _ccs_object_deserialize(
-			object_ret, format,
-			CCS_DESERIALIZE_OPERATION_FILE,
+			object_ret, format, CCS_DESERIALIZE_OPERATION_FILE,
 			&buffer_size, (const char **)&buf, args);
 		free(buf);
 		return res;
@@ -888,9 +888,7 @@ _ccs_object_deserialize_file_descriptor(
 		CCS_VALIDATE(_ccs_object_deserialize_options(
 			format, CCS_DESERIALIZE_OPERATION_FILE_DESCRIPTOR, args,
 			&opts));
-		CCS_REFUTE(
-			opts.ppfd_state,
-			CCS_RESULT_ERROR_INVALID_VALUE);
+		CCS_REFUTE(opts.ppfd_state, CCS_RESULT_ERROR_INVALID_VALUE);
 		size_t buf_cap = 4096;
 		size_t buf_len = 0;
 		char  *buf     = (char *)malloc(buf_cap);
@@ -901,8 +899,9 @@ _ccs_object_deserialize_file_descriptor(
 				char *nb = (char *)realloc(buf, buf_cap);
 				if (!nb) {
 					free(buf);
-					CCS_RAISE(CCS_RESULT_ERROR_OUT_OF_MEMORY,
-					          "realloc failed");
+					CCS_RAISE(
+						CCS_RESULT_ERROR_OUT_OF_MEMORY,
+						"realloc failed");
 				}
 				buf = nb;
 			}
@@ -914,17 +913,18 @@ _ccs_object_deserialize_file_descriptor(
 				if (errno == EINTR)
 					continue;
 				free(buf);
-				CCS_RAISE(CCS_RESULT_ERROR_SYSTEM,
-				          "read failed on fd");
+				CCS_RAISE(
+					CCS_RESULT_ERROR_SYSTEM,
+					"read failed on fd");
 			}
 			buf_len += count;
 		}
 		size_t      bsz = buf_len;
 		const char *bp  = buf;
-		res = _ccs_object_deserialize(
-			object_ret, format,
-			CCS_DESERIALIZE_OPERATION_FILE_DESCRIPTOR,
-			&bsz, &bp, args);
+		res             = _ccs_object_deserialize(
+                        object_ret, format,
+                        CCS_DESERIALIZE_OPERATION_FILE_DESCRIPTOR, &bsz, &bp,
+                        args);
 		free(buf);
 		return res;
 	}

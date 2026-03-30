@@ -38,7 +38,7 @@ _ccs_hex_decode(const char *hex_str, size_t *out_len)
 		return NULL;
 	for (size_t i = 0; i < *out_len; i++) {
 		unsigned int byte;
-		char         tmp[3] = {hex_str[i * 2], hex_str[i * 2 + 1], '\0'};
+		char tmp[3] = {hex_str[i * 2], hex_str[i * 2 + 1], '\0'};
 		if (sscanf(tmp, "%02x", &byte) != 1) {
 			free(out);
 			return NULL;
@@ -116,8 +116,8 @@ _ccs_serialize_json_rng(ccs_rng_t rng, cJSON *json)
 	_ccs_rng_data_t *data = (_ccs_rng_data_t *)(rng->data);
 	char            *hex;
 
-	CCS_JSON_CHECK_ADD(
-		cJSON_AddStringToObject(json, "rng_type", gsl_rng_name(data->rng)));
+	CCS_JSON_CHECK_ADD(cJSON_AddStringToObject(
+		json, "rng_type", gsl_rng_name(data->rng)));
 	CCS_JSON_CHECK_ADD(cJSON_AddBoolToObject(
 		json, "little_endian", ccs_is_little_endian()));
 
@@ -144,12 +144,10 @@ _ccs_deserialize_json_rng(
 	_ccs_object_deserialize_options_t *opts)
 {
 	(void)opts;
-	cJSON *j_rng_type =
-		cJSON_GetObjectItemCaseSensitive(json, "rng_type");
+	cJSON *j_rng_type = cJSON_GetObjectItemCaseSensitive(json, "rng_type");
 	cJSON *j_little_endian =
 		cJSON_GetObjectItemCaseSensitive(json, "little_endian");
-	cJSON *j_state =
-		cJSON_GetObjectItemCaseSensitive(json, "state");
+	cJSON *j_state = cJSON_GetObjectItemCaseSensitive(json, "state");
 
 	CCS_REFUTE(
 		!j_rng_type || !cJSON_IsString(j_rng_type),
@@ -173,10 +171,10 @@ _ccs_deserialize_json_rng(
 	CCS_VALIDATE(ccs_create_rng_with_type(*t, rng_ret));
 
 	/* Restore state if compatible */
-	ccs_bool_t little_endian =
-		cJSON_IsTrue(j_little_endian) ? CCS_TRUE : CCS_FALSE;
-	size_t          state_len;
-	unsigned char  *state_bytes =
+	ccs_bool_t little_endian = cJSON_IsTrue(j_little_endian) ? CCS_TRUE :
+								   CCS_FALSE;
+	size_t     state_len;
+	unsigned char *state_bytes =
 		_ccs_hex_decode(j_state->valuestring, &state_len);
 	if (state_bytes) {
 		if (state_len == gsl_rng_size((*rng_ret)->data->rng) &&
@@ -204,17 +202,19 @@ _ccs_object_serialize_to_json(
 	cJSON                  *json;
 	ccs_result_t            err = CCS_RESULT_SUCCESS;
 
-	json = cJSON_CreateObject();
+	json                        = cJSON_CreateObject();
 	CCS_REFUTE(!json, CCS_RESULT_ERROR_OUT_OF_MEMORY);
 
 	/* Envelope: version + object_type */
-	if (!cJSON_AddNumberToObject(json, "version",
-	                             CCS_SERIALIZATION_API_VERSION) ||
-	    !cJSON_AddStringToObject(json, "object_type",
-	                             _ccs_object_type_to_string(obj->type))) {
+	if (!cJSON_AddNumberToObject(
+		    json, "version", CCS_SERIALIZATION_API_VERSION) ||
+	    !cJSON_AddStringToObject(
+		    json, "object_type",
+		    _ccs_object_type_to_string(obj->type))) {
 		cJSON_Delete(json);
-		CCS_RAISE(CCS_RESULT_ERROR_OUT_OF_MEMORY,
-		          "Failed to create JSON envelope");
+		CCS_RAISE(
+			CCS_RESULT_ERROR_OUT_OF_MEMORY,
+			"Failed to create JSON envelope");
 	}
 
 	CCS_OBJ_RDLOCK(object);
@@ -234,15 +234,15 @@ _ccs_object_serialize_to_json(
 	}
 
 	/* Serialize user_data if present */
-	if (obj->user_data && (obj->serialize_callback ||
-	                       (opts && opts->serialize_callback))) {
-		size_t serialize_data_size = 0;
+	if (obj->user_data &&
+	    (obj->serialize_callback || (opts && opts->serialize_callback))) {
+		size_t                          serialize_data_size = 0;
 		ccs_object_serialize_callback_t cb =
-			obj->serialize_callback ? obj->serialize_callback
-						: opts->serialize_callback;
-		void *cb_data = obj->serialize_callback
-					? obj->serialize_user_data
-					: opts->serialize_user_data;
+			obj->serialize_callback ? obj->serialize_callback :
+						  opts->serialize_callback;
+		void *cb_data = obj->serialize_callback ?
+					obj->serialize_user_data :
+					opts->serialize_user_data;
 		CCS_VALIDATE_ERR_GOTO(
 			err, cb(object, 0, NULL, &serialize_data_size, cb_data),
 			err_json);
@@ -252,8 +252,9 @@ _ccs_object_serialize_to_json(
 				err = CCS_RESULT_ERROR_OUT_OF_MEMORY;
 				goto err_json;
 			}
-			err = cb(object, serialize_data_size, tmp, NULL,
-			         cb_data);
+			err =
+				cb(object, serialize_data_size, tmp, NULL,
+				   cb_data);
 			if (err != CCS_RESULT_SUCCESS) {
 				free(tmp);
 				goto err_json;
@@ -290,8 +291,7 @@ _ccs_object_deserialize_from_json(
 	ccs_result_t      err;
 	ccs_object_type_t otype;
 
-	cJSON *j_version =
-		cJSON_GetObjectItemCaseSensitive(json, "version");
+	cJSON *j_version = cJSON_GetObjectItemCaseSensitive(json, "version");
 	cJSON *j_object_type =
 		cJSON_GetObjectItemCaseSensitive(json, "object_type");
 
@@ -299,14 +299,15 @@ _ccs_object_deserialize_from_json(
 		!j_version || !cJSON_IsNumber(j_version),
 		CCS_RESULT_ERROR_INVALID_VALUE);
 	CCS_REFUTE(
-		(uint32_t)j_version->valuedouble > CCS_SERIALIZATION_API_VERSION,
+		(uint32_t)j_version->valuedouble >
+			CCS_SERIALIZATION_API_VERSION,
 		CCS_RESULT_ERROR_INVALID_VALUE);
 	CCS_REFUTE(
 		!j_object_type || !cJSON_IsString(j_object_type),
 		CCS_RESULT_ERROR_INVALID_VALUE);
 
-	CCS_VALIDATE(
-		_ccs_object_type_from_string(j_object_type->valuestring, &otype));
+	CCS_VALIDATE(_ccs_object_type_from_string(
+		j_object_type->valuestring, &otype));
 
 	switch (otype) {
 	case CCS_OBJECT_TYPE_RNG:
@@ -325,8 +326,8 @@ _ccs_object_deserialize_from_json(
 		cJSON_GetObjectItemCaseSensitive(json, "user_data");
 	if (j_user_data && cJSON_IsString(j_user_data) &&
 	    opts->deserialize_data_callback) {
-		size_t          data_len;
-		unsigned char  *data_bytes =
+		size_t         data_len;
+		unsigned char *data_bytes =
 			_ccs_hex_decode(j_user_data->valuestring, &data_len);
 		CCS_REFUTE(!data_bytes, CCS_RESULT_ERROR_OUT_OF_MEMORY);
 		err = opts->deserialize_data_callback(

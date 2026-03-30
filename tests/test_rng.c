@@ -65,23 +65,21 @@ test_rng_create_serialize(ccs_serialize_format_t format)
 	assert(err == CCS_RESULT_SUCCESS);
 
 	err = ccs_object_serialize(
-		rng, format, CCS_SERIALIZE_OPERATION_SIZE,
-		&buff_size, CCS_SERIALIZE_OPTION_END);
+		rng, format, CCS_SERIALIZE_OPERATION_SIZE, &buff_size,
+		CCS_SERIALIZE_OPTION_END);
 	assert(err == CCS_RESULT_SUCCESS);
 
 	buff = (char *)malloc(buff_size);
 	assert(buff);
 
 	err = ccs_object_serialize(
-		rng, format,
-		CCS_SERIALIZE_OPERATION_MEMORY, buff_size, buff,
+		rng, format, CCS_SERIALIZE_OPERATION_MEMORY, buff_size, buff,
 		CCS_SERIALIZE_OPTION_END);
 	assert(err == CCS_RESULT_SUCCESS);
 
 	err = ccs_object_deserialize(
-		(ccs_object_t *)&rng2, format,
-		CCS_DESERIALIZE_OPERATION_MEMORY, buff_size, buff,
-		CCS_DESERIALIZE_OPTION_END);
+		(ccs_object_t *)&rng2, format, CCS_DESERIALIZE_OPERATION_MEMORY,
+		buff_size, buff, CCS_DESERIALIZE_OPTION_END);
 	assert(err == CCS_RESULT_SUCCESS);
 	free(buff);
 
@@ -195,15 +193,14 @@ test_rng_file_serialize(ccs_serialize_format_t format)
 
 	/* Serialize to file */
 	err = ccs_object_serialize(
-		rng, format, CCS_SERIALIZE_OPERATION_FILE,
-		tmppath, CCS_SERIALIZE_OPTION_END);
+		rng, format, CCS_SERIALIZE_OPERATION_FILE, tmppath,
+		CCS_SERIALIZE_OPTION_END);
 	assert(err == CCS_RESULT_SUCCESS);
 
 	/* Deserialize from file */
 	err = ccs_object_deserialize(
-		(ccs_object_t *)&rng2, format,
-		CCS_DESERIALIZE_OPERATION_FILE, tmppath,
-		CCS_DESERIALIZE_OPTION_END);
+		(ccs_object_t *)&rng2, format, CCS_DESERIALIZE_OPERATION_FILE,
+		tmppath, CCS_DESERIALIZE_OPTION_END);
 	assert(err == CCS_RESULT_SUCCESS);
 
 	/* Verify roundtrip */
@@ -221,8 +218,7 @@ test_rng_file_serialize(ccs_serialize_format_t format)
 
 	/* Bad file path */
 	err = ccs_object_deserialize(
-		&obj, format,
-		CCS_DESERIALIZE_OPERATION_FILE,
+		&obj, format, CCS_DESERIALIZE_OPERATION_FILE,
 		"/nonexistent/path/ccs_test.bin", CCS_DESERIALIZE_OPTION_END);
 	assert(err == CCS_RESULT_ERROR_INVALID_FILE_PATH);
 	ccs_clear_thread_error();
@@ -253,8 +249,7 @@ test_rng_fd_serialize_blocking(ccs_serialize_format_t format)
 
 	/* Blocking serialize to pipe write end */
 	err = ccs_object_serialize(
-		rng, format,
-		CCS_SERIALIZE_OPERATION_FILE_DESCRIPTOR, pipefd[1],
+		rng, format, CCS_SERIALIZE_OPERATION_FILE_DESCRIPTOR, pipefd[1],
 		CCS_SERIALIZE_OPTION_END);
 	assert(err == CCS_RESULT_SUCCESS);
 	close(pipefd[1]);
