@@ -5,6 +5,17 @@
 #include <stdarg.h>
 #include <pthread.h>
 #include "utarray.h"
+#include "cjson/cJSON.h"
+
+/* Forward declarations — defined in cconfigspace_json.h, included at end */
+static inline const char *
+_ccs_json_object_type_to_string(ccs_object_type_t type);
+static inline ccs_result_t
+_ccs_json_object_type_from_string(const char *str, ccs_object_type_t *type_ret);
+static inline char *
+_ccs_json_hex_encode(const void *data, size_t len);
+static inline unsigned char *
+_ccs_json_hex_decode(const char *hex_str, size_t *out_len);
 
 static inline ccs_bool_t
 _ccs_interval_include(ccs_interval_t *interval, ccs_numeric_t value)
@@ -1329,6 +1340,15 @@ _ccs_serialize_ccs_object_internal(
 		CCS_VALIDATE(_ccs_serialize_bin_ccs_object_internal(
 			obj, buffer_size, buffer));
 	} break;
+	case CCS_SERIALIZE_FORMAT_JSON: {
+		const char *type_str =
+			_ccs_json_object_type_to_string(obj->type);
+		CCS_REFUTE(!type_str, CCS_RESULT_ERROR_INVALID_VALUE);
+		CCS_REFUTE(
+			!cJSON_AddStringToObject(
+				*(cJSON **)buffer, "type", type_str),
+			CCS_RESULT_ERROR_OUT_OF_MEMORY);
+	} break;
 	default:
 		CCS_RAISE(
 			CCS_RESULT_ERROR_INVALID_VALUE,
@@ -1393,6 +1413,16 @@ _ccs_deserialize_ccs_object_internal(
 	case CCS_SERIALIZE_FORMAT_BINARY: {
 		CCS_VALIDATE(_ccs_deserialize_bin_ccs_object_internal(
 			obj, buffer_size, buffer, handle_ret));
+	} break;
+	case CCS_SERIALIZE_FORMAT_JSON: {
+		cJSON *json   = *(cJSON **)buffer;
+		cJSON *j_type = cJSON_GetObjectItemCaseSensitive(json, "type");
+		CCS_REFUTE(
+			!j_type || !cJSON_IsString(j_type),
+			CCS_RESULT_ERROR_INVALID_VALUE);
+		CCS_VALIDATE(_ccs_json_object_type_from_string(
+			j_type->valuestring, &obj->type));
+		*handle_ret = NULL;
 	} break;
 	default:
 		CCS_RAISE(
@@ -1495,6 +1525,52 @@ _ccs_object_serialize_user_data(
 		}
 		break;
 	}
+	case CCS_SERIALIZE_FORMAT_JSON: {
+		_ccs_object_internal_t *obj = (_ccs_object_internal_t *)object;
+		size_t                  serialize_data_size = 0;
+		if (obj->user_data) {
+			ccs_object_serialize_callback_t cb =
+				obj->serialize_callback ?
+					obj->serialize_callback :
+					opts->serialize_callback;
+			void *cb_data = obj->serialize_callback ?
+						obj->serialize_user_data :
+						opts->serialize_user_data;
+			if (cb) {
+				CCS_VALIDATE(
+					cb(object, 0, NULL,
+					   &serialize_data_size, cb_data));
+				if (serialize_data_size) {
+					char *tmp = (char *)malloc(
+						serialize_data_size);
+					CCS_REFUTE(
+						!tmp,
+						CCS_RESULT_ERROR_OUT_OF_MEMORY);
+					ccs_result_t err =
+						cb(object, serialize_data_size,
+						   tmp, NULL, cb_data);
+					if (err != CCS_RESULT_SUCCESS) {
+						free(tmp);
+						return err;
+					}
+					char *hex = _ccs_json_hex_encode(
+						tmp, serialize_data_size);
+					free(tmp);
+					CCS_REFUTE(
+						!hex,
+						CCS_RESULT_ERROR_OUT_OF_MEMORY);
+					cJSON *ud = cJSON_AddStringToObject(
+						*(cJSON **)buffer, "user_data",
+						hex);
+					free(hex);
+					CCS_REFUTE(
+						!ud,
+						CCS_RESULT_ERROR_OUT_OF_MEMORY);
+				}
+			}
+		}
+		break;
+	}
 	default:
 		CCS_RAISE(
 			CCS_RESULT_ERROR_INVALID_VALUE,
@@ -1528,6 +1604,24 @@ _ccs_object_deserialize_user_data(
 					opts->deserialize_data_user_data));
 			*buffer_size -= serialize_data_size;
 			*buffer += serialize_data_size;
+		}
+		break;
+	}
+	case CCS_SERIALIZE_FORMAT_JSON: {
+		cJSON *json = *(cJSON **)buffer;
+		cJSON *j_user_data =
+			cJSON_GetObjectItemCaseSensitive(json, "user_data");
+		if (j_user_data && cJSON_IsString(j_user_data) &&
+		    opts->deserialize_data_callback) {
+			size_t         data_len;
+			unsigned char *data_bytes = _ccs_json_hex_decode(
+				j_user_data->valuestring, &data_len);
+			CCS_REFUTE(!data_bytes, CCS_RESULT_ERROR_OUT_OF_MEMORY);
+			ccs_result_t err = opts->deserialize_data_callback(
+				object, data_len, (const char *)data_bytes,
+				opts->deserialize_data_user_data);
+			free(data_bytes);
+			CCS_VALIDATE(err);
 		}
 		break;
 	}
@@ -1574,5 +1668,7 @@ _ccs_object_serialize_with_opts(
 		object, format, buffer_size, buffer, opts));
 	return CCS_RESULT_SUCCESS;
 }
+
+#include "cconfigspace_json.h"
 
 #endif //_CONFIGSPACE_INTERNAL_H

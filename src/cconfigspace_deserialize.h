@@ -211,6 +211,21 @@ _ccs_object_deserialize_with_opts_check(
 			object_ret, format, version, buffer_size, buffer,
 			opts));
 	} break;
+	case CCS_SERIALIZE_FORMAT_JSON: {
+		cJSON *json   = *(cJSON **)buffer;
+		cJSON *j_type = cJSON_GetObjectItemCaseSensitive(json, "type");
+		CCS_REFUTE(
+			!j_type || !cJSON_IsString(j_type),
+			CCS_RESULT_ERROR_INVALID_VALUE);
+		ccs_object_type_t otype;
+		CCS_VALIDATE(_ccs_json_object_type_from_string(
+			j_type->valuestring, &otype));
+		CCS_REFUTE(
+			otype != expected_type, CCS_RESULT_ERROR_INVALID_TYPE);
+		CCS_VALIDATE(_ccs_object_deserialize_with_opts(
+			object_ret, format, version, buffer_size, buffer,
+			opts));
+	} break;
 	default:
 		CCS_RAISE(
 			CCS_RESULT_ERROR_INVALID_VALUE,
