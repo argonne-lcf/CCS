@@ -43,7 +43,7 @@ test_rng_create_with_type(void)
 }
 
 static void
-test_rng_create(void)
+test_rng_create_serialize(ccs_serialize_format_t format)
 {
 	ccs_rng_t           rng = NULL, rng2 = NULL;
 	ccs_result_t        err = CCS_RESULT_SUCCESS;
@@ -65,7 +65,7 @@ test_rng_create(void)
 	assert(err == CCS_RESULT_SUCCESS);
 
 	err = ccs_object_serialize(
-		rng, CCS_SERIALIZE_FORMAT_BINARY, CCS_SERIALIZE_OPERATION_SIZE,
+		rng, format, CCS_SERIALIZE_OPERATION_SIZE,
 		&buff_size, CCS_SERIALIZE_OPTION_END);
 	assert(err == CCS_RESULT_SUCCESS);
 
@@ -73,13 +73,13 @@ test_rng_create(void)
 	assert(buff);
 
 	err = ccs_object_serialize(
-		rng, CCS_SERIALIZE_FORMAT_BINARY,
+		rng, format,
 		CCS_SERIALIZE_OPERATION_MEMORY, buff_size, buff,
 		CCS_SERIALIZE_OPTION_END);
 	assert(err == CCS_RESULT_SUCCESS);
 
 	err = ccs_object_deserialize(
-		(ccs_object_t *)&rng2, CCS_SERIALIZE_FORMAT_BINARY,
+		(ccs_object_t *)&rng2, format,
 		CCS_DESERIALIZE_OPERATION_MEMORY, buff_size, buff,
 		CCS_DESERIALIZE_OPTION_END);
 	assert(err == CCS_RESULT_SUCCESS);
@@ -172,7 +172,7 @@ test_rng_uniform(void)
 }
 
 static void
-test_rng_file_serialize(void)
+test_rng_file_serialize(ccs_serialize_format_t format)
 {
 	ccs_rng_t           rng = NULL, rng2 = NULL;
 	ccs_object_t        obj;
@@ -195,13 +195,13 @@ test_rng_file_serialize(void)
 
 	/* Serialize to file */
 	err = ccs_object_serialize(
-		rng, CCS_SERIALIZE_FORMAT_BINARY, CCS_SERIALIZE_OPERATION_FILE,
+		rng, format, CCS_SERIALIZE_OPERATION_FILE,
 		tmppath, CCS_SERIALIZE_OPTION_END);
 	assert(err == CCS_RESULT_SUCCESS);
 
 	/* Deserialize from file */
 	err = ccs_object_deserialize(
-		(ccs_object_t *)&rng2, CCS_SERIALIZE_FORMAT_BINARY,
+		(ccs_object_t *)&rng2, format,
 		CCS_DESERIALIZE_OPERATION_FILE, tmppath,
 		CCS_DESERIALIZE_OPTION_END);
 	assert(err == CCS_RESULT_SUCCESS);
@@ -221,7 +221,7 @@ test_rng_file_serialize(void)
 
 	/* Bad file path */
 	err = ccs_object_deserialize(
-		&obj, CCS_SERIALIZE_FORMAT_BINARY,
+		&obj, format,
 		CCS_DESERIALIZE_OPERATION_FILE,
 		"/nonexistent/path/ccs_test.bin", CCS_DESERIALIZE_OPTION_END);
 	assert(err == CCS_RESULT_ERROR_INVALID_FILE_PATH);
@@ -233,7 +233,7 @@ test_rng_file_serialize(void)
 }
 
 static void
-test_rng_fd_serialize_blocking(void)
+test_rng_fd_serialize_blocking(ccs_serialize_format_t format)
 {
 	ccs_rng_t           rng = NULL, rng2 = NULL;
 	ccs_result_t        err;
@@ -253,7 +253,7 @@ test_rng_fd_serialize_blocking(void)
 
 	/* Blocking serialize to pipe write end */
 	err = ccs_object_serialize(
-		rng, CCS_SERIALIZE_FORMAT_BINARY,
+		rng, format,
 		CCS_SERIALIZE_OPERATION_FILE_DESCRIPTOR, pipefd[1],
 		CCS_SERIALIZE_OPTION_END);
 	assert(err == CCS_RESULT_SUCCESS);
@@ -261,7 +261,7 @@ test_rng_fd_serialize_blocking(void)
 
 	/* Blocking deserialize from pipe read end */
 	err = ccs_object_deserialize(
-		(ccs_object_t *)&rng2, CCS_SERIALIZE_FORMAT_BINARY,
+		(ccs_object_t *)&rng2, format,
 		CCS_DESERIALIZE_OPERATION_FILE_DESCRIPTOR, pipefd[0],
 		CCS_DESERIALIZE_OPTION_END);
 	assert(err == CCS_RESULT_SUCCESS);
@@ -381,12 +381,15 @@ main(void)
 {
 	ccs_init();
 	test_rng_create_with_type();
-	test_rng_create();
+	test_rng_create_serialize(CCS_SERIALIZE_FORMAT_BINARY);
+	test_rng_create_serialize(CCS_SERIALIZE_FORMAT_JSON);
 	test_rng_min_max();
 	test_rng_get();
 	test_rng_uniform();
-	test_rng_file_serialize();
-	test_rng_fd_serialize_blocking();
+	test_rng_file_serialize(CCS_SERIALIZE_FORMAT_BINARY);
+	test_rng_file_serialize(CCS_SERIALIZE_FORMAT_JSON);
+	test_rng_fd_serialize_blocking(CCS_SERIALIZE_FORMAT_BINARY);
+	test_rng_fd_serialize_blocking(CCS_SERIALIZE_FORMAT_JSON);
 	test_rng_fd_serialize_non_blocking();
 	ccs_clear_thread_error();
 	ccs_fini();

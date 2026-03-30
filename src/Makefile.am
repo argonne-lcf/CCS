@@ -38,6 +38,7 @@ libcconfigspace_la_SOURCES = \
 	cconfigspace.c \
 	cconfigspace_internal.h \
 	cconfigspace_deserialize.h \
+	cconfigspace_json.h \
 	error_stack.c \
 	error_stack_internal.h \
 	interval.c \

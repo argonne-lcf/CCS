@@ -7,6 +7,23 @@
 #include <errno.h>
 #include <unistd.h>
 #include "version.h"
+#include "cjson/cJSON.h"
+
+/* Forward declarations for JSON serialize/deserialize helpers
+ * (defined in cconfigspace_json.h, included later) */
+static inline ccs_result_t
+_ccs_object_serialize_json_to_string(
+	ccs_object_t                     object,
+	char                           **string_ret,
+	size_t                          *size_ret,
+	_ccs_object_serialize_options_t *opts);
+
+static inline ccs_result_t
+_ccs_object_deserialize_json_from_string(
+	ccs_object_t                      *object_ret,
+	size_t                             buffer_size,
+	const char                        *buffer,
+	_ccs_object_deserialize_options_t *opts);
 
 const ccs_datum_t   ccs_none     = CCS_NONE_VAL;
 const ccs_datum_t   ccs_inactive = CCS_INACTIVE_VAL;
@@ -336,6 +353,15 @@ _ccs_object_serialize_size(
 	CCS_VALIDATE(_ccs_object_serialize_options(
 		format, CCS_SERIALIZE_OPERATION_SIZE, args, &opts));
 	CCS_CHECK_PTR(p_buffer_size);
+	if (format == CCS_SERIALIZE_FORMAT_JSON) {
+		char  *str;
+		size_t sz;
+		CCS_VALIDATE(_ccs_object_serialize_json_to_string(
+			object, &str, &sz, &opts));
+		*p_buffer_size = sz;
+		free(str);
+		return CCS_RESULT_SUCCESS;
+	}
 	CCS_VALIDATE(_ccs_object_header_serialize_size_with_opts(
 		object, format, p_buffer_size, &opts));
 	return CCS_RESULT_SUCCESS;
@@ -373,6 +399,16 @@ _ccs_object_serialize_memory(
 	CCS_CHECK_PTR(buffer);
 	CCS_VALIDATE(_ccs_object_serialize_options(
 		format, CCS_SERIALIZE_OPERATION_MEMORY, args, &opts));
+	if (format == CCS_SERIALIZE_FORMAT_JSON) {
+		char  *str;
+		size_t sz;
+		CCS_VALIDATE(_ccs_object_serialize_json_to_string(
+			object, &str, &sz, &opts));
+		CCS_REFUTE(sz > buffer_size, CCS_RESULT_ERROR_NOT_ENOUGH_DATA);
+		memcpy(buffer, str, sz);
+		free(str);
+		return CCS_RESULT_SUCCESS;
+	}
 	CCS_VALIDATE(_ccs_object_serialize_memory_with_opts(
 		object, format, buffer_size, buffer, &opts));
 	return CCS_RESULT_SUCCESS;
@@ -394,6 +430,26 @@ _ccs_object_serialize_file(
 	CCS_CHECK_PTR(path);
 	CCS_VALIDATE(_ccs_object_serialize_options(
 		format, CCS_SERIALIZE_OPERATION_FILE, args, &opts));
+	if (format == CCS_SERIALIZE_FORMAT_JSON) {
+		char  *str;
+		size_t sz;
+		CCS_VALIDATE(_ccs_object_serialize_json_to_string(
+			object, &str, &sz, &opts));
+		fd = open(path, O_CREAT | O_TRUNC | O_WRONLY,
+			  S_IRUSR | S_IWUSR | S_IWGRP | S_IRGRP | S_IROTH);
+		if (fd == -1) {
+			free(str);
+			CCS_RAISE(CCS_RESULT_ERROR_INVALID_FILE_PATH,
+			          "Could not open file: %s", path);
+		}
+		ssize_t written = write(fd, str, sz);
+		free(str);
+		if (close(fd) == -1 || written < 0 ||
+		    (size_t)written != sz)
+			CCS_RAISE(CCS_RESULT_ERROR_SYSTEM,
+			          "Failed to write JSON to file");
+		return CCS_RESULT_SUCCESS;
+	}
 	fd =
 		open(path, O_CREAT | O_TRUNC | O_RDWR,
 		     S_IRUSR | S_IWUSR | S_IWGRP | S_IRGRP | S_IROTH); // 664
@@ -469,6 +525,31 @@ _ccs_object_serialize_file_descriptor(
 	fd                                     = va_arg(args, int);
 	CCS_VALIDATE(_ccs_object_serialize_options(
 		format, CCS_SERIALIZE_OPERATION_FILE_DESCRIPTOR, args, &opts));
+	if (format == CCS_SERIALIZE_FORMAT_JSON) {
+		CCS_REFUTE(
+			opts.ppfd_state,
+			CCS_RESULT_ERROR_INVALID_VALUE);
+		char  *str;
+		size_t sz;
+		CCS_VALIDATE(_ccs_object_serialize_json_to_string(
+			object, &str, &sz, &opts));
+		size_t remaining = sz;
+		char  *ptr       = str;
+		while (remaining) {
+			ssize_t count = write(fd, ptr, remaining);
+			if (count == -1) {
+				if (errno == EINTR)
+					continue;
+				free(str);
+				CCS_RAISE(CCS_RESULT_ERROR_SYSTEM,
+				          "Failed to write JSON to fd");
+			}
+			remaining -= count;
+			ptr += count;
+		}
+		free(str);
+		return CCS_RESULT_SUCCESS;
+	}
 	/* non blocking */
 	if (opts.ppfd_state) {
 		/* restart */
@@ -587,6 +668,7 @@ end:
 }
 
 #include "cconfigspace_deserialize.h"
+#include "cconfigspace_json.h"
 
 static inline ccs_result_t
 _ccs_object_deserialize(
@@ -605,6 +687,22 @@ _ccs_object_deserialize(
 						  NULL, NULL,      NULL};
 	CCS_VALIDATE(_ccs_object_deserialize_options(
 		format, operation, args, &opts));
+	if (format == CCS_SERIALIZE_FORMAT_JSON) {
+		if (opts.map_values)
+			CCS_VALIDATE(_ccs_map_get_checkpoint(
+				opts.handle_map, &map_checkpoint));
+		CCS_VALIDATE_ERR_GOTO(
+			err,
+			_ccs_object_deserialize_json_from_string(
+				object_ret, *buffer_size, *buffer, &opts),
+			error_json);
+		*buffer_size = 0;
+		return CCS_RESULT_SUCCESS;
+	error_json:
+		if (opts.map_values)
+			_ccs_map_rewind(opts.handle_map, map_checkpoint);
+		return err;
+	}
 	CCS_VALIDATE(_ccs_deserialize_header(
 		format, buffer_size, buffer, &size, &version));
 	if (opts.map_values)
@@ -652,6 +750,46 @@ _ccs_object_deserialize_file(
 	struct stat  stat_buffer;
 	const char  *path = va_arg(args, const char *);
 	CCS_CHECK_PTR(path);
+	if (format == CCS_SERIALIZE_FORMAT_JSON) {
+		fd = open(path, O_RDONLY);
+		CCS_REFUTE(fd == -1, CCS_RESULT_ERROR_INVALID_FILE_PATH);
+		if (fstat(fd, &stat_buffer) == -1) {
+			close(fd);
+			CCS_RAISE(CCS_RESULT_ERROR_SYSTEM,
+			          "fstat failed");
+		}
+		buffer_size = stat_buffer.st_size;
+		char *buf   = (char *)malloc(buffer_size);
+		if (!buf) {
+			close(fd);
+			CCS_RAISE(CCS_RESULT_ERROR_OUT_OF_MEMORY,
+			          "malloc failed for JSON file");
+		}
+		size_t remaining = buffer_size;
+		char  *ptr       = buf;
+		while (remaining) {
+			ssize_t count = read(fd, ptr, remaining);
+			if (count == -1) {
+				if (errno == EINTR)
+					continue;
+				free(buf);
+				close(fd);
+				CCS_RAISE(CCS_RESULT_ERROR_SYSTEM,
+				          "read failed");
+			}
+			if (count == 0)
+				break;
+			remaining -= count;
+			ptr += count;
+		}
+		close(fd);
+		res = _ccs_object_deserialize(
+			object_ret, format,
+			CCS_DESERIALIZE_OPERATION_FILE,
+			&buffer_size, (const char **)&buf, args);
+		free(buf);
+		return res;
+	}
 	fd = open(path, O_RDONLY);
 	CCS_REFUTE(fd == -1, CCS_RESULT_ERROR_INVALID_FILE_PATH);
 	CCS_REFUTE_ERR_GOTO(
@@ -746,6 +884,50 @@ _ccs_object_deserialize_file_descriptor(
 	_ccs_file_descriptor_state_t      state  = {NULL, 0, NULL, 0, -1, 0};
 	_ccs_file_descriptor_state_t     *pstate = NULL;
 	int                               fd     = va_arg(args, int);
+	if (format == CCS_SERIALIZE_FORMAT_JSON) {
+		CCS_VALIDATE(_ccs_object_deserialize_options(
+			format, CCS_DESERIALIZE_OPERATION_FILE_DESCRIPTOR, args,
+			&opts));
+		CCS_REFUTE(
+			opts.ppfd_state,
+			CCS_RESULT_ERROR_INVALID_VALUE);
+		size_t buf_cap = 4096;
+		size_t buf_len = 0;
+		char  *buf     = (char *)malloc(buf_cap);
+		CCS_REFUTE(!buf, CCS_RESULT_ERROR_OUT_OF_MEMORY);
+		for (;;) {
+			if (buf_len == buf_cap) {
+				buf_cap *= 2;
+				char *nb = (char *)realloc(buf, buf_cap);
+				if (!nb) {
+					free(buf);
+					CCS_RAISE(CCS_RESULT_ERROR_OUT_OF_MEMORY,
+					          "realloc failed");
+				}
+				buf = nb;
+			}
+			ssize_t count =
+				read(fd, buf + buf_len, buf_cap - buf_len);
+			if (count == 0)
+				break;
+			if (count == -1) {
+				if (errno == EINTR)
+					continue;
+				free(buf);
+				CCS_RAISE(CCS_RESULT_ERROR_SYSTEM,
+				          "read failed on fd");
+			}
+			buf_len += count;
+		}
+		size_t      bsz = buf_len;
+		const char *bp  = buf;
+		res = _ccs_object_deserialize(
+			object_ret, format,
+			CCS_DESERIALIZE_OPERATION_FILE_DESCRIPTOR,
+			&bsz, &bp, args);
+		free(buf);
+		return res;
+	}
 	CCS_VALIDATE(_ccs_object_deserialize_options(
 		format, CCS_DESERIALIZE_OPERATION_FILE_DESCRIPTOR, args,
 		&opts));
