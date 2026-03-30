@@ -1344,10 +1344,15 @@ _ccs_serialize_ccs_object_internal(
 		const char *type_str =
 			_ccs_json_object_type_to_string(obj->type);
 		CCS_REFUTE(!type_str, CCS_RESULT_ERROR_INVALID_VALUE);
+		cJSON *json = *(cJSON **)buffer;
 		CCS_REFUTE(
-			!cJSON_AddStringToObject(
-				*(cJSON **)buffer, "type", type_str),
+			!cJSON_AddStringToObject(json, "type", type_str),
 			CCS_RESULT_ERROR_OUT_OF_MEMORY);
+		char *hex = _ccs_json_hex_encode(&obj, sizeof(ccs_object_t));
+		CCS_REFUTE(!hex, CCS_RESULT_ERROR_OUT_OF_MEMORY);
+		cJSON *h = cJSON_AddStringToObject(json, "handle", hex);
+		free(hex);
+		CCS_REFUTE(!h, CCS_RESULT_ERROR_OUT_OF_MEMORY);
 	} break;
 	default:
 		CCS_RAISE(
@@ -1422,7 +1427,19 @@ _ccs_deserialize_ccs_object_internal(
 			CCS_RESULT_ERROR_INVALID_VALUE);
 		CCS_VALIDATE(_ccs_json_object_type_from_string(
 			j_type->valuestring, &obj->type));
-		*handle_ret = NULL;
+		cJSON *j_handle =
+			cJSON_GetObjectItemCaseSensitive(json, "handle");
+		CCS_REFUTE(
+			!j_handle || !cJSON_IsString(j_handle),
+			CCS_RESULT_ERROR_INVALID_VALUE);
+		size_t         handle_len;
+		unsigned char *handle_bytes = _ccs_json_hex_decode(
+			j_handle->valuestring, &handle_len);
+		CCS_REFUTE(
+			!handle_bytes || handle_len != sizeof(ccs_object_t),
+			CCS_RESULT_ERROR_INVALID_VALUE);
+		memcpy(handle_ret, handle_bytes, sizeof(ccs_object_t));
+		free(handle_bytes);
 	} break;
 	default:
 		CCS_RAISE(
