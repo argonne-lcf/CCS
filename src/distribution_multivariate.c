@@ -4,6 +4,7 @@
 #include <string.h>
 #include "cconfigspace_internal.h"
 #include "distribution_internal.h"
+#include "cconfigspace_json.h"
 
 struct _ccs_distribution_multivariate_data_s {
 	_ccs_distribution_common_data_t common_data;
@@ -88,6 +89,32 @@ _ccs_serialize_bin_ccs_distribution_multivariate(
 	return CCS_RESULT_SUCCESS;
 }
 
+static inline ccs_result_t
+_ccs_serialize_json_ccs_distribution_multivariate(
+	ccs_distribution_t               distribution,
+	cJSON                           *json,
+	_ccs_object_serialize_options_t *opts)
+{
+	_ccs_distribution_multivariate_data_t *data =
+		(_ccs_distribution_multivariate_data_t *)(distribution->data);
+	CCS_REFUTE(
+		!cJSON_AddStringToObject(
+			json, "distribution_type", "multivariate"),
+		CCS_RESULT_ERROR_OUT_OF_MEMORY);
+	cJSON *distributions = cJSON_AddArrayToObject(json, "distributions");
+	CCS_REFUTE(!distributions, CCS_RESULT_ERROR_OUT_OF_MEMORY);
+	for (size_t i = 0; i < data->num_distributions; i++) {
+		cJSON *child = cJSON_CreateObject();
+		CCS_REFUTE(!child, CCS_RESULT_ERROR_OUT_OF_MEMORY);
+		cJSON_AddItemToArray(distributions, child);
+		size_t dummy = 0;
+		CCS_VALIDATE(_ccs_object_serialize_with_opts(
+			data->distributions[i], CCS_SERIALIZE_FORMAT_JSON,
+			&dummy, (char **)&child, opts));
+	}
+	return CCS_RESULT_SUCCESS;
+}
+
 static ccs_result_t
 _ccs_distribution_multivariate_serialize_size(
 	ccs_object_t                     object,
@@ -100,6 +127,8 @@ _ccs_distribution_multivariate_serialize_size(
 		CCS_VALIDATE(
 			_ccs_serialize_bin_size_ccs_distribution_multivariate(
 				(ccs_distribution_t)object, cum_size, opts));
+		break;
+	case CCS_SERIALIZE_FORMAT_JSON:
 		break;
 	default:
 		CCS_RAISE(
@@ -121,6 +150,10 @@ _ccs_distribution_multivariate_serialize(
 	case CCS_SERIALIZE_FORMAT_BINARY:
 		CCS_VALIDATE(_ccs_serialize_bin_ccs_distribution_multivariate(
 			(ccs_distribution_t)object, buffer_size, buffer, opts));
+		break;
+	case CCS_SERIALIZE_FORMAT_JSON:
+		CCS_VALIDATE(_ccs_serialize_json_ccs_distribution_multivariate(
+			(ccs_distribution_t)object, *(cJSON **)buffer, opts));
 		break;
 	default:
 		CCS_RAISE(
