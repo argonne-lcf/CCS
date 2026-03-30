@@ -901,6 +901,8 @@ ccs_object_set_serialize_callback(
 enum ccs_serialize_format_e {
 	/** A binary format that should be compact and performant. */
 	CCS_SERIALIZE_FORMAT_BINARY,
+	/** A human-readable JSON format. */
+	CCS_SERIALIZE_FORMAT_JSON,
 	/** Guard */
 	CCS_SERIALIZE_FORMAT_MAX,
 	/** Try forcing 32 bits value for bindings */

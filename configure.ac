@@ -99,6 +99,7 @@ AC_CONFIG_HEADERS([src/config.h])
 AC_CONFIG_FILES([Makefile
 		include/Makefile
 		src/Makefile
+		src/cjson/Makefile
 		tests/Makefile
 		connectors/Makefile
 		bindings/Makefile

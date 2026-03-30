@@ -11,8 +11,10 @@ if THREAD_SAFE
 AM_CFLAGS += -DTHREAD_SAFE
 endif
 
+SUBDIRS = cjson
+
 lib_LTLIBRARIES = libcconfigspace.la
-libcconfigspace_la_LIBADD = $(CODE_COVERAGE_LIBS)
+libcconfigspace_la_LIBADD = cjson/libcjson.la $(CODE_COVERAGE_LIBS)
 
 version.h: $(srcdir)/version.h.subst .version_timestamp
 	@echo Processing $@; sh $(top_srcdir)/build-aux/version-subst $(CURVER) $< $@
@@ -36,6 +38,7 @@ libcconfigspace_la_SOURCES = \
 	cconfigspace.c \
 	cconfigspace_internal.h \
 	cconfigspace_deserialize.h \
+	cconfigspace_json.h \
 	error_stack.c \
 	error_stack_internal.h \
 	interval.c \
