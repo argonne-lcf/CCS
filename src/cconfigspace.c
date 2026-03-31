@@ -706,7 +706,7 @@ ccs_object_serialize(
 	...)
 {
 	_ccs_object_internal_t *obj = (_ccs_object_internal_t *)object;
-	ccs_result_t            res = CCS_RESULT_SUCCESS;
+	ccs_result_t            res;
 	va_list                 args;
 
 	CCS_REFUTE(!obj || !obj->ops, CCS_RESULT_ERROR_INVALID_OBJECT);
