@@ -1,5 +1,6 @@
 #include "test_utils.h"
 #include <assert.h>
+#include <stdlib.h>
 
 void
 print_ccs_error_stack(void)
@@ -118,4 +119,31 @@ create_knobs(ccs_features_t *features_on, ccs_features_t *features_off)
 	assert(err == CCS_RESULT_SUCCESS);
 
 	return fspace;
+}
+
+void
+test_serialize_deserialize(
+	ccs_object_t           object,
+	ccs_serialize_format_t format,
+	ccs_object_t          *object_ret)
+{
+	ccs_result_t err;
+	char        *buff;
+	size_t       buff_size;
+
+	err = ccs_object_serialize(
+		object, format, CCS_SERIALIZE_OPERATION_SIZE, &buff_size,
+		CCS_SERIALIZE_OPTION_END);
+	assert(err == CCS_RESULT_SUCCESS);
+	buff = (char *)malloc(buff_size);
+	assert(buff);
+	err = ccs_object_serialize(
+		object, format, CCS_SERIALIZE_OPERATION_MEMORY, buff_size, buff,
+		CCS_SERIALIZE_OPTION_END);
+	assert(err == CCS_RESULT_SUCCESS);
+	err = ccs_object_deserialize(
+		object_ret, format, CCS_DESERIALIZE_OPERATION_MEMORY, buff_size,
+		buff, CCS_DESERIALIZE_OPTION_END);
+	assert(err == CCS_RESULT_SUCCESS);
+	free(buff);
 }

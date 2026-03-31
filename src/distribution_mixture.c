@@ -142,8 +142,6 @@ _ccs_distribution_mixture_serialize_size(
 		CCS_VALIDATE(_ccs_serialize_bin_size_ccs_distribution_mixture(
 			(ccs_distribution_t)object, cum_size, opts));
 		break;
-	case CCS_SERIALIZE_FORMAT_JSON:
-		break;
 	default:
 		CCS_RAISE(
 			CCS_RESULT_ERROR_INVALID_VALUE,

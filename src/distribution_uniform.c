@@ -158,8 +158,6 @@ _ccs_distribution_uniform_serialize_size(
 		*cum_size += _ccs_serialize_bin_size_ccs_distribution_uniform(
 			(ccs_distribution_t)object);
 		break;
-	case CCS_SERIALIZE_FORMAT_JSON:
-		break;
 	default:
 		CCS_RAISE(
 			CCS_RESULT_ERROR_INVALID_VALUE,

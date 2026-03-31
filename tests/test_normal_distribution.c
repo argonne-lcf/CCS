@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <assert.h>
 #include <cconfigspace.h>
+#include "test_utils.h"
 #include <gsl/gsl_statistics.h>
 #include <gsl/gsl_randist.h>
 #include <gsl/gsl_cdf.h>
@@ -59,34 +60,6 @@ compare_distribution(
 }
 
 static void
-test_serialize_deserialize(
-	ccs_distribution_t     distrib,
-	ccs_serialize_format_t format,
-	ccs_distribution_t    *distrib_ret)
-{
-	ccs_result_t err;
-	char        *buff;
-	size_t       buff_size;
-
-	err = ccs_object_serialize(
-		distrib, format, CCS_SERIALIZE_OPERATION_SIZE, &buff_size,
-		CCS_SERIALIZE_OPTION_END);
-	assert(err == CCS_RESULT_SUCCESS);
-	buff = (char *)malloc(buff_size);
-	assert(buff);
-	err = ccs_object_serialize(
-		distrib, format, CCS_SERIALIZE_OPERATION_MEMORY, buff_size,
-		buff, CCS_SERIALIZE_OPTION_END);
-	assert(err == CCS_RESULT_SUCCESS);
-	err = ccs_object_deserialize(
-		(ccs_object_t *)distrib_ret, format,
-		CCS_DESERIALIZE_OPERATION_MEMORY, buff_size, buff,
-		CCS_DESERIALIZE_OPTION_END);
-	assert(err == CCS_RESULT_SUCCESS);
-	free(buff);
-}
-
-static void
 test_create_normal_distribution(void)
 {
 	ccs_distribution_t distrib  = NULL;
@@ -100,13 +73,15 @@ test_create_normal_distribution(void)
 	compare_distribution(distrib, 1.0, 2.0, CCSF(0.0));
 
 	test_serialize_deserialize(
-		distrib, CCS_SERIALIZE_FORMAT_BINARY, &distrib2);
+		(ccs_object_t)distrib, CCS_SERIALIZE_FORMAT_BINARY,
+		(ccs_object_t *)&distrib2);
 	compare_distribution(distrib2, 1.0, 2.0, CCSF(0.0));
 	err = ccs_release_object(distrib2);
 	assert(err == CCS_RESULT_SUCCESS);
 
 	test_serialize_deserialize(
-		distrib, CCS_SERIALIZE_FORMAT_JSON, &distrib2);
+		(ccs_object_t)distrib, CCS_SERIALIZE_FORMAT_JSON,
+		(ccs_object_t *)&distrib2);
 	compare_distribution(distrib2, 1.0, 2.0, CCSF(0.0));
 	err = ccs_release_object(distrib2);
 	assert(err == CCS_RESULT_SUCCESS);

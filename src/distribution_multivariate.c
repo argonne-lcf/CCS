@@ -128,8 +128,6 @@ _ccs_distribution_multivariate_serialize_size(
 			_ccs_serialize_bin_size_ccs_distribution_multivariate(
 				(ccs_distribution_t)object, cum_size, opts));
 		break;
-	case CCS_SERIALIZE_FORMAT_JSON:
-		break;
 	default:
 		CCS_RAISE(
 			CCS_RESULT_ERROR_INVALID_VALUE,
