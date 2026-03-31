@@ -549,7 +549,7 @@ _ccs_object_serialize_file(
 	size_t                          buffer_size = 0;
 	const char                     *path;
 	int                             fd;
-	ccs_result_t                    res  = CCS_RESULT_SUCCESS;
+	ccs_result_t                    res;
 	_ccs_object_serialize_options_t opts = {NULL, NULL, NULL};
 	path                                 = va_arg(args, const char *);
 	CCS_CHECK_PTR(path);
