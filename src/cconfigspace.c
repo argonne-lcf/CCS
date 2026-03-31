@@ -1225,7 +1225,7 @@ ccs_object_deserialize(
 	ccs_deserialize_operation_t operation,
 	...)
 {
-	ccs_result_t res = CCS_RESULT_SUCCESS;
+	ccs_result_t res;
 	va_list      args;
 
 	CCS_CHECK_PTR(object_ret);
