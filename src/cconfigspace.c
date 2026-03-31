@@ -541,7 +541,7 @@ _ccs_object_serialize_file(
 	size_t                          buffer_size = 0;
 	const char                     *path;
 	int                             fd;
-	ccs_result_t                    res;
+	ccs_result_t                    res  = CCS_RESULT_SUCCESS;
 	_ccs_object_serialize_options_t opts = {NULL, NULL, NULL};
 	path                                 = va_arg(args, const char *);
 	CCS_CHECK_PTR(path);
@@ -615,7 +615,7 @@ _ccs_object_serialize_file_descriptor(
 	va_list                args)
 {
 	int                             fd;
-	ccs_result_t                    res;
+	ccs_result_t                    res    = CCS_RESULT_SUCCESS;
 	_ccs_object_serialize_options_t opts   = {NULL, NULL, NULL};
 	_ccs_file_descriptor_state_t    state  = {NULL, 0, NULL, 0, -1, 0};
 	_ccs_file_descriptor_state_t   *pstate = NULL;
@@ -698,7 +698,7 @@ ccs_object_serialize(
 	...)
 {
 	_ccs_object_internal_t *obj = (_ccs_object_internal_t *)object;
-	ccs_result_t            res;
+	ccs_result_t            res = CCS_RESULT_SUCCESS;
 	va_list                 args;
 
 	CCS_REFUTE(!obj || !obj->ops, CCS_RESULT_ERROR_INVALID_OBJECT);
@@ -1136,9 +1136,9 @@ _ccs_object_deserialize_file_descriptor_header(
 	_ccs_file_descriptor_state_t     **pstate_ptr,
 	_ccs_object_deserialize_options_t *opts)
 {
-	ccs_result_t res;
-	res = _ccs_object_deserialize_file_descriptor_header_read(
-		format, non_blocking, fd, header_size, pstate_ptr, opts);
+	ccs_result_t res = CCS_RESULT_SUCCESS;
+	res              = _ccs_object_deserialize_file_descriptor_header_read(
+                format, non_blocking, fd, header_size, pstate_ptr, opts);
 	if (res != CCS_RESULT_SUCCESS)
 		return res;
 	return _ccs_object_deserialize_file_descriptor_header_decode(
@@ -1214,7 +1214,7 @@ ccs_object_deserialize(
 	ccs_deserialize_operation_t operation,
 	...)
 {
-	ccs_result_t res;
+	ccs_result_t res = CCS_RESULT_SUCCESS;
 	va_list      args;
 
 	CCS_CHECK_PTR(object_ret);
