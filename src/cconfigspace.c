@@ -623,7 +623,7 @@ _ccs_object_serialize_file_descriptor(
 	va_list                args)
 {
 	int                             fd;
-	ccs_result_t                    res;
+	ccs_result_t                    res    = CCS_RESULT_SUCCESS;
 	_ccs_object_serialize_options_t opts   = {NULL, NULL, NULL};
 	_ccs_file_descriptor_state_t    state  = {NULL, 0, NULL, 0, -1, 0};
 	_ccs_file_descriptor_state_t   *pstate = NULL;
