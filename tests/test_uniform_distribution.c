@@ -55,26 +55,17 @@ compare_distribution(
 }
 
 static void
-test_create_uniform_distribution(void)
+test_serialize_deserialize(
+	ccs_distribution_t     distrib,
+	ccs_serialize_format_t format,
+	ccs_distribution_t    *distrib_ret)
 {
-	ccs_distribution_t distrib = NULL;
-	ccs_result_t       err     = CCS_RESULT_SUCCESS;
-	ccs_int_t          l       = -10L;
-	ccs_int_t          u       = 11L;
-	ccs_int_t          q       = 0L;
-	char              *buff;
-	size_t             buff_size;
-
-	err = ccs_create_uniform_distribution(
-		CCS_NUMERIC_TYPE_INT, CCSI(l), CCSI(u), CCS_SCALE_TYPE_LINEAR,
-		CCSI(q), &distrib);
-	assert(err == CCS_RESULT_SUCCESS);
-
-	compare_distribution(distrib, l, u, q);
+	ccs_result_t err;
+	char        *buff;
+	size_t       buff_size;
 
 	err = ccs_object_serialize(
-		distrib, CCS_SERIALIZE_FORMAT_BINARY,
-		CCS_SERIALIZE_OPERATION_SIZE, &buff_size,
+		distrib, format, CCS_SERIALIZE_OPERATION_SIZE, &buff_size,
 		CCS_SERIALIZE_OPTION_END);
 	assert(err == CCS_RESULT_SUCCESS);
 
@@ -82,22 +73,46 @@ test_create_uniform_distribution(void)
 	assert(buff);
 
 	err = ccs_object_serialize(
-		distrib, CCS_SERIALIZE_FORMAT_BINARY,
-		CCS_SERIALIZE_OPERATION_MEMORY, buff_size, buff,
-		CCS_SERIALIZE_OPTION_END);
-	assert(err == CCS_RESULT_SUCCESS);
-
-	err = ccs_release_object(distrib);
+		distrib, format, CCS_SERIALIZE_OPERATION_MEMORY, buff_size,
+		buff, CCS_SERIALIZE_OPTION_END);
 	assert(err == CCS_RESULT_SUCCESS);
 
 	err = ccs_object_deserialize(
-		(ccs_object_t *)&distrib, CCS_SERIALIZE_FORMAT_BINARY,
+		(ccs_object_t *)distrib_ret, format,
 		CCS_DESERIALIZE_OPERATION_MEMORY, buff_size, buff,
 		CCS_DESERIALIZE_OPTION_END);
 	assert(err == CCS_RESULT_SUCCESS);
 	free(buff);
+}
+
+static void
+test_create_uniform_distribution(void)
+{
+	ccs_distribution_t distrib  = NULL;
+	ccs_distribution_t distrib2 = NULL;
+	ccs_result_t       err      = CCS_RESULT_SUCCESS;
+	ccs_int_t          l        = -10L;
+	ccs_int_t          u        = 11L;
+	ccs_int_t          q        = 0L;
+
+	err                         = ccs_create_uniform_distribution(
+                CCS_NUMERIC_TYPE_INT, CCSI(l), CCSI(u), CCS_SCALE_TYPE_LINEAR,
+                CCSI(q), &distrib);
+	assert(err == CCS_RESULT_SUCCESS);
 
 	compare_distribution(distrib, l, u, q);
+
+	test_serialize_deserialize(
+		distrib, CCS_SERIALIZE_FORMAT_BINARY, &distrib2);
+	compare_distribution(distrib2, l, u, q);
+	err = ccs_release_object(distrib2);
+	assert(err == CCS_RESULT_SUCCESS);
+
+	test_serialize_deserialize(
+		distrib, CCS_SERIALIZE_FORMAT_JSON, &distrib2);
+	compare_distribution(distrib2, l, u, q);
+	err = ccs_release_object(distrib2);
+	assert(err == CCS_RESULT_SUCCESS);
 
 	err = ccs_release_object(distrib);
 	assert(err == CCS_RESULT_SUCCESS);

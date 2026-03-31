@@ -61,15 +61,42 @@ compare_distribution(
 	assert(refcount == 1);
 }
 
+static void
+test_serialize_deserialize(
+	ccs_distribution_t     distrib,
+	ccs_serialize_format_t format,
+	ccs_distribution_t    *distrib_ret)
+{
+	ccs_result_t err;
+	char        *buff;
+	size_t       buff_size;
+
+	err = ccs_object_serialize(
+		distrib, format, CCS_SERIALIZE_OPERATION_SIZE, &buff_size,
+		CCS_SERIALIZE_OPTION_END);
+	assert(err == CCS_RESULT_SUCCESS);
+	buff = (char *)malloc(buff_size);
+	assert(buff);
+	err = ccs_object_serialize(
+		distrib, format, CCS_SERIALIZE_OPERATION_MEMORY, buff_size,
+		buff, CCS_SERIALIZE_OPTION_END);
+	assert(err == CCS_RESULT_SUCCESS);
+	err = ccs_object_deserialize(
+		(ccs_object_t *)distrib_ret, format,
+		CCS_DESERIALIZE_OPERATION_MEMORY, buff_size, buff,
+		CCS_DESERIALIZE_OPTION_END);
+	assert(err == CCS_RESULT_SUCCESS);
+	free(buff);
+}
+
 void
 test_create_roulette_distribution(void)
 {
 	ccs_distribution_t distrib   = NULL;
+	ccs_distribution_t distrib2  = NULL;
 	ccs_result_t       err       = CCS_RESULT_SUCCESS;
 	const size_t       num_areas = NUM_AREAS;
 	ccs_float_t        areas[NUM_AREAS];
-	char              *buff;
-	size_t             buff_size;
 
 	for (size_t i = 0; i < num_areas; i++) {
 		areas[i] = (ccs_float_t)(i + 1);
@@ -77,35 +104,19 @@ test_create_roulette_distribution(void)
 
 	err = ccs_create_roulette_distribution(num_areas, areas, &distrib);
 	assert(err == CCS_RESULT_SUCCESS);
-
 	compare_distribution(distrib, num_areas, areas);
 
-	err = ccs_object_serialize(
-		distrib, CCS_SERIALIZE_FORMAT_BINARY,
-		CCS_SERIALIZE_OPERATION_SIZE, &buff_size,
-		CCS_SERIALIZE_OPTION_END);
+	test_serialize_deserialize(
+		distrib, CCS_SERIALIZE_FORMAT_BINARY, &distrib2);
+	compare_distribution(distrib2, num_areas, areas);
+	err = ccs_release_object(distrib2);
 	assert(err == CCS_RESULT_SUCCESS);
 
-	buff = (char *)malloc(buff_size);
-	assert(buff);
-
-	err = ccs_object_serialize(
-		distrib, CCS_SERIALIZE_FORMAT_BINARY,
-		CCS_SERIALIZE_OPERATION_MEMORY, buff_size, buff,
-		CCS_SERIALIZE_OPTION_END);
+	test_serialize_deserialize(
+		distrib, CCS_SERIALIZE_FORMAT_JSON, &distrib2);
+	compare_distribution(distrib2, num_areas, areas);
+	err = ccs_release_object(distrib2);
 	assert(err == CCS_RESULT_SUCCESS);
-
-	err = ccs_release_object(distrib);
-	assert(err == CCS_RESULT_SUCCESS);
-
-	err = ccs_object_deserialize(
-		(ccs_object_t *)&distrib, CCS_SERIALIZE_FORMAT_BINARY,
-		CCS_DESERIALIZE_OPERATION_MEMORY, buff_size, buff,
-		CCS_DESERIALIZE_OPTION_END);
-	assert(err == CCS_RESULT_SUCCESS);
-	free(buff);
-
-	compare_distribution(distrib, num_areas, areas);
 
 	err = ccs_release_object(distrib);
 	assert(err == CCS_RESULT_SUCCESS);
