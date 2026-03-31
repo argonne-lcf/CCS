@@ -240,6 +240,11 @@ _ccs_serialize_header(
 				header, "version",
 				CCS_SERIALIZATION_API_VERSION),
 			CCS_RESULT_ERROR_OUT_OF_MEMORY);
+		char *hex = _ccs_json_hex_encode(&size, sizeof(size_t));
+		CCS_REFUTE(!hex, CCS_RESULT_ERROR_OUT_OF_MEMORY);
+		cJSON *s = cJSON_AddStringToObject(header, "size", hex);
+		free(hex);
+		CCS_REFUTE(!s, CCS_RESULT_ERROR_OUT_OF_MEMORY);
 	} break;
 	default:
 		CCS_RAISE(
@@ -275,6 +280,31 @@ _ccs_deserialize_header(
 		CCS_REFUTE(
 			*version > CCS_SERIALIZATION_API_VERSION,
 			CCS_RESULT_ERROR_INVALID_VALUE);
+	} break;
+	case CCS_SERIALIZE_FORMAT_JSON: {
+		cJSON *j_header = *(cJSON **)buffer;
+		cJSON *j_version =
+			cJSON_GetObjectItemCaseSensitive(j_header, "version");
+		cJSON *j_size =
+			cJSON_GetObjectItemCaseSensitive(j_header, "size");
+		CCS_REFUTE(
+			!j_version || !cJSON_IsNumber(j_version),
+			CCS_RESULT_ERROR_INVALID_VALUE);
+		*version = (uint32_t)j_version->valuedouble;
+		CCS_REFUTE(
+			*version > CCS_SERIALIZATION_API_VERSION,
+			CCS_RESULT_ERROR_INVALID_VALUE);
+		CCS_REFUTE(
+			!j_size || !cJSON_IsString(j_size),
+			CCS_RESULT_ERROR_INVALID_VALUE);
+		size_t         sz_len;
+		unsigned char *sz_bytes =
+			_ccs_json_hex_decode(j_size->valuestring, &sz_len);
+		CCS_REFUTE(
+			!sz_bytes || sz_len != sizeof(size_t),
+			CCS_RESULT_ERROR_INVALID_VALUE);
+		memcpy(size, sz_bytes, sizeof(size_t));
+		free(sz_bytes);
 	} break;
 	default:
 		CCS_RAISE(
@@ -377,8 +407,11 @@ _ccs_object_serialize_memory_with_opts(
 		cJSON       *obj_node = NULL;
 		char        *str      = NULL;
 		char        *bp       = NULL;
+		char        *size_hex = NULL;
+		char        *size_loc = NULL;
 		size_t       dummy    = 0;
 		size_t       sz       = 0;
+		size_t       hex_len  = sizeof(size_t) * 2;
 		root                  = cJSON_CreateObject();
 		CCS_REFUTE(!root, CCS_RESULT_ERROR_OUT_OF_MEMORY);
 		bp = (char *)root;
@@ -399,7 +432,21 @@ _ccs_object_serialize_memory_with_opts(
 		cJSON_Delete(root);
 		root = NULL;
 		CCS_REFUTE(!str, CCS_RESULT_ERROR_OUT_OF_MEMORY);
-		sz = strlen(str) + 1;
+		sz       = strlen(str) + 1;
+		/* patch the size placeholder in the printed string */
+		size_hex = _ccs_json_hex_encode(&sz, sizeof(size_t));
+		if (!size_hex) {
+			free(str);
+			CCS_RAISE(
+				CCS_RESULT_ERROR_OUT_OF_MEMORY,
+				"hex encode failed");
+		}
+		size_loc = strstr(str, "\"size\":\"");
+		if (size_loc) {
+			size_loc += strlen("\"size\":\"");
+			memcpy(size_loc, size_hex, hex_len);
+		}
+		free(size_hex);
 		if (sz > buffer_size) {
 			free(str);
 			CCS_RAISE(
@@ -668,22 +715,74 @@ _ccs_object_deserialize(
 						  NULL, NULL,      NULL};
 	CCS_VALIDATE(_ccs_object_deserialize_options(
 		format, operation, args, &opts));
-	CCS_VALIDATE(_ccs_deserialize_header(
-		format, buffer_size, buffer, &size, &version));
-	if (opts.map_values)
-		CCS_VALIDATE(_ccs_map_get_checkpoint(
-			opts.handle_map, &map_checkpoint));
-	CCS_VALIDATE_ERR_GOTO(
-		err,
-		_ccs_object_deserialize_with_opts(
-			object_ret, format, version, buffer_size, buffer,
-			&opts),
-		error);
-	return CCS_RESULT_SUCCESS;
-error:
-	if (opts.map_values)
-		_ccs_map_rewind(opts.handle_map, map_checkpoint);
-	return err;
+	switch (format) {
+	case CCS_SERIALIZE_FORMAT_BINARY:
+		CCS_VALIDATE(_ccs_deserialize_header(
+			format, buffer_size, buffer, &size, &version));
+		if (opts.map_values)
+			CCS_VALIDATE(_ccs_map_get_checkpoint(
+				opts.handle_map, &map_checkpoint));
+		CCS_VALIDATE_ERR_GOTO(
+			err,
+			_ccs_object_deserialize_with_opts(
+				object_ret, format, version, buffer_size,
+				buffer, &opts),
+			error);
+		return CCS_RESULT_SUCCESS;
+	error:
+		if (opts.map_values)
+			_ccs_map_rewind(opts.handle_map, map_checkpoint);
+		return err;
+	case CCS_SERIALIZE_FORMAT_JSON: {
+		cJSON      *root     = NULL;
+		cJSON      *j_header = NULL;
+		cJSON      *j_obj    = NULL;
+		const char *hdr_buf  = NULL;
+		const char *obj_buf  = NULL;
+		size_t      dummy    = 0;
+		root = cJSON_ParseWithLength(*buffer, *buffer_size);
+		CCS_REFUTE(!root, CCS_RESULT_ERROR_INVALID_VALUE);
+		j_header = cJSON_GetObjectItemCaseSensitive(root, "header");
+		CCS_REFUTE_ERR_GOTO(
+			err, !j_header || !cJSON_IsObject(j_header),
+			CCS_RESULT_ERROR_INVALID_VALUE, err_json);
+		j_obj = cJSON_GetObjectItemCaseSensitive(root, "object");
+		CCS_REFUTE_ERR_GOTO(
+			err, !j_obj || !cJSON_IsObject(j_obj),
+			CCS_RESULT_ERROR_INVALID_VALUE, err_json);
+		hdr_buf = (const char *)j_header;
+		CCS_VALIDATE_ERR_GOTO(
+			err,
+			_ccs_deserialize_header(
+				format, &dummy, &hdr_buf, &size, &version),
+			err_json);
+		if (opts.map_values)
+			CCS_VALIDATE_ERR_GOTO(
+				err,
+				_ccs_map_get_checkpoint(
+					opts.handle_map, &map_checkpoint),
+				err_json);
+		obj_buf = (const char *)j_obj;
+		CCS_VALIDATE_ERR_GOTO(
+			err,
+			_ccs_object_deserialize_with_opts(
+				object_ret, format, version, &dummy, &obj_buf,
+				&opts),
+			err_json_map);
+		cJSON_Delete(root);
+		return CCS_RESULT_SUCCESS;
+	err_json_map:
+		if (opts.map_values)
+			_ccs_map_rewind(opts.handle_map, map_checkpoint);
+	err_json:
+		cJSON_Delete(root);
+		return err;
+	}
+	default:
+		CCS_RAISE(
+			CCS_RESULT_ERROR_INVALID_VALUE,
+			"Unsupported serialization format: %d", format);
+	}
 }
 
 static inline ccs_result_t
@@ -809,7 +908,7 @@ _ccs_object_deserialize_file_descriptor(
 	_ccs_file_descriptor_state_t      state  = {NULL, 0, NULL, 0, -1, 0};
 	_ccs_file_descriptor_state_t     *pstate = NULL;
 	va_list                           args_copy;
-	int fd = va_arg(args, int);
+	int                               fd = va_arg(args, int);
 	va_copy(args_copy, args);
 	CCS_VALIDATE(_ccs_object_deserialize_options(
 		format, CCS_DESERIALIZE_OPERATION_FILE_DESCRIPTOR, args,
