@@ -808,7 +808,9 @@ _ccs_object_deserialize_file_descriptor(
 						    NULL, NULL,      NULL};
 	_ccs_file_descriptor_state_t      state  = {NULL, 0, NULL, 0, -1, 0};
 	_ccs_file_descriptor_state_t     *pstate = NULL;
-	int                               fd     = va_arg(args, int);
+	va_list                           args_copy;
+	int fd = va_arg(args, int);
+	va_copy(args_copy, args);
 	CCS_VALIDATE(_ccs_object_deserialize_options(
 		format, CCS_DESERIALIZE_OPERATION_FILE_DESCRIPTOR, args,
 		&opts));
@@ -895,21 +897,23 @@ _ccs_object_deserialize_file_descriptor(
 	}
 	/* read rest of object */
 	FD_READ_LOOP(pstate, non_blocking);
-	/* rewind */
-	offset = header_size;
+	/* rewind to start of buffer (including header) */
+	offset = 0;
 	if (non_blocking)
 		offset += sizeof(_ccs_file_descriptor_state_t);
 	pstate->buffer_size = pstate->base_size - offset;
 	pstate->buffer      = pstate->base + offset;
-	/* decode object */
+	/* decode via _ccs_object_deserialize (header + object) */
 	CCS_VALIDATE_ERR_GOTO(
 		res,
-		_ccs_object_deserialize_with_opts(
-			object_ret, format, pstate->version,
+		_ccs_object_deserialize(
+			object_ret, format,
+			CCS_DESERIALIZE_OPERATION_FILE_DESCRIPTOR,
 			&pstate->buffer_size, (const char **)&pstate->buffer,
-			&opts),
+			args_copy),
 		err_fd_buffer);
 err_fd_buffer:
+	va_end(args_copy);
 	free(pstate->base);
 	if (opts.ppfd_state)
 		*(opts.ppfd_state) = NULL;
