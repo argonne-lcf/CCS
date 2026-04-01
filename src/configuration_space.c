@@ -1,4 +1,5 @@
 #include "cconfigspace_internal.h"
+#include "cconfigspace_json.h"
 #include "configuration_space_internal.h"
 #include "distribution_space_internal.h"
 #include "configuration_internal.h"
@@ -198,6 +199,98 @@ _ccs_serialize_bin_ccs_configuration_space(
 	return CCS_RESULT_SUCCESS;
 }
 
+static inline ccs_result_t
+_ccs_serialize_json_ccs_configuration_space(
+	ccs_configuration_space_t        configuration_space,
+	cJSON                           *json,
+	_ccs_object_serialize_options_t *opts)
+{
+	_ccs_configuration_space_data_t *data =
+		(_ccs_configuration_space_data_t *)(configuration_space->data);
+	size_t dummy = 0;
+
+	CCS_REFUTE(
+		!cJSON_AddStringToObject(json, "name", data->name),
+		CCS_RESULT_ERROR_OUT_OF_MEMORY);
+
+	/* feature space (optional) */
+	if (data->feature_space) {
+		cJSON *fs = cJSON_AddObjectToObject(json, "feature_space");
+		CCS_REFUTE(!fs, CCS_RESULT_ERROR_OUT_OF_MEMORY);
+		CCS_VALIDATE(_ccs_object_serialize_with_opts(
+			data->feature_space, CCS_SERIALIZE_FORMAT_JSON, &dummy,
+			(char **)&fs, opts));
+	}
+
+	/* rng */
+	{
+		cJSON *rng_node = cJSON_AddObjectToObject(json, "rng");
+		CCS_REFUTE(!rng_node, CCS_RESULT_ERROR_OUT_OF_MEMORY);
+		CCS_VALIDATE(_ccs_object_serialize_with_opts(
+			data->rng, CCS_SERIALIZE_FORMAT_JSON, &dummy,
+			(char **)&rng_node, opts));
+	}
+
+	/* parameters */
+	{
+		cJSON *params = cJSON_AddArrayToObject(json, "parameters");
+		CCS_REFUTE(!params, CCS_RESULT_ERROR_OUT_OF_MEMORY);
+		for (size_t i = 0; i < data->num_parameters; i++) {
+			cJSON *child = cJSON_CreateObject();
+			CCS_REFUTE(!child, CCS_RESULT_ERROR_OUT_OF_MEMORY);
+			cJSON_AddItemToArray(params, child);
+			CCS_VALIDATE(_ccs_object_serialize_with_opts(
+				data->parameters[i], CCS_SERIALIZE_FORMAT_JSON,
+				&dummy, (char **)&child, opts));
+		}
+	}
+
+	/* conditions -- array of {index, expression} */
+	{
+		cJSON *conds = cJSON_AddArrayToObject(json, "conditions");
+		CCS_REFUTE(!conds, CCS_RESULT_ERROR_OUT_OF_MEMORY);
+		for (size_t i = 0; i < data->num_parameters; i++) {
+			if (data->conditions[i]) {
+				cJSON *cond = cJSON_CreateObject();
+				cJSON *expr;
+				CCS_REFUTE(
+					!cond, CCS_RESULT_ERROR_OUT_OF_MEMORY);
+				cJSON_AddItemToArray(conds, cond);
+				CCS_REFUTE(
+					!cJSON_AddNumberToObject(
+						cond, "index", (double)i),
+					CCS_RESULT_ERROR_OUT_OF_MEMORY);
+				expr = cJSON_AddObjectToObject(
+					cond, "expression");
+				CCS_REFUTE(
+					!expr, CCS_RESULT_ERROR_OUT_OF_MEMORY);
+				CCS_VALIDATE(_ccs_object_serialize_with_opts(
+					data->conditions[i],
+					CCS_SERIALIZE_FORMAT_JSON, &dummy,
+					(char **)&expr, opts));
+			}
+		}
+	}
+
+	/* forbidden clauses */
+	{
+		cJSON *forbids =
+			cJSON_AddArrayToObject(json, "forbidden_clauses");
+		CCS_REFUTE(!forbids, CCS_RESULT_ERROR_OUT_OF_MEMORY);
+		for (size_t i = 0; i < data->num_forbidden_clauses; i++) {
+			cJSON *child = cJSON_CreateObject();
+			CCS_REFUTE(!child, CCS_RESULT_ERROR_OUT_OF_MEMORY);
+			cJSON_AddItemToArray(forbids, child);
+			CCS_VALIDATE(_ccs_object_serialize_with_opts(
+				data->forbidden_clauses[i],
+				CCS_SERIALIZE_FORMAT_JSON, &dummy,
+				(char **)&child, opts));
+		}
+	}
+
+	return CCS_RESULT_SUCCESS;
+}
+
 static ccs_result_t
 _ccs_configuration_space_serialize_size(
 	ccs_object_t                     object,
@@ -230,6 +323,11 @@ _ccs_configuration_space_serialize(
 	case CCS_SERIALIZE_FORMAT_BINARY:
 		CCS_VALIDATE(_ccs_serialize_bin_ccs_configuration_space(
 			(ccs_configuration_space_t)object, buffer_size, buffer,
+			opts));
+		break;
+	case CCS_SERIALIZE_FORMAT_JSON:
+		CCS_VALIDATE(_ccs_serialize_json_ccs_configuration_space(
+			(ccs_configuration_space_t)object, *(cJSON **)buffer,
 			opts));
 		break;
 	default:
