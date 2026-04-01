@@ -97,6 +97,46 @@ _ccs_serialize_bin_ccs_tree_space_dynamic(
 	return CCS_RESULT_SUCCESS;
 }
 
+static inline ccs_result_t
+_ccs_serialize_json_ccs_tree_space_dynamic(
+	ccs_tree_space_t                 tree_space,
+	cJSON                           *json,
+	_ccs_object_serialize_options_t *opts)
+{
+	_ccs_tree_space_dynamic_data_t *data =
+		(_ccs_tree_space_dynamic_data_t *)tree_space->data;
+	CCS_VALIDATE(_ccs_serialize_json_ccs_tree_space_common_data(
+		&data->common_data, json, opts));
+
+	/* user state blob */
+	{
+		size_t state_size = 0;
+		if (data->vector.serialize_user_state)
+			CCS_VALIDATE(data->vector.serialize_user_state(
+				tree_space, 0, NULL, &state_size));
+		if (state_size) {
+			char *tmp = (char *)malloc(state_size);
+			char *hex;
+			CCS_REFUTE(!tmp, CCS_RESULT_ERROR_OUT_OF_MEMORY);
+			CCS_VALIDATE(data->vector.serialize_user_state(
+				tree_space, state_size, tmp, NULL));
+			hex = _ccs_json_hex_encode(tmp, state_size);
+			free(tmp);
+			CCS_REFUTE(!hex, CCS_RESULT_ERROR_OUT_OF_MEMORY);
+			{
+				cJSON *j_state = cJSON_AddStringToObject(
+					json, "user_state", hex);
+				free(hex);
+				CCS_REFUTE(
+					!j_state,
+					CCS_RESULT_ERROR_OUT_OF_MEMORY);
+			}
+		}
+	}
+
+	return CCS_RESULT_SUCCESS;
+}
+
 static ccs_result_t
 _ccs_tree_space_dynamic_serialize_size(
 	ccs_object_t                     object,
@@ -129,6 +169,10 @@ _ccs_tree_space_dynamic_serialize(
 	case CCS_SERIALIZE_FORMAT_BINARY:
 		CCS_VALIDATE(_ccs_serialize_bin_ccs_tree_space_dynamic(
 			(ccs_tree_space_t)object, buffer_size, buffer, opts));
+		break;
+	case CCS_SERIALIZE_FORMAT_JSON:
+		CCS_VALIDATE(_ccs_serialize_json_ccs_tree_space_dynamic(
+			(ccs_tree_space_t)object, *(cJSON **)buffer, opts));
 		break;
 	default:
 		CCS_RAISE(

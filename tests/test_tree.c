@@ -235,42 +235,79 @@ test_tree(void)
 	assert(err == CCS_RESULT_SUCCESS);
 	check_samples(5, areas, counts, NUM_SAMPLES, samples);
 
-	char  *buff;
-	size_t buff_size;
+	{
+		ccs_serialize_format_t formats[] = {
+			CCS_SERIALIZE_FORMAT_BINARY, CCS_SERIALIZE_FORMAT_JSON};
+		size_t num_formats = sizeof(formats) / sizeof(formats[0]);
+		size_t f;
+		for (f = 0; f < num_formats; f++) {
+			char  *buff;
+			size_t buff_size;
 
-	err = ccs_object_serialize(
-		root, CCS_SERIALIZE_FORMAT_BINARY, CCS_SERIALIZE_OPERATION_SIZE,
-		&buff_size, CCS_SERIALIZE_OPTION_END);
-	assert(err == CCS_RESULT_SUCCESS);
+			err = ccs_object_serialize(
+				root, formats[f], CCS_SERIALIZE_OPERATION_SIZE,
+				&buff_size, CCS_SERIALIZE_OPTION_END);
+			assert(err == CCS_RESULT_SUCCESS);
 
-	buff = (char *)malloc(buff_size);
-	assert(buff);
+			buff = (char *)malloc(buff_size);
+			assert(buff);
 
-	err = ccs_object_serialize(
-		root, CCS_SERIALIZE_FORMAT_BINARY,
-		CCS_SERIALIZE_OPERATION_MEMORY, buff_size, buff,
-		CCS_SERIALIZE_OPTION_END);
-	assert(err == CCS_RESULT_SUCCESS);
+			err = ccs_object_serialize(
+				root, formats[f],
+				CCS_SERIALIZE_OPERATION_MEMORY, buff_size, buff,
+				CCS_SERIALIZE_OPTION_END);
+			assert(err == CCS_RESULT_SUCCESS);
+
+			err = ccs_release_object(root);
+			assert(err == CCS_RESULT_SUCCESS);
+			err = ccs_release_object(child);
+			assert(err == CCS_RESULT_SUCCESS);
+			err = ccs_release_object(grand_child);
+			assert(err == CCS_RESULT_SUCCESS);
+
+			err = ccs_object_deserialize(
+				(ccs_object_t *)&root, formats[f],
+				CCS_DESERIALIZE_OPERATION_MEMORY, buff_size,
+				buff, CCS_DESERIALIZE_OPTION_END);
+			assert(err == CCS_RESULT_SUCCESS);
+			free(buff);
+
+			err = ccs_tree_samples(root, rng, NUM_SAMPLES, samples);
+			assert(err == CCS_RESULT_SUCCESS);
+			check_samples(5, areas, counts, NUM_SAMPLES, samples);
+
+			/* Verify tree structure */
+			{
+				ccs_datum_t v;
+				size_t      a;
+				err = ccs_tree_get_value(root, &v);
+				assert(err == CCS_RESULT_SUCCESS);
+				assert(!ccs_datum_cmp(v, ccs_string("foo")));
+				err = ccs_tree_get_arity(root, &a);
+				assert(err == CCS_RESULT_SUCCESS);
+				assert(a == 4);
+			}
+
+			/* Re-extract child / grand_child for next
+			 * iteration */
+			err = ccs_tree_get_child(root, 2, &child);
+			assert(err == CCS_RESULT_SUCCESS);
+			assert(child);
+			err = ccs_retain_object(child);
+			assert(err == CCS_RESULT_SUCCESS);
+			err = ccs_tree_get_child(child, 1, &grand_child);
+			assert(err == CCS_RESULT_SUCCESS);
+			assert(grand_child);
+			err = ccs_retain_object(grand_child);
+			assert(err == CCS_RESULT_SUCCESS);
+		}
+	}
 
 	err = ccs_release_object(root);
 	assert(err == CCS_RESULT_SUCCESS);
 	err = ccs_release_object(child);
 	assert(err == CCS_RESULT_SUCCESS);
 	err = ccs_release_object(grand_child);
-	assert(err == CCS_RESULT_SUCCESS);
-
-	err = ccs_object_deserialize(
-		(ccs_object_t *)&root, CCS_SERIALIZE_FORMAT_BINARY,
-		CCS_DESERIALIZE_OPERATION_MEMORY, buff_size, buff,
-		CCS_DESERIALIZE_OPTION_END);
-	assert(err == CCS_RESULT_SUCCESS);
-	free(buff);
-
-	err = ccs_tree_samples(root, rng, NUM_SAMPLES, samples);
-	assert(err == CCS_RESULT_SUCCESS);
-	check_samples(5, areas, counts, NUM_SAMPLES, samples);
-
-	err = ccs_release_object(root);
 	assert(err == CCS_RESULT_SUCCESS);
 	err = ccs_release_object(rng);
 	assert(err == CCS_RESULT_SUCCESS);

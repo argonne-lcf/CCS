@@ -72,6 +72,19 @@ _ccs_serialize_bin_ccs_tree_space_static(
 	return CCS_RESULT_SUCCESS;
 }
 
+static inline ccs_result_t
+_ccs_serialize_json_ccs_tree_space_static(
+	ccs_tree_space_t                 tree_space,
+	cJSON                           *json,
+	_ccs_object_serialize_options_t *opts)
+{
+	_ccs_tree_space_static_data_t *data =
+		(_ccs_tree_space_static_data_t *)tree_space->data;
+	CCS_VALIDATE(_ccs_serialize_json_ccs_tree_space_common_data(
+		&data->common_data, json, opts));
+	return CCS_RESULT_SUCCESS;
+}
+
 static ccs_result_t
 _ccs_tree_space_static_serialize_size(
 	ccs_object_t                     object,
@@ -104,6 +117,10 @@ _ccs_tree_space_static_serialize(
 	case CCS_SERIALIZE_FORMAT_BINARY:
 		CCS_VALIDATE(_ccs_serialize_bin_ccs_tree_space_static(
 			(ccs_tree_space_t)object, buffer_size, buffer, opts));
+		break;
+	case CCS_SERIALIZE_FORMAT_JSON:
+		CCS_VALIDATE(_ccs_serialize_json_ccs_tree_space_static(
+			(ccs_tree_space_t)object, *(cJSON **)buffer, opts));
 		break;
 	default:
 		CCS_RAISE(

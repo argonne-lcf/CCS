@@ -277,6 +277,41 @@ _ccs_json_expression_type_from_string(
 }
 
 /*============================================================================
+ * Tree space type string conversion
+ *============================================================================*/
+
+static inline const char *
+_ccs_json_tree_space_type_to_string(ccs_tree_space_type_t type)
+{
+	switch (type) {
+	case CCS_TREE_SPACE_TYPE_STATIC:
+		return "static";
+	case CCS_TREE_SPACE_TYPE_DYNAMIC:
+		return "dynamic";
+	default:
+		return NULL;
+	}
+}
+
+static inline ccs_result_t
+_ccs_json_tree_space_type_from_string(
+	const char            *str,
+	ccs_tree_space_type_t *type_ret)
+{
+	if (!strcmp(str, "static")) {
+		*type_ret = CCS_TREE_SPACE_TYPE_STATIC;
+		return CCS_RESULT_SUCCESS;
+	}
+	if (!strcmp(str, "dynamic")) {
+		*type_ret = CCS_TREE_SPACE_TYPE_DYNAMIC;
+		return CCS_RESULT_SUCCESS;
+	}
+	CCS_RAISE(
+		CCS_RESULT_ERROR_INVALID_VALUE,
+		"Unknown tree space type string: %s", str);
+}
+
+/*============================================================================
  * ccs_datum_t JSON helpers
  *============================================================================*/
 

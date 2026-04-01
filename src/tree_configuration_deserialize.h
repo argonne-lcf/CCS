@@ -1,6 +1,7 @@
 #ifndef _TREE_CONFIGURATION_DESERIALIZE_H
 #define _TREE_CONFIGURATION_DESERIALIZE_H
 #include "cconfigspace_internal.h"
+#include "cconfigspace_json.h"
 #include "tree_configuration_internal.h"
 
 struct _ccs_tree_configuration_data_mock_s {
@@ -95,6 +96,105 @@ end:
 	return res;
 }
 
+static inline ccs_result_t
+_ccs_deserialize_json_tree_configuration(
+	ccs_tree_configuration_t          *configuration_ret,
+	uint32_t                           version,
+	size_t                            *buffer_size,
+	const char                       **buffer,
+	_ccs_object_deserialize_options_t *opts)
+{
+	ccs_result_t     res = CCS_RESULT_SUCCESS;
+	cJSON           *json;
+	cJSON           *j_ts;
+	cJSON           *j_position;
+	cJSON           *j_features;
+	ccs_tree_space_t tree_space;
+	ccs_datum_t      d;
+	ccs_object_t     ts_handle;
+	size_t          *position = NULL;
+	ccs_features_t   features = NULL;
+	int              pos_count;
+	int              i;
+	const char      *cbuf;
+	size_t           dummy;
+
+	(void)buffer_size;
+
+	CCS_CHECK_OBJ(opts->handle_map, CCS_OBJECT_TYPE_MAP);
+
+	json = *(cJSON **)buffer;
+
+	j_ts = cJSON_GetObjectItemCaseSensitive(json, "tree_space");
+	CCS_REFUTE(
+		!j_ts || !cJSON_IsString(j_ts), CCS_RESULT_ERROR_INVALID_VALUE);
+	CCS_REFUTE(
+		strlen(j_ts->valuestring) != sizeof(ccs_object_t) * 2,
+		CCS_RESULT_ERROR_INVALID_VALUE);
+	CCS_REFUTE(
+		_ccs_json_hex_decode_buf(
+			j_ts->valuestring, sizeof(ccs_object_t) * 2,
+			&ts_handle),
+		CCS_RESULT_ERROR_INVALID_VALUE);
+
+	CCS_VALIDATE_ERR_GOTO(
+		res, ccs_map_get(opts->handle_map, ccs_object(ts_handle), &d),
+		end);
+	CCS_REFUTE_ERR_GOTO(
+		res, d.type != CCS_DATA_TYPE_OBJECT,
+		CCS_RESULT_ERROR_INVALID_HANDLE, end);
+	tree_space = (ccs_tree_space_t)(d.value.o);
+
+	j_position = cJSON_GetObjectItemCaseSensitive(json, "position");
+	CCS_REFUTE_ERR_GOTO(
+		res, !j_position || !cJSON_IsArray(j_position),
+		CCS_RESULT_ERROR_INVALID_VALUE, end);
+	pos_count = cJSON_GetArraySize(j_position);
+
+	if (pos_count > 0) {
+		position = (size_t *)calloc((size_t)pos_count, sizeof(size_t));
+		CCS_REFUTE_ERR_GOTO(
+			res, !position, CCS_RESULT_ERROR_OUT_OF_MEMORY, end);
+		for (i = 0; i < pos_count; i++) {
+			cJSON *item = cJSON_GetArrayItem(j_position, i);
+			CCS_REFUTE_ERR_GOTO(
+				res, !item || !cJSON_IsNumber(item),
+				CCS_RESULT_ERROR_INVALID_VALUE, end);
+			position[i] = (size_t)item->valuedouble;
+		}
+	}
+
+	j_features = cJSON_GetObjectItemCaseSensitive(json, "features");
+	if (j_features && cJSON_IsObject(j_features)) {
+		_ccs_object_deserialize_options_t feat_opts = *opts;
+		feat_opts.map_values                        = CCS_FALSE;
+		cbuf  = (const char *)j_features;
+		dummy = 0;
+		CCS_VALIDATE_ERR_GOTO(
+			res,
+			_ccs_object_deserialize_with_opts_check(
+				(ccs_object_t *)&features,
+				CCS_OBJECT_TYPE_FEATURES,
+				CCS_SERIALIZE_FORMAT_JSON, version, &dummy,
+				&cbuf, &feat_opts),
+			end);
+	}
+
+	CCS_VALIDATE_ERR_GOTO(
+		res,
+		ccs_create_tree_configuration(
+			tree_space, features, (size_t)pos_count, position,
+			configuration_ret),
+		end);
+
+end:
+	if (features)
+		ccs_release_object(features);
+	if (position)
+		free(position);
+	return res;
+}
+
 static ccs_result_t
 _ccs_tree_configuration_deserialize(
 	ccs_tree_configuration_t          *configuration_ret,
@@ -107,6 +207,10 @@ _ccs_tree_configuration_deserialize(
 	switch (format) {
 	case CCS_SERIALIZE_FORMAT_BINARY:
 		CCS_VALIDATE(_ccs_deserialize_bin_tree_configuration(
+			configuration_ret, version, buffer_size, buffer, opts));
+		break;
+	case CCS_SERIALIZE_FORMAT_JSON:
+		CCS_VALIDATE(_ccs_deserialize_json_tree_configuration(
 			configuration_ret, version, buffer_size, buffer, opts));
 		break;
 	default:
