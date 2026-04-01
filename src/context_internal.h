@@ -304,6 +304,30 @@ _ccs_serialize_bin_ccs_context_data(
 }
 
 static inline ccs_result_t
+_ccs_serialize_json_ccs_context(
+	ccs_context_t                    context,
+	cJSON                           *json,
+	_ccs_object_serialize_options_t *opts)
+{
+	_ccs_context_data_t *data = context->data;
+	CCS_REFUTE(
+		!cJSON_AddStringToObject(json, "name", data->name),
+		CCS_RESULT_ERROR_OUT_OF_MEMORY);
+	cJSON *parameters = cJSON_AddArrayToObject(json, "parameters");
+	CCS_REFUTE(!parameters, CCS_RESULT_ERROR_OUT_OF_MEMORY);
+	for (size_t i = 0; i < data->num_parameters; i++) {
+		cJSON *child = cJSON_CreateObject();
+		CCS_REFUTE(!child, CCS_RESULT_ERROR_OUT_OF_MEMORY);
+		cJSON_AddItemToArray(parameters, child);
+		size_t dummy = 0;
+		CCS_VALIDATE(_ccs_object_serialize_with_opts(
+			data->parameters[i], CCS_SERIALIZE_FORMAT_JSON, &dummy,
+			(char **)&child, opts));
+	}
+	return CCS_RESULT_SUCCESS;
+}
+
+static inline ccs_result_t
 _ccs_serialize_bin_size_ccs_context(
 	ccs_context_t                    context,
 	size_t                          *cum_size,

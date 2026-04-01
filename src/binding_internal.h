@@ -170,6 +170,23 @@ _ccs_serialize_bin_ccs_binding_data(
 }
 
 static inline ccs_result_t
+_ccs_serialize_json_ccs_binding(ccs_binding_t binding, cJSON *json)
+{
+	_ccs_binding_data_t *data = binding->data;
+	char                 hex[sizeof(ccs_object_t) * 2 + 1];
+	_ccs_json_hex_encode_buf(&data->context, sizeof(ccs_object_t), hex);
+	CCS_REFUTE(
+		!cJSON_AddStringToObject(json, "context", hex),
+		CCS_RESULT_ERROR_OUT_OF_MEMORY);
+	cJSON *values = cJSON_AddArrayToObject(json, "values");
+	CCS_REFUTE(!values, CCS_RESULT_ERROR_OUT_OF_MEMORY);
+	for (size_t i = 0; i < data->num_values; i++)
+		CCS_VALIDATE(
+			_ccs_json_add_datum_to_array(values, data->values[i]));
+	return CCS_RESULT_SUCCESS;
+}
+
+static inline ccs_result_t
 _ccs_serialize_bin_size_ccs_binding(ccs_binding_t binding, size_t *cum_size)
 {
 	*cum_size += _ccs_serialize_bin_size_ccs_binding_data(binding->data);
@@ -206,6 +223,43 @@ _ccs_deserialize_bin_ccs_binding_data(
 		for (size_t i = 0; i < data->num_values; i++)
 			CCS_VALIDATE(_ccs_deserialize_bin_ccs_datum(
 				data->values + i, buffer_size, buffer));
+	}
+	return CCS_RESULT_SUCCESS;
+}
+
+static inline ccs_result_t
+_ccs_deserialize_json_ccs_binding_data(_ccs_binding_data_t *data, cJSON *json)
+{
+	size_t num;
+	cJSON *j_context = cJSON_GetObjectItemCaseSensitive(json, "context");
+	cJSON *j_values  = cJSON_GetObjectItemCaseSensitive(json, "values");
+	data->context    = NULL;
+	data->num_values = 0;
+	data->values     = NULL;
+	CCS_REFUTE(
+		!j_context || !cJSON_IsString(j_context),
+		CCS_RESULT_ERROR_INVALID_VALUE);
+	CCS_REFUTE(
+		!j_values || !cJSON_IsArray(j_values),
+		CCS_RESULT_ERROR_INVALID_VALUE);
+	CCS_REFUTE(
+		strlen(j_context->valuestring) != sizeof(ccs_object_t) * 2,
+		CCS_RESULT_ERROR_INVALID_VALUE);
+	CCS_REFUTE(
+		_ccs_json_hex_decode_buf(
+			j_context->valuestring, sizeof(ccs_object_t) * 2,
+			&data->context),
+		CCS_RESULT_ERROR_INVALID_VALUE);
+	num              = (size_t)cJSON_GetArraySize(j_values);
+	data->num_values = num;
+	if (num) {
+		data->values = (ccs_datum_t *)calloc(num, sizeof(ccs_datum_t));
+		CCS_REFUTE(!data->values, CCS_RESULT_ERROR_OUT_OF_MEMORY);
+		for (size_t i = 0; i < num; i++) {
+			cJSON *item = cJSON_GetArrayItem(j_values, (int)i);
+			CCS_VALIDATE(
+				_ccs_json_get_datum(item, data->values + i));
+		}
 	}
 	return CCS_RESULT_SUCCESS;
 }

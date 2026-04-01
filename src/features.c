@@ -48,6 +48,10 @@ _ccs_features_serialize(
 		CCS_VALIDATE(_ccs_serialize_bin_ccs_binding(
 			(ccs_binding_t)object, buffer_size, buffer));
 		break;
+	case CCS_SERIALIZE_FORMAT_JSON:
+		CCS_VALIDATE(_ccs_serialize_json_ccs_binding(
+			(ccs_binding_t)object, *(cJSON **)buffer));
+		break;
 	default:
 		CCS_RAISE(
 			CCS_RESULT_ERROR_INVALID_VALUE,

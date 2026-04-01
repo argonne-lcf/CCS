@@ -225,6 +225,31 @@ test_deserialize(void)
 
 	check_features(feature_space, 3, parameters);
 
+	/* JSON roundtrip */
+	{
+		ccs_feature_space_t feature_space2;
+		ccs_parameter_t     param_tmp;
+		const char         *name;
+		test_serialize_deserialize(
+			(ccs_object_t)feature_space, CCS_SERIALIZE_FORMAT_JSON,
+			(ccs_object_t *)&feature_space2);
+		err = ccs_context_get_name(
+			(ccs_context_t)feature_space2, &name);
+		assert(err == CCS_RESULT_SUCCESS);
+		assert(!strcmp(name, "my_config_space"));
+		err = ccs_context_get_parameter_by_name(
+			(ccs_context_t)feature_space2, "param1", &param_tmp);
+		assert(err == CCS_RESULT_SUCCESS);
+		err = ccs_context_get_parameter_by_name(
+			(ccs_context_t)feature_space2, "param2", &param_tmp);
+		assert(err == CCS_RESULT_SUCCESS);
+		err = ccs_context_get_parameter_by_name(
+			(ccs_context_t)feature_space2, "param3", &param_tmp);
+		assert(err == CCS_RESULT_SUCCESS);
+		err = ccs_release_object(feature_space2);
+		assert(err == CCS_RESULT_SUCCESS);
+	}
+
 	err = ccs_object_serialize(
 		feature_space, CCS_SERIALIZE_FORMAT_BINARY,
 		CCS_SERIALIZE_OPERATION_SIZE, &buff_size,
@@ -324,54 +349,66 @@ test_features_deserialize(void)
 	err = ccs_create_features(feature_space, 3, values, &features_ref);
 	assert(err == CCS_RESULT_SUCCESS);
 
-	err = ccs_create_map(&map);
-	assert(err == CCS_RESULT_SUCCESS);
-	err = ccs_object_serialize(
-		features_ref, CCS_SERIALIZE_FORMAT_BINARY,
-		CCS_SERIALIZE_OPERATION_SIZE, &buff_size,
-		CCS_SERIALIZE_OPTION_END);
-	assert(err == CCS_RESULT_SUCCESS);
-	buff = (char *)malloc(buff_size);
-	assert(buff);
+	{
+		ccs_serialize_format_t formats[] = {
+			CCS_SERIALIZE_FORMAT_BINARY, CCS_SERIALIZE_FORMAT_JSON};
+		size_t num_formats = sizeof(formats) / sizeof(formats[0]);
+		for (size_t f = 0; f < num_formats; f++) {
+			err = ccs_create_map(&map);
+			assert(err == CCS_RESULT_SUCCESS);
 
-	err = ccs_object_serialize(
-		features_ref, CCS_SERIALIZE_FORMAT_BINARY,
-		CCS_SERIALIZE_OPERATION_MEMORY, buff_size, buff,
-		CCS_SERIALIZE_OPTION_END);
-	assert(err == CCS_RESULT_SUCCESS);
+			err = ccs_object_serialize(
+				features_ref, formats[f],
+				CCS_SERIALIZE_OPERATION_SIZE, &buff_size,
+				CCS_SERIALIZE_OPTION_END);
+			assert(err == CCS_RESULT_SUCCESS);
+			buff = (char *)malloc(buff_size);
+			assert(buff);
+			err = ccs_object_serialize(
+				features_ref, formats[f],
+				CCS_SERIALIZE_OPERATION_MEMORY, buff_size, buff,
+				CCS_SERIALIZE_OPTION_END);
+			assert(err == CCS_RESULT_SUCCESS);
 
-	err = ccs_object_deserialize(
-		(ccs_object_t *)&features, CCS_SERIALIZE_FORMAT_BINARY,
-		CCS_DESERIALIZE_OPERATION_MEMORY, buff_size, buff,
-		CCS_DESERIALIZE_OPTION_HANDLE_MAP, map,
-		CCS_DESERIALIZE_OPTION_END);
-	assert(err == CCS_RESULT_ERROR_INVALID_HANDLE);
+			/* deserialize with empty handle map — should
+			 * fail */
+			err = ccs_object_deserialize(
+				(ccs_object_t *)&features, formats[f],
+				CCS_DESERIALIZE_OPERATION_MEMORY, buff_size,
+				buff, CCS_DESERIALIZE_OPTION_HANDLE_MAP, map,
+				CCS_DESERIALIZE_OPTION_END);
+			assert(err == CCS_RESULT_ERROR_INVALID_HANDLE);
 
-	d = ccs_object(feature_space);
-	d.flags |= CCS_DATUM_FLAG_ID;
-	err = ccs_map_set(map, d, ccs_object(feature_space));
-	assert(err == CCS_RESULT_SUCCESS);
+			/* add feature_space to handle map */
+			d = ccs_object(feature_space);
+			d.flags |= CCS_DATUM_FLAG_ID;
+			err = ccs_map_set(map, d, ccs_object(feature_space));
+			assert(err == CCS_RESULT_SUCCESS);
 
-	err = ccs_object_deserialize(
-		(ccs_object_t *)&features, CCS_SERIALIZE_FORMAT_BINARY,
-		CCS_DESERIALIZE_OPERATION_MEMORY, buff_size, buff,
-		CCS_DESERIALIZE_OPTION_HANDLE_MAP, map,
-		CCS_DESERIALIZE_OPTION_END);
-	assert(err == CCS_RESULT_SUCCESS);
+			err = ccs_object_deserialize(
+				(ccs_object_t *)&features, formats[f],
+				CCS_DESERIALIZE_OPERATION_MEMORY, buff_size,
+				buff, CCS_DESERIALIZE_OPTION_HANDLE_MAP, map,
+				CCS_DESERIALIZE_OPTION_END);
+			assert(err == CCS_RESULT_SUCCESS);
 
-	err = ccs_binding_cmp(
-		(ccs_binding_t)features_ref, (ccs_binding_t)features, &cmp);
-	assert(err == CCS_RESULT_SUCCESS);
-	assert(!cmp);
+			err = ccs_binding_cmp(
+				(ccs_binding_t)features_ref,
+				(ccs_binding_t)features, &cmp);
+			assert(err == CCS_RESULT_SUCCESS);
+			assert(!cmp);
 
-	free(buff);
+			free(buff);
+			err = ccs_release_object(features);
+			assert(err == CCS_RESULT_SUCCESS);
+			err = ccs_release_object(map);
+			assert(err == CCS_RESULT_SUCCESS);
+		}
+	}
+
 	err = ccs_release_object(feature_space);
 	assert(err == CCS_RESULT_SUCCESS);
 	err = ccs_release_object(features_ref);
-	assert(err == CCS_RESULT_SUCCESS);
-	err = ccs_release_object(features);
-	assert(err == CCS_RESULT_SUCCESS);
-	err = ccs_release_object(map);
 	assert(err == CCS_RESULT_SUCCESS);
 	for (size_t i = 0; i < 3; i++) {
 		err = ccs_release_object(parameters[i]);

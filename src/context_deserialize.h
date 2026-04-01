@@ -36,4 +36,43 @@ _ccs_deserialize_bin_ccs_context_data(
 	return CCS_RESULT_SUCCESS;
 }
 
+static inline ccs_result_t
+_ccs_deserialize_json_ccs_context_data(
+	_ccs_context_data_mock_t          *data,
+	uint32_t                           version,
+	cJSON                             *json,
+	_ccs_object_deserialize_options_t *opts)
+{
+	size_t num;
+	cJSON *j_name   = cJSON_GetObjectItemCaseSensitive(json, "name");
+	cJSON *j_params = cJSON_GetObjectItemCaseSensitive(json, "parameters");
+	data->num_parameters = 0;
+	data->parameters     = NULL;
+	CCS_REFUTE(
+		!j_name || !cJSON_IsString(j_name),
+		CCS_RESULT_ERROR_INVALID_VALUE);
+	CCS_REFUTE(
+		!j_params || !cJSON_IsArray(j_params),
+		CCS_RESULT_ERROR_INVALID_VALUE);
+	data->name           = j_name->valuestring;
+	num                  = (size_t)cJSON_GetArraySize(j_params);
+	data->num_parameters = num;
+	if (num) {
+		data->parameters =
+			(ccs_parameter_t *)calloc(num, sizeof(ccs_parameter_t));
+		CCS_REFUTE(!data->parameters, CCS_RESULT_ERROR_OUT_OF_MEMORY);
+		for (size_t i = 0; i < num; i++) {
+			cJSON *child     = cJSON_GetArrayItem(j_params, (int)i);
+			const char *cbuf = (const char *)child;
+			size_t      dummy = 0;
+			CCS_VALIDATE(_ccs_object_deserialize_with_opts_check(
+				(ccs_object_t *)data->parameters + i,
+				CCS_OBJECT_TYPE_PARAMETER,
+				CCS_SERIALIZE_FORMAT_JSON, version, &dummy,
+				&cbuf, opts));
+		}
+	}
+	return CCS_RESULT_SUCCESS;
+}
+
 #endif //_CONTEXT_DESERIALIZE_H
