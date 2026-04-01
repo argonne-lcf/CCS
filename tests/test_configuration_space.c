@@ -240,55 +240,67 @@ test_configuration_deserialize(void)
 		configuration_space, NULL, NULL, NULL, &configuration_ref);
 	assert(err == CCS_RESULT_SUCCESS);
 
-	err = ccs_create_map(&map);
-	assert(err == CCS_RESULT_SUCCESS);
-	err = ccs_object_serialize(
-		configuration_ref, CCS_SERIALIZE_FORMAT_BINARY,
-		CCS_SERIALIZE_OPERATION_SIZE, &buff_size,
-		CCS_SERIALIZE_OPTION_END);
-	assert(err == CCS_RESULT_SUCCESS);
-	buff = (char *)malloc(buff_size);
-	assert(buff);
+	{
+		ccs_serialize_format_t formats[] = {
+			CCS_SERIALIZE_FORMAT_BINARY, CCS_SERIALIZE_FORMAT_JSON};
+		size_t num_formats = sizeof(formats) / sizeof(formats[0]);
+		for (size_t f = 0; f < num_formats; f++) {
+			err = ccs_create_map(&map);
+			assert(err == CCS_RESULT_SUCCESS);
 
-	err = ccs_object_serialize(
-		configuration_ref, CCS_SERIALIZE_FORMAT_BINARY,
-		CCS_SERIALIZE_OPERATION_MEMORY, buff_size, buff,
-		CCS_SERIALIZE_OPTION_END);
-	assert(err == CCS_RESULT_SUCCESS);
+			err = ccs_object_serialize(
+				configuration_ref, formats[f],
+				CCS_SERIALIZE_OPERATION_SIZE, &buff_size,
+				CCS_SERIALIZE_OPTION_END);
+			assert(err == CCS_RESULT_SUCCESS);
+			buff = (char *)malloc(buff_size);
+			assert(buff);
+			err = ccs_object_serialize(
+				configuration_ref, formats[f],
+				CCS_SERIALIZE_OPERATION_MEMORY, buff_size, buff,
+				CCS_SERIALIZE_OPTION_END);
+			assert(err == CCS_RESULT_SUCCESS);
 
-	err = ccs_object_deserialize(
-		(ccs_object_t *)&configuration, CCS_SERIALIZE_FORMAT_BINARY,
-		CCS_DESERIALIZE_OPERATION_MEMORY, buff_size, buff,
-		CCS_DESERIALIZE_OPTION_HANDLE_MAP, map,
-		CCS_DESERIALIZE_OPTION_END);
-	assert(err == CCS_RESULT_ERROR_INVALID_HANDLE);
+			/* empty handle map — should fail */
+			err = ccs_object_deserialize(
+				(ccs_object_t *)&configuration, formats[f],
+				CCS_DESERIALIZE_OPERATION_MEMORY, buff_size,
+				buff, CCS_DESERIALIZE_OPTION_HANDLE_MAP, map,
+				CCS_DESERIALIZE_OPTION_END);
+			assert(err == CCS_RESULT_ERROR_INVALID_HANDLE);
+			ccs_clear_thread_error();
 
-	d = ccs_object(configuration_space);
-	d.flags |= CCS_DATUM_FLAG_ID;
-	err = ccs_map_set(map, d, ccs_object(configuration_space));
-	assert(err == CCS_RESULT_SUCCESS);
+			/* correct handle map */
+			d = ccs_object(configuration_space);
+			d.flags |= CCS_DATUM_FLAG_ID;
+			err = ccs_map_set(
+				map, d, ccs_object(configuration_space));
+			assert(err == CCS_RESULT_SUCCESS);
 
-	err = ccs_object_deserialize(
-		(ccs_object_t *)&configuration, CCS_SERIALIZE_FORMAT_BINARY,
-		CCS_DESERIALIZE_OPERATION_MEMORY, buff_size, buff,
-		CCS_DESERIALIZE_OPTION_HANDLE_MAP, map,
-		CCS_DESERIALIZE_OPTION_END);
-	assert(err == CCS_RESULT_SUCCESS);
+			err = ccs_object_deserialize(
+				(ccs_object_t *)&configuration, formats[f],
+				CCS_DESERIALIZE_OPERATION_MEMORY, buff_size,
+				buff, CCS_DESERIALIZE_OPTION_HANDLE_MAP, map,
+				CCS_DESERIALIZE_OPTION_END);
+			assert(err == CCS_RESULT_SUCCESS);
 
-	err = ccs_binding_cmp(
-		(ccs_binding_t)configuration_ref, (ccs_binding_t)configuration,
-		&cmp);
-	assert(err == CCS_RESULT_SUCCESS);
-	assert(!cmp);
+			err = ccs_binding_cmp(
+				(ccs_binding_t)configuration_ref,
+				(ccs_binding_t)configuration, &cmp);
+			assert(err == CCS_RESULT_SUCCESS);
+			assert(!cmp);
 
-	free(buff);
+			free(buff);
+			err = ccs_release_object(configuration);
+			assert(err == CCS_RESULT_SUCCESS);
+			err = ccs_release_object(map);
+			assert(err == CCS_RESULT_SUCCESS);
+		}
+	}
+
 	err = ccs_release_object(configuration_space);
 	assert(err == CCS_RESULT_SUCCESS);
 	err = ccs_release_object(configuration_ref);
-	assert(err == CCS_RESULT_SUCCESS);
-	err = ccs_release_object(configuration);
-	assert(err == CCS_RESULT_SUCCESS);
-	err = ccs_release_object(map);
 	assert(err == CCS_RESULT_SUCCESS);
 	for (size_t i = 0; i < 3; i++) {
 		err = ccs_release_object(parameters[i]);
@@ -301,7 +313,7 @@ test_deserialize(void)
 {
 	ccs_parameter_t           parameters[3];
 	ccs_expression_t          conditions[3] = {NULL, NULL, NULL};
-	ccs_configuration_space_t space, space_ref;
+	ccs_configuration_space_t space;
 	ccs_expression_t          expression, expressions[3];
 	char                     *buff;
 	size_t                    buff_size;
@@ -347,73 +359,79 @@ test_deserialize(void)
 		assert(err == CCS_RESULT_SUCCESS);
 	}
 
-	err = ccs_object_serialize(
-		space, CCS_SERIALIZE_FORMAT_BINARY,
-		CCS_SERIALIZE_OPERATION_SIZE, &buff_size,
-		CCS_SERIALIZE_OPTION_END);
-	assert(err == CCS_RESULT_SUCCESS);
+	{
+		ccs_serialize_format_t formats[] = {
+			CCS_SERIALIZE_FORMAT_BINARY, CCS_SERIALIZE_FORMAT_JSON};
+		size_t num_formats = sizeof(formats) / sizeof(formats[0]);
+		for (size_t f = 0; f < num_formats; f++) {
+			ccs_configuration_space_t space_deser;
+			err = ccs_object_serialize(
+				space, formats[f], CCS_SERIALIZE_OPERATION_SIZE,
+				&buff_size, CCS_SERIALIZE_OPTION_END);
+			assert(err == CCS_RESULT_SUCCESS);
+			buff = (char *)malloc(buff_size);
+			assert(buff);
+			err = ccs_object_serialize(
+				space, formats[f],
+				CCS_SERIALIZE_OPERATION_MEMORY, buff_size, buff,
+				CCS_SERIALIZE_OPTION_END);
+			assert(err == CCS_RESULT_SUCCESS);
 
-	buff = (char *)malloc(buff_size);
-	assert(buff);
+			/* deserialize without handle map */
+			err = ccs_object_deserialize(
+				(ccs_object_t *)&space_deser, formats[f],
+				CCS_DESERIALIZE_OPERATION_MEMORY, buff_size,
+				buff, CCS_DESERIALIZE_OPTION_END);
+			assert(err == CCS_RESULT_SUCCESS);
+			err = ccs_release_object(space_deser);
+			assert(err == CCS_RESULT_SUCCESS);
 
-	err = ccs_object_serialize(
-		space, CCS_SERIALIZE_FORMAT_BINARY,
-		CCS_SERIALIZE_OPERATION_MEMORY, buff_size, buff,
-		CCS_SERIALIZE_OPTION_END);
-	assert(err == CCS_RESULT_SUCCESS);
+			/* deserialize with handle map + MAP_HANDLES */
+			err = ccs_create_map(&map);
+			assert(err == CCS_RESULT_SUCCESS);
+			err = ccs_object_deserialize(
+				(ccs_object_t *)&space_deser, formats[f],
+				CCS_DESERIALIZE_OPERATION_MEMORY, buff_size,
+				buff, CCS_DESERIALIZE_OPTION_HANDLE_MAP, map,
+				CCS_DESERIALIZE_OPTION_MAP_HANDLES,
+				CCS_DESERIALIZE_OPTION_END);
+			assert(err == CCS_RESULT_SUCCESS);
 
-	space_ref = space;
-	err       = ccs_release_object(space);
-	assert(err == CCS_RESULT_SUCCESS);
+			err = ccs_map_get(map, ccs_object(space), &d);
+			assert(err == CCS_RESULT_SUCCESS);
+			assert(d.type == CCS_DATA_TYPE_OBJECT);
+			assert(d.value.o == space_deser);
 
-	err = ccs_object_deserialize(
-		(ccs_object_t *)&space, CCS_SERIALIZE_FORMAT_BINARY,
-		CCS_DESERIALIZE_OPERATION_MEMORY, buff_size, buff,
-		CCS_DESERIALIZE_OPTION_END);
-	assert(err == CCS_RESULT_SUCCESS);
+			err = ccs_context_get_parameters(
+				(ccs_context_t)space_deser, 0, NULL, &count);
+			assert(err == CCS_RESULT_SUCCESS);
+			assert(count == 3);
 
+			err = ccs_configuration_space_get_conditions(
+				space_deser, 3, expressions, NULL);
+			assert(err == CCS_RESULT_SUCCESS);
+			assert(expressions[0]);
+			assert(!expressions[1]);
+			assert(expressions[2]);
+			assert(expressions[0] != expressions[2]);
+
+			err = ccs_configuration_space_get_forbidden_clauses(
+				space_deser, 3, expressions, &count);
+			assert(err == CCS_RESULT_SUCCESS);
+			assert(count == 1);
+			assert(expressions[0]);
+			assert(!expressions[1]);
+			assert(!expressions[2]);
+
+			err = ccs_release_object(map);
+			assert(err == CCS_RESULT_SUCCESS);
+			err = ccs_release_object(space_deser);
+			assert(err == CCS_RESULT_SUCCESS);
+			free(buff);
+		}
+	}
 	err = ccs_release_object(space);
 	assert(err == CCS_RESULT_SUCCESS);
-
-	err = ccs_create_map(&map);
-	assert(err == CCS_RESULT_SUCCESS);
-	err = ccs_object_deserialize(
-		(ccs_object_t *)&space, CCS_SERIALIZE_FORMAT_BINARY,
-		CCS_DESERIALIZE_OPERATION_MEMORY, buff_size, buff,
-		CCS_DESERIALIZE_OPTION_HANDLE_MAP, map,
-		CCS_DESERIALIZE_OPTION_MAP_HANDLES, CCS_DESERIALIZE_OPTION_END);
-	assert(err == CCS_RESULT_SUCCESS);
-
-	err = ccs_map_get(map, ccs_object(space_ref), &d);
-	assert(err == CCS_RESULT_SUCCESS);
-	assert(d.type == CCS_DATA_TYPE_OBJECT);
-	assert(d.value.o == space);
-
-	err = ccs_context_get_parameters((ccs_context_t)space, 0, NULL, &count);
-	assert(err == CCS_RESULT_SUCCESS);
-	assert(count == 3);
-
-	err = ccs_configuration_space_get_conditions(
-		space, 3, expressions, NULL);
-	assert(err == CCS_RESULT_SUCCESS);
-	assert(expressions[0]);
-	assert(!expressions[1]);
-	assert(expressions[2]);
-	assert(expressions[0] != expressions[2]);
-
-	err = ccs_configuration_space_get_forbidden_clauses(
-		space, 3, expressions, &count);
-	assert(err == CCS_RESULT_SUCCESS);
-	assert(count == 1);
-	assert(expressions[0]);
-	assert(!expressions[1]);
-	assert(!expressions[2]);
-
-	err = ccs_release_object(map);
-	assert(err == CCS_RESULT_SUCCESS);
-	err = ccs_release_object(space);
-	assert(err == CCS_RESULT_SUCCESS);
-	free(buff);
 }
 
 void

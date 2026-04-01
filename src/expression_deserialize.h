@@ -346,7 +346,7 @@ _ccs_deserialize_json_expression_general(
 	size_t                            num_nodes;
 
 	_ccs_object_deserialize_options_t new_opts = *opts;
-	new_opts.handle_map                        = NULL;
+	new_opts.map_values                        = CCS_FALSE;
 
 	data.type                                  = type;
 	data.num_nodes                             = 0;
@@ -416,7 +416,7 @@ _ccs_deserialize_json_expression_user_defined(
 	unsigned char                        *state_data = NULL;
 
 	_ccs_object_deserialize_options_t     new_opts   = *opts;
-	new_opts.handle_map                              = NULL;
+	new_opts.map_values                              = CCS_FALSE;
 
 	data.num_nodes                                   = 0;
 	data.nodes                                       = NULL;
