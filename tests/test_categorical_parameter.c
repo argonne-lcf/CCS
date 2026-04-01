@@ -2,6 +2,7 @@
 #include <assert.h>
 #include <cconfigspace.h>
 #include <string.h>
+#include "test_utils.h"
 
 #define NUM_POSSIBLE_VALUES 4
 #define NUM_SAMPLES         10000
@@ -161,7 +162,8 @@ test_create(void)
 	err = ccs_object_serialize(
 		parameter, CCS_SERIALIZE_FORMAT_BINARY,
 		CCS_SERIALIZE_OPERATION_SIZE, &buff_size,
-		CCS_SERIALIZE_OPTION_END);
+		CCS_SERIALIZE_OPTION_CALLBACK, serialize_callback,
+		(void *)0xdeadbeef, CCS_SERIALIZE_OPTION_END);
 	assert(err == CCS_RESULT_SUCCESS);
 
 	buff = (char *)malloc(buff_size);
@@ -170,7 +172,8 @@ test_create(void)
 	err = ccs_object_serialize(
 		parameter, CCS_SERIALIZE_FORMAT_BINARY,
 		CCS_SERIALIZE_OPERATION_MEMORY, buff_size, buff,
-		CCS_SERIALIZE_OPTION_END);
+		CCS_SERIALIZE_OPTION_CALLBACK, serialize_callback,
+		(void *)0xdeadbeef, CCS_SERIALIZE_OPTION_END);
 	assert(err == CCS_RESULT_SUCCESS);
 
 	err = ccs_release_object(parameter);
@@ -179,30 +182,8 @@ test_create(void)
 	err = ccs_object_deserialize(
 		(ccs_object_t *)&parameter, CCS_SERIALIZE_FORMAT_BINARY,
 		CCS_DESERIALIZE_OPERATION_MEMORY, buff_size, buff,
-		CCS_DESERIALIZE_OPTION_DATA_CALLBACK, &deserialize_callback,
+		CCS_DESERIALIZE_OPTION_DATA_CALLBACK, deserialize_callback,
 		(void *)0xbeefdead, CCS_DESERIALIZE_OPTION_END);
-	assert(err == CCS_RESULT_SUCCESS);
-	free(buff);
-
-	compare_parameter(
-		parameter, num_possible_values, possible_values,
-		default_value_index);
-
-	err = ccs_object_serialize(
-		parameter, CCS_SERIALIZE_FORMAT_BINARY,
-		CCS_SERIALIZE_OPERATION_SIZE, &buff_size,
-		CCS_SERIALIZE_OPTION_CALLBACK, serialize_callback,
-		(void *)0xdeadbeef, CCS_SERIALIZE_OPTION_END);
-	assert(err == CCS_RESULT_SUCCESS);
-
-	buff = (char *)malloc(buff_size);
-	assert(buff);
-
-	err = ccs_object_serialize(
-		parameter, CCS_SERIALIZE_FORMAT_BINARY,
-		CCS_SERIALIZE_OPERATION_MEMORY, buff_size, buff,
-		CCS_SERIALIZE_OPTION_CALLBACK, serialize_callback,
-		(void *)0xdeadbeef, CCS_SERIALIZE_OPTION_END);
 	assert(err == CCS_RESULT_SUCCESS);
 	free(buff);
 
@@ -238,6 +219,29 @@ test_samples(void)
 		"my_param", num_possible_values, possible_values,
 		default_value_index, &parameter);
 	assert(err == CCS_RESULT_SUCCESS);
+
+	{
+		ccs_serialize_format_t formats[] = {
+			CCS_SERIALIZE_FORMAT_BINARY, CCS_SERIALIZE_FORMAT_JSON};
+		size_t num_formats = sizeof(formats) / sizeof(formats[0]);
+		for (size_t f = 0; f < num_formats; f++) {
+			ccs_parameter_t      parameter2;
+			ccs_parameter_type_t ptype;
+			const char          *pname;
+
+			test_serialize_deserialize(
+				(ccs_object_t)parameter, formats[f],
+				(ccs_object_t *)&parameter2);
+			err = ccs_parameter_get_type(parameter2, &ptype);
+			assert(err == CCS_RESULT_SUCCESS);
+			assert(ptype == CCS_PARAMETER_TYPE_CATEGORICAL);
+			err = ccs_parameter_get_name(parameter2, &pname);
+			assert(err == CCS_RESULT_SUCCESS);
+			assert(!strcmp(pname, "my_param"));
+			err = ccs_release_object(parameter2);
+			assert(err == CCS_RESULT_SUCCESS);
+		}
+	}
 
 	err = ccs_parameter_get_default_distribution(parameter, &distribution);
 	assert(err == CCS_RESULT_SUCCESS);

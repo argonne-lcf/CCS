@@ -2,6 +2,7 @@
 #include <assert.h>
 #include <cconfigspace.h>
 #include <string.h>
+#include "test_utils.h"
 
 #define NUM_POSSIBLE_VALUES 4
 #define NUM_SAMPLES         10000
@@ -72,12 +73,11 @@ void
 test_create(void)
 {
 	ccs_parameter_t parameter;
+	ccs_parameter_t parameter2;
 	ccs_result_t    err;
 	const size_t    num_possible_values = NUM_POSSIBLE_VALUES;
 	ccs_datum_t     possible_values[NUM_POSSIBLE_VALUES];
 	const size_t    default_value_index = 2;
-	char           *buff;
-	size_t          buff_size;
 
 	for (size_t i = 0; i < num_possible_values; i++) {
 		possible_values[i].type    = CCS_DATA_TYPE_INT;
@@ -93,34 +93,23 @@ test_create(void)
 		parameter, num_possible_values, possible_values,
 		default_value_index);
 
-	err = ccs_object_serialize(
-		parameter, CCS_SERIALIZE_FORMAT_BINARY,
-		CCS_SERIALIZE_OPERATION_SIZE, &buff_size,
-		CCS_SERIALIZE_OPTION_END);
-	assert(err == CCS_RESULT_SUCCESS);
-
-	buff = (char *)malloc(buff_size);
-	assert(buff);
-
-	err = ccs_object_serialize(
-		parameter, CCS_SERIALIZE_FORMAT_BINARY,
-		CCS_SERIALIZE_OPERATION_MEMORY, buff_size, buff,
-		CCS_SERIALIZE_OPTION_END);
-	assert(err == CCS_RESULT_SUCCESS);
-
-	err = ccs_release_object(parameter);
-	assert(err == CCS_RESULT_SUCCESS);
-
-	err = ccs_object_deserialize(
-		(ccs_object_t *)&parameter, CCS_SERIALIZE_FORMAT_BINARY,
-		CCS_DESERIALIZE_OPERATION_MEMORY, buff_size, buff,
-		CCS_DESERIALIZE_OPTION_END);
-	assert(err == CCS_RESULT_SUCCESS);
-	free(buff);
-
+	test_serialize_deserialize(
+		(ccs_object_t)parameter, CCS_SERIALIZE_FORMAT_BINARY,
+		(ccs_object_t *)&parameter2);
 	compare_parameter(
-		parameter, num_possible_values, possible_values,
+		parameter2, num_possible_values, possible_values,
 		default_value_index);
+	err = ccs_release_object(parameter2);
+	assert(err == CCS_RESULT_SUCCESS);
+
+	test_serialize_deserialize(
+		(ccs_object_t)parameter, CCS_SERIALIZE_FORMAT_JSON,
+		(ccs_object_t *)&parameter2);
+	compare_parameter(
+		parameter2, num_possible_values, possible_values,
+		default_value_index);
+	err = ccs_release_object(parameter2);
+	assert(err == CCS_RESULT_SUCCESS);
 
 	err = ccs_release_object(parameter);
 	assert(err == CCS_RESULT_SUCCESS);

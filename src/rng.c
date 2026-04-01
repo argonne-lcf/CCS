@@ -1,5 +1,6 @@
 #include "cconfigspace_internal.h"
 #include "rng_internal.h"
+#include "cconfigspace_json.h"
 #include <stdlib.h>
 
 static ccs_result_t
@@ -50,6 +51,28 @@ _ccs_serialize_bin_ccs_rng(ccs_rng_t rng, size_t *buffer_size, char **buffer)
 	return CCS_RESULT_SUCCESS;
 }
 
+static inline ccs_result_t
+_ccs_serialize_json_ccs_rng(ccs_rng_t rng, cJSON *json)
+{
+	_ccs_rng_data_t *data = (_ccs_rng_data_t *)(rng->data);
+	CCS_REFUTE(
+		!cJSON_AddStringToObject(
+			json, "rng_type", gsl_rng_name(data->rng)),
+		CCS_RESULT_ERROR_OUT_OF_MEMORY);
+	CCS_REFUTE(
+		!cJSON_AddBoolToObject(
+			json, "little_endian", ccs_is_little_endian()),
+		CCS_RESULT_ERROR_OUT_OF_MEMORY);
+	size_t state_size = gsl_rng_size(data->rng);
+	void  *state      = gsl_rng_state(data->rng);
+	char  *hex        = _ccs_json_hex_encode(state, state_size);
+	CCS_REFUTE(!hex, CCS_RESULT_ERROR_OUT_OF_MEMORY);
+	cJSON *j_state = cJSON_AddStringToObject(json, "state", hex);
+	free(hex);
+	CCS_REFUTE(!j_state, CCS_RESULT_ERROR_OUT_OF_MEMORY);
+	return CCS_RESULT_SUCCESS;
+}
+
 static ccs_result_t
 _ccs_rng_serialize_size(
 	ccs_object_t                     object,
@@ -91,6 +114,13 @@ _ccs_rng_serialize(
 			err,
 			_ccs_serialize_bin_ccs_rng(
 				(ccs_rng_t)object, buffer_size, buffer),
+			end);
+		break;
+	case CCS_SERIALIZE_FORMAT_JSON:
+		CCS_VALIDATE_ERR_GOTO(
+			err,
+			_ccs_serialize_json_ccs_rng(
+				(ccs_rng_t)object, *(cJSON **)buffer),
 			end);
 		break;
 	default:

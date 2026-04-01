@@ -2,6 +2,7 @@
 #include <assert.h>
 #include <cconfigspace.h>
 #include <string.h>
+#include "test_utils.h"
 
 #define NUM_SAMPLES 10000
 
@@ -62,9 +63,8 @@ static void
 test_create(void)
 {
 	ccs_parameter_t parameter;
+	ccs_parameter_t parameter2;
 	ccs_result_t    err;
-	char           *buff;
-	size_t          buff_size;
 
 	err = ccs_create_numerical_parameter(
 		"my_param", CCS_NUMERIC_TYPE_FLOAT, CCSF(-5.0), CCSF(5.0),
@@ -73,32 +73,19 @@ test_create(void)
 
 	compare_parameter(parameter);
 
-	err = ccs_object_serialize(
-		parameter, CCS_SERIALIZE_FORMAT_BINARY,
-		CCS_SERIALIZE_OPERATION_SIZE, &buff_size,
-		CCS_SERIALIZE_OPTION_END);
+	test_serialize_deserialize(
+		(ccs_object_t)parameter, CCS_SERIALIZE_FORMAT_BINARY,
+		(ccs_object_t *)&parameter2);
+	compare_parameter(parameter2);
+	err = ccs_release_object(parameter2);
 	assert(err == CCS_RESULT_SUCCESS);
 
-	buff = (char *)malloc(buff_size);
-	assert(buff);
-
-	err = ccs_object_serialize(
-		parameter, CCS_SERIALIZE_FORMAT_BINARY,
-		CCS_SERIALIZE_OPERATION_MEMORY, buff_size, buff,
-		CCS_SERIALIZE_OPTION_END);
+	test_serialize_deserialize(
+		(ccs_object_t)parameter, CCS_SERIALIZE_FORMAT_JSON,
+		(ccs_object_t *)&parameter2);
+	compare_parameter(parameter2);
+	err = ccs_release_object(parameter2);
 	assert(err == CCS_RESULT_SUCCESS);
-
-	err = ccs_release_object(parameter);
-	assert(err == CCS_RESULT_SUCCESS);
-
-	err = ccs_object_deserialize(
-		(ccs_object_t *)&parameter, CCS_SERIALIZE_FORMAT_BINARY,
-		CCS_DESERIALIZE_OPERATION_MEMORY, buff_size, buff,
-		CCS_DESERIALIZE_OPTION_END);
-	assert(err == CCS_RESULT_SUCCESS);
-	free(buff);
-
-	compare_parameter(parameter);
 
 	err = ccs_release_object(parameter);
 	assert(err == CCS_RESULT_SUCCESS);

@@ -48,8 +48,6 @@ test_rng_create(void)
 	ccs_rng_t           rng = NULL, rng2 = NULL;
 	ccs_result_t        err = CCS_RESULT_SUCCESS;
 	const gsl_rng_type *t, *t2;
-	char               *buff;
-	size_t              buff_size;
 	unsigned long int   i = 0, i2 = 0;
 
 	err = ccs_create_rng(NULL);
@@ -64,40 +62,35 @@ test_rng_create(void)
 	err = ccs_rng_get(rng, &i);
 	assert(err == CCS_RESULT_SUCCESS);
 
-	err = ccs_object_serialize(
-		rng, CCS_SERIALIZE_FORMAT_BINARY, CCS_SERIALIZE_OPERATION_SIZE,
-		&buff_size, CCS_SERIALIZE_OPTION_END);
-	assert(err == CCS_RESULT_SUCCESS);
-
-	buff = (char *)malloc(buff_size);
-	assert(buff);
-
-	err = ccs_object_serialize(
-		rng, CCS_SERIALIZE_FORMAT_BINARY,
-		CCS_SERIALIZE_OPERATION_MEMORY, buff_size, buff,
-		CCS_SERIALIZE_OPTION_END);
-	assert(err == CCS_RESULT_SUCCESS);
-
-	err = ccs_object_deserialize(
-		(ccs_object_t *)&rng2, CCS_SERIALIZE_FORMAT_BINARY,
-		CCS_DESERIALIZE_OPERATION_MEMORY, buff_size, buff,
-		CCS_DESERIALIZE_OPTION_END);
-	assert(err == CCS_RESULT_SUCCESS);
-	free(buff);
-
+	test_serialize_deserialize(
+		(ccs_object_t)rng, CCS_SERIALIZE_FORMAT_BINARY,
+		(ccs_object_t *)&rng2);
 	err = ccs_rng_get_type(rng2, &t2);
 	assert(err == CCS_RESULT_SUCCESS);
 	assert(t == t2);
-
 	err = ccs_rng_get(rng, &i);
 	assert(err == CCS_RESULT_SUCCESS);
 	err = ccs_rng_get(rng2, &i2);
 	assert(err == CCS_RESULT_SUCCESS);
 	assert(i == i2);
+	err = ccs_release_object(rng2);
+	assert(err == CCS_RESULT_SUCCESS);
+
+	test_serialize_deserialize(
+		(ccs_object_t)rng, CCS_SERIALIZE_FORMAT_JSON,
+		(ccs_object_t *)&rng2);
+	err = ccs_rng_get_type(rng2, &t2);
+	assert(err == CCS_RESULT_SUCCESS);
+	assert(t == t2);
+	err = ccs_rng_get(rng, &i);
+	assert(err == CCS_RESULT_SUCCESS);
+	err = ccs_rng_get(rng2, &i2);
+	assert(err == CCS_RESULT_SUCCESS);
+	assert(i == i2);
+	err = ccs_release_object(rng2);
+	assert(err == CCS_RESULT_SUCCESS);
 
 	err = ccs_release_object(rng);
-	assert(err == CCS_RESULT_SUCCESS);
-	err = ccs_release_object(rng2);
 	assert(err == CCS_RESULT_SUCCESS);
 }
 
@@ -174,50 +167,55 @@ test_rng_uniform(void)
 static void
 test_rng_file_serialize(void)
 {
-	ccs_rng_t           rng = NULL, rng2 = NULL;
-	ccs_object_t        obj;
-	ccs_result_t        err;
-	const gsl_rng_type *t, *t2;
-	unsigned long int   i = 0, i2 = 0;
-	char                tmppath[] = "/tmp/ccs_test_XXXXXX";
-	int                 fd;
+	ccs_rng_t              rng = NULL, rng2 = NULL;
+	ccs_object_t           obj;
+	ccs_result_t           err;
+	const gsl_rng_type    *t, *t2;
+	unsigned long int      i = 0, i2 = 0;
+	char                   tmppath[] = "/tmp/ccs_test_XXXXXX";
+	int                    fd;
+	ccs_serialize_format_t formats[] = {
+		CCS_SERIALIZE_FORMAT_BINARY, CCS_SERIALIZE_FORMAT_JSON};
+	size_t num_formats = sizeof(formats) / sizeof(formats[0]);
 
-	err = ccs_create_rng(&rng);
+	err                = ccs_create_rng(&rng);
 	assert(err == CCS_RESULT_SUCCESS);
-
-	err = ccs_rng_get(rng, &i);
-	assert(err == CCS_RESULT_SUCCESS);
-
-	/* Create temp file */
-	fd = mkstemp(tmppath);
-	assert(fd != -1);
-	close(fd);
-
-	/* Serialize to file */
-	err = ccs_object_serialize(
-		rng, CCS_SERIALIZE_FORMAT_BINARY, CCS_SERIALIZE_OPERATION_FILE,
-		tmppath, CCS_SERIALIZE_OPTION_END);
-	assert(err == CCS_RESULT_SUCCESS);
-
-	/* Deserialize from file */
-	err = ccs_object_deserialize(
-		(ccs_object_t *)&rng2, CCS_SERIALIZE_FORMAT_BINARY,
-		CCS_DESERIALIZE_OPERATION_FILE, tmppath,
-		CCS_DESERIALIZE_OPTION_END);
-	assert(err == CCS_RESULT_SUCCESS);
-
-	/* Verify roundtrip */
-	err = ccs_rng_get_type(rng, &t);
-	assert(err == CCS_RESULT_SUCCESS);
-	err = ccs_rng_get_type(rng2, &t2);
-	assert(err == CCS_RESULT_SUCCESS);
-	assert(t == t2);
 
 	err = ccs_rng_get(rng, &i);
 	assert(err == CCS_RESULT_SUCCESS);
-	err = ccs_rng_get(rng2, &i2);
-	assert(err == CCS_RESULT_SUCCESS);
-	assert(i == i2);
+
+	for (size_t f = 0; f < num_formats; f++) {
+		strcpy(tmppath, "/tmp/ccs_test_XXXXXX");
+		fd = mkstemp(tmppath);
+		assert(fd != -1);
+		close(fd);
+
+		err = ccs_object_serialize(
+			rng, formats[f], CCS_SERIALIZE_OPERATION_FILE, tmppath,
+			CCS_SERIALIZE_OPTION_END);
+		assert(err == CCS_RESULT_SUCCESS);
+
+		err = ccs_object_deserialize(
+			(ccs_object_t *)&rng2, formats[f],
+			CCS_DESERIALIZE_OPERATION_FILE, tmppath,
+			CCS_DESERIALIZE_OPTION_END);
+		assert(err == CCS_RESULT_SUCCESS);
+
+		err = ccs_rng_get_type(rng, &t);
+		assert(err == CCS_RESULT_SUCCESS);
+		err = ccs_rng_get_type(rng2, &t2);
+		assert(err == CCS_RESULT_SUCCESS);
+		assert(t == t2);
+
+		err = ccs_rng_get(rng, &i);
+		assert(err == CCS_RESULT_SUCCESS);
+		err = ccs_rng_get(rng2, &i2);
+		assert(err == CCS_RESULT_SUCCESS);
+		assert(i == i2);
+
+		unlink(tmppath);
+		ccs_release_object(rng2);
+	}
 
 	/* Bad file path */
 	err = ccs_object_deserialize(
@@ -227,66 +225,68 @@ test_rng_file_serialize(void)
 	assert(err == CCS_RESULT_ERROR_INVALID_FILE_PATH);
 	ccs_clear_thread_error();
 
-	unlink(tmppath);
-	ccs_release_object(rng2);
 	ccs_release_object(rng);
 }
 
 static void
 test_rng_fd_serialize_blocking(void)
 {
-	ccs_rng_t           rng = NULL, rng2 = NULL;
-	ccs_result_t        err;
-	const gsl_rng_type *t, *t2;
-	unsigned long int   i = 0, i2 = 0;
-	int                 pipefd[2];
-	int                 ret;
+	ccs_rng_t              rng = NULL, rng2 = NULL;
+	ccs_result_t           err;
+	const gsl_rng_type    *t, *t2;
+	unsigned long int      i = 0, i2 = 0;
+	int                    pipefd[2];
+	int                    ret;
+	ccs_serialize_format_t formats[] = {
+		CCS_SERIALIZE_FORMAT_BINARY, CCS_SERIALIZE_FORMAT_JSON};
+	size_t num_formats = sizeof(formats) / sizeof(formats[0]);
 
-	err = ccs_create_rng(&rng);
+	err                = ccs_create_rng(&rng);
 	assert(err == CCS_RESULT_SUCCESS);
 
 	err = ccs_rng_get(rng, &i);
 	assert(err == CCS_RESULT_SUCCESS);
 
-	ret = pipe(pipefd);
-	assert(ret == 0);
+	for (size_t f = 0; f < num_formats; f++) {
+		ret = pipe(pipefd);
+		assert(ret == 0);
 
-	/* Blocking serialize to pipe write end */
-	err = ccs_object_serialize(
-		rng, CCS_SERIALIZE_FORMAT_BINARY,
-		CCS_SERIALIZE_OPERATION_FILE_DESCRIPTOR, pipefd[1],
-		CCS_SERIALIZE_OPTION_END);
-	assert(err == CCS_RESULT_SUCCESS);
-	close(pipefd[1]);
+		err = ccs_object_serialize(
+			rng, formats[f],
+			CCS_SERIALIZE_OPERATION_FILE_DESCRIPTOR, pipefd[1],
+			CCS_SERIALIZE_OPTION_END);
+		assert(err == CCS_RESULT_SUCCESS);
+		close(pipefd[1]);
 
-	/* Blocking deserialize from pipe read end */
-	err = ccs_object_deserialize(
-		(ccs_object_t *)&rng2, CCS_SERIALIZE_FORMAT_BINARY,
-		CCS_DESERIALIZE_OPERATION_FILE_DESCRIPTOR, pipefd[0],
-		CCS_DESERIALIZE_OPTION_END);
-	assert(err == CCS_RESULT_SUCCESS);
-	close(pipefd[0]);
+		err = ccs_object_deserialize(
+			(ccs_object_t *)&rng2, formats[f],
+			CCS_DESERIALIZE_OPERATION_FILE_DESCRIPTOR, pipefd[0],
+			CCS_DESERIALIZE_OPTION_END);
+		assert(err == CCS_RESULT_SUCCESS);
+		close(pipefd[0]);
 
-	/* Verify roundtrip */
-	err = ccs_rng_get_type(rng, &t);
-	assert(err == CCS_RESULT_SUCCESS);
-	err = ccs_rng_get_type(rng2, &t2);
-	assert(err == CCS_RESULT_SUCCESS);
-	assert(t == t2);
+		err = ccs_rng_get_type(rng, &t);
+		assert(err == CCS_RESULT_SUCCESS);
+		err = ccs_rng_get_type(rng2, &t2);
+		assert(err == CCS_RESULT_SUCCESS);
+		assert(t == t2);
 
-	err = ccs_rng_get(rng, &i);
-	assert(err == CCS_RESULT_SUCCESS);
-	err = ccs_rng_get(rng2, &i2);
-	assert(err == CCS_RESULT_SUCCESS);
-	assert(i == i2);
+		err = ccs_rng_get(rng, &i);
+		assert(err == CCS_RESULT_SUCCESS);
+		err = ccs_rng_get(rng2, &i2);
+		assert(err == CCS_RESULT_SUCCESS);
+		assert(i == i2);
 
-	ccs_release_object(rng2);
+		ccs_release_object(rng2);
+	}
+
 	ccs_release_object(rng);
 }
 
 struct _nb_write_args {
-	ccs_rng_t rng;
-	int       fd;
+	ccs_rng_t              rng;
+	int                    fd;
+	ccs_serialize_format_t format;
 };
 
 static void *
@@ -297,7 +297,7 @@ _nb_write_thread(void *arg)
 	ccs_result_t           err;
 	do {
 		err = ccs_object_serialize(
-			wa->rng, CCS_SERIALIZE_FORMAT_BINARY,
+			wa->rng, wa->format,
 			CCS_SERIALIZE_OPERATION_FILE_DESCRIPTOR, wa->fd,
 			CCS_SERIALIZE_OPTION_NON_BLOCKING, &write_state,
 			CCS_SERIALIZE_OPTION_END);
@@ -311,68 +311,70 @@ _nb_write_thread(void *arg)
 static void
 test_rng_fd_serialize_non_blocking(void)
 {
-	ccs_rng_t             rng = NULL, rng2 = NULL;
-	ccs_result_t          err;
-	const gsl_rng_type   *t, *t2;
-	unsigned long int     i = 0, i2 = 0;
-	int                   pipefd[2];
-	int                   ret;
-	int                   flags;
-	void                 *read_state = NULL;
-	pthread_t             writer;
-	struct _nb_write_args wa;
+	ccs_rng_t              rng = NULL, rng2 = NULL;
+	ccs_result_t           err;
+	const gsl_rng_type    *t, *t2;
+	unsigned long int      i = 0, i2 = 0;
+	int                    pipefd[2];
+	int                    ret;
+	int                    flags;
+	void                  *read_state = NULL;
+	pthread_t              writer;
+	struct _nb_write_args  wa;
+	ccs_serialize_format_t formats[] = {
+		CCS_SERIALIZE_FORMAT_BINARY, CCS_SERIALIZE_FORMAT_JSON};
+	size_t num_formats = sizeof(formats) / sizeof(formats[0]);
 
-	err = ccs_create_rng(&rng);
+	err                = ccs_create_rng(&rng);
 	assert(err == CCS_RESULT_SUCCESS);
 
 	err = ccs_rng_get(rng, &i);
 	assert(err == CCS_RESULT_SUCCESS);
 
-	ret = pipe(pipefd);
-	assert(ret == 0);
+	for (size_t f = 0; f < num_formats; f++) {
+		ret = pipe(pipefd);
+		assert(ret == 0);
 
-	/* Set both ends to non-blocking */
-	flags = fcntl(pipefd[0], F_GETFL, 0);
-	fcntl(pipefd[0], F_SETFL, flags | O_NONBLOCK);
-	flags = fcntl(pipefd[1], F_GETFL, 0);
-	fcntl(pipefd[1], F_SETFL, flags | O_NONBLOCK);
+		flags = fcntl(pipefd[0], F_GETFL, 0);
+		fcntl(pipefd[0], F_SETFL, flags | O_NONBLOCK);
+		flags = fcntl(pipefd[1], F_GETFL, 0);
+		fcntl(pipefd[1], F_SETFL, flags | O_NONBLOCK);
 
-	/* Write in a separate thread so that if the pipe buffer fills,
-	 * the read thread can drain it. */
-	wa.rng = rng;
-	wa.fd  = pipefd[1];
-	ret    = pthread_create(&writer, NULL, _nb_write_thread, &wa);
-	assert(ret == 0);
+		wa.rng    = rng;
+		wa.fd     = pipefd[1];
+		wa.format = formats[f];
+		ret = pthread_create(&writer, NULL, _nb_write_thread, &wa);
+		assert(ret == 0);
 
-	/* Non-blocking deserialize in the main thread */
-	do {
-		err = ccs_object_deserialize(
-			(ccs_object_t *)&rng2, CCS_SERIALIZE_FORMAT_BINARY,
-			CCS_DESERIALIZE_OPERATION_FILE_DESCRIPTOR, pipefd[0],
-			CCS_DESERIALIZE_OPTION_NON_BLOCKING, &read_state,
-			CCS_DESERIALIZE_OPTION_END);
-	} while (err == CCS_RESULT_AGAIN);
-	assert(err == CCS_RESULT_SUCCESS);
-	assert(read_state == NULL);
-	close(pipefd[0]);
+		do {
+			err = ccs_object_deserialize(
+				(ccs_object_t *)&rng2, formats[f],
+				CCS_DESERIALIZE_OPERATION_FILE_DESCRIPTOR,
+				pipefd[0], CCS_DESERIALIZE_OPTION_NON_BLOCKING,
+				&read_state, CCS_DESERIALIZE_OPTION_END);
+		} while (err == CCS_RESULT_AGAIN);
+		assert(err == CCS_RESULT_SUCCESS);
+		assert(read_state == NULL);
+		close(pipefd[0]);
 
-	ret = pthread_join(writer, NULL);
-	assert(ret == 0);
+		ret = pthread_join(writer, NULL);
+		assert(ret == 0);
 
-	/* Verify roundtrip */
-	err = ccs_rng_get_type(rng, &t);
-	assert(err == CCS_RESULT_SUCCESS);
-	err = ccs_rng_get_type(rng2, &t2);
-	assert(err == CCS_RESULT_SUCCESS);
-	assert(t == t2);
+		err = ccs_rng_get_type(rng, &t);
+		assert(err == CCS_RESULT_SUCCESS);
+		err = ccs_rng_get_type(rng2, &t2);
+		assert(err == CCS_RESULT_SUCCESS);
+		assert(t == t2);
 
-	err = ccs_rng_get(rng, &i);
-	assert(err == CCS_RESULT_SUCCESS);
-	err = ccs_rng_get(rng2, &i2);
-	assert(err == CCS_RESULT_SUCCESS);
-	assert(i == i2);
+		err = ccs_rng_get(rng, &i);
+		assert(err == CCS_RESULT_SUCCESS);
+		err = ccs_rng_get(rng2, &i2);
+		assert(err == CCS_RESULT_SUCCESS);
+		assert(i == i2);
 
-	ccs_release_object(rng2);
+		ccs_release_object(rng2);
+	}
+
 	ccs_release_object(rng);
 }
 

@@ -1,5 +1,6 @@
 #include "cconfigspace_internal.h"
 #include "parameter_internal.h"
+#include "cconfigspace_json.h"
 #include "datum_uthash.h"
 #include "datum_hash.h"
 #include <string.h>
@@ -71,6 +72,23 @@ _ccs_serialize_bin_ccs_parameter_string(
 	return CCS_RESULT_SUCCESS;
 }
 
+static inline ccs_result_t
+_ccs_serialize_json_ccs_parameter_string(ccs_parameter_t parameter, cJSON *json)
+{
+	_ccs_parameter_string_data_t *data =
+		(_ccs_parameter_string_data_t *)(parameter->data);
+	CCS_REFUTE(
+		!cJSON_AddStringToObject(
+			json, "parameter_type",
+			_ccs_json_parameter_type_to_string(
+				data->common_data.type)),
+		CCS_RESULT_ERROR_OUT_OF_MEMORY);
+	CCS_REFUTE(
+		!cJSON_AddStringToObject(json, "name", data->common_data.name),
+		CCS_RESULT_ERROR_OUT_OF_MEMORY);
+	return CCS_RESULT_SUCCESS;
+}
+
 static ccs_result_t
 _ccs_parameter_string_serialize_size(
 	ccs_object_t                     object,
@@ -105,6 +123,10 @@ _ccs_parameter_string_serialize(
 	case CCS_SERIALIZE_FORMAT_BINARY:
 		CCS_VALIDATE(_ccs_serialize_bin_ccs_parameter_string(
 			(ccs_parameter_t)object, buffer_size, buffer));
+		break;
+	case CCS_SERIALIZE_FORMAT_JSON:
+		CCS_VALIDATE(_ccs_serialize_json_ccs_parameter_string(
+			(ccs_parameter_t)object, *(cJSON **)buffer));
 		break;
 	default:
 		CCS_RAISE(
