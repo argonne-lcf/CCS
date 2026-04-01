@@ -85,126 +85,148 @@ test_static_tree_space(void)
 	err = ccs_tree_space_sample(tree_space, NULL, NULL, &config);
 	assert(err == CCS_RESULT_SUCCESS);
 
-	ccs_map_t   map;
-	ccs_datum_t d;
-	char       *buff;
-	size_t      buff_size;
+	{
+		ccs_serialize_format_t formats[] = {
+			CCS_SERIALIZE_FORMAT_BINARY, CCS_SERIALIZE_FORMAT_JSON};
+		size_t num_formats = sizeof(formats) / sizeof(formats[0]);
+		size_t f;
 
-	err = ccs_create_map(&map);
-	assert(err == CCS_RESULT_SUCCESS);
+		/* Test tree_configuration roundtrip */
+		for (f = 0; f < num_formats; f++) {
+			ccs_map_t   map;
+			ccs_datum_t d;
+			char       *buff;
+			size_t      buff_size;
 
-	err = ccs_object_serialize(
-		config, CCS_SERIALIZE_FORMAT_BINARY,
-		CCS_SERIALIZE_OPERATION_SIZE, &buff_size,
-		CCS_SERIALIZE_OPTION_END);
-	assert(err == CCS_RESULT_SUCCESS);
+			err = ccs_create_map(&map);
+			assert(err == CCS_RESULT_SUCCESS);
 
-	buff = (char *)malloc(buff_size);
-	assert(buff);
+			err = ccs_object_serialize(
+				config, formats[f],
+				CCS_SERIALIZE_OPERATION_SIZE, &buff_size,
+				CCS_SERIALIZE_OPTION_END);
+			assert(err == CCS_RESULT_SUCCESS);
 
-	err = ccs_object_serialize(
-		config, CCS_SERIALIZE_FORMAT_BINARY,
-		CCS_SERIALIZE_OPERATION_MEMORY, buff_size, buff,
-		CCS_SERIALIZE_OPTION_END);
-	assert(err == CCS_RESULT_SUCCESS);
+			buff = (char *)malloc(buff_size);
+			assert(buff);
 
-	err = ccs_release_object(config);
-	assert(err == CCS_RESULT_SUCCESS);
+			err = ccs_object_serialize(
+				config, formats[f],
+				CCS_SERIALIZE_OPERATION_MEMORY, buff_size, buff,
+				CCS_SERIALIZE_OPTION_END);
+			assert(err == CCS_RESULT_SUCCESS);
 
-	err = ccs_object_deserialize(
-		(ccs_object_t *)&config, CCS_SERIALIZE_FORMAT_BINARY,
-		CCS_DESERIALIZE_OPERATION_MEMORY, buff_size, buff,
-		CCS_DESERIALIZE_OPTION_HANDLE_MAP, map,
-		CCS_DESERIALIZE_OPTION_END);
-	assert(err == CCS_RESULT_ERROR_INVALID_HANDLE);
+			err = ccs_release_object(config);
+			assert(err == CCS_RESULT_SUCCESS);
 
-	d = ccs_object(tree_space);
-	d.flags |= CCS_DATUM_FLAG_ID;
-	err = ccs_map_set(map, d, ccs_object(tree_space));
-	assert(err == CCS_RESULT_SUCCESS);
+			err = ccs_object_deserialize(
+				(ccs_object_t *)&config, formats[f],
+				CCS_DESERIALIZE_OPERATION_MEMORY, buff_size,
+				buff, CCS_DESERIALIZE_OPTION_HANDLE_MAP, map,
+				CCS_DESERIALIZE_OPTION_END);
+			assert(err == CCS_RESULT_ERROR_INVALID_HANDLE);
 
-	err = ccs_object_deserialize(
-		(ccs_object_t *)&config, CCS_SERIALIZE_FORMAT_BINARY,
-		CCS_DESERIALIZE_OPERATION_MEMORY, buff_size, buff,
-		CCS_DESERIALIZE_OPTION_HANDLE_MAP, map,
-		CCS_DESERIALIZE_OPTION_END);
-	assert(err == CCS_RESULT_SUCCESS);
-	free(buff);
+			d = ccs_object(tree_space);
+			d.flags |= CCS_DATUM_FLAG_ID;
+			err = ccs_map_set(map, d, ccs_object(tree_space));
+			assert(err == CCS_RESULT_SUCCESS);
 
-	err = ccs_release_object(map);
-	assert(err == CCS_RESULT_SUCCESS);
+			err = ccs_object_deserialize(
+				(ccs_object_t *)&config, formats[f],
+				CCS_DESERIALIZE_OPERATION_MEMORY, buff_size,
+				buff, CCS_DESERIALIZE_OPTION_HANDLE_MAP, map,
+				CCS_DESERIALIZE_OPTION_END);
+			assert(err == CCS_RESULT_SUCCESS);
+			free(buff);
 
-	err = ccs_tree_space_samples(
-		tree_space, NULL, NULL, NUM_SAMPLES, configs);
-	assert(err == CCS_RESULT_SUCCESS);
+			err = ccs_release_object(map);
+			assert(err == CCS_RESULT_SUCCESS);
+		}
 
-	inv_sum = 0;
-	for (size_t i = 0; i < 5; i++) {
-		depths[i] = 0;
-		inv_sum += areas[i];
-	}
-	inv_sum = 1.0 / inv_sum;
-	for (size_t i = 0; i < NUM_SAMPLES; i++) {
-		err = ccs_tree_configuration_get_position(
-			configs[i], 0, NULL, &position_size);
+		err = ccs_tree_space_samples(
+			tree_space, NULL, NULL, NUM_SAMPLES, configs);
 		assert(err == CCS_RESULT_SUCCESS);
-		depths[position_size]++;
-		err = ccs_release_object(configs[i]);
-		assert(err == CCS_RESULT_SUCCESS);
-	}
-	for (size_t i = 0; i < 5; i++) {
-		ccs_float_t target = NUM_SAMPLES * areas[i] * inv_sum;
-		assert(depths[i] >= target * 0.95 &&
-		       depths[i] <= target * 1.05);
-	}
 
-	err = ccs_object_serialize(
-		tree_space, CCS_SERIALIZE_FORMAT_BINARY,
-		CCS_SERIALIZE_OPERATION_SIZE, &buff_size,
-		CCS_SERIALIZE_OPTION_END);
-	assert(err == CCS_RESULT_SUCCESS);
+		inv_sum = 0;
+		for (size_t i = 0; i < 5; i++) {
+			depths[i] = 0;
+			inv_sum += areas[i];
+		}
+		inv_sum = 1.0 / inv_sum;
+		for (size_t i = 0; i < NUM_SAMPLES; i++) {
+			err = ccs_tree_configuration_get_position(
+				configs[i], 0, NULL, &position_size);
+			assert(err == CCS_RESULT_SUCCESS);
+			depths[position_size]++;
+			err = ccs_release_object(configs[i]);
+			assert(err == CCS_RESULT_SUCCESS);
+		}
+		for (size_t i = 0; i < 5; i++) {
+			ccs_float_t target = NUM_SAMPLES * areas[i] * inv_sum;
+			assert(depths[i] >= target * 0.95 &&
+			       depths[i] <= target * 1.05);
+		}
 
-	buff = (char *)malloc(buff_size);
-	assert(buff);
+		/* Test tree_space roundtrip */
+		for (f = 0; f < num_formats; f++) {
+			char       *buff;
+			size_t      buff_size;
+			const char *ts_name;
 
-	err = ccs_object_serialize(
-		tree_space, CCS_SERIALIZE_FORMAT_BINARY,
-		CCS_SERIALIZE_OPERATION_MEMORY, buff_size, buff,
-		CCS_SERIALIZE_OPTION_END);
-	assert(err == CCS_RESULT_SUCCESS);
+			err = ccs_object_serialize(
+				tree_space, formats[f],
+				CCS_SERIALIZE_OPERATION_SIZE, &buff_size,
+				CCS_SERIALIZE_OPTION_END);
+			assert(err == CCS_RESULT_SUCCESS);
 
-	err = ccs_release_object(tree_space);
-	assert(err == CCS_RESULT_SUCCESS);
+			buff = (char *)malloc(buff_size);
+			assert(buff);
 
-	err = ccs_object_deserialize(
-		(ccs_object_t *)&tree_space, CCS_SERIALIZE_FORMAT_BINARY,
-		CCS_DESERIALIZE_OPERATION_MEMORY, buff_size, buff,
-		CCS_DESERIALIZE_OPTION_END);
-	assert(err == CCS_RESULT_SUCCESS);
-	free(buff);
+			err = ccs_object_serialize(
+				tree_space, formats[f],
+				CCS_SERIALIZE_OPERATION_MEMORY, buff_size, buff,
+				CCS_SERIALIZE_OPTION_END);
+			assert(err == CCS_RESULT_SUCCESS);
 
-	err = ccs_tree_space_samples(
-		tree_space, NULL, NULL, NUM_SAMPLES, configs);
-	assert(err == CCS_RESULT_SUCCESS);
+			err = ccs_release_object(tree_space);
+			assert(err == CCS_RESULT_SUCCESS);
 
-	inv_sum = 0;
-	for (size_t i = 0; i < 5; i++) {
-		depths[i] = 0;
-		inv_sum += areas[i];
-	}
-	inv_sum = 1.0 / inv_sum;
-	for (size_t i = 0; i < NUM_SAMPLES; i++) {
-		err = ccs_tree_configuration_get_position(
-			configs[i], 0, NULL, &position_size);
-		assert(err == CCS_RESULT_SUCCESS);
-		depths[position_size]++;
-		err = ccs_release_object(configs[i]);
-		assert(err == CCS_RESULT_SUCCESS);
-	}
-	for (size_t i = 0; i < 5; i++) {
-		ccs_float_t target = NUM_SAMPLES * areas[i] * inv_sum;
-		assert(depths[i] >= target * 0.95 &&
-		       depths[i] <= target * 1.05);
+			err = ccs_object_deserialize(
+				(ccs_object_t *)&tree_space, formats[f],
+				CCS_DESERIALIZE_OPERATION_MEMORY, buff_size,
+				buff, CCS_DESERIALIZE_OPTION_END);
+			assert(err == CCS_RESULT_SUCCESS);
+			free(buff);
+
+			err = ccs_tree_space_get_name(tree_space, &ts_name);
+			assert(err == CCS_RESULT_SUCCESS);
+			assert(!strcmp(ts_name, "space"));
+
+			err = ccs_tree_space_samples(
+				tree_space, NULL, NULL, NUM_SAMPLES, configs);
+			assert(err == CCS_RESULT_SUCCESS);
+
+			inv_sum = 0;
+			for (size_t i = 0; i < 5; i++) {
+				depths[i] = 0;
+				inv_sum += areas[i];
+			}
+			inv_sum = 1.0 / inv_sum;
+			for (size_t i = 0; i < NUM_SAMPLES; i++) {
+				err = ccs_tree_configuration_get_position(
+					configs[i], 0, NULL, &position_size);
+				assert(err == CCS_RESULT_SUCCESS);
+				depths[position_size]++;
+				err = ccs_release_object(configs[i]);
+				assert(err == CCS_RESULT_SUCCESS);
+			}
+			for (size_t i = 0; i < 5; i++) {
+				ccs_float_t target =
+					NUM_SAMPLES * areas[i] * inv_sum;
+				assert(depths[i] >= target * 0.95 &&
+				       depths[i] <= target * 1.05);
+			}
+		}
 	}
 
 	err = ccs_release_object(config);

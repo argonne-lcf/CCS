@@ -1,4 +1,5 @@
 #include "cconfigspace_internal.h"
+#include "cconfigspace_json.h"
 #include "tree_configuration_internal.h"
 #include "tree_space_internal.h"
 #include "features_internal.h"
@@ -80,6 +81,44 @@ _ccs_serialize_bin_ccs_tree_configuration(
 	return CCS_RESULT_SUCCESS;
 }
 
+static inline ccs_result_t
+_ccs_serialize_json_ccs_tree_configuration(
+	ccs_tree_configuration_t         tree_configuration,
+	cJSON                           *json,
+	_ccs_object_serialize_options_t *opts)
+{
+	_ccs_tree_configuration_data_t *data = tree_configuration->data;
+	char                            hex[sizeof(ccs_object_t) * 2 + 1];
+	cJSON                          *positions;
+	size_t                          dummy = 0;
+	size_t                          i;
+
+	_ccs_json_hex_encode_buf(&data->tree_space, sizeof(ccs_object_t), hex);
+	CCS_REFUTE(
+		!cJSON_AddStringToObject(json, "tree_space", hex),
+		CCS_RESULT_ERROR_OUT_OF_MEMORY);
+
+	positions = cJSON_AddArrayToObject(json, "position");
+	CCS_REFUTE(!positions, CCS_RESULT_ERROR_OUT_OF_MEMORY);
+	for (i = 0; i < data->position_size; i++)
+		CCS_REFUTE(
+			!cJSON_AddItemToArray(
+				positions,
+				cJSON_CreateNumber((double)data->position[i])),
+			CCS_RESULT_ERROR_OUT_OF_MEMORY);
+
+	if (data->features) {
+		cJSON *feat = cJSON_AddObjectToObject(json, "features");
+		CCS_REFUTE(!feat, CCS_RESULT_ERROR_OUT_OF_MEMORY);
+		dummy = 0;
+		CCS_VALIDATE(_ccs_object_serialize_with_opts(
+			data->features, CCS_SERIALIZE_FORMAT_JSON, &dummy,
+			(char **)&feat, opts));
+	}
+
+	return CCS_RESULT_SUCCESS;
+}
+
 static ccs_result_t
 _ccs_tree_configuration_serialize_size(
 	ccs_object_t                     object,
@@ -112,6 +151,11 @@ _ccs_tree_configuration_serialize(
 	case CCS_SERIALIZE_FORMAT_BINARY:
 		CCS_VALIDATE(_ccs_serialize_bin_ccs_tree_configuration(
 			(ccs_tree_configuration_t)object, buffer_size, buffer,
+			opts));
+		break;
+	case CCS_SERIALIZE_FORMAT_JSON:
+		CCS_VALIDATE(_ccs_serialize_json_ccs_tree_configuration(
+			(ccs_tree_configuration_t)object, *(cJSON **)buffer,
 			opts));
 		break;
 	default:

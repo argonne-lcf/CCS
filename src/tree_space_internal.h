@@ -3,6 +3,7 @@
 #include "tree_internal.h"
 #include "rng_internal.h"
 #include "feature_space_internal.h"
+#include "cconfigspace_json.h"
 
 #define CCS_CHECK_TREE_SPACE(o, t)                                             \
 	do {                                                                   \
@@ -97,6 +98,61 @@ _ccs_serialize_bin_ccs_tree_space_common_data(
 		CCS_VALIDATE(_ccs_object_serialize_with_opts(
 			data->feature_space, CCS_SERIALIZE_FORMAT_BINARY,
 			buffer_size, buffer, opts));
+	return CCS_RESULT_SUCCESS;
+}
+
+static inline ccs_result_t
+_ccs_serialize_json_ccs_tree_space_common_data(
+	_ccs_tree_space_common_data_t   *data,
+	cJSON                           *json,
+	_ccs_object_serialize_options_t *opts)
+{
+	const char *type_str;
+	cJSON      *rng_node;
+	cJSON      *tree_node;
+	size_t      dummy = 0;
+
+	type_str          = _ccs_json_tree_space_type_to_string(data->type);
+	CCS_REFUTE(!type_str, CCS_RESULT_ERROR_INVALID_VALUE);
+	CCS_REFUTE(
+		!cJSON_AddStringToObject(json, "tree_space_type", type_str),
+		CCS_RESULT_ERROR_OUT_OF_MEMORY);
+
+	CCS_REFUTE(
+		!cJSON_AddStringToObject(json, "name", data->name),
+		CCS_RESULT_ERROR_OUT_OF_MEMORY);
+
+	rng_node = cJSON_AddObjectToObject(json, "rng");
+	CCS_REFUTE(!rng_node, CCS_RESULT_ERROR_OUT_OF_MEMORY);
+	dummy = 0;
+	CCS_VALIDATE(_ccs_object_serialize_with_opts(
+		data->rng, CCS_SERIALIZE_FORMAT_JSON, &dummy,
+		(char **)&rng_node, opts));
+
+	tree_node = cJSON_AddObjectToObject(json, "tree");
+	CCS_REFUTE(!tree_node, CCS_RESULT_ERROR_OUT_OF_MEMORY);
+	dummy = 0;
+	CCS_VALIDATE(_ccs_object_serialize_with_opts(
+		data->tree, CCS_SERIALIZE_FORMAT_JSON, &dummy,
+		(char **)&tree_node, opts));
+
+	if (data->feature_space) {
+		char   hex[sizeof(ccs_object_t) * 2 + 1];
+		cJSON *fs_node;
+		_ccs_json_hex_encode_buf(
+			&data->feature_space, sizeof(ccs_object_t), hex);
+		CCS_REFUTE(
+			!cJSON_AddStringToObject(
+				json, "feature_space_handle", hex),
+			CCS_RESULT_ERROR_OUT_OF_MEMORY);
+		fs_node = cJSON_AddObjectToObject(json, "feature_space");
+		CCS_REFUTE(!fs_node, CCS_RESULT_ERROR_OUT_OF_MEMORY);
+		dummy = 0;
+		CCS_VALIDATE(_ccs_object_serialize_with_opts(
+			data->feature_space, CCS_SERIALIZE_FORMAT_JSON, &dummy,
+			(char **)&fs_node, opts));
+	}
+
 	return CCS_RESULT_SUCCESS;
 }
 

@@ -1,6 +1,7 @@
 #ifndef _TREE_DESERIALIZE_H
 #define _TREE_DESERIALIZE_H
 #include "cconfigspace_internal.h"
+#include "cconfigspace_json.h"
 #include "tree_internal.h"
 
 struct _ccs_tree_data_mock_s {
@@ -98,6 +99,121 @@ end:
 	return res;
 }
 
+static inline ccs_result_t
+_ccs_deserialize_json_tree(
+	ccs_tree_t                        *tree_ret,
+	uint32_t                           version,
+	size_t                            *buffer_size,
+	const char                       **buffer,
+	_ccs_object_deserialize_options_t *opts)
+{
+	_ccs_object_deserialize_options_t new_opts = *opts;
+	ccs_result_t                      res      = CCS_RESULT_SUCCESS;
+	cJSON                            *json;
+	cJSON                            *j_arity;
+	cJSON                            *j_weight;
+	cJSON                            *j_bias;
+	cJSON                            *j_value;
+	cJSON                            *j_children;
+	ccs_tree_t                        tree = NULL;
+	_ccs_tree_data_mock_t             data;
+	int                               num_children;
+	int                               i;
+	const char                       *cbuf;
+	size_t                            dummy;
+
+	(void)buffer_size;
+	new_opts.handle_map = NULL;
+	new_opts.map_values = CCS_FALSE;
+	data.children       = NULL;
+
+	json                = *(cJSON **)buffer;
+
+	j_arity             = cJSON_GetObjectItemCaseSensitive(json, "arity");
+	CCS_REFUTE(
+		!j_arity || !cJSON_IsNumber(j_arity),
+		CCS_RESULT_ERROR_INVALID_VALUE);
+	data.arity = (size_t)j_arity->valuedouble;
+
+	j_weight   = cJSON_GetObjectItemCaseSensitive(json, "weight");
+	CCS_REFUTE(
+		!j_weight || !cJSON_IsNumber(j_weight),
+		CCS_RESULT_ERROR_INVALID_VALUE);
+	data.weight = j_weight->valuedouble;
+
+	j_bias      = cJSON_GetObjectItemCaseSensitive(json, "bias");
+	CCS_REFUTE(
+		!j_bias || !cJSON_IsNumber(j_bias),
+		CCS_RESULT_ERROR_INVALID_VALUE);
+	data.bias = j_bias->valuedouble;
+
+	j_value   = cJSON_GetObjectItemCaseSensitive(json, "value");
+	CCS_REFUTE(!j_value, CCS_RESULT_ERROR_INVALID_VALUE);
+	CCS_VALIDATE_ERR_GOTO(
+		res, _ccs_json_get_datum(j_value, &data.value), end);
+
+	j_children = cJSON_GetObjectItemCaseSensitive(json, "children");
+	CCS_REFUTE_ERR_GOTO(
+		res, !j_children || !cJSON_IsArray(j_children),
+		CCS_RESULT_ERROR_INVALID_VALUE, end);
+	num_children = cJSON_GetArraySize(j_children);
+	CCS_REFUTE_ERR_GOTO(
+		res, (size_t)num_children != data.arity,
+		CCS_RESULT_ERROR_INVALID_VALUE, end);
+
+	if (data.arity) {
+		data.children =
+			(ccs_tree_t *)calloc(data.arity, sizeof(ccs_tree_t));
+		CCS_REFUTE_ERR_GOTO(
+			res, !data.children, CCS_RESULT_ERROR_OUT_OF_MEMORY,
+			end);
+		for (i = 0; i < num_children; i++) {
+			cJSON *child_item = cJSON_GetArrayItem(j_children, i);
+			if (!cJSON_IsNull(child_item)) {
+				cbuf  = (const char *)child_item;
+				dummy = 0;
+				CCS_VALIDATE_ERR_GOTO(
+					res,
+					_ccs_object_deserialize_with_opts_check(
+						(ccs_object_t *)data.children +
+							i,
+						CCS_OBJECT_TYPE_TREE,
+						CCS_SERIALIZE_FORMAT_JSON,
+						version, &dummy, &cbuf,
+						&new_opts),
+					end);
+			}
+		}
+	}
+
+	CCS_VALIDATE_ERR_GOTO(
+		res, ccs_create_tree(data.arity, data.value, &tree), end);
+	CCS_VALIDATE_ERR_GOTO(
+		res, ccs_tree_set_weight(tree, data.weight), err_tree);
+	CCS_VALIDATE_ERR_GOTO(
+		res, ccs_tree_set_bias(tree, data.bias), err_tree);
+	for (i = 0; (size_t)i < data.arity; i++)
+		if (data.children[i])
+			CCS_VALIDATE_ERR_GOTO(
+				res,
+				ccs_tree_set_child(
+					tree, (size_t)i, data.children[i]),
+				err_tree);
+
+	*tree_ret = tree;
+	goto end;
+err_tree:
+	ccs_release_object(tree);
+end:
+	if (data.children) {
+		for (i = 0; (size_t)i < data.arity; i++)
+			if (data.children[i])
+				ccs_release_object(data.children[i]);
+		free(data.children);
+	}
+	return res;
+}
+
 static ccs_result_t
 _ccs_tree_deserialize(
 	ccs_tree_t                        *tree_ret,
@@ -110,6 +226,10 @@ _ccs_tree_deserialize(
 	switch (format) {
 	case CCS_SERIALIZE_FORMAT_BINARY:
 		CCS_VALIDATE(_ccs_deserialize_bin_tree(
+			tree_ret, version, buffer_size, buffer, opts));
+		break;
+	case CCS_SERIALIZE_FORMAT_JSON:
+		CCS_VALIDATE(_ccs_deserialize_json_tree(
 			tree_ret, version, buffer_size, buffer, opts));
 		break;
 	default:

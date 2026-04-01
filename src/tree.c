@@ -1,4 +1,5 @@
 #include "cconfigspace_internal.h"
+#include "cconfigspace_json.h"
 #include "tree_internal.h"
 
 static ccs_result_t
@@ -85,6 +86,47 @@ _ccs_serialize_bin_ccs_tree(
 	return CCS_RESULT_SUCCESS;
 }
 
+static inline ccs_result_t
+_ccs_serialize_json_ccs_tree(
+	ccs_tree_t                       tree,
+	cJSON                           *json,
+	_ccs_object_serialize_options_t *opts)
+{
+	_ccs_tree_data_t *data  = tree->data;
+	size_t            dummy = 0;
+	cJSON            *children;
+	size_t            i;
+
+	CCS_REFUTE(
+		!cJSON_AddNumberToObject(json, "arity", (double)data->arity),
+		CCS_RESULT_ERROR_OUT_OF_MEMORY);
+	CCS_REFUTE(
+		!cJSON_AddNumberToObject(
+			json, "weight", data->weights[data->arity]),
+		CCS_RESULT_ERROR_OUT_OF_MEMORY);
+	CCS_REFUTE(
+		!cJSON_AddNumberToObject(json, "bias", data->bias),
+		CCS_RESULT_ERROR_OUT_OF_MEMORY);
+	CCS_VALIDATE(_ccs_json_add_datum(json, "value", data->value));
+
+	children = cJSON_AddArrayToObject(json, "children");
+	CCS_REFUTE(!children, CCS_RESULT_ERROR_OUT_OF_MEMORY);
+	for (i = 0; i < data->arity; i++) {
+		if (data->children[i]) {
+			cJSON *child = cJSON_CreateObject();
+			CCS_REFUTE(!child, CCS_RESULT_ERROR_OUT_OF_MEMORY);
+			cJSON_AddItemToArray(children, child);
+			dummy = 0;
+			CCS_VALIDATE(_ccs_object_serialize_with_opts(
+				data->children[i], CCS_SERIALIZE_FORMAT_JSON,
+				&dummy, (char **)&child, opts));
+		} else {
+			cJSON_AddItemToArray(children, cJSON_CreateNull());
+		}
+	}
+	return CCS_RESULT_SUCCESS;
+}
+
 static ccs_result_t
 _ccs_tree_serialize_size(
 	ccs_object_t                     object,
@@ -117,6 +159,10 @@ _ccs_tree_serialize(
 	case CCS_SERIALIZE_FORMAT_BINARY:
 		CCS_VALIDATE(_ccs_serialize_bin_ccs_tree(
 			(ccs_tree_t)object, buffer_size, buffer, opts));
+		break;
+	case CCS_SERIALIZE_FORMAT_JSON:
+		CCS_VALIDATE(_ccs_serialize_json_ccs_tree(
+			(ccs_tree_t)object, *(cJSON **)buffer, opts));
 		break;
 	default:
 		CCS_RAISE(
