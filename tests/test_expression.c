@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <assert.h>
 #include <cconfigspace.h>
+#include "test_utils.h"
 #include <string.h>
 #include <math.h>
 #include <gsl/gsl_rng.h>
@@ -1028,140 +1029,181 @@ test_check_context(void)
 void
 test_deserialize_literal(void)
 {
-	ccs_result_t          err;
-	ccs_expression_t      expression;
-	ccs_object_type_t     otype;
-	ccs_expression_type_t etype;
-	char                 *buff;
-	size_t                buff_size;
-	ccs_datum_t           d;
+	ccs_result_t           err;
+	ccs_expression_t       expression;
+	ccs_expression_t       expression2;
+	ccs_object_type_t      otype;
+	ccs_expression_type_t  etype;
+	ccs_datum_t            d;
+	ccs_serialize_format_t formats[] = {
+		CCS_SERIALIZE_FORMAT_BINARY, CCS_SERIALIZE_FORMAT_JSON};
+	size_t num_formats = sizeof(formats) / sizeof(formats[0]);
 
-	err = ccs_create_literal(ccs_float(3.0), &expression);
+	err                = ccs_create_literal(ccs_float(3.0), &expression);
 	assert(err == CCS_RESULT_SUCCESS);
 
-	err = ccs_object_serialize(
-		expression, CCS_SERIALIZE_FORMAT_BINARY,
-		CCS_SERIALIZE_OPERATION_SIZE, &buff_size,
-		CCS_SERIALIZE_OPTION_END);
-	assert(err == CCS_RESULT_SUCCESS);
-	buff = (char *)malloc(buff_size);
-	assert(buff);
+	for (size_t f = 0; f < num_formats; f++) {
+		test_serialize_deserialize(
+			(ccs_object_t)expression, formats[f],
+			(ccs_object_t *)&expression2);
 
-	err = ccs_object_serialize(
-		expression, CCS_SERIALIZE_FORMAT_BINARY,
-		CCS_SERIALIZE_OPERATION_MEMORY, buff_size, buff,
-		CCS_SERIALIZE_OPTION_END);
-	assert(err == CCS_RESULT_SUCCESS);
+		err = ccs_object_get_type(expression2, &otype);
+		assert(err == CCS_RESULT_SUCCESS);
+		assert(otype == CCS_OBJECT_TYPE_EXPRESSION);
 
-	err = ccs_release_object(expression);
-	assert(err == CCS_RESULT_SUCCESS);
+		err = ccs_expression_get_type(expression2, &etype);
+		assert(err == CCS_RESULT_SUCCESS);
+		assert(etype == CCS_EXPRESSION_TYPE_LITERAL);
 
-	err = ccs_object_deserialize(
-		(ccs_object_t *)&expression, CCS_SERIALIZE_FORMAT_BINARY,
-		CCS_DESERIALIZE_OPERATION_MEMORY, buff_size, buff,
-		CCS_DESERIALIZE_OPTION_END);
-	assert(err == CCS_RESULT_SUCCESS);
+		err = ccs_literal_get_value(expression2, &d);
+		assert(err == CCS_RESULT_SUCCESS);
+		assert(d.type == CCS_DATA_TYPE_FLOAT);
+		assert(d.value.f == 3.0);
 
-	err = ccs_object_get_type(expression, &otype);
-	assert(err == CCS_RESULT_SUCCESS);
-	assert(otype == CCS_OBJECT_TYPE_EXPRESSION);
-
-	err = ccs_expression_get_type(expression, &etype);
-	assert(err == CCS_RESULT_SUCCESS);
-	assert(etype == CCS_EXPRESSION_TYPE_LITERAL);
-
-	err = ccs_literal_get_value(expression, &d);
-	assert(err == CCS_RESULT_SUCCESS);
-	assert(d.type == CCS_DATA_TYPE_FLOAT);
-	assert(d.value.f == 3.0);
+		err = ccs_release_object(expression2);
+		assert(err == CCS_RESULT_SUCCESS);
+	}
 
 	err = ccs_release_object(expression);
 	assert(err == CCS_RESULT_SUCCESS);
-	free(buff);
+
+	/* int literal */
+	err = ccs_create_literal(ccs_int(42), &expression);
+	assert(err == CCS_RESULT_SUCCESS);
+	for (size_t f = 0; f < num_formats; f++) {
+		test_serialize_deserialize(
+			(ccs_object_t)expression, formats[f],
+			(ccs_object_t *)&expression2);
+		err = ccs_literal_get_value(expression2, &d);
+		assert(err == CCS_RESULT_SUCCESS);
+		assert(d.type == CCS_DATA_TYPE_INT);
+		assert(d.value.i == 42);
+		err = ccs_release_object(expression2);
+		assert(err == CCS_RESULT_SUCCESS);
+	}
+	err = ccs_release_object(expression);
+	assert(err == CCS_RESULT_SUCCESS);
+
+	/* string literal */
+	err = ccs_create_literal(ccs_string("hello"), &expression);
+	assert(err == CCS_RESULT_SUCCESS);
+	for (size_t f = 0; f < num_formats; f++) {
+		test_serialize_deserialize(
+			(ccs_object_t)expression, formats[f],
+			(ccs_object_t *)&expression2);
+		err = ccs_literal_get_value(expression2, &d);
+		assert(err == CCS_RESULT_SUCCESS);
+		assert(d.type == CCS_DATA_TYPE_STRING);
+		assert(!strcmp(d.value.s, "hello"));
+		err = ccs_release_object(expression2);
+		assert(err == CCS_RESULT_SUCCESS);
+	}
+	err = ccs_release_object(expression);
+	assert(err == CCS_RESULT_SUCCESS);
+
+	/* bool literal */
+	err = ccs_create_literal(ccs_bool(CCS_TRUE), &expression);
+	assert(err == CCS_RESULT_SUCCESS);
+	for (size_t f = 0; f < num_formats; f++) {
+		test_serialize_deserialize(
+			(ccs_object_t)expression, formats[f],
+			(ccs_object_t *)&expression2);
+		err = ccs_literal_get_value(expression2, &d);
+		assert(err == CCS_RESULT_SUCCESS);
+		assert(d.type == CCS_DATA_TYPE_BOOL);
+		assert(d.value.i == CCS_TRUE);
+		err = ccs_release_object(expression2);
+		assert(err == CCS_RESULT_SUCCESS);
+	}
+	err = ccs_release_object(expression);
+	assert(err == CCS_RESULT_SUCCESS);
 }
 
 void
 test_deserialize_variable(void)
 {
-	ccs_result_t          err;
-	ccs_parameter_t       parameter;
-	ccs_map_t             handle_map;
-	ccs_expression_t      expression;
-	ccs_object_type_t     otype;
-	ccs_expression_type_t etype;
-	char                 *buff;
-	size_t                buff_size;
-	ccs_datum_t           d;
+	ccs_result_t           err;
+	ccs_parameter_t        parameter;
+	ccs_parameter_t        parameter2;
+	ccs_map_t              handle_map;
+	ccs_expression_t       expression;
+	ccs_expression_t       expression2;
+	ccs_object_type_t      otype;
+	ccs_expression_type_t  etype;
+	char                  *buff;
+	size_t                 buff_size;
+	ccs_datum_t            d;
+	ccs_serialize_format_t formats[] = {
+		CCS_SERIALIZE_FORMAT_BINARY, CCS_SERIALIZE_FORMAT_JSON};
+	size_t num_formats = sizeof(formats) / sizeof(formats[0]);
 
-	parameter = create_dummy_numerical("param");
+	parameter          = create_dummy_numerical("param");
 
-	err       = ccs_create_variable(parameter, &expression);
+	err                = ccs_create_variable(parameter, &expression);
 	assert(err == CCS_RESULT_SUCCESS);
 
-	err = ccs_object_serialize(
-		expression, CCS_SERIALIZE_FORMAT_BINARY,
-		CCS_SERIALIZE_OPERATION_SIZE, &buff_size,
-		CCS_SERIALIZE_OPTION_END);
-	assert(err == CCS_RESULT_SUCCESS);
-	buff = (char *)malloc(buff_size);
-	assert(buff);
+	for (size_t f = 0; f < num_formats; f++) {
+		/* serialize */
+		err = ccs_object_serialize(
+			expression, formats[f], CCS_SERIALIZE_OPERATION_SIZE,
+			&buff_size, CCS_SERIALIZE_OPTION_END);
+		assert(err == CCS_RESULT_SUCCESS);
+		buff = (char *)malloc(buff_size);
+		assert(buff);
+		err = ccs_object_serialize(
+			expression, formats[f], CCS_SERIALIZE_OPERATION_MEMORY,
+			buff_size, buff, CCS_SERIALIZE_OPTION_END);
+		assert(err == CCS_RESULT_SUCCESS);
 
-	err = ccs_object_serialize(
-		expression, CCS_SERIALIZE_FORMAT_BINARY,
-		CCS_SERIALIZE_OPERATION_MEMORY, buff_size, buff,
-		CCS_SERIALIZE_OPTION_END);
-	assert(err == CCS_RESULT_SUCCESS);
+		/* deserialize without handle map — should fail */
+		err = ccs_object_deserialize(
+			(ccs_object_t *)&expression2, formats[f],
+			CCS_DESERIALIZE_OPERATION_MEMORY, buff_size, buff,
+			CCS_DESERIALIZE_OPTION_END);
+		assert(err == CCS_RESULT_ERROR_INVALID_OBJECT);
+
+		/* deserialize with empty handle map — should fail */
+		err = ccs_create_map(&handle_map);
+		assert(err == CCS_RESULT_SUCCESS);
+		err = ccs_object_deserialize(
+			(ccs_object_t *)&expression2, formats[f],
+			CCS_DESERIALIZE_OPERATION_MEMORY, buff_size, buff,
+			CCS_DESERIALIZE_OPTION_HANDLE_MAP, handle_map,
+			CCS_DESERIALIZE_OPTION_END);
+		assert(err == CCS_RESULT_ERROR_INVALID_HANDLE);
+
+		/* deserialize with correct handle map — should succeed */
+		d = ccs_object(parameter);
+		d.flags |= CCS_DATUM_FLAG_ID;
+		err = ccs_map_set(handle_map, d, ccs_object(parameter));
+		assert(err == CCS_RESULT_SUCCESS);
+
+		err = ccs_object_deserialize(
+			(ccs_object_t *)&expression2, formats[f],
+			CCS_DESERIALIZE_OPERATION_MEMORY, buff_size, buff,
+			CCS_DESERIALIZE_OPTION_HANDLE_MAP, handle_map,
+			CCS_DESERIALIZE_OPTION_END);
+		assert(err == CCS_RESULT_SUCCESS);
+		free(buff);
+
+		err = ccs_object_get_type(expression2, &otype);
+		assert(err == CCS_RESULT_SUCCESS);
+		assert(otype == CCS_OBJECT_TYPE_EXPRESSION);
+		err = ccs_expression_get_type(expression2, &etype);
+		assert(err == CCS_RESULT_SUCCESS);
+		assert(etype == CCS_EXPRESSION_TYPE_VARIABLE);
+		err = ccs_variable_get_parameter(expression2, &parameter2);
+		assert(err == CCS_RESULT_SUCCESS);
+		assert(parameter2 == parameter);
+
+		ccs_release_object(expression2);
+		ccs_release_object(handle_map);
+	}
 
 	err = ccs_release_object(expression);
 	assert(err == CCS_RESULT_SUCCESS);
-
-	err = ccs_object_deserialize(
-		(ccs_object_t *)&expression, CCS_SERIALIZE_FORMAT_BINARY,
-		CCS_DESERIALIZE_OPERATION_MEMORY, buff_size, buff,
-		CCS_DESERIALIZE_OPTION_END);
-	assert(err == CCS_RESULT_ERROR_INVALID_OBJECT);
-
-	err = ccs_create_map(&handle_map);
-	assert(err == CCS_RESULT_SUCCESS);
-
-	err = ccs_object_deserialize(
-		(ccs_object_t *)&expression, CCS_SERIALIZE_FORMAT_BINARY,
-		CCS_DESERIALIZE_OPERATION_MEMORY, buff_size, buff,
-		CCS_DESERIALIZE_OPTION_HANDLE_MAP, handle_map,
-		CCS_DESERIALIZE_OPTION_END);
-	assert(err == CCS_RESULT_ERROR_INVALID_HANDLE);
-
-	d = ccs_object(parameter);
-	d.flags |= CCS_DATUM_FLAG_ID;
-	err = ccs_map_set(handle_map, d, ccs_object(parameter));
-	assert(err == CCS_RESULT_SUCCESS);
-
 	err = ccs_release_object(parameter);
 	assert(err == CCS_RESULT_SUCCESS);
-
-	err = ccs_object_deserialize(
-		(ccs_object_t *)&expression, CCS_SERIALIZE_FORMAT_BINARY,
-		CCS_DESERIALIZE_OPERATION_MEMORY, buff_size, buff,
-		CCS_DESERIALIZE_OPTION_HANDLE_MAP, handle_map,
-		CCS_DESERIALIZE_OPTION_END);
-	assert(err == CCS_RESULT_SUCCESS);
-
-	err = ccs_object_get_type(expression, &otype);
-	assert(err == CCS_RESULT_SUCCESS);
-	assert(otype == CCS_OBJECT_TYPE_EXPRESSION);
-
-	err = ccs_expression_get_type(expression, &etype);
-	assert(err == CCS_RESULT_SUCCESS);
-	assert(etype == CCS_EXPRESSION_TYPE_VARIABLE);
-
-	err = ccs_variable_get_parameter(expression, &parameter);
-	assert(err == CCS_RESULT_SUCCESS);
-
-	err = ccs_release_object(handle_map);
-	assert(err == CCS_RESULT_SUCCESS);
-	err = ccs_release_object(expression);
-	assert(err == CCS_RESULT_SUCCESS);
-	free(buff);
 }
 
 void

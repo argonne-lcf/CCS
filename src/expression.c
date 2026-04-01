@@ -1,6 +1,7 @@
 #include "cconfigspace_internal.h"
 #include "expression_internal.h"
 #include "parameter_internal.h"
+#include "cconfigspace_json.h"
 #include <math.h>
 #include <string.h>
 #include "utarray.h"
@@ -164,6 +165,33 @@ _ccs_serialize_bin_ccs_expression(
 	return CCS_RESULT_SUCCESS;
 }
 
+static inline ccs_result_t
+_ccs_serialize_json_ccs_expression(
+	ccs_expression_t                 expression,
+	cJSON                           *json,
+	_ccs_object_serialize_options_t *opts)
+{
+	_ccs_expression_data_t *data =
+		(_ccs_expression_data_t *)(expression->data);
+	CCS_REFUTE(
+		!cJSON_AddStringToObject(
+			json, "expression_type",
+			_ccs_json_expression_type_to_string(data->type)),
+		CCS_RESULT_ERROR_OUT_OF_MEMORY);
+	cJSON *nodes = cJSON_AddArrayToObject(json, "nodes");
+	CCS_REFUTE(!nodes, CCS_RESULT_ERROR_OUT_OF_MEMORY);
+	for (size_t i = 0; i < data->num_nodes; i++) {
+		cJSON *child = cJSON_CreateObject();
+		CCS_REFUTE(!child, CCS_RESULT_ERROR_OUT_OF_MEMORY);
+		cJSON_AddItemToArray(nodes, child);
+		size_t dummy = 0;
+		CCS_VALIDATE(_ccs_object_serialize_with_opts(
+			data->nodes[i], CCS_SERIALIZE_FORMAT_JSON, &dummy,
+			(char **)&child, opts));
+	}
+	return CCS_RESULT_SUCCESS;
+}
+
 static ccs_result_t
 _ccs_expression_serialize_size(
 	ccs_object_t                     object,
@@ -196,6 +224,10 @@ _ccs_expression_serialize(
 	case CCS_SERIALIZE_FORMAT_BINARY:
 		CCS_VALIDATE(_ccs_serialize_bin_ccs_expression(
 			(ccs_expression_t)object, buffer_size, buffer, opts));
+		break;
+	case CCS_SERIALIZE_FORMAT_JSON:
+		CCS_VALIDATE(_ccs_serialize_json_ccs_expression(
+			(ccs_expression_t)object, *(cJSON **)buffer, opts));
 		break;
 	default:
 		CCS_RAISE(
@@ -1108,6 +1140,22 @@ _ccs_serialize_bin_ccs_expression_literal(
 	return CCS_RESULT_SUCCESS;
 }
 
+static inline ccs_result_t
+_ccs_serialize_json_ccs_expression_literal(
+	ccs_expression_t                 expression,
+	cJSON                           *json,
+	_ccs_object_serialize_options_t *opts)
+{
+	(void)opts;
+	_ccs_expression_literal_data_t *data =
+		(_ccs_expression_literal_data_t *)(expression->data);
+	CCS_REFUTE(
+		!cJSON_AddStringToObject(json, "expression_type", "literal"),
+		CCS_RESULT_ERROR_OUT_OF_MEMORY);
+	CCS_VALIDATE(_ccs_json_add_datum(json, "value", data->value));
+	return CCS_RESULT_SUCCESS;
+}
+
 static ccs_result_t
 _ccs_expression_literal_serialize_size(
 	ccs_object_t                     object,
@@ -1140,6 +1188,10 @@ _ccs_expression_literal_serialize(
 	case CCS_SERIALIZE_FORMAT_BINARY:
 		CCS_VALIDATE(_ccs_serialize_bin_ccs_expression_literal(
 			(ccs_expression_t)object, buffer_size, buffer, opts));
+		break;
+	case CCS_SERIALIZE_FORMAT_JSON:
+		CCS_VALIDATE(_ccs_serialize_json_ccs_expression_literal(
+			(ccs_expression_t)object, *(cJSON **)buffer, opts));
 		break;
 	default:
 		CCS_RAISE(
@@ -1231,6 +1283,26 @@ _ccs_serialize_bin_ccs_expression_variable(
 	return CCS_RESULT_SUCCESS;
 }
 
+static inline ccs_result_t
+_ccs_serialize_json_ccs_expression_variable(
+	ccs_expression_t                 expression,
+	cJSON                           *json,
+	_ccs_object_serialize_options_t *opts)
+{
+	(void)opts;
+	_ccs_expression_variable_data_t *data =
+		(_ccs_expression_variable_data_t *)(expression->data);
+	CCS_REFUTE(
+		!cJSON_AddStringToObject(json, "expression_type", "variable"),
+		CCS_RESULT_ERROR_OUT_OF_MEMORY);
+	char hex[sizeof(ccs_object_t) * 2 + 1];
+	_ccs_json_hex_encode_buf(&data->parameter, sizeof(ccs_object_t), hex);
+	CCS_REFUTE(
+		!cJSON_AddStringToObject(json, "parameter", hex),
+		CCS_RESULT_ERROR_OUT_OF_MEMORY);
+	return CCS_RESULT_SUCCESS;
+}
+
 static ccs_result_t
 _ccs_expression_variable_serialize_size(
 	ccs_object_t                     object,
@@ -1263,6 +1335,10 @@ _ccs_expression_variable_serialize(
 	case CCS_SERIALIZE_FORMAT_BINARY:
 		CCS_VALIDATE(_ccs_serialize_bin_ccs_expression_variable(
 			(ccs_expression_t)object, buffer_size, buffer, opts));
+		break;
+	case CCS_SERIALIZE_FORMAT_JSON:
+		CCS_VALIDATE(_ccs_serialize_json_ccs_expression_variable(
+			(ccs_expression_t)object, *(cJSON **)buffer, opts));
 		break;
 	default:
 		CCS_RAISE(
@@ -1366,6 +1442,58 @@ _ccs_serialize_bin_ccs_expression_user_defined(
 	return CCS_RESULT_SUCCESS;
 }
 
+static inline ccs_result_t
+_ccs_serialize_json_ccs_expression_user_defined(
+	ccs_expression_t                 expression,
+	cJSON                           *json,
+	_ccs_object_serialize_options_t *opts)
+{
+	_ccs_expression_user_defined_data_t *data =
+		(_ccs_expression_user_defined_data_t *)(expression->data);
+	CCS_REFUTE(
+		!cJSON_AddStringToObject(
+			json, "expression_type", "user_defined"),
+		CCS_RESULT_ERROR_OUT_OF_MEMORY);
+	CCS_REFUTE(
+		!cJSON_AddStringToObject(json, "name", data->name),
+		CCS_RESULT_ERROR_OUT_OF_MEMORY);
+	/* serialize child nodes */
+	cJSON *nodes = cJSON_AddArrayToObject(json, "nodes");
+	CCS_REFUTE(!nodes, CCS_RESULT_ERROR_OUT_OF_MEMORY);
+	for (size_t i = 0; i < data->expr.num_nodes; i++) {
+		cJSON *child = cJSON_CreateObject();
+		CCS_REFUTE(!child, CCS_RESULT_ERROR_OUT_OF_MEMORY);
+		cJSON_AddItemToArray(nodes, child);
+		size_t dummy = 0;
+		CCS_VALIDATE(_ccs_object_serialize_with_opts(
+			data->expr.nodes[i], CCS_SERIALIZE_FORMAT_JSON, &dummy,
+			(char **)&child, opts));
+	}
+	/* serialize user state */
+	size_t state_size = 0;
+	if (data->vector.serialize_user_state) {
+		CCS_VALIDATE(data->vector.serialize_user_state(
+			expression, 0, NULL, &state_size));
+		if (state_size) {
+			char *tmp = (char *)malloc(state_size);
+			CCS_REFUTE(!tmp, CCS_RESULT_ERROR_OUT_OF_MEMORY);
+			ccs_result_t err = data->vector.serialize_user_state(
+				expression, state_size, tmp, NULL);
+			if (err != CCS_RESULT_SUCCESS) {
+				free(tmp);
+				return err;
+			}
+			char *hex = _ccs_json_hex_encode(tmp, state_size);
+			free(tmp);
+			CCS_REFUTE(!hex, CCS_RESULT_ERROR_OUT_OF_MEMORY);
+			cJSON *s = cJSON_AddStringToObject(json, "state", hex);
+			free(hex);
+			CCS_REFUTE(!s, CCS_RESULT_ERROR_OUT_OF_MEMORY);
+		}
+	}
+	return CCS_RESULT_SUCCESS;
+}
+
 static ccs_result_t
 _ccs_expression_user_defined_serialize_size(
 	ccs_object_t                     object,
@@ -1399,6 +1527,10 @@ _ccs_expression_user_defined_serialize(
 	case CCS_SERIALIZE_FORMAT_BINARY:
 		CCS_VALIDATE(_ccs_serialize_bin_ccs_expression_user_defined(
 			(ccs_expression_t)object, buffer_size, buffer, opts));
+		break;
+	case CCS_SERIALIZE_FORMAT_JSON:
+		CCS_VALIDATE(_ccs_serialize_json_ccs_expression_user_defined(
+			(ccs_expression_t)object, *(cJSON **)buffer, opts));
 		break;
 	default:
 		CCS_RAISE(

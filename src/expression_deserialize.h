@@ -2,6 +2,7 @@
 #define _EXPRESSION_DESERIALIZE_H
 #include "cconfigspace_internal.h"
 #include "expression_internal.h"
+#include "cconfigspace_json.h"
 
 struct _ccs_expression_data_mock_s {
 	ccs_expression_type_t type;
@@ -282,6 +283,266 @@ _ccs_deserialize_bin_expression(
 	return CCS_RESULT_SUCCESS;
 }
 
+/*============================================================================
+ * JSON deserialization
+ *============================================================================*/
+
+static inline ccs_result_t
+_ccs_deserialize_json_expression_literal(
+	ccs_expression_t *expression_ret,
+	cJSON            *json)
+{
+	cJSON      *j_value = cJSON_GetObjectItemCaseSensitive(json, "value");
+	ccs_datum_t value;
+	CCS_REFUTE(!j_value, CCS_RESULT_ERROR_INVALID_VALUE);
+	CCS_VALIDATE(_ccs_json_get_datum(j_value, &value));
+	CCS_VALIDATE(ccs_create_literal(value, expression_ret));
+	return CCS_RESULT_SUCCESS;
+}
+
+static inline ccs_result_t
+_ccs_deserialize_json_expression_variable(
+	ccs_expression_t                  *expression_ret,
+	cJSON                             *json,
+	_ccs_object_deserialize_options_t *opts)
+{
+	ccs_datum_t     d;
+	ccs_parameter_t h;
+	ccs_object_t    obj;
+	cJSON          *j_param;
+
+	CCS_CHECK_OBJ(opts->handle_map, CCS_OBJECT_TYPE_MAP);
+	j_param = cJSON_GetObjectItemCaseSensitive(json, "parameter");
+	CCS_REFUTE(
+		!j_param || !cJSON_IsString(j_param),
+		CCS_RESULT_ERROR_INVALID_VALUE);
+	CCS_REFUTE(
+		strlen(j_param->valuestring) != sizeof(ccs_object_t) * 2,
+		CCS_RESULT_ERROR_INVALID_VALUE);
+	CCS_REFUTE(
+		_ccs_json_hex_decode_buf(
+			j_param->valuestring, sizeof(ccs_object_t) * 2, &obj),
+		CCS_RESULT_ERROR_INVALID_VALUE);
+	CCS_VALIDATE(ccs_map_get(opts->handle_map, ccs_object(obj), &d));
+	CCS_REFUTE(
+		d.type != CCS_DATA_TYPE_OBJECT,
+		CCS_RESULT_ERROR_INVALID_HANDLE);
+	h = (ccs_parameter_t)(d.value.o);
+	CCS_VALIDATE(ccs_create_variable(h, expression_ret));
+	return CCS_RESULT_SUCCESS;
+}
+
+static inline ccs_result_t
+_ccs_deserialize_json_expression_general(
+	ccs_expression_t                  *expression_ret,
+	ccs_expression_type_t              type,
+	uint32_t                           version,
+	cJSON                             *json,
+	_ccs_object_deserialize_options_t *opts)
+{
+	ccs_result_t                      res = CCS_RESULT_SUCCESS;
+	_ccs_expression_data_mock_t       data;
+	cJSON                            *j_nodes;
+	size_t                            num_nodes;
+
+	_ccs_object_deserialize_options_t new_opts = *opts;
+	new_opts.handle_map                        = NULL;
+
+	data.type                                  = type;
+	data.num_nodes                             = 0;
+	data.nodes                                 = NULL;
+
+	j_nodes = cJSON_GetObjectItemCaseSensitive(json, "nodes");
+	CCS_REFUTE(
+		!j_nodes || !cJSON_IsArray(j_nodes),
+		CCS_RESULT_ERROR_INVALID_VALUE);
+	num_nodes      = (size_t)cJSON_GetArraySize(j_nodes);
+	data.num_nodes = num_nodes;
+	if (num_nodes) {
+		data.nodes =
+			(ccs_datum_t *)calloc(num_nodes, sizeof(ccs_datum_t));
+		CCS_REFUTE(!data.nodes, CCS_RESULT_ERROR_OUT_OF_MEMORY);
+		for (size_t i = 0; i < num_nodes; i++) {
+			ccs_expression_t expr;
+			cJSON           *child;
+			size_t           dummy;
+			const char      *cbuf;
+
+			child = cJSON_GetArrayItem(j_nodes, (int)i);
+			CCS_REFUTE_ERR_GOTO(
+				res, !child || !cJSON_IsObject(child),
+				CCS_RESULT_ERROR_INVALID_VALUE, end);
+			dummy = 0;
+			cbuf  = (const char *)child;
+			CCS_VALIDATE_ERR_GOTO(
+				res,
+				_ccs_object_deserialize_with_opts_check(
+					(ccs_object_t *)&expr,
+					CCS_OBJECT_TYPE_EXPRESSION,
+					CCS_SERIALIZE_FORMAT_JSON, version,
+					&dummy, &cbuf, &new_opts),
+				end);
+			data.nodes[i].type    = CCS_DATA_TYPE_OBJECT;
+			data.nodes[i].value.o = expr;
+		}
+	}
+	CCS_VALIDATE_ERR_GOTO(
+		res,
+		ccs_create_expression(
+			data.type, data.num_nodes, data.nodes, expression_ret),
+		end);
+end:
+	_ccs_expression_data_mock_free(&data);
+	return res;
+}
+
+static inline ccs_result_t
+_ccs_deserialize_json_expression_user_defined(
+	ccs_expression_t                  *expression_ret,
+	uint32_t                           version,
+	cJSON                             *json,
+	_ccs_object_deserialize_options_t *opts)
+{
+	ccs_result_t                          res = CCS_RESULT_SUCCESS;
+	_ccs_expression_data_mock_t           data;
+	ccs_user_defined_expression_vector_t *vector          = NULL;
+	void                                 *expression_data = NULL;
+	const char                           *name;
+	cJSON                                *j_name;
+	cJSON                                *j_nodes;
+	cJSON                                *j_state;
+	size_t                                num_nodes;
+	size_t                                state_len  = 0;
+	unsigned char                        *state_data = NULL;
+
+	_ccs_object_deserialize_options_t     new_opts   = *opts;
+	new_opts.handle_map                              = NULL;
+
+	data.num_nodes                                   = 0;
+	data.nodes                                       = NULL;
+
+	j_name = cJSON_GetObjectItemCaseSensitive(json, "name");
+	CCS_REFUTE(
+		!j_name || !cJSON_IsString(j_name),
+		CCS_RESULT_ERROR_INVALID_VALUE);
+	name    = j_name->valuestring;
+
+	j_nodes = cJSON_GetObjectItemCaseSensitive(json, "nodes");
+	CCS_REFUTE(
+		!j_nodes || !cJSON_IsArray(j_nodes),
+		CCS_RESULT_ERROR_INVALID_VALUE);
+	num_nodes      = (size_t)cJSON_GetArraySize(j_nodes);
+	data.num_nodes = num_nodes;
+	if (num_nodes) {
+		data.nodes =
+			(ccs_datum_t *)calloc(num_nodes, sizeof(ccs_datum_t));
+		CCS_REFUTE(!data.nodes, CCS_RESULT_ERROR_OUT_OF_MEMORY);
+		for (size_t i = 0; i < num_nodes; i++) {
+			ccs_expression_t expr;
+			cJSON           *child;
+			size_t           dummy;
+			const char      *cbuf;
+
+			child = cJSON_GetArrayItem(j_nodes, (int)i);
+			CCS_REFUTE_ERR_GOTO(
+				res, !child || !cJSON_IsObject(child),
+				CCS_RESULT_ERROR_INVALID_VALUE, end);
+			dummy = 0;
+			cbuf  = (const char *)child;
+			CCS_VALIDATE_ERR_GOTO(
+				res,
+				_ccs_object_deserialize_with_opts_check(
+					(ccs_object_t *)&expr,
+					CCS_OBJECT_TYPE_EXPRESSION,
+					CCS_SERIALIZE_FORMAT_JSON, version,
+					&dummy, &cbuf, &new_opts),
+				end);
+			data.nodes[i].type    = CCS_DATA_TYPE_OBJECT;
+			data.nodes[i].value.o = expr;
+		}
+	}
+
+	CCS_VALIDATE_ERR_GOTO(
+		res,
+		opts->deserialize_vector_callback(
+			CCS_OBJECT_TYPE_EXPRESSION, name,
+			opts->deserialize_vector_user_data, (void **)&vector,
+			&expression_data),
+		end);
+
+	j_state = cJSON_GetObjectItemCaseSensitive(json, "state");
+	if (j_state && cJSON_IsString(j_state)) {
+		state_data =
+			_ccs_json_hex_decode(j_state->valuestring, &state_len);
+		CCS_REFUTE_ERR_GOTO(
+			res, !state_data, CCS_RESULT_ERROR_INVALID_VALUE, end);
+	}
+
+	if (vector->deserialize_state && state_data)
+		CCS_VALIDATE_ERR_GOTO(
+			res,
+			vector->deserialize_state(
+				state_len, state_data, &expression_data),
+			end);
+
+	CCS_VALIDATE_ERR_GOTO(
+		res,
+		ccs_create_user_defined_expression(
+			name, data.num_nodes, data.nodes, vector,
+			expression_data, expression_ret),
+		end);
+
+end:
+	free(state_data);
+	_ccs_expression_data_mock_free(&data);
+	return res;
+}
+
+static inline ccs_result_t
+_ccs_deserialize_json_expression(
+	ccs_expression_t                  *expression_ret,
+	uint32_t                           version,
+	size_t                            *buffer_size,
+	const char                       **buffer,
+	_ccs_object_deserialize_options_t *opts)
+{
+	ccs_expression_type_t dtype;
+	cJSON                *json;
+	cJSON                *j_dtype;
+
+	(void)buffer_size;
+	json    = *(cJSON **)buffer;
+	j_dtype = cJSON_GetObjectItemCaseSensitive(json, "expression_type");
+	CCS_REFUTE(
+		!j_dtype || !cJSON_IsString(j_dtype),
+		CCS_RESULT_ERROR_INVALID_VALUE);
+	CCS_VALIDATE(_ccs_json_expression_type_from_string(
+		j_dtype->valuestring, &dtype));
+	switch (dtype) {
+	case CCS_EXPRESSION_TYPE_LITERAL:
+		CCS_VALIDATE(_ccs_deserialize_json_expression_literal(
+			expression_ret, json));
+		break;
+	case CCS_EXPRESSION_TYPE_VARIABLE:
+		CCS_VALIDATE(_ccs_deserialize_json_expression_variable(
+			expression_ret, json, opts));
+		break;
+	case CCS_EXPRESSION_TYPE_USER_DEFINED:
+		CCS_CHECK_PTR(opts->deserialize_vector_callback);
+		CCS_VALIDATE(_ccs_deserialize_json_expression_user_defined(
+			expression_ret, version, json, opts));
+		break;
+	default:
+		CCS_REFUTE(
+			dtype < CCS_EXPRESSION_TYPE_OR ||
+				dtype >= CCS_EXPRESSION_TYPE_MAX,
+			CCS_RESULT_ERROR_UNSUPPORTED_OPERATION);
+		CCS_VALIDATE(_ccs_deserialize_json_expression_general(
+			expression_ret, dtype, version, json, opts));
+	}
+	return CCS_RESULT_SUCCESS;
+}
+
 static ccs_result_t
 _ccs_expression_deserialize(
 	ccs_expression_t                  *expression_ret,
@@ -294,6 +555,10 @@ _ccs_expression_deserialize(
 	switch (format) {
 	case CCS_SERIALIZE_FORMAT_BINARY:
 		CCS_VALIDATE(_ccs_deserialize_bin_expression(
+			expression_ret, version, buffer_size, buffer, opts));
+		break;
+	case CCS_SERIALIZE_FORMAT_JSON:
+		CCS_VALIDATE(_ccs_deserialize_json_expression(
 			expression_ret, version, buffer_size, buffer, opts));
 		break;
 	default:
