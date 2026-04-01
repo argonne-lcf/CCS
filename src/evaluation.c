@@ -1,4 +1,5 @@
 #include "cconfigspace_internal.h"
+#include "cconfigspace_json.h"
 #include "evaluation_internal.h"
 #include "search_configuration_internal.h"
 #include "configuration_internal.h"
@@ -76,6 +77,35 @@ _ccs_serialize_bin_ccs_evaluation(
 	return CCS_RESULT_SUCCESS;
 }
 
+static inline ccs_result_t
+_ccs_serialize_json_ccs_evaluation(
+	ccs_evaluation_t                 evaluation,
+	cJSON                           *json,
+	_ccs_object_serialize_options_t *opts)
+{
+	_ccs_evaluation_data_t *data  = evaluation->data;
+	size_t                  dummy = 0;
+
+	CCS_VALIDATE(_ccs_serialize_json_ccs_binding(
+		(ccs_binding_t)evaluation, json));
+
+	/* configuration */
+	{
+		cJSON *conf = cJSON_AddObjectToObject(json, "configuration");
+		CCS_REFUTE(!conf, CCS_RESULT_ERROR_OUT_OF_MEMORY);
+		CCS_VALIDATE(_ccs_object_serialize_with_opts(
+			data->configuration, CCS_SERIALIZE_FORMAT_JSON, &dummy,
+			(char **)&conf, opts));
+	}
+
+	/* result */
+	CCS_REFUTE(
+		!cJSON_AddNumberToObject(json, "result", (double)data->result),
+		CCS_RESULT_ERROR_OUT_OF_MEMORY);
+
+	return CCS_RESULT_SUCCESS;
+}
+
 static ccs_result_t
 _ccs_evaluation_serialize_size(
 	ccs_object_t                     object,
@@ -108,6 +138,10 @@ _ccs_evaluation_serialize(
 	case CCS_SERIALIZE_FORMAT_BINARY:
 		CCS_VALIDATE(_ccs_serialize_bin_ccs_evaluation(
 			(ccs_evaluation_t)object, buffer_size, buffer, opts));
+		break;
+	case CCS_SERIALIZE_FORMAT_JSON:
+		CCS_VALIDATE(_ccs_serialize_json_ccs_evaluation(
+			(ccs_evaluation_t)object, *(cJSON **)buffer, opts));
 		break;
 	default:
 		CCS_RAISE(
