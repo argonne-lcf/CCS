@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <assert.h>
 #include <cconfigspace.h>
+#include "test_utils.h"
 #include <gsl/gsl_statistics.h>
 #include <gsl/gsl_randist.h>
 #include <gsl/gsl_cdf.h>
@@ -87,14 +88,13 @@ test_create_multivariate_distribution(void)
 {
 	const size_t       num_distribs = NUM_DISTRIBS;
 	ccs_distribution_t distrib      = NULL;
+	ccs_distribution_t distrib2     = NULL;
 	ccs_distribution_t distribs[NUM_DISTRIBS];
 	ccs_result_t       err = CCS_RESULT_SUCCESS;
-	char              *buff;
-	size_t             buff_size;
 
-	err = ccs_create_uniform_distribution(
-		CCS_NUMERIC_TYPE_FLOAT, CCSF(-5.0), CCSF(5.0),
-		CCS_SCALE_TYPE_LINEAR, CCSF(0.0), distribs);
+	err                    = ccs_create_uniform_distribution(
+                CCS_NUMERIC_TYPE_FLOAT, CCSF(-5.0), CCSF(5.0),
+                CCS_SCALE_TYPE_LINEAR, CCSF(0.0), distribs);
 	assert(err == CCS_RESULT_SUCCESS);
 
 	err = ccs_create_uniform_distribution(
@@ -105,35 +105,21 @@ test_create_multivariate_distribution(void)
 	err = ccs_create_multivariate_distribution(
 		num_distribs, distribs, &distrib);
 	assert(err == CCS_RESULT_SUCCESS);
-
 	compare_distribution(distrib, num_distribs, distribs);
 
-	err = ccs_object_serialize(
-		distrib, CCS_SERIALIZE_FORMAT_BINARY,
-		CCS_SERIALIZE_OPERATION_SIZE, &buff_size,
-		CCS_SERIALIZE_OPTION_END);
+	test_serialize_deserialize(
+		(ccs_object_t)distrib, CCS_SERIALIZE_FORMAT_BINARY,
+		(ccs_object_t *)&distrib2);
+	compare_distribution(distrib2, num_distribs, distribs);
+	err = ccs_release_object(distrib2);
 	assert(err == CCS_RESULT_SUCCESS);
 
-	buff = (char *)malloc(buff_size);
-	assert(buff);
-
-	err = ccs_object_serialize(
-		distrib, CCS_SERIALIZE_FORMAT_BINARY,
-		CCS_SERIALIZE_OPERATION_MEMORY, buff_size, buff,
-		CCS_SERIALIZE_OPTION_END);
+	test_serialize_deserialize(
+		(ccs_object_t)distrib, CCS_SERIALIZE_FORMAT_JSON,
+		(ccs_object_t *)&distrib2);
+	compare_distribution(distrib2, num_distribs, distribs);
+	err = ccs_release_object(distrib2);
 	assert(err == CCS_RESULT_SUCCESS);
-
-	err = ccs_release_object(distrib);
-	assert(err == CCS_RESULT_SUCCESS);
-
-	err = ccs_object_deserialize(
-		(ccs_object_t *)&distrib, CCS_SERIALIZE_FORMAT_BINARY,
-		CCS_DESERIALIZE_OPERATION_MEMORY, buff_size, buff,
-		CCS_DESERIALIZE_OPTION_END);
-	assert(err == CCS_RESULT_SUCCESS);
-	free(buff);
-
-	compare_distribution(distrib, num_distribs, distribs);
 
 	for (size_t i = 0; i < num_distribs; i++) {
 		err = ccs_release_object(distribs[i]);

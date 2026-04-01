@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <assert.h>
 #include <cconfigspace.h>
+#include "test_utils.h"
 #include <gsl/gsl_statistics.h>
 #include <gsl/gsl_randist.h>
 #include <gsl/gsl_cdf.h>
@@ -61,44 +62,29 @@ compare_distribution(
 static void
 test_create_normal_distribution(void)
 {
-	ccs_distribution_t distrib = NULL;
-	ccs_result_t       err     = CCS_RESULT_SUCCESS;
-	char              *buff;
-	size_t             buff_size;
+	ccs_distribution_t distrib  = NULL;
+	ccs_distribution_t distrib2 = NULL;
+	ccs_result_t       err      = CCS_RESULT_SUCCESS;
 
-	err = ccs_create_normal_distribution(
-		CCS_NUMERIC_TYPE_FLOAT, 1.0, 2.0, CCS_SCALE_TYPE_LINEAR,
-		CCSF(0.0), &distrib);
+	err                         = ccs_create_normal_distribution(
+                CCS_NUMERIC_TYPE_FLOAT, 1.0, 2.0, CCS_SCALE_TYPE_LINEAR,
+                CCSF(0.0), &distrib);
 	assert(err == CCS_RESULT_SUCCESS);
-
 	compare_distribution(distrib, 1.0, 2.0, CCSF(0.0));
 
-	err = ccs_object_serialize(
-		distrib, CCS_SERIALIZE_FORMAT_BINARY,
-		CCS_SERIALIZE_OPERATION_SIZE, &buff_size,
-		CCS_SERIALIZE_OPTION_END);
+	test_serialize_deserialize(
+		(ccs_object_t)distrib, CCS_SERIALIZE_FORMAT_BINARY,
+		(ccs_object_t *)&distrib2);
+	compare_distribution(distrib2, 1.0, 2.0, CCSF(0.0));
+	err = ccs_release_object(distrib2);
 	assert(err == CCS_RESULT_SUCCESS);
 
-	buff = (char *)malloc(buff_size);
-	assert(buff);
-
-	err = ccs_object_serialize(
-		distrib, CCS_SERIALIZE_FORMAT_BINARY,
-		CCS_SERIALIZE_OPERATION_MEMORY, buff_size, buff,
-		CCS_SERIALIZE_OPTION_END);
+	test_serialize_deserialize(
+		(ccs_object_t)distrib, CCS_SERIALIZE_FORMAT_JSON,
+		(ccs_object_t *)&distrib2);
+	compare_distribution(distrib2, 1.0, 2.0, CCSF(0.0));
+	err = ccs_release_object(distrib2);
 	assert(err == CCS_RESULT_SUCCESS);
-
-	err = ccs_release_object(distrib);
-	assert(err == CCS_RESULT_SUCCESS);
-
-	err = ccs_object_deserialize(
-		(ccs_object_t *)&distrib, CCS_SERIALIZE_FORMAT_BINARY,
-		CCS_DESERIALIZE_OPERATION_MEMORY, buff_size, buff,
-		CCS_DESERIALIZE_OPTION_END);
-	assert(err == CCS_RESULT_SUCCESS);
-	free(buff);
-
-	compare_distribution(distrib, 1.0, 2.0, CCSF(0.0));
 
 	err = ccs_release_object(distrib);
 	assert(err == CCS_RESULT_SUCCESS);

@@ -3,6 +3,7 @@
 #include <math.h>
 #include "cconfigspace_internal.h"
 #include "distribution_internal.h"
+#include "cconfigspace_json.h"
 #include "rng_internal.h"
 
 struct _ccs_distribution_roulette_data_s {
@@ -72,6 +73,28 @@ _ccs_serialize_bin_ccs_distribution_roulette(
 	return CCS_RESULT_SUCCESS;
 }
 
+static inline ccs_result_t
+_ccs_serialize_json_ccs_distribution_roulette(
+	ccs_distribution_t distribution,
+	cJSON             *json)
+{
+	_ccs_distribution_roulette_data_t *data =
+		(_ccs_distribution_roulette_data_t *)(distribution->data);
+	CCS_REFUTE(
+		!cJSON_AddStringToObject(json, "distribution_type", "roulette"),
+		CCS_RESULT_ERROR_OUT_OF_MEMORY);
+	cJSON *areas = cJSON_AddArrayToObject(json, "areas");
+	CCS_REFUTE(!areas, CCS_RESULT_ERROR_OUT_OF_MEMORY);
+	for (size_t i = 0; i < data->num_areas; i++)
+		CCS_REFUTE(
+			!cJSON_AddItemToArray(
+				areas,
+				cJSON_CreateNumber(
+					data->areas[i + 1] - data->areas[i])),
+			CCS_RESULT_ERROR_OUT_OF_MEMORY);
+	return CCS_RESULT_SUCCESS;
+}
+
 static ccs_result_t
 _ccs_distribution_roulette_serialize_size(
 	ccs_object_t                     object,
@@ -106,6 +129,10 @@ _ccs_distribution_roulette_serialize(
 	case CCS_SERIALIZE_FORMAT_BINARY:
 		CCS_VALIDATE(_ccs_serialize_bin_ccs_distribution_roulette(
 			(ccs_distribution_t)object, buffer_size, buffer));
+		break;
+	case CCS_SERIALIZE_FORMAT_JSON:
+		CCS_VALIDATE(_ccs_serialize_json_ccs_distribution_roulette(
+			(ccs_distribution_t)object, *(cJSON **)buffer));
 		break;
 	default:
 		CCS_RAISE(

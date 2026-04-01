@@ -3,6 +3,7 @@
 #include <gsl/gsl_randist.h>
 #include "cconfigspace_internal.h"
 #include "distribution_internal.h"
+#include "cconfigspace_json.h"
 #include "rng_internal.h"
 
 struct _ccs_distribution_uniform_data_s {
@@ -97,6 +98,53 @@ _ccs_serialize_bin_ccs_distribution_uniform(
 	return CCS_RESULT_SUCCESS;
 }
 
+static inline ccs_result_t
+_ccs_serialize_json_ccs_distribution_uniform(
+	ccs_distribution_t distribution,
+	cJSON             *json)
+{
+	_ccs_distribution_uniform_data_t *data =
+		(_ccs_distribution_uniform_data_t *)(distribution->data);
+	CCS_REFUTE(
+		!cJSON_AddStringToObject(json, "distribution_type", "uniform"),
+		CCS_RESULT_ERROR_OUT_OF_MEMORY);
+	CCS_REFUTE(
+		!cJSON_AddStringToObject(
+			json, "data_type",
+			_ccs_json_numeric_type_to_string(
+				data->common_data.data_types[0])),
+		CCS_RESULT_ERROR_OUT_OF_MEMORY);
+	CCS_REFUTE(
+		!cJSON_AddStringToObject(
+			json, "scale_type",
+			_ccs_json_scale_type_to_string(data->scale_type)),
+		CCS_RESULT_ERROR_OUT_OF_MEMORY);
+	if (data->common_data.data_types[0] == CCS_NUMERIC_TYPE_FLOAT) {
+		CCS_REFUTE(
+			!cJSON_AddNumberToObject(json, "lower", data->lower.f),
+			CCS_RESULT_ERROR_OUT_OF_MEMORY);
+		CCS_REFUTE(
+			!cJSON_AddNumberToObject(json, "upper", data->upper.f),
+			CCS_RESULT_ERROR_OUT_OF_MEMORY);
+		CCS_REFUTE(
+			!cJSON_AddNumberToObject(
+				json, "quantization", data->quantization.f),
+			CCS_RESULT_ERROR_OUT_OF_MEMORY);
+	} else {
+		CCS_REFUTE(
+			!cJSON_AddNumberToObject(json, "lower", data->lower.i),
+			CCS_RESULT_ERROR_OUT_OF_MEMORY);
+		CCS_REFUTE(
+			!cJSON_AddNumberToObject(json, "upper", data->upper.i),
+			CCS_RESULT_ERROR_OUT_OF_MEMORY);
+		CCS_REFUTE(
+			!cJSON_AddNumberToObject(
+				json, "quantization", data->quantization.i),
+			CCS_RESULT_ERROR_OUT_OF_MEMORY);
+	}
+	return CCS_RESULT_SUCCESS;
+}
+
 static ccs_result_t
 _ccs_distribution_uniform_serialize_size(
 	ccs_object_t                     object,
@@ -131,6 +179,10 @@ _ccs_distribution_uniform_serialize(
 	case CCS_SERIALIZE_FORMAT_BINARY:
 		CCS_VALIDATE(_ccs_serialize_bin_ccs_distribution_uniform(
 			(ccs_distribution_t)object, buffer_size, buffer));
+		break;
+	case CCS_SERIALIZE_FORMAT_JSON:
+		CCS_VALIDATE(_ccs_serialize_json_ccs_distribution_uniform(
+			(ccs_distribution_t)object, *(cJSON **)buffer));
 		break;
 	default:
 		CCS_RAISE(

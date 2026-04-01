@@ -14,3 +14,9 @@ create_height_objective(ccs_configuration_space_t cspace);
 
 extern ccs_feature_space_t
 create_knobs(ccs_features_t *features_on, ccs_features_t *features_off);
+
+extern void
+test_serialize_deserialize(
+	ccs_object_t           object,
+	ccs_serialize_format_t format,
+	ccs_object_t          *object_ret);

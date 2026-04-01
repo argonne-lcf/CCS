@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <assert.h>
 #include <cconfigspace.h>
+#include "test_utils.h"
 #include <gsl/gsl_statistics.h>
 #include <gsl/gsl_randist.h>
 #include <gsl/gsl_cdf.h>
@@ -83,12 +84,11 @@ compare_distribution(
 void
 test_create_mixture_distribution(void)
 {
-	ccs_distribution_t distrib      = NULL, distribs[NUM_DISTRIBS];
+	ccs_distribution_t distrib = NULL, distrib2 = NULL;
+	ccs_distribution_t distribs[NUM_DISTRIBS];
 	ccs_result_t       err          = CCS_RESULT_SUCCESS;
 	const size_t       num_distribs = NUM_DISTRIBS;
 	ccs_float_t        weights[NUM_DISTRIBS];
-	char              *buff;
-	size_t             buff_size;
 
 	for (size_t i = 0; i < num_distribs; i++) {
 		weights[i] = (ccs_float_t)(i + 1);
@@ -110,32 +110,19 @@ test_create_mixture_distribution(void)
 
 	compare_distribution(distrib, num_distribs, distribs, weights);
 
-	err = ccs_object_serialize(
-		distrib, CCS_SERIALIZE_FORMAT_BINARY,
-		CCS_SERIALIZE_OPERATION_SIZE, &buff_size,
-		CCS_SERIALIZE_OPTION_END);
+	test_serialize_deserialize(
+		(ccs_object_t)distrib, CCS_SERIALIZE_FORMAT_BINARY,
+		(ccs_object_t *)&distrib2);
+	compare_distribution(distrib2, num_distribs, distribs, weights);
+	err = ccs_release_object(distrib2);
 	assert(err == CCS_RESULT_SUCCESS);
 
-	buff = (char *)malloc(buff_size);
-	assert(buff);
-
-	err = ccs_object_serialize(
-		distrib, CCS_SERIALIZE_FORMAT_BINARY,
-		CCS_SERIALIZE_OPERATION_MEMORY, buff_size, buff,
-		CCS_SERIALIZE_OPTION_END);
+	test_serialize_deserialize(
+		(ccs_object_t)distrib, CCS_SERIALIZE_FORMAT_JSON,
+		(ccs_object_t *)&distrib2);
+	compare_distribution(distrib2, num_distribs, distribs, weights);
+	err = ccs_release_object(distrib2);
 	assert(err == CCS_RESULT_SUCCESS);
-
-	err = ccs_release_object(distrib);
-	assert(err == CCS_RESULT_SUCCESS);
-
-	err = ccs_object_deserialize(
-		(ccs_object_t *)&distrib, CCS_SERIALIZE_FORMAT_BINARY,
-		CCS_DESERIALIZE_OPERATION_MEMORY, buff_size, buff,
-		CCS_DESERIALIZE_OPTION_END);
-	assert(err == CCS_RESULT_SUCCESS);
-	free(buff);
-
-	compare_distribution(distrib, num_distribs, distribs, weights);
 
 	for (size_t i = 0; i < num_distribs; i++) {
 		err = ccs_release_object(distribs[i]);

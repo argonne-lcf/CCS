@@ -1,6 +1,7 @@
 #ifndef _DISTRIBUTION_DESERIALIZE_H
 #define _DISTRIBUTION_DESERIALIZE_H
 #include "distribution_internal.h"
+#include "cconfigspace_json.h"
 
 struct _ccs_distribution_uniform_data_mock_s {
 	_ccs_distribution_common_data_t common_data;
@@ -324,6 +325,319 @@ end:
 	return res;
 }
 
+/*============================================================================
+ * JSON deserialization
+ *============================================================================*/
+
+static inline ccs_result_t
+_ccs_deserialize_json_distribution_uniform(
+	ccs_distribution_t *distribution_ret,
+	cJSON              *json)
+{
+	cJSON *j_data_type =
+		cJSON_GetObjectItemCaseSensitive(json, "data_type");
+	cJSON *j_scale_type =
+		cJSON_GetObjectItemCaseSensitive(json, "scale_type");
+	cJSON *j_lower = cJSON_GetObjectItemCaseSensitive(json, "lower");
+	cJSON *j_upper = cJSON_GetObjectItemCaseSensitive(json, "upper");
+	cJSON *j_quantization =
+		cJSON_GetObjectItemCaseSensitive(json, "quantization");
+
+	CCS_REFUTE(
+		!j_data_type || !cJSON_IsString(j_data_type),
+		CCS_RESULT_ERROR_INVALID_VALUE);
+	CCS_REFUTE(
+		!j_scale_type || !cJSON_IsString(j_scale_type),
+		CCS_RESULT_ERROR_INVALID_VALUE);
+	CCS_REFUTE(
+		!j_lower || !cJSON_IsNumber(j_lower),
+		CCS_RESULT_ERROR_INVALID_VALUE);
+	CCS_REFUTE(
+		!j_upper || !cJSON_IsNumber(j_upper),
+		CCS_RESULT_ERROR_INVALID_VALUE);
+	CCS_REFUTE(
+		!j_quantization || !cJSON_IsNumber(j_quantization),
+		CCS_RESULT_ERROR_INVALID_VALUE);
+
+	ccs_numeric_type_t data_type;
+	ccs_scale_type_t   scale_type;
+	CCS_VALIDATE(_ccs_json_numeric_type_from_string(
+		j_data_type->valuestring, &data_type));
+	CCS_VALIDATE(_ccs_json_scale_type_from_string(
+		j_scale_type->valuestring, &scale_type));
+
+	ccs_numeric_t lower, upper, quantization;
+	if (data_type == CCS_NUMERIC_TYPE_FLOAT) {
+		lower.f        = j_lower->valuedouble;
+		upper.f        = j_upper->valuedouble;
+		quantization.f = j_quantization->valuedouble;
+	} else {
+		lower.i        = (ccs_int_t)j_lower->valuedouble;
+		upper.i        = (ccs_int_t)j_upper->valuedouble;
+		quantization.i = (ccs_int_t)j_quantization->valuedouble;
+	}
+	CCS_VALIDATE(ccs_create_uniform_distribution(
+		data_type, lower, upper, scale_type, quantization,
+		distribution_ret));
+	return CCS_RESULT_SUCCESS;
+}
+
+static inline ccs_result_t
+_ccs_deserialize_json_distribution_normal(
+	ccs_distribution_t *distribution_ret,
+	cJSON              *json)
+{
+	cJSON *j_data_type =
+		cJSON_GetObjectItemCaseSensitive(json, "data_type");
+	cJSON *j_scale_type =
+		cJSON_GetObjectItemCaseSensitive(json, "scale_type");
+	cJSON *j_mu    = cJSON_GetObjectItemCaseSensitive(json, "mu");
+	cJSON *j_sigma = cJSON_GetObjectItemCaseSensitive(json, "sigma");
+	cJSON *j_quantization =
+		cJSON_GetObjectItemCaseSensitive(json, "quantization");
+
+	CCS_REFUTE(
+		!j_data_type || !cJSON_IsString(j_data_type),
+		CCS_RESULT_ERROR_INVALID_VALUE);
+	CCS_REFUTE(
+		!j_scale_type || !cJSON_IsString(j_scale_type),
+		CCS_RESULT_ERROR_INVALID_VALUE);
+	CCS_REFUTE(
+		!j_mu || !cJSON_IsNumber(j_mu), CCS_RESULT_ERROR_INVALID_VALUE);
+	CCS_REFUTE(
+		!j_sigma || !cJSON_IsNumber(j_sigma),
+		CCS_RESULT_ERROR_INVALID_VALUE);
+	CCS_REFUTE(
+		!j_quantization || !cJSON_IsNumber(j_quantization),
+		CCS_RESULT_ERROR_INVALID_VALUE);
+
+	ccs_numeric_type_t data_type;
+	ccs_scale_type_t   scale_type;
+	CCS_VALIDATE(_ccs_json_numeric_type_from_string(
+		j_data_type->valuestring, &data_type));
+	CCS_VALIDATE(_ccs_json_scale_type_from_string(
+		j_scale_type->valuestring, &scale_type));
+
+	ccs_numeric_t quantization;
+	if (data_type == CCS_NUMERIC_TYPE_FLOAT)
+		quantization.f = j_quantization->valuedouble;
+	else
+		quantization.i = (ccs_int_t)j_quantization->valuedouble;
+	CCS_VALIDATE(ccs_create_normal_distribution(
+		data_type, j_mu->valuedouble, j_sigma->valuedouble, scale_type,
+		quantization, distribution_ret));
+	return CCS_RESULT_SUCCESS;
+}
+
+static inline ccs_result_t
+_ccs_deserialize_json_distribution_roulette(
+	ccs_distribution_t *distribution_ret,
+	cJSON              *json)
+{
+	ccs_result_t res     = CCS_RESULT_SUCCESS;
+	ccs_float_t *areas   = NULL;
+	cJSON       *j_areas = cJSON_GetObjectItemCaseSensitive(json, "areas");
+	CCS_REFUTE(
+		!j_areas || !cJSON_IsArray(j_areas),
+		CCS_RESULT_ERROR_INVALID_VALUE);
+	size_t num_areas = (size_t)cJSON_GetArraySize(j_areas);
+	areas = (ccs_float_t *)calloc(num_areas, sizeof(ccs_float_t));
+	CCS_REFUTE(!areas, CCS_RESULT_ERROR_OUT_OF_MEMORY);
+	for (size_t i = 0; i < num_areas; i++) {
+		cJSON *item = cJSON_GetArrayItem(j_areas, (int)i);
+		CCS_REFUTE_ERR_GOTO(
+			res, !item || !cJSON_IsNumber(item),
+			CCS_RESULT_ERROR_INVALID_VALUE, end);
+		areas[i] = item->valuedouble;
+	}
+	CCS_VALIDATE_ERR_GOTO(
+		res,
+		ccs_create_roulette_distribution(
+			num_areas, areas, distribution_ret),
+		end);
+end:
+	free(areas);
+	return res;
+}
+
+static inline ccs_result_t
+_ccs_deserialize_json_distribution_mixture(
+	ccs_distribution_t                *distribution_ret,
+	uint32_t                           version,
+	cJSON                             *json,
+	_ccs_object_deserialize_options_t *opts)
+{
+	ccs_result_t                      res           = CCS_RESULT_SUCCESS;
+	ccs_distribution_t               *distributions = NULL;
+	ccs_float_t                      *weights       = NULL;
+
+	_ccs_object_deserialize_options_t new_opts      = *opts;
+	new_opts.handle_map                             = NULL;
+
+	cJSON *j_weights = cJSON_GetObjectItemCaseSensitive(json, "weights");
+	cJSON *j_distributions =
+		cJSON_GetObjectItemCaseSensitive(json, "distributions");
+	CCS_REFUTE(
+		!j_weights || !cJSON_IsArray(j_weights),
+		CCS_RESULT_ERROR_INVALID_VALUE);
+	CCS_REFUTE(
+		!j_distributions || !cJSON_IsArray(j_distributions),
+		CCS_RESULT_ERROR_INVALID_VALUE);
+
+	size_t num = (size_t)cJSON_GetArraySize(j_distributions);
+	CCS_REFUTE(
+		(size_t)cJSON_GetArraySize(j_weights) != num,
+		CCS_RESULT_ERROR_INVALID_VALUE);
+
+	distributions =
+		(ccs_distribution_t *)calloc(num, sizeof(ccs_distribution_t));
+	CCS_REFUTE(!distributions, CCS_RESULT_ERROR_OUT_OF_MEMORY);
+	weights = (ccs_float_t *)calloc(num, sizeof(ccs_float_t));
+	if (!weights) {
+		free(distributions);
+		CCS_RAISE(CCS_RESULT_ERROR_OUT_OF_MEMORY, "calloc failed");
+	}
+
+	for (size_t i = 0; i < num; i++) {
+		cJSON *w = cJSON_GetArrayItem(j_weights, (int)i);
+		CCS_REFUTE_ERR_GOTO(
+			res, !w || !cJSON_IsNumber(w),
+			CCS_RESULT_ERROR_INVALID_VALUE, end);
+		weights[i]   = w->valuedouble;
+		cJSON *child = cJSON_GetArrayItem(j_distributions, (int)i);
+		CCS_REFUTE_ERR_GOTO(
+			res, !child || !cJSON_IsObject(child),
+			CCS_RESULT_ERROR_INVALID_VALUE, end);
+		size_t      dummy = 0;
+		const char *cbuf  = (const char *)child;
+		CCS_VALIDATE_ERR_GOTO(
+			res,
+			_ccs_object_deserialize_with_opts_check(
+				(ccs_object_t *)distributions + i,
+				CCS_OBJECT_TYPE_DISTRIBUTION,
+				CCS_SERIALIZE_FORMAT_JSON, version, &dummy,
+				&cbuf, &new_opts),
+			end);
+	}
+	CCS_VALIDATE_ERR_GOTO(
+		res,
+		ccs_create_mixture_distribution(
+			num, distributions, weights, distribution_ret),
+		end);
+end:
+	if (distributions) {
+		for (size_t i = 0; i < num; i++)
+			if (distributions[i])
+				ccs_release_object(distributions[i]);
+		free(distributions);
+	}
+	free(weights);
+	return res;
+}
+
+static inline ccs_result_t
+_ccs_deserialize_json_distribution_multivariate(
+	ccs_distribution_t                *distribution_ret,
+	uint32_t                           version,
+	cJSON                             *json,
+	_ccs_object_deserialize_options_t *opts)
+{
+	ccs_result_t                      res           = CCS_RESULT_SUCCESS;
+	ccs_distribution_t               *distributions = NULL;
+
+	_ccs_object_deserialize_options_t new_opts      = *opts;
+	new_opts.handle_map                             = NULL;
+
+	cJSON *j_distributions =
+		cJSON_GetObjectItemCaseSensitive(json, "distributions");
+	CCS_REFUTE(
+		!j_distributions || !cJSON_IsArray(j_distributions),
+		CCS_RESULT_ERROR_INVALID_VALUE);
+
+	size_t num = (size_t)cJSON_GetArraySize(j_distributions);
+	distributions =
+		(ccs_distribution_t *)calloc(num, sizeof(ccs_distribution_t));
+	CCS_REFUTE(!distributions, CCS_RESULT_ERROR_OUT_OF_MEMORY);
+
+	for (size_t i = 0; i < num; i++) {
+		cJSON *child = cJSON_GetArrayItem(j_distributions, (int)i);
+		CCS_REFUTE_ERR_GOTO(
+			res, !child || !cJSON_IsObject(child),
+			CCS_RESULT_ERROR_INVALID_VALUE, end);
+		size_t      dummy = 0;
+		const char *cbuf  = (const char *)child;
+		CCS_VALIDATE_ERR_GOTO(
+			res,
+			_ccs_object_deserialize_with_opts_check(
+				(ccs_object_t *)distributions + i,
+				CCS_OBJECT_TYPE_DISTRIBUTION,
+				CCS_SERIALIZE_FORMAT_JSON, version, &dummy,
+				&cbuf, &new_opts),
+			end);
+	}
+	CCS_VALIDATE_ERR_GOTO(
+		res,
+		ccs_create_multivariate_distribution(
+			num, distributions, distribution_ret),
+		end);
+end:
+	if (distributions) {
+		for (size_t i = 0; i < num; i++)
+			if (distributions[i])
+				ccs_release_object(distributions[i]);
+		free(distributions);
+	}
+	return res;
+}
+
+static inline ccs_result_t
+_ccs_deserialize_json_distribution(
+	ccs_distribution_t                *distribution_ret,
+	uint32_t                           version,
+	size_t                            *buffer_size,
+	const char                       **buffer,
+	_ccs_object_deserialize_options_t *opts)
+{
+	(void)buffer_size;
+	cJSON                  *json = *(cJSON **)buffer;
+	ccs_distribution_type_t dtype;
+	cJSON                  *j_dtype =
+		cJSON_GetObjectItemCaseSensitive(json, "distribution_type");
+	CCS_REFUTE(
+		!j_dtype || !cJSON_IsString(j_dtype),
+		CCS_RESULT_ERROR_INVALID_VALUE);
+	CCS_VALIDATE(_ccs_json_distribution_type_from_string(
+		j_dtype->valuestring, &dtype));
+	switch (dtype) {
+	case CCS_DISTRIBUTION_TYPE_UNIFORM:
+		CCS_VALIDATE(_ccs_deserialize_json_distribution_uniform(
+			distribution_ret, json));
+		break;
+	case CCS_DISTRIBUTION_TYPE_NORMAL:
+		CCS_VALIDATE(_ccs_deserialize_json_distribution_normal(
+			distribution_ret, json));
+		break;
+	case CCS_DISTRIBUTION_TYPE_ROULETTE:
+		CCS_VALIDATE(_ccs_deserialize_json_distribution_roulette(
+			distribution_ret, json));
+		break;
+	case CCS_DISTRIBUTION_TYPE_MIXTURE:
+		CCS_VALIDATE(_ccs_deserialize_json_distribution_mixture(
+			distribution_ret, version, json, opts));
+		break;
+	case CCS_DISTRIBUTION_TYPE_MULTIVARIATE:
+		CCS_VALIDATE(_ccs_deserialize_json_distribution_multivariate(
+			distribution_ret, version, json, opts));
+		break;
+	default:
+		CCS_RAISE(
+			CCS_RESULT_ERROR_UNSUPPORTED_OPERATION,
+			"Unsupported distribution type: %s",
+			j_dtype->valuestring);
+	}
+	return CCS_RESULT_SUCCESS;
+}
+
 static inline ccs_result_t
 _ccs_deserialize_bin_distribution(
 	ccs_distribution_t                *distribution_ret,
@@ -376,6 +690,10 @@ _ccs_distribution_deserialize(
 	switch (format) {
 	case CCS_SERIALIZE_FORMAT_BINARY:
 		CCS_VALIDATE(_ccs_deserialize_bin_distribution(
+			distribution_ret, version, buffer_size, buffer, opts));
+		break;
+	case CCS_SERIALIZE_FORMAT_JSON:
+		CCS_VALIDATE(_ccs_deserialize_json_distribution(
 			distribution_ret, version, buffer_size, buffer, opts));
 		break;
 	default:
