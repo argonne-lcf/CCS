@@ -199,20 +199,22 @@ _ccs_deserialize_json_parameter_numerical(
 	CCS_REFUTE(!j_default_value, CCS_RESULT_ERROR_INVALID_VALUE);
 
 	ccs_numeric_type_t data_type;
+	ccs_datum_t        default_datum;
 	CCS_VALIDATE(_ccs_json_numeric_type_from_string(
 		j_data_type->valuestring, &data_type));
+	CCS_VALIDATE(_ccs_json_get_datum(j_default_value, &default_datum));
 
 	ccs_numeric_t lower, upper, quantization, default_value;
 	if (data_type == CCS_NUMERIC_TYPE_FLOAT) {
 		lower.f         = j_lower->valuedouble;
 		upper.f         = j_upper->valuedouble;
 		quantization.f  = j_quantization->valuedouble;
-		default_value.f = j_default_value->valuedouble;
+		default_value.f = default_datum.value.f;
 	} else {
 		lower.i         = (ccs_int_t)j_lower->valuedouble;
 		upper.i         = (ccs_int_t)j_upper->valuedouble;
 		quantization.i  = (ccs_int_t)j_quantization->valuedouble;
-		default_value.i = (ccs_int_t)j_default_value->valuedouble;
+		default_value.i = default_datum.value.i;
 	}
 	CCS_VALIDATE(ccs_create_numerical_parameter(
 		j_name->valuestring, data_type, lower, upper, quantization,
