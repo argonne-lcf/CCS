@@ -35,11 +35,19 @@ class CConfigSpaceTestRng < Minitest::Test
     assert_equal(v1, v2)
   end
 
-  def test_serialize
+  def test_serialize_binary
+    _test_serialize(:binary)
+  end
+
+  def test_serialize_json
+    _test_serialize(:json)
+  end
+
+  def _test_serialize(fmt)
     rng = CCS::Rng::new
     rng.seed = 10
-    buff = rng.serialize
-    rng2 = CCS::deserialize(buffer: buff)
+    buff = rng.serialize(format: fmt)
+    rng2 = CCS::deserialize(format: fmt, buffer: buff)
     assert_equal( :CCS_OBJECT_TYPE_RNG, rng2.object_type )
     assert_equal(rng.get, rng2.get)
   end
