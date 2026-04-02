@@ -108,17 +108,11 @@ _ccs_serialize_json_ccs_distribution_normal(
 			json, "scale_type",
 			_ccs_json_scale_type_to_string(data->scale_type)),
 		CCS_RESULT_ERROR_OUT_OF_MEMORY);
-	CCS_REFUTE(
-		!cJSON_AddNumberToObject(json, "mu", data->mu),
-		CCS_RESULT_ERROR_OUT_OF_MEMORY);
-	CCS_REFUTE(
-		!cJSON_AddNumberToObject(json, "sigma", data->sigma),
-		CCS_RESULT_ERROR_OUT_OF_MEMORY);
+	CCS_VALIDATE(_ccs_json_add_float(json, "mu", data->mu));
+	CCS_VALIDATE(_ccs_json_add_float(json, "sigma", data->sigma));
 	if (data->common_data.data_types[0] == CCS_NUMERIC_TYPE_FLOAT) {
-		CCS_REFUTE(
-			!cJSON_AddNumberToObject(
-				json, "quantization", data->quantization.f),
-			CCS_RESULT_ERROR_OUT_OF_MEMORY);
+		CCS_VALIDATE(_ccs_json_add_float(
+			json, "quantization", data->quantization.f));
 	} else {
 		CCS_REFUTE(
 			!cJSON_AddNumberToObject(

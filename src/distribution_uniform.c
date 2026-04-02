@@ -120,16 +120,10 @@ _ccs_serialize_json_ccs_distribution_uniform(
 			_ccs_json_scale_type_to_string(data->scale_type)),
 		CCS_RESULT_ERROR_OUT_OF_MEMORY);
 	if (data->common_data.data_types[0] == CCS_NUMERIC_TYPE_FLOAT) {
-		CCS_REFUTE(
-			!cJSON_AddNumberToObject(json, "lower", data->lower.f),
-			CCS_RESULT_ERROR_OUT_OF_MEMORY);
-		CCS_REFUTE(
-			!cJSON_AddNumberToObject(json, "upper", data->upper.f),
-			CCS_RESULT_ERROR_OUT_OF_MEMORY);
-		CCS_REFUTE(
-			!cJSON_AddNumberToObject(
-				json, "quantization", data->quantization.f),
-			CCS_RESULT_ERROR_OUT_OF_MEMORY);
+		CCS_VALIDATE(_ccs_json_add_float(json, "lower", data->lower.f));
+		CCS_VALIDATE(_ccs_json_add_float(json, "upper", data->upper.f));
+		CCS_VALIDATE(_ccs_json_add_float(
+			json, "quantization", data->quantization.f));
 	} else {
 		CCS_REFUTE(
 			!cJSON_AddNumberToObject(json, "lower", data->lower.i),

@@ -1,6 +1,7 @@
 #ifndef _CCONFIGSPACE_JSON_H
 #define _CCONFIGSPACE_JSON_H
 #include "cjson/cJSON.h"
+#include <math.h>
 #include <string.h>
 
 /*============================================================================
@@ -347,6 +348,58 @@ _ccs_json_objective_type_from_string(
 }
 
 /*============================================================================
+ * Float JSON helpers (handles Infinity and NaN)
+ *============================================================================*/
+
+/* Add a float value to a cJSON object, encoding non-finite values as strings
+ * so that Infinity and NaN survive round-trip. */
+static inline ccs_result_t
+_ccs_json_add_float(cJSON *json, const char *key, double value)
+{
+	if (isfinite(value)) {
+		CCS_REFUTE(
+			!cJSON_AddNumberToObject(json, key, value),
+			CCS_RESULT_ERROR_OUT_OF_MEMORY);
+	} else if (isinf(value)) {
+		CCS_REFUTE(
+			!cJSON_AddStringToObject(
+				json, key,
+				value > 0 ? "Infinity" : "-Infinity"),
+			CCS_RESULT_ERROR_OUT_OF_MEMORY);
+	} else {
+		CCS_REFUTE(
+			!cJSON_AddStringToObject(json, key, "NaN"),
+			CCS_RESULT_ERROR_OUT_OF_MEMORY);
+	}
+	return CCS_RESULT_SUCCESS;
+}
+
+/* Read a float value that may be a number or a string ("Infinity", etc.). */
+static inline ccs_result_t
+_ccs_json_get_float(cJSON *item, double *value_ret)
+{
+	if (cJSON_IsNumber(item)) {
+		*value_ret = item->valuedouble;
+	} else if (cJSON_IsString(item)) {
+		if (!strcmp(item->valuestring, "Infinity"))
+			*value_ret = INFINITY;
+		else if (!strcmp(item->valuestring, "-Infinity"))
+			*value_ret = -INFINITY;
+		else if (!strcmp(item->valuestring, "NaN"))
+			*value_ret = NAN;
+		else
+			CCS_RAISE(
+				CCS_RESULT_ERROR_INVALID_VALUE,
+				"Unknown float string: %s", item->valuestring);
+	} else {
+		CCS_RAISE(
+			CCS_RESULT_ERROR_INVALID_VALUE,
+			"Expected number or string for float value");
+	}
+	return CCS_RESULT_SUCCESS;
+}
+
+/*============================================================================
  * ccs_datum_t JSON helpers
  *============================================================================*/
 
@@ -369,14 +422,17 @@ _ccs_json_datum_to_cjson(ccs_datum_t datum, cJSON **item_ret)
 			!cJSON_AddNumberToObject(item, "value", datum.value.i),
 			CCS_RESULT_ERROR_OUT_OF_MEMORY);
 		break;
-	case CCS_DATA_TYPE_FLOAT:
+	case CCS_DATA_TYPE_FLOAT: {
+		ccs_result_t _err;
 		CCS_REFUTE(
 			!cJSON_AddStringToObject(item, "type", "float"),
 			CCS_RESULT_ERROR_OUT_OF_MEMORY);
-		CCS_REFUTE(
-			!cJSON_AddNumberToObject(item, "value", datum.value.f),
-			CCS_RESULT_ERROR_OUT_OF_MEMORY);
-		break;
+		_err = _ccs_json_add_float(item, "value", datum.value.f);
+		if (_err != CCS_RESULT_SUCCESS) {
+			cJSON_Delete(item);
+			return _err;
+		}
+	} break;
 	case CCS_DATA_TYPE_BOOL:
 		CCS_REFUTE(
 			!cJSON_AddStringToObject(item, "type", "bool"),
@@ -460,11 +516,11 @@ _ccs_json_get_datum(cJSON *item, ccs_datum_t *datum_ret)
 			CCS_RESULT_ERROR_INVALID_VALUE);
 		*datum_ret = ccs_int((ccs_int_t)j_value->valuedouble);
 	} else if (!strcmp(j_type->valuestring, "float")) {
+		double fval;
 		j_value = cJSON_GetObjectItemCaseSensitive(item, "value");
-		CCS_REFUTE(
-			!j_value || !cJSON_IsNumber(j_value),
-			CCS_RESULT_ERROR_INVALID_VALUE);
-		*datum_ret = ccs_float(j_value->valuedouble);
+		CCS_REFUTE(!j_value, CCS_RESULT_ERROR_INVALID_VALUE);
+		CCS_VALIDATE(_ccs_json_get_float(j_value, &fval));
+		*datum_ret = ccs_float(fval);
 	} else if (!strcmp(j_type->valuestring, "bool")) {
 		j_value = cJSON_GetObjectItemCaseSensitive(item, "value");
 		CCS_REFUTE(
