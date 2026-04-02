@@ -1,6 +1,7 @@
 #ifndef _TUNER_DESERIALIZE_H
 #define _TUNER_DESERIALIZE_H
 #include "tuner_internal.h"
+#include "cconfigspace_json.h"
 
 struct _ccs_random_tuner_data_mock_s {
 	_ccs_tuner_common_data_t common_data;
@@ -221,6 +222,273 @@ end:
 }
 
 static inline ccs_result_t
+_ccs_deserialize_json_ccs_random_tuner_data(
+	_ccs_random_tuner_data_mock_t     *data,
+	uint32_t                           version,
+	cJSON                             *json,
+	_ccs_object_deserialize_options_t *opts)
+{
+	cJSON      *j_name;
+	cJSON      *j_os;
+	cJSON      *j_history;
+	cJSON      *j_optima;
+	const char *cbuf;
+	size_t      dummy;
+
+	j_name = cJSON_GetObjectItemCaseSensitive(json, "name");
+	CCS_REFUTE(
+		!j_name || !cJSON_IsString(j_name),
+		CCS_RESULT_ERROR_INVALID_VALUE);
+	data->common_data.name = j_name->valuestring;
+
+	/* objective_space (inlined) */
+	j_os = cJSON_GetObjectItemCaseSensitive(json, "objective_space");
+	CCS_REFUTE(
+		!j_os || !cJSON_IsObject(j_os), CCS_RESULT_ERROR_INVALID_VALUE);
+	cbuf  = (const char *)j_os;
+	dummy = 0;
+	CCS_VALIDATE(_ccs_object_deserialize_with_opts_check(
+		(ccs_object_t *)&data->common_data.objective_space,
+		CCS_OBJECT_TYPE_OBJECTIVE_SPACE, CCS_SERIALIZE_FORMAT_JSON,
+		version, &dummy, &cbuf, opts));
+
+	/* history */
+	j_history = cJSON_GetObjectItemCaseSensitive(json, "history");
+	CCS_REFUTE(
+		!j_history || !cJSON_IsArray(j_history),
+		CCS_RESULT_ERROR_INVALID_VALUE);
+	data->history_size = (size_t)cJSON_GetArraySize(j_history);
+
+	/* optima */
+	j_optima           = cJSON_GetObjectItemCaseSensitive(json, "optima");
+	CCS_REFUTE(
+		!j_optima || !cJSON_IsArray(j_optima),
+		CCS_RESULT_ERROR_INVALID_VALUE);
+	data->size_optima = (size_t)cJSON_GetArraySize(j_optima);
+
+	if (!(data->history_size + data->size_optima))
+		return CCS_RESULT_SUCCESS;
+	data->history = (ccs_evaluation_t *)calloc(
+		data->history_size + data->size_optima,
+		sizeof(ccs_evaluation_t));
+	CCS_REFUTE(!data->history, CCS_RESULT_ERROR_OUT_OF_MEMORY);
+	data->optima = data->history + data->history_size;
+
+	for (size_t i = 0; i < data->history_size; i++) {
+		cJSON *child = cJSON_GetArrayItem(j_history, (int)i);
+		cbuf         = (const char *)child;
+		dummy        = 0;
+		CCS_VALIDATE(_ccs_object_deserialize_with_opts_check(
+			(ccs_object_t *)data->history + i,
+			CCS_OBJECT_TYPE_EVALUATION, CCS_SERIALIZE_FORMAT_JSON,
+			version, &dummy, &cbuf, opts));
+	}
+
+	for (size_t i = 0; i < data->size_optima; i++) {
+		cJSON *child = cJSON_GetArrayItem(j_optima, (int)i);
+		CCS_REFUTE(
+			!child || !cJSON_IsString(child),
+			CCS_RESULT_ERROR_INVALID_VALUE);
+		CCS_REFUTE(
+			strlen(child->valuestring) != sizeof(ccs_object_t) * 2,
+			CCS_RESULT_ERROR_INVALID_VALUE);
+		CCS_REFUTE(
+			_ccs_json_hex_decode_buf(
+				child->valuestring, sizeof(ccs_object_t) * 2,
+				data->optima + i),
+			CCS_RESULT_ERROR_INVALID_VALUE);
+	}
+	for (size_t i = 0; i < data->size_optima; i++) {
+		ccs_datum_t d;
+		CCS_VALIDATE(ccs_map_get(
+			opts->handle_map, ccs_object(data->optima[i]), &d));
+		CCS_REFUTE(
+			d.type != CCS_DATA_TYPE_OBJECT,
+			CCS_RESULT_ERROR_INVALID_HANDLE);
+		data->optima[i] = (ccs_evaluation_t)(d.value.o);
+	}
+	return CCS_RESULT_SUCCESS;
+}
+
+static inline ccs_result_t
+_ccs_deserialize_json_random_tuner(
+	ccs_tuner_t                       *tuner_ret,
+	uint32_t                           version,
+	size_t                            *buffer_size,
+	const char                       **buffer,
+	_ccs_object_deserialize_options_t *opts)
+{
+	(void)buffer_size;
+	_ccs_random_tuner_data_mock_t data = {
+		{(ccs_tuner_type_t)0, NULL, NULL, NULL, NULL}, 0, 0, NULL, NULL};
+	ccs_result_t res = CCS_RESULT_SUCCESS;
+	CCS_VALIDATE_ERR_GOTO(
+		res,
+		_ccs_deserialize_json_ccs_random_tuner_data(
+			&data, version, *(cJSON **)buffer, opts),
+		evaluations);
+	CCS_VALIDATE_ERR_GOTO(
+		res,
+		ccs_create_random_tuner(
+			data.common_data.name, data.common_data.objective_space,
+			tuner_ret),
+		evaluations);
+	CCS_VALIDATE_ERR_GOTO(
+		res,
+		ccs_tuner_tell(*tuner_ret, data.history_size, data.history),
+		tuner);
+	goto evaluations;
+tuner:
+	ccs_release_object(*tuner_ret);
+	*tuner_ret = NULL;
+evaluations:
+	if (data.history)
+		for (size_t i = 0; i < data.history_size; i++)
+			if (data.history[i])
+				ccs_release_object(data.history[i]);
+	if (data.common_data.objective_space)
+		ccs_release_object(data.common_data.objective_space);
+	if (data.history)
+		free(data.history);
+	return res;
+}
+
+static inline ccs_result_t
+_ccs_deserialize_json_user_defined_tuner(
+	ccs_tuner_t                       *tuner_ret,
+	uint32_t                           version,
+	size_t                            *buffer_size,
+	const char                       **buffer,
+	_ccs_object_deserialize_options_t *opts)
+{
+	(void)buffer_size;
+	_ccs_random_tuner_data_mock_t data = {
+		{(ccs_tuner_type_t)0, NULL, NULL, NULL, NULL}, 0, 0, NULL, NULL};
+	_ccs_blob_t                      blob       = {0, NULL};
+	ccs_user_defined_tuner_vector_t *vector     = NULL;
+	void                            *tuner_data = NULL;
+	ccs_result_t                     res        = CCS_RESULT_SUCCESS;
+
+	CCS_VALIDATE_ERR_GOTO(
+		res,
+		_ccs_deserialize_json_ccs_random_tuner_data(
+			&data, version, *(cJSON **)buffer, opts),
+		end);
+
+	/* user state */
+	{
+		cJSON *j_state = cJSON_GetObjectItemCaseSensitive(
+			*(cJSON **)buffer, "user_state");
+		if (j_state && cJSON_IsString(j_state)) {
+			size_t slen = strlen(j_state->valuestring);
+			if (slen) {
+				blob.sz                = slen / 2;
+				unsigned char *decoded = _ccs_json_hex_decode(
+					j_state->valuestring, &blob.sz);
+				CCS_REFUTE_ERR_GOTO(
+					res, !decoded,
+					CCS_RESULT_ERROR_INVALID_VALUE, end);
+				blob.blob = decoded;
+			}
+		}
+	}
+
+	CCS_VALIDATE_ERR_GOTO(
+		res,
+		opts->deserialize_vector_callback(
+			CCS_OBJECT_TYPE_TUNER, data.common_data.name,
+			opts->deserialize_vector_user_data, (void **)&vector,
+			&tuner_data),
+		end);
+
+	if (vector->deserialize_state)
+		CCS_VALIDATE_ERR_GOTO(
+			res,
+			vector->deserialize_state(
+				data.common_data.objective_space,
+				data.history_size, data.history,
+				data.size_optima, data.optima, blob.sz,
+				blob.blob, &tuner_data),
+			end);
+
+	CCS_VALIDATE_ERR_GOTO(
+		res,
+		ccs_create_user_defined_tuner(
+			data.common_data.name, data.common_data.objective_space,
+			vector, tuner_data, tuner_ret),
+		end);
+	if (!vector->deserialize_state)
+		CCS_VALIDATE_ERR_GOTO(
+			res,
+			vector->tell(
+				*tuner_ret, data.history_size, data.history),
+			tuner);
+	goto end;
+tuner:
+	ccs_release_object(*tuner_ret);
+	*tuner_ret = NULL;
+end:
+	if (blob.blob)
+		free((void *)blob.blob);
+	if (data.common_data.objective_space)
+		ccs_release_object(data.common_data.objective_space);
+	if (data.history) {
+		for (size_t i = 0; i < data.history_size; i++)
+			if (data.history[i])
+				ccs_release_object(data.history[i]);
+		free(data.history);
+	}
+	return res;
+}
+
+static inline ccs_result_t
+_ccs_deserialize_json_tuner(
+	ccs_tuner_t                       *tuner_ret,
+	uint32_t                           version,
+	size_t                            *buffer_size,
+	const char                       **buffer,
+	_ccs_object_deserialize_options_t *opts)
+{
+	_ccs_object_deserialize_options_t new_opts = *opts;
+	ccs_result_t                      res      = CCS_RESULT_SUCCESS;
+	cJSON                            *json     = *(cJSON **)buffer;
+
+	cJSON *j_ttype = cJSON_GetObjectItemCaseSensitive(json, "tuner_type");
+	CCS_REFUTE(
+		!j_ttype || !cJSON_IsString(j_ttype),
+		CCS_RESULT_ERROR_INVALID_VALUE);
+
+	if (!strcmp(j_ttype->valuestring, "user_defined"))
+		CCS_CHECK_PTR(opts->deserialize_vector_callback);
+
+	new_opts.map_values = CCS_TRUE;
+	CCS_VALIDATE(ccs_create_map(&new_opts.handle_map));
+
+	if (!strcmp(j_ttype->valuestring, "random"))
+		CCS_VALIDATE_ERR_GOTO(
+			res,
+			_ccs_deserialize_json_random_tuner(
+				tuner_ret, version, buffer_size, buffer,
+				&new_opts),
+			end);
+	else if (!strcmp(j_ttype->valuestring, "user_defined"))
+		CCS_VALIDATE_ERR_GOTO(
+			res,
+			_ccs_deserialize_json_user_defined_tuner(
+				tuner_ret, version, buffer_size, buffer,
+				&new_opts),
+			end);
+	else
+		CCS_RAISE_ERR_GOTO(
+			res, CCS_RESULT_ERROR_INVALID_TYPE, end,
+			"Unsupported tuner type: %s", j_ttype->valuestring);
+
+end:
+	ccs_release_object(new_opts.handle_map);
+	return res;
+}
+
+static inline ccs_result_t
 _ccs_deserialize_bin_tuner(
 	ccs_tuner_t                       *tuner_ret,
 	uint32_t                           version,
@@ -279,6 +547,10 @@ _ccs_tuner_deserialize(
 	switch (format) {
 	case CCS_SERIALIZE_FORMAT_BINARY:
 		CCS_VALIDATE(_ccs_deserialize_bin_tuner(
+			tuner_ret, version, buffer_size, buffer, opts));
+		break;
+	case CCS_SERIALIZE_FORMAT_JSON:
+		CCS_VALIDATE(_ccs_deserialize_json_tuner(
 			tuner_ret, version, buffer_size, buffer, opts));
 		break;
 	default:

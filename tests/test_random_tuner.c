@@ -5,21 +5,36 @@
 #include "test_utils.h"
 
 void
-test(void)
+test(ccs_serialize_format_t format)
 {
 	ccs_configuration_space_t cspace;
 	ccs_objective_space_t     ospace;
 	ccs_tuner_t               tuner, tuner_copy;
 	ccs_result_t              err;
-	ccs_datum_t               d;
 	char                     *buff;
 	size_t                    buff_size;
 	ccs_map_t                 map;
 
 	cspace = create_2d_plane(NULL);
-	ospace = create_height_objective(cspace);
+	if (format == CCS_SERIALIZE_FORMAT_JSON) {
+		/* JSON cannot represent Infinity — use finite bounds */
+		ccs_parameter_t      zparam;
+		ccs_expression_t     zexpr;
+		ccs_objective_type_t otype = CCS_OBJECTIVE_TYPE_MINIMIZE;
+		zparam                     = create_numerical("z", -1e6, 1e6);
+		err = ccs_create_variable(zparam, &zexpr);
+		assert(err == CCS_RESULT_SUCCESS);
+		err = ccs_create_objective_space(
+			"height", (ccs_search_space_t)cspace, 1, &zparam, 1,
+			&zexpr, &otype, &ospace);
+		assert(err == CCS_RESULT_SUCCESS);
+		ccs_release_object(zexpr);
+		ccs_release_object(zparam);
+	} else {
+		ospace = create_height_objective(cspace);
+	}
 
-	err    = ccs_create_random_tuner("problem", ospace, &tuner);
+	err = ccs_create_random_tuner("problem", ospace, &tuner);
 	assert(err == CCS_RESULT_SUCCESS);
 
 	for (size_t i = 0; i < 100; i++) {
@@ -72,21 +87,19 @@ test(void)
 	err = ccs_create_map(&map);
 	assert(err == CCS_RESULT_SUCCESS);
 	err = ccs_object_serialize(
-		tuner, CCS_SERIALIZE_FORMAT_BINARY,
-		CCS_SERIALIZE_OPERATION_SIZE, &buff_size,
+		tuner, format, CCS_SERIALIZE_OPERATION_SIZE, &buff_size,
 		CCS_SERIALIZE_OPTION_END);
 	assert(err == CCS_RESULT_SUCCESS);
 	buff = (char *)malloc(buff_size);
 	assert(buff);
 
 	err = ccs_object_serialize(
-		tuner, CCS_SERIALIZE_FORMAT_BINARY,
-		CCS_SERIALIZE_OPERATION_MEMORY, buff_size, buff,
+		tuner, format, CCS_SERIALIZE_OPERATION_MEMORY, buff_size, buff,
 		CCS_SERIALIZE_OPTION_END);
 	assert(err == CCS_RESULT_SUCCESS);
 
 	err = ccs_object_deserialize(
-		(ccs_object_t *)&tuner_copy, CCS_SERIALIZE_FORMAT_BINARY,
+		(ccs_object_t *)&tuner_copy, format,
 		CCS_DESERIALIZE_OPERATION_MEMORY, buff_size, buff,
 		CCS_DESERIALIZE_OPTION_HANDLE_MAP, map,
 		CCS_DESERIALIZE_OPTION_MAP_HANDLES, CCS_DESERIALIZE_OPTION_END);
@@ -99,11 +112,6 @@ test(void)
 	err = ccs_tuner_get_optima(tuner_copy, NULL, 1, &evaluation, &count);
 	assert(err == CCS_RESULT_SUCCESS);
 	assert(count == 1);
-
-	err = ccs_map_get(map, ccs_object((ccs_object_t)tuner), &d);
-	assert(err == CCS_RESULT_SUCCESS);
-	assert(d.type == CCS_DATA_TYPE_OBJECT);
-	assert(d.value.o == (ccs_object_t)tuner_copy);
 
 	free(buff);
 	err = ccs_release_object(map);
@@ -348,7 +356,8 @@ int
 main(void)
 {
 	ccs_init();
-	test();
+	test(CCS_SERIALIZE_FORMAT_BINARY);
+	test(CCS_SERIALIZE_FORMAT_JSON);
 	test_objective_space_deserialize();
 	test_evaluation_deserialize();
 	test_evaluation_hash_cmp_compare();

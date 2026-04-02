@@ -1,4 +1,5 @@
 #include "cconfigspace_internal.h"
+#include "cconfigspace_json.h"
 #include "tuner_internal.h"
 #include "evaluation_internal.h"
 #include "search_space_internal.h"
@@ -150,6 +151,81 @@ _ccs_serialize_bin_ccs_random_tuner(
 	return CCS_RESULT_SUCCESS;
 }
 
+static inline ccs_result_t
+_ccs_serialize_json_ccs_random_tuner(
+	ccs_tuner_t                      tuner,
+	cJSON                           *json,
+	_ccs_object_serialize_options_t *opts)
+{
+	_ccs_random_tuner_data_t *data =
+		(_ccs_random_tuner_data_t *)(tuner->data);
+	_ccs_hash_features_t *cur, *tmp;
+	size_t                dummy = 0;
+
+	/* tuner type + name */
+	CCS_REFUTE(
+		!cJSON_AddStringToObject(json, "tuner_type", "random"),
+		CCS_RESULT_ERROR_OUT_OF_MEMORY);
+	CCS_REFUTE(
+		!cJSON_AddStringToObject(json, "name", data->common_data.name),
+		CCS_RESULT_ERROR_OUT_OF_MEMORY);
+
+	/* objective_space (inlined) */
+	{
+		cJSON *os = cJSON_AddObjectToObject(json, "objective_space");
+		CCS_REFUTE(!os, CCS_RESULT_ERROR_OUT_OF_MEMORY);
+		CCS_VALIDATE(_ccs_object_serialize_with_opts(
+			data->common_data.objective_space,
+			CCS_SERIALIZE_FORMAT_JSON, &dummy, (char **)&os, opts));
+	}
+
+	/* history (inlined evaluations) */
+	{
+		cJSON *history = cJSON_AddArrayToObject(json, "history");
+		CCS_REFUTE(!history, CCS_RESULT_ERROR_OUT_OF_MEMORY);
+		HASH_ITER(hh, data->features_hash, cur, tmp)
+		{
+			ccs_evaluation_t *e = NULL;
+			while ((e = (ccs_evaluation_t *)utarray_next(
+					cur->history, e))) {
+				cJSON *eval_obj = cJSON_CreateObject();
+				CCS_REFUTE(
+					!eval_obj,
+					CCS_RESULT_ERROR_OUT_OF_MEMORY);
+				CCS_REFUTE(
+					!cJSON_AddItemToArray(history, eval_obj),
+					CCS_RESULT_ERROR_OUT_OF_MEMORY);
+				CCS_VALIDATE(_ccs_object_serialize_with_opts(
+					*e, CCS_SERIALIZE_FORMAT_JSON, &dummy,
+					(char **)&eval_obj, opts));
+			}
+		}
+	}
+
+	/* optima (handles referencing history evaluations) */
+	{
+		cJSON *optima = cJSON_AddArrayToObject(json, "optima");
+		CCS_REFUTE(!optima, CCS_RESULT_ERROR_OUT_OF_MEMORY);
+		HASH_ITER(hh, data->features_hash, cur, tmp)
+		{
+			ccs_evaluation_t *e = NULL;
+			while ((e = (ccs_evaluation_t *)utarray_next(
+					cur->optima, e))) {
+				char hex[sizeof(ccs_object_t) * 2 + 1];
+				_ccs_json_hex_encode_buf(
+					e, sizeof(ccs_object_t), hex);
+				cJSON *h = cJSON_CreateString(hex);
+				CCS_REFUTE(!h, CCS_RESULT_ERROR_OUT_OF_MEMORY);
+				CCS_REFUTE(
+					!cJSON_AddItemToArray(optima, h),
+					CCS_RESULT_ERROR_OUT_OF_MEMORY);
+			}
+		}
+	}
+
+	return CCS_RESULT_SUCCESS;
+}
+
 static ccs_result_t
 _ccs_tuner_random_serialize_size(
 	ccs_object_t                     object,
@@ -182,6 +258,10 @@ _ccs_tuner_random_serialize(
 	case CCS_SERIALIZE_FORMAT_BINARY:
 		CCS_VALIDATE(_ccs_serialize_bin_ccs_random_tuner(
 			(ccs_tuner_t)object, buffer_size, buffer, opts));
+		break;
+	case CCS_SERIALIZE_FORMAT_JSON:
+		CCS_VALIDATE(_ccs_serialize_json_ccs_random_tuner(
+			(ccs_tuner_t)object, *(cJSON **)buffer, opts));
 		break;
 	default:
 		CCS_RAISE(

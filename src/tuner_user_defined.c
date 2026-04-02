@@ -1,4 +1,5 @@
 #include "cconfigspace_internal.h"
+#include "cconfigspace_json.h"
 #include "tuner_internal.h"
 #include "evaluation_internal.h"
 #include "search_space_internal.h"
@@ -179,6 +180,140 @@ end:
 	return res;
 }
 
+static inline ccs_result_t
+_ccs_serialize_json_ccs_user_defined_tuner(
+	ccs_tuner_t                      tuner,
+	cJSON                           *json,
+	_ccs_object_serialize_options_t *opts)
+{
+	ccs_result_t                    res = CCS_RESULT_SUCCESS;
+	_ccs_user_defined_tuner_data_t *data =
+		(_ccs_user_defined_tuner_data_t *)(tuner->data);
+	size_t            history_size = 0;
+	size_t            num_optima   = 0;
+	size_t            state_size   = 0;
+	size_t            dummy        = 0;
+	ccs_evaluation_t *history      = NULL;
+	ccs_evaluation_t *optima       = NULL;
+
+	/* tuner type + name */
+	CCS_REFUTE(
+		!cJSON_AddStringToObject(json, "tuner_type", "user_defined"),
+		CCS_RESULT_ERROR_OUT_OF_MEMORY);
+	CCS_REFUTE(
+		!cJSON_AddStringToObject(json, "name", data->common_data.name),
+		CCS_RESULT_ERROR_OUT_OF_MEMORY);
+
+	/* objective_space (inlined) */
+	{
+		cJSON *os = cJSON_AddObjectToObject(json, "objective_space");
+		CCS_REFUTE(!os, CCS_RESULT_ERROR_OUT_OF_MEMORY);
+		CCS_VALIDATE(_ccs_object_serialize_with_opts(
+			data->common_data.objective_space,
+			CCS_SERIALIZE_FORMAT_JSON, &dummy, (char **)&os, opts));
+	}
+
+	CCS_VALIDATE(
+		data->vector.get_history(tuner, NULL, 0, NULL, &history_size));
+	CCS_VALIDATE(
+		data->vector.get_optima(tuner, NULL, 0, NULL, &num_optima));
+	if (0 != history_size + num_optima) {
+		history = (ccs_evaluation_t *)calloc(
+			history_size + num_optima, sizeof(ccs_evaluation_t));
+		CCS_REFUTE(!history, CCS_RESULT_ERROR_OUT_OF_MEMORY);
+		optima = history + history_size;
+		if (history_size)
+			CCS_VALIDATE_ERR_GOTO(
+				res,
+				data->vector.get_history(
+					tuner, NULL, history_size, history,
+					NULL),
+				end);
+		if (num_optima)
+			CCS_VALIDATE_ERR_GOTO(
+				res,
+				data->vector.get_optima(
+					tuner, NULL, num_optima, optima, NULL),
+				end);
+	}
+
+	/* history (inlined evaluations) */
+	{
+		cJSON *j_history = cJSON_AddArrayToObject(json, "history");
+		CCS_REFUTE_ERR_GOTO(
+			res, !j_history, CCS_RESULT_ERROR_OUT_OF_MEMORY, end);
+		for (size_t i = 0; i < history_size; i++) {
+			cJSON *eval_obj = cJSON_CreateObject();
+			CCS_REFUTE_ERR_GOTO(
+				res, !eval_obj, CCS_RESULT_ERROR_OUT_OF_MEMORY,
+				end);
+			CCS_REFUTE_ERR_GOTO(
+				res, !cJSON_AddItemToArray(j_history, eval_obj),
+				CCS_RESULT_ERROR_OUT_OF_MEMORY, end);
+			CCS_VALIDATE_ERR_GOTO(
+				res,
+				_ccs_object_serialize_with_opts(
+					history[i], CCS_SERIALIZE_FORMAT_JSON,
+					&dummy, (char **)&eval_obj, opts),
+				end);
+		}
+	}
+
+	/* optima (handles) */
+	{
+		cJSON *j_optima = cJSON_AddArrayToObject(json, "optima");
+		CCS_REFUTE_ERR_GOTO(
+			res, !j_optima, CCS_RESULT_ERROR_OUT_OF_MEMORY, end);
+		for (size_t i = 0; i < num_optima; i++) {
+			char hex[sizeof(ccs_object_t) * 2 + 1];
+			_ccs_json_hex_encode_buf(
+				&optima[i], sizeof(ccs_object_t), hex);
+			cJSON *h = cJSON_CreateString(hex);
+			CCS_REFUTE_ERR_GOTO(
+				res, !h, CCS_RESULT_ERROR_OUT_OF_MEMORY, end);
+			CCS_REFUTE_ERR_GOTO(
+				res, !cJSON_AddItemToArray(j_optima, h),
+				CCS_RESULT_ERROR_OUT_OF_MEMORY, end);
+		}
+	}
+
+	/* user state */
+	if (data->vector.serialize_user_state) {
+		CCS_VALIDATE_ERR_GOTO(
+			res,
+			data->vector.serialize_user_state(
+				tuner, 0, NULL, &state_size),
+			end);
+		if (state_size) {
+			char *state_buf = (char *)malloc(state_size);
+			CCS_REFUTE_ERR_GOTO(
+				res, !state_buf, CCS_RESULT_ERROR_OUT_OF_MEMORY,
+				end);
+			ccs_result_t err = data->vector.serialize_user_state(
+				tuner, state_size, state_buf, NULL);
+			if (err != CCS_RESULT_SUCCESS) {
+				free(state_buf);
+				res = err;
+				goto end;
+			}
+			char *hex = _ccs_json_hex_encode(state_buf, state_size);
+			free(state_buf);
+			CCS_REFUTE_ERR_GOTO(
+				res, !hex, CCS_RESULT_ERROR_OUT_OF_MEMORY, end);
+			cJSON *j = cJSON_AddStringToObject(
+				json, "user_state", hex);
+			free(hex);
+			CCS_REFUTE_ERR_GOTO(
+				res, !j, CCS_RESULT_ERROR_OUT_OF_MEMORY, end);
+		}
+	}
+
+end:
+	if (history)
+		free(history);
+	return res;
+}
+
 static ccs_result_t
 _ccs_tuner_user_defined_serialize_size(
 	ccs_object_t                     object,
@@ -211,6 +346,10 @@ _ccs_tuner_user_defined_serialize(
 	case CCS_SERIALIZE_FORMAT_BINARY:
 		CCS_VALIDATE(_ccs_serialize_bin_ccs_user_defined_tuner(
 			(ccs_tuner_t)object, buffer_size, buffer, opts));
+		break;
+	case CCS_SERIALIZE_FORMAT_JSON:
+		CCS_VALIDATE(_ccs_serialize_json_ccs_user_defined_tuner(
+			(ccs_tuner_t)object, *(cJSON **)buffer, opts));
 		break;
 	default:
 		CCS_RAISE(
