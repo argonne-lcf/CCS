@@ -260,7 +260,7 @@ test_set_distribution(void)
 }
 
 void
-test_deserialize(void)
+test_deserialize(ccs_serialize_format_t format)
 {
 	ccs_parameter_t           parameters[3];
 	ccs_configuration_space_t space;
@@ -319,8 +319,7 @@ test_deserialize(void)
 	}
 
 	err = ccs_object_serialize(
-		distrib_space, CCS_SERIALIZE_FORMAT_BINARY,
-		CCS_SERIALIZE_OPERATION_SIZE, &buff_size,
+		distrib_space, format, CCS_SERIALIZE_OPERATION_SIZE, &buff_size,
 		CCS_SERIALIZE_OPTION_END);
 	assert(err == CCS_RESULT_SUCCESS);
 
@@ -328,9 +327,8 @@ test_deserialize(void)
 	assert(buff);
 
 	err = ccs_object_serialize(
-		distrib_space, CCS_SERIALIZE_FORMAT_BINARY,
-		CCS_SERIALIZE_OPERATION_MEMORY, buff_size, buff,
-		CCS_SERIALIZE_OPTION_END);
+		distrib_space, format, CCS_SERIALIZE_OPERATION_MEMORY,
+		buff_size, buff, CCS_SERIALIZE_OPTION_END);
 	assert(err == CCS_RESULT_SUCCESS);
 
 	err = ccs_create_map(&map);
@@ -338,21 +336,23 @@ test_deserialize(void)
 	err = ccs_release_object(distrib_space);
 	assert(err == CCS_RESULT_SUCCESS);
 
+	/* Error path: missing handle in map */
 	err = ccs_object_deserialize(
-		(ccs_object_t *)&distrib_space, CCS_SERIALIZE_FORMAT_BINARY,
+		(ccs_object_t *)&distrib_space, format,
 		CCS_DESERIALIZE_OPERATION_MEMORY, buff_size, buff,
 		CCS_DESERIALIZE_OPTION_HANDLE_MAP, map,
 		CCS_DESERIALIZE_OPTION_END);
 	assert(err == CCS_RESULT_ERROR_INVALID_HANDLE);
+	ccs_clear_thread_error();
 
+	/* Add configuration space to map and retry */
 	d = ccs_object(space);
 	d.flags |= CCS_DATUM_FLAG_ID;
 	err = ccs_map_set(map, d, ccs_object(space));
 	assert(err == CCS_RESULT_SUCCESS);
 
-	assert(err == CCS_RESULT_SUCCESS);
 	err = ccs_object_deserialize(
-		(ccs_object_t *)&distrib_space, CCS_SERIALIZE_FORMAT_BINARY,
+		(ccs_object_t *)&distrib_space, format,
 		CCS_DESERIALIZE_OPERATION_MEMORY, buff_size, buff,
 		CCS_DESERIALIZE_OPTION_HANDLE_MAP, map,
 		CCS_DESERIALIZE_OPTION_END);
@@ -386,7 +386,8 @@ main(void)
 	ccs_init();
 	test_create();
 	test_set_distribution();
-	test_deserialize();
+	test_deserialize(CCS_SERIALIZE_FORMAT_BINARY);
+	test_deserialize(CCS_SERIALIZE_FORMAT_JSON);
 	ccs_clear_thread_error();
 	ccs_fini();
 	return 0;
