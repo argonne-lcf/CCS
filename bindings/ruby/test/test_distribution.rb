@@ -35,12 +35,20 @@ class CConfigSpaceTestDistribution < Minitest::Test
     roulette_check(areas, d)
   end
 
-  def test_serialize_roulette
+  def _test_serialize_roulette(fmt)
     areas = [ 1.0, 2.0, 1.0, 0.5 ]
     dref = CCS::RouletteDistribution::new(areas: areas)
-    buff = dref.serialize
-    d = CCS::deserialize(buffer: buff)
+    buff = dref.serialize(format: fmt)
+    d = CCS::deserialize(format: fmt, buffer: buff)
     roulette_check(areas, d)
+  end
+
+  def test_serialize_roulette_binary
+    _test_serialize_roulette(:binary)
+  end
+
+  def test_serialize_roulette_json
+    _test_serialize_roulette(:json)
   end
 
   def test_from_handle_normal
@@ -70,11 +78,19 @@ class CConfigSpaceTestDistribution < Minitest::Test
     normal_check(d)
   end
 
-  def test_serialize_normal
+  def _test_serialize_normal(fmt)
     dref = CCS::NormalDistribution::Float.new
-    buff = dref.serialize
-    d = CCS::deserialize(buffer: buff)
+    buff = dref.serialize(format: fmt)
+    d = CCS::deserialize(format: fmt, buffer: buff)
     normal_check(d)
+  end
+
+  def test_serialize_normal_binary
+    _test_serialize_normal(:binary)
+  end
+
+  def test_serialize_normal_json
+    _test_serialize_normal(:json)
   end
 
   def test_create_normal_int
@@ -137,11 +153,19 @@ class CConfigSpaceTestDistribution < Minitest::Test
     uniform_check(d)
   end
 
-  def test_serialize_uniform
+  def _test_serialize_uniform(fmt)
     dref = CCS::UniformDistribution::Float.new
-    buff = dref.serialize
-    d = CCS::deserialize(buffer: buff)
+    buff = dref.serialize(format: fmt)
+    d = CCS::deserialize(format: fmt, buffer: buff)
     uniform_check(d)
+  end
+
+  def test_serialize_uniform_binary
+    _test_serialize_uniform(:binary)
+  end
+
+  def test_serialize_uniform_json
+    _test_serialize_uniform(:json)
   end
 
   def test_create_uniform_float
@@ -223,11 +247,11 @@ class CConfigSpaceTestDistribution < Minitest::Test
     assert_equal( d.class, d2.class )
   end
 
-  def test_serialize_mixture
+  def _test_serialize_mixture(fmt)
     distributions = [ CCS::UniformDistribution::Float.new(lower: -5.0, upper: 0.0), CCS::UniformDistribution::Float.new(lower: 0.0, upper: 2.0) ]
     dref = CCS::MixtureDistribution::new(distributions: distributions)
-    buff = dref.serialize
-    d = CCS::deserialize(buffer: buff)
+    buff = dref.serialize(format: fmt)
+    d = CCS::deserialize(format: fmt, buffer: buff)
     assert( d.object_type == :CCS_OBJECT_TYPE_DISTRIBUTION )
     assert( d.type == :CCS_DISTRIBUTION_TYPE_MIXTURE )
     assert( d.data_types == [:CCS_NUMERIC_TYPE_FLOAT] )
@@ -238,6 +262,14 @@ class CConfigSpaceTestDistribution < Minitest::Test
       assert_equal( d2ref.lower, d2.lower )
       assert_equal( d2ref.upper, d2.upper )
     }
+  end
+
+  def test_serialize_mixture_binary
+    _test_serialize_mixture(:binary)
+  end
+
+  def test_serialize_mixture_json
+    _test_serialize_mixture(:json)
   end
 
   def test_create_multivariate
@@ -251,11 +283,11 @@ class CConfigSpaceTestDistribution < Minitest::Test
     assert_equal( d.class, d2.class )
   end
 
-  def test_serialize_multivariate
+  def _test_serialize_multivariate(fmt)
     distributions = [ CCS::UniformDistribution::Float.new(lower: -5.0, upper: 0.0), CCS::UniformDistribution::Int.new(lower: 0, upper: 2) ]
     dref = CCS::MultivariateDistribution::new(distributions: distributions)
-    buff = dref.serialize
-    d = CCS::deserialize(buffer: buff)
+    buff = dref.serialize(format: fmt)
+    d = CCS::deserialize(format: fmt, buffer: buff)
     assert( d.object_type == :CCS_OBJECT_TYPE_DISTRIBUTION )
     assert( d.type == :CCS_DISTRIBUTION_TYPE_MULTIVARIATE )
     assert( d.data_types == [:CCS_NUMERIC_TYPE_FLOAT, :CCS_NUMERIC_TYPE_INT] )
@@ -265,6 +297,14 @@ class CConfigSpaceTestDistribution < Minitest::Test
       assert_equal( d2ref.lower, d2.lower )
       assert_equal( d2ref.upper, d2.upper )
     }
+  end
+
+  def test_serialize_multivariate_binary
+    _test_serialize_multivariate(:binary)
+  end
+
+  def test_serialize_multivariate_json
+    _test_serialize_multivariate(:json)
   end
 
   def test_mixture_multidim

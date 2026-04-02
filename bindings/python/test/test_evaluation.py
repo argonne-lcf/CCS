@@ -32,7 +32,7 @@ class TestEvaluation(unittest.TestCase):
     self.assertEqual( ccs.Comparison.NOT_COMPARABLE, ev1.compare(ev4) )
     self.assertEqual( ccs.Comparison.NOT_COMPARABLE, ev4.compare(ev1) )
 
-  def test_serialize(self):
+  def _test_serialize(self, fmt):
     h1 = ccs.NumericalParameter.Float()
     h2 = ccs.NumericalParameter.Float()
     h3 = ccs.NumericalParameter.Float()
@@ -43,15 +43,21 @@ class TestEvaluation(unittest.TestCase):
     e2 = ccs.Expression.Variable(parameter = v2)
     os = ccs.ObjectiveSpace(name = "ospace", search_space = cs, parameters = [v1, v2], objectives = { e1: ccs.ObjectiveType.MAXIMIZE, e2: ccs.ObjectiveType.MINIMIZE })
     evref = ccs.Evaluation(objective_space = os, configuration = cs.sample(), values = [0.5, 0.6])
-    buff = evref.serialize()
+    buff = evref.serialize(format = fmt)
     handle_map = ccs.Map()
     handle_map[cs] = cs
     handle_map[os] = os
-    ev = ccs.deserialize(buffer = buff, handle_map = handle_map)
+    ev = ccs.deserialize(format = fmt, buffer = buff, handle_map = handle_map)
     self.assertEqual( cs.handle.value, ev.configuration.configuration_space.handle.value)
     self.assertEqual( os.handle.value, ev.objective_space.handle.value)
     self.assertEqual( (0.5, 0.6), ev.values )
     self.assertEqual( (0.5, 0.6), ev.objective_values )
+
+  def test_serialize_binary(self):
+    self._test_serialize('binary')
+
+  def test_serialize_json(self):
+    self._test_serialize('json')
 
 if __name__ == '__main__':
     unittest.main()

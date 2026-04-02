@@ -28,7 +28,7 @@ class CConfigSpaceTestObjectiveSpace < Minitest::Test
     assert_equal( :CCS_OBJECTIVE_TYPE_MAXIMIZE, objs[1][1] )
   end
 
-  def test_features
+  def _test_features(fmt)
     f = CCS::NumericalParameter::Float.new
     fs = CCS::FeatureSpace::new(parameters: [f])
     p = CCS::NumericalParameter::Float.new
@@ -43,14 +43,22 @@ class CConfigSpaceTestObjectiveSpace < Minitest::Test
     evaluation = CCS::Evaluation::new(objective_space: os, values: [-0.25], configuration: configuration)
     assert_equal([0.25+0.5, -0.25], evaluation.objective_values)
 
-    buff = os.serialize
-    os = CCS::deserialize(buffer: buff)
+    buff = os.serialize(format: fmt)
+    os = CCS::deserialize(format: fmt, buffer: buff)
     cs = os.search_space
     fs = cs.feature_space
     features = CCS::Features::new(feature_space: fs, values: [0.5])
     configuration = CCS::Configuration::new(configuration_space: cs, values: [0.25], features: features)
     evaluation = CCS::Evaluation::new(objective_space: os, values: [-0.25], configuration: configuration)
     assert_equal([0.25+0.5, -0.25], evaluation.objective_values)
+  end
+
+  def test_features_binary
+    _test_features(:binary)
+  end
+
+  def test_features_json
+    _test_features(:json)
   end
 
 end

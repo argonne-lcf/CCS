@@ -38,7 +38,7 @@ class CConfigSpaceTestTreeEvaluation < Minitest::Test
     assert_equal( :CCS_COMPARISON_NOT_COMPARABLE, ev4.compare(ev1) )
   end
 
-  def test_serialize
+  def _test_serialize(fmt)
     tree = generate_tree(4, 0)
     ts = CCS::StaticTreeSpace.new(name: 'space', tree: tree)
     v1 = CCS::NumericalParameter::Float.new
@@ -47,15 +47,23 @@ class CConfigSpaceTestTreeEvaluation < Minitest::Test
     e2 = CCS::Expression::Variable.new(parameter: v2)
     os = CCS::ObjectiveSpace.new(name: 'ospace', search_space: ts, parameters: [v1, v2], objectives: { e1 => :CCS_OBJECTIVE_TYPE_MAXIMIZE, e2 => :CCS_OBJECTIVE_TYPE_MINIMIZE })
     evref = CCS::Evaluation.new(objective_space: os, configuration: ts.sample, values: [0.5, 0.6])
-    buff = evref.serialize
+    buff = evref.serialize(format: fmt)
     handle_map = CCS::Map.new
     handle_map[ts] = ts
     handle_map[os] = os
-    ev = CCS.deserialize(buffer: buff, handle_map: handle_map)
+    ev = CCS.deserialize(format: fmt, buffer: buff, handle_map: handle_map)
     assert_equal( ts.handle, ev.configuration.tree_space.handle)
     assert_equal( os.handle, ev.objective_space.handle)
     assert_equal( [0.5, 0.6], ev.values )
     assert_equal( [0.5, 0.6], ev.objective_values )
+  end
+
+  def test_serialize_binary
+    _test_serialize(:binary)
+  end
+
+  def test_serialize_json
+    _test_serialize(:json)
   end
 
 end

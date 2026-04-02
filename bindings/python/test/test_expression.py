@@ -61,7 +61,7 @@ class TestExpression(unittest.TestCase):
     self.assertEqual( "true || false", str(e) )
     self.assertTrue( e.eval() )
 
-  def test_user_defined(self):
+  def _test_user_defined(self, fmt):
     def my_rand(expr, limit):
       return expr.expression_data.randrange(limit)
 
@@ -82,10 +82,16 @@ class TestExpression(unittest.TestCase):
     evals = [ e.eval() for i in range(100) ]
     self.assertTrue( all(i >= 0 and i < limit for i in evals) )
 
-    buff = e.serialize()
-    e_copy = ccs.deserialize(buffer = buff, vector_callback = get_vector_data)
+    buff = e.serialize(format = fmt)
+    e_copy = ccs.deserialize(format = fmt, buffer = buff, vector_callback = get_vector_data)
 
     self.assertTrue( all(e.eval() == e_copy.eval() for i in range(100)) )
+
+  def test_user_defined_binary(self):
+    self._test_user_defined('binary')
+
+  def test_user_defined_json(self):
+    self._test_user_defined('json')
 
 if __name__ == '__main__':
     unittest.main()

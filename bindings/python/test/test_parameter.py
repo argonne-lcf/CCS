@@ -29,11 +29,11 @@ class TestParameter(unittest.TestCase):
     for v in vals:
       self.assertTrue( v in values )
 
-  def test_serialize_discrete(self):
+  def _test_serialize_discrete(self, fmt):
     values = [0.2, 1.5, 2, 7.2]
     href = ccs.DiscreteParameter(values = values)
-    buff = href.serialize()
-    h = ccs.Object.deserialize(buffer = buff)
+    buff = href.serialize(format = fmt)
+    h = ccs.Object.deserialize(format = fmt, buffer = buff)
     self.assertEqual( ccs.ObjectType.PARAMETER, h.object_type )
     self.assertEqual( ccs.ParameterType.DISCRETE, h.type )
     self.assertTrue( h.name[:5] == "param" )
@@ -86,11 +86,11 @@ class TestParameter(unittest.TestCase):
     for v in vals:
       self.assertTrue( v in values )
 
-  def test_serialize_ordinal(self):
+  def _test_serialize_ordinal(self, fmt):
     values = ["foo", 2, 3.0]
     href = ccs.OrdinalParameter(values = values)
-    buff = href.serialize()
-    h = ccs.Object.deserialize(buffer = buff)
+    buff = href.serialize(format = fmt)
+    h = ccs.Object.deserialize(format = fmt, buffer = buff)
     self.assertEqual( ccs.ObjectType.PARAMETER, h.object_type )
     self.assertEqual( ccs.ParameterType.ORDINAL, h.type )
     self.assertTrue( h.name[:5] == "param" )
@@ -135,12 +135,12 @@ class TestParameter(unittest.TestCase):
     for v in vals:
       self.assertTrue( v in values )
 
-  def test_serialize_categorical(self):
+  def _test_serialize_categorical(self, fmt):
     values = ["foo", 2, 3.0]
     href = ccs.CategoricalParameter(values = values)
     href.user_data = {'foo': ['bar', 'baz']}
-    buff = href.serialize()
-    h = ccs.Object.deserialize(buffer = buff)
+    buff = href.serialize(format = fmt)
+    h = ccs.Object.deserialize(format = fmt, buffer = buff)
     self.assertEqual( ccs.ObjectType.PARAMETER, h.object_type )
     self.assertEqual( ccs.ParameterType.CATEGORICAL, h.type )
     self.assertTrue( h.name[:5] == "param" )
@@ -206,10 +206,10 @@ class TestParameter(unittest.TestCase):
       self.assertIsInstance( v, float )
       self.assertTrue( v >= 0.0 and v < 1.0 )
 
-  def test_serialize_numerical(self):
+  def _test_serialize_numerical(self, fmt):
     href = ccs.NumericalParameter.Float()
-    buff = href.serialize()
-    h = ccs.Object.deserialize(buffer = buff)
+    buff = href.serialize(format = fmt)
+    h = ccs.Object.deserialize(format = fmt, buffer = buff)
     self.assertEqual( ccs.ObjectType.PARAMETER, h.object_type )
     self.assertEqual( ccs.ParameterType.NUMERICAL, h.type )
     self.assertTrue( h.name[:5] == "param" )
@@ -283,16 +283,46 @@ class TestParameter(unittest.TestCase):
     with self.assertRaises( ccs.Error ):
       h.sample()
 
-  def test_serialize_string(self):
+  def _test_serialize_string(self, fmt):
     href = ccs.StringParameter()
-    buff = href.serialize()
-    h = ccs.Object.deserialize(buffer = buff)
+    buff = href.serialize(format = fmt)
+    h = ccs.Object.deserialize(format = fmt, buffer = buff)
     self.assertEqual( ccs.ObjectType.PARAMETER, h.object_type )
     self.assertEqual( ccs.ParameterType.STRING, h.type )
     self.assertTrue( h.name[:5] == "param" )
     self.assertIsNone( h.user_data )
     with self.assertRaises( ccs.Error ):
       h.sample()
+
+  def test_serialize_discrete_binary(self):
+    self._test_serialize_discrete('binary')
+
+  def test_serialize_discrete_json(self):
+    self._test_serialize_discrete('json')
+
+  def test_serialize_ordinal_binary(self):
+    self._test_serialize_ordinal('binary')
+
+  def test_serialize_ordinal_json(self):
+    self._test_serialize_ordinal('json')
+
+  def test_serialize_categorical_binary(self):
+    self._test_serialize_categorical('binary')
+
+  def test_serialize_categorical_json(self):
+    self._test_serialize_categorical('json')
+
+  def test_serialize_numerical_binary(self):
+    self._test_serialize_numerical('binary')
+
+  def test_serialize_numerical_json(self):
+    self._test_serialize_numerical('json')
+
+  def test_serialize_string_binary(self):
+    self._test_serialize_string('binary')
+
+  def test_serialize_string_json(self):
+    self._test_serialize_string('json')
 
 if __name__ == '__main__':
     unittest.main()

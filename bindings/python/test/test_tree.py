@@ -7,7 +7,7 @@ import cconfigspace as ccs
 
 class TestTree(unittest.TestCase):
 
-  def test_create(self):
+  def _test_create(self, fmt):
     rng = ccs.Rng()
     root = ccs.Tree(arity = 4, value = "foo")
     self.assertEqual( "foo", root.value )
@@ -43,7 +43,13 @@ class TestTree(unittest.TestCase):
     self.assertEqual( child.handle.value, root.get_node_at_position([2]).handle.value )
     self.assertEqual( ["foo", "bar"], root.get_values_at_position([2]) )
 
-    buff = root.serialize()
-    tree = ccs.Object.deserialize(buffer = buff)
+    buff = root.serialize(format = fmt)
+    tree = ccs.Object.deserialize(format = fmt, buffer = buff)
     self.assertEqual( tree.object_type, ccs.ObjectType.TREE )
     self.assertEqual( ["foo", "bar"], tree.get_values_at_position([2]) )
+
+  def test_create_binary(self):
+    self._test_create('binary')
+
+  def test_create_json(self):
+    self._test_create('json')

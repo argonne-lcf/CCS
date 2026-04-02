@@ -17,7 +17,7 @@ class CConfigSpaceTestFeaturesTuner < Minitest::Test
     [fs, os]
   end
 
-  def test_create_random
+  def _test_create_random(fmt)
     fs, os = create_tuning_problem
     t = CCS::RandomTuner::new(name: "tuner", objective_space: os)
     t2 = CCS::Object::from_handle(t)
@@ -52,11 +52,19 @@ class CConfigSpaceTestFeaturesTuner < Minitest::Test
       assert( t.optima(features: features).collect(&:configuration).include?(t.suggest(features: features)))
     }
 
-    buff = t.serialize
-    t_copy = CCS.deserialize(buffer: buff)
+    buff = t.serialize(format: fmt)
+    t_copy = CCS.deserialize(format: fmt, buffer: buff)
     hist = t_copy.history
     assert_equal(200, hist.size)
     assert_equal(t.num_optima, t_copy.num_optima)
+  end
+
+  def test_create_random_binary
+    _test_create_random(:binary)
+  end
+
+  def test_create_random_json
+    _test_create_random(:json)
   end
 
   class TunerData
@@ -67,7 +75,7 @@ class CConfigSpaceTestFeaturesTuner < Minitest::Test
     end
   end
 
-  def test_user_defined
+  def _get_user_defined_helpers
     del = lambda { |tuner| nil }
     ask = lambda { |tuner, features, count|
       if count
@@ -113,7 +121,7 @@ class CConfigSpaceTestFeaturesTuner < Minitest::Test
         tuner.tuner_data.optima
       end
     }
-    suggest = lambda { |tuner, features|
+    sug = lambda { |tuner, features|
       optis = tuner.tuner_data.optima.select { |e| e.features == features }
       if optis.empty?
         ask.call(tuner, features, 1)
@@ -124,11 +132,16 @@ class CConfigSpaceTestFeaturesTuner < Minitest::Test
     get_vector_data = lambda { |otype, name|
       assert_equal(:CCS_OBJECT_TYPE_TUNER, otype)
       assert_equal("tuner", name)
-      [CCS::UserDefinedTuner.get_vector(del: del, ask: ask, tell: tell, get_optima: get_optima, get_history: get_history, suggest: suggest), TunerData.new]
+      [CCS::UserDefinedTuner.get_vector(del: del, ask: ask, tell: tell, get_optima: get_optima, get_history: get_history, suggest: sug), TunerData.new]
     }
+    [del, ask, tell, get_history, get_optima, sug, get_vector_data]
+  end
+
+  def _test_user_defined(fmt)
+    del, ask, tell, get_history, get_optima, sug, get_vector_data = _get_user_defined_helpers
 
     fs, os = create_tuning_problem
-    t = CCS::UserDefinedTuner::new(name: "tuner", objective_space: os, del: del, ask: ask, tell: tell, get_optima: get_optima, get_history: get_history, suggest: suggest, tuner_data: TunerData.new)
+    t = CCS::UserDefinedTuner::new(name: "tuner", objective_space: os, del: del, ask: ask, tell: tell, get_optima: get_optima, get_history: get_history, suggest: sug, tuner_data: TunerData.new)
     t2 = CCS::Object::from_handle(t)
     assert_equal( t.class, t2.class)
     assert_equal( "tuner", t.name )
@@ -161,11 +174,19 @@ class CConfigSpaceTestFeaturesTuner < Minitest::Test
       assert( t.optima(features: features).collect(&:configuration).include?(t.suggest(features: features)))
     }
 
-    buff = t.serialize
-    t_copy = CCS::deserialize(buffer: buff, vector_callback: get_vector_data)
+    buff = t.serialize(format: fmt)
+    t_copy = CCS::deserialize(format: fmt, buffer: buff, vector_callback: get_vector_data)
     hist = t_copy.history
     assert_equal(200, hist.size)
     assert_equal(t.num_optima, t_copy.num_optima)
+  end
+
+  def test_user_defined_binary
+    _test_user_defined(:binary)
+  end
+
+  def test_user_defined_json
+    _test_user_defined(:json)
   end
 end
 

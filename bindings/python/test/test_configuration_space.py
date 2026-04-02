@@ -77,7 +77,7 @@ class TestConfigurationSpace(unittest.TestCase):
     self.assertEqual( 1, len(forbidden_clauses) )
     self.assertEqual( f1.handle.value, forbidden_clauses[0].handle.value )
 
-  def test_features(self):
+  def _test_features(self, fmt):
     fe1 = ccs.CategoricalParameter(values = ["on", "off"])
     fs = ccs.FeatureSpace(parameters = [fe1])
     h1 = ccs.NumericalParameter.Float(lower = -1.0, upper = 1.0, default = 0.0)
@@ -96,8 +96,8 @@ class TestConfigurationSpace(unittest.TestCase):
     s = cs.sample(features = features_off)
     self.assertEqual(ccs.inactive, s.value(3))
 
-    buff = cs.serialize()
-    cs_copy = ccs.Object.deserialize(buffer = buff)
+    buff = cs.serialize(format = fmt)
+    cs_copy = ccs.Object.deserialize(format = fmt, buffer = buff)
 
     features_on = ccs.Features(feature_space = cs_copy.feature_space, values = ["on"])
     features_off = ccs.Features(feature_space = cs_copy.feature_space, values = ["off"])
@@ -105,6 +105,12 @@ class TestConfigurationSpace(unittest.TestCase):
     self.assertIsInstance(s.value(3), float)
     s = cs_copy.sample(features = features_off)
     self.assertEqual(ccs.inactive, s.value(3))
+
+  def test_features_binary(self):
+    self._test_features('binary')
+
+  def test_features_json(self):
+    self._test_features('json')
 
   def extract_active_parameters(self, values):
     res = ['p1']
@@ -207,7 +213,7 @@ class TestConfigurationSpace(unittest.TestCase):
       self.assertFalse( s.value('p1') == '#pragma omp #P2' and  s.value('p2') == ' ' )
       self.assertFalse( s.value('p1') == '#pragma omp #P3' and  s.value('p3') == ' ' )
 
-  def test_omp_parse(self):
+  def _test_omp_parse(self, fmt):
     p1 = ccs.CategoricalParameter(
       name = 'p1',
       values = [
@@ -278,8 +284,8 @@ class TestConfigurationSpace(unittest.TestCase):
       self.assertFalse( s.value('p1') == '#pragma omp #P2' and  s.value('p2') == ' ' )
       self.assertFalse( s.value('p1') == '#pragma omp #P3' and  s.value('p3') == ' ' )
 
-    buff = cs.serialize()
-    cs_copy = ccs.Object.deserialize(buffer = buff)
+    buff = cs.serialize(format = fmt)
+    cs_copy = ccs.Object.deserialize(format = fmt, buffer = buff)
     for i in range(1000):
       s = cs_copy.sample()
       active_params = self.extract_active_parameters(s.values)
@@ -289,6 +295,12 @@ class TestConfigurationSpace(unittest.TestCase):
         self.assertEqual( ccs.inactive, s.value(par) )
       self.assertFalse( s.value('p1') == '#pragma omp #P2' and  s.value('p2') == ' ' )
       self.assertFalse( s.value('p1') == '#pragma omp #P3' and  s.value('p3') == ' ' )
+
+  def test_omp_parse_binary(self):
+    self._test_omp_parse('binary')
+
+  def test_omp_parse_json(self):
+    self._test_omp_parse('json')
 
 
 if __name__ == '__main__':
