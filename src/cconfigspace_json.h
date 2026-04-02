@@ -406,73 +406,76 @@ _ccs_json_get_float(cJSON *item, double *value_ret)
 static inline ccs_result_t
 _ccs_json_datum_to_cjson(ccs_datum_t datum, cJSON **item_ret)
 {
-	cJSON *item = cJSON_CreateObject();
+	ccs_result_t err  = CCS_RESULT_SUCCESS;
+	cJSON       *item = cJSON_CreateObject();
 	CCS_REFUTE(!item, CCS_RESULT_ERROR_OUT_OF_MEMORY);
 	switch (datum.type) {
 	case CCS_DATA_TYPE_NONE:
-		CCS_REFUTE(
-			!cJSON_AddStringToObject(item, "type", "none"),
-			CCS_RESULT_ERROR_OUT_OF_MEMORY);
+		CCS_REFUTE_ERR_GOTO(
+			err, !cJSON_AddStringToObject(item, "type", "none"),
+			CCS_RESULT_ERROR_OUT_OF_MEMORY, err_item);
 		break;
 	case CCS_DATA_TYPE_INT:
-		CCS_REFUTE(
-			!cJSON_AddStringToObject(item, "type", "int"),
-			CCS_RESULT_ERROR_OUT_OF_MEMORY);
-		CCS_REFUTE(
+		CCS_REFUTE_ERR_GOTO(
+			err, !cJSON_AddStringToObject(item, "type", "int"),
+			CCS_RESULT_ERROR_OUT_OF_MEMORY, err_item);
+		CCS_REFUTE_ERR_GOTO(
+			err,
 			!cJSON_AddNumberToObject(item, "value", datum.value.i),
-			CCS_RESULT_ERROR_OUT_OF_MEMORY);
+			CCS_RESULT_ERROR_OUT_OF_MEMORY, err_item);
 		break;
-	case CCS_DATA_TYPE_FLOAT: {
-		ccs_result_t _err;
-		CCS_REFUTE(
-			!cJSON_AddStringToObject(item, "type", "float"),
-			CCS_RESULT_ERROR_OUT_OF_MEMORY);
-		_err = _ccs_json_add_float(item, "value", datum.value.f);
-		if (_err != CCS_RESULT_SUCCESS) {
-			cJSON_Delete(item);
-			return _err;
-		}
-	} break;
+	case CCS_DATA_TYPE_FLOAT:
+		CCS_REFUTE_ERR_GOTO(
+			err, !cJSON_AddStringToObject(item, "type", "float"),
+			CCS_RESULT_ERROR_OUT_OF_MEMORY, err_item);
+		CCS_VALIDATE_ERR_GOTO(
+			err, _ccs_json_add_float(item, "value", datum.value.f),
+			err_item);
+		break;
 	case CCS_DATA_TYPE_BOOL:
-		CCS_REFUTE(
-			!cJSON_AddStringToObject(item, "type", "bool"),
-			CCS_RESULT_ERROR_OUT_OF_MEMORY);
-		CCS_REFUTE(
+		CCS_REFUTE_ERR_GOTO(
+			err, !cJSON_AddStringToObject(item, "type", "bool"),
+			CCS_RESULT_ERROR_OUT_OF_MEMORY, err_item);
+		CCS_REFUTE_ERR_GOTO(
+			err,
 			!cJSON_AddBoolToObject(item, "value", datum.value.i),
-			CCS_RESULT_ERROR_OUT_OF_MEMORY);
+			CCS_RESULT_ERROR_OUT_OF_MEMORY, err_item);
 		break;
 	case CCS_DATA_TYPE_STRING:
-		CCS_REFUTE(
-			!cJSON_AddStringToObject(item, "type", "string"),
-			CCS_RESULT_ERROR_OUT_OF_MEMORY);
-		CCS_REFUTE(
+		CCS_REFUTE_ERR_GOTO(
+			err, !cJSON_AddStringToObject(item, "type", "string"),
+			CCS_RESULT_ERROR_OUT_OF_MEMORY, err_item);
+		CCS_REFUTE_ERR_GOTO(
+			err,
 			!cJSON_AddStringToObject(item, "value", datum.value.s),
-			CCS_RESULT_ERROR_OUT_OF_MEMORY);
+			CCS_RESULT_ERROR_OUT_OF_MEMORY, err_item);
 		break;
 	case CCS_DATA_TYPE_INACTIVE:
-		CCS_REFUTE(
-			!cJSON_AddStringToObject(item, "type", "inactive"),
-			CCS_RESULT_ERROR_OUT_OF_MEMORY);
+		CCS_REFUTE_ERR_GOTO(
+			err, !cJSON_AddStringToObject(item, "type", "inactive"),
+			CCS_RESULT_ERROR_OUT_OF_MEMORY, err_item);
 		break;
 	case CCS_DATA_TYPE_OBJECT: {
 		char hex[sizeof(ccs_object_t) * 2 + 1];
 		_ccs_json_hex_encode_buf(
 			&datum.value.o, sizeof(ccs_object_t), hex);
-		CCS_REFUTE(
-			!cJSON_AddStringToObject(item, "type", "object"),
-			CCS_RESULT_ERROR_OUT_OF_MEMORY);
-		CCS_REFUTE(
-			!cJSON_AddStringToObject(item, "value", hex),
-			CCS_RESULT_ERROR_OUT_OF_MEMORY);
+		CCS_REFUTE_ERR_GOTO(
+			err, !cJSON_AddStringToObject(item, "type", "object"),
+			CCS_RESULT_ERROR_OUT_OF_MEMORY, err_item);
+		CCS_REFUTE_ERR_GOTO(
+			err, !cJSON_AddStringToObject(item, "value", hex),
+			CCS_RESULT_ERROR_OUT_OF_MEMORY, err_item);
 	} break;
 	default:
-		cJSON_Delete(item);
-		CCS_RAISE(
-			CCS_RESULT_ERROR_INVALID_VALUE,
+		CCS_RAISE_ERR_GOTO(
+			err, CCS_RESULT_ERROR_INVALID_VALUE, err_item,
 			"Unsupported datum type for JSON: %d", datum.type);
 	}
 	*item_ret = item;
 	return CCS_RESULT_SUCCESS;
+err_item:
+	cJSON_Delete(item);
+	return err;
 }
 
 static inline ccs_result_t
