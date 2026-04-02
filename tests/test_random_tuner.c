@@ -16,25 +16,9 @@ test(ccs_serialize_format_t format)
 	ccs_map_t                 map;
 
 	cspace = create_2d_plane(NULL);
-	if (format == CCS_SERIALIZE_FORMAT_JSON) {
-		/* JSON cannot represent Infinity — use finite bounds */
-		ccs_parameter_t      zparam;
-		ccs_expression_t     zexpr;
-		ccs_objective_type_t otype = CCS_OBJECTIVE_TYPE_MINIMIZE;
-		zparam                     = create_numerical("z", -1e6, 1e6);
-		err = ccs_create_variable(zparam, &zexpr);
-		assert(err == CCS_RESULT_SUCCESS);
-		err = ccs_create_objective_space(
-			"height", (ccs_search_space_t)cspace, 1, &zparam, 1,
-			&zexpr, &otype, &ospace);
-		assert(err == CCS_RESULT_SUCCESS);
-		ccs_release_object(zexpr);
-		ccs_release_object(zparam);
-	} else {
-		ospace = create_height_objective(cspace);
-	}
+	ospace = create_height_objective(cspace);
 
-	err = ccs_create_random_tuner("problem", ospace, &tuner);
+	err    = ccs_create_random_tuner("problem", ospace, &tuner);
 	assert(err == CCS_RESULT_SUCCESS);
 
 	for (size_t i = 0; i < 100; i++) {
