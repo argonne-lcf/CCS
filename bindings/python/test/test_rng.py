@@ -36,11 +36,17 @@ class TestRng(unittest.TestCase):
     v2 = rng.get()
     self.assertEqual(v1, v2)
 
-  def test_serialize(self):
+  def test_serialize_binary(self):
+    self._test_serialize('binary')
+
+  def test_serialize_json(self):
+    self._test_serialize('json')
+
+  def _test_serialize(self, fmt):
     rng = ccs.Rng()
     rng.seed = 10
-    buff = rng.serialize()
-    rng2 = ccs.Object.deserialize(buffer = buff)
+    buff = rng.serialize(format = fmt)
+    rng2 = ccs.Object.deserialize(format = fmt, buffer = buff)
     self.assertEqual( ccs.ObjectType.RNG, rng2.object_type )
     v1 = rng.get()
     v2 = rng2.get()

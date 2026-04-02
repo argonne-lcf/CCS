@@ -212,7 +212,8 @@ module CCS
   end
 
   SerializeFormat = enum FFI::Type::INT32, :ccs_serialize_format_t, [
-    :CCS_SERIALIZE_FORMAT_BINARY ]
+    :CCS_SERIALIZE_FORMAT_BINARY,
+    :CCS_SERIALIZE_FORMAT_JSON ]
 
   SerializeOperation = enum FFI::Type::INT32, :ccs_serialize_operation_t, [
     :CCS_SERIALIZE_OPERATION_SIZE,
@@ -707,8 +708,11 @@ module CCS
       self
     end
 
+    FORMAT_MAP = { binary: :CCS_SERIALIZE_FORMAT_BINARY, json: :CCS_SERIALIZE_FORMAT_JSON }.freeze
+
     def serialize(format: :binary, path: nil, file_descriptor: nil, callback: nil)
-      raise CCSError, :CCS_RESULT_ERROR_INVALID_VALUE if format != :binary
+      fmt = FORMAT_MAP[format]
+      raise CCSError, :CCS_RESULT_ERROR_INVALID_VALUE unless fmt
       raise CCSError, :CCS_RESULT_ERROR_INVALID_VALUE if path && file_descriptor
       options = []
       if callback
@@ -718,7 +722,7 @@ module CCS
         options.concat [:ccs_serialize_option_t, :CCS_SERIALIZE_OPTION_CALLBACK, :ccs_object_serialize_callback, CCS.default_user_data_serializer, :value, nil]
       end
       options.concat [:ccs_serialize_option_t, :CCS_SERIALIZE_OPTION_END]
-      format = :CCS_SERIALIZE_FORMAT_BINARY
+      format = fmt
       if path
         result = nil
         operation = :CCS_SERIALIZE_OPERATION_FILE
@@ -742,8 +746,9 @@ module CCS
     end
 
     def self.deserialize(format: :binary, handle_map: nil, map_handles: false, path: nil, buffer: nil, file_descriptor: nil, vector_callback: nil, vector_callback_data: nil, callback: nil)
-      raise CCSError, :CCS_RESULT_ERROR_INVALID_VALUE if format != :binary
-      format = :CCS_SERIALIZE_FORMAT_BINARY
+      fmt = FORMAT_MAP[format]
+      raise CCSError, :CCS_RESULT_ERROR_INVALID_VALUE unless fmt
+      format = fmt
       mode_count = 0
       mode_count += 1 if path
       mode_count += 1 if buffer
