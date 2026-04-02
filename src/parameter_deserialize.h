@@ -187,15 +187,9 @@ _ccs_deserialize_json_parameter_numerical(
 	CCS_REFUTE(
 		!j_name || !cJSON_IsString(j_name),
 		CCS_RESULT_ERROR_INVALID_VALUE);
-	CCS_REFUTE(
-		!j_lower || !cJSON_IsNumber(j_lower),
-		CCS_RESULT_ERROR_INVALID_VALUE);
-	CCS_REFUTE(
-		!j_upper || !cJSON_IsNumber(j_upper),
-		CCS_RESULT_ERROR_INVALID_VALUE);
-	CCS_REFUTE(
-		!j_quantization || !cJSON_IsNumber(j_quantization),
-		CCS_RESULT_ERROR_INVALID_VALUE);
+	CCS_REFUTE(!j_lower, CCS_RESULT_ERROR_INVALID_VALUE);
+	CCS_REFUTE(!j_upper, CCS_RESULT_ERROR_INVALID_VALUE);
+	CCS_REFUTE(!j_quantization, CCS_RESULT_ERROR_INVALID_VALUE);
 	CCS_REFUTE(!j_default_value, CCS_RESULT_ERROR_INVALID_VALUE);
 
 	ccs_numeric_type_t data_type;
@@ -206,11 +200,24 @@ _ccs_deserialize_json_parameter_numerical(
 
 	ccs_numeric_t lower, upper, quantization, default_value;
 	if (data_type == CCS_NUMERIC_TYPE_FLOAT) {
-		lower.f         = j_lower->valuedouble;
-		upper.f         = j_upper->valuedouble;
-		quantization.f  = j_quantization->valuedouble;
+		double fl, fu, fq;
+		CCS_VALIDATE(_ccs_json_get_float(j_lower, &fl));
+		CCS_VALIDATE(_ccs_json_get_float(j_upper, &fu));
+		CCS_VALIDATE(_ccs_json_get_float(j_quantization, &fq));
+		lower.f         = fl;
+		upper.f         = fu;
+		quantization.f  = fq;
 		default_value.f = default_datum.value.f;
 	} else {
+		CCS_REFUTE(
+			!cJSON_IsNumber(j_lower),
+			CCS_RESULT_ERROR_INVALID_VALUE);
+		CCS_REFUTE(
+			!cJSON_IsNumber(j_upper),
+			CCS_RESULT_ERROR_INVALID_VALUE);
+		CCS_REFUTE(
+			!cJSON_IsNumber(j_quantization),
+			CCS_RESULT_ERROR_INVALID_VALUE);
 		lower.i         = (ccs_int_t)j_lower->valuedouble;
 		upper.i         = (ccs_int_t)j_upper->valuedouble;
 		quantization.i  = (ccs_int_t)j_quantization->valuedouble;

@@ -349,15 +349,9 @@ _ccs_deserialize_json_distribution_uniform(
 	CCS_REFUTE(
 		!j_scale_type || !cJSON_IsString(j_scale_type),
 		CCS_RESULT_ERROR_INVALID_VALUE);
-	CCS_REFUTE(
-		!j_lower || !cJSON_IsNumber(j_lower),
-		CCS_RESULT_ERROR_INVALID_VALUE);
-	CCS_REFUTE(
-		!j_upper || !cJSON_IsNumber(j_upper),
-		CCS_RESULT_ERROR_INVALID_VALUE);
-	CCS_REFUTE(
-		!j_quantization || !cJSON_IsNumber(j_quantization),
-		CCS_RESULT_ERROR_INVALID_VALUE);
+	CCS_REFUTE(!j_lower, CCS_RESULT_ERROR_INVALID_VALUE);
+	CCS_REFUTE(!j_upper, CCS_RESULT_ERROR_INVALID_VALUE);
+	CCS_REFUTE(!j_quantization, CCS_RESULT_ERROR_INVALID_VALUE);
 
 	ccs_numeric_type_t data_type;
 	ccs_scale_type_t   scale_type;
@@ -368,10 +362,23 @@ _ccs_deserialize_json_distribution_uniform(
 
 	ccs_numeric_t lower, upper, quantization;
 	if (data_type == CCS_NUMERIC_TYPE_FLOAT) {
-		lower.f        = j_lower->valuedouble;
-		upper.f        = j_upper->valuedouble;
-		quantization.f = j_quantization->valuedouble;
+		double fl, fu, fq;
+		CCS_VALIDATE(_ccs_json_get_float(j_lower, &fl));
+		CCS_VALIDATE(_ccs_json_get_float(j_upper, &fu));
+		CCS_VALIDATE(_ccs_json_get_float(j_quantization, &fq));
+		lower.f        = fl;
+		upper.f        = fu;
+		quantization.f = fq;
 	} else {
+		CCS_REFUTE(
+			!cJSON_IsNumber(j_lower),
+			CCS_RESULT_ERROR_INVALID_VALUE);
+		CCS_REFUTE(
+			!cJSON_IsNumber(j_upper),
+			CCS_RESULT_ERROR_INVALID_VALUE);
+		CCS_REFUTE(
+			!cJSON_IsNumber(j_quantization),
+			CCS_RESULT_ERROR_INVALID_VALUE);
 		lower.i        = (ccs_int_t)j_lower->valuedouble;
 		upper.i        = (ccs_int_t)j_upper->valuedouble;
 		quantization.i = (ccs_int_t)j_quantization->valuedouble;
@@ -402,30 +409,34 @@ _ccs_deserialize_json_distribution_normal(
 	CCS_REFUTE(
 		!j_scale_type || !cJSON_IsString(j_scale_type),
 		CCS_RESULT_ERROR_INVALID_VALUE);
-	CCS_REFUTE(
-		!j_mu || !cJSON_IsNumber(j_mu), CCS_RESULT_ERROR_INVALID_VALUE);
-	CCS_REFUTE(
-		!j_sigma || !cJSON_IsNumber(j_sigma),
-		CCS_RESULT_ERROR_INVALID_VALUE);
-	CCS_REFUTE(
-		!j_quantization || !cJSON_IsNumber(j_quantization),
-		CCS_RESULT_ERROR_INVALID_VALUE);
+	CCS_REFUTE(!j_mu, CCS_RESULT_ERROR_INVALID_VALUE);
+	CCS_REFUTE(!j_sigma, CCS_RESULT_ERROR_INVALID_VALUE);
+	CCS_REFUTE(!j_quantization, CCS_RESULT_ERROR_INVALID_VALUE);
 
 	ccs_numeric_type_t data_type;
 	ccs_scale_type_t   scale_type;
+	double             mu_val, sigma_val;
 	CCS_VALIDATE(_ccs_json_numeric_type_from_string(
 		j_data_type->valuestring, &data_type));
 	CCS_VALIDATE(_ccs_json_scale_type_from_string(
 		j_scale_type->valuestring, &scale_type));
+	CCS_VALIDATE(_ccs_json_get_float(j_mu, &mu_val));
+	CCS_VALIDATE(_ccs_json_get_float(j_sigma, &sigma_val));
 
 	ccs_numeric_t quantization;
-	if (data_type == CCS_NUMERIC_TYPE_FLOAT)
-		quantization.f = j_quantization->valuedouble;
-	else
+	if (data_type == CCS_NUMERIC_TYPE_FLOAT) {
+		double fq;
+		CCS_VALIDATE(_ccs_json_get_float(j_quantization, &fq));
+		quantization.f = fq;
+	} else {
+		CCS_REFUTE(
+			!cJSON_IsNumber(j_quantization),
+			CCS_RESULT_ERROR_INVALID_VALUE);
 		quantization.i = (ccs_int_t)j_quantization->valuedouble;
+	}
 	CCS_VALIDATE(ccs_create_normal_distribution(
-		data_type, j_mu->valuedouble, j_sigma->valuedouble, scale_type,
-		quantization, distribution_ret));
+		data_type, mu_val, sigma_val, scale_type, quantization,
+		distribution_ret));
 	return CCS_RESULT_SUCCESS;
 }
 

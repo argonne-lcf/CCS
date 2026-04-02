@@ -5,7 +5,7 @@
 #include "test_utils.h"
 
 void
-test(void)
+test(ccs_serialize_format_t format)
 {
 	ccs_configuration_space_t cspace;
 	ccs_objective_space_t     ospace;
@@ -72,21 +72,19 @@ test(void)
 	err = ccs_create_map(&map);
 	assert(err == CCS_RESULT_SUCCESS);
 	err = ccs_object_serialize(
-		tuner, CCS_SERIALIZE_FORMAT_BINARY,
-		CCS_SERIALIZE_OPERATION_SIZE, &buff_size,
+		tuner, format, CCS_SERIALIZE_OPERATION_SIZE, &buff_size,
 		CCS_SERIALIZE_OPTION_END);
 	assert(err == CCS_RESULT_SUCCESS);
 	buff = (char *)malloc(buff_size);
 	assert(buff);
 
 	err = ccs_object_serialize(
-		tuner, CCS_SERIALIZE_FORMAT_BINARY,
-		CCS_SERIALIZE_OPERATION_MEMORY, buff_size, buff,
+		tuner, format, CCS_SERIALIZE_OPERATION_MEMORY, buff_size, buff,
 		CCS_SERIALIZE_OPTION_END);
 	assert(err == CCS_RESULT_SUCCESS);
 
 	err = ccs_object_deserialize(
-		(ccs_object_t *)&tuner_copy, CCS_SERIALIZE_FORMAT_BINARY,
+		(ccs_object_t *)&tuner_copy, format,
 		CCS_DESERIALIZE_OPERATION_MEMORY, buff_size, buff,
 		CCS_DESERIALIZE_OPTION_HANDLE_MAP, map,
 		CCS_DESERIALIZE_OPTION_MAP_HANDLES, CCS_DESERIALIZE_OPTION_END);
@@ -348,7 +346,8 @@ int
 main(void)
 {
 	ccs_init();
-	test();
+	test(CCS_SERIALIZE_FORMAT_BINARY);
+	test(CCS_SERIALIZE_FORMAT_JSON);
 	test_objective_space_deserialize();
 	test_evaluation_deserialize();
 	test_evaluation_hash_cmp_compare();

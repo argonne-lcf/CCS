@@ -54,20 +54,12 @@ _ccs_serialize_json_ccs_parameter_numerical(
 				data->common_data.interval.type)),
 		CCS_RESULT_ERROR_OUT_OF_MEMORY);
 	if (data->common_data.interval.type == CCS_NUMERIC_TYPE_FLOAT) {
-		CCS_REFUTE(
-			!cJSON_AddNumberToObject(
-				json, "lower",
-				data->common_data.interval.lower.f),
-			CCS_RESULT_ERROR_OUT_OF_MEMORY);
-		CCS_REFUTE(
-			!cJSON_AddNumberToObject(
-				json, "upper",
-				data->common_data.interval.upper.f),
-			CCS_RESULT_ERROR_OUT_OF_MEMORY);
-		CCS_REFUTE(
-			!cJSON_AddNumberToObject(
-				json, "quantization", data->quantization.f),
-			CCS_RESULT_ERROR_OUT_OF_MEMORY);
+		CCS_VALIDATE(_ccs_json_add_float(
+			json, "lower", data->common_data.interval.lower.f));
+		CCS_VALIDATE(_ccs_json_add_float(
+			json, "upper", data->common_data.interval.upper.f));
+		CCS_VALIDATE(_ccs_json_add_float(
+			json, "quantization", data->quantization.f));
 	} else {
 		CCS_REFUTE(
 			!cJSON_AddNumberToObject(
