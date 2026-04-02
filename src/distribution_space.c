@@ -1,4 +1,5 @@
 #include "cconfigspace_internal.h"
+#include "cconfigspace_json.h"
 #include "distribution_space_internal.h"
 #include "distribution_internal.h"
 
@@ -104,6 +105,58 @@ _ccs_serialize_bin_ccs_distribution_space(
 	return CCS_RESULT_SUCCESS;
 }
 
+static inline ccs_result_t
+_ccs_serialize_json_ccs_distribution_space(
+	ccs_distribution_space_t         distribution_space,
+	cJSON                           *json,
+	_ccs_object_serialize_options_t *opts)
+{
+	_ccs_distribution_space_data_t *data = distribution_space->data;
+	_ccs_distribution_wrapper_t    *dw;
+	char                            hex[sizeof(ccs_object_t) * 2 + 1];
+	size_t                          dummy = 0;
+
+	_ccs_json_hex_encode_buf(
+		&data->configuration_space, sizeof(ccs_object_t), hex);
+	CCS_REFUTE(
+		!cJSON_AddStringToObject(json, "configuration_space", hex),
+		CCS_RESULT_ERROR_OUT_OF_MEMORY);
+
+	cJSON *distribs = cJSON_AddArrayToObject(json, "distributions");
+	CCS_REFUTE(!distribs, CCS_RESULT_ERROR_OUT_OF_MEMORY);
+
+	dw = NULL;
+	DL_FOREACH(data->distribution_list, dw)
+	{
+		cJSON *entry = cJSON_CreateObject();
+		CCS_REFUTE(!entry, CCS_RESULT_ERROR_OUT_OF_MEMORY);
+		CCS_REFUTE(
+			!cJSON_AddItemToArray(distribs, entry),
+			CCS_RESULT_ERROR_OUT_OF_MEMORY);
+
+		cJSON *dist_obj =
+			cJSON_AddObjectToObject(entry, "distribution");
+		CCS_REFUTE(!dist_obj, CCS_RESULT_ERROR_OUT_OF_MEMORY);
+		CCS_VALIDATE(_ccs_object_serialize_with_opts(
+			dw->distribution, CCS_SERIALIZE_FORMAT_JSON, &dummy,
+			(char **)&dist_obj, opts));
+
+		cJSON *indices =
+			cJSON_AddArrayToObject(entry, "parameter_indices");
+		CCS_REFUTE(!indices, CCS_RESULT_ERROR_OUT_OF_MEMORY);
+		for (size_t i = 0; i < dw->dimension; i++)
+			CCS_REFUTE(
+				!cJSON_AddItemToArray(
+					indices,
+					cJSON_CreateNumber(
+						(double)dw
+							->parameter_indexes[i])),
+				CCS_RESULT_ERROR_OUT_OF_MEMORY);
+	}
+
+	return CCS_RESULT_SUCCESS;
+}
+
 static ccs_result_t
 _ccs_distribution_space_serialize_size(
 	ccs_object_t                     object,
@@ -149,6 +202,14 @@ _ccs_distribution_space_serialize(
 			_ccs_serialize_bin_ccs_distribution_space(
 				(ccs_distribution_space_t)object, buffer_size,
 				buffer, opts),
+			end);
+		break;
+	case CCS_SERIALIZE_FORMAT_JSON:
+		CCS_VALIDATE_ERR_GOTO(
+			err,
+			_ccs_serialize_json_ccs_distribution_space(
+				(ccs_distribution_space_t)object,
+				*(cJSON **)buffer, opts),
 			end);
 		break;
 	default:
