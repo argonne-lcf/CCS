@@ -13,7 +13,7 @@ class CConfigSpaceTestTreeSpace < Minitest::Test
     tree
   end
 
-  def test_static_tree_space
+  def _test_static_tree_space(fmt)
     rng = CCS::Rng.new
     tree = generate_tree(4, 0)
     ts = CCS::StaticTreeSpace.new(name: 'space', tree: tree, rng: rng)
@@ -30,12 +30,20 @@ class CConfigSpaceTestTreeSpace < Minitest::Test
     ts.sample
     ts.samples(100)
 
-    buff = ts.serialize
-    ts2 = CCS.deserialize(buffer: buff)
+    buff = ts.serialize(format: fmt)
+    ts2 = CCS.deserialize(format: fmt, buffer: buff)
     assert_equal( [400, 301, 201], ts2.get_values_at_position([1, 1]) )
   end
 
-  def test_dynamic_tree_space
+  def test_static_tree_space_binary
+    _test_static_tree_space(:binary)
+  end
+
+  def test_static_tree_space_json
+    _test_static_tree_space(:json)
+  end
+
+  def _test_dynamic_tree_space(fmt)
     del = lambda { |tree_space| nil }
     get_child = lambda { |tree_space, parent, child_index|
       depth = parent.depth
@@ -62,9 +70,17 @@ class CConfigSpaceTestTreeSpace < Minitest::Test
     ts.sample
     ts.samples(100)
 
-    buff = ts.serialize
-    ts2 = CCS::deserialize(buffer: buff, vector_callback: get_vector_data)
+    buff = ts.serialize(format: fmt)
+    ts2 = CCS::deserialize(format: fmt, buffer: buff, vector_callback: get_vector_data)
     assert_equal( [400, 301, 201], ts2.get_values_at_position([1, 1]) )
+  end
+
+  def test_dynamic_tree_space_binary
+    _test_dynamic_tree_space(:binary)
+  end
+
+  def test_dynamic_tree_space_json
+    _test_dynamic_tree_space(:json)
   end
 
   def test_tree_configuration

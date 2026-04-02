@@ -73,7 +73,7 @@ class CConfigSpaceTestConfigurationSpace < Minitest::Test
     assert_equal( f1.handle, forbidden_clauses[0].handle )
   end
 
-  def test_features
+  def _test_features(fmt)
     fe1 = CCS::CategoricalParameter::new(values: ["on", "off"])
     fs = CCS::FeatureSpace::new(parameters: [fe1])
     h1 = CCS::NumericalParameter::Float.new(lower: -1.0, upper: 1.0, default: 0.0)
@@ -93,8 +93,8 @@ class CConfigSpaceTestConfigurationSpace < Minitest::Test
     s = cs.sample(features: features_off)
     assert_equal(CCS::Inactive, s.value(3))
 
-    buff = cs.serialize
-    cs_copy = CCS::deserialize(buffer: buff)
+    buff = cs.serialize(format: fmt)
+    cs_copy = CCS::deserialize(format: fmt, buffer: buff)
 
     features_on = CCS::Features::new(feature_space: cs_copy.feature_space, values: ["on"])
     features_off = CCS::Features::new(feature_space: cs_copy.feature_space, values: ["off"])
@@ -102,6 +102,14 @@ class CConfigSpaceTestConfigurationSpace < Minitest::Test
     assert(s.value(3).kind_of?(Float))
     s = cs_copy.sample(features: features_off)
     assert_equal(CCS::Inactive, s.value(3))
+  end
+
+  def test_features_binary
+    _test_features(:binary)
+  end
+
+  def test_features_json
+    _test_features(:json)
   end
 
   def extract_active_parameters(values)
@@ -219,7 +227,7 @@ class CConfigSpaceTestConfigurationSpace < Minitest::Test
     }
   end
 
-  def test_omp_parse
+  def _test_omp_parse(fmt)
     p1 = CCS::CategoricalParameter::new(
       name: 'p1',
       values: [
@@ -295,8 +303,8 @@ class CConfigSpaceTestConfigurationSpace < Minitest::Test
       refute( s.value('p1') == '#pragma omp #P3' && s.value('p3') == ' ' )
     }
 
-    buff = cs.serialize
-    cs_copy = CCS::deserialize(buffer: buff)
+    buff = cs.serialize(format: fmt)
+    cs_copy = CCS::deserialize(format: fmt, buffer: buff)
     1000.times {
       s = cs_copy.sample
       active_params = extract_active_parameters(s.values)
@@ -310,5 +318,13 @@ class CConfigSpaceTestConfigurationSpace < Minitest::Test
       refute( s.value('p1') == '#pragma omp #P3' && s.value('p3') == ' ' )
     }
 
+  end
+
+  def test_omp_parse_binary
+    _test_omp_parse(:binary)
+  end
+
+  def test_omp_parse_json
+    _test_omp_parse(:json)
   end
 end

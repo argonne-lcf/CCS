@@ -33,12 +33,12 @@ class TestDistribution(unittest.TestCase):
     self.assertTrue( i.lower_included )
     self.assertFalse( i.upper_included )
 
-  def test_serialize_roulette(self):
+  def _test_serialize_roulette(self, fmt):
     areas = [ 1.0, 2.0, 1.0, 0.5 ]
     s = sum(areas)
     dref = ccs.RouletteDistribution(areas = areas)
-    buff = dref.serialize()
-    d = ccs.Object.deserialize(buffer = buff)
+    buff = dref.serialize(format = fmt)
+    d = ccs.Object.deserialize(format = fmt, buffer = buff)
     self.assertEqual( ccs.ObjectType.DISTRIBUTION, d.object_type )
     self.assertEqual( ccs.DistributionType.ROULETTE, d.type )
     self.assertEqual( ccs.NumericType.INT, d.data_type )
@@ -79,10 +79,10 @@ class TestDistribution(unittest.TestCase):
     self.assertFalse( i.lower_included )
     self.assertFalse( i.upper_included )
 
-  def test_serialize_normal(self):
+  def _test_serialize_normal(self, fmt):
     dref = ccs.NormalDistribution.Float()
-    buff = dref.serialize()
-    d = ccs.Object.deserialize(buffer = buff)
+    buff = dref.serialize(format = fmt)
+    d = ccs.Object.deserialize(format = fmt, buffer = buff)
     self.assertEqual( ccs.ObjectType.DISTRIBUTION, d.object_type )
     self.assertEqual( ccs.DistributionType.NORMAL, d.type )
     self.assertEqual( ccs.NumericType.FLOAT, d.data_type )
@@ -150,10 +150,10 @@ class TestDistribution(unittest.TestCase):
     self.assertTrue( i.lower_included )
     self.assertFalse( i.upper_included )
 
-  def test_serialize_uniform(self):
+  def _test_serialize_uniform(self, fmt):
     dref = ccs.UniformDistribution.Float()
-    buff = dref.serialize()
-    d = ccs.Object.deserialize(buffer = buff)
+    buff = dref.serialize(format = fmt)
+    d = ccs.Object.deserialize(format = fmt, buffer = buff)
     self.assertEqual( ccs.ObjectType.DISTRIBUTION, d.object_type )
     self.assertEqual( ccs.DistributionType.UNIFORM, d.type )
     self.assertEqual( ccs.NumericType.FLOAT, d.data_type )
@@ -241,12 +241,12 @@ class TestDistribution(unittest.TestCase):
     d2 = ccs.Object.from_handle(d.handle)
     self.assertEqual( d.__class__, d2.__class__ )
 
-  def test_serialize_mixture(self):
+  def _test_serialize_mixture(self, fmt):
     distributions = [ ccs.UniformDistribution.Float(lower = -5.0, upper = 0.0),
                       ccs.UniformDistribution.Float(lower =  0.0, upper = 2.0) ]
     dref = ccs.MixtureDistribution(distributions = distributions)
-    buff = dref.serialize()
-    d = ccs.Object.deserialize(buffer = buff)
+    buff = dref.serialize(format = fmt)
+    d = ccs.Object.deserialize(format = fmt, buffer = buff)
     self.assertEqual( d.object_type, ccs.ObjectType.DISTRIBUTION )
     self.assertEqual( d.type, ccs.DistributionType.MIXTURE )
     self.assertEqual( d.data_types, [ccs.NumericType.FLOAT] )
@@ -269,12 +269,12 @@ class TestDistribution(unittest.TestCase):
     d2 = ccs.Object.from_handle(d.handle)
     self.assertEqual( d.__class__, d2.__class__ )
 
-  def test_serialize_multivariate(self):
+  def _test_serialize_multivariate(self, fmt):
     distributions = [ ccs.UniformDistribution.Float(lower = -5.0, upper = 0.0),
                       ccs.UniformDistribution.Int(lower =  0, upper = 2) ]
     dref = ccs.MultivariateDistribution(distributions = distributions)
-    buff = dref.serialize()
-    d = ccs.Object.deserialize(buffer = buff)
+    buff = dref.serialize(format = fmt)
+    d = ccs.Object.deserialize(format = fmt, buffer = buff)
     self.assertEqual( d.object_type, ccs.ObjectType.DISTRIBUTION )
     self.assertEqual( d.type, ccs.DistributionType.MULTIVARIATE )
     self.assertEqual( d.data_types, [ccs.NumericType.FLOAT, ccs.NumericType.INT] )
@@ -295,6 +295,36 @@ class TestDistribution(unittest.TestCase):
     self.assertEqual( d2.data_types, [ccs.NumericType.FLOAT, ccs.NumericType.INT] )
     self.assertEqual( d2.weights, (0.5, 0.5) )
 
+
+  def test_serialize_roulette_binary(self):
+    self._test_serialize_roulette('binary')
+
+  def test_serialize_roulette_json(self):
+    self._test_serialize_roulette('json')
+
+  def test_serialize_normal_binary(self):
+    self._test_serialize_normal('binary')
+
+  def test_serialize_normal_json(self):
+    self._test_serialize_normal('json')
+
+  def test_serialize_uniform_binary(self):
+    self._test_serialize_uniform('binary')
+
+  def test_serialize_uniform_json(self):
+    self._test_serialize_uniform('json')
+
+  def test_serialize_mixture_binary(self):
+    self._test_serialize_mixture('binary')
+
+  def test_serialize_mixture_json(self):
+    self._test_serialize_mixture('json')
+
+  def test_serialize_multivariate_binary(self):
+    self._test_serialize_multivariate('binary')
+
+  def test_serialize_multivariate_json(self):
+    self._test_serialize_multivariate('json')
 
 if __name__ == '__main__':
     unittest.main()

@@ -30,7 +30,7 @@ class TestObjectiveSpace(unittest.TestCase):
     self.assertEqual( e2.handle.value, objs[1][0].handle.value )
     self.assertEqual( ccs.ObjectiveType.MAXIMIZE, objs[1][1] )
  
-  def test_features(self):
+  def _test_features(self, fmt):
     f = ccs.NumericalParameter.Float()
     fs = ccs.FeatureSpace(parameters = [f])
     p = ccs.NumericalParameter.Float()
@@ -44,14 +44,20 @@ class TestObjectiveSpace(unittest.TestCase):
     configuration = ccs.Configuration(configuration_space = cs, values = [0.25], features = features)
     evaluation = ccs.Evaluation(objective_space = os, values = [-0.25], configuration = configuration)
     self.assertEqual(tuple([0.25+0.5, -0.25]), evaluation.objective_values)
-    buff = os.serialize()
-    os = ccs.deserialize(buffer = buff)
+    buff = os.serialize(format = fmt)
+    os = ccs.deserialize(format = fmt, buffer = buff)
     cs = os.search_space
     fs = cs.feature_space
     features = ccs.Features(feature_space = fs, values = [0.5])
     configuration = ccs.Configuration(configuration_space = cs, values = [0.25], features = features)
     evaluation = ccs.Evaluation(objective_space = os, values = [-0.25], configuration = configuration)
     self.assertEqual(tuple([0.25+0.5, -0.25]), evaluation.objective_values)
+
+  def test_features_binary(self):
+    self._test_features('binary')
+
+  def test_features_json(self):
+    self._test_features('json')
 
 
 if __name__ == '__main__':

@@ -59,7 +59,7 @@ class CConfigSpaceTestExpressionParser < Minitest::Test
     assert_equal( "none", res.to_s )
   end
 
-  def test_function
+  def _test_function(fmt)
     def func(a, b)
       a * b
     end
@@ -74,10 +74,18 @@ class CConfigSpaceTestExpressionParser < Minitest::Test
       CCS::Expression::get_function_vector_data(name, binding: binding)
     }
 
-    buff = res.serialize
-    res_copy = CCS::deserialize(buffer: buff, vector_callback: get_vector_data)
+    buff = res.serialize(format: fmt)
+    res_copy = CCS::deserialize(format: fmt, buffer: buff, vector_callback: get_vector_data)
     assert_equal( "func(3, 4)", res_copy.to_s )
     assert_equal( 12, res_copy.eval )
+  end
+
+  def test_function_binary
+    _test_function(:binary)
+  end
+
+  def test_function_json
+    _test_function(:json)
   end
 
 end

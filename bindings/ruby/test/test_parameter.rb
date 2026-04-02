@@ -31,12 +31,20 @@ class CConfigSpaceTestParameter < Minitest::Test
     discrete_check(values, h)
   end
 
-  def test_serialize_discrete
+  def _test_serialize_discrete(fmt)
     values = [0.2, 1.5, 2, 7.2]
     href = CCS::DiscreteParameter::new(values: values)
-    buff = href.serialize
-    h = CCS::deserialize(buffer: buff)
+    buff = href.serialize(format: fmt)
+    h = CCS::deserialize(format: fmt, buffer: buff)
     discrete_check(values, h)
+  end
+
+  def test_serialize_discrete_binary
+    _test_serialize_discrete(:binary)
+  end
+
+  def test_serialize_discrete_json
+    _test_serialize_discrete(:json)
   end
 
   def test_dup_discrete
@@ -93,12 +101,20 @@ class CConfigSpaceTestParameter < Minitest::Test
     ordinal_check(values, h)
   end
 
-  def test_serialize_ordinal
+  def _test_serialize_ordinal(fmt)
     values = ["foo", 2, 3.0]
     href = CCS::OrdinalParameter::new(values: values)
-    buff = href.serialize
-    h = CCS::deserialize(buffer: buff)
+    buff = href.serialize(format: fmt)
+    h = CCS::deserialize(format: fmt, buffer: buff)
     ordinal_check(values, h)
+  end
+
+  def test_serialize_ordinal_binary
+    _test_serialize_ordinal(:binary)
+  end
+
+  def test_serialize_ordinal_json
+    _test_serialize_ordinal(:json)
   end
 
   def test_dup_ordinal
@@ -142,13 +158,21 @@ class CConfigSpaceTestParameter < Minitest::Test
     categorical_check(values, h)
   end
 
-  def test_serialize_categorical
+  def _test_serialize_categorical(fmt)
     values = ["foo", 2, 3.0]
     href = CCS::CategoricalParameter::new(values: values)
     href.user_data = {'foo': ['bar', 'baz']}
-    buff = href.serialize
-    h = CCS::deserialize(buffer: buff)
+    buff = href.serialize(format: fmt)
+    h = CCS::deserialize(format: fmt, buffer: buff)
     categorical_check(values, h)
+  end
+
+  def test_serialize_categorical_binary
+    _test_serialize_categorical(:binary)
+  end
+
+  def test_serialize_categorical_json
+    _test_serialize_categorical(:json)
   end
 
   def test_dup_categorical
@@ -188,11 +212,19 @@ class CConfigSpaceTestParameter < Minitest::Test
     numerical_check(h)
   end
 
-  def test_serialize_numerical
+  def _test_serialize_numerical(fmt)
     href = CCS::NumericalParameter::Float::new
-    buff = href.serialize
-    h = CCS::deserialize(buffer: buff)
+    buff = href.serialize(format: fmt)
+    h = CCS::deserialize(format: fmt, buffer: buff)
     numerical_check(h)
+  end
+
+  def test_serialize_numerical_binary
+    _test_serialize_numerical(:binary)
+  end
+
+  def test_serialize_numerical_json
+    _test_serialize_numerical(:json)
   end
 
   def test_dup_numerical
@@ -261,11 +293,19 @@ class CConfigSpaceTestParameter < Minitest::Test
     string_check(h)
   end
 
-  def test_serialize_string
+  def _test_serialize_string(fmt)
     href = CCS::StringParameter::new
-    buff = href.serialize
-    h = CCS::deserialize(buffer: buff)
+    buff = href.serialize(format: fmt)
+    h = CCS::deserialize(format: fmt, buffer: buff)
     string_check(h)
+  end
+
+  def test_serialize_string_binary
+    _test_serialize_string(:binary)
+  end
+
+  def test_serialize_string_json
+    _test_serialize_string(:json)
   end
 
   def test_dup_string

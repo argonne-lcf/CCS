@@ -2,7 +2,7 @@ require 'minitest/autorun'
 require_relative '../lib/cconfigspace'
 
 class CConfigSpaceTestTree < Minitest::Test
-  def test_create
+  def _test_create(fmt)
     rng = CCS::Rng.new
     root = CCS::Tree.new(arity: 4, value: "foo")
     assert_equal( "foo", root.value )
@@ -40,9 +40,17 @@ class CConfigSpaceTestTree < Minitest::Test
     assert_equal( child.handle, root.get_node_at_position([2]).handle )
     assert_equal( ["foo", "bar"], root.get_values_at_position([2]) )
 
-    buff = root.serialize
-    tree = CCS.deserialize(buffer: buff)
+    buff = root.serialize(format: fmt)
+    tree = CCS.deserialize(format: fmt, buffer: buff)
     assert_equal( tree.object_type, :CCS_OBJECT_TYPE_TREE )
     assert_equal( ["foo", "bar"], tree.get_values_at_position([2]) )
+  end
+
+  def test_create_binary
+    _test_create(:binary)
+  end
+
+  def test_create_json
+    _test_create(:json)
   end
 end

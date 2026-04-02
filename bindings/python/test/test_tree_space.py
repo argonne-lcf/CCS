@@ -16,7 +16,7 @@ def generate_tree(depth, rank):
 
 class TestTreeSpace(unittest.TestCase):
 
-  def test_static_tree_space(self):
+  def _test_static_tree_space(self, fmt):
     rng = ccs.Rng()
     tree = generate_tree(4, 0)
     ts = ccs.StaticTreeSpace(name = 'space', tree = tree, rng = rng)
@@ -33,11 +33,17 @@ class TestTreeSpace(unittest.TestCase):
     ts.sample()
     ts.samples(100)
 
-    buff = ts.serialize()
-    ts2 = ccs.Object.deserialize(buffer = buff)
+    buff = ts.serialize(format = fmt)
+    ts2 = ccs.Object.deserialize(format = fmt, buffer = buff)
     self.assertEqual( [400, 301, 201], ts2.get_values_at_position([1, 1]) )
 
-  def test_dynamic_tree_space(self):
+  def test_static_tree_space_binary(self):
+    self._test_static_tree_space('binary')
+
+  def test_static_tree_space_json(self):
+    self._test_static_tree_space('json')
+
+  def _test_dynamic_tree_space(self, fmt):
 
     def delete(tree_space):
       return None
@@ -66,9 +72,15 @@ class TestTreeSpace(unittest.TestCase):
     ts.sample()
     ts.samples(100)
 
-    buff = ts.serialize()
-    ts2 = ccs.deserialize(buffer = buff, vector_callback = get_vector_data)
+    buff = ts.serialize(format = fmt)
+    ts2 = ccs.deserialize(format = fmt, buffer = buff, vector_callback = get_vector_data)
     self.assertEqual( [400, 301, 201], ts2.get_values_at_position([1, 1]) )
+
+  def test_dynamic_tree_space_binary(self):
+    self._test_dynamic_tree_space('binary')
+
+  def test_dynamic_tree_space_json(self):
+    self._test_dynamic_tree_space('json')
 
   def test_tree_configuration(self):
     tree = generate_tree(4, 0)

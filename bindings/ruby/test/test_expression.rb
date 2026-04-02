@@ -61,7 +61,7 @@ class CConfigSpaceTestExpression < Minitest::Test
     assert_equal( true, e.eval )
   end
 
-  def test_user_defined
+  def _test_user_defined(fmt)
     my_rand = lambda { |expr, limit|
       expr.expression_data.rand(limit)
     }
@@ -89,12 +89,20 @@ class CConfigSpaceTestExpression < Minitest::Test
       assert(i >= 0 && i < limit)
     }
 
-    buff = e.serialize
+    buff = e.serialize(format: fmt)
 
-    e_copy = CCS::deserialize(buffer: buff, vector_callback: get_vector_data)
+    e_copy = CCS::deserialize(format: fmt, buffer: buff, vector_callback: get_vector_data)
 
     100.times {
       assert( e.eval == e_copy.eval )
     }
+  end
+
+  def test_user_defined_binary
+    _test_user_defined(:binary)
+  end
+
+  def test_user_defined_json
+    _test_user_defined(:json)
   end
 end
