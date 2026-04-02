@@ -1,4 +1,5 @@
 #include "cconfigspace_internal.h"
+#include "cconfigspace_json.h"
 #include "search_space_internal.h"
 #include "objective_space_internal.h"
 #include "evaluation_internal.h"
@@ -39,17 +40,14 @@ _ccs_serialize_bin_size_ccs_objective_space_data(
 	size_t                          *cum_size,
 	_ccs_object_serialize_options_t *opts)
 {
-	ccs_feature_space_t feature_space  = data->feature_space;
-	ccs_search_space_t  search_space   = data->search_space;
-	size_t              num_parameters = data->num_parameters;
-	ccs_parameter_t    *parameters     = data->parameters;
-	size_t              num_objectives = data->num_objectives;
-	_ccs_objective_t   *objectives     = data->objectives;
+	ccs_search_space_t search_space   = data->search_space;
+	size_t             num_parameters = data->num_parameters;
+	ccs_parameter_t   *parameters     = data->parameters;
+	size_t             num_objectives = data->num_objectives;
+	_ccs_objective_t  *objectives     = data->objectives;
 
 	*cum_size += _ccs_serialize_bin_size_string(data->name);
 
-	*cum_size += _ccs_serialize_bin_size_ccs_object(feature_space);
-	*cum_size += _ccs_serialize_bin_size_ccs_object(search_space);
 	CCS_VALIDATE(_ccs_object_serialize_size_with_opts(
 		search_space, CCS_SERIALIZE_FORMAT_BINARY, cum_size, opts));
 
@@ -81,20 +79,15 @@ _ccs_serialize_bin_ccs_objective_space_data(
 	char                           **buffer,
 	_ccs_object_serialize_options_t *opts)
 {
-	ccs_feature_space_t feature_space  = data->feature_space;
-	ccs_search_space_t  search_space   = data->search_space;
-	size_t              num_parameters = data->num_parameters;
-	ccs_parameter_t    *parameters     = data->parameters;
-	size_t              num_objectives = data->num_objectives;
-	_ccs_objective_t   *objectives     = data->objectives;
+	ccs_search_space_t search_space   = data->search_space;
+	size_t             num_parameters = data->num_parameters;
+	ccs_parameter_t   *parameters     = data->parameters;
+	size_t             num_objectives = data->num_objectives;
+	_ccs_objective_t  *objectives     = data->objectives;
 
 	CCS_VALIDATE(
 		_ccs_serialize_bin_string(data->name, buffer_size, buffer));
 
-	CCS_VALIDATE(_ccs_serialize_bin_ccs_object(
-		feature_space, buffer_size, buffer));
-	CCS_VALIDATE(_ccs_serialize_bin_ccs_object(
-		search_space, buffer_size, buffer));
 	CCS_VALIDATE(_ccs_object_serialize_with_opts(
 		search_space, CCS_SERIALIZE_FORMAT_BINARY, buffer_size, buffer,
 		opts));
@@ -149,6 +142,70 @@ _ccs_serialize_bin_ccs_objective_space(
 	return CCS_RESULT_SUCCESS;
 }
 
+static inline ccs_result_t
+_ccs_serialize_json_ccs_objective_space(
+	ccs_objective_space_t            objective_space,
+	cJSON                           *json,
+	_ccs_object_serialize_options_t *opts)
+{
+	_ccs_objective_space_data_t *data =
+		(_ccs_objective_space_data_t *)(objective_space->data);
+	size_t dummy = 0;
+
+	CCS_REFUTE(
+		!cJSON_AddStringToObject(json, "name", data->name),
+		CCS_RESULT_ERROR_OUT_OF_MEMORY);
+
+	/* search_space (embedded) */
+	{
+		cJSON *ss = cJSON_AddObjectToObject(json, "search_space");
+		CCS_REFUTE(!ss, CCS_RESULT_ERROR_OUT_OF_MEMORY);
+		CCS_VALIDATE(_ccs_object_serialize_with_opts(
+			data->search_space, CCS_SERIALIZE_FORMAT_JSON, &dummy,
+			(char **)&ss, opts));
+	}
+
+	/* parameters */
+	{
+		cJSON *params = cJSON_AddArrayToObject(json, "parameters");
+		CCS_REFUTE(!params, CCS_RESULT_ERROR_OUT_OF_MEMORY);
+		for (size_t i = 0; i < data->num_parameters; i++) {
+			cJSON *child = cJSON_CreateObject();
+			CCS_REFUTE(!child, CCS_RESULT_ERROR_OUT_OF_MEMORY);
+			cJSON_AddItemToArray(params, child);
+			CCS_VALIDATE(_ccs_object_serialize_with_opts(
+				data->parameters[i], CCS_SERIALIZE_FORMAT_JSON,
+				&dummy, (char **)&child, opts));
+		}
+	}
+
+	/* objectives: expression + type */
+	{
+		cJSON *objs = cJSON_AddArrayToObject(json, "objectives");
+		CCS_REFUTE(!objs, CCS_RESULT_ERROR_OUT_OF_MEMORY);
+		for (size_t i = 0; i < data->num_objectives; i++) {
+			cJSON *obj = cJSON_CreateObject();
+			CCS_REFUTE(!obj, CCS_RESULT_ERROR_OUT_OF_MEMORY);
+			cJSON_AddItemToArray(objs, obj);
+			cJSON *expr =
+				cJSON_AddObjectToObject(obj, "expression");
+			CCS_REFUTE(!expr, CCS_RESULT_ERROR_OUT_OF_MEMORY);
+			CCS_VALIDATE(_ccs_object_serialize_with_opts(
+				data->objectives[i].expression,
+				CCS_SERIALIZE_FORMAT_JSON, &dummy,
+				(char **)&expr, opts));
+			CCS_REFUTE(
+				!cJSON_AddStringToObject(
+					obj, "type",
+					_ccs_json_objective_type_to_string(
+						data->objectives[i].type)),
+				CCS_RESULT_ERROR_OUT_OF_MEMORY);
+		}
+	}
+
+	return CCS_RESULT_SUCCESS;
+}
+
 static ccs_result_t
 _ccs_objective_space_serialize_size(
 	ccs_object_t                     object,
@@ -181,6 +238,11 @@ _ccs_objective_space_serialize(
 	case CCS_SERIALIZE_FORMAT_BINARY:
 		CCS_VALIDATE(_ccs_serialize_bin_ccs_objective_space(
 			(ccs_objective_space_t)object, buffer_size, buffer,
+			opts));
+		break;
+	case CCS_SERIALIZE_FORMAT_JSON:
+		CCS_VALIDATE(_ccs_serialize_json_ccs_objective_space(
+			(ccs_objective_space_t)object, *(cJSON **)buffer,
 			opts));
 		break;
 	default:

@@ -312,6 +312,41 @@ _ccs_json_tree_space_type_from_string(
 }
 
 /*============================================================================
+ * Objective type string conversion
+ *============================================================================*/
+
+static inline const char *
+_ccs_json_objective_type_to_string(ccs_objective_type_t type)
+{
+	switch (type) {
+	case CCS_OBJECTIVE_TYPE_MINIMIZE:
+		return "minimize";
+	case CCS_OBJECTIVE_TYPE_MAXIMIZE:
+		return "maximize";
+	default:
+		return NULL;
+	}
+}
+
+static inline ccs_result_t
+_ccs_json_objective_type_from_string(
+	const char           *str,
+	ccs_objective_type_t *type_ret)
+{
+	if (!strcmp(str, "minimize")) {
+		*type_ret = CCS_OBJECTIVE_TYPE_MINIMIZE;
+		return CCS_RESULT_SUCCESS;
+	}
+	if (!strcmp(str, "maximize")) {
+		*type_ret = CCS_OBJECTIVE_TYPE_MAXIMIZE;
+		return CCS_RESULT_SUCCESS;
+	}
+	CCS_RAISE(
+		CCS_RESULT_ERROR_INVALID_VALUE,
+		"Unknown objective type string: %s", str);
+}
+
+/*============================================================================
  * ccs_datum_t JSON helpers
  *============================================================================*/
 

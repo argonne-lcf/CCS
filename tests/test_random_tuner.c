@@ -119,6 +119,49 @@ test(void)
 }
 
 void
+test_objective_space_deserialize(void)
+{
+	ccs_configuration_space_t cspace;
+	ccs_objective_space_t     ospace, ospace_copy;
+	ccs_parameter_t           param;
+	ccs_expression_t          expression;
+	ccs_objective_type_t      otype;
+	ccs_result_t              err;
+	ccs_serialize_format_t    formats[] = {
+                CCS_SERIALIZE_FORMAT_BINARY, CCS_SERIALIZE_FORMAT_JSON};
+	size_t num_formats = sizeof(formats) / sizeof(formats[0]);
+
+	cspace             = create_2d_plane(NULL);
+
+	/* Use finite bounds so JSON roundtrip works (cJSON cannot
+	 * represent Infinity). */
+	param              = create_numerical("z", -1e6, 1e6);
+	err                = ccs_create_variable(param, &expression);
+	assert(err == CCS_RESULT_SUCCESS);
+	otype = CCS_OBJECTIVE_TYPE_MINIMIZE;
+	err   = ccs_create_objective_space(
+                "height", (ccs_search_space_t)cspace, 1, &param, 1, &expression,
+                &otype, &ospace);
+	assert(err == CCS_RESULT_SUCCESS);
+	err = ccs_release_object(expression);
+	assert(err == CCS_RESULT_SUCCESS);
+	err = ccs_release_object(param);
+	assert(err == CCS_RESULT_SUCCESS);
+
+	for (size_t f = 0; f < num_formats; f++) {
+		test_serialize_deserialize(
+			ospace, formats[f], (ccs_object_t *)&ospace_copy);
+		err = ccs_release_object(ospace_copy);
+		assert(err == CCS_RESULT_SUCCESS);
+	}
+
+	err = ccs_release_object(cspace);
+	assert(err == CCS_RESULT_SUCCESS);
+	err = ccs_release_object(ospace);
+	assert(err == CCS_RESULT_SUCCESS);
+}
+
+void
 test_evaluation_deserialize(void)
 {
 	ccs_configuration_space_t  cspace;
@@ -131,11 +174,14 @@ test_evaluation_deserialize(void)
 	size_t                     buff_size;
 	ccs_map_t                  map;
 	int                        cmp;
+	ccs_serialize_format_t     formats[] = {
+                CCS_SERIALIZE_FORMAT_BINARY, CCS_SERIALIZE_FORMAT_JSON};
+	size_t num_formats = sizeof(formats) / sizeof(formats[0]);
 
-	cspace = create_2d_plane(NULL);
-	ospace = create_height_objective(cspace);
+	cspace             = create_2d_plane(NULL);
+	ospace             = create_height_objective(cspace);
 
-	err    = ccs_configuration_space_sample(
+	err                = ccs_configuration_space_sample(
                 cspace, NULL, NULL, NULL,
                 (ccs_configuration_t *)&configuration);
 	assert(err == CCS_RESULT_SUCCESS);
@@ -146,64 +192,70 @@ test_evaluation_deserialize(void)
 		&evaluation_ref);
 	assert(err == CCS_RESULT_SUCCESS);
 
-	err = ccs_create_map(&map);
-	assert(err == CCS_RESULT_SUCCESS);
-	err = ccs_object_serialize(
-		evaluation_ref, CCS_SERIALIZE_FORMAT_BINARY,
-		CCS_SERIALIZE_OPERATION_SIZE, &buff_size,
-		CCS_SERIALIZE_OPTION_END);
-	assert(err == CCS_RESULT_SUCCESS);
-	buff = (char *)malloc(buff_size);
-	assert(buff);
+	for (size_t f = 0; f < num_formats; f++) {
+		err = ccs_create_map(&map);
+		assert(err == CCS_RESULT_SUCCESS);
+		err = ccs_object_serialize(
+			evaluation_ref, formats[f],
+			CCS_SERIALIZE_OPERATION_SIZE, &buff_size,
+			CCS_SERIALIZE_OPTION_END);
+		assert(err == CCS_RESULT_SUCCESS);
+		buff = (char *)malloc(buff_size);
+		assert(buff);
 
-	err = ccs_object_serialize(
-		evaluation_ref, CCS_SERIALIZE_FORMAT_BINARY,
-		CCS_SERIALIZE_OPERATION_MEMORY, buff_size, buff,
-		CCS_SERIALIZE_OPTION_END);
-	assert(err == CCS_RESULT_SUCCESS);
+		err = ccs_object_serialize(
+			evaluation_ref, formats[f],
+			CCS_SERIALIZE_OPERATION_MEMORY, buff_size, buff,
+			CCS_SERIALIZE_OPTION_END);
+		assert(err == CCS_RESULT_SUCCESS);
 
-	err = ccs_object_deserialize(
-		(ccs_object_t *)&evaluation, CCS_SERIALIZE_FORMAT_BINARY,
-		CCS_DESERIALIZE_OPERATION_MEMORY, buff_size, buff,
-		CCS_DESERIALIZE_OPTION_HANDLE_MAP, map,
-		CCS_DESERIALIZE_OPTION_END);
-	assert(err == CCS_RESULT_ERROR_INVALID_HANDLE);
+		err = ccs_object_deserialize(
+			(ccs_object_t *)&evaluation, formats[f],
+			CCS_DESERIALIZE_OPERATION_MEMORY, buff_size, buff,
+			CCS_DESERIALIZE_OPTION_HANDLE_MAP, map,
+			CCS_DESERIALIZE_OPTION_END);
+		assert(err == CCS_RESULT_ERROR_INVALID_HANDLE);
+		ccs_clear_thread_error();
 
-	d = ccs_object(ospace);
-	d.flags |= CCS_DATUM_FLAG_ID;
-	err = ccs_map_set(map, d, ccs_object(ospace));
-	assert(err == CCS_RESULT_SUCCESS);
+		d = ccs_object(ospace);
+		d.flags |= CCS_DATUM_FLAG_ID;
+		err = ccs_map_set(map, d, ccs_object(ospace));
+		assert(err == CCS_RESULT_SUCCESS);
 
-	err = ccs_object_deserialize(
-		(ccs_object_t *)&evaluation, CCS_SERIALIZE_FORMAT_BINARY,
-		CCS_DESERIALIZE_OPERATION_MEMORY, buff_size, buff,
-		CCS_DESERIALIZE_OPTION_HANDLE_MAP, map,
-		CCS_DESERIALIZE_OPTION_END);
-	assert(err == CCS_RESULT_ERROR_INVALID_HANDLE);
+		err = ccs_object_deserialize(
+			(ccs_object_t *)&evaluation, formats[f],
+			CCS_DESERIALIZE_OPERATION_MEMORY, buff_size, buff,
+			CCS_DESERIALIZE_OPTION_HANDLE_MAP, map,
+			CCS_DESERIALIZE_OPTION_END);
+		assert(err == CCS_RESULT_ERROR_INVALID_HANDLE);
+		ccs_clear_thread_error();
 
-	d = ccs_object(cspace);
-	d.flags |= CCS_DATUM_FLAG_ID;
-	err = ccs_map_set(map, d, ccs_object(cspace));
-	assert(err == CCS_RESULT_SUCCESS);
+		d = ccs_object(cspace);
+		d.flags |= CCS_DATUM_FLAG_ID;
+		err = ccs_map_set(map, d, ccs_object(cspace));
+		assert(err == CCS_RESULT_SUCCESS);
 
-	err = ccs_object_deserialize(
-		(ccs_object_t *)&evaluation, CCS_SERIALIZE_FORMAT_BINARY,
-		CCS_DESERIALIZE_OPERATION_MEMORY, buff_size, buff,
-		CCS_DESERIALIZE_OPTION_HANDLE_MAP, map,
-		CCS_DESERIALIZE_OPTION_END);
-	assert(err == CCS_RESULT_SUCCESS);
+		err = ccs_object_deserialize(
+			(ccs_object_t *)&evaluation, formats[f],
+			CCS_DESERIALIZE_OPERATION_MEMORY, buff_size, buff,
+			CCS_DESERIALIZE_OPTION_HANDLE_MAP, map,
+			CCS_DESERIALIZE_OPTION_END);
+		assert(err == CCS_RESULT_SUCCESS);
 
-	err = ccs_binding_cmp(
-		(ccs_binding_t)evaluation_ref, (ccs_binding_t)evaluation, &cmp);
-	assert(err == CCS_RESULT_SUCCESS);
-	assert(!cmp);
+		err = ccs_binding_cmp(
+			(ccs_binding_t)evaluation_ref,
+			(ccs_binding_t)evaluation, &cmp);
+		assert(err == CCS_RESULT_SUCCESS);
+		assert(!cmp);
 
-	free(buff);
-	err = ccs_release_object(map);
-	assert(err == CCS_RESULT_SUCCESS);
+		free(buff);
+		err = ccs_release_object(map);
+		assert(err == CCS_RESULT_SUCCESS);
+		err = ccs_release_object(evaluation);
+		assert(err == CCS_RESULT_SUCCESS);
+	}
+
 	err = ccs_release_object(evaluation_ref);
-	assert(err == CCS_RESULT_SUCCESS);
-	err = ccs_release_object(evaluation);
 	assert(err == CCS_RESULT_SUCCESS);
 	err = ccs_release_object(configuration);
 	assert(err == CCS_RESULT_SUCCESS);
@@ -297,6 +349,7 @@ main(void)
 {
 	ccs_init();
 	test();
+	test_objective_space_deserialize();
 	test_evaluation_deserialize();
 	test_evaluation_hash_cmp_compare();
 	ccs_clear_thread_error();
