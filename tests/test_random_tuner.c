@@ -11,6 +11,7 @@ test(ccs_serialize_format_t format)
 	ccs_objective_space_t     ospace;
 	ccs_tuner_t               tuner, tuner_copy;
 	ccs_result_t              err;
+	ccs_datum_t               d;
 	char                     *buff;
 	size_t                    buff_size;
 	ccs_map_t                 map;
@@ -96,6 +97,11 @@ test(ccs_serialize_format_t format)
 	err = ccs_tuner_get_optima(tuner_copy, NULL, 1, &evaluation, &count);
 	assert(err == CCS_RESULT_SUCCESS);
 	assert(count == 1);
+
+	err = ccs_map_get(map, ccs_object((ccs_object_t)tuner), &d);
+	assert(err == CCS_RESULT_SUCCESS);
+	assert(d.type == CCS_DATA_TYPE_OBJECT);
+	assert(d.value.o == (ccs_object_t)tuner_copy);
 
 	free(buff);
 	err = ccs_release_object(map);
