@@ -1,4 +1,5 @@
 #include "cconfigspace_internal.h"
+#include "cconfigspace_json.h"
 #include "map_internal.h"
 #include "datum_uthash.h"
 #include "datum_hash.h"
@@ -95,6 +96,31 @@ _ccs_serialize_bin_ccs_map(ccs_map_t map, size_t *buffer_size, char **buffer)
 	return CCS_RESULT_SUCCESS;
 }
 
+static inline ccs_result_t
+_ccs_serialize_json_ccs_map(ccs_map_t map, cJSON *json)
+{
+	_ccs_map_data_t  *data = (_ccs_map_data_t *)(map->data);
+	_ccs_map_datum_t *current, *tmp;
+
+	cJSON            *pairs = cJSON_AddArrayToObject(json, "pairs");
+	CCS_REFUTE(!pairs, CCS_RESULT_ERROR_OUT_OF_MEMORY);
+
+	HASH_ITER(hh, data->map, current, tmp)
+	{
+		cJSON *pair = cJSON_CreateObject();
+		CCS_REFUTE(!pair, CCS_RESULT_ERROR_OUT_OF_MEMORY);
+		CCS_REFUTE(
+			!cJSON_AddItemToArray(pairs, pair),
+			CCS_RESULT_ERROR_OUT_OF_MEMORY);
+
+		CCS_VALIDATE(_ccs_json_add_datum(pair, "key", current->key));
+		CCS_VALIDATE(
+			_ccs_json_add_datum(pair, "value", current->value));
+	}
+
+	return CCS_RESULT_SUCCESS;
+}
+
 static ccs_result_t
 _ccs_map_serialize_size(
 	ccs_object_t                     object,
@@ -136,6 +162,13 @@ _ccs_map_serialize(
 			err,
 			_ccs_serialize_bin_ccs_map(
 				(ccs_map_t)object, buffer_size, buffer),
+			end);
+		break;
+	case CCS_SERIALIZE_FORMAT_JSON:
+		CCS_VALIDATE_ERR_GOTO(
+			err,
+			_ccs_serialize_json_ccs_map(
+				(ccs_map_t)object, *(cJSON **)buffer),
 			end);
 		break;
 	default:

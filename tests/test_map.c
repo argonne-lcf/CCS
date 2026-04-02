@@ -2,6 +2,7 @@
 #include <assert.h>
 #include <string.h>
 #include <cconfigspace.h>
+#include "test_utils.h"
 
 void
 test_map(void)
@@ -261,6 +262,83 @@ test_map_set_duplicate_value(void)
 	assert(err == CCS_RESULT_SUCCESS);
 }
 
+static void
+test_map_serialize(ccs_serialize_format_t format)
+{
+	ccs_map_t    map, map2;
+	ccs_datum_t  d_ret;
+	size_t       d_count;
+	ccs_result_t err;
+	char        *str1, *str2;
+
+	err = ccs_create_map(&map);
+	assert(err == CCS_RESULT_SUCCESS);
+
+	err = ccs_map_set(map, ccs_string("hello"), ccs_float(1.0));
+	assert(err == CCS_RESULT_SUCCESS);
+
+	err = ccs_map_set(map, ccs_int(42), ccs_string("world"));
+	assert(err == CCS_RESULT_SUCCESS);
+
+	str1 = (char *)malloc(strlen("foo") + 1);
+	assert(str1);
+	strcpy(str1, "foo");
+
+	str2 = (char *)malloc(strlen("bar") + 1);
+	assert(str2);
+	strcpy(str2, "bar");
+
+	{
+		ccs_datum_t d1 = ccs_string(str1);
+		d1.flags |= CCS_DATUM_FLAG_TRANSIENT;
+		err = ccs_map_set(map, d1, ccs_true);
+		assert(err == CCS_RESULT_SUCCESS);
+	}
+	free(str1);
+
+	{
+		ccs_datum_t d2 = ccs_string(str2);
+		d2.flags |= CCS_DATUM_FLAG_TRANSIENT;
+		err = ccs_map_set(map, ccs_false, d2);
+		assert(err == CCS_RESULT_SUCCESS);
+	}
+	free(str2);
+
+	err = ccs_map_set(map, ccs_float(3.14), ccs_none);
+	assert(err == CCS_RESULT_SUCCESS);
+
+	test_serialize_deserialize(map, format, (ccs_object_t *)&map2);
+
+	err = ccs_map_get_pairs(map2, 0, NULL, NULL, &d_count);
+	assert(err == CCS_RESULT_SUCCESS);
+	assert(d_count == 5);
+
+	err = ccs_map_get(map2, ccs_string("hello"), &d_ret);
+	assert(err == CCS_RESULT_SUCCESS);
+	assert(!ccs_datum_cmp(d_ret, ccs_float(1.0)));
+
+	err = ccs_map_get(map2, ccs_int(42), &d_ret);
+	assert(err == CCS_RESULT_SUCCESS);
+	assert(!ccs_datum_cmp(d_ret, ccs_string("world")));
+
+	err = ccs_map_get(map2, ccs_string("foo"), &d_ret);
+	assert(err == CCS_RESULT_SUCCESS);
+	assert(!ccs_datum_cmp(d_ret, ccs_true));
+
+	err = ccs_map_get(map2, ccs_false, &d_ret);
+	assert(err == CCS_RESULT_SUCCESS);
+	assert(!ccs_datum_cmp(d_ret, ccs_string("bar")));
+
+	err = ccs_map_get(map2, ccs_float(3.14), &d_ret);
+	assert(err == CCS_RESULT_SUCCESS);
+	assert(!ccs_datum_cmp(d_ret, ccs_none));
+
+	err = ccs_release_object(map2);
+	assert(err == CCS_RESULT_SUCCESS);
+	err = ccs_release_object(map);
+	assert(err == CCS_RESULT_SUCCESS);
+}
+
 int
 main(void)
 {
@@ -270,6 +348,9 @@ main(void)
 	test_map_error_paths();
 	ccs_clear_thread_error();
 	test_map_set_duplicate_value();
+	ccs_clear_thread_error();
+	test_map_serialize(CCS_SERIALIZE_FORMAT_BINARY);
+	test_map_serialize(CCS_SERIALIZE_FORMAT_JSON);
 	ccs_clear_thread_error();
 	ccs_fini();
 	return 0;
