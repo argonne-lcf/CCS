@@ -14,7 +14,7 @@ class CConfigSpaceTestTuner < Minitest::Test
     CCS::ObjectiveSpace::new(name: "ospace", search_space: cs, parameters: [v1, v2], objectives: [e1, e2])
   end
 
-  def test_create_random
+  def _test_create_random(fmt)
     os = create_tuning_problem
     t = CCS::RandomTuner::new(name: "tuner", objective_space: os)
     t2 = CCS::Object::from_handle(t)
@@ -39,14 +39,22 @@ class CConfigSpaceTestTuner < Minitest::Test
     objs.collect { |(_, v)| v }.each_cons(2) { |v1, v2| assert( (v1 <=> v2) > 0 ) }
     assert( t.optima.collect(&:configuration).include?(t.suggest) )
 
-    buff = t.serialize
-    t_copy = CCS.deserialize(buffer: buff)
+    buff = t.serialize(format: fmt)
+    t_copy = CCS.deserialize(format: fmt, buffer: buff)
     hist = t_copy.history
     assert_equal(200, hist.size)
     assert_equal(t.num_optima, t_copy.num_optima)
     objs = t_copy.optima.collect(&:objective_values).sort
     objs.collect { |(_, v)| v }.each_cons(2) { |v1, v2| assert( (v1 <=> v2) > 0 ) }
     assert( t_copy.optima.collect(&:configuration).include?(t_copy.suggest) )
+  end
+
+  def test_create_random_binary
+    _test_create_random(:binary)
+  end
+
+  def test_create_random_json
+    _test_create_random(:json)
   end
 
   class TunerData
@@ -57,7 +65,7 @@ class CConfigSpaceTestTuner < Minitest::Test
     end
   end
 
-  def test_user_defined
+  def _get_user_defined_helpers
     del = lambda { |tuner| nil }
     ask = lambda { |tuner, _, count|
       if count
@@ -95,7 +103,7 @@ class CConfigSpaceTestTuner < Minitest::Test
     get_optima = lambda { |tuner, _|
       tuner.tuner_data.optima
     }
-    suggest = lambda { |tuner, _|
+    sug = lambda { |tuner, _|
       if tuner.tuner_data.optima.empty?
         ask.call(tuner, 1)
       else
@@ -105,11 +113,16 @@ class CConfigSpaceTestTuner < Minitest::Test
     get_vector_data = lambda { |otype, name|
       assert_equal(:CCS_OBJECT_TYPE_TUNER, otype)
       assert_equal("tuner", name)
-      [CCS::UserDefinedTuner.get_vector(del: del, ask: ask, tell: tell, get_optima: get_optima, get_history: get_history, suggest: suggest), TunerData.new]
+      [CCS::UserDefinedTuner.get_vector(del: del, ask: ask, tell: tell, get_optima: get_optima, get_history: get_history, suggest: sug), TunerData.new]
     }
+    [del, ask, tell, get_history, get_optima, sug, get_vector_data]
+  end
+
+  def _test_user_defined(fmt)
+    del, ask, tell, get_history, get_optima, sug, get_vector_data = _get_user_defined_helpers
 
     os = create_tuning_problem
-    t = CCS::UserDefinedTuner::new(name: "tuner", objective_space: os, del: del, ask: ask, tell: tell, get_optima: get_optima, get_history: get_history, suggest: suggest, tuner_data: TunerData.new)
+    t = CCS::UserDefinedTuner::new(name: "tuner", objective_space: os, del: del, ask: ask, tell: tell, get_optima: get_optima, get_history: get_history, suggest: sug, tuner_data: TunerData.new)
     t2 = CCS::Object::from_handle(t)
     assert_equal( t.class, t2.class)
     assert_equal( "tuner", t.name )
@@ -133,8 +146,8 @@ class CConfigSpaceTestTuner < Minitest::Test
     objs.collect { |(_, v)| v }.each_cons(2) { |v1, v2| assert( (v1 <=> v2) > 0 ) }
     assert( t.optima.collect(&:configuration).include?(t.suggest) )
 
-    buff = t.serialize
-    t_copy = CCS::deserialize(buffer: buff, vector_callback: get_vector_data)
+    buff = t.serialize(format: fmt)
+    t_copy = CCS::deserialize(format: fmt, buffer: buff, vector_callback: get_vector_data)
     hist = t_copy.history
     assert_equal(200, hist.size)
     assert_equal(t.num_optima, t_copy.num_optima)
@@ -142,8 +155,8 @@ class CConfigSpaceTestTuner < Minitest::Test
     objs.collect { |(_, v)| v }.each_cons(2) { |v1, v2| assert( (v1 <=> v2) > 0 ) }
     assert( t_copy.optima.collect(&:configuration).include?(t_copy.suggest) )
 
-    t.serialize(path: 'tuner.ccs')
-    t_copy = CCS::deserialize(path: 'tuner.ccs', vector_callback: get_vector_data)
+    t.serialize(format: fmt, path: 'tuner.ccs')
+    t_copy = CCS::deserialize(format: fmt, path: 'tuner.ccs', vector_callback: get_vector_data)
     hist = t_copy.history
     assert_equal(200, hist.size)
     assert_equal(t.num_optima, t_copy.num_optima)
@@ -153,10 +166,10 @@ class CConfigSpaceTestTuner < Minitest::Test
     File.delete('tuner.ccs')
 
     f = File.open('tuner.ccs', "wb")
-    t.serialize(file_descriptor: f.fileno)
+    t.serialize(format: fmt, file_descriptor: f.fileno)
     f.close
     f = File.open('tuner.ccs', "rb")
-    t_copy = CCS::deserialize(file_descriptor: f.fileno, vector_callback: get_vector_data)
+    t_copy = CCS::deserialize(format: fmt, file_descriptor: f.fileno, vector_callback: get_vector_data)
     f.close
     hist = t_copy.history
     assert_equal(200, hist.size)
@@ -165,6 +178,14 @@ class CConfigSpaceTestTuner < Minitest::Test
     objs.collect { |(_, v)| v }.each_cons(2) { |v1, v2| assert( (v1 <=> v2) > 0 ) }
     assert( t_copy.optima.collect(&:configuration).include?(t_copy.suggest) )
     File.delete('tuner.ccs')
+  end
+
+  def test_user_defined_binary
+    _test_user_defined(:binary)
+  end
+
+  def test_user_defined_json
+    _test_user_defined(:json)
   end
 
   require 'open3'

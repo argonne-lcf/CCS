@@ -27,7 +27,7 @@ class TestTuner(unittest.TestCase):
     os = ccs.ObjectiveSpace(name = "ospace", search_space = cs, parameters = [v1, v2], objectives = [e1, e2])
     return os
 
-  def test_create_random(self):
+  def _test_create_random(self, fmt):
     os = self.create_tuning_problem()
     t = ccs.RandomTuner(name = "tuner", objective_space = os)
     t2 = ccs.Object.from_handle(t.handle)
@@ -49,8 +49,8 @@ class TestTuner(unittest.TestCase):
     self.assertTrue(all(objs[i][1] >= objs[i+1][1] for i in range(len(objs)-1)))
     self.assertTrue(t.suggest() in [x.configuration for x in optims])
     # test serialization
-    buff = t.serialize()
-    t_copy = ccs.deserialize(buffer = buff)
+    buff = t.serialize(format = fmt)
+    t_copy = ccs.deserialize(format = fmt, buffer = buff)
     hist = t_copy.history()
     self.assertEqual(200, len(hist))
     optims_2 = t_copy.optima()
@@ -60,7 +60,13 @@ class TestTuner(unittest.TestCase):
     self.assertTrue(all(objs[i][1] >= objs[i+1][1] for i in range(len(objs)-1)))
     self.assertTrue(t_copy.suggest() in [x.configuration for x in optims_2])
 
-  def test_user_defined(self):
+  def test_create_random_binary(self):
+    self._test_create_random('binary')
+
+  def test_create_random_json(self):
+    self._test_create_random('json')
+
+  def _get_user_defined_helpers(self):
     class TunerData:
       def __init__(self):
         self.history = []
@@ -111,6 +117,11 @@ class TestTuner(unittest.TestCase):
     def get_vector_data(otype, name):
       return (ccs.UserDefinedTuner.get_vector(delete = delete, ask = ask, tell = tell, get_optima = get_optima, get_history = get_history, suggest = suggest), TunerData())
 
+    return TunerData, delete, ask, tell, get_history, get_optima, suggest, get_vector_data
+
+  def _test_user_defined(self, fmt):
+    TunerData, delete, ask, tell, get_history, get_optima, suggest, get_vector_data = self._get_user_defined_helpers()
+
     os = self.create_tuning_problem()
     t = ccs.UserDefinedTuner(name = "tuner", objective_space = os, delete = delete, ask = ask, tell = tell, get_optima = get_optima, get_history = get_history, suggest = suggest, tuner_data = TunerData())
     t2 = ccs.Object.from_handle(t.handle)
@@ -134,9 +145,9 @@ class TestTuner(unittest.TestCase):
     self.assertTrue(all(objs[i][1] >= objs[i+1][1] for i in range(len(objs)-1)))
     self.assertTrue(t.suggest() in [x.configuration for x in optims])
 
-    # test serialization
-    buff = t.serialize()
-    t_copy = ccs.deserialize(buffer = buff, vector_callback = get_vector_data)
+    # test serialization — memory
+    buff = t.serialize(format = fmt)
+    t_copy = ccs.deserialize(format = fmt, buffer = buff, vector_callback = get_vector_data)
     hist = t_copy.history()
     self.assertEqual(200, len(hist))
     optims_2 = t_copy.optima()
@@ -146,8 +157,9 @@ class TestTuner(unittest.TestCase):
     self.assertTrue(all(objs[i][1] >= objs[i+1][1] for i in range(len(objs)-1)))
     self.assertTrue(t_copy.suggest() in [x.configuration for x in optims_2])
 
-    t.serialize(path = 'tuner.ccs')
-    t_copy = ccs.deserialize(path = 'tuner.ccs', vector_callback = get_vector_data)
+    # test serialization — file path
+    t.serialize(format = fmt, path = 'tuner.ccs')
+    t_copy = ccs.deserialize(format = fmt, path = 'tuner.ccs', vector_callback = get_vector_data)
     hist = t_copy.history()
     self.assertEqual(200, len(hist))
     optims_2 = t_copy.optima()
@@ -158,11 +170,12 @@ class TestTuner(unittest.TestCase):
     self.assertTrue(t_copy.suggest() in [x.configuration for x in optims_2])
     _os.remove('tuner.ccs')
 
+    # test serialization — file descriptor
     file = open( 'tuner.ccs', "wb")
-    t.serialize(file_descriptor = file.fileno())
+    t.serialize(format = fmt, file_descriptor = file.fileno())
     file.close()
     file = open( 'tuner.ccs', "rb")
-    t_copy = ccs.deserialize(file_descriptor = file.fileno(), vector_callback = get_vector_data)
+    t_copy = ccs.deserialize(format = fmt, file_descriptor = file.fileno(), vector_callback = get_vector_data)
     file.close()
     hist = t_copy.history()
     self.assertEqual(200, len(hist))
@@ -173,6 +186,12 @@ class TestTuner(unittest.TestCase):
     self.assertTrue(all(objs[i][1] >= objs[i+1][1] for i in range(len(objs)-1)))
     self.assertTrue(t_copy.suggest() in [x.configuration for x in optims_2])
     _os.remove('tuner.ccs')
+
+  def test_user_defined_binary(self):
+    self._test_user_defined('binary')
+
+  def test_user_defined_json(self):
+    self._test_user_defined('json')
 
   class ServerThread(threading.Thread):
     def __init__(self):

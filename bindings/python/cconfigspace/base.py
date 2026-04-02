@@ -373,7 +373,8 @@ class Error(Exception):
 
 class SerializeFormat(CEnumeration):
   _members_ = [
-    ('BINARY', 0)
+    ('BINARY', 0),
+    'JSON'
   ]
 
 class SerializeOperation(CEnumeration):
@@ -532,7 +533,8 @@ class Object:
     _set_destroy_callback(self.handle, callback)
 
   def serialize(self, format = 'binary', path = None, file_descriptor = None, callback = None):
-    if format != 'binary':
+    fmt = getattr(SerializeFormat, format.upper(), None)
+    if fmt is None:
       raise Error(Result(Result.ERROR_INVALID_VALUE))
     if path and file_descriptor:
       raise Error(Result(Result.ERROR_INVALID_VALUE))
@@ -546,26 +548,27 @@ class Object:
     if path:
       p = str.encode(path)
       pp = ct.c_char_p(p)
-      res = ccs_object_serialize(self.handle, SerializeFormat.BINARY, SerializeOperation.FILE, pp, *options)
+      res = ccs_object_serialize(self.handle, fmt, SerializeOperation.FILE, pp, *options)
       Error.check(res)
       return None
     elif file_descriptor:
       fd = ct.c_int(file_descriptor)
-      res = ccs_object_serialize(self.handle, SerializeFormat.BINARY, SerializeOperation.FILE_DESCRIPTOR, fd, *options)
+      res = ccs_object_serialize(self.handle, fmt, SerializeOperation.FILE_DESCRIPTOR, fd, *options)
       Error.check(res)
       return None
     else:
       s = ct.c_size_t(0)
-      res = ccs_object_serialize(self.handle, SerializeFormat.BINARY, SerializeOperation.SIZE, ct.byref(s), *options)
+      res = ccs_object_serialize(self.handle, fmt, SerializeOperation.SIZE, ct.byref(s), *options)
       Error.check(res)
       v = ct.create_string_buffer(s.value)
-      res = ccs_object_serialize(self.handle, SerializeFormat.BINARY, SerializeOperation.MEMORY, ct.sizeof(v), v, *options)
+      res = ccs_object_serialize(self.handle, fmt, SerializeOperation.MEMORY, ct.sizeof(v), v, *options)
       Error.check(res)
       return v.raw
 
   @classmethod
   def deserialize(cls, format = 'binary', handle_map = None, map_handles = False, vector_callback = None, path = None, buffer = None, file_descriptor = None, callback = None):
-    if format != 'binary':
+    fmt = getattr(SerializeFormat, format.upper(), None)
+    if fmt is None:
       raise Error(Result(Result.ERROR_INVALID_VALUE))
     mode_count = 0;
     if path is not None:
@@ -596,14 +599,14 @@ class Object:
       options = [DeserializeOption.DATA_CALLBACK, _default_user_data_deserializer, ct.py_object()] + options
     if buffer is not None:
       s = len(buffer)
-      res = ccs_object_deserialize(ct.byref(o), SerializeFormat.BINARY, DeserializeOperation.MEMORY, s, ct.create_string_buffer(buffer, s), *options)
+      res = ccs_object_deserialize(ct.byref(o), fmt, DeserializeOperation.MEMORY, s, ct.create_string_buffer(buffer, s), *options)
     elif path is not None:
       p = str.encode(path)
       pp = ct.c_char_p(p)
-      res = ccs_object_deserialize(ct.byref(o), SerializeFormat.BINARY, DeserializeOperation.FILE, pp, *options)
+      res = ccs_object_deserialize(ct.byref(o), fmt, DeserializeOperation.FILE, pp, *options)
     elif file_descriptor is not None:
       fd = ct.c_int(file_descriptor)
-      res = ccs_object_deserialize(ct.byref(o), SerializeFormat.BINARY, DeserializeOperation.FILE_DESCRIPTOR, fd, *options)
+      res = ccs_object_deserialize(ct.byref(o), fmt, DeserializeOperation.FILE_DESCRIPTOR, fd, *options)
     else:
       raise Error(Result(Result.ERROR_INVALID_VALUE))
     Error.check(res)
