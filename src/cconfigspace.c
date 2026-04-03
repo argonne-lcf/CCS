@@ -522,6 +522,47 @@ err_json_alloc:
 }
 
 static inline ccs_result_t
+_ccs_object_serialize_buffer_with_opts(
+	ccs_object_t                     object,
+	ccs_serialize_format_t           format,
+	char                           **buffer_ret,
+	size_t                          *buffer_size_ret,
+	_ccs_object_serialize_options_t *opts)
+{
+	switch (format) {
+	case CCS_SERIALIZE_FORMAT_BINARY: {
+		ccs_result_t err = CCS_RESULT_SUCCESS;
+		size_t       sz  = 0;
+		char        *buf = NULL;
+		CCS_VALIDATE(_ccs_object_header_serialize_size_with_opts(
+			object, format, &sz, opts));
+		buf = (char *)malloc(sz);
+		CCS_REFUTE(!buf, CCS_RESULT_ERROR_OUT_OF_MEMORY);
+		CCS_VALIDATE_ERR_GOTO(
+			err,
+			_ccs_object_serialize_memory_with_opts(
+				object, format, sz, buf, opts),
+			err_bin_buf);
+		*buffer_ret      = buf;
+		*buffer_size_ret = sz;
+		break;
+	err_bin_buf:
+		free(buf);
+		return err;
+	}
+	case CCS_SERIALIZE_FORMAT_JSON:
+		CCS_VALIDATE(_ccs_object_serialize_json_alloc(
+			object, buffer_ret, buffer_size_ret, opts));
+		break;
+	default:
+		CCS_RAISE(
+			CCS_RESULT_ERROR_INVALID_VALUE,
+			"Unsupported serialization format: %d", format);
+	}
+	return CCS_RESULT_SUCCESS;
+}
+
+static inline ccs_result_t
 _ccs_object_serialize_buffer(
 	ccs_object_t           object,
 	ccs_serialize_format_t format,
@@ -536,37 +577,8 @@ _ccs_object_serialize_buffer(
 	CCS_CHECK_PTR(buffer_size_ret);
 	CCS_VALIDATE(_ccs_object_serialize_options(
 		format, CCS_SERIALIZE_OPERATION_BUFFER, args, &opts));
-
-	switch (format) {
-	case CCS_SERIALIZE_FORMAT_BINARY: {
-		ccs_result_t err = CCS_RESULT_SUCCESS;
-		size_t       sz  = 0;
-		char        *buf = NULL;
-		CCS_VALIDATE(_ccs_object_header_serialize_size_with_opts(
-			object, format, &sz, &opts));
-		buf = (char *)malloc(sz);
-		CCS_REFUTE(!buf, CCS_RESULT_ERROR_OUT_OF_MEMORY);
-		CCS_VALIDATE_ERR_GOTO(
-			err,
-			_ccs_object_serialize_memory_with_opts(
-				object, format, sz, buf, &opts),
-			err_bin_buf);
-		*buffer_ret      = buf;
-		*buffer_size_ret = sz;
-		break;
-	err_bin_buf:
-		free(buf);
-		return err;
-	}
-	case CCS_SERIALIZE_FORMAT_JSON:
-		CCS_VALIDATE(_ccs_object_serialize_json_alloc(
-			object, buffer_ret, buffer_size_ret, &opts));
-		break;
-	default:
-		CCS_RAISE(
-			CCS_RESULT_ERROR_INVALID_VALUE,
-			"Unsupported serialization format: %d", format);
-	}
+	CCS_VALIDATE(_ccs_object_serialize_buffer_with_opts(
+		object, format, buffer_ret, buffer_size_ret, &opts));
 	return CCS_RESULT_SUCCESS;
 }
 
