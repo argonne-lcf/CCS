@@ -212,11 +212,10 @@ _ccs_object_deserialize_with_opts_check(
 			opts));
 	} break;
 	case CCS_SERIALIZE_FORMAT_JSON: {
-		cJSON *json   = *(cJSON **)buffer;
-		cJSON *j_type = cJSON_GetObjectItemCaseSensitive(json, "type");
+		cJSON            *json = *(cJSON **)buffer;
 		const char       *type_str;
 		ccs_object_type_t otype;
-		CCS_VALIDATE(_ccs_json_get_string(j_type, &type_str));
+		CCS_VALIDATE(_ccs_json_extract_string(json, "type", &type_str));
 		CCS_VALIDATE(
 			_ccs_json_object_type_from_string(type_str, &otype));
 		CCS_REFUTE(

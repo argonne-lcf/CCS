@@ -334,44 +334,34 @@ _ccs_deserialize_json_distribution_uniform(
 	ccs_distribution_t *distribution_ret,
 	cJSON              *json)
 {
-	cJSON *j_data_type =
-		cJSON_GetObjectItemCaseSensitive(json, "data_type");
-	cJSON *j_scale_type =
-		cJSON_GetObjectItemCaseSensitive(json, "scale_type");
-	cJSON *j_lower = cJSON_GetObjectItemCaseSensitive(json, "lower");
-	cJSON *j_upper = cJSON_GetObjectItemCaseSensitive(json, "upper");
-	cJSON *j_quantization =
-		cJSON_GetObjectItemCaseSensitive(json, "quantization");
-
 	const char        *data_type_str;
 	const char        *scale_type_str;
 	ccs_numeric_type_t data_type;
 	ccs_scale_type_t   scale_type;
-	CCS_VALIDATE(_ccs_json_get_string(j_data_type, &data_type_str));
-	CCS_VALIDATE(_ccs_json_get_string(j_scale_type, &scale_type_str));
-	CCS_REFUTE(!j_lower, CCS_RESULT_ERROR_INVALID_VALUE);
-	CCS_REFUTE(!j_upper, CCS_RESULT_ERROR_INVALID_VALUE);
-	CCS_REFUTE(!j_quantization, CCS_RESULT_ERROR_INVALID_VALUE);
-
+	ccs_numeric_t      lower, upper, quantization;
+	CCS_VALIDATE(
+		_ccs_json_extract_string(json, "data_type", &data_type_str));
+	CCS_VALIDATE(
+		_ccs_json_extract_string(json, "scale_type", &scale_type_str));
 	CCS_VALIDATE(
 		_ccs_json_numeric_type_from_string(data_type_str, &data_type));
 	CCS_VALIDATE(
 		_ccs_json_scale_type_from_string(scale_type_str, &scale_type));
 
-	ccs_numeric_t lower, upper, quantization;
 	if (data_type == CCS_NUMERIC_TYPE_FLOAT) {
 		double fl, fu, fq;
-		CCS_VALIDATE(_ccs_json_get_float(j_lower, &fl));
-		CCS_VALIDATE(_ccs_json_get_float(j_upper, &fu));
-		CCS_VALIDATE(_ccs_json_get_float(j_quantization, &fq));
+		CCS_VALIDATE(_ccs_json_extract_float(json, "lower", &fl));
+		CCS_VALIDATE(_ccs_json_extract_float(json, "upper", &fu));
+		CCS_VALIDATE(
+			_ccs_json_extract_float(json, "quantization", &fq));
 		lower.f        = fl;
 		upper.f        = fu;
 		quantization.f = fq;
 	} else {
-		CCS_VALIDATE(_ccs_json_get_int(j_lower, &lower.i));
-		CCS_VALIDATE(_ccs_json_get_int(j_upper, &upper.i));
-		CCS_VALIDATE(
-			_ccs_json_get_int(j_quantization, &quantization.i));
+		CCS_VALIDATE(_ccs_json_extract_int(json, "lower", &lower.i));
+		CCS_VALIDATE(_ccs_json_extract_int(json, "upper", &upper.i));
+		CCS_VALIDATE(_ccs_json_extract_int(
+			json, "quantization", &quantization.i));
 	}
 	CCS_VALIDATE(ccs_create_uniform_distribution(
 		data_type, lower, upper, scale_type, quantization,
@@ -384,41 +374,31 @@ _ccs_deserialize_json_distribution_normal(
 	ccs_distribution_t *distribution_ret,
 	cJSON              *json)
 {
-	cJSON *j_data_type =
-		cJSON_GetObjectItemCaseSensitive(json, "data_type");
-	cJSON *j_scale_type =
-		cJSON_GetObjectItemCaseSensitive(json, "scale_type");
-	cJSON *j_mu    = cJSON_GetObjectItemCaseSensitive(json, "mu");
-	cJSON *j_sigma = cJSON_GetObjectItemCaseSensitive(json, "sigma");
-	cJSON *j_quantization =
-		cJSON_GetObjectItemCaseSensitive(json, "quantization");
-
 	const char        *data_type_str;
 	const char        *scale_type_str;
 	ccs_numeric_type_t data_type;
 	ccs_scale_type_t   scale_type;
 	double             mu_val, sigma_val;
-	CCS_VALIDATE(_ccs_json_get_string(j_data_type, &data_type_str));
-	CCS_VALIDATE(_ccs_json_get_string(j_scale_type, &scale_type_str));
-	CCS_REFUTE(!j_mu, CCS_RESULT_ERROR_INVALID_VALUE);
-	CCS_REFUTE(!j_sigma, CCS_RESULT_ERROR_INVALID_VALUE);
-	CCS_REFUTE(!j_quantization, CCS_RESULT_ERROR_INVALID_VALUE);
-
+	ccs_numeric_t      quantization;
+	CCS_VALIDATE(
+		_ccs_json_extract_string(json, "data_type", &data_type_str));
+	CCS_VALIDATE(
+		_ccs_json_extract_string(json, "scale_type", &scale_type_str));
 	CCS_VALIDATE(
 		_ccs_json_numeric_type_from_string(data_type_str, &data_type));
 	CCS_VALIDATE(
 		_ccs_json_scale_type_from_string(scale_type_str, &scale_type));
-	CCS_VALIDATE(_ccs_json_get_float(j_mu, &mu_val));
-	CCS_VALIDATE(_ccs_json_get_float(j_sigma, &sigma_val));
+	CCS_VALIDATE(_ccs_json_extract_float(json, "mu", &mu_val));
+	CCS_VALIDATE(_ccs_json_extract_float(json, "sigma", &sigma_val));
 
-	ccs_numeric_t quantization;
 	if (data_type == CCS_NUMERIC_TYPE_FLOAT) {
 		double fq;
-		CCS_VALIDATE(_ccs_json_get_float(j_quantization, &fq));
+		CCS_VALIDATE(
+			_ccs_json_extract_float(json, "quantization", &fq));
 		quantization.f = fq;
 	} else {
-		CCS_VALIDATE(
-			_ccs_json_get_int(j_quantization, &quantization.i));
+		CCS_VALIDATE(_ccs_json_extract_int(
+			json, "quantization", &quantization.i));
 	}
 	CCS_VALIDATE(ccs_create_normal_distribution(
 		data_type, mu_val, sigma_val, scale_type, quantization,

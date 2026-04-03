@@ -149,7 +149,6 @@ _ccs_deserialize_json_ccs_distribution_space_data(
 	cJSON                               *json,
 	_ccs_object_deserialize_options_t   *opts)
 {
-	cJSON      *j_cs;
 	cJSON      *j_distribs;
 	size_t      num;
 	size_t      total_indices = 0;
@@ -159,8 +158,8 @@ _ccs_deserialize_json_ccs_distribution_space_data(
 
 	/* configuration_space handle */
 	const char *cs_str;
-	j_cs = cJSON_GetObjectItemCaseSensitive(json, "configuration_space");
-	CCS_VALIDATE(_ccs_json_get_string(j_cs, &cs_str));
+	CCS_VALIDATE(
+		_ccs_json_extract_string(json, "configuration_space", &cs_str));
 	CCS_REFUTE(
 		strlen(cs_str) != sizeof(ccs_object_t) * 2,
 		CCS_RESULT_ERROR_INVALID_VALUE);

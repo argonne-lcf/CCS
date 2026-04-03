@@ -171,46 +171,35 @@ _ccs_deserialize_json_parameter_numerical(
 	ccs_parameter_t *parameter_ret,
 	cJSON           *json)
 {
-	cJSON *j_data_type =
-		cJSON_GetObjectItemCaseSensitive(json, "data_type");
-	cJSON *j_name  = cJSON_GetObjectItemCaseSensitive(json, "name");
-	cJSON *j_lower = cJSON_GetObjectItemCaseSensitive(json, "lower");
-	cJSON *j_upper = cJSON_GetObjectItemCaseSensitive(json, "upper");
-	cJSON *j_quantization =
-		cJSON_GetObjectItemCaseSensitive(json, "quantization");
-	cJSON *j_default_value =
-		cJSON_GetObjectItemCaseSensitive(json, "default_value");
-
 	const char        *data_type_str;
 	const char        *name_str;
 	ccs_numeric_type_t data_type;
 	ccs_datum_t        default_datum;
-	CCS_VALIDATE(_ccs_json_get_string(j_data_type, &data_type_str));
-	CCS_VALIDATE(_ccs_json_get_string(j_name, &name_str));
-	CCS_REFUTE(!j_lower, CCS_RESULT_ERROR_INVALID_VALUE);
-	CCS_REFUTE(!j_upper, CCS_RESULT_ERROR_INVALID_VALUE);
-	CCS_REFUTE(!j_quantization, CCS_RESULT_ERROR_INVALID_VALUE);
-	CCS_REFUTE(!j_default_value, CCS_RESULT_ERROR_INVALID_VALUE);
+	CCS_VALIDATE(
+		_ccs_json_extract_string(json, "data_type", &data_type_str));
+	CCS_VALIDATE(_ccs_json_extract_string(json, "name", &name_str));
 
 	CCS_VALIDATE(
 		_ccs_json_numeric_type_from_string(data_type_str, &data_type));
-	CCS_VALIDATE(_ccs_json_get_datum(j_default_value, &default_datum));
+	CCS_VALIDATE(
+		_ccs_json_extract_datum(json, "default_value", &default_datum));
 
 	ccs_numeric_t lower, upper, quantization, default_value;
 	if (data_type == CCS_NUMERIC_TYPE_FLOAT) {
 		double fl, fu, fq;
-		CCS_VALIDATE(_ccs_json_get_float(j_lower, &fl));
-		CCS_VALIDATE(_ccs_json_get_float(j_upper, &fu));
-		CCS_VALIDATE(_ccs_json_get_float(j_quantization, &fq));
+		CCS_VALIDATE(_ccs_json_extract_float(json, "lower", &fl));
+		CCS_VALIDATE(_ccs_json_extract_float(json, "upper", &fu));
+		CCS_VALIDATE(
+			_ccs_json_extract_float(json, "quantization", &fq));
 		lower.f         = fl;
 		upper.f         = fu;
 		quantization.f  = fq;
 		default_value.f = default_datum.value.f;
 	} else {
-		CCS_VALIDATE(_ccs_json_get_int(j_lower, &lower.i));
-		CCS_VALIDATE(_ccs_json_get_int(j_upper, &upper.i));
-		CCS_VALIDATE(
-			_ccs_json_get_int(j_quantization, &quantization.i));
+		CCS_VALIDATE(_ccs_json_extract_int(json, "lower", &lower.i));
+		CCS_VALIDATE(_ccs_json_extract_int(json, "upper", &upper.i));
+		CCS_VALIDATE(_ccs_json_extract_int(
+			json, "quantization", &quantization.i));
 		default_value.i = default_datum.value.i;
 	}
 	CCS_VALIDATE(ccs_create_numerical_parameter(
@@ -231,15 +220,11 @@ _ccs_deserialize_json_parameter_categorical(
 	ccs_datum_t  default_datum;
 	int          found               = 0;
 	size_t       default_value_index = 0;
-	cJSON       *j_name = cJSON_GetObjectItemCaseSensitive(json, "name");
-	cJSON       *j_default_value =
-		cJSON_GetObjectItemCaseSensitive(json, "default_value");
-	cJSON *j_possible_values =
+	cJSON       *j_possible_values =
 		cJSON_GetObjectItemCaseSensitive(json, "possible_values");
 
 	const char *name_str;
-	CCS_VALIDATE(_ccs_json_get_string(j_name, &name_str));
-	CCS_REFUTE(!j_default_value, CCS_RESULT_ERROR_INVALID_VALUE);
+	CCS_VALIDATE(_ccs_json_extract_string(json, "name", &name_str));
 	CCS_REFUTE(
 		!j_possible_values || !cJSON_IsArray(j_possible_values),
 		CCS_RESULT_ERROR_INVALID_VALUE);
@@ -257,7 +242,9 @@ _ccs_deserialize_json_parameter_categorical(
 	}
 
 	CCS_VALIDATE_ERR_GOTO(
-		res, _ccs_json_get_datum(j_default_value, &default_datum), end);
+		res,
+		_ccs_json_extract_datum(json, "default_value", &default_datum),
+		end);
 	for (size_t i = 0; i < num_possible_values; i++)
 		if (!ccs_datum_cmp(default_datum, possible_values[i])) {
 			found               = 1;
@@ -306,9 +293,8 @@ _ccs_deserialize_json_parameter_string(
 	ccs_parameter_t *parameter_ret,
 	cJSON           *json)
 {
-	cJSON      *j_name = cJSON_GetObjectItemCaseSensitive(json, "name");
 	const char *name_str;
-	CCS_VALIDATE(_ccs_json_get_string(j_name, &name_str));
+	CCS_VALIDATE(_ccs_json_extract_string(json, "name", &name_str));
 	CCS_VALIDATE(ccs_create_string_parameter(name_str, parameter_ret));
 	return CCS_RESULT_SUCCESS;
 }
@@ -324,14 +310,13 @@ _ccs_deserialize_json_parameter(
 	(void)version;
 	(void)buffer_size;
 	cJSON               *json;
-	cJSON               *j_ptype;
 	const char          *ptype_str;
 	ccs_parameter_type_t ptype;
 
 	(void)opts;
-	json    = *(cJSON **)buffer;
-	j_ptype = cJSON_GetObjectItemCaseSensitive(json, "parameter_type");
-	CCS_VALIDATE(_ccs_json_get_string(j_ptype, &ptype_str));
+	json = *(cJSON **)buffer;
+	CCS_VALIDATE(
+		_ccs_json_extract_string(json, "parameter_type", &ptype_str));
 	CCS_VALIDATE(_ccs_json_parameter_type_from_string(ptype_str, &ptype));
 
 	switch (ptype) {

@@ -97,7 +97,6 @@ _ccs_deserialize_json_ccs_evaluation(
 	ccs_evaluation_result_t    result        = CCS_RESULT_SUCCESS;
 	cJSON                     *json;
 	cJSON                     *j_conf;
-	cJSON                     *j_result;
 	const char                *cbuf;
 	size_t                     dummy;
 	ccs_int_t                  result_val;
@@ -139,11 +138,8 @@ _ccs_deserialize_json_ccs_evaluation(
 	}
 
 	/* result */
-	j_result = cJSON_GetObjectItemCaseSensitive(json, "result");
-	CCS_REFUTE_ERR_GOTO(
-		res, !j_result, CCS_RESULT_ERROR_INVALID_VALUE, end);
 	CCS_VALIDATE_ERR_GOTO(
-		res, _ccs_json_get_int(j_result, &result_val), end);
+		res, _ccs_json_extract_int(json, "result", &result_val), end);
 	result = (ccs_evaluation_result_t)result_val;
 
 	CCS_VALIDATE_ERR_GOTO(

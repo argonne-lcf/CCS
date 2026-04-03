@@ -292,10 +292,8 @@ _ccs_deserialize_json_expression_literal(
 	ccs_expression_t *expression_ret,
 	cJSON            *json)
 {
-	cJSON      *j_value = cJSON_GetObjectItemCaseSensitive(json, "value");
 	ccs_datum_t value;
-	CCS_REFUTE(!j_value, CCS_RESULT_ERROR_INVALID_VALUE);
-	CCS_VALIDATE(_ccs_json_get_datum(j_value, &value));
+	CCS_VALIDATE(_ccs_json_extract_datum(json, "value", &value));
 	CCS_VALIDATE(ccs_create_literal(value, expression_ret));
 	return CCS_RESULT_SUCCESS;
 }
@@ -309,12 +307,10 @@ _ccs_deserialize_json_expression_variable(
 	ccs_datum_t     d;
 	ccs_parameter_t h;
 	ccs_object_t    obj;
-	cJSON          *j_param;
 	const char     *param_str;
 
 	CCS_CHECK_OBJ(opts->handle_map, CCS_OBJECT_TYPE_MAP);
-	j_param = cJSON_GetObjectItemCaseSensitive(json, "parameter");
-	CCS_VALIDATE(_ccs_json_get_string(j_param, &param_str));
+	CCS_VALIDATE(_ccs_json_extract_string(json, "parameter", &param_str));
 	CCS_REFUTE(
 		strlen(param_str) != sizeof(ccs_object_t) * 2,
 		CCS_RESULT_ERROR_INVALID_VALUE);
@@ -407,7 +403,6 @@ _ccs_deserialize_json_expression_user_defined(
 	ccs_user_defined_expression_vector_t *vector          = NULL;
 	void                                 *expression_data = NULL;
 	const char                           *name;
-	cJSON                                *j_name;
 	cJSON                                *j_nodes;
 	cJSON                                *j_state;
 	size_t                                num_nodes;
@@ -421,8 +416,7 @@ _ccs_deserialize_json_expression_user_defined(
 	data.num_nodes                                   = 0;
 	data.nodes                                       = NULL;
 
-	j_name = cJSON_GetObjectItemCaseSensitive(json, "name");
-	CCS_VALIDATE(_ccs_json_get_string(j_name, &name));
+	CCS_VALIDATE(_ccs_json_extract_string(json, "name", &name));
 
 	j_nodes = cJSON_GetObjectItemCaseSensitive(json, "nodes");
 	CCS_REFUTE(
@@ -505,13 +499,12 @@ _ccs_deserialize_json_expression(
 {
 	ccs_expression_type_t dtype;
 	cJSON                *json;
-	cJSON                *j_dtype;
 	const char           *dtype_str;
 
 	(void)buffer_size;
-	json    = *(cJSON **)buffer;
-	j_dtype = cJSON_GetObjectItemCaseSensitive(json, "expression_type");
-	CCS_VALIDATE(_ccs_json_get_string(j_dtype, &dtype_str));
+	json = *(cJSON **)buffer;
+	CCS_VALIDATE(
+		_ccs_json_extract_string(json, "expression_type", &dtype_str));
 	CCS_VALIDATE(_ccs_json_expression_type_from_string(dtype_str, &dtype));
 	switch (dtype) {
 	case CCS_EXPRESSION_TYPE_LITERAL:

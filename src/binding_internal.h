@@ -228,14 +228,13 @@ _ccs_deserialize_bin_ccs_binding_data(
 static inline ccs_result_t
 _ccs_deserialize_json_ccs_binding_data(_ccs_binding_data_t *data, cJSON *json)
 {
-	size_t num;
-	cJSON *j_context = cJSON_GetObjectItemCaseSensitive(json, "context");
-	cJSON *j_values  = cJSON_GetObjectItemCaseSensitive(json, "values");
+	size_t      num;
+	cJSON      *j_values = cJSON_GetObjectItemCaseSensitive(json, "values");
 	const char *context_str;
 	data->context    = NULL;
 	data->num_values = 0;
 	data->values     = NULL;
-	CCS_VALIDATE(_ccs_json_get_string(j_context, &context_str));
+	CCS_VALIDATE(_ccs_json_extract_string(json, "context", &context_str));
 	CCS_REFUTE(
 		!j_values || !cJSON_IsArray(j_values),
 		CCS_RESULT_ERROR_INVALID_VALUE);

@@ -106,7 +106,6 @@ _ccs_deserialize_json_tree_configuration(
 {
 	ccs_result_t     res = CCS_RESULT_SUCCESS;
 	cJSON           *json;
-	cJSON           *j_ts;
 	cJSON           *j_position;
 	cJSON           *j_features;
 	ccs_tree_space_t tree_space;
@@ -126,8 +125,7 @@ _ccs_deserialize_json_tree_configuration(
 
 	json = *(cJSON **)buffer;
 
-	j_ts = cJSON_GetObjectItemCaseSensitive(json, "tree_space");
-	CCS_VALIDATE(_ccs_json_get_string(j_ts, &ts_str));
+	CCS_VALIDATE(_ccs_json_extract_string(json, "tree_space", &ts_str));
 	CCS_REFUTE(
 		strlen(ts_str) != sizeof(ccs_object_t) * 2,
 		CCS_RESULT_ERROR_INVALID_VALUE);
