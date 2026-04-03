@@ -77,15 +77,11 @@ _ccs_serialize_json_ccs_parameter_string(ccs_parameter_t parameter, cJSON *json)
 {
 	_ccs_parameter_string_data_t *data =
 		(_ccs_parameter_string_data_t *)(parameter->data);
-	CCS_REFUTE(
-		!cJSON_AddStringToObject(
-			json, "parameter_type",
-			_ccs_json_parameter_type_to_string(
-				data->common_data.type)),
-		CCS_RESULT_ERROR_OUT_OF_MEMORY);
-	CCS_REFUTE(
-		!cJSON_AddStringToObject(json, "name", data->common_data.name),
-		CCS_RESULT_ERROR_OUT_OF_MEMORY);
+	CCS_VALIDATE(_ccs_json_add_string(
+		json, "parameter_type",
+		_ccs_json_parameter_type_to_string(data->common_data.type)));
+	CCS_VALIDATE(
+		_ccs_json_add_string(json, "name", data->common_data.name));
 	return CCS_RESULT_SUCCESS;
 }
 

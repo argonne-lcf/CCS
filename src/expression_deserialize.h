@@ -310,18 +310,17 @@ _ccs_deserialize_json_expression_variable(
 	ccs_parameter_t h;
 	ccs_object_t    obj;
 	cJSON          *j_param;
+	const char     *param_str;
 
 	CCS_CHECK_OBJ(opts->handle_map, CCS_OBJECT_TYPE_MAP);
 	j_param = cJSON_GetObjectItemCaseSensitive(json, "parameter");
+	CCS_VALIDATE(_ccs_json_get_string(j_param, &param_str));
 	CCS_REFUTE(
-		!j_param || !cJSON_IsString(j_param),
-		CCS_RESULT_ERROR_INVALID_VALUE);
-	CCS_REFUTE(
-		strlen(j_param->valuestring) != sizeof(ccs_object_t) * 2,
+		strlen(param_str) != sizeof(ccs_object_t) * 2,
 		CCS_RESULT_ERROR_INVALID_VALUE);
 	CCS_REFUTE(
 		_ccs_json_hex_decode_buf(
-			j_param->valuestring, sizeof(ccs_object_t) * 2, &obj),
+			param_str, sizeof(ccs_object_t) * 2, &obj),
 		CCS_RESULT_ERROR_INVALID_VALUE);
 	CCS_VALIDATE(ccs_map_get(opts->handle_map, ccs_object(obj), &d));
 	CCS_REFUTE(
@@ -414,6 +413,7 @@ _ccs_deserialize_json_expression_user_defined(
 	size_t                                num_nodes;
 	size_t                                state_len  = 0;
 	unsigned char                        *state_data = NULL;
+	const char                           *state_str  = NULL;
 
 	_ccs_object_deserialize_options_t     new_opts   = *opts;
 	new_opts.map_values                              = CCS_FALSE;
@@ -422,10 +422,7 @@ _ccs_deserialize_json_expression_user_defined(
 	data.nodes                                       = NULL;
 
 	j_name = cJSON_GetObjectItemCaseSensitive(json, "name");
-	CCS_REFUTE(
-		!j_name || !cJSON_IsString(j_name),
-		CCS_RESULT_ERROR_INVALID_VALUE);
-	name    = j_name->valuestring;
+	CCS_VALIDATE(_ccs_json_get_string(j_name, &name));
 
 	j_nodes = cJSON_GetObjectItemCaseSensitive(json, "nodes");
 	CCS_REFUTE(
@@ -471,9 +468,9 @@ _ccs_deserialize_json_expression_user_defined(
 		end);
 
 	j_state = cJSON_GetObjectItemCaseSensitive(json, "state");
-	if (j_state && cJSON_IsString(j_state)) {
-		state_data =
-			_ccs_json_hex_decode(j_state->valuestring, &state_len);
+	if (j_state &&
+	    _ccs_json_get_string(j_state, &state_str) == CCS_RESULT_SUCCESS) {
+		state_data = _ccs_json_hex_decode(state_str, &state_len);
 		CCS_REFUTE_ERR_GOTO(
 			res, !state_data, CCS_RESULT_ERROR_INVALID_VALUE, end);
 	}
@@ -509,15 +506,13 @@ _ccs_deserialize_json_expression(
 	ccs_expression_type_t dtype;
 	cJSON                *json;
 	cJSON                *j_dtype;
+	const char           *dtype_str;
 
 	(void)buffer_size;
 	json    = *(cJSON **)buffer;
 	j_dtype = cJSON_GetObjectItemCaseSensitive(json, "expression_type");
-	CCS_REFUTE(
-		!j_dtype || !cJSON_IsString(j_dtype),
-		CCS_RESULT_ERROR_INVALID_VALUE);
-	CCS_VALIDATE(_ccs_json_expression_type_from_string(
-		j_dtype->valuestring, &dtype));
+	CCS_VALIDATE(_ccs_json_get_string(j_dtype, &dtype_str));
+	CCS_VALIDATE(_ccs_json_expression_type_from_string(dtype_str, &dtype));
 	switch (dtype) {
 	case CCS_EXPRESSION_TYPE_LITERAL:
 		CCS_VALIDATE(_ccs_deserialize_json_expression_literal(

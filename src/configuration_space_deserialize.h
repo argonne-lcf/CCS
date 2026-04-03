@@ -182,13 +182,10 @@ _ccs_deserialize_json_ccs_configuration_space_data(
 	size_t      dummy;
 
 	j_name = cJSON_GetObjectItemCaseSensitive(json, "name");
-	CCS_REFUTE(
-		!j_name || !cJSON_IsString(j_name),
-		CCS_RESULT_ERROR_INVALID_VALUE);
-	data->name = j_name->valuestring;
+	CCS_VALIDATE(_ccs_json_get_string(j_name, &data->name));
 
 	/* feature space (optional) */
-	j_fs       = cJSON_GetObjectItemCaseSensitive(json, "feature_space");
+	j_fs = cJSON_GetObjectItemCaseSensitive(json, "feature_space");
 	if (j_fs && cJSON_IsObject(j_fs)) {
 		cbuf  = (const char *)j_fs;
 		dummy = 0;

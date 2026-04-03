@@ -104,9 +104,8 @@ _ccs_serialize_json_ccs_distribution_mixture(
 {
 	_ccs_distribution_mixture_data_t *data =
 		(_ccs_distribution_mixture_data_t *)(distribution->data);
-	CCS_REFUTE(
-		!cJSON_AddStringToObject(json, "distribution_type", "mixture"),
-		CCS_RESULT_ERROR_OUT_OF_MEMORY);
+	CCS_VALIDATE(
+		_ccs_json_add_string(json, "distribution_type", "mixture"));
 	cJSON *weights = cJSON_AddArrayToObject(json, "weights");
 	CCS_REFUTE(!weights, CCS_RESULT_ERROR_OUT_OF_MEMORY);
 	for (size_t i = 0; i < data->num_distributions; i++) {

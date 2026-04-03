@@ -163,12 +163,9 @@ _ccs_serialize_json_ccs_random_tuner(
 	size_t                dummy = 0;
 
 	/* tuner type + name */
-	CCS_REFUTE(
-		!cJSON_AddStringToObject(json, "tuner_type", "random"),
-		CCS_RESULT_ERROR_OUT_OF_MEMORY);
-	CCS_REFUTE(
-		!cJSON_AddStringToObject(json, "name", data->common_data.name),
-		CCS_RESULT_ERROR_OUT_OF_MEMORY);
+	CCS_VALIDATE(_ccs_json_add_string(json, "tuner_type", "random"));
+	CCS_VALIDATE(
+		_ccs_json_add_string(json, "name", data->common_data.name));
 
 	/* objective_space (inlined) */
 	{
@@ -214,8 +211,8 @@ _ccs_serialize_json_ccs_random_tuner(
 				char hex[sizeof(ccs_object_t) * 2 + 1];
 				_ccs_json_hex_encode_buf(
 					e, sizeof(ccs_object_t), hex);
-				cJSON *h = cJSON_CreateString(hex);
-				CCS_REFUTE(!h, CCS_RESULT_ERROR_OUT_OF_MEMORY);
+				cJSON *h = NULL;
+				CCS_VALIDATE(_ccs_json_create_string(hex, &h));
 				CCS_REFUTE(
 					!cJSON_AddItemToArray(optima, h),
 					CCS_RESULT_ERROR_OUT_OF_MEMORY);

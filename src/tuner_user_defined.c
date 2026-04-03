@@ -197,12 +197,9 @@ _ccs_serialize_json_ccs_user_defined_tuner(
 	ccs_evaluation_t *optima       = NULL;
 
 	/* tuner type + name */
-	CCS_REFUTE(
-		!cJSON_AddStringToObject(json, "tuner_type", "user_defined"),
-		CCS_RESULT_ERROR_OUT_OF_MEMORY);
-	CCS_REFUTE(
-		!cJSON_AddStringToObject(json, "name", data->common_data.name),
-		CCS_RESULT_ERROR_OUT_OF_MEMORY);
+	CCS_VALIDATE(_ccs_json_add_string(json, "tuner_type", "user_defined"));
+	CCS_VALIDATE(
+		_ccs_json_add_string(json, "name", data->common_data.name));
 
 	/* objective_space (inlined) */
 	{
@@ -268,9 +265,9 @@ _ccs_serialize_json_ccs_user_defined_tuner(
 			char hex[sizeof(ccs_object_t) * 2 + 1];
 			_ccs_json_hex_encode_buf(
 				&optima[i], sizeof(ccs_object_t), hex);
-			cJSON *h = cJSON_CreateString(hex);
-			CCS_REFUTE_ERR_GOTO(
-				res, !h, CCS_RESULT_ERROR_OUT_OF_MEMORY, end);
+			cJSON *h = NULL;
+			CCS_VALIDATE_ERR_GOTO(
+				res, _ccs_json_create_string(hex, &h), end);
 			CCS_REFUTE_ERR_GOTO(
 				res, !cJSON_AddItemToArray(j_optima, h),
 				CCS_RESULT_ERROR_OUT_OF_MEMORY, end);
@@ -300,11 +297,10 @@ _ccs_serialize_json_ccs_user_defined_tuner(
 			free(state_buf);
 			CCS_REFUTE_ERR_GOTO(
 				res, !hex, CCS_RESULT_ERROR_OUT_OF_MEMORY, end);
-			cJSON *j = cJSON_AddStringToObject(
-				json, "user_state", hex);
+			ccs_result_t add_err =
+				_ccs_json_add_string(json, "user_state", hex);
 			free(hex);
-			CCS_REFUTE_ERR_GOTO(
-				res, !j, CCS_RESULT_ERROR_OUT_OF_MEMORY, end);
+			CCS_VALIDATE_ERR_GOTO(res, add_err, end);
 		}
 	}
 

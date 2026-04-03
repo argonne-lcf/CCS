@@ -118,9 +118,7 @@ _ccs_serialize_json_ccs_distribution_space(
 
 	_ccs_json_hex_encode_buf(
 		&data->configuration_space, sizeof(ccs_object_t), hex);
-	CCS_REFUTE(
-		!cJSON_AddStringToObject(json, "configuration_space", hex),
-		CCS_RESULT_ERROR_OUT_OF_MEMORY);
+	CCS_VALIDATE(_ccs_json_add_string(json, "configuration_space", hex));
 
 	cJSON *distribs = cJSON_AddArrayToObject(json, "distributions");
 	CCS_REFUTE(!distribs, CCS_RESULT_ERROR_OUT_OF_MEMORY);

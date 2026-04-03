@@ -115,22 +115,29 @@ _ccs_serialize_json_ccs_tree_space_dynamic(
 			CCS_VALIDATE(data->vector.serialize_user_state(
 				tree_space, 0, NULL, &state_size));
 		if (state_size) {
-			char *tmp = (char *)malloc(state_size);
-			char *hex;
+			ccs_result_t err;
+			char        *tmp = (char *)malloc(state_size);
+			char        *hex = NULL;
 			CCS_REFUTE(!tmp, CCS_RESULT_ERROR_OUT_OF_MEMORY);
-			CCS_VALIDATE(data->vector.serialize_user_state(
-				tree_space, state_size, tmp, NULL));
+			CCS_VALIDATE_ERR_GOTO(
+				err,
+				data->vector.serialize_user_state(
+					tree_space, state_size, tmp, NULL),
+				err_ts_tmp);
 			hex = _ccs_json_hex_encode(tmp, state_size);
+			CCS_REFUTE_ERR_GOTO(
+				err, !hex, CCS_RESULT_ERROR_OUT_OF_MEMORY,
+				err_ts_tmp);
+			CCS_VALIDATE_ERR_GOTO(
+				err,
+				_ccs_json_add_string(json, "user_state", hex),
+				err_ts_hex);
+		err_ts_hex:
+			free(hex);
+		err_ts_tmp:
 			free(tmp);
-			CCS_REFUTE(!hex, CCS_RESULT_ERROR_OUT_OF_MEMORY);
-			{
-				cJSON *j_state = cJSON_AddStringToObject(
-					json, "user_state", hex);
-				free(hex);
-				CCS_REFUTE(
-					!j_state,
-					CCS_RESULT_ERROR_OUT_OF_MEMORY);
-			}
+			if (err != CCS_RESULT_SUCCESS)
+				return err;
 		}
 	}
 

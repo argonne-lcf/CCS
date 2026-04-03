@@ -52,29 +52,25 @@ _ccs_deserialize_json_rng(
 	const char                       **buffer,
 	_ccs_object_deserialize_options_t *opts)
 {
+	cJSON      *json;
+	cJSON      *j_rng_type;
+	cJSON      *j_little_endian;
+	cJSON      *j_state;
+	const char *name;
+	ccs_bool_t  little_endian;
+	const char *state_str;
+
 	(void)version;
 	(void)buffer_size;
 	(void)opts;
-	cJSON *json       = *(cJSON **)buffer;
-
-	cJSON *j_rng_type = cJSON_GetObjectItemCaseSensitive(json, "rng_type");
-	cJSON *j_little_endian =
+	json       = *(cJSON **)buffer;
+	j_rng_type = cJSON_GetObjectItemCaseSensitive(json, "rng_type");
+	j_little_endian =
 		cJSON_GetObjectItemCaseSensitive(json, "little_endian");
-	cJSON *j_state = cJSON_GetObjectItemCaseSensitive(json, "state");
-
-	CCS_REFUTE(
-		!j_rng_type || !cJSON_IsString(j_rng_type),
-		CCS_RESULT_ERROR_INVALID_VALUE);
-	CCS_REFUTE(
-		!j_little_endian || !cJSON_IsBool(j_little_endian),
-		CCS_RESULT_ERROR_INVALID_VALUE);
-	CCS_REFUTE(
-		!j_state || !cJSON_IsString(j_state),
-		CCS_RESULT_ERROR_INVALID_VALUE);
-
-	const char *name          = j_rng_type->valuestring;
-	ccs_bool_t  little_endian = cJSON_IsTrue(j_little_endian) ? CCS_TRUE :
-								    CCS_FALSE;
+	j_state = cJSON_GetObjectItemCaseSensitive(json, "state");
+	CCS_VALIDATE(_ccs_json_get_string(j_rng_type, &name));
+	CCS_VALIDATE(_ccs_json_get_bool(j_little_endian, &little_endian));
+	CCS_VALIDATE(_ccs_json_get_string(j_state, &state_str));
 
 	if (!_ccs_gsl_rng_types)
 		_ccs_gsl_rng_types = gsl_rng_types_setup();
@@ -88,8 +84,7 @@ _ccs_deserialize_json_rng(
 	CCS_VALIDATE(ccs_create_rng_with_type(*t, rng_ret));
 
 	size_t         state_len;
-	unsigned char *state_data =
-		_ccs_json_hex_decode(j_state->valuestring, &state_len);
+	unsigned char *state_data = _ccs_json_hex_decode(state_str, &state_len);
 	if (state_data) {
 		if (state_len == gsl_rng_size((*rng_ret)->data->rng) &&
 		    little_endian == ccs_is_little_endian())

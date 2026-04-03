@@ -38,21 +38,15 @@ _ccs_serialize_json_ccs_parameter_numerical(
 {
 	_ccs_parameter_numerical_data_t *data =
 		(_ccs_parameter_numerical_data_t *)(parameter->data);
-	CCS_REFUTE(
-		!cJSON_AddStringToObject(
-			json, "parameter_type",
-			_ccs_json_parameter_type_to_string(
-				data->common_data.type)),
-		CCS_RESULT_ERROR_OUT_OF_MEMORY);
-	CCS_REFUTE(
-		!cJSON_AddStringToObject(json, "name", data->common_data.name),
-		CCS_RESULT_ERROR_OUT_OF_MEMORY);
-	CCS_REFUTE(
-		!cJSON_AddStringToObject(
-			json, "data_type",
-			_ccs_json_numeric_type_to_string(
-				data->common_data.interval.type)),
-		CCS_RESULT_ERROR_OUT_OF_MEMORY);
+	CCS_VALIDATE(_ccs_json_add_string(
+		json, "parameter_type",
+		_ccs_json_parameter_type_to_string(data->common_data.type)));
+	CCS_VALIDATE(
+		_ccs_json_add_string(json, "name", data->common_data.name));
+	CCS_VALIDATE(_ccs_json_add_string(
+		json, "data_type",
+		_ccs_json_numeric_type_to_string(
+			data->common_data.interval.type)));
 	if (data->common_data.interval.type == CCS_NUMERIC_TYPE_FLOAT) {
 		CCS_VALIDATE(_ccs_json_add_float(
 			json, "lower", data->common_data.interval.lower.f));

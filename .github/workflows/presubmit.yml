@@ -104,7 +104,7 @@ jobs:
       - run: pip3 install --user parglare
       - run: ./autogen.sh
       - run: mkdir -p build
-      - run: ../configure --enable-code-coverage --enable-thread-safe
+      - run: ../configure --enable-code-coverage --enable-thread-safe CFLAGS="-O0 -g -fprofile-arcs -ftest-coverage -fprofile-update=atomic"
         working-directory: build
       - run: make -j
         working-directory: build

@@ -152,9 +152,7 @@ _ccs_serialize_json_ccs_objective_space(
 		(_ccs_objective_space_data_t *)(objective_space->data);
 	size_t dummy = 0;
 
-	CCS_REFUTE(
-		!cJSON_AddStringToObject(json, "name", data->name),
-		CCS_RESULT_ERROR_OUT_OF_MEMORY);
+	CCS_VALIDATE(_ccs_json_add_string(json, "name", data->name));
 
 	/* search_space (embedded) */
 	{
@@ -194,12 +192,10 @@ _ccs_serialize_json_ccs_objective_space(
 				data->objectives[i].expression,
 				CCS_SERIALIZE_FORMAT_JSON, &dummy,
 				(char **)&expr, opts));
-			CCS_REFUTE(
-				!cJSON_AddStringToObject(
-					obj, "type",
-					_ccs_json_objective_type_to_string(
-						data->objectives[i].type)),
-				CCS_RESULT_ERROR_OUT_OF_MEMORY);
+			CCS_VALIDATE(_ccs_json_add_string(
+				obj, "type",
+				_ccs_json_objective_type_to_string(
+					data->objectives[i].type)));
 		}
 	}
 

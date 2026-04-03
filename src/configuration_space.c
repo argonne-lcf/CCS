@@ -209,9 +209,7 @@ _ccs_serialize_json_ccs_configuration_space(
 		(_ccs_configuration_space_data_t *)(configuration_space->data);
 	size_t dummy = 0;
 
-	CCS_REFUTE(
-		!cJSON_AddStringToObject(json, "name", data->name),
-		CCS_RESULT_ERROR_OUT_OF_MEMORY);
+	CCS_VALIDATE(_ccs_json_add_string(json, "name", data->name));
 
 	/* feature space (optional) */
 	if (data->feature_space) {

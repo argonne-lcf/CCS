@@ -80,9 +80,8 @@ _ccs_serialize_json_ccs_distribution_roulette(
 {
 	_ccs_distribution_roulette_data_t *data =
 		(_ccs_distribution_roulette_data_t *)(distribution->data);
-	CCS_REFUTE(
-		!cJSON_AddStringToObject(json, "distribution_type", "roulette"),
-		CCS_RESULT_ERROR_OUT_OF_MEMORY);
+	CCS_VALIDATE(
+		_ccs_json_add_string(json, "distribution_type", "roulette"));
 	cJSON *areas = cJSON_AddArrayToObject(json, "areas");
 	CCS_REFUTE(!areas, CCS_RESULT_ERROR_OUT_OF_MEMORY);
 	for (size_t i = 0; i < data->num_areas; i++) {

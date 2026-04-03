@@ -81,15 +81,11 @@ _ccs_serialize_json_ccs_parameter_categorical(
 {
 	_ccs_parameter_categorical_data_t *data =
 		(_ccs_parameter_categorical_data_t *)(parameter->data);
-	CCS_REFUTE(
-		!cJSON_AddStringToObject(
-			json, "parameter_type",
-			_ccs_json_parameter_type_to_string(
-				data->common_data.type)),
-		CCS_RESULT_ERROR_OUT_OF_MEMORY);
-	CCS_REFUTE(
-		!cJSON_AddStringToObject(json, "name", data->common_data.name),
-		CCS_RESULT_ERROR_OUT_OF_MEMORY);
+	CCS_VALIDATE(_ccs_json_add_string(
+		json, "parameter_type",
+		_ccs_json_parameter_type_to_string(data->common_data.type)));
+	CCS_VALIDATE(
+		_ccs_json_add_string(json, "name", data->common_data.name));
 	CCS_VALIDATE(_ccs_json_add_datum(
 		json, "default_value", data->common_data.default_value));
 	cJSON *j_values = cJSON_AddArrayToObject(json, "possible_values");
