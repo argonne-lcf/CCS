@@ -61,20 +61,12 @@ _ccs_serialize_json_ccs_parameter_numerical(
 		CCS_VALIDATE(_ccs_json_add_float(
 			json, "quantization", data->quantization.f));
 	} else {
-		CCS_REFUTE(
-			!cJSON_AddNumberToObject(
-				json, "lower",
-				data->common_data.interval.lower.i),
-			CCS_RESULT_ERROR_OUT_OF_MEMORY);
-		CCS_REFUTE(
-			!cJSON_AddNumberToObject(
-				json, "upper",
-				data->common_data.interval.upper.i),
-			CCS_RESULT_ERROR_OUT_OF_MEMORY);
-		CCS_REFUTE(
-			!cJSON_AddNumberToObject(
-				json, "quantization", data->quantization.i),
-			CCS_RESULT_ERROR_OUT_OF_MEMORY);
+		CCS_VALIDATE(_ccs_json_add_int(
+			json, "lower", data->common_data.interval.lower.i));
+		CCS_VALIDATE(_ccs_json_add_int(
+			json, "upper", data->common_data.interval.upper.i));
+		CCS_VALIDATE(_ccs_json_add_int(
+			json, "quantization", data->quantization.i));
 	}
 	CCS_VALIDATE(_ccs_json_add_datum(
 		json, "default_value", data->common_data.default_value));

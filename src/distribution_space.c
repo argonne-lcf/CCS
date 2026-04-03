@@ -144,14 +144,15 @@ _ccs_serialize_json_ccs_distribution_space(
 		cJSON *indices =
 			cJSON_AddArrayToObject(entry, "parameter_indices");
 		CCS_REFUTE(!indices, CCS_RESULT_ERROR_OUT_OF_MEMORY);
-		for (size_t i = 0; i < dw->dimension; i++)
+		for (size_t i = 0; i < dw->dimension; i++) {
+			cJSON *idx_item;
+			CCS_VALIDATE(_ccs_json_create_int(
+				(ccs_int_t)dw->parameter_indexes[i],
+				&idx_item));
 			CCS_REFUTE(
-				!cJSON_AddItemToArray(
-					indices,
-					cJSON_CreateNumber(
-						(double)dw
-							->parameter_indexes[i])),
+				!cJSON_AddItemToArray(indices, idx_item),
 				CCS_RESULT_ERROR_OUT_OF_MEMORY);
+		}
 	}
 
 	return CCS_RESULT_SUCCESS;

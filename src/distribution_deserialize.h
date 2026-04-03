@@ -370,18 +370,10 @@ _ccs_deserialize_json_distribution_uniform(
 		upper.f        = fu;
 		quantization.f = fq;
 	} else {
-		CCS_REFUTE(
-			!cJSON_IsNumber(j_lower),
-			CCS_RESULT_ERROR_INVALID_VALUE);
-		CCS_REFUTE(
-			!cJSON_IsNumber(j_upper),
-			CCS_RESULT_ERROR_INVALID_VALUE);
-		CCS_REFUTE(
-			!cJSON_IsNumber(j_quantization),
-			CCS_RESULT_ERROR_INVALID_VALUE);
-		lower.i        = (ccs_int_t)j_lower->valuedouble;
-		upper.i        = (ccs_int_t)j_upper->valuedouble;
-		quantization.i = (ccs_int_t)j_quantization->valuedouble;
+		CCS_VALIDATE(_ccs_json_get_int(j_lower, &lower.i));
+		CCS_VALIDATE(_ccs_json_get_int(j_upper, &upper.i));
+		CCS_VALIDATE(
+			_ccs_json_get_int(j_quantization, &quantization.i));
 	}
 	CCS_VALIDATE(ccs_create_uniform_distribution(
 		data_type, lower, upper, scale_type, quantization,
@@ -429,10 +421,8 @@ _ccs_deserialize_json_distribution_normal(
 		CCS_VALIDATE(_ccs_json_get_float(j_quantization, &fq));
 		quantization.f = fq;
 	} else {
-		CCS_REFUTE(
-			!cJSON_IsNumber(j_quantization),
-			CCS_RESULT_ERROR_INVALID_VALUE);
-		quantization.i = (ccs_int_t)j_quantization->valuedouble;
+		CCS_VALIDATE(
+			_ccs_json_get_int(j_quantization, &quantization.i));
 	}
 	CCS_VALIDATE(ccs_create_normal_distribution(
 		data_type, mu_val, sigma_val, scale_type, quantization,
@@ -457,9 +447,9 @@ _ccs_deserialize_json_distribution_roulette(
 	for (size_t i = 0; i < num_areas; i++) {
 		cJSON *item = cJSON_GetArrayItem(j_areas, (int)i);
 		CCS_REFUTE_ERR_GOTO(
-			res, !item || !cJSON_IsNumber(item),
-			CCS_RESULT_ERROR_INVALID_VALUE, end);
-		areas[i] = item->valuedouble;
+			res, !item, CCS_RESULT_ERROR_INVALID_VALUE, end);
+		CCS_VALIDATE_ERR_GOTO(
+			res, _ccs_json_get_float(item, &areas[i]), end);
 	}
 	CCS_VALIDATE_ERR_GOTO(
 		res,
@@ -512,9 +502,9 @@ _ccs_deserialize_json_distribution_mixture(
 	for (size_t i = 0; i < num; i++) {
 		cJSON *w = cJSON_GetArrayItem(j_weights, (int)i);
 		CCS_REFUTE_ERR_GOTO(
-			res, !w || !cJSON_IsNumber(w),
-			CCS_RESULT_ERROR_INVALID_VALUE, end);
-		weights[i]   = w->valuedouble;
+			res, !w, CCS_RESULT_ERROR_INVALID_VALUE, end);
+		CCS_VALIDATE_ERR_GOTO(
+			res, _ccs_json_get_float(w, &weights[i]), end);
 		cJSON *child = cJSON_GetArrayItem(j_distributions, (int)i);
 		CCS_REFUTE_ERR_GOTO(
 			res, !child || !cJSON_IsObject(child),

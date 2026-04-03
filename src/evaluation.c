@@ -99,9 +99,8 @@ _ccs_serialize_json_ccs_evaluation(
 	}
 
 	/* result */
-	CCS_REFUTE(
-		!cJSON_AddNumberToObject(json, "result", (double)data->result),
-		CCS_RESULT_ERROR_OUT_OF_MEMORY);
+	CCS_VALIDATE(
+		_ccs_json_add_int(json, "result", (ccs_int_t)data->result));
 
 	return CCS_RESULT_SUCCESS;
 }

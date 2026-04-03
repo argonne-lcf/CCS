@@ -85,13 +85,14 @@ _ccs_serialize_json_ccs_distribution_roulette(
 		CCS_RESULT_ERROR_OUT_OF_MEMORY);
 	cJSON *areas = cJSON_AddArrayToObject(json, "areas");
 	CCS_REFUTE(!areas, CCS_RESULT_ERROR_OUT_OF_MEMORY);
-	for (size_t i = 0; i < data->num_areas; i++)
+	for (size_t i = 0; i < data->num_areas; i++) {
+		cJSON *a_item = NULL;
+		CCS_VALIDATE(_ccs_json_create_float(
+			data->areas[i + 1] - data->areas[i], &a_item));
 		CCS_REFUTE(
-			!cJSON_AddItemToArray(
-				areas,
-				cJSON_CreateNumber(
-					data->areas[i + 1] - data->areas[i])),
+			!cJSON_AddItemToArray(areas, a_item),
 			CCS_RESULT_ERROR_OUT_OF_MEMORY);
+	}
 	return CCS_RESULT_SUCCESS;
 }
 

@@ -256,10 +256,8 @@ _ccs_serialize_json_ccs_configuration_space(
 				CCS_REFUTE(
 					!cond, CCS_RESULT_ERROR_OUT_OF_MEMORY);
 				cJSON_AddItemToArray(conds, cond);
-				CCS_REFUTE(
-					!cJSON_AddNumberToObject(
-						cond, "index", (double)i),
-					CCS_RESULT_ERROR_OUT_OF_MEMORY);
+				CCS_VALIDATE(_ccs_json_add_int(
+					cond, "index", (ccs_int_t)i));
 				expr = cJSON_AddObjectToObject(
 					cond, "expression");
 				CCS_REFUTE(

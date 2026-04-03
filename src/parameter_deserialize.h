@@ -209,18 +209,10 @@ _ccs_deserialize_json_parameter_numerical(
 		quantization.f  = fq;
 		default_value.f = default_datum.value.f;
 	} else {
-		CCS_REFUTE(
-			!cJSON_IsNumber(j_lower),
-			CCS_RESULT_ERROR_INVALID_VALUE);
-		CCS_REFUTE(
-			!cJSON_IsNumber(j_upper),
-			CCS_RESULT_ERROR_INVALID_VALUE);
-		CCS_REFUTE(
-			!cJSON_IsNumber(j_quantization),
-			CCS_RESULT_ERROR_INVALID_VALUE);
-		lower.i         = (ccs_int_t)j_lower->valuedouble;
-		upper.i         = (ccs_int_t)j_upper->valuedouble;
-		quantization.i  = (ccs_int_t)j_quantization->valuedouble;
+		CCS_VALIDATE(_ccs_json_get_int(j_lower, &lower.i));
+		CCS_VALIDATE(_ccs_json_get_int(j_upper, &upper.i));
+		CCS_VALIDATE(
+			_ccs_json_get_int(j_quantization, &quantization.i));
 		default_value.i = default_datum.value.i;
 	}
 	CCS_VALIDATE(ccs_create_numerical_parameter(

@@ -234,11 +234,11 @@ _ccs_deserialize_json_ccs_distribution_space_data(
 		dim                 = (size_t)cJSON_GetArraySize(j_indices);
 		data->dimensions[i] = dim;
 		for (size_t j = 0; j < dim; j++) {
-			cJSON *idx = cJSON_GetArrayItem(j_indices, (int)j);
-			CCS_REFUTE(
-				!idx || !cJSON_IsNumber(idx),
-				CCS_RESULT_ERROR_INVALID_VALUE);
-			*indices = (size_t)idx->valuedouble;
+			ccs_int_t idx_val;
+			cJSON    *idx = cJSON_GetArrayItem(j_indices, (int)j);
+			CCS_REFUTE(!idx, CCS_RESULT_ERROR_INVALID_VALUE);
+			CCS_VALIDATE(_ccs_json_get_int(idx, &idx_val));
+			*indices = (size_t)idx_val;
 			indices++;
 		}
 	}

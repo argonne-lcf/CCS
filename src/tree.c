@@ -97,16 +97,10 @@ _ccs_serialize_json_ccs_tree(
 	cJSON            *children;
 	size_t            i;
 
-	CCS_REFUTE(
-		!cJSON_AddNumberToObject(json, "arity", (double)data->arity),
-		CCS_RESULT_ERROR_OUT_OF_MEMORY);
-	CCS_REFUTE(
-		!cJSON_AddNumberToObject(
-			json, "weight", data->weights[data->arity]),
-		CCS_RESULT_ERROR_OUT_OF_MEMORY);
-	CCS_REFUTE(
-		!cJSON_AddNumberToObject(json, "bias", data->bias),
-		CCS_RESULT_ERROR_OUT_OF_MEMORY);
+	CCS_VALIDATE(_ccs_json_add_int(json, "arity", (ccs_int_t)data->arity));
+	CCS_VALIDATE(_ccs_json_add_float(
+		json, "weight", data->weights[data->arity]));
+	CCS_VALIDATE(_ccs_json_add_float(json, "bias", data->bias));
 	CCS_VALIDATE(_ccs_json_add_datum(json, "value", data->value));
 
 	children = cJSON_AddArrayToObject(json, "children");

@@ -100,6 +100,7 @@ _ccs_deserialize_json_ccs_evaluation(
 	cJSON                     *j_result;
 	const char                *cbuf;
 	size_t                     dummy;
+	ccs_int_t                  result_val;
 
 	(void)version;
 	(void)buffer_size;
@@ -140,9 +141,10 @@ _ccs_deserialize_json_ccs_evaluation(
 	/* result */
 	j_result = cJSON_GetObjectItemCaseSensitive(json, "result");
 	CCS_REFUTE_ERR_GOTO(
-		res, !j_result || !cJSON_IsNumber(j_result),
-		CCS_RESULT_ERROR_INVALID_VALUE, end);
-	result = (ccs_evaluation_result_t)j_result->valuedouble;
+		res, !j_result, CCS_RESULT_ERROR_INVALID_VALUE, end);
+	CCS_VALIDATE_ERR_GOTO(
+		res, _ccs_json_get_int(j_result, &result_val), end);
+	result = (ccs_evaluation_result_t)result_val;
 
 	CCS_VALIDATE_ERR_GOTO(
 		res,
