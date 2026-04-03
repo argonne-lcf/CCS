@@ -153,8 +153,6 @@ _ccs_deserialize_json_ccs_distribution_space_data(
 	size_t      num;
 	size_t      total_indices = 0;
 	uintptr_t   mem;
-	const char *cbuf;
-	size_t      dummy;
 
 	/* configuration_space handle */
 	const char *cs_str;
@@ -213,22 +211,15 @@ _ccs_deserialize_json_ccs_distribution_space_data(
 
 	size_t *indices = data->distrib_parameter_indices;
 	for (size_t i = 0; i < num; i++) {
-		cJSON *entry = cJSON_GetArrayItem(j_distribs, (int)i);
-		cJSON *j_dist =
-			cJSON_GetObjectItemCaseSensitive(entry, "distribution");
+		cJSON *entry     = cJSON_GetArrayItem(j_distribs, (int)i);
 		cJSON *j_indices = cJSON_GetObjectItemCaseSensitive(
 			entry, "parameter_indices");
 		size_t dim;
 
-		CCS_REFUTE(
-			!j_dist || !cJSON_IsObject(j_dist),
-			CCS_RESULT_ERROR_INVALID_VALUE);
-		cbuf  = (const char *)j_dist;
-		dummy = 0;
-		CCS_VALIDATE(_ccs_object_deserialize_with_opts_check(
-			(ccs_object_t *)data->distributions + i,
-			CCS_OBJECT_TYPE_DISTRIBUTION, CCS_SERIALIZE_FORMAT_JSON,
-			version, &dummy, &cbuf, opts));
+		CCS_VALIDATE(_ccs_json_extract_object(
+			entry, "distribution", CCS_OBJECT_TYPE_DISTRIBUTION,
+			version, (ccs_object_t *)data->distributions + i,
+			opts));
 
 		dim                 = (size_t)cJSON_GetArraySize(j_indices);
 		data->dimensions[i] = dim;

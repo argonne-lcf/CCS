@@ -59,16 +59,11 @@ _ccs_deserialize_json_ccs_context_data(
 		data->parameters =
 			(ccs_parameter_t *)calloc(num, sizeof(ccs_parameter_t));
 		CCS_REFUTE(!data->parameters, CCS_RESULT_ERROR_OUT_OF_MEMORY);
-		for (size_t i = 0; i < num; i++) {
-			cJSON *child     = cJSON_GetArrayItem(j_params, (int)i);
-			const char *cbuf = (const char *)child;
-			size_t      dummy = 0;
-			CCS_VALIDATE(_ccs_object_deserialize_with_opts_check(
-				(ccs_object_t *)data->parameters + i,
-				CCS_OBJECT_TYPE_PARAMETER,
-				CCS_SERIALIZE_FORMAT_JSON, version, &dummy,
-				&cbuf, opts));
-		}
+		for (size_t i = 0; i < num; i++)
+			CCS_VALIDATE(_ccs_json_deserialize_array_object(
+				cJSON_GetArrayItem(j_params, (int)i),
+				CCS_OBJECT_TYPE_PARAMETER, version,
+				(ccs_object_t *)data->parameters + i, opts));
 	}
 	return CCS_RESULT_SUCCESS;
 }

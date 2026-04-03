@@ -115,8 +115,6 @@ _ccs_deserialize_json_tree(
 	_ccs_tree_data_mock_t             data;
 	int                               num_children;
 	int                               i;
-	const char                       *cbuf;
-	size_t                            dummy;
 	ccs_int_t                         arity_val;
 
 	(void)buffer_size;
@@ -152,20 +150,16 @@ _ccs_deserialize_json_tree(
 			end);
 		for (i = 0; i < num_children; i++) {
 			cJSON *child_item = cJSON_GetArrayItem(j_children, i);
-			if (!cJSON_IsNull(child_item)) {
-				cbuf  = (const char *)child_item;
-				dummy = 0;
+			if (!cJSON_IsNull(child_item))
 				CCS_VALIDATE_ERR_GOTO(
 					res,
-					_ccs_object_deserialize_with_opts_check(
+					_ccs_json_deserialize_array_object(
+						child_item,
+						CCS_OBJECT_TYPE_TREE, version,
 						(ccs_object_t *)data.children +
 							i,
-						CCS_OBJECT_TYPE_TREE,
-						CCS_SERIALIZE_FORMAT_JSON,
-						version, &dummy, &cbuf,
 						&new_opts),
 					end);
-			}
 		}
 	}
 

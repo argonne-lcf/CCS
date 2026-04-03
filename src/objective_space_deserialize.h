@@ -135,26 +135,18 @@ _ccs_deserialize_json_ccs_objective_space_data(
 	cJSON                             *json,
 	_ccs_object_deserialize_options_t *opts)
 {
-	cJSON      *j_ss;
-	cJSON      *j_params;
-	cJSON      *j_objs;
-	size_t      num;
-	size_t      num_objs;
-	uintptr_t   mem;
-	const char *cbuf;
-	size_t      dummy;
+	cJSON    *j_params;
+	cJSON    *j_objs;
+	size_t    num;
+	size_t    num_objs;
+	uintptr_t mem;
 
 	CCS_VALIDATE(_ccs_json_extract_string(json, "name", &data->name));
 
 	/* search_space */
-	j_ss = cJSON_GetObjectItemCaseSensitive(json, "search_space");
-	CCS_REFUTE(
-		!j_ss || !cJSON_IsObject(j_ss), CCS_RESULT_ERROR_INVALID_VALUE);
-	cbuf  = (const char *)j_ss;
-	dummy = 0;
-	CCS_VALIDATE(_ccs_object_deserialize_with_opts(
-		(ccs_object_t *)&data->search_space, CCS_SERIALIZE_FORMAT_JSON,
-		version, &dummy, &cbuf, opts));
+	CCS_VALIDATE(_ccs_json_extract_object_uncheck(
+		json, "search_space", version,
+		(ccs_object_t *)&data->search_space, opts));
 
 	/* parameters */
 	j_params = cJSON_GetObjectItemCaseSensitive(json, "parameters");
@@ -195,30 +187,17 @@ _ccs_deserialize_json_ccs_objective_space_data(
 	data->objective_types =
 		CCS_ALLOC_CARVE_ARRAY(mem, num_objs, ccs_objective_type_t);
 
-	for (size_t i = 0; i < num; i++) {
-		cJSON *child = cJSON_GetArrayItem(j_params, (int)i);
-		cbuf         = (const char *)child;
-		dummy        = 0;
-		CCS_VALIDATE(_ccs_object_deserialize_with_opts_check(
-			(ccs_object_t *)data->parameters + i,
-			CCS_OBJECT_TYPE_PARAMETER, CCS_SERIALIZE_FORMAT_JSON,
-			version, &dummy, &cbuf, opts));
-	}
+	for (size_t i = 0; i < num; i++)
+		CCS_VALIDATE(_ccs_json_deserialize_array_object(
+			cJSON_GetArrayItem(j_params, (int)i),
+			CCS_OBJECT_TYPE_PARAMETER, version,
+			(ccs_object_t *)data->parameters + i, opts));
 
 	for (size_t i = 0; i < num_objs; i++) {
 		cJSON *obj_item = cJSON_GetArrayItem(j_objs, (int)i);
-		cJSON *j_expr;
-		j_expr = cJSON_GetObjectItemCaseSensitive(
-			obj_item, "expression");
-		CCS_REFUTE(
-			!j_expr || !cJSON_IsObject(j_expr),
-			CCS_RESULT_ERROR_INVALID_VALUE);
-		cbuf  = (const char *)j_expr;
-		dummy = 0;
-		CCS_VALIDATE(_ccs_object_deserialize_with_opts_check(
-			(ccs_object_t *)data->objectives + i,
-			CCS_OBJECT_TYPE_EXPRESSION, CCS_SERIALIZE_FORMAT_JSON,
-			version, &dummy, &cbuf, opts));
+		CCS_VALIDATE(_ccs_json_extract_object(
+			obj_item, "expression", CCS_OBJECT_TYPE_EXPRESSION,
+			version, (ccs_object_t *)data->objectives + i, opts));
 		const char *otype_str;
 		CCS_VALIDATE(
 			_ccs_json_extract_string(obj_item, "type", &otype_str));

@@ -20,6 +20,31 @@ _ccs_object_deserialize_with_opts(
 	const char                       **buffer,
 	_ccs_object_deserialize_options_t *opts);
 
+static inline ccs_result_t
+_ccs_json_extract_object(
+	cJSON                             *json,
+	const char                        *key,
+	ccs_object_type_t                  expected_type,
+	uint32_t                           version,
+	ccs_object_t                      *object_ret,
+	_ccs_object_deserialize_options_t *opts);
+
+static inline ccs_result_t
+_ccs_json_extract_object_uncheck(
+	cJSON                             *json,
+	const char                        *key,
+	uint32_t                           version,
+	ccs_object_t                      *object_ret,
+	_ccs_object_deserialize_options_t *opts);
+
+static inline ccs_result_t
+_ccs_json_deserialize_array_object(
+	cJSON                             *item,
+	ccs_object_type_t                  expected_type,
+	uint32_t                           version,
+	ccs_object_t                      *object_ret,
+	_ccs_object_deserialize_options_t *opts);
+
 #include "rng_deserialize.h"
 #include "distribution_deserialize.h"
 #include "parameter_deserialize.h"
@@ -268,6 +293,76 @@ _ccs_object_deserialize_with_opts(
 errobj:
 	ccs_release_object(obj);
 	return err;
+}
+
+/*============================================================================
+ * JSON object extraction helpers
+ *============================================================================*/
+
+/* Look up a child object by key, validate it is a JSON object,
+ * and deserialize it with type checking. */
+static inline ccs_result_t
+_ccs_json_extract_object(
+	cJSON                             *json,
+	const char                        *key,
+	ccs_object_type_t                  expected_type,
+	uint32_t                           version,
+	ccs_object_t                      *object_ret,
+	_ccs_object_deserialize_options_t *opts)
+{
+	size_t      dummy = 0;
+	cJSON      *item  = cJSON_GetObjectItemCaseSensitive(json, key);
+	const char *cbuf;
+	CCS_REFUTE(
+		!item || !cJSON_IsObject(item), CCS_RESULT_ERROR_INVALID_VALUE);
+	cbuf = (const char *)item;
+	CCS_VALIDATE(_ccs_object_deserialize_with_opts_check(
+		object_ret, expected_type, CCS_SERIALIZE_FORMAT_JSON, version,
+		&dummy, &cbuf, opts));
+	return CCS_RESULT_SUCCESS;
+}
+
+/* Look up a child object by key, validate it is a JSON object,
+ * and deserialize it without type checking (for polymorphic fields). */
+static inline ccs_result_t
+_ccs_json_extract_object_uncheck(
+	cJSON                             *json,
+	const char                        *key,
+	uint32_t                           version,
+	ccs_object_t                      *object_ret,
+	_ccs_object_deserialize_options_t *opts)
+{
+	size_t      dummy = 0;
+	cJSON      *item  = cJSON_GetObjectItemCaseSensitive(json, key);
+	const char *cbuf;
+	CCS_REFUTE(
+		!item || !cJSON_IsObject(item), CCS_RESULT_ERROR_INVALID_VALUE);
+	cbuf = (const char *)item;
+	CCS_VALIDATE(_ccs_object_deserialize_with_opts(
+		object_ret, CCS_SERIALIZE_FORMAT_JSON, version, &dummy, &cbuf,
+		opts));
+	return CCS_RESULT_SUCCESS;
+}
+
+/* Deserialize a JSON array item (already obtained via cJSON_GetArrayItem)
+ * as a typed object. */
+static inline ccs_result_t
+_ccs_json_deserialize_array_object(
+	cJSON                             *item,
+	ccs_object_type_t                  expected_type,
+	uint32_t                           version,
+	ccs_object_t                      *object_ret,
+	_ccs_object_deserialize_options_t *opts)
+{
+	size_t      dummy = 0;
+	const char *cbuf;
+	CCS_REFUTE(
+		!item || !cJSON_IsObject(item), CCS_RESULT_ERROR_INVALID_VALUE);
+	cbuf = (const char *)item;
+	CCS_VALIDATE(_ccs_object_deserialize_with_opts_check(
+		object_ret, expected_type, CCS_SERIALIZE_FORMAT_JSON, version,
+		&dummy, &cbuf, opts));
+	return CCS_RESULT_SUCCESS;
 }
 
 #endif //_CCONFIG_SPACE_SPACE_DESERIALIZE_H

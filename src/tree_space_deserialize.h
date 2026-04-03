@@ -201,12 +201,7 @@ _ccs_deserialize_json_ccs_tree_space_common_data(
 	_ccs_object_deserialize_options_t  *opts)
 {
 	_ccs_object_deserialize_options_t new_opts = *opts;
-	cJSON                            *j_rng;
-	cJSON                            *j_tree;
 	cJSON                            *j_fs_handle;
-	cJSON                            *j_fs;
-	const char                       *cbuf;
-	size_t                            dummy;
 	const char                       *type_str;
 
 	new_opts.handle_map = NULL;
@@ -218,25 +213,13 @@ _ccs_deserialize_json_ccs_tree_space_common_data(
 
 	CCS_VALIDATE(_ccs_json_extract_string(json, "name", &data->name));
 
-	j_rng = cJSON_GetObjectItemCaseSensitive(json, "rng");
-	CCS_REFUTE(
-		!j_rng || !cJSON_IsObject(j_rng),
-		CCS_RESULT_ERROR_INVALID_VALUE);
-	cbuf  = (const char *)j_rng;
-	dummy = 0;
-	CCS_VALIDATE(_ccs_object_deserialize_with_opts_check(
-		(ccs_object_t *)&data->rng, CCS_OBJECT_TYPE_RNG,
-		CCS_SERIALIZE_FORMAT_JSON, version, &dummy, &cbuf, &new_opts));
+	CCS_VALIDATE(_ccs_json_extract_object(
+		json, "rng", CCS_OBJECT_TYPE_RNG, version,
+		(ccs_object_t *)&data->rng, &new_opts));
 
-	j_tree = cJSON_GetObjectItemCaseSensitive(json, "tree");
-	CCS_REFUTE(
-		!j_tree || !cJSON_IsObject(j_tree),
-		CCS_RESULT_ERROR_INVALID_VALUE);
-	cbuf  = (const char *)j_tree;
-	dummy = 0;
-	CCS_VALIDATE(_ccs_object_deserialize_with_opts_check(
-		(ccs_object_t *)&data->tree, CCS_OBJECT_TYPE_TREE,
-		CCS_SERIALIZE_FORMAT_JSON, version, &dummy, &cbuf, &new_opts));
+	CCS_VALIDATE(_ccs_json_extract_object(
+		json, "tree", CCS_OBJECT_TYPE_TREE, version,
+		(ccs_object_t *)&data->tree, &new_opts));
 
 	j_fs_handle =
 		cJSON_GetObjectItemCaseSensitive(json, "feature_space_handle");
@@ -251,17 +234,9 @@ _ccs_deserialize_json_ccs_tree_space_common_data(
 				fs_handle_str, sizeof(ccs_object_t) * 2,
 				&data->feature_space_handle),
 			CCS_RESULT_ERROR_INVALID_VALUE);
-		j_fs = cJSON_GetObjectItemCaseSensitive(json, "feature_space");
-		CCS_REFUTE(
-			!j_fs || !cJSON_IsObject(j_fs),
-			CCS_RESULT_ERROR_INVALID_VALUE);
-		cbuf  = (const char *)j_fs;
-		dummy = 0;
-		CCS_VALIDATE(_ccs_object_deserialize_with_opts_check(
-			(ccs_object_t *)&data->feature_space,
-			CCS_OBJECT_TYPE_FEATURE_SPACE,
-			CCS_SERIALIZE_FORMAT_JSON, version, &dummy, &cbuf,
-			opts));
+		CCS_VALIDATE(_ccs_json_extract_object(
+			json, "feature_space", CCS_OBJECT_TYPE_FEATURE_SPACE,
+			version, (ccs_object_t *)&data->feature_space, opts));
 	}
 
 	return CCS_RESULT_SUCCESS;
