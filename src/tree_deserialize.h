@@ -121,6 +121,7 @@ _ccs_deserialize_json_tree(
 	int                               i;
 	const char                       *cbuf;
 	size_t                            dummy;
+	ccs_int_t                         arity_val;
 
 	(void)buffer_size;
 	new_opts.handle_map = NULL;
@@ -128,26 +129,20 @@ _ccs_deserialize_json_tree(
 	data.children       = NULL;
 
 	json                = *(cJSON **)buffer;
-
 	j_arity             = cJSON_GetObjectItemCaseSensitive(json, "arity");
-	CCS_REFUTE(
-		!j_arity || !cJSON_IsNumber(j_arity),
-		CCS_RESULT_ERROR_INVALID_VALUE);
-	data.arity = (size_t)j_arity->valuedouble;
+	CCS_REFUTE(!j_arity, CCS_RESULT_ERROR_INVALID_VALUE);
+	CCS_VALIDATE(_ccs_json_get_int(j_arity, &arity_val));
+	data.arity = (size_t)arity_val;
 
 	j_weight   = cJSON_GetObjectItemCaseSensitive(json, "weight");
-	CCS_REFUTE(
-		!j_weight || !cJSON_IsNumber(j_weight),
-		CCS_RESULT_ERROR_INVALID_VALUE);
-	data.weight = j_weight->valuedouble;
+	CCS_REFUTE(!j_weight, CCS_RESULT_ERROR_INVALID_VALUE);
+	CCS_VALIDATE(_ccs_json_get_float(j_weight, &data.weight));
 
-	j_bias      = cJSON_GetObjectItemCaseSensitive(json, "bias");
-	CCS_REFUTE(
-		!j_bias || !cJSON_IsNumber(j_bias),
-		CCS_RESULT_ERROR_INVALID_VALUE);
-	data.bias = j_bias->valuedouble;
+	j_bias = cJSON_GetObjectItemCaseSensitive(json, "bias");
+	CCS_REFUTE(!j_bias, CCS_RESULT_ERROR_INVALID_VALUE);
+	CCS_VALIDATE(_ccs_json_get_float(j_bias, &data.bias));
 
-	j_value   = cJSON_GetObjectItemCaseSensitive(json, "value");
+	j_value = cJSON_GetObjectItemCaseSensitive(json, "value");
 	CCS_REFUTE(!j_value, CCS_RESULT_ERROR_INVALID_VALUE);
 	CCS_VALIDATE_ERR_GOTO(
 		res, _ccs_json_get_datum(j_value, &data.value), end);

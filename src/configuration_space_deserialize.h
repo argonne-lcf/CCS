@@ -267,15 +267,15 @@ _ccs_deserialize_json_ccs_configuration_space_data(
 	}
 
 	for (size_t i = 0; i < num_conds; i++) {
-		cJSON *cond_obj = cJSON_GetArrayItem(j_conds, (int)i);
-		cJSON *j_index;
-		cJSON *j_expr;
-		size_t index;
+		cJSON    *cond_obj = cJSON_GetArrayItem(j_conds, (int)i);
+		cJSON    *j_index;
+		cJSON    *j_expr;
+		size_t    index;
+		ccs_int_t index_val;
 		j_index = cJSON_GetObjectItemCaseSensitive(cond_obj, "index");
-		CCS_REFUTE(
-			!j_index || !cJSON_IsNumber(j_index),
-			CCS_RESULT_ERROR_INVALID_VALUE);
-		index = (size_t)j_index->valuedouble;
+		CCS_REFUTE(!j_index, CCS_RESULT_ERROR_INVALID_VALUE);
+		CCS_VALIDATE(_ccs_json_get_int(j_index, &index_val));
+		index = (size_t)index_val;
 		CCS_REFUTE(index >= num, CCS_RESULT_ERROR_INVALID_VALUE);
 		j_expr = cJSON_GetObjectItemCaseSensitive(
 			cond_obj, "expression");

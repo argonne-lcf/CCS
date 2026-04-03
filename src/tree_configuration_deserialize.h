@@ -156,11 +156,14 @@ _ccs_deserialize_json_tree_configuration(
 		CCS_REFUTE_ERR_GOTO(
 			res, !position, CCS_RESULT_ERROR_OUT_OF_MEMORY, end);
 		for (i = 0; i < pos_count; i++) {
-			cJSON *item = cJSON_GetArrayItem(j_position, i);
+			ccs_int_t pos_val;
+			cJSON    *item = cJSON_GetArrayItem(j_position, i);
 			CCS_REFUTE_ERR_GOTO(
-				res, !item || !cJSON_IsNumber(item),
-				CCS_RESULT_ERROR_INVALID_VALUE, end);
-			position[i] = (size_t)item->valuedouble;
+				res, !item, CCS_RESULT_ERROR_INVALID_VALUE,
+				end);
+			CCS_VALIDATE_ERR_GOTO(
+				res, _ccs_json_get_int(item, &pos_val), end);
+			position[i] = (size_t)pos_val;
 		}
 	}
 

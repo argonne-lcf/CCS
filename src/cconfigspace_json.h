@@ -348,6 +348,51 @@ _ccs_json_objective_type_from_string(
 }
 
 /*============================================================================
+ * Integer JSON helpers (guards against precision loss)
+ *============================================================================*/
+
+/* Safe integer range matching JavaScript's Number.MAX_SAFE_INTEGER
+ * and Number.MIN_SAFE_INTEGER: ±(2^53 - 1). */
+#define CCS_JSON_INT_MAX (((ccs_int_t)1 << 53) - 1)
+#define CCS_JSON_INT_MIN (-(CCS_JSON_INT_MAX))
+
+/* Add an integer value to a cJSON object, raising an error if the value
+ * exceeds the range representable by a double without precision loss. */
+static inline ccs_result_t
+_ccs_json_add_int(cJSON *json, const char *key, ccs_int_t value)
+{
+	CCS_REFUTE(
+		value > CCS_JSON_INT_MAX || value < CCS_JSON_INT_MIN,
+		CCS_RESULT_ERROR_INVALID_VALUE);
+	CCS_REFUTE(
+		!cJSON_AddNumberToObject(json, key, (double)value),
+		CCS_RESULT_ERROR_OUT_OF_MEMORY);
+	return CCS_RESULT_SUCCESS;
+}
+
+/* Create a cJSON number item from an integer, with range check. */
+static inline ccs_result_t
+_ccs_json_create_int(ccs_int_t value, cJSON **item_ret)
+{
+	CCS_REFUTE(
+		value > CCS_JSON_INT_MAX || value < CCS_JSON_INT_MIN,
+		CCS_RESULT_ERROR_INVALID_VALUE);
+	*item_ret = cJSON_CreateNumber((double)value);
+	CCS_REFUTE(!*item_ret, CCS_RESULT_ERROR_OUT_OF_MEMORY);
+	return CCS_RESULT_SUCCESS;
+}
+
+/* Read an integer value from a cJSON number. */
+static inline ccs_result_t
+_ccs_json_get_int(cJSON *item, ccs_int_t *value_ret)
+{
+	CCS_REFUTE(
+		!item || !cJSON_IsNumber(item), CCS_RESULT_ERROR_INVALID_VALUE);
+	*value_ret = (ccs_int_t)item->valuedouble;
+	return CCS_RESULT_SUCCESS;
+}
+
+/*============================================================================
  * Float JSON helpers (handles Infinity and NaN)
  *============================================================================*/
 
@@ -371,6 +416,23 @@ _ccs_json_add_float(cJSON *json, const char *key, double value)
 			!cJSON_AddStringToObject(json, key, "NaN"),
 			CCS_RESULT_ERROR_OUT_OF_MEMORY);
 	}
+	return CCS_RESULT_SUCCESS;
+}
+
+/* Create a cJSON item from a float, encoding non-finite values as strings. */
+static inline ccs_result_t
+_ccs_json_create_float(double value, cJSON **item_ret)
+{
+	cJSON *item = NULL;
+	if (isfinite(value)) {
+		item = cJSON_CreateNumber(value);
+	} else if (isinf(value)) {
+		item = cJSON_CreateString(value > 0 ? "Infinity" : "-Infinity");
+	} else {
+		item = cJSON_CreateString("NaN");
+	}
+	CCS_REFUTE(!item, CCS_RESULT_ERROR_OUT_OF_MEMORY);
+	*item_ret = item;
 	return CCS_RESULT_SUCCESS;
 }
 
@@ -419,10 +481,9 @@ _ccs_json_datum_to_cjson(ccs_datum_t datum, cJSON **item_ret)
 		CCS_REFUTE_ERR_GOTO(
 			err, !cJSON_AddStringToObject(item, "type", "int"),
 			CCS_RESULT_ERROR_OUT_OF_MEMORY, err_item);
-		CCS_REFUTE_ERR_GOTO(
-			err,
-			!cJSON_AddNumberToObject(item, "value", datum.value.i),
-			CCS_RESULT_ERROR_OUT_OF_MEMORY, err_item);
+		CCS_VALIDATE_ERR_GOTO(
+			err, _ccs_json_add_int(item, "value", datum.value.i),
+			err_item);
 		break;
 	case CCS_DATA_TYPE_FLOAT:
 		CCS_REFUTE_ERR_GOTO(
