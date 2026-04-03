@@ -20,3 +20,9 @@ test_serialize_deserialize(
 	ccs_object_t           object,
 	ccs_serialize_format_t format,
 	ccs_object_t          *object_ret);
+
+extern void
+test_buffer_serialize_deserialize(
+	ccs_object_t           object,
+	ccs_serialize_format_t format,
+	ccs_object_t          *object_ret);

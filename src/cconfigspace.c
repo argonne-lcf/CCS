@@ -345,6 +345,14 @@ _ccs_object_serialize_options(
 	return CCS_RESULT_SUCCESS;
 }
 
+/* Forward declaration — defined after _ccs_object_serialize_with_opts */
+static inline ccs_result_t
+_ccs_object_serialize_json_alloc(
+	ccs_object_t                     object,
+	char                           **buffer_ret,
+	size_t                          *buffer_size_ret,
+	_ccs_object_serialize_options_t *opts);
+
 static inline ccs_result_t
 _ccs_object_header_serialize_size_with_opts(
 	ccs_object_t                     object,
@@ -359,45 +367,13 @@ _ccs_object_header_serialize_size_with_opts(
 			object, format, buffer_size, opts));
 		break;
 	case CCS_SERIALIZE_FORMAT_JSON: {
-		ccs_result_t err      = CCS_RESULT_SUCCESS;
-		cJSON       *root     = NULL;
-		cJSON       *obj_node = NULL;
-		char        *str      = NULL;
-		char        *bp       = NULL;
-		size_t       dummy    = 0;
-		cJSON       *hdr_node = NULL;
-		root                  = cJSON_CreateObject();
-		CCS_REFUTE(!root, CCS_RESULT_ERROR_OUT_OF_MEMORY);
-		hdr_node = cJSON_AddObjectToObject(root, "header");
-		CCS_REFUTE_ERR_GOTO(
-			err, !hdr_node, CCS_RESULT_ERROR_OUT_OF_MEMORY,
-			err_json_size);
-		bp = (char *)hdr_node;
-		CCS_VALIDATE_ERR_GOTO(
-			err, _ccs_serialize_header(format, NULL, &bp, 0),
-			err_json_size);
-		obj_node = cJSON_AddObjectToObject(root, "object");
-		CCS_REFUTE_ERR_GOTO(
-			err, !obj_node, CCS_RESULT_ERROR_OUT_OF_MEMORY,
-			err_json_size);
-		bp = (char *)obj_node;
-		CCS_VALIDATE_ERR_GOTO(
-			err,
-			_ccs_object_serialize_with_opts(
-				object, format, &dummy, &bp, opts),
-			err_json_size);
-		str = cJSON_PrintUnformatted(root);
-		cJSON_Delete(root);
-		root = NULL;
-		CCS_REFUTE(!str, CCS_RESULT_ERROR_OUT_OF_MEMORY);
-		*buffer_size = strlen(str) + 1;
+		char  *str = NULL;
+		size_t sz  = 0;
+		CCS_VALIDATE(_ccs_object_serialize_json_alloc(
+			object, &str, &sz, opts));
+		*buffer_size = sz;
 		free(str);
-		break;
-	err_json_size:
-		if (root)
-			cJSON_Delete(root);
-		return err;
-	}
+	} break;
 	default:
 		CCS_RAISE(
 			CCS_RESULT_ERROR_INVALID_VALUE,
@@ -444,52 +420,10 @@ _ccs_object_serialize_memory_with_opts(
 			total_size - buffer_size));
 	} break;
 	case CCS_SERIALIZE_FORMAT_JSON: {
-		ccs_result_t err      = CCS_RESULT_SUCCESS;
-		cJSON       *root     = NULL;
-		cJSON       *obj_node = NULL;
-		char        *str      = NULL;
-		char        *bp       = NULL;
-		char        *size_loc = NULL;
-		size_t       dummy    = 0;
-		size_t       sz       = 0;
-		size_t       hex_len  = sizeof(size_t) * 2;
-		cJSON       *hdr_node = NULL;
-		root                  = cJSON_CreateObject();
-		CCS_REFUTE(!root, CCS_RESULT_ERROR_OUT_OF_MEMORY);
-		hdr_node = cJSON_AddObjectToObject(root, "header");
-		CCS_REFUTE_ERR_GOTO(
-			err, !hdr_node, CCS_RESULT_ERROR_OUT_OF_MEMORY,
-			err_json_mem);
-		bp = (char *)hdr_node;
-		CCS_VALIDATE_ERR_GOTO(
-			err, _ccs_serialize_header(format, NULL, &bp, 0),
-			err_json_mem);
-		obj_node = cJSON_AddObjectToObject(root, "object");
-		CCS_REFUTE_ERR_GOTO(
-			err, !obj_node, CCS_RESULT_ERROR_OUT_OF_MEMORY,
-			err_json_mem);
-		bp = (char *)obj_node;
-		CCS_VALIDATE_ERR_GOTO(
-			err,
-			_ccs_object_serialize_with_opts(
-				object, format, &dummy, &bp, opts),
-			err_json_mem);
-		str = cJSON_PrintUnformatted(root);
-		cJSON_Delete(root);
-		root = NULL;
-		CCS_REFUTE(!str, CCS_RESULT_ERROR_OUT_OF_MEMORY);
-		sz = strlen(str) + 1;
-		/* patch the size placeholder in the printed string */
-		{
-			char size_hex_buf[sizeof(size_t) * 2 + 1];
-			_ccs_json_hex_encode_buf(
-				&sz, sizeof(size_t), size_hex_buf);
-			size_loc = strstr(str, "\"size\":\"");
-			if (size_loc) {
-				size_loc += strlen("\"size\":\"");
-				memcpy(size_loc, size_hex_buf, hex_len);
-			}
-		}
+		char  *str = NULL;
+		size_t sz  = 0;
+		CCS_VALIDATE(_ccs_object_serialize_json_alloc(
+			object, &str, &sz, opts));
 		if (sz > buffer_size) {
 			free(str);
 			CCS_RAISE(
@@ -498,12 +432,7 @@ _ccs_object_serialize_memory_with_opts(
 		}
 		memcpy(buffer, str, sz);
 		free(str);
-		return CCS_RESULT_SUCCESS;
-	err_json_mem:
-		if (root)
-			cJSON_Delete(root);
-		return err;
-	}
+	} break;
 	default:
 		CCS_RAISE(
 			CCS_RESULT_ERROR_INVALID_VALUE,
@@ -531,6 +460,116 @@ _ccs_object_serialize_memory(
 	return CCS_RESULT_SUCCESS;
 }
 
+/* Build a JSON buffer in a single pass: cJSON tree -> print -> patch size.
+ * Caller receives the malloc'd string and must free it. */
+static inline ccs_result_t
+_ccs_object_serialize_json_alloc(
+	ccs_object_t                     object,
+	char                           **buffer_ret,
+	size_t                          *buffer_size_ret,
+	_ccs_object_serialize_options_t *opts)
+{
+	ccs_result_t err      = CCS_RESULT_SUCCESS;
+	cJSON       *root     = NULL;
+	cJSON       *hdr_node = NULL;
+	cJSON       *obj_node = NULL;
+	char        *bp       = NULL;
+	char        *str      = NULL;
+	char        *size_loc = NULL;
+	size_t       dummy    = 0;
+	size_t       sz       = 0;
+	size_t       hex_len  = sizeof(size_t) * 2;
+	root                  = cJSON_CreateObject();
+	CCS_REFUTE(!root, CCS_RESULT_ERROR_OUT_OF_MEMORY);
+	hdr_node = cJSON_AddObjectToObject(root, "header");
+	CCS_REFUTE_ERR_GOTO(
+		err, !hdr_node, CCS_RESULT_ERROR_OUT_OF_MEMORY, err_json_alloc);
+	bp = (char *)hdr_node;
+	CCS_VALIDATE_ERR_GOTO(
+		err,
+		_ccs_serialize_header(CCS_SERIALIZE_FORMAT_JSON, NULL, &bp, 0),
+		err_json_alloc);
+	obj_node = cJSON_AddObjectToObject(root, "object");
+	CCS_REFUTE_ERR_GOTO(
+		err, !obj_node, CCS_RESULT_ERROR_OUT_OF_MEMORY, err_json_alloc);
+	bp = (char *)obj_node;
+	CCS_VALIDATE_ERR_GOTO(
+		err,
+		_ccs_object_serialize_with_opts(
+			object, CCS_SERIALIZE_FORMAT_JSON, &dummy, &bp, opts),
+		err_json_alloc);
+	str = cJSON_PrintUnformatted(root);
+	cJSON_Delete(root);
+	root = NULL;
+	CCS_REFUTE(!str, CCS_RESULT_ERROR_OUT_OF_MEMORY);
+	sz = strlen(str) + 1;
+	{
+		char size_hex_buf[sizeof(size_t) * 2 + 1];
+		_ccs_json_hex_encode_buf(&sz, sizeof(size_t), size_hex_buf);
+		size_loc = strstr(str, "\"size\":\"");
+		if (size_loc) {
+			size_loc += strlen("\"size\":\"");
+			memcpy(size_loc, size_hex_buf, hex_len);
+		}
+	}
+	*buffer_ret      = str;
+	*buffer_size_ret = sz;
+	return CCS_RESULT_SUCCESS;
+err_json_alloc:
+	if (root)
+		cJSON_Delete(root);
+	return err;
+}
+
+static inline ccs_result_t
+_ccs_object_serialize_buffer(
+	ccs_object_t           object,
+	ccs_serialize_format_t format,
+	va_list                args)
+{
+	char                          **buffer_ret      = NULL;
+	size_t                         *buffer_size_ret = NULL;
+	_ccs_object_serialize_options_t opts            = {NULL, NULL, NULL};
+	buffer_ret                                      = va_arg(args, char **);
+	buffer_size_ret = va_arg(args, size_t *);
+	CCS_CHECK_PTR(buffer_ret);
+	CCS_CHECK_PTR(buffer_size_ret);
+	CCS_VALIDATE(_ccs_object_serialize_options(
+		format, CCS_SERIALIZE_OPERATION_BUFFER, args, &opts));
+
+	switch (format) {
+	case CCS_SERIALIZE_FORMAT_BINARY: {
+		ccs_result_t err = CCS_RESULT_SUCCESS;
+		size_t       sz  = 0;
+		char        *buf = NULL;
+		CCS_VALIDATE(_ccs_object_header_serialize_size_with_opts(
+			object, format, &sz, &opts));
+		buf = (char *)malloc(sz);
+		CCS_REFUTE(!buf, CCS_RESULT_ERROR_OUT_OF_MEMORY);
+		CCS_VALIDATE_ERR_GOTO(
+			err,
+			_ccs_object_serialize_memory_with_opts(
+				object, format, sz, buf, &opts),
+			err_bin_buf);
+		*buffer_ret      = buf;
+		*buffer_size_ret = sz;
+		break;
+	err_bin_buf:
+		free(buf);
+		return err;
+	}
+	case CCS_SERIALIZE_FORMAT_JSON:
+		CCS_VALIDATE(_ccs_object_serialize_json_alloc(
+			object, buffer_ret, buffer_size_ret, &opts));
+		break;
+	default:
+		CCS_RAISE(
+			CCS_RESULT_ERROR_INVALID_VALUE,
+			"Unsupported serialization format: %d", format);
+	}
+	return CCS_RESULT_SUCCESS;
+}
+
 static inline ccs_result_t
 _ccs_object_serialize_file(
 	ccs_object_t           object,
@@ -547,65 +586,90 @@ _ccs_object_serialize_file(
 	CCS_CHECK_PTR(path);
 	CCS_VALIDATE(_ccs_object_serialize_options(
 		format, CCS_SERIALIZE_OPERATION_FILE, args, &opts));
-	fd =
-		open(path, O_CREAT | O_TRUNC | O_RDWR,
-		     S_IRUSR | S_IWUSR | S_IWGRP | S_IRGRP | S_IROTH); // 664
-	CCS_REFUTE(fd == -1, CCS_RESULT_ERROR_INVALID_FILE_PATH);
-	CCS_VALIDATE_ERR_GOTO(
-		res,
-		_ccs_object_header_serialize_size_with_opts(
-			object, format, &buffer_size, &opts),
-		err_file_fd);
-	// ftruncate must come before mmap so the file has the correct size
-	// before mapping. Mapping a 0-byte file causes SIGBUS on access and
-	// mmap failure on stricter POSIX implementations (e.g. macOS).
-	// On any subsequent error, truncate the file back to 0 to avoid
-	// leaving a large incomplete file on disk.
-	CCS_REFUTE_ERR_GOTO(
-		res, ftruncate(fd, buffer_size) == -1, CCS_RESULT_ERROR_SYSTEM,
-		err_file_fd);
-	buffer = (char *)mmap(
-		0, buffer_size, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
-	if (CCS_UNLIKELY(buffer == MAP_FAILED)) {
-		switch (errno) {
-		case ENOMEM:
-			CCS_RAISE_ERR_GOTO(
-				res, CCS_RESULT_ERROR_OUT_OF_MEMORY,
-				err_file_truncated,
-				"mmap failed: out of memory");
-			break;
-		case EACCES:
-			CCS_RAISE_ERR_GOTO(
-				res, CCS_RESULT_ERROR_INVALID_FILE_PATH,
-				err_file_truncated,
-				"mmap failed: invalid file");
-			break;
-		default:
-			CCS_RAISE_ERR_GOTO(
-				res, CCS_RESULT_ERROR_SYSTEM,
-				err_file_truncated,
-				"mmap failed: unexpected system error");
+	switch (format) {
+	case CCS_SERIALIZE_FORMAT_JSON: {
+		FILE  *fp;
+		size_t written;
+		CCS_VALIDATE(_ccs_object_serialize_json_alloc(
+			object, &buffer, &buffer_size, &opts));
+		fp = fopen(path, "wb");
+		if (!fp) {
+			free(buffer);
+			CCS_RAISE(
+				CCS_RESULT_ERROR_INVALID_FILE_PATH,
+				"Could not open file: %s", path);
 		}
+		written = fwrite(buffer, 1, buffer_size, fp);
+		free(buffer);
+		if (fclose(fp) != 0 || written != buffer_size)
+			CCS_RAISE(
+				CCS_RESULT_ERROR_SYSTEM,
+				"Failed to write JSON to file");
+		return CCS_RESULT_SUCCESS;
 	}
-	CCS_VALIDATE_ERR_GOTO(
-		res,
-		_ccs_object_serialize_memory_with_opts(
-			object, format, buffer_size, buffer, &opts),
-		err_file_map);
-	CCS_REFUTE_ERR_GOTO(
-		res, msync(buffer, buffer_size, MS_SYNC) == -1,
-		CCS_RESULT_ERROR_SYSTEM, err_file_map);
-err_file_map:
-	if (munmap(buffer, buffer_size) == -1) { /* best-effort */
-	}
-err_file_truncated:
-	if (CCS_UNLIKELY(res < CCS_RESULT_SUCCESS))
-		if (ftruncate(fd, 0) == -1) { /* best-effort */
+	case CCS_SERIALIZE_FORMAT_BINARY:
+		fd =
+			open(path, O_CREAT | O_TRUNC | O_RDWR,
+			     S_IRUSR | S_IWUSR | S_IWGRP | S_IRGRP | S_IROTH);
+		CCS_REFUTE(fd == -1, CCS_RESULT_ERROR_INVALID_FILE_PATH);
+		CCS_VALIDATE_ERR_GOTO(
+			res,
+			_ccs_object_header_serialize_size_with_opts(
+				object, format, &buffer_size, &opts),
+			err_file_fd);
+		/* ftruncate must come before mmap so the file has the
+		 * correct size before mapping. */
+		CCS_REFUTE_ERR_GOTO(
+			res, ftruncate(fd, buffer_size) == -1,
+			CCS_RESULT_ERROR_SYSTEM, err_file_fd);
+		buffer = (char *)mmap(
+			0, buffer_size, PROT_READ | PROT_WRITE, MAP_SHARED, fd,
+			0);
+		if (CCS_UNLIKELY(buffer == MAP_FAILED)) {
+			switch (errno) {
+			case ENOMEM:
+				CCS_RAISE_ERR_GOTO(
+					res, CCS_RESULT_ERROR_OUT_OF_MEMORY,
+					err_file_truncated,
+					"mmap failed: out of memory");
+				break;
+			case EACCES:
+				CCS_RAISE_ERR_GOTO(
+					res, CCS_RESULT_ERROR_INVALID_FILE_PATH,
+					err_file_truncated,
+					"mmap failed: invalid file");
+				break;
+			default:
+				CCS_RAISE_ERR_GOTO(
+					res, CCS_RESULT_ERROR_SYSTEM,
+					err_file_truncated,
+					"mmap failed: unexpected error");
+			}
 		}
-err_file_fd:
-	if (close(fd) == -1) { /* best-effort */
+		CCS_VALIDATE_ERR_GOTO(
+			res,
+			_ccs_object_serialize_memory_with_opts(
+				object, format, buffer_size, buffer, &opts),
+			err_file_map);
+		CCS_REFUTE_ERR_GOTO(
+			res, msync(buffer, buffer_size, MS_SYNC) == -1,
+			CCS_RESULT_ERROR_SYSTEM, err_file_map);
+	err_file_map:
+		if (munmap(buffer, buffer_size) == -1) {
+		}
+	err_file_truncated:
+		if (CCS_UNLIKELY(res < CCS_RESULT_SUCCESS))
+			if (ftruncate(fd, 0) == -1) {
+			}
+	err_file_fd:
+		if (close(fd) == -1) {
+		}
+		return res;
+	default:
+		CCS_RAISE(
+			CCS_RESULT_ERROR_INVALID_VALUE,
+			"Unsupported serialization format: %d", format);
 	}
-	return res;
 }
 
 static inline ccs_result_t
@@ -634,9 +698,10 @@ _ccs_object_serialize_file_descriptor(
 		}
 	} else
 		pstate = &state;
-	/* if non blocking start or blocking */
+	/* if non blocking start or blocking, allocate and fill buffer */
 	if (!pstate || !pstate->base) {
-		size_t object_size;
+		size_t object_size = 0;
+		/* get size (binary) or full buffer (json) */
 		CCS_VALIDATE(_ccs_object_header_serialize_size_with_opts(
 			object, format, &object_size, &opts));
 		/* initialize user_state */
@@ -727,6 +792,11 @@ ccs_object_serialize(
 			res,
 			_ccs_object_serialize_file_descriptor(
 				object, format, args),
+			end);
+		break;
+	case CCS_SERIALIZE_OPERATION_BUFFER:
+		CCS_VALIDATE_ERR_GOTO(
+			res, _ccs_object_serialize_buffer(object, format, args),
 			end);
 		break;
 	default:
@@ -1259,6 +1329,13 @@ end:
 	case value:                                                            \
 		*name = #value;                                                \
 		break
+
+ccs_result_t
+ccs_release_buffer(void *buffer)
+{
+	free(buffer);
+	return CCS_RESULT_SUCCESS;
+}
 
 ccs_result_t
 ccs_get_result_name(ccs_result_t result, const char **name)
