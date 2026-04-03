@@ -147,3 +147,25 @@ test_serialize_deserialize(
 	assert(err == CCS_RESULT_SUCCESS);
 	free(buff);
 }
+
+void
+test_buffer_serialize_deserialize(
+	ccs_object_t           object,
+	ccs_serialize_format_t format,
+	ccs_object_t          *object_ret)
+{
+	ccs_result_t err;
+	char        *buff;
+	size_t       buff_size;
+
+	err = ccs_object_serialize(
+		object, format, CCS_SERIALIZE_OPERATION_BUFFER, &buff,
+		&buff_size, CCS_SERIALIZE_OPTION_END);
+	assert(err == CCS_RESULT_SUCCESS);
+	err = ccs_object_deserialize(
+		object_ret, format, CCS_DESERIALIZE_OPERATION_MEMORY, buff_size,
+		buff, CCS_DESERIALIZE_OPTION_END);
+	assert(err == CCS_RESULT_SUCCESS);
+	err = ccs_release_buffer(buff);
+	assert(err == CCS_RESULT_SUCCESS);
+}

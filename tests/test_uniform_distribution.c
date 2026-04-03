@@ -86,6 +86,21 @@ test_create_uniform_distribution(void)
 	err = ccs_release_object(distrib2);
 	assert(err == CCS_RESULT_SUCCESS);
 
+	/* BUFFER operation roundtrip */
+	test_buffer_serialize_deserialize(
+		(ccs_object_t)distrib, CCS_SERIALIZE_FORMAT_BINARY,
+		(ccs_object_t *)&distrib2);
+	compare_distribution(distrib2, l, u, q);
+	err = ccs_release_object(distrib2);
+	assert(err == CCS_RESULT_SUCCESS);
+
+	test_buffer_serialize_deserialize(
+		(ccs_object_t)distrib, CCS_SERIALIZE_FORMAT_JSON,
+		(ccs_object_t *)&distrib2);
+	compare_distribution(distrib2, l, u, q);
+	err = ccs_release_object(distrib2);
+	assert(err == CCS_RESULT_SUCCESS);
+
 	err = ccs_release_object(distrib);
 	assert(err == CCS_RESULT_SUCCESS);
 }

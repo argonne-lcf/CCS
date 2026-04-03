@@ -925,6 +925,9 @@ enum ccs_serialize_operation_e {
 	CCS_SERIALIZE_OPERATION_FILE,
 	/** Serialize the ojbect in the given file descriptor */
 	CCS_SERIALIZE_OPERATION_FILE_DESCRIPTOR,
+	/** Serialize into a newly allocated buffer returned to the caller.
+	 *  The caller must free the buffer with ccs_release_buffer(). */
+	CCS_SERIALIZE_OPERATION_BUFFER,
 	/** Guard */
 	CCS_SERIALIZE_OPERATION_MAX,
 	/** Try forcing 32 bits value for bindings */
@@ -1110,6 +1113,9 @@ typedef enum ccs_deserialize_option_e ccs_deserialize_option_t;
  *
  * - #CCS_SERIALIZE_OPERATION_FILE_DESCRIPTOR: an \c int file descriptor
  *   open for writing.
+ * - #CCS_SERIALIZE_OPERATION_BUFFER: a \c char** output pointer for the
+ *   allocated buffer, followed by a \c size_t* output pointer for the
+ *   buffer size. The caller must free the buffer with ccs_release_buffer().
  *
  * After the operation-specific parameters, pass a list of options
  * terminated by #CCS_SERIALIZE_OPTION_END:
@@ -1224,6 +1230,15 @@ ccs_object_deserialize(
 	ccs_serialize_format_t      format,
 	ccs_deserialize_operation_t operation,
 	...);
+
+/**
+ * Release a buffer allocated by CCS (e.g., from
+ * #CCS_SERIALIZE_OPERATION_BUFFER).
+ * @param[in] buffer the buffer to release, or NULL (no-op)
+ * @return #CCS_RESULT_SUCCESS on success
+ */
+extern ccs_result_t
+ccs_release_buffer(void *buffer);
 
 #ifdef __cplusplus
 }
