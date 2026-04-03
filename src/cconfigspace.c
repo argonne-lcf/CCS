@@ -522,6 +522,47 @@ err_json_alloc:
 }
 
 static inline ccs_result_t
+_ccs_object_serialize_buffer_with_opts(
+	ccs_object_t                     object,
+	ccs_serialize_format_t           format,
+	char                           **buffer_ret,
+	size_t                          *buffer_size_ret,
+	_ccs_object_serialize_options_t *opts)
+{
+	switch (format) {
+	case CCS_SERIALIZE_FORMAT_BINARY: {
+		ccs_result_t err = CCS_RESULT_SUCCESS;
+		size_t       sz  = 0;
+		char        *buf = NULL;
+		CCS_VALIDATE(_ccs_object_header_serialize_size_with_opts(
+			object, format, &sz, opts));
+		buf = (char *)malloc(sz);
+		CCS_REFUTE(!buf, CCS_RESULT_ERROR_OUT_OF_MEMORY);
+		CCS_VALIDATE_ERR_GOTO(
+			err,
+			_ccs_object_serialize_memory_with_opts(
+				object, format, sz, buf, opts),
+			err_bin_buf);
+		*buffer_ret      = buf;
+		*buffer_size_ret = sz;
+		break;
+	err_bin_buf:
+		free(buf);
+		return err;
+	}
+	case CCS_SERIALIZE_FORMAT_JSON:
+		CCS_VALIDATE(_ccs_object_serialize_json_alloc(
+			object, buffer_ret, buffer_size_ret, opts));
+		break;
+	default:
+		CCS_RAISE(
+			CCS_RESULT_ERROR_INVALID_VALUE,
+			"Unsupported serialization format: %d", format);
+	}
+	return CCS_RESULT_SUCCESS;
+}
+
+static inline ccs_result_t
 _ccs_object_serialize_buffer(
 	ccs_object_t           object,
 	ccs_serialize_format_t format,
@@ -536,37 +577,8 @@ _ccs_object_serialize_buffer(
 	CCS_CHECK_PTR(buffer_size_ret);
 	CCS_VALIDATE(_ccs_object_serialize_options(
 		format, CCS_SERIALIZE_OPERATION_BUFFER, args, &opts));
-
-	switch (format) {
-	case CCS_SERIALIZE_FORMAT_BINARY: {
-		ccs_result_t err = CCS_RESULT_SUCCESS;
-		size_t       sz  = 0;
-		char        *buf = NULL;
-		CCS_VALIDATE(_ccs_object_header_serialize_size_with_opts(
-			object, format, &sz, &opts));
-		buf = (char *)malloc(sz);
-		CCS_REFUTE(!buf, CCS_RESULT_ERROR_OUT_OF_MEMORY);
-		CCS_VALIDATE_ERR_GOTO(
-			err,
-			_ccs_object_serialize_memory_with_opts(
-				object, format, sz, buf, &opts),
-			err_bin_buf);
-		*buffer_ret      = buf;
-		*buffer_size_ret = sz;
-		break;
-	err_bin_buf:
-		free(buf);
-		return err;
-	}
-	case CCS_SERIALIZE_FORMAT_JSON:
-		CCS_VALIDATE(_ccs_object_serialize_json_alloc(
-			object, buffer_ret, buffer_size_ret, &opts));
-		break;
-	default:
-		CCS_RAISE(
-			CCS_RESULT_ERROR_INVALID_VALUE,
-			"Unsupported serialization format: %d", format);
-	}
+	CCS_VALIDATE(_ccs_object_serialize_buffer_with_opts(
+		object, format, buffer_ret, buffer_size_ret, &opts));
 	return CCS_RESULT_SUCCESS;
 }
 
@@ -698,41 +710,35 @@ _ccs_object_serialize_file_descriptor(
 		}
 	} else
 		pstate = &state;
-	/* if non blocking start or blocking, allocate and fill buffer */
+	/* if non blocking start or blocking, serialize into buffer */
 	if (!pstate || !pstate->base) {
-		size_t object_size = 0;
-		/* get size (binary) or full buffer (json) */
-		CCS_VALIDATE(_ccs_object_header_serialize_size_with_opts(
-			object, format, &object_size, &opts));
-		/* initialize user_state */
+		char  *buf      = NULL;
+		size_t buf_size = 0;
+		CCS_VALIDATE(_ccs_object_serialize_buffer_with_opts(
+			object, format, &buf, &buf_size, &opts));
 		if (!pstate) {
-			char *mem = (char *)malloc(
-				sizeof(_ccs_file_descriptor_state_t) +
-				object_size);
-			CCS_REFUTE(!mem, CCS_RESULT_ERROR_OUT_OF_MEMORY);
-			*(opts.ppfd_state) = pstate =
-				(_ccs_file_descriptor_state_t *)mem;
-			pstate->base = mem;
-			pstate->base_size =
-				sizeof(_ccs_file_descriptor_state_t) +
-				object_size;
-			pstate->buffer =
-				mem + sizeof(_ccs_file_descriptor_state_t);
+			/* non-blocking: allocate state, use buf directly */
+			_ccs_file_descriptor_state_t *mem =
+				(_ccs_file_descriptor_state_t *)malloc(
+					sizeof(_ccs_file_descriptor_state_t));
+			if (!mem) {
+				free(buf);
+				CCS_RAISE(
+					CCS_RESULT_ERROR_OUT_OF_MEMORY,
+					"malloc failed");
+			}
+			*(opts.ppfd_state) = pstate = mem;
+			pstate->base                = buf;
+			pstate->base_size           = buf_size;
+			pstate->buffer              = buf;
 		} else {
-			pstate->base = (char *)malloc(object_size);
-			CCS_REFUTE(
-				!pstate->base, CCS_RESULT_ERROR_OUT_OF_MEMORY);
-			pstate->base_size = object_size;
-			pstate->buffer    = pstate->base;
+			/* blocking: use the buffer directly */
+			pstate->base      = buf;
+			pstate->base_size = buf_size;
+			pstate->buffer    = buf;
 		}
-		pstate->buffer_size = object_size;
+		pstate->buffer_size = buf_size;
 		pstate->fd          = fd;
-		CCS_VALIDATE_ERR_GOTO(
-			res,
-			_ccs_object_serialize_memory_with_opts(
-				object, format, pstate->buffer_size,
-				pstate->buffer, &opts),
-			err_fd_buffer);
 	}
 	do {
 		ssize_t count;
@@ -750,8 +756,10 @@ _ccs_object_serialize_file_descriptor(
 	} while (pstate->buffer_size);
 err_fd_buffer:
 	free(pstate->base);
-	if (opts.ppfd_state)
+	if (opts.ppfd_state) {
+		free(*(opts.ppfd_state));
 		*(opts.ppfd_state) = NULL;
+	}
 	return res;
 }
 
