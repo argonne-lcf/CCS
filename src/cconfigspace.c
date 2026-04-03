@@ -275,20 +275,17 @@ _ccs_deserialize_header(
 			CCS_RESULT_ERROR_INVALID_VALUE);
 	} break;
 	case CCS_SERIALIZE_FORMAT_JSON: {
-		cJSON *j_header = *(cJSON **)buffer;
-		cJSON *j_version =
-			cJSON_GetObjectItemCaseSensitive(j_header, "version");
-		cJSON *j_size =
-			cJSON_GetObjectItemCaseSensitive(j_header, "size");
+		cJSON      *j_header = *(cJSON **)buffer;
 		ccs_int_t   version_val;
 		const char *size_str;
-		CCS_REFUTE(!j_version, CCS_RESULT_ERROR_INVALID_VALUE);
-		CCS_VALIDATE(_ccs_json_get_int(j_version, &version_val));
+		CCS_VALIDATE(_ccs_json_extract_int(
+			j_header, "version", &version_val));
 		*version = (uint32_t)version_val;
 		CCS_REFUTE(
 			*version > CCS_SERIALIZATION_API_VERSION,
 			CCS_RESULT_ERROR_INVALID_VALUE);
-		CCS_VALIDATE(_ccs_json_get_string(j_size, &size_str));
+		CCS_VALIDATE(
+			_ccs_json_extract_string(j_header, "size", &size_str));
 		CCS_REFUTE(
 			strlen(size_str) != sizeof(size_t) * 2,
 			CCS_RESULT_ERROR_INVALID_VALUE);

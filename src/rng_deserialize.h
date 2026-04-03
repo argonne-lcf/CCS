@@ -53,9 +53,6 @@ _ccs_deserialize_json_rng(
 	_ccs_object_deserialize_options_t *opts)
 {
 	cJSON      *json;
-	cJSON      *j_rng_type;
-	cJSON      *j_little_endian;
-	cJSON      *j_state;
 	const char *name;
 	ccs_bool_t  little_endian;
 	const char *state_str;
@@ -63,14 +60,11 @@ _ccs_deserialize_json_rng(
 	(void)version;
 	(void)buffer_size;
 	(void)opts;
-	json       = *(cJSON **)buffer;
-	j_rng_type = cJSON_GetObjectItemCaseSensitive(json, "rng_type");
-	j_little_endian =
-		cJSON_GetObjectItemCaseSensitive(json, "little_endian");
-	j_state = cJSON_GetObjectItemCaseSensitive(json, "state");
-	CCS_VALIDATE(_ccs_json_get_string(j_rng_type, &name));
-	CCS_VALIDATE(_ccs_json_get_bool(j_little_endian, &little_endian));
-	CCS_VALIDATE(_ccs_json_get_string(j_state, &state_str));
+	json = *(cJSON **)buffer;
+	CCS_VALIDATE(_ccs_json_extract_string(json, "rng_type", &name));
+	CCS_VALIDATE(
+		_ccs_json_extract_bool(json, "little_endian", &little_endian));
+	CCS_VALIDATE(_ccs_json_extract_string(json, "state", &state_str));
 
 	if (!_ccs_gsl_rng_types)
 		_ccs_gsl_rng_types = gsl_rng_types_setup();

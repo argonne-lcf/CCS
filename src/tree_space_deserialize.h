@@ -201,8 +201,6 @@ _ccs_deserialize_json_ccs_tree_space_common_data(
 	_ccs_object_deserialize_options_t  *opts)
 {
 	_ccs_object_deserialize_options_t new_opts = *opts;
-	cJSON                            *j_type;
-	cJSON                            *j_name;
 	cJSON                            *j_rng;
 	cJSON                            *j_tree;
 	cJSON                            *j_fs_handle;
@@ -213,13 +211,12 @@ _ccs_deserialize_json_ccs_tree_space_common_data(
 
 	new_opts.handle_map = NULL;
 	new_opts.map_values = CCS_FALSE;
-	j_type = cJSON_GetObjectItemCaseSensitive(json, "tree_space_type");
-	CCS_VALIDATE(_ccs_json_get_string(j_type, &type_str));
+	CCS_VALIDATE(
+		_ccs_json_extract_string(json, "tree_space_type", &type_str));
 	CCS_VALIDATE(
 		_ccs_json_tree_space_type_from_string(type_str, &data->type));
 
-	j_name = cJSON_GetObjectItemCaseSensitive(json, "name");
-	CCS_VALIDATE(_ccs_json_get_string(j_name, &data->name));
+	CCS_VALIDATE(_ccs_json_extract_string(json, "name", &data->name));
 
 	j_rng = cJSON_GetObjectItemCaseSensitive(json, "rng");
 	CCS_REFUTE(
@@ -396,16 +393,15 @@ _ccs_deserialize_json_tree_space(
 	_ccs_object_deserialize_options_t *opts)
 {
 	cJSON                             *json;
-	cJSON                             *j_type;
 	ccs_tree_space_type_t              stype;
 	_ccs_tree_space_common_data_mock_t data = {
 		CCS_TREE_SPACE_TYPE_STATIC, NULL, NULL, NULL, NULL, NULL};
 	const char *stype_str;
 
 	(void)buffer_size;
-	json   = *(cJSON **)buffer;
-	j_type = cJSON_GetObjectItemCaseSensitive(json, "tree_space_type");
-	CCS_VALIDATE(_ccs_json_get_string(j_type, &stype_str));
+	json = *(cJSON **)buffer;
+	CCS_VALIDATE(
+		_ccs_json_extract_string(json, "tree_space_type", &stype_str));
 	CCS_VALIDATE(_ccs_json_tree_space_type_from_string(stype_str, &stype));
 
 	if (stype == CCS_TREE_SPACE_TYPE_DYNAMIC)

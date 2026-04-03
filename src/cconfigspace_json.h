@@ -522,6 +522,51 @@ _ccs_json_get_float(cJSON *item, double *value_ret)
 }
 
 /*============================================================================
+ * Extract helpers (lookup by key + validate + read in one call)
+ *============================================================================*/
+
+static inline ccs_result_t
+_ccs_json_extract_string(cJSON *json, const char *key, const char **value_ret)
+{
+	cJSON *item = cJSON_GetObjectItemCaseSensitive(json, key);
+	CCS_VALIDATE(_ccs_json_get_string(item, value_ret));
+	return CCS_RESULT_SUCCESS;
+}
+
+static inline ccs_result_t
+_ccs_json_extract_bool(cJSON *json, const char *key, ccs_bool_t *value_ret)
+{
+	cJSON *item = cJSON_GetObjectItemCaseSensitive(json, key);
+	CCS_VALIDATE(_ccs_json_get_bool(item, value_ret));
+	return CCS_RESULT_SUCCESS;
+}
+
+static inline ccs_result_t
+_ccs_json_extract_int(cJSON *json, const char *key, ccs_int_t *value_ret)
+{
+	cJSON *item = cJSON_GetObjectItemCaseSensitive(json, key);
+	CCS_VALIDATE(_ccs_json_get_int(item, value_ret));
+	return CCS_RESULT_SUCCESS;
+}
+
+static inline ccs_result_t
+_ccs_json_extract_float(cJSON *json, const char *key, double *value_ret)
+{
+	cJSON *item = cJSON_GetObjectItemCaseSensitive(json, key);
+	CCS_VALIDATE(_ccs_json_get_float(item, value_ret));
+	return CCS_RESULT_SUCCESS;
+}
+
+static inline ccs_result_t
+_ccs_json_extract_datum(cJSON *json, const char *key, ccs_datum_t *value_ret)
+{
+	cJSON *item = cJSON_GetObjectItemCaseSensitive(json, key);
+	CCS_REFUTE(!item, CCS_RESULT_ERROR_INVALID_VALUE);
+	CCS_VALIDATE(_ccs_json_get_datum(item, value_ret));
+	return CCS_RESULT_SUCCESS;
+}
+
+/*============================================================================
  * ccs_datum_t JSON helpers
  *============================================================================*/
 

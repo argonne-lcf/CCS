@@ -168,7 +168,6 @@ _ccs_deserialize_json_ccs_configuration_space_data(
 	cJSON                                *json,
 	_ccs_object_deserialize_options_t    *opts)
 {
-	cJSON      *j_name;
 	cJSON      *j_fs;
 	cJSON      *j_rng;
 	cJSON      *j_params;
@@ -181,8 +180,7 @@ _ccs_deserialize_json_ccs_configuration_space_data(
 	const char *cbuf;
 	size_t      dummy;
 
-	j_name = cJSON_GetObjectItemCaseSensitive(json, "name");
-	CCS_VALIDATE(_ccs_json_get_string(j_name, &data->name));
+	CCS_VALIDATE(_ccs_json_extract_string(json, "name", &data->name));
 
 	/* feature space (optional) */
 	j_fs = cJSON_GetObjectItemCaseSensitive(json, "feature_space");
@@ -265,13 +263,11 @@ _ccs_deserialize_json_ccs_configuration_space_data(
 
 	for (size_t i = 0; i < num_conds; i++) {
 		cJSON    *cond_obj = cJSON_GetArrayItem(j_conds, (int)i);
-		cJSON    *j_index;
 		cJSON    *j_expr;
 		size_t    index;
 		ccs_int_t index_val;
-		j_index = cJSON_GetObjectItemCaseSensitive(cond_obj, "index");
-		CCS_REFUTE(!j_index, CCS_RESULT_ERROR_INVALID_VALUE);
-		CCS_VALIDATE(_ccs_json_get_int(j_index, &index_val));
+		CCS_VALIDATE(
+			_ccs_json_extract_int(cond_obj, "index", &index_val));
 		index = (size_t)index_val;
 		CCS_REFUTE(index >= num, CCS_RESULT_ERROR_INVALID_VALUE);
 		j_expr = cJSON_GetObjectItemCaseSensitive(

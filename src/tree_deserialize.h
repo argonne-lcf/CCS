@@ -110,10 +110,6 @@ _ccs_deserialize_json_tree(
 	_ccs_object_deserialize_options_t new_opts = *opts;
 	ccs_result_t                      res      = CCS_RESULT_SUCCESS;
 	cJSON                            *json;
-	cJSON                            *j_arity;
-	cJSON                            *j_weight;
-	cJSON                            *j_bias;
-	cJSON                            *j_value;
 	cJSON                            *j_children;
 	ccs_tree_t                        tree = NULL;
 	_ccs_tree_data_mock_t             data;
@@ -129,23 +125,15 @@ _ccs_deserialize_json_tree(
 	data.children       = NULL;
 
 	json                = *(cJSON **)buffer;
-	j_arity             = cJSON_GetObjectItemCaseSensitive(json, "arity");
-	CCS_REFUTE(!j_arity, CCS_RESULT_ERROR_INVALID_VALUE);
-	CCS_VALIDATE(_ccs_json_get_int(j_arity, &arity_val));
+	CCS_VALIDATE(_ccs_json_extract_int(json, "arity", &arity_val));
 	data.arity = (size_t)arity_val;
 
-	j_weight   = cJSON_GetObjectItemCaseSensitive(json, "weight");
-	CCS_REFUTE(!j_weight, CCS_RESULT_ERROR_INVALID_VALUE);
-	CCS_VALIDATE(_ccs_json_get_float(j_weight, &data.weight));
+	CCS_VALIDATE(_ccs_json_extract_float(json, "weight", &data.weight));
 
-	j_bias = cJSON_GetObjectItemCaseSensitive(json, "bias");
-	CCS_REFUTE(!j_bias, CCS_RESULT_ERROR_INVALID_VALUE);
-	CCS_VALIDATE(_ccs_json_get_float(j_bias, &data.bias));
+	CCS_VALIDATE(_ccs_json_extract_float(json, "bias", &data.bias));
 
-	j_value = cJSON_GetObjectItemCaseSensitive(json, "value");
-	CCS_REFUTE(!j_value, CCS_RESULT_ERROR_INVALID_VALUE);
 	CCS_VALIDATE_ERR_GOTO(
-		res, _ccs_json_get_datum(j_value, &data.value), end);
+		res, _ccs_json_extract_datum(json, "value", &data.value), end);
 
 	j_children = cJSON_GetObjectItemCaseSensitive(json, "children");
 	CCS_REFUTE_ERR_GOTO(

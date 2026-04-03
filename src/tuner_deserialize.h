@@ -228,15 +228,14 @@ _ccs_deserialize_json_ccs_random_tuner_data(
 	cJSON                             *json,
 	_ccs_object_deserialize_options_t *opts)
 {
-	cJSON      *j_name;
 	cJSON      *j_os;
 	cJSON      *j_history;
 	cJSON      *j_optima;
 	const char *cbuf;
 	size_t      dummy;
 
-	j_name = cJSON_GetObjectItemCaseSensitive(json, "name");
-	CCS_VALIDATE(_ccs_json_get_string(j_name, &data->common_data.name));
+	CCS_VALIDATE(_ccs_json_extract_string(
+		json, "name", &data->common_data.name));
 
 	/* objective_space (inlined) */
 	j_os = cJSON_GetObjectItemCaseSensitive(json, "objective_space");
@@ -452,9 +451,8 @@ _ccs_deserialize_json_tuner(
 	ccs_result_t                      res      = CCS_RESULT_SUCCESS;
 	cJSON                            *json     = *(cJSON **)buffer;
 
-	cJSON *j_ttype = cJSON_GetObjectItemCaseSensitive(json, "tuner_type");
-	const char *ttype_str;
-	CCS_VALIDATE(_ccs_json_get_string(j_ttype, &ttype_str));
+	const char                       *ttype_str;
+	CCS_VALIDATE(_ccs_json_extract_string(json, "tuner_type", &ttype_str));
 
 	if (!strcmp(ttype_str, "user_defined"))
 		CCS_CHECK_PTR(opts->deserialize_vector_callback);

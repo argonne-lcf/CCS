@@ -104,23 +104,17 @@ _ccs_deserialize_json_map(
 	CCS_VALIDATE(ccs_create_map(map_ret));
 	for (size_t i = 0; i < num; i++) {
 		cJSON      *pair = cJSON_GetArrayItem(j_pairs, (int)i);
-		cJSON      *j_key;
-		cJSON      *j_value;
 		ccs_datum_t key, value;
 
 		CCS_REFUTE_ERR_GOTO(
 			res, !pair || !cJSON_IsObject(pair),
 			CCS_RESULT_ERROR_INVALID_VALUE, err_map);
-		j_key = cJSON_GetObjectItemCaseSensitive(pair, "key");
-		CCS_REFUTE_ERR_GOTO(
-			res, !j_key, CCS_RESULT_ERROR_INVALID_VALUE, err_map);
 		CCS_VALIDATE_ERR_GOTO(
-			res, _ccs_json_get_datum(j_key, &key), err_map);
-		j_value = cJSON_GetObjectItemCaseSensitive(pair, "value");
-		CCS_REFUTE_ERR_GOTO(
-			res, !j_value, CCS_RESULT_ERROR_INVALID_VALUE, err_map);
+			res, _ccs_json_extract_datum(pair, "key", &key),
+			err_map);
 		CCS_VALIDATE_ERR_GOTO(
-			res, _ccs_json_get_datum(j_value, &value), err_map);
+			res, _ccs_json_extract_datum(pair, "value", &value),
+			err_map);
 		/* Strings from cJSON point into the cJSON tree which will
 		 * be freed after deserialization.  Mark them transient so
 		 * ccs_map_set copies the data. */

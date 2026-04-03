@@ -135,7 +135,6 @@ _ccs_deserialize_json_ccs_objective_space_data(
 	cJSON                             *json,
 	_ccs_object_deserialize_options_t *opts)
 {
-	cJSON      *j_name;
 	cJSON      *j_ss;
 	cJSON      *j_params;
 	cJSON      *j_objs;
@@ -145,8 +144,7 @@ _ccs_deserialize_json_ccs_objective_space_data(
 	const char *cbuf;
 	size_t      dummy;
 
-	j_name = cJSON_GetObjectItemCaseSensitive(json, "name");
-	CCS_VALIDATE(_ccs_json_get_string(j_name, &data->name));
+	CCS_VALIDATE(_ccs_json_extract_string(json, "name", &data->name));
 
 	/* search_space */
 	j_ss = cJSON_GetObjectItemCaseSensitive(json, "search_space");
@@ -210,7 +208,6 @@ _ccs_deserialize_json_ccs_objective_space_data(
 	for (size_t i = 0; i < num_objs; i++) {
 		cJSON *obj_item = cJSON_GetArrayItem(j_objs, (int)i);
 		cJSON *j_expr;
-		cJSON *j_type;
 		j_expr = cJSON_GetObjectItemCaseSensitive(
 			obj_item, "expression");
 		CCS_REFUTE(
@@ -223,8 +220,8 @@ _ccs_deserialize_json_ccs_objective_space_data(
 			CCS_OBJECT_TYPE_EXPRESSION, CCS_SERIALIZE_FORMAT_JSON,
 			version, &dummy, &cbuf, opts));
 		const char *otype_str;
-		j_type = cJSON_GetObjectItemCaseSensitive(obj_item, "type");
-		CCS_VALIDATE(_ccs_json_get_string(j_type, &otype_str));
+		CCS_VALIDATE(
+			_ccs_json_extract_string(obj_item, "type", &otype_str));
 		CCS_VALIDATE(_ccs_json_objective_type_from_string(
 			otype_str, data->objective_types + i));
 	}
