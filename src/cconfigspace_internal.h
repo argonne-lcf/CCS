@@ -20,6 +20,36 @@ static inline char *
 _ccs_json_hex_encode(const void *data, size_t len);
 static inline unsigned char *
 _ccs_json_hex_decode(const char *hex_str, size_t *out_len);
+static inline ccs_result_t
+_ccs_json_add_string(cJSON *json, const char *key, const char *value);
+static inline ccs_result_t
+_ccs_json_get_string(cJSON *item, const char **value_ret);
+static inline ccs_result_t
+_ccs_json_add_bool(cJSON *json, const char *key, ccs_bool_t value);
+static inline ccs_result_t
+_ccs_json_get_bool(cJSON *item, ccs_bool_t *value_ret);
+static inline ccs_result_t
+_ccs_json_add_int(cJSON *json, const char *key, ccs_int_t value);
+static inline ccs_result_t
+_ccs_json_get_int(cJSON *item, ccs_int_t *value_ret);
+static inline ccs_result_t
+_ccs_json_add_float(cJSON *json, const char *key, double value);
+static inline ccs_result_t
+_ccs_json_get_float(cJSON *item, double *value_ret);
+static inline ccs_result_t
+_ccs_json_create_string(const char *value, cJSON **item_ret);
+static inline ccs_result_t
+_ccs_json_create_bool(ccs_bool_t value, cJSON **item_ret);
+static inline ccs_result_t
+_ccs_json_create_int(ccs_int_t value, cJSON **item_ret);
+static inline ccs_result_t
+_ccs_json_create_float(double value, cJSON **item_ret);
+static inline ccs_result_t
+_ccs_json_add_datum(cJSON *json, const char *key, ccs_datum_t datum);
+static inline ccs_result_t
+_ccs_json_add_datum_to_array(cJSON *array, ccs_datum_t datum);
+static inline ccs_result_t
+_ccs_json_get_datum(cJSON *item, ccs_datum_t *datum_ret);
 
 static inline ccs_bool_t
 _ccs_interval_include(ccs_interval_t *interval, ccs_numeric_t value)
@@ -1349,14 +1379,10 @@ _ccs_serialize_ccs_object_internal(
 			_ccs_json_object_type_to_string(obj->type);
 		CCS_REFUTE(!type_str, CCS_RESULT_ERROR_INVALID_VALUE);
 		cJSON *json = *(cJSON **)buffer;
-		CCS_REFUTE(
-			!cJSON_AddStringToObject(json, "type", type_str),
-			CCS_RESULT_ERROR_OUT_OF_MEMORY);
+		CCS_VALIDATE(_ccs_json_add_string(json, "type", type_str));
 		char hex[sizeof(ccs_object_t) * 2 + 1];
 		_ccs_json_hex_encode_buf(&obj, sizeof(ccs_object_t), hex);
-		CCS_REFUTE(
-			!cJSON_AddStringToObject(json, "handle", hex),
-			CCS_RESULT_ERROR_OUT_OF_MEMORY);
+		CCS_VALIDATE(_ccs_json_add_string(json, "handle", hex));
 	} break;
 	default:
 		CCS_RAISE(
@@ -1426,23 +1452,20 @@ _ccs_deserialize_ccs_object_internal(
 	case CCS_SERIALIZE_FORMAT_JSON: {
 		cJSON *json   = *(cJSON **)buffer;
 		cJSON *j_type = cJSON_GetObjectItemCaseSensitive(json, "type");
-		CCS_REFUTE(
-			!j_type || !cJSON_IsString(j_type),
-			CCS_RESULT_ERROR_INVALID_VALUE);
+		cJSON *j_handle;
+		const char *type_str;
+		const char *handle_str;
+		CCS_VALIDATE(_ccs_json_get_string(j_type, &type_str));
 		CCS_VALIDATE(_ccs_json_object_type_from_string(
-			j_type->valuestring, &obj->type));
-		cJSON *j_handle =
-			cJSON_GetObjectItemCaseSensitive(json, "handle");
+			type_str, &obj->type));
+		j_handle = cJSON_GetObjectItemCaseSensitive(json, "handle");
+		CCS_VALIDATE(_ccs_json_get_string(j_handle, &handle_str));
 		CCS_REFUTE(
-			!j_handle || !cJSON_IsString(j_handle),
-			CCS_RESULT_ERROR_INVALID_VALUE);
-		CCS_REFUTE(
-			strlen(j_handle->valuestring) !=
-				sizeof(ccs_object_t) * 2,
+			strlen(handle_str) != sizeof(ccs_object_t) * 2,
 			CCS_RESULT_ERROR_INVALID_VALUE);
 		CCS_REFUTE(
 			_ccs_json_hex_decode_buf(
-				j_handle->valuestring, sizeof(ccs_object_t) * 2,
+				handle_str, sizeof(ccs_object_t) * 2,
 				handle_ret),
 			CCS_RESULT_ERROR_INVALID_VALUE);
 	} break;
@@ -1563,31 +1586,36 @@ _ccs_object_serialize_user_data(
 					cb(object, 0, NULL,
 					   &serialize_data_size, cb_data));
 				if (serialize_data_size) {
-					char *tmp = (char *)malloc(
-						serialize_data_size);
+					ccs_result_t err;
+					char        *tmp = (char *)malloc(
+                                                serialize_data_size);
+					char *hex = NULL;
 					CCS_REFUTE(
 						!tmp,
 						CCS_RESULT_ERROR_OUT_OF_MEMORY);
-					ccs_result_t err =
+					CCS_VALIDATE_ERR_GOTO(
+						err,
 						cb(object, serialize_data_size,
-						   tmp, NULL, cb_data);
-					if (err != CCS_RESULT_SUCCESS) {
-						free(tmp);
-						return err;
-					}
-					char *hex = _ccs_json_hex_encode(
+						   tmp, NULL, cb_data),
+						err_ud_tmp);
+					hex = _ccs_json_hex_encode(
 						tmp, serialize_data_size);
-					free(tmp);
-					CCS_REFUTE(
-						!hex,
-						CCS_RESULT_ERROR_OUT_OF_MEMORY);
-					cJSON *ud = cJSON_AddStringToObject(
-						*(cJSON **)buffer, "user_data",
-						hex);
+					CCS_REFUTE_ERR_GOTO(
+						err, !hex,
+						CCS_RESULT_ERROR_OUT_OF_MEMORY,
+						err_ud_tmp);
+					CCS_VALIDATE_ERR_GOTO(
+						err,
+						_ccs_json_add_string(
+							*(cJSON **)buffer,
+							"user_data", hex),
+						err_ud_hex);
+				err_ud_hex:
 					free(hex);
-					CCS_REFUTE(
-						!ud,
-						CCS_RESULT_ERROR_OUT_OF_MEMORY);
+				err_ud_tmp:
+					free(tmp);
+					if (err != CCS_RESULT_SUCCESS)
+						return err;
 				}
 			}
 		}
@@ -1633,11 +1661,14 @@ _ccs_object_deserialize_user_data(
 		cJSON *json = *(cJSON **)buffer;
 		cJSON *j_user_data =
 			cJSON_GetObjectItemCaseSensitive(json, "user_data");
-		if (j_user_data && cJSON_IsString(j_user_data) &&
-		    opts->deserialize_data_callback) {
+		if (j_user_data && opts->deserialize_data_callback) {
+			const char    *ud_str;
 			size_t         data_len;
-			unsigned char *data_bytes = _ccs_json_hex_decode(
-				j_user_data->valuestring, &data_len);
+			unsigned char *data_bytes;
+			if (_ccs_json_get_string(j_user_data, &ud_str) !=
+			    CCS_RESULT_SUCCESS)
+				break;
+			data_bytes = _ccs_json_hex_decode(ud_str, &data_len);
 			CCS_REFUTE(!data_bytes, CCS_RESULT_ERROR_OUT_OF_MEMORY);
 			ccs_result_t err = opts->deserialize_data_callback(
 				object, data_len, (const char *)data_bytes,

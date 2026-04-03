@@ -114,13 +114,9 @@ _ccs_serialize_json_ccs_tree_space_common_data(
 
 	type_str          = _ccs_json_tree_space_type_to_string(data->type);
 	CCS_REFUTE(!type_str, CCS_RESULT_ERROR_INVALID_VALUE);
-	CCS_REFUTE(
-		!cJSON_AddStringToObject(json, "tree_space_type", type_str),
-		CCS_RESULT_ERROR_OUT_OF_MEMORY);
+	CCS_VALIDATE(_ccs_json_add_string(json, "tree_space_type", type_str));
 
-	CCS_REFUTE(
-		!cJSON_AddStringToObject(json, "name", data->name),
-		CCS_RESULT_ERROR_OUT_OF_MEMORY);
+	CCS_VALIDATE(_ccs_json_add_string(json, "name", data->name));
 
 	rng_node = cJSON_AddObjectToObject(json, "rng");
 	CCS_REFUTE(!rng_node, CCS_RESULT_ERROR_OUT_OF_MEMORY);
@@ -141,10 +137,8 @@ _ccs_serialize_json_ccs_tree_space_common_data(
 		cJSON *fs_node;
 		_ccs_json_hex_encode_buf(
 			&data->feature_space, sizeof(ccs_object_t), hex);
-		CCS_REFUTE(
-			!cJSON_AddStringToObject(
-				json, "feature_space_handle", hex),
-			CCS_RESULT_ERROR_OUT_OF_MEMORY);
+		CCS_VALIDATE(_ccs_json_add_string(
+			json, "feature_space_handle", hex));
 		fs_node = cJSON_AddObjectToObject(json, "feature_space");
 		CCS_REFUTE(!fs_node, CCS_RESULT_ERROR_OUT_OF_MEMORY);
 		dummy = 0;

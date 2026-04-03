@@ -158,15 +158,15 @@ _ccs_deserialize_json_ccs_distribution_space_data(
 	size_t      dummy;
 
 	/* configuration_space handle */
+	const char *cs_str;
 	j_cs = cJSON_GetObjectItemCaseSensitive(json, "configuration_space");
+	CCS_VALIDATE(_ccs_json_get_string(j_cs, &cs_str));
 	CCS_REFUTE(
-		!j_cs || !cJSON_IsString(j_cs), CCS_RESULT_ERROR_INVALID_VALUE);
-	CCS_REFUTE(
-		strlen(j_cs->valuestring) != sizeof(ccs_object_t) * 2,
+		strlen(cs_str) != sizeof(ccs_object_t) * 2,
 		CCS_RESULT_ERROR_INVALID_VALUE);
 	CCS_REFUTE(
 		_ccs_json_hex_decode_buf(
-			j_cs->valuestring, sizeof(ccs_object_t) * 2,
+			cs_str, sizeof(ccs_object_t) * 2,
 			&data->configuration_space),
 		CCS_RESULT_ERROR_INVALID_VALUE);
 

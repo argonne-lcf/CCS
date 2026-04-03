@@ -236,10 +236,7 @@ _ccs_deserialize_json_ccs_random_tuner_data(
 	size_t      dummy;
 
 	j_name = cJSON_GetObjectItemCaseSensitive(json, "name");
-	CCS_REFUTE(
-		!j_name || !cJSON_IsString(j_name),
-		CCS_RESULT_ERROR_INVALID_VALUE);
-	data->common_data.name = j_name->valuestring;
+	CCS_VALIDATE(_ccs_json_get_string(j_name, &data->common_data.name));
 
 	/* objective_space (inlined) */
 	j_os = cJSON_GetObjectItemCaseSensitive(json, "objective_space");
@@ -285,16 +282,16 @@ _ccs_deserialize_json_ccs_random_tuner_data(
 	}
 
 	for (size_t i = 0; i < data->size_optima; i++) {
-		cJSON *child = cJSON_GetArrayItem(j_optima, (int)i);
+		cJSON      *child = cJSON_GetArrayItem(j_optima, (int)i);
+		const char *child_str;
+		CCS_REFUTE(!child, CCS_RESULT_ERROR_INVALID_VALUE);
+		CCS_VALIDATE(_ccs_json_get_string(child, &child_str));
 		CCS_REFUTE(
-			!child || !cJSON_IsString(child),
-			CCS_RESULT_ERROR_INVALID_VALUE);
-		CCS_REFUTE(
-			strlen(child->valuestring) != sizeof(ccs_object_t) * 2,
+			strlen(child_str) != sizeof(ccs_object_t) * 2,
 			CCS_RESULT_ERROR_INVALID_VALUE);
 		CCS_REFUTE(
 			_ccs_json_hex_decode_buf(
-				child->valuestring, sizeof(ccs_object_t) * 2,
+				child_str, sizeof(ccs_object_t) * 2,
 				data->optima + i),
 			CCS_RESULT_ERROR_INVALID_VALUE);
 	}
@@ -379,12 +376,14 @@ _ccs_deserialize_json_user_defined_tuner(
 	{
 		cJSON *j_state = cJSON_GetObjectItemCaseSensitive(
 			*(cJSON **)buffer, "user_state");
-		if (j_state && cJSON_IsString(j_state)) {
-			size_t slen = strlen(j_state->valuestring);
+		const char *state_str = NULL;
+		if (j_state && _ccs_json_get_string(j_state, &state_str) ==
+				       CCS_RESULT_SUCCESS) {
+			size_t slen = strlen(state_str);
 			if (slen) {
 				blob.sz                = slen / 2;
 				unsigned char *decoded = _ccs_json_hex_decode(
-					j_state->valuestring, &blob.sz);
+					state_str, &blob.sz);
 				CCS_REFUTE_ERR_GOTO(
 					res, !decoded,
 					CCS_RESULT_ERROR_INVALID_VALUE, end);
@@ -454,24 +453,23 @@ _ccs_deserialize_json_tuner(
 	cJSON                            *json     = *(cJSON **)buffer;
 
 	cJSON *j_ttype = cJSON_GetObjectItemCaseSensitive(json, "tuner_type");
-	CCS_REFUTE(
-		!j_ttype || !cJSON_IsString(j_ttype),
-		CCS_RESULT_ERROR_INVALID_VALUE);
+	const char *ttype_str;
+	CCS_VALIDATE(_ccs_json_get_string(j_ttype, &ttype_str));
 
-	if (!strcmp(j_ttype->valuestring, "user_defined"))
+	if (!strcmp(ttype_str, "user_defined"))
 		CCS_CHECK_PTR(opts->deserialize_vector_callback);
 
 	new_opts.map_values = CCS_TRUE;
 	CCS_VALIDATE(ccs_create_map(&new_opts.handle_map));
 
-	if (!strcmp(j_ttype->valuestring, "random"))
+	if (!strcmp(ttype_str, "random"))
 		CCS_VALIDATE_ERR_GOTO(
 			res,
 			_ccs_deserialize_json_random_tuner(
 				tuner_ret, version, buffer_size, buffer,
 				&new_opts),
 			end);
-	else if (!strcmp(j_ttype->valuestring, "user_defined"))
+	else if (!strcmp(ttype_str, "user_defined"))
 		CCS_VALIDATE_ERR_GOTO(
 			res,
 			_ccs_deserialize_json_user_defined_tuner(
@@ -481,7 +479,7 @@ _ccs_deserialize_json_tuner(
 	else
 		CCS_RAISE_ERR_GOTO(
 			res, CCS_RESULT_ERROR_INVALID_TYPE, end,
-			"Unsupported tuner type: %s", j_ttype->valuestring);
+			"Unsupported tuner type: %s", ttype_str);
 
 end:
 	ccs_release_object(new_opts.handle_map);

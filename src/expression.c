@@ -173,11 +173,9 @@ _ccs_serialize_json_ccs_expression(
 {
 	_ccs_expression_data_t *data =
 		(_ccs_expression_data_t *)(expression->data);
-	CCS_REFUTE(
-		!cJSON_AddStringToObject(
-			json, "expression_type",
-			_ccs_json_expression_type_to_string(data->type)),
-		CCS_RESULT_ERROR_OUT_OF_MEMORY);
+	CCS_VALIDATE(_ccs_json_add_string(
+		json, "expression_type",
+		_ccs_json_expression_type_to_string(data->type)));
 	cJSON *nodes = cJSON_AddArrayToObject(json, "nodes");
 	CCS_REFUTE(!nodes, CCS_RESULT_ERROR_OUT_OF_MEMORY);
 	for (size_t i = 0; i < data->num_nodes; i++) {
@@ -1149,9 +1147,7 @@ _ccs_serialize_json_ccs_expression_literal(
 	(void)opts;
 	_ccs_expression_literal_data_t *data =
 		(_ccs_expression_literal_data_t *)(expression->data);
-	CCS_REFUTE(
-		!cJSON_AddStringToObject(json, "expression_type", "literal"),
-		CCS_RESULT_ERROR_OUT_OF_MEMORY);
+	CCS_VALIDATE(_ccs_json_add_string(json, "expression_type", "literal"));
 	CCS_VALIDATE(_ccs_json_add_datum(json, "value", data->value));
 	return CCS_RESULT_SUCCESS;
 }
@@ -1292,14 +1288,10 @@ _ccs_serialize_json_ccs_expression_variable(
 	(void)opts;
 	_ccs_expression_variable_data_t *data =
 		(_ccs_expression_variable_data_t *)(expression->data);
-	CCS_REFUTE(
-		!cJSON_AddStringToObject(json, "expression_type", "variable"),
-		CCS_RESULT_ERROR_OUT_OF_MEMORY);
+	CCS_VALIDATE(_ccs_json_add_string(json, "expression_type", "variable"));
 	char hex[sizeof(ccs_object_t) * 2 + 1];
 	_ccs_json_hex_encode_buf(&data->parameter, sizeof(ccs_object_t), hex);
-	CCS_REFUTE(
-		!cJSON_AddStringToObject(json, "parameter", hex),
-		CCS_RESULT_ERROR_OUT_OF_MEMORY);
+	CCS_VALIDATE(_ccs_json_add_string(json, "parameter", hex));
 	return CCS_RESULT_SUCCESS;
 }
 
@@ -1450,13 +1442,9 @@ _ccs_serialize_json_ccs_expression_user_defined(
 {
 	_ccs_expression_user_defined_data_t *data =
 		(_ccs_expression_user_defined_data_t *)(expression->data);
-	CCS_REFUTE(
-		!cJSON_AddStringToObject(
-			json, "expression_type", "user_defined"),
-		CCS_RESULT_ERROR_OUT_OF_MEMORY);
-	CCS_REFUTE(
-		!cJSON_AddStringToObject(json, "name", data->name),
-		CCS_RESULT_ERROR_OUT_OF_MEMORY);
+	CCS_VALIDATE(
+		_ccs_json_add_string(json, "expression_type", "user_defined"));
+	CCS_VALIDATE(_ccs_json_add_string(json, "name", data->name));
 	/* serialize child nodes */
 	cJSON *nodes = cJSON_AddArrayToObject(json, "nodes");
 	CCS_REFUTE(!nodes, CCS_RESULT_ERROR_OUT_OF_MEMORY);
@@ -1475,20 +1463,28 @@ _ccs_serialize_json_ccs_expression_user_defined(
 		CCS_VALIDATE(data->vector.serialize_user_state(
 			expression, 0, NULL, &state_size));
 		if (state_size) {
-			char *tmp = (char *)malloc(state_size);
+			ccs_result_t err;
+			char        *tmp = (char *)malloc(state_size);
+			char        *hex = NULL;
 			CCS_REFUTE(!tmp, CCS_RESULT_ERROR_OUT_OF_MEMORY);
-			ccs_result_t err = data->vector.serialize_user_state(
-				expression, state_size, tmp, NULL);
-			if (err != CCS_RESULT_SUCCESS) {
-				free(tmp);
-				return err;
-			}
-			char *hex = _ccs_json_hex_encode(tmp, state_size);
-			free(tmp);
-			CCS_REFUTE(!hex, CCS_RESULT_ERROR_OUT_OF_MEMORY);
-			cJSON *s = cJSON_AddStringToObject(json, "state", hex);
+			CCS_VALIDATE_ERR_GOTO(
+				err,
+				data->vector.serialize_user_state(
+					expression, state_size, tmp, NULL),
+				err_expr_tmp);
+			hex = _ccs_json_hex_encode(tmp, state_size);
+			CCS_REFUTE_ERR_GOTO(
+				err, !hex, CCS_RESULT_ERROR_OUT_OF_MEMORY,
+				err_expr_tmp);
+			CCS_VALIDATE_ERR_GOTO(
+				err, _ccs_json_add_string(json, "state", hex),
+				err_expr_hex);
+		err_expr_hex:
 			free(hex);
-			CCS_REFUTE(!s, CCS_RESULT_ERROR_OUT_OF_MEMORY);
+		err_expr_tmp:
+			free(tmp);
+			if (err != CCS_RESULT_SUCCESS)
+				return err;
 		}
 	}
 	return CCS_RESULT_SUCCESS;

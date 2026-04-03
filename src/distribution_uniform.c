@@ -105,20 +105,15 @@ _ccs_serialize_json_ccs_distribution_uniform(
 {
 	_ccs_distribution_uniform_data_t *data =
 		(_ccs_distribution_uniform_data_t *)(distribution->data);
-	CCS_REFUTE(
-		!cJSON_AddStringToObject(json, "distribution_type", "uniform"),
-		CCS_RESULT_ERROR_OUT_OF_MEMORY);
-	CCS_REFUTE(
-		!cJSON_AddStringToObject(
-			json, "data_type",
-			_ccs_json_numeric_type_to_string(
-				data->common_data.data_types[0])),
-		CCS_RESULT_ERROR_OUT_OF_MEMORY);
-	CCS_REFUTE(
-		!cJSON_AddStringToObject(
-			json, "scale_type",
-			_ccs_json_scale_type_to_string(data->scale_type)),
-		CCS_RESULT_ERROR_OUT_OF_MEMORY);
+	CCS_VALIDATE(
+		_ccs_json_add_string(json, "distribution_type", "uniform"));
+	CCS_VALIDATE(_ccs_json_add_string(
+		json, "data_type",
+		_ccs_json_numeric_type_to_string(
+			data->common_data.data_types[0])));
+	CCS_VALIDATE(_ccs_json_add_string(
+		json, "scale_type",
+		_ccs_json_scale_type_to_string(data->scale_type)));
 	if (data->common_data.data_types[0] == CCS_NUMERIC_TYPE_FLOAT) {
 		CCS_VALIDATE(_ccs_json_add_float(json, "lower", data->lower.f));
 		CCS_VALIDATE(_ccs_json_add_float(json, "upper", data->upper.f));

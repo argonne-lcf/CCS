@@ -181,21 +181,19 @@ _ccs_deserialize_json_parameter_numerical(
 	cJSON *j_default_value =
 		cJSON_GetObjectItemCaseSensitive(json, "default_value");
 
-	CCS_REFUTE(
-		!j_data_type || !cJSON_IsString(j_data_type),
-		CCS_RESULT_ERROR_INVALID_VALUE);
-	CCS_REFUTE(
-		!j_name || !cJSON_IsString(j_name),
-		CCS_RESULT_ERROR_INVALID_VALUE);
+	const char        *data_type_str;
+	const char        *name_str;
+	ccs_numeric_type_t data_type;
+	ccs_datum_t        default_datum;
+	CCS_VALIDATE(_ccs_json_get_string(j_data_type, &data_type_str));
+	CCS_VALIDATE(_ccs_json_get_string(j_name, &name_str));
 	CCS_REFUTE(!j_lower, CCS_RESULT_ERROR_INVALID_VALUE);
 	CCS_REFUTE(!j_upper, CCS_RESULT_ERROR_INVALID_VALUE);
 	CCS_REFUTE(!j_quantization, CCS_RESULT_ERROR_INVALID_VALUE);
 	CCS_REFUTE(!j_default_value, CCS_RESULT_ERROR_INVALID_VALUE);
 
-	ccs_numeric_type_t data_type;
-	ccs_datum_t        default_datum;
-	CCS_VALIDATE(_ccs_json_numeric_type_from_string(
-		j_data_type->valuestring, &data_type));
+	CCS_VALIDATE(
+		_ccs_json_numeric_type_from_string(data_type_str, &data_type));
 	CCS_VALIDATE(_ccs_json_get_datum(j_default_value, &default_datum));
 
 	ccs_numeric_t lower, upper, quantization, default_value;
@@ -216,8 +214,8 @@ _ccs_deserialize_json_parameter_numerical(
 		default_value.i = default_datum.value.i;
 	}
 	CCS_VALIDATE(ccs_create_numerical_parameter(
-		j_name->valuestring, data_type, lower, upper, quantization,
-		default_value, parameter_ret));
+		name_str, data_type, lower, upper, quantization, default_value,
+		parameter_ret));
 	return CCS_RESULT_SUCCESS;
 }
 
@@ -239,9 +237,8 @@ _ccs_deserialize_json_parameter_categorical(
 	cJSON *j_possible_values =
 		cJSON_GetObjectItemCaseSensitive(json, "possible_values");
 
-	CCS_REFUTE(
-		!j_name || !cJSON_IsString(j_name),
-		CCS_RESULT_ERROR_INVALID_VALUE);
+	const char *name_str;
+	CCS_VALIDATE(_ccs_json_get_string(j_name, &name_str));
 	CCS_REFUTE(!j_default_value, CCS_RESULT_ERROR_INVALID_VALUE);
 	CCS_REFUTE(
 		!j_possible_values || !cJSON_IsArray(j_possible_values),
@@ -273,27 +270,24 @@ _ccs_deserialize_json_parameter_categorical(
 		CCS_VALIDATE_ERR_GOTO(
 			res,
 			ccs_create_categorical_parameter(
-				j_name->valuestring, num_possible_values,
-				possible_values, default_value_index,
-				parameter_ret),
+				name_str, num_possible_values, possible_values,
+				default_value_index, parameter_ret),
 			end);
 		break;
 	case CCS_PARAMETER_TYPE_ORDINAL:
 		CCS_VALIDATE_ERR_GOTO(
 			res,
 			ccs_create_ordinal_parameter(
-				j_name->valuestring, num_possible_values,
-				possible_values, default_value_index,
-				parameter_ret),
+				name_str, num_possible_values, possible_values,
+				default_value_index, parameter_ret),
 			end);
 		break;
 	case CCS_PARAMETER_TYPE_DISCRETE:
 		CCS_VALIDATE_ERR_GOTO(
 			res,
 			ccs_create_discrete_parameter(
-				j_name->valuestring, num_possible_values,
-				possible_values, default_value_index,
-				parameter_ret),
+				name_str, num_possible_values, possible_values,
+				default_value_index, parameter_ret),
 			end);
 		break;
 	default:
@@ -312,12 +306,10 @@ _ccs_deserialize_json_parameter_string(
 	ccs_parameter_t *parameter_ret,
 	cJSON           *json)
 {
-	cJSON *j_name = cJSON_GetObjectItemCaseSensitive(json, "name");
-	CCS_REFUTE(
-		!j_name || !cJSON_IsString(j_name),
-		CCS_RESULT_ERROR_INVALID_VALUE);
-	CCS_VALIDATE(ccs_create_string_parameter(
-		j_name->valuestring, parameter_ret));
+	cJSON      *j_name = cJSON_GetObjectItemCaseSensitive(json, "name");
+	const char *name_str;
+	CCS_VALIDATE(_ccs_json_get_string(j_name, &name_str));
+	CCS_VALIDATE(ccs_create_string_parameter(name_str, parameter_ret));
 	return CCS_RESULT_SUCCESS;
 }
 
@@ -331,18 +323,16 @@ _ccs_deserialize_json_parameter(
 {
 	(void)version;
 	(void)buffer_size;
-	(void)opts;
-	cJSON *json = *(cJSON **)buffer;
-
-	cJSON *j_ptype =
-		cJSON_GetObjectItemCaseSensitive(json, "parameter_type");
-	CCS_REFUTE(
-		!j_ptype || !cJSON_IsString(j_ptype),
-		CCS_RESULT_ERROR_INVALID_VALUE);
-
+	cJSON               *json;
+	cJSON               *j_ptype;
+	const char          *ptype_str;
 	ccs_parameter_type_t ptype;
-	CCS_VALIDATE(_ccs_json_parameter_type_from_string(
-		j_ptype->valuestring, &ptype));
+
+	(void)opts;
+	json    = *(cJSON **)buffer;
+	j_ptype = cJSON_GetObjectItemCaseSensitive(json, "parameter_type");
+	CCS_VALIDATE(_ccs_json_get_string(j_ptype, &ptype_str));
+	CCS_VALIDATE(_ccs_json_parameter_type_from_string(ptype_str, &ptype));
 
 	switch (ptype) {
 	case CCS_PARAMETER_TYPE_NUMERICAL:

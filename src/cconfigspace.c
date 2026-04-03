@@ -237,9 +237,7 @@ _ccs_serialize_header(
 			header, "version", CCS_SERIALIZATION_API_VERSION));
 		char hex[sizeof(size_t) * 2 + 1];
 		_ccs_json_hex_encode_buf(&size, sizeof(size_t), hex);
-		CCS_REFUTE(
-			!cJSON_AddStringToObject(header, "size", hex),
-			CCS_RESULT_ERROR_OUT_OF_MEMORY);
+		CCS_VALIDATE(_ccs_json_add_string(header, "size", hex));
 	} break;
 	default:
 		CCS_RAISE(
@@ -282,22 +280,21 @@ _ccs_deserialize_header(
 			cJSON_GetObjectItemCaseSensitive(j_header, "version");
 		cJSON *j_size =
 			cJSON_GetObjectItemCaseSensitive(j_header, "size");
-		ccs_int_t version_val;
+		ccs_int_t   version_val;
+		const char *size_str;
 		CCS_REFUTE(!j_version, CCS_RESULT_ERROR_INVALID_VALUE);
 		CCS_VALIDATE(_ccs_json_get_int(j_version, &version_val));
 		*version = (uint32_t)version_val;
 		CCS_REFUTE(
 			*version > CCS_SERIALIZATION_API_VERSION,
 			CCS_RESULT_ERROR_INVALID_VALUE);
+		CCS_VALIDATE(_ccs_json_get_string(j_size, &size_str));
 		CCS_REFUTE(
-			!j_size || !cJSON_IsString(j_size),
-			CCS_RESULT_ERROR_INVALID_VALUE);
-		CCS_REFUTE(
-			strlen(j_size->valuestring) != sizeof(size_t) * 2,
+			strlen(size_str) != sizeof(size_t) * 2,
 			CCS_RESULT_ERROR_INVALID_VALUE);
 		CCS_REFUTE(
 			_ccs_json_hex_decode_buf(
-				j_size->valuestring, sizeof(size_t) * 2, size),
+				size_str, sizeof(size_t) * 2, size),
 			CCS_RESULT_ERROR_INVALID_VALUE);
 	} break;
 	default:

@@ -55,22 +55,23 @@ static inline ccs_result_t
 _ccs_serialize_json_ccs_rng(ccs_rng_t rng, cJSON *json)
 {
 	_ccs_rng_data_t *data = (_ccs_rng_data_t *)(rng->data);
-	CCS_REFUTE(
-		!cJSON_AddStringToObject(
-			json, "rng_type", gsl_rng_name(data->rng)),
-		CCS_RESULT_ERROR_OUT_OF_MEMORY);
-	CCS_REFUTE(
-		!cJSON_AddBoolToObject(
-			json, "little_endian", ccs_is_little_endian()),
-		CCS_RESULT_ERROR_OUT_OF_MEMORY);
-	size_t state_size = gsl_rng_size(data->rng);
-	void  *state      = gsl_rng_state(data->rng);
-	char  *hex        = _ccs_json_hex_encode(state, state_size);
+	ccs_result_t     err;
+	size_t           state_size;
+	void            *state;
+	char            *hex;
+	CCS_VALIDATE(_ccs_json_add_string(
+		json, "rng_type", gsl_rng_name(data->rng)));
+	CCS_VALIDATE(_ccs_json_add_bool(
+		json, "little_endian", ccs_is_little_endian()));
+	state_size = gsl_rng_size(data->rng);
+	state      = gsl_rng_state(data->rng);
+	hex        = _ccs_json_hex_encode(state, state_size);
 	CCS_REFUTE(!hex, CCS_RESULT_ERROR_OUT_OF_MEMORY);
-	cJSON *j_state = cJSON_AddStringToObject(json, "state", hex);
+	CCS_VALIDATE_ERR_GOTO(
+		err, _ccs_json_add_string(json, "state", hex), err_hex);
+err_hex:
 	free(hex);
-	CCS_REFUTE(!j_state, CCS_RESULT_ERROR_OUT_OF_MEMORY);
-	return CCS_RESULT_SUCCESS;
+	return err;
 }
 
 static ccs_result_t

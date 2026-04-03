@@ -94,20 +94,14 @@ _ccs_serialize_json_ccs_distribution_normal(
 {
 	_ccs_distribution_normal_data_t *data =
 		(_ccs_distribution_normal_data_t *)(distribution->data);
-	CCS_REFUTE(
-		!cJSON_AddStringToObject(json, "distribution_type", "normal"),
-		CCS_RESULT_ERROR_OUT_OF_MEMORY);
-	CCS_REFUTE(
-		!cJSON_AddStringToObject(
-			json, "data_type",
-			_ccs_json_numeric_type_to_string(
-				data->common_data.data_types[0])),
-		CCS_RESULT_ERROR_OUT_OF_MEMORY);
-	CCS_REFUTE(
-		!cJSON_AddStringToObject(
-			json, "scale_type",
-			_ccs_json_scale_type_to_string(data->scale_type)),
-		CCS_RESULT_ERROR_OUT_OF_MEMORY);
+	CCS_VALIDATE(_ccs_json_add_string(json, "distribution_type", "normal"));
+	CCS_VALIDATE(_ccs_json_add_string(
+		json, "data_type",
+		_ccs_json_numeric_type_to_string(
+			data->common_data.data_types[0])));
+	CCS_VALIDATE(_ccs_json_add_string(
+		json, "scale_type",
+		_ccs_json_scale_type_to_string(data->scale_type)));
 	CCS_VALIDATE(_ccs_json_add_float(json, "mu", data->mu));
 	CCS_VALIDATE(_ccs_json_add_float(json, "sigma", data->sigma));
 	if (data->common_data.data_types[0] == CCS_NUMERIC_TYPE_FLOAT) {

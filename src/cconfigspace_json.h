@@ -348,6 +348,66 @@ _ccs_json_objective_type_from_string(
 }
 
 /*============================================================================
+ * String JSON helpers
+ *============================================================================*/
+
+static inline ccs_result_t
+_ccs_json_add_string(cJSON *json, const char *key, const char *value)
+{
+	CCS_REFUTE(
+		!cJSON_AddStringToObject(json, key, value),
+		CCS_RESULT_ERROR_OUT_OF_MEMORY);
+	return CCS_RESULT_SUCCESS;
+}
+
+static inline ccs_result_t
+_ccs_json_get_string(cJSON *item, const char **value_ret)
+{
+	CCS_REFUTE(
+		!item || !cJSON_IsString(item), CCS_RESULT_ERROR_INVALID_VALUE);
+	*value_ret = item->valuestring;
+	return CCS_RESULT_SUCCESS;
+}
+
+static inline ccs_result_t
+_ccs_json_create_string(const char *value, cJSON **item_ret)
+{
+	*item_ret = cJSON_CreateString(value);
+	CCS_REFUTE(!*item_ret, CCS_RESULT_ERROR_OUT_OF_MEMORY);
+	return CCS_RESULT_SUCCESS;
+}
+
+/*============================================================================
+ * Bool JSON helpers
+ *============================================================================*/
+
+static inline ccs_result_t
+_ccs_json_add_bool(cJSON *json, const char *key, ccs_bool_t value)
+{
+	CCS_REFUTE(
+		!cJSON_AddBoolToObject(json, key, value),
+		CCS_RESULT_ERROR_OUT_OF_MEMORY);
+	return CCS_RESULT_SUCCESS;
+}
+
+static inline ccs_result_t
+_ccs_json_get_bool(cJSON *item, ccs_bool_t *value_ret)
+{
+	CCS_REFUTE(
+		!item || !cJSON_IsBool(item), CCS_RESULT_ERROR_INVALID_VALUE);
+	*value_ret = cJSON_IsTrue(item) ? CCS_TRUE : CCS_FALSE;
+	return CCS_RESULT_SUCCESS;
+}
+
+static inline ccs_result_t
+_ccs_json_create_bool(ccs_bool_t value, cJSON **item_ret)
+{
+	*item_ret = cJSON_CreateBool(value);
+	CCS_REFUTE(!*item_ret, CCS_RESULT_ERROR_OUT_OF_MEMORY);
+	return CCS_RESULT_SUCCESS;
+}
+
+/*============================================================================
  * Integer JSON helpers (guards against precision loss)
  *============================================================================*/
 
@@ -473,59 +533,57 @@ _ccs_json_datum_to_cjson(ccs_datum_t datum, cJSON **item_ret)
 	CCS_REFUTE(!item, CCS_RESULT_ERROR_OUT_OF_MEMORY);
 	switch (datum.type) {
 	case CCS_DATA_TYPE_NONE:
-		CCS_REFUTE_ERR_GOTO(
-			err, !cJSON_AddStringToObject(item, "type", "none"),
-			CCS_RESULT_ERROR_OUT_OF_MEMORY, err_item);
+		CCS_VALIDATE_ERR_GOTO(
+			err, _ccs_json_add_string(item, "type", "none"),
+			err_item);
 		break;
 	case CCS_DATA_TYPE_INT:
-		CCS_REFUTE_ERR_GOTO(
-			err, !cJSON_AddStringToObject(item, "type", "int"),
-			CCS_RESULT_ERROR_OUT_OF_MEMORY, err_item);
+		CCS_VALIDATE_ERR_GOTO(
+			err, _ccs_json_add_string(item, "type", "int"),
+			err_item);
 		CCS_VALIDATE_ERR_GOTO(
 			err, _ccs_json_add_int(item, "value", datum.value.i),
 			err_item);
 		break;
 	case CCS_DATA_TYPE_FLOAT:
-		CCS_REFUTE_ERR_GOTO(
-			err, !cJSON_AddStringToObject(item, "type", "float"),
-			CCS_RESULT_ERROR_OUT_OF_MEMORY, err_item);
+		CCS_VALIDATE_ERR_GOTO(
+			err, _ccs_json_add_string(item, "type", "float"),
+			err_item);
 		CCS_VALIDATE_ERR_GOTO(
 			err, _ccs_json_add_float(item, "value", datum.value.f),
 			err_item);
 		break;
 	case CCS_DATA_TYPE_BOOL:
-		CCS_REFUTE_ERR_GOTO(
-			err, !cJSON_AddStringToObject(item, "type", "bool"),
-			CCS_RESULT_ERROR_OUT_OF_MEMORY, err_item);
-		CCS_REFUTE_ERR_GOTO(
-			err,
-			!cJSON_AddBoolToObject(item, "value", datum.value.i),
-			CCS_RESULT_ERROR_OUT_OF_MEMORY, err_item);
+		CCS_VALIDATE_ERR_GOTO(
+			err, _ccs_json_add_string(item, "type", "bool"),
+			err_item);
+		CCS_VALIDATE_ERR_GOTO(
+			err, _ccs_json_add_bool(item, "value", datum.value.i),
+			err_item);
 		break;
 	case CCS_DATA_TYPE_STRING:
-		CCS_REFUTE_ERR_GOTO(
-			err, !cJSON_AddStringToObject(item, "type", "string"),
-			CCS_RESULT_ERROR_OUT_OF_MEMORY, err_item);
-		CCS_REFUTE_ERR_GOTO(
-			err,
-			!cJSON_AddStringToObject(item, "value", datum.value.s),
-			CCS_RESULT_ERROR_OUT_OF_MEMORY, err_item);
+		CCS_VALIDATE_ERR_GOTO(
+			err, _ccs_json_add_string(item, "type", "string"),
+			err_item);
+		CCS_VALIDATE_ERR_GOTO(
+			err, _ccs_json_add_string(item, "value", datum.value.s),
+			err_item);
 		break;
 	case CCS_DATA_TYPE_INACTIVE:
-		CCS_REFUTE_ERR_GOTO(
-			err, !cJSON_AddStringToObject(item, "type", "inactive"),
-			CCS_RESULT_ERROR_OUT_OF_MEMORY, err_item);
+		CCS_VALIDATE_ERR_GOTO(
+			err, _ccs_json_add_string(item, "type", "inactive"),
+			err_item);
 		break;
 	case CCS_DATA_TYPE_OBJECT: {
 		char hex[sizeof(ccs_object_t) * 2 + 1];
 		_ccs_json_hex_encode_buf(
 			&datum.value.o, sizeof(ccs_object_t), hex);
-		CCS_REFUTE_ERR_GOTO(
-			err, !cJSON_AddStringToObject(item, "type", "object"),
-			CCS_RESULT_ERROR_OUT_OF_MEMORY, err_item);
-		CCS_REFUTE_ERR_GOTO(
-			err, !cJSON_AddStringToObject(item, "value", hex),
-			CCS_RESULT_ERROR_OUT_OF_MEMORY, err_item);
+		CCS_VALIDATE_ERR_GOTO(
+			err, _ccs_json_add_string(item, "type", "object"),
+			err_item);
+		CCS_VALIDATE_ERR_GOTO(
+			err, _ccs_json_add_string(item, "value", hex),
+			err_item);
 	} break;
 	default:
 		CCS_RAISE_ERR_GOTO(
@@ -564,62 +622,55 @@ _ccs_json_add_datum_to_array(cJSON *array, ccs_datum_t datum)
 static inline ccs_result_t
 _ccs_json_get_datum(cJSON *item, ccs_datum_t *datum_ret)
 {
-	cJSON *j_type  = NULL;
-	cJSON *j_value = NULL;
+	cJSON      *j_type  = NULL;
+	cJSON      *j_value = NULL;
+	const char *type_str;
 	CCS_REFUTE(!cJSON_IsObject(item), CCS_RESULT_ERROR_INVALID_VALUE);
 	j_type = cJSON_GetObjectItemCaseSensitive(item, "type");
-	CCS_REFUTE(
-		!j_type || !cJSON_IsString(j_type),
-		CCS_RESULT_ERROR_INVALID_VALUE);
-	if (!strcmp(j_type->valuestring, "none")) {
+	CCS_VALIDATE(_ccs_json_get_string(j_type, &type_str));
+	if (!strcmp(type_str, "none")) {
 		*datum_ret = ccs_none;
-	} else if (!strcmp(j_type->valuestring, "int")) {
+	} else if (!strcmp(type_str, "int")) {
 		j_value = cJSON_GetObjectItemCaseSensitive(item, "value");
 		CCS_REFUTE(
 			!j_value || !cJSON_IsNumber(j_value),
 			CCS_RESULT_ERROR_INVALID_VALUE);
 		*datum_ret = ccs_int((ccs_int_t)j_value->valuedouble);
-	} else if (!strcmp(j_type->valuestring, "float")) {
+	} else if (!strcmp(type_str, "float")) {
 		double fval;
 		j_value = cJSON_GetObjectItemCaseSensitive(item, "value");
 		CCS_REFUTE(!j_value, CCS_RESULT_ERROR_INVALID_VALUE);
 		CCS_VALIDATE(_ccs_json_get_float(j_value, &fval));
 		*datum_ret = ccs_float(fval);
-	} else if (!strcmp(j_type->valuestring, "bool")) {
+	} else if (!strcmp(type_str, "bool")) {
+		ccs_bool_t bval;
 		j_value = cJSON_GetObjectItemCaseSensitive(item, "value");
-		CCS_REFUTE(
-			!j_value || !cJSON_IsBool(j_value),
-			CCS_RESULT_ERROR_INVALID_VALUE);
-		*datum_ret =
-			ccs_bool(cJSON_IsTrue(j_value) ? CCS_TRUE : CCS_FALSE);
-	} else if (!strcmp(j_type->valuestring, "string")) {
+		CCS_VALIDATE(_ccs_json_get_bool(j_value, &bval));
+		*datum_ret = ccs_bool(bval);
+	} else if (!strcmp(type_str, "string")) {
+		const char *sval;
 		j_value = cJSON_GetObjectItemCaseSensitive(item, "value");
-		CCS_REFUTE(
-			!j_value || !cJSON_IsString(j_value),
-			CCS_RESULT_ERROR_INVALID_VALUE);
-		*datum_ret = ccs_string(j_value->valuestring);
-	} else if (!strcmp(j_type->valuestring, "inactive")) {
+		CCS_VALIDATE(_ccs_json_get_string(j_value, &sval));
+		*datum_ret = ccs_string(sval);
+	} else if (!strcmp(type_str, "inactive")) {
 		*datum_ret = ccs_inactive;
-	} else if (!strcmp(j_type->valuestring, "object")) {
+	} else if (!strcmp(type_str, "object")) {
+		const char  *oval;
 		ccs_object_t obj;
 		j_value = cJSON_GetObjectItemCaseSensitive(item, "value");
+		CCS_VALIDATE(_ccs_json_get_string(j_value, &oval));
 		CCS_REFUTE(
-			!j_value || !cJSON_IsString(j_value),
-			CCS_RESULT_ERROR_INVALID_VALUE);
-		CCS_REFUTE(
-			strlen(j_value->valuestring) !=
-				sizeof(ccs_object_t) * 2,
+			strlen(oval) != sizeof(ccs_object_t) * 2,
 			CCS_RESULT_ERROR_INVALID_VALUE);
 		CCS_REFUTE(
 			_ccs_json_hex_decode_buf(
-				j_value->valuestring, sizeof(ccs_object_t) * 2,
-				&obj),
+				oval, sizeof(ccs_object_t) * 2, &obj),
 			CCS_RESULT_ERROR_INVALID_VALUE);
 		*datum_ret = ccs_object(obj);
 	} else {
 		CCS_RAISE(
 			CCS_RESULT_ERROR_INVALID_VALUE,
-			"Unknown JSON datum type: %s", j_type->valuestring);
+			"Unknown JSON datum type: %s", type_str);
 	}
 	return CCS_RESULT_SUCCESS;
 }

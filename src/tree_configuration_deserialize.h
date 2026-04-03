@@ -118,6 +118,7 @@ _ccs_deserialize_json_tree_configuration(
 	int              i;
 	const char      *cbuf;
 	size_t           dummy;
+	const char      *ts_str;
 
 	(void)buffer_size;
 
@@ -126,15 +127,13 @@ _ccs_deserialize_json_tree_configuration(
 	json = *(cJSON **)buffer;
 
 	j_ts = cJSON_GetObjectItemCaseSensitive(json, "tree_space");
+	CCS_VALIDATE(_ccs_json_get_string(j_ts, &ts_str));
 	CCS_REFUTE(
-		!j_ts || !cJSON_IsString(j_ts), CCS_RESULT_ERROR_INVALID_VALUE);
-	CCS_REFUTE(
-		strlen(j_ts->valuestring) != sizeof(ccs_object_t) * 2,
+		strlen(ts_str) != sizeof(ccs_object_t) * 2,
 		CCS_RESULT_ERROR_INVALID_VALUE);
 	CCS_REFUTE(
 		_ccs_json_hex_decode_buf(
-			j_ts->valuestring, sizeof(ccs_object_t) * 2,
-			&ts_handle),
+			ts_str, sizeof(ccs_object_t) * 2, &ts_handle),
 		CCS_RESULT_ERROR_INVALID_VALUE);
 
 	CCS_VALIDATE_ERR_GOTO(
