@@ -102,8 +102,7 @@ _ccs_serialize_json_ccs_tree(
 	CCS_VALIDATE(_ccs_json_add_float(json, "bias", data->bias));
 	CCS_VALIDATE(_ccs_json_add_datum(json, "value", data->value));
 
-	children = cJSON_AddArrayToObject(json, "children");
-	CCS_REFUTE(!children, CCS_RESULT_ERROR_OUT_OF_MEMORY);
+	CCS_VALIDATE(_ccs_json_add_array(json, "children", &children));
 	for (i = 0; i < data->arity; i++) {
 		if (data->children[i]) {
 			CCS_VALIDATE(_ccs_json_embed_array_object(

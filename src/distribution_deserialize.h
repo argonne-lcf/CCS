@@ -411,13 +411,12 @@ _ccs_deserialize_json_distribution_roulette(
 	ccs_distribution_t *distribution_ret,
 	cJSON              *json)
 {
-	ccs_result_t res     = CCS_RESULT_SUCCESS;
-	ccs_float_t *areas   = NULL;
-	cJSON       *j_areas = cJSON_GetObjectItemCaseSensitive(json, "areas");
-	CCS_REFUTE(
-		!j_areas || !cJSON_IsArray(j_areas),
-		CCS_RESULT_ERROR_INVALID_VALUE);
-	size_t num_areas = (size_t)cJSON_GetArraySize(j_areas);
+	ccs_result_t res   = CCS_RESULT_SUCCESS;
+	ccs_float_t *areas = NULL;
+	cJSON       *j_areas;
+	size_t       num_areas;
+	CCS_VALIDATE(
+		_ccs_json_extract_array(json, "areas", &j_areas, &num_areas));
 	areas = (ccs_float_t *)calloc(num_areas, sizeof(ccs_float_t));
 	CCS_REFUTE(!areas, CCS_RESULT_ERROR_OUT_OF_MEMORY);
 	for (size_t i = 0; i < num_areas; i++) {
@@ -451,20 +450,15 @@ _ccs_deserialize_json_distribution_mixture(
 	_ccs_object_deserialize_options_t new_opts      = *opts;
 	new_opts.handle_map                             = NULL;
 
-	cJSON *j_weights = cJSON_GetObjectItemCaseSensitive(json, "weights");
-	cJSON *j_distributions =
-		cJSON_GetObjectItemCaseSensitive(json, "distributions");
-	CCS_REFUTE(
-		!j_weights || !cJSON_IsArray(j_weights),
-		CCS_RESULT_ERROR_INVALID_VALUE);
-	CCS_REFUTE(
-		!j_distributions || !cJSON_IsArray(j_distributions),
-		CCS_RESULT_ERROR_INVALID_VALUE);
-
-	size_t num = (size_t)cJSON_GetArraySize(j_distributions);
-	CCS_REFUTE(
-		(size_t)cJSON_GetArraySize(j_weights) != num,
-		CCS_RESULT_ERROR_INVALID_VALUE);
+	cJSON *j_weights;
+	cJSON *j_distributions;
+	size_t num;
+	size_t num_weights;
+	CCS_VALIDATE(_ccs_json_extract_array(
+		json, "distributions", &j_distributions, &num));
+	CCS_VALIDATE(_ccs_json_extract_array(
+		json, "weights", &j_weights, &num_weights));
+	CCS_REFUTE(num_weights != num, CCS_RESULT_ERROR_INVALID_VALUE);
 
 	distributions =
 		(ccs_distribution_t *)calloc(num, sizeof(ccs_distribution_t));
@@ -518,13 +512,10 @@ _ccs_deserialize_json_distribution_multivariate(
 	_ccs_object_deserialize_options_t new_opts      = *opts;
 	new_opts.handle_map                             = NULL;
 
-	cJSON *j_distributions =
-		cJSON_GetObjectItemCaseSensitive(json, "distributions");
-	CCS_REFUTE(
-		!j_distributions || !cJSON_IsArray(j_distributions),
-		CCS_RESULT_ERROR_INVALID_VALUE);
-
-	size_t num = (size_t)cJSON_GetArraySize(j_distributions);
+	cJSON *j_distributions;
+	size_t num;
+	CCS_VALIDATE(_ccs_json_extract_array(
+		json, "distributions", &j_distributions, &num));
 	distributions =
 		(ccs_distribution_t *)calloc(num, sizeof(ccs_distribution_t));
 	CCS_REFUTE(!distributions, CCS_RESULT_ERROR_OUT_OF_MEMORY);

@@ -173,11 +173,11 @@ _ccs_serialize_json_ccs_expression(
 {
 	_ccs_expression_data_t *data =
 		(_ccs_expression_data_t *)(expression->data);
+	cJSON *nodes;
 	CCS_VALIDATE(_ccs_json_add_string(
 		json, "expression_type",
 		_ccs_json_expression_type_to_string(data->type)));
-	cJSON *nodes = cJSON_AddArrayToObject(json, "nodes");
-	CCS_REFUTE(!nodes, CCS_RESULT_ERROR_OUT_OF_MEMORY);
+	CCS_VALIDATE(_ccs_json_add_array(json, "nodes", &nodes));
 	for (size_t i = 0; i < data->num_nodes; i++)
 		CCS_VALIDATE(_ccs_json_embed_array_object(
 			nodes, data->nodes[i], opts));
@@ -1436,12 +1436,12 @@ _ccs_serialize_json_ccs_expression_user_defined(
 {
 	_ccs_expression_user_defined_data_t *data =
 		(_ccs_expression_user_defined_data_t *)(expression->data);
+	cJSON *nodes;
 	CCS_VALIDATE(
 		_ccs_json_add_string(json, "expression_type", "user_defined"));
 	CCS_VALIDATE(_ccs_json_add_string(json, "name", data->name));
 	/* serialize child nodes */
-	cJSON *nodes = cJSON_AddArrayToObject(json, "nodes");
-	CCS_REFUTE(!nodes, CCS_RESULT_ERROR_OUT_OF_MEMORY);
+	CCS_VALIDATE(_ccs_json_add_array(json, "nodes", &nodes));
 	for (size_t i = 0; i < data->expr.num_nodes; i++)
 		CCS_VALIDATE(_ccs_json_embed_array_object(
 			nodes, data->expr.nodes[i], opts));

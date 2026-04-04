@@ -97,10 +97,11 @@ _ccs_serialize_json_ccs_distribution_multivariate(
 {
 	_ccs_distribution_multivariate_data_t *data =
 		(_ccs_distribution_multivariate_data_t *)(distribution->data);
+	cJSON *distributions;
 	CCS_VALIDATE(_ccs_json_add_string(
 		json, "distribution_type", "multivariate"));
-	cJSON *distributions = cJSON_AddArrayToObject(json, "distributions");
-	CCS_REFUTE(!distributions, CCS_RESULT_ERROR_OUT_OF_MEMORY);
+	CCS_VALIDATE(
+		_ccs_json_add_array(json, "distributions", &distributions));
 	for (size_t i = 0; i < data->num_distributions; i++)
 		CCS_VALIDATE(_ccs_json_embed_array_object(
 			distributions, data->distributions[i], opts));

@@ -159,8 +159,8 @@ _ccs_serialize_json_ccs_objective_space(
 
 	/* parameters */
 	{
-		cJSON *params = cJSON_AddArrayToObject(json, "parameters");
-		CCS_REFUTE(!params, CCS_RESULT_ERROR_OUT_OF_MEMORY);
+		cJSON *params;
+		CCS_VALIDATE(_ccs_json_add_array(json, "parameters", &params));
 		for (size_t i = 0; i < data->num_parameters; i++)
 			CCS_VALIDATE(_ccs_json_embed_array_object(
 				params, data->parameters[i], opts));
@@ -168,8 +168,8 @@ _ccs_serialize_json_ccs_objective_space(
 
 	/* objectives: expression + type */
 	{
-		cJSON *objs = cJSON_AddArrayToObject(json, "objectives");
-		CCS_REFUTE(!objs, CCS_RESULT_ERROR_OUT_OF_MEMORY);
+		cJSON *objs;
+		CCS_VALIDATE(_ccs_json_add_array(json, "objectives", &objs));
 		for (size_t i = 0; i < data->num_objectives; i++) {
 			cJSON *obj = cJSON_CreateObject();
 			CCS_REFUTE(!obj, CCS_RESULT_ERROR_OUT_OF_MEMORY);

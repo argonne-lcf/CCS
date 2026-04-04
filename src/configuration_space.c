@@ -220,8 +220,8 @@ _ccs_serialize_json_ccs_configuration_space(
 
 	/* parameters */
 	{
-		cJSON *params = cJSON_AddArrayToObject(json, "parameters");
-		CCS_REFUTE(!params, CCS_RESULT_ERROR_OUT_OF_MEMORY);
+		cJSON *params;
+		CCS_VALIDATE(_ccs_json_add_array(json, "parameters", &params));
 		for (size_t i = 0; i < data->num_parameters; i++)
 			CCS_VALIDATE(_ccs_json_embed_array_object(
 				params, data->parameters[i], opts));
@@ -229,8 +229,8 @@ _ccs_serialize_json_ccs_configuration_space(
 
 	/* conditions -- array of {index, expression} */
 	{
-		cJSON *conds = cJSON_AddArrayToObject(json, "conditions");
-		CCS_REFUTE(!conds, CCS_RESULT_ERROR_OUT_OF_MEMORY);
+		cJSON *conds;
+		CCS_VALIDATE(_ccs_json_add_array(json, "conditions", &conds));
 		for (size_t i = 0; i < data->num_parameters; i++) {
 			if (data->conditions[i]) {
 				cJSON *cond = cJSON_CreateObject();
@@ -248,9 +248,9 @@ _ccs_serialize_json_ccs_configuration_space(
 
 	/* forbidden clauses */
 	{
-		cJSON *forbids =
-			cJSON_AddArrayToObject(json, "forbidden_clauses");
-		CCS_REFUTE(!forbids, CCS_RESULT_ERROR_OUT_OF_MEMORY);
+		cJSON *forbids;
+		CCS_VALIDATE(_ccs_json_add_array(
+			json, "forbidden_clauses", &forbids));
 		for (size_t i = 0; i < data->num_forbidden_clauses; i++)
 			CCS_VALIDATE(_ccs_json_embed_array_object(
 				forbids, data->forbidden_clauses[i], opts));

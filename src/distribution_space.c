@@ -114,18 +114,18 @@ _ccs_serialize_json_ccs_distribution_space(
 	_ccs_distribution_space_data_t *data = distribution_space->data;
 	_ccs_distribution_wrapper_t    *dw;
 	char                            hex[sizeof(ccs_object_t) * 2 + 1];
+	cJSON                          *distribs;
 
 	_ccs_json_hex_encode_buf(
 		&data->configuration_space, sizeof(ccs_object_t), hex);
 	CCS_VALIDATE(_ccs_json_add_string(json, "configuration_space", hex));
-
-	cJSON *distribs = cJSON_AddArrayToObject(json, "distributions");
-	CCS_REFUTE(!distribs, CCS_RESULT_ERROR_OUT_OF_MEMORY);
+	CCS_VALIDATE(_ccs_json_add_array(json, "distributions", &distribs));
 
 	dw = NULL;
 	DL_FOREACH(data->distribution_list, dw)
 	{
 		cJSON *entry = cJSON_CreateObject();
+		cJSON *indices;
 		CCS_REFUTE(!entry, CCS_RESULT_ERROR_OUT_OF_MEMORY);
 		CCS_REFUTE(
 			!cJSON_AddItemToArray(distribs, entry),
@@ -133,10 +133,8 @@ _ccs_serialize_json_ccs_distribution_space(
 
 		CCS_VALIDATE(_ccs_json_embed_object(
 			entry, "distribution", dw->distribution, opts));
-
-		cJSON *indices =
-			cJSON_AddArrayToObject(entry, "parameter_indices");
-		CCS_REFUTE(!indices, CCS_RESULT_ERROR_OUT_OF_MEMORY);
+		CCS_VALIDATE(_ccs_json_add_array(
+			entry, "parameter_indices", &indices));
 		for (size_t i = 0; i < dw->dimension; i++) {
 			cJSON *idx_item;
 			CCS_VALIDATE(_ccs_json_create_int(

@@ -567,6 +567,35 @@ _ccs_json_extract_datum(cJSON *json, const char *key, ccs_datum_t *value_ret)
 }
 
 /*============================================================================
+ * Array JSON helpers
+ *============================================================================*/
+
+/* Add an array to a JSON object and return a pointer to it. */
+static inline ccs_result_t
+_ccs_json_add_array(cJSON *json, const char *key, cJSON **array_ret)
+{
+	*array_ret = cJSON_AddArrayToObject(json, key);
+	CCS_REFUTE(!*array_ret, CCS_RESULT_ERROR_OUT_OF_MEMORY);
+	return CCS_RESULT_SUCCESS;
+}
+
+/* Look up an array by key in a JSON object and return it with its size. */
+static inline ccs_result_t
+_ccs_json_extract_array(
+	cJSON      *json,
+	const char *key,
+	cJSON     **array_ret,
+	size_t     *count_ret)
+{
+	cJSON *item = cJSON_GetObjectItemCaseSensitive(json, key);
+	CCS_REFUTE(
+		!item || !cJSON_IsArray(item), CCS_RESULT_ERROR_INVALID_VALUE);
+	*array_ret = item;
+	*count_ret = (size_t)cJSON_GetArraySize(item);
+	return CCS_RESULT_SUCCESS;
+}
+
+/*============================================================================
  * ccs_datum_t JSON helpers
  *============================================================================*/
 

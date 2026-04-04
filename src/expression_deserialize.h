@@ -347,11 +347,8 @@ _ccs_deserialize_json_expression_general(
 	data.num_nodes                             = 0;
 	data.nodes                                 = NULL;
 
-	j_nodes = cJSON_GetObjectItemCaseSensitive(json, "nodes");
-	CCS_REFUTE(
-		!j_nodes || !cJSON_IsArray(j_nodes),
-		CCS_RESULT_ERROR_INVALID_VALUE);
-	num_nodes      = (size_t)cJSON_GetArraySize(j_nodes);
+	CCS_VALIDATE(
+		_ccs_json_extract_array(json, "nodes", &j_nodes, &num_nodes));
 	data.num_nodes = num_nodes;
 	if (num_nodes) {
 		data.nodes =
@@ -407,11 +404,8 @@ _ccs_deserialize_json_expression_user_defined(
 
 	CCS_VALIDATE(_ccs_json_extract_string(json, "name", &name));
 
-	j_nodes = cJSON_GetObjectItemCaseSensitive(json, "nodes");
-	CCS_REFUTE(
-		!j_nodes || !cJSON_IsArray(j_nodes),
-		CCS_RESULT_ERROR_INVALID_VALUE);
-	num_nodes      = (size_t)cJSON_GetArraySize(j_nodes);
+	CCS_VALIDATE(
+		_ccs_json_extract_array(json, "nodes", &j_nodes, &num_nodes));
 	data.num_nodes = num_nodes;
 	if (num_nodes) {
 		data.nodes =

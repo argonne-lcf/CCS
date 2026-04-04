@@ -168,11 +168,8 @@ _ccs_deserialize_json_ccs_distribution_space_data(
 		CCS_RESULT_ERROR_INVALID_VALUE);
 
 	/* distributions array */
-	j_distribs = cJSON_GetObjectItemCaseSensitive(json, "distributions");
-	CCS_REFUTE(
-		!j_distribs || !cJSON_IsArray(j_distribs),
-		CCS_RESULT_ERROR_INVALID_VALUE);
-	num                     = (size_t)cJSON_GetArraySize(j_distribs);
+	CCS_VALIDATE(_ccs_json_extract_array(
+		json, "distributions", &j_distribs, &num));
 	data->num_distributions = num;
 
 	if (!num)
@@ -180,13 +177,12 @@ _ccs_deserialize_json_ccs_distribution_space_data(
 
 	/* First pass: count total indices */
 	for (size_t i = 0; i < num; i++) {
-		cJSON *entry     = cJSON_GetArrayItem(j_distribs, (int)i);
-		cJSON *j_indices = cJSON_GetObjectItemCaseSensitive(
-			entry, "parameter_indices");
-		CCS_REFUTE(
-			!j_indices || !cJSON_IsArray(j_indices),
-			CCS_RESULT_ERROR_INVALID_VALUE);
-		total_indices += (size_t)cJSON_GetArraySize(j_indices);
+		cJSON *entry = cJSON_GetArrayItem(j_distribs, (int)i);
+		cJSON *j_indices;
+		size_t dim;
+		CCS_VALIDATE(_ccs_json_extract_array(
+			entry, "parameter_indices", &j_indices, &dim));
+		total_indices += dim;
 	}
 	data->num_parameters = total_indices;
 
@@ -211,9 +207,8 @@ _ccs_deserialize_json_ccs_distribution_space_data(
 
 	size_t *indices = data->distrib_parameter_indices;
 	for (size_t i = 0; i < num; i++) {
-		cJSON *entry     = cJSON_GetArrayItem(j_distribs, (int)i);
-		cJSON *j_indices = cJSON_GetObjectItemCaseSensitive(
-			entry, "parameter_indices");
+		cJSON *entry = cJSON_GetArrayItem(j_distribs, (int)i);
+		cJSON *j_indices;
 		size_t dim;
 
 		CCS_VALIDATE(_ccs_json_extract_object(
@@ -221,7 +216,8 @@ _ccs_deserialize_json_ccs_distribution_space_data(
 			version, (ccs_object_t *)data->distributions + i,
 			opts));
 
-		dim                 = (size_t)cJSON_GetArraySize(j_indices);
+		CCS_VALIDATE(_ccs_json_extract_array(
+			entry, "parameter_indices", &j_indices, &dim));
 		data->dimensions[i] = dim;
 		for (size_t j = 0; j < dim; j++) {
 			ccs_int_t idx_val;
