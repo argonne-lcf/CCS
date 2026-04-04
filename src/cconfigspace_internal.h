@@ -1724,4 +1724,42 @@ _ccs_object_serialize_with_opts(
 
 #include "cconfigspace_json.h"
 
+/*============================================================================
+ * JSON embed helpers (serialize a child object into a cJSON parent)
+ *============================================================================*/
+
+/* Embed a child object under a named key in a JSON object. */
+static inline ccs_result_t
+_ccs_json_embed_object(
+	cJSON                           *json,
+	const char                      *key,
+	ccs_object_t                     object,
+	_ccs_object_serialize_options_t *opts)
+{
+	size_t dummy = 0;
+	cJSON *child = cJSON_AddObjectToObject(json, key);
+	CCS_REFUTE(!child, CCS_RESULT_ERROR_OUT_OF_MEMORY);
+	CCS_VALIDATE(_ccs_object_serialize_with_opts(
+		object, CCS_SERIALIZE_FORMAT_JSON, &dummy, (char **)&child,
+		opts));
+	return CCS_RESULT_SUCCESS;
+}
+
+/* Append a child object to a JSON array. */
+static inline ccs_result_t
+_ccs_json_embed_array_object(
+	cJSON                           *array,
+	ccs_object_t                     object,
+	_ccs_object_serialize_options_t *opts)
+{
+	size_t dummy = 0;
+	cJSON *child = cJSON_CreateObject();
+	CCS_REFUTE(!child, CCS_RESULT_ERROR_OUT_OF_MEMORY);
+	cJSON_AddItemToArray(array, child);
+	CCS_VALIDATE(_ccs_object_serialize_with_opts(
+		object, CCS_SERIALIZE_FORMAT_JSON, &dummy, (char **)&child,
+		opts));
+	return CCS_RESULT_SUCCESS;
+}
+
 #endif //_CONFIGSPACE_INTERNAL_H

@@ -313,15 +313,9 @@ _ccs_serialize_json_ccs_context(
 	CCS_VALIDATE(_ccs_json_add_string(json, "name", data->name));
 	cJSON *parameters = cJSON_AddArrayToObject(json, "parameters");
 	CCS_REFUTE(!parameters, CCS_RESULT_ERROR_OUT_OF_MEMORY);
-	for (size_t i = 0; i < data->num_parameters; i++) {
-		cJSON *child = cJSON_CreateObject();
-		CCS_REFUTE(!child, CCS_RESULT_ERROR_OUT_OF_MEMORY);
-		cJSON_AddItemToArray(parameters, child);
-		size_t dummy = 0;
-		CCS_VALIDATE(_ccs_object_serialize_with_opts(
-			data->parameters[i], CCS_SERIALIZE_FORMAT_JSON, &dummy,
-			(char **)&child, opts));
-	}
+	for (size_t i = 0; i < data->num_parameters; i++)
+		CCS_VALIDATE(_ccs_json_embed_array_object(
+			parameters, data->parameters[i], opts));
 	return CCS_RESULT_SUCCESS;
 }
 

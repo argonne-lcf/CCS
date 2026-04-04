@@ -118,15 +118,9 @@ _ccs_serialize_json_ccs_distribution_mixture(
 	}
 	cJSON *distributions = cJSON_AddArrayToObject(json, "distributions");
 	CCS_REFUTE(!distributions, CCS_RESULT_ERROR_OUT_OF_MEMORY);
-	for (size_t i = 0; i < data->num_distributions; i++) {
-		cJSON *child = cJSON_CreateObject();
-		CCS_REFUTE(!child, CCS_RESULT_ERROR_OUT_OF_MEMORY);
-		cJSON_AddItemToArray(distributions, child);
-		size_t dummy = 0;
-		CCS_VALIDATE(_ccs_object_serialize_with_opts(
-			data->distributions[i], CCS_SERIALIZE_FORMAT_JSON,
-			&dummy, (char **)&child, opts));
-	}
+	for (size_t i = 0; i < data->num_distributions; i++)
+		CCS_VALIDATE(_ccs_json_embed_array_object(
+			distributions, data->distributions[i], opts));
 	return CCS_RESULT_SUCCESS;
 }
 

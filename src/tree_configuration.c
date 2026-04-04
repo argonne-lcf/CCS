@@ -90,7 +90,6 @@ _ccs_serialize_json_ccs_tree_configuration(
 	_ccs_tree_configuration_data_t *data = tree_configuration->data;
 	char                            hex[sizeof(ccs_object_t) * 2 + 1];
 	cJSON                          *positions;
-	size_t                          dummy = 0;
 	size_t                          i;
 
 	_ccs_json_hex_encode_buf(&data->tree_space, sizeof(ccs_object_t), hex);
@@ -107,14 +106,9 @@ _ccs_serialize_json_ccs_tree_configuration(
 			CCS_RESULT_ERROR_OUT_OF_MEMORY);
 	}
 
-	if (data->features) {
-		cJSON *feat = cJSON_AddObjectToObject(json, "features");
-		CCS_REFUTE(!feat, CCS_RESULT_ERROR_OUT_OF_MEMORY);
-		dummy = 0;
-		CCS_VALIDATE(_ccs_object_serialize_with_opts(
-			data->features, CCS_SERIALIZE_FORMAT_JSON, &dummy,
-			(char **)&feat, opts));
-	}
+	if (data->features)
+		CCS_VALIDATE(_ccs_json_embed_object(
+			json, "features", data->features, opts));
 
 	return CCS_RESULT_SUCCESS;
 }

@@ -192,7 +192,6 @@ _ccs_serialize_json_ccs_user_defined_tuner(
 	size_t            history_size = 0;
 	size_t            num_optima   = 0;
 	size_t            state_size   = 0;
-	size_t            dummy        = 0;
 	ccs_evaluation_t *history      = NULL;
 	ccs_evaluation_t *optima       = NULL;
 
@@ -202,13 +201,9 @@ _ccs_serialize_json_ccs_user_defined_tuner(
 		_ccs_json_add_string(json, "name", data->common_data.name));
 
 	/* objective_space (inlined) */
-	{
-		cJSON *os = cJSON_AddObjectToObject(json, "objective_space");
-		CCS_REFUTE(!os, CCS_RESULT_ERROR_OUT_OF_MEMORY);
-		CCS_VALIDATE(_ccs_object_serialize_with_opts(
-			data->common_data.objective_space,
-			CCS_SERIALIZE_FORMAT_JSON, &dummy, (char **)&os, opts));
-	}
+	CCS_VALIDATE(_ccs_json_embed_object(
+		json, "objective_space", data->common_data.objective_space,
+		opts));
 
 	CCS_VALIDATE(
 		data->vector.get_history(tuner, NULL, 0, NULL, &history_size));
@@ -239,21 +234,12 @@ _ccs_serialize_json_ccs_user_defined_tuner(
 		cJSON *j_history = cJSON_AddArrayToObject(json, "history");
 		CCS_REFUTE_ERR_GOTO(
 			res, !j_history, CCS_RESULT_ERROR_OUT_OF_MEMORY, end);
-		for (size_t i = 0; i < history_size; i++) {
-			cJSON *eval_obj = cJSON_CreateObject();
-			CCS_REFUTE_ERR_GOTO(
-				res, !eval_obj, CCS_RESULT_ERROR_OUT_OF_MEMORY,
-				end);
-			CCS_REFUTE_ERR_GOTO(
-				res, !cJSON_AddItemToArray(j_history, eval_obj),
-				CCS_RESULT_ERROR_OUT_OF_MEMORY, end);
+		for (size_t i = 0; i < history_size; i++)
 			CCS_VALIDATE_ERR_GOTO(
 				res,
-				_ccs_object_serialize_with_opts(
-					history[i], CCS_SERIALIZE_FORMAT_JSON,
-					&dummy, (char **)&eval_obj, opts),
+				_ccs_json_embed_array_object(
+					j_history, history[i], opts),
 				end);
-		}
 	}
 
 	/* optima (handles) */

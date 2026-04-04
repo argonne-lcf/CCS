@@ -114,7 +114,6 @@ _ccs_serialize_json_ccs_distribution_space(
 	_ccs_distribution_space_data_t *data = distribution_space->data;
 	_ccs_distribution_wrapper_t    *dw;
 	char                            hex[sizeof(ccs_object_t) * 2 + 1];
-	size_t                          dummy = 0;
 
 	_ccs_json_hex_encode_buf(
 		&data->configuration_space, sizeof(ccs_object_t), hex);
@@ -132,12 +131,8 @@ _ccs_serialize_json_ccs_distribution_space(
 			!cJSON_AddItemToArray(distribs, entry),
 			CCS_RESULT_ERROR_OUT_OF_MEMORY);
 
-		cJSON *dist_obj =
-			cJSON_AddObjectToObject(entry, "distribution");
-		CCS_REFUTE(!dist_obj, CCS_RESULT_ERROR_OUT_OF_MEMORY);
-		CCS_VALIDATE(_ccs_object_serialize_with_opts(
-			dw->distribution, CCS_SERIALIZE_FORMAT_JSON, &dummy,
-			(char **)&dist_obj, opts));
+		CCS_VALIDATE(_ccs_json_embed_object(
+			entry, "distribution", dw->distribution, opts));
 
 		cJSON *indices =
 			cJSON_AddArrayToObject(entry, "parameter_indices");

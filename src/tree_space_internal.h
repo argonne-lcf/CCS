@@ -108,43 +108,25 @@ _ccs_serialize_json_ccs_tree_space_common_data(
 	_ccs_object_serialize_options_t *opts)
 {
 	const char *type_str;
-	cJSON      *rng_node;
-	cJSON      *tree_node;
-	size_t      dummy = 0;
 
-	type_str          = _ccs_json_tree_space_type_to_string(data->type);
+	type_str = _ccs_json_tree_space_type_to_string(data->type);
 	CCS_REFUTE(!type_str, CCS_RESULT_ERROR_INVALID_VALUE);
 	CCS_VALIDATE(_ccs_json_add_string(json, "tree_space_type", type_str));
 
 	CCS_VALIDATE(_ccs_json_add_string(json, "name", data->name));
 
-	rng_node = cJSON_AddObjectToObject(json, "rng");
-	CCS_REFUTE(!rng_node, CCS_RESULT_ERROR_OUT_OF_MEMORY);
-	dummy = 0;
-	CCS_VALIDATE(_ccs_object_serialize_with_opts(
-		data->rng, CCS_SERIALIZE_FORMAT_JSON, &dummy,
-		(char **)&rng_node, opts));
+	CCS_VALIDATE(_ccs_json_embed_object(json, "rng", data->rng, opts));
 
-	tree_node = cJSON_AddObjectToObject(json, "tree");
-	CCS_REFUTE(!tree_node, CCS_RESULT_ERROR_OUT_OF_MEMORY);
-	dummy = 0;
-	CCS_VALIDATE(_ccs_object_serialize_with_opts(
-		data->tree, CCS_SERIALIZE_FORMAT_JSON, &dummy,
-		(char **)&tree_node, opts));
+	CCS_VALIDATE(_ccs_json_embed_object(json, "tree", data->tree, opts));
 
 	if (data->feature_space) {
-		char   hex[sizeof(ccs_object_t) * 2 + 1];
-		cJSON *fs_node;
+		char hex[sizeof(ccs_object_t) * 2 + 1];
 		_ccs_json_hex_encode_buf(
 			&data->feature_space, sizeof(ccs_object_t), hex);
 		CCS_VALIDATE(_ccs_json_add_string(
 			json, "feature_space_handle", hex));
-		fs_node = cJSON_AddObjectToObject(json, "feature_space");
-		CCS_REFUTE(!fs_node, CCS_RESULT_ERROR_OUT_OF_MEMORY);
-		dummy = 0;
-		CCS_VALIDATE(_ccs_object_serialize_with_opts(
-			data->feature_space, CCS_SERIALIZE_FORMAT_JSON, &dummy,
-			(char **)&fs_node, opts));
+		CCS_VALIDATE(_ccs_json_embed_object(
+			json, "feature_space", data->feature_space, opts));
 	}
 
 	return CCS_RESULT_SUCCESS;
