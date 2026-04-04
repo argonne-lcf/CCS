@@ -231,13 +231,19 @@ _ccs_create_configuration(
 	}
 	if (values) {
 		ccs_bool_t is_valid;
-		for (size_t i = 0; i < num_values; i++)
-			CCS_VALIDATE_ERR_GOTO(
-				err,
-				ccs_context_validate_value(
-					(ccs_context_t)configuration_space, i,
-					values[i], config->data->values + i),
-				errinit);
+		for (size_t i = 0; i < num_values; i++) {
+			if (values[i].type == CCS_DATA_TYPE_INACTIVE)
+				config->data->values[i] = ccs_inactive;
+			else
+				CCS_VALIDATE_ERR_GOTO(
+					err,
+					ccs_context_validate_value(
+						(ccs_context_t)
+							configuration_space,
+						i, values[i],
+						config->data->values + i),
+					errinit);
+		}
 		CCS_VALIDATE_ERR_GOTO(
 			err,
 			_check_configuration(
