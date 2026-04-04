@@ -282,6 +282,84 @@ test_serialize_inactive(void)
 	assert(err == CCS_RESULT_SUCCESS);
 }
 
+void
+test_create_valid_invalid(void)
+{
+	ccs_parameter_t           parameter1, parameter2;
+	ccs_parameter_t           parameters[2];
+	ccs_expression_t          conditions[2] = {NULL, NULL};
+	ccs_configuration_space_t space;
+	ccs_configuration_t       configuration;
+	ccs_datum_t               values[2];
+	ccs_result_t              err;
+
+	/* condition: param2 is active only when param1 < 0 */
+	parameters[0] = parameter1 = create_numerical("param1", -1.0, 1.0);
+	parameters[1] = parameter2 = create_numerical("param2", -1.0, 1.0);
+	err                        = ccs_create_binary_expression(
+                CCS_EXPRESSION_TYPE_LESS, ccs_object(parameter1),
+                ccs_float(0.0), &conditions[1]);
+	assert(err == CCS_RESULT_SUCCESS);
+
+	err = ccs_create_configuration_space(
+		"space", 2, parameters, conditions, 0, NULL, NULL, NULL,
+		&space);
+	assert(err == CCS_RESULT_SUCCESS);
+
+	/* Valid: param1 < 0, param2 active */
+	values[0] = ccs_float(-0.5);
+	values[1] = ccs_float(0.3);
+	err = ccs_create_configuration(space, NULL, 2, values, &configuration);
+	assert(err == CCS_RESULT_SUCCESS);
+	err = ccs_release_object(configuration);
+	assert(err == CCS_RESULT_SUCCESS);
+
+	/* Valid: param1 >= 0, param2 inactive */
+	values[0] = ccs_float(0.5);
+	values[1] = ccs_inactive;
+	err = ccs_create_configuration(space, NULL, 2, values, &configuration);
+	assert(err == CCS_RESULT_SUCCESS);
+	err = ccs_release_object(configuration);
+	assert(err == CCS_RESULT_SUCCESS);
+
+	/* Invalid: param1 < 0 but param2 inactive (should be active) */
+	values[0] = ccs_float(-0.5);
+	values[1] = ccs_inactive;
+	err = ccs_create_configuration(space, NULL, 2, values, &configuration);
+	assert(err == CCS_RESULT_ERROR_INVALID_VALUE);
+	ccs_clear_thread_error();
+
+	/* Invalid: param1 >= 0 but param2 active (should be inactive) */
+	values[0] = ccs_float(0.5);
+	values[1] = ccs_float(0.3);
+	err = ccs_create_configuration(space, NULL, 2, values, &configuration);
+	assert(err == CCS_RESULT_ERROR_INVALID_VALUE);
+	ccs_clear_thread_error();
+
+	/* Invalid: param1 in range but param2 out of range */
+	values[0] = ccs_float(-0.5);
+	values[1] = ccs_float(5.0);
+	err = ccs_create_configuration(space, NULL, 2, values, &configuration);
+	assert(err == CCS_RESULT_ERROR_INVALID_VALUE);
+	ccs_clear_thread_error();
+
+	/* Invalid: param1 out of range */
+	values[0] = ccs_float(5.0);
+	values[1] = ccs_inactive;
+	err = ccs_create_configuration(space, NULL, 2, values, &configuration);
+	assert(err == CCS_RESULT_ERROR_INVALID_VALUE);
+	ccs_clear_thread_error();
+
+	err = ccs_release_object(conditions[1]);
+	assert(err == CCS_RESULT_SUCCESS);
+	err = ccs_release_object(parameter1);
+	assert(err == CCS_RESULT_SUCCESS);
+	err = ccs_release_object(parameter2);
+	assert(err == CCS_RESULT_SUCCESS);
+	err = ccs_release_object(space);
+	assert(err == CCS_RESULT_SUCCESS);
+}
+
 int
 main(void)
 {
@@ -289,6 +367,7 @@ main(void)
 	test_simple();
 	test_transitive();
 	test_serialize_inactive();
+	test_create_valid_invalid();
 	ccs_clear_thread_error();
 	ccs_fini();
 	return 0;
