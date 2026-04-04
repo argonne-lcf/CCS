@@ -174,9 +174,9 @@ _ccs_serialize_json_ccs_binding(ccs_binding_t binding, cJSON *json)
 {
 	_ccs_binding_data_t *data = binding->data;
 	char                 hex[sizeof(ccs_object_t) * 2 + 1];
+	cJSON               *values;
 	_ccs_json_hex_encode_buf(&data->context, sizeof(ccs_object_t), hex);
 	CCS_VALIDATE(_ccs_json_add_string(json, "context", hex));
-	cJSON *values;
 	CCS_VALIDATE(_ccs_json_add_array(json, "values", &values));
 	for (size_t i = 0; i < data->num_values; i++)
 		CCS_VALIDATE(

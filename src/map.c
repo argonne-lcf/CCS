@@ -101,7 +101,6 @@ _ccs_serialize_json_ccs_map(ccs_map_t map, cJSON *json)
 {
 	_ccs_map_data_t  *data = (_ccs_map_data_t *)(map->data);
 	_ccs_map_datum_t *current, *tmp;
-
 	cJSON            *pairs;
 	CCS_VALIDATE(_ccs_json_add_array(json, "pairs", &pairs));
 

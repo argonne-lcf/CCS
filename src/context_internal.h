@@ -310,8 +310,8 @@ _ccs_serialize_json_ccs_context(
 	_ccs_object_serialize_options_t *opts)
 {
 	_ccs_context_data_t *data = context->data;
+	cJSON               *parameters;
 	CCS_VALIDATE(_ccs_json_add_string(json, "name", data->name));
-	cJSON *parameters;
 	CCS_VALIDATE(_ccs_json_add_array(json, "parameters", &parameters));
 	for (size_t i = 0; i < data->num_parameters; i++)
 		CCS_VALIDATE(_ccs_json_embed_array_object(
