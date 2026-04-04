@@ -350,14 +350,14 @@ test_create_valid_invalid(void)
 	assert(err == CCS_RESULT_ERROR_INVALID_VALUE);
 	ccs_clear_thread_error();
 
-	/* Invalid: param1 inactive (unconditional parameter) */
+	/* Invalid: both inactive */
 	values[0] = ccs_inactive;
 	values[1] = ccs_inactive;
 	err = ccs_create_configuration(space, NULL, 2, values, &configuration);
 	assert(err == CCS_RESULT_ERROR_INVALID_VALUE);
 	ccs_clear_thread_error();
 
-	/* Invalid: both inactive */
+	/* Invalid: param1 inactive (unconditional parameter) */
 	values[0] = ccs_inactive;
 	values[1] = ccs_float(0.3);
 	err = ccs_create_configuration(space, NULL, 2, values, &configuration);
