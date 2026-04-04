@@ -197,11 +197,8 @@ _ccs_serialize_json_ccs_random_tuner(
 				char hex[sizeof(ccs_object_t) * 2 + 1];
 				_ccs_json_hex_encode_buf(
 					e, sizeof(ccs_object_t), hex);
-				cJSON *h = NULL;
-				CCS_VALIDATE(_ccs_json_create_string(hex, &h));
-				CCS_REFUTE(
-					!cJSON_AddItemToArray(optima, h),
-					CCS_RESULT_ERROR_OUT_OF_MEMORY);
+				CCS_VALIDATE(_ccs_json_add_string_to_array(
+					optima, hex));
 			}
 		}
 	}

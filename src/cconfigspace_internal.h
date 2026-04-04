@@ -1753,9 +1753,8 @@ _ccs_json_embed_array_object(
 	_ccs_object_serialize_options_t *opts)
 {
 	size_t dummy = 0;
-	cJSON *child = cJSON_CreateObject();
-	CCS_REFUTE(!child, CCS_RESULT_ERROR_OUT_OF_MEMORY);
-	cJSON_AddItemToArray(array, child);
+	cJSON *child;
+	CCS_VALIDATE(_ccs_json_add_object_to_array(array, &child));
 	CCS_VALIDATE(_ccs_object_serialize_with_opts(
 		object, CCS_SERIALIZE_FORMAT_JSON, &dummy, (char **)&child,
 		opts));

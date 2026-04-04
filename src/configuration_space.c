@@ -233,10 +233,9 @@ _ccs_serialize_json_ccs_configuration_space(
 		CCS_VALIDATE(_ccs_json_add_array(json, "conditions", &conds));
 		for (size_t i = 0; i < data->num_parameters; i++) {
 			if (data->conditions[i]) {
-				cJSON *cond = cJSON_CreateObject();
-				CCS_REFUTE(
-					!cond, CCS_RESULT_ERROR_OUT_OF_MEMORY);
-				cJSON_AddItemToArray(conds, cond);
+				cJSON *cond;
+				CCS_VALIDATE(_ccs_json_add_object_to_array(
+					conds, &cond));
 				CCS_VALIDATE(_ccs_json_add_int(
 					cond, "index", (ccs_int_t)i));
 				CCS_VALIDATE(_ccs_json_embed_object(
