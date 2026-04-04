@@ -160,7 +160,6 @@ _ccs_serialize_json_ccs_random_tuner(
 	_ccs_random_tuner_data_t *data =
 		(_ccs_random_tuner_data_t *)(tuner->data);
 	_ccs_hash_features_t *cur, *tmp;
-	size_t                dummy = 0;
 
 	/* tuner type + name */
 	CCS_VALIDATE(_ccs_json_add_string(json, "tuner_type", "random"));
@@ -168,13 +167,9 @@ _ccs_serialize_json_ccs_random_tuner(
 		_ccs_json_add_string(json, "name", data->common_data.name));
 
 	/* objective_space (inlined) */
-	{
-		cJSON *os = cJSON_AddObjectToObject(json, "objective_space");
-		CCS_REFUTE(!os, CCS_RESULT_ERROR_OUT_OF_MEMORY);
-		CCS_VALIDATE(_ccs_object_serialize_with_opts(
-			data->common_data.objective_space,
-			CCS_SERIALIZE_FORMAT_JSON, &dummy, (char **)&os, opts));
-	}
+	CCS_VALIDATE(_ccs_json_embed_object(
+		json, "objective_space", data->common_data.objective_space,
+		opts));
 
 	/* history (inlined evaluations) */
 	{
@@ -184,18 +179,9 @@ _ccs_serialize_json_ccs_random_tuner(
 		{
 			ccs_evaluation_t *e = NULL;
 			while ((e = (ccs_evaluation_t *)utarray_next(
-					cur->history, e))) {
-				cJSON *eval_obj = cJSON_CreateObject();
-				CCS_REFUTE(
-					!eval_obj,
-					CCS_RESULT_ERROR_OUT_OF_MEMORY);
-				CCS_REFUTE(
-					!cJSON_AddItemToArray(history, eval_obj),
-					CCS_RESULT_ERROR_OUT_OF_MEMORY);
-				CCS_VALIDATE(_ccs_object_serialize_with_opts(
-					*e, CCS_SERIALIZE_FORMAT_JSON, &dummy,
-					(char **)&eval_obj, opts));
-			}
+					cur->history, e)))
+				CCS_VALIDATE(_ccs_json_embed_array_object(
+					history, *e, opts));
 		}
 	}
 

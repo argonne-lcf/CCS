@@ -178,15 +178,9 @@ _ccs_serialize_json_ccs_expression(
 		_ccs_json_expression_type_to_string(data->type)));
 	cJSON *nodes = cJSON_AddArrayToObject(json, "nodes");
 	CCS_REFUTE(!nodes, CCS_RESULT_ERROR_OUT_OF_MEMORY);
-	for (size_t i = 0; i < data->num_nodes; i++) {
-		cJSON *child = cJSON_CreateObject();
-		CCS_REFUTE(!child, CCS_RESULT_ERROR_OUT_OF_MEMORY);
-		cJSON_AddItemToArray(nodes, child);
-		size_t dummy = 0;
-		CCS_VALIDATE(_ccs_object_serialize_with_opts(
-			data->nodes[i], CCS_SERIALIZE_FORMAT_JSON, &dummy,
-			(char **)&child, opts));
-	}
+	for (size_t i = 0; i < data->num_nodes; i++)
+		CCS_VALIDATE(_ccs_json_embed_array_object(
+			nodes, data->nodes[i], opts));
 	return CCS_RESULT_SUCCESS;
 }
 
@@ -1448,15 +1442,9 @@ _ccs_serialize_json_ccs_expression_user_defined(
 	/* serialize child nodes */
 	cJSON *nodes = cJSON_AddArrayToObject(json, "nodes");
 	CCS_REFUTE(!nodes, CCS_RESULT_ERROR_OUT_OF_MEMORY);
-	for (size_t i = 0; i < data->expr.num_nodes; i++) {
-		cJSON *child = cJSON_CreateObject();
-		CCS_REFUTE(!child, CCS_RESULT_ERROR_OUT_OF_MEMORY);
-		cJSON_AddItemToArray(nodes, child);
-		size_t dummy = 0;
-		CCS_VALIDATE(_ccs_object_serialize_with_opts(
-			data->expr.nodes[i], CCS_SERIALIZE_FORMAT_JSON, &dummy,
-			(char **)&child, opts));
-	}
+	for (size_t i = 0; i < data->expr.num_nodes; i++)
+		CCS_VALIDATE(_ccs_json_embed_array_object(
+			nodes, data->expr.nodes[i], opts));
 	/* serialize user state */
 	size_t state_size = 0;
 	if (data->vector.serialize_user_state) {

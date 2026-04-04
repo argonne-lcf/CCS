@@ -92,8 +92,7 @@ _ccs_serialize_json_ccs_tree(
 	cJSON                           *json,
 	_ccs_object_serialize_options_t *opts)
 {
-	_ccs_tree_data_t *data  = tree->data;
-	size_t            dummy = 0;
+	_ccs_tree_data_t *data = tree->data;
 	cJSON            *children;
 	size_t            i;
 
@@ -107,13 +106,8 @@ _ccs_serialize_json_ccs_tree(
 	CCS_REFUTE(!children, CCS_RESULT_ERROR_OUT_OF_MEMORY);
 	for (i = 0; i < data->arity; i++) {
 		if (data->children[i]) {
-			cJSON *child = cJSON_CreateObject();
-			CCS_REFUTE(!child, CCS_RESULT_ERROR_OUT_OF_MEMORY);
-			cJSON_AddItemToArray(children, child);
-			dummy = 0;
-			CCS_VALIDATE(_ccs_object_serialize_with_opts(
-				data->children[i], CCS_SERIALIZE_FORMAT_JSON,
-				&dummy, (char **)&child, opts));
+			CCS_VALIDATE(_ccs_json_embed_array_object(
+				children, data->children[i], opts));
 		} else {
 			cJSON_AddItemToArray(children, cJSON_CreateNull());
 		}

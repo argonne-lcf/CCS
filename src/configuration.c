@@ -79,18 +79,13 @@ _ccs_serialize_json_ccs_configuration(
 	cJSON                           *json,
 	_ccs_object_serialize_options_t *opts)
 {
-	_ccs_configuration_data_t *data  = configuration->data;
-	size_t                     dummy = 0;
+	_ccs_configuration_data_t *data = configuration->data;
 
 	CCS_VALIDATE(_ccs_serialize_json_ccs_binding(
 		(ccs_binding_t)configuration, json));
-	if (data->features) {
-		cJSON *feat = cJSON_AddObjectToObject(json, "features");
-		CCS_REFUTE(!feat, CCS_RESULT_ERROR_OUT_OF_MEMORY);
-		CCS_VALIDATE(_ccs_object_serialize_with_opts(
-			data->features, CCS_SERIALIZE_FORMAT_JSON, &dummy,
-			(char **)&feat, opts));
-	}
+	if (data->features)
+		CCS_VALIDATE(_ccs_json_embed_object(
+			json, "features", data->features, opts));
 	return CCS_RESULT_SUCCESS;
 }
 
