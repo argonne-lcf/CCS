@@ -481,19 +481,12 @@ _ccs_deserialize_json_distribution_mixture(
 			res, !w, CCS_RESULT_ERROR_INVALID_VALUE, end);
 		CCS_VALIDATE_ERR_GOTO(
 			res, _ccs_json_get_float(w, &weights[i]), end);
-		cJSON *child = cJSON_GetArrayItem(j_distributions, (int)i);
-		CCS_REFUTE_ERR_GOTO(
-			res, !child || !cJSON_IsObject(child),
-			CCS_RESULT_ERROR_INVALID_VALUE, end);
-		size_t      dummy = 0;
-		const char *cbuf  = (const char *)child;
 		CCS_VALIDATE_ERR_GOTO(
 			res,
-			_ccs_object_deserialize_with_opts_check(
-				(ccs_object_t *)distributions + i,
-				CCS_OBJECT_TYPE_DISTRIBUTION,
-				CCS_SERIALIZE_FORMAT_JSON, version, &dummy,
-				&cbuf, &new_opts),
+			_ccs_json_deserialize_array_object(
+				cJSON_GetArrayItem(j_distributions, (int)i),
+				CCS_OBJECT_TYPE_DISTRIBUTION, version,
+				(ccs_object_t *)distributions + i, &new_opts),
 			end);
 	}
 	CCS_VALIDATE_ERR_GOTO(
@@ -536,22 +529,14 @@ _ccs_deserialize_json_distribution_multivariate(
 		(ccs_distribution_t *)calloc(num, sizeof(ccs_distribution_t));
 	CCS_REFUTE(!distributions, CCS_RESULT_ERROR_OUT_OF_MEMORY);
 
-	for (size_t i = 0; i < num; i++) {
-		cJSON *child = cJSON_GetArrayItem(j_distributions, (int)i);
-		CCS_REFUTE_ERR_GOTO(
-			res, !child || !cJSON_IsObject(child),
-			CCS_RESULT_ERROR_INVALID_VALUE, end);
-		size_t      dummy = 0;
-		const char *cbuf  = (const char *)child;
+	for (size_t i = 0; i < num; i++)
 		CCS_VALIDATE_ERR_GOTO(
 			res,
-			_ccs_object_deserialize_with_opts_check(
-				(ccs_object_t *)distributions + i,
-				CCS_OBJECT_TYPE_DISTRIBUTION,
-				CCS_SERIALIZE_FORMAT_JSON, version, &dummy,
-				&cbuf, &new_opts),
+			_ccs_json_deserialize_array_object(
+				cJSON_GetArrayItem(j_distributions, (int)i),
+				CCS_OBJECT_TYPE_DISTRIBUTION, version,
+				(ccs_object_t *)distributions + i, &new_opts),
 			end);
-	}
 	CCS_VALIDATE_ERR_GOTO(
 		res,
 		ccs_create_multivariate_distribution(

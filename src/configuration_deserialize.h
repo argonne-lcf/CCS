@@ -96,8 +96,6 @@ _ccs_deserialize_json_configuration(
 	ccs_features_t            features = NULL;
 	cJSON                    *json;
 	cJSON                    *j_features;
-	const char               *cbuf;
-	size_t                    dummy;
 
 	(void)version;
 	(void)buffer_size;
@@ -118,18 +116,14 @@ _ccs_deserialize_json_configuration(
 
 	/* optional features */
 	j_features = cJSON_GetObjectItemCaseSensitive(json, "features");
-	if (j_features && cJSON_IsObject(j_features)) {
+	if (j_features) {
 		_ccs_object_deserialize_options_t feat_opts = *opts;
 		feat_opts.map_values                        = CCS_FALSE;
-		cbuf  = (const char *)j_features;
-		dummy = 0;
 		CCS_VALIDATE_ERR_GOTO(
 			res,
-			_ccs_object_deserialize_with_opts_check(
-				(ccs_object_t *)&features,
-				CCS_OBJECT_TYPE_FEATURES,
-				CCS_SERIALIZE_FORMAT_JSON, version, &dummy,
-				&cbuf, &feat_opts),
+			_ccs_json_extract_object(
+				json, "features", CCS_OBJECT_TYPE_FEATURES,
+				version, (ccs_object_t *)&features, &feat_opts),
 			end);
 	}
 

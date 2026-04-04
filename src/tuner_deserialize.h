@@ -228,25 +228,17 @@ _ccs_deserialize_json_ccs_random_tuner_data(
 	cJSON                             *json,
 	_ccs_object_deserialize_options_t *opts)
 {
-	cJSON      *j_os;
-	cJSON      *j_history;
-	cJSON      *j_optima;
-	const char *cbuf;
-	size_t      dummy;
+	cJSON *j_history;
+	cJSON *j_optima;
 
 	CCS_VALIDATE(_ccs_json_extract_string(
 		json, "name", &data->common_data.name));
 
 	/* objective_space (inlined) */
-	j_os = cJSON_GetObjectItemCaseSensitive(json, "objective_space");
-	CCS_REFUTE(
-		!j_os || !cJSON_IsObject(j_os), CCS_RESULT_ERROR_INVALID_VALUE);
-	cbuf  = (const char *)j_os;
-	dummy = 0;
-	CCS_VALIDATE(_ccs_object_deserialize_with_opts_check(
-		(ccs_object_t *)&data->common_data.objective_space,
-		CCS_OBJECT_TYPE_OBJECTIVE_SPACE, CCS_SERIALIZE_FORMAT_JSON,
-		version, &dummy, &cbuf, opts));
+	CCS_VALIDATE(_ccs_json_extract_object(
+		json, "objective_space", CCS_OBJECT_TYPE_OBJECTIVE_SPACE,
+		version, (ccs_object_t *)&data->common_data.objective_space,
+		opts));
 
 	/* history */
 	j_history = cJSON_GetObjectItemCaseSensitive(json, "history");
@@ -270,15 +262,11 @@ _ccs_deserialize_json_ccs_random_tuner_data(
 	CCS_REFUTE(!data->history, CCS_RESULT_ERROR_OUT_OF_MEMORY);
 	data->optima = data->history + data->history_size;
 
-	for (size_t i = 0; i < data->history_size; i++) {
-		cJSON *child = cJSON_GetArrayItem(j_history, (int)i);
-		cbuf         = (const char *)child;
-		dummy        = 0;
-		CCS_VALIDATE(_ccs_object_deserialize_with_opts_check(
-			(ccs_object_t *)data->history + i,
-			CCS_OBJECT_TYPE_EVALUATION, CCS_SERIALIZE_FORMAT_JSON,
-			version, &dummy, &cbuf, opts));
-	}
+	for (size_t i = 0; i < data->history_size; i++)
+		CCS_VALIDATE(_ccs_json_deserialize_array_object(
+			cJSON_GetArrayItem(j_history, (int)i),
+			CCS_OBJECT_TYPE_EVALUATION, version,
+			(ccs_object_t *)data->history + i, opts));
 
 	for (size_t i = 0; i < data->size_optima; i++) {
 		cJSON      *child = cJSON_GetArrayItem(j_optima, (int)i);

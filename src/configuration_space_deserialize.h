@@ -168,42 +168,28 @@ _ccs_deserialize_json_ccs_configuration_space_data(
 	cJSON                                *json,
 	_ccs_object_deserialize_options_t    *opts)
 {
-	cJSON      *j_fs;
-	cJSON      *j_rng;
-	cJSON      *j_params;
-	cJSON      *j_conds;
-	cJSON      *j_forbids;
-	size_t      num;
-	size_t      num_conds;
-	size_t      num_forbids;
-	uintptr_t   mem;
-	const char *cbuf;
-	size_t      dummy;
+	cJSON    *j_fs;
+	cJSON    *j_params;
+	cJSON    *j_conds;
+	cJSON    *j_forbids;
+	size_t    num;
+	size_t    num_conds;
+	size_t    num_forbids;
+	uintptr_t mem;
 
 	CCS_VALIDATE(_ccs_json_extract_string(json, "name", &data->name));
 
 	/* feature space (optional) */
 	j_fs = cJSON_GetObjectItemCaseSensitive(json, "feature_space");
-	if (j_fs && cJSON_IsObject(j_fs)) {
-		cbuf  = (const char *)j_fs;
-		dummy = 0;
-		CCS_VALIDATE(_ccs_object_deserialize_with_opts_check(
-			(ccs_object_t *)&data->feature_space,
-			CCS_OBJECT_TYPE_FEATURE_SPACE,
-			CCS_SERIALIZE_FORMAT_JSON, version, &dummy, &cbuf,
-			opts));
-	}
+	if (j_fs)
+		CCS_VALIDATE(_ccs_json_extract_object(
+			json, "feature_space", CCS_OBJECT_TYPE_FEATURE_SPACE,
+			version, (ccs_object_t *)&data->feature_space, opts));
 
 	/* rng */
-	j_rng = cJSON_GetObjectItemCaseSensitive(json, "rng");
-	CCS_REFUTE(
-		!j_rng || !cJSON_IsObject(j_rng),
-		CCS_RESULT_ERROR_INVALID_VALUE);
-	cbuf  = (const char *)j_rng;
-	dummy = 0;
-	CCS_VALIDATE(_ccs_object_deserialize_with_opts_check(
-		(ccs_object_t *)&data->rng, CCS_OBJECT_TYPE_RNG,
-		CCS_SERIALIZE_FORMAT_JSON, version, &dummy, &cbuf, opts));
+	CCS_VALIDATE(_ccs_json_extract_object(
+		json, "rng", CCS_OBJECT_TYPE_RNG, version,
+		(ccs_object_t *)&data->rng, opts));
 
 	/* parameters */
 	j_params = cJSON_GetObjectItemCaseSensitive(json, "parameters");
@@ -251,47 +237,31 @@ _ccs_deserialize_json_ccs_configuration_space_data(
 	data->forbidden_clauses =
 		CCS_ALLOC_CARVE_ARRAY(mem, num_forbids, ccs_expression_t);
 
-	for (size_t i = 0; i < num; i++) {
-		cJSON *child = cJSON_GetArrayItem(j_params, (int)i);
-		cbuf         = (const char *)child;
-		dummy        = 0;
-		CCS_VALIDATE(_ccs_object_deserialize_with_opts_check(
-			(ccs_object_t *)data->parameters + i,
-			CCS_OBJECT_TYPE_PARAMETER, CCS_SERIALIZE_FORMAT_JSON,
-			version, &dummy, &cbuf, opts));
-	}
+	for (size_t i = 0; i < num; i++)
+		CCS_VALIDATE(_ccs_json_deserialize_array_object(
+			cJSON_GetArrayItem(j_params, (int)i),
+			CCS_OBJECT_TYPE_PARAMETER, version,
+			(ccs_object_t *)data->parameters + i, opts));
 
 	for (size_t i = 0; i < num_conds; i++) {
 		cJSON    *cond_obj = cJSON_GetArrayItem(j_conds, (int)i);
-		cJSON    *j_expr;
 		size_t    index;
 		ccs_int_t index_val;
 		CCS_VALIDATE(
 			_ccs_json_extract_int(cond_obj, "index", &index_val));
 		index = (size_t)index_val;
 		CCS_REFUTE(index >= num, CCS_RESULT_ERROR_INVALID_VALUE);
-		j_expr = cJSON_GetObjectItemCaseSensitive(
-			cond_obj, "expression");
-		CCS_REFUTE(
-			!j_expr || !cJSON_IsObject(j_expr),
-			CCS_RESULT_ERROR_INVALID_VALUE);
-		cbuf  = (const char *)j_expr;
-		dummy = 0;
-		CCS_VALIDATE(_ccs_object_deserialize_with_opts_check(
-			(ccs_object_t *)data->conditions + index,
-			CCS_OBJECT_TYPE_EXPRESSION, CCS_SERIALIZE_FORMAT_JSON,
-			version, &dummy, &cbuf, opts));
+		CCS_VALIDATE(_ccs_json_extract_object(
+			cond_obj, "expression", CCS_OBJECT_TYPE_EXPRESSION,
+			version, (ccs_object_t *)data->conditions + index,
+			opts));
 	}
 
-	for (size_t i = 0; i < num_forbids; i++) {
-		cJSON *child = cJSON_GetArrayItem(j_forbids, (int)i);
-		cbuf         = (const char *)child;
-		dummy        = 0;
-		CCS_VALIDATE(_ccs_object_deserialize_with_opts_check(
-			(ccs_object_t *)data->forbidden_clauses + i,
-			CCS_OBJECT_TYPE_EXPRESSION, CCS_SERIALIZE_FORMAT_JSON,
-			version, &dummy, &cbuf, opts));
-	}
+	for (size_t i = 0; i < num_forbids; i++)
+		CCS_VALIDATE(_ccs_json_deserialize_array_object(
+			cJSON_GetArrayItem(j_forbids, (int)i),
+			CCS_OBJECT_TYPE_EXPRESSION, version,
+			(ccs_object_t *)data->forbidden_clauses + i, opts));
 
 	return CCS_RESULT_SUCCESS;
 }

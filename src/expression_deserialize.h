@@ -359,23 +359,12 @@ _ccs_deserialize_json_expression_general(
 		CCS_REFUTE(!data.nodes, CCS_RESULT_ERROR_OUT_OF_MEMORY);
 		for (size_t i = 0; i < num_nodes; i++) {
 			ccs_expression_t expr;
-			cJSON           *child;
-			size_t           dummy;
-			const char      *cbuf;
-
-			child = cJSON_GetArrayItem(j_nodes, (int)i);
-			CCS_REFUTE_ERR_GOTO(
-				res, !child || !cJSON_IsObject(child),
-				CCS_RESULT_ERROR_INVALID_VALUE, end);
-			dummy = 0;
-			cbuf  = (const char *)child;
 			CCS_VALIDATE_ERR_GOTO(
 				res,
-				_ccs_object_deserialize_with_opts_check(
-					(ccs_object_t *)&expr,
-					CCS_OBJECT_TYPE_EXPRESSION,
-					CCS_SERIALIZE_FORMAT_JSON, version,
-					&dummy, &cbuf, &new_opts),
+				_ccs_json_deserialize_array_object(
+					cJSON_GetArrayItem(j_nodes, (int)i),
+					CCS_OBJECT_TYPE_EXPRESSION, version,
+					(ccs_object_t *)&expr, &new_opts),
 				end);
 			data.nodes[i].type    = CCS_DATA_TYPE_OBJECT;
 			data.nodes[i].value.o = expr;
@@ -430,23 +419,12 @@ _ccs_deserialize_json_expression_user_defined(
 		CCS_REFUTE(!data.nodes, CCS_RESULT_ERROR_OUT_OF_MEMORY);
 		for (size_t i = 0; i < num_nodes; i++) {
 			ccs_expression_t expr;
-			cJSON           *child;
-			size_t           dummy;
-			const char      *cbuf;
-
-			child = cJSON_GetArrayItem(j_nodes, (int)i);
-			CCS_REFUTE_ERR_GOTO(
-				res, !child || !cJSON_IsObject(child),
-				CCS_RESULT_ERROR_INVALID_VALUE, end);
-			dummy = 0;
-			cbuf  = (const char *)child;
 			CCS_VALIDATE_ERR_GOTO(
 				res,
-				_ccs_object_deserialize_with_opts_check(
-					(ccs_object_t *)&expr,
-					CCS_OBJECT_TYPE_EXPRESSION,
-					CCS_SERIALIZE_FORMAT_JSON, version,
-					&dummy, &cbuf, &new_opts),
+				_ccs_json_deserialize_array_object(
+					cJSON_GetArrayItem(j_nodes, (int)i),
+					CCS_OBJECT_TYPE_EXPRESSION, version,
+					(ccs_object_t *)&expr, &new_opts),
 				end);
 			data.nodes[i].type    = CCS_DATA_TYPE_OBJECT;
 			data.nodes[i].value.o = expr;
