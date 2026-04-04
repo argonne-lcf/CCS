@@ -124,26 +124,17 @@ _ccs_serialize_json_ccs_distribution_space(
 	dw = NULL;
 	DL_FOREACH(data->distribution_list, dw)
 	{
-		cJSON *entry = cJSON_CreateObject();
+		cJSON *entry;
 		cJSON *indices;
-		CCS_REFUTE(!entry, CCS_RESULT_ERROR_OUT_OF_MEMORY);
-		CCS_REFUTE(
-			!cJSON_AddItemToArray(distribs, entry),
-			CCS_RESULT_ERROR_OUT_OF_MEMORY);
+		CCS_VALIDATE(_ccs_json_add_object_to_array(distribs, &entry));
 
 		CCS_VALIDATE(_ccs_json_embed_object(
 			entry, "distribution", dw->distribution, opts));
 		CCS_VALIDATE(_ccs_json_add_array(
 			entry, "parameter_indices", &indices));
-		for (size_t i = 0; i < dw->dimension; i++) {
-			cJSON *idx_item;
-			CCS_VALIDATE(_ccs_json_create_int(
-				(ccs_int_t)dw->parameter_indexes[i],
-				&idx_item));
-			CCS_REFUTE(
-				!cJSON_AddItemToArray(indices, idx_item),
-				CCS_RESULT_ERROR_OUT_OF_MEMORY);
-		}
+		for (size_t i = 0; i < dw->dimension; i++)
+			CCS_VALIDATE(_ccs_json_add_int_to_array(
+				indices, (ccs_int_t)dw->parameter_indexes[i]));
 	}
 
 	return CCS_RESULT_SUCCESS;

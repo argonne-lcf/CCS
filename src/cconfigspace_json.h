@@ -595,6 +595,54 @@ _ccs_json_extract_array(
 	return CCS_RESULT_SUCCESS;
 }
 
+/* Create an empty JSON object and append it to a JSON array. */
+static inline ccs_result_t
+_ccs_json_add_object_to_array(cJSON *array, cJSON **object_ret)
+{
+	*object_ret = cJSON_CreateObject();
+	CCS_REFUTE(!*object_ret, CCS_RESULT_ERROR_OUT_OF_MEMORY);
+	CCS_REFUTE(
+		!cJSON_AddItemToArray(array, *object_ret),
+		CCS_RESULT_ERROR_OUT_OF_MEMORY);
+	return CCS_RESULT_SUCCESS;
+}
+
+/* Append an integer value to a JSON array. */
+static inline ccs_result_t
+_ccs_json_add_int_to_array(cJSON *array, ccs_int_t value)
+{
+	cJSON *item;
+	CCS_VALIDATE(_ccs_json_create_int(value, &item));
+	CCS_REFUTE(
+		!cJSON_AddItemToArray(array, item),
+		CCS_RESULT_ERROR_OUT_OF_MEMORY);
+	return CCS_RESULT_SUCCESS;
+}
+
+/* Append a float value to a JSON array. */
+static inline ccs_result_t
+_ccs_json_add_float_to_array(cJSON *array, double value)
+{
+	cJSON *item;
+	CCS_VALIDATE(_ccs_json_create_float(value, &item));
+	CCS_REFUTE(
+		!cJSON_AddItemToArray(array, item),
+		CCS_RESULT_ERROR_OUT_OF_MEMORY);
+	return CCS_RESULT_SUCCESS;
+}
+
+/* Append a string value to a JSON array. */
+static inline ccs_result_t
+_ccs_json_add_string_to_array(cJSON *array, const char *value)
+{
+	cJSON *item;
+	CCS_VALIDATE(_ccs_json_create_string(value, &item));
+	CCS_REFUTE(
+		!cJSON_AddItemToArray(array, item),
+		CCS_RESULT_ERROR_OUT_OF_MEMORY);
+	return CCS_RESULT_SUCCESS;
+}
+
 /*============================================================================
  * ccs_datum_t JSON helpers
  *============================================================================*/

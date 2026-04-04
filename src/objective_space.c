@@ -171,9 +171,8 @@ _ccs_serialize_json_ccs_objective_space(
 		cJSON *objs;
 		CCS_VALIDATE(_ccs_json_add_array(json, "objectives", &objs));
 		for (size_t i = 0; i < data->num_objectives; i++) {
-			cJSON *obj = cJSON_CreateObject();
-			CCS_REFUTE(!obj, CCS_RESULT_ERROR_OUT_OF_MEMORY);
-			cJSON_AddItemToArray(objs, obj);
+			cJSON *obj;
+			CCS_VALIDATE(_ccs_json_add_object_to_array(objs, &obj));
 			CCS_VALIDATE(_ccs_json_embed_object(
 				obj, "expression",
 				data->objectives[i].expression, opts));

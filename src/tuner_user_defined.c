@@ -253,12 +253,10 @@ _ccs_serialize_json_ccs_user_defined_tuner(
 			char hex[sizeof(ccs_object_t) * 2 + 1];
 			_ccs_json_hex_encode_buf(
 				&optima[i], sizeof(ccs_object_t), hex);
-			cJSON *h = NULL;
 			CCS_VALIDATE_ERR_GOTO(
-				res, _ccs_json_create_string(hex, &h), end);
-			CCS_REFUTE_ERR_GOTO(
-				res, !cJSON_AddItemToArray(j_optima, h),
-				CCS_RESULT_ERROR_OUT_OF_MEMORY, end);
+				res,
+				_ccs_json_add_string_to_array(j_optima, hex),
+				end);
 		}
 	}
 

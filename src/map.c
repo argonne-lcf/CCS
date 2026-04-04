@@ -106,11 +106,8 @@ _ccs_serialize_json_ccs_map(ccs_map_t map, cJSON *json)
 
 	HASH_ITER(hh, data->map, current, tmp)
 	{
-		cJSON *pair = cJSON_CreateObject();
-		CCS_REFUTE(!pair, CCS_RESULT_ERROR_OUT_OF_MEMORY);
-		CCS_REFUTE(
-			!cJSON_AddItemToArray(pairs, pair),
-			CCS_RESULT_ERROR_OUT_OF_MEMORY);
+		cJSON *pair;
+		CCS_VALIDATE(_ccs_json_add_object_to_array(pairs, &pair));
 
 		CCS_VALIDATE(_ccs_json_add_datum(pair, "key", current->key));
 		CCS_VALIDATE(
