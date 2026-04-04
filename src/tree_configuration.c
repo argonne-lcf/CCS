@@ -95,8 +95,7 @@ _ccs_serialize_json_ccs_tree_configuration(
 	_ccs_json_hex_encode_buf(&data->tree_space, sizeof(ccs_object_t), hex);
 	CCS_VALIDATE(_ccs_json_add_string(json, "tree_space", hex));
 
-	positions = cJSON_AddArrayToObject(json, "position");
-	CCS_REFUTE(!positions, CCS_RESULT_ERROR_OUT_OF_MEMORY);
+	CCS_VALIDATE(_ccs_json_add_array(json, "position", &positions));
 	for (i = 0; i < data->position_size; i++) {
 		cJSON *pos_item;
 		CCS_VALIDATE(_ccs_json_create_int(

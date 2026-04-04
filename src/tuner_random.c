@@ -173,8 +173,8 @@ _ccs_serialize_json_ccs_random_tuner(
 
 	/* history (inlined evaluations) */
 	{
-		cJSON *history = cJSON_AddArrayToObject(json, "history");
-		CCS_REFUTE(!history, CCS_RESULT_ERROR_OUT_OF_MEMORY);
+		cJSON *history;
+		CCS_VALIDATE(_ccs_json_add_array(json, "history", &history));
 		HASH_ITER(hh, data->features_hash, cur, tmp)
 		{
 			ccs_evaluation_t *e = NULL;
@@ -187,8 +187,8 @@ _ccs_serialize_json_ccs_random_tuner(
 
 	/* optima (handles referencing history evaluations) */
 	{
-		cJSON *optima = cJSON_AddArrayToObject(json, "optima");
-		CCS_REFUTE(!optima, CCS_RESULT_ERROR_OUT_OF_MEMORY);
+		cJSON *optima;
+		CCS_VALIDATE(_ccs_json_add_array(json, "optima", &optima));
 		HASH_ITER(hh, data->features_hash, cur, tmp)
 		{
 			ccs_evaluation_t *e = NULL;

@@ -94,12 +94,8 @@ _ccs_deserialize_json_map(
 	cJSON       *j_pairs;
 	size_t       num;
 
-	json    = *(cJSON **)buffer;
-	j_pairs = cJSON_GetObjectItemCaseSensitive(json, "pairs");
-	CCS_REFUTE(
-		!j_pairs || !cJSON_IsArray(j_pairs),
-		CCS_RESULT_ERROR_INVALID_VALUE);
-	num = (size_t)cJSON_GetArraySize(j_pairs);
+	json = *(cJSON **)buffer;
+	CCS_VALIDATE(_ccs_json_extract_array(json, "pairs", &j_pairs, &num));
 
 	CCS_VALIDATE(ccs_create_map(map_ret));
 	for (size_t i = 0; i < num; i++) {

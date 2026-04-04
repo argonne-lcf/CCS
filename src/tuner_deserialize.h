@@ -241,18 +241,12 @@ _ccs_deserialize_json_ccs_random_tuner_data(
 		opts));
 
 	/* history */
-	j_history = cJSON_GetObjectItemCaseSensitive(json, "history");
-	CCS_REFUTE(
-		!j_history || !cJSON_IsArray(j_history),
-		CCS_RESULT_ERROR_INVALID_VALUE);
-	data->history_size = (size_t)cJSON_GetArraySize(j_history);
+	CCS_VALIDATE(_ccs_json_extract_array(
+		json, "history", &j_history, &data->history_size));
 
 	/* optima */
-	j_optima           = cJSON_GetObjectItemCaseSensitive(json, "optima");
-	CCS_REFUTE(
-		!j_optima || !cJSON_IsArray(j_optima),
-		CCS_RESULT_ERROR_INVALID_VALUE);
-	data->size_optima = (size_t)cJSON_GetArraySize(j_optima);
+	CCS_VALIDATE(_ccs_json_extract_array(
+		json, "optima", &j_optima, &data->size_optima));
 
 	if (!(data->history_size + data->size_optima))
 		return CCS_RESULT_SUCCESS;

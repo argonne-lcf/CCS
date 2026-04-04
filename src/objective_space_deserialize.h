@@ -149,19 +149,13 @@ _ccs_deserialize_json_ccs_objective_space_data(
 		(ccs_object_t *)&data->search_space, opts));
 
 	/* parameters */
-	j_params = cJSON_GetObjectItemCaseSensitive(json, "parameters");
-	CCS_REFUTE(
-		!j_params || !cJSON_IsArray(j_params),
-		CCS_RESULT_ERROR_INVALID_VALUE);
-	num                  = (size_t)cJSON_GetArraySize(j_params);
+	CCS_VALIDATE(
+		_ccs_json_extract_array(json, "parameters", &j_params, &num));
 	data->num_parameters = num;
 
 	/* objectives */
-	j_objs = cJSON_GetObjectItemCaseSensitive(json, "objectives");
-	CCS_REFUTE(
-		!j_objs || !cJSON_IsArray(j_objs),
-		CCS_RESULT_ERROR_INVALID_VALUE);
-	num_objs             = (size_t)cJSON_GetArraySize(j_objs);
+	CCS_VALIDATE(_ccs_json_extract_array(
+		json, "objectives", &j_objs, &num_objs));
 	data->num_objectives = num_objs;
 
 	if (!(num + num_objs))

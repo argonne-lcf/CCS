@@ -113,8 +113,8 @@ _ccs_deserialize_json_tree_configuration(
 	ccs_object_t     ts_handle;
 	size_t          *position = NULL;
 	ccs_features_t   features = NULL;
-	int              pos_count;
-	int              i;
+	size_t           pos_count;
+	size_t           i;
 	const char      *ts_str;
 
 	(void)buffer_size;
@@ -140,14 +140,14 @@ _ccs_deserialize_json_tree_configuration(
 		CCS_RESULT_ERROR_INVALID_HANDLE, end);
 	tree_space = (ccs_tree_space_t)(d.value.o);
 
-	j_position = cJSON_GetObjectItemCaseSensitive(json, "position");
-	CCS_REFUTE_ERR_GOTO(
-		res, !j_position || !cJSON_IsArray(j_position),
-		CCS_RESULT_ERROR_INVALID_VALUE, end);
-	pos_count = cJSON_GetArraySize(j_position);
+	CCS_VALIDATE_ERR_GOTO(
+		res,
+		_ccs_json_extract_array(
+			json, "position", &j_position, &pos_count),
+		end);
 
-	if (pos_count > 0) {
-		position = (size_t *)calloc((size_t)pos_count, sizeof(size_t));
+	if (pos_count) {
+		position = (size_t *)calloc(pos_count, sizeof(size_t));
 		CCS_REFUTE_ERR_GOTO(
 			res, !position, CCS_RESULT_ERROR_OUT_OF_MEMORY, end);
 		for (i = 0; i < pos_count; i++) {
@@ -177,7 +177,7 @@ _ccs_deserialize_json_tree_configuration(
 	CCS_VALIDATE_ERR_GOTO(
 		res,
 		ccs_create_tree_configuration(
-			tree_space, features, (size_t)pos_count, position,
+			tree_space, features, pos_count, position,
 			configuration_ret),
 		end);
 

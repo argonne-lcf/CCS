@@ -192,27 +192,18 @@ _ccs_deserialize_json_ccs_configuration_space_data(
 		(ccs_object_t *)&data->rng, opts));
 
 	/* parameters */
-	j_params = cJSON_GetObjectItemCaseSensitive(json, "parameters");
-	CCS_REFUTE(
-		!j_params || !cJSON_IsArray(j_params),
-		CCS_RESULT_ERROR_INVALID_VALUE);
-	num                  = (size_t)cJSON_GetArraySize(j_params);
+	CCS_VALIDATE(
+		_ccs_json_extract_array(json, "parameters", &j_params, &num));
 	data->num_parameters = num;
 
 	/* conditions */
-	j_conds = cJSON_GetObjectItemCaseSensitive(json, "conditions");
-	CCS_REFUTE(
-		!j_conds || !cJSON_IsArray(j_conds),
-		CCS_RESULT_ERROR_INVALID_VALUE);
-	num_conds            = (size_t)cJSON_GetArraySize(j_conds);
+	CCS_VALIDATE(_ccs_json_extract_array(
+		json, "conditions", &j_conds, &num_conds));
 	data->num_conditions = num_conds;
 
 	/* forbidden clauses */
-	j_forbids = cJSON_GetObjectItemCaseSensitive(json, "forbidden_clauses");
-	CCS_REFUTE(
-		!j_forbids || !cJSON_IsArray(j_forbids),
-		CCS_RESULT_ERROR_INVALID_VALUE);
-	num_forbids                 = (size_t)cJSON_GetArraySize(j_forbids);
+	CCS_VALIDATE(_ccs_json_extract_array(
+		json, "forbidden_clauses", &j_forbids, &num_forbids));
 	data->num_forbidden_clauses = num_forbids;
 
 	if (!(num + num_conds + num_forbids))

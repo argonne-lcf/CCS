@@ -176,8 +176,8 @@ _ccs_serialize_json_ccs_binding(ccs_binding_t binding, cJSON *json)
 	char                 hex[sizeof(ccs_object_t) * 2 + 1];
 	_ccs_json_hex_encode_buf(&data->context, sizeof(ccs_object_t), hex);
 	CCS_VALIDATE(_ccs_json_add_string(json, "context", hex));
-	cJSON *values = cJSON_AddArrayToObject(json, "values");
-	CCS_REFUTE(!values, CCS_RESULT_ERROR_OUT_OF_MEMORY);
+	cJSON *values;
+	CCS_VALIDATE(_ccs_json_add_array(json, "values", &values));
 	for (size_t i = 0; i < data->num_values; i++)
 		CCS_VALIDATE(
 			_ccs_json_add_datum_to_array(values, data->values[i]));
@@ -229,15 +229,13 @@ static inline ccs_result_t
 _ccs_deserialize_json_ccs_binding_data(_ccs_binding_data_t *data, cJSON *json)
 {
 	size_t      num;
-	cJSON      *j_values = cJSON_GetObjectItemCaseSensitive(json, "values");
+	cJSON      *j_values;
 	const char *context_str;
 	data->context    = NULL;
 	data->num_values = 0;
 	data->values     = NULL;
 	CCS_VALIDATE(_ccs_json_extract_string(json, "context", &context_str));
-	CCS_REFUTE(
-		!j_values || !cJSON_IsArray(j_values),
-		CCS_RESULT_ERROR_INVALID_VALUE);
+	CCS_VALIDATE(_ccs_json_extract_array(json, "values", &j_values, &num));
 	CCS_REFUTE(
 		strlen(context_str) != sizeof(ccs_object_t) * 2,
 		CCS_RESULT_ERROR_INVALID_VALUE);
@@ -245,7 +243,6 @@ _ccs_deserialize_json_ccs_binding_data(_ccs_binding_data_t *data, cJSON *json)
 		_ccs_json_hex_decode_buf(
 			context_str, sizeof(ccs_object_t) * 2, &data->context),
 		CCS_RESULT_ERROR_INVALID_VALUE);
-	num              = (size_t)cJSON_GetArraySize(j_values);
 	data->num_values = num;
 	if (num) {
 		data->values = (ccs_datum_t *)calloc(num, sizeof(ccs_datum_t));

@@ -43,17 +43,15 @@ _ccs_deserialize_json_ccs_context_data(
 	cJSON                             *json,
 	_ccs_object_deserialize_options_t *opts)
 {
-	size_t num;
-	cJSON *j_params = cJSON_GetObjectItemCaseSensitive(json, "parameters");
+	size_t      num;
+	cJSON      *j_params;
 	const char *name_str;
 	data->num_parameters = 0;
 	data->parameters     = NULL;
 	CCS_VALIDATE(_ccs_json_extract_string(json, "name", &name_str));
-	CCS_REFUTE(
-		!j_params || !cJSON_IsArray(j_params),
-		CCS_RESULT_ERROR_INVALID_VALUE);
+	CCS_VALIDATE(
+		_ccs_json_extract_array(json, "parameters", &j_params, &num));
 	data->name           = name_str;
-	num                  = (size_t)cJSON_GetArraySize(j_params);
 	data->num_parameters = num;
 	if (num) {
 		data->parameters =

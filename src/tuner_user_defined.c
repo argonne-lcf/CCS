@@ -231,9 +231,10 @@ _ccs_serialize_json_ccs_user_defined_tuner(
 
 	/* history (inlined evaluations) */
 	{
-		cJSON *j_history = cJSON_AddArrayToObject(json, "history");
-		CCS_REFUTE_ERR_GOTO(
-			res, !j_history, CCS_RESULT_ERROR_OUT_OF_MEMORY, end);
+		cJSON *j_history;
+		CCS_VALIDATE_ERR_GOTO(
+			res, _ccs_json_add_array(json, "history", &j_history),
+			end);
 		for (size_t i = 0; i < history_size; i++)
 			CCS_VALIDATE_ERR_GOTO(
 				res,
@@ -244,9 +245,10 @@ _ccs_serialize_json_ccs_user_defined_tuner(
 
 	/* optima (handles) */
 	{
-		cJSON *j_optima = cJSON_AddArrayToObject(json, "optima");
-		CCS_REFUTE_ERR_GOTO(
-			res, !j_optima, CCS_RESULT_ERROR_OUT_OF_MEMORY, end);
+		cJSON *j_optima;
+		CCS_VALIDATE_ERR_GOTO(
+			res, _ccs_json_add_array(json, "optima", &j_optima),
+			end);
 		for (size_t i = 0; i < num_optima; i++) {
 			char hex[sizeof(ccs_object_t) * 2 + 1];
 			_ccs_json_hex_encode_buf(

@@ -113,8 +113,8 @@ _ccs_deserialize_json_tree(
 	cJSON                            *j_children;
 	ccs_tree_t                        tree = NULL;
 	_ccs_tree_data_mock_t             data;
-	int                               num_children;
-	int                               i;
+	size_t                            num_children;
+	size_t                            i;
 	ccs_int_t                         arity_val;
 
 	(void)buffer_size;
@@ -133,14 +133,14 @@ _ccs_deserialize_json_tree(
 	CCS_VALIDATE_ERR_GOTO(
 		res, _ccs_json_extract_datum(json, "value", &data.value), end);
 
-	j_children = cJSON_GetObjectItemCaseSensitive(json, "children");
+	CCS_VALIDATE_ERR_GOTO(
+		res,
+		_ccs_json_extract_array(
+			json, "children", &j_children, &num_children),
+		end);
 	CCS_REFUTE_ERR_GOTO(
-		res, !j_children || !cJSON_IsArray(j_children),
-		CCS_RESULT_ERROR_INVALID_VALUE, end);
-	num_children = cJSON_GetArraySize(j_children);
-	CCS_REFUTE_ERR_GOTO(
-		res, (size_t)num_children != data.arity,
-		CCS_RESULT_ERROR_INVALID_VALUE, end);
+		res, num_children != data.arity, CCS_RESULT_ERROR_INVALID_VALUE,
+		end);
 
 	if (data.arity) {
 		data.children =
@@ -149,7 +149,8 @@ _ccs_deserialize_json_tree(
 			res, !data.children, CCS_RESULT_ERROR_OUT_OF_MEMORY,
 			end);
 		for (i = 0; i < num_children; i++) {
-			cJSON *child_item = cJSON_GetArrayItem(j_children, i);
+			cJSON *child_item =
+				cJSON_GetArrayItem(j_children, (int)i);
 			if (!cJSON_IsNull(child_item))
 				CCS_VALIDATE_ERR_GOTO(
 					res,

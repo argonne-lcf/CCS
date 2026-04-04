@@ -220,16 +220,13 @@ _ccs_deserialize_json_parameter_categorical(
 	ccs_datum_t  default_datum;
 	int          found               = 0;
 	size_t       default_value_index = 0;
-	cJSON       *j_possible_values =
-		cJSON_GetObjectItemCaseSensitive(json, "possible_values");
+	cJSON       *j_possible_values;
 
-	const char *name_str;
+	const char  *name_str;
 	CCS_VALIDATE(_ccs_json_extract_string(json, "name", &name_str));
-	CCS_REFUTE(
-		!j_possible_values || !cJSON_IsArray(j_possible_values),
-		CCS_RESULT_ERROR_INVALID_VALUE);
-
-	num_possible_values = (size_t)cJSON_GetArraySize(j_possible_values);
+	CCS_VALIDATE(_ccs_json_extract_array(
+		json, "possible_values", &j_possible_values,
+		&num_possible_values));
 	possible_values =
 		(ccs_datum_t *)calloc(num_possible_values, sizeof(ccs_datum_t));
 	CCS_REFUTE(!possible_values, CCS_RESULT_ERROR_OUT_OF_MEMORY);
