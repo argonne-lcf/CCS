@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include <assert.h>
+#include <math.h>
 #include <cconfigspace.h>
 #include <string.h>
 #include "test_utils.h"
@@ -348,6 +349,86 @@ test_default_distribution(void)
 	assert(err == CCS_RESULT_SUCCESS);
 }
 
+static void
+test_diverse_values(void)
+{
+	ccs_parameter_t parameter;
+	ccs_result_t    err;
+	ccs_datum_t     possible_values[7];
+	size_t          num_possible_values = 7;
+
+	/* int */
+	possible_values[0]                  = ccs_int(42);
+	/* float (finite) */
+	possible_values[1]                  = ccs_float(3.14);
+	/* float (+Infinity) */
+	possible_values[2]                  = ccs_float(INFINITY);
+	/* float (-Infinity) */
+	possible_values[3]                  = ccs_float(-INFINITY);
+	/* float (NaN) */
+	possible_values[4]                  = ccs_float(NAN);
+	/* string */
+	possible_values[5]                  = ccs_string("hello");
+	/* bool */
+	possible_values[6]                  = ccs_bool(CCS_TRUE);
+
+	err                                 = ccs_create_categorical_parameter(
+                "diverse", num_possible_values, possible_values, 0, &parameter);
+	assert(err == CCS_RESULT_SUCCESS);
+
+	{
+		ccs_serialize_format_t formats[] = {
+			CCS_SERIALIZE_FORMAT_BINARY, CCS_SERIALIZE_FORMAT_JSON};
+		size_t num_formats = sizeof(formats) / sizeof(formats[0]);
+		for (size_t f = 0; f < num_formats; f++) {
+			ccs_parameter_t      parameter2;
+			ccs_parameter_type_t ptype;
+			const char          *pname;
+			ccs_datum_t          dval;
+			size_t               num_pv;
+
+			test_serialize_deserialize(
+				(ccs_object_t)parameter, formats[f],
+				(ccs_object_t *)&parameter2);
+
+			err = ccs_parameter_get_type(parameter2, &ptype);
+			assert(err == CCS_RESULT_SUCCESS);
+			assert(ptype == CCS_PARAMETER_TYPE_CATEGORICAL);
+
+			err = ccs_parameter_get_name(parameter2, &pname);
+			assert(err == CCS_RESULT_SUCCESS);
+			assert(!strcmp(pname, "diverse"));
+
+			err = ccs_categorical_parameter_get_values(
+				parameter2, 0, NULL, &num_pv);
+			assert(err == CCS_RESULT_SUCCESS);
+			assert(num_pv == num_possible_values);
+
+			/* default is index 0 = int(42) */
+			err = ccs_parameter_get_default_value(
+				parameter2, &dval);
+			assert(err == CCS_RESULT_SUCCESS);
+			assert(dval.type == CCS_DATA_TYPE_INT);
+			assert(dval.value.i == 42);
+
+			/* check all values are valid */
+			for (size_t i = 0; i < num_possible_values; i++) {
+				ccs_bool_t check;
+				err = ccs_parameter_check_value(
+					parameter2, possible_values[i], &check);
+				assert(err == CCS_RESULT_SUCCESS);
+				assert(check == CCS_TRUE);
+			}
+
+			err = ccs_release_object(parameter2);
+			assert(err == CCS_RESULT_SUCCESS);
+		}
+	}
+
+	err = ccs_release_object(parameter);
+	assert(err == CCS_RESULT_SUCCESS);
+}
+
 int
 main(void)
 {
@@ -356,6 +437,7 @@ main(void)
 	test_samples();
 	test_oversampling();
 	test_default_distribution();
+	test_diverse_values();
 	ccs_clear_thread_error();
 	ccs_fini();
 	return 0;
