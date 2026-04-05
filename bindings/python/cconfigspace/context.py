@@ -73,9 +73,9 @@ class Context(Object):
 
   def validate_value(self, parameter, value):
     if isinstance(parameter, Parameter):
-      parameter = parameter_index(parameter)
+      parameter = self.parameter_index(parameter)
     elif isinstance(parameter, str):
-      parameter = parameter_index_by_name(parameter)
+      parameter = self.parameter_index_by_name(parameter)
     pv = Datum(value)
     v = DatumFix(pv)
     vo = Datum()

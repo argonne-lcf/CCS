@@ -73,7 +73,7 @@ class TreeSpace(Object):
     res = ccs_tree_space_get_feature_space(self.handle, ct.byref(v))
     Error.check(res)
     if bool(v):
-      self._feature_space = Rng.from_handle(v)
+      self._feature_space = FeatureSpace.from_handle(v)
     else:
       self._feature_space = None
     return self._feature_space

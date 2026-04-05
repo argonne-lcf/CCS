@@ -28,6 +28,7 @@ class Map(Object):
   def __len__(self):
     v = ct.c_size_t()
     res = ccs_map_get_keys(self.handle, 0, None, ct.byref(v))
+    Error.check(res)
     return v.value
 
   def __getitem__(self, key):

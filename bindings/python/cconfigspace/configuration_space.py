@@ -50,7 +50,7 @@ class ConfigurationSpace(Context):
           if isinstance(k, Parameter):
             cv[indexdict[k]] = v.handle.value
           elif isinstance(k, str):
-            cv[indexdict[namedict[k]]] = v.handle.value
+            cv[indexdict[ctx[k]]] = v.handle.value
           else:
             cv[k] = v.handle.value
       else:
