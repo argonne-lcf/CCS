@@ -108,7 +108,7 @@ _ccs_serialize_json_ccs_tree(
 			CCS_VALIDATE(_ccs_json_embed_array_object(
 				children, data->children[i], opts));
 		} else {
-			cJSON_AddItemToArray(children, cJSON_CreateNull());
+			CCS_VALIDATE(_ccs_json_add_null_to_array(children));
 		}
 	}
 	return CCS_RESULT_SUCCESS;

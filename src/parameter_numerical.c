@@ -198,10 +198,21 @@ _ccs_parameter_numerical_samples(
 			CCS_REFUTE_ERR_GOTO(
 				err, coeff > 32,
 				CCS_RESULT_ERROR_SAMPLING_UNSUCCESSFUL, errmem);
-			size_t         buff_sz = (num_values - found) * coeff;
-			ccs_numeric_t *oldvs   = vs;
-			vs                     = (ccs_numeric_t *)realloc(
-                                oldvs, sizeof(ccs_numeric_t) * buff_sz);
+			size_t         buff_sz;
+			size_t         alloc_sz;
+			ccs_numeric_t *oldvs = vs;
+			CCS_REFUTE_ERR_GOTO(
+				err,
+				_ccs_size_mul(
+					num_values - found, coeff, &buff_sz),
+				CCS_RESULT_ERROR_OUT_OF_MEMORY, errmem);
+			CCS_REFUTE_ERR_GOTO(
+				err,
+				_ccs_size_mul(
+					sizeof(ccs_numeric_t), buff_sz,
+					&alloc_sz),
+				CCS_RESULT_ERROR_OUT_OF_MEMORY, errmem);
+			vs = (ccs_numeric_t *)realloc(oldvs, alloc_sz);
 			if (CCS_UNLIKELY(!vs)) {
 				if (oldvs)
 					free(oldvs);
