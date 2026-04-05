@@ -558,6 +558,14 @@ class Object:
       res = ccs_object_serialize(self.handle, fmt, SerializeOperation.FILE_DESCRIPTOR, fd, *options)
       Error.check(res)
       return None
+    elif fmt == SerializeFormat.BINARY:
+      s = ct.c_size_t(0)
+      res = ccs_object_serialize(self.handle, fmt, SerializeOperation.SIZE, ct.byref(s), *options)
+      Error.check(res)
+      v = ct.create_string_buffer(s.value)
+      res = ccs_object_serialize(self.handle, fmt, SerializeOperation.MEMORY, ct.sizeof(v), v, *options)
+      Error.check(res)
+      return v.raw
     else:
       buf_ptr = ct.c_void_p()
       buf_sz = ct.c_size_t(0)

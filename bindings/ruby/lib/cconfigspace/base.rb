@@ -735,6 +735,15 @@ module CCS
         varargs = [:int, file_descriptor] + options
         CCS.error_check CCS.ccs_object_serialize(@handle, format, operation, *varargs)
         return nil
+      elsif format == :CCS_SERIALIZE_FORMAT_BINARY
+        sz = MemoryPointer::new(:size_t)
+        varargs = [:pointer, sz] + options
+        CCS.error_check CCS.ccs_object_serialize(@handle, format, :CCS_SERIALIZE_OPERATION_SIZE, *varargs)
+        sz = sz.read_size_t
+        result = String.new("\0", encoding: 'BINARY') * sz
+        varargs = [:size_t, sz, :pointer, result] + options
+        CCS.error_check CCS.ccs_object_serialize(@handle, format, :CCS_SERIALIZE_OPERATION_MEMORY, *varargs)
+        return result
       else
         buf_ptr = MemoryPointer::new(:pointer)
         buf_sz = MemoryPointer::new(:size_t)
