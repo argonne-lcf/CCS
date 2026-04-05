@@ -83,6 +83,21 @@ class CConfigSpaceTestTreeSpace < Minitest::Test
     _test_dynamic_tree_space(:json)
   end
 
+  def test_static_tree_space_feature_space
+    fe1 = CCS::CategoricalParameter::new(values: ["on", "off"])
+    fs = CCS::FeatureSpace::new(parameters: [fe1])
+    tree = generate_tree(4, 0)
+    ts = CCS::StaticTreeSpace.new(name: 'space', tree: tree, feature_space: fs)
+    assert_instance_of( CCS::FeatureSpace, ts.feature_space )
+    assert_equal( fs.handle, ts.feature_space.handle )
+  end
+
+  def test_static_tree_space_no_feature_space
+    tree = generate_tree(4, 0)
+    ts = CCS::StaticTreeSpace.new(name: 'space', tree: tree)
+    assert_nil( ts.feature_space )
+  end
+
   def test_tree_configuration
     tree = generate_tree(4, 0)
     ts = CCS::StaticTreeSpace.new(name: 'space', tree: tree)

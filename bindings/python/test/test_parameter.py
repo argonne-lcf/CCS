@@ -324,5 +324,12 @@ class TestParameter(unittest.TestCase):
   def test_serialize_string_json(self):
     self._test_serialize_string('json')
 
+  def test_check_values(self):
+    values = ["foo", 2, 3.0]
+    h = ccs.CategoricalParameter(values = values)
+    results = h.check_values(["foo", 2, 1.5, 3.0])
+    self.assertEqual( [True, True, False, True], results )
+    self.assertEqual( [], h.check_values([]) )
+
 if __name__ == '__main__':
     unittest.main()
