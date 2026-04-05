@@ -31,7 +31,7 @@ module CCS
         when Parameter
           configuration_space.parameter_index(h)
         when String, Symbol
-          configuration_space.parameter_index_by_name(parameter)
+          configuration_space.parameter_index_by_name(h)
         else
           h
         end

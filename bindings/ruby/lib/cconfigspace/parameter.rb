@@ -87,6 +87,7 @@ module CCS
     def check_values(vals)
       count = vals.size
       return [] if count == 0
+      ss = []
       values = MemoryPointer::new(:ccs_datum_t, count)
       vals.each_with_index { |v, i| Datum::new(values[i]).set_value(v, string_store: ss) }
       ptr = MemoryPointer::new(:ccs_bool_t, count)
