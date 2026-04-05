@@ -92,7 +92,7 @@ module CCS
       vals.each_with_index { |v, i| Datum::new(values[i]).set_value(v, string_store: ss) }
       ptr = MemoryPointer::new(:ccs_bool_t, count)
       CCS.error_check CCS.ccs_parameter_check_values(@handle, count, values, ptr)
-      count.times.collect { |i| ptr[i].read_ccs_bool_t == CCS::FALSE ? false : true }
+      count.times.collect { |i| Pointer.new(:ccs_bool_t, ptr[i]).read_ccs_bool_t == CCS::FALSE ? false : true }
     end
 
     def sample(distribution: default_distribution, rng: CCS::DefaultRng)

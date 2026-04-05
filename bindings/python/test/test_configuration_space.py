@@ -302,6 +302,41 @@ class TestConfigurationSpace(unittest.TestCase):
   def test_omp_parse_json(self):
     self._test_omp_parse('json')
 
+  def test_set_distribution_string_names(self):
+    h1 = ccs.NumericalParameter.Float()
+    h2 = ccs.NumericalParameter.Float()
+    cs = ccs.ConfigurationSpace(name = "space", parameters = [h1, h2])
+    ds = ccs.DistributionSpace(configuration_space = cs)
+    distributions = [ ccs.UniformDistribution.Float(lower = 0.1, upper = 0.3),
+                      ccs.UniformDistribution.Float(lower = 0.2, upper = 0.6) ]
+    d = ccs.MultivariateDistribution(distributions = distributions)
+    ds.set_distribution(d, [h1.name, h2.name])
+    (dist, indx) = ds.get_parameter_distribution(h1)
+    self.assertEqual( d.handle.value, dist.handle.value )
+    self.assertEqual( 0, indx )
+    (dist, indx) = ds.get_parameter_distribution(h2)
+    self.assertEqual( d.handle.value, dist.handle.value )
+    self.assertEqual( 1, indx )
+
+  def test_conditions_string_keys(self):
+    h1 = ccs.NumericalParameter.Float(lower = -1.0, upper = 1.0, default = 0.0)
+    h2 = ccs.NumericalParameter.Float(lower = -1.0, upper = 1.0)
+    e1 = ccs.Expression.Less(left = h1, right = 0.0)
+    cs = ccs.ConfigurationSpace(name = "space", parameters = [h1, h2], conditions = {h2.name: e1})
+    conditions = cs.conditions
+    self.assertIsNone( conditions[0] )
+    self.assertEqual( e1.handle.value, conditions[1].handle.value )
+
+  def test_validate_value(self):
+    h1 = ccs.NumericalParameter.Float(lower = -1.0, upper = 1.0, default = 0.0)
+    cs = ccs.ConfigurationSpace(name = "space", parameters = [h1])
+    v = cs.validate_value(0, 0.5)
+    self.assertEqual( 0.5, v )
+    v = cs.validate_value(h1, 0.5)
+    self.assertEqual( 0.5, v )
+    v = cs.validate_value(h1.name, 0.5)
+    self.assertEqual( 0.5, v )
+
 
 if __name__ == '__main__':
     unittest.main()

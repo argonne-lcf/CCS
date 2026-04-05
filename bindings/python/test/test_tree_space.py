@@ -82,6 +82,19 @@ class TestTreeSpace(unittest.TestCase):
   def test_dynamic_tree_space_json(self):
     self._test_dynamic_tree_space('json')
 
+  def test_static_tree_space_feature_space(self):
+    fe1 = ccs.CategoricalParameter(values = ["on", "off"])
+    fs = ccs.FeatureSpace(parameters = [fe1])
+    tree = generate_tree(4, 0)
+    ts = ccs.StaticTreeSpace(name = 'space', tree = tree, feature_space = fs)
+    self.assertIsInstance( ts.feature_space, ccs.FeatureSpace )
+    self.assertEqual( fs.handle.value, ts.feature_space.handle.value )
+
+  def test_static_tree_space_no_feature_space(self):
+    tree = generate_tree(4, 0)
+    ts = ccs.StaticTreeSpace(name = 'space', tree = tree)
+    self.assertIsNone( ts.feature_space )
+
   def test_tree_configuration(self):
     tree = generate_tree(4, 0)
     ts = ccs.StaticTreeSpace(name = 'space', tree = tree)

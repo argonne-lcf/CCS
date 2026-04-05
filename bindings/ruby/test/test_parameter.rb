@@ -313,4 +313,12 @@ class CConfigSpaceTestParameter < Minitest::Test
     string_check(href.dup)
   end
 
+  def test_check_values
+    values = ["foo", 2, 3.0]
+    h = CCS::CategoricalParameter::new(values: values)
+    results = h.check_values(["foo", 2, 1.5, 3.0])
+    assert_equal( [true, true, false, true], results )
+    assert_equal( [], h.check_values([]) )
+  end
+
 end

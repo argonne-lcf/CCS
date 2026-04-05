@@ -327,4 +327,41 @@ class CConfigSpaceTestConfigurationSpace < Minitest::Test
   def test_omp_parse_json
     _test_omp_parse(:json)
   end
+
+  def test_set_distribution_string_names
+    h1 = CCS::NumericalParameter::Float.new
+    h2 = CCS::NumericalParameter::Float.new
+    cs = CCS::ConfigurationSpace::new(name: "space", parameters: [h1, h2])
+    ds = CCS::DistributionSpace::new(configuration_space: cs)
+    distributions = [ CCS::UniformDistribution::Float.new(lower: 0.1, upper: 0.3), CCS::UniformDistribution::Float.new(lower: 0.2, upper: 0.6) ]
+    d = CCS::MultivariateDistribution::new(distributions: distributions)
+    ds.set_distribution(d, [h1.name, h2.name])
+    dist, indx = ds.get_parameter_distribution(h1)
+    assert_equal( d.handle, dist.handle )
+    assert_equal( 0, indx )
+    dist, indx = ds.get_parameter_distribution(h2)
+    assert_equal( d.handle, dist.handle )
+    assert_equal( 1, indx )
+  end
+
+  def test_conditions_string_keys
+    h1 = CCS::NumericalParameter::Float.new(lower: -1.0, upper: 1.0, default: 0.0)
+    h2 = CCS::NumericalParameter::Float.new(lower: -1.0, upper: 1.0)
+    e1 = CCS::Expression::Less.new(left: h1, right: 0.0)
+    cs = CCS::ConfigurationSpace::new(name: "space", parameters: [h1, h2], conditions: {h2.name => e1})
+    conditions = cs.conditions
+    assert_nil( conditions[0] )
+    assert_equal( e1.handle, conditions[1].handle )
+  end
+
+  def test_validate_value
+    h1 = CCS::NumericalParameter::Float.new(lower: -1.0, upper: 1.0, default: 0.0)
+    cs = CCS::ConfigurationSpace::new(name: "space", parameters: [h1])
+    v = cs.validate_value(0, 0.5)
+    assert_equal( 0.5, v )
+    v = cs.validate_value(h1, 0.5)
+    assert_equal( 0.5, v )
+    v = cs.validate_value(h1.name, 0.5)
+    assert_equal( 0.5, v )
+  end
 end
