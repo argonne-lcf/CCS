@@ -726,14 +726,12 @@ module CCS
       options.concat [:ccs_serialize_option_t, :CCS_SERIALIZE_OPTION_END]
       format = fmt
       if path
-        operation = :CCS_SERIALIZE_OPERATION_FILE
         varargs = [:string, path] + options
-        CCS.error_check CCS.ccs_object_serialize(@handle, format, operation, *varargs)
+        CCS.error_check CCS.ccs_object_serialize(@handle, format, :CCS_SERIALIZE_OPERATION_FILE, *varargs)
         return nil
       elsif file_descriptor
-        operation = :CCS_SERIALIZE_OPERATION_FILE_DESCRIPTOR
         varargs = [:int, file_descriptor] + options
-        CCS.error_check CCS.ccs_object_serialize(@handle, format, operation, *varargs)
+        CCS.error_check CCS.ccs_object_serialize(@handle, format, :CCS_SERIALIZE_OPERATION_FILE_DESCRIPTOR, *varargs)
         return nil
       elsif format == :CCS_SERIALIZE_FORMAT_BINARY
         sz = MemoryPointer::new(:size_t)
