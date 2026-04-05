@@ -108,17 +108,7 @@ _ccs_serialize_json_ccs_tree(
 			CCS_VALIDATE(_ccs_json_embed_array_object(
 				children, data->children[i], opts));
 		} else {
-			ccs_result_t null_err  = CCS_RESULT_SUCCESS;
-			cJSON       *null_item = cJSON_CreateNull();
-			CCS_REFUTE(!null_item, CCS_RESULT_ERROR_OUT_OF_MEMORY);
-			CCS_REFUTE_ERR_GOTO(
-				null_err,
-				!cJSON_AddItemToArray(children, null_item),
-				CCS_RESULT_ERROR_OUT_OF_MEMORY, err_null);
-			continue;
-		err_null:
-			cJSON_Delete(null_item);
-			return null_err;
+			CCS_VALIDATE(_ccs_json_add_null_to_array(children));
 		}
 	}
 	return CCS_RESULT_SUCCESS;

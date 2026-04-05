@@ -660,6 +660,22 @@ err_item:
 	return err;
 }
 
+/* Append a null value to a JSON array. */
+static inline ccs_result_t
+_ccs_json_add_null_to_array(cJSON *array)
+{
+	ccs_result_t err  = CCS_RESULT_SUCCESS;
+	cJSON       *item = cJSON_CreateNull();
+	CCS_REFUTE(!item, CCS_RESULT_ERROR_OUT_OF_MEMORY);
+	CCS_REFUTE_ERR_GOTO(
+		err, !cJSON_AddItemToArray(array, item),
+		CCS_RESULT_ERROR_OUT_OF_MEMORY, err_item);
+	return CCS_RESULT_SUCCESS;
+err_item:
+	cJSON_Delete(item);
+	return err;
+}
+
 /*============================================================================
  * ccs_datum_t JSON helpers
  *============================================================================*/
