@@ -219,7 +219,8 @@ module CCS
     :CCS_SERIALIZE_OPERATION_SIZE,
     :CCS_SERIALIZE_OPERATION_MEMORY,
     :CCS_SERIALIZE_OPERATION_FILE,
-    :CCS_SERIALIZE_OPERATION_FILE_DESCRIPTOR ]
+    :CCS_SERIALIZE_OPERATION_FILE_DESCRIPTOR,
+    :CCS_SERIALIZE_OPERATION_BUFFER ]
 
   SerializeOption = enum FFI::Type::INT32, :ccs_serialize_option_t, [
     :CCS_SERIALIZE_OPTION_END, 0,
@@ -495,6 +496,7 @@ module CCS
   callback :ccs_object_deserialize_vector_callback, [:ccs_object_type_t, :string, :value, :pointer, :pointer], :ccs_result_t
   attach_function :ccs_object_serialize, [:ccs_object_t, :ccs_serialize_format_t, :ccs_serialize_operation_t, :varargs], :ccs_result_t
   attach_function :ccs_object_deserialize, [:ccs_object_t, :ccs_serialize_format_t, :ccs_deserialize_operation_t, :varargs], :ccs_result_t
+  attach_function :ccs_release_buffer, [:pointer], :ccs_result_t
 
   class << self
     alias version ccs_get_version
@@ -724,25 +726,28 @@ module CCS
       options.concat [:ccs_serialize_option_t, :CCS_SERIALIZE_OPTION_END]
       format = fmt
       if path
-        result = nil
         operation = :CCS_SERIALIZE_OPERATION_FILE
         varargs = [:string, path] + options
+        CCS.error_check CCS.ccs_object_serialize(@handle, format, operation, *varargs)
+        return nil
       elsif file_descriptor
-        result = nil
         operation = :CCS_SERIALIZE_OPERATION_FILE_DESCRIPTOR
         varargs = [:int, file_descriptor] + options
-      else
-        operation = :CCS_SERIALIZE_OPERATION_SIZE
-        sz = MemoryPointer::new(:size_t)
-        varargs = [:pointer, sz] + options
         CCS.error_check CCS.ccs_object_serialize(@handle, format, operation, *varargs)
-        operation = :CCS_SERIALIZE_OPERATION_MEMORY
-        sz = sz.read_size_t
-        result = String.new("\0", encoding: 'BINARY') * sz
-        varargs = [:size_t, sz, :pointer, result] + options
+        return nil
+      else
+        buf_ptr = MemoryPointer::new(:pointer)
+        buf_sz = MemoryPointer::new(:size_t)
+        varargs = [:pointer, buf_ptr, :pointer, buf_sz] + options
+        CCS.error_check CCS.ccs_object_serialize(@handle, format, :CCS_SERIALIZE_OPERATION_BUFFER, *varargs)
+        ptr = buf_ptr.read_pointer
+        sz = buf_sz.read_size_t
+        begin
+          return ptr.read_bytes(sz)
+        ensure
+          CCS.ccs_release_buffer(ptr)
+        end
       end
-      CCS.error_check CCS.ccs_object_serialize(@handle, format, operation, *varargs)
-      return result
     end
 
     def self.deserialize(format: :binary, handle_map: nil, map_handles: false, path: nil, buffer: nil, file_descriptor: nil, vector_callback: nil, vector_callback_data: nil, callback: nil)

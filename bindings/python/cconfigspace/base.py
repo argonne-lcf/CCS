@@ -382,7 +382,8 @@ class SerializeOperation(CEnumeration):
     ('SIZE', 0),
     'MEMORY',
     'FILE',
-    'FILE_DESCRIPTOR'
+    'FILE_DESCRIPTOR',
+    'BUFFER'
   ]
 
 class SerializeOption(CEnumeration):
@@ -439,6 +440,7 @@ ccs_object_serialize.restype = Result
 ccs_object_deserialize = getattr(libcconfigspace, "ccs_object_deserialize")
 ccs_object_deserialize.argtypes = ct.POINTER(ccs_object), SerializeFormat, DeserializeOperation,
 ccs_object_deserialize.restype = Result
+ccs_release_buffer = _ccs_get_function("ccs_release_buffer", [ct.c_void_p])
 
 _res = ccs_init()
 Error.check(_res)
@@ -557,13 +559,14 @@ class Object:
       Error.check(res)
       return None
     else:
-      s = ct.c_size_t(0)
-      res = ccs_object_serialize(self.handle, fmt, SerializeOperation.SIZE, ct.byref(s), *options)
+      buf_ptr = ct.c_void_p()
+      buf_sz = ct.c_size_t(0)
+      res = ccs_object_serialize(self.handle, fmt, SerializeOperation.BUFFER, ct.byref(buf_ptr), ct.byref(buf_sz), *options)
       Error.check(res)
-      v = ct.create_string_buffer(s.value)
-      res = ccs_object_serialize(self.handle, fmt, SerializeOperation.MEMORY, ct.sizeof(v), v, *options)
-      Error.check(res)
-      return v.raw
+      try:
+        return ct.string_at(buf_ptr, buf_sz.value)
+      finally:
+        ccs_release_buffer(buf_ptr)
 
   @classmethod
   def deserialize(cls, format = 'binary', handle_map = None, map_handles = False, vector_callback = None, path = None, buffer = None, file_descriptor = None, callback = None):
