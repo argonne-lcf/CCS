@@ -63,6 +63,40 @@ jobs:
             build/**/*.log
             build/config.log
 
+  sanitizers:
+    needs: pre_job
+    if: ${{ needs.pre_job.outputs.should_skip != 'true' }}
+    name: Sanitizers ${{ matrix.sanitizer }}${{ matrix.threadsafe && ' ' || ' No Thread Safe' }}
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        sanitizer: [address, undefined]
+        threadsafe: [true, false]
+
+    steps:
+      - uses: actions/checkout@v4
+      - run: sudo apt update; sudo apt install -y clang ruby-dev libgsl-dev python3-dev
+      - run: gem install --user-install rake ffi ffi-value whittle xmlrpc
+      - run: pip3 install --user parglare
+      - run: ./autogen.sh
+      - run: mkdir -p build
+      - run: ../configure --enable-strict${{ matrix.threadsafe && ' --enable-thread-safe' || ' --disable-thread-safe' }} CC=clang CFLAGS="-gdwarf-4 -O2 -fsanitize=${{ matrix.sanitizer }} -fno-omit-frame-pointer" LDFLAGS="-fsanitize=${{ matrix.sanitizer }}"
+        working-directory: build
+      - run: make -j
+        working-directory: build
+      - run: make -j check
+        working-directory: build
+        env:
+          ASAN_OPTIONS: detect_leaks=1
+          UBSAN_OPTIONS: print_stacktrace=1:halt_on_error=1
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: sanitizers-${{ matrix.sanitizer }}-${{ matrix.threadsafe && 'ts' || 'nots' }}
+          path: |
+            build/**/*.log
+            build/config.log
+
   distcheck:
     needs: pre_job
     if: ${{ needs.pre_job.outputs.should_skip != 'true' }}

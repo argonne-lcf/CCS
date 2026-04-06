@@ -9,12 +9,10 @@ typedef struct _ccs_evaluation_data_s _ccs_evaluation_data_t;
 struct _ccs_evaluation_ops_s {
 	_ccs_object_ops_t obj_ops;
 
-	ccs_result_t (*hash)(ccs_evaluation_t evaluation, ccs_hash_t *hash_ret);
+	ccs_result_t (*hash)(ccs_binding_t binding, ccs_hash_t *hash_ret);
 
-	ccs_result_t (*cmp)(
-		ccs_evaluation_t evaluation,
-		ccs_evaluation_t other,
-		int             *cmp_ret);
+	ccs_result_t (
+		*cmp)(ccs_binding_t binding, ccs_binding_t other, int *cmp_ret);
 
 	ccs_result_t (*compare)(
 		ccs_evaluation_t  evaluation,

@@ -145,9 +145,10 @@ _ccs_evaluation_serialize(
 }
 
 static ccs_result_t
-_ccs_evaluation_hash(ccs_evaluation_t evaluation, ccs_hash_t *hash_ret)
+_ccs_evaluation_hash(ccs_binding_t binding, ccs_hash_t *hash_ret)
 {
-	_ccs_evaluation_data_t *data = evaluation->data;
+	ccs_evaluation_t        evaluation = (ccs_evaluation_t)binding;
+	_ccs_evaluation_data_t *data       = evaluation->data;
 	ccs_hash_t              h, ht;
 	CCS_VALIDATE(_ccs_binding_hash((ccs_binding_t)evaluation, &h));
 	CCS_VALIDATE(_ccs_search_configuration_hash(data->configuration, &ht));
@@ -160,10 +161,12 @@ _ccs_evaluation_hash(ccs_evaluation_t evaluation, ccs_hash_t *hash_ret)
 
 static ccs_result_t
 _ccs_evaluation_cmp(
-	ccs_evaluation_t evaluation,
-	ccs_evaluation_t other,
-	int             *cmp_ret)
+	ccs_binding_t binding,
+	ccs_binding_t other_binding,
+	int          *cmp_ret)
 {
+	ccs_evaluation_t        evaluation = (ccs_evaluation_t)binding;
+	ccs_evaluation_t        other      = (ccs_evaluation_t)other_binding;
 	_ccs_evaluation_data_t *data       = evaluation->data;
 	_ccs_evaluation_data_t *other_data = other->data;
 	*cmp_ret = data->result < other_data->result ? -1 :

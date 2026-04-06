@@ -9,14 +9,10 @@ typedef struct _ccs_search_configuration_data_s _ccs_search_configuration_data_t
 struct _ccs_search_configuration_ops_s {
 	_ccs_object_ops_t obj_ops;
 
-	ccs_result_t (*hash)(
-		ccs_search_configuration_t configuration,
-		ccs_hash_t                *hash_ret);
+	ccs_result_t (*hash)(ccs_binding_t binding, ccs_hash_t *hash_ret);
 
-	ccs_result_t (*cmp)(
-		ccs_search_configuration_t configuration,
-		ccs_search_configuration_t other,
-		int                       *cmp_ret);
+	ccs_result_t (
+		*cmp)(ccs_binding_t binding, ccs_binding_t other, int *cmp_ret);
 };
 typedef struct _ccs_search_configuration_ops_s _ccs_search_configuration_ops_t;
 
@@ -36,7 +32,7 @@ _ccs_search_configuration_hash(
 {
 	_ccs_search_configuration_ops_t *ops =
 		(_ccs_search_configuration_ops_t *)configuration->obj.ops;
-	CCS_VALIDATE(ops->hash(configuration, hash_ret));
+	CCS_VALIDATE(ops->hash((ccs_binding_t)configuration, hash_ret));
 	return CCS_RESULT_SUCCESS;
 }
 
@@ -48,7 +44,8 @@ _ccs_search_configuration_cmp(
 {
 	_ccs_search_configuration_ops_t *ops =
 		(_ccs_search_configuration_ops_t *)configuration->obj.ops;
-	CCS_VALIDATE(ops->cmp(configuration, other, cmp_ret));
+	CCS_VALIDATE(ops->cmp(
+		(ccs_binding_t)configuration, (ccs_binding_t)other, cmp_ret));
 	return CCS_RESULT_SUCCESS;
 }
 

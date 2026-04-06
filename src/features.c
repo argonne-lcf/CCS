@@ -61,17 +61,16 @@ _ccs_features_serialize(
 }
 
 static ccs_result_t
-_ccs_features_hash(ccs_features_t features, ccs_hash_t *hash_ret)
+_ccs_features_hash(ccs_binding_t binding, ccs_hash_t *hash_ret)
 {
-	CCS_VALIDATE(_ccs_binding_hash((ccs_binding_t)features, hash_ret));
+	CCS_VALIDATE(_ccs_binding_hash(binding, hash_ret));
 	return CCS_RESULT_SUCCESS;
 }
 
 static ccs_result_t
-_ccs_features_cmp(ccs_features_t features, ccs_features_t other, int *cmp_ret)
+_ccs_features_cmp(ccs_binding_t binding, ccs_binding_t other, int *cmp_ret)
 {
-	CCS_VALIDATE(_ccs_binding_cmp(
-		(ccs_binding_t)features, (ccs_binding_t)other, cmp_ret));
+	CCS_VALIDATE(_ccs_binding_cmp(binding, other, cmp_ret));
 	return CCS_RESULT_SUCCESS;
 }
 
