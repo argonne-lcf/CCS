@@ -43,7 +43,7 @@ AC_ARG_ENABLE([strict], AS_HELP_STRING([--enable-strict], [Enable -Werror]),
 AM_CONDITIONAL([STRICT], [test "x$enable_strict" = xyes])
 
 AC_ARG_ENABLE([thread-safe],
-              AS_HELP_STRING([--enable-thread-safe], [Build with thread saffety enabled]),
+              AS_HELP_STRING([--enable-thread-safe], [Build with thread safety enabled]),
               [], [enable_thread_safe=yes])
 AM_CONDITIONAL([THREAD_SAFE], [test "x$enable_thread_safe" = xyes])
 

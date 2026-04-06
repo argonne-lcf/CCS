@@ -26,10 +26,11 @@ EXTRA_DIST = \
 	autogen.sh \
 	cconfigspace.pc.subst \
 	README.md \
+	CONCEPTS.md \
 	build-aux/git-version-gen \
 	build-aux/version-subst
 
 dist-hook: .version
-	@echo Creating ditribution .tarball-version; echo v$(CURVER) > $(distdir)/.tarball-version
+	@echo Creating distribution .tarball-version; echo v$(CURVER) > $(distdir)/.tarball-version
 
 @DYNAMIC_VERSION_RULES@
