@@ -18,7 +18,7 @@ auto-tuning needs. It was greatly inspired by
   optimization
 - **Tree spaces**: static and dynamic tree-structured search spaces
 - **Expressions**: expression trees for conditions and forbidden clauses
-- **Serialization**: binary serialization/deserialization of all objects
+- **Serialization**: binary and JSON serialization/deserialization of all objects
 - **Thread safety**: optional thread-safe mode (`--enable-thread-safe`,
   enabled by default)
 - **Bindings**: Ruby and Python bindings
