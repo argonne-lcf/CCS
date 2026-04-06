@@ -734,6 +734,8 @@ module CCS
         CCS.error_check CCS.ccs_object_serialize(@handle, format, :CCS_SERIALIZE_OPERATION_FILE_DESCRIPTOR, *varargs)
         return nil
       elsif format == :CCS_SERIALIZE_FORMAT_BINARY
+        # Binary uses SIZE+MEMORY to minimize copies: the caller
+        # provides the buffer so no extra allocation is needed.
         sz = MemoryPointer::new(:size_t)
         varargs = [:pointer, sz] + options
         CCS.error_check CCS.ccs_object_serialize(@handle, format, :CCS_SERIALIZE_OPERATION_SIZE, *varargs)
@@ -743,6 +745,8 @@ module CCS
         CCS.error_check CCS.ccs_object_serialize(@handle, format, :CCS_SERIALIZE_OPERATION_MEMORY, *varargs)
         return result
       else
+        # JSON uses BUFFER to avoid building the cJSON tree twice
+        # (once for SIZE, once for MEMORY).
         buf_ptr = MemoryPointer::new(:pointer)
         buf_sz = MemoryPointer::new(:size_t)
         varargs = [:pointer, buf_ptr, :pointer, buf_sz] + options

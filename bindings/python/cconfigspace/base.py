@@ -559,6 +559,8 @@ class Object:
       Error.check(res)
       return None
     elif fmt == SerializeFormat.BINARY:
+      # Binary uses SIZE+MEMORY to minimize copies: the caller
+      # provides the buffer so no extra allocation is needed.
       s = ct.c_size_t(0)
       res = ccs_object_serialize(self.handle, fmt, SerializeOperation.SIZE, ct.byref(s), *options)
       Error.check(res)
@@ -567,6 +569,8 @@ class Object:
       Error.check(res)
       return v.raw
     else:
+      # JSON uses BUFFER to avoid building the cJSON tree twice
+      # (once for SIZE, once for MEMORY).
       buf_ptr = ct.c_void_p()
       buf_sz = ct.c_size_t(0)
       res = ccs_object_serialize(self.handle, fmt, SerializeOperation.BUFFER, ct.byref(buf_ptr), ct.byref(buf_sz), *options)
