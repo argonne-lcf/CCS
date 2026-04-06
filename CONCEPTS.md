@@ -473,17 +473,27 @@ using `ccs_expression_eval()`.
 <a id="serialization"></a>
 ## Serialization
 
-CCS supports **binary serialization** (`CCS_SERIALIZE_FORMAT_BINARY`) for all
-object types. This lets you save and restore tuner state, configuration spaces,
-evaluations, and other objects.
+CCS supports serialization of all object types in two formats:
 
-Serialization targets:
+- **Binary** (`CCS_SERIALIZE_FORMAT_BINARY`) — compact and fast, suitable for
+  checkpointing and IPC
+- **JSON** (`CCS_SERIALIZE_FORMAT_JSON`) — human-readable, suitable for
+  inspection, interoperability, and version control of configuration spaces
 
-- **Memory buffer** (`CCS_SERIALIZE_OPERATION_MEMORY`)
+Both formats support the same set of operations:
+
+- **Memory buffer** (`CCS_SERIALIZE_OPERATION_MEMORY`) — serialize into a
+  caller-provided buffer
+- **Library-allocated buffer** (`CCS_SERIALIZE_OPERATION_BUFFER`) — the library
+  allocates the buffer; the caller must free it with `ccs_release_buffer()`
 - **File path** (`CCS_SERIALIZE_OPERATION_FILE`)
 - **File descriptor** (`CCS_SERIALIZE_OPERATION_FILE_DESCRIPTOR`)
 - **Size query** (`CCS_SERIALIZE_OPERATION_SIZE`) — compute the buffer size
-  needed
+  needed for `MEMORY`
+
+The JSON format handles non-finite IEEE 754 values (`Infinity`, `-Infinity`,
+`NaN`) by encoding them as strings while preserving the numeric type, so they
+survive round-trip serialization.
 
 Use `ccs_object_serialize()` to serialize and `ccs_object_deserialize()` to
 restore. For user-defined objects (tuners, expressions), custom serialization
