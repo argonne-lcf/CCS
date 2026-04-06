@@ -59,10 +59,11 @@ class CConfigSpaceTestExpressionParser < Minitest::Test
     assert_equal( "none", res.to_s )
   end
 
+  def func(a, b)
+    a * b
+  end
+
   def _test_function(fmt)
-    def func(a, b)
-      a * b
-    end
     exp = "func(3, 4)"
     res = CCS.parse(exp, binding: binding)
     assert( res.kind_of? CCS::Expression::UserDefined )
