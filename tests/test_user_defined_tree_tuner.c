@@ -216,7 +216,7 @@ deserialize_vector_callback(
 }
 
 void
-test(void)
+test(ccs_serialize_format_t format)
 {
 	ccs_tree_space_t      tree_space;
 	ccs_objective_space_t ospace;
@@ -283,21 +283,19 @@ test(void)
 	err = ccs_create_map(&map);
 	assert(err == CCS_RESULT_SUCCESS);
 	err = ccs_object_serialize(
-		tuner, CCS_SERIALIZE_FORMAT_BINARY,
-		CCS_SERIALIZE_OPERATION_SIZE, &buff_size,
+		tuner, format, CCS_SERIALIZE_OPERATION_SIZE, &buff_size,
 		CCS_SERIALIZE_OPTION_END);
 	assert(err == CCS_RESULT_SUCCESS);
 	buff = (char *)malloc(buff_size);
 	assert(buff);
 
 	err = ccs_object_serialize(
-		tuner, CCS_SERIALIZE_FORMAT_BINARY,
-		CCS_SERIALIZE_OPERATION_MEMORY, buff_size, buff,
+		tuner, format, CCS_SERIALIZE_OPERATION_MEMORY, buff_size, buff,
 		CCS_SERIALIZE_OPTION_END);
 	assert(err == CCS_RESULT_SUCCESS);
 
 	err = ccs_object_deserialize(
-		(ccs_object_t *)&tuner_copy, CCS_SERIALIZE_FORMAT_BINARY,
+		(ccs_object_t *)&tuner_copy, format,
 		CCS_DESERIALIZE_OPERATION_MEMORY, buff_size, buff,
 		CCS_DESERIALIZE_OPTION_HANDLE_MAP, map,
 		CCS_DESERIALIZE_OPTION_MAP_HANDLES,
@@ -336,7 +334,9 @@ int
 main(void)
 {
 	ccs_init();
-	test();
+	test(CCS_SERIALIZE_FORMAT_BINARY);
+	ccs_clear_thread_error();
+	test(CCS_SERIALIZE_FORMAT_JSON);
 	ccs_clear_thread_error();
 	ccs_fini();
 	return 0;
