@@ -61,7 +61,7 @@ deserialize_vector_callback(
 }
 
 void
-test_dynamic_tree_space(void)
+test_dynamic_tree_space(ccs_serialize_format_t format)
 {
 	ccs_result_t             err;
 	ccs_tree_t               root, tree;
@@ -147,8 +147,7 @@ test_dynamic_tree_space(void)
 	size_t buff_size;
 
 	err = ccs_object_serialize(
-		tree_space, CCS_SERIALIZE_FORMAT_BINARY,
-		CCS_SERIALIZE_OPERATION_SIZE, &buff_size,
+		tree_space, format, CCS_SERIALIZE_OPERATION_SIZE, &buff_size,
 		CCS_SERIALIZE_OPTION_END);
 	assert(err == CCS_RESULT_SUCCESS);
 
@@ -156,9 +155,8 @@ test_dynamic_tree_space(void)
 	assert(buff);
 
 	err = ccs_object_serialize(
-		tree_space, CCS_SERIALIZE_FORMAT_BINARY,
-		CCS_SERIALIZE_OPERATION_MEMORY, buff_size, buff,
-		CCS_SERIALIZE_OPTION_END);
+		tree_space, format, CCS_SERIALIZE_OPERATION_MEMORY, buff_size,
+		buff, CCS_SERIALIZE_OPTION_END);
 	assert(err == CCS_RESULT_SUCCESS);
 
 	err = ccs_tree_space_samples(
@@ -194,7 +192,7 @@ test_dynamic_tree_space(void)
 	assert(err == CCS_RESULT_SUCCESS);
 
 	err = ccs_object_deserialize(
-		(ccs_object_t *)&tree_space, CCS_SERIALIZE_FORMAT_BINARY,
+		(ccs_object_t *)&tree_space, format,
 		CCS_DESERIALIZE_OPERATION_MEMORY, buff_size, buff,
 		CCS_DESERIALIZE_OPTION_VECTOR_CALLBACK,
 		&deserialize_vector_callback, (void *)NULL,
@@ -289,7 +287,7 @@ deserialize_vector_callback_with_state(
 }
 
 void
-test_dynamic_tree_space_with_feature_space(void)
+test_dynamic_tree_space_with_feature_space(ccs_serialize_format_t format)
 {
 	ccs_result_t             err;
 	ccs_tree_t               root;
@@ -331,8 +329,7 @@ test_dynamic_tree_space_with_feature_space(void)
 
 	/* Serialize with user state callbacks */
 	err = ccs_object_serialize(
-		tree_space, CCS_SERIALIZE_FORMAT_BINARY,
-		CCS_SERIALIZE_OPERATION_SIZE, &buff_size,
+		tree_space, format, CCS_SERIALIZE_OPERATION_SIZE, &buff_size,
 		CCS_SERIALIZE_OPTION_END);
 	assert(err == CCS_RESULT_SUCCESS);
 
@@ -340,14 +337,13 @@ test_dynamic_tree_space_with_feature_space(void)
 	assert(buff);
 
 	err = ccs_object_serialize(
-		tree_space, CCS_SERIALIZE_FORMAT_BINARY,
-		CCS_SERIALIZE_OPERATION_MEMORY, buff_size, buff,
-		CCS_SERIALIZE_OPTION_END);
+		tree_space, format, CCS_SERIALIZE_OPERATION_MEMORY, buff_size,
+		buff, CCS_SERIALIZE_OPTION_END);
 	assert(err == CCS_RESULT_SUCCESS);
 
 	/* Deserialize with vector callback */
 	err = ccs_object_deserialize(
-		(ccs_object_t *)&tree_space2, CCS_SERIALIZE_FORMAT_BINARY,
+		(ccs_object_t *)&tree_space2, format,
 		CCS_DESERIALIZE_OPERATION_MEMORY, buff_size, buff,
 		CCS_DESERIALIZE_OPTION_VECTOR_CALLBACK,
 		&deserialize_vector_callback_with_state, (void *)NULL,
@@ -376,8 +372,10 @@ int
 main(void)
 {
 	ccs_init();
-	test_dynamic_tree_space();
-	test_dynamic_tree_space_with_feature_space();
+	test_dynamic_tree_space(CCS_SERIALIZE_FORMAT_BINARY);
+	test_dynamic_tree_space(CCS_SERIALIZE_FORMAT_JSON);
+	test_dynamic_tree_space_with_feature_space(CCS_SERIALIZE_FORMAT_BINARY);
+	test_dynamic_tree_space_with_feature_space(CCS_SERIALIZE_FORMAT_JSON);
 	ccs_clear_thread_error();
 	ccs_fini();
 	return 0;
