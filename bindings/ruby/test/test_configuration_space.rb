@@ -364,4 +364,13 @@ class CConfigSpaceTestConfigurationSpace < Minitest::Test
     v = cs.validate_value(h1.name, 0.5)
     assert_equal( 0.5, v )
   end
+
+  def test_map_clear
+    m = CCS::Map::new
+    m["foo"] = "bar"
+    m["baz"] = 42
+    assert_equal( 2, m.size )
+    m.clear
+    assert_equal( 0, m.size )
+  end
 end

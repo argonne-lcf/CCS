@@ -47,4 +47,12 @@ class CConfigSpaceTestInterval < Minitest::Test
     refute( i.include?(6) )
   end
 
+  def test_union
+    i1 = CCS::Interval::new(type: :CCS_NUMERIC_TYPE_FLOAT, lower: -1.0, upper: 0.5)
+    i2 = CCS::Interval::new(type: :CCS_NUMERIC_TYPE_FLOAT, lower: 0.0, upper: 2.0)
+    i3 = i1.union(i2)
+    i4 = CCS::Interval::new(type: :CCS_NUMERIC_TYPE_FLOAT, lower: -1.0, upper: 2.0)
+    assert_equal(i4, i3)
+  end
+
 end

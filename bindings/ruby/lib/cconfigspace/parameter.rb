@@ -29,6 +29,8 @@ module CCS
   attach_function :ccs_parameter_check_values, [:ccs_parameter_t, :size_t, :pointer, :pointer], :ccs_result_t
   attach_function :ccs_parameter_validate_value, [:ccs_parameter_t, :ccs_datum_t, :pointer, :pointer], :ccs_result_t
   attach_function :ccs_parameter_validate_values, [:ccs_parameter_t, :size_t, :pointer, :pointer, :pointer], :ccs_result_t
+  attach_function :ccs_parameter_sampling_interval, [:ccs_parameter_t, Interval.by_ref], :ccs_result_t
+  attach_function :ccs_parameter_convert_samples, [:ccs_parameter_t, :ccs_bool_t, :size_t, :pointer, :pointer], :ccs_result_t
   attach_function :ccs_parameter_sample, [:ccs_parameter_t, :ccs_distribution_t, :ccs_rng_t, :pointer], :ccs_result_t
   attach_function :ccs_parameter_samples, [:ccs_parameter_t, :ccs_distribution_t, :ccs_rng_t, :size_t, :pointer], :ccs_result_t
 
@@ -93,6 +95,53 @@ module CCS
       ptr = MemoryPointer::new(:ccs_bool_t, count)
       CCS.error_check CCS.ccs_parameter_check_values(@handle, count, values, ptr)
       count.times.collect { |i| Pointer.new(:ccs_bool_t, ptr[i]).read_ccs_bool_t == CCS::FALSE ? false : true }
+    end
+
+    def validate_value(v)
+      value_ret = MemoryPointer::new(:ccs_datum_t)
+      result_ret = MemoryPointer::new(:ccs_bool_t)
+      CCS.error_check CCS.ccs_parameter_validate_value(@handle, Datum::from_value(v), value_ret, result_ret)
+      valid = result_ret.read_ccs_bool_t == CCS::FALSE ? false : true
+      [Datum::new(value_ret).value, valid]
+    end
+
+    def validate_values(vals)
+      count = vals.size
+      return [] if count == 0
+      ss = []
+      values = MemoryPointer::new(:ccs_datum_t, count)
+      vals.each_with_index { |v, i| Datum::new(values[i]).set_value(v, string_store: ss) }
+      values_ret = MemoryPointer::new(:ccs_datum_t, count)
+      results = MemoryPointer::new(:ccs_bool_t, count)
+      CCS.error_check CCS.ccs_parameter_validate_values(@handle, count, values, values_ret, results)
+      count.times.collect { |i|
+        valid = Pointer.new(:ccs_bool_t, results[i]).read_ccs_bool_t == CCS::FALSE ? false : true
+        [Datum::new(values_ret[i]).value, valid]
+      }
+    end
+
+    def sampling_interval
+      interval = Interval::new
+      CCS.error_check CCS.ccs_parameter_sampling_interval(@handle, interval)
+      interval
+    end
+
+    def convert_samples(vals, oversampling: false)
+      count = vals.size
+      return [] if count == 0
+      values = MemoryPointer::new(:ccs_numeric_t, count)
+      vals.each_with_index { |v, i|
+        n = Numeric::new(values[i])
+        case v
+        when Integer
+          n[:i] = v
+        when Float
+          n[:f] = v
+        end
+      }
+      results = MemoryPointer::new(:ccs_datum_t, count)
+      CCS.error_check CCS.ccs_parameter_convert_samples(@handle, oversampling ? CCS::TRUE : CCS::FALSE, count, values, results)
+      count.times.collect { |i| Datum::new(results[i]).value }
     end
 
     def sample(distribution: default_distribution, rng: CCS::DefaultRng)

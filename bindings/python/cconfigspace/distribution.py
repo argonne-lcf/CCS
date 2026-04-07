@@ -1,6 +1,6 @@
 import ctypes as ct
 from . import libcconfigspace
-from .base import Object, Error, Result, ccs_int, ccs_float, ccs_bool, ccs_rng, ccs_distribution, NumericType, Numeric, CEnumeration, _ccs_get_function, ccs_false, ccs_true
+from .base import Object, Error, Result, ccs_int, ccs_float, ccs_bool, ccs_rng, ccs_distribution, ccs_parameter, NumericType, Numeric, Datum, CEnumeration, _ccs_get_function, ccs_false, ccs_true
 from .interval import Interval
 
 class DistributionType(CEnumeration):
@@ -23,6 +23,8 @@ ccs_distribution_get_bounds = _ccs_get_function("ccs_distribution_get_bounds", [
 ccs_distribution_check_oversampling = _ccs_get_function("ccs_distribution_check_oversampling", [ccs_distribution, ct.POINTER(Interval), ct.POINTER(ccs_bool)])
 ccs_distribution_sample = _ccs_get_function("ccs_distribution_sample", [ccs_distribution, ccs_rng, ct.POINTER(Numeric)])
 ccs_distribution_samples = _ccs_get_function("ccs_distribution_samples", [ccs_distribution, ccs_rng, ct.c_size_t, ct.POINTER(Numeric)])
+ccs_distribution_parameters_sample = _ccs_get_function("ccs_distribution_parameters_sample", [ccs_distribution, ccs_rng, ct.POINTER(ccs_parameter), ct.POINTER(Datum)])
+ccs_distribution_parameters_samples = _ccs_get_function("ccs_distribution_parameters_samples", [ccs_distribution, ccs_rng, ct.POINTER(ccs_parameter), ct.c_size_t, ct.POINTER(Datum)])
 
 class Distribution(Object):
 
@@ -127,6 +129,28 @@ class Distribution(Object):
       res = ccs_distribution_samples(self.handle, rng.handle, count, v)
       Error.check(res)
       return [ [v[j][i].i if self.data_types[i] == NumericType.INT else v[j][i].f for i in range(dim) ] for j in range(count) ]
+
+  def parameters_sample(self, parameters, rng = None):
+    if rng is None:
+      from .rng import ccs_default_rng
+      rng = ccs_default_rng
+    dim = self.dimension
+    p_params = (ccs_parameter * dim)(*[p.handle.value for p in parameters])
+    values = (Datum * dim)()
+    res = ccs_distribution_parameters_sample(self.handle, rng.handle, p_params, values)
+    Error.check(res)
+    return [x.value for x in values]
+
+  def parameters_samples(self, parameters, count, rng = None):
+    if rng is None:
+      from .rng import ccs_default_rng
+      rng = ccs_default_rng
+    dim = self.dimension
+    p_params = (ccs_parameter * dim)(*[p.handle.value for p in parameters])
+    values = (Datum * (count * dim))()
+    res = ccs_distribution_parameters_samples(self.handle, rng.handle, p_params, count, values)
+    Error.check(res)
+    return [[values[j * dim + i].value for i in range(dim)] for j in range(count)]
 
 ccs_create_uniform_int_distribution = _ccs_get_function("ccs_create_uniform_int_distribution", [ccs_int, ccs_int, ScaleType, ccs_int, ct.POINTER(ccs_distribution)])
 ccs_create_uniform_float_distribution = _ccs_get_function("ccs_create_uniform_float_distribution", [ccs_float, ccs_float, ScaleType, ccs_float, ct.POINTER(ccs_distribution)])

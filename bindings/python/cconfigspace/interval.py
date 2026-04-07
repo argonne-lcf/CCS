@@ -111,6 +111,12 @@ class Interval(ct.Structure):
     Error.check(res)
     return v
 
+  def union(self, other):
+    v = Interval()
+    res = ccs_interval_union(ct.byref(self), ct.byref(other), ct.byref(v))
+    Error.check(res)
+    return v
+
   def __eq__(self, other):
     v = ccs_bool(0)
     res = ccs_interval_equal(ct.byref(self), ct.byref(other), ct.byref(v))
@@ -141,6 +147,7 @@ class Interval(ct.Structure):
 
 ccs_interval_empty = _ccs_get_function("ccs_interval_empty", [ct.POINTER(Interval), ct.POINTER(ccs_bool)])
 ccs_interval_intersect = _ccs_get_function("ccs_interval_intersect", [ct.POINTER(Interval), ct.POINTER(Interval), ct.POINTER(Interval)])
+ccs_interval_union = _ccs_get_function("ccs_interval_union", [ct.POINTER(Interval), ct.POINTER(Interval), ct.POINTER(Interval)])
 ccs_interval_equal = _ccs_get_function("ccs_interval_equal", [ct.POINTER(Interval), ct.POINTER(Interval), ct.POINTER(ccs_bool)])
 ccs_interval_include = _ccs_get_function("ccs_interval_include", [ct.POINTER(Interval), ccs_int], ccs_bool)
 

@@ -316,4 +316,24 @@ class CConfigSpaceTestDistribution < Minitest::Test
     assert( d2.data_types == [:CCS_NUMERIC_TYPE_FLOAT, :CCS_NUMERIC_TYPE_INT] )
     assert( d2.weights == [0.5, 0.5] )
   end
+
+  def test_parameters_sample
+    h = CCS::NumericalParameter::Float.new(lower: -1.0, upper: 1.0)
+    d = CCS::UniformDistribution::Float.new(lower: -1.0, upper: 1.0)
+    vals = d.parameters_sample([h])
+    assert_equal( 1, vals.length )
+    assert_kind_of( Float, vals[0] )
+  end
+
+  def test_parameters_samples
+    h = CCS::NumericalParameter::Float.new(lower: -1.0, upper: 1.0)
+    d = CCS::UniformDistribution::Float.new(lower: -1.0, upper: 1.0)
+    vals = d.parameters_samples([h], 10)
+    assert_equal( 10, vals.length )
+    vals.each { |v|
+      assert_equal( 1, v.length )
+      assert_kind_of( Float, v[0] )
+    }
+    assert_equal( [], d.parameters_samples([h], 0) )
+  end
 end

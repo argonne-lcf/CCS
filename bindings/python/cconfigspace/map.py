@@ -10,6 +10,7 @@ ccs_map_del = _ccs_get_function("ccs_map_del", [ccs_map, DatumFix])
 ccs_map_get_keys = _ccs_get_function("ccs_map_get_keys", [ccs_map, ct.c_size_t, ct.POINTER(Datum), ct.POINTER(ct.c_size_t)])
 ccs_map_get_values = _ccs_get_function("ccs_map_get_values", [ccs_map, ct.c_size_t, ct.POINTER(Datum), ct.POINTER(ct.c_size_t)])
 ccs_map_get_pairs = _ccs_get_function("ccs_map_get_pairs", [ccs_map, ct.c_size_t, ct.POINTER(Datum), ct.POINTER(Datum), ct.POINTER(ct.c_size_t)])
+ccs_map_clear = _ccs_get_function("ccs_map_clear", [ccs_map])
 
 class Map(Object):
   def __init__(self, handle = None, retain = False, auto_release = True):
@@ -51,6 +52,10 @@ class Map(Object):
     pk = Datum(key)
     k = DatumFix(pk)
     res = ccs_map_del(self.handle, k)
+    Error.check(res)
+
+  def clear(self):
+    res = ccs_map_clear(self.handle)
     Error.check(res)
 
   def has_key(self, key):

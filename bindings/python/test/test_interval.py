@@ -48,5 +48,12 @@ class TestInterval(unittest.TestCase):
     self.assertTrue( i.contains(0) )
     self.assertFalse( i.contains(6) )
 
+  def test_union(self):
+    i1 = ccs.Interval(t = ccs.NumericType.FLOAT, lower = -1.0, upper = 0.5)
+    i2 = ccs.Interval(t = ccs.NumericType.FLOAT, lower = 0.0, upper = 2.0)
+    i3 = i1.union(i2)
+    i4 = ccs.Interval(t = ccs.NumericType.FLOAT, lower = -1.0, upper = 2.0)
+    self.assertEqual( i4, i3 )
+
 if __name__ == '__main__':
     unittest.main()

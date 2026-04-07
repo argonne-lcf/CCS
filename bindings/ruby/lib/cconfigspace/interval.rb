@@ -6,25 +6,18 @@ module CCS
            :lower_included, :ccs_bool_t,
            :upper_included, :ccs_bool_t
 
-    def initialize(*args, type:, lower: nil, upper: nil, lower_included: true, upper_included: false)
+    def initialize(*args, type: :CCS_NUMERIC_TYPE_FLOAT, lower: 0.0, upper: 1.0, lower_included: true, upper_included: false)
       unless [:CCS_NUMERIC_TYPE_FLOAT, :CCS_NUMERIC_TYPE_INT].include?(type)
         raise CCSError, :CCS_RESULT_ERROR_INVALID_TYPE
       end
       super(*args)
       self[:type] = type
-      if lower
-        if type == :CCS_NUMERIC_TYPE_FLOAT
-          self[:lower][:f] = lower
-        else
-          self[:lower][:i] = lower
-        end
-      end
-      if upper
-        if type == :CCS_NUMERIC_TYPE_FLOAT
-          self[:upper][:f] = upper
-        else
-          self[:upper][:i] = upper
-        end
+      if type == :CCS_NUMERIC_TYPE_FLOAT
+        self[:lower][:f] = lower
+        self[:upper][:f] = upper
+      else
+        self[:lower][:i] = lower
+        self[:upper][:i] = upper
       end
       self[:lower_included] = lower_included ? CCS::TRUE : CCS::FALSE
       self[:upper_included] = upper_included ? CCS::TRUE : CCS::FALSE
@@ -101,9 +94,15 @@ module CCS
     end
 
     def intersect(other)
-      intersection = Interval::new(type: :CCS_NUMERIC_TYPE_FLOAT)
-      CCS.error_check CCS.ccs_interval_intersect(self, other, intersection)
-      return intersection
+      result = Interval::new(type: self[:type])
+      CCS.error_check CCS.ccs_interval_intersect(self, other, result)
+      return result
+    end
+
+    def union(other)
+      result = Interval::new(type: self[:type])
+      CCS.error_check CCS.ccs_interval_union(self, other, result)
+      return result
     end
 
     def ==(other)
@@ -137,6 +136,7 @@ module CCS
 
   attach_function :ccs_interval_empty, [Interval.by_ref, :pointer], :ccs_result_t
   attach_function :ccs_interval_intersect, [Interval.by_ref, Interval.by_ref, Interval.by_ref], :ccs_result_t
+  attach_function :ccs_interval_union, [Interval.by_ref, Interval.by_ref, Interval.by_ref], :ccs_result_t
   attach_function :ccs_interval_equal, [Interval.by_ref, Interval.by_ref, :pointer], :ccs_result_t
   attach_function :ccs_interval_include, [Interval.by_ref, :ccs_numeric_t], :ccs_bool_t
 

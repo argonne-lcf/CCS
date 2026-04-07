@@ -1,6 +1,7 @@
 import ctypes as ct
 from . import libcconfigspace
-from .base import Object, Error, Result, CEnumeration, _ccs_get_function, ccs_parameter, Datum, DatumFix, ccs_distribution, ccs_rng, ccs_float, ccs_int, DataType, ccs_bool, NumericType, Numeric, _ccs_get_id
+from .base import Object, Error, Result, CEnumeration, _ccs_get_function, ccs_parameter, Datum, DatumFix, ccs_distribution, ccs_rng, ccs_float, ccs_int, DataType, ccs_bool, NumericType, Numeric, _ccs_get_id, ccs_false, ccs_true
+from .interval import Interval
 from .rng import ccs_default_rng
 from .distribution import Distribution
 
@@ -21,6 +22,10 @@ ccs_parameter_get_name = _ccs_get_function("ccs_parameter_get_name", [ccs_parame
 ccs_parameter_get_default_distribution = _ccs_get_function("ccs_parameter_get_default_distribution", [ccs_parameter, ct.POINTER(ccs_distribution)])
 ccs_parameter_check_value = _ccs_get_function("ccs_parameter_check_value", [ccs_parameter, DatumFix, ct.POINTER(ccs_bool)])
 ccs_parameter_check_values = _ccs_get_function("ccs_parameter_check_values", [ccs_parameter, ct.c_size_t, ct.POINTER(Datum), ct.POINTER(ccs_bool)])
+ccs_parameter_validate_value = _ccs_get_function("ccs_parameter_validate_value", [ccs_parameter, DatumFix, ct.POINTER(Datum), ct.POINTER(ccs_bool)])
+ccs_parameter_validate_values = _ccs_get_function("ccs_parameter_validate_values", [ccs_parameter, ct.c_size_t, ct.POINTER(Datum), ct.POINTER(Datum), ct.POINTER(ccs_bool)])
+ccs_parameter_sampling_interval = _ccs_get_function("ccs_parameter_sampling_interval", [ccs_parameter, ct.POINTER(Interval)])
+ccs_parameter_convert_samples = _ccs_get_function("ccs_parameter_convert_samples", [ccs_parameter, ccs_bool, ct.c_size_t, ct.POINTER(Numeric), ct.POINTER(Datum)])
 ccs_parameter_sample = _ccs_get_function("ccs_parameter_sample", [ccs_parameter, ccs_distribution, ccs_rng, ct.POINTER(Datum)])
 ccs_parameter_samples = _ccs_get_function("ccs_parameter_samples", [ccs_parameter, ccs_distribution, ccs_rng, ct.c_size_t, ct.POINTER(Datum)])
 
@@ -119,6 +124,47 @@ class Parameter(Object):
     res = ccs_parameter_check_values(self.handle, sz, v, b)
     Error.check(res)
     return [False if x == 0 else True for x in b]
+
+  def validate_value(self, value):
+    pv = Datum(value)
+    v = DatumFix(pv)
+    vo = Datum()
+    b = ccs_bool()
+    res = ccs_parameter_validate_value(self.handle, v, ct.byref(vo), ct.byref(b))
+    Error.check(res)
+    return (vo.value, False if b.value == ccs_false else True)
+
+  def validate_values(self, values):
+    sz = len(values)
+    v = (Datum * sz)()
+    ss = []
+    for i in range(sz):
+      v[i].set_value(values[i], string_store = ss)
+    vo = (Datum * sz)()
+    b = (ccs_bool * sz)()
+    res = ccs_parameter_validate_values(self.handle, sz, v, vo, b)
+    Error.check(res)
+    return [(vo[i].value, False if b[i] == ccs_false else True) for i in range(sz)]
+
+  @property
+  def sampling_interval(self):
+    v = Interval()
+    res = ccs_parameter_sampling_interval(self.handle, ct.byref(v))
+    Error.check(res)
+    return v
+
+  def convert_samples(self, values, oversampling = False):
+    sz = len(values)
+    v = (Numeric * sz)()
+    for i in range(sz):
+      if isinstance(values[i], int):
+        v[i].i = values[i]
+      else:
+        v[i].f = values[i]
+    results = (Datum * sz)()
+    res = ccs_parameter_convert_samples(self.handle, ccs_true if oversampling else ccs_false, sz, v, results)
+    Error.check(res)
+    return [x.value for x in results]
 
   def sample(self, distribution = None, rng = None):
     if distribution is None:

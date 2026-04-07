@@ -337,6 +337,14 @@ class TestConfigurationSpace(unittest.TestCase):
     v = cs.validate_value(h1.name, 0.5)
     self.assertEqual( 0.5, v )
 
+  def test_map_clear(self):
+    m = ccs.Map()
+    m["foo"] = "bar"
+    m["baz"] = 42
+    self.assertEqual( 2, len(m) )
+    m.clear()
+    self.assertEqual( 0, len(m) )
+
 
 if __name__ == '__main__':
     unittest.main()
