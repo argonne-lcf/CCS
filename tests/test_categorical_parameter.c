@@ -109,7 +109,7 @@ ccs_result_t
 deserialize_callback(
 	ccs_object_t object,
 	size_t       serialize_data_size,
-	void        *serialize_data,
+	const char  *serialize_data,
 	void        *callback_user_data)
 {
 	assert(callback_user_data == (void *)0xbeefdead);

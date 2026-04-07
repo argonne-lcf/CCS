@@ -8,12 +8,10 @@ typedef struct _ccs_features_data_s _ccs_features_data_t;
 struct _ccs_features_ops_s {
 	_ccs_object_ops_t obj_ops;
 
-	ccs_result_t (*hash)(ccs_features_t features, ccs_hash_t *hash_ret);
+	ccs_result_t (*hash)(ccs_binding_t binding, ccs_hash_t *hash_ret);
 
-	ccs_result_t (*cmp)(
-		ccs_features_t features,
-		ccs_features_t other,
-		int           *cmp_ret);
+	ccs_result_t (
+		*cmp)(ccs_binding_t binding, ccs_binding_t other, int *cmp_ret);
 };
 typedef struct _ccs_features_ops_s _ccs_features_ops_t;
 
