@@ -75,9 +75,7 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-      - run: sudo apt update; sudo apt install -y clang ruby-dev libgsl-dev python3-dev
-      - run: gem install --user-install rake ffi ffi-value whittle xmlrpc
-      - run: pip3 install --user parglare
+      - run: sudo apt update; sudo apt install -y clang libgsl-dev
       - run: ./autogen.sh
       - run: mkdir -p build
       - run: ../configure --enable-strict${{ matrix.threadsafe && ' --enable-thread-safe' || ' --disable-thread-safe' }} CC=clang CFLAGS="-gdwarf-4 -O2 -fsanitize=${{ matrix.sanitizer }} -fno-omit-frame-pointer" LDFLAGS="-fsanitize=${{ matrix.sanitizer }}"
@@ -85,7 +83,7 @@ jobs:
       - run: make -j
         working-directory: build
       - run: make -j check
-        working-directory: build
+        working-directory: build/tests
         env:
           ASAN_OPTIONS: detect_leaks=1
           UBSAN_OPTIONS: print_stacktrace=1:halt_on_error=1
