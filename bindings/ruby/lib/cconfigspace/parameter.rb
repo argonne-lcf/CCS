@@ -121,7 +121,7 @@ module CCS
     end
 
     def sampling_interval
-      interval = Interval::new(type: :CCS_NUMERIC_TYPE_FLOAT)
+      interval = Interval::new
       CCS.error_check CCS.ccs_parameter_sampling_interval(@handle, interval)
       interval
     end

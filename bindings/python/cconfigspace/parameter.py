@@ -1,6 +1,6 @@
 import ctypes as ct
 from . import libcconfigspace
-from .base import Object, Error, Result, CEnumeration, _ccs_get_function, ccs_parameter, Datum, DatumFix, ccs_distribution, ccs_rng, ccs_float, ccs_int, DataType, ccs_bool, NumericType, Numeric, _ccs_get_id, ccs_false
+from .base import Object, Error, Result, CEnumeration, _ccs_get_function, ccs_parameter, Datum, DatumFix, ccs_distribution, ccs_rng, ccs_float, ccs_int, DataType, ccs_bool, NumericType, Numeric, _ccs_get_id, ccs_false, ccs_true
 from .interval import Interval
 from .rng import ccs_default_rng
 from .distribution import Distribution
@@ -162,7 +162,7 @@ class Parameter(Object):
       else:
         v[i].f = values[i]
     results = (Datum * sz)()
-    res = ccs_parameter_convert_samples(self.handle, 1 if oversampling else 0, sz, v, results)
+    res = ccs_parameter_convert_samples(self.handle, ccs_true if oversampling else ccs_false, sz, v, results)
     Error.check(res)
     return [x.value for x in results]
 

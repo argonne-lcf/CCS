@@ -6,25 +6,18 @@ module CCS
            :lower_included, :ccs_bool_t,
            :upper_included, :ccs_bool_t
 
-    def initialize(*args, type:, lower: nil, upper: nil, lower_included: true, upper_included: false)
+    def initialize(*args, type: :CCS_NUMERIC_TYPE_FLOAT, lower: 0.0, upper: 1.0, lower_included: true, upper_included: false)
       unless [:CCS_NUMERIC_TYPE_FLOAT, :CCS_NUMERIC_TYPE_INT].include?(type)
         raise CCSError, :CCS_RESULT_ERROR_INVALID_TYPE
       end
       super(*args)
       self[:type] = type
-      if lower
-        if type == :CCS_NUMERIC_TYPE_FLOAT
-          self[:lower][:f] = lower
-        else
-          self[:lower][:i] = lower
-        end
-      end
-      if upper
-        if type == :CCS_NUMERIC_TYPE_FLOAT
-          self[:upper][:f] = upper
-        else
-          self[:upper][:i] = upper
-        end
+      if type == :CCS_NUMERIC_TYPE_FLOAT
+        self[:lower][:f] = lower
+        self[:upper][:f] = upper
+      else
+        self[:lower][:i] = lower
+        self[:upper][:i] = upper
       end
       self[:lower_included] = lower_included ? CCS::TRUE : CCS::FALSE
       self[:upper_included] = upper_included ? CCS::TRUE : CCS::FALSE
