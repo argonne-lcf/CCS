@@ -326,5 +326,22 @@ class TestDistribution(unittest.TestCase):
   def test_serialize_multivariate_json(self):
     self._test_serialize_multivariate('json')
 
+  def test_parameters_sample(self):
+    h = ccs.NumericalParameter.Float(lower = -1.0, upper = 1.0)
+    d = ccs.UniformDistribution.Float(lower = -1.0, upper = 1.0)
+    vals = d.parameters_sample([h])
+    self.assertEqual( 1, len(vals) )
+    self.assertIsInstance( vals[0], float )
+
+  def test_parameters_samples(self):
+    h = ccs.NumericalParameter.Float(lower = -1.0, upper = 1.0)
+    d = ccs.UniformDistribution.Float(lower = -1.0, upper = 1.0)
+    vals = d.parameters_samples([h], 10)
+    self.assertEqual( 10, len(vals) )
+    for v in vals:
+      self.assertEqual( 1, len(v) )
+      self.assertIsInstance( v[0], float )
+    self.assertEqual( [], d.parameters_samples([h], 0) )
+
 if __name__ == '__main__':
     unittest.main()

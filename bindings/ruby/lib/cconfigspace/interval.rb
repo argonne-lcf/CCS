@@ -101,9 +101,15 @@ module CCS
     end
 
     def intersect(other)
-      intersection = Interval::new(type: :CCS_NUMERIC_TYPE_FLOAT)
-      CCS.error_check CCS.ccs_interval_intersect(self, other, intersection)
-      return intersection
+      result = Interval::new(type: self[:type])
+      CCS.error_check CCS.ccs_interval_intersect(self, other, result)
+      return result
+    end
+
+    def union(other)
+      result = Interval::new(type: self[:type])
+      CCS.error_check CCS.ccs_interval_union(self, other, result)
+      return result
     end
 
     def ==(other)
@@ -137,6 +143,7 @@ module CCS
 
   attach_function :ccs_interval_empty, [Interval.by_ref, :pointer], :ccs_result_t
   attach_function :ccs_interval_intersect, [Interval.by_ref, Interval.by_ref, Interval.by_ref], :ccs_result_t
+  attach_function :ccs_interval_union, [Interval.by_ref, Interval.by_ref, Interval.by_ref], :ccs_result_t
   attach_function :ccs_interval_equal, [Interval.by_ref, Interval.by_ref, :pointer], :ccs_result_t
   attach_function :ccs_interval_include, [Interval.by_ref, :ccs_numeric_t], :ccs_bool_t
 

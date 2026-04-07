@@ -321,4 +321,38 @@ class CConfigSpaceTestParameter < Minitest::Test
     assert_equal( [], h.check_values([]) )
   end
 
+  def test_validate_value
+    h = CCS::NumericalParameter::Float.new(lower: -1.0, upper: 1.0)
+    val, valid = h.validate_value(0.5)
+    assert_equal( 0.5, val )
+    assert( valid )
+    val, valid = h.validate_value(5.0)
+    refute( valid )
+  end
+
+  def test_validate_values
+    values = ["foo", 2, 3.0]
+    h = CCS::CategoricalParameter::new(values: values)
+    results = h.validate_values(["foo", 1.5, 3.0])
+    assert_equal( true, results[0][1] )
+    assert_equal( "foo", results[0][0] )
+    assert_equal( false, results[1][1] )
+    assert_equal( true, results[2][1] )
+  end
+
+  def test_sampling_interval
+    h = CCS::NumericalParameter::Float.new(lower: -1.0, upper: 1.0)
+    interval = h.sampling_interval
+    assert_instance_of( CCS::Interval, interval )
+    assert( interval.include?(0.0) )
+    refute( interval.include?(5.0) )
+  end
+
+  def test_convert_samples
+    h = CCS::NumericalParameter::Float.new(lower: -1.0, upper: 1.0)
+    results = h.convert_samples([0.0, 0.5])
+    assert_equal( 2, results.length )
+    results.each { |v| assert_kind_of( Float, v ) }
+  end
+
 end

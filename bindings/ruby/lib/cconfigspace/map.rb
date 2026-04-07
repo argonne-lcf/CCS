@@ -7,6 +7,7 @@ module CCS
   attach_function :ccs_map_get_keys, [:ccs_map_t, :size_t, :pointer, :pointer], :ccs_result_t
   attach_function :ccs_map_get_values, [:ccs_map_t, :size_t, :pointer, :pointer], :ccs_result_t
   attach_function :ccs_map_get_pairs, [:ccs_map_t, :size_t, :pointer, :pointer, :pointer], :ccs_result_t
+  attach_function :ccs_map_clear, [:ccs_map_t], :ccs_result_t
 
   class Map < Object
     add_array_property :keys, :ccs_datum_t, :ccs_map_get_keys
@@ -40,6 +41,11 @@ module CCS
       v = Datum.from_value(value)
       CCS.error_check CCS.ccs_map_set(@handle, k, v)
       value
+    end
+
+    def clear
+      CCS.error_check CCS.ccs_map_clear(@handle)
+      self
     end
 
     def include?(key)

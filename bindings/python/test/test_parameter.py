@@ -331,5 +331,36 @@ class TestParameter(unittest.TestCase):
     self.assertEqual( [True, True, False, True], results )
     self.assertEqual( [], h.check_values([]) )
 
+  def test_validate_value(self):
+    h = ccs.NumericalParameter.Float(lower = -1.0, upper = 1.0)
+    val, valid = h.validate_value(0.5)
+    self.assertEqual( 0.5, val )
+    self.assertTrue( valid )
+    val, valid = h.validate_value(5.0)
+    self.assertFalse( valid )
+
+  def test_validate_values(self):
+    values = ["foo", 2, 3.0]
+    h = ccs.CategoricalParameter(values = values)
+    results = h.validate_values(["foo", 1.5, 3.0])
+    self.assertTrue( results[0][1] )
+    self.assertEqual( "foo", results[0][0] )
+    self.assertFalse( results[1][1] )
+    self.assertTrue( results[2][1] )
+
+  def test_sampling_interval(self):
+    h = ccs.NumericalParameter.Float(lower = -1.0, upper = 1.0)
+    interval = h.sampling_interval
+    self.assertIsInstance( interval, ccs.Interval )
+    self.assertTrue( interval.include(0.0) )
+    self.assertFalse( interval.include(5.0) )
+
+  def test_convert_samples(self):
+    h = ccs.NumericalParameter.Float(lower = -1.0, upper = 1.0)
+    results = h.convert_samples([0.0, 0.5])
+    self.assertEqual( 2, len(results) )
+    for v in results:
+      self.assertIsInstance( v, float )
+
 if __name__ == '__main__':
     unittest.main()

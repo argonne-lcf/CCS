@@ -30,6 +30,8 @@ module CCS
   attach_function :ccs_distribution_check_oversampling, [:ccs_distribution_t, Interval.by_ref, :pointer], :ccs_result_t
   attach_function :ccs_distribution_sample, [:ccs_distribution_t, :ccs_rng_t, :pointer], :ccs_result_t
   attach_function :ccs_distribution_samples, [:ccs_distribution_t, :ccs_rng_t, :size_t, :pointer], :ccs_result_t
+  attach_function :ccs_distribution_parameters_sample, [:ccs_distribution_t, :ccs_rng_t, :pointer, :pointer], :ccs_result_t
+  attach_function :ccs_distribution_parameters_samples, [:ccs_distribution_t, :ccs_rng_t, :pointer, :size_t, :pointer], :ccs_result_t
 
   class Distribution < Object
     add_property :type, :ccs_distribution_type_t, :ccs_distribution_get_type, memoize: true
@@ -120,6 +122,27 @@ module CCS
           }
         }
       end
+    end
+
+    def parameters_sample(parameters, rng: CCS::DefaultRng)
+      dim = dimension
+      p_params = MemoryPointer::new(:ccs_parameter_t, dim)
+      p_params.write_array_of_pointer(parameters.collect(&:handle))
+      values = MemoryPointer::new(:ccs_datum_t, dim)
+      CCS.error_check CCS.ccs_distribution_parameters_sample(@handle, rng, p_params, values)
+      dim.times.collect { |i| Datum::new(values[i]).value }
+    end
+
+    def parameters_samples(parameters, count, rng: CCS::DefaultRng)
+      return [] if count == 0
+      dim = dimension
+      p_params = MemoryPointer::new(:ccs_parameter_t, dim)
+      p_params.write_array_of_pointer(parameters.collect(&:handle))
+      values = MemoryPointer::new(:ccs_datum_t, count * dim)
+      CCS.error_check CCS.ccs_distribution_parameters_samples(@handle, rng, p_params, count, values)
+      count.times.collect { |j|
+        dim.times.collect { |i| Datum::new(values[j * dim + i]).value }
+      }
     end
 
   end
