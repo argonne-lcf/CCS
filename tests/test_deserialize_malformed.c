@@ -220,6 +220,207 @@ test_distribution_space_dimension_overflow(void)
 		ccs_release_object(parameters[i]);
 }
 
+/* A binding (here a configuration) serializes its number of values, then the
+ * values. That count was not bounded by the remaining input: 2^62 values made
+ * calloc's size computation overflow instead of being rejected as corrupt. */
+static void
+test_binding_huge_num_values(void)
+{
+	ccs_result_t              err;
+	ccs_parameter_t           parameters[2];
+	ccs_configuration_space_t cspace;
+	ccs_configuration_t       configuration;
+	ccs_datum_t               values[2] = {ccs_int(77), ccs_int(66)};
+	ccs_map_t                 map;
+	ccs_datum_t               key;
+	ccs_object_t              object = NULL;
+	size_t                    size, offset;
+	char                     *buff, *corrupt;
+	/* compressed: num_values 2, INT 77 (zigzag varint 0x9a 0x01) */
+	const char pattern[] = {0x02, CCS_DATA_TYPE_INT, 0x9a, 0x01};
+
+	err = ccs_create_int_numerical_parameter("i", 0, 100, 0, 0, parameters);
+	assert(err == CCS_RESULT_SUCCESS);
+	err = ccs_create_int_numerical_parameter(
+		"j", 0, 100, 0, 0, parameters + 1);
+	assert(err == CCS_RESULT_SUCCESS);
+	err = ccs_create_configuration_space(
+		"space", 2, parameters, NULL, 0, NULL, NULL, NULL, &cspace);
+	assert(err == CCS_RESULT_SUCCESS);
+	err = ccs_create_configuration(cspace, NULL, 2, values, &configuration);
+	assert(err == CCS_RESULT_SUCCESS);
+
+	buff   = serialize(configuration, &size);
+	offset = find_bytes(buff, size, pattern, sizeof(pattern));
+
+	err    = ccs_create_map(&map);
+	assert(err == CCS_RESULT_SUCCESS);
+	key = ccs_object(cspace);
+	key.flags |= CCS_DATUM_FLAG_ID;
+	err = ccs_map_set(map, key, ccs_object(cspace));
+	assert(err == CCS_RESULT_SUCCESS);
+
+	/* sanity check: the untouched buffer round-trips */
+	err = ccs_object_deserialize(
+		&object, CCS_SERIALIZE_FORMAT_BINARY,
+		CCS_DESERIALIZE_OPERATION_MEMORY, size, buff,
+		CCS_DESERIALIZE_OPTION_HANDLE_MAP, map,
+		CCS_DESERIALIZE_OPTION_END);
+	assert(err == CCS_RESULT_SUCCESS);
+	ccs_release_object(object);
+	object  = NULL;
+
+	/* replace num_values (1 byte) by the 9-byte varint encoding of 2^62 */
+	corrupt = (char *)malloc(size + 8);
+	assert(corrupt);
+	memcpy(corrupt, buff, offset);
+	memset(corrupt + offset, 0x80, 8);
+	corrupt[offset + 8] = 0x40;
+	memcpy(corrupt + offset + 9, buff + offset + 1, size - offset - 1);
+
+	err = ccs_object_deserialize(
+		&object, CCS_SERIALIZE_FORMAT_BINARY,
+		CCS_DESERIALIZE_OPERATION_MEMORY, size + 8, corrupt,
+		CCS_DESERIALIZE_OPTION_HANDLE_MAP, map,
+		CCS_DESERIALIZE_OPTION_END);
+	assert(err == CCS_RESULT_ERROR_INVALID_VALUE);
+	assert(object == NULL);
+
+	free(corrupt);
+	free(buff);
+	ccs_release_object(map);
+	ccs_release_object(configuration);
+	ccs_release_object(cspace);
+	ccs_release_object(parameters[0]);
+	ccs_release_object(parameters[1]);
+}
+
+/* Strings serialize as their length including the terminating NUL, then the
+ * bytes. A string whose last byte is not NUL used to be accepted, and every
+ * later strlen read past it, up to the end of the input buffer and beyond. */
+static void
+test_unterminated_string(void)
+{
+	ccs_result_t    err;
+	ccs_parameter_t parameter;
+	ccs_datum_t  possible_values[2] = {ccs_string("ab"), ccs_string("cd")};
+	ccs_object_t object             = NULL;
+	size_t       size, offset;
+	char        *buff;
+	/* compressed: name length 4, "cat\0" */
+	const char   pattern[] = {0x04, 'c', 'a', 't', 0x00};
+
+	err                    = ccs_create_categorical_parameter(
+                "cat", 2, possible_values, 0, &parameter);
+	assert(err == CCS_RESULT_SUCCESS);
+	buff   = serialize(parameter, &size);
+	offset = find_bytes(buff, size, pattern, sizeof(pattern));
+
+	/* sanity check: the untouched buffer round-trips */
+	err    = ccs_object_deserialize(
+                &object, CCS_SERIALIZE_FORMAT_BINARY,
+                CCS_DESERIALIZE_OPERATION_MEMORY, size, buff,
+                CCS_DESERIALIZE_OPTION_END);
+	assert(err == CCS_RESULT_SUCCESS);
+	ccs_release_object(object);
+	object           = NULL;
+
+	buff[offset + 4] = 'x'; /* drop the name's terminating NUL */
+	err              = ccs_object_deserialize(
+                &object, CCS_SERIALIZE_FORMAT_BINARY,
+                CCS_DESERIALIZE_OPERATION_MEMORY, size, buff,
+                CCS_DESERIALIZE_OPTION_END);
+	assert(err == CCS_RESULT_ERROR_INVALID_VALUE);
+	assert(object == NULL);
+
+	free(buff);
+	ccs_release_object(parameter);
+}
+
+/* A tuner serializes its type, then its name. An unknown type is rejected,
+ * but used to leak the handle map allocated beforehand: only a leak checker
+ * (ASan, valgrind) can tell. */
+static void
+test_tuner_unknown_type(void)
+{
+	ccs_result_t              err;
+	ccs_configuration_space_t cspace;
+	ccs_objective_space_t     ospace;
+	ccs_tuner_t               tuner;
+	ccs_object_t              object = NULL;
+	size_t                    size, offset;
+	char                     *buff;
+	/* compressed: name length 10, then "malformed" and its NUL (implicit in
+	 * the literal); the tuner type byte precedes them */
+	const char                pattern[] = "\x0amalformed";
+
+	cspace                              = create_2d_plane(NULL);
+	ospace                              = create_height_objective(cspace);
+	err = ccs_create_random_tuner("malformed", ospace, &tuner);
+	assert(err == CCS_RESULT_SUCCESS);
+	buff   = serialize(tuner, &size);
+	offset = find_bytes(buff, size, pattern, sizeof(pattern));
+
+	/* sanity check: the untouched buffer round-trips */
+	err    = ccs_object_deserialize(
+                &object, CCS_SERIALIZE_FORMAT_BINARY,
+                CCS_DESERIALIZE_OPERATION_MEMORY, size, buff,
+                CCS_DESERIALIZE_OPTION_END);
+	assert(err == CCS_RESULT_SUCCESS);
+	ccs_release_object(object);
+	object = NULL;
+
+	assert(offset > 0 && buff[offset - 1] == CCS_TUNER_TYPE_RANDOM);
+	buff[offset - 1] = CCS_TUNER_TYPE_MAX; /* not a valid tuner type */
+	err              = ccs_object_deserialize(
+                &object, CCS_SERIALIZE_FORMAT_BINARY,
+                CCS_DESERIALIZE_OPERATION_MEMORY, size, buff,
+                CCS_DESERIALIZE_OPTION_END);
+	assert(err == CCS_RESULT_ERROR_INVALID_TYPE);
+	assert(object == NULL);
+
+	free(buff);
+	ccs_release_object(tuner);
+	ccs_release_object(ospace);
+	ccs_release_object(cspace);
+}
+
+/* An integer range whose width upper - lower does not fit in a ccs_int_t
+ * cannot be represented internally; computing it was signed overflow
+ * (undefined behavior, reported by UBSan). Deserialized parameters and
+ * distributions reach these constructors with arbitrary bounds. */
+static void
+test_int_range_overflow(void)
+{
+	ccs_result_t       err;
+	ccs_parameter_t    parameter    = NULL;
+	ccs_distribution_t distribution = NULL;
+
+	err                             = ccs_create_int_numerical_parameter(
+                "p", CCS_INT_MIN, 0, 0, CCS_INT_MIN, &parameter);
+	assert(err == CCS_RESULT_ERROR_INVALID_VALUE);
+	assert(parameter == NULL);
+	err = ccs_create_int_numerical_parameter(
+		"p", -1, CCS_INT_MAX, 0, 0, &parameter);
+	assert(err == CCS_RESULT_ERROR_INVALID_VALUE);
+	assert(parameter == NULL);
+
+	err = ccs_create_uniform_int_distribution(
+		CCS_INT_MIN, 0, CCS_SCALE_TYPE_LINEAR, 0, &distribution);
+	assert(err == CCS_RESULT_ERROR_INVALID_VALUE);
+	assert(distribution == NULL);
+
+	/* the widest representable range is still accepted */
+	err = ccs_create_int_numerical_parameter(
+		"p", 0, CCS_INT_MAX, 0, 0, &parameter);
+	assert(err == CCS_RESULT_SUCCESS);
+	ccs_release_object(parameter);
+	err = ccs_create_uniform_int_distribution(
+		-1, CCS_INT_MAX - 1, CCS_SCALE_TYPE_LINEAR, 0, &distribution);
+	assert(err == CCS_RESULT_SUCCESS);
+	ccs_release_object(distribution);
+}
+
 int
 main(void)
 {
@@ -227,6 +428,10 @@ main(void)
 	test_leaf_expression_with_nodes();
 	test_huge_count();
 	test_distribution_space_dimension_overflow();
+	test_binding_huge_num_values();
+	test_unterminated_string();
+	test_tuner_unknown_type();
+	test_int_range_overflow();
 	ccs_clear_thread_error();
 	ccs_fini();
 	return 0;

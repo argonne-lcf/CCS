@@ -336,7 +336,9 @@ ccs_create_numerical_parameter(
 		CCS_RESULT_ERROR_INVALID_TYPE);
 	CCS_REFUTE(
 		data_type == CCS_NUMERIC_TYPE_INT &&
-			(lower.i >= upper.i || quantization.i < 0 ||
+			(lower.i >= upper.i ||
+			 _ccs_int_range_overflows(lower.i, upper.i) ||
+			 quantization.i < 0 ||
 			 quantization.i > upper.i - lower.i ||
 			 default_value.i < lower.i ||
 			 default_value.i >= upper.i),

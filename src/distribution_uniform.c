@@ -422,6 +422,7 @@ ccs_create_uniform_distribution(
 	CCS_REFUTE(
 		data_type == CCS_NUMERIC_TYPE_INT &&
 			(lower.i >= upper.i ||
+			 _ccs_int_range_overflows(lower.i, upper.i) ||
 			 (scale_type == CCS_SCALE_TYPE_LOGARITHMIC &&
 			  lower.i <= 0) ||
 			 quantization.i < 0 ||

@@ -503,8 +503,8 @@ _ccs_deserialize_bin_tuner(
 			end);
 		break;
 	default:
-		CCS_RAISE(
-			CCS_RESULT_ERROR_INVALID_TYPE,
+		CCS_RAISE_ERR_GOTO(
+			res, CCS_RESULT_ERROR_INVALID_TYPE, end,
 			"Unsupported tuner type: %d", ttype);
 	}
 

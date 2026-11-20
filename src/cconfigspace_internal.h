@@ -1003,6 +1003,15 @@ _ccs_deserialize_bin_count(
 	return CCS_RESULT_SUCCESS;
 }
 
+/* CCS_TRUE if upper - lower is not representable as a ccs_int_t. */
+static inline ccs_bool_t
+_ccs_int_range_overflows(ccs_int_t lower, ccs_int_t upper)
+{
+	ccs_int_t range;
+	return __builtin_sub_overflow(upper, lower, &range) ? CCS_TRUE :
+							      CCS_FALSE;
+}
+
 /* Checked-overflow size arithmetic for safe allocation.
  * All return CCS_TRUE on overflow. */
 static inline ccs_bool_t
@@ -1097,6 +1106,9 @@ _ccs_deserialize_bin_string(
 	size_t sz;
 	CCS_VALIDATE(_ccs_deserialize_bin_size(&sz, buffer_size, buffer));
 	CCS_REFUTE(*buffer_size < sz, CCS_RESULT_ERROR_NOT_ENOUGH_DATA);
+	/* The serializer writes strlen + 1 bytes: the string must be NUL
+	 * terminated within the buffer, else consumers read past its end. */
+	CCS_REFUTE(!sz || (*buffer)[sz - 1], CCS_RESULT_ERROR_INVALID_VALUE);
 	*str = *buffer;
 	*buffer_size -= sz;
 	*buffer += sz;
