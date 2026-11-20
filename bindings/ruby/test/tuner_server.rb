@@ -58,7 +58,11 @@ get_vector_data = lambda { |otype, name|
   [CCS::UserDefinedTuner.get_vector(del: del, ask: ask, tell: tell, get_optima: get_optima, get_history: get_history, suggest: suggest), TunerData.new]
 }
 
-s = XMLRPC::Server.new(8080)
+# Bind an ephemeral port so the test never collides with another service,
+# and announce it to the parent process on stdout.
+s = XMLRPC::Server.new(0, "127.0.0.1", 4, $stderr)
+$stdout.puts "PORT #{s.instance_variable_get(:@server).config[:Port]}"
+$stdout.flush
 count = 0
 tuners = {}
 # Could be on disk

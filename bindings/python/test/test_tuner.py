@@ -6,6 +6,7 @@ import threading
 import subprocess
 import datetime
 import base64
+import re
 import xmlrpc.client
 import ctypes as ct
 from random import choice
@@ -195,15 +196,22 @@ class TestTuner(unittest.TestCase):
 
   class ServerThread(threading.Thread):
     def __init__(self):
-      self.p = None
       threading.Thread.__init__(self)
+      self.p = subprocess.Popen([sys.executable, _os.path.join(_os.path.abspath(_os.path.dirname(__file__)), 'tuner_server.py')], stdout = subprocess.PIPE, stderr = subprocess.DEVNULL, text = True)
+      line = self.p.stdout.readline()
+      m = re.match(r'PORT (\d+)$', line.strip())
+      if not m:
+        self.p.kill()
+        raise RuntimeError(f"tuner server did not announce its port: {line!r}")
+      self.url = f"http://localhost:{m.group(1)}/"
 
     def run(self):
-      subprocess.run(['python3', _os.path.join(_os.path.abspath(_os.path.dirname(__file__)), 'tuner_server.py')], stdout = subprocess.DEVNULL, stderr = subprocess.DEVNULL)
+      self.p.stdout.read()
+      self.p.wait()
 
   class TunerProxy:
-    def __init__(self, name = "", objective_space = None):
-      self.server = xmlrpc.client.ServerProxy("http://localhost:8000/")
+    def __init__(self, url, name = "", objective_space = None):
+      self.server = xmlrpc.client.ServerProxy(url)
       connected = False
       start = datetime.datetime.now()
       while not connected:
@@ -261,7 +269,7 @@ class TestTuner(unittest.TestCase):
     try:
 
       os = self.create_tuning_problem()
-      t = self.TunerProxy(name = 'my_tuner', objective_space = os)
+      t = self.TunerProxy(thr.url, name = 'my_tuner', objective_space = os)
       func = lambda x, y, z: [(x-2)*(x-2), sin(z+y)]
       evals = [ccs.Evaluation(objective_space = os, configuration = c, values = func(*(c.values))) for c in t.ask(100)]
       t.tell(evals)
@@ -278,7 +286,7 @@ class TestTuner(unittest.TestCase):
       self.assertTrue(t.suggest() in [x.configuration for x in optims])
 
       t.save()
-      t_copy = self.TunerProxy(name = "my_tuner")
+      t_copy = self.TunerProxy(thr.url, name = "my_tuner")
       hist = t_copy.history()
       self.assertEqual(200, len(hist))
       optims_2 = t_copy.optima()
@@ -289,7 +297,7 @@ class TestTuner(unittest.TestCase):
       self.assertTrue(t_copy.suggest() in [x.configuration for x in optims_2])
 
     finally:
-      xmlrpc.client.ServerProxy("http://localhost:8000/").kill()
+      xmlrpc.client.ServerProxy(thr.url).kill()
       thr.join()
 
 if __name__ == '__main__':
