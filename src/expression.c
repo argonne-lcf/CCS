@@ -2123,8 +2123,9 @@ ccs_expression_get_parameters(
 	utarray_new(array, &_parameter_icd);
 	CCS_VALIDATE_ERR_GOTO(
 		err, _get_parameters(expression, array), errutarray);
-	utarray_sort(array, &_parameter_sort);
 	if (utarray_len(array) > 0) {
+		/* qsort must not be given a NULL base, even with no elements */
+		utarray_sort(array, &_parameter_sort);
 		ccs_parameter_t  previous = NULL;
 		ccs_parameter_t *p_h      = NULL;
 		while ((p_h = (ccs_parameter_t *)utarray_next(array, p_h))) {
@@ -2173,8 +2174,9 @@ ccs_expression_check_contexts(
 	utarray_new(array, &_parameter_icd);
 	CCS_VALIDATE_ERR_GOTO(
 		err, _get_parameters(expression, array), errutarray);
-	utarray_sort(array, &_parameter_sort);
 	if (utarray_len(array) > 0) {
+		/* qsort must not be given a NULL base, even with no elements */
+		utarray_sort(array, &_parameter_sort);
 		CCS_REFUTE_ERR_GOTO(
 			err, !contexts, CCS_RESULT_ERROR_INVALID_VALUE,
 			errutarray);
