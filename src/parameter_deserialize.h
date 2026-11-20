@@ -48,7 +48,7 @@ _ccs_deserialize_bin_ccs_parameter_categorical_data(
 {
 	CCS_VALIDATE(_ccs_deserialize_bin_ccs_parameter_common_data(
 		&data->common_data, buffer_size, buffer));
-	CCS_VALIDATE(_ccs_deserialize_bin_size(
+	CCS_VALIDATE(_ccs_deserialize_bin_count(
 		&data->num_possible_values, buffer_size, buffer));
 	{
 		size_t _sz;

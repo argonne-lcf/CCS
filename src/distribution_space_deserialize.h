@@ -27,10 +27,10 @@ _ccs_deserialize_bin_ccs_distribution_space_data(
 		(ccs_object_t *)&data->configuration_space, buffer_size,
 		buffer));
 
-	CCS_VALIDATE(_ccs_deserialize_bin_size(
+	CCS_VALIDATE(_ccs_deserialize_bin_count(
 		&data->num_parameters, buffer_size, buffer));
 
-	CCS_VALIDATE(_ccs_deserialize_bin_size(
+	CCS_VALIDATE(_ccs_deserialize_bin_count(
 		&data->num_distributions, buffer_size, buffer));
 
 	if (!(data->num_distributions))
@@ -60,6 +60,7 @@ _ccs_deserialize_bin_ccs_distribution_space_data(
 	mem += data->num_parameters * sizeof(size_t);
 
 	size_t *indices;
+	size_t  remaining_indices = data->num_parameters;
 	indices = data->distrib_parameter_indices;
 	for (size_t i = 0; i < data->num_distributions; i++) {
 		CCS_VALIDATE(_ccs_object_deserialize_with_opts_check(
@@ -67,8 +68,13 @@ _ccs_deserialize_bin_ccs_distribution_space_data(
 			CCS_OBJECT_TYPE_DISTRIBUTION,
 			CCS_SERIALIZE_FORMAT_BINARY, version, buffer_size,
 			buffer, opts));
-		CCS_VALIDATE(_ccs_deserialize_bin_size(
+		CCS_VALIDATE(_ccs_deserialize_bin_count(
 			data->dimensions + i, buffer_size, buffer));
+		/* indices was sized for num_parameters entries in total */
+		CCS_REFUTE(
+			data->dimensions[i] > remaining_indices,
+			CCS_RESULT_ERROR_INVALID_VALUE);
+		remaining_indices -= data->dimensions[i];
 		for (size_t j = 0; j < data->dimensions[i]; j++) {
 			CCS_VALIDATE(_ccs_deserialize_bin_size(
 				indices, buffer_size, buffer));

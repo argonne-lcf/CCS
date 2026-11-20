@@ -29,11 +29,11 @@ _ccs_deserialize_bin_ccs_configuration_space_data(
 
 	CCS_VALIDATE(
 		_ccs_deserialize_bin_string(&data->name, buffer_size, buffer));
-	CCS_VALIDATE(_ccs_deserialize_bin_size(
+	CCS_VALIDATE(_ccs_deserialize_bin_count(
 		&data->num_parameters, buffer_size, buffer));
-	CCS_VALIDATE(_ccs_deserialize_bin_size(
+	CCS_VALIDATE(_ccs_deserialize_bin_count(
 		&data->num_conditions, buffer_size, buffer));
-	CCS_VALIDATE(_ccs_deserialize_bin_size(
+	CCS_VALIDATE(_ccs_deserialize_bin_count(
 		&data->num_forbidden_clauses, buffer_size, buffer));
 	CCS_VALIDATE(_ccs_deserialize_bin_ccs_object(
 		&data->feature_space_handle, buffer_size, buffer));

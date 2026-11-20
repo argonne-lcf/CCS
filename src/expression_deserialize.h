@@ -22,8 +22,11 @@ _ccs_deserialize_bin_ccs_expression_data(
 	data->nodes = NULL;
 	CCS_VALIDATE(_ccs_deserialize_bin_ccs_expression_type(
 		&data->type, buffer_size, buffer));
-	CCS_VALIDATE(_ccs_deserialize_bin_size(
+	CCS_VALIDATE(_ccs_deserialize_bin_count(
 		&data->num_nodes, buffer_size, buffer));
+	/* leaf expressions (literals and variables) are deserialized without
+	 * options and never have child nodes */
+	CCS_REFUTE(data->num_nodes && !opts, CCS_RESULT_ERROR_INVALID_VALUE);
 	if (data->num_nodes) {
 		data->nodes = (ccs_datum_t *)calloc(
 			data->num_nodes, sizeof(ccs_datum_t));
