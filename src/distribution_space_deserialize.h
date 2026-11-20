@@ -61,7 +61,7 @@ _ccs_deserialize_bin_ccs_distribution_space_data(
 
 	size_t *indices;
 	size_t  remaining_indices = data->num_parameters;
-	indices = data->distrib_parameter_indices;
+	indices                   = data->distrib_parameter_indices;
 	for (size_t i = 0; i < data->num_distributions; i++) {
 		CCS_VALIDATE(_ccs_object_deserialize_with_opts_check(
 			(ccs_object_t *)data->distributions + i,

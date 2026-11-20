@@ -112,8 +112,8 @@ test_huge_count(void)
 		CCS_EXPRESSION_TYPE_ADD, ccs_object(l1), ccs_object(l2),
 		&expression);
 	assert(err == CCS_RESULT_SUCCESS);
-	buff   = serialize(expression, &size);
-	offset = find_bytes(buff, size, pattern, sizeof(pattern));
+	buff    = serialize(expression, &size);
+	offset  = find_bytes(buff, size, pattern, sizeof(pattern));
 
 	/* replace num_nodes (1 byte) by a 10-byte varint encoding of
 	 * UINT64_MAX */
@@ -151,12 +151,12 @@ test_distribution_space_dimension_overflow(void)
 	ccs_distribution_t        distribs[2], distrib;
 	ccs_map_t                 map;
 	ccs_datum_t               key;
-	ccs_object_t              object  = NULL;
+	ccs_object_t              object     = NULL;
 	size_t                    indices[2] = {2, 0};
 	size_t                    size, offset;
 	char                     *buff;
 	/* compressed: num_parameters 3, num_distributions 2 */
-	const char                pattern[]  = {0x03, 0x02};
+	const char                pattern[] = {0x03, 0x02};
 
 	for (size_t i = 0; i < 3; i++) {
 		char name[2] = {(char)('a' + i), 0};
