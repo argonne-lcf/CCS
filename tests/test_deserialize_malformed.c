@@ -1,6 +1,8 @@
 #include <stdlib.h>
 #include <assert.h>
 #include <string.h>
+#include <math.h>
+#include <float.h>
 #include <cconfigspace.h>
 #include "test_utils.h"
 
@@ -237,7 +239,7 @@ test_binding_huge_num_values(void)
 	size_t                    size, offset;
 	char                     *buff, *corrupt;
 	/* compressed: num_values 2, INT 77 (zigzag varint 0x9a 0x01) */
-	const char pattern[] = {0x02, CCS_DATA_TYPE_INT, 0x9a, 0x01};
+	const char pattern[] = {0x02, CCS_DATA_TYPE_INT, (char)0x9a, 0x01};
 
 	err = ccs_create_int_numerical_parameter("i", 0, 100, 0, 0, parameters);
 	assert(err == CCS_RESULT_SUCCESS);
@@ -421,6 +423,150 @@ test_int_range_overflow(void)
 	ccs_release_object(distribution);
 }
 
+/* Configuration space conditions serialize as {index, expression} pairs.
+ * A repeated index used to deserialize a second expression over the first
+ * one, leaking it. Checked for both formats. */
+static void
+test_duplicate_condition_index(void)
+{
+	ccs_result_t              err;
+	ccs_parameter_t           parameters[3];
+	ccs_expression_t          conditions[3] = {NULL, NULL, NULL};
+	ccs_configuration_space_t cspace;
+	ccs_object_t              object = NULL;
+	size_t                    size, expr_size, offset;
+	char                     *buff, *expr_buff, *index_str;
+
+	for (int i = 0; i < 3; i++) {
+		const char *names[] = {"p", "q", "r"};
+		err                 = ccs_create_int_numerical_parameter(
+                        names[i], 0, 100, 0, 0, parameters + i);
+		assert(err == CCS_RESULT_SUCCESS);
+	}
+	for (int i = 1; i < 3; i++) {
+		err = ccs_create_binary_expression(
+			CCS_EXPRESSION_TYPE_LESS, ccs_object(parameters[0]),
+			ccs_int(50), conditions + i);
+		assert(err == CCS_RESULT_SUCCESS);
+	}
+	err = ccs_create_configuration_space(
+		"space", 3, parameters, conditions, 0, NULL, NULL, NULL,
+		&cspace);
+	assert(err == CCS_RESULT_SUCCESS);
+
+	/* binary: the condition on parameter 2 is its index followed by the
+	 * expression body, i.e. the standalone serialization of the
+	 * expression without its 13-byte file header (magic, size, version) */
+	buff      = serialize(cspace, &size);
+	expr_buff = serialize(conditions[2], &expr_size);
+	assert(expr_size > 13);
+	offset = find_bytes(buff, size, expr_buff + 13, expr_size - 13);
+	assert(offset > 0 && buff[offset - 1] == 2);
+
+	err = ccs_object_deserialize(
+		&object, CCS_SERIALIZE_FORMAT_BINARY,
+		CCS_DESERIALIZE_OPERATION_MEMORY, size, buff,
+		CCS_DESERIALIZE_OPTION_END);
+	assert(err == CCS_RESULT_SUCCESS);
+	ccs_release_object(object);
+	object           = NULL;
+
+	buff[offset - 1] = 1;
+	err              = ccs_object_deserialize(
+                &object, CCS_SERIALIZE_FORMAT_BINARY,
+                CCS_DESERIALIZE_OPERATION_MEMORY, size, buff,
+                CCS_DESERIALIZE_OPTION_END);
+	assert(err == CCS_RESULT_ERROR_INVALID_VALUE);
+	assert(object == NULL);
+	free(buff);
+	free(expr_buff);
+
+	/* JSON: same corruption, same length */
+	err = ccs_object_serialize(
+		cspace, CCS_SERIALIZE_FORMAT_JSON, CCS_SERIALIZE_OPERATION_SIZE,
+		&size, CCS_SERIALIZE_OPTION_END);
+	assert(err == CCS_RESULT_SUCCESS);
+	buff = (char *)malloc(size);
+	assert(buff);
+	err = ccs_object_serialize(
+		cspace, CCS_SERIALIZE_FORMAT_JSON,
+		CCS_SERIALIZE_OPERATION_MEMORY, size, buff,
+		CCS_SERIALIZE_OPTION_END);
+	assert(err == CCS_RESULT_SUCCESS);
+	index_str = strstr(buff, "\"index\":2");
+	assert(index_str && !strstr(index_str + 1, "\"index\":2"));
+	index_str[8] = '1';
+	err          = ccs_object_deserialize(
+                &object, CCS_SERIALIZE_FORMAT_JSON,
+                CCS_DESERIALIZE_OPERATION_MEMORY, size, buff,
+                CCS_DESERIALIZE_OPTION_END);
+	assert(err == CCS_RESULT_ERROR_INVALID_VALUE);
+	assert(object == NULL);
+	free(buff);
+
+	ccs_release_object(cspace);
+	for (int i = 0; i < 3; i++)
+		ccs_release_object(parameters[i]);
+	for (int i = 1; i < 3; i++)
+		ccs_release_object(conditions[i]);
+}
+
+/* Roulette areas and mixture weights are normalized by the inverse of their
+ * sum. An infinite area made that inverse 0 and every normalized area NaN,
+ * which then failed to deserialize after a round trip; a NaN area slipped
+ * through the negativity check. */
+static void
+test_non_finite_weights(void)
+{
+	ccs_result_t       err;
+	ccs_distribution_t distribution = NULL, distributions[2];
+	ccs_float_t        bad[][2]     = {
+                {1.0, INFINITY}, {NAN, 1.0}, {DBL_MAX, DBL_MAX}};
+
+	for (int i = 0; i < 2; i++) {
+		err = ccs_create_uniform_float_distribution(
+			0.0, 1.0, CCS_SCALE_TYPE_LINEAR, 0.0,
+			distributions + i);
+		assert(err == CCS_RESULT_SUCCESS);
+	}
+	for (size_t i = 0; i < sizeof(bad) / sizeof(bad[0]); i++) {
+		err = ccs_create_roulette_distribution(
+			2, bad[i], &distribution);
+		assert(err == CCS_RESULT_ERROR_INVALID_VALUE);
+		assert(distribution == NULL);
+		err = ccs_create_mixture_distribution(
+			2, distributions, bad[i], &distribution);
+		assert(err == CCS_RESULT_ERROR_INVALID_VALUE);
+		assert(distribution == NULL);
+	}
+	for (int i = 0; i < 2; i++)
+		ccs_release_object(distributions[i]);
+}
+
+/* With these weights, rounding makes the cumulative weight before the last
+ * (zero) one exceed 1.0, which the mixture constructor rejects. That error
+ * path used to skip releasing a temporary buffer. */
+static void
+test_mixture_rounding_error_path(void)
+{
+	ccs_result_t       err;
+	ccs_distribution_t distribution = NULL, distributions[6];
+	ccs_float_t        weights[6]   = {1.0, 3.0, 1e-17, 0.1, 1.0, 0.0};
+
+	for (int i = 0; i < 6; i++) {
+		err = ccs_create_uniform_float_distribution(
+			0.0, 1.0, CCS_SCALE_TYPE_LINEAR, 0.0,
+			distributions + i);
+		assert(err == CCS_RESULT_SUCCESS);
+	}
+	err = ccs_create_mixture_distribution(
+		6, distributions, weights, &distribution);
+	assert(err == CCS_RESULT_ERROR_INVALID_VALUE);
+	assert(distribution == NULL);
+	for (int i = 0; i < 6; i++)
+		ccs_release_object(distributions[i]);
+}
+
 int
 main(void)
 {
@@ -432,6 +578,9 @@ main(void)
 	test_unterminated_string();
 	test_tuner_unknown_type();
 	test_int_range_overflow();
+	test_duplicate_condition_index();
+	test_non_finite_weights();
+	test_mixture_rounding_error_path();
 	ccs_clear_thread_error();
 	ccs_fini();
 	return 0;

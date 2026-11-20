@@ -230,10 +230,14 @@ ccs_create_mixture_distribution(
 	}
 
 	for (i = 0; i < num_distributions; i++) {
-		CCS_REFUTE(weights[i] < 0.0, CCS_RESULT_ERROR_INVALID_VALUE);
+		CCS_REFUTE(
+			!isfinite(weights[i]) || weights[i] < 0.0,
+			CCS_RESULT_ERROR_INVALID_VALUE);
 		weights_sum += weights[i];
 	}
-	CCS_REFUTE(weights_sum == 0.0, CCS_RESULT_ERROR_INVALID_VALUE);
+	CCS_REFUTE(
+		!isfinite(weights_sum) || weights_sum == 0.0,
+		CCS_RESULT_ERROR_INVALID_VALUE);
 	ccs_float_t weights_sum_inverse = 1.0 / weights_sum;
 	CCS_REFUTE(
 		isnan(weights_sum_inverse) || !isfinite(weights_sum_inverse),
@@ -356,7 +360,7 @@ ccs_create_mixture_distribution(
 	distrib_data->weights[num_distributions] = 1.0;
 	CCS_REFUTE_ERR_GOTO(
 		err, 1.0 < distrib_data->weights[num_distributions - 1],
-		CCS_RESULT_ERROR_INVALID_VALUE, memory);
+		CCS_RESULT_ERROR_INVALID_VALUE, tmpmemory);
 	for (i = 0; i < num_distributions; i++) {
 		CCS_VALIDATE_ERR_GOTO(
 			err, ccs_retain_object(distributions[i]), distrib);
