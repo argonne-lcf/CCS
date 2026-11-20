@@ -25,7 +25,7 @@ _ccs_deserialize_bin_ccs_tree_data(
 	new_opts.handle_map                        = NULL;
 	new_opts.map_values                        = CCS_FALSE;
 	CCS_VALIDATE(
-		_ccs_deserialize_bin_size(&data->arity, buffer_size, buffer));
+		_ccs_deserialize_bin_count(&data->arity, buffer_size, buffer));
 	CCS_VALIDATE(_ccs_deserialize_bin_ccs_float(
 		&data->weight, buffer_size, buffer));
 	if (data->arity) {

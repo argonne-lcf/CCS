@@ -43,9 +43,9 @@ _ccs_deserialize_bin_ccs_random_tuner_data(
 
 	CCS_VALIDATE(_ccs_deserialize_bin_ccs_tuner_common_data(
 		&data->common_data, version, buffer_size, buffer, opts));
-	CCS_VALIDATE(_ccs_deserialize_bin_size(
+	CCS_VALIDATE(_ccs_deserialize_bin_count(
 		&data->history_size, buffer_size, buffer));
-	CCS_VALIDATE(_ccs_deserialize_bin_size(
+	CCS_VALIDATE(_ccs_deserialize_bin_count(
 		&data->size_optima, buffer_size, buffer));
 
 	if (!(data->history_size + data->size_optima))

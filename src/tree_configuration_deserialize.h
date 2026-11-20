@@ -24,7 +24,7 @@ _ccs_deserialize_bin_tree_configuration_data(
 {
 	CCS_VALIDATE(_ccs_deserialize_bin_ccs_object(
 		(ccs_object_t *)&data->tree_space, buffer_size, buffer));
-	CCS_VALIDATE(_ccs_deserialize_bin_size(
+	CCS_VALIDATE(_ccs_deserialize_bin_count(
 		&data->position_size, buffer_size, buffer));
 	if (data->position_size) {
 		size_t _sz;

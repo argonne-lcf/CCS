@@ -130,7 +130,7 @@ _ccs_deserialize_bin_ccs_distribution_roulette_data(
 {
 	CCS_VALIDATE(_ccs_deserialize_bin_ccs_distribution_common_data(
 		&data->common_data, buffer_size, buffer));
-	CCS_VALIDATE(_ccs_deserialize_bin_size(
+	CCS_VALIDATE(_ccs_deserialize_bin_count(
 		&data->num_areas, buffer_size, buffer));
 	{
 		size_t _sz;
@@ -196,7 +196,7 @@ _ccs_deserialize_bin_ccs_distribution_mixture_data(
 	new_opts.handle_map                        = NULL;
 	CCS_VALIDATE(_ccs_deserialize_bin_ccs_distribution_common_data(
 		&data->common_data, buffer_size, buffer));
-	CCS_VALIDATE(_ccs_deserialize_bin_size(
+	CCS_VALIDATE(_ccs_deserialize_bin_count(
 		&data->num_distributions, buffer_size, buffer));
 	data->distributions = (ccs_distribution_t *)calloc(
 		data->num_distributions, sizeof(ccs_distribution_t));
@@ -279,7 +279,7 @@ _ccs_deserialize_bin_ccs_distribution_multivariate_data(
 	new_opts.handle_map                        = NULL;
 	CCS_VALIDATE(_ccs_deserialize_bin_ccs_distribution_common_data(
 		&data->common_data, buffer_size, buffer));
-	CCS_VALIDATE(_ccs_deserialize_bin_size(
+	CCS_VALIDATE(_ccs_deserialize_bin_count(
 		&data->num_distributions, buffer_size, buffer));
 	data->distributions = (ccs_distribution_t *)calloc(
 		data->num_distributions, sizeof(ccs_distribution_t));

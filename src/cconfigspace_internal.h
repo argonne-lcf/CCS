@@ -988,6 +988,21 @@ _ccs_deserialize_bin_size(size_t *sz, size_t *buffer_size, const char **buffer)
 	return CCS_RESULT_SUCCESS;
 }
 
+/* Deserialize an element count that is followed by that many serialized
+ * elements. Every serialized element occupies at least one byte, so a count
+ * larger than the remaining buffer is necessarily corrupt. Rejecting it here
+ * bounds allocations driven by untrusted input to the size of that input. */
+static inline ccs_result_t
+_ccs_deserialize_bin_count(
+	size_t      *count,
+	size_t      *buffer_size,
+	const char **buffer)
+{
+	CCS_VALIDATE(_ccs_deserialize_bin_size(count, buffer_size, buffer));
+	CCS_REFUTE(*count > *buffer_size, CCS_RESULT_ERROR_INVALID_VALUE);
+	return CCS_RESULT_SUCCESS;
+}
+
 /* Checked-overflow size arithmetic for safe allocation.
  * All return CCS_TRUE on overflow. */
 static inline ccs_bool_t

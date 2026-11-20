@@ -21,7 +21,7 @@ _ccs_deserialize_bin_ccs_map_data(
 	size_t               *buffer_size,
 	const char          **buffer)
 {
-	CCS_VALIDATE(_ccs_deserialize_bin_size(
+	CCS_VALIDATE(_ccs_deserialize_bin_count(
 		&data->num_pairs, buffer_size, buffer));
 	{
 		size_t _sz;

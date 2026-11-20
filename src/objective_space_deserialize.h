@@ -31,9 +31,9 @@ _ccs_deserialize_bin_ccs_objective_space_data(
 		(ccs_object_t *)&data->search_space,
 		CCS_SERIALIZE_FORMAT_BINARY, version, buffer_size, buffer,
 		opts));
-	CCS_VALIDATE(_ccs_deserialize_bin_size(
+	CCS_VALIDATE(_ccs_deserialize_bin_count(
 		&data->num_parameters, buffer_size, buffer));
-	CCS_VALIDATE(_ccs_deserialize_bin_size(
+	CCS_VALIDATE(_ccs_deserialize_bin_count(
 		&data->num_objectives, buffer_size, buffer));
 
 	if (!(data->num_parameters + data->num_objectives))
