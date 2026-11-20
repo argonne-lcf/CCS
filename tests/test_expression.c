@@ -1675,7 +1675,8 @@ test_expression_without_parameters(void)
 	ccs_result_t     err;
 
 	err = ccs_create_binary_expression(
-		CCS_EXPRESSION_TYPE_LESS, ccs_float(2.0), ccs_float(1.0), &expr);
+		CCS_EXPRESSION_TYPE_LESS, ccs_float(2.0), ccs_float(1.0),
+		&expr);
 	assert(err == CCS_RESULT_SUCCESS);
 
 	err = ccs_expression_get_parameters(expr, 0, NULL, &num_parameters);
