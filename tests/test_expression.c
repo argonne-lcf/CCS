@@ -1663,6 +1663,37 @@ test_expression_comparison_categorical_error(void)
 	assert(err == CCS_RESULT_SUCCESS);
 }
 
+/* Expressions without any parameter: the parameter list is empty and must
+ * not be sorted (qsort with a NULL base is undefined behavior, reported by
+ * -fsanitize=nonnull-attribute). */
+static void
+test_expression_without_parameters(void)
+{
+	ccs_expression_t expr;
+	ccs_parameter_t  parameter;
+	size_t           num_parameters = 1;
+	ccs_result_t     err;
+
+	err = ccs_create_binary_expression(
+		CCS_EXPRESSION_TYPE_LESS, ccs_float(2.0), ccs_float(1.0),
+		&expr);
+	assert(err == CCS_RESULT_SUCCESS);
+
+	err = ccs_expression_get_parameters(expr, 0, NULL, &num_parameters);
+	assert(err == CCS_RESULT_SUCCESS);
+	assert(num_parameters == 0);
+
+	err = ccs_expression_get_parameters(expr, 1, &parameter, NULL);
+	assert(err == CCS_RESULT_SUCCESS);
+	assert(parameter == NULL);
+
+	err = ccs_expression_check_contexts(expr, 0, NULL);
+	assert(err == CCS_RESULT_SUCCESS);
+
+	err = ccs_release_object(expr);
+	assert(err == CCS_RESULT_SUCCESS);
+}
+
 int
 main(void)
 {
@@ -1698,6 +1729,7 @@ main(void)
 	test_expression_modulo_float();
 	test_expression_not_type_error();
 	test_expression_comparison_categorical_error();
+	test_expression_without_parameters();
 	ccs_clear_thread_error();
 	ccs_fini();
 }
