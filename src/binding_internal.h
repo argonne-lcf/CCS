@@ -212,7 +212,7 @@ _ccs_deserialize_bin_ccs_binding_data(
 	(void)version;
 	CCS_VALIDATE(_ccs_deserialize_bin_ccs_object(
 		(ccs_object_t *)&data->context, buffer_size, buffer));
-	CCS_VALIDATE(_ccs_deserialize_bin_size(
+	CCS_VALIDATE(_ccs_deserialize_bin_count(
 		&data->num_values, buffer_size, buffer));
 	if (data->num_values) {
 		data->values = (ccs_datum_t *)calloc(

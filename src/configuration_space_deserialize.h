@@ -87,7 +87,8 @@ _ccs_deserialize_bin_ccs_configuration_space_data(
 		CCS_VALIDATE(
 			_ccs_deserialize_bin_size(&index, buffer_size, buffer));
 		CCS_REFUTE(
-			index >= data->num_parameters,
+			index >= data->num_parameters ||
+				data->conditions[index],
 			CCS_RESULT_ERROR_INVALID_VALUE);
 		CCS_VALIDATE(_ccs_object_deserialize_with_opts_check(
 			(ccs_object_t *)data->conditions + index,
@@ -241,7 +242,9 @@ _ccs_deserialize_json_ccs_configuration_space_data(
 		CCS_VALIDATE(
 			_ccs_json_extract_int(cond_obj, "index", &index_val));
 		index = (size_t)index_val;
-		CCS_REFUTE(index >= num, CCS_RESULT_ERROR_INVALID_VALUE);
+		CCS_REFUTE(
+			index >= num || data->conditions[index],
+			CCS_RESULT_ERROR_INVALID_VALUE);
 		CCS_VALIDATE(_ccs_json_extract_object(
 			cond_obj, "expression", CCS_OBJECT_TYPE_EXPRESSION,
 			version, (ccs_object_t *)data->conditions + index,

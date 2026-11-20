@@ -110,10 +110,14 @@ _ccs_distribution_roulette_validate_areas(
 {
 	ccs_float_t sum_areas = 0.0;
 	for (size_t i = 0; i < num_areas; i++) {
-		CCS_REFUTE(areas[i] < 0.0, CCS_RESULT_ERROR_INVALID_VALUE);
+		CCS_REFUTE(
+			!isfinite(areas[i]) || areas[i] < 0.0,
+			CCS_RESULT_ERROR_INVALID_VALUE);
 		sum_areas += areas[i];
 	}
-	CCS_REFUTE(sum_areas == 0.0, CCS_RESULT_ERROR_INVALID_VALUE);
+	CCS_REFUTE(
+		!isfinite(sum_areas) || sum_areas == 0.0,
+		CCS_RESULT_ERROR_INVALID_VALUE);
 	ccs_float_t sum_areas_inverse = 1.0 / sum_areas;
 	CCS_REFUTE(
 		isnan(sum_areas_inverse) || !isfinite(sum_areas_inverse),
