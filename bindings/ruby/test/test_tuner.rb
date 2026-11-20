@@ -196,8 +196,8 @@ class CConfigSpaceTestTuner < Minitest::Test
     attr_reader :id
     attr_reader :handle_map
     attr_reader :objective_space
-    def initialize(name: "", objective_space: nil)
-      @server = XMLRPC::Client.new2('http://localhost:8080/RPC2')
+    def initialize(url, name: "", objective_space: nil)
+      @server = XMLRPC::Client.new2(url)
       connected = false
       start = Time.now
       while !connected
@@ -270,14 +270,22 @@ class CConfigSpaceTestTuner < Minitest::Test
   def test_server
     begin
       pid = nil
+      port = Queue.new
       thr = Thread.new do
-        Open3.popen2e(RbConfig.ruby, File.join(File.dirname(__FILE__), 'tuner_server.rb')) { |stdin, stdout_stderr, wait_thr|
+        Open3.popen3(RbConfig.ruby, File.join(File.dirname(__FILE__), 'tuner_server.rb')) { |stdin, stdout, stderr, wait_thr|
           pid = wait_thr.pid
-          stdout_stderr.read
+          err = Thread.new { stderr.read }
+          line = stdout.gets
+          port << (line && line[/\APORT (\d+)$/, 1])
+          stdout.read
+          err.join
         }
       end
+      p = port.pop
+      raise "tuner server did not announce its port" unless p
+      url = "http://127.0.0.1:#{p}/RPC2"
       os = create_tuning_problem
-      t = TunerProxy.new(name: "my_tuner", objective_space: os)
+      t = TunerProxy.new(url, name: "my_tuner", objective_space: os)
       func = lambda { |(x, y, z)|
         [(x-2)**2, Math.sin(z+y)]
       }
@@ -297,7 +305,7 @@ class CConfigSpaceTestTuner < Minitest::Test
       assert( t.optima.collect(&:configuration).include?(t.suggest) )
 
       t.save
-      t_copy = TunerProxy.new(name: "my_tuner")
+      t_copy = TunerProxy.new(url, name: "my_tuner")
       hist = t_copy.history
       assert_equal(200, hist.size)
       assert_equal(t.num_optima, t_copy.num_optima)
@@ -305,7 +313,7 @@ class CConfigSpaceTestTuner < Minitest::Test
       objs.collect { |(_, v)| v }.each_cons(2) { |v1, v2| assert( (v1 <=> v2) > 0 ) }
       assert( t_copy.optima.collect(&:configuration).include?(t_copy.suggest) )
     ensure
-      Process.kill("SIGHUP", pid)
+      Process.kill("SIGHUP", pid) if pid
       thr.join
     end
   end

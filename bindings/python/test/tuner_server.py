@@ -71,7 +71,10 @@ class MyServer(SimpleXMLRPCServer):
     while not self.quit:
       self.handle_request()
 
-s = MyServer(('localhost', 8000))
+# Bind an ephemeral port so the test never collides with another service,
+# and announce it to the parent process on stdout.
+s = MyServer(('localhost', 0), logRequests = False)
+print(f"PORT {s.server_address[1]}", flush = True)
 s.register_introspection_functions()
 
 @s.register_function
