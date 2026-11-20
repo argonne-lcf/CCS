@@ -1094,8 +1094,9 @@ typedef enum ccs_deserialize_option_e ccs_deserialize_option_t;
 /**
  * Perform a serialization operation on a CCS object.
  * @param[in] object a CCS object
- * @param[in] format the requested serialization format (currently only
- *                   #CCS_SERIALIZE_FORMAT_BINARY is supported)
+ * @param[in] format the requested serialization format
+ *                   (#CCS_SERIALIZE_FORMAT_BINARY or
+ *                   #CCS_SERIALIZE_FORMAT_JSON)
  * @param[in] operation the requested serialization operation
  * @param[in,out] ... operation-specific parameters followed by a
  *                    #CCS_SERIALIZE_OPTION_END terminated list of options.
@@ -1161,8 +1162,9 @@ ccs_object_serialize(
  * Perform a deserialization operation and return a new CCS object.
  * @param[out] object_ret a pointer to the variable that will hold the
  *                        newly created CCS object
- * @param[in] format the requested serialization format (currently only
- *                   #CCS_SERIALIZE_FORMAT_BINARY is supported)
+ * @param[in] format the requested serialization format
+ *                   (#CCS_SERIALIZE_FORMAT_BINARY or
+ *                   #CCS_SERIALIZE_FORMAT_JSON)
  * @param[in] operation the requested deserialization operation
  * @param[in,out] ... operation-specific parameters followed by a
  *                    #CCS_DESERIALIZE_OPTION_END terminated list of
