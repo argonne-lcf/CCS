@@ -1,6 +1,9 @@
 #include <stdlib.h>
 #include <cconfigspace.h>
 #include <string.h>
+// Include stdbool.h before ruby.h, otherwise Ruby headers include the
+// deprecated <cstdbool> when compiled as C++, which warns with g++ >= 15.
+#include <stdbool.h>
 // Ruby 3+ bleeds NDEBUG
 // see https://bugs.ruby-lang.org/issues/18777#change-97580
 #ifdef NDEBUG

@@ -77,6 +77,17 @@ then
     HAVE_RB=no
   fi
 fi
+# Treat Ruby headers as system headers: warnings they trigger with recent
+# compilers (e.g. clang -Wdefault-const-init-field-unsafe in rstring.h) are not
+# ours to fix and must not break -Werror builds.
+RUBY_CFLAGS_SYS=
+for flag in $RUBY_CFLAGS; do
+  case $flag in
+    -I*) RUBY_CFLAGS_SYS="$RUBY_CFLAGS_SYS -isystem `echo "$flag" | sed 's/^-I//'`" ;;
+    *) RUBY_CFLAGS_SYS="$RUBY_CFLAGS_SYS $flag" ;;
+  esac
+done
+RUBY_CFLAGS=$RUBY_CFLAGS_SYS
 AM_CONDITIONAL([HAVE_RUBY], [test "x$HAVE_RB" = xyes])
 if test "x$enable_samples" = xyes;
 then
